@@ -23,7 +23,7 @@ Il modello economico di QoreChain è incentrato sul token nativo **QOR** e segue
 | **Prefisso Bech32**     | `qor` (account: `qor1...`, validatori: `qorvaloper...`) |
 
 :::note
-Le cifre riportate in questa pagina descrivono la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live dal 7 giugno 2026 sulla release **v3.2.3** (v3.2.4 dall'altezza 3.742.566). La testnet **`qorechain-diana`** (EVM chain ID **9800**, release **v3.2.4** dal 19 ottobre 2026) ha una propria storia di emissione e di offerta (l'offerta della testnet è molto superiore a quella della mainnet e la sua emissione ha già superato il tetto), quindi usa le cifre della mainnet. Gli importi che cambiano a ogni blocco sono contrassegnati con la data in cui sono stati letti (20 ottobre 2026).
+Le cifre riportate in questa pagina descrivono la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live dal 7 giugno 2026 sulla release **v3.2.4** (applicata all'altezza 3.742.566 il 23 ottobre 2026). La testnet **`qorechain-diana`** (EVM chain ID **9800**, release **v3.2.4** dal 19 ottobre 2026) ha una propria storia di emissione e di offerta (l'offerta della testnet è molto superiore a quella della mainnet e la sua emissione ha già superato il tetto), quindi usa le cifre della mainnet. Gli importi che cambiano a ogni blocco sono contrassegnati con la data in cui sono stati letti (23 ottobre 2026).
 :::
 
 ---
@@ -43,20 +43,20 @@ QoreChain ha un **percorso di offerta finito e con tetto massimo**. L'offerta di
 | Emissione per epoca | **86.000 QOR** (16.239 QOR fino alla proposta di governance 10; la prima epoca da 86.000 QOR inizia al blocco 3.672.000) |
 | Lunghezza dell'epoca | 43.200 blocchi (circa 38,6 ore con l'attuale tempo di blocco di ≈3,2 s) |
 | Tetto cumulativo (`max_total_emission`) | **590.000.000 QOR** (114.285.714 QOR fino alla proposta 10) |
-| Coniati finora (20 ottobre 2026, epoca 84) | 105.248.896,21 QOR (17,84% del tetto) |
+| Coniati finora (23 ottobre 2026, epoca 86) | 105.420.896,21 QOR (17,87% del tetto) |
 | Rimanenti sotto il tetto | 484.751.103,79 QOR (circa 5.637 epoche a 86.000 QOR per epoca; l'ultima è parziale) |
 
 Una volta raggiunto il tetto, il modulo smette definitivamente di coniare; da quel momento le ricompense provengono unicamente dalle commissioni di transazione. I valori di emissione sono stati fissati dalla governance: la proposta n. 4 (26 agosto 2026) ha sostituito il programma decrescente originale con un importo fisso sotto un tetto rigido, e la proposta n. 10 (approvata il 19 ottobre 2026 con tutto lo stake bonded a favore) ha portato tale importo da 16.239 QOR a 86.000 QOR per epoca e ha alzato il tetto da 114.285.714 QOR a 590.000.000 QOR. La lunghezza dell'epoca non è cambiata. I valori del programma (17,5%, 11%, 7%, 7%, 2% per gli anni 1–5) restano memorizzati nei parametri del modulo ma non sono usati in modalità `fixed`.
 
 Il totale coniato, l'importo rimanente e l'altezza della prossima epoca sono disponibili in tempo reale a `GET /qorechain/inflation/v1/epoch_info` (il suo campo `current_inflation_rate` riporta il tasso legacy basato sugli anni, che la modalità `fixed` non usa).
 
-QoreChain non espone una cifra di rendimento dello staking in tempo reale; considera non verificata qualsiasi percentuale citata. Le cifre attuali possono essere lette dallo stato della chain: l'offerta si trova a `GET /cosmos/bank/v1beta1/supply/by_denom?denom=uqor` (4.493.665.185,83 QOR il 20 ottobre 2026) e i totali dei burn a `GET /qorechain/burn/v1/stats`.
+QoreChain non espone una cifra di rendimento dello staking in tempo reale; considera non verificata qualsiasi percentuale citata. Le cifre attuali possono essere lette dallo stato della chain: l'offerta si trova a `GET /cosmos/bank/v1beta1/supply/by_denom?denom=uqor` (4.493.785.581,46 QOR il 23 ottobre 2026) e i totali dei burn a `GET /qorechain/burn/v1/stats`.
 
 ---
 
 ## x/burn — Motore di burn multi-canale
 
-Il modulo `x/burn` definisce **12 sorgenti di burn** sulla mainnet oggi. Ogni token bruciato viene rimosso definitivamente dall'offerta. Sulla mainnet solo `gas_fee` (31.574.710,28 QOR al 20 ottobre 2026) e, dalla v3.2.2, `failed_tx` (0,0855 QOR) hanno registrato burn; gli altri sono definiti ma non ne hanno registrati. Dalla v3.2.4 c'è una tredicesima sorgente, `staking_tier_penalty`, che registra la penale bruciata quando una delega con blocco temporale viene sbloccata in anticipo (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566; vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking)).
+Il modulo `x/burn` definisce **12 sorgenti di burn** sulla mainnet oggi. Ogni token bruciato viene rimosso definitivamente dall'offerta. Sulla mainnet solo `gas_fee` (31.626.314,61 QOR al 23 ottobre 2026) e, dalla v3.2.2, `failed_tx` (0,1355 QOR) hanno registrato burn; gli altri sono definiti ma non ne hanno registrati. Dalla v3.2.4 c'è una tredicesima sorgente, `staking_tier_penalty`, che registra la penale bruciata quando una delega con blocco temporale viene sbloccata in anticipo (attiva sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026; sulla mainnet non è stato ancora registrato alcuno sblocco anticipato; vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking)).
 
 ### Canali di burn
 
@@ -104,7 +104,7 @@ Le quote sono:
 Le quote sono applicate on-chain e devono sempre sommare esattamente al 100%.
 
 :::note Cosa passa effettivamente attraverso la ripartizione
-La ripartizione si applica a tutto ciò che si trova nel fee collector, che contiene sia le commissioni di transazione sia l'emissione di epoca coniata da `x/inflation`. In pratica, oggi quasi tutto è emissione: dei 105.248.896 QOR coniati, 31.574.710 QOR (30,0%) sono stati bruciati attraverso il canale delle commissioni di gas. Fino all'aggiornamento v3.2.0 (25 settembre 2026, altezza 2.981.742) la quota del 10% degli staker veniva spostata nel saldo del modulo di distribuzione senza coprire alcun diritto, quindi staker e validatori insieme ricevevano il 37%, non il 47%; da quell'altezza la quota degli staker viene pagata come normale ricompensa di staking. L'importo già bloccato era stato registrato on-chain ed è stato da allora rilasciato da voti di governance — vedi [Quota degli staker bloccata e riserva dei light node](#stranded-and-reserve).
+La ripartizione si applica a tutto ciò che si trova nel fee collector, che contiene sia le commissioni di transazione sia l'emissione di epoca coniata da `x/inflation`. In pratica, oggi quasi tutto è emissione: dei 105.420.896 QOR coniati, 31.626.315 QOR (30,0%) sono stati bruciati attraverso il canale delle commissioni di gas. Fino all'aggiornamento v3.2.0 (25 settembre 2026, altezza 2.981.742) la quota del 10% degli staker veniva spostata nel saldo del modulo di distribuzione senza coprire alcun diritto, quindi staker e validatori insieme ricevevano il 37%, non il 47%; da quell'altezza la quota degli staker viene pagata come normale ricompensa di staking. L'importo già bloccato era stato registrato on-chain ed è stato da allora rilasciato da voti di governance — vedi [Quota degli staker bloccata e riserva dei light node](#stranded-and-reserve).
 :::
 
 ### Parametri di burn
@@ -135,7 +135,7 @@ Due importi si sono accumulati sulla mainnet prima dell'aggiornamento v3.2.0 (25
 | **Quota degli staker bloccata** — la quota del 10% degli staker che era stata depositata dove non copriva alcun diritto a ricompense di staking | Proposta 9 (approvata il 19 ottobre 2026) | 6.693.045,921330 QOR rilasciati | `MsgReleaseStrandedRewards` (autorità di governance; destinazione indicata; non può superare il registro) |
 | **Riserva dei light node** — la quota del 3% dei light node accumulata mentre nessun light node era idoneo | Proposta 8 (approvata il 19 ottobre 2026) | 3.156.983,796395 QOR rilasciati | `MsgReleaseLightNodeReserve` (autorità di governance) |
 
-**Resto corretto della quota bloccata.** All'aggiornamento v3.2.3 (altezza 3.662.051, 20 ottobre 2026) la chain ha ricalcolato il registro della quota bloccata, che si attestava allora a 3.807.496,785528 QOR (`reserved` in `GET /qorechain/burn/v1/stranded_rewards`, accanto a `released`, 6.693.045,921330 QOR). La proposta di governance 12 propone di rilasciare tale resto alla fondazione; al momento della stesura (20 ottobre 2026) è nel suo periodo di votazione, che termina il 21 ottobre 2026 alle 20:01 UTC. Controlla il registro e la proposta (`GET /cosmos/gov/v1/proposals/12`) per conoscere l'esito.
+**Resto corretto della quota bloccata.** All'aggiornamento v3.2.3 (altezza 3.662.051, 20 ottobre 2026) la chain ha ricalcolato il registro della quota bloccata, che si attestava allora a 3.807.496,785528 QOR (`reserved` in `GET /qorechain/burn/v1/stranded_rewards`, accanto a `released`, 6.693.045,921330 QOR). La proposta di governance 12 ha rilasciato tale resto, 3.807.496,785528 QOR, alla fondazione: è stata approvata (la votazione si è chiusa il 21 ottobre 2026 alle 20:01 UTC) con tutto lo stake vincolato votante a favore. Il registro si può controllare a `GET /qorechain/burn/v1/stranded_rewards` e la proposta a `GET /cosmos/gov/v1/proposals/12`.
 
 **Il pool dei light node oggi.** Dall'aggiornamento v3.2.0, le ricompense dei light node vengono pagate solo da quanto maturato dall'esecuzione di distribuzione precedente, con un limite per nodo. Dalla v3.2.3 il limite è di **2.000 QOR per nodo ogni 30 giorni** (`max_reward_per_month_per_node`), in proporzione al tempo di blocco e all'uptime del nodo; il valore per blocco (`max_reward_per_block_per_node`, 1.713 uqor) è ancora riportato ma non è più la regola. Ciò che non viene guadagnato resta nella riserva del pool, che solo un voto di governance può rilasciare. Dopo la proposta 8 la riserva si accumula di nuovo: il 20 ottobre 2026 conteneva 487,2318 QOR (`reserved` in `GET /qorechain/lightnode/v1/reward_pool`), senza nulla in sospeso né pagabile, perché nessun light node si è ancora registrato. La registrazione è aperta e vincolata a una licenza (vedi [Light Node](/light-node/overview#reward-program-status)). Un rilascio precedente allo snapshot dell'aggiornamento, superiore all'importo registrato o verso una destinazione non valida viene rifiutato.
 
@@ -197,7 +197,7 @@ Il modulo `x/inflation` conia l'emissione per epoca (86.000 QOR dalla proposta 1
 
 ### Parametri
 
-Letti dal vivo il 20 ottobre 2026 da `GET /qorechain/inflation/v1/params`:
+Letti dal vivo il 23 ottobre 2026 da `GET /qorechain/inflation/v1/params`:
 
 | Parametro | Valore (mainnet) | Descrizione |
 | --- | --- | --- |
@@ -211,14 +211,14 @@ Letti dal vivo il 20 ottobre 2026 da `GET /qorechain/inflation/v1/params`:
 I parametri e il record di epoca del modulo sono esposti via REST sulla mainnet dalla v3.2.3 (`/qorechain/inflation/v1/params` e `/qorechain/inflation/v1/epoch_info`); possono anche essere letti dallo stato della chain con l'interfaccia di store grezzo RPC `abci_query` (store `inflation`, chiavi `inflation/params` e `inflation/epoch`).
 
 :::note v3.2.4 e l'emissione della testnet
-La testnet `qorechain-diana` mantiene le proprie impostazioni di emissione precedenti (16.239 QOR per epoca sotto un tetto di 114.285.714 QOR, già raggiunto lì); la mainnet usa i valori qui sopra. La release v3.2.4 aggiunge una terza modalità di emissione, `target_apy`, con un parametro `target_apy_bps`: sulla testnet dal 19 ottobre 2026, sulla mainnet dall'altezza 3.742.566 (proposta di governance 13). Il parametro è `0` sulla testnet e lì non guida l'emissione. Portare una rete su quella modalità è un voto di governance separato e non è stato proposto sulla mainnet; finché uno non passa, la mainnet resta in modalità `fixed` a 86.000 QOR per epoca.
+La testnet `qorechain-diana` mantiene le proprie impostazioni di emissione precedenti (16.239 QOR per epoca sotto un tetto di 114.285.714 QOR, già raggiunto lì); la mainnet usa i valori qui sopra. La release v3.2.4 aggiunge una terza modalità di emissione, `target_apy`, con un parametro `target_apy_bps`: sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026 (proposta di governance 13). Il parametro è `0` su entrambe le reti e non guida l'emissione. Portare una rete su quella modalità è un voto di governance separato e non è stato proposto sulla mainnet; finché uno non passa, la mainnet resta in modalità `fixed` a 86.000 QOR per epoca.
 :::
 
 ---
 
 ## Burn rispetto all'emissione
 
-L'emissione ha un tetto (590.000.000 QOR in totale) e la quota di burn si applica a tutto ciò che entra nel fee collector, emissione inclusa. Finora (20 ottobre 2026) sono stati bruciati 31.574.710 QOR a fronte di 105.248.896 QOR coniati, quindi l'offerta (4.493.665.186 QOR) è attualmente superiore al suo livello di genesi. Dopo il raggiungimento del tetto l'offerta può solo diminuire, della quantità bruciata.
+L'emissione ha un tetto (590.000.000 QOR in totale) e la quota di burn si applica a tutto ciò che entra nel fee collector, emissione inclusa. Finora (23 ottobre 2026) sono stati bruciati 31.626.315 QOR a fronte di 105.420.896 QOR coniati, quindi l'offerta (4.493.785.581 QOR) è attualmente superiore al suo livello di genesi. Dopo il raggiungimento del tetto l'offerta può solo diminuire, della quantità bruciata.
 
 ---
 

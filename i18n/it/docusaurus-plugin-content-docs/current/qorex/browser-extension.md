@@ -21,15 +21,15 @@ L'**estensione browser** QoreX è il wallet desktop di QoreChain. È un **wallet
 
 ### Quale versione è live dove {#versions}
 
-Versione attuale su ciascuno store, al **20 ottobre 2026**:
+Versione attuale su ciascuno store, al **23 ottobre 2026**:
 
 | Store | Versione attuale |
 |---|---|
-| Chrome Web Store | 0.3.6 (non ancora aggiornato alla 0.3.7) |
-| Firefox Add-ons | 0.3.7 |
-| Safari (Mac App Store, app macOS **QoreX Wallet**) | 1.7.7, che include l'estensione 0.3.7 — il Mac App Store usa una propria numerazione `1.x` |
+| Chrome Web Store | 0.3.8 |
+| Firefox Add-ons | 0.3.8 |
+| Safari (Mac App Store, app macOS **QoreX Wallet**) | 1.7.8, che include l'estensione 0.3.8 — il Mac App Store usa una propria numerazione `1.x` |
 
-Le revisioni degli store arrivano in momenti diversi, quindi uno store può servire una build più vecchia di un altro; la scheda dello store mostra sempre la sua versione attuale. Questa pagina descrive il set di funzionalità della 0.3.7; dove un punto richiede la 0.3.7 lo dice, e gli utenti di Chrome la ottengono quando la scheda di Chrome si aggiorna. Vedi anche [Quale versione è live dove](/qorex/overview#versions).
+Le revisioni degli store arrivano in momenti diversi, quindi uno store può servire una build più vecchia di un altro; la scheda dello store mostra sempre la sua versione attuale. Questa pagina descrive il set di funzionalità della 0.3.7, che ora tutti gli store includono (la 0.3.8 è la build attuale). Vedi anche [Quale versione è live dove](/qorex/overview#versions).
 
 Dalla 0.2.6 l'estensione ha acquisito: [più wallet con un'unica password](#wallets), un [account in stile Ethereum che aggiungi a mano](#coin60), [Claim & restake](#stake), un elenco **Unstaking in corso**, l'[aggiunta di un token tramite contratto](#custom-tokens), [Ricevi su qualsiasi rete](#receive), i [Siti connessi con Revoca](#connected-sites), la [finestra di accesso EVM](#evm-window), [`signAndBroadcast` per le dApp](#sign-and-broadcast) e schermate di approvazione che mostrano ogni messaggio, la commissione e la scadenza.
 

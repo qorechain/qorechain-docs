@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Set `--chain-id qorechain-vladi` to broadcast against the live mainnet, or `--chain-id qorechain-diana` for the testnet. Both networks run the v3.2 line: mainnet node release **v3.2.3** (applied at height 3,662,051 on 20 October 2026; mainnet runs v3.2.3 until height 3,742,566 and **v3.2.4** from that block, scheduled by governance proposal 13), testnet **v3.2.4** (applied at height 8,337,253 on 19 October 2026). Check `latest.json` under [download.qore.host](https://download.qore.host) for the current release. If `--chain-id` is omitted, the client uses the `chain-id` from your local client config.
+Set `--chain-id qorechain-vladi` to broadcast against the live mainnet, or `--chain-id qorechain-diana` for the testnet. Both networks run the v3.2 line: mainnet node release **v3.2.4** (applied at height 3,742,566 on 23 October 2026 by governance proposal 13; v3.2.3 was applied at height 3,662,051 on 20 October 2026), testnet **v3.2.4** (applied at height 8,337,253 on 19 October 2026). Check `latest.json` under [download.qore.host](https://download.qore.host) for the current release. If `--chain-id` is omitted, the client uses the `chain-id` from your local client config.
 
-The commands and flags on this page were checked against the v3.2.3 release binary. Anything that exists only from v3.2.4 on (the testnet now, mainnet from height 3,742,566) is marked as such.
+The commands and flags on this page were checked against the v3.2.3 release binary, plus the v3.2.4 additions. Anything that exists only from v3.2.4 on (mainnet since 23 October 2026, testnet since 19 October 2026) is marked as such.
 :::
 
 Common flags apply to every `tx` subcommand:
@@ -262,7 +262,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey_hex> hybrid --pqc-key mypqc
   --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-From v3.2.4 (on the testnet since 19 October 2026; on mainnet from height 3,742,566) the account record also reports whether a proof was verified, as `possession_proven` (see [REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#pqc-module)); a mainnet node still on v3.2.3 does not report it.
+From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) the account record also reports whether a proof was verified, as `possession_proven` (see [REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#pqc-module)).
 
 ### cosign
 
@@ -389,7 +389,7 @@ qorechaind tx pqc cosign register.json --from operator --pqc-key <name> --chain-
 
 `node_type` is `sx` or `ux`. Registration needs an active `lightnode_operator` licence granted by the network's licence authority; see [Light Node](/light-node/overview) for the programme's current status. Other commands: `tx lightnode heartbeat`, `tx lightnode claim-rewards`, `tx lightnode deregister`.
 
-Since v3.2.3 the reward a node can accrue is bounded **per month** (`max_reward_per_month_per_node` in `GET /qorechain/lightnode/v1/reward_pool`, 2,000 QOR per 30 days), prorated by block time and uptime, so the bound no longer depends on how fast blocks are produced. A bound is a ceiling, not a promised amount. From v3.2.4 (on the testnet since 19 October 2026; on mainnet from height 3,742,566) a node's bound starts at its own registration rather than at the previous settlement.
+Since v3.2.3 the reward a node can accrue is bounded **per month** (`max_reward_per_month_per_node` in `GET /qorechain/lightnode/v1/reward_pool`, 2,000 QOR per 30 days), prorated by block time and uptime, so the bound no longer depends on how fast blocks are produced. A bound is a ceiling, not a promised amount. From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) a node's bound starts at its own registration rather than at the previous settlement.
 
 ---
 
@@ -413,7 +413,7 @@ qorechaind tx bridge deposit <source_chain> <source_tx_hash> <asset> <amount> [f
 
 ### register-validator / attest
 
-Bridge-validator messages. `register-validator <pqc_pubkey_hex> <supported_chains_csv>` registers a validator for attestation duty and `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` submits an attestation. No bridge validator is registered on either network. From v3.2.4 (on the testnet since 19 October 2026; on mainnet from height 3,742,566) a bridge validator registration also needs a proof of possession and a key no other bridge validator uses.
+Bridge-validator messages. `register-validator <pqc_pubkey_hex> <supported_chains_csv>` registers a validator for attestation duty and `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` submits an attestation. No bridge validator is registered on either network. From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) a bridge validator registration also needs a proof of possession and a key no other bridge validator uses.
 
 ### update-chain-config / set-verifier-bootstrap / update-circuit-breaker-limits
 
@@ -478,7 +478,7 @@ qorechaind tx crossvm call <evm|cosmwasm|svm> <target_contract> --payload <hex> 
 ## stakingtier (v3.2.4) {#stakingtier}
 
 :::note Available from v3.2.4
-The staking-tiers module arrived with the **v3.2.4** release: it has run on the `qorechain-diana` testnet since 19 October 2026 and runs on mainnet from height 3,742,566 (governance proposal 13). Before that height a mainnet node does not have the module and these commands are refused; check `GET /qorechain/stakingtier/v1/params` on the node you target first.
+The staking-tiers module arrived with the **v3.2.4** release: it has run on the `qorechain-diana` testnet since 19 October 2026 and on mainnet since 23 October 2026 (height 3,742,566, governance proposal 13). A node still on an older release does not have the module and these commands are refused; check `GET /qorechain/stakingtier/v1/params` on the node you target first.
 :::
 
 Optional time-locked delegations: a delegator can lock part of an existing delegation for 3, 6 or 12 months (the minimum lock is 10 QOR) and later claim the bonus the module credits for it. A lock is a record on top of the delegation: the delegated funds stay with the validator.

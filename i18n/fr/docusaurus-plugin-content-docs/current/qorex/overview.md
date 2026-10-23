@@ -66,19 +66,25 @@ QoreX est non-custodial : QoreChain Association ne peut ni récupérer un portef
 
 ## Quelle version est disponible où {#versions}
 
-L'examen par les stores suit son propre calendrier ; chaque store sert donc sa propre version, et Google Play et le Chrome Web Store ont actuellement du retard sur les autres. Voici la version actuelle **sur chaque store** au **20 octobre 2026** :
+L'examen par les stores suit son propre calendrier ; un store peut donc servir pendant un temps une version plus ancienne qu'un autre. Voici la version actuelle **sur chaque store** au **23 octobre 2026** :
 
 | Store | Version actuelle | Remarque |
 |---|---|---|
-| Apple App Store (iOS) | 1.1.7 | publiée le 15 octobre |
-| Google Play (Android) | 1.1.6 | la 1.1.7 est téléversée mais pas encore publique — la fiche publique affiche toujours la 1.1.6 |
-| Chrome Web Store | 0.3.6 | sert toujours la 0.3.6 |
-| Firefox Add-ons | 0.3.7 | |
-| Safari (Mac App Store) | 1.7.7, intégrant l'extension 0.3.7 | le Mac App Store utilise sa propre numérotation `1.x` |
+| Apple App Store (iOS) | 1.1.8 | publiée le 21 octobre |
+| Google Play (Android) | 1.1.8 | |
+| Chrome Web Store | 0.3.8 | |
+| Firefox Add-ons | 0.3.8 | |
+| Safari (Mac App Store) | 1.7.8, intégrant l'extension 0.3.8 | le Mac App Store utilise sa propre numérotation `1.x` |
 
-Les stores affichent toujours leur version actuelle, et un store qui sert encore une version plus ancienne rattrapera son retard automatiquement. Les fonctionnalités ci-dessous marquées **1.1.7 / 0.3.7** sont disponibles sur les stores du tableau qui portent déjà cette version (iOS, Firefox, Safari) et arrivent sur Google Play et Chrome lorsque ces fiches seront mises à jour. Rien de plus récent que la 1.1.7 / 0.3.7 n'est décrit comme disponible dans ce manuel.
+Les stores affichent toujours leur version actuelle, et un store qui sert encore une version plus ancienne rattrapera son retard automatiquement. Rien de plus récent que la 1.1.8 / 0.3.8 n'est décrit comme disponible dans ce manuel.
 
-Ce que les versions 1.1.7 / 0.3.7 ont changé pour vous :
+Ce que les versions 1.1.8 / 0.3.8 ont changé pour vous :
+
+- **MetaMask sur QoreChain, dès la première page.** Ouvrez, vérifiez et fermez la fenêtre d'accès EVM dont MetaMask a besoin, et voyez ce qu'il en reste.
+- **Des vérifications quantiques renforcées.** QoreX vérifie la signature à sécurité quantique d'une application par rapport à la clé de votre compte, et indique clairement si cette clé a été enregistrée par un autre portefeuille.
+- **Correctifs de problèmes de sécurité signalés.**
+
+Ce que les versions 1.1.7 / 0.3.7 ont changé pour vous (incluses dans la 1.1.8 / 0.3.8) :
 
 - **Les approbations refusent une requête dont les octets peuvent se lire de deux façons.** Si un même champ apparaît deux fois dans une requête, un écran et la chaîne pourraient ne pas s'accorder sur ce qui est signé — par exemple des frais ou un montant affichés autrement que ceux exécutés. QoreX refuse désormais une telle requête au lieu d'en montrer une seule lecture. Voir [Ce que montre la fenêtre d'approbation](/qorex/security-and-recovery#approvals).
 - **L'expiration d'une autorisation est affichée à la seconde près**, et les votes de gouvernance sont décodés et affichés sur l'écran d'approbation.
@@ -96,7 +102,7 @@ Points marquants depuis 1.0.9 / 0.2.6 :
 - Des écrans d'approbation qui affichent chaque message, les frais, les limites de dépense et l'expiration, et refusent ce que QoreX ne peut pas afficher ; **`signAndBroadcast`** pour les dApps ; **Sites connectés** avec Révoquer (extension) ; la **fenêtre d'accès EVM** — voir [Sécurité et récupération](/qorex/security-and-recovery) et l'[Extension de navigateur](/qorex/browser-extension).
 - Correctifs : un compte financé pouvait momentanément disparaître de « Vos comptes » (1.0.9) ; le bouton Retour matériel d'Android revient désormais d'un écran en arrière (1.1.1) ; la phrase de récupération est masquée aux services hors accessibilité sur Android 14 et versions ultérieures (1.1.6).
 
-QoreX fonctionne sur le mainnet `qorechain-vladi`, qui exécute la chaîne **v3.2.3** (en ligne depuis le 7 juin 2026) jusqu'à la hauteur 3 742 566 et la v3.2.4 à partir de ce bloc. Le format de signature, les adresses, les décimales, les mémos et les frais ne changent pas lors de ces mises à niveau ; aucune mise à jour de QoreX n'est donc nécessaire.
+QoreX fonctionne sur le mainnet `qorechain-vladi` (en ligne depuis le 7 juin 2026), qui exécute la chaîne **v3.2.4** depuis le 23 octobre 2026. Le format de signature, les adresses, les décimales, les mémos et les frais ne changent pas lors de ces mises à niveau ; aucune mise à jour de QoreX n'est donc nécessaire.
 
 ## Ce que QoreX envoie sur le réseau {#data-and-privacy}
 

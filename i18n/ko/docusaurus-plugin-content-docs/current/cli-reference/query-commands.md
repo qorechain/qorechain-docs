@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-쿼리는 `--node`가 가리키는 노드를 대상으로 실행됩니다. 실시간 데이터를 조회하려면 **`qorechain-vladi`** 메인넷 RPC 엔드포인트(예: `--node https://rpc.qore.host:443`)를 사용하고, 테스트용으로는 **`qorechain-diana`** 테스트넷 엔드포인트(`--node https://rpc-testnet.qore.host:443`)를 사용하세요. 기본값인 `tcp://localhost:26657`은 직접 운영하는 노드를 대상으로 합니다. 메인넷은 높이 3,742,566까지 노드 릴리스 v3.2.3을 실행하고 그 블록부터 v3.2.4를 실행하며(거버넌스 제안 13), 테스트넷은 2026년 10월 19일부터 v3.2.4를 실행하고 있습니다. v3.2.4 릴리스는 몇 가지 경로와 명령어를 추가하며(아래에 **v3.2.4**로 표시), 이는 테스트넷에서는 지금 동작하고 메인넷에서는 높이 3,742,566부터 동작합니다. 아직 v3.2.3인 메인넷 노드는 이에 `Not Implemented`로 응답합니다. 이 페이지의 명령어는 `https://rpc.qore.host:443`을 대상으로 실행한 v3.2.3 릴리스 바이너리를 기준으로 확인했습니다.
+쿼리는 `--node`가 가리키는 노드를 대상으로 실행됩니다. 실시간 데이터를 조회하려면 **`qorechain-vladi`** 메인넷 RPC 엔드포인트(예: `--node https://rpc.qore.host:443`)를 사용하고, 테스트용으로는 **`qorechain-diana`** 테스트넷 엔드포인트(`--node https://rpc-testnet.qore.host:443`)를 사용하세요. 기본값인 `tcp://localhost:26657`은 직접 운영하는 노드를 대상으로 합니다. 메인넷은 2026년 10월 23일부터 노드 릴리스 v3.2.4를 실행하며(거버넌스 제안 13에 따라 높이 3,742,566에서 적용), 테스트넷은 2026년 10월 19일부터 v3.2.4를 실행하고 있습니다. v3.2.4 릴리스는 몇 가지 경로와 명령어를 추가하며(아래에 **v3.2.4**로 표시), 이는 두 네트워크 모두에서 동작하고, 이전 릴리스의 노드는 이에 `Not Implemented`로 응답합니다. 이 페이지의 명령어는 `https://rpc.qore.host:443`을 대상으로 실행한 v3.2.3 릴리스 바이너리를 기준으로 확인했으며, v3.2.4 경로는 2026년 10월 23일에 REST로 확인했습니다.
 :::
 
 공통 플래그는 모든 `query` 하위 명령어에 적용됩니다.
@@ -115,7 +115,7 @@ qorechaind query pqc evm-delegation-consent <address>
 
 - `algorithm`은 알고리즘 이름(`dilithium5`, `mlkem1024`) 또는 숫자 ID를 받습니다.
 - `migration`은 주소가 아닌 **알고리즘 ID**(예: `1`)를 받으며, 진행 중인 마이그레이션이 없으면 `No active migration`을 보고합니다.
-- `account`는 등록된 키를 보고합니다. 키, `key_type`, `algorithm_name` 외에도 레코드에는 `classical_key_source`(`stored`, `auth_account` 또는 `none`: 클래식 공개 키의 출처)가 있습니다. v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) `possession_proven`도 포함되며, 키가 검증된 소유 증명과 함께 등록된 경우 `true`입니다.
+- `account`는 등록된 키를 보고합니다. 키, `key_type`, `algorithm_name` 외에도 레코드에는 `classical_key_source`(`stored`, `auth_account` 또는 `none`: 클래식 공개 키의 출처)가 있습니다. v3.2.4부터(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) `possession_proven`도 포함되며, 키가 검증된 소유 증명과 함께 등록된 경우 `true`입니다.
 - `evm-window`는 해당 주소에 열려 있는 EVM 레인 승인 창이 있는지, 그리고 남은 블록, 트랜잭션, 금액이 얼마인지(`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`)와 함께 창의 범위(`native_only`, `allowed_targets`; 메인넷 v3.2.3부터)를 보여줍니다. REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
 - `evm-delegation-consent`는 해당 주소의 EIP-7702 위임 동의(`found`, `live`, `delegate`, `granted_height`, `expiry_height`), 현재 위임 및 EVM 논스를 보여줍니다. REST: `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
 - `params`와 `hybrid-mode`는 `hybrid_signature_mode`(`2` = 두 네트워크 모두에서 필수)와 `allow_classical_fallback`(`false`)을 보고합니다.
@@ -149,7 +149,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mod
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
 ```
 
-메인넷에서는 `emission_mode: "fixed"`, 43,200블록으로 이루어진 에포크당 86,000 QOR의 고정 발행량, 누적 상한 590,000,000 QOR이 보고됩니다(거버넌스 제안 10, 2026년 10월 19일 통과. 새 발행량이 적용되는 첫 에포크는 블록 3,672,000에서 시작). 금액은 `uqor` 단위입니다. 테스트넷은 여전히 자체적인 다른 값을 보고하며, v3.2.4 릴리스에는 발행 모드가 추가로 포함되어 있습니다(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터). 다만 네트워크는 자체 거버넌스 투표를 통해서만 이 모드로 전환하므로, 그러한 투표가 통과될 때까지 메인넷은 `fixed`를 유지합니다.
+메인넷에서는 `emission_mode: "fixed"`, 43,200블록으로 이루어진 에포크당 86,000 QOR의 고정 발행량, 누적 상한 590,000,000 QOR이 보고됩니다(거버넌스 제안 10, 2026년 10월 19일 통과. 새 발행량이 적용되는 첫 에포크는 블록 3,672,000에서 시작). 금액은 `uqor` 단위입니다. 테스트넷은 여전히 자체적인 다른 값을 보고하며, v3.2.4 릴리스에는 발행 모드가 추가로 포함되어 있습니다(두 네트워크 모두에서 사용 가능). 다만 네트워크는 자체 거버넌스 투표를 통해서만 이 모드로 전환하므로, 그러한 투표가 통과될 때까지 메인넷은 `fixed`를 유지합니다.
 
 ---
 
@@ -184,7 +184,7 @@ qorechaind query lightnode rewards <operator_address>
 qorechaind query lightnode reward-pool
 ```
 
-`reward-pool`은 모듈의 보상 잔액이 `reserved`, `outstanding`, `payable`, `distributable`로 어떻게 나뉘는지와 노드별 한도인 `max_reward_per_block_per_node`, 그리고 v3.2.3부터 `max_reward_per_month_per_node`(2,000 QOR, 블록 시간과 가동률에 비례하여 배분)를 보여줍니다. v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) `monthly_cap_active`, `last_distribution_time`, `last_distribution_height`도 보고합니다.
+`reward-pool`은 모듈의 보상 잔액이 `reserved`, `outstanding`, `payable`, `distributable`로 어떻게 나뉘는지와 노드별 한도인 `max_reward_per_block_per_node`, 그리고 v3.2.3부터 `max_reward_per_month_per_node`(2,000 QOR, 블록 시간과 가동률에 비례하여 배분)를 보여줍니다. v3.2.4부터(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) `monthly_cap_active`, `last_distribution_time`, `last_distribution_height`도 보고합니다.
 
 ---
 
@@ -330,7 +330,7 @@ qorechaind query stakingtier locks <holder_address>
 qorechaind query stakingtier pool
 ```
 
-스테이킹 티어 모듈은 **v3.2.4** 릴리스의 일부입니다. 테스트넷에서는 2026년 10월 19일부터 실행되고 있으며 메인넷에서는 높이 3,742,566부터 실행됩니다(거버넌스 제안 13). 그 높이 이전에는 메인넷 노드가 이 쿼리에 `Not Implemented`로 응답합니다. REST: `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. [트랜잭션 명령어](/cli-reference/transaction-commands#stakingtier)를 참조하십시오.
+스테이킹 티어 모듈은 **v3.2.4** 릴리스의 일부입니다. 테스트넷에서는 2026년 10월 19일부터, 메인넷에서는 2026년 10월 23일(높이 3,742,566, 거버넌스 제안 13)부터 실행되고 있습니다. 이전 릴리스의 노드는 이 쿼리에 `Not Implemented`로 응답합니다. REST: `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. [트랜잭션 명령어](/cli-reference/transaction-commands#stakingtier)를 참조하십시오.
 
 ---
 
@@ -345,7 +345,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>`은 업그레이드가 언제 적용되었는지 확인하는 방법입니다. 메인넷에서는 `v3.2.2`가 높이 3,556,788에, `v3.2.3`이 높이 3,662,051에 적용되었고, 테스트넷에서는 `v3.2.2`가 6,905,034에, `v3.2.3`이 8,003,746에, `v3.2.4`가 8,337,253에 적용되었습니다(`0`은 적용되지 않았음을 의미). 메인넷의 서킷 브레이커 목록(`disabled-list`)에는 현재 베스팅 계정 생성 메시지, QoreChain Native 저장 및 인스턴스화, AMM 풀 일시 중지 및 재개, 크로스 VM 호출, 멀티레이어 레이어 상태 업데이트, PQC 알고리즘 사용 중단 및 비활성화, PRISM 합의 거버넌스 메시지가 들어 있으며, 테스트넷의 목록에는 QoreChain Native 메시지 세 개만 들어 있습니다.
+`query upgrade applied <name>`은 업그레이드가 언제 적용되었는지 확인하는 방법입니다. 메인넷에서는 `v3.2.2`가 높이 3,556,788에, `v3.2.3`이 높이 3,662,051에, `v3.2.4`가 높이 3,742,566에 적용되었고, 테스트넷에서는 `v3.2.2`가 6,905,034에, `v3.2.3`이 8,003,746에, `v3.2.4`가 8,337,253에 적용되었습니다(`0`은 적용되지 않았음을 의미). 메인넷의 서킷 브레이커 목록(`disabled-list`)에는 현재 베스팅 계정 생성 메시지, QoreChain Native 저장 및 인스턴스화, AMM 풀 일시 중지 및 재개, 크로스 VM 호출, 멀티레이어 레이어 상태 업데이트, PQC 알고리즘 사용 중단 및 비활성화, PRISM 합의 거버넌스 메시지가 들어 있으며, 테스트넷의 목록에는 QoreChain Native 메시지 세 개만 들어 있습니다.
 
 ---
 

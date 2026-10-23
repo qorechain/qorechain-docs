@@ -14,7 +14,7 @@ Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge
 :::
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Chain-Version **v3.2.4**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft mit Chain-Version **v3.2.3** bis Höhe 3.742.566 und mit **v3.2.4** ab diesem Block. Ersetze die Mainnet-Chain-ID und die Endpunkte anhand der Seite **Verbindung zum Mainnet**, sobald eine Route aktiviert ist. Status geprüft am 20. Oktober 2026: Alle 37 Chain-Konfigurationen sind auf beiden Netzwerken `pending`.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Chain-Version **v3.2.4**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft mit Chain-Version **v3.2.4** (seit dem 23. Oktober 2026). Ersetze die Mainnet-Chain-ID und die Endpunkte anhand der Seite **Verbindung zum Mainnet**, sobald eine Route aktiviert ist. Status geprüft am 23. Oktober 2026: Alle 37 Chain-Konfigurationen sind auf beiden Netzwerken `pending`.
 :::
 
 ---

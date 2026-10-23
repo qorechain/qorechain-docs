@@ -66,19 +66,25 @@ QoreX saklamasızdır: QoreChain Association kaybolan bir cüzdanı kurtaramaz, 
 
 ## Hangi sürüm nerede canlı {#versions}
 
-Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden her mağaza kendi sürümünü sunar ve Google Play ile Chrome Web Store şu anda diğerlerinin gerisindedir. Bu, **20 Ekim 2026** itibarıyla **her mağazadaki** güncel sürümdür:
+Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza bir süre diğerinden daha eski bir sürüm sunabilir. Bu, **23 Ekim 2026** itibarıyla **her mağazadaki** güncel sürümdür:
 
 | Mağaza | Güncel sürüm | Not |
 |---|---|---|
-| Apple App Store (iOS) | 1.1.7 | 15 Ekim'de yayımlandı |
-| Google Play (Android) | 1.1.6 | 1.1.7 yüklendi ancak henüz herkese açık değil — herkese açık liste hâlâ 1.1.6'yı gösteriyor |
-| Chrome Web Store | 0.3.6 | hâlâ 0.3.6 sunuyor |
-| Firefox Add-ons | 0.3.7 | |
-| Safari (Mac App Store) | 1.7.7, eklenti 0.3.7 ile birlikte | Mac App Store kendi `1.x` numaralandırmasını kullanır |
+| Apple App Store (iOS) | 1.1.8 | 21 Ekim'de yayımlandı |
+| Google Play (Android) | 1.1.8 | |
+| Chrome Web Store | 0.3.8 | |
+| Firefox Add-ons | 0.3.8 | |
+| Safari (Mac App Store) | 1.7.8, eklenti 0.3.8 ile birlikte | Mac App Store kendi `1.x` numaralandırmasını kullanır |
 
-Mağazalar her zaman güncel sürümlerini gösterir ve hâlâ eski bir sürüm sunan bir mağaza otomatik olarak yetişir. Aşağıda **1.1.7 / 0.3.7** olarak işaretlenen özellikler, bu sürümü zaten taşıyan tablodaki mağazalarda (iOS, Firefox, Safari) canlıdır ve bu listeler güncellendiğinde Google Play ve Chrome'a gelir. Bu kılavuzda 1.1.7 / 0.3.7'den daha yeni hiçbir şeyin kullanılabilir olduğu anlatılmaz.
+Mağazalar her zaman güncel sürümlerini gösterir ve hâlâ eski bir sürüm sunan bir mağaza otomatik olarak yetişir. Bu kılavuzda 1.1.8 / 0.3.8'den daha yeni hiçbir şeyin kullanılabilir olduğu anlatılmaz.
 
-1.1.7 / 0.3.7 sürümlerinin sizin için değiştirdikleri:
+1.1.8 / 0.3.8 sürümlerinin sizin için değiştirdikleri:
+
+- **İlk sayfadan itibaren QoreChain'de MetaMask.** MetaMask'ın gerektirdiği EVM erişim penceresini açın, kontrol edin ve kapatın, ne kadarının kaldığını görün.
+- **Daha güçlü kuantum-güvenli kontroller.** QoreX, bir uygulamanın kuantum-güvenli imzasını hesabınızın anahtarına karşı doğrular ve bu anahtar başka bir cüzdan tarafından kaydedilmişse bunu açıkça söyler.
+- **Bildirilen güvenlik sorunları için düzeltmeler.**
+
+1.1.7 / 0.3.7 sürümlerinin sizin için değiştirdikleri (1.1.8 / 0.3.8'e dahildir):
 
 - **Onaylar, baytları iki şekilde okunabilen bir isteği reddeder.** Aynı alan bir istekte iki kez görünürse, bir ekran ile zincir neyin imzalandığı konusunda anlaşamayabilir — örneğin gösterilenden farklı yürütülen bir ücret veya tutar. QoreX artık böyle bir isteği, tek bir okumasını göstermek yerine reddeder. Bkz. [Onay penceresinin gösterdikleri](/qorex/security-and-recovery#approvals).
 - **İzin süresinin bitişi saniyesine kadar gösterilir** ve yönetişim oyları çözülüp onay ekranında gösterilir.
@@ -96,7 +102,7 @@ Mağazalar her zaman güncel sürümlerini gösterir ve hâlâ eski bir sürüm 
 - Her mesajı, ücreti, harcama limitlerini ve son kullanma süresini gösteren ve QoreX'in görüntüleyemediği şeyleri reddeden onay ekranları; dApp'ler için **`signAndBroadcast`**; İptal özellikli **Bağlı siteler** (eklenti); **EVM erişim penceresi** — bkz. [Güvenlik ve Kurtarma](/qorex/security-and-recovery) ve [Tarayıcı Eklentisi](/qorex/browser-extension).
 - Düzeltmeler: fonlanmış bir hesap "Hesaplarınız" listesinden anlık olarak kaybolabiliyordu (1.0.9); Android donanım Geri tuşu artık bir ekran geri gidiyor (1.1.1); kurtarma ifadesi Android 14 ve sonrasında erişilebilirlik hizmeti olmayan hizmetlerden gizleniyor (1.1.6).
 
-QoreX, **v3.2.3** zincir sürümünü çalıştıran mainnet `qorechain-vladi` üzerinde çalışır (7 Haziran 2026'dan beri canlı) 3.742.566 yüksekliğine kadar, v3.2.4 ise o bloktan itibaren çalışır. İmza biçimi, adresler, ondalık basamaklar, memolar ve ücretler bu yükseltmelerde değişmez; bu nedenle bunlar için bir QoreX güncellemesi gerekmez.
+QoreX, 23 Ekim 2026'dan beri **v3.2.4** zincir sürümünü çalıştıran mainnet `qorechain-vladi` (7 Haziran 2026'dan beri canlı) üzerinde çalışır. İmza biçimi, adresler, ondalık basamaklar, memolar ve ücretler bu yükseltmelerde değişmez; bu nedenle bunlar için bir QoreX güncellemesi gerekmez.
 
 ## QoreX'in ağ üzerinden neler gönderdiği {#data-and-privacy}
 

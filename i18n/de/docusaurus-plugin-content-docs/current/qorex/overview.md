@@ -66,19 +66,25 @@ QoreX ist nicht-verwahrend: Die QoreChain Association kann eine verlorene Wallet
 
 ## Welche Version wo live ist {#versions}
 
-Die Store-Prüfung läuft nach ihrem eigenen Zeitplan, sodass jeder Store seinen eigenen Build ausliefert und Google Play sowie der Chrome Web Store derzeit hinter den anderen zurückliegen. Dies ist die aktuelle Version **in jedem Store** Stand **20. Oktober 2026**:
+Die Store-Prüfung läuft nach ihrem eigenen Zeitplan, sodass ein Store eine Weile einen älteren Build ausliefern kann als ein anderer. Dies ist die aktuelle Version **in jedem Store** Stand **23. Oktober 2026**:
 
 | Store | Aktuelle Version | Hinweis |
 |---|---|---|
-| Apple App Store (iOS) | 1.1.7 | am 15. Oktober veröffentlicht |
-| Google Play (Android) | 1.1.6 | 1.1.7 ist hochgeladen, aber noch nicht öffentlich — der öffentliche Eintrag zeigt noch 1.1.6 |
-| Chrome Web Store | 0.3.6 | liefert weiterhin 0.3.6 aus |
-| Firefox Add-ons | 0.3.7 | |
-| Safari (Mac App Store) | 1.7.7, mit Erweiterung 0.3.7 | der Mac App Store verwendet eine eigene `1.x`-Nummerierung |
+| Apple App Store (iOS) | 1.1.8 | am 21. Oktober veröffentlicht |
+| Google Play (Android) | 1.1.8 | |
+| Chrome Web Store | 0.3.8 | |
+| Firefox Add-ons | 0.3.8 | |
+| Safari (Mac App Store) | 1.7.8, mit Erweiterung 0.3.8 | der Mac App Store verwendet eine eigene `1.x`-Nummerierung |
 
-Die Stores zeigen immer ihre aktuelle Version an, und ein Store, der noch einen älteren Build ausliefert, schließt automatisch auf. Unten mit **1.1.7 / 0.3.7** markierte Funktionen sind in den Stores der Tabelle live, die diesen Build bereits führen (iOS, Firefox, Safari), und erreichen Google Play und Chrome, sobald diese Einträge aktualisiert werden. Nichts Neueres als 1.1.7 / 0.3.7 wird in diesem Handbuch als verfügbar beschrieben.
+Die Stores zeigen immer ihre aktuelle Version an, und ein Store, der noch einen älteren Build ausliefert, schließt automatisch auf. Nichts Neueres als 1.1.8 / 0.3.8 wird in diesem Handbuch als verfügbar beschrieben.
 
-Was die Builds 1.1.7 / 0.3.7 für dich geändert haben:
+Was die Builds 1.1.8 / 0.3.8 für dich geändert haben:
+
+- **MetaMask auf QoreChain, gleich von der ersten Seite an.** Öffne, prüfe und schließe das EVM-Zugriffsfenster, das MetaMask braucht, und sieh, was davon noch übrig ist.
+- **Strengere quantensichere Prüfungen.** QoreX verifiziert die quantensichere Signatur einer App gegen den Schlüssel deines Kontos und sagt deutlich, wenn dieser Schlüssel von einer anderen Wallet registriert wurde.
+- **Korrekturen für gemeldete Sicherheitsprobleme.**
+
+Was die Builds 1.1.7 / 0.3.7 für dich geändert haben (in 1.1.8 / 0.3.8 enthalten):
 
 - **Freigaben lehnen eine Anfrage ab, deren Bytes auf zwei Arten gelesen werden können.** Taucht dasselbe Feld in einer Anfrage zweimal auf, könnten ein Bildschirm und die Chain darüber uneins sein, was signiert wird — zum Beispiel eine Gebühr oder ein Betrag, der anders angezeigt wird als der ausgeführte. QoreX lehnt eine solche Anfrage jetzt ab, statt eine Lesart davon anzuzeigen. Siehe [Was das Freigabefenster zeigt](/qorex/security-and-recovery#approvals).
 - **Das Ablaufdatum einer Berechtigung wird sekundengenau angezeigt**, und Governance-Abstimmungen werden dekodiert und auf dem Freigabebildschirm angezeigt.
@@ -96,7 +102,7 @@ Highlights seit 1.0.9 / 0.2.6:
 - Freigabe-Bildschirme, die jede Nachricht, die Gebühr, Ausgabenlimits und den Ablauf anzeigen und ablehnen, was QoreX nicht darstellen kann; **`signAndBroadcast`** für dApps; **Verbundene Websites** mit Widerrufen (Erweiterung); das **EVM-Zugriffsfenster** — siehe [Sicherheit & Wiederherstellung](/qorex/security-and-recovery) und die [Browser-Erweiterung](/qorex/browser-extension).
 - Korrekturen: Ein finanziertes Konto konnte kurzzeitig aus „Deine Konten“ verschwinden (1.0.9); die Android-Hardware-Zurück-Taste geht jetzt einen Bildschirm zurück (1.1.1); die Wiederherstellungsphrase wird unter Android 14 und neuer Nicht-Bedienungshilfen-Diensten vorenthalten (1.1.6).
 
-QoreX arbeitet auf dem Mainnet `qorechain-vladi`, das mit Chain **v3.2.3** läuft (live seit dem 7. Juni 2026) bis Höhe 3.742.566 und ab diesem Block mit v3.2.4. Signaturformat, Adressen, Dezimalstellen, Memos und Gebühren ändern sich bei diesen Upgrades nicht, daher ist dafür kein QoreX-Update nötig.
+QoreX arbeitet auf dem Mainnet `qorechain-vladi` (live seit dem 7. Juni 2026), das seit dem 23. Oktober 2026 mit Chain **v3.2.4** läuft. Signaturformat, Adressen, Dezimalstellen, Memos und Gebühren ändern sich bei diesen Upgrades nicht, daher ist dafür kein QoreX-Update nötig.
 
 ## Was QoreX über das Netzwerk sendet {#data-and-privacy}
 

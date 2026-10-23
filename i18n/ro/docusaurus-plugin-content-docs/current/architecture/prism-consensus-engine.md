@@ -9,7 +9,7 @@ sidebar_position: 2
 
 QoreChain integrează **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), un strat de optimizare prin învățare prin întărire, direct în stratul de consens prin modulul `x/rlconsensus`. PRISM observă metricile lanțului la fiecare N blocuri și este conceput să ruleze inferența printr-o rețea neuronală cu virgulă fixă și să propună ajustări ale parametrilor de consens — toate în mod determinist, fără aritmetică cu virgulă mobilă în căile critice pentru consens.
 
-:::note Stare curentă (20 octombrie 2026: mainnet v3.2.3, testnet v3.2.4)
+:::note Stare curentă (verificat la 20 octombrie 2026; ambele rețele rulează acum v3.2.4)
 Atât pe mainnet, cât și pe testnet agentul este în modul `conservative`, colectează o observație și o recompensă la fiecare 10 blocuri și **nu are ponderi de politică încărcate**: a făcut 0 pași și nu aplică nicio modificare de parametri (verificat prin interogările `AgentStatus` și `Policy` pe ambele rețele). Timpul blocului este determinat de configurația nodurilor validatorilor, nu de PRISM. Încărcarea unei politici, schimbarea modului, reluarea agentului și actualizarea ponderilor de recompensă sunt acțiuni de guvernanță care sunt în prezent dezactivate pe mainnet de circuit breaker; pe testnet nu sunt dezactivate.
 
 Două modificări de versiune strâng limitele a ceea ce poate face o politică sau o schimbare de parametri viitoare. Începând cu v3.2.2, o actualizare de politică prin guvernanță este validată cu aritmetică verificată. Începând cu v3.2.3, mesajele de guvernanță sunt verificate ca interval pe valoarea brută din mesaj (modul agentului), iar fiecare pondere de recompensă trebuie să fie între 0 și 1.

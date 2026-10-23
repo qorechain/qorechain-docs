@@ -110,7 +110,7 @@ CGO_ENABLED=1 go test ./x/svm/... -count=1 -v
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-يجب أن يُنشئ أمر `init` ملف تكوين أولي (genesis) وإعدادات عقدة في `~/.qorechaind/` دون أخطاء. يُهيّئ المثال أعلاه الشبكة التجريبية **`qorechain-diana`** — أما للشبكة الرئيسية، استبدل بـ `--chain-id qorechain-vladi`، الشبكة الحية (إصدار العقدة **v3.2.3**).
+يجب أن يُنشئ أمر `init` ملف تكوين أولي (genesis) وإعدادات عقدة في `~/.qorechaind/` دون أخطاء. يُهيّئ المثال أعلاه الشبكة التجريبية **`qorechain-diana`** — أما للشبكة الرئيسية، استبدل بـ `--chain-id qorechain-vladi`، الشبكة الحية (إصدار العقدة **v3.2.4**).
 
 ## البناء عبر Docker
 

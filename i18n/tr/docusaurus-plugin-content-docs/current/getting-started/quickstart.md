@@ -76,7 +76,7 @@ Bu, `~/.qorechaind/` altında varsayılan yapılandırma ve veri dizinlerini olu
 Düğüm varsayılan ayarlarla başlar. Uygun genesis ve eş yapılandırmasıyla canlı ağa katılmak için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın.
 
 :::note
-Bu sayfadaki örnekler **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) hedefler. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır (3.742.566 yüksekliğine kadar v3.2.3, o bloktan itibaren v3.2.4 sürümü; test ağı 19 Ekim 2026'dan beri v3.2.4 çalıştırır) ve kendine ait özel bir **Ana Ağa Bağlanma** sayfasına sahiptir.
+Bu sayfadaki örnekler **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) hedefler. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır (23 Ekim 2026'dan beri v3.2.4 sürümü; test ağı 19 Ekim 2026'dan beri v3.2.4 çalıştırır) ve kendine ait özel bir **Ana Ağa Bağlanma** sayfasına sahiptir.
 :::
 
 ---

@@ -55,7 +55,7 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. Il livello di ottimizzazione basato sul reinforcement learning incorporato nel Consensus Engine di QoreChain (tramite il modulo `x/rlconsensus`). PRISM osserva le metriche di rete ed è progettato per proporre aggiustamenti deterministici dei parametri di consenso sotto controlli di sicurezza di tipo circuit breaker; oggi funziona in modalità di osservazione. Vedi [PRISM Consensus Engine](/architecture/prism-consensus-engine).
 
-**Proof of possession (PoP)** (prova di possesso) — Una firma che una chiave post-quantistica produce sui propri dati di registrazione, dimostrando che chi la registra detiene la chiave privata. Opzionale nella registrazione delle chiavi degli account dalla v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); obbligatoria per le chiavi dei validatori del bridge dalla v3.2.4 (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566).
+**Proof of possession (PoP)** (prova di possesso) — Una firma che una chiave post-quantistica produce sui propri dati di registrazione, dimostrando che chi la registra detiene la chiave privata. Opzionale nella registrazione delle chiavi degli account dalla v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); obbligatoria per le chiavi dei validatori del bridge dalla v3.2.4 (sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026).
 
 **Protocol feature** (funzionalità di protocollo) — Un interruttore di comportamento che l'upgrade handler di una release attiva a una determinata altezza di blocco su ogni nodo (ad esempio `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`), in modo che la cronologia venga rieseguita invariata al di sotto di quell'altezza.
 
@@ -81,7 +81,7 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **STARK** — Scalable Transparent Argument of Knowledge. Un sistema di prove a conoscenza zero che non richiede un trusted setup ed è resistente ai quanti. Disponibile come sistema di prova alternativo per il settlement degli zk-rollup nell'RDK.
 
-**Stranded staker share / reward-pool reserve** (quota di staker bloccata / riserva del pool di ricompense) — Importi registrati all'upgrade v3.2.0 che si muovono solo tramite voto di governance; la governance li ha rilasciati nell'ottobre 2026 (dopo la v3.2.3 è stato proposto un resto corretto della quota bloccata). Vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+**Stranded staker share / reward-pool reserve** (quota di staker bloccata / riserva del pool di ricompense) — Importi registrati all'upgrade v3.2.0 che si muovono solo tramite voto di governance; la governance li ha rilasciati nell'ottobre 2026 (il resto corretto della quota bloccata, ricalcolato alla v3.2.3, è stato rilasciato dalla proposta 12). Vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 **SVM** — Solana Virtual Machine. Un ambiente di esecuzione ad alte prestazioni per i programmi BPF. QoreChain integra la SVM come uno dei tre runtime supportati insieme al QoreChain EVM Engine e a QoreChain Native.
 
@@ -89,7 +89,7 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **tIBE** — Threshold Identity-Based Encryption (cifratura a soglia basata sull'identità). Uno schema crittografico in cui un messaggio può essere decifrato solo quando una soglia di parti collabora. Usato dal modulo FairBlock per cifrare il contenuto delle transazioni fino alla finalizzazione del blocco, impedendo l'estrazione di MEV.
 
-**Time-locked staking** (staking con blocco temporale) — Un impegno opzionale di una parte di una delega per un periodo fisso, fornito dal modulo `x/stakingtier`. Parte della v3.2.4: sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566. Vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking).
+**Time-locked staking** (staking con blocco temporale) — Un impegno opzionale di una parte di una delega per un periodo fisso, fornito dal modulo `x/stakingtier`. Parte della v3.2.4: sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026. Vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking).
 
 **uqor** — La denominazione base del token QOR. 1 QOR = 1.000.000 uqor (10^6). Tutti gli importi on-chain, le commissioni e i valori di staking sono espressi in uqor.
 

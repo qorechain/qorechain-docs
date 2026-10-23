@@ -40,15 +40,15 @@ seçeneği alır (`"auto"` | `"v1"` | `"v2"`); `"auto"` ağa sorar ve bu nedenle
 `qorechain-vladi` / `qorechain-diana` üzerinde REST uç noktasına (`rest`) ihtiyaç
 duyar: tahmin etmek yerine hata fırlatır. Bkz.
 [Hangi sign-bytes biçimi?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-Biçim, zincir v3.2.3 veya v3.2.4 ile değişmedi (v3.2.4 test ağında 19 Ekim 2026'dan beri, mainnet'te 3.742.566 yüksekliğinden itibaren): `"auto"` her
+Biçim, zincir v3.2.3 veya v3.2.4 ile değişmedi (v3.2.4 test ağında 19 Ekim 2026'dan beri, mainnet'te 23 Ekim 2026'dan beri çalışır): `"auto"` her
 iki ağda da v2'ye çözümlenir.
 :::
 
 ## 0.9.0 neler ekliyor {#whats-new-090}
 
 SDK 0.9.0, zincir **v3.2.2** ve **v3.2.3** için istemci sürümüdür (mainnet
-bunları 3.556.788 ve 3.662.051 yüksekliklerinde uyguladı; testnet 19 Ekim 2026'dan beri v3.2.4
-çalıştırır ve mainnet ona 3.742.566 yüksekliğinde geçer). İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler
+bunları 3.556.788 ve 3.662.051 yüksekliklerinde uyguladı; her iki ağ da artık v3.2.4 çalıştırır: testnet 19 Ekim 2026'dan beri,
+mainnet 3.742.566 yüksekliğinde 23 Ekim 2026'dan beri). İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler
 değişmedi; dolayısıyla 0.8.1 ve sonrasının imzaladığı v2 hibrit sign-bytes biçimi
 hâlâ doğru olandır. Yenilikler:
 
@@ -74,7 +74,7 @@ bir eski anahtarı kurtarmak veya ondan rotasyonla uzaklaşmak hâlâ çalışı
 ## 0.9.0 öncesi sürümler {#before-090}
 
 0.8.x kullanıyorsanız, her iki ağın da doğruladığı biçimi imzalamaya devam eder ve
-mainnet (v3.2.3, ardından 3.742.566 yüksekliğinden itibaren v3.2.4) ve testnet (v3.2.4) üzerinde çalışır. Bunlar, 0.9.0'ın kaldırdığı
+mainnet ve testnet (ikisi de v3.2.4) üzerinde çalışır. Bunlar, 0.9.0'ın kaldırdığı
 sınırlardır ve bazıları bilmediğinizde ücrete mal olur:
 
 | 0.9.0 öncesi sürüm | Geçici çözüm |

@@ -110,7 +110,7 @@ CGO_ENABLED=1 go test ./x/svm/... -count=1 -v
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-`init` 명령은 오류 없이 `~/.qorechaind/`에 제네시스 파일과 노드 구성을 생성해야 합니다. 위 예시는 **`qorechain-diana`** 테스트넷에 대해 초기화합니다. 메인넷의 경우, 운영 중인 네트워크인 `--chain-id qorechain-vladi`로 대체하세요(노드 릴리스 **v3.2.3**).
+`init` 명령은 오류 없이 `~/.qorechaind/`에 제네시스 파일과 노드 구성을 생성해야 합니다. 위 예시는 **`qorechain-diana`** 테스트넷에 대해 초기화합니다. 메인넷의 경우, 운영 중인 네트워크인 `--chain-id qorechain-vladi`로 대체하세요(노드 릴리스 **v3.2.4**).
 
 ## Docker 빌드
 

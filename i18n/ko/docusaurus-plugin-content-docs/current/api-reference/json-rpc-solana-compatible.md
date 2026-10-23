@@ -49,7 +49,7 @@ JSON-RPC 서버는 **`qorechaind start`에 의해 시작**되며 **기본적으�
 | `getTokenAccountsByOwner`           | `owner`, 필터          | 소유자의 토큰 계정을 반환                                      |
 | `getTokenAccountsByDelegate`        | `delegate`, 필터       | 위임자의 토큰 계정을 반환                                      |
 
-`getGenesisHash`, `getEpochInfo` 같이 이 목록에 없는 메서드는 `-32601 method not found`를 반환합니다(`https://svm.qore.host`와 `https://svm-testnet.qore.host`에서 2026년 10월 20일에 확인). v3.2.2부터 RPC 및 gRPC 쿼리의 base58 주소는 정규 형식이어야 하며 길이가 제한됩니다. 형식이 잘못된 주소는 거부됩니다. `getTransaction`은 허용되지만 현재 `result` 필드가 없는 엔벨로프로 응답하므로 의존하지 마십시오. `getSlot`이 보고하는 슬롯은 체인의 블록 높이를 따라갑니다.
+`getGenesisHash`, `getEpochInfo` 같이 이 목록에 없는 메서드는 `-32601 method not found`를 반환합니다(`https://svm.qore.host`와 `https://svm-testnet.qore.host`에서 2026년 10월 23일에 확인). v3.2.2부터 RPC 및 gRPC 쿼리의 base58 주소는 정규 형식이어야 하며 길이가 제한됩니다. 형식이 잘못된 주소는 거부됩니다. `getTransaction`은 허용되지만 현재 `result` 필드가 없는 엔벨로프로 응답하므로 의존하지 마십시오. `getSlot`이 보고하는 슬롯은 체인의 블록 높이를 따라갑니다.
 
 ---
 

@@ -15,7 +15,7 @@ Las llamadas entre VM solo están disponibles en la medida en que lo esté su la
 * `MsgCrossVMCall` está **desactivado en mainnet** por el disyuntor (circuit breaker) (`qorechaind query circuit disabled-list`); en la testnet está habilitado.
 * El **lane de SVM está deshabilitado** para transacciones en ambas redes, por lo que un tramo SVM no puede ejecutarse.
 * **La carga e instanciación de QoreChain Native requieren permisos** en ambas redes y la mainnet no tiene código de contrato almacenado, por lo que todavía no hay ningún contrato QoreChain Native al que llamar.
-* El **precompilado de EVM síncrono no está activo** (véase más abajo). Una versión reforzada está en el binario desde v3.2.3, pero no hay ningún precompilado activado en ninguna de las dos redes, y la v3.2.4 (testnet desde el 19 de octubre de 2026; mainnet desde la altura 3,742,566) no lo cambia.
+* El **precompilado de EVM síncrono no está activo** (véase más abajo). Una versión reforzada está en el binario desde v3.2.3, pero no hay ningún precompilado activado en ninguna de las dos redes, y la v3.2.4 (testnet desde el 19 de octubre de 2026, mainnet desde el 23 de octubre de 2026) no lo cambia.
 
 Las rutas REST del módulo (`/qorechain/crossvm/v1/...`) no las sirve la pasarela pública; lee los mensajes con la CLI o con un cliente de consultas gRPC/ABCI.
 :::

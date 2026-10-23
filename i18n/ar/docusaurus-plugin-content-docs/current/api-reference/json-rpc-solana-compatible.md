@@ -49,7 +49,7 @@ sidebar_position: 4
 | `getTokenAccountsByOwner`           | `owner`، مرشّح          | تُعيد حسابات الرموز الخاصة بمالك                               |
 | `getTokenAccountsByDelegate`        | `delegate`، مرشّح       | تُعيد حسابات الرموز الخاصة بمفوَّض                             |
 
-الطرق الواقعة خارج هذه القائمة، مثل `getGenesisHash` و`getEpochInfo`، تُعيد `-32601 method not found` (جرى التحقق منها مقابل `https://svm.qore.host` و`https://svm-testnet.qore.host`، في 20 أكتوبر 2026). ومنذ v3.2.2 يجب أن تكون عناوين base58 في استعلامات RPC وgRPC قانونية (canonical) ومحدودة الطول؛ ويُرفض العنوان المشوَّه. تُقبل الطريقة `getTransaction` لكنها تردّ حاليًا بغلاف لا يحتوي على الحقل `result`، فلا تعتمد عليها. وتتبع الفتحة (slot) التي تُبلغ عنها `getSlot` ارتفاع كتل السلسلة.
+الطرق الواقعة خارج هذه القائمة، مثل `getGenesisHash` و`getEpochInfo`، تُعيد `-32601 method not found` (جرى التحقق منها مقابل `https://svm.qore.host` و`https://svm-testnet.qore.host`، في 23 أكتوبر 2026). ومنذ v3.2.2 يجب أن تكون عناوين base58 في استعلامات RPC وgRPC قانونية (canonical) ومحدودة الطول؛ ويُرفض العنوان المشوَّه. تُقبل الطريقة `getTransaction` لكنها تردّ حاليًا بغلاف لا يحتوي على الحقل `result`، فلا تعتمد عليها. وتتبع الفتحة (slot) التي تُبلغ عنها `getSlot` ارتفاع كتل السلسلة.
 
 ---
 

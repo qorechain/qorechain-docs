@@ -10,7 +10,7 @@ sidebar_position: 4
 Questa pagina descrive il meccanismo di staking per la governance xQORE così com'è **progettato**, in cui i detentori di QOR bloccherebbero i propri token per ottenere un potere di governance potenziato, con un modello di rebase PvP che premia i partecipanti a lungo termine. **xQORE non può essere utilizzato oggi su nessuna delle due reti**; nulla in questa pagina è ancora qualcosa che puoi fare.
 
 :::warning Non ancora attivo
-xQORE è abilitato nel genesis ma **non è ancora utilizzabile** su mainnet (`qorechain-vladi`, release del nodo **v3.2.3**) o testnet (`qorechain-diana`, release del nodo **v3.2.4**); nessuna delle due release cambia questo stato (verificato il 20 ottobre 2026). Il nodo non ha alcun punto di ingresso di transazione, query, CLI o RPC per esso (la route REST `/qorechain/xqore/v1/params` restituisce `Not Implemented` su entrambe le reti), quindi non esistono `tx xqore lock` / `unlock`, né `query xqore ...`, né route REST di xQORE, né il metodo `qor_getXQOREPosition`; nessun QOR può essere bloccato e nessuno detiene xQORE. È previsto per una futura release della chain, che cambierà anche il modo in cui le penali di uscita vengono ridistribuite, in modo che lo sblocco resti economico indipendentemente dal numero di detentori. La release sarà indicata qui al momento del rilascio.
+xQORE è abilitato nel genesis ma **non è ancora utilizzabile** su mainnet (`qorechain-vladi`, release del nodo **v3.2.4**) o testnet (`qorechain-diana`, release del nodo **v3.2.4**); nessuna delle due release cambia questo stato (verificato il 23 ottobre 2026). Il nodo non ha alcun punto di ingresso di transazione, query, CLI o RPC per esso (la route REST `/qorechain/xqore/v1/params` restituisce `Not Implemented` su entrambe le reti), quindi non esistono `tx xqore lock` / `unlock`, né `query xqore ...`, né route REST di xQORE, né il metodo `qor_getXQOREPosition`; nessun QOR può essere bloccato e nessuno detiene xQORE. È previsto per una futura release della chain, che cambierà anche il modo in cui le penali di uscita vengono ridistribuite, in modo che lo sblocco resti economico indipendentemente dal numero di detentori. La release sarà indicata qui al momento del rilascio.
 :::
 
 ---
@@ -54,7 +54,7 @@ Se vuoi partecipare alla governance adesso, delega QOR a un validatore (vedi [St
 
 ## Lo staking con blocco temporale è una funzione diversa (v3.2.4) {#staking-tiers}
 
-La release **v3.2.4**, che gira sulla testnet dal 19 ottobre 2026 ed è prevista sulla mainnet dall'altezza 3.742.566 (proposta di governance 13), aggiunge un modulo separato, `x/stakingtier`, per lo **staking facoltativo con blocco temporale**. Non è xQORE: non conia xQORE, non modifica il potere di voto e non tocca i parametri xQORE descritti sopra. In sintesi:
+La release **v3.2.4**, che gira sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026 (altezza 3.742.566, proposta di governance 13), aggiunge un modulo separato, `x/stakingtier`, per lo **staking facoltativo con blocco temporale**. Non è xQORE: non conia xQORE, non modifica il potere di voto e non tocca i parametri xQORE descritti sopra. In sintesi:
 
 * Un delegatore blocca una delega a un validatore per un termine scelto (il modulo offre 3, 6 e 12 mesi). Mentre il blocco è in corso, l'importo bloccato non può essere annullato (undelegate) né ridelegato, attraverso alcun percorso di messaggio (una transazione, authz, un contratto o la governance).
 * I blocchi hanno una dimensione minima e un limite al numero che un singolo delegatore può detenere; leggili con `GET /qorechain/stakingtier/v1/params`.
@@ -62,4 +62,4 @@ La release **v3.2.4**, che gira sulla testnet dal 19 ottobre 2026 ed è prevista
 * Un blocco può essere rilasciato in anticipo. Il rilascio anticipato fa perdere ciò che è maturato e non è stato riscosso e comporta una penale, di cui una parte viene bruciata.
 * I blocchi e lo stato dell'account del modulo sono leggibili su `/qorechain/stakingtier/v1/locks/{holder}` e `/qorechain/stakingtier/v1/pool`.
 
-La mainnet esegue la v3.2.3 fino all'altezza 3.742.566, quindi fino ad allora `GET https://api.qore.host/qorechain/stakingtier/v1/params` vi restituisce `Not Implemented`; da quel blocco il modulo esiste sulla mainnet come sulla testnet. La normale delega è trattata in [Staking e Delega](/user-guide/staking-and-delegation).
+Il modulo risponde su entrambe le reti, ad esempio `GET https://api.qore.host/qorechain/stakingtier/v1/params`. La normale delega è trattata in [Staking e Delega](/user-guide/staking-and-delegation).

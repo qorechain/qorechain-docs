@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain supports multiple wallet types across its native, EVM, and SVM execution environments. Choose the wallet that matches your use case.
 
 :::note
-The values below cover both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 7 June 2026, release v3.2.3 until height 3,742,566 and v3.2.4 from that block) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, release v3.2.4 since 19 October 2026). Public endpoints for both networks are listed in [Networks](/appendix/networks#public-endpoints).
+The values below cover both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 7 June 2026, release v3.2.4 since 23 October 2026) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, release v3.2.4 since 19 October 2026). Public endpoints for both networks are listed in [Networks](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recommended) {#qorex}

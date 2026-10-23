@@ -9,8 +9,8 @@ sidebar_position: 10
 
 `x/fairblock` modülü, QoreChain'in Azami Çıkarılabilir Değer (Maximal Extractable Value, MEV) saldırılarına karşı eşik kimlik tabanlı şifreleme kullanan savunma tasarımıdır. 5 şeritli bir işlem önceliklendirme sistemiyle birleştiğinde, kullanıcıları öne geçme (front-running), sandviç saldırıları ve diğer mempool tabanlı değer çıkarma biçimlerinden koruyan bir MEV karşıtı mimari oluşturması amaçlanmaktadır.
 
-:::note Mevcut durum (20 Ekim 2026: mainnet v3.2.3, testnet v3.2.4)
-FairBlock hem mainnet'te hem de testnet'te **devre dışıdır** (`enabled = false`) ve 5 şerit tanımı yalnızca yapılandırmadır: blok alanı şeritleri canlı mempool veya öneri işleyicisi tarafından uygulanmaz. Düğüm herhangi bir FairBlock işlem veya sorgu hizmeti sunmaz ve mainnet v3.2.3 ya da testnet v3.2.4 dahil hiçbir sürüm bunların hiçbirini değiştirmez. Bu sayfa amaçlanan tasarımı açıklar.
+:::note Mevcut durum (ayarlar 20 Ekim 2026'da kontrol edildi; mainnet ve testnet ikisi de v3.2.4 çalıştırıyor)
+FairBlock hem mainnet'te hem de testnet'te **devre dışıdır** (`enabled = false`) ve 5 şerit tanımı yalnızca yapılandırmadır: blok alanı şeritleri canlı mempool veya öneri işleyicisi tarafından uygulanmaz. Düğüm herhangi bir FairBlock işlem veya sorgu hizmeti sunmaz ve her iki ağın da çalıştırdığı v3.2.4 dahil hiçbir sürüm bunların hiçbirini değiştirmez. Bu sayfa amaçlanan tasarımı açıklar.
 
 Canlı ağların AMM takasları için bunun yerine ne yaptığı [AMM ve Zincir Üstü Likidite](/architecture/amm#swap-rules) sayfasında açıklanmıştır: kayma sınırı belirlemeyen takaslar için bir fiyat etkisi üst sınırı ve blok açılışında bir fiyat kontrolü. Bunlar takas üzerindeki protokol kurallarıdır, işlem şifrelemesi değildir.
 :::

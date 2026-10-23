@@ -10,7 +10,7 @@ sidebar_position: 6
 This guide is a short orientation to launching an application-specific rollup that settles on QoreChain with the Rollup Development Kit (RDK). The step-by-step commands live in **[Deploying a Rollup](/rollups/deploying-a-rollup)**; this page covers what you need before you start.
 
 :::caution Early-stage capability
-No rollup has been created on either network yet (checked 21 October 2026). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.3** until height 3,742,566 and **v3.2.4** from that block; the testnet (**`qorechain-diana`**, EVM chain ID **9800**) has run v3.2.4 since 19 October 2026. Validate on testnet first; one behaviour differs until mainnet takes the upgrade (see the challenge-window note in [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement)).
+No rollup has been created on either network yet (checked 23 October 2026). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.4** since 23 October 2026; the testnet (**`qorechain-diana`**, EVM chain ID **9800**) has run v3.2.4 since 19 October 2026. Validate on testnet first; the challenge-window behaviour is described in [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement).
 :::
 
 ---
@@ -56,7 +56,7 @@ See [Preset Profiles](/rollups/preset-profiles) for details and maturity notes (
 * Batches settle without an anchor unless you send the creator's post-quantum signature with them (`--anchor-signature` on `tx rdk submit-batch`, available since v3.2.2). See [State Anchoring](/architecture/rollup-development-kit#state-anchoring).
 * Withdrawals to L1 (`tx rdk execute-withdrawal`) are paid from your rollup's escrow ledger and work on mainnet since v3.2.3; they need a finalized batch with a withdrawals root and use `uqor` only.
 * The rollup creator is the batch submitter today (no sequencer address is set by any preset), so keep the creator key safe: only the creator can pause, resume or stop the rollup.
-* The RDK is published in five languages (version 0.6.0 on every registry, checked 21 October 2026), but only the TypeScript client signs hybrid transactions, and only when you give it your post-quantum keypair; the `qorollup` CLI and the Python, Go, Rust and Java clients sign classical-only, which both networks refuse. See [RDK 0.6.0: changes and limits](/rollups/deploying-a-rollup#rdk-050-limits).
+* The RDK is published in five languages (version 0.6.0 on every registry, checked 23 October 2026), but only the TypeScript client signs hybrid transactions, and only when you give it your post-quantum keypair; the `qorollup` CLI and the Python, Go, Rust and Java clients sign classical-only, which both networks refuse. See [RDK 0.6.0: changes and limits](/rollups/deploying-a-rollup#rdk-050-limits).
 * The `suggest-profile` helper currently returns a fixed `defi` fallback on the public endpoints, so choose from the profile table.
 
 ---

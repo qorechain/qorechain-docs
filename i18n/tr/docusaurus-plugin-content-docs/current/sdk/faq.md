@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Mainnet yayında mı?
 
 Evet. Mainnet **yayında** (zincir kimliği `qorechain-vladi`, 7 Haziran 2026'dan beri
-canlı) ve 3.742.566 yüksekliğine kadar zincir sürümü v3.2.3'ü, o bloktan itibaren v3.2.4'ü çalıştırıyor (yönetişim önerisi 13); testnet 19 Ekim 2026'dan beri v3.2.4'ü çalıştırıyor. Testnet hazır
+canlı) zincir sürümü v3.2.4'ü çalıştırıyor (23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı, yönetişim önerisi 13); testnet 19 Ekim 2026'dan beri v3.2.4'ü çalıştırıyor. Testnet hazır
 ayarı (`qorechain-diana`) da kullanılabilir durumda kalmaya devam eder. Her iki hazır
 ayar da localhost uç nokta varsayılanlarıyla gelir; ağı
 `createClient({ network: "mainnet" })` ile seçin ve `endpoints`'i kendi düğüm
@@ -145,15 +145,14 @@ serileştiriyordu ve zincirin tx kod çözücüsü bunu CheckTx aşamasında red
 
 ## SDK hangi zincir sürümleriyle çalışır?
 
-SDK **0.9.0**, zincir v3.2.2 ve v3.2.3 için istemci sürümüdür: mainnet **v3.2.3** (ve 3.742.566 yüksekliğinden itibaren **v3.2.4**) ve
-testnet **v3.2.4** üzerinde işlem yapar; kayıt sırasında isteğe bağlı sahiplik
+SDK **0.9.0**, zincir v3.2.2 ve v3.2.3 için istemci sürümüdür: mainnet ve testnet **v3.2.4** (mainnet'te 23 Ekim 2026'dan beri) üzerinde işlem yapar; kayıt sırasında isteğe bağlı sahiplik
 kanıtı (proof of possession; ağ v3.2.3'ü uyguladıktan sonra `ensurePqcRegistered`
 tarafından otomatik eklenir), kapsamlı EVM pencereleri ve EIP-7702 onay mesajları
 için oluşturuculara sahiptir. SDK **0.8.1 veya daha yenisi** de her iki ağda işlem
 yapar (v2 hibrit sign-bytes biçimi, kayıt, hibrit gönderimler ve EVM penceresi
 değişmeden çalışır), ancak bu oluşturucuların hiçbirine sahip değildir: bunlar için
 CLI'yı kullanın (bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)). v3.2.4,
-testnet'te 19 Ekim 2026'dan beri çalışır ve mainnet'te 3.742.566 yüksekliğinden itibaren çalışır (yönetişim önerisi 13); SDK hiçbir v3.2.4 alanı ayarlamaz, bu nedenle işlemleri bu yüksekliğin her iki tarafında da geçerli kalır.
+testnet'te 19 Ekim 2026'dan beri ve mainnet'te 23 Ekim 2026'dan beri çalışır (3.742.566 yüksekliği, yönetişim önerisi 13); SDK hiçbir v3.2.4 alanı ayarlamaz, bu nedenle işlemleri yükseltmeden önce ve sonra geçerlidir.
 
 ## PQC anahtar kaydım reddedildi ama ücret alındı
 

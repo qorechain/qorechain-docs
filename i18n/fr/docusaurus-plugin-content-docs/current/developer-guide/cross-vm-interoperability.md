@@ -15,7 +15,7 @@ Les appels inter-VM ne sont disponibles que dans la mesure où leur lane cible l
 * `MsgCrossVMCall` est **désactivé sur le mainnet** par le coupe-circuit (`qorechaind query circuit disabled-list`) ; il est activé sur le testnet.
 * La **lane SVM est désactivée** pour les transactions sur les deux réseaux, de sorte qu'une branche SVM ne peut pas s'exécuter.
 * Le **téléversement et l'instanciation QoreChain Native sont soumis à autorisation** sur les deux réseaux et le mainnet ne contient aucun code de contrat stocké ; il n'y a donc encore aucun contrat QoreChain Native à appeler.
-* Le **précompilé EVM synchrone n'est pas actif** (voir ci-dessous). Une version renforcée figure dans le binaire depuis la v3.2.3, mais aucun précompilé n'est activé sur l'un ou l'autre réseau, et la v3.2.4 (testnet depuis le 19 octobre 2026 ; mainnet à partir de la hauteur 3 742 566) n'y change rien.
+* Le **précompilé EVM synchrone n'est pas actif** (voir ci-dessous). Une version renforcée figure dans le binaire depuis la v3.2.3, mais aucun précompilé n'est activé sur l'un ou l'autre réseau, et la v3.2.4 (testnet depuis le 19 octobre 2026, mainnet depuis le 23 octobre 2026) n'y change rien.
 
 Les routes REST du module (`/qorechain/crossvm/v1/...`) ne sont pas servies par la passerelle publique ; lisez les messages avec la CLI ou un client de requêtes gRPC/ABCI.
 :::

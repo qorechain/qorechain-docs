@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-라이브 메인넷에 브로드캐스트하려면 `--chain-id qorechain-vladi`를, 테스트넷에는 `--chain-id qorechain-diana`를 설정하세요. 두 네트워크 모두 v3.2 라인을 실행합니다. 메인넷 노드 릴리스는 **v3.2.3**(2026년 10월 20일 높이 3,662,051에서 적용됨. 메인넷은 높이 3,742,566까지 v3.2.3을 실행하고 그 블록부터 **v3.2.4**를 실행하며, 이는 거버넌스 제안 13으로 예약되어 있음), 테스트넷은 **v3.2.4**(2026년 10월 19일 높이 8,337,253에서 적용됨)입니다. 현재 릴리스는 [download.qore.host](https://download.qore.host)의 `latest.json`에서 확인하세요. `--chain-id`를 생략하면 클라이언트는 로컬 클라이언트 설정의 `chain-id`를 사용합니다.
+라이브 메인넷에 브로드캐스트하려면 `--chain-id qorechain-vladi`를, 테스트넷에는 `--chain-id qorechain-diana`를 설정하세요. 두 네트워크 모두 v3.2 라인을 실행합니다. 메인넷 노드 릴리스는 **v3.2.4**(2026년 10월 23일 거버넌스 제안 13에 의해 높이 3,742,566에서 적용됨. v3.2.3은 2026년 10월 20일 높이 3,662,051에서 적용됨), 테스트넷은 **v3.2.4**(2026년 10월 19일 높이 8,337,253에서 적용됨)입니다. 현재 릴리스는 [download.qore.host](https://download.qore.host)의 `latest.json`에서 확인하세요. `--chain-id`를 생략하면 클라이언트는 로컬 클라이언트 설정의 `chain-id`를 사용합니다.
 
-이 페이지의 명령어와 플래그는 v3.2.3 릴리스 바이너리를 기준으로 확인했습니다. v3.2.4부터만 존재하는 항목(지금은 테스트넷, 메인넷은 높이 3,742,566부터)에는 그렇게 표시합니다.
+이 페이지의 명령어와 플래그는 v3.2.3 릴리스 바이너리에 v3.2.4 추가분을 더해 확인했습니다. v3.2.4부터만 존재하는 항목(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터)에는 그렇게 표시합니다.
 :::
 
 공통 플래그는 모든 `tx` 하위 명령어에 적용됩니다:
@@ -262,7 +262,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey_hex> hybrid --pqc-key mypqc
   --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) 계정 레코드가 증명이 검증되었는지도 `possession_proven`으로 보고합니다([REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#pqc-module) 참조). 아직 v3.2.3인 메인넷 노드는 이를 보고하지 않습니다.
+v3.2.4부터(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) 계정 레코드가 증명이 검증되었는지도 `possession_proven`으로 보고합니다([REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#pqc-module) 참조).
 
 ### cosign
 
@@ -389,7 +389,7 @@ qorechaind tx pqc cosign register.json --from operator --pqc-key <name> --chain-
 
 `node_type`은 `sx` 또는 `ux`입니다. 등록에는 네트워크의 라이선스 권한자가 부여한 활성 `lightnode_operator` 라이선스가 필요합니다. 프로그램의 현재 상태는 [라이트 노드](/light-node/overview)를 참조하세요. 기타 명령어: `tx lightnode heartbeat`, `tx lightnode claim-rewards`, `tx lightnode deregister`.
 
-v3.2.3부터 노드가 누적할 수 있는 보상은 **월 단위**로 제한되며(`GET /qorechain/lightnode/v1/reward_pool`의 `max_reward_per_month_per_node`, 30일당 2,000 QOR), 블록 시간과 가동률에 비례하여 배분되므로 이 한도는 더 이상 블록 생성 속도에 좌우되지 않습니다. 한도는 상한일 뿐 약속된 금액이 아닙니다. v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) 노드의 한도가 직전 정산 시점이 아니라 노드 자신의 등록 시점부터 시작됩니다.
+v3.2.3부터 노드가 누적할 수 있는 보상은 **월 단위**로 제한되며(`GET /qorechain/lightnode/v1/reward_pool`의 `max_reward_per_month_per_node`, 30일당 2,000 QOR), 블록 시간과 가동률에 비례하여 배분되므로 이 한도는 더 이상 블록 생성 속도에 좌우되지 않습니다. 한도는 상한일 뿐 약속된 금액이 아닙니다. v3.2.4부터(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) 노드의 한도가 직전 정산 시점이 아니라 노드 자신의 등록 시점부터 시작됩니다.
 
 ---
 
@@ -413,7 +413,7 @@ qorechaind tx bridge deposit <source_chain> <source_tx_hash> <asset> <amount> [f
 
 ### register-validator / attest
 
-브리지 검증인 메시지입니다. `register-validator <pqc_pubkey_hex> <supported_chains_csv>`는 검증인을 증명(attestation) 임무에 등록하고, `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]`는 증명을 제출합니다. 두 네트워크 모두 등록된 브리지 검증인이 없습니다. v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) 브리지 검증인 등록에 소유 증명과 다른 어떤 브리지 검증인도 사용하지 않는 키도 필요합니다.
+브리지 검증인 메시지입니다. `register-validator <pqc_pubkey_hex> <supported_chains_csv>`는 검증인을 증명(attestation) 임무에 등록하고, `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]`는 증명을 제출합니다. 두 네트워크 모두 등록된 브리지 검증인이 없습니다. v3.2.4부터(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) 브리지 검증인 등록에 소유 증명과 다른 어떤 브리지 검증인도 사용하지 않는 키도 필요합니다.
 
 ### update-chain-config / set-verifier-bootstrap / update-circuit-breaker-limits
 
@@ -478,7 +478,7 @@ qorechaind tx crossvm call <evm|cosmwasm|svm> <target_contract> --payload <hex> 
 ## stakingtier (v3.2.4) {#stakingtier}
 
 :::note v3.2.4부터 사용 가능
-스테이킹 티어 모듈은 **v3.2.4** 릴리스와 함께 도입되었습니다. `qorechain-diana` 테스트넷에서는 2026년 10월 19일부터 실행되고 있으며 메인넷에서는 높이 3,742,566부터 실행됩니다(거버넌스 제안 13). 그 높이 이전에는 메인넷 노드에 이 모듈이 없으며 이 명령어는 거부됩니다. 먼저 대상 노드에서 `GET /qorechain/stakingtier/v1/params`를 확인하세요.
+스테이킹 티어 모듈은 **v3.2.4** 릴리스와 함께 도입되었습니다. `qorechain-diana` 테스트넷에서는 2026년 10월 19일부터, 메인넷에서는 2026년 10월 23일(높이 3,742,566, 거버넌스 제안 13)부터 실행되고 있습니다. 이전 릴리스를 실행하는 노드에는 이 모듈이 없으며 이 명령어는 거부됩니다. 먼저 대상 노드에서 `GET /qorechain/stakingtier/v1/params`를 확인하세요.
 :::
 
 선택적인 시간 잠금 위임: 위임자는 기존 위임의 일부를 3, 6 또는 12개월 동안(최소 잠금은 10 QOR) 잠그고, 나중에 모듈이 그에 대해 적립한 보너스를 청구할 수 있습니다. 잠금은 위임 위에 얹히는 레코드이며, 위임된 자금은 검증인에게 그대로 남아 있습니다.

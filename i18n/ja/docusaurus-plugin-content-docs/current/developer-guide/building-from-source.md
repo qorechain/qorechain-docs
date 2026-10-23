@@ -110,7 +110,7 @@ CGO_ENABLED=1 go test ./x/svm/... -count=1 -v
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-`init` コマンドは、エラーなく `~/.qorechaind/` に genesis ファイルとノード設定を作成するはずです。上記の例は **`qorechain-diana`** テストネットに対して初期化しています。メインネットの場合は、稼働中のネットワークである `--chain-id qorechain-vladi`（ノードリリース **v3.2.3**）に置き換えてください。
+`init` コマンドは、エラーなく `~/.qorechaind/` に genesis ファイルとノード設定を作成するはずです。上記の例は **`qorechain-diana`** テストネットに対して初期化しています。メインネットの場合は、稼働中のネットワークである `--chain-id qorechain-vladi`（ノードリリース **v3.2.4**）に置き換えてください。
 
 ## Docker ビルド
 

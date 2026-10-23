@@ -21,15 +21,15 @@ Sie ist **live und öffentlich** in drei Stores verfügbar (Chrome, Firefox und 
 
 ### Welche Version wo verfügbar ist {#versions}
 
-Aktuelle Version in jedem Store, Stand **20. Oktober 2026**:
+Aktuelle Version in jedem Store, Stand **23. Oktober 2026**:
 
 | Store | Aktuelle Version |
 |---|---|
-| Chrome Web Store | 0.3.6 (noch nicht auf 0.3.7 aktualisiert) |
-| Firefox Add-ons | 0.3.7 |
-| Safari (Mac App Store, macOS-App **QoreX Wallet**) | 1.7.7, die die Erweiterung 0.3.7 enthält — der Mac App Store verwendet seine eigene `1.x`-Nummerierung |
+| Chrome Web Store | 0.3.8 |
+| Firefox Add-ons | 0.3.8 |
+| Safari (Mac App Store, macOS-App **QoreX Wallet**) | 1.7.8, die die Erweiterung 0.3.8 enthält — der Mac App Store verwendet seine eigene `1.x`-Nummerierung |
 
-Store-Reviews landen zu unterschiedlichen Zeitpunkten, daher kann ein Store einen älteren Build ausliefern als ein anderer; der Store-Eintrag zeigt stets seine aktuelle Version. Diese Seite beschreibt den Funktionsumfang von 0.3.7; wo ein Punkt 0.3.7 voraussetzt, steht das dabei, und Chrome-Nutzer erhalten ihn, sobald der Chrome-Eintrag aktualisiert wird. Siehe auch [Welche Version wo verfügbar ist](/qorex/overview#versions).
+Store-Reviews landen zu unterschiedlichen Zeitpunkten, daher kann ein Store einen älteren Build ausliefern als ein anderer; der Store-Eintrag zeigt stets seine aktuelle Version. Diese Seite beschreibt den Funktionsumfang von 0.3.7, den jetzt jeder Store enthält (0.3.8 ist der aktuelle Build). Siehe auch [Welche Version wo verfügbar ist](/qorex/overview#versions).
 
 Seit 0.2.6 hat die Erweiterung hinzugewonnen: [mehrere Wallets mit einem Passwort](#wallets), ein [Ethereum-artiges Konto, das Sie von Hand hinzufügen](#coin60), [Claim & restake](#stake), eine Liste **Unstaking läuft**, das [Hinzufügen eines Tokens per Vertrag](#custom-tokens), [Empfangen auf jedem Netzwerk](#receive), [Verbundene Websites mit Widerrufen](#connected-sites), das [EVM-Zugriffsfenster](#evm-window), [`signAndBroadcast` für dApps](#sign-and-broadcast) sowie Genehmigungsbildschirme, die jede Nachricht, Gebühr und Ablaufzeit anzeigen.
 

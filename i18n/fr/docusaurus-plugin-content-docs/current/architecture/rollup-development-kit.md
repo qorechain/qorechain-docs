@@ -10,7 +10,7 @@ sidebar_position: 12
 Le module `x/rdk` fournit un kit complet de développement de rollups (Rollup Development Kit, RDK) qui permet aux développeurs de déployer des rollups spécifiques à une application sur QoreChain. Il prend en charge quatre paradigmes de règlement, plusieurs modes de séquenceur, des backends de disponibilité des données enfichables et une optimisation de la configuration assistée par IA.
 
 :::caution Capacité à un stade précoce
-Le module est déployé sur le mainnet (version de chaîne **v3.2.3** jusqu'à la hauteur 3 742 566, **v3.2.4** à partir de ce bloc) et sur le testnet (**v3.2.4**), mais **aucun rollup n'a encore été créé sur l'un ou l'autre réseau** (vérifié le 21 octobre 2026 : `GET /qorechain/rdk/v1/rollups` renvoie une liste vide sur les deux). Plusieurs capacités décrites ci-dessous ne sont pas utilisables de bout en bout aujourd'hui ; le statut est indiqué là où chacune est décrite. Pour le guide pratique destiné aux développeurs, voir [Présentation des rollups](/rollups/overview).
+Le module est déployé sur le mainnet (version de chaîne **v3.2.4** depuis le 23 octobre 2026) et sur le testnet (**v3.2.4**), mais **aucun rollup n'a encore été créé sur l'un ou l'autre réseau** (vérifié le 23 octobre 2026 : `GET /qorechain/rdk/v1/rollups` renvoie une liste vide sur les deux). Plusieurs capacités décrites ci-dessous ne sont pas utilisables de bout en bout aujourd'hui ; le statut est indiqué là où chacune est décrite. Pour le guide pratique destiné aux développeurs, voir [Présentation des rollups](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ Le RDK de QoreChain prend en charge quatre modes de règlement distincts — **o
 Les rollups optimistes supposent que les transactions sont valides par défaut et s'appuient sur des preuves de fraude pour la résolution des litiges.
 
 * **Système de preuve** : preuves de fraude interactives
-* **Fenêtre de contestation** : 604 800 secondes (par défaut, 7 jours). **Jusqu'à la v3.2.4 (mainnet v3.2.3 avant la hauteur 3 742 566) :** la chaîne la convertit en blocs à raison fixe de 6 secondes par bloc, soit **100 800 blocs** ; le temps réel écoulé dépend donc du temps de bloc effectif (environ 3,7 jours avec les blocs actuels du mainnet d'environ 3,2 s) ; planifiez en blocs, pas en jours. **À partir de la v3.2.4 :** pour un lot soumis à partir de la hauteur de la mise à niveau, la fenêtre est mesurée en secondes de temps de bloc (7 jours pleins). Un lot soumis plus tôt conserve la règle du nombre de blocs. Le testnet a appliqué la v3.2.4 à la hauteur 8 337 253 (19 octobre 2026) ; le mainnet l'applique à la hauteur 3 742 566 (proposition de gouvernance 13).
+* **Fenêtre de contestation** : 604 800 secondes (par défaut, 7 jours). **Avant la v3.2.4 :** la chaîne la convertit en blocs à raison fixe de 6 secondes par bloc, soit **100 800 blocs** ; le temps réel écoulé dépend donc du temps de bloc effectif (environ 3,7 jours avec les blocs actuels du mainnet d'environ 3,2 s) ; planifiez en blocs, pas en jours. **À partir de la v3.2.4 :** pour un lot soumis à partir de la hauteur de la mise à niveau, la fenêtre est mesurée en secondes de temps de bloc (7 jours pleins). Un lot soumis plus tôt conserve la règle du nombre de blocs. Le testnet a appliqué la v3.2.4 à la hauteur 8 337 253 (19 octobre 2026) ; le mainnet l'a appliquée à la hauteur 3 742 566 (23 octobre 2026, proposition de gouvernance 13).
 * **Caution de contestation** : 1 000 QOR (1 000 000 000 uqor) — requise pour soumettre une contestation par preuve de fraude (profils `nft` et `custom` ; les profils `defi`, `gaming` et `enterprise` ne définissent aucune caution car ils n'ont pas de fenêtre de contestation)
 * **Finalité** : différée jusqu'à l'expiration de la fenêtre de contestation sans contestation valide
 * **Finalisation automatique** : l'`EndBlocker` finalise automatiquement les lots une fois la fenêtre de contestation passée sans litige. Un lot contesté n'est jamais finalisé automatiquement : le créateur du rollup doit d'abord résoudre la contestation (voir [Déployer un rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Mode de règlement | Déclencheur de finalisation                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100 800 blocs après la soumission (fenêtre par défaut) sans contestation ; pour les lots soumis depuis la v3.2.4 (testnet à partir de la hauteur 8 337 253 ; mainnet à partir de la hauteur 3 742 566), 604 800 secondes de temps de bloc |
+| **Optimistic**  | 100 800 blocs après la soumission (fenêtre par défaut) sans contestation ; pour les lots soumis depuis la v3.2.4 (testnet à partir de la hauteur 8 337 253 ; mainnet à partir de la hauteur 3 742 566, 23 octobre 2026), 604 800 secondes de temps de bloc |
 | **ZK**          | Instantanée à la soumission d'une preuve valide                           |
 | **Based**       | 2 blocs L1 après la soumission                                |
 | **Sovereign**   | Aucune — gérée par le propre consensus du rollup                |

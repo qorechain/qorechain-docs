@@ -17,7 +17,7 @@ construite în jurul Layer 1-ului QoreChain, nu al uneltelor:
 - un runtime **triple-VM** cu apeluri cross-VM.
 
 :::caution Etapă timpurie: citește coloana de stare
-Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 21
+Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 23
 octombrie 2026). Tabelul de mai jos arată ce funcționează astăzi; ce au schimbat
 clienții 0.6.0 publicați și limitele care rămân sunt adunate în
 [RDK 0.6.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits). Dacă ai nevoie doar de un rollup

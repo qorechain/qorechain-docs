@@ -10,7 +10,7 @@ sidebar_position: 3
 Join the live QoreChain Vladi mainnet by configuring your node with the official genesis file, peers, and network settings.
 
 :::note
-This page covers the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`), live since **7 June 2026**, running release **v3.2.3** on Cosmos SDK v0.53 until height **3,742,566**, and **v3.2.4** from that block (governance proposal 13). For the **`qorechain-diana`** testnet (EVM chain ID **9800**), see [Connecting to Testnet](/getting-started/connecting-to-testnet) and rehearse your setup there before going live.
+This page covers the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`), live since **7 June 2026**, running release **v3.2.4** on Cosmos SDK v0.53 since **23 October 2026** (applied at height **3,742,566** by governance proposal 13). For the **`qorechain-diana`** testnet (EVM chain ID **9800**), see [Connecting to Testnet](/getting-started/connecting-to-testnet) and rehearse your setup there before going live.
 :::
 
 ## Public Endpoints
@@ -54,15 +54,15 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 The bundle contains `qorechaind` plus its required shared libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Keep your node current — v3.2.3, then v3.2.4
-Full nodes must track the network's live release — always install the binary the manifest points to, don't pin an old one. The current manifest is **v3.2.3** with `minCompatible` **3.2.3** and `upgradeHeight` **3,662,051**: mainnet applied v3.2.3 there on 20 October 2026 through governance proposal 11, and a node still on an older release cannot follow the chain past that height. Earlier governance upgrades on mainnet were **v3.1.94** at height 2,122,074 (the emission cap), **v3.2.0** at height 2,981,742 (the EVM authorisation window and the v2 hybrid-signature bytes) and **v3.2.2** at height 3,556,788 (16 October 2026, proposal 7). v3.2.1 was a node-local release with no height. **v3.2.4 at height 3,742,566 (governance proposal 13, about 23 October 2026 at 3.2-second blocks).** Nodes stay on v3.2.3 until that height, halt there and restart on v3.2.4; the manifest moves to 3.2.4 (with `minCompatible` 3.2.4) once the upgrade has been applied, and transaction signing is unchanged. A node that joins fresh before the upgrade needs the v3.2.3 binary and the one that joins after it needs v3.2.4 — always read the manifest; prefer state sync (below) over replaying from genesis. The published chain-data snapshot predates all of these upgrade heights, so a node restored from it has to replay them.
+:::caution Keep your node current
+Full nodes must track the network's live release — always install the binary the manifest points to, don't pin an old one. The current manifest is **v3.2.4** with `minCompatible` **3.2.4** and `upgradeHeight` **3,742,566**: mainnet applied v3.2.4 there on 23 October 2026 through governance proposal 13, and a node still on an older release cannot follow the chain past that height. Earlier governance upgrades on mainnet were **v3.1.94** at height 2,122,074 (the emission cap), **v3.2.0** at height 2,981,742 (the EVM authorisation window and the v2 hybrid-signature bytes), **v3.2.2** at height 3,556,788 (16 October 2026, proposal 7) and **v3.2.3** at height 3,662,051 (20 October 2026, proposal 11). v3.2.1 was a node-local release with no height. Transaction signing is unchanged in v3.2.4. A node that joins fresh needs the v3.2.4 binary the manifest names; prefer state sync (below) over replaying from genesis. The published chain-data snapshot predates all of these upgrade heights, so a node restored from it has to replay them.
 
-Set `evm-chain-id = 9801` in `app.toml` (a different value is logged as an error) and keep the system clock NTP-synchronised: a node stops when its clock is more than 60 seconds out. Always check the manifest's `"version"` and `"minCompatible"` fields before trusting `binary.url` — the manifest is promoted deliberately (testnet first, mainnet after a soak period). Signing format, addresses, decimals, memos and fees did not change in v3.2.3.
+Set `evm-chain-id = 9801` in `app.toml` (a different value is logged as an error) and keep the system clock NTP-synchronised: a node stops when its clock is more than 60 seconds out. Always check the manifest's `"version"` and `"minCompatible"` fields before trusting `binary.url` — the manifest is promoted deliberately (testnet first, mainnet after a soak period). Signing format, addresses, decimals, memos and fees did not change in v3.2.3 or v3.2.4.
 
-The testnet (`qorechain-diana`) has run v3.2.4 since 19 October 2026. Do not start a v3.2.4 binary on a mainnet node ahead of height 3,742,566 and never copy a binary between the two networks: follow the mainnet manifest, which offers v3.2.4 once the upgrade has been applied.
+The testnet (`qorechain-diana`) has run v3.2.4 since 19 October 2026. Never copy a binary between the two networks: always follow the manifest of the network you run.
 :::
 
-When a coordinated upgrade is scheduled, the proposal text names the height and tells you to stay on the previous release until then: the node halts at that height and you restart it on the new binary. Read the `status` of the proposal (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/<id>`) and the `version` and `upgradeHeight` fields of the [mainnet manifest](https://download.qore.host/mainnet/latest.json) before you swap any binary, and never install an upgrade binary before its height: a node that carries it early halts too. No upgrade is scheduled at the time of writing (`curl -s https://api.qore.host/cosmos/upgrade/v1beta1/current_plan` returns `"plan": null`).
+When a coordinated upgrade is scheduled, the proposal text names the height and tells you to stay on the previous release until then: the node halts at that height and you restart it on the new binary. Read the `status` of the proposal (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/<id>`) and the `version` and `upgradeHeight` fields of the [mainnet manifest](https://download.qore.host/mainnet/latest.json) before you swap any binary, and never install an upgrade binary before its height: a node that carries it early halts too. No upgrade is scheduled (checked 23 October 2026; `curl -s https://api.qore.host/cosmos/upgrade/v1beta1/current_plan` returns `"plan": null`).
 
 ### Build from source (development only)
 
@@ -256,7 +256,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | Chain ID          | `qorechain-vladi`                      |
 | EVM chain ID      | `9801` (hex `0x2649`)                  |
-| Chain version     | v3.2.3 (applied at height 3,662,051); v3.2.4 from height 3,742,566 |
+| Chain version     | v3.2.4 (applied at height 3,742,566 on 23 October 2026) |
 | Live since        | 7 June 2026                            |
 | Block time        | about 3.2 seconds (measured average)   |
 | Token             | QOR (`uqor`, 10^6 micro-units = 1 QOR) |

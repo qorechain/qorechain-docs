@@ -10,9 +10,9 @@ sidebar_position: 1
 Reference for `qorechaind` commands used to initialize, configure, and operate a QoreChain node.
 
 :::note
-QoreChain runs two networks: the **`qorechain-vladi`** mainnet (live since 7 June 2026; node release **v3.2.3**, applied at height 3,662,051 on 20 October 2026; mainnet runs v3.2.3 until height 3,742,566 and **v3.2.4** from that block, scheduled by governance proposal 13) and the **`qorechain-diana`** testnet (node release **v3.2.4**, applied at height 8,337,253 on 19 October 2026). Pass the appropriate `--chain-id` for the network you intend to join — the examples below target the testnet; use `--chain-id qorechain-vladi` for mainnet. The current release for each network is listed in `latest.json` under [download.qore.host](https://download.qore.host).
+QoreChain runs two networks: the **`qorechain-vladi`** mainnet (live since 7 June 2026; node release **v3.2.4**, applied at height 3,742,566 on 23 October 2026 by governance proposal 13; v3.2.3 was applied at height 3,662,051 on 20 October 2026) and the **`qorechain-diana`** testnet (node release **v3.2.4**, applied at height 8,337,253 on 19 October 2026). Pass the appropriate `--chain-id` for the network you intend to join — the examples below target the testnet; use `--chain-id qorechain-vladi` for mainnet. The current release for each network is listed in `latest.json` under [download.qore.host](https://download.qore.host).
 
-The commands on this page were checked against the v3.2.3 release binary. The v3.2.4 binary adds commands that a v3.2.3 binary does not have (for example `stakingtier`); they run on the testnet now and on mainnet from height 3,742,566, and where this manual mentions one it says so.
+The commands on this page were checked against the v3.2.3 release binary. The v3.2.4 binary adds commands that a v3.2.3 binary does not have (for example `stakingtier`); they run on both networks (testnet since 19 October 2026, mainnet since 23 October 2026), and where this manual mentions one it says so.
 :::
 
 ---
@@ -70,8 +70,9 @@ A binary built from the public source tree (the community build) refuses to star
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 been applied on mainnet, and at which height?
+# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height?
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 ```
 
 ---

@@ -29,7 +29,7 @@ Account, saldi e token sono condivisi tra i runtime e la chain include il modulo
 IBC per l'interoperabilità cross-chain (al momento non è aperto alcun canale IBC
 su mainnet o testnet).
 
-:::note Cosa funziona oggi sulle reti attive (mainnet v3.2.3, v3.2.4 dall'altezza 3.742.566; testnet v3.2.4)
+:::note Cosa funziona oggi sulle reti attive (mainnet e testnet v3.2.4)
 **Funziona:** le letture su ogni corsia, le transazioni Native firmate in modo ibrido, gli account
 unificati, le transazioni EVM all'interno di una
 [finestra di autorizzazione](/sdk/guides/evm#evm-window) e le letture SVM.
@@ -40,7 +40,7 @@ e l'astrazione del gas. Ogni guida ripete l'avvertenza dove si applica.
 
 L'SDK pubblicato (0.9.0, 21 ottobre 2026) firma nella forma che entrambe le reti verificano
 (sign-bytes ibridi v2, risolti dallo stato della chain), e il formato di firma,
-gli indirizzi, i decimali, i memo e le commissioni non sono cambiati nella v3.2.3 né nella v3.2.4 (la mainnet esegue la v3.2.4 dall'altezza 3.742.566). Include
+gli indirizzi, i decimali, i memo e le commissioni non sono cambiati nella v3.2.3 né nella v3.2.4 (la mainnet esegue la v3.2.4 dal 23 ottobre 2026). Include
 il lato client delle successive regole post-quantistiche (la prova di possesso alla registrazione
 della chiave, le finestre EVM con ambito limitato, i messaggi di consenso EIP-7702); le versioni precedenti alla 0.9.0
 non li hanno, vedi [Versioni precedenti alla 0.9.0](/sdk/install#before-090).

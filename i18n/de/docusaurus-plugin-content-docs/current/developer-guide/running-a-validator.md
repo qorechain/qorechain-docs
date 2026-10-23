@@ -10,7 +10,7 @@ sidebar_position: 9
 Dieser Leitfaden erklärt, wie man einen Validator im QoreChain-Netzwerk erstellt, das Design der Pool-Klassifizierung versteht, einen PQC-Schlüssel für quantenresistente Sicherheit registriert und den eigenen Node überwacht.
 
 :::note
-Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und das bis zur Höhe 3.742.566 das Node-Release **v3.2.3** betreibt (per Governance angewendet bei Höhe 3.662.051) und ab diesem Block **v3.2.4** (Governance-Vorschlag 13). Ein Validator muss das v3.2.4-Binary vor dieser Höhe installiert haben, sonst hält sein Node dort an und verpasst Blöcke, bis er neu gestartet wird; siehe [Einen Node betreiben: Upgrades](/developer-guide/running-a-node#upgrades). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, läuft seit dem 19. Oktober 2026 mit v3.2.4) wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Blockzeiten unterscheiden sich: etwa 3,2 s im Mainnet und etwa 1,0 s im Testnet, rechnen Sie Blockanzahlen daher pro Netzwerk in Zeit um.
+Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und das das Node-Release **v3.2.4** betreibt (per Governance-Vorschlag 13 bei Höhe 3.742.566 am 23. Oktober 2026 angewendet, nach v3.2.3 bei Höhe 3.662.051 am 20. Oktober 2026). Ein Validator muss das v3.2.4-Binary betreiben; siehe [Einen Node betreiben: Upgrades](/developer-guide/running-a-node#upgrades). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, läuft seit dem 19. Oktober 2026 mit v3.2.4) wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Blockzeiten unterscheiden sich: etwa 3,2 s im Mainnet und etwa 1,0 s im Testnet, rechnen Sie Blockanzahlen daher pro Netzwerk in Zeit um.
 :::
 
 :::caution Das Release-Binary verwenden, keinen Build aus dem Quellcode
@@ -228,7 +228,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   -y
 ```
 
-`--pqc-key mypqc` hängt einen **Besitznachweis (Proof of Possession)** an: Der Schlüssel signiert `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)`, und die Chain verifiziert dies, sodass niemand einen Public Key registrieren kann, dessen privaten Teil er nicht besitzt. In v3.2.3 ist es optional und wird empfohlen. Ab v3.2.4 (Testnet seit dem 19. Oktober 2026; Mainnet ab Höhe 3.742.566) meldet der Kontodatensatz außerdem, ob ein Nachweis verifiziert wurde (`possession_proven`, in `GET /qorechain/pqc/v1/account/{address}`).
+`--pqc-key mypqc` hängt einen **Besitznachweis (Proof of Possession)** an: Der Schlüssel signiert `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)`, und die Chain verifiziert dies, sodass niemand einen Public Key registrieren kann, dessen privaten Teil er nicht besitzt. In v3.2.3 ist es optional und wird empfohlen. Ab v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026) meldet der Kontodatensatz außerdem, ob ein Nachweis verifiziert wurde (`possession_proven`, in `GET /qorechain/pqc/v1/account/{address}`).
 
 :::note Was v3.2.3 an der Schlüsselregistrierung geändert hat
 * Ein Konto **ohne** registrierten Schlüssel kann nur die Registrierung selbst senden: Jede andere Transaktion mit einer hybriden Signaturerweiterung wird abgelehnt. Registrieren Sie zuerst und signieren Sie dann alles Weitere mit `tx pqc cosign`.

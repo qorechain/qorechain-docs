@@ -30,7 +30,7 @@ Les comptes, soldes et tokens sont partagés entre les environnements
 d'exécution, et la chaîne inclut le module IBC pour l'interopérabilité
 inter-chaînes (aucun canal IBC n'est encore ouvert sur le mainnet ni sur le testnet).
 
-:::note Ce qui fonctionne aujourd'hui sur les réseaux actifs (mainnet v3.2.3, v3.2.4 à partir de la hauteur 3,742,566 ; testnet v3.2.4)
+:::note Ce qui fonctionne aujourd'hui sur les réseaux actifs (mainnet et testnet v3.2.4)
 **Fonctionne :** les lectures sur toutes les voies, les transactions Native à signature hybride, les comptes
 unifiés, les transactions EVM à l'intérieur d'une
 [fenêtre d'autorisation](/sdk/guides/evm#evm-window), et les lectures SVM.
@@ -41,7 +41,7 @@ et l'abstraction de gas. Chaque guide rappelle la réserve là où elle s'appliq
 
 Le SDK publié (0.9.0, 21 octobre 2026) signe sous la forme que vérifient les deux réseaux
 (sign-bytes hybrides v2, déterminés à partir de l'état de la chaîne), et le format de signature,
-les adresses, les décimales, les memos et les frais n'ont pas changé dans la v3.2.3 ni la v3.2.4 (le mainnet exécute la v3.2.4 à partir de la hauteur 3,742,566). Il porte
+les adresses, les décimales, les memos et les frais n'ont pas changé dans la v3.2.3 ni la v3.2.4 (le mainnet exécute la v3.2.4 depuis le 23 octobre 2026). Il porte
 le côté client des règles post-quantiques ultérieures (la preuve de possession lors de l'enregistrement
 de clé, les fenêtres EVM à portée restreinte, les messages de consentement EIP-7702) ; les versions antérieures à la 0.9.0
 n'en disposent pas, voir [Versions antérieures à la 0.9.0](/sdk/install#before-090).

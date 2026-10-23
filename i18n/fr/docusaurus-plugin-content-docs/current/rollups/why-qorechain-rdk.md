@@ -18,7 +18,7 @@ l'outillage :
 - un environnement d'exécution **triple-VM** avec des appels inter-VM.
 
 :::caution Stade précoce : lisez la colonne Statut
-Aucun rollup n'a encore été créé sur l'un ou l'autre réseau (vérifié le 21 octobre 2026).
+Aucun rollup n'a encore été créé sur l'un ou l'autre réseau (vérifié le 23 octobre 2026).
 Le tableau ci-dessous indique ce qui fonctionne aujourd'hui ; ce que les clients
 0.6.0 publiés ont changé et les limites qui subsistent sont rassemblées dans [RDK 0.6.0 : changements et limites](/rollups/deploying-a-rollup#rdk-050-limits). Si vous n'avez besoin que d'un
 rollup optimiste/zk générique, n'importe quel kit fera l'affaire ; les

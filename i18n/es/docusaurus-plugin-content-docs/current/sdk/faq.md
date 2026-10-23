@@ -10,7 +10,7 @@ sidebar_position: 8
 ## ¿Está la mainnet en funcionamiento?
 
 Sí. La mainnet está **en funcionamiento** (id de cadena `qorechain-vladi`, en
-funcionamiento desde el 7 de junio de 2026) y ejecuta la versión de cadena v3.2.3 hasta la altura 3,742,566 y v3.2.4 desde ese bloque (propuesta de gobernanza 13); la testnet ejecuta v3.2.4 desde el 19 de octubre de 2026. El preajuste de testnet (`qorechain-diana`)
+funcionamiento desde el 7 de junio de 2026) y ejecuta la versión de cadena v3.2.4 (aplicada en la altura 3,742,566 el 23 de octubre de 2026, propuesta de gobernanza 13); la testnet ejecuta v3.2.4 desde el 19 de octubre de 2026. El preajuste de testnet (`qorechain-diana`)
 también sigue disponible. Ambos preajustes incluyen endpoints predeterminados de
 localhost; selecciona la red con `createClient({ network: "mainnet" })` y
 sobrescribe `endpoints` con las URL de tus nodos. Consulta
@@ -149,7 +149,7 @@ eth-native).
 ## ¿Con qué versiones de la cadena funciona el SDK?
 
 El SDK **0.9.0** es la versión de cliente para la cadena v3.2.2 y v3.2.3: opera en
-la mainnet **v3.2.3** (y **v3.2.4** desde la altura 3,742,566) y en la testnet **v3.2.4**, y tiene constructores para la
+la mainnet y en la testnet **v3.2.4** (la mainnet desde el 23 de octubre de 2026), y tiene constructores para la
 prueba de posesión opcional en el registro (la adjunta automáticamente
 `ensurePqcRegistered` una vez que la red haya aplicado v3.2.3), las ventanas EVM
 con alcance y los mensajes de consentimiento EIP-7702. El SDK **0.8.1 o posterior**
@@ -157,10 +157,10 @@ también opera en ambas redes (la forma v2 de los sign-bytes híbridos, el regis
 los envíos híbridos y la ventana EVM funcionan sin cambios), pero no tiene ninguno
 de esos constructores: usa la CLI para ellos (consulta
 [Versiones anteriores a la 0.9.0](/sdk/install#before-090)). v3.2.4 está en
-funcionamiento en la testnet desde el 19 de octubre de 2026 y lo estará en la mainnet
-desde la altura 3,742,566 (propuesta de gobernanza 13); el SDK no establece ningún
-campo de v3.2.4, así que sus transacciones siguen siendo válidas a ambos lados de esa
-altura.
+funcionamiento en la testnet desde el 19 de octubre de 2026 y en la mainnet
+desde el 23 de octubre de 2026 (altura 3,742,566, propuesta de gobernanza 13); el SDK no establece ningún
+campo de v3.2.4, así que sus transacciones son válidas antes y después de la
+actualización.
 
 ## Mi registro de clave PQC fue rechazado pero se cobró la comisión
 

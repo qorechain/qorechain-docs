@@ -14,7 +14,7 @@ Le module de pont est déployé sur le mainnet et le testnet, mais **aucune rout
 :::
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**, version de chaîne **v3.2.4**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) exécute la version de chaîne **v3.2.3** jusqu'à la hauteur 3,742,566 et la **v3.2.4** à partir de ce bloc. Substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** une fois qu'une route est activée. Statut vérifié le 20 octobre 2026 : les 37 configurations de chaînes sont `pending` sur les deux réseaux.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**, version de chaîne **v3.2.4**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) exécute la version de chaîne **v3.2.4** (depuis le 23 octobre 2026). Substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** une fois qu'une route est activée. Statut vérifié le 23 octobre 2026 : les 37 configurations de chaînes sont `pending` sur les deux réseaux.
 :::
 
 ---

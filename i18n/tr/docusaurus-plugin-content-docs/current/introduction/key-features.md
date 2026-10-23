@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Temel Özellikler
 
-Aşağıdaki tablo, QoreChain'deki tüm büyük özellikleri, tanıtıldıkları sürüm aşamasına göre düzenlenmiş şekilde listeler. 7 Haziran 2026'dan beri yayında olan mainnet (`qorechain-vladi`, EVM chain ID 9801), 3.742.566 yüksekliğine kadar **v3.2.3**, o bloktan itibaren **v3.2.4** çalıştırır; paralel test ağı (`qorechain-diana`, EVM chain ID 9800) 19 Ekim 2026'dan beri v3.2.4 çalıştırmaktadır. Özellik listesinin sonundaki [Özellik Durumu](#feature-status) tablosu, bugün canlı ağlarda nelerin etkin olduğunu gösterir.
+Aşağıdaki tablo, QoreChain'deki tüm büyük özellikleri, tanıtıldıkları sürüm aşamasına göre düzenlenmiş şekilde listeler. 7 Haziran 2026'dan beri yayında olan mainnet (`qorechain-vladi`, EVM chain ID 9801), **v3.2.4** çalıştırır (23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı); paralel test ağı (`qorechain-diana`, EVM chain ID 9800) 19 Ekim 2026'dan beri v3.2.4 çalıştırmaktadır. Özellik listesinin sonundaki [Özellik Durumu](#feature-status) tablosu, bugün canlı ağlarda nelerin etkin olduğunu gösterir.
 
 | Özellik                    | Tanıtıldığı sürüm   | Açıklama                                                                                                                                                                                                                                                                                                                                                                                          |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -42,7 +42,7 @@ Aşağıdaki tablo, QoreChain'deki tüm büyük özellikleri, tanıtıldıkları
 | --- | --- |
 | Hibrit ML-DSA-87 + secp256k1 imzaları (Cosmos hattı) | **Canlı**, zorunlu (`hybrid_signature_mode = required`) |
 | EVM yetkilendirme penceresi | v3.2.0'dan beri **canlı** (isteğe bağlı kapsam sınırlaması v3.2.3'ten beri) |
-| Zaman kilitli stake (`x/stakingtier`, isteğe bağlı) | v3.2.4: testnet'te 19 Ekim 2026'dan beri canlı; mainnet'te 3.742.566 yüksekliğinden itibaren |
+| Zaman kilitli stake (`x/stakingtier`, isteğe bağlı) | v3.2.4'ten beri **canlı** (testnet'te 19 Ekim 2026'dan beri, mainnet'te 23 Ekim 2026'dan beri) |
 | EVM, QoreChain Native, SVM çalışma zamanları | EVM **canlı**; QoreChain Native kod yükleme ve örnekleme **devre dışı** (yönetişim ayarı artı devre kesici); SVM işlem hattı **devre dışı** (okumalar çalışır) |
 | Yakım motoru ve ücret bölüşümü (37/30/20/10/3) | **Canlı**; mainnet'te yalnızca gaz ücreti ve başarısız işlem yakım kanallarında yakım kaydedilmiştir |
 | Üst sınırlı emisyon (`x/inflation`) | **Canlı**, dönem başına sabit 86.000 QOR, 590.000.000 QOR üst sınırına kadar (mainnet) |

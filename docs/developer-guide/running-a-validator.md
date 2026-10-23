@@ -10,7 +10,7 @@ sidebar_position: 9
 This guide covers how to create a validator on the QoreChain network, understand the pool classification design, register a PQC key for quantum-resistant security, and monitor your node.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.3** (applied by governance at height 3,662,051) until height 3,742,566 and **v3.2.4** from that block (governance proposal 13). A validator must have the v3.2.4 binary installed before that height, or its node halts there and misses blocks until restarted; see [Running a Node: Upgrades](/developer-guide/running-a-node#upgrades). The **`qorechain-diana`** testnet (EVM chain ID **9800**, running v3.2.4 since 19 October 2026) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network. Block times differ: about 3.2 s on mainnet and about 1.0 s on the testnet, so convert block counts to time per network.
+This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026, after v3.2.3 at height 3,662,051 on 20 October 2026). A validator must run the v3.2.4 binary; see [Running a Node: Upgrades](/developer-guide/running-a-node#upgrades). The **`qorechain-diana`** testnet (EVM chain ID **9800**, running v3.2.4 since 19 October 2026) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network. Block times differ: about 3.2 s on mainnet and about 1.0 s on the testnet, so convert block counts to time per network.
 :::
 
 :::caution Use the release binary, not a source build
@@ -228,7 +228,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   -y
 ```
 
-`--pqc-key mypqc` attaches a **proof of possession**: the key signs `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` and the chain verifies it, so nobody can register a public key whose private half they do not hold. It is optional in v3.2.3 and recommended. From v3.2.4 (testnet since 19 October 2026; mainnet from height 3,742,566) the account record also reports whether a proof was verified (`possession_proven`, in `GET /qorechain/pqc/v1/account/{address}`).
+`--pqc-key mypqc` attaches a **proof of possession**: the key signs `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` and the chain verifies it, so nobody can register a public key whose private half they do not hold. It is optional in v3.2.3 and recommended. From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) the account record also reports whether a proof was verified (`possession_proven`, in `GET /qorechain/pqc/v1/account/{address}`).
 
 :::note What v3.2.3 changed for key registration
 * An account with **no** registered key can send only the registration itself: any other transaction carrying a hybrid signature extension is refused. Register first, then sign everything else with `tx pqc cosign`.

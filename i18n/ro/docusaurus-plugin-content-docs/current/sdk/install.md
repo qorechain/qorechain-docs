@@ -40,14 +40,14 @@ primesc o opțiune `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`); `"auto"`
 interoghează rețeaua și are deci nevoie de endpoint-ul REST (`rest`) pe
 `qorechain-vladi` / `qorechain-diana`: aruncă o eroare în loc să ghicească. Vezi
 [Ce formă de sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-Forma nu s-a schimbat în chain v3.2.3 sau v3.2.4 (testnet din 19 octombrie 2026, mainnet de la înălțimea 3.742.566): `"auto"`
+Forma nu s-a schimbat în chain v3.2.3 sau v3.2.4 (v3.2.4 rulează pe testnet din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026): `"auto"`
 se rezolvă la v2 pe ambele rețele.
 :::
 
 ## Ce adaugă 0.9.0 {#whats-new-090}
 
 SDK 0.9.0 este versiunea de client pentru chain **v3.2.2** și **v3.2.3** (mainnet
-le-a aplicat la înălțimile 3.556.788 și 3.662.051; testnet-ul rulează v3.2.4 din 19 octombrie 2026, iar mainnet trece la ea la înălțimea 3.742.566).
+le-a aplicat la înălțimile 3.556.788 și 3.662.051; ambele rețele rulează acum v3.2.4: testnet-ul din 19 octombrie 2026, mainnet-ul din 23 octombrie 2026, la înălțimea 3.742.566).
 Formatul de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au
 schimbat, deci forma v2 a sign-bytes hibride pe care o semnează 0.8.1 și versiunile
 ulterioare este în continuare cea corectă. Ce este nou:
@@ -74,7 +74,7 @@ sau rotirea dintr-o cheie legacy existentă funcționează în continuare.
 ## Versiuni anterioare lui 0.9.0 {#before-090}
 
 Dacă ești pe 0.8.x, aceasta semnează în continuare forma pe care o verifică ambele
-rețele și funcționează pe mainnet (v3.2.3, apoi v3.2.4 de la înălțimea 3.742.566) și pe testnet (v3.2.4). Acestea sunt limitele pe
+rețele și funcționează pe mainnet și pe testnet (ambele v3.2.4). Acestea sunt limitele pe
 care 0.9.0 le elimină, iar unele dintre ele costă un comision dacă nu le cunoști:
 
 | Versiune anterioară lui 0.9.0 | Soluție ocolitoare |

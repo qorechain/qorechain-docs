@@ -23,7 +23,7 @@ sidebar_position: 7
 | عمليات الجسر | 0 | 0 |
 | قنوات / عملاء IBC | 0 / 0 | 0 / 0 |
 
-(جرى التحقق بتاريخ 20 أكتوبر 2026 على الشبكة الرئيسية v3.2.3 وشبكة الاختبار v3.2.4. اقرأ القيم الحية عبر `qorechaind query bridge chains` و`qorechaind query bridge validators`، أو عبر REST على `/qorechain/bridge/v1/chains` و`/qorechain/bridge/v1/validators`.) إعدادات الوحدة هي نفسها على الشبكتين: `min_validators` يساوي 10، و`attestation_threshold` يساوي 7، و`challenge_period_secs` يساوي 86,400، و`large_transfer_threshold` يساوي 100,000 QOR (`100000000000` uqor). حزمة IBC التي ستستخدمها الوحدة هي ibc-go v10.7 (منذ v3.2.2)، لكن لم يُنشأ أي عميل أو قناة.
+(جرى التحقق بتاريخ 23 أكتوبر 2026 على الشبكة الرئيسية وشبكة الاختبار، وكلتاهما v3.2.4. اقرأ القيم الحية عبر `qorechaind query bridge chains` و`qorechaind query bridge validators`، أو عبر REST على `/qorechain/bridge/v1/chains` و`/qorechain/bridge/v1/validators`.) إعدادات الوحدة هي نفسها على الشبكتين: `min_validators` يساوي 10، و`attestation_threshold` يساوي 7، و`challenge_period_secs` يساوي 86,400، و`large_transfer_threshold` يساوي 100,000 QOR (`100000000000` uqor). حزمة IBC التي ستستخدمها الوحدة هي ibc-go v10.7 (منذ v3.2.2)، لكن لم يُنشأ أي عميل أو قناة.
 
 ## نظرة عامة على الاتصال
 
@@ -193,7 +193,7 @@ QoreChain               QoreChain Validators           External Chain
 * قائمة بالسلاسل المدعومة
 * درجة سمعة (تحافظ عليها `x/reputation`)
 
-منذ v3.2.2 تتحقق الوحدة من المبالغ الصفرية ومن إعداداتها بشكل متسق على كل مسار. **من v3.2.4 (على شبكة الاختبار منذ 19 أكتوبر 2026؛ وعلى الشبكة الرئيسية من الارتفاع 3,742,566):** يتطلب تسجيل مُحقِّق جسر أيضًا إثبات امتلاك لمفتاح Dilithium-5 (بصيغة `proof_of_possession` نفسها المستخدمة في تسجيل مفتاح PQC، انظر [Post-Quantum Security](/architecture/post-quantum-security#proof-of-possession))، ويرفض مفتاحًا يستخدمه بالفعل مُحقِّق جسر آخر. الشبكة الرئيسية v3.2.3، التي تعمل حتى ذلك الارتفاع، لا تجري هذا الفحص، ولا يوجد مُحقِّق جسر مسجَّل على أي من الشبكتين.
+منذ v3.2.2 تتحقق الوحدة من المبالغ الصفرية ومن إعداداتها بشكل متسق على كل مسار. **من v3.2.4 (على الشبكة الرئيسية منذ 23 أكتوبر 2026، وعلى شبكة الاختبار منذ 19 أكتوبر 2026):** يتطلب تسجيل مُحقِّق جسر أيضًا إثبات امتلاك لمفتاح Dilithium-5 (بصيغة `proof_of_possession` نفسها المستخدمة في تسجيل مفتاح PQC، انظر [Post-Quantum Security](/architecture/post-quantum-security#proof-of-possession))، ويرفض مفتاحًا يستخدمه بالفعل مُحقِّق جسر آخر. الإصدارات الأقدم لا تجري هذا الفحص، ولا يوجد مُحقِّق جسر مسجَّل على أي من الشبكتين.
 
 ### قواطع الدائرة
 

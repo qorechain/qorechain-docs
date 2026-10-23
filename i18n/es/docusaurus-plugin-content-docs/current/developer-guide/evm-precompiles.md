@@ -24,7 +24,7 @@ Los seis precompilados de QoreChain que se describen a continuación están **co
 | PRISM Consensus Params | `0x…0C01` | No activo | No activo |
 | CrossVM Bridge | `0x…0901` | No activo | No activo |
 
-La activación requiere una actualización de la cadena y está planificada por etapas: primero los precompilados de PQC y de consenso de solo lectura, el par de IA una vez que esté lista su ruta de solo lectura en punto fijo, y el CrossVM Bridge en último lugar. La versión v3.2.3 (mainnet, 20 de octubre de 2026) incluyó en el binario las versiones reforzadas del CrossVM Bridge y del precompilado AI Anomaly Check, detrás de una función de protocolo, **pero no activó ningún precompilado**: la lista `active_static_precompiles` sigue vacía en ambas redes, y la v3.2.4 (en la testnet desde el 19 de octubre de 2026; en la mainnet desde la altura 3,742,566) no lo cambia. Esta tabla se actualiza en la misma operación que la actualización que active cualquiera de ellos.
+La activación requiere una actualización de la cadena y está planificada por etapas: primero los precompilados de PQC y de consenso de solo lectura, el par de IA una vez que esté lista su ruta de solo lectura en punto fijo, y el CrossVM Bridge en último lugar. La versión v3.2.3 (mainnet, 20 de octubre de 2026) incluyó en el binario las versiones reforzadas del CrossVM Bridge y del precompilado AI Anomaly Check, detrás de una función de protocolo, **pero no activó ningún precompilado**: la lista `active_static_precompiles` sigue vacía en ambas redes, y la v3.2.4 (en la mainnet desde el 23 de octubre de 2026, en la testnet desde el 19 de octubre de 2026) no lo cambia. Esta tabla se actualiza en la misma operación que la actualización que active cualquiera de ellos.
 
 Compruebe usted mismo la lista actual (una lista vacía significa que ninguno está activo):
 
@@ -95,7 +95,7 @@ interface IQorePQC {
 }
 ```
 
-Desde v3.2.4 (testnet desde el 19 de octubre de 2026; mainnet desde la altura 3,742,566), una vez que este precompilado esté activo, su salida incluye un cuarto valor, `bool possessionProven`, después de `pubkey`: si la clave actual de la cuenta fue demostrada mediante una prueba de posesión verificada (consulte [Firma post-cuántica](/developer-guide/post-quantum-signing#proof-of-possession)). La interfaz anterior enumera las tres primeras salidas; un contrato que deba confiar en la clave debería leer también la cuarta.
+Desde v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026), una vez que este precompilado esté activo, su salida incluye un cuarto valor, `bool possessionProven`, después de `pubkey`: si la clave actual de la cuenta fue demostrada mediante una prueba de posesión verificada (consulte [Firma post-cuántica](/developer-guide/post-quantum-signing#proof-of-possession)). La interfaz anterior enumera las tres primeras salidas; un contrato que deba confiar en la clave debería leer también la cuarta.
 
 ### IQoreAI.sol
 

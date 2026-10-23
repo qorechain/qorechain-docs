@@ -17,7 +17,7 @@ QoreChain implémente une interface JSON-RPC compatible EVM, de sorte que les ou
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-L'interface JSON-RPC EVM est servie par le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hexadécimal `0x2649`, version de nœud **v3.2.3**, en production depuis le 7 juin 2026 ; v3.2.4 à partir de la hauteur 3 742 566) et le testnet **`qorechain-diana`** (chain ID EVM **9800**, hexadécimal `0x2648`, version de nœud **v3.2.4** depuis le 19 octobre 2026). Les adresses locales ci-dessus s'appliquent à un nœud que vous exécutez vous-même. Les points de terminaison HTTP publics sont `https://evm.qore.host` (mainnet) et `https://evm-testnet.qore.host` (testnet), listés dans [Réseaux](/appendix/networks#public-endpoints). Le seul WebSocket EVM public est celui du testnet (`wss://evm-ws-testnet.qore.host`) ; il n'existe pas de WebSocket EVM public pour le mainnet.
+L'interface JSON-RPC EVM est servie par le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hexadécimal `0x2649`, version de nœud **v3.2.4** depuis le 23 octobre 2026, en production depuis le 7 juin 2026) et le testnet **`qorechain-diana`** (chain ID EVM **9800**, hexadécimal `0x2648`, version de nœud **v3.2.4** depuis le 19 octobre 2026). Les adresses locales ci-dessus s'appliquent à un nœud que vous exécutez vous-même. Les points de terminaison HTTP publics sont `https://evm.qore.host` (mainnet) et `https://evm-testnet.qore.host` (testnet), listés dans [Réseaux](/appendix/networks#public-endpoints). Le seul WebSocket EVM public est celui du testnet (`wss://evm-ws-testnet.qore.host`) ; il n'existe pas de WebSocket EVM public pour le mainnet.
 :::
 
 ## Espaces de noms pris en charge

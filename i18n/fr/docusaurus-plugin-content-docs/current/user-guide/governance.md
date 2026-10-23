@@ -10,7 +10,7 @@ sidebar_position: 3
 Ce guide explique le fonctionnement de la gouvernance on-chain sur QoreChain : comment les votes sont décomptés, comment soumettre des propositions et comment voter.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.3** jusqu'à la hauteur 3 742 566 et la **v3.2.4** à partir de ce bloc ; le testnet exécute la **v3.2.4** depuis le 19 octobre 2026 — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous participez à la gouvernance sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.4** depuis le 23 octobre 2026 ; le testnet exécute la **v3.2.4** depuis le 19 octobre 2026 — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous participez à la gouvernance sur le mainnet.
 :::
 
 :::caution Signez avec `tx pqc cosign`
@@ -29,7 +29,7 @@ Les propositions sont décomptées sur le **stake bonded** : chaque QOR que vous
 | Seuil     | 50%                  | Part de « yes » parmi les votes hors abstentions nécessaire pour être adoptée |
 | Veto      | 33.4%                | Si « no with veto » atteint cette part, la proposition est rejetée et son dépôt est brûlé |
 
-Ces valeurs ont été lues sur le mainnet le 20 octobre 2026 (et sont identiques sur le testnet) ; confirmez-les avec `qorechaind query gov params`, car la gouvernance peut les modifier.
+Ces valeurs ont été lues sur le mainnet le 23 octobre 2026 (et sont identiques sur le testnet) ; confirmez-les avec `qorechaind query gov params`, car la gouvernance peut les modifier.
 
 :::note QDRW est conçu mais n'est pas actif
 La conception de QoreChain inclut une formule de pouvoir de vote **Quadratic Delegation-Reputation Weighted (QDRW)**, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, qui amortirait les stakes importants et pondérerait la réputation. Elle est implémentée dans le module `x/qca` mais est **désactivée** sur les deux réseaux (`qdrw_enabled` vaut `false` dans `qorechaind query qca config`) et ne fait pas partie du décompte de gouvernance ; elle n'affecte donc aucun vote aujourd'hui. xQORE n'est pas non plus en production (voir [xQORE Staking](/user-guide/xqore-staking)).
@@ -175,7 +175,7 @@ Paramètres clés :
 
 ## La gouvernance sur le mainnet jusqu'ici {#mainnet-history}
 
-La gouvernance du mainnet a servi à des changements de paramètres, à des décisions de disjoncteur, à des mises à niveau coordonnées et, depuis octobre 2026, à la libération de montants que la chaîne avait enregistrés lors de la mise à niveau v3.2.0. Les propositions 7 à 11 ont été adoptées sur le mainnet en octobre 2026, tandis que les propositions 12 (une nouvelle libération) et 13 (la mise à niveau v3.2.4 à la hauteur 3 742 566) étaient en période de vote au moment de la rédaction ; la liste et les résultats se trouvent dans l'[Historique des versions](/appendix/version-history#governance-timeline), et chaque proposition peut être lue en direct à `GET /cosmos/gov/v1/proposals`.
+La gouvernance du mainnet a servi à des changements de paramètres, à des décisions de disjoncteur, à des mises à niveau coordonnées et, depuis octobre 2026, à la libération de montants que la chaîne avait enregistrés lors de la mise à niveau v3.2.0. Les propositions 7 à 13 ont été adoptées sur le mainnet en octobre 2026, dont la proposition 12 (une nouvelle libération, adoptée le 21 octobre) et la proposition 13 (la mise à niveau v3.2.4, appliquée à la hauteur 3 742 566 le 23 octobre) ; la liste et les résultats se trouvent dans l'[Historique des versions](/appendix/version-history#governance-timeline), et chaque proposition peut être lue en direct à `GET /cosmos/gov/v1/proposals`.
 
 ---
 

@@ -10,9 +10,9 @@ sidebar_position: 1
 Référence des commandes `qorechaind` utilisées pour initialiser, configurer et faire fonctionner un nœud QoreChain.
 
 :::note
-QoreChain exploite deux réseaux : le mainnet **`qorechain-vladi`** (en service depuis le 7 juin 2026 ; version du nœud **v3.2.3**, appliquée à la hauteur 3 662 051 le 20 octobre 2026 ; le mainnet exécute la v3.2.3 jusqu'à la hauteur 3 742 566 et la **v3.2.4** à partir de ce bloc, programmée par la proposition de gouvernance 13) et le testnet **`qorechain-diana`** (version du nœud **v3.2.4**, appliquée à la hauteur 8 337 253 le 19 octobre 2026). Indiquez le `--chain-id` correspondant au réseau que vous souhaitez rejoindre — les exemples ci-dessous ciblent le testnet ; utilisez `--chain-id qorechain-vladi` pour le mainnet. La version actuelle de chaque réseau est indiquée dans `latest.json` sur [download.qore.host](https://download.qore.host).
+QoreChain exploite deux réseaux : le mainnet **`qorechain-vladi`** (en service depuis le 7 juin 2026 ; version du nœud **v3.2.4**, appliquée à la hauteur 3 742 566 le 23 octobre 2026 par la proposition de gouvernance 13 ; la v3.2.3 a été appliquée à la hauteur 3 662 051 le 20 octobre 2026) et le testnet **`qorechain-diana`** (version du nœud **v3.2.4**, appliquée à la hauteur 8 337 253 le 19 octobre 2026). Indiquez le `--chain-id` correspondant au réseau que vous souhaitez rejoindre — les exemples ci-dessous ciblent le testnet ; utilisez `--chain-id qorechain-vladi` pour le mainnet. La version actuelle de chaque réseau est indiquée dans `latest.json` sur [download.qore.host](https://download.qore.host).
 
-Les commandes de cette page ont été vérifiées avec le binaire de la version v3.2.3. Le binaire v3.2.4 ajoute des commandes qu'un binaire v3.2.3 n'a pas (par exemple `stakingtier`) ; elles fonctionnent sur le testnet dès maintenant et sur le mainnet à partir de la hauteur 3 742 566, et lorsque ce manuel en mentionne une, il l'indique.
+Les commandes de cette page ont été vérifiées avec le binaire de la version v3.2.3. Le binaire v3.2.4 ajoute des commandes qu'un binaire v3.2.3 n'a pas (par exemple `stakingtier`) ; elles fonctionnent sur les deux réseaux (testnet depuis le 19 octobre 2026, mainnet depuis le 23 octobre 2026), et lorsque ce manuel en mentionne une, il l'indique.
 :::
 
 ---
@@ -70,8 +70,9 @@ Un binaire compilé à partir de l'arborescence de sources publique (la version 
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 been applied on mainnet, and at which height?
+# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height?
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 ```
 
 ---

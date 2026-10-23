@@ -23,7 +23,7 @@ Le module de pont est déployé sur le mainnet et le testnet, mais **aucune rout
 | Opérations de pont | 0 | 0 |
 | Canaux / clients IBC | 0 / 0 | 0 / 0 |
 
-(Vérifié le 20 octobre 2026 sur le mainnet v3.2.3 et le testnet v3.2.4. Lisez les valeurs en direct avec `qorechaind query bridge chains` et `qorechaind query bridge validators`, ou via REST à `/qorechain/bridge/v1/chains` et `/qorechain/bridge/v1/validators`.) La configuration du module est identique sur les deux réseaux : `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 et `large_transfer_threshold` 100 000 QOR (`100000000000` uqor). La pile IBC que le module utiliserait est ibc-go v10.7 (depuis v3.2.2), mais aucun client ni canal n'a été créé.
+(Vérifié le 23 octobre 2026 sur le mainnet et le testnet, tous deux en v3.2.4. Lisez les valeurs en direct avec `qorechaind query bridge chains` et `qorechaind query bridge validators`, ou via REST à `/qorechain/bridge/v1/chains` et `/qorechain/bridge/v1/validators`.) La configuration du module est identique sur les deux réseaux : `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 et `large_transfer_threshold` 100 000 QOR (`100000000000` uqor). La pile IBC que le module utiliserait est ibc-go v10.7 (depuis v3.2.2), mais aucun client ni canal n'a été créé.
 
 ## Vue d'ensemble des connexions
 
@@ -193,7 +193,7 @@ Toutes les opérations de pont QCB requièrent un **seuil de 7-sur-10** signatur
 * Une liste des chaînes prises en charge
 * Un score de réputation (maintenu par `x/reputation`)
 
-Depuis v3.2.2, le module valide de manière cohérente les montants nuls et sa configuration sur chaque chemin. **À partir de v3.2.4 (testnet depuis le 19 octobre 2026 ; mainnet à partir de la hauteur 3 742 566) :** l'enregistrement d'un validateur de pont exige aussi une preuve de possession de la clé Dilithium-5 (le même format `proof_of_possession` que l'enregistrement de clé PQC, voir [Sécurité post-quantique](/architecture/post-quantum-security#proof-of-possession)) et refuse une clé qu'un autre validateur de pont utilise déjà. Le mainnet v3.2.3, qui s'exécute jusqu'à cette hauteur, n'a pas cette vérification, et aucun validateur de pont n'est enregistré sur l'un ou l'autre réseau.
+Depuis v3.2.2, le module valide de manière cohérente les montants nuls et sa configuration sur chaque chemin. **À partir de v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026) :** l'enregistrement d'un validateur de pont exige aussi une preuve de possession de la clé Dilithium-5 (le même format `proof_of_possession` que l'enregistrement de clé PQC, voir [Sécurité post-quantique](/architecture/post-quantum-security#proof-of-possession)) et refuse une clé qu'un autre validateur de pont utilise déjà. Les versions antérieures n'ont pas cette vérification, et aucun validateur de pont n'est enregistré sur l'un ou l'autre réseau.
 
 ### Disjoncteurs
 

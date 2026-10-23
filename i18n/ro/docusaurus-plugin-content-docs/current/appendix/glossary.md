@@ -55,7 +55,7 @@ Referință alfabetică a termenilor, abrevierilor și acronimelor folosite în 
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. Stratul de optimizare prin învățare prin întărire integrat în QoreChain Consensus Engine (prin modulul `x/rlconsensus`). PRISM observă metricile rețelei și este conceput să propună ajustări deterministe ale parametrilor de consens sub controale de siguranță de tip întrerupător de circuit; astăzi rulează în mod de observare. Vezi [PRISM Consensus Engine](/architecture/prism-consensus-engine).
 
-**Proof of possession (PoP) (dovadă de posesie)** — O semnătură pe care o cheie post-cuantică o face asupra propriilor detalii de înregistrare, dovedind că cel care o înregistrează deține cheia privată. Opțională la înregistrarea cheii unui cont începând cu v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); obligatorie pentru cheile validatorilor de bridge începând cu v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566).
+**Proof of possession (PoP) (dovadă de posesie)** — O semnătură pe care o cheie post-cuantică o face asupra propriilor detalii de înregistrare, dovedind că cel care o înregistrează deține cheia privată. Opțională la înregistrarea cheii unui cont începând cu v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); obligatorie pentru cheile validatorilor de bridge începând cu v3.2.4 (pe testnet din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026).
 
 **Protocol feature (funcționalitate de protocol)** — Un comutator de comportament pe care handler-ul de upgrade al unei versiuni îl activează la o singură înălțime de bloc pe fiecare nod (de exemplu `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`), astfel încât istoricul se redă neschimbat sub acea înălțime.
 
@@ -81,7 +81,7 @@ Referință alfabetică a termenilor, abrevierilor și acronimelor folosite în 
 
 **STARK** — Scalable Transparent Argument of Knowledge. Un sistem de dovadă cu cunoaștere zero care nu necesită un setup de încredere și este rezistent cuantic. Disponibil ca sistem de dovadă alternativ pentru settlement-ul zk-rollup în RDK.
 
-**Stranded staker share / reward-pool reserve (cota blocată a stakerilor / rezerva pool-ului de recompense)** — Sume înregistrate la upgrade-ul v3.2.0 care se mișcă doar printr-un vot de guvernanță; guvernanța le-a eliberat în octombrie 2026 (după v3.2.3 a fost propus un rest corectat al cotei blocate). Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+**Stranded staker share / reward-pool reserve (cota blocată a stakerilor / rezerva pool-ului de recompense)** — Sume înregistrate la upgrade-ul v3.2.0 care se mișcă doar printr-un vot de guvernanță; guvernanța le-a eliberat în octombrie 2026 (restul corectat al cotei blocate, recalculat la v3.2.3, a fost eliberat prin propunerea 12). Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 **SVM** — Solana Virtual Machine. Un mediu de execuție de înaltă performanță pentru programe BPF. QoreChain integrează SVM ca unul dintre cele trei runtime-uri acceptate, alături de QoreChain EVM Engine și QoreChain Native.
 
@@ -89,7 +89,7 @@ Referință alfabetică a termenilor, abrevierilor și acronimelor folosite în 
 
 **tIBE** — Threshold Identity-Based Encryption (criptare bazată pe identitate cu prag). O schemă criptografică în care un mesaj poate fi decriptat doar atunci când un prag de părți colaborează. Folosită de modulul FairBlock pentru a cripta conținutul tranzacțiilor până la finalizarea blocului, prevenind extragerea MEV.
 
-**Time-locked staking (staking cu blocare în timp)** — Un angajament opțional al unei părți dintr-o delegare pentru un termen fix, oferit de modulul `x/stakingtier`. Face parte din v3.2.4: pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566. Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking).
+**Time-locked staking (staking cu blocare în timp)** — Un angajament opțional al unei părți dintr-o delegare pentru un termen fix, oferit de modulul `x/stakingtier`. Face parte din v3.2.4: pe testnet din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026. Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking).
 
 **uqor** — Denominarea de bază a tokenului QOR. 1 QOR = 1.000.000 uqor (10^6). Toate sumele on-chain, comisioanele și valorile de staking sunt denominate în uqor.
 

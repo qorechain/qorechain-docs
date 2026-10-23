@@ -15,7 +15,7 @@ Apelurile între VM-uri sunt disponibile doar în măsura în care este disponib
 * `MsgCrossVMCall` este **oprit pe mainnet** de circuit breaker (`qorechaind query circuit disabled-list`); pe testnet este activat.
 * **Lane-ul SVM este dezactivat** pentru tranzacții pe ambele rețele, deci un segment SVM nu poate rula.
 * **Încărcarea și instanțierea QoreChain Native sunt permisionate** pe ambele rețele, iar mainnet-ul nu are cod de contract stocat, deci nu există încă niciun contract QoreChain Native de apelat.
-* **Precompile-ul EVM sincron nu este activ** (vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3, dar niciun precompile nu este activat pe vreuna dintre rețele, iar v3.2.4 (testnet din 19 octombrie 2026; mainnet de la înălțimea 3.742.566) nu schimbă acest lucru.
+* **Precompile-ul EVM sincron nu este activ** (vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3, dar niciun precompile nu este activat pe vreuna dintre rețele, iar v3.2.4 (testnet din 19 octombrie 2026, mainnet din 23 octombrie 2026) nu schimbă acest lucru.
 
 Rutele REST ale modulului (`/qorechain/crossvm/v1/...`) nu sunt servite de gateway-ul public; citește mesajele cu CLI-ul sau cu un client de interogare gRPC/ABCI.
 :::

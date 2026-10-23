@@ -66,19 +66,25 @@ QoreX este non-custodial: QoreChain Association nu poate recupera, reseta sau re
 
 ## Ce versiune este disponibilă unde {#versions}
 
-Revizuirea din magazine se desfășoară după propriul program, astfel încât fiecare magazin servește propria versiune, iar Google Play și Chrome Web Store sunt în prezent în urma celorlalte. Aceasta este versiunea curentă **din fiecare magazin** la **20 octombrie 2026**:
+Revizuirea din magazine se desfășoară după propriul program, astfel încât un magazin poate servi pentru o vreme o versiune mai veche decât altul. Aceasta este versiunea curentă **din fiecare magazin** la **23 octombrie 2026**:
 
 | Magazin | Versiune curentă | Notă |
 |---|---|---|
-| Apple App Store (iOS) | 1.1.7 | lansată pe 15 octombrie |
-| Google Play (Android) | 1.1.6 | 1.1.7 este încărcată, dar încă nu este publică — listarea publică afișează în continuare 1.1.6 |
-| Chrome Web Store | 0.3.6 | încă servește 0.3.6 |
-| Firefox Add-ons | 0.3.7 | |
-| Safari (Mac App Store) | 1.7.7, cu extensia 0.3.7 | Mac App Store folosește propria numerotare `1.x` |
+| Apple App Store (iOS) | 1.1.8 | lansată pe 21 octombrie |
+| Google Play (Android) | 1.1.8 | |
+| Chrome Web Store | 0.3.8 | |
+| Firefox Add-ons | 0.3.8 | |
+| Safari (Mac App Store) | 1.7.8, cu extensia 0.3.8 | Mac App Store folosește propria numerotare `1.x` |
 
-Magazinele afișează întotdeauna versiunea lor curentă, iar un magazin care încă servește o versiune mai veche se va actualiza automat. Funcțiile de mai jos marcate **1.1.7 / 0.3.7** sunt disponibile în magazinele din tabel care au deja acea versiune (iOS, Firefox, Safari) și ajung pe Google Play și Chrome când aceste listări se actualizează. Nimic mai nou decât 1.1.7 / 0.3.7 nu este descris în acest manual ca disponibil.
+Magazinele afișează întotdeauna versiunea lor curentă, iar un magazin care încă servește o versiune mai veche se va actualiza automat. Nimic mai nou decât 1.1.8 / 0.3.8 nu este descris în acest manual ca disponibil.
 
-Ce au schimbat pentru tine versiunile 1.1.7 / 0.3.7:
+Ce au schimbat pentru tine versiunile 1.1.8 / 0.3.8:
+
+- **MetaMask pe QoreChain, de la prima pagină.** Deschide, verifică și închide fereastra de acces EVM de care are nevoie MetaMask și vezi ce mai are la dispoziție.
+- **Verificări cuantic-sigure mai puternice.** QoreX verifică semnătura cuantic-sigură a unei aplicații în raport cu cheia contului tău și spune clar dacă acea cheie a fost înregistrată de alt portofel.
+- **Remedieri pentru probleme de securitate raportate.**
+
+Ce au schimbat pentru tine versiunile 1.1.7 / 0.3.7 (incluse în 1.1.8 / 0.3.8):
 
 - **Aprobările refuză o cerere ai cărei octeți pot fi citiți în două moduri.** Dacă același câmp apare de două ori într-o cerere, un ecran și lanțul ar putea să nu cadă de acord asupra a ceea ce se semnează — de exemplu o taxă sau o sumă afișată diferit de cea executată. QoreX refuză acum o astfel de cerere, în loc să arate o singură interpretare a ei. Vezi [Ce arată fereastra de aprobare](/qorex/security-and-recovery#approvals).
 - **Expirarea unei permisiuni este afișată la secundă**, iar voturile de guvernanță sunt decodate și afișate pe ecranul de aprobare.
@@ -96,7 +102,7 @@ Noutăți principale față de 1.0.9 / 0.2.6:
 - Ecrane de aprobare care arată fiecare mesaj, comisionul, limitele de cheltuire și expirarea, și refuză ceea ce QoreX nu poate afișa; **`signAndBroadcast`** pentru dApp-uri; **Site-uri conectate** cu Revocare (extensia); **fereastra de acces EVM** — vezi [Securitate și recuperare](/qorex/security-and-recovery) și [Extensia de browser](/qorex/browser-extension).
 - Remedieri: un cont alimentat putea dispărea momentan din „Conturile tale" (1.0.9); butonul hardware Înapoi de pe Android revine acum cu un ecran (1.1.1); fraza de recuperare este ascunsă serviciilor care nu sunt de accesibilitate pe Android 14 și versiunile ulterioare (1.1.6).
 
-QoreX funcționează pe mainnet `qorechain-vladi`, care rulează chain **v3.2.3** (activ din 7 iunie 2026) până la înălțimea 3,742,566 și v3.2.4 de la acel bloc. Formatul de semnare, adresele, zecimalele, memo-urile și comisioanele nu se schimbă în aceste actualizări, așa că nu este necesară nicio actualizare QoreX pentru ele.
+QoreX funcționează pe mainnet `qorechain-vladi` (activ din 7 iunie 2026), care rulează chain **v3.2.4** din 23 octombrie 2026. Formatul de semnare, adresele, zecimalele, memo-urile și comisioanele nu se schimbă în aceste actualizări, așa că nu este necesară nicio actualizare QoreX pentru ele.
 
 ## Ce trimite QoreX prin rețea {#data-and-privacy}
 

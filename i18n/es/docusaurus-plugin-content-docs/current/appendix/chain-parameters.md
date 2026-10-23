@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Parámetros de la cadena
 
-Referencia consolidada de los parámetros de módulo de las redes de QoreChain, agrupados por módulo. Los parámetros pueden consultarse con `qorechaind query <module> params` cuando el módulo tiene una consulta de params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` y `gasabstraction` usan `config`, y `gasabstraction` solo es consultable en la testnet), y por REST únicamente en las rutas enumeradas en la [referencia REST / gRPC](/api-reference/rest-grpc-endpoints). Los parámetros de `x/inflation` también se sirven por REST en la mainnet desde v3.2.3 (`/qorechain/inflation/v1/params`). REST no está disponible para `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ni `xqore`.
+Referencia consolidada de los parámetros de módulo de las redes de QoreChain, agrupados por módulo. Los parámetros pueden consultarse con `qorechaind query <module> params` cuando el módulo tiene una consulta de params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` y `gasabstraction` usan `config`), y por REST únicamente en las rutas enumeradas en la [referencia REST / gRPC](/api-reference/rest-grpc-endpoints). Los parámetros de `x/inflation` también se sirven por REST en la mainnet desde v3.2.3 (`/qorechain/inflation/v1/params`). REST no está disponible para `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ni `xqore`.
 
 :::note
-Los valores mostrados se leyeron en vivo de la mainnet **`qorechain-vladi`** (EVM chain ID **9801**, versión **v3.2.3**) el 20 de octubre de 2026 (valores de génesis salvo que una propuesta de gobernanza los haya cambiado; esos casos se indican). Son idénticos en la testnet **`qorechain-diana`** (EVM chain ID **9800**, versión **v3.2.4** desde el 19 de octubre de 2026) salvo donde se indique lo contrario; las diferencias que existen hasta que la mainnet adopte la actualización v3.2.4 (altura 3,742,566) se recogen en [Diferencias hasta la actualización v3.2.4](#testnet-differences). Las duraciones expresadas en bloques se convierten con el tiempo de bloque medido en la mainnet, de unos 3,2 segundos (la testnet produce un bloque aproximadamente cada segundo).
+Los valores mostrados se leyeron en vivo de la mainnet **`qorechain-vladi`** (EVM chain ID **9801**, versión **v3.2.4**, aplicada el 23 de octubre de 2026) el 23 de octubre de 2026 (valores de génesis salvo que una propuesta de gobernanza los haya cambiado; esos casos se indican). Son idénticos en la testnet **`qorechain-diana`** (EVM chain ID **9800**, versión **v3.2.4** desde el 19 de octubre de 2026) salvo donde se indique lo contrario; las diferencias que quedan se recogen en [Diferencias entre testnet y mainnet](#testnet-differences). Las duraciones expresadas en bloques se convierten con el tiempo de bloque medido en la mainnet, de unos 3,2 segundos (la testnet produce un bloque aproximadamente cada segundo).
 :::
 
 ---
@@ -152,7 +152,7 @@ Penalizaciones de salida: 50 % (bloqueo inferior a 30 días), 35 % (30–90 día
 | `schedule`             | 17,5 %, 11 %, 7 %, 7 %, 2 % | Tasas heredadas por año, sin uso en modo fijo     |
 | `enabled`              | `true`                  | Indicador de activación del módulo                    |
 
-El módulo acuña esta emisión en el colector de comisiones hasta alcanzar el tope. La primera época con 86.000 QOR comienza en el bloque 3,672,000. El 20 de octubre de 2026 (época 84) se habían acuñado 105.248.896,21 QOR y quedaban 484.751.103,79 QOR bajo el tope (`GET /qorechain/inflation/v1/epoch_info`). Véase [Tokenomics](/architecture/tokenomics#supply-and-emission).
+El módulo acuña esta emisión en el colector de comisiones hasta alcanzar el tope. La primera época con 86.000 QOR comienza en el bloque 3,672,000. El 23 de octubre de 2026 (época 86) se habían acuñado 105.420.896,21 QOR y quedaban 484.579.103,79 QOR bajo el tope (`GET /qorechain/inflation/v1/epoch_info`). Véase [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ---
 
@@ -349,7 +349,7 @@ Todavía no existen pools ni en la mainnet ni en la testnet, y `MsgPausePool` / 
 
 ## Staking, slashing, gobernanza, comisiones y EVM {#core-modules}
 
-Módulos estándar del Cosmos SDK y de EVM, leídos en vivo el 20 de octubre de 2026 (idénticos en ambas redes salvo que se indique lo contrario; sin cambios desde la lectura del 14 de octubre).
+Módulos estándar del Cosmos SDK y de EVM, leídos en vivo el 23 de octubre de 2026 para las filas de staking, slashing, gobernanza y distribución (las filas de fee-market, EVM, ERC-20 y QoreChain Native se leyeron por última vez el 20 de octubre de 2026); idénticos en ambas redes salvo que se indique lo contrario y sin cambios por la actualización v3.2.4.
 
 | Módulo | Parámetro | Valor |
 | --- | --- | --- |
@@ -394,21 +394,11 @@ Todos los demás tipos de mensaje, incluidos todos los mensajes estándar de ban
 
 ---
 
-## Diferencias hasta la actualización v3.2.4 {#testnet-differences}
+## Diferencias entre testnet y mainnet {#testnet-differences}
 
-La testnet `qorechain-diana` ejecuta v3.2.4 desde la altura 8,337,253 (19 de octubre de 2026). La mainnet ejecuta v3.2.3 hasta la altura 3,742,566 y v3.2.4 desde ese bloque (propuesta de gobernanza 13); a partir de entonces las filas de v3.2.4 de abajo se aplican a ambas redes y solo siguen siendo distintos los valores propios de cada red. A 20 de octubre de 2026 la testnet se diferencia de la mainnet como sigue:
+Ambas redes ejecutan v3.2.4: la testnet `qorechain-diana` desde la altura 8,337,253 (19 de octubre de 2026) y la mainnet `qorechain-vladi` desde la altura 3,742,566 (23 de octubre de 2026, propuesta de gobernanza 13). Por tanto, las novedades de v3.2.4 son las mismas en ambas redes: el módulo opcional de staking con bloqueo temporal `x/stakingtier` (49 módulos en lugar de 48; `GET /qorechain/stakingtier/v1/params`, bloqueo mínimo de 10 QOR, penalización por desbloqueo anticipado del 5 %), un tercer `emission_mode` (`target_apy`, con `target_apy_bps` en `0` en ambas redes), una decimotercera fuente de quema registrada (`staking_tier_penalty`), campos adicionales de reporte del pool de recompensas de nodos ligeros (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`) con un límite de recompensa que comienza con el propio registro del nodo, el indicador `possession_proven` en las cuentas PQC (la prueba de posesión sigue siendo opcional para las claves de cuenta y obligatoria para las claves de validadores del puente), la ventana de desafío de RDK contada en tiempo de bloque y las consultas `protocol_features` y `auth_nonce`. Véase [Staking y delegación](/user-guide/staking-and-delegation#time-locked-staking). A 23 de octubre de 2026 las dos redes se diferencian solo en los valores siguientes.
 
-| Área | Testnet ahora; mainnet desde la altura 3,742,566 |
-| ---- | ------- |
-| Módulos | 49 en lugar de 48: el módulo opcional de staking con bloqueo temporal `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`; bloqueo mínimo de 10 QOR). Véase [Staking y delegación](/user-guide/staking-and-delegation#time-locked-staking). |
-| `x/inflation` | Un tercer `emission_mode`, `target_apy`, con un parámetro `target_apy_bps` que es `0` en la testnet. Qué modo está en vigor es una decisión de gobernanza independiente en cada red. |
-| `x/burn` | Una decimotercera fuente registrada, `staking_tier_penalty`. |
-| Pool de recompensas de `x/lightnode` | Campos de reporte adicionales (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); el límite de recompensa de un nodo comienza con su propio registro. |
-| `x/pqc` | Un indicador `possession_proven` en las cuentas PQC; la prueba de posesión sigue siendo opcional para las claves de cuenta y obligatoria para las claves de validadores del puente. |
-| `x/rdk` | La ventana de desafío optimista se cuenta en tiempo de bloque. |
-| Consultas | Nuevas consultas `protocol_features` y `auth_nonce`. |
-
-Estos valores son propios de la testnet y siguen siendo distintos después de la actualización:
+Estos valores son propios de la testnet:
 
 | Área | Testnet |
 | ---- | ------- |

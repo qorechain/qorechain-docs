@@ -11,7 +11,7 @@ sidebar_position: 5
 
 ### Este mainnet-ul live?
 
-Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 7 iunie 2026 și rulează versiunea v3.2.3 până la înălțimea 3.742.566 și v3.2.4 începând cu acel bloc (propunerea de guvernanță 13); testnet-ul, `qorechain-diana`, rulează v3.2.4 din 19 octombrie 2026. Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
+Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 7 iunie 2026 și rulează versiunea v3.2.4 (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, prin propunerea de guvernanță 13); testnet-ul, `qorechain-diana`, rulează v3.2.4 din 19 octombrie 2026. Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
 
 ### Care sunt chain ID-urile și EVM chain ID-urile?
 
@@ -51,7 +51,7 @@ QoreChain folosește o schemă hibridă post-cuantică care combină **secp256k1
 
 ### Câți validatori are mainnet-ul?
 
-Opt validatori bonded la 20 octombrie 2026, cu aproximativ 55,1 milioane de QOR bonded (setul activ poate cuprinde până la 100). Testnet-ul are trei. Citiți setul live la `GET /cosmos/staking/v1beta1/validators` pe `https://api.qore.host`.
+Opt validatori bonded la 23 octombrie 2026, cu aproximativ 55,6 milioane de QOR bonded (setul activ poate cuprinde până la 100). Testnet-ul are trei. Citiți setul live la `GET /cosmos/staking/v1beta1/validators` pe `https://api.qore.host`.
 
 ### Ce timp de bloc ar trebui să mă aștept?
 

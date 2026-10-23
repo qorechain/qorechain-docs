@@ -55,7 +55,7 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. QoreChain Konsensüs Motoruna (`x/rlconsensus` modülü aracılığıyla) gömülü pekiştirmeli öğrenme optimizasyon katmanı. PRISM, ağ metriklerini gözlemler ve devre kesici güvenlik kontrolleri altında deterministik konsensüs parametresi ayarlamaları önermek üzere tasarlanmıştır; bugün gözlem modunda çalışır. Bkz. [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine).
 
-**Proof of possession (PoP) (sahiplik kanıtı)** — Bir kuantum sonrası anahtarın kendi kayıt ayrıntıları üzerinde attığı ve kaydeden tarafın özel anahtarı elinde tuttuğunu kanıtlayan imza. v3.2.3'ten beri hesap anahtarı kaydında isteğe bağlıdır (`tx pqc register-key-v2 ... --pqc-key <name>`); v3.2.4'ten itibaren köprü doğrulayıcı anahtarları için zorunludur (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 numaralı yükseklikten itibaren).
+**Proof of possession (PoP) (sahiplik kanıtı)** — Bir kuantum sonrası anahtarın kendi kayıt ayrıntıları üzerinde attığı ve kaydeden tarafın özel anahtarı elinde tuttuğunu kanıtlayan imza. v3.2.3'ten beri hesap anahtarı kaydında isteğe bağlıdır (`tx pqc register-key-v2 ... --pqc-key <name>`); v3.2.4'ten itibaren köprü doğrulayıcı anahtarları için zorunludur (test ağında 19 Ekim 2026'dan beri ve ana ağda 23 Ekim 2026'dan beri).
 
 **Protocol feature (protokol özelliği)** — Bir sürümün yükseltme işleyicisinin her düğümde tek bir blok yüksekliğinde açtığı davranış anahtarı (örneğin `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`); böylece bu yüksekliğin altındaki geçmiş değişmeden yeniden oynatılır.
 
@@ -81,7 +81,7 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **STARK** — Scalable Transparent Argument of Knowledge. Güvenilir kurulum gerektirmeyen ve kuantuma dayanıklı bir sıfır bilgi kanıt sistemi. RDK'da zk-rollup mutabakatı için alternatif bir kanıt sistemi olarak mevcuttur.
 
-**Stranded staker share / reward-pool reserve (sıkışmış staker payı / ödül havuzu rezervi)** — v3.2.0 yükseltmesinde kaydedilen ve yalnızca bir yönetişim oyuyla hareket eden tutarlar; yönetişim bunları Ekim 2026'da serbest bıraktı (sıkışmış payın düzeltilmiş bir kalanı v3.2.3'ten sonra önerildi). Bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+**Stranded staker share / reward-pool reserve (sıkışmış staker payı / ödül havuzu rezervi)** — v3.2.0 yükseltmesinde kaydedilen ve yalnızca bir yönetişim oyuyla hareket eden tutarlar; yönetişim bunları Ekim 2026'da serbest bıraktı (sıkışmış payın v3.2.3'te yeniden hesaplanan düzeltilmiş kalanı, öneri 12 ile serbest bırakıldı). Bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 **SVM** — Solana Virtual Machine (Solana Sanal Makinesi). BPF programları için yüksek performanslı bir yürütme ortamı. QoreChain, SVM'yi QoreChain EVM Motoru ve QoreChain Native ile birlikte desteklenen üç çalışma zamanından biri olarak entegre eder.
 
@@ -89,7 +89,7 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **tIBE** — Threshold Identity-Based Encryption (Eşik Kimlik Tabanlı Şifreleme). Bir mesajın yalnızca bir eşik sayıda tarafın işbirliği yapması durumunda çözülebildiği bir kriptografik şema. FairBlock modülü tarafından, MEV çıkarımını önlemek için işlem içeriklerini blok sonlandırmaya kadar şifrelemek üzere kullanılır.
 
-**Time-locked staking (zaman kilitli stake)** — Bir delegasyonun bir kısmının sabit bir süreyle taahhüt edilmesi; `x/stakingtier` modülü tarafından sağlanan isteğe bağlı bir özelliktir. v3.2.4'ün parçasıdır: test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 numaralı yükseklikten itibaren. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
+**Time-locked staking (zaman kilitli stake)** — Bir delegasyonun bir kısmının sabit bir süreyle taahhüt edilmesi; `x/stakingtier` modülü tarafından sağlanan isteğe bağlı bir özelliktir. v3.2.4'ün parçasıdır: test ağında 19 Ekim 2026'dan beri ve ana ağda 23 Ekim 2026'dan beri. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
 
 **uqor** — QOR tokeninin temel denomu. 1 QOR = 1.000.000 uqor (10^6). Tüm zincir üstü miktarlar, ücretler ve stake değerleri uqor cinsindendir.
 

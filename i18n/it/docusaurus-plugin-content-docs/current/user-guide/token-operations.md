@@ -10,7 +10,7 @@ sidebar_position: 1
 Questa guida illustra il token QOR, come inviare e ricevere token, interrogare i saldi e comprendere il modello di distribuzione delle commissioni su QoreChain.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.3** fino all'altezza 3.742.566 e la **v3.2.4** da quel blocco in poi; la testnet esegue la **v3.2.4** dal 19 ottobre 2026 — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connecting to Mainnet** quando effettui transazioni sulla mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.4** dal 23 ottobre 2026; la testnet esegue la **v3.2.4** dal 19 ottobre 2026 — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connecting to Mainnet** quando effettui transazioni sulla mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -98,7 +98,7 @@ La ripartizione si applica a tutto ciò che entra nel fee collector, che contien
 
 ## Canali di Burn
 
-Il modulo di burn di QoreChain definisce 12 sorgenti di burn. I QOR bruciati attraverso una qualsiasi di esse vengono rimossi permanentemente dalla circolazione. Sulla mainnet finora solo i canali delle gas fee e delle transazioni fallite hanno registrato burn; gli altri sono definiti ma non hanno registrato nulla. Dalla v3.2.4 (testnet dal 19 ottobre 2026; mainnet dall'altezza 3.742.566) esiste una tredicesima sorgente, `staking_tier_penalty`, per il modulo opzionale di staking con blocco temporale.
+Il modulo di burn di QoreChain definisce 12 sorgenti di burn. I QOR bruciati attraverso una qualsiasi di esse vengono rimossi permanentemente dalla circolazione. Sulla mainnet finora solo i canali delle gas fee e delle transazioni fallite hanno registrato burn; gli altri sono definiti ma non hanno registrato nulla. Dalla v3.2.4 (testnet dal 19 ottobre 2026; mainnet dal 23 ottobre 2026) esiste una tredicesima sorgente, `staking_tier_penalty`, per il modulo opzionale di staking con blocco temporale.
 
 | Canale                | Descrizione                                                         |
 | --------------------- | -------------------------------------------------------------------- |

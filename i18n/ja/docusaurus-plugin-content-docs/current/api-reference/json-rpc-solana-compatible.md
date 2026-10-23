@@ -49,7 +49,7 @@ JSON-RPC サーバーは **`qorechaind start` によって起動され**、**デ
 | `getTokenAccountsByOwner`           | `owner`、フィルター          | 所有者のトークンアカウントを返します                            |
 | `getTokenAccountsByDelegate`        | `delegate`、フィルター       | デリゲートのトークンアカウントを返します                          |
 
-`getGenesisHash` や `getEpochInfo` など、この一覧にないメソッドは `-32601 method not found` を返します(`https://svm.qore.host` と `https://svm-testnet.qore.host` に対して確認、2026年10月20日)。v3.2.2 以降、RPC および gRPC クエリの base58 アドレスは正規の形式で、かつ長さが制限内でなければならず、不正な形式のものは拒否されます。`getTransaction` は受け付けられますが、現在は `result` フィールドのないエンベロープを返すため、これに依存しないでください。`getSlot` が報告するスロットは、チェーンのブロック高に連動します。
+`getGenesisHash` や `getEpochInfo` など、この一覧にないメソッドは `-32601 method not found` を返します(`https://svm.qore.host` と `https://svm-testnet.qore.host` に対して確認、2026年10月23日)。v3.2.2 以降、RPC および gRPC クエリの base58 アドレスは正規の形式で、かつ長さが制限内でなければならず、不正な形式のものは拒否されます。`getTransaction` は受け付けられますが、現在は `result` フィールドのないエンベロープを返すため、これに依存しないでください。`getSlot` が報告するスロットは、チェーンのブロック高に連動します。
 
 ---
 

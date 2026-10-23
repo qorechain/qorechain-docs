@@ -18,7 +18,7 @@ che agli strumenti:
 - un runtime **a tripla VM** con chiamate cross-VM.
 
 :::caution Fase iniziale: leggi la colonna Stato
-Nessun rollup è ancora stato creato su nessuna delle due reti (verificato il 21
+Nessun rollup è ancora stato creato su nessuna delle due reti (verificato il 23
 ottobre 2026). La tabella qui sotto indica cosa funziona oggi; ciò che i client
 0.6.0 pubblicati hanno cambiato e i limiti che restano sono raccolti in [RDK 0.6.0: modifiche e limiti](/rollups/deploying-a-rollup#rdk-050-limits). Se ti serve solo un generico rollup optimistic/zk,
 qualunque kit va bene; le funzionalità descritte qui sono ciò

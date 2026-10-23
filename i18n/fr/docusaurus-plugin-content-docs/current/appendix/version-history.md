@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Historique des versions
 
-Historique public des versions de QoreChain. Le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en production depuis le 7 juin 2026) exécute **v3.2.3** (appliquée par la gouvernance à la hauteur 3 662 051 le 20 octobre 2026) jusqu'à la hauteur **3 742 566**, puis **v3.2.4** à partir de ce bloc (proposition de gouvernance 13 du mainnet). Le testnet **`qorechain-diana`** (EVM chain ID **9800**) exécute **v3.2.4** depuis la hauteur 8 337 253 (19 octobre 2026).
+Historique public des versions de QoreChain. Le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en production depuis le 7 juin 2026) exécute **v3.2.4** (appliquée par la proposition de gouvernance 13 à la hauteur 3 742 566 le 23 octobre 2026 ; la version précédente, v3.2.3, a été appliquée à la hauteur 3 662 051 le 20 octobre 2026). Le testnet **`qorechain-diana`** (EVM chain ID **9800**) exécute **v3.2.4** depuis la hauteur 8 337 253 (19 octobre 2026).
 
 :::note
 Les entrées ci-dessous sont des résumés de capacités de haut niveau. Les entrées `v1.x` antérieures sont conservées comme trace historique de la lignée de versions testnet qui a précédé le mainnet. Le manifeste de version ([Se connecter au mainnet](/getting-started/connecting-to-mainnet)) est promu séparément du tag et peut avoir un certain décalage par rapport à celui-ci — vérifiez-le directement pour savoir ce qu'une nouvelle installation télécharge réellement.
@@ -15,7 +15,7 @@ Les entrées ci-dessous sont des résumés de capacités de haut niveau. Les ent
 
 ## Chronologie de gouvernance du mainnet {#governance-timeline}
 
-Propositions qui ont modifié, ou programment des modifications du, mainnet en production depuis le 14 octobre 2026. Les sept sont des propositions accélérées (période de vote d'un jour) ; les propositions 7 à 11 ont été adoptées avec tout le stake bonded votant en faveur. La liste complète se trouve à `GET /cosmos/gov/v1/proposals` sur `https://api.qore.host`.
+Propositions qui ont modifié le mainnet en production depuis le 14 octobre 2026. Les sept sont des propositions accélérées (période de vote d'un jour) ; les propositions 7 à 13 ont été adoptées avec tout le stake bonded votant en faveur. La liste complète se trouve à `GET /cosmos/gov/v1/proposals` sur `https://api.qore.host`.
 
 | Proposition | Ce qu'elle fait | Vote | Résultat |
 | --- | --- | --- | --- |
@@ -24,28 +24,28 @@ Propositions qui ont modifié, ou programment des modifications du, mainnet en p
 | 9 | Libère la part des stakers bloquée (6 693 045,921330 QOR) vers la fondation | 18–19 octobre 2026 (se termine à 19:15 UTC) | Adoptée |
 | 10 | Émission : fixe l'émission fixe à 86 000 QOR par époque et le plafond cumulatif à 590 000 000 QOR (durée d'époque inchangée ; la première époque à 86 000 QOR commence au bloc 3 672 000) | 18–19 octobre 2026 (se termine à 19:15 UTC) | Adoptée |
 | 11 | Applique v3.2.3 à la hauteur 3 662 051 | 18–19 octobre 2026 (se termine à 19:15 UTC) | Adoptée ; appliquée le 20 octobre 2026 |
-| 12 | Libère la part des stakers bloquée corrigée (3 807 496,785528 QOR, recalculée à la hauteur de v3.2.3) vers la fondation | 20 octobre 2026 à 20:01 UTC jusqu'au 21 octobre 2026 à 20:01 UTC | En période de vote au moment de la rédaction |
-| 13 | Mise à niveau coordonnée vers v3.2.4 à la hauteur 3 742 566 (vers le 23 octobre 2026 avec des blocs de 3,2 secondes) : staking à verrouillage temporel facultatif, borne de récompense des light nodes comptée depuis l'enregistrement, indicateur de possession pour les clés post-quantiques, preuve de possession pour les validateurs de pont, fenêtre de contestation du RDK exprimée en temps de bloc, et durcissement local au nœud | 20 octobre 2026 à 21:18 UTC jusqu'au 21 octobre 2026 à 21:18 UTC | En période de vote au moment de la rédaction, avec tous les votes exprimés jusqu'ici en faveur ; consultez `GET /cosmos/gov/v1/proposals/13` pour le résultat final |
+| 12 | Libère la part des stakers bloquée corrigée (3 807 496,785528 QOR, recalculée à la hauteur de v3.2.3) vers la fondation | 20 octobre 2026 à 20:01 UTC jusqu'au 21 octobre 2026 à 20:01 UTC | Adoptée |
+| 13 | Mise à niveau coordonnée vers v3.2.4 à la hauteur 3 742 566 : staking à verrouillage temporel facultatif, borne de récompense des light nodes comptée depuis l'enregistrement, indicateur de possession pour les clés post-quantiques, preuve de possession pour les validateurs de pont, fenêtre de contestation du RDK exprimée en temps de bloc, et durcissement local au nœud | 20 octobre 2026 à 21:18 UTC jusqu'au 21 octobre 2026 à 21:18 UTC | Adoptée ; appliquée le 23 octobre 2026 à la hauteur 3 742 566 |
 
 Voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve) pour la signification de ces libérations et [Gouvernance](/user-guide/governance) pour savoir comment voter.
 
 ---
 
-## v3.2.4 — Fenêtre d'enregistrement des light nodes et staking à verrouillage temporel facultatif (programmée pour le mainnet)
+## v3.2.4 — Fenêtre d'enregistrement des light nodes et staking à verrouillage temporel facultatif (mainnet)
 
-**Axe de la version :** La prochaine version du mainnet programmée. Elle s'exécute sur le testnet `qorechain-diana` depuis que la proposition de gouvernance 13 du testnet l'a appliquée à la hauteur **8 337 253** (19 octobre 2026 ; le manifeste du testnet fixe `minCompatible` à 3.2.4). Sur le mainnet, la proposition de gouvernance 13 la programme à la hauteur **3 742 566** : les nœuds restent sur v3.2.3 jusqu'à ce bloc, s'y arrêtent et redémarrent sur v3.2.4, et la signature des transactions est inchangée. Chaque fonctionnalité ci-dessous est donc active dès maintenant sur le testnet et s'applique à `qorechain-vladi` à partir de la hauteur 3 742 566 (une fois la proposition adoptée).
+**Axe de la version :** La version actuelle sur les deux réseaux. Elle s'est exécutée d'abord sur le testnet `qorechain-diana` : la proposition de gouvernance 13 du testnet l'a appliquée à la hauteur **8 337 253** (19 octobre 2026). Sur le mainnet, la proposition de gouvernance 13 l'a appliquée à la hauteur **3 742 566** le 23 octobre 2026 : les nœuds sont restés sur v3.2.3 jusqu'à ce bloc, s'y sont arrêtés et ont redémarré sur v3.2.4, et la signature des transactions est inchangée. Les manifestes du mainnet et du testnet fixent tous deux `minCompatible` à 3.2.4 : un nœud qui rejoint l'un ou l'autre réseau a donc désormais besoin de v3.2.4. Chaque fonctionnalité ci-dessous est en production sur les deux réseaux.
 
 * **Fenêtre d'enregistrement des light nodes.** La borne de récompense d'un light node commence au plus tardif du règlement précédent et de l'enregistrement du nœud lui-même, de sorte qu'un nouvel enregistrement ne perçoit pas un montant accumulé avant son arrivée.
 * **Staking à verrouillage temporel facultatif (`x/stakingtier`, un nouveau module).** Un délégateur peut verrouiller une partie d'une délégation pour 3, 6 ou 12 mois ; la partie verrouillée ne peut être ni retirée de la délégation ni redéléguée, et un déverrouillage anticipé est autorisé moyennant une pénalité qui est brûlée. Le verrouillage minimal est de 10 QOR. Voir [Staking et délégation](/user-guide/staking-and-delegation#time-locked-staking).
-* **Nouveau mode d'émission.** `x/inflation` gagne un troisième mode d'émission, `target_apy`, avec un paramètre `target_apy_bps` (`0` sur le testnet). Modifier le mode d'émission d'un réseau est une décision de gouvernance distincte ; le mode en vigueur est affiché à `/qorechain/inflation/v1/params`.
+* **Nouveau mode d'émission.** `x/inflation` gagne un troisième mode d'émission, `target_apy`, avec un paramètre `target_apy_bps` (`0` sur les deux réseaux ; le mode en vigueur sur le mainnet est toujours `fixed`). Modifier le mode d'émission d'un réseau est une décision de gouvernance distincte ; le mode en vigueur est affiché à `/qorechain/inflation/v1/params`.
 * **Indicateur `possession_proven`** sur les enregistrements de compte post-quantiques ; la preuve de possession des clés de compte reste facultative.
 * **Preuve de possession des validateurs de pont.** L'enregistrement d'un validateur de pont exige une preuve de possession et une clé qu'aucun autre validateur de pont n'utilise.
 * **Fenêtre de contestation RDK en temps de bloc.** La fenêtre de contestation optimiste est comptée en temps de bloc plutôt qu'en un nombre de blocs qui en est dérivé.
 * **Durcissement local au nœud** (bornes des requêtes JSON-RPC, budget des chunks de state-sync, pré-vérifications d'enregistrement de clé) et nouvelles requêtes (`protocol_features`, `auth_nonce`, et les champs supplémentaires du pool de récompenses des light nodes tels que `monthly_cap_active`).
 
-## v3.2.3 — Deuxième lot de sécurité d'octobre (mainnet)
+## v3.2.3 — Deuxième lot de sécurité d'octobre
 
-**Axe de la version :** Le deuxième lot de durcissement d'octobre, appliqué sur le mainnet par la proposition de gouvernance 11 à la hauteur **3 662 051** (20 octobre 2026, 16:01 UTC) ; appliqué plus tôt sur le testnet à la hauteur 8 003 746 (15 octobre). Le manifeste du mainnet fixe `minCompatible` à 3.2.3 : un nœud qui rejoint le mainnet a désormais besoin de v3.2.3. La mise à niveau active 52 fonctionnalités de protocole à cette hauteur ; le format de signature, les adresses, les décimales, les mémos et les frais sont inchangés.
+**Axe de la version :** Le deuxième lot de durcissement d'octobre, appliqué sur le mainnet par la proposition de gouvernance 11 à la hauteur **3 662 051** (20 octobre 2026, 16:01 UTC) ; appliqué plus tôt sur le testnet à la hauteur 8 003 746 (15 octobre). La mise à niveau active 52 fonctionnalités de protocole à cette hauteur ; le format de signature, les adresses, les décimales, les mémos et les frais sont inchangés.
 
 * **Intégrité des clés post-quantiques.** Les clés faibles, dégénérées et déjà utilisées sont refusées à l'enregistrement ; la maintenance des clés hybrides est renforcée ; les messages de gestion de clés post-quantiques ne peuvent plus passer par authz ; un compte ne peut pas retirer son dernier algorithme de signature. L'enregistrement (`MsgRegisterPQCKeyV2`, `tx pqc register-key-v2 ... --pqc-key <name>`) accepte une **preuve de possession facultative**, vérifiée lorsqu'elle est présente.
 * **Fenêtres EVM à portée restreinte.** `MsgOpenEVMWindow` accepte les champs facultatifs `native_only` (transferts de QOR natif simples uniquement) et `allowed_targets` (jusqu'à 16 destinataires) qui restreignent une fenêtre. Voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window).
@@ -73,7 +73,7 @@ Voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve) pour la signifi
 * Met à jour la dépendance du moteur de consensus ; maintenez l'horloge système synchronisée par NTP (un décalage de plus de 60 secondes arrête le nœud).
 * Recommandée pour tous les opérateurs ; `minCompatible` dans le manifeste mainnet valait alors 3.2.0.
 
-v3.2.1 a été appliquée nœud par nœud et n'a pas de hauteur de mise à niveau ; elle a été remplacée sur le mainnet par v3.2.2 (16 octobre) puis v3.2.3 (20 octobre).
+v3.2.1 a été appliquée nœud par nœud et n'a pas de hauteur de mise à niveau ; elle a été remplacée sur le mainnet par v3.2.2 (16 octobre), v3.2.3 (20 octobre) et v3.2.4 (23 octobre).
 
 ## v3.2.0 — Fenêtre d'autorisation EVM et correctifs de comptabilité
 

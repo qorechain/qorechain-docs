@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **3.742.566** yüksekliğine kadar **v3.2.3** (yönetişimle 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı) sürümünü, o bloktan itibaren ise **v3.2.4** sürümünü çalıştırır (ana ağ yönetişim önerisi 13). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) 8.337.253 yüksekliğinden (19 Ekim 2026) beri **v3.2.4** çalıştırır.
+QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **v3.2.4** sürümünü çalıştırır (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı; önceki sürüm v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) 8.337.253 yüksekliğinden (19 Ekim 2026) beri **v3.2.4** çalıştırır.
 
 :::note
 Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır. Yayın manifesti ([Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet)) etiketlemeden ayrı olarak yükseltilir ve bir etiketin gerisinde bir süre kalabilir — taze bir kurulumun gerçekte ne indirdiğini görmek için doğrudan kontrol edin.
@@ -15,7 +15,7 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 
 ## Ana ağ yönetişim zaman çizelgesi {#governance-timeline}
 
-14 Ekim 2026'dan bu yana çalışan ana ağı değiştiren veya değişiklikleri zamanlayan öneriler. Yedisi de hızlandırılmış önerilerdir (bir günlük oylama süresi); 7 ila 11 numaralı öneriler, oy kullanan tüm bonded stake'in lehte oyuyla kabul edildi. Tam liste `https://api.qore.host` üzerinde `GET /cosmos/gov/v1/proposals` adresindedir.
+14 Ekim 2026'dan bu yana çalışan ana ağı değiştiren öneriler. Yedisi de hızlandırılmış önerilerdir (bir günlük oylama süresi); 7 ila 13 numaralı öneriler, oy kullanan tüm bonded stake'in lehte oyuyla kabul edildi. Tam liste `https://api.qore.host` üzerinde `GET /cosmos/gov/v1/proposals` adresindedir.
 
 | Öneri | Ne yapar | Oylama | Sonuç |
 | --- | --- | --- | --- |
@@ -24,28 +24,28 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 | 9 | Sahipsiz kalmış stake sahibi payını (6.693.045,921330 QOR) vakfa aktarır | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi |
 | 10 | Emisyon: sabit emisyonu dönem başına 86.000 QOR'a ve kümülatif tavanı 590.000.000 QOR'a ayarlar (dönem uzunluğu değişmez; 86.000 QOR'luk ilk dönem 3.672.000 numaralı blokta başlar) | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi |
 | 11 | v3.2.3'ü 3.662.051 yüksekliğinde uygular | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi; 20 Ekim 2026'da uygulandı |
-| 12 | Düzeltilmiş sahipsiz stake sahibi payını (3.807.496,785528 QOR, v3.2.3 yüksekliğinde yeniden hesaplandı) vakfa aktarır | 20 Ekim 2026 20:01 UTC ile 21 Ekim 2026 20:01 UTC arası | Bu yazıldığı sırada oylama döneminde |
-| 13 | v3.2.4'e 3.742.566 yüksekliğinde koordineli yükseltme (3,2 saniyelik bloklarla yaklaşık 23 Ekim 2026): isteğe bağlı zaman kilitli stake, kayıttan itibaren sayılan ışık düğümü ödül sınırı, kuantum-sonrası anahtarlar için bir sahiplik bayrağı, köprü doğrulayıcıları için sahiplik kanıtı, blok süresi cinsinden RDK itiraz penceresi ve düğüm-yerel sertleştirme | 20 Ekim 2026 21:18 UTC ile 21 Ekim 2026 21:18 UTC arası | Bu yazıldığı sırada oylama döneminde; şimdiye kadar kullanılan tüm oylar lehte; nihai sonuç için `GET /cosmos/gov/v1/proposals/13` adresine bakın |
+| 12 | Düzeltilmiş sahipsiz stake sahibi payını (3.807.496,785528 QOR, v3.2.3 yüksekliğinde yeniden hesaplandı) vakfa aktarır | 20 Ekim 2026 20:01 UTC ile 21 Ekim 2026 20:01 UTC arası | Kabul edildi |
+| 13 | v3.2.4'e 3.742.566 yüksekliğinde koordineli yükseltme: isteğe bağlı zaman kilitli stake, kayıttan itibaren sayılan ışık düğümü ödül sınırı, kuantum-sonrası anahtarlar için bir sahiplik bayrağı, köprü doğrulayıcıları için sahiplik kanıtı, blok süresi cinsinden RDK itiraz penceresi ve düğüm-yerel sertleştirme | 20 Ekim 2026 21:18 UTC ile 21 Ekim 2026 21:18 UTC arası | Kabul edildi; 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı |
 
 Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve); nasıl oy verileceği için bkz. [Yönetişim](/user-guide/governance).
 
 ---
 
-## v3.2.4 — Işık Düğümü Kayıt Penceresi ve İsteğe Bağlı Zaman Kilitli Stake (ana ağ için zamanlandı)
+## v3.2.4 — Işık Düğümü Kayıt Penceresi ve İsteğe Bağlı Zaman Kilitli Stake (ana ağ)
 
-**Sürüm odağı:** Zamanlanmış bir sonraki ana ağ sürümü. Test ağı yönetişim önerisi 13 bunu **8.337.253** yüksekliğinde (19 Ekim 2026) uygulayalı beri `qorechain-diana` test ağında çalışıyor (test ağı manifestosu `minCompatible` değerini 3.2.4 olarak ayarlar). Ana ağda yönetişim önerisi 13 bunu **3.742.566** yüksekliğine zamanlar: düğümler o bloğa kadar v3.2.3'te kalır, orada durur ve v3.2.4 ile yeniden başlar; işlem imzalama değişmez. Dolayısıyla aşağıdaki her özellik şu anda test ağında canlıdır ve (öneri kabul edildiğinde) 3.742.566 yüksekliğinden itibaren `qorechain-vladi` için geçerli olur.
+**Sürüm odağı:** Her iki ağdaki güncel sürüm. Önce `qorechain-diana` test ağında çalıştı: test ağı yönetişim önerisi 13 bunu **8.337.253** yüksekliğinde (19 Ekim 2026) uyguladı. Ana ağda yönetişim önerisi 13 bunu 23 Ekim 2026'da **3.742.566** yüksekliğinde uyguladı: düğümler o bloğa kadar v3.2.3'te kaldı, orada durdu ve v3.2.4 ile yeniden başladı; işlem imzalama değişmez. Ana ağ ve test ağı manifestoları `minCompatible` değerini 3.2.4 olarak ayarlar; dolayısıyla artık her iki ağa katılan bir düğümün v3.2.4'e ihtiyacı vardır. Aşağıdaki her özellik her iki ağda da canlıdır.
 
 * **Işık düğümü kayıt penceresi.** Bir ışık düğümünün ödül sınırı, önceki yerleşim ile düğümün kendi kaydından hangisi daha geçse oradan başlar; böylece yeni bir kayıt, katılmasından önceki birikmiş bir tutarı toplamaz.
 * **İsteğe bağlı zaman kilitli stake (`x/stakingtier`, yeni bir modül).** Bir delegatör, delegasyonunun bir kısmını 3, 6 veya 12 ay için kilitleyebilir; kilitli kısım delegasyondan çıkarılamaz veya yeniden delege edilemez, erken kilit açmaya ise yakılan bir ceza ile izin verilir. Asgari kilit 10 QOR'dur. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
-* **Yeni emisyon modu.** `x/inflation`, `target_apy_bps` parametresiyle (test ağında `0`) üçüncü bir emisyon modu olan `target_apy`'yi kazanır. Bir ağın emisyon modunu değiştirmek ayrı bir yönetişim kararıdır; yürürlükteki mod `/qorechain/inflation/v1/params` adresinde gösterilir.
+* **Yeni emisyon modu.** `x/inflation`, `target_apy_bps` parametresiyle (her iki ağda `0`; ana ağda yürürlükteki mod hâlâ `fixed`) üçüncü bir emisyon modu olan `target_apy`'yi kazanır. Bir ağın emisyon modunu değiştirmek ayrı bir yönetişim kararıdır; yürürlükteki mod `/qorechain/inflation/v1/params` adresinde gösterilir.
 * Kuantum-sonrası hesap kayıtlarında **`possession_proven` bayrağı**; hesap anahtarları için sahiplik kanıtı isteğe bağlı kalır.
 * **Köprü doğrulayıcısı sahiplik kanıtı.** Bir köprü doğrulayıcısını kaydetmek, bir sahiplik kanıtı ve başka hiçbir köprü doğrulayıcısının kullanmadığı bir anahtar gerektirir.
 * **Blok süresi cinsinden RDK itiraz penceresi.** İyimser itiraz penceresi, ondan türetilen bir blok sayısı yerine blok süresi cinsinden sayılır.
 * **Düğüm-yerel sertleştirme** (JSON-RPC istek sınırları, durum-senkronizasyonu parça bütçesi, anahtar kaydı ön denetimleri) ve yeni sorgular (`protocol_features`, `auth_nonce` ve `monthly_cap_active` gibi ek ışık düğümü ödül havuzu alanları).
 
-## v3.2.3 — İkinci Ekim Güvenlik Paketi (ana ağ)
+## v3.2.3 — İkinci Ekim Güvenlik Paketi
 
-**Sürüm odağı:** İkinci Ekim sertleştirme paketi; ana ağda yönetişim önerisi 11 ile **3.662.051** yüksekliğinde (20 Ekim 2026, 16:01 UTC) uygulandı; test ağında daha önce 8.003.746 yüksekliğinde (15 Ekim) uygulanmıştı. Ana ağ manifestosu `minCompatible` değerini 3.2.3 olarak ayarlar: ana ağa katılan bir düğümün artık v3.2.3'e ihtiyacı vardır. Yükseltme, o yükseklikte 52 protokol özelliğini açar; imza biçimi, adresler, ondalık basamaklar, memolar ve ücretler değişmez.
+**Sürüm odağı:** İkinci Ekim sertleştirme paketi; ana ağda yönetişim önerisi 11 ile **3.662.051** yüksekliğinde (20 Ekim 2026, 16:01 UTC) uygulandı; test ağında daha önce 8.003.746 yüksekliğinde (15 Ekim) uygulanmıştı. Yükseltme, o yükseklikte 52 protokol özelliğini açar; imza biçimi, adresler, ondalık basamaklar, memolar ve ücretler değişmez.
 
 * **Kuantum-sonrası anahtar bütünlüğü.** Zayıf, dejenere ve daha önce kullanılmış anahtarlar kayıtta reddedilir; hibrit anahtar bakımı sıkılaştırılır; kuantum-sonrası anahtar yönetimi mesajları artık authz üzerinden çalıştırılamaz; bir hesap son imzalama algoritmasını kaldıramaz. Kayıt (`MsgRegisterPQCKeyV2`, `tx pqc register-key-v2 ... --pqc-key <name>`), varsa doğrulanan **isteğe bağlı bir sahiplik kanıtı** kabul eder.
 * **Kapsamlı EVM pencereleri.** `MsgOpenEVMWindow`, bir pencereyi daraltan isteğe bağlı `native_only` (yalnızca düz yerel QOR transferleri) ve `allowed_targets` (en fazla 16 alıcı) alanlarını alır. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
@@ -73,7 +73,7 @@ Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics
 * Konsensüs motoru bağımlılığını günceller; sistem saatini NTP ile senkronize tutun (60 saniyeden fazla sapma düğümü durdurur).
 * Her operatör için önerilir; ana ağ manifestosundaki `minCompatible` değeri o sırada 3.2.0'dı.
 
-v3.2.1 düğüm düğüm uygulandı ve yükseltme yüksekliği yoktur; ana ağda v3.2.2 (16 Ekim) ve v3.2.3 (20 Ekim) tarafından geçersiz kılındı.
+v3.2.1 düğüm düğüm uygulandı ve yükseltme yüksekliği yoktur; ana ağda v3.2.2 (16 Ekim), v3.2.3 (20 Ekim) ve v3.2.4 (23 Ekim) tarafından geçersiz kılındı.
 
 ## v3.2.0 — EVM Yetkilendirme Penceresi ve Muhasebe Düzeltmeleri
 

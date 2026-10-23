@@ -23,7 +23,7 @@ Köprü modülü mainnet ve testnet üzerinde dağıtılmıştır, ancak **hiçb
 | Köprü işlemleri | 0 | 0 |
 | IBC kanalları / istemcileri | 0 / 0 | 0 / 0 |
 
-(20 Ekim 2026'da mainnet v3.2.3 ve testnet v3.2.4 üzerinde kontrol edildi. Canlı değerleri `qorechaind query bridge chains` ve `qorechaind query bridge validators` ile ya da REST üzerinden `/qorechain/bridge/v1/chains` ve `/qorechain/bridge/v1/validators` adreslerinden okuyun.) Modül yapılandırması her iki ağda aynıdır: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 ve `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Modülün kullanacağı IBC yığını ibc-go v10.7'dir (v3.2.2'den beri), ancak henüz hiçbir istemci veya kanal oluşturulmamıştır.
+(23 Ekim 2026'da mainnet ve testnet üzerinde, ikisi de v3.2.4, kontrol edildi. Canlı değerleri `qorechaind query bridge chains` ve `qorechaind query bridge validators` ile ya da REST üzerinden `/qorechain/bridge/v1/chains` ve `/qorechain/bridge/v1/validators` adreslerinden okuyun.) Modül yapılandırması her iki ağda aynıdır: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 ve `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Modülün kullanacağı IBC yığını ibc-go v10.7'dir (v3.2.2'den beri), ancak henüz hiçbir istemci veya kanal oluşturulmamıştır.
 
 ## Bağlantıya Genel Bakış
 
@@ -193,7 +193,7 @@ Tüm QCB köprü işlemleri, kayıtlı köprü doğrulayıcılarından Dilithium
 * Desteklenen zincirlerin listesi
 * Bir itibar puanı (`x/reputation` tarafından sürdürülür)
 
-v3.2.2'den beri modül, sıfır tutarları ve kendi yapılandırmasını her yolda tutarlı biçimde doğrular. **v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; mainnet'te 3.742.566 yüksekliğinden itibaren):** bir köprü doğrulayıcısını kaydetmek ayrıca Dilithium-5 anahtarının sahiplik kanıtını gerektirir (PQC anahtar kaydıyla aynı `proof_of_possession` biçimi; bkz. [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security#proof-of-possession)) ve başka bir köprü doğrulayıcısının zaten kullandığı bir anahtarı reddeder. Bu yüksekliğe kadar çalışan mainnet v3.2.3'te böyle bir kontrol yoktur ve hiçbir ağda kayıtlı köprü doğrulayıcısı bulunmamaktadır.
+v3.2.2'den beri modül, sıfır tutarları ve kendi yapılandırmasını her yolda tutarlı biçimde doğrular. **v3.2.4'ten itibaren (mainnet'te 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri):** bir köprü doğrulayıcısını kaydetmek ayrıca Dilithium-5 anahtarının sahiplik kanıtını gerektirir (PQC anahtar kaydıyla aynı `proof_of_possession` biçimi; bkz. [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security#proof-of-possession)) ve başka bir köprü doğrulayıcısının zaten kullandığı bir anahtarı reddeder. Önceki sürümlerde böyle bir kontrol yoktur ve hiçbir ağda kayıtlı köprü doğrulayıcısı bulunmamaktadır.
 
 ### Devre Kesiciler (Circuit Breakers)
 

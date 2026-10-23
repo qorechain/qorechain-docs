@@ -39,14 +39,14 @@ I builder ibridi accettano un'opzione `signBytesVersion` (`"auto"` | `"v1"` | `"
 interroga la rete e quindi richiede l'endpoint REST (`rest`) su
 `qorechain-vladi` / `qorechain-diana`: solleva un errore invece di tirare a indovinare. Vedi
 [Quale forma di sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-La forma non è cambiata nella chain v3.2.3 né nella v3.2.4 (la testnet dal 19 ottobre 2026, la mainnet dall'altezza 3.742.566): `"auto"`
+La forma non è cambiata nella chain v3.2.3 né nella v3.2.4 (la v3.2.4 gira sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026): `"auto"`
 si risolve in v2 su entrambe le reti.
 :::
 
 ## Cosa aggiunge la 0.9.0 {#whats-new-090}
 
 L'SDK 0.9.0 è la release client per la chain **v3.2.2** e **v3.2.3** (la mainnet le
-ha applicate alle altezze 3.556.788 e 3.662.051; la testnet esegue la v3.2.4 dal 19 ottobre 2026 e la mainnet passa ad essa all'altezza 3.742.566). Il
+ha applicate alle altezze 3.556.788 e 3.662.051; entrambe le reti ora eseguono la v3.2.4: la testnet dal 19 ottobre 2026, la mainnet dal 23 ottobre 2026 all'altezza 3.742.566). Il
 formato di firma, gli indirizzi, i decimali, i memo e le commissioni non sono
 cambiati, quindi la forma sign-bytes ibrida v2 che firmano la 0.8.1 e le successive
 è ancora quella giusta. Le novità:
@@ -73,7 +73,7 @@ ruotare allontanandosi da una chiave legacy esistente funziona ancora.
 ## Versioni precedenti alla 0.9.0 {#before-090}
 
 Se sei sulla 0.8.x, firma ancora la forma che entrambe le reti verificano e funziona
-sulla mainnet (v3.2.3, poi v3.2.4 dall'altezza 3.742.566) e sulla testnet (v3.2.4). Questi sono i limiti che la 0.9.0 rimuove, e
+sulla mainnet e sulla testnet (entrambe v3.2.4). Questi sono i limiti che la 0.9.0 rimuove, e
 alcuni di essi costano una commissione se non li conosci:
 
 | Release precedente alla 0.9.0 | Soluzione alternativa |

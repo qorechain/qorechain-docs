@@ -10,7 +10,7 @@ sidebar_position: 4
 Diese Seite beschreibt den **vorgesehenen** xQORE-Governance-Staking-Mechanismus, bei dem QOR-Inhaber Token für erweiterte Governance-Macht sperren würden, unterstützt durch ein PvP-Rebase-Modell, das langfristige Teilnehmer belohnt. **xQORE kann heute auf keinem der beiden Netzwerke verwendet werden**; nichts auf dieser Seite können Sie bereits tun.
 
 :::warning Noch nicht live
-xQORE ist in der Genesis aktiviert, aber **noch nicht nutzbar**, weder im Mainnet (`qorechain-vladi`, Node-Release **v3.2.3**) noch im Testnet (`qorechain-diana`, Node-Release **v3.2.4**); keines der beiden Releases ändert daran etwas (geprüft am 20. Oktober 2026). Der Node hat dafür keinen Transaktions-, Query-, CLI- oder RPC-Einstiegspunkt (die REST-Route `/qorechain/xqore/v1/params` liefert in beiden Netzwerken `Not Implemented`), daher gibt es weder `tx xqore lock` / `unlock` noch `query xqore ...`, keine xQORE-REST-Route und keine Methode `qor_getXQOREPosition`; es kann kein QOR gesperrt werden, und niemand hält xQORE. Es ist für ein künftiges Chain-Release geplant, das auch ändern wird, wie Ausstiegsstrafen umverteilt werden, sodass das Entsperren unabhängig von der Anzahl der Inhaber günstig bleibt. Das Release wird hier genannt, sobald es erscheint.
+xQORE ist in der Genesis aktiviert, aber **noch nicht nutzbar**, weder im Mainnet (`qorechain-vladi`, Node-Release **v3.2.4**) noch im Testnet (`qorechain-diana`, Node-Release **v3.2.4**); keines der beiden Releases ändert daran etwas (geprüft am 23. Oktober 2026). Der Node hat dafür keinen Transaktions-, Query-, CLI- oder RPC-Einstiegspunkt (die REST-Route `/qorechain/xqore/v1/params` liefert in beiden Netzwerken `Not Implemented`), daher gibt es weder `tx xqore lock` / `unlock` noch `query xqore ...`, keine xQORE-REST-Route und keine Methode `qor_getXQOREPosition`; es kann kein QOR gesperrt werden, und niemand hält xQORE. Es ist für ein künftiges Chain-Release geplant, das auch ändern wird, wie Ausstiegsstrafen umverteilt werden, sodass das Entsperren unabhängig von der Anzahl der Inhaber günstig bleibt. Das Release wird hier genannt, sobald es erscheint.
 :::
 
 ---
@@ -54,7 +54,7 @@ Wenn Sie jetzt an der Governance teilnehmen möchten, delegieren Sie QOR an eine
 
 ## Zeitgesperrtes Staking ist ein anderes Feature (v3.2.4) {#staking-tiers}
 
-Das Release **v3.2.4**, das seit dem 19. Oktober 2026 im Testnet läuft und für das Mainnet ab Höhe 3.742.566 vorgesehen ist (Governance-Vorschlag 13), fügt ein separates Modul hinzu, `x/stakingtier`, für **optionales zeitgesperrtes Staking**. Es ist nicht xQORE: Es prägt kein xQORE, ändert die Stimmkraft nicht und berührt die oben genannten xQORE-Parameter nicht. In Umrissen:
+Das Release **v3.2.4**, das seit dem 19. Oktober 2026 im Testnet und seit dem 23. Oktober 2026 im Mainnet läuft (Höhe 3.742.566, Governance-Vorschlag 13), fügt ein separates Modul hinzu, `x/stakingtier`, für **optionales zeitgesperrtes Staking**. Es ist nicht xQORE: Es prägt kein xQORE, ändert die Stimmkraft nicht und berührt die oben genannten xQORE-Parameter nicht. In Umrissen:
 
 * Ein Delegator sperrt eine Delegation an einen Validator für eine gewählte Laufzeit (das Modul bietet 3, 6 und 12 Monate an). Solange die Sperre läuft, kann der gesperrte Betrag über keinen Nachrichtenweg entbunden oder neu delegiert werden (eine Transaktion, Authz, ein Contract oder die Governance).
 * Sperren haben eine Mindestgröße und eine Begrenzung, wie viele ein Delegator halten darf; lesen Sie sie mit `GET /qorechain/stakingtier/v1/params` aus.
@@ -62,4 +62,4 @@ Das Release **v3.2.4**, das seit dem 19. Oktober 2026 im Testnet läuft und für
 * Eine Sperre kann vorzeitig aufgehoben werden. Die vorzeitige Aufhebung verwirkt das, was aufgelaufen und nicht eingefordert ist, und zieht eine Strafe nach sich, von der ein Teil verbrannt wird.
 * Sperren und der Zustand des Modulkontos sind unter `/qorechain/stakingtier/v1/locks/{holder}` und `/qorechain/stakingtier/v1/pool` lesbar.
 
-Das Mainnet läuft bis Höhe 3.742.566 mit v3.2.3, daher liefert `GET https://api.qore.host/qorechain/stakingtier/v1/params` dort bis dahin `Not Implemented`; ab diesem Block gibt es das Modul im Mainnet ebenso wie im Testnet. Die gewöhnliche Delegation ist behandelt unter [Staking und Delegation](/user-guide/staking-and-delegation).
+Das Modul antwortet in beiden Netzwerken, zum Beispiel auf `GET https://api.qore.host/qorechain/stakingtier/v1/params`. Die gewöhnliche Delegation ist behandelt unter [Staking und Delegation](/user-guide/staking-and-delegation).

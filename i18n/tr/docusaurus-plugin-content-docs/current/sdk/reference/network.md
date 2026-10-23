@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `mainnet` |
 | Chain id | `qorechain-vladi` (7 Haziran 2026'dan beri yayında) |
-| Zincir sürümü (21 Ekim 2026) | 3.742.566 yüksekliğine kadar v3.2.3, o bloktan itibaren v3.2.4 (yönetişim önerisi 13) |
+| Zincir sürümü (23 Ekim 2026) | v3.2.4 (3.742.566 yüksekliğinden beri, 23 Ekim 2026, yönetişim önerisi 13) |
 | EVM zincir kimliği | `9801` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `testnet` |
 | Chain id | `qorechain-diana` (yayında) |
-| Zincir sürümü (21 Ekim 2026) | v3.2.4 (8.337.253 yüksekliğinden beri, 19 Ekim 2026) |
+| Zincir sürümü (23 Ekim 2026) | v3.2.4 (8.337.253 yüksekliğinden beri, 19 Ekim 2026) |
 | EVM zincir kimliği | `9800` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |

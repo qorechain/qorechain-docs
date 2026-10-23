@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # 체인 파라미터
 
-QoreChain 네트워크의 모듈 파라미터를 모듈별로 묶어 통합 정리한 참조 문서입니다. 파라미터는 해당 모듈에 params 쿼리가 있는 경우 `qorechaind query <module> params`로 조회할 수 있습니다(`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`. `ai`, `qca`, `rdk`, `bridge`, `abstractaccount`, `gasabstraction`은 `config`를 사용하며, `gasabstraction`은 테스트넷에서만 조회할 수 있습니다). REST로는 [REST / gRPC 레퍼런스](/api-reference/rest-grpc-endpoints)에 나열된 경로만 조회할 수 있습니다. `x/inflation` 파라미터는 v3.2.3부터 메인넷에서도 REST(`/qorechain/inflation/v1/params`)로 제공됩니다. `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock`, `xqore`는 REST를 지원하지 않습니다.
+QoreChain 네트워크의 모듈 파라미터를 모듈별로 묶어 통합 정리한 참조 문서입니다. 파라미터는 해당 모듈에 params 쿼리가 있는 경우 `qorechaind query <module> params`로 조회할 수 있습니다(`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`. `ai`, `qca`, `rdk`, `bridge`, `abstractaccount`, `gasabstraction`은 `config`를 사용합니다). REST로는 [REST / gRPC 레퍼런스](/api-reference/rest-grpc-endpoints)에 나열된 경로만 조회할 수 있습니다. `x/inflation` 파라미터는 v3.2.3부터 메인넷에서도 REST(`/qorechain/inflation/v1/params`)로 제공됩니다. `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock`, `xqore`는 REST를 지원하지 않습니다.
 
 :::note
-표시된 값은 2026년 10월 20일에 메인넷 **`qorechain-vladi`**(EVM 체인 ID **9801**, 릴리스 **v3.2.3**)에서 실시간으로 읽은 값입니다(거버넌스 제안으로 변경된 경우를 제외하면 제네시스 값이며, 변경된 값은 별도로 표기했습니다). 별도 표기가 없는 한 테스트넷 **`qorechain-diana`**(EVM 체인 ID **9800**, 릴리스 **v3.2.4**, 2026년 10월 19일부터)에서도 동일합니다. 메인넷이 v3.2.4 업그레이드(높이 3,742,566)를 적용할 때까지 존재하는 차이점은 [v3.2.4 업그레이드 전까지의 차이점](#testnet-differences)에 정리되어 있습니다. 블록 단위로 표시된 기간은 측정된 메인넷 블록 시간인 약 3.2초로 환산한 것입니다(테스트넷은 약 1초마다 블록을 생성합니다).
+표시된 값은 2026년 10월 23일에 메인넷 **`qorechain-vladi`**(EVM 체인 ID **9801**, 릴리스 **v3.2.4**, 2026년 10월 23일 적용)에서 실시간으로 읽은 값입니다(거버넌스 제안으로 변경된 경우를 제외하면 제네시스 값이며, 변경된 값은 별도로 표기했습니다). 별도 표기가 없는 한 테스트넷 **`qorechain-diana`**(EVM 체인 ID **9800**, 릴리스 **v3.2.4**, 2026년 10월 19일부터)에서도 동일합니다. 남아 있는 차이점은 [테스트넷과 메인넷의 차이점](#testnet-differences)에 정리되어 있습니다. 블록 단위로 표시된 기간은 측정된 메인넷 블록 시간인 약 3.2초로 환산한 것입니다(테스트넷은 약 1초마다 블록을 생성합니다).
 :::
 
 ---
@@ -152,7 +152,7 @@ xQORE 모듈의 회계 로직은 존재하지만, 잠금 및 잠금 해제 트�
 | `schedule`             | 17.5 %, 11 %, 7 %, 7 %, 2 % | 연도별 레거시 비율, fixed 모드에서는 사용되지 않음 |
 | `enabled`              | `true`                  | 모듈 활성화 플래그                                    |
 
-이 모듈은 상한에 도달할 때까지 이 발행량을 수수료 수집기로 발행합니다. 86,000 QOR로 시작하는 첫 에포크는 블록 3,672,000에서 시작됩니다. 2026년 10월 20일(에포크 84) 기준으로 105,248,896.21 QOR가 발행되었고 상한까지 484,751,103.79 QOR가 남아 있었습니다(`GET /qorechain/inflation/v1/epoch_info`). [토크노믹스](/architecture/tokenomics#supply-and-emission)를 참조하세요.
+이 모듈은 상한에 도달할 때까지 이 발행량을 수수료 수집기로 발행합니다. 86,000 QOR로 시작하는 첫 에포크는 블록 3,672,000에서 시작됩니다. 2026년 10월 23일(에포크 86) 기준으로 105,420,896.21 QOR가 발행되었고 상한까지 484,579,103.79 QOR가 남아 있었습니다(`GET /qorechain/inflation/v1/epoch_info`). [토크노믹스](/architecture/tokenomics#supply-and-emission)를 참조하세요.
 
 ---
 
@@ -349,7 +349,7 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 
 ## 스테이킹, 슬래싱, 거버넌스, 수수료, EVM {#core-modules}
 
-표준 Cosmos SDK 및 EVM 모듈이며, 2026년 10월 20일에 실시간으로 읽은 값입니다(별도 표기가 없는 한 두 네트워크에서 동일하며, 10월 14일 조회 이후 변경 없음).
+표준 Cosmos SDK 및 EVM 모듈이며, 스테이킹, 슬래싱, 거버넌스, 분배 행은 2026년 10월 23일에 실시간으로 읽은 값입니다(수수료 시장, EVM, ERC-20, QoreChain Native 행은 2026년 10월 20일에 마지막으로 읽은 값입니다). 별도 표기가 없는 한 두 네트워크에서 동일하며 v3.2.4 업그레이드로 변경되지 않았습니다.
 
 | 모듈 | 파라미터 | 값 |
 | --- | --- | --- |
@@ -394,21 +394,11 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 
 ---
 
-## v3.2.4 업그레이드 전까지의 차이점 {#testnet-differences}
+## 테스트넷과 메인넷의 차이점 {#testnet-differences}
 
-테스트넷 `qorechain-diana`는 높이 8,337,253(2026년 10월 19일)부터 v3.2.4를 실행하고 있습니다. 메인넷은 높이 3,742,566까지 v3.2.3을 실행하고 그 블록부터 v3.2.4를 실행합니다(거버넌스 제안 13). 그때부터 아래 v3.2.4 행은 두 네트워크 모두에 적용되며, 네트워크별 값만 계속 다르게 남습니다. 2026년 10월 20일 기준으로 테스트넷은 메인넷과 다음과 같이 다릅니다.
+두 네트워크 모두 v3.2.4를 실행합니다. 테스트넷 `qorechain-diana`는 높이 8,337,253(2026년 10월 19일)부터, 메인넷 `qorechain-vladi`는 높이 3,742,566(2026년 10월 23일, 거버넌스 제안 13)부터입니다. 따라서 v3.2.4 추가 사항은 두 네트워크에서 동일합니다. 선택적 시간 잠금 스테이킹 모듈 `x/stakingtier`(48개 대신 49개 모듈; `GET /qorechain/stakingtier/v1/params`, 최소 잠금 10 QOR, 조기 해제 페널티 5 %), 세 번째 `emission_mode`(`target_apy`, 두 네트워크 모두 `target_apy_bps`는 `0`), 열세 번째 기록 소각 소스(`staking_tier_penalty`), 추가 라이트 노드 보상 풀 보고 필드(`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`)와 노드 자신의 등록 시점부터 시작되는 보상 한도, PQC 계정의 `possession_proven` 플래그(소유 증명은 계정 키에는 선택 사항으로 유지되며 브리지 검증자 키에는 필수), 블록 시간으로 계산되는 RDK 챌린지 윈도우, 그리고 `protocol_features` 및 `auth_nonce` 쿼리가 그것입니다. [스테이킹과 위임](/user-guide/staking-and-delegation#time-locked-staking)을 참조하세요. 2026년 10월 23일 기준으로 두 네트워크는 아래 값에서만 다릅니다.
 
-| 영역 | 현재 테스트넷, 높이 3,742,566부터 메인넷 |
-| ---- | ------- |
-| 모듈 | 48개 대신 49개: 선택적 시간 잠금 스테이킹 모듈 `x/stakingtier`(`GET /qorechain/stakingtier/v1/params`; 최소 잠금 10 QOR). [스테이킹과 위임](/user-guide/staking-and-delegation#time-locked-staking)을 참조하세요. |
-| `x/inflation` | 세 번째 `emission_mode`인 `target_apy`, 그리고 테스트넷에서 `0`인 `target_apy_bps` 파라미터. 어느 모드를 적용할지는 각 네트워크에서 별도의 거버넌스 결정입니다. |
-| `x/burn` | 열세 번째 기록 소스인 `staking_tier_penalty`. |
-| `x/lightnode` 보상 풀 | 추가 보고 필드(`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); 노드의 보상 한도는 해당 노드 자신의 등록 시점부터 시작됩니다. |
-| `x/pqc` | PQC 계정의 `possession_proven` 플래그; 소유 증명은 계정 키에는 여전히 선택 사항이며 브리지 검증자 키에는 필수입니다. |
-| `x/rdk` | 낙관적 챌린지 윈도우가 블록 시간으로 계산됩니다. |
-| 쿼리 | 새로운 `protocol_features` 및 `auth_nonce` 쿼리. |
-
-다음 값은 테스트넷 고유이며 업그레이드 후에도 계속 다릅니다.
+다음 값은 테스트넷 고유입니다.
 
 | 영역 | 테스트넷 |
 | ---- | ------- |

@@ -9,8 +9,8 @@ sidebar_position: 10
 
 Il modulo `x/fairblock` è il progetto di QoreChain per difendersi dagli attacchi MEV (Maximal Extractable Value) utilizzando la crittografia a soglia basata sull'identità. Combinato con un sistema di prioritizzazione delle transazioni a 5 corsie, è pensato per costituire un'architettura anti-MEV che protegge gli utenti da front-running, attacchi sandwich e altre forme di estrazione di valore basate sul mempool.
 
-:::note Stato attuale (20 ottobre 2026: mainnet v3.2.3, testnet v3.2.4)
-FairBlock è **disabilitato sia sulla mainnet sia sulla testnet** (`enabled = false`), e le definizioni delle 5 corsie sono solo configurazione: le corsie di spazio nel blocco non sono applicate dal mempool né dal gestore delle proposte in produzione. Il nodo non serve alcun servizio di transazioni o di query FairBlock, e nessuna release fino alla mainnet v3.2.3 o alla testnet v3.2.4 cambia nulla di tutto ciò. Questa pagina descrive il progetto previsto.
+:::note Stato attuale (impostazioni verificate il 20 ottobre 2026; mainnet e testnet eseguono entrambe la v3.2.4)
+FairBlock è **disabilitato sia sulla mainnet sia sulla testnet** (`enabled = false`), e le definizioni delle 5 corsie sono solo configurazione: le corsie di spazio nel blocco non sono applicate dal mempool né dal gestore delle proposte in produzione. Il nodo non serve alcun servizio di transazioni o di query FairBlock, e nessuna release fino alla v3.2.4, che eseguono entrambe le reti, cambia nulla di tutto ciò. Questa pagina descrive il progetto previsto.
 
 Ciò che le reti attive fanno invece per gli swap AMM è descritto in [AMM e liquidità on-chain](/architecture/amm#swap-rules): un tetto all'impatto sul prezzo e un controllo del prezzo all'apertura del blocco per gli swap che non impostano alcun limite di slippage. Sono regole di protocollo sullo swap, non crittografia delle transazioni.
 :::

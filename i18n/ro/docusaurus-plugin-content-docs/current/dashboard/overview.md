@@ -77,7 +77,7 @@ Dashboard-ul funcționează pe două rețele. Antetul afișează rețeaua la car
 
 | Rețea | Chain ID | Când se folosește |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Rețeaua live (live din 7 iunie 2026, rulează chain v3.2.3 până la înălțimea 3.742.566 și v3.2.4 de la acel bloc) pentru valoare reală și utilizare în producție. Non-custodial: îți conectezi propriul portofel. |
+| **Mainnet** | `qorechain-vladi` | Rețeaua live (live din 7 iunie 2026, rulează chain v3.2.4 din 23 octombrie 2026) pentru valoare reală și utilizare în producție. Non-custodial: îți conectezi propriul portofel. |
 | **Testnet** | `qorechain-diana` | Mediu gratuit pentru testare (rulează chain v3.2.4 din 19 octombrie 2026), cu un portofel de test gestionat de dashboard și [Faucet](/dashboard/faucet) pentru tokenuri de test. |
 
 Tokenul nativ este **QOR** (denominarea de bază `uqor`, unde 1 QOR = 10^6 uqor). Dacă ești nou, începe pe testnet, revendică tokenuri de la Faucet și încearcă un prim transfer înainte de a trece pe mainnet.

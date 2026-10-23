@@ -49,7 +49,7 @@ Zincir sürümü **v3.1.82** itibarıyla, SVM arayüzü hesabın **yerel QOR bak
 | `getTokenAccountsByOwner`           | `owner`, filtre          | Bir sahibin token hesaplarını döndürür                           |
 | `getTokenAccountsByDelegate`        | `delegate`, filtre       | Bir delegenin token hesaplarını döndürür                          |
 
-`getGenesisHash` ve `getEpochInfo` gibi bu listenin dışındaki yöntemler `-32601 method not found` döndürür (`https://svm.qore.host` ve `https://svm-testnet.qore.host` üzerinde denetlendi, 20 Ekim 2026). v3.2.2'den itibaren RPC ve gRPC sorgularındaki base58 adresleri kanonik olmalı ve uzunluk bakımından sınırlı olmalıdır; hatalı biçimli bir adres reddedilir. `getTransaction` kabul edilir ancak şu anda `result` alanı olmayan bir zarfla yanıt verir, bu yüzden ona güvenmeyin. `getSlot` tarafından bildirilen slot, zincirin blok yüksekliğini takip eder.
+`getGenesisHash` ve `getEpochInfo` gibi bu listenin dışındaki yöntemler `-32601 method not found` döndürür (`https://svm.qore.host` ve `https://svm-testnet.qore.host` üzerinde denetlendi, 23 Ekim 2026). v3.2.2'den itibaren RPC ve gRPC sorgularındaki base58 adresleri kanonik olmalı ve uzunluk bakımından sınırlı olmalıdır; hatalı biçimli bir adres reddedilir. `getTransaction` kabul edilir ancak şu anda `result` alanı olmayan bir zarfla yanıt verir, bu yüzden ona güvenmeyin. `getSlot` tarafından bildirilen slot, zincirin blok yüksekliğini takip eder.
 
 ---
 

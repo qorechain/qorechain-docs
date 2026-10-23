@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implementa un'**architettura gerarchica a 4 livelli** tramite il modulo `x/multilayer`. La main chain funge da radice di regolamento e di fiducia, mentre i livelli sussidiari (sidechain, paychain e rollup) gestiscono carichi di lavoro specializzati con diversi compromessi tra prestazioni e sicurezza.
 
 :::caution Funzionalità in fase iniziale
-Il modulo è distribuito sulla mainnet (versione di chain **v3.2.3** fino all'altezza 3.742.566, **v3.2.4** da quel blocco) e sulla testnet (**v3.2.4**), ma **su nessuna delle due reti esiste ancora alcun livello né alcun anchor** (verificato il 20 ottobre 2026: `GET /qorechain/multilayer/v1/layers` restituisce un elenco vuoto su entrambe). Tutto ciò che segue descrive il modulo così come è stato realizzato; i parametri sono i valori attivi. Sulla mainnet il messaggio `MsgUpdateLayerStatus` è attualmente disattivato dal circuit breaker (vedi [Parametri della chain](/appendix/chain-parameters#circuit-breaker)); sulla testnet no.
+Il modulo è distribuito sulla mainnet (versione di chain **v3.2.4** dal 23 ottobre 2026) e sulla testnet (**v3.2.4**), ma **su nessuna delle due reti esiste ancora alcun livello né alcun anchor** (verificato il 23 ottobre 2026: `GET /qorechain/multilayer/v1/layers` restituisce un elenco vuoto su entrambe). Tutto ciò che segue descrive il modulo così come è stato realizzato; i parametri sono i valori attivi. Sulla mainnet il messaggio `MsgUpdateLayerStatus` è attualmente disattivato dal circuit breaker (vedi [Parametri della chain](/appendix/chain-parameters#circuit-breaker)); sulla testnet no.
 :::
 
 ---
@@ -64,7 +64,7 @@ La main chain è la radice di fiducia per l'intero ecosistema QoreChain.
 | Consenso        | Consenso QoreChain (vedi [Meccanismo di consenso](/architecture/consensus-mechanism) per ciò che è attivo oggi)         |
 | Sicurezza       | Protetta con PQC tramite firme Dilithium-5                                                                              |
 | Ruolo           | Livello di regolamento, archiviazione degli state anchor, QCAI routing engine, radice di fiducia                        |
-| Tempo di blocco | Dipende dalla rete: circa 3,2 secondi sulla mainnet, circa 1,0 secondo sulla testnet (misurato il 20 ottobre 2026)      |
+| Tempo di blocco | Dipende dalla rete: circa 3,2 secondi sulla mainnet, circa 1,0 secondo sulla testnet (misurato il 23 ottobre 2026)      |
 
 Tutti i livelli sussidiari ancorano periodicamente le proprie state root alla main chain tramite gli Hierarchical Commitment Schemes (HCS).
 
@@ -274,4 +274,4 @@ Le transizioni di stato sono applicate dal keeper. Le transizioni non valide (ad
 | `routing_confidence_threshold` | string | `0.6`           | Confidenza minima per le decisioni di routing QCAI        |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Abilita il Cross-Layer Fee Bundling globale               |
 
-Questi sono i valori restituiti da `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) su mainnet e testnet il 20 ottobre 2026. Dalla v3.2.2 il `MsgUpdateParams` del modulo può essere instradato, quindi una proposta di governance può modificarli.
+Questi sono i valori restituiti da `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) su mainnet e testnet il 23 ottobre 2026. Dalla v3.2.2 il `MsgUpdateParams` del modulo può essere instradato, quindi una proposta di governance può modificarli.

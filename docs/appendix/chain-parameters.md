@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Chain Parameters
 
-Consolidated reference of the module parameters of the QoreChain networks, grouped by module. Parameters can be queried with `qorechaind query <module> params` where the module has a params query (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` and `gasabstraction` use `config`, and `gasabstraction` is queryable on the testnet only), and over REST only for the routes listed in the [REST / gRPC reference](/api-reference/rest-grpc-endpoints). The `x/inflation` parameters are also served over REST on mainnet since v3.2.3 (`/qorechain/inflation/v1/params`). REST is not available for `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` or `xqore`.
+Consolidated reference of the module parameters of the QoreChain networks, grouped by module. Parameters can be queried with `qorechaind query <module> params` where the module has a params query (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` and `gasabstraction` use `config`), and over REST only for the routes listed in the [REST / gRPC reference](/api-reference/rest-grpc-endpoints). The `x/inflation` parameters are also served over REST on mainnet since v3.2.3 (`/qorechain/inflation/v1/params`). REST is not available for `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` or `xqore`.
 
 :::note
-Values shown were read live from mainnet **`qorechain-vladi`** (EVM chain ID **9801**, release **v3.2.3**) on 20 October 2026 (genesis values unless a governance proposal changed them; those are noted). They are identical on the testnet **`qorechain-diana`** (EVM chain ID **9800**, release **v3.2.4** since 19 October 2026) except where stated; the differences that exist until mainnet takes the v3.2.4 upgrade (height 3,742,566) are collected in [Differences until the v3.2.4 upgrade](#testnet-differences). Durations given in blocks convert at the measured mainnet block time of about 3.2 seconds (the testnet produces a block about every second).
+Values shown were read live from mainnet **`qorechain-vladi`** (EVM chain ID **9801**, release **v3.2.4**, applied 23 October 2026) on 23 October 2026 (genesis values unless a governance proposal changed them; those are noted). They are identical on the testnet **`qorechain-diana`** (EVM chain ID **9800**, release **v3.2.4** since 19 October 2026) except where stated; the remaining differences are collected in [Differences between testnet and mainnet](#testnet-differences). Durations given in blocks convert at the measured mainnet block time of about 3.2 seconds (the testnet produces a block about every second).
 :::
 
 ---
@@ -152,7 +152,7 @@ Exit penalties: 50 % (lock shorter than 30 days), 35 % (30â€“90 days), 15 % (90â
 | `schedule`             | 17.5 %, 11 %, 7 %, 7 %, 2 % | Legacy year-based rates, unused in fixed mode     |
 | `enabled`              | `true`                  | Module activation flag                                |
 
-The module mints this emission into the fee collector until the cap is reached. The first epoch at 86,000 QOR starts at block 3,672,000. On 20 October 2026 (epoch 84) 105,248,896.21 QOR had been minted and 484,751,103.79 QOR remained under the cap (`GET /qorechain/inflation/v1/epoch_info`). See [Tokenomics](/architecture/tokenomics#supply-and-emission).
+The module mints this emission into the fee collector until the cap is reached. The first epoch at 86,000 QOR starts at block 3,672,000. On 23 October 2026 (epoch 86) 105,420,896.21 QOR had been minted and 484,579,103.79 QOR remained under the cap (`GET /qorechain/inflation/v1/epoch_info`). See [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ---
 
@@ -349,7 +349,7 @@ No pools exist yet on mainnet or testnet, and `MsgPausePool` / `MsgResumePool` a
 
 ## Staking, Slashing, Governance, Fees and EVM {#core-modules}
 
-Standard Cosmos SDK and EVM modules, read live on 20 October 2026 (identical on both networks unless noted; unchanged since the 14 October reading).
+Standard Cosmos SDK and EVM modules, read live on 23 October 2026 for the staking, slashing, governance and distribution rows (the fee-market, EVM, ERC-20 and QoreChain Native rows were last read on 20 October 2026); identical on both networks unless noted and unchanged by the v3.2.4 upgrade.
 
 | Module | Parameter | Value |
 | --- | --- | --- |
@@ -394,21 +394,11 @@ Every other message type, including all standard bank, staking, governance, dist
 
 ---
 
-## Differences until the v3.2.4 upgrade {#testnet-differences}
+## Differences between testnet and mainnet {#testnet-differences}
 
-The testnet `qorechain-diana` has run v3.2.4 since height 8,337,253 (19 October 2026). Mainnet runs v3.2.3 until height 3,742,566 and v3.2.4 from that block (governance proposal 13); from then the v3.2.4 rows below apply to both networks and only the network-specific values remain different. As of 20 October 2026 the testnet differs from mainnet as follows:
+Both networks run v3.2.4: the testnet `qorechain-diana` since height 8,337,253 (19 October 2026), mainnet `qorechain-vladi` since height 3,742,566 (23 October 2026, governance proposal 13). The v3.2.4 additions are therefore the same on both networks: the optional time-locked staking module `x/stakingtier` (49 modules instead of 48; `GET /qorechain/stakingtier/v1/params`, minimum lock 10 QOR, early-unlock penalty 5 %), a third `emission_mode` (`target_apy`, with `target_apy_bps` at `0` on both networks), a thirteenth recorded burn source (`staking_tier_penalty`), extra light-node reward-pool reporting fields (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`) with a reward bound that starts at a node's own registration, the `possession_proven` flag on PQC accounts (proof of possession stays optional for account keys and is required for bridge validator keys), the RDK challenge window counted in block time, and the `protocol_features` and `auth_nonce` queries. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking). As of 23 October 2026 the two networks differ only in the values below.
 
-| Area | Testnet now; mainnet from height 3,742,566 |
-| ---- | ------- |
-| Modules | 49 instead of 48: the optional time-locked staking module `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`; minimum lock 10 QOR). See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking). |
-| `x/inflation` | A third `emission_mode`, `target_apy`, with a `target_apy_bps` parameter that is `0` on the testnet. Which mode is in force is a separate governance decision on each network. |
-| `x/burn` | A thirteenth recorded source, `staking_tier_penalty`. |
-| `x/lightnode` reward pool | Extra reporting fields (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); a node's reward bound starts at its own registration. |
-| `x/pqc` | A `possession_proven` flag on PQC accounts; proof of possession is still optional for account keys and required for bridge validator keys. |
-| `x/rdk` | The optimistic challenge window is counted in block time. |
-| Queries | New `protocol_features` and `auth_nonce` queries. |
-
-These values are specific to the testnet and stay different after the upgrade:
+These values are specific to the testnet:
 
 | Area | Testnet |
 | ---- | ------- |

@@ -21,15 +21,15 @@ QoreX **tarayıcı uzantısı**, masaüstü QoreChain cüzdanıdır. **Bağıms�
 
 ### Hangi sürüm nerede yayında {#versions}
 
-Her mağazadaki güncel sürüm, **20 Ekim 2026** itibarıyla:
+Her mağazadaki güncel sürüm, **23 Ekim 2026** itibarıyla:
 
 | Mağaza | Güncel sürüm |
 |---|---|
-| Chrome Web Store | 0.3.6 (henüz 0.3.7'ye güncellenmedi) |
-| Firefox Add-ons | 0.3.7 |
-| Safari (Mac App Store, **QoreX Wallet** macOS uygulaması) | 1.7.7, 0.3.7 uzantısını taşır — Mac App Store kendi `1.x` numaralandırmasını kullanır |
+| Chrome Web Store | 0.3.8 |
+| Firefox Add-ons | 0.3.8 |
+| Safari (Mac App Store, **QoreX Wallet** macOS uygulaması) | 1.7.8, 0.3.8 uzantısını taşır — Mac App Store kendi `1.x` numaralandırmasını kullanır |
 
-Mağaza incelemeleri farklı zamanlarda sonuçlandığı için bir mağaza diğerinden daha eski bir derleme sunabilir; mağaza listelemesi her zaman güncel sürümünü gösterir. Bu sayfa 0.3.7 özellik setini açıklar; bir noktanın 0.3.7'ye ihtiyaç duyduğu yerde bunu belirtir ve Chrome kullanıcıları Chrome listelemesi güncellendiğinde ona kavuşur. Ayrıca bkz. [Hangi sürüm nerede yayında](/qorex/overview#versions).
+Mağaza incelemeleri farklı zamanlarda sonuçlandığı için bir mağaza diğerinden daha eski bir derleme sunabilir; mağaza listelemesi her zaman güncel sürümünü gösterir. Bu sayfa 0.3.7 özellik setini açıklar; bu sürümü artık her mağaza taşır (güncel derleme 0.3.8). Ayrıca bkz. [Hangi sürüm nerede yayında](/qorex/overview#versions).
 
 0.2.6'dan bu yana uzantıya şunlar eklendi: [tek parolayla birden fazla cüzdan](#wallets), [elle eklediğiniz Ethereum tarzı bir hesap](#coin60), [Claim & restake](#stake), bir **Unstaking in progress** listesi, [bir token'ı kontratıyla ekleme](#custom-tokens), [her ağda Al](#receive), [Revoke özellikli bağlı siteler](#connected-sites), [EVM erişim penceresi](#evm-window), [dApp'ler için `signAndBroadcast`](#sign-and-broadcast) ve her mesajı, ücreti ve son kullanma süresini gösteren onay ekranları.
 

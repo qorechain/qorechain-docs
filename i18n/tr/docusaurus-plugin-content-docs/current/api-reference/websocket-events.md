@@ -141,7 +141,7 @@ Yalnızca belirli bir modülden gelen olayları almak için olay türüne göre 
 
 ## Modül Olayları Referansı
 
-Olaylar standart consensus-engine olayları olarak yayınlanır. Olay türü ve niteliğine göre filtrelenmiş bir `tm.event='Tx'` sorgusuyla abone olun (örneğin `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Blok düzeyindeki olaylar (aşağıdaki PRISM olayları gibi, blok sonu mantığı tarafından yayınlananlar) `Tx` ile değil, `tm.event='NewBlock'` ile iletilir. Aşağıdaki adlar ve nitelikler zincir sürümü v3.2.3'e (mainnet) aittir; yalnızca v3.2.4 testnet'inde bulunan olaylar işaretlenmiştir.
+Olaylar standart consensus-engine olayları olarak yayınlanır. Olay türü ve niteliğine göre filtrelenmiş bir `tm.event='Tx'` sorgusuyla abone olun (örneğin `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Blok düzeyindeki olaylar (aşağıdaki PRISM olayları gibi, blok sonu mantığı tarafından yayınlananlar) `Tx` ile değil, `tm.event='NewBlock'` ile iletilir. Aşağıdaki adlar ve nitelikler zincir sürümü v3.2.4'e aittir (mainnet 23 Ekim 2026'dan, testnet 19 Ekim 2026'dan beri); v3.2.4'te eklenen olaylar işaretlenmiştir.
 
 :::note Gerçekte hangi olayları göreceksiniz
 Bu modüllerin çoğu herkese açık ağlarda boştadır: köprü canlı değildir, henüz kayıtlı bir multilayer katmanı veya rollup yoktur ve xQORE kullanılamaz. Bu modüllerin olayları tanımlıdır ancak etkinlik olana kadar tetiklenmez. PRISM gözlem ve ödül olayları (`rl_observation_collected`, `rl_reward_computed`) her iki ağda da yaklaşık her 10 blokta bir yayınlanır.
@@ -227,7 +227,7 @@ PQC anahtarları bir kayıt işlemiyle açıkça kaydedilir; otomatik bir kayıt
 
 ### Staking Tiers Modülü (v3.2.4)
 
-Bu olaylar v3.2.4 sürümüyle gelir: `qorechain-diana` testnet'i bunları 19 Ekim 2026'dan beri yayar, mainnet ise 3,742,566 yüksekliğinden itibaren yayar (yönetişim önerisi 13). Hâlâ v3.2.3'te olan bir mainnet düğümünde staking-tiers modülü yoktur ve bunların hiçbirini yaymaz.
+Bu olaylar v3.2.4 sürümüyle gelir: `qorechain-diana` testnet'i bunları 19 Ekim 2026'dan beri yayar, mainnet ise 23 Ekim 2026'dan beri yayar (yönetişim önerisi 13, 3,742,566 yüksekliği). Daha eski bir sürümdeki bir düğümde staking-tiers modülü yoktur ve bunların hiçbirini yaymaz.
 
 | Olay Türü | Anahtar Nitelikler | Açıklama |
 | ---------- | -------------- | ----------- |

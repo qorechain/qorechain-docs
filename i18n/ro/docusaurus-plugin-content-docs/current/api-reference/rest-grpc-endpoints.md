@@ -18,7 +18,7 @@ QoreChain expune trei interfețe principale pentru acces programatic:
 Toate punctele finale REST returnează JSON. Punctele finale gRPC folosesc Protocol Buffers și pot fi consumate cu orice client gRPC. Interfața RPC oferă interogări la nivel de consens și difuzarea tranzacțiilor.
 
 :::note
-Aceste interfețe sunt disponibile atât pe mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026; versiunea de nod **v3.2.3**), cât și pe testnet-ul **`qorechain-diana`** (versiunea de nod **v3.2.4**). Mainnet-ul rulează v3.2.3 până la înălțimea 3.742.566 și v3.2.4 începând cu acel bloc (propunerea de guvernanță 13). URL-urile de bază de mai jos presupun un nod care rulează local. Punctele finale publice găzduite sunt `https://api.qore.host` / `https://api-testnet.qore.host` (REST) și `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), listate în [Rețele](/appendix/networks#public-endpoints). **Nu există un punct final gRPC public**: numele de gazdă `grpc.qore.host` și `grpc-testnet.qore.host` nu există, așa că rulați propriul nod dacă aveți nevoie de gRPC.
+Aceste interfețe sunt disponibile atât pe mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026), cât și pe testnet-ul **`qorechain-diana`**, iar ambele rulează versiunea de nod **v3.2.4** (verificat la 23 octombrie 2026). Mainnet-ul a aplicat v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026 (propunerea de guvernanță 13); testnet-ul o rulează din 19 octombrie 2026. URL-urile de bază de mai jos presupun un nod care rulează local. Punctele finale publice găzduite sunt `https://api.qore.host` / `https://api-testnet.qore.host` (REST) și `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), listate în [Rețele](/appendix/networks#public-endpoints). **Nu există un punct final gRPC public**: numele de gazdă `grpc.qore.host` și `grpc-testnet.qore.host` nu există, așa că rulați propriul nod dacă aveți nevoie de gRPC.
 :::
 
 ## URL-uri de bază
@@ -35,7 +35,7 @@ Modulele specifice QoreChain sunt expuse prin REST sub prefixul `/qorechain/<mod
 
 O rută care nu există răspunde cu HTTP `501` și `{"code":12,"message":"Not Implemented"}`. Asta înseamnă că ruta nu este servită, nu că interogarea a returnat un rezultat gol. Căile scurte fără prefixul `/qorechain/` (de exemplu `/bridge/v1/chains` sau `/pqc/v1/params`) **nu** sunt servite. O înregistrare necunoscută pe o rută care există returnează HTTP `404` cu `{"code":5,"message":"... not found"}`.
 
-Exemplele de mai jos folosesc gazda publică de mainnet; înlocuiți-o cu `https://api-testnet.qore.host` pentru testnet. Valorile din exemple au fost citite de pe rețelele live în jurul datei de 20 octombrie 2026 (mainnet v3.2.3, testnet v3.2.4) și se schimbă în timp; folosiți-le pentru forma unui răspuns. Versiunea v3.2.4 adaugă câteva rute și câmpuri. Ele sunt marcate mai jos cu **v3.2.4**: testnet-ul le servește din 19 octombrie 2026, mainnet-ul le servește de la înălțimea 3.742.566, iar până atunci un nod de mainnet le răspunde cu `501`.
+Exemplele de mai jos folosesc gazda publică de mainnet; înlocuiți-o cu `https://api-testnet.qore.host` pentru testnet. Valorile din exemple au fost citite de pe rețelele live între 20 și 23 octombrie 2026 și se schimbă în timp; folosiți-le pentru forma unui răspuns. Versiunea v3.2.4 adaugă câteva rute și câmpuri. Ele sunt marcate mai jos cu **v3.2.4**: testnet-ul le servește din 19 octombrie 2026, iar mainnet-ul din 23 octombrie 2026. Un nod aflat încă pe o versiune mai veche răspunde la rutele noi cu `501`.
 
 ## Modulul PQC {#pqc-module}
 
@@ -44,7 +44,7 @@ Exemplele de mai jos folosesc gazda publică de mainnet; înlocuiți-o cu `https
 | GET    | `/qorechain/pqc/v1/account/{address}`    | Înregistrarea cheii post-cuantice pentru un cont (`found`, tip de cheie, algoritm) |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | Fereastra de autorizare a benzii EVM a contului și ce a rămas din ea        |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | Consimțământul contului pentru delegarea EIP-7702, delegarea curentă și nonce-ul EVM (începând cu v3.2.2) |
-| GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (testnet din 19 octombrie 2026; mainnet de la înălțimea 3.742.566; `501` pe mainnet înainte de aceasta). Fiecare funcționalitate de protocol pe care o cunoaște binarul, cu indicatorii `enabled`, `known` și `staged` |
+| GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (testnet din 19 octombrie 2026; mainnet din 23 octombrie 2026; `501` pe un nod mai vechi). Fiecare funcționalitate de protocol pe care o cunoaște binarul, cu indicatorii `enabled`, `known` și `staged` |
 
 Rețineți că segmentul de cale este `account`, la singular. Nu există ruta `/qorechain/pqc/v1/params` sau `/stats` (folosiți `qorechaind query pqc params` și `stats` pentru acestea).
 
@@ -70,7 +70,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
 }
 ```
 
-`classical_key_source` spune de unde provine `ecdsa_pubkey`: `stored` (cheia furnizată la înregistrare), `auth_account` (nu a fost stocat nimic, deci este cheia publică on-chain proprie a contului) sau `none`. Începând cu v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566) înregistrarea poartă și `"possession_proven": false`, care devine `true` odată ce o cheie a fost înregistrată cu o [dovadă de posesie](/developer-guide/post-quantum-signing#proof-of-possession) verificată; un nod de mainnet aflat încă pe v3.2.3 nu raportează acest câmp.
+`classical_key_source` spune de unde provine `ecdsa_pubkey`: `stored` (cheia furnizată la înregistrare), `auth_account` (nu a fost stocat nimic, deci este cheia publică on-chain proprie a contului) sau `none`. Începând cu v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet din 23 octombrie 2026) înregistrarea poartă și `"possession_proven": false`, care devine `true` odată ce o cheie a fost înregistrată cu o [dovadă de posesie](/developer-guide/post-quantum-signing#proof-of-possession) verificată; un nod aflat pe o versiune mai veche nu raportează acest câmp.
 
 Un cont fără cheie înregistrată returnează `{"found": false, "account": null}`. Folosiți `found` pentru a decide dacă un cont trebuie să înregistreze o cheie înainte de a putea trimite.
 
@@ -229,10 +229,10 @@ curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
 ```json
-{ "reserved": "3807496785528", "released": "6693045921330", "initialized": true, "snapshot_height": "2981742" }
+{ "reserved": "0", "released": "10500542706858", "initialized": true, "snapshot_height": "2981742" }
 ```
 
-`reserved` este ce a mai rămas de eliberat, `released` este cât a mutat deja guvernanța, iar `snapshot_height` este înălțimea upgrade-ului v3.2.0 care a înregistrat rezerva. Valorile de mai sus sunt cele de la momentul scrierii: guvernanța a eliberat prima sumă (6.693.045,921330 QOR) la 19 octombrie 2026, iar upgrade-ul v3.2.3 a recalculat rezerva rămasă la înălțimea sa (3.807.496,785528 QOR). O altă propunere de guvernanță pentru eliberarea acestei sume recalculate se afla încă în perioada de vot la momentul scrierii, așa că citiți valorile live. Vezi [Tokenomics](/architecture/tokenomics).
+`reserved` este ce a mai rămas de eliberat, `released` este cât a mutat deja guvernanța, iar `snapshot_height` este înălțimea upgrade-ului v3.2.0 care a înregistrat rezerva. Valorile de mai sus sunt cele citite la 23 octombrie 2026: guvernanța a eliberat prima sumă (6.693.045,921330 QOR) la 19 octombrie 2026, upgrade-ul v3.2.3 a recalculat rezerva rămasă la înălțimea sa (3.807.496,785528 QOR), iar propunerea de guvernanță 12 a eliberat acea sumă (aprobată, votul s-a încheiat la 21 octombrie 2026), deci rezerva este acum goală, iar `released` totalizează 10.500.542,706858 QOR. Citiți valorile live. Vezi [Tokenomics](/architecture/tokenomics).
 
 ## Modulul Abstract Account {#abstract-account-module}
 
@@ -244,7 +244,7 @@ Serviciul de interogare abstract-account este expus prin REST sub `/qorechain/ab
 | GET    | `/qorechain/abstractaccount/v1/accounts`              | Listează conturile abstracte                                            |
 | GET    | `/qorechain/abstractaccount/v1/accounts/{address}`    | Starea contului abstract pentru o adresă (`404` dacă nu există)         |
 | GET    | `/qorechain/abstractaccount/v1/permission_schema`     | `schema_version`, `permissions`, `msg_permissions`, `key_management_msgs`, `lane_rules` |
-| GET    | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **v3.2.4** (testnet din 19 octombrie 2026; mainnet de la înălțimea 3.742.566; `501` pe mainnet înainte de aceasta). Secvența pe care o cheie de autentificator conectată trebuie să o semneze următoarea (`nonce`, `linked`) |
+| GET    | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **v3.2.4** (testnet din 19 octombrie 2026; mainnet din 23 octombrie 2026; `501` pe un nod mai vechi). Secvența pe care o cheie de autentificator conectată trebuie să o semneze următoarea (`nonce`, `linked`) |
 
 ```bash
 curl -s https://api.qore.host/qorechain/abstractaccount/v1/config
@@ -357,21 +357,24 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/reward_pool
 
 ```json
 {
-  "balance": "487231800",
-  "reserved": "487231800",
-  "outstanding": "0",
+  "balance": "5645408555",
+  "reserved": "5645276228",
+  "outstanding": "130077",
   "payable": "0",
   "max_reward_per_block_per_node": "1713",
-  "distributable": "0",
+  "distributable": "2250",
   "initialized": true,
-  "max_reward_per_month_per_node": "2000000000"
+  "max_reward_per_month_per_node": "2000000000",
+  "monthly_cap_active": true,
+  "last_distribution_time": "1792775155",
+  "last_distribution_height": "3744000"
 }
 ```
 
-`reserved` este partea din pool care este ținută deoparte și poate fi mutată doar printr-un vot de guvernanță. Limitele per nod sunt în `uqor`: `max_reward_per_block_per_node` este plafonul per bloc și, începând cu v3.2.3, `max_reward_per_month_per_node` (`2000000000` uqor = 2.000 QOR pe 30 de zile) este plafonul lunar, calculat proporțional cu timpul de bloc și cu uptime-ul, astfel încât nu mai depinde de cât de repede vin blocurile. Un plafon nu este o sumă promisă. Exemplul este răspunsul live de pe mainnet la momentul scrierii, după ce guvernanța a eliberat rezerva anterioară (propunerea 8, 19 octombrie 2026). Începând cu v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566) răspunsul are în plus `monthly_cap_active`, `last_distribution_time` și `last_distribution_height`, iar limita unui nod începe de la propria sa înregistrare.
+`reserved` este partea din pool care este ținută deoparte și poate fi mutată doar printr-un vot de guvernanță. Limitele per nod sunt în `uqor`: `max_reward_per_block_per_node` este plafonul per bloc și, începând cu v3.2.3, `max_reward_per_month_per_node` (`2000000000` uqor = 2.000 QOR pe 30 de zile) este plafonul lunar, calculat proporțional cu timpul de bloc și cu uptime-ul, astfel încât nu mai depinde de cât de repede vin blocurile. Un plafon nu este o sumă promisă. Exemplul este răspunsul live de pe mainnet citit la 23 octombrie 2026, după ce guvernanța a eliberat rezerva anterioară (propunerea 8, 19 octombrie 2026). Începând cu v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet din 23 octombrie 2026) răspunsul are în plus `monthly_cap_active`, `last_distribution_time` și `last_distribution_height`, iar limita unui nod începe de la propria sa înregistrare.
 
 :::note Înregistrarea necesită o licență
-Chain-ul refuză o înregistrare de nod light fără o acordare activă a licenței `lightnode_operator` (`holders/lightnode_operator` listează acordările). La momentul scrierii, `stats` raportează `"total_registered": "0"` pe mainnet și un nod înregistrat pe testnet. Vezi [Noduri Light](/light-node/overview) pentru starea programului.
+Chain-ul refuză o înregistrare de nod light fără o acordare activă a licenței `lightnode_operator` (`holders/lightnode_operator` listează acordările). La 23 octombrie 2026, `stats` raportează `"total_registered": "1"` atât pe mainnet, cât și pe testnet. Vezi [Noduri Light](/light-node/overview) pentru starea programului.
 :::
 
 ## Modulul RDK {#rdk-module}
@@ -406,7 +409,7 @@ curl -s https://api.qore.host/qorechain/rdk/v1/params
 }
 ```
 
-La momentul scrierii, `rollups` este o listă goală pe ambele rețele, deci rutele per rollup răspund cu `404` (de exemplu `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window` este exprimat în secunde (`604800`). Începând cu v3.2.4, fereastra de contestare optimistă a unui lot nou trimis este măsurată în timp de bloc: pe testnet de la înălțimea 8.337.253 (19 octombrie 2026), pe mainnet de la înălțimea 3.742.566. Până atunci, mainnet-ul convertește valoarea în secunde în blocuri la un ritm fix de 6 secunde pe bloc.
+La momentul scrierii, `rollups` este o listă goală pe ambele rețele, deci rutele per rollup răspund cu `404` (de exemplu `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window` este exprimat în secunde (`604800`). Începând cu v3.2.4, fereastra de contestare optimistă a unui lot nou trimis este măsurată în timp de bloc: pe testnet de la înălțimea 8.337.253 (19 octombrie 2026), pe mainnet de la înălțimea 3.742.566 (23 octombrie 2026). Înainte de upgrade, lanțul convertea valoarea în secunde în blocuri la un ritm fix de 6 secunde pe bloc.
 
 ## Modulul Inflation {#inflation-module}
 
@@ -422,7 +425,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info
 ```
 
-Pe mainnet, `emission_mode` este `"fixed"`, `fixed_epoch_emission` este `"86000000000"` (86.000 QOR pe epocă), `epoch_length` este `"43200"` blocuri, iar `max_total_emission` este `"590000000000000"` (590.000.000 QOR, plafonul cumulat). Acestea au fost stabilite prin propunerea de guvernanță 10 (aprobată la 19 octombrie 2026); prima epocă care folosește noua sumă fixă începe la blocul 3.672.000, iar `epoch_info` arată epoca în desfășurare și suma emisă până acum. Lista `schedule` din răspuns aparține modului inițial `schedule`; ea nu descrie ce emite o epocă în modul fixed. Toate sumele sunt în `uqor`. Testnet-ul raportează propriile valori, diferite. Începând cu v3.2.4 există un al treilea mod, `target_apy`, cu un câmp `target_apy_bps` (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566). O rețea trece la el doar printr-un vot propriu de guvernanță, deci mainnet-ul rămâne pe `fixed` până când un astfel de vot este aprobat; testnet-ul raportează `"emission_mode": "fixed"` la momentul scrierii.
+Pe mainnet, `emission_mode` este `"fixed"`, `fixed_epoch_emission` este `"86000000000"` (86.000 QOR pe epocă), `epoch_length` este `"43200"` blocuri, iar `max_total_emission` este `"590000000000000"` (590.000.000 QOR, plafonul cumulat). Acestea au fost stabilite prin propunerea de guvernanță 10 (aprobată la 19 octombrie 2026); prima epocă care folosește noua sumă fixă începe la blocul 3.672.000, iar `epoch_info` arată epoca în desfășurare și suma emisă până acum. Lista `schedule` din răspuns aparține modului inițial `schedule`; ea nu descrie ce emite o epocă în modul fixed. Toate sumele sunt în `uqor`. Testnet-ul raportează propriile valori, diferite. Începând cu v3.2.4 există un al treilea mod, `target_apy`, cu un câmp `target_apy_bps` (pe testnet din 19 octombrie 2026; pe mainnet din 23 octombrie 2026). O rețea trece la el doar printr-un vot propriu de guvernanță, deci mainnet-ul rămâne pe `fixed` până când un astfel de vot este aprobat (verificat la 23 octombrie 2026: încă `fixed`); testnet-ul raportează `"emission_mode": "fixed"` la momentul scrierii.
 
 ## Modulul Gas Abstraction {#gas-abstraction-module}
 
@@ -458,7 +461,7 @@ Lista acceptată conține doar `uqor` nativ pe ambele rețele, deci taxele se pl
 ## Modulul Staking Tiers (v3.2.4) {#stakingtier-module}
 
 :::note Disponibil începând cu v3.2.4
-Modulul staking-tiers face parte din **v3.2.4**. Aceste rute sunt servite de testnet din 19 octombrie 2026 și sunt servite de mainnet de la înălțimea 3.742.566 (propunerea de guvernanță 13). Până la acea înălțime, un nod de mainnet le răspunde cu `501`.
+Modulul staking-tiers face parte din **v3.2.4**. Aceste rute sunt servite de testnet din 19 octombrie 2026 și de mainnet din 23 octombrie 2026 (propunerea de guvernanță 13, înălțimea 3.742.566). Un nod aflat pe o versiune mai veche le răspunde cu `501`.
 :::
 
 | Metodă | Punct final                               | Descriere                                                          |
@@ -473,7 +476,7 @@ Modulul staking-tiers face parte din **v3.2.4**. Aceste rute sunt servite de tes
 
 Aceste module au un serviciu gRPC `Query`, dar **nicio rută REST**. Numele serviciilor urmează forma `qorechain.<module>.v1.Query`.
 
-| Modul         | Metode de interogare gRPC (versiunea de chain v3.2.3)  |
+| Modul         | Metode de interogare gRPC (versiunea de chain v3.2.4)  |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
@@ -525,7 +528,7 @@ Pentru a interoga un anumit serviciu:
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` are trei metode pe un nod v3.2.3, `Account`, `EVMWindow` și `EVMDelegationConsent`, și o a patra începând cu v3.2.4 (testnet din 19 octombrie 2026, mainnet de la înălțimea 3.742.566), `ProtocolFeatures`. Nu există metoda `Params`.
+`qorechain.pqc.v1.Query` are trei metode pe un nod v3.2.3, `Account`, `EVMWindow` și `EVMDelegationConsent`, și o a patra începând cu v3.2.4 (testnet din 19 octombrie 2026, mainnet din 23 octombrie 2026), `ProtocolFeatures`. Nu există metoda `Params`.
 
 ## Autentificare
 

@@ -10,7 +10,7 @@ sidebar_position: 1
 Esta guía cubre el token QOR, cómo enviar y recibir tokens, consultar saldos y comprender el modelo de distribución de comisiones en QoreChain.
 
 :::note
-Los comandos siguientes utilizan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.3** hasta la altura 3,742,566 y **v3.2.4** desde ese bloque; la testnet ejecuta **v3.2.4** desde el 19 de octubre de 2026 — sustituye el chain ID y los endpoints de mainnet de la página **Conectarse a la Mainnet** cuando realices transacciones en mainnet.
+Los comandos siguientes utilizan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.4** desde el 23 de octubre de 2026; la testnet ejecuta **v3.2.4** desde el 19 de octubre de 2026 — sustituye el chain ID y los endpoints de mainnet de la página **Conectarse a la Mainnet** cuando realices transacciones en mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -98,7 +98,7 @@ El reparto se aplica a todo lo que entra en el fee collector, que contiene las c
 
 ## Canales de Quema
 
-El módulo de quema de QoreChain define 12 fuentes de quema. El QOR quemado a través de cualquiera de ellas se elimina permanentemente de la circulación. En mainnet, hasta ahora solo los canales de comisiones de gas y de transacciones fallidas han registrado quemas; los demás están definidos pero no han registrado nada. Desde v3.2.4 (testnet desde el 19 de octubre de 2026; mainnet desde la altura 3,742,566) hay una decimotercera fuente, `staking_tier_penalty`, para el módulo opcional de staking con bloqueo temporal.
+El módulo de quema de QoreChain define 12 fuentes de quema. El QOR quemado a través de cualquiera de ellas se elimina permanentemente de la circulación. En mainnet, hasta ahora solo los canales de comisiones de gas y de transacciones fallidas han registrado quemas; los demás están definidos pero no han registrado nada. Desde v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026) hay una decimotercera fuente, `staking_tier_penalty`, para el módulo opcional de staking con bloqueo temporal.
 
 | Canal              | Descripción                                                         |
 | -------------------- | ------------------------------------------------------------------- |

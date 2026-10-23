@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain prend en charge plusieurs types de portefeuilles dans ses environnements d'exécution natif, EVM et SVM. Choisissez le portefeuille adapté à votre cas d'usage.
 
 :::note
-Les valeurs ci-dessous couvrent à la fois le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, actif depuis le 7 juin 2026, version v3.2.3 jusqu'à la hauteur 3 742 566 puis v3.2.4 à partir de ce bloc) et le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version v3.2.4 depuis le 19 octobre 2026). Les points de terminaison publics des deux réseaux sont répertoriés dans [Réseaux](/appendix/networks#public-endpoints).
+Les valeurs ci-dessous couvrent à la fois le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, actif depuis le 7 juin 2026, version v3.2.4 depuis le 23 octobre 2026) et le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version v3.2.4 depuis le 19 octobre 2026). Les points de terminaison publics des deux réseaux sont répertoriés dans [Réseaux](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recommandé) {#qorex}

@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Parametrii lanțului
 
-Referință consolidată a parametrilor de modul ai rețelelor QoreChain, grupați pe module. Parametrii pot fi interogați cu `qorechaind query <module> params` acolo unde modulul are o interogare params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` și `gasabstraction` folosesc `config`, iar `gasabstraction` poate fi interogat doar pe testnet) și, prin REST, doar pentru rutele enumerate în [referința REST / gRPC](/api-reference/rest-grpc-endpoints). Parametrii `x/inflation` sunt serviți și prin REST pe mainnet începând cu v3.2.3 (`/qorechain/inflation/v1/params`). REST nu este disponibil pentru `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` sau `xqore`.
+Referință consolidată a parametrilor de modul ai rețelelor QoreChain, grupați pe module. Parametrii pot fi interogați cu `qorechaind query <module> params` acolo unde modulul are o interogare params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` și `gasabstraction` folosesc `config`) și, prin REST, doar pentru rutele enumerate în [referința REST / gRPC](/api-reference/rest-grpc-endpoints). Parametrii `x/inflation` sunt serviți și prin REST pe mainnet începând cu v3.2.3 (`/qorechain/inflation/v1/params`). REST nu este disponibil pentru `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` sau `xqore`.
 
 :::note
-Valorile afișate au fost citite în direct de pe mainnet **`qorechain-vladi`** (EVM chain ID **9801**, versiunea **v3.2.3**) la 20 octombrie 2026 (valori de genesis, cu excepția cazurilor în care o propunere de guvernanță le-a schimbat; acestea sunt menționate). Ele sunt identice pe testnet **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.4** din 19 octombrie 2026), cu excepția cazurilor indicate; diferențele care există până când mainnet-ul preia upgrade-ul v3.2.4 (înălțimea 3,742,566) sunt adunate în [Diferențe până la upgrade-ul v3.2.4](#testnet-differences). Duratele exprimate în blocuri sunt convertite la timpul de bloc măsurat pe mainnet, de aproximativ 3,2 secunde (testnet-ul produce un bloc aproximativ la fiecare secundă).
+Valorile afișate au fost citite în direct de pe mainnet **`qorechain-vladi`** (EVM chain ID **9801**, versiunea **v3.2.4**, aplicată la 23 octombrie 2026) la 23 octombrie 2026 (valori de genesis, cu excepția cazurilor în care o propunere de guvernanță le-a schimbat; acestea sunt menționate). Ele sunt identice pe testnet **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.4** din 19 octombrie 2026), cu excepția cazurilor indicate; diferențele rămase sunt adunate în [Diferențe între testnet și mainnet](#testnet-differences). Duratele exprimate în blocuri sunt convertite la timpul de bloc măsurat pe mainnet, de aproximativ 3,2 secunde (testnet-ul produce un bloc aproximativ la fiecare secundă).
 :::
 
 ---
@@ -152,7 +152,7 @@ Penalizări de ieșire: 50 % (blocare mai scurtă de 30 de zile), 35 % (30–90 
 | `schedule`             | 17,5 %, 11 %, 7 %, 7 %, 2 % | Rate vechi pe ani, nefolosite în modul fixed      |
 | `enabled`              | `true`                  | Indicator de activare a modulului                     |
 
-Modulul emite această cantitate în colectorul de comisioane până la atingerea plafonului. Prima epocă la 86.000 QOR începe la blocul 3,672,000. La 20 octombrie 2026 (epoca 84) fuseseră emiși 105.248.896,21 QOR și rămâneau 484.751.103,79 QOR sub plafon (`GET /qorechain/inflation/v1/epoch_info`). Vezi [Tokenomics](/architecture/tokenomics#supply-and-emission).
+Modulul emite această cantitate în colectorul de comisioane până la atingerea plafonului. Prima epocă la 86.000 QOR începe la blocul 3,672,000. La 23 octombrie 2026 (epoca 86) fuseseră emiși 105.420.896,21 QOR și rămâneau 484.579.103,79 QOR sub plafon (`GET /qorechain/inflation/v1/epoch_info`). Vezi [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ---
 
@@ -349,7 +349,7 @@ Nu există încă pool-uri pe mainnet sau testnet, iar `MsgPausePool` / `MsgResu
 
 ## Staking, slashing, guvernanță, comisioane și EVM {#core-modules}
 
-Module standard Cosmos SDK și EVM, citite în direct la 20 octombrie 2026 (identice pe ambele rețele, cu excepția cazurilor indicate; neschimbate față de citirea din 14 octombrie).
+Module standard Cosmos SDK și EVM, citite în direct la 23 octombrie 2026 pentru rândurile de staking, slashing, guvernanță și distribuție (rândurile fee-market, EVM, ERC-20 și QoreChain Native au fost citite ultima dată la 20 octombrie 2026); identice pe ambele rețele, cu excepția cazurilor indicate, și neschimbate de upgrade-ul v3.2.4.
 
 | Modul | Parametru | Valoare |
 | --- | --- | --- |
@@ -394,21 +394,11 @@ Orice alt tip de mesaj, inclusiv toate mesajele standard bank, staking, governan
 
 ---
 
-## Diferențe până la upgrade-ul v3.2.4 {#testnet-differences}
+## Diferențe între testnet și mainnet {#testnet-differences}
 
-Testnet-ul `qorechain-diana` rulează v3.2.4 de la înălțimea 8,337,253 (19 octombrie 2026). Mainnet-ul rulează v3.2.3 până la înălțimea 3,742,566 și v3.2.4 de la acel bloc (propunerea de guvernanță 13); din acel moment rândurile v3.2.4 de mai jos se aplică ambelor rețele și rămân diferite doar valorile specifice fiecărei rețele. La 20 octombrie 2026, testnet-ul diferă de mainnet astfel:
+Ambele rețele rulează v3.2.4: testnet-ul `qorechain-diana` de la înălțimea 8,337,253 (19 octombrie 2026), mainnet-ul `qorechain-vladi` de la înălțimea 3,742,566 (23 octombrie 2026, propunerea de guvernanță 13). Adăugirile v3.2.4 sunt deci aceleași pe ambele rețele: modulul opțional de staking cu blocare în timp `x/stakingtier` (49 de module în loc de 48; `GET /qorechain/stakingtier/v1/params`, blocare minimă 10 QOR, penalizare la deblocare anticipată 5 %), un al treilea `emission_mode` (`target_apy`, cu `target_apy_bps` la `0` pe ambele rețele), o a treisprezecea sursă înregistrată de ardere (`staking_tier_penalty`), câmpuri suplimentare de raportare a pool-ului de recompense al nodurilor light (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`) cu o limită de recompensă care începe de la propria înregistrare a nodului, indicatorul `possession_proven` pe conturile PQC (dovada de posesie rămâne opțională pentru cheile de cont și este obligatorie pentru cheile validatorilor de bridge), fereastra de contestare RDK numărată în timp de bloc și interogările `protocol_features` și `auth_nonce`. Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking). La 23 octombrie 2026, cele două rețele diferă doar prin valorile de mai jos.
 
-| Zonă | Testnet acum; mainnet de la înălțimea 3,742,566 |
-| ---- | ------- |
-| Module | 49 în loc de 48: modulul opțional de staking cu blocare în timp `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`; blocare minimă 10 QOR). Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking). |
-| `x/inflation` | Un al treilea `emission_mode`, `target_apy`, cu un parametru `target_apy_bps` care este `0` pe testnet. Care mod este în vigoare este o decizie de guvernanță separată pe fiecare rețea. |
-| `x/burn` | O a treisprezecea sursă înregistrată, `staking_tier_penalty`. |
-| Pool-ul de recompense `x/lightnode` | Câmpuri suplimentare de raportare (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); limita de recompensă a unui nod începe de la propria înregistrare. |
-| `x/pqc` | Un indicator `possession_proven` pe conturile PQC; dovada de posesie este în continuare opțională pentru cheile de cont și obligatorie pentru cheile validatorilor de bridge. |
-| `x/rdk` | Fereastra optimistă de contestare este numărată în timp de bloc. |
-| Interogări | Interogări noi `protocol_features` și `auth_nonce`. |
-
-Aceste valori sunt specifice testnet-ului și rămân diferite și după upgrade:
+Aceste valori sunt specifice testnet-ului:
 
 | Zonă | Testnet |
 | ---- | ------- |

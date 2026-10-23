@@ -10,9 +10,9 @@ sidebar_position: 1
 Riferimento per i comandi `qorechaind` usati per inizializzare, configurare e gestire un nodo QoreChain.
 
 :::note
-QoreChain gestisce due reti: la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026; release del nodo **v3.2.3**, applicata all'altezza 3.662.051 il 20 ottobre 2026; la mainnet esegue la v3.2.3 fino all'altezza 3.742.566 e la **v3.2.4** da quel blocco, programmata dalla proposta di governance 13) e la testnet **`qorechain-diana`** (release del nodo **v3.2.4**, applicata all'altezza 8.337.253 il 19 ottobre 2026). Passa il `--chain-id` appropriato per la rete a cui vuoi collegarti — gli esempi seguenti fanno riferimento alla testnet; usa `--chain-id qorechain-vladi` per la mainnet. La release attuale di ciascuna rete è indicata in `latest.json` su [download.qore.host](https://download.qore.host).
+QoreChain gestisce due reti: la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026; release del nodo **v3.2.4**, applicata all'altezza 3.742.566 il 23 ottobre 2026 dalla proposta di governance 13; la v3.2.3 è stata applicata all'altezza 3.662.051 il 20 ottobre 2026) e la testnet **`qorechain-diana`** (release del nodo **v3.2.4**, applicata all'altezza 8.337.253 il 19 ottobre 2026). Passa il `--chain-id` appropriato per la rete a cui vuoi collegarti — gli esempi seguenti fanno riferimento alla testnet; usa `--chain-id qorechain-vladi` per la mainnet. La release attuale di ciascuna rete è indicata in `latest.json` su [download.qore.host](https://download.qore.host).
 
-I comandi di questa pagina sono stati verificati con il binario della release v3.2.3. Il binario v3.2.4 aggiunge comandi che un binario v3.2.3 non ha (per esempio `stakingtier`); funzionano sulla testnet ora e sulla mainnet dall'altezza 3.742.566, e dove questo manuale ne cita uno lo indica.
+I comandi di questa pagina sono stati verificati con il binario della release v3.2.3. Il binario v3.2.4 aggiunge comandi che un binario v3.2.3 non ha (per esempio `stakingtier`); funzionano su entrambe le reti (testnet dal 19 ottobre 2026, mainnet dal 23 ottobre 2026), e dove questo manuale ne cita uno lo indica.
 :::
 
 ---
@@ -70,8 +70,9 @@ Un binario compilato dall'albero dei sorgenti pubblico (la build della community
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 been applied on mainnet, and at which height?
+# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height?
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 ```
 
 ---

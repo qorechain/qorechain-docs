@@ -141,7 +141,7 @@ Filtrate per tipo di evento per ricevere solo gli eventi provenienti da un modul
 
 ## Riferimento agli eventi dei moduli
 
-Gli eventi vengono emessi come eventi standard del consensus engine. Sottoscrivetevi con una query `tm.event='Tx'` filtrata sul tipo di evento e sull'attributo (ad esempio `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Gli eventi a livello di blocco (quelli emessi dalla logica di fine blocco, come gli eventi PRISM qui sotto) vengono consegnati con `tm.event='NewBlock'`, non con `Tx`. I nomi e gli attributi riportati di seguito sono quelli della versione della chain v3.2.3 (mainnet); gli eventi che esistono solo sulla testnet v3.2.4 sono contrassegnati.
+Gli eventi vengono emessi come eventi standard del consensus engine. Sottoscrivetevi con una query `tm.event='Tx'` filtrata sul tipo di evento e sull'attributo (ad esempio `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Gli eventi a livello di blocco (quelli emessi dalla logica di fine blocco, come gli eventi PRISM qui sotto) vengono consegnati con `tm.event='NewBlock'`, non con `Tx`. I nomi e gli attributi riportati di seguito sono quelli della versione della chain v3.2.4 (mainnet dal 23 ottobre 2026, testnet dal 19 ottobre 2026); gli eventi aggiunti nella v3.2.4 sono contrassegnati.
 
 :::note Quali eventi vedrete davvero
 Molti di questi moduli sono inattivi sulle reti pubbliche: il bridge non è attivo, non è ancora registrato alcun layer multilayer né alcun rollup, e xQORE non è utilizzabile. I loro eventi sono definiti ma non vengono emessi finché non c'è attività. Gli eventi di osservazione e di ricompensa PRISM (`rl_observation_collected`, `rl_reward_computed`) vengono emessi circa ogni 10 blocchi su entrambe le reti.
@@ -227,7 +227,7 @@ Le chiavi PQC vengono registrate esplicitamente con una transazione di registraz
 
 ### Modulo Staking Tiers (v3.2.4)
 
-Questi eventi arrivano con la release v3.2.4: la testnet `qorechain-diana` li emette dal 19 ottobre 2026 e la mainnet li emette dall'altezza 3.742.566 (proposta di governance 13). Un nodo mainnet ancora sulla v3.2.3 non ha il modulo staking-tiers e non ne emette nessuno.
+Questi eventi arrivano con la release v3.2.4: la testnet `qorechain-diana` li emette dal 19 ottobre 2026 e la mainnet dal 23 ottobre 2026 (proposta di governance 13, altezza 3.742.566). Un nodo con una release precedente non ha il modulo staking-tiers e non ne emette nessuno.
 
 | Tipo di evento | Attributi chiave | Descrizione |
 | ---------- | -------------- | ----------- |

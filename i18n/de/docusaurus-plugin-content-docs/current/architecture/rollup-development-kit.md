@@ -10,7 +10,7 @@ sidebar_position: 12
 Das `x/rdk`-Modul stellt ein umfassendes Rollup Development Kit (RDK) bereit, mit dem Entwickler anwendungsspezifische Rollups auf QoreChain bereitstellen können. Es unterstützt vier Settlement-Paradigmen, mehrere Sequencer-Modi, austauschbare Datenverfügbarkeits-Backends und KI-gestützte Konfigurationsoptimierung.
 
 :::caution Frühphasige Funktion
-Das Modul ist auf Mainnet (Chain-Version **v3.2.3** bis Blockhöhe 3.742.566, **v3.2.4** ab diesem Block) und Testnet (**v3.2.4**) bereitgestellt, aber **auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt** (geprüft am 21. Oktober 2026: `GET /qorechain/rdk/v1/rollups` liefert auf beiden eine leere Liste). Mehrere der unten beschriebenen Funktionen sind heute nicht Ende-zu-Ende nutzbar; der jeweilige Status ist dort angegeben, wo die Funktion beschrieben wird. Die Anleitung für Entwickler finden Sie unter [Rollups Overview](/rollups/overview).
+Das Modul ist auf Mainnet (Chain-Version **v3.2.4** seit dem 23. Oktober 2026) und Testnet (**v3.2.4**) bereitgestellt, aber **auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt** (geprüft am 23. Oktober 2026: `GET /qorechain/rdk/v1/rollups` liefert auf beiden eine leere Liste). Mehrere der unten beschriebenen Funktionen sind heute nicht Ende-zu-Ende nutzbar; der jeweilige Status ist dort angegeben, wo die Funktion beschrieben wird. Die Anleitung für Entwickler finden Sie unter [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ QoreChain RDK unterstützt vier unterschiedliche Settlement-Modi — **optimisti
 Optimistic Rollups gehen standardmäßig davon aus, dass Transaktionen gültig sind, und verlassen sich für die Streitbeilegung auf Betrugsbeweise (Fraud Proofs).
 
 * **Beweissystem**: Interaktive Betrugsbeweise
-* **Challenge-Fenster**: 604.800 Sekunden (Standard, 7 Tage). **Bis v3.2.4 (Mainnet v3.2.3 vor Blockhöhe 3.742.566):** Die Chain rechnet dies mit festen 6 Sekunden pro Block in Blöcke um, **100.800 Blöcke**, sodass die tatsächlich verstreichende Zeit von der realen Blockzeit abhängt (etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets); planen Sie daher in Blöcken, nicht in Tagen. **Ab v3.2.4:** Für einen Batch, der ab der Upgrade-Höhe eingereicht wird, wird das Fenster in Sekunden der Blockzeit gemessen (volle 7 Tage). Ein früher eingereichter Batch behält die Regel nach Blockanzahl. Das Testnet hat v3.2.4 auf Höhe 8.337.253 angewendet (19. Oktober 2026); das Mainnet wendet es auf Höhe 3.742.566 an (Governance-Vorschlag 13).
+* **Challenge-Fenster**: 604.800 Sekunden (Standard, 7 Tage). **Vor v3.2.4:** Die Chain rechnet dies mit festen 6 Sekunden pro Block in Blöcke um, **100.800 Blöcke**, sodass die tatsächlich verstreichende Zeit von der realen Blockzeit abhängt (etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets); planen Sie daher in Blöcken, nicht in Tagen. **Ab v3.2.4:** Für einen Batch, der ab der Upgrade-Höhe eingereicht wird, wird das Fenster in Sekunden der Blockzeit gemessen (volle 7 Tage). Ein früher eingereichter Batch behält die Regel nach Blockanzahl. Das Testnet hat v3.2.4 auf Höhe 8.337.253 angewendet (19. Oktober 2026); das Mainnet hat es auf Höhe 3.742.566 angewendet (23. Oktober 2026, Governance-Vorschlag 13).
 * **Challenge-Bond**: 1.000 QOR (1.000.000.000 uqor) — erforderlich, um eine Betrugsbeweis-Anfechtung einzureichen (Presets `nft` und `custom`; die Presets `defi`, `gaming` und `enterprise` setzen keinen Bond, da sie kein Challenge-Fenster haben)
 * **Finalität**: Verzögert, bis das Challenge-Fenster ohne gültige Anfechtung abläuft
 * **Auto-Finalisierung**: Der `EndBlocker` finalisiert Batches automatisch, sobald das Challenge-Fenster ohne Streitfall abgelaufen ist. Ein angefochtener Batch wird nie automatisch finalisiert: Der Ersteller des Rollups löst die Anfechtung zuerst auf (siehe [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Settlement-Modus | Finalisierungs-Trigger                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100.800 Blöcke nach der Übermittlung (Standardfenster) ohne Anfechtung; bei Batches, die seit v3.2.4 eingereicht wurden (Testnet ab Höhe 8.337.253; Mainnet ab Höhe 3.742.566), 604.800 Sekunden Blockzeit |
+| **Optimistic**  | 100.800 Blöcke nach der Übermittlung (Standardfenster) ohne Anfechtung; bei Batches, die seit v3.2.4 eingereicht wurden (Testnet ab Höhe 8.337.253; Mainnet ab Höhe 3.742.566, 23. Oktober 2026), 604.800 Sekunden Blockzeit |
 | **ZK**          | Sofort bei Übermittlung eines gültigen Beweises                           |
 | **Based**       | 2 L1-Blöcke nach Übermittlung                                |
 | **Sovereign**   | Keine — verwaltet durch den eigenen Konsens des Rollups                |

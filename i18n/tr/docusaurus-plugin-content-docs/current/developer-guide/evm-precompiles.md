@@ -24,7 +24,7 @@ Aşağıdaki altı QoreChain ön derlemesi **düğüme derlenmiştir ancak henü
 | PRISM Consensus Params | `0x…0C01` | Etkin değil | Etkin değil |
 | CrossVM Bridge | `0x…0901` | Etkin değil | Etkin değil |
 
-Etkinleştirme bir zincir yükseltmesi gerektirir ve aşamalı olarak planlanmıştır: önce salt okunur PQC ve konsensüs ön derlemeleri, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve en son CrossVM köprüsü. v3.2.3 sürümü (ana ağ, 20 Ekim 2026), CrossVM köprüsünün ve AI anomali ön derlemesinin güçlendirilmiş sürümlerini bir protokol özelliğinin arkasında ikili dosyaya koydu, **ancak hiçbir ön derlemeyi etkinleştirmedi**: `active_static_precompiles` listesi her iki ağda da hâlâ boştur ve v3.2.4 (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren) bunu değiştirmez. Bu tablo, herhangi birini etkinleştiren yükseltmeyle aynı işlemde güncellenir.
+Etkinleştirme bir zincir yükseltmesi gerektirir ve aşamalı olarak planlanmıştır: önce salt okunur PQC ve konsensüs ön derlemeleri, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve en son CrossVM köprüsü. v3.2.3 sürümü (ana ağ, 20 Ekim 2026), CrossVM köprüsünün ve AI anomali ön derlemesinin güçlendirilmiş sürümlerini bir protokol özelliğinin arkasında ikili dosyaya koydu, **ancak hiçbir ön derlemeyi etkinleştirmedi**: `active_static_precompiles` listesi her iki ağda da hâlâ boştur ve v3.2.4 (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri) bunu değiştirmez. Bu tablo, herhangi birini etkinleştiren yükseltmeyle aynı işlemde güncellenir.
 
 Güncel listeyi kendiniz kontrol edin (boşsa hiçbiri etkin değildir):
 
@@ -95,7 +95,7 @@ interface IQorePQC {
 }
 ```
 
-v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren), bu ön derleme etkin hale geldiğinde çıktısı `pubkey` değerinden sonra dördüncü bir değer taşır, `bool possessionProven`: hesabın geçerli anahtarının doğrulanmış bir sahiplik kanıtıyla kanıtlanıp kanıtlanmadığı (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#proof-of-possession)). Yukarıdaki arayüz ilk üç çıktıyı listeler; anahtara güvenmesi gereken bir sözleşme dördüncüyü de okumalıdır.
+v3.2.4'ten itibaren (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri), bu ön derleme etkin hale geldiğinde çıktısı `pubkey` değerinden sonra dördüncü bir değer taşır, `bool possessionProven`: hesabın geçerli anahtarının doğrulanmış bir sahiplik kanıtıyla kanıtlanıp kanıtlanmadığı (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#proof-of-possession)). Yukarıdaki arayüz ilk üç çıktıyı listeler; anahtara güvenmesi gereken bir sözleşme dördüncüyü de okumalıdır.
 
 ### IQoreAI.sol
 

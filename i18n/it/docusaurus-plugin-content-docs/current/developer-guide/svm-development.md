@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain include un ambiente di esecuzione **Solana Virtual Machine (SVM)**, che consente agli sviluppatori di distribuire ed eseguire programmi SBF/BPF utilizzando gli strumenti Solana con cui hanno già familiarità. Il modulo SVM espone un'interfaccia JSON-RPC compatibile con Solana sulla **porta 8899**, che `qorechaind start` avvia automaticamente (vedi [JSON-RPC Server](#json-rpc-server) qui sotto).
 
 :::note
-I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.3** fino all'altezza 3.742.566 e la **v3.2.4** da quel blocco (proposta di governance 13). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.4 dal 19 ottobre 2026. **Le transazioni SVM sono disabilitate su entrambe le reti** (vedi il riquadro successivo), quindi i comandi `tx svm` di questa pagina hanno valore di sola consultazione: oggi non possono andare a buon fine.
+I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.4** dal 23 ottobre 2026 (proposta di governance 13, altezza 3.742.566). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.4 dal 19 ottobre 2026. **Le transazioni SVM sono disabilitate su entrambe le reti** (vedi il riquadro successivo), quindi i comandi `tx svm` di questa pagina hanno valore di sola consultazione: oggi non possono andare a buon fine.
 :::
 
 ---

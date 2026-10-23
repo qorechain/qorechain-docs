@@ -21,7 +21,7 @@ Les commandes ci-dessous utilisent `qorechaind`. Ajoutez les indicateurs de tran
 :::
 
 :::caution Aucun pool n'existe encore
-Le module AMM est en production sur le mainnet (v3.2.3) et le testnet (v3.2.4), mais **aucun pool n'a encore été créé** (vérifié le 20 octobre 2026 : `GET /qorechain/amm/v1/pools` renvoie une liste vide sur les deux), et les denoms des exemples ci-dessous (`uusdc`, `uusdt`) sont illustratifs : aucun actif de ce type n'existe aujourd'hui sur les réseaux. Tant qu'aucun pool n'existe, toute commande de swap ou d'ajout de liquidité échoue avec une erreur de pool introuvable.
+Le module AMM est en production sur le mainnet et le testnet (tous deux en v3.2.4), mais **aucun pool n'a encore été créé** (vérifié le 23 octobre 2026 : `GET /qorechain/amm/v1/pools` renvoie une liste vide sur les deux), et les denoms des exemples ci-dessous (`uusdc`, `uusdt`) sont illustratifs : aucun actif de ce type n'existe aujourd'hui sur les réseaux. Tant qu'aucun pool n'existe, toute commande de swap ou d'ajout de liquidité échoue avec une erreur de pool introuvable.
 :::
 
 ## Paramètres du module {#parameters}

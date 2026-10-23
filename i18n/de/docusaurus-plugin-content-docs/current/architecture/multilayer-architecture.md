@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implementiert über das Modul `x/multilayer` eine **hierarchische 4-Schichten-Chain-Architektur**. Die Hauptchain dient als Settlement- und Trust-Root, während die untergeordneten Schichten (Sidechains, Paychains und Rollups) spezialisierte Workloads mit unterschiedlichen Kompromissen zwischen Performance und Sicherheit verarbeiten.
 
 :::caution Frühe Entwicklungsphase
-Das Modul ist im Mainnet (Chain-Version **v3.2.3** bis Blockhöhe 3,742,566, **v3.2.4** ab diesem Block) und im Testnet (**v3.2.4**) bereitgestellt, aber **bisher existiert in keinem der beiden Netzwerke eine Schicht oder ein Anchor** (geprüft am 20. Oktober 2026: `GET /qorechain/multilayer/v1/layers` liefert in beiden eine leere Liste). Alles Folgende beschreibt das Modul so, wie es gebaut ist; die Parameter sind die aktuell gültigen Werte. Im Mainnet ist die Nachricht `MsgUpdateLayerStatus` derzeit durch den Circuit Breaker abgeschaltet (siehe [Chain-Parameter](/appendix/chain-parameters#circuit-breaker)); im Testnet nicht.
+Das Modul ist im Mainnet (Chain-Version **v3.2.4** seit dem 23. Oktober 2026) und im Testnet (**v3.2.4**) bereitgestellt, aber **bisher existiert in keinem der beiden Netzwerke eine Schicht oder ein Anchor** (geprüft am 23. Oktober 2026: `GET /qorechain/multilayer/v1/layers` liefert in beiden eine leere Liste). Alles Folgende beschreibt das Modul so, wie es gebaut ist; die Parameter sind die aktuell gültigen Werte. Im Mainnet ist die Nachricht `MsgUpdateLayerStatus` derzeit durch den Circuit Breaker abgeschaltet (siehe [Chain-Parameter](/appendix/chain-parameters#circuit-breaker)); im Testnet nicht.
 :::
 
 ---
@@ -64,7 +64,7 @@ Die Hauptchain ist der Trust-Root für das gesamte QoreChain-Ökosystem.
 | Konsens    | QoreChain-Konsens (siehe [Konsensmechanismus](/architecture/consensus-mechanism), was heute verdrahtet ist) |
 | Sicherheit | PQC-gesichert mit Dilithium-5-Signaturen                                        |
 | Rolle      | Settlement-Schicht, Speicherung von State-Anchors, QCAI-Routing-Engine, Trust-Root |
-| Blockzeit  | Netzwerkabhängig: etwa 3,2 Sekunden im Mainnet, etwa 1,0 Sekunden im Testnet (gemessen am 20. Oktober 2026) |
+| Blockzeit  | Netzwerkabhängig: etwa 3,2 Sekunden im Mainnet, etwa 1,0 Sekunden im Testnet (gemessen am 23. Oktober 2026) |
 
 Alle untergeordneten Schichten verankern ihre State-Roots periodisch über Hierarchical Commitment Schemes (HCS) an der Hauptchain.
 
@@ -274,4 +274,4 @@ Statusübergänge werden vom Keeper durchgesetzt. Ungültige Übergänge (z. B. 
 | `routing_confidence_threshold` | string | `0.6`           | Mindestkonfidenz für QCAI-Routing-Entscheidungen        |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Globales Cross-Layer Fee Bundling aktivieren            |
 
-Dies sind die Werte, die `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) am 20. Oktober 2026 in Mainnet und Testnet zurückgibt. Seit v3.2.2 kann `MsgUpdateParams` des Moduls geroutet werden, sodass ein Governance-Vorschlag sie ändern kann.
+Dies sind die Werte, die `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) am 23. Oktober 2026 in Mainnet und Testnet zurückgibt. Seit v3.2.2 kann `MsgUpdateParams` des Moduls geroutet werden, sodass ein Governance-Vorschlag sie ändern kann.

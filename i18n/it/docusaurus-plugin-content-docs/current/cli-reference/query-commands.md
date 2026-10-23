@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Le query vengono eseguite sul nodo indicato da `--node`. Usa un endpoint RPC mainnet **`qorechain-vladi`** per i dati live (ad esempio `--node https://rpc.qore.host:443`), oppure un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) per i test. Il valore predefinito `tcp://localhost:26657` punta a un nodo eseguito da te. La mainnet esegue la release del nodo v3.2.3 fino all'altezza 3.742.566 e la v3.2.4 da quel blocco (proposta di governance 13); la testnet esegue la v3.2.4 dal 19 ottobre 2026. La release v3.2.4 aggiunge alcune route e comandi (contrassegnati come **v3.2.4** più sotto): funzionano subito sulla testnet e sulla mainnet dall'altezza 3.742.566, mentre un nodo mainnet ancora sulla v3.2.3 risponde con `Not Implemented`. I comandi di questa pagina sono stati verificati con il binario della release v3.2.3, eseguito su `https://rpc.qore.host:443`.
+Le query vengono eseguite sul nodo indicato da `--node`. Usa un endpoint RPC mainnet **`qorechain-vladi`** per i dati live (ad esempio `--node https://rpc.qore.host:443`), oppure un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) per i test. Il valore predefinito `tcp://localhost:26657` punta a un nodo eseguito da te. La mainnet esegue la release del nodo v3.2.4 dal 23 ottobre 2026 (applicata all'altezza 3.742.566 dalla proposta di governance 13); la testnet esegue la v3.2.4 dal 19 ottobre 2026. La release v3.2.4 aggiunge alcune route e comandi (contrassegnati come **v3.2.4** più sotto): funzionano su entrambe le reti, mentre un nodo ancora su una release precedente risponde con `Not Implemented`. I comandi di questa pagina sono stati verificati con il binario della release v3.2.3, eseguito su `https://rpc.qore.host:443`; le route v3.2.4 sono state verificate tramite REST il 23 ottobre 2026.
 :::
 
 Flag comuni si applicano a ogni sottocomando `query`:
@@ -115,7 +115,7 @@ qorechaind query pqc evm-delegation-consent <address>
 
 - `algorithm` accetta il nome di un algoritmo (`dilithium5`, `mlkem1024`) o un ID numerico.
 - `migration` accetta un **ID di algoritmo** (ad esempio `1`), non un indirizzo, e riporta `No active migration` quando nessuna è in corso.
-- `account` riporta la chiave registrata. Oltre alla chiave, a `key_type` e ad `algorithm_name`, il record contiene `classical_key_source` (`stored`, `auth_account` o `none`: da dove proviene la chiave pubblica classica). Dalla v3.2.4 (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566) contiene anche `possession_proven`, che vale `true` quando la chiave è stata registrata con una prova di possesso verificata.
+- `account` riporta la chiave registrata. Oltre alla chiave, a `key_type` e ad `algorithm_name`, il record contiene `classical_key_source` (`stored`, `auth_account` o `none`: da dove proviene la chiave pubblica classica). Dalla v3.2.4 (mainnet dal 23 ottobre 2026, testnet dal 19 ottobre 2026) contiene anche `possession_proven`, che vale `true` quando la chiave è stata registrata con una prova di possesso verificata.
 - `evm-window` mostra se l'indirizzo ha una finestra di autorizzazione aperta sulla lane EVM e quanti blocchi, transazioni e valore restano (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`), più l'ambito della finestra (`native_only`, `allowed_targets`; dalla v3.2.3 della mainnet). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
 - `evm-delegation-consent` mostra il consenso alla delega EIP-7702 dell'indirizzo (`found`, `live`, `delegate`, `granted_height`, `expiry_height`), la sua delega attuale e il suo nonce EVM. REST: `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
 - `params` e `hybrid-mode` riportano `hybrid_signature_mode` (`2` = obbligatoria su entrambe le reti) e `allow_classical_fallback` (`false`).
@@ -149,7 +149,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mod
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
 ```
 
-Sulla mainnet queste riportano `emission_mode: "fixed"`, un'emissione fissa di 86.000 QOR per epoca di 43.200 blocchi e un tetto cumulativo di 590.000.000 QOR (proposta di governance 10, approvata il 19 ottobre 2026; la prima epoca con il nuovo importo inizia al blocco 3.672.000). Gli importi sono in `uqor`. La testnet riporta ancora valori propri, diversi; la release v3.2.4 aggiunge un'ulteriore modalità di emissione (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566), ma una rete passa a essa solo con un proprio voto di governance, quindi la mainnet mantiene `fixed` finché un tale voto non viene approvato.
+Sulla mainnet queste riportano `emission_mode: "fixed"`, un'emissione fissa di 86.000 QOR per epoca di 43.200 blocchi e un tetto cumulativo di 590.000.000 QOR (proposta di governance 10, approvata il 19 ottobre 2026; la prima epoca con il nuovo importo inizia al blocco 3.672.000). Gli importi sono in `uqor`. La testnet riporta ancora valori propri, diversi; la release v3.2.4 aggiunge un'ulteriore modalità di emissione (disponibile su entrambe le reti), ma una rete passa a essa solo con un proprio voto di governance, quindi la mainnet mantiene `fixed` finché un tale voto non viene approvato.
 
 ---
 
@@ -184,7 +184,7 @@ qorechaind query lightnode rewards <operator_address>
 qorechaind query lightnode reward-pool
 ```
 
-`reward-pool` mostra come il saldo delle ricompense del modulo si suddivide in `reserved`, `outstanding`, `payable` e `distributable`, e i limiti per nodo: `max_reward_per_block_per_node` e, dalla v3.2.3, `max_reward_per_month_per_node` (2.000 QOR, proporzionati al tempo di blocco e all'uptime). Dalla v3.2.4 (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566) riporta anche `monthly_cap_active`, `last_distribution_time` e `last_distribution_height`.
+`reward-pool` mostra come il saldo delle ricompense del modulo si suddivide in `reserved`, `outstanding`, `payable` e `distributable`, e i limiti per nodo: `max_reward_per_block_per_node` e, dalla v3.2.3, `max_reward_per_month_per_node` (2.000 QOR, proporzionati al tempo di blocco e all'uptime). Dalla v3.2.4 (mainnet dal 23 ottobre 2026, testnet dal 19 ottobre 2026) riporta anche `monthly_cap_active`, `last_distribution_time` e `last_distribution_height`.
 
 ---
 
@@ -330,7 +330,7 @@ qorechaind query stakingtier locks <holder_address>
 qorechaind query stakingtier pool
 ```
 
-Il modulo dei tier di staking fa parte della release **v3.2.4**: gira sulla testnet dal 19 ottobre 2026 e sulla mainnet dall'altezza 3.742.566 (proposta di governance 13). Prima di quell'altezza un nodo mainnet risponde a queste query con `Not Implemented`. REST: `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. Vedi [Comandi di transazione](/cli-reference/transaction-commands#stakingtier).
+Il modulo dei tier di staking fa parte della release **v3.2.4**: gira sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026 (altezza 3.742.566, proposta di governance 13). Un nodo su una release precedente risponde a queste query con `Not Implemented`. REST: `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. Vedi [Comandi di transazione](/cli-reference/transaction-commands#stakingtier).
 
 ---
 
@@ -345,7 +345,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>` è il modo per leggere quando un upgrade è entrato in vigore: sulla mainnet `v3.2.2` è stato applicato all'altezza 3.556.788 e `v3.2.3` all'altezza 3.662.051; sulla testnet `v3.2.2` a 6.905.034, `v3.2.3` a 8.003.746 e `v3.2.4` a 8.337.253 (`0` significa non applicato). L'elenco del circuit breaker della mainnet (`disabled-list`) contiene attualmente i messaggi di creazione degli account in vesting, lo store e l'istanziazione di QoreChain Native, la pausa e la ripresa dei pool AMM, la chiamata cross-VM, l'aggiornamento dello stato dei layer multilayer, la deprecazione e la disabilitazione degli algoritmi PQC e i messaggi di governance del consenso PRISM; quello della testnet contiene solo i tre messaggi QoreChain Native.
+`query upgrade applied <name>` è il modo per leggere quando un upgrade è entrato in vigore: sulla mainnet `v3.2.2` è stato applicato all'altezza 3.556.788, `v3.2.3` all'altezza 3.662.051 e `v3.2.4` all'altezza 3.742.566; sulla testnet `v3.2.2` a 6.905.034, `v3.2.3` a 8.003.746 e `v3.2.4` a 8.337.253 (`0` significa non applicato). L'elenco del circuit breaker della mainnet (`disabled-list`) contiene attualmente i messaggi di creazione degli account in vesting, lo store e l'istanziazione di QoreChain Native, la pausa e la ripresa dei pool AMM, la chiamata cross-VM, l'aggiornamento dello stato dei layer multilayer, la deprecazione e la disabilitazione degli algoritmi PQC e i messaggi di governance del consenso PRISM; quello della testnet contiene solo i tre messaggi QoreChain Native.
 
 ---
 

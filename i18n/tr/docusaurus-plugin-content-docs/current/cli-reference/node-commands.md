@@ -10,9 +10,9 @@ sidebar_position: 1
 Bir QoreChain düğümünü başlatmak, yapılandırmak ve işletmek için kullanılan `qorechaind` komutlarına yönelik referans.
 
 :::note
-QoreChain iki ağ çalıştırır: **`qorechain-vladi`** ana ağı (7 Haziran 2026'dan beri canlı; düğüm sürümü **v3.2.3**, 20 Ekim 2026'da 3,662,051 yüksekliğinde uygulandı; ana ağ 3,742,566 yüksekliğine kadar v3.2.3 çalıştırır ve o bloktan itibaren **v3.2.4** çalıştırır, bu geçiş yönetişim önerisi 13 ile planlanmıştır) ve **`qorechain-diana`** test ağı (düğüm sürümü **v3.2.4**, 19 Ekim 2026'da 8,337,253 yüksekliğinde uygulandı). Katılmak istediğiniz ağ için uygun `--chain-id` değerini geçirin — aşağıdaki örnekler test ağını hedefler; ana ağ için `--chain-id qorechain-vladi` kullanın. Her ağın güncel sürümü, [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasında listelenir.
+QoreChain iki ağ çalıştırır: **`qorechain-vladi`** ana ağı (7 Haziran 2026'dan beri canlı; düğüm sürümü **v3.2.4**, yönetişim önerisi 13 ile 23 Ekim 2026'da 3,742,566 yüksekliğinde uygulandı; v3.2.3, 20 Ekim 2026'da 3,662,051 yüksekliğinde uygulanmıştı) ve **`qorechain-diana`** test ağı (düğüm sürümü **v3.2.4**, 19 Ekim 2026'da 8,337,253 yüksekliğinde uygulandı). Katılmak istediğiniz ağ için uygun `--chain-id` değerini geçirin — aşağıdaki örnekler test ağını hedefler; ana ağ için `--chain-id qorechain-vladi` kullanın. Her ağın güncel sürümü, [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasında listelenir.
 
-Bu sayfadaki komutlar, v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir. v3.2.4 ikili dosyası, v3.2.3 ikili dosyasında bulunmayan komutlar ekler (örneğin `stakingtier`); bunlar test ağında şimdi, ana ağda ise 3,742,566 yüksekliğinden itibaren çalışır ve bu kılavuz bunlardan birini andığında bunu belirtir.
+Bu sayfadaki komutlar, v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir. v3.2.4 ikili dosyası, v3.2.3 ikili dosyasında bulunmayan komutlar ekler (örneğin `stakingtier`); bunlar her iki ağda da çalışır (test ağında 19 Ekim 2026'dan beri, ana ağda 23 Ekim 2026'dan beri) ve bu kılavuz bunlardan birini andığında bunu belirtir.
 :::
 
 ---
@@ -70,8 +70,9 @@ Genel kaynak ağacından derlenen bir ikili dosya (topluluk derlemesi), `qorecha
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 been applied on mainnet, and at which height?
+# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height?
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 ```
 
 ---

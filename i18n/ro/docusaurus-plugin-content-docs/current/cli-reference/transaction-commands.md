@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Setați `--chain-id qorechain-vladi` pentru a difuza tranzacția pe mainnet-ul live sau `--chain-id qorechain-diana` pentru testnet. Ambele rețele rulează linia v3.2: versiunea de nod pentru mainnet **v3.2.3** (aplicată la înălțimea 3.662.051 pe 20 octombrie 2026; mainnet-ul rulează v3.2.3 până la înălțimea 3.742.566 și **v3.2.4** de la acel bloc, programată prin propunerea de guvernanță 13), testnet **v3.2.4** (aplicată la înălțimea 8.337.253 pe 19 octombrie 2026). Verificați `latest.json` de pe [download.qore.host](https://download.qore.host) pentru versiunea curentă. Dacă `--chain-id` este omis, clientul folosește `chain-id`-ul din configurația locală a clientului.
+Setați `--chain-id qorechain-vladi` pentru a difuza tranzacția pe mainnet-ul live sau `--chain-id qorechain-diana` pentru testnet. Ambele rețele rulează linia v3.2: versiunea de nod pentru mainnet **v3.2.4** (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026 prin propunerea de guvernanță 13; v3.2.3 a fost aplicată la înălțimea 3.662.051 pe 20 octombrie 2026), testnet **v3.2.4** (aplicată la înălțimea 8.337.253 pe 19 octombrie 2026). Verificați `latest.json` de pe [download.qore.host](https://download.qore.host) pentru versiunea curentă. Dacă `--chain-id` este omis, clientul folosește `chain-id`-ul din configurația locală a clientului.
 
-Comenzile și flag-urile de pe această pagină au fost verificate pe binarul de release v3.2.3. Tot ce există doar începând cu v3.2.4 (acum pe testnet, pe mainnet de la înălțimea 3.742.566) este marcat ca atare.
+Comenzile și flag-urile de pe această pagină au fost verificate pe binarul de release v3.2.3, plus completările din v3.2.4. Tot ce există doar începând cu v3.2.4 (pe mainnet din 23 octombrie 2026, pe testnet din 19 octombrie 2026) este marcat ca atare.
 :::
 
 Flag-urile comune se aplică fiecărei subcomenzi `tx`:
@@ -262,7 +262,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey_hex> hybrid --pqc-key mypqc
   --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-Începând cu v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566) înregistrarea contului raportează și dacă o dovadă a fost verificată, ca `possession_proven` (vezi [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module)); un nod de mainnet aflat încă pe v3.2.3 nu îl raportează.
+Începând cu v3.2.4 (pe mainnet din 23 octombrie 2026, pe testnet din 19 octombrie 2026) înregistrarea contului raportează și dacă o dovadă a fost verificată, ca `possession_proven` (vezi [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module)).
 
 ### cosign
 
@@ -389,7 +389,7 @@ qorechaind tx pqc cosign register.json --from operator --pqc-key <name> --chain-
 
 `node_type` este `sx` sau `ux`. Înregistrarea necesită o licență `lightnode_operator` activă, acordată de autoritatea de licențiere a rețelei; vezi [Nod light](/light-node/overview) pentru starea curentă a programului. Alte comenzi: `tx lightnode heartbeat`, `tx lightnode claim-rewards`, `tx lightnode deregister`.
 
-Începând cu v3.2.3, recompensa pe care o poate acumula un nod este limitată **pe lună** (`max_reward_per_month_per_node` în `GET /qorechain/lightnode/v1/reward_pool`, 2.000 QOR per 30 de zile), proporțional cu timpul de bloc și uptime-ul, deci limita nu mai depinde de cât de repede sunt produse blocurile. O limită este un plafon, nu o sumă promisă. Începând cu v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566) limita unui nod începe de la propria sa înregistrare, nu de la decontarea anterioară.
+Începând cu v3.2.3, recompensa pe care o poate acumula un nod este limitată **pe lună** (`max_reward_per_month_per_node` în `GET /qorechain/lightnode/v1/reward_pool`, 2.000 QOR per 30 de zile), proporțional cu timpul de bloc și uptime-ul, deci limita nu mai depinde de cât de repede sunt produse blocurile. O limită este un plafon, nu o sumă promisă. Începând cu v3.2.4 (pe mainnet din 23 octombrie 2026, pe testnet din 19 octombrie 2026) limita unui nod începe de la propria sa înregistrare, nu de la decontarea anterioară.
 
 ---
 
@@ -413,7 +413,7 @@ qorechaind tx bridge deposit <source_chain> <source_tx_hash> <asset> <amount> [f
 
 ### register-validator / attest
 
-Mesaje de validator de bridge. `register-validator <pqc_pubkey_hex> <supported_chains_csv>` înregistrează un validator pentru îndatorirea de atestare, iar `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` trimite o atestare. Niciun validator de bridge nu este înregistrat pe vreuna dintre rețele. Începând cu v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566), o înregistrare de validator de bridge necesită și o dovadă de posesie și o cheie pe care niciun alt validator de bridge nu o folosește.
+Mesaje de validator de bridge. `register-validator <pqc_pubkey_hex> <supported_chains_csv>` înregistrează un validator pentru îndatorirea de atestare, iar `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` trimite o atestare. Niciun validator de bridge nu este înregistrat pe vreuna dintre rețele. Începând cu v3.2.4 (pe mainnet din 23 octombrie 2026, pe testnet din 19 octombrie 2026), o înregistrare de validator de bridge necesită și o dovadă de posesie și o cheie pe care niciun alt validator de bridge nu o folosește.
 
 ### update-chain-config / set-verifier-bootstrap / update-circuit-breaker-limits
 
@@ -478,7 +478,7 @@ qorechaind tx crossvm call <evm|cosmwasm|svm> <target_contract> --payload <hex> 
 ## stakingtier (v3.2.4) {#stakingtier}
 
 :::note Disponibil de la v3.2.4
-Modulul de niveluri de staking a apărut cu versiunea **v3.2.4**: rulează pe testnet-ul `qorechain-diana` din 19 octombrie 2026 și rulează pe mainnet de la înălțimea 3.742.566 (propunerea de guvernanță 13). Înainte de acea înălțime, un nod de mainnet nu are modulul, iar aceste comenzi sunt refuzate; verificați mai întâi `GET /qorechain/stakingtier/v1/params` pe nodul pe care îl țintiți.
+Modulul de niveluri de staking a apărut cu versiunea **v3.2.4**: rulează pe testnet-ul `qorechain-diana` din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026 (înălțimea 3.742.566, propunerea de guvernanță 13). Un nod aflat încă pe o versiune mai veche nu are modulul, iar aceste comenzi sunt refuzate; verificați mai întâi `GET /qorechain/stakingtier/v1/params` pe nodul pe care îl țintiți.
 :::
 
 Delegări opționale blocate în timp: un delegator poate bloca o parte dintr-o delegare existentă pentru 3, 6 sau 12 luni (blocarea minimă este de 10 QOR) și poate revendica ulterior bonusul pe care modulul îl creditează pentru ea. O blocare este o înregistrare adăugată peste delegare: fondurile delegate rămân la validator.

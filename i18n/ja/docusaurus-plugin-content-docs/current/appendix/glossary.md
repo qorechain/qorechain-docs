@@ -55,7 +55,7 @@ QoreChain ドキュメント全体で使用される用語、略語、頭字語�
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines。QoreChain コンセンサスエンジンに（`x/rlconsensus` モジュールを介して）組み込まれた強化学習最適化レイヤー。PRISM はネットワーク指標を観測し、サーキットブレーカー型の安全制御のもとで決定論的なコンセンサスパラメータの調整を提案するよう設計されています。現在は観測モードで動作しています。[PRISM コンセンサスエンジン](/architecture/prism-consensus-engine)を参照してください。
 
-**Proof of possession (PoP)**（所有証明）— ポスト量子鍵が自身の登録内容に対して行う署名で、登録者が秘密鍵を保持していることを証明します。v3.2.3 以降、アカウント鍵の登録では任意です（`tx pqc register-key-v2 ... --pqc-key <name>`）。v3.2.4 以降（テストネットでは 2026 年 10 月 19 日から、メインネットではブロック高 3,742,566 から）、ブリッジバリデータの鍵に必須です。
+**Proof of possession (PoP)**（所有証明）— ポスト量子鍵が自身の登録内容に対して行う署名で、登録者が秘密鍵を保持していることを証明します。v3.2.3 以降、アカウント鍵の登録では任意です（`tx pqc register-key-v2 ... --pqc-key <name>`）。v3.2.4 以降（テストネットでは 2026 年 10 月 19 日から、メインネットでは 2026 年 10 月 23 日から）、ブリッジバリデータの鍵に必須です。
 
 **Protocol feature**（プロトコル機能）— リリースのアップグレードハンドラーが、すべてのノードで特定のブロック高さにおいてオンにする動作スイッチ（例: `pqc-sign-bytes-v2`、`evm-pqc-authorisation-window`）。これにより、その高さより下の履歴は変更なしでリプレイされます。
 
@@ -81,7 +81,7 @@ QoreChain ドキュメント全体で使用される用語、略語、頭字語�
 
 **STARK** — Scalable Transparent Argument of Knowledge（スケーラブルで透明な知識証明）。トラステッドセットアップを必要とせず、量子耐性を持つゼロ知識証明システム。RDK における zk ロールアップ決済の代替証明システムとして利用できます。
 
-**Stranded staker share / reward-pool reserve**（取り残されたステーカーシェア / 報酬プールのリザーブ）— v3.2.0 アップグレード時に記録された金額で、ガバナンス投票によってのみ動かせます。ガバナンスは 2026 年 10 月にこれらを解放しました（v3.2.3 の後に、取り残されたシェアの修正済みの残額が提案されました）。[トークノミクス](/architecture/tokenomics#stranded-and-reserve)を参照してください。
+**Stranded staker share / reward-pool reserve**（取り残されたステーカーシェア / 報酬プールのリザーブ）— v3.2.0 アップグレード時に記録された金額で、ガバナンス投票によってのみ動かせます。ガバナンスは 2026 年 10 月にこれらを解放しました（v3.2.3 で再計算された、取り残されたシェアの修正済みの残額は、提案 12 によって解放されました）。[トークノミクス](/architecture/tokenomics#stranded-and-reserve)を参照してください。
 
 **SVM** — Solana Virtual Machine。BPF プログラム向けの高性能実行環境。QoreChain は、QoreChain EVM エンジンおよび QoreChain Native と並ぶ、サポートされる 3 つのランタイムの 1 つとして SVM を統合しています。
 
@@ -89,7 +89,7 @@ QoreChain ドキュメント全体で使用される用語、略語、頭字語�
 
 **tIBE** — Threshold Identity-Based Encryption（しきい値 ID ベース暗号化）。しきい値以上の関係者が協力した場合にのみメッセージを復号できる暗号方式。FairBlock モジュールがブロックのファイナライズまでトランザクション内容を暗号化し、MEV 抽出を防ぐために使用します。
 
-**Time-locked staking**（時間ロック付きステーキング）— 委任の一部を一定期間コミットする任意の仕組みで、`x/stakingtier` モジュールが提供します。v3.2.4 の一部です。テストネットでは 2026 年 10 月 19 日から、メインネットではブロック高 3,742,566 から稼働します。[ステーキングと委任](/user-guide/staking-and-delegation#time-locked-staking)を参照してください。
+**Time-locked staking**（時間ロック付きステーキング）— 委任の一部を一定期間コミットする任意の仕組みで、`x/stakingtier` モジュールが提供します。v3.2.4 の一部です。テストネットでは 2026 年 10 月 19 日から、メインネットでは 2026 年 10 月 23 日から稼働しています。[ステーキングと委任](/user-guide/staking-and-delegation#time-locked-staking)を参照してください。
 
 **uqor** — QOR トークンの基本単位。1 QOR = 1,000,000 uqor（10^6）。すべてのオンチェーンの金額、手数料、ステーキング値は uqor で表されます。
 

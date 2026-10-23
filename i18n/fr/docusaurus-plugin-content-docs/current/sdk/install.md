@@ -39,14 +39,14 @@ hybrides acceptent une option `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`) ; 
 interroge le réseau et nécessite donc le point d'accès REST (`rest`) sur
 `qorechain-vladi` / `qorechain-diana` : il lève une erreur au lieu de deviner. Voir
 [Quelle forme de sign-bytes ?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-La forme n'a pas changé dans la chaîne v3.2.3 ni v3.2.4 (le testnet depuis le 19 octobre 2026, le mainnet à partir de la hauteur 3,742,566) : `"auto"`
+La forme n'a pas changé dans la chaîne v3.2.3 ni v3.2.4 (la v3.2.4 s'exécute sur le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026) : `"auto"`
 se résout en v2 sur les deux réseaux.
 :::
 
 ## Ce qu'ajoute la 0.9.0 {#whats-new-090}
 
 Le SDK 0.9.0 est la version cliente pour les chaînes **v3.2.2** et **v3.2.3** (le mainnet
-les a appliquées aux hauteurs 3,556,788 et 3,662,051 ; le testnet exécute la v3.2.4 depuis le 19 octobre 2026 et le mainnet y passe à la hauteur 3,742,566). Le
+les a appliquées aux hauteurs 3,556,788 et 3,662,051 ; les deux réseaux exécutent désormais la v3.2.4 : le testnet depuis le 19 octobre 2026, le mainnet depuis le 23 octobre 2026 à la hauteur 3,742,566). Le
 format de signature, les adresses, les décimales, les memos et les frais n'ont pas changé,
 si bien que la forme sign-bytes hybride v2 que signent la 0.8.1 et les versions suivantes
 reste la bonne.
@@ -74,7 +74,7 @@ ou en changer par rotation fonctionne toujours.
 ## Versions antérieures à la 0.9.0 {#before-090}
 
 Si vous êtes en 0.8.x, elle signe toujours la forme que vérifient les deux réseaux et fonctionne sur
-le mainnet (v3.2.3, puis v3.2.4 à partir de la hauteur 3,742,566) et le testnet (v3.2.4). Voici les limites que la 0.9.0 supprime, et
+le mainnet et le testnet (tous deux en v3.2.4). Voici les limites que la 0.9.0 supprime, et
 certaines coûtent des frais si vous ne les connaissez pas :
 
 | Version antérieure à la 0.9.0 | Contournement |

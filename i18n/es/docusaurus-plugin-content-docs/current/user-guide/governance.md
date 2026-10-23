@@ -10,7 +10,7 @@ sidebar_position: 3
 Esta guía explica cómo funciona la gobernanza on-chain en QoreChain: cómo se cuentan los votos, cómo presentar propuestas y cómo votar.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.3** hasta la altura 3,742,566 y **v3.2.4** desde ese bloque; la testnet ejecuta **v3.2.4** desde el 19 de octubre de 2026 — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** al participar en la gobernanza en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.4** desde el 23 de octubre de 2026; la testnet ejecuta **v3.2.4** desde el 19 de octubre de 2026 — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** al participar en la gobernanza en mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -29,7 +29,7 @@ Las propuestas se cuentan sobre el **stake vinculado (bonded)**: cada QOR que ha
 | Umbral    | 50%        | Proporción de "sí" entre los votos no abstenidos necesaria para aprobar       |
 | Veto      | 33.4%      | Si "no con veto" alcanza esta proporción, la propuesta se rechaza y su depósito se quema |
 
-Estos valores se leyeron de mainnet el 20 de octubre de 2026 (y son los mismos en la testnet); confírmalos con `qorechaind query gov params`, ya que la gobernanza puede cambiarlos.
+Estos valores se leyeron de mainnet el 23 de octubre de 2026 (y son los mismos en la testnet); confírmalos con `qorechaind query gov params`, ya que la gobernanza puede cambiarlos.
 
 :::note QDRW está diseñado pero no está activo
 El diseño de QoreChain incluye una fórmula de poder de voto **Quadratic Delegation-Reputation Weighted (QDRW)**, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, que amortiguaría los stakes grandes y ponderaría la reputación. Está implementada en el módulo `x/qca`, pero está **desactivada** en ambas redes (`qdrw_enabled` es `false` en `qorechaind query qca config`) y no forma parte del recuento de gobernanza, por lo que hoy no afecta a ningún voto. xQORE tampoco está activo (consulta [Staking de xQORE](/user-guide/xqore-staking)).
@@ -175,7 +175,7 @@ Los parámetros clave incluyen:
 
 ## La gobernanza en mainnet hasta ahora {#mainnet-history}
 
-La gobernanza de mainnet se ha usado para cambios de parámetros, decisiones de cortacircuitos, actualizaciones coordinadas y, desde octubre de 2026, para liberar cantidades que la cadena registró en la actualización v3.2.0. Las propuestas 7 a 11 se aprobaron en mainnet en octubre de 2026, mientras que las propuestas 12 (otra liberación) y 13 (la actualización v3.2.4 en la altura 3,742,566) estaban en su período de votación al momento de escribir esto; la lista y los resultados están en el [Historial de versiones](/appendix/version-history#governance-timeline), y cada propuesta puede leerse en vivo en `GET /cosmos/gov/v1/proposals`.
+La gobernanza de mainnet se ha usado para cambios de parámetros, decisiones de cortacircuitos, actualizaciones coordinadas y, desde octubre de 2026, para liberar cantidades que la cadena registró en la actualización v3.2.0. Las propuestas 7 a 13 se aprobaron en mainnet en octubre de 2026, incluidas la propuesta 12 (otra liberación, aprobada el 21 de octubre) y la propuesta 13 (la actualización v3.2.4, aplicada en la altura 3,742,566 el 23 de octubre); la lista y los resultados están en el [Historial de versiones](/appendix/version-history#governance-timeline), y cada propuesta puede leerse en vivo en `GET /cosmos/gov/v1/proposals`.
 
 ---
 

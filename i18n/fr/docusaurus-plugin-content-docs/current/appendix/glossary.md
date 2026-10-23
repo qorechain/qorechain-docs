@@ -55,7 +55,7 @@ Référence alphabétique des termes, abréviations et acronymes utilisés dans 
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. La couche d'optimisation par apprentissage par renforcement intégrée au moteur de consensus de QoreChain (via le module `x/rlconsensus`). PRISM observe les métriques du réseau et est conçu pour proposer des ajustements déterministes des paramètres de consensus sous des contrôles de sécurité de type disjoncteur ; aujourd'hui, il fonctionne en mode observation. Voir [Moteur de consensus PRISM](/architecture/prism-consensus-engine).
 
-**Proof of possession (PoP)** (preuve de possession) — Une signature qu'une clé post-quantique effectue sur ses propres informations d'enregistrement, prouvant que la personne qui l'enregistre détient la clé privée. Facultative lors de l'enregistrement d'une clé de compte depuis la v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`) ; requise pour les clés de validateur de bridge à partir de la v3.2.4 (sur le testnet depuis le 19 octobre 2026 ; sur le mainnet à partir de la hauteur 3 742 566).
+**Proof of possession (PoP)** (preuve de possession) — Une signature qu'une clé post-quantique effectue sur ses propres informations d'enregistrement, prouvant que la personne qui l'enregistre détient la clé privée. Facultative lors de l'enregistrement d'une clé de compte depuis la v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`) ; requise pour les clés de validateur de bridge à partir de la v3.2.4 (sur le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026).
 
 **Protocol feature** (fonctionnalité de protocole) — Un interrupteur de comportement que le gestionnaire de mise à niveau d'une version active à une hauteur de bloc donnée sur chaque nœud (par exemple `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`), de sorte que l'historique se rejoue sans changement en dessous de cette hauteur.
 
@@ -81,7 +81,7 @@ Référence alphabétique des termes, abréviations et acronymes utilisés dans 
 
 **STARK** — Scalable Transparent Argument of Knowledge. Un système de preuve à divulgation nulle de connaissance ne nécessitant aucune configuration de confiance et résistant au quantique. Disponible comme système de preuve alternatif pour le règlement des zk-rollups dans le RDK.
 
-**Stranded staker share / reward-pool reserve** (part de staker bloquée / réserve du pool de récompenses) — Montants enregistrés lors de la mise à niveau v3.2.0 qui ne bougent que par un vote de gouvernance ; la gouvernance les a libérés en octobre 2026 (un reliquat corrigé de la part bloquée a été proposé après la v3.2.3). Voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+**Stranded staker share / reward-pool reserve** (part de staker bloquée / réserve du pool de récompenses) — Montants enregistrés lors de la mise à niveau v3.2.0 qui ne bougent que par un vote de gouvernance ; la gouvernance les a libérés en octobre 2026 (le reliquat corrigé de la part bloquée, recalculé à la v3.2.3, a été libéré par la proposition 12). Voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 **SVM** — Solana Virtual Machine. Un environnement d'exécution haute performance pour les programmes BPF. QoreChain intègre la SVM comme l'un des trois runtimes pris en charge, aux côtés du moteur EVM QoreChain et de QoreChain Native.
 
@@ -89,7 +89,7 @@ Référence alphabétique des termes, abréviations et acronymes utilisés dans 
 
 **tIBE** — Threshold Identity-Based Encryption (chiffrement basé sur l'identité à seuil). Un schéma cryptographique où un message ne peut être déchiffré que lorsqu'un seuil de parties collaborent. Utilisé par le module FairBlock pour chiffrer le contenu des transactions jusqu'à la finalisation du bloc, empêchant l'extraction de MEV.
 
-**Time-locked staking** (staking à verrouillage temporel) — Un engagement facultatif d'une partie d'une délégation pour une durée fixe, fourni par le module `x/stakingtier`. Fait partie de la v3.2.4 : sur le testnet depuis le 19 octobre 2026 ; sur le mainnet à partir de la hauteur 3 742 566. Voir [Staking et délégation](/user-guide/staking-and-delegation#time-locked-staking).
+**Time-locked staking** (staking à verrouillage temporel) — Un engagement facultatif d'une partie d'une délégation pour une durée fixe, fourni par le module `x/stakingtier`. Fait partie de la v3.2.4 : sur le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026. Voir [Staking et délégation](/user-guide/staking-and-delegation#time-locked-staking).
 
 **uqor** — La dénomination de base du jeton QOR. 1 QOR = 1 000 000 uqor (10^6). Tous les montants on-chain, frais et valeurs de staking sont libellés en uqor.
 

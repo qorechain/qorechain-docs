@@ -40,14 +40,14 @@ akzeptieren die Option `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`); `"auto"`
 Netzwerk ab und benötigt daher den REST-Endpunkt (`rest`) auf
 `qorechain-vladi` / `qorechain-diana`: Es wirft einen Fehler, statt zu raten. Siehe
 [Welche Sign-Bytes-Form?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-Die Form hat sich in Chain v3.2.3 oder v3.2.4 (das Testnet seit dem 19. Oktober 2026, das Mainnet ab Höhe 3.742.566) nicht geändert: `"auto"`
+Die Form hat sich in Chain v3.2.3 oder v3.2.4 (v3.2.4 läuft im Testnet seit dem 19. Oktober 2026 und im Mainnet seit dem 23. Oktober 2026) nicht geändert: `"auto"`
 wird auf beiden Netzwerken zu v2 aufgelöst.
 :::
 
 ## Was 0.9.0 neu bringt {#whats-new-090}
 
 SDK 0.9.0 ist das Client-Release für die Chain-Versionen **v3.2.2** und **v3.2.3** (das Mainnet
-hat sie bei den Höhen 3,556,788 und 3,662,051 angewendet; das Testnet läuft seit dem 19. Oktober 2026 mit v3.2.4, und das Mainnet wechselt bei Höhe 3.742.566 darauf). Signaturformat,
+hat sie bei den Höhen 3,556,788 und 3,662,051 angewendet; beide Netzwerke laufen jetzt mit v3.2.4: das Testnet seit dem 19. Oktober 2026, das Mainnet seit dem 23. Oktober 2026 bei Höhe 3.742.566). Signaturformat,
 Adressen, Dezimalstellen, Memos und Gebühren haben sich nicht geändert, sodass die hybride
 v2-Sign-Bytes-Form, die 0.8.1 und neuer signieren, weiterhin die richtige ist.
 Neu ist Folgendes:
@@ -74,7 +74,7 @@ das Wiederherstellen eines bestehenden Legacy-Schlüssels oder das Wegrotieren v
 ## Versionen vor 0.9.0 {#before-090}
 
 Wenn Sie 0.8.x einsetzen, signiert es weiterhin die Form, die beide Netzwerke verifizieren, und funktioniert auf
-dem Mainnet (v3.2.3, ab Höhe 3.742.566 dann v3.2.4) und dem Testnet (v3.2.4). Dies sind die Einschränkungen, die 0.9.0 beseitigt,
+dem Mainnet und dem Testnet (beide v3.2.4). Dies sind die Einschränkungen, die 0.9.0 beseitigt,
 und einige davon kosten eine Gebühr, wenn man sie nicht kennt:
 
 | Release vor 0.9.0 | Workaround |

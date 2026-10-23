@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Funzionalità Principali
 
-La tabella seguente elenca tutte le funzionalità principali di QoreChain, organizzate in base alla fase di rilascio in cui sono state introdotte. La mainnet (`qorechain-vladi`, EVM chain ID 9801), attiva dal 7 giugno 2026, esegue la **v3.2.3** fino all'altezza 3.742.566 e la **v3.2.4** da quel blocco; la testnet parallela (`qorechain-diana`, EVM chain ID 9800) esegue la v3.2.4 dal 19 ottobre 2026. La tabella [Stato delle funzionalità](#feature-status) al termine dell'elenco mostra cosa è attivo oggi sulle reti live.
+La tabella seguente elenca tutte le funzionalità principali di QoreChain, organizzate in base alla fase di rilascio in cui sono state introdotte. La mainnet (`qorechain-vladi`, EVM chain ID 9801), attiva dal 7 giugno 2026, esegue la **v3.2.4** (applicata all'altezza 3.742.566 il 23 ottobre 2026); la testnet parallela (`qorechain-diana`, EVM chain ID 9800) esegue la v3.2.4 dal 19 ottobre 2026. La tabella [Stato delle funzionalità](#feature-status) al termine dell'elenco mostra cosa è attivo oggi sulle reti live.
 
 | Funzionalità                    | Introdotta in       | Descrizione                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -42,7 +42,7 @@ Verificato sulle reti live il 20 ottobre 2026. «Live» significa che la funzion
 | --- | --- |
 | Firme ibride ML-DSA-87 + secp256k1 (lane Cosmos) | **Live**, obbligatorie (`hybrid_signature_mode = required`) |
 | Finestra di autorizzazione EVM | **Live** dalla v3.2.0 (ambito opzionale dalla v3.2.3) |
-| Staking con blocco temporale (`x/stakingtier`, facoltativo) | v3.2.4: live sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566 |
+| Staking con blocco temporale (`x/stakingtier`, facoltativo) | **Live** dalla v3.2.4 (testnet dal 19 ottobre 2026, mainnet dal 23 ottobre 2026) |
 | Runtime EVM, QoreChain Native, SVM | EVM **live**; caricamento del codice e istanziazione QoreChain Native **disabilitati** (impostazione di governance più circuit breaker); lane delle transazioni SVM **disabilitata** (le letture funzionano) |
 | Motore di burn e suddivisione delle commissioni (37/30/20/10/3) | **Live**; solo i canali di burn delle commissioni di gas e delle transazioni fallite hanno registrato burn sulla mainnet |
 | Emissione con tetto massimo (`x/inflation`) | **Live**, fissa a 86.000 QOR per epoca fino a un tetto di 590.000.000 QOR (mainnet) |

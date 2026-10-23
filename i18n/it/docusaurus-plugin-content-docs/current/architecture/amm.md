@@ -21,7 +21,7 @@ I comandi seguenti utilizzano `qorechaind`. Aggiungi i consueti flag di transazi
 :::
 
 :::caution Nessun pool esiste ancora
-Il modulo AMM è attivo sulla mainnet (v3.2.3) e sulla testnet (v3.2.4), ma **non è stato ancora creato alcun pool** (verificato il 20 ottobre 2026: `GET /qorechain/amm/v1/pools` restituisce un elenco vuoto su entrambe), e i denom negli esempi seguenti (`uusdc`, `uusdt`) sono illustrativi: oggi sulle reti non esiste alcun asset di questo tipo. Finché non esiste un pool, ogni comando di swap o di aggiunta di liquidità fallisce con un errore di pool non trovato.
+Il modulo AMM è attivo sulla mainnet e sulla testnet (entrambe v3.2.4), ma **non è stato ancora creato alcun pool** (verificato il 23 ottobre 2026: `GET /qorechain/amm/v1/pools` restituisce un elenco vuoto su entrambe), e i denom negli esempi seguenti (`uusdc`, `uusdt`) sono illustrativi: oggi sulle reti non esiste alcun asset di questo tipo. Finché non esiste un pool, ogni comando di swap o di aggiunta di liquidità fallisce con un errore di pool non trovato.
 :::
 
 ## Parametri del modulo {#parameters}

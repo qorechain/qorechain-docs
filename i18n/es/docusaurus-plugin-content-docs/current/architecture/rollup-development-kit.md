@@ -10,7 +10,7 @@ sidebar_position: 12
 El módulo `x/rdk` proporciona un Rollup Development Kit (RDK) completo que permite a los desarrolladores desplegar rollups específicos de aplicación en QoreChain. Admite cuatro paradigmas de liquidación, múltiples modos de secuenciador, backends de disponibilidad de datos conectables y optimización de configuración asistida por IA.
 
 :::caution Capacidad en fase temprana
-El módulo está desplegado en mainnet (versión de cadena **v3.2.3** hasta la altura 3,742,566, **v3.2.4** desde ese bloque) y en testnet (**v3.2.4**), pero **todavía no se ha creado ningún rollup en ninguna de las dos redes** (comprobado el 21 de octubre de 2026: `GET /qorechain/rdk/v1/rollups` devuelve una lista vacía en ambas). Varias de las capacidades descritas a continuación no son utilizables de extremo a extremo hoy; el estado se indica donde se describe cada una. Para la guía práctica dirigida a desarrolladores, consulte [Rollups Overview](/rollups/overview).
+El módulo está desplegado en mainnet (versión de cadena **v3.2.4** desde el 23 de octubre de 2026) y en testnet (**v3.2.4**), pero **todavía no se ha creado ningún rollup en ninguna de las dos redes** (comprobado el 23 de octubre de 2026: `GET /qorechain/rdk/v1/rollups` devuelve una lista vacía en ambas). Varias de las capacidades descritas a continuación no son utilizables de extremo a extremo hoy; el estado se indica donde se describe cada una. Para la guía práctica dirigida a desarrolladores, consulte [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ El RDK de QoreChain admite cuatro modos de liquidación distintos — **optimist
 Los rollups optimistas asumen que las transacciones son válidas por defecto y dependen de pruebas de fraude para la resolución de disputas.
 
 * **Sistema de pruebas**: pruebas de fraude interactivas
-* **Ventana de impugnación**: 604,800 segundos (por defecto, 7 días). **Hasta v3.2.4 (mainnet v3.2.3 antes de la altura 3,742,566):** la cadena lo convierte a bloques a razón fija de 6 segundos por bloque, **100,800 bloques**, así que el tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,2 s de mainnet); planifique en bloques, no en días. **Desde v3.2.4:** para un lote enviado a partir de la altura de la actualización, la ventana se mide en segundos de tiempo de bloque (7 días completos). Un lote enviado antes conserva la regla del número de bloques. La testnet aplicó la v3.2.4 en la altura 8,337,253 (19 de octubre de 2026); mainnet la aplica en la altura 3,742,566 (propuesta de gobernanza 13).
+* **Ventana de impugnación**: 604,800 segundos (por defecto, 7 días). **Antes de v3.2.4:** la cadena lo convierte a bloques a razón fija de 6 segundos por bloque, **100,800 bloques**, así que el tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,2 s de mainnet); planifique en bloques, no en días. **Desde v3.2.4:** para un lote enviado a partir de la altura de la actualización, la ventana se mide en segundos de tiempo de bloque (7 días completos). Un lote enviado antes conserva la regla del número de bloques. La testnet aplicó la v3.2.4 en la altura 8,337,253 (19 de octubre de 2026); mainnet la aplicó en la altura 3,742,566 (23 de octubre de 2026, propuesta de gobernanza 13).
 * **Fianza de impugnación**: 1,000 QOR (1,000,000,000 uqor) — requerida para presentar una impugnación con prueba de fraude (presets `nft` y `custom`; los presets `defi`, `gaming` y `enterprise` no establecen fianza porque no tienen ventana de impugnación)
 * **Finalidad**: retrasada hasta que expire la ventana de impugnación sin una impugnación válida
 * **Auto-finalización**: el `EndBlocker` finaliza automáticamente los lotes una vez que la ventana de impugnación ha pasado sin disputa. Un lote impugnado nunca se finaliza automáticamente: el creador del rollup resuelve primero la impugnación (consulte [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Modo de liquidación | Disparador de finalización                                   |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100,800 bloques después del envío (ventana por defecto) sin impugnación; para los lotes enviados desde v3.2.4 (testnet desde la altura 8,337,253; mainnet desde la altura 3,742,566), 604,800 segundos de tiempo de bloque |
+| **Optimistic**  | 100,800 bloques después del envío (ventana por defecto) sin impugnación; para los lotes enviados desde v3.2.4 (testnet desde la altura 8,337,253; mainnet desde la altura 3,742,566, 23 de octubre de 2026), 604,800 segundos de tiempo de bloque |
 | **ZK**          | Instantánea al enviar una prueba válida                      |
 | **Based**       | 2 bloques de L1 después del envío                            |
 | **Sovereign**   | Ninguna — gestionada por el propio consenso del rollup       |

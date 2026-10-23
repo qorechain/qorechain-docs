@@ -10,7 +10,7 @@ sidebar_position: 5
 This page covers two related topics: the **ZK proof systems** (`snark` and `stark`) used by ZK-settled rollups, and the **L2 → L1 withdrawal flow** that moves funds from a rollup back to QoreChain once a batch is finalized.
 
 :::caution Early-stage capability
-No rollup has been created on either network yet (checked 21 October 2026), so neither the proof verification nor the withdrawal flow described here has been exercised on a live rollup. Withdrawals can succeed on mainnet only from v3.2.3 (height 3,662,051, 20 October 2026), when the per-rollup escrow ledger went live (see [Where the funds come from](#where-the-funds-come-from)); before that every withdrawal failed. SNARK verification exists but a rollup created through `create-rollup` cannot yet finalise a ZK batch, and STARK verification is experimental. Validate on the **`qorechain-diana`** testnet and do not assume production-hardened guarantees on mainnet.
+No rollup has been created on either network yet (checked 23 October 2026), so neither the proof verification nor the withdrawal flow described here has been exercised on a live rollup. Withdrawals can succeed on mainnet only from v3.2.3 (height 3,662,051, 20 October 2026), when the per-rollup escrow ledger went live (see [Where the funds come from](#where-the-funds-come-from)); before that every withdrawal failed. SNARK verification exists but a rollup created through `create-rollup` cannot yet finalise a ZK batch, and STARK verification is experimental. Validate on the **`qorechain-diana`** testnet and do not assume production-hardened guarantees on mainnet.
 :::
 
 ---
@@ -117,7 +117,7 @@ flowchart LR
 ```
 
 1. **Settle a batch.** The rollup operator submits a settlement batch with `submit-batch`. The batch can commit a withdrawals root over its outbound L2 → L1 messages.
-2. **Finalize.** The batch finalizes according to the rollup's settlement mode — on valid proof verification for `zk`, or after the challenge window for `optimistic` (during which `challenge-batch` may dispute it). The optimistic window is 100,800 blocks by default for a batch submitted on mainnet before height 3,742,566; from v3.2.4 it is measured in seconds of block time for batches submitted from the upgrade height on (the testnet since height 8,337,253, mainnet from height 3,742,566).
+2. **Finalize.** The batch finalizes according to the rollup's settlement mode — on valid proof verification for `zk`, or after the challenge window for `optimistic` (during which `challenge-batch` may dispute it). The optimistic window is 100,800 blocks by default for a batch submitted before the v3.2.4 upgrade; from v3.2.4 it is measured in seconds of block time for batches submitted from the upgrade height on (testnet since height 8,337,253 on 19 October 2026, mainnet since height 3,742,566 on 23 October 2026).
 3. **Prove and execute.** Once finalized, anyone submits `execute-withdrawal` with the Merkle inclusion proof (`--proof`) for the specific withdrawal leaf. The module verifies inclusion against the finalized batch's withdrawals root and pays the recipient from escrow.
 
 Because step 3 is permissionless and proof-based, a withdrawal does not depend on the rollup operator's cooperation once the batch carrying it is finalized.

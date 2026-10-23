@@ -55,7 +55,7 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. The reinforcement-learning optimization layer embedded in the QoreChain Consensus Engine (via the `x/rlconsensus` module). PRISM observes network metrics and is designed to propose deterministic consensus-parameter adjustments under circuit-breaker safety controls; today it runs in observation mode. See [PRISM Consensus Engine](/architecture/prism-consensus-engine).
 
-**Proof of possession (PoP)** — A signature a post-quantum key makes over its own registration details, proving that the registrant holds the private key. Optional on account key registration since v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); required for bridge validator keys from v3.2.4 (on the testnet since 19 October 2026; on mainnet from height 3,742,566).
+**Proof of possession (PoP)** — A signature a post-quantum key makes over its own registration details, proving that the registrant holds the private key. Optional on account key registration since v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); required for bridge validator keys from v3.2.4 (on the testnet since 19 October 2026 and on mainnet since 23 October 2026).
 
 **Protocol feature** — A behaviour switch that a release's upgrade handler turns on at one block height on every node (for example `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`), so history replays unchanged below that height.
 
@@ -81,7 +81,7 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **STARK** — Scalable Transparent Argument of Knowledge. A zero-knowledge proof system that requires no trusted setup and is quantum-resistant. Available as an alternative proof system for zk-rollup settlement in the RDK.
 
-**Stranded staker share / reward-pool reserve** — Amounts recorded at the v3.2.0 upgrade that move only by a governance vote; governance released them in October 2026 (a corrected remainder of the stranded share was proposed after v3.2.3). See [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+**Stranded staker share / reward-pool reserve** — Amounts recorded at the v3.2.0 upgrade that move only by a governance vote; governance released them in October 2026 (the corrected remainder of the stranded share, recomputed at v3.2.3, was released by proposal 12). See [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 **SVM** — Solana Virtual Machine. A high-performance execution environment for BPF programs. QoreChain integrates the SVM as one of three supported runtimes alongside the QoreChain EVM Engine and QoreChain Native.
 
@@ -89,7 +89,7 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **tIBE** — Threshold Identity-Based Encryption. A cryptographic scheme where a message can only be decrypted when a threshold of parties collaborate. Used by the FairBlock module to encrypt transaction contents until block finalization, preventing MEV extraction.
 
-**Time-locked staking** — An optional commitment of part of a delegation for a fixed term, provided by the `x/stakingtier` module. Part of v3.2.4: on the testnet since 19 October 2026; on mainnet from height 3,742,566. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking).
+**Time-locked staking** — An optional commitment of part of a delegation for a fixed term, provided by the `x/stakingtier` module. Part of v3.2.4: on the testnet since 19 October 2026 and on mainnet since 23 October 2026. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking).
 
 **uqor** — The base denomination of the QOR token. 1 QOR = 1,000,000 uqor (10^6). All on-chain amounts, fees, and staking values are denominated in uqor.
 

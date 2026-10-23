@@ -23,7 +23,7 @@ sidebar_position: 7
 | ブリッジ操作 | 0 | 0 |
 | IBC チャネル / クライアント | 0 / 0 | 0 / 0 |
 
-（2026 年 10 月 20 日に、メインネット v3.2.3 とテストネット v3.2.4 で確認。ライブの値は `qorechaind query bridge chains` と `qorechaind query bridge validators` で、または REST の `/qorechain/bridge/v1/chains` と `/qorechain/bridge/v1/validators` で読み取ってください。）モジュールの構成は両ネットワークで同一です：`min_validators` 10、`attestation_threshold` 7、`challenge_period_secs` 86,400、`large_transfer_threshold` 100,000 QOR（`100000000000` uqor）。モジュールが使用することになる IBC スタックは ibc-go v10.7（v3.2.2 以降）ですが、クライアントもチャネルも作成されていません。
+（2026 年 10 月 23 日に、メインネットとテストネット（どちらも v3.2.4）で確認。ライブの値は `qorechaind query bridge chains` と `qorechaind query bridge validators` で、または REST の `/qorechain/bridge/v1/chains` と `/qorechain/bridge/v1/validators` で読み取ってください。）モジュールの構成は両ネットワークで同一です：`min_validators` 10、`attestation_threshold` 7、`challenge_period_secs` 86,400、`large_transfer_threshold` 100,000 QOR（`100000000000` uqor）。モジュールが使用することになる IBC スタックは ibc-go v10.7（v3.2.2 以降）ですが、クライアントもチャネルも作成されていません。
 
 ## 接続の概要
 
@@ -193,7 +193,7 @@ QoreChain               QoreChain Validators           External Chain
 * サポートされるチェーンのリスト
 * レピュテーションスコア（`x/reputation` によって維持される）
 
-v3.2.2 以降、モジュールはゼロ金額とその構成をすべてのパスで一貫して検証します。**v3.2.4 以降（テストネットでは 2026 年 10 月 19 日から、メインネットでは高さ 3,742,566 から）：** ブリッジバリデーターの登録には、Dilithium-5 鍵の所有証明も必要となり（PQC 鍵登録と同じ `proof_of_possession` 形式。[ポスト量子セキュリティ](/architecture/post-quantum-security#proof-of-possession) を参照）、別のブリッジバリデーターがすでに使用している鍵は拒否されます。その高さまで稼働するメインネット v3.2.3 にはそのようなチェックはなく、どちらのネットワークにもブリッジバリデーターは登録されていません。
+v3.2.2 以降、モジュールはゼロ金額とその構成をすべてのパスで一貫して検証します。**v3.2.4 以降（メインネットでは 2026 年 10 月 23 日から、テストネットでは 2026 年 10 月 19 日から）：** ブリッジバリデーターの登録には、Dilithium-5 鍵の所有証明も必要となり（PQC 鍵登録と同じ `proof_of_possession` 形式。[ポスト量子セキュリティ](/architecture/post-quantum-security#proof-of-possession) を参照）、別のブリッジバリデーターがすでに使用している鍵は拒否されます。それ以前のリリースにはそのようなチェックはなく、どちらのネットワークにもブリッジバリデーターは登録されていません。
 
 ### サーキットブレーカー
 

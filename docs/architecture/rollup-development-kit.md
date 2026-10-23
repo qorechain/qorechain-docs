@@ -10,7 +10,7 @@ sidebar_position: 12
 The `x/rdk` module provides a comprehensive Rollup Development Kit (RDK) that allows developers to deploy application-specific rollups on QoreChain. It supports four settlement paradigms, multiple sequencer modes, pluggable data availability backends, and AI-assisted configuration optimization.
 
 :::caution Early-stage capability
-The module is deployed on mainnet (chain version **v3.2.3** until height 3,742,566, **v3.2.4** from that block) and testnet (**v3.2.4**), but **no rollup has been created on either network yet** (checked 21 October 2026: `GET /qorechain/rdk/v1/rollups` returns an empty list on both). Several capabilities described below are not usable end to end today; the status is stated where each is described. For the developer-facing how-to, see [Rollups Overview](/rollups/overview).
+The module is deployed on mainnet (chain version **v3.2.4** since 23 October 2026) and testnet (**v3.2.4**), but **no rollup has been created on either network yet** (checked 23 October 2026: `GET /qorechain/rdk/v1/rollups` returns an empty list on both). Several capabilities described below are not usable end to end today; the status is stated where each is described. For the developer-facing how-to, see [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ QoreChain RDK supports four distinct settlement modes — **optimistic**, **zk**
 Optimistic rollups assume transactions are valid by default and rely on fraud proofs for dispute resolution.
 
 * **Proof system**: Interactive fraud proofs
-* **Challenge window**: 604,800 seconds (default, 7 days). **Until v3.2.4 (mainnet v3.2.3 before height 3,742,566):** the chain converts this to blocks at a fixed 6 seconds per block, **100,800 blocks**, so the real elapsed time depends on actual block time (about 3.7 days at mainnet's current ≈3.2 s blocks); plan in blocks, not days. **From v3.2.4:** for a batch submitted from the upgrade height on, the window is measured in seconds of block time (a full 7 days). A batch submitted earlier keeps the block-count rule. The testnet applied v3.2.4 at height 8,337,253 (19 October 2026); mainnet applies it at height 3,742,566 (governance proposal 13).
+* **Challenge window**: 604,800 seconds (default, 7 days). **Before v3.2.4:** the chain converts this to blocks at a fixed 6 seconds per block, **100,800 blocks**, so the real elapsed time depends on actual block time (about 3.7 days at mainnet's current ≈3.2 s blocks); plan in blocks, not days. **From v3.2.4:** for a batch submitted from the upgrade height on, the window is measured in seconds of block time (a full 7 days). A batch submitted earlier keeps the block-count rule. The testnet applied v3.2.4 at height 8,337,253 (19 October 2026); mainnet applied it at height 3,742,566 (23 October 2026, governance proposal 13).
 * **Challenge bond**: 1,000 QOR (1,000,000,000 uqor) — required to submit a fraud proof challenge (`nft` and `custom` presets; the `defi`, `gaming` and `enterprise` presets set no bond because they have no challenge window)
 * **Finality**: Delayed until the challenge window expires with no valid challenge
 * **Auto-finalization**: The `EndBlocker` automatically finalizes batches once the challenge window has passed without dispute. A challenged batch is never auto-finalised: the rollup creator resolves the challenge first (see [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Settlement Mode | Finalization Trigger                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100,800 blocks after submission (default window) with no challenge; for batches submitted since v3.2.4 (testnet from height 8,337,253; mainnet from height 3,742,566), 604,800 seconds of block time |
+| **Optimistic**  | 100,800 blocks after submission (default window) with no challenge; for batches submitted since v3.2.4 (testnet from height 8,337,253; mainnet from height 3,742,566, 23 October 2026), 604,800 seconds of block time |
 | **ZK**          | Instant on valid proof submission                           |
 | **Based**       | 2 L1 blocks after submission                                |
 | **Sovereign**   | None — managed by the rollup's own consensus                |

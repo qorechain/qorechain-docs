@@ -17,7 +17,7 @@ QoreChainはEVM互換のJSON-RPCインターフェースを実装しており、
 | WebSocket        | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネット(EVMチェーンID **9801**、16進数 `0x2649`、ノードリリース **v3.2.3**、2026年6月7日から稼働。高さ 3,742,566 から v3.2.4)と **`qorechain-diana`** テストネット(EVMチェーンID **9800**、16進数 `0x2648`、ノードリリース **v3.2.4**、2026年10月19日から)によって提供されます。上記のローカルアドレスは自分で実行するノードに適用されます。公開HTTPエンドポイントは `https://evm.qore.host`(メインネット)と `https://evm-testnet.qore.host`(テストネット)で、[ネットワーク](/appendix/networks#public-endpoints)に記載されています。公開されているEVM WebSocketはテストネットのもの(`wss://evm-ws-testnet.qore.host`)のみで、メインネットの公開EVM WebSocketはありません。
+EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネット(EVMチェーンID **9801**、16進数 `0x2649`、ノードリリース **v3.2.4**、2026年10月23日から、2026年6月7日から稼働)と **`qorechain-diana`** テストネット(EVMチェーンID **9800**、16進数 `0x2648`、ノードリリース **v3.2.4**、2026年10月19日から)によって提供されます。上記のローカルアドレスは自分で実行するノードに適用されます。公開HTTPエンドポイントは `https://evm.qore.host`(メインネット)と `https://evm-testnet.qore.host`(テストネット)で、[ネットワーク](/appendix/networks#public-endpoints)に記載されています。公開されているEVM WebSocketはテストネットのもの(`wss://evm-ws-testnet.qore.host`)のみで、メインネットの公開EVM WebSocketはありません。
 :::
 
 ## サポートされている名前空間

@@ -18,7 +18,7 @@ Fähigkeiten, die um QoreChains Layer 1 herum gebaut sind und nicht um das Tooli
 
 :::caution Frühe Phase: Lesen Sie die Statusspalte
 Bisher wurde auf keinem der beiden Netzwerke ein Rollup erstellt (geprüft am
-21. Oktober 2026). Die folgende Tabelle gibt an, was heute funktioniert; was die
+23. Oktober 2026). Die folgende Tabelle gibt an, was heute funktioniert; was die
 veröffentlichten 0.6.0-Clients geändert haben und welche Grenzen bleiben, ist unter
 [RDK 0.6.0: Änderungen und Grenzen](/rollups/deploying-a-rollup#rdk-050-limits) zusammengefasst.
 Wenn Sie nur ein generisches optimistisches/zk-Rollup benötigen, tut es jedes Kit;

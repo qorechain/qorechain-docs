@@ -23,7 +23,7 @@ El módulo del puente está desplegado en mainnet y testnet, pero **ninguna ruta
 | Operaciones del puente | 0 | 0 |
 | Canales / clientes IBC | 0 / 0 | 0 / 0 |
 
-(Comprobado el 20 de octubre de 2026 con la mainnet v3.2.3 y la testnet v3.2.4. Lea los valores en vivo con `qorechaind query bridge chains` y `qorechaind query bridge validators`, o por REST en `/qorechain/bridge/v1/chains` y `/qorechain/bridge/v1/validators`.) La configuración del módulo es la misma en ambas redes: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86.400 y `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). La pila IBC que usaría el módulo es ibc-go v10.7 (desde v3.2.2), pero no se ha creado ningún cliente ni canal.
+(Comprobado el 23 de octubre de 2026 con la mainnet y la testnet, ambas en v3.2.4. Lea los valores en vivo con `qorechaind query bridge chains` y `qorechaind query bridge validators`, o por REST en `/qorechain/bridge/v1/chains` y `/qorechain/bridge/v1/validators`.) La configuración del módulo es la misma en ambas redes: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86.400 y `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). La pila IBC que usaría el módulo es ibc-go v10.7 (desde v3.2.2), pero no se ha creado ningún cliente ni canal.
 
 ## Resumen de Conexiones
 
@@ -193,7 +193,7 @@ Todas las operaciones del puente QCB requieren un **umbral de 7 de 10** firmas p
 * Una lista de cadenas admitidas
 * Una puntuación de reputación (mantenida por `x/reputation`)
 
-Desde v3.2.2 el módulo valida de forma coherente los montos cero y su configuración en todas las rutas. **Desde v3.2.4 (testnet desde el 19 de octubre de 2026; mainnet desde la altura 3,742,566):** registrar un validador de puente también requiere una prueba de posesión de la clave Dilithium-5 (el mismo formato `proof_of_possession` que el registro de claves PQC, véase [Seguridad Poscuántica](/architecture/post-quantum-security#proof-of-possession)) y rechaza una clave que otro validador de puente ya esté usando. La mainnet v3.2.3, que se ejecuta hasta esa altura, no tiene esa comprobación, y no hay ningún validador de puente registrado en ninguna de las dos redes.
+Desde v3.2.2 el módulo valida de forma coherente los montos cero y su configuración en todas las rutas. **Desde v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026):** registrar un validador de puente también requiere una prueba de posesión de la clave Dilithium-5 (el mismo formato `proof_of_possession` que el registro de claves PQC, véase [Seguridad Poscuántica](/architecture/post-quantum-security#proof-of-possession)) y rechaza una clave que otro validador de puente ya esté usando. Las versiones anteriores no tienen esa comprobación, y no hay ningún validador de puente registrado en ninguna de las dos redes.
 
 ### Disyuntores (Circuit Breakers)
 

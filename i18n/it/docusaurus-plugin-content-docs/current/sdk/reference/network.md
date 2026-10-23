@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Preset di rete | `mainnet` |
 | Chain id | `qorechain-vladi` (attiva dal 7 giugno 2026) |
-| Versione della chain (21 ottobre 2026) | v3.2.3 fino all'altezza 3.742.566, v3.2.4 da quel blocco (proposta di governance 13) |
+| Versione della chain (23 ottobre 2026) | v3.2.4 (dall'altezza 3.742.566, 23 ottobre 2026, proposta di governance 13) |
 | EVM chain ID | `9801` |
 | Token visualizzato | `QOR` |
 | Denominazione base | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Preset di rete | `testnet` |
 | Chain id | `qorechain-diana` (attiva) |
-| Versione della chain (21 ottobre 2026) | v3.2.4 (dall'altezza 8.337.253, 19 ottobre 2026) |
+| Versione della chain (23 ottobre 2026) | v3.2.4 (dall'altezza 8.337.253, 19 ottobre 2026) |
 | EVM chain ID | `9800` |
 | Token visualizzato | `QOR` |
 | Denominazione base | `uqor` |

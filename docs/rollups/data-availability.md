@@ -16,7 +16,7 @@ Data availability (DA) is the guarantee that the transaction data behind a rollu
 | **`both`** | Native and Celestia together, for redundancy | Behaves exactly like `native` today |
 
 :::caution Early-stage capability
-No rollup has been created on either network yet (checked 21 October 2026), and the DA backends are only partly implemented. The status of each backend is stated below; validate on the **`qorechain-diana`** testnet before relying on any of them.
+No rollup has been created on either network yet (checked 23 October 2026), and the DA backends are only partly implemented. The status of each backend is stated below; validate on the **`qorechain-diana`** testnet before relying on any of them.
 :::
 
 ---

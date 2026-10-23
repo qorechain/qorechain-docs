@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Sorgular, `--node` parametresinin işaret ettiği düğüme karşı çalışır. Canlı veriler için bir **`qorechain-vladi`** ana ağ RPC uç noktası (örneğin `--node https://rpc.qore.host:443`) veya test için bir **`qorechain-diana`** test ağı uç noktası (`--node https://rpc-testnet.qore.host:443`) kullanın. Varsayılan `tcp://localhost:26657` kendi çalıştırdığınız bir düğümü hedefler. Ana ağ, 3.742.566 yüksekliğine kadar düğüm sürümü v3.2.3'ü, o bloktan itibaren v3.2.4'ü çalıştırır (yönetişim önerisi 13); test ağı 19 Ekim 2026'dan beri v3.2.4'ü çalıştırır. v3.2.4 sürümü birkaç yol ve komut ekler (aşağıda **v3.2.4** olarak işaretlenmiştir): bunlar test ağında şimdiden, ana ağda ise 3.742.566 yüksekliğinden itibaren çalışır; hâlâ v3.2.3 üzerinde olan bir ana ağ düğümü bunlara `Not Implemented` ile yanıt verir. Bu sayfadaki komutlar, `https://rpc.qore.host:443` adresine karşı çalıştırılan v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir.
+Sorgular, `--node` parametresinin işaret ettiği düğüme karşı çalışır. Canlı veriler için bir **`qorechain-vladi`** ana ağ RPC uç noktası (örneğin `--node https://rpc.qore.host:443`) veya test için bir **`qorechain-diana`** test ağı uç noktası (`--node https://rpc-testnet.qore.host:443`) kullanın. Varsayılan `tcp://localhost:26657` kendi çalıştırdığınız bir düğümü hedefler. Ana ağ, 23 Ekim 2026'dan beri düğüm sürümü v3.2.4'ü çalıştırır (3.742.566 yüksekliğinde yönetişim önerisi 13 ile uygulandı); test ağı 19 Ekim 2026'dan beri v3.2.4'ü çalıştırır. v3.2.4 sürümü birkaç yol ve komut ekler (aşağıda **v3.2.4** olarak işaretlenmiştir): bunlar her iki ağda da çalışır; daha eski bir sürümde olan bir düğüm bunlara `Not Implemented` ile yanıt verir. Bu sayfadaki komutlar, `https://rpc.qore.host:443` adresine karşı çalıştırılan v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir; v3.2.4 yolları 23 Ekim 2026'da REST üzerinden denetlenmiştir.
 :::
 
 Ortak bayraklar her `query` alt komutu için geçerlidir:
@@ -115,7 +115,7 @@ qorechaind query pqc evm-delegation-consent <address>
 
 - `algorithm`, bir algoritma adı (`dilithium5`, `mlkem1024`) veya sayısal kimlik alır.
 - `migration`, bir adres değil, bir **algoritma kimliği** (örneğin `1`) alır ve çalışan bir geçiş olmadığında `No active migration` bildirir.
-- `account`, kayıtlı anahtarı bildirir. Anahtarın, `key_type` ve `algorithm_name` alanlarının yanı sıra kayıt, `classical_key_source` alanını da taşır (`stored`, `auth_account` veya `none`: klasik açık anahtarın nereden geldiği). v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren) ayrıca `possession_proven` alanı bulunur; anahtar doğrulanmış bir sahiplik kanıtıyla kaydedildiyse bu alan `true` olur.
+- `account`, kayıtlı anahtarı bildirir. Anahtarın, `key_type` ve `algorithm_name` alanlarının yanı sıra kayıt, `classical_key_source` alanını da taşır (`stored`, `auth_account` veya `none`: klasik açık anahtarın nereden geldiği). v3.2.4'ten itibaren (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri) ayrıca `possession_proven` alanı bulunur; anahtar doğrulanmış bir sahiplik kanıtıyla kaydedildiyse bu alan `true` olur.
 - `evm-window`, adresin açık bir EVM hattı yetkilendirme penceresi olup olmadığını ve kaç blok, işlem ve değerin kaldığını gösterir (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`); ayrıca pencerenin kapsamını da gösterir (`native_only`, `allowed_targets`; ana ağ v3.2.3'ten itibaren). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
 - `evm-delegation-consent`, adresin EIP-7702 delegasyon onayını (`found`, `live`, `delegate`, `granted_height`, `expiry_height`), mevcut delegasyonunu ve EVM nonce'unu gösterir. REST: `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
 - `params` ve `hybrid-mode`, `hybrid_signature_mode` (`2` = her iki ağda da zorunlu) ve `allow_classical_fallback` (`false`) değerlerini bildirir.
@@ -149,7 +149,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mod
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
 ```
 
-Ana ağda bunlar `emission_mode: "fixed"`, her biri 43,200 bloktan oluşan epoch başına 86,000 QOR sabit emisyon ve 590,000,000 QOR kümülatif üst sınır bildirir (yönetişim önerisi 10, 19 Ekim 2026'da kabul edildi; yeni miktardaki ilk epoch 3,672,000 numaralı blokta başlar). Miktarlar `uqor` cinsindendir. Test ağı hâlâ kendine ait, farklı değerler bildirir; v3.2.4 sürümü ek bir emisyon modu getirir (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren), ancak bir ağ yalnızca kendi yönetişim oylamasıyla bu moda geçer; dolayısıyla böyle bir oylama kabul edilene kadar ana ağ `fixed` modunda kalır.
+Ana ağda bunlar `emission_mode: "fixed"`, her biri 43,200 bloktan oluşan epoch başına 86,000 QOR sabit emisyon ve 590,000,000 QOR kümülatif üst sınır bildirir (yönetişim önerisi 10, 19 Ekim 2026'da kabul edildi; yeni miktardaki ilk epoch 3,672,000 numaralı blokta başlar). Miktarlar `uqor` cinsindendir. Test ağı hâlâ kendine ait, farklı değerler bildirir; v3.2.4 sürümü ek bir emisyon modu getirir (her iki ağda da kullanılabilir), ancak bir ağ yalnızca kendi yönetişim oylamasıyla bu moda geçer; dolayısıyla böyle bir oylama kabul edilene kadar ana ağ `fixed` modunda kalır.
 
 ---
 
@@ -184,7 +184,7 @@ qorechaind query lightnode rewards <operator_address>
 qorechaind query lightnode reward-pool
 ```
 
-`reward-pool`, modülün ödül bakiyesinin `reserved`, `outstanding`, `payable` ve `distributable` olarak nasıl bölündüğünü ve düğüm başına sınırları gösterir: `max_reward_per_block_per_node` ve v3.2.3'ten itibaren `max_reward_per_month_per_node` (2,000 QOR; blok süresine ve çalışma süresine göre orantılanır). v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren) ayrıca `monthly_cap_active`, `last_distribution_time` ve `last_distribution_height` alanlarını bildirir.
+`reward-pool`, modülün ödül bakiyesinin `reserved`, `outstanding`, `payable` ve `distributable` olarak nasıl bölündüğünü ve düğüm başına sınırları gösterir: `max_reward_per_block_per_node` ve v3.2.3'ten itibaren `max_reward_per_month_per_node` (2,000 QOR; blok süresine ve çalışma süresine göre orantılanır). v3.2.4'ten itibaren (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri) ayrıca `monthly_cap_active`, `last_distribution_time` ve `last_distribution_height` alanlarını bildirir.
 
 ---
 
@@ -330,7 +330,7 @@ qorechaind query stakingtier locks <holder_address>
 qorechaind query stakingtier pool
 ```
 
-Staking katmanları modülü **v3.2.4** sürümünün bir parçasıdır: test ağında 19 Ekim 2026'dan beri çalışır ve ana ağda 3,742,566 yüksekliğinden itibaren çalışır (yönetişim önerisi 13). Bu yükseklikten önce bir ana ağ düğümü bu sorgulara `Not Implemented` ile yanıt verir. REST: `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. Bkz. [İşlem Komutları](/cli-reference/transaction-commands#stakingtier).
+Staking katmanları modülü **v3.2.4** sürümünün bir parçasıdır: test ağında 19 Ekim 2026'dan beri, ana ağda ise 23 Ekim 2026'dan beri (3,742,566 yüksekliği, yönetişim önerisi 13) çalışır. Daha eski bir sürümdeki bir düğüm bu sorgulara `Not Implemented` ile yanıt verir. REST: `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. Bkz. [İşlem Komutları](/cli-reference/transaction-commands#stakingtier).
 
 ---
 
@@ -345,7 +345,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>`, bir yükseltmenin ne zaman yürürlüğe girdiğini okumanın yoludur: ana ağda `v3.2.2` 3,556,788 yüksekliğinde, `v3.2.3` ise 3,662,051 yüksekliğinde uygulandı; test ağında `v3.2.2` 6,905,034'te, `v3.2.3` 8,003,746'da ve `v3.2.4` 8,337,253'te uygulandı (`0` uygulanmadı demektir). Ana ağ devre kesici listesi (`disabled-list`) şu anda vesting hesabı oluşturma mesajlarını, QoreChain Native store ve instantiate'i, AMM havuzunu duraklatma ve sürdürmeyi, cross-VM çağrısını, multilayer katman durumu güncellemesini, PQC algoritmasını kullanımdan kaldırma ve devre dışı bırakmayı ve PRISM uzlaşma yönetişim mesajlarını içerir; test ağınınki ise yalnızca üç QoreChain Native mesajını içerir.
+`query upgrade applied <name>`, bir yükseltmenin ne zaman yürürlüğe girdiğini okumanın yoludur: ana ağda `v3.2.2` 3,556,788 yüksekliğinde, `v3.2.3` 3,662,051 yüksekliğinde ve `v3.2.4` 3,742,566 yüksekliğinde uygulandı; test ağında `v3.2.2` 6,905,034'te, `v3.2.3` 8,003,746'da ve `v3.2.4` 8,337,253'te uygulandı (`0` uygulanmadı demektir). Ana ağ devre kesici listesi (`disabled-list`) şu anda vesting hesabı oluşturma mesajlarını, QoreChain Native store ve instantiate'i, AMM havuzunu duraklatma ve sürdürmeyi, cross-VM çağrısını, multilayer katman durumu güncellemesini, PQC algoritmasını kullanımdan kaldırma ve devre dışı bırakmayı ve PRISM uzlaşma yönetişim mesajlarını içerir; test ağınınki ise yalnızca üç QoreChain Native mesajını içerir.
 
 ---
 

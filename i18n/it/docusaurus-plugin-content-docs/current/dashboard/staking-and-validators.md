@@ -57,7 +57,7 @@ Tutte e quattro le azioni si trovano nella pagina **Wallet** (`/wallet`), non ne
 9. Apri QoreX (il link/deeplink lo fa per te) e approva la delega. QoreX costruisce, firma e trasmette la transazione; il dashboard non vede mai la tua chiave.
 
 :::note Lo staking con blocco temporale non fa parte della dashboard
-La release v3.2.4 aggiunge un modulo opzionale di staking con blocco temporale (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566) — vedi [Staking con blocco temporale](/user-guide/staking-and-delegation#time-locked-staking). Né la Dashboard né QoreX hanno una schermata per esso. Le deleghe effettuate qui sono deleghe ordinarie senza vincolo di blocco; l'unica attesa è l'unbonding di 21 giorni in uscita.
+La release v3.2.4 aggiunge un modulo opzionale di staking con blocco temporale (sulla mainnet dal 23 ottobre 2026, sulla testnet dal 19 ottobre 2026) — vedi [Staking con blocco temporale](/user-guide/staking-and-delegation#time-locked-staking). Né la Dashboard né QoreX hanno una schermata per esso. Le deleghe effettuate qui sono deleghe ordinarie senza vincolo di blocco; l'unica attesa è l'unbonding di 21 giorni in uscita.
 :::
 
 ### Ridelegare {#redelegate}

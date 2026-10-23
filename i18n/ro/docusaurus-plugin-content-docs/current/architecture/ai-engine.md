@@ -21,7 +21,7 @@ Motorul QCAI (QoreChain AI) operează pe trei straturi:
 
 Nivelul de consens este documentat separat în [Motorul de consens PRISM](/architecture/prism-consensus-engine). Această pagină acoperă nivelurile de rețea și de aplicație.
 
-:::note Ce este aplicat pe rețelele live (mainnet v3.2.3, testnet v3.2.4)
+:::note Ce este aplicat pe rețelele live (mainnet și testnet v3.2.4)
 Două părți din `x/ai` acționează astăzi asupra tranzacțiilor, atât pe lane-ul Cosmos, cât și pe lane-ul EVM:
 
 * O **limită de rată per expeditor**. Limita live este de **600 de tranzacții pe minut per expeditor** (`max_tx_per_minute`; lane-ul EVM are propria limită opțională, care nu este setată, deci se aplică aceeași valoare). „Minutul” este numărat pe o fereastră fixă de blocuri, nu pe timpul real al ceasului, deoarece înălțimea blocului este singurul ceas pe care îl împărtășesc toți validatorii. Unui expeditor aflat la limită i se refuză tranzacțiile următoare până când cele mai vechi ies din fereastră. Limita este aplicată pe lane-ul Cosmos începând cu v3.2.0 și pe ambele lane-uri începând cu v3.2.2.
@@ -180,7 +180,7 @@ Două contracte precompilate expun capabilitățile AI on-chain către contracte
 Aceste precompilate **nu sunt active** pe mainnet (`qorechain-vladi`) și nici pe testnet (`qorechain-diana`); un apel returnează date goale. Vor fi activate abia după ce vor avea o cale de scorare read-only, în virgulă fixă. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
 :::
 
-**Important**: Precompilatele EVM folosesc **doar motorul euristic determinist**. Ele nu apelează niciodată sidecar-ul, asigurând că întreaga execuție EVM rămâne complet deterministă și reproductibilă. Începând cu v3.2.3, precompilatul de verificare a anomaliilor analizează o tranzacție fără a scrie în stare; celelalte întăriri ale precompilatelor din acea versiune (puntea CrossVM care refuză `STATICCALL`, care măsoară apelul imbricat din gazul cadrului apelant și care atinge doar ținte QoreChain Native din lista de permise) se aplică odată ce precompilatul CrossVM este activat. La 20 octombrie 2026, lista `active_static_precompiles` este goală pe ambele rețele.
+**Important**: Precompilatele EVM folosesc **doar motorul euristic determinist**. Ele nu apelează niciodată sidecar-ul, asigurând că întreaga execuție EVM rămâne complet deterministă și reproductibilă. Începând cu v3.2.3, precompilatul de verificare a anomaliilor analizează o tranzacție fără a scrie în stare; celelalte întăriri ale precompilatelor din acea versiune (puntea CrossVM care refuză `STATICCALL`, care măsoară apelul imbricat din gazul cadrului apelant și care atinge doar ținte QoreChain Native din lista de permise) se aplică odată ce precompilatul CrossVM este activat. La 23 octombrie 2026, lista `active_static_precompiles` este goală pe ambele rețele.
 
 ## Atestare TEE
 

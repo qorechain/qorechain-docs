@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain esegue un ambiente di esecuzione completamente compatibile con EVM sul QoreChain EVM Engine, che consente di distribuire e interagire con smart contract Solidity utilizzando strumenti familiari. Il modulo EVM espone un'interfaccia JSON-RPC sulla **porta 8545** (WebSocket sulla **8546**) che supporta i flussi di lavoro di sviluppo Ethereum standard.
 
 :::note
-Gli esempi seguenti fanno riferimento alla mainnet **`qorechain-vladi`** (Chain ID EVM **9801**), attiva dal 7 giugno 2026, che esegue la release di nodo **v3.2.3** (applicata all'altezza 3,662,051 il 20 ottobre 2026). La mainnet passa alla release di nodo **v3.2.4** all'altezza 3,742,566 (proposta di governance 13). La testnet **`qorechain-diana`** esegue la v3.2.4 dall'altezza 8,337,253 (19 ottobre 2026); lì usa il Chain ID EVM **9800**. Gli esempi di codice usano `http://localhost:8545` per un nodo gestito da te; l'endpoint pubblico della mainnet è `https://evm.qore.host` e quello della testnet è `https://evm-testnet.qore.host`.
+Gli esempi seguenti fanno riferimento alla mainnet **`qorechain-vladi`** (Chain ID EVM **9801**), attiva dal 7 giugno 2026, che esegue la release di nodo **v3.2.4** (applicata dalla proposta di governance 13 all'altezza 3,742,566 il 23 ottobre 2026; la v3.2.3 era stata applicata all'altezza 3,662,051 il 20 ottobre 2026). La testnet **`qorechain-diana`** esegue la v3.2.4 dall'altezza 8,337,253 (19 ottobre 2026); lì usa il Chain ID EVM **9800**. Gli esempi di codice usano `http://localhost:8545` per un nodo gestito da te; l'endpoint pubblico della mainnet è `https://evm.qore.host` e quello della testnet è `https://evm-testnet.qore.host`.
 :::
 
 :::caution Una transazione EVM richiede una chiave PQC registrata e una finestra di autorizzazione aperta
@@ -34,7 +34,7 @@ Sulla mainnet, dalla v3.2.2, valgono altre due regole: **le transazioni non prot
 
 Le letture specifiche di QoreChain sono servite tramite REST (`api.qore.host`); il namespace JSON-RPC `qor_` descritto [più sotto](#custom-qor_-namespace) **non è abilitato** sugli endpoint pubblici né nella configurazione predefinita del nodo. L'elenco `api` predefinito di un nodo appena inizializzato (v3.2.3 e successive) è `eth,net,web3`; `txpool` è opt-in, perché pubblica le transazioni in sospeso del nodo.
 
-Dalla release di nodo v3.2.4 (testnet dal 19 ottobre 2026; nodi della mainnet dall'altezza 3,742,566) un nodo limita il proprio server JSON-RPC: i corpi delle richieste oltre 256 KiB vengono rifiutati (HTTP 413), non più di 256 richieste vengono servite contemporaneamente (oltre, HTTP 503), e un filtro `eth_getLogs` o `eth_newFilter` con più di 4 posizioni di topic, 1000 alternative in una posizione o 1000 indirizzi viene rifiutato. I limiti sono impostazioni locali al nodo nella sezione `[json-rpc]` di `app.toml`; vedi [Esecuzione di un nodo](/developer-guide/running-a-node#exposing-endpoints-for-integration).
+Dalla release di nodo v3.2.4 (mainnet dal 23 ottobre 2026, testnet dal 19 ottobre 2026) un nodo limita il proprio server JSON-RPC: i corpi delle richieste oltre 256 KiB vengono rifiutati (HTTP 413), non più di 256 richieste vengono servite contemporaneamente (oltre, HTTP 503), e un filtro `eth_getLogs` o `eth_newFilter` con più di 4 posizioni di topic, 1000 alternative in una posizione o 1000 indirizzi viene rifiutato. I limiti sono impostazioni locali al nodo nella sezione `[json-rpc]` di `app.toml`; vedi [Esecuzione di un nodo](/developer-guide/running-a-node#exposing-endpoints-for-integration).
 
 ---
 

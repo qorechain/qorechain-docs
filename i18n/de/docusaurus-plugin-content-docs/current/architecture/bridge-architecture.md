@@ -23,7 +23,7 @@ Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge
 | Bridge-Operationen | 0 | 0 |
 | IBC-Kanäle / -Clients | 0 / 0 | 0 / 0 |
 
-(Geprüft am 20. Oktober 2026 gegen Mainnet v3.2.3 und Testnet v3.2.4. Die Live-Werte lesen Sie mit `qorechaind query bridge chains` und `qorechaind query bridge validators` oder über REST unter `/qorechain/bridge/v1/chains` und `/qorechain/bridge/v1/validators`.) Die Modulkonfiguration ist auf beiden Netzwerken gleich: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 und `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Der IBC-Stack, den das Modul verwenden würde, ist ibc-go v10.7 (seit v3.2.2), es wurde jedoch noch kein Client und kein Kanal erstellt.
+(Geprüft am 23. Oktober 2026 gegen Mainnet und Testnet, beide v3.2.4. Die Live-Werte lesen Sie mit `qorechaind query bridge chains` und `qorechaind query bridge validators` oder über REST unter `/qorechain/bridge/v1/chains` und `/qorechain/bridge/v1/validators`.) Die Modulkonfiguration ist auf beiden Netzwerken gleich: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 und `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Der IBC-Stack, den das Modul verwenden würde, ist ibc-go v10.7 (seit v3.2.2), es wurde jedoch noch kein Client und kein Kanal erstellt.
 
 ## Verbindungsübersicht
 
@@ -193,7 +193,7 @@ Alle QCB-Bridge-Operationen erfordern einen **7-aus-10-Schwellenwert** von Dilit
 * Einer Liste unterstützter Chains
 * Einem Reputationswert (verwaltet von `x/reputation`)
 
-Seit v3.2.2 validiert das Modul Nullbeträge und seine Konfiguration auf jedem Pfad einheitlich. **Ab v3.2.4 (Testnet seit 19. Oktober 2026; Mainnet ab Höhe 3.742.566):** Die Registrierung eines Bridge-Validators erfordert zusätzlich einen Besitznachweis des Dilithium-5-Schlüssels (dasselbe `proof_of_possession`-Format wie bei der PQC-Schlüsselregistrierung, siehe [Post-Quanten-Sicherheit](/architecture/post-quantum-security#proof-of-possession)) und weist einen Schlüssel zurück, den bereits ein anderer Bridge-Validator verwendet. Das Mainnet v3.2.3, das bis zu dieser Höhe läuft, hat keine solche Prüfung, und auf keinem der beiden Netzwerke ist ein Bridge-Validator registriert.
+Seit v3.2.2 validiert das Modul Nullbeträge und seine Konfiguration auf jedem Pfad einheitlich. **Ab v3.2.4 (Mainnet seit 23. Oktober 2026, Testnet seit 19. Oktober 2026):** Die Registrierung eines Bridge-Validators erfordert zusätzlich einen Besitznachweis des Dilithium-5-Schlüssels (dasselbe `proof_of_possession`-Format wie bei der PQC-Schlüsselregistrierung, siehe [Post-Quanten-Sicherheit](/architecture/post-quantum-security#proof-of-possession)) und weist einen Schlüssel zurück, den bereits ein anderer Bridge-Validator verwendet. Frühere Releases haben keine solche Prüfung, und auf keinem der beiden Netzwerke ist ein Bridge-Validator registriert.
 
 ### Circuit Breaker
 

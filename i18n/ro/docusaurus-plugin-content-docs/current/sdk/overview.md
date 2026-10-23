@@ -30,7 +30,7 @@ Conturile, soldurile și token-urile sunt partajate între runtime-uri, iar lan�
 include modulul IBC pentru interoperabilitate cross-chain (încă nu este deschis
 niciun canal IBC pe mainnet sau testnet).
 
-:::note Ce funcționează astăzi pe rețelele live (mainnet v3.2.3, v3.2.4 de la înălțimea 3.742.566; testnet v3.2.4)
+:::note Ce funcționează astăzi pe rețelele live (mainnet și testnet v3.2.4)
 **Funcționează:** citiri pe fiecare bandă, tranzacții Native semnate hibrid,
 conturi unificate, tranzacții EVM în interiorul unei
 [ferestre de autorizare](/sdk/guides/evm#evm-window) și citiri SVM.
@@ -43,7 +43,7 @@ abstractizarea gazului. Fiecare ghid repetă avertismentul acolo unde se aplică
 SDK-ul publicat (0.9.0, 21 octombrie 2026) semnează în forma pe care o verifică
 ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul
 de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în
-v3.2.3 sau v3.2.4 (mainnet rulează v3.2.4 de la înălțimea 3.742.566). Poartă partea de client a regulilor post-cuantice ulterioare
+v3.2.3 sau v3.2.4 (mainnet-ul rulează v3.2.4 din 23 octombrie 2026). Poartă partea de client a regulilor post-cuantice ulterioare
 (dovada de posesie la înregistrarea cheii, ferestre EVM cu domeniu restrâns,
 mesaje de consimțământ EIP-7702); versiunile anterioare lui 0.9.0 nu o au, vezi
 [Versiuni anterioare lui 0.9.0](/sdk/install#before-090).

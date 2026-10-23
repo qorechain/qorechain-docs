@@ -24,7 +24,7 @@ Cele șase precompilate QoreChain de mai jos sunt **compilate în nod, dar înc�
 | PRISM Consensus Params | `0x…0C01` | Neactiv | Neactiv |
 | CrossVM Bridge | `0x…0901` | Neactiv | Neactiv |
 
-Activarea necesită un upgrade al lanțului și este planificată în etape: mai întâi precompilatele PQC și de consens, doar pentru citire, apoi perechea AI, odată ce calea lor de citire, în virgulă fixă, este pusă la punct, iar puntea CrossVM la final. Versiunea v3.2.3 (mainnet, 20 octombrie 2026) a introdus în binar, în spatele unei funcționalități de protocol, versiunile întărite ale punții CrossVM și ale precompilatului AI de anomalii, **dar nu a activat niciun precompilat**: lista `active_static_precompiles` este în continuare goală pe ambele rețele, iar v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3,742,566) nu schimbă acest lucru. Acest tabel se actualizează în aceeași operațiune cu upgrade-ul care activează oricare dintre ele.
+Activarea necesită un upgrade al lanțului și este planificată în etape: mai întâi precompilatele PQC și de consens, doar pentru citire, apoi perechea AI, odată ce calea lor de citire, în virgulă fixă, este pusă la punct, iar puntea CrossVM la final. Versiunea v3.2.3 (mainnet, 20 octombrie 2026) a introdus în binar, în spatele unei funcționalități de protocol, versiunile întărite ale punții CrossVM și ale precompilatului AI de anomalii, **dar nu a activat niciun precompilat**: lista `active_static_precompiles` este în continuare goală pe ambele rețele, iar v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026) nu schimbă acest lucru. Acest tabel se actualizează în aceeași operațiune cu upgrade-ul care activează oricare dintre ele.
 
 Verifică singur lista curentă (goală înseamnă că niciunul nu e activ):
 
@@ -95,7 +95,7 @@ interface IQorePQC {
 }
 ```
 
-Începând cu v3.2.4 (testnet din 19 octombrie 2026; mainnet de la înălțimea 3,742,566), odată ce acest precompilat este activ, ieșirea lui conține o a patra valoare, `bool possessionProven`, după `pubkey`: dacă cheia curentă a contului a fost dovedită printr-o dovadă de posesie verificată (vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing#proof-of-possession)). Interfața de mai sus listează primele trei ieșiri; un contract care trebuie să aibă încredere în cheie ar trebui să citească și a patra valoare.
+Începând cu v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026), odată ce acest precompilat este activ, ieșirea lui conține o a patra valoare, `bool possessionProven`, după `pubkey`: dacă cheia curentă a contului a fost dovedită printr-o dovadă de posesie verificată (vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing#proof-of-possession)). Interfața de mai sus listează primele trei ieșiri; un contract care trebuie să aibă încredere în cheie ar trebui să citească și a patra valoare.
 
 ### IQoreAI.sol
 

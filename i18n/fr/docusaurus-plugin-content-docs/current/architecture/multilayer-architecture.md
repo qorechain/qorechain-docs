@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain met en œuvre une **architecture de chaînes hiérarchique à 4 niveaux** via le module `x/multilayer`. La chaîne principale sert de racine de règlement et de confiance, tandis que les couches subsidiaires (sidechains, paychains et rollups) prennent en charge des charges de travail spécialisées avec différents compromis de performance et de sécurité.
 
 :::caution Capacité à un stade précoce
-Le module est déployé sur le mainnet (version de chaîne **v3.2.3** jusqu'à la hauteur 3 742 566, **v3.2.4** à partir de ce bloc) et sur le testnet (**v3.2.4**), mais **aucune couche et aucune ancre n'existe encore sur l'un ou l'autre réseau** (vérifié le 20 octobre 2026 : `GET /qorechain/multilayer/v1/layers` renvoie une liste vide sur les deux). Tout ce qui suit décrit le module tel qu'il est construit ; les paramètres sont les valeurs en vigueur. Sur le mainnet, le message `MsgUpdateLayerStatus` est actuellement désactivé par le disjoncteur (voir [Paramètres de la chaîne](/appendix/chain-parameters#circuit-breaker)) ; sur le testnet, il ne l'est pas.
+Le module est déployé sur le mainnet (version de chaîne **v3.2.4** depuis le 23 octobre 2026) et sur le testnet (**v3.2.4**), mais **aucune couche et aucune ancre n'existe encore sur l'un ou l'autre réseau** (vérifié le 23 octobre 2026 : `GET /qorechain/multilayer/v1/layers` renvoie une liste vide sur les deux). Tout ce qui suit décrit le module tel qu'il est construit ; les paramètres sont les valeurs en vigueur. Sur le mainnet, le message `MsgUpdateLayerStatus` est actuellement désactivé par le disjoncteur (voir [Paramètres de la chaîne](/appendix/chain-parameters#circuit-breaker)) ; sur le testnet, il ne l'est pas.
 :::
 
 ---
@@ -64,7 +64,7 @@ La chaîne principale est la racine de confiance de l'ensemble de l'écosystème
 | Consensus       | Consensus QoreChain (voir [Mécanisme de consensus](/architecture/consensus-mechanism) pour ce qui est branché aujourd'hui) |
 | Sécurité        | Sécurisé par PQC avec signatures Dilithium-5                                    |
 | Rôle            | Couche de règlement, stockage des ancres d'état, moteur de routage QCAI, racine de confiance |
-| Temps de bloc   | Variable selon le réseau : environ 3,2 secondes sur le mainnet, environ 1,0 seconde sur le testnet (mesuré le 20 octobre 2026) |
+| Temps de bloc   | Variable selon le réseau : environ 3,2 secondes sur le mainnet, environ 1,0 seconde sur le testnet (mesuré le 23 octobre 2026) |
 
 Toutes les couches subsidiaires ancrent périodiquement leurs racines d'état à la chaîne principale via des schémas d'engagement hiérarchiques (HCS).
 
@@ -274,4 +274,4 @@ Les transitions de statut sont imposées par le keeper. Les transitions invalide
 | `routing_confidence_threshold` | string | `0.6`           | Confiance minimale pour les décisions de routage QCAI  |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Activer le regroupement de frais inter-couches global  |
 
-Ce sont les valeurs renvoyées par `qorechaind query multilayer params` (REST : `/qorechain/multilayer/v1/params`) sur le mainnet et le testnet le 20 octobre 2026. Depuis la v3.2.2, le `MsgUpdateParams` du module peut être routé, de sorte qu'une proposition de gouvernance peut les modifier.
+Ce sont les valeurs renvoyées par `qorechaind query multilayer params` (REST : `/qorechain/multilayer/v1/params`) sur le mainnet et le testnet le 23 octobre 2026. Depuis la v3.2.2, le `MsgUpdateParams` du module peut être routé, de sorte qu'une proposition de gouvernance peut les modifier.

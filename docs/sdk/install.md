@@ -39,14 +39,14 @@ Hybrid builders take a `signBytesVersion` option (`"auto"` | `"v1"` | `"v2"`); `
 asks the network and therefore needs the REST endpoint (`rest`) on
 `qorechain-vladi` / `qorechain-diana`: it throws instead of guessing. See
 [Which sign-bytes form?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-The form did not change in chain v3.2.3 or v3.2.4 (the testnet since 19 October 2026, mainnet from height 3,742,566): `"auto"`
+The form did not change in chain v3.2.3 or v3.2.4 (v3.2.4 runs on the testnet since 19 October 2026 and on mainnet since 23 October 2026): `"auto"`
 resolves to v2 on both networks.
 :::
 
 ## What 0.9.0 adds {#whats-new-090}
 
 SDK 0.9.0 is the client release for chain **v3.2.2** and **v3.2.3** (mainnet
-applied them at heights 3,556,788 and 3,662,051; the testnet has run v3.2.4 since 19 October 2026 and mainnet moves to it at height 3,742,566). The
+applied them at heights 3,556,788 and 3,662,051; both networks now run v3.2.4: the testnet since 19 October 2026, mainnet since 23 October 2026 at height 3,742,566). The
 signing format, addresses, decimals, memos and fees did not change, so the
 v2 hybrid sign-bytes form that 0.8.1 and later sign is still the right one.
 What is new:
@@ -73,7 +73,7 @@ rotating away from an existing legacy key still works.
 ## Versions before 0.9.0 {#before-090}
 
 If you are on 0.8.x, it still signs the form both networks verify and works on
-mainnet (v3.2.3, then v3.2.4 from height 3,742,566) and the testnet (v3.2.4). These are the limits that 0.9.0 removes, and
+mainnet and the testnet (both v3.2.4). These are the limits that 0.9.0 removes, and
 some of them cost a fee if you do not know them:
 
 | Release before 0.9.0 | Workaround |

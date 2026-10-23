@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Características principales
 
-La siguiente tabla enumera todas las características importantes de QoreChain, organizadas según la fase de lanzamiento en la que se introdujeron. La mainnet (`qorechain-vladi`, EVM chain ID 9801), activa desde el 7 de junio de 2026, ejecuta **v3.2.3** hasta la altura 3,742,566 y **v3.2.4** desde ese bloque; la testnet en paralelo (`qorechain-diana`, EVM chain ID 9800) ejecuta v3.2.4 desde el 19 de octubre de 2026. La tabla de [Estado de las características](#feature-status) al final de la lista muestra qué está activo hoy en las redes en producción.
+La siguiente tabla enumera todas las características importantes de QoreChain, organizadas según la fase de lanzamiento en la que se introdujeron. La mainnet (`qorechain-vladi`, EVM chain ID 9801), activa desde el 7 de junio de 2026, ejecuta **v3.2.4** (aplicada en la altura 3,742,566 el 23 de octubre de 2026); la testnet en paralelo (`qorechain-diana`, EVM chain ID 9800) ejecuta v3.2.4 desde el 19 de octubre de 2026. La tabla de [Estado de las características](#feature-status) al final de la lista muestra qué está activo hoy en las redes en producción.
 
 | Característica             | Introducida en      | Descripción                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -42,7 +42,7 @@ Verificado frente a las redes en producción el 20 de octubre de 2026. "Activa" 
 | --- | --- |
 | Firmas híbridas ML-DSA-87 + secp256k1 (carril Cosmos) | **Activa**, obligatoria (`hybrid_signature_mode = required`) |
 | Ventana de autorización EVM | **Activa** desde v3.2.0 (ámbito opcional desde v3.2.3) |
-| Staking con bloqueo temporal (`x/stakingtier`, opcional) | v3.2.4: activo en la testnet desde el 19 de octubre de 2026; en mainnet desde la altura 3,742,566 |
+| Staking con bloqueo temporal (`x/stakingtier`, opcional) | **Activo** desde v3.2.4 (testnet desde el 19 de octubre de 2026, mainnet desde el 23 de octubre de 2026) |
 | Entornos de ejecución EVM, QoreChain Native, SVM | EVM **activo**; carga de código e instanciación de QoreChain Native **deshabilitadas** (ajuste de gobernanza más disyuntor); carril de transacciones SVM **deshabilitado** (las lecturas funcionan) |
 | Motor de quema y reparto de comisiones (37/30/20/10/3) | **Activo**; solo los canales de quema de comisiones de gas y de transacciones fallidas han registrado quemas en mainnet |
 | Emisión limitada (`x/inflation`) | **Activa**, 86.000 QOR fijos por época hasta un tope de 590.000.000 QOR (mainnet) |

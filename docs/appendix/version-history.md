@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.3** (applied by governance at height 3,662,051 on 20 October 2026) until height **3,742,566**, and **v3.2.4** from that block (mainnet governance proposal 13). The testnet **`qorechain-diana`** (EVM chain ID **9800**) has run **v3.2.4** since height 8,337,253 (19 October 2026).
+Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026; the previous release, v3.2.3, was applied at height 3,662,051 on 20 October 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) has run **v3.2.4** since height 8,337,253 (19 October 2026).
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet. The release manifest ([Connecting to Mainnet](/getting-started/connecting-to-mainnet)) is promoted separately from tagging and can lag a tag by some time — check it directly for what a fresh install actually downloads.
@@ -15,7 +15,7 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ## Mainnet governance timeline {#governance-timeline}
 
-Proposals that changed or schedule changes to the running mainnet since 14 October 2026. All seven are expedited proposals (one-day voting period); proposals 7 to 11 passed with all voting bonded stake in favour. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
+Proposals that changed the running mainnet since 14 October 2026. All seven are expedited proposals (one-day voting period); proposals 7 to 13 passed with all voting bonded stake in favour. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
 
 | Proposal | What it does | Voting | Outcome |
 | --- | --- | --- | --- |
@@ -24,28 +24,28 @@ Proposals that changed or schedule changes to the running mainnet since 14 Octob
 | 9 | Releases the stranded staker share (6,693,045.921330 QOR) to the foundation | 18–19 October 2026 (ends 19:15 UTC) | Passed |
 | 10 | Emission: sets the fixed emission to 86,000 QOR per epoch and the cumulative cap to 590,000,000 QOR (epoch length unchanged; the first 86,000 QOR epoch starts at block 3,672,000) | 18–19 October 2026 (ends 19:15 UTC) | Passed |
 | 11 | Applies v3.2.3 at height 3,662,051 | 18–19 October 2026 (ends 19:15 UTC) | Passed; applied 20 October 2026 |
-| 12 | Releases the corrected stranded staker share (3,807,496.785528 QOR, recomputed at the v3.2.3 height) to the foundation | 20 October 2026 20:01 UTC to 21 October 2026 20:01 UTC | In its voting period at the time of writing |
-| 13 | Coordinated upgrade to v3.2.4 at height 3,742,566 (about 23 October 2026 at 3.2-second blocks): optional time-locked staking, light-node reward bound counted from registration, a possession flag for post-quantum keys, proof of possession for bridge validators, the RDK challenge window in block time, and node-local hardening | 20 October 2026 21:18 UTC to 21 October 2026 21:18 UTC | In its voting period at the time of writing, with every vote cast so far in favour; check `GET /cosmos/gov/v1/proposals/13` for the final result |
+| 12 | Releases the corrected stranded staker share (3,807,496.785528 QOR, recomputed at the v3.2.3 height) to the foundation | 20 October 2026 20:01 UTC to 21 October 2026 20:01 UTC | Passed |
+| 13 | Coordinated upgrade to v3.2.4 at height 3,742,566: optional time-locked staking, light-node reward bound counted from registration, a possession flag for post-quantum keys, proof of possession for bridge validators, the RDK challenge window in block time, and node-local hardening | 20 October 2026 21:18 UTC to 21 October 2026 21:18 UTC | Passed; applied 23 October 2026 at height 3,742,566 |
 
 See [Tokenomics](/architecture/tokenomics#stranded-and-reserve) for what the releases mean and [Governance](/user-guide/governance) for how to vote.
 
 ---
 
-## v3.2.4 — Light-Node Registration Window and Optional Time-Locked Staking (scheduled for mainnet)
+## v3.2.4 — Light-Node Registration Window and Optional Time-Locked Staking (mainnet)
 
-**Release focus:** The scheduled next mainnet release. It has run on the testnet `qorechain-diana` since testnet governance proposal 13 applied it at height **8,337,253** (19 October 2026; the testnet manifest sets `minCompatible` to 3.2.4). On mainnet, governance proposal 13 schedules it at height **3,742,566**: nodes stay on v3.2.3 until that block, halt there and restart on v3.2.4, and transaction signing is unchanged. Every feature below is therefore live on the testnet now and applies to `qorechain-vladi` from height 3,742,566 (once the proposal passes).
+**Release focus:** The current release on both networks. It ran on the testnet `qorechain-diana` first: testnet governance proposal 13 applied it at height **8,337,253** (19 October 2026). On mainnet, governance proposal 13 applied it at height **3,742,566** on 23 October 2026: nodes stayed on v3.2.3 until that block, halted there and restarted on v3.2.4, and transaction signing is unchanged. The mainnet and testnet manifests both set `minCompatible` to 3.2.4, so a node joining either network now needs v3.2.4. Every feature below is live on both networks.
 
 * **Light-node registration window.** A light node's reward bound starts at the later of the previous settlement and the node's own registration, so a new registration does not collect an accumulated amount from before it joined.
 * **Optional time-locked staking (`x/stakingtier`, a new module).** A delegator may lock part of a delegation for 3, 6 or 12 months; the locked part cannot be undelegated or redelegated, and an early unlock is allowed with a penalty that is burned. The minimum lock is 10 QOR. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking).
-* **New emission mode.** `x/inflation` gains a third emission mode, `target_apy`, with a `target_apy_bps` parameter (`0` on the testnet). Changing a network's emission mode is a separate governance decision; the mode in force is shown at `/qorechain/inflation/v1/params`.
+* **New emission mode.** `x/inflation` gains a third emission mode, `target_apy`, with a `target_apy_bps` parameter (`0` on both networks; the mode in force on mainnet is still `fixed`). Changing a network's emission mode is a separate governance decision; the mode in force is shown at `/qorechain/inflation/v1/params`.
 * **`possession_proven` flag** on post-quantum account records; proof of possession for account keys stays optional.
 * **Bridge validator proof of possession.** Registering a bridge validator needs a proof of possession and a key no other bridge validator uses.
 * **RDK challenge window in block time.** The optimistic challenge window is counted in block time rather than a block count derived from it.
 * **Node-local hardening** (JSON-RPC request bounds, state-sync chunk budget, key-registration pre-checks) and new queries (`protocol_features`, `auth_nonce`, and the extra light-node reward-pool fields such as `monthly_cap_active`).
 
-## v3.2.3 — Second October Security Batch (mainnet)
+## v3.2.3 — Second October Security Batch
 
-**Release focus:** The second October hardening batch, applied on mainnet by governance proposal 11 at height **3,662,051** (20 October 2026, 16:01 UTC); applied earlier on the testnet at height 8,003,746 (15 October). The mainnet manifest sets `minCompatible` to 3.2.3: a node joining mainnet now needs v3.2.3. The upgrade turns on 52 protocol features at that height; signing format, addresses, decimals, memos and fees are unchanged.
+**Release focus:** The second October hardening batch, applied on mainnet by governance proposal 11 at height **3,662,051** (20 October 2026, 16:01 UTC); applied earlier on the testnet at height 8,003,746 (15 October). The upgrade turns on 52 protocol features at that height; signing format, addresses, decimals, memos and fees are unchanged.
 
 * **Post-quantum key integrity.** Weak, degenerate and already-used keys are refused at registration; hybrid-key maintenance is tightened; post-quantum key-management messages can no longer run through authz; an account cannot remove its last signing algorithm. Registration (`MsgRegisterPQCKeyV2`, `tx pqc register-key-v2 ... --pqc-key <name>`) accepts an **optional proof of possession**, verified when present.
 * **Scoped EVM windows.** `MsgOpenEVMWindow` takes optional `native_only` (plain native QOR transfers only) and `allowed_targets` (up to 16 recipients) fields that narrow a window. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
@@ -73,7 +73,7 @@ See [Tokenomics](/architecture/tokenomics#stranded-and-reserve) for what the rel
 * Updates the consensus-engine dependency; keep the system clock NTP-synchronised (a skew of more than 60 seconds stops the node).
 * Recommended for every operator; `minCompatible` in the mainnet manifest was 3.2.0 at the time.
 
-v3.2.1 was applied node by node and has no upgrade height; it was superseded on mainnet by v3.2.2 (16 October) and v3.2.3 (20 October).
+v3.2.1 was applied node by node and has no upgrade height; it was superseded on mainnet by v3.2.2 (16 October), v3.2.3 (20 October) and v3.2.4 (23 October).
 
 ## v3.2.0 — EVM Authorisation Window and Accounting Fixes
 

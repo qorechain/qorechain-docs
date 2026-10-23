@@ -18,7 +18,7 @@ QoreChain, programatik erişim için üç temel arayüz sunar:
 Tüm REST uç noktaları JSON döndürür. gRPC uç noktaları Protocol Buffers kullanır ve herhangi bir gRPC istemcisiyle tüketilebilir. RPC arayüzü, konsensüs düzeyinde sorgular ve işlem yayını sağlar.
 
 :::note
-Bu arayüzler hem **`qorechain-vladi`** ana ağında (7 Haziran 2026'dan beri canlı; düğüm sürümü **v3.2.3**) hem de **`qorechain-diana`** test ağında (düğüm sürümü **v3.2.4**) kullanılabilir. Ana ağ, 3.742.566 numaralı yüksekliğe kadar v3.2.3'ü, o bloktan itibaren v3.2.4'ü çalıştırır (yönetişim önerisi 13). Aşağıdaki temel URL'ler yerel olarak çalışan bir düğüm varsayar. Herkese açık barındırılan uç noktalar `https://api.qore.host` / `https://api-testnet.qore.host` (REST) ve `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC) adresleridir ve [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir. **Herkese açık bir gRPC uç noktası yoktur**: `grpc.qore.host` ve `grpc-testnet.qore.host` ana bilgisayar adları mevcut değildir, bu nedenle gRPC'ye ihtiyacınız varsa kendi düğümünüzü çalıştırın.
+Bu arayüzler hem **`qorechain-vladi`** ana ağında (7 Haziran 2026'dan beri canlı) hem de **`qorechain-diana`** test ağında kullanılabilir ve ikisi de **v3.2.4** düğüm sürümünü çalıştırır (23 Ekim 2026'da kontrol edildi). Ana ağ v3.2.4'ü 23 Ekim 2026'da 3.742.566 numaralı yükseklikte uyguladı (yönetişim önerisi 13); test ağı onu 19 Ekim 2026'dan beri çalıştırıyor. Aşağıdaki temel URL'ler yerel olarak çalışan bir düğüm varsayar. Herkese açık barındırılan uç noktalar `https://api.qore.host` / `https://api-testnet.qore.host` (REST) ve `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC) adresleridir ve [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir. **Herkese açık bir gRPC uç noktası yoktur**: `grpc.qore.host` ve `grpc-testnet.qore.host` ana bilgisayar adları mevcut değildir, bu nedenle gRPC'ye ihtiyacınız varsa kendi düğümünüzü çalıştırın.
 :::
 
 ## Temel URL'ler
@@ -35,7 +35,7 @@ QoreChain'e özgü modüller REST üzerinden `/qorechain/<module>/v1/...` öneki
 
 Var olmayan bir rota HTTP `501` ve `{"code":12,"message":"Not Implemented"}` ile yanıt verir. Bu, rotanın sunulmadığı anlamına gelir; sorgunun boş döndüğü anlamına gelmez. `/qorechain/` öneki olmayan kısaltılmış yollar (örneğin `/bridge/v1/chains` veya `/pqc/v1/params`) **sunulmaz**. Var olan bir rotada bilinmeyen bir kayıt HTTP `404` ve `{"code":5,"message":"... not found"}` döndürür.
 
-Aşağıdaki örnekler herkese açık ana ağ adresini kullanır; test ağı için bunu `https://api-testnet.qore.host` ile değiştirin. Örneklerdeki değerler 20 ve 21 Ekim 2026 civarında canlı ağlardan okunmuştur (ana ağ v3.2.3, test ağı v3.2.4) ve zamanla değişir; bunları yanıtın biçimini görmek için kullanın. v3.2.4 sürümü birkaç rota ve alan ekler. Bunlar aşağıda **v3.2.4** olarak işaretlenmiştir: test ağı bunları 19 Ekim 2026'dan beri sunar, ana ağ 3.742.566 numaralı yükseklikten itibaren sunar ve o zamana kadar bir ana ağ düğümü bunlara `501` ile yanıt verir.
+Aşağıdaki örnekler herkese açık ana ağ adresini kullanır; test ağı için bunu `https://api-testnet.qore.host` ile değiştirin. Örneklerdeki değerler 20 ile 23 Ekim 2026 arasında canlı ağlardan okunmuştur ve zamanla değişir; bunları yanıtın biçimini görmek için kullanın. v3.2.4 sürümü birkaç rota ve alan ekler. Bunlar aşağıda **v3.2.4** olarak işaretlenmiştir: test ağı bunları 19 Ekim 2026'dan beri, ana ağ ise 23 Ekim 2026'dan beri sunar. Daha eski bir sürümde kalmış bir düğüm yeni rotalara `501` ile yanıt verir.
 
 ## PQC Modülü {#pqc-module}
 
@@ -44,7 +44,7 @@ Aşağıdaki örnekler herkese açık ana ağ adresini kullanır; test ağı iç
 | GET   | `/qorechain/pqc/v1/account/{address}`    | Bir hesabın kuantum sonrası anahtar kaydı (`found`, anahtar türü, algoritma) |
 | GET   | `/qorechain/pqc/v1/evm_window/{address}` | Hesabın EVM şeridi yetkilendirme penceresi ve bunun kalan kısmı             |
 | GET   | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | Hesabın EIP-7702 delegasyon onayı, geçerli delegasyonu ve EVM nonce değeri (v3.2.2'den beri) |
-| GET   | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 numaralı yükseklikten itibaren; o zamana kadar ana ağda `501`). İkili dosyanın bildiği her protokol özelliği; `enabled`, `known` ve `staged` bayraklarıyla |
+| GET   | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (test ağında 19 Ekim 2026'dan beri; ana ağda 23 Ekim 2026'dan beri; eski bir düğümde `501`). İkili dosyanın bildiği her protokol özelliği; `enabled`, `known` ve `staged` bayraklarıyla |
 
 Yol bölümünün tekil `account` olduğuna dikkat edin. `/qorechain/pqc/v1/params` veya `/stats` rotası yoktur (bunlar için `qorechaind query pqc params` ve `stats` kullanın).
 
@@ -70,7 +70,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
 }
 ```
 
-`classical_key_source`, `ecdsa_pubkey` değerinin nereden geldiğini söyler: `stored` (kayıt sırasında verilen anahtar), `auth_account` (hiçbir şey saklanmadı, dolayısıyla hesabın kendi zincir üstü genel anahtarıdır) veya `none`. v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 numaralı yükseklikten itibaren) kayıt ayrıca `"possession_proven": false` alanını da taşır; bu alan, bir anahtar doğrulanmış bir [sahiplik kanıtıyla](/developer-guide/post-quantum-signing#proof-of-possession) kaydedildiğinde `true` olur; hâlâ v3.2.3'te olan bir ana ağ düğümü bu alanı raporlamaz.
+`classical_key_source`, `ecdsa_pubkey` değerinin nereden geldiğini söyler: `stored` (kayıt sırasında verilen anahtar), `auth_account` (hiçbir şey saklanmadı, dolayısıyla hesabın kendi zincir üstü genel anahtarıdır) veya `none`. v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; ana ağda 23 Ekim 2026'dan beri) kayıt ayrıca `"possession_proven": false` alanını da taşır; bu alan, bir anahtar doğrulanmış bir [sahiplik kanıtıyla](/developer-guide/post-quantum-signing#proof-of-possession) kaydedildiğinde `true` olur; daha eski bir sürümdeki düğüm bu alanı raporlamaz.
 
 Kayıtlı anahtarı olmayan bir hesap `{"found": false, "account": null}` döndürür. Bir hesabın gönderim yapabilmesi için önce anahtar kaydetmesi gerekip gerekmediğine karar vermek için `found` alanını kullanın.
 
@@ -229,10 +229,10 @@ curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
 ```json
-{ "reserved": "3807496785528", "released": "6693045921330", "initialized": true, "snapshot_height": "2981742" }
+{ "reserved": "0", "released": "10500542706858", "initialized": true, "snapshot_height": "2981742" }
 ```
 
-`reserved` serbest bırakılmak üzere kalan miktardır, `released` yönetişimin şimdiye kadar taşıdığı miktardır, `snapshot_height` ise ayrılan rezervi kaydeden v3.2.0 yükseltmesinin yüksekliğidir. Yukarıdaki değerler yazının hazırlandığı andaki değerlerdir: yönetişim ilk miktarı (6.693.045,921330 QOR) 19 Ekim 2026'da serbest bıraktı ve v3.2.3 yükseltmesi kalan rezervi kendi yüksekliğinde yeniden hesapladı (3.807.496,785528 QOR). Yeniden hesaplanan bu miktarın serbest bırakılması için yeni bir yönetişim önerisi yazının hazırlandığı sırada hâlâ oylama döneminde olduğundan canlı değerleri okuyun. [Tokenomi](/architecture/tokenomics) sayfasına bakın.
+`reserved` serbest bırakılmak üzere kalan miktardır, `released` yönetişimin şimdiye kadar taşıdığı miktardır, `snapshot_height` ise ayrılan rezervi kaydeden v3.2.0 yükseltmesinin yüksekliğidir. Yukarıdaki değerler 23 Ekim 2026'da okunanlardır: yönetişim ilk miktarı (6.693.045,921330 QOR) 19 Ekim 2026'da serbest bıraktı, v3.2.3 yükseltmesi kalan rezervi kendi yüksekliğinde yeniden hesapladı (3.807.496,785528 QOR) ve yönetişim önerisi 12 bu miktarı serbest bıraktı (kabul edildi, oylama 21 Ekim 2026'da sona erdi); dolayısıyla rezerv artık boştur ve `released` toplamı 10.500.542,706858 QOR'dur. Canlı değerleri okuyun. [Tokenomi](/architecture/tokenomics) sayfasına bakın.
 
 ## Abstract Account Modülü {#abstract-account-module}
 
@@ -244,7 +244,7 @@ Abstract-account sorgu servisi REST üzerinden `/qorechain/abstractaccount/v1/..
 | GET   | `/qorechain/abstractaccount/v1/accounts`              | Abstract hesapları listeler                                        |
 | GET   | `/qorechain/abstractaccount/v1/accounts/{address}`    | Bir adres için abstract-account durumu (yoksa `404`)               |
 | GET   | `/qorechain/abstractaccount/v1/permission_schema`     | `schema_version`, `permissions`, `msg_permissions`, `key_management_msgs`, `lane_rules` |
-| GET   | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **v3.2.4** (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 numaralı yükseklikten itibaren; o zamana kadar ana ağda `501`). Bağlı bir authenticator anahtarının sıradaki imzalaması gereken sıra numarası (`nonce`, `linked`) |
+| GET   | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **v3.2.4** (test ağında 19 Ekim 2026'dan beri; ana ağda 23 Ekim 2026'dan beri; eski bir düğümde `501`). Bağlı bir authenticator anahtarının sıradaki imzalaması gereken sıra numarası (`nonce`, `linked`) |
 
 ```bash
 curl -s https://api.qore.host/qorechain/abstractaccount/v1/config
@@ -357,21 +357,24 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/reward_pool
 
 ```json
 {
-  "balance": "487231800",
-  "reserved": "487231800",
-  "outstanding": "0",
+  "balance": "5645408555",
+  "reserved": "5645276228",
+  "outstanding": "130077",
   "payable": "0",
   "max_reward_per_block_per_node": "1713",
-  "distributable": "0",
+  "distributable": "2250",
   "initialized": true,
-  "max_reward_per_month_per_node": "2000000000"
+  "max_reward_per_month_per_node": "2000000000",
+  "monthly_cap_active": true,
+  "last_distribution_time": "1792775155",
+  "last_distribution_height": "3744000"
 }
 ```
 
-`reserved`, havuzun ayrılmış olan ve yalnızca bir yönetişim oyuyla taşınabilen kısmıdır. Düğüm başına sınırlar `uqor` cinsindendir: `max_reward_per_block_per_node` blok başına üst sınırdır ve v3.2.3'ten itibaren `max_reward_per_month_per_node` (`2000000000` uqor = 30 günde 2.000 QOR) aylık üst sınırdır; blok süresine ve çalışma süresine (uptime) göre orantılanır, dolayısıyla artık blokların ne kadar hızlı geldiğine bağlı değildir. Üst sınır, vaat edilen bir miktar değildir. Örnek, yönetişimin önceki rezervi serbest bırakmasından sonra (öneri 8, 19 Ekim 2026) yazının hazırlandığı andaki canlı ana ağ yanıtıdır. v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 numaralı yükseklikten itibaren) yanıt ayrıca `monthly_cap_active`, `last_distribution_time` ve `last_distribution_height` alanlarını içerir ve bir düğümün sınırı kendi kaydıyla başlar.
+`reserved`, havuzun ayrılmış olan ve yalnızca bir yönetişim oyuyla taşınabilen kısmıdır. Düğüm başına sınırlar `uqor` cinsindendir: `max_reward_per_block_per_node` blok başına üst sınırdır ve v3.2.3'ten itibaren `max_reward_per_month_per_node` (`2000000000` uqor = 30 günde 2.000 QOR) aylık üst sınırdır; blok süresine ve çalışma süresine (uptime) göre orantılanır, dolayısıyla artık blokların ne kadar hızlı geldiğine bağlı değildir. Üst sınır, vaat edilen bir miktar değildir. Örnek, yönetişimin önceki rezervi serbest bırakmasından sonra (öneri 8, 19 Ekim 2026) 23 Ekim 2026'da okunan canlı ana ağ yanıtıdır. v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; ana ağda 23 Ekim 2026'dan beri) yanıt ayrıca `monthly_cap_active`, `last_distribution_time` ve `last_distribution_height` alanlarını içerir ve bir düğümün sınırı kendi kaydıyla başlar.
 
 :::note Kayıt için lisans gerekir
-Zincir, etkin bir `lightnode_operator` lisans izni olmadan bir hafif düğüm kaydını reddeder (`holders/lightnode_operator` izinleri listeler). Yazının hazırlandığı sırada `stats`, ana ağda `"total_registered": "0"` ve test ağında kayıtlı bir düğüm raporlar. Program durumu için [Hafif Düğümler](/light-node/overview) sayfasına bakın.
+Zincir, etkin bir `lightnode_operator` lisans izni olmadan bir hafif düğüm kaydını reddeder (`holders/lightnode_operator` izinleri listeler). 23 Ekim 2026'da `stats`, hem ana ağda hem de test ağında `"total_registered": "1"` raporlar. Program durumu için [Hafif Düğümler](/light-node/overview) sayfasına bakın.
 :::
 
 ## RDK Modülü {#rdk-module}
@@ -406,7 +409,7 @@ curl -s https://api.qore.host/qorechain/rdk/v1/params
 }
 ```
 
-Yazının hazırlandığı sırada `rollups` her iki ağda da boş bir listedir; bu nedenle rollup başına rotalar `404` ile yanıt verir (örneğin `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window` saniye cinsinden ifade edilir (`604800`). v3.2.4'ten itibaren yeni gönderilen bir batch'in iyimser itiraz penceresi blok süresiyle ölçülür: test ağında 8.337.253 numaralı yükseklikten (19 Ekim 2026), ana ağda 3.742.566 numaralı yükseklikten itibaren. O zamana kadar ana ağ, saniye değerini sabit blok başına 6 saniyeyle bloğa çevirir.
+Yazının hazırlandığı sırada `rollups` her iki ağda da boş bir listedir; bu nedenle rollup başına rotalar `404` ile yanıt verir (örneğin `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window` saniye cinsinden ifade edilir (`604800`). v3.2.4'ten itibaren yeni gönderilen bir batch'in iyimser itiraz penceresi blok süresiyle ölçülür: test ağında 8.337.253 numaralı yükseklikten (19 Ekim 2026), ana ağda 3.742.566 numaralı yükseklikten (23 Ekim 2026) itibaren. Yükseltmeden önce zincir saniye değerini sabit blok başına 6 saniyeyle bloğa çeviriyordu.
 
 ## Inflation Modülü {#inflation-module}
 
@@ -422,7 +425,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info
 ```
 
-Ana ağda `emission_mode` `"fixed"`, `fixed_epoch_emission` `"86000000000"` (dönem başına 86.000 QOR), `epoch_length` `"43200"` blok ve `max_total_emission` `"590000000000000"` değerindedir (590.000.000 QOR, kümülatif tavan). Bunlar 10 numaralı yönetişim önerisiyle belirlendi (19 Ekim 2026'da kabul edildi); yeni sabit miktarı kullanan ilk dönem 3.672.000 numaralı blokta başlar ve `epoch_info` devam eden dönemi ve şimdiye kadar basılan miktarı gösterir. Yanıttaki `schedule` listesi özgün `schedule` moduna aittir; sabit modda bir dönemin ne bastığını açıklamaz. Tüm tutarlar `uqor` cinsindendir. Test ağı kendi, farklı değerlerini raporlar. v3.2.4'ten itibaren üçüncü bir mod olan `target_apy` vardır; `target_apy_bps` alanıyla birlikte gelir (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 numaralı yükseklikten itibaren). Bir ağ buna yalnızca kendi yönetişim oyuyla geçer; dolayısıyla böyle bir oy kabul edilene kadar ana ağ `fixed` modunda kalır; test ağı yazının hazırlandığı sırada `"emission_mode": "fixed"` raporlar.
+Ana ağda `emission_mode` `"fixed"`, `fixed_epoch_emission` `"86000000000"` (dönem başına 86.000 QOR), `epoch_length` `"43200"` blok ve `max_total_emission` `"590000000000000"` değerindedir (590.000.000 QOR, kümülatif tavan). Bunlar 10 numaralı yönetişim önerisiyle belirlendi (19 Ekim 2026'da kabul edildi); yeni sabit miktarı kullanan ilk dönem 3.672.000 numaralı blokta başlar ve `epoch_info` devam eden dönemi ve şimdiye kadar basılan miktarı gösterir. Yanıttaki `schedule` listesi özgün `schedule` moduna aittir; sabit modda bir dönemin ne bastığını açıklamaz. Tüm tutarlar `uqor` cinsindendir. Test ağı kendi, farklı değerlerini raporlar. v3.2.4'ten itibaren üçüncü bir mod olan `target_apy` vardır; `target_apy_bps` alanıyla birlikte gelir (test ağında 19 Ekim 2026'dan beri; ana ağda 23 Ekim 2026'dan beri). Bir ağ buna yalnızca kendi yönetişim oyuyla geçer; dolayısıyla böyle bir oy kabul edilene kadar ana ağ `fixed` modunda kalır (23 Ekim 2026'da kontrol edildi: hâlâ `fixed`); test ağı yazının hazırlandığı sırada `"emission_mode": "fixed"` raporlar.
 
 ## Gas Abstraction Modülü {#gas-abstraction-module}
 
@@ -458,7 +461,7 @@ Kabul edilenler listesi her iki ağda da yalnızca yerel `uqor` içerir; dolayı
 ## Staking Tiers Modülü (v3.2.4) {#stakingtier-module}
 
 :::note v3.2.4'ten itibaren kullanılabilir
-Staking-tiers modülü **v3.2.4** sürümünün parçasıdır. Bu rotalar test ağında 19 Ekim 2026'dan beri sunulur ve ana ağda 3.742.566 numaralı yükseklikten itibaren sunulur (yönetişim önerisi 13). O yüksekliğe kadar bir ana ağ düğümü bunlara `501` ile yanıt verir.
+Staking-tiers modülü **v3.2.4** sürümünün parçasıdır. Bu rotalar test ağında 19 Ekim 2026'dan beri, ana ağda ise 23 Ekim 2026'dan beri sunulur (yönetişim önerisi 13, yükseklik 3.742.566). Daha eski bir sürümdeki düğüm bunlara `501` ile yanıt verir.
 :::
 
 | Metot | Uç Nokta                                  | Açıklama                                                           |
@@ -473,7 +476,7 @@ Staking-tiers modülü **v3.2.4** sürümünün parçasıdır. Bu rotalar test a
 
 Bu modüllerin bir gRPC `Query` servisi vardır ancak **REST rotası yoktur**. Servis adları `qorechain.<module>.v1.Query` biçimini izler.
 
-| Modül         | gRPC sorgu metotları (zincir sürümü v3.2.3)            |
+| Modül         | gRPC sorgu metotları (zincir sürümü v3.2.4)            |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
@@ -525,7 +528,7 @@ Belirli bir servisi sorgulamak için:
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` bir v3.2.3 düğümünde üç metoda sahiptir: `Account`, `EVMWindow` ve `EVMDelegationConsent`; v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri, ana ağda 3.742.566 numaralı yükseklikten itibaren) dördüncü bir metot olan `ProtocolFeatures` vardır. `Params` metodu yoktur.
+`qorechain.pqc.v1.Query` bir v3.2.3 düğümünde üç metoda sahiptir: `Account`, `EVMWindow` ve `EVMDelegationConsent`; v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri, ana ağda 23 Ekim 2026'dan beri) dördüncü bir metot olan `ProtocolFeatures` vardır. `Params` metodu yoktur.
 
 ## Kimlik Doğrulama
 

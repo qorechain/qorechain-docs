@@ -22,7 +22,7 @@ QCAIA este construit pentru a-i ajuta pe noii veniți și pe membrii comunităț
 
 Dacă o întrebare iese din ceea ce știe QCAIA, va spune asta în loc să ghicească. QCAIA este un ajutor comunitar, nu sfaturi financiare sau de investiții.
 
-Răspunsurile QCAIA urmează documentația publică a QoreChain, așa că pot rămâne în urma unei versiuni. Pentru ce este activ acum pe fiecare rețea (mainnet `qorechain-vladi` rulează v3.2.3, iar testnet `qorechain-diana` rulează v3.2.4, la 20 octombrie 2026), consultă [Rețele](/appendix/networks) și [Istoricul versiunilor](/appendix/version-history) sau interoghează direct un nod. Mai multe părți ale platformei despre care este întrebat QCAIA, precum bridge-ul, pool-urile AMM, rollup-urile și xQORE, sunt descrise în documentație ca proiectate, dar nu sunt încă active; dacă QCAIA dă un răspuns diferit, ai încredere în documentație și în rețeaua live.
+Răspunsurile QCAIA urmează documentația publică a QoreChain, așa că pot rămâne în urma unei versiuni. Pentru ce este activ acum pe fiecare rețea (mainnet `qorechain-vladi` rulează v3.2.4 din 23 octombrie 2026; testnet `qorechain-diana` rulează v3.2.4 din 19 octombrie 2026), consultă [Rețele](/appendix/networks) și [Istoricul versiunilor](/appendix/version-history) sau interoghează direct un nod. Mai multe părți ale platformei despre care este întrebat QCAIA, precum bridge-ul, pool-urile AMM, rollup-urile și xQORE, sunt descrise în documentație ca proiectate, dar nu sunt încă active; dacă QCAIA dă un răspuns diferit, ai încredere în documentație și în rețeaua live.
 
 ## Suport multi-limbă
 

@@ -57,7 +57,7 @@ All four actions live on the **Wallet** page (`/wallet`), not on the Validators 
 9. Open QoreX (the link/deeplink does this) and approve the delegation. QoreX builds, signs, and broadcasts the transaction; the dashboard never sees your key.
 
 :::note Time-locked staking is not part of the dashboard
-Release v3.2.4 adds an optional time-locked staking module (on the testnet since 19 October 2026; on mainnet from height 3,742,566) — see [Time-locked staking](/user-guide/staking-and-delegation#time-locked-staking). Neither the Dashboard nor QoreX has a screen for it. Delegations made here are ordinary delegations with no lock-in; the only wait is the 21-day unbonding on the way out.
+Release v3.2.4 adds an optional time-locked staking module (on mainnet since 23 October 2026, on the testnet since 19 October 2026) — see [Time-locked staking](/user-guide/staking-and-delegation#time-locked-staking). Neither the Dashboard nor QoreX has a screen for it. Delegations made here are ordinary delegations with no lock-in; the only wait is the 21-day unbonding on the way out.
 :::
 
 ### Redelegate {#redelegate}

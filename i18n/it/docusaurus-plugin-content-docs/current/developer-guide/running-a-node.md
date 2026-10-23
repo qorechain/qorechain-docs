@@ -26,8 +26,8 @@ Il binario corrente, il genesis, i peer, i seed e un trust point per lo state-sy
 I campi del manifest includono `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un trust point aggiornato ogni ora) e `minCompatible`. I passaggi di installazione e collegamento riportati di seguito recuperano questo manifest e ne usano i valori correnti.
 :::
 
-:::caution Usa la release indicata dal manifest: v3.2.3 sulla mainnet
-Un nodo che si sincronizza dal genesis o che effettua il replay da uno snapshot attraversa diversi upgrade di governance (vedi [Upgrade](#upgrades) più sotto), quindi installa sempre il binario a cui punta il manifest: contiene tutti i gestori di upgrade. Sulla **mainnet** `minCompatible` e `version` del manifest sono entrambi `3.2.3` (l'upgrade coordinato applicato all'altezza 3.662.051 il 20 ottobre 2026), quindi un nodo che si unisce ora richiede la v3.2.3: un binario più vecchio si ferma all'altezza di upgrade che non conosce. Sulla **testnet** sono entrambi `3.2.4` (applicata all'altezza 8.337.253 il 19 ottobre 2026). La mainnet esegue la v3.2.3 fino all'altezza 3.742.566 e la v3.2.4 da quel blocco (proposta di governance 13), quindi non eseguire un binario testnet contro la mainnet e non installare la v3.2.4 su un nodo mainnet prima che il manifest la nomini (vedi [Upgrade](#upgrades)). Il manifest viene promosso deliberatamente (prima sulla testnet, poi sulla mainnet dopo un periodo di stabilizzazione), quindi controlla il suo campo `"version"` rispetto a `minCompatible` prima di fidarti di `binary.url`.
+:::caution Usa la release indicata dal manifest: v3.2.4 su entrambe le reti
+Un nodo che si sincronizza dal genesis o che effettua il replay da uno snapshot attraversa diversi upgrade di governance (vedi [Upgrade](#upgrades) più sotto), quindi installa sempre il binario a cui punta il manifest: contiene tutti i gestori di upgrade. Sulla **mainnet** `minCompatible` e `version` del manifest sono entrambi `3.2.4` (l'upgrade coordinato applicato all'altezza 3.742.566 il 23 ottobre 2026, proposta di governance 13), quindi un nodo che si unisce ora richiede la v3.2.4: un binario più vecchio si ferma a un'altezza di upgrade che non conosce. Sulla **testnet** sono entrambi `3.2.4` (applicata all'altezza 8.337.253 il 19 ottobre 2026). Non eseguire un binario testnet contro la mainnet né il contrario: ogni directory contiene la propria release (vedi [Upgrade](#upgrades)). Il manifest viene promosso deliberatamente (prima sulla testnet, poi sulla mainnet dopo un periodo di stabilizzazione), quindi controlla il suo campo `"version"` rispetto a `minCompatible` prima di fidarti di `binary.url`.
 
 Un binario compilato dai sorgenti pubblici (la build community) si rifiuta di avviarsi su entrambe le reti pubbliche (dalla v3.2.3 in poi): non può verificare le firme post-quantum e non può rieseguire fedelmente i blocchi delle reti. Usa solo l'archivio di release.
 
@@ -52,7 +52,7 @@ Dalla v3.2.1 contano due impostazioni: mantieni l'orologio di sistema sincronizz
 
 | Rete  | Chain ID            | EVM chain ID         | Note                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primaria — live dal 7 giu 2026; release del nodo v3.2.3 (v3.2.4 dall'altezza 3.742.566) |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primaria — live dal 7 giu 2026; release del nodo v3.2.4 (dal 23 ott 2026) |
 | Testnet  | `qorechain-diana`   | `9800`               | Prova qui le integrazioni per prima cosa; release del nodo v3.2.4 (dal 19 ott 2026) |
 
 Sostituisci il `--chain-id` appropriato per la rete di destinazione in tutta questa guida. Gli esempi usano di default la mainnet.
@@ -75,7 +75,7 @@ Un SSD NVMe è vivamente consigliato — lo stato della chain e gli store EVM/SV
 
 ### Docker Compose
 
-Un deployment solo nodo con Docker Compose. Non esiste alcuna immagine `qorechaind` pubblicata pubblicamente da scaricare (non è pubblicato nulla sotto l'organizzazione Docker Hub del progetto). Il `Dockerfile` nel repository pubblico compila il binario **community** (senza libreria post-quantum, keeper stub): è adatto allo sviluppo locale ma non può seguire la mainnet né la testnet, e dalla v3.2.3 si rifiuta di avviarsi su di esse. Per un nodo di rete, compila la tua immagine a partire dall'**archivio di release** indicato in `latest.json`, taggala con la versione della release (**v3.2.3** su mainnet, **v3.2.4** su testnet), poi monta un volume persistente per i dati della chain:
+Un deployment solo nodo con Docker Compose. Non esiste alcuna immagine `qorechaind` pubblicata pubblicamente da scaricare (non è pubblicato nulla sotto l'organizzazione Docker Hub del progetto). Il `Dockerfile` nel repository pubblico compila il binario **community** (senza libreria post-quantum, keeper stub): è adatto allo sviluppo locale ma non può seguire la mainnet né la testnet, e dalla v3.2.3 si rifiuta di avviarsi su di esse. Per un nodo di rete, compila la tua immagine a partire dall'**archivio di release** indicato in `latest.json`, taggala con la versione della release (**v3.2.4** su entrambe le reti), poi monta un volume persistente per i dati della chain:
 
 ```bash
 # Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
@@ -92,7 +92,7 @@ COPY lib/ /opt/qorechain/lib/
 ENV LD_LIBRARY_PATH=/opt/qorechain/lib
 ENTRYPOINT ["qorechaind"]
 EOF
-docker build -t qorechain-node:v3.2.3 release/
+docker build -t qorechain-node:v3.2.4 release/
 ```
 
 L'archivio contiene `qorechaind` e una directory `lib/` con le sue librerie condivise (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); l'immagine qui sopra è solo `linux/amd64`, come l'archivio di release.
@@ -101,7 +101,7 @@ L'archivio contiene `qorechaind` e una directory `lib/` con le sue librerie cond
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.2.3
+    image: qorechain-node:v3.2.4
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -281,14 +281,14 @@ Le modifiche al consenso arrivano come **upgrade di governance coordinati**: una
 | v3.2.1 | locale al nodo, nessuna altezza | locale al nodo |
 | v3.2.2 | altezza 3.556.788 (16 ott 2026) | altezza 6.905.034 (2 ott 2026) |
 | v3.2.3 | altezza 3.662.051 (20 ott 2026, proposta di governance 11) | altezza 8.003.746 (15 ott 2026) |
-| v3.2.4 | programmato sulla mainnet all'altezza 3.742.566 (proposta di governance 13) | altezza 8.337.253 (19 ott 2026, proposta di governance 13) |
+| v3.2.4 | altezza 3.742.566 (23 ott 2026, proposta di governance 13) | altezza 8.337.253 (19 ott 2026, proposta di governance 13) |
 
-**Cosa fa l'operatore di un nodo mainnet per la v3.2.4 (altezza 3.742.566).** La proposta di governance 13 chiama il piano `v3.2.4` all'altezza 3.742.566 e stabilisce che i nodi restano sulla v3.2.3 fino a quell'altezza, si fermano lì e ripartono sulla v3.2.4. In concreto:
+**Cosa ha fatto l'operatore di un nodo per la v3.2.4 (altezza mainnet 3.742.566).** La proposta di governance 13 ha chiamato il piano `v3.2.4` all'altezza 3.742.566 (applicato il 23 ottobre 2026): i nodi sono rimasti sulla v3.2.3 fino a quell'altezza, si sono fermati lì e sono ripartiti sulla v3.2.4. Per il prossimo upgrade coordinato i passaggi sono gli stessi:
 
-1. Continua a eseguire la **v3.2.3** finché il manifest della mainnet (`https://download.qore.host/mainnet/latest.json`) non elenca la v3.2.4. Finché il manifest mostra ancora `version` e `minCompatible` `3.2.3` e nessuna altezza di upgrade per la v3.2.4, non c'è nulla da installare: un binario v3.2.4 dalla directory della testnet non è la release della mainnet.
-2. Quando il manifest nomina la v3.2.4, scarica l'archivio dal suo `binary.url`, verifica lo `sha256` (anche il testo della proposta pubblica lo sha256 del binario) e preparalo **prima** dell'altezza. Controlla `GET /cosmos/upgrade/v1beta1/current_plan` per il piano in sospeso (`name` e `height`) e l'altezza corrente con `GET /status` sull'RPC.
-3. All'altezza 3.742.566 un nodo ancora sulla v3.2.3 **si ferma** (è il comportamento previsto del modulo di upgrade, non un guasto); un nodo già sul nuovo binario applica il gestore di upgrade e prosegue. Se il tuo si è fermato per primo, sostituisci il binario e riavvia. Dopo l'upgrade, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` restituisce l'altezza invece di `0`.
-4. Un nodo che si unisce alla mainnet dopo l'upgrade installa la release che il manifest nomina in quel momento (controlla `version` rispetto a `minCompatible`).
+1. Controlla il manifest (`https://download.qore.host/mainnet/latest.json`): finché non nomina la nuova release non c'è nulla da installare, e un binario dalla directory della testnet non è la release della mainnet.
+2. Quando il manifest nomina la release, scarica l'archivio dal suo `binary.url`, verifica lo `sha256` (anche il testo della proposta pubblica lo sha256 del binario) e preparalo **prima** dell'altezza. Controlla `GET /cosmos/upgrade/v1beta1/current_plan` per il piano in sospeso (`name` e `height`) e l'altezza corrente con `GET /status` sull'RPC.
+3. All'altezza del piano un nodo ancora sul vecchio binario **si ferma** (è il comportamento previsto del modulo di upgrade, non un guasto); un nodo già sul nuovo binario applica il gestore di upgrade e prosegue. Se il tuo si è fermato per primo, sostituisci il binario e riavvia. Dopo l'upgrade, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` restituisce l'altezza invece di `0` (3742566 sulla mainnet, 8337253 sulla testnet).
+4. Un nodo che si unisce ora alla mainnet installa la release che il manifest nomina (v3.2.4; controlla `version` rispetto a `minCompatible`).
 
 Firma delle transazioni, indirizzi, decimali, memo e commissioni non sono cambiati dalla v3.2.4.
 
@@ -368,7 +368,7 @@ ws-address = "0.0.0.0:8546"
 api = "eth,net,web3,txpool"
 ```
 
-**Limiti JSON-RPC nella release di nodo v3.2.4.** Un nodo che esegue il binario v3.2.4 (testnet dal 19 ottobre 2026; nodi mainnet dall'altezza 3.742.566) limita il proprio server JSON-RPC. Sono impostazioni locali al nodo nella sezione `[json-rpc]` di `app.toml` e non influenzano il consenso: `http-body-limit` (default 262144 byte, 256 KiB; un corpo di richiesta più grande viene rifiutato con HTTP 413 prima di essere letto), `max-concurrent-requests` (default 256; le richieste oltre questo limite ricevono subito HTTP 503) e `max-open-connections` (un valore mancante o zero ora significa 1000, non illimitato). Inoltre, l'argomento filtro di `eth_getLogs` e `eth_newFilter` viene rifiutato quando elenca più di 4 posizioni di topic, più di 1000 alternative in una posizione o più di 1000 indirizzi. Un integratore che invia al proprio nodo richieste batch o di deploy di contratti molto grandi dovrebbe verificare che la sua richiesta più grande rientri nel limite del corpo e alzarlo se necessario.
+**Limiti JSON-RPC nella release di nodo v3.2.4.** Un nodo che esegue il binario v3.2.4 (testnet dal 19 ottobre 2026; mainnet dal 23 ottobre 2026) limita il proprio server JSON-RPC. Sono impostazioni locali al nodo nella sezione `[json-rpc]` di `app.toml` e non influenzano il consenso: `http-body-limit` (default 262144 byte, 256 KiB; un corpo di richiesta più grande viene rifiutato con HTTP 413 prima di essere letto), `max-concurrent-requests` (default 256; le richieste oltre questo limite ricevono subito HTTP 503) e `max-open-connections` (un valore mancante o zero ora significa 1000, non illimitato). Inoltre, l'argomento filtro di `eth_getLogs` e `eth_newFilter` viene rifiutato quando elenca più di 4 posizioni di topic, più di 1000 alternative in una posizione o più di 1000 indirizzi. Un integratore che invia al proprio nodo richieste batch o di deploy di contratti molto grandi dovrebbe verificare che la sua richiesta più grande rientri nel limite del corpo e alzarlo se necessario.
 
 Gli endpoint pubblici servono i namespace `eth_`, `net_`, `web3_` e `txpool_` (solo stato); un nodo inizializzato dalla v3.2.3 o successiva usa di default `eth,net,web3` e lascia fuori `txpool` (pubblica le transazioni in sospeso del nodo), quindi aggiungilo solo se ti serve. Il namespace `qor_` non è servito da nessuna build del nodo rilasciata, quindi non aggiungerlo (vedi [il namespace `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
@@ -435,7 +435,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Best practice operative
 
-1. **Fissa la versione della chain.** Esegui la release consigliata dal manifest (**v3.2.3** su mainnet fino all'altezza 3.742.566, poi v3.2.4), segui le release ufficiali per gli aggiornamenti coordinati e mantieni l'orologio di sistema sincronizzato tramite NTP.
+1. **Fissa la versione della chain.** Esegui la release consigliata dal manifest (**v3.2.4** su entrambe le reti), segui le release ufficiali per gli aggiornamenti coordinati e mantieni l'orologio di sistema sincronizzato tramite NTP.
 
 2. **Esegui nodi ridondanti.** Gestisci almeno due nodi dietro un load balancer in modo che un singolo riavvio o una risincronizzazione non interrompano il traffico di integrazione.
 

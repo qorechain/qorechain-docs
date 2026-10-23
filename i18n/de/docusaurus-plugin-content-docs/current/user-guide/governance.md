@@ -10,7 +10,7 @@ sidebar_position: 3
 Dieser Leitfaden erklärt, wie die On-Chain-Governance bei QoreChain funktioniert: wie Stimmen ausgezählt werden, wie man Vorschläge einreicht und wie man abstimmt.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live auf Release **v3.2.3** bis Höhe 3.742.566 und ab diesem Block auf **v3.2.4**; das Testnet läuft seit dem 19. Oktober 2026 mit **v3.2.4** — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live und seit dem 23. Oktober 2026 auf Release **v3.2.4**; das Testnet läuft seit dem 19. Oktober 2026 mit **v3.2.4** — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -29,7 +29,7 @@ Vorschläge werden anhand des **gebondeten Stakes** ausgezählt: Jedes QOR, das 
 | Schwellenwert | 50%   | Anteil der „Ja“-Stimmen unter den nicht enthaltenen Stimmen, der zur Annahme nötig ist |
 | Veto      | 33.4%      | Erreicht „Nein mit Veto“ diesen Anteil, wird der Vorschlag abgelehnt und seine Einzahlung verbrannt |
 
-Diese Werte wurden am 20. Oktober 2026 vom Mainnet ausgelesen (und sind im Testnet dieselben); bestätige sie mit `qorechaind query gov params`, da die Governance sie ändern kann.
+Diese Werte wurden am 23. Oktober 2026 vom Mainnet ausgelesen (und sind im Testnet dieselben); bestätige sie mit `qorechaind query gov params`, da die Governance sie ändern kann.
 
 :::note QDRW ist entworfen, aber nicht aktiv
 Das Design von QoreChain sieht eine Stimmgewicht-Formel **Quadratic Delegation-Reputation Weighted (QDRW)** vor, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, die große Stakes dämpfen und Reputation gewichten würde. Sie ist im Modul `x/qca` implementiert, aber auf beiden Netzwerken **abgeschaltet** (`qdrw_enabled` ist in `qorechaind query qca config` `false`) und nicht Teil der Governance-Auszählung, beeinflusst also heute keine Abstimmung. xQORE ist ebenfalls noch nicht live (siehe [xQORE-Staking](/user-guide/xqore-staking)).
@@ -175,7 +175,7 @@ Wichtige Parameter sind unter anderem:
 
 ## Governance im Mainnet bisher {#mainnet-history}
 
-Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 11 wurden im Oktober 2026 im Mainnet angenommen, während sich die Vorschläge 12 (eine weitere Freigabe) und 13 (das Upgrade auf v3.2.4 bei Höhe 3.742.566) zum Zeitpunkt der Erstellung in ihren Abstimmungsphasen befanden; die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
+Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 13 wurden im Oktober 2026 im Mainnet angenommen, darunter Vorschlag 12 (eine weitere Freigabe, angenommen am 21. Oktober) und Vorschlag 13 (das Upgrade auf v3.2.4, angewendet auf Höhe 3.742.566 am 23. Oktober); die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
 
 ---
 

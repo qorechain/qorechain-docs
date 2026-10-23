@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Ist das Mainnet live?
 
 Ja. Das Mainnet ist **live** (Chain-ID `qorechain-vladi`, live seit dem 7. Juni 2026)
-und läuft mit der Chain-Version v3.2.3 bis Höhe 3.742.566 und mit v3.2.4 ab diesem Block (Governance-Vorschlag 13); das Testnet läuft seit dem 19. Oktober 2026 mit v3.2.4. Das Testnet-Preset
+und läuft mit der Chain-Version v3.2.4 (angewendet bei Höhe 3.742.566 am 23. Oktober 2026, Governance-Vorschlag 13); das Testnet läuft seit dem 19. Oktober 2026 mit v3.2.4. Das Testnet-Preset
 (`qorechain-diana`) bleibt ebenfalls verfügbar. Beide Presets werden mit
 Localhost-Endpoint-Standardwerten ausgeliefert; wählen Sie das Netzwerk mit
 `createClient({ network: "mainnet" })` und überschreiben Sie `endpoints` mit den
@@ -150,7 +150,7 @@ werden on-chain abgelehnt, und zwar in jeder Lane (einschließlich eth-native).
 ## Mit welchen Chain-Versionen funktioniert das SDK?
 
 SDK **0.9.0** ist das Client-Release für die Chain v3.2.2 und v3.2.3: Es
-transagiert auf dem Mainnet **v3.2.3** (und **v3.2.4** ab Höhe 3.742.566) und dem Testnet **v3.2.4** und hat Builder für
+transagiert auf Mainnet und Testnet **v3.2.4** (Mainnet seit dem 23. Oktober 2026) und hat Builder für
 den optionalen Besitznachweis (Proof of Possession) bei der Registrierung (automatisch
 angefügt von `ensurePqcRegistered`, sobald das Netzwerk v3.2.3 angewendet hat),
 EVM-Fenster mit Gültigkeitsbereich und die EIP-7702-Einwilligungsnachrichten.
@@ -159,7 +159,7 @@ Sign-Bytes-Form v2 für Hybrid, die Registrierung, hybride Sendungen und das
 EVM-Fenster funktionieren unverändert), hat aber keinen dieser Builder: Verwenden Sie
 dafür die CLI (siehe
 [Versionen vor 0.9.0](/sdk/install#before-090)). v3.2.4 läuft seit dem
-19. Oktober 2026 im Testnet und läuft im Mainnet ab Höhe 3.742.566 (Governance-Vorschlag 13); das SDK setzt kein v3.2.4-Feld, sodass seine Transaktionen auf beiden Seiten dieser Höhe gültig bleiben.
+19. Oktober 2026 im Testnet und im Mainnet seit dem 23. Oktober 2026 (Höhe 3.742.566, Governance-Vorschlag 13); das SDK setzt kein v3.2.4-Feld, sodass seine Transaktionen vor und nach dem Upgrade gültig sind.
 
 ## Meine PQC-Schlüsselregistrierung wurde abgelehnt, aber die Gebühr wurde abgebucht
 

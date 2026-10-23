@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Canlı mainnet'e karşı yayınlamak için `--chain-id qorechain-vladi`, testnet için ise `--chain-id qorechain-diana` ayarlayın. Her iki ağ da v3.2 hattını çalıştırır: mainnet düğüm sürümü **v3.2.3** (20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı; mainnet 3.742.566 yüksekliğine kadar v3.2.3'ü, o bloktan itibaren **v3.2.4**'ü çalıştırır, yönetişim önerisi 13 ile planlanmıştır), testnet **v3.2.4** (19 Ekim 2026'da 8.337.253 yüksekliğinde uygulandı). Güncel sürüm için [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasına bakın. `--chain-id` belirtilmezse istemci, yerel istemci yapılandırmanızdaki `chain-id` değerini kullanır.
+Canlı mainnet'e karşı yayınlamak için `--chain-id qorechain-vladi`, testnet için ise `--chain-id qorechain-diana` ayarlayın. Her iki ağ da v3.2 hattını çalıştırır: mainnet düğüm sürümü **v3.2.4** (23 Ekim 2026'da 3.742.566 yüksekliğinde yönetişim önerisi 13 ile uygulandı; v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı), testnet **v3.2.4** (19 Ekim 2026'da 8.337.253 yüksekliğinde uygulandı). Güncel sürüm için [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasına bakın. `--chain-id` belirtilmezse istemci, yerel istemci yapılandırmanızdaki `chain-id` değerini kullanır.
 
-Bu sayfadaki komutlar ve bayraklar v3.2.3 sürüm ikilisine karşı denetlenmiştir. Yalnızca v3.2.4'ten itibaren bulunan her şey (testnet şimdiden, mainnet 3.742.566 yüksekliğinden itibaren) bu şekilde işaretlenmiştir.
+Bu sayfadaki komutlar ve bayraklar v3.2.3 sürüm ikilisine karşı, ayrıca v3.2.4 eklemeleriyle denetlenmiştir. Yalnızca v3.2.4'ten itibaren bulunan her şey (mainnet'te 23 Ekim 2026'dan beri, testnet'te 19 Ekim 2026'dan beri) bu şekilde işaretlenmiştir.
 :::
 
 Ortak bayraklar her `tx` alt komutu için geçerlidir:
@@ -262,7 +262,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey_hex> hybrid --pqc-key mypqc
   --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-v3.2.4'ten itibaren (testnet'te 19 Ekim 2026'dan beri; mainnet'te 3.742.566 yüksekliğinden itibaren) hesap kaydı ayrıca bir kanıtın doğrulanıp doğrulanmadığını `possession_proven` olarak bildirir (bkz. [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#pqc-module)); hâlâ v3.2.3 üzerinde olan bir mainnet düğümü bunu bildirmez.
+v3.2.4'ten itibaren (mainnet'te 23 Ekim 2026'dan beri, testnet'te 19 Ekim 2026'dan beri) hesap kaydı ayrıca bir kanıtın doğrulanıp doğrulanmadığını `possession_proven` olarak bildirir (bkz. [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#pqc-module)).
 
 ### cosign
 
@@ -389,7 +389,7 @@ qorechaind tx pqc cosign register.json --from operator --pqc-key <name> --chain-
 
 `node_type` değeri `sx` veya `ux`'tir. Kayıt, ağın lisans yetkilisi tarafından verilen etkin bir `lightnode_operator` lisansı gerektirir; programın güncel durumu için bkz. [Hafif Düğüm](/light-node/overview). Diğer komutlar: `tx lightnode heartbeat`, `tx lightnode claim-rewards`, `tx lightnode deregister`.
 
-v3.2.3'ten itibaren bir düğümün biriktirebileceği ödül **aylık** olarak sınırlıdır (`GET /qorechain/lightnode/v1/reward_pool` içindeki `max_reward_per_month_per_node`, 30 günde 2.000 QOR); blok süresine ve çalışma süresine göre orantılanır, dolayısıyla sınır artık blokların ne kadar hızlı üretildiğine bağlı değildir. Bir sınır tavandır, vaat edilen bir miktar değildir. v3.2.4'ten itibaren (testnet'te 19 Ekim 2026'dan beri; mainnet'te 3.742.566 yüksekliğinden itibaren) bir düğümün sınırı, önceki uzlaşmadan değil kendi kaydından başlar.
+v3.2.3'ten itibaren bir düğümün biriktirebileceği ödül **aylık** olarak sınırlıdır (`GET /qorechain/lightnode/v1/reward_pool` içindeki `max_reward_per_month_per_node`, 30 günde 2.000 QOR); blok süresine ve çalışma süresine göre orantılanır, dolayısıyla sınır artık blokların ne kadar hızlı üretildiğine bağlı değildir. Bir sınır tavandır, vaat edilen bir miktar değildir. v3.2.4'ten itibaren (mainnet'te 23 Ekim 2026'dan beri, testnet'te 19 Ekim 2026'dan beri) bir düğümün sınırı, önceki uzlaşmadan değil kendi kaydından başlar.
 
 ---
 
@@ -413,7 +413,7 @@ qorechaind tx bridge deposit <source_chain> <source_tx_hash> <asset> <amount> [f
 
 ### register-validator / attest
 
-Köprü doğrulayıcı mesajlarıdır. `register-validator <pqc_pubkey_hex> <supported_chains_csv>` bir doğrulayıcıyı tasdik görevi için kaydeder ve `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` bir tasdik gönderir. Her iki ağda da kayıtlı köprü doğrulayıcısı yoktur. v3.2.4'ten itibaren (testnet'te 19 Ekim 2026'dan beri; mainnet'te 3.742.566 yüksekliğinden itibaren) bir köprü doğrulayıcı kaydı ayrıca bir sahiplik kanıtı ve başka hiçbir köprü doğrulayıcısının kullanmadığı bir anahtar gerektirir.
+Köprü doğrulayıcı mesajlarıdır. `register-validator <pqc_pubkey_hex> <supported_chains_csv>` bir doğrulayıcıyı tasdik görevi için kaydeder ve `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` bir tasdik gönderir. Her iki ağda da kayıtlı köprü doğrulayıcısı yoktur. v3.2.4'ten itibaren (mainnet'te 23 Ekim 2026'dan beri, testnet'te 19 Ekim 2026'dan beri) bir köprü doğrulayıcı kaydı ayrıca bir sahiplik kanıtı ve başka hiçbir köprü doğrulayıcısının kullanmadığı bir anahtar gerektirir.
 
 ### update-chain-config / set-verifier-bootstrap / update-circuit-breaker-limits
 
@@ -478,7 +478,7 @@ qorechaind tx crossvm call <evm|cosmwasm|svm> <target_contract> --payload <hex> 
 ## stakingtier (v3.2.4) {#stakingtier}
 
 :::note v3.2.4'ten itibaren mevcut
-Staking katmanları modülü **v3.2.4** sürümüyle geldi: `qorechain-diana` testnet'inde 19 Ekim 2026'dan beri çalışır ve mainnet'te 3.742.566 yüksekliğinden itibaren çalışır (yönetişim önerisi 13). Bu yükseklikten önce bir mainnet düğümünde modül yoktur ve bu komutlar reddedilir; hedeflediğiniz düğümde önce `GET /qorechain/stakingtier/v1/params` adresini kontrol edin.
+Staking katmanları modülü **v3.2.4** sürümüyle geldi: `qorechain-diana` testnet'inde 19 Ekim 2026'dan beri çalışır ve mainnet'te 23 Ekim 2026'dan beri çalışır (3.742.566 yüksekliği, yönetişim önerisi 13). Daha eski bir sürümde kalan bir düğümde modül yoktur ve bu komutlar reddedilir; hedeflediğiniz düğümde önce `GET /qorechain/stakingtier/v1/params` adresini kontrol edin.
 :::
 
 İsteğe bağlı zaman kilitli delegasyonlar: bir delegatör, mevcut bir delegasyonun bir kısmını 3, 6 veya 12 ay boyunca kilitleyebilir (asgari kilit 10 QOR'dur) ve daha sonra modülün bunun için hesaba kattığı bonusu talep edebilir. Kilit, delegasyonun üzerinde bir kayıttır: delege edilen fonlar doğrulayıcıda kalır.

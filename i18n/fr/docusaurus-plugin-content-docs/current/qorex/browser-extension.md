@@ -21,15 +21,15 @@ Elle est **en ligne et publique** sur trois boutiques (Chrome, Firefox et Safari
 
 ### Quelle version est en ligne où {#versions}
 
-Version actuelle sur chaque boutique, au **20 octobre 2026** :
+Version actuelle sur chaque boutique, au **23 octobre 2026** :
 
 | Boutique | Version actuelle |
 |---|---|
-| Chrome Web Store | 0.3.6 (pas encore mise à jour vers la 0.3.7) |
-| Firefox Add-ons | 0.3.7 |
-| Safari (Mac App Store, app macOS **QoreX Wallet**) | 1.7.7, qui embarque l'extension 0.3.7 — le Mac App Store utilise sa propre numérotation `1.x` |
+| Chrome Web Store | 0.3.8 |
+| Firefox Add-ons | 0.3.8 |
+| Safari (Mac App Store, app macOS **QoreX Wallet**) | 1.7.8, qui embarque l'extension 0.3.8 — le Mac App Store utilise sa propre numérotation `1.x` |
 
-Les revues des boutiques n'arrivent pas au même moment, donc une boutique peut servir une version plus ancienne qu'une autre ; la fiche de la boutique affiche toujours sa version actuelle. Cette page décrit l'ensemble de fonctionnalités de la 0.3.7 ; lorsqu'un point nécessite la 0.3.7, elle le précise, et les utilisateurs de Chrome l'obtiennent lorsque la fiche Chrome est mise à jour. Voir aussi [Quelle version est en ligne où](/qorex/overview#versions).
+Les revues des boutiques n'arrivent pas au même moment, donc une boutique peut servir une version plus ancienne qu'une autre ; la fiche de la boutique affiche toujours sa version actuelle. Cette page décrit l'ensemble de fonctionnalités de la 0.3.7, que toutes les boutiques proposent désormais (la 0.3.8 est la version actuelle). Voir aussi [Quelle version est en ligne où](/qorex/overview#versions).
 
 Depuis la 0.2.6, l'extension a gagné : [plusieurs portefeuilles avec un seul mot de passe](#wallets), un [compte de type Ethereum que vous ajoutez à la main](#coin60), [Claim & restake](#stake), une liste **Unstaking en cours**, l'[ajout d'un jeton par contrat](#custom-tokens), [Recevoir sur n'importe quel réseau](#receive), les [Sites connectés avec Révoquer](#connected-sites), la [fenêtre d'accès EVM](#evm-window), [`signAndBroadcast` pour les dApps](#sign-and-broadcast), et des écrans d'approbation qui montrent chaque message, les frais et l'expiration.
 

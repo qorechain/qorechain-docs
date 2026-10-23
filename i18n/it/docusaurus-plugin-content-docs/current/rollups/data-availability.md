@@ -16,7 +16,7 @@ La disponibilità dei dati (DA, data availability) è la garanzia che i dati di 
 | **`both`** | Native e Celestia insieme, per ridondanza | Si comporta esattamente come `native` oggi |
 
 :::caution Capacità in fase iniziale
-Nessun rollup è stato ancora creato su nessuna delle due reti (verificato il 21 ottobre 2026), e i backend DA sono implementati solo in parte. Lo stato di ciascun backend è indicato di seguito; verifica sulla testnet **`qorechain-diana`** prima di affidarti a uno qualsiasi di essi.
+Nessun rollup è stato ancora creato su nessuna delle due reti (verificato il 23 ottobre 2026), e i backend DA sono implementati solo in parte. Lo stato di ciascun backend è indicato di seguito; verifica sulla testnet **`qorechain-diana`** prima di affidarti a uno qualsiasi di essi.
 :::
 
 ---

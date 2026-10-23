@@ -10,7 +10,7 @@ sidebar_position: 2
 Acest ghid acoperă modul de delegare a token-urilor QOR către validatori, redelegarea între validatori, debondarea stake-ului, revendicarea recompenselor și înțelegerea părților din designul de staking al QoreChain care sunt active astăzi.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.3**; testnet-ul rulează **v3.2.4** — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.4** (aplicată pe 23 octombrie 2026); testnet-ul rulează v3.2.4 din 19 octombrie 2026. Înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
 :::
 
 :::caution Semnați cu `tx pqc cosign`
@@ -19,7 +19,7 @@ Mainnet-ul și testnet-ul cer o semnătură post-cuantică hibridă pe fiecare t
 
 ## Există o perioadă de blocare? {#lock-in-period}
 
-**Astăzi, pe mainnet**, nu — nu există un termen de ales, pentru că staking-ul nu se vinde în durate fixe aici, așa cum se întâmplă adesea pe un exchange. Delegarea rămâne activă, cu recompense care curg din blocul următor, atât timp cât doriți, până când alegeți să anulați delegarea (undelegate); nimic nu expiră și nimic nu trebuie reînnoit. **Perioada de debondare de 21 de zile** la care se face referire pe tot parcursul acestui ghid nu este o blocare pe care o acceptați din start — ea începe doar din momentul în care *cereți* anularea delegării și se aplică doar la QOR-ul pe care îl retrageți. Mutarea unei delegări între validatori (redelegate) evită complet această așteptare, deoarece stake-ul nu părăsește niciodată pool-ul bonded. Termenul de „loialitate" din [curba de bonding](#bonding-curve) de mai jos face parte din designul QoreChain, dar **nu este aplicat de chain-ul live astăzi**, deci cât timp rămâneți delegat nu modifică rata dumneavoastră de recompensă. O formă opțională de staking, cu blocare în timp, există acum pe testnet și este programată pentru mainnet de la înălțimea 3.742.566; vezi [Staking cu blocare în timp (v3.2.4)](#time-locked-staking).
+**Pentru delegarea obișnuită**, nu — nu există un termen de ales, pentru că staking-ul nu se vinde în durate fixe aici, așa cum se întâmplă adesea pe un exchange. Delegarea rămâne activă, cu recompense care curg din blocul următor, atât timp cât doriți, până când alegeți să anulați delegarea (undelegate); nimic nu expiră și nimic nu trebuie reînnoit. **Perioada de debondare de 21 de zile** la care se face referire pe tot parcursul acestui ghid nu este o blocare pe care o acceptați din start — ea începe doar din momentul în care *cereți* anularea delegării și se aplică doar la QOR-ul pe care îl retrageți. Mutarea unei delegări între validatori (redelegate) evită complet această așteptare, deoarece stake-ul nu părăsește niciodată pool-ul bonded. Termenul de „loialitate" din [curba de bonding](#bonding-curve) de mai jos face parte din designul QoreChain, dar **nu este aplicat de chain-ul live astăzi**, deci cât timp rămâneți delegat nu modifică rata dumneavoastră de recompensă. O formă opțională de staking, cu blocare în timp, este disponibilă pe mainnet din v3.2.4 (23 octombrie 2026) și pe testnet din 19 octombrie 2026; primiți o blocare doar dacă o creați. Vezi [Staking cu blocare în timp (v3.2.4)](#time-locked-staking).
 
 Aceasta descrie comportamentul actual al mainnet-ului, nu o garanție permanentă — o perioadă minimă de staking este un parametru pe care guvernanța l-ar putea introduce pe viitor, la fel cum orice alt parametru de staking de pe această pagină poate fi modificat prin vot. Dacă se va întâmpla vreodată acest lucru, portofelul va afișa așteptarea rezultată (orice minim plus debondarea de 21 de zile) înainte de a confirma o delegare, iar această pagină va fi actualizată în consecință.
 
@@ -126,14 +126,14 @@ Recompensele de staking sunt finanțate din două surse: bugetul de emisie plafo
 ## Staking cu blocare în timp (v3.2.4) {#time-locked-staking}
 
 :::note Când se aplică
-Versiunea v3.2.4 adaugă un modul opțional de staking cu blocare în timp, `x/stakingtier`. Este activ pe **testnet-ul `qorechain-diana`** din 19 octombrie 2026 și este programat pentru **mainnet de la înălțimea 3.742.566** (propunerea de guvernanță 13; mainnet-ul rulează v3.2.3 până la acel bloc). Până la upgrade-ul de mainnet, delegarea pe mainnet nu are blocare (vezi [mai sus](#lock-in-period)); de la upgrade, blocarea este disponibilă ca opțiune, iar delegarea obișnuită rămâne fără blocare. Mecanismul de mai jos a fost verificat față de parametrii live ai testnet-ului.
+Versiunea v3.2.4 adaugă un modul opțional de staking cu blocare în timp, `x/stakingtier`. Este activ pe **testnet-ul `qorechain-diana`** din 19 octombrie 2026 și pe **mainnet** din 23 octombrie 2026 (aplicat la înălțimea 3.742.566 prin propunerea de guvernanță 13). Blocarea este disponibilă ca opțiune, iar delegarea obișnuită rămâne fără blocare (vezi [mai sus](#lock-in-period)). Mecanismul de mai jos a fost verificat față de parametrii live ai mainnet-ului și ai testnet-ului pe 23 octombrie 2026.
 :::
 
 Un delegator poate angaja o parte dintr-o delegare existentă către un validator pentru un termen fix de 3, 6 sau 12 luni. Termenele și sumele sunt parametri ai chain-ului; citiți-i pe cei actuali de la `GET /qorechain/stakingtier/v1/params`, nu de pe această pagină.
 
 * **Blocarea este opțională.** Delegarea, redelegarea și debondarea obișnuite funcționează exact așa cum este descris pe această pagină. Doar suma blocată este restricționată: cât timp o blocare este deschisă, suma nu poate fi dedelegată sau redelegată, iar acest lucru este valabil pentru orice rută (tranzacție, authz, group, contract, guvernanță).
 * **Blocare minimă** de 10 QOR și cel mult 16 blocări deschise per delegator.
-* **Deblocarea anticipată** este permisă: încheie blocarea, pierde orice recompensă de blocare care nu a fost plătită și arde o penalizare luată din suma blocată (5% în parametrii testnet-ului, înregistrată la sursa de ardere `staking_tier_penalty`); restul rămâne delegat și deblocat.
+* **Deblocarea anticipată** este permisă: încheie blocarea, pierde orice recompensă de blocare care nu a fost plătită și arde o penalizare luată din suma blocată (5% în parametrii actuali, înregistrată la sursa de ardere `staking_tier_penalty`); restul rămâne delegat și deblocat.
 * **Slashing-ul** se aplică unei delegări blocate ca oricărei alteia; blocarea se micșorează odată cu delegarea.
 * **Revendicarea.** O blocare câștigă o componentă suplimentară de recompensă pe epocă, stabilită de parametrii modulului; aceasta este plătită atunci când o revendicați, nu automat. Această pagină nu citează rate: citiți `params` pentru setările live.
 * **La expirare**, blocarea este eliberată, iar delegarea continuă ca una obișnuită.
@@ -150,7 +150,7 @@ qorechaind tx stakingtier claim --from mykey --chain-id qorechain-diana \
 qorechaind query stakingtier locks <holder_address>
 ```
 
-ID-ul de chain de mai sus este cel al testnet-ului; folosiți `qorechain-vladi` pe mainnet după ce acesta a trecut prin upgrade-ul v3.2.4. Ca în restul acestei pagini, semnați fiecare tranzacție generată cu `tx pqc cosign`.
+ID-ul de chain de mai sus este cel al testnet-ului; folosiți `qorechain-vladi` pe mainnet. Ca în restul acestei pagini, semnați fiecare tranzacție generată cu `tx pqc cosign`.
 
 ---
 

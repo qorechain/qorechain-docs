@@ -57,7 +57,7 @@ Alle vier Aktionen befinden sich auf der Seite **Wallet** (`/wallet`), nicht auf
 9. Öffne QoreX (der Link/Deeplink erledigt das) und genehmige die Delegation. QoreX erstellt, signiert und sendet die Transaktion; das Dashboard bekommt deinen Schlüssel niemals zu Gesicht.
 
 :::note Zeitgesperrtes Staking ist nicht Teil des Dashboards
-Das Release v3.2.4 bringt ein optionales Modul für zeitgesperrtes Staking mit (auf dem Testnet seit dem 19. Oktober 2026; auf dem Mainnet ab Höhe 3.742.566) — siehe [Zeitgesperrtes Staking](/user-guide/staking-and-delegation#time-locked-staking). Weder das Dashboard noch QoreX haben dafür einen Bildschirm. Die hier vorgenommenen Delegationen sind gewöhnliche Delegationen ohne Sperrbindung; die einzige Wartezeit ist das 21-tägige Unbonding beim Ausstieg.
+Das Release v3.2.4 bringt ein optionales Modul für zeitgesperrtes Staking mit (auf dem Mainnet seit dem 23. Oktober 2026, auf dem Testnet seit dem 19. Oktober 2026) — siehe [Zeitgesperrtes Staking](/user-guide/staking-and-delegation#time-locked-staking). Weder das Dashboard noch QoreX haben dafür einen Bildschirm. Die hier vorgenommenen Delegationen sind gewöhnliche Delegationen ohne Sperrbindung; die einzige Wartezeit ist das 21-tägige Unbonding beim Ausstieg.
 :::
 
 ### Umdelegieren {#redelegate}

@@ -10,7 +10,7 @@ sidebar_position: 7
 Abstractizarea gazului îi permite unui utilizator să plătească o taxă de tranzacție într-un token non-nativ acceptat, în loc de QOR. Codul de conversie a taxelor face parte din lanț, dar **astăzi nu este acceptat niciun token non-nativ în niciuna dintre rețele**, deci fiecare taxă se plătește în QOR. Această pagină explică ce este activ, cum funcționează conversia așa cum a fost construită și ce faceți în schimb.
 
 :::caution Încă indisponibil: plătiți fiecare taxă în uqor
-Pe mainnet (**`qorechain-vladi`**, versiunea de nod **v3.2.3**, v3.2.4 de la înălțimea 3.742.566) și pe testnet (**`qorechain-diana`**, versiunea de nod **v3.2.4**), verificat la 20 octombrie 2026:
+Pe mainnet (**`qorechain-vladi`**) și pe testnet (**`qorechain-diana`**), ambele pe versiunea de nod **v3.2.4**, verificat la 23 octombrie 2026:
 
 * Lista activă a tokenurilor acceptate conține **doar `uqor`**. Conversia taxelor a fost activată cu v3.2.2, dar nimic altceva nu este listat, plafonul de conversie per bloc este `0` (conversie oprită), iar float-ul de conversie nu deține niciun sold. O taxă plătită în orice altă denominare este refuzată cu o eroare „denom not accepted for fee payment”, atât în simulare, cât și într-o tranzacție reală.
 * Niciun canal sau client IBC nu există în vreuna dintre rețele, deci nu poate exista niciun sold `ibc/…` cu care să se plătească.
@@ -36,7 +36,7 @@ Apoi semnați-o hibrid și transmiteți-o cu `qorechaind tx pqc cosign`, așa cu
 
 ## Configurația activă {#live-configuration}
 
-Modulul își servește configurația prin REST și gRPC. Acestea sunt valorile de pe ambele rețele la 20 octombrie 2026:
+Modulul își servește configurația prin REST și gRPC. Acestea sunt valorile de pe ambele rețele la 23 octombrie 2026:
 
 | Câmp | Valoare | Semnificație |
 | --- | --- | --- |

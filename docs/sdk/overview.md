@@ -29,7 +29,7 @@ Accounts, balances, and tokens are shared across the runtimes, and the chain
 includes the IBC module for cross-chain interoperability (no IBC channels are
 open on mainnet or testnet yet).
 
-:::note What works on the live networks today (mainnet v3.2.3, v3.2.4 from height 3,742,566; testnet v3.2.4)
+:::note What works on the live networks today (mainnet and testnet v3.2.4)
 **Works:** reads on every lane, hybrid-signed Native transactions, unified
 accounts, EVM transactions inside an
 [authorization window](/sdk/guides/evm#evm-window), and SVM reads.
@@ -41,7 +41,7 @@ and gas abstraction. Each guide repeats the caveat where it applies.
 
 The published SDK (0.9.0, 21 October 2026) signs in the form both networks verify
 (v2 hybrid sign-bytes, resolved from chain state), and the signing format,
-addresses, decimals, memos and fees did not change in v3.2.3 or v3.2.4 (mainnet runs v3.2.4 from height 3,742,566). It carries
+addresses, decimals, memos and fees did not change in v3.2.3 or v3.2.4 (mainnet has run v3.2.4 since 23 October 2026). It carries
 the client side of the later post-quantum rules (the proof of possession on key
 registration, scoped EVM windows, EIP-7702 consent messages); versions before 0.9.0
 do not, see [Versions before 0.9.0](/sdk/install#before-090).

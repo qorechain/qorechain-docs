@@ -24,7 +24,7 @@ Die sechs untenstehenden QoreChain-Precompiles sind **in den Knoten kompiliert, 
 | PRISM Consensus Params | `0x…0C01` | Nicht aktiv | Nicht aktiv |
 | CrossVM Bridge | `0x…0901` | Nicht aktiv | Nicht aktiv |
 
-Die Aktivierung erfordert ein Chain-Upgrade und ist in Stufen geplant: zuerst die schreibgeschützten PQC- und Konsens-Precompiles, das KI-Paar, sobald ihr schreibgeschützter Festkomma-Pfad vorhanden ist, und die CrossVM Bridge zuletzt. Das Release v3.2.3 (Mainnet, 20. Oktober 2026) hat die gehärteten Versionen der CrossVM Bridge und des AI-Anomaly-Precompiles hinter einem Protokoll-Feature in die Binärdatei aufgenommen, **aber kein Precompile aktiviert**: Die Liste `active_static_precompiles` ist in beiden Netzwerken weiterhin leer, und v3.2.4 (im Testnet seit dem 19. Oktober 2026; im Mainnet ab Höhe 3.742.566) ändert daran nichts. Diese Tabelle wird im selben Schritt wie das Upgrade aktualisiert, das eines davon aktiviert.
+Die Aktivierung erfordert ein Chain-Upgrade und ist in Stufen geplant: zuerst die schreibgeschützten PQC- und Konsens-Precompiles, das KI-Paar, sobald ihr schreibgeschützter Festkomma-Pfad vorhanden ist, und die CrossVM Bridge zuletzt. Das Release v3.2.3 (Mainnet, 20. Oktober 2026) hat die gehärteten Versionen der CrossVM Bridge und des AI-Anomaly-Precompiles hinter einem Protokoll-Feature in die Binärdatei aufgenommen, **aber kein Precompile aktiviert**: Die Liste `active_static_precompiles` ist in beiden Netzwerken weiterhin leer, und v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026) ändert daran nichts. Diese Tabelle wird im selben Schritt wie das Upgrade aktualisiert, das eines davon aktiviert.
 
 Prüfen Sie die aktuelle Liste selbst (eine leere Liste bedeutet: keines ist aktiv):
 
@@ -95,7 +95,7 @@ interface IQorePQC {
 }
 ```
 
-Ab v3.2.4 (Testnet seit dem 19. Oktober 2026; Mainnet ab Höhe 3.742.566) liefert dieses Precompile, sobald es aktiv ist, einen vierten Ausgabewert, `bool possessionProven`, nach `pubkey`: ob der aktuelle Schlüssel des Kontos durch einen verifizierten Besitznachweis belegt wurde (siehe [Post-Quantum-Signierung](/developer-guide/post-quantum-signing#proof-of-possession)). Die obige Schnittstelle listet die ersten drei Ausgaben; ein Contract, der dem Schlüssel vertrauen muss, sollte auch die vierte lesen.
+Ab v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026) liefert dieses Precompile, sobald es aktiv ist, einen vierten Ausgabewert, `bool possessionProven`, nach `pubkey`: ob der aktuelle Schlüssel des Kontos durch einen verifizierten Besitznachweis belegt wurde (siehe [Post-Quantum-Signierung](/developer-guide/post-quantum-signing#proof-of-possession)). Die obige Schnittstelle listet die ersten drei Ausgaben; ein Contract, der dem Schlüssel vertrauen muss, sollte auch die vierte lesen.
 
 ### IQoreAI.sol
 

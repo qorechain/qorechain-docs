@@ -11,7 +11,7 @@ Questions générales sur QoreChain, répondues à partir de la documentation. C
 
 ### Le mainnet est-il en ligne ?
 
-Oui. Le mainnet de QoreChain (chaîne `qorechain-vladi`, EVM chain ID 9801) est en ligne depuis le 7 juin 2026 et exécute la version v3.2.3 jusqu'à la hauteur 3 742 566 et la v3.2.4 à partir de ce bloc (proposition de gouvernance 13) ; le testnet, `qorechain-diana`, exécute la v3.2.4 depuis le 19 octobre 2026. Voir [Réseaux](/appendix/networks) et [Se connecter au mainnet](/getting-started/connecting-to-mainnet).
+Oui. Le mainnet de QoreChain (chaîne `qorechain-vladi`, EVM chain ID 9801) est en ligne depuis le 7 juin 2026 et exécute la version v3.2.4 (appliquée à la hauteur 3 742 566 le 23 octobre 2026 par la proposition de gouvernance 13) ; le testnet, `qorechain-diana`, exécute la v3.2.4 depuis le 19 octobre 2026. Voir [Réseaux](/appendix/networks) et [Se connecter au mainnet](/getting-started/connecting-to-mainnet).
 
 ### Quels sont les chain IDs et les EVM chain IDs ?
 
@@ -51,7 +51,7 @@ Depuis la v3.2.0, la lane EVM n'admet une transaction que si elle provient d'un 
 
 ### Combien de validateurs le mainnet compte-t-il ?
 
-Huit validateurs bonded le 20 octobre 2026, avec environ 55,1 millions de QOR bonded (l'ensemble actif peut en contenir jusqu'à 100). Le testnet en compte trois. Consultez l'ensemble en direct à `GET /cosmos/staking/v1beta1/validators` sur `https://api.qore.host`.
+Huit validateurs bonded le 23 octobre 2026, avec environ 55,6 millions de QOR bonded (l'ensemble actif peut en contenir jusqu'à 100). Le testnet en compte trois. Consultez l'ensemble en direct à `GET /cosmos/staking/v1beta1/validators` sur `https://api.qore.host`.
 
 ### Quel temps de bloc dois-je attendre ?
 

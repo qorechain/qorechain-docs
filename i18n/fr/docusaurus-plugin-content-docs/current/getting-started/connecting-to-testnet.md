@@ -10,7 +10,7 @@ sidebar_position: 4
 Rejoignez le testnet QoreChain Diana en service en configurant votre nœud avec le bon fichier genesis, les bons pairs et les bons paramètres réseau.
 
 :::note
-Cette page couvre le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 (version **v3.2.3** jusqu'à la hauteur 3,742,566, **v3.2.4** à partir de ce bloc) et dispose de sa propre page dédiée **Connexion au mainnet**, avec un genesis, des pairs et des détails de connexion distincts. Le testnet exécute la version **v3.2.4** depuis le 19 octobre 2026 ; son manifeste de version se trouve à l'adresse [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Cette page couvre le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 (version **v3.2.4** depuis le 23 octobre 2026) et dispose de sa propre page dédiée **Connexion au mainnet**, avec un genesis, des pairs et des détails de connexion distincts. Le testnet exécute la version **v3.2.4** depuis le 19 octobre 2026 ; son manifeste de version se trouve à l'adresse [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Points d'accès publics
@@ -52,7 +52,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-Le testnet applique des mises à niveau coordonnées via des propositions de gouvernance ; son manifeste porte donc un champ `upgradeHeight` (la v3.2.4 a été appliquée à la hauteur 8,337,253 le 19 octobre 2026 ; avant elle, la v3.2.3 à 8,003,746 et la v3.2.2 à 6,905,034) et `minCompatible` est égal à la version actuelle (3.2.4). Un nœud qui rejoint le réseau maintenant a besoin de la version indiquée dans le manifeste. Gardez l'horloge système synchronisée par NTP. Le manifeste du mainnet pointe vers une autre version (v3.2.3 jusqu'à sa mise à niveau à la hauteur 3,742,566) ; ne copiez donc jamais un binaire d'un réseau à l'autre.
+Le testnet applique des mises à niveau coordonnées via des propositions de gouvernance ; son manifeste porte donc un champ `upgradeHeight` (la v3.2.4 a été appliquée à la hauteur 8,337,253 le 19 octobre 2026 ; avant elle, la v3.2.3 à 8,003,746 et la v3.2.2 à 6,905,034) et `minCompatible` est égal à la version actuelle (3.2.4). Un nœud qui rejoint le réseau maintenant a besoin de la version indiquée dans le manifeste. Gardez l'horloge système synchronisée par NTP. Le mainnet a appliqué la v3.2.4 à la hauteur 3,742,566 le 23 octobre 2026, mais son manifeste est distinct ; ne copiez donc jamais un binaire d'un réseau à l'autre.
 
 ---
 

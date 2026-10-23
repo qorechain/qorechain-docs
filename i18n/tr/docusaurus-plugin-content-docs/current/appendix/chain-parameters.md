@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Zincir Parametreleri
 
-QoreChain ağlarının modül parametrelerinin, modüle göre gruplanmış birleştirilmiş referansı. Parametreler, modülün bir params sorgusu olduğu yerlerde `qorechaind query <module> params` ile sorgulanabilir (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` ve `gasabstraction` `config` kullanır ve `gasabstraction` yalnızca test ağında sorgulanabilir), REST üzerinden ise yalnızca [REST / gRPC başvurusunda](/api-reference/rest-grpc-endpoints) listelenen rotalar için sorgulanabilir. `x/inflation` parametreleri de v3.2.3'ten beri ana ağda REST üzerinden sunulur (`/qorechain/inflation/v1/params`). `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ve `xqore` için REST kullanılamaz.
+QoreChain ağlarının modül parametrelerinin, modüle göre gruplanmış birleştirilmiş referansı. Parametreler, modülün bir params sorgusu olduğu yerlerde `qorechaind query <module> params` ile sorgulanabilir (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` ve `gasabstraction` `config` kullanır), REST üzerinden ise yalnızca [REST / gRPC başvurusunda](/api-reference/rest-grpc-endpoints) listelenen rotalar için sorgulanabilir. `x/inflation` parametreleri de v3.2.3'ten beri ana ağda REST üzerinden sunulur (`/qorechain/inflation/v1/params`). `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ve `xqore` için REST kullanılamaz.
 
 :::note
-Gösterilen değerler 20 Ekim 2026 tarihinde ana ağ **`qorechain-vladi`**'den (EVM zincir kimliği **9801**, sürüm **v3.2.3**) canlı olarak okunmuştur (bir yönetişim önerisinin değiştirdikleri dışında genesis değerleridir; değişenler ayrıca belirtilmiştir). Belirtilen durumlar dışında test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**, sürüm **v3.2.4**, 19 Ekim 2026'dan beri) üzerinde de aynıdır; ana ağ v3.2.4 yükseltmesini alana kadar (3.742.566 yüksekliği) var olan farklar [v3.2.4 yükseltmesine kadarki farklar](#testnet-differences) bölümünde toplanmıştır. Blok cinsinden verilen süreler, ölçülen ana ağ blok süresi olan yaklaşık 3,2 saniyeye göre çevrilmiştir (test ağı yaklaşık her saniye bir blok üretir).
+Gösterilen değerler 23 Ekim 2026 tarihinde ana ağ **`qorechain-vladi`**'den (EVM zincir kimliği **9801**, sürüm **v3.2.4**, 23 Ekim 2026'da uygulandı) canlı olarak okunmuştur (bir yönetişim önerisinin değiştirdikleri dışında genesis değerleridir; değişenler ayrıca belirtilmiştir). Belirtilen durumlar dışında test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**, sürüm **v3.2.4**, 19 Ekim 2026'dan beri) üzerinde de aynıdır; kalan farklar [Test ağı ile ana ağ arasındaki farklar](#testnet-differences) bölümünde toplanmıştır. Blok cinsinden verilen süreler, ölçülen ana ağ blok süresi olan yaklaşık 3,2 saniyeye göre çevrilmiştir (test ağı yaklaşık her saniye bir blok üretir).
 :::
 
 ---
@@ -152,7 +152,7 @@ xQORE modülünün muhasebesi mevcuttur, ancak kilitleme ve kilit açma işlemle
 | `schedule`             | %17,5, %11, %7, %7, %2  | Eski yıl bazlı oranlar, fixed modunda kullanılmaz     |
 | `enabled`              | `true`                  | Modül etkinleştirme bayrağı                           |
 
-Modül, üst sınıra ulaşılana kadar bu emisyonu ücret toplayıcısına basar. 86.000 QOR'luk ilk dönem 3.672.000 numaralı blokta başlar. 20 Ekim 2026'da (84. dönem) 105.248.896,21 QOR basılmıştı ve üst sınır altında 484.751.103,79 QOR kalmıştı (`GET /qorechain/inflation/v1/epoch_info`). Bkz. [Tokenomics](/architecture/tokenomics#supply-and-emission).
+Modül, üst sınıra ulaşılana kadar bu emisyonu ücret toplayıcısına basar. 86.000 QOR'luk ilk dönem 3.672.000 numaralı blokta başlar. 23 Ekim 2026'da (86. dönem) 105.420.896,21 QOR basılmıştı ve üst sınır altında 484.579.103,79 QOR kalmıştı (`GET /qorechain/inflation/v1/epoch_info`). Bkz. [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ---
 
@@ -349,7 +349,7 @@ Ana ağda da test ağında da henüz havuz yoktur ve `MsgPausePool` / `MsgResume
 
 ## Stake, Slashing, Yönetişim, Ücretler ve EVM {#core-modules}
 
-Standart Cosmos SDK ve EVM modülleri, 20 Ekim 2026'da canlı olarak okunmuştur (belirtilen durumlar dışında her iki ağda aynıdır; 14 Ekim okumasından beri değişmemiştir).
+Standart Cosmos SDK ve EVM modülleri; stake, slashing, yönetişim ve dağıtım satırları 23 Ekim 2026'da canlı olarak okunmuştur (fee-market, EVM, ERC-20 ve QoreChain Native satırları en son 20 Ekim 2026'da okunmuştur); belirtilen durumlar dışında her iki ağda aynıdır ve v3.2.4 yükseltmesinden etkilenmemiştir.
 
 | Modül | Parametre | Değer |
 | --- | --- | --- |
@@ -394,21 +394,11 @@ Standart bank, staking, governance, distribution, authz ve `x/pqc` kayıt mesajl
 
 ---
 
-## v3.2.4 Yükseltmesine Kadarki Farklar {#testnet-differences}
+## Test Ağı ile Ana Ağ Arasındaki Farklar {#testnet-differences}
 
-`qorechain-diana` test ağı 8.337.253 yüksekliğinden (19 Ekim 2026) beri v3.2.4 çalıştırır. Ana ağ 3.742.566 yüksekliğine kadar v3.2.3, o bloktan itibaren v3.2.4 çalıştırır (yönetişim önerisi 13); o andan itibaren aşağıdaki v3.2.4 satırları her iki ağ için de geçerlidir ve yalnızca ağa özgü değerler farklı kalır. 20 Ekim 2026 itibarıyla test ağı ana ağdan şu şekilde farklıdır:
+Her iki ağ da v3.2.4 çalıştırır: `qorechain-diana` test ağı 8.337.253 yüksekliğinden (19 Ekim 2026) beri, `qorechain-vladi` ana ağı 3.742.566 yüksekliğinden (23 Ekim 2026, yönetişim önerisi 13) beri. Dolayısıyla v3.2.4 eklemeleri her iki ağda da aynıdır: isteğe bağlı zaman kilitli stake modülü `x/stakingtier` (48 yerine 49 modül; `GET /qorechain/stakingtier/v1/params`, minimum kilit 10 QOR, erken kilit açma cezası %5), üçüncü bir `emission_mode` (`target_apy`; `target_apy_bps` her iki ağda `0`), on üçüncü bir kayıtlı yakım kaynağı (`staking_tier_penalty`), ek hafif düğüm ödül havuzu raporlama alanları (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`) ve bir düğümün kendi kaydıyla başlayan ödül sınırı, PQC hesaplarında `possession_proven` bayrağı (sahiplik kanıtı hesap anahtarları için isteğe bağlı kalır, köprü doğrulayıcı anahtarları için zorunludur), blok süresi cinsinden sayılan RDK itiraz penceresi ve `protocol_features` ile `auth_nonce` sorguları. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking). 23 Ekim 2026 itibarıyla iki ağ yalnızca aşağıdaki değerlerde farklıdır.
 
-| Alan | Test ağı şimdi; ana ağ 3.742.566 yüksekliğinden itibaren |
-| ---- | ------- |
-| Modüller | 48 yerine 49: isteğe bağlı zaman kilitli stake modülü `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`; minimum kilit 10 QOR). Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking). |
-| `x/inflation` | Üçüncü bir `emission_mode` olan `target_apy`; `target_apy_bps` parametresi test ağında `0`'dır. Hangi modun yürürlükte olduğu, her ağda ayrı bir yönetişim kararıdır. |
-| `x/burn` | On üçüncü bir kayıtlı kaynak, `staking_tier_penalty`. |
-| `x/lightnode` ödül havuzu | Ek raporlama alanları (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); bir düğümün ödül sınırı kendi kaydıyla başlar. |
-| `x/pqc` | PQC hesaplarında bir `possession_proven` bayrağı; sahiplik kanıtı hesap anahtarları için hâlâ isteğe bağlıdır, köprü doğrulayıcı anahtarları için zorunludur. |
-| `x/rdk` | İyimser itiraz penceresi blok süresi cinsinden sayılır. |
-| Sorgular | Yeni `protocol_features` ve `auth_nonce` sorguları. |
-
-Bu değerler test ağına özgüdür ve yükseltmeden sonra da farklı kalır:
+Bu değerler test ağına özgüdür:
 
 | Alan | Test ağı |
 | ---- | ------- |

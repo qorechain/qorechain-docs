@@ -11,7 +11,7 @@ QoreChain에 관한 일반적인 질문을 문서 기반으로 답변합니다. 
 
 ### 메인넷이 가동 중인가요?
 
-네. QoreChain 메인넷(체인 `qorechain-vladi`, EVM 체인 ID 9801)은 2026년 6월 7일부터 가동되고 있으며 높이 3,742,566까지 릴리스 v3.2.3을, 그 블록부터 v3.2.4를 실행합니다(거버넌스 제안 13). 테스트넷 `qorechain-diana`는 2026년 10월 19일부터 v3.2.4를 실행하고 있습니다. [네트워크](/appendix/networks)와 [메인넷 연결하기](/getting-started/connecting-to-mainnet)를 참조하세요.
+네. QoreChain 메인넷(체인 `qorechain-vladi`, EVM 체인 ID 9801)은 2026년 6월 7일부터 가동되고 있으며 릴리스 v3.2.4를 실행합니다(거버넌스 제안 13에 따라 2026년 10월 23일 높이 3,742,566에서 적용). 테스트넷 `qorechain-diana`는 2026년 10월 19일부터 v3.2.4를 실행하고 있습니다. [네트워크](/appendix/networks)와 [메인넷 연결하기](/getting-started/connecting-to-mainnet)를 참조하세요.
 
 ### 체인 ID와 EVM 체인 ID는 무엇인가요?
 
@@ -51,7 +51,7 @@ v3.2.0부터 EVM 레인은 등록된 포스트 양자 키와 열려 있는 인�
 
 ### 메인넷에는 검증자가 몇 명인가요?
 
-2026년 10월 20일 기준으로 본딩된 검증자는 8명이며, 본딩된 QOR는 약 5,510만 개입니다(활성 집합은 최대 100명까지 가능합니다). 테스트넷에는 3명이 있습니다. 실시간 집합은 `https://api.qore.host`의 `GET /cosmos/staking/v1beta1/validators`에서 확인하세요.
+2026년 10월 23일 기준으로 본딩된 검증자는 8명이며, 본딩된 QOR는 약 5,560만 개입니다(활성 집합은 최대 100명까지 가능합니다). 테스트넷에는 3명이 있습니다. 실시간 집합은 `https://api.qore.host`의 `GET /cosmos/staking/v1beta1/validators`에서 확인하세요.
 
 ### 블록 시간은 어느 정도로 예상해야 하나요?
 

@@ -17,14 +17,14 @@ QoreChain ağları için birleştirilmiş bir başvuru kaynağı — zincir tan�
 | **Cosmos zincir kimliği** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM zincir kimliği (EIP-155)** | **9801** (onaltılık `0x2649`) | **9800** (onaltılık `0x2648`) |
 | **Canlıya geçiş tarihi** | 7 Haziran 2026 | 1 Temmuz 2026 (o tarihten beri kesintisiz; sıfırlama yok) |
-| **Zincir sürümü** | 3.742.566 yüksekliğine kadar v3.2.3; o bloktan itibaren v3.2.4 (yönetişim önerisi 13). v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı | v3.2.4 (8.337.253 yüksekliğinde uygulandı, 19 Ekim 2026) |
+| **Zincir sürümü** | v3.2.4 (3.742.566 yüksekliğinde uygulandı, 23 Ekim 2026, yönetişim önerisi 13). v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı | v3.2.4 (8.337.253 yüksekliğinde uygulandı, 19 Ekim 2026) |
 | **Blok süresi (ölçülen ortalama)** | yaklaşık 3,2 sn | yaklaşık 1,0 sn |
 | **Sürüm manifestosu** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Çerçeve** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimum gaz fiyatı** | `0.1uqor` | `0.1uqor` |
 | **Bağlantı kılavuzu** | [Mainnet'e Bağlanma](/getting-started/connecting-to-mainnet) | [Testnet'e Bağlanma](/getting-started/connecting-to-testnet) |
 
-Her iki manifesto da yeni bir düğümün çalıştırması gereken sürüm için tek doğru kaynaktır. Her iki ağ da yönetişim üzerinden koordineli yükseltmeler alır; bu nedenle her manifesto, güncel sürümünün `upgradeHeight` değerini ve bu sürüme eşit bir `minCompatible` değerini taşır (testnet 3.2.4; mainnet, 3.742.566 yüksekliğindeki v3.2.4 yükseltmesine kadar 3.2.3, ardından mainnet manifestosu 3.2.4'e geçer). Testnet, 19 Ekim 2026'dan beri v3.2.4 çalıştırmaktadır.
+Her iki manifesto da yeni bir düğümün çalıştırması gereken sürüm için tek doğru kaynaktır. Her iki ağ da yönetişim üzerinden koordineli yükseltmeler alır; bu nedenle her manifesto, güncel sürümünün `upgradeHeight` değerini ve bu sürüme eşit bir `minCompatible` değerini taşır (her iki ağda 3.2.4, 23 Ekim 2026'da kontrol edildi). Testnet 19 Ekim 2026'dan beri, mainnet ise 23 Ekim 2026'dan beri v3.2.4 çalıştırmaktadır.
 
 ## Genel uç noktalar {#public-endpoints}
 

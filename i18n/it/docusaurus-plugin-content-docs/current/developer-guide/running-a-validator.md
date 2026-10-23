@@ -10,7 +10,7 @@ sidebar_position: 9
 Questa guida spiega come creare un validatore sulla rete QoreChain, comprendere il sistema di classificazione a pool, registrare una chiave PQC per una sicurezza resistente ai computer quantistici e monitorare il proprio nodo.
 
 :::note
-Questa guida si riferisce alla mainnet **`qorechain-vladi`** (EVM chain ID **9801**), attiva dal 7 giugno 2026, che esegue la release di nodo **v3.2.3** (applicata tramite governance all'altezza 3.662.051) fino all'altezza 3.742.566 e la **v3.2.4** da quel blocco (proposta di governance 13). Un validatore deve avere installato il binario v3.2.4 prima di quell'altezza, altrimenti il suo nodo si ferma lì e perde blocchi finché non viene riavviato; vedi [Esecuzione di un nodo: Upgrade](/developer-guide/running-a-node#upgrades). La testnet **`qorechain-diana`** (EVM chain ID **9800**, che esegue la v3.2.4 dal 19 ottobre 2026) è consigliata per provare la configurazione prima di andare in produzione. Sostituisci il `--chain-id` appropriato per la rete di destinazione. I tempi di blocco differiscono: circa 3,2 s sulla mainnet e circa 1,0 s sulla testnet, quindi converti il numero di blocchi in tempo per ciascuna rete.
+Questa guida si riferisce alla mainnet **`qorechain-vladi`** (EVM chain ID **9801**), attiva dal 7 giugno 2026, che esegue la release di nodo **v3.2.4** (applicata dalla proposta di governance 13 all'altezza 3.742.566 il 23 ottobre 2026, dopo la v3.2.3 all'altezza 3.662.051 il 20 ottobre 2026). Un validatore deve eseguire il binario v3.2.4; vedi [Esecuzione di un nodo: Upgrade](/developer-guide/running-a-node#upgrades). La testnet **`qorechain-diana`** (EVM chain ID **9800**, che esegue la v3.2.4 dal 19 ottobre 2026) è consigliata per provare la configurazione prima di andare in produzione. Sostituisci il `--chain-id` appropriato per la rete di destinazione. I tempi di blocco differiscono: circa 3,2 s sulla mainnet e circa 1,0 s sulla testnet, quindi converti il numero di blocchi in tempo per ciascuna rete.
 :::
 
 :::caution Usa il binario di release, non una build dal sorgente
@@ -228,7 +228,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   -y
 ```
 
-`--pqc-key mypqc` allega una **prova di possesso** (proof of possession): la chiave firma `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` e la chain la verifica, così nessuno può registrare una chiave pubblica di cui non possiede la metà privata. Nella v3.2.3 è facoltativa e consigliata. Dalla v3.2.4 (testnet dal 19 ottobre 2026; mainnet dall'altezza 3.742.566) il record dell'account riporta anche se una prova è stata verificata (`possession_proven`, in `GET /qorechain/pqc/v1/account/{address}`).
+`--pqc-key mypqc` allega una **prova di possesso** (proof of possession): la chiave firma `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` e la chain la verifica, così nessuno può registrare una chiave pubblica di cui non possiede la metà privata. Nella v3.2.3 è facoltativa e consigliata. Dalla v3.2.4 (mainnet dal 23 ottobre 2026, testnet dal 19 ottobre 2026) il record dell'account riporta anche se una prova è stata verificata (`possession_proven`, in `GET /qorechain/pqc/v1/account/{address}`).
 
 :::note Cosa ha cambiato la v3.2.3 per la registrazione delle chiavi
 * Un account **senza** chiave registrata può inviare solo la registrazione stessa: qualsiasi altra transazione che porti un'estensione di firma ibrida viene rifiutata. Registra prima la chiave, poi firma tutto il resto con `tx pqc cosign`.

@@ -24,7 +24,7 @@ The six QoreChain precompiles below are **compiled into the node but not yet act
 | PRISM Consensus Params | `0x…0C01` | Not active | Not active |
 | CrossVM Bridge | `0x…0901` | Not active | Not active |
 
-Activation needs a chain upgrade and is planned in stages: the read-only PQC and consensus precompiles first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge last. The v3.2.3 release (mainnet, 20 October 2026) put the hardened versions of the CrossVM bridge and the AI anomaly precompile into the binary behind a protocol feature, **but it did not activate any precompile**: the `active_static_precompiles` list is still empty on both networks, and v3.2.4 (on the testnet since 19 October 2026; on mainnet from height 3,742,566) does not change that. This table is updated in the same operation as the upgrade that activates any of them.
+Activation needs a chain upgrade and is planned in stages: the read-only PQC and consensus precompiles first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge last. The v3.2.3 release (mainnet, 20 October 2026) put the hardened versions of the CrossVM bridge and the AI anomaly precompile into the binary behind a protocol feature, **but it did not activate any precompile**: the `active_static_precompiles` list is still empty on both networks, and v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) does not change that. This table is updated in the same operation as the upgrade that activates any of them.
 
 Check the live list yourself (an empty list means none is active):
 
@@ -95,7 +95,7 @@ interface IQorePQC {
 }
 ```
 
-From v3.2.4 (testnet since 19 October 2026; mainnet from height 3,742,566), once this precompile is active its output carries a fourth value, `bool possessionProven`, after `pubkey`: whether the account's current key was proven by a verified proof of possession (see [Post-Quantum Signing](/developer-guide/post-quantum-signing#proof-of-possession)). The interface above lists the first three outputs; a contract that must trust the key should read the fourth as well.
+From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026), once this precompile is active its output carries a fourth value, `bool possessionProven`, after `pubkey`: whether the account's current key was proven by a verified proof of possession (see [Post-Quantum Signing](/developer-guide/post-quantum-signing#proof-of-possession)). The interface above lists the first three outputs; a contract that must trust the key should read the fourth as well.
 
 ### IQoreAI.sol
 

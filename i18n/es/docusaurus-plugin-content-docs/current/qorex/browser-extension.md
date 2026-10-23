@@ -21,15 +21,15 @@ Está **activa y disponible públicamente** en tres tiendas (Chrome, Firefox y S
 
 ### Qué versión está activa en cada uno {#versions}
 
-Versión actual en cada tienda, a fecha de **20 de octubre de 2026**:
+Versión actual en cada tienda, a fecha de **23 de octubre de 2026**:
 
 | Tienda | Versión actual |
 |---|---|
-| Chrome Web Store | 0.3.6 (aún no actualizada a 0.3.7) |
-| Firefox Add-ons | 0.3.7 |
-| Safari (Mac App Store, app de macOS **QoreX Wallet**) | 1.7.7, que incluye la extensión 0.3.7 — la Mac App Store usa su propia numeración `1.x` |
+| Chrome Web Store | 0.3.8 |
+| Firefox Add-ons | 0.3.8 |
+| Safari (Mac App Store, app de macOS **QoreX Wallet**) | 1.7.8, que incluye la extensión 0.3.8 — la Mac App Store usa su propia numeración `1.x` |
 
-Las revisiones de cada tienda se completan en momentos distintos, así que una tienda puede servir un build más antiguo que otra; la ficha de la tienda siempre muestra su versión actual. Esta página describe el conjunto de funciones de 0.3.7; donde un punto requiere 0.3.7 lo indica, y los usuarios de Chrome lo obtienen cuando se actualice la ficha de Chrome. Consulta también [Qué versión está activa en cada uno](/qorex/overview#versions).
+Las revisiones de cada tienda se completan en momentos distintos, así que una tienda puede servir un build más antiguo que otra; la ficha de la tienda siempre muestra su versión actual. Esta página describe el conjunto de funciones de 0.3.7, que ya incluyen todas las tiendas (0.3.8 es el build actual). Consulta también [Qué versión está activa en cada uno](/qorex/overview#versions).
 
 Desde 0.2.6 la extensión ha incorporado: [varias wallets con una sola contraseña](#wallets), una [cuenta al estilo Ethereum que añades a mano](#coin60), [Claim & restake](#stake), una lista **Unstaking en curso**, [añadir un token por contrato](#custom-tokens), [Recibir en cualquier red](#receive), [Sitios conectados con Revocar](#connected-sites), la [ventana de acceso EVM](#evm-window), [`signAndBroadcast` para dApps](#sign-and-broadcast) y pantallas de aprobación que muestran cada mensaje, comisión y caducidad.
 

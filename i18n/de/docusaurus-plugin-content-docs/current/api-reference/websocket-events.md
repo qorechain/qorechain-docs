@@ -141,7 +141,7 @@ Filtern Sie nach Ereignistyp, um nur Ereignisse eines bestimmten Moduls zu erhal
 
 ## Referenz der Modul-Ereignisse
 
-Ereignisse werden als Standard-Ereignisse der Consensus Engine ausgegeben. Abonnieren Sie mit einer `tm.event='Tx'`-Query, die nach Ereignistyp und Attribut gefiltert ist (zum Beispiel `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Ereignisse auf Blockebene (also solche, die von der End-of-Block-Logik ausgegeben werden, wie die PRISM-Ereignisse unten) werden mit `tm.event='NewBlock'` zugestellt, nicht mit `Tx`. Die unten aufgeführten Namen und Attribute entsprechen der Chain-Version v3.2.3 (Mainnet); Ereignisse, die nur im Testnet v3.2.4 existieren, sind gekennzeichnet.
+Ereignisse werden als Standard-Ereignisse der Consensus Engine ausgegeben. Abonnieren Sie mit einer `tm.event='Tx'`-Query, die nach Ereignistyp und Attribut gefiltert ist (zum Beispiel `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Ereignisse auf Blockebene (also solche, die von der End-of-Block-Logik ausgegeben werden, wie die PRISM-Ereignisse unten) werden mit `tm.event='NewBlock'` zugestellt, nicht mit `Tx`. Die unten aufgeführten Namen und Attribute entsprechen der Chain-Version v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026); in v3.2.4 hinzugekommene Ereignisse sind gekennzeichnet.
 
 :::note Welche Ereignisse Sie tatsächlich sehen werden
 Viele dieser Module sind in den öffentlichen Netzwerken inaktiv: Die Bridge ist nicht live, es sind noch keine Multilayer-Layer oder Rollups registriert, und xQORE ist nicht nutzbar. Ihre Ereignisse sind zwar definiert, werden aber erst ausgelöst, wenn es Aktivität gibt. Die PRISM-Beobachtungs- und Belohnungsereignisse (`rl_observation_collected`, `rl_reward_computed`) werden in beiden Netzwerken etwa alle 10 Blöcke ausgegeben.
@@ -227,7 +227,7 @@ PQC-Schlüssel werden explizit mit einer Registrierungstransaktion registriert; 
 
 ### Staking-Tiers-Modul (v3.2.4)
 
-Diese Ereignisse gehören zum Release v3.2.4: Das `qorechain-diana`-Testnet gibt sie seit dem 19. Oktober 2026 aus, und das Mainnet gibt sie ab Höhe 3.742.566 aus (Governance-Vorschlag 13). Ein Mainnet-Node, der noch auf v3.2.3 läuft, hat kein Staking-Tiers-Modul und gibt keines davon aus.
+Diese Ereignisse gehören zum Release v3.2.4: Das `qorechain-diana`-Testnet gibt sie seit dem 19. Oktober 2026 aus, und das Mainnet seit dem 23. Oktober 2026 (Governance-Vorschlag 13, Höhe 3.742.566). Ein Node mit einem älteren Release hat kein Staking-Tiers-Modul und gibt keines davon aus.
 
 | Ereignistyp | Schlüsselattribute | Beschreibung |
 | ---------- | -------------- | ----------- |

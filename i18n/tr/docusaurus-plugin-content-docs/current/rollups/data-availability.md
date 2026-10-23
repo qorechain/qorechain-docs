@@ -16,7 +16,7 @@ Veri kullanılabilirliği (DA), bir rollup'ın durumunun arkasındaki işlem ver
 | **`both`** | Yedeklilik için native ve Celestia birlikte | Bugün tam olarak `native` gibi davranır |
 
 :::caution Erken aşama yeteneği
-Henüz hiçbir ağda bir rollup oluşturulmamıştır (21 Ekim 2026 itibarıyla kontrol edildi) ve DA arka uçları yalnızca kısmen uygulanmıştır. Her arka ucun durumu aşağıda belirtilmiştir; herhangi birine güvenmeden önce **`qorechain-diana`** testnet üzerinde doğrulayın.
+Henüz hiçbir ağda bir rollup oluşturulmamıştır (23 Ekim 2026 itibarıyla kontrol edildi) ve DA arka uçları yalnızca kısmen uygulanmıştır. Her arka ucun durumu aşağıda belirtilmiştir; herhangi birine güvenmeden önce **`qorechain-diana`** testnet üzerinde doğrulayın.
 :::
 
 ---

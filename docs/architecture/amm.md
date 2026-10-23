@@ -21,7 +21,7 @@ Commands below use `qorechaind`. Append the usual transaction flags (`--from`, `
 :::
 
 :::caution No pools exist yet
-The AMM module is live on mainnet (v3.2.3) and the testnet (v3.2.4), but **no pools have been created yet** (checked 20 October 2026: `GET /qorechain/amm/v1/pools` returns an empty list on both), and the denoms in the examples below (`uusdc`, `uusdt`) are illustrative: no such assets exist on the networks today. Until a pool exists, every swap or add-liquidity command fails with a pool-not-found error.
+The AMM module is live on mainnet and the testnet (both v3.2.4), but **no pools have been created yet** (checked 23 October 2026: `GET /qorechain/amm/v1/pools` returns an empty list on both), and the denoms in the examples below (`uusdc`, `uusdt`) are illustrative: no such assets exist on the networks today. Until a pool exists, every swap or add-liquidity command fails with a pool-not-found error.
 :::
 
 ## Module parameters {#parameters}

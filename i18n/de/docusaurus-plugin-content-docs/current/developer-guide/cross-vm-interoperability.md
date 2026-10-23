@@ -15,7 +15,7 @@ Cross-VM-Aufrufe sind nur so verfügbar wie ihre Ziel-Lane:
 * `MsgCrossVMCall` ist im **Mainnet durch den Circuit Breaker abgeschaltet** (`qorechaind query circuit disabled-list`); im Testnet ist sie aktiviert.
 * Die **SVM-Lane ist für Transaktionen in beiden Netzwerken deaktiviert**, daher kann ein SVM-Teil nicht ausgeführt werden.
 * **QoreChain Native-Upload und -Instanziierung sind in beiden Netzwerken zugriffsbeschränkt**, und das Mainnet hat keinen gespeicherten Contract-Code, daher gibt es noch keinen QoreChain Native-Contract, der aufgerufen werden könnte.
-* Das synchrone **EVM-Precompile ist nicht aktiv** (siehe unten). Seit v3.2.3 befindet sich eine gehärtete Version in der Binärdatei, aber in keinem der beiden Netzwerke ist ein Precompile aktiviert, und daran ändert auch v3.2.4 (Testnet seit dem 19. Oktober 2026; Mainnet ab Höhe 3.742.566) nichts.
+* Das synchrone **EVM-Precompile ist nicht aktiv** (siehe unten). Seit v3.2.3 befindet sich eine gehärtete Version in der Binärdatei, aber in keinem der beiden Netzwerke ist ein Precompile aktiviert, und daran ändert auch v3.2.4 (Testnet seit dem 19. Oktober 2026, Mainnet seit dem 23. Oktober 2026) nichts.
 
 Die REST-Routen des Moduls (`/qorechain/crossvm/v1/...`) werden vom öffentlichen Gateway nicht bereitgestellt; lesen Sie Nachrichten mit der CLI oder einem gRPC-/ABCI-Query-Client.
 :::

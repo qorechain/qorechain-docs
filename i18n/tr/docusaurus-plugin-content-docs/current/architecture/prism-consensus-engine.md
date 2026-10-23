@@ -9,7 +9,7 @@ sidebar_position: 2
 
 QoreChain, bir pekiştirmeli öğrenme optimizasyon katmanı olan **PRISM'i** (Policy-driven Reinforcement-learning for Intelligent State Machines), `x/rlconsensus` modülü aracılığıyla doğrudan konsensüs katmanına gömer. PRISM, her N blokta bir zincir metriklerini gözlemler ve sabit noktalı bir sinir ağı üzerinden çıkarım çalıştırıp konsensüs parametresi ayarlamaları önerecek şekilde tasarlanmıştır — hepsi deterministik olarak, konsensüs açısından kritik yollarda kayan nokta aritmetiği kullanmadan.
 
-:::note Mevcut durum (20 Ekim 2026: mainnet v3.2.3, testnet v3.2.4)
+:::note Mevcut durum (20 Ekim 2026'da kontrol edildi; her iki ağ da artık v3.2.4 çalıştırıyor)
 Hem mainnet'te hem de testnet'te ajan `conservative` modundadır, her 10 blokta bir gözlem ve ödül toplar ve **yüklenmiş politika ağırlığı yoktur**: 0 adım atmıştır ve hiçbir parametre değişikliği uygulamaz (her iki ağda `AgentStatus` ve `Policy` sorguları üzerinden kontrol edildi). Blok süresi PRISM tarafından değil, doğrulayıcıların düğüm yapılandırması tarafından belirlenir. Bir politika yüklemek, modu değiştirmek, ajanı yeniden başlatmak ve ödül ağırlıklarını güncellemek yönetişim eylemleridir ve şu anda mainnet'te devre kesici tarafından devre dışı bırakılmıştır; testnet'te devre dışı değildir.
 
 İki sürüm değişikliği, gelecekteki bir politika veya parametre değişikliğinin yapabileceklerini sıkılaştırır. v3.2.2'den beri bir yönetişim politikası güncellemesi denetimli aritmetikle doğrulanır. v3.2.3'ten beri yönetişim mesajlarının ham tel değeri (ajan modu) aralık denetiminden geçer ve her ödül ağırlığı 0 ile 1 arasında olmalıdır.

@@ -24,7 +24,7 @@ I sei precompilati QoreChain qui sotto sono **compilati nel nodo ma non ancora a
 | PRISM Consensus Params | `0x…0C01` | Non attivo | Non attivo |
 | CrossVM Bridge | `0x…0901` | Non attivo | Non attivo |
 
-L'attivazione richiede un upgrade della chain ed è pianificata per fasi: prima i precompilati PQC e di consenso in sola lettura, poi la coppia AI una volta predisposto il loro percorso in sola lettura a virgola fissa, e il CrossVM bridge per ultimo. La release v3.2.3 (mainnet, 20 ottobre 2026) ha inserito nel binario, dietro una funzionalità di protocollo, le versioni rinforzate del CrossVM bridge e del precompilato AI anomaly, **ma non ha attivato alcun precompilato**: la lista `active_static_precompiles` è ancora vuota su entrambe le reti, e la v3.2.4 (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566) non lo cambia. Questa tabella viene aggiornata nella stessa operazione dell'upgrade che ne attiva uno qualsiasi.
+L'attivazione richiede un upgrade della chain ed è pianificata per fasi: prima i precompilati PQC e di consenso in sola lettura, poi la coppia AI una volta predisposto il loro percorso in sola lettura a virgola fissa, e il CrossVM bridge per ultimo. La release v3.2.3 (mainnet, 20 ottobre 2026) ha inserito nel binario, dietro una funzionalità di protocollo, le versioni rinforzate del CrossVM bridge e del precompilato AI anomaly, **ma non ha attivato alcun precompilato**: la lista `active_static_precompiles` è ancora vuota su entrambe le reti, e la v3.2.4 (mainnet dal 23 ottobre 2026, testnet dal 19 ottobre 2026) non lo cambia. Questa tabella viene aggiornata nella stessa operazione dell'upgrade che ne attiva uno qualsiasi.
 
 Controlla tu stesso la lista attuale (vuota significa nessuno attivo):
 
@@ -95,7 +95,7 @@ interface IQorePQC {
 }
 ```
 
-Dalla v3.2.4 (testnet dal 19 ottobre 2026; mainnet dall'altezza 3.742.566), una volta attivo questo precompilato, il suo output contiene un quarto valore, `bool possessionProven`, dopo `pubkey`: indica se la chiave attuale dell'account è stata dimostrata da una prova di possesso verificata (vedi [Firma post-quantistica](/developer-guide/post-quantum-signing#proof-of-possession)). L'interfaccia qui sopra elenca i primi tre output; un contratto che deve fidarsi della chiave dovrebbe leggere anche il quarto.
+Dalla v3.2.4 (mainnet dal 23 ottobre 2026, testnet dal 19 ottobre 2026), una volta attivo questo precompilato, il suo output contiene un quarto valore, `bool possessionProven`, dopo `pubkey`: indica se la chiave attuale dell'account è stata dimostrata da una prova di possesso verificata (vedi [Firma post-quantistica](/developer-guide/post-quantum-signing#proof-of-possession)). L'interfaccia qui sopra elenca i primi tre output; un contratto che deve fidarsi della chiave dovrebbe leggere anche il quarto.
 
 ### IQoreAI.sol
 

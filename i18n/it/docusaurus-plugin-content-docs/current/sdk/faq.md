@@ -10,7 +10,7 @@ sidebar_position: 8
 ## La mainnet è attiva?
 
 Sì. La mainnet è **attiva** (chain id `qorechain-vladi`, attiva dal 7 giugno
-2026) esegue la versione della chain v3.2.3 fino all'altezza 3.742.566 e la v3.2.4 da quel blocco (proposta di governance 13); la testnet esegue la v3.2.4 dal 19 ottobre 2026. Anche il
+2026) esegue la versione della chain v3.2.4 (applicata all'altezza 3.742.566 il 23 ottobre 2026, proposta di governance 13); la testnet esegue la v3.2.4 dal 19 ottobre 2026. Anche il
 preset testnet (`qorechain-diana`) rimane disponibile. Entrambi i preset
 forniscono endpoint predefiniti su localhost; seleziona la rete con
 `createClient({ network: "mainnet" })` e sovrascrivi `endpoints` con gli URL
@@ -149,7 +149,7 @@ rifiutate on-chain, in ogni lane (incluso eth-native).
 ## Con quali versioni della chain funziona l'SDK?
 
 L'SDK **0.9.0** è la release client per la chain v3.2.2 e v3.2.3: transa sulla
-mainnet **v3.2.3** (e **v3.2.4** dall'altezza 3.742.566) e sulla testnet **v3.2.4**, e ha builder per la prova di
+mainnet e testnet **v3.2.4** (mainnet dal 23 ottobre 2026), e ha builder per la prova di
 possesso facoltativa alla registrazione (allegata automaticamente da
 `ensurePqcRegistered` una volta che la rete ha applicato la v3.2.3), per le
 finestre EVM con ambito limitato e per i messaggi di consenso EIP-7702.
@@ -157,9 +157,9 @@ L'SDK **0.8.1 o successivo** transa anch'esso su entrambe le reti (la forma v2
 dei sign-bytes ibridi, la registrazione, gli invii ibridi e la finestra EVM
 funzionano senza modifiche), ma non ha nessuno di quei builder: usa la CLI per
 quelli (vedi [Versioni precedenti alla 0.9.0](/sdk/install#before-090)). La
-v3.2.4 è attiva sulla testnet dal 19 ottobre 2026 e lo è sulla mainnet dall'altezza 3.742.566
-(proposta di governance 13); l'SDK non imposta alcun campo della v3.2.4, quindi le sue
-transazioni restano valide su entrambi i lati di quell'altezza.
+v3.2.4 è attiva sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026 (altezza 3.742.566,
+proposta di governance 13); l'SDK non imposta alcun campo della v3.2.4, quindi le sue
+transazioni sono valide prima e dopo l'aggiornamento.
 
 ## La registrazione della mia chiave PQC è stata rifiutata ma la fee è stata prelevata
 

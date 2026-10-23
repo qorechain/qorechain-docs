@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain, geliştiricilerin tanıdık Solana araçlarını kullanarak SBF/BPF programları dağıtmasına ve çalıştırmasına olanak tanıyan bir **Solana Virtual Machine (SVM)** yürütme ortamı içerir. SVM modülü, `qorechaind start` komutunun otomatik olarak başlattığı, **8899 portu** üzerinde Solana uyumlu bir JSON-RPC arayüzü sunar (aşağıdaki [JSON-RPC Sunucusu](#json-rpc-server) bölümüne bakın).
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve 3.742.566 yüksekliğine kadar **v3.2.3**, o bloktan itibaren **v3.2.4** düğüm sürümünü çalıştıran (yönetişim önerisi 13) **`qorechain-vladi`** ana ağını (mainnet) kullanır. 19 Ekim 2026'dan beri v3.2.4 çalıştıran test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **Her iki ağda da SVM işlemleri devre dışıdır** (bir sonraki kutuya bakın); bu nedenle bu sayfadaki `tx svm` komutları yalnızca referans amaçlıdır: bugün başarılı olamazlar.
+Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve 23 Ekim 2026'dan beri **v3.2.4** düğüm sürümünü çalıştıran (yönetişim önerisi 13, yükseklik 3.742.566) **`qorechain-vladi`** ana ağını (mainnet) kullanır. 19 Ekim 2026'dan beri v3.2.4 çalıştıran test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **Her iki ağda da SVM işlemleri devre dışıdır** (bir sonraki kutuya bakın); bu nedenle bu sayfadaki `tx svm` komutları yalnızca referans amaçlıdır: bugün başarılı olamazlar.
 :::
 
 ---

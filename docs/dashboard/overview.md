@@ -77,7 +77,7 @@ The Dashboard works against two networks. The header shows the network you are c
 
 | Network | Chain ID | When to use it |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Live network (live since 7 June 2026, running chain v3.2.3 until height 3,742,566 and v3.2.4 from that block) for real value and production use. Non-custodial: you connect your own wallet. |
+| **Mainnet** | `qorechain-vladi` | Live network (live since 7 June 2026, running chain v3.2.4 since 23 October 2026) for real value and production use. Non-custodial: you connect your own wallet. |
 | **Testnet** | `qorechain-diana` | Free environment for testing (running chain v3.2.4 since 19 October 2026), with a dashboard-managed test wallet and the [Faucet](/dashboard/faucet) for test tokens. |
 
 The native token is **QOR** (base denomination `uqor`, where 1 QOR = 10^6 uqor). If you are new, start on testnet, claim tokens from the Faucet, and try a first transfer before moving to mainnet.

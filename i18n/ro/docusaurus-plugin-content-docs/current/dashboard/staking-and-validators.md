@@ -57,7 +57,7 @@ Toate cele patru acțiuni se află pe pagina **Portofel** (`/wallet`), nu pe pag
 9. Deschide QoreX (link-ul/deeplink-ul face asta) și aprobă delegarea. QoreX construiește, semnează și transmite tranzacția; dashboard-ul nu vede niciodată cheia ta.
 
 :::note Staking-ul cu blocare în timp nu face parte din dashboard
-Versiunea v3.2.4 adaugă un modul opțional de staking cu blocare în timp (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566) — vezi [Staking cu blocare în timp](/user-guide/staking-and-delegation#time-locked-staking). Nici Dashboard-ul, nici QoreX nu au un ecran pentru el. Delegările făcute aici sunt delegări obișnuite, fără blocare; singura așteptare este eliberarea (unbonding) de 21 de zile la ieșire.
+Versiunea v3.2.4 adaugă un modul opțional de staking cu blocare în timp (pe mainnet din 23 octombrie 2026, pe testnet din 19 octombrie 2026) — vezi [Staking cu blocare în timp](/user-guide/staking-and-delegation#time-locked-staking). Nici Dashboard-ul, nici QoreX nu au un ecran pentru el. Delegările făcute aici sunt delegări obișnuite, fără blocare; singura așteptare este eliberarea (unbonding) de 21 de zile la ieșire.
 :::
 
 ### Redelegă {#redelegate}

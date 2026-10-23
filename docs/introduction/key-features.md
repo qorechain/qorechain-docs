@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Key Features
 
-The following table lists every major feature in QoreChain, organized by the release phase in which it was introduced. Mainnet (`qorechain-vladi`, EVM chain ID 9801), live since 7 June 2026, runs **v3.2.3** until height 3,742,566 and **v3.2.4** from that block; the parallel testnet (`qorechain-diana`, EVM chain ID 9800) has run v3.2.4 since 19 October 2026. The [Feature Status](#feature-status) table at the end of the feature list shows what is active on the live networks today.
+The following table lists every major feature in QoreChain, organized by the release phase in which it was introduced. Mainnet (`qorechain-vladi`, EVM chain ID 9801), live since 7 June 2026, runs **v3.2.4** (applied at height 3,742,566 on 23 October 2026); the parallel testnet (`qorechain-diana`, EVM chain ID 9800) has run v3.2.4 since 19 October 2026. The [Feature Status](#feature-status) table at the end of the feature list shows what is active on the live networks today.
 
 | Feature                    | Introduced in       | Description                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -42,7 +42,7 @@ Verified against the live networks on 20 October 2026. "Live" means the capabili
 | --- | --- |
 | Hybrid ML-DSA-87 + secp256k1 signatures (Cosmos lane) | **Live**, required (`hybrid_signature_mode = required`) |
 | EVM authorisation window | **Live** since v3.2.0 (optional scoping since v3.2.3) |
-| Time-locked staking (`x/stakingtier`, optional) | v3.2.4: live on the testnet since 19 October 2026; on mainnet from height 3,742,566 |
+| Time-locked staking (`x/stakingtier`, optional) | **Live** since v3.2.4 (testnet since 19 October 2026, mainnet since 23 October 2026) |
 | EVM, QoreChain Native, SVM runtimes | EVM **live**; QoreChain Native code upload and instantiation **disabled** (governance setting plus circuit breaker); SVM transaction lane **disabled** (reads work) |
 | Burn engine and fee split (37/30/20/10/3) | **Live**; only the gas-fee and failed-transaction burn channels have recorded burns on mainnet |
 | Capped emission (`x/inflation`) | **Live**, fixed 86,000 QOR per epoch up to a 590,000,000 QOR cap (mainnet) |

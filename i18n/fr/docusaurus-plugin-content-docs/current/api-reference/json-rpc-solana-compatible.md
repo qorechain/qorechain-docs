@@ -49,7 +49,7 @@ Depuis la version de chaîne **v3.1.82**, l'interface SVM sert le **solde QOR na
 | `getTokenAccountsByOwner`           | `owner`, filtre          | Renvoie les comptes de tokens d'un propriétaire                 |
 | `getTokenAccountsByDelegate`        | `delegate`, filtre       | Renvoie les comptes de tokens d'un délégué                      |
 
-Les méthodes absentes de cette liste, telles que `getGenesisHash` et `getEpochInfo`, renvoient `-32601 method not found` (vérifié sur `https://svm.qore.host` et `https://svm-testnet.qore.host`, le 20 octobre 2026). Depuis la v3.2.2, les adresses base58 dans les requêtes RPC et gRPC doivent être canoniques et de longueur bornée ; une adresse mal formée est refusée. `getTransaction` est accepté mais répond actuellement par une enveloppe sans champ `result` ; ne vous y fiez donc pas. Le slot rapporté par `getSlot` suit la hauteur de bloc de la chaîne.
+Les méthodes absentes de cette liste, telles que `getGenesisHash` et `getEpochInfo`, renvoient `-32601 method not found` (vérifié sur `https://svm.qore.host` et `https://svm-testnet.qore.host`, le 23 octobre 2026). Depuis la v3.2.2, les adresses base58 dans les requêtes RPC et gRPC doivent être canoniques et de longueur bornée ; une adresse mal formée est refusée. `getTransaction` est accepté mais répond actuellement par une enveloppe sans champ `result` ; ne vous y fiez donc pas. Le slot rapporté par `getSlot` suit la hauteur de bloc de la chaîne.
 
 ---
 

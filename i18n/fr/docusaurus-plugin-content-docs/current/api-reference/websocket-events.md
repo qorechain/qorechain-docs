@@ -141,7 +141,7 @@ Filtrez par type d'événement pour ne recevoir que les événements d'un module
 
 ## Référence des événements de module
 
-Les événements sont émis comme des événements standard du moteur de consensus. Abonnez-vous avec une requête `tm.event='Tx'` filtrée sur le type d'événement et l'attribut (par exemple `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Les événements au niveau du bloc (ceux émis par la logique de fin de bloc, comme les événements PRISM ci-dessous) sont délivrés avec `tm.event='NewBlock'`, et non `Tx`. Les noms et attributs ci-dessous sont ceux de la version de chaîne v3.2.3 (mainnet) ; les événements qui n'existent que sur le testnet v3.2.4 sont signalés.
+Les événements sont émis comme des événements standard du moteur de consensus. Abonnez-vous avec une requête `tm.event='Tx'` filtrée sur le type d'événement et l'attribut (par exemple `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Les événements au niveau du bloc (ceux émis par la logique de fin de bloc, comme les événements PRISM ci-dessous) sont délivrés avec `tm.event='NewBlock'`, et non `Tx`. Les noms et attributs ci-dessous sont ceux de la version de chaîne v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026) ; les événements ajoutés dans la v3.2.4 sont signalés.
 
 :::note Quels événements verrez-vous réellement
 Beaucoup de ces modules sont inactifs sur les réseaux publics : le bridge n'est pas en production, aucune couche multilayer ni aucun rollup n'est encore enregistré, et xQORE n'est pas utilisable. Leurs événements sont définis mais ne se déclenchent pas tant qu'il n'y a pas d'activité. Les événements d'observation et de récompense PRISM (`rl_observation_collected`, `rl_reward_computed`) sont émis environ tous les 10 blocs sur les deux réseaux.
@@ -227,7 +227,7 @@ Les clés PQC sont enregistrées explicitement par une transaction d'enregistrem
 
 ### Module Staking Tiers (v3.2.4)
 
-Ces événements viennent avec la version v3.2.4 : le testnet `qorechain-diana` les émet depuis le 19 octobre 2026 et le mainnet les émet à partir de la hauteur 3 742 566 (proposition de gouvernance 13). Un nœud mainnet encore en v3.2.3 n'a pas de module staking-tiers et n'en émet aucun.
+Ces événements viennent avec la version v3.2.4 : le testnet `qorechain-diana` les émet depuis le 19 octobre 2026 et le mainnet depuis le 23 octobre 2026 (proposition de gouvernance 13, hauteur 3 742 566). Un nœud sur une version plus ancienne n'a pas de module staking-tiers et n'en émet aucun.
 
 | Type d'événement | Attributs clés | Description |
 | ---------- | -------------- | ----------- |

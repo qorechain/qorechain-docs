@@ -21,15 +21,15 @@ Este **live și public** pe trei magazine (Chrome, Firefox și Safari); Chrome e
 
 ### Ce versiune este live unde {#versions}
 
-Versiunea curentă din fiecare magazin, la data de **20 octombrie 2026**:
+Versiunea curentă din fiecare magazin, la data de **23 octombrie 2026**:
 
 | Magazin | Versiunea curentă |
 |---|---|
-| Chrome Web Store | 0.3.6 (încă neactualizat la 0.3.7) |
-| Firefox Add-ons | 0.3.7 |
-| Safari (Mac App Store, aplicația macOS **QoreX Wallet**) | 1.7.7, care conține extensia 0.3.7 — Mac App Store folosește propria numerotare `1.x` |
+| Chrome Web Store | 0.3.8 |
+| Firefox Add-ons | 0.3.8 |
+| Safari (Mac App Store, aplicația macOS **QoreX Wallet**) | 1.7.8, care conține extensia 0.3.8 — Mac App Store folosește propria numerotare `1.x` |
 
-Recenziile magazinelor ajung în momente diferite, astfel încât un magazin poate servi un build mai vechi decât altul; listarea din magazin arată mereu versiunea sa curentă. Această pagină descrie setul de funcții din 0.3.7; acolo unde un punct necesită 0.3.7, se spune acest lucru, iar utilizatorii de Chrome îl primesc când se actualizează listarea Chrome. Vezi și [Ce versiune este live unde](/qorex/overview#versions).
+Recenziile magazinelor ajung în momente diferite, astfel încât un magazin poate servi un build mai vechi decât altul; listarea din magazin arată mereu versiunea sa curentă. Această pagină descrie setul de funcții din 0.3.7, pe care îl poartă acum fiecare magazin (0.3.8 este versiunea curentă). Vezi și [Ce versiune este live unde](/qorex/overview#versions).
 
 De la 0.2.6, extensia a primit: [mai multe portofele cu o singură parolă](#wallets), un [cont în stil Ethereum pe care îl adaugi manual](#coin60), [Claim & restake](#stake), o listă **Unstaking in progress**, [adăugarea unui token prin contract](#custom-tokens), [Receive pe orice rețea](#receive), [Site-uri conectate cu Revoke](#connected-sites), [fereastra de acces EVM](#evm-window), [`signAndBroadcast` pentru dApp-uri](#sign-and-broadcast) și ecrane de aprobare care arată fiecare mesaj, comision și expirare.
 

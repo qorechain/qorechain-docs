@@ -21,15 +21,15 @@ QoreX **브라우저 확장 프로그램**은 데스크톱용 QoreChain 지갑�
 
 ### 브라우저별로 어떤 버전이 서비스 중인가 {#versions}
 
-**2026년 10월 20일** 기준 각 스토어의 현재 버전:
+**2026년 10월 23일** 기준 각 스토어의 현재 버전:
 
 | 스토어 | 현재 버전 |
 |---|---|
-| Chrome Web Store | 0.3.6 (아직 0.3.7로 업데이트되지 않음) |
-| Firefox Add-ons | 0.3.7 |
-| Safari (Mac App Store, **QoreX Wallet** macOS 앱) | 1.7.7, 확장 프로그램 0.3.7 포함 — Mac App Store는 자체 `1.x` 번호 체계를 사용합니다 |
+| Chrome Web Store | 0.3.8 |
+| Firefox Add-ons | 0.3.8 |
+| Safari (Mac App Store, **QoreX Wallet** macOS 앱) | 1.7.8, 확장 프로그램 0.3.8 포함 — Mac App Store는 자체 `1.x` 번호 체계를 사용합니다 |
 
-스토어 심사 완료 시점이 서로 다르기 때문에 한 스토어가 다른 스토어보다 오래된 빌드를 제공할 수 있습니다. 스토어 등록 정보에는 항상 현재 버전이 표시됩니다. 이 페이지는 0.3.7 기능 세트를 설명하며, 0.3.7이 필요한 부분에는 그렇게 명시합니다. Chrome 사용자는 Chrome 등록 정보가 업데이트되면 이를 받게 됩니다. [브라우저별로 어떤 버전이 서비스 중인가](/qorex/overview#versions)도 참고하세요.
+스토어 심사 완료 시점이 서로 다르기 때문에 한 스토어가 다른 스토어보다 오래된 빌드를 제공할 수 있습니다. 스토어 등록 정보에는 항상 현재 버전이 표시됩니다. 이 페이지는 0.3.7 기능 세트를 설명하며, 이제 모든 스토어가 이를 제공합니다(0.3.8이 현재 빌드입니다). [브라우저별로 어떤 버전이 서비스 중인가](/qorex/overview#versions)도 참고하세요.
 
 0.2.6 이후 확장 프로그램에는 다음이 추가되었습니다. [하나의 비밀번호로 여러 지갑](#wallets), [직접 추가하는 Ethereum 방식 계정](#coin60), [Claim & restake](#stake)(청구 후 재스테이킹), **Unstaking in progress**(언스테이킹 진행 중) 목록, [컨트랙트로 토큰 추가](#custom-tokens), [모든 네트워크에서 받기](#receive), [Revoke 기능이 있는 연결된 사이트](#connected-sites), [EVM 접근 창](#evm-window), [dApp용 `signAndBroadcast`](#sign-and-broadcast), 그리고 모든 메시지, 수수료, 만료 시점을 보여주는 승인 화면.
 

@@ -23,7 +23,7 @@ Modulul podului este implementat pe mainnet și testnet, dar **nicio rută de po
 | Operațiuni de pod | 0 | 0 |
 | Canale / clienți IBC | 0 / 0 | 0 / 0 |
 
-(Verificat la 20 octombrie 2026 pe mainnet v3.2.3 și testnet v3.2.4. Citiți valorile live cu `qorechaind query bridge chains` și `qorechaind query bridge validators`, sau prin REST la `/qorechain/bridge/v1/chains` și `/qorechain/bridge/v1/validators`.) Configurația modulului este aceeași pe ambele rețele: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 și `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Stiva IBC pe care ar folosi-o modulul este ibc-go v10.7 (începând cu v3.2.2), dar nu a fost creat niciun client sau canal.
+(Verificat la 23 octombrie 2026 pe mainnet și testnet, ambele v3.2.4. Citiți valorile live cu `qorechaind query bridge chains` și `qorechaind query bridge validators`, sau prin REST la `/qorechain/bridge/v1/chains` și `/qorechain/bridge/v1/validators`.) Configurația modulului este aceeași pe ambele rețele: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 și `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Stiva IBC pe care ar folosi-o modulul este ibc-go v10.7 (începând cu v3.2.2), dar nu a fost creat niciun client sau canal.
 
 ## Prezentare generală a conexiunilor
 
@@ -193,7 +193,7 @@ Toate operațiunile podului QCB necesită un **prag de 7-din-10** semnături pos
 * O listă de lanțuri suportate
 * Un scor de reputație (menținut de `x/reputation`)
 
-Începând cu v3.2.2, modulul validează consecvent sumele zero și configurația sa pe fiecare cale. **De la v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566):** înregistrarea unui validator de pod necesită și o dovadă de posesie a cheii Dilithium-5 (același format `proof_of_possession` ca la înregistrarea cheii PQC, vezi [Securitate post-cuantică](/architecture/post-quantum-security#proof-of-possession)) și refuză o cheie pe care o folosește deja alt validator de pod. Mainnet v3.2.3, care rulează până la acea înălțime, nu are o astfel de verificare, iar pe niciuna dintre rețele nu este înregistrat vreun validator de pod.
+Începând cu v3.2.2, modulul validează consecvent sumele zero și configurația sa pe fiecare cale. **De la v3.2.4 (pe mainnet din 23 octombrie 2026, pe testnet din 19 octombrie 2026):** înregistrarea unui validator de pod necesită și o dovadă de posesie a cheii Dilithium-5 (același format `proof_of_possession` ca la înregistrarea cheii PQC, vezi [Securitate post-cuantică](/architecture/post-quantum-security#proof-of-possession)) și refuză o cheie pe care o folosește deja alt validator de pod. Versiunile anterioare nu au o astfel de verificare, iar pe niciuna dintre rețele nu este înregistrat vreun validator de pod.
 
 ### Disjunctoare (circuit breakers)
 

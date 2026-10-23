@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Este mainnet-ul activ?
 
 Da. Mainnet-ul este **activ** (chain id `qorechain-vladi`, activ din 7 iunie 2026)
-și rulează versiunea de chain v3.2.3 până la înălțimea 3.742.566 și v3.2.4 de la acel bloc (propunerea de guvernanță 13); testnet-ul rulează v3.2.4 din 19 octombrie 2026. Presetul de testnet
+și rulează versiunea de chain v3.2.4 (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, propunerea de guvernanță 13); testnet-ul rulează v3.2.4 din 19 octombrie 2026. Presetul de testnet
 (`qorechain-diana`) rămâne de asemenea disponibil. Ambele preseturi vin cu
 endpoint-uri implicite pe localhost; selectați rețeaua cu
 `createClient({ network: "mainnet" })` și suprascrieți `endpoints` cu URL-urile
@@ -148,7 +148,7 @@ vechi sunt respinse on-chain, pe fiecare cale (inclusiv eth-native).
 ## Cu ce versiuni de chain funcționează SDK-ul?
 
 SDK **0.9.0** este versiunea de client pentru chain v3.2.2 și v3.2.3: tranzacționează pe
-mainnet **v3.2.3** (și **v3.2.4** de la înălțimea 3.742.566) și pe testnet **v3.2.4** și are constructori pentru dovada de
+mainnet și pe testnet **v3.2.4** (mainnet din 23 octombrie 2026) și are constructori pentru dovada de
 posesie opțională la înregistrare (atașată automat de `ensurePqcRegistered` odată ce
 rețeaua a aplicat v3.2.3), pentru ferestrele EVM cu domeniu limitat și pentru mesajele
 de consimțământ EIP-7702.
@@ -157,8 +157,8 @@ sign-bytes hibride, înregistrarea, trimiterile hibride și fereastra EVM funcț
 neschimbat), dar nu are niciunul dintre acei constructori: folosiți CLI-ul pentru ei
 (vedeți
 [Versiuni anterioare lui 0.9.0](/sdk/install#before-090)). v3.2.4 rulează pe testnet
-din 19 octombrie 2026 și pe mainnet de la înălțimea 3.742.566 (propunerea de guvernanță 13);
-SDK-ul nu setează niciun câmp v3.2.4, deci tranzacțiile sale rămân valide de ambele părți ale acelei înălțimi.
+din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026 (înălțimea 3.742.566, propunerea de guvernanță 13);
+SDK-ul nu setează niciun câmp v3.2.4, deci tranzacțiile sale sunt valide înainte și după upgrade.
 
 ## Înregistrarea cheii mele PQC a fost refuzată, dar taxa a fost luată
 

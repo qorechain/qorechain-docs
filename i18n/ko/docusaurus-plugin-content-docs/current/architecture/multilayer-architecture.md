@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain은 `x/multilayer` 모듈을 통해 **4계층 계층형 체인 아키텍처**를 구현합니다. 메인 체인은 정산 및 신뢰 루트 역할을 하며, 하위 레이어(사이드체인, 페이체인, 롤업)는 서로 다른 성능 및 보안 트레이드오프를 가지고 특화된 워크로드를 처리합니다.
 
 :::caution 초기 단계 기능
-이 모듈은 메인넷(체인 버전 높이 3,742,566까지 **v3.2.3**, 그 블록부터 **v3.2.4**)과 테스트넷(**v3.2.4**)에 배포되어 있지만, **두 네트워크 모두에 아직 레이어와 앵커가 존재하지 않습니다**(2026년 10월 20일 확인: 두 네트워크 모두에서 `GET /qorechain/multilayer/v1/layers`가 빈 목록을 반환합니다). 아래 내용은 구현된 모듈을 설명하며, 매개변수는 실제 운영 값입니다. 메인넷에서는 `MsgUpdateLayerStatus` 메시지가 현재 서킷 브레이커에 의해 꺼져 있으며([체인 매개변수](/appendix/chain-parameters#circuit-breaker) 참조), 테스트넷에서는 꺼져 있지 않습니다.
+이 모듈은 메인넷(체인 버전 2026년 10월 23일부터 **v3.2.4**)과 테스트넷(**v3.2.4**)에 배포되어 있지만, **두 네트워크 모두에 아직 레이어와 앵커가 존재하지 않습니다**(2026년 10월 23일 확인: 두 네트워크 모두에서 `GET /qorechain/multilayer/v1/layers`가 빈 목록을 반환합니다). 아래 내용은 구현된 모듈을 설명하며, 매개변수는 실제 운영 값입니다. 메인넷에서는 `MsgUpdateLayerStatus` 메시지가 현재 서킷 브레이커에 의해 꺼져 있으며([체인 매개변수](/appendix/chain-parameters#circuit-breaker) 참조), 테스트넷에서는 꺼져 있지 않습니다.
 :::
 
 ---
@@ -64,7 +64,7 @@ flowchart TD
 | 합의       | QoreChain 합의 (현재 연결된 내용은 [합의 메커니즘](/architecture/consensus-mechanism) 참조) |
 | 보안       | Dilithium-5 서명으로 PQC 보안 적용                                             |
 | 역할       | 정산 레이어, 상태 앵커 저장, QCAI 라우팅 엔진, 신뢰 루트                       |
-| 블록 시간  | 네트워크에 따라 다름: 메인넷 약 3.2초, 테스트넷 약 1.0초 (2026년 10월 20일 측정) |
+| 블록 시간  | 네트워크에 따라 다름: 메인넷 약 3.2초, 테스트넷 약 1.0초 (2026년 10월 23일 측정) |
 
 모든 하위 레이어는 계층적 커밋먼트 스킴(HCS)을 통해 주기적으로 자신의 상태 루트를 메인 체인에 앵커링합니다.
 
@@ -274,4 +274,4 @@ Proposed --> Active --> Suspended --> Decommissioned
 | `routing_confidence_threshold` | string | `0.6`           | QCAI 라우팅 결정을 위한 최소 신뢰도                     |
 | `cross_layer_fee_bundling`     | bool   | `true`          | 전역 크로스 레이어 수수료 번들링 활성화                 |
 
-이 값들은 2026년 10월 20일 메인넷과 테스트넷에서 `qorechaind query multilayer params`(REST: `/qorechain/multilayer/v1/params`)가 반환한 값입니다. v3.2.2부터 이 모듈의 `MsgUpdateParams`를 라우팅할 수 있으므로 거버넌스 제안으로 이 값들을 변경할 수 있습니다.
+이 값들은 2026년 10월 23일 메인넷과 테스트넷에서 `qorechaind query multilayer params`(REST: `/qorechain/multilayer/v1/params`)가 반환한 값입니다. v3.2.2부터 이 모듈의 `MsgUpdateParams`를 라우팅할 수 있으므로 거버넌스 제안으로 이 값들을 변경할 수 있습니다.

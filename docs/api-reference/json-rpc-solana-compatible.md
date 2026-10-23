@@ -49,7 +49,7 @@ As of chain version **v3.1.82**, the SVM interface serves the account's **native
 | `getTokenAccountsByOwner`           | `owner`, filter          | Returns token accounts for an owner                            |
 | `getTokenAccountsByDelegate`        | `delegate`, filter       | Returns token accounts for a delegate                          |
 
-Methods outside this list, such as `getGenesisHash` and `getEpochInfo`, return `-32601 method not found` (checked against `https://svm.qore.host` and `https://svm-testnet.qore.host`, 20 October 2026). Since v3.2.2 base58 addresses in the RPC and gRPC queries must be canonical and bounded in length; a malformed one is refused. `getTransaction` is accepted but currently answers with an envelope that has no `result` field, so do not rely on it. The slot reported by `getSlot` tracks the chain's block height.
+Methods outside this list, such as `getGenesisHash` and `getEpochInfo`, return `-32601 method not found` (checked against `https://svm.qore.host` and `https://svm-testnet.qore.host`, 23 October 2026). Since v3.2.2 base58 addresses in the RPC and gRPC queries must be canonical and bounded in length; a malformed one is refused. `getTransaction` is accepted but currently answers with an envelope that has no `result` field, so do not rely on it. The slot reported by `getSlot` tracks the chain's block height.
 
 ---
 

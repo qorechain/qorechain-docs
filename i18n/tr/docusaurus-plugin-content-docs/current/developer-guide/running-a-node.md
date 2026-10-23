@@ -26,8 +26,8 @@ Güncel ikili dosya, genesis, eşler (peers), tohum düğümler (seeds) ve bir s
 Manifestonun alanları şunları içerir: `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (saatlik yenilenen bir güven noktası) ve `minCompatible`. Aşağıdaki kurulum ve katılım adımları bu manifestoyu alır ve güncel değerlerini kullanır.
 :::
 
-:::caution Manifestonun adını verdiği sürümü kullanın: mainnet'te v3.2.3
-Genesis'ten senkronize olan veya bir anlık görüntüden yeniden oynatma (replay) yapan bir düğüm, birkaç yönetişim (governance) yükseltmesinden geçer (aşağıdaki [Yükseltmeler](#upgrades) bölümüne bakın); bu nedenle her zaman manifestonun işaret ettiği ikili dosyayı kurun: bu dosya tüm yükseltme işleyicilerini (handler) taşır. **Mainnet**'te manifestodaki `minCompatible` ve `version` değerlerinin ikisi de `3.2.3`'tür (20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanan koordineli yükseltme); bu nedenle şimdi katılan bir düğüm v3.2.3 gerektirir: daha eski bir ikili dosya, bilmediği yükseltme yüksekliğinde durur. **Testnet**'te ikisi de `3.2.4`'tür (19 Ekim 2026'da 8.337.253 yüksekliğinde uygulandı). Mainnet, 3.742.566 yüksekliğine kadar v3.2.3'ü, o bloktan itibaren v3.2.4'ü çalıştırır (yönetişim önerisi 13); bu nedenle mainnet'e karşı bir testnet ikili dosyası çalıştırmayın ve manifesto onu adlandırmadan bir mainnet düğümüne v3.2.4 kurmayın (bkz. [Yükseltmeler](#upgrades)). Manifesto kasıtlı olarak kademeli yükseltilir (önce testnet'e, ardından bir dinlenme/soak süresinin sonunda mainnet'e); bu yüzden `binary.url`'e güvenmeden önce manifestonun `"version"` alanını `minCompatible` ile karşılaştırarak kontrol edin.
+:::caution Manifestonun adını verdiği sürümü kullanın: her iki ağda v3.2.4
+Genesis'ten senkronize olan veya bir anlık görüntüden yeniden oynatma (replay) yapan bir düğüm, birkaç yönetişim (governance) yükseltmesinden geçer (aşağıdaki [Yükseltmeler](#upgrades) bölümüne bakın); bu nedenle her zaman manifestonun işaret ettiği ikili dosyayı kurun: bu dosya tüm yükseltme işleyicilerini (handler) taşır. **Mainnet**'te manifestodaki `minCompatible` ve `version` değerlerinin ikisi de `3.2.4`'tür (23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanan koordineli yükseltme, yönetişim önerisi 13); bu nedenle şimdi katılan bir düğüm v3.2.4 gerektirir: daha eski bir ikili dosya, bilmediği bir yükseltme yüksekliğinde durur. **Testnet**'te ikisi de `3.2.4`'tür (19 Ekim 2026'da 8.337.253 yüksekliğinde uygulandı). Bir testnet ikili dosyasını mainnet'e karşı veya tersini çalıştırmayın: her dizin kendi sürümünü taşır (bkz. [Yükseltmeler](#upgrades)). Manifesto kasıtlı olarak kademeli yükseltilir (önce testnet'e, ardından bir dinlenme/soak süresinin sonunda mainnet'e); bu yüzden `binary.url`'e güvenmeden önce manifestonun `"version"` alanını `minCompatible` ile karşılaştırarak kontrol edin.
 
 Genel kaynaktan derlenen bir ikili dosya (topluluk derlemesi) her iki genel ağda da başlamayı reddeder (v3.2.3 ve sonrası): kuantum sonrası imzaları doğrulayamaz ve ağların bloklarını sadık biçimde yeniden oynatamaz. Yalnızca sürüm arşivini kullanın.
 
@@ -52,7 +52,7 @@ v3.2.1'den itibaren iki ayar önem taşır: sistem saatini NTP ile senkronize tu
 
 | Ağ       | Zincir kimliği      | EVM zincir kimliği   | Notlar                         |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Birincil ağ — 7 Haziran 2026'dan beri canlı; düğüm sürümü v3.2.3 (3.742.566 yüksekliğinden itibaren v3.2.4) |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Birincil ağ — 7 Haziran 2026'dan beri canlı; düğüm sürümü v3.2.4 (23 Ekim 2026'dan beri) |
 | Testnet  | `qorechain-diana`   | `9800`               | Entegrasyonların provasını önce burada yapın; düğüm sürümü v3.2.4 (19 Eki 2026'dan beri) |
 
 Bu kılavuz boyunca hedef ağınıza uygun `--chain-id` değerini kullanın. Örnekler varsayılan olarak mainnet'i kullanır.
@@ -75,7 +75,7 @@ NVMe SSD şiddetle önerilir — zincir durumu (state) ile EVM/SVM depoları yo�
 
 ### Docker Compose
 
-Docker Compose ile yalnızca düğüm dağıtımı. Çekilebilecek genele açık, yayınlanmış bir `qorechaind` imajı yok (projenin Docker Hub organizasyonu altında hiçbir şey yayınlanmamıştır). Genel depodaki `Dockerfile`, **topluluk (community)** ikili dosyasını derler (kuantum sonrası kütüphane yok, stub keeper'lar): yerel geliştirme için uygundur, ancak mainnet'i veya testnet'i takip edemez ve v3.2.3'ten beri onlarda başlamayı reddeder. Bir ağ düğümü için, `latest.json` içinde belirtilen **sürüm arşivinden** kendi imajınızı derleyin, sürüm numarasıyla etiketleyin (mainnet'te **v3.2.3**, testnet'te **v3.2.4**), ardından zincir verisi için kalıcı bir volume bağlayın:
+Docker Compose ile yalnızca düğüm dağıtımı. Çekilebilecek genele açık, yayınlanmış bir `qorechaind` imajı yok (projenin Docker Hub organizasyonu altında hiçbir şey yayınlanmamıştır). Genel depodaki `Dockerfile`, **topluluk (community)** ikili dosyasını derler (kuantum sonrası kütüphane yok, stub keeper'lar): yerel geliştirme için uygundur, ancak mainnet'i veya testnet'i takip edemez ve v3.2.3'ten beri onlarda başlamayı reddeder. Bir ağ düğümü için, `latest.json` içinde belirtilen **sürüm arşivinden** kendi imajınızı derleyin, sürüm numarasıyla etiketleyin (her iki ağda **v3.2.4**), ardından zincir verisi için kalıcı bir volume bağlayın:
 
 ```bash
 # Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
@@ -92,7 +92,7 @@ COPY lib/ /opt/qorechain/lib/
 ENV LD_LIBRARY_PATH=/opt/qorechain/lib
 ENTRYPOINT ["qorechaind"]
 EOF
-docker build -t qorechain-node:v3.2.3 release/
+docker build -t qorechain-node:v3.2.4 release/
 ```
 
 Arşiv, `qorechaind` dosyasını ve paylaşımlı kütüphanelerini (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) içeren bir `lib/` dizinini barındırır; yukarıdaki imaj, sürüm arşivi gibi yalnızca `linux/amd64` içindir.
@@ -101,7 +101,7 @@ Arşiv, `qorechaind` dosyasını ve paylaşımlı kütüphanelerini (`libqorepqc
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.2.3
+    image: qorechain-node:v3.2.4
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -281,14 +281,14 @@ Konsensüs değişiklikleri **koordineli yönetişim yükseltmeleri** olarak gel
 | v3.2.1 | düğüme yerel, yükseklik yok | düğüme yerel |
 | v3.2.2 | yükseklik 3.556.788 (16 Eki 2026) | yükseklik 6.905.034 (2 Eki 2026) |
 | v3.2.3 | yükseklik 3.662.051 (20 Eki 2026, yönetişim önerisi 11) | yükseklik 8.003.746 (15 Eki 2026) |
-| v3.2.4 | mainnet'te 3.742.566 yüksekliğinde planlandı (yönetişim önerisi 13) | yükseklik 8.337.253 (19 Eki 2026, yönetişim önerisi 13) |
+| v3.2.4 | yükseklik 3.742.566 (23 Eki 2026, yönetişim önerisi 13) | yükseklik 8.337.253 (19 Eki 2026, yönetişim önerisi 13) |
 
-**v3.2.4 için bir mainnet düğüm operatörü ne yapar (yükseklik 3.742.566).** Yönetişim önerisi 13, planı 3.742.566 yüksekliğinde `v3.2.4` olarak adlandırır ve düğümlerin o yüksekliğe kadar v3.2.3'te kalacağını, orada duracağını ve v3.2.4 ile yeniden başlayacağını belirtir. Somut olarak:
+**Bir düğüm operatörü v3.2.4 için ne yaptı (mainnet yüksekliği 3.742.566).** Yönetişim önerisi 13, planı 3.742.566 yüksekliğinde `v3.2.4` olarak adlandırdı (23 Ekim 2026'da uygulandı): düğümler o yüksekliğe kadar v3.2.3'te kaldı, orada durdu ve v3.2.4 ile yeniden başladı. Bir sonraki koordineli yükseltme için adımlar aynıdır:
 
-1. Mainnet manifestosu (`https://download.qore.host/mainnet/latest.json`) v3.2.4'ü listeleyene kadar **v3.2.3** çalıştırmaya devam edin. Manifesto hâlâ `version` ve `minCompatible` için `3.2.3` gösterirken ve v3.2.4 için hiçbir yükseltme yüksekliği yokken kurulacak bir şey yoktur: testnet dizinindeki bir v3.2.4 ikili dosyası mainnet sürümü değildir.
-2. Manifesto v3.2.4'ü adlandırdığında, arşivi `binary.url` adresinden indirin, `sha256` değerini doğrulayın (öneri metni de ikili dosyanın sha256 değerini yayımlar) ve yükseklikten **önce** yerleştirin. Bekleyen plan (`name` ve `height`) için `GET /cosmos/upgrade/v1beta1/current_plan` adresini, mevcut yükseklik için RPC üzerinde `GET /status` adresini kontrol edin.
-3. 3.742.566 yüksekliğinde hâlâ v3.2.3'te olan bir düğüm **durur** (bu, yükseltme modülünün amaçlanan davranışıdır, bir arıza değildir); zaten yeni ikili dosyayı çalıştıran bir düğüm yükseltme işleyicisini uygular ve devam eder. Sizinki önce durduysa, ikili dosyayı değiştirin ve yeniden başlatın. Yükseltmeden sonra `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` adresi `0` yerine yüksekliği döndürür.
-4. Yükseltmeden sonra mainnet'e katılan bir düğüm, o sırada manifestonun adlandırdığı sürümü kurar (`version` değerini `minCompatible` ile karşılaştırın).
+1. Manifestoyu (`https://download.qore.host/mainnet/latest.json`) izleyin: yeni sürümü adlandırana kadar kurulacak bir şey yoktur ve testnet dizinindeki bir ikili dosya mainnet sürümü değildir.
+2. Manifesto sürümü adlandırdığında, arşivi `binary.url` adresinden indirin, `sha256` değerini doğrulayın (öneri metni de ikili dosyanın sha256 değerini yayımlar) ve yükseklikten **önce** yerleştirin. Bekleyen plan (`name` ve `height`) için `GET /cosmos/upgrade/v1beta1/current_plan` adresini, mevcut yükseklik için RPC üzerinde `GET /status` adresini kontrol edin.
+3. Plan yüksekliğinde hâlâ eski ikili dosyada olan bir düğüm **durur** (bu, yükseltme modülünün amaçlanan davranışıdır, bir arıza değildir); zaten yeni ikili dosyayı çalıştıran bir düğüm yükseltme işleyicisini uygular ve devam eder. Sizinki önce durduysa, ikili dosyayı değiştirin ve yeniden başlatın. Yükseltmeden sonra `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` adresi `0` yerine yüksekliği döndürür (mainnet'te 3742566, testnet'te 8337253).
+4. Şimdi mainnet'e katılan bir düğüm manifestonun adlandırdığı sürümü kurar (v3.2.4; `version` değerini `minCompatible` ile karşılaştırın).
 
 İşlem imzalama, adresler, ondalık basamaklar, memolar ve ücretler v3.2.4 ile değişmez.
 
@@ -368,7 +368,7 @@ ws-address = "0.0.0.0:8546"
 api = "eth,net,web3,txpool"
 ```
 
-**Düğüm sürümü v3.2.4'te JSON-RPC sınırları.** v3.2.4 ikili dosyasını çalıştıran bir düğüm (testnet'te 19 Ekim 2026'dan beri; mainnet düğümlerinde 3.742.566 yüksekliğinden itibaren) kendi JSON-RPC sunucusunu sınırlar. Bunlar `app.toml` içindeki `[json-rpc]` bölümündeki düğüme yerel ayarlardır ve konsensüsü etkilemez: `http-body-limit` (varsayılan 262144 bayt, 256 KiB; daha büyük bir istek gövdesi okunmadan önce HTTP 413 ile reddedilir), `max-concurrent-requests` (varsayılan 256; bunun ötesindeki istekler hemen HTTP 503 alır) ve `max-open-connections` (eksik veya sıfır bir değer artık sınırsız değil, 1000 anlamına gelir). Buna ek olarak, `eth_getLogs` ve `eth_newFilter` filtre argümanı, 4'ten fazla konu (topic) konumu, tek bir konumda 1000'den fazla alternatif veya 1000'den fazla adres listelediğinde reddedilir. Kendi düğümüne çok büyük toplu veya sözleşme dağıtım istekleri gönderen bir entegratör, en büyük isteğinin gövde sınırına sığdığını kontrol etmeli ve gerekirse sınırı yükseltmelidir.
+**Düğüm sürümü v3.2.4'te JSON-RPC sınırları.** v3.2.4 ikili dosyasını çalıştıran bir düğüm (testnet'te 19 Ekim 2026'dan beri; mainnet'te 23 Ekim 2026'dan beri) kendi JSON-RPC sunucusunu sınırlar. Bunlar `app.toml` içindeki `[json-rpc]` bölümündeki düğüme yerel ayarlardır ve konsensüsü etkilemez: `http-body-limit` (varsayılan 262144 bayt, 256 KiB; daha büyük bir istek gövdesi okunmadan önce HTTP 413 ile reddedilir), `max-concurrent-requests` (varsayılan 256; bunun ötesindeki istekler hemen HTTP 503 alır) ve `max-open-connections` (eksik veya sıfır bir değer artık sınırsız değil, 1000 anlamına gelir). Buna ek olarak, `eth_getLogs` ve `eth_newFilter` filtre argümanı, 4'ten fazla konu (topic) konumu, tek bir konumda 1000'den fazla alternatif veya 1000'den fazla adres listelediğinde reddedilir. Kendi düğümüne çok büyük toplu veya sözleşme dağıtım istekleri gönderen bir entegratör, en büyük isteğinin gövde sınırına sığdığını kontrol etmeli ve gerekirse sınırı yükseltmelidir.
 
 Genel uç noktalar `eth_`, `net_`, `web3_` ve `txpool_` (yalnızca durum) ad alanlarını (namespace) sunar; v3.2.3 veya sonrasıyla başlatılan bir düğüm varsayılan olarak `eth,net,web3` kullanır ve `txpool`'u dışarıda bırakır (düğümün bekleyen işlemlerini yayınlar), bu yüzden onu yalnızca ihtiyacınız varsa ekleyin. `qor_` ad alanı yayınlanmış hiçbir düğüm derlemesi tarafından sunulmaz; bu yüzden onu eklemeyin ([`qor_` ad alanına](/api-reference/json-rpc-qor_-namespace) bakın).
 
@@ -435,7 +435,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operasyonel En İyi Uygulamalar
 
-1. **Zincir sürümünü sabitleyin.** Manifestonun önerdiği sürümü çalıştırın (mainnet'te 3.742.566 yüksekliğine kadar **v3.2.3**, sonra v3.2.4), koordineli yükseltmeler için resmi sürümleri takip edin ve sistem saatini NTP ile senkronize tutun.
+1. **Zincir sürümünü sabitleyin.** Manifestonun önerdiği sürümü çalıştırın (her iki ağda **v3.2.4**), koordineli yükseltmeler için resmi sürümleri takip edin ve sistem saatini NTP ile senkronize tutun.
 
 2. **Yedekli düğümler çalıştırın.** Tek bir yeniden başlatma veya yeniden senkronizasyonun entegrasyon trafiğini kesintiye uğratmaması için bir yük dengeleyicinin (load balancer) arkasında en az iki düğüm işletin.
 

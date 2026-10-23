@@ -9,8 +9,8 @@ sidebar_position: 1
 
 QoreChain implements **Triple-Pool Composite Proof-of-Stake (CPoS)**, a consensus mechanism that classifies validators into three specialized pools and uses reputation-weighted selection to balance security, decentralization, and performance. CPoS is implemented in the `x/qca` module and operates on top of the **QoreChain Consensus Engine**.
 
-:::note Current status (20 October 2026: mainnet v3.2.3, testnet v3.2.4)
-The Triple-Pool CPoS logic described on this page — pool classification, pool-weighted proposer selection, the reward bonding curve, progressive slashing and QDRW tallying — is implemented in the `x/qca` module and its parameters are on chain, but **it is not yet wired into block production, rewards, slashing or the governance tally**. Today the proposer rotation is the standard stake-weighted validator rotation, slashing follows the standard `x/slashing` parameters (downtime window 10,000 blocks, jailed below 5 % signed, 1 % downtime and 5 % double-sign slash, 10-minute jail) and proposals are tallied on bonded stake (quorum 33.4 %, threshold 50 %, veto 33.4 %). The design below describes where the module is heading. No release up to mainnet v3.2.3 or testnet v3.2.4 changes this; the rules that **are** enforced today are listed in [Validator admission and staking rules in force](#admission).
+:::note Current status (23 October 2026: mainnet and testnet v3.2.4)
+The Triple-Pool CPoS logic described on this page — pool classification, pool-weighted proposer selection, the reward bonding curve, progressive slashing and QDRW tallying — is implemented in the `x/qca` module and its parameters are on chain, but **it is not yet wired into block production, rewards, slashing or the governance tally**. Today the proposer rotation is the standard stake-weighted validator rotation, slashing follows the standard `x/slashing` parameters (downtime window 10,000 blocks, jailed below 5 % signed, 1 % downtime and 5 % double-sign slash, 10-minute jail) and proposals are tallied on bonded stake (quorum 33.4 %, threshold 50 %, veto 33.4 %). The design below describes where the module is heading. No release up to v3.2.4 (mainnet and testnet) changes this; the rules that **are** enforced today are listed in [Validator admission and staking rules in force](#admission).
 :::
 
 The reinforcement-learning optimization layer designed to tune consensus parameters at runtime is branded **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). See the [PRISM Consensus Engine](/architecture/prism-consensus-engine) for details.
@@ -43,7 +43,7 @@ These rules are enforced on mainnet (since v3.2.2, with a further hardening in v
 | Stake authorisations (v3.2.3) | The allow and deny lists of an `x/authz` stake authorisation compare validator addresses by their decoded bytes, so the spelling of an address (for example all upper-case) cannot get around a deny list |
 | Redelegation slashing (v3.2.0) | The total slash applied to a redelegation entry is capped at the slash fraction times the entry's initial balance |
 
-Staking parameters read on both networks on 20 October 2026: `max_validators` 100, unbonding time 21 days (1,814,400 s), `max_entries` 7, `min_commission_rate` 0. The licence authority, the account that grants `validator_operator` licences, can be replaced by governance since v3.2.3 (`MsgUpdateAuthority`).
+Staking parameters read on both networks on 23 October 2026: `max_validators` 100, unbonding time 21 days (1,814,400 s), `max_entries` 7, `min_commission_rate` 0. The licence authority, the account that grants `validator_operator` licences, can be replaced by governance since v3.2.3 (`MsgUpdateAuthority`).
 
 ---
 

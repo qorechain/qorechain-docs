@@ -10,7 +10,7 @@ sidebar_position: 1
 Ce guide couvre le jeton QOR, l'envoi et la réception de jetons, la consultation des soldes, ainsi que le modèle de répartition des frais sur QoreChain.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.3** jusqu'à la hauteur 3,742,566 et **v3.2.4** à partir de ce bloc ; le testnet exécute **v3.2.4** depuis le 19 octobre 2026 — remplacez le chain ID et les points de terminaison du mainnet indiqués sur la page **Connecting to Mainnet** lors de transactions sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.4** depuis le 23 octobre 2026 ; le testnet exécute **v3.2.4** depuis le 19 octobre 2026 — remplacez le chain ID et les points de terminaison du mainnet indiqués sur la page **Connecting to Mainnet** lors de transactions sur le mainnet.
 :::
 
 :::caution Signer avec `tx pqc cosign`
@@ -98,7 +98,7 @@ La répartition s'applique à tout ce qui entre dans le collecteur de frais, qui
 
 ## Canaux de destruction
 
-Le module de destruction de QoreChain définit 12 sources de destruction. Les QOR détruits via l'une d'elles sont retirés définitivement de la circulation. Sur le mainnet, seuls les canaux des frais de gas et des transactions échouées ont enregistré des destructions jusqu'à présent ; les autres sont définis mais n'ont rien enregistré. À partir de la v3.2.4 (testnet depuis le 19 octobre 2026 ; mainnet à partir de la hauteur 3,742,566), il existe une treizième source, `staking_tier_penalty`, pour le module facultatif de staking à verrouillage temporel.
+Le module de destruction de QoreChain définit 12 sources de destruction. Les QOR détruits via l'une d'elles sont retirés définitivement de la circulation. Sur le mainnet, seuls les canaux des frais de gas et des transactions échouées ont enregistré des destructions jusqu'à présent ; les autres sont définis mais n'ont rien enregistré. À partir de la v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026), il existe une treizième source, `staking_tier_penalty`, pour le module facultatif de staking à verrouillage temporel.
 
 | Canal              | Description                                                                      |
 | ------------------ | -------------------------------------------------------------------------------- |

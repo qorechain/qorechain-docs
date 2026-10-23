@@ -57,7 +57,7 @@ Ces quatre actions se trouvent toutes sur la page **Portefeuille** (`/wallet`), 
 9. Ouvrez QoreX (le lien/deeplink s'en charge) et approuvez la délégation. QoreX construit, signe et diffuse (broadcast) la transaction ; le dashboard ne voit jamais votre clé.
 
 :::note Le staking à verrouillage temporel ne fait pas partie du dashboard
-La version v3.2.4 ajoute un module facultatif de staking à verrouillage temporel (sur le testnet depuis le 19 octobre 2026 ; sur le mainnet à partir de la hauteur 3 742 566) — voir [Staking à verrouillage temporel](/user-guide/staking-and-delegation#time-locked-staking). Ni le Dashboard ni QoreX n'ont d'écran pour lui. Les délégations effectuées ici sont des délégations ordinaires, sans verrouillage ; la seule attente est la déliaison de 21 jours à la sortie.
+La version v3.2.4 ajoute un module facultatif de staking à verrouillage temporel (sur le mainnet depuis le 23 octobre 2026, sur le testnet depuis le 19 octobre 2026) — voir [Staking à verrouillage temporel](/user-guide/staking-and-delegation#time-locked-staking). Ni le Dashboard ni QoreX n'ont d'écran pour lui. Les délégations effectuées ici sont des délégations ordinaires, sans verrouillage ; la seule attente est la déliaison de 21 jours à la sortie.
 :::
 
 ### Redéléguer {#redelegate}

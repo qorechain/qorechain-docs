@@ -57,7 +57,7 @@ Las cuatro acciones están en la página **Billetera** (`/wallet`), no en la pá
 9. Abre QoreX (el enlace/deeplink hace esto) y aprueba la delegación. QoreX construye, firma y transmite la transacción; el panel nunca ve tu clave.
 
 :::note El staking con bloqueo temporal no forma parte del panel
-La versión v3.2.4 añade un módulo opcional de staking con bloqueo temporal (en la testnet desde el 19 de octubre de 2026; en mainnet desde la altura 3,742,566) — consulta [Staking con bloqueo temporal](/user-guide/staking-and-delegation#time-locked-staking). Ni el Panel ni QoreX tienen una pantalla para él. Las delegaciones hechas aquí son delegaciones ordinarias sin bloqueo; la única espera es la desvinculación de 21 días al salir.
+La versión v3.2.4 añade un módulo opcional de staking con bloqueo temporal (en mainnet desde el 23 de octubre de 2026, en la testnet desde el 19 de octubre de 2026) — consulta [Staking con bloqueo temporal](/user-guide/staking-and-delegation#time-locked-staking). Ni el Panel ni QoreX tienen una pantalla para él. Las delegaciones hechas aquí son delegaciones ordinarias sin bloqueo; la única espera es la desvinculación de 21 días al salir.
 :::
 
 ### Redelegar {#redelegate}

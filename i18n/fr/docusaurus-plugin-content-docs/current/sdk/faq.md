@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Le mainnet est-il en ligne ?
 
 Oui. Le mainnet est **en ligne** (identifiant de chaîne `qorechain-vladi`, en
-production depuis le 7 juin 2026) et exécute la version de chaîne v3.2.3 jusqu'à la hauteur 3,742,566 et la v3.2.4 à partir de ce bloc (proposition de gouvernance 13) ; le testnet exécute la v3.2.4 depuis le 19 octobre 2026. Le préréglage testnet (`qorechain-diana`) reste également
+production depuis le 7 juin 2026) et exécute la version de chaîne v3.2.4 (appliquée à la hauteur 3,742,566 le 23 octobre 2026, proposition de gouvernance 13) ; le testnet exécute la v3.2.4 depuis le 19 octobre 2026. Le préréglage testnet (`qorechain-diana`) reste également
 disponible. Les deux préréglages utilisent par défaut des points de terminaison
 localhost ; sélectionnez le réseau avec `createClient({ network: "mainnet" })` et
 remplacez `endpoints` par les URL de vos nœuds. Voir
@@ -153,7 +153,7 @@ rejetées on-chain, sur toutes les voies (y compris eth-native).
 ## Avec quelles versions de chaîne le SDK fonctionne-t-il ?
 
 Le SDK **0.9.0** est la version cliente pour la chaîne v3.2.2 et v3.2.3 : il
-transige sur le mainnet **v3.2.3** (et **v3.2.4** à partir de la hauteur 3,742,566) et le testnet **v3.2.4**, et dispose de
+transige sur le mainnet et le testnet **v3.2.4** (mainnet depuis le 23 octobre 2026), et dispose de
 constructeurs pour la preuve de possession facultative à l'enregistrement
 (jointe automatiquement par `ensurePqcRegistered` une fois que le réseau a
 appliqué la v3.2.3), les fenêtres EVM à portée limitée et les messages de
@@ -162,8 +162,8 @@ réseaux (la forme v2 des sign-bytes hybrides, l'enregistrement, les envois
 hybrides et la fenêtre EVM fonctionnent sans changement), mais n'a aucun de ces
 constructeurs : utilisez la CLI pour ceux-ci (voir
 [Versions antérieures à la 0.9.0](/sdk/install#before-090)). La v3.2.4 s'exécute sur
-le testnet depuis le 19 octobre 2026 et sur le mainnet à partir de la hauteur 3,742,566 (proposition de gouvernance 13) ; le SDK ne définit aucun
-champ de la v3.2.4, de sorte que ses transactions restent valides des deux côtés de cette hauteur.
+le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026 (hauteur 3,742,566, proposition de gouvernance 13) ; le SDK ne définit aucun
+champ de la v3.2.4, de sorte que ses transactions sont valides avant et après la mise à niveau.
 
 ## Mon enregistrement de clé PQC a été refusé mais les frais ont été prélevés
 

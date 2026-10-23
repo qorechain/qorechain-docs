@@ -10,7 +10,7 @@ sidebar_position: 2
 Esta guía explica cómo delegar tokens QOR a validadores, redelegar entre validadores, retirar tu stake (unbonding), reclamar recompensas y entender qué partes del diseño de staking de QoreChain están activas hoy.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.3**; la testnet ejecuta **v3.2.4** — sustituye el chain ID y los endpoints de mainnet desde la página **Conectando a Mainnet** al hacer staking en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.4** (aplicada el 23 de octubre de 2026); la testnet ejecuta v3.2.4 desde el 19 de octubre de 2026. Sustituye el chain ID y los endpoints de mainnet desde la página **Conectando a Mainnet** al hacer staking en mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -19,7 +19,7 @@ Mainnet y testnet exigen una firma híbrida post-cuántica en cada transacción 
 
 ## ¿Existe un período de bloqueo? {#lock-in-period}
 
-**En mainnet hoy**, no — no hay que elegir un plazo, porque el staking aquí no se ofrece en duraciones fijas como suele ocurrir en un exchange. La delegación permanece activa con recompensas fluyendo desde el siguiente bloque, durante todo el tiempo que quieras, hasta que decidas retirarla (undelegate); no hay nada que expire ni que renovar. El **período de unbonding de 21 días** que verás mencionado a lo largo de esta guía no es un bloqueo que aceptes de antemano — solo comienza cuando *solicitas* retirar la delegación, y solo se aplica al QOR que estás retirando. Mover una delegación entre validadores (redelegar) evita completamente esa espera, ya que el stake nunca sale del pool bonded. El término de "lealtad" de la [curva de bonding](#bonding-curve) más abajo forma parte del diseño de QoreChain, pero **la cadena activa no lo aplica hoy**, por lo que el tiempo que permanezcas delegando no cambia tu tasa de recompensa. Una forma opcional de staking con bloqueo temporal está ya en la testnet y está prevista para mainnet desde la altura 3,742,566; consulta [Staking con bloqueo temporal (v3.2.4)](#time-locked-staking).
+**Para la delegación ordinaria**, no — no hay que elegir un plazo, porque el staking aquí no se ofrece en duraciones fijas como suele ocurrir en un exchange. La delegación permanece activa con recompensas fluyendo desde el siguiente bloque, durante todo el tiempo que quieras, hasta que decidas retirarla (undelegate); no hay nada que expire ni que renovar. El **período de unbonding de 21 días** que verás mencionado a lo largo de esta guía no es un bloqueo que aceptes de antemano — solo comienza cuando *solicitas* retirar la delegación, y solo se aplica al QOR que estás retirando. Mover una delegación entre validadores (redelegar) evita completamente esa espera, ya que el stake nunca sale del pool bonded. El término de "lealtad" de la [curva de bonding](#bonding-curve) más abajo forma parte del diseño de QoreChain, pero **la cadena activa no lo aplica hoy**, por lo que el tiempo que permanezcas delegando no cambia tu tasa de recompensa. Una forma opcional de staking con bloqueo temporal está disponible en mainnet desde v3.2.4 (23 de octubre de 2026) y en la testnet desde el 19 de octubre de 2026; solo tienes un bloqueo si lo creas. Consulta [Staking con bloqueo temporal (v3.2.4)](#time-locked-staking).
 
 Esto describe el comportamiento actual de la mainnet, no una garantía permanente — un período mínimo de staking es un parámetro que la gobernanza podría introducir en el futuro, de la misma manera que cualquier otro parámetro de staking en esta página puede cambiar por votación. Si eso llegara a ocurrir, el wallet mostrará la espera resultante (cualquier mínimo más el unbonding de 21 días) antes de que confirmes una delegación, y esta página se actualizará para reflejarlo.
 
@@ -126,14 +126,14 @@ Las recompensas de staking se financian desde dos fuentes: el presupuesto de emi
 ## Staking con bloqueo temporal (v3.2.4) {#time-locked-staking}
 
 :::note Cuándo se aplica
-La versión v3.2.4 añade un módulo opcional de staking con bloqueo temporal, `x/stakingtier`. Está activo en la **testnet `qorechain-diana`** desde el 19 de octubre de 2026 y está previsto para **mainnet desde la altura 3,742,566** (propuesta de gobernanza 13; mainnet ejecuta v3.2.3 hasta ese bloque). Hasta la actualización de mainnet, la delegación en mainnet no tiene bloqueo (consulta [arriba](#lock-in-period)); a partir de la actualización, el bloqueo está disponible como opción y la delegación ordinaria sigue sin bloqueo. El mecanismo descrito a continuación se comprobó con los parámetros en vivo de la testnet.
+La versión v3.2.4 añade un módulo opcional de staking con bloqueo temporal, `x/stakingtier`. Está activo en la **testnet `qorechain-diana`** desde el 19 de octubre de 2026 y en **mainnet** desde el 23 de octubre de 2026 (aplicado en la altura 3,742,566 por la propuesta de gobernanza 13). El bloqueo está disponible como opción y la delegación ordinaria sigue sin bloqueo (consulta [arriba](#lock-in-period)). El mecanismo descrito a continuación se comprobó con los parámetros en vivo de mainnet y testnet el 23 de octubre de 2026.
 :::
 
 Un delegador puede comprometer parte de una delegación existente a un validador durante un plazo fijo de 3, 6 o 12 meses. Los plazos y los montos son parámetros de la cadena; lee los actuales en `GET /qorechain/stakingtier/v1/params` en lugar de en esta página.
 
 * **El bloqueo es opcional.** La delegación, la redelegación y el unbonding ordinarios funcionan exactamente como se describe en esta página. Solo el monto bloqueado está restringido: mientras un bloqueo está abierto no se puede retirar la delegación ni redelegar, y esto se cumple por cualquier ruta (transacción, authz, group, contrato, gobernanza).
 * **Bloqueo mínimo** de 10 QOR, y como máximo 16 bloqueos abiertos por delegador.
-* **Se permite el desbloqueo anticipado**: termina el bloqueo, se pierde la recompensa de bloqueo que no se haya pagado y se quema una penalización tomada del monto bloqueado (5% en los parámetros de la testnet, registrada bajo la fuente de quema `staking_tier_penalty`); el resto permanece delegado y desbloqueado.
+* **Se permite el desbloqueo anticipado**: termina el bloqueo, se pierde la recompensa de bloqueo que no se haya pagado y se quema una penalización tomada del monto bloqueado (5% en los parámetros actuales, registrada bajo la fuente de quema `staking_tier_penalty`); el resto permanece delegado y desbloqueado.
 * **El slashing** se aplica a una delegación bloqueada como a cualquier otra; el bloqueo se reduce junto con la delegación.
 * **Reclamación.** Un bloqueo gana un componente de recompensa adicional por época, fijado por los parámetros del módulo; se paga cuando lo reclamas, no de forma automática. Esta página no cita tasas: lee `params` para ver los ajustes en vivo.
 * **Al vencer** el bloqueo se libera y la delegación continúa como una delegación ordinaria.
@@ -150,7 +150,7 @@ qorechaind tx stakingtier claim --from mykey --chain-id qorechain-diana \
 qorechaind query stakingtier locks <holder_address>
 ```
 
-El chain ID anterior es el de la testnet; usa `qorechain-vladi` en mainnet una vez que haya aplicado la actualización v3.2.4. Como en el resto de esta página, firma cada transacción generada con `tx pqc cosign`.
+El chain ID anterior es el de la testnet; usa `qorechain-vladi` en mainnet. Como en el resto de esta página, firma cada transacción generada con `tx pqc cosign`.
 
 ---
 

@@ -297,7 +297,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 الجزء ما بعد الكمومي كامتداد `PQCHybridSignature` على المعاملة.
 
 :::caution التوقيع الهجين مطلوب على مسار Native
-اعتبارًا من إصدار السلسلة **v3.2.0** (تعمل الشبكة الرئيسية بالإصدار v3.2.3 حتى الارتفاع 3,742,566 وبالإصدار v3.2.4 من تلك الكتلة؛ وتعمل شبكة الاختبار بالإصدار v3.2.4)،
+اعتبارًا من إصدار السلسلة **v3.2.0** (تعمل الشبكة الرئيسية وشبكة الاختبار كلتاهما بالإصدار v3.2.4)،
 الإعداد الافتراضي للشبكة هو
 `hybrid_signature_mode = required` مع `allow_classical_fallback = false`.
 التوقيع الهجين عبر `buildHybridTx` / `signAndBroadcastHybrid` (مرِّر `rest`)،

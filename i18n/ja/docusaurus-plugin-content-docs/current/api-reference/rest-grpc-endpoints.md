@@ -18,7 +18,7 @@ QoreChain はプログラムからのアクセス向けに、3つの主要なイ
 すべての REST エンドポイントは JSON を返します。gRPC エンドポイントは Protocol Buffers を使用し、任意の gRPC クライアントで利用できます。RPC インターフェースはコンセンサスレベルのクエリとトランザクションのブロードキャストを提供します。
 
 :::note
-これらのインターフェースは、**`qorechain-vladi`** メインネット（2026年6月7日より稼働中、ノードリリース **v3.2.3**）と **`qorechain-diana`** テストネット（ノードリリース **v3.2.4**）の両方で利用できます。メインネットはブロック高 3,742,566 まで v3.2.3 を実行し、そのブロックから v3.2.4 を実行します（ガバナンス提案 13）。以下のベース URL はローカルで実行中のノードを前提としています。公開ホスト型エンドポイントは `https://api.qore.host` / `https://api-testnet.qore.host`（REST）と `https://rpc.qore.host` / `https://rpc-testnet.qore.host`（RPC）で、[ネットワーク](/appendix/networks#public-endpoints)に掲載されています。**公開の gRPC エンドポイントはありません**。ホスト名 `grpc.qore.host` と `grpc-testnet.qore.host` は存在しないため、gRPC が必要な場合は自分のノードを実行してください。
+これらのインターフェースは、**`qorechain-vladi`** メインネット（2026年6月7日より稼働中）と **`qorechain-diana`** テストネットの両方で利用でき、どちらもノードリリース **v3.2.4** を実行しています（2026年10月23日に確認）。メインネットは 2026年10月23日にブロック高 3,742,566 で v3.2.4 を適用しました（ガバナンス提案 13）。テストネットは 2026年10月19日から実行しています。以下のベース URL はローカルで実行中のノードを前提としています。公開ホスト型エンドポイントは `https://api.qore.host` / `https://api-testnet.qore.host`（REST）と `https://rpc.qore.host` / `https://rpc-testnet.qore.host`（RPC）で、[ネットワーク](/appendix/networks#public-endpoints)に掲載されています。**公開の gRPC エンドポイントはありません**。ホスト名 `grpc.qore.host` と `grpc-testnet.qore.host` は存在しないため、gRPC が必要な場合は自分のノードを実行してください。
 :::
 
 ## ベース URL
@@ -35,7 +35,7 @@ QoreChain 固有のモジュールは `/qorechain/<module>/v1/...` プレフィ�
 
 存在しないルートは、HTTP `501` と `{"code":12,"message":"Not Implemented"}` で応答します。これはルートが提供されていないことを意味し、クエリの結果が空だったという意味ではありません。`/qorechain/` プレフィックスのない短縮パス（例: `/bridge/v1/chains` や `/pqc/v1/params`）は提供**されません**。存在するルートで未知のレコードを指定すると、HTTP `404` と `{"code":5,"message":"... not found"}` が返ります。
 
-以下の例は公開メインネットのホストを使用しています。テストネットでは `https://api-testnet.qore.host` に置き換えてください。サンプルの値は 2026年10月20日と21日ごろ（メインネット v3.2.3、テストネット v3.2.4）に実際のネットワークから読み取ったもので、時間とともに変化します。レスポンスの形を示すものとしてご利用ください。v3.2.4 リリースでは、いくつかのルートとフィールドが追加されます。これらは以下で **v3.2.4** と表記しており、テストネットでは 2026年10月19日から提供され、メインネットではブロック高 3,742,566 から提供されます。それまでの間、メインネットのノードはこれらに `501` で応答します。
+以下の例は公開メインネットのホストを使用しています。テストネットでは `https://api-testnet.qore.host` に置き換えてください。サンプルの値は 2026年10月20日から23日の間に実際のネットワークから読み取ったもので、時間とともに変化します。レスポンスの形を示すものとしてご利用ください。v3.2.4 リリースでは、いくつかのルートとフィールドが追加されます。これらは以下で **v3.2.4** と表記しており、テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から提供されています。古いリリースのままのノードは、新しいルートに `501` で応答します。
 
 ## PQC モジュール {#pqc-module}
 
@@ -44,7 +44,7 @@ QoreChain 固有のモジュールは `/qorechain/<module>/v1/...` プレフィ�
 | GET    | `/qorechain/pqc/v1/account/{address}`    | アカウントのポスト量子鍵の登録状況（`found`、鍵タイプ、アルゴリズム） |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | アカウントの EVM レーン認可ウィンドウと、その残り          |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | アカウントの EIP-7702 委任の同意、現在の委任、EVM ノンス（v3.2.2 以降） |
-| GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4**（テストネットでは 2026年10月19日から、メインネットではブロック高 3,742,566 から。それ以前のメインネットでは `501`）。バイナリが認識しているすべてのプロトコル機能と、`enabled`、`known`、`staged` フラグ |
+| GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4**（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から。古いノードでは `501`）。バイナリが認識しているすべてのプロトコル機能と、`enabled`、`known`、`staged` フラグ |
 
 パスのセグメントは単数形の `account` である点に注意してください。`/qorechain/pqc/v1/params` や `/stats` のルートはありません（これらには `qorechaind query pqc params` と `stats` を使用してください）。
 
@@ -70,7 +70,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
 }
 ```
 
-`classical_key_source` は `ecdsa_pubkey` の出所を示します。`stored`（登録時に渡された鍵）、`auth_account`（何も保存されていないため、アカウント自身のオンチェーン公開鍵）、または `none` です。v3.2.4 以降（テストネットでは 2026年10月19日から、メインネットではブロック高 3,742,566 から）は、レコードに `"possession_proven": false` も含まれます。これは、検証済みの[所有証明](/developer-guide/post-quantum-signing#proof-of-possession)とともに鍵が登録されると `true` になります。まだ v3.2.3 のメインネットノードは、このフィールドを報告しません。
+`classical_key_source` は `ecdsa_pubkey` の出所を示します。`stored`（登録時に渡された鍵）、`auth_account`（何も保存されていないため、アカウント自身のオンチェーン公開鍵）、または `none` です。v3.2.4 以降（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）は、レコードに `"possession_proven": false` も含まれます。これは、検証済みの[所有証明](/developer-guide/post-quantum-signing#proof-of-possession)とともに鍵が登録されると `true` になります。古いリリースのノードは、このフィールドを報告しません。
 
 鍵が登録されていないアカウントは `{"found": false, "account": null}` を返します。アカウントが送信前に鍵を登録する必要があるかどうかは、`found` で判断してください。
 
@@ -229,10 +229,10 @@ curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
 ```json
-{ "reserved": "3807496785528", "released": "6693045921330", "initialized": true, "snapshot_height": "2981742" }
+{ "reserved": "0", "released": "10500542706858", "initialized": true, "snapshot_height": "2981742" }
 ```
 
-`reserved` は解放されずに残っている分、`released` はガバナンスがすでに移動した分、`snapshot_height` は準備金を記録した v3.2.0 アップグレードの高さです。上記の値は本稿執筆時点のものです。ガバナンスは最初の金額（6,693,045.921330 QOR）を 2026年10月19日に解放し、v3.2.3 アップグレードは残りの準備金をその時点の高さで再計算しました（3,807,496.785528 QOR）。再計算された金額を解放するための次のガバナンス提案は、本稿執筆時点ではまだ投票期間中でしたので、最新の値を読み取ってください。[トークノミクス](/architecture/tokenomics)を参照してください。
+`reserved` は解放されずに残っている分、`released` はガバナンスがすでに移動した分、`snapshot_height` は準備金を記録した v3.2.0 アップグレードの高さです。上記の値は 2026年10月23日に読み取ったものです。ガバナンスは最初の金額（6,693,045.921330 QOR）を 2026年10月19日に解放し、v3.2.3 アップグレードは残りの準備金をその時点の高さで再計算し（3,807,496.785528 QOR）、ガバナンス提案 12 がその金額を解放しました（可決、投票は 2026年10月21日に終了）。そのため準備金は現在空で、`released` の合計は 10,500,542.706858 QOR です。最新の値を読み取ってください。[トークノミクス](/architecture/tokenomics)を参照してください。
 
 ## Abstract Account モジュール {#abstract-account-module}
 
@@ -244,7 +244,7 @@ Abstract Account のクエリサービスは `/qorechain/abstractaccount/v1/...`
 | GET    | `/qorechain/abstractaccount/v1/accounts`              | アブストラクトアカウントを一覧表示                                |
 | GET    | `/qorechain/abstractaccount/v1/accounts/{address}`    | 指定アドレスのアブストラクトアカウントの状態（なければ `404`）                  |
 | GET    | `/qorechain/abstractaccount/v1/permission_schema`     | `schema_version`、`permissions`、`msg_permissions`、`key_management_msgs`、`lane_rules` |
-| GET    | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **v3.2.4**（テストネットでは 2026年10月19日から、メインネットではブロック高 3,742,566 から。それ以前のメインネットでは `501`）。リンク済みオーセンティケーター鍵が次に署名すべきシーケンス（`nonce`、`linked`） |
+| GET    | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **v3.2.4**（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から。古いノードでは `501`）。リンク済みオーセンティケーター鍵が次に署名すべきシーケンス（`nonce`、`linked`） |
 
 ```bash
 curl -s https://api.qore.host/qorechain/abstractaccount/v1/config
@@ -357,21 +357,24 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/reward_pool
 
 ```json
 {
-  "balance": "487231800",
-  "reserved": "487231800",
-  "outstanding": "0",
+  "balance": "5645408555",
+  "reserved": "5645276228",
+  "outstanding": "130077",
   "payable": "0",
   "max_reward_per_block_per_node": "1713",
-  "distributable": "0",
+  "distributable": "2250",
   "initialized": true,
-  "max_reward_per_month_per_node": "2000000000"
+  "max_reward_per_month_per_node": "2000000000",
+  "monthly_cap_active": true,
+  "last_distribution_time": "1792775155",
+  "last_distribution_height": "3744000"
 }
 ```
 
-`reserved` はプールのうち留保されていて、ガバナンス投票でしか動かせない部分です。ノードごとの上限は `uqor` 単位です。`max_reward_per_block_per_node` はブロックごとの上限で、v3.2.3 以降は `max_reward_per_month_per_node`（`2000000000` uqor = 30 日あたり 2,000 QOR）が月ごとの上限となり、ブロック時間と稼働率に応じて按分されるため、ブロックの生成速度に左右されなくなりました。上限は約束された金額ではありません。サンプルは、ガバナンスが以前の準備金を解放した後（提案 8、2026年10月19日）の、本稿執筆時点の実際のメインネットのレスポンスです。v3.2.4 以降（テストネットでは 2026年10月19日から、メインネットではブロック高 3,742,566 から）は、レスポンスに `monthly_cap_active`、`last_distribution_time`、`last_distribution_height` も含まれ、ノードの上限はそのノード自身の登録時から始まります。
+`reserved` はプールのうち留保されていて、ガバナンス投票でしか動かせない部分です。ノードごとの上限は `uqor` 単位です。`max_reward_per_block_per_node` はブロックごとの上限で、v3.2.3 以降は `max_reward_per_month_per_node`（`2000000000` uqor = 30 日あたり 2,000 QOR）が月ごとの上限となり、ブロック時間と稼働率に応じて按分されるため、ブロックの生成速度に左右されなくなりました。上限は約束された金額ではありません。サンプルは、ガバナンスが以前の準備金を解放した後（提案 8、2026年10月19日）の、2026年10月23日に読み取った実際のメインネットのレスポンスです。v3.2.4 以降（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）は、レスポンスに `monthly_cap_active`、`last_distribution_time`、`last_distribution_height` も含まれ、ノードの上限はそのノード自身の登録時から始まります。
 
 :::note 登録にはライセンスが必要です
-チェーンは、有効な `lightnode_operator` ライセンスの付与がないライトノード登録を拒否します（`holders/lightnode_operator` で付与を一覧できます）。本稿執筆時点では、`stats` はメインネットで `"total_registered": "0"`、テストネットで登録済みノード1件を報告しています。プログラムの状況については[ライトノード](/light-node/overview)を参照してください。
+チェーンは、有効な `lightnode_operator` ライセンスの付与がないライトノード登録を拒否します（`holders/lightnode_operator` で付与を一覧できます）。2026年10月23日時点で、`stats` はメインネットとテストネットの両方で `"total_registered": "1"` を報告しています。プログラムの状況については[ライトノード](/light-node/overview)を参照してください。
 :::
 
 ## RDK モジュール {#rdk-module}
@@ -406,7 +409,7 @@ curl -s https://api.qore.host/qorechain/rdk/v1/params
 }
 ```
 
-本稿執筆時点では、両ネットワークとも `rollups` は空のリストであるため、ロールアップごとのルートは `404` で応答します（例: `{"code":5,"message":"rollup foo not found"}`）。`default_challenge_window` は秒単位で表されます（`604800`）。v3.2.4 以降、新たに送信されたバッチのオプティミスティックのチャレンジウィンドウはブロック時間で計測されます。テストネットではブロック高 8,337,253（2026年10月19日）から、メインネットではブロック高 3,742,566 からです。それまでは、メインネットは秒単位の値を 1 ブロックあたり 6 秒の固定でブロック数に換算します。
+本稿執筆時点では、両ネットワークとも `rollups` は空のリストであるため、ロールアップごとのルートは `404` で応答します（例: `{"code":5,"message":"rollup foo not found"}`）。`default_challenge_window` は秒単位で表されます（`604800`）。v3.2.4 以降、新たに送信されたバッチのオプティミスティックのチャレンジウィンドウはブロック時間で計測されます。テストネットではブロック高 8,337,253（2026年10月19日）から、メインネットではブロック高 3,742,566（2026年10月23日）からです。アップグレード前は、チェーンは秒単位の値を 1 ブロックあたり 6 秒の固定でブロック数に換算していました。
 
 ## Inflation モジュール {#inflation-module}
 
@@ -422,7 +425,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info
 ```
 
-メインネットでは、`emission_mode` は `"fixed"`、`fixed_epoch_emission` は `"86000000000"`（1エポックあたり 86,000 QOR）、`epoch_length` は `"43200"` ブロック、`max_total_emission` は `"590000000000000"`（590,000,000 QOR、累積の上限）です。これらはガバナンス提案 10（2026年10月19日可決）で設定されました。新しい固定額を使用する最初のエポックはブロック 3,672,000 から始まり、`epoch_info` は進行中のエポックとこれまでにミントされた量を示します。レスポンス内の `schedule` リストは元の `schedule` モードに属するもので、固定モードのエポックがミントする量を表すものではありません。すべての金額は `uqor` 単位です。テストネットは、それとは異なる独自の値を報告します。v3.2.4 からは、3つ目のモード `target_apy` があり、`target_apy_bps` フィールドを持ちます（テストネットでは 2026年10月19日から、メインネットではブロック高 3,742,566 から）。ネットワークがこのモードに切り替わるのは、そのネットワーク自身のガバナンス投票によってのみです。そのため、そのような投票が可決されるまでメインネットは `fixed` のままです。テストネットは、本稿執筆時点で `"emission_mode": "fixed"` を報告しています。
+メインネットでは、`emission_mode` は `"fixed"`、`fixed_epoch_emission` は `"86000000000"`（1エポックあたり 86,000 QOR）、`epoch_length` は `"43200"` ブロック、`max_total_emission` は `"590000000000000"`（590,000,000 QOR、累積の上限）です。これらはガバナンス提案 10（2026年10月19日可決）で設定されました。新しい固定額を使用する最初のエポックはブロック 3,672,000 から始まり、`epoch_info` は進行中のエポックとこれまでにミントされた量を示します。レスポンス内の `schedule` リストは元の `schedule` モードに属するもので、固定モードのエポックがミントする量を表すものではありません。すべての金額は `uqor` 単位です。テストネットは、それとは異なる独自の値を報告します。v3.2.4 からは、3つ目のモード `target_apy` があり、`target_apy_bps` フィールドを持ちます（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）。ネットワークがこのモードに切り替わるのは、そのネットワーク自身のガバナンス投票によってのみです。そのため、そのような投票が可決されるまでメインネットは `fixed` のままです（2026年10月23日に確認: まだ `fixed`）。テストネットは、本稿執筆時点で `"emission_mode": "fixed"` を報告しています。
 
 ## Gas Abstraction モジュール {#gas-abstraction-module}
 
@@ -458,7 +461,7 @@ curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
 ## Staking Tiers モジュール（v3.2.4） {#stakingtier-module}
 
 :::note v3.2.4 から利用可能
-Staking Tiers モジュールは **v3.2.4** の一部です。これらのルートは、テストネットでは 2026年10月19日から、メインネットではブロック高 3,742,566 から提供されます（ガバナンス提案 13）。そのブロック高までは、メインネットのノードはこれらに `501` で応答します。
+Staking Tiers モジュールは **v3.2.4** の一部です。これらのルートは、テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から提供されています（ガバナンス提案 13、ブロック高 3,742,566）。古いリリースのノードは、これらに `501` で応答します。
 :::
 
 | メソッド | エンドポイント                                  | 説明                                                        |
@@ -473,7 +476,7 @@ Staking Tiers モジュールは **v3.2.4** の一部です。これらのルー
 
 これらのモジュールには gRPC の `Query` サービスはありますが、**REST ルートはありません**。サービス名は `qorechain.<module>.v1.Query` の形式です。
 
-| モジュール        | gRPC クエリメソッド（チェーンバージョン v3.2.3）              |
+| モジュール        | gRPC クエリメソッド（チェーンバージョン v3.2.4）              |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
@@ -525,7 +528,7 @@ grpcurl -plaintext localhost:9090 list
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` にはv3.2.3 のノードで `Account`、`EVMWindow`、`EVMDelegationConsent` の3つのメソッドがあり、v3.2.4 から（テストネットでは 2026年10月19日から、メインネットではブロック高 3,742,566 から）4つ目の `ProtocolFeatures` があります。`Params` メソッドはありません。
+`qorechain.pqc.v1.Query` にはv3.2.3 のノードで `Account`、`EVMWindow`、`EVMDelegationConsent` の3つのメソッドがあり、v3.2.4 から（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）4つ目の `ProtocolFeatures` があります。`Params` メソッドはありません。
 
 ## 認証
 

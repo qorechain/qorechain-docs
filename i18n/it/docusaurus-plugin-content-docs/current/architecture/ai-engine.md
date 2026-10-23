@@ -21,7 +21,7 @@ Il motore QCAI (QoreChain AI) opera su tre livelli:
 
 Il livello di consenso è documentato separatamente in [Motore di Consenso PRISM](/architecture/prism-consensus-engine). Questa pagina copre i livelli di rete e applicazione.
 
-:::note Cosa viene applicato sulle reti attive (mainnet v3.2.3, testnet v3.2.4)
+:::note Cosa viene applicato sulle reti attive (mainnet e testnet v3.2.4)
 Due parti di `x/ai` agiscono oggi sulle transazioni, sia sulla corsia Cosmos sia sulla corsia EVM:
 
 * Un **limite di frequenza per mittente**. Il limite attivo è di **600 transazioni al minuto per mittente** (`max_tx_per_minute`; la corsia EVM ha un proprio limite facoltativo, che non è impostato, quindi si applica lo stesso valore). Il "minuto" è contato su una finestra fissa di blocchi, non sul tempo reale, perché l'altezza del blocco è l'unico orologio condiviso da tutti i validatori. Un mittente che ha raggiunto il limite si vede rifiutare le transazioni successive finché quelle più vecchie non escono dalla finestra. Il limite è applicato sulla corsia Cosmos dalla v3.2.0 e su entrambe le corsie dalla v3.2.2.
@@ -180,7 +180,7 @@ Due contratti precompilati espongono le capacità di AI on-chain agli smart cont
 Questi precompilati **non sono attivi** sulla mainnet (`qorechain-vladi`) né sulla testnet (`qorechain-diana`); una chiamata restituisce dati vuoti. Verranno attivati solo dopo aver ottenuto un percorso di scoring in sola lettura e a virgola fissa. Vedi [Precompilati EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
 :::
 
-**Importante**: I precompilati EVM utilizzano **esclusivamente il motore euristico deterministico**. Non chiamano mai il sidecar, garantendo che tutta l'esecuzione EVM rimanga completamente deterministica e riproducibile. Dalla v3.2.3 il precompilato di controllo delle anomalie analizza una transazione senza scrivere stato; l'altro rafforzamento dei precompilati in quella release (il bridge CrossVM che rifiuta `STATICCALL`, misura la propria chiamata annidata sul gas del frame chiamante e raggiunge solo target QoreChain Native in allowlist) si applica una volta attivato il precompilato CrossVM. Al 20 ottobre 2026 l'elenco `active_static_precompiles` è vuoto su entrambe le reti.
+**Importante**: I precompilati EVM utilizzano **esclusivamente il motore euristico deterministico**. Non chiamano mai il sidecar, garantendo che tutta l'esecuzione EVM rimanga completamente deterministica e riproducibile. Dalla v3.2.3 il precompilato di controllo delle anomalie analizza una transazione senza scrivere stato; l'altro rafforzamento dei precompilati in quella release (il bridge CrossVM che rifiuta `STATICCALL`, misura la propria chiamata annidata sul gas del frame chiamante e raggiunge solo target QoreChain Native in allowlist) si applica una volta attivato il precompilato CrossVM. Al 23 ottobre 2026 l'elenco `active_static_precompiles` è vuoto su entrambe le reti.
 
 ## Attestazione TEE
 

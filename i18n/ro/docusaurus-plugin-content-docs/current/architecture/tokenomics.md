@@ -23,7 +23,7 @@ Modelul economic al QoreChain este centrat pe tokenul nativ **QOR** și are o **
 | **Prefix Bech32**     | `qor` (conturi: `qor1...`, validatori: `qorvaloper...`) |
 
 :::note
-Cifrele de pe această pagină descriu **mainnet-ul** (`qorechain-vladi`, EVM chain ID **9801**), live din 7 iunie 2026 pe versiunea **v3.2.3** (v3.2.4 de la înălțimea 3.742.566). Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.4** din 19 octombrie 2026) are propriul istoric de emisie și ofertă (oferta testnet-ului este cu mult peste cea a mainnet-ului, iar emisia sa a depășit deja plafonul), așa că folosește cifrele mainnet-ului. Sumele care se schimbă cu fiecare bloc sunt marcate cu data la care au fost citite (20 octombrie 2026).
+Cifrele de pe această pagină descriu **mainnet-ul** (`qorechain-vladi`, EVM chain ID **9801**), live din 7 iunie 2026 pe versiunea **v3.2.4** (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026). Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.4** din 19 octombrie 2026) are propriul istoric de emisie și ofertă (oferta testnet-ului este cu mult peste cea a mainnet-ului, iar emisia sa a depășit deja plafonul), așa că folosește cifrele mainnet-ului. Sumele care se schimbă cu fiecare bloc sunt marcate cu data la care au fost citite (23 octombrie 2026).
 :::
 
 ---
@@ -43,20 +43,20 @@ QoreChain are o **cale de ofertă finită, plafonată**. Oferta la genesis a fos
 | Emisie per epocă | **86.000 QOR** (16.239 QOR până la propunerea de guvernanță 10; prima epocă de 86.000 QOR începe la blocul 3.672.000) |
 | Lungimea epocii | 43.200 de blocuri (aproximativ 38,6 ore la timpul de bloc actual de ≈3,2 s) |
 | Plafon cumulativ (`max_total_emission`) | **590.000.000 QOR** (114.285.714 QOR până la propunerea 10) |
-| Emis până acum (20 octombrie 2026, epoca 84) | 105.248.896,21 QOR (17,84 % din plafon) |
-| Rămas sub plafon | 484.751.103,79 QOR (aproximativ 5.637 de epoci la 86.000 QOR pe epocă; ultima este parțială) |
+| Emis până acum (23 octombrie 2026, epoca 86) | 105.420.896,21 QOR (17,87 % din plafon) |
+| Rămas sub plafon | 484.579.103,79 QOR (aproximativ 5.635 de epoci la 86.000 QOR pe epocă; ultima este parțială) |
 
 Odată ce plafonul este atins, modulul încetează definitiv să mai emită; după aceea, recompensele provin doar din taxele de tranzacție. Cifrele de emisie au fost stabilite prin guvernanță: propunerea #4 (26 august 2026) a înlocuit programul descrescător original cu o sumă fixă sub un plafon dur, iar propunerea #10 (trecută pe 19 octombrie 2026 cu tot stake-ul bonded votând în favoare) a schimbat această sumă de la 16.239 QOR la 86.000 QOR pe epocă și a ridicat plafonul de la 114.285.714 QOR la 590.000.000 QOR. Lungimea epocii nu s-a schimbat. Valorile programului (17,5 %, 11 %, 7 %, 7 %, 2 % pentru anii 1–5) rămân stocate în parametrii modulului, dar nu sunt folosite în modul `fixed`.
 
 Totalul emis, suma rămasă și înălțimea epocii următoare sunt disponibile live la `GET /qorechain/inflation/v1/epoch_info` (câmpul său `current_inflation_rate` raportează rata veche, pe ani, pe care modul `fixed` nu o folosește).
 
-QoreChain nu expune o cifră live a randamentului de staking; tratează orice procent citat ca neverificat. Cifrele curente pot fi citite din starea lanțului: oferta se află la `GET /cosmos/bank/v1beta1/supply/by_denom?denom=uqor` (4.493.665.185,83 QOR la 20 octombrie 2026), iar totalurile de ardere la `GET /qorechain/burn/v1/stats`.
+QoreChain nu expune o cifră live a randamentului de staking; tratează orice procent citat ca neverificat. Cifrele curente pot fi citite din starea lanțului: oferta se află la `GET /cosmos/bank/v1beta1/supply/by_denom?denom=uqor` (4.493.785.581,46 QOR la 23 octombrie 2026), iar totalurile de ardere la `GET /qorechain/burn/v1/stats`.
 
 ---
 
 ## x/burn — Motor de ardere pe mai multe canale
 
-Modulul `x/burn` definește astăzi **12 surse de ardere** pe mainnet. Fiecare token ars este eliminat permanent din ofertă. Pe mainnet, doar `gas_fee` (31.574.710,28 QOR la 20 octombrie 2026) și, din v3.2.2, `failed_tx` (0,0855 QOR) au arderi înregistrate; celelalte sunt definite, dar nu au înregistrat nimic. Începând cu v3.2.4 există o a treisprezecea sursă, `staking_tier_penalty`, care înregistrează penalizarea arsă atunci când o delegare blocată în timp este deblocată anticipat (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566; vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking)).
+Modulul `x/burn` definește astăzi **12 surse de ardere** pe mainnet. Fiecare token ars este eliminat permanent din ofertă. Pe mainnet, doar `gas_fee` (31.626.314,61 QOR la 23 octombrie 2026) și, din v3.2.2, `failed_tx` (0,1355 QOR) au arderi înregistrate; celelalte sunt definite, dar nu au înregistrat nimic. Începând cu v3.2.4 există o a treisprezecea sursă, `staking_tier_penalty`, care înregistrează penalizarea arsă atunci când o delegare blocată în timp este deblocată anticipat (activă pe testnet din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026; pe mainnet nu a fost înregistrată încă nicio deblocare anticipată; vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking)).
 
 ### Canale de ardere
 
@@ -104,7 +104,7 @@ Cotele sunt:
 Cotele sunt impuse on-chain și trebuie să însumeze întotdeauna exact 100%.
 
 :::note Ce trece de fapt prin această împărțire
-Împărțirea se aplică la tot ce se află în colectorul de taxe, care conține atât taxele de tranzacție, cât și emisia epocii emisă de `x/inflation`. În practică, aproape totul este astăzi emisie: din 105.248.896 QOR emiși, 31.574.710 QOR (30,0 %) au fost arși prin canalul gas-fee. Până la upgrade-ul v3.2.0 (25 septembrie 2026, înălțimea 2.981.742), cota de 10 % a stakerilor era mutată în soldul modulului de distribuție fără să sprijine vreo cerere de plată, astfel că stakerii și validatorii împreună primeau 37 %, nu 47 %; de la acea înălțime, cota stakerilor este plătită ca o recompensă obișnuită de staking. Suma care se blocase deja a fost înregistrată on-chain și a fost eliberată între timp prin voturi de guvernanță — vezi [Cota blocată a stakerilor și rezerva nodurilor light](#stranded-and-reserve).
+Împărțirea se aplică la tot ce se află în colectorul de taxe, care conține atât taxele de tranzacție, cât și emisia epocii emisă de `x/inflation`. În practică, aproape totul este astăzi emisie: din 105.420.896 QOR emiși, 31.626.315 QOR (30,0 %) au fost arși prin canalul gas-fee. Până la upgrade-ul v3.2.0 (25 septembrie 2026, înălțimea 2.981.742), cota de 10 % a stakerilor era mutată în soldul modulului de distribuție fără să sprijine vreo cerere de plată, astfel că stakerii și validatorii împreună primeau 37 %, nu 47 %; de la acea înălțime, cota stakerilor este plătită ca o recompensă obișnuită de staking. Suma care se blocase deja a fost înregistrată on-chain și a fost eliberată între timp prin voturi de guvernanță — vezi [Cota blocată a stakerilor și rezerva nodurilor light](#stranded-and-reserve).
 :::
 
 ### Parametrii de ardere
@@ -135,7 +135,7 @@ Două sume s-au acumulat pe mainnet înaintea upgrade-ului v3.2.0 (25 septembrie
 | **Cota blocată a stakerilor** — cota de 10 % a stakerilor care fusese depusă acolo unde nu sprijinea nicio cerere de recompensă de staking | Propunerea 9 (trecută pe 19 octombrie 2026) | 6.693.045,921330 QOR eliberați | `MsgReleaseStrandedRewards` (autoritate de guvernanță; destinație numită; nu poate depăși înregistrarea) |
 | **Rezerva nodurilor light** — cota de 3 % a nodurilor light acumulată cât timp niciun nod light nu era eligibil | Propunerea 8 (trecută pe 19 octombrie 2026) | 3.156.983,796395 QOR eliberați | `MsgReleaseLightNodeReserve` (autoritate de guvernanță) |
 
-**Restul corectat al cotei blocate.** La upgrade-ul v3.2.3 (înălțimea 3.662.051, 20 octombrie 2026) lanțul a recalculat înregistrarea cotei blocate, care a ajuns atunci la 3.807.496,785528 QOR (`reserved` în `GET /qorechain/burn/v1/stranded_rewards`, alături de `released`, 6.693.045,921330 QOR). Propunerea de guvernanță 12 propune eliberarea acestui rest către fundație; la momentul scrierii (20 octombrie 2026) se află în perioada de votare, care se încheie pe 21 octombrie 2026, la 20:01 UTC. Verifică înregistrarea și propunerea (`GET /cosmos/gov/v1/proposals/12`) pentru rezultat.
+**Restul corectat al cotei blocate.** La upgrade-ul v3.2.3 (înălțimea 3.662.051, 20 octombrie 2026) lanțul a recalculat înregistrarea cotei blocate, care a ajuns atunci la 3.807.496,785528 QOR (`reserved` în `GET /qorechain/burn/v1/stranded_rewards`, alături de `released`, 6.693.045,921330 QOR). Propunerea de guvernanță 12 a eliberat acest rest, 3.807.496,785528 QOR, către fundație: a trecut (votul s-a încheiat pe 21 octombrie 2026, la 20:01 UTC), cu toată miza angajată care a votat în favoare. Înregistrarea poate fi verificată la `GET /qorechain/burn/v1/stranded_rewards`, iar propunerea la `GET /cosmos/gov/v1/proposals/12`.
 
 **Pool-ul nodurilor light acum.** Din upgrade-ul v3.2.0, recompensele nodurilor light sunt plătite doar din ceea ce s-a acumulat de la rularea anterioară a distribuției, cu un plafon per nod. Din v3.2.3 plafonul este de **2.000 QOR per nod la 30 de zile** (`max_reward_per_month_per_node`), proporțional cu timpul de bloc și uptime-ul nodului; valoarea per bloc (`max_reward_per_block_per_node`, 1.713 uqor) este în continuare raportată, dar nu mai este regula. Ce nu este câștigat rămâne în rezerva pool-ului, pe care o poate elibera doar un vot de guvernanță. După propunerea 8, rezerva se acumulează din nou: pe 20 octombrie 2026 conținea 487,2318 QOR (`reserved` în `GET /qorechain/lightnode/v1/reward_pool`), fără nimic restant sau de plată, deoarece încă nu s-a înregistrat niciun nod light. Înregistrarea este deschisă și condiționată de licență (vezi [Light Node](/light-node/overview#reward-program-status)). O eliberare dinaintea snapshot-ului upgrade-ului, peste suma înregistrată sau către o destinație invalidă este refuzată.
 
@@ -197,7 +197,7 @@ Modulul `x/inflation` emite emisia per epocă (86.000 QOR din propunerea 10, `em
 
 ### Parametri
 
-Citiți live pe 20 octombrie 2026 din `GET /qorechain/inflation/v1/params`:
+Citiți live pe 23 octombrie 2026 din `GET /qorechain/inflation/v1/params`:
 
 | Parametru | Valoare (mainnet) | Descriere |
 | --- | --- | --- |
@@ -211,14 +211,14 @@ Citiți live pe 20 octombrie 2026 din `GET /qorechain/inflation/v1/params`:
 Parametrii modulului și înregistrarea epocii sunt expuse prin REST pe mainnet din v3.2.3 (`/qorechain/inflation/v1/params` și `/qorechain/inflation/v1/epoch_info`); pot fi citite și din starea lanțului prin interfața raw store a RPC-ului `abci_query` (store `inflation`, cheile `inflation/params` și `inflation/epoch`).
 
 :::note v3.2.4 și emisia testnet-ului
-Testnet-ul `qorechain-diana` își păstrează setările anterioare de emisie (16.239 QOR per epocă sub un plafon de 114.285.714 QOR, deja atins acolo); mainnet-ul folosește valorile de mai sus. Versiunea v3.2.4 adaugă un al treilea mod de emisie, `target_apy`, cu un parametru `target_apy_bps`: pe testnet din 19 octombrie 2026, pe mainnet de la înălțimea 3.742.566 (propunerea de guvernanță 13). Parametrul este `0` pe testnet și nu determină emisia acolo. Trecerea unei rețele la acel mod este un vot separat de guvernanță și nu a fost propusă pe mainnet; până când unul este aprobat, mainnet-ul rămâne în modul `fixed`, la 86.000 QOR per epocă.
+Testnet-ul `qorechain-diana` își păstrează setările anterioare de emisie (16.239 QOR per epocă sub un plafon de 114.285.714 QOR, deja atins acolo); mainnet-ul folosește valorile de mai sus. Versiunea v3.2.4 adaugă un al treilea mod de emisie, `target_apy`, cu un parametru `target_apy_bps`: pe testnet din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026 (propunerea de guvernanță 13). Parametrul este `0` pe ambele rețele și nu determină emisia. Trecerea unei rețele la acel mod este un vot separat de guvernanță și nu a fost propusă pe mainnet; până când unul este aprobat, mainnet-ul rămâne în modul `fixed`, la 86.000 QOR per epocă.
 :::
 
 ---
 
 ## Ardere versus emisie
 
-Emisia este plafonată (590.000.000 QOR în total), iar cota de ardere se aplică la tot ce intră în colectorul de taxe, inclusiv emisia. Până în prezent (20 octombrie 2026) au fost arși 31.574.710 QOR față de 105.248.896 QOR emiși, deci oferta (4.493.665.186 QOR) este în prezent peste nivelul ei de la genesis. După atingerea plafonului, oferta poate doar să scadă, cu suma arsă.
+Emisia este plafonată (590.000.000 QOR în total), iar cota de ardere se aplică la tot ce intră în colectorul de taxe, inclusiv emisia. Până în prezent (23 octombrie 2026) au fost arși 31.626.315 QOR față de 105.420.896 QOR emiși, deci oferta (4.493.785.581 QOR) este în prezent peste nivelul ei de la genesis. După atingerea plafonului, oferta poate doar să scadă, cu suma arsă.
 
 ---
 

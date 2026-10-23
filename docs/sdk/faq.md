@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Is mainnet live?
 
 Yes. Mainnet is **live** (chain id `qorechain-vladi`, live since 7 June 2026) and
-runs chain version v3.2.3 until height 3,742,566 and v3.2.4 from that block (governance proposal 13); the testnet has run v3.2.4 since 19 October 2026. The testnet preset
+runs chain version v3.2.4 (applied at height 3,742,566 on 23 October 2026, governance proposal 13); the testnet has run v3.2.4 since 19 October 2026. The testnet preset
 (`qorechain-diana`) also remains available. Both presets ship localhost endpoint
 defaults; select the network with `createClient({ network: "mainnet" })` and
 override `endpoints` with your node URLs. See
@@ -141,14 +141,14 @@ eth-native).
 ## Which chain versions does the SDK work with?
 
 SDK **0.9.0** is the client release for chain v3.2.2 and v3.2.3: it transacts on
-mainnet **v3.2.3** (and **v3.2.4** from height 3,742,566) and testnet **v3.2.4**, and has builders for the optional proof of
+mainnet and testnet **v3.2.4** (mainnet since 23 October 2026), and has builders for the optional proof of
 possession on registration (attached automatically by `ensurePqcRegistered` once the
 network has applied v3.2.3), scoped EVM windows and the EIP-7702 consent messages.
 SDK **0.8.1 or later** also transacts on both networks (the v2 hybrid sign-bytes
 form, registration, hybrid sends and the EVM window work unchanged), but it has none
 of those builders: use the CLI for them (see
 [Versions before 0.9.0](/sdk/install#before-090)). v3.2.4 has run on the testnet
-since 19 October 2026 and runs on mainnet from height 3,742,566 (governance proposal 13); the SDK sets no v3.2.4 field, so its transactions stay valid on both sides of that height.
+since 19 October 2026 and on mainnet since 23 October 2026 (height 3,742,566, governance proposal 13); the SDK sets no v3.2.4 field, so its transactions are valid before and after the upgrade.
 
 ## My PQC key registration was refused but the fee was taken
 

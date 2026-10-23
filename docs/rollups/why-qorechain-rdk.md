@@ -17,7 +17,7 @@ QoreChain's Layer 1 rather than the tooling:
 - a **triple-VM** runtime with cross-VM calls.
 
 :::caution Early stage: read the status column
-No rollup has been created on either network yet (checked 21 October 2026). The
+No rollup has been created on either network yet (checked 23 October 2026). The
 table below states what works today; what the released 0.6.0 clients changed and the
 limits that remain are collected in [RDK 0.6.0: changes and limits](/rollups/deploying-a-rollup#rdk-050-limits). If you only need a generic optimistic/zk rollup, any kit will do;
 the capabilities here are what the RDK adds on top, in TypeScript, Python, Go,

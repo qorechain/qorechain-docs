@@ -21,7 +21,7 @@ Die folgenden Befehle verwenden `qorechaind`. Hängen Sie die üblichen Transakt
 :::
 
 :::caution Noch keine Pools vorhanden
-Das AMM-Modul ist im Mainnet (v3.2.3) und im Testnet (v3.2.4) live, aber **es wurden noch keine Pools erstellt** (geprüft am 20. Oktober 2026: `GET /qorechain/amm/v1/pools` liefert auf beiden eine leere Liste), und die Denoms in den folgenden Beispielen (`uusdc`, `uusdt`) sind illustrativ: Solche Assets existieren heute auf den Netzwerken nicht. Solange kein Pool existiert, schlägt jeder Swap- oder Add-Liquidity-Befehl mit einem Pool-nicht-gefunden-Fehler fehl.
+Das AMM-Modul ist im Mainnet und im Testnet (beide v3.2.4) live, aber **es wurden noch keine Pools erstellt** (geprüft am 23. Oktober 2026: `GET /qorechain/amm/v1/pools` liefert auf beiden eine leere Liste), und die Denoms in den folgenden Beispielen (`uusdc`, `uusdt`) sind illustrativ: Solche Assets existieren heute auf den Netzwerken nicht. Solange kein Pool existiert, schlägt jeder Swap- oder Add-Liquidity-Befehl mit einem Pool-nicht-gefunden-Fehler fehl.
 :::
 
 ## Modulparameter {#parameters}

@@ -310,7 +310,7 @@ protezione post-quantistica. La parte post-quantistica viaggia come
 estensione `PQCHybridSignature` sulla transazione.
 
 :::caution La firma ibrida è obbligatoria sul percorso Native
-A partire dalla versione **v3.2.0** della chain (la mainnet esegue la v3.2.3 fino all'altezza 3.742.566 e la v3.2.4 da quel blocco in poi; la testnet esegue la v3.2.4), il valore predefinito di rete è
+A partire dalla versione **v3.2.0** della chain (la mainnet e la testnet eseguono entrambe la v3.2.4), il valore predefinito di rete è
 `hybrid_signature_mode = required` con `allow_classical_fallback = false`. La
 firma ibrida tramite `buildHybridTx` / `signAndBroadcastHybrid` (passa `rest`),
 oppure `signHybridEth` / `EthNativeSigner` per gli account unificati

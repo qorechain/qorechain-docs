@@ -17,7 +17,7 @@ Katmanı (Layer 1) etrafında inşa edilmiş, QoreChain'e özgü üç yetenek ek
 - zincirler arası VM çağrılarına sahip **üçlü-VM** çalışma zamanı.
 
 :::caution Erken aşama: durum sütununu okuyun
-Henüz hiçbir ağda rollup oluşturulmadı (21 Ekim 2026 itibarıyla kontrol edildi).
+Henüz hiçbir ağda rollup oluşturulmadı (23 Ekim 2026 itibarıyla kontrol edildi).
 Aşağıdaki tablo bugün nelerin çalıştığını belirtir; yayınlanmış 0.6.0
 istemcilerinin neyi değiştirdiği ve kalan sınırlar [RDK 0.6.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits)
 bölümünde toplanmıştır. Yalnızca genel bir optimistic/zk rollup'a ihtiyacınız varsa,

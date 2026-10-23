@@ -10,7 +10,7 @@ sidebar_position: 11
 Modulul `x/babylon` este conceput să integreze QoreChain cu Babylon Protocol pentru a moșteni garanțiile de finalitate proof-of-work ale Bitcoin. Prin restaking BTC, QoreChain ar câștiga un strat secundar de finalitate susținut de hashrate-ul Bitcoin — fără a necesita vreo modificare a protocolului Bitcoin însuși.
 
 :::caution Etapa de proiectare
-Integrarea Babylon este specificată, dar tranzacțiile sale **nu sunt activate pe rețelele live**: modulul este dezactivat în configurația genesis (`enabled = false`), nu are serviciu de tranzacții, serviciu de interogări, CLI sau rute REST, iar niciun canal IBC (inclusiv către Babylon) nu este deschis pe vreuna dintre rețele. Situația este neschimbată pe mainnet v3.2.3 și testnet v3.2.4 (verificat la 20 octombrie 2026: nodul nu răspunde la nicio interogare `babylon`, nu există niciun client sau canal IBC, iar metoda `qor_getBTCStakingPosition` nu este servită). Tot ce urmează descrie designul intenționat; numele mesajelor, căile REST și comenzile CLI nu sunt disponibile astăzi.
+Integrarea Babylon este specificată, dar tranzacțiile sale **nu sunt activate pe rețelele live**: modulul este dezactivat în configurația genesis (`enabled = false`), nu are serviciu de tranzacții, serviciu de interogări, CLI sau rute REST, iar niciun canal IBC (inclusiv către Babylon) nu este deschis pe vreuna dintre rețele. Situația este neschimbată pe mainnet și testnet, ambele v3.2.4 (verificat la 23 octombrie 2026: nodul nu răspunde la nicio interogare `babylon`, nu există niciun client sau canal IBC, iar metoda `qor_getBTCStakingPosition` nu este servită). Tot ce urmează descrie designul intenționat; numele mesajelor, căile REST și comenzile CLI nu sunt disponibile astăzi.
 :::
 
 ## Prezentare generală

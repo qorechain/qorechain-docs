@@ -15,7 +15,7 @@ VM'ler arası çağrılar yalnızca hedef şeritlerinin (lane) sunulabildiği ö
 * `MsgCrossVMCall`, devre kesici tarafından **ana ağda kapatılmıştır** (`qorechaind query circuit disabled-list`); test ağında etkindir.
 * **SVM şeridi, her iki ağda da işlemler için devre dışıdır**, bu nedenle bir SVM adımı çalışamaz.
 * **QoreChain Native yükleme ve örnekleme (instantiate) her iki ağda da izne tabidir** ve ana ağda kayıtlı sözleşme kodu yoktur, dolayısıyla henüz çağrılacak bir QoreChain Native sözleşmesi bulunmamaktadır.
-* Senkron **EVM önderlenmiş işlevi etkin değildir** (aşağıya bakın). Güçlendirilmiş bir sürüm v3.2.3'ten beri ikili dosyada bulunur, ancak hiçbir ağda hiçbir önderlenmiş işlev etkinleştirilmemiştir ve v3.2.4 (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren) bunu değiştirmez.
+* Senkron **EVM önderlenmiş işlevi etkin değildir** (aşağıya bakın). Güçlendirilmiş bir sürüm v3.2.3'ten beri ikili dosyada bulunur, ancak hiçbir ağda hiçbir önderlenmiş işlev etkinleştirilmemiştir ve v3.2.4 (test ağında 19 Ekim 2026'dan beri, ana ağda 23 Ekim 2026'dan beri) bunu değiştirmez.
 
 Modülün REST rotaları (`/qorechain/crossvm/v1/...`) genel ağ geçidi tarafından sunulmaz; mesajları CLI ile veya bir gRPC/ABCI sorgu istemcisiyle okuyun.
 :::

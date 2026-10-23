@@ -14,7 +14,7 @@ QoreChain은 `x/abstractaccount` 모듈을 통해 **프로토콜 수준의 계�
 :::
 
 :::note
-아래 명령어는 2026년 6월 7일부터 운영 중이며 노드 릴리스 **v3.2.3**을 높이 3,742,566까지 실행하고 그 블록부터 **v3.2.4**를 실행하는(거버넌스 제안 13) **`qorechain-vladi`** 메인넷을 기준으로 작성되었습니다. 2026년 10월 19일부터 v3.2.4를 실행하고 있는 테스트넷에서는 `--chain-id qorechain-diana`로 대체하십시오.
+아래 명령어는 2026년 6월 7일부터 운영 중이며 노드 릴리스 **v3.2.4**(2026년 10월 23일 높이 3,742,566에서 적용됨, 거버넌스 제안 13)를 실행하는 **`qorechain-vladi`** 메인넷을 기준으로 작성되었습니다. 2026년 10월 19일부터 v3.2.4를 실행하고 있는 테스트넷에서는 `--chain-id qorechain-diana`로 대체하십시오.
 :::
 
 :::caution 모든 Cosmos 레인 트랜잭션에는 하이브리드 양자내성 공동 서명이 필요합니다
@@ -176,7 +176,7 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 :::caution 논스 규칙
 * `MsgExecuteEVM.nonce`는 계정의 **현재** EVM 논스(`eth_getTransactionCount(account0x, "latest")`)여야 합니다. 실제 운영 환경에서 릴레이어는 *다른* 계정이므로 +1을 더하지 **마십시오**. 오래된 논스로 서명하면 코드 `11`이 반환됩니다.
-* `MsgExecuteCosmos.nonce`는 인증자별 시퀀스입니다(계정의 인증자 상태를 조회하십시오). 계정의 Cosmos 시퀀스가 **아닙니다**. v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`가 해당 시퀀스(`nonce`, `linked`)를 직접 반환합니다.
+* `MsgExecuteCosmos.nonce`는 인증자별 시퀀스입니다(계정의 인증자 상태를 조회하십시오). 계정의 Cosmos 시퀀스가 **아닙니다**. v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터) `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`가 해당 시퀀스(`nonce`, `linked`)를 직접 반환합니다.
 :::
 
 **Phantom 예시**(브라우저: Phantom이 서명하고, 백엔드가 릴레이합니다):

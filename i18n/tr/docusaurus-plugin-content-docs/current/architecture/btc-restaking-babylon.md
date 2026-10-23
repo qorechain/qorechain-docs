@@ -10,7 +10,7 @@ sidebar_position: 11
 `x/babylon` modülü, Bitcoin'in proof-of-work sonlandırma garantilerini devralmak için QoreChain'i Babylon Protocol ile entegre etmek üzere tasarlanmıştır. BTC yeniden stake yoluyla, QoreChain — Bitcoin protokolünün kendisinde herhangi bir değişiklik gerektirmeden — Bitcoin'in hash gücüyle desteklenen ikincil bir sonlandırma katmanı kazanacaktır.
 
 :::caution Tasarım aşaması
-Babylon entegrasyonu belirtilmiştir (specified), ancak işlemleri **canlı ağlarda etkin değildir**: modül genesis yapılandırmasında devre dışıdır (`enabled = false`); işlem servisi, sorgu servisi, CLI veya REST rotası yoktur ve hiçbir ağda (Babylon'a giden kanal dahil) açık bir IBC kanalı bulunmaz. Bu durum mainnet v3.2.3 ve testnet v3.2.4 üzerinde değişmemiştir (20 Ekim 2026'da kontrol edildi: düğüm hiçbir `babylon` sorgusuna yanıt vermiyor, hiçbir IBC istemcisi veya kanalı yok ve `qor_getBTCStakingPosition` yöntemi sunulmuyor). Aşağıdakilerin tümü amaçlanan tasarımı açıklar; mesaj adları, REST yolları ve CLI komutları bugün kullanılamaz.
+Babylon entegrasyonu belirtilmiştir (specified), ancak işlemleri **canlı ağlarda etkin değildir**: modül genesis yapılandırmasında devre dışıdır (`enabled = false`); işlem servisi, sorgu servisi, CLI veya REST rotası yoktur ve hiçbir ağda (Babylon'a giden kanal dahil) açık bir IBC kanalı bulunmaz. Bu durum mainnet ve testnet üzerinde, ikisi de v3.2.4, değişmemiştir (23 Ekim 2026'da kontrol edildi: düğüm hiçbir `babylon` sorgusuna yanıt vermiyor, hiçbir IBC istemcisi veya kanalı yok ve `qor_getBTCStakingPosition` yöntemi sunulmuyor). Aşağıdakilerin tümü amaçlanan tasarımı açıklar; mesaj adları, REST yolları ve CLI komutları bugün kullanılamaz.
 :::
 
 ## Genel Bakış

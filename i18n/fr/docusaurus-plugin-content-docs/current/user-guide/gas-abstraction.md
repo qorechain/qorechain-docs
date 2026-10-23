@@ -10,7 +10,7 @@ sidebar_position: 7
 L'abstraction du gas permet à un utilisateur de payer les frais de transaction dans un jeton non natif accepté au lieu de QOR. Le code de conversion des frais fait partie de la chaîne, mais **aucun jeton non natif n'est accepté sur l'un ou l'autre réseau aujourd'hui** ; chaque frais est donc payé en QOR. Cette page explique ce qui est en service, comment fonctionne la conversion telle qu'elle est construite, et ce que vous devez faire à la place.
 
 :::caution Pas encore utilisable : payez chaque frais en uqor
-Sur le mainnet (**`qorechain-vladi`**, version de nœud **v3.2.3**, v3.2.4 à partir de la hauteur 3 742 566) et sur le testnet (**`qorechain-diana`**, version de nœud **v3.2.4**), vérifié le 20 octobre 2026 :
+Sur le mainnet (**`qorechain-vladi`**) et sur le testnet (**`qorechain-diana`**), tous deux en version de nœud **v3.2.4**, vérifié le 23 octobre 2026 :
 
 * La liste des jetons acceptés en service ne contient **que `uqor`**. La conversion des frais a été activée avec la v3.2.2, mais rien d'autre n'est listé, le plafond de conversion par bloc vaut `0` (conversion désactivée) et le float de conversion ne détient aucun solde. Un frais payé dans toute autre dénomination est refusé avec une erreur « denom not accepted for fee payment », en simulation comme dans une transaction réelle.
 * Aucun canal ni client IBC n'existe sur l'un ou l'autre réseau, donc aucun solde `ibc/…` ne peut exister pour payer.
@@ -36,7 +36,7 @@ Signez-la ensuite en mode hybride et diffusez-la avec `qorechaind tx pqc cosign`
 
 ## La configuration en service {#live-configuration}
 
-Le module sert sa configuration via REST et gRPC. Voici les valeurs sur les deux réseaux au 20 octobre 2026 :
+Le module sert sa configuration via REST et gRPC. Voici les valeurs sur les deux réseaux au 23 octobre 2026 :
 
 | Champ | Valeur | Signification |
 | --- | --- | --- |

@@ -17,14 +17,14 @@ Una referencia consolidada de las redes de QoreChain: identificadores de cadena,
 | **Chain ID de Cosmos** | `qorechain-vladi` | `qorechain-diana` |
 | **Chain ID de EVM (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **En producción desde** | 7 de junio de 2026 | 1 de julio de 2026 (continua desde entonces; sin reinicio) |
-| **Versión de la cadena** | v3.2.3 hasta la altura 3,742,566; v3.2.4 desde ese bloque (propuesta de gobernanza 13). La v3.2.3 se aplicó en la altura 3,662,051 el 20 de octubre de 2026 | v3.2.4 (aplicada en la altura 8,337,253, 19 de octubre de 2026) |
+| **Versión de la cadena** | v3.2.4 (aplicada en la altura 3,742,566, 23 de octubre de 2026, propuesta de gobernanza 13). La v3.2.3 se aplicó en la altura 3,662,051 el 20 de octubre de 2026 | v3.2.4 (aplicada en la altura 8,337,253, 19 de octubre de 2026) |
 | **Tiempo de bloque (promedio medido)** | unos 3,2 s | unos 1,0 s |
 | **Manifiesto de versión** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Precio mínimo de gas** | `0.1uqor` | `0.1uqor` |
 | **Guía de conexión** | [Conexión a Mainnet](/getting-started/connecting-to-mainnet) | [Conexión a Testnet](/getting-started/connecting-to-testnet) |
 
-Ambos manifiestos son la fuente de verdad de la versión que debe ejecutar un nodo nuevo. Ambas redes reciben actualizaciones coordinadas mediante gobernanza, por lo que cada manifiesto incluye el `upgradeHeight` de su versión actual y un `minCompatible` igual a esa versión (testnet 3.2.4; mainnet 3.2.3 hasta la actualización a la v3.2.4 en la altura 3,742,566, tras la cual el manifiesto de la mainnet pasa a 3.2.4). La testnet ejecuta la v3.2.4 desde el 19 de octubre de 2026.
+Ambos manifiestos son la fuente de verdad de la versión que debe ejecutar un nodo nuevo. Ambas redes reciben actualizaciones coordinadas mediante gobernanza, por lo que cada manifiesto incluye el `upgradeHeight` de su versión actual y un `minCompatible` igual a esa versión (3.2.4 en ambas redes, comprobado el 23 de octubre de 2026). La testnet ejecuta la v3.2.4 desde el 19 de octubre de 2026 y la mainnet desde el 23 de octubre de 2026.
 
 ## Endpoints públicos {#public-endpoints}
 

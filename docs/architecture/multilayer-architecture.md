@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implements a **4-tier hierarchical chain architecture** through the `x/multilayer` module. The main chain serves as the settlement and trust root, while subsidiary layers (sidechains, paychains, and rollups) handle specialized workloads with different performance and security trade-offs.
 
 :::caution Early-stage capability
-The module is deployed on mainnet (chain version **v3.2.3** until height 3,742,566, **v3.2.4** from that block) and testnet (**v3.2.4**), but **no layer and no anchor exists on either network yet** (checked 20 October 2026: `GET /qorechain/multilayer/v1/layers` returns an empty list on both). Everything below describes the module as built; the parameters are the live values. On mainnet the `MsgUpdateLayerStatus` message is currently switched off by the circuit breaker (see [Chain Parameters](/appendix/chain-parameters#circuit-breaker)); on the testnet it is not.
+The module is deployed on mainnet (chain version **v3.2.4** since 23 October 2026) and testnet (**v3.2.4**), but **no layer and no anchor exists on either network yet** (checked 23 October 2026: `GET /qorechain/multilayer/v1/layers` returns an empty list on both). Everything below describes the module as built; the parameters are the live values. On mainnet the `MsgUpdateLayerStatus` message is currently switched off by the circuit breaker (see [Chain Parameters](/appendix/chain-parameters#circuit-breaker)); on the testnet it is not.
 :::
 
 ---
@@ -64,7 +64,7 @@ The main chain is the trust root for the entire QoreChain ecosystem.
 | Consensus  | QoreChain consensus (see [Consensus Mechanism](/architecture/consensus-mechanism) for what is wired today) |
 | Security   | PQC-secured with Dilithium-5 signatures                                        |
 | Role       | Settlement layer, state anchor storage, QCAI routing engine, trust root        |
-| Block time | Network-dependent: about 3.2 seconds on mainnet, about 1.0 second on testnet (measured 20 October 2026) |
+| Block time | Network-dependent: about 3.2 seconds on mainnet, about 1.0 second on testnet (measured 23 October 2026) |
 
 All subsidiary layers periodically anchor their state roots to the main chain via Hierarchical Commitment Schemes (HCS).
 
@@ -274,4 +274,4 @@ Status transitions are enforced by the keeper. Invalid transitions (e.g., Decomm
 | `routing_confidence_threshold` | string | `0.6`           | Minimum confidence for QCAI routing decisions           |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Enable global Cross-Layer Fee Bundling                  |
 
-These are the values returned by `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) on mainnet and testnet on 20 October 2026. Since v3.2.2 the module's `MsgUpdateParams` can be routed, so a governance proposal can change them.
+These are the values returned by `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) on mainnet and testnet on 23 October 2026. Since v3.2.2 the module's `MsgUpdateParams` can be routed, so a governance proposal can change them.

@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Queries run against whichever node `--node` points to. Use a **`qorechain-vladi`** mainnet RPC endpoint for live data (for example `--node https://rpc.qore.host:443`), or a **`qorechain-diana`** testnet endpoint (`--node https://rpc-testnet.qore.host:443`) for testing. The default `tcp://localhost:26657` targets a node you run yourself. Mainnet runs node release v3.2.3 until height 3,742,566 and v3.2.4 from that block (governance proposal 13); the testnet has run v3.2.4 since 19 October 2026. The v3.2.4 release adds a few routes and commands (marked **v3.2.4** below): they work on the testnet now and on mainnet from height 3,742,566, and a mainnet node still on v3.2.3 answers them with `Not Implemented`. The commands on this page were checked against the v3.2.3 release binary, run against `https://rpc.qore.host:443`.
+Queries run against whichever node `--node` points to. Use a **`qorechain-vladi`** mainnet RPC endpoint for live data (for example `--node https://rpc.qore.host:443`), or a **`qorechain-diana`** testnet endpoint (`--node https://rpc-testnet.qore.host:443`) for testing. The default `tcp://localhost:26657` targets a node you run yourself. Mainnet runs node release v3.2.4 since 23 October 2026 (applied at height 3,742,566 by governance proposal 13); the testnet has run v3.2.4 since 19 October 2026. The v3.2.4 release adds a few routes and commands (marked **v3.2.4** below): they work on both networks, and a node still on an older release answers them with `Not Implemented`. The commands on this page were checked against the v3.2.3 release binary, run against `https://rpc.qore.host:443`; the v3.2.4 routes were checked over REST on 23 October 2026.
 :::
 
 Common flags apply to every `query` subcommand:
@@ -115,7 +115,7 @@ qorechaind query pqc evm-delegation-consent <address>
 
 - `algorithm` takes an algorithm name (`dilithium5`, `mlkem1024`) or numeric ID.
 - `migration` takes an **algorithm ID** (for example `1`), not an address, and reports `No active migration` when none is running.
-- `account` reports the registered key. Besides the key, `key_type` and `algorithm_name`, the record has `classical_key_source` (`stored`, `auth_account` or `none`: where the classical public key comes from). From v3.2.4 (on the testnet since 19 October 2026; on mainnet from height 3,742,566) it also carries `possession_proven`, which is `true` when the key was registered with a verified proof of possession.
+- `account` reports the registered key. Besides the key, `key_type` and `algorithm_name`, the record has `classical_key_source` (`stored`, `auth_account` or `none`: where the classical public key comes from). From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) it also carries `possession_proven`, which is `true` when the key was registered with a verified proof of possession.
 - `evm-window` shows whether the address has an open EVM-lane authorisation window and how many blocks, transactions and value remain (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`), plus the window's scope (`native_only`, `allowed_targets`; since mainnet v3.2.3). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
 - `evm-delegation-consent` shows the address's EIP-7702 delegation consent (`found`, `live`, `delegate`, `granted_height`, `expiry_height`), its current delegation and its EVM nonce. REST: `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
 - `params` and `hybrid-mode` report `hybrid_signature_mode` (`2` = required on both networks) and `allow_classical_fallback` (`false`).
@@ -149,7 +149,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mod
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
 ```
 
-On mainnet these report `emission_mode: "fixed"`, a fixed emission of 86,000 QOR per epoch of 43,200 blocks and a cumulative cap of 590,000,000 QOR (governance proposal 10, passed 19 October 2026; the first epoch at the new amount starts at block 3,672,000). Amounts are in `uqor`. The testnet still reports its own, different values; the v3.2.4 release adds a further emission mode (on the testnet since 19 October 2026; on mainnet from height 3,742,566), but a network only switches to it by its own governance vote, so mainnet keeps `fixed` until such a vote passes.
+On mainnet these report `emission_mode: "fixed"`, a fixed emission of 86,000 QOR per epoch of 43,200 blocks and a cumulative cap of 590,000,000 QOR (governance proposal 10, passed 19 October 2026; the first epoch at the new amount starts at block 3,672,000). Amounts are in `uqor`. The testnet still reports its own, different values; the v3.2.4 release adds a further emission mode (available on both networks), but a network only switches to it by its own governance vote, so mainnet keeps `fixed` until such a vote passes.
 
 ---
 
@@ -184,7 +184,7 @@ qorechaind query lightnode rewards <operator_address>
 qorechaind query lightnode reward-pool
 ```
 
-`reward-pool` shows how the module's reward balance splits into `reserved`, `outstanding`, `payable` and `distributable`, and the per-node bounds: `max_reward_per_block_per_node` and, since v3.2.3, `max_reward_per_month_per_node` (2,000 QOR, prorated by block time and uptime). From v3.2.4 (on the testnet since 19 October 2026; on mainnet from height 3,742,566) it also reports `monthly_cap_active`, `last_distribution_time` and `last_distribution_height`.
+`reward-pool` shows how the module's reward balance splits into `reserved`, `outstanding`, `payable` and `distributable`, and the per-node bounds: `max_reward_per_block_per_node` and, since v3.2.3, `max_reward_per_month_per_node` (2,000 QOR, prorated by block time and uptime). From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) it also reports `monthly_cap_active`, `last_distribution_time` and `last_distribution_height`.
 
 ---
 
@@ -330,7 +330,7 @@ qorechaind query stakingtier locks <holder_address>
 qorechaind query stakingtier pool
 ```
 
-The staking-tiers module is part of the **v3.2.4** release: it has run on the testnet since 19 October 2026 and runs on mainnet from height 3,742,566 (governance proposal 13). Before that height a mainnet node answers these queries with `Not Implemented`. REST: `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. See [Transaction Commands](/cli-reference/transaction-commands#stakingtier).
+The staking-tiers module is part of the **v3.2.4** release: it has run on the testnet since 19 October 2026 and on mainnet since 23 October 2026 (height 3,742,566, governance proposal 13). A node on an older release answers these queries with `Not Implemented`. REST: `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. See [Transaction Commands](/cli-reference/transaction-commands#stakingtier).
 
 ---
 
@@ -345,7 +345,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>` is the way to read when an upgrade took effect: on mainnet `v3.2.2` was applied at height 3,556,788 and `v3.2.3` at height 3,662,051; on the testnet `v3.2.2` at 6,905,034, `v3.2.3` at 8,003,746 and `v3.2.4` at 8,337,253 (`0` means not applied). The mainnet circuit-breaker list (`disabled-list`) currently holds the vesting-account creation messages, QoreChain Native store and instantiate, AMM pool pause and resume, cross-VM call, multilayer layer-status update, PQC algorithm deprecate and disable, and the PRISM consensus governance messages; the testnet's holds only the three QoreChain Native messages.
+`query upgrade applied <name>` is the way to read when an upgrade took effect: on mainnet `v3.2.2` was applied at height 3,556,788, `v3.2.3` at height 3,662,051 and `v3.2.4` at height 3,742,566; on the testnet `v3.2.2` at 6,905,034, `v3.2.3` at 8,003,746 and `v3.2.4` at 8,337,253 (`0` means not applied). The mainnet circuit-breaker list (`disabled-list`) currently holds the vesting-account creation messages, QoreChain Native store and instantiate, AMM pool pause and resume, cross-VM call, multilayer layer-status update, PQC algorithm deprecate and disable, and the PRISM consensus governance messages; the testnet's holds only the three QoreChain Native messages.
 
 ---
 

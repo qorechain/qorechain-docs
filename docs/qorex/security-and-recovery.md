@@ -28,7 +28,7 @@ Doing both is the safest option — the phrase covers you if you switch devices 
 
 The **Security** screen shows the live on-chain state of your post-quantum key: **"Registers with your first transfer"** → **"Registered on-chain ✓"**. The algorithm is **ML-DSA-87** (deterministic, hybrid with secp256k1).
 
-**Key rotation** — rotating your post-quantum key (an on-chain `MsgRotatePQCKey` operation) is **not yet available inside QoreX**; it will arrive with a later key-management update, will require a fresh biometric confirmation, and is **never automated**. Websites cannot ask QoreX to register, migrate or rotate your post-quantum key. Registration happens by itself with your first transfer and needs nothing from you — on mainnet v3.2.3 the chain also accepts an optional *proof of possession* with the registration, which QoreX handles invisibly in current store builds. See [Key rotation](/developer-guide/post-quantum-signing#key-rotation) for the underlying mechanism.
+**Key rotation** — rotating your post-quantum key (an on-chain `MsgRotatePQCKey` operation) is **not yet available inside QoreX**; it will arrive with a later key-management update, will require a fresh biometric confirmation, and is **never automated**. Websites cannot ask QoreX to register, migrate or rotate your post-quantum key. Registration happens by itself with your first transfer and needs nothing from you — since v3.2.3 the chain also accepts an optional *proof of possession* with the registration, which QoreX handles invisibly in current store builds. See [Key rotation](/developer-guide/post-quantum-signing#key-rotation) for the underlying mechanism.
 
 ## Social recovery {#social-recovery}
 

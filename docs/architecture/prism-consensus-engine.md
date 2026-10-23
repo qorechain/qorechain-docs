@@ -9,7 +9,7 @@ sidebar_position: 2
 
 QoreChain embeds **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), a reinforcement-learning optimization layer, directly into the consensus layer via the `x/rlconsensus` module. PRISM observes chain metrics every N blocks and is designed to run inference through a fixed-point neural network and propose consensus parameter adjustments — all deterministically, with no floating-point arithmetic in consensus-critical paths.
 
-:::note Current status (20 October 2026: mainnet v3.2.3, testnet v3.2.4)
+:::note Current status (checked 20 October 2026; both networks now run v3.2.4)
 On both mainnet and testnet the agent is in `conservative` mode, collects an observation and a reward every 10 blocks, and has **no policy weights loaded**: it has taken 0 steps and applies no parameter change (checked through the `AgentStatus` and `Policy` queries on both networks). Block time is determined by the validators' node configuration, not by PRISM. Loading a policy, changing the mode, resuming the agent and updating the reward weights are governance actions that are currently disabled on mainnet by the circuit breaker; they are not disabled on the testnet.
 
 Two release changes tighten what a future policy or parameter change can do. Since v3.2.2 a governance policy update is validated with checked arithmetic. Since v3.2.3 the governance messages are range-checked on the raw wire value (the agent mode) and each reward weight must lie between 0 and 1.

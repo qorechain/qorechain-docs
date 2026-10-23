@@ -57,7 +57,7 @@ Bu dört işlemin tamamı Validators sayfasında değil, **Wallet** sayfasında 
 9. QoreX'i açın (bağlantı/deeplink bunu yapar) ve delegasyonu onaylayın. QoreX işlemi oluşturur, imzalar ve yayınlar; dashboard anahtarınızı asla görmez.
 
 :::note Zaman kilitli stake Dashboard'un parçası değildir
-v3.2.4 sürümü isteğe bağlı bir zaman kilitli stake modülü ekler (test ağında 19 Ekim 2026'dan beri; mainnet'te 3,742,566 yüksekliğinden itibaren) — bkz. [Zaman kilitli stake](/user-guide/staking-and-delegation#time-locked-staking). Ne Dashboard'da ne de QoreX'te bunun için bir ekran bulunur. Burada yapılan delegasyonlar, kilitlenme içermeyen sıradan delegasyonlardır; tek bekleme, çıkışta 21 günlük unbonding'dir.
+v3.2.4 sürümü isteğe bağlı bir zaman kilitli stake modülü ekler (mainnet'te 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri) — bkz. [Zaman kilitli stake](/user-guide/staking-and-delegation#time-locked-staking). Ne Dashboard'da ne de QoreX'te bunun için bir ekran bulunur. Burada yapılan delegasyonlar, kilitlenme içermeyen sıradan delegasyonlardır; tek bekleme, çıkışta 21 günlük unbonding'dir.
 :::
 
 ### Yeniden delegasyon yap {#redelegate}

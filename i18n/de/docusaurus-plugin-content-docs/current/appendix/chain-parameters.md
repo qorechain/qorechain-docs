@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Chain-Parameter
 
-Konsolidierte Referenz der Modulparameter der QoreChain-Netzwerke, nach Modul gruppiert. Die Parameter können mit `qorechaind query <module> params` abgefragt werden, sofern das Modul eine Params-Abfrage besitzt (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` und `gasabstraction` verwenden `config`, und `gasabstraction` ist nur im Testnet abfragbar), und über REST nur für die in der [REST- / gRPC-Referenz](/api-reference/rest-grpc-endpoints) aufgeführten Routen. Die Parameter von `x/inflation` werden im Mainnet seit v3.2.3 ebenfalls über REST bereitgestellt (`/qorechain/inflation/v1/params`). REST ist für `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` und `xqore` nicht verfügbar.
+Konsolidierte Referenz der Modulparameter der QoreChain-Netzwerke, nach Modul gruppiert. Die Parameter können mit `qorechaind query <module> params` abgefragt werden, sofern das Modul eine Params-Abfrage besitzt (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` und `gasabstraction` verwenden `config`), und über REST nur für die in der [REST- / gRPC-Referenz](/api-reference/rest-grpc-endpoints) aufgeführten Routen. Die Parameter von `x/inflation` werden im Mainnet seit v3.2.3 ebenfalls über REST bereitgestellt (`/qorechain/inflation/v1/params`). REST ist für `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` und `xqore` nicht verfügbar.
 
 :::note
-Die angezeigten Werte wurden am 20. Oktober 2026 live aus dem Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, Release **v3.2.3**) ausgelesen (Genesis-Werte, sofern kein Governance-Vorschlag sie geändert hat; solche Fälle sind vermerkt). Sie sind auf dem Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**, Release **v3.2.4** seit dem 19. Oktober 2026) identisch, sofern nicht anders angegeben; die Unterschiede, die bestehen, bis das Mainnet das Upgrade auf v3.2.4 übernimmt (Blockhöhe 3,742,566), sind unter [Unterschiede bis zum Upgrade auf v3.2.4](#testnet-differences) zusammengefasst. In Blöcken angegebene Dauern werden mit der gemessenen Mainnet-Blockzeit von etwa 3,2 Sekunden umgerechnet (das Testnet erzeugt etwa jede Sekunde einen Block).
+Die angezeigten Werte wurden live aus dem Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, Release **v3.2.4**, angewendet am 23. Oktober 2026) am 23. Oktober 2026 ausgelesen (Genesis-Werte, sofern kein Governance-Vorschlag sie geändert hat; solche Fälle sind vermerkt). Sie sind auf dem Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**, Release **v3.2.4** seit dem 19. Oktober 2026) identisch, sofern nicht anders angegeben; die verbleibenden Unterschiede sind unter [Unterschiede zwischen Testnet und Mainnet](#testnet-differences) zusammengefasst. In Blöcken angegebene Dauern werden mit der gemessenen Mainnet-Blockzeit von etwa 3,2 Sekunden umgerechnet (das Testnet erzeugt etwa jede Sekunde einen Block).
 :::
 
 ---
@@ -152,7 +152,7 @@ Ausstiegsstrafen: 50 % (Sperre kürzer als 30 Tage), 35 % (30–90 Tage), 15 % (
 | `schedule`             | 17,5 %, 11 %, 7 %, 7 %, 2 % | Veraltete jahresbasierte Raten, im Fixed-Modus ungenutzt |
 | `enabled`              | `true`                  | Modul-Aktivierungsflag                                |
 
-Das Modul prägt diese Emission in das Gebühren-Sammelkonto, bis die Obergrenze erreicht ist. Die erste Epoche mit 86.000 QOR beginnt bei Block 3.672.000. Am 20. Oktober 2026 (Epoche 84) waren 105.248.896,21 QOR geprägt, und 484.751.103,79 QOR verblieben unter der Obergrenze (`GET /qorechain/inflation/v1/epoch_info`). Siehe [Tokenomics](/architecture/tokenomics#supply-and-emission).
+Das Modul prägt diese Emission in das Gebühren-Sammelkonto, bis die Obergrenze erreicht ist. Die erste Epoche mit 86.000 QOR beginnt bei Block 3.672.000. Am 23. Oktober 2026 (Epoche 86) waren 105.420.896,21 QOR geprägt, und 484.579.103,79 QOR verblieben unter der Obergrenze (`GET /qorechain/inflation/v1/epoch_info`). Siehe [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ---
 
@@ -349,7 +349,7 @@ Weder im Mainnet noch im Testnet existieren bisher Pools, und `MsgPausePool` / `
 
 ## Staking, Slashing, Governance, Gebühren und EVM {#core-modules}
 
-Standardmodule des Cosmos SDK und EVM-Module, am 20. Oktober 2026 live ausgelesen (auf beiden Netzwerken identisch, sofern nicht anders angegeben; unverändert seit der Auslesung vom 14. Oktober).
+Standardmodule des Cosmos SDK und EVM-Module, am 23. Oktober 2026 live ausgelesen für die Zeilen zu Staking, Slashing, Governance und Distribution (die Zeilen zu Fee-Market, EVM, ERC-20 und QoreChain Native wurden zuletzt am 20. Oktober 2026 ausgelesen); auf beiden Netzwerken identisch, sofern nicht anders angegeben, und durch das Upgrade auf v3.2.4 unverändert.
 
 | Modul | Parameter | Wert |
 | --- | --- | --- |
@@ -394,21 +394,11 @@ Jeder andere Nachrichtentyp, einschließlich aller Standardnachrichten für Bank
 
 ---
 
-## Unterschiede bis zum Upgrade auf v3.2.4 {#testnet-differences}
+## Unterschiede zwischen Testnet und Mainnet {#testnet-differences}
 
-Das Testnet `qorechain-diana` läuft seit Blockhöhe 8,337,253 (19. Oktober 2026) mit v3.2.4. Das Mainnet läuft bis Blockhöhe 3,742,566 mit v3.2.3 und ab diesem Block mit v3.2.4 (Governance-Vorschlag 13); ab dann gelten die v3.2.4-Zeilen unten für beide Netzwerke, und nur die netzwerkspezifischen Werte bleiben verschieden. Stand 20. Oktober 2026 unterscheidet sich das Testnet wie folgt vom Mainnet:
+Beide Netzwerke laufen mit v3.2.4: das Testnet `qorechain-diana` seit Blockhöhe 8,337,253 (19. Oktober 2026), das Mainnet `qorechain-vladi` seit Blockhöhe 3,742,566 (23. Oktober 2026, Governance-Vorschlag 13). Die Ergänzungen von v3.2.4 sind daher auf beiden Netzwerken gleich: das optionale zeitgesperrte Staking-Modul `x/stakingtier` (49 Module statt 48; `GET /qorechain/stakingtier/v1/params`, Mindestsperre 10 QOR, Strafe bei vorzeitigem Entsperren 5 %), ein dritter `emission_mode` (`target_apy`, mit `target_apy_bps` bei `0` auf beiden Netzwerken), eine dreizehnte erfasste Burn-Quelle (`staking_tier_penalty`), zusätzliche Berichtsfelder des Light-Node-Belohnungspools (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`) mit einer Belohnungsobergrenze, die bei der eigenen Registrierung eines Nodes beginnt, das Flag `possession_proven` an PQC-Konten (der Besitznachweis bleibt für Kontoschlüssel optional und ist für Bridge-Validator-Schlüssel erforderlich), das in Blockzeit gezählte RDK-Anfechtungsfenster sowie die Abfragen `protocol_features` und `auth_nonce`. Siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking). Stand 23. Oktober 2026 unterscheiden sich die beiden Netzwerke nur noch in den folgenden Werten.
 
-| Bereich | Testnet jetzt; Mainnet ab Blockhöhe 3,742,566 |
-| ---- | ------- |
-| Module | 49 statt 48: das optionale zeitgesperrte Staking-Modul `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`; Mindestsperre 10 QOR). Siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking). |
-| `x/inflation` | Ein dritter `emission_mode`, `target_apy`, mit einem Parameter `target_apy_bps`, der im Testnet `0` ist. Welcher Modus gilt, ist auf jedem Netzwerk eine eigene Governance-Entscheidung. |
-| `x/burn` | Eine dreizehnte erfasste Quelle, `staking_tier_penalty`. |
-| `x/lightnode`-Belohnungspool | Zusätzliche Berichtsfelder (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); die Belohnungsobergrenze eines Nodes beginnt bei dessen eigener Registrierung. |
-| `x/pqc` | Ein Flag `possession_proven` an PQC-Konten; der Besitznachweis ist für Kontoschlüssel weiterhin optional und für Bridge-Validator-Schlüssel erforderlich. |
-| `x/rdk` | Das optimistische Anfechtungsfenster wird in Blockzeit gezählt. |
-| Abfragen | Neue Abfragen `protocol_features` und `auth_nonce`. |
-
-Diese Werte sind testnetspezifisch und bleiben auch nach dem Upgrade verschieden:
+Diese Werte sind testnetspezifisch:
 
 | Bereich | Testnet |
 | ---- | ------- |

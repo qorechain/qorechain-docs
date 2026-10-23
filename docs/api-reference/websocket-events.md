@@ -141,7 +141,7 @@ Filter by event type to receive only events from a specific module:
 
 ## Module Events Reference
 
-Events are emitted as standard consensus-engine events. Subscribe with a `tm.event='Tx'` query filtered on the event type and attribute (for example `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Block-level events (those emitted by end-of-block logic, such as the PRISM events below) are delivered with `tm.event='NewBlock'`, not `Tx`. The names and attributes below are those of chain version v3.2.3 (mainnet); events that exist only on the v3.2.4 testnet are marked.
+Events are emitted as standard consensus-engine events. Subscribe with a `tm.event='Tx'` query filtered on the event type and attribute (for example `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Block-level events (those emitted by end-of-block logic, such as the PRISM events below) are delivered with `tm.event='NewBlock'`, not `Tx`. The names and attributes below are those of chain version v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026); events added in v3.2.4 are marked.
 
 :::note Which events you will actually see
 Many of these modules are idle on the public networks: the bridge is not live, no multilayer layers or rollups are registered yet, and xQORE is not usable. Their events are defined but do not fire until there is activity. The PRISM observation and reward events (`rl_observation_collected`, `rl_reward_computed`) are emitted about every 10 blocks on both networks.
@@ -227,7 +227,7 @@ PQC keys are registered explicitly with a registration transaction; there is no 
 
 ### Staking Tiers Module (v3.2.4)
 
-These events come with the v3.2.4 release: the `qorechain-diana` testnet has emitted them since 19 October 2026 and mainnet emits them from height 3,742,566 (governance proposal 13). A mainnet node still on v3.2.3 has no staking-tiers module and emits none of them.
+These events come with the v3.2.4 release: the `qorechain-diana` testnet has emitted them since 19 October 2026 and mainnet since 23 October 2026 (governance proposal 13, height 3,742,566). A node on an older release has no staking-tiers module and emits none of them.
 
 | Event Type | Key Attributes | Description |
 | ---------- | -------------- | ----------- |

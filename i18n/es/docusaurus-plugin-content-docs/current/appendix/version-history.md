@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Historial de versiones
 
-Historial de versiones público de QoreChain. La mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026) ejecuta **v3.2.3** (aplicada mediante gobernanza en la altura 3,662,051 el 20 de octubre de 2026) hasta la altura **3,742,566**, y **v3.2.4** desde ese bloque (propuesta de gobernanza 13 de mainnet). La testnet **`qorechain-diana`** (chain ID EVM **9800**) ejecuta **v3.2.4** desde la altura 8,337,253 (19 de octubre de 2026).
+Historial de versiones público de QoreChain. La mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026) ejecuta **v3.2.4** (aplicada mediante la propuesta de gobernanza 13 en la altura 3,742,566 el 23 de octubre de 2026; la versión anterior, v3.2.3, se aplicó en la altura 3,662,051 el 20 de octubre de 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) ejecuta **v3.2.4** desde la altura 8,337,253 (19 de octubre de 2026).
 
 :::note
 Las entradas siguientes son resúmenes de capacidades de alto nivel. Las entradas anteriores `v1.x` se conservan como registro histórico de la línea de versiones de testnet que precedió a la mainnet. El manifiesto de la versión ([Conexión a mainnet](/getting-started/connecting-to-mainnet)) se publica por separado del etiquetado y puede ir con retraso respecto a un tag durante algún tiempo — consúltelo directamente para saber qué descarga realmente una instalación nueva.
@@ -15,7 +15,7 @@ Las entradas siguientes son resúmenes de capacidades de alto nivel. Las entrada
 
 ## Cronología de gobernanza de mainnet {#governance-timeline}
 
-Propuestas que modificaron, o programan cambios en, la mainnet en ejecución desde el 14 de octubre de 2026. Las siete son propuestas aceleradas (período de votación de un día); las propuestas 7 a 11 se aprobaron con todo el stake bonded que votó a favor. La lista completa está en `GET /cosmos/gov/v1/proposals` en `https://api.qore.host`.
+Propuestas que modificaron la mainnet en ejecución desde el 14 de octubre de 2026. Las siete son propuestas aceleradas (período de votación de un día); las propuestas 7 a 13 se aprobaron con todo el stake bonded que votó a favor. La lista completa está en `GET /cosmos/gov/v1/proposals` en `https://api.qore.host`.
 
 | Propuesta | Qué hace | Votación | Resultado |
 | --- | --- | --- | --- |
@@ -24,28 +24,28 @@ Propuestas que modificaron, o programan cambios en, la mainnet en ejecución des
 | 9 | Libera la parte de los stakers atascada (6,693,045.921330 QOR) a la fundación | 18–19 de octubre de 2026 (termina a las 19:15 UTC) | Aprobada |
 | 10 | Emisión: fija la emisión fija en 86,000 QOR por época y el tope acumulativo en 590,000,000 QOR (la duración de la época no cambia; la primera época de 86,000 QOR comienza en el bloque 3,672,000) | 18–19 de octubre de 2026 (termina a las 19:15 UTC) | Aprobada |
 | 11 | Aplica v3.2.3 en la altura 3,662,051 | 18–19 de octubre de 2026 (termina a las 19:15 UTC) | Aprobada; aplicada el 20 de octubre de 2026 |
-| 12 | Libera la parte corregida de los stakers atascada (3,807,496.785528 QOR, recalculada en la altura de v3.2.3) a la fundación | 20 de octubre de 2026 20:01 UTC a 21 de octubre de 2026 20:01 UTC | En su período de votación al momento de escribir esto |
-| 13 | Actualización coordinada a v3.2.4 en la altura 3,742,566 (alrededor del 23 de octubre de 2026 con bloques de 3.2 segundos): staking con bloqueo temporal opcional, límite de recompensa de nodos ligeros contado desde el registro, un indicador de posesión para las claves post-cuánticas, prueba de posesión para los validadores de puente, la ventana de desafío del RDK en tiempo de bloque y endurecimiento local del nodo | 20 de octubre de 2026 21:18 UTC a 21 de octubre de 2026 21:18 UTC | En su período de votación al momento de escribir esto, con todos los votos emitidos hasta ahora a favor; consulte `GET /cosmos/gov/v1/proposals/13` para el resultado final |
+| 12 | Libera la parte corregida de los stakers atascada (3,807,496.785528 QOR, recalculada en la altura de v3.2.3) a la fundación | 20 de octubre de 2026 20:01 UTC a 21 de octubre de 2026 20:01 UTC | Aprobada |
+| 13 | Actualización coordinada a v3.2.4 en la altura 3,742,566: staking con bloqueo temporal opcional, límite de recompensa de nodos ligeros contado desde el registro, un indicador de posesión para las claves post-cuánticas, prueba de posesión para los validadores de puente, la ventana de desafío del RDK en tiempo de bloque y endurecimiento local del nodo | 20 de octubre de 2026 21:18 UTC a 21 de octubre de 2026 21:18 UTC | Aprobada; aplicada el 23 de octubre de 2026 en la altura 3,742,566 |
 
 Consulte [Tokenomics](/architecture/tokenomics#stranded-and-reserve) para saber qué significan las liberaciones y [Gobernanza](/user-guide/governance) para saber cómo votar.
 
 ---
 
-## v3.2.4 — Ventana de registro de nodos ligeros y staking con bloqueo temporal opcional (programada para mainnet)
+## v3.2.4 — Ventana de registro de nodos ligeros y staking con bloqueo temporal opcional (mainnet)
 
-**Enfoque de la versión:** La próxima versión programada para mainnet. Se ejecuta en la testnet `qorechain-diana` desde que la propuesta de gobernanza 13 de testnet la aplicó en la altura **8,337,253** (19 de octubre de 2026; el manifiesto de testnet establece `minCompatible` en 3.2.4). En mainnet, la propuesta de gobernanza 13 la programa en la altura **3,742,566**: los nodos permanecen en v3.2.3 hasta ese bloque, se detienen allí y se reinician con v3.2.4, y la firma de transacciones no cambia. Por tanto, cada función siguiente está activa ahora en la testnet y se aplica a `qorechain-vladi` desde la altura 3,742,566 (una vez que la propuesta sea aprobada).
+**Enfoque de la versión:** La versión actual en ambas redes. Se ejecutó primero en la testnet `qorechain-diana`: la propuesta de gobernanza 13 de testnet la aplicó en la altura **8,337,253** (19 de octubre de 2026). En mainnet, la propuesta de gobernanza 13 la aplicó en la altura **3,742,566** el 23 de octubre de 2026: los nodos permanecieron en v3.2.3 hasta ese bloque, se detuvieron allí y se reiniciaron con v3.2.4, y la firma de transacciones no cambia. Los manifiestos de mainnet y de testnet establecen ambos `minCompatible` en 3.2.4, por lo que un nodo que se une a cualquiera de las dos redes necesita ahora v3.2.4. Cada función siguiente está activa en ambas redes.
 
 * **Ventana de registro de nodos ligeros.** El límite de recompensa de un nodo ligero comienza en el más tardío entre la liquidación anterior y el propio registro del nodo, de modo que un registro nuevo no cobra un monto acumulado de antes de incorporarse.
 * **Staking con bloqueo temporal opcional (`x/stakingtier`, un módulo nuevo).** Un delegador puede bloquear parte de una delegación durante 3, 6 o 12 meses; la parte bloqueada no puede deshacer su delegación ni redelegarse, y se permite un desbloqueo anticipado con una penalización que se quema. El bloqueo mínimo es de 10 QOR. Consulte [Staking y delegación](/user-guide/staking-and-delegation#time-locked-staking).
-* **Nuevo modo de emisión.** `x/inflation` incorpora un tercer modo de emisión, `target_apy`, con un parámetro `target_apy_bps` (`0` en la testnet). Cambiar el modo de emisión de una red es una decisión de gobernanza independiente; el modo vigente se muestra en `/qorechain/inflation/v1/params`.
+* **Nuevo modo de emisión.** `x/inflation` incorpora un tercer modo de emisión, `target_apy`, con un parámetro `target_apy_bps` (`0` en ambas redes; el modo vigente en mainnet sigue siendo `fixed`). Cambiar el modo de emisión de una red es una decisión de gobernanza independiente; el modo vigente se muestra en `/qorechain/inflation/v1/params`.
 * **Flag `possession_proven`** en los registros de cuentas post-cuánticas; la prueba de posesión de las claves de cuenta sigue siendo opcional.
 * **Prueba de posesión del validador de puente.** Registrar un validador de puente requiere una prueba de posesión y una clave que ningún otro validador de puente utilice.
 * **Ventana de disputa del RDK en tiempo de bloque.** La ventana de disputa optimista se cuenta en tiempo de bloque en lugar de en un número de bloques derivado de este.
 * **Endurecimiento local del nodo** (límites de las solicitudes JSON-RPC, presupuesto de chunks de state-sync, verificaciones previas del registro de claves) y nuevas consultas (`protocol_features`, `auth_nonce` y los campos adicionales del pool de recompensas de nodos ligeros, como `monthly_cap_active`).
 
-## v3.2.3 — Segundo lote de seguridad de octubre (mainnet)
+## v3.2.3 — Segundo lote de seguridad de octubre
 
-**Enfoque de la versión:** El segundo lote de endurecimiento de octubre, aplicado en mainnet mediante la propuesta de gobernanza 11 en la altura **3,662,051** (20 de octubre de 2026, 16:01 UTC); aplicado antes en la testnet en la altura 8,003,746 (15 de octubre). El manifiesto de mainnet establece `minCompatible` en 3.2.3: un nodo que se une a mainnet ahora necesita v3.2.3. La actualización activa 52 funciones del protocolo en esa altura; el formato de firma, las direcciones, los decimales, los memos y las comisiones no cambian.
+**Enfoque de la versión:** El segundo lote de endurecimiento de octubre, aplicado en mainnet mediante la propuesta de gobernanza 11 en la altura **3,662,051** (20 de octubre de 2026, 16:01 UTC); aplicado antes en la testnet en la altura 8,003,746 (15 de octubre). La actualización activa 52 funciones del protocolo en esa altura; el formato de firma, las direcciones, los decimales, los memos y las comisiones no cambian.
 
 * **Integridad de las claves post-cuánticas.** Las claves débiles, degeneradas y ya utilizadas se rechazan en el registro; se refuerza el mantenimiento de claves híbridas; los mensajes de gestión de claves post-cuánticas ya no pueden ejecutarse mediante authz; una cuenta no puede eliminar su último algoritmo de firma. El registro (`MsgRegisterPQCKeyV2`, `tx pqc register-key-v2 ... --pqc-key <name>`) acepta una **prueba de posesión opcional**, que se verifica cuando está presente.
 * **Ventanas EVM con alcance limitado.** `MsgOpenEVMWindow` admite los campos opcionales `native_only` (solo transferencias simples de QOR nativo) y `allowed_targets` (hasta 16 destinatarios) que acotan una ventana. Consulte [Ventana de autorización EVM](/getting-started/first-transaction#evm-window).
@@ -73,7 +73,7 @@ Consulte [Tokenomics](/architecture/tokenomics#stranded-and-reserve) para saber 
 * Actualiza la dependencia del motor de consenso; mantenga el reloj del sistema sincronizado por NTP (un desfase de más de 60 segundos detiene el nodo).
 * Recomendada para todos los operadores; `minCompatible` en el manifiesto de mainnet era 3.2.0 en ese momento.
 
-v3.2.1 se aplicó nodo por nodo y no tiene altura de actualización; fue reemplazada en mainnet por v3.2.2 (16 de octubre) y v3.2.3 (20 de octubre).
+v3.2.1 se aplicó nodo por nodo y no tiene altura de actualización; fue reemplazada en mainnet por v3.2.2 (16 de octubre), v3.2.3 (20 de octubre) y v3.2.4 (23 de octubre).
 
 ## v3.2.0 — Ventana de autorización EVM y correcciones de contabilidad
 

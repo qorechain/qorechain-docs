@@ -23,7 +23,7 @@ Il modulo bridge è distribuito su mainnet e testnet, ma **nessuna rotta del bri
 | Operazioni del bridge | 0 | 0 |
 | Canali / client IBC | 0 / 0 | 0 / 0 |
 
-(Verificato il 20 ottobre 2026 sulla mainnet v3.2.3 e sulla testnet v3.2.4. Leggete i valori live con `qorechaind query bridge chains` e `qorechaind query bridge validators`, oppure tramite REST su `/qorechain/bridge/v1/chains` e `/qorechain/bridge/v1/validators`.) La configurazione del modulo è la stessa su entrambe le reti: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 e `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Lo stack IBC che il modulo utilizzerebbe è ibc-go v10.7 (dalla v3.2.2), ma non è stato creato alcun client né canale.
+(Verificato il 23 ottobre 2026 su mainnet e testnet, entrambe v3.2.4. Leggete i valori live con `qorechaind query bridge chains` e `qorechaind query bridge validators`, oppure tramite REST su `/qorechain/bridge/v1/chains` e `/qorechain/bridge/v1/validators`.) La configurazione del modulo è la stessa su entrambe le reti: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 e `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Lo stack IBC che il modulo utilizzerebbe è ibc-go v10.7 (dalla v3.2.2), ma non è stato creato alcun client né canale.
 
 ## Panoramica delle Connessioni
 
@@ -193,7 +193,7 @@ Tutte le operazioni del bridge QCB richiedono una **soglia 7-su-10** di firme po
 * Un elenco di catene supportate
 * Un punteggio di reputazione (mantenuto da `x/reputation`)
 
-Dalla v3.2.2 il modulo convalida in modo coerente su ogni percorso gli importi pari a zero e la propria configurazione. **Dalla v3.2.4 (testnet dal 19 ottobre 2026; mainnet dall'altezza 3.742.566):** la registrazione di un validatore del bridge richiede inoltre una prova di possesso della chiave Dilithium-5 (lo stesso formato `proof_of_possession` della registrazione delle chiavi PQC, vedi [Sicurezza Post-Quantistica](/architecture/post-quantum-security#proof-of-possession)) e rifiuta una chiave già utilizzata da un altro validatore del bridge. La mainnet v3.2.3, che resta in esecuzione fino a quell'altezza, non ha un controllo di questo tipo, e su nessuna delle due reti è registrato alcun validatore del bridge.
+Dalla v3.2.2 il modulo convalida in modo coerente su ogni percorso gli importi pari a zero e la propria configurazione. **Dalla v3.2.4 (mainnet dal 23 ottobre 2026, testnet dal 19 ottobre 2026):** la registrazione di un validatore del bridge richiede inoltre una prova di possesso della chiave Dilithium-5 (lo stesso formato `proof_of_possession` della registrazione delle chiavi PQC, vedi [Sicurezza Post-Quantistica](/architecture/post-quantum-security#proof-of-possession)) e rifiuta una chiave già utilizzata da un altro validatore del bridge. Le release precedenti non hanno un controllo di questo tipo, e su nessuna delle due reti è registrato alcun validatore del bridge.
 
 ### Circuit Breaker
 

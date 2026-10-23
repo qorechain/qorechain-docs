@@ -10,7 +10,7 @@ sidebar_position: 7
 La abstracción de gas permite a un usuario pagar la comisión de una transacción en un token no nativo aceptado en lugar de QOR. El código de conversión de comisiones forma parte de la cadena, pero **hoy no se acepta ningún token no nativo en ninguna de las dos redes**, por lo que toda comisión se paga en QOR. Esta página explica qué está activo, cómo funciona la conversión tal como está construida y qué hacer en su lugar.
 
 :::caution Todavía no se puede usar: pague cada comisión en uqor
-En mainnet (**`qorechain-vladi`**, versión de nodo **v3.2.3**, v3.2.4 desde la altura 3.742.566) y en la testnet (**`qorechain-diana`**, versión de nodo **v3.2.4**), comprobado el 20 de octubre de 2026:
+En mainnet (**`qorechain-vladi`**) y en la testnet (**`qorechain-diana`**), ambas en la versión de nodo **v3.2.4**, comprobado el 23 de octubre de 2026:
 
 * La lista de tokens aceptados en producción contiene **solo `uqor`**. La conversión de comisiones se activó con v3.2.2, pero no hay nada más en la lista, el tope de conversión por bloque es `0` (conversión desactivada) y el float de conversión no tiene saldo. Una comisión pagada en cualquier otra denominación es rechazada con un error «denom not accepted for fee payment», tanto en simulación como en una transacción real.
 * No existe ningún canal ni cliente IBC en ninguna de las dos redes, por lo que no puede existir ningún saldo `ibc/…` con el que pagar.
@@ -36,7 +36,7 @@ Después fírmela de forma híbrida y transmítala con `qorechaind tx pqc cosign
 
 ## La configuración en producción {#live-configuration}
 
-El módulo sirve su configuración por REST y gRPC. Estos son los valores en ambas redes el 20 de octubre de 2026:
+El módulo sirve su configuración por REST y gRPC. Estos son los valores en ambas redes el 23 de octubre de 2026:
 
 | Campo | Valor | Significado |
 | --- | --- | --- |

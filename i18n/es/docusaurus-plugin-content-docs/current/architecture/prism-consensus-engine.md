@@ -9,7 +9,7 @@ sidebar_position: 2
 
 QoreChain integra **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), una capa de optimización por aprendizaje por refuerzo, directamente en la capa de consenso a través del módulo `x/rlconsensus`. PRISM observa las métricas de la cadena cada N bloques y está diseñado para ejecutar inferencia mediante una red neuronal de punto fijo y proponer ajustes de parámetros de consenso — todo de forma determinista, sin aritmética de punto flotante en las rutas críticas para el consenso.
 
-:::note Estado actual (20 de octubre de 2026: mainnet v3.2.3, testnet v3.2.4)
+:::note Estado actual (comprobado el 20 de octubre de 2026; ambas redes ejecutan ahora v3.2.4)
 Tanto en mainnet como en testnet el agente está en modo `conservative`, recopila una observación y una recompensa cada 10 bloques y **no tiene pesos de política cargados**: ha dado 0 pasos y no aplica ningún cambio de parámetros (comprobado mediante las consultas `AgentStatus` y `Policy` en ambas redes). El tiempo de bloque lo determina la configuración de los nodos de los validadores, no PRISM. Cargar una política, cambiar el modo, reanudar el agente y actualizar los pesos de recompensa son acciones de gobernanza que actualmente están deshabilitadas en mainnet por el circuit breaker; no están deshabilitadas en la testnet.
 
 Dos cambios de versión restringen lo que puede hacer un futuro cambio de política o de parámetros. Desde v3.2.2, una actualización de política por gobernanza se valida con aritmética comprobada. Desde v3.2.3, los mensajes de gobernanza se comprueban por rango sobre el valor en bruto de la transmisión (el modo del agente) y cada peso de recompensa debe estar entre 0 y 1.

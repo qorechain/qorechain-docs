@@ -14,7 +14,7 @@ Le module d'abstraction de compte est actuellement **désactivé** sur les deux 
 :::
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.3** jusqu'à la hauteur 3 742 566 et la **v3.2.4** à partir de ce bloc (proposition de gouvernance 13). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.4 depuis le 19 octobre 2026.
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.4** (appliquée à la hauteur 3 742 566 le 23 octobre 2026, proposition de gouvernance 13). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.4 depuis le 19 octobre 2026.
 :::
 
 :::caution Toute transaction sur la voie Cosmos exige la co-signature post-quantique hybride
@@ -176,7 +176,7 @@ Deux messages transportent les actions autorisées par un authentificateur. Dans
 
 :::caution Règles de nonce
 * `MsgExecuteEVM.nonce` = le nonce EVM **actuel** du compte (`eth_getTransactionCount(account0x, "latest")`). En production, le relayeur est un compte *différent*, donc n'ajoutez **pas** +1. Signer un nonce périmé renvoie le code `11`.
-* `MsgExecuteCosmos.nonce` = la séquence par authentificateur (interrogez l'état d'authentificateur du compte), et **non** la séquence Cosmos du compte. À partir de la v3.2.4 (sur le testnet depuis le 19 octobre 2026 ; sur le mainnet à partir de la hauteur 3 742 566), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` renvoie directement cette séquence (`nonce`, `linked`).
+* `MsgExecuteCosmos.nonce` = la séquence par authentificateur (interrogez l'état d'authentificateur du compte), et **non** la séquence Cosmos du compte. À partir de la v3.2.4 (testnet depuis le 19 octobre 2026, mainnet depuis le 23 octobre 2026), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` renvoie directement cette séquence (`nonce`, `linked`).
 :::
 
 **Exemple Phantom** (navigateur : Phantom signe, votre backend relaie) :

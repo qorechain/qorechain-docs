@@ -11,7 +11,7 @@ Domande generali su QoreChain, con risposte tratte dalla documentazione. Ogni ri
 
 ### La mainnet è attiva?
 
-Sì. La mainnet di QoreChain (chain `qorechain-vladi`, EVM chain ID 9801) è attiva dal 7 giugno 2026 ed esegue la release v3.2.3 fino all'altezza 3.742.566 e la v3.2.4 da quel blocco (proposta di governance 13); la testnet, `qorechain-diana`, esegue la v3.2.4 dal 19 ottobre 2026. Vedi [Reti](/appendix/networks) e [Connessione alla mainnet](/getting-started/connecting-to-mainnet).
+Sì. La mainnet di QoreChain (chain `qorechain-vladi`, EVM chain ID 9801) è attiva dal 7 giugno 2026 ed esegue la release v3.2.4 (applicata all'altezza 3.742.566 il 23 ottobre 2026 dalla proposta di governance 13); la testnet, `qorechain-diana`, esegue la v3.2.4 dal 19 ottobre 2026. Vedi [Reti](/appendix/networks) e [Connessione alla mainnet](/getting-started/connecting-to-mainnet).
 
 ### Quali sono i chain ID e gli EVM chain ID?
 
@@ -51,7 +51,7 @@ Dalla v3.2.0 la lane EVM ammette una transazione solo da un account che abbia un
 
 ### Quanti validatori ha la mainnet?
 
-Otto validatori bonded al 20 ottobre 2026, con circa 55,1 milioni di QOR in bonding (il set attivo può contenerne fino a 100). La testnet ne ha tre. Leggi il set in tempo reale su `GET /cosmos/staking/v1beta1/validators` all'indirizzo `https://api.qore.host`.
+Otto validatori bonded al 23 ottobre 2026, con circa 55,6 milioni di QOR in bonding (il set attivo può contenerne fino a 100). La testnet ne ha tre. Leggi il set in tempo reale su `GET /cosmos/staking/v1beta1/validators` all'indirizzo `https://api.qore.host`.
 
 ### Quale block time devo aspettarmi?
 

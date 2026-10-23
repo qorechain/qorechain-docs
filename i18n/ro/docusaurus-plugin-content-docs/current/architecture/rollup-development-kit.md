@@ -10,7 +10,7 @@ sidebar_position: 12
 Modulul `x/rdk` oferă un Rollup Development Kit (RDK) cuprinzător, care permite dezvoltatorilor să implementeze rollup-uri specifice aplicațiilor pe QoreChain. Suportă patru paradigme de decontare, mai multe moduri de secvențiere, backend-uri de disponibilitate a datelor conectabile și optimizare a configurației asistată de AI.
 
 :::caution Capabilitate în stadiu incipient
-Modulul este implementat pe mainnet (versiunea de lanț **v3.2.3** până la înălțimea 3,742,566, **v3.2.4** de la acel bloc) și pe testnet (**v3.2.4**), dar **niciun rollup nu a fost creat încă pe niciuna dintre rețele** (verificat la 21 octombrie 2026: `GET /qorechain/rdk/v1/rollups` returnează o listă goală pe ambele). Mai multe capabilități descrise mai jos nu pot fi folosite în prezent de la un capăt la altul; starea este indicată acolo unde fiecare este descrisă. Pentru ghidul practic destinat dezvoltatorilor, consultați [Prezentare generală a rollup-urilor](/rollups/overview).
+Modulul este implementat pe mainnet (versiunea de lanț **v3.2.4** din 23 octombrie 2026) și pe testnet (**v3.2.4**), dar **niciun rollup nu a fost creat încă pe niciuna dintre rețele** (verificat la 23 octombrie 2026: `GET /qorechain/rdk/v1/rollups` returnează o listă goală pe ambele). Mai multe capabilități descrise mai jos nu pot fi folosite în prezent de la un capăt la altul; starea este indicată acolo unde fiecare este descrisă. Pentru ghidul practic destinat dezvoltatorilor, consultați [Prezentare generală a rollup-urilor](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ QoreChain RDK suportă patru moduri distincte de decontare — **optimistic**, *
 Rollup-urile optimiste presupun că tranzacțiile sunt valide în mod implicit și se bazează pe demonstrații de fraudă pentru rezolvarea disputelor.
 
 * **Sistem de demonstrare**: Demonstrații de fraudă interactive
-* **Fereastră de contestare**: 604,800 de secunde (implicit, 7 zile). **Până la v3.2.4 (mainnet v3.2.3 înainte de înălțimea 3,742,566):** lanțul o convertește în blocuri la un raport fix de 6 secunde per bloc, **100,800 de blocuri**, deci timpul real scurs depinde de timpul efectiv al blocurilor (aproximativ 3,7 zile la blocurile actuale de ≈3.2 s de pe mainnet); planificați în blocuri, nu în zile. **De la v3.2.4:** pentru un lot trimis începând cu înălțimea upgrade-ului, fereastra este măsurată în secunde de timp de bloc (7 zile întregi). Un lot trimis mai devreme păstrează regula numărului de blocuri. Testnet-ul a aplicat v3.2.4 la înălțimea 8,337,253 (19 octombrie 2026); mainnet-ul o aplică la înălțimea 3,742,566 (propunerea de guvernanță 13).
+* **Fereastră de contestare**: 604,800 de secunde (implicit, 7 zile). **Înainte de v3.2.4:** lanțul o convertește în blocuri la un raport fix de 6 secunde per bloc, **100,800 de blocuri**, deci timpul real scurs depinde de timpul efectiv al blocurilor (aproximativ 3,7 zile la blocurile actuale de ≈3.2 s de pe mainnet); planificați în blocuri, nu în zile. **De la v3.2.4:** pentru un lot trimis începând cu înălțimea upgrade-ului, fereastra este măsurată în secunde de timp de bloc (7 zile întregi). Un lot trimis mai devreme păstrează regula numărului de blocuri. Testnet-ul a aplicat v3.2.4 la înălțimea 8,337,253 (19 octombrie 2026); mainnet-ul a aplicat-o la înălțimea 3,742,566 (23 octombrie 2026, propunerea de guvernanță 13).
 * **Garanție de contestare**: 1,000 QOR (1,000,000,000 uqor) — necesară pentru a depune o contestare prin demonstrație de fraudă (profilurile `nft` și `custom`; profilurile `defi`, `gaming` și `enterprise` nu setează nicio garanție deoarece nu au fereastră de contestare)
 * **Finalitate**: Întârziată până la expirarea ferestrei de contestare fără o contestare validă
 * **Auto-finalizare**: `EndBlocker` finalizează automat loturile odată ce fereastra de contestare a trecut fără dispută. Un lot contestat nu este niciodată finalizat automat: creatorul rollup-ului rezolvă mai întâi contestarea (vezi [Implementarea unui rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Mod de decontare | Declanșator de finalizare                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100,800 de blocuri după trimitere (fereastra implicită) fără contestare; pentru loturile trimise începând cu v3.2.4 (testnet de la înălțimea 8,337,253; mainnet de la înălțimea 3,742,566), 604,800 de secunde de timp de bloc |
+| **Optimistic**  | 100,800 de blocuri după trimitere (fereastra implicită) fără contestare; pentru loturile trimise începând cu v3.2.4 (testnet de la înălțimea 8,337,253; mainnet de la înălțimea 3,742,566, 23 octombrie 2026), 604,800 de secunde de timp de bloc |
 | **ZK**          | Instantaneu la depunerea unei demonstrații valide                           |
 | **Based**       | 2 blocuri L1 după trimitere                                |
 | **Sovereign**   | Niciunul — gestionat de propriul consens al rollup-ului                |

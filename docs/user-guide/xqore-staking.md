@@ -10,7 +10,7 @@ sidebar_position: 4
 This page describes the **designed** xQORE governance-staking mechanism, in which QOR holders would lock tokens for enhanced governance power under a PvP rebase model that rewards long-term participants. **xQORE cannot be used on either network today**; nothing on this page is something you can do yet.
 
 :::warning Not live yet
-xQORE is enabled in genesis but **not usable yet** on mainnet (`qorechain-vladi`, node release **v3.2.3**) or testnet (`qorechain-diana`, node release **v3.2.4**); neither release changes this (checked 20 October 2026). The node has no transaction, query, CLI or RPC entry point for it (the REST route `/qorechain/xqore/v1/params` returns `Not Implemented` on both networks), so there is no `tx xqore lock` / `unlock`, no `query xqore ...`, no xQORE REST route and no `qor_getXQOREPosition` method, no QOR can be locked, and nobody holds xQORE. It is planned for a future chain release, which will also change how exit penalties are redistributed so that unlocking stays cheap however many holders there are. The release will be named here when it ships.
+xQORE is enabled in genesis but **not usable yet** on mainnet (`qorechain-vladi`, node release **v3.2.4**) or testnet (`qorechain-diana`, node release **v3.2.4**); neither release changes this (checked 23 October 2026). The node has no transaction, query, CLI or RPC entry point for it (the REST route `/qorechain/xqore/v1/params` returns `Not Implemented` on both networks), so there is no `tx xqore lock` / `unlock`, no `query xqore ...`, no xQORE REST route and no `qor_getXQOREPosition` method, no QOR can be locked, and nobody holds xQORE. It is planned for a future chain release, which will also change how exit penalties are redistributed so that unlocking stays cheap however many holders there are. The release will be named here when it ships.
 :::
 
 ---
@@ -54,7 +54,7 @@ If you want to take part in governance now, delegate QOR to a validator (see [St
 
 ## Time-locked staking is a different feature (v3.2.4) {#staking-tiers}
 
-Release **v3.2.4**, which has run on the testnet since 19 October 2026 and is scheduled for mainnet from height 3,742,566 (governance proposal 13), adds a separate module, `x/stakingtier`, for **optional time-locked staking**. It is not xQORE: it mints no xQORE, does not change voting power and does not touch the xQORE parameters above. In outline:
+Release **v3.2.4**, which has run on the testnet since 19 October 2026 and on mainnet since 23 October 2026 (height 3,742,566, governance proposal 13), adds a separate module, `x/stakingtier`, for **optional time-locked staking**. It is not xQORE: it mints no xQORE, does not change voting power and does not touch the xQORE parameters above. In outline:
 
 * A delegator locks a delegation to a validator for a chosen term (the module offers 3, 6 and 12 months). While the lock runs, the locked amount cannot be undelegated or redelegated, through any message path (a transaction, authz, a contract or governance).
 * Locks have a minimum size and a limit on how many one delegator may hold; read them with `GET /qorechain/stakingtier/v1/params`.
@@ -62,4 +62,4 @@ Release **v3.2.4**, which has run on the testnet since 19 October 2026 and is sc
 * A lock can be released early. Early release forfeits what has accrued and unclaimed and carries a penalty, part of which is burned.
 * Locks and the module account's state are readable at `/qorechain/stakingtier/v1/locks/{holder}` and `/qorechain/stakingtier/v1/pool`.
 
-Mainnet runs v3.2.3 until height 3,742,566, so until then `GET https://api.qore.host/qorechain/stakingtier/v1/params` returns `Not Implemented` there; from that block the module exists on mainnet as it does on the testnet. Ordinary delegation is covered in [Staking and Delegation](/user-guide/staking-and-delegation).
+The module answers on both networks, for example `GET https://api.qore.host/qorechain/stakingtier/v1/params`. Ordinary delegation is covered in [Staking and Delegation](/user-guide/staking-and-delegation).

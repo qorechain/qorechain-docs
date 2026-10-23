@@ -21,7 +21,7 @@ Aşağıdaki komutlar `qorechaind` kullanır. Ortamınız için olağan işlem b
 :::
 
 :::caution Henüz hiç havuz yok
-AMM modülü ana ağda (v3.2.3) ve test ağında (v3.2.4) canlıdır, ancak **henüz hiçbir havuz oluşturulmamıştır** (20 Ekim 2026'da kontrol edildi: `GET /qorechain/amm/v1/pools` her ikisinde de boş bir liste döndürür) ve aşağıdaki örneklerdeki birimler (`uusdc`, `uusdt`) açıklayıcıdır: bugün ağlarda böyle varlıklar bulunmaz. Bir havuz oluşana kadar her takas veya likidite ekleme komutu, havuz bulunamadı hatasıyla başarısız olur.
+AMM modülü ana ağda ve test ağında (ikisi de v3.2.4) canlıdır, ancak **henüz hiçbir havuz oluşturulmamıştır** (23 Ekim 2026'da kontrol edildi: `GET /qorechain/amm/v1/pools` her ikisinde de boş bir liste döndürür) ve aşağıdaki örneklerdeki birimler (`uusdc`, `uusdt`) açıklayıcıdır: bugün ağlarda böyle varlıklar bulunmaz. Bir havuz oluşana kadar her takas veya likidite ekleme komutu, havuz bulunamadı hatasıyla başarısız olur.
 :::
 
 ## Modül parametreleri {#parameters}

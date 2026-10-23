@@ -21,7 +21,7 @@ Comenzile de mai jos folosesc `qorechaind`. Adăugați flag-urile uzuale de tran
 :::
 
 :::caution Nu există încă pool-uri
-Modulul AMM este activ pe mainnet (v3.2.3) și pe testnet (v3.2.4), dar **nu a fost creat încă niciun pool** (verificat pe 20 octombrie 2026: `GET /qorechain/amm/v1/pools` returnează o listă goală pe ambele), iar denom-urile din exemplele de mai jos (`uusdc`, `uusdt`) sunt ilustrative: astăzi nu există astfel de active pe rețele. Până când există un pool, orice comandă de schimb sau de adăugare de lichiditate eșuează cu o eroare de tip pool negăsit.
+Modulul AMM este activ pe mainnet și pe testnet (ambele v3.2.4), dar **nu a fost creat încă niciun pool** (verificat pe 23 octombrie 2026: `GET /qorechain/amm/v1/pools` returnează o listă goală pe ambele), iar denom-urile din exemplele de mai jos (`uusdc`, `uusdt`) sunt ilustrative: astăzi nu există astfel de active pe rețele. Până când există un pool, orice comandă de schimb sau de adăugare de lichiditate eșuează cu o eroare de tip pool negăsit.
 :::
 
 ## Parametrii modulului {#parameters}

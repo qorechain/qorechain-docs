@@ -49,7 +49,7 @@ A partir de la versión de cadena **v3.1.82**, la interfaz SVM sirve el **saldo 
 | `getTokenAccountsByOwner`           | `owner`, filtro          | Devuelve las cuentas de token de un propietario                |
 | `getTokenAccountsByDelegate`        | `delegate`, filtro       | Devuelve las cuentas de token de un delegado                   |
 
-Los métodos fuera de esta lista, como `getGenesisHash` y `getEpochInfo`, devuelven `-32601 method not found` (comprobado contra `https://svm.qore.host` y `https://svm-testnet.qore.host`, 20 de octubre de 2026). Desde v3.2.2, las direcciones base58 en las consultas RPC y gRPC deben ser canónicas y de longitud acotada; una dirección mal formada se rechaza. `getTransaction` se acepta, pero actualmente responde con un sobre que no tiene el campo `result`, así que no cuentes con él. El slot que informa `getSlot` sigue la altura de bloque de la cadena.
+Los métodos fuera de esta lista, como `getGenesisHash` y `getEpochInfo`, devuelven `-32601 method not found` (comprobado contra `https://svm.qore.host` y `https://svm-testnet.qore.host`, 23 de octubre de 2026). Desde v3.2.2, las direcciones base58 en las consultas RPC y gRPC deben ser canónicas y de longitud acotada; una dirección mal formada se rechaza. `getTransaction` se acepta, pero actualmente responde con un sobre que no tiene el campo `result`, así que no cuentes con él. El slot que informa `getSlot` sigue la altura de bloque de la cadena.
 
 ---
 

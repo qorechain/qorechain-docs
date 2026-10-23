@@ -16,7 +16,7 @@ Datenverfügbarkeit (Data Availability, DA) ist die Garantie, dass die Transakti
 | **`both`** | Native und Celestia zusammen, zur Redundanz | Verhält sich heute exakt wie `native` |
 
 :::caution Fähigkeit im frühen Stadium
-Auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt (geprüft am 21. Oktober 2026), und die DA-Backends sind nur teilweise implementiert. Der Status jedes Backends ist unten angegeben; validieren Sie auf dem **`qorechain-diana`**-Testnet, bevor Sie sich auf eines davon verlassen.
+Auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt (geprüft am 23. Oktober 2026), und die DA-Backends sind nur teilweise implementiert. Der Status jedes Backends ist unten angegeben; validieren Sie auf dem **`qorechain-diana`**-Testnet, bevor Sie sich auf eines davon verlassen.
 :::
 
 ---

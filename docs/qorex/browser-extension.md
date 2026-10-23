@@ -21,15 +21,15 @@ It is **live and public** on three stores (Chrome, Firefox and Safari); Chrome c
 
 ### Which version is live where {#versions}
 
-Current version on each store, as of **20 October 2026**:
+Current version on each store, as of **23 October 2026**:
 
 | Store | Current version |
 |---|---|
-| Chrome Web Store | 0.3.6 (not yet updated to 0.3.7) |
-| Firefox Add-ons | 0.3.7 |
-| Safari (Mac App Store, **QoreX Wallet** macOS app) | 1.7.7, carrying extension 0.3.7 — the Mac App Store uses its own `1.x` numbering |
+| Chrome Web Store | 0.3.8 |
+| Firefox Add-ons | 0.3.8 |
+| Safari (Mac App Store, **QoreX Wallet** macOS app) | 1.7.8, carrying extension 0.3.8 — the Mac App Store uses its own `1.x` numbering |
 
-Store reviews land at different times, so a store can serve an older build than another; the store listing always shows its current version. This page describes the 0.3.7 feature set; where a point needs 0.3.7 it says so, and Chrome users get it when the Chrome listing updates. See also [Which version is live where](/qorex/overview#versions).
+Store reviews land at different times, so a store can serve an older build than another; the store listing always shows its current version. This page describes the 0.3.7 feature set, which every store now carries (0.3.8 is the current build). See also [Which version is live where](/qorex/overview#versions).
 
 Since 0.2.6 the extension gained: [several wallets with one password](#wallets), an [Ethereum-style account you add by hand](#coin60), [Claim & restake](#stake), an **Unstaking in progress** list, [adding a token by contract](#custom-tokens), [Receive on any network](#receive), [Connected sites with Revoke](#connected-sites), the [EVM access window](#evm-window), [`signAndBroadcast` for dApps](#sign-and-broadcast), and approval screens that show every message, fee and expiry.
 

@@ -66,19 +66,25 @@ QoreX is non-custodial: QoreChain Association cannot recover a lost wallet, rese
 
 ## Which version is live where {#versions}
 
-Store review runs on its own schedule, so each store serves its own build, and Google Play and the Chrome Web Store currently lag the others. This is the current version **on each store** as of **20 October 2026**:
+Store review runs on its own schedule, so a store can serve an older build than another for a while. This is the current version **on each store** as of **23 October 2026**:
 
 | Store | Current version | Note |
 |---|---|---|
-| Apple App Store (iOS) | 1.1.7 | released 15 October |
-| Google Play (Android) | 1.1.6 | 1.1.7 is uploaded but not public yet — the public listing still shows 1.1.6 |
-| Chrome Web Store | 0.3.6 | still serves 0.3.6 |
-| Firefox Add-ons | 0.3.7 | |
-| Safari (Mac App Store) | 1.7.7, carrying extension 0.3.7 | the Mac App Store uses its own `1.x` numbering |
+| Apple App Store (iOS) | 1.1.8 | released 21 October |
+| Google Play (Android) | 1.1.8 | |
+| Chrome Web Store | 0.3.8 | |
+| Firefox Add-ons | 0.3.8 | |
+| Safari (Mac App Store) | 1.7.8, carrying extension 0.3.8 | the Mac App Store uses its own `1.x` numbering |
 
-The stores always show their current version, and a store still serving an older build catches up automatically. Features below marked **1.1.7 / 0.3.7** are live on the stores in the table that already carry that build (iOS, Firefox, Safari) and arrive on Google Play and Chrome when those listings update. Nothing newer than 1.1.7 / 0.3.7 is described in this manual as available.
+The stores always show their current version, and a store still serving an older build catches up automatically. Nothing newer than 1.1.8 / 0.3.8 is described in this manual as available.
 
-What the 1.1.7 / 0.3.7 builds changed for you:
+What the 1.1.8 / 0.3.8 builds changed for you:
+
+- **MetaMask on QoreChain, from the first page.** Open, check and close the EVM access window that MetaMask needs, and see what it has left.
+- **Stronger quantum-safe checks.** QoreX verifies an app's quantum-safe signature against your account's key, and says clearly if that key was registered by another wallet.
+- **Fixes for reported security issues.**
+
+What the 1.1.7 / 0.3.7 builds changed for you (included in 1.1.8 / 0.3.8):
 
 - **Approvals refuse a request whose bytes can be read two ways.** If the same field appears twice in a request, a screen and the chain could disagree about what is being signed — for example a fee or an amount shown differently from the one executed. QoreX now refuses such a request instead of showing one reading of it. See [What the approval window shows](/qorex/security-and-recovery#approvals).
 - **Grant expiry is shown to the second**, and governance votes are decoded and shown on the approval screen.
@@ -96,7 +102,7 @@ Highlights since 1.0.9 / 0.2.6:
 - Approval screens that show every message, the fee, spending limits and expiry, and refuse what QoreX cannot display; **`signAndBroadcast`** for dApps; **Connected sites** with Revoke (extension); the **EVM access window** — see [Security & Recovery](/qorex/security-and-recovery) and the [Browser Extension](/qorex/browser-extension).
 - Fixes: a funded account could momentarily vanish from "Your accounts" (1.0.9); Android hardware Back now goes back one screen (1.1.1); the recovery phrase is withheld from non-accessibility services on Android 14 and later (1.1.6).
 
-QoreX works on mainnet `qorechain-vladi`, which runs chain **v3.2.3** (live since 7 June 2026) until height 3,742,566 and v3.2.4 from that block. Signing format, addresses, decimals, memos and fees do not change in these upgrades, so no QoreX update is needed for them.
+QoreX works on mainnet `qorechain-vladi` (live since 7 June 2026), which has run chain **v3.2.4** since 23 October 2026. Signing format, addresses, decimals, memos and fees do not change in these upgrades, so no QoreX update is needed for them.
 
 ## What QoreX sends over the network {#data-and-privacy}
 

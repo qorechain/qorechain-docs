@@ -18,7 +18,7 @@ construidas en torno a la Layer 1 de QoreChain y no en torno a las herramientas:
 
 :::caution Etapa temprana: lee la columna de estado
 Todavía no se ha creado ningún rollup en ninguna de las dos redes (comprobado el
-21 de octubre de 2026). La tabla siguiente indica lo que funciona hoy; lo que
+23 de octubre de 2026). La tabla siguiente indica lo que funciona hoy; lo que
 cambiaron los clientes 0.6.0 publicados y los límites que persisten se recogen en
 [RDK 0.6.0: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits). Si solo
 necesitas un rollup genérico optimista/zk, cualquier kit te sirve; las

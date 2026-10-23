@@ -279,7 +279,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 ポスト量子部分は、トランザクションの`PQCHybridSignature`拡張として運ばれます。
 
 :::caution Nativeパスではハイブリッド署名が必須です
-チェーンバージョン**v3.2.0**(メインネットは高さ3,742,566まではv3.2.3、そのブロックからはv3.2.4で稼働。テストネットはv3.2.4で稼働)以降、
+チェーンバージョン**v3.2.0**(メインネットとテストネットはどちらもv3.2.4で稼働)以降、
 ネットワークのデフォルトは`hybrid_signature_mode = required`、
 `allow_classical_fallback = false`です。`buildHybridTx` / `signAndBroadcastHybrid`
 (`rest`を渡す)によるハイブリッド署名 — または統一eth-nativeアカウント向けの

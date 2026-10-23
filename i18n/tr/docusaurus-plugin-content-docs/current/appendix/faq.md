@@ -11,7 +11,7 @@ QoreChain hakkında dokümantasyondan yanıtlanan genel sorular. Her yanıt, ayr
 
 ### Ana ağ canlı mı?
 
-Evet. QoreChain ana ağı (zincir `qorechain-vladi`, EVM zincir kimliği 9801) 7 Haziran 2026'dan beri canlıdır ve 3.742.566 numaralı yüksekliğe kadar v3.2.3 sürümünü, o bloktan itibaren v3.2.4'ü çalıştırır (yönetişim önerisi 13); test ağı `qorechain-diana` 19 Ekim 2026'dan beri v3.2.4 çalıştırır. Bkz. [Ağlar](/appendix/networks) ve [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
+Evet. QoreChain ana ağı (zincir `qorechain-vladi`, EVM zincir kimliği 9801) 7 Haziran 2026'dan beri canlıdır ve v3.2.4 sürümünü çalıştırır (23 Ekim 2026'da 3.742.566 numaralı yükseklikte yönetişim önerisi 13 ile uygulandı); test ağı `qorechain-diana` 19 Ekim 2026'dan beri v3.2.4 çalıştırır. Bkz. [Ağlar](/appendix/networks) ve [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
 
 ### Zincir kimlikleri ve EVM zincir kimlikleri nelerdir?
 
@@ -51,7 +51,7 @@ v3.2.0'dan itibaren EVM hattı, bir işlemi yalnızca kayıtlı bir kuantum sonr
 
 ### Ana ağda kaç doğrulayıcı var?
 
-20 Ekim 2026'da sekiz bağlı (bonded) doğrulayıcı vardı ve yaklaşık 55,1 milyon QOR bağlanmıştı (aktif küme en fazla 100 doğrulayıcı alabilir). Test ağında üç tane var. Canlı kümeyi `https://api.qore.host` üzerinde `GET /cosmos/staking/v1beta1/validators` adresinden okuyun.
+23 Ekim 2026'da sekiz bağlı (bonded) doğrulayıcı vardı ve yaklaşık 55,6 milyon QOR bağlanmıştı (aktif küme en fazla 100 doğrulayıcı alabilir). Test ağında üç tane var. Canlı kümeyi `https://api.qore.host` üzerinde `GET /cosmos/staking/v1beta1/validators` adresinden okuyun.
 
 ### Ne kadar blok süresi beklemeliyim?
 
