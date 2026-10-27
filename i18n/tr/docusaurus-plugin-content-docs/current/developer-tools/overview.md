@@ -241,6 +241,12 @@ Kılavuz: [Geliştiriciler için QoreX](/qorex/overview#developers). Kaynak: [qo
 | Cosmos dApp'leri | `@qorechain/qorex-interchain-kit` (veya `@qorechain/qorex-cosmos-kit`) |
 | Kendi cüzdanınızda veya arka ucunuzda hibrit imzalama | `@qorechain/qoresign` |
 
+### QORel, IBC relayer'ı {#group-qorel}
+
+| Paket | Nerede | Sürüm | Kurulum | Durum |
+|---|---|---|---|---|
+| QORel (`qorel`) | GitHub sürümü `qorel-v0.1.0`, Homebrew, konteyner `ghcr.io/qorechain/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` | Ön sürüm olarak yayımlandı. Yalnızca IBC v1; yalnızca testnet. Bkz. [QORel](/qorel/overview) |
+
 ### MCP sunucusu ve CLI {#group-mcp}
 
 Sayfalar: [QoreChain MCP sunucusu](/developer-tools/mcp), [QoreChain CLI](/developer-tools/qore-cli). Kaynak: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp) (herkese açık). İkisi de zinciri okur; hiçbiri imzalamaz, anahtar tutmaz veya yayınlamaz. 27 Ekim 2026'da yayımlandı.

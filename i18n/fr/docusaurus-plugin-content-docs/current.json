@@ -150,5 +150,13 @@
   "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
     "message": "Tous les packages publics de QoreChain : ce que c’est, ce qui y est nouveau, comment l’utiliser, comment y accéder et où il est publié.",
     "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel": {
+    "message": "QORel",
+    "description": "The label for category 'QORel' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel.link.generated-index.description": {
+    "message": "Le relayeur IBC de QoreChain : un fork de Hermes qui ajoute la signature hybride post-quantique exigée par QoreChain. Installation, démarrage rapide, configuration, exploitation et signature depuis n'importe quel langage.",
+    "description": "The generated-index page description for category 'QORel' in sidebar 'docsSidebar'"
   }
 }

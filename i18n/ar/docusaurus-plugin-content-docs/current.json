@@ -150,5 +150,13 @@
   "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
     "message": "كل حزمة عامة من QoreChain: ما هي، وما الجديد فيها، وكيفية استخدامها، وكيفية الوصول إليها، وأين تُنشر.",
     "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel": {
+    "message": "QORel",
+    "description": "The label for category 'QORel' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel.link.generated-index.description": {
+    "message": "مُرحِّل IBC الخاص بـ QoreChain: نسخة مُفرَّعة من Hermes تضيف التوقيع الهجين ما بعد الكمّي الذي تشترطه QoreChain. التثبيت والبدء السريع والإعداد والتشغيل والتوقيع من أي لغة.",
+    "description": "The generated-index page description for category 'QORel' in sidebar 'docsSidebar'"
   }
 }

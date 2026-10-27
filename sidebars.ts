@@ -223,6 +223,27 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "QORel",
+      link: {
+        type: "generated-index",
+        slug: "/qorel",
+        description:
+          "QoreChain's IBC relayer: a Hermes fork that adds the hybrid post-quantum signature QoreChain requires. Install, quickstart, configuration, operations, and signing from any language.",
+      },
+      items: [
+        "qorel/overview",
+        "qorel/whats-new",
+        "qorel/install",
+        "qorel/quickstart",
+        "qorel/configuration",
+        "qorel/running-next-to-a-validator",
+        "qorel/monitoring",
+        "qorel/signing-from-any-language",
+        "qorel/troubleshooting",
+      ],
+    },
+    {
+      type: "category",
       label: "QoreSign",
       link: {
         type: "generated-index",

@@ -241,6 +241,12 @@ TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあ�
 | Cosmos dApp | `@qorechain/qorex-interchain-kit`(または`@qorechain/qorex-cosmos-kit`) |
 | 自前のウォレットやバックエンドでのハイブリッド署名 | `@qorechain/qoresign` |
 
+### QORel、IBCリレイヤー {#group-qorel}
+
+| パッケージ | 場所 | バージョン | インストール | ステータス |
+|---|---|---|---|---|
+| QORel(`qorel`) | GitHubリリース`qorel-v0.1.0`、Homebrew、コンテナ`ghcr.io/qorechain/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` | プレリリースとして公開。IBC v1のみ、テストネットのみ。[QORel](/qorel/overview)を参照してください |
+
 ### MCPサーバーとCLI {#group-mcp}
 
 ページ: [QoreChain MCPサーバー](/developer-tools/mcp)、[QoreChain CLI](/developer-tools/qore-cli)。ソース: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp)(公開)。どちらもチェーンを読み取るだけで、署名も、鍵の保持も、ブロードキャストも行いません。2026年10月27日に公開されました。

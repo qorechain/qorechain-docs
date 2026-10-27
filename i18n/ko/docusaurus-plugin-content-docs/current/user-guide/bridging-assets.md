@@ -72,7 +72,7 @@ qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_test
 qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
-이것은 두 테스트 네트워크 사이의 테스트 채널이며, 토큰에는 가치가 없습니다. 패킷이 전달되려면 해당 채널에서 릴레이어가 실행 중이어야 하는데, 이 매뉴얼은 릴레이어를 게시하거나 약속하지 않으므로 전송이 대기 상태로 남아 있을 수 있습니다. 위 명령어를 메인넷에서 사용하지 마십시오. 메인넷에는 열린 채널이 없어 트랜잭션이 실패합니다.
+이것은 두 테스트 네트워크 사이의 테스트 채널이며, 토큰에는 가치가 없습니다. 패킷이 전달되려면 해당 채널에서 릴레이어가 실행 중이어야 하는데, [QORel](/qorel/overview)로 직접 릴레이어를 실행할 수 있습니다. 이 매뉴얼은 QoreChain이 운영하는 릴레이어 서비스를 약속하지 않으므로 전송이 대기 상태로 남아 있을 수 있습니다. 위 명령어를 메인넷에서 사용하지 마십시오. 메인넷에는 열린 채널이 없어 트랜잭션이 실패합니다.
 
 ---
 

@@ -150,5 +150,13 @@
   "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
     "message": "Herkese açık her QoreChain paketi: nedir, yenilikleri nelerdir, nasıl kullanılır, nasıl erişilir ve nerede yayımlanır.",
     "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel": {
+    "message": "QORel",
+    "description": "The label for category 'QORel' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel.link.generated-index.description": {
+    "message": "QoreChain'in IBC relayer'ı: QoreChain'in gerektirdiği hibrit post-kuantum imzayı ekleyen bir Hermes fork'u. Kurulum, hızlı başlangıç, yapılandırma, işletim ve her dilden imzalama.",
+    "description": "The generated-index page description for category 'QORel' in sidebar 'docsSidebar'"
   }
 }

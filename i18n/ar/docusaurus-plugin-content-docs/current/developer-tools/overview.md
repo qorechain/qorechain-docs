@@ -241,6 +241,12 @@ sidebar_position: 1
 | تطبيقات Cosmos dApp | `@qorechain/qorex-interchain-kit` (أو `@qorechain/qorex-cosmos-kit`) |
 | التوقيع الهجين في محفظتك أو خادمك الخلفي | `@qorechain/qoresign` |
 
+### QORel، مُرحِّل IBC {#group-qorel}
+
+| الحزمة | المصدر | الإصدار | التثبيت | الحالة |
+|---|---|---|---|---|
+| QORel (`qorel`) | إصدار GitHub `qorel-v0.1.0`، وHomebrew، والحاوية `ghcr.io/qorechain/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` | منشورة كإصدار تجريبي مبدئي (pre-release). IBC v1 فقط؛ لشبكة الاختبار فقط. راجع [QORel](/qorel/overview) |
+
 ### خادم MCP وأداة CLI {#group-mcp}
 
 الصفحات: [خادم MCP الخاص بـ QoreChain](/developer-tools/mcp)، [QoreChain CLI](/developer-tools/qore-cli). المصدر: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp) (عام). كلاهما يقرأ السلسلة ولا يوقّع ولا يحتفظ بمفاتيح ولا يبثّ. نُشرا في 27 أكتوبر 2026.

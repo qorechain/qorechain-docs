@@ -241,6 +241,12 @@ Guía: [QoreX, para desarrolladores](/qorex/overview#developers). Código fuente
 | dApps de Cosmos | `@qorechain/qorex-interchain-kit` (o `@qorechain/qorex-cosmos-kit`) |
 | Firma híbrida en tu propio monedero o backend | `@qorechain/qoresign` |
 
+### QORel, el relayer de IBC {#group-qorel}
+
+| Paquete | Dónde | Versión | Instalación | Estado |
+|---|---|---|---|---|
+| QORel (`qorel`) | Release de GitHub `qorel-v0.1.0`, Homebrew, contenedor `ghcr.io/qorechain/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` | Publicado como prelanzamiento. Solo IBC v1; solo testnet. Consulta [QORel](/qorel/overview) |
+
 ### Servidor MCP y CLI {#group-mcp}
 
 Páginas: [Servidor MCP de QoreChain](/developer-tools/mcp), [CLI de QoreChain](/developer-tools/qore-cli). Código fuente: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp) (público). Ambos leen la cadena y ninguno firma, custodia claves ni transmite. Publicados el 27 de octubre de 2026.

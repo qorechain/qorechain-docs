@@ -150,5 +150,13 @@
   "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
     "message": "QoreChain の公開パッケージすべて: それが何か、新しい点、使い方、アクセス方法、公開場所。",
     "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel": {
+    "message": "QORel",
+    "description": "The label for category 'QORel' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel.link.generated-index.description": {
+    "message": "QoreChain の IBC リレイヤー。QoreChain が必須とするハイブリッドのポスト量子署名を追加した Hermes のフォークです。インストール、クイックスタート、設定、運用、そしてあらゆる言語からの署名を扱います。",
+    "description": "The generated-index page description for category 'QORel' in sidebar 'docsSidebar'"
   }
 }

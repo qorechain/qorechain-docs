@@ -72,7 +72,7 @@ qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_test
 qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
-Acesta este un canal de test între două rețele de test; tokenurile nu au valoare. Livrarea unui pachet necesită un relayer care rulează pentru canal, iar acest manual nu publică și nu promite unul, așa că un transfer poate rămâne în așteptare. Nu folosi comenzile de mai sus pe mainnet: acolo nu există niciun canal deschis, iar tranzacția ar eșua.
+Acesta este un canal de test între două rețele de test; tokenurile nu au valoare. Livrarea unui pachet necesită un relayer care rulează pentru canal. Poți rula unul propriu cu [QORel](/qorel/overview); acest manual nu promite un serviciu de relayer rulat de QoreChain, așa că un transfer poate rămâne în așteptare. Nu folosi comenzile de mai sus pe mainnet: acolo nu există niciun canal deschis, iar tranzacția ar eșua.
 
 ---
 

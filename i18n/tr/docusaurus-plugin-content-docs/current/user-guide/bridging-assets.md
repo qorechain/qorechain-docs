@@ -72,7 +72,7 @@ qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_test
 qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
-Bu, iki test ağı arasında bir test kanalıdır; token'ların değeri yoktur. Bir paketin teslim edilmesi için kanal için çalışan bir relayer gerekir; bu kılavuz bir tane yayımlamaz veya vaat etmez, bu yüzden bir transfer beklemede kalabilir. Yukarıdaki komutları mainnet'te kullanmayın: orada açık kanal yoktur ve işlem başarısız olur.
+Bu, iki test ağı arasında bir test kanalıdır; token'ların değeri yoktur. Bir paketin teslim edilmesi için kanal için çalışan bir relayer gerekir. Kendi relayer'ınızı [QORel](/qorel/overview) ile çalıştırabilirsiniz; bu kılavuz QoreChain tarafından işletilen bir relayer hizmeti vaat etmez, bu yüzden bir transfer beklemede kalabilir. Yukarıdaki komutları mainnet'te kullanmayın: orada açık kanal yoktur ve işlem başarısız olur.
 
 ---
 

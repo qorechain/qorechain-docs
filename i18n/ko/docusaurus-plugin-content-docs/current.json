@@ -150,5 +150,13 @@
   "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
     "message": "QoreChain의 모든 공개 패키지: 무엇인지, 새로운 점은 무엇인지, 사용 방법, 접근 방법, 게시 위치.",
     "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel": {
+    "message": "QORel",
+    "description": "The label for category 'QORel' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel.link.generated-index.description": {
+    "message": "QoreChain의 IBC 릴레이어입니다. QoreChain이 요구하는 하이브리드 포스트 양자 서명을 추가한 Hermes 포크입니다. 설치, 빠른 시작, 설정, 운영, 그리고 모든 언어에서의 서명을 다룹니다.",
+    "description": "The generated-index page description for category 'QORel' in sidebar 'docsSidebar'"
   }
 }

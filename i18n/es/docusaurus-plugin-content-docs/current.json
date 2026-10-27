@@ -150,5 +150,13 @@
   "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
     "message": "Todos los paquetes públicos de QoreChain: qué es cada uno, qué hay de nuevo, cómo usarlo, cómo acceder a él y dónde está publicado.",
     "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel": {
+    "message": "QORel",
+    "description": "The label for category 'QORel' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel.link.generated-index.description": {
+    "message": "El relayer de IBC de QoreChain: un fork de Hermes que añade la firma híbrida poscuántica que exige QoreChain. Instalación, inicio rápido, configuración, operación y firma desde cualquier lenguaje.",
+    "description": "The generated-index page description for category 'QORel' in sidebar 'docsSidebar'"
   }
 }

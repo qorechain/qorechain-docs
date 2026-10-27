@@ -241,6 +241,12 @@ Ghid: [QoreX, pentru dezvoltatori](/qorex/overview#developers). Sursă: [qorecha
 | dApp-uri Cosmos | `@qorechain/qorex-interchain-kit` (sau `@qorechain/qorex-cosmos-kit`) |
 | Semnare hibridă în propriul portofel sau backend | `@qorechain/qoresign` |
 
+### QORel, releul IBC {#group-qorel}
+
+| Pachet | Unde | Versiune | Instalare | Stare |
+|---|---|---|---|---|
+| QORel (`qorel`) | Release GitHub `qorel-v0.1.0`, Homebrew, container `ghcr.io/qorechain/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` | Publicat ca pre-lansare. Doar IBC v1; doar testnet. Vezi [QORel](/qorel/overview) |
+
 ### Server MCP și CLI {#group-mcp}
 
 Pagini: [Serverul MCP QoreChain](/developer-tools/mcp), [CLI-ul QoreChain](/developer-tools/qore-cli). Sursa: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp) (public). Ambele citesc lanțul și niciunul nu semnează, nu ține chei și nu transmite. Publicate la 27 octombrie 2026.

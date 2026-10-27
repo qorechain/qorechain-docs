@@ -150,5 +150,13 @@
   "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
     "message": "Toate pachetele publice QoreChain: ce sunt, ce este nou în ele, cum se folosesc, cum se accesează și unde sunt publicate.",
     "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel": {
+    "message": "QORel",
+    "description": "The label for category 'QORel' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QORel.link.generated-index.description": {
+    "message": "Releul IBC al QoreChain: un fork al Hermes care adaugă semnătura hibridă post-cuantică pe care o cere QoreChain. Instalare, pornire rapidă, configurare, operare și semnare din orice limbaj.",
+    "description": "The generated-index page description for category 'QORel' in sidebar 'docsSidebar'"
   }
 }

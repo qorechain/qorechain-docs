@@ -241,6 +241,12 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 | Cosmos dApp | `@qorechain/qorex-interchain-kit` (또는 `@qorechain/qorex-cosmos-kit`) |
 | 자체 지갑이나 백엔드에서의 하이브리드 서명 | `@qorechain/qoresign` |
 
+### QORel, IBC 릴레이어 {#group-qorel}
+
+| 패키지 | 위치 | 버전 | 설치 | 상태 |
+|---|---|---|---|---|
+| QORel (`qorel`) | GitHub 릴리스 `qorel-v0.1.0`, Homebrew, 컨테이너 `ghcr.io/qorechain/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` | 사전 릴리스로 게시됨. IBC v1만 지원, 테스트넷 전용. [QORel](/qorel/overview) 참조 |
+
 ### MCP 서버와 CLI {#group-mcp}
 
 페이지: [QoreChain MCP 서버](/developer-tools/mcp), [QoreChain CLI](/developer-tools/qore-cli). 소스: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp)(공개). 둘 다 체인을 읽기만 하며 서명하거나, 키를 보관하거나, 브로드캐스트하지 않습니다. 2026년 10월 27일에 게시되었습니다.
