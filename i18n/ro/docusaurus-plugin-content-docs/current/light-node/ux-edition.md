@@ -27,35 +27,33 @@ Construiește din tag-ul de release pe care îl numește manifestul (astăzi `gi
 
 ### Docker
 
-Serviciul UX se construiește din `Dockerfile.ux` din depozitul sursă (`github.com/qorechain/qorechain-lightnode`, tag-ul care corespunde manifestului rețelei tale). Containerul are nevoie de un `config.toml` în volumul său de date înainte de a porni. Binarul UX are comenzile de configurare, așa că îl poți crea direct în volum:
+Serviciul UX rulează imaginea publică `ghcr.io/qorechain/qorechain-lightnode-ux` (tag-urile `latest` și `v<version>`, de exemplu `v3.1.12`), descărcată de `docker-compose.yml` din ramura `main` a `github.com/qorechain/qorechain-lightnode`; dacă registrul nu este accesibil, compose construiește `Dockerfile.ux` din sursă. Containerul are nevoie de un `config.toml` în volumul său de date înainte de a porni. Binarul UX are comenzile de configurare, așa că îl poți crea direct în volum:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull
 
 docker compose run --rm lightnode-ux onboard
 docker compose run --rm lightnode-ux keys add-operator --recover   # to register this node
 docker compose run --rm lightnode-ux register --delegate-to qorvaloper1...
 ```
 
-În interiorul unui container, dashboard-ul trebuie să asculte pe toate interfețele containerului, așa că setează acest lucru în configurația respectivă (`/root/.qorechain-lightnode/config.toml` din volum) și publică portul pe loopback-ul gazdei exclusiv. Fișierul `docker-compose.yml` livrat publică `8420:8420`, care este accesibil de pe alte mașini; modifică-l:
+În interiorul unui container, dashboard-ul trebuie să asculte pe toate interfețele containerului, așa că setează acest lucru în configurația respectivă (`/root/.qorechain-lightnode/config.toml` din volum):
 
 ```toml
 [dashboard]
 bind_addr = "0.0.0.0:8420"
 ```
 
-```yaml
-# docker-compose.yml, lightnode-ux service
-ports:
-  - "127.0.0.1:8420:8420"
-```
+Fișierul compose publică portul exclusiv pe loopback-ul gazdei (`127.0.0.1:8420:8420`), așa că dashboard-ul nu este accesibil de pe alte mașini. Păstrează-l așa: dashboard-ul nu are autentificare (vezi mai jos).
 
 ```bash
 docker compose up -d lightnode-ux
 ```
 
-Containerul UX își păstrează datele, inclusiv keyring-ul, într-un volum denumit la `/root/.qorechain-lightnode` și citește adresa RPC a chain-ului din variabila de mediu `QORECHAIN_RPC_ADDR`. Nodul își semnează singur tranzacțiile, așa că un container UX se poate înregistra și poate trimite heartbeat-uri la fel ca ediția SX. Imaginea UX nu include `qorechaind`, așa că alternativa `qorechaind` nu este disponibilă în ea.
+Containerul UX își păstrează datele, inclusiv keyring-ul, într-un volum denumit la `/root/.qorechain-lightnode` și citește adresa RPC a chain-ului din variabila de mediu `QORECHAIN_RPC_ADDR`. Nodul își semnează singur tranzacțiile, așa că un container UX se poate înregistra și poate trimite heartbeat-uri la fel ca ediția SX. Imaginea UX nu include `qorechaind`, așa că alternativa `qorechaind` nu este disponibilă în ea. Pentru actualizare, rulează `docker compose pull && docker compose up -d` (nodul anunță release-urile noi, dar nu se înlocuiește singur într-un container).
 
 ## Rulare
 

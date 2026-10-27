@@ -27,35 +27,33 @@ Manifestin adlandırdığı sürüm etiketinden derleyin (bugün `git checkout v
 
 ### Docker
 
-UX hizmeti, kaynak deposundaki (`github.com/qorechain/qorechain-lightnode`, ağınızın manifestiyle eşleşen etiket) `Dockerfile.ux`'ten derlenir. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir. UX ikili dosyası kurulum komutlarına sahip olduğundan bunu birim içinde oluşturabilirsiniz:
+UX hizmeti, `github.com/qorechain/qorechain-lightnode` deposunun `main` dalındaki `docker-compose.yml` tarafından çekilen herkese açık `ghcr.io/qorechain/qorechain-lightnode-ux` imajını çalıştırır (etiketler `latest` ve `v<version>`, örneğin `v3.1.12`); kayıt defterine ulaşılamazsa compose `Dockerfile.ux` dosyasını kaynaktan derler. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir. UX ikili dosyası kurulum komutlarına sahip olduğundan bunu birim içinde oluşturabilirsiniz:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull
 
 docker compose run --rm lightnode-ux onboard
 docker compose run --rm lightnode-ux keys add-operator --recover   # to register this node
 docker compose run --rm lightnode-ux register --delegate-to qorvaloper1...
 ```
 
-Bir konteynerin içinde dashboard'un tüm konteyner arabirimlerinde dinlemesi gerekir; bu nedenle bunu o yapılandırmada (birimdeki `/root/.qorechain-lightnode/config.toml`) ayarlayın ve bağlantı noktasını yalnızca ana makinenin loopback'inde yayınlayın. Birlikte gelen `docker-compose.yml`, başka makinelerden erişilebilen `8420:8420` eşlemesini yayınlar; bunu değiştirin:
+Bir konteynerin içinde dashboard'un tüm konteyner arabirimlerinde dinlemesi gerekir; bu nedenle bunu o yapılandırmada (birimdeki `/root/.qorechain-lightnode/config.toml`) ayarlayın:
 
 ```toml
 [dashboard]
 bind_addr = "0.0.0.0:8420"
 ```
 
-```yaml
-# docker-compose.yml, lightnode-ux service
-ports:
-  - "127.0.0.1:8420:8420"
-```
+Compose dosyası bağlantı noktasını yalnızca ana makinenin loopback'inde yayınlar (`127.0.0.1:8420:8420`); dolayısıyla dashboard başka makinelerden erişilemez. Bu şekilde bırakın: dashboard'da giriş yoktur (aşağıya bakın).
 
 ```bash
 docker compose up -d lightnode-ux
 ```
 
-UX konteyneri, anahtarlık dahil verilerini `/root/.qorechain-lightnode` konumundaki adlandırılmış bir birimde kalıcı kılar ve zincir RPC adresini `QORECHAIN_RPC_ADDR` ortam değişkeninden okur. Düğüm kendi işlemlerini kendisi imzalar; bu nedenle bir UX konteyneri SX sürümü gibi kayıt olabilir ve heartbeat gönderebilir. UX imajı `qorechaind` içermez, dolayısıyla `qorechaind` alternatifi bu imajda kullanılamaz.
+UX konteyneri, anahtarlık dahil verilerini `/root/.qorechain-lightnode` konumundaki adlandırılmış bir birimde kalıcı kılar ve zincir RPC adresini `QORECHAIN_RPC_ADDR` ortam değişkeninden okur. Düğüm kendi işlemlerini kendisi imzalar; bu nedenle bir UX konteyneri SX sürümü gibi kayıt olabilir ve heartbeat gönderebilir. UX imajı `qorechaind` içermez, dolayısıyla `qorechaind` alternatifi bu imajda kullanılamaz. Güncellemek için `docker compose pull && docker compose up -d` çalıştırın (düğüm yeni sürümleri duyurur ancak bir konteyner içinde kendini değiştirmez).
 
 ## Çalıştırma
 

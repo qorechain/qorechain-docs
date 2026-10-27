@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 Le RPC de la chaîne pour `onboard` est `https://rpc.qore.host` (mainnet) ou `https://rpc-testnet.qore.host` (testnet). Pour l'édition UX, utilisez `lightnode-ux` avec les mêmes commandes et ouvrez `http://127.0.0.1:8420`. Détails de chaque étape : [Édition SX](/light-node/sx-edition) et [Enregistrement et licence](/light-node/registration-and-licensing).
 
-**3. Gardez-le à jour.** Les nœuds légers 3.1.11 et ultérieurs se mettent à jour eux-mêmes hors des conteneurs (voir l'élément de mise à jour automatique ci-dessus). Un nœud en 3.1.10 ou antérieur doit installer la 3.1.12 à la main une fois : téléchargez le binaire versionné comme ci-dessus et remplacez le fichier. Avec Docker, reconstruisez à partir du nouveau tag source. Voir [Édition SX : mise à jour](/light-node/sx-edition#updating).
+**3. Gardez-le à jour.** Les nœuds légers 3.1.11 et ultérieurs se mettent à jour eux-mêmes hors des conteneurs (voir l'élément de mise à jour automatique ci-dessus). Un nœud en 3.1.10 ou antérieur doit installer la 3.1.12 à la main une fois : téléchargez le binaire versionné comme ci-dessus et remplacez le fichier. Avec Docker, exécutez `docker compose pull && docker compose up -d`. Voir [Édition SX : mise à jour](/light-node/sx-edition#updating).
 
 ## Comment y accéder {#how-to-access}
 
@@ -120,7 +120,7 @@ Pour être éligible aux récompenses, un nœud léger doit être **enregistré 
 | Binaires | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 12 fichiers par publication (SX et UX, Linux, macOS et Windows, amd64 et arm64) plus `SHA256SUMS` |
 | Code source et publications | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Publication `v3.1.12` (actuelle) et tags antérieurs ; chacune comprend les 12 binaires, `SHA256SUMS`, `lightnode-build.json` et un APK Android en aperçu |
 | Android | Joint à la publication GitHub uniquement | Aperçu : suit la chaîne, ne s'enregistre pas, ne gagne rien |
-| Docker | Construit à partir du tag source (voir [Édition SX : Docker](/light-node/sx-edition#docker)) | Aucune image de registre n'est publiée pour des pulls anonymes |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` et `ghcr.io/qorechain/qorechain-lightnode-ux`, publiques, tags `latest` et `v<version>` (voir [Édition SX : Docker](/light-node/sx-edition#docker)) | `v3.1.12` |
 
 Vérifiez la `version` dans le manifeste de votre réseau avant de télécharger, plutôt que de vous fier à ce tableau. La clé de signature des publications est intégrée au binaire ; il n'y a rien à installer de votre côté.
 
@@ -131,7 +131,7 @@ Vérifiez la `version` dans le manifeste de votre réseau avant de télécharger
 - **Un heartbeat est une signature de vivacité.** Il prouve que la clé de l'opérateur a signé à temps, et non que le logiciel complet a tourné en continu.
 - **Les avertissements de réputation ne fonctionnent que sur le testnet pour l'instant.** Le mainnet ne sert pas encore les scores de réputation par validateur ; sur le mainnet, cette vérification ne s'exécute donc pas et le nœud l'indique dans son journal. Les avertissements « jailed », « hors de l'ensemble actif » et « stake faible » n'en dépendent pas. Les versions du nœud antérieures à la 3.1.11 consignaient un échec de la vérification de réputation toutes les cinq minutes et n'avertissaient jamais de rien.
 - **La mise à jour automatique commence à la 3.1.11.** Un nœud en 3.1.10 ou antérieur ne se met pas à jour tout seul et nécessite une installation manuelle de la 3.1.12. Dans un conteneur ou un dossier non accessible en écriture, le nœud ne fait qu'annoncer les nouvelles versions.
-- **Pas d'image Docker à récupérer.** Construisez à partir du tag source ; les paquets de conteneur publiés ne sont pas encore publics. Les nœuds Docker ne se mettent jamais à jour eux-mêmes.
+- **Les nœuds Docker ne se mettent pas à jour eux-mêmes.** Ils sont informés d'une nouvelle version, et la mise à jour se fait avec `docker compose pull && docker compose up -d`.
 - **Android est un aperçu** et ne s'enregistre pas et ne gagne rien.
 - **Licences.** Les attributions du mainnet sont signées à la main par lots ; il y a donc une attente entre le paiement et l'enregistrement. La licence testnet est limitée à une par compte et une par adresse.
 - **Un portefeuille créé sur le Dashboard ne peut pas faire tourner un nœud** sauf si vous exportez sa graine, car le nœud doit signer avec des clés que vous détenez.

@@ -43,15 +43,16 @@ Build from the release tag the manifest names (`git checkout v3.1.12` today). Th
 
 ### Docker {#docker}
 
-There is no pre-built registry image you can pull: the published container packages are not public yet, so you build the image from the source tag. Use the tag the manifest names (**`v3.1.12`** today). To update an existing install, rebuild from the new tag (`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`); a plain `docker compose up` or `restart` reuses the old image. Keys, config and the data volume carry over.
+The released images are public and can be pulled anonymously: `ghcr.io/qorechain/qorechain-lightnode-sx` and `ghcr.io/qorechain/qorechain-lightnode-ux`, each tagged `latest` and `v<version>` (for example `v3.1.12`). The `docker-compose.yml` on the `main` branch of the source repository uses them and falls back to building from source (`Dockerfile.sx`, `Dockerfile.ux`) when the registry is not reachable. To pin a release, change the `image:` tag in the compose file; to build from a release tag instead, `git checkout v<version>` and run `docker compose build`. Keys, config and the data volume carry over when you update.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull                    # fetches the released image
 
 # Once: the same setup as outside Docker, written into the data volume.
 docker compose run --rm lightnode-sx onboard
@@ -64,7 +65,7 @@ docker compose run --rm lightnode-sx status
 
 Keep `QORECHAIN_RPC_ADDR` exported on every `docker compose` command: it overrides `rpc_addr` from the config. Since 3.1.10 the compose file defaults it to the mainnet RPC `https://rpc.qore.host`, so a testnet node must export `https://rpc-testnet.qore.host` or it will follow mainnet. The SX container persists its data, including the keyring, in a named volume mounted at `/root/.qorechain-lightnode`.
 
-The node signs natively inside the container, so nothing else is required. The SX image also still carries a released `qorechaind` (v3.2.0, linux/amd64 only, checked against a pinned digest) for the [`qorechaind` fallback](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): `docker-compose.yml` mounts `~/.qorechaind` (or `QORECHAIND_HOME`) at `/root/.qorechaind` and passes `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` for that path. A node whose operator key is in its own keyring does not use either.
+The node signs natively inside the container, so nothing else is required. The SX image still carries a released `qorechaind` (v3.2.0, linux/amd64 only, checked against a pinned digest) for the [`qorechaind` fallback](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): `docker-compose.yml` mounts `~/.qorechaind` (or `QORECHAIND_HOME`) at `/root/.qorechaind` and passes `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` for that path. A node whose operator key is in its own keyring does not use either.
 
 ## Updating {#updating}
 
@@ -78,7 +79,7 @@ The node signs natively inside the container, so nothing else is required. The S
 - **Seeing an announcement.** The node logs a newer release and serves it on the local dashboard API at `GET /api/update` (fields `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); the UX dashboard shows a banner.
 - **Container or unwritable folder.** The node only announces: update the image or the file yourself.
 - **Light node 3.1.10 and earlier** do not update themselves. Install 3.1.12 by hand once: download the versioned binary from the manifest path (see [Install](#install)), verify it, replace the file and restart. After that the node follows its channel.
-- **Docker.** Docker never modifies the image. Rebuild from the new source tag (see [Docker](#docker)) and recreate the container.
+- **Docker.** A Docker node is notified of a new release (log and `GET /api/update`) but never replaces itself; the pull is the update: `docker compose pull && docker compose up -d` (keep `QORECHAIN_RPC_ADDR` exported). Building from the new source tag is the alternative.
 
 ## Configure {#configure}
 

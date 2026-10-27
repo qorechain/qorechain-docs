@@ -43,15 +43,16 @@ go build -o build/lightnode-sx ./cmd/lightnode-sx/
 
 ### Docker {#docker}
 
-プルできるビルド済みのレジストリイメージはありません。公開されたコンテナパッケージはまだ公開されていないため、ソースタグからイメージをビルドします。マニフェストが示すタグ(現在は **`v3.1.12`**)を使用してください。既存のインストールを更新するには、新しいタグから再ビルドしてください(`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`)。単純な `docker compose up` や `restart` では古いイメージが再利用されます。キー、設定、データボリュームはそのまま引き継がれます。
+リリース済みのイメージは公開されており、匿名でプルできます。`ghcr.io/qorechain/qorechain-lightnode-sx` と `ghcr.io/qorechain/qorechain-lightnode-ux` で、それぞれに `latest` と `v<version>`(例: `v3.1.12`)のタグが付いています。ソースリポジトリの `main` ブランチにある `docker-compose.yml` はこれらを使用し、レジストリに到達できない場合はソースからのビルド(`Dockerfile.sx`、`Dockerfile.ux`)にフォールバックします。リリースを固定するには compose ファイルの `image:` タグを変更してください。代わりにリリースタグからビルドするには、`git checkout v<version>` を実行してから `docker compose build` を実行します。アップデートしても、キー、設定、データボリュームはそのまま引き継がれます。
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull                    # fetches the released image
 
 # Once: the same setup as outside Docker, written into the data volume.
 docker compose run --rm lightnode-sx onboard
@@ -78,7 +79,7 @@ docker compose run --rm lightnode-sx status
 - **通知の確認。** ノードはより新しいリリースをログに出力し、ローカルのダッシュボード API の `GET /api/update` で提供します(フィールド `network`、`mode`、`current`、`latest`、`min_compatible`、`notes`、`update_available`、`mandatory`、`can_install`、`blocked`、`last_check`、`last_error`)。UX ダッシュボードにはバナーが表示されます。
 - **コンテナまたは書き込み不可のフォルダー。** ノードは通知のみを行います。イメージまたはファイルは自分で更新してください。
 - **ライトノード 3.1.10 以前**は自己更新しません。一度だけ手動で 3.1.12 をインストールしてください。マニフェストのパスからバージョン付きバイナリをダウンロードし([インストール](#install)を参照)、検証し、ファイルを置き換えて再起動します。その後、ノードはチャンネルに追従します。
-- **Docker。** Docker はイメージを変更しません。新しいソースタグから再ビルドし([Docker](#docker)を参照)、コンテナを再作成してください。
+- **Docker。** Docker ノードは新しいリリースの通知(ログと `GET /api/update`)を受け取りますが、自分自身を置き換えることはありません。プルがそのままアップデートになります: `docker compose pull && docker compose up -d`(`QORECHAIN_RPC_ADDR` はエクスポートしたままにしてください)。新しいソースタグからビルドする方法も代替手段として使えます。
 
 ## 設定 {#configure}
 

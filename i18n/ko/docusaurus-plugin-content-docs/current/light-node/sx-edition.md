@@ -43,15 +43,16 @@ go build -o build/lightnode-sx ./cmd/lightnode-sx/
 
 ### Docker {#docker}
 
-가져올 수 있는 미리 빌드된 레지스트리 이미지는 없습니다. 게시된 컨테이너 패키지가 아직 공개되지 않았으므로, 소스 태그에서 이미지를 직접 빌드합니다. 매니페스트가 지정하는 태그를 사용하세요(현재는 **`v3.1.12`**). 기존 설치를 업데이트하려면 새 태그에서 다시 빌드하세요(`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`). 단순한 `docker compose up`이나 `restart`는 이전 이미지를 재사용합니다. 키, 설정, 데이터 볼륨은 그대로 유지됩니다.
+릴리스된 이미지는 공개되어 있으며 익명으로 가져올 수 있습니다: `ghcr.io/qorechain/qorechain-lightnode-sx`와 `ghcr.io/qorechain/qorechain-lightnode-ux`이며, 각각 `latest`와 `v<version>` 태그(예: `v3.1.12`)가 있습니다. 소스 저장소 `main` 브랜치의 `docker-compose.yml`이 이 이미지를 사용하며, 레지스트리에 접근할 수 없으면 소스에서 빌드하는 방식(`Dockerfile.sx`, `Dockerfile.ux`)으로 대체됩니다. 특정 릴리스에 고정하려면 compose 파일의 `image:` 태그를 변경하세요. 대신 릴리스 태그에서 빌드하려면 `git checkout v<version>`을 실행한 뒤 `docker compose build`를 실행하세요. 업데이트할 때 키, 설정, 데이터 볼륨은 그대로 유지됩니다.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull                    # fetches the released image
 
 # Once: the same setup as outside Docker, written into the data volume.
 docker compose run --rm lightnode-sx onboard
@@ -78,7 +79,7 @@ docker compose run --rm lightnode-sx status
 - **공지 확인.** 노드는 더 새로운 릴리스를 로그에 기록하고 로컬 대시보드 API의 `GET /api/update`에서 제공합니다(필드 `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`). UX 대시보드는 배너를 표시합니다.
 - **컨테이너 또는 쓰기 불가능한 폴더.** 노드는 알리기만 합니다. 이미지나 파일은 직접 업데이트하세요.
 - **라이트 노드 3.1.10 이하**는 스스로 업데이트하지 않습니다. 3.1.12를 한 번 직접 설치하세요. 매니페스트 경로에서 버전이 포함된 바이너리를 다운로드하고([설치](#install) 참조), 검증한 다음, 파일을 교체하고 다시 시작합니다. 그 이후에는 노드가 자신의 채널을 따라갑니다.
-- **Docker.** Docker는 이미지를 절대 수정하지 않습니다. 새 소스 태그에서 다시 빌드하고([Docker](#docker) 참조) 컨테이너를 다시 만드세요.
+- **Docker.** Docker 노드는 새 릴리스를 알림(로그와 `GET /api/update`)으로 받지만 스스로를 교체하지는 않습니다. 업데이트는 pull입니다: `docker compose pull && docker compose up -d`(`QORECHAIN_RPC_ADDR`를 export된 상태로 유지하세요). 대안은 새 소스 태그에서 빌드하는 것입니다.
 
 ## 설정 {#configure}
 

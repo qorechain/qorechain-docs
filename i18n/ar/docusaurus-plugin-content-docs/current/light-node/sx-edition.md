@@ -43,15 +43,16 @@ go build -o build/lightnode-sx ./cmd/lightnode-sx/
 
 ### Docker {#docker}
 
-لا توجد صورة جاهزة يمكنك سحبها: حزم الحاويات المنشورة ليست عامة بعد، لذا تبني الصورة من وسم المصدر. استخدم الوسم الذي يسميه البيان (**`v3.1.12`** اليوم). لتحديث تثبيت قائم، أعد البناء من الوسم الجديد (`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`)؛ فالأمر `docker compose up` أو `restart` وحده يعيد استخدام الصورة القديمة. تنتقل المفاتيح والإعدادات ووحدة تخزين البيانات كما هي.
+الصور المنشورة عامة ويمكن سحبها دون مصادقة: `ghcr.io/qorechain/qorechain-lightnode-sx` و`ghcr.io/qorechain/qorechain-lightnode-ux`، لكل منهما الوسمان `latest` و`v<version>` (مثلًا `v3.1.12`). يستخدمهما ملف `docker-compose.yml` في الفرع `main` من مستودع المصدر، ويعود إلى البناء من المصدر (`Dockerfile.sx` و`Dockerfile.ux`) عندما يتعذّر الوصول إلى السجل. لتثبيت إصدار بعينه، غيّر وسم `image:` في ملف compose؛ ولبناء الصورة من وسم إصدار بدلًا من ذلك، نفّذ `git checkout v<version>` ثم `docker compose build`. تنتقل المفاتيح والإعدادات ووحدة تخزين البيانات كما هي عند التحديث.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull                    # fetches the released image
 
 # Once: the same setup as outside Docker, written into the data volume.
 docker compose run --rm lightnode-sx onboard
@@ -64,7 +65,7 @@ docker compose run --rm lightnode-sx status
 
 أبقِ `QORECHAIN_RPC_ADDR` مُصدَّرًا مع كل أمر `docker compose`: فهو يتجاوز `rpc_addr` من ملف الإعدادات. منذ 3.1.10 يضبط ملف compose قيمته الافتراضية على RPC الشبكة الرئيسية `https://rpc.qore.host`، لذا يجب على عقدة شبكة الاختبار أن تصدّر `https://rpc-testnet.qore.host` وإلا ستتابع الشبكة الرئيسية. تحفظ حاوية SX بياناتها، بما فيها حلقة المفاتيح، في وحدة تخزين مسمّاة مركَّبة عند `/root/.qorechain-lightnode`.
 
-توقّع العقدة توقيعًا أصليًا داخل الحاوية، لذا لا حاجة إلى أي شيء آخر. ولا تزال صورة SX تحمل أيضًا `qorechaind` منشورًا (v3.2.0، لـ linux/amd64 فقط، يُفحص مقابل بصمة مثبَّتة) من أجل [البديل الاحتياطي `qorechaind`](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): يركِّب `docker-compose.yml` المجلد `~/.qorechaind` (أو `QORECHAIND_HOME`) عند `/root/.qorechaind` ويمرّر `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` لذلك المسار. أما العقدة التي يوجد مفتاح مشغِّلها في حلقة مفاتيحها الخاصة فلا تستخدم أيًّا منهما.
+توقّع العقدة توقيعًا أصليًا داخل الحاوية، لذا لا حاجة إلى أي شيء آخر. ولا تزال صورة SX تحمل `qorechaind` منشورًا (v3.2.0، لـ linux/amd64 فقط، يُفحص مقابل بصمة مثبَّتة) من أجل [البديل الاحتياطي `qorechaind`](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): يركِّب `docker-compose.yml` المجلد `~/.qorechaind` (أو `QORECHAIND_HOME`) عند `/root/.qorechaind` ويمرّر `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` لذلك المسار. أما العقدة التي يوجد مفتاح مشغِّلها في حلقة مفاتيحها الخاصة فلا تستخدم أيًّا منهما.
 
 ## التحديث {#updating}
 
@@ -78,7 +79,7 @@ docker compose run --rm lightnode-sx status
 - **رؤية الإعلان.** تسجّل العقدة وجود إصدار أحدث وتقدّمه على واجهة API للوحة التحكم المحلية عند `GET /api/update` (الحقول `network` و`mode` و`current` و`latest` و`min_compatible` و`notes` و`update_available` و`mandatory` و`can_install` و`blocked` و`last_check` و`last_error`)؛ وتعرض لوحة UX شريطًا.
 - **حاوية أو مجلد غير قابل للكتابة.** تكتفي العقدة بالإعلان: حدّث الصورة أو الملف بنفسك.
 - **العقدة الخفيفة 3.1.10 وما قبلها** لا تحدّث نفسها. ثبّت الإصدار 3.1.12 يدويًا مرة واحدة: نزّل الثنائي المرقَّم من مسار البيان (راجع [التثبيت](#install))، وتحقق منه، واستبدل الملف وأعد التشغيل. بعد ذلك تتبع العقدة قناتها.
-- **Docker.** لا يعدّل Docker الصورة أبدًا. أعد البناء من وسم المصدر الجديد (راجع [Docker](#docker)) وأعد إنشاء الحاوية.
+- **Docker.** تُبلَّغ عقدة Docker بوجود إصدار جديد (في السجل وعبر `GET /api/update`) لكنها لا تستبدل نفسها أبدًا؛ والسحب هو التحديث: `docker compose pull && docker compose up -d` (أبقِ `QORECHAIN_RPC_ADDR` مُصدَّرًا). والبديل هو البناء من وسم المصدر الجديد.
 
 ## التهيئة {#configure}
 

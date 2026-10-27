@@ -43,15 +43,16 @@ Construiește din tag-ul de release pe care îl indică manifestul (`git checkou
 
 ### Docker {#docker}
 
-Nu există o imagine precompilată pe care să o poți descărca dintr-un registru: pachetele de container publicate nu sunt încă publice, așa că construiești imaginea din tag-ul sursă. Folosește tag-ul pe care îl indică manifestul (**`v3.1.12`** astăzi). Pentru a actualiza o instalare existentă, reconstruiește din noul tag (`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`); un simplu `docker compose up` sau `restart` refolosește imaginea veche. Cheile, configurația și volumul de date se păstrează.
+Imaginile publicate sunt publice și pot fi descărcate anonim: `ghcr.io/qorechain/qorechain-lightnode-sx` și `ghcr.io/qorechain/qorechain-lightnode-ux`, fiecare cu tag-urile `latest` și `v<version>` (de exemplu `v3.1.12`). Fișierul `docker-compose.yml` din ramura `main` a depozitului sursă le folosește și revine la construirea din sursă (`Dockerfile.sx`, `Dockerfile.ux`) când registrul nu este accesibil. Pentru a fixa un release, schimbă tag-ul `image:` din fișierul compose; pentru a construi în schimb dintr-un tag de release, rulează `git checkout v<version>` și apoi `docker compose build`. Cheile, configurația și volumul de date se păstrează când actualizezi.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull                    # fetches the released image
 
 # Once: the same setup as outside Docker, written into the data volume.
 docker compose run --rm lightnode-sx onboard
@@ -64,7 +65,7 @@ docker compose run --rm lightnode-sx status
 
 Păstrează `QORECHAIN_RPC_ADDR` exportat la fiecare comandă `docker compose`: suprascrie `rpc_addr` din configurație. Din 3.1.10, fișierul compose îl setează implicit la RPC-ul de mainnet `https://rpc.qore.host`, așa că un nod de testnet trebuie să exporte `https://rpc-testnet.qore.host`, altfel va urma mainnet-ul. Containerul SX persistă datele, inclusiv keyring-ul, într-un volum numit, montat la `/root/.qorechain-lightnode`.
 
-Nodul semnează nativ în interiorul containerului, deci nu este nevoie de nimic altceva. Imaginea SX conține în continuare și un `qorechaind` publicat oficial (v3.2.0, doar linux/amd64, verificat față de un digest fixat) pentru [alternativa `qorechaind`](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): `docker-compose.yml` montează `~/.qorechaind` (sau `QORECHAIND_HOME`) la `/root/.qorechaind` și transmite `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` pentru această cale. Un nod a cărui cheie de operator se află în propriul keyring nu folosește niciuna dintre ele.
+Nodul semnează nativ în interiorul containerului, deci nu este nevoie de nimic altceva. Imaginea SX conține în continuare un `qorechaind` publicat oficial (v3.2.0, doar linux/amd64, verificat față de un digest fixat) pentru [alternativa `qorechaind`](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): `docker-compose.yml` montează `~/.qorechaind` (sau `QORECHAIND_HOME`) la `/root/.qorechaind` și transmite `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` pentru această cale. Un nod a cărui cheie de operator se află în propriul keyring nu folosește niciuna dintre ele.
 
 ## Actualizare {#updating}
 
@@ -78,7 +79,7 @@ Nodul semnează nativ în interiorul containerului, deci nu este nevoie de nimic
 - **Cum vezi un anunț.** Nodul jurnalizează un release mai nou și îl servește în API-ul tabloului de bord local la `GET /api/update` (câmpuri `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); tabloul de bord UX afișează un banner.
 - **Container sau folder fără drept de scriere.** Nodul doar anunță: actualizează tu imaginea sau fișierul.
 - **Light node 3.1.10 și anterioare** nu se actualizează singure. Instalează 3.1.12 manual o dată: descarcă binarul versionat din calea manifestului (vezi [Instalare](#install)), verifică-l, înlocuiește fișierul și repornește. După aceea nodul urmează canalul său.
-- **Docker.** Docker nu modifică niciodată imaginea. Reconstruiește din noul tag sursă (vezi [Docker](#docker)) și recreează containerul.
+- **Docker.** Un nod Docker este notificat despre un release nou (în jurnal și la `GET /api/update`), dar nu se înlocuiește niciodată singur; descărcarea este actualizarea: `docker compose pull && docker compose up -d` (păstrează `QORECHAIN_RPC_ADDR` exportat). Alternativa este construirea din noul tag sursă.
 
 ## Configurare {#configure}
 

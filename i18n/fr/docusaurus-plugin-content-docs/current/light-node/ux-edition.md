@@ -27,35 +27,33 @@ Compilez à partir du tag de version que nomme le manifeste (`git checkout v3.1.
 
 ### Docker
 
-Le service UX se compile à partir de `Dockerfile.ux` dans le dépôt source (`github.com/qorechain/qorechain-lightnode`, le tag correspondant au manifeste de votre réseau). Le conteneur a besoin d'un `config.toml` dans son volume de données avant de pouvoir démarrer. Le binaire UX dispose des commandes de configuration, vous pouvez donc la créer directement dans le volume :
+Le service UX exécute l'image publique `ghcr.io/qorechain/qorechain-lightnode-ux` (tags `latest` et `v<version>`, par exemple `v3.1.12`), récupérée par le `docker-compose.yml` de la branche `main` de `github.com/qorechain/qorechain-lightnode` ; si le registre n'est pas joignable, compose compile `Dockerfile.ux` depuis les sources. Le conteneur a besoin d'un `config.toml` dans son volume de données avant de pouvoir démarrer. Le binaire UX dispose des commandes de configuration, vous pouvez donc la créer directement dans le volume :
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull
 
 docker compose run --rm lightnode-ux onboard
 docker compose run --rm lightnode-ux keys add-operator --recover   # to register this node
 docker compose run --rm lightnode-ux register --delegate-to qorvaloper1...
 ```
 
-Dans un conteneur, le dashboard doit écouter sur toutes les interfaces du conteneur ; définissez donc ceci dans cette configuration (`/root/.qorechain-lightnode/config.toml` dans le volume) et publiez le port uniquement sur la boucle locale de l'hôte. Le `docker-compose.yml` fourni publie `8420:8420`, qui est joignable depuis d'autres machines ; modifiez-le :
+Dans un conteneur, le dashboard doit écouter sur toutes les interfaces du conteneur ; définissez donc ceci dans cette configuration (`/root/.qorechain-lightnode/config.toml` dans le volume) :
 
 ```toml
 [dashboard]
 bind_addr = "0.0.0.0:8420"
 ```
 
-```yaml
-# docker-compose.yml, lightnode-ux service
-ports:
-  - "127.0.0.1:8420:8420"
-```
+Le fichier compose publie le port uniquement sur la boucle locale de l'hôte (`127.0.0.1:8420:8420`) ; le dashboard n'est donc pas joignable depuis d'autres machines. Gardez-le ainsi : le dashboard n'a pas de connexion (voir ci-dessous).
 
 ```bash
 docker compose up -d lightnode-ux
 ```
 
-Le conteneur UX conserve les données, y compris le keyring, dans un volume nommé sur `/root/.qorechain-lightnode` et lit l'adresse RPC de la chaîne depuis la variable d'environnement `QORECHAIN_RPC_ADDR`. Le nœud signe lui-même ses transactions ; un conteneur UX peut donc s'enregistrer et envoyer des heartbeats comme l'édition SX. L'image UX n'inclut pas `qorechaind`, le repli `qorechaind` n'y est donc pas disponible.
+Le conteneur UX conserve les données, y compris le keyring, dans un volume nommé sur `/root/.qorechain-lightnode` et lit l'adresse RPC de la chaîne depuis la variable d'environnement `QORECHAIN_RPC_ADDR`. Le nœud signe lui-même ses transactions ; un conteneur UX peut donc s'enregistrer et envoyer des heartbeats comme l'édition SX. L'image UX n'inclut pas `qorechaind`, le repli `qorechaind` n'y est donc pas disponible. Pour mettre à jour, exécutez `docker compose pull && docker compose up -d` (le nœud annonce les nouvelles versions mais ne se remplace pas lui-même dans un conteneur).
 
 ## Exécution
 

@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 Der Chain-RPC für `onboard` ist `https://rpc.qore.host` (Mainnet) oder `https://rpc-testnet.qore.host` (Testnet). Verwenden Sie für die UX-Edition `lightnode-ux` mit denselben Befehlen und öffnen Sie `http://127.0.0.1:8420`. Details zu jedem Schritt: [SX-Edition](/light-node/sx-edition) und [Registrierung und Lizenzierung](/light-node/registration-and-licensing).
 
-**3. Aktuell halten.** Light Node 3.1.11 und neuer aktualisieren sich außerhalb von Containern selbst (siehe den Punkt zum Self-Update oben). Ein Knoten mit 3.1.10 oder früher muss 3.1.12 einmal von Hand installieren: Laden Sie die versionierte Binärdatei wie oben herunter und ersetzen Sie die Datei. Bei Docker bauen Sie aus dem neuen Source-Tag neu. Siehe [SX-Edition: Aktualisieren](/light-node/sx-edition#updating).
+**3. Aktuell halten.** Light Node 3.1.11 und neuer aktualisieren sich außerhalb von Containern selbst (siehe den Punkt zum Self-Update oben). Ein Knoten mit 3.1.10 oder früher muss 3.1.12 einmal von Hand installieren: Laden Sie die versionierte Binärdatei wie oben herunter und ersetzen Sie die Datei. Bei Docker führen Sie `docker compose pull && docker compose up -d` aus. Siehe [SX-Edition: Aktualisieren](/light-node/sx-edition#updating).
 
 ## So erhalten Sie Zugang {#how-to-access}
 
@@ -120,7 +120,7 @@ Um für Belohnungen berechtigt zu sein, muss eine Light Node **on-chain registri
 | Binärdateien | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 12 Dateien pro Release (SX und UX, Linux, macOS und Windows, amd64 und arm64) plus `SHA256SUMS` |
 | Quellcode und Releases | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Release `v3.1.12` (aktuell) und frühere Tags; jedes enthält die 12 Binärdateien, `SHA256SUMS`, `lightnode-build.json` und eine Android-Vorschau-APK |
 | Android | Nur dem GitHub-Release beigefügt | Vorschau: folgt der Chain, registriert sich nicht, verdient nichts |
-| Docker | Aus dem Source-Tag gebaut (siehe [SX-Edition: Docker](/light-node/sx-edition#docker)) | Es wird kein Registry-Image für anonyme Pulls veröffentlicht |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` und `ghcr.io/qorechain/qorechain-lightnode-ux`, öffentlich, Tags `latest` und `v<version>` (siehe [SX-Edition: Docker](/light-node/sx-edition#docker)) | `v3.1.12` |
 
 Prüfen Sie die `version` im Manifest Ihres Netzwerks, bevor Sie herunterladen, anstatt sich auf diese Tabelle zu verlassen. Der Release-Signaturschlüssel ist in die Binärdatei eingebaut; Sie müssen nichts installieren.
 
@@ -131,7 +131,7 @@ Prüfen Sie die `version` im Manifest Ihres Netzwerks, bevor Sie herunterladen, 
 - **Ein Heartbeat ist eine Liveness-Signatur.** Er belegt, dass der Operator-Schlüssel rechtzeitig signiert hat, nicht, dass die vollständige Software durchgehend lief.
 - **Reputationswarnungen gibt es vorerst nur im Testnet.** Das Mainnet stellt noch keine Reputationswerte pro Validator bereit, daher läuft diese eine Prüfung im Mainnet nicht, und der Knoten sagt das in seinem Log. Die Warnungen zu inhaftiert (jailed), nicht im aktiven Set und zu niedrigem Stake hängen nicht davon ab. Knotenversionen vor 3.1.11 protokollierten alle fünf Minuten eine fehlgeschlagene Reputationsprüfung und warnten nie vor irgendetwas.
 - **Das Self-Update beginnt bei 3.1.11.** Ein Knoten mit 3.1.10 oder früher aktualisiert sich nicht selbst und braucht eine manuelle Installation von 3.1.12. In einem Container oder einem nicht beschreibbaren Ordner kündigt der Knoten neue Releases nur an.
-- **Kein Docker-Image zum Pullen.** Bauen Sie aus dem Source-Tag; die veröffentlichten Container-Pakete sind noch nicht öffentlich. Docker-Knoten aktualisieren sich nie selbst.
+- **Docker-Knoten aktualisieren sich nicht selbst.** Sie werden über ein neues Release informiert, und das Update ist `docker compose pull && docker compose up -d`.
 - **Android ist eine Vorschau** und registriert sich nicht und verdient nichts.
 - **Lizenzen.** Mainnet-Vergaben werden in Stapeln von Hand signiert, es gibt also eine Wartezeit zwischen Zahlung und Registrierung. Die Testnet-Lizenz ist auf eine pro Konto und eine pro Adresse begrenzt.
 - **Eine im Dashboard erstellte Wallet kann keinen Knoten betreiben**, sofern Sie nicht ihren Seed exportieren, da der Knoten mit Schlüsseln signieren muss, die Sie besitzen.

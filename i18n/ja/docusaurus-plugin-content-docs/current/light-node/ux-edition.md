@@ -27,35 +27,33 @@ go build -o build/lightnode-ux ./cmd/lightnode-ux/
 
 ### Docker
 
-UX サービスは、ソースリポジトリ(`github.com/qorechain/qorechain-lightnode`、お使いのネットワークのマニフェストに一致するタグ)の `Dockerfile.ux` からビルドされます。コンテナは起動前にデータボリューム内に `config.toml` を必要とします。UX バイナリにはセットアップコマンドが含まれているため、ボリューム内で直接作成できます。
+UX サービスは公開イメージ `ghcr.io/qorechain/qorechain-lightnode-ux`(タグは `latest` と `v<version>`、例: `v3.1.12`)を実行します。これは `github.com/qorechain/qorechain-lightnode` の `main` ブランチにある `docker-compose.yml` によってプルされ、レジストリに到達できない場合、compose は `Dockerfile.ux` をソースからビルドします。コンテナは起動前にデータボリューム内に `config.toml` を必要とします。UX バイナリにはセットアップコマンドが含まれているため、ボリューム内で直接作成できます。
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull
 
 docker compose run --rm lightnode-ux onboard
 docker compose run --rm lightnode-ux keys add-operator --recover   # to register this node
 docker compose run --rm lightnode-ux register --delegate-to qorvaloper1...
 ```
 
-コンテナ内ではダッシュボードがコンテナのすべてのインターフェースでリッスンする必要があるため、その設定(ボリューム内の `/root/.qorechain-lightnode/config.toml`)に次を記述し、ポートはホストのループバックにのみ公開してください。同梱の `docker-compose.yml` は他のマシンから到達可能な `8420:8420` を公開しているため、次のように変更してください。
+コンテナ内ではダッシュボードがコンテナのすべてのインターフェースでリッスンする必要があるため、その設定(ボリューム内の `/root/.qorechain-lightnode/config.toml`)に次を記述してください。
 
 ```toml
 [dashboard]
 bind_addr = "0.0.0.0:8420"
 ```
 
-```yaml
-# docker-compose.yml, lightnode-ux service
-ports:
-  - "127.0.0.1:8420:8420"
-```
+compose ファイルはポートをホストのループバックにのみ公開します(`127.0.0.1:8420:8420`)。そのため、ダッシュボードは他のマシンから到達できません。この状態を維持してください。ダッシュボードにはログインがありません(下記を参照)。
 
 ```bash
 docker compose up -d lightnode-ux
 ```
 
-UX コンテナは、キーリングを含むデータを `/root/.qorechain-lightnode` にある名前付きボリュームに永続化し、チェーン RPC アドレスを `QORECHAIN_RPC_ADDR` 環境変数から読み取ります。ノードは自身のトランザクションに署名するため、UX コンテナも SX エディションと同様に登録とハートビートの送信ができます。UX イメージには `qorechaind` が含まれていないため、その中では `qorechaind` によるフォールバックは利用できません。
+UX コンテナは、キーリングを含むデータを `/root/.qorechain-lightnode` にある名前付きボリュームに永続化し、チェーン RPC アドレスを `QORECHAIN_RPC_ADDR` 環境変数から読み取ります。ノードは自身のトランザクションに署名するため、UX コンテナも SX エディションと同様に登録とハートビートの送信ができます。UX イメージには `qorechaind` が含まれていないため、その中では `qorechaind` によるフォールバックは利用できません。アップデートするには `docker compose pull && docker compose up -d` を実行してください(ノードは新しいリリースを通知しますが、コンテナ内では自分自身を置き換えません)。
 
 ## 実行
 

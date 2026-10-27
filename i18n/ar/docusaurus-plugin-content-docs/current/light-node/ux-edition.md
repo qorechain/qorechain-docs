@@ -27,35 +27,33 @@ go build -o build/lightnode-ux ./cmd/lightnode-ux/
 
 ### Docker
 
-تُبنى خدمة UX من `Dockerfile.ux` في مستودع المصدر (`github.com/qorechain/qorechain-lightnode`، الوسم المطابق لملف البيان (manifest) الخاص بشبكتك). تحتاج الحاوية إلى `config.toml` في وحدة تخزين بياناتها قبل أن تبدأ. يتضمن ثنائي UX أوامر الإعداد، لذا يمكنك إنشاؤه داخل وحدة التخزين:
+تشغّل خدمة UX الصورة العامة `ghcr.io/qorechain/qorechain-lightnode-ux` (الوسمان `latest` و`v<version>`، مثلًا `v3.1.12`)، ويسحبها ملف `docker-compose.yml` في الفرع `main` من `github.com/qorechain/qorechain-lightnode`؛ وإذا تعذّر الوصول إلى السجل، يبني compose الملف `Dockerfile.ux` من المصدر. تحتاج الحاوية إلى `config.toml` في وحدة تخزين بياناتها قبل أن تبدأ. يتضمن ثنائي UX أوامر الإعداد، لذا يمكنك إنشاؤه داخل وحدة التخزين:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull
 
 docker compose run --rm lightnode-ux onboard
 docker compose run --rm lightnode-ux keys add-operator --recover   # to register this node
 docker compose run --rm lightnode-ux register --delegate-to qorvaloper1...
 ```
 
-داخل الحاوية يجب أن تستمع لوحة التحكم على جميع واجهات الحاوية، لذا اضبط هذا في ذلك الملف (`/root/.qorechain-lightnode/config.toml` داخل وحدة التخزين) وانشر المنفذ على loopback الخاص بالمضيف فقط. ينشر ملف `docker-compose.yml` المرفق المنفذ `8420:8420`، الذي يمكن الوصول إليه من أجهزة أخرى؛ غيِّره:
+داخل الحاوية يجب أن تستمع لوحة التحكم على جميع واجهات الحاوية، لذا اضبط هذا في ذلك الملف (`/root/.qorechain-lightnode/config.toml` داخل وحدة التخزين):
 
 ```toml
 [dashboard]
 bind_addr = "0.0.0.0:8420"
 ```
 
-```yaml
-# docker-compose.yml, lightnode-ux service
-ports:
-  - "127.0.0.1:8420:8420"
-```
+ينشر ملف compose المنفذ على loopback الخاص بالمضيف فقط (`127.0.0.1:8420:8420`)، لذا لا يمكن الوصول إلى لوحة التحكم من أجهزة أخرى. أبقِ الأمر كذلك: فلوحة التحكم بلا تسجيل دخول (انظر أدناه).
 
 ```bash
 docker compose up -d lightnode-ux
 ```
 
-تحفظ حاوية UX البيانات، بما فيها حلقة المفاتيح، في وحدة تخزين مسمّاة عند `/root/.qorechain-lightnode` وتقرأ عنوان RPC للسلسلة من متغير البيئة `QORECHAIN_RPC_ADDR`. توقّع العقدة معاملاتها بنفسها، لذا تستطيع حاوية UX التسجيل وإرسال نبضات الحياة (heartbeats) مثل إصدار SX. لا تتضمن صورة UX البرنامج `qorechaind`، لذا لا يتوفر فيها البديل الاحتياطي عبر `qorechaind`.
+تحفظ حاوية UX البيانات، بما فيها حلقة المفاتيح، في وحدة تخزين مسمّاة عند `/root/.qorechain-lightnode` وتقرأ عنوان RPC للسلسلة من متغير البيئة `QORECHAIN_RPC_ADDR`. توقّع العقدة معاملاتها بنفسها، لذا تستطيع حاوية UX التسجيل وإرسال نبضات الحياة (heartbeats) مثل إصدار SX. لا تتضمن صورة UX البرنامج `qorechaind`، لذا لا يتوفر فيها البديل الاحتياطي عبر `qorechaind`. للتحديث، نفّذ `docker compose pull && docker compose up -d` (تُعلن العقدة عن الإصدارات الجديدة لكنها لا تستبدل نفسها داخل حاوية).
 
 ## التشغيل
 

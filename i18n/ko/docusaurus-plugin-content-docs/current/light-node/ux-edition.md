@@ -27,35 +27,33 @@ go build -o build/lightnode-ux ./cmd/lightnode-ux/
 
 ### Docker
 
-UX 서비스는 소스 저장소(`github.com/qorechain/qorechain-lightnode`, 네트워크의 매니페스트와 일치하는 태그)의 `Dockerfile.ux`에서 빌드됩니다. 컨테이너는 시작하기 전에 데이터 볼륨에 `config.toml`이 있어야 합니다. UX 바이너리에는 설정 명령이 있으므로 볼륨 안에서 직접 만들 수 있습니다:
+UX 서비스는 공개 이미지 `ghcr.io/qorechain/qorechain-lightnode-ux`(태그 `latest`와 `v<version>`, 예: `v3.1.12`)를 실행하며, 이 이미지는 `github.com/qorechain/qorechain-lightnode`의 `main` 브랜치에 있는 `docker-compose.yml`이 가져옵니다. 레지스트리에 접근할 수 없으면 compose가 `Dockerfile.ux`를 소스에서 빌드합니다. 컨테이너는 시작하기 전에 데이터 볼륨에 `config.toml`이 있어야 합니다. UX 바이너리에는 설정 명령이 있으므로 볼륨 안에서 직접 만들 수 있습니다:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull
 
 docker compose run --rm lightnode-ux onboard
 docker compose run --rm lightnode-ux keys add-operator --recover   # to register this node
 docker compose run --rm lightnode-ux register --delegate-to qorvaloper1...
 ```
 
-컨테이너 내부에서는 대시보드가 모든 컨테이너 인터페이스에서 수신 대기해야 하므로, 해당 설정(볼륨 안의 `/root/.qorechain-lightnode/config.toml`)에 다음을 지정하고 포트는 호스트의 루프백에서만 게시하세요. 기본 제공되는 `docker-compose.yml`은 다른 머신에서 접근 가능한 `8420:8420`을 게시하므로 다음과 같이 변경하세요:
+컨테이너 내부에서는 대시보드가 모든 컨테이너 인터페이스에서 수신 대기해야 하므로, 해당 설정(볼륨 안의 `/root/.qorechain-lightnode/config.toml`)에 다음을 지정하세요:
 
 ```toml
 [dashboard]
 bind_addr = "0.0.0.0:8420"
 ```
 
-```yaml
-# docker-compose.yml, lightnode-ux service
-ports:
-  - "127.0.0.1:8420:8420"
-```
+compose 파일은 포트를 호스트의 루프백에서만 게시하므로(`127.0.0.1:8420:8420`) 대시보드는 다른 머신에서 접근할 수 없습니다. 그대로 유지하세요. 대시보드에는 로그인이 없습니다(아래 참조).
 
 ```bash
 docker compose up -d lightnode-ux
 ```
 
-UX 컨테이너는 키링을 포함한 데이터를 `/root/.qorechain-lightnode`의 명명된 볼륨에 영속화하며, `QORECHAIN_RPC_ADDR` 환경 변수에서 체인 RPC 주소를 읽습니다. 노드가 자체 트랜잭션에 직접 서명하므로, UX 컨테이너도 SX 에디션처럼 등록하고 하트비트를 보낼 수 있습니다. UX 이미지에는 `qorechaind`가 포함되어 있지 않으므로 그 안에서는 `qorechaind` 대체 경로를 사용할 수 없습니다.
+UX 컨테이너는 키링을 포함한 데이터를 `/root/.qorechain-lightnode`의 명명된 볼륨에 영속화하며, `QORECHAIN_RPC_ADDR` 환경 변수에서 체인 RPC 주소를 읽습니다. 노드가 자체 트랜잭션에 직접 서명하므로, UX 컨테이너도 SX 에디션처럼 등록하고 하트비트를 보낼 수 있습니다. UX 이미지에는 `qorechaind`가 포함되어 있지 않으므로 그 안에서는 `qorechaind` 대체 경로를 사용할 수 없습니다. 업데이트하려면 `docker compose pull && docker compose up -d`를 실행하세요(노드는 새 릴리스를 알리지만 컨테이너 안에서 스스로를 교체하지는 않습니다).
 
 ## 실행
 

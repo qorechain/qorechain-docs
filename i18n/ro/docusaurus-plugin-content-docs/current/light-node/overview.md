@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 RPC-ul lanțului pentru `onboard` este `https://rpc.qore.host` (mainnet) sau `https://rpc-testnet.qore.host` (testnet). Pentru ediția UX folosiți `lightnode-ux` cu aceleași comenzi și deschideți `http://127.0.0.1:8420`. Detalii despre fiecare pas: [Ediția SX](/light-node/sx-edition) și [Înregistrare și licențiere](/light-node/registration-and-licensing).
 
-**3. Păstrați-l actualizat.** Nodul light 3.1.11 și versiunile ulterioare se actualizează singure în afara containerelor (vezi elementul despre auto-actualizare de mai sus). Un nod pe 3.1.10 sau mai vechi trebuie să instaleze 3.1.12 manual o singură dată: descărcați binarul cu versiune ca mai sus și înlocuiți fișierul. Cu Docker, reconstruiți din noua etichetă sursă. Vezi [Ediția SX: actualizare](/light-node/sx-edition#updating).
+**3. Păstrați-l actualizat.** Nodul light 3.1.11 și versiunile ulterioare se actualizează singure în afara containerelor (vezi elementul despre auto-actualizare de mai sus). Un nod pe 3.1.10 sau mai vechi trebuie să instaleze 3.1.12 manual o singură dată: descărcați binarul cu versiune ca mai sus și înlocuiți fișierul. Cu Docker, rulați `docker compose pull && docker compose up -d`. Vezi [Ediția SX: actualizare](/light-node/sx-edition#updating).
 
 ## Cum accesați {#how-to-access}
 
@@ -120,7 +120,7 @@ Pentru a fi eligibil pentru recompense, un nod light trebuie să fie **înregist
 | Binare | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 12 fișiere per lansare (SX și UX, Linux, macOS și Windows, amd64 și arm64) plus `SHA256SUMS` |
 | Sursă și lansări | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Lansarea `v3.1.12` (curentă) și etichetele anterioare; fiecare conține cele 12 binare, `SHA256SUMS`, `lightnode-build.json` și un APK de previzualizare pentru Android |
 | Android | Atașat doar lansării GitHub | Previzualizare: urmărește lanțul, nu se înregistrează, nu câștigă recompense |
-| Docker | Construit din eticheta sursă (vezi [Ediția SX: Docker](/light-node/sx-edition#docker)) | Nu este publicată nicio imagine de registru pentru descărcare anonimă |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` și `ghcr.io/qorechain/qorechain-lightnode-ux`, publice, tag-uri `latest` și `v<version>` (vezi [Ediția SX: Docker](/light-node/sx-edition#docker)) | `v3.1.12` |
 
 Verificați `version` din manifestul rețelei dvs. înainte de a descărca, în loc să vă bazați pe acest tabel. Cheia de semnare a lansărilor este încorporată în binar; nu aveți nimic de instalat.
 
@@ -131,7 +131,7 @@ Verificați `version` din manifestul rețelei dvs. înainte de a descărca, în 
 - **Un heartbeat este o semnătură de funcționare.** Dovedește că cheia operatorului a semnat la timp, nu că software-ul complet a rulat continuu.
 - **Avertismentele de reputație sunt deocamdată doar pe testnet.** Mainnet nu servește încă scoruri de reputație per validator, așa că pe mainnet acea verificare nu rulează, iar nodul spune acest lucru în jurnal. Avertismentele despre jail, despre lipsa din setul activ și despre miza scăzută nu depind de ea. Versiunile de nod dinaintea lui 3.1.11 înregistrau în jurnal o verificare eșuată de reputație la fiecare cinci minute și nu avertizau niciodată despre nimic.
 - **Auto-actualizarea începe de la 3.1.11.** Un nod pe 3.1.10 sau mai vechi nu se actualizează singur și are nevoie de o instalare manuală a lui 3.1.12. Într-un container sau într-un folder care nu poate fi scris, nodul doar anunță versiunile noi.
-- **Nu există imagine Docker de descărcat.** Construiți din eticheta sursă; pachetele de container publicate nu sunt încă publice. Nodurile Docker nu se actualizează niciodată singure.
+- **Nodurile Docker nu se actualizează singure.** Ele sunt informate despre un release nou, iar actualizarea este `docker compose pull && docker compose up -d`.
 - **Android este o previzualizare** și nu se înregistrează și nu câștigă recompense.
 - **Licențe.** Acordările pe mainnet sunt semnate manual, în loturi, deci există o așteptare între plată și înregistrare. Licența de testnet este limitată la una per cont și una per adresă.
 - **Un portofel creat în Dashboard nu poate rula un nod** decât dacă îi exportați seed-ul, deoarece nodul trebuie să semneze cu chei pe care le dețineți.

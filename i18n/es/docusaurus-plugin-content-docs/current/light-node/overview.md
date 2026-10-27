@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 El RPC de la cadena para `onboard` es `https://rpc.qore.host` (mainnet) o `https://rpc-testnet.qore.host` (testnet). Para la edición UX usa `lightnode-ux` con los mismos comandos y abre `http://127.0.0.1:8420`. Detalles de cada paso: [Edición SX](/light-node/sx-edition) y [Registro y licenciamiento](/light-node/registration-and-licensing).
 
-**3. Mantenlo actualizado.** El nodo ligero 3.1.11 y posteriores se actualizan solos fuera de contenedores (consulta el elemento de autoactualización más arriba). Un nodo en 3.1.10 o anterior debe instalar 3.1.12 a mano una vez: descarga el binario versionado como arriba y sustituye el archivo. Con Docker, recompila desde la nueva etiqueta de código fuente. Consulta [Edición SX: actualización](/light-node/sx-edition#updating).
+**3. Mantenlo actualizado.** El nodo ligero 3.1.11 y posteriores se actualizan solos fuera de contenedores (consulta el elemento de autoactualización más arriba). Un nodo en 3.1.10 o anterior debe instalar 3.1.12 a mano una vez: descarga el binario versionado como arriba y sustituye el archivo. Con Docker, ejecuta `docker compose pull && docker compose up -d`. Consulta [Edición SX: actualización](/light-node/sx-edition#updating).
 
 ## Cómo acceder {#how-to-access}
 
@@ -120,7 +120,7 @@ Para ser elegible para recompensas, un nodo ligero debe estar **registrado on-ch
 | Binarios | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 12 archivos por versión (SX y UX, Linux, macOS y Windows, amd64 y arm64) más `SHA256SUMS` |
 | Código fuente y versiones | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Versión `v3.1.12` (actual) y etiquetas anteriores; cada una incluye los 12 binarios, `SHA256SUMS`, `lightnode-build.json` y un APK de vista previa para Android |
 | Android | Adjunto solo a la versión de GitHub | Vista previa: sigue la cadena, no se registra, no gana |
-| Docker | Se compila desde la etiqueta de código fuente (consulta [Edición SX: Docker](/light-node/sx-edition#docker)) | No se publica ninguna imagen en un registro para descargas anónimas |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` y `ghcr.io/qorechain/qorechain-lightnode-ux`, públicas, etiquetas `latest` y `v<version>` (consulta [Edición SX: Docker](/light-node/sx-edition#docker)) | `v3.1.12` |
 
 Comprueba la `version` del manifiesto de tu red antes de descargar, en lugar de fiarte de esta tabla. La clave de firma de versiones está incorporada en el binario; no hay nada que instalar por tu parte.
 
@@ -131,7 +131,7 @@ Comprueba la `version` del manifiesto de tu red antes de descargar, en lugar de 
 - **Un heartbeat es una firma de liveness.** Demuestra que la clave del operador firmó a tiempo, no que el software completo se ejecutara de forma continua.
 - **Los avisos de reputación son solo de testnet por ahora.** Mainnet todavía no sirve puntuaciones de reputación por validador, así que en mainnet esa comprobación no se ejecuta y el nodo lo dice en su registro. Los avisos de jail, de fuera del conjunto activo y de stake bajo no dependen de ella. Las versiones del nodo anteriores a 3.1.11 registraban una comprobación de reputación fallida cada cinco minutos y nunca avisaban de nada.
 - **La autoactualización empieza en 3.1.11.** Un nodo en 3.1.10 o anterior no se actualiza solo y necesita una instalación manual de 3.1.12. En un contenedor o en una carpeta no escribible, el nodo solo anuncia nuevas versiones.
-- **No hay imagen de Docker que descargar.** Compila desde la etiqueta de código fuente; los paquetes de contenedor publicados todavía no son públicos. Los nodos Docker nunca se actualizan solos.
+- **Los nodos Docker no se actualizan solos.** Se les avisa de una nueva versión, y la actualización es `docker compose pull && docker compose up -d`.
 - **Android es una vista previa** y no se registra ni gana.
 - **Licencias.** Las concesiones de mainnet se firman a mano por lotes, así que hay una espera entre el pago y el registro. La licencia de testnet se limita a una por cuenta y una por dirección.
 - **Un monedero creado en el Dashboard no puede ejecutar un nodo** a menos que exportes su semilla, porque el nodo debe firmar con claves que tengas tú.

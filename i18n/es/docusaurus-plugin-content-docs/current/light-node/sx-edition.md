@@ -43,15 +43,16 @@ Compila desde la etiqueta de la versión que nombra el manifiesto (hoy, `git che
 
 ### Docker {#docker}
 
-No hay una imagen precompilada en un registro que puedas descargar: los paquetes de contenedor publicados todavía no son públicos, así que compilas la imagen desde la etiqueta del código fuente. Usa la etiqueta que nombra el manifiesto (hoy, **`v3.1.12`**). Para actualizar una instalación existente, vuelve a compilar desde la nueva etiqueta (`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`); un simple `docker compose up` o `restart` reutiliza la imagen antigua. Las claves, la configuración y el volumen de datos se conservan.
+Las imágenes publicadas son públicas y se pueden descargar de forma anónima: `ghcr.io/qorechain/qorechain-lightnode-sx` y `ghcr.io/qorechain/qorechain-lightnode-ux`, cada una con las etiquetas `latest` y `v<version>` (por ejemplo `v3.1.12`). El `docker-compose.yml` de la rama `main` del repositorio de código fuente las usa y recurre a compilar desde el código fuente (`Dockerfile.sx`, `Dockerfile.ux`) cuando no se puede acceder al registro. Para fijar una versión, cambia la etiqueta de `image:` en el archivo compose; para compilar en cambio desde una etiqueta de versión, ejecuta `git checkout v<version>` y luego `docker compose build`. Las claves, la configuración y el volumen de datos se conservan cuando actualizas.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull                    # fetches the released image
 
 # Once: the same setup as outside Docker, written into the data volume.
 docker compose run --rm lightnode-sx onboard
@@ -64,7 +65,7 @@ docker compose run --rm lightnode-sx status
 
 Mantén `QORECHAIN_RPC_ADDR` exportada en cada comando `docker compose`: sobrescribe `rpc_addr` de la configuración. Desde 3.1.10 el archivo compose la fija por defecto al RPC de mainnet `https://rpc.qore.host`, así que un nodo de testnet debe exportar `https://rpc-testnet.qore.host` o seguirá mainnet. El contenedor SX persiste sus datos, incluido el keyring, en un volumen con nombre montado en `/root/.qorechain-lightnode`.
 
-El nodo firma de forma nativa dentro del contenedor, así que no se necesita nada más. La imagen SX sigue incluyendo además un `qorechaind` publicado (v3.2.0, solo linux/amd64, comprobado contra un digest fijado) para la [alternativa `qorechaind`](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): `docker-compose.yml` monta `~/.qorechaind` (o `QORECHAIND_HOME`) en `/root/.qorechaind` y pasa `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` para esa vía. Un nodo cuya clave del operador está en su propio keyring no usa ninguna de las dos cosas.
+El nodo firma de forma nativa dentro del contenedor, así que no se necesita nada más. La imagen SX sigue incluyendo un `qorechaind` publicado (v3.2.0, solo linux/amd64, comprobado contra un digest fijado) para la [alternativa `qorechaind`](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): `docker-compose.yml` monta `~/.qorechaind` (o `QORECHAIND_HOME`) en `/root/.qorechaind` y pasa `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` para esa vía. Un nodo cuya clave del operador está en su propio keyring no usa ninguna de las dos cosas.
 
 ## Actualización {#updating}
 
@@ -78,7 +79,7 @@ El nodo firma de forma nativa dentro del contenedor, así que no se necesita nad
 - **Ver un anuncio.** El nodo registra una versión más reciente y la sirve en la API local del panel en `GET /api/update` (campos `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); el panel de la edición UX muestra un banner.
 - **Contenedor o carpeta sin permiso de escritura.** El nodo solo anuncia: actualiza tú mismo la imagen o el archivo.
 - **Nodo ligero 3.1.10 y anteriores** no se actualizan solos. Instala 3.1.12 a mano una vez: descarga el binario versionado desde la ruta del manifiesto (consulta [Instalación](#install)), verifícalo, sustituye el archivo y reinicia. Después, el nodo sigue su canal.
-- **Docker.** Docker nunca modifica la imagen. Vuelve a compilar desde la nueva etiqueta del código fuente (consulta [Docker](#docker)) y recrea el contenedor.
+- **Docker.** Un nodo Docker recibe el aviso de una nueva versión (en el registro y en `GET /api/update`) pero nunca se reemplaza a sí mismo; la descarga es la actualización: `docker compose pull && docker compose up -d` (mantén `QORECHAIN_RPC_ADDR` exportada). La alternativa es compilar desde la nueva etiqueta del código fuente.
 
 ## Configuración {#configure}
 

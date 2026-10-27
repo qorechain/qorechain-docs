@@ -43,15 +43,16 @@ Manifestonun adını verdiği sürüm etiketinden derleyin (bugün `git checkout
 
 ### Docker {#docker}
 
-Çekebileceğiniz önceden derlenmiş bir kayıt defteri imajı yoktur: yayınlanmış konteyner paketleri henüz herkese açık değildir, bu nedenle imajı kaynak etiketinden kendiniz derlersiniz. Manifestonun adını verdiği etiketi kullanın (bugün **`v3.1.12`**). Mevcut bir kurulumu güncellemek için yeni etiketten yeniden derleyin (`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`); düz bir `docker compose up` veya `restart` eski imajı yeniden kullanır. Anahtarlar, yapılandırma ve veri birimi korunur.
+Yayımlanan imajlar herkese açıktır ve anonim olarak çekilebilir: `ghcr.io/qorechain/qorechain-lightnode-sx` ve `ghcr.io/qorechain/qorechain-lightnode-ux`; her biri `latest` ve `v<version>` (örneğin `v3.1.12`) olarak etiketlenir. Kaynak deposunun `main` dalındaki `docker-compose.yml` bunları kullanır ve kayıt defterine ulaşılamadığında kaynaktan derlemeye (`Dockerfile.sx`, `Dockerfile.ux`) geri döner. Bir sürümü sabitlemek için compose dosyasındaki `image:` etiketini değiştirin; bunun yerine bir sürüm etiketinden derlemek için `git checkout v<version>` yapıp `docker compose build` çalıştırın. Güncellediğinizde anahtarlar, yapılandırma ve veri birimi korunur.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull                    # fetches the released image
 
 # Once: the same setup as outside Docker, written into the data volume.
 docker compose run --rm lightnode-sx onboard
@@ -78,7 +79,7 @@ Düğüm konteyner içinde yerel olarak imzalar, bu nedenle başka hiçbir şey 
 - **Bir duyuruyu görme.** Düğüm daha yeni bir sürümü günlüğe yazar ve yerel pano API'sinde `GET /api/update` üzerinden sunar (alanlar `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); UX panosu bir afiş gösterir.
 - **Konteyner veya yazılamayan klasör.** Düğüm yalnızca duyurur: imajı veya dosyayı kendiniz güncelleyin.
 - **Hafif düğüm 3.1.10 ve öncesi** kendini güncellemez. 3.1.12'yi bir kez elle kurun: sürüm numaralı ikili dosyayı manifesto yolundan indirin ([Kurulum](#install) bölümüne bakın), doğrulayın, dosyayı değiştirin ve yeniden başlatın. Bundan sonra düğüm kendi kanalını izler.
-- **Docker.** Docker imajı asla değiştirmez. Yeni kaynak etiketinden yeniden derleyin ([Docker](#docker) bölümüne bakın) ve konteyneri yeniden oluşturun.
+- **Docker.** Bir Docker düğümü yeni bir sürümden haberdar edilir (günlük ve `GET /api/update`) ancak kendini asla değiştirmez; güncelleme çekmektir: `docker compose pull && docker compose up -d` (`QORECHAIN_RPC_ADDR` değerini dışa aktarılmış tutun). Alternatif, yeni kaynak etiketinden derlemektir.
 
 ## Yapılandırma {#configure}
 

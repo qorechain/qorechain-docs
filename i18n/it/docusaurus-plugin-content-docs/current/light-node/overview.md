@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 L'RPC della chain per `onboard` è `https://rpc.qore.host` (mainnet) oppure `https://rpc-testnet.qore.host` (testnet). Per l'edizione UX usa `lightnode-ux` con gli stessi comandi e apri `http://127.0.0.1:8420`. Dettagli di ogni passaggio: [Edizione SX](/light-node/sx-edition) e [Registrazione e Licenze](/light-node/registration-and-licensing).
 
-**3. Mantienilo aggiornato.** Il light node 3.1.11 e successivi si aggiornano da soli fuori dai container (vedi la voce sull'auto-aggiornamento qui sopra). Un nodo alla 3.1.10 o precedente deve installare a mano la 3.1.12 una volta: scarica il binario versionato come sopra e sostituisci il file. Con Docker, ricostruisci dal nuovo tag sorgente. Vedi [Edizione SX: aggiornamento](/light-node/sx-edition#updating).
+**3. Mantienilo aggiornato.** Il light node 3.1.11 e successivi si aggiornano da soli fuori dai container (vedi la voce sull'auto-aggiornamento qui sopra). Un nodo alla 3.1.10 o precedente deve installare a mano la 3.1.12 una volta: scarica il binario versionato come sopra e sostituisci il file. Con Docker, esegui `docker compose pull && docker compose up -d`. Vedi [Edizione SX: aggiornamento](/light-node/sx-edition#updating).
 
 ## Come accedere {#how-to-access}
 
@@ -120,7 +120,7 @@ Per essere idoneo alle ricompense un light node deve essere **registrato on-chai
 | Binari | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 12 file per release (SX e UX, Linux, macOS e Windows, amd64 e arm64) più `SHA256SUMS` |
 | Sorgente e release | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Release `v3.1.12` (corrente) e tag precedenti; ciascuna contiene i 12 binari, `SHA256SUMS`, `lightnode-build.json` e un APK Android in anteprima |
 | Android | Allegato solo alla release GitHub | Anteprima: segue la chain, non si registra, non guadagna |
-| Docker | Costruito dal tag sorgente (vedi [Edizione SX: Docker](/light-node/sx-edition#docker)) | Non è pubblicata alcuna immagine di registro per pull anonimi |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` e `ghcr.io/qorechain/qorechain-lightnode-ux`, pubbliche, tag `latest` e `v<version>` (vedi [Edizione SX: Docker](/light-node/sx-edition#docker)) | `v3.1.12` |
 
 Controlla la `version` nel manifest della tua rete prima di scaricare, invece di affidarti a questa tabella. La chiave di firma del rilascio è incorporata nel binario; non c'è nulla da installare da parte tua.
 
@@ -131,7 +131,7 @@ Controlla la `version` nel manifest della tua rete prima di scaricare, invece di
 - **Un heartbeat è una firma di liveness.** Dimostra che la chiave dell'operatore ha firmato in tempo, non che il software completo sia rimasto in esecuzione in modo continuo.
 - **Gli avvisi di reputazione per ora sono solo per la testnet.** La mainnet non serve ancora i punteggi di reputazione per validatore, quindi sulla mainnet quel controllo non viene eseguito e il nodo lo dice nel suo log. Gli avvisi di jail, di assenza dal set attivo e di stake basso non ne dipendono. Le versioni del nodo precedenti alla 3.1.11 registravano un controllo di reputazione fallito ogni cinque minuti e non avvisavano mai di nulla.
 - **L'auto-aggiornamento parte dalla 3.1.11.** Un nodo alla 3.1.10 o precedente non si aggiorna da solo e richiede un'installazione manuale della 3.1.12. In un container o in una cartella non scrivibile il nodo si limita ad annunciare le nuove release.
-- **Nessuna immagine Docker da scaricare.** Costruisci dal tag sorgente; i pacchetti container pubblicati non sono ancora pubblici. I nodi Docker non si aggiornano mai da soli.
+- **I nodi Docker non si aggiornano da soli.** Vengono avvisati di una nuova release e l'aggiornamento è `docker compose pull && docker compose up -d`.
 - **Android è un'anteprima** e non si registra né guadagna.
 - **Licenze.** Le concessioni sulla mainnet vengono firmate a mano in lotti, quindi c'è un'attesa tra il pagamento e la registrazione. La licenza della testnet è limitata a una per account e una per indirizzo.
 - **Un wallet creato dalla dashboard non può eseguire un nodo** a meno che tu non ne esporti il seed, perché il nodo deve firmare con chiavi che possiedi.

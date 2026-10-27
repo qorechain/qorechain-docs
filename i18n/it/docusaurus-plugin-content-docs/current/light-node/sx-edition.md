@@ -43,15 +43,16 @@ Compila dal tag della release indicato dal manifest (oggi `git checkout v3.1.12`
 
 ### Docker {#docker}
 
-Non esiste un'immagine precompilata da scaricare da un registry: i pacchetti container pubblicati non sono ancora pubblici, quindi costruisci l'immagine dal tag sorgente. Usa il tag indicato dal manifest (oggi **`v3.1.12`**). Per aggiornare un'installazione esistente, ricostruisci dal nuovo tag (`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`); un semplice `docker compose up` o `restart` riutilizza la vecchia immagine. Chiavi, configurazione e volume dati vengono mantenuti.
+Le immagini rilasciate sono pubbliche e possono essere scaricate in forma anonima: `ghcr.io/qorechain/qorechain-lightnode-sx` e `ghcr.io/qorechain/qorechain-lightnode-ux`, ciascuna con tag `latest` e `v<version>` (ad esempio `v3.1.12`). Il `docker-compose.yml` sul branch `main` del repository dei sorgenti le usa e ripiega sulla compilazione dai sorgenti (`Dockerfile.sx`, `Dockerfile.ux`) quando il registry non è raggiungibile. Per fissare una release, cambia il tag `image:` nel file compose; per compilare invece da un tag di release, esegui `git checkout v<version>` e poi `docker compose build`. Chiavi, configurazione e volume dati vengono mantenuti quando aggiorni.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull                    # fetches the released image
 
 # Once: the same setup as outside Docker, written into the data volume.
 docker compose run --rm lightnode-sx onboard
@@ -78,7 +79,7 @@ Il node firma nativamente all'interno del container, quindi non serve nient'altr
 - **Vedere un annuncio.** Il node registra nei log una release più recente e la espone sull'API della dashboard locale a `GET /api/update` (campi `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); la dashboard UX mostra un banner.
 - **Container o cartella non scrivibile.** Il node si limita ad annunciare: aggiorna tu l'immagine o il file.
 - **Light node 3.1.10 e precedenti** non si aggiornano da soli. Installa la 3.1.12 a mano una volta: scarica il binario con versione dal percorso del manifest (vedi [Installazione](#install)), verificalo, sostituisci il file e riavvia. Dopo di che il node segue il proprio canale.
-- **Docker.** Docker non modifica mai l'immagine. Ricostruisci dal nuovo tag sorgente (vedi [Docker](#docker)) e ricrea il container.
+- **Docker.** Un nodo Docker riceve la notifica di una nuova release (log e `GET /api/update`) ma non si sostituisce mai da solo; il pull è l'aggiornamento: `docker compose pull && docker compose up -d` (mantieni `QORECHAIN_RPC_ADDR` esportata). In alternativa, compila dal nuovo tag sorgente.
 
 ## Configurazione {#configure}
 

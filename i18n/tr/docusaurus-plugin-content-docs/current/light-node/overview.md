@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 `onboard` için zincir RPC'si `https://rpc.qore.host` (ana ağ) veya `https://rpc-testnet.qore.host` (test ağı) adresidir. UX sürümü için aynı komutlarla `lightnode-ux` kullanın ve `http://127.0.0.1:8420` adresini açın. Her adımın ayrıntıları: [SX Sürümü](/light-node/sx-edition) ve [Kayıt ve Lisanslama](/light-node/registration-and-licensing).
 
-**3. Güncel tutun.** Hafif düğüm 3.1.11 ve sonrası kapsayıcıların dışında kendini günceller (yukarıdaki kendini güncelleme maddesine bakın). 3.1.10 veya daha eski bir düğüm 3.1.12'yi bir kez elle kurmalıdır: sürüme özgü ikili dosyayı yukarıdaki gibi indirin ve dosyayı değiştirin. Docker ile yeni kaynak etiketinden yeniden inşa edin. Bkz. [SX Sürümü: güncelleme](/light-node/sx-edition#updating).
+**3. Güncel tutun.** Hafif düğüm 3.1.11 ve sonrası kapsayıcıların dışında kendini günceller (yukarıdaki kendini güncelleme maddesine bakın). 3.1.10 veya daha eski bir düğüm 3.1.12'yi bir kez elle kurmalıdır: sürüme özgü ikili dosyayı yukarıdaki gibi indirin ve dosyayı değiştirin. Docker ile `docker compose pull && docker compose up -d` çalıştırın. Bkz. [SX Sürümü: güncelleme](/light-node/sx-edition#updating).
 
 ## Nasıl erişilir {#how-to-access}
 
@@ -120,7 +120,7 @@ Bu %3, hafif düğüm modül hesabına ödenen tutardır; düğüm başına bir 
 | İkili dosyalar | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | Sürüm başına 12 dosya (SX ve UX, Linux, macOS ve Windows, amd64 ve arm64) artı `SHA256SUMS` |
 | Kaynak ve sürümler | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Sürüm `v3.1.12` (güncel) ve önceki etiketler; her biri 12 ikili dosyayı, `SHA256SUMS`, `lightnode-build.json` ve bir Android önizleme APK'sını taşır |
 | Android | Yalnızca GitHub sürümüne eklenmiştir | Önizleme: zinciri takip eder, kayıt olmaz, kazanmaz |
-| Docker | Kaynak etiketinden inşa edilir (bkz. [SX Sürümü: Docker](/light-node/sx-edition#docker)) | Anonim çekme için hiçbir kayıt defteri imajı yayımlanmaz |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` ve `ghcr.io/qorechain/qorechain-lightnode-ux`, herkese açık, etiketler `latest` ve `v<version>` (bkz. [SX Sürümü: Docker](/light-node/sx-edition#docker)) | `v3.1.12` |
 
 İndirmeden önce bu tabloya güvenmek yerine ağınızın manifestindeki `version` değerini kontrol edin. Sürüm imzalama anahtarı ikili dosyaya gömülüdür; sizin kurmanız gereken bir şey yoktur.
 
@@ -131,7 +131,7 @@ Bu %3, hafif düğüm modül hesabına ödenen tutardır; düğüm başına bir 
 - **Kalp atışı bir canlılık imzasıdır.** Operatör anahtarının zamanında imzaladığını kanıtlar, tam yazılımın kesintisiz çalıştığını değil.
 - **İtibar uyarıları şimdilik yalnızca test ağındadır.** Ana ağ henüz doğrulayıcı başına itibar puanı sunmaz; bu yüzden ana ağda o kontrol çalışmaz ve düğüm bunu günlüğünde söyler. Jail edilmiş, aktif kümede olmayan ve düşük stake uyarıları buna bağlı değildir. 3.1.11'den önceki düğüm sürümleri başarısız bir itibar kontrolünü her beş dakikada bir kaydediyordu ve hiçbir şey için uyarı vermiyordu.
 - **Kendini güncelleme 3.1.11 ile başlar.** 3.1.10 veya daha eski bir düğüm kendini güncellemez ve 3.1.12'nin bir kez elle kurulmasını gerektirir. Bir kapsayıcıda veya yazılamaz bir klasörde düğüm yalnızca yeni sürümleri duyurur.
-- **Çekilecek Docker imajı yok.** Kaynak etiketinden inşa edin; yayımlanmış kapsayıcı paketleri henüz herkese açık değildir. Docker düğümleri kendilerini asla güncellemez.
+- **Docker düğümleri kendilerini güncellemez.** Yeni bir sürümden haberdar edilirler ve güncelleme `docker compose pull && docker compose up -d` komutudur.
 - **Android bir önizlemedir** ve kayıt olmaz veya kazanmaz.
 - **Lisanslar.** Ana ağ hibeleri gruplar halinde elle imzalanır, bu yüzden ödeme ile kayıt arasında bir bekleme vardır. Test ağı lisansı hesap başına bir ve adres başına bir ile sınırlıdır.
 - **Dashboard'da oluşturulmuş bir cüzdan bir düğüm çalıştıramaz**, seed'ini dışa aktarmadığınız sürece; çünkü düğümün elinizde bulunan anahtarlarla imzalaması gerekir.

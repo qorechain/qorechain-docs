@@ -43,15 +43,16 @@ Baue aus dem Release-Tag, den das Manifest nennt (heute `git checkout v3.1.12`).
 
 ### Docker {#docker}
 
-Es gibt kein vorgefertigtes Registry-Image, das du ziehen könntest: Die veröffentlichten Container-Pakete sind noch nicht öffentlich, daher baust du das Image aus dem Quell-Tag. Verwende den Tag, den das Manifest nennt (heute **`v3.1.12`**). Um eine bestehende Installation zu aktualisieren, baue aus dem neuen Tag neu (`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`); ein einfaches `docker compose up` oder `restart` verwendet das alte Image weiter. Schlüssel, Konfiguration und das Daten-Volume bleiben erhalten.
+Die veröffentlichten Images sind öffentlich und lassen sich anonym ziehen: `ghcr.io/qorechain/qorechain-lightnode-sx` und `ghcr.io/qorechain/qorechain-lightnode-ux`, jeweils mit den Tags `latest` und `v<version>` (zum Beispiel `v3.1.12`). Die `docker-compose.yml` auf dem Branch `main` des Quell-Repositorys verwendet sie und baut aus dem Quellcode (`Dockerfile.sx`, `Dockerfile.ux`), wenn die Registry nicht erreichbar ist. Um ein Release festzulegen, ändere den `image:`-Tag in der Compose-Datei; um stattdessen aus einem Release-Tag zu bauen, führe `git checkout v<version>` aus und starte `docker compose build`. Schlüssel, Konfiguration und das Daten-Volume bleiben bei einem Update erhalten.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose pull                    # fetches the released image
 
 # Once: the same setup as outside Docker, written into the data volume.
 docker compose run --rm lightnode-sx onboard
@@ -64,7 +65,7 @@ docker compose run --rm lightnode-sx status
 
 Halte `QORECHAIN_RPC_ADDR` bei jedem `docker compose`-Befehl exportiert: Es überschreibt `rpc_addr` aus der Konfiguration. Seit 3.1.10 setzt die Compose-Datei als Standard den Mainnet-RPC `https://rpc.qore.host`, ein Testnet-Node muss daher `https://rpc-testnet.qore.host` exportieren, sonst folgt er dem Mainnet. Der SX-Container speichert seine Daten, einschließlich des Keyrings, dauerhaft in einem benannten Volume, das unter `/root/.qorechain-lightnode` eingehängt ist.
 
-Der Node signiert nativ im Container, daher wird nichts weiter benötigt. Das SX-Image enthält außerdem weiterhin ein veröffentlichtes `qorechaind` (v3.2.0, nur linux/amd64, gegen einen fest hinterlegten Digest geprüft) für den [`qorechaind`-Fallback](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): `docker-compose.yml` bindet `~/.qorechaind` (oder `QORECHAIND_HOME`) unter `/root/.qorechaind` ein und übergibt `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` für diesen Weg. Ein Node, dessen Operator-Schlüssel in seinem eigenen Keyring liegt, verwendet keines von beiden.
+Der Node signiert nativ im Container, daher wird nichts weiter benötigt. Das SX-Image enthält weiterhin ein veröffentlichtes `qorechaind` (v3.2.0, nur linux/amd64, gegen einen fest hinterlegten Digest geprüft) für den [`qorechaind`-Fallback](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): `docker-compose.yml` bindet `~/.qorechaind` (oder `QORECHAIND_HOME`) unter `/root/.qorechaind` ein und übergibt `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` für diesen Weg. Ein Node, dessen Operator-Schlüssel in seinem eigenen Keyring liegt, verwendet keines von beiden.
 
 ## Aktualisieren {#updating}
 
@@ -78,7 +79,7 @@ Der Node signiert nativ im Container, daher wird nichts weiter benötigt. Das SX
 - **Eine Ankündigung sehen.** Der Node protokolliert ein neueres Release und stellt es in der lokalen Dashboard-API unter `GET /api/update` bereit (Felder `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); das UX-Dashboard zeigt ein Banner.
 - **Container oder nicht beschreibbarer Ordner.** Der Node kündigt nur an: Aktualisiere das Image oder die Datei selbst.
 - **Light Node 3.1.10 und früher** aktualisieren sich nicht selbst. Installiere 3.1.12 einmal von Hand: Lade die versionierte Binärdatei vom Manifestpfad herunter (siehe [Installation](#install)), verifiziere sie, ersetze die Datei und starte neu. Danach folgt der Node seinem Kanal.
-- **Docker.** Docker verändert das Image nie. Baue aus dem neuen Quell-Tag neu (siehe [Docker](#docker)) und erstelle den Container neu.
+- **Docker.** Ein Docker-Node wird über ein neues Release benachrichtigt (Log und `GET /api/update`), ersetzt sich aber nie selbst; das Pullen ist das Update: `docker compose pull && docker compose up -d` (lass `QORECHAIN_RPC_ADDR` exportiert). Alternativ kannst du aus dem neuen Quell-Tag bauen.
 
 ## Konfiguration {#configure}
 

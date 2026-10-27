@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 `onboard`용 체인 RPC는 `https://rpc.qore.host`(메인넷) 또는 `https://rpc-testnet.qore.host`(테스트넷)입니다. UX 에디션은 같은 명령으로 `lightnode-ux`를 사용하고 `http://127.0.0.1:8420`을 여세요. 각 단계의 자세한 내용은 [SX 에디션](/light-node/sx-edition)과 [등록 및 라이선싱](/light-node/registration-and-licensing)을 참조하세요.
 
-**3. 최신 상태 유지.** 라이트 노드 3.1.11 이상은 컨테이너 밖에서 스스로 업데이트합니다(위의 자체 업데이트 항목 참조). 3.1.10 이하 노드는 3.1.12를 한 번 수동으로 설치해야 합니다. 위와 같이 버전이 지정된 바이너리를 다운로드해 파일을 교체하세요. Docker에서는 새 소스 태그로 다시 빌드하세요. [SX 에디션: 업데이트](/light-node/sx-edition#updating)를 참조하세요.
+**3. 최신 상태 유지.** 라이트 노드 3.1.11 이상은 컨테이너 밖에서 스스로 업데이트합니다(위의 자체 업데이트 항목 참조). 3.1.10 이하 노드는 3.1.12를 한 번 수동으로 설치해야 합니다. 위와 같이 버전이 지정된 바이너리를 다운로드해 파일을 교체하세요. Docker에서는 `docker compose pull && docker compose up -d`를 실행하세요. [SX 에디션: 업데이트](/light-node/sx-edition#updating)를 참조하세요.
 
 ## 이용 방법 {#how-to-access}
 
@@ -120,7 +120,7 @@ QoreChain의 수수료 분배는 라이트 노드에 고정된 **3% 분배**(`re
 | 바이너리 | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 릴리스당 12개 파일(SX와 UX, Linux, macOS, Windows, amd64와 arm64)과 `SHA256SUMS` |
 | 소스 및 릴리스 | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | 릴리스 `v3.1.12`(현재) 및 이전 태그. 각각 12개 바이너리, `SHA256SUMS`, `lightnode-build.json`, Android 프리뷰 APK를 포함 |
 | Android | GitHub 릴리스에만 첨부 | 프리뷰: 체인을 따르며, 등록하지 않고 보상도 받지 않음 |
-| Docker | 소스 태그에서 빌드([SX 에디션: Docker](/light-node/sx-edition#docker) 참조) | 익명으로 가져올 수 있는 레지스트리 이미지는 게시되지 않음 |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` 및 `ghcr.io/qorechain/qorechain-lightnode-ux`, 공개, 태그 `latest`와 `v<version>`([SX 에디션: Docker](/light-node/sx-edition#docker) 참조) | `v3.1.12` |
 
 이 표에 의존하지 말고 다운로드하기 전에 네트워크 매니페스트의 `version`을 확인하세요. 릴리스 서명 키는 바이너리에 내장되어 있으며 따로 설치할 것은 없습니다.
 
@@ -131,7 +131,7 @@ QoreChain의 수수료 분배는 라이트 노드에 고정된 **3% 분배**(`re
 - **하트비트는 활성 서명입니다.** 운영자 키가 제때 서명했다는 것을 증명할 뿐, 전체 소프트웨어가 계속 실행되었다는 것을 증명하지는 않습니다.
 - **평판 경고는 현재 테스트넷 전용입니다.** 메인넷은 아직 검증자별 평판 점수를 제공하지 않으므로, 메인넷에서는 그 검사 하나가 실행되지 않으며 노드는 로그에 그렇게 알립니다. jail, 활성 집합 미포함, 낮은 스테이크 경고는 이에 의존하지 않습니다. 3.1.11 이전 노드 버전은 실패한 평판 검사를 5분마다 기록했으며 어떤 것에 대해서도 경고하지 않았습니다.
 - **자체 업데이트는 3.1.11부터 시작됩니다.** 3.1.10 이하 노드는 스스로 업데이트하지 않으며 3.1.12를 한 번 수동으로 설치해야 합니다. 컨테이너나 쓸 수 없는 폴더에서는 노드가 새 릴리스를 알리기만 합니다.
-- **가져올 Docker 이미지가 없습니다.** 소스 태그에서 빌드하세요. 게시된 컨테이너 패키지는 아직 공개되지 않았습니다. Docker 노드는 스스로 업데이트하지 않습니다.
+- **Docker 노드는 스스로 업데이트하지 않습니다.** 새 릴리스에 대해 알림만 받으며, 업데이트는 `docker compose pull && docker compose up -d`입니다.
 - **Android는 프리뷰**이며 등록하지도 보상을 받지도 않습니다.
 - **라이선스.** 메인넷 부여는 일괄로 수동 서명되므로 결제와 등록 사이에 대기 시간이 있습니다. 테스트넷 라이선스는 계정당 1개, 주소당 1개로 제한됩니다.
 - **Dashboard에서 만든 지갑은 노드를 실행할 수 없습니다.** 시드를 내보내지 않는 한 그렇습니다. 노드는 사용자가 보유한 키로 서명해야 하기 때문입니다.

@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 `onboard` のチェーン RPC は、`https://rpc.qore.host`（メインネット）または `https://rpc-testnet.qore.host`（テストネット）です。UX エディションでは、同じコマンドで `lightnode-ux` を使用し、`http://127.0.0.1:8420` を開きます。各ステップの詳細は [SX Edition](/light-node/sx-edition) と [Registration and Licensing](/light-node/registration-and-licensing) にあります。
 
-**3. 最新に保つ。** ライトノード 3.1.11 以降は、コンテナの外では自動的にアップデートされます（上記の自己アップデートの項目を参照）。3.1.10 以前のノードは、一度だけ 3.1.12 を手動でインストールする必要があります。上記のようにバージョン付きのバイナリをダウンロードして、ファイルを置き換えてください。Docker では、新しいソースタグから再ビルドします。[SX Edition: updating](/light-node/sx-edition#updating) を参照してください。
+**3. 最新に保つ。** ライトノード 3.1.11 以降は、コンテナの外では自動的にアップデートされます（上記の自己アップデートの項目を参照）。3.1.10 以前のノードは、一度だけ 3.1.12 を手動でインストールする必要があります。上記のようにバージョン付きのバイナリをダウンロードして、ファイルを置き換えてください。Docker では、`docker compose pull && docker compose up -d` を実行します。[SX Edition: updating](/light-node/sx-edition#updating) を参照してください。
 
 ## アクセス方法 {#how-to-access}
 
@@ -120,7 +120,7 @@ QoreChain の手数料分配は、**固定の 3% 分配をライトノードに*
 | バイナリ | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | リリースごとに12ファイル（SX と UX、Linux、macOS、Windows、amd64 と arm64）と `SHA256SUMS` |
 | ソースとリリース | `github.com/qorechain/qorechain-lightnode`（Apache 2.0） | リリース `v3.1.12`（現行）と以前のタグ。それぞれに12個のバイナリ、`SHA256SUMS`、`lightnode-build.json`、Android プレビュー APK が付属 |
 | Android | GitHub リリースにのみ添付 | プレビュー: チェーンを追跡するが、登録せず、報酬も得ない |
-| Docker | ソースタグからビルド（[SX Edition: Docker](/light-node/sx-edition#docker)を参照） | 匿名で pull できるレジストリイメージは公開されていません |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` と `ghcr.io/qorechain/qorechain-lightnode-ux`、公開、タグは `latest` と `v<version>`（[SX Edition: Docker](/light-node/sx-edition#docker)を参照） | `v3.1.12` |
 
 この表に頼らず、ダウンロードの前にお使いのネットワークのマニフェストにある `version` を確認してください。リリース署名鍵はバイナリに組み込まれており、ご自身でインストールするものはありません。
 
@@ -131,7 +131,7 @@ QoreChain の手数料分配は、**固定の 3% 分配をライトノードに*
 - **ハートビートはライブネスの署名です。** オペレーター鍵が時間通りに署名したことを証明するものであり、ソフトウェア全体が継続して動作していたことを証明するものではありません。
 - **評判の警告は、今のところテストネット限定です。** メインネットはまだバリデーターごとの評判スコアを提供していないため、メインネットではこの1つのチェックは実行されず、ノードはその旨をログに記録します。ジェイル、アクティブセット外、ステーク不足の警告はこれに依存しません。3.1.11 より前のノードバージョンは、評判チェックの失敗を5分ごとにログに記録し、何についても警告しませんでした。
 - **自己アップデートは 3.1.11 から始まります。** 3.1.10 以前のノードは自己アップデートせず、3.1.12 を一度手動でインストールする必要があります。コンテナや書き込めないフォルダーでは、ノードは新しいリリースを通知するだけです。
-- **pull できる Docker イメージはありません。** ソースタグからビルドしてください。公開されたコンテナパッケージはまだ非公開です。Docker のノードが自己アップデートすることはありません。
+- **Docker のノードは自己アップデートしません。** 新しいリリースは通知されるだけで、アップデートは `docker compose pull && docker compose up -d` です。
 - **Android はプレビュー**であり、登録も報酬の獲得もできません。
 - **ライセンス。** メインネットの付与は手動でバッチごとに署名されるため、支払いから登録までに待ち時間があります。テストネットのライセンスは、アカウントごとに1つ、アドレスごとに1つに限られます。
 - **Dashboard で作成したウォレットではノードを実行できません。** シードをエクスポートした場合を除きます。ノードは、あなたが保持する鍵で署名する必要があるためです。
