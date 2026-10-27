@@ -18,6 +18,7 @@ sidebar_position: 9
 - **한 번의 요청, 두 종류의 토큰.** 요청 한 번으로 100 QOR가 지급되고, 별도의 트랜잭션으로 1,000 fUSD, 0.5 fETH, 0.02 fBTC가 지급됩니다. Fest 전송이 실패해도 QOR은 그대로 도착하며 결과 카드에 그렇게 표시됩니다.
 - **이중 쿨다운.** 계정당 **그리고** 주소당 24시간에 한 번 요청할 수 있습니다. 슬롯은 무언가를 보내기 전에 예약되고 전송이 실패하면 해제되므로, 실패한 요청이 그날의 기회를 소모하지 않습니다.
 - **Fest 토큰은 네이티브 뱅크 코인입니다.** 이들은 온체인 AMM, 뱅크 전송, IBC, QoreChain Native 컨트랙트가 그대로 사용하는 `erc20:0x...` 뱅크 디노미네이션입니다. MetaMask나 EVM DEX는 `MsgConvertCoin` 변환 후에야 이들을 볼 수 있습니다([Fest 테스트 토큰](#fest-tokens) 참조).
+- **잘못된 숫자는 없습니다.** 포셋의 정보를 불러올 수 없으면 페이지는 추측한 금액 대신 "..."를 표시합니다.
 - **`0x` 수신자는 그에 대응하는 `qor1` 주소로 지급됩니다.** `0x` 주소는 `qor1` 형태와 같은 20바이트이므로, 서비스는 같은 계정에 지급합니다. 대시보드 양식 자체는 `qor1...`만 받습니다.
 
 ## 사용 방법 {#how-to-use}
@@ -48,7 +49,7 @@ sidebar_position: 9
 - **테스트넷 전용.** 이 토큰들은 메인넷에 존재하지 않습니다.
 - **디노미네이션을 정확히 복사하십시오.** 주소 부분은 EIP-55 대소문자 혼합이며 디노미네이션은 대소문자를 구분하여 일치시킵니다.
 - **온체인에서 확인.** `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata`는 세 디노미네이션을 심볼 및 표시 이름과 함께 나열합니다.
-- **MetaMask나 EVM DEX에서 사용하기.** 포셋은 뱅크 코인을 지급합니다. MetaMask나 EVM DEX용으로 ERC-20 형태로 보유하려면 `MsgConvertCoin`으로 변환하십시오(발신자는 `qor1...` 주소, 수신자는 `0x...` 주소, 그리고 대소문자가 정확히 일치하는 디노미네이션). 되돌리는 것은 `MsgConvertERC20`입니다. 단계와 가스 수치는 [EVM 개발](/developer-guide/evm-development#fest-tokens)에 있습니다.
+- **MetaMask나 EVM DEX에서 사용하기.** 포셋은 뱅크 코인을 지급합니다. MetaMask나 EVM DEX용으로 ERC-20 형태로 보유하려면 `MsgConvertCoin`으로 변환하십시오(발신자는 `qor1...` 주소, 수신자는 `0x...` 주소, 그리고 대소문자가 정확히 일치하는 디노미네이션). 되돌리는 것은 `MsgConvertERC20`입니다. 단계와 가스 수치는 [EVM 개발](/developer-guide/evm-development#fest-tokens)에 있습니다. 단계별 변환 전용 가이드는 계획 중이며 아직 게시되지 않았습니다.
 - **풀.** 테스트넷 [AMM](/architecture/amm)은 이들을 `uqor`와 풀로 묶을 수 있으며, 풀이 있는지는 `GET /qorechain/amm/v1/pools`로 확인합니다. [지갑](/dashboard/wallet)의 Tokens 탭과 [트레이드](/dashboard/trade)에는 이들을 위한 항목이 없으므로, 잔액은 `GET /cosmos/bank/v1beta1/balances/{address}`로 확인하십시오.
 
 ### 테스트 토큰으로 할 수 있는 일

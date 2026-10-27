@@ -18,6 +18,7 @@ Testnet QOR has **no real value**. The Faucet never touches mainnet: there is no
 - **One claim, two kinds of token.** A claim pays 100 QOR, and in a separate transaction 1,000 fUSD, 0.5 fETH and 0.02 fBTC. If the fest send fails, the QOR still arrives and the result card says so.
 - **A double cooldown.** One claim per 24 hours per account **and** per address. The slot is reserved before anything is sent and released if the send fails, so a failed claim does not use up your day.
 - **Fest tokens are native bank coins.** They are `erc20:0x...` bank denominations that the on-chain AMM, bank sends, IBC and QoreChain Native contracts use as they are. MetaMask or an EVM DEX see them only after a `MsgConvertCoin` conversion (see [Fest test tokens](#fest-tokens)).
+- **No wrong numbers.** If the Faucet's info cannot be loaded, the page shows "..." instead of an amount, never a guessed one.
 - **A `0x` recipient is paid on its `qor1` twin.** A `0x` address is the same 20 bytes as its `qor1` form, so the service pays the same account. The Dashboard form itself only accepts `qor1...`.
 
 ## How to use {#how-to-use}
@@ -48,7 +49,7 @@ Three extra test tokens exist on the testnet for the builder fest: **fUSD** (Fes
 - **Testnet only.** The tokens do not exist on mainnet.
 - **Copy the denomination exactly.** The address part is in EIP-55 mixed case and the denomination is matched case-sensitively.
 - **See them on chain.** `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` lists the three denominations with their symbols and display names.
-- **Using them from MetaMask or an EVM DEX.** The Faucet pays bank coins. To hold one as an ERC-20 for MetaMask or an EVM DEX, convert it with `MsgConvertCoin` (sender your `qor1...` address, receiver a `0x...` address, and the exact mixed-case denomination). Moving it back is `MsgConvertERC20`. Steps and gas figures are in [EVM Development](/developer-guide/evm-development#fest-tokens).
+- **Using them from MetaMask or an EVM DEX.** The Faucet pays bank coins. To hold one as an ERC-20 for MetaMask or an EVM DEX, convert it with `MsgConvertCoin` (sender your `qor1...` address, receiver a `0x...` address, and the exact mixed-case denomination). Moving it back is `MsgConvertERC20`. Steps and gas figures are in [EVM Development](/developer-guide/evm-development#fest-tokens). A dedicated step-by-step conversion guide is planned and not published yet.
 - **Pools.** The testnet [AMM](/architecture/amm) can pool them against `uqor`; whether a pool exists is shown by `GET /qorechain/amm/v1/pools`. The [Wallet](/dashboard/wallet) Tokens tab and [Trade](/dashboard/trade) have no entry for them; check a balance with `GET /cosmos/bank/v1beta1/balances/{address}`.
 
 ### What to do with test tokens

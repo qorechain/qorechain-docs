@@ -17,7 +17,7 @@ Watchtower는 옵티미스틱 롤업을 위한 자동 챌린저 프레임워크�
 `validate` 함수를 호출하고 여러분이 반환한 값에 따라 행동할 뿐입니다.
 
 :::caution 초기 단계: 아직 감시할 대상이 없음
-Watchtower는 RDK REST 클라이언트를 통해 배치를 읽으며, `/qorechain/rdk/v1/…` 경로는 두 네트워크 모두에서 제공됩니다. 어느 네트워크에서도 롤업이 생성된 적이 없으므로(2026년 10월 27일 확인) 아직 감시할 대상이 없으며 Watchtower가 실제 배치를 상대로 실행된 적도 없습니다. `@qorechain/rdk` 0.5.0에서는 마감 로직이 잘못되어 있었고(블록 높이를 Unix 타임스탬프로 읽어서 `onDeadline`이 배치가 처음 감지되는 즉시 발생했습니다) 첫 페이지의 50개 배치만 읽었습니다. **0.6.0이 둘 다 수정했습니다**(아래 참조). 현재 릴리스인 0.6.2를 사용하세요.
+Watchtower는 RDK REST 클라이언트를 통해 배치를 읽으며, `/qorechain/rdk/v1/…` 경로는 두 네트워크 모두에서 제공됩니다. 어느 네트워크에서도 롤업이 생성된 적이 없으므로(2026년 10월 27일 확인) 아직 감시할 대상이 없으며 Watchtower가 실제 배치를 상대로 실행된 적도 없습니다. `@qorechain/rdk` 0.5.0에서는 마감 로직이 잘못되어 있었고(블록 높이를 Unix 타임스탬프로 읽어서 `onDeadline`이 배치가 처음 감지되는 즉시 발생했습니다) 첫 페이지의 50개 배치만 읽었습니다. **0.6.0이 둘 다 수정했습니다**(아래 참조). 현재 릴리스인 0.7.0을 사용하세요.
 :::
 
 ## `watchBatches`
@@ -29,7 +29,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.6.2: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
@@ -73,7 +73,11 @@ watcher.stop();
 - `onDeadline`을 통한 **챌린지 윈도우 마감**, 그리고
 - `onInvalid`를 통한 **무효 배치** (여러분의 `validate`가 `false`를 반환한 경우).
 
-0.6.0부터(그리고 0.6.1과 0.6.2에서도) 롤업의 배치 목록을 모든 페이지에 걸쳐 따라가고, 마감이 다가오면 배치를 다시 판단하며(각 배치를 처음 볼 때 한 번만 판단하는 대신, 윈도우가 아직 열려 있는 가장 오래된 배치부터 앞으로 계속 폴링합니다), 각 윈도우를 로컬 시계가 아닌 체인 팁(`getChainTip`, 노드의 상태)을 기준으로 측정합니다. 이미 `finalized`된 배치는 검증하거나 경고하지 않습니다.
+0.6.0부터(그리고 그 이후의 모든 릴리스에서도) 롤업의 배치 목록을 모든 페이지에 걸쳐 따라가고, 마감이 다가오면 배치를 다시 판단하며(각 배치를 처음 볼 때 한 번만 판단하는 대신, 윈도우가 아직 열려 있는 가장 오래된 배치부터 앞으로 계속 폴링합니다), 각 윈도우를 로컬 시계가 아닌 체인 팁(`getChainTip`, 노드의 상태)을 기준으로 측정합니다. 이미 `finalized`된 배치는 검증하거나 경고하지 않습니다.
+
+**재제출된 배치(0.7.0).** 체인 v3.2.5부터(테스트넷은 지금, 메인넷은 업그레이드 후) 인정된 사기 증명은 해당 배치와 이후의 확정되지 않은 모든 배치를 거부하며, 시퀀서는 같은 인덱스로 다시 제출합니다. 0.7.0 이전 릴리스는 배치를 인덱스만으로 구분했기 때문에 거부된 인덱스에 재제출된 배치를 놓쳤습니다. 0.7.0은 인덱스와 상태 루트로 구분하며, 거부된 배치는 절대 검증하지 않습니다.
+
+**체인의 사기 규칙 적용(0.7.0).** `transitionRootValidator`는 체인 자체의 규칙(상태 루트가 표준 전환 루트가 아니면 해당 배치는 사기)을 적용하는 즉시 쓸 수 있는 `validate` 술어이며, `fraudProofForBatch`는 이기는 증명을 반환합니다(정직한 배치에는 없음). 이를 `challengeBatch`에 전달할 수 있습니다.
 
 `onInvalid`를 챌린지에 연결하면 Watchtower가 완전한 자동 챌린저로
 바뀝니다. 설정하지 않은 채 두면 관찰 전용 모드로 실행됩니다.
@@ -89,5 +93,5 @@ qorollup watchtower my-rollup
 ```
 
 `watchtower`는 명령줄에서 프레임워크를 실행하며, Ctrl-C를 누를 때까지 새 배치와
-챌린지 윈도우 마감을 출력합니다. 전체 `qorollup` 운영자 CLI는
+챌린지 윈도우 마감을 출력합니다. `--canonical`(0.7.0)을 추가하면 상태 루트가 표준 전환 루트가 아닌 모든 배치, 즉 챌린지가 이기게 될 배치도 함께 보고합니다. 전체 `qorollup` 운영자 CLI는
 [롤업 배포하기](/rollups/deploying-a-rollup)를 참조하세요.

@@ -29,7 +29,7 @@ sidebar_position: 1
 
 | الإدخال | الصفحة | ما هو |
 | --- | --- | --- |
-| **Discover** | `/` | الرئيسية: زرّا الواجهة **Create Smart Contract** و**Explore Network**، وعدّادات "Dashboard Overview"، وقوائم العقود المنشأة وأحدث عمليات التدقيق وأبرز المساهمين، و"Developer Toolkit" مع **Start Generating** و**New Audit** و**Claim Tokens**. |
+| **Discover** | `/` | الرئيسية: زرّا الواجهة **Create Smart Contract** و**Explore Network**، وعدّادات "Dashboard Overview"، وقوائم العقود المنشأة وأحدث عمليات التدقيق العامة وأبرز المساهمين، و"Developer Toolkit" مع **Start Generating** و**New Audit** و**Claim Tokens**. |
 | **Public Sale** | `/public-sale` | يرى المشاركون الحاليون تخصيصهم وجدول الاستحقاق والمطالبة. |
 | **Wallet** | [المحفظة](/dashboard/wallet) | الرصيد والسجلّ والاستلام، و(على الشبكة الرئيسية) الإرسال والتخزين عبر QoreX. |
 | **Faucet** | [الصنبور](/dashboard/faucet) | رموز مجانية لشبكة الاختبار. |
@@ -37,7 +37,7 @@ sidebar_position: 1
 | **Trade** | [التداول](/dashboard/trade) | شاشة تبادل بالرموز التجريبية. |
 | مجموعة **Earn** | [المهام](/dashboard/quests) | Quests وLeaderboard وBadges. |
 | **Games** | [المهام](/dashboard/quests#games) | QoreChain Arcade. |
-| مجموعة **Build** | [منشئ العقود الذكية](/dashboard/smart-contract-creator)، [مدقّق العقود](/dashboard/contract-auditor)، [العقد والمدقّقون](/dashboard/tools-hub) (`/tools`)، [المطورون](/dashboard/developers) | أدوات العقود، وأدوات العقد والمدقّقين، وأدوات المطورين. كان إدخال Nodes & Validators يحمل سابقًا التسمية "Tools". |
+| مجموعة **Build** | [منشئ العقود الذكية](/dashboard/smart-contract-creator)، [مدقّق العقود](/dashboard/contract-auditor)، [العقد والمدقّقون](/dashboard/tools-hub) (`/tools`)، [المطورون](/dashboard/developers) | أدوات العقود، وصفحة المشغّلين (خمسة تبويبات: Validator Program وValidator Application وLight Node وNode Registration وRollups) وصفحة المطورين العامة (ستة تبويبات: SDKs وPQ key status وSimulator وSigning playground وQoreX test wallet وAI agents (MCP)). كان إدخال Nodes & Validators يحمل سابقًا التسمية "Tools"؛ وانتقل تبويب SDK الخاص به إلى المطورين. |
 | **FAQ** | `/faq` | مساعدة داخل التطبيق. أجزاء منها قديمة؛ هذا الدليل هو المرجع. |
 
 صفحة [المدقّقون](/dashboard/validators) (`/validators`) ليس لها رابط في الشريط الجانبي؛ افتحها عبر عنوانها.
@@ -119,7 +119,8 @@ sidebar_position: 1
 
 - **لا توجد شاشة جسر (Bridge).** راجع [الجسر](/dashboard/bridge).
 - **لا يتبع التداول مفتاح تبديل الشبكة.** يعرض محتوى شبكة الاختبار حتى مع ضبط الترويسة على Mainnet. راجع [التداول](/dashboard/trade).
-- **بعض النصوص داخل التطبيق قديمة.** الأسئلة الشائعة (FAQ)، وبعض الصياغات في شاشة إنشاء المحفظة وفي تبويب SDK ضمن Nodes & Validators، لا تطابق السلوك الحالي. حيثما اختلف هذا الدليل مع التطبيق، اتبع هذا الدليل وبلّغ عن الصفحة.
+- **الأسئلة الشائعة (FAQ) داخل التطبيق صفحة مساعدة قصيرة.** حيثما اختلفت عن هذا الدليل، اتبع هذا الدليل.
+- **غير متاح بعد:** أداة فحص المعاملات (Transaction inspector) في صفحة المطورين، وخادم MCP (تذكر صفحة المطورين أنه غير منشور).
 - **قيود الشبكة الرئيسية.** التخزين والإرسال ونشر العقود على الشبكة الرئيسية موصوفة لكل صفحة على حدة؛ وهناك مسارات عدة (عمليات النشر على Native أو SVM، وإعادة التفويض، والتخزين المقفل زمنيًا) غير متاحة في لوحة التحكم.
 - **شبكة الاختبار بلا قيمة حقيقية.** لا ترسل QOR حقيقيًا إلى عنوان على شبكة الاختبار أبدًا: الصيغ متطابقة. راجع [المحفظة](/dashboard/wallet#testnet).
 

@@ -17,10 +17,10 @@ sidebar_position: 6
 
 - **アカウントなしで 1 回生成できます。** 初めての訪問者は 1 回生成でき、コントラクトの全体を確認できます。訪問者ごとの上限と、全体の 1 日あたりの上限があります。無料お試しの結果には **Deploy** も、動作する **Edit** もありません。その後、ページに **Create a free account** が表示されます。
 - **サインインすると UTC の毎日 1 回は無料で生成できます。** UTC の各日の最初の生成は、両ネットワークで無料です。それ以降は、テストネットでは「Generation Cost」を表示する「Confirm Contract Generation」ダイアログの後、テストウォレットのテスト QOR で 1 回ごとに支払います。メインネットではダッシュボードが鍵を保持しないため、次の UTC の日までそれ以上の生成は拒否されます。
-- **すべてを入力するスターター。** **Token**、**NFT collection**、**Locked vault**、**2-of-3 multisig** のそれぞれが、完全なプロンプトを入力し、ターゲットを QoreChain に設定し、テンプレートを選択します。
+- **すべてを入力するスターター。** **Token**、**NFT collection**、**Locked vault**、**2-of-3 multisig** のそれぞれが、完全なプロンプトを入力し、ターゲットを QoreChain に設定し、テンプレートを選択します。「PQC Token」と「PQC NFT」テンプレートは、ML-DSA-87 で署名するアカウント向けのコントラクトを記述します。
 - **17 のターゲットブロックチェーン。** それぞれに専用のテンプレートと「Custom (describe in prompt)」があります。QoreChain、Cosmos、Ethereum、Solana、Avalanche、NEAR、Polygon、BSC、TON、Cardano、Polkadot、Tezos、Arbitrum、Optimism、Sui、Aptos、Tron。
 - **メインネット EVM でのノンカストディアルデプロイ。** ダッシュボードはコントラクトをコンパイルし、**未署名**のデプロイデータを返します。注入型の EVM ウォレット（MetaMask、Rabby、Coinbase Wallet）がチェーン 9801 を追加または切り替え、署名してブロードキャストします。その後、ダッシュボードがアドレスを記録します。
-- **テストネットではガバナンスで承認された QoreChain Native のコード。** 生成されたコードはアップロードされません。テストネットのガバナンスがすでに承認し、チェーンからライブで読み取られるコードをインスタンス化します。CW20 token (cw20-base)、NFT collection (cw721-base)、Member group (cw4-group)、Multisig (cw3-fixed-multisig)、Counter example (qore-counter) です。インスタンス化メッセージはあらかじめ入力され、編集できます。
+- **テストネットで承認済みの QoreChain Native コントラクト。** テストネットのフェスト期間中、コントラクトのアップロードはガバナンスを通じて審査されるため、生成されたコードはアップロードされません。承認済みのコントラクトをインスタンス化します。一覧はチェーンからライブで読み取られます。CW20 token (cw20-base)、NFT collection (cw721-base)、Member group (cw4-group)、Multisig (cw3-fixed-multisig)、Counter example (qore-counter) です。インスタンス化メッセージはあらかじめ入力され、編集できます。
 - **ダイアログ内でのコンパイルフィードバック。** エラーはその場に表示され、ダイアログは推測できないコンストラクタ引数を尋ね、トークンのフィールドはコードまたはプロンプトから事前に読み取られます。
 - **デフォルトで非公開、公開するとフォーク可能。** 所有者は **Public** と **Private** を切り替えられ、公開コントラクトの所有者以外は **Fork** できます。
 
@@ -70,7 +70,12 @@ Deploy は結果ページと編集ページにあります。ダイアログに�
 #### テストネット、ワンクリック {#deploy-testnet}
 
 - **EVM：** **Deploy to Testnet** を選択します。ダッシュボードのテストウォレットがデプロイを署名して送信し、成功すると「Deployed on Testnet」と表示されます。メインネットに進む前に、[フォーセット](/dashboard/faucet)のトークンで繰り返し試してください。
-- **QoreChain Native：** **Approved contract** を選び、**Label \*** を設定し、**Instantiate message (JSON)** を確認または編集して、**Instantiate on Testnet** を選択します。テストネットでのコントラクトのアップロードはガバナンスを通じて審査されるため、自分のコードをアップロードするのではなく、承認済みのコードをインスタンス化します。ダッシュボードが認識しない承認済みコードは、空のメッセージで表示されます。カスタムコントラクトは QoreChain EVM（Solidity）に送られます。
+- **QoreChain Native：** テストネットのフェスト期間中、コントラクトのアップロードはガバナンスを通じて審査されるため、生成したコードをアップロードする代わりに、承認済みのコントラクトをインスタンス化します。ダイアログでは次のようにします。
+  1. **Approved contract** を選びます。一覧はチェーンからライブで読み取られ、現在は CW20 token (cw20-base)、NFT collection (cw721-base)、Member group (cw4-group)、Multisig (cw3-fixed-multisig)、Counter example (qore-counter) が提供されています。
+  2. **Instantiate message (JSON)** を確認します。トークンのフィールドからあらかじめ入力されており、編集できます。ダッシュボードが認識しない承認済みコードは、空のメッセージで表示されます。
+  3. **Label \*** を設定し、**Instantiate on Testnet** を選択します。テストネットのウォレットで署名され、結果にはコントラクトのアドレスとトランザクションが表示されます。
+  
+  カスタムコントラクトは QoreChain EVM（Solidity）に送られます。
 - ダッシュボードからデプロイできるのは、EVM コントラクトと承認済みの QoreChain Native コードのみです。別の EVM チェーン（Polygon、BSC、Arbitrum など）向けに書かれたコントラクトは、そのチェーン自身のネットワークではなく QoreChain EVM にデプロイされます。EVM 以外のチェーン向けのコントラクトは、ここからはデプロイできません。
 
 **最小限の例（テストネット）：** **Token** を選択し、**Generate Smart Contract**、Confirm、**Deploy** の順に進み、「CW20 token (cw20-base)」を選び、Label を `my-token` にして、**Instantiate on Testnet** を選択します。

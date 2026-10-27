@@ -75,11 +75,11 @@ Daily and weekly quests reset on a schedule; the detail page shows the reset cad
 ## Limits and known issues {#limits}
 
 - **Quest sets change.** A season's tab can be empty or show fewer quests when its quests are not active; check the tab rather than relying on this page for the current list.
-- **Everything here is off chain:** points, ranks, badges and game scores are recorded by the Dashboard, not on QoreChain. The Arcade subtitle's word "on-chain" does not describe the scores.
+- **Everything here is off chain:** points, ranks, badges and game scores are recorded by the Dashboard, not on QoreChain. Photons are not on chain.
 - **Reward amounts** are shown on each quest and can change.
 - **Sign-in** and, for social quests, verified linked accounts are required.
 - **Public Sale** (`/public-sale`) is a separate page for existing participants (allocation, vesting timeline, claim); all earlier rounds are closed, and it is not described further here.
-- **FAQ** (`/faq`) is an in-app help page whose content lags behind this manual.
+- **FAQ** (`/faq`) is a short in-app help page; this manual is the reference.
 
 ## Related
 

@@ -27,7 +27,7 @@ Los rollups optimistas asumen que las transacciones son válidas por defecto y d
 * **Ventana de impugnación**: 604,800 segundos (por defecto, 7 días). **Antes de v3.2.4:** la cadena lo convierte a bloques a razón fija de 6 segundos por bloque, **100,800 bloques**, así que el tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,1 s de mainnet); planifique en bloques, no en días. **Desde v3.2.4:** para un lote enviado a partir de la altura de la actualización, la ventana se mide en segundos de tiempo de bloque (7 días completos). Un lote enviado antes conserva la regla del número de bloques. La testnet aplicó la v3.2.4 en la altura 8,337,253 (19 de octubre de 2026); mainnet la aplicó en la altura 3,742,566 (23 de octubre de 2026, propuesta de gobernanza 13). El valor por defecto configurado en la testnet es más corto, 3,600 segundos (1 hora), de modo que un rollup de testnet finaliza más rápido que los 7 días descritos aquí.
 * **Fianza de impugnación**: 1,000 QOR (1,000,000,000 uqor) — requerida para presentar una impugnación con prueba de fraude (presets `nft` y `custom`; los presets `defi`, `gaming` y `enterprise` no establecen fianza porque no tienen ventana de impugnación)
 * **Finalidad**: retrasada hasta que expire la ventana de impugnación sin una impugnación válida
-* **Auto-finalización**: el `EndBlocker` finaliza automáticamente los lotes una vez que la ventana de impugnación ha pasado sin disputa. Un lote impugnado nunca se finaliza automáticamente: el creador del rollup resuelve primero la impugnación (consulte [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
+* **Auto-finalización**: el `EndBlocker` finaliza automáticamente los lotes una vez que la ventana de impugnación ha pasado sin disputa. Un lote impugnado nunca se finaliza automáticamente: primero debe resolverse, por el creador del rollup en mainnet (v3.2.4) y por cualquier cuenta en la testnet (v3.2.5 y posteriores; mainnet lo seguirá cuando la propuesta de gobernanza 14 aplique v3.2.5) (consulte [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
 
 **Ciclo de vida del lote**:
 
@@ -152,7 +152,7 @@ Los proponentes de L1 de QoreChain secuencian las transacciones del rollup.
 Almacenamiento de blobs en el KV-store on-chain dentro de la propia QoreChain.
 
 :::caution Todavía no hay una forma pública de publicar un blob
-El módulo define el almacenamiento, la retención y la poda de blobs, pero en las versiones actuales no existe ningún mensaje de transacción para publicar un blob. Un lote que nombre un hash de datos en un rollup `native` o `both` es rechazado porque no se puede almacenar ningún blob coincidente. Consulte [Data Availability](/rollups/data-availability). Por tanto, con disponibilidad de datos native un lote debe dejar `data_hash` vacío; el cliente RDK (0.6.2) lo hace así, y la cadena rechaza un lote que declare uno.
+El módulo define el almacenamiento, la retención y la poda de blobs, pero en las versiones actuales no existe ningún mensaje de transacción para publicar un blob. Un lote que nombre un hash de datos en un rollup `native` o `both` es rechazado porque no se puede almacenar ningún blob coincidente. Consulte [Data Availability](/rollups/data-availability). Por tanto, con disponibilidad de datos native un lote debe dejar `data_hash` vacío; el cliente RDK (0.7.0) lo hace así, y la cadena rechaza un lote que declare uno.
 :::
 
 | Parámetro            | Valor                                                                                               |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Lote aceptado como canónico                        |
 | **Rejected**   | Lote invalidado por una impugnación exitosa        |
 
-Comportamiento del RDK 0.6.1 y 0.6.2 (el código de la biblioteca es el mismo): para un rollup optimistic, el cliente construye un lote cuya raíz de estado es la raíz de transición canónica de la cadena (`batchTransitionRoot` en el RDK), no un valor libre propio.
+Comportamiento del RDK 0.6.1 y posteriores (la 0.7.0 es la actual): para un rollup optimistic, el cliente construye un lote cuya raíz de estado es la raíz de transición canónica de la cadena (`batchTransitionRoot` en el RDK), no un valor libre propio.
 
 ### Reglas de auto-finalización
 

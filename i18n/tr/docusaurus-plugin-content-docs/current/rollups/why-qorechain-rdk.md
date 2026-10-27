@@ -19,7 +19,7 @@ Katmanı (Layer 1) etrafında inşa edilmiş, QoreChain'e özgü üç yetenek ek
 :::caution Erken aşama: durum sütununu okuyun
 Henüz hiçbir ağda rollup oluşturulmadı (27 Ekim 2026 itibarıyla kontrol edildi).
 Aşağıdaki tablo bugün nelerin çalıştığını belirtir; yayınlanmış 0.6.x
-istemcilerinin neyi değiştirdiği ve kalan sınırlar [RDK 0.6.2: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits)
+istemcilerinin neyi değiştirdiği ve kalan sınırlar [RDK 0.7.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits)
 bölümünde toplanmıştır. Yalnızca genel bir optimistic/zk rollup'a ihtiyacınız varsa,
 herhangi bir kit işinizi görür; buradaki yetenekler RDK'nın bunun üzerine eklediği
 şeylerdir ve TypeScript, Python, Go, Rust ve Java dillerinde sunulur.
@@ -27,7 +27,7 @@ herhangi bir kit işinizi görür; buradaki yetenekler RDK'nın bunun üzerine e
 
 | Yetenek | Durum | Neye dayanır |
 | --- | --- | --- |
-| **Yerleşim makbuzları** | 🟡 Erken aşama | Sabitlemeler (anchor), Ana Zincirin kuantum sonrası şeması olan ML-DSA-87 ile imzalanır; henüz sabitleme yok, dolayısıyla zincire karşı kontrol yapan 0.6.2 doğrulayıcısı gerçek bir sabitleme üzerinde hiç çalıştırılmadı |
+| **Yerleşim makbuzları** | 🟡 Erken aşama | Sabitlemeler (anchor), Ana Zincirin kuantum sonrası şeması olan ML-DSA-87 ile imzalanır; henüz sabitleme yok, dolayısıyla zincire karşı kontrol yapan 0.7.0 doğrulayıcısı gerçek bir sabitleme üzerinde hiç çalıştırılmadı |
 | **QCAI Rollup Copilot** | 🟡 Genel uç noktalarda henüz mevcut değil | Genel uç noktaların bugün sunmadığı zincir üstü AI/RL danışma servisleri |
 | **Çoklu-VM zincirler arası VM çağrıları** | 🟡 Canlı ağlarda henüz kullanılamaz | Etkinleştirilmemiş bir zincirler arası VM precompile'ı (0.6.0'dan beri kodlayıcı zincirin yerleşimiyle eşleşir) ve kapalı QoreChain Native yüklemesi |
 
@@ -58,7 +58,7 @@ console.log(result.valid);
 `verifySettlementReceipt` zincire karşı kontrol eder ve bir `client` olmadan
 `valid` demeyi reddeder. 0.5.0'da zincir kontrolü canlı ağlara karşı
 tamamlanamıyordu (gerçek bir makbuzu geçerli olarak bildirmek yerine güvenli
-biçimde başarısız oluyordu, fail closed); 0.6.0 bunu düzeltti ve 0.6.1 (dolayısıyla 0.6.2) makbuzun her alanını karşılaştırır, ancak henüz hiçbir
+biçimde başarısız oluyordu, fail closed); 0.6.0 bunu düzeltti ve 0.6.1 (ve sonraki her sürüm) makbuzun her alanını karşılaştırır, ancak henüz hiçbir
 çapa mevcut olmadığından hiçbiri gerçek bir çapa üzerinde çalıştırılmamıştır. Bir makbuzun neyi kanıtlayıp neyi
 kanıtlamadığı ve tam sınırlar için bkz.
 [Yerleşim makbuzları](/rollups/settlement-receipts).

@@ -19,7 +19,7 @@ lot est frauduleux — elle appelle votre fonction `validate` et agit selon ce q
 vous renvoyez.
 
 :::caution Stade précoce : rien à surveiller pour l'instant
-La Tour de guet lit les lots via le client REST du RDK, et les routes `/qorechain/rdk/v1/…` sont servies sur les deux réseaux. Aucun rollup n'a été créé sur l'un ou l'autre réseau (vérifié le 27 octobre 2026) ; il n'y a donc encore rien à surveiller et la Tour de guet n'a jamais tourné face à un lot réel. Dans `@qorechain/rdk` 0.5.0, sa logique d'échéance était erronée (elle lisait une hauteur de bloc comme un horodatage Unix, de sorte que `onDeadline` se déclenchait dès qu'un lot était vu pour la première fois) et elle ne lisait que la première page de 50 lots ; **la 0.6.0 a corrigé les deux** (voir ci-dessous). Utilisez la 0.6.2, la version actuelle.
+La Tour de guet lit les lots via le client REST du RDK, et les routes `/qorechain/rdk/v1/…` sont servies sur les deux réseaux. Aucun rollup n'a été créé sur l'un ou l'autre réseau (vérifié le 27 octobre 2026) ; il n'y a donc encore rien à surveiller et la Tour de guet n'a jamais tourné face à un lot réel. Dans `@qorechain/rdk` 0.5.0, sa logique d'échéance était erronée (elle lisait une hauteur de bloc comme un horodatage Unix, de sorte que `onDeadline` se déclenchait dès qu'un lot était vu pour la première fois) et elle ne lisait que la première page de 50 lots ; **la 0.6.0 a corrigé les deux** (voir ci-dessous). Utilisez la 0.7.0, la version actuelle.
 :::
 
 ## `watchBatches`
@@ -31,7 +31,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.6.2: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
@@ -75,7 +75,11 @@ Le framework fait remonter :
 - les **échéances de fenêtre de contestation** via `onDeadline`, et
 - les **lots invalides** (ceux pour lesquels votre `validate` a renvoyé `false`) via `onInvalid`.
 
-Depuis la 0.6.0 (et dans la 0.6.1 et la 0.6.2), elle parcourt chaque page de la liste de lots d'un rollup, rejuge un lot à mesure que son échéance approche (elle continue d'interroger à partir du plus ancien lot dont la fenêtre est encore ouverte, au lieu de juger chaque lot une seule fois à sa première apparition), et mesure chaque fenêtre par rapport à la tête de la chaîne (`getChainTip`, le statut du nœud) plutôt qu'à l'horloge locale. Un lot déjà `finalized` n'est ni validé ni signalé.
+Depuis la 0.6.0 (et dans toutes les versions suivantes), elle parcourt chaque page de la liste de lots d'un rollup, rejuge un lot à mesure que son échéance approche (elle continue d'interroger à partir du plus ancien lot dont la fenêtre est encore ouverte, au lieu de juger chaque lot une seule fois à sa première apparition), et mesure chaque fenêtre par rapport à la tête de la chaîne (`getChainTip`, le statut du nœud) plutôt qu'à l'horloge locale. Un lot déjà `finalized` n'est ni validé ni signalé.
+
+**Lots soumis de nouveau (0.7.0).** À partir de la chaîne v3.2.5 (testnet dès maintenant ; mainnet après la mise à niveau), une fraude confirmée rejette le lot ainsi que tous les lots non finalisés suivants, et le séquenceur les soumet de nouveau sous les mêmes index. Les versions antérieures à la 0.7.0 distinguaient les lots par leur seul index et manquaient donc un lot soumis de nouveau à un index rejeté ; la 0.7.0 les distingue par index et racine d'état, et ne valide jamais un lot rejeté.
+
+**Appliquer la règle de fraude de la chaîne (0.7.0).** `transitionRootValidator` est un prédicat `validate` prêt à l'emploi qui applique la règle propre à la chaîne (un lot est frauduleux lorsque sa racine d'état n'est pas la racine de transition canonique), et `fraudProofForBatch` renvoie la preuve gagnante, ou aucune pour un lot honnête, afin que vous puissiez la passer à `challengeBatch`.
 
 Relier `onInvalid` à une contestation transforme la Tour de guet en un
 contestataire automatique complet ; laissez-le non défini pour fonctionner en
@@ -93,6 +97,6 @@ qorollup watchtower my-rollup
 
 `watchtower` exécute le framework depuis la ligne de commande, en affichant les
 nouveaux lots et les échéances de fenêtre de contestation jusqu'à ce que vous
-appuyiez sur Ctrl-C. Consultez
+appuyiez sur Ctrl-C. Ajoutez `--canonical` (0.7.0) et il signale aussi chaque lot dont la racine d'état n'est pas la racine de transition canonique, c'est-à-dire les lots qu'une contestation gagnerait. Consultez
 [Déployer un rollup](/rollups/deploying-a-rollup) pour le CLI opérateur
 `qorollup` complet.

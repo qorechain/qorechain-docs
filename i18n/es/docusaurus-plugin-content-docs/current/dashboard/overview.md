@@ -29,7 +29,7 @@ Esta sección es una guía práctica para el usuario: qué hace cada página, c�
 
 | Entrada | Página | Qué es |
 | --- | --- | --- |
-| **Discover** | `/` | Inicio: botones principales **Create Smart Contract** y **Explore Network**, contadores de "Dashboard Overview", listas de contratos creados, últimas auditorías y principales colaboradores, y un "Developer Toolkit" con **Start Generating**, **New Audit** y **Claim Tokens**. |
+| **Discover** | `/` | Inicio: botones principales **Create Smart Contract** y **Explore Network**, contadores de "Dashboard Overview", listas de contratos creados, últimas auditorías públicas y principales colaboradores, y un "Developer Toolkit" con **Start Generating**, **New Audit** y **Claim Tokens**. |
 | **Public Sale** | `/public-sale` | Los participantes existentes ven su asignación, el calendario de vesting y el reclamo. |
 | **Wallet** | [Monedero](/dashboard/wallet) | Saldo, historial, recepción y (en mainnet) envío y staking a través de QoreX. |
 | **Faucet** | [Faucet](/dashboard/faucet) | Tokens de testnet gratuitos. |
@@ -37,7 +37,7 @@ Esta sección es una guía práctica para el usuario: qué hace cada página, c�
 | **Trade** | [Trade](/dashboard/trade) | Pantalla de intercambio con tokens de prueba. |
 | Grupo **Earn** | [Misiones](/dashboard/quests) | Quests, Leaderboard, Badges. |
 | **Games** | [Misiones](/dashboard/quests#games) | El QoreChain Arcade. |
-| Grupo **Build** | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Herramientas de contratos, herramientas de nodos y validadores, herramientas para desarrolladores. La entrada Nodes & Validators antes se llamaba "Tools". |
+| Grupo **Build** | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Herramientas de contratos, la página del operador (cinco pestañas: Validator Program, Validator Application, Light Node, Node Registration, Rollups) y la página pública para desarrolladores (seis pestañas: SDKs, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). La entrada Nodes & Validators antes se llamaba "Tools"; su pestaña SDK pasó a Developers. |
 | **FAQ** | `/faq` | Ayuda dentro de la app. Partes de ella están desactualizadas; este manual es la referencia. |
 
 La página [Validadores](/dashboard/validators) (`/validators`) no tiene enlace en la barra lateral; ábrela por su dirección.
@@ -119,7 +119,8 @@ Páginas de esta sección: [Explorador](/dashboard/explorer), [Monedero](/dashbo
 
 - **No hay pantalla de Bridge.** Consulta [Bridge](/dashboard/bridge).
 - **Trade no sigue el selector de red.** Muestra contenido de testnet incluso con la cabecera en Mainnet. Consulta [Trade](/dashboard/trade).
-- **Parte del texto de la app está desactualizado.** La FAQ, y parte de la redacción de la pantalla de creación de monedero y de la pestaña SDK de Nodes & Validators, no coinciden con el comportamiento actual. Donde este manual y la app discrepen, sigue este manual e informa de la página.
+- **La FAQ de la app es una página de ayuda breve.** Donde difiera de este manual, sigue este manual.
+- **Todavía no está activo:** el Transaction inspector de la página Developers y el servidor MCP (la página Developers indica que no está publicado).
 - **Restricciones de mainnet.** El staking, el envío y los despliegues de contratos en mainnet se describen en cada página; varios flujos (despliegues Native o SVM, redelegación, staking con bloqueo temporal) no se ofrecen en el Panel.
 - **Testnet no tiene valor real.** Nunca envíes QOR reales a una dirección de testnet: los formatos son idénticos. Consulta [Monedero](/dashboard/wallet#testnet).
 

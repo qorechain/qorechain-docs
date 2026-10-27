@@ -18,6 +18,7 @@ Testnet QOR'un **gerçek bir değeri yoktur**. Musluk asla mainnet'e dokunmaz: m
 - **Tek talep, iki tür token.** Bir talep 100 QOR öder; ayrı bir işlemde ise 1.000 fUSD, 0,5 fETH ve 0,02 fBTC öder. Fest gönderimi başarısız olursa QOR yine de ulaşır ve sonuç kartı bunu belirtir.
 - **Çift bekleme süresi.** Hesap başına **ve** adres başına 24 saatte bir talep. Yuva, herhangi bir şey gönderilmeden önce ayrılır ve gönderim başarısız olursa serbest bırakılır; böylece başarısız bir talep gününüzü tüketmez.
 - **Fest token'ları yerel bank coin'leridir.** Bunlar, zincir üzerindeki AMM'nin, bank gönderimlerinin, IBC'nin ve QoreChain Native sözleşmelerinin olduğu gibi kullandığı `erc20:0x...` bank birimleridir. MetaMask veya bir EVM DEX bunları yalnızca bir `MsgConvertCoin` dönüşümünden sonra görür (bkz. [Fest test token'ları](#fest-tokens)).
+- **Yanlış rakam yok.** Musluğun bilgisi yüklenemezse sayfa bir tutar yerine "..." gösterir, asla tahmin edilmiş bir tutar göstermez.
 - **Bir `0x` alıcı, `qor1` ikizi üzerinden ödenir.** Bir `0x` adresi, `qor1` biçimiyle aynı 20 baytıdır; bu nedenle servis aynı hesabı öder. Panel formunun kendisi yalnızca `qor1...` kabul eder.
 
 ## Nasıl kullanılır {#how-to-use}
@@ -48,7 +49,7 @@ Testnet'te geliştirici festivali için üç ek test token'ı vardır: **fUSD** 
 - **Yalnızca testnet.** Bu token'lar mainnet'te yoktur.
 - **Birimi tam olarak kopyalayın.** Adres kısmı EIP-55 karışık harf biçimindedir ve birim büyük/küçük harf duyarlı olarak eşleştirilir.
 - **Zincir üzerinde görün.** `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` üç birimi sembolleri ve görünen adlarıyla listeler.
-- **MetaMask veya bir EVM DEX'ten kullanma.** Musluk bank coin'leri öder. Birini MetaMask veya bir EVM DEX için ERC-20 olarak tutmak istiyorsanız `MsgConvertCoin` ile dönüştürün (gönderen `qor1...` adresiniz, alıcı bir `0x...` adresi ve tam karışık harfli birim). Geri taşımak `MsgConvertERC20` ile yapılır. Adımlar ve gas rakamları [EVM Geliştirme](/developer-guide/evm-development#fest-tokens) sayfasındadır.
+- **MetaMask veya bir EVM DEX'ten kullanma.** Musluk bank coin'leri öder. Birini MetaMask veya bir EVM DEX için ERC-20 olarak tutmak istiyorsanız `MsgConvertCoin` ile dönüştürün (gönderen `qor1...` adresiniz, alıcı bir `0x...` adresi ve tam karışık harfli birim). Geri taşımak `MsgConvertERC20` ile yapılır. Adımlar ve gas rakamları [EVM Geliştirme](/developer-guide/evm-development#fest-tokens) sayfasındadır. Adım adım özel bir dönüştürme kılavuzu planlanmıştır ve henüz yayımlanmamıştır.
 - **Havuzlar.** Testnet [AMM](/architecture/amm), bunları `uqor` karşısında havuzlayabilir; bir havuzun var olup olmadığını `GET /qorechain/amm/v1/pools` gösterir. [Cüzdan](/dashboard/wallet) sayfasının Tokens sekmesinde ve [Trade](/dashboard/trade) sayfasında bunlar için bir giriş yoktur; bir bakiyeyi `GET /cosmos/bank/v1beta1/balances/{address}` ile denetleyin.
 
 ### Test token'larıyla ne yapılır

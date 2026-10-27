@@ -27,7 +27,7 @@ I rollup optimistic presumono che le transazioni siano valide per impostazione p
 * **Finestra di contestazione**: 604.800 secondi (predefinita, 7 giorni). **Prima della v3.2.4:** la catena la converte in blocchi a un rapporto fisso di 6 secondi per blocco, **100.800 blocchi**, quindi il tempo reale trascorso dipende dal tempo di blocco effettivo (circa 3,7 giorni con gli attuali blocchi da ≈3,1 s della mainnet); pianifica in blocchi, non in giorni. **Dalla v3.2.4:** per un batch inviato dall'altezza dell'upgrade in poi, la finestra è misurata in secondi di tempo di blocco (7 giorni pieni). Un batch inviato prima mantiene la regola del conteggio dei blocchi. La testnet ha applicato la v3.2.4 all'altezza 8.337.253 (19 ottobre 2026); la mainnet l'ha applicata all'altezza 3.742.566 (23 ottobre 2026, proposta di governance 13). Il valore predefinito configurato sulla testnet è più breve, 3.600 secondi (1 ora), quindi un rollup sulla testnet si finalizza più in fretta dei 7 giorni qui descritti.
 * **Cauzione di contestazione**: 1.000 QOR (1.000.000.000 uqor) — necessaria per inviare una contestazione tramite prova di frode (preset `nft` e `custom`; i preset `defi`, `gaming` ed `enterprise` non impostano alcuna cauzione perché non hanno una finestra di contestazione)
 * **Finalità**: ritardata fino allo scadere della finestra di contestazione senza alcuna contestazione valida
-* **Finalizzazione automatica**: l'`EndBlocker` finalizza automaticamente i batch una volta trascorsa la finestra di contestazione senza dispute. Un batch contestato non viene mai finalizzato automaticamente: il creatore del rollup deve prima risolvere la contestazione (vedi [Distribuire un Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
+* **Finalizzazione automatica**: l'`EndBlocker` finalizza automaticamente i batch una volta trascorsa la finestra di contestazione senza dispute. Un batch contestato non viene mai finalizzato automaticamente: deve prima essere risolto, dal creatore del rollup su mainnet (v3.2.4) e da qualsiasi account su testnet (v3.2.5 e successive; la mainnet segue quando la proposta di governance 14 applica la v3.2.5) (vedi [Distribuire un Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
 
 **Ciclo di vita del batch**:
 
@@ -152,7 +152,7 @@ I proposer L1 di QoreChain eseguono il sequencing delle transazioni del rollup.
 Archiviazione di blob on-chain in un KV-store all'interno di QoreChain stessa.
 
 :::caution Ancora nessun modo pubblico per pubblicare un blob
-Il modulo definisce l'archiviazione, la conservazione e il pruning dei blob, ma nelle versioni attuali non esiste alcun messaggio di transazione per pubblicare un blob. Un batch che indica un hash di dati su un rollup `native` o `both` viene rifiutato perché non è possibile archiviare alcun blob corrispondente. Vedi [Disponibilità dei Dati](/rollups/data-availability). Con la disponibilità dei dati nativa, un batch deve quindi lasciare `data_hash` vuoto; il client RDK (0.6.2) lo fa, e la catena rifiuta un batch che ne dichiari uno.
+Il modulo definisce l'archiviazione, la conservazione e il pruning dei blob, ma nelle versioni attuali non esiste alcun messaggio di transazione per pubblicare un blob. Un batch che indica un hash di dati su un rollup `native` o `both` viene rifiutato perché non è possibile archiviare alcun blob corrispondente. Vedi [Disponibilità dei Dati](/rollups/data-availability). Con la disponibilità dei dati nativa, un batch deve quindi lasciare `data_hash` vuoto; il client RDK (0.7.0) lo fa, e la catena rifiuta un batch che ne dichiari uno.
 :::
 
 | Parametro                    | Valore                                                                                                                      |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Batch accettato come canonico                                  |
 | **Rejected**   | Batch invalidato da una contestazione riuscita                 |
 
-Comportamento di RDK 0.6.1 e 0.6.2 (il codice della libreria è lo stesso): per un rollup optimistic il client costruisce un batch la cui radice di stato è la radice di transizione canonica della catena (`batchTransitionRoot` nell'RDK), non un valore libero a tua scelta.
+Comportamento di RDK 0.6.1 e successive (la 0.7.0 è l'attuale): per un rollup optimistic il client costruisce un batch la cui radice di stato è la radice di transizione canonica della catena (`batchTransitionRoot` nell'RDK), non un valore libero a tua scelta.
 
 ### Regole di finalizzazione automatica
 

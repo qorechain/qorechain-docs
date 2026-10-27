@@ -16,7 +16,7 @@ Versiunile din tabele au fost citite din registre la 27 octombrie 2026. Mainnet-
 - **Un singur format de semnătură hibridă în fiecare limbaj.** Lanțul cere o semnătură secp256k1 plus o semnătură ML-DSA-87 (FIPS 204) pentru tranzacțiile de pe traseul native. QoreSign reproduce vectorii săi de test publicați octet cu octet în TypeScript, Rust, Go, Swift și Kotlin, iar `qorechain-pqc` rulează un singur set comun de vectori în cele șase binding-uri ale sale, astfel încât o cheie sau o semnătură făcută într-un limbaj se verifică în celelalte.
 - **Forma sign-bytes este aleasă pe baza stării lanțului, nu ghicită.** SDK-ul, wallet adapter-ul, `chain-bridge` și helper-ele de rețea QoreSign cer nodului `GET /cosmos/upgrade/v1beta1/applied_plan/{name}` pentru ambele nume de upgrade (`v3.2.0` și `v3.1.98`) și semnează în forma v2 când oricare dintre înălțimi este mai mare decât zero. Fără un endpoint REST pe aceste două lanțuri, ele aruncă o eroare în loc să ghicească. Ambele rețele verifică v2 astăzi (verificat la 27 octombrie 2026: `v3.2.0` aplicat pe mainnet la înălțimea 2,981,742 și `v3.1.98` pe testnet la înălțimea 5,746,000).
 - **Quickstart-uri care au fost rulate, nu doar scrise.** Pentru pachetele care au unul, exemplul a fost rulat la 27 octombrie 2026 după instalarea din registrul public. 31 din 34 de intrări de quickstart au rulat și au trecut; manifestul consemnează care trei nu au rulat (vezi [Limite](#limits)).
-- **Un singur manifest în spatele tabelelor.** Numele pachetelor, versiunile și comenzile de instalare de pe această pagină provin dintr-un singur manifest care poate fi citit automat, cu un endpoint de versiune live pentru fiecare pachet, aceleași date din care se construiește hub-ul pentru dezvoltatori din dashboard.
+- **Un singur manifest în spatele tabelelor.** Numele pachetelor, versiunile și comenzile de instalare de pe această pagină provin dintr-un singur manifest care poate fi citit automat, cu un endpoint de versiune live pentru fiecare pachet, aceleași date din care este construit hub-ul SDK de pe [pagina Developers din dashboard](/dashboard/developers#sdks).
 
 ## Cum se utilizează {#how-to-use}
 
@@ -53,15 +53,16 @@ Instalează un singur pachet și rulează-i quickstart-ul mai întâi pe testnet
 
 ### Pagina pentru dezvoltatori din dashboard {#dashboard-developers}
 
-Dashboard-ul are o pagină publică la [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Verificată la 27 octombrie 2026, are aceste file:
+Dashboard-ul are o pagină publică la [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Verificată la 27 octombrie 2026, are șase file (prezentare completă: [Developers](/dashboard/developers)):
 
+- **SDKs:** hub-ul SDK. Fiecare pachet din manifest, grupat pe produs, cu selector de limbaj, cea mai recentă versiune citită live din fiecare registru, linii de instalare și de import cu butoane de copiere, quickstart-ul cu rezultatul observat de echipa SDK, probleme cunoscute, precum și id-urile de lanț și endpoint-urile publice. Pachetele nepublicate nu afișează nicio comandă de instalare.
 - **PQ key status:** citește din blockchain cheia ML-DSA-87 pe care o adresă a înregistrat-o și fereastra sa de autorizare EVM, pe testnet sau mainnet.
 - **Simulator:** simulează o tranzacție semnată (`TxRaw` în base64 sau hex) și afișează consumul de gas și modificările de sold. Nimic nu este transmis în rețea.
 - **Signing playground:** doar testnet. Generează în browser o cheie hibridă de unică folosință, ținută în memorie, pentru a semna și verifica mesaje și cereri Sign In With QoreChain.
 - **QoreX test wallet:** doar testnet. Injectează în filă un portofel de test (`window.qorex`, anunțat prin EIP-6963 ca „QoreX (mock)") pentru a putea încerca fluxuri de dApp.
 - **AI agents (MCP):** o pagină pentru serverul MCP, care nu este încă publicat (vezi [Planificate](#planned)).
 
-Hub-ul SDK care listează fiecare pachet din manifest, cu versiuni live, și inspectorul de tranzacții **nu sunt încă live**. Fila **SDKs** de pe acea pagină mai afișează text mai vechi, așa că nu o folosi pentru versiuni sau comenzi de instalare; folosește tabelele de mai jos, care au fost verificate față de registre.
+**Inspectorul de tranzacții** (lipești un hash și vezi fiecare mesaj, semnatarul, taxa și dacă semnătura post-cuantică se verifică) **nu este încă live**. Tabelele de mai jos și hub-ul SDK afișează aceleași date; tabelele au fost verificate față de registre la 27 octombrie 2026.
 
 ## Unde este publicat {#where-published}
 
@@ -105,13 +106,13 @@ Ghiduri: [Prezentarea rollup-urilor](/rollups/overview), [Implementarea unui rol
 
 | Pachet | Limbaj | Versiune | Instalare | Stare |
 |---|---|---|---|---|
-| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.6.2 | `npm install @qorechain/rdk` | Publicat. Singurul client RDK care semnează hibrid, și doar când pasezi un `pqcKeypair` |
-| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.6.2 | `npm install -g @qorechain/rdk-cli` | Publicat. 0.6.2 remediază problema de pornire din 0.6.1 prin link-ul bin npm. Comenzile sale de tranzacție semnează doar clasic, ceea ce rețelele refuză |
-| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.6.2 | `npx create-qorechain-rollup my-rollup` | Publicat |
-| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, se importă `qorrdk`) | 0.6.2 | `pip install qorechain-rdk` | Publicat. Citirile funcționează; tranzacțiile semnează doar clasic |
-| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.6.2 | `cargo add qorechain-rdk` | Publicat. Citirile funcționează; tranzacțiile semnează doar clasic |
-| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.6.2 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.6.2` | Publicat. Citirile funcționează; tranzacțiile semnează doar clasic |
-| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.6.1 | `implementation("io.github.qorechain:qorechain-rdk:0.6.1")` | Publicat la 0.6.1; 0.6.2 nu era pe Maven Central la 27 octombrie 2026. Citirile funcționează; tranzacțiile semnează doar clasic |
+| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.7.0 | `npm install @qorechain/rdk` | Publicat. Singurul client RDK care semnează hibrid, și doar când pasezi un `pqcKeypair` |
+| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.7.0 | `npm install -g @qorechain/rdk-cli` | Publicat. De la 0.6.2 pornește prin link-ul bin npm (0.6.1 și versiunile anterioare nu afișau nimic). Comenzile sale de tranzacție semnează doar clasic, ceea ce rețelele refuză |
+| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.7.0 | `npx create-qorechain-rollup my-rollup` | Publicat |
+| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, se importă `qorrdk`) | 0.7.0 | `pip install qorechain-rdk` | Publicat. Citirile funcționează; tranzacțiile semnează doar clasic |
+| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.7.0 | `cargo add qorechain-rdk` | Publicat. Citirile funcționează; tranzacțiile semnează doar clasic |
+| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.7.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.7.0` | Publicat. Citirile funcționează; tranzacțiile semnează doar clasic |
+| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.7.0 | `implementation("io.github.qorechain:qorechain-rdk:0.7.0")` | Publicat. Citirile funcționează; tranzacțiile semnează doar clasic |
 
 ### Primitive post-cuantice (`qorechain-pqc`) {#group-pqc}
 
@@ -208,11 +209,11 @@ Pentru un nume npm cu scope păstrează `@`, de exemplu `https://registry.npmjs.
 ## Limite și probleme cunoscute {#limits}
 
 - **Două rețele live, versiuni diferite.** Mainnet-ul rulează v3.2.4, iar testnet-ul rulează v3.2.6. O funcție care există doar pe testnet este marcată pe pagina ei. Nu presupune comportamentul v3.2.5 pe mainnet.
-- **Încă nu sunt live:** hub-ul SDK și inspectorul de tranzacții din pagina pentru dezvoltatori a dashboard-ului, serverul MCP și CLI-ul `qore`, QoreSign pentru Python, tranzacțiile SVM și precompilările EVM pe mainnet (vezi [prezentarea SDK](/sdk/overview) pentru lista pe trasee).
+- **Încă nu sunt live:** inspectorul de tranzacții din pagina pentru dezvoltatori a dashboard-ului, serverul MCP și CLI-ul `qore`, QoreSign pentru Python, tranzacțiile SVM și precompilările EVM pe mainnet (vezi [prezentarea SDK](/sdk/overview) pentru lista pe trasee).
 - **Exemple nerulate:** din cele 34 de intrări de quickstart, 31 au rulat și au trecut la 27 octombrie 2026. Exemplul QoreSign pentru Python nu a fost rulat (pachetul nu este publicat), iar exemplul QoreSign pentru Android nu a fost rulat pe un dispozitiv. Wallet adapter-ul, chain bridge-ul și handle-urile nu au quickstart, așa că exemplele lor din acest manual provin din tipurile și sursa pachetelor și nu au fost rulate end to end.
-- **`@qorechain/rdk-cli` înainte de 0.6.2** nu afișa nimic când era pornit prin link-ul bin npm, iar `--version` afișa 0.4.1. Folosește 0.6.2.
+- **`@qorechain/rdk-cli` înainte de 0.6.2** nu afișa nimic când era pornit prin link-ul bin npm, iar `--version` afișa 0.4.1. **`@qorechain/rdk` înainte de 0.7.0** construia dovezi de retragere care nu s-au verificat niciodată on-chain. Folosește 0.7.0.
 - **Conflict de versiune cosmjs.** `@qorechain/wallet-adapter` și `@qorechain/chain-bridge` folosesc cosmjs 0.32; SDK-ul folosește cosmjs 0.39. Instalarea adapter-ului lângă SDK în același proiect face ca npm să raporteze `ERESOLVE`. Păstrează-le în proiecte separate sau pasează `--legacy-peer-deps`.
-- **Copie SDK imbricată în RDK.** `@qorechain/rdk` 0.6.2 depinde de `@qorechain/sdk` `^0.9.0`; un caret pe o versiune 0.x rămâne în interiorul 0.9, așa că o aplicație pe SDK 0.10.0 primește o a doua copie SDK 0.9.x imbricată.
+- **Copie SDK imbricată în versiunile mai vechi ale RDK.** `@qorechain/rdk` 0.6.2 și versiunile anterioare depind de `@qorechain/sdk` `^0.9.0`, așa că o aplicație pe SDK 0.10.0 primea o a doua copie SDK 0.9.x imbricată. De la 0.7.0 kitul depinde de `@qorechain/sdk` `^0.10.0` și împarte o singură copie.
 - **Clienți RDK doar clasici.** Clienții RDK Python, Rust, Go și Java semnează doar clasic, ceea ce traseul native refuză pe ambele rețele; folosește-i pentru citiri sau folosește clientul TypeScript cu un `pqcKeypair` pentru tranzacții.
 - **Pachete fără repository sursă public.** `@qorechain/chain-bridge` și `@qorechain/handles` nu listează niciun repository sursă în metadatele lor din registru. Poți citi conținutul publicat al pachetelor pe npm.
 - **Python `qorechain-pqc`** nu are generare de chei din seed în 0.2.3 și necesită liboqs.

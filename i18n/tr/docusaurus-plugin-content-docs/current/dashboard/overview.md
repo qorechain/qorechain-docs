@@ -29,7 +29,7 @@ Bu bölüm bir kullanıcı kılavuzudur: her sayfanın ne işe yaradığı, nas�
 
 | Giriş | Sayfa | Nedir |
 | --- | --- | --- |
-| **Discover** | `/` | Ana sayfa: **Create Smart Contract** ve **Explore Network** hero düğmeleri, "Dashboard Overview" sayaçları, oluşturulan sözleşmelerin, son denetimlerin ve en iyi katkıda bulunanların listeleri ve **Start Generating**, **New Audit** ve **Claim Tokens** içeren bir "Developer Toolkit". |
+| **Discover** | `/` | Ana sayfa: **Create Smart Contract** ve **Explore Network** hero düğmeleri, "Dashboard Overview" sayaçları, oluşturulan sözleşmelerin, son herkese açık denetimlerin ve en iyi katkıda bulunanların listeleri ve **Start Generating**, **New Audit** ve **Claim Tokens** içeren bir "Developer Toolkit". |
 | **Public Sale** | `/public-sale` | Mevcut katılımcılar tahsisatlarını, vesting zaman çizelgesini ve claim işlemini görür. |
 | **Wallet** | [Wallet](/dashboard/wallet) | Bakiye, geçmiş, alma ve (mainnet) QoreX üzerinden gönderme ve stake etme. |
 | **Faucet** | [Faucet](/dashboard/faucet) | Ücretsiz testnet tokenleri. |
@@ -37,7 +37,7 @@ Bu bölüm bir kullanıcı kılavuzudur: her sayfanın ne işe yaradığı, nas�
 | **Trade** | [Trade](/dashboard/trade) | Test tokeni takas ekranı. |
 | **Earn** grubu | [Quests](/dashboard/quests) | Quests, Leaderboard, Badges. |
 | **Games** | [Quests](/dashboard/quests#games) | QoreChain Arcade. |
-| **Build** grubu | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Sözleşme araçları, node ve doğrulayıcı araçları, geliştirici araçları. Nodes & Validators girişi eskiden "Tools" olarak etiketlenirdi. |
+| **Build** grubu | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Sözleşme araçları, operatör sayfası (beş sekme: Validator Program, Validator Application, Light Node, Node Registration, Rollups) ve herkese açık geliştirici sayfası (altı sekme: SDKs, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). Nodes & Validators girişi eskiden "Tools" olarak etiketlenirdi; SDK sekmesi Developers sayfasına taşındı. |
 | **FAQ** | `/faq` | Uygulama içi yardım. Bir kısmı güncel değildir; başvuru kaynağı bu kılavuzdur. |
 
 [Validators](/dashboard/validators) sayfasının (`/validators`) kenar çubuğunda bağlantısı yoktur; adresiyle açın.
@@ -119,7 +119,8 @@ Bu bölümün sayfaları: [Explorer](/dashboard/explorer), [Wallet](/dashboard/w
 
 - **Bridge ekranı yoktur.** Bkz. [Bridge](/dashboard/bridge).
 - **Trade ağ anahtarını izlemez.** Başlık Mainnet'te olsa bile testnet içeriği gösterir. Bkz. [Trade](/dashboard/trade).
-- **Uygulama içi bazı metinler güncel değildir.** FAQ ile cüzdan oluşturma ekranındaki ve Nodes & Validators SDK sekmesindeki bazı ifadeler mevcut davranışla örtüşmez. Bu kılavuz ile uygulama çeliştiğinde bu kılavuzu izleyin ve sayfayı bildirin.
+- **Uygulama içi FAQ kısa bir yardım sayfasıdır.** Onunla bu kılavuz farklılaştığında bu kılavuzu izleyin.
+- **Henüz canlı değil:** Developers sayfasındaki Transaction inspector ve MCP sunucusu (Developers sayfası bunun yayımlanmadığını belirtir).
 - **Mainnet kısıtlamaları.** Mainnet'te staking, gönderme ve sözleşme dağıtımları sayfa başına açıklanır; birkaç akış (Native veya SVM dağıtımları, redelegation, zaman kilitli staking) Dashboard'da sunulmaz.
 - **Testnet'in gerçek değeri yoktur.** Bir testnet adresine asla gerçek QOR göndermeyin: biçimler aynıdır. Bkz. [Wallet](/dashboard/wallet#testnet).
 

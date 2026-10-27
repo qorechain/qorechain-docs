@@ -75,11 +75,11 @@ Tägliche und wöchentliche Quests werden nach einem Zeitplan zurückgesetzt; di
 ## Limits und bekannte Probleme {#limits}
 
 - **Quest-Sets ändern sich.** Der Tab einer Season kann leer sein oder weniger Quests zeigen, wenn seine Quests nicht aktiv sind; prüfe den Tab, statt dich für die aktuelle Liste auf diese Seite zu verlassen.
-- **Alles hier ist off-chain:** Punkte, Ränge, Badges und Spiel-Scores werden vom Dashboard erfasst, nicht auf QoreChain. Das Wort „on-chain“ im Untertitel der Arcade beschreibt die Scores nicht.
+- **Alles hier ist off-chain:** Punkte, Ränge, Badges und Spiel-Scores werden vom Dashboard erfasst, nicht auf QoreChain. Photons sind nicht on-chain.
 - **Belohnungsbeträge** werden bei jeder Quest angezeigt und können sich ändern.
 - **Anmeldung** und, für Social-Quests, verifizierte verknüpfte Konten sind erforderlich.
 - **Public Sale** (`/public-sale`) ist eine separate Seite für bestehende Teilnehmer (Zuteilung, Vesting-Zeitplan, Claim); alle früheren Runden sind geschlossen, und sie wird hier nicht weiter beschrieben.
-- **FAQ** (`/faq`) ist eine In-App-Hilfeseite, deren Inhalt hinter diesem Handbuch zurückliegt.
+- **FAQ** (`/faq`) ist eine kurze In-App-Hilfeseite; dieses Handbuch ist die Referenz.
 
 ## Verwandt
 

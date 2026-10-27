@@ -16,7 +16,7 @@ Les versions des tableaux ont été lues sur les registres le 27 octobre 2026. L
 - **Un seul format de signature hybride dans tous les langages.** La chaîne exige une signature secp256k1 plus une signature ML-DSA-87 (FIPS 204) sur les transactions de la voie native. QoreSign reproduit ses vecteurs de test publiés octet pour octet en TypeScript, Rust, Go, Swift et Kotlin, et `qorechain-pqc` exécute un même jeu de vecteurs dans ses six bindings, de sorte qu'une clé ou une signature produite dans un langage se vérifie dans les autres.
 - **Forme des sign-bytes choisie d'après l'état de la chaîne, sans deviner.** Le SDK, l'adaptateur de portefeuille, `chain-bridge` et les assistants réseau de QoreSign demandent au nœud `GET /cosmos/upgrade/v1beta1/applied_plan/{name}` pour les deux noms de mise à niveau (`v3.2.0` et `v3.1.98`) et signent la forme v2 lorsque l'une des deux hauteurs est supérieure à zéro. Sans point de terminaison REST sur ces deux chaînes, ils lèvent une erreur au lieu de deviner. Les deux réseaux vérifient la v2 aujourd'hui (vérifié le 27 octobre 2026 : `v3.2.0` appliquée sur le mainnet à la hauteur 2,981,742 et `v3.1.98` sur le testnet à la hauteur 5,746,000).
 - **Des quickstarts exécutés, pas seulement écrits.** Pour les packages qui en ont un, l'exemple a été exécuté le 27 octobre 2026 après installation depuis le registre public. 31 des 34 entrées de quickstart se sont exécutées avec succès ; le manifeste indique lesquelles trois ne l'ont pas été (voir [Limites](#limits)).
-- **Un seul manifeste derrière les tableaux.** Les noms de packages, les versions et les commandes d'installation de cette page proviennent d'un unique manifeste lisible par machine, avec un point de terminaison de version en direct par package, les mêmes données que celles à partir desquelles le hub développeur du dashboard est en cours de construction.
+- **Un seul manifeste derrière les tableaux.** Les noms de packages, les versions et les commandes d'installation de cette page proviennent d'un unique manifeste lisible par machine, avec un point de terminaison de version en direct par package, les mêmes données que celles à partir desquelles le hub SDK de la [page Développeurs du dashboard](/dashboard/developers#sdks) est construit.
 
 ## Comment l'utiliser {#how-to-use}
 
@@ -53,15 +53,16 @@ Installez un package et exécutez d'abord son quickstart sur le testnet public. 
 
 ### La page développeur du dashboard {#dashboard-developers}
 
-Le dashboard dispose d'une page publique à l'adresse [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Vérifiée le 27 octobre 2026, elle comporte ces onglets :
+Le dashboard dispose d'une page publique à l'adresse [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Vérifiée le 27 octobre 2026, elle comporte six onglets (parcours complet : [Développeurs](/dashboard/developers)) :
 
+- **SDKs :** le hub SDK. Chaque package du manifeste, regroupé par produit, avec un sélecteur de langage, la dernière version lue en direct sur chaque registre, des lignes d'installation et d'import avec boutons de copie, le quickstart avec la sortie observée par l'équipe SDK, les problèmes connus, ainsi que les ID de chaîne et les points de terminaison publics. Les packages qui ne sont pas publiés n'affichent aucune commande d'installation.
 - **PQ key status :** lit la clé ML-DSA-87 qu'une adresse a enregistrée on-chain et sa fenêtre d'autorisation EVM, sur le testnet ou le mainnet.
 - **Simulator :** simule à blanc une transaction signée (`TxRaw` en base64 ou hex) et affiche la consommation de gas et les variations de solde. Rien n'est diffusé.
 - **Signing playground :** testnet uniquement. Génère dans le navigateur une clé hybride jetable, conservée en mémoire, pour signer et vérifier des messages et des requêtes Sign In With QoreChain.
 - **QoreX test wallet :** testnet uniquement. Injecte dans l'onglet un portefeuille de test (`window.qorex`, annoncé via EIP-6963 sous le nom « QoreX (mock) ») pour que vous puissiez essayer des flux de dApp.
 - **AI agents (MCP) :** une page pour le serveur MCP, qui n'est pas encore publié (voir [Prévu](#planned)).
 
-Le hub SDK qui liste tous les packages du manifeste, avec les versions en direct, et l'inspecteur de transactions ne sont **pas encore en ligne**. L'onglet **SDKs** de cette page affiche encore un ancien texte ; ne l'utilisez donc pas pour les versions ou les commandes d'installation, mais utilisez les tableaux ci-dessous, qui ont été vérifiés auprès des registres.
+L'**inspecteur de transactions** (collez un hash, voyez chaque message, le signataire, les frais et si la signature post-quantique est vérifiée) n'est **pas encore en ligne**. Les tableaux ci-dessous et le hub SDK affichent les mêmes données ; les tableaux ont été vérifiés auprès des registres le 27 octobre 2026.
 
 ## Où c'est publié {#where-published}
 
@@ -105,13 +106,13 @@ Guides : [Présentation des rollups](/rollups/overview), [Déployer un rollup](/
 
 | Package | Langage | Version | Installation | Statut |
 |---|---|---|---|---|
-| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.6.2 | `npm install @qorechain/rdk` | Publié. Le seul client RDK qui signe en hybride, et seulement lorsque vous passez un `pqcKeypair` |
-| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.6.2 | `npm install -g @qorechain/rdk-cli` | Publié. La 0.6.2 corrige le problème de lancement de la 0.6.1 via le lien bin de npm. Ses commandes de transaction signent en classique uniquement, ce que les réseaux refusent |
-| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.6.2 | `npx create-qorechain-rollup my-rollup` | Publié |
-| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, importe `qorrdk`) | 0.6.2 | `pip install qorechain-rdk` | Publié. Les lectures fonctionnent ; les transactions signent en classique uniquement |
-| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.6.2 | `cargo add qorechain-rdk` | Publié. Les lectures fonctionnent ; les transactions signent en classique uniquement |
-| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.6.2 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.6.2` | Publié. Les lectures fonctionnent ; les transactions signent en classique uniquement |
-| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.6.1 | `implementation("io.github.qorechain:qorechain-rdk:0.6.1")` | Publié en 0.6.1 ; la 0.6.2 n'était pas sur Maven Central le 27 octobre 2026. Les lectures fonctionnent ; les transactions signent en classique uniquement |
+| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.7.0 | `npm install @qorechain/rdk` | Publié. Le seul client RDK qui signe en hybride, et seulement lorsque vous passez un `pqcKeypair` |
+| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.7.0 | `npm install -g @qorechain/rdk-cli` | Publié. Depuis la 0.6.2, il se lance via le lien bin de npm (la 0.6.1 et les versions antérieures n'affichaient rien). Ses commandes de transaction signent en classique uniquement, ce que les réseaux refusent |
+| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.7.0 | `npx create-qorechain-rollup my-rollup` | Publié |
+| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, importe `qorrdk`) | 0.7.0 | `pip install qorechain-rdk` | Publié. Les lectures fonctionnent ; les transactions signent en classique uniquement |
+| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.7.0 | `cargo add qorechain-rdk` | Publié. Les lectures fonctionnent ; les transactions signent en classique uniquement |
+| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.7.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.7.0` | Publié. Les lectures fonctionnent ; les transactions signent en classique uniquement |
+| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.7.0 | `implementation("io.github.qorechain:qorechain-rdk:0.7.0")` | Publié. Les lectures fonctionnent ; les transactions signent en classique uniquement |
 
 ### Primitives post-quantiques (`qorechain-pqc`) {#group-pqc}
 
@@ -208,11 +209,11 @@ Pour un nom npm avec scope, conservez le `@`, par exemple `https://registry.npmj
 ## Limites et problèmes connus {#limits}
 
 - **Deux réseaux en ligne, des versions différentes.** Le mainnet exécute la v3.2.4 et le testnet exécute la v3.2.6. Une fonctionnalité qui n'existe que sur le testnet est signalée sur sa propre page. Ne supposez pas le comportement de la v3.2.5 sur le mainnet.
-- **Pas encore en ligne :** le hub SDK et l'inspecteur de transactions de la page développeur du dashboard, le serveur MCP et la CLI `qore`, QoreSign pour Python, les transactions SVM, et les précompilés EVM sur le mainnet (voir la [Présentation du SDK](/sdk/overview) pour la liste voie par voie).
+- **Pas encore en ligne :** l'inspecteur de transactions de la page développeur du dashboard, le serveur MCP et la CLI `qore`, QoreSign pour Python, les transactions SVM, et les précompilés EVM sur le mainnet (voir la [Présentation du SDK](/sdk/overview) pour la liste voie par voie).
 - **Exemples non exécutés :** sur les 34 entrées de quickstart, 31 se sont exécutées avec succès le 27 octobre 2026. L'exemple Python de QoreSign n'a pas été exécuté (le package n'est pas publié) et l'exemple Android de QoreSign n'a pas été exécuté sur un appareil. L'adaptateur de portefeuille, chain bridge et handles n'ont pas de quickstart ; leurs exemples dans ce manuel proviennent donc des typages et du source des packages et n'ont pas été exécutés de bout en bout.
-- **`@qorechain/rdk-cli` avant la 0.6.2** n'affichait rien lorsqu'il était lancé via le lien bin de npm, et son `--version` affichait 0.4.1. Utilisez la 0.6.2.
+- **`@qorechain/rdk-cli` avant la 0.6.2** n'affichait rien lorsqu'il était lancé via le lien bin de npm, et son `--version` affichait 0.4.1. **`@qorechain/rdk` avant la 0.7.0** construisait des preuves de retrait qui ne se vérifiaient jamais on-chain. Utilisez la 0.7.0.
 - **Conflit de version cosmjs.** `@qorechain/wallet-adapter` et `@qorechain/chain-bridge` utilisent cosmjs 0.32 ; le SDK utilise cosmjs 0.39. Installer l'adaptateur à côté du SDK dans un même projet fait signaler `ERESOLVE` par npm. Gardez-les dans des projets séparés ou passez `--legacy-peer-deps`.
-- **Copie imbriquée du SDK dans le RDK.** `@qorechain/rdk` 0.6.2 dépend de `@qorechain/sdk` `^0.9.0` ; un caret sur une version 0.x reste dans la 0.9, de sorte qu'une application sur le SDK 0.10.0 obtient une seconde copie imbriquée du SDK 0.9.x.
+- **Copie imbriquée du SDK dans les anciennes versions du RDK.** `@qorechain/rdk` 0.6.2 et les versions antérieures dépendent de `@qorechain/sdk` `^0.9.0` ; une application sur le SDK 0.10.0 obtenait donc une seconde copie imbriquée du SDK 0.9.x. À partir de la 0.7.0, le kit dépend de `@qorechain/sdk` `^0.10.0` et partage une seule copie.
 - **Clients RDK en classique uniquement.** Les clients RDK Python, Rust, Go et Java signent en classique uniquement, ce que la voie native refuse sur les deux réseaux ; utilisez-les pour les lectures, ou utilisez le client TypeScript avec un `pqcKeypair` pour les transactions.
 - **Packages sans dépôt source public.** `@qorechain/chain-bridge` et `@qorechain/handles` n'indiquent aucun dépôt source dans leurs métadonnées de registre. Vous pouvez lire le contenu publié des packages sur npm.
 - **Python `qorechain-pqc`** n'a pas de génération de clé à partir d'une graine en 0.2.3, et il nécessite liboqs.

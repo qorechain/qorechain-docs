@@ -17,10 +17,10 @@ Generated code is a strong starting point, not a substitute for review. Read the
 
 - **One generation without an account.** A first-time visitor can generate once and sees the full contract. It is limited per visitor and by a global daily cap. A free-try result has no **Deploy** and no working **Edit**; the page offers **Create a free account** afterwards.
 - **A free generation every UTC day when signed in.** The first generation of each UTC day is free on both networks. After that, on testnet each generation is paid in test QOR from your test wallet after a "Confirm Contract Generation" dialog that shows the "Generation Cost". On mainnet the Dashboard holds no keys, so further generations are refused until the next UTC day.
-- **Starters that fill everything.** **Token**, **NFT collection**, **Locked vault** and **2-of-3 multisig** each fill a complete prompt, set the target to QoreChain and pick a template.
+- **Starters that fill everything.** **Token**, **NFT collection**, **Locked vault** and **2-of-3 multisig** each fill a complete prompt, set the target to QoreChain and pick a template. The "PQC Token" and "PQC NFT" templates describe contracts for accounts that sign with ML-DSA-87.
 - **17 target blockchains,** each with its own templates plus "Custom (describe in prompt)": QoreChain, Cosmos, Ethereum, Solana, Avalanche, NEAR, Polygon, BSC, TON, Cardano, Polkadot, Tezos, Arbitrum, Optimism, Sui, Aptos and Tron.
 - **Non-custodial deploy on mainnet EVM.** The Dashboard compiles the contract and returns **unsigned** deployment data. Any injected EVM wallet (MetaMask, Rabby, Coinbase Wallet) adds or switches to chain 9801, then signs and broadcasts; the Dashboard records the address afterwards.
-- **Governance-approved QoreChain Native codes on testnet.** The generated code is not uploaded. You instantiate a code that testnet governance already approved, read live from the chain: CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) and Counter example (qore-counter). The instantiate message is prefilled and editable.
+- **Approved QoreChain Native contracts on testnet.** During the testnet fest, contract uploads are reviewed through governance, so the generated code is not uploaded. You instantiate an approved contract, with the list read live from the chain: CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) and Counter example (qore-counter). The instantiate message is prefilled and editable.
 - **Compile feedback in the dialog.** Errors show inline, the dialog asks for constructor arguments it cannot infer, and token fields are pre-read from the code or the prompt.
 - **Private by default, forkable when public.** The owner toggles **Public** or **Private**; a non-owner of a public contract can **Fork** it.
 
@@ -70,7 +70,12 @@ Other targets on mainnet show "Direct deploy not available for this contract". Q
 #### On testnet, one click {#deploy-testnet}
 
 - **EVM:** select **Deploy to Testnet**. The Dashboard's test wallet signs and submits the deployment; success shows "Deployed on Testnet". Iterate with [Faucet](/dashboard/faucet) tokens before going to mainnet.
-- **QoreChain Native:** pick an **Approved contract**, set the **Label \***, check or edit the **Instantiate message (JSON)** and select **Instantiate on Testnet**. Contract uploads on testnet are reviewed through governance, which is why you instantiate approved codes rather than upload your own. Approved codes the Dashboard does not recognise appear with an empty message. Custom contracts go to the QoreChain EVM (Solidity).
+- **QoreChain Native:** during the testnet fest, contract uploads are reviewed through governance, so instead of uploading your generated code you instantiate an approved contract. In the dialog:
+  1. Pick an **Approved contract**. The list is read live from the chain and currently offers CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) and Counter example (qore-counter).
+  2. Check the **Instantiate message (JSON)**. It is prefilled from your token fields and editable; an approved code the Dashboard does not recognise appears with an empty message.
+  3. Set the **Label \***, then select **Instantiate on Testnet**. It is signed with your testnet wallet, and the result shows the contract address and the transaction.
+  
+  Custom contracts go to the QoreChain EVM (Solidity).
 - Only EVM contracts and approved QoreChain Native codes can be deployed from the Dashboard. A contract written for another EVM chain (Polygon, BSC, Arbitrum and so on) deploys to the QoreChain EVM, not to that chain's own network; contracts for non-EVM chains cannot be deployed from here.
 
 **Minimal example (testnet):** select **Token**, **Generate Smart Contract**, Confirm, **Deploy**, pick "CW20 token (cw20-base)", Label `my-token`, **Instantiate on Testnet**.

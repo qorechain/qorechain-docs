@@ -7,70 +7,129 @@ sidebar_position: 13
 
 # Geliştiriciler
 
-**Developers** sayfası (`/developers`, kenar çubuğu **Build**, giriş **Developers**), QoreChain üzerinde geliştirme yapanlar için herkese açık bir araç kutusudur. Altı sekmesi vardır: **SDKs**, **PQ key status**, **Simulator**, **Signing playground**, **QoreX test wallet** ve **AI agents (MCP)**. Bir hesabın hangi kuantum sonrası anahtarı kaydettirdiğini ve EVM yetkilendirme penceresinin açık olup olmadığını kontrol edebilir, imzalı bir işlemi deneme amaçlı çalıştırabilir, tek kullanımlık bir anahtarla hibrit imzalamayı deneyebilir ve bir dApp'i sahte (mock) bir QoreX cüzdanına karşı sınayabilirsiniz; hepsi tarayıcıda ve hesap gerektirmeden. dApp, cüzdan ve backend geliştiricileri içindir. SDK'ların kendisi için bkz. [SDK Genel Bakış](/sdk/overview) ve [Kurulum](/sdk/install).
+**Developers** sayfası (`/developers`, kenar çubuğu **Build** grubu, giriş **Developers**), QoreChain üzerinde geliştirme yapanlar için herkese açık bir araç sayfasıdır. Hesap gerektirmez. Altı sekmesi vardır: **SDKs**, **PQ key status**, **Simulator**, **Signing playground**, **QoreX test wallet** ve **AI agents (MCP)**. Birlikte, doğru paketi bulup kurmanızı, bir hesabın hangi kuantum sonrası anahtarı kaydettirdiğini ve EVM yetkilendirme penceresinin açık olup olmadığını kontrol etmenizi, imzalı bir işlemi deneme amaçlı çalıştırmanızı, tek kullanımlık bir anahtarla hibrit imzalamayı denemenizi ve bir dApp'i sahte (mock) bir QoreX cüzdanına karşı sınamanızı sağlarlar; hepsi tarayıcıda. dApp, cüzdan ve backend geliştiricileri içindir. Bir **Transaction inspector** planlanmıştır ve henüz canlı değildir (bkz. [Sınırlar](#limits)). Kütüphanelerin kendisi için bkz. [Geliştirici Paketleri](/developer-tools/overview), [SDK Genel Bakış](/sdk/overview) ve [Kurulum](/sdk/install).
 
 ## Yenilikler {#innovations}
 
-- **Herhangi bir adres için bir PQC anahtarını ve EVM penceresini zincirden okuyun.** PQ key status sekmesi, bir hesabın kaydettirdiği ML-DSA-87 anahtarını ve EVM yetkilendirme penceresini, mainnet veya testnet üzerinde, zincirin kendi sorgu rotaları aracılığıyla arar. `qor1...`, `0x...` ve `qorvaloper1...` adreslerini kabul eder.
-- **Hiçbir şey yayınlamayan bir deneme çalıştırması.** Simulator, imzalı bir işlemi zincirin simulate rotasına gönderir ve kullanılan gas'ı, önerilen bir gas limitini ve işlemin üreteceği bakiye değişikliklerini ve olayları bildirir. Dashboard'un bunun için açığa çıkardığı tek yazma rotası simulate'tir.
-- **Tarayıcıda, tarayıcıdan asla çıkmayan bir anahtarla hibrit imzalama.** Signing playground, sayfada tek kullanımlık 24 kelimelik bir ifade üretir, bir secp256k1 anahtarı ve bir ML-DSA-87 anahtarı türetir; mesajları ve Sign In With QoreChain isteklerini [QoreSign](/qoresign/overview) kütüphanesiyle imzalar ve doğrular. Anahtar yalnızca bellekte yaşar ve yeniden yüklemede kaybolur.
-- **dApp'leri test etmek için sahte bir QoreX.** QoreX test wallet, geçerli sekmede `window.qorex`'i kurar ve kendini EIP-6963 üzerinden "QoreX (mock)" olarak duyurur; testnet'te gerçek hibrit imzalama ve her istek için elle onaylama veya reddetme ile.
-- **Tasarım gereği yalnızca testnet.** Signing playground ve test wallet mainnet'i reddeder: yalnızca `qorechain-diana` için imzalarlar. İki salt okunur sekme her iki ağı da hedefleyebilir.
+- **Zincire salt okunur bir ağ geçidi.** Araçlar, herkese açık zincir verilerini okur ve bir işlemi, `cosmos/`, `cosmwasm/` ve `qorechain/` sorgu yolları ile simulate çağrısı altında salt okunur bir ağ geçidi üzerinden simüle eder. Sayfadaki hiçbir şey bir işlemi yayınlayamaz. Ağ geçidi, zincirin REST uç noktaları tarayıcı CORS başlıkları göndermediği için vardır.
+- **Tarayıcıdan asla çıkmayan anahtarlar.** Signing playground ve test cüzdanının anahtarları tarayıcınızda üretilir ve yalnızca bellekte tutulur. Asla kaydedilmez veya gönderilmez ve yeniden yüklemede kaybolurlar. Bu iki sekme yalnızca testnet içindir ve mainnet'i reddeder.
+- **Bir demo değil, üretimdeki imzalama kütüphanesi.** Playground, üretim entegrasyonlarıyla aynı açık kaynaklı kütüphane olan [QoreSign](/qoresign/overview) kütüphanesini kullanır. Hibrit imzalar üretir ve doğrular: aynı mesaj üzerinde bir secp256k1 imzası artı bir ML-DSA-87 imzası.
+- **Test edilmiş verilerden üretilen bir paket merkezi.** **SDKs** sekmesi, tek bir manifestodan 40 paket listeler. Sürümler her kayıt defterinden canlı okunur (10 dakikada bir yenilenir; bir kayıt defterine ulaşılamazsa son kontrol edilen sürüm ve tarihi gösterilir) ve her hızlı başlangıç SDK ekibi tarafından herkese açık kayıt defterlerine karşı çalıştırılmıştır; gözlemledikleri çıktı yanında gösterilir.
+- **Tahmin değil, zincirin yanıtları.** **PQ key status**, kayıtlı ML-DSA-87 anahtarını ve EVM penceresi durumunu düğümün kendi sorgu rotalarından okur; böylece bir EVM işleminin neden reddedileceğini göndermeden önce görebilirsiniz.
 
 ## Nasıl kullanılır {#how-to-use}
 
-Sayfa **SDKs** sekmesinde açılır. **PQ key status** ve **Simulator** sekmeleri, sayfaya özgü olan ve üst bilgi ne derse desin **varsayılan olarak Testnet** olan bir **Network** anahtarı gösterir. (Ağ değiştirmenin sayfayı yeniden yüklemesi ve bellekteki anahtarlarınızı ve test cüzdanınızı silmesi önlensin diye sayfa düzeyinde bir anahtar kullanılır.)
+[dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) adresini açın. Sayfa **SDKs** sekmesinde açılır. **PQ key status** ve **Simulator** sekmeleri, sayfaya özgü olan ve üst bilgi ne derse desin **varsayılan olarak Testnet** olan bir **Network** anahtarı (Testnet veya Mainnet) gösterir. Bu bilerek sayfa düzeyindedir: üst bilgideki anahtar sayfayı yeniden yükler ve bu, bellekteki anahtarları ve test cüzdanını silerdi.
+
+### SDKs {#sdks}
+
+**Ne yapar.** Her QoreChain kütüphanesini ürüne göre gruplayarak listeler. Manifesto, TypeScript, Python, Go, Rust, Java, Kotlin ve Swift genelinde 40 paket içerir: 36 kararlı, 1 kullanımdan kaldırılmış ve 3 henüz yayımlanmamış (Python için QoreSign, MCP sunucusu ve `qore` komut satırı aracı). Ürünler, gösterildikleri sırayla şunlardır: QoreChain SDK (çekirdek, React hook'ları, EVM, SVM, dApp başlangıç şablonu ve Python, Rust, Go ve Java portları), QoreSign, RDK (rollup geliştirme kiti, komut satırı aracı, rollup başlangıç şablonu ve Python, Rust, Go ve Java portları), PQC kütüphanesi, cüzdan adaptörü, zincir köprüsü, Handles, QoreX entegrasyonları ve MCP ile `qore` CLI.
+
+**Nasıl çalışır.** Her ürün bir karttır. Ürün birden çok dilde sunuluyorsa, bir dil seçici (hap düğmeler) gösterilen paketi değiştirir. Her paket şunları gösterir:
+
+- bir durum etiketi (**Stable**, **Not published yet** veya **Deprecated**);
+- kayıt defterinden (npm, PyPI, crates.io, Go proxy, Maven Central veya GitHub sürümleri) canlı okunan ve 10 dakikada bir yenilenen **en son sürüm**. Bir kayıt defterine ulaşılamazsa, son kontrol edilen sürüm tarihiyle ve canlı sürümlerin okunamadığına dair bir notla gösterilir;
+- **Registry**, **Source** (depo) ve **License** (Apache-2.0) ile çalışma zamanı gereksinimleri;
+- **Install** komutu ve **Import** satırı (her birinde bir kopyalama düğmesi) ile, pakette varsa eş bağımlılıklar, alt yol dışa aktarımları, taşıma katmanları ve barındırılan bir uç nokta (Maven bir `pom.xml` bloğu gösterir);
+- **Quickstart**: tarihle birlikte **Tested**, **Failed in testing** veya **Not tested** yazan bir etiket, dosya adı, kopyalama düğmeli kod, **Observed output** ve **How it was tested**. Başarısız olan bir hızlı başlangıç, önce bilinen sorunları okumanızı söyleyen bir uyarıyla **Show the quickstart** arkasında gizlenir;
+- SDK ekibinden kelimesi kelimesine **Known issues** ve notlar.
+
+Yayımlanmamış bir paket "This package is not on its registry yet, so there is no install command." mesajını gösterir ve kurulum satırı yoktur. Kullanımdan kaldırılmış paket (`@qorechain/connect`), yerine geçen paketlerle (`@qorechain/qorex-*` paketleri) birlikte altta **Deprecated packages** başlığı altında katlanmış olarak yer alır.
+
+**Adımlar.**
+
+1. Listeyi daraltmak için filtre kutusuna yazın ("Filter by name or language"); **Clear filter** sıfırlar. Birden çok ürün eşleştiğinde, bir **Jump to** satırı her birine bağlanır.
+2. Ürünü, ardından dil etiketini seçin.
+3. Sürüm satırını kontrol edin ("latest on npm" veya tarihli "checked"), ardından **Install** komutunu kopyalayın.
+4. **Import** satırını, ardından hızlı başlangıcı **File name** altında belirtilen dosyaya kopyalayın ve çalıştırın.
+5. Testnet ve mainnet için zincir kimliklerini ve herkese açık uç noktaları kopyalamak üzere **Network endpoints** bölümünü açın. Altındaki not hızlı başlangıç kurallarını açıklar: örnekler yalnızca okur ve herkese açık test ifadesiyle imzalar; bu yüzden ondan türetilen bir hesabı asla fonlamayın.
+
+**Asgari örnek.** Filtreye `python` yazın, **QoreChain SDK**'yi açın, **Python** etiketini seçin, **Install** altındaki kurulum komutunu kopyalayın, ardından hızlı başlangıcı kopyalayıp çalıştırın.
+
+**Ağ.** Statik liste artı canlı kayıt defteri okumaları; ağ seçimi uygulanmaz.
 
 ### PQ key status {#pq-status}
 
-1. **PQ key status** sekmesini açın ve ağı seçin.
-2. Bir **Account address** girin (`qor1...`, `0x...` veya `qorvaloper1...`). Bir `0x` adresi, `qor1` biçimiyle aynı 20 bayttır; bir `qorvaloper` adresi, operatörün kendi hesabı olarak aranır. Sayfa biçimi ve sağlama toplamını kontrol eder.
-3. **Check**'i seçin.
-4. **Registered PQC key**, bir anahtarın kayıtlı olup olmadığını, algoritmasını (ML-DSA-87), anahtar türünü, **Proof of possession** değerini (zincir bunu isteğe bağlı sayar) ve genel anahtarı gösterir. Hiçbiri kayıtlı değilse bunu söyler.
-5. **EVM authorisation window**, durumu (**Open** veya **Closed**), **Blocks left**, **Transactions used** (örneğin "3 of 20"), **Value used**, açılış ve sona erme yüksekliklerini, pencerenin **Native QOR transfers only** olup olmadığını ve izin verilen hedefleri gösterir. Hesap hiç pencere açmadıysa "No EVM authorisation window has been opened for this account." der.
+**Ne yapar.** Bir hesabın zincirde kaydettirdiği ML-DSA-87 anahtarını ve EVM yetkilendirme penceresinin durumunu, mainnet veya testnet üzerinde gösterir.
 
-Pencere, hesabın ML-DSA-87 anahtarıyla native hattan açılır ve blok sınırına veya işlem sınırına ulaşıldığında kapanır; bkz. [EVM yetkilendirme penceresi](/developer-guide/evm-development#evm-window). Bu sekme, "EVM işlemim neden reddedildi?" sorusunu komut satırı olmadan yanıtlar.
+**Nasıl çalışır.** Sayfa girdinizi ayrıştırır, bir `qor1...` hesabına dönüştürür ve düğüme iki sorgu yapar: kayıtlı PQC anahtarı ([QoreSign](/qoresign/overview) aracılığıyla) ve hesabın EVM penceresi (`GET /qorechain/pqc/v1/evm_window/{address}`). Bir `0x...` adresi, `qor1...` biçimiyle aynı 20 bayttır ve bir `qorvaloper1...` adresi operatörün kendi hesabı olarak aranır. Sonuçlar tek bir ağa aittir: anahtarı değiştirmek onları temizler.
+
+**Adımlar.**
+
+1. **PQ key status** sekmesini açın ve ağı seçin.
+2. Bir **Account address** girin (`qor1...`, `0x...` veya `qorvaloper1...`). Sayfa biçimi ve sağlama toplamını kontrol eder ve bir yazım hatasını bildirir.
+3. **Check**'i seçin.
+4. **Registered PQC key** alanını okuyun: bir anahtarın kayıtlı olup olmadığı, **Algorithm** (ML-DSA-87), **Key type** (hybrid), **Proof of possession** (zincirin bunu isteğe bağlı saydığı notuyla) ve **Public key** (2592 bayt, kısaltılmış, kopyalama düğmeli). Anahtarı olmayan bir hesap "This account has no PQC key registered on this network." mesajını gösterir.
+5. **EVM authorisation window** alanını okuyun: **State** (**Open** veya **Closed**), **Blocks left**, **Transactions used** ("3 of 20" biçiminde), **Value used**, **Opened / expiry height** ve pencerenin **Native QOR transfers only** olup olmadığı, varsa izin verilen hedeflerle birlikte. Hiç pencere açmamış bir hesap "No EVM authorisation window has been opened for this account." mesajını gösterir.
+
+Pencere, hesabın ML-DSA-87 anahtarıyla native hattan açılır ve blok sınırına veya işlem sınırına ulaşıldığında kapanır; bkz. [EVM yetkilendirme penceresi](/developer-guide/evm-development#evm-window).
+
+**Asgari örnek.** Testnet'i seçin, MetaMask ile kullandığınız bir adresin `0x...` biçimini yapıştırın, **Check**'i seçin: pencere **Closed** ise veya yoksa, o hesaptan gelen bir EVM işlemi reddedilirdi.
 
 ### Simulator {#simulator}
 
-1. **Simulator** sekmesini açın ve ağı seçin.
-2. Kutuya bir **Signed TxRaw** (base64 veya hex) yapıştırın. Sayfa size çözülmüş boyutu ve imza sayısını söyler ve hiç imza yoksa uyarır (zincir imzasız bir işlemi simüle etmeyi büyük olasılıkla reddeder).
-3. **Simulate**'i seçin. Sonuç **Gas used**, **Suggested gas limit**, **Balance changes** (adres, birim, değişiklik) ve **Events** değerlerini gösterir.
-4. Zincir reddederse, sayfa kodunu, codespace'ini ve günlüğünü gösterir.
+**Ne yapar.** İmzalı bir işlemi zincire karşı deneme amaçlı çalıştırır ve maliyetini ve neyi değiştireceğini bildirir. Hiçbir şey yayınlanmaz.
 
-Hiçbir şey yayınlanmaz. İmzalı işlem baytları gerekir: önce bir SDK veya `qorechaind` ile oluşturup imzalayın (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)). Girdi yaklaşık 180 KB ile sınırlıdır.
+**Nasıl çalışır.** Sayfa girdinizi çözer (base64 veya hex, yaklaşık 180 KB'a kadar), imzalarını sayar ve düğümün simulate rotasına gönderir. Simulate çağrısı, ağ geçidinin izin verdiği tek yazma rotasıdır.
+
+**Adımlar.**
+
+1. **Simulator** sekmesini açın ve ağı seçin.
+2. İmzalı işlemi (bir `TxRaw`, base64 veya hex) **Signed TxRaw** alanına yapıştırın. Sayfa çözülmüş boyutu ve imza sayısını gösterir ve hiç imza yoksa uyarır (zincir imzasız bir işlemi simüle etmeyi büyük olasılıkla reddeder).
+3. **Simulate**'i seçin.
+4. **Gas used**, **Suggested gas limit**, **Balance changes** (adres, birim, değişiklik) ve katlanabilir listedeki **Events** değerlerini okuyun.
+5. Zincir reddederse, sayfa "The chain refused the simulation" altında **Code**, **Codespace** ve **Log** değerlerini gösterir.
+
+Önce imzalı bayt gerekir: bir SDK veya `qorechaind` ile oluşturup imzalayın (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)). **Asgari örnek:** testnet'te SDK ile küçük bir transfer imzalayın, base64 `TxRaw` değerini yapıştırın, **Simulate**'i seçin ve yayınlamadan önce önerilen gas limitini kontrol edin.
 
 ### Signing playground (yalnızca testnet) {#signing-playground}
 
-1. **Signing playground** sekmesini açın. Şu uyarıyı verir: "Throwaway testnet key: never use it for real funds."
-2. **Generate throwaway key**'i seçin. Sayfa adresi, secp256k1 genel anahtar boyutunu ve ML-DSA-87 anahtar boyutlarını gösterir. Bir tane daha için **New key**'i seçin.
-3. **Message:** metin girin ve **Sign**'ı seçin. Metin, `qorechain-diana` zinciri için her iki anahtarla imzalanır; imza JSON olarak görünür.
-4. **Verify:** bir imza ve imzalayan adresi yapıştırın ve **Verify**'ı seçin. "Valid signature" veya "Invalid signature" bildirir. Tek kullanımlık bir anahtar zincirde kayıtlı olmadığından, imzalayan adrese ve bu oturumun ML-DSA-87 genel anahtarına karşı kontrol eder.
-5. **Sign In With QoreChain:** bu site için rastgele bir nonce ile bir oturum açma mesajı oluşturmak üzere **Build message**'ı seçin, ardından bir sunucunun yapacağı gibi imzalayıp doğrulayın. Ayrıştırılmış alanlar gösterilir. Bkz. [SIWQ belirtimi](/qoresign/spec/siwq-v1) ve [oturum açma kılavuzu](/qoresign/guides/sign-in).
+**Ne yapar.** Tek kullanımlık bir hibrit anahtar üretmenize ve tarayıcıda mesajları ve Sign In With QoreChain isteklerini imzalayıp doğrulamanıza olanak tanır.
 
-Anahtar tarayıcıda üretilir, asla kaydedilmez veya gönderilmez ve kurtarılamaz. Biçimler için bkz. [QoreSign](/qoresign/overview) ve [Hibrit imzalama v1](/qoresign/spec/hybrid-signing-v1).
+**Nasıl çalışır.** Sayfada 24 kelimelik bir ifade üretilir ve yalnızca bellekte tutulur. [QoreSign](/qoresign/overview) ondan bir secp256k1 anahtarı ve bir ML-DSA-87 anahtarı türetir. İmzalar, `qorechain-diana` zinciri için aynı mesajı her iki anahtarla kapsar. Tek kullanımlık bir anahtar zincirde kayıtlı olmadığından, doğrulama bu oturumun ML-DSA-87 genel anahtarını kullanır.
+
+**Adımlar.**
+
+1. **Signing playground** sekmesini açın. "Throwaway testnet key: never use it for real funds." uyarısını verir.
+2. **Generate throwaway key**'i seçin. Sayfa `qor1...` adresini, secp256k1 genel anahtarını (33 bayt) ve ML-DSA-87 anahtarını (genel anahtar 2592 bayt, gizli anahtar 4896 bayt) gösterir. **New key** onu değiştirir.
+3. **Message:** metin girin, **Sign**'ı seçin; sonuç JSON olarak bir hibrit imzadır. **Verify**'ı seçin: sayfa "Valid signature" veya hata koduyla "Invalid signature" gösterir.
+4. **Sign In With QoreChain:** **Build message**'ı seçin (bu site için alan adı, adres, zincir kimliği, rastgele bir nonce ile verilme ve sona erme zamanlarını içeren bir oturum açma mesajı), ardından **Sign**, sonra **Verify**. Verify, bir sunucunun yapacağı gibi kontrol eder ve ayrıştırılmış alanları listeler. Bkz. [SIWQ belirtimi](/qoresign/spec/siwq-v1) ve [oturum açma kılavuzu](/qoresign/guides/sign-in).
+
+**Asgari örnek.** **Generate throwaway key**, `hello` yazın, **Sign**, **Verify**: sayfa "Valid signature" gösterir.
+
+**Ağ.** Yalnızca testnet; anahtar mainnet için kullanılamaz ve yeniden yüklemede kaybolur.
 
 ### QoreX test wallet (yalnızca testnet) {#test-wallet}
 
+**Ne yapar.** Gerçek bir cüzdan olmadan bir dApp'in bağlanma ve imzalama akışlarını denemeniz için geçerli sekmeye QoreX cüzdanının sahte bir kopyasını kurar.
+
+**Nasıl çalışır.** **Start test wallet**, tek kullanımlık bir anahtarla bir test cüzdanı oluşturur (yayımlanmış `@qorechain/qorex-wallet-mock` paketi) ve onu sayfadaki dApp'lere, tarayıcı cüzdanları için standart cüzdan keşfi (EIP-6963) aracılığıyla "QoreX (mock)" olarak duyurur; ayrıca `window.qorex`'i açığa çıkarır. Hiçbir şey otomatik onaylanmaz. İşlem yayınlamaz. Sekmede gerçek bir QoreX eklentisi varsa, siz yeniden yükleyene kadar sahte cüzdan onun yerini alır.
+
+**Adımlar.**
+
 1. **QoreX test wallet** sekmesini açın ve uyarıyı okuyun: her başlatma bellekte tek kullanımlık bir testnet anahtarı üretir; ona asla gerçek fon göndermeyin.
-2. **Start test wallet**'i seçin. Yayımlanmış `@qorechain/qorex-wallet-mock` paketini kullanır, sahte cüzdanı **bu sekmeye** kurar (siz yeniden yükleyene kadar oradaki gerçek bir QoreX eklentisinin yerini alır) ve tuttuğu **Addresses** değerlerini listeler: QoreChain Native, EVM ve SVM.
-3. Aynı sekmede çalışan bir dApp'ten bağlanın veya tarayıcı konsolundan `window.qorex`'i çağırın.
-4. Her istek **Waiting for approval** altında sizi bekler: **Approve** veya **Reject**'i seçin. **Requests** listesi her birini onay durumu ve sonucuyla günlüğe kaydeder.
+2. **Start test wallet**'i seçin. **Addresses** kartı QoreChain Native, EVM ve SVM adreslerini listeler.
+3. Bu sekmede çalışan bir dApp'ten bağlanın veya tarayıcı konsolundan `window.qorex`'i çağırın.
+4. Her istek **Waiting for approval** altında görünür; **Approve** veya **Reject**'i seçin. **Requests** listesi her isteği onay durumu ve sonucuyla günlüğe kaydeder.
 5. Sahte cüzdanı kaldırmak için **Stop (reloads the page)**'i seçin.
 
-Yalnızca testnet için imzalar, asla mainnet için değil. Bir dApp'i gerçek bir QoreX'e yöneltmeden önce bağlantı akışını denemek için kullanın.
+**Asgari örnek.** Test cüzdanını başlatın, aynı sekmede bir dApp açın, bağlanma iletişim kutusunda "QoreX (mock)" seçeneğini seçin ve bağlantıyı **Approve** ile onaylayın.
 
-### SDKs ve AI agents (MCP)
+**Ağ.** Yalnızca testnet.
 
-- **SDKs:** sekme şu anda kısa, statik bir hızlı başlangıç ve paket tablosu gösterir. **Güncel değildir** (hâlâ 0.1.0 sürümünü anlatır ve paketlerin kayıt defterlerinde olmadığını söyler; bu artık doğru değildir). Güncel paketler ve sürümler için [SDK Kurulumu](/sdk/install) sayfasını kullanın. Test edilmiş paket listesinden, kurulum komutları, hızlı başlangıçlar ve canlı kayıt defteri sürümleriyle üretilen yeniden oluşturulmuş bir SDKs sekmesi **yakında gelecek ve henüz canlı değil**.
-- **AI agents (MCP):** sekme, QoreChain MCP sunucusu için npm kayıt defterini kontrol eder ve paket yayımlanmadığı sürece **"The QoreChain MCP server is not published yet."** der. Henüz bir kurulum komutu yok. Paket yayımlandığında sekme, onu stdio üzerinden yerel olarak veya Streamable HTTP üzerinden kendi barındırmanızla çalıştırmak için istemci yapılandırmasını gösterecek.
-- **Transaction inspector:** herhangi bir işlemi çözümleyip açıklayan bir araç **yakında gelecek ve henüz canlı değil**.
+### AI agents (MCP) {#mcp}
+
+**Ne yapar.** QoreChain MCP sunucusunun mevcut olup olmadığını ve mevcut olduğunda bir MCP istemcisinde nasıl kurulacağını söyler.
+
+**Nasıl çalışır.** Sekmeyi açtığınızda sayfa paket kayıt defterine canlı sorar. Bugün paket yayımlanmamıştır; bu nedenle sekme **Not published** ve "The QoreChain MCP server is not published yet." mesajını, sunacaklarının kısa bir açıklamasıyla birlikte gösterir. Hiçbir kurulum komutu göstermez. Paket yayımlandığında sekme sürümünü (**Published**) ve bir MCP istemcisi için kurulumu gösterecek: yerel (stdio) bir yapılandırma ve kendi barındırdığınız (Streamable HTTP) bir yapılandırma.
+
+**Adımlar.** Sekmeyi açın ve durumu okuyun. Sunucu yayımlanana kadar başka bir şey gerekmez. **SDKs** sekmesindeki merkez aynı paketi "Not published yet" olarak gösterir.
 
 ## Nasıl erişilir {#how-to-access}
 
 - **URL:** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) veya kenar çubuğu **Build** grubunda (ve mobil menüde) **Developers**.
 - **Oturum açma:** yok. Sayfa herkese açıktır.
-- **Ağ:** PQ key status ve Simulator: sekmedeki anahtar aracılığıyla mainnet veya testnet (varsayılan testnet). Signing playground ve QoreX test wallet: yalnızca testnet.
+- **Ağ:** **PQ key status** ve **Simulator**, sekmedeki anahtar aracılığıyla mainnet veya testnet üzerinde çalışır (varsayılan testnet). **Signing playground** ve **QoreX test wallet** yalnızca testnet içindir. **SDKs** ve **AI agents (MCP)** bir ağa bağlı değildir.
 - **Cüzdan:** yok. Araçlar kendi tek kullanımlık anahtarlarını üretir.
 - **Maliyet:** ücretsiz. Zincire okuma sorguları ve simulate çağrıları dışında hiçbir şey gönderilmez.
 - **Gizlilik:** tek kullanımlık anahtarlar yalnızca sayfanın belleğinde bulunur. Hiçbir araca gerçek bir kurtarma ifadesi yapıştırmayın.
@@ -79,18 +138,20 @@ Yalnızca testnet için imzalar, asla mainnet için değil. Bir dApp'i gerçek b
 
 | Yüzey | Adres | Ağlar |
 | --- | --- | --- |
-| Developers sayfası | `dashboard.qorechain.io/developers` | Mainnet ve testnet okuma araçları; yalnızca testnet imzalama araçları |
-| İmzalama kütüphanesi | npm `@qorechain/qoresign` 0.1.0, kaynak `github.com/qorechain/qoresign`, bkz. [QoreSign](/qoresign/overview) | yok |
-| Test cüzdanı paketi | npm `@qorechain/qorex-wallet-mock` 0.1.0, kaynak `github.com/qorechain/qorex-integrations` | Testnet |
+| Developers sayfası | `dashboard.qorechain.io/developers` | Mainnet ve testnet üzerinde okuma araçları; yalnızca testnet imzalama araçları |
+| İmzalama kütüphanesi | npm `@qorechain/qoresign`, kaynak `github.com/qorechain/qoresign`, bkz. [QoreSign](/qoresign/overview) | yok |
+| Test cüzdanı paketi | npm `@qorechain/qorex-wallet-mock`, kaynak `github.com/qorechain/qorex-integrations` | Testnet |
+| Paket dizini | [Geliştirici Paketleri](/developer-tools/overview) | yok |
 | MCP sunucusu | `@qorechain/mcp`: henüz yayımlanmadı | yok |
 
-Sürümler npm kayıt defterinde 27 Ekim 2026'da kontrol edildi.
+Paket sürümleri değişir; güncel olanları **SDKs** sekmesinde veya kayıt defterlerinde okuyun.
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
-- **Henüz canlı değil:** yeniden oluşturulmuş SDKs sekmesi ve transaction inspector. MCP sunucusu yayımlanmadı, bu nedenle kurulacak bir şey yok.
-- **Mevcut SDKs sekmesi eskidir;** bunun yerine [SDK sayfalarını](/sdk/overview) kullanın.
-- **Simulator imzalı bir işlem gerektirir.** Sizin yerinize imzalayamaz ve yayınlamaz.
-- **Playground ve test wallet yalnızca testnet içindir** ve yeniden yüklemede kaybolan tek kullanımlık anahtarlar kullanır. Gerçek fon tutamaz veya taşıyamaz.
-- **Aynı sekmedeki gerçek bir QoreX eklentisinin yerini** siz sayfayı yeniden yükleyene kadar test wallet alır.
-- **Okumalar salt okunur bir proxy üzerinden geçer.** Zincirin REST uç noktaları tarayıcı CORS başlıkları göndermez; bu nedenle Dashboard, `cosmos/`, `cosmwasm/` ve `qorechain/` yolları altındaki salt okunur istekleri ve simulate çağrısını aktarır. Kendi kodunuzdan genel uç noktaları doğrudan çağırın: `api.qore.host` ve `api-testnet.qore.host`.
+- **Transaction inspector: yakında gelecek, henüz canlı değil.** Planlanan: bir karma yapıştırın ve her mesajı, imzalayanı, ücreti, kuantum sonrası imzanın imzalayanın kayıtlı anahtarına karşı doğrulanıp doğrulanmadığını ve güvenlik katmanını görün. Bir sonraki QoreSign sürümüyle gelir.
+- **MCP sunucusu yayımlanmadı,** bu nedenle kurulacak bir şey yok; Python için QoreSign ve `qore` komut satırı aracı da henüz yayımlanmadı ve kurulum komutu göstermez.
+- **İki hızlı başlangıç "Not tested" olarak işaretlidir:** Android için QoreSign (aynı kod yalnızca JVM artefaktında çalıştırıldı, bir cihazda değil) ve Python için QoreSign (paket yayımlanmadı). Diğer 32 hızlı başlangıç girdisi çalıştı ve geçti.
+- **Simulator imzalı bayt gerektirir.** Sizin yerinize imzalayamaz ve asla yayınlamaz.
+- **Playground ve test wallet yalnızca testnet içindir,** yeniden yüklemede kaybolan tek kullanımlık anahtarlar kullanır ve gerçek fon tutamaz veya taşıyamaz.
+- **Aynı sekmedeki gerçek bir QoreX eklentisinin yerini** siz yeniden yükleyene kadar test wallet alır.
+- **Okumalar Dashboard'un ağ geçidinden geçer.** Kendi kodunuzdan genel uç noktaları doğrudan çağırın: `api.qore.host` ve `api-testnet.qore.host`.

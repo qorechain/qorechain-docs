@@ -75,11 +75,11 @@ Les quêtes quotidiennes et hebdomadaires se réinitialisent selon un calendrier
 ## Limites et problèmes connus {#limits}
 
 - **Les ensembles de quêtes changent.** L'onglet d'une saison peut être vide ou afficher moins de quêtes lorsque ses quêtes ne sont pas actives ; consultez l'onglet plutôt que de vous fier à cette page pour la liste actuelle.
-- **Tout ce qui figure ici est hors chaîne :** les points, les classements, les badges et les scores de jeu sont enregistrés par le Dashboard, pas sur QoreChain. Le mot "on-chain" dans le sous-titre de l'Arcade ne décrit pas les scores.
+- **Tout ce qui figure ici est hors chaîne :** les points, les classements, les badges et les scores de jeu sont enregistrés par le Dashboard, pas sur QoreChain. Les Photons ne sont pas sur la chaîne.
 - **Les montants de récompense** sont affichés sur chaque quête et peuvent changer.
 - **La connexion** et, pour les quêtes sociales, des comptes liés vérifiés sont requis.
 - **Public Sale** (`/public-sale`) est une page distincte pour les participants existants (allocation, calendrier de vesting, claim) ; toutes les rondes précédentes sont closes, et elle n'est pas décrite plus avant ici.
-- **FAQ** (`/faq`) est une page d'aide intégrée à l'application dont le contenu est en retard sur ce manuel.
+- **FAQ** (`/faq`) est une courte page d'aide intégrée à l'application ; ce manuel fait référence.
 
 ## Liens connexes
 

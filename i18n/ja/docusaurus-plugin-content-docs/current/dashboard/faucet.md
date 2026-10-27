@@ -18,6 +18,7 @@ sidebar_position: 9
 - **1 回の請求で 2 種類のトークン。** 1 回の請求で 100 QOR が支払われ、別のトランザクションで 1,000 fUSD、0.5 fETH、0.02 fBTC が支払われます。Fest トークンの送信が失敗しても QOR は届き、結果カードにその旨が表示されます。
 - **二重のクールダウン。** アカウントごと**および**アドレスごとに、24 時間に 1 回まで請求できます。何かを送る前に枠が確保され、送信が失敗した場合は解放されるため、失敗した請求でその日の枠が消費されることはありません。
 - **Fest トークンはネイティブのバンクコインです。** `erc20:0x...` 形式のバンク denom で、オンチェーン AMM、バンク送金、IBC、QoreChain Native コントラクトでそのまま使用できます。MetaMask や EVM DEX で扱えるのは、`MsgConvertCoin` による変換の後だけです（[Fest テストトークン](#fest-tokens)を参照）。
+- **誤った数値は表示されません。** フォーセットの情報を読み込めない場合、ページは推測した金額ではなく、金額の代わりに「...」を表示します。
 - **`0x` の受取人は、その `qor1` の対応アドレスに支払われます。** `0x` アドレスは `qor1` 形式と同じ 20 バイトなので、サービスは同じアカウントに支払います。ダッシュボードのフォーム自体は `qor1...` のみを受け付けます。
 
 ## 使い方 {#how-to-use}
@@ -48,7 +49,7 @@ sidebar_position: 9
 - **テストネットのみ。** これらのトークンはメインネットには存在しません。
 - **denom は正確にコピーしてください。** アドレス部分は EIP-55 の大文字小文字混在形式で、denom は大文字小文字を区別して照合されます。
 - **オンチェーンで確認する。** `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` は、3 つの denom をシンボルと表示名とともに一覧します。
-- **MetaMask や EVM DEX で使う。** フォーセットが支払うのはバンクコインです。MetaMask や EVM DEX 用に ERC-20 として保有するには、`MsgConvertCoin` で変換します（送信者はご自身の `qor1...` アドレス、受信者は `0x...` アドレス、denom は大文字小文字混在の正確なもの）。元に戻すには `MsgConvertERC20` を使います。手順とガスの数値は [EVM 開発](/developer-guide/evm-development#fest-tokens)にあります。
+- **MetaMask や EVM DEX で使う。** フォーセットが支払うのはバンクコインです。MetaMask や EVM DEX 用に ERC-20 として保有するには、`MsgConvertCoin` で変換します（送信者はご自身の `qor1...` アドレス、受信者は `0x...` アドレス、denom は大文字小文字混在の正確なもの）。元に戻すには `MsgConvertERC20` を使います。手順とガスの数値は [EVM 開発](/developer-guide/evm-development#fest-tokens)にあります。専用のステップバイステップの変換ガイドは予定されていますが、まだ公開されていません。
 - **プール。** テストネットの [AMM](/architecture/amm) では、これらを `uqor` とプールにできます。プールが存在するかどうかは `GET /qorechain/amm/v1/pools` で確認できます。[ウォレット](/dashboard/wallet)の Tokens タブと[トレード](/dashboard/trade)には、これらのエントリはありません。残高は `GET /cosmos/bank/v1beta1/balances/{address}` で確認してください。
 
 ### テストトークンの使い道

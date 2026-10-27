@@ -27,7 +27,7 @@ Optimistic Rollups gehen standardmäßig davon aus, dass Transaktionen gültig s
 * **Challenge-Fenster**: 604.800 Sekunden (Standard, 7 Tage). **Vor v3.2.4:** Die Chain rechnet dies mit festen 6 Sekunden pro Block in Blöcke um, **100.800 Blöcke**, sodass die tatsächlich verstreichende Zeit von der realen Blockzeit abhängt (etwa 3,7 Tage bei den aktuellen ≈3,1-s-Blöcken des Mainnets); planen Sie daher in Blöcken, nicht in Tagen. **Ab v3.2.4:** Für einen Batch, der ab der Upgrade-Höhe eingereicht wird, wird das Fenster in Sekunden der Blockzeit gemessen (volle 7 Tage). Ein früher eingereichter Batch behält die Regel nach Blockanzahl. Das Testnet hat v3.2.4 auf Höhe 8.337.253 angewendet (19. Oktober 2026); das Mainnet hat es auf Höhe 3.742.566 angewendet (23. Oktober 2026, Governance-Vorschlag 13). Der konfigurierte Standard des Testnets ist kürzer, nämlich 3.600 Sekunden (1 Stunde), sodass ein Testnet-Rollup schneller finalisiert als die hier beschriebenen 7 Tage.
 * **Challenge-Bond**: 1.000 QOR (1.000.000.000 uqor) — erforderlich, um eine Betrugsbeweis-Anfechtung einzureichen (Presets `nft` und `custom`; die Presets `defi`, `gaming` und `enterprise` setzen keinen Bond, da sie kein Challenge-Fenster haben)
 * **Finalität**: Verzögert, bis das Challenge-Fenster ohne gültige Anfechtung abläuft
-* **Auto-Finalisierung**: Der `EndBlocker` finalisiert Batches automatisch, sobald das Challenge-Fenster ohne Streitfall abgelaufen ist. Ein angefochtener Batch wird nie automatisch finalisiert: Der Ersteller des Rollups löst die Anfechtung zuerst auf (siehe [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
+* **Auto-Finalisierung**: Der `EndBlocker` finalisiert Batches automatisch, sobald das Challenge-Fenster ohne Streitfall abgelaufen ist. Ein angefochtener Batch wird nie automatisch finalisiert: Er muss zuerst aufgelöst werden, auf dem Mainnet (v3.2.4) vom Ersteller des Rollups und auf dem Testnet (v3.2.5 und später; das Mainnet folgt, sobald Governance-Vorschlag 14 v3.2.5 anwendet) von jedem Konto (siehe [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
 
 **Batch-Lebenszyklus**:
 
@@ -152,7 +152,7 @@ QoreChain-L1-Proposer sequenzieren Rollup-Transaktionen.
 On-Chain-KV-Store-Blob-Speicherung innerhalb von QoreChain selbst.
 
 :::caution Noch kein öffentlicher Weg, einen Blob zu veröffentlichen
-Das Modul definiert Blob-Speicherung, Aufbewahrung und Pruning, aber es gibt in den aktuellen Releases keine Transaktionsnachricht zum Veröffentlichen eines Blobs. Ein Batch, der bei einem `native`- oder `both`-Rollup einen Daten-Hash nennt, wird abgelehnt, weil kein passender Blob gespeichert werden kann. Siehe [Data Availability](/rollups/data-availability). Bei nativer Datenverfügbarkeit muss ein Batch daher `data_hash` leer lassen; der RDK-Client (0.6.2) tut das, und die Chain lehnt einen Batch ab, der einen angibt.
+Das Modul definiert Blob-Speicherung, Aufbewahrung und Pruning, aber es gibt in den aktuellen Releases keine Transaktionsnachricht zum Veröffentlichen eines Blobs. Ein Batch, der bei einem `native`- oder `both`-Rollup einen Daten-Hash nennt, wird abgelehnt, weil kein passender Blob gespeichert werden kann. Siehe [Data Availability](/rollups/data-availability). Bei nativer Datenverfügbarkeit muss ein Batch daher `data_hash` leer lassen; der RDK-Client (0.7.0) tut das, und die Chain lehnt einen Batch ab, der einen angibt.
 :::
 
 | Parameter            | Wert                                                                                               |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Batch als kanonisch akzeptiert                       |
 | **Rejected**   | Batch durch erfolgreiche Anfechtung für ungültig erklärt         |
 
-Verhalten von RDK 0.6.1 und 0.6.2 (der Bibliothekscode ist derselbe): Für ein Optimistic Rollup baut der Client einen Batch, dessen State-Root die kanonische Übergangs-Root der Chain ist (`batchTransitionRoot` im RDK), kein frei gewählter eigener Wert.
+Verhalten von RDK 0.6.1 und später (0.7.0 ist aktuell): Für ein Optimistic Rollup baut der Client einen Batch, dessen State-Root die kanonische Übergangs-Root der Chain ist (`batchTransitionRoot` im RDK), kein frei gewählter eigener Wert.
 
 ### Regeln zur Auto-Finalisierung
 

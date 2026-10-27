@@ -44,7 +44,7 @@ Die vollständige Berichtsseite `/audits/<id>` ergänzt die Schweregrad-Aufschl�
 ### Frühere Audits und Teilen
 
 - Ihre eigenen Berichte finden Sie unter **Profile > Audited**.
-- Die Liste **All Security Audits** unter `/audits` (von der Startseite aus verlinkt) zeigt die neuesten Audits aller Nutzer in einer Tabelle mit Contract-Name, Blockchain, Risikostufe, Score und Datum. Ein Suchfeld filtert nach Name, Blockchain oder Risikostufe. Eine Zeile lässt sich nur öffnen, wenn der Bericht öffentlich ist oder Ihnen gehört.
+- Die Liste **All Security Audits** unter `/audits` (von der Startseite aus verlinkt) zeigt die neuesten Audits, deren Eigentümer sie öffentlich gemacht haben, in einer Tabelle mit Contract-Name, Blockchain, Risikostufe, Score und Datum. Ein Suchfeld filtert nach Name, Blockchain oder Risikostufe. Private Berichte erscheinen dort nie; dasselbe gilt für die Liste der neuesten Audits auf der Startseite.
 - Bei einem Bericht, der Ihnen gehört, steht oben ein Schalter mit der Beschriftung „This report is private“. Schalten Sie ihn ein, um den Bericht öffentlich zu machen, sodass ihn jeder mit dem Link lesen kann (Ihr Name und Ihre IP werden nie angezeigt), und schalten Sie ihn aus, um ihn wieder privat zu machen.
 
 :::tip Auditieren Sie vor dem Deployen

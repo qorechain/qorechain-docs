@@ -20,14 +20,14 @@ construite în jurul Layer 1-ului QoreChain, nu al uneltelor:
 Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 27
 octombrie 2026). Tabelul de mai jos arată ce funcționează astăzi; ce au schimbat
 clienții 0.6.x publicați și limitele care rămân sunt adunate în
-[RDK 0.6.2: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits). Dacă ai nevoie doar de un rollup
+[RDK 0.7.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits). Dacă ai nevoie doar de un rollup
 optimistic/zk generic, orice kit e suficient; capabilitățile de aici sunt ceea
 ce adaugă RDK-ul în plus, în TypeScript, Python, Go, Rust și Java.
 :::
 
 | Capabilitate | Stare | Pe ce se bazează |
 | --- | --- | --- |
-| **Chitanțe de decontare** | 🟡 Etapă timpurie | Ancorele sunt semnate cu ML-DSA-87, schema post-cuantică a Main Chain; încă nu există ancore, deci verificatorul 0.6.2 (care verifică față de lanț) nu a rulat niciodată pe o ancoră reală |
+| **Chitanțe de decontare** | 🟡 Etapă timpurie | Ancorele sunt semnate cu ML-DSA-87, schema post-cuantică a Main Chain; încă nu există ancore, deci verificatorul 0.7.0 (care verifică față de lanț) nu a rulat niciodată pe o ancoră reală |
 | **QCAI Rollup Copilot** | 🟡 Încă indisponibil pe endpoint-urile publice | Servicii de consultanță AI/RL on-chain pe care endpoint-urile publice nu le expun astăzi |
 | **Apeluri cross-VM multi-VM** | 🟡 Încă inutilizabil pe rețelele live | Un precompile cross-VM care nu este activat (encoderul din 0.6.0 se potrivește cu structura lanțului), iar încărcarea QoreChain Native este închisă |
 
@@ -58,7 +58,7 @@ console.log(result.valid);
 `verifySettlementReceipt` verifică față de lanț și refuză să spună `valid`
 fără un `client`. În 0.5.0, verificarea sa în lanț nu se putea finaliza pe
 rețelele live (eșua închis în loc să raporteze o chitanță autentică drept
-validă); 0.6.0 a corectat acest lucru, iar 0.6.1 (și deci 0.6.2) compară fiecare câmp al chitanței, dar nu există încă nicio ancoră, deci niciuna dintre ele nu a rulat pe una reală. Vezi [Chitanțe de decontare](/rollups/settlement-receipts) pentru
+validă); 0.6.0 a corectat acest lucru, iar 0.6.1 (și fiecare versiune de după ea) compară fiecare câmp al chitanței, dar nu există încă nicio ancoră, deci niciuna dintre ele nu a rulat pe una reală. Vezi [Chitanțe de decontare](/rollups/settlement-receipts) pentru
 ce dovedește și ce nu dovedește o chitanță și pentru limitele exacte.
 
 ---

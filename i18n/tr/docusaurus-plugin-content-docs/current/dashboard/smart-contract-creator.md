@@ -17,10 +17,10 @@ sidebar_position: 6
 
 - **Hesap olmadan bir üretim.** İlk kez gelen bir ziyaretçi bir kez üretim yapabilir ve sözleşmenin tamamını görür. Bu, ziyaretçi başına ve genel bir günlük üst sınırla sınırlandırılmıştır. Ücretsiz deneme sonucunda **Deploy** yoktur ve **Edit** çalışmaz; sayfa bunun ardından **Create a free account** seçeneğini sunar.
 - **Oturum açıkken her UTC gününde bir ücretsiz üretim.** Her UTC gününün ilk üretimi her iki ağda da ücretsizdir. Bundan sonra testnet üzerinde her üretim, "Generation Cost" bilgisini gösteren bir "Confirm Contract Generation" iletişim kutusundan sonra test cüzdanınızdan test QOR ile ödenir. Mainnet'te Kontrol Paneli hiçbir anahtar tutmaz; bu nedenle sonraki üretimler bir sonraki UTC gününe kadar reddedilir.
-- **Her şeyi dolduran başlangıç örnekleri.** **Token**, **NFT collection**, **Locked vault** ve **2-of-3 multisig**; her biri eksiksiz bir istem doldurur, hedefi QoreChain olarak ayarlar ve bir şablon seçer.
+- **Her şeyi dolduran başlangıç örnekleri.** **Token**, **NFT collection**, **Locked vault** ve **2-of-3 multisig**; her biri eksiksiz bir istem doldurur, hedefi QoreChain olarak ayarlar ve bir şablon seçer. "PQC Token" ve "PQC NFT" şablonları, ML-DSA-87 ile imzalayan hesaplar için sözleşmeleri tanımlar.
 - **17 hedef blok zinciri,** her birinin kendi şablonları ve "Custom (describe in prompt)" seçeneği vardır: QoreChain, Cosmos, Ethereum, Solana, Avalanche, NEAR, Polygon, BSC, TON, Cardano, Polkadot, Tezos, Arbitrum, Optimism, Sui, Aptos ve Tron.
 - **Mainnet EVM üzerinde emanetsiz (non-custodial) dağıtım.** Kontrol Paneli sözleşmeyi derler ve **imzasız** dağıtım verisini döndürür. Herhangi bir enjekte EVM cüzdanı (MetaMask, Rabby, Coinbase Wallet) 9801 zincirini ekler veya bu zincire geçer, ardından imzalayıp yayınlar; Kontrol Paneli adresi sonradan kaydeder.
-- **Testnet üzerinde yönetişimle onaylanmış QoreChain Native kodları.** Üretilen kod yüklenmez. Testnet yönetişiminin zaten onayladığı ve zincirden canlı okunan bir kodu örneklendirirsiniz (instantiate): CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) ve Counter example (qore-counter). Instantiate mesajı önceden doldurulur ve düzenlenebilir.
+- **Testnet üzerinde onaylı QoreChain Native sözleşmeleri.** Testnet festi sırasında sözleşme yüklemeleri yönetişim yoluyla incelenir; bu yüzden üretilen kod yüklenmez. Onaylı bir sözleşmeyi örneklendirirsiniz (instantiate); liste zincirden canlı okunur: CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) ve Counter example (qore-counter). Instantiate mesajı önceden doldurulur ve düzenlenebilir.
 - **İletişim kutusunda derleme geri bildirimi.** Hatalar satır içinde gösterilir, iletişim kutusu çıkarsayamadığı yapıcı (constructor) argümanlarını sorar ve token alanları koddan veya istemden önceden okunur.
 - **Varsayılan olarak özel, herkese açıkken fork edilebilir.** Sahibi **Public** veya **Private** arasında geçiş yapar; herkese açık bir sözleşmenin sahibi olmayan biri onu **Fork** edebilir.
 
@@ -70,7 +70,12 @@ Mainnet üzerindeki diğer hedefler "Direct deploy not available for this contra
 #### Testnet üzerinde, tek tıkla {#deploy-testnet}
 
 - **EVM:** **Deploy to Testnet** öğesini seçin. Kontrol Paneli'nin test cüzdanı dağıtımı imzalar ve gönderir; başarı durumunda "Deployed on Testnet" gösterilir. Mainnet'e geçmeden önce [Faucet](/dashboard/faucet) tokenlarıyla yineleme yapın.
-- **QoreChain Native:** bir **Approved contract** seçin, **Label \*** alanını ayarlayın, **Instantiate message (JSON)** alanını kontrol edin veya düzenleyin ve **Instantiate on Testnet** öğesini seçin. Testnet üzerindeki sözleşme yüklemeleri yönetişim yoluyla incelenir; bu yüzden kendi kodunuzu yüklemek yerine onaylı kodları örneklendirirsiniz. Kontrol Paneli'nin tanımadığı onaylı kodlar boş bir mesajla görünür. Özel sözleşmeler QoreChain EVM'ye (Solidity) gider.
+- **QoreChain Native:** testnet festi sırasında sözleşme yüklemeleri yönetişim yoluyla incelenir; bu yüzden ürettiğiniz kodu yüklemek yerine onaylı bir sözleşmeyi örneklendirirsiniz. Açılan pencerede:
+  1. Bir **Approved contract** seçin. Liste zincirden canlı okunur ve şu anda CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) ve Counter example (qore-counter) sunar.
+  2. **Instantiate message (JSON)** alanını kontrol edin. Token alanlarınızdan önceden doldurulur ve düzenlenebilir; Kontrol Paneli'nin tanımadığı onaylı bir kod boş bir mesajla görünür.
+  3. **Label \*** alanını ayarlayın, ardından **Instantiate on Testnet** öğesini seçin. Testnet cüzdanınızla imzalanır ve sonuç, sözleşme adresini ve işlemi gösterir.
+  
+  Özel sözleşmeler QoreChain EVM'ye (Solidity) gider.
 - Kontrol Paneli'nden yalnızca EVM sözleşmeleri ve onaylı QoreChain Native kodları dağıtılabilir. Başka bir EVM zinciri (Polygon, BSC, Arbitrum vb.) için yazılmış bir sözleşme o zincirin kendi ağına değil, QoreChain EVM'ye dağıtılır; EVM olmayan zincirler için sözleşmeler buradan dağıtılamaz.
 
 **Minimal örnek (testnet):** **Token**, **Generate Smart Contract**, Confirm, **Deploy** seçeneklerini seçin, "CW20 token (cw20-base)" seçin, Label olarak `my-token` girin, **Instantiate on Testnet**.

@@ -18,6 +18,7 @@ QOR de testnet **nu are valoare reală**. Faucet-ul nu atinge niciodată mainnet
 - **O singură solicitare, două feluri de token.** O solicitare plătește 100 QOR și, într-o tranzacție separată, 1.000 fUSD, 0,5 fETH și 0,02 fBTC. Dacă trimiterea tokenurilor Fest eșuează, QOR ajunge oricum, iar cardul de rezultat o spune.
 - **Un cooldown dublu.** O solicitare per 24 de ore per cont **și** per adresă. Slotul este rezervat înainte de a se trimite ceva și eliberat dacă trimiterea eșuează, deci o solicitare eșuată nu îți consumă ziua.
 - **Tokenurile Fest sunt monede bank native.** Sunt denominații bank `erc20:0x...` pe care AMM-ul on-chain, transferurile bank, IBC și contractele QoreChain Native le folosesc ca atare. MetaMask sau un DEX EVM le văd doar după o conversie `MsgConvertCoin` (vezi [Tokenuri de test Fest](#fest-tokens)).
+- **Fără numere greșite.** Dacă informațiile Faucet-ului nu pot fi încărcate, pagina arată „..." în loc de o sumă, niciodată una ghicită.
 - **Un destinatar `0x` este plătit pe geamănul său `qor1`.** O adresă `0x` reprezintă aceiași 20 de octeți ca forma sa `qor1`, deci serviciul plătește același cont. Formularul din Dashboard acceptă el însuși doar `qor1...`.
 
 ## Cum se folosește {#how-to-use}
@@ -48,7 +49,7 @@ Trei tokenuri de test suplimentare există pe testnet pentru fest-ul builderilor
 - **Doar pe testnet.** Tokenurile nu există pe mainnet.
 - **Copiază denominația exact.** Partea de adresă este în format EIP-55 cu majuscule și minuscule mixte, iar denominația este comparată sensibil la majuscule.
 - **Vezi-le on-chain.** `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` listează cele trei denominații cu simbolurile și numele lor de afișare.
-- **Folosirea lor din MetaMask sau dintr-un DEX EVM.** Faucet-ul plătește monede bank. Pentru a deține una ca ERC-20 în MetaMask sau într-un DEX EVM, convert-o cu `MsgConvertCoin` (expeditor adresa ta `qor1...`, destinatar o adresă `0x...` și denominația exactă cu majuscule și minuscule mixte). Mutarea înapoi se face cu `MsgConvertERC20`. Pașii și cifrele de gaz se găsesc în [Dezvoltare EVM](/developer-guide/evm-development#fest-tokens).
+- **Folosirea lor din MetaMask sau dintr-un DEX EVM.** Faucet-ul plătește monede bank. Pentru a deține una ca ERC-20 în MetaMask sau într-un DEX EVM, convert-o cu `MsgConvertCoin` (expeditor adresa ta `qor1...`, destinatar o adresă `0x...` și denominația exactă cu majuscule și minuscule mixte). Mutarea înapoi se face cu `MsgConvertERC20`. Pașii și cifrele de gaz se găsesc în [Dezvoltare EVM](/developer-guide/evm-development#fest-tokens). Un ghid dedicat de conversie, pas cu pas, este planificat și încă nu este publicat.
 - **Pool-uri.** [AMM](/architecture/amm)-ul testnet-ului le poate pune în pool împotriva `uqor`; dacă există un pool este arătat de `GET /qorechain/amm/v1/pools`. Fila Tokens din [Wallet](/dashboard/wallet) și [Trade](/dashboard/trade) nu au o intrare pentru ele; verifică un sold cu `GET /cosmos/bank/v1beta1/balances/{address}`.
 
 ### Ce să faci cu tokenurile de test

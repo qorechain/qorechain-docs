@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` din `@qorechain/rdk` 0.6.0 și ulterior construiește același calldata pentru tine:
+`encodeCrossVmCalldata` din `@qorechain/rdk` 0.6.0 și ulterior (0.7.0 este versiunea curentă) construiește același calldata pentru tine:
 
 ```ts
 import {
@@ -75,6 +75,17 @@ const calldata = encodeCrossVmCalldata({
 
 `isCrossVmPrecompileActive(restBase)` citește parametrul EVM `active_static_precompiles` prin REST și răspunde `active: true` doar când adresa precompilului este listată. Aceasta este singura verificare de încredere și trebuie făcută în afara lanțului: precompilul întoarce răspunsul brut al țintei, deci un răspuns gol nu poate deosebi un precompil inactiv de un apel real către un contract care nu întoarce nimic, iar un precompil nu are bytecode indiferent dacă este activ sau nu. Chiar și când raportează `active: true`, pachetul documentează că, începând cu lanțul v3.2.3, un apel ajunge doar la țintele pe care guvernanța le-a pus pe lista permisă (parametrul cross-VM `bridge_allowed_targets`, fiecare intrare având forma `<vm>:<contract>`) și că EVM-către-EVM este refuzat.
 
+### Lanțul v3.2.5: lista permisă, formatul răspunsului și refuzurile (acum pe testnet, pe mainnet după upgrade) {#chain-v325}
+
+Lanțul v3.2.5 schimbă comportamentul bridge-ului. Testnet-ul îl rulează; **mainnet-ul (v3.2.4) nu îl rulează până când propunerea de guvernanță 14 este aplicată**, iar descrierile din alte locuri ale acestei pagini, care spun că precompilul întoarce răspunsul brut al țintei, descriu mainnet-ul de astăzi.
+
+* **O rută pentru lista permisă.** `GET /qorechain/crossvm/v1/params` servește parametrii bridge-ului, inclusiv lista permisă a țintelor. Pe testnet lista permisă este goală (verificat la 27 octombrie 2026), deci nicio țintă nu este încă permisă.
+* **Un format fix al răspunsului.** Precompilul întoarce `abi.encode(bytes)`, deci un răspuns are mereu cel puțin 64 de octeți și un răspuns gol poate fi deosebit de unul lipsă; decodează-l cu `abi.decode(ret, (bytes))`.
+* **Refuzurile au un motiv.** Când bridge-ul refuză un apel, face revert cu `Error(string)`, pe care un contract îl poate citi și transmite mai departe.
+* **Precompilul tot nu este activ.** `0x...0901` nu se află în lista precompilurilor active pe niciuna dintre rețele, deci nimic din acestea nu a rulat de la un capăt la altul.
+
+`@qorechain/rdk` 0.7.0 are helperi pentru acestea (verificați față de codificările produse de Solidity): `getCrossVmParams` (lista permisă), `crossVmTargetReady` (precompil activ, bridge activat și ținta pe lista permisă, cu motivul care blochează când nu este), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) și `decodeRevertReason` (`Error(string)`).
+
 ## Partea de Solidity
 
 Dintr-un contract EVM apelezi adresa precompilului cu apelul codificat:
@@ -94,7 +105,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Deoarece precompilul este inactiv, un simplu `.call` către el întoarce **succes cu date goale și nu face nimic**; flag-ul `ok` nu îți spune dacă apelul a avut efect. Garda de încredere din interiorul contractului este o țintă care întoarce mereu o confirmare nevidă, cu un `require(ret.length > 0)` după apel, astfel încât un răspuns gol să fie tratat ca eșec; șablonul `multivm-rollup` (0.6.0 până la 0.6.2) face acest lucru.
+Deoarece precompilul este inactiv, un simplu `.call` către el întoarce **succes cu date goale și nu face nimic**; flag-ul `ok` nu îți spune dacă apelul a avut efect. Garda de încredere din interiorul contractului este o țintă care întoarce mereu o confirmare nevidă, cu un `require(ret.length > 0)` după apel, astfel încât un răspuns gol să fie tratat ca eșec; șablonul `multivm-rollup` face acest lucru (0.6.0 și ulterior).
 
 ## Generarea unui rollup multi-VM
 
@@ -102,4 +113,4 @@ Deoarece precompilul este inactiv, un simplu `.call` către el întoarce **succe
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Șablonul `multivm-rollup` (0.6.0 până la 0.6.2) include `src/crossvm-call.ts` (verifică dacă precompilul este activ, apoi afișează calldata) și un `contracts/CrossVmCaller.sol` care apelează `executeCrossVMCall(uint8,string,bytes)` și cere un răspuns nevid de la țintă. Nu face ca un apel să funcționeze cât timp precompilul este inactiv. Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup) pentru toate șabloanele generatorului de schelet.
+Șablonul `multivm-rollup` include `src/crossvm-call.ts` (verifică dacă precompilul este activ, apoi afișează calldata) și un `contracts/CrossVmCaller.sol` care apelează `executeCrossVMCall(uint8,string,bytes)` și cere un răspuns nevid de la țintă. De la 0.7.0, contractul decodează rezultatul `abi.encode(bytes)`, cere minimul de 64 de octeți pe care îl întoarce un precompil activ și transmite mai departe motivul refuzului lanțului. Nu face ca un apel să funcționeze cât timp precompilul este inactiv. Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup) pentru toate șabloanele generatorului de schelet.

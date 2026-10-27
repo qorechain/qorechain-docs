@@ -27,7 +27,7 @@ Rollup-urile optimiste presupun că tranzacțiile sunt valide în mod implicit �
 * **Fereastră de contestare**: 604,800 de secunde (implicit, 7 zile). **Înainte de v3.2.4:** lanțul o convertește în blocuri la un raport fix de 6 secunde per bloc, **100,800 de blocuri**, deci timpul real scurs depinde de timpul efectiv al blocurilor (aproximativ 3,7 zile la blocurile actuale de ≈3.1 s de pe mainnet); planificați în blocuri, nu în zile. **De la v3.2.4:** pentru un lot trimis începând cu înălțimea upgrade-ului, fereastra este măsurată în secunde de timp de bloc (7 zile întregi). Un lot trimis mai devreme păstrează regula numărului de blocuri. Testnet-ul a aplicat v3.2.4 la înălțimea 8,337,253 (19 octombrie 2026); mainnet-ul a aplicat-o la înălțimea 3,742,566 (23 octombrie 2026, propunerea de guvernanță 13). Valoarea implicită configurată pe testnet este mai scurtă, 3,600 de secunde (1 oră), așa că un rollup de pe testnet se finalizează mai repede decât cele 7 zile descrise aici.
 * **Garanție de contestare**: 1,000 QOR (1,000,000,000 uqor) — necesară pentru a depune o contestare prin demonstrație de fraudă (profilurile `nft` și `custom`; profilurile `defi`, `gaming` și `enterprise` nu setează nicio garanție deoarece nu au fereastră de contestare)
 * **Finalitate**: Întârziată până la expirarea ferestrei de contestare fără o contestare validă
-* **Auto-finalizare**: `EndBlocker` finalizează automat loturile odată ce fereastra de contestare a trecut fără dispută. Un lot contestat nu este niciodată finalizat automat: creatorul rollup-ului rezolvă mai întâi contestarea (vezi [Implementarea unui rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
+* **Auto-finalizare**: `EndBlocker` finalizează automat loturile odată ce fereastra de contestare a trecut fără dispută. Un lot contestat nu este niciodată finalizat automat: trebuie rezolvat mai întâi, de creatorul rollup-ului pe mainnet (v3.2.4) și de orice cont pe testnet (v3.2.5 și ulterior; mainnet-ul urmează când propunerea de guvernanță 14 aplică v3.2.5) (vezi [Implementarea unui rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
 
 **Ciclul de viață al lotului**:
 
@@ -152,7 +152,7 @@ Proponenții L1 QoreChain secvențiază tranzacțiile rollup-ului.
 Stocare de blob-uri în KV-store on-chain în interiorul QoreChain.
 
 :::caution Încă nu există o modalitate publică de a publica un blob
-Modulul definește stocarea, păstrarea și curățarea blob-urilor, dar în versiunile actuale nu există niciun mesaj de tranzacție pentru publicarea unui blob. Un lot care indică un hash de date pe un rollup `native` sau `both` este refuzat deoarece nu poate fi stocat niciun blob corespunzător. Vezi [Disponibilitatea datelor](/rollups/data-availability). Pe disponibilitatea nativă a datelor, un lot trebuie deci să lase `data_hash` gol; clientul RDK (0.6.2) face acest lucru, iar lanțul refuză un lot care pretinde unul.
+Modulul definește stocarea, păstrarea și curățarea blob-urilor, dar în versiunile actuale nu există niciun mesaj de tranzacție pentru publicarea unui blob. Un lot care indică un hash de date pe un rollup `native` sau `both` este refuzat deoarece nu poate fi stocat niciun blob corespunzător. Vezi [Disponibilitatea datelor](/rollups/data-availability). Pe disponibilitatea nativă a datelor, un lot trebuie deci să lase `data_hash` gol; clientul RDK (0.7.0) face acest lucru, iar lanțul refuză un lot care pretinde unul.
 :::
 
 | Parametru            | Valoare                                                                                               |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Lot acceptat ca fiind canonic                       |
 | **Rejected**   | Lot invalidat printr-o contestare reușită         |
 
-Comportamentul RDK 0.6.1 și 0.6.2 (codul bibliotecii este același): pentru un rollup optimistic, clientul construiește un lot a cărui rădăcină de stare este rădăcina canonică de tranziție a lanțului (`batchTransitionRoot` în RDK), nu o valoare liberă proprie.
+Comportamentul RDK 0.6.1 și ulterior (0.7.0 este versiunea curentă): pentru un rollup optimistic, clientul construiește un lot a cărui rădăcină de stare este rădăcina canonică de tranziție a lanțului (`batchTransitionRoot` în RDK), nu o valoare liberă proprie.
 
 ### Reguli de auto-finalizare
 

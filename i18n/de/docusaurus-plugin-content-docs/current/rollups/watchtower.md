@@ -19,7 +19,7 @@ betrügerisch ist — er ruft deine `validate`-Funktion auf und handelt anhand
 dessen, was du zurückgibst.
 
 :::caution Frühes Stadium: noch nichts zu beobachten
-Der Watchtower liest Batches über den RDK-REST-Client, und die Routen `/qorechain/rdk/v1/…` werden auf beiden Netzwerken bereitgestellt. In keinem der beiden Netzwerke wurde ein Rollup erstellt (geprüft am 27. Oktober 2026), es gibt also noch nichts zu beobachten, und der Watchtower ist noch nie gegen einen Live-Batch gelaufen. In `@qorechain/rdk` 0.5.0 war seine Fristlogik falsch (sie las eine Blockhöhe als Unix-Zeitstempel, sodass `onDeadline` ausgelöst wurde, sobald ein Batch zum ersten Mal gesehen wurde), und er las nur die erste Seite mit 50 Batches; **0.6.0 hat beides behoben** (siehe unten). Verwende 0.6.2, das aktuelle Release.
+Der Watchtower liest Batches über den RDK-REST-Client, und die Routen `/qorechain/rdk/v1/…` werden auf beiden Netzwerken bereitgestellt. In keinem der beiden Netzwerke wurde ein Rollup erstellt (geprüft am 27. Oktober 2026), es gibt also noch nichts zu beobachten, und der Watchtower ist noch nie gegen einen Live-Batch gelaufen. In `@qorechain/rdk` 0.5.0 war seine Fristlogik falsch (sie las eine Blockhöhe als Unix-Zeitstempel, sodass `onDeadline` ausgelöst wurde, sobald ein Batch zum ersten Mal gesehen wurde), und er las nur die erste Seite mit 50 Batches; **0.6.0 hat beides behoben** (siehe unten). Verwende 0.7.0, das aktuelle Release.
 :::
 
 ## `watchBatches`
@@ -31,7 +31,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.6.2: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
@@ -79,7 +79,11 @@ Indem du `onInvalid` mit einer Challenge verbindest, wird der Watchtower zu
 einem vollständigen Auto-Challenger; lass es ungesetzt, um im reinen
 Beobachtungsmodus zu laufen.
 
-Seit 0.6.0 (und in 0.6.1 und 0.6.2) folgt er jeder Seite der Batch-Liste eines Rollups, beurteilt einen Batch neu, wenn sich seine Frist nähert (er pollt weiter ab dem ältesten Batch, dessen Fenster noch offen ist, statt jeden Batch nur einmal beim ersten Anblick zu beurteilen), und misst jedes Fenster an der Chain-Spitze (`getChainTip`, dem Status des Nodes) statt an der lokalen Uhr. Ein Batch, der bereits `finalized` ist, wird weder validiert noch gemeldet.
+Seit 0.6.0 (und in jedem späteren Release) folgt er jeder Seite der Batch-Liste eines Rollups, beurteilt einen Batch neu, wenn sich seine Frist nähert (er pollt weiter ab dem ältesten Batch, dessen Fenster noch offen ist, statt jeden Batch nur einmal beim ersten Anblick zu beurteilen), und misst jedes Fenster an der Chain-Spitze (`getChainTip`, dem Status des Nodes) statt an der lokalen Uhr. Ein Batch, der bereits `finalized` ist, wird weder validiert noch gemeldet.
+
+**Erneut eingereichte Batches (0.7.0).** Ab Chain v3.2.5 (jetzt im Testnet; im Mainnet nach dem Upgrade) lehnt ein bestätigter Betrugsfall den Batch und jeden späteren nicht finalisierten ab, und der Sequencer reicht unter denselben Indizes erneut ein. Releases vor 0.7.0 unterschieden Batches nur anhand des Index und übersahen daher einen Batch, der unter einem abgelehnten Index erneut eingereicht wurde; 0.7.0 unterscheidet sie anhand von Index und State Root und validiert einen abgelehnten Batch nie.
+
+**Die Betrugsregel der Chain anwenden (0.7.0).** `transitionRootValidator` ist ein fertiges `validate`-Prädikat, das die eigene Regel der Chain anwendet (ein Batch ist betrügerisch, wenn sein State Root nicht der kanonische Transition Root ist), und `fraudProofForBatch` liefert den Nachweis, der gewinnt, oder keinen für einen ehrlichen Batch, sodass du ihn an `challengeBatch` übergeben kannst.
 
 :::note Challenge-Window
 Die Chain misst das Fenster eines Batches auf eine von zwei Arten, und `batchChallengeWindow` (verwendet vom Watchtower und von der Gesundheitsprüfung hinter `qorollup status`) meldet, auf welche. **Fenster nach Blockanzahl, die Regel im Mainnet für Batches, die vor Höhe 3.742.566 eingereicht wurden (v3.2.3 und früher):** Das Fenster sind die konfigurierten Sekunden des Rollups, umgerechnet mit festen 6 Sekunden pro Block, also **100.800 Blöcke** für die standardmäßigen 604.800, gezählt ab der Höhe `submitted_at` des Batches; die reale Zeit folgt der Blockzeit und ist daher bei den ≈3,1-s-Blöcken des Mainnets kürzer als „7 Tage“. Das Paket meldet `open` und `finalizable` getrennt, weil bei der Regel, die es umsetzt, ein Block beides ist (eine Challenge gilt als offen, solange `height - submitted_at <= window`, finalisierbar ab `height - submitted_at >= window`). **Zeitbasiertes Fenster, ab v3.2.4 (das Testnet seit Höhe 8.337.253, das Mainnet seit Höhe 3.742.566):** Ein Batch, der ab der Upgrade-Höhe eingereicht wird, hält seine Blockzeit fest, und sein Fenster ist diese Anzahl von Sekunden Blockzeit. Der Watchtower verwendet das eigene Fenster des Rollups, wenn der Node es meldet (das Paket dokumentiert dies als v3.2.4 und später); andernfalls fällt er auf das Standardfenster des Moduls zurück, übergib daher `challengeWindowSecs` für ein Rollup, das ein eigenes konfiguriert hat. Das Einreichen einer Challenge erfordert außerdem die Challenge-Bond des Rollups (1.000 QOR für die Presets `nft` und `custom`). Das Standardfenster des Moduls beträgt 604.800 Sekunden im Mainnet und 3.600 Sekunden (eine Stunde) im Testnet (gelesen von `GET /qorechain/rdk/v1/params` am 27. Oktober 2026), daher hat dieselbe Rollup-Konfiguration im Testnet ein viel kürzeres Fenster.
@@ -92,6 +96,6 @@ qorollup watchtower my-rollup
 ```
 
 `watchtower` führt das Framework über die Kommandozeile aus und gibt neue
-Batches sowie Challenge-Window-Fristen aus, bis du Strg-C drückst. Siehe
+Batches sowie Challenge-Window-Fristen aus, bis du Strg-C drückst. Mit `--canonical` (0.7.0) meldet er außerdem jeden Batch, dessen State Root nicht der kanonische Transition Root ist, also die Batches, bei denen eine Challenge gewinnen würde. Siehe
 [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für die vollständige
 `qorollup`-Operator-CLI.

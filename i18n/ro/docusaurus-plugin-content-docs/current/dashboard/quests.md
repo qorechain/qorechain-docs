@@ -75,11 +75,11 @@ Misiunile zilnice și săptămânale se resetează după un program; pagina de d
 ## Limite și probleme cunoscute {#limits}
 
 - **Seturile de misiuni se schimbă.** Fila unui sezon poate fi goală sau poate arăta mai puține misiuni atunci când misiunile ei nu sunt active; verifică fila în loc să te bazezi pe această pagină pentru lista curentă.
-- **Totul aici este off-chain:** punctele, clasamentele, insignele și scorurile jocurilor sunt înregistrate de Dashboard, nu pe QoreChain. Cuvântul "on-chain" din subtitlul Arcade nu descrie scorurile.
+- **Totul aici este off-chain:** punctele, clasamentele, insignele și scorurile jocurilor sunt înregistrate de Dashboard, nu pe QoreChain. Photonii nu sunt on-chain.
 - **Sumele recompenselor** sunt afișate la fiecare misiune și se pot schimba.
 - **Autentificarea** și, pentru misiunile sociale, conturile conectate verificate sunt necesare.
 - **Public Sale** (`/public-sale`) este o pagină separată pentru participanții existenți (alocare, calendar de vesting, claim); toate rundele anterioare sunt închise, iar pagina nu este descrisă mai departe aici.
-- **FAQ** (`/faq`) este o pagină de ajutor din aplicație al cărei conținut rămâne în urma acestui manual.
+- **FAQ** (`/faq`) este o scurtă pagină de ajutor din aplicație; acest manual este referința.
 
 ## Înrudite
 

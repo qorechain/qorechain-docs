@@ -29,7 +29,7 @@ sidebar_position: 1
 
 | エントリ | ページ | 内容 |
 | --- | --- | --- |
-| **Discover** | `/` | ホーム: ヒーローボタン **Create Smart Contract** と **Explore Network**、「Dashboard Overview」のカウンター、作成されたコントラクトの一覧、最新の監査、トップコントリビューター、そして **Start Generating**、**New Audit**、**Claim Tokens** を備えた「Developer Toolkit」。 |
+| **Discover** | `/` | ホーム: ヒーローボタン **Create Smart Contract** と **Explore Network**、「Dashboard Overview」のカウンター、作成されたコントラクトの一覧、最新の公開監査、トップコントリビューター、そして **Start Generating**、**New Audit**、**Claim Tokens** を備えた「Developer Toolkit」。 |
 | **Public Sale** | `/public-sale` | 既存の参加者は、割り当て、ベスティングのタイムライン、クレームを確認できます。 |
 | **Wallet** | [Wallet](/dashboard/wallet) | 残高、履歴、受け取り、そして (メインネットでは) QoreX を通じた送金とステーキング。 |
 | **Faucet** | [Faucet](/dashboard/faucet) | 無料のテストネットトークン。 |
@@ -37,7 +37,7 @@ sidebar_position: 1
 | **Trade** | [Trade](/dashboard/trade) | テストトークンのスワップ画面。 |
 | **Earn** グループ | [Quests](/dashboard/quests) | Quests、Leaderboard、Badges。 |
 | **Games** | [Quests](/dashboard/quests#games) | QoreChain Arcade。 |
-| **Build** グループ | [Smart Contract Creator](/dashboard/smart-contract-creator)、[Contract Auditor](/dashboard/contract-auditor)、[Nodes & Validators](/dashboard/tools-hub) (`/tools`)、[Developers](/dashboard/developers) | コントラクトツール、ノードとバリデータ向けのツール、開発者ツール。Nodes & Validators のエントリは以前「Tools」というラベルでした。 |
+| **Build** グループ | [Smart Contract Creator](/dashboard/smart-contract-creator)、[Contract Auditor](/dashboard/contract-auditor)、[Nodes & Validators](/dashboard/tools-hub) (`/tools`)、[Developers](/dashboard/developers) | コントラクトツール、オペレーター向けページ（5 つのタブ: Validator Program、Validator Application、Light Node、Node Registration、Rollups）、公開の開発者ページ（6 つのタブ: SDKs、PQ key status、Simulator、Signing playground、QoreX test wallet、AI agents (MCP)）。Nodes & Validators のエントリは以前「Tools」というラベルでした。その SDK タブは Developers に移動しました。 |
 | **FAQ** | `/faq` | アプリ内ヘルプ。一部は古くなっています。リファレンスはこのマニュアルです。 |
 
 [Validators](/dashboard/validators) ページ (`/validators`) にはサイドバーのリンクがありません。アドレスを指定して開いてください。
@@ -119,7 +119,8 @@ sidebar_position: 1
 
 - **Bridge 画面はありません。** [Bridge](/dashboard/bridge) を参照してください。
 - **Trade はネットワークの切り替えに従いません。** ヘッダーが Mainnet でも、テストネットの内容を表示します。[Trade](/dashboard/trade) を参照してください。
-- **アプリ内の一部のテキストは古くなっています。** FAQ、およびウォレット作成画面と Nodes & Validators の SDK タブの一部の文言は、現在の動作と一致しません。このマニュアルとアプリの内容が食い違う場合は、このマニュアルに従い、そのページを報告してください。
+- **アプリ内の FAQ は短いヘルプページです。** FAQ とこのマニュアルの内容が異なる場合は、このマニュアルに従ってください。
+- **まだ提供されていないもの:** Developers ページの Transaction inspector と MCP サーバー（Developers ページには、公開されていないと表示されています）。
 - **メインネットの制限。** メインネットでのステーキング、送金、コントラクトのデプロイはページごとに説明されています。いくつかのフロー (Native や SVM のデプロイ、再委任、タイムロック付きステーキング) は、ダッシュボードでは提供されていません。
 - **テストネットに実際の価値はありません。** 実際の QOR をテストネットのアドレスに送らないでください。形式は同一です。[Wallet](/dashboard/wallet#testnet) を参照してください。
 

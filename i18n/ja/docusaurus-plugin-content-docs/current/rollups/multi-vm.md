@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`@qorechain/rdk` 0.6.0 以降の `encodeCrossVmCalldata` は、同じコールデータを代わりに構築します:
+`@qorechain/rdk` 0.6.0 以降（現行は 0.7.0）の `encodeCrossVmCalldata` は、同じコールデータを代わりに構築します:
 
 ```ts
 import {
@@ -75,6 +75,17 @@ const calldata = encodeCrossVmCalldata({
 
 `isCrossVmPrecompileActive(restBase)` は REST 経由で EVM パラメータ `active_static_precompiles` を読み取り、プリコンパイルのアドレスが一覧に含まれている場合にのみ `active: true` と答えます。これが唯一の信頼できる確認方法であり、オフチェーンで行う必要があります。プリコンパイルはターゲットの生の応答を返すため、空の応答では、無効なプリコンパイルと、何も返さないコントラクトへの正当な呼び出しとを区別できません。また、プリコンパイルは有効か無効かにかかわらずバイトコードを持ちません。`active: true` と報告される場合でも、パッケージのドキュメントには、チェーン v3.2.3 以降、呼び出しはガバナンスが許可リストに載せたターゲット（クロスVMパラメータ `bridge_allowed_targets`、各エントリは `<vm>:<contract>`）にのみ到達し、EVM から EVM への呼び出しは拒否されると記載されています。
 
+### チェーン v3.2.5: 許可リスト、応答形式、拒否（テストネットでは現在、メインネットではアップグレード後） {#chain-v325}
+
+チェーン v3.2.5 は、ブリッジの動作を変更します。テストネットはこれを実行しています。**メインネット（v3.2.4）は、ガバナンス提案 14 が適用されるまで実行しません。** また、このページの他の箇所にある、プリコンパイルがターゲットの生の応答を返すという説明は、現時点のメインネットについてのものです。
+
+* **許可リストのルート。** `GET /qorechain/crossvm/v1/params` は、ターゲットの許可リストを含むブリッジのパラメータを返します。テストネットでは許可リストは空であり（2026年10月27日に確認）、現時点で許可されているターゲットはありません。
+* **固定の応答形式。** プリコンパイルは `abi.encode(bytes)` を返すため、応答は常に 64 バイト以上になり、空の応答と応答なしを区別できます。`abi.decode(ret, (bytes))` でデコードしてください。
+* **拒否には理由が付きます。** ブリッジが呼び出しを拒否すると、`Error(string)` でリバートします。コントラクトはこれを読み取って、そのまま伝えることができます。
+* **プリコンパイルはまだ有効ではありません。** `0x...0901` はどちらのネットワークでも有効なプリコンパイルの一覧に含まれていないため、これらはいずれもエンドツーエンドで実行されたことがありません。
+
+`@qorechain/rdk` 0.7.0 には、これらのためのヘルパーがあります（Solidity が生成したエンコーディングに対して確認済み）: `getCrossVmParams`（許可リスト）、`crossVmTargetReady`（プリコンパイルが有効で、ブリッジが有効で、ターゲットが許可リストに載っていること。そうでない場合は、阻害している理由を返します）、`decodeCrossVmResult`（`abi.decode(ret, (bytes))`）、`decodeRevertReason`（`Error(string)`）。
+
 ## Solidity 側
 
 EVM コントラクトからは、エンコードされた呼び出しを使ってプリコンパイルアドレスを呼び出します:
@@ -94,7 +105,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-プリコンパイルは無効なため、それに対する単純な `.call` は**空のデータとともに成功を返し、何も行いません**。`ok` フラグは、呼び出しが効果を持ったことを示すものではありません。コントラクト内で頼れるガードは、常に空でない確認応答を返すターゲットを用意し、呼び出しの後に `require(ret.length > 0)` を置いて、空の応答を失敗として扱うことです。`multivm-rollup` テンプレート（0.6.0 から 0.6.2）はこれを行っています。
+プリコンパイルは無効なため、それに対する単純な `.call` は**空のデータとともに成功を返し、何も行いません**。`ok` フラグは、呼び出しが効果を持ったことを示すものではありません。コントラクト内で頼れるガードは、常に空でない確認応答を返すターゲットを用意し、呼び出しの後に `require(ret.length > 0)` を置いて、空の応答を失敗として扱うことです。`multivm-rollup` テンプレートはこれを行っています（0.6.0 以降）。
 
 ## マルチVMロールアップのスキャフォールド
 
@@ -102,4 +113,4 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-`multivm-rollup` テンプレート（0.6.0 から 0.6.2）には、`src/crossvm-call.ts`（プリコンパイルが稼働しているかを確認し、その後コールデータを出力します）と、`executeCrossVMCall(uint8,string,bytes)` を呼び出してターゲットから空でない応答を要求する `contracts/CrossVmCaller.sol` が含まれています。プリコンパイルが無効な間は、呼び出しを機能させるものではありません。すべてのスキャフォールダーテンプレートについては [ロールアップのデプロイ](/rollups/deploying-a-rollup) を参照してください。
+`multivm-rollup` テンプレートには、`src/crossvm-call.ts`（プリコンパイルが稼働しているかを確認し、その後コールデータを出力します）と、`executeCrossVMCall(uint8,string,bytes)` を呼び出してターゲットから空でない応答を要求する `contracts/CrossVmCaller.sol` が含まれています。0.7.0 からは、このコントラクトは `abi.encode(bytes)` の結果をデコードし、稼働中のプリコンパイルが返す 64 バイトの最小長を要求し、チェーンの拒否理由をそのまま伝えます。プリコンパイルが無効な間は、呼び出しを機能させるものではありません。すべてのスキャフォールダーテンプレートについては [ロールアップのデプロイ](/rollups/deploying-a-rollup) を参照してください。

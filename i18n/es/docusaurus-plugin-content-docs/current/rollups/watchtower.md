@@ -18,7 +18,7 @@ El Watchtower nunca decide por sí solo que un lote es fraudulento — llama a t
 función `validate` y actúa según lo que devuelvas.
 
 :::caution Etapa temprana: todavía nada que vigilar
-El Watchtower lee los lotes a través del cliente REST del RDK, y las rutas `/qorechain/rdk/v1/…` se sirven en ambas redes. No se ha creado ningún rollup en ninguna de las dos redes (comprobado el 27 de octubre de 2026), así que todavía no hay nada que vigilar y el Watchtower no se ha ejecutado contra un lote real. En `@qorechain/rdk` 0.5.0 su lógica de fecha límite era incorrecta (leía una altura de bloque como una marca de tiempo Unix, por lo que `onDeadline` se disparaba en cuanto se veía un lote por primera vez) y solo leía la primera página de 50 lotes; **la 0.6.0 corrigió ambas cosas** (véase abajo). Usa la 0.6.2, la versión actual.
+El Watchtower lee los lotes a través del cliente REST del RDK, y las rutas `/qorechain/rdk/v1/…` se sirven en ambas redes. No se ha creado ningún rollup en ninguna de las dos redes (comprobado el 27 de octubre de 2026), así que todavía no hay nada que vigilar y el Watchtower no se ha ejecutado contra un lote real. En `@qorechain/rdk` 0.5.0 su lógica de fecha límite era incorrecta (leía una altura de bloque como una marca de tiempo Unix, por lo que `onDeadline` se disparaba en cuanto se veía un lote por primera vez) y solo leía la primera página de 50 lotes; **la 0.6.0 corrigió ambas cosas** (véase abajo). Usa la 0.7.0, la versión actual.
 :::
 
 ## `watchBatches`
@@ -30,7 +30,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.6.2: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
@@ -74,7 +74,11 @@ El framework expone:
 - **fechas límite de la ventana de desafío** mediante `onDeadline`, y
 - **lotes inválidos** (aquellos en los que tu `validate` devolvió `false`) mediante `onInvalid`.
 
-Desde la 0.6.0 (y en la 0.6.1 y la 0.6.2) recorre todas las páginas de la lista de lotes de un rollup, vuelve a juzgar un lote a medida que se acerca su fecha límite (sigue sondeando hacia adelante desde el lote más antiguo cuya ventana sigue abierta, en lugar de juzgar cada lote una sola vez al verlo por primera vez) y mide cada ventana contra la punta de la cadena (`getChainTip`, el estado del nodo) en lugar del reloj local. Un lote que ya está `finalized` no se valida ni genera avisos.
+Desde la 0.6.0 (y en todas las versiones posteriores) recorre todas las páginas de la lista de lotes de un rollup, vuelve a juzgar un lote a medida que se acerca su fecha límite (sigue sondeando hacia adelante desde el lote más antiguo cuya ventana sigue abierta, en lugar de juzgar cada lote una sola vez al verlo por primera vez) y mide cada ventana contra la punta de la cadena (`getChainTip`, el estado del nodo) en lugar del reloj local. Un lote que ya está `finalized` no se valida ni genera avisos.
+
+**Lotes reenviados (0.7.0).** Desde la cadena v3.2.5 (testnet ahora; mainnet tras la actualización), un fraude confirmado rechaza el lote y todos los posteriores sin finalizar, y el secuenciador los reenvía con los mismos índices. Las versiones anteriores a la 0.7.0 distinguían los lotes solo por el índice, por lo que pasaban por alto un lote reenviado en un índice rechazado; la 0.7.0 los distingue por índice y raíz de estado, y nunca valida un lote rechazado.
+
+**Aplicar la regla de fraude de la cadena (0.7.0).** `transitionRootValidator` es un predicado `validate` listo para usar que aplica la regla propia de la cadena (un lote es fraudulento cuando su raíz de estado no es la raíz de transición canónica), y `fraudProofForBatch` devuelve la prueba que gana, o ninguna para un lote honesto, de modo que puedas pasarla a `challengeBatch`.
 
 Conectar `onInvalid` a un desafío convierte al Watchtower en un
 auto-challenger completo; déjalo sin definir para ejecutarlo en modo de solo
@@ -92,6 +96,6 @@ qorollup watchtower my-rollup
 
 `watchtower` ejecuta el framework desde la línea de comandos, imprimiendo los
 nuevos lotes y las fechas límite de la ventana de desafío hasta que pulses
-Ctrl-C. Consulta
+Ctrl-C. Añade `--canonical` (0.7.0) y también informa de cada lote cuya raíz de estado no es la raíz de transición canónica, es decir, los lotes que un desafío ganaría. Consulta
 [Desplegar un Rollup](/rollups/deploying-a-rollup) para ver la CLI completa de
 operador `qorollup`.

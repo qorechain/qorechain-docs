@@ -12,22 +12,23 @@ QoreChain **Rollup Development Kit (RDK)**; QoreChain üzerinde zincir üstü `x
 :::caution Erken aşama bir yetenek
 RDK her iki ağda da dağıtılmıştır, ancak **henüz hiçbirinde bir rollup oluşturulmamıştır** (27 Ekim 2026 itibarıyla kontrol edildi); dolayısıyla bu bölümde anlatılan akışlar üçüncü taraflarca denenmemiştir. **ZK mutabakatı (`defi` profili, `defi-rollup` şablonu ve her `zk` rollup'ı) henüz her iki ağda da kullanılamaz:** zincirde bir doğrulama anahtarını kaydetmenin yolu yoktur, bu yüzden her ZK batch'i ücreti ödendikten sonra reddedilir. Anahtar kaydı zincir v3.2.7 için planlanmıştır. O zamana kadar `optimistic` mutabakatı kullanın.
 
-Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) zincir sürümü **v3.2.4**'ü çalıştırır (3.742.566 yüksekliğinde, 23 Ekim 2026'da uygulandı, yönetişim önerisi 13); test ağı (**`qorechain-diana`**, EVM zincir kimliği **9800**) **v3.2.6** çalıştırır (v3.2.4 ona 19 Ekim 2026'da, v3.2.5 26 Ekim'de ve v3.2.6 27 Ekim'de ulaştı). Ana ağ yönetişim önerisi 14, v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır ve yazım sırasında oylama dönemindeydi; v3.2.5'in rollup'lar için neyi değiştirdiği, ana ağ onu uyguladığı gün belgelenir. Davranışın v3.2.3 ile v3.2.4 arasında değiştiği yerlerde bu bölüm hangi sürümün geçerli olduğunu belirtir. Her dağıtımı önce test ağında doğrulayın ve her sayfadaki durum notlarını okuyun: birçok yetenek (ZK doğrulaması, Celestia veri erişilebilirliği, QCAI Copilot, çapraz-VM çağrıları, mutabakat makbuzları) bugün uçtan uca kullanılamaz.
+Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) zincir sürümü **v3.2.4**'ü çalıştırır (3.742.566 yüksekliğinde, 23 Ekim 2026'da uygulandı, yönetişim önerisi 13); test ağı (**`qorechain-diana`**, EVM zincir kimliği **9800**) **v3.2.6** çalıştırır (v3.2.4 ona 19 Ekim 2026'da, v3.2.5 26 Ekim'de ve v3.2.6 27 Ekim'de ulaştı). Ana ağ yönetişim önerisi 14, v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır ve yazım sırasında oylama dönemindeydi; v3.2.5'in rollup'lar için neyi değiştirdiği, şimdilik test ağı ve yükseltmeden sonra ana ağ olarak etiketlenerek [zincir v3.2.5 davranışı](#v325) altında listelenir. Davranışın v3.2.3 ile v3.2.4 arasında değiştiği yerlerde bu bölüm hangi sürümün geçerli olduğunu belirtir. Her dağıtımı önce test ağında doğrulayın ve her sayfadaki durum notlarını okuyun: birçok yetenek (ZK doğrulaması, Celestia veri erişilebilirliği, QCAI Copilot, çapraz-VM çağrıları, mutabakat makbuzları) bugün uçtan uca kullanılamaz.
 :::
 
 ## Yenilikler {#innovations}
 
 * **Post-kuantum mutabakat makbuzları.** Bir batch'in durum çapası (state anchor), rollup oluşturucusunun kayıtlı anahtarıyla ML-DSA-87 kullanılarak imzalanır. `verifySettlementReceipt`, makbuzun her alanını zincirden yeniden okur (rollup, katman, batch kökü ve çapa: durum kökü, katman yüksekliği, Ana Zincir yüksekliği, çapa zamanı, doğrulayıcı kümesi özeti, işlem sayısı, ispat, imza). Doğrulama anahtarı zincirden gelir, asla makbuzdan gelmez; makbuz sorguladığınız ağı belirtmelidir; bilinmeyen bir makbuz sürümü veya ML-DSA-87 dışında bir algoritma herhangi bir okumadan önce reddedilir; ve yalnızca imzaya dayanan bir kontrol asla geçerli olarak bildirilmez. Çapa mesajının, zincir v3.2.2 yüksekliğinin altında geçerli bir ilk biçimi ve ondan itibaren geçerli, zincir kimliğini de bağlayan ikinci bir biçimi vardır; biçim çapanın yüksekliğine göre seçilir. Bkz. [Mutabakat makbuzları](/rollups/settlement-receipts).
 * **İki anahtar türetimiyle hibrit imzalama.** İşlemler secp256k1 artı ML-DSA-87 ile imzalanır. Post-kuantum anahtar, anımsatıcı ifadeden (mnemonic) hem kanonik yolla (`qorechain:pqc:v1|`, adres ve anımsatıcı ifade üzerinde SHAKE-256) hem de eski yolla türetilir ve istemci, zincirin hesap için kaydettiği anahtarı kullanır. Bugün yalnızca TypeScript istemcisi hibrit imzalar.
+* **Zincirin kurduğu gibi kurulan para çekme ispatları.** `withdrawalsTree` (0.7.0, beş dilin hepsinde), bir batch'in para çekme kökünü ve her ispatı tam olarak zincirin yaptığı gibi oluşturur: yaprak konumu para çekme dizinidir, düğümler SHAKE-256 ile özetlenir ve zincir v3.2.5'ten itibaren batch'ler zincir kimliğini de belirten ikinci biçim yaprakları kullanır. Zincirin kendi koduyla üretilen vektörlere karşı test edilmiştir ve bu vektörlerdeki her ispat zincirin doğrulayıcısı tarafından kabul edilir. `qorollup withdraw`, sonucu batch'in zincir üstündeki `withdrawals_root` değeri değilse ücret ödemeden önce reddeder.
 * **Kanonik geçiş kökü.** `batchTransitionRoot`, zincirin bir optimistic batch'i yargılarken kullandığı tam durum kökünü hesaplar (ana ağın bugün uyguladığı biçim; önceki durum kökünün, veri özetinin ve işlem sayısının SHAKE-256 taahhüdüdür; `transitionRootVersionFor` bağlı ağın uyguladığı biçimi seçer) ve `fraudProof` ondan 64 baytlık ispatı oluşturur. İkisi de zincirin kendi koduyla üretilen vektörlere karşı test edilmiştir.
-* **Zincirle birebir itiraz pencereleri.** `batchChallengeWindow`, bir batch'in penceresini zincirin yaptığı gibi hesaplar (zamana dayalı: blok zamanı gönderim zamanı artı pencerenin altında olduğu sürece açık; daha eski batch'ler için pencerenin gönderim yüksekliğinden itibaren altıya bölünmüş blok sayısı) ve yerel saate göre değil, RPC `/status`'tan okunan zincir ucuna göre değerlendirir. [Watchtower](/rollups/watchtower) ve sağlık izleyicisi bunu kullanır.
-* **Herhangi bir ücret ödenmeden önce kontroller.** Kit, `^[a-z0-9][a-z0-9._-]{2,63}$` dışındaki bir rollup kimliğini; `uqor` cinsinden olmayan, tutarı sıfır olan, 32 baytlık 64 seviyeden daha derin bir ispat taşıyan veya geçersiz bir bech32 adresi belirten bir para çekmeyi; ve rollup'ı okuyabildiğinde, `native` veya `both` veri erişilebilirliğine sahip bir rollup'ta veri özeti belirten bir batch'i reddeder. Bunların her biri aksi halde ücret harcandıktan sonra zincir tarafından reddedilirdi.
-* **Çapraz-VM calldata'sı ve canlı kontrol.** `encodeCrossVmCalldata`, `executeCrossVMCall(uint8,string,bytes)` için calldata oluşturur (seçici `0x3c11078c`, ön derleme `0x...0901`) ve `isCrossVmPrecompileActive` ön derlemenin ağda etkin olup olmadığını okur. Bkz. [Çoklu-VM](/rollups/multi-vm).
+* **Zincirle birebir itiraz pencereleri.** `batchChallengeWindow`, bir batch'in penceresini zincirin yaptığı gibi hesaplar (zamana dayalı: blok zamanı gönderim zamanı artı pencerenin altında olduğu sürece açık; daha eski batch'ler için pencerenin gönderim yüksekliğinden itibaren altıya bölünmüş blok sayısı) ve yerel saate göre değil, RPC `/status`'tan okunan zincir ucuna göre değerlendirir. [Watchtower](/rollups/watchtower) ve sağlık izleyicisi bunu kullanır. 0.7.0'dan itibaren `getRollupHealth`, zincirin sıralı kesinliği (şimdilik test ağında, bkz. [zincir v3.2.5 davranışı](#v325)) bir batch'i geri tuttuğunda ayrıca `heldBackBy` bildirir ve `qorollup watchtower --canonical` bir itirazın kazanacağı batch'leri bildirir.
+* **Herhangi bir ücret ödenmeden önce kontroller.** Kit, `^[a-z0-9][a-z0-9._-]{2,63}$` dışındaki bir rollup kimliğini; `uqor` cinsinden olmayan, tutarı sıfır olan, 32 baytlık 64 seviyeden daha derin bir ispat taşıyan veya geçersiz bir bech32 adresi belirten bir para çekmeyi; boş olmayan ve tam 32 bayt da olmayan bir para çekme kökünü; zincirin reddedeceği bir rollup durdurmayı (şimdilik test ağında); ve rollup'ı okuyabildiğinde, `native` veya `both` veri erişilebilirliğine sahip bir rollup'ta veri özeti belirten bir batch'i reddeder. Bunların her biri aksi halde ücret harcandıktan sonra zincir tarafından reddedilirdi.
+* **Çapraz-VM calldata'sı ve canlı kontrol.** `encodeCrossVmCalldata`, `executeCrossVMCall(uint8,string,bytes)` için calldata oluşturur (seçici `0x3c11078c`, ön derleme `0x...0901`) ve `isCrossVmPrecompileActive` ön derlemenin ağda etkin olup olmadığını okur. 0.7.0'dan itibaren `getCrossVmParams`, `crossVmTargetReady`, `decodeCrossVmResult` ve `decodeRevertReason`, zincir v3.2.5 izin listesini ve yanıt biçimlerini kapsar (şimdilik test ağında). Bkz. [Çoklu-VM](/rollups/multi-vm).
 * **Beş dil için tek bir test vektörü kümesi.** TypeScript, Python, Go, Rust ve Java paketleri aynı altın (golden) fikstüre karşı kontrol edilir (Go paketinde 100, Rust'ta 77 ve Java'da 75 birim testi vardır).
 
 ## Nasıl kullanılır {#how-to-use}
 
-Okumalar için anahtar da fon da gerekmez. Aşağıdaki kod parçaları, herkese açık test ağındaki (`qorechain-diana`) canlı `rdk` modülü parametrelerini ve rollup listesini okur ve 27 Ekim 2026'da yayımlanmış paketlerden çalıştırılmıştır (kütüphane parçaları 0.6.1 ile, yani 0.6.2'nin de içerdiği kütüphane kodu sürümüyle; CLI 0.6.2 ile). Her biri test ağı parametrelerini (en fazla rollup 200, asgari stake 10.000 QOR, oluşturma yakım oranı 0,01, varsayılan itiraz penceresi 3.600 saniye, en büyük DA blob boyutu 2.097.152 bayt, blob saklama süresi 432.000 blok, blok başına en fazla 10 batch) ve `0 rollups` çıktısını verdi.
+Okumalar için anahtar da fon da gerekmez. Aşağıdaki kod parçaları, herkese açık test ağındaki (`qorechain-diana`) canlı `rdk` modülü parametrelerini ve rollup listesini okur ve 27 Ekim 2026'da yayımlanmış paketlerden çalıştırılmıştır (güncel sürüm 0.7.0'dır; TypeScript kod parçası ve komut satırı npm'den 0.7.0 ile yeniden çalıştırıldı, geliştirici merkezi ise Python, Rust, Go ve Java kod parçalarının aynı sürüme karşı geçtiğini kaydeder). Her biri test ağı parametrelerini (en fazla rollup 200, asgari stake 10.000 QOR, oluşturma yakım oranı 0,01, varsayılan itiraz penceresi 3.600 saniye, en büyük DA blob boyutu 2.097.152 bayt, blob saklama süresi 432.000 blok, blok başına en fazla 10 batch) ve `0 rollups` çıktısını verdi.
 
 ### TypeScript (test edildi)
 
@@ -75,7 +76,7 @@ Python 3.10 veya üstü. `qorechain-rdk`, `liboqs-python` getiren ve `liboqs` k�
 ### Go (test edildi)
 
 ```bash
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.6.2
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.7.0
 ```
 
 ```go
@@ -136,8 +137,8 @@ Kütüphane `qorechain_rdk`'dır. Rust 1.95 ile, crates.io'ya karşı derlenerek
 ### Java (test edildi)
 
 ```kotlin
-// build.gradle.kts - Maven Central serves 0.6.1 until 0.6.2 is live there
-implementation("io.github.qorechain:qorechain-rdk:0.6.1")
+// build.gradle.kts
+implementation("io.github.qorechain:qorechain-rdk:0.7.0")
 ```
 
 ```java
@@ -163,7 +164,7 @@ public class RdkQuickstart {
 }
 ```
 
-JDK 17 veya üstü; Maven Central'dan çözümleyen JDK 21 ve Gradle 9.6 ile test edildi. Dosyanın adı `RdkQuickstart.java` olmalıdır. 0.6.2 hiçbir Java değişikliği içermez, dolayısıyla 0.6.1 yapıtı aynı kütüphanedir.
+JDK 17 veya üstü; Maven Central'dan çözümleyen JDK 21 ve Gradle 9.6 ile test edildi. Dosyanın adı `RdkQuickstart.java` olmalıdır. Maven Central 0.6.2 ve 0.7.0'ı sunar (27 Ekim 2026'da kontrol edildi).
 
 ### Komut satırı (test edildi)
 
@@ -173,7 +174,7 @@ qorollup --version
 qorollup params --network testnet
 ```
 
-`qorollup --version` `0.6.2` yazdırır ve `qorollup params --network testnet` canlı modül parametrelerini yazdırır. **Bu, 0.6.2'den itibaren çalışır.** 0.6.1 ve önceki sürümler npm'den kurulduğunda 0 koduyla çıkıyor ve hiçbir şey yazdırmıyordu. Test, `@qorechain/rdk-cli@0.6.2`'yi boş bir projeye kurdu ve `node_modules/.bin/qorollup` üzerinden çalıştırdı; global kurulum ve `npx` aynı bin bağlantısını kullanır. Node 20 veya üstü gereklidir.
+`qorollup --version` `0.7.0` yazdırır ve `qorollup params --network testnet` canlı modül parametrelerini yazdırır. **Bu, 0.6.2'den itibaren çalışır.** 0.6.1 ve önceki sürümler npm'den kurulduğunda 0 koduyla çıkıyor ve hiçbir şey yazdırmıyordu. Test, `@qorechain/rdk-cli@0.7.0`'ı boş bir projeye kurdu ve `node_modules/.bin/qorollup` üzerinden çalıştırdı; global kurulum ve `npx` aynı bin bağlantısını kullanır. Node 20 veya üstü gereklidir.
 
 ### Bir proje iskeleti oluşturun (test edildi)
 
@@ -182,7 +183,7 @@ npx create-qorechain-rollup my-rollup --template nft-rollup --network testnet --
 cd my-rollup && npm run doctor
 ```
 
-Şablonlar `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup` ve `multivm-rollup`'tır. İskeleti oluşturulan proje `@qorechain/rdk` `^0.6.1`'e bağlıdır; yeni bir kurulum bunu 0.6.2'ye çözümler. `nft-rollup` iskeleti `@qorechain/rdk` 0.6.1 üzerinde bir proje üretti ve `npm run doctor` test ağına karşı geçti (REST erişilebilir, parametreler okunabilir, ağ `qorechain-diana`; Celestia veri erişilebilirliği ve eksik bir imzalayıcı için uyarı verir); `defi-rollup` iskeletini oluşturup `npm run typecheck` çalıştırmak geçti. **Bir rollup başlatmak için henüz `defi-rollup` kullanmayın** (bkz. [Sınırlar](#limits)). Bir rollup oluşturmak ve batch göndermek için [Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasını izleyin; işlemler kayıtlı bir post-kuantum anahtar gerektirir ve RDK'da TypeScript istemcisine bir `pqcKeypair` verilmelidir.
+Şablonlar `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup` ve `multivm-rollup`'tır. İskeleti oluşturulan proje `@qorechain/rdk` `^0.7.0`'a bağlıdır. `nft-rollup` iskeletini 0.6.1 iskele oluşturucusuyla oluşturmak, `npm run doctor` komutu test ağına karşı geçen bir proje üretti (REST erişilebilir, parametreler okunabilir, ağ `qorechain-diana`; Celestia veri erişilebilirliği ve eksik bir imzalayıcı için uyarı verir); `defi-rollup` iskeletini oluşturup `npm run typecheck` çalıştırmak, güncel sürümle 27 Ekim 2026'da yeniden geçti. **Bir rollup başlatmak için henüz `defi-rollup` kullanmayın** (bkz. [Sınırlar](#limits)). Bir rollup oluşturmak ve batch göndermek için [Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasını izleyin; işlemler kayıtlı bir post-kuantum anahtar gerektirir ve RDK'da TypeScript istemcisine bir `pqcKeypair` verilmelidir.
 
 ## Nasıl erişilir {#how-to-access}
 
@@ -208,6 +209,21 @@ Her iki ağ da RDK sorgularını (`/qorechain/rdk/v1/...`) REST, gRPC ve CLI üz
 
 Durumu okumak bunların hiçbirini gerektirmez. Ayrıca Dashboard üzerinden bir rollup talep edebilir (zincir üstü bir işlem değil, bir talep formu) veya zincir CLI'sı ile bir tane oluşturabilirsiniz; tam akış, CLI komutları ve TypeScript imzalama yolu için [Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasına bakın.
 
+### Zincir v3.2.5 davranışı: şimdilik test ağı, yükseltmeden sonra ana ağ {#v325}
+
+Test ağı, v3.2.5'i içeren zincir v3.2.6'yı çalıştırır. **Ana ağ, yönetişim önerisi 14 v3.2.5'i uygulayana kadar v3.2.4'ü çalıştırır** (29 Ekim 2026 civarında bekleniyor). RDK 0.7.0 her ikisini de destekler. Bir rollup geliştiricisinin karşılaştığı farklar:
+
+| Davranış | Test ağı (v3.2.6) | Ana ağ (v3.2.4, yükseltmeye kadar) |
+| --------- | ---------------- | ----------------------------------- |
+| Bir itirazı kim çözebilir | Herhangi bir hesap | Yalnızca rollup'ı oluşturan taraf |
+| Kanıtlanan bir sahtecilikten sonra | Batch ve sonraki tüm kesinleşmemiş batch'ler reddedilir; sıralayıcı, son iyi kökten itibaren aynı dizinler altında yeniden gönderir | İtiraz edilen batch reddedilir (v3.2.4 kuralı) |
+| Kesinlik sırası | Batch'ler dizin sırasıyla kesinleşir | v3.2.4 kuralı değil |
+| Bekleyen optimistic batch'ler | Rollup başına en fazla 4.096 | v3.2.4 kuralı değil |
+| Bir rollup'ı durdurma | Son batch `submitted` veya `challenged` durumundayken reddedilir; durdurulan bir rollup yuvasını serbest bırakır | v3.2.4 kuralı değil |
+| `withdrawals_root` | Boş veya tam 32 bayt; ikinci biçim para çekme yaprakları zincir kimliğini belirtir | v3.2.4 kuralı değil; ilk biçim yapraklar |
+| Çapraz-VM köprüsü | `GET /qorechain/crossvm/v1/params` izin listesini sunar (boş); ön derleme `abi.encode(bytes)` döndürür ve `Error(string)` ile reddeder | Hedefin ham yanıtı, Çoklu-VM sayfasında anlatıldığı gibi |
+| Çapraz-VM ön derlemesi `0x...0901` | Hâlâ etkin değil | Etkin değil |
+
 ### Bugün neler mevcut {#what-exists-today}
 
 | | Durum |
@@ -215,7 +231,7 @@ Durumu okumak bunların hiçbirini gerektirmez. Ayrıca Dashboard üzerinden bir
 | Kayıtlı rollup'lar (ana ağ ve test ağı) | Yok |
 | `x/rdk` modülü ve parametreleri | Her iki ağda da dağıtılmıştır; `qorechaind query rdk config` ile okuyun |
 | RDK sorguları | Her iki ağda da CLI, gRPC ve REST (`/qorechain/rdk/v1/...`) üzerinden sunulur; bu nedenle TypeScript `rdk.params()` gibi REST tabanlı okumalar ana ağa karşı çalışır |
-| RDK tarafından yazılan mutabakat çapaları | Yok. v3.2.2'den itibaren bir batch bir `anchor_signature` taşıyabilir ve bu durumda aynı işlemde `x/multilayer`'a çapalanır; bu alan olmadan batch çapasız olarak mutabık kalır. Henüz hiçbir rollup, katman veya çapa mevcut değildir. TypeScript RDK (0.6.0 ile 0.6.2 arası), istemcisi hibrit imzaladığında ve rollup'ın oluşturucusu olduğunda bu alanı gönderir (canlıda denenmedi); Python, Go, Rust ve Java istemcileri göndermez |
+| RDK tarafından yazılan mutabakat çapaları | Yok. v3.2.2'den itibaren bir batch bir `anchor_signature` taşıyabilir ve bu durumda aynı işlemde `x/multilayer`'a çapalanır; bu alan olmadan batch çapasız olarak mutabık kalır. Henüz hiçbir rollup, katman veya çapa mevcut değildir. TypeScript RDK (0.6.0 ile 0.7.0 arası), istemcisi hibrit imzaladığında ve rollup'ın oluşturucusu olduğunda bu alanı gönderir (canlıda denenmedi); Python, Go, Rust ve Java istemcileri göndermez |
 | `x/multilayer`'da kayıtlı rollup katmanları | Yok |
 | ZK mutabakatı | Henüz her iki ağda da kullanılamaz (doğrulama anahtarı kaydetmenin yolu yok; zincir v3.2.7 için planlanmıştır) |
 | Para çekme işlemleri | v3.2.3'ten beri rollup başına bir emanet (escrow) defterinden ödenir (bkz. [ZK / STARK ve Para Çekme](/rollups/zk-stark-withdrawals)); hiçbir rollup bulunmadığı için hiç yapılmamıştır |
@@ -228,15 +244,15 @@ Sürümler 27 Ekim 2026'da kayıt defterlerinde kontrol edildi. Tüm paketler Ap
 
 | Kayıt defteri | Paket | Güncel sürüm | Bağlantı |
 | -------- | ------- | --------------- | ---- |
-| npm | `@qorechain/rdk` (TypeScript istemcisi) | 0.6.2 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
-| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.6.2 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
-| npm | `create-qorechain-rollup` (iskele oluşturucu) | 0.6.2 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
-| PyPI | `qorechain-rdk` (içe aktarma `qorrdk`) | 0.6.2 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
-| crates.io | `qorechain-rdk` (kütüphane `qorechain_rdk`) | 0.6.2 | [crates.io](https://crates.io/crates/qorechain-rdk) |
-| Go modül proxy'si | `github.com/qorechain/qorechain-rdk/packages/go` | v0.6.2 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
-| Maven Central | `io.github.qorechain:qorechain-rdk` | **0.6.1** (0.6.2 henüz orada yayında değil) | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
+| npm | `@qorechain/rdk` (TypeScript istemcisi) | 0.7.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
+| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.7.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
+| npm | `create-qorechain-rollup` (iskele oluşturucu) | 0.7.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
+| PyPI | `qorechain-rdk` (içe aktarma `qorrdk`) | 0.7.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
+| crates.io | `qorechain-rdk` (kütüphane `qorechain_rdk`) | 0.7.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
+| Go modül proxy'si | `github.com/qorechain/qorechain-rdk/packages/go` | v0.7.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
+| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.7.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
 
-Maven Central, 0.6.2 orada yayına girene kadar 0.6.1'i sunar; 0.6.2 hiçbir Java değişikliği içermez. Kaynak kod [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk) adresinde herkese açıktır, sürüm notları [v0.6.2](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.6.2) adresindedir ve kitin kendi belgeleri [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/) adresindedir. TypeScript paketi `@qorechain/sdk` `^0.9.0` ve `@qorechain/evm` `^0.8.0`'a (dolayısıyla SDK 0.10.0 kullanan bir uygulama kit ile birlikte ikinci, iç içe geçmiş bir SDK 0.9.x kopyası alır), Python paketi ise `qorechain-pqc` 0.2.x'e bağlıdır. Zincirin `x/rdk` modül mantığının kendisi herkese açık kitin parçası değildir.
+Maven Central, önceki sürümlerin yanı sıra 0.6.2 ve 0.7.0'ı da sunar ve Go proxy'sinin `@latest` değeri yeni bir etiketin gerisinde kalabilir; bu yüzden Go sürümünü sabitleyin. Kaynak kod [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk) adresinde herkese açıktır, sürüm notları [v0.7.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.0) adresindedir ve kitin kendi belgeleri [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/) adresindedir. TypeScript paketi `@qorechain/sdk` `^0.10.0`'a (0.7.0'dan itibaren; 0.6.x `^0.9.0` kullanıyordu) ve `@qorechain/evm` `^0.8.0`'a, Python paketi ise `qorechain-pqc` 0.2.x'e bağlıdır. Zincirin `x/rdk` modül mantığının kendisi herkese açık kitin parçası değildir.
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
@@ -244,12 +260,12 @@ Maven Central, 0.6.2 orada yayına girene kadar 0.6.1'i sunar; 0.6.2 hiçbir Jav
 * **Hiçbir ağda henüz bir rollup oluşturulmamıştır.** Oluşturma, batch, itiraz, makbuz ve para çekme yolları birim testleri ve ortak vektörlerle kapsanır, ancak zincir üzerinde denenmemiştir.
 * **Yalnızca TypeScript istemcisi hibrit işlemleri imzalar.** Python, Go, Rust ve Java işlem yolları ile `qorollup` işlem komutları (`create`, `pause`, `resume`, `stop`, `withdraw`) yalnızca klasik imzalar; her iki ağ da bunu reddeder. Okumaları çalışır. Bunlardan işlem göndermek için mesajı oluşturup zincir CLI'sı ile birlikte imzalayın veya bir `pqcKeypair` ile TypeScript istemcisini kullanın.
 * **(a) `qorollup` CLI'sı 0.6.1 ve önceki sürümlerde npm'den kurulduğunda hiçbir şey yazdırmıyordu.** Bu **0.6.2'de düzeltildi**: `npm i -g @qorechain/rdk-cli` sonrasında `qorollup ...` çalışır ve `qorollup --version` 0.6.2 yazdırır.
-* **(b) Para çekme Merkle yardımcıları varsayılan olarak SHA-256 kullanır, oysa zincir SHAKE-256 kullanır.** Varsayılanlarla oluşturulan bir ispat doğrulanmaz; özeti ve yaprak kodlamasını geçersiz kılın (bkz. [Yaprak ve düğüm kodlaması](/rollups/zk-stark-withdrawals#leaf-and-node-encoding)).
-* **(c) `buildDaBlob` SHA-256 ile özetler, oysa zincirin blob taahhüdü SHAKE-256'dır.** Hiçbir işlem blob yayımlamadığı için bugün pratik bir etkisi yoktur; `native` ve `both` veri erişilebilirliğinde `dataHash` değerini boş bırakın (bkz. [Veri Erişilebilirliği](/rollups/data-availability)).
+* **(b) Para çekme Merkle yardımcıları 0.6.2 ve öncesinde varsayılan olarak SHA-256 kullanıyordu, oysa zincir SHAKE-256 kullanır.** Bu varsayılanlarla oluşturulan bir ispat zincirde hiçbir zaman doğrulanmadı. **0.7.0'da düzeltildi:** `withdrawalsTree` zincirin birebir ağacını oluşturur ve zincirin kendi doğrulayıcısına karşı kontrol edilmiştir (bkz. [Yaprak ve düğüm kodlaması](/rollups/zk-stark-withdrawals#leaf-and-node-encoding)). Yükseltin; SHA-256 varsayılanlarına dayanan kodun artık `hash` değerini açıkça geçmesi gerekir.
+* **(c) `buildDaBlob` 0.6.2 ve öncesinde SHA-256 ile özetliyordu, oysa zincirin blob taahhüdü SHAKE-256'dır.** **0.7.0'da düzeltildi**; taahhüdü artık zincirin taahhüdüdür. Hiçbir işlem blob yayımlamadığı için hiçbir zaman pratik bir etkisi olmadı; `native` ve `both` veri erişilebilirliğinde `dataHash` değerini boş bırakın (bkz. [Veri Erişilebilirliği](/rollups/data-availability)).
 * **(d) `defi` şablonunun demo devresi doğrulanamaz.** Bu bir `snarkjs` çarpıcısıdır ve zincir, önceki durum kökünü, durum kökünü ve veri özetini genel girdi olarak alan BLS12-381 üzerinde Groth16'yı kontrol eder; o devre bunları sunmaz. Anahtar kaydı yayımlandıktan sonra bile kendi devrenize ihtiyacınız vardır.
-* **Ana ağda bir itirazı yalnızca rollup'ın oluşturucusu çözebilir.** Zincir sahtecilik ispatını kendisi kontrol eder, ancak çözümü oluşturucu gönderir (bkz. [Optimistic](#optimistic)).
+* **Ana ağda (v3.2.4) bir itirazı yalnızca rollup'ın oluşturucusu çözebilir.** Zincir sahtecilik ispatını kendisi kontrol eder, ancak çözümü oluşturucu gönderir. Test ağı bugün herhangi bir hesabın çözmesine izin verir; ana ağ, öneri 14 v3.2.5'i uyguladığında buna kavuşur (bkz. [zincir v3.2.5 davranışı](#v325) ve [Optimistic](#optimistic)).
 * **Canlı ağlarda kullanılamayanlar:** Celestia veri erişilebilirliği (uygulanmadı), [QCAI Rollup Copilot](/rollups/qcai-copilot) (danışmanlık servisleri herkese açık uç noktalarda yok), çapraz-VM çağrıları (`0x...0901` ön derlemesi etkin değil), paylaşımlı ve based sıralayıcılar (zincir yalnızca yapılandırılmış sıralayıcıyı veya hiçbiri ayarlanmamışsa oluşturucuyu kabul eder) ve `suggest-profile` (sabit bir yedek olarak `defi` döndürür).
-* **Sürüm notları.** Maven Central, 0.6.2 orada yayına girene kadar 0.6.1'i sunar. Makbuzlar, Watchtower ve çapraz-VM calldata'sı için 0.6.2 veya üstünü kullanın; 0.5.0 ve öncesi bunlar için kullanılmamalıdır. Her sürümün neyi değiştirdiğinin tam listesi [RDK 0.6.2: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits) sayfasındadır.
+* **Sürüm notları.** Her şey için 0.7.0'ı kullanın: 0.6.2 ve öncesi zincirde hiçbir zaman doğrulanmayan para çekme ispatları oluşturur ve 0.6.1 ve öncesi npm'den kurulduğunda `qorollup` hiçbir şey yazdırmaz. 0.5.0 ve öncesi makbuzlar, Watchtower veya çapraz-VM calldata'sı için kullanılmamalıdır. Her sürümün neyi değiştirdiğinin tam listesi [RDK 0.7.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits) sayfasındadır.
 
 ---
 
@@ -274,10 +290,10 @@ Herhangi bir rollup kitinin standart özelliklerinin ötesinde, RDK; QoreChain'i
 
 | Yetenek | Ne yapar |
 | ---------- | ------------ |
-| **[Mutabakat makbuzları](/rollups/settlement-receipts)** | Bir mutabakat çapasını, post-kuantum (ML-DSA-87 / Dilithium-5) imza taşıyan taşınabilir bir makbuz olarak paketler. Erken aşama: henüz hiçbir çapa mevcut değildir, dolayısıyla gerçek bir çapaya karşı hiçbir şey doğrulanmamıştır; bir makbuz zincir durumuna karşı kontrol edilmesi gereken bir iddiadır ve 0.6.2 doğrulayıcısı bunu alan alan yapar. |
+| **[Mutabakat makbuzları](/rollups/settlement-receipts)** | Bir mutabakat çapasını, post-kuantum (ML-DSA-87 / Dilithium-5) imza taşıyan taşınabilir bir makbuz olarak paketler. Erken aşama: henüz hiçbir çapa mevcut değildir, dolayısıyla gerçek bir çapaya karşı hiçbir şey doğrulanmamıştır; bir makbuz zincir durumuna karşı kontrol edilmesi gereken bir iddiadır ve 0.7.0 doğrulayıcısı bunu alan alan yapar. |
 | **[QCAI Rollup Copilot](/rollups/qcai-copilot)** | Tek bir rollup için salt okunur bir danışmanlık yardımcısı (ücret tahmini, öneriler, dolandırıcılık soruşturmaları). Okuduğu danışmanlık servisleri henüz herkese açık uç noktalarda sunulmamaktadır. |
 | **[Çoklu-VM çapraz-VM çağrıları](/rollups/multi-vm)** | Çapraz-VM ön derlemesi (`0x...0901`) aracılığıyla bir EVM'den QoreChain Native'e çağrıyı kodlamaya yarayan araçlar. Ön derleme canlı ağlarda etkinleştirilmemiştir, bu nedenle bir çağrı hiçbir şey yapmaz; 0.6.0'dan beri kodlayıcı zincirin çözdüğü düzenle eşleşir. |
-| **[Watchtower](/rollups/watchtower)** | Optimistic rollup'lar için yeni batch'leri ve itiraz penceresi (challenge window) son tarihlerini ortaya çıkaran ve geçersiz batch'lere sizin geçerlilik yüklemenize (validity predicate) göre itiraz eden bir otomatik itiraz çerçevesi. REST üzerinden okur ve her iki ağ da bunu sunar; 0.6.0'dan itibaren her batch'in penceresini zincirin yaptığı gibi değerlendirir (0.6.2 bunu korur). |
+| **[Watchtower](/rollups/watchtower)** | Optimistic rollup'lar için yeni batch'leri ve itiraz penceresi (challenge window) son tarihlerini ortaya çıkaran ve geçersiz batch'lere sizin geçerlilik yüklemenize (validity predicate) göre itiraz eden bir otomatik itiraz çerçevesi. REST üzerinden okur ve her iki ağ da bunu sunar; 0.6.0'dan itibaren her batch'in penceresini zincirin yaptığı gibi değerlendirir (sonraki sürümler bunu korur). |
 
 Gerekçenin tamamı ve kod örnekleri için **[Neden QoreChain RDK](/rollups/why)** sayfasına bakın.
 
@@ -305,7 +321,7 @@ Optimistic rollup'lar, gönderilen batch'lerin varsayılan olarak geçerli oldu�
 * **İspat sistemi**: `fraud` (etkileşimli sahtecilik ispatları).
 * **Sıralayıcı**: `dedicated` veya `shared`.
 * **Kesinlik**: Yapılandırılabilir itiraz penceresi başarılı bir itiraz olmadan sona erene kadar gecikmelidir.
-* **Uyuşmazlıklar**: Pencere içinde herkes, bir teminat (bond) ve bir sahtecilik ispatı yayımlayarak gönderilmiş bir batch'e itiraz edebilir. İtiraz batch'i dondurur; ana ağda ardından rollup'ı oluşturan taraf bunu çözer ve zincir ispatı kendisi kontrol eder: kanıtlanan sahtecilik batch'i reddeder ve itiraz edene ödeme yapar, reddedilen bir itiraz batch'i `submitted` durumuna geri döndürür. Bkz. [Rollup Dağıtma](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups).
+* **Uyuşmazlıklar**: Pencere içinde herkes, bir teminat (bond) ve bir sahtecilik ispatı yayımlayarak gönderilmiş bir batch'e itiraz edebilir. İtiraz batch'i dondurur; ana ağda (v3.2.4) ardından rollup'ı oluşturan taraf bunu çözer, test ağında (v3.2.5 ve sonrası) ise herhangi bir hesap çözebilir ve ana ağ, öneri 14 v3.2.5'i uyguladığında bunu izler. Zincir ispatı kendisi kontrol eder: kanıtlanan sahtecilik batch'i reddeder ve itiraz edene ödeme yapar, reddedilen bir itiraz batch'i `submitted` durumuna geri döndürür. Test ağında kanıtlanan bir sahtecilik ayrıca sonraki tüm kesinleşmemiş batch'leri de reddeder; sıralayıcı bunları son iyi kökten itibaren aynı dizinler altında yeniden gönderir (bkz. [zincir v3.2.5 davranışı](#v325)). Bkz. [Rollup Dağıtma](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups).
 * **Pencere uzunluğu**: varsayılan pencere ana ağda 604.800 "saniyedir" (modülün `default_challenge_window` değeri; test ağının varsayılanı 3.600 saniyedir, 27 Ekim 2026'da okundu ve bir rollup kendi değerini belirleyebilir). **v3.2.4'ten önce (ana ağda 3.742.566 yüksekliğinden önce)** zincir bunu blok başına sabit 6 saniye üzerinden bloğa çevirir, yani **100.800 blok**; dolayısıyla gerçek geçen süre fiili blok süresini izler (ana ağın mevcut ≈3,1 sn'lik blokları ile yaklaşık 3,7 gün); gün cinsinden değil, blok cinsinden planlama yapın. **v3.2.4'ten itibaren**, yükseltme yüksekliğinden itibaren gönderilen bir batch, blok süresinin saniyesi cinsinden ölçülen bir pencere alır (tam 7 gün); daha önceki batch'ler blok sayısı kuralını korur. Yükseltme yüksekliği test ağında 8.337.253 (19 Ekim 2026'dan beri) ve ana ağda 3.742.566'dır (23 Ekim 2026).
 
 #### ZK (Sıfır Bilgi / Zero-Knowledge) {#zk}

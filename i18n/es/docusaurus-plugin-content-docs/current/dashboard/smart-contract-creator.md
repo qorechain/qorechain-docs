@@ -17,10 +17,10 @@ El código generado es un excelente punto de partida, no un sustituto de la revi
 
 - **Una generación sin cuenta.** Un visitante nuevo puede generar una vez y ve el contrato completo. Está limitada por visitante y por un tope diario global. Un resultado de prueba gratuita no tiene **Deploy** ni un **Edit** que funcione; después, la página ofrece **Create a free account**.
 - **Una generación gratuita cada día UTC con sesión iniciada.** La primera generación de cada día UTC es gratuita en ambas redes. Después, en testnet cada generación se paga con QOR de prueba desde tu billetera de prueba, tras un diálogo "Confirm Contract Generation" que muestra el "Generation Cost". En mainnet el Dashboard no guarda claves, por lo que las generaciones adicionales se rechazan hasta el siguiente día UTC.
-- **Ejemplos que rellenan todo.** **Token**, **NFT collection**, **Locked vault** y **2-of-3 multisig** rellenan cada uno una descripción completa, fijan QoreChain como destino y eligen una plantilla.
+- **Ejemplos que rellenan todo.** **Token**, **NFT collection**, **Locked vault** y **2-of-3 multisig** rellenan cada uno una descripción completa, fijan QoreChain como destino y eligen una plantilla. Las plantillas "PQC Token" y "PQC NFT" describen contratos para cuentas que firman con ML-DSA-87.
 - **17 blockchains de destino,** cada una con sus propias plantillas más "Custom (describe in prompt)": QoreChain, Cosmos, Ethereum, Solana, Avalanche, NEAR, Polygon, BSC, TON, Cardano, Polkadot, Tezos, Arbitrum, Optimism, Sui, Aptos y Tron.
 - **Despliegue sin custodia en EVM de mainnet.** El Dashboard compila el contrato y devuelve datos de despliegue **sin firmar**. Cualquier billetera EVM inyectada (MetaMask, Rabby, Coinbase Wallet) añade o cambia a la cadena 9801, y luego firma y difunde; el Dashboard registra la dirección después.
-- **Códigos de QoreChain Native aprobados por gobernanza en testnet.** El código generado no se sube. Instancias un código que la gobernanza de testnet ya aprobó, leído en vivo desde la cadena: token CW20 (cw20-base), colección NFT (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) y ejemplo Counter (qore-counter). El mensaje de instanciación viene rellenado y es editable.
+- **Contratos aprobados de QoreChain Native en testnet.** Durante el fest de testnet, las subidas de contratos se revisan mediante gobernanza, por lo que el código generado no se sube. Instancias un contrato aprobado, con la lista leída en vivo desde la cadena: token CW20 (cw20-base), colección NFT (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) y ejemplo Counter (qore-counter). El mensaje de instanciación viene rellenado y es editable.
 - **Retroalimentación de compilación en el diálogo.** Los errores se muestran en línea, el diálogo pide los argumentos del constructor que no puede deducir, y los campos del token se leen previamente del código o de la descripción.
 - **Privado por defecto, con fork cuando es público.** El propietario alterna entre **Public** y **Private**; quien no es propietario de un contrato público puede hacer **Fork** de él.
 
@@ -70,7 +70,12 @@ Otros destinos en mainnet muestran "Direct deploy not available for this contrac
 #### En testnet, con un clic {#deploy-testnet}
 
 - **EVM:** selecciona **Deploy to Testnet**. La billetera de prueba del Dashboard firma y envía el despliegue; si tiene éxito se muestra "Deployed on Testnet". Itera con tokens del [Faucet](/dashboard/faucet) antes de pasar a mainnet.
-- **QoreChain Native:** elige un **Approved contract**, define el **Label \***, revisa o edita el **Instantiate message (JSON)** y selecciona **Instantiate on Testnet**. Las subidas de contratos en testnet se revisan mediante gobernanza, por eso instancias códigos aprobados en lugar de subir el tuyo. Los códigos aprobados que el Dashboard no reconoce aparecen con un mensaje vacío. Los contratos personalizados van al EVM de QoreChain (Solidity).
+- **QoreChain Native:** durante el fest de testnet, las subidas de contratos se revisan mediante gobernanza, así que en lugar de subir tu código generado instancias un contrato aprobado. En el diálogo:
+  1. Elige un **Approved contract**. La lista se lee en vivo desde la cadena y actualmente ofrece token CW20 (cw20-base), colección NFT (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) y ejemplo Counter (qore-counter).
+  2. Revisa el **Instantiate message (JSON)**. Viene rellenado a partir de los campos de tu token y es editable; un código aprobado que el Dashboard no reconoce aparece con un mensaje vacío.
+  3. Define el **Label \***, y luego selecciona **Instantiate on Testnet**. Se firma con tu wallet de testnet, y el resultado muestra la dirección del contrato y la transacción.
+  
+  Los contratos personalizados van al EVM de QoreChain (Solidity).
 - Solo se pueden desplegar desde el Dashboard los contratos EVM y los códigos aprobados de QoreChain Native. Un contrato escrito para otra cadena EVM (Polygon, BSC, Arbitrum, etc.) se despliega en el EVM de QoreChain, no en la red propia de esa cadena; los contratos para cadenas no EVM no se pueden desplegar desde aquí.
 
 **Ejemplo mínimo (testnet):** selecciona **Token**, **Generate Smart Contract**, Confirm, **Deploy**, elige "CW20 token (cw20-base)", Label `my-token`, **Instantiate on Testnet**.

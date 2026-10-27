@@ -10,7 +10,7 @@ sidebar_position: 6
 Un **bon de decontare** este o înregistrare portabilă care atestă că un lot de decontare al unui rollup a fost ancorat în Main Chain sub o semnătură post-cuantică. Acesta indică rollup-ul, lotul și ancora și poartă semnătura **ML-DSA-87** (Dilithium-5, FIPS-204) a ancorei, aceeași schemă pe care o folosește Main Chain.
 
 :::caution Fază incipientă: nu există încă ancore
-Bonurile depind de ancore, iar **niciun rollup și nicio ancoră nu există încă în niciuna dintre rețele** (verificat la 27 octombrie 2026). Începând cu v3.2.2 (activă pe ambele rețele), un lot trimis cu un `anchor_signature` este ancorat în `x/multilayer` în aceeași tranzacție; un lot trimis fără acesta se decontează neancorat. RDK TypeScript (0.6.2) trimite acel câmp atunci când clientul său de tranzacții semnează hibrid și este creatorul rollup-ului, iar în caz contrar trimite neancorat; clienții Python, Go, Rust și Java semnează doar clasic și nu construiesc câmpul. Nimic din toate acestea nu a fost exersat pe un rollup activ. Tratează această pagină ca pe o descriere a designului și a componentelor de bază, nu a unui serviciu pe care te poți baza astăzi.
+Bonurile depind de ancore, iar **niciun rollup și nicio ancoră nu există încă în niciuna dintre rețele** (verificat la 27 octombrie 2026). Începând cu v3.2.2 (activă pe ambele rețele), un lot trimis cu un `anchor_signature` este ancorat în `x/multilayer` în aceeași tranzacție; un lot trimis fără acesta se decontează neancorat. RDK TypeScript (0.6.0 până la 0.7.0) trimite acel câmp atunci când clientul său de tranzacții semnează hibrid și este creatorul rollup-ului, iar în caz contrar trimite neancorat; clienții Python, Go, Rust și Java semnează doar clasic și nu construiesc câmpul. Nimic din toate acestea nu a fost exersat pe un rollup activ. Tratează această pagină ca pe o descriere a designului și a componentelor de bază, nu a unui serviciu pe care te poți baza astăzi.
 :::
 
 ## Un bon este o afirmație, nu o dovadă {#a-receipt-is-a-claim}
@@ -46,9 +46,9 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Transmite un `client` la fiecare verificare. API-ul bonurilor și verificările sale s-au schimbat între versiuni, așa că folosește 0.6.2 (versiunea curentă; codul său pentru bonuri este cel din 0.6.1): 0.5.0 nu putea finaliza verificarea în lanț, iar 0.6.0 nu compara fiecare câmp al bonului (vezi mai jos). Clienții Python, Go, Rust și Java expun aceeași suprafață de construire/verificare; versiunile lor 0.6.1 și 0.6.2 folosesc aceeași rută la singular de căutare a cheii, aceeași alegere a mesajului ancorei în funcție de înălțime și aceeași comparare câmp cu câmp.
+Transmite un `client` la fiecare verificare. API-ul bonurilor și verificările sale s-au schimbat între versiuni, așa că folosește 0.7.0 (versiunea curentă; verificările sale pentru bonuri sunt cele introduse în 0.6.1): 0.5.0 nu putea finaliza verificarea în lanț, iar 0.6.0 nu compara fiecare câmp al bonului (vezi mai jos). Clienții Python, Go, Rust și Java expun aceeași suprafață de construire/verificare; versiunile lor 0.6.1 și ulterioare folosesc aceeași rută la singular de căutare a cheii, aceeași alegere a mesajului ancorei în funcție de înălțime și aceeași comparare câmp cu câmp.
 
-### Ce verifică 0.6.2 {#what-060-verifies}
+### Ce verifică 0.7.0 {#what-060-verifies}
 
 `verifySettlementReceipt` nu raportează niciodată `valid` doar pe baza bonului: fără un `client`, rezultatul este `mode: "signature-only"` și `valid: false`. Cu un `client`, citește din nou lanțul și raportează separat fiecare verificare:
 
@@ -66,9 +66,9 @@ Mesajul ancorei este ales după înălțimea la care a fost înregistrată ancor
 Nicio ancoră nu există în niciuna dintre rețele, așa că aceasta a fost verificată doar față de codul pachetului și offline, nu față de o ancoră reală. `buildSettlementReceipt` funcționează doar după ce o ancoră acoperă lotul.
 
 :::note Versiuni anterioare lui 0.6.1
-`verifySettlementReceipt` în 0.6.0 potrivea ancora lanțului după state root, înălțimea layer-ului, hash-ul setului de validatori și semnătură, dar nu compara celelalte câmpuri pe care le arată un bon (înălțimea Main Chain, momentul ancorării, algoritmul, versiunea și, pe un bon de versiunea 2, numărul de tranzacții și dovada de stare comprimată), și trata state root-ul lotului ca informativ. Afirmația de decontare în sine (state root, semnătura ancorei, cheia creatorului) a fost întotdeauna legată; ce nu îți putea spune 0.6.0 era dacă metadatele afișate lângă ea corespundeau lanțului. Folosește 0.6.2.
+`verifySettlementReceipt` în 0.6.0 potrivea ancora lanțului după state root, înălțimea layer-ului, hash-ul setului de validatori și semnătură, dar nu compara celelalte câmpuri pe care le arată un bon (înălțimea Main Chain, momentul ancorării, algoritmul, versiunea și, pe un bon de versiunea 2, numărul de tranzacții și dovada de stare comprimată), și trata state root-ul lotului ca informativ. Afirmația de decontare în sine (state root, semnătura ancorei, cheia creatorului) a fost întotdeauna legată; ce nu îți putea spune 0.6.0 era dacă metadatele afișate lângă ea corespundeau lanțului. Folosește 0.7.0.
 
-`verifySettlementReceipt` în 0.5.0 eșua închis pe rețelele active, din două motive care țineau de client, nu de lanț: căuta cheia creatorului prin forma plurală `accounts` a rutei conturilor post-cuantice, pe care rețelele nu o servesc (HTTP 501), și reconstruia doar mesajul v1, pe care lanțul nu îl mai acceptă pentru ancore de la v3.2.2. Un bon autentic nu putea, deci, să se verifice, iar unul falsificat era totuși refuzat. Folosește 0.6.2.
+`verifySettlementReceipt` în 0.5.0 eșua închis pe rețelele active, din două motive care țineau de client, nu de lanț: căuta cheia creatorului prin forma plurală `accounts` a rutei conturilor post-cuantice, pe care rețelele nu o servesc (HTTP 501), și reconstruia doar mesajul v1, pe care lanțul nu îl mai acceptă pentru ancore de la v3.2.2. Un bon autentic nu putea, deci, să se verifice, iar unul falsificat era totuși refuzat. Folosește 0.7.0.
 :::
 
 ## CLI {#cli}

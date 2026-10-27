@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` from `@qorechain/rdk` 0.6.0 and later builds the same calldata for you:
+`encodeCrossVmCalldata` from `@qorechain/rdk` 0.6.0 and later (0.7.0 is current) builds the same calldata for you:
 
 ```ts
 import {
@@ -75,6 +75,17 @@ const calldata = encodeCrossVmCalldata({
 
 `isCrossVmPrecompileActive(restBase)` reads the EVM parameter `active_static_precompiles` over REST and answers `active: true` only when the precompile's address is listed. That is the only reliable check, and it has to happen off-chain: the precompile returns the target's raw reply, so an empty reply cannot tell an inactive precompile from a genuine call to a contract that returns nothing, and a precompile has no bytecode whether it is active or not. Even when it reports `active: true`, the package documents that from chain v3.2.3 a call reaches only the targets governance has allowlisted (the cross-VM parameter `bridge_allowed_targets`, each entry `<vm>:<contract>`), and that EVM-to-EVM is refused.
 
+### Chain v3.2.5: allowlist, reply format and refusals (testnet now, mainnet after the upgrade) {#chain-v325}
+
+Chain v3.2.5 changes how the bridge behaves. The testnet runs it; **mainnet (v3.2.4) does not until governance proposal 14 is applied**, and the descriptions elsewhere on this page that say the precompile returns the target's raw reply describe mainnet today.
+
+* **An allowlist route.** `GET /qorechain/crossvm/v1/params` serves the bridge parameters, including the allowlist of targets. On the testnet the allowlist is empty (checked 27 October 2026), so no target is allowed yet.
+* **A fixed reply format.** The precompile returns `abi.encode(bytes)`, so a reply is always at least 64 bytes and an empty reply can be told from a missing one; decode it with `abi.decode(ret, (bytes))`.
+* **Refusals carry a reason.** When the bridge refuses a call it reverts with `Error(string)`, which a contract can read and pass on.
+* **The precompile is still not active.** `0x...0901` is not in the active precompile list on either network, so none of this has run end to end.
+
+`@qorechain/rdk` 0.7.0 has helpers for these (checked against encodings Solidity produced): `getCrossVmParams` (the allowlist), `crossVmTargetReady` (precompile active, bridge enabled and the target allowlisted, with the blocking reason when not), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) and `decodeRevertReason` (`Error(string)`).
+
 ## The Solidity side
 
 From an EVM contract you call the precompile address with the encoded call:
@@ -94,7 +105,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Because the precompile is inactive, a plain `.call` to it returns **success with empty data and does nothing**; the `ok` flag does not tell you the call took effect. The dependable in-contract guard is a target that always returns a non-empty acknowledgement, with a `require(ret.length > 0)` after the call, so that an empty reply is treated as a failure; the `multivm-rollup` template (0.6.0 to 0.6.2) does this.
+Because the precompile is inactive, a plain `.call` to it returns **success with empty data and does nothing**; the `ok` flag does not tell you the call took effect. The dependable in-contract guard is a target that always returns a non-empty acknowledgement, with a `require(ret.length > 0)` after the call, so that an empty reply is treated as a failure; the `multivm-rollup` template does this (0.6.0 and later).
 
 ## Scaffold a multi-VM rollup
 
@@ -102,4 +113,4 @@ Because the precompile is inactive, a plain `.call` to it returns **success with
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-The `multivm-rollup` template (0.6.0 to 0.6.2) includes `src/crossvm-call.ts` (it checks whether the precompile is live, then prints the calldata) and a `contracts/CrossVmCaller.sol` that calls `executeCrossVMCall(uint8,string,bytes)` and requires a non-empty reply from the target. It does not make a call work while the precompile is inactive. See [Deploying a Rollup](/rollups/deploying-a-rollup) for all scaffolder templates.
+The `multivm-rollup` template includes `src/crossvm-call.ts` (it checks whether the precompile is live, then prints the calldata) and a `contracts/CrossVmCaller.sol` that calls `executeCrossVMCall(uint8,string,bytes)` and requires a non-empty reply from the target. From 0.7.0 the contract decodes the `abi.encode(bytes)` result, requires the 64-byte minimum an active precompile returns, and passes the chain's refusal reason through. It does not make a call work while the precompile is inactive. See [Deploying a Rollup](/rollups/deploying-a-rollup) for all scaffolder templates.

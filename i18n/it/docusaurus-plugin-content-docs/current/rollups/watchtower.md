@@ -18,7 +18,7 @@ validità**. Il Watchtower non decide mai da solo che un batch è fraudolento �
 chiama la tua funzione `validate` e agisce in base a ciò che restituisci.
 
 :::caution Fase iniziale: ancora nulla da osservare
-Il Watchtower legge i batch tramite il client REST dell'RDK, e le route `/qorechain/rdk/v1/…` sono servite su entrambe le reti. Non è stato creato alcun rollup su nessuna delle due reti (verificato il 27 ottobre 2026), quindi non c'è ancora nulla da osservare e il Watchtower non è mai stato eseguito su un batch live. In `@qorechain/rdk` 0.5.0 la sua logica di scadenza era errata (leggeva un'altezza di blocco come timestamp Unix, quindi `onDeadline` scattava non appena un batch veniva visto per la prima volta) e leggeva solo la prima pagina di 50 batch; **la 0.6.0 ha corretto entrambe le cose** (vedi sotto). Usa la 0.6.2, la release attuale.
+Il Watchtower legge i batch tramite il client REST dell'RDK, e le route `/qorechain/rdk/v1/…` sono servite su entrambe le reti. Non è stato creato alcun rollup su nessuna delle due reti (verificato il 27 ottobre 2026), quindi non c'è ancora nulla da osservare e il Watchtower non è mai stato eseguito su un batch live. In `@qorechain/rdk` 0.5.0 la sua logica di scadenza era errata (leggeva un'altezza di blocco come timestamp Unix, quindi `onDeadline` scattava non appena un batch veniva visto per la prima volta) e leggeva solo la prima pagina di 50 batch; **la 0.6.0 ha corretto entrambe le cose** (vedi sotto). Usa la 0.7.0, la release attuale.
 :::
 
 ## `watchBatches`
@@ -30,7 +30,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.6.2: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
@@ -74,7 +74,11 @@ Il framework segnala:
 - le **scadenze delle finestre di challenge** tramite `onDeadline` e
 - i **batch non validi** (per i quali la tua `validate` ha restituito `false`) tramite `onInvalid`.
 
-Dalla 0.6.0 (e nella 0.6.1 e nella 0.6.2) segue ogni pagina dell'elenco dei batch di un rollup, rivaluta un batch man mano che la sua scadenza si avvicina (continua a interrogare in avanti a partire dal batch più vecchio la cui finestra è ancora aperta, anziché giudicare ciascun batch una sola volta alla prima occasione), e misura ogni finestra rispetto alla punta della chain (`getChainTip`, lo stato del nodo) anziché rispetto all'orologio locale. Un batch già `finalized` non viene validato né segnalato.
+Dalla 0.6.0 (e in ogni release successiva) segue ogni pagina dell'elenco dei batch di un rollup, rivaluta un batch man mano che la sua scadenza si avvicina (continua a interrogare in avanti a partire dal batch più vecchio la cui finestra è ancora aperta, anziché giudicare ciascun batch una sola volta alla prima occasione), e misura ogni finestra rispetto alla punta della chain (`getChainTip`, lo stato del nodo) anziché rispetto all'orologio locale. Un batch già `finalized` non viene validato né segnalato.
+
+**Batch rinviati (0.7.0).** Dalla chain v3.2.5 (testnet ora; mainnet dopo l'upgrade) una frode confermata rifiuta il batch e ogni batch successivo non finalizzato, e il sequencer li rinvia con gli stessi indici. Le release precedenti alla 0.7.0 distinguevano i batch solo per indice e quindi perdevano un batch rinviato a un indice rifiutato; la 0.7.0 li distingue per indice e state root e non valida mai un batch rifiutato.
+
+**Applicare la regola antifrode della chain (0.7.0).** `transitionRootValidator` è un predicato `validate` già pronto che applica la regola della chain stessa (un batch è fraudolento quando la sua state root non è la transition root canonica), e `fraudProofForBatch` restituisce la prova vincente, o nessuna per un batch onesto, così puoi passarla a `challengeBatch`.
 
 Collegare `onInvalid` a una challenge trasforma il Watchtower in un
 auto-challenger completo; lascialo non impostato per operare in modalità di sola
@@ -91,6 +95,6 @@ qorollup watchtower my-rollup
 ```
 
 `watchtower` esegue il framework dalla riga di comando, stampando i nuovi batch
-e le scadenze delle finestre di challenge finché non premi Ctrl-C. Consulta
+e le scadenze delle finestre di challenge finché non premi Ctrl-C. Aggiungi `--canonical` (0.7.0) e riporta anche ogni batch la cui state root non è la transition root canonica, cioè i batch che una challenge vincerebbe. Consulta
 [Distribuire un Rollup](/rollups/deploying-a-rollup) per la CLI operatore
 `qorollup` completa.

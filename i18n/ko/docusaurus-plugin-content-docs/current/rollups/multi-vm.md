@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`@qorechain/rdk` 0.6.0 이상의 `encodeCrossVmCalldata`가 같은 calldata를 대신 빌드해 줍니다:
+`@qorechain/rdk` 0.6.0 이상(현재는 0.7.0)의 `encodeCrossVmCalldata`가 같은 calldata를 대신 빌드해 줍니다:
 
 ```ts
 import {
@@ -75,6 +75,17 @@ const calldata = encodeCrossVmCalldata({
 
 `isCrossVmPrecompileActive(restBase)`는 REST로 EVM 매개변수 `active_static_precompiles`를 읽고, 프리컴파일의 주소가 목록에 있을 때만 `active: true`로 응답합니다. 이것이 유일하게 신뢰할 수 있는 확인 방법이며 오프체인에서 이루어져야 합니다. 프리컴파일은 대상의 원시 응답을 그대로 반환하므로, 빈 응답만으로는 비활성 프리컴파일과 아무것도 반환하지 않는 컨트랙트에 대한 정상 호출을 구분할 수 없고, 프리컴파일은 활성 여부와 관계없이 바이트코드가 없기 때문입니다. `active: true`로 보고되더라도, 패키지 문서에 따르면 체인 v3.2.3부터 호출은 거버넌스가 허용 목록에 올린 대상(크로스 VM 매개변수 `bridge_allowed_targets`, 각 항목은 `<vm>:<contract>`)에만 도달하며 EVM-to-EVM은 거부됩니다.
 
+### 체인 v3.2.5: 허용 목록, 응답 형식, 거부 {#chain-v325}
+
+체인 v3.2.5는 브리지의 동작을 바꿉니다. 테스트넷은 이를 실행 중이며, **메인넷(v3.2.4)은 거버넌스 제안 14가 적용되기 전까지 실행하지 않습니다.** 이 페이지의 다른 곳에서 프리컴파일이 대상의 원시 응답을 반환한다고 설명한 내용은 오늘 기준 메인넷에 대한 설명입니다.
+
+* **허용 목록 경로.** `GET /qorechain/crossvm/v1/params`는 대상 허용 목록을 포함한 브리지 매개변수를 제공합니다. 테스트넷의 허용 목록은 비어 있으므로(2026년 10월 27일 확인) 아직 허용된 대상이 없습니다.
+* **고정된 응답 형식.** 프리컴파일은 `abi.encode(bytes)`를 반환하므로 응답은 항상 64바이트 이상이며 빈 응답과 누락된 응답을 구분할 수 있습니다. `abi.decode(ret, (bytes))`로 디코딩하세요.
+* **거부에는 사유가 담깁니다.** 브리지가 호출을 거부하면 `Error(string)`으로 리버트하며, 컨트랙트가 이를 읽고 전달할 수 있습니다.
+* **프리컴파일은 여전히 활성 상태가 아닙니다.** `0x...0901`은 어느 네트워크의 활성 프리컴파일 목록에도 없으므로, 이 중 어느 것도 종단 간으로 실행된 적이 없습니다.
+
+`@qorechain/rdk` 0.7.0에는 이를 위한 헬퍼가 있습니다(Solidity가 만든 인코딩에 대해 확인됨): `getCrossVmParams`(허용 목록), `crossVmTargetReady`(프리컴파일 활성, 브리지 활성화, 대상이 허용 목록에 있는지를 확인하며, 그렇지 않으면 막는 사유를 함께 반환), `decodeCrossVmResult`(`abi.decode(ret, (bytes))`), `decodeRevertReason`(`Error(string)`).
+
 ## Solidity 측
 
 EVM 컨트랙트에서는 인코딩된 호출과 함께 프리컴파일 주소를 호출합니다:
@@ -94,7 +105,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-프리컴파일이 비활성 상태이므로 이에 대한 일반 `.call`은 **빈 데이터와 함께 성공을 반환하고 아무 일도 하지 않습니다**. `ok` 플래그만으로는 호출이 실제로 적용되었는지 알 수 없습니다. 컨트랙트 안에서 신뢰할 수 있는 방어책은 항상 비어 있지 않은 확인 응답을 반환하는 대상을 사용하고, 호출 뒤에 `require(ret.length > 0)`를 두어 빈 응답을 실패로 처리하는 것입니다. `multivm-rollup` 템플릿(0.6.0부터 0.6.2까지)이 이렇게 합니다.
+프리컴파일이 비활성 상태이므로 이에 대한 일반 `.call`은 **빈 데이터와 함께 성공을 반환하고 아무 일도 하지 않습니다**. `ok` 플래그만으로는 호출이 실제로 적용되었는지 알 수 없습니다. 컨트랙트 안에서 신뢰할 수 있는 방어책은 항상 비어 있지 않은 확인 응답을 반환하는 대상을 사용하고, 호출 뒤에 `require(ret.length > 0)`를 두어 빈 응답을 실패로 처리하는 것입니다. `multivm-rollup` 템플릿이 이렇게 합니다(0.6.0부터).
 
 ## 멀티 VM 롤업 스캐폴딩
 
@@ -102,4 +113,4 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-`multivm-rollup` 템플릿(0.6.0부터 0.6.2까지)에는 `src/crossvm-call.ts`(프리컴파일이 라이브인지 확인한 뒤 calldata를 출력합니다)와 `executeCrossVMCall(uint8,string,bytes)`를 호출하고 대상으로부터 비어 있지 않은 응답을 요구하는 `contracts/CrossVmCaller.sol`이 포함되어 있습니다. 프리컴파일이 비활성인 동안에는 호출이 동작하게 만들어 주지 않습니다. 모든 스캐폴더 템플릿은 [롤업 배포하기](/rollups/deploying-a-rollup)를 참고하세요.
+`multivm-rollup` 템플릿에는 `src/crossvm-call.ts`(프리컴파일이 라이브인지 확인한 뒤 calldata를 출력합니다)와 `executeCrossVMCall(uint8,string,bytes)`를 호출하고 대상으로부터 비어 있지 않은 응답을 요구하는 `contracts/CrossVmCaller.sol`이 포함되어 있습니다. 0.7.0부터 이 컨트랙트는 `abi.encode(bytes)` 결과를 디코딩하고, 활성 프리컴파일이 반환하는 최소 64바이트를 요구하며, 체인의 거부 사유를 그대로 전달합니다. 프리컴파일이 비활성인 동안에는 호출이 동작하게 만들어 주지 않습니다. 모든 스캐폴더 템플릿은 [롤업 배포하기](/rollups/deploying-a-rollup)를 참고하세요.

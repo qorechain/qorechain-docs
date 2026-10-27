@@ -17,10 +17,10 @@ sidebar_position: 6
 
 - **계정 없이 1회 생성.** 처음 방문한 사용자는 한 번 생성할 수 있으며 컨트랙트 전체를 볼 수 있습니다. 방문자별 제한과 전체 일일 한도가 적용됩니다. 무료 체험 결과에는 **Deploy**가 없고 **Edit**도 작동하지 않으며, 이후 페이지에 **Create a free account**가 표시됩니다.
 - **로그인하면 UTC 기준 매일 무료 생성 1회.** 매 UTC 일의 첫 생성은 두 네트워크 모두에서 무료입니다. 그 이후에는 테스트넷에서 "Generation Cost"를 보여 주는 "Confirm Contract Generation" 대화상자를 거쳐 테스트 지갑의 테스트 QOR로 생성마다 비용을 지불합니다. 메인넷에서는 대시보드가 키를 보관하지 않으므로, 이후 생성은 다음 UTC 일까지 거부됩니다.
-- **모든 것을 채워 주는 스타터.** **Token**, **NFT collection**, **Locked vault**, **2-of-3 multisig**는 각각 완전한 프롬프트를 채우고, 대상을 QoreChain으로 설정하며, 템플릿을 선택합니다.
+- **모든 것을 채워 주는 스타터.** **Token**, **NFT collection**, **Locked vault**, **2-of-3 multisig**는 각각 완전한 프롬프트를 채우고, 대상을 QoreChain으로 설정하며, 템플릿을 선택합니다. "PQC Token"과 "PQC NFT" 템플릿은 ML-DSA-87로 서명하는 계정을 위한 컨트랙트를 설명합니다.
 - **17개 대상 블록체인.** 각 체인마다 고유한 템플릿과 "Custom (describe in prompt)"이 있습니다: QoreChain, Cosmos, Ethereum, Solana, Avalanche, NEAR, Polygon, BSC, TON, Cardano, Polkadot, Tezos, Arbitrum, Optimism, Sui, Aptos, Tron.
 - **메인넷 EVM에서의 논커스터디얼 배포.** 대시보드는 컨트랙트를 컴파일하고 **서명되지 않은** 배포 데이터를 반환합니다. 주입형 EVM 지갑(MetaMask, Rabby, Coinbase Wallet)이 체인 9801을 추가하거나 전환한 뒤 서명하고 브로드캐스트하며, 이후 대시보드가 주소를 기록합니다.
-- **테스트넷의 거버넌스 승인 QoreChain Native 코드.** 생성된 코드는 업로드되지 않습니다. 테스트넷 거버넌스가 이미 승인한 코드를 체인에서 실시간으로 읽어 인스턴스화합니다: CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig), Counter example (qore-counter). 인스턴스화 메시지는 미리 채워지며 편집할 수 있습니다.
+- **테스트넷의 승인된 QoreChain Native 컨트랙트.** 테스트넷 페스트 기간 동안 컨트랙트 업로드는 거버넌스를 통해 검토되므로, 생성된 코드는 업로드되지 않습니다. 승인된 컨트랙트를 인스턴스화하며, 목록은 체인에서 실시간으로 읽어옵니다: CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig), Counter example (qore-counter). 인스턴스화 메시지는 미리 채워지며 편집할 수 있습니다.
 - **대화상자에서 컴파일 피드백 제공.** 오류가 인라인으로 표시되고, 대화상자는 추론할 수 없는 생성자 인수를 요청하며, 토큰 필드는 코드 또는 프롬프트에서 미리 읽어 채워집니다.
 - **기본은 비공개, 공개하면 포크 가능.** 소유자가 **Public** 또는 **Private**을 전환하며, 공개 컨트랙트의 소유자가 아닌 사용자는 **Fork**할 수 있습니다.
 
@@ -70,7 +70,12 @@ sidebar_position: 6
 #### 테스트넷, 원클릭 {#deploy-testnet}
 
 - **EVM:** **Deploy to Testnet**을 선택합니다. 대시보드의 테스트 지갑이 배포를 서명하고 제출하며, 성공하면 "Deployed on Testnet"이 표시됩니다. 메인넷으로 가기 전에 [Faucet](/dashboard/faucet) 토큰으로 반복 개발하세요.
-- **QoreChain Native:** **Approved contract**를 선택하고, **Label \***을 설정하고, **Instantiate message (JSON)**를 확인하거나 편집한 뒤 **Instantiate on Testnet**을 선택합니다. 테스트넷의 컨트랙트 업로드는 거버넌스를 통해 검토되므로, 직접 업로드하는 대신 승인된 코드를 인스턴스화합니다. 대시보드가 인식하지 못하는 승인된 코드는 빈 메시지로 표시됩니다. 사용자 지정 컨트랙트는 QoreChain EVM(Solidity)으로 배포합니다.
+- **QoreChain Native:** 테스트넷 페스트 기간 동안 컨트랙트 업로드는 거버넌스를 통해 검토되므로, 생성된 코드를 업로드하는 대신 승인된 컨트랙트를 인스턴스화합니다. 대화상자에서:
+  1. **Approved contract**를 선택합니다. 목록은 체인에서 실시간으로 읽어오며 현재 CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig), Counter example (qore-counter)을 제공합니다.
+  2. **Instantiate message (JSON)**를 확인합니다. 토큰 필드에서 미리 채워지며 편집할 수 있습니다. 대시보드가 인식하지 못하는 승인된 코드는 빈 메시지로 표시됩니다.
+  3. **Label \***을 설정한 뒤 **Instantiate on Testnet**을 선택합니다. 테스트넷 지갑으로 서명되며, 결과에 컨트랙트 주소와 트랜잭션이 표시됩니다.
+  
+  사용자 지정 컨트랙트는 QoreChain EVM(Solidity)으로 배포합니다.
 - 대시보드에서 배포할 수 있는 것은 EVM 컨트랙트와 승인된 QoreChain Native 코드뿐입니다. 다른 EVM 체인(Polygon, BSC, Arbitrum 등)용으로 작성된 컨트랙트는 해당 체인 자체 네트워크가 아니라 QoreChain EVM에 배포되며, 비 EVM 체인용 컨트랙트는 여기에서 배포할 수 없습니다.
 
 **최소 예시(테스트넷):** **Token**을 선택하고, **Generate Smart Contract**, Confirm, **Deploy**를 차례로 누른 다음 "CW20 token (cw20-base)"를 선택하고, Label을 `my-token`으로 입력한 뒤 **Instantiate on Testnet**을 선택합니다.

@@ -44,7 +44,7 @@ The full report page `/audits/<id>` adds the severity breakdown, **Recommendatio
 ### Past audits and sharing
 
 - Your own reports are under **Profile > Audited**.
-- The **All Security Audits** list at `/audits` (linked from the home page) shows the latest audits across all users in a table with contract name, blockchain, risk level, score and date. A search box filters by name, blockchain or risk level. A row opens only if the report is public or yours.
+- The **All Security Audits** list at `/audits` (linked from the home page) shows the latest audits whose owners made them public, in a table with contract name, blockchain, risk level, score and date. A search box filters by name, blockchain or risk level. Private reports never appear in it; the same applies to the latest-audits list on the home page.
 - On a report you own, a switch at the top reads "This report is private". Turn it on to make the report public so anyone with the link can read it (your name and IP are never shown), and off to make it private again.
 
 :::tip Audit before you deploy

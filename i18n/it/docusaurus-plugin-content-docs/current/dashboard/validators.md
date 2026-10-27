@@ -15,7 +15,7 @@ La pagina **Validators** elenca i validatori della rete che hai selezionato, con
 - **Rendimento letto dalla chain, con i suoi limiti allegati.** La colonna APY è il tasso base dello staking-tier della chain moltiplicato per (1 meno la commissione del validatore). È mostrata con un asterisco e la nota "variable, not guaranteed, lock bonuses not included". Il valore è una lettura in tempo reale di un tasso di protocollo variabile, non una promessa e non una previsione.
 - **"From fees" oltre il tetto di emissione.** Una rete che ha superato il proprio tetto di emissione mostra **From fees** al posto di una percentuale, perché non viene coniato nuovo QOR e lo staking guadagna allora solo dalle commissioni di transazione. Sulla testnet la colonna attualmente riporta **From fees**. Un valore sconosciuto mostra un trattino, mai 0.00%.
 - **Classifica per potere di voto.** La posizione è calcolata dal potere di voto, quindi il rango 1 è il validatore con più stake.
-- **Lacune dichiarate.** Regione, blocchi proposti, versione del software e ultimo avvistamento vengono mostrati solo quando la fonte dei dati li fornisce, e l'uptime sconosciuto riporta **N/A** anziché 0%.
+- **Dati reali, lacune dichiarate.** La commissione è quella reale del validatore e un validatore in jail è mostrato come **Jailed**. Regione, blocchi proposti, versione del software e ultimo avvistamento vengono mostrati solo quando la rete li comunica, cosa che oggi non avviene; l'uptime sconosciuto riporta **N/A** anziché 0%.
 
 ## Come si usa {#how-to-use}
 

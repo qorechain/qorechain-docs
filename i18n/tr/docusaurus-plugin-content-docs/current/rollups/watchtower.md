@@ -20,7 +20,7 @@ karar vermez — sizin `validate` fonksiyonunuzu çağırır ve döndürdüğün
 göre hareket eder.
 
 :::caution Erken aşama: henüz izlenecek bir şey yok
-Watchtower yığınları RDK REST istemcisi aracılığıyla okur ve `/qorechain/rdk/v1/…` rotaları her iki ağda da sunulmaktadır. Hiçbir ağda rollup oluşturulmamıştır (27 Ekim 2026 itibarıyla kontrol edildi), dolayısıyla henüz izlenecek bir şey yoktur ve Watchtower canlı bir yığına karşı çalıştırılmamıştır. `@qorechain/rdk` 0.5.0 sürümünde son tarih mantığı yanlıştı (bir blok yüksekliğini Unix zaman damgası olarak okuyordu; bu yüzden `onDeadline` bir yığın ilk görüldüğü anda tetikleniyordu) ve yalnızca 50 yığınlık ilk sayfayı okuyordu; **0.6.0 ikisini de düzeltti** (aşağıya bakın). Güncel sürüm olan 0.6.2'yi kullanın.
+Watchtower yığınları RDK REST istemcisi aracılığıyla okur ve `/qorechain/rdk/v1/…` rotaları her iki ağda da sunulmaktadır. Hiçbir ağda rollup oluşturulmamıştır (27 Ekim 2026 itibarıyla kontrol edildi), dolayısıyla henüz izlenecek bir şey yoktur ve Watchtower canlı bir yığına karşı çalıştırılmamıştır. `@qorechain/rdk` 0.5.0 sürümünde son tarih mantığı yanlıştı (bir blok yüksekliğini Unix zaman damgası olarak okuyordu; bu yüzden `onDeadline` bir yığın ilk görüldüğü anda tetikleniyordu) ve yalnızca 50 yığınlık ilk sayfayı okuyordu; **0.6.0 ikisini de düzeltti** (aşağıya bakın). Güncel sürüm olan 0.7.0'ı kullanın.
 :::
 
 ## `watchBatches`
@@ -32,7 +32,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.6.2: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
@@ -77,7 +77,11 @@ watcher.stop();
 - **geçersiz yığınlar** (sizin `validate` fonksiyonunuzun `false` döndürdüğü
   durumlar) `onInvalid` aracılığıyla.
 
-0.6.0'dan itibaren (ve 0.6.1 ile 0.6.2'de) bir rollup'ın batch listesinin her sayfasını izler, bir batch'i son tarihi yaklaştıkça yeniden değerlendirir (her batch'i ilk görüşte bir kez yargılamak yerine, penceresi hâlâ açık olan en eski batch'ten itibaren ileriye doğru yoklamayı sürdürür) ve her pencereyi yerel saate göre değil, zincir ucuna (`getChainTip`, düğümün durumu) göre ölçer. Zaten `finalized` olan bir batch doğrulanmaz veya hakkında uyarı verilmez.
+0.6.0'dan itibaren (ve sonraki her sürümde) bir rollup'ın batch listesinin her sayfasını izler, bir batch'i son tarihi yaklaştıkça yeniden değerlendirir (her batch'i ilk görüşte bir kez yargılamak yerine, penceresi hâlâ açık olan en eski batch'ten itibaren ileriye doğru yoklamayı sürdürür) ve her pencereyi yerel saate göre değil, zincir ucuna (`getChainTip`, düğümün durumu) göre ölçer. Zaten `finalized` olan bir batch doğrulanmaz veya hakkında uyarı verilmez.
+
+**Yeniden gönderilen batch'ler (0.7.0).** Zincir v3.2.5'ten itibaren (şimdi testnet'te; mainnet'te yükseltmeden sonra) onaylanan bir sahtekârlık, batch'i ve sonraki sonlandırılmamış her batch'i reddeder ve sequencer aynı indekslerle yeniden gönderir. 0.7.0 öncesi sürümler batch'leri yalnızca indekse göre ayırt ediyordu ve bu yüzden reddedilmiş bir indekste yeniden gönderilen bir batch'i kaçırıyordu; 0.7.0 onları indeks ve durum köküne göre ayırt eder ve reddedilmiş bir batch'i asla doğrulamaz.
+
+**Zincirin sahtekârlık kuralını uygulama (0.7.0).** `transitionRootValidator`, zincirin kendi kuralını uygulayan hazır bir `validate` yüklemidir (bir batch, durum kökü kanonik geçiş kökü değilse sahtekârdır) ve `fraudProofForBatch`, kazanan kanıtı döndürür (dürüst bir batch için hiçbir şey döndürmez); böylece onu `challengeBatch`'e geçirebilirsiniz.
 
 `onInvalid`'i bir itiraza bağlamak, Watchtower'ı eksiksiz bir otomatik
 itiraz aracına dönüştürür; yalnızca gözlem (observe-only) modunda çalıştırmak için
@@ -94,6 +98,6 @@ qorollup watchtower my-rollup
 ```
 
 `watchtower`, çerçeveyi komut satırından çalıştırır; siz Ctrl-C'ye basana kadar
-yeni yığınları ve itiraz penceresi son tarihlerini yazdırır. Tam `qorollup`
+yeni yığınları ve itiraz penceresi son tarihlerini yazdırır. `--canonical` ekleyin (0.7.0); durum kökü kanonik geçiş kökü olmayan her batch'i, yani bir itirazın kazanacağı batch'leri de bildirir. Tam `qorollup`
 operatör CLI'si için bkz.
 [Bir Rollup Dağıtma](/rollups/deploying-a-rollup).

@@ -16,7 +16,7 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 - **すべての言語で単一のハイブリッド署名フォーマット。** チェーンは、Nativeレーンのトランザクションにsecp256k1署名とML-DSA-87(FIPS 204)署名の両方を要求します。QoreSignは、公開しているテストベクターをTypeScript、Rust、Go、Swift、Kotlinでバイト単位で再現し、`qorechain-pqc`は6つのバインディングで共通のベクターセットを実行します。そのため、ある言語で作成した鍵や署名は、他の言語でも検証できます。
 - **署名対象バイト列の形式は推測ではなく、チェーンの状態から決定します。** SDK、ウォレットアダプター、`chain-bridge`、QoreSignのネットワークヘルパーは、ノードに対して両方のアップグレード名(`v3.2.0`と`v3.1.98`)について`GET /cosmos/upgrade/v1beta1/applied_plan/{name}`を問い合わせ、いずれかの高さが0より大きければv2形式で署名します。これら2つのチェーンでRESTエンドポイントがない場合は、推測せずにエラーを投げます。現在、両ネットワークともv2を検証します(2026年10月27日に確認: `v3.2.0`はメインネットで高さ2,981,742、`v3.1.98`はテストネットで高さ5,746,000で適用済み)。
 - **書いただけでなく、実行したクイックスタート。** クイックスタートがあるパッケージについては、公開レジストリからインストールした後の2026年10月27日に例を実行しました。34件のクイックスタート項目のうち31件が実行されて成功し、実行されなかった3件はマニフェストに記録されています([制限事項](#limits)を参照)。
-- **表の背後にある1つのマニフェスト。** このページのパッケージ名、バージョン、インストールコマンドは、パッケージごとにライブのバージョンエンドポイントを持つ、機械可読な1つのマニフェストから取得しています。ダッシュボードの開発者ハブも、同じデータから構築が進められています。
+- **表の背後にある1つのマニフェスト。** このページのパッケージ名、バージョン、インストールコマンドは、パッケージごとにライブのバージョンエンドポイントを持つ、機械可読な1つのマニフェストから取得しています。[ダッシュボードの開発者ページ](/dashboard/developers#sdks)のSDKハブも、同じデータから構築されています。
 
 ## 使い方 {#how-to-use}
 
@@ -53,15 +53,16 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 
 ### ダッシュボードの開発者ページ {#dashboard-developers}
 
-ダッシュボードには、[dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers)に公開ページがあります。2026年10月27日に確認した時点で、次のタブがあります。
+ダッシュボードには、[dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers)に公開ページがあります。2026年10月27日に確認した時点で、6つのタブがあります(詳しい説明: [開発者](/dashboard/developers))。
 
+- **SDKs:** SDKハブです。マニフェストにあるすべてのパッケージを製品ごとにまとめ、言語セレクター、各レジストリからライブで読み取った最新バージョン、コピーボタン付きのインストール行とインポート行、SDKチームが観測した出力つきのクイックスタート、既知の問題、チェーンIDと公開エンドポイントを表示します。公開されていないパッケージにはインストールコマンドが表示されません。
 - **PQ key status:** アドレスがチェーンに登録したML-DSA-87鍵とそのEVM認可ウィンドウを、テストネットまたはメインネットで読み取ります。
 - **Simulator:** 署名済みトランザクション(base64またはhexの`TxRaw`)をドライランし、ガス使用量と残高の変化を表示します。ブロードキャストは行われません。
 - **Signing playground:** テストネット専用です。ブラウザ内で使い捨てのハイブリッド鍵(メモリ内にのみ保持)を生成し、メッセージとSign In With QoreChainリクエストの署名と検証を行います。
 - **QoreX test wallet:** テストネット専用です。テストウォレット(`window.qorex`、EIP-6963で「QoreX (mock)」として通知)をタブに注入し、dAppのフローを試せます。
 - **AI agents (MCP):** MCPサーバーのためのページですが、サーバーはまだ公開されていません([計画中](#planned)を参照)。
 
-マニフェストからライブのバージョンつきで全パッケージを一覧表示するSDKハブと、トランザクションインスペクターは**まだ公開されていません**。そのページの**SDKs**タブには古い文言が残っているため、バージョンやインストールコマンドにはそれを使わず、レジストリと照合済みの以下の表を使ってください。
+**トランザクションインスペクター**(ハッシュを貼り付けると、すべてのメッセージ、署名者、手数料、ポスト量子署名が検証されるかどうかを表示)は**まだ公開されていません**。以下の表とSDKハブは同じデータを示しており、表は2026年10月27日にレジストリと照合済みです。
 
 ## 公開場所 {#where-published}
 
@@ -105,13 +106,13 @@ TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあ�
 
 | パッケージ | 言語 | バージョン | インストール | ステータス |
 |---|---|---|---|---|
-| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.6.2 | `npm install @qorechain/rdk` | 公開済み。ハイブリッドで署名できる唯一のRDKクライアントで、`pqcKeypair`を渡した場合のみです |
-| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.6.2 | `npm install -g @qorechain/rdk-cli` | 公開済み。0.6.2はnpmのbinリンク経由での0.6.1の起動問題を修正しています。トランザクションコマンドは従来型のみで署名するため、ネットワークに拒否されます |
-| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.6.2 | `npx create-qorechain-rollup my-rollup` | 公開済み |
-| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, imports `qorrdk`) | 0.6.2 | `pip install qorechain-rdk` | 公開済み。読み取りは動作します。トランザクションは従来型のみで署名します |
-| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.6.2 | `cargo add qorechain-rdk` | 公開済み。読み取りは動作します。トランザクションは従来型のみで署名します |
-| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.6.2 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.6.2` | 公開済み。読み取りは動作します。トランザクションは従来型のみで署名します |
-| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.6.1 | `implementation("io.github.qorechain:qorechain-rdk:0.6.1")` | 0.6.1で公開済み。0.6.2は2026年10月27日時点でMaven Centralにありませんでした。読み取りは動作します。トランザクションは従来型のみで署名します |
+| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.7.0 | `npm install @qorechain/rdk` | 公開済み。ハイブリッドで署名できる唯一のRDKクライアントで、`pqcKeypair`を渡した場合のみです |
+| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.7.0 | `npm install -g @qorechain/rdk-cli` | 公開済み。0.6.2以降はnpmのbinリンク経由で起動します(0.6.1以前は何も出力しませんでした)。トランザクションコマンドは従来型のみで署名するため、ネットワークに拒否されます |
+| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.7.0 | `npx create-qorechain-rollup my-rollup` | 公開済み |
+| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, imports `qorrdk`) | 0.7.0 | `pip install qorechain-rdk` | 公開済み。読み取りは動作します。トランザクションは従来型のみで署名します |
+| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.7.0 | `cargo add qorechain-rdk` | 公開済み。読み取りは動作します。トランザクションは従来型のみで署名します |
+| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.7.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.7.0` | 公開済み。読み取りは動作します。トランザクションは従来型のみで署名します |
+| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.7.0 | `implementation("io.github.qorechain:qorechain-rdk:0.7.0")` | 公開済み。読み取りは動作します。トランザクションは従来型のみで署名します |
 
 ### ポスト量子プリミティブ(`qorechain-pqc`) {#group-pqc}
 
@@ -208,11 +209,11 @@ TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあ�
 ## 制限事項と既知の問題 {#limits}
 
 - **稼働中の2つのネットワークでバージョンが異なります。** メインネットはv3.2.4、テストネットはv3.2.6で稼働しています。テストネットにしかない機能は、その機能自身のページに明記されています。メインネットでv3.2.5の動作を前提にしないでください。
-- **まだ公開されていないもの:** ダッシュボードの開発者ページのSDKハブとトランザクションインスペクター、MCPサーバーと`qore` CLI、Python版QoreSign、SVMトランザクション、メインネットのEVMプリコンパイル(レーンごとの一覧は[SDK概要](/sdk/overview)を参照)。
+- **まだ公開されていないもの:** ダッシュボードの開発者ページのトランザクションインスペクター、MCPサーバーと`qore` CLI、Python版QoreSign、SVMトランザクション、メインネットのEVMプリコンパイル(レーンごとの一覧は[SDK概要](/sdk/overview)を参照)。
 - **実行していない例:** 34件のクイックスタート項目のうち、31件が2026年10月27日に実行されて成功しました。Python版QoreSignの例は実行しておらず(パッケージが未公開のため)、QoreSignのAndroidの例はデバイスでは実行していません。ウォレットアダプター、チェーンブリッジ、ハンドルにはクイックスタートがないため、このマニュアルのそれらの例はパッケージの型定義とソースに基づいており、エンドツーエンドでは実行していません。
-- **0.6.2より前の`@qorechain/rdk-cli`**は、npmのbinリンク経由で起動しても何も出力せず、`--version`は0.4.1を出力していました。0.6.2を使用してください。
+- **0.6.2より前の`@qorechain/rdk-cli`**は、npmのbinリンク経由で起動しても何も出力せず、`--version`は0.4.1を出力していました。**0.7.0より前の`@qorechain/rdk`**は、チェーン上で一度も検証を通らない出金証明を構築していました。0.7.0を使用してください。
 - **cosmjsのバージョン競合。** `@qorechain/wallet-adapter`と`@qorechain/chain-bridge`はcosmjs 0.32を使い、SDKはcosmjs 0.39を使います。1つのプロジェクトでアダプターをSDKと並べてインストールすると、npmが`ERESOLVE`を報告します。別々のプロジェクトに分けるか、`--legacy-peer-deps`を渡してください。
-- **RDK内のSDKのネストされたコピー。** `@qorechain/rdk` 0.6.2は`@qorechain/sdk`の`^0.9.0`に依存しています。0.xバージョンでのキャレットは0.9の範囲内にとどまるため、SDK 0.10.0を使うアプリには、ネストされた2つ目のSDK 0.9.xのコピーが入ります。
+- **古いRDKリリースでのSDKのネストされたコピー。** `@qorechain/rdk` 0.6.2以前は`@qorechain/sdk`の`^0.9.0`に依存していたため、SDK 0.10.0を使うアプリには、ネストされた2つ目のSDK 0.9.xのコピーが入っていました。0.7.0からはキットが`@qorechain/sdk`の`^0.10.0`に依存し、コピーは1つを共有します。
 - **従来型のみのRDKクライアント。** Python、Rust、Go、JavaのRDKクライアントは従来型のみで署名するため、両ネットワークのNativeレーンに拒否されます。読み取りに使うか、トランザクションにはTypeScriptクライアントを`pqcKeypair`とともに使ってください。
 - **公開ソースリポジトリがないパッケージ。** `@qorechain/chain-bridge`と`@qorechain/handles`は、レジストリのメタデータにソースリポジトリが記載されていません。公開されたパッケージの内容はnpmで読めます。
 - **Pythonの`qorechain-pqc`**は0.2.3ではシードからの鍵生成がなく、liboqsが必要です。

@@ -44,7 +44,7 @@ La pagina del report completo `/audits/<id>` aggiunge la suddivisione per gravit
 ### Audit precedenti e condivisione
 
 - I tuoi report si trovano in **Profile > Audited**.
-- L'elenco **All Security Audits** su `/audits` (collegato dalla home page) mostra gli ultimi audit di tutti gli utenti in una tabella con nome del contratto, blockchain, livello di rischio, punteggio e data. Una casella di ricerca filtra per nome, blockchain o livello di rischio. Una riga si apre solo se il report è pubblico o tuo.
+- L'elenco **All Security Audits** su `/audits` (collegato dalla home page) mostra gli ultimi audit i cui proprietari li hanno resi pubblici, in una tabella con nome del contratto, blockchain, livello di rischio, punteggio e data. Una casella di ricerca filtra per nome, blockchain o livello di rischio. I report privati non vi compaiono mai; lo stesso vale per l'elenco degli ultimi audit nella home page.
 - Su un report di tua proprietà, un interruttore in alto riporta "This report is private". Attivalo per rendere il report pubblico così che chiunque abbia il link possa leggerlo (il tuo nome e il tuo IP non vengono mai mostrati), e disattivalo per renderlo di nuovo privato.
 
 :::tip Esegui l'audit prima del deploy

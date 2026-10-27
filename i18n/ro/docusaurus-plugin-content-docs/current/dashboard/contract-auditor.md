@@ -44,7 +44,7 @@ Pagina raportului complet `/audits/<id>` adaugă defalcarea pe severitate, **Rec
 ### Audituri anterioare și partajare
 
 - Rapoartele tale se găsesc la **Profile > Audited**.
-- Lista **All Security Audits** de la `/audits` (cu link de pe pagina de start) arată cele mai recente audituri ale tuturor utilizatorilor într-un tabel cu numele contractului, blockchain, nivelul de risc, scor și dată. O casetă de căutare filtrează după nume, blockchain sau nivel de risc. Un rând se deschide doar dacă raportul este public sau al tău.
+- Lista **All Security Audits** de la `/audits` (cu link de pe pagina de start) arată cele mai recente audituri ale căror proprietari le-au făcut publice, într-un tabel cu numele contractului, blockchain, nivelul de risc, scor și dată. O casetă de căutare filtrează după nume, blockchain sau nivel de risc. Rapoartele private nu apar niciodată în ea; același lucru este valabil pentru lista celor mai recente audituri de pe pagina de start.
 - Pe un raport pe care îl deții, un comutator din partea de sus scrie „This report is private”. Activează-l pentru a face raportul public, astfel încât oricine are linkul să îl poată citi (numele și IP-ul tău nu sunt afișate niciodată), și dezactivează-l pentru a-l face din nou privat.
 
 :::tip Auditează înainte de a face deploy

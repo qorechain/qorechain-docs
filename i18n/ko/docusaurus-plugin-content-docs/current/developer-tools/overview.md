@@ -16,7 +16,7 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 - **모든 언어에서 하나의 하이브리드 서명 형식.** 체인은 네이티브 레인 트랜잭션에 secp256k1 서명과 ML-DSA-87(FIPS 204) 서명을 함께 요구합니다. QoreSign은 공개된 테스트 벡터를 TypeScript, Rust, Go, Swift, Kotlin에서 바이트 단위로 동일하게 재현하며, `qorechain-pqc`는 여섯 개 바인딩에서 하나의 공유 벡터 세트를 실행하므로, 한 언어에서 만든 키나 서명은 다른 언어에서도 검증됩니다.
 - **추측이 아니라 체인 상태에서 정하는 서명 바이트 형식.** SDK, 지갑 어댑터, `chain-bridge`, QoreSign 네트워크 헬퍼는 두 업그레이드 이름(`v3.2.0`과 `v3.1.98`) 모두에 대해 노드에 `GET /cosmos/upgrade/v1beta1/applied_plan/{name}`을 요청하고, 둘 중 하나의 높이가 0보다 크면 v2 형식으로 서명합니다. 이 두 체인에서 REST 엔드포인트가 없으면 추측하지 않고 오류를 발생시킵니다. 두 네트워크는 현재 모두 v2를 검증합니다(2026년 10월 27일 확인: `v3.2.0`은 메인넷 높이 2,981,742에서, `v3.1.98`은 테스트넷 높이 5,746,000에서 적용됨).
 - **작성만 한 것이 아니라 실제로 실행한 퀵스타트.** 퀵스타트가 있는 패키지는 2026년 10월 27일에 공개 레지스트리에서 설치한 뒤 예제를 실행했습니다. 34개 퀵스타트 항목 중 31개가 실행되어 통과했으며, 통과하지 못한 세 가지는 매니페스트에 기록되어 있습니다([제한 사항](#limits) 참조).
-- **표 뒤에 있는 하나의 매니페스트.** 이 페이지의 패키지 이름, 버전, 설치 명령은 패키지별 실시간 버전 엔드포인트를 갖춘 단일 기계 판독 매니페스트에서 가져옵니다. 대시보드 개발자 허브도 같은 데이터로 만들어지고 있습니다.
+- **표 뒤에 있는 하나의 매니페스트.** 이 페이지의 패키지 이름, 버전, 설치 명령은 패키지별 실시간 버전 엔드포인트를 갖춘 단일 기계 판독 매니페스트에서 가져옵니다. [대시보드 개발자 페이지](/dashboard/developers#sdks)의 SDK 허브도 같은 데이터로 만들어집니다.
 
 ## 사용 방법 {#how-to-use}
 
@@ -53,15 +53,16 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 
 ### 대시보드 개발자 페이지 {#dashboard-developers}
 
-대시보드에는 [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers)에 공개 페이지가 있습니다. 2026년 10월 27일에 확인한 시점에 다음 탭이 있습니다.
+대시보드에는 [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers)에 공개 페이지가 있습니다. 2026년 10월 27일에 확인한 시점에 여섯 개의 탭이 있습니다(전체 안내: [개발자](/dashboard/developers)).
 
+- **SDKs:** SDK 허브입니다. 매니페스트의 모든 패키지를 제품별로 묶어 보여주며, 언어 선택기, 각 레지스트리에서 실시간으로 읽은 최신 버전, 복사 버튼이 있는 설치 및 import 줄, SDK 팀이 관찰한 출력과 함께 제공되는 퀵스타트, 알려진 문제, 체인 ID와 공개 엔드포인트를 제공합니다. 게시되지 않은 패키지에는 설치 명령이 표시되지 않습니다.
 - **PQ 키 상태:** 주소가 체인에 등록한 ML-DSA-87 키와 그 EVM 인가 윈도우를 테스트넷 또는 메인넷에서 읽습니다.
 - **시뮬레이터:** 서명된 트랜잭션(base64 또는 hex `TxRaw`)을 시험 실행하여 가스 사용량과 잔액 변화를 보여줍니다. 아무것도 브로드캐스트되지 않습니다.
 - **서명 플레이그라운드:** 테스트넷 전용. 브라우저에서 메모리에만 보관되는 일회용 하이브리드 키를 생성하여 메시지와 Sign In With QoreChain 요청에 서명하고 검증합니다.
 - **QoreX 테스트 지갑:** 테스트넷 전용. 탭에 테스트 지갑(`window.qorex`, EIP-6963으로 "QoreX (mock)"로 알림)을 주입하여 dApp 흐름을 시험해 볼 수 있습니다.
 - **AI 에이전트(MCP):** 아직 게시되지 않은 MCP 서버를 위한 페이지입니다([예정](#planned) 참조).
 
-매니페스트의 모든 패키지를 실시간 버전과 함께 나열하는 SDK 허브와 트랜잭션 인스펙터는 **아직 라이브가 아닙니다**. 해당 페이지의 **SDKs** 탭에는 아직 이전 문구가 표시되므로 버전이나 설치 명령에는 사용하지 마세요. 레지스트리와 대조해 확인한 아래의 표를 사용하세요.
+**트랜잭션 인스펙터**(해시를 붙여 넣으면 모든 메시지, 서명자, 수수료, 포스트 퀀텀 서명의 검증 여부를 보여줌)는 **아직 라이브가 아닙니다**. 아래의 표와 SDK 허브는 같은 데이터를 보여주며, 표는 2026년 10월 27일에 레지스트리와 대조해 확인했습니다.
 
 ## 게시 위치 {#where-published}
 
@@ -105,13 +106,13 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 
 | 패키지 | 언어 | 버전 | 설치 | 상태 |
 |---|---|---|---|---|
-| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.6.2 | `npm install @qorechain/rdk` | Published. 하이브리드로 서명하는 유일한 RDK 클라이언트이며, `pqcKeypair`를 전달할 때만 그렇게 함 |
-| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.6.2 | `npm install -g @qorechain/rdk-cli` | Published. 0.6.2는 npm bin 링크를 통한 0.6.1의 실행 문제를 수정함. 트랜잭션 명령은 클래식 서명만 하며 네트워크가 이를 거부함 |
-| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.6.2 | `npx create-qorechain-rollup my-rollup` | Published |
-| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, `qorrdk`로 import) | 0.6.2 | `pip install qorechain-rdk` | Published. 읽기는 동작하며, 트랜잭션은 클래식 서명만 함 |
-| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.6.2 | `cargo add qorechain-rdk` | Published. 읽기는 동작하며, 트랜잭션은 클래식 서명만 함 |
-| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.6.2 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.6.2` | Published. 읽기는 동작하며, 트랜잭션은 클래식 서명만 함 |
-| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.6.1 | `implementation("io.github.qorechain:qorechain-rdk:0.6.1")` | 0.6.1로 게시됨. 0.6.2는 2026년 10월 27일 Maven Central에 없었음. 읽기는 동작하며, 트랜잭션은 클래식 서명만 함 |
+| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.7.0 | `npm install @qorechain/rdk` | Published. 하이브리드로 서명하는 유일한 RDK 클라이언트이며, `pqcKeypair`를 전달할 때만 그렇게 함 |
+| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.7.0 | `npm install -g @qorechain/rdk-cli` | Published. 0.6.2부터 npm bin 링크를 통해 실행됨(0.6.1 이전은 아무것도 출력하지 않았음). 트랜잭션 명령은 클래식 서명만 하며 네트워크가 이를 거부함 |
+| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.7.0 | `npx create-qorechain-rollup my-rollup` | Published |
+| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, `qorrdk`로 import) | 0.7.0 | `pip install qorechain-rdk` | Published. 읽기는 동작하며, 트랜잭션은 클래식 서명만 함 |
+| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.7.0 | `cargo add qorechain-rdk` | Published. 읽기는 동작하며, 트랜잭션은 클래식 서명만 함 |
+| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.7.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.7.0` | Published. 읽기는 동작하며, 트랜잭션은 클래식 서명만 함 |
+| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.7.0 | `implementation("io.github.qorechain:qorechain-rdk:0.7.0")` | Published. 읽기는 동작하며, 트랜잭션은 클래식 서명만 함 |
 
 ### 포스트 퀀텀 프리미티브 (`qorechain-pqc`) {#group-pqc}
 
@@ -208,11 +209,11 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 ## 제한 사항 및 알려진 문제 {#limits}
 
 - **두 라이브 네트워크, 서로 다른 버전.** 메인넷은 v3.2.4를, 테스트넷은 v3.2.6을 실행합니다. 테스트넷에만 있는 기능은 해당 페이지에 표시됩니다. 메인넷에서 v3.2.5 동작을 가정하지 마세요.
-- **아직 라이브가 아닌 것:** 대시보드 개발자 페이지의 SDK 허브와 트랜잭션 인스펙터, MCP 서버와 `qore` CLI, Python용 QoreSign, SVM 트랜잭션, 메인넷의 EVM 프리컴파일(레인별 목록은 [SDK 개요](/sdk/overview) 참조).
+- **아직 라이브가 아닌 것:** 대시보드 개발자 페이지의 트랜잭션 인스펙터, MCP 서버와 `qore` CLI, Python용 QoreSign, SVM 트랜잭션, 메인넷의 EVM 프리컴파일(레인별 목록은 [SDK 개요](/sdk/overview) 참조).
 - **실행하지 않은 예제:** 34개 퀵스타트 항목 중 31개가 2026년 10월 27일에 실행되어 통과했습니다. QoreSign Python 예제는 실행하지 않았고(패키지가 게시되지 않음), QoreSign Android 예제는 기기에서 실행하지 않았습니다. 지갑 어댑터, 체인 브리지, handles에는 퀵스타트가 없으므로, 이 매뉴얼의 해당 예제는 패키지 타입 정의와 소스에서 가져온 것이며 끝까지 실행하지 않았습니다.
-- **0.6.2 이전의 `@qorechain/rdk-cli`**는 npm bin 링크로 시작하면 아무것도 출력하지 않았고, `--version`은 0.4.1을 출력했습니다. 0.6.2를 사용하세요.
+- **0.6.2 이전의 `@qorechain/rdk-cli`**는 npm bin 링크로 시작하면 아무것도 출력하지 않았고, `--version`은 0.4.1을 출력했습니다. **0.7.0 이전의 `@qorechain/rdk`**는 체인에서 한 번도 검증되지 않는 출금 증명을 만들었습니다. 0.7.0을 사용하세요.
 - **cosmjs 버전 충돌.** `@qorechain/wallet-adapter`와 `@qorechain/chain-bridge`는 cosmjs 0.32를 사용하고, SDK는 cosmjs 0.39를 사용합니다. 한 프로젝트에 어댑터를 SDK와 함께 설치하면 npm이 `ERESOLVE`를 보고합니다. 별도의 프로젝트로 유지하거나 `--legacy-peer-deps`를 전달하세요.
-- **RDK 안의 중첩된 SDK 사본.** `@qorechain/rdk` 0.6.2는 `@qorechain/sdk` `^0.9.0`에 의존합니다. 0.x 버전의 캐럿은 0.9 안에 머무르므로, SDK 0.10.0을 쓰는 앱에는 두 번째로 중첩된 SDK 0.9.x 사본이 생깁니다.
+- **이전 RDK 릴리스의 중첩된 SDK 사본.** `@qorechain/rdk` 0.6.2 이하는 `@qorechain/sdk` `^0.9.0`에 의존했으므로, SDK 0.10.0을 쓰는 앱에는 두 번째로 중첩된 SDK 0.9.x 사본이 생겼습니다. 0.7.0부터 키트는 `@qorechain/sdk` `^0.10.0`에 의존하며 하나의 사본을 공유합니다.
 - **클래식 서명만 하는 RDK 클라이언트.** Python, Rust, Go, Java RDK 클라이언트는 클래식 서명만 하며, 네이티브 레인은 두 네트워크 모두에서 이를 거부합니다. 읽기에 사용하거나, 트랜잭션에는 `pqcKeypair`를 쓰는 TypeScript 클라이언트를 사용하세요.
 - **공개 소스 저장소가 없는 패키지.** `@qorechain/chain-bridge`와 `@qorechain/handles`는 레지스트리 메타데이터에 소스 저장소가 나열되어 있지 않습니다. 게시된 패키지 내용은 npm에서 읽을 수 있습니다.
 - **Python `qorechain-pqc`**는 0.2.3에서 시드 기반 키 생성이 없으며 liboqs가 필요합니다.

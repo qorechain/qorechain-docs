@@ -18,7 +18,7 @@ Watchtower nu decide niciodată de unul singur că un lot este fraudulos — ape
 funcția ta `validate` și acționează pe baza a ceea ce returnezi.
 
 :::caution Stadiu incipient: nu există încă nimic de urmărit
-Watchtower citește loturile prin clientul REST RDK, iar rutele `/qorechain/rdk/v1/…` sunt servite pe ambele rețele. Nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 27 octombrie 2026), deci nu există încă nimic de urmărit, iar Watchtower nu a rulat împotriva unui lot real. În `@qorechain/rdk` 0.5.0, logica sa de termen-limită era greșită (citea o înălțime de bloc ca timestamp Unix, așa că `onDeadline` se declanșa imediat ce un lot era văzut prima dată) și citea doar prima pagină de 50 de loturi; **0.6.0 le-a corectat pe amândouă** (vezi mai jos). Folosește 0.6.2, versiunea curentă.
+Watchtower citește loturile prin clientul REST RDK, iar rutele `/qorechain/rdk/v1/…` sunt servite pe ambele rețele. Nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 27 octombrie 2026), deci nu există încă nimic de urmărit, iar Watchtower nu a rulat împotriva unui lot real. În `@qorechain/rdk` 0.5.0, logica sa de termen-limită era greșită (citea o înălțime de bloc ca timestamp Unix, așa că `onDeadline` se declanșa imediat ce un lot era văzut prima dată) și citea doar prima pagină de 50 de loturi; **0.6.0 le-a corectat pe amândouă** (vezi mai jos). Folosește 0.7.0, versiunea curentă.
 :::
 
 ## `watchBatches`
@@ -30,7 +30,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.6.2: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
@@ -74,7 +74,11 @@ Cadrul evidențiază:
 - **termene-limită ale ferestrei de contestare** prin `onDeadline` și
 - **loturi invalide** (pentru care `validate` a returnat `false`) prin `onInvalid`.
 
-De la 0.6.0 (și în 0.6.1 și 0.6.2), urmărește toate paginile listei de loturi a unui rollup, rejudecă un lot pe măsură ce se apropie termenul-limită al acestuia (continuă să interogheze înainte, începând de la cel mai vechi lot a cărui fereastră este încă deschisă, în loc să judece fiecare lot o singură dată, la prima vedere) și măsoară fiecare fereastră față de vârful lanțului (`getChainTip`, starea nodului) în loc de ceasul local. Un lot deja `finalized` nu este validat și nu se emit avertismente pentru el.
+De la 0.6.0 (și în fiecare versiune de după ea), urmărește toate paginile listei de loturi a unui rollup, rejudecă un lot pe măsură ce se apropie termenul-limită al acestuia (continuă să interogheze înainte, începând de la cel mai vechi lot a cărui fereastră este încă deschisă, în loc să judece fiecare lot o singură dată, la prima vedere) și măsoară fiecare fereastră față de vârful lanțului (`getChainTip`, starea nodului) în loc de ceasul local. Un lot deja `finalized` nu este validat și nu se emit avertismente pentru el.
+
+**Loturi retrimise (0.7.0).** De la lanțul v3.2.5 (acum pe testnet; pe mainnet după upgrade), o fraudă confirmată respinge lotul și fiecare lot nefinalizat de după el, iar sequencer-ul le retrimite sub aceiași indecși. Versiunile dinainte de 0.7.0 deosebeau loturile doar după index și de aceea nu observau un lot retrimis la un index respins; 0.7.0 le deosebește după index și rădăcina de stare și nu validează niciodată un lot respins.
+
+**Aplicarea regulii de fraudă a lanțului (0.7.0).** `transitionRootValidator` este un predicat `validate` gata făcut, care aplică regula proprie a lanțului (un lot este fraudulos când rădăcina sa de stare nu este rădăcina canonică de tranziție), iar `fraudProofForBatch` returnează dovada care câștigă, sau nimic pentru un lot onest, astfel încât să o poți transmite lui `challengeBatch`.
 
 Conectarea `onInvalid` la o contestare transformă Watchtower într-un
 auto-contestator complet; lasă-l neconfigurat pentru a rula în mod
@@ -91,6 +95,6 @@ qorollup watchtower my-rollup
 ```
 
 `watchtower` rulează cadrul din linia de comandă, afișând loturile noi și
-termenele-limită ale ferestrei de contestare până când apeși Ctrl-C. Vezi
+termenele-limită ale ferestrei de contestare până când apeși Ctrl-C. Adaugă `--canonical` (0.7.0) și raportează și fiecare lot a cărui rădăcină de stare nu este rădăcina canonică de tranziție, adică loturile pe care o contestare le-ar câștiga. Vezi
 [Implementarea unui rollup](/rollups/deploying-a-rollup) pentru întregul CLI
 de operator `qorollup`.

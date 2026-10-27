@@ -29,7 +29,7 @@ Această secțiune este un ghid pentru utilizator: ce face fiecare pagină, cum 
 
 | Intrare | Pagină | Ce este |
 | --- | --- | --- |
-| **Discover** | `/` | Acasă: butoanele din hero **Create Smart Contract** și **Explore Network**, contoarele „Dashboard Overview", liste cu contractele create, ultimele audituri și cei mai activi contribuitori, plus un „Developer Toolkit" cu **Start Generating**, **New Audit** și **Claim Tokens**. |
+| **Discover** | `/` | Acasă: butoanele din hero **Create Smart Contract** și **Explore Network**, contoarele „Dashboard Overview", liste cu contractele create, ultimele audituri publice și cei mai activi contribuitori, plus un „Developer Toolkit" cu **Start Generating**, **New Audit** și **Claim Tokens**. |
 | **Public Sale** | `/public-sale` | Participanții existenți își văd alocarea, calendarul de vesting și revendicarea. |
 | **Wallet** | [Wallet](/dashboard/wallet) | Sold, istoric, primire și (pe mainnet) trimitere și staking prin QoreX. |
 | **Faucet** | [Faucet](/dashboard/faucet) | Tokenuri de testnet gratuite. |
@@ -37,7 +37,7 @@ Această secțiune este un ghid pentru utilizator: ce face fiecare pagină, cum 
 | **Trade** | [Trade](/dashboard/trade) | Ecran de swap cu tokenuri de test. |
 | Grupul **Earn** | [Quests](/dashboard/quests) | Quests, Leaderboard, Badges. |
 | **Games** | [Quests](/dashboard/quests#games) | QoreChain Arcade. |
-| Grupul **Build** | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Unelte pentru contracte, unelte pentru noduri și validatori, unelte pentru dezvoltatori. Intrarea Nodes & Validators se numea înainte „Tools". |
+| Grupul **Build** | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Unelte pentru contracte, pagina operatorului (cinci file: Validator Program, Validator Application, Light Node, Node Registration, Rollups) și pagina publică pentru dezvoltatori (șase file: SDKs, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). Intrarea Nodes & Validators se numea înainte „Tools"; fila sa SDK s-a mutat la Developers. |
 | **FAQ** | `/faq` | Ajutor în aplicație. Părți din el sunt depășite; acest manual este referința. |
 
 Pagina [Validators](/dashboard/validators) (`/validators`) nu are link în bara laterală; deschide-o după adresă.
@@ -119,7 +119,8 @@ Paginile acestei secțiuni: [Explorer](/dashboard/explorer), [Wallet](/dashboard
 
 - **Nu există un ecran Bridge.** Vezi [Bridge](/dashboard/bridge).
 - **Trade nu urmează comutatorul de rețea.** Arată conținut de testnet chiar și cu antetul pe Mainnet. Vezi [Trade](/dashboard/trade).
-- **Unele texte din aplicație sunt depășite.** FAQ-ul, precum și unele formulări de pe ecranul de creare a portofelului și din fila SDK de la Nodes & Validators, nu corespund comportamentului actual. Unde acest manual și aplicația diferă, urmează acest manual și raportează pagina.
+- **FAQ-ul din aplicație este o scurtă pagină de ajutor.** Unde el și acest manual diferă, urmează acest manual.
+- **Încă nu sunt disponibile:** inspectorul de tranzacții de pe pagina Developers și serverul MCP (pagina Developers spune că nu este publicat).
 - **Restricții pe mainnet.** Staking-ul, trimiterea și deploy-urile de contracte pe mainnet sunt descrise pe fiecare pagină; mai multe fluxuri (deploy-uri Native sau SVM, redelegarea, staking-ul cu blocare în timp) nu sunt oferite în Dashboard.
 - **Testnet-ul nu are valoare reală.** Nu trimite niciodată QOR real la o adresă de testnet: formatele sunt identice. Vezi [Wallet](/dashboard/wallet#testnet).
 

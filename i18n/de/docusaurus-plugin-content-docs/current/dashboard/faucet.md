@@ -18,6 +18,7 @@ Testnet-QOR hat **keinen realen Wert**. Der Faucet berührt niemals das Mainnet:
 - **Ein Claim, zwei Arten von Token.** Ein Claim zahlt 100 QOR aus, und in einer separaten Transaktion 1.000 fUSD, 0,5 fETH und 0,02 fBTC. Schlägt der Fest-Versand fehl, kommen die QOR trotzdem an, und die Ergebniskarte weist darauf hin.
 - **Eine doppelte Abklingzeit.** Ein Claim pro 24 Stunden pro Konto **und** pro Adresse. Der Slot wird reserviert, bevor etwas gesendet wird, und freigegeben, wenn der Versand fehlschlägt; ein fehlgeschlagener Claim verbraucht Ihren Tag also nicht.
 - **Fest-Token sind native Bank-Coins.** Es sind Bank-Denominationen der Form `erc20:0x...`, die die On-Chain-AMM, Bank-Sends, IBC und QoreChain-Native-Contracts unverändert verwenden. MetaMask oder eine EVM-DEX sehen sie erst nach einer Umwandlung per `MsgConvertCoin` (siehe [Fest-Test-Token](#fest-tokens)).
+- **Keine falschen Zahlen.** Lassen sich die Infos des Faucets nicht laden, zeigt die Seite „...“ statt eines Betrags, nie einen geschätzten.
 - **Ein `0x`-Empfänger wird auf seinem `qor1`-Zwilling bezahlt.** Eine `0x`-Adresse sind dieselben 20 Bytes wie ihre `qor1`-Form, daher bezahlt der Dienst dasselbe Konto. Das Dashboard-Formular selbst akzeptiert nur `qor1...`.
 
 ## So verwenden Sie es {#how-to-use}
@@ -48,7 +49,7 @@ Für das Builder-Fest existieren im Testnet drei zusätzliche Test-Token: **fUSD
 - **Nur Testnet.** Die Token existieren im Mainnet nicht.
 - **Kopieren Sie die Denomination exakt.** Der Adressteil steht in der gemischten Groß-/Kleinschreibung nach EIP-55, und die Denomination wird groß-/kleinschreibungsabhängig abgeglichen.
 - **On-Chain ansehen.** `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` listet die drei Denominationen mit ihren Symbolen und Anzeigenamen auf.
-- **Verwendung aus MetaMask oder einer EVM-DEX.** Der Faucet zahlt Bank-Coins aus. Um eines als ERC-20 für MetaMask oder eine EVM-DEX zu halten, wandeln Sie es mit `MsgConvertCoin` um (Absender Ihre `qor1...`-Adresse, Empfänger eine `0x...`-Adresse und die exakte Denomination in gemischter Groß-/Kleinschreibung). Zurück geht es mit `MsgConvertERC20`. Schritte und Gas-Werte stehen unter [EVM-Entwicklung](/developer-guide/evm-development#fest-tokens).
+- **Verwendung aus MetaMask oder einer EVM-DEX.** Der Faucet zahlt Bank-Coins aus. Um eines als ERC-20 für MetaMask oder eine EVM-DEX zu halten, wandeln Sie es mit `MsgConvertCoin` um (Absender Ihre `qor1...`-Adresse, Empfänger eine `0x...`-Adresse und die exakte Denomination in gemischter Groß-/Kleinschreibung). Zurück geht es mit `MsgConvertERC20`. Schritte und Gas-Werte stehen unter [EVM-Entwicklung](/developer-guide/evm-development#fest-tokens). Eine eigene Schritt-für-Schritt-Anleitung zur Umwandlung ist geplant und noch nicht veröffentlicht.
 - **Pools.** Die [AMM](/architecture/amm) im Testnet kann sie gegen `uqor` poolen; ob ein Pool existiert, zeigt `GET /qorechain/amm/v1/pools`. Der Tab Tokens der [Wallet](/dashboard/wallet) und [Trade](/dashboard/trade) haben keinen Eintrag dafür; prüfen Sie ein Guthaben mit `GET /cosmos/bank/v1beta1/balances/{address}`.
 
 ### Was Sie mit Test-Token tun können

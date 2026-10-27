@@ -17,7 +17,7 @@ Watchtower never decides on its own that a batch is fraudulent — it calls your
 `validate` function and acts on what you return.
 
 :::caution Early-stage: nothing to watch yet
-The Watchtower reads batches through the RDK REST client, and the `/qorechain/rdk/v1/…` routes are served on both networks. No rollup has been created on either network (checked 27 October 2026), so there is nothing to watch yet and the Watchtower has not run against a live batch. In `@qorechain/rdk` 0.5.0 its deadline logic was wrong (it read a block height as a Unix timestamp, so `onDeadline` fired as soon as a batch was first seen) and it read only the first page of 50 batches; **0.6.0 fixed both** (see below). Use 0.6.2, the current release.
+The Watchtower reads batches through the RDK REST client, and the `/qorechain/rdk/v1/…` routes are served on both networks. No rollup has been created on either network (checked 27 October 2026), so there is nothing to watch yet and the Watchtower has not run against a live batch. In `@qorechain/rdk` 0.5.0 its deadline logic was wrong (it read a block height as a Unix timestamp, so `onDeadline` fired as soon as a batch was first seen) and it read only the first page of 50 batches; **0.6.0 fixed both** (see below). Use 0.7.0, the current release.
 :::
 
 ## `watchBatches`
@@ -29,7 +29,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.6.2: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
@@ -73,7 +73,11 @@ The framework surfaces:
 - **challenge-window deadlines** via `onDeadline`, and
 - **invalid batches** (where your `validate` returned `false`) via `onInvalid`.
 
-Since 0.6.0 (and in 0.6.1 and 0.6.2) it follows every page of a rollup's batch list, re-judges a batch as its deadline approaches (it keeps polling forward from the oldest batch whose window is still open, rather than judging each batch once on first sight), and measures each window against the chain tip (`getChainTip`, the node's status) instead of the local clock. A batch that is already `finalized` is not validated or warned about.
+Since 0.6.0 (and in every release after it) it follows every page of a rollup's batch list, re-judges a batch as its deadline approaches (it keeps polling forward from the oldest batch whose window is still open, rather than judging each batch once on first sight), and measures each window against the chain tip (`getChainTip`, the node's status) instead of the local clock. A batch that is already `finalized` is not validated or warned about.
+
+**Resubmitted batches (0.7.0).** From chain v3.2.5 (testnet now; mainnet after the upgrade) an upheld fraud rejects the batch and every later unfinalized one, and the sequencer resubmits under the same indexes. Releases before 0.7.0 told batches apart by index only and so missed a batch resubmitted at a rejected index; 0.7.0 tells them apart by index and state root, and never validates a rejected batch.
+
+**Applying the chain's fraud rule (0.7.0).** `transitionRootValidator` is a ready-made `validate` predicate that applies the chain's own rule (a batch is fraudulent when its state root is not the canonical transition root), and `fraudProofForBatch` returns the proof that wins, or none for an honest batch, so you can pass it to `challengeBatch`.
 
 Wiring `onInvalid` to a challenge turns the Watchtower into a complete
 auto-challenger; leave it unset to run in observe-only mode.
@@ -89,6 +93,6 @@ qorollup watchtower my-rollup
 ```
 
 `watchtower` runs the framework from the command line, printing new batches and
-challenge-window deadlines until you press Ctrl-C. See
+challenge-window deadlines until you press Ctrl-C. Add `--canonical` (0.7.0) and it also reports every batch whose state root is not the canonical transition root, that is, the batches a challenge would win. See
 [Deploying a Rollup](/rollups/deploying-a-rollup) for the full `qorollup`
 operator CLI.

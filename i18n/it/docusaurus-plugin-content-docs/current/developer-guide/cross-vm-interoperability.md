@@ -88,7 +88,7 @@ contract CrossVMCaller {
 
 Questo è il layout che il nodo decodifica; è lo stesso layout costruito dall'encoder di `@qorechain/rdk`, e il contratto qui sopra corrisponde allo starter in [Multi-VM](/rollups/multi-vm). I fondi non possono essere allegati tramite la precompile (il percorso del messaggio `MsgCrossVMCall` accetta `--funds`). L'esempio oggi non può fare nulla su nessuna delle due reti, perché la precompile non è attiva (vedi l'avviso sopra); l'ABI potrebbe ancora cambiare prima dell'attivazione.
 
-Una volta attiva, la precompile esegue il contratto QoreChain Native immediatamente e restituisce il risultato. (L'helper `encodeCrossVmCalldata` di `@qorechain/rdk`, disponibile dalla 0.6.0 e nella 0.6.2 attuale, costruisce i calldata; vedi [Multi-VM](/rollups/multi-vm).) Costo del gas: **50.000 base + 4 per byte di input + costo di esecuzione**.
+Una volta attiva, la precompile esegue il contratto QoreChain Native immediatamente e restituisce il risultato. (L'helper `encodeCrossVmCalldata` di `@qorechain/rdk`, disponibile dalla 0.6.0 e nella 0.7.0 attuale, costruisce i calldata; vedi [Multi-VM](/rollups/multi-vm).) Costo del gas: **50.000 base + 4 per byte di input + costo di esecuzione**.
 
 ---
 

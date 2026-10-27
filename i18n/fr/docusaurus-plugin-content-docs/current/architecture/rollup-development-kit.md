@@ -27,7 +27,7 @@ Les rollups optimistes supposent que les transactions sont valides par défaut e
 * **Fenêtre de contestation** : 604 800 secondes (par défaut, 7 jours). **Avant la v3.2.4 :** la chaîne la convertit en blocs à raison fixe de 6 secondes par bloc, soit **100 800 blocs** ; le temps réel écoulé dépend donc du temps de bloc effectif (environ 3,7 jours avec les blocs actuels du mainnet d'environ 3,1 s) ; planifiez en blocs, pas en jours. **À partir de la v3.2.4 :** pour un lot soumis à partir de la hauteur de la mise à niveau, la fenêtre est mesurée en secondes de temps de bloc (7 jours pleins). Un lot soumis plus tôt conserve la règle du nombre de blocs. Le testnet a appliqué la v3.2.4 à la hauteur 8 337 253 (19 octobre 2026) ; le mainnet l'a appliquée à la hauteur 3 742 566 (23 octobre 2026, proposition de gouvernance 13). La valeur par défaut configurée du testnet est plus courte, 3 600 secondes (1 heure) : un rollup du testnet se finalise donc plus vite que les 7 jours décrits ici.
 * **Caution de contestation** : 1 000 QOR (1 000 000 000 uqor) — requise pour soumettre une contestation par preuve de fraude (profils `nft` et `custom` ; les profils `defi`, `gaming` et `enterprise` ne définissent aucune caution car ils n'ont pas de fenêtre de contestation)
 * **Finalité** : différée jusqu'à l'expiration de la fenêtre de contestation sans contestation valide
-* **Finalisation automatique** : l'`EndBlocker` finalise automatiquement les lots une fois la fenêtre de contestation passée sans litige. Un lot contesté n'est jamais finalisé automatiquement : le créateur du rollup doit d'abord résoudre la contestation (voir [Déployer un rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
+* **Finalisation automatique** : l'`EndBlocker` finalise automatiquement les lots une fois la fenêtre de contestation passée sans litige. Un lot contesté n'est jamais finalisé automatiquement : il doit d'abord être résolu, par le créateur du rollup sur le mainnet (v3.2.4) et par n'importe quel compte sur le testnet (v3.2.5 et suivantes ; le mainnet suivra lorsque la proposition de gouvernance 14 appliquera la v3.2.5) (voir [Déployer un rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
 
 **Cycle de vie d'un lot** :
 
@@ -152,7 +152,7 @@ Les proposeurs L1 de QoreChain séquencent les transactions du rollup.
 Stockage de blobs en KV-store on-chain au sein de QoreChain elle-même.
 
 :::caution Pas encore de moyen public de publier un blob
-Le module définit le stockage, la rétention et l'élagage des blobs, mais il n'existe aucun message de transaction pour publier un blob dans les versions actuelles. Un lot qui nomme un hachage de données sur un rollup `native` ou `both` est refusé, car aucun blob correspondant ne peut être stocké. Voir [Disponibilité des données](/rollups/data-availability). Sur la DA native, un lot doit donc laisser `data_hash` vide ; le client RDK (0.6.2) le fait, et la chaîne refuse un lot qui en revendique un.
+Le module définit le stockage, la rétention et l'élagage des blobs, mais il n'existe aucun message de transaction pour publier un blob dans les versions actuelles. Un lot qui nomme un hachage de données sur un rollup `native` ou `both` est refusé, car aucun blob correspondant ne peut être stocké. Voir [Disponibilité des données](/rollups/data-availability). Sur la DA native, un lot doit donc laisser `data_hash` vide ; le client RDK (0.7.0) le fait, et la chaîne refuse un lot qui en revendique un.
 :::
 
 | Paramètre            | Valeur                                                                                               |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Lot accepté comme canonique                       |
 | **Rejected**   | Lot invalidé par une contestation réussie         |
 
-Comportement de RDK 0.6.1 et 0.6.2 (le code de la bibliothèque est le même) : pour un rollup optimistic, le client construit un lot dont la racine d'état est la racine de transition canonique de la chaîne (`batchTransitionRoot` dans le RDK), et non une valeur libre de votre choix.
+Comportement de RDK 0.6.1 et ultérieur (la 0.7.0 est la version actuelle) : pour un rollup optimistic, le client construit un lot dont la racine d'état est la racine de transition canonique de la chaîne (`batchTransitionRoot` dans le RDK), et non une valeur libre de votre choix.
 
 ### Règles de finalisation automatique
 

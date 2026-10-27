@@ -18,6 +18,7 @@ El QOR de testnet **no tiene valor real**. El Grifo nunca toca mainnet: no exist
 - **Una solicitud, dos tipos de token.** Una solicitud paga 100 QOR y, en una transacción aparte, 1,000 fUSD, 0.5 fETH y 0.02 fBTC. Si falla el envío del fest, el QOR llega igualmente y la tarjeta de resultado lo indica.
 - **Un doble periodo de espera.** Una solicitud cada 24 horas por cuenta **y** por dirección. El hueco se reserva antes de enviar nada y se libera si el envío falla, así que una solicitud fallida no consume tu día.
 - **Los tokens del fest son monedas bank nativas.** Son denominaciones bank `erc20:0x...` que el AMM on-chain, los envíos bank, IBC y los contratos de QoreChain Native usan tal cual. MetaMask o un DEX de EVM solo los ven tras una conversión con `MsgConvertCoin` (consulta [Tokens de prueba del fest](#fest-tokens)).
+- **Sin cifras erróneas.** Si no se puede cargar la información del Grifo, la página muestra "..." en lugar de una cantidad, nunca una cantidad supuesta.
 - **Un destinatario `0x` se paga en su gemela `qor1`.** Una dirección `0x` son los mismos 20 bytes que su forma `qor1`, así que el servicio paga a la misma cuenta. El propio formulario del Panel solo acepta `qor1...`.
 
 ## Cómo usarlo {#how-to-use}
@@ -48,7 +49,7 @@ Existen tres tokens de prueba adicionales en la testnet para el fest de builders
 - **Solo testnet.** Los tokens no existen en mainnet.
 - **Copia la denominación exactamente.** La parte de la dirección está en mayúsculas y minúsculas EIP-55 y la denominación se compara distinguiendo mayúsculas de minúsculas.
 - **Míralos on-chain.** `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` lista las tres denominaciones con sus símbolos y nombres para mostrar.
-- **Usarlos desde MetaMask o un DEX de EVM.** El Grifo paga monedas bank. Para mantener una como ERC-20 en MetaMask o en un DEX de EVM, conviértela con `MsgConvertCoin` (remitente tu dirección `qor1...`, destinatario una dirección `0x...` y la denominación exacta con mayúsculas y minúsculas). Devolverla es `MsgConvertERC20`. Los pasos y las cifras de gas están en [Desarrollo EVM](/developer-guide/evm-development#fest-tokens).
+- **Usarlos desde MetaMask o un DEX de EVM.** El Grifo paga monedas bank. Para mantener una como ERC-20 en MetaMask o en un DEX de EVM, conviértela con `MsgConvertCoin` (remitente tu dirección `qor1...`, destinatario una dirección `0x...` y la denominación exacta con mayúsculas y minúsculas). Devolverla es `MsgConvertERC20`. Los pasos y las cifras de gas están en [Desarrollo EVM](/developer-guide/evm-development#fest-tokens). Está prevista una guía de conversión paso a paso, pero todavía no se ha publicado.
 - **Pools.** El [AMM](/architecture/amm) de la testnet puede agruparlos frente a `uqor`; si existe un pool lo muestra `GET /qorechain/amm/v1/pools`. La pestaña Tokens del [Monedero](/dashboard/wallet) y [Operar](/dashboard/trade) no tienen una entrada para ellos; consulta un saldo con `GET /cosmos/bank/v1beta1/balances/{address}`.
 
 ### Qué hacer con los tokens de prueba

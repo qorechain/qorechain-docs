@@ -16,7 +16,7 @@ Tablolardaki sürümler 27 Ekim 2026 tarihinde kayıt defterlerinden okunmuştur
 - **Her dilde tek bir hibrit imza biçimi.** Zincir, native ray işlemlerinde bir secp256k1 imzasının yanında bir ML-DSA-87 (FIPS 204) imzası ister. QoreSign, yayınlanmış test vektörlerini TypeScript, Rust, Go, Swift ve Kotlin'de bayt bayt yeniden üretir; `qorechain-pqc` ise altı bağlamasında ortak bir vektör kümesi çalıştırır, böylece bir dilde üretilen anahtar veya imza diğerlerinde doğrulanır.
 - **İmzalanacak bayt biçimi tahminle değil zincir durumuyla seçilir.** SDK, cüzdan adaptörü, `chain-bridge` ve QoreSign ağ yardımcıları, her iki yükseltme adı (`v3.2.0` ve `v3.1.98`) için düğüme `GET /cosmos/upgrade/v1beta1/applied_plan/{name}` isteğini sorar ve bunlardan biri için yükseklik sıfırın üzerindeyse v2 biçimini imzalar. Bu iki zincirde bir REST uç noktası yoksa tahmin etmek yerine hata verirler. Her iki ağ da bugün v2'yi doğrular (27 Ekim 2026'da kontrol edildi: `v3.2.0` mainnet'te 2.981.742 yüksekliğinde, `v3.1.98` testnet'te 5.746.000 yüksekliğinde uygulandı).
 - **Yalnızca yazılmış değil, çalıştırılmış hızlı başlangıçlar.** Hızlı başlangıcı olan paketler için örnek, 27 Ekim 2026'da genel kayıt defterinden kurulumdan sonra çalıştırıldı. 34 hızlı başlangıç girdisinden 31'i çalıştı ve geçti; bildirim dosyası hangi üçünün geçmediğini kaydeder ([Sınırlar](#limits) bölümüne bakın).
-- **Tabloların arkasında tek bir bildirim dosyası.** Bu sayfadaki paket adları, sürümler ve kurulum komutları, her paket için canlı bir sürüm uç noktası bulunan tek bir makine tarafından okunabilir bildirim dosyasından gelir; dashboard geliştirici merkezi de aynı veriden oluşturulmaktadır.
+- **Tabloların arkasında tek bir bildirim dosyası.** Bu sayfadaki paket adları, sürümler ve kurulum komutları, her paket için canlı bir sürüm uç noktası bulunan tek bir makine tarafından okunabilir bildirim dosyasından gelir; [dashboard Geliştiriciler sayfasındaki](/dashboard/developers#sdks) SDK merkezi de aynı veriden oluşturulur.
 
 ## Nasıl kullanılır {#how-to-use}
 
@@ -53,15 +53,16 @@ Bir paket kurun ve önce hızlı başlangıcını genel testnet üzerinde çalı
 
 ### Dashboard geliştirici sayfası {#dashboard-developers}
 
-Dashboard'un [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) adresinde herkese açık bir sayfası vardır. 27 Ekim 2026'da kontrol edildiğinde şu sekmelere sahiptir:
+Dashboard'un [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) adresinde herkese açık bir sayfası vardır. 27 Ekim 2026'da kontrol edildiğinde altı sekmesi vardır (tam anlatım: [Geliştiriciler](/dashboard/developers)):
 
+- **SDKs:** SDK merkezi. Bildirim dosyasındaki her paket, ürüne göre gruplanmış olarak; dil seçici, her kayıt defterinden canlı okunan en son sürüm, kopyalama düğmeli kurulum ve içe aktarma satırları, SDK ekibinin gözlemlediği çıktıyla hızlı başlangıç, bilinen sorunlar ile zincir kimlikleri ve genel uç noktalar. Yayınlanmamış paketler için kurulum komutu gösterilmez.
 - **PQ key status:** bir adresin zincirde kayıtlı ML-DSA-87 anahtarını ve EVM yetkilendirme penceresini testnet veya mainnet üzerinde okur.
 - **Simulator:** imzalı bir işlemi (base64 veya hex `TxRaw`) deneme olarak çalıştırır ve gaz kullanımını ile bakiye değişikliklerini gösterir. Hiçbir şey yayınlanmaz.
 - **Signing playground:** yalnızca testnet. Tarayıcıda, bellekte tutulan geçici bir hibrit anahtar üretir; mesajları ve Sign In With QoreChain isteklerini imzalamak ve doğrulamak için kullanılır.
 - **QoreX test wallet:** yalnızca testnet. dApp akışlarını deneyebilmeniz için sekmeye bir test cüzdanı (`window.qorex`, EIP-6963 üzerinden "QoreX (mock)" olarak duyurulur) ekler.
 - **AI agents (MCP):** henüz yayınlanmamış olan MCP sunucusu için bir sayfa ([Planlanan](#planned) bölümüne bakın).
 
-Her paketi bildirim dosyasından canlı sürümleriyle listeleyen SDK merkezi ve işlem denetçisi **henüz canlı değildir**. O sayfadaki **SDKs** sekmesi hâlâ eski metni gösterir; bu nedenle sürümler veya kurulum komutları için onu kullanmayın, kayıt defterlerine karşı kontrol edilmiş aşağıdaki tabloları kullanın.
+**İşlem denetçisi** (bir hash yapıştırın; her mesajı, imzalayanı, ücreti ve kuantum sonrası imzanın doğrulanıp doğrulanmadığını görün) **henüz canlı değildir**. Aşağıdaki tablolar ve SDK merkezi aynı veriyi gösterir; tablolar 27 Ekim 2026'da kayıt defterlerine karşı kontrol edilmiştir.
 
 ## Nerede yayınlanıyor {#where-published}
 
@@ -105,13 +106,13 @@ Kılavuzlar: [Rollup'lara genel bakış](/rollups/overview), [Rollup dağıtma](
 
 | Paket | Dil | Sürüm | Kurulum | Durum |
 |---|---|---|---|---|
-| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.6.2 | `npm install @qorechain/rdk` | Yayınlandı. Hibrit imzalayan tek RDK istemcisi ve yalnızca bir `pqcKeypair` verdiğinizde |
-| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.6.2 | `npm install -g @qorechain/rdk-cli` | Yayınlandı. 0.6.2, 0.6.1'deki npm bin bağlantısı üzerinden başlatma sorununu giderir. İşlem komutları yalnızca klasik imzalar, ki ağlar bunu reddeder |
-| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.6.2 | `npx create-qorechain-rollup my-rollup` | Yayınlandı |
-| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, `qorrdk` olarak içe aktarılır) | 0.6.2 | `pip install qorechain-rdk` | Yayınlandı. Okumalar çalışır; işlemler yalnızca klasik imzalar |
-| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.6.2 | `cargo add qorechain-rdk` | Yayınlandı. Okumalar çalışır; işlemler yalnızca klasik imzalar |
-| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.6.2 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.6.2` | Yayınlandı. Okumalar çalışır; işlemler yalnızca klasik imzalar |
-| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.6.1 | `implementation("io.github.qorechain:qorechain-rdk:0.6.1")` | 0.6.1 olarak yayınlandı; 0.6.2, 27 Ekim 2026'da Maven Central'da değildi. Okumalar çalışır; işlemler yalnızca klasik imzalar |
+| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.7.0 | `npm install @qorechain/rdk` | Yayınlandı. Hibrit imzalayan tek RDK istemcisi ve yalnızca bir `pqcKeypair` verdiğinizde |
+| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.7.0 | `npm install -g @qorechain/rdk-cli` | Yayınlandı. 0.6.2'den beri npm bin bağlantısı üzerinden başlar (0.6.1 ve öncesi hiçbir şey yazdırmıyordu). İşlem komutları yalnızca klasik imzalar, ki ağlar bunu reddeder |
+| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.7.0 | `npx create-qorechain-rollup my-rollup` | Yayınlandı |
+| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, `qorrdk` olarak içe aktarılır) | 0.7.0 | `pip install qorechain-rdk` | Yayınlandı. Okumalar çalışır; işlemler yalnızca klasik imzalar |
+| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.7.0 | `cargo add qorechain-rdk` | Yayınlandı. Okumalar çalışır; işlemler yalnızca klasik imzalar |
+| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.7.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.7.0` | Yayınlandı. Okumalar çalışır; işlemler yalnızca klasik imzalar |
+| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.7.0 | `implementation("io.github.qorechain:qorechain-rdk:0.7.0")` | Yayınlandı. Okumalar çalışır; işlemler yalnızca klasik imzalar |
 
 ### Kuantum sonrası ilkeller (`qorechain-pqc`) {#group-pqc}
 
@@ -208,11 +209,11 @@ Kapsamlı (scoped) bir npm adı için `@` işaretini koruyun, örneğin `https:/
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 - **İki canlı ağ, farklı sürümler.** Mainnet v3.2.4, testnet v3.2.6 çalıştırır. Yalnızca testnet'te bulunan bir özellik kendi sayfasında işaretlenir. Mainnet'te v3.2.5 davranışını varsaymayın.
-- **Henüz canlı değil:** dashboard geliştirici sayfasındaki SDK merkezi ve işlem denetçisi, MCP sunucusu ve `qore` CLI, Python için QoreSign, SVM işlemleri ve mainnet üzerindeki EVM precompile'ları (ray ray liste için [SDK genel bakış](/sdk/overview) sayfasına bakın).
+- **Henüz canlı değil:** dashboard geliştirici sayfasındaki işlem denetçisi, MCP sunucusu ve `qore` CLI, Python için QoreSign, SVM işlemleri ve mainnet üzerindeki EVM precompile'ları (ray ray liste için [SDK genel bakış](/sdk/overview) sayfasına bakın).
 - **Çalıştırılmayan örnekler:** 34 hızlı başlangıç girdisinden 31'i 27 Ekim 2026'da çalıştı ve geçti. QoreSign Python örneği çalıştırılmadı (paket yayınlanmadı) ve QoreSign Android örneği bir cihazda çalıştırılmadı. Cüzdan adaptörü, chain bridge ve handle'ların hızlı başlangıcı yoktur; bu nedenle bu kılavuzdaki örnekleri paket tür tanımlarından ve kaynaktan gelir ve uçtan uca çalıştırılmamıştır.
-- **0.6.2 öncesi `@qorechain/rdk-cli`,** npm bin bağlantısı üzerinden başlatıldığında hiçbir şey yazdırmadı ve `--version` çıktısı 0.4.1 idi. 0.6.2 kullanın.
+- **0.6.2 öncesi `@qorechain/rdk-cli`,** npm bin bağlantısı üzerinden başlatıldığında hiçbir şey yazdırmadı ve `--version` çıktısı 0.4.1 idi. **0.7.0 öncesi `@qorechain/rdk`** zincirde hiç doğrulanmayan çekim kanıtları üretiyordu. 0.7.0 kullanın.
 - **cosmjs sürüm çakışması.** `@qorechain/wallet-adapter` ve `@qorechain/chain-bridge` cosmjs 0.32 kullanır; SDK cosmjs 0.39 kullanır. Adaptörü SDK'nın yanına aynı projeye kurmak npm'in `ERESOLVE` bildirmesine yol açar. Bunları ayrı projelerde tutun veya `--legacy-peer-deps` geçirin.
-- **RDK içindeki iç içe SDK kopyası.** `@qorechain/rdk` 0.6.2, `@qorechain/sdk` `^0.9.0` sürümüne bağlıdır; bir 0.x sürümündeki şapka (caret) 0.9 içinde kalır, dolayısıyla SDK 0.10.0 kullanan bir uygulama ikinci, iç içe bir SDK 0.9.x kopyası alır.
+- **Eski RDK sürümlerinde iç içe SDK kopyası.** `@qorechain/rdk` 0.6.2 ve öncesi `@qorechain/sdk` `^0.9.0` sürümüne bağlıdır; bu yüzden SDK 0.10.0 kullanan bir uygulama ikinci, iç içe bir SDK 0.9.x kopyası aldı. 0.7.0'dan itibaren kit `@qorechain/sdk` `^0.10.0` sürümüne bağlıdır ve tek bir kopyayı paylaşır.
 - **Yalnızca klasik imzalayan RDK istemcileri.** Python, Rust, Go ve Java RDK istemcileri yalnızca klasik imzalar, ki native ray bunu her iki ağda da reddeder; bunları okumalar için kullanın veya işlemler için TypeScript istemcisini bir `pqcKeypair` ile kullanın.
 - **Herkese açık kaynak deposu olmayan paketler.** `@qorechain/chain-bridge` ve `@qorechain/handles`, kayıt defteri meta verisinde bir kaynak deposu listelemez. Yayınlanmış paket içeriğini npm üzerinde okuyabilirsiniz.
 - **Python `qorechain-pqc`,** 0.2.3 sürümünde tohumlu anahtar üretimine sahip değildir ve liboqs gerektirir.

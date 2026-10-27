@@ -75,11 +75,11 @@ Las misiones diarias y semanales se reinician con una periodicidad; la página d
 ## Límites y problemas conocidos {#limits}
 
 - **Los conjuntos de misiones cambian.** La pestaña de una temporada puede estar vacía o mostrar menos misiones cuando sus misiones no están activas; consulta la pestaña en lugar de fiarte de esta página para la lista actual.
-- **Todo aquí es off-chain:** los puntos, las clasificaciones, las insignias y las puntuaciones de los juegos los registra el Panel, no QoreChain. La palabra "on-chain" del subtítulo del Arcade no describe las puntuaciones.
+- **Todo aquí es off-chain:** los puntos, las clasificaciones, las insignias y las puntuaciones de los juegos los registra el Panel, no QoreChain. Los Photons no están on-chain.
 - **Las cantidades de recompensa** se muestran en cada misión y pueden cambiar.
 - **Se requiere iniciar sesión** y, para las misiones sociales, cuentas vinculadas verificadas.
 - **Public Sale** (`/public-sale`) es una página aparte para los participantes existentes (asignación, calendario de vesting, reclamación); todas las rondas anteriores están cerradas y no se describe más aquí.
-- **FAQ** (`/faq`) es una página de ayuda dentro de la aplicación cuyo contenido va por detrás de este manual.
+- **FAQ** (`/faq`) es una página de ayuda breve dentro de la aplicación; este manual es la referencia.
 
 ## Relacionado
 

@@ -509,7 +509,7 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 
 `profile`은 `defi`, `gaming`, `nft`, `enterprise` 또는 `custom`이며, `stake_amount`는 uqor 단위입니다(현재 최소값은 `query rdk config`에 있습니다). 프로필 프리셋이 정산, 시퀀서, DA 및 가스 모델을 제공하며, 명령줄에서는 VM만 재정의할 수 있습니다. `finalize-batch` 명령어는 없습니다.
 
-데이터 가용성이 `native`(또는 `both`)인 롤업에서는 `--data-hash`를 비워 두십시오. 어떤 트랜잭션도 데이터 가용성 블롭을 게시하지 않으며, 체인은 그런 롤업에 대해 데이터 해시를 주장하는 배치를 거부합니다(이 글을 쓰는 시점의 메인넷 릴리스인 노드 릴리스 v3.2.4의 동작입니다). 옵티미스틱 롤업의 경우 `@qorechain/rdk` 클라이언트(0.6.2)가 배치의 상태 루트를 체인의 표준 전환 루트(RDK의 `batchTransitionRoot`)로 설정합니다. [롤업](/rollups/overview)을 참조하십시오.
+데이터 가용성이 `native`(또는 `both`)인 롤업에서는 `--data-hash`를 비워 두십시오. 어떤 트랜잭션도 데이터 가용성 블롭을 게시하지 않으며, 체인은 그런 롤업에 대해 데이터 해시를 주장하는 배치를 거부합니다(이 글을 쓰는 시점의 메인넷 릴리스인 노드 릴리스 v3.2.4의 동작입니다). 옵티미스틱 롤업의 경우 `@qorechain/rdk` 클라이언트(0.7.0)가 배치의 상태 루트를 체인의 표준 전환 루트(RDK의 `batchTransitionRoot`)로 설정합니다. [롤업](/rollups/overview)을 참조하십시오.
 
 `--anchor-signature`는 **v2 앵커 서명 바이트**에 대한 롤업 생성자의 ML-DSA 서명이며, 이를 지정하면 배치가 멀티레이어 모듈에도 앵커링됩니다. 서명할 정확한 바이트는 `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>`로 출력하세요. 값은 `submit-batch` 플래그와 일치해야 합니다. v3.2.3부터 모듈은 **롤업별 에스크로 원장**을 유지합니다. 출금은 해당 롤업의 원장이 보유한 금액에서만 지급되며, 디놈, 양수 금액, 증명 깊이, 형제 노드 크기가 검사됩니다. 롤업을 중지하면 원장에 남은 금액만 환불되고, 중지된 롤업은 더 이상 출금을 지급하지 않습니다. 이 글을 쓰는 시점에 두 네트워크 모두 롤업이 존재하지 않습니다.
 

@@ -15,7 +15,7 @@ sidebar_position: 12
 - **Zincirden okunan getiri, sınırlarıyla birlikte.** APY sütunu, zincirin staking katmanı (staking-tier) temel oranının (1 eksi doğrulayıcının komisyonu) ile çarpımıdır. Yıldız işaretiyle ve "variable, not guaranteed, lock bonuses not included" notuyla gösterilir. Rakam, değişken bir protokol oranının canlı okumasıdır; bir vaat ya da öngörü değildir.
 - **Emisyon tavanını aşınca "From fees".** Emisyon tavanını aşmış bir ağ yüzde yerine **From fees** gösterir, çünkü yeni QOR basılmaz ve staking o zaman yalnızca işlem ücretlerinden kazanır. Testnet'te sütun şu anda **From fees** yazar. Bilinmeyen bir değer tire gösterir, asla %0,00 göstermez.
 - **Oy gücüne göre sıralama.** Sıra oy gücünden hesaplanır; yani 1. sıradaki doğrulayıcı en fazla stake'e sahip olandır.
-- **Dürüst boşluklar.** Bölge, önerilen blok sayısı, yazılım sürümü ve son görülme yalnızca veri kaynağı sağladığında gösterilir ve bilinmeyen çalışma süresi (uptime) %0 yerine **N/A** yazar.
+- **Gerçek rakamlar, dürüst boşluklar.** Komisyon, doğrulayıcının gerçek komisyonudur ve hapse atılmış (jailed) bir doğrulayıcı **Jailed** olarak gösterilir. Bölge, önerilen blok sayısı, yazılım sürümü ve son görülme yalnızca ağ bunları bildirdiğinde gösterilir, ki bugün bildirmemektedir; bilinmeyen çalışma süresi (uptime) %0 yerine **N/A** yazar.
 
 ## Nasıl kullanılır {#how-to-use}
 

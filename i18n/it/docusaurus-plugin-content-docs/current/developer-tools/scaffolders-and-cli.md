@@ -10,15 +10,15 @@ sidebar_position: 21
 Tre strumenti da riga di comando portano un progetto QoreChain dal nulla a un punto di partenza tipizzato e compilabile. Sono pensati per gli sviluppatori di applicazioni (dApp) e per gli operatori di rollup che lavorano in Node.js:
 
 * **`create-qorechain-dapp`** (0.10.0) genera lo scheletro di una dApp a partire da uno di tre template, costruiti sull'[SDK QoreChain](/sdk/overview).
-* **`create-qorechain-rollup`** (0.6.2) genera lo scheletro di un progetto rollup a partire da uno di sei template, costruiti sul [Rollup Development Kit](/rollups/overview) TypeScript.
-* **`qorollup`**, il comando del pacchetto `@qorechain/rdk-cli` (0.6.2), è la riga di comando dell'operatore: controlli preliminari, creazione e monitoraggio di un rollup, lettura dei parametri live.
+* **`create-qorechain-rollup`** (0.7.0) genera lo scheletro di un progetto rollup a partire da uno di sei template, costruiti sul [Rollup Development Kit](/rollups/overview) TypeScript.
+* **`qorollup`**, il comando del pacchetto `@qorechain/rdk-cli` (0.7.0), è la riga di comando dell'operatore: controlli preliminari, creazione e monitoraggio di un rollup, lettura dei parametri live.
 
 La pagina riflette i pacchetti pubblicati così come installati da npm il 27 ottobre 2026. Le guide concettuali sono [Distribuire un Rollup](/rollups/deploying-a-rollup) e il [riferimento della CLI dell'SDK](/sdk/reference/cli).
 
 ## Innovazioni {#innovations}
 
 * **Scaffolding non interattivo per la CI.** Ogni domanda ha un flag: `--template`, `--network`, `--package-manager`, `--yes` (accetta i valori predefiniti) e `--no-install`. Una pipeline può generare e compilare un progetto con un solo comando e senza terminale.
-* **I template sono vincolati ai pacchetti correnti.** I template dApp dipendono da `@qorechain/sdk` `^0.10.0` (il template EVM da `@qorechain/evm`) e i template rollup da `@qorechain/rdk` `^0.6.1`, che un'installazione nuova risolve in 0.6.2. Uno scaffolder precedente (0.8.0) scriveva intervalli che si risolvevano in un SDK incapace di firmare per le reti live; con quello attuale questo non accade.
+* **I template sono vincolati ai pacchetti correnti.** I template dApp dipendono da `@qorechain/sdk` `^0.10.0` (il template EVM da `@qorechain/evm`) e i template rollup da `@qorechain/rdk` `^0.7.0`. Uno scaffolder precedente (0.8.0) scriveva intervalli che si risolvevano in un SDK incapace di firmare per le reti live; con quello attuale questo non accade.
 * **I template rollup codificano una configurazione valida per ogni caso d'uso.** Ogni template rollup imposta una combinazione di settlement, sequencer, data availability, gas e VM che la matrice di compatibilità dell'RDK accetta, e lo scaffolder stampa lo stake e il burn di creazione correnti prima che tu crei qualsiasi cosa.
 * **Un comando di controllo preliminare che nomina ciò che manca.** `qorollup doctor` (e `npm run doctor` all'interno di un template rollup) verifica che l'endpoint REST risponda, che i parametri dei moduli siano leggibili, che l'endpoint sia la rete richiesta e che sia configurato un signer, e stampa una riga per ogni controllo. All'interno di un template convalida anche la configurazione del rollup rispetto alla matrice di compatibilità.
 * **Firma ibrida integrata nei template.** I template rollup si connettono tramite un piccolo `signer.ts` che deriva la chiave ML-DSA-87 dell'account dalla tua mnemonica (oppure accetta un seed insieme a una chiave privata grezza) e firma in modo ibrido, come richiesto dalle reti sulla lane nativa. Il template dApp `rollup-app` fa lo stesso ed è eseguito come dry run a meno che tu non imposti `QORE_BROADCAST=1`.
@@ -94,7 +94,7 @@ Passaggi successivi, così come li stampa lo scaffolder: `npm install`, inserire
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # 0.6.2
+qorollup --version          # 0.7.0
 qorollup doctor --network testnet
 ```
 
@@ -137,7 +137,7 @@ Una riga che inizia con `!` è un avviso e non fa fallire l'esecuzione; un signe
 npx -y @qorechain/rdk-cli params --network testnet --rest https://api-testnet.qore.host
 ```
 
-Osservato con la 0.6.2 tramite `npx`, tramite un'installazione globale e tramite il link locale `node_modules/.bin/qorollup`: i parametri dei moduli vengono stampati (rollup massimi 200, stake minimo 10000 QOR, burn di creazione 1%, finestra di contestazione 3600 s, blob di data availability massimo 2,097,152 byte, conservazione dei blob 432,000 blocchi, batch massimi per blocco 10). Un dry run di una creazione, anch'esso osservato:
+Osservato con la 0.6.2 tramite `npx`, tramite un'installazione globale e tramite il link locale `node_modules/.bin/qorollup` (e con la 0.7.0 tramite il link locale, dove `qorollup --version` ha stampato 0.7.0): i parametri dei moduli vengono stampati (rollup massimi 200, stake minimo 10000 QOR, burn di creazione 1%, finestra di contestazione 3600 s, blob di data availability massimo 2,097,152 byte, conservazione dei blob 432,000 blocchi, batch massimi per blocco 10). Un dry run di una creazione, anch'esso osservato:
 
 ```bash
 qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
@@ -159,17 +159,17 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | Registro | Pacchetto | Versione | Link |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (comando `create-qorechain-dapp`) | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (comando `create-qorechain-rollup`) | 0.6.2 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (comando `qorollup`) | 0.6.2 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (libreria usata dai template) | 0.6.2 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (comando `create-qorechain-rollup`) | 0.7.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (comando `qorollup`) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (libreria usata dai template) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-Sorgenti: https://github.com/qorechain/qorechain-sdk/tree/main/cli (scaffolder dApp), https://github.com/qorechain/qorechain-rdk/tree/main/cli (scaffolder rollup) e https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). La release 0.6.2 dell'RDK è disponibile anche su PyPI, crates.io e sul Go module proxy; l'artefatto Java su Maven Central è ancora la 0.6.1 (verificato il 27 ottobre 2026). Tutti sono Apache-2.0.
+Sorgenti: https://github.com/qorechain/qorechain-sdk/tree/main/cli (scaffolder dApp), https://github.com/qorechain/qorechain-rdk/tree/main/cli (scaffolder rollup) e https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). La release 0.7.0 dell'RDK è disponibile anche su PyPI, crates.io, Maven Central e sul Go module proxy (verificato il 27 ottobre 2026). Tutti sono Apache-2.0.
 
 ## Limiti e problemi noti {#limits}
 
 * **`--network mainnet` non ha cambiato i file generati in un'esecuzione di prova.** Il 27 ottobre 2026 `fullstack-web` e `custom-rollup` sono stati generati con `--network mainnet`; il `.env` generato conteneva ancora endpoint localhost (dApp) oppure `QORE_NETWORK=testnet` con gli endpoint della testnet (rollup), e l'`App.tsx` della dApp creava un client `testnet`. Imposta tu la rete e gli endpoint in `.env` e, per il template web, in `src/App.tsx`.
-* **Nessun rollup esiste ancora su nessuna delle due reti** (verificato il 27 ottobre 2026). Nessun percorso di transazione degli strumenti rollup è stato messo alla prova su un rollup live. Convalida tutto prima sulla testnet e leggi [RDK 0.6.2: modifiche e limiti](/rollups/deploying-a-rollup#rdk-050-limits).
-* **Il template `defi-rollup` non può finalizzare un batch.** Il settlement ZK non è ancora utilizzabile su nessuna delle due reti, e il suo circuito dimostrativo non potrebbe comunque superare il controllo della prova della chain. Usa un template con settlement `optimistic` finché la situazione non cambia (vedi [ZK, STARK e prelievi](/rollups/zk-stark-withdrawals)).
+* **Nessun rollup esiste ancora su nessuna delle due reti** (verificato il 27 ottobre 2026). Nessun percorso di transazione degli strumenti rollup è stato messo alla prova su un rollup live. Convalida tutto prima sulla testnet e leggi [RDK 0.7.0: modifiche e limiti](/rollups/deploying-a-rollup#rdk-050-limits).
+* **Il template `defi-rollup` non può effettuare il settlement di un batch.** Il settlement ZK non è ancora utilizzabile su nessuna delle due reti (la registrazione delle chiavi è prevista per la chain v3.2.7), e il suo circuito dimostrativo non potrebbe comunque superare il controllo della prova della chain. Dalla 0.7.0 il template si ferma prima dell'invio, quindi non spende più una fee per un batch che la chain rifiuta sempre. Usa un template con settlement `optimistic` finché la situazione non cambia (vedi [ZK, STARK e prelievi](/rollups/zk-stark-withdrawals)).
 * **Il template `multivm-rollup` dipende da qualcosa che non è live.** Il precompile cross-VM all'indirizzo `0x0000000000000000000000000000000000000901` non è attivo su nessuna delle due reti, quindi una chiamata da un contratto non produce alcun effetto; il template lo verifica e il suo contratto è scritto in modo da fare revert invece di fallire in silenzio (vedi [Multi-VM](/rollups/multi-vm)).
 * **I comandi di transazione di `qorollup` firmano solo in modo classico.** `create`, `pause`, `resume`, `stop` e `withdraw` si connettono senza una chiave post-quantistica, che entrambe le reti rifiutano sulla lane nativa. Le letture, `doctor`, `params`, `receipt` e `--dry-run` non sono interessati. Per inviare transazioni, usa un progetto generato (i suoi script firmano in modo ibrido), l'RDK TypeScript con un `pqcKeypair`, oppure la CLI della chain.
 * **Alcuni helper di `qorollup` non hanno ancora nulla con cui comunicare.** `advise` sulla testnet il 27 ottobre ha stampato "advisory unavailable" per le superfici di commissioni, rete, frodi e agente RL (il nodo rispondeva 501 o "method does not exist") e per un rollup che non esiste. `suggest` ha restituito un profilo con `source: fallback`, il che indica che è stato usato l'elenco predefinito integrato invece del servizio assistente. Leggi gli avvisi.
@@ -179,5 +179,4 @@ Sorgenti: https://github.com/qorechain/qorechain-sdk/tree/main/cli (scaffolder d
 * **`create-qorechain-dapp --version` stampa `0.5.1`** sebbene il pacchetto installato sia la 0.10.0 (verificato il 27 ottobre 2026). Leggi la versione da `package.json` o dal registro.
 * **I README dei pacchetti sono obsoleti.** Il README di `create-qorechain-dapp` elenca due template e quello di `create-qorechain-rollup` cinque; `--help` ne mostra tre e sei. Fidati di `--help`.
 * **Le versioni precedenti alla 0.6.2 non funzionano da npm.** `qorollup` 0.6.1 e precedenti, installato tramite npm in qualsiasi modo, non ha stampato nulla ed è terminato con codice 0, e `--version` ha stampato `0.4.1`. Se devi restare sulla 0.6.1, esegui `node node_modules/@qorechain/rdk-cli/dist/index.js <command>`; altrimenti aggiorna.
-* **Copie delle dipendenze.** `@qorechain/rdk` 0.6.2 dipende da `@qorechain/sdk` `^0.9.0`, quindi un progetto che installa anche l'SDK 0.10.0 contiene un secondo SDK 0.9.x annidato. Questo è innocuo per gli script che i template generano.
-* **Maven Central è in ritardo.** L'artefatto Java dell'RDK lì è la 0.6.1; la 0.6.2 è in attesa e non contiene alcuna modifica Java.
+* **Copie delle dipendenze (solo 0.6.x).** `@qorechain/rdk` 0.6.2 e precedenti dipendono da `@qorechain/sdk` `^0.9.0`, quindi un progetto che installava anche l'SDK 0.10.0 conteneva un secondo SDK 0.9.x annidato. Dalla 0.7.0 il kit dipende da `@qorechain/sdk` `^0.10.0` e condivide un'unica copia.

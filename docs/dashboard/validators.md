@@ -15,7 +15,7 @@ The **Validators** page lists the validators of the network you have selected, w
 - **Yield read from the chain, with its limits attached.** The APY column is the chain's staking-tier base rate multiplied by (1 minus the validator's commission). It is shown with an asterisk and the note "variable, not guaranteed, lock bonuses not included". The figure is a live reading of a variable protocol rate, not a promise and not a forecast.
 - **"From fees" past the emission cap.** A network past its emission cap shows **From fees** instead of a percentage, because no new QOR is minted and staking then earns from transaction fees only. On testnet the column currently reads **From fees**. An unknown value shows a dash, never 0.00%.
 - **Rank by voting power.** The rank is computed from voting power, so rank 1 is the validator with the most stake.
-- **Honest gaps.** Region, blocks proposed, software version and last seen are shown only when the data source supplies them, and unknown uptime reads **N/A** rather than 0%.
+- **Real figures, honest gaps.** Commission is the validator's real commission, and a jailed validator is shown as **Jailed**. Region, blocks proposed, software version and last seen are shown only when the network reports them, which today it does not; unknown uptime reads **N/A** rather than 0%.
 
 ## How to use {#how-to-use}
 

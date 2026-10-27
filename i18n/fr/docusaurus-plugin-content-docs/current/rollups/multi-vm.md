@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 et ultérieures construit pour vous les mêmes calldata :
+`encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 et ultérieures (la 0.7.0 est la version actuelle) construit pour vous les mêmes calldata :
 
 ```ts
 import {
@@ -75,6 +75,17 @@ const calldata = encodeCrossVmCalldata({
 
 `isCrossVmPrecompileActive(restBase)` lit le paramètre EVM `active_static_precompiles` via REST et répond `active: true` uniquement lorsque l'adresse du précompilé figure dans la liste. C'est la seule vérification fiable, et elle doit se faire hors chaîne : le précompilé renvoie la réponse brute de la cible, de sorte qu'une réponse vide ne permet pas de distinguer un précompilé inactif d'un véritable appel à un contrat qui ne renvoie rien, et un précompilé n'a pas de bytecode, qu'il soit actif ou non. Même lorsqu'il indique `active: true`, le paquet documente qu'à partir de la chaîne v3.2.3 un appel n'atteint que les cibles que la gouvernance a placées sur la liste d'autorisation (le paramètre inter-VM `bridge_allowed_targets`, chaque entrée étant de la forme `<vm>:<contract>`), et que l'EVM vers l'EVM est refusé.
 
+### Chaîne v3.2.5 : liste d'autorisation, format de réponse et refus (testnet dès maintenant, mainnet après la mise à niveau) {#chain-v325}
+
+La chaîne v3.2.5 change le comportement du pont. Le testnet l'exécute ; **le mainnet (v3.2.4) ne l'exécute pas tant que la proposition de gouvernance 14 n'est pas appliquée**, et les descriptions ailleurs sur cette page qui disent que le précompilé renvoie la réponse brute de la cible décrivent le mainnet d'aujourd'hui.
+
+* **Une route de liste d'autorisation.** `GET /qorechain/crossvm/v1/params` sert les paramètres du pont, y compris la liste d'autorisation des cibles. Sur le testnet, la liste d'autorisation est vide (vérifié le 27 octobre 2026) : aucune cible n'est donc encore autorisée.
+* **Un format de réponse fixe.** Le précompilé renvoie `abi.encode(bytes)`, de sorte qu'une réponse fait toujours au moins 64 octets et qu'une réponse vide se distingue d'une réponse absente ; décodez-la avec `abi.decode(ret, (bytes))`.
+* **Les refus portent un motif.** Lorsque le pont refuse un appel, il annule avec `Error(string)`, qu'un contrat peut lire et transmettre.
+* **Le précompilé n'est toujours pas actif.** `0x...0901` ne figure dans la liste des précompilés actifs d'aucun des deux réseaux : rien de tout cela n'a donc été exécuté de bout en bout.
+
+`@qorechain/rdk` 0.7.0 fournit des assistants pour cela (vérifiés par rapport à des encodages produits par Solidity) : `getCrossVmParams` (la liste d'autorisation), `crossVmTargetReady` (précompilé actif, pont activé et cible sur la liste d'autorisation, avec le motif bloquant dans le cas contraire), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) et `decodeRevertReason` (`Error(string)`).
+
 ## Le côté Solidity
 
 Depuis un contrat EVM, vous appelez l'adresse du précompilé avec l'appel encodé :
@@ -94,7 +105,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Comme le précompilé est inactif, un simple `.call` vers celui-ci renvoie un **succès avec des données vides et ne fait rien** ; l'indicateur `ok` ne vous dit pas que l'appel a pris effet. La protection fiable côté contrat est une cible qui renvoie toujours un accusé de réception non vide, avec un `require(ret.length > 0)` après l'appel, de sorte qu'une réponse vide soit traitée comme un échec ; le modèle `multivm-rollup` (0.6.0 à 0.6.2) fait cela.
+Comme le précompilé est inactif, un simple `.call` vers celui-ci renvoie un **succès avec des données vides et ne fait rien** ; l'indicateur `ok` ne vous dit pas que l'appel a pris effet. La protection fiable côté contrat est une cible qui renvoie toujours un accusé de réception non vide, avec un `require(ret.length > 0)` après l'appel, de sorte qu'une réponse vide soit traitée comme un échec ; le modèle `multivm-rollup` fait cela (0.6.0 et ultérieures).
 
 ## Générer un rollup multi-VM
 
@@ -102,4 +113,4 @@ Comme le précompilé est inactif, un simple `.call` vers celui-ci renvoie un **
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Le modèle `multivm-rollup` (0.6.0 à 0.6.2) inclut `src/crossvm-call.ts` (il vérifie si le précompilé est actif, puis affiche les calldata) et un `contracts/CrossVmCaller.sol` qui appelle `executeCrossVMCall(uint8,string,bytes)` et exige une réponse non vide de la cible. Il ne fait pas fonctionner un appel tant que le précompilé est inactif. Consultez [Déployer un Rollup](/rollups/deploying-a-rollup) pour tous les modèles du générateur de structure.
+Le modèle `multivm-rollup` inclut `src/crossvm-call.ts` (il vérifie si le précompilé est actif, puis affiche les calldata) et un `contracts/CrossVmCaller.sol` qui appelle `executeCrossVMCall(uint8,string,bytes)` et exige une réponse non vide de la cible. À partir de la 0.7.0, le contrat décode le résultat `abi.encode(bytes)`, exige le minimum de 64 octets que renvoie un précompilé actif et transmet le motif de refus de la chaîne. Il ne fait pas fonctionner un appel tant que le précompilé est inactif. Consultez [Déployer un Rollup](/rollups/deploying-a-rollup) pour tous les modèles du générateur de structure.

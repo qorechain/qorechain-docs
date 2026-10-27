@@ -75,11 +75,11 @@ Le quest giornaliere e settimanali si reimpostano con una cadenza; la pagina di 
 ## Limiti e problemi noti {#limits}
 
 - **Gli insiemi di quest cambiano.** La scheda di una stagione può essere vuota o mostrare meno quest quando le sue quest non sono attive; controlla la scheda invece di fare affidamento su questa pagina per l'elenco attuale.
-- **Tutto qui è off-chain:** punti, classifiche, badge e punteggi dei giochi sono registrati dalla Dashboard, non su QoreChain. La parola "on-chain" nel sottotitolo dell'Arcade non descrive i punteggi.
+- **Tutto qui è off-chain:** punti, classifiche, badge e punteggi dei giochi sono registrati dalla Dashboard, non su QoreChain. I Photons non sono on-chain.
 - **Gli importi delle ricompense** sono mostrati su ogni quest e possono cambiare.
 - **L'accesso** e, per le quest social, gli account collegati verificati sono richiesti.
 - **Public Sale** (`/public-sale`) è una pagina separata per i partecipanti esistenti (allocazione, calendario di vesting, claim); tutti i round precedenti sono chiusi e non viene descritta ulteriormente qui.
-- **FAQ** (`/faq`) è una pagina di aiuto nell'app il cui contenuto è in ritardo rispetto a questo manuale.
+- **FAQ** (`/faq`) è una breve pagina di aiuto nell'app; questo manuale è il riferimento.
 
 ## Correlati
 

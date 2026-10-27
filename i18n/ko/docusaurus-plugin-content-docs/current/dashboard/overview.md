@@ -29,7 +29,7 @@ sidebar_position: 1
 
 | 항목 | 페이지 | 설명 |
 | --- | --- | --- |
-| **Discover** | `/` | 홈: 히어로 버튼 **Create Smart Contract**와 **Explore Network**, "Dashboard Overview" 카운터, 생성된 컨트랙트·최신 감사·상위 기여자 목록, 그리고 **Start Generating**, **New Audit**, **Claim Tokens**가 있는 "Developer Toolkit". |
+| **Discover** | `/` | 홈: 히어로 버튼 **Create Smart Contract**와 **Explore Network**, "Dashboard Overview" 카운터, 생성된 컨트랙트·최신 공개 감사·상위 기여자 목록, 그리고 **Start Generating**, **New Audit**, **Claim Tokens**가 있는 "Developer Toolkit". |
 | **Public Sale** | `/public-sale` | 기존 참여자는 자신의 할당량, 베스팅 일정, 청구를 확인합니다. |
 | **Wallet** | [Wallet](/dashboard/wallet) | 잔액, 내역, 받기, 그리고 (메인넷에서) QoreX를 통한 보내기와 스테이킹. |
 | **Faucet** | [Faucet](/dashboard/faucet) | 무료 테스트넷 토큰. |
@@ -37,7 +37,7 @@ sidebar_position: 1
 | **Trade** | [Trade](/dashboard/trade) | 테스트 토큰 스왑 화면. |
 | **Earn** 그룹 | [Quests](/dashboard/quests) | Quests, Leaderboard, Badges. |
 | **Games** | [Quests](/dashboard/quests#games) | QoreChain Arcade. |
-| **Build** 그룹 | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | 컨트랙트 도구, 노드 및 밸리데이터 도구, 개발자 도구. Nodes & Validators 항목은 예전에 "Tools"라는 이름이었습니다. |
+| **Build** 그룹 | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | 컨트랙트 도구, 운영자 페이지(탭 5개: Validator Program, Validator Application, Light Node, Node Registration, Rollups), 그리고 공개 개발자 페이지(탭 6개: SDKs, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). Nodes & Validators 항목은 예전에 "Tools"라는 이름이었으며, 그 SDK 탭은 Developers로 옮겨졌습니다. |
 | **FAQ** | `/faq` | 앱 내 도움말. 일부는 최신이 아니므로 이 매뉴얼이 기준입니다. |
 
 [Validators](/dashboard/validators) 페이지(`/validators`)에는 사이드바 링크가 없으며, 주소로 직접 엽니다.
@@ -119,7 +119,8 @@ sidebar_position: 1
 
 - **Bridge 화면은 없습니다.** [Bridge](/dashboard/bridge)를 참고하세요.
 - **Trade는 네트워크 전환을 따르지 않습니다.** 헤더가 Mainnet이어도 테스트넷 콘텐츠를 보여줍니다. [Trade](/dashboard/trade)를 참고하세요.
-- **앱 내 일부 텍스트는 최신이 아닙니다.** FAQ, 그리고 지갑 생성 화면과 Nodes & Validators SDK 탭의 일부 문구는 현재 동작과 맞지 않습니다. 이 매뉴얼과 앱이 다를 경우 이 매뉴얼을 따르고 해당 페이지를 신고해 주세요.
+- **앱 내 FAQ는 짧은 도움말 페이지입니다.** FAQ와 이 매뉴얼이 다를 경우 이 매뉴얼을 따르세요.
+- **아직 라이브가 아닌 것:** Developers 페이지의 Transaction inspector, 그리고 MCP 서버(Developers 페이지에 게시되지 않았다고 표시됩니다).
 - **메인넷 제한.** 메인넷에서의 스테이킹, 보내기, 컨트랙트 배포는 페이지별로 설명되어 있으며, 여러 흐름(Native 또는 SVM 배포, 리델리게이션, 타임락 스테이킹)은 대시보드에서 제공되지 않습니다.
 - **테스트넷에는 실제 가치가 없습니다.** 형식이 동일하므로 테스트넷 주소로 실제 QOR를 보내지 마세요. [Wallet](/dashboard/wallet#testnet)을 참고하세요.
 

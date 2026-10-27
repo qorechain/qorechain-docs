@@ -75,11 +75,11 @@ Günlük ve haftalık görevler bir programa göre sıfırlanır; ayrıntı sayf
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 - **Görev kümeleri değişir.** Bir sezonun sekmesi, görevleri etkin olmadığında boş olabilir veya daha az görev gösterebilir; güncel liste için bu sayfaya güvenmek yerine sekmeye bakın.
-- **Buradaki her şey zincir dışıdır:** puanlar, sıralamalar, rozetler ve oyun skorları QoreChain'de değil, Panel tarafından kaydedilir. Arcade alt başlığındaki "on-chain" sözcüğü skorları tanımlamaz.
+- **Buradaki her şey zincir dışıdır:** puanlar, sıralamalar, rozetler ve oyun skorları QoreChain'de değil, Panel tarafından kaydedilir. Photon'lar zincir üzerinde değildir.
 - **Ödül tutarları** her görevde gösterilir ve değişebilir.
 - **Oturum açma** ve sosyal görevler için doğrulanmış bağlı hesaplar gereklidir.
 - **Public Sale** (`/public-sale`), mevcut katılımcılar için ayrı bir sayfadır (tahsis, vesting zaman çizelgesi, talep); önceki tüm turlar kapalıdır ve burada daha fazla açıklanmaz.
-- **FAQ** (`/faq`), içeriği bu kılavuzun gerisinde kalan uygulama içi bir yardım sayfasıdır.
+- **FAQ** (`/faq`) kısa bir uygulama içi yardım sayfasıdır; başvuru kaynağı bu kılavuzdur.
 
 ## İlgili
 

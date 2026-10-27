@@ -18,6 +18,7 @@ Le QOR de testnet n'a **aucune valeur réelle**. Le Faucet ne touche jamais au m
 - **Une demande, deux sortes de jetons.** Une demande verse 100 QOR et, dans une transaction distincte, 1 000 fUSD, 0,5 fETH et 0,02 fBTC. Si l'envoi des jetons du fest échoue, le QOR arrive quand même et la carte de résultat l'indique.
 - **Un double délai d'attente.** Une demande par 24 heures par compte **et** par adresse. Le créneau est réservé avant tout envoi et libéré si l'envoi échoue : une demande échouée ne consomme donc pas votre journée.
 - **Les jetons du fest sont des coins bancaires natifs.** Ce sont des dénominations bancaires `erc20:0x...` que l'AMM on-chain, les envois bancaires, IBC et les contrats QoreChain Native utilisent telles quelles. MetaMask ou un DEX EVM ne les voient qu'après une conversion `MsgConvertCoin` (voir [Jetons de test du fest](#fest-tokens)).
+- **Aucun chiffre erroné.** Si les informations du Faucet ne peuvent pas être chargées, la page affiche « ... » au lieu d'un montant, jamais un montant deviné.
 - **Un destinataire `0x` est payé sur son jumeau `qor1`.** Une adresse `0x` correspond aux mêmes 20 octets que sa forme `qor1` : le service paie donc le même compte. Le formulaire du Dashboard lui-même n'accepte que `qor1...`.
 
 ## Comment l'utiliser {#how-to-use}
@@ -48,7 +49,7 @@ Trois jetons de test supplémentaires existent sur le testnet pour le fest des b
 - **Testnet uniquement.** Ces jetons n'existent pas sur le mainnet.
 - **Copiez la dénomination exactement.** La partie adresse est en casse mixte EIP-55 et la dénomination est comparée en respectant la casse.
 - **Les voir on-chain.** `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` liste les trois dénominations avec leurs symboles et leurs noms d'affichage.
-- **Les utiliser depuis MetaMask ou un DEX EVM.** Le Faucet verse des coins bancaires. Pour en détenir un sous forme d'ERC-20 pour MetaMask ou un DEX EVM, convertissez-le avec `MsgConvertCoin` (expéditeur : votre adresse `qor1...`, destinataire : une adresse `0x...`, et la dénomination exacte en casse mixte). Le convertir dans l'autre sens se fait avec `MsgConvertERC20`. Les étapes et les chiffres de gas figurent dans [Développement EVM](/developer-guide/evm-development#fest-tokens).
+- **Les utiliser depuis MetaMask ou un DEX EVM.** Le Faucet verse des coins bancaires. Pour en détenir un sous forme d'ERC-20 pour MetaMask ou un DEX EVM, convertissez-le avec `MsgConvertCoin` (expéditeur : votre adresse `qor1...`, destinataire : une adresse `0x...`, et la dénomination exacte en casse mixte). Le convertir dans l'autre sens se fait avec `MsgConvertERC20`. Les étapes et les chiffres de gas figurent dans [Développement EVM](/developer-guide/evm-development#fest-tokens). Un guide de conversion pas à pas dédié est prévu et n'est pas encore publié.
 - **Pools.** L'[AMM](/architecture/amm) du testnet peut les mettre en pool contre `uqor` ; l'existence d'un pool est indiquée par `GET /qorechain/amm/v1/pools`. L'onglet Tokens de [Wallet](/dashboard/wallet) et [Trade](/dashboard/trade) n'ont pas d'entrée pour eux ; vérifiez un solde avec `GET /cosmos/bank/v1beta1/balances/{address}`.
 
 ### Que faire avec les jetons de test

@@ -44,7 +44,7 @@ La page du rapport complet `/audits/<id>` ajoute la répartition par gravité, l
 ### Audits passés et partage
 
 - Vos propres rapports se trouvent sous **Profile > Audited**.
-- La liste **All Security Audits** à l'adresse `/audits` (liée depuis la page d'accueil) affiche les derniers audits de tous les utilisateurs dans un tableau avec le nom du contrat, la blockchain, le niveau de risque, le score et la date. Une zone de recherche filtre par nom, blockchain ou niveau de risque. Une ligne ne s'ouvre que si le rapport est public ou si c'est le vôtre.
+- La liste **All Security Audits** à l'adresse `/audits` (liée depuis la page d'accueil) affiche les derniers audits dont les propriétaires ont choisi la visibilité publique, dans un tableau avec le nom du contrat, la blockchain, le niveau de risque, le score et la date. Une zone de recherche filtre par nom, blockchain ou niveau de risque. Les rapports privés n'y apparaissent jamais ; il en va de même pour la liste des derniers audits de la page d'accueil.
 - Sur un rapport qui vous appartient, un interrupteur en haut indique « This report is private ». Activez-le pour rendre le rapport public afin que toute personne disposant du lien puisse le lire (votre nom et votre IP ne sont jamais affichés), et désactivez-le pour le rendre de nouveau privé.
 
 :::tip Auditer avant de déployer

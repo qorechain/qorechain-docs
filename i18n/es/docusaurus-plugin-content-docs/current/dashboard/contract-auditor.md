@@ -44,7 +44,7 @@ La página del informe completo `/audits/<id>` añade el desglose por severidad,
 ### Auditorías anteriores y cómo compartir
 
 - Tus propios informes están en **Profile > Audited**.
-- La lista **All Security Audits** en `/audits` (enlazada desde la página de inicio) muestra las últimas auditorías de todos los usuarios en una tabla con nombre del contrato, blockchain, nivel de riesgo, puntuación y fecha. Un cuadro de búsqueda filtra por nombre, blockchain o nivel de riesgo. Una fila solo se abre si el informe es público o tuyo.
+- La lista **All Security Audits** en `/audits` (enlazada desde la página de inicio) muestra las últimas auditorías cuyos propietarios las hicieron públicas, en una tabla con nombre del contrato, blockchain, nivel de riesgo, puntuación y fecha. Un cuadro de búsqueda filtra por nombre, blockchain o nivel de riesgo. Los informes privados nunca aparecen en ella; lo mismo se aplica a la lista de últimas auditorías de la página de inicio.
 - En un informe de tu propiedad, un interruptor en la parte superior dice "This report is private". Actívalo para hacer público el informe y que cualquiera con el enlace pueda leerlo (tu nombre y tu IP nunca se muestran), y desactívalo para volver a hacerlo privado.
 
 :::tip Audita antes de desplegar

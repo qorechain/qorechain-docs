@@ -44,7 +44,7 @@ Tam rapor sayfası `/audits/<id>`, önem derecesi dağılımını, **Recommendat
 ### Geçmiş denetimler ve paylaşım
 
 - Kendi raporlarınız **Profile > Audited** altındadır.
-- `/audits` adresindeki **All Security Audits** listesi (ana sayfadan bağlantılıdır), tüm kullanıcıların en son denetimlerini sözleşme adı, blok zinciri, risk seviyesi, puan ve tarihle bir tabloda gösterir. Bir arama kutusu ada, blok zincirine veya risk seviyesine göre filtreler. Bir satır yalnızca rapor herkese açıksa veya size aitse açılır.
+- `/audits` adresindeki **All Security Audits** listesi (ana sayfadan bağlantılıdır), sahiplerinin herkese açık yaptığı en son denetimleri sözleşme adı, blok zinciri, risk seviyesi, puan ve tarihle bir tabloda gösterir. Bir arama kutusu ada, blok zincirine veya risk seviyesine göre filtreler. Özel raporlar bu listede asla görünmez; aynı durum ana sayfadaki en son denetimler listesi için de geçerlidir.
 - Size ait bir raporda, üstteki bir anahtar "This report is private" yazar. Raporu herkese açık yapmak için açın; böylece bağlantıya sahip herkes onu okuyabilir (adınız ve IP'niz asla gösterilmez); tekrar özel yapmak için kapatın.
 
 :::tip Dağıtmadan önce denetleyin

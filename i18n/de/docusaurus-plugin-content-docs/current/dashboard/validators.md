@@ -15,7 +15,7 @@ Die Seite **Validators** listet die Validatoren des ausgewählten Netzwerks auf,
 - **Von der Chain gelesene Rendite, mit ihren Grenzen.** Die APY-Spalte ist der Basissatz der Staking-Stufe der Chain, multipliziert mit (1 minus der Provision des Validators). Sie wird mit einem Sternchen und dem Hinweis „variable, not guaranteed, lock bonuses not included“ angezeigt. Die Zahl ist eine Live-Ablesung eines variablen Protokollsatzes, kein Versprechen und keine Prognose.
 - **„From fees“ nach Erreichen der Emissionsobergrenze.** Ein Netzwerk, das seine Emissionsobergrenze erreicht hat, zeigt statt eines Prozentwerts **From fees**, weil kein neues QOR geprägt wird und Staking dann nur noch aus Transaktionsgebühren verdient. Im Testnet lautet die Spalte derzeit **From fees**. Ein unbekannter Wert zeigt einen Strich, nie 0.00%.
 - **Rang nach Voting Power.** Der Rang wird aus der Voting Power berechnet, Rang 1 ist also der Validator mit dem meisten Stake.
-- **Ehrliche Lücken.** Region, vorgeschlagene Blöcke, Softwareversion und zuletzt gesehen werden nur angezeigt, wenn die Datenquelle sie liefert, und unbekannte Uptime lautet **N/A** statt 0%.
+- **Echte Werte, ehrliche Lücken.** Die Provision ist die tatsächliche Provision des Validators, und ein gejailter Validator wird als **Jailed** angezeigt. Region, vorgeschlagene Blöcke, Softwareversion und zuletzt gesehen werden nur angezeigt, wenn das Netzwerk sie meldet, was derzeit nicht der Fall ist; unbekannte Uptime lautet **N/A** statt 0%.
 
 ## Anwendung {#how-to-use}
 

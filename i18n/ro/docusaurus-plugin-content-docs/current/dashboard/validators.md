@@ -15,7 +15,7 @@ Pagina **Validators** listează validatorii rețelei selectate, cu carduri rezum
 - **Randament citit din lanț, cu limitele lui alăturate.** Coloana APY este rata de bază a nivelului de staking al lanțului, înmulțită cu (1 minus comisionul validatorului). Este afișată cu un asterisc și nota „variable, not guaranteed, lock bonuses not included”. Cifra este o citire în timp real a unei rate variabile de protocol, nu o promisiune și nu o prognoză.
 - **„From fees” după plafonul de emisie.** O rețea care a depășit plafonul de emisie afișează **From fees** în loc de un procent, pentru că nu se mai creează QOR nou, iar staking-ul câștigă atunci doar din comisioanele de tranzacție. Pe testnet, coloana scrie în prezent **From fees**. O valoare necunoscută afișează o liniuță, niciodată 0.00%.
 - **Rang după puterea de vot.** Rangul se calculează din puterea de vot, deci rangul 1 este validatorul cu cel mai mult stake.
-- **Lipsurile sunt arătate cinstit.** Regiunea, blocurile propuse, versiunea software și ultima apariție sunt afișate doar când sursa de date le furnizează, iar un uptime necunoscut scrie **N/A**, nu 0%.
+- **Cifre reale, lipsuri arătate cinstit.** Comisionul este comisionul real al validatorului, iar un validator închis (jailed) este afișat ca **Jailed**. Regiunea, blocurile propuse, versiunea software și ultima apariție sunt afișate doar când rețeaua le raportează, ceea ce în prezent nu se întâmplă; un uptime necunoscut scrie **N/A**, nu 0%.
 
 ## Cum se folosește {#how-to-use}
 

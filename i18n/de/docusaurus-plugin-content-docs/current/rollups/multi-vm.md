@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` aus `@qorechain/rdk` 0.6.0 und neuer erstellt dieselbe Calldata für Sie:
+`encodeCrossVmCalldata` aus `@qorechain/rdk` 0.6.0 und neuer (aktuell ist 0.7.0) erstellt dieselbe Calldata für Sie:
 
 ```ts
 import {
@@ -75,6 +75,17 @@ const calldata = encodeCrossVmCalldata({
 
 `isCrossVmPrecompileActive(restBase)` liest den EVM-Parameter `active_static_precompiles` über REST und antwortet nur dann mit `active: true`, wenn die Adresse des Precompiles aufgeführt ist. Das ist die einzige verlässliche Prüfung, und sie muss off-chain erfolgen: Das Precompile gibt die Rohantwort des Ziels zurück, sodass eine leere Antwort ein inaktives Precompile nicht von einem echten Aufruf eines Contracts unterscheiden kann, der nichts zurückgibt, und ein Precompile hat keinen Bytecode, ob aktiv oder nicht. Selbst wenn es `active: true` meldet, dokumentiert das Paket, dass ein Aufruf ab Chain v3.2.3 nur die Ziele erreicht, die die Governance auf die Allowlist gesetzt hat (der VM-übergreifende Parameter `bridge_allowed_targets`, jeder Eintrag `<vm>:<contract>`), und dass EVM-zu-EVM abgelehnt wird.
 
+### Chain v3.2.5: Allowlist, Antwortformat und Ablehnungen (jetzt im Testnet, im Mainnet nach dem Upgrade) {#chain-v325}
+
+Chain v3.2.5 ändert das Verhalten der Bridge. Das Testnet läuft damit; **das Mainnet (v3.2.4) erst, wenn Governance-Vorschlag 14 angewendet ist**, und die Beschreibungen an anderer Stelle auf dieser Seite, nach denen das Precompile die Rohantwort des Ziels zurückgibt, beschreiben das heutige Mainnet.
+
+* **Eine Allowlist-Route.** `GET /qorechain/crossvm/v1/params` liefert die Bridge-Parameter, einschließlich der Allowlist der Ziele. Im Testnet ist die Allowlist leer (geprüft am 27. Oktober 2026), daher ist noch kein Ziel erlaubt.
+* **Ein festes Antwortformat.** Das Precompile gibt `abi.encode(bytes)` zurück, sodass eine Antwort immer mindestens 64 Bytes lang ist und sich eine leere Antwort von einer fehlenden unterscheiden lässt; dekodieren Sie sie mit `abi.decode(ret, (bytes))`.
+* **Ablehnungen tragen einen Grund.** Lehnt die Bridge einen Aufruf ab, bricht sie mit `Error(string)` ab (Revert), was ein Contract lesen und weitergeben kann.
+* **Das Precompile ist weiterhin nicht aktiv.** `0x...0901` steht in keinem der beiden Netzwerke in der Liste der aktiven Precompiles, daher ist nichts davon bisher Ende-zu-Ende gelaufen.
+
+`@qorechain/rdk` 0.7.0 hat dafür Helfer (gegen von Solidity erzeugte Kodierungen geprüft): `getCrossVmParams` (die Allowlist), `crossVmTargetReady` (Precompile aktiv, Bridge aktiviert und das Ziel auf der Allowlist, mit dem blockierenden Grund, wenn nicht), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) und `decodeRevertReason` (`Error(string)`).
+
 ## Die Solidity-Seite
 
 Aus einem EVM-Contract rufen Sie die Precompile-Adresse mit dem kodierten Aufruf auf:
@@ -94,7 +105,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit leeren Daten zurück und bewirkt nichts**; das `ok`-Flag sagt Ihnen nicht, ob der Aufruf eine Wirkung hatte. Der verlässliche Schutz im Contract ist ein Ziel, das stets eine nicht leere Bestätigung zurückgibt, mit einem `require(ret.length > 0)` nach dem Aufruf, sodass eine leere Antwort als Fehler behandelt wird; die `multivm-rollup`-Vorlage (0.6.0 bis 0.6.2) tut dies.
+Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit leeren Daten zurück und bewirkt nichts**; das `ok`-Flag sagt Ihnen nicht, ob der Aufruf eine Wirkung hatte. Der verlässliche Schutz im Contract ist ein Ziel, das stets eine nicht leere Bestätigung zurückgibt, mit einem `require(ret.length > 0)` nach dem Aufruf, sodass eine leere Antwort als Fehler behandelt wird; die `multivm-rollup`-Vorlage tut dies (ab 0.6.0).
 
 ## Ein Multi-VM-Rollup per Scaffold erstellen
 
@@ -102,4 +113,4 @@ Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit le
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Die `multivm-rollup`-Vorlage (0.6.0 bis 0.6.2) enthält `src/crossvm-call.ts` (es prüft, ob das Precompile aktiv ist, und gibt dann die Calldata aus) und einen `contracts/CrossVmCaller.sol`, der `executeCrossVMCall(uint8,string,bytes)` aufruft und eine nicht leere Antwort des Ziels verlangt. Er lässt einen Aufruf nicht funktionieren, solange das Precompile inaktiv ist. Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für alle Scaffolder-Vorlagen.
+Die `multivm-rollup`-Vorlage enthält `src/crossvm-call.ts` (es prüft, ob das Precompile aktiv ist, und gibt dann die Calldata aus) und einen `contracts/CrossVmCaller.sol`, der `executeCrossVMCall(uint8,string,bytes)` aufruft und eine nicht leere Antwort des Ziels verlangt. Ab 0.7.0 dekodiert der Contract das Ergebnis `abi.encode(bytes)`, verlangt die 64-Byte-Untergrenze, die ein aktives Precompile zurückgibt, und reicht den Ablehnungsgrund der Chain durch. Er lässt einen Aufruf nicht funktionieren, solange das Precompile inaktiv ist. Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für alle Scaffolder-Vorlagen.

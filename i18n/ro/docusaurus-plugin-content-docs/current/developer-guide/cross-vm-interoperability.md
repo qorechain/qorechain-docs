@@ -88,7 +88,7 @@ contract CrossVMCaller {
 
 Aceasta este structura pe care o decodifică nodul; este aceeași structură pe care o construiește encoderul `@qorechain/rdk`, iar contractul de mai sus corespunde șablonului de pornire din [Multi-VM](/rollups/multi-vm). Fondurile nu pot fi atașate prin precompile (calea prin mesajul `MsgCrossVMCall` acceptă `--funds`). Exemplul nu poate face nimic pe nicio rețea astăzi, deoarece precompile-ul nu este activ (vezi avertismentul de mai sus); ABI-ul se mai poate schimba înainte de activare.
 
-Odată activ, precompile-ul execută imediat contractul QoreChain Native și returnează rezultatul. (Helperul `encodeCrossVmCalldata` din `@qorechain/rdk`, disponibil din 0.6.0 și în curentul 0.6.2, construiește calldata; vezi [Multi-VM](/rollups/multi-vm).) Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
+Odată activ, precompile-ul execută imediat contractul QoreChain Native și returnează rezultatul. (Helperul `encodeCrossVmCalldata` din `@qorechain/rdk`, disponibil din 0.6.0 și în curentul 0.7.0, construiește calldata; vezi [Multi-VM](/rollups/multi-vm).) Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
 
 ---
 

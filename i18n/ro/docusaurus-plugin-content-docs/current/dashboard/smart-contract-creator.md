@@ -17,10 +17,10 @@ Codul generat este un punct de plecare solid, nu un substitut pentru analiză. C
 
 - **O generare fără cont.** Un vizitator nou poate genera o dată și vede întregul contract. Este limitată pe vizitator și printr-un plafon zilnic global. Un rezultat din încercarea gratuită nu are **Deploy** și nu are **Edit** funcțional; pagina oferă după aceea **Create a free account**.
 - **O generare gratuită în fiecare zi UTC, când ești autentificat.** Prima generare din fiecare zi UTC este gratuită pe ambele rețele. După aceea, pe testnet fiecare generare se plătește în QOR de test din portofelul tău de test, după o fereastră „Confirm Contract Generation” care afișează „Generation Cost”. Pe mainnet Panoul nu deține chei, așa că generările suplimentare sunt refuzate până în următoarea zi UTC.
-- **Exemple de pornire care completează tot.** **Token**, **NFT collection**, **Locked vault** și **2-of-3 multisig** completează fiecare o descriere completă, setează ținta la QoreChain și aleg un șablon.
+- **Exemple de pornire care completează tot.** **Token**, **NFT collection**, **Locked vault** și **2-of-3 multisig** completează fiecare o descriere completă, setează ținta la QoreChain și aleg un șablon. Șabloanele „PQC Token” și „PQC NFT” descriu contracte pentru conturi care semnează cu ML-DSA-87.
 - **17 blockchain-uri țintă,** fiecare cu propriile șabloane plus „Custom (describe in prompt)”: QoreChain, Cosmos, Ethereum, Solana, Avalanche, NEAR, Polygon, BSC, TON, Cardano, Polkadot, Tezos, Arbitrum, Optimism, Sui, Aptos și Tron.
 - **Implementare non-custodială pe EVM de mainnet.** Panoul compilează contractul și returnează date de implementare **nesemnate**. Orice portofel EVM injectat (MetaMask, Rabby, Coinbase Wallet) adaugă sau comută pe chain 9801, apoi semnează și transmite; Panoul înregistrează adresa după aceea.
-- **Coduri QoreChain Native aprobate prin guvernanță, pe testnet.** Codul generat nu este încărcat. Instanțiezi un cod pe care guvernanța testnet-ului l-a aprobat deja, citit direct din chain: token CW20 (cw20-base), colecție NFT (cw721-base), grup de membri (cw4-group), multisig (cw3-fixed-multisig) și exemplul Counter (qore-counter). Mesajul de instanțiere este precompletat și editabil.
+- **Contracte QoreChain Native aprobate, pe testnet.** În timpul fest-ului testnet, încărcările de contracte sunt analizate prin guvernanță, deci codul generat nu este încărcat. Instanțiezi un contract aprobat, cu lista citită direct din chain: token CW20 (cw20-base), colecție NFT (cw721-base), grup de membri (cw4-group), multisig (cw3-fixed-multisig) și exemplul Counter (qore-counter). Mesajul de instanțiere este precompletat și editabil.
 - **Feedback de compilare în fereastră.** Erorile apar direct în fereastră, fereastra cere argumentele constructorului pe care nu le poate deduce, iar câmpurile tokenului sunt citite în prealabil din cod sau din prompt.
 - **Privat în mod implicit, cu fork când este public.** Proprietarul comută între **Public** și **Private**; un non-proprietar al unui contract public îl poate **Fork**-ui.
 
@@ -70,7 +70,12 @@ Alte ținte pe mainnet afișează „Direct deploy not available for this contra
 #### Pe testnet, un singur clic {#deploy-testnet}
 
 - **EVM:** selectează **Deploy to Testnet**. Portofelul de test al Panoului semnează și trimite implementarea; succesul afișează „Deployed on Testnet”. Iterează cu tokenuri de la [Faucet](/dashboard/faucet) înainte de a trece pe mainnet.
-- **QoreChain Native:** alege un **Approved contract**, setează **Label \***, verifică sau editează **Instantiate message (JSON)** și selectează **Instantiate on Testnet**. Încărcările de contracte pe testnet sunt analizate prin guvernanță, de aceea instanțiezi coduri aprobate în loc să le încarci pe ale tale. Codurile aprobate pe care Panoul nu le recunoaște apar cu un mesaj gol. Contractele personalizate merg pe EVM-ul QoreChain (Solidity).
+- **QoreChain Native:** în timpul fest-ului testnet, încărcările de contracte sunt analizate prin guvernanță, așa că în loc să încarci codul generat, instanțiezi un contract aprobat. În fereastră:
+  1. Alege un **Approved contract**. Lista este citită direct din chain și oferă în prezent token CW20 (cw20-base), colecție NFT (cw721-base), grup de membri (cw4-group), multisig (cw3-fixed-multisig) și exemplul Counter (qore-counter).
+  2. Verifică **Instantiate message (JSON)**. Este precompletat din câmpurile tokenului tău și editabil; un cod aprobat pe care Panoul nu îl recunoaște apare cu un mesaj gol.
+  3. Setează **Label \***, apoi selectează **Instantiate on Testnet**. Este semnat cu portofelul tău de test, iar rezultatul afișează adresa contractului și tranzacția.
+  
+  Contractele personalizate merg pe EVM-ul QoreChain (Solidity).
 - Din Panou pot fi implementate doar contractele EVM și codurile QoreChain Native aprobate. Un contract scris pentru alt chain EVM (Polygon, BSC, Arbitrum și așa mai departe) se implementează pe EVM-ul QoreChain, nu în rețeaua proprie a acelui chain; contractele pentru chain-uri non-EVM nu pot fi implementate de aici.
 
 **Exemplu minimal (testnet):** selectează **Token**, **Generate Smart Contract**, Confirm, **Deploy**, alege „CW20 token (cw20-base)”, Label `my-token`, **Instantiate on Testnet**.
