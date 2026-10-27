@@ -84,7 +84,7 @@ console.log("EVM window:", win.found, win.live);
 
 `fetchEvmWindow({ rest, address })` は、`found`、`live`、開始高さと有効期限の高さ、トランザクション数と金額の上限および使用済み量、残りのブロック数・トランザクション数・金額、`nativeOnly`、`allowedTargets` を返します。
 
-これはライブラリ関数です。ダッシュボードの[開発者](/dashboard/developers)ページには、まだトランザクションインスペクターのタブはありません。
+これはライブラリ関数です。ダッシュボードの[開発者](/dashboard/developers#inspector)ページには、これを使うトランザクションインスペクターのタブがあります。トランザクションハッシュを貼り付けると、コードを書かずに結果を読み取れます。
 
 ## 用途 {#use-cases}
 

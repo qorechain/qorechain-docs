@@ -7,14 +7,15 @@ sidebar_position: 13
 
 # Developers
 
-La página **Developers** (`/developers`, barra lateral grupo **Build**, entrada **Developers**) es una página pública de herramientas para construir sobre QoreChain. No necesita cuenta. Tiene seis pestañas: **SDKs**, **PQ key status**, **Simulator**, **Signing playground**, **QoreX test wallet** y **AI agents (MCP)**. Juntas te permiten encontrar e instalar el paquete adecuado, comprobar qué clave post-cuántica tiene registrada una cuenta y si su ventana de autorización EVM está abierta, hacer una simulación de una transacción firmada, practicar la firma híbrida con una clave desechable y probar una dApp contra una wallet QoreX simulada, todo en el navegador. Está pensada para desarrolladores de dApps, wallets y backends. Un **Transaction inspector** está previsto y todavía no está activo (consulta [Límites](#limits)). Para las bibliotecas en sí, consulta [Paquetes para desarrolladores](/developer-tools/overview), la [Visión General del SDK](/sdk/overview) e [Instalación](/sdk/install).
+La página **Developers** (`/developers`, barra lateral grupo **Build**, entrada **Developers**) es una página pública de herramientas para construir sobre QoreChain. No necesita cuenta. Tiene siete pestañas: **SDKs**, **Transaction inspector**, **PQ key status**, **Simulator**, **Signing playground**, **QoreX test wallet** y **AI agents (MCP)**. Juntas te permiten encontrar e instalar el paquete adecuado, leer cualquier transacción confirmada y ver si su capa post-cuántica se verifica, comprobar qué clave post-cuántica tiene registrada una cuenta y si su ventana de autorización EVM está abierta, hacer una simulación de una transacción firmada, practicar la firma híbrida con una clave desechable y probar una dApp contra una wallet QoreX simulada, todo en el navegador. Está pensada para desarrolladores de dApps, wallets y backends. Para las bibliotecas en sí, consulta [Paquetes para desarrolladores](/developer-tools/overview), la [Visión General del SDK](/sdk/overview) e [Instalación](/sdk/install).
 
 ## Innovaciones {#innovations}
 
 - **Una puerta de enlace de solo lectura a la cadena.** Las herramientas leen datos públicos de la cadena y simulan una transacción a través de una puerta de enlace de solo lectura bajo las rutas de consulta `cosmos/`, `cosmwasm/` y `qorechain/` más la llamada de simulación. Nada en la página puede transmitir una transacción. La puerta de enlace existe porque los endpoints REST de la cadena no envían cabeceras CORS de navegador.
 - **Claves que nunca salen del navegador.** Las claves del signing playground y de la test wallet se generan en tu navegador y se conservan solo en memoria. Nunca se guardan ni se envían, y desaparecen al recargar. Esas dos pestañas son solo de testnet y rechazan mainnet.
 - **La biblioteca de firma de producción, no una demo.** El playground usa [QoreSign](/qoresign/overview), la misma biblioteca de código abierto que usan las integraciones de producción. Produce y verifica firmas híbridas: una firma secp256k1 más una firma ML-DSA-87 sobre el mismo mensaje.
-- **Un centro de paquetes generado a partir de datos probados.** La pestaña **SDKs** lista unos 40 paquetes a partir de un único manifiesto. Las versiones se leen en vivo de cada registro (se actualizan cada 10 minutos, y se muestra la última versión comprobada con su fecha si no se puede alcanzar un registro), y cada inicio rápido fue ejecutado por el equipo del SDK contra los registros públicos, con la salida que observaron mostrada a su lado.
+- **Un centro de paquetes generado a partir de datos probados.** La pestaña **SDKs** lista 48 paquetes a partir de un único manifiesto. Las versiones se leen en vivo de cada registro (se actualizan cada 10 minutos, y se muestra la última versión comprobada con su fecha si no se puede alcanzar un registro), y cada inicio rápido fue ejecutado por el equipo del SDK contra los registros públicos, con la salida que observaron mostrada a su lado.
+- **Un veredicto que puedes reproducir.** El **Transaction inspector** lee una transacción confirmada e informa de si su capa ML-DSA-87 se verifica contra la clave que el firmante tiene registrada, con la versión de los bytes de firma y el motivo cuando no se verifica, usando la función `inspectTransaction` de [QoreSign](/qoresign/overview) 0.1.1, de modo que la misma comprobación se ejecuta en tu propio código. Es de solo lectura.
 - **Respuestas de la cadena, no suposiciones.** **PQ key status** lee la clave ML-DSA-87 registrada y el estado de la ventana EVM desde las propias rutas de consulta del nodo, de modo que puedes ver por qué se rechazaría una transacción EVM antes de enviarla.
 
 ## Cómo usarlo {#how-to-use}
@@ -23,7 +24,7 @@ Abre [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/develope
 
 ### SDKs {#sdks}
 
-**Qué hace.** Lista todas las bibliotecas de QoreChain, agrupadas por producto. El manifiesto contiene unos 40 paquetes en TypeScript, Python, Go, Rust, Java, Kotlin y Swift. La mayoría son estables; uno está obsoleto, y un paquete que todavía no está en su registro se marca como tal. Los productos, en el orden mostrado, son: QoreChain SDK (core, hooks de React, EVM, SVM, el starter de dApps y los ports a Python, Rust, Go y Java), QoreSign, RDK (el kit de desarrollo de rollups, su herramienta de línea de comandos, el starter de rollups y los ports a Python, Rust, Go y Java), la biblioteca PQC, el wallet adapter, el chain bridge, Handles, las integraciones de QoreX, y MCP y la CLI `qore`.
+**Qué hace.** Lista todas las bibliotecas de QoreChain, agrupadas por producto. El manifiesto contiene 48 paquetes en TypeScript, Python, Go, Rust, Java, Kotlin y Swift. 46 son estables, 1 está obsoleto y 1 todavía no está en su registro y se marca como **Not published yet** (QoreSeal para npm). Los productos, en el orden mostrado, son: QoreChain SDK (core, hooks de React, EVM, SVM, el starter de dApps y los ports a Python, Rust, Go y Java), QoreSign (incluido QoreSign para Python), QoreSeal (cifrado hacia cuentas con ML-KEM-1024, testnet; consulta [QoreSeal](/developer-tools/qoreseal), en Rust, Go, Python, Swift, Kotlin y Android), RDK (el kit de desarrollo de rollups, su herramienta de línea de comandos, el starter de rollups y los ports a Python, Rust, Go y Java), la biblioteca PQC, el wallet adapter, el chain bridge, Handles, las integraciones de QoreX, y MCP y la CLI `qore`.
 
 **Cómo funciona.** Cada producto es una tarjeta. Si el producto se distribuye en varios lenguajes, un selector de lenguaje (pills) cambia el paquete mostrado. Cada paquete muestra:
 
@@ -47,6 +48,37 @@ Un paquete que no está publicado muestra "This package is not on its registry y
 **Ejemplo mínimo.** Escribe `python` en el filtro, abre **QoreChain SDK**, elige la pill **Python**, copia el comando de instalación de **Install**, y luego copia el inicio rápido y ejecútalo.
 
 **Red.** Lista estática más lecturas de registros en vivo; no se aplica ninguna elección de red.
+
+### Transaction inspector {#inspector}
+
+**Qué hace.** Lee una transacción confirmada a partir de su hash y explica quién la firmó, cuánto costó, si su capa post-cuántica se verifica y en qué nivel de seguridad se sitúa. Es de solo lectura: no se firma ni se envía nada.
+
+**Cómo funciona.** La página pide a la puerta de enlace de solo lectura del Dashboard la transacción en la red que elijas y ejecuta sobre ella la función `inspectTransaction` de [QoreSign](/qoresign/overview) 0.1.1 (consulta el [inicio rápido de QoreSign](/qoresign/quickstart) para ejecutar la misma comprobación en código). La capa post-cuántica se comprueba contra la clave ML-DSA-87 que el firmante tiene registrada **ahora**, así que una rotación de clave posterior puede hacer que una transacción más antigua aparezca como no verificada.
+
+**Pasos.**
+
+1. Abre la pestaña **Transaction inspector** (está justo después de **SDKs**) y elige **Testnet** o **Mainnet** con el selector.
+2. Pega el **Transaction hash**: 64 caracteres hexadecimales, con o sin `0x`. Un hash mal formado se rechaza antes de pedir nada.
+3. Selecciona **Inspect**.
+4. Lee el resultado:
+   - **Overview:** **Status** (**Success**, o **Failed** con el codespace y el código), **Height**, **Chain id**, **Memo**, **Fee** con el **Gas limit** (y el pagador o el concedente de la comisión cuando se indican) y **Open in explorer**. El explorador sigue la red elegida en el encabezado, así que una nota te indica que la cambies cuando la transacción está en la otra red.
+   - **Signer:** **Address**, **Key type**, **Sequence**, **Public key** y **Classical signature valid**. Las transacciones del carril EVM no llevan aquí información del firmante, y la pestaña lo indica.
+   - **Post-quantum layer:** **Present**, **Count**, **Algorithm** (ML-DSA-87), **Verified** (sí o no), **Sign-bytes version** y, cuando no está verificada, el **Reason**.
+   - **Security tier**, con estas definiciones:
+
+     | Nivel | Significado |
+     | --- | --- |
+     | **PQC** | Lleva la capa ML-DSA-87: una firma híbrida. |
+     | **Enrollment** | Registra o gestiona la clave ML-DSA-87 de la cuenta, y está firmada con la clave clásica por diseño. |
+     | **SHAKE** | Una transacción del carril nativo sin la capa ML-DSA-87. |
+     | **Classical** | Una transacción del carril EVM, firmada solo con secp256k1. |
+
+   - **Messages:** la URL de tipo de cada mensaje y su valor sin procesar (**Show raw value (base64)**), y el **Raw JSON**.
+5. Un hash desconocido muestra "No transaction with this hash was found on ..." con una indicación para comprobar el hash o cambiar de red. Los nodos de testnet podan el historial antiguo, así que una transacción antigua de testnet puede haber desaparecido.
+
+**Ejemplo mínimo.** Elige **Testnet** y pega `124E5B2B5B5A8AE7CBA254224CBA07F5014BD1B0014C164A8208E5D7EC0C664E`: el nivel muestra **PQC** y la capa post-cuántica muestra **Verified** (comprobado el 27 de octubre de 2026; si esa transacción ya se ha podado, usa el hash de una transferencia reciente de testnet).
+
+**Red.** Mainnet o testnet, mediante el selector de la pestaña (por defecto testnet).
 
 ### PQ key status {#pq-status}
 
@@ -142,7 +174,7 @@ Límites: una clave activa por cuenta, 10 solicitudes por segundo (ráfaga de 20
 
 - **URL:** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers), o **Developers** en el grupo **Build** de la barra lateral (y en el menú móvil).
 - **Inicio de sesión:** ninguno para la página y sus herramientas. Solicitar una clave de API para el endpoint MCP alojado requiere iniciar sesión.
-- **Red:** **PQ key status** y **Simulator** funcionan en mainnet o testnet mediante el selector de la pestaña (por defecto testnet). **Signing playground** y **QoreX test wallet** son solo de testnet. **SDKs** y **AI agents (MCP)** no dependen de una red.
+- **Red:** **Transaction inspector**, **PQ key status** y **Simulator** funcionan en mainnet o testnet mediante el selector de la pestaña (por defecto testnet). **Signing playground** y **QoreX test wallet** son solo de testnet. **SDKs** y **AI agents (MCP)** no dependen de una red.
 - **Wallet:** ninguna. Las herramientas generan sus propias claves desechables.
 - **Coste:** gratis. No se envía nada a la cadena salvo consultas de lectura y llamadas de simulación.
 - **Privacidad:** las claves desechables existen solo en la memoria de la página. No pegues una frase de recuperación real en ninguna herramienta.
@@ -152,7 +184,7 @@ Límites: una clave activa por cuenta, 10 solicitudes por segundo (ráfaga de 20
 | Superficie | Dirección | Redes |
 | --- | --- | --- |
 | Página Developers | `dashboard.qorechain.io/developers` | Herramientas de lectura en mainnet y testnet; herramientas de firma solo en testnet |
-| Biblioteca de firma | npm `@qorechain/qoresign`, código fuente `github.com/qorechain/qoresign`, consulta [QoreSign](/qoresign/overview) | n/a |
+| Biblioteca de firma | npm `@qorechain/qoresign` (0.1.1 añade `inspectTransaction`), PyPI QoreSign para Python, código fuente `github.com/qorechain/qoresign`, consulta [QoreSign](/qoresign/overview) | n/a |
 | Paquete de la test wallet | npm `@qorechain/qorex-wallet-mock`, código fuente `github.com/qorechain/qorex-integrations` | Testnet |
 | Índice de paquetes | [Paquetes para desarrolladores](/developer-tools/overview) | n/a |
 | Servidor MCP | npm `@qorechain/mcp` 0.1.0 y `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0; guía: [Servidor MCP de QoreChain](/developer-tools/mcp) | Testnet por defecto |
@@ -161,9 +193,9 @@ Las versiones de los paquetes cambian; consulta las actuales en la pestaña **SD
 
 ## Límites y problemas conocidos {#limits}
 
-- **Transaction inspector: próximamente, todavía no activo.** Previsto: pegar un hash y ver cada mensaje, el firmante, la comisión, si la firma post-cuántica se verifica contra la clave registrada del firmante, y el nivel de seguridad. Llegará con la próxima versión de QoreSign.
+- **El inspector juzga contra la clave registrada ahora.** Tras una rotación de clave, una transacción más antigua puede aparecer como no verificada. Solo lee transacciones confirmadas.
 - **El endpoint MCP alojado necesita una clave de API.** Solicita una desde tu panel (una clave activa por cuenta, 10 solicitudes por segundo, 100 000 por día); la configuración local no necesita ninguna. Usa la configuración local para la mayor parte del trabajo.
-- **Dos inicios rápidos están marcados como "Not tested":** QoreSign para Android (el mismo código se ejecutó solo en el artefacto JVM, no en un dispositivo) y QoreSign para Python. Las otras 32 entradas de inicio rápido se ejecutaron y pasaron.
+- **Dos inicios rápidos están marcados como "Not tested":** QoreSign para Android y QoreSeal para Android (el mismo código se ejecutó en el artefacto JVM, no en un dispositivo). Los demás inicios rápidos probados se ejecutaron y pasaron.
 - **El simulador necesita bytes firmados.** No puede firmar por ti y nunca transmite.
 - **El playground y la test wallet son solo de testnet,** usan claves desechables que desaparecen al recargar y no pueden guardar ni mover fondos reales.
 - **Una extensión QoreX real en la misma pestaña es reemplazada** por la test wallet hasta que recargues.

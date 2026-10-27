@@ -84,7 +84,7 @@ Guárdalo como `inspect.mjs` y ejecuta `node inspect.mjs <txhash>` con el hash d
 
 `fetchEvmWindow({ rest, address })` devuelve `found`, `live`, las alturas de apertura y de expiración, el máximo y lo usado de transacciones y de valor, los bloques, transacciones y valor restantes, `nativeOnly` y `allowedTargets`.
 
-Esta es la función de la biblioteca. La página [Developers](/dashboard/developers) del dashboard aún no tiene una pestaña de inspector de transacciones.
+Esta es la función de la biblioteca. La página [Developers](/dashboard/developers#inspector) del dashboard tiene una pestaña Transaction inspector que la usa: pega un hash de transacción y lee el resultado sin escribir código.
 
 ## Para qué se usa {#use-cases}
 

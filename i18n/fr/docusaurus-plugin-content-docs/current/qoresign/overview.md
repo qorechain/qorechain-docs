@@ -84,7 +84,7 @@ Enregistrez-le sous `inspect.mjs` et exécutez `node inspect.mjs <txhash>` avec 
 
 `fetchEvmWindow({ rest, address })` renvoie `found`, `live`, les hauteurs d'ouverture et d'expiration, le maximum et l'utilisation de transactions et de valeur, les blocs, transactions et valeur restants, `nativeOnly` et `allowedTargets`.
 
-Ceci est la fonction de la bibliothèque. La page [Développeurs](/dashboard/developers) du tableau de bord n'a pas encore d'onglet Inspecteur de transactions.
+Ceci est la fonction de la bibliothèque. La page [Développeurs](/dashboard/developers#inspector) du tableau de bord a un onglet Transaction inspector qui l'utilise : collez un hash de transaction et lisez le résultat sans écrire de code.
 
 ## À quoi elle sert {#use-cases}
 

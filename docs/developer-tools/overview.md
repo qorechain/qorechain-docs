@@ -61,16 +61,17 @@ Install one package and run its quickstart against the public testnet first. Rea
 
 ### The dashboard developer page {#dashboard-developers}
 
-The dashboard has a public page at [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Checked on 27 October 2026 it has six tabs (full walkthrough: [Developers](/dashboard/developers)):
+The dashboard has a public page at [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Checked on 27 October 2026 it has seven tabs (full walkthrough: [Developers](/dashboard/developers)):
 
 - **SDKs:** the SDK hub. Every package in the manifest, grouped by product, with a language selector, the latest version read live from each registry, install and import lines with copy buttons, the quickstart with the output the SDK team observed, known issues, and the chain ids and public endpoints. Packages that are not published show no install command.
+- **Transaction inspector:** paste a 64-hex transaction hash on testnet or mainnet and see the status, signer, fee, whether the post-quantum layer verifies, and the security tier (PQC, Enrollment, SHAKE or Classical). It uses the QoreSign 0.1.1 function `inspectTransaction`: see [Transaction inspector](/qoresign/overview#inspector).
 - **PQ key status:** reads the ML-DSA-87 key an address has registered on chain and its EVM authorization window, on testnet or mainnet.
 - **Simulator:** dry-runs a signed transaction (base64 or hex `TxRaw`) and shows gas use and balance changes. Nothing is broadcast.
 - **Signing playground:** testnet only. Generates a throwaway hybrid key in the browser, kept in memory, to sign and verify messages and Sign In With QoreChain requests.
 - **QoreX test wallet:** testnet only. Injects a test wallet (`window.qorex`, announced over EIP-6963 as "QoreX (mock)") into the tab so you can try dApp flows.
 - **AI agents (MCP):** the status of the QoreChain MCP server (published) and the setup for an MCP client: local `npx` first, plus a hosted testnet endpoint that needs an API key. See [QoreChain MCP server](/developer-tools/mcp).
 
-A **Transaction inspector** tab (paste a hash, see every message, the signer, the fee and whether the post-quantum signature verifies) is not on the dashboard page yet; on 27 October 2026 the page still showed the six tabs above. The same check is available now as a library function, `inspectTransaction`, in QoreSign 0.1.1 (TypeScript): see [Transaction inspector](/qoresign/overview#inspector). The tables below and the SDK hub show the same package data; the tables were checked against the registries on 27 October 2026.
+The same inspector check is available in code as the library function `inspectTransaction` in QoreSign 0.1.1 (TypeScript). The tables below and the SDK hub show the same package data; the tables were checked against the registries on 27 October 2026.
 
 ## Where it is published {#where-published}
 
@@ -284,7 +285,7 @@ For a scoped npm name keep the `@`, for example `https://registry.npmjs.org/@qor
 ## Limits and known issues {#limits}
 
 - **Two live networks, different versions.** Mainnet runs v3.2.4 and testnet runs v3.2.6. A feature that exists only on testnet is marked on its own page. Do not assume v3.2.5 behaviour on mainnet.
-- **Not live yet:** the Transaction inspector tab on the dashboard developer page (the library function `inspectTransaction` in QoreSign 0.1.1 is published), `@qorechain/qoreseal` on npm, SDK 0.11.0 (the chain developer kit) on npm, SVM transactions, and the EVM precompiles on mainnet (they are active on testnet only; see the [SDK overview](/sdk/overview) for the lane-by-lane list).
+- **Not live yet:** `@qorechain/qoreseal` on npm, SDK 0.11.0 (the chain developer kit) on npm, SVM transactions, and the EVM precompiles on mainnet (they are active on testnet only; see the [SDK overview](/sdk/overview) for the lane-by-lane list).
 - **QoreSeal registry and the PQ light client.** Encrypting to an address read from the chain needs the KEM key registry, live on testnet and coming to mainnet after v3.2.5. The PQ light client does not connect to either network; no chain support for its checkpoints is scheduled.
 - **Kotlin 2.3 or later.** The QoreSign and QoreSeal Kotlin and Android artifacts need the Kotlin 2.3 or later compiler; Kotlin 2.1 fails to compile against them.
 - **No Windows wheels.** The QoreSign and QoreSeal Python packages have wheels for macOS and Linux only; other platforms build from the source distribution, which needs Rust.

@@ -7,14 +7,15 @@ sidebar_position: 13
 
 # 開発者
 
-**Developers** ページ(`/developers`、サイドバーの **Build** グループ内の **Developers** 項目)は、QoreChain 上で構築するためのツールをまとめた公開ページです。アカウントは不要です。**SDKs**、**PQ key status**、**Simulator**、**Signing playground**、**QoreX test wallet**、**AI agents (MCP)** の6つのタブがあります。これらを使うと、適切なパッケージを見つけてインストールしたり、アカウントが登録したポスト量子鍵とその EVM 認可ウィンドウが開いているかどうかを確認したり、署名済みトランザクションをドライランしたり、使い捨ての鍵でハイブリッド署名を練習したり、モックの QoreX ウォレットを相手に dApp を動作確認したりできます。これらはすべてブラウザ上で行えます。dApp、ウォレット、バックエンドの開発者向けです。**Transaction inspector** は計画中で、まだ稼働していません([制限事項](#limits)を参照)。ライブラリそのものについては、[開発者向けパッケージ](/developer-tools/overview)、[SDK 概要](/sdk/overview)、[インストール](/sdk/install)を参照してください。
+**Developers** ページ(`/developers`、サイドバーの **Build** グループ内の **Developers** 項目)は、QoreChain 上で構築するためのツールをまとめた公開ページです。アカウントは不要です。**SDKs**、**Transaction inspector**、**PQ key status**、**Simulator**、**Signing playground**、**QoreX test wallet**、**AI agents (MCP)** の7つのタブがあります。これらを使うと、適切なパッケージを見つけてインストールしたり、コミット済みのトランザクションを読み取ってそのポスト量子レイヤーが検証されるかどうかを確認したり、アカウントが登録したポスト量子鍵とその EVM 認可ウィンドウが開いているかどうかを確認したり、署名済みトランザクションをドライランしたり、使い捨ての鍵でハイブリッド署名を練習したり、モックの QoreX ウォレットを相手に dApp を動作確認したりできます。これらはすべてブラウザ上で行えます。dApp、ウォレット、バックエンドの開発者向けです。ライブラリそのものについては、[開発者向けパッケージ](/developer-tools/overview)、[SDK 概要](/sdk/overview)、[インストール](/sdk/install)を参照してください。
 
 ## イノベーション {#innovations}
 
 - **チェーンへの読み取り専用ゲートウェイ。** これらのツールは、`cosmos/`、`cosmwasm/`、`qorechain/` の各クエリパスと simulate 呼び出しに対する読み取り専用のゲートウェイを通じて、公開されているチェーンのデータを読み取り、トランザクションをシミュレートします。ページ上のどの操作も、トランザクションをブロードキャストすることはできません。このゲートウェイが存在するのは、チェーンの REST エンドポイントがブラウザの CORS ヘッダーを送信しないためです。
 - **鍵がブラウザの外に出ません。** Signing playground と test wallet の鍵はブラウザ内で生成され、メモリ上にのみ保持されます。保存も送信もされず、再読み込みすると消えます。この2つのタブはテストネット専用で、メインネットを拒否します。
 - **デモではなく、本番の署名ライブラリ。** Playground は、本番の統合と同じオープンソースライブラリである [QoreSign](/qoresign/overview) を使用します。同じメッセージに対する secp256k1 署名と ML-DSA-87 署名からなるハイブリッド署名を生成し、検証します。
-- **テスト済みのデータから生成されるパッケージハブ。** **SDKs** タブは、1つのマニフェストから約40個のパッケージを一覧表示します。バージョンは各レジストリからライブで読み取られ(10分ごとに更新され、レジストリに到達できない場合は最後に確認したバージョンとその日付が表示されます)、各クイックスタートは SDK チームが公開レジストリに対して実行したもので、観測された出力が横に表示されます。
+- **テスト済みのデータから生成されるパッケージハブ。** **SDKs** タブは、1つのマニフェストから48個のパッケージを一覧表示します。バージョンは各レジストリからライブで読み取られ(10分ごとに更新され、レジストリに到達できない場合は最後に確認したバージョンとその日付が表示されます)、各クイックスタートは SDK チームが公開レジストリに対して実行したもので、観測された出力が横に表示されます。
+- **再現できる判定。** **Transaction inspector** は、コミット済みのトランザクションを読み取り、その ML-DSA-87 レイヤーが署名者の登録済みの鍵に対して検証されるかどうかを報告します。検証されない場合は、sign-bytes のバージョンとその理由も示します。これには [QoreSign](/qoresign/overview) 0.1.1 の `inspectTransaction` 関数を使用しているため、同じ確認をご自身のコードでも実行できます。読み取り専用です。
 - **推測ではなく、チェーンの答え。** **PQ key status** は、登録済みの ML-DSA-87 鍵と EVM ウィンドウの状態を、ノード自身のクエリルートから読み取ります。そのため、EVM トランザクションが拒否される理由を、送信する前に確認できます。
 
 ## 使い方 {#how-to-use}
@@ -23,7 +24,7 @@ sidebar_position: 13
 
 ### SDKs {#sdks}
 
-**できること。** すべての QoreChain ライブラリを、製品ごとにまとめて一覧表示します。マニフェストには、TypeScript、Python、Go、Rust、Java、Kotlin、Swift にまたがる約40個のパッケージがあります。大半は安定版で、1個は非推奨です。レジストリにまだないパッケージには、その旨が表示されます。製品は、表示順に次のとおりです。QoreChain SDK(コア、React フック、EVM、SVM、dApp スターター、および Python、Rust、Go、Java への移植版)、QoreSign、RDK(ロールアップ開発キット、そのコマンドラインツール、ロールアップスターター、および Python、Rust、Go、Java への移植版)、PQC ライブラリ、ウォレットアダプター、チェーンブリッジ、Handles、QoreX 統合、そして MCP と `qore` CLI。
+**できること。** すべての QoreChain ライブラリを、製品ごとにまとめて一覧表示します。マニフェストには、TypeScript、Python、Go、Rust、Java、Kotlin、Swift にまたがる48個のパッケージがあります。46個は安定版、1個は非推奨で、1個はまだレジストリになく **Not published yet** と表示されます(npm 向けの QoreSeal)。製品は、表示順に次のとおりです。QoreChain SDK(コア、React フック、EVM、SVM、dApp スターター、および Python、Rust、Go、Java への移植版)、QoreSign(Python 向けの QoreSign を含む)、QoreSeal(ML-KEM-1024 によるアカウント宛ての暗号化、テストネット。[QoreSeal](/developer-tools/qoreseal) を参照。Rust、Go、Python、Swift、Kotlin、Android 向け)、RDK(ロールアップ開発キット、そのコマンドラインツール、ロールアップスターター、および Python、Rust、Go、Java への移植版)、PQC ライブラリ、ウォレットアダプター、チェーンブリッジ、Handles、QoreX 統合、そして MCP と `qore` CLI。
 
 **仕組み。** 各製品はカードになっています。製品が複数の言語で提供されている場合は、言語セレクター(ピル)で表示するパッケージを切り替えます。各パッケージには次の内容が表示されます。
 
@@ -47,6 +48,37 @@ sidebar_position: 13
 **最小限の例。** フィルターに `python` と入力し、**QoreChain SDK** を開き、**Python** のピルを選び、**Install** からインストールコマンドをコピーしてから、クイックスタートをコピーして実行します。
 
 **ネットワーク。** 静的な一覧とレジストリのライブ読み取りです。ネットワークの選択は適用されません。
+
+### Transaction inspector {#inspector}
+
+**できること。** コミット済みのトランザクションをハッシュで読み取り、誰が署名したか、いくらかかったか、そのポスト量子レイヤーが検証されるか、どのセキュリティ階層に当たるかを説明します。読み取り専用で、署名も送信も行いません。
+
+**仕組み。** ページは、選択したネットワーク上のトランザクションを Dashboard の読み取り専用ゲートウェイに問い合わせ、その結果に対して [QoreSign](/qoresign/overview) 0.1.1 の `inspectTransaction` 関数を実行します(同じ確認をコードで実行するには、[QoreSign クイックスタート](/qoresign/quickstart)を参照)。ポスト量子レイヤーは、署名者が**現在**登録している ML-DSA-87 鍵に対して確認されるため、後から鍵をローテーションすると、古いトランザクションが未検証として表示されることがあります。
+
+**手順。**
+
+1. **Transaction inspector** タブ(**SDKs** のすぐ右にあります)を開き、トグルで **Testnet** または **Mainnet** を選びます。
+2. **Transaction hash** を貼り付けます。`0x` の有無を問わず、64文字の16進数です。形式の誤ったハッシュは、何かをリクエストする前に拒否されます。
+3. **Inspect** を選択します。
+4. 結果を読みます。
+   - **Overview:** **Status**(**Success**、または codespace とコード付きの **Failed**)、**Height**、**Chain id**、**Memo**、**Gas limit** 付きの **Fee**(設定されている場合は手数料の支払者または付与者も)、そして **Open in explorer**。エクスプローラーはヘッダーで選んだネットワークに従うため、トランザクションが別のネットワークにある場合は、切り替えるよう案内する注記が表示されます。
+   - **Signer:** **Address**、**Key type**、**Sequence**、**Public key**、**Classical signature valid**。EVM レーンのトランザクションにはここに署名者情報がなく、タブにもその旨が表示されます。
+   - **Post-quantum layer:** **Present**、**Count**、**Algorithm**(ML-DSA-87)、**Verified**(yes または no)、**Sign-bytes version**、そして検証されない場合は **Reason**。
+   - **Security tier**。定義は次のとおりです。
+
+     | 階層 | 意味 |
+     | --- | --- |
+     | **PQC** | ML-DSA-87 レイヤーを持ちます。つまりハイブリッド署名です。 |
+     | **Enrollment** | アカウントの ML-DSA-87 鍵を登録または管理するもので、設計上、クラシカルな鍵で署名されます。 |
+     | **SHAKE** | ML-DSA-87 レイヤーを持たない、ネイティブレーンのトランザクションです。 |
+     | **Classical** | EVM レーンのトランザクションで、secp256k1 のみで署名されます。 |
+
+   - **Messages:** 各メッセージの type URL とその生の値(**Show raw value (base64)**)、そして **Raw JSON**。
+5. 不明なハッシュには、「No transaction with this hash was found on ...」と表示され、ハッシュの確認またはネットワークの切り替えを促すヒントが付きます。テストネットのノードは古い履歴を削除するため、古いテストネットのトランザクションは見つからないことがあります。
+
+**最小限の例。** **Testnet** を選び、`124E5B2B5B5A8AE7CBA254224CBA07F5014BD1B0014C164A8208E5D7EC0C664E` を貼り付けます。階層は **PQC**、ポスト量子レイヤーは **Verified** と表示されます(2026年10月27日に確認。そのトランザクションが削除されている場合は、最近のテストネット送金のハッシュを使ってください)。
+
+**ネットワーク。** タブ上のトグルで、メインネットまたはテストネットを選べます(デフォルトはテストネット)。
 
 ### PQ key status {#pq-status}
 
@@ -142,7 +174,7 @@ sidebar_position: 13
 
 - **URL:** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers)、またはサイドバーの **Build** グループ内(およびモバイルメニュー)の **Developers**。
 - **サインイン:** ページとそのツールには不要です。ホスト型 MCP エンドポイント用の API キーを申請するにはサインインが必要です。
-- **ネットワーク:** **PQ key status** と **Simulator** は、タブ上のトグルでメインネットまたはテストネットを選べます(デフォルトはテストネット)。**Signing playground** と **QoreX test wallet** はテストネット専用です。**SDKs** と **AI agents (MCP)** はネットワークに依存しません。
+- **ネットワーク:** **Transaction inspector**、**PQ key status**、**Simulator** は、タブ上のトグルでメインネットまたはテストネットを選べます(デフォルトはテストネット)。**Signing playground** と **QoreX test wallet** はテストネット専用です。**SDKs** と **AI agents (MCP)** はネットワークに依存しません。
 - **ウォレット:** 不要です。ツールは自前の使い捨ての鍵を生成します。
 - **費用:** 無料です。読み取りクエリと simulate 呼び出し以外は、チェーンに何も送信されません。
 - **プライバシー:** 使い捨ての鍵は、ページのメモリ上にのみ存在します。本物のリカバリーフレーズをどのツールにも貼り付けないでください。
@@ -152,7 +184,7 @@ sidebar_position: 13
 | サーフェス | アドレス | ネットワーク |
 | --- | --- | --- |
 | Developers ページ | `dashboard.qorechain.io/developers` | 読み取りツールはメインネットとテストネット、署名ツールはテストネット専用 |
-| 署名ライブラリ | npm `@qorechain/qoresign`、ソース `github.com/qorechain/qoresign`、[QoreSign](/qoresign/overview) を参照 | 該当なし |
+| 署名ライブラリ | npm `@qorechain/qoresign`(0.1.1 で `inspectTransaction` を追加)、PyPI の QoreSign for Python、ソース `github.com/qorechain/qoresign`、[QoreSign](/qoresign/overview) を参照 | 該当なし |
 | テストウォレットパッケージ | npm `@qorechain/qorex-wallet-mock`、ソース `github.com/qorechain/qorex-integrations` | テストネット |
 | パッケージ索引 | [開発者向けパッケージ](/developer-tools/overview) | 該当なし |
 | MCP サーバー | npm `@qorechain/mcp` 0.1.0 と `@qorechain/qore-cli` 0.1.0、PyPI `qorechain-mcp` 0.1.0。ガイド: [QoreChain MCP サーバー](/developer-tools/mcp) | デフォルトはテストネット |
@@ -161,9 +193,9 @@ sidebar_position: 13
 
 ## 制限事項と既知の問題 {#limits}
 
-- **Transaction inspector:近日公開予定で、まだ稼働していません。** 計画している内容:ハッシュを貼り付けると、すべてのメッセージ、署名者、手数料、ポスト量子署名が署名者の登録済みの鍵に対して検証されるかどうか、そしてセキュリティ階層が表示されます。次の QoreSign のリリースとともに提供されます。
+- **インスペクターは、現在登録されている鍵を基準に判定します。** 鍵のローテーション後は、古いトランザクションが未検証として表示されることがあります。読み取れるのはコミット済みのトランザクションのみです。
 - **ホスト型の MCP エンドポイントには API キーが必要です。** ダッシュボードから申請してください(アカウントごとに有効なキーは1つ、1秒あたり10リクエスト、1日あたり100,000リクエスト)。ローカルのセットアップではキーは不要です。ほとんどの作業にはローカルのセットアップを使ってください。
-- **2つのクイックスタートは「Not tested」としてマークされています。** Android 向けの QoreSign(同じコードを JVM アーティファクト上でのみ実行し、実機では実行していません)と、Python 向けの QoreSign です。残りの32件のクイックスタートは実行され、合格しました。
+- **2つのクイックスタートは「Not tested」としてマークされています。** Android 向けの QoreSign と Android 向けの QoreSeal です(同じコードを JVM アーティファクト上で実行し、実機では実行していません)。テスト済みのその他のクイックスタートは実行され、合格しました。
 - **Simulator には署名済みのバイトが必要です。** 代わりに署名することはできず、ブロードキャストも行いません。
 - **Playground と test wallet はテストネット専用で、** 再読み込みすると消える使い捨ての鍵を使用し、実際の資金を保持したり移動したりすることはできません。
 - **同じタブにある本物の QoreX 拡張機能は、** ページを再読み込みするまで test wallet に置き換えられます。

@@ -37,7 +37,7 @@ This section is a user how-to: what each page does, how to open it and what its 
 | **Trade** | [Trade](/dashboard/trade) | Test-token swap screen. |
 | **Earn** group | [Quests](/dashboard/quests) | Quests, Leaderboard, Badges. |
 | **Games** | [Quests](/dashboard/quests#games) | The QoreChain Arcade. |
-| **Build** group | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Contract tools, the operator page (five tabs: Validator Program, Validator Application, Light Node, Node Registration, Rollups) and the public developer page (six tabs: SDKs, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). The Nodes & Validators entry used to be labelled "Tools"; its SDK tab moved to Developers. |
+| **Build** group | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Contract tools, the operator page (five tabs: Validator Program, Validator Application, Light Node, Node Registration, Rollups) and the public developer page (seven tabs: SDKs, Transaction inspector, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). The Nodes & Validators entry used to be labelled "Tools"; its SDK tab moved to Developers. |
 | **FAQ** | `/faq` | In-app help. Parts of it are out of date; this manual is the reference. |
 
 The [Validators](/dashboard/validators) page (`/validators`) has no sidebar link; open it by address.
@@ -120,7 +120,6 @@ Pages of this section: [Explorer](/dashboard/explorer), [Wallet](/dashboard/wall
 - **There is no Bridge screen.** See [Bridge](/dashboard/bridge).
 - **Trade does not follow the network switch.** It shows testnet content even with the header on Mainnet. See [Trade](/dashboard/trade).
 - **The in-app FAQ is a short help page.** Where it and this manual differ, follow this manual.
-- **Not live yet:** the Transaction inspector on the Developers page.
 - **Mainnet restrictions.** Staking, send and contract deploys on mainnet are described per page; several flows (Native or SVM deploys, redelegation, time-locked staking) are not offered on the Dashboard.
 - **Testnet has no real value.** Never send real QOR to a testnet address: the formats are identical. See [Wallet](/dashboard/wallet#testnet).
 

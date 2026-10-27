@@ -37,7 +37,7 @@ sidebar_position: 1
 | **Trade** | [Trade](/dashboard/trade) | テストトークンのスワップ画面。 |
 | **Earn** グループ | [Quests](/dashboard/quests) | Quests、Leaderboard、Badges。 |
 | **Games** | [Quests](/dashboard/quests#games) | QoreChain Arcade。 |
-| **Build** グループ | [Smart Contract Creator](/dashboard/smart-contract-creator)、[Contract Auditor](/dashboard/contract-auditor)、[Nodes & Validators](/dashboard/tools-hub) (`/tools`)、[Developers](/dashboard/developers) | コントラクトツール、オペレーター向けページ（5 つのタブ: Validator Program、Validator Application、Light Node、Node Registration、Rollups）、公開の開発者ページ（6 つのタブ: SDKs、PQ key status、Simulator、Signing playground、QoreX test wallet、AI agents (MCP)）。Nodes & Validators のエントリは以前「Tools」というラベルでした。その SDK タブは Developers に移動しました。 |
+| **Build** グループ | [Smart Contract Creator](/dashboard/smart-contract-creator)、[Contract Auditor](/dashboard/contract-auditor)、[Nodes & Validators](/dashboard/tools-hub) (`/tools`)、[Developers](/dashboard/developers) | コントラクトツール、オペレーター向けページ（5 つのタブ: Validator Program、Validator Application、Light Node、Node Registration、Rollups）、公開の開発者ページ（7 つのタブ: SDKs、Transaction inspector、PQ key status、Simulator、Signing playground、QoreX test wallet、AI agents (MCP)）。Nodes & Validators のエントリは以前「Tools」というラベルでした。その SDK タブは Developers に移動しました。 |
 | **FAQ** | `/faq` | アプリ内ヘルプ。一部は古くなっています。リファレンスはこのマニュアルです。 |
 
 [Validators](/dashboard/validators) ページ (`/validators`) にはサイドバーのリンクがありません。アドレスを指定して開いてください。
@@ -120,7 +120,6 @@ sidebar_position: 1
 - **Bridge 画面はありません。** [Bridge](/dashboard/bridge) を参照してください。
 - **Trade はネットワークの切り替えに従いません。** ヘッダーが Mainnet でも、テストネットの内容を表示します。[Trade](/dashboard/trade) を参照してください。
 - **アプリ内の FAQ は短いヘルプページです。** FAQ とこのマニュアルの内容が異なる場合は、このマニュアルに従ってください。
-- **まだ提供されていないもの:** Developers ページの Transaction inspector。
 - **メインネットの制限。** メインネットでのステーキング、送金、コントラクトのデプロイはページごとに説明されています。いくつかのフロー (Native や SVM のデプロイ、再委任、タイムロック付きステーキング) は、ダッシュボードでは提供されていません。
 - **テストネットに実際の価値はありません。** 実際の QOR をテストネットのアドレスに送らないでください。形式は同一です。[Wallet](/dashboard/wallet#testnet) を参照してください。
 

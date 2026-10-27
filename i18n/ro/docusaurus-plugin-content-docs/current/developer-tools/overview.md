@@ -61,16 +61,17 @@ Instalează un singur pachet și rulează-i quickstart-ul mai întâi pe testnet
 
 ### Pagina pentru dezvoltatori din dashboard {#dashboard-developers}
 
-Dashboard-ul are o pagină publică la [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Verificată la 27 octombrie 2026, are șase file (prezentare completă: [Developers](/dashboard/developers)):
+Dashboard-ul are o pagină publică la [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Verificată la 27 octombrie 2026, are șapte file (prezentare completă: [Developers](/dashboard/developers)):
 
 - **SDKs:** hub-ul SDK. Fiecare pachet din manifest, grupat pe produs, cu selector de limbaj, cea mai recentă versiune citită live din fiecare registru, linii de instalare și de import cu butoane de copiere, quickstart-ul cu rezultatul observat de echipa SDK, probleme cunoscute, precum și id-urile de lanț și endpoint-urile publice. Pachetele nepublicate nu afișează nicio comandă de instalare.
+- **Transaction inspector:** lipești un hash de tranzacție de 64 de caractere hex, pe testnet sau mainnet, și vezi starea, semnatarul, taxa, dacă stratul post-cuantic se verifică și nivelul de securitate (PQC, Enrollment, SHAKE sau Classical). Folosește funcția `inspectTransaction` din QoreSign 0.1.1: vezi [Inspectorul de tranzacții](/qoresign/overview#inspector).
 - **PQ key status:** citește din blockchain cheia ML-DSA-87 pe care o adresă a înregistrat-o și fereastra sa de autorizare EVM, pe testnet sau mainnet.
 - **Simulator:** simulează o tranzacție semnată (`TxRaw` în base64 sau hex) și afișează consumul de gas și modificările de sold. Nimic nu este transmis în rețea.
 - **Signing playground:** doar testnet. Generează în browser o cheie hibridă de unică folosință, ținută în memorie, pentru a semna și verifica mesaje și cereri Sign In With QoreChain.
 - **QoreX test wallet:** doar testnet. Injectează în filă un portofel de test (`window.qorex`, anunțat prin EIP-6963 ca „QoreX (mock)") pentru a putea încerca fluxuri de dApp.
 - **AI agents (MCP):** starea serverului MCP QoreChain (publicat) și configurarea pentru un client MCP: mai întâi `npx` local, plus un endpoint găzduit de testnet care are nevoie de o cheie API. Vezi [Serverul MCP QoreChain](/developer-tools/mcp).
 
-O filă **Transaction inspector** (lipești un hash și vezi fiecare mesaj, semnatarul, taxa și dacă semnătura post-cuantică se verifică) nu se află încă pe pagina din dashboard; la 27 octombrie 2026 pagina arăta în continuare cele șase file de mai sus. Aceeași verificare este disponibilă acum ca funcție de bibliotecă, `inspectTransaction`, în QoreSign 0.1.1 (TypeScript): vezi [Inspectorul de tranzacții](/qoresign/overview#inspector). Tabelele de mai jos și hub-ul SDK afișează aceleași date despre pachete; tabelele au fost verificate față de registre la 27 octombrie 2026.
+Aceeași verificare a inspectorului este disponibilă în cod ca funcția de bibliotecă `inspectTransaction` din QoreSign 0.1.1 (TypeScript). Tabelele de mai jos și hub-ul SDK afișează aceleași date despre pachete; tabelele au fost verificate față de registre la 27 octombrie 2026.
 
 ## Unde este publicat {#where-published}
 
@@ -284,7 +285,7 @@ Pentru un nume npm cu scope păstrează `@`, de exemplu `https://registry.npmjs.
 ## Limite și probleme cunoscute {#limits}
 
 - **Două rețele live, versiuni diferite.** Mainnet-ul rulează v3.2.4, iar testnet-ul rulează v3.2.6. O funcție care există doar pe testnet este marcată pe pagina ei. Nu presupune comportamentul v3.2.5 pe mainnet.
-- **Încă nu sunt live:** fila Transaction inspector din pagina pentru dezvoltatori a dashboard-ului (funcția de bibliotecă `inspectTransaction` din QoreSign 0.1.1 este publicată), `@qorechain/qoreseal` pe npm, SDK 0.11.0 (chain developer kit) pe npm, tranzacțiile SVM și precompilările EVM pe mainnet (sunt active doar pe testnet; vezi [prezentarea SDK](/sdk/overview) pentru lista pe trasee).
+- **Încă nu sunt live:** `@qorechain/qoreseal` pe npm, SDK 0.11.0 (chain developer kit) pe npm, tranzacțiile SVM și precompilările EVM pe mainnet (sunt active doar pe testnet; vezi [prezentarea SDK](/sdk/overview) pentru lista pe trasee).
 - **Registrul QoreSeal și PQ light client.** Criptarea către o adresă citită din lanț necesită registrul de chei KEM, live pe testnet și care ajunge pe mainnet după v3.2.5. PQ light client nu se conectează la niciuna dintre rețele; nu este programat niciun suport în lanț pentru checkpoint-urile sale.
 - **Kotlin 2.3 sau mai nou.** Artefactele Kotlin și Android QoreSign și QoreSeal au nevoie de compilatorul Kotlin 2.3 sau mai nou; Kotlin 2.1 nu se compilează împotriva lor.
 - **Fără wheel-uri pentru Windows.** Pachetele Python QoreSign și QoreSeal au wheel-uri doar pentru macOS și Linux; pe alte platforme se construiesc din distribuția sursă, care necesită Rust.

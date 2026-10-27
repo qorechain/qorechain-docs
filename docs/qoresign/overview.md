@@ -84,7 +84,7 @@ Save it as `inspect.mjs` and run `node inspect.mjs <txhash>` with a testnet tran
 
 `fetchEvmWindow({ rest, address })` returns `found`, `live`, the opened and expiry heights, the maximum and used transactions and value, the remaining blocks, transactions and value, `nativeOnly` and `allowedTargets`.
 
-This is the library function. The dashboard [Developers](/dashboard/developers) page does not have a Transaction inspector tab yet.
+This is the library function. The dashboard [Developers](/dashboard/developers#inspector) page has a Transaction inspector tab that uses it: paste a transaction hash and read the result without writing code.
 
 ## What it is used for {#use-cases}
 

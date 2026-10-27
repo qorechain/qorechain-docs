@@ -37,7 +37,7 @@ Această secțiune este un ghid pentru utilizator: ce face fiecare pagină, cum 
 | **Trade** | [Trade](/dashboard/trade) | Ecran de swap cu tokenuri de test. |
 | Grupul **Earn** | [Quests](/dashboard/quests) | Quests, Leaderboard, Badges. |
 | **Games** | [Quests](/dashboard/quests#games) | QoreChain Arcade. |
-| Grupul **Build** | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Unelte pentru contracte, pagina operatorului (cinci file: Validator Program, Validator Application, Light Node, Node Registration, Rollups) și pagina publică pentru dezvoltatori (șase file: SDKs, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). Intrarea Nodes & Validators se numea înainte „Tools"; fila sa SDK s-a mutat la Developers. |
+| Grupul **Build** | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Unelte pentru contracte, pagina operatorului (cinci file: Validator Program, Validator Application, Light Node, Node Registration, Rollups) și pagina publică pentru dezvoltatori (șapte file: SDKs, Transaction inspector, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). Intrarea Nodes & Validators se numea înainte „Tools"; fila sa SDK s-a mutat la Developers. |
 | **FAQ** | `/faq` | Ajutor în aplicație. Părți din el sunt depășite; acest manual este referința. |
 
 Pagina [Validators](/dashboard/validators) (`/validators`) nu are link în bara laterală; deschide-o după adresă.
@@ -120,7 +120,6 @@ Paginile acestei secțiuni: [Explorer](/dashboard/explorer), [Wallet](/dashboard
 - **Nu există un ecran Bridge.** Vezi [Bridge](/dashboard/bridge).
 - **Trade nu urmează comutatorul de rețea.** Arată conținut de testnet chiar și cu antetul pe Mainnet. Vezi [Trade](/dashboard/trade).
 - **FAQ-ul din aplicație este o scurtă pagină de ajutor.** Unde el și acest manual diferă, urmează acest manual.
-- **Încă nu sunt disponibile:** inspectorul de tranzacții de pe pagina Developers.
 - **Restricții pe mainnet.** Staking-ul, trimiterea și deploy-urile de contracte pe mainnet sunt descrise pe fiecare pagină; mai multe fluxuri (deploy-uri Native sau SVM, redelegarea, staking-ul cu blocare în timp) nu sunt oferite în Dashboard.
 - **Testnet-ul nu are valoare reală.** Nu trimite niciodată QOR real la o adresă de testnet: formatele sunt identice. Vezi [Wallet](/dashboard/wallet#testnet).
 

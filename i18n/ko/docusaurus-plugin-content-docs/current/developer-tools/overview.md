@@ -61,16 +61,17 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 
 ### 대시보드 개발자 페이지 {#dashboard-developers}
 
-대시보드에는 [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers)에 공개 페이지가 있습니다. 2026년 10월 27일에 확인한 시점에 여섯 개의 탭이 있습니다(전체 안내: [개발자](/dashboard/developers)).
+대시보드에는 [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers)에 공개 페이지가 있습니다. 2026년 10월 27일에 확인한 시점에 일곱 개의 탭이 있습니다(전체 안내: [개발자](/dashboard/developers)).
 
 - **SDKs:** SDK 허브입니다. 매니페스트의 모든 패키지를 제품별로 묶어 보여주며, 언어 선택기, 각 레지스트리에서 실시간으로 읽은 최신 버전, 복사 버튼이 있는 설치 및 import 줄, SDK 팀이 관찰한 출력과 함께 제공되는 퀵스타트, 알려진 문제, 체인 ID와 공개 엔드포인트를 제공합니다. 게시되지 않은 패키지에는 설치 명령이 표시되지 않습니다.
+- **트랜잭션 인스펙터:** 테스트넷 또는 메인넷의 64자리 16진수 트랜잭션 해시를 붙여 넣으면 상태, 서명자, 수수료, 포스트 양자 계층의 검증 여부, 보안 등급(PQC, Enrollment, SHAKE 또는 Classical)을 보여줍니다. QoreSign 0.1.1의 `inspectTransaction` 함수를 사용합니다. [트랜잭션 인스펙터](/qoresign/overview#inspector)를 참고하세요.
 - **PQ 키 상태:** 주소가 체인에 등록한 ML-DSA-87 키와 그 EVM 인가 윈도우를 테스트넷 또는 메인넷에서 읽습니다.
 - **시뮬레이터:** 서명된 트랜잭션(base64 또는 hex `TxRaw`)을 시험 실행하여 가스 사용량과 잔액 변화를 보여줍니다. 아무것도 브로드캐스트되지 않습니다.
 - **서명 플레이그라운드:** 테스트넷 전용. 브라우저에서 메모리에만 보관되는 일회용 하이브리드 키를 생성하여 메시지와 Sign In With QoreChain 요청에 서명하고 검증합니다.
 - **QoreX 테스트 지갑:** 테스트넷 전용. 탭에 테스트 지갑(`window.qorex`, EIP-6963으로 "QoreX (mock)"로 알림)을 주입하여 dApp 흐름을 시험해 볼 수 있습니다.
 - **AI 에이전트(MCP):** QoreChain MCP 서버의 상태(게시됨)와 MCP 클라이언트 설정입니다. 로컬 `npx`가 우선이며, API 키가 필요한 호스팅 테스트넷 엔드포인트도 있습니다. [QoreChain MCP 서버](/developer-tools/mcp)를 참고하세요.
 
-**트랜잭션 인스펙터** 탭(해시를 붙여 넣으면 모든 메시지, 서명자, 수수료, 포스트 퀀텀 서명의 검증 여부를 보여줌)은 아직 대시보드 페이지에 없습니다. 2026년 10월 27일에는 이 페이지에 위의 여섯 개 탭만 표시되었습니다. 같은 검사는 지금 QoreSign 0.1.1(TypeScript)의 라이브러리 함수 `inspectTransaction`으로 사용할 수 있습니다. [트랜잭션 인스펙터](/qoresign/overview#inspector)를 참고하세요. 아래의 표와 SDK 허브는 같은 패키지 데이터를 보여주며, 표는 2026년 10월 27일에 레지스트리와 대조해 확인했습니다.
+같은 인스펙터 검사는 코드에서 QoreSign 0.1.1(TypeScript)의 라이브러리 함수 `inspectTransaction`으로 사용할 수 있습니다. 아래의 표와 SDK 허브는 같은 패키지 데이터를 보여주며, 표는 2026년 10월 27일에 레지스트리와 대조해 확인했습니다.
 
 ## 게시 위치 {#where-published}
 
@@ -284,7 +285,7 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 ## 제한 사항 및 알려진 문제 {#limits}
 
 - **두 라이브 네트워크, 서로 다른 버전.** 메인넷은 v3.2.4를, 테스트넷은 v3.2.6을 실행합니다. 테스트넷에만 있는 기능은 해당 페이지에 표시됩니다. 메인넷에서 v3.2.5 동작을 가정하지 마세요.
-- **아직 라이브가 아닌 것:** 대시보드 개발자 페이지의 트랜잭션 인스펙터 탭(QoreSign 0.1.1의 라이브러리 함수 `inspectTransaction`은 게시되어 있음), npm의 `@qorechain/qoreseal`, npm의 SDK 0.11.0(체인 개발자 키트), SVM 트랜잭션, 메인넷의 EVM 프리컴파일(테스트넷에서만 활성. 레인별 목록은 [SDK 개요](/sdk/overview) 참조).
+- **아직 라이브가 아닌 것:** npm의 `@qorechain/qoreseal`, npm의 SDK 0.11.0(체인 개발자 키트), SVM 트랜잭션, 메인넷의 EVM 프리컴파일(테스트넷에서만 활성. 레인별 목록은 [SDK 개요](/sdk/overview) 참조).
 - **QoreSeal 레지스트리와 PQ 라이트 클라이언트.** 체인에서 읽은 주소로 암호화하려면 KEM 키 레지스트리가 필요하며, 이는 테스트넷에서 라이브이고 v3.2.5 이후 메인넷에 적용됩니다. PQ 라이트 클라이언트는 어느 네트워크에도 연결되지 않으며, 해당 체크포인트에 대한 체인 지원은 예정되어 있지 않습니다.
 - **Kotlin 2.3 이상.** QoreSign과 QoreSeal의 Kotlin 및 Android 아티팩트에는 Kotlin 2.3 이상 컴파일러가 필요합니다. Kotlin 2.1은 이를 대상으로 컴파일에 실패합니다.
 - **Windows wheel 없음.** QoreSign과 QoreSeal Python 패키지의 wheel은 macOS와 Linux용만 있으며, 다른 플랫폼은 소스 배포본에서 빌드하고 이때 Rust가 필요합니다.

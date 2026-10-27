@@ -37,7 +37,7 @@ sidebar_position: 1
 | **Trade** | [التداول](/dashboard/trade) | شاشة تبادل بالرموز التجريبية. |
 | مجموعة **Earn** | [المهام](/dashboard/quests) | Quests وLeaderboard وBadges. |
 | **Games** | [المهام](/dashboard/quests#games) | QoreChain Arcade. |
-| مجموعة **Build** | [منشئ العقود الذكية](/dashboard/smart-contract-creator)، [مدقّق العقود](/dashboard/contract-auditor)، [العقد والمدقّقون](/dashboard/tools-hub) (`/tools`)، [المطورون](/dashboard/developers) | أدوات العقود، وصفحة المشغّلين (خمسة تبويبات: Validator Program وValidator Application وLight Node وNode Registration وRollups) وصفحة المطورين العامة (ستة تبويبات: SDKs وPQ key status وSimulator وSigning playground وQoreX test wallet وAI agents (MCP)). كان إدخال Nodes & Validators يحمل سابقًا التسمية "Tools"؛ وانتقل تبويب SDK الخاص به إلى المطورين. |
+| مجموعة **Build** | [منشئ العقود الذكية](/dashboard/smart-contract-creator)، [مدقّق العقود](/dashboard/contract-auditor)، [العقد والمدقّقون](/dashboard/tools-hub) (`/tools`)، [المطورون](/dashboard/developers) | أدوات العقود، وصفحة المشغّلين (خمسة تبويبات: Validator Program وValidator Application وLight Node وNode Registration وRollups) وصفحة المطورين العامة (سبعة تبويبات: SDKs وTransaction inspector وPQ key status وSimulator وSigning playground وQoreX test wallet وAI agents (MCP)). كان إدخال Nodes & Validators يحمل سابقًا التسمية "Tools"؛ وانتقل تبويب SDK الخاص به إلى المطورين. |
 | **FAQ** | `/faq` | مساعدة داخل التطبيق. أجزاء منها قديمة؛ هذا الدليل هو المرجع. |
 
 صفحة [المدقّقون](/dashboard/validators) (`/validators`) ليس لها رابط في الشريط الجانبي؛ افتحها عبر عنوانها.
@@ -120,7 +120,6 @@ sidebar_position: 1
 - **لا توجد شاشة جسر (Bridge).** راجع [الجسر](/dashboard/bridge).
 - **لا يتبع التداول مفتاح تبديل الشبكة.** يعرض محتوى شبكة الاختبار حتى مع ضبط الترويسة على Mainnet. راجع [التداول](/dashboard/trade).
 - **الأسئلة الشائعة (FAQ) داخل التطبيق صفحة مساعدة قصيرة.** حيثما اختلفت عن هذا الدليل، اتبع هذا الدليل.
-- **غير متاح بعد:** أداة فحص المعاملات (Transaction inspector) في صفحة المطورين.
 - **قيود الشبكة الرئيسية.** التخزين والإرسال ونشر العقود على الشبكة الرئيسية موصوفة لكل صفحة على حدة؛ وهناك مسارات عدة (عمليات النشر على Native أو SVM، وإعادة التفويض، والتخزين المقفل زمنيًا) غير متاحة في لوحة التحكم.
 - **شبكة الاختبار بلا قيمة حقيقية.** لا ترسل QOR حقيقيًا إلى عنوان على شبكة الاختبار أبدًا: الصيغ متطابقة. راجع [المحفظة](/dashboard/wallet#testnet).
 

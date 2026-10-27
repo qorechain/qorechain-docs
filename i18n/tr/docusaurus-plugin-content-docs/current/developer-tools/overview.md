@@ -61,16 +61,17 @@ Bir paket kurun ve önce hızlı başlangıcını genel testnet üzerinde çalı
 
 ### Dashboard geliştirici sayfası {#dashboard-developers}
 
-Dashboard'un [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) adresinde herkese açık bir sayfası vardır. 27 Ekim 2026'da kontrol edildiğinde altı sekmesi vardır (tam anlatım: [Geliştiriciler](/dashboard/developers)):
+Dashboard'un [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) adresinde herkese açık bir sayfası vardır. 27 Ekim 2026'da kontrol edildiğinde yedi sekmesi vardır (tam anlatım: [Geliştiriciler](/dashboard/developers)):
 
 - **SDKs:** SDK merkezi. Bildirim dosyasındaki her paket, ürüne göre gruplanmış olarak; dil seçici, her kayıt defterinden canlı okunan en son sürüm, kopyalama düğmeli kurulum ve içe aktarma satırları, SDK ekibinin gözlemlediği çıktıyla hızlı başlangıç, bilinen sorunlar ile zincir kimlikleri ve genel uç noktalar. Yayınlanmamış paketler için kurulum komutu gösterilmez.
+- **Transaction inspector:** testnet veya mainnet üzerinde 64 onaltılık karakterlik bir işlem karması yapıştırın; durumu, imzalayanı, ücreti, kuantum sonrası katmanın doğrulanıp doğrulanmadığını ve güvenlik katmanını (PQC, Enrollment, SHAKE veya Classical) görün. QoreSign 0.1.1 işlevi `inspectTransaction` kullanılır: bkz. [İşlem denetçisi](/qoresign/overview#inspector).
 - **PQ key status:** bir adresin zincirde kayıtlı ML-DSA-87 anahtarını ve EVM yetkilendirme penceresini testnet veya mainnet üzerinde okur.
 - **Simulator:** imzalı bir işlemi (base64 veya hex `TxRaw`) deneme olarak çalıştırır ve gaz kullanımını ile bakiye değişikliklerini gösterir. Hiçbir şey yayınlanmaz.
 - **Signing playground:** yalnızca testnet. Tarayıcıda, bellekte tutulan geçici bir hibrit anahtar üretir; mesajları ve Sign In With QoreChain isteklerini imzalamak ve doğrulamak için kullanılır.
 - **QoreX test wallet:** yalnızca testnet. dApp akışlarını deneyebilmeniz için sekmeye bir test cüzdanı (`window.qorex`, EIP-6963 üzerinden "QoreX (mock)" olarak duyurulur) ekler.
 - **AI agents (MCP):** QoreChain MCP sunucusunun durumu (yayımlandı) ve bir MCP istemcisi için kurulum: önce yerel `npx`, ayrıca bir API anahtarı gerektiren barındırılan bir testnet uç noktası. Bkz. [QoreChain MCP sunucusu](/developer-tools/mcp).
 
-**İşlem denetçisi** sekmesi (bir hash yapıştırın; her mesajı, imzalayanı, ücreti ve kuantum sonrası imzanın doğrulanıp doğrulanmadığını görün) henüz dashboard sayfasında yoktur; 27 Ekim 2026'da sayfa hâlâ yukarıdaki altı sekmeyi gösteriyordu. Aynı kontrol artık QoreSign 0.1.1'de (TypeScript) bir kütüphane işlevi olarak, `inspectTransaction`, mevcuttur: bkz. [İşlem denetçisi](/qoresign/overview#inspector). Aşağıdaki tablolar ve SDK merkezi aynı paket verisini gösterir; tablolar 27 Ekim 2026'da kayıt defterlerine karşı kontrol edilmiştir.
+Aynı denetçi kontrolü kodda, QoreSign 0.1.1'de (TypeScript) `inspectTransaction` kütüphane işlevi olarak da mevcuttur. Aşağıdaki tablolar ve SDK merkezi aynı paket verisini gösterir; tablolar 27 Ekim 2026'da kayıt defterlerine karşı kontrol edilmiştir.
 
 ## Nerede yayınlanıyor {#where-published}
 
@@ -284,7 +285,7 @@ Kapsamlı (scoped) bir npm adı için `@` işaretini koruyun, örneğin `https:/
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 - **İki canlı ağ, farklı sürümler.** Mainnet v3.2.4, testnet v3.2.6 çalıştırır. Yalnızca testnet'te bulunan bir özellik kendi sayfasında işaretlenir. Mainnet'te v3.2.5 davranışını varsaymayın.
-- **Henüz canlı değil:** dashboard geliştirici sayfasındaki İşlem denetçisi sekmesi (QoreSign 0.1.1'deki `inspectTransaction` kütüphane işlevi yayınlanmıştır), npm üzerinde `@qorechain/qoreseal`, npm üzerinde SDK 0.11.0 (zincir geliştirici kiti), SVM işlemleri ve mainnet üzerindeki EVM precompile'ları (yalnızca testnet'te etkindir; ray ray liste için [SDK genel bakış](/sdk/overview) sayfasına bakın).
+- **Henüz canlı değil:** npm üzerinde `@qorechain/qoreseal`, npm üzerinde SDK 0.11.0 (zincir geliştirici kiti), SVM işlemleri ve mainnet üzerindeki EVM precompile'ları (yalnızca testnet'te etkindir; ray ray liste için [SDK genel bakış](/sdk/overview) sayfasına bakın).
 - **QoreSeal kayıt defteri ve PQ hafif istemci.** Zincirden okunan bir adrese şifrelemek, testnet'te canlı olan ve v3.2.5 sonrasında mainnet'e gelecek olan KEM anahtar kayıt defterini gerektirir. PQ hafif istemci iki ağdan hiçbirine bağlanmaz; kontrol noktaları için planlanmış bir zincir desteği yoktur.
 - **Kotlin 2.3 veya daha yeni.** QoreSign ve QoreSeal Kotlin ile Android yapıtları Kotlin 2.3 veya daha yeni derleyiciyi gerektirir; Kotlin 2.1 bunlara karşı derlenemez.
 - **Windows wheel'i yok.** QoreSign ve QoreSeal Python paketlerinin yalnızca macOS ve Linux için wheel'leri vardır; diğer platformlar, Rust gerektiren kaynak dağıtımından derlenir.

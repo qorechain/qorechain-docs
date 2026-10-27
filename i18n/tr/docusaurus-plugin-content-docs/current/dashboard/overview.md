@@ -37,7 +37,7 @@ Bu bölüm bir kullanıcı kılavuzudur: her sayfanın ne işe yaradığı, nas�
 | **Trade** | [Trade](/dashboard/trade) | Test tokeni takas ekranı. |
 | **Earn** grubu | [Quests](/dashboard/quests) | Quests, Leaderboard, Badges. |
 | **Games** | [Quests](/dashboard/quests#games) | QoreChain Arcade. |
-| **Build** grubu | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Sözleşme araçları, operatör sayfası (beş sekme: Validator Program, Validator Application, Light Node, Node Registration, Rollups) ve herkese açık geliştirici sayfası (altı sekme: SDKs, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). Nodes & Validators girişi eskiden "Tools" olarak etiketlenirdi; SDK sekmesi Developers sayfasına taşındı. |
+| **Build** grubu | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Sözleşme araçları, operatör sayfası (beş sekme: Validator Program, Validator Application, Light Node, Node Registration, Rollups) ve herkese açık geliştirici sayfası (yedi sekme: SDKs, Transaction inspector, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). Nodes & Validators girişi eskiden "Tools" olarak etiketlenirdi; SDK sekmesi Developers sayfasına taşındı. |
 | **FAQ** | `/faq` | Uygulama içi yardım. Bir kısmı güncel değildir; başvuru kaynağı bu kılavuzdur. |
 
 [Validators](/dashboard/validators) sayfasının (`/validators`) kenar çubuğunda bağlantısı yoktur; adresiyle açın.
@@ -120,7 +120,6 @@ Bu bölümün sayfaları: [Explorer](/dashboard/explorer), [Wallet](/dashboard/w
 - **Bridge ekranı yoktur.** Bkz. [Bridge](/dashboard/bridge).
 - **Trade ağ anahtarını izlemez.** Başlık Mainnet'te olsa bile testnet içeriği gösterir. Bkz. [Trade](/dashboard/trade).
 - **Uygulama içi FAQ kısa bir yardım sayfasıdır.** Onunla bu kılavuz farklılaştığında bu kılavuzu izleyin.
-- **Henüz canlı değil:** Developers sayfasındaki Transaction inspector.
 - **Mainnet kısıtlamaları.** Mainnet'te staking, gönderme ve sözleşme dağıtımları sayfa başına açıklanır; birkaç akış (Native veya SVM dağıtımları, redelegation, zaman kilitli staking) Dashboard'da sunulmaz.
 - **Testnet'in gerçek değeri yoktur.** Bir testnet adresine asla gerçek QOR göndermeyin: biçimler aynıdır. Bkz. [Wallet](/dashboard/wallet#testnet).
 

@@ -7,14 +7,15 @@ sidebar_position: 13
 
 # Dezvoltatori
 
-Pagina **Developers** (`/developers`, bara laterală **Build**, intrarea **Developers**) este o pagină publică cu unelte pentru cei care construiesc pe QoreChain. Nu necesită cont. Are șase tab-uri: **SDKs**, **PQ key status**, **Simulator**, **Signing playground**, **QoreX test wallet** și **AI agents (MCP)**. Împreună îți permit să găsești și să instalezi pachetul potrivit, să verifici ce cheie post-cuantică are înregistrată un cont și dacă fereastra sa de autorizare EVM este deschisă, să rulezi în simulare (dry-run) o tranzacție semnată, să exersezi semnarea hibridă cu o cheie de unică folosință și să testezi o aplicație dApp cu un portofel QoreX simulat (mock), totul în browser. Este destinată dezvoltatorilor de dApp-uri, de portofele și de backend. Un **Transaction inspector** este planificat și încă nu este activ (vezi [Limite](#limits)). Pentru bibliotecile în sine vezi [Pachete pentru dezvoltatori](/developer-tools/overview), [Prezentare generală SDK](/sdk/overview) și [Instalare](/sdk/install).
+Pagina **Developers** (`/developers`, bara laterală **Build**, intrarea **Developers**) este o pagină publică cu unelte pentru cei care construiesc pe QoreChain. Nu necesită cont. Are șapte tab-uri: **SDKs**, **Transaction inspector**, **PQ key status**, **Simulator**, **Signing playground**, **QoreX test wallet** și **AI agents (MCP)**. Împreună îți permit să găsești și să instalezi pachetul potrivit, să citești orice tranzacție confirmată și să vezi dacă stratul ei post-cuantic se verifică, să verifici ce cheie post-cuantică are înregistrată un cont și dacă fereastra sa de autorizare EVM este deschisă, să rulezi în simulare (dry-run) o tranzacție semnată, să exersezi semnarea hibridă cu o cheie de unică folosință și să testezi o aplicație dApp cu un portofel QoreX simulat (mock), totul în browser. Este destinată dezvoltatorilor de dApp-uri, de portofele și de backend. Pentru bibliotecile în sine vezi [Pachete pentru dezvoltatori](/developer-tools/overview), [Prezentare generală SDK](/sdk/overview) și [Instalare](/sdk/install).
 
 ## Inovații {#innovations}
 
 - **Un gateway doar pentru citire către lanț.** Uneltele citesc date publice ale lanțului și simulează o tranzacție printr-un gateway doar pentru citire, pe căile de interogare `cosmos/`, `cosmwasm/` și `qorechain/`, plus apelul de simulare. Nimic de pe pagină nu poate transmite o tranzacție. Gateway-ul există pentru că endpoint-urile REST ale lanțului nu trimit anteturi CORS pentru browser.
 - **Chei care nu părăsesc niciodată browserul.** Cheile pentru signing playground și pentru portofelul de test sunt generate în browserul tău și păstrate doar în memorie. Nu sunt niciodată salvate sau trimise și dispar la reîncărcare. Cele două tab-uri sunt doar pentru testnet și refuză mainnet-ul.
 - **Biblioteca de semnare din producție, nu o demonstrație.** Playground-ul folosește [QoreSign](/qoresign/overview), aceeași bibliotecă open-source ca integrările din producție. Produce și verifică semnături hibride: o semnătură secp256k1 plus o semnătură ML-DSA-87 peste același mesaj.
-- **Un hub de pachete generat din date testate.** Tab-ul **SDKs** listează aproximativ 40 de pachete dintr-un singur manifest. Versiunile sunt citite live din fiecare registru (reîmprospătate la fiecare 10 minute, cu ultima versiune verificată și data ei afișate dacă un registru nu poate fi contactat), iar fiecare ghid rapid (quickstart) a fost rulat de echipa SDK pe registrele publice, cu rezultatul observat afișat alături.
+- **Un hub de pachete generat din date testate.** Tab-ul **SDKs** listează 48 de pachete dintr-un singur manifest. Versiunile sunt citite live din fiecare registru (reîmprospătate la fiecare 10 minute, cu ultima versiune verificată și data ei afișate dacă un registru nu poate fi contactat), iar fiecare ghid rapid (quickstart) a fost rulat de echipa SDK pe registrele publice, cu rezultatul observat afișat alături.
+- **Un verdict pe care îl poți reproduce.** **Transaction inspector** citește o tranzacție confirmată și raportează dacă stratul ei ML-DSA-87 se verifică în raport cu cheia pe care semnatarul a înregistrat-o, cu versiunea sign-bytes și motivul când nu se verifică, folosind funcția `inspectTransaction` din [QoreSign](/qoresign/overview) 0.1.1, astfel încât aceeași verificare rulează în propriul tău cod. Este doar pentru citire.
 - **Răspunsuri din lanț, nu presupuneri.** **PQ key status** citește cheia ML-DSA-87 înregistrată și starea ferestrei EVM din rutele de interogare proprii ale nodului, astfel încât poți vedea de ce o tranzacție EVM ar fi refuzată înainte de a o trimite.
 
 ## Cum se folosește {#how-to-use}
@@ -23,7 +24,7 @@ Deschide [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/deve
 
 ### SDKs {#sdks}
 
-**Ce face.** Listează fiecare bibliotecă QoreChain, grupată pe produs. Manifestul conține aproximativ 40 de pachete în TypeScript, Python, Go, Rust, Java, Kotlin și Swift. Cele mai multe sunt stabile; unul este depreciat, iar un pachet care nu este încă în registrul său este marcat ca atare. Produsele, în ordinea afișată, sunt: QoreChain SDK (core, hook-uri React, EVM, SVM, starterul dApp și portările Python, Rust, Go și Java), QoreSign, RDK (kitul de dezvoltare pentru rollup-uri, instrumentul său în linie de comandă, starterul de rollup și portările Python, Rust, Go și Java), biblioteca PQC, wallet adapter, chain bridge, Handles, integrările QoreX, precum și MCP și CLI-ul `qore`.
+**Ce face.** Listează fiecare bibliotecă QoreChain, grupată pe produs. Manifestul conține 48 de pachete în TypeScript, Python, Go, Rust, Java, Kotlin și Swift. 46 sunt stabile, 1 este depreciat, iar 1 nu este încă în registrul său și este marcat **Not published yet** (QoreSeal pentru npm). Produsele, în ordinea afișată, sunt: QoreChain SDK (core, hook-uri React, EVM, SVM, starterul dApp și portările Python, Rust, Go și Java), QoreSign (inclusiv QoreSign pentru Python), QoreSeal (criptare către conturi cu ML-KEM-1024, testnet; vezi [QoreSeal](/developer-tools/qoreseal), în Rust, Go, Python, Swift, Kotlin și Android), RDK (kitul de dezvoltare pentru rollup-uri, instrumentul său în linie de comandă, starterul de rollup și portările Python, Rust, Go și Java), biblioteca PQC, wallet adapter, chain bridge, Handles, integrările QoreX, precum și MCP și CLI-ul `qore`.
 
 **Cum funcționează.** Fiecare produs este o cartelă. Dacă produsul apare în mai multe limbaje, un selector de limbaj (pastile) schimbă pachetul afișat. Fiecare pachet arată:
 
@@ -47,6 +48,37 @@ Un pachet care nu este publicat afișează „This package is not on its registr
 **Exemplu minimal.** Scrie `python` în filtru, deschide **QoreChain SDK**, alege pastila **Python**, copiază comanda de instalare din **Install**, apoi copiază quickstart-ul și rulează-l.
 
 **Rețea.** Listă statică plus citiri live din registre; nu se aplică nicio alegere de rețea.
+
+### Transaction inspector {#inspector}
+
+**Ce face.** Citește o tranzacție confirmată după hash și explică cine a semnat-o, cât a costat, dacă stratul ei post-cuantic se verifică și în ce nivel de securitate se încadrează. Este doar pentru citire: nimic nu este semnat sau trimis.
+
+**Cum funcționează.** Pagina cere gateway-ului doar pentru citire al Dashboard-ului tranzacția din rețeaua aleasă de tine și rulează peste ea funcția `inspectTransaction` din [QoreSign](/qoresign/overview) 0.1.1 (vezi [ghidul rapid QoreSign](/qoresign/quickstart) pentru a rula aceeași verificare în cod). Stratul post-cuantic este verificat în raport cu cheia ML-DSA-87 pe care semnatarul a înregistrat-o **acum**, așa că o rotire ulterioară a cheii poate face ca o tranzacție mai veche să apară ca neverificată.
+
+**Pași.**
+
+1. Deschide tab-ul **Transaction inspector** (se află imediat după **SDKs**) și alege **Testnet** sau **Mainnet** cu comutatorul.
+2. Lipește **Transaction hash**: 64 de caractere hexazecimale, cu sau fără `0x`. Un hash malformat este respins înainte de a se cere orice.
+3. Selectează **Inspect**.
+4. Citește rezultatul:
+   - **Overview:** **Status** (**Success** sau **Failed**, cu codespace și cod), **Height**, **Chain id**, **Memo**, **Fee** cu **Gas limit** (și plătitorul sau acordantul comisionului, când este setat) și **Open in explorer**. Explorer-ul urmează rețeaua aleasă în antet, așa că o notă îți spune să o schimbi când tranzacția se află în cealaltă rețea.
+   - **Signer:** **Address**, **Key type**, **Sequence**, **Public key** și **Classical signature valid**. Tranzacțiile de pe lane-ul EVM nu poartă aici informații despre semnatar, iar tab-ul spune acest lucru.
+   - **Post-quantum layer:** **Present**, **Count**, **Algorithm** (ML-DSA-87), **Verified** (da sau nu), **Sign-bytes version** și, când nu este verificat, **Reason**.
+   - **Security tier**, cu aceste definiții:
+
+     | Nivel | Semnificație |
+     | --- | --- |
+     | **PQC** | Poartă stratul ML-DSA-87: o semnătură hibridă. |
+     | **Enrollment** | Înregistrează sau gestionează cheia ML-DSA-87 a contului și este semnată, intenționat, cu cheia clasică. |
+     | **SHAKE** | O tranzacție pe lane-ul nativ fără stratul ML-DSA-87. |
+     | **Classical** | O tranzacție pe lane-ul EVM, semnată doar cu secp256k1. |
+
+   - **Messages:** URL-ul de tip al fiecărui mesaj și valoarea sa brută (**Show raw value (base64)**), plus **Raw JSON**.
+5. Un hash necunoscut afișează „No transaction with this hash was found on ...", cu un indiciu să verifici hash-ul sau să schimbi rețeaua. Nodurile de testnet elimină istoricul vechi, așa că o tranzacție veche de testnet poate să nu mai existe.
+
+**Exemplu minimal.** Alege **Testnet** și lipește `124E5B2B5B5A8AE7CBA254224CBA07F5014BD1B0014C164A8208E5D7EC0C664E`: nivelul afișează **PQC**, iar stratul post-cuantic afișează **Verified** (verificat la 27 octombrie 2026; dacă acea tranzacție a fost între timp eliminată, folosește hash-ul unui transfer recent de pe testnet).
+
+**Rețea.** Mainnet sau testnet, prin comutatorul din tab (implicit testnet).
 
 ### PQ key status {#pq-status}
 
@@ -142,7 +174,7 @@ Limite: o cheie activă pe cont, 10 cereri pe secundă (rafală de 20) și 100.0
 
 - **URL:** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) sau **Developers** în grupul **Build** din bara laterală (și în meniul mobil).
 - **Autentificare:** niciuna pentru pagină și uneltele ei. Solicitarea unei chei API pentru endpoint-ul MCP găzduit necesită autentificare.
-- **Rețea:** **PQ key status** și **Simulator** funcționează pe mainnet sau testnet prin comutatorul din tab (implicit testnet). **Signing playground** și **QoreX test wallet** sunt doar pe testnet. **SDKs** și **AI agents (MCP)** nu depind de o rețea.
+- **Rețea:** **Transaction inspector**, **PQ key status** și **Simulator** funcționează pe mainnet sau testnet prin comutatorul din tab (implicit testnet). **Signing playground** și **QoreX test wallet** sunt doar pe testnet. **SDKs** și **AI agents (MCP)** nu depind de o rețea.
 - **Portofel:** niciunul. Uneltele își generează propriile chei de unică folosință.
 - **Cost:** gratuit. Nu se trimite nimic către lanț în afară de interogări de citire și apeluri de simulare.
 - **Confidențialitate:** cheile de unică folosință există doar în memoria paginii. Nu lipi o frază de recuperare reală în nicio unealtă.
@@ -152,7 +184,7 @@ Limite: o cheie activă pe cont, 10 cereri pe secundă (rafală de 20) și 100.0
 | Suprafață | Adresă | Rețele |
 | --- | --- | --- |
 | Pagina Developers | `dashboard.qorechain.io/developers` | Unelte de citire pe mainnet și testnet; unelte de semnare doar pe testnet |
-| Biblioteca de semnare | npm `@qorechain/qoresign`, sursa `github.com/qorechain/qoresign`, vezi [QoreSign](/qoresign/overview) | n/a |
+| Biblioteca de semnare | npm `@qorechain/qoresign` (0.1.1 adaugă `inspectTransaction`), PyPI QoreSign pentru Python, sursa `github.com/qorechain/qoresign`, vezi [QoreSign](/qoresign/overview) | n/a |
 | Pachetul de portofel de test | npm `@qorechain/qorex-wallet-mock`, sursa `github.com/qorechain/qorex-integrations` | Testnet |
 | Indexul de pachete | [Pachete pentru dezvoltatori](/developer-tools/overview) | n/a |
 | Server MCP | npm `@qorechain/mcp` 0.1.0 și `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0; ghid: [Serverul MCP QoreChain](/developer-tools/mcp) | Implicit testnet |
@@ -161,9 +193,9 @@ Versiunile pachetelor se schimbă; citește-le pe cele curente în tab-ul **SDKs
 
 ## Limite și probleme cunoscute {#limits}
 
-- **Transaction inspector: în curând, încă nu este activ.** Planificat: lipești un hash și vezi fiecare mesaj, semnatarul, comisionul, dacă semnătura post-cuantică se verifică în raport cu cheia înregistrată a semnatarului și nivelul de securitate. Apare odată cu următoarea versiune QoreSign.
+- **Inspectorul judecă în raport cu cheia înregistrată acum.** După o rotire a cheii, o tranzacție mai veche poate apărea ca neverificată. Citește doar tranzacții confirmate.
 - **Endpoint-ul MCP găzduit are nevoie de o cheie API.** Solicită una din dashboard-ul tău (o cheie activă pe cont, 10 cereri pe secundă, 100.000 pe zi); configurarea locală nu are nevoie de nicio cheie. Folosește configurarea locală pentru majoritatea lucrărilor.
-- **Două quickstart-uri sunt marcate „Not tested”:** QoreSign pentru Android (același cod a fost rulat doar pe artefactul JVM, nu pe un dispozitiv) și QoreSign pentru Python. Celelalte 32 de intrări quickstart au rulat și au trecut.
+- **Două quickstart-uri sunt marcate „Not tested”:** QoreSign pentru Android și QoreSeal pentru Android (același cod a fost rulat pe artefactul JVM, nu pe un dispozitiv). Celelalte quickstart-uri testate au rulat și au trecut.
 - **Simulatorul are nevoie de octeți semnați.** Nu poate semna în locul tău și nu transmite niciodată.
 - **Playground-ul și portofelul de test sunt doar pe testnet,** folosesc chei de unică folosință care dispar la reîncărcare și nu pot deține sau muta fonduri reale.
 - **O extensie QoreX reală din același tab este înlocuită** de portofelul de test până când reîncarci pagina.

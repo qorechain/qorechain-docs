@@ -84,7 +84,7 @@ Bunu `inspect.mjs` olarak kaydedin ve bir test ağı işlem hash'iyle `node insp
 
 `fetchEvmWindow({ rest, address })` şunları döndürür: `found`, `live`, açılış ve bitiş yükseklikleri, en fazla ve kullanılan işlem ile değer, kalan blok, işlem ve değer, `nativeOnly` ve `allowedTargets`.
 
-Bu, kütüphane işlevidir. Gösterge paneli [Geliştiriciler](/dashboard/developers) sayfasında henüz bir İşlem denetleyicisi sekmesi yoktur.
+Bu, kütüphane işlevidir. Gösterge paneli [Geliştiriciler](/dashboard/developers#inspector) sayfasında onu kullanan bir İşlem denetleyicisi sekmesi vardır: bir işlem karması yapıştırın ve sonucu kod yazmadan okuyun.
 
 ## Ne için kullanılır {#use-cases}
 

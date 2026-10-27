@@ -85,7 +85,7 @@ console.log("EVM window:", win.found, win.live);
 
 `fetchEvmWindow({ rest, address })`는 `found`, `live`, 시작 및 만료 높이, 최대 및 사용된 트랜잭션 수와 값, 남은 블록, 트랜잭션, 값, `nativeOnly`, `allowedTargets`를 반환합니다.
 
-이것은 라이브러리 함수입니다. 대시보드 [개발자](/dashboard/developers) 페이지에는 아직 트랜잭션 인스펙터 탭이 없습니다.
+이것은 라이브러리 함수입니다. 대시보드 [개발자](/dashboard/developers#inspector) 페이지에는 이를 사용하는 트랜잭션 인스펙터 탭이 있습니다. 트랜잭션 해시를 붙여 넣으면 코드를 작성하지 않고도 결과를 읽을 수 있습니다.
 
 ## 사용 용도 {#use-cases}
 

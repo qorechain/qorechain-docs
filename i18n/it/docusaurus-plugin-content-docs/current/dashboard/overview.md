@@ -37,7 +37,7 @@ Questa sezione è una guida pratica per l'utente: cosa fa ogni pagina, come apri
 | **Trade** | [Trade](/dashboard/trade) | Schermata di swap con token di test. |
 | Gruppo **Earn** | [Quests](/dashboard/quests) | Quests, Leaderboard, Badges. |
 | **Games** | [Quests](/dashboard/quests#games) | La QoreChain Arcade. |
-| Gruppo **Build** | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Strumenti per i contratti, la pagina per gli operatori (cinque schede: Validator Program, Validator Application, Light Node, Node Registration, Rollups) e la pagina pubblica per gli sviluppatori (sei schede: SDKs, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). La voce Nodes & Validators era etichettata «Tools»; la sua scheda SDK è passata a Developers. |
+| Gruppo **Build** | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Strumenti per i contratti, la pagina per gli operatori (cinque schede: Validator Program, Validator Application, Light Node, Node Registration, Rollups) e la pagina pubblica per gli sviluppatori (sette schede: SDKs, Transaction inspector, PQ key status, Simulator, Signing playground, QoreX test wallet, AI agents (MCP)). La voce Nodes & Validators era etichettata «Tools»; la sua scheda SDK è passata a Developers. |
 | **FAQ** | `/faq` | Aiuto nell'app. Alcune parti sono obsolete; questo manuale è il riferimento. |
 
 La pagina [Validators](/dashboard/validators) (`/validators`) non ha un link nella barra laterale; aprila tramite l'indirizzo.
@@ -120,7 +120,6 @@ Pagine di questa sezione: [Explorer](/dashboard/explorer), [Wallet](/dashboard/w
 - **Non esiste una schermata Bridge.** Vedi [Bridge](/dashboard/bridge).
 - **Trade non segue il selettore di rete.** Mostra contenuti di testnet anche con l'intestazione su Mainnet. Vedi [Trade](/dashboard/trade).
 - **Le FAQ nell'app sono una breve pagina di aiuto.** Dove differiscono da questo manuale, segui questo manuale.
-- **Non ancora attivi:** il Transaction inspector nella pagina Developers.
 - **Restrizioni della mainnet.** Staking, invio e deploy di contratti su mainnet sono descritti pagina per pagina; diversi flussi (deploy Native o SVM, redelegation, staking con blocco temporale) non sono offerti sulla Dashboard.
 - **La testnet non ha valore reale.** Non inviare mai QOR reali a un indirizzo di testnet: i formati sono identici. Vedi [Wallet](/dashboard/wallet#testnet).
 

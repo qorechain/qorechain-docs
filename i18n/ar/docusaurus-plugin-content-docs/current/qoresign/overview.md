@@ -84,7 +84,7 @@ console.log("EVM window:", win.found, win.live);
 
 تعيد `fetchEvmWindow({ rest, address })` الحقول `found` و`live` وارتفاعي الفتح والانتهاء والحد الأقصى للمعاملات والقيمة والمستخدم منهما، والكتل والمعاملات والقيمة المتبقية، و`nativeOnly` و`allowedTargets`.
 
-هذه دالة المكتبة. لا تحتوي صفحة [المطورين](/dashboard/developers) في لوحة التحكم على تبويب مفتش المعاملات بعد.
+هذه دالة المكتبة. تحتوي صفحة [المطورين](/dashboard/developers#inspector) في لوحة التحكم على تبويب مفتش المعاملات (Transaction inspector) يستخدمها: الصق تجزئة معاملة واقرأ النتيجة دون كتابة شيفرة.
 
 ## فيم يُستخدم {#use-cases}
 

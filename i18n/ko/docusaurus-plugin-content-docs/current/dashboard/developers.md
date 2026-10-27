@@ -7,14 +7,15 @@ sidebar_position: 13
 
 # 개발자
 
-**Developers** 페이지(`/developers`, 사이드바 **Build** 그룹, 항목 **Developers**)는 QoreChain 위에서 구축하는 사람들을 위한 공개 도구 페이지입니다. 계정이 필요 없습니다. 여섯 개의 탭이 있습니다: **SDKs**, **PQ key status**, **Simulator**, **Signing playground**, **QoreX test wallet**, **AI agents (MCP)**. 이 탭들을 통해 알맞은 패키지를 찾아 설치하고, 계정에 어떤 포스트 양자 키가 등록되어 있는지와 EVM 승인 창이 열려 있는지 확인하고, 서명된 트랜잭션을 드라이런하고, 일회용 키로 하이브리드 서명을 연습하고, 모의 QoreX 지갑으로 dApp을 테스트할 수 있으며, 모두 브라우저에서 이루어집니다. dApp, 지갑, 백엔드 개발자를 위한 페이지입니다. **Transaction inspector**는 계획되어 있으며 아직 라이브가 아닙니다([제한 사항](#limits) 참고). 라이브러리 자체에 대해서는 [개발자 패키지](/developer-tools/overview), [SDK 개요](/sdk/overview), [설치](/sdk/install)를 참고하세요.
+**Developers** 페이지(`/developers`, 사이드바 **Build** 그룹, 항목 **Developers**)는 QoreChain 위에서 구축하는 사람들을 위한 공개 도구 페이지입니다. 계정이 필요 없습니다. 일곱 개의 탭이 있습니다: **SDKs**, **Transaction inspector**, **PQ key status**, **Simulator**, **Signing playground**, **QoreX test wallet**, **AI agents (MCP)**. 이 탭들을 통해 알맞은 패키지를 찾아 설치하고, 커밋된 트랜잭션을 읽어 그 포스트 양자 계층이 검증되는지 확인하고, 계정에 어떤 포스트 양자 키가 등록되어 있는지와 EVM 승인 창이 열려 있는지 확인하고, 서명된 트랜잭션을 드라이런하고, 일회용 키로 하이브리드 서명을 연습하고, 모의 QoreX 지갑으로 dApp을 테스트할 수 있으며, 모두 브라우저에서 이루어집니다. dApp, 지갑, 백엔드 개발자를 위한 페이지입니다. 라이브러리 자체에 대해서는 [개발자 패키지](/developer-tools/overview), [SDK 개요](/sdk/overview), [설치](/sdk/install)를 참고하세요.
 
 ## 혁신 사항 {#innovations}
 
 - **체인에 대한 읽기 전용 게이트웨이.** 도구들은 공개 체인 데이터를 읽고, `cosmos/`, `cosmwasm/`, `qorechain/` 쿼리 경로와 시뮬레이트 호출에 한해 읽기 전용 게이트웨이를 통해 트랜잭션을 시뮬레이션합니다. 이 페이지의 어떤 것도 트랜잭션을 브로드캐스트할 수 없습니다. 체인의 REST 엔드포인트가 브라우저 CORS 헤더를 보내지 않기 때문에 이 게이트웨이가 존재합니다.
 - **브라우저를 떠나지 않는 키.** 서명 플레이그라운드와 테스트 지갑의 키는 브라우저에서 생성되며 메모리에만 보관됩니다. 저장되거나 전송되지 않으며, 새로고침하면 사라집니다. 이 두 탭은 테스트넷 전용이며 메인넷을 거부합니다.
 - **데모가 아닌 프로덕션 서명 라이브러리.** 플레이그라운드는 프로덕션 통합과 동일한 오픈 소스 라이브러리인 [QoreSign](/qoresign/overview)을 사용합니다. 같은 메시지에 대한 secp256k1 서명과 ML-DSA-87 서명으로 이루어진 하이브리드 서명을 생성하고 검증합니다.
-- **테스트된 데이터에서 생성되는 패키지 허브.** **SDKs** 탭은 하나의 매니페스트에서 약 40개의 패키지를 나열합니다. 버전은 각 레지스트리에서 실시간으로 읽어오며(10분마다 갱신되고, 레지스트리에 연결할 수 없으면 마지막으로 확인한 버전과 그 날짜가 표시됩니다), 각 퀵스타트는 SDK 팀이 공개 레지스트리를 대상으로 실행했고 그들이 관찰한 출력이 옆에 함께 표시됩니다.
+- **테스트된 데이터에서 생성되는 패키지 허브.** **SDKs** 탭은 하나의 매니페스트에서 48개의 패키지를 나열합니다. 버전은 각 레지스트리에서 실시간으로 읽어오며(10분마다 갱신되고, 레지스트리에 연결할 수 없으면 마지막으로 확인한 버전과 그 날짜가 표시됩니다), 각 퀵스타트는 SDK 팀이 공개 레지스트리를 대상으로 실행했고 그들이 관찰한 출력이 옆에 함께 표시됩니다.
+- **재현할 수 있는 판정.** **Transaction inspector**는 커밋된 트랜잭션을 읽고, 그 ML-DSA-87 계층이 서명자가 등록한 키에 대해 검증되는지를 보고하며, 검증되지 않을 때는 sign-bytes 버전과 그 이유를 함께 알려줍니다. [QoreSign](/qoresign/overview) 0.1.1의 `inspectTransaction` 함수를 사용하므로 같은 검사를 자체 코드에서도 실행할 수 있습니다. 읽기 전용입니다.
 - **추측이 아닌 체인의 답.** **PQ key status**는 등록된 ML-DSA-87 키와 EVM 창 상태를 노드 자체의 쿼리 경로에서 읽어오므로, EVM 트랜잭션을 보내기 전에 왜 거부될지 확인할 수 있습니다.
 
 ## 사용 방법 {#how-to-use}
@@ -23,7 +24,7 @@ sidebar_position: 13
 
 ### SDKs {#sdks}
 
-**기능.** 모든 QoreChain 라이브러리를 제품별로 묶어 나열합니다. 매니페스트에는 TypeScript, Python, Go, Rust, Java, Kotlin, Swift에 걸쳐 약 40개의 패키지가 있습니다. 대부분은 안정 버전이고, 하나는 지원 중단되었으며, 아직 레지스트리에 없는 패키지는 그렇게 표시됩니다. 표시되는 순서대로 제품은 다음과 같습니다: QoreChain SDK(코어, React 훅, EVM, SVM, dApp 스타터, Python·Rust·Go·Java 포트), QoreSign, RDK(롤업 개발 키트, 그 명령줄 도구, 롤업 스타터, Python·Rust·Go·Java 포트), PQC 라이브러리, 지갑 어댑터, 체인 브리지, Handles, QoreX 통합, 그리고 MCP와 `qore` CLI.
+**기능.** 모든 QoreChain 라이브러리를 제품별로 묶어 나열합니다. 매니페스트에는 TypeScript, Python, Go, Rust, Java, Kotlin, Swift에 걸쳐 48개의 패키지가 있습니다. 46개는 안정 버전이고, 1개는 지원 중단되었으며, 1개는 아직 레지스트리에 없어 **Not published yet**로 표시됩니다(npm용 QoreSeal). 표시되는 순서대로 제품은 다음과 같습니다: QoreChain SDK(코어, React 훅, EVM, SVM, dApp 스타터, Python·Rust·Go·Java 포트), QoreSign(Python용 QoreSign 포함), QoreSeal(ML-KEM-1024로 계정에 암호화, 테스트넷; [QoreSeal](/developer-tools/qoreseal) 참고, Rust, Go, Python, Swift, Kotlin, Android), RDK(롤업 개발 키트, 그 명령줄 도구, 롤업 스타터, Python·Rust·Go·Java 포트), PQC 라이브러리, 지갑 어댑터, 체인 브리지, Handles, QoreX 통합, 그리고 MCP와 `qore` CLI.
 
 **작동 방식.** 각 제품은 카드입니다. 제품이 여러 언어로 제공되면 언어 선택기(알약 모양)로 표시되는 패키지를 전환합니다. 각 패키지는 다음을 보여줍니다:
 
@@ -47,6 +48,37 @@ sidebar_position: 13
 **최소 예제.** 필터에 `python`을 입력하고, **QoreChain SDK**를 열고, **Python** 알약을 고른 뒤, **Install**에서 설치 명령을 복사하고, 이어서 퀵스타트를 복사해 실행합니다.
 
 **네트워크.** 정적 목록과 실시간 레지스트리 읽기이며, 네트워크 선택은 적용되지 않습니다.
+
+### Transaction inspector {#inspector}
+
+**기능.** 해시로 커밋된 트랜잭션을 읽고 누가 서명했는지, 비용이 얼마였는지, 포스트 양자 계층이 검증되는지, 어느 보안 등급에 속하는지를 설명합니다. 읽기 전용이며, 아무것도 서명되거나 전송되지 않습니다.
+
+**작동 방식.** 페이지는 선택한 네트워크의 트랜잭션을 Dashboard의 읽기 전용 게이트웨이에 요청하고 그 위에서 [QoreSign](/qoresign/overview) 0.1.1의 `inspectTransaction` 함수를 실행합니다(같은 검사를 코드에서 실행하려면 [QoreSign 퀵스타트](/qoresign/quickstart) 참고). 포스트 양자 계층은 서명자가 **현재** 등록한 ML-DSA-87 키에 대해 검사되므로, 이후의 키 교체로 인해 이전 트랜잭션이 검증되지 않은 것으로 표시될 수 있습니다.
+
+**단계.**
+
+1. **Transaction inspector** 탭을 열고(**SDKs** 바로 다음에 있습니다) 토글로 **Testnet** 또는 **Mainnet**을 선택합니다.
+2. **Transaction hash**를 붙여넣습니다: `0x`가 있든 없든 16진수 64자입니다. 형식이 잘못된 해시는 아무것도 요청하기 전에 거부됩니다.
+3. **Inspect**를 선택합니다.
+4. 결과를 읽습니다:
+   - **Overview:** **Status**(**Success**, 또는 코드스페이스와 코드가 포함된 **Failed**), **Height**, **Chain id**, **Memo**, **Gas limit**과 함께 표시되는 **Fee**(설정된 경우 수수료 납부자 또는 부여자 포함), 그리고 **Open in explorer**. 탐색기는 헤더에서 선택한 네트워크를 따르므로, 트랜잭션이 다른 네트워크에 있으면 전환하라는 안내가 표시됩니다.
+   - **Signer:** **Address**, **Key type**, **Sequence**, **Public key**, **Classical signature valid**. EVM 레인 트랜잭션에는 여기에 서명자 정보가 없으며, 탭이 그렇게 알려줍니다.
+   - **Post-quantum layer:** **Present**, **Count**, **Algorithm**(ML-DSA-87), **Verified**(예 또는 아니요), **Sign-bytes version**, 그리고 검증되지 않은 경우 **Reason**.
+   - **Security tier**, 정의는 다음과 같습니다:
+
+     | 등급 | 의미 |
+     | --- | --- |
+     | **PQC** | ML-DSA-87 계층을 포함합니다: 하이브리드 서명. |
+     | **Enrollment** | 계정의 ML-DSA-87 키를 등록하거나 관리하며, 설계상 클래식 키로 서명됩니다. |
+     | **SHAKE** | ML-DSA-87 계층이 없는 네이티브 레인 트랜잭션. |
+     | **Classical** | secp256k1로만 서명된 EVM 레인 트랜잭션. |
+
+   - **Messages:** 각 메시지의 타입 URL과 원시 값(**Show raw value (base64)**), 그리고 **Raw JSON**.
+5. 알 수 없는 해시에는 해시를 확인하거나 네트워크를 전환하라는 안내와 함께 "No transaction with this hash was found on ..."가 표시됩니다. 테스트넷 노드는 오래된 기록을 정리하므로, 오래된 테스트넷 트랜잭션은 사라졌을 수 있습니다.
+
+**최소 예제.** **Testnet**을 고르고 `124E5B2B5B5A8AE7CBA254224CBA07F5014BD1B0014C164A8208E5D7EC0C664E`를 붙여넣습니다: 등급이 **PQC**로, 포스트 양자 계층이 **Verified**로 표시됩니다(2026년 10월 27일에 확인함. 해당 트랜잭션이 이후 정리되었다면 최근 테스트넷 송금의 해시를 사용하세요).
+
+**네트워크.** 탭의 토글을 통한 메인넷 또는 테스트넷(기본값 테스트넷).
 
 ### PQ key status {#pq-status}
 
@@ -142,7 +174,7 @@ sidebar_position: 13
 
 - **URL:** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers), 또는 사이드바 **Build** 그룹(및 모바일 메뉴)의 **Developers**.
 - **로그인:** 페이지와 그 도구에는 필요 없습니다. 호스팅 MCP 엔드포인트용 API 키를 요청하려면 로그인이 필요합니다.
-- **네트워크:** **PQ key status**와 **Simulator**는 탭의 토글을 통해 메인넷 또는 테스트넷에서 작동합니다(기본값 테스트넷). **Signing playground**와 **QoreX test wallet**은 테스트넷 전용입니다. **SDKs**와 **AI agents (MCP)**는 네트워크에 의존하지 않습니다.
+- **네트워크:** **Transaction inspector**, **PQ key status**, **Simulator**는 탭의 토글을 통해 메인넷 또는 테스트넷에서 작동합니다(기본값 테스트넷). **Signing playground**와 **QoreX test wallet**은 테스트넷 전용입니다. **SDKs**와 **AI agents (MCP)**는 네트워크에 의존하지 않습니다.
 - **지갑:** 필요 없습니다. 도구가 자체적으로 일회용 키를 생성합니다.
 - **비용:** 무료입니다. 읽기 쿼리와 시뮬레이트 호출 외에는 체인으로 아무것도 전송되지 않습니다.
 - **개인정보 보호:** 일회용 키는 페이지의 메모리에만 존재합니다. 실제 복구 구문을 어떤 도구에도 붙여넣지 마세요.
@@ -152,7 +184,7 @@ sidebar_position: 13
 | 화면 | 주소 | 네트워크 |
 | --- | --- | --- |
 | Developers 페이지 | `dashboard.qorechain.io/developers` | 메인넷과 테스트넷 읽기 도구, 테스트넷 전용 서명 도구 |
-| 서명 라이브러리 | npm `@qorechain/qoresign`, 소스 `github.com/qorechain/qoresign`, [QoreSign](/qoresign/overview) 참고 | 해당 없음 |
+| 서명 라이브러리 | npm `@qorechain/qoresign`(0.1.1에서 `inspectTransaction` 추가), PyPI Python용 QoreSign, 소스 `github.com/qorechain/qoresign`, [QoreSign](/qoresign/overview) 참고 | 해당 없음 |
 | 테스트 지갑 패키지 | npm `@qorechain/qorex-wallet-mock`, 소스 `github.com/qorechain/qorex-integrations` | 테스트넷 |
 | 패키지 색인 | [개발자 패키지](/developer-tools/overview) | 해당 없음 |
 | MCP 서버 | npm `@qorechain/mcp` 0.1.0과 `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0, 가이드: [QoreChain MCP 서버](/developer-tools/mcp) | 기본값 테스트넷 |
@@ -161,9 +193,9 @@ sidebar_position: 13
 
 ## 제한 사항 및 알려진 문제 {#limits}
 
-- **Transaction inspector: 예정, 아직 라이브가 아닙니다.** 계획: 해시를 붙여넣으면 모든 메시지, 서명자, 수수료, 포스트 양자 서명이 서명자의 등록된 키에 대해 검증되는지 여부, 그리고 보안 등급을 볼 수 있습니다. 다음 QoreSign 릴리스와 함께 제공됩니다.
+- **인스펙터는 현재 등록된 키를 기준으로 판정합니다.** 키 교체 후에는 이전 트랜잭션이 검증되지 않은 것으로 표시될 수 있습니다. 커밋된 트랜잭션만 읽습니다.
 - **호스팅 MCP 엔드포인트에는 API 키가 필요합니다.** 대시보드에서 요청하세요(계정당 활성 키 1개, 초당 요청 10회, 하루 100,000회). 로컬 설정에는 키가 필요 없습니다. 대부분의 작업에는 로컬 설정을 사용하세요.
-- **두 개의 퀵스타트가 "Not tested"로 표시됩니다:** Android용 QoreSign(같은 코드를 JVM 아티팩트에서만 실행했고 실제 기기에서는 실행하지 않았습니다)과 Python용 QoreSign. 나머지 32개의 퀵스타트 항목은 실행되어 통과했습니다.
+- **두 개의 퀵스타트가 "Not tested"로 표시됩니다:** Android용 QoreSign과 Android용 QoreSeal(같은 코드를 JVM 아티팩트에서 실행했고 실제 기기에서는 실행하지 않았습니다). 테스트된 나머지 퀵스타트는 실행되어 통과했습니다.
 - **시뮬레이터는 서명된 바이트가 필요합니다.** 대신 서명해 주지 않으며 브로드캐스트하지 않습니다.
 - **플레이그라운드와 테스트 지갑은 테스트넷 전용**이며 새로고침하면 사라지는 일회용 키를 사용하고, 실제 자금을 보유하거나 이동할 수 없습니다.
 - **같은 탭의 실제 QoreX 확장 프로그램은 대체됩니다.** 다시 로드할 때까지 테스트 지갑이 그 자리를 차지합니다.

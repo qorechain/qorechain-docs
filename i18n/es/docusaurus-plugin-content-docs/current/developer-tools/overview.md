@@ -61,16 +61,17 @@ Instala un paquete y ejecuta su inicio rápido primero contra la testnet públic
 
 ### La página de desarrolladores del panel {#dashboard-developers}
 
-El panel tiene una página pública en [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Comprobada el 27 de octubre de 2026, tiene seis pestañas (recorrido completo: [Developers](/dashboard/developers)):
+El panel tiene una página pública en [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Comprobada el 27 de octubre de 2026, tiene siete pestañas (recorrido completo: [Developers](/dashboard/developers)):
 
 - **SDKs:** el centro de SDK. Cada paquete del manifiesto, agrupado por producto, con un selector de lenguaje, la última versión leída en vivo de cada registro, líneas de instalación e importación con botones de copiar, el inicio rápido con la salida que observó el equipo del SDK, los problemas conocidos, y los ID de cadena y los endpoints públicos. Los paquetes que no están publicados no muestran comando de instalación.
+- **Transaction inspector:** pega un hash de transacción de 64 caracteres hexadecimales en testnet o mainnet y ve el estado, el firmante, la comisión, si la capa poscuántica se verifica y el nivel de seguridad (PQC, Enrollment, SHAKE o Classical). Usa la función `inspectTransaction` de QoreSign 0.1.1: consulta [Inspector de transacciones](/qoresign/overview#inspector).
 - **PQ key status:** lee la clave ML-DSA-87 que una dirección tiene registrada en la cadena y su ventana de autorización EVM, en testnet o mainnet.
 - **Simulator:** simula una transacción firmada (`TxRaw` en base64 o hex) y muestra el consumo de gas y los cambios de saldo. No se transmite nada.
 - **Signing playground:** solo testnet. Genera en el navegador una clave híbrida desechable, mantenida en memoria, para firmar y verificar mensajes y solicitudes de Sign In With QoreChain.
 - **QoreX test wallet:** solo testnet. Inyecta un monedero de prueba (`window.qorex`, anunciado mediante EIP-6963 como «QoreX (mock)») en la pestaña para que puedas probar flujos de dApp.
 - **AI agents (MCP):** el estado del servidor MCP de QoreChain (publicado) y la configuración para un cliente MCP: primero `npx` local, más un endpoint alojado de testnet que necesita una clave de API. Consulta [Servidor MCP de QoreChain](/developer-tools/mcp).
 
-Una pestaña **Transaction inspector** (pegas un hash y ves cada mensaje, el firmante, la comisión y si la firma poscuántica se verifica) todavía no está en la página del panel; el 27 de octubre de 2026 la página seguía mostrando las seis pestañas anteriores. La misma comprobación ya está disponible como función de biblioteca, `inspectTransaction`, en QoreSign 0.1.1 (TypeScript): consulta [Inspector de transacciones](/qoresign/overview#inspector). Las tablas de abajo y el centro de SDK muestran los mismos datos de paquetes; las tablas se contrastaron con los registros el 27 de octubre de 2026.
+La misma comprobación del inspector está disponible en código como la función de biblioteca `inspectTransaction` en QoreSign 0.1.1 (TypeScript). Las tablas de abajo y el centro de SDK muestran los mismos datos de paquetes; las tablas se contrastaron con los registros el 27 de octubre de 2026.
 
 ## Dónde está publicado {#where-published}
 
@@ -284,7 +285,7 @@ En un nombre de npm con ámbito conserva la `@`, por ejemplo `https://registry.n
 ## Límites y problemas conocidos {#limits}
 
 - **Dos redes en vivo, versiones distintas.** Mainnet ejecuta v3.2.4 y testnet ejecuta v3.2.6. Una función que existe solo en testnet se marca en su propia página. No asumas el comportamiento de v3.2.5 en mainnet.
-- **Todavía no están en vivo:** la pestaña Transaction inspector de la página de desarrolladores del panel (la función de biblioteca `inspectTransaction` de QoreSign 0.1.1 sí está publicada), `@qorechain/qoreseal` en npm, el SDK 0.11.0 (el kit de desarrollo de cadena) en npm, las transacciones SVM y los precompilados EVM en mainnet (solo están activos en testnet; consulta la [visión general del SDK](/sdk/overview) para la lista carril por carril).
+- **Todavía no están en vivo:** `@qorechain/qoreseal` en npm, el SDK 0.11.0 (el kit de desarrollo de cadena) en npm, las transacciones SVM y los precompilados EVM en mainnet (solo están activos en testnet; consulta la [visión general del SDK](/sdk/overview) para la lista carril por carril).
 - **Registro de QoreSeal y cliente ligero PQ.** Cifrar hacia una dirección leída desde la cadena necesita el registro de claves KEM, en vivo en testnet y que llega a mainnet tras v3.2.5. El cliente ligero PQ no se conecta a ninguna de las dos redes; no hay soporte de cadena planificado para sus checkpoints.
 - **Kotlin 2.3 o posterior.** Los artefactos de Kotlin y Android de QoreSign y QoreSeal necesitan el compilador de Kotlin 2.3 o posterior; con Kotlin 2.1 falla la compilación contra ellos.
 - **Sin wheels para Windows.** Los paquetes de Python de QoreSign y QoreSeal tienen wheels solo para macOS y Linux; otras plataformas compilan desde la distribución de código fuente, que necesita Rust.
