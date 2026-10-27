@@ -59,7 +59,7 @@ Bu kılavuz boyunca hedef ağınıza uygun `--chain-id` değerini kullanın. Ör
 
 ---
 
-## Önerilen Donanım
+## Önerilen Donanım {#recommended-hardware}
 
 | Profil                   | CPU      | RAM   | Disk (NVMe SSD)         | Ağ        |
 | ------------------------ | -------- | ----- | ----------------------- | --------- |
@@ -67,7 +67,7 @@ Bu kılavuz boyunca hedef ağınıza uygun `--chain-id` değerini kullanın. Ör
 | Tam/arşiv düğümü         | 8 çekirdek | 32 GB | 2 TB+ (zamanla büyür)  | 1 Gbps    |
 | Borsa entegrasyonu       | 8 çekirdek | 32 GB | 2 TB+ (yedek alanla)   | 1 Gbps    |
 
-NVMe SSD şiddetle önerilir — zincir durumu (state) ile EVM/SVM depoları yoğun G/Ç (I/O) kullanır. Arşiv düğümleri (budama yok, tam tx indeksleme) sürekli büyür; diski yedek alan bırakarak ve izlemeyle (monitoring) birlikte planlayın.
+NVMe SSD şiddetle önerilir: zincir durumu (state) ile EVM/SVM depoları yoğun G/Ç (I/O) kullanır. Yukarıdaki disk rakamları cömerttir. Mainnet'te ölçülen değerler (27 Ekim 2026): `pruning = "custom"` (keep-recent 100000) ve `indexer = "null"` ile state sync yoluyla katılan bir doğrulayıcı iki ay sonra yaklaşık 10 GB tutar; genesis'ten beri çalışan ve varsayılan budamayı kullanan bir düğüm ise dört ay sonra yaklaşık 100 ila 130 GB tutar. Doğrulayıcı boyutlandırması [Doğrulayıcı Çalıştırma: Donanım](/developer-guide/running-a-validator#hardware) bölümündedir. Arşiv düğümleri (budama yok, tam tx indeksleme) sürekli büyür; diski yedek alan bırakarak ve izlemeyle (monitoring) birlikte planlayın.
 
 ---
 
@@ -222,7 +222,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 
 ## Hızlı Başlatma
 
-Genesis'ten senkronize olmak uzun sürebilir. Entegrasyonlarda hızlı bir soğuk başlangıç için **state sync** veya bir **anlık görüntü (snapshot)** kullanın.
+Genesis'ten senkronize olmak uzun sürebilir. Katılmanın varsayılan yolu olarak **state sync** kullanın; **anlık görüntü (snapshot)** yalnızca bir yedektir (mainnet anlık görüntüsü 21 Ağustos 2026 tarihlidir ve testnet hiç anlık görüntü yayınlamaz).
 
 ### State sync
 
@@ -231,18 +231,22 @@ State sync, her bloğu yeniden oynatmak yerine güvenilir RPC sunucularından g�
 ```toml
 [statesync]
 enable = true
-rpc_servers = "https://rpc.qore.host:443,https://rpc.qore.host:443"
+rpc_servers = "https://rpc.qore.host:443,https://<a second RPC you run or trust>:26657"
 trust_height = <TRUSTED_BLOCK_HEIGHT>
 trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-`trust_height` / `trust_hash` değerlerini manifestonun `stateSync` alanından alın — bu alan saatlik olarak yenilenir, dolayısıyla tercih edilen kaynaktır:
+`trust_height` / `trust_hash` değerlerini manifestonun `stateSync` alanından alın. Bu alan saatlik olarak yenilenir, dolayısıyla tercih edilen kaynaktır:
 
 ```bash
 TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
 TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 ```
+
+:::warning İki farklı RPC sunucusu
+State sync, güven noktasını **iki** RPC sunucusuna karşı çapraz kontrol eder. Manifestonun `stateSync.rpcServers` alanı mainnet'te `https://rpc.qore.host` adresini iki kez listeler (testnet'te ise `https://rpc-testnet.qore.host` adresini iki kez): iki özdeş girdi sayı koşulunu karşılar ama çapraz kontrolü boşa çıkarır. Bağımsız olarak çalıştırdığınız veya güvendiğiniz ikinci bir RPC ekleyin ve güven hash'ini ikinci bir kaynakla karşılaştırın, örneğin `curl -s "https://<second-rpc>/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash`; çıktı `$TRUST_HASH` değerine eşit olmalıdır.
+:::
 
 Yedek/alternatif olarak, güvenilir bir yükseklik ve hash değerini genele açık RPC'den kendiniz türetebilirsiniz:
 

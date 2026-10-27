@@ -140,7 +140,15 @@
     "description": "The label for category 'QoreX Wallet' in sidebar 'docsSidebar'"
   },
   "sidebar.docsSidebar.category.QoreX Wallet.link.generated-index.description": {
-    "message": "QoreX — QoreChain의 공식 비수탁형 양자 안전 지갑: 모바일 앱과 브라우저 확장 프로그램. 설정, 전송 및 수신, 스테이킹, 복구, dApp 연결.",
+    "message": "QoreX — QoreChain의 공식 비수탁형 지갑으로, 네이티브 레인에서 하이브리드 ML-DSA-87 서명을 사용합니다: 모바일 앱과 브라우저 확장 프로그램. 설정, 전송 및 수신, 스테이킹, 복구, dApp 연결.",
     "description": "The generated-index page description for category 'QoreX Wallet' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages": {
+    "message": "개발자 패키지",
+    "description": "The label for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
+    "message": "QoreChain의 모든 공개 패키지: 무엇인지, 새로운 점은 무엇인지, 사용 방법, 접근 방법, 게시 위치.",
+    "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
   }
 }

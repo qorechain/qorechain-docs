@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Edition — Web-Dashboard
 
-Die **UX (User eXperience)**-Edition führt denselben Light-Node-Daemon aus wie die SX-Edition, fügt aber ein **eingebettetes Web-Dashboard** hinzu, mit dem du den Node und das Netzwerk im Browser beobachten kannst. Die Binärdatei heißt `lightnode-ux`. Wie bei der SX-Edition beschreibt diese Seite Light Node **3.1.10** (eine eigene Versionslinie, getrennt von der Chain-Version).
+Die **UX (User eXperience)**-Edition führt denselben Light-Node-Daemon aus wie die SX-Edition, fügt aber ein **eingebettetes Web-Dashboard** hinzu, mit dem du den Node und das Netzwerk im Browser beobachten kannst. Die Binärdatei heißt `lightnode-ux`. Wie bei der SX-Edition liegt sie auf der eigenen Versionslinie des Light Nodes, getrennt von der Chain-Version (die Kanäle beider Netzwerke tragen am 27. Oktober 2026 3.1.12).
 
 Die UX-Edition ist die richtige Wahl für den Desktop-Einsatz und für Betreiber, die eine visuelle Oberfläche der Kommandozeile vorziehen.
 
@@ -23,11 +23,11 @@ Die UX-Edition benötigt **Go 1.26.1**. Ihre Post-Quanten-Kryptografie ist eine 
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Baue aus dem Release-Tag (`git checkout v3.1.10`). Das erzeugt `build/lightnode-ux`.
+Baue aus dem Release-Tag, den das Manifest nennt (heute `git checkout v3.1.12`). Das erzeugt `build/lightnode-ux`.
 
 ### Docker
 
-Der UX-Dienst wird aus `Dockerfile.ux` im Quell-Repository (`github.com/qorechain/qorechain-lightnode`, Tag `v3.1.10`) gebaut. Der Container benötigt eine `config.toml` in seinem Daten-Volume, bevor er startet. Die UX-Binärdatei enthält die Einrichtungsbefehle, du kannst sie also direkt im Volume erstellen:
+Der UX-Dienst wird aus `Dockerfile.ux` im Quell-Repository (`github.com/qorechain/qorechain-lightnode`, der Tag, der zum Manifest deines Netzwerks passt) gebaut. Der Container benötigt eine `config.toml` in seinem Daten-Volume, bevor er startet. Die UX-Binärdatei enthält die Einrichtungsbefehle, du kannst sie also direkt im Volume erstellen:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
@@ -106,6 +106,8 @@ Das Dashboard ist in folgende Ansichten gegliedert:
 - **Bridge** — Cross-Chain-Bridge-Telemetrie.
 - **Tokenomics** — Token-Ökonomie-Telemetrie.
 - **Settings** — die effektive Konfiguration des Nodes.
+
+Ab Light Node 3.1.11 zeigt das Dashboard ein Banner, wenn der Node ein neueres Release findet (siehe [SX Edition: Aktualisieren](/light-node/sx-edition#updating)). Seine lokale API liefert dieselbe Information unter `GET /api/update`.
 
 Die Telemetrie wird in Echtzeit aktualisiert; der Daemon aktualisiert Validatoren-, Netzwerk-, Bridge- und Tokenomics-Daten in unabhängigen Intervallen (konfigurierbar unter `[telemetry]` in `config.toml`).
 

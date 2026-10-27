@@ -24,7 +24,7 @@ El RDK de QoreChain admite cuatro modos de liquidación distintos — **optimist
 Los rollups optimistas asumen que las transacciones son válidas por defecto y dependen de pruebas de fraude para la resolución de disputas.
 
 * **Sistema de pruebas**: pruebas de fraude interactivas
-* **Ventana de impugnación**: 604,800 segundos (por defecto, 7 días). **Antes de v3.2.4:** la cadena lo convierte a bloques a razón fija de 6 segundos por bloque, **100,800 bloques**, así que el tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,2 s de mainnet); planifique en bloques, no en días. **Desde v3.2.4:** para un lote enviado a partir de la altura de la actualización, la ventana se mide en segundos de tiempo de bloque (7 días completos). Un lote enviado antes conserva la regla del número de bloques. La testnet aplicó la v3.2.4 en la altura 8,337,253 (19 de octubre de 2026); mainnet la aplicó en la altura 3,742,566 (23 de octubre de 2026, propuesta de gobernanza 13). El valor por defecto configurado en la testnet es más corto, 3,600 segundos (1 hora), de modo que un rollup de testnet finaliza más rápido que los 7 días descritos aquí.
+* **Ventana de impugnación**: 604,800 segundos (por defecto, 7 días). **Antes de v3.2.4:** la cadena lo convierte a bloques a razón fija de 6 segundos por bloque, **100,800 bloques**, así que el tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,1 s de mainnet); planifique en bloques, no en días. **Desde v3.2.4:** para un lote enviado a partir de la altura de la actualización, la ventana se mide en segundos de tiempo de bloque (7 días completos). Un lote enviado antes conserva la regla del número de bloques. La testnet aplicó la v3.2.4 en la altura 8,337,253 (19 de octubre de 2026); mainnet la aplicó en la altura 3,742,566 (23 de octubre de 2026, propuesta de gobernanza 13). El valor por defecto configurado en la testnet es más corto, 3,600 segundos (1 hora), de modo que un rollup de testnet finaliza más rápido que los 7 días descritos aquí.
 * **Fianza de impugnación**: 1,000 QOR (1,000,000,000 uqor) — requerida para presentar una impugnación con prueba de fraude (presets `nft` y `custom`; los presets `defi`, `gaming` y `enterprise` no establecen fianza porque no tienen ventana de impugnación)
 * **Finalidad**: retrasada hasta que expire la ventana de impugnación sin una impugnación válida
 * **Auto-finalización**: el `EndBlocker` finaliza automáticamente los lotes una vez que la ventana de impugnación ha pasado sin disputa. Un lote impugnado nunca se finaliza automáticamente: el creador del rollup resuelve primero la impugnación (consulte [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -44,7 +44,7 @@ Los rollups ZK proporcionan pruebas criptográficas de validez que garantizan la
 * **Finalidad**: instantánea al verificar la prueba — no se requiere ventana de impugnación
 * **Tamaño máximo de prueba**: 1 MB (1,048,576 bytes)
 * **Profundidad de recursión**: profundidad de agregación de pruebas configurable (por defecto: 1)
-* **Madurez**: los lotes SNARK se verifican on-chain (Groth16 sobre BLS12-381) contra una clave de verificación almacenada junto con el rollup. Un rollup creado mediante `create-rollup` no incluye actualmente una clave de verificación, por lo que los lotes ZK todavía no pueden finalizarse de extremo a extremo. La verificación STARK es experimental: es opcional y comprueba un circuito de demostración, no la transición de estado de su propio rollup. Trate la liquidación ZK como no apta para producción.
+* **Madurez**: los lotes SNARK se verifican on-chain (Groth16 sobre BLS12-381) contra una clave de verificación almacenada junto con el rollup. **La liquidación ZK todavía no puede usarse en ninguna de las dos redes:** la cadena no tiene forma de registrar una clave de verificación para un rollup, por lo que todo lote ZK es rechazado después de pagar su comisión. El registro de claves está previsto para la versión de cadena v3.2.7. La verificación STARK es experimental: es opcional y comprueba un circuito de demostración, no la transición de estado de su propio rollup. Trate la liquidación ZK como no apta para producción.
 
 **Ciclo de vida del lote**:
 
@@ -152,13 +152,13 @@ Los proponentes de L1 de QoreChain secuencian las transacciones del rollup.
 Almacenamiento de blobs en el KV-store on-chain dentro de la propia QoreChain.
 
 :::caution Todavía no hay una forma pública de publicar un blob
-El módulo define el almacenamiento, la retención y la poda de blobs, pero en las versiones actuales no existe ningún mensaje de transacción para publicar un blob. Un lote que nombre un hash de datos en un rollup `native` o `both` es rechazado porque no se puede almacenar ningún blob coincidente. Consulte [Data Availability](/rollups/data-availability). Por tanto, con disponibilidad de datos native un lote debe dejar `data_hash` vacío; el cliente RDK (0.6.1) lo hace así, y la cadena rechaza un lote que declare uno.
+El módulo define el almacenamiento, la retención y la poda de blobs, pero en las versiones actuales no existe ningún mensaje de transacción para publicar un blob. Un lote que nombre un hash de datos en un rollup `native` o `both` es rechazado porque no se puede almacenar ningún blob coincidente. Consulte [Data Availability](/rollups/data-availability). Por tanto, con disponibilidad de datos native un lote debe dejar `data_hash` vacío; el cliente RDK (0.6.2) lo hace así, y la cadena rechaza un lote que declare uno.
 :::
 
 | Parámetro            | Valor                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | **Tamaño máximo de blob** | 2 MB (2,097,152 bytes)                                                                          |
-| **Período de retención** | 432,000 bloques (unos 16 días con los bloques actuales de ≈3,2 s de mainnet; la cifra varía con el tiempo de bloque) |
+| **Período de retención** | 432,000 bloques (unos 16 días con los bloques actuales de ≈3,1 s de mainnet; la cifra varía con el tiempo de bloque) |
 | **Auto-poda**        | Los blobs expirados se podan en el `EndBlocker` — los datos se eliminan pero se conservan los metadatos del compromiso |
 | **Compromiso**       | Hash SHAKE-256 (32 bytes) de los datos del blob                                                     |
 
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Lote aceptado como canónico                        |
 | **Rejected**   | Lote invalidado por una impugnación exitosa        |
 
-Comportamiento del RDK 0.6.1: para un rollup optimistic, el cliente construye un lote cuya raíz de estado es la raíz de transición canónica de la cadena (`batchTransitionRoot` en el RDK), no un valor libre propio.
+Comportamiento del RDK 0.6.1 y 0.6.2 (el código de la biblioteca es el mismo): para un rollup optimistic, el cliente construye un lote cuya raíz de estado es la raíz de transición canónica de la cadena (`batchTransitionRoot` en el RDK), no un valor libre propio.
 
 ### Reglas de auto-finalización
 
@@ -261,7 +261,7 @@ El registro es **no fatal**: si falla (saldo insuficiente o límite alcanzado), 
 
 ### Anclaje de estado {#state-anchoring}
 
-Un lote de liquidación puede anclarse a `x/multilayer`, que registra el ID de capa, la altura de capa (el índice del lote), la raíz de estado, el hash del conjunto de validadores y el recuento de transacciones bajo una firma poscuántica del creador del rollup.
+Un lote de liquidación puede anclarse a `x/multilayer`, que registra el ID de capa, la altura de capa (el índice del lote), la raíz de estado, el hash del conjunto de validadores y el recuento de transacciones bajo una firma post-cuántica del creador del rollup.
 
 * **Desde v3.2.2 (activo en mainnet y testnet):** `MsgSubmitBatch` tiene dos campos opcionales. `anchor_signature` es la firma ML-DSA-87 del creador sobre los **bytes de firma de ancla v2** del lote (consulte [Lectura de Anclas](/architecture/multilayer-architecture#reading-anchors)); cuando está presente, el lote se ancla en `x/multilayer` en la **misma transacción**, y un ancla rechazada rechaza el lote. `validator_set_hash` es el compromiso del conjunto de validadores del rollup que se incluye en el ancla y queda cubierto por la firma. En la CLI: `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` imprime los bytes que hay que firmar (`<layer-id>` es el id de capa del rollup, que coincide con el id del rollup en los rollups creados mediante el RDK), y `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` los envía.
 * **Sin la firma** el lote se liquida sin anclar, exactamente como antes. Un cliente que no envía el campo produce lotes sin anclar, así que compruebe que el toolkit que usa lo admite: el `@qorechain/rdk` 0.6.0 de TypeScript firma el ancla cuando su cliente firma en modo híbrido y es el creador del rollup (y en caso contrario envía el lote sin anclar), mientras que los clientes de Python, Go, Rust y Java no construyen el campo. Todavía no existe ningún rollup, capa ni ancla en ninguna de las dos redes, por lo que no se ha escrito ningún ancla y esa vía no se ha probado en vivo.

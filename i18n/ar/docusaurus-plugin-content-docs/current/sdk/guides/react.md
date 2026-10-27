@@ -8,8 +8,8 @@ sidebar_position: 7
 # عدّة React (`@qorechain/react`)
 
 `@qorechain/react` هي طبقة React الرسمية فوق `@qorechain/sdk`: مزوّد واحد،
-وحفنة من الخطّافات، ومكوّنان جاهزان للإدراج — بما في ذلك شارة **آمن كمّيًا**
-من سطر واحد. إنّها تجعل بناء تطبيق dApp آمن كمّيًا المسار الافتراضي.
+وحفنة من الخطّافات، ومكوّنان جاهزان للإدراج — بما في ذلك شارة حالة PQC
+من سطر واحد. إنّها تجعل بناء تطبيق dApp بتوقيع ML-DSA-87 هجين المسار الافتراضي.
 
 ```bash
 npm i @qorechain/react @qorechain/sdk react react-dom
@@ -27,7 +27,7 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 ML-DSA-87 الهجين): لا يمكن لـ `send` / `sendTokens` إدراج معاملة على الشبكة
 الرئيسية أو شبكة الاختبار. أرسل باستخدام `TxClient` الهجين في الـ SDK
 (`client.connectTx(signer, { pqcKeypair })`، انظر
-[الأمان الكمّي](/sdk/guides/quantum-safe#register-in-one-call)) لعمليات الإرسال.
+[التوقيع الهجين](/sdk/guides/quantum-safe#register-in-one-call)) لعمليات الإرسال.
 يقرأ `usePqcStatus` و`<QuantumSafeBadge/>` الحالة عبر
 `getPqcStatus` مع العميل المُركّب للمزوّد، الذي يقرأ منذ SDK 0.9.0 عبر
 REST (`/qorechain/pqc/v1/account/{address}`)، ولذلك يعملان مقابل `*.qore.host`
@@ -136,8 +136,8 @@ function Send() {
 
 ### `<QuantumSafeBadge/>`
 
-يُظهِر مؤشر **آمن كمّيًا** عندما يكون للعنوان مفتاح ما بعد كمّي مسجّل
-(عبر `usePqcStatus`)، وإلّا حالة "غير آمن كمّيًا" مكتومة. القيمة الافتراضية هي
+يُظهِر مؤشر حالة عندما يكون للعنوان مفتاح ما بعد كمّي مسجّل
+(عبر `usePqcStatus`)، وإلّا حالة "غير مسجّل" مكتومة. القيمة الافتراضية هي
 الحساب المتّصل.
 
 ```tsx
@@ -172,4 +172,4 @@ function Dashboard() {
 ```
 
 انظر [مثال `react-dapp`](https://github.com/qorechain/qorechain-sdk/tree/main/examples/react-dapp)
-القابل للتشغيل و[دليل الأمان الكمّي](/sdk/guides/quantum-safe) لاستدعاءات الـ SDK الأساسية.
+القابل للتشغيل و[دليل التوقيع الهجين](/sdk/guides/quantum-safe) لاستدعاءات الـ SDK الأساسية.

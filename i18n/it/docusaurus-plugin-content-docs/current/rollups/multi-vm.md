@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Poiché il precompile è inattivo, una semplice `.call` verso di esso restituisce **successo con dati vuoti e non fa nulla**; il flag `ok` non indica che la chiamata abbia avuto effetto. La protezione affidabile all'interno del contratto è un target che restituisce sempre una conferma non vuota, con un `require(ret.length > 0)` dopo la chiamata, in modo che una risposta vuota sia trattata come un fallimento; il template `multivm-rollup` (0.6.0 e 0.6.1) fa così.
+Poiché il precompile è inattivo, una semplice `.call` verso di esso restituisce **successo con dati vuoti e non fa nulla**; il flag `ok` non indica che la chiamata abbia avuto effetto. La protezione affidabile all'interno del contratto è un target che restituisce sempre una conferma non vuota, con un `require(ret.length > 0)` dopo la chiamata, in modo che una risposta vuota sia trattata come un fallimento; il template `multivm-rollup` (da 0.6.0 a 0.6.2) fa così.
 
 ## Scaffold di un rollup multi-VM
 
@@ -102,4 +102,4 @@ Poiché il precompile è inattivo, una semplice `.call` verso di esso restituisc
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Il template `multivm-rollup` (0.6.0 e 0.6.1) include `src/crossvm-call.ts` (verifica se il precompile è attivo, poi stampa i calldata) e un `contracts/CrossVmCaller.sol` che chiama `executeCrossVMCall(uint8,string,bytes)` e richiede una risposta non vuota dal target. Non fa funzionare una chiamata finché il precompile è inattivo. Vedi [Distribuire un rollup](/rollups/deploying-a-rollup) per tutti i template dello scaffolder.
+Il template `multivm-rollup` (da 0.6.0 a 0.6.2) include `src/crossvm-call.ts` (verifica se il precompile è attivo, poi stampa i calldata) e un `contracts/CrossVmCaller.sol` che chiama `executeCrossVMCall(uint8,string,bytes)` e richiede una risposta non vuota dal target. Non fa funzionare una chiamata finché il precompile è inattivo. Vedi [Distribuire un rollup](/rollups/deploying-a-rollup) per tutti i template dello scaffolder.

@@ -13,7 +13,7 @@ Référence alphabétique des termes, abréviations et acronymes utilisés dans 
 
 **AMM** — Automated Market Maker (teneur de marché automatisé). Le module de liquidité on-chain natif de QoreChain (`x/amm`) fournissant des pools à produit constant, des swaps et de l'apport de liquidité directement au niveau du protocole, sans déploiement de smart contract externe. Voir [AMM](/architecture/amm).
 
-**Authorisation window (EVM)** (fenêtre d'autorisation EVM) — Une permission bornée (blocs, nombre de transactions, valeur totale), ouverte par un message de la voie Cosmos signé de façon post-quantique, à l'intérieur de laquelle une transaction de la voie EVM doit se situer depuis la v3.2.0. Depuis la v3.2.3, une fenêtre peut être restreinte aux seuls transferts natifs ou à une liste de destinataires. Voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window).
+**Authorisation window (EVM)** (fenêtre d'autorisation EVM) — Une permission bornée (blocs, nombre de transactions, valeur totale), ouverte par un message de la voie Cosmos portant une signature hybride ML-DSA-87 (FIPS 204), à l'intérieur de laquelle une transaction de la voie EVM doit se situer depuis la v3.2.0. Depuis la v3.2.3, une fenêtre peut être restreinte aux seuls transferts natifs ou à une liste de destinataires. Voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window).
 
 **BPF** — Berkeley Packet Filter. Le format de bytecode utilisé par le runtime SVM pour exécuter des programmes on-chain. Les programmes sont compilés en BPF avant déploiement.
 
@@ -39,11 +39,11 @@ Référence alphabétique des termes, abréviations et acronymes utilisés dans 
 
 **IBC** — Inter-Blockchain Communication (communication inter-blockchains). Un protocole de transmission de messages authentifiés entre blockchains indépendantes. QoreChain prend en charge les canaux IBC pour les transferts de jetons inter-chaînes et le relais de données.
 
-**Light Node** (nœud léger) — Un client peu gourmand en ressources qui suit la chaîne en recoupant les en-têtes de blocs auprès d'un ou plusieurs points de terminaison RPC, sans détenir l'état complet. Il ne sert pas de requêtes à d'autres. La répartition des frais du protocole réserve une part de **3 %** au programme de récompenses des nœuds légers. L'enregistrement au programme est ouvert et soumis à une licence `lightnode_operator` (50 $, achetée sur le tableau de bord) ; au 20 octobre 2026, six licences avaient été accordées sur le mainnet et aucun nœud léger ne s'était encore enregistré. Exécuter un nœud ne nécessite aucune licence. Voir [Nœud léger](/light-node/overview) et son [état du programme de récompenses](/light-node/overview#reward-program-status).
+**Light Node** (nœud léger) — Un client peu gourmand en ressources qui suit la chaîne en recoupant les en-têtes de blocs auprès d'un ou plusieurs points de terminaison RPC, sans détenir l'état complet. Il ne sert pas de requêtes à d'autres. La répartition des frais du protocole réserve une part de **3 %** au programme de récompenses des nœuds légers. L'enregistrement au programme est ouvert et soumis à une licence `lightnode_operator` (50 $, achetée sur le tableau de bord) ; le 27 octobre 2026, sept licences avaient été accordées sur le mainnet et un nœud léger était enregistré sur chaque réseau. Exécuter un nœud ne nécessite aucune licence. Voir [Nœud léger](/light-node/overview) et son [état du programme de récompenses](/light-node/overview#reward-program-status).
 
 **MEV** — Maximal Extractable Value (valeur extractible maximale). Le profit pouvant être obtenu en réordonnant, insérant ou censurant des transactions au sein d'un bloc. Le module FairBlock de QoreChain (chiffrement tIBE) est conçu pour atténuer l'extraction de MEV ; il n'est pas encore activé.
 
-**ML-DSA-87** — Module-Lattice Digital Signature Algorithm (niveau de sécurité 5). Le schéma de signature numérique post-quantique standardisé par le NIST utilisé par QoreChain pour la signature de transactions résistante au quantique. Produit des signatures de 4 627 octets avec des clés publiques de 2 592 octets.
+**ML-DSA-87** — Module-Lattice Digital Signature Algorithm (niveau de sécurité 5). Le schéma de signature numérique post-quantique standardisé par le NIST utilisé par QoreChain, avec secp256k1, pour les signatures hybrides de transactions sur la voie native. Produit des signatures de 4 627 octets avec des clés publiques de 2 592 octets.
 
 **ML-KEM-1024** — Module-Lattice Key Encapsulation Mechanism (niveau de sécurité 5). Un schéma d'encapsulation de clé post-quantique standardisé par le NIST, disponible dans le registre d'algorithmes PQC de QoreChain pour de futurs canaux de communication chiffrés.
 
@@ -79,7 +79,7 @@ Référence alphabétique des termes, abréviations et acronymes utilisés dans 
 
 **SNARK** — Succinct Non-interactive Argument of Knowledge. Un type de preuve à divulgation nulle de connaissance pouvant être vérifié rapidement avec une preuve de petite taille. Pris en charge comme paradigme de règlement dans le module RDK pour les zk-rollups.
 
-**STARK** — Scalable Transparent Argument of Knowledge. Un système de preuve à divulgation nulle de connaissance ne nécessitant aucune configuration de confiance et résistant au quantique. Disponible comme système de preuve alternatif pour le règlement des zk-rollups dans le RDK.
+**STARK** — Scalable Transparent Argument of Knowledge. Un système de preuve à divulgation nulle de connaissance ne nécessitant aucune configuration de confiance et reposant sur des fonctions de hachage plutôt que sur des courbes elliptiques. Disponible comme système de preuve alternatif pour le règlement des zk-rollups dans le RDK.
 
 **Stranded staker share / reward-pool reserve** (part de staker bloquée / réserve du pool de récompenses) — Montants enregistrés lors de la mise à niveau v3.2.0 qui ne bougent que par un vote de gouvernance ; la gouvernance les a libérés en octobre 2026 (le reliquat corrigé de la part bloquée, recalculé à la v3.2.3, a été libéré par la proposition 12). Voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 

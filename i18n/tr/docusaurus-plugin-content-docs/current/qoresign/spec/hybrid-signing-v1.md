@@ -123,7 +123,7 @@ taklit edilebilir.
   imzası taşımazlar. Kayıtlı bir ML-DSA-87 anahtarı olan bir hesap, yerel hattan
   sınırlı bir EVM yetkilendirme penceresi açabilir (bitiş yüksekliği, en fazla
   işlem, en fazla değer). Bkz.
-  [EVM cüzdanları: kuantuma hazır mod](/qoresign/guides/evm-quantum-ready).
+  [EVM cüzdanları: yetkilendirme penceresi](/qoresign/guides/evm-quantum-ready).
 - SVM hattı: ağda henüz açık değil.
 
 ## Test vektörleri {#test-vectors}

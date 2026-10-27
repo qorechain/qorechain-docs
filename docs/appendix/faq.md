@@ -43,7 +43,7 @@ Testnet-only test tokens (FestUSD, FestETH and FestBTC, with 6, 18 and 8 decimal
 
 ### How do I run a node, validator, or light node?
 
-For a full node, see [Running a Node](/developer-guide/running-a-node). For a validator, see [Running a Validator](/developer-guide/running-a-validator). For a light node, see [Light Node](/light-node/overview); registration for the light-node reward program is open and licence-gated ([status](/light-node/overview#reward-program-status)).
+For a full node, see [Running a Node](/developer-guide/running-a-node). For a validator, see [Running a Validator](/developer-guide/running-a-validator). For a light node, see [Light Node](/light-node/overview); registration for the light-node reward program is open and licence-gated, and on 27 October 2026 one light node was registered on each network ([status](/light-node/overview#reward-program-status)).
 
 ### What signature scheme does QoreChain use?
 
@@ -51,7 +51,7 @@ QoreChain uses a post-quantum hybrid scheme combining classical **secp256k1 (ECD
 
 ### Why is my EVM transaction refused with "no open EVM authorisation window"?
 
-Since v3.2.0 the EVM lane admits a transaction only from an account that has a registered post-quantum key and an open authorisation window. Open a window with a post-quantum-signed Cosmos-lane transaction, then retry. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
+Since v3.2.0 the EVM lane admits a transaction only from an account that has a registered post-quantum key and an open authorisation window. Open a window with a Cosmos-lane transaction with a hybrid ML-DSA-87 signature (FIPS 204), then retry. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
 
 ### How many validators does mainnet have?
 
@@ -59,7 +59,7 @@ Eight bonded validators on 27 October 2026, with about 60.3 million QOR bonded (
 
 ### Which block time should I expect?
 
-About 3.2 seconds on mainnet and about 1.3 seconds on the testnet (measured averages, 27 October 2026). Block time is set by the validators' node configuration.
+About 3.1 seconds on mainnet and about 1.3 seconds on the testnet (measured averages, 27 October 2026). Block time is set by the validators' node configuration.
 
 ### Is xQORE available?
 

@@ -41,7 +41,7 @@ QoreChain are o **cale de ofertă finită, plafonată**. Oferta la genesis a fos
 | --- | --- |
 | Modul de emisie | `fixed` (din v3.1.94, înălțimea 2.122.074 — 26 august 2026) |
 | Emisie per epocă | **86.000 QOR** (16.239 QOR până la propunerea de guvernanță 10; prima epocă de 86.000 QOR începe la blocul 3.672.000) |
-| Lungimea epocii | 43.200 de blocuri (aproximativ 38,6 ore la timpul de bloc actual de ≈3,2 s) |
+| Lungimea epocii | 43.200 de blocuri (aproximativ 37,7 ore la timpul de bloc actual de ≈3,1 s) |
 | Plafon cumulativ (`max_total_emission`) | **590.000.000 QOR** (114.285.714 QOR până la propunerea 10) |
 | Emis până acum (23 octombrie 2026, epoca 86) | 105.420.896,21 QOR (17,87 % din plafon) |
 | Rămas sub plafon | 484.579.103,79 QOR (aproximativ 5.635 de epoci la 86.000 QOR pe epocă; ultima este parțială) |
@@ -137,7 +137,7 @@ Două sume s-au acumulat pe mainnet înaintea upgrade-ului v3.2.0 (25 septembrie
 
 **Restul corectat al cotei blocate.** La upgrade-ul v3.2.3 (înălțimea 3.662.051, 20 octombrie 2026) lanțul a recalculat înregistrarea cotei blocate, care a ajuns atunci la 3.807.496,785528 QOR (`reserved` în `GET /qorechain/burn/v1/stranded_rewards`, alături de `released`, 6.693.045,921330 QOR). Propunerea de guvernanță 12 a eliberat acest rest, 3.807.496,785528 QOR, către fundație: a trecut (votul s-a încheiat pe 21 octombrie 2026, la 20:01 UTC), cu toată miza angajată care a votat în favoare. Înregistrarea poate fi verificată la `GET /qorechain/burn/v1/stranded_rewards`, iar propunerea la `GET /cosmos/gov/v1/proposals/12`.
 
-**Pool-ul nodurilor light acum.** Din upgrade-ul v3.2.0, recompensele nodurilor light sunt plătite doar din ceea ce s-a acumulat de la rularea anterioară a distribuției, cu un plafon per nod. Din v3.2.3 plafonul este de **2.000 QOR per nod la 30 de zile** (`max_reward_per_month_per_node`), proporțional cu timpul de bloc și uptime-ul nodului; valoarea per bloc (`max_reward_per_block_per_node`, 1.713 uqor) este în continuare raportată, dar nu mai este regula. Ce nu este câștigat rămâne în rezerva pool-ului, pe care o poate elibera doar un vot de guvernanță. După propunerea 8, rezerva se acumulează din nou: pe 20 octombrie 2026 conținea 487,2318 QOR (`reserved` în `GET /qorechain/lightnode/v1/reward_pool`), fără nimic restant sau de plată, deoarece încă nu s-a înregistrat niciun nod light. Înregistrarea este deschisă și condiționată de licență (vezi [Light Node](/light-node/overview#reward-program-status)). O eliberare dinaintea snapshot-ului upgrade-ului, peste suma înregistrată sau către o destinație invalidă este refuzată.
+**Pool-ul nodurilor light acum.** Din upgrade-ul v3.2.0, recompensele nodurilor light sunt plătite doar din ceea ce s-a acumulat de la rularea anterioară a distribuției, cu un plafon per nod. Din v3.2.3 plafonul este de **2.000 QOR per nod la 30 de zile** (`max_reward_per_month_per_node`), proporțional cu timpul de bloc și uptime-ul nodului; valoarea per bloc (`max_reward_per_block_per_node`, 1.713 uqor) este în continuare raportată, dar nu mai este regula. Ce nu este câștigat rămâne în rezerva pool-ului, pe care o poate elibera doar un vot de guvernanță. După propunerea 8, rezerva se acumulează din nou: pe 27 octombrie 2026, `reserved` al pool-ului de mainnet (în `GET /qorechain/lightnode/v1/reward_pool`) era de aproximativ 13.380,9 QOR, cu 0,06 QOR restanți și nimic de plată; în acea zi s-a înregistrat câte un nod light pe fiecare rețea. Înregistrarea este deschisă și condiționată de licență (vezi [Light Node](/light-node/overview#reward-program-status)). O eliberare dinaintea snapshot-ului upgrade-ului, peste suma înregistrată sau către o destinație invalidă este refuzată.
 
 ## x/xqore — Staking blocat și amplificare a guvernanței {#x-xqore}
 
@@ -191,7 +191,7 @@ Modulul `x/inflation` emite emisia per epocă (86.000 QOR din propunerea 10, `em
 
 ### Mecanica epocilor
 
-* **Lungimea epocii**: 43.200 de blocuri (aproximativ 38,6 ore la ≈3,2 s per bloc).
+* **Lungimea epocii**: 43.200 de blocuri (aproximativ 37,7 ore la ≈3,1 s per bloc).
 * La fiecare limită de epocă, modulul emite emisia epocii (sau restul până la plafon), actualizează înregistrarea epocii și încetează să mai emită odată ce `total_minted` atinge plafonul.
 * Din v3.2.3, anul de emisie este derivat din lungimea epocii, nu dintr-un număr fix de blocuri.
 

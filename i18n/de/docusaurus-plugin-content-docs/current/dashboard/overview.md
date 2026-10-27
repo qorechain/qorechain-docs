@@ -7,89 +7,122 @@ sidebar_position: 1
 
 # Dashboard-Überblick & Erste Schritte
 
-Das QoreChain Dashboard unter **[dashboard.qorechain.io](https://dashboard.qorechain.io)** ist die offizielle Web-App, um QoreChain direkt aus dem Browser zu nutzen. An einer einzigen Stelle können Sie die Chain erkunden, eine Wallet verwalten, Token tauschen, Smart Contracts generieren und prüfen, bei Validatoren staken, Testnet-Token beantragen, Quests abschließen und die Tools des Netzwerks erreichen.
+Das QoreChain Dashboard unter **[dashboard.qorechain.io](https://dashboard.qorechain.io)** ist die offizielle Web-App, um QoreChain aus dem Browser zu nutzen. Ein Konto und ein Netzwerk-Schalter geben Ihnen den Explorer, eine Wallet-Ansicht, einen Testnet-Faucet, einen Swap-Bildschirm für Test-Token, Quests, KI-Contract-Tools, Node- und Validator-Tooling sowie eine Entwicklerseite. Es ist für alle gedacht, die das Netzwerk ausprobieren möchten, ohne etwas zu installieren, und für Entwickler, die während der Arbeit schnelle Prüfungen brauchen. Es wird nichts installiert: Das Dashboard läuft in Ihrem Browser.
 
-Alles in diesem Abschnitt ist eine Anleitung für Nutzer: was jede Seite tut und wie man sie verwendet. Es ist keine Installation erforderlich — das Dashboard läuft vollständig in Ihrem Browser.
+Dieser Abschnitt ist eine Anleitung für Nutzer: was jede Seite tut, wie man sie öffnet und welche Grenzen sie hat.
 
-## Was Sie tun können
+## Innovationen {#innovations}
 
-| Bereich | Wofür es gedacht ist |
-| --- | --- |
-| **[Explorer](/dashboard/explorer)** | Blöcke, Transaktionen, Adressen und Validatoren durchsuchen. |
-| **[Wallet](/dashboard/wallet)** | Ihr Guthaben und Ihren Verlauf einsehen und QOR empfangen — mit Ihrer eigenen Wallet (non-custodial) im Mainnet oder einer vom Dashboard verwalteten Test-Wallet im Testnet. |
-| **[Trade](/dashboard/trade)** | Token tauschen und Liquidität auf dem On-Chain-AMM bereitstellen. |
-| **[Smart Contract Creator](/dashboard/smart-contract-creator)** | Smart Contracts mit **QCAI** für 17 unterstützte Blockchains generieren. |
-| **[Contract Auditor](/dashboard/contract-auditor)** | Eine **QCAI**-Sicherheitsanalyse für einen Smart Contract durchführen. |
-| **[Staking & Validatoren](/dashboard/staking-and-validators)** | Validatoren prüfen und Ihre QOR delegieren. |
-| **[Faucet](/dashboard/faucet)** | Test-Token im Testnet anfordern. |
-| **[Quests](/dashboard/quests)** | Geführte Aufgaben abschließen, um das Netzwerk kennenzulernen. |
-| **[Tools Hub](/dashboard/tools-hub)** | Betreiber- und Entwickler-Tooling in sechs Tabs: Validator Program, Validator Application, Light Node, Node Registration, Rollups und SDK. |
+- **Ein Schalter legt das Netzwerk für jede Seite fest.** Der Schalter **Testnet / Mainnet** in der Kopfzeile speichert Ihre Wahl im Browser und lädt die Seite neu, sodass Server und Browser dasselbe Netzwerk lesen. Mainnet ist der Standard.
+- **Mainnet ist non-custodial.** Das Dashboard hält niemals Mainnet-Schlüssel und signiert niemals eine Mainnet-Transaktion. Es übergibt QoreX nur die Parameter einer Sende- oder Staking-Aktion, und QoreX baut die Transaktion neu auf, zeigt sie an, signiert sie (hybride ML-DSA-87-Signatur) und sendet sie. Das Dashboard erfährt nur den Transaktions-Hash.
+- **Mainnet-Ansichten brauchen ein Konto; das Testnet ist offen.** Im Mainnet prüfen die Startseiten-Statistiken, die Wallet, Trade und die Explorer-Übersicht den Zugriff auf dem Server. Ein abgemeldeter Besucher sieht „Sign in to view mainnet“.
+- **Eine Bestätigung zu echten Mitteln, einmal pro Browser.** Vor der ersten Mainnet-Ansicht von Wallet, Trade, Explorer-Übersicht oder Startseiten-Statistiken listet eine Karte mit dem Titel „You're entering QoreChain Mainnet“ vier Punkte auf: Das Dashboard ist non-custodial, Transaktionen sind endgültig und unumkehrbar, es besteht das Risiko eines Totalverlusts und nichts hier ist eine Finanzberatung, und Testnet-QOR ist niemals tauschbar. Die Bestätigung wird in Ihrem Browser gespeichert, nicht in Ihrem Konto.
+- **Ein Konto, drei Kodierungen.** Dasselbe Konto wird als `qor1...`-Adresse, als `0x...`-Adresse und als SVM-Base58-Adresse gezeigt, und das Dashboard liest Guthaben und Verlauf einmal über `qor1...`.
 
-## Anmelden {#sign-in}
+## Verwendung {#how-to-use}
 
-Das Dashboard hat zwei Ebenen: ein **Dashboard-Konto**, mit dem Sie sich anmelden, und die **Wallet**, die Sie damit verbinden. Die meisten Seiten benötigen zuerst das Konto:
+### Das Layout
 
-- **Seiten, für die Sie angemeldet sein müssen:** [Wallet](/dashboard/wallet), [Trade](/dashboard/trade), [Faucet](/dashboard/faucet), [Quests](/dashboard/quests), Ihre gespeicherten Contracts im [Smart Contract Creator](/dashboard/smart-contract-creator) und Ihr Profil. Wenn Sie eine davon abgemeldet öffnen, werden Sie zur Anmeldeseite weitergeleitet.
-- **Mainnet abgemeldet ansehen:** Auf Seiten, die Mainnet-Daten zeigen, einschließlich des Explorers im Dashboard, sieht ein abgemeldeter Besucher „Sign in to view mainnet“ und eine Schaltfläche **Sign in**. Derselbe Explorer wird auch ohne Konto unter [explore.qore.network](https://explore.qore.network) bereitgestellt.
-- **Ohne Konto zugänglich:** die Startseite des [Smart Contract Creator](/dashboard/smart-contract-creator) (sie bietet eine kostenlose Generierung) und der [Tools Hub](/dashboard/tools-hub). Für das Ausführen eines Contract-Audits ist ein Konto erforderlich.
+**Kopfzeile.** Der Netzwerk-Schalter, dann **Sign In** oder ein Profilmenü (Profile, Edit Profile, Theme, Language, Rewards, Referral, Docs, Log out).
 
-Zum Durchsuchen des Dashboards ist nie eine Wallet nötig; das Verbinden einer Wallet ist ein separater Schritt, der als Nächstes beschrieben wird.
+**Desktop-Seitenleiste, der Reihe nach:**
 
-## Verbinden Sie Ihre Wallet {#connect-your-wallet}
+| Eintrag | Seite | Was es ist |
+| --- | --- | --- |
+| **Discover** | `/` | Startseite: Hero-Schaltflächen **Create Smart Contract** und **Explore Network**, Zähler unter „Dashboard Overview“, Listen erstellter Contracts, neuester Audits und Top-Contributors sowie ein „Developer Toolkit“ mit **Start Generating**, **New Audit** und **Claim Tokens**. |
+| **Public Sale** | `/public-sale` | Bestehende Teilnehmer sehen ihre Zuteilung, den Vesting-Zeitplan und den Claim. |
+| **Wallet** | [Wallet](/dashboard/wallet) | Guthaben, Verlauf, Empfangen und (Mainnet) Senden und Staken über QoreX. |
+| **Faucet** | [Faucet](/dashboard/faucet) | Kostenlose Testnet-Token. |
+| **Explorer** | [Explorer](/dashboard/explorer) | Blöcke, Transaktionen, Adressen und Validatoren. |
+| **Trade** | [Trade](/dashboard/trade) | Swap-Bildschirm für Test-Token. |
+| Gruppe **Earn** | [Quests](/dashboard/quests) | Quests, Leaderboard, Badges. |
+| **Games** | [Quests](/dashboard/quests#games) | Die QoreChain Arcade. |
+| Gruppe **Build** | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Contract-Tools, Node- und Validator-Tooling, Entwickler-Tools. Der Eintrag Nodes & Validators hieß früher „Tools“. |
+| **FAQ** | `/faq` | Hilfe in der App. Teile davon sind veraltet; dieses Handbuch ist die Referenz. |
 
-Die meisten Aktionen, die den On-Chain-Zustand ändern — Token senden, tauschen, staken — erfordern eine verbundene Wallet. Wie das Dashboard mit Schlüsseln umgeht, hängt vom Netzwerk ab:
+Die Seite [Validators](/dashboard/validators) (`/validators`) hat keinen Link in der Seitenleiste; öffnen Sie sie über die Adresse.
 
-- **Mainnet ist non-custodial.** Das Dashboard hält niemals Ihre Mainnet-Schlüssel. Sie verbinden Ihre eigene Wallet — **QoreX** (die offizielle QoreChain-Wallet, als Extension oder App), **Keplr** oder **MetaMask** — und das Dashboard liest Ihr tatsächliches Guthaben und Ihren Verlauf von der Chain. Jede Mainnet-Transaktion wird in Ihrer eigenen Wallet signiert, niemals vom Dashboard. Senden und Staken auf der **Native-Schiene erfordern QoreX**, da QoreChain-Konten mit einer post-quantum-hybriden Signatur signieren, die heute nur QoreX erzeugt; Keplr kann sich trotzdem verbinden, um Ihr Native-Schienen-Guthaben anzuzeigen. **MetaMask** verbindet sich auf der **EVM-Schiene**; das Senden dort erfordert zusätzlich den Post-Quantum-Schlüssel des Kontos und ein geöffnetes EVM-Autorisierungsfenster, das aus QoreX heraus auf dem Ethereum-artigen Konto (Coin 60) geöffnet wird, das sich den Schlüssel mit MetaMask teilt (siehe [Senden mit MetaMask](/dashboard/wallet#send-metamask)).
-- **Testnet ist custodial.** Das Dashboard verwaltet eine Test-Wallet für Sie, sodass Sie ohne Einrichtungsaufwand und ohne Risiko für echte Werte experimentieren können.
+**Mobil.** Eine untere Leiste (Discover, Wallet, Faucet, dann Explorer, Trade, Quests) plus ein zentrales Fächermenü mit dem Rest.
 
-### Mit QoreX verbinden (empfohlen) {#connect-qorex}
+### Anmelden {#sign-in}
 
-QoreX ist die offizielle QoreChain-Wallet. Die Karte **Connect with QoreX** im Dashboard unterstützt sowohl die Browser-Extension als auch die mobile App über denselben Einstiegspunkt.
+Das Dashboard hat zwei Ebenen: ein **Dashboard-Konto**, mit dem Sie sich anmelden, und die **Wallet**, die Sie damit verbinden. Zum Durchsuchen ist nie eine Wallet nötig.
 
-1. Öffnen Sie [dashboard.qorechain.io](https://dashboard.qorechain.io) und stellen Sie sicher, dass die Kopfzeile **Mainnet** anzeigt.
-2. Wenn dies Ihr erster Besuch einer Mainnet-Seite ist, lesen und akzeptieren Sie den [einmaligen Risikohinweis](#risk-acknowledgement).
-3. Öffnen Sie **Wallet** in der Seitenleiste (Sie müssen angemeldet sein) und wählen Sie auf der Karte **QoreX wallet** die Option **Connect with QoreX**.
-4. Wenn die QoreX-Browser-Extension installiert und in diesem Browser erkannt wird, fragt das Dashboard **„How do you want to connect?“** mit zwei Optionen, **Browser extension** und **QoreX app**. Wählen Sie eine aus — die Wahl wird gespeichert, sodass sie bei künftigen Besuchen übersprungen wird (ein Link **Use a different method** ist jederzeit verfügbar, falls Sie später wechseln möchten). Wird keine Extension erkannt, geht das Dashboard direkt zum App-Ablauf über.
-   - **Browser extension**: Das Popup der Extension öffnet sich und zeigt `dashboard.qorechain.io` als die Seite, die die Verbindung anfordert. Prüfen Sie dies und bestätigen Sie — damit wird ein einmaliger Nachweis signiert, dass Ihnen Ihre `qor1...`-Adresse gehört (es werden keine Mittel bewegt). Die Kopplung wird sofort in derselben Browser-Sitzung abgeschlossen.
-   - **QoreX app**: Das Dashboard zeigt einen QR-Code (mit einem Link **Open QoreX**, der die App direkt öffnet, wenn Sie vom selben Smartphone aus browsen). Öffnen Sie die QoreX-App, scannen Sie den QR-Code (oder tippen Sie den Link an), prüfen Sie die Kopplungsanfrage mit der Herkunft des Dashboards und bestätigen Sie sie mit Ihrer biometrischen Bestätigung. Das Dashboard fragt im Hintergrund weiter ab und schließt die Kopplung automatisch ab, sobald Sie bestätigen.
-5. Nach der Bestätigung zeigt das Dashboard Ihre `qor1...`-Adresse an und schaltet die Aktionen frei, die eine Signatur benötigen.
+- **Vor dem Laden der Seite zur Anmeldung weitergeleitet:** Profile, [Wallet](/dashboard/wallet), Rewards, Referral, [Quests](/dashboard/quests), [Trade](/dashboard/trade), [Faucet](/dashboard/faucet), Connection, Contracts, Public Sale und jede gespeicherte Contract-Seite `/smart-contract-creator/<id>`.
+- **Zeigt einen Bildschirm „Authentication Required“, wenn Sie abgemeldet sind:** [Nodes & Validators](/dashboard/tools-hub), [Validators](/dashboard/validators), FAQ, [AI Audit](/dashboard/contract-auditor), Badges, Leaderboard und Games.
+- **Ohne Konto geöffnet:** die Discover-Startseite, die Detailseiten des [Explorers](/dashboard/explorer) (Transaktion, Block, Adresse, Validatoren) in beiden Netzwerken, die Explorer-Übersicht im Testnet, die Startseite des [Smart Contract Creator](/dashboard/smart-contract-creator) (eine kostenlose Generierung), die Audit-Liste unter `/audits` und öffentliche Audit-Berichte sowie die Seite [Developers](/dashboard/developers).
+- **Mainnet im abgemeldeten Zustand:** Seiten, die Mainnet-Daten zeigen (Startseiten-Zähler, Wallet, Trade, die Explorer-Übersicht), zeigen „Sign in to view mainnet“ und eine Schaltfläche **Sign In**.
 
-Siehe [Wallet](/dashboard/wallet#mainnet) für die vollständige Anleitung zum Verbinden und Senden je Wallet-Typ sowie die Seite [Account & Dashboard](/qorex/account-and-dashboard#dashboard) in der QoreX-Dokumentation für die Wallet-seitige Sicht derselben Kopplung.
+### Wählen Sie Ihr Netzwerk {#select-network}
 
-### Mit Keplr oder MetaMask verbinden
-
-1. Öffnen Sie [dashboard.qorechain.io](https://dashboard.qorechain.io) und stellen Sie sicher, dass die Kopfzeile **Mainnet** anzeigt.
-2. Wenn dies Ihr erster Besuch einer Mainnet-Seite ist, lesen und akzeptieren Sie den einmaligen Risikohinweis (siehe unten).
-3. Öffnen Sie **Wallet** in der Seitenleiste und wählen Sie unter **or connect another wallet** die Option **Connect Keplr** oder **Connect MetaMask**.
-4. Bestätigen Sie die Verbindung in Ihrer Wallet.
-
-Sobald verbunden, zeigt die Wallet-Seite Ihre Adresse (in verkürzter Form) mit Guthaben und Verlauf an. Mit MetaMask können Sie auf der EVM-Schiene empfangen und dort senden, sobald ein EVM-Fenster geöffnet ist (siehe [Senden mit MetaMask](/dashboard/wallet#send-metamask)). Keplr schaltet die Ansicht Ihres Guthabens und Verlaufs auf der Native-Schiene frei — Senden und Staken laufen dort über QoreX (siehe oben), da QoreChain-Konten mit einer post-quantum-hybriden Signatur signieren. Nur lesende Seiten wie der Explorer funktionieren auch ohne Verbindung.
-
-QoreChain-Konten verwenden das Bech32-Präfix `qor`, sodass eine verbundene Adresse wie `qor1...` aussieht — dasselbe Konto hat außerdem eine EVM- (`0x...`) und eine SVM-Kodierung (Base58). Konten sind mit quantensicherer Kryptografie geschützt. Siehe [Wallet Setup](/getting-started/wallet-setup) für eine Anleitung zur Ersteinrichtung und [QoreChain zu Ihrer Wallet hinzufügen](/dashboard/wallet#add-network), falls Ihre Wallet das Netzwerk noch nicht kennt.
-
-### Einmaliger Risikohinweis {#risk-acknowledgement}
-
-Bevor Sie eine Mainnet-Seite nutzen können, bittet das Dashboard Sie, einen einmaligen Haftungsausschluss zu akzeptieren. Er bestätigt, dass Sie verstehen, dass Mainnet-Transaktionen **echte Mittel** bewegen, dass das Dashboard **non-custodial** ist (nur Sie kontrollieren Ihre Schlüssel) und dass On-Chain-Transaktionen **unumkehrbar** sind. Sie akzeptieren ihn einmal; danach öffnen sich Mainnet-Seiten direkt.
-
-## Wählen Sie Ihr Netzwerk
-
-Das Dashboard arbeitet mit zwei Netzwerken. Die Kopfzeile zeigt das Netzwerk, mit dem Sie gerade verbunden sind, und lässt Sie wechseln; standardmäßig öffnet sie **Mainnet**, und Ihre Wahl wird in Ihrem Browser gespeichert.
+Die Kopfzeile zeigt das Netzwerk, auf dem Sie sind, und lässt Sie wechseln. Die Wahl wird in Ihrem Browser gespeichert.
 
 | Netzwerk | Chain-ID | Wann es zu verwenden ist |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Live-Netzwerk (live seit dem 7. Juni 2026, läuft seit dem 23. Oktober 2026 mit Chain v3.2.4) für echten Wert und den produktiven Einsatz. Non-custodial: Sie verbinden Ihre eigene Wallet. |
-| **Testnet** | `qorechain-diana` | Kostenlose Umgebung zum Testen (läuft seit dem 27. Oktober 2026 mit Chain v3.2.6), mit einer vom Dashboard verwalteten Test-Wallet und dem [Faucet](/dashboard/faucet) für Test-Token. |
+| **Mainnet** | `qorechain-vladi` | Live-Netzwerk (live seit dem 7. Juni 2026, läuft seit dem 23. Oktober 2026 mit Chain v3.2.4) für echten Wert. Non-custodial: Sie verbinden Ihre eigene Wallet. |
+| **Testnet** | `qorechain-diana` | Kostenlose Umgebung (läuft seit dem 27. Oktober 2026 mit Chain v3.2.6) mit einer vom Dashboard verwalteten Test-Wallet und dem [Faucet](/dashboard/faucet). |
 
-Das native Token ist **QOR** (Basiseinheit `uqor`, wobei 1 QOR = 10^6 uqor). Wenn Sie neu sind, beginnen Sie im Testnet, beantragen Sie Token beim Faucet und probieren Sie eine erste Überweisung aus, bevor Sie zum Mainnet wechseln.
+Das native Token ist **QOR** (Basiseinheit `uqor`, 1 QOR = 10^6 uqor). Wenn Sie neu sind, beginnen Sie im Testnet, beantragen Sie Token beim Faucet und probieren Sie eine erste Überweisung aus, bevor Sie zum Mainnet wechseln.
+
+Einige Seiten ignorieren den Schalter: Der Faucet zahlt immer im Testnet aus, [Trade](/dashboard/trade) zeigt immer Testnet-Inhalte, und Quests, Badges, Leaderboard, Games, Public Sale und FAQ hängen nicht vom Netzwerk ab.
+
+### Verbinden Sie Ihre Wallet {#connect-your-wallet}
+
+- **Mainnet ist non-custodial.** Verbinden Sie **QoreX** (die offizielle QoreChain-Wallet, Extension oder App), **Keplr** oder **MetaMask**. Senden und Staken auf der Native-Schiene erfordern QoreX, da QoreChain-Konten mit einer hybriden Post-Quanten-Signatur signieren, die heute nur QoreX erzeugt. Keplr verbindet sich, um auf der Native-Schiene anzuzeigen und zu empfangen. MetaMask verbindet sich auf der EVM-Schiene; das Senden dort erfordert zusätzlich den Post-Quanten-Schlüssel des Kontos und ein geöffnetes EVM-Fenster, das aus QoreX heraus geöffnet wird (siehe [Senden mit MetaMask](/dashboard/wallet#send-metamask)).
+- **Testnet ist custodial.** Das Dashboard verwaltet eine Test-Wallet für Sie, sodass nichts zu installieren ist und kein echter Wert auf dem Spiel steht.
+
+#### Mit QoreX verbinden (empfohlen) {#connect-qorex}
+
+1. Öffnen Sie [dashboard.qorechain.io](https://dashboard.qorechain.io) und stellen Sie sicher, dass die Kopfzeile **Mainnet** anzeigt.
+2. Wenn dies Ihr erster Besuch einer Mainnet-Seite in diesem Browser ist, akzeptieren Sie den [einmaligen Risikohinweis](#risk-acknowledgement).
+3. Öffnen Sie **Wallet** (Sie müssen angemeldet sein) und wählen Sie auf der Karte **QoreX wallet** die Option **Connect with QoreX**.
+4. Wenn die QoreX-Browser-Extension erkannt wird und keine Methode gespeichert ist, fragt das Dashboard „How do you want to connect?“ mit **Browser extension** und **QoreX app**. Die Wahl wird gespeichert. Wird keine Extension erkannt, geht es direkt zum App-Ablauf.
+   - **Browser extension:** Das Popup der Extension zeigt `dashboard.qorechain.io` als anfragende Seite. Bestätigen Sie es; damit wird ein einmaliger Nachweis signiert, dass Ihnen Ihre `qor1...`-Adresse gehört. Es werden keine Mittel bewegt.
+   - **QoreX app:** Das Dashboard zeigt einen QR-Code und **Open QoreX**. Scannen oder tippen Sie ihn an, prüfen Sie die Kopplungsanfrage in QoreX und bestätigen Sie mit Ihrer Biometrie. Das Dashboard fragt im Hintergrund ab („Waiting for approval in QoreX...“) und schließt von selbst ab.
+   - Ein Link **Use a different method** erscheint nur, solange eine Kopplung aussteht.
+5. Nach der Bestätigung zeigt das Dashboard Ihre `qor1...`-Adresse an und schaltet die Aktionen frei, die eine Signatur benötigen.
+
+Siehe [Wallet](/dashboard/wallet#mainnet) für die vollständige Anleitung zum Verbinden und Senden sowie die Seite [Account & Dashboard](/qorex/account-and-dashboard#dashboard) in der QoreX-Dokumentation für die Wallet-seitige Sicht derselben Kopplung.
+
+#### Mit Keplr oder MetaMask verbinden
+
+1. Öffnen Sie **Wallet**, mit der Kopfzeile auf **Mainnet** und akzeptiertem Hinweis.
+2. Wählen Sie unter **or connect another wallet** die Option **Connect Keplr** oder **Connect MetaMask**.
+3. Bestätigen Sie die Verbindung in Ihrer Wallet. Wenn Ihre Wallet QoreChain noch nicht kennt, siehe [QoreChain zu Ihrer Wallet hinzufügen](/dashboard/wallet#add-network).
+
+Sobald verbunden, zeigt die Wallet-Seite Ihre Adresse mit Guthaben und Verlauf an. Siehe [Wallet Setup](/getting-started/wallet-setup) für eine Anleitung zur Ersteinrichtung.
+
+### Einmaliger Risikohinweis {#risk-acknowledgement}
+
+Die Karte mit dem Hinweis erscheint vor der ersten Mainnet-Ansicht von **Wallet**, **Trade**, **Explorer-Übersicht** oder **Startseiten-Statistiken** in einem Browser. Sie ist nicht für jede Mainnet-Seite erforderlich: Die Detailseiten des Explorers, der Creator und die anderen Seiten öffnen sich ohne sie. Akzeptieren Sie sie einmal pro Browser; das Löschen der Browserdaten zeigt sie erneut an.
+
+## Zugang {#how-to-access}
+
+- **URL:** [dashboard.qorechain.io](https://dashboard.qorechain.io), in jedem aktuellen Browser. Keine Installation.
+- **Konto:** Anmeldung per E-Mail oder über einen unterstützten Identitätsanbieter auf der Anmeldeseite. Welche Seiten es erfordern, ist unter [Anmelden](#sign-in) aufgeführt.
+- **Netzwerke:** Mainnet `qorechain-vladi` und Testnet `qorechain-diana`, mit dem Schalter in der Kopfzeile. Mainnet ist der Standard.
+- **Wallet:** keine zum Durchsuchen. QoreX für Senden und Staken im Mainnet, Keplr oder MetaMask zum Anzeigen und Empfangen. Im Testnet erstellt das Dashboard eine Test-Wallet für Sie.
+- **Kosten:** Das Dashboard ist kostenlos nutzbar. On-Chain-Aktionen zahlen die Netzwerkgebühr (Untergrenze 0,1 uqor pro Gas). Einige kostenpflichtige Angebote sind auf ihren eigenen Seiten beschrieben (die Light-Node-Lizenz und die Gebühr des Validator-Programms unter [Nodes & Validators](/dashboard/tools-hub)).
+- **Early-Access-Sperre:** heute keine. Mainnet-Seiten brauchen nur die Anmeldung (wo oben aufgeführt) und den einmaligen Hinweis.
+
+## Wo veröffentlicht {#where-published}
+
+| Oberfläche | Adresse | Netzwerke | Anmeldung |
+| --- | --- | --- | --- |
+| Dashboard | [dashboard.qorechain.io](https://dashboard.qorechain.io) | Mainnet und Testnet | Je Seite, siehe [Anmelden](#sign-in) |
+| Eigenständiger Explorer | [explore.qore.network](https://explore.qore.network) (eine separate App, siehe [Explorer](/dashboard/explorer#standalone-explorer)) | Mainnet und Testnet | Keine |
+| Öffentliche Endpunkte | `rpc.qore.host`, `api.qore.host`, `evm.qore.host`, `svm.qore.host`, mit `*-testnet`-Varianten | Mainnet und Testnet | Keine |
+
+Seiten dieses Abschnitts: [Explorer](/dashboard/explorer), [Wallet](/dashboard/wallet), [Trade](/dashboard/trade), [Bridge](/dashboard/bridge), [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Staking & Validatoren](/dashboard/staking-and-validators), [Validators](/dashboard/validators), [Faucet](/dashboard/faucet), [Quests, Badges, Leaderboard und Games](/dashboard/quests), [Nodes & Validators](/dashboard/tools-hub) und [Developers](/dashboard/developers).
+
+## Grenzen und bekannte Probleme {#limits}
+
+- **Es gibt keinen Bridge-Bildschirm.** Siehe [Bridge](/dashboard/bridge).
+- **Trade folgt nicht dem Netzwerk-Schalter.** Es zeigt Testnet-Inhalte, auch wenn die Kopfzeile auf Mainnet steht. Siehe [Trade](/dashboard/trade).
+- **Manche Texte in der App sind veraltet.** Die FAQ sowie einige Formulierungen auf dem Bildschirm zum Erstellen der Wallet und im SDK-Tab von Nodes & Validators entsprechen nicht dem aktuellen Verhalten. Wo dieses Handbuch und die App voneinander abweichen, folgen Sie diesem Handbuch und melden Sie die Seite.
+- **Mainnet-Einschränkungen.** Staking, Senden und Contract-Deployments im Mainnet sind je Seite beschrieben; mehrere Abläufe (Native- oder SVM-Deployments, Redelegation, zeitgesperrtes Staking) werden im Dashboard nicht angeboten.
+- **Das Testnet hat keinen echten Wert.** Senden Sie niemals echte QOR an eine Testnet-Adresse: Die Formate sind identisch. Siehe [Wallet](/dashboard/wallet#testnet).
 
 :::tip Neu bei QoreChain?
 Folgen Sie [Verbindung zum Testnet](/getting-started/connecting-to-testnet) und [Ihre erste Transaktion](/getting-started/first-transaction), um schnell praktische Erfahrung zu sammeln, und kehren Sie dann zurück, um den Rest des Dashboards zu erkunden.
 :::
-
-## Verwandte Themen
-
-* [Explorer](/dashboard/explorer) — Blöcke, Transaktionen und Konten durchsuchen.
-* [Wallet](/dashboard/wallet) — Konten verwalten und Transaktionen senden.
-* [Trade / DEX](/dashboard/trade) — Token gegen On-Chain-AMM-Pools tauschen.
-* [Tools Hub](/dashboard/tools-hub) — Validator Program, Validator Application, Light Node, Node Registration, Rollups und SDK.
-* [Faucet](/dashboard/faucet) — Test-Token im Testnet.

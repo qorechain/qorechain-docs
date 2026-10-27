@@ -7,10 +7,10 @@ sidebar_position: 9
 
 # Validator betreiben
 
-Dieser Leitfaden erklärt, wie man einen Validator im QoreChain-Netzwerk erstellt, das Design der Pool-Klassifizierung versteht, einen PQC-Schlüssel für quantenresistente Sicherheit registriert und den eigenen Node überwacht.
+Dieser Leitfaden erklärt, wie man einen Validator im QoreChain-Netzwerk erstellt, das Design der Pool-Klassifizierung versteht, einen PQC-Schlüssel (hybride ML-DSA-87-Signaturen, FIPS 204) registriert und den eigenen Node überwacht.
 
 :::note
-Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und das das Node-Release **v3.2.4** betreibt (per Governance-Vorschlag 13 bei Höhe 3.742.566 am 23. Oktober 2026 angewendet, nach v3.2.3 bei Höhe 3.662.051 am 20. Oktober 2026). Ein Validator muss zum Zeitpunkt der Erstellung das v3.2.4-Binary betreiben; der Mainnet-Governance-Vorschlag 14 würde v3.2.5 auf Höhe 3.906.833 anwenden, und das Manifest nennt dann das zu installierende Binary (siehe [Einen Node betreiben: Upgrades](/developer-guide/running-a-node#upgrades)). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) läuft mit v3.2.6 (angewendet am 27. Oktober 2026, nach v3.2.5 am 26. Oktober) und wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Blockzeiten unterscheiden sich: etwa 3,2 s im Mainnet und etwa 1,3 s im Testnet (27. Oktober 2026; sie schwankt), rechnen Sie Blockanzahlen daher pro Netzwerk in Zeit um.
+Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und das das Node-Release **v3.2.4** betreibt (per Governance-Vorschlag 13 bei Höhe 3.742.566 am 23. Oktober 2026 angewendet, nach v3.2.3 bei Höhe 3.662.051 am 20. Oktober 2026). Ein Validator muss zum Zeitpunkt der Erstellung das v3.2.4-Binary betreiben; der Mainnet-Governance-Vorschlag 14 würde v3.2.5 auf Höhe 3.906.833 anwenden, und das Manifest nennt dann das zu installierende Binary (siehe [Einen Node betreiben: Upgrades](/developer-guide/running-a-node#upgrades)). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) läuft mit v3.2.6 (angewendet am 27. Oktober 2026, nach v3.2.5 am 26. Oktober) und wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Blockzeiten unterscheiden sich: etwa 3,1 s im Mainnet (die letzten 1.000 Blöcke brauchten am 27. Oktober 2026 52 Minuten 21 Sekunden) und etwa 1,3 s im Testnet; beide schwanken, rechnen Sie Blockanzahlen daher pro Netzwerk in Zeit um.
 :::
 
 :::caution Das Release-Binary verwenden, keinen Build aus dem Quellcode
@@ -28,8 +28,88 @@ Die Blockproduktion verwendet die standardmäßige, nach Stake gewichtete Valida
 * Ein vollständig synchronisierter Release-`qorechaind`-Node (siehe [Mit dem Mainnet verbinden](/getting-started/connecting-to-mainnet) bzw. [Mit dem Testnet verbinden](/getting-started/connecting-to-testnet) zum Proben)
 * Ein **registrierter ML-DSA-87-PQC-Schlüssel** auf dem Operator-Konto (siehe [PQC-Schlüsselregistrierung](#pqc-key-registration)) — `create-validator` benötigt die hybride Signatur
 * Ein finanziertes Konto mit mindestens **100.000 QOR** (100.000.000.000 uqor) für die anfängliche Self-Delegation — dieses Minimum wird on-chain erzwungen, und `create-validator` wird darunter abgelehnt
-* Eine aktive **`validator_operator`-Erteilung** auf Ihrer Operator-Adresse, ausgestellt über das [Validator Program](/dashboard/tools-hub#validator-application) (bewerben, ausgewählt werden, die Programmgebühr von $1,000 zahlen); siehe den Hinweis unten. Ohne sie schlägt `create-validator` mit `ErrUnauthorized` fehl, unabhängig davon, wie viel QOR Sie self-bonden
+* Eine aktive **`validator_operator`-Erteilung** auf Ihrer Operator-Adresse, ausgestellt über das [Validator Program](/dashboard/tools-hub#validator-application) auf der Seite **Nodes & Validators** des Dashboards (bewerben, ausgewählt werden, die Programmgebühr von $1,000 zahlen); siehe den Hinweis unten. Ohne sie schlägt `create-validator` mit `ErrUnauthorized` fehl, unabhängig davon, wie viel QOR Sie self-bonden
 * Vertrautheit mit dem Modell [Staking und Delegation](/user-guide/staking-and-delegation)
+
+---
+
+## Dem Netzwerk beitreten {#joining}
+
+**Verwenden Sie State Sync als Standardweg zum Beitritt.** Es holt einen aktuellen Anwendungszustand von Peers, statt Blöcke abzuspielen, also statt jeden Block ab Genesis erneut abzuspielen. Der Snapshot-Download ist nur ein Ausweichweg: Der Snapshot im Mainnet-Manifest ist weiterhin das Archiv vom 21. August 2026 (Höhe 1.966.629, etwa 27 GB), das vor mehreren Upgrades liegt und danach etwa zwei Monate an Blöcken abspielt; das Testnet veröffentlicht überhaupt keinen Snapshot.
+
+1. Installieren Sie das Release-`qorechaind`, das das Manifest nennt (siehe [Einen Node betreiben](/developer-guide/running-a-node#fetch-the-manifest)), führen Sie `qorechaind init <moniker> --chain-id qorechain-vladi` aus, legen Sie dann Genesis, Peers und Seeds aus dem Manifest wie dort beschrieben ab und setzen Sie `minimum-gas-prices = "0.1uqor"` in `app.toml`.
+2. Übernehmen Sie den Trust Point aus dem Manifest und schreiben Sie den Abschnitt `[statesync]` der `config.toml`:
+
+```bash
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+```toml
+[statesync]
+enable = true
+rpc_servers = "https://rpc.qore.host:443,https://<a second RPC you run or trust>:26657"
+trust_height = <TRUST_HEIGHT>
+trust_hash = "<TRUST_HASH>"
+trust_period = "168h0m0s"
+```
+
+3. Halten Sie optional die Festplattennutzung klein (siehe [Hardware](#hardware)): Setzen Sie in `app.toml` `pruning = "custom"` mit `pruning-keep-recent = "100000"` und `pruning-interval = "10"`, und in `config.toml` `indexer = "null"` unter `[tx_index]` (ein Validator bedient keine Transaktionsabfragen; verwenden Sie `null` nicht auf einem Node, den Sie abfragen).
+4. Starten Sie mit `qorechaind start --minimum-gas-prices=0.1uqor` und warten Sie, bis `catching_up` den Wert `false` hat.
+
+:::warning State Sync benötigt zwei verschiedene RPC-Server
+State Sync gleicht den Trust Point mit **zwei** RPC-Servern ab. Die `stateSync.rpcServers` des Manifests führen `https://rpc.qore.host` **zweimal** auf (und das Testnet-Manifest führt `https://rpc-testnet.qore.host` zweimal auf). Zwei identische Einträge erfüllen die Anzahl, heben aber den Abgleich auf, da beide Antworten von einem einzigen Server stammen. Fügen Sie einen zweiten RPC hinzu, den Sie selbst betreiben oder dem Sie unabhängig vertrauen, und prüfen Sie den Trust Hash vor dem Start gegen eine zweite Quelle, zum Beispiel muss `curl -s "https://<second-rpc>/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash` gleich `$TRUST_HASH` sein. Der Trust Point im Manifest wird stündlich aktualisiert, holen Sie ihn also erneut, falls er veraltet ist.
+:::
+
+Halten Sie die Systemuhr per NTP synchronisiert: Ab v3.2.1 stoppt der Node, wenn seine Uhr um mehr als 60 Sekunden abweicht.
+
+---
+
+## Netzwerkparameter {#parameters}
+
+Diese Werte wurden am 27. Oktober 2026 aus der Mainnet-REST-API gelesen (`qorechain-vladi`, v3.2.4). Lesen Sie sie live aus, bevor Sie sich darauf verlassen: `qorechaind query staking params`, `qorechaind query slashing params` oder `GET /cosmos/staking/v1beta1/params` und `GET /cosmos/slashing/v1beta1/params`.
+
+| Eintrag | Wert |
+| --- | --- |
+| Größe des aktiven Sets (`max_validators`) | 100 (heute sind 8 Validatoren gebondet, keiner gejailt) |
+| Unbonding-Zeitraum | 1.814.400 s (21 Tage); höchstens 7 Unbonding-Einträge (`max_entries`) pro Delegator |
+| Minimale Provisionsrate (`min_commission_rate`) | 0 (Sie wählen Ihre eigene Rate, bis zu Ihrer `commission-max-rate`) |
+| Fenster für signierte Blöcke | 10.000 Blöcke (`signed_blocks_window`) |
+| Mindestanteil signierter Blöcke pro Fenster | 0,05, ein Validator wird also gejailt, wenn er weniger als 5 % des Fensters signiert |
+| Downtime-Jail / -Slash | 600 s Jail, 1 % des Stakes geslasht |
+| Double-Sign-Slash | 5 % des Stakes |
+| Self-Bond-Untergrenze zum Erstellen eines Validators | **100.000 QOR** (`100000000000uqor`), on-chain erzwungen; darunter schlägt `create-validator` mit Code 18 fehl |
+| Operator-Erteilung | Eine aktive `validator_operator`-Erteilung auf dem Absender ist erforderlich; ohne sie schlägt `create-validator` mit `ErrUnauthorized` fehl |
+| Gebührenuntergrenze | 0,1 uqor pro Gas |
+
+**Reihenfolge der Schritte.** Gehen Sie in dieser Reihenfolge vor: (1) den PQC-Schlüssel des Kontos registrieren, (2) die `validator_operator`-Erteilung erhalten, (3) `create-validator` mit `--generate-only` erzeugen und mit `tx pqc cosign` signieren. Der Schlüssel kommt zuerst, weil ein Konto ohne registrierten Schlüssel nur die Registrierung selbst senden kann (siehe [PQC-Schlüsselregistrierung](#pqc-key-registration)), und die Erteilung geprüft wird, wenn `create-validator` ausgeführt wird. Einzelheiten stehen unter [Einen Validator erstellen](#validator-license-gate) und [PQC-Schlüsselregistrierung](#pqc-key-registration).
+
+:::caution `min-self-delegation` ist nicht die Untergrenze von 100.000 QOR
+Die Genesis-Validatoren zeigen on-chain `min_self_delegation` = `1` (1 uqor). Das ist **nicht** die Untergrenze: deren Genesis-Transaktionen waren davon ausgenommen. Das Feld `min-self-delegation` in Ihrer `validator.json` ist Ihr eigenes Versprechen, mindestens so viel self-gebondet zu halten, und hat nichts mit der Untergrenze von 100.000 QOR zu tun, die für den `amount` gilt, den Sie beim Erstellen des Validators self-delegieren.
+:::
+
+---
+
+## Hardware {#hardware}
+
+Gemessen an den laufenden Mainnet-Validatoren (27. Oktober 2026): etwa 3,2 bis 3,5 GB RAM und unter 10 % CPU bei normaler Last. Ein Validator läuft komfortabel mit 3 bis 4 vCPU, 8 bis 16 GB RAM und NVMe-Speicher. Die Single-Core-Geschwindigkeit ist wichtiger als die Kernanzahl: Das Verifizieren von ML-DSA-87-Signaturen macht etwa die Hälfte der Arbeit bei der Prüfung einer Transaktion aus und erreicht unter Last Spitzen.
+
+| Eintrag | Empfohlenes Validator-Profil |
+| --- | --- |
+| CPU | 4 vCPU, hohe Taktrate |
+| RAM | 16 GB |
+| Festplatte | 100 GB oder mehr, NVMe |
+| Uhr | NTP-synchronisiert (die 60-Sekunden-Regel oben) |
+| Netzwerk | Nur P2P `26656` ist für die Welt offen; RPC, REST und EVM sind an localhost gebunden |
+
+Die Festplattennutzung hängt davon ab, wie Sie beigetreten sind. Ein Validator, der per State Sync mit `pruning = "custom"` (keep-recent 100000) und `indexer = "null"` beigetreten ist, belegt nach zwei Monaten etwa 10 GB. Ein Node mit Standard-Pruning, der seit Genesis läuft, belegt nach vier Monaten etwa 100 bis 130 GB. Die 500 GB oder mehr, die für RPC-Nodes unter [Einen Node betreiben](/developer-guide/running-a-node#recommended-hardware) empfohlen werden, sind für einen Validator großzügig bemessen.
+
+---
+
+## Wie das Netzwerk betrieben wird {#network-organisation}
+
+Am 27. Oktober 2026 hat das Netzwerk 8 aktive Validatoren, in mehreren Ländern und bei mehr als einem Hosting-Anbieter. Die öffentlichen Endpunkte (`rpc.qore.host`, `api.qore.host`, `evm.qore.host`, `svm.qore.host`) werden von dedizierten Nicht-Validator-Nodes hinter einem Edge-Netzwerk bedient, nie von Validatoren, und die IP-Adressen der Validatoren werden nicht im DNS veröffentlicht. Die Stimmgewalt folgt dem gebondeten Stake: Ein neuer Validator mit dem minimalen Self-Bond startet mit einem kleinen Anteil an der Stimmgewalt und wächst, sobald Delegationen eintreffen.
 
 ---
 
@@ -42,7 +122,7 @@ Die Blockproduktion verwendet die standardmäßige, nach Stake gewichtete Valida
 1. **Mindest-Self-Bond von 100.000 QOR.**
 2. **Eine aktive `validator_operator`-Erteilung** auf dem Konto, das die Transaktion einreicht.
 
-Die Erteilung wird on-chain von der QoreChain Association über das **Validator Program** ausgestellt: Bewerben Sie sich im [Tools Hub](/dashboard/tools-hub#validator-application), betreiben Sie für die 14-tägige Probephase einen Validator im diana-Testnet und zahlen Sie nach Ihrer Auswahl die **Programmgebühr von $1,000**; die Erteilung wird dann in Stapeln für die Operator-Adresse aus Ihrer Bewerbung signiert. Prüfen Sie Ihre mit `GET /qorechain/license/v1/check/{grantee}/validator_operator`. Das `expires_at` einer Lizenz ist eine **Blockhöhe**, kein Datum und keine Dauer — `0` bedeutet keine Ablauffrist. Fehlt die Lizenz oder ist sie abgelaufen, schlägt `create-validator` mit `ErrUnauthorized` fehl, egal wie viel Sie self-bonden; dies ist der mit Abstand häufigste Grund, warum ein gut finanzierter Versuch scheitert und unerklärlich wirkt. Diese Sperre existiert gerade deshalb, weil die EVM-Ausführungsebene sie weder sehen noch durchsetzen kann (ein einzelner Ante-Decorator dort würde sie vollständig umgehen) — das ist einer der Gründe, warum Staking und Validierung ausschließlich auf der nativen Lane verbleiben.
+Die Erteilung wird on-chain von der QoreChain Association über das **Validator Program** ausgestellt: Bewerben Sie sich auf der Seite **Nodes & Validators** des Dashboards ([Tools Hub](/dashboard/tools-hub#validator-application)), betreiben Sie für die 14-tägige Probephase einen Validator im diana-Testnet und zahlen Sie nach Ihrer Auswahl die **Programmgebühr von $1,000**; die Erteilung wird dann in Stapeln für die Operator-Adresse aus Ihrer Bewerbung signiert. Prüfen Sie Ihre mit `GET /qorechain/license/v1/check/{grantee}/validator_operator`. Das `expires_at` einer Lizenz ist eine **Blockhöhe**, kein Datum und keine Dauer — `0` bedeutet keine Ablauffrist. Fehlt die Lizenz oder ist sie abgelaufen, schlägt `create-validator` mit `ErrUnauthorized` fehl, egal wie viel Sie self-bonden; dies ist der mit Abstand häufigste Grund, warum ein gut finanzierter Versuch scheitert und unerklärlich wirkt. Diese Sperre existiert gerade deshalb, weil die EVM-Ausführungsebene sie weder sehen noch durchsetzen kann (ein einzelner Ante-Decorator dort würde sie vollständig umgehen) — das ist einer der Gründe, warum Staking und Validierung ausschließlich auf der nativen Lane verbleiben.
 
 Erstellen Sie eine Datei `validator.json` (die flag-basierte Form wurde im aktuellen SDK entfernt):
 
@@ -83,7 +163,7 @@ Die Gebührenuntergrenze des Netzwerks beträgt **0,1 uqor pro Gas-Einheit**, ei
 | `commission-rate`              | Anfängliche Provisionsrate (z. B. 0,10 = 10 %)         |
 | `commission-max-rate`          | Maximale Provisionsrate (nach Erstellung unveränderlich) |
 | `commission-max-change-rate`   | Maximale tägliche Änderungsrate der Provision              |
-| `min-self-delegation`          | Mindestanzahl an Token, die der Betreiber selbst delegieren muss     |
+| `min-self-delegation`          | Ihre eigene Verpflichtung, mindestens so viel self-gebondet zu halten (in uqor). Es ist **nicht** die On-Chain-Untergrenze von 100.000 QOR, die für `amount` gilt |
 
 Prüfen Sie nach Bestätigung der Transaktion Ihren Validator:
 
@@ -99,7 +179,7 @@ qorechaind query staking validator $(qorechaind keys show mykey --bech val -a)
 Die folgende Pool-Klassifizierung ist das Design von `x/qca`. Ihre Parameter liegen on-chain (`qorechaind query qca config`), aber Blockvorschläger werden noch nicht nach Pool ausgewählt, und die Pools verändern Belohnungen oder Slashing noch nicht.
 :::
 
-Das Modul `x/qca` (Quantum Consensus Allocation) von QoreChain definiert ein **dreistufiges Pool-Klassifizierungssystem**. Alle **1.000 Blöcke** (etwa 54 Minuten bei den 3,2-s-Blöcken des Mainnets) sollen Validatoren anhand ihrer Reputation und ihres Stakes in einen von drei Pools neu eingeteilt werden:
+Das Modul `x/qca` (Quantum Consensus Allocation) von QoreChain definiert ein **dreistufiges Pool-Klassifizierungssystem**. Alle **1.000 Blöcke** (etwa 52 Minuten bei den 3,1-s-Blöcken des Mainnets) sollen Validatoren anhand ihrer Reputation und ihres Stakes in einen von drei Pools neu eingeteilt werden:
 
 | Pool                                 | Kriterien                                          | Block-Zuteilung |
 | ------------------------------------ | ------------------------------------------------- | ---------------- |
@@ -173,7 +253,7 @@ qorechaind query slashing params
 
 | Parameter | Wert |
 | --- | --- |
-| Fenster für signierte Blöcke | 10.000 Blöcke (etwa 8,9 Stunden im Mainnet bei 3,2 s pro Block; im Testnet kürzer) |
+| Fenster für signierte Blöcke | 10.000 Blöcke (etwa 8,7 Stunden im Mainnet bei 3,1 s pro Block; im Testnet kürzer) |
 | Mindestanteil signierter Blöcke pro Fenster | 5 % (`min_signed_per_window` = 0,05): Ein Validator wird gejailt, wenn er **weniger als 5 %** der letzten 10.000 Blöcke signiert, das heißt, wenn er mehr als 95 % verpasst |
 | Downtime-Jail-Dauer | 600 Sekunden (10 Minuten) |
 | Downtime-Slash-Anteil | 1 % des Stakes |
@@ -205,7 +285,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 2. **Die Strafe eskaliert exponentiell.** Die Strafe eskaliert anhand des effektiven Zählers gemäß der obigen Formel, sodass Wiederholungstäter deutlich höhere Strafen erhalten.
 
-3. **Der effektive Zähler verfällt mit der Zeit.** Der effektive Zähler verfällt mit einer Halbwertszeit von 100.000 Blöcken (etwa 3,7 Tage bei den 3,2-s-Blöcken des Mainnets), sodass sich Validatoren nach einer Phase guten Verhaltens erholen können.
+3. **Der effektive Zähler verfällt mit der Zeit.** Der effektive Zähler verfällt mit einer Halbwertszeit von 100.000 Blöcken (etwa 3,6 Tage bei den 3,1-s-Blöcken des Mainnets), sodass sich Validatoren nach einer Phase guten Verhaltens erholen können.
 
 4. **Einzelereignisse vs. wiederholte Verstöße.** Ein einzelnes versehentliches Downtime-Ereignis führt zu einer geringen Strafe, während wiederholte Verstöße exponentiell steigende Konsequenzen auslösen.
 
@@ -318,7 +398,7 @@ qorechaind query staking validators --status BOND_STATUS_BONDED | grep "my-valid
 
 4. **Software aktuell halten.** Verfolgen Sie QoreChain-Releases und spielen Sie Updates zeitnah ein. Stimmen Sie sich für Chain-Upgrades mit der Validator-Community ab.
 
-5. **Ihre Schlüssel sichern.** Verwenden Sie ein Hardware-Sicherheitsmodul (HSM) oder einen Remote-Signer für den Konsensschlüssel des Validators. Bewahren Sie Schlüssel niemals auf derselben Maschine wie den Node auf.
+5. **Ihre Schlüssel sichern.** Schützen Sie den Konsensschlüssel des Validators (`priv_validator_key.json`) und bewahren Sie Backups offline auf; erwägen Sie einen Remote-Signer. Remote-Signing (`priv_validator_laddr`) wurde mit dem Release-Binary `qorechaind` nicht verifiziert, und das Post-Quanten-Modul ändert den Typ des Konsensschlüssels (ed25519) nicht, testen Sie also jedes Signer-Setup im Testnet, bevor Sie sich darauf verlassen. Halten Sie die Schlüssel des Operator-Kontos und dessen PQC-Schlüsseldatei nach Möglichkeit von der Maschine fern, auf der der Validator läuft.
 
 6. **Zuerst einen PQC-Schlüssel registrieren.** Das Operator-Konto benötigt einen registrierten ML-DSA-87-Schlüssel, bevor es einen Validator erstellen oder eine andere Transaktion auf der Cosmos-Lane senden kann.
 

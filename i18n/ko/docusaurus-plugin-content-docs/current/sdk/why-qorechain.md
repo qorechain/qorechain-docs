@@ -102,13 +102,13 @@ await crossVM.callAtomic([
 
 ---
 
-## 3. 기본으로 양자 안전
+## 3. 기본으로 하이브리드 서명
 
-**단 한 번의 호출로 서명자를 포스트 양자 보호 상태로 만드세요.**
+**단 한 번의 호출로 서명자의 ML-DSA-87 키를 등록하세요.**
 
 QoreChain은 하이브리드 포스트 양자 서명(ML-DSA-87 + 클래식)을 프로토콜
 수준에서 강제합니다. SDK는 이를 도입하는 과정을 한 줄로 만듭니다: 확인, 등록,
-하이브리드 서명으로의 마이그레이션 — 사용자에게 보호 상태를 보여주는 React
+하이브리드 서명으로의 마이그레이션 — 주소에 등록된 키가 있는지 보여주는 React
 배지까지 포함해서요.
 
 ```ts
@@ -131,8 +131,8 @@ await hybrid.signAndBroadcastHybrid({
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key
-// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 이상).
+// Shows a status badge when the address has a registered PQC key
+// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
 
@@ -140,7 +140,7 @@ import { QuantumSafeBadge } from "@qorechain/react";
 필수이며, 실험이 아닙니다. SDK는 이를 도입하는 과정을 등록 호출 한 번과
 하이브리드 전송 경로로 줄여 줍니다. 등록은 명시적으로 이루어집니다. 첫
 트랜잭션에서 자동으로 등록되지 않습니다.
-[양자 안전](/sdk/guides/quantum-safe)을 참조하세요.
+[하이브리드 서명](/sdk/guides/quantum-safe)을 참조하세요.
 
 ---
 

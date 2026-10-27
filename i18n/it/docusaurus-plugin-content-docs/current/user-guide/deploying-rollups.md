@@ -33,7 +33,7 @@ L'RDK viene fornito con cinque profili preimpostati, ciascuno ottimizzato per un
 | **enterprise** | based               | based     | native          | subsidized   | EVM      | Distribuzioni permissioned e consortium con commissioni sponsorizzate |
 | **custom**     | default: optimistic (fraud) | dedicated | native | standard | EVM | Default di partenza; modifica ciò che il messaggio consente |
 
-Vedi [Profili Preimpostati](/rollups/preset-profiles) per i dettagli e le note sulla maturità (ad esempio, un rollup `defi` creato tramite la CLI non può ancora finalizzare batch ZK, e il sequencing `based` al momento significa che l'invio è a carico del creatore).
+Vedi [Profili Preimpostati](/rollups/preset-profiles) per i dettagli e le note sulla maturità (ad esempio, il settlement ZK, e quindi il profilo `defi`, non può ancora essere usato su nessuna delle due reti, e il sequencing `based` al momento significa che l'invio è a carico del creatore).
 
 ---
 
@@ -56,7 +56,7 @@ Vedi [Profili Preimpostati](/rollups/preset-profiles) per i dettagli e le note s
 * I batch vengono regolati senza un'ancora a meno che tu non invii con essi la firma post-quantum del creatore (`--anchor-signature` su `tx rdk submit-batch`, disponibile dalla v3.2.2). Vedi [State Anchoring](/architecture/rollup-development-kit#state-anchoring).
 * I prelievi verso L1 (`tx rdk execute-withdrawal`) vengono pagati dal registro di escrow del tuo rollup e funzionano sulla mainnet dalla v3.2.3; richiedono un batch finalizzato con una withdrawals root e usano solo `uqor`.
 * Oggi il creatore del rollup è chi invia i batch (nessun preset imposta un indirizzo di sequencer), quindi custodisci al sicuro la chiave del creatore: solo il creatore può mettere in pausa, riprendere o fermare il rollup.
-* L'RDK è pubblicato in cinque linguaggi (versione 0.6.1 su ogni registry, verificato il 27 ottobre 2026), ma solo il client TypeScript firma transazioni ibride, e solo quando gli fornisci la tua coppia di chiavi post-quantistiche; la CLI `qorollup` e i client Python, Go, Rust e Java firmano solo in modo classico, cosa che entrambe le reti rifiutano. Vedi [Modifiche e limiti dell'RDK](/rollups/deploying-a-rollup#rdk-050-limits).
+* L'RDK è pubblicato in cinque linguaggi (versione 0.6.2 su npm, PyPI, crates.io e sul proxy dei moduli Go, e 0.6.1 su Maven Central finché la 0.6.2 non è disponibile lì; verificato il 27 ottobre 2026), ma solo il client TypeScript firma transazioni ibride, e solo quando gli fornisci la tua coppia di chiavi post-quantistiche; la CLI `qorollup` e i client Python, Go, Rust e Java firmano solo in modo classico, cosa che entrambe le reti rifiutano. Vedi [Modifiche e limiti dell'RDK](/rollups/deploying-a-rollup#rdk-050-limits).
 * L'helper `suggest-profile` al momento restituisce un fallback fisso `defi` sugli endpoint pubblici, quindi scegli dalla tabella dei profili.
 
 ---

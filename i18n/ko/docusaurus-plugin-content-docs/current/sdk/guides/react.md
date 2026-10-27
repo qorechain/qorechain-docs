@@ -9,8 +9,8 @@ sidebar_position: 7
 
 `@qorechain/react`는 `@qorechain/sdk` 위에 얹은 공식 React 레이어입니다. 하나의
 프로바이더, 몇 개의 훅, 그리고 즉시 사용 가능한 두 개의 컴포넌트(한 줄짜리
-**양자 안전** 배지 포함)를 제공합니다. 양자 안전 dApp을 만드는 것을 기본 경로로
-만듭니다.
+PQC 상태 배지 포함)를 제공합니다. 하이브리드 ML-DSA-87 서명을 사용하는 dApp을
+만드는 것을 기본 경로로 만듭니다.
 
 ```bash
 npm i @qorechain/react @qorechain/sdk react react-dom
@@ -28,7 +28,7 @@ SDK 0.8.0에 고정되어 있는데, 이 버전은 메인넷에서 잘못된 하
 서명만으로 전송하는데, 라이브 네트워크는 이를 거부합니다(Native 경로는 하이브리드
 ML-DSA-87 확장을 요구합니다). 따라서 `send` / `sendTokens`로는 메인넷이나
 테스트넷에 트랜잭션을 반영할 수 없습니다. 전송에는 SDK의 하이브리드 `TxClient`
-(`client.connectTx(signer, { pqcKeypair })`, [양자 안전](/sdk/guides/quantum-safe#register-in-one-call)
+(`client.connectTx(signer, { pqcKeypair })`, [하이브리드 서명](/sdk/guides/quantum-safe#register-in-one-call)
 참고)를 사용하세요. `usePqcStatus`와 `<QuantumSafeBadge/>`는 프로바이더의 구성된
 클라이언트와 함께 `getPqcStatus`를 통해 상태를 읽는데, SDK 0.9.0부터 이는 REST
 (`/qorechain/pqc/v1/account/{address}`)로 읽으므로 `*.qore.host`에 대해서도
@@ -137,8 +137,8 @@ function Send() {
 
 ### `<QuantumSafeBadge/>`
 
-주소에 등록된 포스트 양자 키가 있을 때(`usePqcStatus`를 통해) **양자 안전** 표시를
-보여주고, 그렇지 않으면 흐릿한 "Not quantum-safe" 상태를 보여줍니다. 기본값은
+주소에 등록된 포스트 양자 키가 있을 때(`usePqcStatus`를 통해) 상태 표시를
+보여주고, 그렇지 않으면 흐릿한 "등록되지 않음" 상태를 보여줍니다. 기본값은
 연결된 계정입니다.
 
 ```tsx
@@ -173,4 +173,4 @@ function Dashboard() {
 ```
 
 실행 가능한 [`react-dapp` 예제](https://github.com/qorechain/qorechain-sdk/tree/main/examples/react-dapp)와
-기반이 되는 SDK 호출은 [양자 안전 가이드](/sdk/guides/quantum-safe)를 참고하세요.
+기반이 되는 SDK 호출은 [하이브리드 서명 가이드](/sdk/guides/quantum-safe)를 참고하세요.

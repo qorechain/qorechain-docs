@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain, **kuantum sonrası kriptografi (post-quantum cryptography, PQC) ile genesis'te** inşa edilmiştir — sonradan bir yükseltme olarak eklenmemiştir. `x/pqc` modülü, uzun vadeli dayanıklılık için yönetişim kontrollü bir algoritma çevikliği çerçevesiyle birlikte birincil kriptografik ilkeller olarak kafes tabanlı dijital imzalar ve anahtar kapsülleme sağlar.
 
-Tam PQC temeli — **Dilithium-5 (imzalar) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — artık tamamlandı ve ağ varsayılanıdır. Canlı ağlarda (v3.2.x), hibrit imzalar cosmos işlem yolunda **varsayılan olarak gereklidir**: `hybrid_signature_mode = required` ve `allow_classical_fallback = false`. Her cosmos yolu işlemi, klasik secp256k1 imzasının yanında bir Dilithium-5 imzası taşımalıdır; bir PQC hesabından gelen yalnızca klasik işlemler reddedilir ve klasik geri dönüş (downgrade) yolu kapalıdır. Mainnet ve testnet ikisi de v3.2.4 çalıştırır; v3.2.2 ve v3.2.3 sürümlerinin kuantum sonrası kurallara eklediği şeyler (anahtar bütünlüğü, isteğe bağlı sahiplik kanıtı, kapsamlı EVM pencereleri, EIP-7702 onayı) [Anahtar bütünlüğü kuralları](#key-integrity), [Sahiplik kanıtı](#proof-of-possession) ve [EIP-7702 delegasyonları](#eip-7702) bölümlerinde açıklanmıştır.
+Tam PQC temeli — **Dilithium-5 (imzalar) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — artık tamamlandı ve ağ varsayılanıdır. Canlı ağlarda (v3.2.x), hibrit imzalar cosmos işlem yolunda **varsayılan olarak gereklidir**: `hybrid_signature_mode = required` ve `allow_classical_fallback = false`. Her cosmos yolu işlemi, klasik secp256k1 imzasının yanında bir Dilithium-5 imzası taşımalıdır; bir PQC hesabından gelen yalnızca klasik işlemler reddedilir ve klasik geri dönüş (downgrade) yolu kapalıdır. Mainnet v3.2.4, testnet v3.2.6 çalıştırır (27 Ekim 2026'da kontrol edildi); v3.2.2 ve v3.2.3 sürümlerinin kuantum sonrası kurallara eklediği şeyler (anahtar bütünlüğü, isteğe bağlı sahiplik kanıtı, kapsamlı EVM pencereleri, EIP-7702 onayı) [Anahtar bütünlüğü kuralları](#key-integrity), [Sahiplik kanıtı](#proof-of-possession) ve [EIP-7702 delegasyonları](#eip-7702) bölümlerinde açıklanmıştır.
 
 ## Tasarım İlkeleri
 
@@ -228,7 +228,7 @@ active --> migrating --> deprecated --> disabled
 
 ### Çift İmza Geçişi
 
-Bir algoritma kullanımdan kaldırıldığında, bir **geçiş süresi** başlar (varsayılan: 1,000,000 blok — mainnet'in mevcut ≈3.2 s blok süresinde yaklaşık 37 gün). Bu süre boyunca:
+Bir algoritma kullanımdan kaldırıldığında, bir **geçiş süresi** başlar (varsayılan: 1,000,000 blok — mainnet'in mevcut ≈3.1 s blok süresinde yaklaşık 36 gün). Bu süre boyunca:
 
 1. Kullanımdan kaldırılan algoritmayı kullanan anahtarlara sahip hesaplar, yedeğe geçmelidir.
 2. Geçiş, çift imza gerektirir (`MsgMigratePQCKey`): biri eski anahtardan, biri yeni anahtardan, her ikisinin de sahipliğini kanıtlar.
@@ -254,7 +254,7 @@ Bir algoritma eklemek, onu birleşik imzalama ve doğrulama arayüzünün arkas�
 
 ## SHAKE-256 Hash
 
-v3.1.73 itibarıyla, **SHAKE-256** (SHA-3 genişletilebilir çıktı fonksiyonu), `qorehash` paketi tarafından sağlanan, QoreChain genelinde **varsayılan uygulama hash'idir** — Dilithium-5 imzaları ve ML-KEM-1024 anahtar kapsüllemenin yanında kuantuma dayanıklı kriptografik temeli tamamlar. `x/pqc` modülü saf Go SHAKE-256 yardımcı programları sağlar:
+v3.1.73 itibarıyla, **SHAKE-256** (SHA-3 genişletilebilir çıktı fonksiyonu), `qorehash` paketi tarafından sağlanan, QoreChain genelinde **varsayılan uygulama hash'idir** — Dilithium-5 imzaları ve ML-KEM-1024 anahtar kapsüllemenin yanında kriptografik temeli tamamlar. `x/pqc` modülü saf Go SHAKE-256 yardımcı programları sağlar:
 
 | Fonksiyon                          | Açıklama                          | Çıktı            |
 | ---------------------------------- | --------------------------------- | ---------------- |

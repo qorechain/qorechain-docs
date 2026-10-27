@@ -59,7 +59,7 @@ Setzen Sie in diesem Leitfaden durchgehend die passende `--chain-id` für Ihr Zi
 
 ---
 
-## Empfohlene Hardware
+## Empfohlene Hardware {#recommended-hardware}
 
 | Profil                   | CPU      | RAM   | Festplatte (NVMe-SSD)   | Netzwerk  |
 | ------------------------ | -------- | ----- | ----------------------- | --------- |
@@ -67,7 +67,7 @@ Setzen Sie in diesem Leitfaden durchgehend die passende `--chain-id` für Ihr Zi
 | Full-/Archive-Node       | 8 Kerne  | 32 GB | 2 TB+ (wächst mit der Zeit) | 1 Gbps    |
 | Börsen-Integration       | 8 Kerne  | 32 GB | 2 TB+ mit Reserve       | 1 Gbps    |
 
-Eine NVMe-SSD wird dringend empfohlen — der Chain-State und die EVM-/SVM-Stores sind I/O-intensiv. Archive-Nodes (kein Pruning, vollständige Tx-Indexierung) wachsen kontinuierlich; stellen Sie Speicherplatz mit Reserve und Monitoring bereit.
+Eine NVMe-SSD wird dringend empfohlen: Der Chain-State und die EVM-/SVM-Stores sind I/O-intensiv. Die obigen Festplattenangaben sind großzügig. Gemessen im Mainnet (27. Oktober 2026): Ein Validator, der per State Sync beigetreten ist, mit `pruning = "custom"` (keep-recent 100000) und `indexer = "null"`, belegt nach zwei Monaten etwa 10 GB, und ein Node mit Standard-Pruning, der seit Genesis läuft, belegt nach vier Monaten etwa 100 bis 130 GB. Die Dimensionierung für Validatoren steht unter [Einen Validator betreiben: Hardware](/developer-guide/running-a-validator#hardware). Archive-Nodes (kein Pruning, vollständige Tx-Indexierung) wachsen kontinuierlich; stellen Sie Speicherplatz mit Reserve und Monitoring bereit.
 
 ---
 
@@ -222,7 +222,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 
 ## Schneller Bootstrap
 
-Die Synchronisierung ab Genesis kann sehr lange dauern. Verwenden Sie für Integrationen **State Sync** oder einen **Snapshot** für einen schnellen Kaltstart.
+Die Synchronisierung ab Genesis kann sehr lange dauern. Verwenden Sie **State Sync** als Standardweg zum Beitreten; ein **Snapshot** ist nur ein Fallback (der Mainnet-Snapshot stammt vom 21. August 2026, und das Testnet veröffentlicht keinen).
 
 ### State Sync
 
@@ -231,18 +231,22 @@ State Sync lädt einen aktuellen Snapshot des Anwendungszustands von vertrauensw
 ```toml
 [statesync]
 enable = true
-rpc_servers = "https://rpc.qore.host:443,https://rpc.qore.host:443"
+rpc_servers = "https://rpc.qore.host:443,https://<a second RPC you run or trust>:26657"
 trust_height = <TRUSTED_BLOCK_HEIGHT>
 trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Entnehmen Sie `trust_height` / `trust_hash` dem Feld `stateSync` des Manifests — es wird stündlich aktualisiert und ist damit die bevorzugte Quelle:
+Entnehmen Sie `trust_height` / `trust_hash` dem Feld `stateSync` des Manifests. Es wird stündlich aktualisiert und ist damit die bevorzugte Quelle:
 
 ```bash
 TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
 TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 ```
+
+:::warning Zwei verschiedene RPC-Server
+State Sync gleicht den Trust Point mit **zwei** RPC-Servern ab. Die Liste `stateSync.rpcServers` des Manifests nennt im Mainnet `https://rpc.qore.host` zweimal (und im Testnet `https://rpc-testnet.qore.host` zweimal): Zwei identische Einträge erfüllen die Anzahl, machen den Abgleich aber wirkungslos. Fügen Sie einen zweiten RPC hinzu, den Sie selbst betreiben oder dem Sie unabhängig vertrauen, und vergleichen Sie den Trust-Hash mit einer zweiten Quelle, zum Beispiel `curl -s "https://<second-rpc>/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash`, was `$TRUST_HASH` entsprechen muss.
+:::
 
 Als Fallback/Alternative können Sie eine vertrauenswürdige Höhe und deren Hash selbst über den öffentlichen RPC ableiten:
 

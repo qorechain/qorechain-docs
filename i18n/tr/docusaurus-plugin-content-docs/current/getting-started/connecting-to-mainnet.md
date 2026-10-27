@@ -130,7 +130,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### Önerilen Ayarlar
 
-Tam bir düğüm blok süresini seçmez — bunu doğrulayıcılar seçer (ana ağ şu anda yaklaşık her 3.2 saniyede bir blok üretir). Bir doğrulayıcı işletmiyorsanız ve doğrulayıcı grubu tarafından size değerler verilmediyse konsensüs zaman aşımlarını varsayılanlarında bırakın. Genel bir RPC düğümü için `config.toml` içinde yararlı bir mempool ayarı:
+Tam bir düğüm blok süresini seçmez — bunu doğrulayıcılar seçer (ana ağ şu anda yaklaşık her 3.1 saniyede bir blok üretir). Bir doğrulayıcı işletmiyorsanız ve doğrulayıcı grubu tarafından size değerler verilmediyse konsensüs zaman aşımlarını varsayılanlarında bırakın. Genel bir RPC düğümü için `config.toml` içinde yararlı bir mempool ayarı:
 
 ```toml
 [mempool]
@@ -258,7 +258,7 @@ http://localhost:1317
 | EVM zincir kimliği | `9801` (onaltılık `0x2649`)            |
 | Zincir sürümü      | v3.2.4 (23 Ekim 2026'da 3,742,566 yüksekliğinde uygulandı) |
 | Canlıya geçiş tarihi | 7 Haziran 2026                       |
-| Blok süresi        | yaklaşık 3.2 saniye (ölçülen ortalama) |
+| Blok süresi        | yaklaşık 3.1 saniye (ölçülen ortalama) |
 | Token              | QOR (`uqor`, 10^6 mikro birim = 1 QOR) |
 | Asgari gaz fiyatı  | `0.1uqor`                              |
 | Hesap ön eki       | `qor`                                  |

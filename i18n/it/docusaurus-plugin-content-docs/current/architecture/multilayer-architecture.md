@@ -64,7 +64,7 @@ La main chain è la radice di fiducia per l'intero ecosistema QoreChain.
 | Consenso        | Consenso QoreChain (vedi [Meccanismo di consenso](/architecture/consensus-mechanism) per ciò che è attivo oggi)         |
 | Sicurezza       | Protetta con PQC tramite firme Dilithium-5                                                                              |
 | Ruolo           | Livello di regolamento, archiviazione degli state anchor, QCAI routing engine, radice di fiducia                        |
-| Tempo di blocco | Dipende dalla rete: circa 3,2 secondi sulla mainnet, circa 1,3 secondi sulla testnet (misurato il 27 ottobre 2026)      |
+| Tempo di blocco | Dipende dalla rete: circa 3,1 secondi sulla mainnet, circa 1,3 secondi sulla testnet (misurato il 27 ottobre 2026)      |
 
 Tutti i livelli sussidiari ancorano periodicamente le proprie state root alla main chain tramite gli Hierarchical Commitment Schemes (HCS).
 

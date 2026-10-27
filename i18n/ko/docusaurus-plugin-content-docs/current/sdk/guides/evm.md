@@ -91,7 +91,7 @@ import { deployContract, readContract, writeContract } from "@qorechain/evm";
 
 SDK **0.8.2 이상**에서는 코드로 윈도우를 열 수 있습니다(**0.9.0**은 아래의
 범위 옵션을 추가합니다). 키 등록(1회)은
-[양자 내성](/sdk/guides/quantum-safe)에 설명되어 있으며, 아래 예제는 그 다음에
+[하이브리드 서명](/sdk/guides/quantum-safe)에 설명되어 있으며, 아래 예제는 그 다음에
 통합 eth-네이티브 계정을 위한 윈도우를 엽니다(`npm i @cosmjs/stargate`):
 
 ```ts

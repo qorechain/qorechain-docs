@@ -117,7 +117,7 @@ tipurile tipizate `ContractMsg`, `FeeInput`, `InstantiateOpts`,
 
 Adaugă tipurile de mesaje QoreChain Native într-un registry și trimite `MsgExecuteContract`
 prin builderul hibrid. Cheia ML-DSA-87 a contului trebuie înregistrată mai întâi
-(vezi [Rezistență cuantică](/sdk/guides/quantum-safe)). Necesită
+(vezi [Semnare hibridă](/sdk/guides/quantum-safe)). Necesită
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:
 
 ```ts

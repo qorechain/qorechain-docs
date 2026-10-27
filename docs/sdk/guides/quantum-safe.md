@@ -1,22 +1,21 @@
 ---
 slug: /sdk/guides/quantum-safe
-title: Quantum-safe by Default
-sidebar_label: Quantum-safe
+title: Hybrid Signing by Default
+sidebar_label: Hybrid signing
 sidebar_position: 6
 ---
 
-# Quantum-safe by default
+# Hybrid signing by default
 
 QoreChain treats post-quantum cryptography as a **first-class** signature scheme.
 An account registers an **ML-DSA-87 (Dilithium-5, NIST FIPS 204)** key on-chain,
 after which its transactions can carry a **hybrid** signature — the usual
 classical secp256k1 signature **plus** an ML-DSA-87 signature. The chain's ante
-handler verifies both, so a quantum-safe account stays fully compatible with
-classical verification while gaining protection against a future quantum
-adversary.
+handler verifies both, so an account with a registered key stays fully compatible with
+classical verification while its transactions also carry a post-quantum signature.
 
-The SDK packages this into a tiny, idempotent surface so a dApp becomes
-**quantum-safe by default**: one call to be PQC-protected. On the live networks
+The SDK packages this into a tiny, idempotent surface so a dApp signs
+**hybrid by default**: one call registers the key. On the live networks
 this is not optional for Native-path transactions: the key must be registered
 **explicitly** (there is no auto-registration on the first transaction), and every
 Native-path transaction must then carry the hybrid signature.
@@ -67,7 +66,7 @@ active on mainnet, and it is listed as active on the testnet (checked 27 October
 
 ## Register in one call {#register-in-one-call}
 
-`ensurePqcRegistered` makes an account quantum-safe. It builds and broadcasts
+`ensurePqcRegistered` registers the account's ML-DSA-87 key. It builds and broadcasts
 `MsgRegisterPQCKeyV2` with the signer's ML-DSA-87 public key. It is **idempotent**:
 it reads the account's status first (over REST when you pass `rest`), skips the
 registration when the account already holds this keypair's key, and is therefore
@@ -274,7 +273,7 @@ await migratePqcKeyHybrid({
 ## In the UI
 
 The [`@qorechain/react`](/sdk/guides/react) kit surfaces all of this in React: the
-`usePqcStatus` hook and the `<QuantumSafeBadge/>` component show a **Quantum-safe**
+`usePqcStatus` hook and the `<QuantumSafeBadge/>` component show a status
 indicator whenever the connected account has a registered PQC key. Both read the
 status through `getPqcStatus` with the composed client, so from `@qorechain/react`
 0.9.0 they read it over REST and work against the public endpoints; 0.8.x could

@@ -1,11 +1,11 @@
 ---
 slug: /qoresign/guides/evm-quantum-ready
-title: "Portefeuilles EVM : mode prêt pour le post-quantique"
-sidebar_label: Mode EVM prêt pour le post-quantique
+title: "Portefeuilles EVM : fenêtre d'autorisation"
+sidebar_label: Fenêtre d'autorisation EVM
 sidebar_position: 3
 ---
 
-# Portefeuilles EVM : mode prêt pour le post-quantique
+# Portefeuilles EVM : fenêtre d'autorisation
 
 Les transactions Ethereum n'ont aucun champ où une seconde signature pourrait
 circuler, et le réseau applique son paramètre PQC à l'échelle de la chaîne plutôt
@@ -16,9 +16,9 @@ avec secp256k1 uniquement, et QoreSign ne propose pas de signature EVM hybride
 À la place, le réseau n'admet une transaction EVM que si son expéditeur possède
 une clé ML-DSA-87 enregistrée et une **fenêtre d'autorisation EVM** active qui la
 couvre. La fenêtre est ouverte depuis la voie native par une transaction signée
-de façon hybride ; la clé post-quantique autorise ainsi l'activité EVM à l'avance
-(« mode prêt pour le post-quantique »). Les deux réseaux publics appliquent cette
-règle (fonctionnalité de protocole `evm-pqc-authorisation-window`, lisible avec
+de façon hybride ; la clé post-quantique autorise ainsi l'activité EVM à l'avance.
+La transaction EVM elle-même est signée avec secp256k1 uniquement. Les deux réseaux
+publics appliquent cette règle (fonctionnalité de protocole `evm-pqc-authorisation-window`, lisible avec
 `fetchProtocolFeatures` dans le [SDK QoreChain](/sdk/overview) ou à l'adresse
 `/qorechain/pqc/v1/protocol_features`).
 

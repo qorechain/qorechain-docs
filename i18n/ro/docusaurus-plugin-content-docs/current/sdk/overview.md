@@ -8,8 +8,8 @@ sidebar_position: 1
 # SDK-ul QoreChain
 
 SDK-ul QoreChain este kitul oficial de dezvoltare multi-limbaj pentru construirea
-de aplicații descentralizate pe **QoreChain** — o rețea Layer 1 rezistentă la
-atacuri cuantice, cu triplu VM.
+de aplicații descentralizate pe **QoreChain** — o rețea Layer 1 cu triplu VM
+și semnături hibride ML-DSA-87 (FIPS 204).
 
 Această documentație acoperă modul de instalare a SDK-ului, conectarea la rețea,
 citirea stării on-chain, derivarea conturilor, semnarea și trimiterea
@@ -58,7 +58,7 @@ nu o au pe prima, vezi [Versiuni anterioare lui 0.9.0](/sdk/install#before-090)
 Semnare pentru portofele și backend-uri: vezi [QoreSign](/qoresign/overview).
 :::
 
-### Rezistent la atacuri cuantice prin design
+### Semnare hibridă ML-DSA-87
 
 QoreChain oferă primitive de criptografie post-cuantică (PQC) bazate pe
 **ML-DSA-87** (Dilithium-5, FIPS 204). Alături de semnarea clasică secp256k1,
@@ -91,10 +91,10 @@ care niciun alt Layer 1 nu le are:
   `createCrossVMClient` apelează un contract pe oricare VM, iar `callAtomic`
   împachetează mai multe apeluri cross-VM într-o singură tranzacție atomică,
   semnată o singură dată. Vezi [Apeluri cross-VM](/sdk/guides/cross-vm).
-- **DX rezistent la atacuri cuantice** — fă un semnatar protejat post-cuantic
+- **DX pentru semnare hibridă** — înregistrează cheia ML-DSA-87 a unui semnatar
   într-un singur apel idempotent (`ensurePqcRegistered` / `migrateToHybrid`),
   cu un badge React gata de utilizare. Vezi
-  [Quantum-safe](/sdk/guides/quantum-safe).
+  [Semnare hibridă](/sdk/guides/quantum-safe).
 
 Alte două capabilități la nivel de lanț au sosit în 0.6.0 și 0.7.0 (a doua nu
 poate fi folosită încă pe rețelele live, vezi mai jos):
@@ -110,7 +110,7 @@ poate fi folosită încă pe rețelele live, vezi mai jos):
   [Autentificatori și cheltuire delegată](/sdk/guides/authenticators).
 
 Un nou kit **`@qorechain/react`** (provider, hooks, `ConnectButton`,
-`QuantumSafeBadge`) face din construirea unui dApp rezistent la atacuri cuantice
+`QuantumSafeBadge`) face din construirea unui dApp cu semnare hibridă ML-DSA-87
 calea implicită — vezi [ghidul kitului React](/sdk/guides/react). Pentru
 argumentația completă, citește [De ce QoreChain SDK](/sdk/why).
 

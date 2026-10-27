@@ -140,7 +140,15 @@
     "description": "The label for category 'QoreX Wallet' in sidebar 'docsSidebar'"
   },
   "sidebar.docsSidebar.category.QoreX Wallet.link.generated-index.description": {
-    "message": "QoreX – die offizielle nicht-verwahrende, quantensichere Wallet für QoreChain: mobile App und Browser-Erweiterung. Einrichten, senden und empfangen, staken, wiederherstellen und mit dApps verbinden.",
+    "message": "QoreX – die offizielle nicht-verwahrende Wallet für QoreChain mit hybrider ML-DSA-87-Signierung auf der nativen Lane: mobile App und Browser-Erweiterung. Einrichten, senden und empfangen, staken, wiederherstellen und mit dApps verbinden.",
     "description": "The generated-index page description for category 'QoreX Wallet' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages": {
+    "message": "Entwicklerpakete",
+    "description": "The label for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
+    "message": "Jedes öffentliche QoreChain-Paket: was es ist, was darin neu ist, wie man es verwendet, wie man darauf zugreift und wo es veröffentlicht ist.",
+    "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
   }
 }

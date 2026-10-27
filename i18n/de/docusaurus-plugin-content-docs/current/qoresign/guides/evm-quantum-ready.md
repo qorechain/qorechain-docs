@@ -1,11 +1,11 @@
 ---
 slug: /qoresign/guides/evm-quantum-ready
-title: "EVM-Wallets: Quantum-Ready-Modus"
-sidebar_label: EVM-Quantum-Ready-Modus
+title: "EVM-Wallets: Autorisierungsfenster"
+sidebar_label: EVM-Autorisierungsfenster
 sidebar_position: 3
 ---
 
-# EVM-Wallets: Quantum-Ready-Modus
+# EVM-Wallets: Autorisierungsfenster
 
 Ethereum-Transaktionen haben kein Feld, in dem eine zweite Signatur
 mitreisen könnte, und das Netzwerk wendet seine PQC-Einstellung chainweit an,
@@ -17,7 +17,7 @@ Stattdessen lässt das Netzwerk eine EVM-Transaktion nur zu, wenn ihr Absender
 einen registrierten ML-DSA-87-Schlüssel und ein aktives **EVM-Autorisierungsfenster**
 hat, das sie abdeckt. Das Fenster wird von der nativen Lane aus durch eine
 hybrid signierte Transaktion geöffnet, sodass der Post-Quanten-Schlüssel
-EVM-Aktivität im Voraus autorisiert („Quantum-Ready-Modus“).
+EVM-Aktivität im Voraus autorisiert. Die EVM-Transaktion selbst ist nur mit secp256k1 signiert.
 Beide öffentlichen Netzwerke erzwingen dies (Protokollfunktion
 `evm-pqc-authorisation-window`, abrufbar mit `fetchProtocolFeatures` im
 [QoreChain SDK](/sdk/overview) oder unter `/qorechain/pqc/v1/protocol_features`).

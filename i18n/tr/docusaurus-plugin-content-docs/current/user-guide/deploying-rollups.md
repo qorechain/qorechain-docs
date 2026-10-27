@@ -33,7 +33,7 @@ RDK, her biri yaygın bir uygulama kategorisi için ayarlanmış beş hazır pro
 | **enterprise** | based                 | based      | native          | subsidized   | EVM      | Sponsorlu ücretlerle izinli ve konsorsiyum dağıtımları |
 | **custom**     | varsayılanlar: optimistic (fraud) | dedicated | native | standard | EVM | Başlangıç varsayılanları; mesajın izin verdiklerini ayarlayın |
 
-Ayrıntılar ve olgunluk notları için [Hazır Profiller](/rollups/preset-profiles) sayfasına bakın (örneğin CLI ile oluşturulan bir `defi` rollup'ı henüz ZK toplu işlemlerini kesinleştiremez ve `based` sıralama şu anda göndermeyi oluşturucunun yaptığı anlamına gelir).
+Ayrıntılar ve olgunluk notları için [Hazır Profiller](/rollups/preset-profiles) sayfasına bakın (örneğin ZK uzlaşması ve dolayısıyla `defi` profili henüz her iki ağda da kullanılamaz ve `based` sıralama şu anda göndermeyi oluşturucunun yaptığı anlamına gelir).
 
 ---
 
@@ -56,7 +56,7 @@ Ayrıntılar ve olgunluk notları için [Hazır Profiller](/rollups/preset-profi
 * Toplu işlemler, oluşturucunun kuantum sonrası imzasını yanlarında göndermediğiniz sürece çapa olmadan uzlaşır (`tx rdk submit-batch` üzerinde `--anchor-signature`, v3.2.2'den beri mevcut). Bkz. [Durum Çapalama](/architecture/rollup-development-kit#state-anchoring).
 * L1'e çekimler (`tx rdk execute-withdrawal`) rollup'ınızın emanet defterinden ödenir ve v3.2.3'ten beri mainnet'te çalışır; çekim kökü olan kesinleşmiş bir toplu işlem gerektirir ve yalnızca `uqor` kullanır.
 * Rollup oluşturucusu bugün toplu işlem göndericisidir (hiçbir hazır profil bir sıralayıcı adresi belirlemez); bu yüzden oluşturucu anahtarını güvende tutun: rollup'ı yalnızca oluşturucu duraklatabilir, sürdürebilir veya durdurabilir.
-* RDK beş dilde yayımlanmıştır (her kayıt defterinde sürüm 0.6.1, 27 Ekim 2026'da kontrol edildi), ancak hibrit işlemleri yalnızca TypeScript istemcisi imzalar ve bunu da yalnızca ona kuantum sonrası anahtar çiftinizi verdiğinizde yapar; `qorollup` CLI'ı ile Python, Go, Rust ve Java istemcileri yalnızca klasik imzalar, ki her iki ağ da bunu reddeder. Bkz. [RDK değişiklikleri ve sınırları](/rollups/deploying-a-rollup#rdk-050-limits).
+* RDK beş dilde yayımlanmıştır (npm, PyPI, crates.io ve Go modül proxy'sinde sürüm 0.6.2, Maven Central'da ise 0.6.2 orada yayına girene kadar 0.6.1; 27 Ekim 2026'da kontrol edildi), ancak hibrit işlemleri yalnızca TypeScript istemcisi imzalar ve bunu da yalnızca ona kuantum sonrası anahtar çiftinizi verdiğinizde yapar; `qorollup` CLI'ı ile Python, Go, Rust ve Java istemcileri yalnızca klasik imzalar, ki her iki ağ da bunu reddeder. Bkz. [RDK değişiklikleri ve sınırları](/rollups/deploying-a-rollup#rdk-050-limits).
 * `suggest-profile` yardımcısı şu anda genel uç noktalarda sabit bir `defi` yedeği döndürür; bu yüzden profil tablosundan seçim yapın.
 
 ---

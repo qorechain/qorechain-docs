@@ -152,6 +152,24 @@ qorechaind query stakingtier locks <holder_address>
 
 The chain ID above is the testnet's; use `qorechain-vladi` on mainnet. As on the rest of this page, sign each generated transaction with `tx pqc cosign`.
 
+### Using time-locked staking {#using-time-locks}
+
+**Steps.** (1) Delegate to a validator as usual. (2) Run `tx stakingtier lock` for that validator with an amount (at least 10 QOR) and a term of 3, 6 or 12 months, then cosign and broadcast. (3) Read the result with `GET /qorechain/stakingtier/v1/locks/{holder}` or `qorechaind query stakingtier locks <holder_address>`; each lock has an id. (4) Claim with `tx stakingtier claim` whenever you want the lock reward. (5) At the end of the term the lock releases by itself; to leave sooner use `tx stakingtier unlock-early <lock_id>` and accept the penalty.
+
+**Where it works, checked on 27 October 2026.**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| Module live | Yes, since height 3,742,566 | Yes, since v3.2.4 (height 8,337,253) |
+| Open locks | None yet | 3 test locks |
+| Undelegating locked stake | Refused by the staking message gate when the transaction runs | Refused by the mempool before any fee is charged (testnet only until mainnet applies v3.2.6) |
+
+Both networks answer `GET /qorechain/stakingtier/v1/params` with the same settings: three terms, a 10 QOR minimum (`min_lock_amount` `"10000000"` uqor), an early-unlock penalty of 500 basis points (5%) and `enabled: true`. The response also carries the bonus settings in basis points; this manual does not quote them, because a bonus is not a promised return and the settings can be changed by governance. `GET /qorechain/stakingtier/v1/pool` shows the pool that pays lock rewards.
+
+**Clients.** The command line (above) and `@qorechain/sdk` 0.10.0, which has the composers `lockDelegation`, `unlockEarly` and `claimBonus` and the reads `fetchStakingTierParams`, `fetchStakingLocks` and `fetchStakingTierPool` (see [SDK install](/sdk/install)). No published version of QoreX or the dashboard has a lock screen today, so locking on mainnet is done with the CLI or the SDK.
+
+**Do not mix it up** with [xQORE staking](/user-guide/xqore-staking), which is a designed mechanism that is not live, or with the Triple-Pool classification below, which does not change what you receive.
+
 ---
 
 ## Triple-Pool Classification (design status)
@@ -200,7 +218,7 @@ Slashing on QoreChain follows the standard Cosmos SDK slashing module with these
 
 | Event                | Rule                                                                 | Consequence                                  |
 | -------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
-| Downtime             | Signing fewer than 5% of the last 10,000 blocks (about 8.9 hours at the mainnet's roughly 3.2-second blocks) | Jailed for 600 seconds; 1% of stake slashed |
+| Downtime             | Signing fewer than 5% of the last 10,000 blocks (about 8.7 hours at the mainnet's roughly 3.1-second blocks) | Jailed for 600 seconds; 1% of stake slashed |
 | Double-signing       | Signing two different blocks at the same height                      | 5% of stake slashed                          |
 
 Slashing applies to a validator's total bonded stake, so delegators bear their proportional share. It can also reach stake that is already unbonding from a slashed validator, which is why the unbonding period is a security measure and not only a waiting time.

@@ -7,24 +7,27 @@ sidebar_position: 2
 
 # SX Edition — Server Daemon
 
-The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. This page describes light node **3.1.10** (source tag `v3.1.10`), which is on its own version line, separate from the chain version.
+The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. Light node versions are on their own line, separate from the chain version: both networks' channels carry **3.1.12** (27 October 2026). This page notes where a feature needs 3.1.11 or later.
 
 ## Install {#install}
 
-Prebuilt binaries are the easiest path — the light node client runs natively on **six platforms with zero native dependencies**: Linux (amd64, arm64), macOS (Intel, Apple Silicon), and Windows (amd64, arm64) — 12 binaries in total across the SX and UX editions. Each binary is roughly 13 MB — download it and run it, no separate libraries to install. The node signs its own transactions on every one of these platforms, so nothing else (in particular, no `qorechaind`) is needed to register and run a node.
+Prebuilt binaries are the easiest path. The light node client is a single static binary of roughly 13 MB, with no native libraries to install: Linux (amd64, arm64), macOS (Intel, Apple Silicon) and Windows (amd64, arm64) builds exist for both editions, 12 binaries in total per release. The node signs its own transactions, so nothing else (in particular, no `qorechaind`) is needed to register and run a node.
 
-**Verify the checksum before you run it.** The release manifest at `https://download.qore.host/<net>/lightnode/latest.json` carries a `sha256` for every binary, a `checksums.url` pointing at a `SHA256SUMS` file over the whole release, and that file's own `checksums.sha256`. Verify what you downloaded — this isn't a footnote, it's the difference between running the binary that was actually built and running whatever landed at that URL:
+**Verify the checksum before you run it.** The release manifest at `https://download.qore.host/<net>/lightnode/latest.json` carries a `sha256` for every binary, a `checksums.url` pointing at a `SHA256SUMS` file over the whole release, and that file's own `checksums.sha256`. Verify what you downloaded: it is the difference between running the binary that was built and running whatever landed at that URL. Take the version from the manifest, and take the binary and its `SHA256SUMS` from the same versioned path:
 
 ```bash
 NET=mainnet            # or testnet
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.12 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/v3.1.10/$F   # or the artifacts[].url from latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/SHA256SUMS
-grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
+curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
+curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
+grep " $F\$" SHA256SUMS | sha256sum -c -    # macOS: shasum -a 256 -c -
 chmod +x $F
 ```
 
-On Windows, compare `certutil -hashfile lightnode-sx-<platform>.exe SHA256` against the manifest value. Both networks serve the same 3.1.10 build; the manifests still accept 3.1.9 (`minCompatible: 3.1.9`). Since 3.1.10 each release's binaries sit under a versioned path, `https://download.qore.host/<net>/lightnode/v<version>/<file>`, which is what `artifacts[].url` in the manifest points to; use it rather than the unversioned copy, which can lag behind for a few hours. The source is public at `github.com/qorechain/qorechain-lightnode` (Apache 2.0). An Android build is attached to the GitHub release as a preview; it does not register and does not earn.
+Use the versioned `SHA256SUMS` (`.../v$V/SHA256SUMS`) with the versioned binary. The unversioned `.../lightnode/SHA256SUMS` belongs to the manifest and can lag behind a new release for a few hours, so a versioned binary checked against it can fail.
+
+On Windows, compare `certutil -hashfile lightnode-sx-<platform>.exe SHA256` against the manifest value. Both manifests accept 3.1.9 and later (`minCompatible: 3.1.9`). The source is public at `github.com/qorechain/qorechain-lightnode` (Apache 2.0). An Android build is attached to the GitHub release as a preview; it does not register and does not earn.
 
 You can also build the binary from source or run it with Docker.
 
@@ -36,16 +39,16 @@ The light node requires **Go 1.26.1**. Its post-quantum cryptography is a pure-G
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Build from the release tag (`git checkout v3.1.10`). This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`. Before registering, sanity-check the post-quantum signing stack with [`selftest`](#verify-the-pqc-stack-selftest).
+Build from the release tag the manifest names (`git checkout v3.1.12` today). This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`. Before registering, sanity-check the post-quantum signing stack with [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-There is no pre-built registry image; you build it from the source tag. Use tag **`v3.1.10`**. To update an existing install, rebuild from the new tag (`git fetch --tags && git checkout v3.1.10 && docker compose build --no-cache lightnode-sx`); a plain `docker compose up` or `restart` reuses the old image. Keys, config and the data volume carry over.
+There is no pre-built registry image you can pull: the published container packages are not public yet, so you build the image from the source tag. Use the tag the manifest names (**`v3.1.12`** today). To update an existing install, rebuild from the new tag (`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`); a plain `docker compose up` or `restart` reuses the old image. Keys, config and the data volume carry over.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.10
+git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
@@ -59,11 +62,25 @@ docker compose up -d lightnode-sx
 docker compose run --rm lightnode-sx status
 ```
 
-Keep `QORECHAIN_RPC_ADDR` exported on every `docker compose` command: it overrides `rpc_addr` from the config, and the compose default points at `host.docker.internal:26657`. The SX container persists its data, including the keyring, in a named volume mounted at `/root/.qorechain-lightnode`.
+Keep `QORECHAIN_RPC_ADDR` exported on every `docker compose` command: it overrides `rpc_addr` from the config. Since 3.1.10 the compose file defaults it to the mainnet RPC `https://rpc.qore.host`, so a testnet node must export `https://rpc-testnet.qore.host` or it will follow mainnet. The SX container persists its data, including the keyring, in a named volume mounted at `/root/.qorechain-lightnode`.
 
 The node signs natively inside the container, so nothing else is required. The SX image also still carries a released `qorechaind` (v3.2.0, linux/amd64 only, checked against a pinned digest) for the [`qorechaind` fallback](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): `docker-compose.yml` mounts `~/.qorechaind` (or `QORECHAIND_HOME`) at `/root/.qorechaind` and passes `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` for that path. A node whose operator key is in its own keyring does not use either.
 
-## Configure
+## Updating {#updating}
+
+- **Light node 3.1.11 and later, outside Docker.** Every 6 hours the node reads `https://download.qore.host/<net>/lightnode/latest.json` for its own network (mainnet for `qorechain-vladi`, testnet for `qorechain-diana`, nothing for other chains). The manifest is only a hint. The node installs a release only if all of these hold:
+  1. `v<version>/SHA256SUMS.sig` is a valid Ed25519 signature, by the release key built into the binary, over the network, the version and the contents of `SHA256SUMS`;
+  2. the binary, fetched from the channel's own versioned path (manifest URLs are not followed), matches its signed checksum;
+  3. the new binary runs and reports exactly `v<version>`.
+
+  It then keeps the previous binary as `<name>.old` and restarts in place: the same process on Linux and macOS (so a systemd service stays up), while on Windows the new binary starts and the old one exits (set a service to restart on exit).
+- **Settings.** `[update] mode = "auto"` (default, also for a config without the section) announces and installs; `"notify"` announces only; `"off"` does not check. By hand: `lightnode-sx update --check`, then `lightnode-sx update`, then restart the node.
+- **Seeing an announcement.** The node logs a newer release and serves it on the local dashboard API at `GET /api/update` (fields `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); the UX dashboard shows a banner.
+- **Container or unwritable folder.** The node only announces: update the image or the file yourself.
+- **Light node 3.1.10 and earlier** do not update themselves. Install 3.1.12 by hand once: download the versioned binary from the manifest path (see [Install](#install)), verify it, replace the file and restart. After that the node follows its channel.
+- **Docker.** Docker never modifies the image. Rebuild from the new source tag (see [Docker](#docker)) and recreate the container.
+
+## Configure {#configure}
 
 The light node reads a TOML config file. By default it looks for `config.toml` in the home directory (`~/.qorechain-lightnode/config.toml`). You normally do not write this file by hand — the [`onboard` wizard](#first-run-onboard) creates it for you — but it is useful to understand the options.
 
@@ -85,7 +102,8 @@ The most relevant configuration options, at a usage level:
 | `operator_address` | The account this node belongs to (`qor1...`); validated at load. `keys add-operator` fills it in. Required for `register`, `status` and heartbeats. See [The operator wallet](#operator-wallet). |
 | `api_addr` | The REST endpoint. Derived from `rpc_addr` when empty (port 26657 becomes 1317; `rpc.` hosts become `api.`), so it is only needed for endpoints that follow neither convention. |
 | `[heartbeat]` | On by default (`enabled`). `interval_blocks` (match the chain's `heartbeat_interval`, 1000), `check_interval` (default `60s`) and `gas` (default `300000`; with native signing the fee is 0.25 uqor per unit of gas, so 75,000 uqor). Used only by the `qorechaind` fallback: `fees` (default `50000uqor`), `qorechaind_path` (empty means `qorechaind` on `PATH`), `qorechaind_home` (empty means `~/.qorechaind`), `keyring_backend`, and `key_name` (the `qorechaind` key holding the operator account; defaults to the top-level `key_name`). |
-| `[delegation]` | `auto_claim` (off by default: claims accrued light-node rewards to the operator account through the signer; the node never re-delegates from the server), the check interval, minimum reward to claim, `rebalance_enabled` and `min_reputation` (reputation alerts only — the node never moves stake). `validators` and `split_weights` are accepted but not currently acted on. |
+| `[delegation]` | `auto_claim` (off by default: claims accrued light-node rewards to the operator account through the signer; the node never re-delegates from the server), the check interval, minimum reward to claim, `rebalance_enabled` (on by default) and `min_reputation` (warnings only; the node never moves stake). From 3.1.11 `rebalance_enabled` switches on warnings for a delegated validator that is jailed or not in the active set and for bonded stake below `min_delegated_stake` (1,000 QOR); `min_reputation` (default `0.5`) applies where the network serves per-validator reputation scores, which is the testnet today. `validators` and `split_weights` are accepted but not currently acted on. |
+| `[update]` | `mode`: `auto` (default, also when the section is absent), `notify` (announce only) or `off`. Light node 3.1.11 and later. See [Updating](#updating). |
 | `[telemetry]` | Whether telemetry is enabled and the refresh intervals for validators, network, bridge, and tokenomics. |
 | `[dashboard]` | The local dashboard API. The UX edition always serves it; the SX edition only with `enabled = true`. `bind_addr` (default `127.0.0.1:8420`) and `token` (when set, every `/api` route and `/ws` require `Authorization: Bearer <token>`). See [UX Edition](/light-node/ux-edition). |
 | `log_level` / `log_format` | Logging verbosity (`debug`, `info`, `warn`, `error`) and format (`text` or `json`). Top-level keys: put them before the first `[table]`. |
@@ -102,7 +120,7 @@ The most relevant configuration options, at a usage level:
 A witness on the same host as the primary is refused — a compromised endpoint would simply agree with itself, so it corroborates nothing. A plaintext `http://` witness on a remote host is also refused, since an attacker who can rewrite that connection can answer as every witness at once; loopback `http://` is fine. Point witnesses at RPC endpoints you have independent reasons to trust.
 :::
 
-Delegation defaults enable reputation-aware rebalancing alerts and leave `auto_claim` off — see [Rewards and Monitoring](/light-node/rewards-and-monitoring) for what these do.
+Delegation defaults enable the stake alerts and leave `auto_claim` off; see [Rewards and Monitoring](/light-node/rewards-and-monitoring) for what these do.
 
 ## First run: `onboard` {#first-run-onboard}
 
@@ -207,6 +225,7 @@ The SX CLI includes commands for inspecting node state and managing keys. Since 
 | `delegation` | Show the operator account's delegations, as mirrored into the local database by the running daemon. |
 | `rewards` | Show the operator account's pending staking rewards (not light-node rewards; see [Rewards and Monitoring](/light-node/rewards-and-monitoring#how-rewards-work)). |
 | `network` | Show network telemetry (recent synced headers) from the local database. |
+| `update [--check]` | Light node 3.1.11 and later. `--check` says whether a newer release exists; without it, verify, install and keep the previous binary as `<name>.old`. Restart the node afterwards. See [Updating](#updating). |
 | `version` | Print the binary version. |
 
 For staking, rewards, and monitoring details see [Rewards and Monitoring](/light-node/rewards-and-monitoring). For getting registered on-chain, see [Registration and Licensing](/light-node/registration-and-licensing).

@@ -1,22 +1,21 @@
 ---
 slug: /sdk/guides/quantum-safe
-title: Quantum-safe în mod implicit
-sidebar_label: Quantum-safe
+title: Semnare hibridă în mod implicit
+sidebar_label: Semnare hibridă
 sidebar_position: 6
 ---
 
-# Quantum-safe în mod implicit
+# Semnare hibridă în mod implicit
 
 QoreChain tratează criptografia post-cuantică drept o schemă de semnătură **de prim rang**.
 Un cont înregistrează pe lanț o cheie **ML-DSA-87 (Dilithium-5, NIST FIPS 204)**,
 după care tranzacțiile sale pot purta o semnătură **hibridă** — obișnuita
 semnătură clasică secp256k1 **plus** o semnătură ML-DSA-87. Ante handler-ul lanțului
-verifică ambele, astfel încât un cont quantum-safe rămâne pe deplin compatibil cu
-verificarea clasică, câștigând totodată protecție împotriva unui viitor adversar
-cuantic.
+verifică ambele, astfel încât un cont cu o cheie înregistrată rămâne pe deplin compatibil cu
+verificarea clasică, iar tranzacțiile sale poartă în plus o semnătură post-cuantică.
 
 SDK-ul împachetează acest lucru într-o suprafață minusculă, idempotentă, astfel încât o
-dApp devine **quantum-safe în mod implicit**: un singur apel pentru a fi protejat PQC.
+dApp semnează **hibrid în mod implicit**: un singur apel înregistrează cheia.
 Pe rețelele live, acest lucru nu este opțional pentru tranzacțiile pe calea Native:
 cheia trebuie înregistrată **explicit** (nu există înregistrare automată la prima
 tranzacție), iar fiecare tranzacție pe calea Native trebuie apoi să poarte semnătura
@@ -69,7 +68,7 @@ activă pe mainnet și este listată ca activă pe testnet (verificat la 27 octo
 
 ## Înregistrare într-un singur apel {#register-in-one-call}
 
-`ensurePqcRegistered` face un cont quantum-safe. Construiește și difuzează
+`ensurePqcRegistered` înregistrează cheia ML-DSA-87 a contului. Construiește și difuzează
 `MsgRegisterPQCKeyV2` cu cheia publică ML-DSA-87 a semnatarului. Este **idempotent**:
 citește mai întâi starea contului (prin REST când transmiți `rest`), sare peste
 înregistrare atunci când contul deține deja cheia acestei perechi de chei și poate fi,
@@ -279,7 +278,7 @@ await migratePqcKeyHybrid({
 ## În interfața utilizator
 
 Kit-ul [`@qorechain/react`](/sdk/guides/react) expune toate acestea în React: hook-ul
-`usePqcStatus` și componenta `<QuantumSafeBadge/>` afișează un indicator **Quantum-safe**
+`usePqcStatus` și componenta `<QuantumSafeBadge/>` afișează un indicator de stare
 ori de câte ori contul conectat are o cheie PQC înregistrată. Ambele citesc starea
 prin `getPqcStatus` cu clientul compus, deci începând cu `@qorechain/react` 0.9.0 o
 citesc prin REST și funcționează față de endpoint-urile publice; 0.8.x nu putea

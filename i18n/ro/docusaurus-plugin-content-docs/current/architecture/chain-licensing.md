@@ -38,7 +38,9 @@ O licență încetează de asemenea să fie activă odată ce înălțimea sa `e
 
 Acordarea, revocarea, suspendarea și reluarea licențelor sunt **operațiuni de autoritate**: sunt semnate de contul autorității de licențiere a modulului, nu de utilizatori arbitrari. Începând cu v3.2.3, guvernanța poate înlocui acel cont cu `MsgUpdateAuthority`, calea de recuperare dacă cheia lui se pierde vreodată. Aceste tranzacții există ca parte a suprafeței de comenzi a modulului, dar un utilizator obișnuit nu le apelează direct; ciclul de viață este administrat on-chain de autoritate.
 
-Pentru a **obține** una: o licență de light node se cumpără din **Dashboard (Tools → Light Node)**, iar o acordare `validator_operator` vine prin **Validator Program** (Tools → Validator Application: aplicați, sunteți selectat, plătiți taxa de program de $1,000). Autoritatea înregistrează apoi acordarea on-chain, în loturi.
+Pentru a **obține** una pe mainnet: o licență de light node se cumpără din **Dashboard (Nodes & Validators → Light Node)**, iar o acordare `validator_operator` vine prin **Validator Program** (Nodes & Validators → Validator Application: aplicați, sunteți selectat, plătiți taxa de program de $1,000). Autoritatea înregistrează apoi acordarea on-chain, în loturi.
+
+Pe testnet, o licență de light node este gratuită și în regim self-service: în **Nodes & Validators → Light Node**, cu rețeaua setată pe Testnet, introduceți adresa `qor1…` și selectați **Request licence**. Acordarea este semnată automat, de obicei în câteva minute, iar fila afișează starea ei (solicitată, acordată sau imposibil de semnat, caz în care puteți solicita din nou). Fiecare cont și fiecare adresă poate avea o singură solicitare.
 
 Tranzacțiile restricționate la autoritate sunt:
 

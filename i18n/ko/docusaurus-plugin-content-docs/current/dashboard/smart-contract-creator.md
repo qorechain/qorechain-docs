@@ -7,57 +7,102 @@ sidebar_position: 6
 
 # 스마트 컨트랙트 생성기
 
-**스마트 컨트랙트 생성기**는 **QCAI**를 기반으로 일반 언어 설명으로부터 스마트 컨트랙트를 생성합니다. 원하는 내용을 설명하고 대상 블록체인을 선택하면 QCAI가 컨트랙트를 작성해 줍니다. AI 도구를 위한 **17개 블록체인**을 지원하므로, 구축하려는 생태계를 대상으로 지정할 수 있습니다.
-
-**계정 없이** 체험해 볼 수 있습니다. 처음 방문한 사용자는 무료 생성 1회를 받고 컨트랙트 전체를 볼 수 있습니다. 그다음 생성에는 저장, 감사, 배포와 함께 무료 계정이 필요하며, 무료 체험을 모두 사용하면 페이지에 **무료 계정 만들기**가 표시됩니다.
-
-생성한 컨트랙트를 저장하고 관리하려면 로그인하세요 — [로그인](/dashboard/overview#sign-in)을 참고하세요.
-
-## 컨트랙트 생성하기
-
-1. **예시로 시작하거나 직접 설명하세요.** 페이지는 "무엇을 만들고 싶으신가요?"로 시작합니다. **또는 예시로 시작:** 아래에서 **Token**, **NFT collection**, **Locked vault**, **2-of-3 multisig** 중 하나를 선택하면 — 각각 완전한 설명이 채워지고 알맞은 블록체인과 템플릿이 선택됩니다 — 또는 **Contract Description**에 직접 작성하세요. 구체적으로 작성할수록 더 좋은 결과를 얻을 수 있습니다.
-2. **블록체인을 선택하세요.** **Target Blockchain**을 사용하세요. 선택한 항목에 해당하는 컨트랙트 언어와 카테고리가 선택기 옆에 표시됩니다.
-3. **컨트랙트 유형을 선택하세요** (선택 사항). **Contract Type**은 토큰, NFT, 거버넌스 컨트랙트 같은 시작 템플릿을 제공합니다. 설명만으로 진행하려면 **Custom (describe in prompt)**으로 두세요.
-4. **생성하세요.** **Generate Smart Contract**를 선택하세요. QCAI가 컨트랙트를 생성하는 동안 진행 상태 표시기가 상태를 보여 줍니다.
-
-## 결과 검토하기
-
-생성이 완료되면 대시보드는 컨트랙트를 구문 강조 뷰로 표시하며, 컨트랙트 이름, 블록체인, 언어, 파일 크기, 생성 시각 같은 세부 정보를 함께 보여 줍니다. 사용한 프롬프트도 참고용으로 결과와 함께 표시됩니다.
-
-여기에서 다음을 할 수 있습니다:
-
-- 컨트랙트 코드를 클립보드로 **복사**합니다(**Copy Code**).
-- 컨트랙트를 **PDF로 내보냅니다**(**Export PDF**).
-- 선택한 블록체인에 맞는 형식의 파일로 컨트랙트를 **다운로드**합니다(**Download File**).
-- 컨트랙트를 **편집**하여(**Edit Contract**) 더 다듬을 수 있습니다.
-
-## 컨트랙트 배포하기 {#deploy}
-
-### 메인넷(EVM) — 논커스터디얼 배포 {#deploy-mainnet}
-
-메인넷 배포는 논커스터디얼 방식입니다. 대시보드는 컨트랙트를 컴파일하고 **서명되지 않은** 배포 데이터를 반환할 뿐, 여러분의 키를 보관하지 않으며 여러분을 대신해 서명하지도 않습니다. 배포 트랜잭션의 서명과 브로드캐스트는 여러분의 지갑에서 직접 수행하며, 이후 대시보드가 생성된 컨트랙트를 기록합니다.
-
-1. 배포할 컨트랙트(EVM 대상 컨트랙트)를 열고 **Mainnet**에서 **Deploy**를 선택하세요. 첫 메인넷 작업이라면 [1회성 위험 고지 동의](/dashboard/overview#risk-acknowledgement)에 동의해야 합니다.
-2. **MetaMask**가 아직 연결되어 있지 않다면 연결하세요 — [개요 및 시작하기](/dashboard/overview#connect-your-wallet)를 참고하세요. 체인 v3.2.0부터 EVM 레인은 계정에 등록된 포스트 퀀텀 키와 **열려 있는 EVM 승인 창**도 요구하며, 이 창은 QoreX에서 열 수 있습니다([MetaMask로 전송](/dashboard/wallet#send-metamask) 참조). 이것이 없으면 체인이 배포를 거부합니다.
-3. 대시보드가 컨트랙트를 컴파일하고 서명되지 않은 배포 트랜잭션을 지갑에 전달합니다.
-4. MetaMask에서 트랜잭션 — 네트워크, 가스, 데이터 — 을 검토한 뒤 확인을 눌러 직접 서명하고 브로드캐스트하세요.
-5. 배포가 온체인에서 확정되면, 대시보드가 생성된 컨트랙트 주소를 저장된 컨트랙트 목록에 함께 기록합니다.
-
-대시보드에서는 **EVM**(Solidity) 컨트랙트만 배포할 수 있습니다. QoreChain Native 및 Solana 프로그램 배포는 현재 두 네트워크 모두에서 사용할 수 없습니다.
-
-### 테스트넷 — 원클릭 {#deploy-testnet}
-
-테스트넷에서는 대시보드가 관리하는 테스트 지갑이 원클릭으로 EVM 배포를 서명하고 제출해 주므로, 메인넷으로 가기 전에 [Faucet](/dashboard/faucet) 토큰으로 빠르게 반복 개발할 수 있습니다. 테스트넷도 메인넷과 동일한 EVM 레인 규칙을 적용하므로, 계정에 포스트 퀀텀 키가 없거나 열려 있는 EVM 창이 없으면 배포가 거부될 수 있습니다.
-
-## 공유 및 재사용
-
-생성된 각 컨트랙트에는 전용 페이지가 있습니다. 컨트랙트는 **기본적으로 비공개**이며, 본인만 열 수 있습니다. 소유자는 컨트랙트 페이지에서 **Public** / **Private** 버튼을 볼 수 있으며, **Public**으로 설정하면 링크가 있는 누구나 컨트랙트를 열고 포크할 수 있고, 다시 **Private**으로 설정하면 공개를 철회합니다. 자신이 소유하지 않은 공개 컨트랙트를 열면 **포크**하여 자신의 사본을 만들고 거기서부터 이어서 작업할 수 있습니다.
+**스마트 컨트랙트 생성기**(사이드바 **Build**, 항목 **SC Creator**)는 QoreChain의 AI 어시스턴트인 **QCAIA**를 사용해, 일반 언어로 작성한 설명을 여러분이 선택한 블록체인용 컨트랙트 소스로 바꿔 줍니다. 토큰, NFT 컬렉션, 볼트 또는 멀티시그의 초안이 필요하거나 평소 작성하지 않는 언어로 된 컨트랙트가 필요한 빌더를 위한 도구이며, 이후 검토, 테스트, 배포는 직접 진행합니다.
 
 :::tip 항상 검토하고 테스트하세요
-QCAI가 생성한 코드는 훌륭한 출발점일 뿐 검토를 대체하지 않습니다. 컨트랙트를 읽어 보고, [테스트넷](/getting-started/connecting-to-testnet)에서 테스트하고, 가치 있는 것을 배포하기 전에 [컨트랙트 감사기](/dashboard/contract-auditor)로 점검하세요.
+생성된 코드는 훌륭한 출발점일 뿐 검토를 대체하지 않습니다. 컨트랙트를 읽어 보고, [테스트넷](/getting-started/connecting-to-testnet)에서 테스트하고, 가치 있는 것을 배포하기 전에 [컨트랙트 감사기](/dashboard/contract-auditor)로 점검하세요.
 :::
+
+## 혁신 {#innovations}
+
+- **계정 없이 1회 생성.** 처음 방문한 사용자는 한 번 생성할 수 있으며 컨트랙트 전체를 볼 수 있습니다. 방문자별 제한과 전체 일일 한도가 적용됩니다. 무료 체험 결과에는 **Deploy**가 없고 **Edit**도 작동하지 않으며, 이후 페이지에 **Create a free account**가 표시됩니다.
+- **로그인하면 UTC 기준 매일 무료 생성 1회.** 매 UTC 일의 첫 생성은 두 네트워크 모두에서 무료입니다. 그 이후에는 테스트넷에서 "Generation Cost"를 보여 주는 "Confirm Contract Generation" 대화상자를 거쳐 테스트 지갑의 테스트 QOR로 생성마다 비용을 지불합니다. 메인넷에서는 대시보드가 키를 보관하지 않으므로, 이후 생성은 다음 UTC 일까지 거부됩니다.
+- **모든 것을 채워 주는 스타터.** **Token**, **NFT collection**, **Locked vault**, **2-of-3 multisig**는 각각 완전한 프롬프트를 채우고, 대상을 QoreChain으로 설정하며, 템플릿을 선택합니다.
+- **17개 대상 블록체인.** 각 체인마다 고유한 템플릿과 "Custom (describe in prompt)"이 있습니다: QoreChain, Cosmos, Ethereum, Solana, Avalanche, NEAR, Polygon, BSC, TON, Cardano, Polkadot, Tezos, Arbitrum, Optimism, Sui, Aptos, Tron.
+- **메인넷 EVM에서의 논커스터디얼 배포.** 대시보드는 컨트랙트를 컴파일하고 **서명되지 않은** 배포 데이터를 반환합니다. 주입형 EVM 지갑(MetaMask, Rabby, Coinbase Wallet)이 체인 9801을 추가하거나 전환한 뒤 서명하고 브로드캐스트하며, 이후 대시보드가 주소를 기록합니다.
+- **테스트넷의 거버넌스 승인 QoreChain Native 코드.** 생성된 코드는 업로드되지 않습니다. 테스트넷 거버넌스가 이미 승인한 코드를 체인에서 실시간으로 읽어 인스턴스화합니다: CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig), Counter example (qore-counter). 인스턴스화 메시지는 미리 채워지며 편집할 수 있습니다.
+- **대화상자에서 컴파일 피드백 제공.** 오류가 인라인으로 표시되고, 대화상자는 추론할 수 없는 생성자 인수를 요청하며, 토큰 필드는 코드 또는 프롬프트에서 미리 읽어 채워집니다.
+- **기본은 비공개, 공개하면 포크 가능.** 소유자가 **Public** 또는 **Private**을 전환하며, 공개 컨트랙트의 소유자가 아닌 사용자는 **Fork**할 수 있습니다.
+
+## 사용 방법 {#how-to-use}
+
+### 컨트랙트 생성하기
+
+1. **SC Creator**를 엽니다. 페이지 제목은 "What would you like to build?"입니다.
+2. **예시로 시작하거나 직접 설명하세요.** "Or start from an example:" 아래에서 스타터를 선택하거나 **Contract Description**에 직접 작성하세요. 구체적으로 작성할수록 더 좋은 결과를 얻을 수 있습니다.
+3. **Target Blockchain**을 선택합니다. 그 아래에 언어와 카테고리가 표시됩니다("Language: ... | Category: ..."). 체인을 바꾸면 해당 체인의 첫 번째 템플릿이 자동으로 선택되므로, 설명만으로 결과를 만들고 싶다면 **Contract Type**에서 직접 **Custom (describe in prompt)**을 선택하세요.
+4. 로그인한 경우에만: **Generation Tier**(Standard 또는 Premium)를 선택합니다. Premium은 메인넷에서 사용할 수 없습니다.
+5. **Generate Smart Contract**를 선택합니다. 로그인한 상태라면 "Confirm Contract Generation" 대화상자가 이어서 나타납니다("Generation Cost"와 오늘 무료 여부를 보여 줍니다). 결과에는 "Generated by QCAIA Standard"라는 표시가 붙습니다.
+
+### 결과 검토하기
+
+컨트랙트는 구문 강조 뷰로 표시되며 다음 동작을 제공합니다:
+
+- **Deploy**,
+- **Edit Now**,
+- **Download File**(선택한 체인에 맞는 형식),
+- **Copy Code**.
+
+세부 정보와 사용한 프롬프트는 결과가 아니라 컨트랙트 자체 페이지(아래)에 있습니다.
+
+### 컨트랙트 페이지
+
+저장된 각 컨트랙트에는 `/smart-contract-creator/<id>` 페이지가 있으며, Copy, **Public / Private**, Download, Edit 또는 Fork, 통계 행(Created, Lines, Size, Gen Time, Tokens, AI Model), "Generation Prompt", "Download from Cloud"(링크는 24시간 후 만료됩니다)가 제공됩니다. 컨트랙트 페이지를 열려면 공개 컨트랙트라도 로그인이 필요합니다.
+
+**Edit** 페이지에는 **Save Changes**(소유자) 또는 **Save as New Contract**(포크할 때)와 **Deploy**가 있습니다. **Export PDF** 동작은 결과 화면이 아니라 프로필의 컨트랙트 목록에 있습니다.
+
+### 컨트랙트 배포하기 {#deploy}
+
+배포는 결과 페이지와 편집 페이지에서 할 수 있습니다. 대화상자에는 "Target: TESTNET ... 9800" 또는 "Target: MAINNET ... 9801" 배너가 표시됩니다.
+
+#### 메인넷(EVM), 논커스터디얼 {#deploy-mainnet}
+
+대시보드는 여러분의 키를 보관하지 않으며 여러분을 대신해 서명하지도 않습니다.
+
+1. 대상이 QoreChain EVM에서 실행되는 컨트랙트에서 헤더를 **Mainnet**으로 두고 **Deploy**를 선택하세요. 이 브라우저에서 Wallet, Trade 또는 Explorer 개요를 메인넷으로 처음 보는 경우라면 그곳에서 [1회성 위험 고지 동의](/dashboard/overview#risk-acknowledgement)에 동의합니다. 생성기 자체에는 추가 위험 화면이 없습니다.
+2. **Deploy from your wallet**을 선택하세요. 주입형 EVM 지갑이면 어느 것이든 사용할 수 있으며, 대화상자가 직접 네트워크(체인 9801)를 추가하거나 전환합니다.
+3. 체인 v3.2.0부터 EVM 레인은 배포하는 계정이 등록된 ML-DSA-87 키와 QoreX에서 연 **열려 있는 EVM 승인 창**을 보유해야 합니다([MetaMask로 전송](/dashboard/wallet#send-metamask) 참조). 이것이 없으면 체인이 배포를 거부합니다.
+4. 대시보드가 컴파일하고 서명되지 않은 트랜잭션을 지갑에 전달합니다. "Confirm in your wallet..."이 표시될 때까지 기다린 뒤 네트워크, 가스, 데이터를 검토하세요.
+5. 확정되면 대시보드가 컨트랙트 주소를 저장된 컨트랙트와 함께 기록합니다.
+
+메인넷의 다른 대상에는 "Direct deploy not available for this contract"가 표시됩니다. 메인넷에서는 QoreChain Native와 SVM 배포가 제공되지 않으며, 대시보드에서 CosmWasm을 게시하는 기능도 없습니다.
+
+#### 테스트넷, 원클릭 {#deploy-testnet}
+
+- **EVM:** **Deploy to Testnet**을 선택합니다. 대시보드의 테스트 지갑이 배포를 서명하고 제출하며, 성공하면 "Deployed on Testnet"이 표시됩니다. 메인넷으로 가기 전에 [Faucet](/dashboard/faucet) 토큰으로 반복 개발하세요.
+- **QoreChain Native:** **Approved contract**를 선택하고, **Label \***을 설정하고, **Instantiate message (JSON)**를 확인하거나 편집한 뒤 **Instantiate on Testnet**을 선택합니다. 테스트넷의 컨트랙트 업로드는 거버넌스를 통해 검토되므로, 직접 업로드하는 대신 승인된 코드를 인스턴스화합니다. 대시보드가 인식하지 못하는 승인된 코드는 빈 메시지로 표시됩니다. 사용자 지정 컨트랙트는 QoreChain EVM(Solidity)으로 배포합니다.
+- 대시보드에서 배포할 수 있는 것은 EVM 컨트랙트와 승인된 QoreChain Native 코드뿐입니다. 다른 EVM 체인(Polygon, BSC, Arbitrum 등)용으로 작성된 컨트랙트는 해당 체인 자체 네트워크가 아니라 QoreChain EVM에 배포되며, 비 EVM 체인용 컨트랙트는 여기에서 배포할 수 없습니다.
+
+**최소 예시(테스트넷):** **Token**을 선택하고, **Generate Smart Contract**, Confirm, **Deploy**를 차례로 누른 다음 "CW20 token (cw20-base)"를 선택하고, Label을 `my-token`으로 입력한 뒤 **Instantiate on Testnet**을 선택합니다.
+
+### 공유 및 재사용
+
+컨트랙트는 **기본적으로 비공개**입니다. 소유자는 컨트랙트를 **Public**으로 설정해 로그인한 다른 사용자가 열고 포크할 수 있게 하고, 다시 **Private**으로 설정해 공개를 철회할 수 있습니다. **Fork**는 공개 컨트랙트를 여러분의 계정으로 복사하여 거기서부터 이어서 작업할 수 있게 합니다.
+
+## 접근 방법 {#how-to-access}
+
+- **URL:** [dashboard.qorechain.io/smart-contract-creator](https://dashboard.qorechain.io/smart-contract-creator) (홈페이지의 **Create Smart Contract**로도 접근할 수 있습니다).
+- **계정:** 랜딩 페이지와 무료 생성 1회는 계정 없이 사용할 수 있습니다. 그 외 모든 기능(추가 생성, 저장된 컨트랙트, 컨트랙트 및 편집 페이지, 배포)은 로그인이 필요합니다. [로그인](/dashboard/overview#sign-in)을 참고하세요.
+- **네트워크:** 생성은 두 네트워크 모두에서 작동합니다. 테스트넷 배포는 대시보드 테스트 지갑을, 메인넷 EVM 배포는 본인의 지갑을 사용합니다.
+- **비용:** 매 UTC 일의 첫 생성은 무료입니다. 그 이후 테스트넷 생성은 테스트 QOR로 지불하며, 메인넷 생성은 다음 UTC 일까지 기다려야 합니다. 배포에는 네트워크 가스가 듭니다.
+
+## 게시 위치 {#where-published}
+
+| 화면 | 주소 | 네트워크 |
+| --- | --- | --- |
+| 생성기 및 저장된 컨트랙트 | `dashboard.qorechain.io/smart-contract-creator` | 두 네트워크 모두에서 생성 |
+| EVM 배포 | 결과 및 편집 페이지 | 테스트넷은 원클릭, 메인넷은 본인 지갑에서 |
+| QoreChain Native 배포 | 결과 및 편집 페이지 | 테스트넷, 승인된 코드만 |
+
+## 제한 사항 및 알려진 문제 {#limits}
+
+- **제공되지 않음:** Solana 배포(서버가 거부합니다), 메인넷의 Native 또는 SVM 배포, 다른 체인의 퍼블릭 네트워크로의 배포, 메인넷의 Premium.
+- **테스트넷 Native 배포**는 거버넌스에서 승인된 코드만 인스턴스화하며, 생성된 소스는 업로드되지 않습니다.
+- **무료 체험 결과**에는 Deploy와 Edit가 없습니다.
+- 배포하기 전에 **모든 것을 검토하세요.** 생성된 코드에는 실수가 포함될 수 있습니다.
 
 ## 관련 문서
 
-- [컨트랙트 감사기](/dashboard/contract-auditor) — 컨트랙트에 대해 QCAI 보안 분석을 실행합니다.
-- [개발자 가이드](/developer-guide/evm-development) — QoreChain 런타임에 컨트랙트 배포하기.
+- [컨트랙트 감사기](/dashboard/contract-auditor) - 컨트랙트에 대해 보안 분석을 실행합니다.
+- [EVM 개발](/developer-guide/evm-development) - QoreChain 런타임에 컨트랙트 배포하기.
+- [CosmWasm 개발](/developer-guide/cosmwasm-development) - QoreChain Native 런타임.

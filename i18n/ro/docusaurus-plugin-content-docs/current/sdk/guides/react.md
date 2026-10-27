@@ -8,8 +8,8 @@ sidebar_position: 7
 # Kit React (`@qorechain/react`)
 
 `@qorechain/react` este stratul React oficial peste `@qorechain/sdk`: un
-provider, câteva hook-uri și două componente drop-in — inclusiv un badge
-**Quantum-safe** de o singură linie. Face din construirea unei dApp quantum-safe calea implicită.
+provider, câteva hook-uri și două componente drop-in — inclusiv un badge de
+stare PQC de o singură linie. Face din construirea unei dApp cu semnare hibridă ML-DSA-87 calea implicită.
 
 ```bash
 npm i @qorechain/react @qorechain/sdk react react-dom
@@ -28,7 +28,7 @@ post-cuantice, deci trimite doar cu semnătura clasică, pe care rețelele live 
 (calea Native cere extensia hibridă ML-DSA-87): `send` / `sendTokens` nu pot înscrie o
 tranzacție pe mainnet sau testnet. Pentru trimiteri folosește `TxClient`-ul hibrid al
 SDK-ului (`client.connectTx(signer, { pqcKeypair })`, vezi
-[Quantum-safe](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` și
+[Semnare hibridă](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` și
 `<QuantumSafeBadge/>` citesc starea prin `getPqcStatus` cu clientul compus al
 provider-ului, care începând cu SDK 0.9.0 citește prin REST
 (`/qorechain/pqc/v1/account/{address}`), deci funcționează față de `*.qore.host`
@@ -137,8 +137,8 @@ total:
 
 ### `<QuantumSafeBadge/>`
 
-Afișează un indicator **Quantum-safe** atunci când adresa are o cheie post-cuantică
-înregistrată (prin `usePqcStatus`), altfel o stare estompată „Not quantum-safe”. Implicit la
+Afișează un indicator de stare atunci când adresa are o cheie post-cuantică
+înregistrată (prin `usePqcStatus`), altfel o stare estompată „not registered”. Implicit la
 contul conectat.
 
 ```tsx
@@ -173,4 +173,4 @@ function Dashboard() {
 ```
 
 Vezi [exemplul `react-dapp`](https://github.com/qorechain/qorechain-sdk/tree/main/examples/react-dapp) executabil
-și [ghidul quantum-safe](/sdk/guides/quantum-safe) pentru apelurile SDK subiacente.
+și [ghidul de semnare hibridă](/sdk/guides/quantum-safe) pentru apelurile SDK subiacente.

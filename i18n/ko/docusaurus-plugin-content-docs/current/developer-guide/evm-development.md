@@ -14,7 +14,7 @@ QoreChain은 QoreChain EVM 엔진에서 완전한 EVM 호환 실행 환경을 �
 :::
 
 :::caution EVM 트랜잭션에는 등록된 PQC 키와 열려 있는 인가 윈도우가 필요합니다
-v3.2.0 업그레이드(메인넷 높이 2,981,742, 테스트넷 높이 5,920,000) 이후 EVM 레인은 **(1) 등록된 ML-DSA-87 양자 내성 키**와 **(2) 해당 트랜잭션을 수용할 여유가 있는, 열려 있는 EVM 인가 윈도우**를 모두 가진 계정의 트랜잭션만 받아들입니다. 서명은 일반 도구(MetaMask, ethers.js, Hardhat, Foundry)로 하지만, 등록된 키와 열려 있는 윈도우가 없으면 `eth_sendRawTransaction`은 거부됩니다(코드스페이스 `pqc`, 코드 26, 27 또는 28). 읽기, `eth_call`, 가스 추정에는 둘 다 필요하지 않습니다. 아래의 [EVM 인가 윈도우](#evm-window)와 [첫 트랜잭션](/getting-started/first-transaction#evm-window)의 단계별 안내를 참조하세요.
+v3.2.0 업그레이드(메인넷 높이 2,981,742, 테스트넷 높이 5,920,000) 이후 EVM 레인은 **(1) 등록된 ML-DSA-87 포스트 양자 키**와 **(2) 해당 트랜잭션을 수용할 여유가 있는, 열려 있는 EVM 인가 윈도우**를 모두 가진 계정의 트랜잭션만 받아들입니다. 서명은 일반 도구(MetaMask, ethers.js, Hardhat, Foundry)로 하지만, 등록된 키와 열려 있는 윈도우가 없으면 `eth_sendRawTransaction`은 거부됩니다(코드스페이스 `pqc`, 코드 26, 27 또는 28). 읽기, `eth_call`, 가스 추정에는 둘 다 필요하지 않습니다. 아래의 [EVM 인가 윈도우](#evm-window)와 [첫 트랜잭션](/getting-started/first-transaction#evm-window)의 단계별 안내를 참조하세요.
 
 v3.2.2부터 메인넷에는 두 가지 규칙이 더 적용됩니다. **보호되지 않은(EIP-155 이전) 트랜잭션은 거부됩니다**(노드의 멤풀과 블록 실행 모두에서). 따라서 체인 ID를 포함해 서명하세요(현재의 모든 지갑과 라이브러리가 그렇게 합니다). 또한 **모듈 계정은 EVM을 통해 점유할 수 없습니다**.
 :::
@@ -179,7 +179,7 @@ qorechaind tx erc20 convert-coin 1000000uqor --from mykey --gas 400000 --fees 40
 qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey --gas 400000 --fees 40000uqor
 ```
 
-이들은 Cosmos 레인 트랜잭션이므로, 라이브 네트워크에서는 하이브리드 양자 내성 cosign도 필요합니다(`--generate-only`로 구성한 다음 `qorechaind tx pqc cosign` 실행. [양자 내성 서명](/developer-guide/post-quantum-signing) 참조). 위의 일반 `convert-erc20` 명령은 CLI가 `0x` 발신자를 기록하기 때문에 노드 릴리스 v3.2.6에서 거부됩니다. 동작하는 형식은 [두 형태 사이의 변환](#fest-convert)을 참조하세요. 토큰 페어는 허가형 정책에 따라 등록되며(거버넌스가 등록합니다), 작성 시점에 메인넷에는 존재하지 않습니다. 테스트넷에는 [다음 섹션](#fest-tokens)의 Fest 테스트 토큰이 있습니다.
+이들은 Cosmos 레인 트랜잭션이므로, 라이브 네트워크에서는 하이브리드 포스트 양자 cosign도 필요합니다(`--generate-only`로 구성한 다음 `qorechaind tx pqc cosign` 실행. [포스트 양자 서명](/developer-guide/post-quantum-signing) 참조). 위의 일반 `convert-erc20` 명령은 CLI가 `0x` 발신자를 기록하기 때문에 노드 릴리스 v3.2.6에서 거부됩니다. 동작하는 형식은 [두 형태 사이의 변환](#fest-convert)을 참조하세요. 토큰 페어는 허가형 정책에 따라 등록되며(거버넌스가 등록합니다), 작성 시점에 메인넷에는 존재하지 않습니다. 테스트넷에는 [다음 섹션](#fest-tokens)의 Fest 테스트 토큰이 있습니다.
 
 ## Fest 테스트 토큰과 ERC20 변환 {#fest-tokens}
 
@@ -207,7 +207,7 @@ curl -s "https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs/0x97143B7
 
 ### 두 형태 사이의 변환 {#fest-convert}
 
-두 변환 메시지는 모두 Cosmos 레인 트랜잭션입니다. 등록된 양자 내성 키와 하이브리드 cosign이 필요하며, 다른 네이티브 트랜잭션과 같습니다(구성한 다음 `qorechaind tx pqc cosign`. [양자 내성 서명](/developer-guide/post-quantum-signing) 참조). 수수료는 최소 gas × 0.1 uqor여야 합니다.
+두 변환 메시지는 모두 Cosmos 레인 트랜잭션입니다. 등록된 포스트 양자 키와 하이브리드 cosign이 필요하며, 다른 네이티브 트랜잭션과 같습니다(구성한 다음 `qorechaind tx pqc cosign`. [포스트 양자 서명](/developer-guide/post-quantum-signing) 참조). 수수료는 최소 gas × 0.1 uqor여야 합니다.
 
 :::note 실제로 실행한 것
 이 페이지의 REST 읽기(`token_pairs`, `denoms_metadata`)는 2026년 10월 27일 테스트넷에 대해 실행했습니다. 아래의 두 변환 명령은 이 페이지를 위해 끝까지 실행하지 **않았습니다**. 메시지 형태와 발신자 규칙은 v3.2.6 노드 소스와 체인 팀의 참고 자료에서 가져왔습니다. 문서화된 형태로 취급하고, 먼저 소량으로 확인하세요.
@@ -264,9 +264,9 @@ qorechaind tx pqc cosign convert-erc20.json --from mykey --pqc-key mypqc --chain
 
 ## PQC와 EVM 호환성
 
-EVM 트랜잭션은 **고전적인 ECDSA(secp256k1)**로 서명되므로, MetaMask, Hardhat, Foundry, ethers.js 및 기타 표준 도구가 수정 없이 이를 구성하고 서명합니다. **v3.2.0**에서 바뀐 것은 *수용(admission)* 입니다. 트랜잭션은 발신자가 등록된 양자 내성 키와 유효한 인가 윈도우(다음 섹션)를 가진 경우에만 수락됩니다. 키 등록과 윈도우 개설은 Cosmos 레인 트랜잭션이며 하이브리드(ML-DSA-87 + secp256k1) 서명이 필요합니다.
+EVM 트랜잭션은 **고전적인 ECDSA(secp256k1)**로 서명되므로, MetaMask, Hardhat, Foundry, ethers.js 및 기타 표준 도구가 수정 없이 이를 구성하고 서명합니다. **v3.2.0**에서 바뀐 것은 *수용(admission)* 입니다. 트랜잭션은 발신자가 등록된 포스트 양자 키와 유효한 인가 윈도우(다음 섹션)를 가진 경우에만 수락됩니다. 키 등록과 윈도우 개설은 Cosmos 레인 트랜잭션이며 하이브리드(ML-DSA-87 + secp256k1) 서명이 필요합니다.
 
-컨트랙트 내에서 양자 내성 보안을 확보하려면 다음을 활용하세요.
+컨트랙트 내에서 포스트 양자 보안을 확보하려면 다음을 활용하세요.
 
 * **PQC Verify 프리컴파일**(`0x0000...0A01`)은 Solidity에서 온체인으로 ML-DSA-87 서명을 검증합니다. 이 프리컴파일은 **테스트넷에서 활성화되어 있으며**(거버넌스 제안 21로 활성화, 2026년 10월 27일 통과) 작성 시점에 **메인넷에서는 활성화되지 않았습니다**. [EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status)를 참조하세요.
 * EVM에서 QoreChain Native 또는 SVM으로 향하는 **크로스-VM 메시지**는 Cosmos 레인 트랜잭션이며 다른 트랜잭션과 마찬가지로 하이브리드 서명을 포함합니다. 현재 사용 가능 여부는 [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참조하세요.
@@ -275,7 +275,7 @@ EVM 트랜잭션은 **고전적인 ECDSA(secp256k1)**로 서명되므로, MetaMa
 
 ## EVM 인가 윈도우 {#evm-window}
 
-양자 내성 서명은 이더리움 트랜잭션과 *함께* 전달될 수 없으므로(MetaMask와 같은 지갑은 두 번째 서명을 첨부할 수 없습니다), 그보다 *앞서* 전달됩니다. 계정은 Cosmos 레인 메시지 `MsgOpenEVMWindow`로 범위가 제한된 윈도우를 열고, 이후 EVM 레인은 유효한 윈도우가 포괄하는 트랜잭션만 수용합니다. 도난당한 고전 키만으로는 윈도우를 열 수 없으므로, 이미 열려 있는 윈도우가 허용하는 범위만 이동할 수 있습니다.
+포스트 양자 서명은 이더리움 트랜잭션과 *함께* 전달될 수 없으므로(MetaMask와 같은 지갑은 두 번째 서명을 첨부할 수 없습니다), 그보다 *앞서* 전달됩니다. 계정은 Cosmos 레인 메시지 `MsgOpenEVMWindow`로 범위가 제한된 윈도우를 열고, 이후 EVM 레인은 유효한 윈도우가 포괄하는 트랜잭션만 수용합니다. 도난당한 고전 키만으로는 윈도우를 열 수 없으므로, 이미 열려 있는 윈도우가 허용하는 범위만 이동할 수 있습니다.
 
 | 한도        | 범위               | 의미 |
 | ----------- | ------------------ | ------- |
@@ -283,7 +283,7 @@ EVM 트랜잭션은 **고전적인 ECDSA(secp256k1)**로 서명되므로, MetaMa
 | `max-txs`   | 1 – 1,000          | 수용하는 EVM 트랜잭션 수 |
 | `max-value` | 0 초과, `uqor` 단위 | 수용하는 총 유출액: 전송 값 **더하기** 각 트랜잭션이 지불할 수 있는 최대 수수료(가스 한도 × 가스당 최대 수수료)를 `uqor`로 환산해 올림한 값 |
 
-먼저 소진되는 한도가 윈도우를 닫습니다. 세 가지 한도는 모두 필수이며, 윈도우를 열면 기존 윈도우가 대체됩니다. 수용된 후 실패한 트랜잭션도 슬롯과 값 예산을 소모하며, 컨트랙트 배포도 다른 트랜잭션과 동일하게 계산됩니다. `blocks`는 기간이 아니라 블록 수입니다. 17,280 블록은 메인넷에서 약 15시간(블록당 약 3.2초), 테스트넷에서 약 6시간(2026년 10월 27일 기준 블록당 약 1.3초이며, 테스트넷 블록 시간은 변동합니다)입니다.
+먼저 소진되는 한도가 윈도우를 닫습니다. 세 가지 한도는 모두 필수이며, 윈도우를 열면 기존 윈도우가 대체됩니다. 수용된 후 실패한 트랜잭션도 슬롯과 값 예산을 소모하며, 컨트랙트 배포도 다른 트랜잭션과 동일하게 계산됩니다. `blocks`는 기간이 아니라 블록 수입니다. 17,280 블록은 메인넷에서 약 15시간(블록당 약 3.1초), 테스트넷에서 약 6시간(2026년 10월 27일 기준 블록당 약 1.3초이며, 테스트넷 블록 시간은 변동합니다)입니다.
 
 **값 한도는 네이티브 QOR만 계산합니다.** 토큰 전송, 승인(approval) 또는 기타 컨트랙트 호출은 값이 0이므로 `max-value`에 계산되지 않습니다(최대 수수료만 계산됨). 이들도 제한하려면 윈도우의 **범위(scope)**를 좁히세요(메인넷 v3.2.3 이상):
 
@@ -296,7 +296,7 @@ EVM 트랜잭션은 **고전적인 ECDSA(secp256k1)**로 서명되므로, MetaMa
 
 **단계**(전체 안내는 [첫 트랜잭션](/getting-started/first-transaction#evm-window)에 있습니다):
 
-1. ML-DSA-87 키를 한 번 등록합니다(`tx pqc register-key-v2` 또는 `register-key`, `--gas 600000 --fees 60000uqor` 사용. 이 트랜잭션 하나는 하이브리드 요건에서 면제되므로 새 계정도 부트스트랩할 수 있습니다). [양자 내성 서명](/developer-guide/post-quantum-signing#pqc-key-registration)을 참조하세요.
+1. ML-DSA-87 키를 한 번 등록합니다(`tx pqc register-key-v2` 또는 `register-key`, `--gas 600000 --fees 60000uqor` 사용. 이 트랜잭션 하나는 하이브리드 요건에서 면제되므로 새 계정도 부트스트랩할 수 있습니다). [포스트 양자 서명](/developer-guide/post-quantum-signing#pqc-key-registration)을 참조하세요.
 2. 윈도우를 엽니다. 이는 Cosmos 레인 트랜잭션이므로 서명하지 않은 상태로 생성한 다음 ML-DSA 키로 cosign합니다(`max-value`는 `uqor` 또는 `qor`를 받으며, `1000qor`는 1,000 QOR입니다):
 
    ```bash
@@ -316,7 +316,7 @@ EVM 트랜잭션은 **고전적인 ECDSA(secp256k1)**로 서명되므로, MetaMa
 
 ### EIP-7702 위임 {#eip-7702}
 
-계정의 EIP-7702 위임(타입 4 트랜잭션)은 v3.2.2부터 계정 자신의 양자 내성 동의가 있어야만 효력이 발생합니다. 먼저 하이브리드 서명된 Cosmos 레인 메시지 `MsgAuthorizeEVMDelegation`(`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`)으로 동의를 기록하세요. 이 동의는 일회용이며, 지정한 블록 수가 지나면 만료되고 `close-evm-window`로 철회됩니다. 위임된 계정에서 나가는 값은 **해당** 계정 자신의 윈도우에 청구되며, 실패한 타입 4 트랜잭션도 이미 적용한 인가는 유지하고, `qorechaind tx pqc clear-evm-delegation`은 위임을 제거합니다. 거부된 위임은 코드 60에서 63으로 응답합니다. 동의 내용은 `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`로 읽을 수 있습니다.
+계정의 EIP-7702 위임(타입 4 트랜잭션)은 v3.2.2부터 계정 자신의 포스트 양자 동의가 있어야만 효력이 발생합니다. 먼저 하이브리드 서명된 Cosmos 레인 메시지 `MsgAuthorizeEVMDelegation`(`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`)으로 동의를 기록하세요. 이 동의는 일회용이며, 지정한 블록 수가 지나면 만료되고 `close-evm-window`로 철회됩니다. 위임된 계정에서 나가는 값은 **해당** 계정 자신의 윈도우에 청구되며, 실패한 타입 4 트랜잭션도 이미 적용한 인가는 유지하고, `qorechaind tx pqc clear-evm-delegation`은 위임을 제거합니다. 거부된 위임은 코드 60에서 63으로 응답합니다. 동의 내용은 `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`로 읽을 수 있습니다.
 
 | 거부 (코드스페이스 `pqc`) | 의미 |
 | ------------------------- | ------- |

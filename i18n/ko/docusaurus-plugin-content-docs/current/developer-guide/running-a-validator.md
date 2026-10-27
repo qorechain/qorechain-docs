@@ -7,14 +7,14 @@ sidebar_position: 9
 
 # 밸리데이터 운영하기
 
-이 가이드는 QoreChain 네트워크에서 밸리데이터를 생성하는 방법, 풀 분류 설계 이해하기, 양자내성 보안을 위한 PQC 키 등록, 노드 모니터링 방법을 다룹니다.
+이 가이드는 QoreChain 네트워크에서 밸리데이터를 생성하는 방법, 풀 분류 설계 이해하기, PQC 키(하이브리드 ML-DSA-87 서명, FIPS 204) 등록, 노드 모니터링 방법을 다룹니다.
 
 :::note
-이 가이드는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)을 대상으로 하며, 2026년 6월 7일부터 운영 중이고 노드 릴리스 **v3.2.4**를 실행합니다(2026년 10월 23일 높이 3,742,566에서 거버넌스 제안 13으로 적용되었으며, 그에 앞서 v3.2.3이 2026년 10월 20일 높이 3,662,051에서 적용되었습니다). 밸리데이터는 작성 시점에 v3.2.4 바이너리를 실행해야 합니다. 메인넷 거버넌스 제안 14가 높이 3,906,833에서 v3.2.5를 적용할 예정이며, 그때는 매니페스트가 설치할 바이너리를 알려줍니다([노드 실행: 업그레이드](/developer-guide/running-a-node#upgrades) 참조). **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)은 v3.2.6을 실행하며(2026년 10월 27일 적용, 10월 26일 v3.2.5 이후) 실제 배포 전에 설정을 미리 연습해보는 용도로 권장됩니다. 대상 네트워크에 맞는 `--chain-id`로 대체하세요. 블록 시간은 네트워크마다 다릅니다. 메인넷은 약 3.2초, 테스트넷은 약 1.3초(2026년 10월 27일 기준이며 변동합니다)이므로, 블록 수를 시간으로 환산할 때는 네트워크별로 계산하세요.
+이 가이드는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)을 대상으로 하며, 2026년 6월 7일부터 운영 중이고 노드 릴리스 **v3.2.4**를 실행합니다(2026년 10월 23일 높이 3,742,566에서 거버넌스 제안 13으로 적용되었으며, 그에 앞서 v3.2.3이 2026년 10월 20일 높이 3,662,051에서 적용되었습니다). 밸리데이터는 작성 시점에 v3.2.4 바이너리를 실행해야 합니다. 메인넷 거버넌스 제안 14가 높이 3,906,833에서 v3.2.5를 적용할 예정이며, 그때는 매니페스트가 설치할 바이너리를 알려줍니다([노드 실행: 업그레이드](/developer-guide/running-a-node#upgrades) 참조). **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)은 v3.2.6을 실행하며(2026년 10월 27일 적용, 10월 26일 v3.2.5 이후) 실제 배포 전에 설정을 미리 연습해보는 용도로 권장됩니다. 대상 네트워크에 맞는 `--chain-id`로 대체하세요. 블록 시간은 네트워크마다 다릅니다. 메인넷은 약 3.1초(2026년 10월 27일에 최근 1,000블록이 52분 21초 걸렸습니다), 테스트넷은 약 1.3초이며, 둘 다 변동하므로 블록 수를 시간으로 환산할 때는 네트워크별로 계산하세요.
 :::
 
 :::caution 소스 빌드가 아닌 릴리스 바이너리를 사용하세요
-밸리데이터는 라이브 매니페스트(`https://download.qore.host/mainnet/latest.json`, [노드 운영하기](/developer-guide/running-a-node#fetch-the-manifest) 참고)에 명시된 **릴리스 `qorechaind`**를 실행해야 합니다. 공개 소스에서 빌드한 바이너리에는 스텁 키퍼가 들어 있고 양자내성 서명기가 없습니다. 그래서 네트워크의 합의 상태를 재현할 수 없고, `create-validator` 및 모든 Cosmos 레인 트랜잭션에 필요한 하이브리드 서명도 만들 수 없습니다([소스에서 빌드하기](/developer-guide/building-from-source) 참고). v3.2.3부터는 공개 소스에서 빌드한 바이너리가 공개 네트워크에서 아예 시작되지 않습니다. 새로 구성하는 메인넷 노드에는 v3.2.0 이상이 필요합니다. v3.2.1부터는 노드의 시계가 60초 넘게 어긋나면 노드가 멈추므로, 시스템 시계를 NTP로 동기화된 상태로 유지하세요.
+밸리데이터는 라이브 매니페스트(`https://download.qore.host/mainnet/latest.json`, [노드 운영하기](/developer-guide/running-a-node#fetch-the-manifest) 참고)에 명시된 **릴리스 `qorechaind`**를 실행해야 합니다. 공개 소스에서 빌드한 바이너리에는 스텁 키퍼가 들어 있고 포스트 퀀텀 서명기가 없습니다. 그래서 네트워크의 합의 상태를 재현할 수 없고, `create-validator` 및 모든 Cosmos 레인 트랜잭션에 필요한 하이브리드 서명도 만들 수 없습니다([소스에서 빌드하기](/developer-guide/building-from-source) 참고). v3.2.3부터는 공개 소스에서 빌드한 바이너리가 공개 네트워크에서 아예 시작되지 않습니다. 새로 구성하는 메인넷 노드에는 v3.2.0 이상이 필요합니다. v3.2.1부터는 노드의 시계가 60초 넘게 어긋나면 노드가 멈추므로, 시스템 시계를 NTP로 동기화된 상태로 유지하세요.
 :::
 
 :::note 이 페이지에서 실제로 적용되는 부분
@@ -28,8 +28,88 @@ sidebar_position: 9
 * 완전히 동기화된 릴리스 `qorechaind` 노드 ([메인넷에 연결하기](/getting-started/connecting-to-mainnet) 참고, 연습하려면 [테스트넷에 연결하기](/getting-started/connecting-to-testnet))
 * 운영자 계정에 **등록된 ML-DSA-87 PQC 키** ([PQC 키 등록](#pqc-key-registration) 참고) — `create-validator`에는 하이브리드 서명이 필요합니다
 * 초기 셀프 위임을 위해 최소 **100,000 QOR**(100,000,000,000 uqor)가 있는 자금이 있는 계정 — 이 최소값은 온체인에서 강제되며, 미달 시 `create-validator`가 거부됩니다
-* 운영자 주소에 활성화된 **`validator_operator` 부여** — [Validator Program](/dashboard/tools-hub#validator-application)을 통해 발급됩니다(신청하고, 선정되고, $1,000 프로그램 수수료를 납부). 아래 참고 사항을 확인하세요. 부여가 없으면 얼마나 많은 QOR을 셀프 본딩하든 상관없이 `create-validator`가 `ErrUnauthorized`로 실패합니다
+* 운영자 주소에 활성화된 **`validator_operator` 부여** — 대시보드의 **Nodes & Validators** 페이지에서 [Validator Program](/dashboard/tools-hub#validator-application)을 통해 발급됩니다(신청하고, 선정되고, $1,000 프로그램 수수료를 납부). 아래 참고 사항을 확인하세요. 부여가 없으면 얼마나 많은 QOR을 셀프 본딩하든 상관없이 `create-validator`가 `ErrUnauthorized`로 실패합니다
 * [스테이킹과 위임](/user-guide/staking-and-delegation) 모델에 대한 이해
+
+---
+
+## 네트워크 참여하기 {#joining}
+
+**기본적으로 상태 동기화(state sync)를 사용해 참여하세요.** 제네시스부터 모든 블록을 재생하는 대신, 피어에서 최근 애플리케이션 상태를 가져옵니다. 스냅샷 다운로드는 대체 수단일 뿐입니다. 메인넷 매니페스트의 스냅샷은 여전히 2026년 8월 21일자 아카이브(높이 1,966,629, 약 27 GB)로, 여러 업그레이드 이전의 것이어서 이후 약 두 달 치 블록을 재생해야 하며, 테스트넷은 스냅샷을 아예 게시하지 않습니다.
+
+1. 매니페스트가 명시한 릴리스 `qorechaind`를 설치하고([노드 운영하기](/developer-guide/running-a-node#fetch-the-manifest) 참고), `qorechaind init <moniker> --chain-id qorechain-vladi`를 실행한 다음, 그곳에 설명된 대로 매니페스트의 제네시스, 피어, 시드를 제자리에 두고, `app.toml`에 `minimum-gas-prices = "0.1uqor"`를 설정합니다.
+2. 매니페스트에서 신뢰 지점(trust point)을 가져와 `config.toml`의 `[statesync]` 섹션을 작성합니다.
+
+```bash
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+```toml
+[statesync]
+enable = true
+rpc_servers = "https://rpc.qore.host:443,https://<a second RPC you run or trust>:26657"
+trust_height = <TRUST_HEIGHT>
+trust_hash = "<TRUST_HASH>"
+trust_period = "168h0m0s"
+```
+
+3. 선택적으로 디스크 사용량을 작게 유지합니다([하드웨어](#hardware) 참고). `app.toml`에서 `pruning = "custom"`과 `pruning-keep-recent = "100000"`, `pruning-interval = "10"`을 설정하고, `config.toml`의 `[tx_index]` 아래에서 `indexer = "null"`을 설정합니다(밸리데이터는 트랜잭션 조회를 제공하지 않습니다. 조회에 사용하는 노드에서는 `null`을 쓰지 마세요).
+4. `qorechaind start --minimum-gas-prices=0.1uqor`로 시작하고 `catching_up`이 `false`가 될 때까지 기다립니다.
+
+:::warning 상태 동기화에는 서로 다른 두 RPC 서버가 필요합니다
+상태 동기화는 신뢰 지점을 **두 개**의 RPC 서버와 교차 확인합니다. 매니페스트의 `stateSync.rpcServers`에는 `https://rpc.qore.host`가 **두 번** 나열되어 있습니다(테스트넷 매니페스트도 `https://rpc-testnet.qore.host`를 두 번 나열합니다). 동일한 항목 두 개는 개수 조건은 만족하지만 두 응답이 한 서버에서 나오므로 교차 확인의 의미가 없어집니다. 직접 운영하거나 독립적으로 신뢰하는 두 번째 RPC를 추가하고, 시작하기 전에 신뢰 해시를 두 번째 출처와 대조하세요. 예를 들어 `curl -s "https://<second-rpc>/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash`의 결과가 `$TRUST_HASH`와 같아야 합니다. 매니페스트의 신뢰 지점은 매시간 갱신되므로, 오래되었다면 다시 가져오세요.
+:::
+
+시스템 시계를 NTP로 동기화된 상태로 유지하세요. v3.2.1부터는 노드의 시계가 60초 넘게 어긋나면 노드가 멈춥니다.
+
+---
+
+## 네트워크 매개변수 {#parameters}
+
+이 값들은 2026년 10월 27일에 메인넷 REST API(`qorechain-vladi`, v3.2.4)에서 읽은 것입니다. 의존하기 전에 실시간으로 확인하세요: `qorechaind query staking params`, `qorechaind query slashing params`, 또는 `GET /cosmos/staking/v1beta1/params`와 `GET /cosmos/slashing/v1beta1/params`.
+
+| 항목 | 값 |
+| --- | --- |
+| 활성 세트 크기(`max_validators`) | 100 (현재 8명의 밸리데이터가 본딩되어 있으며 감금된 밸리데이터는 없음) |
+| 언본딩 기간 | 1,814,400초 (21일). 위임자당 언본딩 항목은 최대 7개(`max_entries`) |
+| 최소 수수료율(`min_commission_rate`) | 0 (`commission-max-rate`까지 자신의 수수료율을 직접 선택) |
+| 서명 확인 윈도우 | 10,000블록(`signed_blocks_window`) |
+| 윈도우당 최소 서명 비율 | 0.05, 즉 윈도우의 5% 미만에 서명하면 밸리데이터가 감금됨 |
+| 다운타임 감금 / 슬래싱 | 600초 감금, 스테이크의 1% 슬래싱 |
+| 이중 서명 슬래싱 | 스테이크의 5% |
+| 밸리데이터 생성을 위한 셀프 본딩 하한 | **100,000 QOR**(`100000000000uqor`), 온체인에서 강제됨. 미달 시 `create-validator`가 코드 18로 실패 |
+| 운영자 부여 | 발신자에게 활성화된 `validator_operator` 부여가 필요함. 없으면 `create-validator`가 `ErrUnauthorized`로 실패 |
+| 수수료 하한 | 가스당 0.1 uqor |
+
+**작업 순서.** 다음 순서로 진행하세요. (1) 계정의 PQC 키 등록, (2) `validator_operator` 부여 받기, (3) `--generate-only`로 `create-validator`를 만들고 `tx pqc cosign`으로 서명. 등록된 키가 없는 계정은 등록 트랜잭션 자체만 보낼 수 있으므로([PQC 키 등록](#pqc-key-registration) 참고) 키가 먼저이고, 부여는 `create-validator`가 실행될 때 확인됩니다. 자세한 내용은 [밸리데이터 생성하기](#validator-license-gate)와 [PQC 키 등록](#pqc-key-registration)에 있습니다.
+
+:::caution `min-self-delegation`은 100,000 QOR 하한이 아닙니다
+제네시스 밸리데이터는 온체인에서 `min_self_delegation` = `1`(1 uqor)로 표시됩니다. 이는 하한이 **아닙니다**. 그들의 제네시스 트랜잭션은 하한에서 면제되었습니다. `validator.json`의 `min-self-delegation` 필드는 최소한 그만큼을 셀프 본딩 상태로 유지하겠다는 운영자 자신의 약속일 뿐이며, 밸리데이터를 생성할 때 셀프 위임하는 `amount`에 적용되는 100,000 QOR 하한과는 무관합니다.
+:::
+
+---
+
+## 하드웨어 {#hardware}
+
+실행 중인 메인넷 밸리데이터에서 측정한 값입니다(2026년 10월 27일): 일반 부하에서 RAM 약 3.2~3.5 GB, CPU 10% 미만. 밸리데이터는 3~4 vCPU, 8~16 GB RAM, NVMe 스토리지에서 여유롭게 실행됩니다. 코어 수보다 싱글 코어 속도가 더 중요합니다. ML-DSA-87 서명 검증이 트랜잭션 검사 작업의 약 절반을 차지하며, 부하 시에 정점에 이릅니다.
+
+| 항목 | 권장 밸리데이터 사양 |
+| --- | --- |
+| CPU | 4 vCPU, 높은 클럭 속도 |
+| RAM | 16 GB |
+| 디스크 | 100 GB 이상, NVMe |
+| 시계 | NTP 동기화(위의 60초 규칙) |
+| 네트워크 | P2P `26656`만 외부에 개방. RPC, REST, EVM은 localhost에 바인딩 |
+
+디스크 사용량은 참여 방식에 따라 달라집니다. `pruning = "custom"`(keep-recent 100000)과 `indexer = "null"`로 상태 동기화를 통해 참여한 밸리데이터는 두 달 뒤 약 10 GB를 차지합니다. 기본 프루닝으로 제네시스부터 운영한 노드는 넉 달 뒤 약 100~130 GB를 차지합니다. [노드 운영하기](/developer-guide/running-a-node#recommended-hardware)에서 RPC 노드에 권장하는 500 GB 이상은 밸리데이터에게는 넉넉한 사양입니다.
+
+---
+
+## 네트워크 운영 방식 {#network-organisation}
+
+2026년 10월 27일 현재 네트워크에는 활성 밸리데이터 8명이 있으며, 여러 국가와 둘 이상의 호스팅 제공업체에 분포해 있습니다. 공개 엔드포인트(`rpc.qore.host`, `api.qore.host`, `evm.qore.host`, `svm.qore.host`)는 엣지 네트워크 뒤의 전용 비밸리데이터 노드가 제공하며 밸리데이터가 제공하는 일은 없고, 밸리데이터의 IP 주소는 DNS에 게시되지 않습니다. 투표권은 본딩된 스테이크를 따릅니다. 최소 셀프 본딩으로 시작한 새 밸리데이터는 작은 지분의 투표권으로 시작해, 위임이 들어오면서 늘어납니다.
 
 ---
 
@@ -42,7 +122,7 @@ sidebar_position: 9
 1. **최소 100,000 QOR 셀프 본딩.**
 2. **트랜잭션을 제출하는 계정에 활성화된 `validator_operator` 부여.**
 
-이 부여는 QoreChain Association이 **Validator Program**을 통해 온체인에서 발급합니다: [Tools Hub](/dashboard/tools-hub#validator-application)에서 신청하고, 14일간의 시험 운영 기간 동안 diana 테스트넷에서 밸리데이터를 운영한 뒤, 선정되면 **$1,000 프로그램 수수료**를 납부하세요. 그러면 신청서에 기재한 운영자 주소에 대해 부여가 일괄 서명됩니다. 내 부여는 `GET /qorechain/license/v1/check/{grantee}/validator_operator`로 확인하세요. 라이선스의 `expires_at`은 날짜나 기간이 아니라 **블록 높이**입니다 — `0`은 만료 없음을 의미합니다. 라이선스가 없거나 만료된 경우, 셀프 본딩 금액과 무관하게 `create-validator`는 `ErrUnauthorized`로 실패합니다. 이는 자금이 충분한데도 원인을 알 수 없이 실패하는 가장 흔한 이유입니다. 이 게이트가 존재하는 이유는 EVM 실행 레인이 이를 확인하거나 강제할 수 없기 때문입니다(그곳의 단일 ante 데코레이터로는 완전히 우회될 수 있습니다) — 이는 스테이킹과 검증이 오직 Native 레인에만 남아 있는 이유 중 하나입니다.
+이 부여는 QoreChain Association이 **Validator Program**을 통해 온체인에서 발급합니다: 대시보드의 **Nodes & Validators** 페이지([Tools Hub](/dashboard/tools-hub#validator-application))에서 신청하고, 14일간의 시험 운영 기간 동안 diana 테스트넷에서 밸리데이터를 운영한 뒤, 선정되면 **$1,000 프로그램 수수료**를 납부하세요. 그러면 신청서에 기재한 운영자 주소에 대해 부여가 일괄 서명됩니다. 내 부여는 `GET /qorechain/license/v1/check/{grantee}/validator_operator`로 확인하세요. 라이선스의 `expires_at`은 날짜나 기간이 아니라 **블록 높이**입니다 — `0`은 만료 없음을 의미합니다. 라이선스가 없거나 만료된 경우, 셀프 본딩 금액과 무관하게 `create-validator`는 `ErrUnauthorized`로 실패합니다. 이는 자금이 충분한데도 원인을 알 수 없이 실패하는 가장 흔한 이유입니다. 이 게이트가 존재하는 이유는 EVM 실행 레인이 이를 확인하거나 강제할 수 없기 때문입니다(그곳의 단일 ante 데코레이터로는 완전히 우회될 수 있습니다) — 이는 스테이킹과 검증이 오직 Native 레인에만 남아 있는 이유 중 하나입니다.
 
 `validator.json` 파일을 만드세요(플래그 방식은 현재 SDK에서 제거되었습니다).
 
@@ -83,7 +163,7 @@ qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorecha
 | `commission-rate`              | 초기 수수료율 (예: 0.10 = 10%)                     |
 | `commission-max-rate`          | 최대 수수료율 (생성 후 변경 불가)                  |
 | `commission-max-change-rate`   | 일일 최대 수수료 변경률                            |
-| `min-self-delegation`          | 운영자가 셀프 위임해야 하는 최소 토큰 수량         |
+| `min-self-delegation`          | 최소한 이만큼을 셀프 본딩 상태로 유지하겠다는 운영자 자신의 약속(uqor 단위). 이는 `amount`에 적용되는 100,000 QOR 온체인 하한이 **아닙니다** |
 
 트랜잭션이 확정된 후 밸리데이터를 확인하세요.
 
@@ -99,7 +179,7 @@ qorechaind query staking validator $(qorechaind keys show mykey --bech val -a)
 아래의 풀 분류는 `x/qca` 설계입니다. 매개변수는 온체인에 있지만(`qorechaind query qca config`), 블록 제안자는 아직 풀 기준으로 선정되지 않으며 풀이 보상이나 슬래싱을 아직 변경하지 않습니다.
 :::
 
-QoreChain의 `x/qca`(Quantum Consensus Allocation) 모듈은 **3단계 풀 분류 시스템**을 정의합니다. **1,000블록**마다(메인넷의 3.2초 블록 기준 약 54분) 밸리데이터는 평판과 스테이크를 기준으로 세 가지 풀 중 하나로 재분류되도록 설계되어 있습니다.
+QoreChain의 `x/qca`(Quantum Consensus Allocation) 모듈은 **3단계 풀 분류 시스템**을 정의합니다. **1,000블록**마다(메인넷의 3.1초 블록 기준 약 52분) 밸리데이터는 평판과 스테이크를 기준으로 세 가지 풀 중 하나로 재분류되도록 설계되어 있습니다.
 
 | 풀                                   | 기준                                               | 블록 할당      |
 | ------------------------------------ | -------------------------------------------------- | --------------- |
@@ -173,7 +253,7 @@ qorechaind query slashing params
 
 | 매개변수 | 값 |
 | --- | --- |
-| 서명 확인 윈도우 | 10,000블록 (메인넷 3.2초 블록 기준 약 8.9시간, 테스트넷은 더 짧음) |
+| 서명 확인 윈도우 | 10,000블록 (메인넷 3.1초 블록 기준 약 8.7시간, 테스트넷은 더 짧음) |
 | 윈도우당 최소 서명 비율 | 5% (`min_signed_per_window` = 0.05): 밸리데이터는 최근 10,000블록 중 **5% 미만**에 서명하면, 즉 95% 넘게 놓치면 감금됩니다 |
 | 다운타임 감금 시간 | 600초 (10분) |
 | 다운타임 슬래싱 비율 | 스테이크의 1% |
@@ -205,7 +285,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 2. **처벌은 지수적으로 증가합니다.** 위의 공식을 사용해 유효 카운트를 기준으로 처벌이 확대되므로, 반복 위반자는 훨씬 더 큰 처벌을 받게 됩니다.
 
-3. **유효 카운트는 시간이 지나면 감쇠합니다.** 유효 카운트는 100,000블록(메인넷 3.2초 블록 기준 약 3.7일)의 반감기로 감쇠하며, 이를 통해 밸리데이터는 일정 기간 정상적으로 운영하면 회복할 수 있습니다.
+3. **유효 카운트는 시간이 지나면 감쇠합니다.** 유효 카운트는 100,000블록(메인넷 3.1초 블록 기준 약 3.6일)의 반감기로 감쇠하며, 이를 통해 밸리데이터는 일정 기간 정상적으로 운영하면 회복할 수 있습니다.
 
 4. **단발성 이벤트와 반복 위반의 차이.** 우발적인 단발성 다운타임 이벤트는 경미한 처벌로 이어지지만, 반복되는 위반은 지수적으로 증가하는 결과를 초래합니다.
 
@@ -213,7 +293,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC 키 등록 {#pqc-key-registration}
 
-`create-validator`를 실행하기 **전에**, 그리고 가능한 한 일찍 **양자내성 암호화(PQC) 공개 키**(ML-DSA-87)를 등록하세요. [Validator Readiness](/dashboard/tools-hub#validator-application) 패널은 신청하는 순간부터 이를 확인합니다. 이는 **선택 사항이 아니며 자동으로 처리되지도 않습니다.** 체인은 모든 Cosmos 레인 트랜잭션에 하이브리드 PQC 서명을 요구하며, `MsgCreateValidator`는 예외 대상 메시지 유형에 포함되지 않고, 어떤 계정도 키를 자동으로 등록하지 않습니다. 등록은 명시적인 트랜잭션이며, 모든 계정(밸리데이터 운영자 포함)이 사전에 직접 보내야 합니다. 먼저 키를 생성하세요.
+`create-validator`를 실행하기 **전에**, 그리고 가능한 한 일찍 **포스트 퀀텀 암호화(PQC) 공개 키**(ML-DSA-87)를 등록하세요. [Validator Readiness](/dashboard/tools-hub#validator-application) 패널은 신청하는 순간부터 이를 확인합니다. 이는 **선택 사항이 아니며 자동으로 처리되지도 않습니다.** 체인은 모든 Cosmos 레인 트랜잭션에 하이브리드 PQC 서명을 요구하며, `MsgCreateValidator`는 예외 대상 메시지 유형에 포함되지 않고, 어떤 계정도 키를 자동으로 등록하지 않습니다. 등록은 명시적인 트랜잭션이며, 모든 계정(밸리데이터 운영자 포함)이 사전에 직접 보내야 합니다. 먼저 키를 생성하세요.
 
 ```bash
 qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
@@ -255,7 +335,7 @@ ML-DSA-87 공개 키는 2,592바이트이며, 이를 온체인에 기록하면 �
 qorechaind query pqc account <account-address>
 ```
 
-`~/.qorechaind/pqc/` 아래의 키 파일은 계정의 양자내성 서명 키입니다. 니모닉처럼 백업하고, 가능하면 합의 키를 실행하는 머신과 분리해 보관하세요. 복구와 교체에 대해서는 [양자내성 서명](/developer-guide/post-quantum-signing#pqc-key-registration)을 참고하세요.
+`~/.qorechaind/pqc/` 아래의 키 파일은 계정의 포스트 퀀텀 서명 키입니다. 니모닉처럼 백업하고, 가능하면 합의 키를 실행하는 머신과 분리해 보관하세요. 복구와 교체에 대해서는 [포스트 퀀텀 서명](/developer-guide/post-quantum-signing#pqc-key-registration)을 참고하세요.
 
 ---
 
@@ -318,7 +398,7 @@ qorechaind query staking validators --status BOND_STATUS_BONDED | grep "my-valid
 
 4. **소프트웨어를 최신 상태로 유지하세요.** QoreChain 릴리스를 추적하고 업데이트를 신속하게 적용하세요. 체인 업그레이드에 대해서는 밸리데이터 커뮤니티와 조율하세요.
 
-5. **키를 안전하게 보관하세요.** 밸리데이터 합의 키에는 하드웨어 보안 모듈(HSM)이나 원격 서명자를 사용하세요. 키를 노드와 동일한 머신에 저장하지 마세요.
+5. **키를 안전하게 보관하세요.** 밸리데이터 합의 키(`priv_validator_key.json`)를 보호하고 백업은 오프라인에 보관하세요. 원격 서명자도 고려해 볼 수 있습니다. 원격 서명(`priv_validator_laddr`)은 `qorechaind` 릴리스 바이너리로 검증되지 않았고, 포스트 퀀텀 모듈은 합의 키 유형(ed25519)을 바꾸지 않으므로, 서명자 구성에 의존하기 전에 반드시 테스트넷에서 테스트하세요. 가능하면 운영자 계정의 키와 그 PQC 키 파일은 밸리데이터를 실행하는 머신에서 분리해 두세요.
 
 6. **PQC 키를 먼저 등록하세요.** 운영자 계정은 밸리데이터를 생성하거나 다른 Cosmos 레인 트랜잭션을 보내기 전에 등록된 ML-DSA-87 키가 있어야 합니다.
 
@@ -384,4 +464,4 @@ qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorecha
 
 * [노드 운영하기](/developer-guide/running-a-node) — 릴리스 바이너리 설치, 상태 동기화 및 노드 설정
 * [EVM 개발](/developer-guide/evm-development) — QoreChain에 스마트 컨트랙트 배포하기
-* [양자내성 서명](/developer-guide/post-quantum-signing) — 키 등록, 복구 및 교체
+* [포스트 퀀텀 서명](/developer-guide/post-quantum-signing) — 키 등록, 복구 및 교체

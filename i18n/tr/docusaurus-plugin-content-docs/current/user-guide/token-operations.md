@@ -94,7 +94,7 @@ QoreChain üzerindeki işlem ücretleri, ağ teşviklerini uyumlu hale getirmek 
 | **Stake Edenler** | %10 | Tüm delegatörlere orantılı olarak dağıtılır                        |
 | **Hafif Node'lar**| %3  | Hafif node ödülleri (aşağıdaki nota bakın)                          |
 
-Bu pay, ücret toplayıcıya (fee collector) giren her şeye uygulanır; ücret toplayıcı, işlem ücretlerini ve her epoch'ta basılan staking emisyonunu tutar. Hafif node payı, hafif node ödül havuzuna birikir; kayıt açıktır ve lisansa bağlıdır, ancak henüz hiçbir hafif node kayıt olmamıştır; bu nedenle şu anda hiçbir node bundan ödeme almamaktadır (bkz. [Hafif Node](/light-node/overview#reward-program-status)). v3.2.0 yükseltmesinden bu yana staker payı normal bir staking ödülü olarak ödenir (bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+Bu pay, ücret toplayıcıya (fee collector) giren her şeye uygulanır; ücret toplayıcı, işlem ücretlerini ve her epoch'ta basılan staking emisyonunu tutar. Hafif node payı, hafif node ödül havuzuna birikir; kayıt açıktır ve lisansa bağlıdır; 27 Ekim 2026'da her ağda bir hafif node kaydedildi (bkz. [Hafif Node](/light-node/overview#reward-program-status)). v3.2.0 yükseltmesinden bu yana staker payı normal bir staking ödülü olarak ödenir (bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Yakma Kanalları
 

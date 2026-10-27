@@ -30,7 +30,7 @@ Las cifras de esta página describen la **mainnet** (`qorechain-vladi`, EVM chai
 
 ## Modelo de suministro y emisión {#supply-and-emission}
 
-QoreChain tiene una **trayectoria de suministro finita y con tope**. El suministro de génesis fue de **4.420.000.000 QOR** (estaban previstos 4.500.000.000 QOR; 80.000.000 QOR, el 1,78%, se quemaron en el Token Generation Event antes del génesis). Después del génesis el protocolo modifica el suministro mediante dos mecanismos:
+QoreChain tiene una **trayectoria de suministro finita y con tope**. El suministro de génesis fue de **4.420.000.000 QOR** (estaban previstos 4.500.000.000 QOR; 80.000.000 QOR, el 1,78 %, se quemaron en el Token Generation Event antes del génesis). Después del génesis el protocolo modifica el suministro mediante dos mecanismos:
 
 * **Emisión** — el módulo `x/inflation` acuña una cantidad fija en cada época, bajo un **límite acumulado estricto de 590.000.000 QOR**. Los tokens acuñados entran en el colector de tarifas y pasan por el mismo reparto que las tarifas de transacción (consulta [Distribución de tarifas](#fee-distribution)).
 * **Quemas** — el módulo `x/burn` elimina de forma permanente la parte de quema de todo lo que hay en el colector de tarifas.
@@ -41,12 +41,12 @@ QoreChain tiene una **trayectoria de suministro finita y con tope**. El suminist
 | --- | --- |
 | Modo de emisión | `fixed` (desde v3.1.94, altura 2.122.074 — 26 de agosto de 2026) |
 | Emisión por época | **86.000 QOR** (16.239 QOR hasta la propuesta de gobernanza 10; la primera época de 86.000 QOR comienza en el bloque 3.672.000) |
-| Duración de la época | 43.200 bloques (unas 38,6 horas con el tiempo de bloque actual de ≈3,2 s) |
+| Duración de la época | 43.200 bloques (unas 37,7 horas con el tiempo de bloque actual de ≈3,1 s) |
 | Límite acumulado (`max_total_emission`) | **590.000.000 QOR** (114.285.714 QOR hasta la propuesta 10) |
-| Acuñado hasta ahora (23 de octubre de 2026, época 86) | 105.420.896,21 QOR (17,87% del límite) |
+| Acuñado hasta ahora (23 de octubre de 2026, época 86) | 105.420.896,21 QOR (17,87 % del límite) |
 | Restante bajo el límite | 484.579.103,79 QOR (unas 5.635 épocas a 86.000 QOR por época; la última es parcial) |
 
-Una vez alcanzado el límite, el módulo deja de acuñar de forma permanente; a partir de entonces, las recompensas provienen únicamente de las tarifas de transacción. Las cifras de emisión las fijó la gobernanza: la propuesta n.º 4 (26 de agosto de 2026) sustituyó el calendario decreciente original por una cantidad fija bajo un límite estricto, y la propuesta n.º 10 (aprobada el 19 de octubre de 2026 con todo el stake en staking votando a favor) cambió esa cantidad de 16.239 QOR a 86.000 QOR por época y elevó el límite de 114.285.714 QOR a 590.000.000 QOR. La duración de la época no cambió. Los valores del calendario (17,5%, 11%, 7%, 7%, 2% para los años 1–5) siguen almacenados en los parámetros del módulo, pero no se usan en el modo `fixed`.
+Una vez alcanzado el límite, el módulo deja de acuñar de forma permanente; a partir de entonces, las recompensas provienen únicamente de las tarifas de transacción. Las cifras de emisión las fijó la gobernanza: la propuesta n.º 4 (26 de agosto de 2026) sustituyó el calendario decreciente original por una cantidad fija bajo un límite estricto, y la propuesta n.º 10 (aprobada el 19 de octubre de 2026 con todo el stake en staking votando a favor) cambió esa cantidad de 16.239 QOR a 86.000 QOR por época y elevó el límite de 114.285.714 QOR a 590.000.000 QOR. La duración de la época no cambió. Los valores del calendario (17,5 %, 11 %, 7 %, 7 %, 2 % para los años 1–5) siguen almacenados en los parámetros del módulo, pero no se usan en el modo `fixed`.
 
 El total acuñado, la cantidad restante y la altura de la próxima época están disponibles en vivo en `GET /qorechain/inflation/v1/epoch_info` (su campo `current_inflation_rate` informa la tasa heredada por año, que el modo `fixed` no utiliza).
 
@@ -104,7 +104,7 @@ Los porcentajes son:
 Los porcentajes se imponen on-chain y siempre deben sumar exactamente el 100%.
 
 :::note Lo que realmente fluye por el reparto
-El reparto se aplica a todo lo que hay en el colector de tarifas, que contiene tanto las tarifas de transacción como la emisión de la época acuñada por `x/inflation`. En la práctica, hoy casi todo es emisión: de los 105.420.896 QOR acuñados, se han quemado 31.626.315 QOR (30,0%) a través del canal de tarifas de gas. Hasta la actualización a v3.2.0 (25 de septiembre de 2026, altura 2.981.742), la parte del 10% de los stakers se movía al saldo del módulo de distribución sin respaldar ninguna reclamación, por lo que stakers y validadores juntos recibían el 37%, no el 47%; desde esa altura la parte de los stakers se paga como una recompensa de staking normal. La cantidad que ya había quedado varada se registró on-chain y desde entonces la han liberado votaciones de gobernanza — consulta [Parte de stakers varada y reserva de light nodes](#stranded-and-reserve).
+El reparto se aplica a todo lo que hay en el colector de tarifas, que contiene tanto las tarifas de transacción como la emisión de la época acuñada por `x/inflation`. En la práctica, hoy casi todo es emisión: de los 105.420.896 QOR acuñados, se han quemado 31.626.315 QOR (30,0 %) a través del canal de tarifas de gas. Hasta la actualización a v3.2.0 (25 de septiembre de 2026, altura 2.981.742), la parte del 10 % de los stakers se movía al saldo del módulo de distribución sin respaldar ninguna reclamación, por lo que stakers y validadores juntos recibían el 37 %, no el 47 %; desde esa altura la parte de los stakers se paga como una recompensa de staking normal. La cantidad que ya había quedado varada se registró on-chain y desde entonces la han liberado votaciones de gobernanza — consulta [Parte de stakers varada y reserva de light nodes](#stranded-and-reserve).
 :::
 
 ### Parámetros de quema
@@ -132,12 +132,12 @@ Dos cantidades se acumularon en la mainnet antes de la actualización a v3.2.0 (
 
 | Registro | Liberación | Cantidad | Mensaje de gobernanza |
 | --- | --- | --- | --- |
-| **Parte de stakers varada** — la parte del 10% de los stakers que se depositó donde no respaldaba ninguna reclamación de recompensas de staking | Propuesta 9 (aprobada el 19 de octubre de 2026) | 6.693.045,921330 QOR liberados | `MsgReleaseStrandedRewards` (autoridad de gobernanza; destino nombrado; no puede superar el registro) |
-| **Reserva de light nodes** — la parte del 3% de los light nodes que se acumuló mientras ningún light node era elegible | Propuesta 8 (aprobada el 19 de octubre de 2026) | 3.156.983,796395 QOR liberados | `MsgReleaseLightNodeReserve` (autoridad de gobernanza) |
+| **Parte de stakers varada** — la parte del 10 % de los stakers que se depositó donde no respaldaba ninguna reclamación de recompensas de staking | Propuesta 9 (aprobada el 19 de octubre de 2026) | 6.693.045,921330 QOR liberados | `MsgReleaseStrandedRewards` (autoridad de gobernanza; destino nombrado; no puede superar el registro) |
+| **Reserva de light nodes** — la parte del 3 % de los light nodes que se acumuló mientras ningún light node era elegible | Propuesta 8 (aprobada el 19 de octubre de 2026) | 3.156.983,796395 QOR liberados | `MsgReleaseLightNodeReserve` (autoridad de gobernanza) |
 
 **Remanente corregido de la parte varada.** En la actualización a v3.2.3 (altura 3.662.051, 20 de octubre de 2026) la cadena recalculó el registro de la parte varada, que entonces ascendía a 3.807.496,785528 QOR (`reserved` en `GET /qorechain/burn/v1/stranded_rewards`, junto a `released`, 6.693.045,921330 QOR). La propuesta de gobernanza 12 liberó ese remanente, 3.807.496,785528 QOR, a la fundación: fue aprobada (la votación terminó el 21 de octubre de 2026 a las 20:01 UTC) con todo el stake bonded que votó a favor. El registro puede consultarse en `GET /qorechain/burn/v1/stranded_rewards` y la propuesta en `GET /cosmos/gov/v1/proposals/12`.
 
-**El pool de light nodes ahora.** Desde la actualización a v3.2.0, las recompensas de los light nodes se pagan únicamente de lo acumulado desde la ejecución de distribución anterior, con un techo por nodo. Desde v3.2.3 el techo es de **2.000 QOR por nodo cada 30 días** (`max_reward_per_month_per_node`), prorrateado por tiempo de bloque y por el uptime del nodo; el valor por bloque (`max_reward_per_block_per_node`, 1.713 uqor) se sigue informando pero ya no es la regla. Lo que no se gana permanece en la reserva del pool, que solo una votación de gobernanza puede liberar. Tras la propuesta 8 la reserva vuelve a acumularse: el 20 de octubre de 2026 contenía 487,2318 QOR (`reserved` en `GET /qorechain/lightnode/v1/reward_pool`) sin nada pendiente ni pagable, porque todavía no se ha registrado ningún light node. El registro está abierto y sujeto a licencia (consulta [Light Node](/light-node/overview#reward-program-status)). Se rechaza una liberación anterior a la instantánea de la actualización, superior a la cantidad registrada o dirigida a un destino no válido.
+**El pool de light nodes ahora.** Desde la actualización a v3.2.0, las recompensas de los light nodes se pagan únicamente de lo acumulado desde la ejecución de distribución anterior, con un techo por nodo. Desde v3.2.3 el techo es de **2.000 QOR por nodo cada 30 días** (`max_reward_per_month_per_node`), prorrateado por tiempo de bloque y por el uptime del nodo; el valor por bloque (`max_reward_per_block_per_node`, 1.713 uqor) se sigue informando pero ya no es la regla. Lo que no se gana permanece en la reserva del pool, que solo una votación de gobernanza puede liberar. Tras la propuesta 8 la reserva vuelve a acumularse: el 27 de octubre de 2026 el `reserved` del pool de la mainnet (en `GET /qorechain/lightnode/v1/reward_pool`) era de unos 13.380,9 QOR, con 0,06 QOR pendientes y nada pagable; ese día había un light node registrado en cada red. El registro está abierto y sujeto a licencia (consulta [Light Node](/light-node/overview#reward-program-status)). Se rechaza una liberación anterior a la instantánea de la actualización, superior a la cantidad registrada o dirigida a un destino no válido.
 
 ## x/xqore — Staking bloqueado y amplificación de gobernanza {#x-xqore}
 
@@ -191,7 +191,7 @@ El módulo `x/inflation` acuña la emisión por época (86.000 QOR desde la prop
 
 ### Mecánica de épocas
 
-* **Duración de la época**: 43.200 bloques (unas 38,6 horas a ≈3,2 s por bloque).
+* **Duración de la época**: 43.200 bloques (unas 37,7 horas a ≈3,1 s por bloque).
 * En cada límite de época el módulo acuña la emisión de la época (o el remanente hasta el límite), actualiza el registro de la época y deja de acuñar cuando `total_minted` alcanza el límite.
 * Desde v3.2.3 el año de emisión se deriva de la duración de la época en lugar de un número fijo de bloques.
 
@@ -205,7 +205,7 @@ Leídos en vivo el 23 de octubre de 2026 desde `GET /qorechain/inflation/v1/para
 | `fixed_epoch_emission` | 86.000.000.000 uqor (86.000 QOR) | Acuñado por época en modo fijo |
 | `max_total_emission` | 590.000.000.000.000 uqor (590.000.000 QOR) | Techo acumulado estricto |
 | `epoch_length` | 43.200 bloques | Bloques por época de emisión |
-| `schedule` | 17,5%, 11%, 7%, 7%, 2% (años 1–5) | Calendario heredado, sin uso en modo fijo |
+| `schedule` | 17,5 %, 11 %, 7 %, 7 %, 2 % (años 1–5) | Calendario heredado, sin uso en modo fijo |
 | `enabled` | `true` | Indicador de activación del módulo |
 
 Los parámetros del módulo y el registro de la época se exponen por REST en la mainnet desde v3.2.3 (`/qorechain/inflation/v1/params` y `/qorechain/inflation/v1/epoch_info`); también pueden leerse del estado de la cadena con la interfaz de almacén en bruto de la RPC `abci_query` (almacén `inflation`, claves `inflation/params` y `inflation/epoch`).

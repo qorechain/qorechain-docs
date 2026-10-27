@@ -140,7 +140,15 @@
     "description": "The label for category 'QoreX Wallet' in sidebar 'docsSidebar'"
   },
   "sidebar.docsSidebar.category.QoreX Wallet.link.generated-index.description": {
-    "message": "QoreX : le portefeuille officiel non custodial et à l'épreuve du quantique pour QoreChain, sous forme d'application mobile et d'extension de navigateur. Configuration, envoi et réception, staking, récupération et connexion aux dApps.",
+    "message": "QoreX : le portefeuille officiel non custodial pour QoreChain, avec signature hybride ML-DSA-87 sur la voie native, sous forme d'application mobile et d'extension de navigateur. Configuration, envoi et réception, staking, récupération et connexion aux dApps.",
     "description": "The generated-index page description for category 'QoreX Wallet' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages": {
+    "message": "Packages pour développeurs",
+    "description": "The label for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
+    "message": "Tous les packages publics de QoreChain : ce que c’est, ce qui y est nouveau, comment l’utiliser, comment y accéder et où il est publié.",
+    "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
   }
 }

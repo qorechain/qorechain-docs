@@ -106,14 +106,14 @@ instanciación de QoreChain Native requieren permisos (la instanciación está a
 
 ---
 
-## 3. Seguridad cuántica por defecto
+## 3. Firma híbrida por defecto
 
-**Convierte un firmante en protegido post-cuántico con una sola llamada.**
+**Registra la clave ML-DSA-87 de un firmante con una sola llamada.**
 
 QoreChain impone firmas híbridas post-cuánticas (ML-DSA-87 + clásica) a nivel de
 protocolo. El SDK convierte su adopción en una sola línea: comprobar, registrar
-y migrar a la firma híbrida — con una insignia de React para mostrar a los
-usuarios que están protegidos.
+y migrar a la firma híbrida — con una insignia de React que muestra si una
+dirección tiene una clave registrada.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -135,7 +135,7 @@ await hybrid.signAndBroadcastHybrid({
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// Shows a status badge when the address has a registered PQC key
 // (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
@@ -144,7 +144,7 @@ import { QuantumSafeBadge } from "@qorechain/react";
 ruta Native de QoreChain, no un experimento, y el SDK reduce su adopción a una
 llamada de registro más una ruta de envío híbrida. El registro es explícito: no
 hay registro automático en la primera transacción. Consulta
-[Seguridad cuántica](/sdk/guides/quantum-safe).
+[Firma híbrida](/sdk/guides/quantum-safe).
 
 ---
 

@@ -7,9 +7,9 @@ sidebar_position: 1
 
 # QoreChain SDK
 
-QoreChain SDK는 양자 내성(quantum-safe) 트리플 VM 레이어 1 네트워크인
-**QoreChain** 위에서 탈중앙화 애플리케이션을 구축하기 위한 공식 다중 언어
-개발자 키트입니다.
+QoreChain SDK는 하이브리드 ML-DSA-87(FIPS 204) 서명을 갖춘 트리플 VM 레이어 1
+네트워크인 **QoreChain** 위에서 탈중앙화 애플리케이션을 구축하기 위한 공식
+다중 언어 개발자 키트입니다.
 
 이 문서에서는 SDK 설치, 네트워크 연결, 온체인 상태 조회, 계정 파생, 트랜잭션
 서명 및 전송, 그리고 QoreChain의 각 가상 머신을 다루는 방법을 설명합니다.
@@ -55,7 +55,7 @@ EIP-7702 동의 메시지)과 v3.2.4에 대한 지원(스테이킹 티어, 인�
 지갑 및 백엔드 서명: [QoreSign](/qoresign/overview)을 참고하세요.
 :::
 
-### 설계부터 양자 내성
+### 하이브리드 ML-DSA-87 서명
 
 QoreChain은 **ML-DSA-87**(Dilithium-5, FIPS 204)에 기반한 포스트 양자
 암호(PQC) 프리미티브를 제공합니다. 고전적인 secp256k1 서명과 함께, 체인은
@@ -85,10 +85,10 @@ SDK는 현재 ML-DSA-87 키 생성, 서명, 검증과 함께 하이브리드 트
   `createCrossVMClient`는 어떤 VM의 컨트랙트든 호출하며, `callAtomic`은 여러
   크로스 VM 호출을 한 번의 서명으로 하나의 원자적 트랜잭션에 담습니다.
   [크로스 VM 호출](/sdk/guides/cross-vm)을 참고하세요.
-- **양자 내성 DX** — 멱등성이 보장되는 단 한 번의 호출
-  (`ensurePqcRegistered` / `migrateToHybrid`)로 서명자를 포스트 양자 보호
-  상태로 만들 수 있으며, 바로 사용할 수 있는 React 배지도 제공됩니다.
-  [양자 내성](/sdk/guides/quantum-safe)을 참고하세요.
+- **하이브리드 서명 DX** — 멱등성이 보장되는 단 한 번의 호출
+  (`ensurePqcRegistered` / `migrateToHybrid`)로 서명자의 ML-DSA-87 키를
+  등록할 수 있으며, 바로 사용할 수 있는 React 배지도 제공됩니다.
+  [하이브리드 서명](/sdk/guides/quantum-safe)을 참고하세요.
 
 0.6.0과 0.7.0에서는 체인 수준의 기능 두 가지가 더 추가되었습니다(두 번째
 기능은 아래에 설명하듯 아직 라이브 네트워크에서 사용할 수 없습니다):
@@ -104,8 +104,8 @@ SDK는 현재 ML-DSA-87 키 생성, 서명, 검증과 함께 하이브리드 트
   [인증자 및 위임 지출](/sdk/guides/authenticators)을 참고하세요.
 
 새로운 **`@qorechain/react`** 키트(프로바이더, 훅, `ConnectButton`,
-`QuantumSafeBadge`)는 양자 내성 dApp 구축을 기본 경로로 만들어 줍니다 —
-[React 키트 가이드](/sdk/guides/react)를 참고하세요. 전체적인 근거는
+`QuantumSafeBadge`)는 하이브리드 ML-DSA-87 서명을 사용하는 dApp 구축을 기본
+경로로 만들어 줍니다 — [React 키트 가이드](/sdk/guides/react)를 참고하세요. 전체적인 근거는
 [왜 QoreChain SDK인가](/sdk/why)에서 확인하세요.
 
 ## SDK 제품군

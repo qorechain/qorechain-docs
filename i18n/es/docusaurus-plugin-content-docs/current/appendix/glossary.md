@@ -13,7 +13,7 @@ Referencia alfabética de términos, abreviaturas y acrónimos utilizados a lo l
 
 **AMM** — Creador de Mercado Automatizado (Automated Market Maker). El módulo nativo de liquidez en cadena de QoreChain (`x/amm`) que proporciona pools de producto constante, swaps y provisión de liquidez directamente a nivel de protocolo, sin un despliegue externo de contrato inteligente. Consulta [AMM](/architecture/amm).
 
-**Ventana de autorización (EVM)** — Un permiso acotado (bloques, número de transacciones, valor total) que se abre con un mensaje del carril Cosmos firmado con firma post-cuántica y dentro del cual debe caer una transacción del carril EVM desde v3.2.0. Desde v3.2.3 una ventana puede restringirse a transferencias nativas únicamente o a una lista de destinatarios. Consulta [Ventana de autorización EVM](/getting-started/first-transaction#evm-window).
+**Ventana de autorización (EVM)** — Un permiso acotado (bloques, número de transacciones, valor total) que se abre con un mensaje del carril Cosmos que lleva una firma híbrida ML-DSA-87 (FIPS 204) y dentro del cual debe caer una transacción del carril EVM desde v3.2.0. Desde v3.2.3 una ventana puede restringirse a transferencias nativas únicamente o a una lista de destinatarios. Consulta [Ventana de autorización EVM](/getting-started/first-transaction#evm-window).
 
 **BPF** — Berkeley Packet Filter. El formato de bytecode utilizado por el runtime SVM para ejecutar programas en cadena. Los programas se compilan a BPF antes del despliegue.
 
@@ -39,11 +39,11 @@ Referencia alfabética de términos, abreviaturas y acrónimos utilizados a lo l
 
 **IBC** — Comunicación entre Cadenas de Bloques (Inter-Blockchain Communication). Un protocolo para el paso autenticado de mensajes entre cadenas de bloques independientes. QoreChain admite canales IBC para transferencias de tokens entre cadenas y retransmisión de datos.
 
-**Nodo ligero** — Un cliente de bajos recursos que sigue la cadena contrastando las cabeceras de bloque con uno o varios endpoints RPC, sin mantener el estado completo. No atiende consultas de otros. La división de comisiones del protocolo reserva una cuota del **3%** para el programa de recompensas de nodos ligeros. El registro en el programa está abierto y sujeto a una licencia `lightnode_operator` (50 $, que se compra en el Dashboard); a 20 de octubre de 2026 se habían concedido seis licencias en la mainnet y todavía no se había registrado ningún nodo ligero. Ejecutar un nodo no requiere licencia. Consulta [Nodo ligero](/light-node/overview) y su [estado del programa de recompensas](/light-node/overview#reward-program-status).
+**Nodo ligero** — Un cliente de bajos recursos que sigue la cadena contrastando las cabeceras de bloque con uno o varios endpoints RPC, sin mantener el estado completo. No atiende consultas de otros. La división de comisiones del protocolo reserva una cuota del **3%** para el programa de recompensas de nodos ligeros. El registro en el programa está abierto y sujeto a una licencia `lightnode_operator` (50 $, que se compra en el Dashboard); a 27 de octubre de 2026 se habían concedido siete licencias en la mainnet y se había registrado un nodo ligero en cada red. Ejecutar un nodo no requiere licencia. Consulta [Nodo ligero](/light-node/overview) y su [estado del programa de recompensas](/light-node/overview#reward-program-status).
 
 **MEV** — Valor Máximo Extraíble (Maximal Extractable Value). El beneficio que se puede obtener reordenando, insertando o censurando transacciones dentro de un bloque. El módulo FairBlock de QoreChain (cifrado tIBE) está diseñado para mitigar la extracción de MEV; todavía no está habilitado.
 
-**ML-DSA-87** — Algoritmo de Firma Digital basado en Retículos Modulares (Module-Lattice Digital Signature Algorithm, nivel de seguridad 5). El esquema de firma digital post-cuántica estandarizado por el NIST que utiliza QoreChain para la firma de transacciones resistente a la computación cuántica. Produce firmas de 4.627 bytes con claves públicas de 2.592 bytes.
+**ML-DSA-87** — Algoritmo de Firma Digital basado en Retículos Modulares (Module-Lattice Digital Signature Algorithm, nivel de seguridad 5). El esquema de firma digital post-cuántica estandarizado por el NIST que utiliza QoreChain, junto con secp256k1, para las firmas híbridas de transacción en el carril nativo. Produce firmas de 4.627 bytes con claves públicas de 2.592 bytes.
 
 **ML-KEM-1024** — Mecanismo de Encapsulación de Claves basado en Retículos Modulares (Module-Lattice Key Encapsulation Mechanism, nivel de seguridad 5). Un esquema de encapsulación de claves post-cuántica estandarizado por el NIST, disponible en el registro de algoritmos PQC de QoreChain para futuros canales de comunicación cifrados.
 
@@ -79,7 +79,7 @@ Referencia alfabética de términos, abreviaturas y acrónimos utilizados a lo l
 
 **SNARK** — Argumento Sucinto No Interactivo de Conocimiento (Succinct Non-interactive Argument of Knowledge). Un tipo de prueba de conocimiento cero que puede verificarse rápidamente con un tamaño de prueba pequeño. Admitido como paradigma de liquidación en el módulo RDK para zk-rollups.
 
-**STARK** — Argumento Escalable y Transparente de Conocimiento (Scalable Transparent Argument of Knowledge). Un sistema de prueba de conocimiento cero que no requiere configuración de confianza y es resistente a la computación cuántica. Disponible como sistema de prueba alternativo para la liquidación de zk-rollups en el RDK.
+**STARK** — Argumento Escalable y Transparente de Conocimiento (Scalable Transparent Argument of Knowledge). Un sistema de prueba de conocimiento cero que no requiere configuración de confianza y se basa en funciones hash en lugar de curvas elípticas. Disponible como sistema de prueba alternativo para la liquidación de zk-rollups en el RDK.
 
 **Cuota de stakers varados / reserva del pool de recompensas** — Cantidades registradas en la actualización a v3.2.0 que solo se mueven mediante una votación de gobernanza; la gobernanza las liberó en octubre de 2026 (el remanente corregido de la cuota varada, recalculado en v3.2.3, lo liberó la propuesta 12). Consulta [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 

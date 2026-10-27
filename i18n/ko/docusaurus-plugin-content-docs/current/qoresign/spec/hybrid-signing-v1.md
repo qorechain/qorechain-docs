@@ -110,7 +110,7 @@ ML-DSA-87 서명은 `ML-DSA.Sign(sk, signBytes, ctx = "")`입니다. 네트워�
 - EVM 레인: Ethereum 트랜잭션에는 확장을 위한 필드가 없으므로 ML-DSA-87 서명을 담지 않습니다.
   ML-DSA-87 키가 등록된 계정은 Native 레인에서 제한된 EVM 승인 윈도우(만료 높이, 최대 트랜잭션 수,
   최대 금액)를 열 수 있습니다.
-  [EVM 지갑: 양자 대비 모드](/qoresign/guides/evm-quantum-ready)를 참고하세요.
+  [EVM 지갑: 승인 윈도우](/qoresign/guides/evm-quantum-ready)를 참고하세요.
 - SVM 레인: 아직 네트워크에서 열리지 않았습니다.
 
 ## 테스트 벡터 {#test-vectors}

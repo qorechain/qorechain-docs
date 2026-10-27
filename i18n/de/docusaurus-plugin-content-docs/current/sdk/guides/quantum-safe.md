@@ -1,22 +1,21 @@
 ---
 slug: /sdk/guides/quantum-safe
-title: Standardmäßig quantensicher
-sidebar_label: Quantensicher
+title: Standardmäßig hybrides Signieren
+sidebar_label: Hybrides Signieren
 sidebar_position: 6
 ---
 
-# Standardmäßig quantensicher
+# Standardmäßig hybrides Signieren
 
 QoreChain behandelt Post-Quanten-Kryptografie als **erstklassiges** Signaturverfahren.
 Ein Konto registriert einen **ML-DSA-87-Schlüssel (Dilithium-5, NIST FIPS 204)** on-chain,
 woraufhin seine Transaktionen eine **hybride** Signatur tragen können — die übliche
 klassische secp256k1-Signatur **plus** eine ML-DSA-87-Signatur. Der Ante-Handler der Chain
-verifiziert beide, sodass ein quantensicheres Konto vollständig mit der klassischen
-Verifikation kompatibel bleibt und gleichzeitig Schutz gegen einen künftigen quantenbasierten
-Angreifer erhält.
+verifiziert beide, sodass ein Konto mit registriertem Schlüssel vollständig mit der klassischen
+Verifikation kompatibel bleibt, während seine Transaktionen zusätzlich eine Post-Quanten-Signatur tragen.
 
 Das SDK fasst dies in eine winzige, idempotente Oberfläche zusammen, sodass eine dApp
-**standardmäßig quantensicher** wird: ein Aufruf zum PQC-Schutz. Auf den Live-Netzwerken
+**standardmäßig hybrid** signiert: ein Aufruf registriert den Schlüssel. Auf den Live-Netzwerken
 ist dies für Transaktionen auf dem Native-Pfad nicht optional: Der Schlüssel muss
 **explizit** registriert werden (es gibt keine automatische Registrierung bei der ersten
 Transaktion), und jede Transaktion auf dem Native-Pfad muss danach die hybride Signatur tragen.
@@ -67,7 +66,7 @@ aktiv, und im Testnet wird es als aktiv geführt (geprüft am 27. Oktober 2026; 
 
 ## Registrierung in einem Aufruf {#register-in-one-call}
 
-`ensurePqcRegistered` macht ein Konto quantensicher. Es erstellt und sendet
+`ensurePqcRegistered` registriert den ML-DSA-87-Schlüssel des Kontos. Es erstellt und sendet
 `MsgRegisterPQCKeyV2` mit dem ML-DSA-87-Public-Key des Signierers. Es ist **idempotent**:
 Es liest zuerst den Status des Kontos (über REST, wenn Sie `rest` übergeben), überspringt
 die Registrierung, wenn das Konto bereits den Schlüssel dieses Schlüsselpaars hält, und kann
@@ -280,7 +279,7 @@ await migratePqcKeyHybrid({
 ## In der UI
 
 Das [`@qorechain/react`](/sdk/guides/react)-Kit stellt all dies in React bereit: der
-`usePqcStatus`-Hook und die `<QuantumSafeBadge/>`-Komponente zeigen einen **Quantum-safe**-
+`usePqcStatus`-Hook und die `<QuantumSafeBadge/>`-Komponente zeigen einen Status-
 Indikator an, sobald das verbundene Konto einen registrierten PQC-Schlüssel besitzt. Beide lesen den
 Status über `getPqcStatus` mit dem zusammengesetzten Client, sodass sie ihn ab `@qorechain/react`
 0.9.0 über REST lesen und gegen die öffentlichen Endpunkte funktionieren; 0.8.x konnte dort

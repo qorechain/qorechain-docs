@@ -1,22 +1,21 @@
 ---
 slug: /sdk/guides/quantum-safe
-title: Quantum-safe per impostazione predefinita
-sidebar_label: Quantum-safe
+title: Firma ibrida per impostazione predefinita
+sidebar_label: Firma ibrida
 sidebar_position: 6
 ---
 
-# Quantum-safe per impostazione predefinita
+# Firma ibrida per impostazione predefinita
 
 QoreChain tratta la crittografia post-quantistica come uno schema di firma **di prima classe**.
 Un account registra on-chain una chiave **ML-DSA-87 (Dilithium-5, NIST FIPS 204)**,
 dopodiché le sue transazioni possono portare una firma **ibrida** — la consueta
 firma classica secp256k1 **più** una firma ML-DSA-87. L'ante
-handler della catena verifica entrambe, così un account quantum-safe rimane pienamente compatibile con
-la verifica classica e guadagna al contempo protezione contro un futuro avversario
-quantistico.
+handler della catena verifica entrambe, così un account con una chiave registrata rimane pienamente compatibile con
+la verifica classica mentre le sue transazioni portano anche una firma post-quantistica.
 
-L'SDK racchiude tutto questo in una superficie minima e idempotente così che una dApp diventi
-**quantum-safe per impostazione predefinita**: una sola chiamata per essere protetta da PQC. Sulle
+L'SDK racchiude tutto questo in una superficie minima e idempotente così che una dApp firmi
+**in modo ibrido per impostazione predefinita**: una sola chiamata registra la chiave. Sulle
 reti live questo non è facoltativo per le transazioni del percorso Native: la chiave deve essere
 registrata **esplicitamente** (non esiste alcuna registrazione automatica alla prima
 transazione), e poi ogni transazione del percorso Native deve portare la firma ibrida.
@@ -67,7 +66,7 @@ attivo sulla mainnet, ed è elencato come attivo sulla testnet (verificato il 27
 
 ## Registrare con una sola chiamata {#register-in-one-call}
 
-`ensurePqcRegistered` rende un account quantum-safe. Costruisce e trasmette
+`ensurePqcRegistered` registra la chiave ML-DSA-87 dell'account. Costruisce e trasmette
 `MsgRegisterPQCKeyV2` con la chiave pubblica ML-DSA-87 del firmatario. È **idempotente**:
 legge prima lo stato dell'account (tramite REST quando passi `rest`), salta la
 registrazione quando l'account detiene già la chiave di questa coppia di chiavi, ed è quindi
@@ -274,7 +273,7 @@ await migratePqcKeyHybrid({
 ## Nell'interfaccia utente
 
 Il kit [`@qorechain/react`](/sdk/guides/react) espone tutto questo in React: l'hook
-`usePqcStatus` e il componente `<QuantumSafeBadge/>` mostrano un indicatore **Quantum-safe**
+`usePqcStatus` e il componente `<QuantumSafeBadge/>` mostrano un indicatore di stato
 ogni volta che l'account connesso ha una chiave PQC registrata. Entrambi leggono lo
 stato tramite `getPqcStatus` con il client composto, quindi da `@qorechain/react`
 0.9.0 lo leggono tramite REST e funzionano contro gli endpoint pubblici; la 0.8.x

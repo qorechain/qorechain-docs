@@ -40,7 +40,7 @@ The node's Dilithium-5 key has no address of its own: on QoreChain a post-quantu
 
 ### Mainnet: buy on the Dashboard
 
-Licences are bought on the QoreChain Dashboard at **Tools → Light Node**. A licence costs **$50**, paid in USDT on ERC-20, BEP-20 or TRC-20; the payment is verified on its chain. You must enter the `qor1…` address the licence is for **before** paying; use the operator address described above.
+Licences are bought on the QoreChain Dashboard at **Nodes & Validators → Light Node** (the sidebar entry used to be called **Tools**; the page is still at `/tools`). The page needs sign-in, and the tab follows the network chosen in the header. A licence costs **$50**, paid in USDT on ERC-20, BEP-20 or TRC-20; the payment is verified on its chain. You must enter the `qor1…` address the licence is for **before** paying; use the operator address described above.
 
 The grant is a separate on-chain step, signed by hand and sent in batches. Until the chain confirms it, the tab shows **Paid, awaiting on-chain grant**, and the node keeps reporting that the address has no licence. `lightnode-sx status` shows a `Licence:` line that changes to `active` when the grant lands. You can also check it directly:
 
@@ -48,9 +48,15 @@ The grant is a separate on-chain step, signed by hand and sent in batches. Until
 curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator
 ```
 
-### Testnet: on request
+### Testnet: free and self-service
 
-Nothing is sold on testnet. Testnet licences are free and granted by the testnet licence authority on request: write to nodes@qorechain.io with your testnet `qor1…` address.
+Nothing is sold on testnet. Testnet licences are free:
+
+1. Open the Dashboard, go to **Nodes & Validators → Light Node**, and select the testnet in the header.
+2. Under **Free testnet licence**, enter the `qor1…` address your node will sign with (one whose recovery words you hold, not a wallet the Dashboard created for you) and select **Request licence**.
+3. The tab shows "Requested for …" while the grant is signed, then "Granted to … You can register your node now." Grants on testnet are signed automatically, usually within minutes. If the grant could not be signed, the tab says so and you can request again.
+
+There is one request per account and one per address. Mainnet grants stay manual (see above). The result is the same on chain: check it with `GET https://api-testnet.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator`.
 
 ## Registering the node
 
@@ -81,7 +87,7 @@ The passphrase protects both keys in the node's keyring: the node's post-quantum
 
 `register` reads `operator_address` and the keys from the keyring, then:
 
-1. **Checks the licence.** It asks the chain whether `operator_address` holds an active `lightnode_operator` licence. Without one it stops and says where to get one. From 3.1.10 the message points to **Tools → Light Node** on mainnet and, on testnet, to a free licence on request at nodes@qorechain.io (3.1.9 still named the Dashboard's old tab). A licence that has expired or is suspended is reported as such. A node that is already registered is reported as such, and nothing is sent.
+1. **Checks the licence.** It asks the chain whether `operator_address` holds an active `lightnode_operator` licence. Without one it stops and says where to get one. The message points to the Dashboard's Light Node tab, using the sidebar's earlier name **Tools → Light Node**: on mainnet it says to buy a licence there, and on the testnet it says to request one there with the testnet selected (the self-service **Request licence** described above). The tab is now under **Nodes & Validators**. 3.1.9 still named the Dashboard's old tab. A licence that has expired or is suspended is reported as such. A node that is already registered is reported as such, and nothing is sent.
 2. **Attaches the post-quantum key**, unless the account already has one. An account with no post-quantum key may only send this one message, signed classically (without the hybrid extension); the node sends it that way and includes a proof of possession of the key where the chain supports it.
 3. **Delegates the missing stake**, only if you name a validator with `--delegate-to qorvaloper1...`. Without `--delegate-to`, if the account is below the minimum, it stops and says how much is missing. From 3.1.10 it counts only stake delegated to **bonded** validators, as the chain does; 3.1.9 also counted jailed or unbonded validators and could then be refused on chain, so delegate to an active validator if you run 3.1.9.
 4. **Registers the node** with the 1 QOR fee.
@@ -134,11 +140,11 @@ Until the node is registered it does not send heartbeats; it logs why instead, o
 
 ## The Dashboard's Light Node tab
 
-The QoreChain Dashboard's **Tools → Light Node** tab brings the steps together:
+The QoreChain Dashboard's **Nodes & Validators → Light Node** tab brings the steps together:
 
 1. **Downloads.** It links the light-node binaries for the selected network (the same files as `https://download.qore.host/<net>/lightnode/latest.json`, with their sha256 checksums).
 2. **Setup steps.** It shows the five steps above, matched to the version in the release manifest, and whether registration is open, read from the manifest's `registration` field.
-3. **Licence purchase** (mainnet only). It takes the licence address before payment and shows **Paid, awaiting on-chain grant** until the chain confirms the grant. It warns you if the address you enter is your own custodial Dashboard wallet, and it notes, for information, if the address already has a post-quantum key.
+3. **Licence** (mainnet purchase, testnet free request). On mainnet it takes the licence address before payment and shows **Paid, awaiting on-chain grant** until the chain confirms the grant. On testnet it shows the **Request licence** form. It warns you if the address you enter is your own custodial Dashboard wallet, and it notes, for information, if the address already has a post-quantum key.
 4. **Status.** A status panel shows the node's state as read from the chain.
 
 The registration itself is always the transaction sent by `lightnode-sx register` (or `lightnode-ux register`). The Dashboard does not register nodes; its old registration form, which only stored a record, has been removed.

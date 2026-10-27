@@ -93,7 +93,7 @@ sayfasındadır.
 
 SDK **0.8.2 veya daha yenisiyle** koddan bir pencere açabilirsiniz (**0.9.0**, aşağıdaki
 kapsam seçeneklerini ekler). Anahtarın kaydedilmesi (bir kez)
-[Kuantuma dayanıklı](/sdk/guides/quantum-safe) sayfasında
+[Hibrit imzalama](/sdk/guides/quantum-safe) sayfasında
 açıklanmıştır; aşağıdaki örnek bundan sonra birleşik bir eth-native hesap için bir
 pencere açar (`npm i
 @cosmjs/stargate`):

@@ -143,7 +143,7 @@ oder die `0x`-Form desselben Kontos denselben Schlüssel ergibt.
 Jede Sprache hat dieselbe Funktion (Python `derive_pqc_canonical`, Go
 `authenticator.DerivePQCCanonical`, Rust `try_derive_pqc_canonical`, Java
 `Authenticator.derivePqcCanonical`; siehe die
-[Tabelle im Leitfaden Quantensicher](/sdk/guides/quantum-safe#canonical-derivation)),
+[Tabelle im Leitfaden Hybrides Signieren](/sdk/guides/quantum-safe#canonical-derivation)),
 und dieselben `{ address, mnemonic }` ergeben in allen denselben Schlüssel (für
 TypeScript, Python, Go und Rust im Oktober 2026 geprüft).
 

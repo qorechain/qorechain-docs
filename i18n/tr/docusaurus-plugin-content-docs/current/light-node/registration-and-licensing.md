@@ -40,7 +40,7 @@ Düğümün Dilithium-5 anahtarının kendine ait bir adresi yoktur: QoreChain'd
 
 ### Ana ağ: Dashboard'dan satın alma
 
-Lisanslar QoreChain Dashboard'da **Araçlar → Hafif Düğüm** bölümünden satın alınır. Bir lisans **50 $**'dır ve ERC-20, BEP-20 veya TRC-20 üzerinde USDT ile ödenir; ödeme kendi zincirinde doğrulanır. Lisansın verileceği `qor1…` adresini ödeme yapmadan **önce** girmeniz gerekir; yukarıda açıklanan operatör adresini kullanın.
+Lisanslar QoreChain Dashboard'da **Nodes & Validators → Light Node** bölümünden satın alınır (kenar çubuğu girişi eskiden **Tools** olarak adlandırılıyordu; sayfa hâlâ `/tools` adresindedir). Sayfa oturum açmayı gerektirir ve sekme, üst bilgide seçilen ağı izler. Bir lisans **50 $**'dır ve ERC-20, BEP-20 veya TRC-20 üzerinde USDT ile ödenir; ödeme kendi zincirinde doğrulanır. Lisansın verileceği `qor1…` adresini ödeme yapmadan **önce** girmeniz gerekir; yukarıda açıklanan operatör adresini kullanın.
 
 Verme (grant) işlemi, elle imzalanan ve toplu olarak gönderilen ayrı bir zincir üzeri adımdır. Zincir bunu onaylayana kadar sekme **Paid, awaiting on-chain grant** gösterir ve düğüm adresin lisansı olmadığını bildirmeye devam eder. `lightnode-sx status`, verme işlemi gerçekleştiğinde `active` olarak değişen bir `Licence:` satırı gösterir. Bunu doğrudan da kontrol edebilirsiniz:
 
@@ -48,9 +48,15 @@ Verme (grant) işlemi, elle imzalanan ve toplu olarak gönderilen ayrı bir zinc
 curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator
 ```
 
-### Test ağı: talep üzerine
+### Test ağı: ücretsiz ve self-servis
 
-Test ağında hiçbir şey satılmaz. Test ağı lisansları ücretsizdir ve test ağı lisans yetkilisi tarafından talep üzerine verilir: test ağı `qor1…` adresinizle birlikte nodes@qorechain.io adresine yazın.
+Test ağında hiçbir şey satılmaz. Test ağı lisansları ücretsizdir:
+
+1. Dashboard'u açın, **Nodes & Validators → Light Node** bölümüne gidin ve üst bilgiden test ağını seçin.
+2. **Free testnet licence** altında, düğümünüzün imza atacağı `qor1…` adresini girin (kurtarma kelimelerine sahip olduğunuz bir adres; Dashboard'un sizin için oluşturduğu bir cüzdan değil) ve **Request licence** düğmesini seçin.
+3. Verme işlemi imzalanırken sekme "Requested for …" gösterir, ardından "Granted to … You can register your node now." gösterir. Test ağındaki verme işlemleri otomatik olarak imzalanır, genellikle birkaç dakika içinde. Verme işlemi imzalanamadıysa sekme bunu söyler ve yeniden talep edebilirsiniz.
+
+Hesap başına bir talep ve adres başına bir talep vardır. Ana ağdaki verme işlemleri elle yapılmaya devam eder (yukarıya bakın). Zincirdeki sonuç aynıdır: `GET https://api-testnet.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator` ile kontrol edin.
 
 ## Düğümü kaydetme
 
@@ -81,7 +87,7 @@ Parola, düğümün keyring'indeki iki anahtarı da korur: düğümün kuantum-s
 
 `register`, `operator_address` değerini ve anahtarları keyring'den okur, ardından:
 
-1. **Lisansı kontrol eder.** Zincire `operator_address` adresinin aktif bir `lightnode_operator` lisansı taşıyıp taşımadığını sorar. Lisans yoksa durur ve nereden alınacağını söyler. 3.1.10'dan itibaren mesaj ana ağda **Araçlar → Hafif Düğüm** bölümüne, test ağında ise nodes@qorechain.io adresinden talep üzerine verilen ücretsiz lisansa yönlendirir (3.1.9 hâlâ Dashboard'un eski sekmesini anıyordu). Süresi dolmuş veya askıya alınmış bir lisans bu şekilde bildirilir. Zaten kayıtlı olan bir düğüm bu şekilde bildirilir ve hiçbir şey gönderilmez.
+1. **Lisansı kontrol eder.** Zincire `operator_address` adresinin aktif bir `lightnode_operator` lisansı taşıyıp taşımadığını sorar. Lisans yoksa durur ve nereden alınacağını söyler. Mesaj, kenar çubuğunun önceki adı olan **Tools → Light Node** adını kullanarak Dashboard'un Light Node sekmesine yönlendirir: ana ağda orada lisans satın almanızı, test ağında ise test ağı seçiliyken orada lisans talep etmenizi söyler (yukarıda açıklanan self-servis **Request licence**). Sekme artık **Nodes & Validators** altındadır. 3.1.9 hâlâ Dashboard'un eski sekmesini anıyordu. Süresi dolmuş veya askıya alınmış bir lisans bu şekilde bildirilir. Zaten kayıtlı olan bir düğüm bu şekilde bildirilir ve hiçbir şey gönderilmez.
 2. **Kuantum-sonrası anahtarı bağlar**, hesabın zaten bir anahtarı yoksa. Kuantum-sonrası anahtarı olmayan bir hesap yalnızca bu tek mesajı, klasik olarak imzalanmış şekilde (hibrit uzantı olmadan) gönderebilir; düğüm mesajı bu şekilde gönderir ve zincirin desteklediği yerlerde anahtara sahip olduğuna dair bir kanıt (proof of possession) ekler.
 3. **Eksik stake'i delege eder**, yalnızca `--delegate-to qorvaloper1...` ile bir doğrulayıcı belirtirseniz. `--delegate-to` olmadan, hesap minimumun altındaysa durur ve ne kadar eksik olduğunu söyler. 3.1.10'dan itibaren, zincirin yaptığı gibi yalnızca **bağlı (bonded)** doğrulayıcılara delege edilen stake'i sayar; 3.1.9 hapsedilmiş (jailed) veya bağı çözülmüş (unbonded) doğrulayıcıları da sayıyordu ve bu durumda zincirde reddedilebiliyordu, bu yüzden 3.1.9 çalıştırıyorsanız aktif bir doğrulayıcıya delege edin.
 4. **Düğümü kaydeder**, 1 QOR ücretle.
@@ -132,13 +138,13 @@ Daemon, imzalayıcısını başlangıçta seçer:
 
 Düğüm kaydedilene kadar kalp atışı göndermez; bunun yerine nedenini her durum değişikliğinde bir kez günlüğe yazar: lisans yok ya da lisans aktif ama kayıtlı değil (`register` çalıştırın). `lightnode-sx status`, nedeni günlükleri okumadan görebilmeniz için `Signer:`, `Licence:` ve `Registration:` satırlarını gösterir. İmzalayıcı olmadığında düğüm yine de çalışır ve senkronize olur, ancak zincirde aktif kalamaz ve `status` bunu söyler.
 
-## Dashboard'un Hafif Düğüm sekmesi
+## Dashboard'un Light Node sekmesi
 
-QoreChain Dashboard'un **Araçlar → Hafif Düğüm** sekmesi adımları bir araya getirir:
+QoreChain Dashboard'un **Nodes & Validators → Light Node** sekmesi adımları bir araya getirir:
 
 1. **İndirmeler.** Seçili ağ için hafif düğüm ikili dosyalarına (sha256 sağlama toplamlarıyla birlikte `https://download.qore.host/<net>/lightnode/latest.json` ile aynı dosyalar) bağlantı verir.
 2. **Kurulum adımları.** Yukarıdaki beş adımı sürüm manifestindeki sürüme göre gösterir ve kaydın açık olup olmadığını manifestin `registration` alanından okuyarak belirtir.
-3. **Lisans satın alma** (yalnızca ana ağ). Ödemeden önce lisans adresini alır ve zincir verme işlemini onaylayana kadar **Paid, awaiting on-chain grant** gösterir. Girdiğiniz adres kendi emanetçi Dashboard cüzdanınızsa sizi uyarır ve adresin zaten bir kuantum-sonrası anahtarı varsa bilgi amaçlı olarak belirtir.
+3. **Lisans** (ana ağda satın alma, test ağında ücretsiz talep). Ana ağda ödemeden önce lisans adresini alır ve zincir verme işlemini onaylayana kadar **Paid, awaiting on-chain grant** gösterir. Test ağında **Request licence** formunu gösterir. Girdiğiniz adres kendi emanetçi Dashboard cüzdanınızsa sizi uyarır ve adresin zaten bir kuantum-sonrası anahtarı varsa bilgi amaçlı olarak belirtir.
 4. **Durum.** Bir durum paneli, düğümün zincirden okunan durumunu gösterir.
 
 Kaydın kendisi her zaman `lightnode-sx register` (veya `lightnode-ux register`) tarafından gönderilen işlemdir. Dashboard düğüm kaydetmez; yalnızca bir kayıt tutan eski kayıt formu kaldırılmıştır.

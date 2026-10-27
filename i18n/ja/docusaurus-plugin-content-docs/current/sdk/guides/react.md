@@ -9,7 +9,7 @@ sidebar_position: 7
 
 `@qorechain/react` は `@qorechain/sdk` 上に構築された公式の React レイヤーです。1 つの
 プロバイダー、いくつかのフック、そして 2 つのすぐに使えるコンポーネント（1 行で使える
-**量子耐性**バッジを含む）を提供します。これにより、量子耐性 dApp の構築がデフォルトの道筋になります。
+PQC ステータスバッジを含む）を提供します。これにより、ハイブリッド ML-DSA-87 署名を備えた dApp の構築がデフォルトの道筋になります。
 
 ```bash
 npm i @qorechain/react @qorechain/sdk react react-dom
@@ -27,7 +27,7 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 `send` / `sendTokens` ではメインネットでもテストネットでもトランザクションを確定できません。送信には SDK の
 ハイブリッド `TxClient`
 （`client.connectTx(signer, { pqcKeypair })`、
-[量子耐性](/sdk/guides/quantum-safe#register-in-one-call)を参照）を使用してください。`usePqcStatus` と `<QuantumSafeBadge/>` は、
+[ハイブリッド署名](/sdk/guides/quantum-safe#register-in-one-call)を参照）を使用してください。`usePqcStatus` と `<QuantumSafeBadge/>` は、
 プロバイダーの合成クライアントとともに
 `getPqcStatus` を通じてステータスを読み取ります。これは SDK 0.9.0 以降 REST
 （`/qorechain/pqc/v1/account/{address}`）経由で読み取るため、`*.qore.host` に対して動作します
@@ -136,8 +136,8 @@ function Send() {
 
 ### `<QuantumSafeBadge/>`
 
-アドレスに登録済みのポスト量子鍵がある場合（`usePqcStatus` を介して）に**量子耐性**
-インジケーターを表示し、そうでない場合は控えめな「Not quantum-safe」状態を表示します。
+アドレスに登録済みのポスト量子鍵がある場合（`usePqcStatus` を介して）にステータス
+インジケーターを表示し、そうでない場合は控えめな「未登録」状態を表示します。
 デフォルトでは接続中のアカウントを対象とします。
 
 ```tsx
@@ -172,4 +172,4 @@ function Dashboard() {
 ```
 
 実行可能な [`react-dapp` サンプル](https://github.com/qorechain/qorechain-sdk/tree/main/examples/react-dapp)
-と、基盤となる SDK 呼び出しについては[量子耐性ガイド](/sdk/guides/quantum-safe)を参照してください。
+と、基盤となる SDK 呼び出しについては[ハイブリッド署名ガイド](/sdk/guides/quantum-safe)を参照してください。

@@ -115,7 +115,7 @@ typés `ContractMsg`, `FeeInput`, `InstantiateOpts`, `CosmWasmReadClient` et
 
 Ajoutez les types de messages QoreChain Native à un registre et envoyez le `MsgExecuteContract`
 via le constructeur hybride. La clé ML-DSA-87 du compte doit d'abord avoir été enregistrée
-(voir [Quantum-safe](/sdk/guides/quantum-safe)). Nécessite
+(voir [Signature hybride](/sdk/guides/quantum-safe)). Nécessite
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate` :
 
 ```ts

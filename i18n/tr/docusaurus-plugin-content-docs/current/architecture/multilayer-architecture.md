@@ -64,7 +64,7 @@ Ana zincir, tüm QoreChain ekosisteminin güven köküdür.
 | Uzlaşma    | QoreChain uzlaşması (bugün devrede olanlar için bkz. [Uzlaşma Mekanizması](/architecture/consensus-mechanism)) |
 | Güvenlik   | Dilithium-5 imzalarıyla PQC güvenceli                                          |
 | Rol        | Uzlaştırma katmanı, durum bağlantısı (anchor) depolama, QCAI yönlendirme motoru, güven kökü |
-| Blok süresi | Ağa bağlıdır: ana ağda yaklaşık 3.2 saniye, test ağında yaklaşık 1.3 saniye (27 Ekim 2026'da ölçülmüştür) |
+| Blok süresi | Ağa bağlıdır: ana ağda yaklaşık 3.1 saniye, test ağında yaklaşık 1.3 saniye (27 Ekim 2026'da ölçülmüştür) |
 
 Tüm alt katmanlar, durum köklerini Hiyerarşik Bağlılık Şemaları (HCS) aracılığıyla periyodik olarak ana zincire bağlar.
 

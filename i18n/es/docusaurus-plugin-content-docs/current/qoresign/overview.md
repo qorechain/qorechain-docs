@@ -26,11 +26,11 @@ de prueba están en el repositorio
 | Carril | Qué hace QoreSign hoy |
 |---|---|
 | **Nativo** (Cosmos SDK) | Firma y verificación híbridas. La red exige por defecto la firma ML-DSA-87. |
-| **EVM** | Solo modo quantum-ready: la cuenta registra una clave ML-DSA-87 y abre desde el carril nativo una ventana de autorización acotada. Las transacciones de Ethereum en sí no llevan ninguna firma ML-DSA-87. |
+| **EVM** | Solo ventana de autorización: la cuenta registra una clave ML-DSA-87 y abre desde el carril nativo una ventana de autorización acotada. Las transacciones de Ethereum en sí no llevan ninguna firma ML-DSA-87. |
 | **SVM** | Aún no está abierto en la red (`LANE_NOT_AVAILABLE`). |
 
 La firma híbrida en EVM requiere antes soporte PQC por carril en la red.
-Consulta [Carteras EVM: modo quantum-ready](/qoresign/guides/evm-quantum-ready).
+Consulta [Carteras EVM: ventana de autorización](/qoresign/guides/evm-quantum-ready).
 
 ## Paquetes {#packages}
 
@@ -83,7 +83,7 @@ difusión, verificación del inicio de sesión contra la cadena) están en
 - Guías
   - [Añadir firma híbrida a una cartera compatible con Keplr](/qoresign/guides/keplr-compatible-wallets)
   - [Sign In With QoreChain: verificación en el servidor](/qoresign/guides/sign-in)
-  - [Carteras EVM: modo quantum-ready](/qoresign/guides/evm-quantum-ready)
+  - [Carteras EVM: ventana de autorización](/qoresign/guides/evm-quantum-ready)
   - [Derivación de claves: claves canónicas y el borrador HD](/qoresign/guides/key-derivation)
   - [Tamaños y transporte](/qoresign/guides/sizes-and-transport)
 - Especificaciones

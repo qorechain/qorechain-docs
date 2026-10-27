@@ -28,7 +28,7 @@ Native DA is the on-chain blob store inside `x/rdk`: each blob is keyed by rollu
 :::caution No public way to post a blob yet
 The module defines blob storage, retention and pruning, but there is **no transaction message for posting a blob** in the current releases (mainnet v3.2.4 and testnet v3.2.6; the module's messages are checked in the chain source). The chain accepts a non-empty `data_hash` on a `native` or `both` rollup only when a matching blob is stored on chain, and nothing can store one. So a settlement batch on such a rollup **must leave `data_hash` empty**: a batch that names a data hash is refused as data unavailable, after the transaction fee has been paid.
 
-The RDK follows this from **0.6.1**: `SubmitBatchInput.dataHash` is optional (omitted means empty), all six starter templates leave it empty, `dataHashError` (`data_hash_error`, `DataHashError`, `Rules.dataHashError`) exposes the rule in all five languages, and `RdkTxClient.submitBatch` refuses such a batch before broadcasting when it can read the rollup (a hybrid client with a REST endpoint). Earlier template releases put a data hash on their batches, which the chain refused.
+The RDK follows this from **0.6.1** (and so does 0.6.2): `SubmitBatchInput.dataHash` is optional (omitted means empty), all six starter templates leave it empty, `dataHashError` (`data_hash_error`, `DataHashError`, `Rules.dataHashError`) exposes the rule in all five languages, and `RdkTxClient.submitBatch` refuses such a batch before broadcasting when it can read the rollup (a hybrid client with a REST endpoint). Earlier template releases put a data hash on their batches, which the chain refused.
 :::
 
 Key concepts:
@@ -36,7 +36,7 @@ Key concepts:
 * **Blobs.** A blob is associated with a rollup ID and a blob index.
 * **Commitments.** Each blob carries a 32-byte SHAKE-256 commitment of its data, so a blob can be verified against what was committed, without trusting the storer. (The TypeScript helper `buildDaBlob()` currently hashes with SHA-256, so its `dataHash` does not match the chain's commitment, and since no transaction posts a blob, you should not send that hash in a batch on a `native` or `both` rollup anyway.)
 * **Namespaces.** Blobs can carry a rollup-specific namespace, keeping each rollup's data logically separated within shared storage.
-* **Retention and pruning.** Native blobs are retained for `blob_retention_blocks` (432,000 blocks — about 16 days at mainnet's current ≈3.2 s block time; the figure moves with block time) and then pruned to keep on-chain storage sustainable. After pruning, the raw blob data is removed while commitment metadata is retained, so the historical commitment remains verifiable even though the bytes are no longer stored on-chain.
+* **Retention and pruning.** Native blobs are retained for `blob_retention_blocks` (432,000 blocks — about 16 days at mainnet's current ≈3.1 s block time; the figure moves with block time) and then pruned to keep on-chain storage sustainable. After pruning, the raw blob data is removed while commitment metadata is retained, so the historical commitment remains verifiable even though the bytes are no longer stored on-chain.
 
 The maximum blob size and retention window are governed by the live module parameters. Query them before you design around any specific limit:
 

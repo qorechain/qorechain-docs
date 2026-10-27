@@ -114,7 +114,7 @@ const res = await execute(
 
 QoreChain Native 메시지 타입을 레지스트리에 추가하고 `MsgExecuteContract`를 하이브리드
 빌더를 통해 전송합니다. 계정의 ML-DSA-87 키가 먼저 등록되어 있어야 합니다
-([양자 내성](/sdk/guides/quantum-safe) 참고).
+([하이브리드 서명](/sdk/guides/quantum-safe) 참고).
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`가
 필요합니다:
 

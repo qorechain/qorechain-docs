@@ -152,6 +152,24 @@ qorechaind query stakingtier locks <holder_address>
 
 L'identifiant de chaîne ci-dessus est celui du testnet ; utilisez `qorechain-vladi` sur le mainnet. Comme sur le reste de cette page, signez chaque transaction générée avec `tx pqc cosign`.
 
+### Utiliser le staking à verrouillage temporel {#using-time-locks}
+
+**Étapes.** (1) Déléguez à un validateur comme d'habitude. (2) Exécutez `tx stakingtier lock` pour ce validateur avec un montant (au moins 10 QOR) et une durée de 3, 6 ou 12 mois, puis cosignez et diffusez. (3) Lisez le résultat avec `GET /qorechain/stakingtier/v1/locks/{holder}` ou `qorechaind query stakingtier locks <holder_address>` ; chaque verrou a un identifiant. (4) Réclamez avec `tx stakingtier claim` quand vous le souhaitez pour obtenir la récompense du verrou. (5) À la fin de la durée, le verrou se libère de lui-même ; pour sortir plus tôt, utilisez `tx stakingtier unlock-early <lock_id>` et acceptez la pénalité.
+
+**Où cela fonctionne, vérifié le 27 octobre 2026.**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| Module actif | Oui, depuis la hauteur 3,742,566 | Oui, depuis la v3.2.4 (hauteur 8,337,253) |
+| Verrous ouverts | Aucun pour l'instant | 3 verrous de test |
+| Undelegate de stake verrouillé | Refusé par la barrière de messages de staking lors de l'exécution de la transaction | Refusé par le mempool avant que des frais soient prélevés (testnet uniquement, jusqu'à ce que le mainnet applique la v3.2.6) |
+
+Les deux réseaux répondent à `GET /qorechain/stakingtier/v1/params` avec les mêmes réglages : trois durées, un minimum de 10 QOR (`min_lock_amount` `"10000000"` uqor), une pénalité de sortie anticipée de 500 points de base (5 %) et `enabled: true`. La réponse contient aussi les réglages de bonus en points de base ; ce manuel ne les cite pas, car un bonus n'est pas un rendement promis et les réglages peuvent être modifiés par la gouvernance. `GET /qorechain/stakingtier/v1/pool` montre le pool qui paie les récompenses des verrous.
+
+**Clients.** La ligne de commande (ci-dessus) et `@qorechain/sdk` 0.10.0, qui propose les composeurs `lockDelegation`, `unlockEarly` et `claimBonus` ainsi que les lectures `fetchStakingTierParams`, `fetchStakingLocks` et `fetchStakingTierPool` (voir [Installation du SDK](/sdk/install)). Aucune version publiée de QoreX ou du Dashboard n'a d'écran de verrouillage aujourd'hui : le verrouillage sur le mainnet se fait donc avec la CLI ou le SDK.
+
+**Ne confondez pas** avec le [staking xQORE](/user-guide/xqore-staking), qui est un mécanisme conçu mais non actif, ni avec la classification à triple pool ci-dessous, qui ne change pas ce que vous recevez.
+
 ---
 
 ## Classification à triple pool (état de la conception)
@@ -200,7 +218,7 @@ Le slashing sur QoreChain suit le module de slashing standard du Cosmos SDK avec
 
 | Événement            | Règle                                                                | Conséquence                                  |
 | -------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
-| Indisponibilité      | Signer moins de 5% des 10,000 derniers blocs (environ 8,9 heures avec les blocs d'environ 3,2 secondes du mainnet) | Mise en prison (jailed) pendant 600 secondes ; 1% de la mise slashé |
+| Indisponibilité      | Signer moins de 5% des 10,000 derniers blocs (environ 8,7 heures avec les blocs d'environ 3,1 secondes du mainnet) | Mise en prison (jailed) pendant 600 secondes ; 1% de la mise slashé |
 | Double signature     | Signer deux blocs différents à la même hauteur                       | 5% de la mise slashé                         |
 
 Le slashing s'applique à la mise liée totale d'un validateur ; les délégants en supportent donc leur part proportionnelle. Il peut aussi toucher la mise déjà en cours de désengagement depuis un validateur slashé, c'est pourquoi la période de désengagement est une mesure de sécurité et pas seulement un temps d'attente.

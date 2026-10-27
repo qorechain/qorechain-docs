@@ -91,7 +91,7 @@ transacción, como un mensaje del carril nativo (Native) con firma híbrida. Las
 
 Con el SDK **0.8.2 o posterior** puedes abrir una ventana desde código (la **0.9.0** añade
 las opciones de alcance que se describen más abajo). El registro de la clave
-(una sola vez) se describe en [Quantum-safe](/sdk/guides/quantum-safe); el ejemplo
+(una sola vez) se describe en [Firma híbrida](/sdk/guides/quantum-safe); el ejemplo
 siguiente abre entonces una ventana para una cuenta eth-nativa unificada (`npm i @cosmjs/stargate`):
 
 ```ts

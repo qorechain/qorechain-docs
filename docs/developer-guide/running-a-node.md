@@ -59,7 +59,7 @@ Substitute the appropriate `--chain-id` for your target network throughout this 
 
 ---
 
-## Recommended Hardware
+## Recommended Hardware {#recommended-hardware}
 
 | Profile                  | CPU      | RAM   | Disk (NVMe SSD)         | Network   |
 | ------------------------ | -------- | ----- | ----------------------- | --------- |
@@ -67,7 +67,7 @@ Substitute the appropriate `--chain-id` for your target network throughout this 
 | Full/archive node        | 8 cores  | 32 GB | 2 TB+ (grows over time) | 1 Gbps    |
 | Exchange integration     | 8 cores  | 32 GB | 2 TB+ with headroom     | 1 Gbps    |
 
-NVMe SSD is strongly recommended — chain state and the EVM/SVM stores are I/O intensive. Archive nodes (no pruning, full tx indexing) grow continuously; provision disk with headroom and monitoring.
+NVMe SSD is strongly recommended: chain state and the EVM/SVM stores are I/O intensive. The disk figures above are generous. Measured on mainnet (27 October 2026): a validator that joined by state sync with `pruning = "custom"` (keep-recent 100000) and `indexer = "null"` holds about 10 GB after two months, and a node on default pruning that has run since genesis holds about 100 to 130 GB after four months. Validator sizing is in [Running a Validator: Hardware](/developer-guide/running-a-validator#hardware). Archive nodes (no pruning, full tx indexing) grow continuously; provision disk with headroom and monitoring.
 
 ---
 
@@ -222,7 +222,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 
 ## Fast Bootstrap
 
-Syncing from genesis can take a long time. For integrations, use **state sync** or a **snapshot** for a fast cold start.
+Syncing from genesis can take a long time. Use **state sync** as the default way to join; a **snapshot** is a fallback only (the mainnet snapshot is from 21 August 2026 and the testnet publishes none).
 
 ### State sync
 
@@ -231,18 +231,22 @@ State sync fetches a recent application state snapshot from trusted RPC servers 
 ```toml
 [statesync]
 enable = true
-rpc_servers = "https://rpc.qore.host:443,https://rpc.qore.host:443"
+rpc_servers = "https://rpc.qore.host:443,https://<a second RPC you run or trust>:26657"
 trust_height = <TRUSTED_BLOCK_HEIGHT>
 trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Take `trust_height` / `trust_hash` from the manifest's `stateSync` field — it's refreshed hourly, so it's the preferred source:
+Take `trust_height` / `trust_hash` from the manifest's `stateSync` field. It is refreshed hourly, so it is the preferred source:
 
 ```bash
 TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
 TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 ```
+
+:::warning Two different RPC servers
+State sync cross-checks the trust point against **two** RPC servers. The manifest's `stateSync.rpcServers` lists `https://rpc.qore.host` twice on mainnet (and `https://rpc-testnet.qore.host` twice on the testnet): two identical entries satisfy the count but defeat the cross-check. Add a second RPC that you run or trust independently, and compare the trust hash with a second source, for example `curl -s "https://<second-rpc>/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash`, which must equal `$TRUST_HASH`.
+:::
 
 As a fallback/alternative, you can derive a trusted height and hash yourself from the public RPC:
 

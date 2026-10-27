@@ -137,7 +137,7 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 형태도 동일한 키를 생성합니다.
 모든 언어에 같은 함수가 있으며(Python `derive_pqc_canonical`, Go
 `authenticator.DerivePQCCanonical`, Rust `try_derive_pqc_canonical`, Java
-`Authenticator.derivePqcCanonical`; [양자 안전 가이드의
+`Authenticator.derivePqcCanonical`; [하이브리드 서명 가이드의
 표](/sdk/guides/quantum-safe#canonical-derivation) 참고), 같은
 `{ address, mnemonic }`은 모든 언어에서 같은 키를 생성합니다(2026년 10월에
 TypeScript, Python, Go, Rust에 대해 확인).
@@ -296,8 +296,8 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 ## 하이브리드 서명 {#hybrid-signing}
 
 **하이브리드** 트랜잭션은 클래식 secp256k1 서명과 ML-DSA-87 서명을 모두
-포함하므로, 클래식 검증 하에서도 유효하게 유지되면서 양자내성 보호를
-추가로 얻습니다. 양자내성 부분은 트랜잭션의 `PQCHybridSignature` 확장으로
+포함하므로, 클래식 검증 하에서도 유효하게 유지되면서 포스트 퀀텀 보호를
+추가로 얻습니다. 포스트 퀀텀 부분은 트랜잭션의 `PQCHybridSignature` 확장으로
 전달됩니다.
 
 :::caution Native 경로에서는 하이브리드 서명이 필수입니다

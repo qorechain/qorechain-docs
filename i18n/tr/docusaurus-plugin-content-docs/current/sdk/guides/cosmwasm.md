@@ -117,7 +117,7 @@ Tam argüman şekilleri `@cosmjs/cosmwasm-stargate`'i izler; SDK, tipli
 
 QoreChain Native mesaj türlerini bir registry'ye ekleyin ve `MsgExecuteContract`'ı hibrit
 oluşturucu üzerinden gönderin. Hesabın ML-DSA-87 anahtarı önce kaydedilmiş olmalıdır
-(bkz. [Kuantum güvenli](/sdk/guides/quantum-safe)). Şunu gerektirir:
+(bkz. [Hibrit imzalama](/sdk/guides/quantum-safe)). Şunu gerektirir:
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:
 
 ```ts

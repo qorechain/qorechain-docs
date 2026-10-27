@@ -140,7 +140,15 @@
     "description": "The label for category 'QoreX Wallet' in sidebar 'docsSidebar'"
   },
   "sidebar.docsSidebar.category.QoreX Wallet.link.generated-index.description": {
-    "message": "QoreX — QoreChain için resmi, saklamasız (non-custodial), kuantum güvenli cüzdan: mobil uygulama ve tarayıcı uzantısı. Kurulum, gönderme ve alma, stake etme, kurtarma ve dApp'lere bağlanma.",
+    "message": "QoreX — QoreChain için resmi, saklamasız (non-custodial) cüzdan; yerel hatta hibrit ML-DSA-87 imzalama sunar: mobil uygulama ve tarayıcı uzantısı. Kurulum, gönderme ve alma, stake etme, kurtarma ve dApp'lere bağlanma.",
     "description": "The generated-index page description for category 'QoreX Wallet' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages": {
+    "message": "Geliştirici Paketleri",
+    "description": "The label for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
+    "message": "Herkese açık her QoreChain paketi: nedir, yenilikleri nelerdir, nasıl kullanılır, nasıl erişilir ve nerede yayımlanır.",
+    "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
   }
 }

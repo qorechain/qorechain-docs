@@ -508,6 +508,18 @@ Das Staking-Tiers-Modul ist Teil von **v3.2.4**. Diese Routen werden vom Testnet
 
 `params` listet die drei Lock-Laufzeiten (3, 6 und 12 Monate) mit ihren Parametern und `min_lock_amount` (`"10000000"` uqor, 10 QOR). Locks werden mit `tx stakingtier lock` erstellt (siehe [Transaktionsbefehle](/cli-reference/transaction-commands#stakingtier)).
 
+## Reputationsmodul {#reputation-module}
+
+Die REST-Routen des Reputationsmoduls werden vom **Testnet** (`qorechain-diana`, Chain v3.2.6) bereitgestellt. Im Mainnet antwortet jede Route `/qorechain/reputation/v1/...` zum Zeitpunkt der Erstellung (27. Oktober 2026) mit HTTP `501` (`{"code":12,"message":"Not Implemented"}`); dort ist das Modul nur über gRPC erreichbar (`Params`, siehe unten). Ein späteres Mainnet-Release soll sie bereitstellen; diese Seite wird aktualisiert, sobald es so weit ist.
+
+| Methode | Endpunkt | Beschreibung |
+| ------- | -------- | ------------ |
+| GET     | `/qorechain/reputation/v1/params` | Die Score-Gewichte (`alpha`, `beta`, `gamma`, `delta`), `lambda` und `min_score` |
+| GET     | `/qorechain/reputation/v1/validator/{address}` | Der Datensatz eines Validators. `{address}` ist eine Operator-Adresse `qorvaloper1...` oder eine Konsensadresse `qorvalcons1...`. Zu den Feldern gehören `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks` und `last_updated_height`. `404` bedeutet, dass der Validator noch keinen Score hat; eine Zeichenfolge, die weder eine Operator- noch eine Konsensadresse ist, wird mit `400` beantwortet |
+| GET     | `/qorechain/reputation/v1/validators` | Die Datensätze aller bewerteten Validatoren (`reputations`) |
+
+Scores sind Dezimalzeichenfolgen zwischen 0 und 1. Der Light Node liest die Route pro Validator, um zu warnen, wenn ein delegierter Validator unter `min_reputation` liegt (siehe [Belohnungen und Überwachung](/light-node/rewards-and-monitoring#delegation-alerts)). Dieselben Routen liefern vom Mainnet-Host `501`, bis das Mainnet sie bereitstellt.
+
 ## Nur-gRPC-Module {#grpc-only-modules}
 
 Im Mainnet (Node-Release v3.2.4, geprüft am 27. Oktober 2026) haben diese Module einen gRPC-`Query`-Dienst, aber **keine REST-Route**. Die Dienstnamen folgen dem Muster `qorechain.<module>.v1.Query`.
@@ -516,7 +528,7 @@ Im Mainnet (Node-Release v3.2.4, geprüft am 27. Oktober 2026) haben diese Modul
 | ------------- | ---------------------------------------------------------- |
 | `ai`          | `Config`, `Stats`                                          |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                     |
-| `reputation`  | `Params`                                                   |
+| `reputation`  | `Params` (REST-Routen gibt es nur im Testnet, siehe [Reputationsmodul](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                               |
 | `qca`         | `Config`                                                   |

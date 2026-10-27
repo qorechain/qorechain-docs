@@ -508,6 +508,18 @@ Modulul staking-tiers face parte din **v3.2.4**. Aceste rute sunt servite de tes
 
 `params` listează cele trei durate de blocare (3, 6 și 12 luni) cu parametrii lor și `min_lock_amount` (`"10000000"` uqor, 10 QOR). Blocările se fac cu `tx stakingtier lock` (vezi [Comenzi de tranzacție](/cli-reference/transaction-commands#stakingtier)).
 
+## Modulul Reputation {#reputation-module}
+
+Rutele REST ale modulului reputation sunt servite de **testnet** (`qorechain-diana`, chain v3.2.6). Pe mainnet, fiecare rută `/qorechain/reputation/v1/...` răspunde cu HTTP `501` (`{"code":12,"message":"Not Implemented"}`) la momentul scrierii (27 octombrie 2026); acolo modulul poate fi accesat doar prin gRPC (`Params`, vezi mai jos). Se așteaptă ca o versiune ulterioară de mainnet să le servească; această pagină va fi actualizată după aceea.
+
+| Metodă | Punct final | Descriere |
+| ------ | -------- | ----------- |
+| GET    | `/qorechain/reputation/v1/params` | Ponderile scorului (`alpha`, `beta`, `gamma`, `delta`), `lambda` și `min_score` |
+| GET    | `/qorechain/reputation/v1/validator/{address}` | Înregistrarea unui validator. `{address}` este o adresă de operator `qorvaloper1...` sau o adresă de consens `qorvalcons1...`. Câmpurile includ `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks` și `last_updated_height`. `404` înseamnă că validatorul nu are încă un scor; un șir care nu este nici adresă de operator, nici adresă de consens răspunde cu `400` |
+| GET    | `/qorechain/reputation/v1/validators` | Înregistrările tuturor validatorilor cu scor (`reputations`) |
+
+Scorurile sunt șiruri zecimale între 0 și 1. Nodul light citește ruta per validator pentru a avertiza când un validator delegat se află sub `min_reputation` (vezi [Recompense și monitorizare](/light-node/rewards-and-monitoring#delegation-alerts)). Aceleași rute de pe gazda mainnet returnează `501` până când mainnet le servește.
+
 ## Module doar gRPC {#grpc-only-modules}
 
 Pe mainnet (versiunea de nod v3.2.4, verificat la 27 octombrie 2026) aceste module au un serviciu gRPC `Query`, dar **nicio rută REST**. Numele serviciilor urmează forma `qorechain.<module>.v1.Query`.
@@ -516,7 +528,7 @@ Pe mainnet (versiunea de nod v3.2.4, verificat la 27 octombrie 2026) aceste modu
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
-| `reputation`  | `Params`                                               |
+| `reputation`  | `Params` (rutele REST există doar pe testnet, vezi [Modulul Reputation](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |

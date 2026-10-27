@@ -1,16 +1,16 @@
 ---
 slug: /rollups/settlement-receipts
-title: Quantensichere Abwicklungsbelege
+title: Abwicklungsbelege
 sidebar_label: Abwicklungsbelege
 sidebar_position: 6
 ---
 
-# Quantensichere Abwicklungsbelege
+# Abwicklungsbelege
 
 Ein **Abwicklungsbeleg** ist ein portabler Nachweis dafür, dass der Abwicklungs-Batch eines Rollups unter einer Post-Quanten-Signatur an der Main Chain verankert wurde. Er benennt das Rollup, den Batch und den Anker und trägt die **ML-DSA-87**-Signatur (Dilithium-5, FIPS-204) des Ankers, also dasselbe Verfahren, das die Main Chain verwendet.
 
 :::caution Frühes Stadium: Es gibt noch keine Anker
-Belege hängen von Ankern ab, und **auf keinem der beiden Netzwerke existiert bisher ein Rollup oder ein Anker** (geprüft am 27. Oktober 2026). Seit v3.2.2 (auf beiden Netzwerken live) wird ein Batch, der mit einer `anchor_signature` eingereicht wird, in derselben Transaktion in `x/multilayer` verankert; ein Batch ohne diese Signatur wird unverankert abgewickelt. Das TypeScript-RDK (0.6.1) sendet dieses Feld, wenn sein Transaktions-Client hybrid signiert und der Ersteller des Rollups ist, und reicht andernfalls unverankert ein; die Clients für Python, Go, Rust und Java signieren nur klassisch und bauen das Feld nicht. Nichts davon wurde auf einem Live-Rollup erprobt. Betrachten Sie diese Seite als Beschreibung des Designs und der Bausteine, nicht eines Dienstes, auf den Sie sich heute verlassen können.
+Belege hängen von Ankern ab, und **auf keinem der beiden Netzwerke existiert bisher ein Rollup oder ein Anker** (geprüft am 27. Oktober 2026). Seit v3.2.2 (auf beiden Netzwerken live) wird ein Batch, der mit einer `anchor_signature` eingereicht wird, in derselben Transaktion in `x/multilayer` verankert; ein Batch ohne diese Signatur wird unverankert abgewickelt. Das TypeScript-RDK (0.6.2) sendet dieses Feld, wenn sein Transaktions-Client hybrid signiert und der Ersteller des Rollups ist, und reicht andernfalls unverankert ein; die Clients für Python, Go, Rust und Java signieren nur klassisch und bauen das Feld nicht. Nichts davon wurde auf einem Live-Rollup erprobt. Betrachten Sie diese Seite als Beschreibung des Designs und der Bausteine, nicht eines Dienstes, auf den Sie sich heute verlassen können.
 :::
 
 ## Ein Beleg ist eine Behauptung, kein Beweis {#a-receipt-is-a-claim}
@@ -46,9 +46,9 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Übergeben Sie bei jeder Verifikation einen `client`. Die Beleg-API und ihre Prüfungen haben sich zwischen den Versionen geändert, verwenden Sie daher 0.6.1 (das aktuelle Release): 0.5.0 konnte die Chain-Prüfung nicht abschließen, und 0.6.0 verglich nicht jedes Feld des Belegs (siehe unten). Die Clients für Python, Go, Rust und Java bieten dieselbe Build-/Verify-Schnittstelle; ihre 0.6.1-Releases verwenden dieselbe Singular-Route für die Schlüsselsuche, dieselbe höhenbasierte Wahl der Anker-Nachricht und denselben feldweisen Vergleich.
+Übergeben Sie bei jeder Verifikation einen `client`. Die Beleg-API und ihre Prüfungen haben sich zwischen den Versionen geändert, verwenden Sie daher 0.6.2 (das aktuelle Release; sein Beleg-Code ist der von 0.6.1): 0.5.0 konnte die Chain-Prüfung nicht abschließen, und 0.6.0 verglich nicht jedes Feld des Belegs (siehe unten). Die Clients für Python, Go, Rust und Java bieten dieselbe Build-/Verify-Schnittstelle; ihre 0.6.1- und 0.6.2-Releases verwenden dieselbe Singular-Route für die Schlüsselsuche, dieselbe höhenbasierte Wahl der Anker-Nachricht und denselben feldweisen Vergleich.
 
-### Was 0.6.1 verifiziert {#what-060-verifies}
+### Was 0.6.2 verifiziert {#what-060-verifies}
 
 `verifySettlementReceipt` meldet niemals `valid` allein anhand des Belegs: Ohne `client` lautet das Ergebnis `mode: "signature-only"` und `valid: false`. Mit einem `client` liest es die Chain erneut aus und meldet jede Prüfung einzeln:
 
@@ -66,9 +66,9 @@ Seit 0.6.1 trägt das Ergebnis außerdem den eigenen `anchor` der Chain und, wen
 Auf keinem der beiden Netzwerke existiert ein Anker, daher wurde dies nur gegen den Paketcode und offline geprüft, nicht gegen einen echten Anker. `buildSettlementReceipt` funktioniert erst, wenn ein Anker den Batch abdeckt.
 
 :::note Versionen vor 0.6.1
-`verifySettlementReceipt` in 0.6.0 glich den Anker der Chain anhand seiner State Root, Layer-Höhe, seines Validator-Set-Hashs und seiner Signatur ab, verglich aber die übrigen Felder, die ein Beleg zeigt, nicht (Main-Chain-Höhe, Anker-Zeitpunkt, Algorithmus, Version sowie bei einem Beleg der Version 2 die Transaktionsanzahl und der komprimierte State Proof), und behandelte die Batch-State-Root als rein informativ. Die Settlement-Aussage selbst (State Root, Anker-Signatur, Schlüssel des Erstellers) war stets gebunden; was 0.6.0 Ihnen nicht sagen konnte, war, ob die daneben ausgegebenen Metadaten mit der Chain übereinstimmten. Verwenden Sie 0.6.1.
+`verifySettlementReceipt` in 0.6.0 glich den Anker der Chain anhand seiner State Root, Layer-Höhe, seines Validator-Set-Hashs und seiner Signatur ab, verglich aber die übrigen Felder, die ein Beleg zeigt, nicht (Main-Chain-Höhe, Anker-Zeitpunkt, Algorithmus, Version sowie bei einem Beleg der Version 2 die Transaktionsanzahl und der komprimierte State Proof), und behandelte die Batch-State-Root als rein informativ. Die Settlement-Aussage selbst (State Root, Anker-Signatur, Schlüssel des Erstellers) war stets gebunden; was 0.6.0 Ihnen nicht sagen konnte, war, ob die daneben ausgegebenen Metadaten mit der Chain übereinstimmten. Verwenden Sie 0.6.2.
 
-`verifySettlementReceipt` in 0.5.0 schlug gegen die Live-Netzwerke geschlossen fehl (fail closed), aus zwei Gründen, die im Client lagen, nicht in der Chain: Er schlug den Schlüssel des Erstellers über eine Pluralform `accounts` der Post-Quanten-Kontoroute nach, die die Netzwerke nicht bereitstellen (HTTP 501), und er baute nur die v1-Nachricht nach, die die Chain für Anker seit v3.2.2 nicht mehr akzeptiert. Ein echter Beleg konnte daher nicht verifiziert werden, und ein gefälschter wurde dennoch zurückgewiesen. Verwenden Sie 0.6.1.
+`verifySettlementReceipt` in 0.5.0 schlug gegen die Live-Netzwerke geschlossen fehl (fail closed), aus zwei Gründen, die im Client lagen, nicht in der Chain: Er schlug den Schlüssel des Erstellers über eine Pluralform `accounts` der Post-Quanten-Kontoroute nach, die die Netzwerke nicht bereitstellen (HTTP 501), und er baute nur die v1-Nachricht nach, die die Chain für Anker seit v3.2.2 nicht mehr akzeptiert. Ein echter Beleg konnte daher nicht verifiziert werden, und ein gefälschter wurde dennoch zurückgewiesen. Verwenden Sie 0.6.2.
 :::
 
 ## CLI {#cli}

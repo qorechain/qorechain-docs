@@ -55,6 +55,7 @@ const sidebars: SidebarsConfig = {
         "user-guide/bridging-assets",
         "user-guide/deploying-rollups",
         "user-guide/gas-abstraction",
+        "user-guide/guardians",
       ],
     },
     {
@@ -197,6 +198,24 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Developer Packages",
+      link: {
+        type: "generated-index",
+        slug: "/developer-tools",
+        description:
+          "Every public QoreChain package: what it is, what is new in it, how to use it, how to access it, and where it is published.",
+      },
+      items: [
+        "developer-tools/overview",
+        "developer-tools/wallet-adapter",
+        "developer-tools/chain-bridge",
+        "developer-tools/pqc-library",
+        "developer-tools/scaffolders-and-cli",
+        "developer-tools/qorex-integrations",
+      ],
+    },
+    {
+      type: "category",
       label: "QoreSign",
       link: {
         type: "generated-index",
@@ -253,9 +272,11 @@ const sidebars: SidebarsConfig = {
         "dashboard/smart-contract-creator",
         "dashboard/contract-auditor",
         "dashboard/staking-and-validators",
+        "dashboard/validators",
         "dashboard/faucet",
         "dashboard/quests",
         "dashboard/tools-hub",
+        "dashboard/developers",
       ],
     },
     {
@@ -265,7 +286,7 @@ const sidebars: SidebarsConfig = {
         type: "generated-index",
         slug: "/qorex",
         description:
-          "QoreX — the official non-custodial, quantum-safe wallet for QoreChain: mobile app and browser extension. Set up, send and receive, stake, recover, and connect to dApps.",
+          "QoreX — the official non-custodial wallet for QoreChain, with hybrid ML-DSA-87 signing on the native lane: mobile app and browser extension. Set up, send and receive, stake, recover, and connect to dApps.",
       },
       items: [
         "qorex/overview",

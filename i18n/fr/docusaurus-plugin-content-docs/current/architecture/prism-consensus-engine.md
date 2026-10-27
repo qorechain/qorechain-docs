@@ -243,7 +243,7 @@ Toutes les fonctions opèrent sur des valeurs `cosmossdk.io/math.LegacyDec`, gar
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Changement de paramètre maximal en mode Autonomous   |
 | `circuit_breaker_window`         | uint64    | `50`         | Nombre de blocs récents surveillés par le disjoncteur |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Fraction minimale de blocs sains avant déclenchement  |
-| `default_block_time_ms`          | int64     | `5000`       | Temps de bloc cible par défaut (ms) utilisé comme référence d'observation ; le temps de bloc réel est d'environ 3,2 s sur le mainnet et d'environ 1,3 s sur le testnet |
+| `default_block_time_ms`          | int64     | `5000`       | Temps de bloc cible par défaut (ms) utilisé comme référence d'observation ; le temps de bloc réel est d'environ 3,1 s sur le mainnet et d'environ 1,3 s sur le testnet |
 | `default_base_gas_price`         | LegacyDec | `100`        | Prix de gas de base par défaut                       |
 | `default_validator_set_size`     | uint64    | `100`        | Taille cible par défaut de l'ensemble des validateurs |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Poids de récompense pour l'amélioration du débit     |

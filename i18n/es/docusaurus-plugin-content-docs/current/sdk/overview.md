@@ -9,7 +9,7 @@ sidebar_position: 1
 
 El SDK de QoreChain es el kit de desarrollo oficial multilenguaje para construir
 aplicaciones descentralizadas sobre **QoreChain**, una red Layer 1 de triple VM
-y resistente a la computación cuántica.
+con firmas híbridas ML-DSA-87 (FIPS 204).
 
 Esta documentación cubre cómo instalar el SDK, conectarse a la red, leer el
 estado on-chain, derivar cuentas, firmar y enviar transacciones, y trabajar con
@@ -59,7 +59,7 @@ y [Qué añade la 0.10.0](/sdk/install#whats-new-0100).
 Firma para wallets y backends: consulta [QoreSign](/qoresign/overview).
 :::
 
-### Resistente a la computación cuántica por diseño
+### Firma híbrida ML-DSA-87
 
 QoreChain proporciona primitivas de criptografía poscuántica (PQC) basadas en
 **ML-DSA-87** (Dilithium-5, FIPS 204). Junto a la firma clásica secp256k1, la
@@ -91,10 +91,10 @@ ninguna otra Layer 1 tiene:
   `createCrossVMClient` llama a un contrato en cualquier VM y `callAtomic`
   agrupa varias llamadas entre VMs en una sola transacción atómica firmada una
   única vez. Consulta [Llamadas cross-VM](/sdk/guides/cross-vm).
-- **DX resistente a la computación cuántica** — haz que un firmante quede
-  protegido de forma poscuántica con una sola llamada idempotente
+- **DX de firma híbrida** — registra la clave ML-DSA-87 de un firmante con una
+  sola llamada idempotente
   (`ensurePqcRegistered` / `migrateToHybrid`), con una insignia React lista
-  para usar. Consulta [Quantum-safe](/sdk/guides/quantum-safe).
+  para usar. Consulta [Firma híbrida](/sdk/guides/quantum-safe).
 
 Otras dos capacidades a nivel de cadena llegaron en 0.6.0 y 0.7.0 (la segunda
 aún no se puede usar en las redes en vivo, véase más abajo):
@@ -111,8 +111,8 @@ aún no se puede usar en las redes en vivo, véase más abajo):
   [Autenticadores y gasto delegado](/sdk/guides/authenticators).
 
 Un nuevo kit **`@qorechain/react`** (provider, hooks, `ConnectButton`,
-`QuantumSafeBadge`) convierte la construcción de una dApp resistente a la
-computación cuántica en el camino por defecto — consulta la
+`QuantumSafeBadge`) convierte la construcción de una dApp con firma híbrida
+ML-DSA-87 en el camino por defecto — consulta la
 [guía del kit de React](/sdk/guides/react). Para el argumento completo, lee
 [Por qué el SDK de QoreChain](/sdk/why).
 

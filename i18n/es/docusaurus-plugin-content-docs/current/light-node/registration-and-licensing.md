@@ -40,7 +40,7 @@ La clave Dilithium-5 del nodo no tiene dirección propia: en QoreChain una clave
 
 ### Mainnet: compra en el Dashboard
 
-Las licencias se compran en el Dashboard de QoreChain en **Tools → Light Node**. Una licencia cuesta **50 $**, pagados en USDT en ERC-20, BEP-20 o TRC-20; el pago se verifica en su cadena. Debes introducir la dirección `qor1…` a la que se destina la licencia **antes** de pagar; usa la dirección de operador descrita arriba.
+Las licencias se compran en el Dashboard de QoreChain en **Nodes & Validators → Light Node** (la entrada de la barra lateral se llamaba antes **Tools**; la página sigue en `/tools`). La página requiere iniciar sesión, y la pestaña sigue la red elegida en la cabecera. Una licencia cuesta **50 $**, pagados en USDT en ERC-20, BEP-20 o TRC-20; el pago se verifica en su cadena. Debes introducir la dirección `qor1…` a la que se destina la licencia **antes** de pagar; usa la dirección de operador descrita arriba.
 
 La concesión es un paso on-chain aparte, firmado a mano y enviado por lotes. Hasta que la cadena la confirma, la pestaña muestra **Paid, awaiting on-chain grant**, y el nodo sigue informando de que la dirección no tiene licencia. `lightnode-sx status` muestra una línea `Licence:` que pasa a `active` cuando llega la concesión. También puedes comprobarlo directamente:
 
@@ -48,9 +48,15 @@ La concesión es un paso on-chain aparte, firmado a mano y enviado por lotes. Ha
 curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator
 ```
 
-### Testnet: bajo solicitud
+### Testnet: gratuita y de autoservicio
 
-En testnet no se vende nada. Las licencias de testnet son gratuitas y las concede bajo solicitud la autoridad de licencias de testnet: escribe a nodes@qorechain.io con tu dirección `qor1…` de testnet.
+En testnet no se vende nada. Las licencias de testnet son gratuitas:
+
+1. Abre el Dashboard, ve a **Nodes & Validators → Light Node** y selecciona testnet en la cabecera.
+2. En **Free testnet licence**, introduce la dirección `qor1…` con la que firmará tu nodo (una cuyas palabras de recuperación tengas, no una wallet creada por el Dashboard para ti) y selecciona **Request licence**.
+3. La pestaña muestra "Requested for …" mientras se firma la concesión y después "Granted to … You can register your node now." Las concesiones en testnet se firman automáticamente, normalmente en unos minutos. Si no se pudo firmar la concesión, la pestaña lo indica y puedes volver a solicitarla.
+
+Hay una solicitud por cuenta y una por dirección. Las concesiones en mainnet siguen siendo manuales (ver arriba). El resultado on-chain es el mismo: compruébalo con `GET https://api-testnet.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator`.
 
 ## Registrar el nodo
 
@@ -81,7 +87,7 @@ La frase de contraseña protege ambas claves del keyring del nodo: la clave post
 
 `register` lee `operator_address` y las claves del keyring, y luego:
 
-1. **Comprueba la licencia.** Pregunta a la cadena si `operator_address` tiene una licencia `lightnode_operator` activa. Sin ella se detiene e indica dónde conseguir una. Desde 3.1.10 el mensaje remite a **Tools → Light Node** en mainnet y, en testnet, a una licencia gratuita bajo solicitud en nodes@qorechain.io (3.1.9 todavía nombraba la antigua pestaña del Dashboard). Una licencia caducada o suspendida se notifica como tal. Un nodo que ya está registrado se notifica como tal, y no se envía nada.
+1. **Comprueba la licencia.** Pregunta a la cadena si `operator_address` tiene una licencia `lightnode_operator` activa. Sin ella se detiene e indica dónde conseguir una. El mensaje remite a la pestaña Light Node del Dashboard, con el nombre anterior de la barra lateral **Tools → Light Node**: en mainnet indica que allí se compra una licencia y, en testnet, que allí se solicita una con testnet seleccionada (el autoservicio **Request licence** descrito arriba). La pestaña está ahora en **Nodes & Validators**. 3.1.9 todavía nombraba la antigua pestaña del Dashboard. Una licencia caducada o suspendida se notifica como tal. Un nodo que ya está registrado se notifica como tal, y no se envía nada.
 2. **Asocia la clave post-cuántica**, salvo que la cuenta ya tenga una. Una cuenta sin clave post-cuántica solo puede enviar este único mensaje, firmado de forma clásica (sin la extensión híbrida); el nodo lo envía así e incluye una prueba de posesión de la clave cuando la cadena la admite.
 3. **Delega el stake que falta**, solo si nombras un validador con `--delegate-to qorvaloper1...`. Sin `--delegate-to`, si la cuenta está por debajo del mínimo, se detiene e indica cuánto falta. Desde 3.1.10 solo cuenta el stake delegado a validadores **en bond**, como hace la cadena; 3.1.9 también contaba validadores encarcelados (jailed) o fuera de bond y entonces podía ser rechazado en cadena, así que delega a un validador activo si ejecutas 3.1.9.
 4. **Registra el nodo** con la tarifa de 1 QOR.
@@ -134,11 +140,11 @@ Mientras el nodo no esté registrado, no envía heartbeats; en su lugar registra
 
 ## La pestaña Light Node del Dashboard
 
-La pestaña **Tools → Light Node** del Dashboard de QoreChain reúne los pasos:
+La pestaña **Nodes & Validators → Light Node** del Dashboard de QoreChain reúne los pasos:
 
 1. **Descargas.** Enlaza los binarios del light node para la red seleccionada (los mismos archivos que `https://download.qore.host/<net>/lightnode/latest.json`, con sus sumas de verificación sha256).
 2. **Pasos de configuración.** Muestra los cinco pasos anteriores, ajustados a la versión del manifiesto de la versión, y si el registro está abierto, según el campo `registration` del manifiesto.
-3. **Compra de la licencia** (solo mainnet). Pide la dirección de la licencia antes del pago y muestra **Paid, awaiting on-chain grant** hasta que la cadena confirma la concesión. Te avisa si la dirección que introduces es tu propia wallet custodial del Dashboard e indica, a título informativo, si la dirección ya tiene una clave post-cuántica.
+3. **Licencia** (compra en mainnet, solicitud gratuita en testnet). En mainnet pide la dirección de la licencia antes del pago y muestra **Paid, awaiting on-chain grant** hasta que la cadena confirma la concesión. En testnet muestra el formulario **Request licence**. Te avisa si la dirección que introduces es tu propia wallet custodial del Dashboard e indica, a título informativo, si la dirección ya tiene una clave post-cuántica.
 4. **Estado.** Un panel de estado muestra el estado del nodo tal como se lee de la cadena.
 
 El registro en sí es siempre la transacción enviada por `lightnode-sx register` (o `lightnode-ux register`). El Dashboard no registra nodos; su antiguo formulario de registro, que solo guardaba un registro, se ha eliminado.

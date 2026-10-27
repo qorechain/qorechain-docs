@@ -123,7 +123,7 @@ sus firmas pueden falsificarse.
   por lo que no llevan firma ML-DSA-87. Una cuenta con una clave ML-DSA-87
   registrada puede abrir desde el carril nativo una ventana de autorización EVM
   acotada (altura de expiración, máximo de transacciones, valor máximo).
-  Consulta [Carteras EVM: modo quantum-ready](/qoresign/guides/evm-quantum-ready).
+  Consulta [Carteras EVM: ventana de autorización](/qoresign/guides/evm-quantum-ready).
 - Carril SVM: aún no está abierto en la red.
 
 ## Vectores de prueba {#test-vectors}

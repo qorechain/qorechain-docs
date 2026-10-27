@@ -243,7 +243,7 @@ Toate funcțiile operează pe valori `cosmossdk.io/math.LegacyDec`, asigurând r
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Modificarea maximă a parametrilor în modul Autonomous          |
 | `circuit_breaker_window`         | uint64    | `50`         | Numărul de blocuri recente monitorizate de circuit breaker |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Fracțiunea minimă de blocuri sănătoase înainte de declanșare        |
-| `default_block_time_ms`          | int64     | `5000`       | Timpul țintă implicit al blocului (ms), folosit ca bază de observație; timpul real al blocului este de aproximativ 3,2 s pe mainnet și aproximativ 1,3 s pe testnet |
+| `default_block_time_ms`          | int64     | `5000`       | Timpul țintă implicit al blocului (ms), folosit ca bază de observație; timpul real al blocului este de aproximativ 3,1 s pe mainnet și aproximativ 1,3 s pe testnet |
 | `default_base_gas_price`         | LegacyDec | `100`        | Prețul de bază implicit al gazului                       |
 | `default_validator_set_size`     | uint64    | `100`        | Dimensiunea țintă implicită a setului de validatori                    |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Ponderea de recompensă pentru îmbunătățirea throughput-ului             |

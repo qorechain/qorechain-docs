@@ -41,10 +41,38 @@ IBC tasarımın bir parçasıdır (Cosmos Hub, Osmosis, Noble, Celestia, Stride,
 Üç IBC özelliği yalnızca testnet'te vardır; mainnet'te yoktur (`/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` rotası 501 yanıtı verir):
 
 * **IBC hız sınırı.** Yönetişim, IBC transferleri için kanal başına bir kota belirleyebilir (saat cinsinden bir pencere başına arzın tam sayı yüzdesi). Bu **otomatik değildir**: bugün hiçbir sınır ayarlı değildir ve boş küme sınırsız anlamına gelir. İletilen bir paket her iki kanalda da ücretlendirilir ve bir iade kotayı geri verir. Bu, [Güvenlik Modeli](#security-model) altında anlatılan köprü devre kesicilerinden ayrıdır.
-* **Paket iletme (forwarding).** IBC v1 üzerinden gelen bir transfer, başka bir zincire gönderilmek üzere `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` biçiminde bir memo taşıyabilir; bir atlama başarısız olursa göndericiye iade yapılır. Yeniden deneme yoktur ve bir atlama varsayılan olarak 10 dakika sonra zaman aşımına uğrar. Varışta ERC-20'ye dönüşen bir token iletilemez.
+* **Paket iletme (forwarding).** IBC v1 üzerinden gelen bir transfer, başka bir zincire gönderilmek üzere `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` biçiminde bir memo taşıyabilir; bir atlama başarısız olursa göndericiye iade yapılır. Yeniden deneme yoktur ve bir atlama varsayılan olarak 10 dakika sonra zaman aşımına uğrar. Varışta ERC-20'ye dönüşen bir token iletilemez.
 * **08-wasm hafif istemcileri.** Bir wasm hafif istemci ikilisini saklamak, taşımak ve kaldırmak yalnızca yetkili makama aittir ve izin verilen istemci türleri, yönetişim `08-wasm` ekleyene kadar yalnızca standart istemciyi içerir.
 
-Sınırları testnet'te `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` ile okuyun (bugün `\{"rate_limits":[]\}`).
+Sınırları testnet'te `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` ile okuyun (bugün `{"rate_limits":[]}`).
+
+**Hangi ağda ne var (27 Ekim 2026'da kontrol edildi).**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| ICS-20 transferi (IBC v1) | Yerleşik, ancak açık kanal yok | Yerleşik, bir kanal açık |
+| IBC hız sınırı | Mevcut değil (501) | Mevcut, ayarlı sınır yok |
+| Paket iletme | Mevcut değil | Mevcut (yalnızca IBC v1) |
+| 08-wasm hafif istemcileri | Mevcut değil | Mesaj kümesi var; yönetişim `08-wasm`'a izin verene kadar hiçbir wasm istemcisi oluşturulamaz |
+
+### Testnet'teki test kanalı {#ibc-test-channel}
+
+Testnet'te tek bir açık transfer kanalı vardır: `channel-0` (port `transfer`, `connection-0`, sürüm `ics20-1`, sırasız). Karşı tarafı Cosmos Hub testnet'idir (zincir kimliği `provider`, kanal `channel-600`). Testnet şimdiye kadar tek bir IBC denom'u görmüştür: `channel-0` üzerinden gelen `uatom`; QoreChain bunun için modüle ait bir ERC-20 çifti de tutar. Durumu şunlarla okuyun:
+
+```bash
+curl -s https://api-testnet.qore.host/ibc/core/channel/v1/channels
+curl -s https://api-testnet.qore.host/ibc/apps/transfer/v1/denoms
+```
+
+Test kanalında göndermek için transferi oluşturun, ardından hibrit imzayı diğer yerel şerit işlemleri gibi ekleyin:
+
+```bash
+qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_testnet> 1000uqor \
+  --from mykey --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > ibc.json
+qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
+```
+
+Bu, iki test ağı arasında bir test kanalıdır; token'ların değeri yoktur. Bir paketin teslim edilmesi için kanal için çalışan bir relayer gerekir; bu kılavuz bir tane yayımlamaz veya vaat etmez, bu yüzden bir transfer beklemede kalabilir. Yukarıdaki komutları mainnet'te kullanmayın: orada açık kanal yoktur ve işlem başarısız olur.
 
 ---
 

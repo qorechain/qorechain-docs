@@ -94,7 +94,7 @@ Les frais de transaction sur QoreChain sont répartis entre cinq destinations af
 | **Stakers**     | 10%   | Distribués proportionnellement à tous les délégants                    |
 | **Nœuds légers** | 3%    | Réservés aux récompenses des nœuds légers (voir la note ci-dessous)            |
 
-La répartition s'applique à tout ce qui entre dans le collecteur de frais, qui contient les frais de transaction et l'émission de staking frappée à chaque époque. La part des nœuds légers alimente le pool de récompenses des nœuds légers ; l'enregistrement est ouvert et soumis à licence, mais aucun nœud léger ne s'est encore enregistré, donc aucun nœud n'est payé sur ce pool aujourd'hui (voir [Nœud léger](/light-node/overview#reward-program-status)). Depuis la mise à niveau v3.2.0, la part des stakers est versée comme une récompense de staking normale (voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+La répartition s'applique à tout ce qui entre dans le collecteur de frais, qui contient les frais de transaction et l'émission de staking frappée à chaque époque. La part des nœuds légers alimente le pool de récompenses des nœuds légers ; l'enregistrement est ouvert et soumis à licence ; le 27 octobre 2026, un nœud léger était enregistré sur chaque réseau (voir [Nœud léger](/light-node/overview#reward-program-status)). Depuis la mise à niveau v3.2.0, la part des stakers est versée comme une récompense de staking normale (voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canaux de destruction
 

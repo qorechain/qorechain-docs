@@ -88,7 +88,7 @@ contract CrossVMCaller {
 
 이것은 노드가 디코딩하는 레이아웃이며 `@qorechain/rdk` 인코더가 만드는 레이아웃과 같고, 위의 컨트랙트는 [Multi-VM](/rollups/multi-vm)의 스타터와 일치합니다. 프리컴파일을 통해서는 자금을 첨부할 수 없습니다(`MsgCrossVMCall` 메시지 경로는 `--funds`를 받습니다). 프리컴파일이 활성화되어 있지 않으므로(위 경고 참조) 이 샘플은 현재 어느 네트워크에서도 아무것도 할 수 없으며, ABI는 활성화 전에 변경될 수 있습니다.
 
-활성화되면 프리컴파일은 QoreChain Native 컨트랙트를 즉시 실행하고 결과를 반환합니다. (`@qorechain/rdk` 헬퍼 `encodeCrossVmCalldata`(0.6.0부터 제공되며 현재 0.6.1에 있음)가 calldata를 만듭니다. [Multi-VM](/rollups/multi-vm) 참조.) 가스 비용: **기본 50,000 + 입력 바이트당 4 + 실행 비용**.
+활성화되면 프리컴파일은 QoreChain Native 컨트랙트를 즉시 실행하고 결과를 반환합니다. (`@qorechain/rdk` 헬퍼 `encodeCrossVmCalldata`(0.6.0부터 제공되며 현재 0.6.2에 있음)가 calldata를 만듭니다. [Multi-VM](/rollups/multi-vm) 참조.) 가스 비용: **기본 50,000 + 입력 바이트당 4 + 실행 비용**.
 
 ---
 

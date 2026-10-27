@@ -24,7 +24,7 @@ Le RDK de QoreChain prend en charge quatre modes de règlement distincts — **o
 Les rollups optimistes supposent que les transactions sont valides par défaut et s'appuient sur des preuves de fraude pour la résolution des litiges.
 
 * **Système de preuve** : preuves de fraude interactives
-* **Fenêtre de contestation** : 604 800 secondes (par défaut, 7 jours). **Avant la v3.2.4 :** la chaîne la convertit en blocs à raison fixe de 6 secondes par bloc, soit **100 800 blocs** ; le temps réel écoulé dépend donc du temps de bloc effectif (environ 3,7 jours avec les blocs actuels du mainnet d'environ 3,2 s) ; planifiez en blocs, pas en jours. **À partir de la v3.2.4 :** pour un lot soumis à partir de la hauteur de la mise à niveau, la fenêtre est mesurée en secondes de temps de bloc (7 jours pleins). Un lot soumis plus tôt conserve la règle du nombre de blocs. Le testnet a appliqué la v3.2.4 à la hauteur 8 337 253 (19 octobre 2026) ; le mainnet l'a appliquée à la hauteur 3 742 566 (23 octobre 2026, proposition de gouvernance 13). La valeur par défaut configurée du testnet est plus courte, 3 600 secondes (1 heure) : un rollup du testnet se finalise donc plus vite que les 7 jours décrits ici.
+* **Fenêtre de contestation** : 604 800 secondes (par défaut, 7 jours). **Avant la v3.2.4 :** la chaîne la convertit en blocs à raison fixe de 6 secondes par bloc, soit **100 800 blocs** ; le temps réel écoulé dépend donc du temps de bloc effectif (environ 3,7 jours avec les blocs actuels du mainnet d'environ 3,1 s) ; planifiez en blocs, pas en jours. **À partir de la v3.2.4 :** pour un lot soumis à partir de la hauteur de la mise à niveau, la fenêtre est mesurée en secondes de temps de bloc (7 jours pleins). Un lot soumis plus tôt conserve la règle du nombre de blocs. Le testnet a appliqué la v3.2.4 à la hauteur 8 337 253 (19 octobre 2026) ; le mainnet l'a appliquée à la hauteur 3 742 566 (23 octobre 2026, proposition de gouvernance 13). La valeur par défaut configurée du testnet est plus courte, 3 600 secondes (1 heure) : un rollup du testnet se finalise donc plus vite que les 7 jours décrits ici.
 * **Caution de contestation** : 1 000 QOR (1 000 000 000 uqor) — requise pour soumettre une contestation par preuve de fraude (profils `nft` et `custom` ; les profils `defi`, `gaming` et `enterprise` ne définissent aucune caution car ils n'ont pas de fenêtre de contestation)
 * **Finalité** : différée jusqu'à l'expiration de la fenêtre de contestation sans contestation valide
 * **Finalisation automatique** : l'`EndBlocker` finalise automatiquement les lots une fois la fenêtre de contestation passée sans litige. Un lot contesté n'est jamais finalisé automatiquement : le créateur du rollup doit d'abord résoudre la contestation (voir [Déployer un rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -44,7 +44,7 @@ Les rollups ZK fournissent des preuves de validité cryptographiques qui garanti
 * **Finalité** : instantanée à la vérification de la preuve — aucune fenêtre de contestation requise
 * **Taille de preuve maximale** : 1 Mo (1 048 576 octets)
 * **Profondeur de récursion** : profondeur d'agrégation de preuves configurable (par défaut : 1)
-* **Maturité** : les lots SNARK sont vérifiés on-chain (Groth16 sur BLS12-381) par rapport à une clé de vérification stockée avec le rollup. Un rollup créé via `create-rollup` ne porte actuellement pas de clé de vérification, de sorte que les lots ZK ne peuvent pas encore être finalisés de bout en bout. La vérification STARK est expérimentale : elle est optionnelle et vérifie un circuit de démonstration, et non la propre transition d'état de votre rollup. Considérez le règlement ZK comme non prêt pour la production.
+* **Maturité** : les lots SNARK sont vérifiés on-chain (Groth16 sur BLS12-381) par rapport à une clé de vérification stockée avec le rollup. **Le règlement ZK ne peut pas encore être utilisé sur l'un ou l'autre réseau :** la chaîne n'offre aucun moyen d'enregistrer une clé de vérification pour un rollup, de sorte que chaque lot ZK est refusé une fois ses frais payés. L'enregistrement des clés est prévu pour la version de chaîne v3.2.7. La vérification STARK est expérimentale : elle est optionnelle et vérifie un circuit de démonstration, et non la propre transition d'état de votre rollup. Considérez le règlement ZK comme non prêt pour la production.
 
 **Cycle de vie d'un lot** :
 
@@ -152,13 +152,13 @@ Les proposeurs L1 de QoreChain séquencent les transactions du rollup.
 Stockage de blobs en KV-store on-chain au sein de QoreChain elle-même.
 
 :::caution Pas encore de moyen public de publier un blob
-Le module définit le stockage, la rétention et l'élagage des blobs, mais il n'existe aucun message de transaction pour publier un blob dans les versions actuelles. Un lot qui nomme un hachage de données sur un rollup `native` ou `both` est refusé, car aucun blob correspondant ne peut être stocké. Voir [Disponibilité des données](/rollups/data-availability). Sur la DA native, un lot doit donc laisser `data_hash` vide ; le client RDK (0.6.1) le fait, et la chaîne refuse un lot qui en revendique un.
+Le module définit le stockage, la rétention et l'élagage des blobs, mais il n'existe aucun message de transaction pour publier un blob dans les versions actuelles. Un lot qui nomme un hachage de données sur un rollup `native` ou `both` est refusé, car aucun blob correspondant ne peut être stocké. Voir [Disponibilité des données](/rollups/data-availability). Sur la DA native, un lot doit donc laisser `data_hash` vide ; le client RDK (0.6.2) le fait, et la chaîne refuse un lot qui en revendique un.
 :::
 
 | Paramètre            | Valeur                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | **Taille de blob maximale**    | 2 Mo (2 097 152 octets)                                                                              |
-| **Période de rétention** | 432 000 blocs (environ 16 jours avec les blocs actuels du mainnet d'environ 3,2 s ; ce chiffre évolue avec le temps de bloc) |
+| **Période de rétention** | 432 000 blocs (environ 16 jours avec les blocs actuels du mainnet d'environ 3,1 s ; ce chiffre évolue avec le temps de bloc) |
 | **Élagage automatique**     | Les blobs expirés sont élagués dans l'`EndBlocker` — les données sont supprimées mais les métadonnées d'engagement sont conservées  |
 | **Engagement**       | Hachage SHAKE-256 (32 octets) des données du blob                                                   |
 
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Lot accepté comme canonique                       |
 | **Rejected**   | Lot invalidé par une contestation réussie         |
 
-Comportement de RDK 0.6.1 : pour un rollup optimistic, le client construit un lot dont la racine d'état est la racine de transition canonique de la chaîne (`batchTransitionRoot` dans le RDK), et non une valeur libre de votre choix.
+Comportement de RDK 0.6.1 et 0.6.2 (le code de la bibliothèque est le même) : pour un rollup optimistic, le client construit un lot dont la racine d'état est la racine de transition canonique de la chaîne (`batchTransitionRoot` dans le RDK), et non une valeur libre de votre choix.
 
 ### Règles de finalisation automatique
 

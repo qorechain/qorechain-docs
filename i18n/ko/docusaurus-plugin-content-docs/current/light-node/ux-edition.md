@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX 에디션 — 웹 대시보드
 
-**UX (User eXperience)** 에디션은 SX 에디션과 동일한 라이트 노드 데몬을 실행하지만, **내장 웹 대시보드**를 추가하여 브라우저에서 노드와 네트워크를 지켜볼 수 있습니다. 바이너리는 `lightnode-ux`입니다. SX 에디션과 마찬가지로, 이 페이지는 라이트 노드 **3.1.10**를 설명합니다(체인 버전과는 별개인 자체 버전 라인).
+**UX (User eXperience)** 에디션은 SX 에디션과 동일한 라이트 노드 데몬을 실행하지만, **내장 웹 대시보드**를 추가하여 브라우저에서 노드와 네트워크를 지켜볼 수 있습니다. 바이너리는 `lightnode-ux`입니다. SX 에디션과 마찬가지로, 라이트 노드 자체의 버전 라인을 따르며 체인 버전과는 별개입니다(2026년 10월 27일에 두 네트워크의 채널 모두 3.1.12를 제공합니다).
 
 UX 에디션은 데스크톱 사용과, 명령줄보다 시각적 인터페이스를 선호하는 운영자에게 적합한 선택입니다.
 
@@ -23,11 +23,11 @@ UX 에디션은 **Go 1.26.1**이 필요합니다. 포스트 양자 암호화는 
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-릴리스 태그(`git checkout v3.1.10`)에서 빌드하세요. 이는 `build/lightnode-ux`를 생성합니다.
+매니페스트가 지정하는 릴리스 태그(현재는 `git checkout v3.1.12`)에서 빌드하세요. 이는 `build/lightnode-ux`를 생성합니다.
 
 ### Docker
 
-UX 서비스는 소스 저장소(`github.com/qorechain/qorechain-lightnode`, 태그 `v3.1.10`)의 `Dockerfile.ux`에서 빌드됩니다. 컨테이너는 시작하기 전에 데이터 볼륨에 `config.toml`이 있어야 합니다. UX 바이너리에는 설정 명령이 있으므로 볼륨 안에서 직접 만들 수 있습니다:
+UX 서비스는 소스 저장소(`github.com/qorechain/qorechain-lightnode`, 네트워크의 매니페스트와 일치하는 태그)의 `Dockerfile.ux`에서 빌드됩니다. 컨테이너는 시작하기 전에 데이터 볼륨에 `config.toml`이 있어야 합니다. UX 바이너리에는 설정 명령이 있으므로 볼륨 안에서 직접 만들 수 있습니다:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
@@ -106,6 +106,8 @@ http://localhost:8420
 - **Bridge** — 크로스체인 브리지 텔레메트리.
 - **Tokenomics** — 토큰 이코노믹스 텔레메트리.
 - **Settings** — 노드의 유효 구성.
+
+라이트 노드 3.1.11부터 대시보드는 노드가 더 새로운 릴리스를 발견하면 배너를 표시합니다([SX 에디션: 업데이트](/light-node/sx-edition#updating) 참조). 로컬 API는 `GET /api/update`에서 같은 정보를 제공합니다.
 
 텔레메트리는 실시간으로 업데이트되며, 데몬이 검증자, 네트워크, 브리지, 토크노믹스 데이터를 독립적인 간격으로 새로 고칩니다(`config.toml`의 `[telemetry]` 아래에서 구성 가능).
 

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Sürümü — Web Dashboard
 
-**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, bu sayfa da hafif düğüm **3.1.10**'u açıklar (zincir sürümünden ayrı, kendi sürüm hattı).
+**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, hafif düğümün kendi sürüm hattındadır, zincir sürümünden ayrıdır (27 Ekim 2026'da her iki ağın kanalları da 3.1.12 taşır).
 
 UX sürümü, masaüstü kullanımı ve komut satırı yerine görsel bir arabirimi tercih eden operatörler için doğru seçimdir.
 
@@ -23,11 +23,11 @@ UX sürümü **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go ile
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Sürüm etiketinden derleyin (`git checkout v3.1.10`). Bu, `build/lightnode-ux` üretir.
+Manifestin adlandırdığı sürüm etiketinden derleyin (bugün `git checkout v3.1.12`). Bu, `build/lightnode-ux` üretir.
 
 ### Docker
 
-UX hizmeti, kaynak deposundaki (`github.com/qorechain/qorechain-lightnode`, etiket `v3.1.10`) `Dockerfile.ux`'ten derlenir. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir. UX ikili dosyası kurulum komutlarına sahip olduğundan bunu birim içinde oluşturabilirsiniz:
+UX hizmeti, kaynak deposundaki (`github.com/qorechain/qorechain-lightnode`, ağınızın manifestiyle eşleşen etiket) `Dockerfile.ux`'ten derlenir. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir. UX ikili dosyası kurulum komutlarına sahip olduğundan bunu birim içinde oluşturabilirsiniz:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
@@ -106,6 +106,8 @@ Dashboard aşağıdaki görünümlere göre düzenlenmiştir:
 - **Bridge** — çapraz zincir köprü telemetrisi.
 - **Tokenomics** — token ekonomisi telemetrisi.
 - **Settings** — düğümün etkin yapılandırması.
+
+Hafif düğüm 3.1.11'den itibaren dashboard, düğüm daha yeni bir sürüm bulduğunda bir afiş gösterir ([SX Sürümü: güncelleme](/light-node/sx-edition#updating) bölümüne bakın). Yerel API'si aynı bilgiyi `GET /api/update` adresinde sunar.
 
 Telemetri gerçek zamanlı olarak güncellenir; daemon, doğrulayıcılar, ağ, köprü ve tokenomik verilerini bağımsız aralıklarda yeniler (`config.toml` içinde `[telemetry]` altında yapılandırılabilir).
 

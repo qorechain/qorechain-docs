@@ -38,7 +38,9 @@ Una licenza smette inoltre di essere attiva una volta superata l'altezza `expire
 
 La concessione, la revoca, la sospensione e il ripristino delle licenze sono **operazioni dell'autorità**: vengono firmate dall'account dell'autorità di licenza del modulo, non da utenti arbitrari. Dalla v3.2.3 la governance può sostituire quell'account con `MsgUpdateAuthority`, il percorso di recupero nel caso in cui la sua chiave venga persa. Queste transazioni esistono come parte della superficie di comando del modulo, ma un normale utente non le chiama direttamente; il ciclo di vita è amministrato on-chain dall'autorità.
 
-Per **ottenerne** una: una licenza light node si acquista sulla **Dashboard (Tools → Light Node)**, e una concessione `validator_operator` arriva tramite il **Validator Program** (Tools → Validator Application: fai domanda, vieni selezionato, paga la quota di programma di $1,000). L'autorità registra quindi la concessione on-chain, in batch.
+Per **ottenerne** una sulla mainnet: una licenza light node si acquista sulla **Dashboard (Nodes & Validators → Light Node)**, e una concessione `validator_operator` arriva tramite il **Validator Program** (Nodes & Validators → Validator Application: fai domanda, vieni selezionato, paga la quota di programma di $1,000). L'autorità registra quindi la concessione on-chain, in batch.
+
+Sulla testnet una licenza light node è gratuita e in self-service: in **Nodes & Validators → Light Node** con la rete impostata su Testnet, inserisci il tuo indirizzo `qor1…` e seleziona **Request licence**. La concessione viene firmata automaticamente, di solito entro pochi minuti, e la scheda mostra il suo stato (richiesta, concessa oppure impossibile da firmare, nel qual caso puoi richiederla di nuovo). Ogni account e ogni indirizzo può avere una sola richiesta.
 
 Le transazioni soggette a restrizioni dell'autorità sono:
 

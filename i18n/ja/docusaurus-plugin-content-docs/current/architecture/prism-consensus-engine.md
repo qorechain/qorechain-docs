@@ -243,7 +243,7 @@ PRISM は、ロールアップパラメータ最適化のためのアドバイ�
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Autonomous モードでの最大パラメータ変更             |
 | `circuit_breaker_window`         | uint64    | `50`         | サーキットブレーカーが監視する直近のブロック数       |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | トリガー前の最小健全ブロック割合                     |
-| `default_block_time_ms`          | int64     | `5000`       | 観測のベースラインとして使用されるデフォルトの目標ブロックタイム（ms）。実際のブロックタイムは、メインネットで約 3.2 秒、テストネットで約 1.3 秒 |
+| `default_block_time_ms`          | int64     | `5000`       | 観測のベースラインとして使用されるデフォルトの目標ブロックタイム（ms）。実際のブロックタイムは、メインネットで約 3.1 秒、テストネットで約 1.3 秒 |
 | `default_base_gas_price`         | LegacyDec | `100`        | デフォルトのベースガス価格                           |
 | `default_validator_set_size`     | uint64    | `100`        | デフォルトの目標バリデーターセットサイズ             |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | スループット改善の報酬重み                           |

@@ -9,7 +9,7 @@ sidebar_position: 7
 
 `@qorechain/react` est la couche React officielle au-dessus de `@qorechain/sdk` : un
 provider, une poignée de hooks, et deux composants prêts à l'emploi — y compris un badge
-**Résistant au quantique** en une ligne. Il fait de la construction d'une dApp résistante au quantique le chemin par défaut.
+d'état PQC en une ligne. Il fait de la construction d'une dApp à signature hybride ML-DSA-87 le chemin par défaut.
 
 ```bash
 npm i @qorechain/react @qorechain/sdk react react-dom
@@ -27,7 +27,7 @@ uniquement avec la signature classique, que les réseaux en direct rejettent (le
 exige l'extension hybride ML-DSA-87) : `send` / `sendTokens` ne peuvent pas faire aboutir une
 transaction sur le mainnet ni sur le testnet. Pour les envois, utilisez le `TxClient` hybride du SDK
 (`client.connectTx(signer, { pqcKeypair })`, voir
-[Résistant au quantique](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` et `<QuantumSafeBadge/>` lisent le statut via
+[Signature hybride](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` et `<QuantumSafeBadge/>` lisent le statut via
 `getPqcStatus` avec le client composé du provider, qui depuis le SDK 0.9.0 lit via
 REST (`/qorechain/pqc/v1/account/{address}`) ; ils fonctionnent donc contre `*.qore.host`
 (le kit 0.8.x lisait `qor_getPQCKeyStatus`, que les endpoints publics ne servent pas, et
@@ -135,8 +135,8 @@ total :
 
 ### `<QuantumSafeBadge/>`
 
-Affiche un indicateur **Résistant au quantique** lorsque l'adresse possède une clé post-quantique
-enregistrée (via `usePqcStatus`), sinon un état atténué « Non résistant au quantique ». Par défaut,
+Affiche un indicateur d'état lorsque l'adresse possède une clé post-quantique
+enregistrée (via `usePqcStatus`), sinon un état atténué « non enregistrée ». Par défaut,
 il s'applique au compte connecté.
 
 ```tsx
@@ -171,4 +171,4 @@ function Dashboard() {
 ```
 
 Voir l'[exemple `react-dapp`](https://github.com/qorechain/qorechain-sdk/tree/main/examples/react-dapp) exécutable
-et le [guide résistant au quantique](/sdk/guides/quantum-safe) pour les appels SDK sous-jacents.
+et le [guide de la signature hybride](/sdk/guides/quantum-safe) pour les appels SDK sous-jacents.

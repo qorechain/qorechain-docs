@@ -20,11 +20,11 @@ QoreSign을 사용하면 QoreChain 자체 지갑이 아닌 지갑도 계정의 M
 | 레인 | 현재 QoreSign이 하는 일 |
 |---|---|
 | **Native** (Cosmos SDK) | 하이브리드 서명 및 검증. 네트워크는 기본적으로 ML-DSA-87 서명을 요구합니다. |
-| **EVM** | 양자 대비(quantum-ready) 모드만 지원: 계정이 ML-DSA-87 키를 등록하고 Native 레인에서 제한된 승인 윈도우를 엽니다. Ethereum 트랜잭션 자체에는 ML-DSA-87 서명이 포함되지 않습니다. |
+| **EVM** | 승인 윈도우만 지원: 계정이 ML-DSA-87 키를 등록하고 Native 레인에서 제한된 승인 윈도우를 엽니다. Ethereum 트랜잭션 자체에는 ML-DSA-87 서명이 포함되지 않습니다. |
 | **SVM** | 아직 네트워크에서 열리지 않았습니다(`LANE_NOT_AVAILABLE`). |
 
 하이브리드 EVM 서명을 사용하려면 먼저 네트워크에서 레인별 PQC 지원이 필요합니다.
-[EVM 지갑: 양자 대비 모드](/qoresign/guides/evm-quantum-ready)를 참고하세요.
+[EVM 지갑: 승인 윈도우](/qoresign/guides/evm-quantum-ready)를 참고하세요.
 
 ## 패키지 {#packages}
 
@@ -76,7 +76,7 @@ verifyHybridTx({
 - 가이드
   - [Keplr 호환 지갑에 하이브리드 서명 추가하기](/qoresign/guides/keplr-compatible-wallets)
   - [Sign In With QoreChain: 서버 검증](/qoresign/guides/sign-in)
-  - [EVM 지갑: 양자 대비 모드](/qoresign/guides/evm-quantum-ready)
+  - [EVM 지갑: 승인 윈도우](/qoresign/guides/evm-quantum-ready)
   - [키 파생: 표준 키와 HD 초안](/qoresign/guides/key-derivation)
   - [크기와 전송](/qoresign/guides/sizes-and-transport)
 - 명세

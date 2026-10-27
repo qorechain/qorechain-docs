@@ -43,7 +43,7 @@ Tokens de prueba exclusivos de la testnet (FestUSD, FestETH y FestBTC, con 6, 18
 
 ### ¿Cómo ejecuto un nodo, un validador o un nodo ligero?
 
-Para un nodo completo, consulta [Ejecutar un nodo](/developer-guide/running-a-node). Para un validador, consulta [Ejecutar un validador](/developer-guide/running-a-validator). Para un nodo ligero, consulta [Nodo ligero](/light-node/overview); el registro en el programa de recompensas de nodos ligeros está abierto y sujeto a licencia ([estado](/light-node/overview#reward-program-status)).
+Para un nodo completo, consulta [Ejecutar un nodo](/developer-guide/running-a-node). Para un validador, consulta [Ejecutar un validador](/developer-guide/running-a-validator). Para un nodo ligero, consulta [Nodo ligero](/light-node/overview); el registro en el programa de recompensas de nodos ligeros está abierto y sujeto a licencia, y el 27 de octubre de 2026 se registró un nodo ligero en cada red ([estado](/light-node/overview#reward-program-status)).
 
 ### ¿Qué esquema de firma usa QoreChain?
 
@@ -51,7 +51,7 @@ QoreChain usa un esquema híbrido post-cuántico que combina el clásico **secp2
 
 ### ¿Por qué se rechaza mi transacción EVM con "no open EVM authorisation window"?
 
-Desde la v3.2.0, el carril EVM admite una transacción solo de una cuenta que tenga una clave post-cuántica registrada y una ventana de autorización abierta. Abre una ventana con una transacción del carril Cosmos firmada con firma post-cuántica y vuelve a intentarlo. Consulta [Ventana de autorización EVM](/getting-started/first-transaction#evm-window).
+Desde la v3.2.0, el carril EVM admite una transacción solo de una cuenta que tenga una clave post-cuántica registrada y una ventana de autorización abierta. Abre una ventana con una transacción del carril Cosmos con una firma híbrida ML-DSA-87 (FIPS 204) y vuelve a intentarlo. Consulta [Ventana de autorización EVM](/getting-started/first-transaction#evm-window).
 
 ### ¿Cuántos validadores tiene la mainnet?
 
@@ -59,7 +59,7 @@ Ocho validadores en bonding el 27 de octubre de 2026, con unos 60,3 millones de 
 
 ### ¿Qué tiempo de bloque debo esperar?
 
-Unos 3,2 segundos en la mainnet y unos 1,3 segundos en la testnet (promedios medidos, 27 de octubre de 2026). El tiempo de bloque lo fija la configuración de los nodos de los validadores.
+Unos 3,1 segundos en la mainnet y unos 1,3 segundos en la testnet (promedios medidos, 27 de octubre de 2026). El tiempo de bloque lo fija la configuración de los nodos de los validadores.
 
 ### ¿Está disponible xQORE?
 

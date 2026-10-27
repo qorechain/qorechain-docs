@@ -43,7 +43,7 @@ Des jetons de test réservés au testnet (FestUSD, FestETH et FestBTC, avec 6, 1
 
 ### Comment exécuter un nœud, un validateur ou un nœud léger ?
 
-Pour un nœud complet, voir [Exécuter un nœud](/developer-guide/running-a-node). Pour un validateur, voir [Exécuter un validateur](/developer-guide/running-a-validator). Pour un nœud léger, voir [Nœud léger](/light-node/overview) ; l'enregistrement au programme de récompenses des nœuds légers est ouvert et soumis à licence ([statut](/light-node/overview#reward-program-status)).
+Pour un nœud complet, voir [Exécuter un nœud](/developer-guide/running-a-node). Pour un validateur, voir [Exécuter un validateur](/developer-guide/running-a-validator). Pour un nœud léger, voir [Nœud léger](/light-node/overview) ; l'enregistrement au programme de récompenses des nœuds légers est ouvert et soumis à licence, et le 27 octobre 2026 un nœud léger était enregistré sur chaque réseau ([statut](/light-node/overview#reward-program-status)).
 
 ### Quel schéma de signature QoreChain utilise-t-il ?
 
@@ -51,7 +51,7 @@ QoreChain utilise un schéma hybride post-quantique combinant le **secp256k1 (EC
 
 ### Pourquoi ma transaction EVM est-elle refusée avec « no open EVM authorisation window » ?
 
-Depuis la v3.2.0, la lane EVM n'admet une transaction que si elle provient d'un compte disposant d'une clé post-quantique enregistrée et d'une fenêtre d'autorisation ouverte. Ouvrez une fenêtre avec une transaction de la lane Cosmos signée en post-quantique, puis réessayez. Voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window).
+Depuis la v3.2.0, la lane EVM n'admet une transaction que si elle provient d'un compte disposant d'une clé post-quantique enregistrée et d'une fenêtre d'autorisation ouverte. Ouvrez une fenêtre avec une transaction de la lane Cosmos portant une signature hybride ML-DSA-87 (FIPS 204), puis réessayez. Voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window).
 
 ### Combien de validateurs le mainnet compte-t-il ?
 
@@ -59,7 +59,7 @@ Huit validateurs bonded le 27 octobre 2026, avec environ 60,3 millions de QOR bo
 
 ### Quel temps de bloc dois-je attendre ?
 
-Environ 3,2 secondes sur le mainnet et environ 1,3 seconde sur le testnet (moyennes mesurées, 27 octobre 2026). Le temps de bloc est défini par la configuration des nœuds des validateurs.
+Environ 3,1 secondes sur le mainnet et environ 1,3 seconde sur le testnet (moyennes mesurées, 27 octobre 2026). Le temps de bloc est défini par la configuration des nœuds des validateurs.
 
 ### xQORE est-il disponible ?
 

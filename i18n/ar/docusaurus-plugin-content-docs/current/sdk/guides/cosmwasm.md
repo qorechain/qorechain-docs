@@ -113,7 +113,7 @@ const res = await execute(
 
 أضف أنواع رسائل QoreChain Native إلى سجل (registry) وأرسل `MsgExecuteContract`
 عبر المُنشئ الهجين. يجب تسجيل مفتاح ML-DSA-87 للحساب أولًا
-(راجع [الآمن كميًا](/sdk/guides/quantum-safe)). يتطلب
+(راجع [التوقيع الهجين](/sdk/guides/quantum-safe)). يتطلب
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:
 
 ```ts

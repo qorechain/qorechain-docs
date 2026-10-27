@@ -114,7 +114,7 @@ const res = await execute(
 
 QoreChain Native のメッセージ型をレジストリに追加し、ハイブリッドビルダー経由で
 `MsgExecuteContract` を送信します。アカウントの ML-DSA-87 鍵を事前に登録しておく必要があります
-（[Quantum-safe](/sdk/guides/quantum-safe) を参照）。次のインストールが必要です:
+（[ハイブリッド署名](/sdk/guides/quantum-safe) を参照）。次のインストールが必要です:
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`
 
 ```ts

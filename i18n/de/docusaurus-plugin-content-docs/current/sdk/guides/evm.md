@@ -91,7 +91,7 @@ hybrid-signierte Native-Lane-Nachricht. Die Regeln auf Chain-Ebene, die Grenzwer
 
 Mit SDK **0.8.2 oder neuer** können Sie ein Fenster aus Code heraus öffnen (**0.9.0** ergänzt die
 unten beschriebenen Scope-Optionen). Das (einmalige)
-Registrieren des Schlüssels ist unter [Quantensicher](/sdk/guides/quantum-safe) beschrieben; das
+Registrieren des Schlüssels ist unter [Hybrides Signieren](/sdk/guides/quantum-safe) beschrieben; das
 folgende Beispiel öffnet dann ein Fenster für ein vereinheitlichtes eth-natives Konto (`npm i @cosmjs/stargate`):
 
 ```ts

@@ -64,7 +64,7 @@ La chaîne principale est la racine de confiance de l'ensemble de l'écosystème
 | Consensus       | Consensus QoreChain (voir [Mécanisme de consensus](/architecture/consensus-mechanism) pour ce qui est branché aujourd'hui) |
 | Sécurité        | Sécurisé par PQC avec signatures Dilithium-5                                    |
 | Rôle            | Couche de règlement, stockage des ancres d'état, moteur de routage QCAI, racine de confiance |
-| Temps de bloc   | Variable selon le réseau : environ 3,2 secondes sur le mainnet, environ 1,3 seconde sur le testnet (mesuré le 27 octobre 2026) |
+| Temps de bloc   | Variable selon le réseau : environ 3,1 secondes sur le mainnet, environ 1,3 seconde sur le testnet (mesuré le 27 octobre 2026) |
 
 Toutes les couches subsidiaires ancrent périodiquement leurs racines d'état à la chaîne principale via des schémas d'engagement hiérarchiques (HCS).
 
@@ -176,7 +176,7 @@ Une **ancre de règlement** écrite via `x/rdk` (un lot soumis avec une `anchor_
 
 ### Période de contestation
 
-Chaque ancre entre dans une **période de contestation** de **24 heures** (86 400 secondes, configurable par couche). Pendant cette période, toute partie peut contester l'ancre en soumettant une preuve de fraude via `MsgChallengeAnchor`. Si la preuve de fraude est valide, l'ancre est invalidée et l'état de la chaîne subsidiaire est ramené à l'ancre précédente.
+Chaque ancre entre dans une **période de contestation** de **24 heures** (86,400 secondes, configurable par couche). Pendant cette période, toute partie peut contester l'ancre en soumettant une preuve de fraude via `MsgChallengeAnchor`. Si la preuve de fraude est valide, l'ancre est invalidée et l'état de la chaîne subsidiaire est ramené à l'ancre précédente.
 
 Une fois la période de contestation expirée sans contestation aboutie, l'ancre est considérée comme finalisée.
 

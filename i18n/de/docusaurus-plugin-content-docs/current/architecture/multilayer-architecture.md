@@ -64,7 +64,7 @@ Die Hauptchain ist der Trust-Root für das gesamte QoreChain-Ökosystem.
 | Konsens    | QoreChain-Konsens (siehe [Konsensmechanismus](/architecture/consensus-mechanism), was heute verdrahtet ist) |
 | Sicherheit | PQC-gesichert mit Dilithium-5-Signaturen                                        |
 | Rolle      | Settlement-Schicht, Speicherung von State-Anchors, QCAI-Routing-Engine, Trust-Root |
-| Blockzeit  | Netzwerkabhängig: etwa 3,2 Sekunden im Mainnet, etwa 1,3 Sekunden im Testnet (gemessen am 27. Oktober 2026) |
+| Blockzeit  | Netzwerkabhängig: etwa 3,1 Sekunden im Mainnet, etwa 1,3 Sekunden im Testnet (gemessen am 27. Oktober 2026) |
 
 Alle untergeordneten Schichten verankern ihre State-Roots periodisch über Hierarchical Commitment Schemes (HCS) an der Hauptchain.
 

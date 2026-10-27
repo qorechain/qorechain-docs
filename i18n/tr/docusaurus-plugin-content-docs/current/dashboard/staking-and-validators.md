@@ -7,105 +7,106 @@ sidebar_position: 8
 
 # Stake ve Doğrulayıcılar
 
-**Validators** sayfası (`/validators`) ağın doğrulayıcılarını incelemenizi sağlar — bu, cüzdan bağlantısı olmayan ve üzerinde delegasyon düğmesi bulunmayan, salt okunur bir tarayıcıdır. Asıl stake işlemleri (delegasyon, delegasyonu geri çekme, ödül talep etme) bunun yerine **Wallet** sayfasında, QoreX cüzdanınız orada bağlandıktan sonra **Stake / Delegate** ve **Rewards** sekmelerinde yer alır. Delegasyon ağın güvenliğine katkıda bulunur ve stake ödülleri kazandırır. Delegasyon ve ödüllerin arkasındaki kavramlar için bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation).
+Bu sayfa Dashboard'dan stake işlemini kapsar: QOR'unuzu bir doğrulayıcıya delege etme, unbond etme ve ödülleri talep etme. İşlemler **mainnet**'te, QoreX cüzdanınız bağlıyken **Wallet** sayfasında (**Stake / Delegate** ve **Rewards** sekmeleri) yer alır. Önce doğrulayıcıları karşılaştırmak için salt okunur [Doğrulayıcılar](/dashboard/validators) sayfasını kullanın. Delegasyon ve ödüllerin arkasındaki kavramlar için bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation).
 
-QoreChain stake işlemleri kuantum-sonrası olarak imzalanır, dolayısıyla dashboard bir delegasyonu imzalayabilecek bir anahtarı asla tutmaz. Aşağıdaki her stake işlemi aynı şekilde çalışır: isteği dashboard üzerinde oluşturursunuz (hangi doğrulayıcı, ne kadar), ardından bunu **bağlı QoreX cüzdanınızda** — uygulama veya tarayıcı eklentisi ([nerede hangi sürümün canlı olduğuna](/qorex/overview#platform-availability) bakın) — onaylar ve imzalarsınız — tıpkı [Gönderme akışında](/dashboard/wallet#mainnet) olduğu gibi. Dashboard yalnızca parametreleri bir `qorex://tx?...` bağlantısı üzerinden gönderir; asıl işlemi yeniden oluşturan, imzalayan ve yayınlayan QoreX'in kendisidir. Önce cüzdanınızı bağlayın — bkz. [Wallet'ı mainnet'te kullanma](/dashboard/wallet#mainnet).
+## Yenilikler {#innovations}
 
-Stake, delegasyon ve doğrulama işlemleri yalnızca ve sadece native (Cosmos) hat üzerinde, hibrit kuantum-sonrası imza kullanılarak gerçekleşir — hiçbir zaman bir EVM precompile'ı üzerinden değil. Bu geçici bir eksiklik değil, kalıcı bir güvenlik özelliğidir: EVM hattı tek bir ante decorator ile çalışır, bu yüzden native hattın ante'sinde bulunan doğrulayıcı-lisansı, minimum öz-bond ve PQC kontrolleri, stake işlemi orada açığa çıkarılsaydı tamamen atlanmış olurdu. MetaMask ile bağlı bir adres QOR alabilir ve açık bir EVM penceresiyle gönderebilir (bkz. [MetaMask ile gönderme](/dashboard/wallet#send-metamask)), ancak stake yapamaz — yalnızca QoreX ile bağlı bir adres stake yapabilir.
+- **Dashboard hiçbir zaman bir stake anahtarı tutmaz.** İsteği (hangi doğrulayıcı, ne kadar) Dashboard üzerinde oluşturursunuz; QoreX onu yeniden oluşturur, gösterir, ML-DSA-87 hibrit imzasıyla imzalar ve yayınlar. Dashboard yalnızca parametreleri bir `qorex://tx?...` bağlantısı üzerinden gönderir ve yalnızca işlem hash'ini öğrenir. Akış, [Gönderme akışıyla](/dashboard/wallet#send-mainnet) aynıdır.
+- **Yalnızca native hat, kalıcı olarak.** Stake, delegasyon ve doğrulayıcı işlemleri yalnızca hibrit kuantum sonrası imzayla native (Cosmos) hatta gerçekleşir, asla bir EVM precompile'ı üzerinden değil. MetaMask ile bağlı bir adres QOR alabilir ve açık bir EVM penceresiyle gönderebilir, ancak stake yapamaz. Yalnızca QoreX ile bağlı bir adres yapabilir.
+- **Doğrulayıcı sıralaması stake'i yayar.** Yalnızca bonded ve jailed olmayan doğrulayıcılar listelenir, en küçük önce. İlk sıra, sunucuda küçük yarıdan rastgele çekilir; bu nedenle en büyük doğrulayıcı asla varsayılan olmaz.
+- **Light-node eşiği tek bir toplamdır.** "Currently bonded" değeri, light-node stake eşiğine karşı, tüm doğrulayıcılarınız birlikte sayılarak gösterilir; böylece bir eksiklik doğrulayıcılar arasında bölünebilir.
+- **Unbonding süresi önemli olduğu yerde gösterilir.** 21 günlük unbonding süresi zincirden okunur ve Delegate'te bir kez, Unbond'da iki kez gösterilir; bu kasıtlıdır, çünkü insanların buna en çok ihtiyaç duyduğu yer burasıdır.
+- **İmzalamadan önce ücret kontrolü.** Panel harcanabilir QOR'unuzu okur (vesting ve bonded coin'ler hariç) ve ücret ödenebilene kadar **Continue in QoreX** düğmesini devre dışı tutar.
 
-## Doğrulayıcıları inceleyin
+## Nasıl kullanılır {#how-to-use}
 
-:::caution Mainnet'te bu sayfa şu anda testnet doğrulayıcı setini gösteriyor
-Dashboard mainnet'teyken **Validators** sayfası (`/validators`) **testnet** doğrulayıcı setini gösteriyor — bu bir backend veri sorunu, bağlantınız veya hesabınızla ilgili bir şey değil. Özet kartlarındaki rakamlar (aktif doğrulayıcılar, bonded QOR, blok yüksekliği) de testnet'e aittir. Mainnet'in doğrulayıcılarının kim olduğuna karar vermek için bu sayfayı kullanmayın; bunun yerine [block explorer'ı](https://explore.qore.network) veya doğrudan bir zincir sorgusu (`qorechaind query staking validators`) kullanın. Ancak bu yalnızca bilgi düzeyinde bir tutarsızlıktır: [Wallet sayfasının Stake sekmesindeki](/dashboard/wallet#mainnet) **Delegate** doğrulayıcı seçicisi, zincirden doğrudan farklı ve doğru bir rotayı okur, dolayısıyla mainnet'te var olmayan bir doğrulayıcıyı gerçekte seçemez veya ona delegasyon yapamazsınız — oraya vardığınızda yalnızca farklı (ve doğru) bir liste görürsünüz.
-:::
+Ön koşullar: oturum açmış olmak, üst bilginin **Mainnet**'te olması, [onayın](/dashboard/overview#risk-acknowledgement) kabul edilmiş olması ve [Wallet'ı mainnet'te kullanma](/dashboard/wallet#mainnet) bölümünde anlatıldığı gibi bir QoreX cüzdanının bağlı olması.
 
-Sayfa; aktif doğrulayıcı sayısı, toplam bonded QOR, ortalama komisyon ve ortalama çalışma süresi için özet kartlarıyla açılır. Bunun altında doğrulayıcı listesi yer alır. Her doğrulayıcı satırı şunları gösterir:
+### Bir doğrulayıcı seçin
 
-- Bir **sıra** ve doğrulayıcının **moniker'ı** (adı), adresi ve bir kopyalama düğmesiyle birlikte.
-- **Oy gücü** — doğrulayıcının bonded stake'i ve toplam içindeki payı.
-- **Komisyon** — doğrulayıcının ödüllerden aldığı yüzde.
-- **APY** — bir em dash (—) olarak gösterilir: Dashboard hesaplanmış bir stake getirisi yayınlamaz, bu yüzden başka bir yerde alıntılanan herhangi bir yüzdeyi doğrulanmamış kabul edin.
-- **Durum** — örneğin aktif veya jailed (hapsedilmiş).
-- İşletimsel ayrıntılar: bölge, çalışma süresi, önerilen bloklar, yazılım sürümü ve son görülme.
+Komisyonu, oy gücünü ve durumu karşılaştırmak için [Doğrulayıcılar](/dashboard/validators) sayfasını açın. Sayfa Dashboard'da `/validators` adresindedir: oturum açmış olmanızı gerektirir, kenar çubuğunda bağlantısı yoktur (adresi yazın veya buradaki bağlantıyı izleyin) ve üst bilgide seçili ağı izler. APY sütunu zincirden okunur ve "variable, not guaranteed, lock bonuses not included" notunu taşır (veya "From fees" yazar); hiçbir rakam vaat edilmez. Birini seçerken şunları göz önünde bulundurun:
 
-Bir arama kutusu listeyi doğrulayıcı adına veya adresine göre filtreler.
+- **Komisyon:** daha düşük bir oran size daha fazla ödül bırakır, ancak sürdürülebilir operatörlerin makul bir pay alması gerekir.
+- **Durum:** bir doğrulayıcı, 10.000 bloktan oluşan bir pencerede blokların %5'inden azını imzaladığında jailed olur; bu, mainnet'te blok başına yaklaşık 3,1 saniyeyle yaklaşık 8,3 saatlik kaçırılmış blok demektir. Bir downtime jail'i sabit **600 saniye** sürer ve doğrulayıcıya stake'inin **%1**'ine mal olur; double-signing ise ayrı ve daha ciddi bir ihlaldir ve **%5** kesinti uygular. Bunlar zincirin canlı parametreleridir (27 Ekim 2026'da kontrol edildi).
+- **Oy gücü:** stake'i doğrulayıcılara yaymak ademi merkeziyetçiliği destekler. Delegate panelinin sıralaması buna yardımcı olur.
 
-Bu sayfa yalnızca doğrulayıcıları karşılaştırmak içindir. Birine gerçekten delegasyon yapmak için **Wallet** sayfasına gidin — aşağıya bakın.
+### Delege et {#delegate}
 
-## Bir doğrulayıcı seçin
-
-Delegasyon yapacağınız bir doğrulayıcı seçerken şunları göz önünde bulundurun:
-
-- **Komisyon** — daha düşük bir oran size daha fazla ödül bırakır, ancak sürdürülebilir operatörlerin makul bir pay alması gerekir.
-- **Çalışma süresi ve durum** — güçlü çalışma süresine sahip aktif doğrulayıcıları tercih edin; jailed bir doğrulayıcı kazanç sağlamaz. Bir doğrulayıcı, 10.000 bloktan oluşan bir pencerede blokların %5'inden azını imzaladığında jail'e girer — başka bir deyişle %95'inden fazlasını kaçırmıştır; bu, mainnet'te kabaca 8,5 saat çevrimdışı kalmak demektir (blok başına yaklaşık 3,2 saniye; testnet'te blok süreleri farklıdır) — jail'den çıkana kadar ne sizin ne de kendisi için hiçbir kazanç elde etmez. Bir downtime jail'i sabit **600 saniye (10 dakika)** sürer ve doğrulayıcıya stake'inin **%1**'ine mal olur; double-signing ise ayrı ve daha ciddi bir ihlaldir ve **%5** kesinti uygular. Bu rakamlar zincirin canlı, güncel parametreleridir — başka bir yerde gördüğünüz daha eski bir rakamı geçersiz sayın.
-- **Oy gücü** — stake'i birden fazla doğrulayıcıya yaymak ademi merkeziyetçiliği destekler. Delegate panelinde ilk sıra, doğrulayıcıların küçük yarısı arasında dönüşümlü olarak verilir — en büyük doğrulayıcı onu asla alamaz — ve geri kalanlar tam da bu nedenle en küçükten başlayarak sıralanır.
-
-## Delegasyon yap, yeniden delegasyon yap, delegasyonu geri çek ve ödül talep et
-
-Bu dört işlemin tamamı Validators sayfasında değil, **Wallet** sayfasında (`/wallet`) yer alır. Wallet'ı açın, henüz bağlamadıysanız QoreX'i bağlayın (bkz. [Wallet'ı mainnet'te kullanma](/dashboard/wallet#mainnet)), ardından delegasyon yapmak ve delegasyonu geri çekmek için **Stake / Delegate** sekmesini, talep etmek için de **Rewards** sekmesini kullanın.
-
-### Delegasyon yap {#delegate}
-
-1. **Wallet** sayfasında **Stake / Delegate** sekmesini seçin.
-2. **Delegate QOR** panelinde üstteki bilgi kutusunu kontrol edin — bu kutu, mevcut bonded toplamınızı light-node stake eşiğiyle karşılaştırarak gösterir ve bu eşiği zaten karşılayıp karşılamadığınızı belirtir. Bu eşik, tek bir doğrulayıcıya karşı değil, **tüm doğrulayıcılar toplamında delege ettiğiniz toplam stake'inize** göre kontrol edilir, dolayısıyla bir eksiklik doğrulayıcılar arasında bölünebilir — delegasyon her zaman bir doğrulayıcıyı hedeflediğinden ve light-node uygunluğu toplamınız üzerinde ayrı bir kontrol olduğundan, doğrudan "bir light node'a delegasyon yapmanın" bir yolu yoktur.
-3. **Validator** açılır menüsünü açın ve birini seçin. İlk giriş, doğrulayıcıların küçük yarısından rastgele çekilir ve sayfayı yeniden yüklediğinizde değişebilir; geri kalanlar en küçük stake'ten başlayarak sıralanır. Jailed doğrulayıcılar sunulmaz.
+1. **Wallet** sayfasında **Stake / Delegate** sekmesini açın ve **Delegate QOR** panelini bulun.
+2. Bilgi kutusunu okuyun: **Currently bonded** değeri **Light-node threshold** değerine karşı ve eşiği karşılayıp karşılamadığınız. Eşik, tüm doğrulayıcılar genelindeki toplam delege edilmiş stake'inize göre kontrol edilir. Doğrudan "bir light node'a delegasyon yapmanın" bir yolu yoktur: delegasyon her zaman bir doğrulayıcıyı hedefler ve light-node uygunluğu toplamınız üzerinde ayrı bir kontroldür.
+3. **Validator** açılır menüsünü açın ve birini seçin. İlk giriş, doğrulayıcıların küçük yarısından rastgele çekilir ve sayfayı yeniden yüklediğinizde değişebilir; geri kalanlar en küçük stake önce olacak şekilde listelenir. Jailed doğrulayıcılar sunulmaz.
 4. Bir **Amount (QOR)** girin.
-5. Tutar alanının altındaki notu okuyun: unbonding 21 gün sürer ve bonded hale geldikten sonra bu süre geçene kadar QOR taşınamaz veya satılamaz.
-6. Panel, bu adreste ücreti karşılamaya yetecek harcanabilir QOR olmadığına dair bir uyarı gösteriyorsa, önce ona biraz harcanabilir QOR gönderin — vesting veya bonded coin'ler ücreti ödeyemez. Bu çözülene kadar **Continue in QoreX** düğmesi devre dışı kalır.
-7. **Continue in QoreX**'e tıklayın (istek oluşturulurken **Preparing…** yazısını gösterir).
-8. Panel artık bir **Open QoreX** bağlantısı ve bir istek kimliğiyle birlikte **Approve it in QoreX** gösterir. QoreX, imzalamadan önce size doğrulayıcıyı ve tutarı gösterecektir — siz orada onaylamadan hiçbir şey gönderilmez. QoreX tarayıcı eklentisi algılanırsa, bir **Approve in the browser extension** düğmesi de sunulur.
-9. QoreX'i açın (bağlantı/deeplink bunu yapar) ve delegasyonu onaylayın. QoreX işlemi oluşturur, imzalar ve yayınlar; dashboard anahtarınızı asla görmez.
+5. Tutarın altındaki notu okuyun: unbonding 21 gün sürer ve bonded QOR bu süre geçene kadar taşınamaz veya satılamaz.
+6. Panel, adreste ücret için yeterli harcanabilir QOR olmadığı uyarısını veriyorsa, önce ona biraz harcanabilir QOR gönderin. Bu çözülene kadar **Continue in QoreX** devre dışı kalır.
+7. **Continue in QoreX**'i seçin (istek oluşturulurken **Preparing...** yazar).
+8. Panel, **Open QoreX**, istek kimliği ve eklenti algılandığında **Approve in the browser extension** ile birlikte "Approve it in QoreX" gösterir. QoreX imzalamadan önce doğrulayıcıyı ve tutarı gösterir; siz onaylamadan hiçbir şey gönderilmez.
+9. QoreX'te onaylayın. QoreX delegasyonu oluşturur, imzalar ve yayınlar.
+
+**Minimal örnek:** listelenen ilk doğrulayıcıya 10 QOR delege edin ve QoreX'te onaylayın.
 
 :::note Zaman kilitli stake Dashboard'un parçası değildir
-v3.2.4 sürümü isteğe bağlı bir zaman kilitli stake modülü ekler (mainnet'te 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri) — bkz. [Zaman kilitli stake](/user-guide/staking-and-delegation#time-locked-staking). Ne Dashboard'da ne de QoreX'te bunun için bir ekran bulunur. Burada yapılan delegasyonlar, kilitlenme içermeyen sıradan delegasyonlardır; tek bekleme, çıkışta 21 günlük unbonding'dir.
+v3.2.4 sürümü isteğe bağlı bir zaman kilitli stake modülü ekler (mainnet'te 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri); bkz. [Zaman kilitli stake](/user-guide/staking-and-delegation#time-locked-staking). Ne Dashboard'da ne de QoreX'te bunun için bir ekran bulunur. Burada yapılan delegasyonlar, kilitlenme içermeyen sıradan delegasyonlardır; tek bekleme, çıkışta 21 günlük unbonding'dir.
 :::
 
-### Yeniden delegasyon yap {#redelegate}
+### Yeniden delege et {#redelegate}
 
-Dashboard'ın kendisinde özel bir Redelegate paneli yok — ama artık buna ihtiyacınız yok. **QoreX'in kendisi artık stake'i doğrulayıcılar arasında doğrudan taşıyabiliyor** (uygulama 1.0.8+ ve eklenti 0.2.6+): 21 günlük unbonding beklemesi yok, kayıp ödül yok, hatta tek bir işlemde bir taşımayı birden fazla hedef doğrulayıcıya bölebiliyor. QoreX'te **Stake**'i açın, ayrılmak istediğiniz doğrulayıcıya dokunun ve stake'in nereye gideceğini seçin — tam anlatım için bkz. [Stake'i doğrulayıcılar arasında taşıma](/qorex/portfolio-and-staking#move-stake). Bu, dashboard'ın kendi istek sözleşmesinin sunabileceği herhangi bir şeyden daha iyi bir çözümdür, bu yüzden aşağıdaki geçici çözüm yerine bunun için doğrudan QoreX'i kullanın.
+Dashboard'da Redelegate paneli yoktur. **QoreX stake'i doğrulayıcılar arasında doğrudan taşır** (uygulama 1.0.8+ ve eklenti 0.2.6+): 21 günlük unbonding beklemesi yok, kayıp ödül yok ve bir taşımayı tek bir işlemde birden fazla hedef doğrulayıcıya bölebilir. QoreX'te **Stake**'i açın, ayrılmak istediğiniz doğrulayıcıya dokunun ve stake'in nereye gideceğini seçin; bkz. [Stake'i doğrulayıcılar arasında taşıma](/qorex/portfolio-and-staking#move-stake).
 
-Henüz bu özelliğe sahip olmayan eski bir QoreX sürümündeyseniz, bu sayfadaki akışları kullanarak bir stake'i farklı bir doğrulayıcıya iki adımda taşıyın:
+Bu özelliği olmayan eski bir QoreX sürümünde, stake'i bunun yerine iki adımda taşıyın: [undelegate](#undelegate), unbonding süresinin dolmasını bekleyin (QOR bu sürede ne taşınabilir ne de kazanç sağlar), ardından yeni doğrulayıcıya [delege edin](#delegate). Bu geçici çözüm 21 günlük ödüle ve daha fazla ücrete mal olur, bu yüzden mümkünse QoreX'i güncelleyin.
 
-1. Ayrılmak istediğiniz doğrulayıcıdan tutarı **[Delegasyonu geri çekin](#undelegate)**.
-2. O akışta gösterilen unbonding süresinin dolmasını bekleyin — bu süre boyunca QOR taşınamaz veya kazanç sağlamaz.
-3. Unbonded QOR tekrar harcanabilir hale geldiğinde, onu yeni doğrulayıcıya **[delege edin](#delegate)**.
-
-Bu geçici çözüm 21 günlük kayıp ödüle ve doğrudan bir taşımadan daha fazla ücrete mal olur, bu yüzden mümkünse buna güvenmek yerine QoreX'i güncelleyin.
-
-### Delegasyonu geri çek {#undelegate}
-
-Bir delegasyondan çıkmak artık dashboard üzerinden mümkün — bir süre boyunca buradan delegasyon yapmak mümkün olsa da unbond etmek hiç mümkün değildi, bu yüzden bunun eksik olduğunu hatırlıyorsanız sebebi budur.
+### Undelegate {#undelegate}
 
 :::caution 21 günlük unbonding süresi
-Delegasyonu geri çekilen QOR bugün elinize ulaşmaz. Önce **21 günlük bir unbonding süresine** girer; bu süre boyunca hiçbir ödül kazanmaz ve taşınamaz veya satılamaz. Panel bunu kasıtlı olarak iki kez belirtir — biri alt başlığında, diğeri onay düğmesinin hemen üzerinde — çünkü bu ekrana aceleyle ulaşan biri (düşen bir piyasa, jailed bir doğrulayıcı) tam olarak imzalamadan önce bunu görmesi en çok gereken kişidir.
+Undelegate edilen QOR bugün elinize ulaşmaz. Önce **21 günlük bir unbonding süresine** girer; bu süre boyunca hiçbir ödül kazanmaz ve taşınamaz veya satılamaz. Panel bunu bilerek iki kez belirtir: bir kez alt başlığında, bir kez de onay düğmesinin hemen üzerinde.
 :::
 
-1. **Wallet** sayfasında **Stake / Delegate** sekmesini seçin ve Delegate'in altındaki **Unbond QOR** paneline kaydırın. Alt başlığı zaten yukarıdaki 21 günlük unbonding uyarısını yineler.
+1. **Wallet** sayfasında **Stake / Delegate**'i açın ve Delegate'in altındaki **Unbond QOR** paneline kaydırın.
 2. Bu adresten aktif bir delegasyonunuz yoksa, panel bunu belirtir ve burada durur.
-3. **Unbond from** açılır menüsünü açın ve azaltmak istediğiniz delegasyonu seçin — burada yalnızca gerçekten delegasyon yaptığınız doğrulayıcılar listelenir, her biri bonded tutarıyla birlikte gösterilir.
-4. Unbond etmek için bir **Amount (QOR)** girin veya o doğrulayıcı için tam bonded tutarı doldurmak üzere **Unbond all `<amount>` QOR**'a tıklayın.
-5. O doğrulayıcıya bonded olandan daha fazlasını girerseniz, panel bunu size bildirir ve gönderimi engeller.
-6. Onay düğmesinin hemen üzerinde uyarı ikinci kez görünür: QOR bugün değil, 21 gün içinde ulaşır ve o zamana kadar hiçbir kazanç sağlamaz. Bu kasıtlı bir tekrardır, dokümantasyon hatası değil — devam etmeden önce tekrar okuyun.
-7. Adres ücreti karşılayamıyorsa (bonded coin'ler bunu ödeyemez — önce burada biraz harcanabilir QOR'a ihtiyacınız var), panel sizi uyarır ve düğmeyi devre dışı bırakır.
-8. **Continue in QoreX**'e tıklayın (istek oluşturulurken **Preparing…**).
-9. Panel, bir **Open QoreX** bağlantısı ve bir istek kimliğiyle **Approve it in QoreX** gösterir — QoreX, imzalamadan önce size doğrulayıcıyı ve tutarı gösterir. QoreX tarayıcı eklentisi algılanırsa, bir **Approve in the browser extension** düğmesi de sunulur.
-10. QoreX'i açın ve onaylayın. İşlemi imzalar ve yayınlar; QOR yalnızca 21 günlük unbonding süresi sona erdikten sonra tekrar harcanabilir hale gelir.
+3. **Unbond from**'u açın ve azaltılacak delegasyonu seçin. Yalnızca delege olduğunuz doğrulayıcıları, bonded tutarla birlikte listeler.
+4. Bir tutar girin veya tam bonded tutarı doldurmak için **Unbond all X QOR**'u seçin.
+5. Bonded olandan fazlasını girmek gönderimi engeller.
+6. Onay düğmesinin üzerindeki ikinci uyarıyı okuyun: QOR bugün değil, 21 gün içinde ulaşır.
+7. Adres ücreti karşılayamıyorsa (bonded coin'ler bunu ödeyemez), panel uyarır ve düğmeyi devre dışı bırakır.
+8. **Continue in QoreX**'i seçin (istek oluşturulurken **Preparing...**), ardından **Open QoreX** üzerinden veya **Approve in the browser extension** ile QoreX'te onaylayın.
+
+QOR yalnızca 21 günlük unbonding süresi bittikten sonra tekrar harcanabilir hale gelir.
 
 ### Ödülleri talep et {#claim}
 
-1. **Wallet** sayfasında **Rewards** sekmesini seçin.
-2. **Staking rewards** paneli, delegasyon yaptığınız her doğrulayıcı genelinde birikmiş ödüllerinizi okur. Bu adresten hiçbir şey stake edilmemişse, panel bunu belirtir ve talep edilecek bir şey yoktur.
-3. Aksi halde, talep edilmeyi bekleyen toplam tutarı ve her doğrulayıcı için birikmiş tutarın satır satır dökümünü gösterir. Ödüller sürekli birikir ve beklemekle asla kaybedilmez — bir son tarih yoktur.
-4. **Claim in QoreX**'e tıklayın. Bu, tek bir istekte gösterilen tüm doğrulayıcılardan biriken ödülleri talep eden bir "tümünü talep et" işlemidir — doğrulayıcı başına ayrı bir talep düğmesi yoktur.
-5. Talebi imzalayıp yayınlamak için QoreX'te (**Open QoreX** bağlantısı üzerinden) onaylayın. QoreX tarayıcı eklentisi algılanırsa, bir **Approve in the browser extension** düğmesi de sunulur.
+1. **Wallet** sayfasında **Rewards** sekmesini açın.
+2. **Staking rewards** paneli, delege olduğunuz her doğrulayıcı genelindeki birikmiş ödüllerinizi okur. Bu adresten hiçbir şey stake edilmemişse, bunu belirtir.
+3. Aksi halde bekleyen toplamı ve doğrulayıcı başına bir satır gösterir. Ödüller sürekli birikir ve beklemekle kaybolmaz.
+4. **Claim in QoreX**'i seçin. Bu, **tüm** doğrulayıcılardan aynı anda talep eder; doğrulayıcı başına talep yoktur.
+5. Talebi QoreX'te onaylayın (**Open QoreX** veya **Approve in the browser extension**).
 
-:::note Unbonding süresi
-Delegasyonu geri çekilen QOR, tekrar harcanabilir hale gelmeden önce 21 günlük bir unbonding sürecinden geçer ve bu süre boyunca ödül kazanmaz. Ayrıntılar için bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation).
-:::
+## Nasıl erişilir {#how-to-access}
+
+- **Nerede:** [dashboard.qorechain.io/wallet](https://dashboard.qorechain.io/wallet), **Stake / Delegate** ve **Rewards** sekmeleri. Oturum açmak gereklidir.
+- **Ağ:** yalnızca mainnet, bağlı bir QoreX cüzdanıyla. Testnet cüzdanlarının stake ekranı yoktur.
+- **Cüzdan:** QoreX (uygulama veya eklenti). Keplr ve MetaMask, Dashboard'dan stake yapamaz.
+- **Maliyetler:** harcanabilir QOR'dan ödenen ağ ücreti (gas başına en az 0,1 uqor). Dashboard hiçbir şey almaz.
+- **Fonlar:** vesting bakiyeleri delege edebileceğiniz tutara sayılır ancak ücreti ödeyemez.
+
+## Nerede yayımlanır {#where-published}
+
+| Yüzey | Adres | Ağ |
+| --- | --- | --- |
+| Delegate, Unbond, Rewards | `dashboard.qorechain.io/wallet` | Mainnet |
+| Doğrulayıcıları karşılaştırma | `dashboard.qorechain.io/validators`, bkz. [Doğrulayıcılar](/dashboard/validators) | Üst bilgideki ağı izler |
+| Stake'i doğrulayıcılar arasında taşıma | QoreX, bkz. [Portföy ve Stake](/qorex/portfolio-and-staking#move-stake) | Mainnet |
+
+## Sınırlar ve bilinen sorunlar {#limits}
+
+- **Dashboard'da yok:** yeniden delegasyon (QoreX'i kullanın) ve zaman kilitli stake.
+- Dashboard'da **testnet cüzdanları için stake yok**.
+- **Tahminler yaklaşıktır:** panelde gösterilen ücret tahmini ve light-node eşiği, o anda zincirden okunmayan, Dashboard'a gömülü değerlerdir. QoreX, imzalamadan önce kesin ücreti gösterir.
+- **Unbonding 21 gündür** ve kısaltılamaz.
+- **Claim, tümünü talep etmedir.**
 
 ## İlgili
 
-- [Stake ve Delegasyon](/user-guide/staking-and-delegation) — kapsamlı stake kavramları.
-- [Wallet'ı mainnet'te kullanma](/dashboard/wallet#mainnet) — stake yapmadan önce QoreX'i bağlayın.
-- [Explorer Validators](/dashboard/explorer#validators) — cüzdan olmadan doğrulayıcılara göz atın.
-- [Tools Hub](/dashboard/tools-hub) — kendi doğrulayıcınızı çalıştırmak için başvurun.
+- [Doğrulayıcılar](/dashboard/validators) - doğrulayıcıları, komisyonu ve değişken getiriyi karşılaştırın.
+- [Stake ve Delegasyon](/user-guide/staking-and-delegation) - kapsamlı stake kavramları.
+- [Wallet'ı mainnet'te kullanma](/dashboard/wallet#mainnet) - stake yapmadan önce QoreX'i bağlayın.
+- [Explorer Doğrulayıcıları](/dashboard/explorer#validators) - cüzdan olmadan doğrulayıcılara göz atın.
+- [Düğümler ve Doğrulayıcılar](/dashboard/tools-hub) - kendi doğrulayıcınızı çalıştırmak için başvurun.

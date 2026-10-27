@@ -105,14 +105,14 @@ instanțierea QoreChain Native sunt cu permisiuni (instanțierea este deschisă 
 
 ---
 
-## 3. Rezistent la calculul cuantic în mod implicit
+## 3. Semnare hibridă în mod implicit
 
-**Fă un semnatar protejat post-cuantic printr-un singur apel.**
+**Înregistrează cheia ML-DSA-87 a unui semnatar printr-un singur apel.**
 
 QoreChain impune semnături hibride post-cuantice (ML-DSA-87 + clasice) la
 nivelul protocolului. SDK-ul reduce adoptarea lor la o singură linie de cod:
 verifici, înregistrezi și migrezi la semnarea hibridă — cu un badge React care
-le arată utilizatorilor că sunt protejați.
+arată dacă o adresă are o cheie înregistrată.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -134,7 +134,7 @@ await hybrid.signAndBroadcastHybrid({
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// Shows a status badge when the address has a registered PQC key
 // (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
@@ -143,7 +143,7 @@ import { QuantumSafeBadge } from "@qorechain/react";
 calea Native a QoreChain, nu un experiment, iar SDK-ul reduce adoptarea ei la un
 apel de înregistrare plus o cale de trimitere hibridă. Înregistrarea este
 explicită: nu există auto-înregistrare la prima tranzacție. Vezi
-[Quantum-safe](/sdk/guides/quantum-safe).
+[Semnare hibridă](/sdk/guides/quantum-safe).
 
 ---
 

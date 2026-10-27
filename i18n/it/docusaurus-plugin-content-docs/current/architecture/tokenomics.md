@@ -41,7 +41,7 @@ QoreChain ha un **percorso di offerta finito e con tetto massimo**. L'offerta di
 | --- | --- |
 | Modalità di emissione | `fixed` (dalla v3.1.94, altezza 2.122.074 — 26 agosto 2026) |
 | Emissione per epoca | **86.000 QOR** (16.239 QOR fino alla proposta di governance 10; la prima epoca da 86.000 QOR inizia al blocco 3.672.000) |
-| Lunghezza dell'epoca | 43.200 blocchi (circa 38,6 ore con l'attuale tempo di blocco di ≈3,2 s) |
+| Lunghezza dell'epoca | 43.200 blocchi (circa 37,7 ore con l'attuale tempo di blocco di ≈3,1 s) |
 | Tetto cumulativo (`max_total_emission`) | **590.000.000 QOR** (114.285.714 QOR fino alla proposta 10) |
 | Coniati finora (23 ottobre 2026, epoca 86) | 105.420.896,21 QOR (17,87% del tetto) |
 | Rimanenti sotto il tetto | 484.579.103,79 QOR (circa 5.635 epoche a 86.000 QOR per epoca; l'ultima è parziale) |
@@ -137,7 +137,7 @@ Due importi si sono accumulati sulla mainnet prima dell'aggiornamento v3.2.0 (25
 
 **Resto corretto della quota bloccata.** All'aggiornamento v3.2.3 (altezza 3.662.051, 20 ottobre 2026) la chain ha ricalcolato il registro della quota bloccata, che si attestava allora a 3.807.496,785528 QOR (`reserved` in `GET /qorechain/burn/v1/stranded_rewards`, accanto a `released`, 6.693.045,921330 QOR). La proposta di governance 12 ha rilasciato tale resto, 3.807.496,785528 QOR, alla fondazione: è stata approvata (la votazione si è chiusa il 21 ottobre 2026 alle 20:01 UTC) con tutto lo stake vincolato votante a favore. Il registro si può controllare a `GET /qorechain/burn/v1/stranded_rewards` e la proposta a `GET /cosmos/gov/v1/proposals/12`.
 
-**Il pool dei light node oggi.** Dall'aggiornamento v3.2.0, le ricompense dei light node vengono pagate solo da quanto maturato dall'esecuzione di distribuzione precedente, con un limite per nodo. Dalla v3.2.3 il limite è di **2.000 QOR per nodo ogni 30 giorni** (`max_reward_per_month_per_node`), in proporzione al tempo di blocco e all'uptime del nodo; il valore per blocco (`max_reward_per_block_per_node`, 1.713 uqor) è ancora riportato ma non è più la regola. Ciò che non viene guadagnato resta nella riserva del pool, che solo un voto di governance può rilasciare. Dopo la proposta 8 la riserva si accumula di nuovo: il 20 ottobre 2026 conteneva 487,2318 QOR (`reserved` in `GET /qorechain/lightnode/v1/reward_pool`), senza nulla in sospeso né pagabile, perché nessun light node si è ancora registrato. La registrazione è aperta e vincolata a una licenza (vedi [Light Node](/light-node/overview#reward-program-status)). Un rilascio precedente allo snapshot dell'aggiornamento, superiore all'importo registrato o verso una destinazione non valida viene rifiutato.
+**Il pool dei light node oggi.** Dall'aggiornamento v3.2.0, le ricompense dei light node vengono pagate solo da quanto maturato dall'esecuzione di distribuzione precedente, con un limite per nodo. Dalla v3.2.3 il limite è di **2.000 QOR per nodo ogni 30 giorni** (`max_reward_per_month_per_node`), in proporzione al tempo di blocco e all'uptime del nodo; il valore per blocco (`max_reward_per_block_per_node`, 1.713 uqor) è ancora riportato ma non è più la regola. Ciò che non viene guadagnato resta nella riserva del pool, che solo un voto di governance può rilasciare. Dopo la proposta 8 la riserva si accumula di nuovo: il 27 ottobre 2026 il `reserved` del pool della mainnet (in `GET /qorechain/lightnode/v1/reward_pool`) era di circa 13.380,9 QOR, con 0,06 QOR in sospeso e nulla di pagabile; quel giorno era registrato un light node su ciascuna rete. La registrazione è aperta e vincolata a una licenza (vedi [Light Node](/light-node/overview#reward-program-status)). Un rilascio precedente allo snapshot dell'aggiornamento, superiore all'importo registrato o verso una destinazione non valida viene rifiutato.
 
 ## x/xqore — Staking bloccato e amplificazione della governance {#x-xqore}
 
@@ -191,7 +191,7 @@ Il modulo `x/inflation` conia l'emissione per epoca (86.000 QOR dalla proposta 1
 
 ### Meccanica delle epoche
 
-* **Lunghezza dell'epoca**: 43.200 blocchi (circa 38,6 ore a ≈3,2 s per blocco).
+* **Lunghezza dell'epoca**: 43.200 blocchi (circa 37,7 ore a ≈3,1 s per blocco).
 * A ogni confine di epoca il modulo conia l'emissione dell'epoca (o il residuo fino al tetto), aggiorna il record dell'epoca e smette di coniare una volta che `total_minted` raggiunge il tetto.
 * Dalla v3.2.3 l'anno di emissione è derivato dalla lunghezza dell'epoca anziché da un numero fisso di blocchi.
 

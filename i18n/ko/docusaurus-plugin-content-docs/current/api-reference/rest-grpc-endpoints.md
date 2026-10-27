@@ -41,7 +41,7 @@ QoreChain 전용 모듈은 REST에서 `/qorechain/<module>/v1/...` 접두사 아
 
 | 메서드 | 엔드포인트                                 | 설명                                                                 |
 | ------ | ---------------------------------------- | --------------------------------------------------------------------------- |
-| GET    | `/qorechain/pqc/v1/account/{address}`    | 계정의 양자내성 키 등록 정보(`found`, 키 유형, 알고리즘) |
+| GET    | `/qorechain/pqc/v1/account/{address}`    | 계정의 포스트 양자 키 등록 정보(`found`, 키 유형, 알고리즘) |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | 계정의 EVM 레인 승인 윈도우와 그 잔여 한도          |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | 계정의 EIP-7702 위임 동의, 현재 위임 및 EVM 논스(v3.2.2부터) |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4**(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터이며 이전 릴리스 노드에서는 `501`). 바이너리가 알고 있는 모든 프로토콜 기능과 `enabled`, `known`, `staged` 플래그 |
@@ -115,7 +115,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...
 }
 ```
 
-계정의 EIP-7702 위임은 해당 계정 자신의 양자내성 동의(`MsgAuthorizeEVMDelegation`)가 있어야만 효력이 발생합니다. `found`와 `live`는 `delegate`에 대해 기록된, 아직 사용 가능한 동의가 있는지를 보고하며, `current_delegate`는 계정이 현재 설정한 위임이고 `nonce`는 해당 계정의 EVM 논스입니다.
+계정의 EIP-7702 위임은 해당 계정 자신의 포스트 양자 동의(`MsgAuthorizeEVMDelegation`)가 있어야만 효력이 발생합니다. `found`와 `live`는 `delegate`에 대해 기록된, 아직 사용 가능한 동의가 있는지를 보고하며, `current_delegate`는 계정이 현재 설정한 위임이고 `nonce`는 해당 계정의 EVM 논스입니다.
 
 ## 브리지 모듈 {#bridge-module}
 
@@ -508,6 +508,18 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
 
 `params`는 세 가지 락 기간(3개월, 6개월, 12개월)과 해당 파라미터, 그리고 `min_lock_amount`(`"10000000"` uqor, 10 QOR)를 나열합니다. 락은 `tx stakingtier lock`으로 생성합니다([트랜잭션 명령](/cli-reference/transaction-commands#stakingtier) 참조).
 
+## 평판 모듈 {#reputation-module}
+
+평판 모듈의 REST 라우트는 **테스트넷**(`qorechain-diana`, 체인 v3.2.6)에서 제공됩니다. 메인넷에서는 이 글을 쓰는 시점(2026년 10월 27일)에 모든 `/qorechain/reputation/v1/...` 라우트가 HTTP `501`(`{"code":12,"message":"Not Implemented"}`)로 응답하며, 메인넷에서 이 모듈은 gRPC로만 접근할 수 있습니다(`Params`, 아래 참조). 이후 메인넷 릴리스에서 이 라우트들이 제공될 것으로 예상되며, 그때 이 페이지를 업데이트합니다.
+
+| 메서드 | 엔드포인트 | 설명 |
+| ------ | -------- | ----------- |
+| GET    | `/qorechain/reputation/v1/params` | 점수 가중치(`alpha`, `beta`, `gamma`, `delta`), `lambda`, `min_score` |
+| GET    | `/qorechain/reputation/v1/validator/{address}` | 한 검증자의 레코드. `{address}`는 `qorvaloper1...` 운영자 주소 또는 `qorvalcons1...` 합의 주소입니다. 필드에는 `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks`, `last_updated_height`가 있습니다. `404`는 검증자에게 아직 점수가 없다는 뜻이며, 운영자 주소도 합의 주소도 아닌 문자열은 `400`으로 응답합니다 |
+| GET    | `/qorechain/reputation/v1/validators` | 점수가 매겨진 모든 검증자의 레코드(`reputations`) |
+
+점수는 0과 1 사이의 십진수 문자열입니다. 라이트 노드는 검증자별 라우트를 읽어, 위임한 검증자가 `min_reputation` 아래로 내려가면 경고합니다([보상 및 모니터링](/light-node/rewards-and-monitoring#delegation-alerts) 참조). 메인넷 호스트의 같은 라우트는 메인넷이 이를 제공할 때까지 `501`을 반환합니다.
+
 ## gRPC 전용 모듈 {#grpc-only-modules}
 
 메인넷(노드 릴리스 v3.2.4, 2026년 10월 27일 확인)에서 이 모듈들은 gRPC `Query` 서비스는 있지만 **REST 라우트는 없습니다**. 서비스 이름은 `qorechain.<module>.v1.Query` 형식을 따릅니다.
@@ -516,7 +528,7 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
-| `reputation`  | `Params`                                               |
+| `reputation`  | `Params` (REST 라우트는 테스트넷에만 있음, [평판 모듈](#reputation-module) 참조) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |

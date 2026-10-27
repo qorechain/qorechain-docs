@@ -54,7 +54,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Il bundle contiene `qorechaind` più le librerie condivise richieste (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Mantieni il nodo aggiornato — v3.2.3, poi v3.2.4
+:::caution Mantieni il nodo aggiornato
 I full node devono seguire la release attualmente in esecuzione sulla rete — installa sempre il binario indicato dal manifest, non fissarne uno vecchio. Il manifest corrente è **v3.2.4** con `minCompatible` **3.2.4** e `upgradeHeight` **3.742.566**: la mainnet ha applicato la v3.2.4 a quell'altezza il 23 ottobre 2026 tramite la proposta di governance 13, e un nodo ancora su una release precedente non può seguire la chain oltre quell'altezza. Gli upgrade di governance precedenti sulla mainnet sono stati la **v3.1.94** all'altezza 2.122.074 (il tetto massimo all'emissione), la **v3.2.0** all'altezza 2.981.742 (la finestra di autorizzazione EVM e i byte di firma ibrida v2), la **v3.2.2** all'altezza 3.556.788 (16 ottobre 2026, proposta 7) e la **v3.2.3** all'altezza 3.662.051 (20 ottobre 2026, proposta 11). La v3.2.1 è stata una release locale al nodo, senza altezza. La firma delle transazioni non cambia nella v3.2.4. Un nodo che si unisce ora ha bisogno del binario v3.2.4 indicato dal manifest; preferisci lo state sync (sotto) al replay dal genesis. Lo snapshot dei dati della chain pubblicato è antecedente a tutte queste altezze di upgrade, quindi un nodo ripristinato da esso deve rieseguirle.
 
 Imposta `evm-chain-id = 9801` in `app.toml` (un valore diverso viene registrato nei log come errore) e mantieni l'orologio di sistema sincronizzato via NTP: un nodo si arresta quando il suo orologio si discosta di oltre 60 secondi. Controlla sempre i campi `"version"` e `"minCompatible"` del manifest prima di fidarti di `binary.url` — il manifest viene promosso in modo deliberato (prima sulla testnet, poi sulla mainnet dopo un periodo di rodaggio). Formato di firma, indirizzi, decimali, memo e commissioni non sono cambiati nella v3.2.3 né nella v3.2.4.
@@ -130,7 +130,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### Impostazioni consigliate
 
-Un full node non sceglie il tempo di blocco — lo scelgono i validatori (la mainnet produce attualmente un blocco circa ogni 3,2 secondi). Lascia i timeout di consenso ai valori predefiniti, a meno che tu non gestisca un validatore e il gruppo dei validatori ti abbia fornito dei valori. Un'impostazione utile del mempool per un nodo RPC pubblico, in `config.toml`:
+Un full node non sceglie il tempo di blocco — lo scelgono i validatori (la mainnet produce attualmente un blocco circa ogni 3,1 secondi). Lascia i timeout di consenso ai valori predefiniti, a meno che tu non gestisca un validatore e il gruppo dei validatori ti abbia fornito dei valori. Un'impostazione utile del mempool per un nodo RPC pubblico, in `config.toml`:
 
 ```toml
 [mempool]
@@ -258,7 +258,7 @@ http://localhost:1317
 | EVM chain ID            | `9801` (esadecimale `0x2649`)           |
 | Versione della chain    | v3.2.4 (applicata all'altezza 3.742.566 il 23 ottobre 2026) |
 | Attiva dal              | 7 giugno 2026                           |
-| Tempo di blocco         | circa 3,2 secondi (media misurata)      |
+| Tempo di blocco         | circa 3,1 secondi (media misurata)      |
 | Token                   | QOR (`uqor`, 10^6 micro-unità = 1 QOR)  |
 | Prezzo minimo del gas   | `0.1uqor`                               |
 | Prefisso degli account  | `qor`                                   |

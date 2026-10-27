@@ -1,11 +1,11 @@
 ---
 slug: /qoresign/guides/evm-quantum-ready
-title: "EVM wallets: quantum-ready mode"
-sidebar_label: EVM quantum-ready mode
+title: "EVM wallets: authorization window"
+sidebar_label: EVM authorization window
 sidebar_position: 3
 ---
 
-# EVM wallets: quantum-ready mode
+# EVM wallets: authorization window
 
 Ethereum transactions have no field where a second signature could travel, and
 the network applies its PQC setting chain-wide rather than per lane. So a
@@ -16,7 +16,7 @@ QoreSign does not offer a hybrid EVM signature (`assertHybridLane("evm")` throws
 Instead, the network admits an EVM transaction only if its sender has a
 registered ML-DSA-87 key and a live **EVM authorization window** that covers it.
 The window is opened from the native lane by a hybrid-signed transaction, so the
-post-quantum key authorizes EVM activity ahead of time ("quantum-ready mode").
+post-quantum key authorizes EVM activity ahead of time. The EVM transaction itself is secp256k1 only.
 Both public networks enforce this (protocol feature
 `evm-pqc-authorisation-window`, readable with `fetchProtocolFeatures` in the
 [QoreChain SDK](/sdk/overview) or at `/qorechain/pqc/v1/protocol_features`).

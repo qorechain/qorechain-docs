@@ -1,11 +1,11 @@
 ---
 slug: /qoresign/guides/evm-quantum-ready
-title: "Portofele EVM: modul pregătit pentru era cuantică"
-sidebar_label: Modul pregătit pentru era cuantică EVM
+title: "Portofele EVM: fereastra de autorizare"
+sidebar_label: Fereastra de autorizare EVM
 sidebar_position: 3
 ---
 
-# Portofele EVM: modul pregătit pentru era cuantică
+# Portofele EVM: fereastra de autorizare
 
 Tranzacțiile Ethereum nu au un câmp în care să circule o a doua semnătură, iar
 rețeaua aplică setarea PQC la nivelul întregului lanț, nu per lane. Așadar, o
@@ -17,10 +17,10 @@ aruncă `LANE_NOT_AVAILABLE`).
 ML-DSA-87 înregistrată și o **fereastră de autorizare EVM** activă care o
 acoperă. Fereastra este deschisă de pe lane-ul nativ printr-o tranzacție
 semnată hibrid, astfel încât cheia post-cuantică autorizează în avans activitatea
-EVM („modul pregătit pentru era cuantică"). Ambele rețele publice aplică
-această regulă (funcționalitatea de protocol `evm-pqc-authorisation-window`,
-care poate fi citită cu `fetchProtocolFeatures` din
-[SDK-ul QoreChain](/sdk/overview) sau la
+EVM. Tranzacția EVM în sine este semnată doar cu secp256k1. Ambele rețele
+publice aplică această regulă (funcționalitatea de protocol
+`evm-pqc-authorisation-window`, care poate fi citită cu `fetchProtocolFeatures`
+din [SDK-ul QoreChain](/sdk/overview) sau la
 `/qorechain/pqc/v1/protocol_features`).
 
 ## Pașii pentru un cont EVM {#steps}

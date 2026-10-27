@@ -139,7 +139,7 @@ Tout le reste de la voie EVM est inchangé : vous continuez à signer avec MetaM
 | `max-txs` | Nombre de transactions EVM qu'elle admet | 1 – 1,000 |
 | `max-value` | Sortie totale qu'elle admet, en uqor : valeur transférée **plus** les frais maximaux que chaque transaction pourrait payer (limite de gas × plafond de frais), arrondi à l'unité supérieure | supérieur à 0 |
 
-* 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,2 s par bloc) et environ 6 heures sur le testnet (environ 1,3 s par bloc).
+* 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,1 s par bloc) et environ 6 heures sur le testnet (environ 1,3 s par bloc).
 * Une transaction admise qui échoue consomme tout de même son emplacement et son budget de valeur.
 * L'ouverture d'une nouvelle fenêtre **remplace** la précédente ; la consommation repart de zéro.
 * Le CLI accepte `max-value` en `uqor` ou en `qor` (`1000qor` = 1,000,000,000 uqor).

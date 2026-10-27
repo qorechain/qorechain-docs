@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain este construit cu **criptografie post-cuantică (PQC) de la genesis** — nu adăugată ulterior ca actualizare. Modulul `x/pqc` oferă semnături digitale bazate pe rețele (lattice) și încapsulare de chei drept primitive criptografice principale, cu un cadru de agilitate a algoritmilor controlat prin guvernanță pentru reziliență pe termen lung.
 
-Baza completă PQC — **Dilithium-5 (semnături) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — este acum finalizată și reprezintă valoarea implicită a rețelei. Pe rețelele live (v3.2.x), semnăturile hibride sunt **obligatorii implicit** pe calea de tranzacții cosmos: `hybrid_signature_mode = required` și `allow_classical_fallback = false`. Fiecare tranzacție de pe calea cosmos trebuie să poarte o semnătură Dilithium-5 alături de semnătura sa clasică secp256k1; tranzacțiile exclusiv clasice de la un cont PQC sunt respinse, iar calea de retrogradare clasică este închisă. Mainnet rulează v3.2.3, iar testnet v3.2.4; ce au adăugat versiunile v3.2.2 și v3.2.3 la regulile post-cuantice (integritatea cheilor, dovada deținerii opțională, ferestre EVM cu domeniu limitat, consimțământul EIP-7702) este descris în [Reguli de integritate a cheilor](#key-integrity), [Dovada deținerii](#proof-of-possession) și [Delegările EIP-7702](#eip-7702).
+Baza completă PQC — **Dilithium-5 (semnături) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — este acum finalizată și reprezintă valoarea implicită a rețelei. Pe rețelele live (v3.2.x), semnăturile hibride sunt **obligatorii implicit** pe calea de tranzacții cosmos: `hybrid_signature_mode = required` și `allow_classical_fallback = false`. Fiecare tranzacție de pe calea cosmos trebuie să poarte o semnătură Dilithium-5 alături de semnătura sa clasică secp256k1; tranzacțiile exclusiv clasice de la un cont PQC sunt respinse, iar calea de retrogradare clasică este închisă. Mainnet rulează v3.2.4, iar testnet v3.2.6 (verificat la 27 octombrie 2026); ce au adăugat versiunile v3.2.2 și v3.2.3 la regulile post-cuantice (integritatea cheilor, dovada deținerii opțională, ferestre EVM cu domeniu limitat, consimțământul EIP-7702) este descris în [Reguli de integritate a cheilor](#key-integrity), [Dovada deținerii](#proof-of-possession) și [Delegările EIP-7702](#eip-7702).
 
 ## Principii de proiectare
 
@@ -228,7 +228,7 @@ active --> migrating --> deprecated --> disabled
 
 ### Migrare cu semnătură dublă
 
-Când un algoritm este retras, începe o **perioadă de migrare** (implicit: 1,000,000 de blocuri — aproximativ 37 de zile la timpul actual de bloc al mainnet-ului, ≈3.2 s). În această perioadă:
+Când un algoritm este retras, începe o **perioadă de migrare** (implicit: 1,000,000 de blocuri — aproximativ 36 de zile la timpul actual de bloc al mainnet-ului, ≈3.1 s). În această perioadă:
 
 1. Conturile cu chei care folosesc algoritmul retras trebuie să migreze la cel de înlocuire.
 2. Migrarea necesită semnături duble (`MsgMigratePQCKey`): una de la cheia veche și una de la cheia nouă, dovedind deținerea ambelor.
@@ -254,7 +254,7 @@ Adăugarea unui algoritm necesită o versiune de software care îl implementeaz�
 
 ## Hash SHAKE-256
 
-Începând cu v3.1.73, **SHAKE-256** (funcția SHA-3 cu ieșire extensibilă) este **hash-ul implicit al aplicației** în întreaga QoreChain — oferit de pachetul `qorehash` — completând baza criptografică rezistentă cuantic alături de semnăturile Dilithium-5 și încapsularea de chei ML-KEM-1024. Modulul `x/pqc` oferă utilitare SHAKE-256 pure-Go:
+Începând cu v3.1.73, **SHAKE-256** (funcția SHA-3 cu ieșire extensibilă) este **hash-ul implicit al aplicației** în întreaga QoreChain — oferit de pachetul `qorehash` — completând baza criptografică alături de semnăturile Dilithium-5 și încapsularea de chei ML-KEM-1024. Modulul `x/pqc` oferă utilitare SHAKE-256 pure-Go:
 
 | Funcție                           | Descriere                       | Ieșire           |
 | ---------------------------------- | --------------------------------- | ---------------- |

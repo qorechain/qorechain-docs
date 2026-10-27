@@ -508,6 +508,18 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
 
 تسرد `params` أطوال القفل الثلاثة (3 و6 و12 شهرًا) مع معاملاتها و`min_lock_amount` (`"10000000"` uqor، أي 10 QOR). تُجرى الأقفال بالأمر `tx stakingtier lock` (انظر [أوامر المعاملات](/cli-reference/transaction-commands#stakingtier)).
 
+## وحدة السمعة {#reputation-module}
+
+تُخدَّم مسارات REST لوحدة السمعة على **الشبكة التجريبية** (`qorechain-diana`، السلسلة v3.2.6). أما على الشبكة الرئيسية فيردّ كل مسار `/qorechain/reputation/v1/...` بـ HTTP `501` (`{"code":12,"message":"Not Implemented"}`) وقت كتابة هذا (27 أكتوبر 2026)؛ وهناك لا يمكن الوصول إلى الوحدة إلا عبر gRPC فقط (`Params`، انظر أدناه). ومن المتوقع أن يخدمها إصدار لاحق للشبكة الرئيسية؛ وستُحدَّث هذه الصفحة بعد ذلك.
+
+| الطريقة | نقطة النهاية | الوصف |
+| ------- | ------------ | ----- |
+| GET     | `/qorechain/reputation/v1/params` | أوزان الدرجة (`alpha` و`beta` و`gamma` و`delta`) و`lambda` و`min_score` |
+| GET     | `/qorechain/reputation/v1/validator/{address}` | سجل مدقّق واحد. `{address}` هو عنوان مشغّل بصيغة `qorvaloper1...` أو عنوان إجماع بصيغة `qorvalcons1...`. تشمل الحقول `composite_score` و`stake_score` و`performance_score` و`contribution_score` و`time_score` و`uptime_blocks` و`missed_blocks` و`last_updated_height`. يعني `404` أن المدقّق ليست له درجة بعد؛ وأي سلسلة ليست عنوان مشغّل ولا عنوان إجماع تردّ بـ `400` |
+| GET     | `/qorechain/reputation/v1/validators` | سجلات جميع المدقّقين الذين لهم درجات (`reputations`) |
+
+الدرجات سلاسل عشرية بين 0 و1. تقرأ العقدة الخفيفة المسار الخاص بكل مدقّق لتحذّر عندما يكون مدقّق مفوَّض إليه أدنى من `min_reputation` (انظر [المكافآت والمراقبة](/light-node/rewards-and-monitoring#delegation-alerts)). وتعيد المسارات نفسها من مضيف الشبكة الرئيسية `501` إلى أن تخدمها الشبكة الرئيسية.
+
 ## وحدات gRPC فقط {#grpc-only-modules}
 
 على الشبكة الرئيسية (إصدار العقدة v3.2.4، جرى التحقق في 27 أكتوبر 2026) لهذه الوحدات خدمة gRPC من نوع `Query` لكن **بلا مسار REST**. تتبع أسماء الخدمات الصيغة `qorechain.<module>.v1.Query`.
@@ -516,7 +528,7 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
 | ------------- | ---------------------------------------------------------- |
 | `ai`          | `Config`, `Stats`                                          |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                     |
-| `reputation`  | `Params`                                                   |
+| `reputation`  | `Params` (مسارات REST موجودة على الشبكة التجريبية فقط، انظر [وحدة السمعة](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                               |
 | `qca`         | `Config`                                                   |

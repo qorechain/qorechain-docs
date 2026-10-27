@@ -41,10 +41,38 @@ IBC fa parte del design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Ba
 Tre funzionalità IBC esistono solo sulla testnet; la mainnet non le ha (la sua route `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` risponde 501):
 
 * **Limite di frequenza IBC.** La governance può fissare una quota per canale per i trasferimenti IBC (una percentuale intera dell'offerta per finestra di ore). **Non è automatico**: oggi non è impostato alcun limite, e un insieme vuoto significa nessun limite. Un pacchetto inoltrato viene addebitato su entrambi i canali e un rimborso restituisce la quota. È distinto dai circuit breaker del bridge descritti in [Modello di sicurezza](#security-model).
-* **Inoltro dei pacchetti.** Un trasferimento in arrivo via IBC v1 può portare un memo della forma `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` per essere inviato a un'altra chain, con rimborso al mittente se un salto fallisce. Non ci sono ritentativi e un salto scade per default dopo 10 minuti. Un token che all'arrivo si converte in un ERC-20 non può essere inoltrato.
+* **Inoltro dei pacchetti.** Un trasferimento in arrivo via IBC v1 può portare un memo della forma `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` per essere inviato a un'altra chain, con rimborso al mittente se un salto fallisce. Non ci sono ritentativi e un salto scade per default dopo 10 minuti. Un token che all'arrivo si converte in un ERC-20 non può essere inoltrato.
 * **Light client 08-wasm.** Archiviare, migrare e rimuovere il binario di un light client wasm sono operazioni riservate all'autorità, e i tipi di client consentiti contengono solo il client standard finché la governance non aggiunge `08-wasm`.
 
-Leggi i limiti con `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` sulla testnet (`\{"rate_limits":[]\}` oggi).
+Leggi i limiti con `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` sulla testnet (`{"rate_limits":[]}` oggi).
+
+**Quale rete ha cosa (verificato il 27 ottobre 2026).**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| Trasferimento ICS-20 (IBC v1) | Integrato, ma nessun canale è aperto | Integrato, un canale aperto |
+| Limite di frequenza IBC | Non disponibile (501) | Disponibile, nessun limite impostato |
+| Inoltro dei pacchetti | Non disponibile | Disponibile (solo IBC v1) |
+| Light client 08-wasm | Non disponibile | Set di messaggi presente, nessun client wasm può essere creato finché la governance non consente `08-wasm` |
+
+### Il canale di test sulla testnet {#ibc-test-channel}
+
+La testnet ha un canale di trasferimento aperto, `channel-0` (porta `transfer`, `connection-0`, versione `ics20-1`, unordered). La sua controparte è la testnet del Cosmos Hub (chain ID `provider`, canale `channel-600`). La testnet ha visto una sola denominazione IBC, `uatom`, in arrivo su `channel-0`; QoreChain mantiene inoltre per essa una coppia ERC-20, di proprietà del modulo. Leggi lo stato con:
+
+```bash
+curl -s https://api-testnet.qore.host/ibc/core/channel/v1/channels
+curl -s https://api-testnet.qore.host/ibc/apps/transfer/v1/denoms
+```
+
+Per inviare sul canale di test, costruisci il trasferimento, poi aggiungi la firma ibrida come per qualsiasi altra transazione sulla corsia nativa:
+
+```bash
+qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_testnet> 1000uqor \
+  --from mykey --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > ibc.json
+qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
+```
+
+Questo è un canale di test tra due reti di test; i token non hanno alcun valore. La consegna di un pacchetto richiede un relayer in esecuzione per il canale, e questo manuale non ne pubblica né ne promette uno, quindi un trasferimento può restare in sospeso. Non usare i comandi sopra sulla mainnet: lì non c'è alcun canale aperto e la transazione fallirebbe.
 
 ---
 

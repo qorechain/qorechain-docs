@@ -31,14 +31,14 @@ QoreChain, paralel olarak çalışan iki köprü protokolünü desteklemek üzer
 
 | Protokol | Bağlantılar          | Güvenlik Modeli                       | Kullanım Senaryosu                      |
 | -------- | -------------------- | ------------------------------------ | --------------------------------------- |
-| **IBC**  | en fazla 8 kanal (hiçbiri açık değil)  | Standart IBC + PQC paket imzaları    | Cosmos SDK uyumlu zincirler             |
+| **IBC**  | en fazla 8 kanal (hiçbiri açık değil)  | Standart IBC (ICS-20) | Cosmos SDK uyumlu zincirler             |
 | **QCB**  | 37 zincir yapılandırması (tümü pending) | 7/10 Dilithium-5 çoklu imza       | IBC olmayan zincirler (EVM, Solana, TON, vb.) |
 
 **37 zincir yapılandırması**, aşağıda listelenen **36 harici zincir** ile IBC türünde yapılandırılmış **Injective**'dir. QoreChain için bir geri döngü (loopback) yapılandırması yoktur. Planlanan IBC kanalları, Cosmos SDK uyumlu zincirlere bağlanır.
 
 ## IBC Kanalları
 
-QoreChain, Hermes v1.x aracılığıyla aktarılan aşağıdaki 8 zincire IBC bağlantıları sürdürmek üzere tasarlanmıştır. **Bu karşı tarafların hiçbiri henüz bağlı değildir** (mainnet'te IBC kanalı veya istemcisi yoktur; testnet'te kimliği `provider` olan bir zincire giden tek bir ICS-20 test kanalı vardır, 27 Ekim 2026'da kontrol edildi), bu nedenle bu tablo yalnızca planlanan karşı tarafları listeler:
+QoreChain, bir IBC aktarıcısı (relayer) tarafından aktarılan aşağıdaki 8 zincire IBC bağlantıları sürdürmek üzere tasarlanmıştır. **Bu karşı tarafların hiçbiri henüz bağlı değildir** (mainnet'te IBC kanalı veya istemcisi yoktur; testnet'te kimliği `provider` olan bir zincire giden tek bir ICS-20 test kanalı vardır, 27 Ekim 2026'da kontrol edildi), bu nedenle bu tablo yalnızca planlanan karşı tarafları listeler:
 
 | Zincir     | Açıklama                       |
 | ---------- | ------------------------------ |
@@ -51,13 +51,12 @@ QoreChain, Hermes v1.x aracılığıyla aktarılan aşağıdaki 8 zincire IBC ba
 | Babylon    | BTC restaking protokolü        |
 | Injective  | DeFi / emir defteri birlikte çalışabilirliği |
 
-### IBC Aktarıcı (Relayer) Yapılandırması
+### IBC Aktarıcı (Relayer) {#ibc-relayer}
 
-* **Aktarıcı yazılımı**: Hermes v1.x
-* **İstemci güncellemeleri**: Otomatik hafif istemci yenileme
-* **Kötü davranış tespiti**: Etkin — aktarıcı, çift imzalamayı (equivocation) izler
-* **Paket temizleme**: Her 100 blokta bir, bekleyen IBC paketleri temizlenir
-* **PQC geliştirmesi**: QoreChain'den kaynaklanan her IBC paketi, ileriye dönük kuantum güvenliği için isteğe bağlı bir Dilithium-5 imzası içerir. PQC farkındalığına sahip alıcı zincirler, bu imzayı standart IBC doğrulamasıyla birlikte doğrulayabilir.
+IBC paketleri ve istemci güncellemeleri zincirler arasında bir aktarıcı (relayer) tarafından taşınır; aktarıcı, her iki zinciri izleyen ve paketleri, kanıtları ve istemci güncellemelerini gönderen ayrı bir programdır. Aktarıcı zincirin parçası değildir ve bu kılavuz bir aktarıcı hizmeti yayımlamaz veya vaat etmez. QoreChain, QORel adlı herkese açık bir aktarıcı fork'u sürdürür ([github.com/qorechain/QORel](https://github.com/qorechain/QORel)); henüz bir sürümü yoktur, bu nedenle bugün ondan kurulacak bir şey yoktur.
+
+* **İstemci güncellemeleri, kötü davranış izleme ve paket temizleme**, zincir parametreleri değil, bir operatörün çalıştırdığı aktarıcının ayarlarıdır. Örneğin bir aktarıcı hafif istemcileri otomatik olarak yenileyebilir, çift imzalamayı (equivocation) izleyebilir ve bekleyen paketleri düzenli aralıklarla temizleyebilir.
+* **Kuantum sonrası imzalar.** QoreChain'in yerel şeritte kabul ettiği işlemler, bir aktarıcının ona gönderdiği işlemler dahil, hibrit bir secp256k1 + ML-DSA-87 imzası (FIPS 204) taşır; bkz. [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security). IBC paket biçiminin kendisi standart olandır ve bu kılavuz, paketlerin diğer zincirlerin doğruladığı ek bir imza taşıdığını iddia etmez.
 
 ## QCB (QoreChain Bridge) Protokolü
 
@@ -119,7 +118,7 @@ Harici zincir olaylarını güvene dayanmadan doğrulamak için köprü, her kay
 
 ## Yatırma Akışı (Harici Zincirden QoreChain'e)
 
-Aşağıdaki dizi, tasarlanan QCB yatırma işlemini gösterir: varlıklar harici bir zincirde kilitlenir, QoreChain doğrulayıcıları PQC imzalı tasdikler gönderir (7/10 Dilithium-5) ve sarmalanmış (wrapped) tokenlar basılır. Cosmos SDK uyumlu zincirler bunun yerine paralel IBC yolunu kullanır (en fazla 8 kanal, isteğe bağlı Dilithium-5 paket imzalarıyla). Her iki yol da etkin değildir; bugüne kadar hiçbir yatırma işlemi yapılmamıştır.
+Aşağıdaki dizi, tasarlanan QCB yatırma işlemini gösterir: varlıklar harici bir zincirde kilitlenir, QoreChain doğrulayıcıları PQC imzalı tasdikler gönderir (7/10 Dilithium-5) ve sarmalanmış (wrapped) tokenlar basılır. Cosmos SDK uyumlu zincirler bunun yerine paralel IBC yolunu kullanır (en fazla 8 kanal, bir IBC aktarıcısı tarafından taşınır). Her iki yol da etkin değildir; bugüne kadar hiçbir yatırma işlemi yapılmamıştır.
 
 ```mermaid
 sequenceDiagram

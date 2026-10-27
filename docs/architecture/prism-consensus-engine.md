@@ -243,7 +243,7 @@ All functions operate on `cosmossdk.io/math.LegacyDec` values, ensuring identica
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Maximum parameter change in Autonomous mode          |
 | `circuit_breaker_window`         | uint64    | `50`         | Number of recent blocks monitored by circuit breaker |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Minimum healthy block fraction before trigger        |
-| `default_block_time_ms`          | int64     | `5000`       | Default target block time (ms) used as the observation baseline; the live block time is about 3.2 s on mainnet and about 1.3 s on testnet |
+| `default_block_time_ms`          | int64     | `5000`       | Default target block time (ms) used as the observation baseline; the live block time is about 3.1 s on mainnet and about 1.3 s on testnet |
 | `default_base_gas_price`         | LegacyDec | `100`        | Default base gas price                               |
 | `default_validator_set_size`     | uint64    | `100`        | Default target validator set size                    |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Reward weight for throughput improvement             |

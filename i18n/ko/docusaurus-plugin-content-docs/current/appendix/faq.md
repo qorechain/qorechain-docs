@@ -43,7 +43,7 @@ PRISM은 QoreChain 컨센서스 엔진에 내장된 강화학습 최적화 계�
 
 ### 노드, 검증자, 라이트 노드는 어떻게 운영하나요?
 
-풀 노드는 [노드 운영하기](/developer-guide/running-a-node)를 참조하세요. 검증자는 [검증자 운영하기](/developer-guide/running-a-validator)를 참조하세요. 라이트 노드는 [라이트 노드](/light-node/overview)를 참조하세요. 라이트 노드 보상 프로그램의 등록은 열려 있으며 라이선스로 제한됩니다([현황](/light-node/overview#reward-program-status)).
+풀 노드는 [노드 운영하기](/developer-guide/running-a-node)를 참조하세요. 검증자는 [검증자 운영하기](/developer-guide/running-a-validator)를 참조하세요. 라이트 노드는 [라이트 노드](/light-node/overview)를 참조하세요. 라이트 노드 보상 프로그램의 등록은 열려 있으며 라이선스로 제한되고, 2026년 10월 27일에 각 네트워크에서 라이트 노드가 한 개씩 등록되었습니다([현황](/light-node/overview#reward-program-status)).
 
 ### QoreChain은 어떤 서명 체계를 사용하나요?
 
@@ -59,7 +59,7 @@ v3.2.0부터 EVM 레인은 등록된 포스트 양자 키와 열려 있는 인�
 
 ### 블록 시간은 어느 정도로 예상해야 하나요?
 
-메인넷에서는 약 3.2초, 테스트넷에서는 약 1.3초입니다(2026년 10월 27일 측정 평균). 블록 시간은 검증자의 노드 구성에 따라 정해집니다.
+메인넷에서는 약 3.1초, 테스트넷에서는 약 1.3초입니다(2026년 10월 27일 측정 평균). 블록 시간은 검증자의 노드 구성에 따라 정해집니다.
 
 ### xQORE를 사용할 수 있나요?
 

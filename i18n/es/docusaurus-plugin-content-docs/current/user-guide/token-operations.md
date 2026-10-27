@@ -94,7 +94,7 @@ Las comisiones de transacción en QoreChain se distribuyen entre cinco destinos 
 | **Stakers**     | 10%   | Distribuido proporcionalmente entre todos los delegadores                    |
 | **Nodos Ligeros** | 3%    | Recompensas de nodos ligeros (consulta la nota siguiente)            |
 
-El reparto se aplica a todo lo que entra en el fee collector, que contiene las comisiones de transacción y la emisión de staking acuñada en cada época. La cuota de nodos ligeros se acumula en el pool de recompensas de nodos ligeros; el registro está abierto y sujeto a licencia, pero todavía no se ha registrado ningún nodo ligero, por lo que actualmente no se paga a ningún nodo con ella (consulta [Nodo Ligero](/light-node/overview#reward-program-status)). Desde la actualización v3.2.0, la cuota de los stakers se paga como una recompensa de staking normal (consulta [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+El reparto se aplica a todo lo que entra en el fee collector, que contiene las comisiones de transacción y la emisión de staking acuñada en cada época. La cuota de nodos ligeros se acumula en el pool de recompensas de nodos ligeros; el registro está abierto y sujeto a licencia; el 27 de octubre de 2026 se registró un nodo ligero en cada red (consulta [Nodo Ligero](/light-node/overview#reward-program-status)). Desde la actualización v3.2.0, la cuota de los stakers se paga como una recompensa de staking normal (consulta [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canales de Quema
 

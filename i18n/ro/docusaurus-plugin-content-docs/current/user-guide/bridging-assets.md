@@ -41,10 +41,38 @@ IBC face parte din design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, 
 Trei funcționalități IBC există doar pe testnet; mainnet-ul nu le are (ruta sa `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` răspunde cu 501):
 
 * **Limită de rată IBC.** Guvernanța poate seta o cotă pe canal pentru transferurile IBC (un procent întreg din ofertă pe fereastră de ore). **Nu este automată**: nu este setată nicio limită în prezent, iar un set gol înseamnă nelimitat. Un pachet redirecționat este taxat pe ambele canale, iar o rambursare returnează cota. Aceasta este separată de întrerupătoarele automate ale punții descrise la [Modelul de securitate](#security-model).
-* **Redirecționarea pachetelor (packet forwarding).** Un transfer care sosește prin IBC v1 poate purta un memo de forma `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` pentru a fi trimis mai departe către alt lanț, cu rambursări către expeditor dacă un hop eșuează. Nu există reîncercări, iar un hop expiră implicit după 10 minute. Un token care se convertește într-un ERC-20 la sosire nu poate fi redirecționat.
+* **Redirecționarea pachetelor (packet forwarding).** Un transfer care sosește prin IBC v1 poate purta un memo de forma `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` pentru a fi trimis mai departe către alt lanț, cu rambursări către expeditor dacă un hop eșuează. Nu există reîncercări, iar un hop expiră implicit după 10 minute. Un token care se convertește într-un ERC-20 la sosire nu poate fi redirecționat.
 * **Clienți light 08-wasm.** Stocarea, migrarea și eliminarea unui binar de client light wasm sunt rezervate autorității, iar tipurile de client permise conțin doar clientul standard până când guvernanța adaugă `08-wasm`.
 
-Citește limitele cu `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` pe testnet (`\{"rate_limits":[]\}` astăzi).
+Citește limitele cu `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` pe testnet (`{"rate_limits":[]}` astăzi).
+
+**Ce rețea ce are (verificat la 27 octombrie 2026).**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| Transfer ICS-20 (IBC v1) | Integrat, dar niciun canal nu este deschis | Integrat, un canal deschis |
+| Limită de rată IBC | Indisponibilă (501) | Disponibilă, fără limite setate |
+| Redirecționarea pachetelor | Indisponibilă | Disponibilă (doar IBC v1) |
+| Clienți light 08-wasm | Indisponibili | Setul de mesaje există, dar nu se poate crea niciun client wasm până când guvernanța permite `08-wasm` |
+
+### Canalul de test de pe testnet {#ibc-test-channel}
+
+Testnet-ul are un singur canal de transfer deschis, `channel-0` (port `transfer`, `connection-0`, versiunea `ics20-1`, neordonat). Contrapartea sa este testnet-ul Cosmos Hub (ID de lanț `provider`, canal `channel-600`). Testnet-ul a văzut o singură denominație IBC, `uatom`, sosind prin `channel-0`; QoreChain păstrează pentru ea și o pereche ERC-20, deținută de modul. Citește starea cu:
+
+```bash
+curl -s https://api-testnet.qore.host/ibc/core/channel/v1/channels
+curl -s https://api-testnet.qore.host/ibc/apps/transfer/v1/denoms
+```
+
+Pentru a trimite pe canalul de test, construiește transferul, apoi adaugă semnătura hibridă ca la orice altă tranzacție pe lane-ul nativ:
+
+```bash
+qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_testnet> 1000uqor \
+  --from mykey --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > ibc.json
+qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
+```
+
+Acesta este un canal de test între două rețele de test; tokenurile nu au valoare. Livrarea unui pachet necesită un relayer care rulează pentru canal, iar acest manual nu publică și nu promite unul, așa că un transfer poate rămâne în așteptare. Nu folosi comenzile de mai sus pe mainnet: acolo nu există niciun canal deschis, iar tranzacția ar eșua.
 
 ---
 

@@ -20,7 +20,7 @@ Fähigkeiten, die um QoreChains Layer 1 herum gebaut sind und nicht um das Tooli
 Bisher wurde auf keinem der beiden Netzwerke ein Rollup erstellt (geprüft am
 27. Oktober 2026). Die folgende Tabelle gibt an, was heute funktioniert; was die
 veröffentlichten 0.6.x-Clients geändert haben und welche Grenzen bleiben, ist unter
-[RDK 0.6.1: Änderungen und Grenzen](/rollups/deploying-a-rollup#rdk-050-limits) zusammengefasst.
+[RDK 0.6.2: Änderungen und Grenzen](/rollups/deploying-a-rollup#rdk-050-limits) zusammengefasst.
 Wenn Sie nur ein generisches optimistisches/zk-Rollup benötigen, tut es jedes Kit;
 die hier genannten Fähigkeiten sind das, was das RDK obendrauf bietet — in
 TypeScript, Python, Go, Rust und Java.
@@ -28,13 +28,13 @@ TypeScript, Python, Go, Rust und Java.
 
 | Fähigkeit | Status | Wovon sie abhängt |
 | --- | --- | --- |
-| **Quantensichere Abwicklungsquittungen** | 🟡 Frühe Phase | Anker werden mit ML-DSA-87 signiert, dem Post-Quanten-Schema der Main Chain; es existieren noch keine Anker, daher wurde der 0.6.1-Verifizierer (der gegen die Chain prüft) noch nie an einem echten Anker ausgeführt |
+| **Abwicklungsquittungen** | 🟡 Frühe Phase | Anker werden mit ML-DSA-87 signiert, dem Post-Quanten-Schema der Main Chain; es existieren noch keine Anker, daher wurde der 0.6.2-Verifizierer (der gegen die Chain prüft) noch nie an einem echten Anker ausgeführt |
 | **QCAI Rollup Copilot** | 🟡 Auf den öffentlichen Endpunkten noch nicht verfügbar | On-Chain-KI/RL-Beratungsdienste, die die öffentlichen Endpunkte heute nicht bereitstellen |
 | **Multi-VM: VM-übergreifende Aufrufe** | 🟡 Auf den Live-Netzwerken noch nicht nutzbar | Ein VM-übergreifendes Precompile, das nicht aktiviert ist (der Encoder seit 0.6.0 passt zum Layout der Chain), und der QoreChain Native-Upload ist geschlossen |
 
 ---
 
-## 1. Quantensichere Abwicklungsquittungen
+## 1. Abwicklungsquittungen
 
 > 🟡 **Design auf Basis der Post-Quanten-Basisschicht von QoreChain.**
 > Abwicklungs-Anker werden mit ML-DSA-87 (Dilithium-5, FIPS-204) signiert, demselben
@@ -60,7 +60,7 @@ console.log(result.valid);
 `verifySettlementReceipt` prüft gegen die Chain und weigert sich, ohne `client`
 `valid` zu melden. In 0.5.0 konnte seine Chain-Prüfung gegen die Live-Netzwerke nicht
 abgeschlossen werden (es reagierte fail-closed, statt eine echte Quittung als gültig zu
-melden); 0.6.0 hat das behoben und 0.6.1 vergleicht jedes Feld der Quittung, aber es existiert noch kein Anker, es wurde also noch keines von beiden an einem echten ausgeführt. Siehe [Quantensichere Abwicklungsquittungen](/rollups/settlement-receipts),
+melden); 0.6.0 hat das behoben und 0.6.1 (und damit 0.6.2) vergleicht jedes Feld der Quittung, aber es existiert noch kein Anker, es wurde also noch keines von beiden an einem echten ausgeführt. Siehe [Abwicklungsquittungen](/rollups/settlement-receipts),
 was eine Quittung beweist und was nicht und welche Grenzen genau gelten.
 
 ---
@@ -166,7 +166,7 @@ optimistische Rollups und die Operator-CLI `qorollup`.
 
 - [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) — Installation je
   Sprache und der CLI-Weg zu einem Testnet-Rollup.
-- [Quantensichere Abwicklungsquittungen](/rollups/settlement-receipts) ·
+- [Abwicklungsquittungen](/rollups/settlement-receipts) ·
   [QCAI Copilot](/rollups/qcai-copilot) ·
   [Multi-VM](/rollups/multi-vm) ·
   [Watchtower](/rollups/watchtower) — die Deep Dives.

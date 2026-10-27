@@ -103,14 +103,14 @@ SDK インターフェースで 3 つすべてを扱えます。単一 VM のチ
 
 ---
 
-## 3. デフォルトで量子安全
+## 3. デフォルトでハイブリッド署名
 
-**署名者を 1 回の呼び出しでポスト量子保護にします。**
+**署名者の ML-DSA-87 鍵を 1 回の呼び出しで登録します。**
 
 QoreChain はハイブリッドなポスト量子署名(ML-DSA-87 + 古典)をプロトコルレベルで
 強制しています。SDK はその導入をワンライナーにします: チェック、登録、ハイブリッド
-署名への移行 — さらに、保護されていることをユーザーに示す React バッジも用意されて
-います。
+署名への移行 — さらに、アドレスに登録済みの鍵があるかどうかを示す React バッジも
+用意されています。
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -132,7 +132,7 @@ await hybrid.signAndBroadcastHybrid({
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// Shows a status badge when the address has a registered PQC key
 // (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
@@ -140,7 +140,7 @@ import { QuantumSafeBadge } from "@qorechain/react";
 **重要な理由:** ポスト量子暗号は QoreChain のネイティブパスではネイティブかつ必須
 であり、実験的なものではありません。SDK はその導入を、登録の呼び出しとハイブリッド
 送信パスだけに集約します。登録は明示的に行います: 最初のトランザクションでの自動
-登録はありません。詳細は [量子安全](/sdk/guides/quantum-safe) を参照してください。
+登録はありません。詳細は [ハイブリッド署名](/sdk/guides/quantum-safe) を参照してください。
 
 ---
 

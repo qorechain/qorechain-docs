@@ -1,16 +1,16 @@
 ---
 slug: /rollups/settlement-receipts
-title: Ricevute di settlement quantum-safe
+title: Ricevute di settlement
 sidebar_label: Ricevute di Settlement
 sidebar_position: 6
 ---
 
-# Ricevute di settlement quantum-safe
+# Ricevute di settlement
 
 Una **ricevuta di settlement** è un record portabile che attesta che un batch di settlement di un rollup è stato ancorato alla Main Chain sotto una firma post-quantum. Indica il rollup, il batch e l'anchor, e porta la firma **ML-DSA-87** (Dilithium-5, FIPS-204) dell'anchor, lo stesso schema utilizzato dalla Main Chain.
 
 :::caution Fase iniziale: non esiste ancora alcun anchor
-Le ricevute dipendono dagli anchor, e **nessun rollup né anchor esiste ancora su nessuna delle due reti** (verificato il 27 ottobre 2026). Dalla v3.2.2 (attiva su entrambe le reti) un batch sottomesso con un `anchor_signature` viene ancorato in `x/multilayer` nella stessa transazione; un batch sottomesso senza di esso viene regolato senza anchor. L'RDK TypeScript (0.6.1) invia quel campo quando il suo client di transazione firma in modalità hybrid ed è il creatore del rollup, e sottomette senza anchor in caso contrario; i client Python, Go, Rust e Java firmano solo in modalità classica e non costruiscono il campo. Nulla di tutto ciò è stato messo alla prova su un rollup live. Considera questa pagina come una descrizione del design e dei componenti di base, non di un servizio su cui puoi fare affidamento oggi.
+Le ricevute dipendono dagli anchor, e **nessun rollup né anchor esiste ancora su nessuna delle due reti** (verificato il 27 ottobre 2026). Dalla v3.2.2 (attiva su entrambe le reti) un batch sottomesso con un `anchor_signature` viene ancorato in `x/multilayer` nella stessa transazione; un batch sottomesso senza di esso viene regolato senza anchor. L'RDK TypeScript (0.6.2) invia quel campo quando il suo client di transazione firma in modalità hybrid ed è il creatore del rollup, e sottomette senza anchor in caso contrario; i client Python, Go, Rust e Java firmano solo in modalità classica e non costruiscono il campo. Nulla di tutto ciò è stato messo alla prova su un rollup live. Considera questa pagina come una descrizione del design e dei componenti di base, non di un servizio su cui puoi fare affidamento oggi.
 :::
 
 ## Una ricevuta è un'affermazione, non una prova {#a-receipt-is-a-claim}
@@ -46,9 +46,9 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Passa un `client` per ogni verifica. L'API delle ricevute e i suoi controlli sono cambiati tra una release e l'altra, quindi usa la 0.6.1 (la release attuale): la 0.5.0 non riusciva a completare il controllo sulla chain, e la 0.6.0 non confrontava ogni campo della ricevuta (vedi sotto). I client Python, Go, Rust e Java espongono la stessa interfaccia di costruzione/verifica; le loro release 0.6.1 usano la stessa route singolare di ricerca della chiave, la stessa scelta del messaggio di anchor in base all'altezza e lo stesso confronto campo per campo.
+Passa un `client` per ogni verifica. L'API delle ricevute e i suoi controlli sono cambiati tra una release e l'altra, quindi usa la 0.6.2 (la release attuale; il suo codice delle ricevute è quello della 0.6.1): la 0.5.0 non riusciva a completare il controllo sulla chain, e la 0.6.0 non confrontava ogni campo della ricevuta (vedi sotto). I client Python, Go, Rust e Java espongono la stessa interfaccia di costruzione/verifica; le loro release 0.6.1 e 0.6.2 usano la stessa route singolare di ricerca della chiave, la stessa scelta del messaggio di anchor in base all'altezza e lo stesso confronto campo per campo.
 
-### Cosa verifica la 0.6.1 {#what-060-verifies}
+### Cosa verifica la 0.6.2 {#what-060-verifies}
 
 `verifySettlementReceipt` non segnala mai `valid` a partire dalla sola ricevuta: senza un `client` il risultato è `mode: "signature-only"` e `valid: false`. Con un `client` rilegge la chain e riporta ogni controllo separatamente:
 
@@ -66,9 +66,9 @@ Dalla 0.6.1 il risultato porta anche l'`anchor` della chain stessa e, quando `va
 Su nessuna delle due reti esiste un anchor, quindi questo è stato verificato solo rispetto al codice del pacchetto e offline, non rispetto a un anchor reale. `buildSettlementReceipt` funziona solo quando un anchor copre il batch.
 
 :::note Release precedenti alla 0.6.1
-`verifySettlementReceipt` nella 0.6.0 faceva corrispondere l'anchor della chain su state root, altezza del layer, hash del set di validatori e firma, ma non confrontava gli altri campi mostrati da una ricevuta (altezza della Main Chain, ora dell'anchor, algoritmo, versione, e su una ricevuta versione 2 il conteggio delle transazioni e la state proof compressa), e trattava la state root del batch come informativa. L'affermazione di settlement in sé (state root, firma dell'anchor, chiave del creatore) era sempre vincolata; ciò che la 0.6.0 non poteva dirti era se i metadati stampati accanto ad essa corrispondessero alla chain. Usa la 0.6.1.
+`verifySettlementReceipt` nella 0.6.0 faceva corrispondere l'anchor della chain su state root, altezza del layer, hash del set di validatori e firma, ma non confrontava gli altri campi mostrati da una ricevuta (altezza della Main Chain, ora dell'anchor, algoritmo, versione, e su una ricevuta versione 2 il conteggio delle transazioni e la state proof compressa), e trattava la state root del batch come informativa. L'affermazione di settlement in sé (state root, firma dell'anchor, chiave del creatore) era sempre vincolata; ciò che la 0.6.0 non poteva dirti era se i metadati stampati accanto ad essa corrispondessero alla chain. Usa la 0.6.2.
 
-In 0.5.0 `verifySettlementReceipt` falliva in modo chiuso (fail-closed) sulle reti live, per due ragioni che stavano nel client, non nella chain: cercava la chiave del creatore attraverso una forma plurale `accounts` della route dell'account post-quantum, che le reti non servono (HTTP 501), e ricostruiva solo il messaggio v1, che la chain non accetta più per gli anchor dalla v3.2.2. Una ricevuta genuina quindi non poteva essere verificata, e una contraffatta veniva comunque rifiutata. Usa la 0.6.1.
+In 0.5.0 `verifySettlementReceipt` falliva in modo chiuso (fail-closed) sulle reti live, per due ragioni che stavano nel client, non nella chain: cercava la chiave del creatore attraverso una forma plurale `accounts` della route dell'account post-quantum, che le reti non servono (HTTP 501), e ricostruiva solo il messaggio v1, che la chain non accetta più per gli anchor dalla v3.2.2. Una ricevuta genuina quindi non poteva essere verificata, e una contraffatta veniva comunque rifiutata. Usa la 0.6.2.
 :::
 
 ## CLI {#cli}

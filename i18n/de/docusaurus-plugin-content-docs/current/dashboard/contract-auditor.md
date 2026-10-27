@@ -7,37 +7,71 @@ sidebar_position: 7
 
 # Contract Auditor
 
-Der **Contract Auditor** führt eine KI-gestützte Sicherheitsanalyse eines Smart Contracts durch, angetrieben von **QCAI**. Reichen Sie einen Contract ein, und QCAI überprüft ihn auf Schwachstellen, weist eine Gesamtrisikostufe und einen Sicherheits-Score zu und erklärt jeden Befund mit einer empfohlenen Behebung. Wie der [Smart Contract Creator](/dashboard/smart-contract-creator) arbeitet der Auditor für KI-Tooling über **17 Blockchains** hinweg.
+Der **Contract Auditor** (Seitenleiste **Build**, Eintrag **AI Audit**) führt mit **QCAIA**, dem KI-Assistenten von QoreChain, eine Sicherheitsprüfung des eingefügten Contract-Quellcodes durch und liefert einen Score, eine Risikostufe und Befunde mit empfohlenen Behebungen. Er richtet sich an Entwickler, die vor dem Testen und Deployen eines Contracts schnell eine zweite Einschätzung wollen. Er ist kein formales Audit und ersetzt keine Prüfung durch Menschen.
 
-## Ein Audit durchführen
+## Innovationen {#innovations}
 
-1. Melden Sie sich an, öffnen Sie **AI Audit** und fügen Sie Ihren Contract in **Contract Source Code** ein. Legen Sie optional die **Blockchain** fest (Standard ist **Auto-detect from code**) sowie einen **Name**.
-2. Wählen Sie **Run Security Audit**. QCAI überprüft den Contract und erstellt einen Bericht; mit **Export PDF** speichern Sie ihn.
+- **Automatische Blockchain-Erkennung.** „Auto-detect from code“ ist die Voreinstellung; stattdessen können Sie eines von 17 Ökosystemen auswählen.
+- **Ein separater Prozentwert für die Post-Quanten-Bereitschaft** neben dem Sicherheits-Score von 0 bis 100. Er wird für sich ausgewiesen und fließt nicht in den Sicherheits-Score ein.
+- **Ein kostenloses Audit pro UTC-Tag.** Das erste Audit eines jeden UTC-Tages ist kostenlos. Danach wird jedes weitere Audit im Testnet nach einem Dialog „Confirm Security Audit“, der die „Audit Cost“ zeigt, in Test-QOR bezahlt; im Mainnet müssen weitere Audits bis zum nächsten UTC-Tag warten.
+- **Berichte sind standardmäßig privat.** Der Eigentümer schaltet die Sichtbarkeit um; ein öffentlicher Bericht zeigt nie den Namen oder die IP des Eigentümers.
+- **Befunde mit Behebungen, nicht nur Etiketten.** Jeder Befund hat einen Schweregrad, eine Fundstelle, eine Beschreibung und eine empfohlene Behebung, und der vollständige Bericht ergänzt Empfehlungen, Gas-Optimierungen, Best Practices und positive Aspekte.
 
-## Den Bericht lesen
+## Anwendung {#how-to-use}
 
-Ein Audit-Bericht wird auf einer eigenen Seite geöffnet und enthält:
+### Ein Audit durchführen
 
-- **Risikostufe** — eine Gesamtbewertung (zum Beispiel kritisch, hoch, mittel oder niedrig), farblich codiert für schnelles Überfliegen.
-- **Sicherheits-Score** — ein Gesamt-Score von 0 bis 100.
-- **Schweregrad-Aufschlüsselung** — wie viele Befunde in jeden Schweregrad fallen (kritisch, hoch, mittel, niedrig und informativ).
-- **Zusammenfassung** — ein kurzer Überblick über die Sicherheitslage des Contracts.
+1. Melden Sie sich an (erforderlich) und öffnen Sie **AI Audit**.
+2. Füllen Sie **Blockchain** (Standard „Auto-detect from code“), **Name (Optional)** und **Contract Source Code** aus.
+3. Wählen Sie **Run Security Audit** und bestätigen Sie dann den Dialog „Confirm Security Audit“.
+4. Der **Security Report** erscheint direkt auf derselben Seite. Mit **Export PDF** speichern Sie ihn.
 
-### Befunde
+**Minimales Beispiel:** Fügen Sie einen ERC-20 ein, lassen Sie die automatische Erkennung aktiv, **Run Security Audit**, Confirm, **Export PDF**.
 
-Jeder Befund führt seinen Schweregrad auf, einen Titel, die Stelle im Code, auf die er sich bezieht, eine Beschreibung des Problems und eine empfohlene Behebung. Wenn ein Contract auf einer bestimmten Stufe keine Probleme aufweist, vermerkt der Bericht dies.
+### Den Bericht lesen
 
-Sofern zutreffend enthält der Bericht außerdem Abschnitte für allgemeine Empfehlungen, Gas-Optimierungen, Best Practices und positive Aspekte, die der Contract bereits richtig umsetzt.
+Der Bericht auf der Seite zeigt:
 
-## Frühere Audits überprüfen
+- die **Risk Level**, farblich codiert;
+- den **Security Score** von 0 bis 100 sowie den Prozentwert der Post-Quanten-Bereitschaft;
+- eine **Executive Summary**;
+- **Vulnerabilities Found (N Issues)** mit den Schweregraden Critical, High, Medium, Low und Info. Ein sauberes Ergebnis lautet „No vulnerabilities detected“.
 
-Die Audit-Liste zeigt Ihre vorherigen Berichte in einer Tabelle mit dem Contract-Namen, der Blockchain, der Risikostufe, dem Sicherheits-Score und dem Erstellungszeitpunkt jedes Berichts. Ein Suchfeld filtert nach Contract-Name oder Blockchain. Wählen Sie eine beliebige Zeile aus, um den vollständigen Bericht erneut zu öffnen. Berichte sind **standardmäßig privat**; bei einem Bericht, der Ihnen gehört, steht oben ein Schalter mit der Beschriftung „This report is private" — schalten Sie ihn ein, um den Bericht öffentlich zu machen, sodass ihn jeder mit dem Link lesen kann (Ihr Name und Ihre IP werden nie angezeigt), und schalten Sie ihn aus, um ihn wieder privat zu machen.
+Jeder Befund führt Schweregrad, Titel, die Stelle im Code, eine Beschreibung und eine empfohlene Behebung auf.
+
+Die vollständige Berichtsseite `/audits/<id>` ergänzt die Schweregrad-Aufschlüsselung, **Recommendations**, **Gas optimizations**, **Best practices**, **Positive aspects** und, für den Eigentümer, den Sichtbarkeitsschalter.
+
+### Frühere Audits und Teilen
+
+- Ihre eigenen Berichte finden Sie unter **Profile > Audited**.
+- Die Liste **All Security Audits** unter `/audits` (von der Startseite aus verlinkt) zeigt die neuesten Audits aller Nutzer in einer Tabelle mit Contract-Name, Blockchain, Risikostufe, Score und Datum. Ein Suchfeld filtert nach Name, Blockchain oder Risikostufe. Eine Zeile lässt sich nur öffnen, wenn der Bericht öffentlich ist oder Ihnen gehört.
+- Bei einem Bericht, der Ihnen gehört, steht oben ein Schalter mit der Beschriftung „This report is private“. Schalten Sie ihn ein, um den Bericht öffentlich zu machen, sodass ihn jeder mit dem Link lesen kann (Ihr Name und Ihre IP werden nie angezeigt), und schalten Sie ihn aus, um ihn wieder privat zu machen.
 
 :::tip Auditieren Sie vor dem Deployen
-Führen Sie ein Audit als letzten Schritt vor dem Deployen durch und wiederholen Sie es nach jeder Änderung. Behandeln Sie Befunde als zu prüfende Orientierungshilfe, nicht als automatische Garantie — kombinieren Sie den Bericht mit Ihren eigenen Tests im [Testnet](/getting-started/connecting-to-testnet).
+Führen Sie ein Audit als letzten Schritt vor dem Deployen durch und wiederholen Sie es nach jeder Änderung. Behandeln Sie Befunde als zu prüfende Orientierungshilfe, nicht als Garantie, und kombinieren Sie den Bericht mit Ihren eigenen Tests im [Testnet](/getting-started/connecting-to-testnet).
 :::
+
+## Zugang {#how-to-access}
+
+- **URL:** [dashboard.qorechain.io/audit](https://dashboard.qorechain.io/audit) oder **New Audit** auf der Startseite.
+- **Konto:** Zum Durchführen eines Audits ist eine Anmeldung erforderlich. Die Liste unter `/audits` und öffentliche Berichte unter `/audits/<id>` lassen sich ohne Konto öffnen.
+- **Netzwerke:** funktioniert in beiden. Die Regel zum täglichen kostenlosen Audit ist dieselbe; kostenpflichtige zusätzliche Audits gibt es nur im Testnet.
+- **Kosten:** Das erste Audit eines jeden UTC-Tages ist kostenlos; zusätzliche Audits im Testnet kosten Test-QOR; zusätzliche Audits im Mainnet warten bis zum nächsten Tag.
+
+## Wo es veröffentlicht ist {#where-published}
+
+| Oberfläche | Adresse | Konto |
+| --- | --- | --- |
+| Ein Audit durchführen | `dashboard.qorechain.io/audit` | Anmeldung erforderlich |
+| All Security Audits | `dashboard.qorechain.io/audits` | Keines |
+| Ein Bericht | `dashboard.qorechain.io/audits/<id>` | Keines, wenn öffentlich; sonst der Eigentümer |
+
+## Grenzen und bekannte Probleme {#limits}
+
+- Er prüft nur den eingefügten Quellcode, ohne Kompilierung, Tests oder Laufzeitanalyse. Befunde können unvollständig oder falsch sein.
+- Ein privater Bericht kann von niemandem außer seinem Eigentümer geöffnet werden, auch nicht mit dem Link.
 
 ## Verwandte Themen
 
-- [Smart Contract Creator](/dashboard/smart-contract-creator) — Contracts mit QCAI generieren.
-- [Post-Quantum-Sicherheit](/architecture/post-quantum-security) — wie QoreChain Konten und Signaturen absichert.
+- [Smart Contract Creator](/dashboard/smart-contract-creator) - Contracts mit QCAIA generieren.
+- [Post-Quantum-Sicherheit](/architecture/post-quantum-security) - wie QoreChain Konten und Signaturen absichert.

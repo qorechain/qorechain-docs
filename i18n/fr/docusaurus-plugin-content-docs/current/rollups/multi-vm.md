@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Comme le précompilé est inactif, un simple `.call` vers celui-ci renvoie un **succès avec des données vides et ne fait rien** ; l'indicateur `ok` ne vous dit pas que l'appel a pris effet. La protection fiable côté contrat est une cible qui renvoie toujours un accusé de réception non vide, avec un `require(ret.length > 0)` après l'appel, de sorte qu'une réponse vide soit traitée comme un échec ; le modèle `multivm-rollup` (0.6.0 et 0.6.1) fait cela.
+Comme le précompilé est inactif, un simple `.call` vers celui-ci renvoie un **succès avec des données vides et ne fait rien** ; l'indicateur `ok` ne vous dit pas que l'appel a pris effet. La protection fiable côté contrat est une cible qui renvoie toujours un accusé de réception non vide, avec un `require(ret.length > 0)` après l'appel, de sorte qu'une réponse vide soit traitée comme un échec ; le modèle `multivm-rollup` (0.6.0 à 0.6.2) fait cela.
 
 ## Générer un rollup multi-VM
 
@@ -102,4 +102,4 @@ Comme le précompilé est inactif, un simple `.call` vers celui-ci renvoie un **
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Le modèle `multivm-rollup` (0.6.0 et 0.6.1) inclut `src/crossvm-call.ts` (il vérifie si le précompilé est actif, puis affiche les calldata) et un `contracts/CrossVmCaller.sol` qui appelle `executeCrossVMCall(uint8,string,bytes)` et exige une réponse non vide de la cible. Il ne fait pas fonctionner un appel tant que le précompilé est inactif. Consultez [Déployer un Rollup](/rollups/deploying-a-rollup) pour tous les modèles du générateur de structure.
+Le modèle `multivm-rollup` (0.6.0 à 0.6.2) inclut `src/crossvm-call.ts` (il vérifie si le précompilé est actif, puis affiche les calldata) et un `contracts/CrossVmCaller.sol` qui appelle `executeCrossVMCall(uint8,string,bytes)` et exige une réponse non vide de la cible. Il ne fait pas fonctionner un appel tant que le précompilé est inactif. Consultez [Déployer un Rollup](/rollups/deploying-a-rollup) pour tous les modèles du générateur de structure.

@@ -38,7 +38,9 @@ Eine Lizenz ist außerdem nicht mehr aktiv, sobald ihre `expires_at`-Höhe über
 
 Das Erteilen, Widerrufen, Suspendieren und Fortsetzen von Lizenzen sind **Autoritätsoperationen**: Sie werden vom Lizenz-Autoritätskonto des Moduls signiert, nicht von beliebigen Nutzern. Ab v3.2.3 kann Governance dieses Konto mit `MsgUpdateAuthority` ersetzen, der Wiederherstellungsweg, falls sein Schlüssel jemals verloren geht. Diese Transaktionen existieren als Teil der Befehlsoberfläche des Moduls, aber ein normaler Nutzer ruft sie nicht direkt auf; der Lebenszyklus wird On-Chain von der Autorität verwaltet.
 
-Um eine zu **erhalten**: Eine Light-Node-Lizenz wird im **Dashboard (Tools → Light Node)** gekauft, und eine `validator_operator`-Erteilung erfolgt über das **Validator Program** (Tools → Validator Application: bewerben, ausgewählt werden, die Programmgebühr von $1,000 zahlen). Die Autorität erfasst die Erteilung dann On-Chain, in Stapeln.
+Um im Mainnet eine zu **erhalten**: Eine Light-Node-Lizenz wird im **Dashboard (Nodes & Validators → Light Node)** gekauft, und eine `validator_operator`-Erteilung erfolgt über das **Validator Program** (Nodes & Validators → Validator Application: bewerben, ausgewählt werden, die Programmgebühr von $1,000 zahlen). Die Autorität erfasst die Erteilung dann On-Chain, in Stapeln.
+
+Im Testnet ist eine Light-Node-Lizenz kostenlos und im Self-Service erhältlich: Geben Sie unter **Nodes & Validators → Light Node** bei auf Testnet gestelltem Netzwerk Ihre `qor1…`-Adresse ein und wählen Sie **Request licence**. Die Erteilung wird automatisch signiert, in der Regel innerhalb weniger Minuten, und der Tab zeigt ihren Status an (angefordert, erteilt oder konnte nicht signiert werden; in diesem Fall können Sie sie erneut anfordern). Jedes Konto und jede Adresse kann eine Anfrage halten.
 
 Die autoritätsgesicherten Transaktionen sind:
 

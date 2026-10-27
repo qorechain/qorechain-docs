@@ -103,14 +103,13 @@ abgeschaltet, SVM-Transaktionen sind deaktiviert, und QoreChain Native-Upload un
 
 ---
 
-## 3. Quantensicher als Standard
+## 3. Hybrides Signieren als Standard
 
-**Machen Sie einen Signer mit einem einzigen Aufruf post-quanten-geschützt.**
+**Registrieren Sie den ML-DSA-87-Schlüssel eines Signers mit einem einzigen Aufruf.**
 
 QoreChain erzwingt hybride Post-Quanten-Signaturen (ML-DSA-87 + klassisch) auf
 Protokollebene. Das SDK macht deren Einführung zum Einzeiler: prüfen, registrieren
-und auf hybrides Signieren migrieren — mit einem React-Badge, das Nutzern zeigt, dass
-sie geschützt sind.
+und auf hybrides Signieren migrieren — mit einem React-Badge, das anzeigt, ob eine Adresse einen registrierten Schlüssel hat.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -132,7 +131,7 @@ await hybrid.signAndBroadcastHybrid({
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// Shows a status badge when the address has a registered PQC key
 // (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
@@ -141,7 +140,7 @@ import { QuantumSafeBadge } from "@qorechain/react";
 QoreChain nativ und verpflichtend, kein Experiment, und das SDK reduziert ihre
 Einführung auf einen Registrierungsaufruf plus einen hybriden Sendepfad. Die
 Registrierung ist explizit: Es gibt keine automatische Registrierung bei der ersten
-Transaktion. Siehe [Quantensicherheit](/sdk/guides/quantum-safe).
+Transaktion. Siehe [Hybrides Signieren](/sdk/guides/quantum-safe).
 
 ---
 

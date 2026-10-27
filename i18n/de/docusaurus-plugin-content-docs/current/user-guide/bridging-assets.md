@@ -41,10 +41,38 @@ IBC ist Teil des Designs (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, B
 Drei IBC-Funktionen gibt es nur im Testnet; das Mainnet hat sie nicht (seine Route `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` antwortet mit 501):
 
 * **IBC-Ratenlimit.** Die Governance kann ein Kontingent pro Kanal für IBC-Transfers festlegen (ein ganzer Prozentsatz des Angebots pro Fenster von Stunden). Es ist **nicht automatisch**: Heute sind keine Limits gesetzt, und eine leere Menge bedeutet unbegrenzt. Ein weitergeleitetes Paket wird auf beiden Kanälen angerechnet, und eine Rückerstattung gibt das Kontingent zurück. Dies ist getrennt von den Bridge-Circuit-Breakern, die unter [Sicherheitsmodell](#security-model) beschrieben sind.
-* **Packet Forwarding.** Ein Transfer, der über IBC v1 eintrifft, kann ein Memo der Form `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` tragen, um an eine andere Chain weitergesendet zu werden, mit Rückerstattung an den Absender, wenn ein Hop fehlschlägt. Es gibt keine Wiederholungen, und ein Hop läuft standardmäßig nach 10 Minuten ab. Ein Token, der bei der Ankunft in einen ERC-20 umgewandelt wird, kann nicht weitergeleitet werden.
+* **Packet Forwarding.** Ein Transfer, der über IBC v1 eintrifft, kann ein Memo der Form `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` tragen, um an eine andere Chain weitergesendet zu werden, mit Rückerstattung an den Absender, wenn ein Hop fehlschlägt. Es gibt keine Wiederholungen, und ein Hop läuft standardmäßig nach 10 Minuten ab. Ein Token, der bei der Ankunft in einen ERC-20 umgewandelt wird, kann nicht weitergeleitet werden.
 * **08-wasm-Light-Clients.** Das Speichern, Migrieren und Entfernen eines Wasm-Light-Client-Binaries ist nur der Autorität vorbehalten, und die erlaubten Client-Typen enthalten nur den Standard-Client, bis die Governance `08-wasm` hinzufügt.
 
-Lesen Sie die Limits mit `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` im Testnet (heute `\{"rate_limits":[]\}`).
+Lesen Sie die Limits mit `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` im Testnet (heute `{"rate_limits":[]}`).
+
+**Welches Netzwerk was hat (geprüft am 27. Oktober 2026).**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| ICS-20-Transfer (IBC v1) | Eingebaut, aber kein Kanal ist offen | Eingebaut, ein Kanal ist offen |
+| IBC-Ratenlimit | Nicht verfügbar (501) | Verfügbar, keine Limits gesetzt |
+| Packet Forwarding | Nicht verfügbar | Verfügbar (nur IBC v1) |
+| 08-wasm-Light-Clients | Nicht verfügbar | Nachrichtensatz vorhanden, es kann kein Wasm-Client erstellt werden, bis die Governance `08-wasm` erlaubt |
+
+### Der Testkanal im Testnet {#ibc-test-channel}
+
+Das Testnet hat einen offenen Transfer-Kanal, `channel-0` (Port `transfer`, `connection-0`, Version `ics20-1`, unordered). Seine Gegenpartei ist das Cosmos-Hub-Testnet (Chain-ID `provider`, Kanal `channel-600`). Im Testnet wurde ein IBC-Denom gesehen, `uatom`, das über `channel-0` eintrifft; QoreChain führt dafür außerdem ein ERC-20-Paar, das dem Modul gehört. Lesen Sie den Zustand mit:
+
+```bash
+curl -s https://api-testnet.qore.host/ibc/core/channel/v1/channels
+curl -s https://api-testnet.qore.host/ibc/apps/transfer/v1/denoms
+```
+
+Um auf dem Testkanal zu senden, erstellen Sie den Transfer und fügen Sie dann die hybride Signatur hinzu, wie bei jeder anderen Transaktion auf der nativen Lane:
+
+```bash
+qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_testnet> 1000uqor \
+  --from mykey --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > ibc.json
+qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
+```
+
+Dies ist ein Testkanal zwischen zwei Testnetzwerken; die Token haben keinen Wert. Für die Zustellung eines Pakets muss ein Relayer für den Kanal laufen, und dieses Handbuch veröffentlicht oder verspricht keinen, daher kann ein Transfer ausstehend bleiben. Verwenden Sie die obigen Befehle nicht im Mainnet: Dort gibt es keinen offenen Kanal, und die Transaktion würde fehlschlagen.
 
 ---
 

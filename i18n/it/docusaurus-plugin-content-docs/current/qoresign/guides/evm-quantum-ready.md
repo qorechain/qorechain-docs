@@ -1,11 +1,11 @@
 ---
 slug: /qoresign/guides/evm-quantum-ready
-title: "Wallet EVM: modalità quantum-ready"
-sidebar_label: Modalità quantum-ready EVM
+title: "Wallet EVM: finestra di autorizzazione"
+sidebar_label: Finestra di autorizzazione EVM
 sidebar_position: 3
 ---
 
-# Wallet EVM: modalità quantum-ready
+# Wallet EVM: finestra di autorizzazione
 
 Le transazioni Ethereum non hanno alcun campo in cui possa viaggiare una seconda
 firma, e la rete applica la propria impostazione PQC a livello di chain intera e
@@ -15,21 +15,21 @@ ibrida (`assertHybridLane("evm")` genera `LANE_NOT_AVAILABLE`).
 
 La rete ammette invece una transazione EVM solo se il suo mittente ha una chiave
 ML-DSA-87 registrata e una **finestra di autorizzazione EVM** attiva che la
-copra. La finestra viene aperta dalla corsia Native con una transazione firmata
+copra. La finestra viene aperta dalla corsia nativa con una transazione firmata
 in modo ibrido, così la chiave post-quantistica autorizza in anticipo l'attività
-EVM («modalità quantum-ready»). Entrambe le reti pubbliche applicano questa
-regola (funzionalità di protocollo `evm-pqc-authorisation-window`, leggibile con
-`fetchProtocolFeatures` nel [QoreChain SDK](/sdk/overview) oppure su
-`/qorechain/pqc/v1/protocol_features`).
+EVM. La transazione EVM stessa è firmata solo con secp256k1.
+Entrambe le reti pubbliche applicano questa regola (funzionalità di protocollo
+`evm-pqc-authorisation-window`, leggibile con `fetchProtocolFeatures` nel
+[QoreChain SDK](/sdk/overview) oppure su `/qorechain/pqc/v1/protocol_features`).
 
 ## Passaggi per un account EVM {#steps}
 
-1. Registra una chiave ML-DSA-87 per l'account sulla corsia Native
+1. Registra una chiave ML-DSA-87 per l'account sulla corsia nativa
    (`buildRegisterPqKeyMessage`, vedi
    [Registrazione](/qoresign/spec/hybrid-signing-v1#registration)). Per un
    account `eth_secp256k1` gli stessi 20 byte di indirizzo hanno una forma
    `qor1`; usala come `sender`.
-2. Apri una finestra con una transazione sulla corsia Native firmata in modo
+2. Apri una finestra con una transazione sulla corsia nativa firmata in modo
    ibrido: un'altezza di scadenza, un numero massimo di transazioni EVM, un
    valore massimo e, facoltativamente, i contratti che può chiamare. Il
    QoreChain SDK dispone di composer per i messaggi della finestra.

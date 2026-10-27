@@ -139,7 +139,7 @@ Everything else about the EVM lane is unchanged: you keep signing with MetaMask,
 | `max-txs` | How many EVM transactions it admits | 1 – 1,000 |
 | `max-value` | Total outflow it admits, in uqor: transferred value **plus** the maximum fee each transaction could pay (gas limit × fee cap), rounded up | greater than 0 |
 
-* 17,280 blocks is about 15 hours on mainnet (about 3.2 s per block) and about 6 hours on the testnet (about 1.3 s per block).
+* 17,280 blocks is about 15 hours on mainnet (about 3.1 s per block) and about 6 hours on the testnet (about 1.3 s per block).
 * A transaction that is admitted and then fails still uses its slot and value budget.
 * Opening a new window **replaces** the previous one; consumption starts again from zero.
 * The CLI accepts `max-value` in `uqor` or `qor` (`1000qor` = 1,000,000,000 uqor).

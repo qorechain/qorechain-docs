@@ -24,7 +24,7 @@ QoreChain RDK supports four distinct settlement modes — **optimistic**, **zk**
 Optimistic rollups assume transactions are valid by default and rely on fraud proofs for dispute resolution.
 
 * **Proof system**: Interactive fraud proofs
-* **Challenge window**: 604,800 seconds (default, 7 days). **Before v3.2.4:** the chain converts this to blocks at a fixed 6 seconds per block, **100,800 blocks**, so the real elapsed time depends on actual block time (about 3.7 days at mainnet's current ≈3.2 s blocks); plan in blocks, not days. **From v3.2.4:** for a batch submitted from the upgrade height on, the window is measured in seconds of block time (a full 7 days). A batch submitted earlier keeps the block-count rule. The testnet applied v3.2.4 at height 8,337,253 (19 October 2026); mainnet applied it at height 3,742,566 (23 October 2026, governance proposal 13). The testnet's configured default is shorter, 3,600 seconds (1 hour), so a testnet rollup finalises faster than the 7 days described here.
+* **Challenge window**: 604,800 seconds (default, 7 days). **Before v3.2.4:** the chain converts this to blocks at a fixed 6 seconds per block, **100,800 blocks**, so the real elapsed time depends on actual block time (about 3.7 days at mainnet's current ≈3.1 s blocks); plan in blocks, not days. **From v3.2.4:** for a batch submitted from the upgrade height on, the window is measured in seconds of block time (a full 7 days). A batch submitted earlier keeps the block-count rule. The testnet applied v3.2.4 at height 8,337,253 (19 October 2026); mainnet applied it at height 3,742,566 (23 October 2026, governance proposal 13). The testnet's configured default is shorter, 3,600 seconds (1 hour), so a testnet rollup finalises faster than the 7 days described here.
 * **Challenge bond**: 1,000 QOR (1,000,000,000 uqor) — required to submit a fraud proof challenge (`nft` and `custom` presets; the `defi`, `gaming` and `enterprise` presets set no bond because they have no challenge window)
 * **Finality**: Delayed until the challenge window expires with no valid challenge
 * **Auto-finalization**: The `EndBlocker` automatically finalizes batches once the challenge window has passed without dispute. A challenged batch is never auto-finalised: the rollup creator resolves the challenge first (see [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -44,7 +44,7 @@ ZK rollups provide cryptographic validity proofs that guarantee state transition
 * **Finality**: Instant on proof verification — no challenge window required
 * **Max proof size**: 1 MB (1,048,576 bytes)
 * **Recursion depth**: Configurable proof aggregation depth (default: 1)
-* **Maturity**: SNARK batches are verified on-chain (Groth16 over BLS12-381) against a verifying key stored with the rollup. A rollup created through `create-rollup` does not currently carry a verifying key, so ZK batches cannot yet be finalised end to end. STARK verification is experimental: it is opt-in and checks a demonstration circuit, not your rollup's own state transition. Treat ZK settlement as not production-ready.
+* **Maturity**: SNARK batches are verified on-chain (Groth16 over BLS12-381) against a verifying key stored with the rollup. **ZK settlement cannot be used on either network yet:** the chain has no way to register a verification key for a rollup, so every ZK batch is refused after its fee is paid. Key registration is planned for chain v3.2.7. STARK verification is experimental: it is opt-in and checks a demonstration circuit, not your rollup's own state transition. Treat ZK settlement as not production-ready.
 
 **Batch lifecycle**:
 
@@ -152,13 +152,13 @@ QoreChain L1 proposers sequence rollup transactions.
 On-chain KV-store blob storage within QoreChain itself.
 
 :::caution No public way to post a blob yet
-The module defines blob storage, retention and pruning, but there is no transaction message for posting a blob in the current releases. A batch that names a data hash on a `native` or `both` rollup is refused because no matching blob can be stored. See [Data Availability](/rollups/data-availability). On native data availability a batch must therefore leave `data_hash` empty; the RDK client (0.6.1) does so, and the chain refuses a batch that claims one.
+The module defines blob storage, retention and pruning, but there is no transaction message for posting a blob in the current releases. A batch that names a data hash on a `native` or `both` rollup is refused because no matching blob can be stored. See [Data Availability](/rollups/data-availability). On native data availability a batch must therefore leave `data_hash` empty; the RDK client (0.6.2) does so, and the chain refuses a batch that claims one.
 :::
 
 | Parameter            | Value                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | **Max blob size**    | 2 MB (2,097,152 bytes)                                                                              |
-| **Retention period** | 432,000 blocks (about 16 days at mainnet's current ≈3.2 s blocks; the figure moves with block time) |
+| **Retention period** | 432,000 blocks (about 16 days at mainnet's current ≈3.1 s blocks; the figure moves with block time) |
 | **Auto-pruning**     | Expired blobs are pruned in the `EndBlocker` — data is removed but commitment metadata is retained  |
 | **Commitment**       | SHAKE-256 (32-byte) hash of the blob data                                                           |
 
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Batch accepted as canonical                       |
 | **Rejected**   | Batch invalidated by successful challenge         |
 
-RDK 0.6.1 behaviour: for an optimistic rollup the client builds a batch whose state root is the chain's canonical transition root (`batchTransitionRoot` in the RDK), not a free-form value of your own.
+RDK 0.6.1 and 0.6.2 behaviour (the library code is the same): for an optimistic rollup the client builds a batch whose state root is the chain's canonical transition root (`batchTransitionRoot` in the RDK), not a free-form value of your own.
 
 ### Auto-Finalization Rules
 

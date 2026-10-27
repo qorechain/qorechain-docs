@@ -94,7 +94,7 @@ Transaction fees on QoreChain are distributed across five destinations to align 
 | **Stakers**     | 10%   | Distributed proportionally to all delegators                    |
 | **Light Nodes** | 3%    | Light-node rewards (see the note below)                         |
 
-The split applies to everything that enters the fee collector, which holds transaction fees and the staking emission minted each epoch. The light-node share accrues to the light-node reward pool; registration is open and licence-gated, but no light node has registered yet, so no node is paid from it today (see [Light Node](/light-node/overview#reward-program-status)). Since the v3.2.0 upgrade the staker share is paid out as a normal staking reward (see [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+The split applies to everything that enters the fee collector, which holds transaction fees and the staking emission minted each epoch. The light-node share accrues to the light-node reward pool; registration is open and licence-gated; on 27 October 2026 one light node was registered on each network (see [Light Node](/light-node/overview#reward-program-status)). Since the v3.2.0 upgrade the staker share is paid out as a normal staking reward (see [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Burn Channels
 

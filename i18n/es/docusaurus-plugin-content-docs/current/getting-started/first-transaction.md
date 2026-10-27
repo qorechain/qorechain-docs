@@ -139,7 +139,7 @@ Todo lo demás de la vía EVM permanece igual: sigues firmando con MetaMask, eth
 | `max-txs` | Cuántas transacciones EVM admite | 1 – 1.000 |
 | `max-value` | Salida total que admite, en uqor: valor transferido **más** la comisión máxima que podría pagar cada transacción (límite de gas × tope de comisión), redondeado hacia arriba | mayor que 0 |
 
-* 17.280 bloques son unas 15 horas en mainnet (unos 3,2 s por bloque) y unas 6 horas en la testnet (aproximadamente 1,3 s por bloque).
+* 17.280 bloques son unas 15 horas en mainnet (unos 3,1 s por bloque) y unas 6 horas en la testnet (aproximadamente 1,3 s por bloque).
 * Una transacción que se admite y luego falla consume igualmente su hueco y su presupuesto de valor.
 * Abrir una nueva ventana **reemplaza** a la anterior; el consumo vuelve a empezar desde cero.
 * La CLI acepta `max-value` en `uqor` o `qor` (`1000qor` = 1.000.000.000 uqor).

@@ -24,7 +24,7 @@ QoreChain RDK unterstützt vier unterschiedliche Settlement-Modi — **optimisti
 Optimistic Rollups gehen standardmäßig davon aus, dass Transaktionen gültig sind, und verlassen sich für die Streitbeilegung auf Betrugsbeweise (Fraud Proofs).
 
 * **Beweissystem**: Interaktive Betrugsbeweise
-* **Challenge-Fenster**: 604.800 Sekunden (Standard, 7 Tage). **Vor v3.2.4:** Die Chain rechnet dies mit festen 6 Sekunden pro Block in Blöcke um, **100.800 Blöcke**, sodass die tatsächlich verstreichende Zeit von der realen Blockzeit abhängt (etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets); planen Sie daher in Blöcken, nicht in Tagen. **Ab v3.2.4:** Für einen Batch, der ab der Upgrade-Höhe eingereicht wird, wird das Fenster in Sekunden der Blockzeit gemessen (volle 7 Tage). Ein früher eingereichter Batch behält die Regel nach Blockanzahl. Das Testnet hat v3.2.4 auf Höhe 8.337.253 angewendet (19. Oktober 2026); das Mainnet hat es auf Höhe 3.742.566 angewendet (23. Oktober 2026, Governance-Vorschlag 13). Der konfigurierte Standard des Testnets ist kürzer, nämlich 3.600 Sekunden (1 Stunde), sodass ein Testnet-Rollup schneller finalisiert als die hier beschriebenen 7 Tage.
+* **Challenge-Fenster**: 604.800 Sekunden (Standard, 7 Tage). **Vor v3.2.4:** Die Chain rechnet dies mit festen 6 Sekunden pro Block in Blöcke um, **100.800 Blöcke**, sodass die tatsächlich verstreichende Zeit von der realen Blockzeit abhängt (etwa 3,7 Tage bei den aktuellen ≈3,1-s-Blöcken des Mainnets); planen Sie daher in Blöcken, nicht in Tagen. **Ab v3.2.4:** Für einen Batch, der ab der Upgrade-Höhe eingereicht wird, wird das Fenster in Sekunden der Blockzeit gemessen (volle 7 Tage). Ein früher eingereichter Batch behält die Regel nach Blockanzahl. Das Testnet hat v3.2.4 auf Höhe 8.337.253 angewendet (19. Oktober 2026); das Mainnet hat es auf Höhe 3.742.566 angewendet (23. Oktober 2026, Governance-Vorschlag 13). Der konfigurierte Standard des Testnets ist kürzer, nämlich 3.600 Sekunden (1 Stunde), sodass ein Testnet-Rollup schneller finalisiert als die hier beschriebenen 7 Tage.
 * **Challenge-Bond**: 1.000 QOR (1.000.000.000 uqor) — erforderlich, um eine Betrugsbeweis-Anfechtung einzureichen (Presets `nft` und `custom`; die Presets `defi`, `gaming` und `enterprise` setzen keinen Bond, da sie kein Challenge-Fenster haben)
 * **Finalität**: Verzögert, bis das Challenge-Fenster ohne gültige Anfechtung abläuft
 * **Auto-Finalisierung**: Der `EndBlocker` finalisiert Batches automatisch, sobald das Challenge-Fenster ohne Streitfall abgelaufen ist. Ein angefochtener Batch wird nie automatisch finalisiert: Der Ersteller des Rollups löst die Anfechtung zuerst auf (siehe [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -44,7 +44,7 @@ ZK Rollups liefern kryptografische Gültigkeitsbeweise, die die Korrektheit des 
 * **Finalität**: Sofort bei Beweisverifikation — kein Challenge-Fenster erforderlich
 * **Maximale Beweisgröße**: 1 MB (1.048.576 Bytes)
 * **Rekursionstiefe**: Konfigurierbare Beweisaggregationstiefe (Standard: 1)
-* **Reifegrad**: SNARK-Batches werden On-Chain (Groth16 über BLS12-381) gegen einen Verifying Key verifiziert, der beim Rollup gespeichert ist. Ein über `create-rollup` erstelltes Rollup trägt derzeit keinen Verifying Key, sodass ZK-Batches noch nicht Ende-zu-Ende finalisiert werden können. Die STARK-Verifikation ist experimentell: Sie ist Opt-in und prüft eine Demonstrationsschaltung, nicht den Zustandsübergang Ihres eigenen Rollups. Betrachten Sie ZK Settlement als nicht produktionsreif.
+* **Reifegrad**: SNARK-Batches werden On-Chain (Groth16 über BLS12-381) gegen einen Verifying Key verifiziert, der beim Rollup gespeichert ist. **ZK Settlement ist derzeit auf keinem der beiden Netzwerke nutzbar:** Die Chain hat keine Möglichkeit, einen Verification Key für ein Rollup zu registrieren, sodass jeder ZK-Batch abgelehnt wird, nachdem seine Gebühr bezahlt wurde. Die Key-Registrierung ist für Chain v3.2.7 geplant. Die STARK-Verifikation ist experimentell: Sie ist Opt-in und prüft eine Demonstrationsschaltung, nicht den Zustandsübergang Ihres eigenen Rollups. Betrachten Sie ZK Settlement als nicht produktionsreif.
 
 **Batch-Lebenszyklus**:
 
@@ -152,13 +152,13 @@ QoreChain-L1-Proposer sequenzieren Rollup-Transaktionen.
 On-Chain-KV-Store-Blob-Speicherung innerhalb von QoreChain selbst.
 
 :::caution Noch kein öffentlicher Weg, einen Blob zu veröffentlichen
-Das Modul definiert Blob-Speicherung, Aufbewahrung und Pruning, aber es gibt in den aktuellen Releases keine Transaktionsnachricht zum Veröffentlichen eines Blobs. Ein Batch, der bei einem `native`- oder `both`-Rollup einen Daten-Hash nennt, wird abgelehnt, weil kein passender Blob gespeichert werden kann. Siehe [Data Availability](/rollups/data-availability). Bei nativer Datenverfügbarkeit muss ein Batch daher `data_hash` leer lassen; der RDK-Client (0.6.1) tut das, und die Chain lehnt einen Batch ab, der einen angibt.
+Das Modul definiert Blob-Speicherung, Aufbewahrung und Pruning, aber es gibt in den aktuellen Releases keine Transaktionsnachricht zum Veröffentlichen eines Blobs. Ein Batch, der bei einem `native`- oder `both`-Rollup einen Daten-Hash nennt, wird abgelehnt, weil kein passender Blob gespeichert werden kann. Siehe [Data Availability](/rollups/data-availability). Bei nativer Datenverfügbarkeit muss ein Batch daher `data_hash` leer lassen; der RDK-Client (0.6.2) tut das, und die Chain lehnt einen Batch ab, der einen angibt.
 :::
 
 | Parameter            | Wert                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | **Maximale Blob-Größe**    | 2 MB (2.097.152 Bytes)                                                                              |
-| **Aufbewahrungszeitraum** | 432.000 Blöcke (etwa 16 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets; der Wert verschiebt sich mit der Blockzeit) |
+| **Aufbewahrungszeitraum** | 432.000 Blöcke (etwa 16 Tage bei den aktuellen ≈3,1-s-Blöcken des Mainnets; der Wert verschiebt sich mit der Blockzeit) |
 | **Auto-Pruning**     | Abgelaufene Blobs werden im `EndBlocker` entfernt — die Daten werden gelöscht, die Commitment-Metadaten jedoch beibehalten  |
 | **Commitment**       | SHAKE-256-Hash (32 Bytes) der Blob-Daten                                                                           |
 
@@ -193,7 +193,7 @@ Pending → Active → Paused → Active → Stopped
 | **Pending** | Rollup registriert, aber noch nicht aktiviert                      |
 | **Active**  | Rollup ist live und verarbeitet Batches                        |
 | **Paused**  | Vom Ersteller vorübergehend angehalten (kann fortgesetzt werden)                   |
-| **Stopped** | Dauerhaft außer Betrieb genommen — was vom Escrow des Erstellers übrig ist, wird zurückgegeben (siehe [Escrow-Ledger](#escrow-ledger))  |
+| **Stopped** | Dauerhaft außer Betrieb genommen — was vom Escrow des Erstellers übrig ist, wird zurückgegeben (siehe [Escrow-Ledger](#escrow-ledger)) |
 
 Bei der Erstellung wird der Rollup-Status unmittelbar nach erfolgreichem Stake-Escrow und erfolgreichem Erstellungs-Burn auf `Active` gesetzt (die Schichtregistrierung wird versucht, ist aber nicht fatal). Nur der Ersteller kann ein Rollup pausieren, fortsetzen oder stoppen (erzwungen seit Chain-Version v3.2.0).
 
@@ -208,14 +208,14 @@ Submitted → Finalized                              (happy path)
 Submitted → Challenged → Rejected                  (fraud detected)
 ```
 
-Verhalten ab RDK 0.6.1: Für ein Optimistic Rollup baut der Client einen Batch, dessen State-Root die kanonische Übergangs-Root der Chain ist (`batchTransitionRoot` im RDK), kein frei gewählter eigener Wert.
-
 | Zustand          | Beschreibung                                       |
 | -------------- | ------------------------------------------------- |
 | **Submitted**  | Batch an QoreChain übermittelt, wartet auf Finalisierung  |
 | **Challenged** | Betrugsbeweis-Anfechtung eingereicht (nur optimistic) |
 | **Finalized**  | Batch als kanonisch akzeptiert                       |
 | **Rejected**   | Batch durch erfolgreiche Anfechtung für ungültig erklärt         |
+
+Verhalten von RDK 0.6.1 und 0.6.2 (der Bibliothekscode ist derselbe): Für ein Optimistic Rollup baut der Client einen Batch, dessen State-Root die kanonische Übergangs-Root der Chain ist (`batchTransitionRoot` im RDK), kein frei gewählter eigener Wert.
 
 ### Regeln zur Auto-Finalisierung
 

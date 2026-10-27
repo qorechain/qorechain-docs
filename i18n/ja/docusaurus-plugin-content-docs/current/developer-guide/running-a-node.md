@@ -59,7 +59,7 @@ v3.2.1以降では2つの設定が重要です。システムクロックをNTP�
 
 ---
 
-## 推奨ハードウェア
+## 推奨ハードウェア {#recommended-hardware}
 
 | プロファイル                  | CPU      | RAM   | ディスク(NVMe SSD)         | ネットワーク   |
 | ------------------------ | -------- | ----- | ----------------------- | --------- |
@@ -67,7 +67,7 @@ v3.2.1以降では2つの設定が重要です。システムクロックをNTP�
 | フル/アーカイブノード        | 8コア  | 32 GB | 2 TB以上(時間とともに増加) | 1 Gbps    |
 | 取引所統合     | 8コア  | 32 GB | 余裕を持たせた2 TB以上     | 1 Gbps    |
 
-NVMe SSDを強く推奨します——チェーンの状態およびEVM/SVMストアはI/O負荷が高いためです。アーカイブノード(プルーニングなし、全トランザクションインデックス)は継続的に増大するため、余裕を持ったディスク容量を用意し、監視を行ってください。
+NVMe SSDを強く推奨します。チェーンの状態およびEVM/SVMストアはI/O負荷が高いためです。上記のディスク容量の数値には十分な余裕があります。メインネットでの実測値（2026年10月27日）: ステートシンクで参加し、`pruning = "custom"`（keep-recent 100000）と`indexer = "null"`を使用しているバリデーターは、2か月後で約10 GB、ジェネシスから稼働しデフォルトのプルーニングを使用しているノードは、4か月後で約100〜130 GBです。バリデーターのサイジングは[バリデーターの運用: ハードウェア](/developer-guide/running-a-validator#hardware)を参照してください。アーカイブノード(プルーニングなし、全トランザクションインデックス)は継続的に増大するため、余裕を持ったディスク容量を用意し、監視を行ってください。
 
 ---
 
@@ -222,7 +222,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 
 ## 高速ブートストラップ
 
-ジェネシスからの同期には長い時間がかかることがあります。統合作業では、コールドスタートを高速化するために**ステートシンク**または**スナップショット**を使用してください。
+ジェネシスからの同期には長い時間がかかることがあります。参加方法としては**ステートシンク**を標準としてください。**スナップショット**はフォールバックに限ります（メインネットのスナップショットは2026年8月21日のもので、テストネットはスナップショットを公開していません）。
 
 ### ステートシンク
 
@@ -231,18 +231,22 @@ qorechaind start --minimum-gas-prices=0.1uqor
 ```toml
 [statesync]
 enable = true
-rpc_servers = "https://rpc.qore.host:443,https://rpc.qore.host:443"
+rpc_servers = "https://rpc.qore.host:443,https://<a second RPC you run or trust>:26657"
 trust_height = <TRUSTED_BLOCK_HEIGHT>
 trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-`trust_height`/`trust_hash`はマニフェストの`stateSync`フィールドから取得してください——1時間ごとに更新されるため、こちらを優先的な情報源としてください。
+`trust_height`/`trust_hash`はマニフェストの`stateSync`フィールドから取得してください。1時間ごとに更新されるため、こちらを優先的な情報源としてください。
 
 ```bash
 TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
 TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 ```
+
+:::warning 2つの異なるRPCサーバー
+ステートシンクは、信頼点を**2つ**のRPCサーバーに対して照合します。マニフェストの`stateSync.rpcServers`は、メインネットでは`https://rpc.qore.host`を2回（テストネットでは`https://rpc-testnet.qore.host`を2回）列挙しています。同一のエントリが2つあっても個数の条件は満たされますが、照合の意味がなくなります。自分で運用している、または独立して信頼できる2つ目のRPCを追加し、信頼ハッシュを2つ目の情報源と比較してください。例えば`curl -s "https://<second-rpc>/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash`の結果は`$TRUST_HASH`と一致しなければなりません。
+:::
 
 フォールバック/代替手段として、公開RPCから信頼するブロック高とハッシュを自分で導出することもできます。
 

@@ -1,16 +1,16 @@
 ---
 slug: /rollups/settlement-receipts
-title: Reçus de règlement à sûreté quantique
+title: Reçus de règlement
 sidebar_label: Reçus de règlement
 sidebar_position: 6
 ---
 
-# Reçus de règlement à sûreté quantique
+# Reçus de règlement
 
 Un **reçu de règlement** est un enregistrement portable attestant qu'un lot de règlement d'un rollup a été ancré à la Main Chain sous une signature post-quantique. Il désigne le rollup, le lot et l'ancre, et porte la signature **ML-DSA-87** (Dilithium-5, FIPS-204) de l'ancre, le même schéma que celui utilisé par la Main Chain.
 
 :::caution Stade précoce : aucune ancre n'existe encore
-Les reçus dépendent des ancres, et **aucun rollup ni aucune ancre n'existe encore sur l'un ou l'autre réseau** (vérifié le 27 octobre 2026). Depuis la v3.2.2 (en service sur les deux réseaux), un lot soumis avec un `anchor_signature` est ancré dans `x/multilayer` au sein de la même transaction ; un lot soumis sans cette signature est réglé sans ancre. Le RDK TypeScript (0.6.1) envoie ce champ lorsque son client de transaction signe en hybride et est le créateur du rollup, et soumet sans ancre dans le cas contraire ; les clients Python, Go, Rust et Java signent en classique uniquement et ne construisent pas ce champ. Rien de tout cela n'a été exercé sur un rollup en production. Considérez cette page comme une description de la conception et des briques de base, et non d'un service sur lequel vous pouvez vous appuyer aujourd'hui.
+Les reçus dépendent des ancres, et **aucun rollup ni aucune ancre n'existe encore sur l'un ou l'autre réseau** (vérifié le 27 octobre 2026). Depuis la v3.2.2 (en service sur les deux réseaux), un lot soumis avec un `anchor_signature` est ancré dans `x/multilayer` au sein de la même transaction ; un lot soumis sans cette signature est réglé sans ancre. Le RDK TypeScript (0.6.2) envoie ce champ lorsque son client de transaction signe en hybride et est le créateur du rollup, et soumet sans ancre dans le cas contraire ; les clients Python, Go, Rust et Java signent en classique uniquement et ne construisent pas ce champ. Rien de tout cela n'a été exercé sur un rollup en production. Considérez cette page comme une description de la conception et des briques de base, et non d'un service sur lequel vous pouvez vous appuyer aujourd'hui.
 :::
 
 ## Un reçu est une affirmation, pas une preuve {#a-receipt-is-a-claim}
@@ -46,9 +46,9 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Passez un `client` pour chaque vérification. L'API des reçus et ses contrôles ont changé d'une version à l'autre : utilisez donc la 0.6.1 (la version actuelle) : la 0.5.0 ne pouvait pas mener à bien le contrôle sur la chaîne, et la 0.6.0 ne comparait pas chaque champ du reçu (voir ci-dessous). Les clients Python, Go, Rust et Java exposent la même surface de construction/vérification ; leurs versions 0.6.1 utilisent la même route de recherche de clé au singulier, le même choix du message d'ancre selon la hauteur et la même comparaison champ par champ.
+Passez un `client` pour chaque vérification. L'API des reçus et ses contrôles ont changé d'une version à l'autre : utilisez donc la 0.6.2 (la version actuelle ; son code de reçus est celui de la 0.6.1) : la 0.5.0 ne pouvait pas mener à bien le contrôle sur la chaîne, et la 0.6.0 ne comparait pas chaque champ du reçu (voir ci-dessous). Les clients Python, Go, Rust et Java exposent la même surface de construction/vérification ; leurs versions 0.6.1 et 0.6.2 utilisent la même route de recherche de clé au singulier, le même choix du message d'ancre selon la hauteur et la même comparaison champ par champ.
 
-### Ce que vérifie la 0.6.1 {#what-060-verifies}
+### Ce que vérifie la 0.6.2 {#what-060-verifies}
 
 `verifySettlementReceipt` ne rapporte jamais `valid` à partir du seul reçu : sans `client`, le résultat est `mode: "signature-only"` et `valid: false`. Avec un `client`, il relit la chaîne et rapporte chaque contrôle séparément :
 
@@ -66,9 +66,9 @@ Depuis la 0.6.1, le résultat porte aussi l'`anchor` propre à la chaîne et, lo
 Aucune ancre n'existe sur l'un ou l'autre réseau ; cela n'a donc été vérifié que par rapport au code du paquet et hors ligne, pas par rapport à une ancre réelle. `buildSettlementReceipt` ne fonctionne qu'une fois qu'une ancre couvre le lot.
 
 :::note Versions antérieures à la 0.6.1
-Dans la 0.6.0, `verifySettlementReceipt` faisait correspondre l'ancre de la chaîne sur sa racine d'état, sa hauteur de couche, son hash d'ensemble de validateurs et sa signature, mais ne comparait pas les autres champs que montre un reçu (hauteur de la Main Chain, heure d'ancrage, algorithme, version, et, sur un reçu de version 2, le nombre de transactions et la preuve d'état compressée), et traitait la racine d'état du lot comme purement informative. L'affirmation de règlement elle-même (racine d'état, signature d'ancre, clé du créateur) était toujours liée ; ce que la 0.6.0 ne pouvait pas vous dire, c'est si les métadonnées imprimées à côté correspondaient à la chaîne. Utilisez la 0.6.1.
+Dans la 0.6.0, `verifySettlementReceipt` faisait correspondre l'ancre de la chaîne sur sa racine d'état, sa hauteur de couche, son hash d'ensemble de validateurs et sa signature, mais ne comparait pas les autres champs que montre un reçu (hauteur de la Main Chain, heure d'ancrage, algorithme, version, et, sur un reçu de version 2, le nombre de transactions et la preuve d'état compressée), et traitait la racine d'état du lot comme purement informative. L'affirmation de règlement elle-même (racine d'état, signature d'ancre, clé du créateur) était toujours liée ; ce que la 0.6.0 ne pouvait pas vous dire, c'est si les métadonnées imprimées à côté correspondaient à la chaîne. Utilisez la 0.6.2.
 
-Dans la 0.5.0, `verifySettlementReceipt` échouait de façon fermée sur les réseaux en service, pour deux raisons qui tenaient au client et non à la chaîne : il recherchait la clé du créateur via une forme plurielle `accounts` de la route de compte post-quantique, que les réseaux ne servent pas (HTTP 501), et il ne reconstruisait que le message v1, que la chaîne n'accepte plus pour les ancres depuis la v3.2.2. Un reçu authentique ne pouvait donc pas être vérifié, tandis qu'un reçu falsifié était tout de même refusé. Utilisez la 0.6.1.
+Dans la 0.5.0, `verifySettlementReceipt` échouait de façon fermée sur les réseaux en service, pour deux raisons qui tenaient au client et non à la chaîne : il recherchait la clé du créateur via une forme plurielle `accounts` de la route de compte post-quantique, que les réseaux ne servent pas (HTTP 501), et il ne reconstruisait que le message v1, que la chaîne n'accepte plus pour les ancres depuis la v3.2.2. Un reçu authentique ne pouvait donc pas être vérifié, tandis qu'un reçu falsifié était tout de même refusé. Utilisez la 0.6.2.
 :::
 
 ## CLI {#cli}

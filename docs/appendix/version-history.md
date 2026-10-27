@@ -104,7 +104,7 @@ v3.2.1 was applied node by node and has no upgrade height; it was superseded on 
 
 **Release focus:** Make the post-quantum requirement true on every lane, and close two accounting gaps. Applied on mainnet by governance proposal #6 at height **2,981,742** (25 September 2026, 12:07 UTC); applied on the testnet at height 5,920,000.
 
-* **EVM authorisation window (breaking for EVM wallets).** An EVM transaction is now admitted only from an account that has a registered ML-DSA-87 key **and** an open window. The window is opened with a Cosmos-lane message (`MsgOpenEVMWindow`, post-quantum signed) and bounded by blocks (≤ 17,280), transactions (≤ 1,000) and total value (transferred value plus the maximum fee of each transaction); `MsgCloseEVMWindow` revokes it. Standard Ethereum signing is unchanged inside a window. The EVM lane, which had been switched off on mainnet on the circuit breaker since 16 September, was reopened in the same block the rule took effect. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
+* **EVM authorisation window (breaking for EVM wallets).** An EVM transaction is now admitted only from an account that has a registered ML-DSA-87 key **and** an open window. The window is opened with a Cosmos-lane message (`MsgOpenEVMWindow`, with a hybrid ML-DSA-87 signature (FIPS 204)) and bounded by blocks (≤ 17,280), transactions (≤ 1,000) and total value (transferred value plus the maximum fee of each transaction); `MsgCloseEVMWindow` revokes it. Standard Ethereum signing is unchanged inside a window. The EVM lane, which had been switched off on mainnet on the circuit breaker since 16 September, was reopened in the same block the rule took effect. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
 * **Hybrid signature v2.** Post-quantum signatures are now over domain-tagged, chain-bound sign-bytes; the first form is refused from the upgrade height. Clients check the node's applied upgrade plans to choose the form; the CLI (`--sign-bytes auto`), SDK 0.8.x and wallet-adapter 0.2.x do this. Key-migration and bridge-attestation payloads moved to the same scheme. See [Post-Quantum Security](/architecture/post-quantum-security#sign-bytes-v2).
 * **Staker share paid.** The 10 % staker share of the fee split was being deposited where it backed no claim; from this upgrade it is paid as a normal staking reward. The amount already accumulated (6,693,045.92 QOR on mainnet) is recorded on chain (`GET /qorechain/burn/v1/stranded_rewards`) and could move only by a governance vote (`MsgReleaseStrandedRewards`); governance released it in October 2026 (see the [governance timeline](#governance-timeline) and [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 * **Light-node reward reserve.** The 3 % light-node share that accumulated while no node was eligible (3,156,009.33 QOR on mainnet) is recorded as a reserve (`GET /qorechain/lightnode/v1/reward_pool`), excluded from distribution and movable only by governance (released in October 2026); distribution afterwards pays only what accrued since the previous run, bounded per node. Light-node registration was still closed at this release and has since opened (see [Light Node](/light-node/overview#reward-program-status)).
@@ -208,7 +208,7 @@ Full nodes must run **v3.1.83+**. A pre-3.1.83 node cannot decode an eth-native 
 
 * **Anchor read queries** — The `x/multilayer` query service now exposes `Anchor` (the latest state anchor for a layer) and `Anchors` (a layer's anchor history), so clients can fetch a layer's settlement anchor and verify it independently.
 * **REST gateway for multilayer** — Every multilayer query (`params`, `layers`, `layers/{layer_id}`, `anchor/{layer_id}`, `anchors/{layer_id}`, `routing-stats`) is now available over REST in addition to gRPC.
-* **Quantum-safe settlement receipts unblocked** — Each anchor carries an **ML-DSA-87 (Dilithium-5)** signature over its canonical fields, providing the on-chain basis for the Rollup Development Kit's offline settlement-receipt verification.
+* **ML-DSA-87 settlement receipts unblocked** — Each anchor carries an **ML-DSA-87 (Dilithium-5)** signature over its canonical fields, providing the on-chain basis for the Rollup Development Kit's offline settlement-receipt verification.
 
 ## v3.1.79 — Validator Auto-Provisioning for Bridge Networks
 
@@ -330,7 +330,7 @@ Full nodes must run **v3.1.83+**. A pre-3.1.83 node cannot decode an eth-native 
 * **Dual secp256k1 (ECDSA) + ML-DSA-87 signatures** — Every transaction carries both a classical and a post-quantum signature, verified in the AnteHandler chain
 * **3 enforcement modes** — Configurable hybrid signature enforcement: off (mode 0), permissive (mode 1, PQC optional), mandatory (mode 2, PQC required)
 * **Key registration** — Early builds auto-registered a PQC public key on the first hybrid transaction; that behaviour was removed, and a key is now registered explicitly with `MsgRegisterPQCKey` (see [First Transaction](/getting-started/first-transaction#register-pqc-key))
-* **SHAKE-256 hash foundation** — All PQC-related hashing operations use SHAKE-256 (SHA-3 family) for quantum-resistant address derivation
+* **SHAKE-256 hash foundation** — All PQC-related hashing operations use SHAKE-256 (SHA-3 family) for address derivation
 * **TEE attestation interfaces** — Trusted Execution Environment attestation support for proving PQC key generation integrity
 * **Algorithm agility framework** — Pluggable algorithm registry allowing future PQC algorithms to be added via governance without a chain upgrade
 
@@ -346,7 +346,7 @@ Full nodes must run **v3.1.83+**. A pre-3.1.83 node cannot decode an eth-native 
 * **QDRW governance** — Quadratic Delegation with Reputation Weighting voting-power formula (implemented; disabled on the live networks)
 * **EVM + QoreChain Native + SVM runtimes** — Three concurrent execution environments: the QoreChain EVM Engine, QoreChain Native smart contracts, and the Solana Virtual Machine
 * **Cross-VM bridge** — Message passing and asset transfers between EVM, QoreChain Native, and SVM runtimes within a single block
-* **Post-quantum cryptography** — Quantum-resistant signing backed by a high-performance PQC library
+* **Post-quantum cryptography** — ML-DSA-87 signing backed by a high-performance PQC library
 * **QCAI** — On-chain heuristic analysis with an optional off-chain sidecar for fraud detection, fee estimation, and network optimization
 * **Containerized deployment** — Full multi-validator testnet deployment with sidecar service and block indexer
 * **Block indexer** — Block listener with persistent storage for historical query and analytics

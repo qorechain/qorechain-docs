@@ -1,21 +1,21 @@
 ---
 slug: /sdk/guides/quantum-safe
-title: Varsayılan Olarak Kuantuma Dayanıklı
-sidebar_label: Kuantuma dayanıklı
+title: Varsayılan Olarak Hibrit İmzalama
+sidebar_label: Hibrit imzalama
 sidebar_position: 6
 ---
 
-# Varsayılan olarak kuantuma dayanıklı
+# Varsayılan olarak hibrit imzalama
 
 QoreChain, post-kuantum kriptografiyi **birinci sınıf** bir imza şeması olarak ele alır.
 Bir hesap, zincir üzerinde bir **ML-DSA-87 (Dilithium-5, NIST FIPS 204)** anahtarı kaydeder,
 ardından işlemleri bir **hibrit** imza taşıyabilir — olağan
 klasik secp256k1 imzası **artı** bir ML-DSA-87 imzası. Zincirin ante
-işleyicisi her ikisini de doğrular; böylece kuantuma dayanıklı bir hesap, gelecekteki bir kuantum
-düşmanına karşı koruma kazanırken klasik doğrulamayla tam uyumlu kalır.
+işleyicisi her ikisini de doğrular; böylece kayıtlı anahtara sahip bir hesap klasik doğrulamayla tam
+uyumlu kalır ve işlemleri ayrıca post-kuantum bir imza da taşır.
 
 SDK bunu küçük, bağımsız uygulanabilir bir yüzeye paketler; böylece bir dApp
-**varsayılan olarak kuantuma dayanıklı** hale gelir: PQC korumalı olmak için tek bir çağrı.
+**varsayılan olarak hibrit** imzalar: anahtarı kaydetmek için tek bir çağrı yeterlidir.
 Canlı ağlarda bu, Native yol işlemleri için isteğe bağlı değildir: anahtar
 **açıkça** kaydedilmelidir (ilk işlemde otomatik kayıt yoktur) ve ardından her
 Native yol işlemi hibrit imzayı taşımalıdır.
@@ -65,7 +65,7 @@ okunabilir; bu ön derleme mainnet üzerinde etkin değildir ve testnet üzerind
 
 ## Tek çağrıda kaydedin {#register-in-one-call}
 
-`ensurePqcRegistered`, bir hesabı kuantuma dayanıklı yapar. İmzalayanın ML-DSA-87
+`ensurePqcRegistered`, hesabın ML-DSA-87 anahtarını kaydeder. İmzalayanın ML-DSA-87
 genel anahtarıyla `MsgRegisterPQCKeyV2` oluşturur ve yayınlar. **Bağımsız
 uygulanabilirdir**: önce hesabın durumunu okur (`rest` geçtiğinizde REST üzerinden),
 hesap zaten bu anahtar çiftinin anahtarını taşıyorsa kaydı atlar ve bu nedenle her
@@ -277,7 +277,7 @@ await migratePqcKeyHybrid({
 
 [`@qorechain/react`](/sdk/guides/react) kiti bunların tümünü React'te sunar:
 `usePqcStatus` kancası ve `<QuantumSafeBadge/>` bileşeni, bağlı hesabın kayıtlı bir
-PQC anahtarına sahip olduğu her durumda bir **Kuantuma dayanıklı**
+PQC anahtarına sahip olduğu her durumda bir durum
 göstergesi gösterir. Her ikisi de durumu oluşturulmuş istemciyle `getPqcStatus`
 üzerinden okur; bu nedenle `@qorechain/react` 0.9.0'dan itibaren bunu REST üzerinden
 okurlar ve genel uç noktalar karşısında çalışırlar; 0.8.x orada bir anahtarı

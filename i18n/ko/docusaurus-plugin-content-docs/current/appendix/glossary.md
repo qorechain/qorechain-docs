@@ -13,7 +13,7 @@ QoreChain 문서 전반에서 사용되는 용어, 약어, 두문자어를 알�
 
 **AMM** — Automated Market Maker(자동화 마켓 메이커). 외부 스마트 컨트랙트 배포 없이 프로토콜 수준에서 직접 상수곱 풀, 스왑, 유동성 공급을 제공하는 QoreChain의 네이티브 온체인 유동성 모듈(`x/amm`). [AMM](/architecture/amm)을 참조하세요.
 
-**Authorisation window (EVM)(EVM 승인 창)** — 포스트 양자 서명이 된 Cosmos 레인 메시지로 열리는 제한된 권한(블록 수, 트랜잭션 수, 총 가치)으로, v3.2.0부터 EVM 레인 트랜잭션은 반드시 이 범위 안에 있어야 합니다. v3.2.3부터는 창을 네이티브 전송만 허용하거나 지정한 수신자 목록으로만 제한하도록 좁힐 수 있습니다. [EVM 승인 창](/getting-started/first-transaction#evm-window)을 참조하세요.
+**Authorisation window (EVM)(EVM 승인 창)** — 하이브리드 ML-DSA-87 서명(FIPS 204)을 담은 Cosmos 레인 메시지로 열리는 제한된 권한(블록 수, 트랜잭션 수, 총 가치)으로, v3.2.0부터 EVM 레인 트랜잭션은 반드시 이 범위 안에 있어야 합니다. v3.2.3부터는 창을 네이티브 전송만 허용하거나 지정한 수신자 목록으로만 제한하도록 좁힐 수 있습니다. [EVM 승인 창](/getting-started/first-transaction#evm-window)을 참조하세요.
 
 **BPF** — Berkeley Packet Filter. SVM 런타임이 온체인 프로그램을 실행하는 데 사용하는 바이트코드 형식. 프로그램은 배포 전에 BPF로 컴파일됩니다.
 
@@ -39,11 +39,11 @@ QoreChain 문서 전반에서 사용되는 용어, 약어, 두문자어를 알�
 
 **IBC** — Inter-Blockchain Communication(블록체인 간 통신). 독립적인 블록체인 간 인증된 메시지 전달을 위한 프로토콜. QoreChain은 크로스체인 토큰 전송 및 데이터 릴레이를 위한 IBC 채널을 지원합니다.
 
-**Light Node** — 전체 상태를 보유하지 않고, 블록 헤더를 하나 이상의 RPC 엔드포인트와 교차 확인하여 체인을 따라가는 리소스 경량 클라이언트. 다른 사용자에게 쿼리를 제공하지 않습니다. 프로토콜 수수료 분배에서는 라이트 노드 보상 프로그램을 위해 **3%** 몫을 따로 확보해 둡니다. 이 프로그램의 등록은 열려 있으며 `lightnode_operator` 라이선스(50달러, 대시보드에서 구매)로 제한됩니다. 2026년 10월 20일 기준으로 메인넷에서 라이선스 6개가 부여되었고 아직 등록한 라이트 노드는 없습니다. 노드 운영에는 라이선스가 필요하지 않습니다. [라이트 노드](/light-node/overview)와 그 [보상 프로그램 현황](/light-node/overview#reward-program-status)을 참조하세요.
+**Light Node** — 전체 상태를 보유하지 않고, 블록 헤더를 하나 이상의 RPC 엔드포인트와 교차 확인하여 체인을 따라가는 리소스 경량 클라이언트. 다른 사용자에게 쿼리를 제공하지 않습니다. 프로토콜 수수료 분배에서는 라이트 노드 보상 프로그램을 위해 **3%** 몫을 따로 확보해 둡니다. 이 프로그램의 등록은 열려 있으며 `lightnode_operator` 라이선스(50달러, 대시보드에서 구매)로 제한됩니다. 2026년 10월 27일 기준으로 메인넷에서 라이선스 7개가 부여되었고 각 네트워크에 라이트 노드 1개가 등록되었습니다. 노드 운영에는 라이선스가 필요하지 않습니다. [라이트 노드](/light-node/overview)와 그 [보상 프로그램 현황](/light-node/overview#reward-program-status)을 참조하세요.
 
 **MEV** — Maximal Extractable Value(최대 추출 가능 가치). 블록 내 트랜잭션을 재정렬, 삽입, 검열하여 얻을 수 있는 이익. QoreChain의 FairBlock 모듈(tIBE 암호화)은 MEV 추출을 완화하도록 설계되었으며, 아직 활성화되지 않았습니다.
 
-**ML-DSA-87** — Module-Lattice Digital Signature Algorithm(보안 수준 5). QoreChain이 양자 내성 트랜잭션 서명에 사용하는 NIST 표준화 포스트 양자 디지털 서명 체계. 4,627바이트의 서명과 2,592바이트의 공개키를 생성합니다.
+**ML-DSA-87** — Module-Lattice Digital Signature Algorithm(보안 수준 5). QoreChain이 네이티브 레인의 하이브리드 트랜잭션 서명에 secp256k1과 함께 사용하는 NIST 표준화 포스트 양자 디지털 서명 체계. 4,627바이트의 서명과 2,592바이트의 공개키를 생성합니다.
 
 **ML-KEM-1024** — Module-Lattice Key Encapsulation Mechanism(보안 수준 5). 향후 암호화 통신 채널을 위해 QoreChain의 PQC 알고리즘 레지스트리에서 사용 가능한 NIST 표준화 포스트 양자 키 캡슐화 체계.
 
@@ -79,7 +79,7 @@ QoreChain 문서 전반에서 사용되는 용어, 약어, 두문자어를 알�
 
 **SNARK** — Succinct Non-interactive Argument of Knowledge. 작은 증명 크기로 빠르게 검증할 수 있는 영지식 증명의 한 종류. zk-롤업을 위한 RDK 모듈의 정산 패러다임으로 지원됩니다.
 
-**STARK** — Scalable Transparent Argument of Knowledge. 신뢰할 수 있는 설정(trusted setup)이 필요 없고 양자 내성을 갖춘 영지식 증명 시스템. RDK에서 zk-롤업 정산을 위한 대체 증명 시스템으로 사용할 수 있습니다.
+**STARK** — Scalable Transparent Argument of Knowledge. 신뢰할 수 있는 설정(trusted setup)이 필요 없고 타원 곡선이 아닌 해시 함수를 기반으로 하는 영지식 증명 시스템. RDK에서 zk-롤업 정산을 위한 대체 증명 시스템으로 사용할 수 있습니다.
 
 **Stranded staker share / reward-pool reserve(미지급 스테이커 지분 / 보상 풀 준비금)** — v3.2.0 업그레이드 시점에 기록된 금액으로, 거버넌스 투표를 통해서만 이동합니다. 거버넌스는 2026년 10월에 이를 해제했습니다(v3.2.3에서 다시 계산된 미지급 지분의 수정된 잔액은 제안 12로 해제되었습니다). [토크노믹스](/architecture/tokenomics#stranded-and-reserve)를 참조하세요.
 

@@ -125,7 +125,7 @@ abgelehnt, weil sich seine Signaturen fälschen lassen.
   ML-DSA-87-Schlüssel kann von der nativen Lane aus ein begrenztes
   EVM-Autorisierungsfenster öffnen (Ablaufhöhe, maximale Transaktionen,
   maximaler Wert). Siehe
-  [EVM-Wallets: Quantum-Ready-Modus](/qoresign/guides/evm-quantum-ready).
+  [EVM-Wallets: Autorisierungsfenster](/qoresign/guides/evm-quantum-ready).
 - SVM-Lane: im Netzwerk noch nicht geöffnet.
 
 ## Testvektoren {#test-vectors}

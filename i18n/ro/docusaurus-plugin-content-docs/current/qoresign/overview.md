@@ -25,11 +25,11 @@ Versiunea curentă este **0.1.0**. Sursa, exemplele și vectorii de test se găs
 | Lane | Ce face QoreSign astăzi |
 |---|---|
 | **Nativ** (Cosmos SDK) | Semnare și verificare hibridă. Rețeaua cere implicit semnătura ML-DSA-87. |
-| **EVM** | Doar modul pregătit pentru era cuantică: contul înregistrează o cheie ML-DSA-87 și deschide, de pe lane-ul nativ, o fereastră de autorizare limitată. Tranzacțiile Ethereum în sine nu poartă nicio semnătură ML-DSA-87. |
+| **EVM** | Doar fereastra de autorizare: contul înregistrează o cheie ML-DSA-87 și deschide, de pe lane-ul nativ, o fereastră de autorizare limitată. Tranzacțiile Ethereum în sine nu poartă nicio semnătură ML-DSA-87. |
 | **SVM** | Încă neactivat în rețea (`LANE_NOT_AVAILABLE`). |
 
 Semnarea hibridă EVM necesită mai întâi suport PQC per lane în rețea. Vezi
-[Portofele EVM: modul pregătit pentru era cuantică](/qoresign/guides/evm-quantum-ready).
+[Portofele EVM: fereastra de autorizare](/qoresign/guides/evm-quantum-ready).
 
 ## Pachete {#packages}
 
@@ -81,7 +81,7 @@ verificarea sign-in-ului față de lanț) se află în `@qorechain/qoresign/netw
 - Ghiduri
   - [Adăugați semnarea hibridă într-un portofel compatibil Keplr](/qoresign/guides/keplr-compatible-wallets)
   - [Sign In With QoreChain: verificarea pe server](/qoresign/guides/sign-in)
-  - [Portofele EVM: modul pregătit pentru era cuantică](/qoresign/guides/evm-quantum-ready)
+  - [Portofele EVM: fereastra de autorizare](/qoresign/guides/evm-quantum-ready)
   - [Derivarea cheilor: chei canonice și draftul HD](/qoresign/guides/key-derivation)
   - [Dimensiuni și transport](/qoresign/guides/sizes-and-transport)
 - Specificații

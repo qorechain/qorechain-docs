@@ -91,7 +91,7 @@ QoreChain implementa un'architettura del mempool a 5 corsie che categorizza le t
 ### Descrizione delle corsie
 
 **Corsia PQC** (Priorità 100, 15% dello spazio nel blocco)\
-Le transazioni firmate con firme crittografiche ibride post-quantistiche ricevono la priorità più alta. Ciò incentiva l'adozione della firma delle transazioni quantum-safe e garantisce che le operazioni protette da PQC non vengano mai escluse durante la congestione.
+Le transazioni firmate con firme crittografiche ibride post-quantistiche ricevono la priorità più alta. Ciò incentiva l'adozione della firma ibrida ML-DSA-87 delle transazioni e garantisce che le operazioni con firma ibrida non vengano mai escluse durante la congestione.
 
 **Corsia MEV** (Priorità 90, 20% dello spazio nel blocco)\
 Le transazioni crittografate con tIBE ricevono la seconda priorità più alta e l'allocazione riservata più ampia. Ciò garantisce che gli utenti che scelgono la protezione MEV abbiano spazio nel blocco garantito, incoraggiando l'adozione diffusa dello schema di crittografia.

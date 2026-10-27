@@ -7,50 +7,77 @@ sidebar_position: 4
 
 # Trade (DEX)
 
-La page **Trade** est l'écran d'échange de jetons du Dashboard : échangez un jeton contre un autre et fournissez de la liquidité à un pool, sans carnet d'ordres off-chain. Pour la conception du teneur de marché automatisé (AMM) natif de QoreChain, voir [AMM et liquidité on-chain](/architecture/amm).
+La page **Trade** (intitulée « QoreChain DEX ») est un écran d'échange de jetons de test, avec quatre onglets : **Swap**, **Pools**, **Add Liquidity** et **My Positions**. Elle sert à essayer un flux d'échange de bout en bout avec des jetons de test avant que de vrais pools n'existent. Pour la conception du teneur de marché automatisé (AMM) natif de QoreChain, voir [AMM et liquidité on-chain](/architecture/amm).
 
 :::caution Jetons de test uniquement, pour le moment
-Les pools et les jetons de cette page sont des jetons de test : les échanges s'exécutent sur un contrat de swap déployé sur l'EVM du testnet, et la page comporte un bouton **Get test tokens** pour les obtenir. Ne considérez rien de ce qui est affiché ici comme de la liquidité de valeur réelle ni comme un prix de marché. Le module AMM natif de QoreChain est actif, mais aucun pool n'a encore été créé sur l'un ou l'autre réseau. Cette page sera mise à jour lorsque de vrais pools seront disponibles.
+Tout ce qui se trouve sur cette page s'exécute sur le **testnet**, quel que soit le réseau affiché dans l'en-tête. Sur le mainnet, la page reste protégée par la connexion et la reconnaissance, mais elle affiche `qorechain-diana` et des jetons de testnet. Seuls cinq jetons de test QoreSwap sont réglés on-chain ; tout le reste ici est un espace d'entraînement. Le module AMM natif de QoreChain est actif, mais aucun pool n'a encore été créé sur l'un ou l'autre réseau (`GET /qorechain/amm/v1/pools` renvoie une liste vide sur les deux, vérifié le 27 octobre 2026).
 :::
 
-Trader nécessite un compte connecté et un portefeuille — voir [Se connecter](/dashboard/overview#sign-in) et [Connecter votre portefeuille](/dashboard/overview#connect-your-wallet).
+## Innovations {#innovations}
 
-La page comporte quatre onglets : **Swap**, **Pools**, **Add Liquidity** et **My Positions**.
+- **Échanges on-chain pour cinq jetons de test.** Les échanges entre WQOR, QUSDC, QUSDT, QWETH et QWBTC s'exécutent contre le contrat AMM QoreSwap sur l'EVM du testnet (chain ID 9800). La cotation provient de `getAmountOut` du contrat.
+- **Slippage appliqué dans la transaction.** L'échange s'exécute comme une approbation suivie de `swapExactTokensForTokens`, avec une sortie minimale dérivée de votre réglage de slippage, signée par la clé EVM du portefeuille de test. Si le prix dépasse votre tolérance, l'échange est annulé au lieu d'être exécuté à un prix moins favorable.
+- **Jetons de test à la demande.** **Get test tokens** réclame les cinq jetons, une fois toutes les 12 heures par jeton.
+- **Séparation honnête entre réel et entraînement.** Les autres paires, la liste Pools, Add Liquidity et My Positions forment un espace d'entraînement du testnet et ne sont pas on-chain.
 
-## Swap
+## Comment l'utiliser {#how-to-use}
 
-Échangez un jeton contre un autre :
+Prérequis : être connecté et disposer d'un portefeuille de test (voir [Portefeuille](/dashboard/wallet#testnet)). Sans portefeuille, la page affiche « Wallet Required for Trading ».
 
-1. Choisissez le jeton avec lequel vous payez et saisissez un montant.
-2. Choisissez le jeton que vous souhaitez recevoir — le montant de sortie est coté automatiquement.
-3. Ajustez éventuellement votre **tolérance de slippage** (le mouvement de prix maximal que vous accepterez ; par défaut 0,5 %).
-4. Sélectionnez **Swap** et confirmez.
+### Swap
 
-Un panneau d'historique des swaps répertorie vos échanges passés avec les jetons, les montants, le taux, l'heure et le statut.
+1. La bannière propose **Get test tokens** ; utilisez-le en premier.
+2. Choisissez le jeton avec lequel vous payez et saisissez un montant. La paire par défaut, QOR vers USDC, est une paire d'**entraînement** qui n'est pas réglée on-chain. Choisissez **WQOR** et **QUSDC** (ou toute paire parmi les cinq) pour un échange on-chain.
+3. Choisissez le jeton à recevoir ; la sortie est cotée automatiquement.
+4. Ajustez éventuellement la **tolérance de slippage** (0,5 % par défaut).
+5. Sélectionnez **Swap Now**, puis **Confirm Swap**. Le résultat affiche « Swap Confirmed » avec **View Transaction**.
+
+**Recent Swaps** liste les échanges de tous les utilisateurs ; **Show My History** le filtre sur les vôtres.
+
+**Exemple minimal :** sur le testnet, sélectionnez **Get test tokens**, vendez 10 WQOR contre du QUSDC, **Swap Now**, **Confirm Swap**.
 
 :::tip Slippage
-Une tolérance de slippage plus élevée augmente les chances qu'un échange aboutisse dans des marchés à évolution rapide, mais vous pourriez recevoir un prix moins favorable. La valeur par défaut convient à la plupart des paires.
+Une tolérance plus élevée augmente les chances qu'un échange aboutisse dans des marchés à évolution rapide, mais vous pourriez recevoir un prix moins favorable. La valeur par défaut convient à la plupart des paires.
 :::
 
-## Pools
+### Pools
 
-Parcourez les pools de liquidité disponibles. Chaque carte de pool affiche la paire de trading, la liquidité totale, le volume sur 24 heures et le nombre de fournisseurs. Un champ de recherche filtre les pools par symbole de jeton.
+Parcourez les cartes de pool : paire de trading, liquidité totale, volume sur 24 heures, nombre de fournisseurs, ainsi qu'un APR, des frais, un ID de pool, un prix et les réserves. Un champ de recherche filtre par symbole de jeton. Ce sont des chiffres d'entraînement ; ne les interprétez pas comme des rendements.
 
-## Add Liquidity
+### Add Liquidity
 
-Fournissez de la liquidité à un pool et recevez une part de ses frais d'échange :
+1. Sélectionnez deux jetons à apparier (l'un est QOR par défaut). Utilisez **Create Pool** pour une nouvelle paire.
+2. Saisissez un montant pour le premier jeton ; le second se remplit pour correspondre au ratio du pool. La page indique « Minimum 1000 QOR required ».
+3. Examinez votre part, puis confirmez.
 
-1. Sélectionnez les deux jetons à apparier (l'un est QOR par défaut).
-2. Saisissez un montant pour le premier jeton — le second montant se remplit automatiquement pour correspondre au ratio actuel du pool.
-3. Examinez votre part projetée du pool, puis sélectionnez **Add Liquidity** et confirmez.
+### My Positions
 
-Vous recevez des jetons de fournisseur de liquidité (LP) représentant votre position.
+Chaque entrée affiche la paire de jetons, le montant de chaque jeton, votre part et les frais gagnés. Pour quitter une position, sélectionnez **Withdraw**, puis **Request Withdrawal (x%)** ; après un délai de refroidissement, sélectionnez **Confirm Withdraw** (ou **Cancel Withdrawal**). Il n'existe pas de bouton unique « Remove Liquidity ».
 
-## My Positions
+## Comment y accéder {#how-to-access}
 
-Consultez les positions de liquidité que vous détenez. Chaque entrée affiche la paire de jetons, le montant dans chaque jeton, votre part du pool et les frais gagnés. Sélectionnez **Remove Liquidity** sur une position pour prévisualiser les jetons que vous recevriez et retirer votre part.
+- **URL :** [dashboard.qorechain.io/trade](https://dashboard.qorechain.io/trade).
+- **Compte :** la connexion est requise. Un portefeuille de test est nécessaire pour échanger. Sur le mainnet, la [reconnaissance](/dashboard/overview#risk-acknowledgement) unique est aussi requise avant l'ouverture de la page.
+- **Réseau :** contenu du testnet uniquement ; le sélecteur de l'en-tête ne le modifie pas.
+- **Coût :** gratuit. Les jetons de test proviennent de **Get test tokens** ; le portefeuille de test paie le gaz en QOR de test depuis le [Faucet](/dashboard/faucet).
+
+## Où il est publié {#where-published}
+
+| Surface | Adresse | Réseau | Réglé on-chain ? |
+| --- | --- | --- | --- |
+| Échange de WQOR, QUSDC, QUSDT, QWETH, QWBTC | `dashboard.qorechain.io/trade` | EVM du testnet, chain ID 9800 | Oui |
+| Autres paires, Pools, Add Liquidity, My Positions | `dashboard.qorechain.io/trade` | Testnet | Non, registre d'entraînement |
+| AMM natif | Voir [AMM](/architecture/amm) | Les deux réseaux | Aucun pool n'existe encore |
+
+## Limites et problèmes connus {#limits}
+
+- **Pas de trading sur le mainnet.** La page ignore le sélecteur de réseau et affiche aussi le contenu du testnet sur le mainnet.
+- **Seuls cinq jetons sont réglés on-chain.** Les jetons du fest du [Faucet](/dashboard/faucet#fest-tokens) ne figurent pas sur cette page.
+- **L'AMM natif n'a aucun pool** sur l'un ou l'autre réseau. Les vrais pools seront décrits lorsqu'ils existeront.
+- **Les chiffres d'entraînement** (prix, APR, volume) ne sont pas des données de marché.
+- **Les jetons de testnet n'ont aucune valeur** et ne peuvent être échangés contre rien.
 
 ## Liens connexes
 
-- [AMM et liquidité on-chain](/architecture/amm) — types de pools et courbes de prix.
-- [Portefeuille](/dashboard/wallet) — vérifiez les soldes avant et après un échange.
+- [AMM et liquidité on-chain](/architecture/amm) - types de pools et courbes de prix.
+- [Portefeuille](/dashboard/wallet) - vérifiez les soldes avant et après un échange.

@@ -33,7 +33,7 @@ The RDK ships with five preset profiles, each tuned for a common application cat
 | **enterprise** | based               | based     | native          | subsidized   | EVM      | Permissioned and consortium deployments with sponsored fees |
 | **custom**     | defaults: optimistic (fraud) | dedicated | native | standard | EVM | Starting defaults; adjust what the message allows |
 
-See [Preset Profiles](/rollups/preset-profiles) for details and maturity notes (for example, a `defi` rollup created through the CLI cannot yet finalise ZK batches, and `based` sequencing currently means the creator submits).
+See [Preset Profiles](/rollups/preset-profiles) for details and maturity notes (for example, ZK settlement, and so the `defi` profile, cannot be used on either network yet, and `based` sequencing currently means the creator submits).
 
 ---
 
@@ -56,7 +56,7 @@ See [Preset Profiles](/rollups/preset-profiles) for details and maturity notes (
 * Batches settle without an anchor unless you send the creator's post-quantum signature with them (`--anchor-signature` on `tx rdk submit-batch`, available since v3.2.2). See [State Anchoring](/architecture/rollup-development-kit#state-anchoring).
 * Withdrawals to L1 (`tx rdk execute-withdrawal`) are paid from your rollup's escrow ledger and work on mainnet since v3.2.3; they need a finalized batch with a withdrawals root and use `uqor` only.
 * The rollup creator is the batch submitter today (no sequencer address is set by any preset), so keep the creator key safe: only the creator can pause, resume or stop the rollup.
-* The RDK is published in five languages (version 0.6.1 on every registry, checked 27 October 2026), but only the TypeScript client signs hybrid transactions, and only when you give it your post-quantum keypair; the `qorollup` CLI and the Python, Go, Rust and Java clients sign classical-only, which both networks refuse. See [RDK changes and limits](/rollups/deploying-a-rollup#rdk-050-limits).
+* The RDK is published in five languages (version 0.6.2 on npm, PyPI, crates.io and the Go module proxy, and 0.6.1 on Maven Central until 0.6.2 is live there; checked 27 October 2026), but only the TypeScript client signs hybrid transactions, and only when you give it your post-quantum keypair; the `qorollup` CLI and the Python, Go, Rust and Java clients sign classical-only, which both networks refuse. See [RDK changes and limits](/rollups/deploying-a-rollup#rdk-050-limits).
 * The `suggest-profile` helper currently returns a fixed `defi` fallback on the public endpoints, so choose from the profile table.
 
 ---

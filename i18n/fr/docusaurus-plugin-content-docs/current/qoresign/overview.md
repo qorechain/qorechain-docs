@@ -27,12 +27,12 @@ vecteurs de test se trouvent dans le dépôt
 | Voie | Ce que QoreSign fait aujourd'hui |
 |---|---|
 | **Native** (Cosmos SDK) | Signature et vérification hybrides. Le réseau exige par défaut la signature ML-DSA-87. |
-| **EVM** | Mode « prêt pour le post-quantique » uniquement : le compte enregistre une clé ML-DSA-87 et ouvre, depuis la voie native, une fenêtre d'autorisation bornée. Les transactions Ethereum elles-mêmes ne portent aucune signature ML-DSA-87. |
+| **EVM** | Fenêtre d'autorisation uniquement : le compte enregistre une clé ML-DSA-87 et ouvre, depuis la voie native, une fenêtre d'autorisation bornée. Les transactions Ethereum elles-mêmes ne portent aucune signature ML-DSA-87. |
 | **SVM** | Pas encore ouverte sur le réseau (`LANE_NOT_AVAILABLE`). |
 
 La signature EVM hybride nécessite d'abord une prise en charge PQC par voie
 côté réseau. Voir
-[Portefeuilles EVM : mode prêt pour le post-quantique](/qoresign/guides/evm-quantum-ready).
+[Portefeuilles EVM : fenêtre d'autorisation](/qoresign/guides/evm-quantum-ready).
 
 ## Paquets {#packages}
 
@@ -85,7 +85,7 @@ diffusion, vérification de connexion auprès de la chaîne) se trouvent dans
 - Guides
   - [Ajouter la signature hybride à un portefeuille compatible Keplr](/qoresign/guides/keplr-compatible-wallets)
   - [Sign In With QoreChain : vérification côté serveur](/qoresign/guides/sign-in)
-  - [Portefeuilles EVM : mode prêt pour le post-quantique](/qoresign/guides/evm-quantum-ready)
+  - [Portefeuilles EVM : fenêtre d'autorisation](/qoresign/guides/evm-quantum-ready)
   - [Dérivation de clés : clés canoniques et brouillon HD](/qoresign/guides/key-derivation)
   - [Tailles et transport](/qoresign/guides/sizes-and-transport)
 - Spécifications

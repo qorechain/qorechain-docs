@@ -25,11 +25,11 @@ the [qorechain/qoresign](https://github.com/qorechain/qoresign) repository.
 | Lane | What QoreSign does today |
 |---|---|
 | **Native** (Cosmos SDK) | Hybrid signing and verification. The network requires the ML-DSA-87 signature by default. |
-| **EVM** | Quantum-ready mode only: the account registers an ML-DSA-87 key and opens a bounded authorization window from the native lane. Ethereum transactions themselves carry no ML-DSA-87 signature. |
+| **EVM** | Authorization window only: the account registers an ML-DSA-87 key and opens a bounded authorization window from the native lane. Ethereum transactions themselves carry no ML-DSA-87 signature. |
 | **SVM** | Not open on the network yet (`LANE_NOT_AVAILABLE`). |
 
 Hybrid EVM signing needs per-lane PQC support in the network first. See
-[EVM wallets: quantum-ready mode](/qoresign/guides/evm-quantum-ready).
+[EVM wallets: authorization window](/qoresign/guides/evm-quantum-ready).
 
 ## Packages {#packages}
 
@@ -81,7 +81,7 @@ sign-in verification against the chain) are in `@qorechain/qoresign/network`.
 - Guides
   - [Add hybrid signing to a Keplr-compatible wallet](/qoresign/guides/keplr-compatible-wallets)
   - [Sign In With QoreChain: server verification](/qoresign/guides/sign-in)
-  - [EVM wallets: quantum-ready mode](/qoresign/guides/evm-quantum-ready)
+  - [EVM wallets: authorization window](/qoresign/guides/evm-quantum-ready)
   - [Key derivation: canonical keys and the HD draft](/qoresign/guides/key-derivation)
   - [Sizes and transport](/qoresign/guides/sizes-and-transport)
 - Specifications

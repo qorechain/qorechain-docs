@@ -64,7 +64,7 @@ La cadena principal es la raíz de confianza para todo el ecosistema de QoreChai
 | Consenso            | Consenso de QoreChain (ver [Mecanismo de Consenso](/architecture/consensus-mechanism) para lo que está conectado hoy) |
 | Seguridad           | Protegida con PQC mediante firmas Dilithium-5                                  |
 | Función             | Capa de liquidación, almacenamiento de anclas de estado, motor de enrutamiento QCAI, raíz de confianza |
-| Tiempo de bloque    | Depende de la red: unos 3,2 segundos en la mainnet y unos 1,3 segundos en la testnet (medido el 27 de octubre de 2026) |
+| Tiempo de bloque    | Depende de la red: unos 3,1 segundos en la mainnet y unos 1,3 segundos en la testnet (medido el 27 de octubre de 2026) |
 
 Todas las capas subsidiarias anclan periódicamente sus raíces de estado a la cadena principal mediante Esquemas de Compromiso Jerárquico (HCS).
 

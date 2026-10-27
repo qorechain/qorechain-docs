@@ -7,10 +7,10 @@ sidebar_position: 9
 
 # Rularea unui Validator
 
-Acest ghid acoperă modul de creare a unui validator pe rețeaua QoreChain, înțelegerea designului de clasificare pe pool-uri, înregistrarea unei chei PQC pentru securitate rezistentă la calculatoarele cuantice și monitorizarea nodului tău.
+Acest ghid acoperă modul de creare a unui validator pe rețeaua QoreChain, înțelegerea designului de clasificare pe pool-uri, înregistrarea unei chei PQC (semnături hibride ML-DSA-87, FIPS 204) și monitorizarea nodului tău.
 
 :::note
-Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.4** (aplicată prin propunerea de guvernanță 13 la înălțimea 3.742.566, pe 23 octombrie 2026, după v3.2.3 la înălțimea 3.662.051, pe 20 octombrie 2026). La momentul scrierii, un validator trebuie să ruleze binarul v3.2.4; propunerea de guvernanță 14 de pe mainnet ar aplica v3.2.5 la înălțimea 3.906.833, iar manifestul numește atunci binarul de instalat (vezi [Rularea unui nod: Upgrade-uri](/developer-guide/running-a-node#upgrades)). Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**) rulează v3.2.6 (aplicată pe 27 octombrie 2026, după v3.2.5 pe 26 octombrie) și este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă. Timpii de bloc diferă: aproximativ 3,2 s pe mainnet și aproximativ 1,3 s pe testnet (27 octombrie 2026; variază), așa că convertește numărul de blocuri în timp separat pentru fiecare rețea.
+Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.4** (aplicată prin propunerea de guvernanță 13 la înălțimea 3.742.566, pe 23 octombrie 2026, după v3.2.3 la înălțimea 3.662.051, pe 20 octombrie 2026). La momentul scrierii, un validator trebuie să ruleze binarul v3.2.4; propunerea de guvernanță 14 de pe mainnet ar aplica v3.2.5 la înălțimea 3.906.833, iar manifestul numește atunci binarul de instalat (vezi [Rularea unui nod: Upgrade-uri](/developer-guide/running-a-node#upgrades)). Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**) rulează v3.2.6 (aplicată pe 27 octombrie 2026, după v3.2.5 pe 26 octombrie) și este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă. Timpii de bloc diferă: aproximativ 3,1 s pe mainnet (ultimele 1.000 de blocuri au durat 52 de minute și 21 de secunde pe 27 octombrie 2026) și aproximativ 1,3 s pe testnet; ambele variază, așa că convertește numărul de blocuri în timp separat pentru fiecare rețea.
 :::
 
 :::caution Folosește binarul de release, nu un build din sursă
@@ -28,8 +28,88 @@ Producerea de blocuri folosește rotația standard de validatori ponderată dup�
 * Un nod `qorechaind` de release complet sincronizat (vezi [Conectarea la Mainnet](/getting-started/connecting-to-mainnet), sau [Conectarea la Testnet](/getting-started/connecting-to-testnet) pentru a repeta configurația)
 * O **cheie PQC ML-DSA-87 înregistrată** pe contul operatorului (vezi [Înregistrarea Cheii PQC](#pqc-key-registration)) — `create-validator` are nevoie de semnătura hibridă
 * Un cont alimentat cu cel puțin **100.000 QOR** (100.000.000.000 uqor) pentru auto-delegarea inițială — acest minim este impus on-chain, iar `create-validator` este respins sub acest prag
-* O **acordare `validator_operator`** activă pe adresa ta de operator, emisă prin [Validator Program](/dashboard/tools-hub#validator-application) (aplici, ești selectat, plătești taxa de program de $1,000); vezi nota de mai jos. Fără ea, `create-validator` eșuează cu `ErrUnauthorized`, indiferent cât de mult QOR auto-bondezi
+* O **acordare `validator_operator`** activă pe adresa ta de operator, emisă prin [Validator Program](/dashboard/tools-hub#validator-application) de pe pagina **Nodes & Validators** a Dashboard-ului (aplici, ești selectat, plătești taxa de program de $1,000); vezi nota de mai jos. Fără ea, `create-validator` eșuează cu `ErrUnauthorized`, indiferent cât de mult QOR auto-bondezi
 * Familiaritate cu modelul [Staking și Delegare](/user-guide/staking-and-delegation)
+
+---
+
+## Alăturarea la rețea {#joining}
+
+**Folosește state sync ca modalitate implicită de a te alătura.** Acesta preia de la peer-i o stare recentă a aplicației, în loc să reia fiecare bloc de la genesis. Descărcarea snapshot-ului este doar o variantă de rezervă: snapshot-ul din manifestul mainnet este în continuare arhiva din 21 august 2026 (înălțimea 1.966.629, aproximativ 27 GB), care precede mai multe upgrade-uri și apoi reia aproximativ două luni de blocuri, iar testnet-ul nu publică niciun snapshot.
+
+1. Instalează `qorechaind` de release pe care îl numește manifestul (vezi [Rularea unui Nod](/developer-guide/running-a-node#fetch-the-manifest)), rulează `qorechaind init <moniker> --chain-id qorechain-vladi`, apoi pune la locul lor genesis-ul, peer-ii și seed-urile din manifest, așa cum este descris acolo, și setează `minimum-gas-prices = "0.1uqor"` în `app.toml`.
+2. Ia punctul de încredere din manifest și scrie secțiunea `[statesync]` din `config.toml`:
+
+```bash
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+```toml
+[statesync]
+enable = true
+rpc_servers = "https://rpc.qore.host:443,https://<a second RPC you run or trust>:26657"
+trust_height = <TRUST_HEIGHT>
+trust_hash = "<TRUST_HASH>"
+trust_period = "168h0m0s"
+```
+
+3. Opțional, ține discul mic (vezi [Hardware](#hardware)): în `app.toml` setează `pruning = "custom"` cu `pruning-keep-recent = "100000"` și `pruning-interval = "10"`, iar în `config.toml` setează `indexer = "null"` sub `[tx_index]` (un validator nu servește căutări de tranzacții; nu folosi `null` pe un nod pe care îl interoghezi).
+4. Pornește cu `qorechaind start --minimum-gas-prices=0.1uqor` și așteaptă până când `catching_up` este `false`.
+
+:::warning State sync are nevoie de două servere RPC diferite
+State sync verifică încrucișat punctul de încredere cu **două** servere RPC. `stateSync.rpcServers` din manifest listează `https://rpc.qore.host` de **două ori** (iar manifestul testnet listează `https://rpc-testnet.qore.host` de două ori). Două intrări identice satisfac numărătoarea, dar anulează verificarea încrucișată, deoarece ambele răspunsuri vin de la un singur server. Adaugă un al doilea RPC pe care îl rulezi tu sau în care ai încredere independent și verifică hash-ul de încredere față de o a doua sursă înainte de a porni, de exemplu `curl -s "https://<second-rpc>/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash` trebuie să fie egal cu `$TRUST_HASH`. Punctul de încredere din manifest este reîmprospătat din oră în oră, așa că preia-l din nou dacă a devenit învechit.
+:::
+
+Ține ceasul sistemului sincronizat prin NTP: începând cu v3.2.1 nodul se oprește dacă ceasul lui deviază cu mai mult de 60 de secunde.
+
+---
+
+## Parametrii rețelei {#parameters}
+
+Aceste valori au fost citite din API-ul REST al mainnet-ului pe 27 octombrie 2026 (`qorechain-vladi`, v3.2.4). Citește-le live înainte să te bazezi pe ele: `qorechaind query staking params`, `qorechaind query slashing params`, sau `GET /cosmos/staking/v1beta1/params` și `GET /cosmos/slashing/v1beta1/params`.
+
+| Element | Valoare |
+| --- | --- |
+| Dimensiunea setului activ (`max_validators`) | 100 (astăzi 8 validatori sunt bonded, niciunul jailed) |
+| Perioada de unbonding | 1.814.400 s (21 de zile); cel mult 7 intrări de unbonding (`max_entries`) per delegator |
+| Rata minimă de comision (`min_commission_rate`) | 0 (îți alegi singur rata, până la `commission-max-rate`) |
+| Fereastra de blocuri semnate | 10.000 de blocuri (`signed_blocks_window`) |
+| Minim semnat per fereastră | 0,05, deci un validator este băgat la închisoare (jailed) când semnează mai puțin de 5% din fereastră |
+| Jail / slash pentru downtime | 600 s de jail, 1% din stake slashed |
+| Slash pentru double-sign | 5% din stake |
+| Pragul de auto-bond pentru a crea un validator | **100.000 QOR** (`100000000000uqor`), impus on-chain; sub acesta `create-validator` eșuează cu codul 18 |
+| Acordarea de operator | Este necesară o acordare `validator_operator` activă pe expeditor; fără ea `create-validator` eșuează cu `ErrUnauthorized` |
+| Pragul minim al comisionului | 0,1 uqor per gas |
+
+**Ordinea operațiunilor.** Fă-le în această ordine: (1) înregistrează cheia PQC a contului, (2) obține acordarea `validator_operator`, (3) construiește `create-validator` cu `--generate-only` și semnează-l cu `tx pqc cosign`. Cheia vine prima, deoarece un cont fără cheie înregistrată poate trimite doar înregistrarea însăși (vezi [Înregistrarea Cheii PQC](#pqc-key-registration)), iar acordarea este verificată când rulează `create-validator`. Detaliile sunt în [Crearea unui Validator](#validator-license-gate) și [Înregistrarea Cheii PQC](#pqc-key-registration).
+
+:::caution `min-self-delegation` nu este pragul de 100.000 QOR
+Validatorii de la genesis arată `min_self_delegation` = `1` (1 uqor) on-chain. Acesta **nu** este pragul: tranzacțiile lor de genesis au fost scutite de el. Câmpul `min-self-delegation` din `validator.json` este propria ta promisiune de a păstra cel puțin atât auto-bondat, fără legătură cu pragul de 100.000 QOR, care se aplică sumei `amount` pe care o auto-delegi la crearea validatorului.
+:::
+
+---
+
+## Hardware {#hardware}
+
+Măsurat pe validatorii mainnet aflați în funcțiune (27 octombrie 2026): aproximativ 3,2 până la 3,5 GB de RAM și sub 10% CPU în sarcină normală. Un validator rulează confortabil pe 3 până la 4 vCPU, 8 până la 16 GB de RAM și stocare NVMe. Viteza pe un singur nucleu contează mai mult decât numărul de nuclee: verificarea semnăturilor ML-DSA-87 reprezintă aproximativ jumătate din munca de verificare a unei tranzacții și atinge vârful sub sarcină.
+
+| Element | Profil de validator sugerat |
+| --- | --- |
+| CPU | 4 vCPU, frecvență ridicată |
+| RAM | 16 GB |
+| Disc | 100 GB sau mai mult, NVMe |
+| Ceas | Sincronizat prin NTP (regula celor 60 de secunde de mai sus) |
+| Rețea | Doar P2P `26656` deschis către lume; RPC, REST și EVM legate de localhost |
+
+Utilizarea discului depinde de modul în care te-ai alăturat. Un validator care s-a alăturat prin state sync cu `pruning = "custom"` (keep-recent 100000) și `indexer = "null"` ocupă aproximativ 10 GB după două luni. Un nod cu pruning implicit, care rulează de la genesis, ocupă aproximativ 100 până la 130 GB după patru luni. Cei 500 GB sau mai mult sugerați pentru nodurile RPC în [Rularea unui Nod](/developer-guide/running-a-node#recommended-hardware) sunt generoși pentru un validator.
+
+---
+
+## Cum este rulată rețeaua {#network-organisation}
+
+Pe 27 octombrie 2026 rețeaua are 8 validatori activi, în mai multe țări și la mai mult de un furnizor de hosting. Endpoint-urile publice (`rpc.qore.host`, `api.qore.host`, `evm.qore.host`, `svm.qore.host`) sunt servite de noduri dedicate, care nu sunt validatori, aflate în spatele unei rețele edge, niciodată de validatori, iar adresele IP ale validatorilor nu sunt publicate în DNS. Puterea de vot urmează stake-ul bonded: un validator nou, cu auto-bond-ul minim, pornește cu o cotă mică de putere și crește pe măsură ce sosesc delegări.
 
 ---
 
@@ -42,7 +122,7 @@ Producerea de blocuri folosește rotația standard de validatori ponderată dup�
 1. **Auto-bond minim de 100.000 QOR.**
 2. **O acordare `validator_operator` activă** pe contul care trimite tranzacția.
 
-Acordarea este emisă on-chain de QoreChain Association prin **Validator Program**: aplici în [Tools Hub](/dashboard/tools-hub#validator-application), rulezi un validator pe testnet-ul diana pentru perioada de probă de 14 zile și, odată selectat, plătești **taxa de program de $1,000**; acordarea este apoi semnată în loturi pentru adresa de operator din aplicația ta. Verifică-o pe a ta cu `GET /qorechain/license/v1/check/{grantee}/validator_operator`. Câmpul `expires_at` al unei licențe este o **înălțime de bloc**, nu o dată sau o durată — `0` înseamnă fără expirare. Dacă lipsește sau a expirat, `create-validator` eșuează cu `ErrUnauthorized`, indiferent cât de mult auto-bondezi; acesta este cel mai frecvent motiv pentru care o încercare bine finanțată eșuează și pare inexplicabilă. Această poartă există special pentru că lane-ul de execuție EVM nu o poate vedea sau impune (un singur decorator ante acolo ar ocoli-o complet) — este unul dintre motivele pentru care staking-ul și validarea rămân exclusiv pe lane-ul Nativ.
+Acordarea este emisă on-chain de QoreChain Association prin **Validator Program**: aplici pe pagina **Nodes & Validators** a Dashboard-ului ([Tools Hub](/dashboard/tools-hub#validator-application)), rulezi un validator pe testnet-ul diana pentru perioada de probă de 14 zile și, odată selectat, plătești **taxa de program de $1,000**; acordarea este apoi semnată în loturi pentru adresa de operator din aplicația ta. Verifică-o pe a ta cu `GET /qorechain/license/v1/check/{grantee}/validator_operator`. Câmpul `expires_at` al unei licențe este o **înălțime de bloc**, nu o dată sau o durată — `0` înseamnă fără expirare. Dacă lipsește sau a expirat, `create-validator` eșuează cu `ErrUnauthorized`, indiferent cât de mult auto-bondezi; acesta este cel mai frecvent motiv pentru care o încercare bine finanțată eșuează și pare inexplicabilă. Această poartă există special pentru că lane-ul de execuție EVM nu o poate vedea sau impune (un singur decorator ante acolo ar ocoli-o complet) — este unul dintre motivele pentru care staking-ul și validarea rămân exclusiv pe lane-ul Nativ.
 
 Creează un fișier `validator.json` (forma bazată pe flag-uri a fost eliminată în SDK-ul actual):
 
@@ -73,7 +153,7 @@ qorechaind tx staking create-validator validator.json \
 qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
 ```
 
-Pragul minim de taxe al rețelei este de **0,1 uqor per unitate de gas**, deci o limită de gas de 600.000 necesită cel puțin 60.000 uqor.
+Pragul minim de comision al rețelei este de **0,1 uqor per unitate de gas**, deci o limită de gas de 600.000 necesită cel puțin 60.000 uqor.
 
 | Câmp `validator.json`          | Descriere                                                |
 | ------------------------------- | --------------------------------------------------------- |
@@ -83,7 +163,7 @@ Pragul minim de taxe al rețelei este de **0,1 uqor per unitate de gas**, deci o
 | `commission-rate`              | Rata de comision inițială (ex., 0.10 = 10%)                |
 | `commission-max-rate`          | Rata maximă de comision (imuabilă după creare)              |
 | `commission-max-change-rate`   | Rata maximă de schimbare zilnică a comisionului             |
-| `min-self-delegation`          | Numărul minim de token-uri pe care operatorul trebuie să le auto-delege |
+| `min-self-delegation`          | Propriul tău angajament de a păstra cel puțin atât auto-bondat (în uqor). **Nu** este pragul on-chain de 100.000 QOR, care se aplică lui `amount` |
 
 După confirmarea tranzacției, verifică validatorul tău:
 
@@ -99,7 +179,7 @@ qorechaind query staking validator $(qorechaind keys show mykey --bech val -a)
 Clasificarea pe pool-uri de mai jos este designul `x/qca`. Parametrii ei sunt on-chain (`qorechaind query qca config`), dar propunătorii de blocuri nu sunt încă aleși după pool, iar pool-urile nu modifică încă recompensele sau slashing-ul.
 :::
 
-Modulul `x/qca` (Quantum Consensus Allocation) al QoreChain definește un **sistem de clasificare pe trei pool-uri**. La fiecare **1.000 de blocuri** (aproximativ 54 de minute la blocurile de 3,2 s ale mainnet-ului), validatorii urmează să fie reclasificați într-unul dintre cele trei pool-uri, în funcție de reputația și stake-ul lor:
+Modulul `x/qca` (Quantum Consensus Allocation) al QoreChain definește un **sistem de clasificare pe trei pool-uri**. La fiecare **1.000 de blocuri** (aproximativ 52 de minute la blocurile de 3,1 s ale mainnet-ului), validatorii urmează să fie reclasificați într-unul dintre cele trei pool-uri, în funcție de reputația și stake-ul lor:
 
 | Pool                                  | Criteriu                                                     | Alocare de blocuri |
 | -------------------------------------- | ------------------------------------------------------------- | ------------------- |
@@ -173,7 +253,7 @@ qorechaind query slashing params
 
 | Parametru | Valoare |
 | --- | --- |
-| Fereastra de blocuri semnate | 10.000 de blocuri (aproximativ 8,9 ore pe mainnet la 3,2 s per bloc; mai puțin pe testnet) |
+| Fereastra de blocuri semnate | 10.000 de blocuri (aproximativ 8,7 ore pe mainnet la 3,1 s per bloc; mai puțin pe testnet) |
 | Minim semnat per fereastră | 5% (`min_signed_per_window` = 0.05): un validator este băgat la închisoare (jailed) când semnează **mai puțin de 5%** din ultimele 10.000 de blocuri, adică atunci când ratează mai mult de 95% |
 | Durata de închisoare (jail) pentru downtime | 600 de secunde (10 minute) |
 | Fracțiunea de slash pentru downtime | 1% din stake |
@@ -205,7 +285,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 2. **Penalizarea escaladează exponențial.** Penalizarea escaladează în funcție de numărul efectiv, conform formulei de mai sus, astfel încât cei care încalcă regulile în mod repetat se confruntă cu penalizări mult mai mari.
 
-3. **Numărul efectiv scade în timp.** Numărul efectiv scade cu un timp de înjumătățire de 100.000 de blocuri (aproximativ 3,7 zile la blocurile de 3,2 s ale mainnet-ului), permițând validatorilor să își revină după o perioadă de comportament corect.
+3. **Numărul efectiv scade în timp.** Numărul efectiv scade cu un timp de înjumătățire de 100.000 de blocuri (aproximativ 3,6 zile la blocurile de 3,1 s ale mainnet-ului), permițând validatorilor să își revină după o perioadă de comportament corect.
 
 4. **Evenimente singulare versus încălcări repetate.** Un singur eveniment accidental de downtime are ca rezultat o penalizare minoră, în timp ce încălcările repetate declanșează consecințe cu creștere exponențială.
 
@@ -213,7 +293,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## Înregistrarea Cheii PQC {#pqc-key-registration}
 
-Înregistrează-ți **cheia publică post-cuantică (PQC)** — ML-DSA-87 — **înainte** de a rula `create-validator`, și cât mai devreme: panoul [Validator Readiness](/dashboard/tools-hub#validator-application) o verifică din momentul în care aplici. Acest lucru **nu este opțional și nu este automat**: chain-ul impune o semnătură hibridă PQC pe fiecare tranzacție de pe lane-ul Cosmos, `MsgCreateValidator` nu se numără printre tipurile de mesaje exceptate, iar niciun cont nu își înregistrează cheia automat: înregistrarea este o tranzacție explicită pe care fiecare cont (inclusiv operatorii de validatori) trebuie să o trimită el însuși, din timp. Generează mai întâi cheia:
+Înregistrează-ți **cheia publică criptografică post-cuantică (PQC)** (ML-DSA-87) **înainte** de a rula `create-validator`, și cât mai devreme: panoul [Validator Readiness](/dashboard/tools-hub#validator-application) o verifică din momentul în care aplici. Acest lucru **nu este opțional și nu este automat**: chain-ul impune o semnătură hibridă PQC pe fiecare tranzacție de pe lane-ul Cosmos, `MsgCreateValidator` nu se numără printre tipurile de mesaje exceptate, iar niciun cont nu își înregistrează cheia automat: înregistrarea este o tranzacție explicită pe care fiecare cont (inclusiv operatorii de validatori) trebuie să o trimită el însuși, din timp. Generează mai întâi cheia:
 
 ```bash
 qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
@@ -246,7 +326,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
 (`qorechaind tx pqc register-key <pubkey-hex> hybrid` este forma legacy echivalentă pentru Dilithium-5.)
 
 :::caution Setează `--gas` explicit
-Cheia publică ML-DSA-87 are 2.592 de bytes, iar scrierea ei on-chain poate depăși limita implicită de gas de 200.000 (înregistrările pe mainnet au folosit între 220.000 și 350.000 de gas). Fără `--gas 600000` (sau mai mult), tranzacția poate eșua cu o eroare opacă `out of gas`. Taxa trebuie să fie cel puțin limita de gas înmulțită cu 0,1 uqor, deci `--gas 600000` necesită `--fees 60000uqor` sau mai mult.
+Cheia publică ML-DSA-87 are 2.592 de bytes, iar scrierea ei on-chain poate depăși limita implicită de gas de 200.000 (înregistrările pe mainnet au folosit între 220.000 și 350.000 de gas). Fără `--gas 600000` (sau mai mult), tranzacția poate eșua cu o eroare opacă `out of gas`. Comisionul trebuie să fie cel puțin limita de gas înmulțită cu 0,1 uqor, deci `--gas 600000` necesită `--fees 60000uqor` sau mai mult.
 :::
 
 Verifică înregistrarea:
@@ -318,7 +398,7 @@ qorechaind query staking validators --status BOND_STATUS_BONDED | grep "my-valid
 
 4. **Menține software-ul actualizat.** Urmărește lansările QoreChain și aplică actualizările prompt. Coordonează-te cu comunitatea de validatori pentru upgrade-urile de chain.
 
-5. **Asigură-ți cheile.** Folosește un modul de securitate hardware (HSM) sau un semnatar la distanță (remote signer) pentru cheia de consens a validatorului. Nu stoca niciodată cheile pe același sistem cu nodul.
+5. **Asigură-ți cheile.** Protejează cheia de consens a validatorului (`priv_validator_key.json`) și ține backup-urile offline; ia în considerare un semnatar la distanță (remote signer). Semnarea la distanță (`priv_validator_laddr`) nu a fost verificată cu binarul de release `qorechaind`, iar modulul post-cuantic nu schimbă tipul cheii de consens (ed25519), așa că testează orice configurare de semnatar pe testnet înainte să te bazezi pe ea. Ține cheile contului de operator și fișierul său de cheie PQC departe, pe cât posibil, de mașina care rulează validatorul.
 
 6. **Înregistrează mai întâi o cheie PQC.** Contul operatorului are nevoie de o cheie ML-DSA-87 înregistrată înainte de a putea crea un validator sau de a trimite orice altă tranzacție pe lane-ul Cosmos.
 
@@ -351,7 +431,7 @@ qorechaind tx distribution withdraw-rewards $(qorechaind keys show mykey --bech 
 qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
 ```
 
-Pragul minim de taxe al rețelei este de 0,1 uqor per unitate de gas. Un cont de operator care **nu** are o cheie PQC înregistrată poate totuși trimite `unjail` în mod clasic; odată ce o cheie este înregistrată, fiecare tranzacție (inclusiv unjail) are nevoie de semnătura hibridă.
+Pragul minim de comision al rețelei este de 0,1 uqor per unitate de gas. Un cont de operator care **nu** are o cheie PQC înregistrată poate totuși trimite `unjail` în mod clasic; odată ce o cheie este înregistrată, fiecare tranzacție (inclusiv unjail) are nevoie de semnătura hibridă.
 
 ---
 

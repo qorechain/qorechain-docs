@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-プリコンパイルは無効なため、それに対する単純な `.call` は**空のデータとともに成功を返し、何も行いません**。`ok` フラグは、呼び出しが効果を持ったことを示すものではありません。コントラクト内で頼れるガードは、常に空でない確認応答を返すターゲットを用意し、呼び出しの後に `require(ret.length > 0)` を置いて、空の応答を失敗として扱うことです。`multivm-rollup` テンプレート（0.6.0 と 0.6.1）はこれを行っています。
+プリコンパイルは無効なため、それに対する単純な `.call` は**空のデータとともに成功を返し、何も行いません**。`ok` フラグは、呼び出しが効果を持ったことを示すものではありません。コントラクト内で頼れるガードは、常に空でない確認応答を返すターゲットを用意し、呼び出しの後に `require(ret.length > 0)` を置いて、空の応答を失敗として扱うことです。`multivm-rollup` テンプレート（0.6.0 から 0.6.2）はこれを行っています。
 
 ## マルチVMロールアップのスキャフォールド
 
@@ -102,4 +102,4 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-`multivm-rollup` テンプレート（0.6.0 と 0.6.1）には、`src/crossvm-call.ts`（プリコンパイルが稼働しているかを確認し、その後コールデータを出力します）と、`executeCrossVMCall(uint8,string,bytes)` を呼び出してターゲットから空でない応答を要求する `contracts/CrossVmCaller.sol` が含まれています。プリコンパイルが無効な間は、呼び出しを機能させるものではありません。すべてのスキャフォールダーテンプレートについては [ロールアップのデプロイ](/rollups/deploying-a-rollup) を参照してください。
+`multivm-rollup` テンプレート（0.6.0 から 0.6.2）には、`src/crossvm-call.ts`（プリコンパイルが稼働しているかを確認し、その後コールデータを出力します）と、`executeCrossVMCall(uint8,string,bytes)` を呼び出してターゲットから空でない応答を要求する `contracts/CrossVmCaller.sol` が含まれています。プリコンパイルが無効な間は、呼び出しを機能させるものではありません。すべてのスキャフォールダーテンプレートについては [ロールアップのデプロイ](/rollups/deploying-a-rollup) を参照してください。

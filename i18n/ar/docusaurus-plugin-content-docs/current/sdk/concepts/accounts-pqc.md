@@ -140,7 +140,7 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 لكل لغة الدالة نفسها (Python `derive_pqc_canonical`، وGo
 `authenticator.DerivePQCCanonical`، وRust `try_derive_pqc_canonical`، وJava
 `Authenticator.derivePqcCanonical`؛ راجع
-[الجدول في دليل الأمان الكمومي](/sdk/guides/quantum-safe#canonical-derivation))،
+[الجدول في دليل التوقيع الهجين](/sdk/guides/quantum-safe#canonical-derivation))،
 ويعطي `{ address, mnemonic }` نفسه المفتاح نفسه في جميعها (جرى التحقق من
 TypeScript وPython وGo وRust في أكتوبر 2026).
 

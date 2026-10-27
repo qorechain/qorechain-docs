@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Como el precompilado está inactivo, un `.call` simple sobre él devuelve **éxito con datos vacíos y no hace nada**; el indicador `ok` no te dice que la llamada haya surtido efecto. La protección fiable dentro del contrato es un destino que siempre devuelva un acuse de recibo no vacío, con un `require(ret.length > 0)` después de la llamada, de modo que una respuesta vacía se trate como un fallo; la plantilla `multivm-rollup` (0.6.0 y 0.6.1) lo hace.
+Como el precompilado está inactivo, un `.call` simple sobre él devuelve **éxito con datos vacíos y no hace nada**; el indicador `ok` no te dice que la llamada haya surtido efecto. La protección fiable dentro del contrato es un destino que siempre devuelva un acuse de recibo no vacío, con un `require(ret.length > 0)` después de la llamada, de modo que una respuesta vacía se trate como un fallo; la plantilla `multivm-rollup` (0.6.0 a 0.6.2) lo hace.
 
 ## Generar el andamiaje de un rollup multi-VM
 
@@ -102,4 +102,4 @@ Como el precompilado está inactivo, un `.call` simple sobre él devuelve **éxi
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-La plantilla `multivm-rollup` (0.6.0 y 0.6.1) incluye `src/crossvm-call.ts` (comprueba si el precompilado está activo y luego imprime el calldata) y un `contracts/CrossVmCaller.sol` que llama a `executeCrossVMCall(uint8,string,bytes)` y exige una respuesta no vacía del destino. No hace que una llamada funcione mientras el precompilado esté inactivo. Consulta [Desplegar un Rollup](/rollups/deploying-a-rollup) para ver todas las plantillas del generador de andamiaje.
+La plantilla `multivm-rollup` (0.6.0 a 0.6.2) incluye `src/crossvm-call.ts` (comprueba si el precompilado está activo y luego imprime el calldata) y un `contracts/CrossVmCaller.sol` que llama a `executeCrossVMCall(uint8,string,bytes)` y exige una respuesta no vacía del destino. No hace que una llamada funcione mientras el precompilado esté inactivo. Consulta [Desplegar un Rollup](/rollups/deploying-a-rollup) para ver todas las plantillas del generador de andamiaje.

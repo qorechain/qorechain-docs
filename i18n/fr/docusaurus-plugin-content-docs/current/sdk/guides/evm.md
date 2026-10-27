@@ -92,7 +92,7 @@ bornes, les formes de la CLI et les codes de refus se trouvent dans
 
 Avec le SDK **0.8.2 ou ultérieur**, vous pouvez ouvrir une fenêtre depuis le code (la **0.9.0**
 ajoute les options de portée ci-dessous). L'enregistrement de la clé
-(une seule fois) est décrit dans [Quantum-safe](/sdk/guides/quantum-safe) ; l'exemple
+(une seule fois) est décrit dans [Signature hybride](/sdk/guides/quantum-safe) ; l'exemple
 ci-dessous ouvre ensuite une fenêtre pour un compte eth-natif unifié (`npm i @cosmjs/stargate`) :
 
 ```ts

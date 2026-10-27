@@ -152,6 +152,24 @@ qorechaind query stakingtier locks <holder_address>
 
 Yukarıdaki zincir kimliği testnet'e aittir; mainnet'te `qorechain-vladi` kullanın. Bu sayfanın geri kalanında olduğu gibi, oluşturulan her işlemi `tx pqc cosign` ile imzalayın.
 
+### Zamana kilitli stake'i kullanma {#using-time-locks}
+
+**Adımlar.** (1) Her zamanki gibi bir doğrulayıcıya delege edin. (2) O doğrulayıcı için bir miktar (en az 10 QOR) ve 3, 6 veya 12 aylık bir vade ile `tx stakingtier lock` çalıştırın, ardından cosign edip yayınlayın. (3) Sonucu `GET /qorechain/stakingtier/v1/locks/{holder}` ile veya `qorechaind query stakingtier locks <holder_address>` ile okuyun; her kilidin bir kimliği (id) vardır. (4) Kilit ödülünü istediğiniz zaman `tx stakingtier claim` ile talep edin. (5) Vade sonunda kilit kendiliğinden çözülür; daha erken ayrılmak için `tx stakingtier unlock-early <lock_id>` kullanın ve cezayı kabul edin.
+
+**Nerede çalışır, 27 Ekim 2026'da kontrol edildi.**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| Modül canlı | Evet, 3,742,566 yüksekliğinden beri | Evet, v3.2.4'ten beri (yükseklik 8,337,253) |
+| Açık kilitler | Henüz yok | 3 test kilidi |
+| Kilitli stake'i undelegate etme | İşlem çalıştığında staking mesaj geçidi tarafından reddedilir | Herhangi bir ücret alınmadan önce mempool tarafından reddedilir (mainnet v3.2.6'yı uygulayana kadar yalnızca testnet) |
+
+Her iki ağ da `GET /qorechain/stakingtier/v1/params` isteğine aynı ayarlarla yanıt verir: üç vade, 10 QOR minimum (`min_lock_amount` `"10000000"` uqor), 500 baz puanlık (%5) erken açma cezası ve `enabled: true`. Yanıt ayrıca baz puan cinsinden bonus ayarlarını da taşır; bu kılavuz bunları belirtmez, çünkü bir bonus vaat edilmiş bir getiri değildir ve ayarlar yönetişim tarafından değiştirilebilir. `GET /qorechain/stakingtier/v1/pool`, kilit ödüllerini ödeyen havuzu gösterir.
+
+**İstemciler.** Komut satırı (yukarıda) ve `lockDelegation`, `unlockEarly` ve `claimBonus` oluşturucularına ile `fetchStakingTierParams`, `fetchStakingLocks` ve `fetchStakingTierPool` okumalarına sahip `@qorechain/sdk` 0.10.0 ([SDK kurulumu](/sdk/install) sayfasına bakın). QoreX'in veya dashboard'un yayımlanmış hiçbir sürümünde bugün bir kilit ekranı yoktur; bu nedenle mainnet'te kilitleme CLI veya SDK ile yapılır.
+
+**Karıştırmayın:** canlı olmayan, tasarlanmış bir mekanizma olan [xQORE staking](/user-guide/xqore-staking) ile veya alacağınızı değiştirmeyen aşağıdaki Triple-Pool sınıflandırmasıyla.
+
 ---
 
 ## Üçlü Havuz (Triple-Pool) Sınıflandırması (tasarım durumu)
@@ -200,7 +218,7 @@ QoreChain'de slashing, şu canlı parametrelerle (`qorechaind query slashing par
 
 | Olay                 | Kural                                                                | Sonuç                                        |
 | -------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
-| Kesinti (downtime)   | Son 10,000 bloğun %5'inden azını imzalama (mainnet'in yaklaşık 3.2 saniyelik bloklarında yaklaşık 8.9 saat) | 600 saniye jail; stake'in %1'i slash edilir |
+| Kesinti (downtime)   | Son 10,000 bloğun %5'inden azını imzalama (mainnet'in yaklaşık 3.1 saniyelik bloklarında yaklaşık 8.7 saat) | 600 saniye jail; stake'in %1'i slash edilir |
 | Çifte imza (double-signing) | Aynı yükseklikte iki farklı bloğu imzalama                    | Stake'in %5'i slash edilir                   |
 
 Slashing, bir doğrulayıcının toplam bonded stake'ine uygulanır; bu nedenle delegatörler kendi orantılı paylarını üstlenir. Slash edilen bir doğrulayıcıdan zaten çözülmekte olan stake'e de ulaşabilir; çözülme süresinin yalnızca bir bekleme süresi değil, bir güvenlik önlemi olmasının nedeni budur.

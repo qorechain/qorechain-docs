@@ -40,7 +40,7 @@ Der Dilithium-5-Schlüssel des Nodes hat keine eigene Adresse: Auf QoreChain wir
 
 ### Mainnet: Kauf im Dashboard
 
-Lizenzen werden im QoreChain Dashboard unter **Tools → Light Node** gekauft. Eine Lizenz kostet **50 $**, zahlbar in USDT auf ERC-20, BEP-20 oder TRC-20; die Zahlung wird auf ihrer jeweiligen Chain verifiziert. Du musst die `qor1…`-Adresse, für die die Lizenz bestimmt ist, **vor** der Zahlung eingeben; verwende die oben beschriebene Operator-Adresse.
+Lizenzen werden im QoreChain Dashboard unter **Nodes & Validators → Light Node** gekauft (der Seitenleisteneintrag hieß früher **Tools**; die Seite liegt weiterhin unter `/tools`). Die Seite erfordert eine Anmeldung, und der Tab folgt dem im Header gewählten Netzwerk. Eine Lizenz kostet **50 $**, zahlbar in USDT auf ERC-20, BEP-20 oder TRC-20; die Zahlung wird auf ihrer jeweiligen Chain verifiziert. Du musst die `qor1…`-Adresse, für die die Lizenz bestimmt ist, **vor** der Zahlung eingeben; verwende die oben beschriebene Operator-Adresse.
 
 Die Vergabe ist ein separater On-Chain-Schritt, der von Hand signiert und in Batches gesendet wird. Bis die Chain sie bestätigt, zeigt der Tab **Paid, awaiting on-chain grant**, und der Node meldet weiterhin, dass die Adresse keine Lizenz hat. `lightnode-sx status` zeigt eine Zeile `Licence:`, die auf `active` wechselt, sobald die Vergabe eintrifft. Du kannst es auch direkt prüfen:
 
@@ -48,9 +48,15 @@ Die Vergabe ist ein separater On-Chain-Schritt, der von Hand signiert und in Bat
 curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator
 ```
 
-### Testnet: auf Anfrage
+### Testnet: kostenlos und im Selbstbedienungsverfahren
 
-Im Testnet wird nichts verkauft. Testnet-Lizenzen sind kostenlos und werden auf Anfrage von der Testnet-Lizenzstelle vergeben: Schreib an nodes@qorechain.io und gib deine Testnet-Adresse `qor1…` an.
+Im Testnet wird nichts verkauft. Testnet-Lizenzen sind kostenlos:
+
+1. Öffne das Dashboard, gehe zu **Nodes & Validators → Light Node** und wähle im Header das Testnet.
+2. Gib unter **Free testnet licence** die `qor1…`-Adresse ein, mit der dein Node signiert (eine, deren Wiederherstellungswörter du besitzt, keine vom Dashboard für dich erstellte Wallet), und wähle **Request licence**.
+3. Der Tab zeigt „Requested for …", während die Vergabe signiert wird, danach „Granted to … You can register your node now." Vergaben im Testnet werden automatisch signiert, meist innerhalb weniger Minuten. Konnte die Vergabe nicht signiert werden, weist der Tab darauf hin, und du kannst die Anfrage erneut stellen.
+
+Pro Konto und pro Adresse ist eine Anfrage möglich. Mainnet-Vergaben bleiben manuell (siehe oben). Das Ergebnis on-chain ist dasselbe: Prüfe es mit `GET https://api-testnet.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator`.
 
 ## Den Node registrieren
 
@@ -81,7 +87,7 @@ Die Passphrase schützt beide Schlüssel im Keyring des Nodes: den Post-Quantum-
 
 `register` liest `operator_address` und die Schlüssel aus dem Keyring und führt dann Folgendes aus:
 
-1. **Prüft die Lizenz.** Es fragt die Chain, ob `operator_address` eine aktive `lightnode_operator`-Lizenz besitzt. Ohne Lizenz bricht es ab und nennt, wo du eine bekommst. Ab 3.1.10 verweist die Meldung im Mainnet auf **Tools → Light Node** und im Testnet auf eine kostenlose Lizenz auf Anfrage unter nodes@qorechain.io (3.1.9 nannte noch den alten Dashboard-Tab). Eine abgelaufene oder gesperrte Lizenz wird als solche gemeldet. Ein bereits registrierter Node wird als solcher gemeldet, und es wird nichts gesendet.
+1. **Prüft die Lizenz.** Es fragt die Chain, ob `operator_address` eine aktive `lightnode_operator`-Lizenz besitzt. Ohne Lizenz bricht es ab und nennt, wo du eine bekommst. Die Meldung verweist auf den Light-Node-Tab des Dashboards und verwendet dabei den früheren Namen des Seitenleisteneintrags, **Tools → Light Node**: Im Mainnet heißt es dort, dass du eine Lizenz kaufen sollst, im Testnet, dass du dort bei gewähltem Testnet eine anfordern sollst (die oben beschriebene **Request licence** im Selbstbedienungsverfahren). Der Tab liegt jetzt unter **Nodes & Validators**. 3.1.9 nannte noch den alten Dashboard-Tab. Eine abgelaufene oder gesperrte Lizenz wird als solche gemeldet. Ein bereits registrierter Node wird als solcher gemeldet, und es wird nichts gesendet.
 2. **Hängt den Post-Quantum-Schlüssel an**, es sei denn, das Konto hat bereits einen. Ein Konto ohne Post-Quantum-Schlüssel darf nur diese eine Nachricht senden, klassisch signiert (ohne die hybride Erweiterung); der Node sendet sie auf diese Weise und fügt einen Besitznachweis (Proof of Possession) für den Schlüssel bei, wo die Chain dies unterstützt.
 3. **Delegiert den fehlenden Stake**, nur wenn du mit `--delegate-to qorvaloper1...` einen Validator angibst. Ohne `--delegate-to` bricht es ab, wenn das Konto unter dem Minimum liegt, und nennt den fehlenden Betrag. Ab 3.1.10 zählt es, wie die Chain, nur Stake, der an **gebondete** Validatoren delegiert ist; 3.1.9 zählte auch gejailte oder ungebondete Validatoren mit und konnte dann on-chain abgewiesen werden, delegiere also an einen aktiven Validator, wenn du 3.1.9 betreibst.
 4. **Registriert den Node** mit der Gebühr von 1 QOR.
@@ -134,11 +140,11 @@ Solange der Node nicht registriert ist, sendet er keine Heartbeats; stattdessen 
 
 ## Der Light-Node-Tab im Dashboard
 
-Der Tab **Tools → Light Node** des QoreChain Dashboards bündelt die Schritte:
+Der Tab **Nodes & Validators → Light Node** des QoreChain Dashboards bündelt die Schritte:
 
 1. **Downloads.** Er verlinkt die Light-Node-Binärdateien für das gewählte Netzwerk (dieselben Dateien wie unter `https://download.qore.host/<net>/lightnode/latest.json`, mit ihren sha256-Prüfsummen).
 2. **Einrichtungsschritte.** Er zeigt die fünf obigen Schritte, abgestimmt auf die Version im Release-Manifest, und ob die Registrierung offen ist, gelesen aus dem Feld `registration` des Manifests.
-3. **Lizenzkauf** (nur Mainnet). Er nimmt die Lizenzadresse vor der Zahlung entgegen und zeigt **Paid, awaiting on-chain grant**, bis die Chain die Vergabe bestätigt. Er warnt dich, wenn die eingegebene Adresse deine eigene Custodial-Wallet im Dashboard ist, und weist zur Information darauf hin, wenn die Adresse bereits einen Post-Quantum-Schlüssel hat.
+3. **Lizenz** (Kauf im Mainnet, kostenlose Anfrage im Testnet). Im Mainnet nimmt er die Lizenzadresse vor der Zahlung entgegen und zeigt **Paid, awaiting on-chain grant**, bis die Chain die Vergabe bestätigt. Im Testnet zeigt er das Formular **Request licence**. Er warnt dich, wenn die eingegebene Adresse deine eigene Custodial-Wallet im Dashboard ist, und weist zur Information darauf hin, wenn die Adresse bereits einen Post-Quantum-Schlüssel hat.
 4. **Status.** Ein Status-Panel zeigt den Zustand des Nodes, wie er von der Chain gelesen wird.
 
 Die Registrierung selbst ist immer die Transaktion, die von `lightnode-sx register` (oder `lightnode-ux register`) gesendet wird. Das Dashboard registriert keine Nodes; sein altes Registrierungsformular, das nur einen Eintrag speicherte, wurde entfernt.

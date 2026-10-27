@@ -25,11 +25,11 @@ Güncel sürüm **0.1.0**'dır. Kaynak kod, örnekler ve test vektörleri
 | Hat | QoreSign bugün ne yapar |
 |---|---|
 | **Yerel** (Cosmos SDK) | Hibrit imzalama ve doğrulama. Ağ, ML-DSA-87 imzasını varsayılan olarak zorunlu tutar. |
-| **EVM** | Yalnızca kuantuma hazır mod: hesap bir ML-DSA-87 anahtarı kaydeder ve yerel hattan sınırlı bir yetkilendirme penceresi açar. Ethereum işlemlerinin kendisi ML-DSA-87 imzası taşımaz. |
+| **EVM** | Yalnızca yetkilendirme penceresi: hesap bir ML-DSA-87 anahtarı kaydeder ve yerel hattan sınırlı bir yetkilendirme penceresi açar. Ethereum işlemlerinin kendisi ML-DSA-87 imzası taşımaz. |
 | **SVM** | Ağda henüz açık değil (`LANE_NOT_AVAILABLE`). |
 
 Hibrit EVM imzalama için önce ağda hat başına PQC desteği gerekir. Bkz.
-[EVM cüzdanları: kuantuma hazır mod](/qoresign/guides/evm-quantum-ready).
+[EVM cüzdanları: yetkilendirme penceresi](/qoresign/guides/evm-quantum-ready).
 
 ## Paketler {#packages}
 
@@ -81,7 +81,7 @@ zincire karşı oturum açma doğrulaması) `@qorechain/qoresign/network` içind
 - Kılavuzlar
   - [Keplr uyumlu bir cüzdana hibrit imzalama ekleyin](/qoresign/guides/keplr-compatible-wallets)
   - [Sign In With QoreChain: sunucu doğrulaması](/qoresign/guides/sign-in)
-  - [EVM cüzdanları: kuantuma hazır mod](/qoresign/guides/evm-quantum-ready)
+  - [EVM cüzdanları: yetkilendirme penceresi](/qoresign/guides/evm-quantum-ready)
   - [Anahtar türetme: kanonik anahtarlar ve HD taslağı](/qoresign/guides/key-derivation)
   - [Boyutlar ve aktarım](/qoresign/guides/sizes-and-transport)
 - Spesifikasyonlar

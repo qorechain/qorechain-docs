@@ -64,7 +64,7 @@ The main chain is the trust root for the entire QoreChain ecosystem.
 | Consensus  | QoreChain consensus (see [Consensus Mechanism](/architecture/consensus-mechanism) for what is wired today) |
 | Security   | PQC-secured with Dilithium-5 signatures                                        |
 | Role       | Settlement layer, state anchor storage, QCAI routing engine, trust root        |
-| Block time | Network-dependent: about 3.2 seconds on mainnet, about 1.3 seconds on testnet (measured 27 October 2026) |
+| Block time | Network-dependent: about 3.1 seconds on mainnet, about 1.3 seconds on testnet (measured 27 October 2026) |
 
 All subsidiary layers periodically anchor their state roots to the main chain via Hierarchical Commitment Schemes (HCS).
 

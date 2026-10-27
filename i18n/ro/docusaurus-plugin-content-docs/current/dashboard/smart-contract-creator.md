@@ -7,57 +7,102 @@ sidebar_position: 6
 
 # Creator de contracte inteligente
 
-**Creatorul de contracte inteligente** generează contracte inteligente pornind de la o descriere în limbaj natural, fiind alimentat de **QCAI**. Descrie ce dorești, alege blockchain-ul țintă, iar QCAI scrie contractul pentru tine. Suportă **17 blockchain-uri** pentru instrumentele AI, astfel încât să poți viza ecosistemul pentru care construiești.
-
-Îl poți încerca **fără cont**: un vizitator nou primește o generare gratuită și vede întregul contract. Pentru următoarea generare este nevoie de un cont gratuit, la fel ca pentru salvare, audit și implementare; pagina oferă **Creează un cont gratuit** după ce încercarea gratuită a fost folosită.
-
-Autentifică-te pentru a salva și a gestiona contractele pe care le generezi — vezi [Autentificare](/dashboard/overview#sign-in).
-
-## Generează un contract
-
-1. **Pornește de la un exemplu sau descrie-l pe al tău.** Pagina se deschide cu „What would you like to build?”. Sub **Or start from an example:** alege **Token**, **NFT collection**, **Locked vault** sau **2-of-3 multisig** — fiecare completează o descriere completă și selectează un blockchain și un șablon potrivite — sau scrie propria descriere în **Contract Description**. Cu cât ești mai specific, cu atât rezultatul este mai bun.
-2. **Alege blockchain-ul.** Folosește **Target Blockchain**. Limbajul contractului și categoria pentru alegerea ta sunt afișate alături de selector.
-3. **Alege un tip de contract** (opțional). **Contract Type** oferă un șablon de pornire precum un token, un NFT sau un contract de guvernanță; lasă-l pe **Custom (describe in prompt)** pentru a te baza doar pe descrierea ta.
-4. **Generează.** Selectează **Generate Smart Contract**. Un indicator de progres afișează starea în timp ce QCAI produce contractul.
-
-## Analizează rezultatul
-
-Când generarea se finalizează, Panoul afișează contractul într-o vizualizare cu evidențiere de sintaxă, împreună cu detalii precum numele contractului, blockchain-ul, limbajul, dimensiunea fișierului și momentul generării. Promptul pe care l-ai folosit este afișat alături de rezultat pentru referință.
-
-De aici poți:
-
-- **Copia** codul contractului în clipboard (**Copy Code**).
-- **Exporta PDF** al contractului (**Export PDF**).
-- **Descărca** contractul ca fișier (**Download File**) în formatul potrivit pentru blockchain-ul ales.
-- **Edita** contractul (**Edit Contract**) pentru a-l rafina în continuare.
-
-## Implementează contractul {#deploy}
-
-### Pe mainnet (EVM) — implementare non-custodială {#deploy-mainnet}
-
-Implementarea pe mainnet este non-custodială: Panoul compilează contractul și returnează date de implementare **nesemnate** — nu îți deține niciodată cheile și nu semnează niciodată în numele tău. Tu semnezi și transmiți implementarea din propriul portofel, iar Panoul înregistrează apoi contractul rezultat.
-
-1. Deschide contractul pe care vrei să îl implementezi (un contract cu țintă EVM) și selectează **Deploy** pe **Mainnet**. Dacă aceasta este prima ta acțiune pe mainnet, acceptă [confirmarea unică a riscurilor](/dashboard/overview#risk-acknowledgement).
-2. Conectează **MetaMask** dacă nu este deja conectat — vezi [Prezentare generală și primii pași](/dashboard/overview#connect-your-wallet). Începând cu chain v3.2.0, lane-ul EVM cere ca și contul să dețină o cheie post-cuantică înregistrată și o **fereastră de autorizare EVM deschisă**, care se deschide din QoreX (vezi [Trimiterea cu MetaMask](/dashboard/wallet#send-metamask)); fără una, chain-ul refuză implementarea.
-3. Panoul compilează contractul și predă tranzacția de implementare nesemnată portofelului tău.
-4. Analizează tranzacția în MetaMask — rețeaua, gas-ul și datele — apoi confirmă pentru a o semna și a o transmite tu însuți.
-5. Odată ce implementarea este confirmată on-chain, Panoul înregistrează adresa contractului rezultat alături de contractele tale salvate.
-
-Din Panou pot fi implementate doar contractele **EVM** (Solidity). Implementările QoreChain Native și de programe Solana nu sunt disponibile deocamdată pe niciuna dintre rețele.
-
-### Pe testnet — un singur clic {#deploy-testnet}
-
-Pe testnet, portofelul de test gestionat de Panou semnează și trimite o implementare EVM pentru tine cu un singur clic, astfel încât să poți itera rapid cu tokenuri de la [Faucet](/dashboard/faucet) înainte de a trece pe mainnet. Testnet-ul aplică aceeași regulă pentru lane-ul EVM ca mainnet-ul, așa că o implementare poate fi totuși refuzată dacă contul nu are o cheie post-cuantică sau o fereastră EVM deschisă.
-
-## Partajează și reutilizează
-
-Fiecare contract generat are propria pagină. Contractele sunt **private în mod implicit**: doar tu îl poți deschide pe al tău. Ca proprietar vei vedea un buton **Public** / **Private** pe pagina contractului; setează-l pe **Public** pentru ca oricine are linkul să poată deschide (și fork-ui) contractul, și înapoi pe **Private** pentru a-l retrage. Dacă deschizi un contract public pe care nu îl deții, îl poți **fork**-ui pentru a începe propria copie și a continua de acolo.
+**Creatorul de contracte inteligente** (bara laterală **Build**, intrarea **SC Creator**) transformă o descriere în limbaj natural în cod sursă de contract pentru un blockchain pe care îl alegi, folosind **QCAIA**, asistentul AI al QoreChain. Este destinat constructorilor care vor o primă versiune pentru un token, o colecție NFT, un seif sau un multisig, ori pentru un contract într-un limbaj pe care nu îl scriu zilnic, și care apoi îl analizează, îl testează și îl implementează singuri.
 
 :::tip Analizează și testează întotdeauna
-Codul generat de QCAI este un punct de plecare solid, nu un substitut pentru analiză. Citește contractul, testează-l pe [testnet](/getting-started/connecting-to-testnet) și rulează-l prin [Auditorul de contracte](/dashboard/contract-auditor) înainte de a implementa ceva de valoare.
+Codul generat este un punct de plecare solid, nu un substitut pentru analiză. Citește contractul, testează-l pe [testnet](/getting-started/connecting-to-testnet) și rulează-l prin [Auditorul de contracte](/dashboard/contract-auditor) înainte de a implementa ceva de valoare.
 :::
+
+## Inovații {#innovations}
+
+- **O generare fără cont.** Un vizitator nou poate genera o dată și vede întregul contract. Este limitată pe vizitator și printr-un plafon zilnic global. Un rezultat din încercarea gratuită nu are **Deploy** și nu are **Edit** funcțional; pagina oferă după aceea **Create a free account**.
+- **O generare gratuită în fiecare zi UTC, când ești autentificat.** Prima generare din fiecare zi UTC este gratuită pe ambele rețele. După aceea, pe testnet fiecare generare se plătește în QOR de test din portofelul tău de test, după o fereastră „Confirm Contract Generation” care afișează „Generation Cost”. Pe mainnet Panoul nu deține chei, așa că generările suplimentare sunt refuzate până în următoarea zi UTC.
+- **Exemple de pornire care completează tot.** **Token**, **NFT collection**, **Locked vault** și **2-of-3 multisig** completează fiecare o descriere completă, setează ținta la QoreChain și aleg un șablon.
+- **17 blockchain-uri țintă,** fiecare cu propriile șabloane plus „Custom (describe in prompt)”: QoreChain, Cosmos, Ethereum, Solana, Avalanche, NEAR, Polygon, BSC, TON, Cardano, Polkadot, Tezos, Arbitrum, Optimism, Sui, Aptos și Tron.
+- **Implementare non-custodială pe EVM de mainnet.** Panoul compilează contractul și returnează date de implementare **nesemnate**. Orice portofel EVM injectat (MetaMask, Rabby, Coinbase Wallet) adaugă sau comută pe chain 9801, apoi semnează și transmite; Panoul înregistrează adresa după aceea.
+- **Coduri QoreChain Native aprobate prin guvernanță, pe testnet.** Codul generat nu este încărcat. Instanțiezi un cod pe care guvernanța testnet-ului l-a aprobat deja, citit direct din chain: token CW20 (cw20-base), colecție NFT (cw721-base), grup de membri (cw4-group), multisig (cw3-fixed-multisig) și exemplul Counter (qore-counter). Mesajul de instanțiere este precompletat și editabil.
+- **Feedback de compilare în fereastră.** Erorile apar direct în fereastră, fereastra cere argumentele constructorului pe care nu le poate deduce, iar câmpurile tokenului sunt citite în prealabil din cod sau din prompt.
+- **Privat în mod implicit, cu fork când este public.** Proprietarul comută între **Public** și **Private**; un non-proprietar al unui contract public îl poate **Fork**-ui.
+
+## Cum se folosește {#how-to-use}
+
+### Generează un contract
+
+1. Deschide **SC Creator**. Titlul paginii este „What would you like to build?”.
+2. **Pornește de la un exemplu sau descrie-l pe al tău.** Sub „Or start from an example:” alege un exemplu de pornire sau scrie propria descriere în **Contract Description**. Cu cât ești mai specific, cu atât rezultatul este mai bun.
+3. Alege **Target Blockchain**. Limbajul și categoria apar sub el („Language: ... | Category: ...”). Schimbarea blockchain-ului alege automat primul șablon al acelui blockchain, așa că alege tu însuți **Custom (describe in prompt)** în **Contract Type** dacă vrei ca doar descrierea ta să determine rezultatul.
+4. Doar autentificat: alege un **Generation Tier** (Standard sau Premium). Premium nu este disponibil pe mainnet.
+5. Selectează **Generate Smart Contract**. Autentificat, urmează o fereastră „Confirm Contract Generation” (afișează „Generation Cost” și starea gratuității de azi). Rezultatul este etichetat „Generated by QCAIA Standard”.
+
+### Analizează rezultatul
+
+Contractul apare într-o vizualizare cu evidențiere de sintaxă, cu aceste acțiuni:
+
+- **Deploy**,
+- **Edit Now**,
+- **Download File** (în formatul potrivit pentru blockchain-ul ales),
+- **Copy Code**.
+
+Detaliile și promptul folosit se află pe pagina proprie a contractului (mai jos), nu pe rezultat.
+
+### Pagina contractului
+
+Fiecare contract salvat are o pagină la `/smart-contract-creator/<id>` cu Copy, **Public / Private**, Download, Edit sau Fork, un rând de statistici (Created, Lines, Size, Gen Time, Tokens, AI Model), „Generation Prompt” și „Download from Cloud” (linkul expiră după 24 de ore). Deschiderea paginii unui contract necesită autentificare, chiar și pentru un contract public.
+
+Pagina **Edit** oferă **Save Changes** (proprietar) sau **Save as New Contract** (la fork), plus **Deploy**. O acțiune **Export PDF** există în lista de contracte din Profilul tău, nu pe rezultat.
+
+### Implementează contractul {#deploy}
+
+Implementarea se află pe paginile de rezultat și de editare. Fereastra afișează un banner „Target: TESTNET ... 9800” sau „Target: MAINNET ... 9801”.
+
+#### Pe mainnet (EVM), non-custodial {#deploy-mainnet}
+
+Panoul nu îți deține niciodată cheile și nu semnează niciodată în numele tău.
+
+1. Selectează **Deploy** pe un contract a cărui țintă rulează pe EVM-ul QoreChain, cu antetul pe **Mainnet**. Dacă aceasta este prima ta vizualizare de mainnet a Wallet, Trade sau a prezentării generale a Explorer în acest browser, accepți acolo [confirmarea unică](/dashboard/overview#risk-acknowledgement); Creatorul în sine nu afișează un ecran suplimentar de risc.
+2. Selectează **Deploy from your wallet**. Funcționează orice portofel EVM injectat; fereastra însăși adaugă sau comută rețeaua (chain 9801).
+3. Începând cu chain v3.2.0, lane-ul EVM cere ca și contul care implementează să dețină o cheie ML-DSA-87 înregistrată și o **fereastră de autorizare EVM deschisă**, care se deschide din QoreX (vezi [Trimiterea cu MetaMask](/dashboard/wallet#send-metamask)). Fără ele, chain-ul refuză implementarea.
+4. Panoul compilează și predă tranzacția nesemnată portofelului tău. Așteaptă „Confirm in your wallet...” și analizează rețeaua, gas-ul și datele.
+5. Odată confirmată, Panoul înregistrează adresa contractului alături de contractele tale salvate.
+
+Alte ținte pe mainnet afișează „Direct deploy not available for this contract”. Implementările QoreChain Native și SVM nu sunt oferite pe mainnet, iar din Panou nu există publicare CosmWasm.
+
+#### Pe testnet, un singur clic {#deploy-testnet}
+
+- **EVM:** selectează **Deploy to Testnet**. Portofelul de test al Panoului semnează și trimite implementarea; succesul afișează „Deployed on Testnet”. Iterează cu tokenuri de la [Faucet](/dashboard/faucet) înainte de a trece pe mainnet.
+- **QoreChain Native:** alege un **Approved contract**, setează **Label \***, verifică sau editează **Instantiate message (JSON)** și selectează **Instantiate on Testnet**. Încărcările de contracte pe testnet sunt analizate prin guvernanță, de aceea instanțiezi coduri aprobate în loc să le încarci pe ale tale. Codurile aprobate pe care Panoul nu le recunoaște apar cu un mesaj gol. Contractele personalizate merg pe EVM-ul QoreChain (Solidity).
+- Din Panou pot fi implementate doar contractele EVM și codurile QoreChain Native aprobate. Un contract scris pentru alt chain EVM (Polygon, BSC, Arbitrum și așa mai departe) se implementează pe EVM-ul QoreChain, nu în rețeaua proprie a acelui chain; contractele pentru chain-uri non-EVM nu pot fi implementate de aici.
+
+**Exemplu minimal (testnet):** selectează **Token**, **Generate Smart Contract**, Confirm, **Deploy**, alege „CW20 token (cw20-base)”, Label `my-token`, **Instantiate on Testnet**.
+
+### Partajează și reutilizează
+
+Contractele sunt **private în mod implicit**. Ca proprietar, setează un contract pe **Public** pentru ca alți utilizatori autentificați să îl poată deschide și fork-ui, și înapoi pe **Private** pentru a-l retrage. **Fork** copiază un contract public în contul tău pentru a continua de acolo.
+
+## Cum se accesează {#how-to-access}
+
+- **URL:** [dashboard.qorechain.io/smart-contract-creator](https://dashboard.qorechain.io/smart-contract-creator) (și **Create Smart Contract** pe pagina de start).
+- **Cont:** pagina de start și o generare gratuită funcționează fără cont. Tot restul (generări suplimentare, contracte salvate, paginile contractului și de editare, implementare) necesită autentificare; vezi [Autentificare](/dashboard/overview#sign-in).
+- **Rețea:** generarea funcționează pe ambele. Implementările pe testnet folosesc portofelul tău de test din Panou; implementările EVM pe mainnet folosesc portofelul tău propriu.
+- **Costuri:** prima generare din fiecare zi UTC este gratuită. După aceea, generările pe testnet se plătesc în QOR de test; generările pe mainnet așteaptă următoarea zi UTC. Implementările plătesc gas de rețea.
+
+## Unde este publicat {#where-published}
+
+| Suprafață | Adresă | Rețele |
+| --- | --- | --- |
+| Creator și contracte salvate | `dashboard.qorechain.io/smart-contract-creator` | Generare pe ambele rețele |
+| Implementare EVM | Paginile de rezultat și de editare | Un singur clic pe testnet; pe mainnet din portofelul tău propriu |
+| Implementare QoreChain Native | Paginile de rezultat și de editare | Testnet, doar coduri aprobate |
+
+## Limite și probleme cunoscute {#limits}
+
+- **Nu se oferă:** implementări Solana (serverul le refuză), implementări Native sau SVM pe mainnet, implementări în rețelele publice ale altor chain-uri și Premium pe mainnet.
+- **Implementările Native pe testnet** instanțiază doar coduri aprobate prin guvernanță; sursa generată de tine nu este încărcată.
+- **Rezultatele din încercarea gratuită** nu au Deploy și nici Edit.
+- **Analizează tot** înainte de implementare; codul generat poate conține greșeli.
 
 ## Înrudite
 
-- [Auditor de contracte](/dashboard/contract-auditor) — rulează o analiză de securitate QCAI asupra unui contract.
-- [Ghidul dezvoltatorului](/developer-guide/evm-development) — implementarea contractelor în runtime-urile QoreChain.
+- [Auditor de contracte](/dashboard/contract-auditor) - rulează o analiză de securitate asupra unui contract.
+- [Dezvoltare EVM](/developer-guide/evm-development) - implementarea contractelor în runtime-urile QoreChain.
+- [Dezvoltare CosmWasm](/developer-guide/cosmwasm-development) - runtime-ul QoreChain Native.

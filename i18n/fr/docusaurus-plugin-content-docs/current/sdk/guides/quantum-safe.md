@@ -1,22 +1,21 @@
 ---
 slug: /sdk/guides/quantum-safe
-title: Résistant au quantique par défaut
-sidebar_label: Résistant au quantique
+title: Signature hybride par défaut
+sidebar_label: Signature hybride
 sidebar_position: 6
 ---
 
-# Résistant au quantique par défaut
+# Signature hybride par défaut
 
 QoreChain considère la cryptographie post-quantique comme un schéma de signature de **première
 classe**. Un compte enregistre une clé **ML-DSA-87 (Dilithium-5, NIST FIPS 204)** sur la chaîne,
 après quoi ses transactions peuvent porter une signature **hybride** — la signature classique
 secp256k1 habituelle **plus** une signature ML-DSA-87. Le gestionnaire ante de la chaîne
-vérifie les deux, de sorte qu'un compte résistant au quantique reste pleinement compatible avec
-la vérification classique tout en gagnant une protection contre un futur adversaire
-quantique.
+vérifie les deux, de sorte qu'un compte disposant d'une clé enregistrée reste pleinement compatible avec
+la vérification classique tandis que ses transactions portent aussi une signature post-quantique.
 
-Le SDK regroupe tout cela en une surface minuscule et idempotente, afin qu'une dApp devienne
-**résistante au quantique par défaut** : un seul appel pour être protégé par PQC. Sur les réseaux
+Le SDK regroupe tout cela en une surface minuscule et idempotente, afin qu'une dApp signe
+**en hybride par défaut** : un seul appel enregistre la clé. Sur les réseaux
 en production, ce n'est pas facultatif pour les transactions du chemin Native : la clé doit être
 enregistrée **explicitement** (il n'y a pas d'enregistrement automatique à la première
 transaction), puis chaque transaction du chemin Native doit porter la signature hybride.
@@ -67,7 +66,7 @@ actif sur le mainnet, et il est listé comme actif sur le testnet (vérifié le 
 
 ## Enregistrer en un seul appel {#register-in-one-call}
 
-`ensurePqcRegistered` rend un compte résistant au quantique. Il construit et diffuse
+`ensurePqcRegistered` enregistre la clé ML-DSA-87 du compte. Il construit et diffuse
 `MsgRegisterPQCKeyV2` avec la clé publique ML-DSA-87 du signataire. Il est **idempotent** :
 il lit d'abord le statut du compte (via REST lorsque vous passez `rest`), ignore
 l'enregistrement lorsque le compte détient déjà la clé de cette paire de clés, et peut donc
@@ -277,7 +276,7 @@ await migratePqcKeyHybrid({
 
 Le kit [`@qorechain/react`](/sdk/guides/react) expose tout cela dans React : le
 hook `usePqcStatus` et le composant `<QuantumSafeBadge/>` affichent un indicateur
-**Résistant au quantique** dès que le compte connecté possède une clé PQC enregistrée. Les deux lisent le
+d'état dès que le compte connecté possède une clé PQC enregistrée. Les deux lisent le
 statut via `getPqcStatus` avec le client composé ; à partir de `@qorechain/react`
 0.9.0, ils le lisent donc via REST et fonctionnent contre les points d'accès publics ; la 0.8.x
 ne pouvait pas y confirmer une clé.

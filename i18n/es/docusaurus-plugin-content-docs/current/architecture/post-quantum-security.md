@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain está construida con **criptografía post-cuántica (PQC) desde el génesis** — no añadida posteriormente como una actualización. El módulo `x/pqc` proporciona firmas digitales basadas en retículos y encapsulamiento de claves como primitivas criptográficas principales, con un marco de agilidad de algoritmos controlado por gobernanza para una resiliencia a largo plazo.
 
-La base completa de PQC — **Dilithium-5 (firmas) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — está ahora completa y es el valor por defecto de la red. En las redes en producción (v3.2.x), las firmas híbridas son **requeridas por defecto** en la ruta de transacción cosmos: `hybrid_signature_mode = required` y `allow_classical_fallback = false`. Cada transacción de la ruta cosmos debe llevar una firma Dilithium-5 junto a su firma clásica secp256k1; las transacciones solo clásicas desde una cuenta PQC se rechazan, y la ruta de degradación clásica está cerrada. La mainnet y la testnet ejecutan v3.2.4; lo que las versiones v3.2.2 y v3.2.3 añadieron a las reglas post-cuánticas (integridad de claves, prueba de posesión opcional, ventanas EVM con alcance, consentimiento de EIP-7702) se describe en [Reglas de integridad de claves](#key-integrity), [Prueba de posesión](#proof-of-possession) y [Delegaciones EIP-7702](#eip-7702).
+La base completa de PQC — **Dilithium-5 (firmas) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — está ahora completa y es el valor por defecto de la red. En las redes en producción (v3.2.x), las firmas híbridas son **requeridas por defecto** en la ruta de transacción cosmos: `hybrid_signature_mode = required` y `allow_classical_fallback = false`. Cada transacción de la ruta cosmos debe llevar una firma Dilithium-5 junto a su firma clásica secp256k1; las transacciones solo clásicas desde una cuenta PQC se rechazan, y la ruta de degradación clásica está cerrada. La mainnet ejecuta v3.2.4 y la testnet v3.2.6 (comprobado el 27 de octubre de 2026); lo que las versiones v3.2.2 y v3.2.3 añadieron a las reglas post-cuánticas (integridad de claves, prueba de posesión opcional, ventanas EVM con alcance, consentimiento de EIP-7702) se describe en [Reglas de integridad de claves](#key-integrity), [Prueba de posesión](#proof-of-possession) y [Delegaciones EIP-7702](#eip-7702).
 
 ## Principios de Diseño
 
@@ -228,7 +228,7 @@ active --> migrating --> deprecated --> disabled
 
 ### Migración por Doble Firma
 
-Cuando un algoritmo se desaprueba, comienza un **período de migración** (por defecto: 1,000,000 bloques — unos 37 días con el tiempo de bloque actual de mainnet de ≈3,2 s). Durante este período:
+Cuando un algoritmo se desaprueba, comienza un **período de migración** (por defecto: 1,000,000 bloques — unos 36 días con el tiempo de bloque actual de mainnet de ≈3,1 s). Durante este período:
 
 1. Las cuentas con claves que usan el algoritmo desaprobado deben migrar al reemplazo.
 2. La migración requiere firmas duales (`MsgMigratePQCKey`): una de la clave antigua y una de la clave nueva, probando la propiedad de ambas.
@@ -254,7 +254,7 @@ Añadir un algoritmo requiere una versión de software que lo implemente detrás
 
 ## Hash SHAKE-256
 
-A partir de v3.1.73, **SHAKE-256** (función de salida extensible SHA-3) es el **hash de aplicación por defecto** en todo QoreChain — proporcionado por el paquete `qorehash` — completando la base criptográfica resistente a la computación cuántica junto a las firmas Dilithium-5 y el encapsulamiento de claves ML-KEM-1024. El módulo `x/pqc` proporciona utilidades SHAKE-256 en Go puro:
+A partir de v3.1.73, **SHAKE-256** (función de salida extensible SHA-3) es el **hash de aplicación por defecto** en todo QoreChain — proporcionado por el paquete `qorehash` — completando la base criptográfica junto a las firmas Dilithium-5 y el encapsulamiento de claves ML-KEM-1024. El módulo `x/pqc` proporciona utilidades SHAKE-256 en Go puro:
 
 | Función                            | Descripción                       | Salida           |
 | ---------------------------------- | --------------------------------- | ---------------- |

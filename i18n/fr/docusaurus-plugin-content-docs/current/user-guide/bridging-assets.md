@@ -41,10 +41,38 @@ IBC fait partie de la conception (Cosmos Hub, Osmosis, Noble, Celestia, Stride, 
 Trois fonctionnalités IBC n'existent que sur le testnet ; le mainnet ne les a pas (sa route `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` répond 501) :
 
 * **Limite de débit IBC.** La gouvernance peut fixer un quota par canal pour les transferts IBC (un pourcentage entier de l'offre par fenêtre de quelques heures). Ce n'est **pas automatique** : aucune limite n'est définie aujourd'hui, et un ensemble vide signifie illimité. Un paquet relayé est comptabilisé sur les deux canaux et un remboursement restitue le quota. Cela est distinct des disjoncteurs du pont décrits dans [Modèle de sécurité](#security-model).
-* **Transfert de paquets.** Un transfert arrivant par IBC v1 peut porter un mémo de la forme `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` pour être envoyé vers une autre chaîne, avec remboursement à l'expéditeur si un saut échoue. Il n'y a aucune nouvelle tentative et un saut expire par défaut au bout de 10 minutes. Un token qui se convertit en ERC-20 à l'arrivée ne peut pas être transféré.
+* **Transfert de paquets.** Un transfert arrivant par IBC v1 peut porter un mémo de la forme `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` pour être envoyé vers une autre chaîne, avec remboursement à l'expéditeur si un saut échoue. Il n'y a aucune nouvelle tentative et un saut expire par défaut au bout de 10 minutes. Un token qui se convertit en ERC-20 à l'arrivée ne peut pas être transféré.
 * **Clients légers 08-wasm.** Enregistrer, migrer et supprimer un binaire de client léger wasm est réservé à l'autorité, et les types de client autorisés ne contiennent que le client standard tant que la gouvernance n'ajoute pas `08-wasm`.
 
-Lisez les limites avec `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` sur le testnet (`\{"rate_limits":[]\}` aujourd'hui).
+Lisez les limites avec `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` sur le testnet (`{"rate_limits":[]}` aujourd'hui).
+
+**Ce que chaque réseau propose (vérifié le 27 octobre 2026).**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| Transfert ICS-20 (IBC v1) | Intégré, mais aucun canal n'est ouvert | Intégré, un canal ouvert |
+| Limite de débit IBC | Non disponible (501) | Disponible, aucune limite définie |
+| Transfert de paquets | Non disponible | Disponible (IBC v1 uniquement) |
+| Clients légers 08-wasm | Non disponible | Jeu de messages présent, aucun client wasm ne peut être créé tant que la gouvernance n'autorise pas `08-wasm` |
+
+### Le canal de test sur le testnet {#ibc-test-channel}
+
+Le testnet dispose d'un canal de transfert ouvert, `channel-0` (port `transfer`, `connection-0`, version `ics20-1`, non ordonné). Sa contrepartie est le testnet du Cosmos Hub (chain ID `provider`, canal `channel-600`). Le testnet a vu passer un seul denom IBC, `uatom`, arrivé par `channel-0` ; QoreChain tient aussi une paire ERC-20 pour celui-ci, détenue par le module. Lisez l'état avec :
+
+```bash
+curl -s https://api-testnet.qore.host/ibc/core/channel/v1/channels
+curl -s https://api-testnet.qore.host/ibc/apps/transfer/v1/denoms
+```
+
+Pour envoyer sur le canal de test, construisez le transfert, puis ajoutez la signature hybride comme pour toute autre transaction de la voie native :
+
+```bash
+qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_testnet> 1000uqor \
+  --from mykey --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > ibc.json
+qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
+```
+
+Il s'agit d'un canal de test entre deux réseaux de test ; les tokens n'ont aucune valeur. La livraison d'un paquet nécessite un relayeur actif pour le canal, et ce manuel n'en publie ni n'en promet aucun : un transfert peut donc rester en attente. N'utilisez pas les commandes ci-dessus sur le mainnet : aucun canal n'y est ouvert et la transaction échouerait.
 
 ---
 

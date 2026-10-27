@@ -1,11 +1,11 @@
 ---
 slug: /qoresign/guides/evm-quantum-ready
-title: "Carteras EVM: modo quantum-ready"
-sidebar_label: Modo quantum-ready en EVM
+title: "Carteras EVM: ventana de autorización"
+sidebar_label: Ventana de autorización EVM
 sidebar_position: 3
 ---
 
-# Carteras EVM: modo quantum-ready
+# Carteras EVM: ventana de autorización
 
 Las transacciones de Ethereum no tienen ningún campo por el que pueda viajar una
 segunda firma, y la red aplica su configuración PQC en toda la cadena, no por
@@ -17,9 +17,9 @@ En su lugar, la red admite una transacción EVM solo si su remitente tiene una
 clave ML-DSA-87 registrada y una **ventana de autorización EVM** activa que la
 cubra. La ventana se abre desde el carril nativo con una transacción firmada de
 forma híbrida, de modo que la clave post-cuántica autoriza la actividad EVM con
-antelación ("modo quantum-ready"). Ambas redes públicas lo aplican (función de
-protocolo `evm-pqc-authorisation-window`, que se puede leer con
-`fetchProtocolFeatures` en el [SDK de QoreChain](/sdk/overview) o en
+antelación. La propia transacción EVM es solo secp256k1. Ambas redes públicas lo
+aplican (función de protocolo `evm-pqc-authorisation-window`, que se puede leer
+con `fetchProtocolFeatures` en el [SDK de QoreChain](/sdk/overview) o en
 `/qorechain/pqc/v1/protocol_features`).
 
 ## Pasos para una cuenta EVM {#steps}

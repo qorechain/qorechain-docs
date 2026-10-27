@@ -13,7 +13,7 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **AMM** — Automated Market Maker (market maker automatizzato). Il modulo di liquidità on-chain nativo di QoreChain (`x/amm`) che fornisce pool a prodotto costante, swap e provisioning di liquidità direttamente a livello di protocollo, senza un deployment di smart contract esterno. Vedi [AMM](/architecture/amm).
 
-**Authorisation window (EVM)** (finestra di autorizzazione EVM) — Un'autorizzazione delimitata (blocchi, numero di transazioni, valore totale), aperta con un messaggio della lane Cosmos firmato in modo post-quantistico, entro cui una transazione della lane EVM deve rientrare dalla v3.2.0. Dalla v3.2.3 una finestra può essere ristretta ai soli trasferimenti nativi o a un elenco di destinatari. Vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
+**Authorisation window (EVM)** (finestra di autorizzazione EVM) — Un'autorizzazione delimitata (blocchi, numero di transazioni, valore totale), aperta con un messaggio della lane Cosmos che porta una firma ibrida ML-DSA-87 (FIPS 204), entro cui una transazione della lane EVM deve rientrare dalla v3.2.0. Dalla v3.2.3 una finestra può essere ristretta ai soli trasferimenti nativi o a un elenco di destinatari. Vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
 
 **BPF** — Berkeley Packet Filter. Il formato bytecode usato dal runtime SVM per eseguire i programmi on-chain. I programmi vengono compilati in BPF prima del deployment.
 
@@ -39,11 +39,11 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **IBC** — Inter-Blockchain Communication (comunicazione tra blockchain). Un protocollo per lo scambio autenticato di messaggi tra blockchain indipendenti. QoreChain supporta i canali IBC per i trasferimenti di token cross-chain e il relay di dati.
 
-**Light Node** — Un client a basso consumo di risorse che segue la chain confrontando gli header dei blocchi con uno o più endpoint RPC, senza mantenere lo stato completo. Non serve query ad altri. La suddivisione delle commissioni di protocollo riserva una quota del **3%** al programma di ricompense dei light node. La registrazione al programma è aperta e subordinata a una licenza `lightnode_operator` (50 $, acquistata sulla Dashboard); al 20 ottobre 2026 sulla mainnet erano state concesse sei licenze e nessun light node si era ancora registrato. Eseguire un nodo non richiede alcuna licenza. Vedi [Light Node](/light-node/overview) e il suo [stato del programma di ricompense](/light-node/overview#reward-program-status).
+**Light Node** — Un client a basso consumo di risorse che segue la chain confrontando gli header dei blocchi con uno o più endpoint RPC, senza mantenere lo stato completo. Non serve query ad altri. La suddivisione delle commissioni di protocollo riserva una quota del **3%** al programma di ricompense dei light node. La registrazione al programma è aperta e subordinata a una licenza `lightnode_operator` (50 $, acquistata sulla Dashboard); il 27 ottobre 2026 sulla mainnet erano state concesse sette licenze e su ciascuna rete era registrato un light node. Eseguire un nodo non richiede alcuna licenza. Vedi [Light Node](/light-node/overview) e il suo [stato del programma di ricompense](/light-node/overview#reward-program-status).
 
 **MEV** — Maximal Extractable Value (valore massimo estraibile). Il profitto che può essere ottenuto riordinando, inserendo o censurando transazioni all'interno di un blocco. Il modulo FairBlock di QoreChain (cifratura tIBE) è progettato per mitigare l'estrazione di MEV; non è ancora abilitato.
 
-**ML-DSA-87** — Module-Lattice Digital Signature Algorithm (livello di sicurezza 5). Lo schema di firma digitale post-quantistico standardizzato dal NIST usato da QoreChain per la firma di transazioni resistente ai quanti. Produce firme di 4.627 byte con chiavi pubbliche di 2.592 byte.
+**ML-DSA-87** — Module-Lattice Digital Signature Algorithm (livello di sicurezza 5). Lo schema di firma digitale post-quantistico standardizzato dal NIST usato da QoreChain, insieme a secp256k1, per le firme ibride delle transazioni sulla lane nativa. Produce firme di 4.627 byte con chiavi pubbliche di 2.592 byte.
 
 **ML-KEM-1024** — Module-Lattice Key Encapsulation Mechanism (livello di sicurezza 5). Uno schema di incapsulamento di chiavi post-quantistico standardizzato dal NIST disponibile nel registry degli algoritmi PQC di QoreChain per futuri canali di comunicazione cifrati.
 
@@ -79,7 +79,7 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **SNARK** — Succinct Non-interactive Argument of Knowledge. Un tipo di prova a conoscenza zero che può essere verificata rapidamente con una prova di piccole dimensioni. Supportato come paradigma di settlement nel modulo RDK per gli zk-rollup.
 
-**STARK** — Scalable Transparent Argument of Knowledge. Un sistema di prove a conoscenza zero che non richiede un trusted setup ed è resistente ai quanti. Disponibile come sistema di prova alternativo per il settlement degli zk-rollup nell'RDK.
+**STARK** — Scalable Transparent Argument of Knowledge. Un sistema di prove a conoscenza zero che non richiede un trusted setup ed è costruito su funzioni hash anziché su curve ellittiche. Disponibile come sistema di prova alternativo per il settlement degli zk-rollup nell'RDK.
 
 **Stranded staker share / reward-pool reserve** (quota di staker bloccata / riserva del pool di ricompense) — Importi registrati all'upgrade v3.2.0 che si muovono solo tramite voto di governance; la governance li ha rilasciati nell'ottobre 2026 (il resto corretto della quota bloccata, ricalcolato alla v3.2.3, è stato rilasciato dalla proposta 12). Vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 

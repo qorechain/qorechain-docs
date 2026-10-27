@@ -41,10 +41,38 @@ IBC는 설계의 일부이지만(Cosmos Hub, Osmosis, Noble, Celestia, Stride, A
 IBC 기능 세 가지는 테스트넷에만 있으며 메인넷에는 없습니다(메인넷의 `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` 경로는 501로 응답합니다).
 
 * **IBC 속도 제한.** 거버넌스는 IBC 전송에 대해 채널별 할당량(시간 단위 윈도우당 공급량의 정수 퍼센트)을 설정할 수 있습니다. **자동이 아닙니다**. 현재 설정된 제한은 없으며, 빈 집합은 무제한을 뜻합니다. 전달된 패킷은 두 채널 모두에서 차감되고 환불은 할당량을 되돌려 줍니다. 이는 [보안 모델](#security-model)에서 설명하는 브리지 서킷 브레이커와는 별개입니다.
-* **패킷 포워딩.** IBC v1로 도착하는 전송은 다른 체인으로 다시 보내기 위해 `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` 형태의 메모를 담을 수 있으며, 홉이 실패하면 발신자에게 환불됩니다. 재시도는 없고 홉은 기본적으로 10분 후 타임아웃됩니다. 도착 시 ERC-20으로 변환되는 토큰은 포워딩할 수 없습니다.
+* **패킷 포워딩.** IBC v1로 도착하는 전송은 다른 체인으로 다시 보내기 위해 `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` 형태의 메모를 담을 수 있으며, 홉이 실패하면 발신자에게 환불됩니다. 재시도는 없고 홉은 기본적으로 10분 후 타임아웃됩니다. 도착 시 ERC-20으로 변환되는 토큰은 포워딩할 수 없습니다.
 * **08-wasm 라이트 클라이언트.** wasm 라이트 클라이언트 바이너리의 저장, 마이그레이션, 제거는 권한자 전용이며, 허용되는 클라이언트 유형은 거버넌스가 `08-wasm`을 추가하기 전까지 표준 클라이언트만 포함합니다.
 
-한도는 테스트넷에서 `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits`로 읽으세요(현재 `\{"rate_limits":[]\}`).
+한도는 테스트넷에서 `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits`로 읽으세요(현재 `{"rate_limits":[]}`).
+
+**어느 네트워크에 무엇이 있는가(2026년 10월 27일 확인).**
+
+| | 메인넷 `qorechain-vladi` (v3.2.4) | 테스트넷 `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| ICS-20 전송 (IBC v1) | 내장되어 있으나 열린 채널 없음 | 내장, 채널 하나 열려 있음 |
+| IBC 속도 제한 | 사용할 수 없음 (501) | 사용 가능, 설정된 제한 없음 |
+| 패킷 포워딩 | 사용할 수 없음 | 사용 가능 (IBC v1만) |
+| 08-wasm 라이트 클라이언트 | 사용할 수 없음 | 메시지 세트는 있으나, 거버넌스가 `08-wasm`을 허용하기 전까지 wasm 클라이언트를 만들 수 없음 |
+
+### 테스트넷의 테스트 채널 {#ibc-test-channel}
+
+테스트넷에는 열려 있는 transfer 채널이 하나, `channel-0`(포트 `transfer`, `connection-0`, 버전 `ics20-1`, unordered)이 있습니다. 상대방은 Cosmos Hub 테스트넷(체인 ID `provider`, 채널 `channel-600`)입니다. 테스트넷에서 확인된 IBC denom은 `channel-0`으로 도착한 `uatom` 하나이며, QoreChain은 이를 위해 모듈이 소유하는 ERC-20 쌍도 유지합니다. 다음으로 상태를 읽으세요:
+
+```bash
+curl -s https://api-testnet.qore.host/ibc/core/channel/v1/channels
+curl -s https://api-testnet.qore.host/ibc/apps/transfer/v1/denoms
+```
+
+테스트 채널에서 전송하려면 전송 트랜잭션을 만든 다음, 다른 네이티브 레인 트랜잭션과 마찬가지로 하이브리드 서명을 추가합니다:
+
+```bash
+qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_testnet> 1000uqor \
+  --from mykey --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > ibc.json
+qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
+```
+
+이것은 두 테스트 네트워크 사이의 테스트 채널이며, 토큰에는 가치가 없습니다. 패킷이 전달되려면 해당 채널에서 릴레이어가 실행 중이어야 하는데, 이 매뉴얼은 릴레이어를 게시하거나 약속하지 않으므로 전송이 대기 상태로 남아 있을 수 있습니다. 위 명령어를 메인넷에서 사용하지 마십시오. 메인넷에는 열린 채널이 없어 트랜잭션이 실패합니다.
 
 ---
 
@@ -112,7 +140,7 @@ qorechaind tx bridge withdraw [destination-chain] [destination-address] [asset] 
 qorechaind tx pqc cosign withdraw.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
-모든 네이티브 레인 트랜잭션에는 하이브리드 양자내성 공동 서명과 가스 단위당 최소 0.1 uqor의 수수료가 필요합니다. [첫 트랜잭션](/getting-started/first-transaction)을 참고하십시오.
+모든 네이티브 레인 트랜잭션에는 하이브리드 포스트 양자 공동 서명과 가스 단위당 최소 0.1 uqor의 수수료가 필요합니다. [첫 트랜잭션](/getting-started/first-transaction)을 참고하십시오.
 
 ---
 
@@ -122,7 +150,7 @@ QoreChain Bridge는 여러 방어 계층으로 보호되도록 설계되었습�
 
 | 메커니즘                     | 설명                                                                                                                                           |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **7-of-10 PQC 다중서명**     | 모든 브리지 작업은 10명의 브리지 검증자 중 최소 7명의 검증(attestation)을 필요로 하며, 각 검증자는 양자내성암호(post-quantum cryptographic) 서명을 사용합니다.               |
+| **7-of-10 PQC 다중서명**     | 모든 브리지 작업은 10명의 브리지 검증자 중 최소 7명의 검증(attestation)을 필요로 하며, 각 검증자는 포스트 양자 암호(post-quantum cryptographic) 서명을 사용합니다.               |
 | **24시간 챌린지 기간**       | 대규모 전송 임계값(100,000 QOR)을 초과하는 전송은 24시간의 챌린지 창(window)에 진입하며, 이 기간 동안 검증자나 감시자가 사기성 트랜잭션을 신고할 수 있습니다. |
 | **서킷 브레이커**            | QCB 브리지를 위해 설계됨: 비정상적인 거래량이나 의심스러운 패턴이 감지되면 자동 제한 장치가 브리지 작업을 중단시키고, 작업은 수동 검토 후 재개됩니다. 이는 IBC가 아니라 QCB 브리지에 적용되며, IBC 속도 제한(테스트넷 전용)은 거버넌스가 설정하고, 자동이 아니며, 현재 설정된 제한이 없습니다. |
 

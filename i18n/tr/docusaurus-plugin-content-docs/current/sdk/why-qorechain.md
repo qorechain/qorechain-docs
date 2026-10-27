@@ -106,14 +106,14 @@ kapatılmıştır, SVM işlemleri devre dışıdır ve QoreChain Native yükleme
 
 ---
 
-## 3. Varsayılan olarak kuantum güvenli
+## 3. Varsayılan olarak hibrit imzalama
 
-**Bir imzalayıcıyı tek bir çağrıyla post-kuantum korumalı hale getirin.**
+**Bir imzalayıcının ML-DSA-87 anahtarını tek bir çağrıyla kaydedin.**
 
 QoreChain, hibrit post-kuantum imzaları (ML-DSA-87 + klasik) protokol
 seviyesinde zorunlu kılar. SDK bunları benimsemeyi tek satırlık bir işleme
 dönüştürür: kontrol edin, kaydedin ve hibrit imzalamaya geçin — üstelik
-kullanıcılara korunduklarını gösteren bir React rozetiyle birlikte.
+bir adresin kayıtlı anahtarı olup olmadığını gösteren bir React rozetiyle birlikte.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -135,7 +135,7 @@ await hybrid.signAndBroadcastHybrid({
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// Shows a status badge when the address has a registered PQC key
 // (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
@@ -143,7 +143,7 @@ import { QuantumSafeBadge } from "@qorechain/react";
 **Neden önemli:** post-kuantum kriptografi, QoreChain'in Native yolunda
 yerleşik ve zorunludur, bir deney değildir; SDK bunu benimsemeyi bir kayıt
 çağrısına ve bir hibrit gönderim yoluna indirger. Kayıt açıktır: ilk işlemde
-otomatik kayıt yoktur. Bkz. [Quantum-safe](/sdk/guides/quantum-safe).
+otomatik kayıt yoktur. Bkz. [Hibrit imzalama](/sdk/guides/quantum-safe).
 
 ---
 

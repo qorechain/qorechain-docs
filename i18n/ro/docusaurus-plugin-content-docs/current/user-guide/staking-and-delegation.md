@@ -152,6 +152,24 @@ qorechaind query stakingtier locks <holder_address>
 
 ID-ul de chain de mai sus este cel al testnet-ului; folosiți `qorechain-vladi` pe mainnet. Ca în restul acestei pagini, semnați fiecare tranzacție generată cu `tx pqc cosign`.
 
+### Folosirea staking-ului cu blocare în timp {#using-time-locks}
+
+**Pași.** (1) Delegați către un validator ca de obicei. (2) Rulați `tx stakingtier lock` pentru acel validator, cu o sumă (cel puțin 10 QOR) și un termen de 3, 6 sau 12 luni, apoi cosemnați și difuzați. (3) Citiți rezultatul cu `GET /qorechain/stakingtier/v1/locks/{holder}` sau cu `qorechaind query stakingtier locks <holder_address>`; fiecare blocare are un id. (4) Revendicați cu `tx stakingtier claim` ori de câte ori doriți recompensa de blocare. (5) La sfârșitul termenului blocarea se eliberează singură; pentru a ieși mai devreme folosiți `tx stakingtier unlock-early <lock_id>` și acceptați penalizarea.
+
+**Unde funcționează, verificat la 27 octombrie 2026.**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| Modul activ | Da, din înălțimea 3.742.566 | Da, din v3.2.4 (înălțimea 8.337.253) |
+| Blocări deschise | Încă niciuna | 3 blocări de test |
+| Dedelegarea stake-ului blocat | Refuzată de poarta de mesaje de staking când rulează tranzacția | Refuzată de mempool înainte să fie perceput vreun comision (doar pe testnet, până când mainnet-ul aplică v3.2.6) |
+
+Ambele rețele răspund la `GET /qorechain/stakingtier/v1/params` cu aceleași setări: trei termene, un minim de 10 QOR (`min_lock_amount` `"10000000"` uqor), o penalizare de deblocare anticipată de 500 de puncte de bază (5%) și `enabled: true`. Răspunsul conține și setările de bonus în puncte de bază; acest manual nu le citează, deoarece un bonus nu este un randament promis, iar setările pot fi schimbate prin guvernanță. `GET /qorechain/stakingtier/v1/pool` arată pool-ul din care se plătesc recompensele de blocare.
+
+**Clienți.** Linia de comandă (de mai sus) și `@qorechain/sdk` 0.10.0, care are compozitoarele `lockDelegation`, `unlockEarly` și `claimBonus` și citirile `fetchStakingTierParams`, `fetchStakingLocks` și `fetchStakingTierPool` (vezi [Instalarea SDK](/sdk/install)). Nicio versiune publicată de QoreX sau de dashboard nu are astăzi un ecran de blocare, așa că blocarea pe mainnet se face cu CLI sau cu SDK.
+
+**Nu o confundați** cu [staking-ul xQORE](/user-guide/xqore-staking), care este un mecanism proiectat ce nu este activ, și nici cu clasificarea Triple-Pool de mai jos, care nu modifică ceea ce primiți.
+
 ---
 
 ## Clasificarea Triple-Pool (starea designului)
@@ -200,7 +218,7 @@ Slashing-ul pe QoreChain urmează modulul standard de slashing din Cosmos SDK, c
 
 | Eveniment            | Regulă                                                               | Consecință                                   |
 | -------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
-| Nefuncționare (downtime) | Semnarea a mai puțin de 5% din ultimele 10,000 de blocuri (aproximativ 8,9 ore la blocurile de aproximativ 3,2 secunde ale mainnet-ului) | Jailed pentru 600 de secunde; 1% din stake este tăiat (slashed) |
+| Nefuncționare (downtime) | Semnarea a mai puțin de 5% din ultimele 10,000 de blocuri (aproximativ 8,7 ore la blocurile de aproximativ 3,1 secunde ale mainnet-ului) | Jailed pentru 600 de secunde; 1% din stake este tăiat (slashed) |
 | Semnare dublă (double-signing) | Semnarea a două blocuri diferite la aceeași înălțime         | 5% din stake este tăiat (slashed)            |
 
 Slashing-ul se aplică întregului stake bonded al unui validator, astfel încât delegatorii suportă partea lor proporțională. Poate afecta și stake-ul care se află deja în debondare de la un validator penalizat, motiv pentru care perioada de debondare este o măsură de securitate, nu doar un timp de așteptare.

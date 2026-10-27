@@ -43,7 +43,7 @@ Reine Testnet-Test-Token (FestUSD, FestETH und FestBTC, mit 6, 18 und 8 Dezimals
 
 ### Wie betreibe ich einen Node, Validator oder Light Node?
 
-Für einen Full Node siehe [Einen Node betreiben](/developer-guide/running-a-node). Für einen Validator siehe [Einen Validator betreiben](/developer-guide/running-a-validator). Für einen Light Node siehe [Light Node](/light-node/overview); die Registrierung für das Light-Node-Belohnungsprogramm ist offen und lizenzpflichtig ([Status](/light-node/overview#reward-program-status)).
+Für einen Full Node siehe [Einen Node betreiben](/developer-guide/running-a-node). Für einen Validator siehe [Einen Validator betreiben](/developer-guide/running-a-validator). Für einen Light Node siehe [Light Node](/light-node/overview); die Registrierung für das Light-Node-Belohnungsprogramm ist offen und lizenzpflichtig, und am 27. Oktober 2026 wurde in jedem Netzwerk ein Light Node registriert ([Status](/light-node/overview#reward-program-status)).
 
 ### Welches Signaturverfahren verwendet QoreChain?
 
@@ -51,7 +51,7 @@ QoreChain verwendet ein Post-Quantum-Hybridverfahren, das klassisches **secp256k
 
 ### Warum wird meine EVM-Transaktion mit „no open EVM authorisation window“ abgelehnt?
 
-Seit v3.2.0 lässt die EVM-Lane eine Transaktion nur von einem Konto zu, das einen registrierten Post-Quantum-Schlüssel und ein offenes Autorisierungsfenster besitzt. Öffnen Sie ein Fenster mit einer Post-Quantum-signierten Transaktion auf der Cosmos-Lane und versuchen Sie es dann erneut. Siehe [EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window).
+Seit v3.2.0 lässt die EVM-Lane eine Transaktion nur von einem Konto zu, das einen registrierten Post-Quantum-Schlüssel und ein offenes Autorisierungsfenster besitzt. Öffnen Sie ein Fenster mit einer Transaktion auf der Cosmos-Lane mit hybrider ML-DSA-87-Signatur (FIPS 204) und versuchen Sie es dann erneut. Siehe [EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window).
 
 ### Wie viele Validatoren hat das Mainnet?
 
@@ -59,7 +59,7 @@ Acht gebondete Validatoren am 27. Oktober 2026, mit etwa 60,3 Millionen gebondet
 
 ### Welche Blockzeit kann ich erwarten?
 
-Etwa 3,2 Sekunden im Mainnet und etwa 1,3 Sekunden im Testnet (gemessene Durchschnittswerte, 27. Oktober 2026). Die Blockzeit wird durch die Node-Konfiguration der Validatoren festgelegt.
+Etwa 3,1 Sekunden im Mainnet und etwa 1,3 Sekunden im Testnet (gemessene Durchschnittswerte, 27. Oktober 2026). Die Blockzeit wird durch die Node-Konfiguration der Validatoren festgelegt.
 
 ### Ist xQORE verfügbar?
 

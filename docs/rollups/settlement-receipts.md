@@ -1,16 +1,16 @@
 ---
 slug: /rollups/settlement-receipts
-title: Quantum-safe settlement receipts
+title: Settlement receipts
 sidebar_label: Settlement Receipts
 sidebar_position: 6
 ---
 
-# Quantum-safe settlement receipts
+# Settlement receipts
 
 A **settlement receipt** is a portable record that a rollup's settlement batch was anchored to the Main Chain under a post-quantum signature. It names the rollup, the batch and the anchor, and carries the anchor's **ML-DSA-87** (Dilithium-5, FIPS-204) signature, the same scheme the Main Chain uses.
 
 :::caution Early-stage: no anchors exist yet
-Receipts depend on anchors, and **no rollup or anchor exists on either network yet** (checked 27 October 2026). Since v3.2.2 (live on both networks) a batch submitted with an `anchor_signature` is anchored in `x/multilayer` in the same transaction; a batch submitted without one settles unanchored. The TypeScript RDK (0.6.1) sends that field when its transaction client signs hybrid and is the rollup's creator, and submits unanchored otherwise; the Python, Go, Rust and Java clients sign classical-only and do not build the field. None of this has been exercised on a live rollup. Treat this page as a description of the design and of the building blocks, not of a service you can rely on today.
+Receipts depend on anchors, and **no rollup or anchor exists on either network yet** (checked 27 October 2026). Since v3.2.2 (live on both networks) a batch submitted with an `anchor_signature` is anchored in `x/multilayer` in the same transaction; a batch submitted without one settles unanchored. The TypeScript RDK (0.6.2) sends that field when its transaction client signs hybrid and is the rollup's creator, and submits unanchored otherwise; the Python, Go, Rust and Java clients sign classical-only and do not build the field. None of this has been exercised on a live rollup. Treat this page as a description of the design and of the building blocks, not of a service you can rely on today.
 :::
 
 ## A receipt is a claim, not evidence {#a-receipt-is-a-claim}
@@ -46,9 +46,9 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Pass a `client` for every verification. The receipt API and its checks have changed between releases, so use 0.6.1 (the current release): 0.5.0 could not complete the chain check, and 0.6.0 did not compare every field of the receipt (see below). The Python, Go, Rust and Java clients expose the same build/verify surface; their 0.6.1 releases use the same singular key-lookup route, the same height-based choice of anchor message and the same field-by-field comparison.
+Pass a `client` for every verification. The receipt API and its checks have changed between releases, so use 0.6.2 (the current release; its receipt code is that of 0.6.1): 0.5.0 could not complete the chain check, and 0.6.0 did not compare every field of the receipt (see below). The Python, Go, Rust and Java clients expose the same build/verify surface; their 0.6.1 and 0.6.2 releases use the same singular key-lookup route, the same height-based choice of anchor message and the same field-by-field comparison.
 
-### What 0.6.1 verifies {#what-060-verifies}
+### What 0.6.2 verifies {#what-060-verifies}
 
 `verifySettlementReceipt` never reports `valid` from the receipt alone: without a `client` the result is `mode: "signature-only"` and `valid: false`. With a `client` it re-reads the chain and reports each check separately:
 
@@ -66,9 +66,9 @@ Since 0.6.1 the result also carries the chain's own `anchor` and, when `valid` i
 No anchor exists on either network, so this has only been checked against the package code and offline, not against a real anchor. `buildSettlementReceipt` works only once an anchor covers the batch.
 
 :::note Releases before 0.6.1
-`verifySettlementReceipt` in 0.6.0 matched the chain's anchor on its state root, layer height, validator-set hash and signature, but did not compare the other fields a receipt shows (Main Chain height, anchor time, algorithm, version, and on a version-2 receipt the transaction count and compressed state proof), and it treated the batch state root as informational. The settlement claim itself (state root, anchor signature, creator key) was always bound; what 0.6.0 could not tell you was whether the metadata printed next to it matched the chain. Use 0.6.1.
+`verifySettlementReceipt` in 0.6.0 matched the chain's anchor on its state root, layer height, validator-set hash and signature, but did not compare the other fields a receipt shows (Main Chain height, anchor time, algorithm, version, and on a version-2 receipt the transaction count and compressed state proof), and it treated the batch state root as informational. The settlement claim itself (state root, anchor signature, creator key) was always bound; what 0.6.0 could not tell you was whether the metadata printed next to it matched the chain. Use 0.6.2.
 
-`verifySettlementReceipt` in 0.5.0 failed closed against the live networks, for two reasons that were in the client, not the chain: it looked the creator's key up through a plural `accounts` form of the post-quantum account route, which the networks do not serve (HTTP 501), and it rebuilt only the v1 message, which the chain no longer accepts for anchors since v3.2.2. A genuine receipt therefore could not verify, and a forged one was still refused. Use 0.6.1.
+`verifySettlementReceipt` in 0.5.0 failed closed against the live networks, for two reasons that were in the client, not the chain: it looked the creator's key up through a plural `accounts` form of the post-quantum account route, which the networks do not serve (HTTP 501), and it rebuilt only the v1 message, which the chain no longer accepts for anchors since v3.2.2. A genuine receipt therefore could not verify, and a forged one was still refused. Use 0.6.2.
 :::
 
 ## CLI {#cli}

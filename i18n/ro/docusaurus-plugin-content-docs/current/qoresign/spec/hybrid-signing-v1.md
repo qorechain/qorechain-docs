@@ -122,7 +122,7 @@ refuzată, deoarece semnăturile ei pot fi falsificate.
   nicio semnătură ML-DSA-87. Un cont cu o cheie ML-DSA-87 înregistrată poate
   deschide, de pe lane-ul nativ, o fereastră de autorizare EVM limitată
   (înălțime de expirare, număr maxim de tranzacții, valoare maximă). Vezi
-  [Portofele EVM: modul pregătit pentru era cuantică](/qoresign/guides/evm-quantum-ready).
+  [Portofele EVM: fereastra de autorizare](/qoresign/guides/evm-quantum-ready).
 - Lane-ul SVM: încă neactivat în rețea.
 
 ## Vectori de test {#test-vectors}

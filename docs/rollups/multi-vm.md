@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Because the precompile is inactive, a plain `.call` to it returns **success with empty data and does nothing**; the `ok` flag does not tell you the call took effect. The dependable in-contract guard is a target that always returns a non-empty acknowledgement, with a `require(ret.length > 0)` after the call, so that an empty reply is treated as a failure; the `multivm-rollup` template (0.6.0 and 0.6.1) does this.
+Because the precompile is inactive, a plain `.call` to it returns **success with empty data and does nothing**; the `ok` flag does not tell you the call took effect. The dependable in-contract guard is a target that always returns a non-empty acknowledgement, with a `require(ret.length > 0)` after the call, so that an empty reply is treated as a failure; the `multivm-rollup` template (0.6.0 to 0.6.2) does this.
 
 ## Scaffold a multi-VM rollup
 
@@ -102,4 +102,4 @@ Because the precompile is inactive, a plain `.call` to it returns **success with
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-The `multivm-rollup` template (0.6.0 and 0.6.1) includes `src/crossvm-call.ts` (it checks whether the precompile is live, then prints the calldata) and a `contracts/CrossVmCaller.sol` that calls `executeCrossVMCall(uint8,string,bytes)` and requires a non-empty reply from the target. It does not make a call work while the precompile is inactive. See [Deploying a Rollup](/rollups/deploying-a-rollup) for all scaffolder templates.
+The `multivm-rollup` template (0.6.0 to 0.6.2) includes `src/crossvm-call.ts` (it checks whether the precompile is live, then prints the calldata) and a `contracts/CrossVmCaller.sol` that calls `executeCrossVMCall(uint8,string,bytes)` and requires a non-empty reply from the target. It does not make a call work while the precompile is inactive. See [Deploying a Rollup](/rollups/deploying-a-rollup) for all scaffolder templates.

@@ -9,7 +9,7 @@ sidebar_position: 1
 
 Le SDK QoreChain est le kit de développement multilangage officiel pour créer
 des applications décentralisées sur **QoreChain** — un réseau Layer 1
-triple-VM et résistant au quantique.
+triple-VM à signatures hybrides ML-DSA-87 (FIPS 204).
 
 Cette documentation explique comment installer le SDK, se connecter au réseau,
 lire l'état on-chain, dériver des comptes, signer et envoyer des transactions,
@@ -56,7 +56,7 @@ et [Ce qu'ajoute la 0.10.0](/sdk/install#whats-new-0100).
 Signature pour portefeuilles et backends : voir [QoreSign](/qoresign/overview).
 :::
 
-### Résistant au quantique par conception
+### Signature hybride ML-DSA-87
 
 QoreChain fournit des primitives de cryptographie post-quantique (PQC) basées
 sur **ML-DSA-87** (Dilithium-5, FIPS 204). Aux côtés de la signature classique
@@ -89,10 +89,10 @@ protocolaires qu'aucun autre Layer 1 ne possède :
   `callAtomic` regroupe plusieurs appels inter-VM dans une seule transaction
   atomique signée une seule fois. Voir
   [Appels inter-VM](/sdk/guides/cross-vm).
-- **DX résistante au quantique** — rendez un signataire protégé en
-  post-quantique en un seul appel idempotent (`ensurePqcRegistered` /
+- **DX de signature hybride** — enregistrez la clé ML-DSA-87 d'un signataire en
+  un seul appel idempotent (`ensurePqcRegistered` /
   `migrateToHybrid`), avec un badge React prêt à l'emploi. Voir
-  [Quantum-safe](/sdk/guides/quantum-safe).
+  [Signature hybride](/sdk/guides/quantum-safe).
 
 Deux capacités supplémentaires au niveau de la chaîne sont arrivées en 0.6.0
 et 0.7.0 (la seconde n'est pas encore utilisable sur les réseaux actifs, voir ci-dessous) :
@@ -108,7 +108,7 @@ et 0.7.0 (la seconde n'est pas encore utilisable sur les réseaux actifs, voir c
   [Authenticators & dépenses déléguées](/sdk/guides/authenticators).
 
 Un nouveau kit **`@qorechain/react`** (provider, hooks, `ConnectButton`,
-`QuantumSafeBadge`) fait de la construction d'une dApp résistante au quantique
+`QuantumSafeBadge`) fait de la construction d'une dApp à signature hybride ML-DSA-87
 le chemin par défaut — voir le [guide du kit React](/sdk/guides/react). Pour
 l'argumentaire complet, lisez [Pourquoi le SDK QoreChain](/sdk/why).
 

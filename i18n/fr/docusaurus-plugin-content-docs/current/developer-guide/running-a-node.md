@@ -59,7 +59,7 @@ Remplacez le `--chain-id` approprié pour votre réseau cible tout au long de ce
 
 ---
 
-## Matériel recommandé
+## Matériel recommandé {#recommended-hardware}
 
 | Profil                    | CPU      | RAM   | Disque (SSD NVMe)        | Réseau    |
 | -------------------------- | -------- | ----- | ------------------------- | --------- |
@@ -67,7 +67,7 @@ Remplacez le `--chain-id` approprié pour votre réseau cible tout au long de ce
 | Nœud complet/archive       | 8 cœurs  | 32 Go | 2 To+ (croît avec le temps) | 1 Gbps    |
 | Intégration exchange       | 8 cœurs  | 32 Go | 2 To+ avec marge           | 1 Gbps    |
 
-Un SSD NVMe est fortement recommandé — l'état de la chaîne et les stores EVM/SVM sont intensifs en E/S. Les nœuds archive (sans élagage, indexation complète des transactions) croissent en continu ; prévoyez une marge de disque et une surveillance.
+Un SSD NVMe est fortement recommandé : l'état de la chaîne et les stores EVM/SVM sont intensifs en E/S. Les chiffres de disque ci-dessus sont généreux. Mesures faites sur le mainnet (27 octobre 2026) : un validateur qui a rejoint le réseau par state sync avec `pruning = "custom"` (keep-recent 100000) et `indexer = "null"` occupe environ 10 Go après deux mois, et un nœud en élagage par défaut qui tourne depuis le genesis occupe environ 100 à 130 Go après quatre mois. Le dimensionnement d'un validateur figure dans [Exécution d'un validateur : matériel](/developer-guide/running-a-validator#hardware). Les nœuds archive (sans élagage, indexation complète des transactions) croissent en continu ; prévoyez une marge de disque et une surveillance.
 
 ---
 
@@ -222,7 +222,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 
 ## Démarrage rapide (Fast Bootstrap)
 
-La synchronisation depuis le genesis peut prendre beaucoup de temps. Pour les intégrations, utilisez le **state sync** ou un **snapshot** pour un démarrage à froid rapide.
+La synchronisation depuis le genesis peut prendre beaucoup de temps. Utilisez le **state sync** comme moyen par défaut de rejoindre le réseau ; un **snapshot** n'est qu'un recours (le snapshot du mainnet date du 21 août 2026 et le testnet n'en publie aucun).
 
 ### State sync
 
@@ -231,18 +231,22 @@ Le state sync récupère un snapshot récent de l'état de l'application depuis 
 ```toml
 [statesync]
 enable = true
-rpc_servers = "https://rpc.qore.host:443,https://rpc.qore.host:443"
+rpc_servers = "https://rpc.qore.host:443,https://<a second RPC you run or trust>:26657"
 trust_height = <TRUSTED_BLOCK_HEIGHT>
 trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Prenez `trust_height` / `trust_hash` depuis le champ `stateSync` du manifeste — il est actualisé toutes les heures, c'est donc la source à privilégier :
+Prenez `trust_height` / `trust_hash` depuis le champ `stateSync` du manifeste. Il est actualisé toutes les heures, c'est donc la source à privilégier :
 
 ```bash
 TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
 TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 ```
+
+:::warning Deux serveurs RPC différents
+Le state sync recoupe le point de confiance auprès de **deux** serveurs RPC. Le champ `stateSync.rpcServers` du manifeste liste deux fois `https://rpc.qore.host` sur le mainnet (et deux fois `https://rpc-testnet.qore.host` sur le testnet) : deux entrées identiques satisfont le décompte mais annulent le recoupement. Ajoutez un second RPC que vous exploitez ou en lequel vous avez confiance de manière indépendante, et comparez le hash de confiance avec une seconde source, par exemple `curl -s "https://<second-rpc>/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash`, qui doit être égal à `$TRUST_HASH`.
+:::
 
 En solution de repli/alternative, vous pouvez dériver vous-même une hauteur et un hash de confiance depuis le RPC public :
 

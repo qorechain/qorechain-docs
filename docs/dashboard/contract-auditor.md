@@ -7,37 +7,71 @@ sidebar_position: 7
 
 # Contract Auditor
 
-The **Contract Auditor** runs an AI-powered security analysis of a smart contract, powered by **QCAI**. Submit a contract and QCAI reviews it for vulnerabilities, assigns an overall risk level and security score, and explains each finding with a recommended fix. Like the [Smart Contract Creator](/dashboard/smart-contract-creator), the Auditor works across **17 blockchains** for AI tooling.
+The **Contract Auditor** (sidebar **Build**, entry **AI Audit**) runs a security review of pasted contract source with **QCAIA**, QoreChain's AI assistant, and returns a score, a risk level and findings with recommended fixes. It is for developers who want a fast second look at a contract before testing and deploying it. It is not a formal audit and does not replace human review.
 
-## Run an audit
+## Innovations {#innovations}
 
-1. Sign in, open **AI Audit**, and paste your contract into **Contract Source Code**. Optionally set the **Blockchain** (it defaults to **Auto-detect from code**) and a **Name**.
-2. Select **Run Security Audit**. QCAI reviews the contract and produces a report; **Export PDF** saves it.
+- **Blockchain auto-detection.** "Auto-detect from code" is the default; you can instead pick one of 17 ecosystems.
+- **A separate post-quantum readiness percentage** next to the 0 to 100 Security Score, reported on its own so it is not folded into the security score.
+- **A free audit every UTC day.** The first audit each UTC day is free. After that, on testnet each audit is paid in test QOR after a "Confirm Security Audit" dialog showing the "Audit Cost"; on mainnet, further audits wait until the next UTC day.
+- **Reports private by default.** The owner switches visibility; a public report never shows the owner's name or IP.
+- **Findings with fixes, not just labels.** Each finding has a severity, location, description and recommended fix, and the full report adds recommendations, gas optimizations, best practices and positive aspects.
 
-## Read the report
+## How to use {#how-to-use}
 
-An audit report opens on its own page and includes:
+### Run an audit
 
-- **Risk level** — an overall rating (for example critical, high, medium, or low), color-coded for quick scanning.
-- **Security score** — an overall score from 0 to 100.
-- **Severity breakdown** — how many findings fall into each severity (critical, high, medium, low, and informational).
-- **Summary** — a short overview of the contract's security posture.
+1. Sign in (required) and open **AI Audit**.
+2. Fill **Blockchain** (default "Auto-detect from code"), **Name (Optional)** and **Contract Source Code**.
+3. Select **Run Security Audit**, then confirm the "Confirm Security Audit" dialog.
+4. The **Security Report** appears inline on the same page. **Export PDF** saves it.
 
-### Findings
+**Minimal example:** paste an ERC-20, keep auto-detect, **Run Security Audit**, Confirm, **Export PDF**.
 
-Each finding lists its severity, a title, the location in the code it refers to, a description of the issue, and a recommended fix. When a contract has no issues at a given level, the report says so.
+### Read the report
 
-Where applicable, the report also includes sections for general recommendations, gas optimizations, best practices, and positive aspects the contract already gets right.
+The inline report shows:
 
-## Review past audits
+- **Risk Level**, colour-coded;
+- **Security Score** from 0 to 100, and the post-quantum readiness percentage;
+- an **Executive Summary**;
+- **Vulnerabilities Found (N Issues)**, with severities Critical, High, Medium, Low and Info. A clean result reads "No vulnerabilities detected".
 
-The audits list shows your previous reports in a table with the contract name, blockchain, risk level, security score, and when each was created. A search box filters by contract name or blockchain. Select any row to reopen the full report. Reports are **private by default**; on a report you own, a switch at the top reads "This report is private" — turn it on to make the report public so anyone with the link can read it (your name and IP are never shown), and turn it off to make it private again.
+Each finding lists severity, title, the location in the code, a description and a recommended fix.
+
+The full report page `/audits/<id>` adds the severity breakdown, **Recommendations**, **Gas optimizations**, **Best practices**, **Positive aspects** and, for the owner, the visibility switch.
+
+### Past audits and sharing
+
+- Your own reports are under **Profile > Audited**.
+- The **All Security Audits** list at `/audits` (linked from the home page) shows the latest audits across all users in a table with contract name, blockchain, risk level, score and date. A search box filters by name, blockchain or risk level. A row opens only if the report is public or yours.
+- On a report you own, a switch at the top reads "This report is private". Turn it on to make the report public so anyone with the link can read it (your name and IP are never shown), and off to make it private again.
 
 :::tip Audit before you deploy
-Run an audit as the last step before deploying, and re-run it after any change. Treat findings as guidance to verify, not an automatic guarantee — combine the report with your own testing on [testnet](/getting-started/connecting-to-testnet).
+Run an audit as the last step before deploying, and re-run it after any change. Treat findings as guidance to verify, not a guarantee, and combine the report with your own testing on [testnet](/getting-started/connecting-to-testnet).
 :::
+
+## How to access {#how-to-access}
+
+- **URL:** [dashboard.qorechain.io/audit](https://dashboard.qorechain.io/audit), or **New Audit** on the home page.
+- **Account:** sign-in is required to run an audit. The `/audits` list and public reports at `/audits/<id>` open without an account.
+- **Networks:** works on both. The free-daily rule is the same; paid extra audits exist on testnet only.
+- **Cost:** the first audit each UTC day is free; testnet extras cost test QOR; mainnet extras wait for the next day.
+
+## Where it is published {#where-published}
+
+| Surface | Address | Account |
+| --- | --- | --- |
+| Run an audit | `dashboard.qorechain.io/audit` | Sign-in required |
+| All Security Audits | `dashboard.qorechain.io/audits` | None |
+| A report | `dashboard.qorechain.io/audits/<id>` | None if public; owner otherwise |
+
+## Limits and known issues {#limits}
+
+- It reviews only the source you paste, with no compile, test or runtime analysis. Findings can be incomplete or wrong.
+- A private report cannot be opened by anyone but its owner, even with the link.
 
 ## Related
 
-- [Smart Contract Creator](/dashboard/smart-contract-creator) — generate contracts with QCAI.
-- [Post-Quantum Security](/architecture/post-quantum-security) — how QoreChain secures accounts and signatures.
+- [Smart Contract Creator](/dashboard/smart-contract-creator) - generate contracts with QCAIA.
+- [Post-Quantum Security](/architecture/post-quantum-security) - how QoreChain secures accounts and signatures.

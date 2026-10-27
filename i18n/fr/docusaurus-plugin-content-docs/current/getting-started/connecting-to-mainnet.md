@@ -130,7 +130,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### Paramètres recommandés
 
-Un nœud complet ne choisit pas le temps de bloc — ce sont les validateurs qui le font (le mainnet produit actuellement un bloc environ toutes les 3,2 secondes). Laissez les délais de consensus à leurs valeurs par défaut, sauf si vous exploitez un validateur et que le groupe de validateurs vous a communiqué des valeurs. Un paramètre de mempool utile pour un nœud RPC public, dans `config.toml` :
+Un nœud complet ne choisit pas le temps de bloc — ce sont les validateurs qui le font (le mainnet produit actuellement un bloc environ toutes les 3,1 secondes). Laissez les délais de consensus à leurs valeurs par défaut, sauf si vous exploitez un validateur et que le groupe de validateurs vous a communiqué des valeurs. Un paramètre de mempool utile pour un nœud RPC public, dans `config.toml` :
 
 ```toml
 [mempool]
@@ -258,7 +258,7 @@ http://localhost:1317
 | Chain ID EVM           | `9801` (hex `0x2649`)                  |
 | Version de chaîne      | v3.2.4 (appliquée à la hauteur 3 742 566 le 23 octobre 2026) |
 | En production depuis   | 7 juin 2026                            |
-| Temps de bloc          | environ 3,2 secondes (moyenne mesurée) |
+| Temps de bloc          | environ 3,1 secondes (moyenne mesurée) |
 | Jeton                  | QOR (`uqor`, 10^6 micro-unités = 1 QOR) |
 | Prix de gaz minimum    | `0.1uqor`                              |
 | Préfixe de compte      | `qor`                                  |

@@ -107,14 +107,14 @@ l'instanciation QoreChain Native sont soumis à autorisation (l'instanciation es
 
 ---
 
-## 3. Sécurité quantique par défaut
+## 3. Signature hybride par défaut
 
-**Rendez un signataire protégé contre le quantique en un seul appel.**
+**Enregistrez la clé ML-DSA-87 d'un signataire en un seul appel.**
 
 QoreChain impose des signatures post-quantiques hybrides (ML-DSA-87 +
 classiques) au niveau du protocole. Le SDK réduit leur adoption à une seule
 ligne : vérifier, enregistrer et migrer vers la signature hybride — avec un
-badge React pour montrer aux utilisateurs qu'ils sont protégés.
+badge React qui indique si une adresse a une clé enregistrée.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -136,7 +136,7 @@ await hybrid.signAndBroadcastHybrid({
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// Shows a status badge when the address has a registered PQC key
 // (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
@@ -145,7 +145,7 @@ import { QuantumSafeBadge } from "@qorechain/react";
 obligatoire sur la voie Native de QoreChain, pas une expérimentation, et le SDK
 réduit son adoption à un appel d'enregistrement plus un chemin d'envoi hybride.
 L'enregistrement est explicite : il n'y a pas d'enregistrement automatique à la
-première transaction. Voir [Sécurité quantique](/sdk/guides/quantum-safe).
+première transaction. Voir [Signature hybride](/sdk/guides/quantum-safe).
 
 ---
 
@@ -212,7 +212,7 @@ const msg = await buildPhantomExecuteCosmos({
 **Pourquoi c'est important :** une fois le module activé, chaque dépense est
 bornée par une taxonomie de permissions on-chain, des limites `SpendingRule` et
 une expiration — moindre privilège et révocable — tandis que le compte lui-même
-reste protégé contre le quantique. Voir
+reste protégé en post-quantique. Voir
 [Authentificateurs et dépenses déléguées](/sdk/guides/authenticators).
 
 ---

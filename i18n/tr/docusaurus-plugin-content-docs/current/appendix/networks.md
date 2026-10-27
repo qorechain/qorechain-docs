@@ -18,7 +18,7 @@ QoreChain ağları için birleştirilmiş bir başvuru kaynağı — zincir tan�
 | **EVM zincir kimliği (EIP-155)** | **9801** (onaltılık `0x2649`) | **9800** (onaltılık `0x2648`) |
 | **Canlıya geçiş tarihi** | 7 Haziran 2026 | 1 Temmuz 2026 (o tarihten beri kesintisiz; sıfırlama yok) |
 | **Zincir sürümü** | v3.2.4 (3.742.566 yüksekliğinde uygulandı, 23 Ekim 2026, yönetişim önerisi 13). v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı | v3.2.6 (8.970.638 yüksekliğinde uygulandı, 27 Ekim 2026; v3.2.5, 26 Ekim'de 8.890.800 yüksekliğinde, v3.2.4 ise 19 Ekim'de 8.337.253 yüksekliğinde uygulandı) |
-| **Blok süresi (ölçülen ortalama)** | yaklaşık 3,2 sn | yaklaşık 1,3 sn |
+| **Blok süresi (ölçülen ortalama)** | yaklaşık 3,1 sn | yaklaşık 1,3 sn |
 | **Sürüm manifestosu** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Çerçeve** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimum gaz fiyatı** | `0.1uqor` | `0.1uqor` |

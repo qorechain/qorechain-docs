@@ -31,14 +31,14 @@ QoreChain está diseñado para admitir dos protocolos de puente operando en para
 
 | Protocolo | Conexiones           | Modelo de Seguridad                  | Caso de Uso                             |
 | -------- | -------------------- | ------------------------------------ | --------------------------------------- |
-| **IBC**  | hasta 8 canales (ninguno abierto) | IBC estándar + firmas PQC de paquetes | Cadenas compatibles con Cosmos SDK      |
+| **IBC**  | hasta 8 canales (ninguno abierto) | IBC estándar (ICS-20) | Cadenas compatibles con Cosmos SDK      |
 | **QCB**  | 37 configs de cadena (todas pending) | multifirma Dilithium-5 7-de-10        | Cadenas no IBC (EVM, Solana, TON, etc.) |
 
 Las **37 configuraciones de cadena** son las **36 cadenas externas** enumeradas a continuación más **Injective**, que está configurada como una cadena de tipo IBC. No existe una configuración loopback de QoreChain. Los canales IBC planificados conectan con cadenas compatibles con Cosmos SDK.
 
 ## Canales IBC
 
-QoreChain está diseñado para mantener conexiones IBC con las siguientes 8 cadenas, retransmitidas vía Hermes v1.x. **Ninguna de estas contrapartes está conectada todavía** (la mainnet no tiene ningún canal ni cliente IBC; la testnet tiene un único canal de prueba ICS-20 hacia una cadena con ID `provider`, comprobado el 27 de octubre de 2026), por lo que esta tabla enumera únicamente contrapartes planificadas:
+QoreChain está diseñado para mantener conexiones IBC con las siguientes 8 cadenas, retransmitidas por un relayer IBC. **Ninguna de estas contrapartes está conectada todavía** (la mainnet no tiene ningún canal ni cliente IBC; la testnet tiene un único canal de prueba ICS-20 hacia una cadena con ID `provider`, comprobado el 27 de octubre de 2026), por lo que esta tabla enumera únicamente contrapartes planificadas:
 
 | Cadena     | Descripción                    |
 | ---------- | ------------------------------ |
@@ -51,13 +51,12 @@ QoreChain está diseñado para mantener conexiones IBC con las siguientes 8 cade
 | Babylon    | Protocolo de restaking de BTC  |
 | Injective  | Interoperabilidad DeFi / libro de órdenes |
 
-### Configuración del Relayer IBC
+### Relayer IBC {#ibc-relayer}
 
-* **Software de relayer**: Hermes v1.x
-* **Actualizaciones de cliente**: Refresco automático del light client
-* **Detección de comportamiento indebido**: Habilitada — el relayer monitorea la equivocación
-* **Limpieza de paquetes**: Cada 100 bloques se limpian los paquetes IBC pendientes
-* **Mejora PQC**: Cada paquete IBC originado en QoreChain incluye una firma Dilithium-5 opcional para seguridad cuántica a futuro. Las cadenas receptoras compatibles con PQC pueden verificar esta firma junto con la verificación IBC estándar.
+Los paquetes IBC y las actualizaciones de cliente se transportan entre cadenas mediante un relayer, un programa independiente que observa ambas cadenas y envía los paquetes, las pruebas y las actualizaciones de cliente. El relayer no forma parte de la cadena, y este manual no publica ni promete un servicio de relayer. QoreChain mantiene un fork público de relayer llamado QORel ([github.com/qorechain/QORel](https://github.com/qorechain/QORel)); todavía no tiene ninguna versión publicada, por lo que hoy no hay nada que instalar a partir de él.
+
+* **Las actualizaciones de cliente, la monitorización de comportamiento indebido y la limpieza de paquetes** son ajustes del relayer que ejecute cada operador, no parámetros de la cadena. Por ejemplo, un relayer puede refrescar los light clients automáticamente, vigilar la equivocación y limpiar periódicamente los paquetes pendientes.
+* **Firmas poscuánticas.** Las transacciones que QoreChain acepta en su carril nativo llevan una firma híbrida secp256k1 + ML-DSA-87 (FIPS 204), incluidas las transacciones que un relayer le envía; consulte [Seguridad Poscuántica](/architecture/post-quantum-security). El formato del paquete IBC en sí es el estándar, y este manual no afirma que los paquetes lleven una firma adicional que otras cadenas verifiquen.
 
 ## Protocolo QCB (QoreChain Bridge)
 
@@ -119,7 +118,7 @@ Para verificar eventos de cadenas externas sin necesidad de confianza, el puente
 
 ## Flujo de Depósito (Externo a QoreChain)
 
-La secuencia siguiente muestra el depósito QCB tal como está diseñado: los activos se bloquean en una cadena externa, los validadores de QoreChain envían atestaciones firmadas con PQC (7-de-10 Dilithium-5) y se acuñan tokens envueltos. Las cadenas compatibles con Cosmos SDK usarían en su lugar la ruta IBC paralela (hasta 8 canales, con firmas Dilithium-5 opcionales de paquetes). Ninguna de las dos rutas está activa; nunca se ha realizado ningún depósito.
+La secuencia siguiente muestra el depósito QCB tal como está diseñado: los activos se bloquean en una cadena externa, los validadores de QoreChain envían atestaciones firmadas con PQC (7-de-10 Dilithium-5) y se acuñan tokens envueltos. Las cadenas compatibles con Cosmos SDK usarían en su lugar la ruta IBC paralela (hasta 8 canales, transportada por un relayer IBC). Ninguna de las dos rutas está activa; nunca se ha realizado ningún depósito.
 
 ```mermaid
 sequenceDiagram

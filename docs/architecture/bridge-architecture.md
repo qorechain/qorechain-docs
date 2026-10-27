@@ -31,14 +31,14 @@ QoreChain is designed to support two bridge protocols operating in parallel:
 
 | Protocol | Connections          | Security Model                       | Use Case                                |
 | -------- | -------------------- | ------------------------------------ | --------------------------------------- |
-| **IBC**  | up to 8 channels (none open)  | Standard IBC + PQC packet signatures | Cosmos SDK-compatible chains            |
+| **IBC**  | up to 8 channels (none open)  | Standard IBC (ICS-20) | Cosmos SDK-compatible chains            |
 | **QCB**  | 37 chain configs (all pending) | 7-of-10 Dilithium-5 multisig         | Non-IBC chains (EVM, Solana, TON, etc.) |
 
 The **37 chain configurations** are the **36 external chains** listed below plus **Injective**, which is configured as an IBC-type chain. There is no QoreChain loopback configuration. The planned IBC channels connect to Cosmos SDK-compatible chains.
 
 ## IBC Channels
 
-QoreChain is designed to maintain IBC connections to the following 8 chains, relayed via Hermes v1.x. **None of these counterparties is connected yet** (mainnet has no IBC channel or client; the testnet has a single ICS-20 test channel to a chain with ID `provider`, checked 27 October 2026), so this table lists planned counterparties only:
+QoreChain is designed to maintain IBC connections to the following 8 chains, relayed by an IBC relayer. **None of these counterparties is connected yet** (mainnet has no IBC channel or client; the testnet has a single ICS-20 test channel to a chain with ID `provider`, checked 27 October 2026), so this table lists planned counterparties only:
 
 | Chain      | Description                    |
 | ---------- | ------------------------------ |
@@ -51,13 +51,12 @@ QoreChain is designed to maintain IBC connections to the following 8 chains, rel
 | Babylon    | BTC restaking protocol         |
 | Injective  | DeFi / orderbook interoperability |
 
-### IBC Relayer Configuration
+### IBC Relayer {#ibc-relayer}
 
-* **Relayer software**: Hermes v1.x
-* **Client updates**: Automatic light client refresh
-* **Misbehaviour detection**: Enabled — the relayer monitors for equivocation
-* **Packet clearing**: Every 100 blocks, pending IBC packets are cleared
-* **PQC enhancement**: Every IBC packet originating from QoreChain includes an optional Dilithium-5 signature for forward quantum security. PQC-aware receiving chains can verify this signature alongside standard IBC verification.
+IBC packets and client updates are carried between chains by a relayer, a separate program that watches both chains and submits the packets, proofs and client updates. The relayer is not part of the chain, and this manual does not publish or promise a relayer service. QoreChain maintains a public relayer fork named QORel ([github.com/qorechain/QORel](https://github.com/qorechain/QORel)); it has no release yet, so there is nothing to install from it today.
+
+* **Client updates, misbehaviour monitoring and packet clearing** are settings of whichever relayer an operator runs, not chain parameters. For example, a relayer can refresh light clients automatically, watch for equivocation, and periodically clear pending packets.
+* **Post-quantum signatures.** Transactions that QoreChain accepts on its native lane carry a hybrid secp256k1 + ML-DSA-87 signature (FIPS 204), including the transactions a relayer submits to it; see [Post-Quantum Security](/architecture/post-quantum-security). The IBC packet format itself is the standard one, and this manual makes no claim that packets carry an extra signature that other chains verify.
 
 ## QCB (QoreChain Bridge) Protocol
 
@@ -119,7 +118,7 @@ To verify external-chain events trustlessly, the bridge is designed to run on-ch
 
 ## Deposit Flow (External to QoreChain)
 
-The sequence below shows the designed QCB deposit: assets are locked on an external chain, QoreChain validators submit PQC-signed attestations (7-of-10 Dilithium-5), and wrapped tokens are minted. Cosmos SDK-compatible chains would instead use the parallel IBC path (up to 8 channels, with optional Dilithium-5 packet signatures). Neither path is active; no deposit has ever been made.
+The sequence below shows the designed QCB deposit: assets are locked on an external chain, QoreChain validators submit PQC-signed attestations (7-of-10 Dilithium-5), and wrapped tokens are minted. Cosmos SDK-compatible chains would instead use the parallel IBC path (up to 8 channels, carried by an IBC relayer). Neither path is active; no deposit has ever been made.
 
 ```mermaid
 sequenceDiagram

@@ -118,7 +118,7 @@ añade los tipos `ContractMsg`, `FeeInput`, `InstantiateOpts`,
 
 Añade los tipos de mensaje de QoreChain Native a un registro y envía el
 `MsgExecuteContract` a través del constructor híbrido. La clave ML-DSA-87 de la
-cuenta debe estar registrada antes (consulta [Resistente a lo cuántico](/sdk/guides/quantum-safe)).
+cuenta debe estar registrada antes (consulta [Firma híbrida](/sdk/guides/quantum-safe)).
 Requiere
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:
 

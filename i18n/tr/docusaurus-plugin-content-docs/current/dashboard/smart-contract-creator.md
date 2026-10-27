@@ -7,57 +7,102 @@ sidebar_position: 6
 
 # Akıllı Sözleşme Oluşturucu
 
-**Akıllı Sözleşme Oluşturucu**, **QCAI** tarafından desteklenerek, sade bir dilde verilen açıklamadan akıllı sözleşmeler üretir. Ne istediğinizi anlatın, hedef blok zincirinizi seçin ve QCAI sözleşmeyi sizin için yazsın. Yapay zeka araçları için **17 blok zinciri** desteklediğinden, geliştirme yaptığınız ekosistemi hedefleyebilirsiniz.
-
-Bunu **hesap olmadan** deneyebilirsiniz: ilk kez gelen bir ziyaretçi bir ücretsiz üretim hakkı alır ve sözleşmenin tamamını görür. Bir sonraki üretim için, kaydetme, denetleme ve dağıtma ile birlikte ücretsiz bir hesap gerekir; ücretsiz denemeniz kullanıldıktan sonra sayfa **Ücretsiz hesap oluştur** seçeneğini sunar.
-
-Ürettiğiniz sözleşmeleri kaydetmek ve yönetmek için oturum açın — bkz. [Oturum açma](/dashboard/overview#sign-in).
-
-## Bir sözleşme üretin
-
-1. **Bir örnekle başlayın veya kendinizinkini tanımlayın.** Sayfa "What would you like to build?" ile açılır. **Or start from an example:** altında **Token**, **NFT collection**, **Locked vault** veya **2-of-3 multisig** öğelerinden birini seçin — her biri eksiksiz bir açıklama doldurur ve uygun bir blok zinciri ile şablon seçer — ya da kendi açıklamanızı **Contract Description** alanına yazın. Ne kadar spesifik olursanız, sonuç o kadar iyi olur.
-2. **Blok zincirini seçin.** **Target Blockchain** öğesini kullanın. Seçiminize ait sözleşme dili ve kategorisi, seçicinin yanında gösterilir.
-3. **Bir sözleşme türü seçin** (isteğe bağlı). **Contract Type**, token, NFT veya yönetişim sözleşmesi gibi bir başlangıç şablonu sunar; yalnızca açıklamanıza güvenmek için bunu **Custom (describe in prompt)** üzerinde bırakın.
-4. **Üretin.** **Generate Smart Contract** öğesini seçin. QCAI sözleşmeyi üretirken bir ilerleme göstergesi durumu gösterir.
-
-## Sonucu inceleyin
-
-Üretim tamamlandığında, Kontrol Paneli sözleşmeyi söz dizimi vurgulamalı bir görünümde, sözleşme adı, blok zinciri, dil, dosya boyutu ve üretildiği zaman gibi ayrıntılarla birlikte gösterir. Kullandığınız istem, referans olması için sonuçla birlikte gösterilir.
-
-Buradan şunları yapabilirsiniz:
-
-- Sözleşme kodunu panonuza **kopyalayın** (**Copy Code**).
-- Sözleşmeyi **PDF olarak dışa aktarın** (**Export PDF**).
-- Sözleşmeyi, seçtiğiniz blok zinciri için doğru biçimde bir dosya olarak **indirin** (**Download File**).
-- Sözleşmeyi daha da iyileştirmek için **düzenleyin** (**Edit Contract**).
-
-## Sözleşmenizi dağıtın {#deploy}
-
-### Mainnet üzerinde (EVM) — emanetsiz dağıtım {#deploy-mainnet}
-
-Mainnet dağıtımı emanetsizdir (non-custodial): Kontrol Paneli sözleşmenizi derler ve **imzasız** dağıtım verisini döndürür — anahtarlarınızı asla tutmaz ve sizin adınıza asla imza atmaz. Dağıtımı kendi cüzdanınızda imzalayıp yayınlarsınız; ardından Kontrol Paneli ortaya çıkan sözleşmeyi kaydeder.
-
-1. Dağıtmak istediğiniz sözleşmeyi (EVM hedefli bir sözleşme) açın ve **Mainnet** üzerinde **Deploy** öğesini seçin. Bu, ilk mainnet işleminizse [tek seferlik risk onayını](/dashboard/overview#risk-acknowledgement) kabul edin.
-2. Henüz bağlı değilse **MetaMask**'i bağlayın — bkz. [Genel Bakış ve Başlangıç](/dashboard/overview#connect-your-wallet). Zincir v3.2.0'dan itibaren EVM şeridi ayrıca hesabın kayıtlı bir kuantum sonrası anahtara ve QoreX'ten açılan **açık bir EVM yetkilendirme penceresine** sahip olmasını gerektirir (bkz. [MetaMask ile Gönderme](/dashboard/wallet#send-metamask)); biri olmadan zincir dağıtımı reddeder.
-3. Kontrol Paneli sözleşmeyi derler ve imzasız dağıtım işlemini cüzdanınıza iletir.
-4. İşlemi MetaMask'te inceleyin — ağ, gas ve veri — ardından imzalayıp kendiniz yayınlamak için onaylayın.
-5. Dağıtım zincir üzerinde onaylandığında, Kontrol Paneli ortaya çıkan sözleşme adresini kayıtlı sözleşmelerinizin yanına kaydeder.
-
-Kontrol Paneli'nden yalnızca **EVM** (Solidity) sözleşmeleri dağıtılabilir. QoreChain Native ve Solana programı dağıtımları şu anda her iki ağda da kullanılamamaktadır.
-
-### Testnet üzerinde — tek tıkla {#deploy-testnet}
-
-Testnet üzerinde, Kontrol Paneli tarafından yönetilen test cüzdanı bir EVM dağıtımını sizin için tek tıkla imzalar ve gönderir; böylece mainnet'e geçmeden önce [Faucet](/dashboard/faucet) tokenlarıyla hızlıca yineleme yapabilirsiniz. Testnet, mainnet ile aynı EVM şeridi kuralını uygular; bu nedenle hesapta kuantum sonrası anahtar veya açık bir EVM penceresi yoksa bir dağıtım yine de reddedilebilir.
-
-## Paylaşın ve yeniden kullanın
-
-Üretilen her sözleşmenin kendi sayfası vardır. Sözleşmeler **varsayılan olarak özeldir**: kendinizinkini yalnızca siz açabilirsiniz. Sahibi olarak sözleşme sayfasında bir **Public** / **Private** düğmesi göreceksiniz; bağlantıya sahip herkesin sözleşmeyi açabilmesi (ve fork edebilmesi) için **Public** olarak ayarlayın, geri çekmek için tekrar **Private** yapın. Size ait olmayan herkese açık bir sözleşmeyi açarsanız, kendi kopyanızı başlatmak ve oradan devam etmek için onu **fork** edebilirsiniz (çatallayabilirsiniz).
+**Akıllı Sözleşme Oluşturucu** (kenar çubuğunda **Build** bölümü, **SC Creator** girişi), QoreChain'in yapay zeka asistanı **QCAIA** ile sade bir dilde verilen açıklamayı, seçtiğiniz bir blok zinciri için sözleşme kaynak koduna dönüştürür. Bir token, NFT koleksiyonu, kasa (vault) veya multisig için ilk taslağı isteyen ya da günlük olarak yazmadığı bir dilde sözleşme isteyen ve ardından sözleşmeyi kendisi inceleyip test eden ve dağıtan geliştiriciler içindir.
 
 :::tip Her zaman inceleyin ve test edin
-QCAI tarafından üretilen kod, sağlam bir başlangıç noktasıdır, incelemenin yerine geçmez. Değerli bir şey dağıtmadan önce sözleşmeyi okuyun, [testnet](/getting-started/connecting-to-testnet) üzerinde test edin ve [Contract Auditor](/dashboard/contract-auditor) üzerinden geçirin.
+Üretilen kod sağlam bir başlangıç noktasıdır, incelemenin yerine geçmez. Değerli bir şey dağıtmadan önce sözleşmeyi okuyun, [testnet](/getting-started/connecting-to-testnet) üzerinde test edin ve [Contract Auditor](/dashboard/contract-auditor) üzerinden geçirin.
 :::
+
+## Yenilikler {#innovations}
+
+- **Hesap olmadan bir üretim.** İlk kez gelen bir ziyaretçi bir kez üretim yapabilir ve sözleşmenin tamamını görür. Bu, ziyaretçi başına ve genel bir günlük üst sınırla sınırlandırılmıştır. Ücretsiz deneme sonucunda **Deploy** yoktur ve **Edit** çalışmaz; sayfa bunun ardından **Create a free account** seçeneğini sunar.
+- **Oturum açıkken her UTC gününde bir ücretsiz üretim.** Her UTC gününün ilk üretimi her iki ağda da ücretsizdir. Bundan sonra testnet üzerinde her üretim, "Generation Cost" bilgisini gösteren bir "Confirm Contract Generation" iletişim kutusundan sonra test cüzdanınızdan test QOR ile ödenir. Mainnet'te Kontrol Paneli hiçbir anahtar tutmaz; bu nedenle sonraki üretimler bir sonraki UTC gününe kadar reddedilir.
+- **Her şeyi dolduran başlangıç örnekleri.** **Token**, **NFT collection**, **Locked vault** ve **2-of-3 multisig**; her biri eksiksiz bir istem doldurur, hedefi QoreChain olarak ayarlar ve bir şablon seçer.
+- **17 hedef blok zinciri,** her birinin kendi şablonları ve "Custom (describe in prompt)" seçeneği vardır: QoreChain, Cosmos, Ethereum, Solana, Avalanche, NEAR, Polygon, BSC, TON, Cardano, Polkadot, Tezos, Arbitrum, Optimism, Sui, Aptos ve Tron.
+- **Mainnet EVM üzerinde emanetsiz (non-custodial) dağıtım.** Kontrol Paneli sözleşmeyi derler ve **imzasız** dağıtım verisini döndürür. Herhangi bir enjekte EVM cüzdanı (MetaMask, Rabby, Coinbase Wallet) 9801 zincirini ekler veya bu zincire geçer, ardından imzalayıp yayınlar; Kontrol Paneli adresi sonradan kaydeder.
+- **Testnet üzerinde yönetişimle onaylanmış QoreChain Native kodları.** Üretilen kod yüklenmez. Testnet yönetişiminin zaten onayladığı ve zincirden canlı okunan bir kodu örneklendirirsiniz (instantiate): CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) ve Counter example (qore-counter). Instantiate mesajı önceden doldurulur ve düzenlenebilir.
+- **İletişim kutusunda derleme geri bildirimi.** Hatalar satır içinde gösterilir, iletişim kutusu çıkarsayamadığı yapıcı (constructor) argümanlarını sorar ve token alanları koddan veya istemden önceden okunur.
+- **Varsayılan olarak özel, herkese açıkken fork edilebilir.** Sahibi **Public** veya **Private** arasında geçiş yapar; herkese açık bir sözleşmenin sahibi olmayan biri onu **Fork** edebilir.
+
+## Nasıl kullanılır {#how-to-use}
+
+### Bir sözleşme üretin
+
+1. **SC Creator** öğesini açın. Sayfa başlığı "What would you like to build?" şeklindedir.
+2. **Bir örnekle başlayın veya kendinizinkini tanımlayın.** "Or start from an example:" altında bir başlangıç örneği seçin ya da kendi açıklamanızı **Contract Description** alanına yazın. Ne kadar spesifik olursanız, sonuç o kadar iyi olur.
+3. **Target Blockchain** öğesini seçin. Dil ve kategori bunun altında gösterilir ("Language: ... | Category: ..."). Zinciri değiştirmek o zincirin ilk şablonunu otomatik olarak seçer; bu nedenle sonucu yalnızca açıklamanızın belirlemesini istiyorsanız **Contract Type** içinde **Custom (describe in prompt)** öğesini kendiniz seçin.
+4. Yalnızca oturum açıkken: bir **Generation Tier** seçin (Standard veya Premium). Premium mainnet'te kullanılamaz.
+5. **Generate Smart Contract** öğesini seçin. Oturum açıkken bir "Confirm Contract Generation" iletişim kutusu gelir ("Generation Cost" bilgisini ve bugünkü ücretsiz hak durumunu gösterir). Sonuç "Generated by QCAIA Standard" olarak etiketlenir.
+
+### Sonucu inceleyin
+
+Sözleşme, aşağıdaki eylemlerle birlikte söz dizimi vurgulamalı bir görünümde gösterilir:
+
+- **Deploy**,
+- **Edit Now**,
+- **Download File** (seçilen zincir için doğru biçimde),
+- **Copy Code**.
+
+Ayrıntılar ve kullandığınız istem sonuçta değil, sözleşmenin kendi sayfasında (aşağıda) yer alır.
+
+### Sözleşme sayfası
+
+Kaydedilen her sözleşmenin `/smart-contract-creator/<id>` adresinde bir sayfası vardır: Copy, **Public / Private**, Download, Edit veya Fork, bir istatistik satırı (Created, Lines, Size, Gen Time, Tokens, AI Model), "Generation Prompt" ve "Download from Cloud" (bağlantı 24 saat sonra sona erer). Herkese açık bir sözleşme için bile sözleşme sayfasını açmak oturum açmayı gerektirir.
+
+**Edit** sayfası **Save Changes** (sahibi için) veya **Save as New Contract** (fork ederken) ile birlikte **Deploy** seçeneğini sunar. **Export PDF** eylemi sonuçta değil, Profilinizdeki sözleşme listesinde bulunur.
+
+### Sözleşmenizi dağıtın {#deploy}
+
+Deploy, sonuç ve düzenleme sayfalarındadır. İletişim kutusu "Target: TESTNET ... 9800" veya "Target: MAINNET ... 9801" başlıklı bir bant gösterir.
+
+#### Mainnet üzerinde (EVM), emanetsiz {#deploy-mainnet}
+
+Kontrol Paneli anahtarlarınızı asla tutmaz ve sizin adınıza asla imza atmaz.
+
+1. Hedefi QoreChain EVM üzerinde çalışan bir sözleşmede, başlık **Mainnet** üzerindeyken **Deploy** öğesini seçin. Bu tarayıcıda Wallet, Trade veya Explorer genel bakışının ilk mainnet görünümünüzse, orada [tek seferlik onayı](/dashboard/overview#risk-acknowledgement) kabul edersiniz; Creator'ın kendisi ek bir risk ekranı göstermez.
+2. **Deploy from your wallet** öğesini seçin. Herhangi bir enjekte EVM cüzdanı çalışır; ağı iletişim kutusunun kendisi ekler veya değiştirir (zincir 9801).
+3. Zincir v3.2.0'dan itibaren EVM şeridi ayrıca, dağıtımı yapan hesabın kayıtlı bir ML-DSA-87 anahtarına ve QoreX'ten açılan **açık bir EVM yetkilendirme penceresine** sahip olmasını gerektirir (bkz. [MetaMask ile Gönderme](/dashboard/wallet#send-metamask)). Bunlar olmadan zincir dağıtımı reddeder.
+4. Kontrol Paneli sözleşmeyi derler ve imzasız işlemi cüzdanınıza iletir. "Confirm in your wallet..." mesajını bekleyin ve ağı, gas'i ve veriyi inceleyin.
+5. Onaylandığında, Kontrol Paneli sözleşme adresini kayıtlı sözleşmelerinizin yanına kaydeder.
+
+Mainnet üzerindeki diğer hedefler "Direct deploy not available for this contract" mesajını gösterir. QoreChain Native ve SVM dağıtımları mainnet'te sunulmaz ve Kontrol Paneli'nden CosmWasm yayımlama yoktur.
+
+#### Testnet üzerinde, tek tıkla {#deploy-testnet}
+
+- **EVM:** **Deploy to Testnet** öğesini seçin. Kontrol Paneli'nin test cüzdanı dağıtımı imzalar ve gönderir; başarı durumunda "Deployed on Testnet" gösterilir. Mainnet'e geçmeden önce [Faucet](/dashboard/faucet) tokenlarıyla yineleme yapın.
+- **QoreChain Native:** bir **Approved contract** seçin, **Label \*** alanını ayarlayın, **Instantiate message (JSON)** alanını kontrol edin veya düzenleyin ve **Instantiate on Testnet** öğesini seçin. Testnet üzerindeki sözleşme yüklemeleri yönetişim yoluyla incelenir; bu yüzden kendi kodunuzu yüklemek yerine onaylı kodları örneklendirirsiniz. Kontrol Paneli'nin tanımadığı onaylı kodlar boş bir mesajla görünür. Özel sözleşmeler QoreChain EVM'ye (Solidity) gider.
+- Kontrol Paneli'nden yalnızca EVM sözleşmeleri ve onaylı QoreChain Native kodları dağıtılabilir. Başka bir EVM zinciri (Polygon, BSC, Arbitrum vb.) için yazılmış bir sözleşme o zincirin kendi ağına değil, QoreChain EVM'ye dağıtılır; EVM olmayan zincirler için sözleşmeler buradan dağıtılamaz.
+
+**Minimal örnek (testnet):** **Token**, **Generate Smart Contract**, Confirm, **Deploy** seçeneklerini seçin, "CW20 token (cw20-base)" seçin, Label olarak `my-token` girin, **Instantiate on Testnet**.
+
+### Paylaşın ve yeniden kullanın
+
+Sözleşmeler **varsayılan olarak özeldir**. Sahibi olarak, bir sözleşmeyi diğer oturum açmış kullanıcıların açıp fork edebilmesi için **Public** olarak ayarlayın, geri çekmek için tekrar **Private** yapın. **Fork**, herkese açık bir sözleşmeyi oradan devam etmeniz için hesabınıza kopyalar.
+
+## Nasıl erişilir {#how-to-access}
+
+- **URL:** [dashboard.qorechain.io/smart-contract-creator](https://dashboard.qorechain.io/smart-contract-creator) (ayrıca ana sayfadaki **Create Smart Contract**).
+- **Hesap:** açılış sayfası ve bir ücretsiz üretim hesap olmadan çalışır. Diğer her şey (sonraki üretimler, kayıtlı sözleşmeler, sözleşme ve düzenleme sayfaları, dağıtım) oturum açmayı gerektirir; bkz. [Oturum açma](/dashboard/overview#sign-in).
+- **Ağ:** üretim her ikisinde de çalışır. Testnet dağıtımları Kontrol Paneli test cüzdanınızı kullanır; mainnet EVM dağıtımları kendi cüzdanınızı kullanır.
+- **Maliyetler:** her UTC gününün ilk üretimi ücretsizdir. Bundan sonra testnet üretimleri test QOR ile ödenir; mainnet üretimleri bir sonraki UTC gününü bekler. Dağıtımlar ağ gas'i öder.
+
+## Nerede yayımlandığı {#where-published}
+
+| Yüzey | Adres | Ağlar |
+| --- | --- | --- |
+| Creator ve kayıtlı sözleşmeler | `dashboard.qorechain.io/smart-contract-creator` | Her iki ağda üretim |
+| EVM dağıtımı | Sonuç ve düzenleme sayfaları | Testnet tek tıkla; mainnet kendi cüzdanınızdan |
+| QoreChain Native dağıtımı | Sonuç ve düzenleme sayfaları | Testnet, yalnızca onaylı kodlar |
+
+## Sınırlar ve bilinen sorunlar {#limits}
+
+- **Sunulmayanlar:** Solana dağıtımları (sunucu bunları reddeder), mainnet üzerinde Native veya SVM dağıtımları, diğer zincirlerin herkese açık ağlarına dağıtım ve mainnet'te Premium.
+- **Testnet Native dağıtımları** yalnızca yönetişimce onaylanmış kodları örneklendirir; ürettiğiniz kaynak kod yüklenmez.
+- **Ücretsiz deneme sonuçlarında** Deploy ve Edit yoktur.
+- Dağıtmadan önce **her şeyi inceleyin**; üretilen kod hatalar içerebilir.
 
 ## İlgili
 
-- [Contract Auditor](/dashboard/contract-auditor) — bir sözleşme üzerinde QCAI güvenlik analizi çalıştırın.
-- [Geliştirici Kılavuzu](/developer-guide/evm-development) — sözleşmeleri QoreChain'in çalışma zamanlarına dağıtma.
+- [Contract Auditor](/dashboard/contract-auditor) - bir sözleşme üzerinde güvenlik analizi çalıştırın.
+- [EVM Geliştirme](/developer-guide/evm-development) - sözleşmeleri QoreChain'in çalışma zamanlarına dağıtma.
+- [CosmWasm Geliştirme](/developer-guide/cosmwasm-development) - QoreChain Native çalışma zamanı.

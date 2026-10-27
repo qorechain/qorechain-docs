@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain 네트워크의 모듈 파라미터를 모듈별로 묶어 통합 정리한 참조 문서입니다. 파라미터는 해당 모듈에 params 쿼리가 있는 경우 `qorechaind query <module> params`로 조회할 수 있습니다(`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`. `ai`, `qca`, `rdk`, `bridge`, `abstractaccount`, `gasabstraction`은 `config`를 사용합니다). REST로는 [REST / gRPC 레퍼런스](/api-reference/rest-grpc-endpoints)에 나열된 경로만 조회할 수 있습니다. `x/inflation` 파라미터는 v3.2.3부터 메인넷에서도 REST(`/qorechain/inflation/v1/params`)로 제공됩니다. 메인넷에서는 `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock`, `xqore`와 `pqc` 파라미터에 REST를 지원하지 않습니다(테스트넷은 v3.2.6부터 `pqc`, `crossvm`, `rlconsensus` 파라미터를 REST로 제공합니다).
 
 :::note
-표시된 값은 2026년 10월 23일에 메인넷 **`qorechain-vladi`**(EVM 체인 ID **9801**, 릴리스 **v3.2.4**, 2026년 10월 23일 적용)에서 실시간으로 읽은 값이며(거버넌스 제안으로 변경된 경우를 제외하면 제네시스 값이며, 변경된 값은 별도로 표기했습니다), 핵심 모듈 행은 2026년 10월 27일에 다시 읽었습니다. 거버넌스 제안 14가 메인넷의 높이 3,906,833에서 v3.2.5를 적용하게 되며(작성 시점에는 투표 기간 중), 이 페이지는 메인넷의 현재 상태를 설명하고 해당 업그레이드가 적용되면 업데이트됩니다. 테스트넷 **`qorechain-diana`**(EVM 체인 ID **9800**)는 릴리스 **v3.2.6**(2026년 10월 27일 적용)을 실행합니다. 별도 표기가 없는 한 테스트넷의 값은 메인넷과 동일하며, 남아 있는 차이점은 [테스트넷과 메인넷의 차이점](#testnet-differences)에 정리되어 있습니다. 블록 단위로 표시된 기간은 측정된 메인넷 블록 시간인 약 3.2초로 환산한 것입니다(테스트넷은 약 1.3초마다 블록을 생성합니다).
+표시된 값은 2026년 10월 23일에 메인넷 **`qorechain-vladi`**(EVM 체인 ID **9801**, 릴리스 **v3.2.4**, 2026년 10월 23일 적용)에서 실시간으로 읽은 값이며(거버넌스 제안으로 변경된 경우를 제외하면 제네시스 값이며, 변경된 값은 별도로 표기했습니다), 핵심 모듈 행은 2026년 10월 27일에 다시 읽었습니다. 거버넌스 제안 14가 메인넷의 높이 3,906,833에서 v3.2.5를 적용하게 되며(작성 시점에는 투표 기간 중), 이 페이지는 메인넷의 현재 상태를 설명하고 해당 업그레이드가 적용되면 업데이트됩니다. 테스트넷 **`qorechain-diana`**(EVM 체인 ID **9800**)는 릴리스 **v3.2.6**(2026년 10월 27일 적용)을 실행합니다. 별도 표기가 없는 한 테스트넷의 값은 메인넷과 동일하며, 남아 있는 차이점은 [테스트넷과 메인넷의 차이점](#testnet-differences)에 정리되어 있습니다. 블록 단위로 표시된 기간은 측정된 메인넷 블록 시간인 약 3.1초로 환산한 것입니다(테스트넷은 약 1.3초마다 블록을 생성합니다).
 :::
 
 ---
@@ -22,7 +22,7 @@ QoreChain 네트워크의 모듈 파라미터를 모듈별로 묶어 통합 정�
 | `pqc_primary`              | `true`                     | 포스트 퀀텀 서명이 기본 방식임                                           |
 | `allow_classical_fallback` | `false`                    | 고전 전용 폴백은 닫혀 있음; Cosmos 레인 트랜잭션은 하이브리드여야 함     |
 | `min_security_level`       | `5`                        | 등록 알고리즘에 요구되는 최소 NIST 보안 수준                             |
-| `default_migration_blocks` | `1,000,000`                | 거버넌스로 시작된 알고리즘 마이그레이션의 기본 기간(≈3.2초 블록 기준 약 37일) |
+| `default_migration_blocks` | `1,000,000`                | 거버넌스로 시작된 알고리즘 마이그레이션의 기본 기간(≈3.1초 블록 기준 약 36일) |
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2` (required)             | 강제 모드: 0=비활성, 1=선택, 2=필수                                      |
 
@@ -34,7 +34,7 @@ QoreChain 네트워크의 모듈 파라미터를 모듈별로 묶어 통합 정�
 
 | 한도 | 값 |
 | ----- | ----- |
-| 최대 `blocks` | 17,280 (≈3.2초 블록 기준 약 15시간) |
+| 최대 `blocks` | 17,280 (≈3.1초 블록 기준 약 15시간) |
 | 최대 `max_txs` | 1,000 |
 | `max_value` | 0보다 큼 (uqor; 전송 금액과 각 트랜잭션의 최대 수수료의 합) |
 | 최대 `allowed_targets` | 수신 주소 16개 (선택적 범위 지정, v3.2.3) |
@@ -52,7 +52,7 @@ v3.2.3부터는 윈도우를 `native_only`(일반 네이티브 QOR 전송만 허
 | `anomaly_threshold` | `0.7`                  | 이 이상 점수를 넘으면 앤티 핸들러가 트랜잭션을 플래그 처리함 |
 | `routing_strategy`  | `reputation_weighted`  | 라우팅 전략                                                                 |
 | `risk_threshold`    | `0.8`                  | 위험 점수 임계값                                                            |
-| `max_tx_per_minute` | `600`                  | Cosmos 레인에서 30블록 구간(≈3.2초 블록 기준 약 96초) 동안 집계되는 발신자별 트랜잭션 한도(이름은 과거 명칭임). v3.2.0부터 적용되며 기본값은 10 |
+| `max_tx_per_minute` | `600`                  | Cosmos 레인에서 30블록 구간(≈3.1초 블록 기준 약 94초) 동안 집계되는 발신자별 트랜잭션 한도(이름은 과거 명칭임). v3.2.0부터 적용되며 기본값은 10 |
 
 [AI 엔진](/architecture/ai-engine) 페이지에 설명된 사기 점수화 가중치와 심각도 임계값은 모듈 파라미터가 아니라 탐지기 상수입니다.
 
@@ -148,7 +148,7 @@ xQORE 모듈의 회계 로직은 존재하지만, 잠금 및 잠금 해제 트�
 | `emission_mode`        | `fixed`                 | `schedule`(레거시) 또는 `fixed`(v3.1.94부터)          |
 | `fixed_epoch_emission` | `86,000,000,000 uqor` (86,000 QOR) | fixed 모드에서 에포크마다 발행되는 양(2026년 10월 19일 거버넌스 제안 10 이전에는 16,239 QOR) |
 | `max_total_emission`   | `590,000,000,000,000 uqor` (590,000,000 QOR) | 누적 발행 하드 상한(제안 10 이전에는 114,285,714 QOR) |
-| `epoch_length`         | `43,200` blocks         | 에포크당 블록 수(≈3.2초 블록 기준 약 38.6시간)        |
+| `epoch_length`         | `43,200` blocks         | 에포크당 블록 수(≈3.1초 블록 기준 약 37.7시간)        |
 | `schedule`             | 17.5 %, 11 %, 7 %, 7 %, 2 % | 연도별 레거시 비율, fixed 모드에서는 사용되지 않음 |
 | `enabled`              | `true`                  | 모듈 활성화 플래그                                    |
 
@@ -261,7 +261,7 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 | `rollup_creation_burn_rate` | `0.01`               | 생성 스테이크 중 소각되는 비율(1%)            |
 | `default_challenge_window`  | `604,800` s (테스트넷: `3,600` s) | 기본 챌린지 윈도우(7일, 테스트넷은 1시간) |
 | `max_da_blob_size`          | `2,097,152`          | 최대 DA blob 크기(바이트, 2 MB)               |
-| `blob_retention_blocks`     | `432,000`            | DA blob 보관 블록 수(≈3.2초 블록 기준 약 16일) |
+| `blob_retention_blocks`     | `432,000`            | DA blob 보관 블록 수(≈3.1초 블록 기준 약 16일) |
 | `max_batches_per_block`     | `10`                 | 블록당 처리되는 최대 배치 수                  |
 
 두 네트워크 모두 아직 생성된 롤업이 없습니다.
@@ -304,14 +304,14 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 | 파라미터                 | 값                 | 설명                                                 |
 | ------------------------ | ------------------ | ---------------------------------------------------- |
 | `registration_fee`       | `1,000,000 uqor` (1 QOR) | 라이트 노드 등록 수수료                        |
-| `heartbeat_interval`     | `1000` blocks      | 필수 하트비트 간 블록 수(≈3.2초 블록 기준 약 54분)   |
+| `heartbeat_interval`     | `1000` blocks      | 필수 하트비트 간 블록 수(≈3.1초 블록 기준 약 52분)   |
 | `min_delegated_stake`    | `1,000,000,000 uqor` (1,000 QOR) | 운영자가 위임해야 하는 최소 스테이크   |
 | `reward_share`           | `0.03`             | 라이트 노드용으로 따로 떼어 두는 수수료 수집기 비율  |
 | `min_uptime_for_rewards` | `0.80`             | 보상 자격을 위한 최소 가동 비율                      |
 | `max_light_nodes`        | `10,000`           | 등록 가능한 최대 라이트 노드 수                      |
 | `heartbeat_grace_period` | `100` blocks       | 늦은 하트비트에 대한 유예 기간                       |
 
-보상 회계는 라이브 상태입니다. `GET /qorechain/lightnode/v1/reward_pool`은 풀(`balance`, `reserved`, `outstanding`, `payable`, `distributable`)과 노드별 보상 한도를 보고합니다. v3.2.3부터 이 한도는 `max_reward_per_month_per_node`로, **노드당 30일에 2,000 QOR(`2000000000` uqor)** 이며 블록 시간에 비례해 안분되고 노드의 가동률에 따라 조정됩니다. 이전의 블록당 값(`max_reward_per_block_per_node`, `1713` uqor)도 계속 보고됩니다. 2026년 10월 20일 기준으로 풀에는 487.2318 QOR의 준비금이 있었고 미지급 금액은 없었습니다. 등록은 열려 있으며 라이선스로 제한됩니다. 메인넷에서 `lightnode_operator` 라이선스 6개가 부여되었으며 아직 등록한 라이트 노드는 없습니다(`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). [라이트 노드](/light-node/overview#reward-program-status)와 [토크노믹스](/architecture/tokenomics#stranded-and-reserve)를 참조하세요.
+보상 회계는 라이브 상태입니다. `GET /qorechain/lightnode/v1/reward_pool`은 풀(`balance`, `reserved`, `outstanding`, `payable`, `distributable`)과 노드별 보상 한도를 보고합니다. v3.2.3부터 이 한도는 `max_reward_per_month_per_node`로, **노드당 30일에 2,000 QOR(`2000000000` uqor)** 이며 블록 시간에 비례해 안분되고 노드의 가동률에 따라 조정됩니다. 이전의 블록당 값(`max_reward_per_block_per_node`, `1713` uqor)도 계속 보고됩니다. 2026년 10월 27일 기준으로 메인넷 풀에는 약 13,380.9 QOR의 준비금(`reserved`)이 있었고, 그중 소액(0.06 QOR)이 미지급 상태였으며 아직 지급 가능한 금액은 없었습니다. 등록은 열려 있으며 라이선스로 제한됩니다. 해당 날짜에 메인넷에서 `lightnode_operator` 라이선스 7개가 부여되었고 각 네트워크에 라이트 노드 1개가 등록되어 있었습니다(`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). [라이트 노드](/light-node/overview#reward-program-status)와 [토크노믹스](/architecture/tokenomics#stranded-and-reserve)를 참조하세요.
 
 ---
 
@@ -359,7 +359,7 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 | | `historical_entries` | 10,000 |
 | | `bond_denom` | `uqor` |
 | | `min_commission_rate` | 0 |
-| 슬래싱 | `signed_blocks_window` | 10,000 블록(≈3.2초 블록 기준 약 8.9시간) |
+| 슬래싱 | `signed_blocks_window` | 10,000 블록(≈3.1초 블록 기준 약 8.7시간) |
 | | `min_signed_per_window` | 5 % (구간의 5 % 미만으로 서명한 검증자는 감옥에 보내짐) |
 | | `downtime_jail_duration` | 600 s |
 | | `slash_fraction_downtime` | 1 % |
@@ -410,7 +410,7 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 | QoreChain Native 인스턴스화 권한 | `Nobody` | `Everybody`(코드 업로드는 두 네트워크 모두 `Nobody` 유지) |
 | 서킷 브레이커 | 16개 항목(위 참조) | 1개 항목: QoreChain Native `MsgStoreCode` |
 | REST 파라미터 경로 | `x/pqc`, `x/crossvm`, `x/rlconsensus` 파라미터는 501로 응답 | `GET /qorechain/pqc/v1/params`, `/qorechain/crossvm/v1/params`, `/qorechain/rlconsensus/v1/params`가 응답함(v3.2.6) |
-| 블록 시간과 검증인 | 약 3.2초. 본딩된 검증인 8명 | 약 1.3초. 본딩된 검증인 4명 |
+| 블록 시간과 검증인 | 약 3.1초. 본딩된 검증인 8명 | 약 1.3초. 본딩된 검증인 4명 |
 | 테스트 토큰 | 없음 | fUSD, fETH, fBTC([파우셋](/dashboard/faucet#fest-tokens) 참조) |
 
 두 네트워크 모두 v3.2.4 추가 사항을 포함합니다. 선택적 시간 잠금 스테이킹 모듈 `x/stakingtier`(48개 대신 49개 모듈; `GET /qorechain/stakingtier/v1/params`, 최소 잠금 10 QOR, 조기 해제 페널티 5 %), 열세 번째 기록 소각 소스(`staking_tier_penalty`), 노드 자신의 등록 시점부터 시작되는 보상 한도를 가진 추가 라이트 노드 보상 풀 보고 필드, PQC 계정의 `possession_proven` 플래그(소유 증명은 계정 키에는 선택 사항으로 유지되며 브리지 검증자 키에는 필수), 블록 시간으로 계산되는 RDK 챌린지 윈도우, 그리고 `protocol_features` 및 `auth_nonce` 쿼리가 그것입니다. [스테이킹과 위임](/user-guide/staking-and-delegation#time-locked-staking)을 참조하세요. 테스트넷에 추가된 v3.2.6 사항은 [버전 이력](/appendix/version-history#testnet-v326)에 요약되어 있습니다.

@@ -24,7 +24,7 @@ QoreChain RDK, her biri farklı güven varsayımlarına, kesinlik (finality) öz
 Optimistic rollup'lar işlemlerin varsayılan olarak geçerli olduğunu kabul eder ve anlaşmazlık çözümü için dolandırıcılık kanıtlarına (fraud proofs) dayanır.
 
 * **Kanıt sistemi**: Etkileşimli dolandırıcılık kanıtları
-* **İtiraz penceresi**: 604,800 saniye (varsayılan, 7 gün). **v3.2.4'ten önce:** zincir bunu blok başına sabit 6 saniyeden bloklara dönüştürür, yani **100,800 blok**; gerçek geçen süre fiili blok süresine bağlıdır (mainnet'in mevcut ≈3.2 sn'lik bloklarında yaklaşık 3.7 gün), bu nedenle günlere göre değil bloklara göre planlama yapın. **v3.2.4'ten itibaren:** yükseltme yüksekliğinden itibaren gönderilen bir parti için pencere, blok süresinin saniyeleriyle ölçülür (tam 7 gün). Daha önce gönderilen bir parti blok sayısı kuralını korur. Testnet v3.2.4'ü 8,337,253 yüksekliğinde (19 Ekim 2026) uyguladı; mainnet bunu 3,742,566 yüksekliğinde (23 Ekim 2026, yönetişim önerisi 13) uyguladı. Testnet'in yapılandırılmış varsayılanı daha kısadır, 3,600 saniye (1 saat); dolayısıyla bir testnet rollup'ı burada anlatılan 7 günden daha hızlı kesinleşir.
+* **İtiraz penceresi**: 604,800 saniye (varsayılan, 7 gün). **v3.2.4'ten önce:** zincir bunu blok başına sabit 6 saniyeden bloklara dönüştürür, yani **100,800 blok**; gerçek geçen süre fiili blok süresine bağlıdır (mainnet'in mevcut ≈3.1 sn'lik bloklarında yaklaşık 3.7 gün), bu nedenle günlere göre değil bloklara göre planlama yapın. **v3.2.4'ten itibaren:** yükseltme yüksekliğinden itibaren gönderilen bir parti için pencere, blok süresinin saniyeleriyle ölçülür (tam 7 gün). Daha önce gönderilen bir parti blok sayısı kuralını korur. Testnet v3.2.4'ü 8,337,253 yüksekliğinde (19 Ekim 2026) uyguladı; mainnet bunu 3,742,566 yüksekliğinde (23 Ekim 2026, yönetişim önerisi 13) uyguladı. Testnet'in yapılandırılmış varsayılanı daha kısadır, 3,600 saniye (1 saat); dolayısıyla bir testnet rollup'ı burada anlatılan 7 günden daha hızlı kesinleşir.
 * **İtiraz teminatı**: 1,000 QOR (1,000,000,000 uqor) — bir dolandırıcılık kanıtı itirazı göndermek için gereklidir (`nft` ve `custom` hazır profilleri; `defi`, `gaming` ve `enterprise` hazır profillerinde itiraz penceresi olmadığı için teminat belirlenmez)
 * **Kesinlik**: Geçerli bir itiraz olmadan itiraz penceresi sona erene kadar ertelenir
 * **Otomatik kesinleştirme**: `EndBlocker`, itiraz penceresi anlaşmazlık olmadan geçtiğinde partileri (batch) otomatik olarak kesinleştirir. İtiraz edilen bir parti asla otomatik olarak kesinleştirilmez: rollup oluşturucusu önce itirazı çözer ([Rollup Dağıtma](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups) bölümüne bakın).
@@ -44,7 +44,7 @@ ZK rollup'lar, durum geçişinin doğruluğunu garanti eden kriptografik geçerl
 * **Kesinlik**: Kanıt doğrulamasında anında — itiraz penceresi gerekmez
 * **Maksimum kanıt boyutu**: 1 MB (1,048,576 bayt)
 * **Özyineleme derinliği**: Yapılandırılabilir kanıt toplama derinliği (varsayılan: 1)
-* **Olgunluk**: SNARK partileri, rollup ile birlikte saklanan bir doğrulama anahtarına karşı zincir üstünde doğrulanır (BLS12-381 üzerinde Groth16). `create-rollup` ile oluşturulan bir rollup şu anda doğrulama anahtarı taşımaz, bu nedenle ZK partileri henüz uçtan uca kesinleştirilemez. STARK doğrulaması deneyseldir: isteğe bağlıdır (opt-in) ve rollup'ınızın kendi durum geçişini değil, bir gösterim devresini kontrol eder. ZK uzlaşmayı üretime hazır değil olarak değerlendirin.
+* **Olgunluk**: SNARK partileri, rollup ile birlikte saklanan bir doğrulama anahtarına karşı zincir üstünde doğrulanır (BLS12-381 üzerinde Groth16). **ZK uzlaşma henüz her iki ağda da kullanılamaz:** zincirde bir rollup için doğrulama anahtarı kaydetmenin bir yolu yoktur, bu nedenle her ZK partisi ücreti ödendikten sonra reddedilir. Anahtar kaydı zincir v3.2.7 için planlanmıştır. STARK doğrulaması deneyseldir: isteğe bağlıdır (opt-in) ve rollup'ınızın kendi durum geçişini değil, bir gösterim devresini kontrol eder. ZK uzlaşmayı üretime hazır değil olarak değerlendirin.
 
 **Parti yaşam döngüsü**:
 
@@ -152,13 +152,13 @@ QoreChain L1 önericileri rollup işlemlerini sıralar.
 QoreChain'in kendi içinde zincir üstü KV-deposu blob depolaması.
 
 :::caution Henüz blob göndermenin genel bir yolu yok
-Modül blob depolamayı, saklamayı ve budamayı tanımlar, ancak mevcut sürümlerde bir blob göndermek için işlem mesajı yoktur. `native` veya `both` rollup üzerinde bir veri karması belirten bir parti, eşleşen hiçbir blob saklanamayacağı için reddedilir. Bkz. [Veri Erişilebilirliği](/rollups/data-availability). Bu nedenle yerel veri erişilebilirliğinde bir parti `data_hash` alanını boş bırakmalıdır; RDK istemcisi (0.6.1) bunu yapar ve zincir bir tane iddia eden partiyi reddeder.
+Modül blob depolamayı, saklamayı ve budamayı tanımlar, ancak mevcut sürümlerde bir blob göndermek için işlem mesajı yoktur. `native` veya `both` rollup üzerinde bir veri karması belirten bir parti, eşleşen hiçbir blob saklanamayacağı için reddedilir. Bkz. [Veri Erişilebilirliği](/rollups/data-availability). Bu nedenle yerel veri erişilebilirliğinde bir parti `data_hash` alanını boş bırakmalıdır; RDK istemcisi (0.6.2) bunu yapar ve zincir bir tane iddia eden partiyi reddeder.
 :::
 
 | Parametre            | Değer                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | **Maksimum blob boyutu** | 2 MB (2,097,152 bayt)                                                                            |
-| **Saklama süresi**   | 432,000 blok (mainnet'in mevcut ≈3.2 sn'lik bloklarında yaklaşık 16 gün; rakam blok süresiyle birlikte değişir) |
+| **Saklama süresi**   | 432,000 blok (mainnet'in mevcut ≈3.1 sn'lik bloklarında yaklaşık 16 gün; rakam blok süresiyle birlikte değişir) |
 | **Otomatik budama**  | Süresi dolan blob'lar `EndBlocker` içinde budanır — veriler kaldırılır ancak taahhüt meta verileri korunur |
 | **Taahhüt**          | Blob verisinin SHAKE-256 (32 baytlık) karması                                                        |
 
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Parti kanonik olarak kabul edildi                 |
 | **Rejected**   | Parti, başarılı bir itiraz ile geçersiz kılındı   |
 
-RDK 0.6.1 davranışı: optimistic bir rollup için istemci, durum kökü zincirin kanonik geçiş kökü (RDK'de `batchTransitionRoot`) olan bir parti oluşturur; kendi belirlediğiniz serbest biçimli bir değer değildir.
+RDK 0.6.1 ve 0.6.2 davranışı (kütüphane kodu aynıdır): optimistic bir rollup için istemci, durum kökü zincirin kanonik geçiş kökü (RDK'de `batchTransitionRoot`) olan bir parti oluşturur; kendi belirlediğiniz serbest biçimli bir değer değildir.
 
 ### Otomatik Kesinleştirme Kuralları
 

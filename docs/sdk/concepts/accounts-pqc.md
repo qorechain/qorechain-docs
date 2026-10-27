@@ -139,7 +139,7 @@ an upper-case bech32 or the `0x` form of the same account yields the same key.
 Every language has the same function (Python `derive_pqc_canonical`, Go
 `authenticator.DerivePQCCanonical`, Rust `try_derive_pqc_canonical`, Java
 `Authenticator.derivePqcCanonical`; see the
-[table in the Quantum-safe guide](/sdk/guides/quantum-safe#canonical-derivation)),
+[table in the Hybrid signing guide](/sdk/guides/quantum-safe#canonical-derivation)),
 and the same `{ address, mnemonic }` gives the same key in all of them (checked for
 TypeScript, Python, Go and Rust in October 2026).
 

@@ -9,7 +9,7 @@ sidebar_position: 7
 
 `@qorechain/react` es la capa oficial de React sobre `@qorechain/sdk`: un
 proveedor, un puñado de hooks y dos componentes listos para usar — incluida una
-insignia de **seguridad cuántica** de una sola línea. Hace que construir una dApp con seguridad cuántica sea la ruta por defecto.
+insignia de estado PQC de una sola línea. Hace que construir una dApp con firma híbrida ML-DSA-87 sea la ruta por defecto.
 
 ```bash
 npm i @qorechain/react @qorechain/sdk react react-dom
@@ -27,7 +27,7 @@ pueden mostrar un saldo o un estado obsoletos tras un cambio de dirección.
 exige la extensión híbrida ML-DSA-87): `send` / `sendTokens` no pueden incluir una
 transacción en la mainnet ni en la testnet. Para los envíos usa el `TxClient` híbrido del SDK
 (`client.connectTx(signer, { pqcKeypair })`, consulta
-[Seguridad cuántica](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` y `<QuantumSafeBadge/>` leen el estado mediante
+[Firma híbrida](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` y `<QuantumSafeBadge/>` leen el estado mediante
 `getPqcStatus` con el cliente compuesto del proveedor, que desde el SDK 0.9.0 lee por
 REST (`/qorechain/pqc/v1/account/{address}`), así que funcionan contra `*.qore.host`
 (el kit 0.8.x leía `qor_getPQCKeyStatus`, que los endpoints públicos no sirven, y
@@ -135,8 +135,8 @@ total:
 
 ### `<QuantumSafeBadge/>`
 
-Muestra un indicador de **seguridad cuántica** cuando la dirección tiene una clave poscuántica
-registrada (mediante `usePqcStatus`); de lo contrario, un estado atenuado "Not quantum-safe". Por defecto usa
+Muestra un indicador de estado cuando la dirección tiene una clave poscuántica
+registrada (mediante `usePqcStatus`); de lo contrario, un estado atenuado "no registrada". Por defecto usa
 la cuenta conectada.
 
 ```tsx
@@ -171,4 +171,4 @@ function Dashboard() {
 ```
 
 Consulta el [ejemplo ejecutable `react-dapp`](https://github.com/qorechain/qorechain-sdk/tree/main/examples/react-dapp)
-y la [guía de seguridad cuántica](/sdk/guides/quantum-safe) para conocer las llamadas subyacentes del SDK.
+y la [guía de firma híbrida](/sdk/guides/quantum-safe) para conocer las llamadas subyacentes del SDK.

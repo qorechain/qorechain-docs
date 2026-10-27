@@ -104,7 +104,7 @@ v3.2.1 düğüm düğüm uygulandı ve yükseltme yüksekliği yoktur; ana ağda
 
 **Sürüm odağı:** Kuantum-sonrası gerekliliğini her hatta geçerli kılmak ve iki muhasebe açığını kapatmak. Ana ağda yönetişim önerisi #6 ile **2.981.742** yüksekliğinde (25 Eylül 2026, 12:07 UTC) uygulandı; test ağında 5.920.000 yüksekliğinde uygulandı.
 
-* **EVM yetkilendirme penceresi (EVM cüzdanları için uyumluluğu bozan değişiklik).** Bir EVM işlemi artık yalnızca kayıtlı bir ML-DSA-87 anahtarına **ve** açık bir pencereye sahip bir hesaptan kabul edilir. Pencere, bir Cosmos-hattı mesajıyla (`MsgOpenEVMWindow`, kuantum-sonrası imzalı) açılır ve blok sayısı (≤ 17.280), işlem sayısı (≤ 1.000) ve toplam değer (aktarılan değer artı her işlemin azami ücreti) ile sınırlandırılır; `MsgCloseEVMWindow` onu iptal eder. Bir pencerenin içinde standart Ethereum imzalama değişmez. 16 Eylül'den beri ana ağda devre kesici ile kapatılmış olan EVM hattı, kuralın yürürlüğe girdiği blokta yeniden açıldı. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
+* **EVM yetkilendirme penceresi (EVM cüzdanları için uyumluluğu bozan değişiklik).** Bir EVM işlemi artık yalnızca kayıtlı bir ML-DSA-87 anahtarına **ve** açık bir pencereye sahip bir hesaptan kabul edilir. Pencere, bir Cosmos-hattı mesajıyla (`MsgOpenEVMWindow`, hibrit ML-DSA-87 imzası (FIPS 204) ile) açılır ve blok sayısı (≤ 17.280), işlem sayısı (≤ 1.000) ve toplam değer (aktarılan değer artı her işlemin azami ücreti) ile sınırlandırılır; `MsgCloseEVMWindow` onu iptal eder. Bir pencerenin içinde standart Ethereum imzalama değişmez. 16 Eylül'den beri ana ağda devre kesici ile kapatılmış olan EVM hattı, kuralın yürürlüğe girdiği blokta yeniden açıldı. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
 * **Hibrit imza v2.** Kuantum-sonrası imzalar artık alan etiketli, zincire bağlı imza baytları üzerinden atılır; ilk biçim yükseltme yüksekliğinden itibaren reddedilir. İstemciler biçimi seçmek için düğümün uygulanmış yükseltme planlarına bakar; CLI (`--sign-bytes auto`), SDK 0.8.x ve wallet-adapter 0.2.x bunu yapar. Anahtar geçişi ve köprü tanıklığı (attestation) yükleri de aynı şemaya taşındı. Bkz. [Kuantum-Sonrası Güvenlik](/architecture/post-quantum-security#sign-bytes-v2).
 * **Stake sahibi payı ödendi.** Ücret bölüşümündeki %10'luk stake sahibi payı hiçbir alacağı karşılamayan bir yere yatırılıyordu; bu yükseltmeden itibaren normal bir stake ödülü olarak ödenir. Halihazırda birikmiş tutar (ana ağda 6.693.045,92 QOR) zincir üzerinde kayıtlıdır (`GET /qorechain/burn/v1/stranded_rewards`) ve yalnızca bir yönetişim oylamasıyla (`MsgReleaseStrandedRewards`) hareket ettirilebilirdi; yönetişim bunu Ekim 2026'da serbest bıraktı (bkz. [yönetişim zaman çizelgesi](#governance-timeline) ve [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 * **Işık düğümü ödül rezervi.** Hiçbir düğümün uygun olmadığı dönemde biriken %3'lük ışık düğümü payı (ana ağda 3.156.009,33 QOR) bir rezerv olarak kaydedilir (`GET /qorechain/lightnode/v1/reward_pool`), dağıtımın dışında tutulur ve yalnızca yönetişimle hareket ettirilebilir (Ekim 2026'da serbest bırakıldı); bundan sonra dağıtım yalnızca bir önceki çalıştırmadan beri biriken tutarı öder ve düğüm başına sınırlıdır. Işık düğümü kaydı bu sürümde hâlâ kapalıydı ve o tarihten beri açıldı (bkz. [Işık Düğümü](/light-node/overview#reward-program-status)).
@@ -208,7 +208,7 @@ Tam düğümler **v3.1.83+** çalıştırmalıdır. v3.1.83 öncesi bir düğüm
 
 * **Çıpa okuma sorguları** — `x/multilayer` sorgu servisi artık `Anchor`'ı (bir katmanın en son durum çıpası) ve `Anchors`'ı (bir katmanın çıpa geçmişi) sunuyor; böylece istemciler bir katmanın yerleşim çıpasını alıp bağımsız olarak doğrulayabilir.
 * **Çok katmanlı için REST ağ geçidi** — Her çok katmanlı sorgu (`params`, `layers`, `layers/{layer_id}`, `anchor/{layer_id}`, `anchors/{layer_id}`, `routing-stats`) artık gRPC'ye ek olarak REST üzerinden de kullanılabilir.
-* **Kuantuma dayanıklı yerleşim makbuzları açıldı** — Her çıpa, kurallı alanları üzerinde bir **ML-DSA-87 (Dilithium-5)** imzası taşır ve bu, Rollup Geliştirme Kiti'nin çevrimdışı yerleşim-makbuzu doğrulaması için zincir üzerindeki temeli sağlar.
+* **ML-DSA-87 yerleşim makbuzları açıldı** — Her çıpa, kurallı alanları üzerinde bir **ML-DSA-87 (Dilithium-5)** imzası taşır ve bu, Rollup Geliştirme Kiti'nin çevrimdışı yerleşim-makbuzu doğrulaması için zincir üzerindeki temeli sağlar.
 
 ## v3.1.79 — Köprü Ağları için Doğrulayıcı Otomatik Hazırlama
 
@@ -330,7 +330,7 @@ Tam düğümler **v3.1.83+** çalıştırmalıdır. v3.1.83 öncesi bir düğüm
 * **Çift secp256k1 (ECDSA) + ML-DSA-87 imzalar** — Her işlem, AnteHandler zincirinde doğrulanan hem klasik hem de kuantum-sonrası bir imza taşır
 * **3 zorunluluk modu** — Yapılandırılabilir hibrit imza zorunluluğu: kapalı (mod 0), izin verici (mod 1, PQC isteğe bağlı), zorunlu (mod 2, PQC gerekli)
 * **Anahtar kaydı** — İlk derlemeler ilk hibrit işlemde bir PQC ortak anahtarını otomatik olarak kaydediyordu; bu davranış kaldırıldı ve artık bir anahtar `MsgRegisterPQCKey` ile açıkça kaydedilir (bkz. [İlk İşlem](/getting-started/first-transaction#register-pqc-key))
-* **SHAKE-256 özet temeli** — PQC ile ilgili tüm özetleme işlemleri, kuantuma dayanıklı adres türetimi için SHAKE-256 (SHA-3 ailesi) kullanır
+* **SHAKE-256 özet temeli** — PQC ile ilgili tüm özetleme işlemleri, adres türetimi için SHAKE-256 (SHA-3 ailesi) kullanır
 * **TEE tanıklama arayüzleri** — PQC anahtar üretimi bütünlüğünü kanıtlamak için Güvenilir Yürütme Ortamı tanıklama desteği
 * **Algoritma çevikliği çerçevesi** — Gelecekteki PQC algoritmalarının bir zincir yükseltmesi olmadan yönetişim yoluyla eklenmesine izin veren eklenebilir algoritma kaydı
 
@@ -346,7 +346,7 @@ Tam düğümler **v3.1.83+** çalıştırmalıdır. v3.1.83 öncesi bir düğüm
 * **QDRW yönetişimi** — İtibar Ağırlıklı Kuadratik Delegasyon (Quadratic Delegation with Reputation Weighting) oy gücü formülü (uygulandı; canlı ağlarda devre dışı)
 * **EVM + QoreChain Native + SVM çalışma zamanları** — QoreChain EVM Motoru, QoreChain Native akıllı sözleşmeleri ve Solana Sanal Makinesi olmak üzere üç eşzamanlı yürütme ortamı
 * **VM'ler arası köprü** — Tek bir blok içinde EVM, QoreChain Native ve SVM çalışma zamanları arasında mesaj geçişi ve varlık transferleri
-* **Kuantum-sonrası kriptografi** — Yüksek performanslı bir PQC kütüphanesi tarafından desteklenen kuantuma dayanıklı imzalama
+* **Kuantum-sonrası kriptografi** — Yüksek performanslı bir PQC kütüphanesi tarafından desteklenen ML-DSA-87 imzalama
 * **QCAI** — Dolandırıcılık tespiti, ücret tahmini ve ağ optimizasyonu için isteğe bağlı bir çevrimdışı yan bileşenle birlikte zincir üzerinde sezgisel analiz
 * **Konteynerleştirilmiş dağıtım** — Yan bileşen servisi ve blok indeksleyicisiyle tam çoklu-doğrulayıcı test ağı dağıtımı
 * **Blok indeksleyicisi** — Geçmiş sorgulama ve analiz için kalıcı depolamaya sahip blok dinleyici

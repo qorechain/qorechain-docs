@@ -10,7 +10,7 @@ sidebar_position: 5
 This page covers two related topics: the **ZK proof systems** (`snark` and `stark`) used by ZK-settled rollups, and the **L2 → L1 withdrawal flow** that moves funds from a rollup back to QoreChain once a batch is finalized.
 
 :::caution Early-stage capability
-No rollup has been created on either network yet (checked 27 October 2026), so neither the proof verification nor the withdrawal flow described here has been exercised on a live rollup. Withdrawals can succeed on mainnet only from v3.2.3 (height 3,662,051, 20 October 2026), when the per-rollup escrow ledger went live (see [Where the funds come from](#where-the-funds-come-from)); before that every withdrawal failed. SNARK verification exists but a rollup created through `create-rollup` cannot yet finalise a ZK batch, and STARK verification is experimental. Validate on the **`qorechain-diana`** testnet and do not assume production-hardened guarantees on mainnet.
+No rollup has been created on either network yet (checked 27 October 2026), so neither the proof verification nor the withdrawal flow described here has been exercised on a live rollup. Withdrawals can succeed on mainnet only from v3.2.3 (height 3,662,051, 20 October 2026), when the per-rollup escrow ledger went live (see [Where the funds come from](#where-the-funds-come-from)); before that every withdrawal failed. **ZK settlement cannot be used on either network yet** (the `defi` profile and every `zk` rollup): the chain has no way to register a verification key, so every ZK batch is refused after its fee is paid, and key registration is planned for chain v3.2.7. STARK verification is experimental. Validate on the **`qorechain-diana`** testnet and do not assume production-hardened guarantees on mainnet.
 :::
 
 ---
@@ -32,7 +32,7 @@ Unlike optimistic rollups — which wait out a fraud-proof challenge window — 
 
 ### Maturity
 
-SNARK batches are verified on-chain (Groth16 over BLS12-381) against a verifying key stored with the rollup. A rollup created through `create-rollup` does not currently carry a verifying key, so ZK batches cannot yet be finalised end to end. STARK verification is experimental: it is opt-in and checks a demonstration circuit, not your rollup's own state transition. Treat ZK settlement as not production-ready, and track the RDK's release notes before relying on it for value-bearing mainnet rollups.
+**ZK settlement cannot be used on either network yet.** SNARK batches are meant to be verified on-chain (Groth16 over BLS12-381, with three public inputs: the previous state root, the new state root and the data hash) against a verification key stored with the rollup. The chain has no way to register that key, so a rollup created with `zk` settlement, including every rollup from the `defi` profile or the `defi-rollup` template, has none, and every ZK batch it submits is refused after its fee is paid. Key registration is planned for chain v3.2.7; until it ships, do not create a ZK rollup or fund one. When it does, the `defi` template's demo circuit (a `snarkjs` multiplier) still cannot verify, because it does not have the public inputs the chain checks; you will need your own circuit. STARK verification is experimental: it is opt-in and checks a demonstration circuit, not your rollup's own state transition. For settlement you can use today, choose `optimistic` (the `nft` and `custom` profiles).
 
 ---
 
@@ -52,7 +52,7 @@ For how batches are submitted and finalized — including `submit-batch` and the
 
 ## Executing a withdrawal: `execute-withdrawal`
 
-The `execute-withdrawal` command finalizes an L2 → L1 withdrawal against a finalized batch's withdrawals root. It proves that a withdrawal leaf is committed in that root and pays the recipient from the rdk module escrow. The action is **permissionless** — anyone may submit a valid proof. Like every native-lane transaction it needs the hybrid post-quantum co-signature, so build it with `--generate-only` and cosign it (see [Deploying a Rollup](/rollups/deploying-a-rollup)). Withdrawals have not been exercised on a live rollup yet; treat the flow as untested. Check these before you pay a fee, because the chain refuses the transaction otherwise: the denom must be exactly `uqor`, the amount must be positive, the proof has at most 64 levels and every sibling is exactly 32 bytes, the submitter and recipient are valid `qor1…` addresses, the batch is finalized and committed a `withdrawals_root`, the rollup is not stopped, and that withdrawal leaf has not been paid before. The TypeScript `@qorechain/rdk` (0.6.0 and 0.6.1) runs the first group of these checks for you (`withdrawalErrors`: addresses, denom, amount, proof depth and sibling length), and `executeWithdrawal` throws before it broadcasts when any of them fails; the batch, rollup and ledger conditions depend on chain state, which this check does not read.
+The `execute-withdrawal` command finalizes an L2 → L1 withdrawal against a finalized batch's withdrawals root. It proves that a withdrawal leaf is committed in that root and pays the recipient from the rdk module escrow. The action is **permissionless** — anyone may submit a valid proof. Like every native-lane transaction it needs the hybrid post-quantum co-signature, so build it with `--generate-only` and cosign it (see [Deploying a Rollup](/rollups/deploying-a-rollup)). Withdrawals have not been exercised on a live rollup yet; treat the flow as untested. Check these before you pay a fee, because the chain refuses the transaction otherwise: the denom must be exactly `uqor`, the amount must be positive, the proof has at most 64 levels and every sibling is exactly 32 bytes, the submitter and recipient are valid `qor1…` addresses, the batch is finalized and committed a `withdrawals_root`, the rollup is not stopped, and that withdrawal leaf has not been paid before. The TypeScript `@qorechain/rdk` (0.6.0 to 0.6.2) runs the first group of these checks for you (`withdrawalErrors`: addresses, denom, amount, proof depth and sibling length), and `executeWithdrawal` throws before it broadcasts when any of them fails; the batch, rollup and ledger conditions depend on chain state, which this check does not read.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -91,7 +91,7 @@ The `--proof` value is the inclusion proof: the sibling hashes along the path fr
 * Every sibling hash must be exactly 32 bytes.
 
 :::caution Generic Merkle helpers do not match
-The RDK's generic `binaryMerkleRoot` / `binaryMerkleProof` helpers default to SHA-256 with duplicated odd nodes. Override the hash and leaf encoding to the rules above, or the proof will not verify on-chain.
+The RDK's generic `binaryMerkleRoot` / `binaryMerkleProof` helpers (and their Python, Go, Rust and Java equivalents) default to SHA-256 with duplicated odd nodes, while the chain uses SHAKE-256 (checked against 0.6.2). Override the hash and leaf encoding to the rules above, or the proof will not verify on-chain.
 :::
 
 ### Where the funds come from {#where-the-funds-come-from}

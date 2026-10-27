@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit leeren Daten zurück und bewirkt nichts**; das `ok`-Flag sagt Ihnen nicht, ob der Aufruf eine Wirkung hatte. Der verlässliche Schutz im Contract ist ein Ziel, das stets eine nicht leere Bestätigung zurückgibt, mit einem `require(ret.length > 0)` nach dem Aufruf, sodass eine leere Antwort als Fehler behandelt wird; die `multivm-rollup`-Vorlage (0.6.0 und 0.6.1) tut dies.
+Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit leeren Daten zurück und bewirkt nichts**; das `ok`-Flag sagt Ihnen nicht, ob der Aufruf eine Wirkung hatte. Der verlässliche Schutz im Contract ist ein Ziel, das stets eine nicht leere Bestätigung zurückgibt, mit einem `require(ret.length > 0)` nach dem Aufruf, sodass eine leere Antwort als Fehler behandelt wird; die `multivm-rollup`-Vorlage (0.6.0 bis 0.6.2) tut dies.
 
 ## Ein Multi-VM-Rollup per Scaffold erstellen
 
@@ -102,4 +102,4 @@ Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit le
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Die `multivm-rollup`-Vorlage (0.6.0 und 0.6.1) enthält `src/crossvm-call.ts` (es prüft, ob das Precompile aktiv ist, und gibt dann die Calldata aus) und einen `contracts/CrossVmCaller.sol`, der `executeCrossVMCall(uint8,string,bytes)` aufruft und eine nicht leere Antwort des Ziels verlangt. Er lässt einen Aufruf nicht funktionieren, solange das Precompile inaktiv ist. Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für alle Scaffolder-Vorlagen.
+Die `multivm-rollup`-Vorlage (0.6.0 bis 0.6.2) enthält `src/crossvm-call.ts` (es prüft, ob das Precompile aktiv ist, und gibt dann die Calldata aus) und einen `contracts/CrossVmCaller.sol`, der `executeCrossVMCall(uint8,string,bytes)` aufruft und eine nicht leere Antwort des Ziels verlangt. Er lässt einen Aufruf nicht funktionieren, solange das Precompile inaktiv ist. Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für alle Scaffolder-Vorlagen.

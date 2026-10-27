@@ -243,7 +243,7 @@ PRISM은 롤업 파라미터 최적화를 위한 자문 함수를 제공합니�
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Autonomous 모드에서의 최대 파라미터 변경              |
 | `circuit_breaker_window`         | uint64    | `50`         | 서킷 브레이커가 모니터링하는 최근 블록 수              |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | 트리거 전 최소 정상 블록 비율                          |
-| `default_block_time_ms`          | int64     | `5000`       | 관찰 기준선으로 사용되는 기본 목표 블록 시간(ms). 실제 블록 시간은 메인넷에서 약 3.2초, 테스트넷에서 약 1.3초입니다 |
+| `default_block_time_ms`          | int64     | `5000`       | 관찰 기준선으로 사용되는 기본 목표 블록 시간(ms). 실제 블록 시간은 메인넷에서 약 3.1초, 테스트넷에서 약 1.3초입니다 |
 | `default_base_gas_price`         | LegacyDec | `100`        | 기본 베이스 가스 가격                                  |
 | `default_validator_set_size`     | uint64    | `100`        | 기본 목표 검증자 집합 크기                             |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | 처리량 개선에 대한 보상 가중치                         |

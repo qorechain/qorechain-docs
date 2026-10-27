@@ -91,7 +91,7 @@ QoreChain implementiert eine 5-Lane-Mempool-Architektur, die Transaktionen nach 
 ### Lane-Beschreibungen
 
 **PQC-Lane** (Priorität 100, 15% Blockraum)\
-Transaktionen, die mit hybriden Post-Quantum-Kryptografiesignaturen signiert sind, erhalten die höchste Priorität. Dies fördert die Einführung quantensicherer Transaktionssignierung und stellt sicher, dass PQC-geschützte Operationen bei Überlastung niemals verdrängt werden.
+Transaktionen, die mit hybriden Post-Quantum-Kryptografiesignaturen signiert sind, erhalten die höchste Priorität. Dies fördert die Einführung der hybriden ML-DSA-87-Transaktionssignierung und stellt sicher, dass hybrid signierte Operationen bei Überlastung niemals verdrängt werden.
 
 **MEV-Lane** (Priorität 90, 20% Blockraum)\
 tIBE-verschlüsselte Transaktionen erhalten die zweithöchste Priorität und den größten reservierten Anteil. Dies stellt sicher, dass Nutzer, die sich für MEV-Schutz entscheiden, garantierten Blockraum erhalten, und fördert die breite Einführung des Verschlüsselungsverfahrens.

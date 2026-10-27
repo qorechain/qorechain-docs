@@ -33,7 +33,7 @@ Das RDK wird mit fünf voreingestellten Profilen ausgeliefert, die jeweils auf e
 | **enterprise** | based               | based     | native          | subsidized   | EVM      | Permissioned- und Konsortial-Deployments mit gesponserten Gebühren |
 | **custom**     | Standardwerte: optimistic (fraud) | dedicated | native | standard | EVM | Ausgangs-Standardwerte; passen Sie an, was die Nachricht erlaubt |
 
-Siehe [Voreingestellte Profile](/rollups/preset-profiles) für Details und Hinweise zum Reifegrad (zum Beispiel kann ein über die CLI erstelltes `defi`-Rollup noch keine ZK-Batches finalisieren, und `based`-Sequenzierung bedeutet derzeit, dass der Ersteller einreicht).
+Siehe [Voreingestellte Profile](/rollups/preset-profiles) für Details und Hinweise zum Reifegrad (zum Beispiel kann ZK-Settlement und damit das Profil `defi` auf keinem der beiden Netzwerke bisher genutzt werden, und `based`-Sequenzierung bedeutet derzeit, dass der Ersteller einreicht).
 
 ---
 
@@ -56,7 +56,7 @@ Siehe [Voreingestellte Profile](/rollups/preset-profiles) für Details und Hinwe
 * Batches werden ohne Anker abgewickelt, es sei denn, Sie senden die Post-Quantum-Signatur des Erstellers mit (`--anchor-signature` bei `tx rdk submit-batch`, verfügbar seit v3.2.2). Siehe [State Anchoring](/architecture/rollup-development-kit#state-anchoring).
 * Auszahlungen nach L1 (`tx rdk execute-withdrawal`) werden aus dem Escrow-Ledger Ihres Rollups bezahlt und funktionieren im Mainnet seit v3.2.3; sie benötigen einen finalisierten Batch mit einer Auszahlungs-Root und verwenden ausschließlich `uqor`.
 * Der Rollup-Ersteller ist derzeit der Batch-Einreicher (kein Preset setzt eine Sequenzer-Adresse), bewahren Sie den Schlüssel des Erstellers daher sicher auf: Nur der Ersteller kann das Rollup pausieren, fortsetzen oder stoppen.
-* Das RDK ist in fünf Sprachen veröffentlicht (Version 0.6.1 in jeder Registry, geprüft am 27. Oktober 2026), aber nur der TypeScript-Client signiert hybride Transaktionen, und zwar nur, wenn Sie ihm Ihr Post-Quantum-Schlüsselpaar geben; die `qorollup`-CLI und die Clients für Python, Go, Rust und Java signieren nur klassisch, was beide Netzwerke ablehnen. Siehe [RDK: Änderungen und Einschränkungen](/rollups/deploying-a-rollup#rdk-050-limits).
+* Das RDK ist in fünf Sprachen veröffentlicht (Version 0.6.2 auf npm, PyPI, crates.io und dem Go-Modul-Proxy sowie 0.6.1 auf Maven Central, bis 0.6.2 dort live ist; geprüft am 27. Oktober 2026), aber nur der TypeScript-Client signiert hybride Transaktionen, und zwar nur, wenn Sie ihm Ihr Post-Quantum-Schlüsselpaar geben; die `qorollup`-CLI und die Clients für Python, Go, Rust und Java signieren nur klassisch, was beide Netzwerke ablehnen. Siehe [RDK: Änderungen und Einschränkungen](/rollups/deploying-a-rollup#rdk-050-limits).
 * Der Helfer `suggest-profile` liefert auf den öffentlichen Endpunkten derzeit einen festen `defi`-Fallback zurück, wählen Sie daher anhand der Profiltabelle.
 
 ---

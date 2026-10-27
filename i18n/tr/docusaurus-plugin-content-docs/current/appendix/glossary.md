@@ -13,7 +13,7 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **AMM** — Automated Market Maker (Otomatik Piyasa Yapıcı). QoreChain'in yerel zincir üstü likidite modülü (`x/amm`); harici bir akıllı sözleşme dağıtımı olmadan doğrudan protokol düzeyinde sabit-çarpım havuzları, takaslar ve likidite sağlama sunar. Bkz. [AMM](/architecture/amm).
 
-**Authorisation window (EVM) (EVM yetkilendirme penceresi)** — Kuantum sonrası imzalı bir Cosmos hattı mesajıyla açılan, sınırlı bir izin (blok, işlem sayısı, toplam değer); v3.2.0'dan itibaren bir EVM hattı işleminin bu sınırın içinde kalması gerekir. v3.2.3'ten itibaren bir pencere yalnızca yerel transferlerle veya bir alıcı listesiyle daraltılabilir. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
+**Authorisation window (EVM) (EVM yetkilendirme penceresi)** — Hibrit bir ML-DSA-87 imzası (FIPS 204) taşıyan bir Cosmos hattı mesajıyla açılan, sınırlı bir izin (blok, işlem sayısı, toplam değer); v3.2.0'dan itibaren bir EVM hattı işleminin bu sınırın içinde kalması gerekir. v3.2.3'ten itibaren bir pencere yalnızca yerel transferlerle veya bir alıcı listesiyle daraltılabilir. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
 
 **BPF** — Berkeley Packet Filter. SVM çalışma zamanının zincir üstü programları yürütmek için kullandığı bayt kodu formatı. Programlar dağıtımdan önce BPF'ye derlenir.
 
@@ -39,11 +39,11 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **IBC** — Inter-Blockchain Communication (Zincirler Arası İletişim). Bağımsız blok zincirleri arasında kimliği doğrulanmış mesaj iletimi için bir protokol. QoreChain, çapraz zincir token transferleri ve veri aktarımı için IBC kanallarını destekler.
 
-**Light Node** — Tam durumu tutmadan, blok başlıklarını bir veya daha fazla RPC uç noktasıyla çapraz kontrol ederek zinciri takip eden, kaynak açısından hafif bir istemci. Başkalarına sorgu hizmeti vermez. Protokol ücret bölüşümü, hafif düğüm ödül programı için **%3** pay ayırır. Programa kayıt açıktır ve bir `lightnode_operator` lisansına (50 $, Dashboard'dan satın alınır) bağlıdır; 20 Ekim 2026 itibarıyla ana ağda altı lisans verilmişti ve henüz hiçbir hafif düğüm kaydolmamıştı. Bir düğüm çalıştırmak lisans gerektirmez. Bkz. [Hafif Düğüm](/light-node/overview) ve [ödül programı durumu](/light-node/overview#reward-program-status).
+**Light Node** — Tam durumu tutmadan, blok başlıklarını bir veya daha fazla RPC uç noktasıyla çapraz kontrol ederek zinciri takip eden, kaynak açısından hafif bir istemci. Başkalarına sorgu hizmeti vermez. Protokol ücret bölüşümü, hafif düğüm ödül programı için **%3** pay ayırır. Programa kayıt açıktır ve bir `lightnode_operator` lisansına (50 $, Dashboard'dan satın alınır) bağlıdır; 27 Ekim 2026 itibarıyla ana ağda yedi lisans verilmişti ve her ağda bir hafif düğüm kayıtlıydı. Bir düğüm çalıştırmak lisans gerektirmez. Bkz. [Hafif Düğüm](/light-node/overview) ve [ödül programı durumu](/light-node/overview#reward-program-status).
 
 **MEV** — Maximal Extractable Value (Maksimum Çıkarılabilir Değer). Bir blok içindeki işlemleri yeniden sıralayarak, ekleyerek veya sansürleyerek elde edilebilecek kâr. QoreChain'in FairBlock modülü (tIBE şifrelemesi) MEV çıkarımını azaltmak üzere tasarlanmıştır; henüz etkin değildir.
 
-**ML-DSA-87** — Module-Lattice Digital Signature Algorithm (güvenlik düzeyi 5). QoreChain'in kuantuma dayanıklı işlem imzalama için kullandığı NIST tarafından standartlaştırılmış kuantum sonrası dijital imza şeması. 2.592 baytlık genel anahtarlarla 4.627 baytlık imzalar üretir.
+**ML-DSA-87** — Module-Lattice Digital Signature Algorithm (güvenlik düzeyi 5). QoreChain'in yerel şeritte secp256k1 ile birlikte hibrit işlem imzaları için kullandığı NIST tarafından standartlaştırılmış kuantum sonrası dijital imza şeması. 2.592 baytlık genel anahtarlarla 4.627 baytlık imzalar üretir.
 
 **ML-KEM-1024** — Module-Lattice Key Encapsulation Mechanism (güvenlik düzeyi 5). QoreChain'in PQC algoritma kayıt defterinde gelecekteki şifreli iletişim kanalları için mevcut olan, NIST tarafından standartlaştırılmış kuantum sonrası bir anahtar kapsülleme şeması.
 
@@ -79,7 +79,7 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **SNARK** — Succinct Non-interactive Argument of Knowledge. Küçük bir kanıt boyutuyla hızlıca doğrulanabilen bir tür sıfır bilgi kanıtı. RDK modülünde zk-rollup'lar için bir mutabakat paradigması olarak desteklenir.
 
-**STARK** — Scalable Transparent Argument of Knowledge. Güvenilir kurulum gerektirmeyen ve kuantuma dayanıklı bir sıfır bilgi kanıt sistemi. RDK'da zk-rollup mutabakatı için alternatif bir kanıt sistemi olarak mevcuttur.
+**STARK** — Scalable Transparent Argument of Knowledge. Güvenilir kurulum gerektirmeyen ve eliptik eğriler yerine özet fonksiyonları üzerine kurulu bir sıfır bilgi kanıt sistemi. RDK'da zk-rollup mutabakatı için alternatif bir kanıt sistemi olarak mevcuttur.
 
 **Stranded staker share / reward-pool reserve (sıkışmış staker payı / ödül havuzu rezervi)** — v3.2.0 yükseltmesinde kaydedilen ve yalnızca bir yönetişim oyuyla hareket eden tutarlar; yönetişim bunları Ekim 2026'da serbest bıraktı (sıkışmış payın v3.2.3'te yeniden hesaplanan düzeltilmiş kalanı, öneri 12 ile serbest bırakıldı). Bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 

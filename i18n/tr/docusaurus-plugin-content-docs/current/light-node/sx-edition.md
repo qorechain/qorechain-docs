@@ -7,24 +7,27 @@ sidebar_position: 2
 
 # SX Sürümü — Sunucu Daemon'u
 
-**SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Bu sayfa hafif düğüm **3.1.10**'u (kaynak etiketi `v3.1.10`) açıklar; hafif düğüm, zincir sürümünden ayrı, kendi sürüm hattındadır.
+**SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Hafif düğüm sürümleri, zincir sürümünden ayrı, kendi hatlarındadır: her iki ağın kanalı da **3.1.12** sürümünü taşır (27 Ekim 2026). Bu sayfa, bir özelliğin 3.1.11 veya daha yenisini gerektirdiği yerleri belirtir.
 
 ## Kurulum {#install}
 
-Önceden derlenmiş ikili dosyalar en kolay yoldur — hafif düğüm istemcisi **altı platformda, hiçbir yerel bağımlılık olmadan** doğal olarak çalışır: Linux (amd64, arm64), macOS (Intel, Apple Silicon) ve Windows (amd64, arm64) — SX ve UX sürümleri genelinde toplam 12 ikili dosya. Her ikili dosya yaklaşık 13 MB'tır — indirin ve çalıştırın, kurulacak ayrı bir kitaplık yoktur. Düğüm, bu platformların her birinde kendi işlemlerini kendisi imzalar; bu nedenle bir düğümü kaydetmek ve çalıştırmak için başka hiçbir şeye (özellikle `qorechaind`'e) gerek yoktur.
+Önceden derlenmiş ikili dosyalar en kolay yoldur. Hafif düğüm istemcisi, kurulacak yerel kitaplık gerektirmeyen, yaklaşık 13 MB'lık tek bir statik ikili dosyadır: Linux (amd64, arm64), macOS (Intel, Apple Silicon) ve Windows (amd64, arm64) derlemeleri her iki sürüm için de mevcuttur, sürüm başına toplam 12 ikili dosya. Düğüm kendi işlemlerini kendisi imzalar; bu nedenle bir düğümü kaydetmek ve çalıştırmak için başka hiçbir şeye (özellikle `qorechaind`'e) gerek yoktur.
 
-**Çalıştırmadan önce sağlama toplamını doğrulayın.** `https://download.qore.host/<net>/lightnode/latest.json` adresindeki sürüm manifestosu her ikili dosya için bir `sha256` değeri, tüm sürümü kapsayan bir `SHA256SUMS` dosyasını gösteren bir `checksums.url` ve o dosyanın kendi `checksums.sha256` değerini taşır. İndirdiğinizi doğrulayın — bu bir dipnot değildir, gerçekten derlenen ikili dosyayı çalıştırmakla o URL'ye her ne indiyse onu çalıştırmak arasındaki farktır:
+**Çalıştırmadan önce sağlama toplamını doğrulayın.** `https://download.qore.host/<net>/lightnode/latest.json` adresindeki sürüm manifestosu her ikili dosya için bir `sha256` değeri, tüm sürümü kapsayan bir `SHA256SUMS` dosyasını gösteren bir `checksums.url` ve o dosyanın kendi `checksums.sha256` değerini taşır. İndirdiğinizi doğrulayın: bu, gerçekten derlenen ikili dosyayı çalıştırmakla o URL'ye her ne indiyse onu çalıştırmak arasındaki farktır. Sürümü manifestodan alın, ikili dosyayı ve `SHA256SUMS` dosyasını da aynı sürüm numaralı yoldan alın:
 
 ```bash
 NET=mainnet            # or testnet
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.12 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/v3.1.10/$F   # or the artifacts[].url from latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/SHA256SUMS
-grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
+curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
+curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
+grep " $F\$" SHA256SUMS | sha256sum -c -    # macOS: shasum -a 256 -c -
 chmod +x $F
 ```
 
-Windows'ta `certutil -hashfile lightnode-sx-<platform>.exe SHA256` çıktısını manifestodaki değerle karşılaştırın. Her iki ağ da aynı 3.1.10 derlemesini sunar; manifestolar 3.1.9'u hâlâ kabul eder (`minCompatible: 3.1.9`). 3.1.10'dan itibaren her sürümün ikili dosyaları sürüm numaralı bir yolda, `https://download.qore.host/<net>/lightnode/v<version>/<file>` altında bulunur; manifestodaki `artifacts[].url` bu yolu gösterir. Birkaç saat geride kalabilen sürümsüz kopya yerine bunu kullanın. Kaynak kodu `github.com/qorechain/qorechain-lightnode` adresinde herkese açıktır (Apache 2.0). GitHub sürümüne önizleme olarak bir Android derlemesi eklenmiştir; kayıt olmaz ve ödül kazanmaz.
+Sürüm numaralı ikili dosyayla birlikte sürüm numaralı `SHA256SUMS` dosyasını (`.../v$V/SHA256SUMS`) kullanın. Sürümsüz `.../lightnode/SHA256SUMS` manifestoya aittir ve yeni bir sürümün birkaç saat gerisinde kalabilir; bu nedenle sürüm numaralı bir ikili dosyanın onunla kontrolü başarısız olabilir.
+
+Windows'ta `certutil -hashfile lightnode-sx-<platform>.exe SHA256` çıktısını manifestodaki değerle karşılaştırın. Her iki manifesto da 3.1.9 ve sonrasını kabul eder (`minCompatible: 3.1.9`). Kaynak kodu `github.com/qorechain/qorechain-lightnode` adresinde herkese açıktır (Apache 2.0). GitHub sürümüne önizleme olarak bir Android derlemesi eklenmiştir; kayıt olmaz ve ödül kazanmaz.
 
 İkili dosyayı kaynaktan da derleyebilir veya Docker ile çalıştırabilirsiniz.
 
@@ -36,16 +39,16 @@ Hafif düğüm **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go i
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Sürüm etiketinden derleyin (`git checkout v3.1.10`). Bu, `build/lightnode-sx` üretir. Doğrudan çalıştırın veya `PATH`'inize kopyalayın. Kaydolmadan önce kuantum sonrası imzalama yığınını [`selftest`](#verify-the-pqc-stack-selftest) ile sağlık kontrolünden geçirin.
+Manifestonun adını verdiği sürüm etiketinden derleyin (bugün `git checkout v3.1.12`). Bu, `build/lightnode-sx` üretir. Doğrudan çalıştırın veya `PATH`'inize kopyalayın. Kaydolmadan önce kuantum sonrası imzalama yığınını [`selftest`](#verify-the-pqc-stack-selftest) ile sağlık kontrolünden geçirin.
 
 ### Docker {#docker}
 
-Önceden derlenmiş bir kayıt defteri imajı yoktur; imajı kaynak etiketinden kendiniz derlersiniz. **`v3.1.10`** etiketini kullanın. Mevcut bir kurulumu güncellemek için yeni etiketten yeniden derleyin (`git fetch --tags && git checkout v3.1.10 && docker compose build --no-cache lightnode-sx`); düz bir `docker compose up` veya `restart` eski imajı yeniden kullanır. Anahtarlar, yapılandırma ve veri birimi korunur.
+Çekebileceğiniz önceden derlenmiş bir kayıt defteri imajı yoktur: yayınlanmış konteyner paketleri henüz herkese açık değildir, bu nedenle imajı kaynak etiketinden kendiniz derlersiniz. Manifestonun adını verdiği etiketi kullanın (bugün **`v3.1.12`**). Mevcut bir kurulumu güncellemek için yeni etiketten yeniden derleyin (`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`); düz bir `docker compose up` veya `restart` eski imajı yeniden kullanır. Anahtarlar, yapılandırma ve veri birimi korunur.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.10
+git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
@@ -59,9 +62,23 @@ docker compose up -d lightnode-sx
 docker compose run --rm lightnode-sx status
 ```
 
-`QORECHAIN_RPC_ADDR` değişkenini her `docker compose` komutunda dışa aktarılmış tutun: yapılandırmadaki `rpc_addr` değerini geçersiz kılar ve compose varsayılanı `host.docker.internal:26657` adresine işaret eder. SX konteyneri, anahtarlık dahil verilerini `/root/.qorechain-lightnode` konumuna bağlanmış adlandırılmış bir birimde kalıcı kılar.
+`QORECHAIN_RPC_ADDR` değişkenini her `docker compose` komutunda dışa aktarılmış tutun: yapılandırmadaki `rpc_addr` değerini geçersiz kılar. 3.1.10'dan beri compose dosyası bunu varsayılan olarak mainnet RPC'si `https://rpc.qore.host` adresine ayarlar; bu yüzden bir testnet düğümü `https://rpc-testnet.qore.host` değerini dışa aktarmalıdır, aksi halde mainnet'i izler. SX konteyneri, anahtarlık dahil verilerini `/root/.qorechain-lightnode` konumuna bağlanmış adlandırılmış bir birimde kalıcı kılar.
 
 Düğüm konteyner içinde yerel olarak imzalar, bu nedenle başka hiçbir şey gerekmez. SX imajı, [`qorechaind` alternatifi](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) için hâlâ yayınlanmış bir `qorechaind` (v3.2.0, yalnızca linux/amd64, sabitlenmiş bir özetle (digest) doğrulanır) da içerir: `docker-compose.yml`, `~/.qorechaind` dizinini (veya `QORECHAIND_HOME`) `/root/.qorechaind` konumuna bağlar ve bu yol için `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` değerini iletir. Operatör anahtarı kendi anahtarlığında bulunan bir düğüm bunların hiçbirini kullanmaz.
+
+## Güncelleme {#updating}
+
+- **Hafif düğüm 3.1.11 ve sonrası, Docker dışında.** Düğüm her 6 saatte bir kendi ağı için `https://download.qore.host/<net>/lightnode/latest.json` adresini okur (`qorechain-vladi` için mainnet, `qorechain-diana` için testnet, diğer zincirler için hiçbir şey). Manifesto yalnızca bir ipucudur. Düğüm bir sürümü yalnızca aşağıdakilerin hepsi sağlanıyorsa kurar:
+  1. `v<version>/SHA256SUMS.sig`, ağ, sürüm ve `SHA256SUMS` içeriği üzerinde, ikili dosyaya gömülü sürüm anahtarıyla atılmış geçerli bir Ed25519 imzasıdır;
+  2. kanalın kendi sürüm numaralı yolundan alınan ikili dosya (manifesto URL'leri izlenmez), imzalı sağlama toplamıyla eşleşir;
+  3. yeni ikili dosya çalışır ve tam olarak `v<version>` bildirir.
+
+  Ardından önceki ikili dosyayı `<name>.old` olarak saklar ve yerinde yeniden başlar: Linux ve macOS'ta aynı süreçle (böylece bir systemd hizmeti ayakta kalır), Windows'ta ise yeni ikili dosya başlar ve eskisi çıkar (bir hizmeti çıkışta yeniden başlayacak şekilde ayarlayın).
+- **Ayarlar.** `[update] mode = "auto"` (varsayılan, bölümü olmayan bir yapılandırma için de) duyurur ve kurar; `"notify"` yalnızca duyurur; `"off"` kontrol etmez. Elle: `lightnode-sx update --check`, ardından `lightnode-sx update`, sonra düğümü yeniden başlatın.
+- **Bir duyuruyu görme.** Düğüm daha yeni bir sürümü günlüğe yazar ve yerel pano API'sinde `GET /api/update` üzerinden sunar (alanlar `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); UX panosu bir afiş gösterir.
+- **Konteyner veya yazılamayan klasör.** Düğüm yalnızca duyurur: imajı veya dosyayı kendiniz güncelleyin.
+- **Hafif düğüm 3.1.10 ve öncesi** kendini güncellemez. 3.1.12'yi bir kez elle kurun: sürüm numaralı ikili dosyayı manifesto yolundan indirin ([Kurulum](#install) bölümüne bakın), doğrulayın, dosyayı değiştirin ve yeniden başlatın. Bundan sonra düğüm kendi kanalını izler.
+- **Docker.** Docker imajı asla değiştirmez. Yeni kaynak etiketinden yeniden derleyin ([Docker](#docker) bölümüne bakın) ve konteyneri yeniden oluşturun.
 
 ## Yapılandırma {#configure}
 
@@ -85,7 +102,8 @@ Kullanım düzeyinde en ilgili yapılandırma seçenekleri:
 | `operator_address` | Bu düğümün ait olduğu hesap (`qor1...`); yükleme sırasında doğrulanır. `keys add-operator` bunu doldurur. `register`, `status` ve heartbeat'ler için gereklidir. Bkz. [Operatör cüzdanı](#operator-wallet). |
 | `api_addr` | REST uç noktası. Boş olduğunda `rpc_addr`'dan türetilir (26657 portu 1317 olur; `rpc.` ana bilgisayarları `api.` olur), dolayısıyla yalnızca bu iki kuralı da izlemeyen uç noktalar için gereklidir. |
 | `[heartbeat]` | Varsayılan olarak açıktır (`enabled`). `interval_blocks` (zincirin `heartbeat_interval` değeriyle, yani 1000 ile eşleştirin), `check_interval` (varsayılan `60s`) ve `gas` (varsayılan `300000`; yerel imzalamada ücret gaz birimi başına 0,25 uqor'dur, yani 75.000 uqor). Yalnızca `qorechaind` alternatifi tarafından kullanılanlar: `fees` (varsayılan `50000uqor`), `qorechaind_path` (boş, `PATH`'teki `qorechaind` anlamına gelir), `qorechaind_home` (boş, `~/.qorechaind` anlamına gelir), `keyring_backend` ve `key_name` (operatör hesabını tutan `qorechaind` anahtarı; varsayılan olarak üst düzey `key_name`). |
-| `[delegation]` | `auto_claim` (varsayılan olarak kapalı: birikmiş hafif düğüm ödüllerini imzalayıcı aracılığıyla operatör hesabına talep eder; düğüm sunucudan asla yeniden delege etmez), kontrol aralığı, talep için minimum ödül, `rebalance_enabled` ve `min_reputation` (yalnızca itibar uyarıları — düğüm stake'i asla taşımaz). `validators` ve `split_weights` kabul edilir ancak şu anda işleme alınmaz. |
+| `[delegation]` | `auto_claim` (varsayılan olarak kapalı: birikmiş hafif düğüm ödüllerini imzalayıcı aracılığıyla operatör hesabına talep eder; düğüm sunucudan asla yeniden delege etmez), kontrol aralığı, talep için minimum ödül, `rebalance_enabled` (varsayılan olarak açık) ve `min_reputation` (yalnızca uyarılar; düğüm stake'i asla taşımaz). 3.1.11'den itibaren `rebalance_enabled`, hapsedilmiş (jailed) veya aktif kümede olmayan bir delege edilmiş doğrulayıcı için ve `min_delegated_stake` değerinin (1.000 QOR) altındaki bağlı stake için uyarıları açar; `min_reputation` (varsayılan `0.5`) ağın doğrulayıcı başına itibar puanları sunduğu yerde, bugün testnet'te, uygulanır. `validators` ve `split_weights` kabul edilir ancak şu anda işleme alınmaz. |
+| `[update]` | `mode`: `auto` (varsayılan, bölüm yokken de), `notify` (yalnızca duyur) veya `off`. Hafif düğüm 3.1.11 ve sonrası. Bkz. [Güncelleme](#updating). |
 | `[telemetry]` | Telemetrinin etkin olup olmadığı ve doğrulayıcılar, ağ, köprü ve tokenomik için yenileme aralıkları. |
 | `[dashboard]` | Yerel pano API'si. UX sürümü bunu her zaman sunar; SX sürümü yalnızca `enabled = true` ile. `bind_addr` (varsayılan `127.0.0.1:8420`) ve `token` (ayarlandığında her `/api` rotası ve `/ws` için `Authorization: Bearer <token>` gerekir). Bkz. [UX Sürümü](/light-node/ux-edition). |
 | `log_level` / `log_format` | Günlük ayrıntı düzeyi (`debug`, `info`, `warn`, `error`) ve biçim (`text` veya `json`). Üst düzey anahtarlardır: bunları ilk `[table]` öncesine yazın. |
@@ -102,7 +120,7 @@ Kullanım düzeyinde en ilgili yapılandırma seçenekleri:
 Birincil ile aynı ana bilgisayardaki bir tanık reddedilir — güvenliği ihlal edilmiş bir uç nokta yalnızca kendisiyle aynı fikirde olur, dolayısıyla hiçbir şeyi doğrulamaz. Uzak bir ana bilgisayardaki düz metin `http://` tanığı da reddedilir, çünkü o bağlantıyı yeniden yazabilen bir saldırgan aynı anda her tanık gibi yanıt verebilir; loopback `http://` sorun değildir. Tanıkları, bağımsız olarak güvenmek için nedenleriniz olan RPC uç noktalarına yönlendirin.
 :::
 
-Delegasyon varsayılanları, itibar farkındalıklı yeniden dengeleme uyarılarını etkinleştirir ve `auto_claim` seçeneğini kapalı bırakır — bunların ne yaptığını öğrenmek için [Ödüller ve İzleme](/light-node/rewards-and-monitoring) bölümüne bakın.
+Delegasyon varsayılanları stake uyarılarını etkinleştirir ve `auto_claim` seçeneğini kapalı bırakır; bunların ne yaptığını öğrenmek için [Ödüller ve İzleme](/light-node/rewards-and-monitoring) bölümüne bakın.
 
 ## İlk çalıştırma: `onboard` {#first-run-onboard}
 
@@ -207,6 +225,7 @@ SX CLI'si, düğüm durumunu incelemek ve anahtarları yönetmek için komutlar 
 | `delegation` | Çalışan daemon tarafından yerel veritabanına yansıtılan haliyle operatör hesabının delegasyonlarını göster. |
 | `rewards` | Operatör hesabının bekleyen staking ödüllerini göster (hafif düğüm ödülleri değil; bkz. [Ödüller ve İzleme](/light-node/rewards-and-monitoring#how-rewards-work)). |
 | `network` | Yerel veritabanından ağ telemetrisini göster (son eşitlenmiş başlıklar). |
+| `update [--check]` | Hafif düğüm 3.1.11 ve sonrası. `--check` daha yeni bir sürüm olup olmadığını söyler; onsuz, doğrular, kurar ve önceki ikili dosyayı `<name>.old` olarak saklar. Ardından düğümü yeniden başlatın. Bkz. [Güncelleme](#updating). |
 | `version` | İkili dosya sürümünü yazdır. |
 
 Staking, ödüller ve izleme ayrıntıları için [Ödüller ve İzleme](/light-node/rewards-and-monitoring) bölümüne bakın. Zincir üzerinde kaydolmak için [Kayıt ve Lisanslama](/light-node/registration-and-licensing) bölümüne bakın.

@@ -123,7 +123,7 @@ signatures can be forged.
   no ML-DSA-87 signature. An account with a registered ML-DSA-87 key can open a
   bounded EVM authorization window from the native lane (expiry height, maximum
   transactions, maximum value). See
-  [EVM wallets: quantum-ready mode](/qoresign/guides/evm-quantum-ready).
+  [EVM wallets: authorization window](/qoresign/guides/evm-quantum-ready).
 - SVM lane: not open on the network yet.
 
 ## Test vectors {#test-vectors}

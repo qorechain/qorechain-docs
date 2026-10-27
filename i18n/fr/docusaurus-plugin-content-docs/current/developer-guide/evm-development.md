@@ -262,7 +262,7 @@ Ici, `receiver` est le compte `qor1...` qui reçoit le coin bancaire (le module 
 
 ---
 
-## PQC et compatibilité EVM {#pqc-and-evm-compatibility}
+## PQC et compatibilité EVM
 
 Les transactions EVM sont signées avec **ECDSA classique (secp256k1)** ; MetaMask, Hardhat, Foundry, ethers.js et les autres outils standard les construisent et les signent donc sans modification. Ce qui a changé avec la **v3.2.0**, c'est l'*admission* : une transaction n'est acceptée que si son expéditeur possède une clé post-quantique enregistrée et une fenêtre d'autorisation active (section suivante). L'enregistrement d'une clé et l'ouverture d'une fenêtre sont des transactions de la voie Cosmos et exigent la signature hybride (ML-DSA-87 + secp256k1).
 
@@ -283,7 +283,7 @@ Une signature post-quantique ne peut pas voyager *avec* une transaction Ethereum
 | `max-txs`   | 1 – 1,000          | Nombre de transactions EVM qu'elle admet |
 | `max-value` | supérieur à 0, en `uqor` | Sortie totale qu'elle admet : valeur transférée **plus** les frais maximaux que chaque transaction pourrait payer (limite de gas × frais max par gas), convertis en `uqor` et arrondis à l'unité supérieure |
 
-La première borne atteinte ferme la fenêtre. Les trois bornes sont obligatoires ; ouvrir une fenêtre remplace celle qui existe ; une transaction admise puis en échec consomme tout de même son emplacement et son budget de valeur ; les déploiements de contrat comptent comme n'importe quelle autre transaction. `blocks` est un nombre de blocs, pas une durée : 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,2 s par bloc) et environ 6 heures sur le testnet (environ 1,3 s par bloc le 27 octobre 2026 ; le temps de bloc du testnet varie).
+La première borne atteinte ferme la fenêtre. Les trois bornes sont obligatoires ; ouvrir une fenêtre remplace celle qui existe ; une transaction admise puis en échec consomme tout de même son emplacement et son budget de valeur ; les déploiements de contrat comptent comme n'importe quelle autre transaction. `blocks` est un nombre de blocs, pas une durée : 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,1 s par bloc) et environ 6 heures sur le testnet (environ 1,3 s par bloc le 27 octobre 2026 ; le temps de bloc du testnet varie).
 
 **La borne de valeur ne compte que le QOR natif.** Un transfert de jeton, une approbation ou tout autre appel de contrat porte une valeur nulle ; il n'est donc pas décompté de `max-value` (seuls ses frais maximaux le sont). Pour borner aussi ces opérations, restreignez la **portée** de la fenêtre (mainnet v3.2.3 et ultérieures) :
 

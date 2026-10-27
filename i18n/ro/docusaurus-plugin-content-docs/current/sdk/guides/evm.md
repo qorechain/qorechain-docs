@@ -92,7 +92,7 @@ formele CLI și codurile de refuz se găsesc în
 
 Cu SDK **0.8.2 sau mai nou** poți deschide o fereastră din cod (**0.9.0** adaugă
 opțiunile de domeniu de mai jos). Înregistrarea cheii
-(o singură dată) este descrisă în [Quantum-safe](/sdk/guides/quantum-safe); exemplul
+(o singură dată) este descrisă în [Semnare hibridă](/sdk/guides/quantum-safe); exemplul
 de mai jos deschide apoi o fereastră pentru un cont eth-native unificat (`npm i @cosmjs/stargate`):
 
 ```ts

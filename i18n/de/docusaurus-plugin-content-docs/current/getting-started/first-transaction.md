@@ -139,7 +139,7 @@ Alles andere am EVM-Pfad bleibt unverändert: Sie signieren weiterhin mit MetaMa
 | `max-txs` | Wie viele EVM-Transaktionen es zulässt | 1 – 1.000 |
 | `max-value` | Gesamter Abfluss, den es zulässt, in uqor: übertragener Wert **plus** die maximale Gebühr, die jede Transaktion zahlen könnte (Gas-Limit × Gebührenobergrenze), aufgerundet | größer als 0 |
 
-* 17.280 Blöcke entsprechen etwa 15 Stunden im Mainnet (etwa 3,2 s pro Block) und etwa 6 Stunden im Testnet (etwa 1,3 s pro Block).
+* 17.280 Blöcke entsprechen etwa 15 Stunden im Mainnet (etwa 3,1 s pro Block) und etwa 6 Stunden im Testnet (etwa 1,3 s pro Block).
 * Eine Transaktion, die zugelassen wird und dann fehlschlägt, verbraucht dennoch ihren Platz und ihr Wertbudget.
 * Das Öffnen eines neuen Fensters **ersetzt** das vorherige; der Verbrauch beginnt wieder bei null.
 * Die CLI akzeptiert `max-value` in `uqor` oder `qor` (`1000qor` = 1.000.000.000 uqor).

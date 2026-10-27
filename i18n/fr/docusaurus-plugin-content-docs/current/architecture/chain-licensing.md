@@ -38,7 +38,9 @@ Une licence cesse également d'être active une fois sa hauteur `expires_at` dé
 
 L'octroi, la révocation, la suspension et la reprise de licences sont des **opérations d'autorité** : elles sont signées par le compte d'autorité de licence du module, et non par des utilisateurs arbitraires. À partir de v3.2.3, la gouvernance peut remplacer ce compte avec `MsgUpdateAuthority`, la voie de récupération si sa clé venait à être perdue. Ces transactions existent dans la surface de commandes du module, mais un utilisateur normal ne les appelle pas directement ; le cycle de vie est administré on-chain par l'autorité.
 
-Pour en **obtenir** une : une licence de nœud léger s'achète sur le **Dashboard (Outils → Light Node)**, et un octroi `validator_operator` passe par le **Validator Program** (Outils → Validator Application : candidater, être sélectionné, payer les frais de programme de $1,000). L'autorité enregistre ensuite l'octroi on-chain, par lots.
+Pour en **obtenir** une sur le mainnet : une licence de nœud léger s'achète sur le **Dashboard (Nodes & Validators → Light Node)**, et un octroi `validator_operator` passe par le **Validator Program** (Nodes & Validators → Validator Application : candidater, être sélectionné, payer les frais de programme de $1,000). L'autorité enregistre ensuite l'octroi on-chain, par lots.
+
+Sur le testnet, une licence de nœud léger est gratuite et en libre-service : dans **Nodes & Validators → Light Node**, avec le réseau réglé sur Testnet, saisissez votre adresse `qor1…` et sélectionnez **Request licence**. L'octroi est signé automatiquement, généralement en quelques minutes, et l'onglet affiche son statut (demandé, octroyé, ou impossible à signer, auquel cas vous pouvez refaire la demande). Chaque compte et chaque adresse peut détenir une seule demande.
 
 Les transactions restreintes à l'autorité sont :
 

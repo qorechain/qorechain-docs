@@ -139,7 +139,7 @@ Tot restul lane-ului EVM rămâne neschimbat: continuați să semnați cu MetaMa
 | `max-txs` | Câte tranzacții EVM admite | 1 – 1,000 |
 | `max-value` | Ieșirea totală pe care o admite, în uqor: valoarea transferată **plus** comisionul maxim pe care l-ar putea plăti fiecare tranzacție (limita de gaz × plafonul comisionului), rotunjit în sus | mai mare decât 0 |
 
-* 17,280 de blocuri înseamnă aproximativ 15 ore pe mainnet (aproximativ 3.2 s pe bloc) și aproximativ 6 ore pe testnet (aproximativ 1.3 s pe bloc).
+* 17,280 de blocuri înseamnă aproximativ 15 ore pe mainnet (aproximativ 3.1 s pe bloc) și aproximativ 6 ore pe testnet (aproximativ 1.3 s pe bloc).
 * O tranzacție care este admisă și apoi eșuează își consumă totuși slotul și bugetul de valoare.
 * Deschiderea unei ferestre noi **înlocuiește** fereastra anterioară; consumul reîncepe de la zero.
 * CLI acceptă `max-value` în `uqor` sau `qor` (`1000qor` = 1,000,000,000 uqor).

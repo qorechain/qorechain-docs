@@ -57,7 +57,7 @@ SDK 0.10.0 は、チェーン **v3.2.4** に対応するクライアントリリ
 | 領域 | 0.10.0 での内容 |
 | --- | --- |
 | ステーキングティア（`x/stakingtier`） | コンポーザー `lockDelegation`（チェーン自身のチェック: 期間は 3、6、または 12 か月で、正の整数の金額）、`unlockEarly`、`claimBonus`、`updateParams`。モジュールパラメータ、保有者のロック、ボーナスプールの読み取り（`fetchStakingTierParams`、`fetchStakingLocks`、`fetchStakingTierPool`）。モジュールのエラーコード。モジュールの動作は[ステーキングと委任](/user-guide/staking-and-delegation)に記載されています |
-| オーセンティケーターのノンス | `fetchAuthNonce({ rest, address, pubkey })` は、リンクされた鍵が `MsgExecuteEVM` / `MsgExecuteCosmos` で次に署名しなければならないシーケンスを、手作業で追跡する代わりに `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` から読み取ります。両ネットワークがこのルートを提供しています。`abstractaccount` モジュール自体はメインネットでは依然として無効(テストネットでは有効)なため、メインネットでは、ノンスが確認される前に支出は拒否されます |
+| オーセンティケーターのノンス | `fetchAuthNonce({ rest, address, pubkey })` は、リンクされた鍵が `MsgExecuteEVM` / `MsgExecuteCosmos` で次に署名しなければならないシーケンスを、手作業で追跡する代わりに `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` から読み取ります。両ネットワークがこのルートを提供しています。`abstractaccount` モジュール自体はメインネットでは無効（テストネットでは有効）なため、メインネットでは、ノンスが確認される前に支出は拒否されます |
 | プロトコル機能スイッチ | `fetchProtocolFeatures` と `isProtocolFeatureEnabled` は、ネットワークがどのコンセンサスルールを適用しているかを、名前で `/qorechain/pqc/v1/protocol_features` から読み取ります（両ネットワークが提供）。v3.2.4 より前のネットワークはこのルートを提供しません。そこでは `isUpgradeApplied` を使用してください |
 | `possessionProven` | PQC ステータスは、アカウントの鍵が所有証明付きで登録されたかどうかを示します |
 | `ibcTimeoutTimestamp(seconds)` | `MsgTransfer` が受け取る単位（Unix ナノ秒）での絶対 IBC タイムアウトです。IBC のタイムアウトは絶対時刻です。IBC v2 パケットは絶対 Unix 秒を受け取り、そこに相対値を渡すと、手数料が課された後に拒否されます。メインネットで開いている IBC チャネルはありません（2026年10月27日に確認） |
@@ -79,12 +79,12 @@ SDK 0.9.0 は、チェーン **v3.2.2** および **v3.2.3** に対応するク�
 | 領域 | 0.9.0（およびそれ以降）での内容 |
 | --- | --- |
 | ハイブリッド `TxClient`（TypeScript） | アカウントの鍵ペアを渡します: `client.connectTx(signer, { pqcKeypair })` または `TxClient.connect({ …, pqcKeypair, rest })`。すると、すべてのトランザクションがハイブリッドで署名され、`fee: "auto"` はハイブリッドトランザクションそのものをシミュレートします。単独の鍵登録は古典署名のままです（チェーンのブートストラップ経路）。`bankSend` と、SDK のロールアップ、マルチレイヤー、クロス VM の各クライアントがこれを使用します。鍵ペアを渡さない場合は何も変わりません |
-| 復元可能な PQC 鍵 | `derivePqcCanonical(address, mnemonic)` と、各言語でのその相当機能（[量子安全](/sdk/guides/quantum-safe#canonical-derivation)を参照） |
+| 復元可能な PQC 鍵 | `derivePqcCanonical(address, mnemonic)` と、各言語でのその相当機能（[ハイブリッド署名](/sdk/guides/quantum-safe#canonical-derivation)を参照） |
 | `ensurePqcRegistered` | まず REST（`rest`）で鍵の状態を読み取り、判断できない場合は登録を拒否し、アカウントがすでに別の鍵を保持している場合は `PqcKeyMismatchError` を投げ、チェーンの「すでに登録済み」という拒否を成功として扱います。チェーン v3.2.3 以降は、**所有証明**に自分で署名して添付します。v3.2.3 より前はフィールドを付けません |
 | スコープ付き EVM ウィンドウ | `openEvmWindowMsg` は `nativeOnly` と `allowedTargets`（最大 16 件、重複不可）を受け取り、`fetchEvmWindow` は両方を読み戻します（[EVM ガイド](/sdk/guides/evm#evm-window)を参照） |
 | EIP-7702 の同意 | `authorizeEvmDelegationMsg`、`clearEvmDelegationMsg`、`fetchEvmDelegationConsent`、`evmDelegationTupleNonce`、`classifyEvmDelegationRejection` |
 | 鍵の完全性 | 登録ビルダーは、`classical_only`、空の鍵、縮退した ML-DSA-87 鍵を拒否します。これらは v3.2.3 以降チェーンも拒否します。`signProofOfPossession` / `verifyProofOfPossession` がエクスポートされ、`migratePqcKeyHybrid` は、v3.2.3 以降に鍵を持つアカウントが必要とするハイブリッド署名付きの `MsgMigratePQCKey` を送信します |
-| アブストラクトアカウントのダイジェスト v2 | `evmAuthSignBytesV2`（呼び出しのガスリミットを束縛）と `resolveEvmAuthDigestVersion`。`abstractaccount` モジュールはメインネットでは無効化されており(テストネットでは有効)、メインネットではこれは参照用です |
+| アブストラクトアカウントのダイジェスト v2 | `evmAuthSignBytesV2`（呼び出しのガスリミットを束縛）と `resolveEvmAuthDigestVersion`。`abstractaccount` モジュールはメインネットでは無効化されており（テストネットでは有効）、メインネットではこれは参照用です |
 | アップグレードの検出 | `isUpgradeApplied`、`requireUpgradeApplied`: 新しい任意フィールドは、`applied_plan` がそのリリースを報告した後にのみ設定されます。リリースを適用していないノードは、そのリリースの新しいフィールドが設定されたトランザクション全体を拒否するためです |
 | エラーのデコード | ブロック内での失敗はそのコードスペースを保持します（たとえば `sdk_231` ではなく `pqc` 231）。`rate_limited` と委任コードがデコードされ、`decodeTxError` は投げられたエラーのログまたはメッセージを読み取ります |
 | 支出ルール | `validateSpendingRules` が `MsgUpdateSpendingRules` ビルダー内で実行され、何も制限しないルールを拒否します |
@@ -266,11 +266,11 @@ implementation 'io.github.qorechain:qorechain-sdk:0.10.0'
 | `@qorechain/wallet-adapter` | ウォレット側のヘルパー: ウォレット生成（`generateQoreWallet`）、`eth_secp256k1` ハイブリッド署名（`signHybridEth`、`QoreChainSigner`）、MetaMask へのネットワーク登録（`addQoreEvmToWallet`）、authenticator および EVM ウィンドウのメッセージビルダー（その `openEvmWindowMsg` が構築するのはスコープなしの形式のみ）、v2 のアブストラクトアカウントダイジェスト。所有証明は添付しません。ピア依存: `@cosmjs/proto-signing` と `@cosmjs/stargate` `^0.32`（SDK は cosmjs 0.39 を使用するため、同じプロジェクトに両方をインストールすると npm がピアの競合 `ERESOLVE` を報告します。別々のプロジェクトに分けるか、`--legacy-peer-deps` を渡してください） | 0.4.0 |
 | `@qorechain/chain-bridge` | バックエンド向けのサーバー側ワーカー: PQC 鍵を導出し、ハイブリッド署名してブロードキャストします（`sendTokens`、`registerPqc` など）。`cosmosRest` を渡してください。渡すと、ネットワークが v3.2.3 を適用した後は登録に所有証明が付き、PQC に見える拒否は再登録の前にチェーンと照合されます（異なる鍵が登録済みの場合は、2 回目の登録に手数料を払う代わりに `pqc_key_mismatch` が発生します） | 0.2.3 |
 | `@qorechain/pqc` | 標準のみに準拠した ML-DSA / ML-KEM / SHAKE-256 プリミティブと `hybridSignBytes`（[ポスト量子署名](/developer-guide/post-quantum-signing)を参照）。PyPI、crates.io、Maven Central、Go プロキシ（Go は `v0.2.3`）にも同じバージョンで公開されています | 0.2.3 |
-| `@qorechain/handles` | 初回使用時ピンニング付きの検証済み `@handle` 解決（`HandleClient`） | 0.1.0 |
-| `@qorechain/connect` | EVM、Cosmos、SVM のウォレットに対応する単一のコネクター。ウォレットアダプター上に構築されています（そのピア範囲は `@qorechain/wallet-adapter` `^0.2.1` で、0.4.0 は含まれません）。[EVM 認可ウィンドウ](/sdk/guides/evm#evm-window)は開かないため、アカウントが登録済みの鍵と開いているウィンドウを持つまで、これを通じた EVM 送信は拒否されます | 0.2.1 |
-| `@qorechain/rdk` | Rollup Development Kit クライアント（[ロールアップ](/rollups/why)を参照）。`@qorechain/sdk` `^0.9.0` と `@qorechain/evm` `^0.8.0` に依存するため、0.x バージョンに対するキャレットは 0.9 の範囲内にとどまるため、SDK 0.10.0 を使うアプリは、このキットと一緒に 2 つ目のネストされた SDK 0.9.x のコピーを取得します（SDK 0.9.x にとどまるアプリは 1 つのコピーを共有します）。`pqcKeypair` を渡した場合にのみハイブリッド署名を行い、読み取りはそれなしでも動作します。PyPI、crates.io、Maven Central では `qorechain-rdk` として、また Go モジュールとしても公開されています（`@v0.6.1` を固定してください）。それら 4 つのクライアントは古典署名のみで署名します。[RDK 0.6.1：変更点と制限](/rollups/deploying-a-rollup#rdk-050-limits)を参照 | 0.6.1 |
-| `@qorechain/rdk-cli` | RDK 用の `qorollup` オペレーター CLI。そのトランザクションコマンド（`create`、`pause`、`resume`、`stop`、`withdraw`）は古典署名のみで署名するため、ネットワークに拒否されます | 0.6.1 |
-| `create-qorechain-rollup` | ロールアップのスターター・スキャフォルダー。そのテンプレートは `@qorechain/rdk` `^0.6.1` に依存し、`QORE_MNEMONIC` または `QORE_PQC_SEED_HEX` からポスト量子鍵を解決できる場合はハイブリッド署名を行います | 0.6.1 |
+| `@qorechain/handles` | 検証済みの `@handle` 解決（`HandleClient`）: レジストリの公開鍵とピンストアはあなたが用意し、ユーザーがアドレスを確認した後にあなたがピン留めします。パッケージが自分でピン留めすることはありません。[チェーンブリッジとハンドル](/developer-tools/chain-bridge#handles)を参照 | 0.1.0 |
+| `@qorechain/connect` | **npm で非推奨となり、メンテナンスも終了しています。新規の作業では使用しないでください。代わりに [`@qorechain/wallet-adapter`](/developer-tools/wallet-adapter) を使用してください (QoreX 接続の代替手段は[開発者ツールの概要](/developer-tools/overview#group-connect)にあります)。** EVM、Cosmos、SVM のウォレットに対応する単一のコネクター。ウォレットアダプター上に構築されています（そのピア範囲は `@qorechain/wallet-adapter` `^0.2.1` で、0.4.0 は含まれません）。[EVM 認可ウィンドウ](/sdk/guides/evm#evm-window)は開かないため、アカウントが登録済みの鍵と開いているウィンドウを持つまで、これを通じた EVM 送信は拒否されます | 0.2.1 |
+| `@qorechain/rdk` | Rollup Development Kit クライアント（[ロールアップ](/rollups/why)を参照）。`@qorechain/sdk` `^0.9.0` と `@qorechain/evm` `^0.8.0` に依存するため、0.x バージョンに対するキャレットは 0.9 の範囲内にとどまるため、SDK 0.10.0 を使うアプリは、このキットと一緒に 2 つ目のネストされた SDK 0.9.x のコピーを取得します（SDK 0.9.x にとどまるアプリは 1 つのコピーを共有します）。`pqcKeypair` を渡した場合にのみハイブリッド署名を行い、読み取りはそれなしでも動作します。PyPI、crates.io、Maven Central では `qorechain-rdk` として、また Go モジュールとしても公開されています（`@v0.6.2` を固定してください。Maven Central は、そこで 0.6.2 が公開されるまで 0.6.1 を提供します）。それら 4 つのクライアントは古典署名のみで署名します。[RDK 0.6.2：変更点と制限](/rollups/deploying-a-rollup#rdk-050-limits)を参照 | 0.6.2 |
+| `@qorechain/rdk-cli` | RDK 用の `qorollup` オペレーター CLI。そのトランザクションコマンド（`create`、`pause`、`resume`、`stop`、`withdraw`）は古典署名のみで署名するため、ネットワークに拒否されます。npm からインストールすると動作し、`--version` は 0.6.2 を表示します（0.6.1 以前は何も表示しませんでした） | 0.6.2 |
+| `create-qorechain-rollup` | ロールアップのスターター・スキャフォルダー。そのテンプレートは `@qorechain/rdk` `^0.6.1` に依存し、`QORE_MNEMONIC` または `QORE_PQC_SEED_HEX` からポスト量子鍵を解決できる場合はハイブリッド署名を行います | 0.6.2 |
 
 ## 次のステップ
 

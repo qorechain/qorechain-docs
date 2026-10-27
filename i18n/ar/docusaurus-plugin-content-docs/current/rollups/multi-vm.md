@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-ولأن الـ precompile غير نشط، فإن استدعاء `.call` عاديًا إليه يُرجع **نجاحًا مع بيانات فارغة ولا ينفّذ شيئًا**؛ فالعلم `ok` لا يدل على أن الاستدعاء قد أحدث أثرًا. والحارس الموثوق داخل العقد هو هدف يُرجع دائمًا إقرارًا غير فارغ، مع `require(ret.length > 0)` بعد الاستدعاء، بحيث يُعامَل الرد الفارغ على أنه فشل؛ وقالب `multivm-rollup` (الإصداران 0.6.0 و0.6.1) يفعل ذلك.
+ولأن الـ precompile غير نشط، فإن استدعاء `.call` عاديًا إليه يُرجع **نجاحًا مع بيانات فارغة ولا ينفّذ شيئًا**؛ فالعلم `ok` لا يدل على أن الاستدعاء قد أحدث أثرًا. والحارس الموثوق داخل العقد هو هدف يُرجع دائمًا إقرارًا غير فارغ، مع `require(ret.length > 0)` بعد الاستدعاء، بحيث يُعامَل الرد الفارغ على أنه فشل؛ وقالب `multivm-rollup` (من 0.6.0 إلى 0.6.2) يفعل ذلك.
 
 ## إنشاء هيكل rollup متعدد الأجهزة الافتراضية
 
@@ -102,4 +102,4 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-يتضمّن قالب `multivm-rollup` (الإصداران 0.6.0 و0.6.1) الملف `src/crossvm-call.ts` (يتحقق من أن الـ precompile حيّ، ثم يطبع بيانات الاستدعاء) والملف `contracts/CrossVmCaller.sol` الذي يستدعي `executeCrossVMCall(uint8,string,bytes)` ويشترط ردًا غير فارغ من الهدف. وهو لا يجعل الاستدعاء يعمل ما دام الـ precompile غير نشط. راجع [نشر Rollup](/rollups/deploying-a-rollup) للاطلاع على جميع قوالب أداة الإنشاء الهيكلي.
+يتضمّن قالب `multivm-rollup` (من 0.6.0 إلى 0.6.2) الملف `src/crossvm-call.ts` (يتحقق من أن الـ precompile حيّ، ثم يطبع بيانات الاستدعاء) والملف `contracts/CrossVmCaller.sol` الذي يستدعي `executeCrossVMCall(uint8,string,bytes)` ويشترط ردًا غير فارغ من الهدف. وهو لا يجعل الاستدعاء يعمل ما دام الـ precompile غير نشط. راجع [نشر Rollup](/rollups/deploying-a-rollup) للاطلاع على جميع قوالب أداة الإنشاء الهيكلي.

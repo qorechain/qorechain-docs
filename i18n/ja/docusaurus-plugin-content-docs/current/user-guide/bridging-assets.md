@@ -41,10 +41,38 @@ IBCは設計の一部です(Cosmos Hub、Osmosis、Noble、Celestia、Stride、A
 3つのIBC機能はテストネットにのみ存在し、メインネットにはありません(メインネットの `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` ルートは 501 を返します):
 
 * **IBCレート制限。** ガバナンスは、IBC転送のチャネルごとのクォータ(供給量の整数パーセントを、時間単位のウィンドウごとに設定)を設定できます。これは**自動ではありません**。現在、制限は設定されておらず、空の設定は無制限を意味します。転送されたパケットは両方のチャネルで課金され、返金ではクォータが戻ります。これは、[セキュリティモデル](#security-model)で説明するブリッジのサーキットブレーカーとは別のものです。
-* **パケットフォワーディング。** IBC v1 で到着する転送は、`\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` の形式のメモを付けることで、別のチェーンへ転送できます。いずれかのホップが失敗した場合は、送信者に返金されます。再試行はなく、ホップは既定で 10 分後にタイムアウトします。到着時に ERC-20 に変換されるトークンは転送できません。
+* **パケットフォワーディング。** IBC v1 で到着する転送は、`{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` の形式のメモを付けることで、別のチェーンへ転送できます。いずれかのホップが失敗した場合は、送信者に返金されます。再試行はなく、ホップは既定で 10 分後にタイムアウトします。到着時に ERC-20 に変換されるトークンは転送できません。
 * **08-wasm ライトクライアント。** wasm ライトクライアントのバイナリの保存、移行、削除は権限者のみが実行でき、ガバナンスが `08-wasm` を追加するまで、許可されるクライアントタイプには標準クライアントのみが含まれます。
 
-テストネットでは、`GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` で制限を読み取れます(現在は `\{"rate_limits":[]\}` です)。
+テストネットでは、`GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` で制限を読み取れます(現在は `{"rate_limits":[]}` です)。
+
+**どのネットワークに何があるか（2026年10月27日に確認）。**
+
+| | メインネット `qorechain-vladi` (v3.2.4) | テストネット `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| ICS-20 転送 (IBC v1) | 組み込み済みだが、開いているチャネルはない | 組み込み済み、チャネルが 1 つ開いている |
+| IBC レート制限 | 利用不可 (501) | 利用可能、制限は未設定 |
+| パケットフォワーディング | 利用不可 | 利用可能 (IBC v1 のみ) |
+| 08-wasm ライトクライアント | 利用不可 | メッセージセットは存在するが、ガバナンスが `08-wasm` を許可するまで wasm クライアントは作成できない |
+
+### テストネットのテストチャネル {#ibc-test-channel}
+
+テストネットには、開いている転送チャネルが 1 つあります。`channel-0`（ポート `transfer`、`connection-0`、バージョン `ics20-1`、unordered）です。その相手側は Cosmos Hub のテストネット（チェーン ID `provider`、チャネル `channel-600`）です。テストネットでこれまでに確認された IBC denom は、`channel-0` で到着した `uatom` の 1 つだけです。QoreChain はそれ用の ERC-20 ペアも保持しており、モジュールが所有しています。状態は次のコマンドで読み取れます。
+
+```bash
+curl -s https://api-testnet.qore.host/ibc/core/channel/v1/channels
+curl -s https://api-testnet.qore.host/ibc/apps/transfer/v1/denoms
+```
+
+テストチャネルで送信するには、転送を構築し、他のネイティブレーンのトランザクションと同様にハイブリッド署名を追加します。
+
+```bash
+qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_testnet> 1000uqor \
+  --from mykey --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > ibc.json
+qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
+```
+
+これは 2 つのテストネットワーク間のテストチャネルであり、トークンに価値はありません。パケットの配信にはそのチャネル用のリレイヤーが稼働している必要がありますが、このマニュアルはリレイヤーを公開も約束もしていないため、転送が保留のままになることがあります。上記のコマンドをメインネットで使用しないでください。メインネットには開いているチャネルがなく、トランザクションは失敗します。
 
 ---
 

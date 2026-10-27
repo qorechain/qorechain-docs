@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain ist **von Anfang an (at genesis) mit Post-Quantum-Kryptografie (PQC) gebaut** — nicht nachträglich als Upgrade ergänzt. Das Modul `x/pqc` stellt gitterbasierte digitale Signaturen und Schlüsselkapselung als primäre kryptografische Primitive bereit, ergänzt um ein per Governance gesteuertes Framework für Algorithmusagilität zur langfristigen Resilienz.
 
-Die vollständige PQC-Baseline — **Dilithium-5 (Signaturen) + ML-KEM-1024 (KEM) + SHAKE-256 (Hash)** — ist nun vollständig und der Netzwerkstandard. In den Live-Netzwerken (v3.2.x) sind Hybridsignaturen auf dem Cosmos-Transaktionspfad **standardmäßig erforderlich**: `hybrid_signature_mode = required` und `allow_classical_fallback = false`. Jede Transaktion auf dem Cosmos-Pfad muss eine Dilithium-5-Signatur zusätzlich zu ihrer klassischen secp256k1-Signatur tragen; rein klassische Transaktionen von einem PQC-Konto werden abgelehnt, und der klassische Downgrade-Pfad ist geschlossen. Mainnet und Testnet laufen beide auf v3.2.4; was die Releases v3.2.2 und v3.2.3 zu den Post-Quantum-Regeln hinzugefügt haben (Schlüsselintegrität, optionaler Besitznachweis, eingegrenzte EVM-Fenster, EIP-7702-Zustimmung), ist unter [Regeln zur Schlüsselintegrität](#key-integrity), [Besitznachweis](#proof-of-possession) und [EIP-7702-Delegationen](#eip-7702) beschrieben.
+Die vollständige PQC-Baseline — **Dilithium-5 (Signaturen) + ML-KEM-1024 (KEM) + SHAKE-256 (Hash)** — ist nun vollständig und der Netzwerkstandard. In den Live-Netzwerken (v3.2.x) sind Hybridsignaturen auf dem Cosmos-Transaktionspfad **standardmäßig erforderlich**: `hybrid_signature_mode = required` und `allow_classical_fallback = false`. Jede Transaktion auf dem Cosmos-Pfad muss eine Dilithium-5-Signatur zusätzlich zu ihrer klassischen secp256k1-Signatur tragen; rein klassische Transaktionen von einem PQC-Konto werden abgelehnt, und der klassische Downgrade-Pfad ist geschlossen. Das Mainnet läuft auf v3.2.4 und das Testnet auf v3.2.6 (geprüft am 27. Oktober 2026); was die Releases v3.2.2 und v3.2.3 zu den Post-Quantum-Regeln hinzugefügt haben (Schlüsselintegrität, optionaler Besitznachweis, eingegrenzte EVM-Fenster, EIP-7702-Zustimmung), ist unter [Regeln zur Schlüsselintegrität](#key-integrity), [Besitznachweis](#proof-of-possession) und [EIP-7702-Delegationen](#eip-7702) beschrieben.
 
 ## Designprinzipien
 
@@ -228,7 +228,7 @@ active --> migrating --> deprecated --> disabled
 
 ### Doppelsignatur-Migration
 
-Wenn ein Algorithmus ausgemustert wird, beginnt eine **Migrationsperiode** (Standard: 1.000.000 Blöcke — etwa 37 Tage bei der aktuellen Blockzeit des Mainnets von ≈3,2 s). Während dieser Periode:
+Wenn ein Algorithmus ausgemustert wird, beginnt eine **Migrationsperiode** (Standard: 1.000.000 Blöcke — etwa 36 Tage bei der aktuellen Blockzeit des Mainnets von ≈3,1 s). Während dieser Periode:
 
 1. Konten mit Schlüsseln, die den ausgemusterten Algorithmus verwenden, müssen zum Ersatz migrieren.
 2. Die Migration erfordert Doppelsignaturen (`MsgMigratePQCKey`): eine vom alten und eine vom neuen Schlüssel, die den Besitz beider nachweisen.
@@ -254,7 +254,7 @@ Das Hinzufügen eines Algorithmus erfordert ein Software-Release, das ihn hinter
 
 ## SHAKE-256-Hash
 
-Ab v3.1.73 ist **SHAKE-256** (Extendable-Output-Funktion von SHA-3) der **Standard-Anwendungs-Hash** in QoreChain — bereitgestellt durch das Paket `qorehash` — und vervollständigt die quantenresistente kryptografische Baseline neben den Dilithium-5-Signaturen und der ML-KEM-1024-Schlüsselkapselung. Das Modul `x/pqc` stellt reine Go-SHAKE-256-Utilities bereit:
+Ab v3.1.73 ist **SHAKE-256** (Extendable-Output-Funktion von SHA-3) der **Standard-Anwendungs-Hash** in QoreChain — bereitgestellt durch das Paket `qorehash` — und vervollständigt die kryptografische Baseline neben den Dilithium-5-Signaturen und der ML-KEM-1024-Schlüsselkapselung. Das Modul `x/pqc` stellt reine Go-SHAKE-256-Utilities bereit:
 
 | Funktion                           | Beschreibung                       | Ausgabe           |
 | ---------------------------------- | --------------------------------- | ---------------- |

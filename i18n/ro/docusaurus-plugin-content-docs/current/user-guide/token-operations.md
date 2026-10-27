@@ -94,7 +94,7 @@ Comisioanele de tranzacție pe QoreChain sunt distribuite către cinci destinaț
 | **Stakeri**     | 10%   | Distribuit proporțional tuturor delegatorilor                     |
 | **Light Nodes** | 3%    | Recompensele light node-urilor (vezi nota de mai jos)             |
 
-Împărțirea se aplică tuturor sumelor care intră în colectorul de comisioane, care deține comisioanele de tranzacție și emisia de staking creată la fiecare epocă. Cota light node-urilor se acumulează în rezerva de recompense pentru light node-uri; înregistrarea este deschisă și condiționată de licență, dar încă nu s-a înregistrat niciun light node, astfel încât în prezent niciun nod nu este plătit din ea (vezi [Light Node](/light-node/overview#reward-program-status)). De la upgrade-ul v3.2.0, cota stakerilor este plătită ca o recompensă obișnuită de staking (vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+Împărțirea se aplică tuturor sumelor care intră în colectorul de comisioane, care deține comisioanele de tranzacție și emisia de staking creată la fiecare epocă. Cota light node-urilor se acumulează în rezerva de recompense pentru light node-uri; înregistrarea este deschisă și condiționată de licență; pe 27 octombrie 2026 a fost înregistrat câte un light node pe fiecare rețea (vezi [Light Node](/light-node/overview#reward-program-status)). De la upgrade-ul v3.2.0, cota stakerilor este plătită ca o recompensă obișnuită de staking (vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canale de ardere
 

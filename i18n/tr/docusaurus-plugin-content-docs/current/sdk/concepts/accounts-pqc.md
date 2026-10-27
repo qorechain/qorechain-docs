@@ -141,7 +141,7 @@ ifade yuvası `"seed:" + hex(seed32)` değeridir.) SDK 0.8.3 sürümünden itiba
 veya aynı hesabın `0x` biçimi de aynı anahtarı üretir. Her dilde aynı işlev
 vardır (Python `derive_pqc_canonical`, Go `authenticator.DerivePQCCanonical`,
 Rust `try_derive_pqc_canonical`, Java `Authenticator.derivePqcCanonical`; bkz.
-[Kuantuma dayanıklı kılavuzundaki tablo](/sdk/guides/quantum-safe#canonical-derivation)),
+[Hibrit imzalama kılavuzundaki tablo](/sdk/guides/quantum-safe#canonical-derivation)),
 ve aynı `{ address, mnemonic }` hepsinde aynı anahtarı verir (Ekim 2026'da
 TypeScript, Python, Go ve Rust için doğrulandı).
 

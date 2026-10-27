@@ -7,57 +7,102 @@ sidebar_position: 6
 
 # Smart Contract Creator
 
-The **Smart Contract Creator** generates smart contracts from a plain-language description, powered by **QCAI**. Describe what you want, pick your target blockchain, and QCAI writes the contract for you. It supports **17 blockchains** for AI tooling, so you can target the ecosystem you are building for.
-
-You can try it **without an account**: a first-time visitor gets one free generation and sees the whole contract. A free account is what the next one needs, along with saving, auditing and deploying; the page offers **Create a free account** once your free try is used.
-
-Sign in to save and manage the contracts you generate — see [Sign in](/dashboard/overview#sign-in).
-
-## Generate a contract
-
-1. **Start from an example, or describe your own.** The page opens with "What would you like to build?". Under **Or start from an example:** pick **Token**, **NFT collection**, **Locked vault** or **2-of-3 multisig** — each fills in a complete description and selects a matching blockchain and template — or write your own in **Contract Description**. The more specific you are, the better the result.
-2. **Choose the blockchain.** Use **Target Blockchain**. The contract language and category for your choice are shown alongside the selector.
-3. **Pick a contract type** (optional). **Contract Type** offers a starting template such as a token, NFT, or governance contract; leave it on **Custom (describe in prompt)** to rely on your description alone.
-4. **Generate.** Select **Generate Smart Contract**. A progress indicator shows the status while QCAI produces the contract.
-
-## Review the result
-
-When generation finishes, the Dashboard shows the contract in a syntax-highlighted view along with details such as the contract name, blockchain, language, file size, and time generated. The prompt you used is shown with the result for reference.
-
-From here you can:
-
-- **Copy** the contract code to your clipboard (**Copy Code**).
-- **Export PDF** of the contract.
-- **Download** the contract as a file (**Download File**) in the right format for your chosen blockchain.
-- **Edit** the contract (**Edit Contract**) to refine it further.
-
-## Deploy your contract {#deploy}
-
-### On mainnet (EVM) — non-custodial deploy {#deploy-mainnet}
-
-Mainnet deployment is non-custodial: the Dashboard compiles your contract and returns **unsigned** deployment data — it never holds your keys and never signs on your behalf. You sign and broadcast the deployment in your own wallet, and the Dashboard then records the resulting contract.
-
-1. Open the contract you want to deploy (an EVM-target contract) and select **Deploy** on **Mainnet**. If this is your first mainnet action, accept the [one-time risk acknowledgement](/dashboard/overview#risk-acknowledgement).
-2. Connect **MetaMask** if it is not already connected — see [Overview & Getting Started](/dashboard/overview#connect-your-wallet). Since chain v3.2.0 the EVM lane also needs the account to hold a registered post-quantum key and an **open EVM authorisation window**, which is opened from QoreX (see [Sending with MetaMask](/dashboard/wallet#send-metamask)); without one the chain refuses the deployment.
-3. The Dashboard compiles the contract and hands the unsigned deployment transaction to your wallet.
-4. Review the transaction in MetaMask — network, gas, and data — then confirm to sign and broadcast it yourself.
-5. Once the deployment is confirmed on-chain, the Dashboard records the resulting contract address alongside your saved contracts.
-
-Only **EVM** (Solidity) contracts can be deployed from the Dashboard. QoreChain Native and Solana-program deploys are not available on either network at the moment.
-
-### On testnet — one click {#deploy-testnet}
-
-On testnet the dashboard-managed test wallet signs and submits an EVM deployment for you in one click, so you can iterate quickly with [Faucet](/dashboard/faucet) tokens before going to mainnet. Testnet enforces the same EVM-lane rule as mainnet, so a deployment can still be refused if the account has no post-quantum key or no open EVM window.
-
-## Share and reuse
-
-Each generated contract has its own page. Contracts are **private by default**: only you can open yours. As the owner you will see a **Public** / **Private** button on the contract page; set it to **Public** to let anyone with the link open (and fork) the contract, and back to **Private** to withdraw it. If you open a public contract you do not own, you can **fork** it to start your own copy and continue from there.
+The **Smart Contract Creator** (sidebar **Build**, entry **SC Creator**) turns a plain-language description into contract source for a blockchain you choose, using **QCAIA**, QoreChain's AI assistant. It is for builders who want a first draft of a token, NFT collection, vault or multisig, or a contract in a language they do not write daily, and who then review, test and deploy it themselves.
 
 :::tip Always review and test
-QCAI-generated code is a strong starting point, not a substitute for review. Read the contract, test it on [testnet](/getting-started/connecting-to-testnet), and run it through the [Contract Auditor](/dashboard/contract-auditor) before deploying anything of value.
+Generated code is a strong starting point, not a substitute for review. Read the contract, test it on [testnet](/getting-started/connecting-to-testnet), and run it through the [Contract Auditor](/dashboard/contract-auditor) before deploying anything of value.
 :::
+
+## Innovations {#innovations}
+
+- **One generation without an account.** A first-time visitor can generate once and sees the full contract. It is limited per visitor and by a global daily cap. A free-try result has no **Deploy** and no working **Edit**; the page offers **Create a free account** afterwards.
+- **A free generation every UTC day when signed in.** The first generation of each UTC day is free on both networks. After that, on testnet each generation is paid in test QOR from your test wallet after a "Confirm Contract Generation" dialog that shows the "Generation Cost". On mainnet the Dashboard holds no keys, so further generations are refused until the next UTC day.
+- **Starters that fill everything.** **Token**, **NFT collection**, **Locked vault** and **2-of-3 multisig** each fill a complete prompt, set the target to QoreChain and pick a template.
+- **17 target blockchains,** each with its own templates plus "Custom (describe in prompt)": QoreChain, Cosmos, Ethereum, Solana, Avalanche, NEAR, Polygon, BSC, TON, Cardano, Polkadot, Tezos, Arbitrum, Optimism, Sui, Aptos and Tron.
+- **Non-custodial deploy on mainnet EVM.** The Dashboard compiles the contract and returns **unsigned** deployment data. Any injected EVM wallet (MetaMask, Rabby, Coinbase Wallet) adds or switches to chain 9801, then signs and broadcasts; the Dashboard records the address afterwards.
+- **Governance-approved QoreChain Native codes on testnet.** The generated code is not uploaded. You instantiate a code that testnet governance already approved, read live from the chain: CW20 token (cw20-base), NFT collection (cw721-base), Member group (cw4-group), Multisig (cw3-fixed-multisig) and Counter example (qore-counter). The instantiate message is prefilled and editable.
+- **Compile feedback in the dialog.** Errors show inline, the dialog asks for constructor arguments it cannot infer, and token fields are pre-read from the code or the prompt.
+- **Private by default, forkable when public.** The owner toggles **Public** or **Private**; a non-owner of a public contract can **Fork** it.
+
+## How to use {#how-to-use}
+
+### Generate a contract
+
+1. Open **SC Creator**. The page title reads "What would you like to build?".
+2. **Start from an example, or describe your own.** Under "Or start from an example:" pick a starter, or write your own in **Contract Description**. The more specific you are, the better the result.
+3. Choose the **Target Blockchain**. The language and category show under it ("Language: ... | Category: ..."). Changing the chain automatically picks that chain's first template, so choose **Custom (describe in prompt)** in **Contract Type** yourself if you want your description alone to drive the result.
+4. Signed in only: choose a **Generation Tier** (Standard or Premium). Premium is not available on mainnet.
+5. Select **Generate Smart Contract**. Signed in, a "Confirm Contract Generation" dialog follows (it shows the "Generation Cost" and the free-today status). The result is labelled "Generated by QCAIA Standard".
+
+### Review the result
+
+The contract shows in a syntax-highlighted view with these actions:
+
+- **Deploy**,
+- **Edit Now**,
+- **Download File** (in the right format for the chosen chain),
+- **Copy Code**.
+
+Details and the prompt you used are on the contract's own page (below), not on the result.
+
+### The contract page
+
+Each saved contract has a page at `/smart-contract-creator/<id>` with Copy, **Public / Private**, Download, Edit or Fork, a stats row (Created, Lines, Size, Gen Time, Tokens, AI Model), the "Generation Prompt" and "Download from Cloud" (the link expires after 24 hours). Opening a contract page needs sign-in, even for a public contract.
+
+The **Edit** page offers **Save Changes** (owner) or **Save as New Contract** (when forking), plus **Deploy**. An **Export PDF** action exists in the contract list on your Profile, not on the result.
+
+### Deploy your contract {#deploy}
+
+Deploy lives on the result and edit pages. The dialog shows a banner "Target: TESTNET ... 9800" or "Target: MAINNET ... 9801".
+
+#### On mainnet (EVM), non-custodial {#deploy-mainnet}
+
+The Dashboard never holds your keys and never signs for you.
+
+1. Select **Deploy** on a contract whose target runs on the QoreChain EVM, with the header on **Mainnet**. If this is your first mainnet view of Wallet, Trade or the Explorer overview in this browser, you accept the [one-time acknowledgement](/dashboard/overview#risk-acknowledgement) there; the Creator itself shows no extra risk screen.
+2. Select **Deploy from your wallet**. Any injected EVM wallet works; the dialog itself adds or switches the network (chain 9801).
+3. Since chain v3.2.0 the EVM lane also needs the deploying account to hold a registered ML-DSA-87 key and an **open EVM authorisation window**, opened from QoreX (see [Sending with MetaMask](/dashboard/wallet#send-metamask)). Without them the chain refuses the deployment.
+4. The Dashboard compiles and hands the unsigned transaction to your wallet. Wait for "Confirm in your wallet..." and review network, gas and data.
+5. Once it confirms, the Dashboard records the contract address with your saved contracts.
+
+Other targets on mainnet show "Direct deploy not available for this contract". QoreChain Native and SVM deploys are not offered on mainnet, and there is no CosmWasm publishing from the Dashboard.
+
+#### On testnet, one click {#deploy-testnet}
+
+- **EVM:** select **Deploy to Testnet**. The Dashboard's test wallet signs and submits the deployment; success shows "Deployed on Testnet". Iterate with [Faucet](/dashboard/faucet) tokens before going to mainnet.
+- **QoreChain Native:** pick an **Approved contract**, set the **Label \***, check or edit the **Instantiate message (JSON)** and select **Instantiate on Testnet**. Contract uploads on testnet are reviewed through governance, which is why you instantiate approved codes rather than upload your own. Approved codes the Dashboard does not recognise appear with an empty message. Custom contracts go to the QoreChain EVM (Solidity).
+- Only EVM contracts and approved QoreChain Native codes can be deployed from the Dashboard. A contract written for another EVM chain (Polygon, BSC, Arbitrum and so on) deploys to the QoreChain EVM, not to that chain's own network; contracts for non-EVM chains cannot be deployed from here.
+
+**Minimal example (testnet):** select **Token**, **Generate Smart Contract**, Confirm, **Deploy**, pick "CW20 token (cw20-base)", Label `my-token`, **Instantiate on Testnet**.
+
+### Share and reuse
+
+Contracts are **private by default**. As the owner, set a contract to **Public** so other signed-in users can open and fork it, and back to **Private** to withdraw it. **Fork** copies a public contract into your account to continue from there.
+
+## How to access {#how-to-access}
+
+- **URL:** [dashboard.qorechain.io/smart-contract-creator](https://dashboard.qorechain.io/smart-contract-creator) (also **Create Smart Contract** on the home page).
+- **Account:** the landing page and one free generation work without an account. Everything else (further generations, saved contracts, the contract and edit pages, deploy) needs sign-in; see [Sign in](/dashboard/overview#sign-in).
+- **Network:** generation works on both. Testnet deploys use your Dashboard test wallet; mainnet EVM deploys use your own wallet.
+- **Costs:** the first generation each UTC day is free. After that, testnet generations are paid in test QOR; mainnet generations wait for the next UTC day. Deploys pay network gas.
+
+## Where it is published {#where-published}
+
+| Surface | Address | Networks |
+| --- | --- | --- |
+| Creator and saved contracts | `dashboard.qorechain.io/smart-contract-creator` | Generation on both networks |
+| EVM deploy | Result and edit pages | Testnet one-click; mainnet from your own wallet |
+| QoreChain Native deploy | Result and edit pages | Testnet, approved codes only |
+
+## Limits and known issues {#limits}
+
+- **Not offered:** Solana deploys (the server refuses them), Native or SVM deploys on mainnet, deploys to other chains' public networks, and Premium on mainnet.
+- **Testnet Native deploys** instantiate only governance-approved codes; your generated source is not uploaded.
+- **Free-try results** have no Deploy and no Edit.
+- **Review everything** before deploying; generated code can contain mistakes.
 
 ## Related
 
-- [Contract Auditor](/dashboard/contract-auditor) — run a QCAI security analysis on a contract.
-- [Developer Guide](/developer-guide/evm-development) — deploying contracts to QoreChain's runtimes.
+- [Contract Auditor](/dashboard/contract-auditor) - run a security analysis on a contract.
+- [EVM Development](/developer-guide/evm-development) - deploying contracts to QoreChain's runtimes.
+- [CosmWasm Development](/developer-guide/cosmwasm-development) - the QoreChain Native runtime.

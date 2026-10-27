@@ -145,7 +145,7 @@ identică în toate SDK-urile QoreChain, indiferent de limbaj. (Pentru
 cheie. Fiecare limbaj are aceeași funcție (Python `derive_pqc_canonical`, Go
 `authenticator.DerivePQCCanonical`, Rust `try_derive_pqc_canonical`, Java
 `Authenticator.derivePqcCanonical`; vezi
-[tabelul din ghidul Quantum-safe](/sdk/guides/quantum-safe#canonical-derivation)),
+[tabelul din ghidul Semnare hibridă](/sdk/guides/quantum-safe#canonical-derivation)),
 iar același `{ address, mnemonic }` produce aceeași cheie în toate (verificat
 pentru TypeScript, Python, Go și Rust în octombrie 2026).
 

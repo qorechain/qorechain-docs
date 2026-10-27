@@ -508,6 +508,18 @@ The staking-tiers module is part of **v3.2.4**. These routes have been served by
 
 `params` lists the three lock lengths (3, 6 and 12 months) with their parameters and `min_lock_amount` (`"10000000"` uqor, 10 QOR). Locks are made with `tx stakingtier lock` (see [Transaction Commands](/cli-reference/transaction-commands#stakingtier)).
 
+## Reputation Module {#reputation-module}
+
+The reputation module's REST routes are served by the **testnet** (`qorechain-diana`, chain v3.2.6). On mainnet every `/qorechain/reputation/v1/...` route answers HTTP `501` (`{"code":12,"message":"Not Implemented"}`) at the time of writing (27 October 2026); there the module is reachable over gRPC only (`Params`, see below). A later mainnet release is expected to serve them; this page is updated once it has.
+
+| Method | Endpoint | Description |
+| ------ | -------- | ----------- |
+| GET    | `/qorechain/reputation/v1/params` | The score weights (`alpha`, `beta`, `gamma`, `delta`), `lambda` and `min_score` |
+| GET    | `/qorechain/reputation/v1/validator/{address}` | One validator's record. `{address}` is a `qorvaloper1...` operator address or a `qorvalcons1...` consensus address. Fields include `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks` and `last_updated_height`. `404` means the validator has no score yet; a string that is neither an operator nor a consensus address answers `400` |
+| GET    | `/qorechain/reputation/v1/validators` | The records of all scored validators (`reputations`) |
+
+Scores are decimal strings between 0 and 1. The light node reads the per-validator route to warn when a delegated validator is below `min_reputation` (see [Rewards and Monitoring](/light-node/rewards-and-monitoring#delegation-alerts)). The same routes from the mainnet host return `501` until mainnet serves them.
+
 ## gRPC-only modules {#grpc-only-modules}
 
 On mainnet (node release v3.2.4, checked 27 October 2026) these modules have a gRPC `Query` service but **no REST route**. Service names follow `qorechain.<module>.v1.Query`.
@@ -516,7 +528,7 @@ On mainnet (node release v3.2.4, checked 27 October 2026) these modules have a g
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
-| `reputation`  | `Params`                                               |
+| `reputation`  | `Params` (REST routes exist on the testnet only, see [Reputation Module](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |

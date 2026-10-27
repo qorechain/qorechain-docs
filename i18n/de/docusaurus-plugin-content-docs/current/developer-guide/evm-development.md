@@ -14,7 +14,7 @@ Die folgenden Beispiele richten sich an das **`qorechain-vladi`**-Mainnet (EVM-C
 :::
 
 :::caution Eine EVM-Transaktion benötigt einen registrierten PQC-Schlüssel und ein offenes Autorisierungsfenster
-Seit dem Upgrade v3.2.0 (Mainnet-Höhe 2,981,742, Testnet-Höhe 5,920,000) lässt die EVM-Lane eine Transaktion nur von einem Konto zu, das **(1) einen registrierten post-quantensicheren ML-DSA-87-Schlüssel** und **(2) ein offenes EVM-Autorisierungsfenster** besitzt, in dem noch Platz für sie ist. Sie signieren mit gewöhnlichen Werkzeugen (MetaMask, ethers.js, Hardhat, Foundry), aber ohne registrierten Schlüssel und offenes Fenster wird `eth_sendRawTransaction` abgelehnt (Codespace `pqc`, Codes 26, 27 oder 28). Lesezugriffe, `eth_call` und die Gasschätzung benötigen weder das eine noch das andere. Siehe [EVM-Autorisierungsfenster](#evm-window) weiter unten und die Schritt-für-Schritt-Anleitung unter [Ihre erste Transaktion](/getting-started/first-transaction#evm-window).
+Seit dem Upgrade v3.2.0 (Mainnet-Höhe 2,981,742, Testnet-Höhe 5,920,000) lässt die EVM-Lane eine Transaktion nur von einem Konto zu, das **(1) einen registrierten ML-DSA-87-Post-Quanten-Schlüssel** und **(2) ein offenes EVM-Autorisierungsfenster** besitzt, in dem noch Platz für sie ist. Sie signieren mit gewöhnlichen Werkzeugen (MetaMask, ethers.js, Hardhat, Foundry), aber ohne registrierten Schlüssel und offenes Fenster wird `eth_sendRawTransaction` abgelehnt (Codespace `pqc`, Codes 26, 27 oder 28). Lesezugriffe, `eth_call` und die Gasschätzung benötigen weder das eine noch das andere. Siehe [EVM-Autorisierungsfenster](#evm-window) weiter unten und die Schritt-für-Schritt-Anleitung unter [Ihre erste Transaktion](/getting-started/first-transaction#evm-window).
 
 Zwei weitere Regeln gelten seit v3.2.2 im Mainnet: **Ungeschützte Transaktionen (vor EIP-155) werden abgelehnt**, sowohl vom Mempool des Nodes als auch bei der Blockausführung; signieren Sie daher mit einer Chain-ID (das tun alle aktuellen Wallets und Bibliotheken); und **Modulkonten können nicht über die EVM beansprucht werden**.
 :::
@@ -179,7 +179,7 @@ qorechaind tx erc20 convert-coin 1000000uqor --from mykey --gas 400000 --fees 40
 qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey --gas 400000 --fees 40000uqor
 ```
 
-Dies sind Transaktionen der Cosmos-Lane: In den Live-Netzwerken benötigen sie ebenfalls den hybriden post-quantensicheren Cosign (mit `--generate-only` erstellen, dann `qorechaind tx pqc cosign`; siehe [Post-Quanten-Signierung](/developer-guide/post-quantum-signing)). Der einfache Befehl `convert-erc20` oben wird im Node-Release v3.2.6 abgelehnt, weil die CLI einen `0x`-Absender schreibt; die funktionierende Form finden Sie unter [Umwandlung zwischen den beiden Formen](#fest-convert). Token-Paare werden unter einer berechtigungsbeschränkten Richtlinie registriert (die Governance registriert sie). Im Mainnet existiert zum Zeitpunkt der Erstellung keines; das Testnet hat die Fest-Test-Token im [nächsten Abschnitt](#fest-tokens).
+Dies sind Transaktionen der Cosmos-Lane: In den Live-Netzwerken benötigen sie ebenfalls den hybriden Post-Quanten-Cosign (mit `--generate-only` erstellen, dann `qorechaind tx pqc cosign`; siehe [Post-Quanten-Signierung](/developer-guide/post-quantum-signing)). Der einfache Befehl `convert-erc20` oben wird im Node-Release v3.2.6 abgelehnt, weil die CLI einen `0x`-Absender schreibt; die funktionierende Form finden Sie unter [Umwandlung zwischen den beiden Formen](#fest-convert). Token-Paare werden unter einer berechtigungsbeschränkten Richtlinie registriert (die Governance registriert sie). Im Mainnet existiert zum Zeitpunkt der Erstellung keines; das Testnet hat die Fest-Test-Token im [nächsten Abschnitt](#fest-tokens).
 
 ## Fest-Test-Token und ERC20-Umwandlung {#fest-tokens}
 
@@ -207,7 +207,7 @@ curl -s "https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs/0x97143B7
 
 ### Umwandlung zwischen den beiden Formen {#fest-convert}
 
-Beide Umwandlungsnachrichten sind Transaktionen der Cosmos-Lane: Sie benötigen Ihren registrierten post-quantensicheren Schlüssel und den hybriden Cosign, wie jede andere native Transaktion (erstellen, dann `qorechaind tx pqc cosign`; siehe [Post-Quanten-Signierung](/developer-guide/post-quantum-signing)). Die Gebühren müssen mindestens Gas × 0.1 uqor betragen.
+Beide Umwandlungsnachrichten sind Transaktionen der Cosmos-Lane: Sie benötigen Ihren registrierten Post-Quanten-Schlüssel und den hybriden Cosign, wie jede andere native Transaktion (erstellen, dann `qorechaind tx pqc cosign`; siehe [Post-Quanten-Signierung](/developer-guide/post-quantum-signing)). Die Gebühren müssen mindestens Gas × 0.1 uqor betragen.
 
 :::note Was ausgeführt wurde
 Die REST-Lesezugriffe auf dieser Seite (`token_pairs`, `denoms_metadata`) wurden am 27. Oktober 2026 gegen das Testnet ausgeführt. Die beiden Umwandlungsbefehle unten wurden für diese Seite **nicht** Ende-zu-Ende ausgeführt: Ihre Nachrichtenformen und die Absenderregel stammen aus dem Node-Quellcode von v3.2.6 und der Referenz des Chain-Teams. Betrachten Sie sie als die dokumentierte Form und bestätigen Sie sie zunächst mit einem kleinen Betrag.
@@ -264,9 +264,9 @@ Hier ist `receiver` das Konto `qor1...`, das den Bank-Coin erhält (das Modul ak
 
 ## PQC und EVM-Kompatibilität
 
-EVM-Transaktionen werden mit **klassischem ECDSA (secp256k1)** signiert, sodass MetaMask, Hardhat, Foundry, ethers.js und andere Standardwerkzeuge sie ohne Änderung erstellen und signieren. Was sich in **v3.2.0** geändert hat, ist die *Zulassung*: Eine Transaktion wird nur akzeptiert, wenn ihr Absender einen registrierten post-quantensicheren Schlüssel und ein aktives Autorisierungsfenster besitzt (nächster Abschnitt). Das Registrieren eines Schlüssels und das Öffnen eines Fensters sind Transaktionen der Cosmos-Lane und benötigen die hybride Signatur (ML-DSA-87 + secp256k1).
+EVM-Transaktionen werden mit **klassischem ECDSA (secp256k1)** signiert, sodass MetaMask, Hardhat, Foundry, ethers.js und andere Standardwerkzeuge sie ohne Änderung erstellen und signieren. Was sich in **v3.2.0** geändert hat, ist die *Zulassung*: Eine Transaktion wird nur akzeptiert, wenn ihr Absender einen registrierten Post-Quanten-Schlüssel und ein aktives Autorisierungsfenster besitzt (nächster Abschnitt). Das Registrieren eines Schlüssels und das Öffnen eines Fensters sind Transaktionen der Cosmos-Lane und benötigen die hybride Signatur (ML-DSA-87 + secp256k1).
 
-Für post-quantensichere Sicherheit innerhalb von Contracts:
+Für Post-Quanten-Sicherheit innerhalb von Contracts:
 
 * Das **PQC-Verify-Precompile** (`0x0000...0A01`) verifiziert ML-DSA-87-Signaturen on-chain aus Solidity heraus. Es ist **im Testnet aktiv** (aktiviert durch Governance-Vorschlag 21, angenommen am 27. Oktober 2026) und zum Zeitpunkt der Erstellung **im Mainnet nicht aktiv**. Siehe [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
 * **Cross-VM-Nachrichten** von der EVM zu QoreChain Native oder SVM sind Transaktionen der Cosmos-Lane und tragen wie jede andere die hybride Signatur; ihre aktuelle Verfügbarkeit finden Sie unter [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability).
@@ -275,7 +275,7 @@ Für post-quantensichere Sicherheit innerhalb von Contracts:
 
 ## EVM-Autorisierungsfenster {#evm-window}
 
-Eine post-quantensichere Signatur kann nicht *mit* einer Ethereum-Transaktion reisen (Wallets wie MetaMask können keine zweite Signatur anhängen), also reist sie *vor* ihr. Das Konto öffnet mit der Cosmos-Lane-Nachricht `MsgOpenEVMWindow` ein begrenztes Fenster; die EVM-Lane lässt dann nur Transaktionen zu, die von einem aktiven Fenster abgedeckt sind. Ein gestohlener klassischer Schlüssel allein kann kein Fenster öffnen und kann daher nur bewegen, was ein bereits geöffnetes Fenster erlaubt.
+Eine Post-Quanten-Signatur kann nicht *mit* einer Ethereum-Transaktion reisen (Wallets wie MetaMask können keine zweite Signatur anhängen), also reist sie *vor* ihr. Das Konto öffnet mit der Cosmos-Lane-Nachricht `MsgOpenEVMWindow` ein begrenztes Fenster; die EVM-Lane lässt dann nur Transaktionen zu, die von einem aktiven Fenster abgedeckt sind. Ein gestohlener klassischer Schlüssel allein kann kein Fenster öffnen und kann daher nur bewegen, was ein bereits geöffnetes Fenster erlaubt.
 
 | Grenze      | Bereich            | Bedeutung |
 | ----------- | ------------------ | ------- |
@@ -283,7 +283,7 @@ Eine post-quantensichere Signatur kann nicht *mit* einer Ethereum-Transaktion re
 | `max-txs`   | 1 – 1,000          | Wie viele EVM-Transaktionen es zulässt |
 | `max-value` | über 0, in `uqor`  | Gesamter Abfluss, den es zulässt: übertragener Wert **plus** die maximale Gebühr, die jede Transaktion zahlen könnte (Gaslimit × maximale Gebühr pro Gas), in `uqor` umgerechnet und aufgerundet |
 
-Welche Grenze zuerst aufgebraucht ist, schließt das Fenster. Die drei Grenzen sind erforderlich; das Öffnen eines Fensters ersetzt ein bestehendes; eine Transaktion, die zugelassen wird und dann fehlschlägt, verbraucht trotzdem ihren Platz und ihr Wertbudget; Contract-Bereitstellungen zählen wie jede andere Transaktion. `blocks` ist eine Blockanzahl, keine Dauer: 17,280 Blöcke entsprechen im Mainnet etwa 15 Stunden (etwa 3.2 s pro Block) und im Testnet etwa 6 Stunden (etwa 1.3 s pro Block am 27. Oktober 2026; die Testnet-Blockzeit schwankt).
+Welche Grenze zuerst aufgebraucht ist, schließt das Fenster. Die drei Grenzen sind erforderlich; das Öffnen eines Fensters ersetzt ein bestehendes; eine Transaktion, die zugelassen wird und dann fehlschlägt, verbraucht trotzdem ihren Platz und ihr Wertbudget; Contract-Bereitstellungen zählen wie jede andere Transaktion. `blocks` ist eine Blockanzahl, keine Dauer: 17,280 Blöcke entsprechen im Mainnet etwa 15 Stunden (etwa 3.1 s pro Block) und im Testnet etwa 6 Stunden (etwa 1.3 s pro Block am 27. Oktober 2026; die Testnet-Blockzeit schwankt).
 
 **Die Wertgrenze zählt nur natives QOR.** Ein Token-Transfer, eine Genehmigung (Approval) oder jeder andere Contract-Aufruf trägt den Wert null und wird daher nicht auf `max-value` angerechnet (nur seine maximale Gebühr). Um auch diese zu begrenzen, schränken Sie den **Scope** des Fensters ein (Mainnet v3.2.3 und später):
 
@@ -316,7 +316,7 @@ Schließen Sie ein Fenster vorzeitig mit `qorechaind tx pqc close-evm-window` (g
 
 ### EIP-7702-Delegationen {#eip-7702}
 
-Eine EIP-7702-Delegation Ihres Kontos (eine Typ-4-Transaktion) wird seit v3.2.2 nur mit der eigenen post-quantensicheren Einwilligung Ihres Kontos wirksam. Erfassen Sie die Einwilligung zuerst mit der hybrid signierten Cosmos-Lane-Nachricht `MsgAuthorizeEVMDelegation` (`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`); sie ist einmalig verwendbar, läuft nach der angegebenen Anzahl von Blöcken ab und wird durch `close-evm-window` widerrufen. Wert, der ein delegiertes Konto verlässt, wird dem Fenster **dieses** Kontos belastet, eine fehlgeschlagene Typ-4-Transaktion behält die Autorisierungen, die sie angewendet hat, und `qorechaind tx pqc clear-evm-delegation` entfernt eine Delegation. Eine abgelehnte Delegation antwortet mit den Codes 60 bis 63. Lesen Sie die Einwilligung mit `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
+Eine EIP-7702-Delegation Ihres Kontos (eine Typ-4-Transaktion) wird seit v3.2.2 nur mit der eigenen Post-Quanten-Einwilligung Ihres Kontos wirksam. Erfassen Sie die Einwilligung zuerst mit der hybrid signierten Cosmos-Lane-Nachricht `MsgAuthorizeEVMDelegation` (`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`); sie ist einmalig verwendbar, läuft nach der angegebenen Anzahl von Blöcken ab und wird durch `close-evm-window` widerrufen. Wert, der ein delegiertes Konto verlässt, wird dem Fenster **dieses** Kontos belastet, eine fehlgeschlagene Typ-4-Transaktion behält die Autorisierungen, die sie angewendet hat, und `qorechaind tx pqc clear-evm-delegation` entfernt eine Delegation. Eine abgelehnte Delegation antwortet mit den Codes 60 bis 63. Lesen Sie die Einwilligung mit `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
 
 | Ablehnung (Codespace `pqc`) | Bedeutung |
 | ------------------------- | ------- |

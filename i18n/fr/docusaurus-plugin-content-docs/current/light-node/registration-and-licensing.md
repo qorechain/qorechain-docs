@@ -40,7 +40,7 @@ La clé Dilithium-5 du nœud n'a pas d'adresse propre : sur QoreChain, une clé 
 
 ### Mainnet : achat sur le Dashboard
 
-Les licences s'achètent sur le Dashboard QoreChain dans **Tools → Light Node**. Une licence coûte **50 $**, payés en USDT sur ERC-20, BEP-20 ou TRC-20 ; le paiement est vérifié sur sa chaîne. Vous devez saisir l'adresse `qor1…` à laquelle la licence est destinée **avant** de payer ; utilisez l'adresse d'opérateur décrite ci-dessus.
+Les licences s'achètent sur le Dashboard QoreChain dans **Nodes & Validators → Light Node** (l'entrée de la barre latérale s'appelait auparavant **Tools** ; la page se trouve toujours à `/tools`). La page nécessite une connexion, et l'onglet suit le réseau choisi dans l'en-tête. Une licence coûte **50 $**, payés en USDT sur ERC-20, BEP-20 ou TRC-20 ; le paiement est vérifié sur sa chaîne. Vous devez saisir l'adresse `qor1…` à laquelle la licence est destinée **avant** de payer ; utilisez l'adresse d'opérateur décrite ci-dessus.
 
 L'octroi est une étape on-chain distincte, signée à la main et envoyée par lots. Tant que la chaîne ne l'a pas confirmé, l'onglet affiche **Paid, awaiting on-chain grant**, et le nœud continue d'indiquer que l'adresse n'a pas de licence. `lightnode-sx status` affiche une ligne `Licence:` qui passe à `active` lorsque l'octroi arrive. Vous pouvez aussi le vérifier directement :
 
@@ -48,9 +48,15 @@ L'octroi est une étape on-chain distincte, signée à la main et envoyée par l
 curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator
 ```
 
-### Testnet : sur demande
+### Testnet : gratuit et en libre-service
 
-Rien n'est vendu sur le testnet. Les licences testnet sont gratuites et accordées sur demande par l'autorité de licence du testnet : écrivez à nodes@qorechain.io en indiquant votre adresse `qor1…` du testnet.
+Rien n'est vendu sur le testnet. Les licences testnet sont gratuites :
+
+1. Ouvrez le Dashboard, allez dans **Nodes & Validators → Light Node**, et sélectionnez le testnet dans l'en-tête.
+2. Sous **Free testnet licence**, saisissez l'adresse `qor1…` avec laquelle votre nœud signera (une adresse dont vous détenez les mots de récupération, et non un portefeuille créé pour vous par le Dashboard) et sélectionnez **Request licence**.
+3. L'onglet affiche « Requested for … » pendant la signature de l'octroi, puis « Granted to … You can register your node now. » Les octrois sur le testnet sont signés automatiquement, généralement en quelques minutes. Si l'octroi n'a pas pu être signé, l'onglet l'indique et vous pouvez refaire la demande.
+
+Il y a une demande par compte et une par adresse. Les octrois sur le mainnet restent manuels (voir ci-dessus). Le résultat est le même on-chain : vérifiez-le avec `GET https://api-testnet.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator`.
 
 ## Enregistrer le nœud
 
@@ -81,7 +87,7 @@ La phrase secrète protège les deux clés du keyring du nœud : la clé post-qu
 
 `register` lit `operator_address` et les clés depuis le keyring, puis :
 
-1. **Vérifie la licence.** Il demande à la chaîne si `operator_address` détient une licence `lightnode_operator` active. Sans licence, il s'arrête et indique où en obtenir une. À partir de la version 3.1.10, le message renvoie à **Tools → Light Node** sur le mainnet et, sur le testnet, à une licence gratuite sur demande à nodes@qorechain.io (la 3.1.9 mentionnait encore l'ancien onglet du Dashboard). Une licence expirée ou suspendue est signalée comme telle. Un nœud déjà enregistré est signalé comme tel, et rien n'est envoyé.
+1. **Vérifie la licence.** Il demande à la chaîne si `operator_address` détient une licence `lightnode_operator` active. Sans licence, il s'arrête et indique où en obtenir une. Le message renvoie à l'onglet Light Node du Dashboard, en utilisant l'ancien nom de la barre latérale **Tools → Light Node** : sur le mainnet, il indique d'y acheter une licence et, sur le testnet, d'y en demander une avec le testnet sélectionné (le libre-service **Request licence** décrit ci-dessus). L'onglet se trouve désormais sous **Nodes & Validators**. La 3.1.9 mentionnait encore l'ancien onglet du Dashboard. Une licence expirée ou suspendue est signalée comme telle. Un nœud déjà enregistré est signalé comme tel, et rien n'est envoyé.
 2. **Rattache la clé post-quantique**, sauf si le compte en possède déjà une. Un compte sans clé post-quantique ne peut envoyer que ce seul message, signé de manière classique (sans l'extension hybride) ; le nœud l'envoie ainsi et y inclut une preuve de possession de la clé lorsque la chaîne la prend en charge.
 3. **Délègue le stake manquant**, uniquement si vous désignez un validateur avec `--delegate-to qorvaloper1...`. Sans `--delegate-to`, si le compte est sous le minimum, il s'arrête et indique le montant manquant. À partir de la version 3.1.10, il ne compte que le stake délégué à des validateurs **bondés**, comme le fait la chaîne ; la 3.1.9 comptait aussi les validateurs emprisonnés (jailed) ou non bondés et pouvait alors être refusée on-chain : déléguez donc à un validateur actif si vous utilisez la 3.1.9.
 4. **Enregistre le nœud** avec les frais de 1 QOR.
@@ -134,11 +140,11 @@ Tant que le nœud n'est pas enregistré, il n'envoie pas de heartbeat ; il consi
 
 ## L'onglet Light Node du Dashboard
 
-L'onglet **Tools → Light Node** du Dashboard QoreChain réunit les étapes :
+L'onglet **Nodes & Validators → Light Node** du Dashboard QoreChain réunit les étapes :
 
 1. **Téléchargements.** Il fournit les liens vers les binaires du nœud léger pour le réseau sélectionné (les mêmes fichiers que `https://download.qore.host/<net>/lightnode/latest.json`, avec leurs sommes de contrôle sha256).
 2. **Étapes de configuration.** Il affiche les cinq étapes ci-dessus, adaptées à la version du manifeste de publication, et indique si l'enregistrement est ouvert, d'après le champ `registration` du manifeste.
-3. **Achat de licence** (mainnet uniquement). Il demande l'adresse de la licence avant le paiement et affiche **Paid, awaiting on-chain grant** jusqu'à ce que la chaîne confirme l'octroi. Il vous avertit si l'adresse saisie est votre propre portefeuille custodial du Dashboard, et il signale, à titre d'information, si l'adresse possède déjà une clé post-quantique.
+3. **Licence** (achat sur le mainnet, demande gratuite sur le testnet). Sur le mainnet, il demande l'adresse de la licence avant le paiement et affiche **Paid, awaiting on-chain grant** jusqu'à ce que la chaîne confirme l'octroi. Sur le testnet, il affiche le formulaire **Request licence**. Il vous avertit si l'adresse saisie est votre propre portefeuille custodial du Dashboard, et il signale, à titre d'information, si l'adresse possède déjà une clé post-quantique.
 4. **Statut.** Un panneau de statut affiche l'état du nœud tel qu'il est lu sur la chaîne.
 
 L'enregistrement lui-même est toujours la transaction envoyée par `lightnode-sx register` (ou `lightnode-ux register`). Le Dashboard n'enregistre pas de nœuds ; son ancien formulaire d'enregistrement, qui ne faisait que stocker une fiche, a été supprimé.

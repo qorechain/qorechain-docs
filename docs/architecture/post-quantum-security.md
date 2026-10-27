@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain is built with **post-quantum cryptography (PQC) at genesis** — not retrofitted as an upgrade. The `x/pqc` module provides lattice-based digital signatures and key encapsulation as the primary cryptographic primitives, with a governance-controlled algorithm agility framework for long-term resilience.
 
-The full PQC baseline — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — is now complete and the network default. On the live networks (v3.2.x), hybrid signatures are **required by default** on the cosmos transaction path: `hybrid_signature_mode = required` and `allow_classical_fallback = false`. Every cosmos-path transaction must carry a Dilithium-5 signature alongside its classical secp256k1 signature; classical-only transactions from a PQC account are rejected, and the classical downgrade path is closed. Mainnet and the testnet both run v3.2.4; what the v3.2.2 and v3.2.3 releases added to the post-quantum rules (key integrity, optional proof of possession, scoped EVM windows, EIP-7702 consent) is described in [Key integrity rules](#key-integrity), [Proof of possession](#proof-of-possession) and [EIP-7702 delegations](#eip-7702).
+The full PQC baseline — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — is now complete and the network default. On the live networks (v3.2.x), hybrid signatures are **required by default** on the cosmos transaction path: `hybrid_signature_mode = required` and `allow_classical_fallback = false`. Every cosmos-path transaction must carry a Dilithium-5 signature alongside its classical secp256k1 signature; classical-only transactions from a PQC account are rejected, and the classical downgrade path is closed. Mainnet runs v3.2.4 and the testnet v3.2.6 (checked 27 October 2026); what the v3.2.2 and v3.2.3 releases added to the post-quantum rules (key integrity, optional proof of possession, scoped EVM windows, EIP-7702 consent) is described in [Key integrity rules](#key-integrity), [Proof of possession](#proof-of-possession) and [EIP-7702 delegations](#eip-7702).
 
 ## Design Principles
 
@@ -228,7 +228,7 @@ active --> migrating --> deprecated --> disabled
 
 ### Dual-Signature Migration
 
-When an algorithm is deprecated, a **migration period** begins (default: 1,000,000 blocks — about 37 days at mainnet's current ≈3.2 s block time). During this period:
+When an algorithm is deprecated, a **migration period** begins (default: 1,000,000 blocks — about 36 days at mainnet's current ≈3.1 s block time). During this period:
 
 1. Accounts with keys using the deprecated algorithm must migrate to the replacement.
 2. Migration requires dual signatures (`MsgMigratePQCKey`): one from the old key and one from the new key, proving ownership of both.
@@ -254,7 +254,7 @@ Adding an algorithm requires a software release that implements it behind the un
 
 ## SHAKE-256 Hash
 
-As of v3.1.73, **SHAKE-256** (SHA-3 extendable-output function) is the **default application hash** across QoreChain — provided by the `qorehash` package — completing the quantum-resistant cryptographic baseline alongside Dilithium-5 signatures and ML-KEM-1024 key encapsulation. The `x/pqc` module provides pure-Go SHAKE-256 utilities:
+As of v3.1.73, **SHAKE-256** (SHA-3 extendable-output function) is the **default application hash** across QoreChain — provided by the `qorehash` package — completing the cryptographic baseline alongside Dilithium-5 signatures and ML-KEM-1024 key encapsulation. The `x/pqc` module provides pure-Go SHAKE-256 utilities:
 
 | Function                           | Description                       | Output           |
 | ---------------------------------- | --------------------------------- | ---------------- |

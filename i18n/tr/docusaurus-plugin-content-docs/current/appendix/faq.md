@@ -43,7 +43,7 @@ Yalnızca test ağında bulunan test tokenları (6, 18 ve 8 ondalıklı FestUSD,
 
 ### Bir düğümü, doğrulayıcıyı veya hafif düğümü nasıl çalıştırırım?
 
-Tam düğüm için bkz. [Bir Düğüm Çalıştırma](/developer-guide/running-a-node). Doğrulayıcı için bkz. [Bir Doğrulayıcı Çalıştırma](/developer-guide/running-a-validator). Hafif düğüm için bkz. [Hafif Düğüm](/light-node/overview); hafif düğüm ödül programına kayıt açıktır ve lisansa bağlıdır ([durum](/light-node/overview#reward-program-status)).
+Tam düğüm için bkz. [Bir Düğüm Çalıştırma](/developer-guide/running-a-node). Doğrulayıcı için bkz. [Bir Doğrulayıcı Çalıştırma](/developer-guide/running-a-validator). Hafif düğüm için bkz. [Hafif Düğüm](/light-node/overview); hafif düğüm ödül programına kayıt açıktır ve lisansa bağlıdır, ayrıca 27 Ekim 2026'da her ağda birer hafif düğüm kayıtlıydı ([durum](/light-node/overview#reward-program-status)).
 
 ### QoreChain hangi imza şemasını kullanır?
 
@@ -51,7 +51,7 @@ QoreChain, klasik **secp256k1 (ECDSA)** ile kuantum sonrası **ML-DSA-87 (Dilith
 
 ### EVM işlemim neden "no open EVM authorisation window" ile reddediliyor?
 
-v3.2.0'dan itibaren EVM hattı, bir işlemi yalnızca kayıtlı bir kuantum sonrası anahtara ve açık bir yetkilendirme penceresine sahip bir hesaptan kabul eder. Kuantum sonrası imzalı bir Cosmos hattı işlemiyle bir pencere açın, ardından yeniden deneyin. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
+v3.2.0'dan itibaren EVM hattı, bir işlemi yalnızca kayıtlı bir kuantum sonrası anahtara ve açık bir yetkilendirme penceresine sahip bir hesaptan kabul eder. Hibrit ML-DSA-87 imzalı (FIPS 204) bir Cosmos hattı işlemiyle bir pencere açın, ardından yeniden deneyin. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
 
 ### Ana ağda kaç doğrulayıcı var?
 
@@ -59,7 +59,7 @@ v3.2.0'dan itibaren EVM hattı, bir işlemi yalnızca kayıtlı bir kuantum sonr
 
 ### Ne kadar blok süresi beklemeliyim?
 
-Ana ağda yaklaşık 3,2 saniye, test ağında yaklaşık 1,3 saniye (ölçülmüş ortalamalar, 27 Ekim 2026). Blok süresi, doğrulayıcıların node yapılandırması tarafından belirlenir.
+Ana ağda yaklaşık 3,1 saniye, test ağında yaklaşık 1,3 saniye (ölçülmüş ortalamalar, 27 Ekim 2026). Blok süresi, doğrulayıcıların node yapılandırması tarafından belirlenir.
 
 ### xQORE kullanılabilir mi?
 

@@ -7,24 +7,27 @@ sidebar_position: 2
 
 # SX エディション — サーバーデーモン
 
-**SX**(Server eXperience)エディションはヘッドレスのライトノードです。デーモンと完全な管理 CLI から成り、サーバーと自動化のために作られています。バイナリは `lightnode-sx` です。このページはライトノード **3.1.10**(ソースタグ `v3.1.10`)について説明しています。これはチェーンバージョンとは別の、独自のバージョンラインです。
+**SX**(Server eXperience)エディションはヘッドレスのライトノードです。デーモンと完全な管理 CLI から成り、サーバーと自動化のために作られています。バイナリは `lightnode-sx` です。ライトノードのバージョンはチェーンバージョンとは別の独自のラインで、両ネットワークのチャンネルが **3.1.12**(2026年10月27日)を配信しています。このページでは、機能に 3.1.11 以降が必要な箇所を明記しています。
 
 ## インストール {#install}
 
-プリビルドされたバイナリを使うのが最も簡単な方法です — ライトノードクライアントは**ネイティブ依存関係ゼロの6つのプラットフォーム**でネイティブに動作します: Linux(amd64、arm64)、macOS(Intel、Apple Silicon)、Windows(amd64、arm64) — SX エディションと UX エディションを合わせて合計12個のバイナリです。各バイナリはおよそ13 MBで、ダウンロードしてそのまま実行できます。別途インストールが必要なライブラリはありません。ノードはこれらすべてのプラットフォームで自身のトランザクションに署名するため、ノードの登録と実行に他のもの(特に `qorechaind`)は必要ありません。
+プリビルドされたバイナリを使うのが最も簡単な方法です。ライトノードクライアントは約13 MBの単一の静的バイナリで、インストールが必要なネイティブライブラリはありません。Linux(amd64、arm64)、macOS(Intel、Apple Silicon)、Windows(amd64、arm64)向けのビルドが両エディションに存在し、リリースごとに合計12個のバイナリです。ノードは自身のトランザクションに署名するため、ノードの登録と実行に他のもの(特に `qorechaind`)は必要ありません。
 
-**実行する前にチェックサムを検証してください。** `https://download.qore.host/<net>/lightnode/latest.json` のリリースマニフェストには、各バイナリの `sha256`、リリース全体に対する `SHA256SUMS` ファイルを指す `checksums.url`、そしてそのファイル自体の `checksums.sha256` が含まれています。ダウンロードしたものを検証してください — これは注釈程度のものではなく、実際にビルドされたバイナリを実行するのか、そのURLにたまたま置かれていたものを実行するのかを分ける違いです。
+**実行する前にチェックサムを検証してください。** `https://download.qore.host/<net>/lightnode/latest.json` のリリースマニフェストには、各バイナリの `sha256`、リリース全体に対する `SHA256SUMS` ファイルを指す `checksums.url`、そしてそのファイル自体の `checksums.sha256` が含まれています。ダウンロードしたものを検証してください。これは、実際にビルドされたバイナリを実行するのか、そのURLにたまたま置かれていたものを実行するのかを分ける違いです。バージョンはマニフェストから取得し、バイナリとその `SHA256SUMS` は同じバージョン付きパスから取得してください。
 
 ```bash
 NET=mainnet            # or testnet
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.12 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/v3.1.10/$F   # or the artifacts[].url from latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/SHA256SUMS
-grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
+curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
+curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
+grep " $F\$" SHA256SUMS | sha256sum -c -    # macOS: shasum -a 256 -c -
 chmod +x $F
 ```
 
-Windows では、`certutil -hashfile lightnode-sx-<platform>.exe SHA256` の出力をマニフェストの値と比較してください。両方のネットワークが同じ 3.1.10 ビルドを配信しており、マニフェストは引き続き 3.1.9 も受け入れます(`minCompatible: 3.1.9`)。3.1.10 以降、各リリースのバイナリはバージョン付きのパス `https://download.qore.host/<net>/lightnode/v<version>/<file>` に置かれ、マニフェストの `artifacts[].url` はこのパスを指しています。数時間遅れることがあるバージョンなしのコピーではなく、こちらを使用してください。ソースは `github.com/qorechain/qorechain-lightnode`(Apache 2.0)で公開されています。Android ビルドは GitHub リリースにプレビューとして添付されていますが、登録は行わず、報酬も獲得しません。
+バージョン付きのバイナリには、バージョン付きの `SHA256SUMS`(`.../v$V/SHA256SUMS`)を使用してください。バージョンなしの `.../lightnode/SHA256SUMS` はマニフェストに属しており、新しいリリースから数時間遅れることがあるため、バージョン付きのバイナリをそれで検証すると失敗する場合があります。
+
+Windows では、`certutil -hashfile lightnode-sx-<platform>.exe SHA256` の出力をマニフェストの値と比較してください。両方のマニフェストは 3.1.9 以降を受け入れます(`minCompatible: 3.1.9`)。ソースは `github.com/qorechain/qorechain-lightnode`(Apache 2.0)で公開されています。Android ビルドは GitHub リリースにプレビューとして添付されていますが、登録は行わず、報酬も獲得しません。
 
 ソースからバイナリをビルドするか、Docker で実行することもできます。
 
@@ -36,16 +39,16 @@ Windows では、`certutil -hashfile lightnode-sx-<platform>.exe SHA256` の出�
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-リリースタグ(`git checkout v3.1.10`)からビルドしてください。これにより `build/lightnode-sx` が生成されます。直接実行するか、`PATH` にコピーしてください。登録する前に、[`selftest`](#verify-the-pqc-stack-selftest) でポスト量子署名スタックの健全性を確認してください。
+マニフェストが示すリリースタグからビルドしてください(現在は `git checkout v3.1.12`)。これにより `build/lightnode-sx` が生成されます。直接実行するか、`PATH` にコピーしてください。登録する前に、[`selftest`](#verify-the-pqc-stack-selftest) でポスト量子署名スタックの健全性を確認してください。
 
 ### Docker {#docker}
 
-ビルド済みのレジストリイメージはありません。ソースタグからビルドします。タグ **`v3.1.10`** を使用してください。既存のインストールを更新するには、新しいタグから再ビルドしてください(`git fetch --tags && git checkout v3.1.10 && docker compose build --no-cache lightnode-sx`)。単純な `docker compose up` や `restart` では古いイメージが再利用されます。キー、設定、データボリュームはそのまま引き継がれます。
+プルできるビルド済みのレジストリイメージはありません。公開されたコンテナパッケージはまだ公開されていないため、ソースタグからイメージをビルドします。マニフェストが示すタグ(現在は **`v3.1.12`**)を使用してください。既存のインストールを更新するには、新しいタグから再ビルドしてください(`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`)。単純な `docker compose up` や `restart` では古いイメージが再利用されます。キー、設定、データボリュームはそのまま引き継がれます。
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.10
+git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
@@ -59,9 +62,23 @@ docker compose up -d lightnode-sx
 docker compose run --rm lightnode-sx status
 ```
 
-`QORECHAIN_RPC_ADDR` は、すべての `docker compose` コマンドでエクスポートしたままにしてください。これは設定の `rpc_addr` を上書きし、compose のデフォルトは `host.docker.internal:26657` を指しています。SX コンテナは、キーリングを含むデータを `/root/.qorechain-lightnode` にマウントされた名前付きボリュームに永続化します。
+`QORECHAIN_RPC_ADDR` は、すべての `docker compose` コマンドでエクスポートしたままにしてください。これは設定の `rpc_addr` を上書きします。3.1.10 以降、compose ファイルはこれのデフォルトをメインネットの RPC `https://rpc.qore.host` にしているため、テストネットのノードは `https://rpc-testnet.qore.host` をエクスポートしないと、メインネットを追従してしまいます。SX コンテナは、キーリングを含むデータを `/root/.qorechain-lightnode` にマウントされた名前付きボリュームに永続化します。
 
 ノードはコンテナ内でネイティブに署名するため、他に必要なものはありません。SX イメージには、[`qorechaind` フォールバック](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline)用に、リリース済みの `qorechaind`(v3.2.0、linux/amd64 のみ、固定されたダイジェストに対して検証済み)も引き続き含まれています。`docker-compose.yml` は `~/.qorechaind`(または `QORECHAIND_HOME`)を `/root/.qorechaind` にマウントし、その経路のために `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` を渡します。オペレーターキーが自身のキーリングにあるノードは、どちらも使用しません。
+
+## 更新 {#updating}
+
+- **ライトノード 3.1.11 以降、Docker 外。** ノードは6時間ごとに、自身のネットワーク用の `https://download.qore.host/<net>/lightnode/latest.json` を読み取ります(`qorechain-vladi` ならメインネット、`qorechain-diana` ならテストネット、その他のチェーンでは何も読みません)。マニフェストはあくまでヒントです。ノードは、次のすべてが満たされる場合にのみリリースをインストールします。
+  1. `v<version>/SHA256SUMS.sig` が、バイナリに組み込まれたリリース鍵による、ネットワーク、バージョン、`SHA256SUMS` の内容に対する有効な Ed25519 署名であること。
+  2. チャンネル自身のバージョン付きパスから取得した(マニフェストの URL は辿りません)バイナリが、署名済みのチェックサムと一致すること。
+  3. 新しいバイナリが実行され、ちょうど `v<version>` と報告すること。
+
+  その後、以前のバイナリを `<name>.old` として保持し、その場で再起動します。Linux と macOS では同じプロセスのまま(systemd サービスは稼働し続けます)、Windows では新しいバイナリが起動して古いものが終了します(サービスは終了時に再起動するよう設定してください)。
+- **設定。** `[update] mode = "auto"`(デフォルト。セクションがない設定でも同様)は通知とインストールを行い、`"notify"` は通知のみ、`"off"` はチェックを行いません。手動の場合: `lightnode-sx update --check`、続いて `lightnode-sx update`、その後ノードを再起動します。
+- **通知の確認。** ノードはより新しいリリースをログに出力し、ローカルのダッシュボード API の `GET /api/update` で提供します(フィールド `network`、`mode`、`current`、`latest`、`min_compatible`、`notes`、`update_available`、`mandatory`、`can_install`、`blocked`、`last_check`、`last_error`)。UX ダッシュボードにはバナーが表示されます。
+- **コンテナまたは書き込み不可のフォルダー。** ノードは通知のみを行います。イメージまたはファイルは自分で更新してください。
+- **ライトノード 3.1.10 以前**は自己更新しません。一度だけ手動で 3.1.12 をインストールしてください。マニフェストのパスからバージョン付きバイナリをダウンロードし([インストール](#install)を参照)、検証し、ファイルを置き換えて再起動します。その後、ノードはチャンネルに追従します。
+- **Docker。** Docker はイメージを変更しません。新しいソースタグから再ビルドし([Docker](#docker)を参照)、コンテナを再作成してください。
 
 ## 設定 {#configure}
 
@@ -85,7 +102,8 @@ docker compose run --rm lightnode-sx status
 | `operator_address` | このノードが属するアカウント(`qor1...`)。読み込み時に検証されます。`keys add-operator` が設定します。`register`、`status`、ハートビートに必要です。[オペレーターウォレット](#operator-wallet)を参照してください。 |
 | `api_addr` | REST エンドポイント。空の場合は `rpc_addr` から導出されます(ポート 26657 は 1317 になり、`rpc.` ホストは `api.` になります)。そのため、どちらの規則にも従わないエンドポイントでのみ必要です。 |
 | `[heartbeat]` | デフォルトで有効(`enabled`)。`interval_blocks`(チェーンの `heartbeat_interval` である 1000 に合わせます)、`check_interval`(デフォルト `60s`)、`gas`(デフォルト `300000`。ネイティブ署名では手数料はガス1単位あたり 0.25 uqor なので 75,000 uqor)。`qorechaind` フォールバックでのみ使用: `fees`(デフォルト `50000uqor`)、`qorechaind_path`(空の場合は `PATH` 上の `qorechaind`)、`qorechaind_home`(空の場合は `~/.qorechaind`)、`keyring_backend`、`key_name`(オペレーターアカウントを保持する `qorechaind` のキー。デフォルトはトップレベルの `key_name`)。 |
-| `[delegation]` | `auto_claim`(デフォルトでは無効。署名者を通じて、蓄積されたライトノード報酬をオペレーターアカウントに請求します。ノードがサーバーから再委任することはありません)、チェックの間隔、請求のための最小報酬、`rebalance_enabled`、`min_reputation`(レピュテーションのアラートのみ — ノードがステークを移動することはありません)。`validators` と `split_weights` は受け付けられますが、現在は動作に反映されません。 |
+| `[delegation]` | `auto_claim`(デフォルトでは無効。署名者を通じて、蓄積されたライトノード報酬をオペレーターアカウントに請求します。ノードがサーバーから再委任することはありません)、チェックの間隔、請求のための最小報酬、`rebalance_enabled`(デフォルトで有効)、`min_reputation`(警告のみ。ノードがステークを移動することはありません)。3.1.11 以降、`rebalance_enabled` は、委任先のバリデーターがジェイルされているかアクティブセットに含まれていない場合、およびボンドされたステークが `min_delegated_stake`(1,000 QOR)を下回る場合の警告を有効にします。`min_reputation`(デフォルト `0.5`)は、ネットワークがバリデーターごとのレピュテーションスコアを提供する場合に適用され、現時点ではテストネットがそれに該当します。`validators` と `split_weights` は受け付けられますが、現在は動作に反映されません。 |
+| `[update]` | `mode`: `auto`(デフォルト。セクションがない場合も同様)、`notify`(通知のみ)、または `off`。ライトノード 3.1.11 以降。[更新](#updating)を参照してください。 |
 | `[telemetry]` | テレメトリを有効にするかどうか、およびバリデーター、ネットワーク、ブリッジ、トークノミクスの更新間隔。 |
 | `[dashboard]` | ローカルのダッシュボード API。UX エディションは常にこれを提供し、SX エディションは `enabled = true` の場合のみ提供します。`bind_addr`(デフォルト `127.0.0.1:8420`)と `token`(設定すると、すべての `/api` ルートと `/ws` に `Authorization: Bearer <token>` が必要になります)。[UX エディション](/light-node/ux-edition)を参照してください。 |
 | `log_level` / `log_format` | ログの詳細度(`debug`、`info`、`warn`、`error`)と形式(`text` または `json`)。トップレベルのキーなので、最初の `[table]` より前に置いてください。 |
@@ -102,7 +120,7 @@ docker compose run --rm lightnode-sx status
 プライマリと同じホスト上のウィットネスは拒否されます — 侵害されたエンドポイントは単に自分自身に同意するだけなので、何の裏付けにもならないからです。リモートホスト上の平文の `http://` ウィットネスも拒否されます。その接続を書き換えられる攻撃者は、すべてのウィットネスとして一斉に応答できてしまうためです。ループバックの `http://` は問題ありません。独立した理由で信頼できる RPC エンドポイントをウィットネスとして指定してください。
 :::
 
-委任のデフォルトは、レピュテーションを考慮したリバランスのアラートを有効にし、`auto_claim` は無効のままにします — これらが何をするかについては[報酬と監視](/light-node/rewards-and-monitoring)を参照してください。
+委任のデフォルトはステークのアラートを有効にし、`auto_claim` は無効のままにします。これらが何をするかについては[報酬と監視](/light-node/rewards-and-monitoring)を参照してください。
 
 ## 初回実行: `onboard` {#first-run-onboard}
 
@@ -117,7 +135,7 @@ lightnode-sx onboard
 
 1. **PQC セルフテスト** — 完全な Dilithium-5 ラウンドトリップを実行します([`selftest`](#verify-the-pqc-stack-selftest)と同じチェック)。PQC スタックが失敗した場合、ウィザードは続行を拒否します。
 2. **チェーン RPC エンドポイント** — QoreChain の RPC URL(メインネット `https://rpc.qore.host`、テストネット `https://rpc-testnet.qore.host`)を貼り付けるか、**ローカルのみモード**で実行するために空白のままにします。URL を入力すると、ウィザードはそれをライブでテストし、チェーン ID を読み取ります。
-3. **ノードキー** — ウィザードは「バリデーター秘密鍵」と呼んでいますが、これはライトノード自身の Dilithium-5 キーであり、バリデーターキーではありません。16進エンコードされた Dilithium-5 秘密鍵を貼り付けるか、`g`(または `generate`)と入力してこのノード上で新しい鍵ペアを生成します。
+3. **ノードキー** — ウィザードは「validator private key」と呼んでいますが、これはライトノード自身の Dilithium-5 キーであり、バリデーターキーではありません。16進エンコードされた Dilithium-5 秘密鍵を貼り付けるか、`g`(または `generate`)と入力してこのノード上で新しい鍵ペアを生成します。
 4. **保存** — `config.toml`(エンドポイントとチェーン ID を含む)を書き込み、キーを `validator` という名前でキーリングに保存し(その名前が使用済みの場合は `validator-<hex>`)、`key_name` をその名前に設定します。
 
 :::note ローカルのみモード
@@ -207,6 +225,7 @@ SX CLI には、ノードの状態を確認しキーを管理するためのコ�
 | `delegation` | 実行中のデーモンがローカルデータベースに反映した、オペレーターアカウントの委任を表示します。 |
 | `rewards` | オペレーターアカウントの保留中のステーキング報酬を表示します(ライトノード報酬ではありません。[報酬と監視](/light-node/rewards-and-monitoring#how-rewards-work)を参照)。 |
 | `network` | ローカルデータベースからネットワークテレメトリ(最近同期したヘッダー)を表示します。 |
+| `update [--check]` | ライトノード 3.1.11 以降。`--check` は、より新しいリリースがあるかどうかを示します。付けない場合は、検証してインストールし、以前のバイナリを `<name>.old` として保持します。その後ノードを再起動してください。[更新](#updating)を参照してください。 |
 | `version` | バイナリのバージョンを出力します。 |
 
 ステーキング、報酬、監視の詳細については[報酬と監視](/light-node/rewards-and-monitoring)を参照してください。オンチェーン登録については[登録とライセンス](/light-node/registration-and-licensing)を参照してください。

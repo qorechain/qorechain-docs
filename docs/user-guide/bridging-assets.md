@@ -41,10 +41,38 @@ IBC is part of the design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, 
 Three IBC features exist on the testnet only; mainnet does not have them (its `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` route answers 501):
 
 * **IBC rate limit.** Governance can set a per-channel quota for IBC transfers (a whole percent of supply per window of hours). It is **not automatic**: no limits are set today, and an empty set means unlimited. A forwarded packet is charged on both channels and a refund returns the quota. This is separate from the bridge circuit breakers described under [Security Model](#security-model).
-* **Packet forwarding.** A transfer arriving over IBC v1 can carry a memo of the form `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` to be sent on to another chain, with refunds to the sender if a hop fails. There are no retries and a hop times out after 10 minutes by default. A token that converts to an ERC-20 on arrival cannot be forwarded.
+* **Packet forwarding.** A transfer arriving over IBC v1 can carry a memo of the form `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` to be sent on to another chain, with refunds to the sender if a hop fails. There are no retries and a hop times out after 10 minutes by default. A token that converts to an ERC-20 on arrival cannot be forwarded.
 * **08-wasm light clients.** Storing, migrating and removing a wasm light-client binary are authority-only, and the allowed client types contain only the standard client until governance adds `08-wasm`.
 
-Read the limits with `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` on the testnet (`\{"rate_limits":[]\}` today).
+Read the limits with `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` on the testnet (`{"rate_limits":[]}` today).
+
+**Which network has what (checked 27 October 2026).**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| ICS-20 transfer (IBC v1) | Built in, but no channel is open | Built in, one channel open |
+| IBC rate limit | Not available (501) | Available, no limits set |
+| Packet forwarding | Not available | Available (IBC v1 only) |
+| 08-wasm light clients | Not available | Message set present, no wasm client can be created until governance allows `08-wasm` |
+
+### The test channel on the testnet {#ibc-test-channel}
+
+The testnet has one open transfer channel, `channel-0` (port `transfer`, `connection-0`, version `ics20-1`, unordered). Its counterparty is the Cosmos Hub testnet (chain ID `provider`, channel `channel-600`). The testnet has seen one IBC denom, `uatom` arriving over `channel-0`; QoreChain also keeps an ERC-20 pair for it, owned by the module. Read the state with:
+
+```bash
+curl -s https://api-testnet.qore.host/ibc/core/channel/v1/channels
+curl -s https://api-testnet.qore.host/ibc/apps/transfer/v1/denoms
+```
+
+To send on the test channel, build the transfer, then add the hybrid signature like any other native-lane transaction:
+
+```bash
+qorechaind tx ibc-transfer transfer transfer channel-0 <receiver_on_the_hub_testnet> 1000uqor \
+  --from mykey --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > ibc.json
+qorechaind tx pqc cosign ibc.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
+```
+
+This is a test channel between two test networks; the tokens have no value. Delivery of a packet needs a relayer running for the channel, and this manual does not publish or promise one, so a transfer can sit pending. Do not use the commands above on mainnet: there is no open channel there and the transaction would fail.
 
 ---
 

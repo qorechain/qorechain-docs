@@ -508,6 +508,18 @@ Staking-tiers modülü **v3.2.4** sürümünün parçasıdır. Bu rotalar test a
 
 `params`, üç kilit süresini (3, 6 ve 12 ay) parametreleriyle ve `min_lock_amount` ile (`"10000000"` uqor, 10 QOR) listeler. Kilitler `tx stakingtier lock` ile oluşturulur (bkz. [İşlem Komutları](/cli-reference/transaction-commands#stakingtier)).
 
+## İtibar Modülü {#reputation-module}
+
+İtibar modülünün REST rotaları **test ağında** (`qorechain-diana`, zincir v3.2.6) sunulur. Ana ağda her `/qorechain/reputation/v1/...` rotası, yazım sırasında (27 Ekim 2026) HTTP `501` ile yanıt verir (`{"code":12,"message":"Not Implemented"}`); orada modüle yalnızca gRPC üzerinden ulaşılır (`Params`, aşağıya bakın). Daha sonraki bir ana ağ sürümünün bunları sunması beklenir; sunduğunda bu sayfa güncellenecektir.
+
+| Metot | Uç Nokta | Açıklama |
+| ------ | -------- | ----------- |
+| GET    | `/qorechain/reputation/v1/params` | Skor ağırlıkları (`alpha`, `beta`, `gamma`, `delta`), `lambda` ve `min_score` |
+| GET    | `/qorechain/reputation/v1/validator/{address}` | Bir doğrulayıcının kaydı. `{address}` bir `qorvaloper1...` operatör adresi veya bir `qorvalcons1...` konsensüs adresidir. Alanlar arasında `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks` ve `last_updated_height` bulunur. `404`, doğrulayıcının henüz skoru olmadığı anlamına gelir; ne operatör ne de konsensüs adresi olan bir dize `400` ile yanıtlanır |
+| GET    | `/qorechain/reputation/v1/validators` | Skoru bulunan tüm doğrulayıcıların kayıtları (`reputations`) |
+
+Skorlar 0 ile 1 arasında ondalık dizelerdir. Light node, delege edilmiş bir doğrulayıcı `min_reputation` değerinin altına düştüğünde uyarmak için doğrulayıcı başına rotayı okur (bkz. [Ödüller ve İzleme](/light-node/rewards-and-monitoring#delegation-alerts)). Ana ağ ana makinesinden aynı rotalar, ana ağ bunları sunana kadar `501` döndürür.
+
 ## Yalnızca gRPC modülleri {#grpc-only-modules}
 
 Ana ağda (düğüm sürümü v3.2.4, 27 Ekim 2026'da kontrol edildi) bu modüllerin bir gRPC `Query` servisi vardır ancak **REST rotası yoktur**. Servis adları `qorechain.<module>.v1.Query` biçimini izler.
@@ -516,7 +528,7 @@ Ana ağda (düğüm sürümü v3.2.4, 27 Ekim 2026'da kontrol edildi) bu modüll
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
-| `reputation`  | `Params`                                               |
+| `reputation`  | `Params` (REST rotaları yalnızca test ağında vardır, bkz. [İtibar Modülü](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |

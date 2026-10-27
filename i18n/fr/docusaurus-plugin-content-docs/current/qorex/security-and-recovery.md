@@ -7,44 +7,60 @@ sidebar_position: 5
 
 # Sécurité et récupération
 
-Tout ce qui concerne la protection et la récupération de votre portefeuille se trouve dans **Paramètres → Sécurité**. L'onglet Accueil affiche également une carte **État de la sauvegarde** qui continue d'avertir tant que la récupération sociale n'est pas configurée. La carte ne suit que la récupération sociale : elle ne peut pas savoir si vous avez noté votre phrase de récupération, faites-le donc vous-même (voir ci-dessous).
+Cette page explique comment QoreX protège vos clés et comment vous retrouvez un portefeuille : la clé ML-DSA-87, la récupération sociale, Legacy, la liaison d'appareil, la fenêtre d'accès EVM, ce que montrent les approbations, et le Q-Day Scanner. Elle s'adresse à tous les utilisateurs de QoreX ; la plupart des outils de récupération se trouvent dans l'application mobile.
 
-## Sauvegardez maintenant — personne ne peut récupérer un portefeuille perdu à votre place {#back-up-now}
+## Innovations {#innovations}
+
+- **Récupération sociale avec parts chiffrées.** Des gardiens détiennent des parts chiffrées de votre graine, scellées avec ML-KEM, réparties en 2 sur 3. Une récupération déclenche un verrouillage temporel de 48 heures et vous alerte ; vous pouvez l'annuler, et une annulation ne peut que retarder, jamais déplacer des fonds. Le relais ne stocke que des enveloppes opaques.
+- **Legacy.** Un interrupteur d'homme mort superposé à vos gardiens, pour un bénéficiaire que vous choisissez.
+- **Liaison d'appareil.** Un code à usage unique et un QR code, jamais sur le même écran. Le QR code seul n'est que du texte chiffré derrière une dérivation de clé gourmande en mémoire.
+- **Clé ML-DSA-87 déterministe.** Dérivée des mêmes 24 mots (`SHAKE256("qorechain:pqc:v1|" + address + "|" + mnemonic)`), si bien que la clé n'a besoin d'aucune sauvegarde séparée. Voir [QoreSign](/qoresign/overview).
+- **Accès EVM borné.** Une transaction EVM n'est admise que tant qu'une fenêtre d'accès est ouverte, limitée par le nombre de transactions, la valeur et l'expiration.
+- **Des approbations qui refusent ce qu'elles ne peuvent pas lire.** Voir [Ce que montre la fenêtre d'approbation](#approvals).
+- **Q-Day Scanner.** Un rapport d'exposition pour n'importe quelle adresse Bitcoin ou Ethereum.
+
+## Comment l'utiliser et où le trouver {#how-to-use}
+
+Tout ce qui suit se trouve dans **Paramètres → Sécurité** de l'application mobile. L'extension de navigateur propose la fenêtre d'accès EVM, les sites connectés et les approbations ; la récupération sociale, Legacy, la liaison d'appareil et le Q-Day Scanner sont réservés au mobile. QoreX est gratuit et ne demande aucun compte pour tout cela ; voir la [vue d'ensemble](/qorex/overview#how-to-access) pour les liens des stores.
+
+L'onglet Accueil affiche également une carte **État de la sauvegarde** qui continue d'avertir tant que la récupération sociale n'est pas configurée. La carte ne suit que la récupération sociale : elle ne peut pas savoir si vous avez noté votre phrase de récupération, faites-le donc vous-même (voir ci-dessous).
+
+## Sauvegardez maintenant - personne ne peut récupérer un portefeuille perdu à votre place {#back-up-now}
 
 :::danger À lire avant d'alimenter votre portefeuille
-QoreX est **non-custodial** : vos clés n'existent que sur votre propre appareil, et QoreChain Association n'en possède aucune copie, aucune clé maîtresse, et n'a aucun moyen de réinitialiser ou de restaurer votre portefeuille. **Il n'existe ni procédure « mot de passe oublié », ni ticket d'assistance, ni intervention du service client** — si vous perdez l'accès à vos clés sans sauvegarde en place, les fonds sont perdus, définitivement et irréversiblement. Cela vaut pour tout portefeuille non-custodial, ce n'est pas une limitation propre à QoreX, mais il est utile de le dire clairement.
+QoreX est **non-custodial** : vos clés n'existent que sur votre propre appareil, et QoreChain Association n'en possède aucune copie, aucune clé maîtresse, et n'a aucun moyen de réinitialiser ou de restaurer votre portefeuille. **Il n'existe ni procédure « mot de passe oublié », ni ticket d'assistance, ni intervention du service client** - si vous perdez l'accès à vos clés sans sauvegarde en place, les fonds sont perdus, définitivement et irréversiblement. Cela vaut pour tout portefeuille non-custodial, ce n'est pas une limitation propre à QoreX, mais il est utile de le dire clairement.
 
-**Faites au moins l'une de ces actions — juste après avoir créé votre portefeuille, pas plus tard :**
+**Faites au moins l'une de ces actions - juste après avoir créé votre portefeuille, pas plus tard :**
 
-1. **Notez votre phrase de récupération de 24 mots** et conservez-la hors ligne, dans un endroit durable (pas une capture d'écran, pas une note synchronisée dans le cloud, pas un message que vous vous envoyez). C'est la seule chose capable de restaurer votre portefeuille, sur n'importe quel appareil, à tout moment — sur mobile, affichez-la depuis **Paramètres → Sécurité → Afficher la phrase de récupération** (l'application ne l'affiche **pas** pendant qu'elle crée le portefeuille : vous devez donc aller la chercher — faites-le immédiatement) ; dans l'extension, elle s'affiche une seule fois à la création du portefeuille, puis à tout moment depuis **Afficher la phrase de récupération** dans la fenêtre contextuelle. Voir [Restaurer un portefeuille existant](/qorex/getting-started#2-restore-an-existing-wallet).
+1. **Notez votre phrase de récupération de 24 mots** et conservez-la hors ligne, dans un endroit durable (pas une capture d'écran, pas une note synchronisée dans le cloud, pas un message que vous vous envoyez). C'est la seule chose capable de restaurer votre portefeuille, sur n'importe quel appareil, à tout moment - sur mobile, affichez-la depuis **Paramètres → Sécurité → Afficher la phrase de récupération** (l'application ne l'affiche **pas** pendant qu'elle crée le portefeuille : vous devez donc aller la chercher - faites-le immédiatement) ; dans l'extension, elle s'affiche une seule fois à la création du portefeuille, puis à tout moment depuis **Afficher la phrase de récupération** dans la fenêtre contextuelle. Voir [Restaurer un portefeuille existant](/qorex/getting-started#2-restore-an-existing-wallet).
 2. **Configurez la [récupération sociale](#social-recovery)** avec des gardiens en qui vous avez confiance. Cela vous permet de récupérer votre portefeuille même si vous perdez la phrase, sans qu'aucun gardien pris isolément ne puisse jamais accéder à vos fonds.
 
-Faire les deux est l'option la plus sûre — la phrase vous couvre si vous changez d'appareil ou si l'application est indisponible ; les gardiens vous couvrent si vous perdez la phrase elle-même.
+Faire les deux est l'option la plus sûre - la phrase vous couvre si vous changez d'appareil ou si l'application est indisponible ; les gardiens vous couvrent si vous perdez la phrase elle-même.
 
-**Désinstaller l'application supprime vos clés de cet appareil.** Le coffre de l'application mobile et celui de l'extension navigateur vivent chacun uniquement sur l'appareil qui les a créés. Désinstaller l'application, réinitialiser le téléphone, ou supprimer/effacer l'extension supprime cette copie — sans sauvegarde ni appareil lié, votre portefeuille ne peut être récupéré par personne, y compris QoreChain. **Retirer un portefeuille d'un téléphone ou d'un navigateur** (Paramètres → Portefeuilles → *Retirer de ce téléphone*, ou *Retirer de ce navigateur* dans l'extension) supprime de la même manière la clé de ce portefeuille de l'appareil — vos fonds restent sur la chaîne, mais seule sa phrase de récupération peut le ramener.
+**Désinstaller l'application supprime vos clés de cet appareil.** Le coffre de l'application mobile et celui de l'extension navigateur vivent chacun uniquement sur l'appareil qui les a créés. Désinstaller l'application, réinitialiser le téléphone, ou supprimer/effacer l'extension supprime cette copie - sans sauvegarde ni appareil lié, votre portefeuille ne peut être récupéré par personne, y compris QoreChain. **Retirer un portefeuille d'un téléphone ou d'un navigateur** (Paramètres → Portefeuilles → *Retirer de ce téléphone*, ou *Retirer de ce navigateur* dans l'extension) supprime de la même manière la clé de ce portefeuille de l'appareil - vos fonds restent sur la chaîne, mais seule sa phrase de récupération peut le ramener.
 :::
 
-## Clé post-quantique {#pqc-key}
+## Clé ML-DSA-87 {#pqc-key}
 
-L'écran **Sécurité** affiche l'état on-chain en direct de votre clé post-quantique : **« S'enregistre à votre premier transfert »** → **« Enregistrée on-chain ✓ »**. L'algorithme est **ML-DSA-87** (déterministe, hybride avec secp256k1).
+L'écran **Sécurité** affiche l'état on-chain en direct de votre clé ML-DSA-87 : **« S'enregistre à votre premier transfert »** → **« Enregistrée on-chain ✓ »**. L'algorithme est **ML-DSA-87** (déterministe, hybride avec secp256k1).
 
-**Rotation de clé** — faire pivoter votre clé post-quantique (une opération on-chain `MsgRotatePQCKey`) n'est **pas encore disponible dans QoreX** ; elle arrivera avec une prochaine mise à jour de gestion des clés, exigera une nouvelle confirmation biométrique et n'est **jamais automatisée**. Les sites web ne peuvent pas demander à QoreX d'enregistrer, de migrer ou de faire pivoter votre clé post-quantique. L'enregistrement se fait de lui-même lors de votre premier transfert et ne demande rien de votre part — depuis la v3.2.3, la chaîne accepte aussi une *preuve de possession* facultative avec l'enregistrement, que QoreX gère de façon invisible dans les versions actuelles des stores. Voir [Rotation de clé](/developer-guide/post-quantum-signing#key-rotation) pour le mécanisme sous-jacent.
+**Rotation de clé** - faire pivoter votre clé ML-DSA-87 (une opération on-chain `MsgRotatePQCKey`) n'est **pas encore disponible dans QoreX** ; elle arrivera avec une prochaine mise à jour de gestion des clés, exigera une nouvelle confirmation biométrique et n'est **jamais automatisée**. Les sites web ne peuvent pas demander à QoreX d'enregistrer, de migrer ou de faire pivoter votre clé ML-DSA-87. L'enregistrement se fait de lui-même lors de votre premier transfert et ne demande rien de votre part - depuis la v3.2.3, la chaîne accepte aussi une *preuve de possession* facultative avec l'enregistrement, que QoreX gère de façon invisible dans les versions actuelles des stores. Voir [Rotation de clé](/developer-guide/post-quantum-signing#key-rotation) pour le mécanisme sous-jacent.
 
 ## Récupération sociale {#social-recovery}
 
 La récupération sociale permet à des **gardiens** de confiance de vous aider à restaurer votre portefeuille sans jamais voir votre phrase de récupération.
 
-- Votre graine est divisée en **parts scellées ML-KEM** — trois par défaut, dont n'importe quelles **deux** peuvent vous aider à récupérer (un schéma à seuil 2 sur 3) ; une seule ne le peut pas.
-- Chaque gardien reçoit un identifiant. La configuration n'écrit rien de lisible sur le relais — uniquement des enveloppes opaques et scellées.
+- Votre graine est divisée en **parts chiffrées** (scellées avec ML-KEM) : trois par défaut, dont n'importe quelles **deux** peuvent vous aider à récupérer (un schéma à seuil 2 sur 3) ; une seule ne le peut pas.
+- Chaque gardien reçoit un identifiant. La configuration n'écrit rien de lisible sur le relais - uniquement des enveloppes opaques et scellées.
 - Une récupération nécessite l'approbation du seuil de gardiens, puis déclenche un **verrouillage temporel de 48 heures** et vous envoie une **alerte d'annulation**, afin qu'une tentative malveillante puisse être stoppée.
 
-**Configuration :** Accueil → **Configurer la récupération** (ou Paramètres → Sécurité → Récupération sociale) → **Créer les identifiants de gardien**. QoreX crée trois identifiants — *Gardien 1*, *Gardien 2* et une *Sauvegarde imprimable* — et **2 sur les 3** suffisent pour vous aider à récupérer. Donnez-en un à chaque personne ou appareil de confiance et conservez la sauvegarde imprimable en lieu sûr. L'avertissement d'état de sauvegarde disparaît une fois cela fait.
+**Configuration :** Accueil → **Configurer la récupération** (ou Paramètres → Sécurité → Récupération sociale) → **Créer les identifiants de gardien**. QoreX crée trois identifiants - *Gardien 1*, *Gardien 2* et une *Sauvegarde imprimable* - et **2 sur les 3** suffisent pour vous aider à récupérer. Donnez-en un à chaque personne ou appareil de confiance et conservez la sauvegarde imprimable en lieu sûr. L'avertissement d'état de sauvegarde disparaît une fois cela fait.
 
 **Approuver la récupération de quelqu'un d'autre :** si vous êtes gardien pour quelqu'un, utilisez **Aider à récupérer** dans l'onglet Accueil pour approuver sa demande.
 
 ## Legacy Protocol {#legacy}
 
-**Legacy Protocol** est un dispositif d'héritage à sécurité post-quantique : un interrupteur d'homme mort superposé à vos gardiens, permettant à vos actifs de revenir aux bénéficiaires que vous avez choisis si vous devenez injoignable. Il est optionnel et se configure depuis Paramètres → Sécurité.
+**Legacy Protocol** est un interrupteur d'homme mort superposé à vos gardiens : vos actifs peuvent revenir au bénéficiaire que vous avez choisi si vous devenez injoignable. Il est optionnel et se configure depuis Paramètres → Sécurité.
 
 ## Lier un nouvel appareil {#link-device}
 
@@ -54,7 +70,7 @@ Transférez votre portefeuille vers un second téléphone ou une tablette **sans
 2. **Ancien appareil** → Paramètres → Sécurité → **Lier un nouvel appareil** → saisissez ce code → confirmez par biométrie. Un **QR code** apparaît (votre graine scellée avec une clé dérivée du code : scrypt N=2¹⁷ → AES-256-GCM).
 3. **Le nouvel appareil** scanne le QR code → il déchiffre localement → même portefeuille, mêmes adresses.
 
-**Pourquoi c'est sûr :** le code et le QR code n'apparaissent jamais sur le même écran. Une photo du QR code seule n'est que du texte chiffré derrière une fonction de dérivation de clé gourmande en mémoire, et les deux éléments sont à usage unique et disparaissent avec les écrans. Un code erroné produit une erreur claire — il suffit de réessayer.
+**Pourquoi une photo du QR code ne suffit pas :** le code et le QR code n'apparaissent jamais sur le même écran. Une photo du QR code seule n'est que du texte chiffré derrière une fonction de dérivation de clé gourmande en mémoire, et les deux éléments sont à usage unique et disparaissent avec les écrans. Un code erroné produit une erreur claire - il suffit de réessayer.
 
 :::note
 La liaison d'appareil est une **commodité**, pas une méthode de récupération. Votre phrase de 24 mots et la récupération sociale sont vos véritables filets de sécurité.
@@ -62,9 +78,9 @@ La liaison d'appareil est une **commodité**, pas une méthode de récupération
 
 ## Fenêtre d'accès EVM {#evm-window}
 
-À partir de la chaîne **v3.2.0**, une transaction sur la **voie EVM** — par exemple une transaction que vous signez dans MetaMask sur le réseau EVM de QoreChain — n'est admise que depuis un compte qui possède une **clé post-quantique enregistrée** *et* une **fenêtre d'autorisation ouverte**. Ouvrir une fenêtre est un message de la voie Native de QoreChain que MetaMask ne peut pas produire ; c'est donc dans QoreX que vous l'ouvrez. Les envois de QoreX eux-mêmes utilisent la voie Native et n'ont jamais besoin d'une fenêtre.
+À partir de la chaîne **v3.2.0**, une transaction sur la **voie EVM** - par exemple une transaction que vous signez dans MetaMask sur le réseau EVM de QoreChain - n'est admise que depuis un compte qui possède une **clé ML-DSA-87 enregistrée** *et* une **fenêtre d'autorisation ouverte** (un `MsgOpenEVMWindow` signé en hybride). La transaction EVM elle-même ne porte qu'une signature secp256k1. L'explorateur étiquette une telle transaction « Authorised by a PQC window ». Ouvrir une fenêtre est un message de la voie QoreChain Native que MetaMask ne peut pas produire ; c'est donc dans QoreX que vous l'ouvrez. Les envois de QoreX eux-mêmes utilisent la voie Native et n'ont jamais besoin d'une fenêtre.
 
-**Qui en a besoin.** Une fenêtre est destinée aux **comptes de type Ethereum (coin 60)** — les comptes que vous ajoutez avec *Ajouter un compte Ethereum (coin 60)* pour une phrase d'abord utilisée dans MetaMask (voir [Restaurer une phrase depuis MetaMask ou le Dashboard](/qorex/getting-started#restore-dashboard)). MetaMask signe avec une clé Ethereum, qui est la clé d'un compte coin 60 ; aucune clé MetaMask ne peut envoyer depuis un compte `qor1…` ordinaire en coin 118 : une fenêtre ouverte sur un tel compte n'apporte donc rien et ne coûte que les frais.
+**Qui en a besoin.** Une fenêtre est destinée aux **comptes de type Ethereum (coin 60)** - les comptes que vous ajoutez avec *Ajouter un compte Ethereum (coin 60)* pour une phrase d'abord utilisée dans MetaMask (voir [Restaurer une phrase depuis MetaMask ou le Dashboard](/qorex/getting-started#restore-dashboard)). MetaMask signe avec une clé Ethereum, qui est la clé d'un compte coin 60 ; aucune clé MetaMask ne peut envoyer depuis un compte `qor1…` ordinaire en coin 118 : une fenêtre ouverte sur un tel compte n'apporte donc rien et ne coûte que les frais.
 
 Ouvrez-la dans l'application via **Paramètres → Sécurité → Fenêtre d'accès EVM**, ou avec le bouton **Fenêtre d'accès EVM** dans la fenêtre contextuelle de l'extension. Vous choisissez :
 
@@ -72,29 +88,29 @@ Ouvrez-la dans l'application via **Paramètres → Sécurité → Fenêtre d'acc
 |---|---|---|
 | **Durée (blocs, max 17280)** | combien de temps la fenêtre reste ouverte | jusqu'à 17 280 blocs (environ 15 heures sur le mainnet) |
 | **Nombre de transactions (max 1000)** | combien de transactions EVM elle admet | jusqu'à 1 000 |
-| **Plafond de dépense, QOR — couvre chaque montant envoyé PLUS ses frais maximaux** | le maximum qu'elle laisse passer | compte la valeur **plus** les frais maximaux de chaque transaction |
+| **Plafond de dépense, QOR - couvre chaque montant envoyé PLUS ses frais maximaux** | le maximum qu'elle laisse passer | compte la valeur **plus** les frais maximaux de chaque transaction |
 
-Depuis la v3.2.3, la chaîne prend aussi en charge des fenêtres plus étroites, *à périmètre limité* ; QoreX ne propose pas d'écran pour celles-ci. Les valeurs par défaut sont 300 blocs (environ 16 minutes sur le mainnet), 5 transactions et 1 QOR. L'ouverture coûte des frais de réseau normaux et est signée avec la signature post-quantique hybride habituelle, et une nouvelle fenêtre **remplace** toute fenêtre déjà ouverte. L'ouvrir fait aussi avancer le nonce de votre compte : ouvrez donc la fenêtre **d'abord**, puis envoyez depuis MetaMask — une transaction préparée plus tôt sera refusée avec « nonce too low ». **Fermer la fenêtre** n'est proposé que tant qu'une fenêtre est active.
+Depuis la v3.2.3, la chaîne prend aussi en charge des fenêtres plus étroites, *à périmètre limité* ; QoreX ne propose pas d'écran pour celles-ci. Les valeurs par défaut sont 300 blocs (environ 16 minutes sur le mainnet), 5 transactions et 1 QOR. L'ouverture coûte des frais de réseau normaux et est signée avec la signature hybride habituelle (secp256k1 et ML-DSA-87), et une nouvelle fenêtre **remplace** toute fenêtre déjà ouverte. L'ouvrir fait aussi avancer le nonce de votre compte : ouvrez donc la fenêtre **d'abord**, puis envoyez depuis MetaMask - une transaction préparée plus tôt sera refusée avec « nonce too low ». **Fermer la fenêtre** n'est proposé que tant qu'une fenêtre est active.
 
-L'écran affiche l'un de quatre états : *Ouverte pour \{blocks\} blocs de plus · \{txs\} transactions · \{value\} QOR restants* ; *Aucune fenêtre n'est ouverte. Les transactions MetaMask de ce compte sont refusées.* ; *Cette fenêtre a expiré ou est épuisée* ; ou *QoreX n'a pas pu lire la fenêtre depuis le réseau* — ce qui signifie que QoreX ne sait pas, et **non** que vous n'en avez pas. Si votre compte n'a pas encore de clé post-quantique, enregistrez-en une d'abord (votre premier transfert QoreX le fait) ; une fenêtre ne sert à rien avant cela.
+L'écran affiche l'un de quatre états : *Ouverte pour \{blocks\} blocs de plus · \{txs\} transactions · \{value\} QOR restants* ; *Aucune fenêtre n'est ouverte. Les transactions MetaMask de ce compte sont refusées.* ; *Cette fenêtre a expiré ou est épuisée* ; ou *QoreX n'a pas pu lire la fenêtre depuis le réseau* - ce qui signifie que QoreX ne sait pas, et **non** que vous n'en avez pas. Si votre compte n'a pas encore de clé ML-DSA-87, enregistrez-en une d'abord (votre premier transfert QoreX le fait) ; une fenêtre ne sert à rien avant cela.
 
 :::caution Gardez-la petite et courte
-Une fenêtre permet à de simples transactions MetaMask de déplacer vos QOR **sans signature post-quantique**. Gardez des limites basses — un petit plafond de dépense, peu de transactions, une durée courte — et fermez la fenêtre quand vous avez terminé. Ouvrir une nouvelle fenêtre remplace l'ancienne, et le plafond compte chaque montant que vous envoyez **plus** ses frais maximaux : une transaction qui dépasserait le plafond est donc refusée.
+Une fenêtre permet à de simples transactions MetaMask de déplacer vos QOR **avec une signature secp256k1 uniquement**. Gardez des limites basses - un petit plafond de dépense, peu de transactions, une durée courte - et fermez la fenêtre quand vous avez terminé. Ouvrir une nouvelle fenêtre remplace l'ancienne, et le plafond compte chaque montant que vous envoyez **plus** ses frais maximaux : une transaction qui dépasserait le plafond est donc refusée.
 :::
 
-QoreX lui-même n'envoie jamais sur la voie EVM de QoreChain ; utilisez MetaMask ou un autre portefeuille EVM pour cela, dans une fenêtre ouverte. (Envoyer des ETH, BNB et d'autres actifs sur *d'autres* réseaux depuis QoreX est une tout autre chose — voir [Réseaux et jetons externes](/qorex/send-and-receive#external-networks-tokens).)
+QoreX lui-même n'envoie jamais sur la voie EVM de QoreChain ; utilisez MetaMask ou un autre portefeuille EVM pour cela, dans une fenêtre ouverte. (Envoyer des ETH, BNB et d'autres actifs sur *d'autres* réseaux depuis QoreX est une tout autre chose - voir [Réseaux et jetons externes](/qorex/send-and-receive#external-networks-tokens).)
 
 ## Ce que montre la fenêtre d'approbation {#approvals}
 
 Chaque signature produite par QoreX est approuvée par vous, et l'approbation liste exactement ce que vous signez. QoreX affiche :
 
-- un titre et des champs étiquetés pour **chaque message** de la requête, y compris les messages imbriqués dans un **MsgExec** authz et les termes des octrois de permissions — et il **refuse** tout ce qu'il ne peut pas afficher (« QoreX ne peut pas lire ce message … N'approuvez que si vous faites entièrement confiance à ce site ») ;
-- les **frais** (*Frais : \{amount\} · gas \{gas\}*), qui les paie et tout octroi de frais — si les frais ne peuvent pas être lus, QoreX le dit et vous indique de ne pas approuver ;
-- la **limite, l'action autorisée et l'expiration** des allocations de dépense et des octrois authz, avec *ILLIMITÉ* et *JAMAIS* écrits en toutes lettres ; une expiration est affichée à la seconde près (`YYYY-MM-DD HH:MM:SS UTC`), et un vote de gouvernance est décodé afin que vous voyiez sur quoi vous votez ; tout ce qui est illisible, illimité ou sans fin exige un **second appui** sur Approuver (*Appuyez à nouveau pour approuver*) ;
+- un titre et des champs étiquetés pour **chaque message** de la requête, y compris les messages imbriqués dans un **MsgExec** authz et les termes des octrois de permissions - et il **refuse** tout ce qu'il ne peut pas afficher (« QoreX ne peut pas lire ce message … N'approuvez que si vous faites entièrement confiance à ce site ») ;
+- les **frais** (*Frais : \{amount\} · gas \{gas\}*), qui les paie et tout octroi de frais - si les frais ne peuvent pas être lus, QoreX le dit et vous indique de ne pas approuver ;
+- la **limite, l'action autorisée et l'expiration** des allocations de dépense et des octrois authz, avec *ILLIMITÉ* et *JAMAIS* écrits en toutes lettres ; une expiration est affichée à la seconde près (`YYYY-MM-DD HH:MM:SS UTC`), et un vote de gouvernance est décodé afin que vous voyiez sur quoi vous votez. Tout ce qui est illisible, illimité ou sans fin exige un **second appui** sur Approuver (*Appuyez à nouveau pour approuver*) ;
 - le compte signataire (*Signé par …*) lorsque vous en avez plusieurs ;
 - pour une requête comportant un très grand nombre de messages, les 50 premiers et le nombre des autres.
 
-QoreX **refuse aussi une requête dont les octets peuvent se lire de deux façons** (depuis 1.1.7 / 0.3.7). Une requête qui répète un champ censé n'apparaître qu'une fois — par exemple des frais ou un montant en double — pourrait être affichée d'une façon et exécutée d'une autre ; QoreX ne la présente donc pas du tout à l'approbation. Pour les sites web, QoreX identifie le site demandeur par l'origine que le navigateur lui-même atteste, jamais par ce que la requête affirme d'elle-même.
+QoreX **refuse aussi une requête dont les octets peuvent se lire de deux façons** (depuis 1.1.7 / 0.3.7). Une requête qui répète un champ censé n'apparaître qu'une fois - par exemple des frais ou un montant en double - pourrait être affichée d'une façon et exécutée d'une autre ; QoreX ne la présente donc pas du tout à l'approbation. Pour les sites web, QoreX identifie le site demandeur par l'origine que le navigateur lui-même atteste, jamais par ce que la requête affirme d'elle-même.
 
 Un changement de portefeuille ou de compte, ou le verrouillage du portefeuille, répond « non » aux requêtes en attente ; un site peut avoir une requête en attente, et trois peuvent attendre au total. Les noms de champs dans les fenêtres d'approbation sont affichés en anglais dans certaines versions.
 
@@ -104,20 +120,29 @@ L'écran de la phrase de récupération demande à chaque fois une nouvelle biom
 
 ## dApps connectées {#connected-dapps}
 
-Les connexions aux dApps sont **par origine**. Dans l'application, elles sont aussi **limitées à la session** : fermer le navigateur de dApps intégré révoque toutes les connexions, de sorte que rien ne reste connecté en arrière-plan (la carte **dApps connectées** dans Paramètres → Sécurité ne fait que le dire). Dans l'extension de navigateur, les connexions persistent jusqu'à ce que vous les supprimiez — ouvrez **Sites connectés** dans la fenêtre contextuelle pour voir tous les sites approuvés par ce portefeuille et **Révoquer** n'importe lequel d'entre eux.
+Les connexions aux dApps sont **par origine**. Dans l'application, elles sont aussi **limitées à la session** : fermer le navigateur de dApps intégré révoque toutes les connexions, de sorte que rien ne reste connecté en arrière-plan (la carte **dApps connectées** dans Paramètres → Sécurité ne fait que le dire). Dans l'extension de navigateur, les connexions persistent jusqu'à ce que vous les supprimiez - ouvrez **Sites connectés** dans la fenêtre contextuelle pour voir tous les sites approuvés par ce portefeuille et **Révoquer** n'importe lequel d'entre eux.
 
 ## Signataires liés et limites de dépense {#linked-signers}
 
-Lier une clé externe (Phantom ou MetaMask) comme **signataire lié** avec ses propres limites de dépense n'est **pas encore disponible dans QoreX** — Paramètres → Sécurité affiche la carte, avec l'action marquée *bientôt*. Rien n'est lié à votre portefeuille, sauf si vous l'avez fait vous-même en dehors de QoreX. La gestion des clés ne peut jamais être déléguée à une clé liée. Pour le modèle on-chain, voir [Authentificateurs de portefeuille lié](/developer-guide/account-abstraction#authenticators).
+Lier une clé externe (Phantom ou MetaMask) comme **signataire lié** avec ses propres limites de dépense n'est **pas encore disponible dans QoreX** - Paramètres → Sécurité affiche la carte, avec l'action marquée *bientôt*. Rien n'est lié à votre portefeuille, sauf si vous l'avez fait vous-même en dehors de QoreX. La gestion des clés ne peut jamais être déléguée à une clé liée. Pour le modèle on-chain, voir [Authentificateurs de portefeuille lié](/developer-guide/account-abstraction#authenticators).
 
 ## Q-Day Scanner {#q-day-scanner}
 
-Le **Q-Day Scanner** vous permet de saisir n'importe quelle adresse — la vôtre ou celle de quelqu'un d'autre — et d'obtenir un rapport d'exposition quantique : quels fonds reposent sur des clés purement classiques et lesquels sont déjà protégés post-quantique. Accessible depuis les boutons rapides de l'onglet Accueil.
+Le **Q-Day Scanner** vous permet de saisir n'importe quelle adresse - la vôtre ou celle de quelqu'un d'autre - et d'obtenir un rapport d'exposition pour n'importe quelle adresse Bitcoin ou Ethereum. Accessible depuis les boutons rapides de l'onglet Accueil.
 
 ## Modèle de sécurité, en bref
 
-1. **Non-custodial** — les clés sont générées sur l'appareil, vivent dans des coffres protégés par le matériel (mobile) ou un coffre chiffré (extension), et n'en sortent jamais.
-2. **Rien sans consentement** — chaque connexion est par origine, chaque signature est approuvée individuellement (biométrie sur mobile), et les charges utiles sont toujours décodées avant signature — ce que QoreX ne sait pas décoder, il le refuse.
-3. **Sécurité post-quantique par défaut** — les transferts QOR sur la voie Native portent toujours ML-DSA-87 + secp256k1 ; tout élément classique est signalé, jamais silencieux.
+1. **Non-custodial** - les clés sont générées sur l'appareil, vivent dans des coffres protégés par le matériel (mobile) ou un coffre chiffré (extension), et n'en sortent jamais.
+2. **Rien sans consentement** - chaque connexion est par origine, chaque signature est approuvée individuellement (biométrie sur mobile), et les charges utiles sont toujours décodées avant signature - ce que QoreX ne sait pas décoder, il le refuse.
+3. **Voie native signée en hybride.** Chaque transfert QOR natif est signé deux fois : avec une clé classique et avec ML-DSA-87 (FIPS 204). Tout élément classique (réseaux externes, EVM) est signalé, jamais silencieux.
 4. **Aucune analytique, aucun rapport de plantage, aucun SDK de suivi.** Les clés, la phrase de récupération, le coffre et les approbations ne quittent jamais l'appareil. La connexion de compte optionnelle, les notifications push et la récupération sociale n'utilisent un serveur que lorsque vous les activez ; la liste complète de ce que QoreX envoie se trouve dans [Ce que QoreX envoie sur le réseau](/qorex/overview#data-and-privacy), et la [politique de confidentialité QoreChain](https://qorechain.io/privacy) la couvre.
-5. **Voies de récupération** — phrase de 24 mots (toujours), récupération sociale avec gardiens + verrouillage temporel de 48h (optionnel), héritage Legacy (optionnel), liaison d'appareil (commodité).
+5. **Voies de récupération** - phrase de 24 mots (toujours), récupération sociale avec gardiens + verrouillage temporel de 48h (optionnel), héritage Legacy (optionnel), liaison d'appareil (commodité).
+
+## Limites et problèmes connus {#limits}
+
+- La récupération sociale, Legacy, la liaison d'appareil et le Q-Day Scanner sont réservés au mobile.
+- La rotation de la clé ML-DSA-87 n'est pas encore disponible dans QoreX.
+- Les signataires liés avec limites de dépense ne sont pas encore disponibles dans QoreX.
+- QoreX ne propose aucun écran pour les fenêtres EVM à périmètre limité (la chaîne les prend en charge depuis la v3.2.3).
+- La liaison d'appareil est une commodité, pas une méthode de récupération. Un portefeuille perdu, sans phrase notée et sans récupération sociale, ne peut être récupéré par personne.
+- La fenêtre d'approbation affiche certains noms de champs en anglais dans certaines versions.

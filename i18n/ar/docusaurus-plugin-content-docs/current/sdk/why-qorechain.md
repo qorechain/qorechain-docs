@@ -103,13 +103,13 @@ await crossVM.callAtomic([
 
 ---
 
-## 3. آمن كموميًّا افتراضيًا
+## 3. التوقيع الهجين افتراضيًا
 
-**اجعل المُوقِّع محميًّا بتشفير ما بعد الكم باستدعاء واحد.**
+**سجّل مفتاح ML-DSA-87 للمُوقِّع باستدعاء واحد.**
 
 تفرض QoreChain التوقيعات الهجينة لما بعد الكم (ML-DSA-87 + الكلاسيكية) على
 مستوى البروتوكول. وتجعل SDK اعتمادها أمرًا من سطر واحد: تحقّق، وسجّل، وانتقل
-إلى التوقيع الهجين — مع شارة React تُظهر للمستخدمين أنهم محميّون.
+إلى التوقيع الهجين — مع شارة React تُظهر ما إذا كان للعنوان مفتاح مسجّل.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -131,7 +131,7 @@ await hybrid.signAndBroadcastHybrid({
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// Shows a status badge when the address has a registered PQC key
 // (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
@@ -139,7 +139,7 @@ import { QuantumSafeBadge } from "@qorechain/react";
 **لماذا هذا مهم:** تشفير ما بعد الكم أصلي وإلزامي على المسار الأصلي (Native) في
 QoreChain، وليس تجربة، وتختزل SDK اعتماده في استدعاء تسجيل واحد ومسار إرسال
 هجين. التسجيل صريح: لا يوجد تسجيل تلقائي عند أول معاملة. راجع
-[الأمان الكمومي](/sdk/guides/quantum-safe).
+[التوقيع الهجين](/sdk/guides/quantum-safe).
 
 ---
 

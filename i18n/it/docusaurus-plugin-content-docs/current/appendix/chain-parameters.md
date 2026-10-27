@@ -10,7 +10,7 @@ sidebar_position: 2
 Riferimento consolidato dei parametri di modulo delle reti QoreChain, raggruppati per modulo. I parametri possono essere interrogati con `qorechaind query <module> params` quando il modulo dispone di una query params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` e `gasabstraction` usano `config`), e tramite REST solo per le route elencate nel [riferimento REST / gRPC](/api-reference/rest-grpc-endpoints). I parametri di `x/inflation` sono serviti anche tramite REST sulla mainnet dalla v3.2.3 (`/qorechain/inflation/v1/params`). REST non è disponibile sulla mainnet per `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` né `xqore`, e nemmeno per i parametri di `pqc` (la testnet serve tramite REST i parametri di `pqc`, `crossvm` e `rlconsensus` dalla v3.2.6).
 
 :::note
-I valori mostrati sono stati letti in diretta dalla mainnet **`qorechain-vladi`** (EVM chain ID **9801**, release **v3.2.4**, applicata il 23 ottobre 2026) il 23 ottobre 2026 (valori del genesis, salvo che una proposta di governance li abbia modificati; tali casi sono segnalati), e le righe dei moduli principali sono state rilette il 27 ottobre 2026. La proposta di governance 14 applicherebbe la v3.2.5 sulla mainnet all'altezza 3.906.833 (in periodo di voto al momento della scrittura); questa pagina descrive la mainnet così com'è oggi e verrà aggiornata quando quell'upgrade sarà applicato. La testnet **`qorechain-diana`** (EVM chain ID **9800**) esegue la release **v3.2.6** (applicata il 27 ottobre 2026). I suoi valori sono identici a quelli della mainnet salvo diversa indicazione; le differenze rimanenti sono raccolte in [Differenze tra testnet e mainnet](#testnet-differences). Le durate espresse in blocchi sono convertite al tempo di blocco misurato sulla mainnet, di circa 3,2 secondi (la testnet produce un blocco circa ogni 1,3 secondi).
+I valori mostrati sono stati letti in diretta dalla mainnet **`qorechain-vladi`** (EVM chain ID **9801**, release **v3.2.4**, applicata il 23 ottobre 2026) il 23 ottobre 2026 (valori del genesis, salvo che una proposta di governance li abbia modificati; tali casi sono segnalati), e le righe dei moduli principali sono state rilette il 27 ottobre 2026. La proposta di governance 14 applicherebbe la v3.2.5 sulla mainnet all'altezza 3.906.833 (in periodo di voto al momento della scrittura); questa pagina descrive la mainnet così com'è oggi e verrà aggiornata quando quell'upgrade sarà applicato. La testnet **`qorechain-diana`** (EVM chain ID **9800**) esegue la release **v3.2.6** (applicata il 27 ottobre 2026). I suoi valori sono identici a quelli della mainnet salvo diversa indicazione; le differenze rimanenti sono raccolte in [Differenze tra testnet e mainnet](#testnet-differences). Le durate espresse in blocchi sono convertite al tempo di blocco misurato sulla mainnet, di circa 3,1 secondi (la testnet produce un blocco circa ogni 1,3 secondi).
 :::
 
 ---
@@ -22,7 +22,7 @@ I valori mostrati sono stati letti in diretta dalla mainnet **`qorechain-vladi`*
 | `pqc_primary`              | `true`                     | Le firme post-quantistiche sono lo schema primario                       |
 | `allow_classical_fallback` | `false`                    | Il fallback solo classico è chiuso; le tx della lane Cosmos devono essere ibride |
 | `min_security_level`       | `5`                        | Livello di sicurezza NIST minimo per un algoritmo registrato             |
-| `default_migration_blocks` | `1,000,000`                | Durata predefinita di una migrazione di algoritmo avviata dalla governance (circa 37 giorni con blocchi da ≈3,2 s) |
+| `default_migration_blocks` | `1,000,000`                | Durata predefinita di una migrazione di algoritmo avviata dalla governance (circa 36 giorni con blocchi da ≈3,1 s) |
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2` (richiesto)            | Modalità di applicazione: 0=disattivata, 1=opzionale, 2=richiesta        |
 
@@ -34,7 +34,7 @@ I limiti di una [finestra di autorizzazione EVM](/getting-started/first-transact
 
 | Limite | Valore |
 | ----- | ----- |
-| `blocks` massimo | 17,280 (circa 15 ore con blocchi da ≈3,2 s) |
+| `blocks` massimo | 17,280 (circa 15 ore con blocchi da ≈3,1 s) |
 | `max_txs` massimo | 1,000 |
 | `max_value` | maggiore di 0 (uqor; valore trasferito più la commissione massima di ciascuna transazione) |
 | `allowed_targets` massimo | 16 indirizzi destinatari (ambito opzionale, v3.2.3) |
@@ -52,7 +52,7 @@ La configurazione del modulo (`qorechaind query ai config`):
 | `anomaly_threshold` | `0.7`                  | Punteggio di anomalia oltre il quale l'ante handler segnala una transazione |
 | `routing_strategy`  | `reputation_weighted`  | Strategia di routing                                                        |
 | `risk_threshold`    | `0.8`                  | Soglia del punteggio di rischio                                             |
-| `max_tx_per_minute` | `600`                  | Limite di transazioni per mittente sulla lane Cosmos, conteggiato su una finestra di 30 blocchi (circa 96 s con blocchi da ≈3,2 s; il nome è storico). Applicato dalla v3.2.0; il valore predefinito è 10 |
+| `max_tx_per_minute` | `600`                  | Limite di transazioni per mittente sulla lane Cosmos, conteggiato su una finestra di 30 blocchi (circa 94 s con blocchi da ≈3,1 s; il nome è storico). Applicato dalla v3.2.0; il valore predefinito è 10 |
 
 I pesi dello scoring di frode e le soglie di gravità descritti nella pagina [AI Engine](/architecture/ai-engine) sono costanti del rilevatore, non parametri di modulo.
 
@@ -148,7 +148,7 @@ Penali di uscita: 50 % (blocco inferiore a 30 giorni), 35 % (30–90 giorni), 15
 | `emission_mode`        | `fixed`                 | `schedule` (legacy) o `fixed` (dalla v3.1.94)         |
 | `fixed_epoch_emission` | `86,000,000,000 uqor` (86.000 QOR) | Coniato per epoca in modalità fixed (16.239 QOR prima della proposta di governance 10, 19 ottobre 2026) |
 | `max_total_emission`   | `590,000,000,000,000 uqor` (590.000.000 QOR) | Tetto cumulativo rigido (114.285.714 QOR prima della proposta 10) |
-| `epoch_length`         | `43,200` blocchi        | Blocchi per epoca (circa 38,6 ore con blocchi da ≈3,2 s) |
+| `epoch_length`         | `43,200` blocchi        | Blocchi per epoca (circa 37,7 ore con blocchi da ≈3,1 s) |
 | `schedule`             | 17,5 %, 11 %, 7 %, 7 %, 2 % | Tassi legacy su base annua, inutilizzati in modalità fixed |
 | `enabled`              | `true`                  | Flag di attivazione del modulo                        |
 
@@ -261,7 +261,7 @@ La lane di transazioni SVM è disattivata su tutta la rete (vedi [Reti](/appendi
 | `rollup_creation_burn_rate` | `0.01`               | Frazione dello stake di creazione bruciata (1%) |
 | `default_challenge_window`  | `604,800` s (testnet: `3,600` s) | Finestra di contestazione predefinita (7 giorni; 1 ora sulla testnet) |
 | `max_da_blob_size`          | `2,097,152`          | Dimensione massima del blob DA in byte (2 MB) |
-| `blob_retention_blocks`     | `432,000`            | Blocchi per cui conservare i blob DA (circa 16 giorni con blocchi da ≈3,2 s) |
+| `blob_retention_blocks`     | `432,000`            | Blocchi per cui conservare i blob DA (circa 16 giorni con blocchi da ≈3,1 s) |
 | `max_batches_per_block`     | `10`                 | Numero massimo di batch elaborati per blocco  |
 
 Nessun rollup è ancora stato creato su nessuna delle due reti.
@@ -304,14 +304,14 @@ Sulla mainnet non è aperto alcun canale IBC, quindi lì non possono esistere `i
 | Parametro                | Valore             | Descrizione                                          |
 | ------------------------ | ------------------ | ---------------------------------------------------- |
 | `registration_fee`       | `1,000,000 uqor` (1 QOR) | Commissione per registrare un light node       |
-| `heartbeat_interval`     | `1000` blocchi     | Blocchi tra gli heartbeat richiesti (circa 54 minuti con blocchi da ≈3,2 s) |
+| `heartbeat_interval`     | `1000` blocchi     | Blocchi tra gli heartbeat richiesti (circa 52 minuti con blocchi da ≈3,1 s) |
 | `min_delegated_stake`    | `1,000,000,000 uqor` (1.000 QOR) | Stake minimo delegato dall'operatore |
 | `reward_share`           | `0.03`             | Quota del fee collector accantonata per i light node |
 | `min_uptime_for_rewards` | `0.80`             | Frazione minima di uptime per l'idoneità ai reward   |
 | `max_light_nodes`        | `10,000`           | Numero massimo di light node registrati              |
 | `heartbeat_grace_period` | `100` blocchi      | Periodo di tolleranza per un heartbeat in ritardo    |
 
-La contabilità dei reward è attiva. `GET /qorechain/lightnode/v1/reward_pool` riporta il pool (`balance`, `reserved`, `outstanding`, `payable`, `distributable`) e il limite di reward per nodo. Dalla v3.2.3 il limite è `max_reward_per_month_per_node`, **2.000 QOR (`2000000000` uqor) per nodo ogni 30 giorni**, riproporzionato in base al tempo di blocco e scalato in base all'uptime del nodo; il precedente valore per blocco (`max_reward_per_block_per_node`, `1713` uqor) continua a essere riportato. Il 20 ottobre 2026 il pool conteneva una riserva di 487,2318 QOR senza nulla in sospeso. La registrazione è aperta e subordinata a una licenza: sulla mainnet sono state concesse sei licenze `lightnode_operator` e nessun light node si è ancora registrato (`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). Vedi [Light Node](/light-node/overview#reward-program-status) e [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+La contabilità dei reward è attiva. `GET /qorechain/lightnode/v1/reward_pool` riporta il pool (`balance`, `reserved`, `outstanding`, `payable`, `distributable`) e il limite di reward per nodo. Dalla v3.2.3 il limite è `max_reward_per_month_per_node`, **2.000 QOR (`2000000000` uqor) per nodo ogni 30 giorni**, riproporzionato in base al tempo di blocco e scalato in base all'uptime del nodo; il precedente valore per blocco (`max_reward_per_block_per_node`, `1713` uqor) continua a essere riportato. Il 27 ottobre 2026 il pool della mainnet conteneva una riserva di circa 13.380,9 QOR (`reserved`), di cui una piccola quantità (0,06 QOR) era in sospeso e nulla era ancora pagabile. La registrazione è aperta e subordinata a una licenza: a quella data sulla mainnet erano state concesse sette licenze `lightnode_operator` e su ciascuna rete era registrato un light node (`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). Vedi [Light Node](/light-node/overview#reward-program-status) e [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 ---
 
@@ -359,7 +359,7 @@ Moduli standard del Cosmos SDK e dell'EVM, tutti letti in diretta sulla mainnet 
 | | `historical_entries` | 10,000 |
 | | `bond_denom` | `uqor` |
 | | `min_commission_rate` | 0 |
-| Slashing | `signed_blocks_window` | 10,000 blocchi (circa 8,9 ore con blocchi da ≈3,2 s) |
+| Slashing | `signed_blocks_window` | 10,000 blocchi (circa 8,7 ore con blocchi da ≈3,1 s) |
 | | `min_signed_per_window` | 5 % (un validatore che firma meno del 5 % della finestra viene messo in jail) |
 | | `downtime_jail_duration` | 600 s |
 | | `slash_fraction_downtime` | 1 % |
@@ -410,7 +410,7 @@ Letti in diretta il 27 ottobre 2026. La mainnet `qorechain-vladi` esegue la v3.2
 | Permesso di istanziazione di QoreChain Native | `Nobody` | `Everybody` (il caricamento del codice resta `Nobody` su entrambe) |
 | Circuit breaker | 16 voci (vedi sopra) | 1 voce: `MsgStoreCode` di QoreChain Native |
 | Route dei parametri tramite REST | i parametri di `x/pqc`, `x/crossvm` e `x/rlconsensus` rispondono 501 | `GET /qorechain/pqc/v1/params`, `/qorechain/crossvm/v1/params` e `/qorechain/rlconsensus/v1/params` rispondono (v3.2.6) |
-| Tempo di blocco e validatori | circa 3,2 s; 8 validatori bonded | circa 1,3 s; 4 validatori bonded |
+| Tempo di blocco e validatori | circa 3,1 s; 8 validatori bonded | circa 1,3 s; 4 validatori bonded |
 | Token di test | nessuno | fUSD, fETH e fBTC (vedi [Faucet](/dashboard/faucet#fest-tokens)) |
 
 Entrambe le reti includono le novità della v3.2.4: il modulo opzionale di staking con blocco temporale `x/stakingtier` (49 moduli invece di 48; `GET /qorechain/stakingtier/v1/params`, blocco minimo 10 QOR, penale di sblocco anticipato 5 %), una tredicesima fonte di burn registrata (`staking_tier_penalty`), campi di reporting aggiuntivi del reward pool dei light node con un limite di reward che parte dalla registrazione del nodo stesso, il flag `possession_proven` sugli account PQC (la prova di possesso resta opzionale per le chiavi degli account ed è obbligatoria per le chiavi dei validatori del bridge), la finestra di contestazione RDK conteggiata in tempo di blocco, e le query `protocol_features` e `auth_nonce`. Vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking). Le novità della v3.2.6 sulla testnet sono riassunte nella [Cronologia delle versioni](/appendix/version-history#testnet-v326).

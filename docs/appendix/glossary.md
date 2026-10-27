@@ -13,7 +13,7 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **AMM** — Automated Market Maker. QoreChain's native on-chain liquidity module (`x/amm`) providing constant-product pools, swaps, and liquidity provisioning directly at the protocol level, without an external smart-contract deployment. See [AMM](/architecture/amm).
 
-**Authorisation window (EVM)** — A bounded permission (blocks, transaction count, total value) opened with a post-quantum-signed Cosmos-lane message that an EVM-lane transaction must fall inside since v3.2.0. From v3.2.3 a window can be narrowed to native transfers only or to a list of recipients. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
+**Authorisation window (EVM)** — A bounded permission (blocks, transaction count, total value) opened with a Cosmos-lane message carrying a hybrid ML-DSA-87 signature (FIPS 204), which an EVM-lane transaction must fall inside since v3.2.0. From v3.2.3 a window can be narrowed to native transfers only or to a list of recipients. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
 
 **BPF** — Berkeley Packet Filter. The bytecode format used by the SVM runtime to execute on-chain programs. Programs are compiled to BPF before deployment.
 
@@ -39,11 +39,11 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **IBC** — Inter-Blockchain Communication. A protocol for authenticated message passing between independent blockchains. QoreChain supports IBC channels for cross-chain token transfers and data relay.
 
-**Light Node** — A resource-light client that follows the chain by cross-checking block headers against one or more RPC endpoints, without holding full state. It does not serve queries to others. The protocol fee split reserves a **3%** share for the light-node reward program. Registration for the program is open and gated by a `lightnode_operator` licence ($50, bought on the Dashboard); as of 20 October 2026 six licences had been granted on mainnet and no light node had registered yet. Running a node needs no licence. See [Light Node](/light-node/overview) and its [reward program status](/light-node/overview#reward-program-status).
+**Light Node** — A resource-light client that follows the chain by cross-checking block headers against one or more RPC endpoints, without holding full state. It does not serve queries to others. The protocol fee split reserves a **3%** share for the light-node reward program. Registration for the program is open and gated by a `lightnode_operator` licence ($50, bought on the Dashboard); on 27 October 2026 seven licences had been granted on mainnet and one light node was registered on each network. Running a node needs no licence. See [Light Node](/light-node/overview) and its [reward program status](/light-node/overview#reward-program-status).
 
 **MEV** — Maximal Extractable Value. The profit that can be obtained by reordering, inserting, or censoring transactions within a block. QoreChain's FairBlock module (tIBE encryption) is designed to mitigate MEV extraction; it is not yet enabled.
 
-**ML-DSA-87** — Module-Lattice Digital Signature Algorithm (security level 5). The NIST-standardized post-quantum digital signature scheme used by QoreChain for quantum-resistant transaction signing. Produces signatures of 4,627 bytes with public keys of 2,592 bytes.
+**ML-DSA-87** — Module-Lattice Digital Signature Algorithm (security level 5). The NIST-standardized post-quantum digital signature scheme used by QoreChain, together with secp256k1, for hybrid transaction signatures on the native lane. Produces signatures of 4,627 bytes with public keys of 2,592 bytes.
 
 **ML-KEM-1024** — Module-Lattice Key Encapsulation Mechanism (security level 5). A NIST-standardized post-quantum key encapsulation scheme available in QoreChain's PQC algorithm registry for future encrypted communication channels.
 
@@ -79,7 +79,7 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **SNARK** — Succinct Non-interactive Argument of Knowledge. A type of zero-knowledge proof that can be verified quickly with a small proof size. Supported as a settlement paradigm in the RDK module for zk-rollups.
 
-**STARK** — Scalable Transparent Argument of Knowledge. A zero-knowledge proof system that requires no trusted setup and is quantum-resistant. Available as an alternative proof system for zk-rollup settlement in the RDK.
+**STARK** — Scalable Transparent Argument of Knowledge. A zero-knowledge proof system that requires no trusted setup and is built on hash functions rather than elliptic curves. Available as an alternative proof system for zk-rollup settlement in the RDK.
 
 **Stranded staker share / reward-pool reserve** — Amounts recorded at the v3.2.0 upgrade that move only by a governance vote; governance released them in October 2026 (the corrected remainder of the stranded share, recomputed at v3.2.3, was released by proposal 12). See [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 

@@ -7,9 +7,9 @@ sidebar_position: 1
 
 # QoreChain SDK
 
-QoreChain SDK, kuantum güvenli, üçlü sanal makineli (triple-VM) bir Katman 1
-ağı olan **QoreChain** üzerinde merkeziyetsiz uygulamalar geliştirmek için
-sunulan resmi çok dilli geliştirici kitidir.
+QoreChain SDK, hibrit ML-DSA-87 (FIPS 204) imzalarına sahip, üçlü sanal makineli
+(triple-VM) bir Katman 1 ağı olan **QoreChain** üzerinde merkeziyetsiz
+uygulamalar geliştirmek için sunulan resmi çok dilli geliştirici kitidir.
 
 Bu dokümantasyon; SDK'nın nasıl kurulacağını, ağa nasıl bağlanılacağını,
 zincir üzerindeki durumun nasıl okunacağını, hesapların nasıl türetileceğini,
@@ -56,7 +56,7 @@ ve [0.10.0 neler ekliyor](/sdk/install#whats-new-0100).
 Cüzdan ve arka uç imzalama: bkz. [QoreSign](/qoresign/overview).
 :::
 
-### Tasarım gereği kuantum güvenli
+### Hibrit ML-DSA-87 imzalama
 
 QoreChain, **ML-DSA-87** (Dilithium-5, FIPS 204) tabanlı post-kuantum
 kriptografi (PQC) ilkelerini sunar. Klasik secp256k1 imzalamanın yanı sıra
@@ -89,10 +89,10 @@ protokol özellikleri üzerine inşa edilmiştir:
   `callAtomic`, birden fazla VM'ler arası çağrıyı tek seferde imzalanan tek
   bir atomik işlemde paketler. Bkz.
   [VM'ler arası çağrılar](/sdk/guides/cross-vm).
-- **Kuantum güvenli geliştirici deneyimi (DX)** — bir imzalayıcıyı tek bir
-  idempotent çağrıyla (`ensurePqcRegistered` / `migrateToHybrid`)
-  post-kuantum korumalı hale getirin; hazır bir React rozetiyle birlikte.
-  Bkz. [Kuantum güvenli](/sdk/guides/quantum-safe).
+- **Hibrit imzalama geliştirici deneyimi (DX)** — bir imzalayıcının ML-DSA-87
+  anahtarını tek bir idempotent çağrıyla (`ensurePqcRegistered` /
+  `migrateToHybrid`) kaydedin; hazır bir React rozetiyle birlikte.
+  Bkz. [Hibrit imzalama](/sdk/guides/quantum-safe).
 
 0.6.0 ve 0.7.0 ile zincir düzeyinde iki yetenek daha geldi (ikincisi,
 aşağıda belirtildiği gibi canlı ağlarda henüz kullanılamaz):
@@ -109,8 +109,8 @@ aşağıda belirtildiği gibi canlı ağlarda henüz kullanılamaz):
   [Authenticator'lar ve yetkilendirilmiş harcama](/sdk/guides/authenticators).
 
 Yeni **`@qorechain/react`** kiti (provider, hook'lar, `ConnectButton`,
-`QuantumSafeBadge`), kuantum güvenli bir dApp geliştirmeyi varsayılan yol
-haline getirir — bkz. [React kiti rehberi](/sdk/guides/react). Konunun
+`QuantumSafeBadge`), hibrit ML-DSA-87 imzalamalı bir dApp geliştirmeyi varsayılan
+yol haline getirir — bkz. [React kiti rehberi](/sdk/guides/react). Konunun
 tamamı için [Neden QoreChain SDK](/sdk/why) sayfasını okuyun.
 
 ## SDK ailesi

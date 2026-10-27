@@ -91,7 +91,7 @@ QoreChain implementa una arquitectura de mempool de 5 carriles que categoriza la
 ### Descripciones de los Carriles
 
 **Carril PQC** (Prioridad 100, 15% de espacio de bloque)\
-Las transacciones firmadas con firmas criptográficas híbridas post-cuánticas reciben la prioridad más alta. Esto incentiva la adopción de la firma de transacciones resistente a la computación cuántica y garantiza que las operaciones protegidas por PQC nunca queden desplazadas durante la congestión.
+Las transacciones firmadas con firmas criptográficas híbridas post-cuánticas reciben la prioridad más alta. Esto incentiva la adopción de la firma híbrida de transacciones ML-DSA-87 y garantiza que las operaciones firmadas de forma híbrida nunca queden desplazadas durante la congestión.
 
 **Carril MEV** (Prioridad 90, 20% de espacio de bloque)\
 Las transacciones cifradas con tIBE reciben la segunda prioridad más alta y la mayor asignación reservada. Esto garantiza que los usuarios que optan por la protección MEV tengan espacio de bloque asegurado, fomentando la adopción generalizada del esquema de cifrado.

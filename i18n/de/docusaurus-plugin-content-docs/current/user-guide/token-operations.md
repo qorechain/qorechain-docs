@@ -94,7 +94,7 @@ Transaktionsgebühren auf QoreChain werden auf fünf Ziele verteilt, um die Netz
 | **Staker**       | 10%   | Proportional an alle Delegatoren verteilt                        |
 | **Light Nodes**  | 3%    | Light-Node-Belohnungen (siehe Hinweis unten)                     |
 
-Die Aufteilung gilt für alles, was in den Fee Collector fließt, der die Transaktionsgebühren und die in jeder Epoche geprägte Staking-Emission enthält. Der Light-Node-Anteil sammelt sich im Belohnungspool für Light Nodes an; die Registrierung ist offen und lizenzgebunden, aber noch hat sich kein Light Node registriert, sodass derzeit kein Node daraus bezahlt wird (siehe [Light Node](/light-node/overview#reward-program-status)). Seit dem Upgrade v3.2.0 wird der Staker-Anteil als normale Staking-Belohnung ausgezahlt (siehe [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+Die Aufteilung gilt für alles, was in den Fee Collector fließt, der die Transaktionsgebühren und die in jeder Epoche geprägte Staking-Emission enthält. Der Light-Node-Anteil sammelt sich im Belohnungspool für Light Nodes an; die Registrierung ist offen und lizenzgebunden; am 27. Oktober 2026 wurde in jedem Netzwerk ein Light Node registriert (siehe [Light Node](/light-node/overview#reward-program-status)). Seit dem Upgrade v3.2.0 wird der Staker-Anteil als normale Staking-Belohnung ausgezahlt (siehe [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Burn-Kanäle
 

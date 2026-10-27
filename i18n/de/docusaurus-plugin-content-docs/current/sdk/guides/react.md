@@ -9,7 +9,7 @@ sidebar_position: 7
 
 `@qorechain/react` ist die offizielle React-Schicht über `@qorechain/sdk`: ein
 Provider, eine Handvoll Hooks und zwei Drop-in-Komponenten — einschließlich eines einzeiligen
-**Quantum-safe**-Badges. Es macht das Erstellen einer quantensicheren dApp zum Standardweg.
+PQC-Status-Badges. Es macht das Erstellen einer dApp mit hybrider ML-DSA-87-Signierung zum Standardweg.
 
 ```bash
 npm i @qorechain/react @qorechain/sdk react react-dom
@@ -27,7 +27,7 @@ nur mit der klassischen Signatur sendet, die die Live-Netzwerke ablehnen (der na
 erfordert die hybride ML-DSA-87-Erweiterung): `send` / `sendTokens` können im
 Mainnet oder Testnet keine Transaktion platzieren. Senden Sie mit dem hybriden `TxClient` des SDK
 (`client.connectTx(signer, { pqcKeypair })`, siehe
-[Quantum-safe](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` und `<QuantumSafeBadge/>` lesen den Status über
+[Hybrides Signieren](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` und `<QuantumSafeBadge/>` lesen den Status über
 `getPqcStatus` mit dem zusammengesetzten Client des Providers, der seit SDK 0.9.0 über
 REST liest (`/qorechain/pqc/v1/account/{address}`), sodass sie gegen `*.qore.host` funktionieren
 (Kit 0.8.x las `qor_getPQCKeyStatus`, das die öffentlichen Endpunkte nicht bereitstellen, und
@@ -135,8 +135,8 @@ Render-Prop für volle Kontrolle:
 
 ### `<QuantumSafeBadge/>`
 
-Zeigt einen **Quantum-safe**-Indikator, wenn die Adresse einen registrierten Post-Quanten-
-Schlüssel besitzt (über `usePqcStatus`), andernfalls einen gedämpften Status "Not quantum-safe".
+Zeigt einen Statusindikator, wenn die Adresse einen registrierten Post-Quanten-
+Schlüssel besitzt (über `usePqcStatus`), andernfalls einen gedämpften Status "not registered".
 Standardmäßig wird das verbundene Konto verwendet.
 
 ```tsx
@@ -171,4 +171,4 @@ function Dashboard() {
 ```
 
 Sehen Sie sich das lauffähige [`react-dapp`-Beispiel](https://github.com/qorechain/qorechain-sdk/tree/main/examples/react-dapp)
-und den [Quantensicher-Leitfaden](/sdk/guides/quantum-safe) für die zugrunde liegenden SDK-Aufrufe an.
+und den [Leitfaden zum hybriden Signieren](/sdk/guides/quantum-safe) für die zugrunde liegenden SDK-Aufrufe an.

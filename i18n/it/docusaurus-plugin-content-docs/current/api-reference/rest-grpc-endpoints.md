@@ -508,6 +508,18 @@ Il modulo staking-tiers fa parte della **v3.2.4**. Queste route sono servite dal
 
 `params` elenca le tre durate di lock (3, 6 e 12 mesi) con i loro parametri e `min_lock_amount` (`"10000000"` uqor, 10 QOR). I lock si creano con `tx stakingtier lock` (vedi [Comandi di transazione](/cli-reference/transaction-commands#stakingtier)).
 
+## Modulo Reputation {#reputation-module}
+
+Le route REST del modulo reputation sono servite dalla **testnet** (`qorechain-diana`, chain v3.2.6). Sulla mainnet ogni route `/qorechain/reputation/v1/...` risponde HTTP `501` (`{"code":12,"message":"Not Implemented"}`) al momento della stesura (27 ottobre 2026); lì il modulo è raggiungibile solo tramite gRPC (`Params`, vedi sotto). Si prevede che una release mainnet successiva le serva; questa pagina viene aggiornata non appena ciò accade.
+
+| Metodo | Endpoint | Descrizione |
+| ------ | -------- | ----------- |
+| GET    | `/qorechain/reputation/v1/params` | I pesi del punteggio (`alpha`, `beta`, `gamma`, `delta`), `lambda` e `min_score` |
+| GET    | `/qorechain/reputation/v1/validator/{address}` | Il record di un validator. `{address}` è un indirizzo operatore `qorvaloper1...` o un indirizzo di consenso `qorvalcons1...`. I campi includono `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks` e `last_updated_height`. `404` significa che il validator non ha ancora un punteggio; una stringa che non è né un indirizzo operatore né un indirizzo di consenso risponde `400` |
+| GET    | `/qorechain/reputation/v1/validators` | I record di tutti i validator con un punteggio (`reputations`) |
+
+I punteggi sono stringhe decimali comprese tra 0 e 1. Il light node legge la route per singolo validator per avvisare quando un validator delegato è sotto `min_reputation` (vedi [Ricompense e Monitoraggio](/light-node/rewards-and-monitoring#delegation-alerts)). Le stesse route dall'host della mainnet restituiscono `501` finché la mainnet non le serve.
+
 ## Moduli solo gRPC {#grpc-only-modules}
 
 Sulla mainnet (release del nodo v3.2.4, verificato il 27 ottobre 2026) questi moduli hanno un servizio `Query` gRPC ma **nessuna route REST**. I nomi dei servizi seguono il formato `qorechain.<module>.v1.Query`.
@@ -516,7 +528,7 @@ Sulla mainnet (release del nodo v3.2.4, verificato il 27 ottobre 2026) questi mo
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
-| `reputation`  | `Params`                                               |
+| `reputation`  | `Params` (le route REST esistono solo sulla testnet, vedi [Modulo Reputation](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |

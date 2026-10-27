@@ -163,7 +163,7 @@ import {
 } from "@qorechain/sdk";
 
 const keypair = generatePqcKeypair();
-const message = new TextEncoder().encode("QoreChain is quantum-safe");
+const message = new TextEncoder().encode("QoreChain signs hybrid");
 const signature = pqcSign(keypair.secretKey, message);
 const valid = pqcVerify(keypair.publicKey, message, signature);
 

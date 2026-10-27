@@ -40,7 +40,7 @@ Cheia Dilithium-5 a nodului nu are o adresă proprie: pe QoreChain, o cheie post
 
 ### Mainnet: cumpărare din Dashboard
 
-Licențele se cumpără din QoreChain Dashboard, la **Tools → Light Node**. O licență costă **50 $**, plătiți în USDT pe ERC-20, BEP-20 sau TRC-20; plata este verificată pe chain-ul respectiv. Trebuie să introduci adresa `qor1…` pentru care este licența **înainte** de a plăti; folosește adresa de operator descrisă mai sus.
+Licențele se cumpără din QoreChain Dashboard, la **Nodes & Validators → Light Node** (intrarea din bara laterală se numea înainte **Tools**; pagina se află în continuare la `/tools`). Pagina necesită autentificare, iar tab-ul urmează rețeaua aleasă în antet. O licență costă **50 $**, plătiți în USDT pe ERC-20, BEP-20 sau TRC-20; plata este verificată pe chain-ul respectiv. Trebuie să introduci adresa `qor1…` pentru care este licența **înainte** de a plăti; folosește adresa de operator descrisă mai sus.
 
 Acordarea este un pas on-chain separat, semnat manual și trimis în loturi. Până când chain-ul o confirmă, tab-ul afișează **Paid, awaiting on-chain grant**, iar nodul raportează în continuare că adresa nu are licență. `lightnode-sx status` afișează o linie `Licence:` care trece pe `active` când acordarea ajunge. O poți verifica și direct:
 
@@ -48,9 +48,15 @@ Acordarea este un pas on-chain separat, semnat manual și trimis în loturi. Pâ
 curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator
 ```
 
-### Testnet: la cerere
+### Testnet: gratuit și self-service
 
-Pe testnet nu se vinde nimic. Licențele de testnet sunt gratuite și sunt acordate la cerere de autoritatea de licențiere a testnet-ului: scrie la nodes@qorechain.io cu adresa ta `qor1…` de testnet.
+Pe testnet nu se vinde nimic. Licențele de testnet sunt gratuite:
+
+1. Deschide Dashboard-ul, mergi la **Nodes & Validators → Light Node** și selectează testnet-ul în antet.
+2. La **Free testnet licence**, introdu adresa `qor1…` cu care va semna nodul tău (una ale cărei cuvinte de recuperare le deții, nu un portofel creat pentru tine de Dashboard) și selectează **Request licence**.
+3. Tab-ul afișează „Requested for …" cât timp acordarea este semnată, apoi „Granted to … You can register your node now." Acordările pe testnet sunt semnate automat, de obicei în câteva minute. Dacă acordarea nu a putut fi semnată, tab-ul spune acest lucru și poți face din nou cererea.
+
+Există o singură cerere per cont și una per adresă. Acordările pe mainnet rămân manuale (vezi mai sus). Rezultatul este același on-chain: verifică-l cu `GET https://api-testnet.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator`.
 
 ## Înregistrarea nodului
 
@@ -81,7 +87,7 @@ Parola protejează ambele chei din keyring-ul nodului: cheia post-cuantică a no
 
 `register` citește `operator_address` și cheile din keyring, apoi:
 
-1. **Verifică licența.** Întreabă chain-ul dacă `operator_address` deține o licență `lightnode_operator` activă. Fără una, se oprește și spune de unde se poate obține. Din 3.1.10, mesajul trimite la **Tools → Light Node** pe mainnet și, pe testnet, la o licență gratuită la cerere la nodes@qorechain.io (3.1.9 încă numea vechiul tab din Dashboard). O licență expirată sau suspendată este raportată ca atare. Un nod deja înregistrat este raportat ca atare și nu se trimite nimic.
+1. **Verifică licența.** Întreabă chain-ul dacă `operator_address` deține o licență `lightnode_operator` activă. Fără una, se oprește și spune de unde se poate obține. Mesajul trimite la tab-ul Light Node din Dashboard, folosind numele anterior al barei laterale **Tools → Light Node**: pe mainnet spune să cumperi acolo o licență, iar pe testnet spune să soliciți una acolo, cu testnet-ul selectat (**Request licence** self-service descris mai sus). Tab-ul se află acum sub **Nodes & Validators**. 3.1.9 numea încă vechiul tab din Dashboard. O licență expirată sau suspendată este raportată ca atare. Un nod deja înregistrat este raportat ca atare și nu se trimite nimic.
 2. **Atașează cheia post-cuantică**, cu excepția cazului în care contul are deja una. Un cont fără cheie post-cuantică poate trimite doar acest mesaj, semnat clasic (fără extensia hibridă); nodul îl trimite astfel și include o dovadă de posesie a cheii acolo unde chain-ul o suportă.
 3. **Delegă stake-ul lipsă**, doar dacă numești un validator cu `--delegate-to qorvaloper1...`. Fără `--delegate-to`, dacă contul este sub minim, se oprește și spune cât lipsește. Din 3.1.10 ia în calcul doar stake-ul delegat către validatori **bonded**, la fel ca chain-ul; 3.1.9 lua în calcul și validatorii în jail sau unbonded și putea fi apoi refuzat on-chain, așa că deleagă către un validator activ dacă rulezi 3.1.9.
 4. **Înregistrează nodul** cu taxa de 1 QOR.
@@ -134,11 +140,11 @@ Până când nodul este înregistrat, nu trimite heartbeat-uri; în schimb loghe
 
 ## Tab-ul Light Node din Dashboard
 
-Tab-ul **Tools → Light Node** din QoreChain Dashboard reunește pașii:
+Tab-ul **Nodes & Validators → Light Node** din QoreChain Dashboard reunește pașii:
 
 1. **Descărcări.** Oferă linkuri către binarele nodului light pentru rețeaua selectată (aceleași fișiere ca `https://download.qore.host/<net>/lightnode/latest.json`, cu sumele lor de control sha256).
 2. **Pașii de configurare.** Afișează cei cinci pași de mai sus, potriviți cu versiunea din manifestul de lansare, și dacă înregistrarea este deschisă, citit din câmpul `registration` al manifestului.
-3. **Cumpărarea licenței** (doar pe mainnet). Preia adresa licenței înainte de plată și afișează **Paid, awaiting on-chain grant** până când chain-ul confirmă acordarea. Te avertizează dacă adresa introdusă este propriul tău portofel custodial din Dashboard și menționează, cu titlu informativ, dacă adresa are deja o cheie post-cuantică.
+3. **Licența** (cumpărare pe mainnet, cerere gratuită pe testnet). Pe mainnet preia adresa licenței înainte de plată și afișează **Paid, awaiting on-chain grant** până când chain-ul confirmă acordarea. Pe testnet afișează formularul **Request licence**. Te avertizează dacă adresa introdusă este propriul tău portofel custodial din Dashboard și menționează, cu titlu informativ, dacă adresa are deja o cheie post-cuantică.
 4. **Stare.** Un panou de stare afișează starea nodului așa cum este citită de pe chain.
 
 Înregistrarea propriu-zisă este întotdeauna tranzacția trimisă de `lightnode-sx register` (sau `lightnode-ux register`). Dashboard-ul nu înregistrează noduri; vechiul său formular de înregistrare, care doar stoca o înregistrare în evidență, a fost eliminat.

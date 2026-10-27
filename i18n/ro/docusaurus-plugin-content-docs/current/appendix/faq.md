@@ -43,7 +43,7 @@ Tokenuri de test disponibile doar pe testnet (FestUSD, FestETH și FestBTC, cu 6
 
 ### Cum rulez un nod, un validator sau un nod light?
 
-Pentru un nod complet, vezi [Rularea unui nod](/developer-guide/running-a-node). Pentru un validator, vezi [Rularea unui validator](/developer-guide/running-a-validator). Pentru un nod light, vezi [Nod light](/light-node/overview); înregistrarea pentru programul de recompense al nodurilor light este deschisă și condiționată de licență ([stare](/light-node/overview#reward-program-status)).
+Pentru un nod complet, vezi [Rularea unui nod](/developer-guide/running-a-node). Pentru un validator, vezi [Rularea unui validator](/developer-guide/running-a-validator). Pentru un nod light, vezi [Nod light](/light-node/overview); înregistrarea pentru programul de recompense al nodurilor light este deschisă și condiționată de licență, iar pe 27 octombrie 2026 a fost înregistrat câte un nod light pe fiecare rețea ([stare](/light-node/overview#reward-program-status)).
 
 ### Ce schemă de semnătură folosește QoreChain?
 
@@ -51,7 +51,7 @@ QoreChain folosește o schemă hibridă post-cuantică care combină **secp256k1
 
 ### De ce este refuzată tranzacția mea EVM cu „no open EVM authorisation window"?
 
-Începând cu v3.2.0, banda EVM admite o tranzacție doar de la un cont care are o cheie post-cuantică înregistrată și o fereastră de autorizare deschisă. Deschide o fereastră cu o tranzacție pe banda Cosmos semnată post-cuantic, apoi reîncearcă. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
+Începând cu v3.2.0, banda EVM admite o tranzacție doar de la un cont care are o cheie post-cuantică înregistrată și o fereastră de autorizare deschisă. Deschide o fereastră cu o tranzacție pe banda Cosmos cu semnătură hibridă ML-DSA-87 (FIPS 204), apoi reîncearcă. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
 
 ### Câți validatori are mainnet-ul?
 
@@ -59,7 +59,7 @@ Opt validatori bonded la 27 octombrie 2026, cu aproximativ 60,3 milioane de QOR 
 
 ### Ce timp de bloc ar trebui să mă aștept?
 
-Aproximativ 3,2 secunde pe mainnet și aproximativ 1,3 secunde pe testnet (medii măsurate, 27 octombrie 2026). Timpul de bloc este stabilit de configurația nodurilor validatorilor.
+Aproximativ 3,1 secunde pe mainnet și aproximativ 1,3 secunde pe testnet (medii măsurate, 27 octombrie 2026). Timpul de bloc este stabilit de configurația nodurilor validatorilor.
 
 ### Este xQORE disponibil?
 

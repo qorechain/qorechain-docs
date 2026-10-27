@@ -8,8 +8,8 @@ sidebar_position: 1
 # QoreChain SDK
 
 Das QoreChain SDK ist das offizielle, mehrsprachige Entwickler-Kit zum Erstellen
-dezentraler Anwendungen auf **QoreChain** — einem quantensicheren
-Layer-1-Netzwerk mit drei virtuellen Maschinen.
+dezentraler Anwendungen auf **QoreChain** — einem
+Layer-1-Netzwerk mit drei virtuellen Maschinen und hybriden ML-DSA-87-Signaturen (FIPS 204).
 
 Diese Dokumentation beschreibt, wie Sie das SDK installieren, sich mit dem
 Netzwerk verbinden, On-Chain-Zustand lesen, Konten ableiten, Transaktionen
@@ -59,7 +59,7 @@ und [Was 0.10.0 neu bringt](/sdk/install#whats-new-0100).
 Wallet- und Backend-Signierung: siehe [QoreSign](/qoresign/overview).
 :::
 
-### Quantensicher von Grund auf
+### Hybrides ML-DSA-87-Signieren
 
 QoreChain stellt Post-Quanten-Kryptografie-Primitive (PQC) auf Basis von
 **ML-DSA-87** (Dilithium-5, FIPS 204) bereit. Neben klassischem
@@ -93,10 +93,10 @@ andere Layer 1 besitzt:
   VM auf, und `callAtomic` bündelt mehrere Cross-VM-Aufrufe in einer einzigen,
   einmal signierten atomaren Transaktion. Siehe
   [Cross-VM-Aufrufe](/sdk/guides/cross-vm).
-- **Quantensichere DX** — machen Sie einen Signer mit einem einzigen
-  idempotenten Aufruf post-quanten-geschützt (`ensurePqcRegistered` /
+- **DX für hybrides Signieren** — registrieren Sie den ML-DSA-87-Schlüssel eines
+  Signers mit einem einzigen idempotenten Aufruf (`ensurePqcRegistered` /
   `migrateToHybrid`), inklusive eines Drop-in-React-Badges. Siehe
-  [Quantensicher](/sdk/guides/quantum-safe).
+  [Hybrides Signieren](/sdk/guides/quantum-safe).
 
 Zwei weitere Fähigkeiten auf Chain-Ebene kamen mit 0.6.0 und 0.7.0 hinzu (die
 zweite ist auf den Live-Netzwerken noch nicht nutzbar, siehe unten):
@@ -113,7 +113,7 @@ zweite ist auf den Live-Netzwerken noch nicht nutzbar, siehe unten):
   [Authenticators & delegiertes Ausgeben](/sdk/guides/authenticators).
 
 Ein neues **`@qorechain/react`**-Kit (Provider, Hooks, `ConnectButton`,
-`QuantumSafeBadge`) macht den Bau einer quantensicheren dApp zum Standardweg —
+`QuantumSafeBadge`) macht den Bau einer dApp mit hybrider ML-DSA-87-Signierung zum Standardweg —
 siehe den [React-Kit-Guide](/sdk/guides/react). Die vollständige Argumentation
 finden Sie unter [Warum QoreChain SDK](/sdk/why).
 

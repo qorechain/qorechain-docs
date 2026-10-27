@@ -31,14 +31,14 @@ QoreChain este conceput să susțină două protocoale de pod care funcționeaz�
 
 | Protocol | Conexiuni            | Model de securitate                  | Caz de utilizare                        |
 | -------- | -------------------- | ------------------------------------ | --------------------------------------- |
-| **IBC**  | până la 8 canale (niciunul deschis)  | IBC standard + semnături PQC de pachet | Lanțuri compatibile Cosmos SDK         |
+| **IBC**  | până la 8 canale (niciunul deschis)  | IBC standard (ICS-20) | Lanțuri compatibile Cosmos SDK         |
 | **QCB**  | 37 configurații de lanț (toate pending) | Multisig Dilithium-5 7-din-10      | Lanțuri non-IBC (EVM, Solana, TON etc.) |
 
 Cele **37 de configurații de lanț** sunt cele **36 de lanțuri externe** enumerate mai jos plus **Injective**, configurat ca lanț de tip IBC. Nu există o configurație loopback pentru QoreChain. Canalele IBC planificate se conectează la lanțuri compatibile Cosmos SDK.
 
 ## Canale IBC
 
-QoreChain este conceput să mențină conexiuni IBC către următoarele 8 lanțuri, retransmise prin Hermes v1.x. **Niciuna dintre aceste contrapărți nu este încă conectată** (mainnet-ul nu are niciun canal sau client IBC; testnet-ul are un singur canal de test ICS-20 către un lanț cu ID `provider`, verificat la 27 octombrie 2026), deci acest tabel enumeră doar contrapărțile planificate:
+QoreChain este conceput să mențină conexiuni IBC către următoarele 8 lanțuri, retransmise de un releu IBC. **Niciuna dintre aceste contrapărți nu este încă conectată** (mainnet-ul nu are niciun canal sau client IBC; testnet-ul are un singur canal de test ICS-20 către un lanț cu ID `provider`, verificat la 27 octombrie 2026), deci acest tabel enumeră doar contrapărțile planificate:
 
 | Lanț       | Descriere                      |
 | ---------- | ------------------------------ |
@@ -51,13 +51,12 @@ QoreChain este conceput să mențină conexiuni IBC către următoarele 8 lanțu
 | Babylon    | Protocol de restaking BTC      |
 | Injective  | Interoperabilitate DeFi / orderbook |
 
-### Configurația releului IBC
+### Releul IBC {#ibc-relayer}
 
-* **Software de releu**: Hermes v1.x
-* **Actualizări de client**: Reîmprospătare automată a clientului light
-* **Detectarea comportamentului necorespunzător**: Activată — releul monitorizează echivocația
-* **Curățarea pachetelor**: La fiecare 100 de blocuri, pachetele IBC în așteptare sunt curățate
-* **Îmbunătățire PQC**: Fiecare pachet IBC care provine din QoreChain include o semnătură Dilithium-5 opțională pentru securitate cuantică în viitor. Lanțurile receptoare care suportă PQC pot verifica această semnătură alături de verificarea IBC standard.
+Pachetele IBC și actualizările de client sunt transportate între lanțuri de un releu, un program separat care urmărește ambele lanțuri și trimite pachetele, dovezile și actualizările de client. Releul nu face parte din lanț, iar acest manual nu publică și nu promite un serviciu de releu. QoreChain întreține un fork public de releu numit QORel ([github.com/qorechain/QORel](https://github.com/qorechain/QORel)); nu are încă nicio versiune publicată, deci nu există nimic de instalat din el astăzi.
+
+* **Actualizările de client, monitorizarea comportamentului necorespunzător și curățarea pachetelor** sunt setări ale oricărui releu rulat de un operator, nu parametri ai lanțului. De exemplu, un releu poate reîmprospăta automat clienții light, poate urmări echivocația și poate curăța periodic pachetele în așteptare.
+* **Semnături post-cuantice.** Tranzacțiile pe care QoreChain le acceptă pe lane-ul nativ poartă o semnătură hibridă secp256k1 + ML-DSA-87 (FIPS 204), inclusiv tranzacțiile pe care un releu i le trimite; vezi [Securitate post-cuantică](/architecture/post-quantum-security). Formatul pachetului IBC în sine este cel standard, iar acest manual nu afirmă că pachetele poartă o semnătură suplimentară pe care o verifică alte lanțuri.
 
 ## Protocolul QCB (QoreChain Bridge)
 
@@ -119,7 +118,7 @@ Pentru a verifica evenimentele de pe lanțurile externe fără încredere, podul
 
 ## Fluxul de depozit (extern către QoreChain)
 
-Secvența de mai jos prezintă depozitul QCB așa cum este conceput: activele sunt blocate pe un lanț extern, validatorii QoreChain trimit atestări semnate PQC (7-din-10 Dilithium-5), iar token-urile wrapped sunt emise. Lanțurile compatibile Cosmos SDK ar folosi în schimb calea IBC paralelă (până la 8 canale, cu semnături de pachet Dilithium-5 opționale). Niciuna dintre căi nu este activă; nu a fost făcut niciodată vreun depozit.
+Secvența de mai jos prezintă depozitul QCB așa cum este conceput: activele sunt blocate pe un lanț extern, validatorii QoreChain trimit atestări semnate PQC (7-din-10 Dilithium-5), iar token-urile wrapped sunt emise. Lanțurile compatibile Cosmos SDK ar folosi în schimb calea IBC paralelă (până la 8 canale, transportate de un releu IBC). Niciuna dintre căi nu este activă; nu a fost făcut niciodată vreun depozit.
 
 ```mermaid
 sequenceDiagram

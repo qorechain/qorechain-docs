@@ -7,89 +7,122 @@ sidebar_position: 1
 
 # Prezentare generală a Dashboard-ului și primii pași
 
-QoreChain Dashboard, disponibil la **[dashboard.qorechain.io](https://dashboard.qorechain.io)**, este aplicația web oficială pentru a folosi QoreChain direct din browser. Dintr-un singur loc poți explora chain-ul, gestiona un portofel, schimba tokenuri, genera și audita smart contracte, delega la validatori, revendica tokenuri de testnet, finaliza quest-uri și ajunge la uneltele rețelei.
+QoreChain Dashboard, disponibil la **[dashboard.qorechain.io](https://dashboard.qorechain.io)**, este aplicația web oficială pentru a folosi QoreChain dintr-un browser. Un singur cont și un singur comutator de rețea îți oferă explorer-ul, o vizualizare a portofelului, un faucet de testnet, un ecran de swap cu tokenuri de test, quest-uri, unelte AI pentru contracte, unelte pentru noduri și validatori și o pagină pentru dezvoltatori. Este pentru oricine vrea să încerce rețeaua fără să instaleze nimic și pentru constructorii care vor verificări rapide în timp ce dezvoltă. Nu se instalează nimic: rulează în browser.
 
-Tot ce se află în această secțiune este un ghid pentru utilizator: ce face fiecare pagină și cum se folosește. Nu este necesară nicio instalare — Dashboard-ul rulează integral în browser.
+Această secțiune este un ghid pentru utilizator: ce face fiecare pagină, cum se deschide și care sunt limitele ei.
 
-## Ce poți face
+## Inovații {#innovations}
 
-| Zonă | Pentru ce este |
-| --- | --- |
-| **[Explorer](/dashboard/explorer)** | Răsfoiește blocuri, tranzacții, adrese și validatori. |
-| **[Wallet](/dashboard/wallet)** | Vezi-ți soldul și istoricul și primește QOR — cu propriul portofel (non-custodial) pe mainnet, sau cu un portofel de test gestionat de dashboard pe testnet. |
-| **[Trade](/dashboard/trade)** | Schimbă tokenuri și oferă lichiditate pe AMM-ul on-chain. |
-| **[Smart Contract Creator](/dashboard/smart-contract-creator)** | Generează smart contracte cu **QCAI** pe 17 blockchain-uri suportate. |
-| **[Contract Auditor](/dashboard/contract-auditor)** | Rulează o analiză de securitate **QCAI** asupra unui smart contract. |
-| **[Staking & Validators](/dashboard/staking-and-validators)** | Trece în revistă validatorii și delegă-ți QOR. |
-| **[Faucet](/dashboard/faucet)** | Solicită tokenuri de test pe testnet. |
-| **[Quests](/dashboard/quests)** | Finalizează sarcini ghidate pentru a învăța cum funcționează rețeaua. |
-| **[Tools Hub](/dashboard/tools-hub)** | Unelte pentru operatori și dezvoltatori în șase file: Validator Program, Validator Application, Light Node, Node Registration, Rollups și SDK. |
+- **Un singur comutator stabilește rețeaua pentru fiecare pagină.** Controlul **Testnet / Mainnet** din antet îți salvează alegerea în browser și reîncarcă pagina, astfel încât serverul și browserul citesc aceeași rețea. Mainnet este implicit.
+- **Mainnet-ul este non-custodial.** Dashboard-ul nu deține niciodată chei de mainnet și nu semnează niciodată o tranzacție de mainnet. Trimite către QoreX doar parametrii unui transfer sau ai unei acțiuni de staking, iar QoreX reconstruiește, afișează, semnează (semnătură hibridă ML-DSA-87) și transmite tranzacția. Dashboard-ul află doar hash-ul tranzacției.
+- **Vizualizările de mainnet cer un cont; testnet-ul este deschis.** Pe mainnet, statisticile din pagina principală, Wallet, Trade și prezentarea generală din Explorer verifică accesul pe server. Un vizitator neautentificat vede „Sign in to view mainnet".
+- **O confirmare privind fondurile reale, o dată per browser.** Înainte de prima vizualizare de mainnet în Wallet, Trade, prezentarea generală din Explorer sau statisticile din pagina principală, un card intitulat „You're entering QoreChain Mainnet" listează patru puncte: Dashboard-ul este non-custodial, tranzacțiile sunt finale și ireversibile, există riscul pierderii totale și nimic de aici nu este sfat financiar, iar QOR de testnet nu este niciodată schimbabil. Acceptarea este stocată în browserul tău, nu în contul tău.
+- **Un cont, trei codificări.** Același cont este afișat ca adresă `qor1...`, ca adresă `0x...` și ca adresă SVM base58, iar Dashboard-ul citește soldul și istoricul o singură dată, prin `qor1...`.
 
-## Autentificare {#sign-in}
+## Cum folosești {#how-to-use}
 
-Dashboard-ul are două straturi: un **cont de Dashboard** cu care te autentifici și **portofelul** pe care îl conectezi la el. Majoritatea paginilor necesită mai întâi contul:
+### Structura
 
-- **Pagini care necesită să fii autentificat:** [Wallet](/dashboard/wallet), [Trade](/dashboard/trade), [Faucet](/dashboard/faucet), [Quests](/dashboard/quests), contractele tale salvate în [Smart Contract Creator](/dashboard/smart-contract-creator) și profilul tău. Dacă deschizi una dintre ele fără să fii autentificat, ești trimis la pagina de autentificare.
-- **Vizualizarea mainnet-ului fără autentificare:** pe paginile care afișează date de mainnet, inclusiv Explorer-ul din Dashboard, un vizitator neautentificat vede „Sign in to view mainnet” și un buton **Sign in**. Același Explorer este disponibil și fără niciun cont la [explore.qore.network](https://explore.qore.network).
-- **Deschise fără cont:** pagina de întâmpinare [Smart Contract Creator](/dashboard/smart-contract-creator) (oferă o generare gratuită) și [Tools Hub](/dashboard/tools-hub). Rularea unui audit de contract necesită un cont.
+**Antet.** Comutatorul de rețea, apoi **Sign In** sau un meniu de profil (Profile, Edit Profile, Theme, Language, Rewards, Referral, Docs, Log out).
 
-Navigarea prin Dashboard nu necesită niciodată un portofel; conectarea unuia este un pas separat, descris în continuare.
+**Bara laterală pe desktop, în ordine:**
 
-## Conectează-ți portofelul {#connect-your-wallet}
+| Intrare | Pagină | Ce este |
+| --- | --- | --- |
+| **Discover** | `/` | Acasă: butoanele din hero **Create Smart Contract** și **Explore Network**, contoarele „Dashboard Overview", liste cu contractele create, ultimele audituri și cei mai activi contribuitori, plus un „Developer Toolkit" cu **Start Generating**, **New Audit** și **Claim Tokens**. |
+| **Public Sale** | `/public-sale` | Participanții existenți își văd alocarea, calendarul de vesting și revendicarea. |
+| **Wallet** | [Wallet](/dashboard/wallet) | Sold, istoric, primire și (pe mainnet) trimitere și staking prin QoreX. |
+| **Faucet** | [Faucet](/dashboard/faucet) | Tokenuri de testnet gratuite. |
+| **Explorer** | [Explorer](/dashboard/explorer) | Blocuri, tranzacții, adrese și validatori. |
+| **Trade** | [Trade](/dashboard/trade) | Ecran de swap cu tokenuri de test. |
+| Grupul **Earn** | [Quests](/dashboard/quests) | Quests, Leaderboard, Badges. |
+| **Games** | [Quests](/dashboard/quests#games) | QoreChain Arcade. |
+| Grupul **Build** | [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Nodes & Validators](/dashboard/tools-hub) (`/tools`), [Developers](/dashboard/developers) | Unelte pentru contracte, unelte pentru noduri și validatori, unelte pentru dezvoltatori. Intrarea Nodes & Validators se numea înainte „Tools". |
+| **FAQ** | `/faq` | Ajutor în aplicație. Părți din el sunt depășite; acest manual este referința. |
 
-Majoritatea acțiunilor care schimbă starea on-chain — trimiterea de tokenuri, swap-uri, staking — necesită un portofel conectat. Modul în care Dashboard-ul gestionează cheile depinde de rețea:
+Pagina [Validators](/dashboard/validators) (`/validators`) nu are link în bara laterală; deschide-o după adresă.
 
-- **Mainnet-ul este non-custodial.** Dashboard-ul nu deține niciodată cheile tale de mainnet. Îți conectezi propriul portofel — **QoreX** (portofelul oficial QoreChain, extensie sau aplicație), **Keplr** sau **MetaMask** — iar Dashboard-ul îți citește soldul și istoricul reale direct din chain. Fiecare tranzacție de mainnet este semnată în propriul tău portofel, niciodată de Dashboard. Trimiterea și staking-ul pe **rail-ul Native necesită QoreX**, deoarece conturile QoreChain semnează cu o semnătură hibridă post-cuantică pe care doar QoreX o produce în prezent; Keplr se poate conecta totuși pentru a vizualiza soldul tău pe rail-ul Native. **MetaMask** se conectează pe **rail-ul EVM**; trimiterea de acolo necesită și cheia post-cuantică a contului și o fereastră de autorizare EVM deschisă, care se deschide din QoreX, pe contul în stil Ethereum (coin 60) care împarte cheia cu MetaMask (vezi [Trimiterea cu MetaMask](/dashboard/wallet#send-metamask)).
-- **Testnet-ul este custodial.** Dashboard-ul îți gestionează un portofel de test, astfel încât poți experimenta fără nicio configurare și fără nicio valoare reală în joc.
+**Mobil.** O bară de jos (Discover, Wallet, Faucet, apoi Explorer, Trade, Quests) plus un meniu central în evantai cu restul.
 
-### Conectează-te cu QoreX (recomandat) {#connect-qorex}
+### Autentificare {#sign-in}
 
-QoreX este portofelul oficial QoreChain. Cardul **Connect with QoreX** din Dashboard suportă atât extensia de browser, cât și aplicația mobilă, din același punct de intrare.
+Dashboard-ul are două straturi: un **cont de Dashboard** cu care te autentifici și **portofelul** pe care îl conectezi la el. Navigarea nu necesită niciodată un portofel.
 
-1. Deschide [dashboard.qorechain.io](https://dashboard.qorechain.io) și asigură-te că antetul afișează **Mainnet**.
-2. Dacă este prima ta vizită pe o pagină de mainnet, citește și acceptă [confirmarea de risc unică](#risk-acknowledgement).
-3. Deschide **Wallet** din bara laterală (trebuie să fii autentificat) și selectează **Connect with QoreX** pe cardul **QoreX wallet**.
-4. Dacă extensia de browser QoreX este instalată și detectată în acest browser, Dashboard-ul întreabă **„Cum vrei să te conectezi?”** cu două opțiuni, **Browser extension** și **QoreX app**. Alege una — opțiunea este salvată, astfel încât la vizitele următoare acest prompt este omis (un link **Use a different method** este mereu disponibil dacă vrei să schimbi ulterior metoda). Dacă nu este detectată nicio extensie, Dashboard-ul trece direct la fluxul aplicației.
-   - **Browser extension**: se deschide propriul pop-up al extensiei, afișând `dashboard.qorechain.io` ca site care solicită conexiunea. Verifică-l și aprobă — asta semnează o dovadă unică că deții adresa ta `qor1...` (nu se mută fonduri). Asocierea se finalizează imediat, în aceeași sesiune de browser.
-   - **QoreX app**: Dashboard-ul afișează un cod QR (cu un link **Open QoreX** care deschide aplicația direct dacă navighezi de pe același telefon). Deschide aplicația QoreX, scanează codul QR (sau atinge linkul), verifică cererea de asociere care afișează originea Dashboard-ului și aprob-o cu confirmarea ta biometrică. Dashboard-ul verifică periodic în fundal și finalizează asocierea automat de îndată ce aprobi.
-5. Odată aprobat, Dashboard-ul îți afișează adresa `qor1...` și deblochează acțiunile care necesită o semnătură.
+- **Redirecționat la autentificare înainte de încărcarea paginii:** Profile, [Wallet](/dashboard/wallet), Rewards, Referral, [Quests](/dashboard/quests), [Trade](/dashboard/trade), [Faucet](/dashboard/faucet), Connection, Contracts, Public Sale și fiecare pagină de contract salvat `/smart-contract-creator/<id>`.
+- **Afișează un ecran „Authentication Required" când nu ești autentificat:** [Nodes & Validators](/dashboard/tools-hub), [Validators](/dashboard/validators), FAQ, [AI Audit](/dashboard/contract-auditor), Badges, Leaderboard și Games.
+- **Deschise fără cont:** pagina principală Discover, paginile de detaliu din [Explorer](/dashboard/explorer) (tranzacție, bloc, adresă, validatori) pe ambele rețele, prezentarea generală din Explorer pe testnet, pagina de întâmpinare [Smart Contract Creator](/dashboard/smart-contract-creator) (o generare gratuită), lista de audituri de la `/audits` și rapoartele publice de audit, precum și pagina [Developers](/dashboard/developers).
+- **Mainnet fără autentificare:** paginile care afișează date de mainnet (contoarele din pagina principală, Wallet, Trade, prezentarea generală din Explorer) arată „Sign in to view mainnet" și un buton **Sign In**.
 
-Vezi [Wallet](/dashboard/wallet#mainnet) pentru ghidul complet de conectare și trimitere pentru fiecare tip de portofel, și pagina [Account & Dashboard](/qorex/account-and-dashboard#dashboard) din documentația QoreX pentru perspectiva din partea portofelului asupra aceleiași asocieri.
+### Alege-ți rețeaua {#select-network}
 
-### Conectează-te cu Keplr sau MetaMask
-
-1. Deschide [dashboard.qorechain.io](https://dashboard.qorechain.io) și asigură-te că antetul afișează **Mainnet**.
-2. Dacă este prima ta vizită pe o pagină de mainnet, citește și acceptă confirmarea de risc unică (vezi mai jos).
-3. Deschide **Wallet** din bara laterală și, sub **or connect another wallet**, selectează **Connect Keplr** sau **Connect MetaMask**.
-4. Aprobă conexiunea în portofelul tău.
-
-Odată conectat, pagina Wallet îți afișează adresa (în formă scurtată) împreună cu soldul și istoricul. MetaMask îți permite să primești pe rail-ul EVM și să trimiți de acolo odată ce o fereastră EVM este deschisă (vezi [Trimiterea cu MetaMask](/dashboard/wallet#send-metamask)). Keplr deblochează vizualizarea soldului și istoricului tău pe rail-ul Native — trimiterea și staking-ul pe acesta se fac prin QoreX (vezi mai sus), deoarece conturile QoreChain semnează cu o semnătură hibridă post-cuantică. Paginile doar-citire, precum Explorer, funcționează fără nicio conectare.
-
-Conturile QoreChain folosesc prefixul bech32 `qor`, așa că o adresă conectată arată ca `qor1...` — același cont are și o codificare EVM (`0x...`) și una SVM (base58). Conturile sunt protejate cu criptografie sigură cuantic. Vezi [Wallet Setup](/getting-started/wallet-setup) pentru îndrumări de configurare inițială, și [Add QoreChain to your wallet](/dashboard/wallet#add-network) dacă portofelul tău nu cunoaște încă rețeaua.
-
-### Confirmarea de risc unică {#risk-acknowledgement}
-
-Înainte de a putea folosi orice pagină de mainnet, Dashboard-ul îți cere să accepți o declinare de responsabilitate unică. Aceasta confirmă că înțelegi că tranzacțiile de mainnet mută **fonduri reale**, că Dashboard-ul este **non-custodial** (doar tu îți controlezi cheile) și că tranzacțiile on-chain sunt **ireversibile**. O accepți o singură dată; după aceea, paginile de mainnet se deschid direct.
-
-## Alege-ți rețeaua
-
-Dashboard-ul funcționează pe două rețele. Antetul afișează rețeaua la care ești conectat în prezent și îți permite să comuți; se deschide implicit pe **Mainnet**, iar alegerea ta este reținută în browser.
+Antetul afișează rețeaua pe care te afli și îți permite să comuți. Alegerea este reținută în browser.
 
 | Rețea | Chain ID | Când se folosește |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Rețeaua live (live din 7 iunie 2026, rulează chain v3.2.4 din 23 octombrie 2026) pentru valoare reală și utilizare în producție. Non-custodial: îți conectezi propriul portofel. |
-| **Testnet** | `qorechain-diana` | Mediu gratuit pentru testare (rulează chain v3.2.6 din 27 octombrie 2026), cu un portofel de test gestionat de dashboard și [Faucet](/dashboard/faucet) pentru tokenuri de test. |
+| **Mainnet** | `qorechain-vladi` | Rețeaua live (live din 7 iunie 2026, rulează chain v3.2.4 din 23 octombrie 2026) pentru valoare reală. Non-custodial: îți conectezi propriul portofel. |
+| **Testnet** | `qorechain-diana` | Mediu gratuit (rulează chain v3.2.6 din 27 octombrie 2026), cu un portofel de test gestionat de Dashboard și [Faucet](/dashboard/faucet). |
 
-Tokenul nativ este **QOR** (denominarea de bază `uqor`, unde 1 QOR = 10^6 uqor). Dacă ești nou, începe pe testnet, revendică tokenuri de la Faucet și încearcă un prim transfer înainte de a trece pe mainnet.
+Tokenul nativ este **QOR** (denominarea de bază `uqor`, 1 QOR = 10^6 uqor). Dacă ești nou, începe pe testnet, revendică tokenuri de la Faucet și încearcă un prim transfer înainte de a trece pe mainnet.
+
+Câteva pagini ignoră comutatorul: Faucet plătește mereu pe testnet, [Trade](/dashboard/trade) arată mereu conținut de testnet, iar Quests, Badges, Leaderboard, Games, Public Sale și FAQ nu depind de rețea.
+
+### Conectează-ți portofelul {#connect-your-wallet}
+
+- **Mainnet-ul este non-custodial.** Conectează **QoreX** (portofelul oficial QoreChain, extensie sau aplicație), **Keplr** sau **MetaMask**. Trimiterea și staking-ul pe rail-ul Native necesită QoreX, deoarece conturile QoreChain semnează cu o semnătură hibridă post-cuantică pe care doar QoreX o produce în prezent. Keplr se conectează pentru a vedea și a primi pe rail-ul Native. MetaMask se conectează pe rail-ul EVM; trimiterea de acolo necesită și cheia post-cuantică a contului și o fereastră EVM deschisă, din QoreX (vezi [Trimiterea cu MetaMask](/dashboard/wallet#send-metamask)).
+- **Testnet-ul este custodial.** Dashboard-ul îți gestionează un portofel de test, așa că nu ai nimic de instalat și nicio valoare reală în joc.
+
+#### Conectează-te cu QoreX (recomandat) {#connect-qorex}
+
+1. Deschide [dashboard.qorechain.io](https://dashboard.qorechain.io) și asigură-te că antetul afișează **Mainnet**.
+2. Dacă este prima ta vizită pe o pagină de mainnet în acest browser, acceptă [confirmarea de risc unică](#risk-acknowledgement).
+3. Deschide **Wallet** (trebuie să fii autentificat) și selectează **Connect with QoreX** pe cardul **QoreX wallet**.
+4. Dacă extensia de browser QoreX este detectată și nu este salvată nicio metodă, Dashboard-ul întreabă „How do you want to connect?" cu **Browser extension** și **QoreX app**. Alegerea este salvată. Dacă nu este detectată nicio extensie, trece direct la fluxul aplicației.
+   - **Browser extension:** pop-up-ul extensiei afișează `dashboard.qorechain.io` ca site care solicită conexiunea. Aprobă; asta semnează o dovadă unică că deții adresa ta `qor1...`. Nu se mută fonduri.
+   - **QoreX app:** Dashboard-ul afișează un cod QR și **Open QoreX**. Scanează-l sau atinge-l, verifică în QoreX cererea de asociere și aprob-o cu biometricul tău. Dashboard-ul verifică periodic („Waiting for approval in QoreX...") și se finalizează singur.
+   - Un link **Use a different method** apare doar cât timp o asociere este în așteptare.
+5. Odată aprobat, Dashboard-ul îți afișează adresa `qor1...` și deblochează acțiunile care necesită o semnătură.
+
+Vezi [Wallet](/dashboard/wallet#mainnet) pentru ghidul complet de conectare și trimitere, și pagina [Account & Dashboard](/qorex/account-and-dashboard#dashboard) din documentația QoreX pentru perspectiva din partea portofelului asupra aceleiași asocieri.
+
+#### Conectează-te cu Keplr sau MetaMask
+
+1. Cu antetul pe **Mainnet** și confirmarea acceptată, deschide **Wallet**.
+2. Sub **or connect another wallet**, selectează **Connect Keplr** sau **Connect MetaMask**.
+3. Aprobă conexiunea în portofelul tău. Dacă portofelul tău nu cunoaște încă QoreChain, vezi [Adaugă QoreChain în portofelul tău](/dashboard/wallet#add-network).
+
+Odată conectat, pagina Wallet îți afișează adresa cu soldul și istoricul. Vezi [Wallet Setup](/getting-started/wallet-setup) pentru îndrumări de configurare inițială.
+
+### Confirmarea de risc unică {#risk-acknowledgement}
+
+Cardul de confirmare apare înaintea primei vizualizări de mainnet în **Wallet**, **Trade**, **prezentarea generală din Explorer** sau **statisticile din pagina principală** într-un browser. Nu este cerut pentru fiecare pagină de mainnet: paginile de detaliu din Explorer, Creator și celelalte pagini se deschid fără el. Acceptă-l o dată per browser; ștergerea datelor browserului îl afișează din nou.
+
+## Cum accesezi {#how-to-access}
+
+- **URL:** [dashboard.qorechain.io](https://dashboard.qorechain.io), în orice browser actual. Fără instalare.
+- **Cont:** autentificare prin e-mail sau un furnizor de identitate suportat, pe pagina de autentificare. Ce pagini îl cer este listat la [Autentificare](#sign-in).
+- **Rețele:** mainnet `qorechain-vladi` și testnet `qorechain-diana`, cu comutatorul din antet. Mainnet este implicit.
+- **Portofel:** niciunul pentru navigare. QoreX pentru trimiteri și staking pe mainnet, Keplr sau MetaMask pentru a vedea și a primi. Pe testnet, Dashboard-ul îți creează un portofel de test.
+- **Cost:** Dashboard-ul este gratuit. Acțiunile on-chain plătesc taxa de rețea (prag de 0,1 uqor per gas). Unele elemente plătite sunt descrise pe paginile lor (licența de light node și taxa programului de validatori, pe [Nodes & Validators](/dashboard/tools-hub)).
+- **Poartă de acces timpuriu:** niciuna în prezent. Paginile de mainnet cer doar autentificare (unde este listat mai sus) și confirmarea unică.
+
+## Unde este publicat {#where-published}
+
+| Suprafață | Adresă | Rețele | Autentificare |
+| --- | --- | --- | --- |
+| Dashboard | [dashboard.qorechain.io](https://dashboard.qorechain.io) | Mainnet și testnet | Per pagină, vezi [Autentificare](#sign-in) |
+| Explorer independent | [explore.qore.network](https://explore.qore.network) (o aplicație separată, vezi [Explorer](/dashboard/explorer#standalone-explorer)) | Mainnet și testnet | Niciuna |
+| Endpoint-uri publice | `rpc.qore.host`, `api.qore.host`, `evm.qore.host`, `svm.qore.host`, cu variantele `*-testnet` | Mainnet și testnet | Niciuna |
+
+Paginile acestei secțiuni: [Explorer](/dashboard/explorer), [Wallet](/dashboard/wallet), [Trade](/dashboard/trade), [Bridge](/dashboard/bridge), [Smart Contract Creator](/dashboard/smart-contract-creator), [Contract Auditor](/dashboard/contract-auditor), [Staking & Validators](/dashboard/staking-and-validators), [Validators](/dashboard/validators), [Faucet](/dashboard/faucet), [Quests, Badges, Leaderboard și Games](/dashboard/quests), [Nodes & Validators](/dashboard/tools-hub) și [Developers](/dashboard/developers).
+
+## Limite și probleme cunoscute {#limits}
+
+- **Nu există un ecran Bridge.** Vezi [Bridge](/dashboard/bridge).
+- **Trade nu urmează comutatorul de rețea.** Arată conținut de testnet chiar și cu antetul pe Mainnet. Vezi [Trade](/dashboard/trade).
+- **Unele texte din aplicație sunt depășite.** FAQ-ul, precum și unele formulări de pe ecranul de creare a portofelului și din fila SDK de la Nodes & Validators, nu corespund comportamentului actual. Unde acest manual și aplicația diferă, urmează acest manual și raportează pagina.
+- **Restricții pe mainnet.** Staking-ul, trimiterea și deploy-urile de contracte pe mainnet sunt descrise pe fiecare pagină; mai multe fluxuri (deploy-uri Native sau SVM, redelegarea, staking-ul cu blocare în timp) nu sunt oferite în Dashboard.
+- **Testnet-ul nu are valoare reală.** Nu trimite niciodată QOR real la o adresă de testnet: formatele sunt identice. Vezi [Wallet](/dashboard/wallet#testnet).
 
 :::tip Ești nou la QoreChain?
 Urmează [Connecting to Testnet](/getting-started/connecting-to-testnet) și [Your First Transaction](/getting-started/first-transaction) pentru a te familiariza rapid, apoi revino pentru a explora restul Dashboard-ului.
 :::
-
-## Legături conexe
-
-* [Explorer](/dashboard/explorer) — răsfoiește blocuri, tranzacții și conturi.
-* [Wallet](/dashboard/wallet) — gestionează conturi și trimite tranzacții.
-* [Trade / DEX](/dashboard/trade) — schimbă tokenuri prin pool-urile AMM on-chain.
-* [Tools Hub](/dashboard/tools-hub) — Validator Program, Validator Application, Light Node, Node Registration, Rollups și SDK.
-* [Faucet](/dashboard/faucet) — tokenuri de test pe testnet.

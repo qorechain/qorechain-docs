@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Ön derleme etkin olmadığından, ona yapılan düz bir `.call` **boş veriyle başarı döndürür ve hiçbir şey yapmaz**; `ok` bayrağı çağrının etkili olduğunu söylemez. Sözleşme içindeki güvenilir koruma, her zaman boş olmayan bir onay döndüren bir hedeftir; çağrıdan sonra `require(ret.length > 0)` konur, böylece boş bir yanıt başarısızlık sayılır; `multivm-rollup` şablonu (0.6.0 ve 0.6.1) bunu yapar.
+Ön derleme etkin olmadığından, ona yapılan düz bir `.call` **boş veriyle başarı döndürür ve hiçbir şey yapmaz**; `ok` bayrağı çağrının etkili olduğunu söylemez. Sözleşme içindeki güvenilir koruma, her zaman boş olmayan bir onay döndüren bir hedeftir; çağrıdan sonra `require(ret.length > 0)` konur, böylece boş bir yanıt başarısızlık sayılır; `multivm-rollup` şablonu (0.6.0 ile 0.6.2 arası) bunu yapar.
 
 ## Çoklu-VM rollup iskeleti oluşturma
 
@@ -102,4 +102,4 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-`multivm-rollup` şablonu (0.6.0 ve 0.6.1) `src/crossvm-call.ts` dosyasını (ön derlemenin canlı olup olmadığını denetler, ardından calldata'yı yazdırır) ve `executeCrossVMCall(uint8,string,bytes)` işlevini çağıran ve hedeften boş olmayan bir yanıt zorunlu kılan bir `contracts/CrossVmCaller.sol` dosyasını içerir. Ön derleme etkin değilken bir çağrının çalışmasını sağlamaz. Tüm iskelet oluşturucu şablonları için [Bir Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasına bakın.
+`multivm-rollup` şablonu (0.6.0 ile 0.6.2 arası) `src/crossvm-call.ts` dosyasını (ön derlemenin canlı olup olmadığını denetler, ardından calldata'yı yazdırır) ve `executeCrossVMCall(uint8,string,bytes)` işlevini çağıran ve hedeften boş olmayan bir yanıt zorunlu kılan bir `contracts/CrossVmCaller.sol` dosyasını içerir. Ön derleme etkin değilken bir çağrının çalışmasını sağlamaz. Tüm iskelet oluşturucu şablonları için [Bir Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasına bakın.

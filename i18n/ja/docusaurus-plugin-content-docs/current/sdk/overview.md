@@ -7,9 +7,9 @@ sidebar_position: 1
 
 # QoreChain SDK
 
-QoreChain SDK は、量子耐性を備えたトリプル VM の Layer 1 ネットワークである
-**QoreChain** 上で分散型アプリケーションを構築するための、公式の多言語対応
-開発者キットです。
+QoreChain SDK は、ハイブリッド ML-DSA-87（FIPS 204）署名を備えたトリプル VM の
+Layer 1 ネットワークである **QoreChain** 上で分散型アプリケーションを構築するための、
+公式の多言語対応開発者キットです。
 
 このドキュメントでは、SDK のインストール方法、ネットワークへの接続、
 オンチェーン状態の読み取り、アカウントの導出、トランザクションの署名と送信、
@@ -52,7 +52,7 @@ EIP-7702 の同意メッセージ）と、v3.2.4 に対するクライアント�
 ウォレットとバックエンドの署名については、[QoreSign](/qoresign/overview)を参照してください。
 :::
 
-### 設計段階からの量子耐性
+### ハイブリッド ML-DSA-87 署名
 
 QoreChain は、**ML-DSA-87**（Dilithium-5、FIPS 204）に基づくポスト量子暗号
 （PQC）プリミティブを提供します。従来の secp256k1 署名に加えて、チェーンは
@@ -85,10 +85,10 @@ ML-DSA-87 鍵を事前に登録しておく必要があります。詳細は
   `callAtomic` は複数のクロス VM 呼び出しを一度の署名で 1 つのアトミックな
   トランザクションにまとめます。
   [クロス VM 呼び出し](/sdk/guides/cross-vm) を参照してください。
-- **量子耐性の開発者体験（DX）** — 冪等な 1 回の呼び出し
-  （`ensurePqcRegistered` / `migrateToHybrid`）でサイナーをポスト量子保護に
-  でき、そのまま使える React バッジも付属します。
-  [量子耐性](/sdk/guides/quantum-safe) を参照してください。
+- **ハイブリッド署名の開発者体験（DX）** — 冪等な 1 回の呼び出し
+  （`ensurePqcRegistered` / `migrateToHybrid`）でサイナーの ML-DSA-87 鍵を
+  登録でき、そのまま使える React バッジも付属します。
+  [ハイブリッド署名](/sdk/guides/quantum-safe) を参照してください。
 
 さらに、0.6.0 と 0.7.0 では 2 つのチェーンレベルの機能が追加されました
 （後者はライブネットワークではまだ使用できません。以下を参照）。
@@ -106,7 +106,7 @@ ML-DSA-87 鍵を事前に登録しておく必要があります。詳細は
   ください。
 
 新しい **`@qorechain/react`** キット（プロバイダー、フック、`ConnectButton`、
-`QuantumSafeBadge`）により、量子耐性 dApp の構築が標準の開発パスになります —
+`QuantumSafeBadge`）により、ハイブリッド ML-DSA-87 署名を備えた dApp の構築が標準の開発パスになります —
 [React キットガイド](/sdk/guides/react) を参照してください。全体像については
 [QoreChain SDK を選ぶ理由](/sdk/why) をお読みください。
 

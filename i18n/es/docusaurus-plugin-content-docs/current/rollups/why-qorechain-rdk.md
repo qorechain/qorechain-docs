@@ -20,7 +20,7 @@ construidas en torno a la Layer 1 de QoreChain y no en torno a las herramientas:
 Todavía no se ha creado ningún rollup en ninguna de las dos redes (comprobado el
 27 de octubre de 2026). La tabla siguiente indica lo que funciona hoy; lo que
 cambiaron los clientes 0.6.x publicados y los límites que persisten se recogen en
-[RDK 0.6.1: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits). Si solo
+[RDK 0.6.2: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits). Si solo
 necesitas un rollup genérico optimista/zk, cualquier kit te sirve; las
 capacidades de aquí son lo que el RDK añade por encima, en TypeScript, Python,
 Go, Rust y Java.
@@ -28,13 +28,13 @@ Go, Rust y Java.
 
 | Capacidad | Estado | De qué depende |
 | --- | --- | --- |
-| **Recibos de liquidación resistentes a la computación cuántica** | 🟡 Etapa temprana | Los anclajes se firman con ML-DSA-87, el esquema post-cuántico de la Main Chain; todavía no existen anclajes, así que el verificador 0.6.1 (que comprueba contra la cadena) nunca se ha ejecutado con un anclaje real |
+| **Recibos de liquidación** | 🟡 Etapa temprana | Los anclajes se firman con ML-DSA-87, el esquema post-cuántico de la Main Chain; todavía no existen anclajes, así que el verificador 0.6.2 (que comprueba contra la cadena) nunca se ha ejecutado con un anclaje real |
 | **QCAI Rollup Copilot** | 🟡 Todavía no disponible en los endpoints públicos | Servicios de asesoría de IA/RL on-chain que los endpoints públicos no exponen hoy |
 | **Llamadas entre VMs multi-VM** | 🟡 Todavía no utilizable en las redes en vivo | Un precompile entre VMs que no está activado (el codificador desde la 0.6.0 coincide con el formato de la cadena), y la subida de QoreChain Native está cerrada |
 
 ---
 
-## 1. Recibos de liquidación resistentes a la computación cuántica
+## 1. Recibos de liquidación
 
 > 🟡 **Diseño construido sobre la capa base post-cuántica de QoreChain.** Los
 > anclajes de liquidación se firman con ML-DSA-87 (Dilithium-5, FIPS-204), el
@@ -59,9 +59,9 @@ console.log(result.valid);
 `verifySettlementReceipt` comprueba contra la cadena y se niega a decir `valid`
 sin un `client`. En 0.5.0 su comprobación contra la cadena no podía completarse
 en las redes en vivo (fallaba de forma cerrada en lugar de informar de que un
-recibo genuino es válido); la 0.6.0 lo corrigió y la 0.6.1 compara todos los campos del recibo, pero todavía no existe ningún
+recibo genuino es válido); la 0.6.0 lo corrigió y la 0.6.1 (y por tanto la 0.6.2) compara todos los campos del recibo, pero todavía no existe ningún
 anclaje, así que ninguna de las dos se ha ejecutado con uno real. Consulta
-[Recibos de liquidación resistentes a la computación cuántica](/rollups/settlement-receipts)
+[Recibos de liquidación](/rollups/settlement-receipts)
 para saber qué demuestra un recibo y qué no, y para conocer los límites exactos.
 
 ---
@@ -166,7 +166,7 @@ disponibilidad de datos (consulta su nota de estado), un auto-retador
 
 - [Desplegar un Rollup](/rollups/deploying-a-rollup) — instalación por lenguaje
   y la ruta por CLI hasta un rollup en testnet.
-- [Recibos de liquidación resistentes a la computación cuántica](/rollups/settlement-receipts) ·
+- [Recibos de liquidación](/rollups/settlement-receipts) ·
   [QCAI Copilot](/rollups/qcai-copilot) ·
   [Multi-VM](/rollups/multi-vm) ·
   [Watchtower](/rollups/watchtower) — los análisis en profundidad.

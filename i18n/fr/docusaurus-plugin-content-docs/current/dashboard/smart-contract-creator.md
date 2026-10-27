@@ -7,57 +7,102 @@ sidebar_position: 6
 
 # Créateur de smart contracts
 
-Le **Créateur de smart contracts** génère des smart contracts à partir d'une description en langage courant, propulsé par **QCAI**. Décrivez ce que vous voulez, choisissez votre blockchain cible, et QCAI écrit le contrat pour vous. Il prend en charge **17 blockchains** pour l'outillage IA, vous permettant ainsi de cibler l'écosystème pour lequel vous développez.
-
-Vous pouvez l'essayer **sans compte** : un nouveau visiteur obtient une génération gratuite et voit le contrat en entier. Un compte gratuit est nécessaire pour la suivante, ainsi que pour l'enregistrement, l'audit et le déploiement ; la page propose **Create a free account** une fois votre essai gratuit utilisé.
-
-Connectez-vous pour enregistrer et gérer les contrats que vous générez — voir [Se connecter](/dashboard/overview#sign-in).
-
-## Générer un contrat
-
-1. **Partez d'un exemple, ou décrivez le vôtre.** La page s'ouvre sur « What would you like to build? ». Sous **Or start from an example:**, choisissez **Token**, **NFT collection**, **Locked vault** ou **2-of-3 multisig** — chacun remplit une description complète et sélectionne une blockchain et un modèle correspondants — ou rédigez la vôtre dans **Contract Description**. Plus vous êtes précis, meilleur sera le résultat.
-2. **Choisissez la blockchain.** Utilisez **Target Blockchain**. Le langage de contrat et la catégorie correspondant à votre choix sont affichés à côté du sélecteur.
-3. **Choisissez un type de contrat** (facultatif). **Contract Type** propose un modèle de départ tel qu'un contrat de jeton, de NFT ou de gouvernance ; laissez **Custom (describe in prompt)** pour vous appuyer uniquement sur votre description.
-4. **Générez.** Sélectionnez **Generate Smart Contract**. Un indicateur de progression affiche l'état pendant que QCAI produit le contrat.
-
-## Examiner le résultat
-
-Une fois la génération terminée, le Dashboard affiche le contrat dans une vue avec coloration syntaxique, accompagné de détails tels que le nom du contrat, la blockchain, le langage, la taille du fichier et l'heure de génération. Le prompt que vous avez utilisé est affiché avec le résultat à titre de référence.
-
-À partir de là, vous pouvez :
-
-- **Copier** le code du contrat dans votre presse-papiers (**Copy Code**).
-- **Export PDF** du contrat.
-- **Télécharger** le contrat sous forme de fichier (**Download File**) au bon format pour la blockchain que vous avez choisie.
-- **Modifier** le contrat (**Edit Contract**) pour l'affiner davantage.
-
-## Déployer votre contrat {#deploy}
-
-### Sur le mainnet (EVM) — déploiement non custodial {#deploy-mainnet}
-
-Le déploiement sur le mainnet est non custodial : le Dashboard compile votre contrat et renvoie des données de déploiement **non signées** — il ne détient jamais vos clés et ne signe jamais en votre nom. Vous signez et diffusez le déploiement dans votre propre portefeuille, puis le Dashboard enregistre le contrat qui en résulte.
-
-1. Ouvrez le contrat que vous souhaitez déployer (un contrat ciblant l'EVM) et sélectionnez **Deploy** sur **Mainnet**. S'il s'agit de votre première action sur le mainnet, acceptez la [reconnaissance unique des risques](/dashboard/overview#risk-acknowledgement).
-2. Connectez **MetaMask** s'il n'est pas déjà connecté — voir [Présentation et premiers pas](/dashboard/overview#connect-your-wallet). Depuis la version de chaîne v3.2.0, le lane EVM exige aussi que le compte détienne une clé post-quantique enregistrée et une **fenêtre d'autorisation EVM ouverte**, qui s'ouvre depuis QoreX (voir [Envoyer avec MetaMask](/dashboard/wallet#send-metamask)) ; sans elle, la chaîne refuse le déploiement.
-3. Le Dashboard compile le contrat et transmet la transaction de déploiement non signée à votre portefeuille.
-4. Vérifiez la transaction dans MetaMask — réseau, gas et données — puis confirmez pour la signer et la diffuser vous-même.
-5. Une fois le déploiement confirmé on-chain, le Dashboard enregistre l'adresse du contrat résultant parmi vos contrats sauvegardés.
-
-Seuls les contrats **EVM** (Solidity) peuvent être déployés depuis le Dashboard. Les déploiements QoreChain Native et de programmes Solana ne sont pas disponibles pour le moment sur l'un ou l'autre réseau.
-
-### Sur le testnet — en un clic {#deploy-testnet}
-
-Sur le testnet, le portefeuille de test géré par le Dashboard signe et soumet un déploiement EVM pour vous en un seul clic, ce qui vous permet d'itérer rapidement avec les jetons du [Faucet](/dashboard/faucet) avant de passer au mainnet. Le testnet applique la même règle de lane EVM que le mainnet : un déploiement peut donc quand même être refusé si le compte n'a pas de clé post-quantique ou pas de fenêtre EVM ouverte.
-
-## Partager et réutiliser
-
-Chaque contrat généré possède sa propre page. Les contrats sont **privés par défaut** : vous seul pouvez ouvrir les vôtres. En tant que propriétaire, vous verrez un bouton **Public** / **Private** sur la page du contrat ; réglez-le sur **Public** pour que toute personne disposant du lien puisse ouvrir (et forker) le contrat, et de nouveau sur **Private** pour le retirer. Si vous ouvrez un contrat public qui ne vous appartient pas, vous pouvez le **forker** (fork) pour en démarrer votre propre copie et continuer à partir de là.
+Le **Créateur de smart contracts** (barre latérale **Build**, entrée **SC Creator**) transforme une description en langage courant en code source de contrat pour la blockchain de votre choix, grâce à **QCAIA**, l'assistant IA de QoreChain. Il s'adresse aux développeurs qui veulent une première ébauche de jeton, de collection NFT, de coffre ou de multisig, ou d'un contrat dans un langage qu'ils n'écrivent pas au quotidien, et qui le relisent, le testent et le déploient ensuite eux-mêmes.
 
 :::tip Toujours examiner et tester
-Le code généré par QCAI est un excellent point de départ, pas un substitut à un examen. Lisez le contrat, testez-le sur le [testnet](/getting-started/connecting-to-testnet) et soumettez-le à l'[Auditeur de contrats](/dashboard/contract-auditor) avant de déployer quoi que ce soit ayant de la valeur.
+Le code généré est un excellent point de départ, pas un substitut à un examen. Lisez le contrat, testez-le sur le [testnet](/getting-started/connecting-to-testnet) et soumettez-le à l'[Auditeur de contrats](/dashboard/contract-auditor) avant de déployer quoi que ce soit ayant de la valeur.
 :::
+
+## Innovations {#innovations}
+
+- **Une génération sans compte.** Un nouveau visiteur peut générer une fois et voit le contrat en entier. L'essai est limité par visiteur et par un plafond quotidien global. Le résultat d'un essai gratuit n'a ni **Deploy** ni **Edit** fonctionnel ; la page propose ensuite **Create a free account**.
+- **Une génération gratuite chaque jour UTC une fois connecté.** La première génération de chaque jour UTC est gratuite sur les deux réseaux. Ensuite, sur le testnet, chaque génération est payée en QOR de test depuis votre portefeuille de test, après une boîte de dialogue « Confirm Contract Generation » qui affiche le « Generation Cost ». Sur le mainnet, le Dashboard ne détient aucune clé : les générations supplémentaires sont donc refusées jusqu'au jour UTC suivant.
+- **Des modèles de départ qui remplissent tout.** **Token**, **NFT collection**, **Locked vault** et **2-of-3 multisig** remplissent chacun un prompt complet, définissent la cible sur QoreChain et sélectionnent un modèle.
+- **17 blockchains cibles,** chacune avec ses propres modèles plus « Custom (describe in prompt) » : QoreChain, Cosmos, Ethereum, Solana, Avalanche, NEAR, Polygon, BSC, TON, Cardano, Polkadot, Tezos, Arbitrum, Optimism, Sui, Aptos et Tron.
+- **Déploiement non custodial sur l'EVM du mainnet.** Le Dashboard compile le contrat et renvoie des données de déploiement **non signées**. N'importe quel portefeuille EVM injecté (MetaMask, Rabby, Coinbase Wallet) ajoute ou bascule vers la chaîne 9801, puis signe et diffuse ; le Dashboard enregistre ensuite l'adresse.
+- **Codes QoreChain Native approuvés par la gouvernance sur le testnet.** Le code généré n'est pas téléversé. Vous instanciez un code que la gouvernance du testnet a déjà approuvé, lu en direct depuis la chaîne : jeton CW20 (cw20-base), collection NFT (cw721-base), groupe de membres (cw4-group), multisig (cw3-fixed-multisig) et exemple Counter (qore-counter). Le message d'instanciation est prérempli et modifiable.
+- **Retour de compilation dans la boîte de dialogue.** Les erreurs s'affichent en ligne, la boîte de dialogue demande les arguments du constructeur qu'elle ne peut pas déduire, et les champs du jeton sont pré-lus à partir du code ou du prompt.
+- **Privé par défaut, forkable lorsqu'il est public.** Le propriétaire bascule entre **Public** et **Private** ; un non-propriétaire d'un contrat public peut le **Fork**.
+
+## Mode d'emploi {#how-to-use}
+
+### Générer un contrat
+
+1. Ouvrez **SC Creator**. Le titre de la page indique « What would you like to build? ».
+2. **Partez d'un exemple, ou décrivez le vôtre.** Sous « Or start from an example: », choisissez un modèle de départ, ou rédigez le vôtre dans **Contract Description**. Plus vous êtes précis, meilleur sera le résultat.
+3. Choisissez la **Target Blockchain**. Le langage et la catégorie s'affichent en dessous (« Language: ... | Category: ... »). Changer de chaîne sélectionne automatiquement le premier modèle de cette chaîne ; choisissez donc vous-même **Custom (describe in prompt)** dans **Contract Type** si vous voulez que votre description seule pilote le résultat.
+4. Connecté uniquement : choisissez un **Generation Tier** (Standard ou Premium). Premium n'est pas disponible sur le mainnet.
+5. Sélectionnez **Generate Smart Contract**. Une fois connecté, une boîte de dialogue « Confirm Contract Generation » suit (elle affiche le « Generation Cost » et l'état de gratuité du jour). Le résultat porte la mention « Generated by QCAIA Standard ».
+
+### Examiner le résultat
+
+Le contrat s'affiche dans une vue avec coloration syntaxique, avec les actions suivantes :
+
+- **Deploy**,
+- **Edit Now**,
+- **Download File** (au bon format pour la blockchain choisie),
+- **Copy Code**.
+
+Les détails et le prompt utilisé se trouvent sur la page du contrat elle-même (ci-dessous), pas sur le résultat.
+
+### La page du contrat
+
+Chaque contrat enregistré possède une page à l'adresse `/smart-contract-creator/<id>` avec Copy, **Public / Private**, Download, Edit ou Fork, une ligne de statistiques (Created, Lines, Size, Gen Time, Tokens, AI Model), le « Generation Prompt » et « Download from Cloud » (le lien expire après 24 heures). L'ouverture de la page d'un contrat exige une connexion, même pour un contrat public.
+
+La page **Edit** propose **Save Changes** (propriétaire) ou **Save as New Contract** (lors d'un fork), ainsi que **Deploy**. Une action **Export PDF** existe dans la liste des contrats de votre Profil, pas sur le résultat.
+
+### Déployer votre contrat {#deploy}
+
+Le déploiement se fait depuis les pages de résultat et d'édition. La boîte de dialogue affiche une bannière « Target: TESTNET ... 9800 » ou « Target: MAINNET ... 9801 ».
+
+#### Sur le mainnet (EVM), non custodial {#deploy-mainnet}
+
+Le Dashboard ne détient jamais vos clés et ne signe jamais en votre nom.
+
+1. Sélectionnez **Deploy** sur un contrat dont la cible s'exécute sur l'EVM de QoreChain, avec l'en-tête sur **Mainnet**. S'il s'agit de votre première consultation du mainnet pour Wallet, Trade ou l'aperçu de l'Explorer dans ce navigateur, vous y acceptez la [reconnaissance unique des risques](/dashboard/overview#risk-acknowledgement) ; le Créateur lui-même n'affiche aucun écran de risque supplémentaire.
+2. Sélectionnez **Deploy from your wallet**. N'importe quel portefeuille EVM injecté convient ; la boîte de dialogue ajoute ou bascule elle-même le réseau (chaîne 9801).
+3. Depuis la version de chaîne v3.2.0, le lane EVM exige aussi que le compte qui déploie détienne une clé ML-DSA-87 enregistrée et une **fenêtre d'autorisation EVM ouverte**, qui s'ouvre depuis QoreX (voir [Envoyer avec MetaMask](/dashboard/wallet#send-metamask)). Sans elles, la chaîne refuse le déploiement.
+4. Le Dashboard compile et transmet la transaction non signée à votre portefeuille. Attendez « Confirm in your wallet... » et vérifiez le réseau, le gas et les données.
+5. Une fois la transaction confirmée, le Dashboard enregistre l'adresse du contrat parmi vos contrats sauvegardés.
+
+Les autres cibles sur le mainnet affichent « Direct deploy not available for this contract ». Les déploiements QoreChain Native et SVM ne sont pas proposés sur le mainnet, et il n'existe aucune publication CosmWasm depuis le Dashboard.
+
+#### Sur le testnet, en un clic {#deploy-testnet}
+
+- **EVM :** sélectionnez **Deploy to Testnet**. Le portefeuille de test du Dashboard signe et soumet le déploiement ; en cas de succès, « Deployed on Testnet » s'affiche. Itérez avec les jetons du [Faucet](/dashboard/faucet) avant de passer au mainnet.
+- **QoreChain Native :** choisissez un **Approved contract**, renseignez le **Label \***, vérifiez ou modifiez le **Instantiate message (JSON)** et sélectionnez **Instantiate on Testnet**. Les téléversements de contrats sur le testnet sont examinés par la gouvernance, c'est pourquoi vous instanciez des codes approuvés au lieu de téléverser le vôtre. Les codes approuvés que le Dashboard ne reconnaît pas apparaissent avec un message vide. Les contrats personnalisés vont sur l'EVM de QoreChain (Solidity).
+- Seuls les contrats EVM et les codes QoreChain Native approuvés peuvent être déployés depuis le Dashboard. Un contrat écrit pour une autre chaîne EVM (Polygon, BSC, Arbitrum, etc.) se déploie sur l'EVM de QoreChain, pas sur le réseau propre à cette chaîne ; les contrats destinés à des chaînes non EVM ne peuvent pas être déployés d'ici.
+
+**Exemple minimal (testnet) :** sélectionnez **Token**, **Generate Smart Contract**, Confirm, **Deploy**, choisissez « CW20 token (cw20-base) », Label `my-token`, **Instantiate on Testnet**.
+
+### Partager et réutiliser
+
+Les contrats sont **privés par défaut**. En tant que propriétaire, réglez un contrat sur **Public** pour que les autres utilisateurs connectés puissent l'ouvrir et le forker, et de nouveau sur **Private** pour le retirer. **Fork** copie un contrat public dans votre compte pour continuer à partir de là.
+
+## Comment y accéder {#how-to-access}
+
+- **URL :** [dashboard.qorechain.io/smart-contract-creator](https://dashboard.qorechain.io/smart-contract-creator) (également **Create Smart Contract** sur la page d'accueil).
+- **Compte :** la page d'accueil et une génération gratuite fonctionnent sans compte. Tout le reste (générations supplémentaires, contrats enregistrés, pages du contrat et d'édition, déploiement) exige une connexion ; voir [Se connecter](/dashboard/overview#sign-in).
+- **Réseau :** la génération fonctionne sur les deux. Les déploiements testnet utilisent le portefeuille de test de votre Dashboard ; les déploiements EVM sur le mainnet utilisent votre propre portefeuille.
+- **Coûts :** la première génération de chaque jour UTC est gratuite. Ensuite, les générations testnet sont payées en QOR de test ; les générations mainnet attendent le jour UTC suivant. Les déploiements paient le gas du réseau.
+
+## Où c'est publié {#where-published}
+
+| Surface | Adresse | Réseaux |
+| --- | --- | --- |
+| Créateur et contrats enregistrés | `dashboard.qorechain.io/smart-contract-creator` | Génération sur les deux réseaux |
+| Déploiement EVM | Pages de résultat et d'édition | Testnet en un clic ; mainnet depuis votre propre portefeuille |
+| Déploiement QoreChain Native | Pages de résultat et d'édition | Testnet, codes approuvés uniquement |
+
+## Limites et problèmes connus {#limits}
+
+- **Non proposé :** les déploiements Solana (le serveur les refuse), les déploiements Native ou SVM sur le mainnet, les déploiements sur les réseaux publics d'autres chaînes, et Premium sur le mainnet.
+- **Les déploiements Native sur le testnet** n'instancient que des codes approuvés par la gouvernance ; votre source générée n'est pas téléversée.
+- **Les résultats d'essai gratuit** n'ont ni Deploy ni Edit.
+- **Relisez tout** avant de déployer ; le code généré peut contenir des erreurs.
 
 ## Liens connexes
 
-- [Auditeur de contrats](/dashboard/contract-auditor) — exécutez une analyse de sécurité QCAI sur un contrat.
-- [Guide du développeur](/developer-guide/evm-development) — déployer des contrats sur les runtimes de QoreChain.
+- [Auditeur de contrats](/dashboard/contract-auditor) - exécutez une analyse de sécurité sur un contrat.
+- [Développement EVM](/developer-guide/evm-development) - déployer des contrats sur les runtimes de QoreChain.
+- [Développement CosmWasm](/developer-guide/cosmwasm-development) - le runtime QoreChain Native.

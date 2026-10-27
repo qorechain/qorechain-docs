@@ -125,7 +125,7 @@ SDK 0.8.3以降、`derivePqcCanonical(account, mnemonic)`は、まず`account`�
 `0x`形式でも同じ鍵が得られます。
 どの言語にも同じ関数があり(Python `derive_pqc_canonical`、Go
 `authenticator.DerivePQCCanonical`、Rust `try_derive_pqc_canonical`、Java
-`Authenticator.derivePqcCanonical`。[量子安全ガイドの表](/sdk/guides/quantum-safe#canonical-derivation)を参照)、
+`Authenticator.derivePqcCanonical`。[ハイブリッド署名ガイドの表](/sdk/guides/quantum-safe#canonical-derivation)を参照)、
 同じ`{ address, mnemonic }`からは、そのすべてで同じ鍵が得られます
 (2026年10月にTypeScript、Python、Go、Rustで確認済み)。
 

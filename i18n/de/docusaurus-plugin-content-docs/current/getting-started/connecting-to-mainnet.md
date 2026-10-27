@@ -130,7 +130,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### Empfohlene Einstellungen
 
-Ein Full Node legt die Blockzeit nicht fest — das tun die Validatoren (das Mainnet erzeugt derzeit etwa alle 3,2 Sekunden einen Block). Belassen Sie die Konsensus-Timeouts bei ihren Standardwerten, es sei denn, Sie betreiben einen Validator und haben von der Validatorengruppe Werte erhalten. Eine nützliche Mempool-Einstellung für einen öffentlichen RPC-Node in `config.toml`:
+Ein Full Node legt die Blockzeit nicht fest — das tun die Validatoren (das Mainnet erzeugt derzeit etwa alle 3,1 Sekunden einen Block). Belassen Sie die Konsensus-Timeouts bei ihren Standardwerten, es sei denn, Sie betreiben einen Validator und haben von der Validatorengruppe Werte erhalten. Eine nützliche Mempool-Einstellung für einen öffentlichen RPC-Node in `config.toml`:
 
 ```toml
 [mempool]
@@ -258,7 +258,7 @@ http://localhost:1317
 | EVM-Chain-ID      | `9801` (hexadezimal `0x2649`)            |
 | Chain-Version     | v3.2.4 (angewendet bei Höhe 3.742.566 am 23. Oktober 2026) |
 | Live seit         | 7. Juni 2026                             |
-| Blockzeit         | etwa 3,2 Sekunden (gemessener Durchschnitt) |
+| Blockzeit         | etwa 3,1 Sekunden (gemessener Durchschnitt) |
 | Token             | QOR (`uqor`, 10^6 Mikroeinheiten = 1 QOR) |
 | Minimaler Gaspreis | `0.1uqor`                                |
 | Account-Präfix    | `qor`                                    |

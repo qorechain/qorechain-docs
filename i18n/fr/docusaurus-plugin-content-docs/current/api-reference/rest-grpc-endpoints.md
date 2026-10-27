@@ -508,6 +508,18 @@ Le module staking-tiers fait partie de la **v3.2.4**. Ces routes sont servies pa
 
 `params` liste les trois durées de verrouillage (3, 6 et 12 mois) avec leurs paramètres et `min_lock_amount` (`"10000000"` uqor, 10 QOR). Les verrouillages se font avec `tx stakingtier lock` (voir [Commandes de transaction](/cli-reference/transaction-commands#stakingtier)).
 
+## Module Reputation {#reputation-module}
+
+Les routes REST du module reputation sont servies par le **testnet** (`qorechain-diana`, chaîne v3.2.6). Sur le mainnet, chaque route `/qorechain/reputation/v1/...` répond par un HTTP `501` (`{"code":12,"message":"Not Implemented"}`) au moment de la rédaction (27 octobre 2026) ; le module n'y est accessible qu'en gRPC (`Params`, voir ci-dessous). Une prochaine version du mainnet devrait les servir ; cette page sera mise à jour dès que ce sera le cas.
+
+| Méthode | Point de terminaison | Description |
+| ------ | -------- | ----------- |
+| GET    | `/qorechain/reputation/v1/params` | Les poids du score (`alpha`, `beta`, `gamma`, `delta`), `lambda` et `min_score` |
+| GET    | `/qorechain/reputation/v1/validator/{address}` | L'enregistrement d'un validateur. `{address}` est une adresse d'opérateur `qorvaloper1...` ou une adresse de consensus `qorvalcons1...`. Les champs incluent `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks` et `last_updated_height`. `404` signifie que le validateur n'a pas encore de score ; une chaîne qui n'est ni une adresse d'opérateur ni une adresse de consensus répond `400` |
+| GET    | `/qorechain/reputation/v1/validators` | Les enregistrements de tous les validateurs notés (`reputations`) |
+
+Les scores sont des chaînes décimales comprises entre 0 et 1. Le light node lit la route par validateur pour avertir lorsqu'un validateur délégué est sous `min_reputation` (voir [Récompenses et surveillance](/light-node/rewards-and-monitoring#delegation-alerts)). Les mêmes routes sur l'hôte du mainnet renvoient `501` tant que le mainnet ne les sert pas.
+
 ## Modules gRPC uniquement {#grpc-only-modules}
 
 Sur le mainnet (version de nœud v3.2.4, vérifié le 27 octobre 2026), ces modules disposent d'un service `Query` gRPC mais **d'aucune route REST**. Les noms de service suivent le format `qorechain.<module>.v1.Query`.
@@ -516,7 +528,7 @@ Sur le mainnet (version de nœud v3.2.4, vérifié le 27 octobre 2026), ces modu
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
-| `reputation`  | `Params`                                               |
+| `reputation`  | `Params` (des routes REST n'existent que sur le testnet, voir [Module Reputation](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |

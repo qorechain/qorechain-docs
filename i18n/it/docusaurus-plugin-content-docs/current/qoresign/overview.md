@@ -27,11 +27,11 @@ test si trovano nel repository
 | Corsia | Che cosa fa oggi QoreSign |
 |---|---|
 | **Native** (Cosmos SDK) | Firma e verifica ibride. Per impostazione predefinita la rete richiede la firma ML-DSA-87. |
-| **EVM** | Solo modalità quantum-ready: l'account registra una chiave ML-DSA-87 e apre dalla corsia Native una finestra di autorizzazione limitata. Le transazioni Ethereum stesse non portano alcuna firma ML-DSA-87. |
+| **EVM** | Solo finestra di autorizzazione: l'account registra una chiave ML-DSA-87 e apre dalla corsia Native una finestra di autorizzazione limitata. Le transazioni Ethereum stesse non portano alcuna firma ML-DSA-87. |
 | **SVM** | Non ancora aperta sulla rete (`LANE_NOT_AVAILABLE`). |
 
 La firma ibrida su EVM richiede prima il supporto PQC per singola corsia nella
-rete. Vedi [Wallet EVM: modalità quantum-ready](/qoresign/guides/evm-quantum-ready).
+rete. Vedi [Wallet EVM: finestra di autorizzazione](/qoresign/guides/evm-quantum-ready).
 
 ## Pacchetti {#packages}
 
@@ -84,7 +84,7 @@ broadcast, verifica del sign-in rispetto alla chain) si trovano in
 - Guide
   - [Aggiungere la firma ibrida a un wallet compatibile con Keplr](/qoresign/guides/keplr-compatible-wallets)
   - [Sign In With QoreChain: verifica lato server](/qoresign/guides/sign-in)
-  - [Wallet EVM: modalità quantum-ready](/qoresign/guides/evm-quantum-ready)
+  - [Wallet EVM: finestra di autorizzazione](/qoresign/guides/evm-quantum-ready)
   - [Derivazione delle chiavi: chiavi canoniche e bozza HD](/qoresign/guides/key-derivation)
   - [Dimensioni e trasporto](/qoresign/guides/sizes-and-transport)
 - Specifiche

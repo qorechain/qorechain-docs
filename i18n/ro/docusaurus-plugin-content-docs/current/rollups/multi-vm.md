@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Deoarece precompilul este inactiv, un simplu `.call` către el întoarce **succes cu date goale și nu face nimic**; flag-ul `ok` nu îți spune dacă apelul a avut efect. Garda de încredere din interiorul contractului este o țintă care întoarce mereu o confirmare nevidă, cu un `require(ret.length > 0)` după apel, astfel încât un răspuns gol să fie tratat ca eșec; șablonul `multivm-rollup` (0.6.0 și 0.6.1) face acest lucru.
+Deoarece precompilul este inactiv, un simplu `.call` către el întoarce **succes cu date goale și nu face nimic**; flag-ul `ok` nu îți spune dacă apelul a avut efect. Garda de încredere din interiorul contractului este o țintă care întoarce mereu o confirmare nevidă, cu un `require(ret.length > 0)` după apel, astfel încât un răspuns gol să fie tratat ca eșec; șablonul `multivm-rollup` (0.6.0 până la 0.6.2) face acest lucru.
 
 ## Generarea unui rollup multi-VM
 
@@ -102,4 +102,4 @@ Deoarece precompilul este inactiv, un simplu `.call` către el întoarce **succe
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Șablonul `multivm-rollup` (0.6.0 și 0.6.1) include `src/crossvm-call.ts` (verifică dacă precompilul este activ, apoi afișează calldata) și un `contracts/CrossVmCaller.sol` care apelează `executeCrossVMCall(uint8,string,bytes)` și cere un răspuns nevid de la țintă. Nu face ca un apel să funcționeze cât timp precompilul este inactiv. Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup) pentru toate șabloanele generatorului de schelet.
+Șablonul `multivm-rollup` (0.6.0 până la 0.6.2) include `src/crossvm-call.ts` (verifică dacă precompilul este activ, apoi afișează calldata) și un `contracts/CrossVmCaller.sol` care apelează `executeCrossVMCall(uint8,string,bytes)` și cere un răspuns nevid de la țintă. Nu face ca un apel să funcționeze cât timp precompilul este inactiv. Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup) pentru toate șabloanele generatorului de schelet.

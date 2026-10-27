@@ -92,7 +92,7 @@ import { deployContract, readContract, writeContract } from "@qorechain/evm";
 
 مع SDK **0.8.2 أو أحدث** يمكنك فتح نافذة من الشيفرة (و**0.9.0** تضيف خيارات
 النطاق أدناه). تسجيل المفتاح
-(مرة واحدة) موصوف في [الأمان الكمومي](/sdk/guides/quantum-safe)؛ ثم يفتح المثال
+(مرة واحدة) موصوف في [التوقيع الهجين](/sdk/guides/quantum-safe)؛ ثم يفتح المثال
 أدناه نافذة لحساب eth-native موحَّد (`npm i @cosmjs/stargate`):
 
 ```ts

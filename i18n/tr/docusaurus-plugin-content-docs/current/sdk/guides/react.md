@@ -9,7 +9,7 @@ sidebar_position: 7
 
 `@qorechain/react`, `@qorechain/sdk` üzerine kurulu resmi React katmanıdır: tek bir
 sağlayıcı, bir avuç kanca ve iki yerleştirilebilir bileşen — tek satırlık bir
-**Kuantuma dayanıklı** rozeti dahil. Kuantuma dayanıklı bir dApp oluşturmayı varsayılan yol haline getirir.
+PQC durum rozeti dahil. Hibrit ML-DSA-87 imzalamalı bir dApp oluşturmayı varsayılan yol haline getirir.
 
 ```bash
 npm i @qorechain/react @qorechain/sdk react react-dom
@@ -27,7 +27,7 @@ yalnızca klasik imzayla gönderir ve canlı ağlar bunu reddeder (Native yolu h
 uzantısını gerektirir): `send` / `sendTokens` mainnet veya testnet üzerinde bir işlemi
 işleyemez. Gönderimler için SDK'nin hibrit `TxClient`'ını kullanın
 (`client.connectTx(signer, { pqcKeypair })`, bkz.
-[Kuantuma dayanıklı](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` ve `<QuantumSafeBadge/>`,
+[Hibrit imzalama](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` ve `<QuantumSafeBadge/>`,
 durumu sağlayıcının oluşturulmuş istemcisiyle `getPqcStatus` üzerinden okur; bu çağrı SDK 0.9.0'dan
 itibaren REST üzerinden okur (`/qorechain/pqc/v1/account/{address}`), bu nedenle
 `*.qore.host` karşısında çalışırlar (kit 0.8.x, genel uç noktaların sunmadığı
@@ -136,7 +136,7 @@ render-prop'u geçin:
 ### `<QuantumSafeBadge/>`
 
 Adresin kayıtlı bir post-kuantum anahtarı olduğunda (`usePqcStatus` aracılığıyla) bir
-**Kuantuma dayanıklı** göstergesi gösterir; aksi takdirde sönük bir "Kuantuma dayanıklı değil"
+durum göstergesi gösterir; aksi takdirde sönük bir "kayıtlı değil"
 durumu gösterir. Varsayılan olarak bağlı hesabı kullanır.
 
 ```tsx
@@ -171,4 +171,4 @@ function Dashboard() {
 ```
 
 Altta yatan SDK çağrıları için çalıştırılabilir [`react-dapp` örneğine](https://github.com/qorechain/qorechain-sdk/tree/main/examples/react-dapp)
-ve [kuantuma dayanıklı kılavuzuna](/sdk/guides/quantum-safe) bakın.
+ve [hibrit imzalama kılavuzuna](/sdk/guides/quantum-safe) bakın.

@@ -140,7 +140,15 @@
     "description": "The label for category 'QoreX Wallet' in sidebar 'docsSidebar'"
   },
   "sidebar.docsSidebar.category.QoreX Wallet.link.generated-index.description": {
-    "message": "QoreX — المحفظة الرسمية غير الحافظة (non-custodial) والآمنة كمّيًا (quantum-safe) لـ QoreChain: تطبيق جوال وإضافة متصفح. الإعداد، والإرسال والاستلام، والتخزين (staking)، والاسترداد، والاتصال بتطبيقات dApp.",
+    "message": "QoreX — المحفظة الرسمية غير الحافظة (non-custodial) لـ QoreChain، بتوقيع هجين ML-DSA-87 على المسار الأصلي: تطبيق جوال وإضافة متصفح. الإعداد، والإرسال والاستلام، والتخزين (staking)، والاسترداد، والاتصال بتطبيقات dApp.",
     "description": "The generated-index page description for category 'QoreX Wallet' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages": {
+    "message": "حزم المطوّرين",
+    "description": "The label for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
+    "message": "كل حزمة عامة من QoreChain: ما هي، وما الجديد فيها، وكيفية استخدامها، وكيفية الوصول إليها، وأين تُنشر.",
+    "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
   }
 }

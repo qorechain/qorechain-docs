@@ -7,50 +7,77 @@ sidebar_position: 4
 
 # Trade (DEX)
 
-La pagina **Trade** è la schermata di scambio di token della Dashboard: scambia un token con un altro e fornisci liquidità a un pool, senza order book off-chain. Per il design dell'automated market maker (AMM) nativo di QoreChain, vedi [AMM e liquidità on-chain](/architecture/amm).
+La pagina **Trade** (intitolata "QoreChain DEX") è una schermata di scambio di token di test con quattro schede: **Swap**, **Pools**, **Add Liquidity** e **My Positions**. Serve a provare un flusso di swap dall'inizio alla fine con token di test, prima che esistano pool reali. Per il design dell'automated market maker nativo di QoreChain, vedi [AMM e liquidità on-chain](/architecture/amm).
 
 :::caution Solo token di test, per ora
-I pool e i token di questa pagina sono token di test: gli swap vengono eseguiti su un contratto di swap distribuito sulla EVM della testnet, e la pagina ha un pulsante **Get test tokens** per ottenerli. Non considerare nulla di ciò che è mostrato qui come liquidità di valore reale né come prezzo di mercato. Il modulo AMM nativo di QoreChain è attivo, ma non è ancora stato creato alcun pool su nessuna delle due reti. Questa pagina verrà aggiornata quando saranno disponibili pool reali.
+Tutto ciò che c'è in questa pagina gira sulla **testnet**, qualunque rete mostri l'intestazione. Sulla mainnet la pagina è comunque protetta dall'accesso e dalla presa d'atto, ma mostra `qorechain-diana` e token di testnet. Solo cinque token di test QoreSwap vengono regolati on-chain; tutto il resto qui è un'area di prova. Il modulo AMM nativo di QoreChain è attivo, ma non è ancora stato creato alcun pool su nessuna delle due reti (`GET /qorechain/amm/v1/pools` restituisce un elenco vuoto su entrambe, verificato il 27 ottobre 2026).
 :::
 
-Fare trading richiede un account con accesso effettuato e un wallet — vedi [Accedi](/dashboard/overview#sign-in) e [Collega il tuo wallet](/dashboard/overview#connect-your-wallet).
+## Innovazioni {#innovations}
 
-La pagina ha quattro schede: **Swap**, **Pools**, **Add Liquidity** e **My Positions**.
+- **Swap on-chain per cinque token di test.** Gli swap tra WQOR, QUSDC, QUSDT, QWETH e QWBTC vengono eseguiti sul contratto AMM QoreSwap della EVM della testnet (chain ID 9800). La quotazione proviene da `getAmountOut` del contratto.
+- **Slippage imposto nella transazione.** Lo scambio avviene come un approve seguito da `swapExactTokensForTokens`, con un output minimo derivato dall'impostazione di slippage, firmato dalla chiave EVM del wallet di test. Se il prezzo si muove oltre la tua tolleranza, lo swap fa revert invece di essere eseguito a un prezzo peggiore.
+- **Token di test su richiesta.** **Get test tokens** ottiene tutti e cinque i token, una volta ogni 12 ore per token.
+- **Distinzione onesta tra reale e di prova.** Le altre coppie, l'elenco dei Pools, Add Liquidity e My Positions sono un'area di prova della testnet e non sono on-chain.
 
-## Swap
+## Come si usa {#how-to-use}
 
-Scambia un token con un altro:
+Prerequisiti: accesso effettuato e un wallet di test (vedi [Wallet](/dashboard/wallet#testnet)). Senza di esso la pagina mostra "Wallet Required for Trading".
 
-1. Scegli il token con cui stai pagando e inserisci un importo.
-2. Scegli il token che desideri ricevere — l'importo in uscita viene quotato automaticamente.
-3. Facoltativamente, regola la tua **tolleranza allo slippage** (la massima variazione di prezzo che accetterai; valore predefinito 0,5%).
-4. Seleziona **Swap** e conferma.
+### Swap
 
-Un pannello della cronologia degli swap elenca i tuoi swap passati con i token, gli importi, il tasso, l'ora e lo stato.
+1. Il banner offre **Get test tokens**; usalo per prima cosa.
+2. Scegli il token con cui paghi e inserisci un importo. La coppia predefinita, da QOR a USDC, è una coppia **di prova** che non viene regolata on-chain. Scegli **WQOR** e **QUSDC** (o una qualsiasi coppia tra i cinque) per uno swap on-chain.
+3. Scegli il token da ricevere; l'importo in uscita viene quotato automaticamente.
+4. Facoltativamente, regola la **tolleranza allo slippage** (predefinita 0,5%).
+5. Seleziona **Swap Now**, poi **Confirm Swap**. Il risultato mostra "Swap Confirmed" con **View Transaction**.
+
+**Recent Swaps** elenca gli swap di tutti gli utenti; **Show My History** lo filtra sui tuoi.
+
+**Esempio minimo:** sulla testnet seleziona **Get test tokens**, vendi 10 WQOR per QUSDC, **Swap Now**, **Confirm Swap**.
 
 :::tip Slippage
-Una tolleranza allo slippage più alta rende più probabile che uno swap vada a buon fine in mercati con movimenti rapidi, ma potresti ricevere un prezzo meno favorevole. Il valore predefinito è adatto alla maggior parte delle coppie.
+Una tolleranza più alta rende più probabile che uno swap vada a buon fine in mercati con movimenti rapidi, ma potresti ricevere un prezzo peggiore. Il valore predefinito è adatto alla maggior parte delle coppie.
 :::
 
-## Pools
+### Pools
 
-Sfoglia i pool di liquidità disponibili. Ogni card di pool mostra la coppia di trading, la liquidità totale, il volume delle 24 ore e il numero di provider. Una casella di ricerca filtra i pool per simbolo del token.
+Sfoglia le card dei pool: coppia di trading, liquidità totale, volume delle 24 ore, numero di provider, e anche un APR, una commissione, un ID del pool, un prezzo e le riserve. Una casella di ricerca filtra per simbolo del token. Sono cifre di prova; non interpretarle come rendimenti.
 
-## Add Liquidity
+### Add Liquidity
 
-Fornisci liquidità a un pool e ricevi una quota delle sue commissioni di swap:
+1. Seleziona due token da accoppiare (uno è impostato per default su QOR). Usa **Create Pool** per una nuova coppia.
+2. Inserisci un importo per il primo token; il secondo si compila per corrispondere al rapporto del pool. La pagina riporta "Minimum 1000 QOR required".
+3. Esamina la tua quota, poi conferma.
 
-1. Seleziona i due token da accoppiare (uno è impostato per default su QOR).
-2. Inserisci un importo per il primo token — il secondo importo si compila automaticamente per corrispondere al rapporto attuale del pool.
-3. Esamina la tua quota prevista del pool, quindi seleziona **Add Liquidity** e conferma.
+### My Positions
 
-Ricevi token liquidity provider (LP) che rappresentano la tua posizione.
+Ogni voce mostra la coppia di token, l'importo di ciascun token, la tua quota e le commissioni guadagnate. Per uscire da una posizione seleziona **Withdraw**, poi **Request Withdrawal (x%)**; dopo un periodo di attesa seleziona **Confirm Withdraw** (oppure **Cancel Withdrawal**). Non esiste un unico pulsante "Remove Liquidity".
 
-## My Positions
+## Come accedere {#how-to-access}
 
-Visualizza le posizioni di liquidità che detieni. Ogni voce mostra la coppia di token, l'importo in ciascun token, la tua quota del pool e le commissioni guadagnate. Seleziona **Remove Liquidity** su una posizione per visualizzare in anteprima i token che riceveresti e prelevare la tua quota.
+- **URL:** [dashboard.qorechain.io/trade](https://dashboard.qorechain.io/trade).
+- **Account:** è richiesto l'accesso. Per fare swap serve un wallet di test. Sulla mainnet, prima che la pagina si apra, è richiesta anche la [presa d'atto](/dashboard/overview#risk-acknowledgement) una tantum.
+- **Rete:** solo contenuti della testnet; l'interruttore nell'intestazione non lo cambia.
+- **Costo:** gratuito. I token di test arrivano da **Get test tokens**; il wallet di test paga il gas in QOR di test dal [Faucet](/dashboard/faucet).
+
+## Dove è pubblicato {#where-published}
+
+| Superficie | Indirizzo | Rete | Regolato on-chain? |
+| --- | --- | --- | --- |
+| Swap di WQOR, QUSDC, QUSDT, QWETH, QWBTC | `dashboard.qorechain.io/trade` | EVM della testnet, chain ID 9800 | Sì |
+| Altre coppie, Pools, Add Liquidity, My Positions | `dashboard.qorechain.io/trade` | Testnet | No, registro di prova |
+| AMM nativo | Vedi [AMM](/architecture/amm) | Entrambe le reti | Non esiste ancora alcun pool |
+
+## Limiti e problemi noti {#limits}
+
+- **Nessun trading su mainnet.** La pagina ignora l'interruttore di rete e mostra contenuti della testnet anche sulla mainnet.
+- **Solo cinque token vengono regolati on-chain.** I token del fest dal [Faucet](/dashboard/faucet#fest-tokens) non sono in questa pagina.
+- **L'AMM nativo non ha pool** su nessuna delle due reti. I pool reali verranno descritti quando esisteranno.
+- **Le cifre di prova** (prezzi, APR, volume) non sono dati di mercato.
+- **I token della testnet non hanno valore** e non possono essere scambiati con nulla.
 
 ## Correlati
 
-- [AMM e liquidità on-chain](/architecture/amm) — tipi di pool e curve di prezzo.
-- [Wallet](/dashboard/wallet) — controlla i saldi prima e dopo uno swap.
+- [AMM e liquidità on-chain](/architecture/amm) - tipi di pool e curve di prezzo.
+- [Wallet](/dashboard/wallet) - controlla i saldi prima e dopo uno swap.

@@ -275,7 +275,7 @@ contract ConsensusReader {
 **가스 비용:** 정액 1,500에, 호출이 수행하는 상태 읽기에 대한 표준 비용이 추가됩니다.
 
 :::note 네 가지 값의 의미
-v3.2.6부터(테스트넷, 메인넷에는 아직 없음) `rlConsensusParams`는 고정된 플레이스홀더 대신 `rlconsensus` 모듈이 보유한 값을 반환합니다. 적용된 블록 시간 목표(밀리초), 적용된 가스 가격 하한, 모듈의 `default_validator_set_size`, 에이전트의 현재 에포크입니다. 2026년 10월 27일 테스트넷에서는 `5000`, `100`, `100`, `1`을 반환했습니다(`GET /qorechain/rlconsensus/v1/applied_params`와 같은 적용 값이며, [REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#rlconsensus-module) 참조). 이 값들은 모듈 자체의 설정이며 **측정된 블록 시간이 아닙니다**(메인넷에서 약 3.2초, 테스트넷에서 약 1.3초). 또한 테스트넷에서 에이전트는 섀도 모드로 실행되므로 아무것도 적용하지 않습니다. v3.2.6보다 오래된 노드에서는 같은 호출이 고정된 플레이스홀더 기본값을 반환합니다.
+v3.2.6부터(테스트넷, 메인넷에는 아직 없음) `rlConsensusParams`는 고정된 플레이스홀더 대신 `rlconsensus` 모듈이 보유한 값을 반환합니다. 적용된 블록 시간 목표(밀리초), 적용된 가스 가격 하한, 모듈의 `default_validator_set_size`, 에이전트의 현재 에포크입니다. 2026년 10월 27일 테스트넷에서는 `5000`, `100`, `100`, `1`을 반환했습니다(`GET /qorechain/rlconsensus/v1/applied_params`와 같은 적용 값이며, [REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#rlconsensus-module) 참조). 이 값들은 모듈 자체의 설정이며 **측정된 블록 시간이 아닙니다**(메인넷에서 약 3.1초, 테스트넷에서 약 1.3초). 또한 테스트넷에서 에이전트는 섀도 모드로 실행되므로 아무것도 적용하지 않습니다. v3.2.6보다 오래된 노드에서는 같은 호출이 고정된 플레이스홀더 기본값을 반환합니다.
 :::
 
 ### CrossVM Bridge — EVM에서 QoreChain Native 호출

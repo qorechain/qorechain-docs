@@ -7,24 +7,27 @@ sidebar_position: 2
 
 # Ediția SX — Daemon Server
 
-Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Această pagină descrie light node-ul **3.1.10** (tag-ul sursă `v3.1.10`), care are o linie de versiune proprie, separată de versiunea lanțului.
+Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Versiunile light node-ului au o linie proprie, separată de versiunea lanțului: canalele ambelor rețele poartă versiunea **3.1.12** (27 octombrie 2026). Această pagină indică unde o funcție necesită 3.1.11 sau o versiune ulterioară.
 
 ## Instalare {#install}
 
-Binarele precompilate sunt calea cea mai simplă — clientul light node rulează nativ pe **șase platforme, fără dependențe native**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) și Windows (amd64, arm64) — în total 12 binare, între edițiile SX și UX. Fiecare binar are aproximativ 13 MB — îl descarci și îl rulezi, fără biblioteci separate de instalat. Nodul își semnează singur tranzacțiile pe fiecare dintre aceste platforme, așa că nu este nevoie de nimic altceva (în special, de niciun `qorechaind`) pentru a înregistra și rula un nod.
+Binarele precompilate sunt calea cea mai simplă. Clientul light node este un singur binar static de aproximativ 13 MB, fără biblioteci native de instalat: există build-uri pentru Linux (amd64, arm64), macOS (Intel, Apple Silicon) și Windows (amd64, arm64) pentru ambele ediții, în total 12 binare per release. Nodul își semnează singur tranzacțiile, așa că nu este nevoie de nimic altceva (în special, de niciun `qorechaind`) pentru a înregistra și rula un nod.
 
-**Verifică suma de control (checksum) înainte de a-l rula.** Manifestul de release de la `https://download.qore.host/<net>/lightnode/latest.json` conține un `sha256` pentru fiecare binar, un `checksums.url` care indică un fișier `SHA256SUMS` pentru întregul release și `checksums.sha256` al acelui fișier. Verifică ceea ce ai descărcat — aceasta nu este o notă de subsol, ci diferența dintre a rula binarul care a fost efectiv construit și a rula orice a ajuns la acel URL:
+**Verifică suma de control (checksum) înainte de a-l rula.** Manifestul de release de la `https://download.qore.host/<net>/lightnode/latest.json` conține un `sha256` pentru fiecare binar, un `checksums.url` care indică un fișier `SHA256SUMS` pentru întregul release și `checksums.sha256` al acelui fișier. Verifică ceea ce ai descărcat: este diferența dintre a rula binarul care a fost construit și a rula orice a ajuns la acel URL. Ia versiunea din manifest, iar binarul și `SHA256SUMS` al lui din aceeași cale versionată:
 
 ```bash
 NET=mainnet            # or testnet
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.12 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/v3.1.10/$F   # or the artifacts[].url from latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/SHA256SUMS
-grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
+curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
+curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
+grep " $F\$" SHA256SUMS | sha256sum -c -    # macOS: shasum -a 256 -c -
 chmod +x $F
 ```
 
-Pe Windows, compară rezultatul `certutil -hashfile lightnode-sx-<platform>.exe SHA256` cu valoarea din manifest. Ambele rețele servesc același build 3.1.10; manifestele acceptă în continuare 3.1.9 (`minCompatible: 3.1.9`). Din 3.1.10, binarele fiecărei versiuni stau sub o cale versionată, `https://download.qore.host/<net>/lightnode/v<version>/<file>`, spre care trimite `artifacts[].url` din manifest; folosește-o în locul copiei neversionate, care poate rămâne în urmă câteva ore. Sursa este publică la `github.com/qorechain/qorechain-lightnode` (Apache 2.0). Un build Android este atașat release-ului GitHub ca previzualizare; nu se înregistrează și nu câștigă recompense.
+Folosește `SHA256SUMS` versionat (`.../v$V/SHA256SUMS`) împreună cu binarul versionat. `.../lightnode/SHA256SUMS` neversionat aparține manifestului și poate rămâne în urmă câteva ore după un release nou, așa că un binar versionat verificat cu el poate eșua.
+
+Pe Windows, compară rezultatul `certutil -hashfile lightnode-sx-<platform>.exe SHA256` cu valoarea din manifest. Ambele manifeste acceptă 3.1.9 și versiunile ulterioare (`minCompatible: 3.1.9`). Sursa este publică la `github.com/qorechain/qorechain-lightnode` (Apache 2.0). Un build Android este atașat release-ului GitHub ca previzualizare; nu se înregistrează și nu câștigă recompense.
 
 De asemenea, poți construi binarul din sursă sau îl poți rula cu Docker.
 
@@ -36,16 +39,16 @@ Light node-ul necesită **Go 1.26.1**. Criptografia sa post-cuantică este o imp
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Construiește din tag-ul de release (`git checkout v3.1.10`). Aceasta produce `build/lightnode-sx`. Rulează-l direct sau copiază-l în `PATH`. Înainte de înregistrare, verifică rapid stiva de semnare post-cuantică cu [`selftest`](#verify-the-pqc-stack-selftest).
+Construiește din tag-ul de release pe care îl indică manifestul (`git checkout v3.1.12` astăzi). Aceasta produce `build/lightnode-sx`. Rulează-l direct sau copiază-l în `PATH`. Înainte de înregistrare, verifică rapid stiva de semnare post-cuantică cu [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-Nu există o imagine precompilată într-un registru; o construiești din tag-ul sursă. Folosește tag-ul **`v3.1.10`**. Pentru a actualiza o instalare existentă, reconstruiește din noul tag (`git fetch --tags && git checkout v3.1.10 && docker compose build --no-cache lightnode-sx`); un simplu `docker compose up` sau `restart` refolosește imaginea veche. Cheile, configurația și volumul de date se păstrează.
+Nu există o imagine precompilată pe care să o poți descărca dintr-un registru: pachetele de container publicate nu sunt încă publice, așa că construiești imaginea din tag-ul sursă. Folosește tag-ul pe care îl indică manifestul (**`v3.1.12`** astăzi). Pentru a actualiza o instalare existentă, reconstruiește din noul tag (`git fetch --tags && git checkout v<new-version> && docker compose build --no-cache lightnode-sx`); un simplu `docker compose up` sau `restart` refolosește imaginea veche. Cheile, configurația și volumul de date se păstrează.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.10
+git checkout v3.1.12      # the version your network's manifest names
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
@@ -59,9 +62,23 @@ docker compose up -d lightnode-sx
 docker compose run --rm lightnode-sx status
 ```
 
-Păstrează `QORECHAIN_RPC_ADDR` exportat la fiecare comandă `docker compose`: suprascrie `rpc_addr` din configurație, iar valoarea implicită din compose indică `host.docker.internal:26657`. Containerul SX persistă datele, inclusiv keyring-ul, într-un volum numit, montat la `/root/.qorechain-lightnode`.
+Păstrează `QORECHAIN_RPC_ADDR` exportat la fiecare comandă `docker compose`: suprascrie `rpc_addr` din configurație. Din 3.1.10, fișierul compose îl setează implicit la RPC-ul de mainnet `https://rpc.qore.host`, așa că un nod de testnet trebuie să exporte `https://rpc-testnet.qore.host`, altfel va urma mainnet-ul. Containerul SX persistă datele, inclusiv keyring-ul, într-un volum numit, montat la `/root/.qorechain-lightnode`.
 
 Nodul semnează nativ în interiorul containerului, deci nu este nevoie de nimic altceva. Imaginea SX conține în continuare și un `qorechaind` publicat oficial (v3.2.0, doar linux/amd64, verificat față de un digest fixat) pentru [alternativa `qorechaind`](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): `docker-compose.yml` montează `~/.qorechaind` (sau `QORECHAIND_HOME`) la `/root/.qorechaind` și transmite `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` pentru această cale. Un nod a cărui cheie de operator se află în propriul keyring nu folosește niciuna dintre ele.
+
+## Actualizare {#updating}
+
+- **Light node 3.1.11 și ulterior, în afara Docker.** La fiecare 6 ore nodul citește `https://download.qore.host/<net>/lightnode/latest.json` pentru propria rețea (mainnet pentru `qorechain-vladi`, testnet pentru `qorechain-diana`, nimic pentru alte lanțuri). Manifestul este doar un indiciu. Nodul instalează un release doar dacă toate acestea sunt adevărate:
+  1. `v<version>/SHA256SUMS.sig` este o semnătură Ed25519 validă, făcută cu cheia de release inclusă în binar, peste rețea, versiune și conținutul `SHA256SUMS`;
+  2. binarul, descărcat din calea versionată proprie a canalului (URL-urile din manifest nu sunt urmate), corespunde sumei sale de control semnate;
+  3. noul binar rulează și raportează exact `v<version>`.
+
+  Apoi păstrează binarul anterior ca `<name>.old` și repornește pe loc: același proces pe Linux și macOS (astfel încât un serviciu systemd rămâne activ), în timp ce pe Windows pornește noul binar și cel vechi se închide (setează serviciul să repornească la ieșire).
+- **Setări.** `[update] mode = "auto"` (implicit, și pentru o configurație fără secțiune) anunță și instalează; `"notify"` doar anunță; `"off"` nu verifică. Manual: `lightnode-sx update --check`, apoi `lightnode-sx update`, apoi repornește nodul.
+- **Cum vezi un anunț.** Nodul jurnalizează un release mai nou și îl servește în API-ul tabloului de bord local la `GET /api/update` (câmpuri `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); tabloul de bord UX afișează un banner.
+- **Container sau folder fără drept de scriere.** Nodul doar anunță: actualizează tu imaginea sau fișierul.
+- **Light node 3.1.10 și anterioare** nu se actualizează singure. Instalează 3.1.12 manual o dată: descarcă binarul versionat din calea manifestului (vezi [Instalare](#install)), verifică-l, înlocuiește fișierul și repornește. După aceea nodul urmează canalul său.
+- **Docker.** Docker nu modifică niciodată imaginea. Reconstruiește din noul tag sursă (vezi [Docker](#docker)) și recreează containerul.
 
 ## Configurare {#configure}
 
@@ -85,7 +102,8 @@ Cele mai relevante opțiuni de configurare, la nivel de utilizare:
 | `operator_address` | Contul căruia îi aparține acest nod (`qor1...`); validat la încărcare. `keys add-operator` îl completează. Necesar pentru `register`, `status` și heartbeat-uri. Vezi [Portofelul operatorului](#operator-wallet). |
 | `api_addr` | Endpoint-ul REST. Dedus din `rpc_addr` când este gol (portul 26657 devine 1317; gazdele `rpc.` devin `api.`), deci este necesar doar pentru endpoint-uri care nu urmează niciuna dintre convenții. |
 | `[heartbeat]` | Activ implicit (`enabled`). `interval_blocks` (potrivește-l cu `heartbeat_interval` al lanțului, 1000), `check_interval` (implicit `60s`) și `gas` (implicit `300000`; cu semnarea nativă, taxa este de 0,25 uqor per unitate de gas, adică 75.000 uqor). Folosite doar de alternativa `qorechaind`: `fees` (implicit `50000uqor`), `qorechaind_path` (gol înseamnă `qorechaind` din `PATH`), `qorechaind_home` (gol înseamnă `~/.qorechaind`), `keyring_backend` și `key_name` (cheia `qorechaind` care conține contul de operator; implicit `key_name` de la nivelul superior). |
-| `[delegation]` | `auto_claim` (dezactivat implicit: revendică recompensele acumulate ale light node-ului în contul operatorului prin semnatar; nodul nu re-deleagă niciodată de pe server), intervalul de verificare, recompensa minimă de revendicat, `rebalance_enabled` și `min_reputation` (doar alerte de reputație — nodul nu mută niciodată stake). `validators` și `split_weights` sunt acceptate, dar nu sunt folosite în prezent. |
+| `[delegation]` | `auto_claim` (dezactivat implicit: revendică recompensele acumulate ale light node-ului în contul operatorului prin semnatar; nodul nu re-deleagă niciodată de pe server), intervalul de verificare, recompensa minimă de revendicat, `rebalance_enabled` (activ implicit) și `min_reputation` (doar avertismente; nodul nu mută niciodată stake). Din 3.1.11, `rebalance_enabled` activează avertismente pentru un validator delegat care este jailed sau nu se află în setul activ și pentru stake-ul bonded sub `min_delegated_stake` (1,000 QOR); `min_reputation` (implicit `0.5`) se aplică acolo unde rețeaua servește scoruri de reputație per validator, adică astăzi pe testnet. `validators` și `split_weights` sunt acceptate, dar nu sunt folosite în prezent. |
+| `[update]` | `mode`: `auto` (implicit, și când secțiunea lipsește), `notify` (doar anunță) sau `off`. Light node 3.1.11 și ulterior. Vezi [Actualizare](#updating). |
 | `[telemetry]` | Dacă telemetria este activată și intervalele de reîmprospătare pentru validatori, rețea, punte (bridge) și tokenomică. |
 | `[dashboard]` | API-ul tabloului de bord local. Ediția UX îl servește întotdeauna; ediția SX doar cu `enabled = true`. `bind_addr` (implicit `127.0.0.1:8420`) și `token` (când este setat, fiecare rută `/api` și `/ws` necesită `Authorization: Bearer <token>`). Vezi [Ediția UX](/light-node/ux-edition). |
 | `log_level` / `log_format` | Nivelul de detaliere al jurnalizării (`debug`, `info`, `warn`, `error`) și formatul (`text` sau `json`). Chei de nivel superior: pune-le înainte de primul `[table]`. |
@@ -102,7 +120,7 @@ Cele mai relevante opțiuni de configurare, la nivel de utilizare:
 Un martor aflat pe aceeași gazdă cu endpoint-ul primar este refuzat — un endpoint compromis pur și simplu s-ar confirma pe sine, deci nu corroborează nimic. Un martor `http://` necriptat pe o gazdă la distanță este de asemenea refuzat, deoarece un atacator care poate rescrie acea conexiune poate răspunde ca oricare martor deodată; `http://` pe loopback este acceptabil. Îndreaptă martorii către endpoint-uri RPC în care ai motive independente să ai încredere.
 :::
 
-Valorile implicite de delegare activează alertele de reechilibrare bazate pe reputație și lasă `auto_claim` dezactivat — vezi [Recompense și Monitorizare](/light-node/rewards-and-monitoring) pentru ce anume fac acestea.
+Valorile implicite de delegare activează alertele de stake și lasă `auto_claim` dezactivat; vezi [Recompense și Monitorizare](/light-node/rewards-and-monitoring) pentru ce anume fac acestea.
 
 ## Prima rulare: `onboard` {#first-run-onboard}
 
@@ -207,6 +225,7 @@ CLI-ul SX include comenzi pentru inspectarea stării nodului și gestionarea che
 | `delegation` | Afișează delegările contului de operator, așa cum sunt reflectate în baza de date locală de daemon-ul în funcțiune. |
 | `rewards` | Afișează recompensele de staking în așteptare ale contului de operator (nu recompensele light node-ului; vezi [Recompense și Monitorizare](/light-node/rewards-and-monitoring#how-rewards-work)). |
 | `network` | Afișează telemetria rețelei (headere sincronizate recent) din baza de date locală. |
+| `update [--check]` | Light node 3.1.11 și ulterior. `--check` spune dacă există un release mai nou; fără el, verifică, instalează și păstrează binarul anterior ca `<name>.old`. Repornește nodul după aceea. Vezi [Actualizare](#updating). |
 | `version` | Afișează versiunea binarului. |
 
 Pentru detalii despre staking, recompense și monitorizare, vezi [Recompense și Monitorizare](/light-node/rewards-and-monitoring). Pentru înregistrarea on-chain, vezi [Înregistrare și Licențiere](/light-node/registration-and-licensing).

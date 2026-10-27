@@ -41,7 +41,7 @@ QoreChain'in **sonlu, üst sınırlı bir arz yolu** vardır. Genesis arzı **4.
 | --- | --- |
 | Emisyon modu | `fixed` (v3.1.94'ten beri, yükseklik 2.122.074 — 26 Ağustos 2026) |
 | Epoch başına emisyon | **86.000 QOR** (yönetişim önerisi 10'a kadar 16.239 QOR; 86.000 QOR'luk ilk epoch 3.672.000 numaralı blokta başlar) |
-| Epoch uzunluğu | 43.200 blok (şu anki ≈3,2 sn blok süresiyle yaklaşık 38,6 saat) |
+| Epoch uzunluğu | 43.200 blok (şu anki ≈3,1 sn blok süresiyle yaklaşık 37,7 saat) |
 | Kümülatif üst sınır (`max_total_emission`) | **590.000.000 QOR** (öneri 10'a kadar 114.285.714 QOR) |
 | Şimdiye kadar basılan (23 Ekim 2026, epoch 86) | 105.420.896,21 QOR (üst sınırın %17,87'si) |
 | Üst sınıra kalan | 484.579.103,79 QOR (epoch başına 86.000 QOR ile yaklaşık 5.635 epoch; sonuncusu kısmidir) |
@@ -137,7 +137,7 @@ Her yakma olayı; kaynağı, tutarı, blok yüksekliği ve ilişkili işlem hash
 
 **Sıkışmış payın düzeltilmiş kalanı.** v3.2.3 yükseltmesinde (yükseklik 3.662.051, 20 Ekim 2026) zincir, sıkışmış pay kaydını yeniden hesapladı; kayıt o zaman 3.807.496,785528 QOR olarak duruyordu (`GET /qorechain/burn/v1/stranded_rewards` içindeki `reserved`; yanında `released`, 6.693.045,921330 QOR). Yönetişim önerisi 12 bu kalanı, 3.807.496,785528 QOR'u, vakfa serbest bıraktı: oylayan tüm bonded stake lehte oy vererek kabul edildi (oylama 21 Ekim 2026'da 20:01 UTC'de sona erdi). Kayıt `GET /qorechain/burn/v1/stranded_rewards` adresinden, öneri ise `GET /cosmos/gov/v1/proposals/12` adresinden kontrol edilebilir.
 
-**Light node havuzu şimdi.** v3.2.0 yükseltmesinden itibaren light node ödülleri yalnızca bir önceki dağıtım çalışmasından bu yana biriken tutardan, node başına bir tavanla ödenir. v3.2.3'ten beri tavan, **node başına 30 günde 2.000 QOR**'dur (`max_reward_per_month_per_node`); blok süresine ve node'un çalışma süresine göre orantılanır; blok başına değer (`max_reward_per_block_per_node`, 1.713 uqor) hâlâ bildirilir ancak artık kural değildir. Kazanılmayan her şey, yalnızca bir yönetişim oylamasının serbest bırakabileceği havuz rezervinde kalır. Öneri 8'den sonra rezerv yeniden birikir: 20 Ekim 2026'da 487,2318 QOR tutuyordu (`GET /qorechain/lightnode/v1/reward_pool` içindeki `reserved`); henüz hiçbir light node kayıt olmadığı için ödenmemiş veya ödenebilir bir şey yoktu. Kayıt açıktır ve lisans kapılıdır (bkz. [Light Node](/light-node/overview#reward-program-status)). Yükseltme anlık görüntüsünden önceki, kayıtlı tutarı aşan veya geçersiz bir hedefe yönelik bir serbest bırakma reddedilir.
+**Light node havuzu şimdi.** v3.2.0 yükseltmesinden itibaren light node ödülleri yalnızca bir önceki dağıtım çalışmasından bu yana biriken tutardan, node başına bir tavanla ödenir. v3.2.3'ten beri tavan, **node başına 30 günde 2.000 QOR**'dur (`max_reward_per_month_per_node`); blok süresine ve node'un çalışma süresine göre orantılanır; blok başına değer (`max_reward_per_block_per_node`, 1.713 uqor) hâlâ bildirilir ancak artık kural değildir. Kazanılmayan her şey, yalnızca bir yönetişim oylamasının serbest bırakabileceği havuz rezervinde kalır. Öneri 8'den sonra rezerv yeniden birikir: 27 Ekim 2026'da mainnet havuzunun `reserved` değeri (`GET /qorechain/lightnode/v1/reward_pool` içinde) yaklaşık 13.380,9 QOR idi; 0,06 QOR ödenmemiş durumdaydı ve ödenebilir bir şey yoktu; o gün her ağda bir light node kayıtlıydı. Kayıt açıktır ve lisans kapılıdır (bkz. [Light Node](/light-node/overview#reward-program-status)). Yükseltme anlık görüntüsünden önceki, kayıtlı tutarı aşan veya geçersiz bir hedefe yönelik bir serbest bırakma reddedilir.
 
 ## x/xqore — Kilitli Staking ve Yönetişim Güçlendirmesi {#x-xqore}
 
@@ -191,7 +191,7 @@ Bu, uzun vadeli sahipler için pozitif toplamlı bir dinamik yaratır: her erken
 
 ### Epoch Mekaniği
 
-* **Epoch uzunluğu**: 43.200 blok (blok başına ≈3,2 sn ile yaklaşık 38,6 saat).
+* **Epoch uzunluğu**: 43.200 blok (blok başına ≈3,1 sn ile yaklaşık 37,7 saat).
 * Her epoch sınırında modül epoch emisyonunu (veya üst sınıra kalan miktarı) basar, epoch kaydını günceller ve `total_minted` üst sınıra ulaştığında basmayı durdurur.
 * v3.2.3'ten beri emisyon yılı, sabit bir blok sayısı yerine epoch uzunluğundan türetilir.
 

@@ -243,7 +243,7 @@ Tüm fonksiyonlar `cosmossdk.io/math.LegacyDec` değerleri üzerinde çalışır
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Autonomous modda azami parametre değişikliği         |
 | `circuit_breaker_window`         | uint64    | `50`         | Devre kesici tarafından izlenen son blok sayısı     |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Tetiklemeden önce asgari sağlıklı blok oranı        |
-| `default_block_time_ms`          | int64     | `5000`       | Gözlem temel çizgisi olarak kullanılan varsayılan hedef blok süresi (ms); gerçek blok süresi mainnet'te yaklaşık 3,2 sn ve testnet'te yaklaşık 1,3 sn'dir |
+| `default_block_time_ms`          | int64     | `5000`       | Gözlem temel çizgisi olarak kullanılan varsayılan hedef blok süresi (ms); gerçek blok süresi mainnet'te yaklaşık 3,1 sn ve testnet'te yaklaşık 1,3 sn'dir |
 | `default_base_gas_price`         | LegacyDec | `100`        | Varsayılan temel gaz fiyatı                          |
 | `default_validator_set_size`     | uint64    | `100`        | Varsayılan hedef doğrulayıcı kümesi boyutu          |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Verim iyileştirmesi için ödül ağırlığı              |

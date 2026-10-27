@@ -99,13 +99,13 @@ instantiate are permissioned (instantiate is open on the testnet). See [Cross-VM
 
 ---
 
-## 3. Quantum-safe by default
+## 3. Hybrid signing by default
 
-**Make a signer post-quantum protected in one call.**
+**Register a signer's ML-DSA-87 key in one call.**
 
 QoreChain enforces hybrid post-quantum signatures (ML-DSA-87 + classical) at the
 protocol level. The SDK makes adopting them a one-liner: check, register, and
-migrate to hybrid signing — with a React badge to show users they're protected.
+migrate to hybrid signing — with a React badge that shows whether an address has a registered key.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -127,7 +127,7 @@ await hybrid.signAndBroadcastHybrid({
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// Shows a status badge when the address has a registered PQC key
 // (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
@@ -136,7 +136,7 @@ import { QuantumSafeBadge } from "@qorechain/react";
 QoreChain's Native path, not an experiment, and the SDK reduces adopting it to a
 register call plus a hybrid send path. Registration is explicit: there is no
 auto-registration on the first transaction. See
-[Quantum-safe](/sdk/guides/quantum-safe).
+[Hybrid signing](/sdk/guides/quantum-safe).
 
 ---
 

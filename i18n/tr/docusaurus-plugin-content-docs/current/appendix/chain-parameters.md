@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain ağlarının modül parametrelerinin, modüle göre gruplanmış birleştirilmiş referansı. Parametreler, modülün bir params sorgusu olduğu yerlerde `qorechaind query <module> params` ile sorgulanabilir (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` ve `gasabstraction` `config` kullanır), REST üzerinden ise yalnızca [REST / gRPC başvurusunda](/api-reference/rest-grpc-endpoints) listelenen rotalar için sorgulanabilir. `x/inflation` parametreleri de v3.2.3'ten beri ana ağda REST üzerinden sunulur (`/qorechain/inflation/v1/params`). Ana ağda `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ve `xqore` için, ayrıca `pqc` parametreleri için REST kullanılamaz (test ağı `pqc`, `crossvm` ve `rlconsensus` parametrelerini v3.2.6'dan beri REST üzerinden sunar).
 
 :::note
-Gösterilen değerler 23 Ekim 2026 tarihinde ana ağ **`qorechain-vladi`**'den (EVM zincir kimliği **9801**, sürüm **v3.2.4**, 23 Ekim 2026'da uygulandı) canlı olarak okunmuştur (bir yönetişim önerisinin değiştirdikleri dışında genesis değerleridir; değişenler ayrıca belirtilmiştir) ve çekirdek modül satırları 27 Ekim 2026'da yeniden okunmuştur. Yönetişim önerisi 14, v3.2.5'i ana ağda 3.906.833 yüksekliğinde uygulayacaktır (bu yazı hazırlanırken oylama döneminde); bu sayfa ana ağı bugün olduğu haliyle anlatır ve bu yükseltme uygulandığında güncellenir. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) **v3.2.6** sürümünü çalıştırır (27 Ekim 2026'da uygulandı). Değerleri, belirtilen durumlar dışında ana ağınkilerle aynıdır; kalan farklar [Test ağı ile ana ağ arasındaki farklar](#testnet-differences) bölümünde toplanmıştır. Blok cinsinden verilen süreler, ölçülen ana ağ blok süresi olan yaklaşık 3,2 saniyeye göre çevrilmiştir (test ağı yaklaşık her 1,3 saniyede bir blok üretir).
+Gösterilen değerler 23 Ekim 2026 tarihinde ana ağ **`qorechain-vladi`**'den (EVM zincir kimliği **9801**, sürüm **v3.2.4**, 23 Ekim 2026'da uygulandı) canlı olarak okunmuştur (bir yönetişim önerisinin değiştirdikleri dışında genesis değerleridir; değişenler ayrıca belirtilmiştir) ve çekirdek modül satırları 27 Ekim 2026'da yeniden okunmuştur. Yönetişim önerisi 14, v3.2.5'i ana ağda 3.906.833 yüksekliğinde uygulayacaktır (bu yazı hazırlanırken oylama döneminde); bu sayfa ana ağı bugün olduğu haliyle anlatır ve bu yükseltme uygulandığında güncellenir. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) **v3.2.6** sürümünü çalıştırır (27 Ekim 2026'da uygulandı). Değerleri, belirtilen durumlar dışında ana ağınkilerle aynıdır; kalan farklar [Test ağı ile ana ağ arasındaki farklar](#testnet-differences) bölümünde toplanmıştır. Blok cinsinden verilen süreler, ölçülen ana ağ blok süresi olan yaklaşık 3,1 saniyeye göre çevrilmiştir (test ağı yaklaşık her 1,3 saniyede bir blok üretir).
 :::
 
 ---
@@ -22,7 +22,7 @@ Gösterilen değerler 23 Ekim 2026 tarihinde ana ağ **`qorechain-vladi`**'den (
 | `pqc_primary`              | `true`                     | Kuantum sonrası imzalar birincil şemadır                                 |
 | `allow_classical_fallback` | `false`                    | Yalnızca klasik geri dönüş kapalıdır; Cosmos hattındaki işlemler hibrit olmalıdır |
 | `min_security_level`       | `5`                        | Kayıtlı bir algoritma için minimum NIST güvenlik seviyesi                |
-| `default_migration_blocks` | `1,000,000`                | Yönetişimle başlatılan bir algoritma geçişinin varsayılan uzunluğu (≈3,2 sn bloklarda yaklaşık 37 gün) |
+| `default_migration_blocks` | `1,000,000`                | Yönetişimle başlatılan bir algoritma geçişinin varsayılan uzunluğu (≈3,1 sn bloklarda yaklaşık 36 gün) |
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2` (required)             | Uygulama modu: 0=devre dışı, 1=isteğe bağlı, 2=zorunlu                   |
 
@@ -34,7 +34,7 @@ Bir [EVM yetkilendirme penceresinin](/getting-started/first-transaction#evm-wind
 
 | Sınır | Değer |
 | ----- | ----- |
-| Maksimum `blocks` | 17,280 (≈3,2 sn bloklarda yaklaşık 15 saat) |
+| Maksimum `blocks` | 17,280 (≈3,1 sn bloklarda yaklaşık 15 saat) |
 | Maksimum `max_txs` | 1,000 |
 | `max_value` | 0'dan büyük (uqor; aktarılan değer artı her işlemin maksimum ücreti) |
 | Maksimum `allowed_targets` | 16 alıcı adresi (isteğe bağlı kapsam, v3.2.3) |
@@ -52,7 +52,7 @@ Modülün yapılandırması (`qorechaind query ai config`):
 | `anomaly_threshold` | `0.7`                  | Ante handler'ın bir işlemi işaretlediği anomali puanı eşiği                 |
 | `routing_strategy`  | `reputation_weighted`  | Yönlendirme stratejisi                                                      |
 | `risk_threshold`    | `0.8`                  | Risk puanı eşiği                                                            |
-| `max_tx_per_minute` | `600`                  | Cosmos hattında 30 blokluk bir pencere boyunca sayılan, gönderen başına işlem sınırı (≈3,2 sn bloklarda yaklaşık 96 sn; ad tarihsel kalıntıdır). v3.2.0'dan beri uygulanır; varsayılan değer 10'dur |
+| `max_tx_per_minute` | `600`                  | Cosmos hattında 30 blokluk bir pencere boyunca sayılan, gönderen başına işlem sınırı (≈3,1 sn bloklarda yaklaşık 94 sn; ad tarihsel kalıntıdır). v3.2.0'dan beri uygulanır; varsayılan değer 10'dur |
 
 [AI Motoru](/architecture/ai-engine) sayfasında açıklanan dolandırıcılık puanlama ağırlıkları ve şiddet eşikleri modül parametresi değil, dedektör sabitleridir.
 
@@ -148,7 +148,7 @@ xQORE modülünün muhasebesi mevcuttur, ancak kilitleme ve kilit açma işlemle
 | `emission_mode`        | `fixed`                 | `schedule` (eski) veya `fixed` (v3.1.94'ten beri)     |
 | `fixed_epoch_emission` | `86,000,000,000 uqor` (86.000 QOR) | Fixed modunda dönem başına basılan miktar (10 numaralı yönetişim önerisinden, 19 Ekim 2026, önce 16.239 QOR) |
 | `max_total_emission`   | `590,000,000,000,000 uqor` (590.000.000 QOR) | Kesin kümülatif üst sınır (10 numaralı öneriden önce 114.285.714 QOR) |
-| `epoch_length`         | `43,200` blocks         | Dönem başına blok sayısı (≈3,2 sn bloklarda yaklaşık 38,6 saat) |
+| `epoch_length`         | `43,200` blocks         | Dönem başına blok sayısı (≈3,1 sn bloklarda yaklaşık 37,7 saat) |
 | `schedule`             | %17,5, %11, %7, %7, %2  | Eski yıl bazlı oranlar, fixed modunda kullanılmaz     |
 | `enabled`              | `true`                  | Modül etkinleştirme bayrağı                           |
 
@@ -261,7 +261,7 @@ SVM işlem hattı ağ genelinde devre dışıdır (bkz. [Ağlar](/appendix/netwo
 | `rollup_creation_burn_rate` | `0.01`               | Oluşturma stake'inin yakılan oranı (%1)       |
 | `default_challenge_window`  | `604,800` s (test ağı: `3,600` s) | Varsayılan itiraz penceresi (7 gün; test ağında 1 saat) |
 | `max_da_blob_size`          | `2,097,152`          | Bayt cinsinden maksimum DA blob boyutu (2 MB) |
-| `blob_retention_blocks`     | `432,000`            | DA bloblarının saklanacağı blok sayısı (≈3,2 sn bloklarda yaklaşık 16 gün) |
+| `blob_retention_blocks`     | `432,000`            | DA bloblarının saklanacağı blok sayısı (≈3,1 sn bloklarda yaklaşık 16 gün) |
 | `max_batches_per_block`     | `10`                 | Blok başına işlenen maksimum parti sayısı     |
 
 Her iki ağda da henüz hiçbir rollup oluşturulmamıştır.
@@ -304,14 +304,14 @@ Ana ağda açık bir IBC kanalı olmadığından orada `ibc/USDC` veya `ibc/ATOM
 | Parametre                | Değer              | Açıklama                                             |
 | ------------------------ | ------------------ | ---------------------------------------------------- |
 | `registration_fee`       | `1,000,000 uqor` (1 QOR) | Bir hafif düğümü kaydetme ücreti               |
-| `heartbeat_interval`     | `1000` blocks      | Zorunlu heartbeat'ler arasındaki blok sayısı (≈3,2 sn bloklarda yaklaşık 54 dakika) |
+| `heartbeat_interval`     | `1000` blocks      | Zorunlu heartbeat'ler arasındaki blok sayısı (≈3,1 sn bloklarda yaklaşık 52 dakika) |
 | `min_delegated_stake`    | `1,000,000,000 uqor` (1.000 QOR) | Operatör tarafından delege edilen minimum stake |
 | `reward_share`           | `0.03`             | Hafif düğümler için ayrılan ücret toplayıcısı payı   |
 | `min_uptime_for_rewards` | `0.80`             | Ödül hakkı için minimum çalışma süresi oranı         |
 | `max_light_nodes`        | `10,000`           | Maksimum kayıtlı hafif düğüm sayısı                  |
 | `heartbeat_grace_period` | `100` blocks       | Geciken bir heartbeat için ek süre                   |
 
-Ödül muhasebesi canlıdır. `GET /qorechain/lightnode/v1/reward_pool` havuzu (`balance`, `reserved`, `outstanding`, `payable`, `distributable`) ve düğüm başına ödül sınırını bildirir. v3.2.3'ten beri sınır `max_reward_per_month_per_node`'dur: **düğüm başına 30 günde 2.000 QOR (`2000000000` uqor)**; blok süresine göre orantılanır ve düğümün çalışma süresine göre ölçeklenir; eski blok başına değer (`max_reward_per_block_per_node`, `1713` uqor) hâlâ bildirilmektedir. 20 Ekim 2026'da havuzda 487,2318 QOR'luk bir rezerv vardı ve bekleyen ödeme yoktu. Kayıt açıktır ve lisansa bağlıdır: ana ağda altı `lightnode_operator` lisansı verilmiştir ve henüz hiçbir hafif düğüm kaydolmamıştır (`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). Bkz. [Hafif Düğüm](/light-node/overview#reward-program-status) ve [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+Ödül muhasebesi canlıdır. `GET /qorechain/lightnode/v1/reward_pool` havuzu (`balance`, `reserved`, `outstanding`, `payable`, `distributable`) ve düğüm başına ödül sınırını bildirir. v3.2.3'ten beri sınır `max_reward_per_month_per_node`'dur: **düğüm başına 30 günde 2.000 QOR (`2000000000` uqor)**; blok süresine göre orantılanır ve düğümün çalışma süresine göre ölçeklenir; eski blok başına değer (`max_reward_per_block_per_node`, `1713` uqor) hâlâ bildirilmektedir. 27 Ekim 2026'da ana ağ havuzunda yaklaşık 13.380,9 QOR'luk bir rezerv (`reserved`) vardı; bunun küçük bir kısmı (0,06 QOR) bekleyen ödemeydi ve henüz ödenebilir bir tutar yoktu. Kayıt açıktır ve lisansa bağlıdır: o tarihte ana ağda yedi `lightnode_operator` lisansı verilmişti ve her ağda bir hafif düğüm kayıtlıydı (`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). Bkz. [Hafif Düğüm](/light-node/overview#reward-program-status) ve [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 ---
 
@@ -359,7 +359,7 @@ Standart Cosmos SDK ve EVM modülleri; tümü 27 Ekim 2026'da ana ağdan canlı 
 | | `historical_entries` | 10,000 |
 | | `bond_denom` | `uqor` |
 | | `min_commission_rate` | 0 |
-| Slashing | `signed_blocks_window` | 10,000 blok (≈3,2 sn bloklarda yaklaşık 8,9 saat) |
+| Slashing | `signed_blocks_window` | 10,000 blok (≈3,1 sn bloklarda yaklaşık 8,7 saat) |
 | | `min_signed_per_window` | %5 (pencerenin %5'inden azını imzalayan bir doğrulayıcı hapse atılır) |
 | | `downtime_jail_duration` | 600 s |
 | | `slash_fraction_downtime` | %1 |
@@ -410,7 +410,7 @@ Standart bank, staking, governance, distribution, authz ve `x/pqc` kayıt mesajl
 | QoreChain Native instantiate izni | `Nobody` | `Everybody` (kod yükleme her iki ağda `Nobody` kalır) |
 | Devre kesici | 16 kayıt (yukarıya bakın) | 1 kayıt: QoreChain Native `MsgStoreCode` |
 | REST üzerinden parametre rotaları | `x/pqc`, `x/crossvm` ve `x/rlconsensus` parametreleri 501 döndürür | `GET /qorechain/pqc/v1/params`, `/qorechain/crossvm/v1/params` ve `/qorechain/rlconsensus/v1/params` yanıt verir (v3.2.6) |
-| Blok süresi ve doğrulayıcılar | yaklaşık 3,2 sn; 8 bağlı doğrulayıcı | yaklaşık 1,3 sn; 4 bağlı doğrulayıcı |
+| Blok süresi ve doğrulayıcılar | yaklaşık 3,1 sn; 8 bağlı doğrulayıcı | yaklaşık 1,3 sn; 4 bağlı doğrulayıcı |
 | Test tokenları | yok | fUSD, fETH ve fBTC (bkz. [Faucet](/dashboard/faucet#fest-tokens)) |
 
 Her iki ağ da v3.2.4 eklemelerini taşır: isteğe bağlı zaman kilitli stake modülü `x/stakingtier` (48 yerine 49 modül; `GET /qorechain/stakingtier/v1/params`, minimum kilit 10 QOR, erken kilit açma cezası %5), on üçüncü bir kayıtlı yakım kaynağı (`staking_tier_penalty`), bir düğümün kendi kaydıyla başlayan ödül sınırına sahip ek hafif düğüm ödül havuzu raporlama alanları, PQC hesaplarında `possession_proven` bayrağı (sahiplik kanıtı hesap anahtarları için isteğe bağlı kalır, köprü doğrulayıcı anahtarları için zorunludur), blok süresi cinsinden sayılan RDK itiraz penceresi ve `protocol_features` ile `auth_nonce` sorguları. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking). Test ağındaki v3.2.6 eklemeleri [Sürüm Geçmişi](/appendix/version-history#testnet-v326) bölümünde özetlenmiştir.

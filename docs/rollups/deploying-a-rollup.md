@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Deploying a Rollup
 
-You can set up an application-specific rollup three ways: through the **Dashboard** (a request form, not an on-chain transaction), through the chain **CLI** (`qorechaind`, full control over the on-chain transaction), or with the **TypeScript RDK** (`@qorechain/rdk` plus the `create-qorechain-rollup` scaffolder), which covers configuration, reads and, when you give it a post-quantum key, hybrid-signed transactions (see [RDK 0.6.1: changes and limits](#rdk-050-limits)). This page covers all three, plus the operator lifecycle and batch commands.
+You can set up an application-specific rollup three ways: through the **Dashboard** (a request form, not an on-chain transaction), through the chain **CLI** (`qorechaind`, full control over the on-chain transaction), or with the **TypeScript RDK** (`@qorechain/rdk` plus the `create-qorechain-rollup` scaffolder), which covers configuration, reads and, when you give it a post-quantum key, hybrid-signed transactions (see [RDK 0.6.2: changes and limits](#rdk-050-limits)). This page covers all three, plus the operator lifecycle and batch commands.
 
 :::caution Early-stage capability
 No rollup has been created on either network yet (checked 27 October 2026). The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**, chain version **v3.2.6**: v3.2.4 was applied there on 19 October 2026, v3.2.5 on 26 October at height 8,890,800 and v3.2.6 on 27 October at height 8,970,638). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, live since 7 June 2026) runs chain version **v3.2.4** since 23 October 2026 (applied at height 3,742,566 by governance proposal 13); governance proposal 14 would apply v3.2.5 at height 3,906,833 and was in its voting period at the time of writing, and what v3.2.5 changes for rollups is documented the day mainnet applies it. Earlier releases differ in a few details, which this page marks "from v3.2.4". The testnet is a staging network with its own module parameters (for example a default challenge window of 3,600 seconds against 604,800 on mainnet, and 200 rollups at most against 100); read `GET /qorechain/rdk/v1/params` on the network you target. Validate every deployment on testnet first.
@@ -94,7 +94,7 @@ qorechaind tx pqc cosign create-rollup.json \
   --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
-A ZK profile such as `defi` is accepted at creation, but a rollup created this way does not carry a verifying key, so its ZK batches cannot be finalised yet (see [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)).
+**Do not create a `defi` (ZK) rollup yet.** The chain accepts the creation and escrows the stake, but it has no way to register a verification key, so every ZK batch is refused after its fee is paid. Key registration is planned for chain v3.2.7. Choose an `optimistic` profile such as `nft` or `custom` for now (see [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)).
 
 **Flags:**
 
@@ -122,12 +122,12 @@ qorechaind query rdk list-rollups
 
 ## Deploy with the TypeScript RDK (`@qorechain/rdk`) {#deploy-with-the-typescript-rdk-qorechainrdk}
 
-The Rollup Development Kit ships as two public npm packages for the same on-chain `x/rdk` module as the CLI. No rollup exists on either network yet, so no transaction path of the kit has been exercised on a live rollup; read [RDK 0.6.1: changes and limits](#rdk-050-limits) before you rely on it to send transactions:
+The Rollup Development Kit ships as two public npm packages for the same on-chain `x/rdk` module as the CLI. No rollup exists on either network yet, so no transaction path of the kit has been exercised on a live rollup; read [RDK 0.6.2: changes and limits](#rdk-050-limits) before you rely on it to send transactions:
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.6.1`) — the TypeScript SDK: a config builder with preset profiles, transaction helpers for the rollup and settlement-batch lifecycles, native DA, typed read clients, quantum-safe settlement receipts, the QCAI Rollup Copilot, cross-VM calldata helpers, and the watchtower. It depends on `@qorechain/sdk` `^0.9.0` and `@qorechain/evm` `^0.8.0`.
-* **`create-qorechain-rollup`** (`v0.6.1`) — a scaffolder that clones one runnable starter template per profile (including the `multivm-rollup` template).
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.6.2`) — the TypeScript SDK: a config builder with preset profiles, transaction helpers for the rollup and settlement-batch lifecycles, native DA, typed read clients, settlement receipts with an ML-DSA-87 signature, the QCAI Rollup Copilot, cross-VM calldata helpers, and the watchtower. It depends on `@qorechain/sdk` `^0.9.0` and `@qorechain/evm` `^0.8.0`.
+* **`create-qorechain-rollup`** (`v0.6.2`) — a scaffolder that clones one runnable starter template per profile (including the `multivm-rollup` template).
 
-These are published to npm. The repo also ships a published operator CLI, **`@qorechain/rdk-cli`** (`qorollup`, `v0.6.1`), with `doctor`, `create`, `status`, `watch`, `params`, `suggest`, lifecycle (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw`, and `faucet` commands, plus the `receipt`, `advise`, and `watchtower` commands. Its transaction commands sign classical-only (see the limits below).
+These are published to npm. The repo also ships a published operator CLI, **`@qorechain/rdk-cli`** (`qorollup`, `v0.6.2`), with `doctor`, `create`, `status`, `watch`, `params`, `suggest`, lifecycle (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw`, and `faucet` commands, plus the `receipt`, `advise`, and `watchtower` commands. Its transaction commands sign classical-only (see the limits below).
 
 Highlights by release:
 
@@ -136,13 +136,19 @@ Highlights by release:
 * **v0.4.4 — tracks `@qorechain/sdk` `^0.7.0`**, the SDK release for the chain **v3.1.85** authenticator lanes. No RDK API change.
 * **v0.5.0 (18 October 2026)** — settlement-receipt verification checks against chain state and never reports a receipt valid from its own fields; the TypeScript transaction client signs hybrid when given a `pqcKeypair`. It depends on `@qorechain/sdk` `^0.8.0`.
 * **v0.6.0 (GitHub release of 20 October 2026)** — the compatibility release for chain v3.2.2 to v3.2.4: anchored batches, settlement receipts that can verify, challenge windows measured as the chain measures them, an encoder that matches the chain's cross-VM layout, templates that sign hybrid, and `@qorechain/sdk` `^0.9.0`. The details are below.
-* **v0.6.1 (GitHub release of 25 October 2026; current)** — a security and template fix release for chain v3.2.3 onward, in all five languages: settlement-receipt verification compares every field the receipt states with the chain's anchor, the six starter templates no longer submit batches the chain refuses (they leave `dataHash` empty), and the optimistic templates publish the chain's canonical state root instead of a placeholder. It keeps the `@qorechain/sdk` `^0.9.0` and `@qorechain/evm` `^0.8.0` ranges. The details are below.
+* **v0.6.1 (GitHub release of 25 October 2026)** — a security and template fix release for chain v3.2.3 onward, in all five languages: settlement-receipt verification compares every field the receipt states with the chain's anchor, the six starter templates no longer submit batches the chain refuses (they leave `dataHash` empty), and the optimistic templates publish the chain's canonical state root instead of a placeholder. It keeps the `@qorechain/sdk` `^0.9.0` and `@qorechain/evm` `^0.8.0` ranges. The details are below.
+* **v0.6.2 (GitHub release of 27 October 2026; current)** — a CLI hotfix with no library changes: `qorollup` installed from npm (local, global or `npx`) runs again, and `qorollup --version` and `create-qorechain-rollup --version` print their real versions. The other packages were re-released as 0.6.2 so every registry stays on one version. Maven Central still serves 0.6.1 until 0.6.2 is live there.
 
-**Published versions (checked on every registry on 27 October 2026).** npm `@qorechain/rdk`, `@qorechain/rdk-cli` and `create-qorechain-rollup`: **0.6.1** (`latest`); PyPI `qorechain-rdk`: 0.6.1; crates.io `qorechain-rdk`: 0.6.1; Maven Central `io.github.qorechain:qorechain-rdk`: 0.6.1 (latest and release); Go module `github.com/qorechain/qorechain-rdk/packages/go`: `v0.6.1` is served by the module proxy and is what `@latest` resolves to today (the proxy's `@latest` can lag a new tag, so pinning `@v0.6.1` explicitly is the clearest). The GitHub release is [v0.6.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.6.1).
+**Published versions (checked on every registry on 27 October 2026).** npm `@qorechain/rdk`, `@qorechain/rdk-cli` and `create-qorechain-rollup`: **0.6.2** (`latest`); PyPI `qorechain-rdk`: 0.6.2; crates.io `qorechain-rdk`: 0.6.2; Go module `github.com/qorechain/qorechain-rdk/packages/go`: `v0.6.2` (tag `packages/go/v0.6.2`, served by the module proxy; pin the version explicitly, because the proxy's `@latest` can lag a new tag). **Maven Central `io.github.qorechain:qorechain-rdk` still serves 0.6.1** (its `maven-metadata.xml` lists 0.6.1 as latest and release); 0.6.2 contains no Java change, so the 0.6.1 artifact is the same library until 0.6.2 is live there. The GitHub release is [v0.6.2](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.6.2).
 
-#### RDK 0.6.1: changes and limits {#rdk-050-limits}
+#### RDK 0.6.2: changes and limits {#rdk-050-limits}
 
-This section states what the published 0.6.1 packages do (and what 0.6.0 changed before them), checked against the package contents and the GitHub release notes, and what they still cannot do. None of these items is a chain behaviour. Where a statement says "untested live", no rollup exists on either network, so the path has only been checked against the code and offline.
+This section states what the published 0.6.2 packages do (0.6.2 changed only the CLI entry point and version stamps, so the library behaviour is that of 0.6.1, plus what 0.6.0 changed before it), checked against the package contents and the GitHub release notes, and what they still cannot do. None of these items is a chain behaviour. Where a statement says "untested live", no rollup exists on either network, so the path has only been checked against the code and offline.
+
+**What 0.6.2 changed** (the CLI and scaffolder only; the library packages are unchanged):
+
+* **`qorollup` runs when installed from npm.** The CLI started only when `process.argv[1]` equalled its own file path, but npm starts a package's bin through a symlink in `node_modules/.bin`, so 0.6.1 and earlier, installed locally, globally or run with `npx`, exited with code 0 and printed nothing; only `node .../dist/index.js` worked. 0.6.2 compares real paths. After `npm i -g @qorechain/rdk-cli`, `qorollup ...` works.
+* **Versions print correctly.** `qorollup --version` printed `0.4.1` and `create-qorechain-rollup --version` printed `0.2.0` in earlier releases; both now read their own `package.json` (checked on 27 October 2026: `qorollup --version` prints `0.6.2`).
 
 **What 0.6.1 changed** (all five languages, unless a line says otherwise; the [release notes](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.6.1) have the full list):
 
@@ -164,7 +170,11 @@ This section states what the published 0.6.1 packages do (and what 0.6.0 changed
 * **Python, Go, Rust and Java.** The read-side fixes above (singular PQC route, `latest_batch`, anchor sign bytes v2, challenge-window rules, id and withdrawal checks) are in the published packages of the four other languages as well.
 * **Breaking changes.** `encodeCrossVmCalldata` takes `targetVm`, and `CROSS_VM_DEFAULT_SIGNATURE` changed. `RollupHealth` and `BatchDeadline` carry a `challengeWindow` instead of the old seconds-based deadline.
 
-**Limits that remain in 0.6.1:**
+**Limits that remain in 0.6.2:**
+
+* **ZK settlement cannot be used on either network yet.** The `defi` profile, the `defi-rollup` template and every rollup created with `zk` settlement are affected: the chain has no way yet to register a verification key for a rollup, so every ZK batch is refused after its fee is paid. Key registration is planned for chain v3.2.7. Use `optimistic` settlement until then (see [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)).
+* **The `defi` template's demo circuit cannot verify.** It is a `snarkjs` multiplier circuit, while the chain checks Groth16 over BLS12-381 with three public inputs (the previous state root, the new state root and the data hash). Even once key registration exists, a proof from the demo circuit would not pass; replace the circuit with your own state-transition circuit.
+* **Withdrawal Merkle helpers default to SHA-256.** The generic `binaryMerkleRoot` / `binaryMerkleProof` helpers (and their Python, Go, Rust and Java equivalents) hash with SHA-256, while the chain uses SHAKE-256 for withdrawal leaves and nodes, so a proof built with the defaults does not verify (see [Leaf and node encoding](/rollups/zk-stark-withdrawals#leaf-and-node-encoding)).
 
 * **Only the TypeScript client signs hybrid.** The `qorollup` CLI (its `create`, `pause`, `resume`, `stop` and `withdraw` commands connect without a post-quantum key) and the **Python, Go, Rust and Java** clients sign classical-only, which both networks refuse on the native lane; their READMEs still say so. Their message builders have no `anchor_signature` or `validator_set_hash` field. For transactions from these, build and sign with the chain CLI (`--generate-only`, then `qorechaind tx pqc cosign`) or use the TypeScript client with a `pqcKeypair`.
 * **No hybrid creation of a rollup has been exercised live,** because no rollup exists on either network. The same holds for anchored batches, withdrawals and the whole receipt flow.
@@ -173,11 +183,11 @@ This section states what the published 0.6.1 packages do (and what 0.6.0 changed
 * **Challenge-window length.** The kit reads a rollup's own window only when the node reports it (the package documents this as v3.2.4 and later, which both networks run). Otherwise it uses the module's default window; pass `challengeWindowSecs` for a rollup that configured its own. The older helpers `challengeWindowDeadline` and `isChallengeWindowClosed` are still exported and still take seconds, so do not feed them a block height.
 * **Data availability.** `buildDaBlob` hashes with SHA-256, while the chain's blob commitment is SHAKE-256, and no transaction posts a blob, so a batch on a `native` or `both` rollup must leave `dataHash` empty (see [Data Availability](/rollups/data-availability)).
 
-**Versions before 0.6.1.** 0.6.0 compares fewer fields in receipt verification than 0.6.1 and ships templates that submit batches the chain refuses (a data hash on a native-DA rollup, a placeholder state root on the optimistic ones); use 0.6.1. 0.5.0 and earlier should not be used for settlement receipts, the watchtower or cross-VM calldata: 0.5.0 looked up the creator's key on a route the networks do not serve (so receipt verification failed closed on every genuine receipt), rebuilt only the v1 anchor message, read a block height as a timestamp (every batch age and challenge deadline was wrong, and the watchtower raised its deadline alert at once for every batch), called a latest-batch route the chain does not serve, read only the first 50 batches, encoded a function the precompile does not decode, and shipped templates that signed classical-only. 0.4.x had no hybrid signing in the transaction client.
+**Versions before 0.6.2.** 0.6.1 and earlier installed the `qorollup` CLI from npm in a state where it printed nothing and exited 0 (fixed in 0.6.2; the library packages are the same). 0.6.0 compares fewer fields in receipt verification than 0.6.1 and ships templates that submit batches the chain refuses (a data hash on a native-DA rollup, a placeholder state root on the optimistic ones); use 0.6.2. 0.5.0 and earlier should not be used for settlement receipts, the watchtower or cross-VM calldata: 0.5.0 looked up the creator's key on a route the networks do not serve (so receipt verification failed closed on every genuine receipt), rebuilt only the v1 anchor message, read a block height as a timestamp (every batch age and challenge deadline was wrong, and the watchtower raised its deadline alert at once for every batch), called a latest-batch route the chain does not serve, read only the first 50 batches, encoded a function the precompile does not decode, and shipped templates that signed classical-only. 0.4.x had no hybrid signing in the transaction client.
 
 #### Python, Go, Rust, and Java clients
 
-Alongside the TypeScript package, the RDK provides full **Python**, **Go**, **Rust**, and **Java** clients that mirror the TypeScript surface: the config builder with validation, the five preset profiles, denom/economics/bech32 utilities, binary-Merkle and withdrawal-proof helpers, rollup manifests, REST and `qor_` JSON-RPC read clients, preflight/health checks, accounts (mnemonic → `qor` address), and classical transaction signing + broadcast (`SIGN_MODE_DIRECT`, not accepted on the hybrid-signature networks — see [RDK 0.6.1: changes and limits](#rdk-050-limits)). All are verified against shared cross-language golden vectors and are **published** to their registries:
+Alongside the TypeScript package, the RDK provides full **Python**, **Go**, **Rust**, and **Java** clients that mirror the TypeScript surface: the config builder with validation, the five preset profiles, denom/economics/bech32 utilities, binary-Merkle and withdrawal-proof helpers, rollup manifests, REST and `qor_` JSON-RPC read clients, preflight/health checks, accounts (mnemonic → `qor` address), and classical transaction signing + broadcast (`SIGN_MODE_DIRECT`, not accepted on the hybrid-signature networks — see [RDK 0.6.2: changes and limits](#rdk-050-limits)). All are verified against shared cross-language golden vectors and are **published** to their registries:
 
 ```bash
 # Python — installs as qorechain-rdk, imports as qorrdk
@@ -187,17 +197,17 @@ pip install qorechain-rdk
 cargo add qorechain-rdk
 
 # Go (pin the version)
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.6.1
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.6.2
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.6.1
+# io.github.qorechain:qorechain-rdk:0.6.1  (Maven Central serves 0.6.1 until 0.6.2 is live there; no Java change)
 ```
 
 ```python
 import qorrdk
 ```
 
-Current published versions, all **0.6.1** (checked 27 October 2026): Python `qorechain-rdk` (PyPI, import `qorrdk`), Go module `github.com/qorechain/qorechain-rdk/packages/go` (`v0.6.1`), Rust `qorechain-rdk` (crates.io) and Java `io.github.qorechain:qorechain-rdk` (Maven Central). These clients read chain state; they still do not produce the hybrid signature the networks require, and their message builders carry no anchor fields (see [RDK 0.6.1: changes and limits](#rdk-050-limits)).
+Current published versions (checked 27 October 2026): Python `qorechain-rdk` (PyPI, import `qorrdk`), Go module `github.com/qorechain/qorechain-rdk/packages/go` (`v0.6.2`) and Rust `qorechain-rdk` (crates.io) are **0.6.2**; Java `io.github.qorechain:qorechain-rdk` (Maven Central) is still **0.6.1**, with no Java change in 0.6.2. These clients read chain state; they still do not produce the hybrid signature the networks require, and their message builders carry no anchor fields (see [RDK 0.6.2: changes and limits](#rdk-050-limits)).
 
 :::note
 The TypeScript RDK and its templates default to the **`qorechain-diana`** testnet, and the presets reach the live public endpoints out of the box. Pin versions and validate on testnet before mainnet.
@@ -222,12 +232,12 @@ npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet -
 The scaffolder prints the documented stake and creation-burn cost and the next steps to create your rollup and read its status.
 
 :::caution What the scaffolded scripts can do
-The templates of `create-qorechain-rollup` 0.6.1 depend on `@qorechain/rdk` `^0.6.1`. Their `create` and `submit-batch` scripts connect through `connectOperator()` in `src/signer.ts`, which resolves your post-quantum key from `QORE_MNEMONIC` (or from `QORE_PQC_SEED_HEX` when you sign with `QORE_OPERATOR_PRIVATE_KEY_HEX`), checks it against the chain, and signs hybrid; with neither set the script warns and signs classical-only, which both networks refuse. No rollup has been created through a template on a live network, so this path is untested live. The starter's `submit-batch` script is a reference flow only: since 0.6.1 it leaves `dataHash` empty (the chain refuses a data hash on a native-DA rollup), and the optimistic templates publish the canonical state root instead of a placeholder; it still uses illustrative values for the rest (and, for the ZK profile, a sample proof), and it is not expected to finalise a batch on a live network.
+The templates of `create-qorechain-rollup` 0.6.2 depend on `@qorechain/rdk` `^0.6.1`, which a fresh install resolves to 0.6.2. Their `create` and `submit-batch` scripts connect through `connectOperator()` in `src/signer.ts`, which resolves your post-quantum key from `QORE_MNEMONIC` (or from `QORE_PQC_SEED_HEX` when you sign with `QORE_OPERATOR_PRIVATE_KEY_HEX`), checks it against the chain, and signs hybrid; with neither set the script warns and signs classical-only, which both networks refuse. No rollup has been created through a template on a live network, so this path is untested live. The starter's `submit-batch` script is a reference flow only: since 0.6.1 it leaves `dataHash` empty (the chain refuses a data hash on a native-DA rollup), and the optimistic templates publish the canonical state root instead of a placeholder; it still uses illustrative values for the rest (and, for the ZK profile, a sample proof), and it is not expected to finalise a batch on a live network.
 :::
 
 ### Build a rollup configuration from code
 
-Build a config from a preset, read the live stake and burn rate from the chain, and produce the create message. The config builder enforces the settlement → proof compatibility matrix on `validate()` / `build()`. Submit the resulting values with the CLI above, or with the TypeScript client given a `pqcKeypair` — see [RDK 0.6.1: changes and limits](#rdk-050-limits).
+Build a config from a preset, read the live stake and burn rate from the chain, and produce the create message. The config builder enforces the settlement → proof compatibility matrix on `validate()` / `build()`. Submit the resulting values with the CLI above, or with the TypeScript client given a `pqcKeypair` — see [RDK 0.6.2: changes and limits](#rdk-050-limits).
 
 ```ts
 import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qorechain/rdk";
@@ -263,7 +273,7 @@ const rollup = await rdk.rest.getRollup("my-defi-rollup");
 console.log(rollup.status, rollup.settlementMode, rollup.daBackend, rollup.vmType);
 ```
 
-For batches, use `rdk.rest.getBatch(rollupId, index)` or `qorechaind query rdk batch [rollup-id]` (below); `getLatestBatch` and `listBatches` read the chain's `latest_batch` route and every page of the batch list since 0.6.0 (see [RDK 0.6.1: changes and limits](#rdk-050-limits)).
+For batches, use `rdk.rest.getBatch(rollupId, index)` or `qorechaind query rdk batch [rollup-id]` (below); `getLatestBatch` and `listBatches` read the chain's `latest_batch` route and every page of the batch list since 0.6.0 (see [RDK 0.6.2: changes and limits](#rdk-050-limits)).
 
 ---
 
@@ -357,11 +367,11 @@ qorechaind query rdk anchor-sign-bytes [layer-id] [batch-index] [state-root-hex]
   --chain-id qorechain-diana --tx-count 120
 ```
 
-`layer-id` is the rollup's layer id (the rollup id for rollups created by the RDK). From TypeScript, `RdkTxClient.submitBatch` in `@qorechain/rdk` 0.6.0 and later signs the anchor for you when the client signs hybrid and is the rollup's creator, and `anchorSignBytesForBatch` gives a creator the bytes to sign out of band (see [RDK 0.6.1: changes and limits](#rdk-050-limits)). The ZK `--proof` for a `zk` rollup has no CLI flag today, and the resolve-challenge message is not a CLI command: use a client. See [Settlement receipts](/rollups/settlement-receipts) for what an anchor does and does not prove. No rollup, layer or anchor exists on either network yet.
+`layer-id` is the rollup's layer id (the rollup id for rollups created by the RDK). From TypeScript, `RdkTxClient.submitBatch` in `@qorechain/rdk` 0.6.0 and later signs the anchor for you when the client signs hybrid and is the rollup's creator, and `anchorSignBytesForBatch` gives a creator the bytes to sign out of band (see [RDK 0.6.2: changes and limits](#rdk-050-limits)). The ZK `--proof` for a `zk` rollup has no CLI flag today, and the resolve-challenge message is not a CLI command: use a client. See [Settlement receipts](/rollups/settlement-receipts) for what an anchor does and does not prove. No rollup, layer or anchor exists on either network yet.
 
 ### Challenge a batch (optimistic rollups) {#challenge-a-batch-optimistic-rollups}
 
-Any account can challenge a `submitted` batch inside the challenge window (100,800 blocks by default for a batch submitted on mainnet before height 3,742,566; from v3.2.4, a window in seconds of block time for new batches: on the testnet since height 8,337,253, on mainnet since height 3,742,566) by posting a bond (the rollup's `challenge_bond`; 1,000 QOR for the `nft` and `custom` presets) and a fraud proof. An optimistic batch is judged by whether its state root is the canonical transition root, so a submitter should publish exactly that root (the RDK 0.6.1 templates do; see [RDK 0.6.1: changes and limits](#rdk-050-limits)). Takes the rollup ID and batch index; pass the fraud proof with `--proof`:
+Any account can challenge a `submitted` batch inside the challenge window (100,800 blocks by default for a batch submitted on mainnet before height 3,742,566; from v3.2.4, a window in seconds of block time for new batches: on the testnet since height 8,337,253, on mainnet since height 3,742,566) by posting a bond (the rollup's `challenge_bond`; 1,000 QOR for the `nft` and `custom` presets) and a fraud proof. An optimistic batch is judged by whether its state root is the canonical transition root, so a submitter should publish exactly that root (the RDK 0.6.1 templates do; see [RDK 0.6.2: changes and limits](#rdk-050-limits)). Takes the rollup ID and batch index; pass the fraud proof with `--proof`:
 
 ```bash
 qorechaind tx rdk challenge-batch [rollup-id] [batch-index] \

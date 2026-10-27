@@ -152,6 +152,24 @@ qorechaind query stakingtier locks <holder_address>
 
 Die obige Chain-ID ist die des Testnets; verwende im Mainnet `qorechain-vladi`. Wie auf dem Rest dieser Seite signierst du jede erzeugte Transaktion mit `tx pqc cosign`.
 
+### Zeitgesperrtes Staking verwenden {#using-time-locks}
+
+**Schritte.** (1) Delegiere wie gewohnt an einen Validator. (2) Führe `tx stakingtier lock` für diesen Validator mit einem Betrag (mindestens 10 QOR) und einer Laufzeit von 3, 6 oder 12 Monaten aus, signiere dann mit cosign und sende die Transaktion. (3) Lies das Ergebnis mit `GET /qorechain/stakingtier/v1/locks/{holder}` oder `qorechaind query stakingtier locks <holder_address>` aus; jede Sperre hat eine ID. (4) Fordere mit `tx stakingtier claim` die Sperrbelohnung ein, wann immer du möchtest. (5) Am Ende der Laufzeit wird die Sperre von selbst aufgehoben; um früher auszusteigen, verwende `tx stakingtier unlock-early <lock_id>` und akzeptiere die Strafe.
+
+**Wo es funktioniert, geprüft am 27. Oktober 2026.**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| Modul live | Ja, seit Höhe 3,742,566 | Ja, seit v3.2.4 (Höhe 8,337,253) |
+| Offene Sperren | Noch keine | 3 Testsperren |
+| Entbinden von gesperrtem Stake | Vom Staking-Nachrichten-Gate abgelehnt, wenn die Transaktion ausgeführt wird | Vom Mempool abgelehnt, bevor eine Gebühr erhoben wird (nur Testnet, bis das Mainnet v3.2.6 anwendet) |
+
+Beide Netzwerke beantworten `GET /qorechain/stakingtier/v1/params` mit denselben Einstellungen: drei Laufzeiten, ein Minimum von 10 QOR (`min_lock_amount` `"10000000"` uqor), eine Strafe für vorzeitiges Entsperren von 500 Basispunkten (5 %) und `enabled: true`. Die Antwort enthält auch die Bonus-Einstellungen in Basispunkten; dieses Handbuch nennt sie nicht, weil ein Bonus keine zugesagte Rendite ist und die Einstellungen per Governance geändert werden können. `GET /qorechain/stakingtier/v1/pool` zeigt den Pool, der die Sperrbelohnungen auszahlt.
+
+**Clients.** Die Kommandozeile (oben) und `@qorechain/sdk` 0.10.0, das die Composer `lockDelegation`, `unlockEarly` und `claimBonus` sowie die Lesefunktionen `fetchStakingTierParams`, `fetchStakingLocks` und `fetchStakingTierPool` enthält (siehe [SDK-Installation](/sdk/install)). Keine veröffentlichte Version von QoreX oder des Dashboards hat heute einen Sperr-Bildschirm, daher erfolgt das Sperren im Mainnet mit der CLI oder dem SDK.
+
+**Nicht verwechseln** mit dem [xQORE-Staking](/user-guide/xqore-staking), einem entworfenen Mechanismus, der nicht live ist, oder mit der unten beschriebenen Triple-Pool-Klassifizierung, die nicht ändert, was du erhältst.
+
 ---
 
 ## Triple-Pool-Klassifizierung (Design-Status)
@@ -200,7 +218,7 @@ Slashing auf QoreChain folgt dem Standard-Slashing-Modul des Cosmos SDK mit dies
 
 | Ereignis             | Regel                                                                | Folge                                        |
 | -------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
-| Ausfallzeit (Downtime) | Weniger als 5 % der letzten 10.000 Blöcke signiert (etwa 8,9 Stunden bei den rund 3,2 Sekunden langen Blöcken des Mainnets) | 600 Sekunden gejailt; 1 % des Stakes geslasht |
+| Ausfallzeit (Downtime) | Weniger als 5 % der letzten 10.000 Blöcke signiert (etwa 8,7 Stunden bei den rund 3,1 Sekunden langen Blöcken des Mainnets) | 600 Sekunden gejailt; 1 % des Stakes geslasht |
 | Doppelsignierung (Double-signing) | Zwei verschiedene Blöcke bei derselben Höhe signiert    | 5 % des Stakes geslasht                      |
 
 Slashing gilt für den gesamten gebundenen Stake eines Validators, sodass Delegatoren ihren anteiligen Teil tragen. Es kann auch Stake treffen, der von einem geslashten Validator bereits entbunden wird, weshalb die Entbindungsperiode eine Sicherheitsmaßnahme und nicht nur eine Wartezeit ist.

@@ -1,11 +1,11 @@
 ---
 slug: /qoresign/guides/evm-quantum-ready
-title: "EVM 지갑: 양자 대비 모드"
-sidebar_label: EVM 양자 대비 모드
+title: "EVM 지갑: 승인 윈도우"
+sidebar_label: EVM 승인 윈도우
 sidebar_position: 3
 ---
 
-# EVM 지갑: 양자 대비 모드
+# EVM 지갑: 승인 윈도우
 
 Ethereum 트랜잭션에는 두 번째 서명을 실어 보낼 필드가 없으며, 네트워크는 PQC 설정을 레인별이 아니라
 체인 전체에 적용합니다. 따라서 QoreChain의 EVM 레인에서 전송되는 트랜잭션은 secp256k1로만 서명되며,
@@ -15,7 +15,7 @@ QoreSign은 하이브리드 EVM 서명을 제공하지 않습니다(`assertHybri
 대신 네트워크는 발신자가 등록된 ML-DSA-87 키를 가지고 있고 해당 트랜잭션을 포함하는 유효한
 **EVM 승인 윈도우**가 열려 있을 때만 EVM 트랜잭션을 받아들입니다.
 윈도우는 하이브리드로 서명된 트랜잭션으로 Native 레인에서 열리므로, 포스트 양자 키가 EVM 활동을
-미리 승인하게 됩니다("양자 대비 모드"). 두 공개 네트워크 모두 이를 강제합니다(프로토콜 기능
+미리 승인하게 됩니다. EVM 트랜잭션 자체는 secp256k1로만 서명됩니다. 두 공개 네트워크 모두 이를 강제합니다(프로토콜 기능
 `evm-pqc-authorisation-window`, [QoreChain SDK](/sdk/overview)의 `fetchProtocolFeatures` 또는
 `/qorechain/pqc/v1/protocol_features`에서 확인할 수 있습니다).
 

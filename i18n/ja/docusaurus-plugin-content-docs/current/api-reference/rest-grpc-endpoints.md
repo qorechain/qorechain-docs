@@ -508,6 +508,18 @@ Staking Tiers モジュールは **v3.2.4** の一部です。これらのルー
 
 `params` は3つのロック期間（3、6、12 か月）とそのパラメータ、および `min_lock_amount`（`"10000000"` uqor、10 QOR）を列挙します。ロックは `tx stakingtier lock` で行います（[トランザクションコマンド](/cli-reference/transaction-commands#stakingtier)を参照）。
 
+## Reputation モジュール {#reputation-module}
+
+Reputation モジュールの REST ルートは、**テストネット**（`qorechain-diana`、チェーン v3.2.6）で提供されています。メインネットでは、本稿執筆時点（2026年10月27日）で `/qorechain/reputation/v1/...` のすべてのルートが HTTP `501`（`{"code":12,"message":"Not Implemented"}`）で応答します。メインネットでは、このモジュールは gRPC（`Params`、下記参照）でのみ利用できます。今後のメインネットリリースでこれらが提供される見込みで、提供された時点でこのページを更新します。
+
+| メソッド | エンドポイント | 説明 |
+| ------ | -------- | ----------- |
+| GET    | `/qorechain/reputation/v1/params` | スコアの重み（`alpha`、`beta`、`gamma`、`delta`）、`lambda`、`min_score` |
+| GET    | `/qorechain/reputation/v1/validator/{address}` | 1 つのバリデーターのレコード。`{address}` は `qorvaloper1...` のオペレーターアドレス、または `qorvalcons1...` のコンセンサスアドレスです。フィールドには `composite_score`、`stake_score`、`performance_score`、`contribution_score`、`time_score`、`uptime_blocks`、`missed_blocks`、`last_updated_height` が含まれます。`404` はそのバリデーターにまだスコアがないことを意味し、オペレーターアドレスでもコンセンサスアドレスでもない文字列には `400` が返ります |
+| GET    | `/qorechain/reputation/v1/validators` | スコアが付いたすべてのバリデーターのレコード（`reputations`） |
+
+スコアは 0 から 1 の間の 10 進文字列です。ライトノードは、バリデーターごとのルートを読み取り、委任先のバリデーターが `min_reputation` を下回ったときに警告します（[報酬とモニタリング](/light-node/rewards-and-monitoring#delegation-alerts)を参照）。メインネットのホストから同じルートを呼ぶと、メインネットが提供するまで `501` が返ります。
+
 ## gRPC 専用モジュール {#grpc-only-modules}
 
 メインネット（ノードリリース v3.2.4、2026年10月27日に確認）では、これらのモジュールには gRPC の `Query` サービスはありますが、**REST ルートはありません**。サービス名は `qorechain.<module>.v1.Query` の形式です。
@@ -516,7 +528,7 @@ Staking Tiers モジュールは **v3.2.4** の一部です。これらのルー
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
-| `reputation`  | `Params`                                               |
+| `reputation`  | `Params`（REST ルートはテストネットにのみ存在します。[Reputation モジュール](#reputation-module)を参照） |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |

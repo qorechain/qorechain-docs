@@ -88,7 +88,7 @@ contract CrossVMCaller {
 
 Bu, düğümün çözdüğü düzendir; `@qorechain/rdk` kodlayıcısının oluşturduğu düzenle aynıdır ve yukarıdaki sözleşme [Multi-VM](/rollups/multi-vm) sayfasındaki başlangıç şablonuyla eşleşir. Önderlenmiş işlev üzerinden fon eklenemez (`MsgCrossVMCall` mesaj yolu `--funds` alır). Önderlenmiş işlev etkin olmadığı için örnek bugün hiçbir ağda bir şey yapamaz (yukarıdaki uyarıya bakın); ABI etkinleştirmeden önce yine de değişebilir.
 
-Etkinleştirildiğinde, önderlenmiş işlev QoreChain Native sözleşmesini hemen yürütür ve sonucu döndürür. (`@qorechain/rdk`'nin 0.6.0'dan itibaren bulunan ve güncel 0.6.1'de yer alan `encodeCrossVmCalldata` yardımcısı calldata'yı oluşturur; bkz. [Multi-VM](/rollups/multi-vm).) Gaz maliyeti: **50.000 taban + girdi baytı başına 4 + yürütme maliyeti**.
+Etkinleştirildiğinde, önderlenmiş işlev QoreChain Native sözleşmesini hemen yürütür ve sonucu döndürür. (`@qorechain/rdk`'nin 0.6.0'dan itibaren bulunan ve güncel 0.6.2'de yer alan `encodeCrossVmCalldata` yardımcısı calldata'yı oluşturur; bkz. [Multi-VM](/rollups/multi-vm).) Gaz maliyeti: **50.000 taban + girdi baytı başına 4 + yürütme maliyeti**.
 
 ---
 

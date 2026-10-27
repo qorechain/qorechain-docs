@@ -92,7 +92,7 @@ bounds, the CLI forms and the refusal codes are in
 
 With SDK **0.8.2 or later** you can open a window from code (**0.9.0** adds the
 scope options below). Registering the key
-(once) is described in [Quantum-safe](/sdk/guides/quantum-safe); the example
+(once) is described in [Hybrid signing](/sdk/guides/quantum-safe); the example
 below then opens a window for a unified eth-native account (`npm i
 @cosmjs/stargate`):
 

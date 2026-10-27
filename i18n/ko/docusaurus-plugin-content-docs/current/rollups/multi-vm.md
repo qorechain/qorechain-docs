@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-프리컴파일이 비활성 상태이므로 이에 대한 일반 `.call`은 **빈 데이터와 함께 성공을 반환하고 아무 일도 하지 않습니다**. `ok` 플래그만으로는 호출이 실제로 적용되었는지 알 수 없습니다. 컨트랙트 안에서 신뢰할 수 있는 방어책은 항상 비어 있지 않은 확인 응답을 반환하는 대상을 사용하고, 호출 뒤에 `require(ret.length > 0)`를 두어 빈 응답을 실패로 처리하는 것입니다. `multivm-rollup` 템플릿(0.6.0 및 0.6.1)이 이렇게 합니다.
+프리컴파일이 비활성 상태이므로 이에 대한 일반 `.call`은 **빈 데이터와 함께 성공을 반환하고 아무 일도 하지 않습니다**. `ok` 플래그만으로는 호출이 실제로 적용되었는지 알 수 없습니다. 컨트랙트 안에서 신뢰할 수 있는 방어책은 항상 비어 있지 않은 확인 응답을 반환하는 대상을 사용하고, 호출 뒤에 `require(ret.length > 0)`를 두어 빈 응답을 실패로 처리하는 것입니다. `multivm-rollup` 템플릿(0.6.0부터 0.6.2까지)이 이렇게 합니다.
 
 ## 멀티 VM 롤업 스캐폴딩
 
@@ -102,4 +102,4 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-`multivm-rollup` 템플릿(0.6.0 및 0.6.1)에는 `src/crossvm-call.ts`(프리컴파일이 라이브인지 확인한 뒤 calldata를 출력합니다)와 `executeCrossVMCall(uint8,string,bytes)`를 호출하고 대상으로부터 비어 있지 않은 응답을 요구하는 `contracts/CrossVmCaller.sol`이 포함되어 있습니다. 프리컴파일이 비활성인 동안에는 호출이 동작하게 만들어 주지 않습니다. 모든 스캐폴더 템플릿은 [롤업 배포하기](/rollups/deploying-a-rollup)를 참고하세요.
+`multivm-rollup` 템플릿(0.6.0부터 0.6.2까지)에는 `src/crossvm-call.ts`(프리컴파일이 라이브인지 확인한 뒤 calldata를 출력합니다)와 `executeCrossVMCall(uint8,string,bytes)`를 호출하고 대상으로부터 비어 있지 않은 응답을 요구하는 `contracts/CrossVmCaller.sol`이 포함되어 있습니다. 프리컴파일이 비활성인 동안에는 호출이 동작하게 만들어 주지 않습니다. 모든 스캐폴더 템플릿은 [롤업 배포하기](/rollups/deploying-a-rollup)를 참고하세요.

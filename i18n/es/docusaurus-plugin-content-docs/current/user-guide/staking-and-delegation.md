@@ -152,6 +152,24 @@ qorechaind query stakingtier locks <holder_address>
 
 El chain ID anterior es el de la testnet; usa `qorechain-vladi` en mainnet. Como en el resto de esta página, firma cada transacción generada con `tx pqc cosign`.
 
+### Usar el staking con bloqueo temporal {#using-time-locks}
+
+**Pasos.** (1) Delega a un validador como de costumbre. (2) Ejecuta `tx stakingtier lock` para ese validador con un monto (al menos 10 QOR) y un plazo de 3, 6 o 12 meses, y luego cofirma y difunde. (3) Lee el resultado con `GET /qorechain/stakingtier/v1/locks/{holder}` o `qorechaind query stakingtier locks <holder_address>`; cada bloqueo tiene un id. (4) Reclama con `tx stakingtier claim` cuando quieras la recompensa del bloqueo. (5) Al final del plazo el bloqueo se libera por sí solo; para salir antes usa `tx stakingtier unlock-early <lock_id>` y acepta la penalización.
+
+**Dónde funciona, comprobado el 27 de octubre de 2026.**
+
+| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+|---|---|---|
+| Módulo activo | Sí, desde la altura 3,742,566 | Sí, desde v3.2.4 (altura 8,337,253) |
+| Bloqueos abiertos | Ninguno todavía | 3 bloqueos de prueba |
+| Retirar la delegación de stake bloqueado | Rechazado por la puerta de mensajes de staking cuando se ejecuta la transacción | Rechazado por el mempool antes de que se cobre comisión alguna (solo en testnet hasta que mainnet aplique v3.2.6) |
+
+Ambas redes responden a `GET /qorechain/stakingtier/v1/params` con los mismos ajustes: tres plazos, un mínimo de 10 QOR (`min_lock_amount` `"10000000"` uqor), una penalización por desbloqueo anticipado de 500 puntos básicos (5%) y `enabled: true`. La respuesta también incluye los ajustes de bonificación en puntos básicos; este manual no los cita, porque una bonificación no es un rendimiento prometido y la gobernanza puede cambiar los ajustes. `GET /qorechain/stakingtier/v1/pool` muestra el pool que paga las recompensas de los bloqueos.
+
+**Clientes.** La línea de comandos (arriba) y `@qorechain/sdk` 0.10.0, que incluye los compositores `lockDelegation`, `unlockEarly` y `claimBonus` y las lecturas `fetchStakingTierParams`, `fetchStakingLocks` y `fetchStakingTierPool` (consulta [Instalación del SDK](/sdk/install)). Ninguna versión publicada de QoreX ni del Dashboard tiene hoy una pantalla de bloqueo, por lo que el bloqueo en mainnet se hace con la CLI o el SDK.
+
+**No lo confundas** con el [staking de xQORE](/user-guide/xqore-staking), que es un mecanismo diseñado que no está activo, ni con la clasificación Triple-Pool de más abajo, que no cambia lo que recibes.
+
 ---
 
 ## Clasificación Triple-Pool (estado del diseño)
@@ -200,7 +218,7 @@ El slashing en QoreChain sigue el módulo estándar de slashing del Cosmos SDK c
 
 | Evento               | Regla                                                                | Consecuencia                                 |
 | -------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
-| Inactividad (downtime) | Firmar menos del 5% de los últimos 10,000 bloques (unas 8.9 horas con los bloques de aproximadamente 3.2 segundos de la mainnet) | Encarcelado (jailed) durante 600 segundos; 1% del stake sancionado (slashed) |
+| Inactividad (downtime) | Firmar menos del 5% de los últimos 10,000 bloques (unas 8.7 horas con los bloques de aproximadamente 3.1 segundos de la mainnet) | Encarcelado (jailed) durante 600 segundos; 1% del stake sancionado (slashed) |
 | Doble firma (double-signing) | Firmar dos bloques distintos a la misma altura               | 5% del stake sancionado (slashed)            |
 
 El slashing se aplica al stake bonded total de un validador, por lo que los delegadores asumen su parte proporcional. También puede alcanzar el stake que ya está en unbonding desde un validador sancionado, razón por la cual el período de unbonding es una medida de seguridad y no solo un tiempo de espera.

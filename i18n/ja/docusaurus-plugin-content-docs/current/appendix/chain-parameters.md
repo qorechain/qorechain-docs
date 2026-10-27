@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain ネットワークのモジュールパラメータを、モジュールごとにまとめた統合リファレンスです。モジュールに params クエリがある場合、パラメータは `qorechaind query <module> params` で取得できます（`pqc`、`amm`、`crossvm`、`lightnode`、`multilayer`、`reputation`、`rlconsensus`。`ai`、`qca`、`rdk`、`bridge`、`abstractaccount`、`gasabstraction` は `config` を使用します）。REST では、[REST / gRPC リファレンス](/api-reference/rest-grpc-endpoints)に記載されたルートに限り取得できます。`x/inflation` のパラメータも、v3.2.3 以降、メインネットで REST から提供されています（`/qorechain/inflation/v1/params`）。メインネットでは、`ai`、`qca`、`reputation`、`crossvm`、`rlconsensus`、`fairblock`、`xqore` に対して、また `pqc` パラメータに対しても REST を利用できません（テストネットでは、v3.2.6 以降、`pqc`、`crossvm`、`rlconsensus` のパラメータを REST で提供しています）。
 
 :::note
-表示されている値は 2026 年 10 月 23 日にメインネット **`qorechain-vladi`**（EVM チェーン ID **9801**、リリース **v3.2.4**、2026 年 10 月 23 日に適用）からライブで読み取ったもので（ガバナンス提案によって変更された場合を除き、ジェネシス値です。変更されたものは明記しています）、コアモジュールの行は 2026 年 10 月 27 日に再度読み取っています。ガバナンス提案 14 は、メインネットで高さ 3,906,833 に v3.2.5 を適用する予定です（本稿執筆時点では投票期間中）。このページは現時点のメインネットを説明しており、そのアップグレードが適用された時点で更新されます。テストネット **`qorechain-diana`**（EVM チェーン ID **9800**）はリリース **v3.2.6**（2026 年 10 月 27 日に適用）を実行しています。その値は、特に記載のない限りメインネットと同一です。残りの差異は[テストネットとメインネットの差異](#testnet-differences)にまとめています。ブロック数で示した期間は、計測されたメインネットのブロック時間（約 3.2 秒）で換算しています（テストネットは約 1.3 秒ごとに 1 ブロックを生成します）。
+表示されている値は 2026 年 10 月 23 日にメインネット **`qorechain-vladi`**（EVM チェーン ID **9801**、リリース **v3.2.4**、2026 年 10 月 23 日に適用）からライブで読み取ったもので（ガバナンス提案によって変更された場合を除き、ジェネシス値です。変更されたものは明記しています）、コアモジュールの行は 2026 年 10 月 27 日に再度読み取っています。ガバナンス提案 14 は、メインネットで高さ 3,906,833 に v3.2.5 を適用する予定です（本稿執筆時点では投票期間中）。このページは現時点のメインネットを説明しており、そのアップグレードが適用された時点で更新されます。テストネット **`qorechain-diana`**（EVM チェーン ID **9800**）はリリース **v3.2.6**（2026 年 10 月 27 日に適用）を実行しています。その値は、特に記載のない限りメインネットと同一です。残りの差異は[テストネットとメインネットの差異](#testnet-differences)にまとめています。ブロック数で示した期間は、計測されたメインネットのブロック時間（約 3.1 秒）で換算しています（テストネットは約 1.3 秒ごとに 1 ブロックを生成します）。
 :::
 
 ---
@@ -22,7 +22,7 @@ QoreChain ネットワークのモジュールパラメータを、モジュー�
 | `pqc_primary`              | `true`                     | ポスト量子署名が主たる方式                                               |
 | `allow_classical_fallback` | `false`                    | 古典暗号のみのフォールバックは閉鎖。Cosmos レーンのトランザクションはハイブリッドである必要がある |
 | `min_security_level`       | `5`                        | 登録されるアルゴリズムの最低 NIST セキュリティレベル                     |
-| `default_migration_blocks` | `1,000,000`                | ガバナンスで開始されるアルゴリズム移行のデフォルト期間（≈3.2 秒のブロックで約 37 日） |
+| `default_migration_blocks` | `1,000,000`                | ガバナンスで開始されるアルゴリズム移行のデフォルト期間（≈3.1 秒のブロックで約 36 日） |
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2`（必須）                | 強制モード: 0=無効, 1=任意, 2=必須                                       |
 
@@ -34,7 +34,7 @@ QoreChain ネットワークのモジュールパラメータを、モジュー�
 
 | 境界 | 値 |
 | ----- | ----- |
-| `blocks` の最大値 | 17,280（≈3.2 秒のブロックで約 15 時間） |
+| `blocks` の最大値 | 17,280（≈3.1 秒のブロックで約 15 時間） |
 | `max_txs` の最大値 | 1,000 |
 | `max_value` | 0 より大きいこと（uqor。送金額に各トランザクションの最大手数料を加えた額） |
 | `allowed_targets` の最大数 | 受取アドレス 16 件（任意のスコープ、v3.2.3） |
@@ -52,7 +52,7 @@ v3.2.3 以降、ウィンドウは `native_only`（通常のネイティブ QOR 
 | `anomaly_threshold` | `0.7`                  | アンテハンドラーがトランザクションをフラグ付けする異常スコアのしきい値     |
 | `routing_strategy`  | `reputation_weighted`  | ルーティング戦略                                                            |
 | `risk_threshold`    | `0.8`                  | リスクスコアのしきい値                                                      |
-| `max_tx_per_minute` | `600`                  | Cosmos レーンにおける送信者ごとのトランザクション上限。30 ブロックのウィンドウで集計（≈3.2 秒のブロックで約 96 秒。名称は歴史的なもの）。v3.2.0 以降で適用。デフォルトは 10 |
+| `max_tx_per_minute` | `600`                  | Cosmos レーンにおける送信者ごとのトランザクション上限。30 ブロックのウィンドウで集計（≈3.1 秒のブロックで約 94 秒。名称は歴史的なもの）。v3.2.0 以降で適用。デフォルトは 10 |
 
 [AI エンジン](/architecture/ai-engine)のページで説明している不正スコアリングの重みと重大度しきい値は、検出器の定数であり、モジュールパラメータではありません。
 
@@ -148,7 +148,7 @@ xQORE モジュールのアカウンティングは存在しますが、ロッ�
 | `emission_mode`        | `fixed`                 | `schedule`（レガシー）または `fixed`（v3.1.94 以降）  |
 | `fixed_epoch_emission` | `86,000,000,000 uqor` (86,000 QOR) | fixed モードでエポックごとにミントされる量（2026 年 10 月 19 日のガバナンス提案 10 より前は 16,239 QOR） |
 | `max_total_emission`   | `590,000,000,000,000 uqor` (590,000,000 QOR) | 累積の絶対上限（提案 10 より前は 114,285,714 QOR） |
-| `epoch_length`         | `43,200` ブロック       | エポックあたりのブロック数（≈3.2 秒のブロックで約 38.6 時間） |
+| `epoch_length`         | `43,200` ブロック       | エポックあたりのブロック数（≈3.1 秒のブロックで約 37.7 時間） |
 | `schedule`             | 17.5 %, 11 %, 7 %, 7 %, 2 % | レガシーの年次レート。fixed モードでは未使用      |
 | `enabled`              | `true`                  | モジュール有効化フラグ                                |
 
@@ -261,7 +261,7 @@ SVM トランザクションレーンはネットワーク全体で無効化さ�
 | `rollup_creation_burn_rate` | `0.01`               | 作成ステークのうちバーンされる割合（1%）      |
 | `default_challenge_window`  | `604,800` s（テストネット: `3,600` s） | デフォルトのチャレンジウィンドウ（7 日。テストネットでは 1 時間） |
 | `max_da_blob_size`          | `2,097,152`          | DA ブロブの最大サイズ（バイト、2 MB）         |
-| `blob_retention_blocks`     | `432,000`            | DA ブロブを保持するブロック数（≈3.2 秒のブロックで約 16 日） |
+| `blob_retention_blocks`     | `432,000`            | DA ブロブを保持するブロック数（≈3.1 秒のブロックで約 16 日） |
 | `max_batches_per_block`     | `10`                 | 1 ブロックで処理されるバッチの最大数          |
 
 どちらのネットワークでも、ロールアップはまだ作成されていません。
@@ -304,14 +304,14 @@ SVM トランザクションレーンはネットワーク全体で無効化さ�
 | パラメータ                | 値                 | 説明                                                 |
 | ------------------------ | ------------------ | ---------------------------------------------------- |
 | `registration_fee`       | `1,000,000 uqor` (1 QOR) | ライトノード登録の手数料                       |
-| `heartbeat_interval`     | `1000` ブロック    | 必須ハートビートの間隔（≈3.2 秒のブロックで約 54 分） |
+| `heartbeat_interval`     | `1000` ブロック    | 必須ハートビートの間隔（≈3.1 秒のブロックで約 52 分） |
 | `min_delegated_stake`    | `1,000,000,000 uqor` (1,000 QOR) | オペレーターがデリゲートする最低ステーク |
 | `reward_share`           | `0.03`             | ライトノード向けに確保されるフィーコレクターの割合   |
 | `min_uptime_for_rewards` | `0.80`             | 報酬の受給資格に必要な最低稼働率                     |
 | `max_light_nodes`        | `10,000`           | 登録可能なライトノードの最大数                       |
 | `heartbeat_grace_period` | `100` ブロック     | ハートビートが遅れた場合の猶予期間                   |
 
-報酬のアカウンティングは稼働しています。`GET /qorechain/lightnode/v1/reward_pool` は、プール（`balance`、`reserved`、`outstanding`、`payable`、`distributable`）とノードごとの報酬上限を報告します。v3.2.3 以降、この上限は `max_reward_per_month_per_node`、つまり**ノードあたり 30 日で 2,000 QOR（`2000000000` uqor）**で、ブロック時間に応じて按分され、ノードの稼働率でスケーリングされます。従来のブロックごとの値（`max_reward_per_block_per_node`、`1713` uqor）も引き続き報告されます。2026 年 10 月 20 日時点で、プールは 487.2318 QOR のリザーブを保有しており、未払いはありませんでした。登録は受付中でライセンスによる制限があります。メインネットでは 6 件の `lightnode_operator` ライセンスが付与されていますが、登録済みのライトノードはまだありません（`GET /qorechain/license/v1/holders/lightnode_operator`、`GET /qorechain/lightnode/v1/stats`）。[ライトノード](/light-node/overview#reward-program-status)と[トークノミクス](/architecture/tokenomics#stranded-and-reserve)を参照してください。
+報酬のアカウンティングは稼働しています。`GET /qorechain/lightnode/v1/reward_pool` は、プール（`balance`、`reserved`、`outstanding`、`payable`、`distributable`）とノードごとの報酬上限を報告します。v3.2.3 以降、この上限は `max_reward_per_month_per_node`、つまり**ノードあたり 30 日で 2,000 QOR（`2000000000` uqor）**で、ブロック時間に応じて按分され、ノードの稼働率でスケーリングされます。従来のブロックごとの値（`max_reward_per_block_per_node`、`1713` uqor）も引き続き報告されます。2026 年 10 月 27 日時点で、メインネットのプールは約 13,380.9 QOR のリザーブ（`reserved`）を保有しており、そのうち少額（0.06 QOR）が未払いで、支払可能な額はまだありませんでした。登録は受付中でライセンスによる制限があります。同日時点で、メインネットでは 7 件の `lightnode_operator` ライセンスが付与されており、各ネットワークで 1 つずつライトノードが登録されていました（`GET /qorechain/license/v1/holders/lightnode_operator`、`GET /qorechain/lightnode/v1/stats`）。[ライトノード](/light-node/overview#reward-program-status)と[トークノミクス](/architecture/tokenomics#stranded-and-reserve)を参照してください。
 
 ---
 
@@ -359,7 +359,7 @@ SVM トランザクションレーンはネットワーク全体で無効化さ�
 | | `historical_entries` | 10,000 |
 | | `bond_denom` | `uqor` |
 | | `min_commission_rate` | 0 |
-| スラッシング | `signed_blocks_window` | 10,000 ブロック（≈3.2 秒のブロックで約 8.9 時間） |
+| スラッシング | `signed_blocks_window` | 10,000 ブロック（≈3.1 秒のブロックで約 8.7 時間） |
 | | `min_signed_per_window` | 5 %（ウィンドウの 5 % 未満しか署名しないバリデータはジェイルされる） |
 | | `downtime_jail_duration` | 600 s |
 | | `slash_fraction_downtime` | 1 % |
@@ -410,7 +410,7 @@ SVM トランザクションレーンはネットワーク全体で無効化さ�
 | QoreChain Native のインスタンス化権限 | `Nobody` | `Everybody`（コードのアップロードは両ネットワークで `Nobody` のまま） |
 | サーキットブレーカー | 16 件（上記参照） | 1 件: QoreChain Native の `MsgStoreCode` |
 | REST のパラメータルート | `x/pqc`、`x/crossvm`、`x/rlconsensus` のパラメータは 501 で応答 | `GET /qorechain/pqc/v1/params`、`/qorechain/crossvm/v1/params`、`/qorechain/rlconsensus/v1/params` が応答（v3.2.6） |
-| ブロック時間とバリデータ | 約 3.2 秒、ボンドされたバリデータ 8 | 約 1.3 秒、ボンドされたバリデータ 4 |
+| ブロック時間とバリデータ | 約 3.1 秒、ボンドされたバリデータ 8 | 約 1.3 秒、ボンドされたバリデータ 4 |
 | テストトークン | なし | fUSD、fETH、fBTC（[Faucet](/dashboard/faucet#fest-tokens)を参照） |
 
 両ネットワークに v3.2.4 の追加点があります。任意の時間ロック付きステーキングモジュール `x/stakingtier`（48 ではなく 49 モジュール、`GET /qorechain/stakingtier/v1/params`、最小ロック 10 QOR、早期アンロックのペナルティ 5 %）、13 番目の記録対象バーンソース（`staking_tier_penalty`）、追加のライトノード報酬プールのレポート項目とノード自身の登録時点から始まる報酬上限、PQC アカウントの `possession_proven` フラグ（所有証明はアカウント鍵では引き続き任意で、ブリッジバリデータ鍵では必須）、ブロック時間で数える RDK のチャレンジウィンドウ、そして `protocol_features` と `auth_nonce` のクエリです。[ステーキングと委任](/user-guide/staking-and-delegation#time-locked-staking)を参照してください。テストネットへの v3.2.6 の追加点は[バージョン履歴](/appendix/version-history#testnet-v326)にまとめています。

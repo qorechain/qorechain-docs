@@ -10,7 +10,7 @@ sidebar_position: 2
 Referință consolidată a parametrilor de modul ai rețelelor QoreChain, grupați pe module. Parametrii pot fi interogați cu `qorechaind query <module> params` acolo unde modulul are o interogare params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` și `gasabstraction` folosesc `config`) și, prin REST, doar pentru rutele enumerate în [referința REST / gRPC](/api-reference/rest-grpc-endpoints). Parametrii `x/inflation` sunt serviți și prin REST pe mainnet începând cu v3.2.3 (`/qorechain/inflation/v1/params`). REST nu este disponibil pe mainnet pentru `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` sau `xqore`, nici pentru parametrii `pqc` (testnet-ul servește prin REST parametrii `pqc`, `crossvm` și `rlconsensus` din v3.2.6).
 
 :::note
-Valorile afișate au fost citite în direct de pe mainnet **`qorechain-vladi`** (EVM chain ID **9801**, versiunea **v3.2.4**, aplicată la 23 octombrie 2026) la 23 octombrie 2026 (valori de genesis, cu excepția cazurilor în care o propunere de guvernanță le-a schimbat; acestea sunt menționate), iar rândurile modulelor de bază au fost recitite la 27 octombrie 2026. Propunerea de guvernanță 14 ar aplica v3.2.5 pe mainnet la înălțimea 3,906,833 (în perioada de votare la momentul redactării); această pagină descrie mainnet-ul așa cum este astăzi și este actualizată când acel upgrade este aplicat. Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**) rulează versiunea **v3.2.6** (aplicată la 27 octombrie 2026). Valorile sale sunt identice cu cele de pe mainnet, cu excepția cazurilor indicate; diferențele rămase sunt adunate în [Diferențe între testnet și mainnet](#testnet-differences). Duratele exprimate în blocuri sunt convertite la timpul de bloc măsurat pe mainnet, de aproximativ 3,2 secunde (testnet-ul produce un bloc aproximativ la fiecare 1,3 secunde).
+Valorile afișate au fost citite în direct de pe mainnet **`qorechain-vladi`** (EVM chain ID **9801**, versiunea **v3.2.4**, aplicată la 23 octombrie 2026) la 23 octombrie 2026 (valori de genesis, cu excepția cazurilor în care o propunere de guvernanță le-a schimbat; acestea sunt menționate), iar rândurile modulelor de bază au fost recitite la 27 octombrie 2026. Propunerea de guvernanță 14 ar aplica v3.2.5 pe mainnet la înălțimea 3,906,833 (în perioada de votare la momentul redactării); această pagină descrie mainnet-ul așa cum este astăzi și este actualizată când acel upgrade este aplicat. Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**) rulează versiunea **v3.2.6** (aplicată la 27 octombrie 2026). Valorile sale sunt identice cu cele de pe mainnet, cu excepția cazurilor indicate; diferențele rămase sunt adunate în [Diferențe între testnet și mainnet](#testnet-differences). Duratele exprimate în blocuri sunt convertite la timpul de bloc măsurat pe mainnet, de aproximativ 3,1 secunde (testnet-ul produce un bloc aproximativ la fiecare 1,3 secunde).
 :::
 
 ---
@@ -22,7 +22,7 @@ Valorile afișate au fost citite în direct de pe mainnet **`qorechain-vladi`** 
 | `pqc_primary`              | `true`                     | Semnăturile post-cuantice sunt schema principală                         |
 | `allow_classical_fallback` | `false`                    | Fallback-ul exclusiv clasic este închis; tranzacțiile din lane-ul Cosmos trebuie să fie hibride |
 | `min_security_level`       | `5`                        | Nivelul minim de securitate NIST pentru un algoritm înregistrat          |
-| `default_migration_blocks` | `1,000,000`                | Durata implicită a unei migrări de algoritm pornite prin guvernanță (aproximativ 37 de zile la blocuri de ≈3,2 s) |
+| `default_migration_blocks` | `1,000,000`                | Durata implicită a unei migrări de algoritm pornite prin guvernanță (aproximativ 36 de zile la blocuri de ≈3,1 s) |
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2` (required)             | Mod de aplicare: 0=dezactivat, 1=opțional, 2=obligatoriu                 |
 
@@ -34,7 +34,7 @@ Limitele unei [ferestre de autorizare EVM](/getting-started/first-transaction#ev
 
 | Limită | Valoare |
 | ------ | ------- |
-| `blocks` maxim | 17,280 (aproximativ 15 ore la blocuri de ≈3,2 s) |
+| `blocks` maxim | 17,280 (aproximativ 15 ore la blocuri de ≈3,1 s) |
 | `max_txs` maxim | 1,000 |
 | `max_value` | mai mare decât 0 (uqor; valoarea transferată plus comisionul maxim al fiecărei tranzacții) |
 | `allowed_targets` maxim | 16 adrese de destinatar (domeniu opțional, v3.2.3) |
@@ -52,7 +52,7 @@ Configurația modulului (`qorechaind query ai config`):
 | `anomaly_threshold` | `0.7`                  | Scorul de anomalie peste care ante handler-ul marchează o tranzacție        |
 | `routing_strategy`  | `reputation_weighted`  | Strategia de rutare                                                         |
 | `risk_threshold`    | `0.8`                  | Pragul scorului de risc                                                     |
-| `max_tx_per_minute` | `600`                  | Limita de tranzacții per expeditor în lane-ul Cosmos, numărate pe o fereastră de 30 de blocuri (aproximativ 96 s la blocuri de ≈3,2 s; numele este istoric). Aplicată începând cu v3.2.0; valoarea implicită este 10 |
+| `max_tx_per_minute` | `600`                  | Limita de tranzacții per expeditor în lane-ul Cosmos, numărate pe o fereastră de 30 de blocuri (aproximativ 94 s la blocuri de ≈3,1 s; numele este istoric). Aplicată începând cu v3.2.0; valoarea implicită este 10 |
 
 Ponderile de scorare a fraudei și pragurile de severitate descrise în pagina [Motorul AI](/architecture/ai-engine) sunt constante ale detectorului, nu parametri de modul.
 
@@ -148,7 +148,7 @@ Penalizări de ieșire: 50 % (blocare mai scurtă de 30 de zile), 35 % (30–90 
 | `emission_mode`        | `fixed`                 | `schedule` (vechi) sau `fixed` (începând cu v3.1.94)  |
 | `fixed_epoch_emission` | `86,000,000,000 uqor` (86.000 QOR) | Emis pe epocă în modul fixed (16.239 QOR înainte de propunerea de guvernanță 10, 19 octombrie 2026) |
 | `max_total_emission`   | `590,000,000,000,000 uqor` (590.000.000 QOR) | Plafon cumulativ strict (114.285.714 QOR înainte de propunerea 10) |
-| `epoch_length`         | `43,200` blocks         | Blocuri per epocă (aproximativ 38,6 ore la blocuri de ≈3,2 s) |
+| `epoch_length`         | `43,200` blocks         | Blocuri per epocă (aproximativ 37,7 ore la blocuri de ≈3,1 s) |
 | `schedule`             | 17,5 %, 11 %, 7 %, 7 %, 2 % | Rate vechi pe ani, nefolosite în modul fixed      |
 | `enabled`              | `true`                  | Indicator de activare a modulului                     |
 
@@ -261,7 +261,7 @@ Lane-ul de tranzacții SVM este dezactivat la nivelul întregii rețele (vezi [R
 | `rollup_creation_burn_rate` | `0.01`               | Fracțiunea din stake-ul de creare care este arsă (1%) |
 | `default_challenge_window`  | `604,800` s (testnet: `3,600` s) | Fereastra implicită de contestare (7 zile; 1 oră pe testnet) |
 | `max_da_blob_size`          | `2,097,152`          | Dimensiunea maximă a blob-ului DA în octeți (2 MB) |
-| `blob_retention_blocks`     | `432,000`            | Blocuri pentru păstrarea blob-urilor DA (aproximativ 16 zile la blocuri de ≈3,2 s) |
+| `blob_retention_blocks`     | `432,000`            | Blocuri pentru păstrarea blob-urilor DA (aproximativ 16 zile la blocuri de ≈3,1 s) |
 | `max_batches_per_block`     | `10`                 | Numărul maxim de batch-uri procesate per bloc |
 
 Până acum nu a fost creat niciun rollup pe vreuna dintre rețele.
@@ -304,14 +304,14 @@ Pe mainnet niciun canal IBC nu este deschis, deci acolo nu pot exista `ibc/USDC`
 | Parametru                | Valoare            | Descriere                                            |
 | ------------------------ | ------------------ | ---------------------------------------------------- |
 | `registration_fee`       | `1,000,000 uqor` (1 QOR) | Comisionul de înregistrare a unui nod light    |
-| `heartbeat_interval`     | `1000` blocks      | Blocuri între heartbeat-urile obligatorii (aproximativ 54 de minute la blocuri de ≈3,2 s) |
+| `heartbeat_interval`     | `1000` blocks      | Blocuri între heartbeat-urile obligatorii (aproximativ 52 de minute la blocuri de ≈3,1 s) |
 | `min_delegated_stake`    | `1,000,000,000 uqor` (1.000 QOR) | Stake-ul minim delegat de operator     |
 | `reward_share`           | `0.03`             | Fracțiunea din colectorul de comisioane rezervată nodurilor light |
 | `min_uptime_for_rewards` | `0.80`             | Fracțiunea minimă de uptime pentru eligibilitatea la recompense |
 | `max_light_nodes`        | `10,000`           | Numărul maxim de noduri light înregistrate           |
 | `heartbeat_grace_period` | `100` blocks       | Perioada de grație pentru un heartbeat întârziat     |
 
-Contabilitatea recompenselor este live. `GET /qorechain/lightnode/v1/reward_pool` raportează pool-ul (`balance`, `reserved`, `outstanding`, `payable`, `distributable`) și limita de recompensă per nod. Începând cu v3.2.3, limita este `max_reward_per_month_per_node`, **2.000 QOR (`2000000000` uqor) per nod la 30 de zile**, calculată proporțional cu timpul de bloc și scalată cu uptime-ul nodului; valoarea mai veche per bloc (`max_reward_per_block_per_node`, `1713` uqor) este în continuare raportată. La 20 octombrie 2026, pool-ul avea o rezervă de 487,2318 QOR, fără nimic restant. Înregistrarea este deschisă și condiționată de licență: pe mainnet au fost acordate șase licențe `lightnode_operator`, iar niciun nod light nu s-a înregistrat încă (`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). Vezi [Nod light](/light-node/overview#reward-program-status) și [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+Contabilitatea recompenselor este live. `GET /qorechain/lightnode/v1/reward_pool` raportează pool-ul (`balance`, `reserved`, `outstanding`, `payable`, `distributable`) și limita de recompensă per nod. Începând cu v3.2.3, limita este `max_reward_per_month_per_node`, **2.000 QOR (`2000000000` uqor) per nod la 30 de zile**, calculată proporțional cu timpul de bloc și scalată cu uptime-ul nodului; valoarea mai veche per bloc (`max_reward_per_block_per_node`, `1713` uqor) este în continuare raportată. La 27 octombrie 2026, pool-ul de pe mainnet avea o rezervă de aproximativ 13.380,9 QOR (`reserved`), din care o sumă mică (0,06 QOR) era restantă, iar nimic nu era încă de plată. Înregistrarea este deschisă și condiționată de licență: la acea dată, pe mainnet fuseseră acordate șapte licențe `lightnode_operator`, iar pe fiecare rețea era înregistrat câte un nod light (`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). Vezi [Nod light](/light-node/overview#reward-program-status) și [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 ---
 
@@ -359,7 +359,7 @@ Module standard Cosmos SDK și EVM, toate citite în direct pe mainnet la 27 oct
 | | `historical_entries` | 10,000 |
 | | `bond_denom` | `uqor` |
 | | `min_commission_rate` | 0 |
-| Slashing | `signed_blocks_window` | 10,000 de blocuri (aproximativ 8,9 ore la blocuri de ≈3,2 s) |
+| Slashing | `signed_blocks_window` | 10,000 de blocuri (aproximativ 8,7 ore la blocuri de ≈3,1 s) |
 | | `min_signed_per_window` | 5 % (un validator care semnează mai puțin de 5 % din fereastră este trimis în jail) |
 | | `downtime_jail_duration` | 600 s |
 | | `slash_fraction_downtime` | 1 % |
@@ -410,7 +410,7 @@ Citite în direct la 27 octombrie 2026. Mainnet-ul `qorechain-vladi` rulează v3
 | Permisiunea de instanțiere QoreChain Native | `Nobody` | `Everybody` (încărcarea codului rămâne `Nobody` pe ambele) |
 | Întrerupător de circuit | 16 intrări (vezi mai sus) | 1 intrare: QoreChain Native `MsgStoreCode` |
 | Rute de parametri prin REST | parametrii `x/pqc`, `x/crossvm` și `x/rlconsensus` răspund 501 | `GET /qorechain/pqc/v1/params`, `/qorechain/crossvm/v1/params` și `/qorechain/rlconsensus/v1/params` răspund (v3.2.6) |
-| Timp de bloc și validatori | aproximativ 3,2 s; 8 validatori bonded | aproximativ 1,3 s; 4 validatori bonded |
+| Timp de bloc și validatori | aproximativ 3,1 s; 8 validatori bonded | aproximativ 1,3 s; 4 validatori bonded |
 | Token-uri de test | niciunul | fUSD, fETH și fBTC (vezi [Faucet Dashboard](/dashboard/faucet#fest-tokens)) |
 
 Ambele rețele conțin adăugirile v3.2.4: modulul opțional de staking cu blocare în timp `x/stakingtier` (49 de module în loc de 48; `GET /qorechain/stakingtier/v1/params`, blocare minimă 10 QOR, penalizare la deblocare anticipată 5 %), o a treisprezecea sursă înregistrată de ardere (`staking_tier_penalty`), câmpuri suplimentare de raportare a pool-ului de recompense al nodurilor light cu o limită de recompensă care începe de la propria înregistrare a nodului, indicatorul `possession_proven` pe conturile PQC (dovada de posesie rămâne opțională pentru cheile de cont și este obligatorie pentru cheile validatorilor de bridge), fereastra de contestare RDK numărată în timp de bloc și interogările `protocol_features` și `auth_nonce`. Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking). Adăugirile v3.2.6 pe testnet sunt rezumate în [Istoric versiuni](/appendix/version-history#testnet-v326).

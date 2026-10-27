@@ -7,28 +7,255 @@ sidebar_position: 1
 
 # Prezentare generală a rollup-urilor
 
-**Rollup Development Kit (RDK)** de la QoreChain — modulul `x/rdk` — le permite dezvoltatorilor să lanseze rollup-uri specifice aplicațiilor, care se decontează pe QoreChain. Fiecare rollup este un mediu de execuție independent, cu propriul timp de bloc, propria mașină virtuală, propriul model de comisioane și propria secvențiere, moștenind în același timp garanțiile QoreChain privind securitatea, criptografia post-cuantică și disponibilitatea datelor.
+**Rollup Development Kit (RDK)** de la QoreChain este un set de biblioteci client (TypeScript, Python, Go, Rust și Java), un instrument de linie de comandă pentru operatori și șabloane de pornire pentru construirea de rollup-uri specifice aplicațiilor, care se decontează pe QoreChain prin modulul on-chain `x/rdk`. Cu el configurați un rollup, construiți și semnați tranzacțiile acestuia, citiți starea lui, urmăriți ferestrele sale de contestare, emiteți și verificați chitanțe de decontare și asamblați apeluri cross-VM și dovezi de retragere. Fiecare rollup este un mediu de execuție independent, cu propriul timp de bloc, propria mașină virtuală, propriul model de comisioane și propria secvențiere, moștenind în același timp securitatea, criptografia post-cuantică și disponibilitatea datelor QoreChain. Această pagină este pentru dezvoltatorii care vor să lanseze sau să opereze un rollup și pentru oricine decide dacă RDK se potrivește aplicației sale.
 
 :::caution Capabilitate în stadiu incipient
-RDK este implementat pe ambele rețele, dar **niciun rollup nu a fost creat încă pe niciuna dintre ele** (verificat la 27 octombrie 2026), așa că fluxurile descrise în această secțiune nu au fost exersate de terți. Mainnetul (**`qorechain-vladi`**, EVM chain ID **9801**, activ din 7 iunie 2026) rulează versiunea lanțului **v3.2.4** (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, propunerea de guvernanță 13); testnetul (**`qorechain-diana`**, EVM chain ID **9800**) rulează **v3.2.6** (v3.2.4 a ajuns pe el la 19 octombrie 2026, v3.2.5 la 26 octombrie și v3.2.6 la 27 octombrie). Propunerea de guvernanță 14 de pe mainnet ar aplica v3.2.5 la înălțimea 3.906.833 și se afla în perioada de vot la momentul scrierii; ce schimbă v3.2.5 pentru rollup-uri este documentat în ziua în care mainnet-ul o aplică. Acolo unde comportamentul s-a schimbat între v3.2.3 și v3.2.4, această secțiune spune care versiune se aplică. Validați fiecare implementare mai întâi pe testnet și citiți notele de stare de pe fiecare pagină: mai multe capabilități (verificarea ZK, disponibilitatea datelor Celestia, QCAI Copilot, apelurile cross-VM, chitanțele de decontare) nu pot fi folosite astăzi cap-coadă, iar clienții RDK publicați au propriile limite (vezi [RDK 0.6.1: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits)).
+RDK este implementat pe ambele rețele, dar **niciun rollup nu a fost creat încă pe niciuna dintre ele** (verificat la 27 octombrie 2026), așa că fluxurile descrise în această secțiune nu au fost exersate de terți. **Decontarea ZK (profilul `defi`, șablonul `defi-rollup` și orice rollup `zk`) nu poate fi folosită încă pe niciuna dintre rețele:** lanțul nu are cum să înregistreze o cheie de verificare, așa că fiecare batch ZK este refuzat după ce comisionul a fost plătit. Înregistrarea cheilor este planificată pentru lanțul v3.2.7. Folosiți decontarea `optimistic` până atunci.
+
+Mainnetul (**`qorechain-vladi`**, EVM chain ID **9801**, activ din 7 iunie 2026) rulează versiunea lanțului **v3.2.4** (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, propunerea de guvernanță 13); testnetul (**`qorechain-diana`**, EVM chain ID **9800**) rulează **v3.2.6** (v3.2.4 a ajuns pe el la 19 octombrie 2026, v3.2.5 la 26 octombrie și v3.2.6 la 27 octombrie). Propunerea de guvernanță 14 de pe mainnet ar aplica v3.2.5 la înălțimea 3.906.833 și se afla în perioada de vot la momentul scrierii; ce schimbă v3.2.5 pentru rollup-uri este documentat în ziua în care mainnet-ul o aplică. Acolo unde comportamentul s-a schimbat între v3.2.3 și v3.2.4, această secțiune spune care versiune se aplică. Validați fiecare implementare mai întâi pe testnet și citiți notele de stare de pe fiecare pagină: mai multe capabilități (verificarea ZK, disponibilitatea datelor Celestia, QCAI Copilot, apelurile cross-VM, chitanțele de decontare) nu pot fi folosite astăzi cap-coadă.
 :::
 
-## Ce există astăzi {#what-exists-today}
+## Inovații {#innovations}
+
+* **Chitanțe de decontare post-cuantice.** Ancora de stare a unui batch este semnată cu ML-DSA-87 de cheia înregistrată a creatorului rollup-ului. `verifySettlementReceipt` recitește din lanț fiecare câmp al chitanței (rollup, strat, rădăcina batch-ului și ancora: rădăcina de stare, înălțimea stratului, înălțimea Main Chain, timpul ancorei, hash-ul setului de validatori, numărul de tranzacții, dovada, semnătura). Cheia de verificare vine din lanț și niciodată din chitanță; chitanța trebuie să indice rețeaua pe care o interogați; o versiune necunoscută de chitanță sau un algoritm diferit de ML-DSA-87 este refuzat înainte de orice citire; iar o verificare doar a semnăturii nu este niciodată raportată ca validă. Mesajul ancorei are o primă formă sub înălțimea lanțului v3.2.2 și o a doua formă, care leagă și chain id-ul, de la ea încolo; versiunea este aleasă după înălțimea ancorei. Consultați [Settlement receipts](/rollups/settlement-receipts).
+* **Semnare hibridă cu două derivări de chei.** Tranzacțiile sunt semnate cu secp256k1 plus ML-DSA-87. Cheia post-cuantică este derivată din mnemonic atât în maniera canonică (SHAKE-256 peste `qorechain:pqc:v1|`, adresa și mnemonicul), cât și în maniera veche (legacy), iar clientul folosește cheia pe care lanțul a înregistrat-o pentru cont. Astăzi doar clientul TypeScript semnează hibrid.
+* **Rădăcină canonică de tranziție.** `batchTransitionRoot` calculează exact rădăcina de stare după care lanțul judecă un batch optimist (forma pe care o aplică astăzi mainnet-ul este un angajament SHAKE-256 al rădăcinii de stare anterioare, al hash-ului de date și al numărului de tranzacții; `transitionRootVersionFor` alege forma pe care o aplică rețeaua conectată), iar `fraudProof` construiește din ea dovada de 64 de octeți. Ambele au fost testate cu vectori generați de codul propriu al lanțului.
+* **Ferestre de contestare exacte ca în lanț.** `batchChallengeWindow` calculează fereastra unui batch așa cum o face lanțul (bazată pe timp: deschisă cât timp timpul blocului este sub timpul trimiterii plus fereastra; pentru batch-urile mai vechi, fereastra împărțită la șase, în blocuri, de la înălțimea trimiterii) și o judecă față de vârful lanțului citit din RPC `/status`, nu față de ceasul local. [Watchtower](/rollups/watchtower) și monitorul de stare o folosesc.
+* **Verificări înainte de plata oricărui comision.** Kitul refuză un id de rollup în afara `^[a-z0-9][a-z0-9._-]{2,63}$`; o retragere care nu este în `uqor`, are suma zero, poartă o dovadă mai adâncă de 64 de niveluri de câte 32 de octeți sau indică o adresă bech32 invalidă; și, atunci când poate citi rollup-ul, un batch care indică un hash de date pe un rollup cu disponibilitatea datelor `native` sau `both`. Fiecare dintre acestea ar fi altfel refuzată de lanț după ce comisionul a fost cheltuit.
+* **Calldata cross-VM și o verificare live.** `encodeCrossVmCalldata` construiește calldata pentru `executeCrossVMCall(uint8,string,bytes)` (selector `0x3c11078c`, precompilare `0x...0901`), iar `isCrossVmPrecompileActive` citește dacă precompilarea este activă pe rețea. Consultați [Multi-VM](/rollups/multi-vm).
+* **Un singur set de vectori de test pentru cinci limbaje.** Pachetele TypeScript, Python, Go, Rust și Java sunt verificate față de același fixture de referință (pachetul Go are 100 de teste unitare, Rust 77 și Java 75).
+
+## Cum se folosește {#how-to-use}
+
+Citirile nu necesită nicio cheie și niciun fond. Fragmentele de mai jos citesc parametrii live ai modulului `rdk` și lista de rollup-uri de pe testnetul public (`qorechain-diana`) și au fost rulate la 27 octombrie 2026 din pachetele publicate (fragmentele de bibliotecă cu 0.6.1, versiunea codului bibliotecii pe care o livrează și 0.6.2; CLI-ul cu 0.6.2). Fiecare a afișat parametrii testnetului (maximum 200 de rollup-uri, miză minimă 10.000 QOR, rată de burn la creare 0,01, fereastră de contestare implicită 3.600 de secunde, dimensiune maximă a blob-ului DA 2.097.152 de octeți, retenția blob-urilor 432.000 de blocuri, maximum 10 batch-uri per bloc) și `0 rollups`.
+
+### TypeScript (testat)
+
+```bash
+npm install @qorechain/rdk
+```
+
+```ts
+import { createRdkClient } from "@qorechain/rdk";
+
+// Public testnet (chain id qorechain-diana).
+const rdk = createRdkClient({
+  network: "testnet",
+  endpoints: { rest: "https://api-testnet.qore.host" },
+});
+
+// Read the live rdk module parameters and the registered rollups.
+const params = await rdk.params();
+const rollups = await rdk.rest.listRollups();
+console.log(rdk.network.chainId, params, `${rollups.length} rollups`);
+```
+
+Preseturile `mainnet` și `testnet` includ deja endpoint-urile publice `qore.host`, așa că `createRdkClient({ network: "testnet" })` funcționează fără câmpul `endpoints`; el este arătat mai sus pentru că fragmentul testat l-a transmis. Rulați cu Node 20 sau mai nou (testul a folosit Node 26).
+
+### Python (testat)
+
+```bash
+pip install qorechain-rdk
+```
+
+```python
+from qorrdk import create_rdk_client
+
+# Public testnet (chain id qorechain-diana).
+rdk = create_rdk_client(network="testnet", endpoints={"rest": "https://api-testnet.qore.host"})
+
+# Read the live rdk module parameters and the registered rollups.
+params = rdk.params()
+rollups = rdk.rest.list_rollups()
+print(rdk.network.chain_id, params, f"{len(rollups)} rollups")
+```
+
+Python 3.10 sau mai nou. `qorechain-rdk` depinde de `qorechain-pqc`, care aduce `liboqs-python` și are nevoie de biblioteca `liboqs`; pe o mașină fără ea, prima importare o construiește (sunt necesare git, CMake și un compilator C). Testat într-un mediu virtual nou, pe Python 3.12.
+
+### Go (testat)
+
+```bash
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.6.2
+```
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+
+	rdk "github.com/qorechain/qorechain-rdk/packages/go"
+)
+
+func main() {
+	// Public testnet (chain id qorechain-diana).
+	client := rdk.NewRdkClient(rdk.RdkClientOptions{
+		Network:   "testnet",
+		Endpoints: &rdk.Endpoints{Rest: "https://api-testnet.qore.host"},
+	})
+	ctx := context.Background()
+	// Read the live rdk module parameters and the registered rollups.
+	params, err := client.Params(ctx)
+	if err != nil {
+		panic(err)
+	}
+	rollups, _ := client.Rest.ListRollups(ctx)
+	fmt.Printf("%s %+v %d rollups\n", client.Network.ChainID, params, len(rollups))
+}
+```
+
+Testat cu Go 1.26, cu modulul preluat de pe proxy-ul Go.
+
+### Rust (testat)
+
+```bash
+cargo add qorechain-rdk
+```
+
+```rust
+use qorechain_rdk::client::{RdkClient, RdkClientOptions};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Public testnet (chain id qorechain-diana).
+    let rdk = RdkClient::new(RdkClientOptions {
+        rest_url: Some("https://api-testnet.qore.host".into()),
+        ..Default::default()
+    });
+
+    // Read the live rdk module parameters and the registered rollups.
+    let params = rdk.params()?;
+    let rollups = rdk.rest.list_rollups()?;
+    println!("{} {:?} {} rollups", rdk.network.chain_id, params, rollups.len());
+    Ok(())
+}
+```
+
+Biblioteca este `qorechain_rdk`. Testat cu Rust 1.95, construit pe baza crates.io.
+
+### Java (testat)
+
+```kotlin
+// build.gradle.kts - Maven Central serves 0.6.1 until 0.6.2 is live there
+implementation("io.github.qorechain:qorechain-rdk:0.6.1")
+```
+
+```java
+import io.github.qorechain.rdk.client.RdkClient;
+import io.github.qorechain.rdk.client.Views.ParamsView;
+import io.github.qorechain.rdk.config.Networks;
+
+public class RdkQuickstart {
+    public static void main(String[] args) {
+        // Public testnet (chain id qorechain-diana).
+        RdkClient.Options options = new RdkClient.Options();
+        options.network = "testnet";
+        options.endpoints = new Networks.Endpoints();
+        options.endpoints.rest = "https://api-testnet.qore.host";
+        RdkClient rdk = new RdkClient(options);
+
+        // Read the live rdk module parameters and the registered rollups.
+        ParamsView params = rdk.params();
+        int rollups = rdk.rest.listRollups().size();
+        System.out.println(rdk.network.chainId + " maxRollups=" + params.maxRollups
+                + " minStakeForRollup=" + params.minStakeForRollup + " " + rollups + " rollups");
+    }
+}
+```
+
+JDK 17 sau mai nou; testat cu JDK 21 și Gradle 9.6, rezolvând dependențele din Maven Central. Fișierul trebuie să se numească `RdkQuickstart.java`. 0.6.2 nu conține nicio modificare Java, deci artefactul 0.6.1 este aceeași bibliotecă.
+
+### Linie de comandă (testat)
+
+```bash
+npm install -g @qorechain/rdk-cli
+qorollup --version
+qorollup params --network testnet
+```
+
+`qorollup --version` afișează `0.6.2`, iar `qorollup params --network testnet` afișează parametrii live ai modulului. **Aceasta funcționează de la 0.6.2.** Versiunile 0.6.1 și anterioare se încheiau cu codul 0 și nu afișau nimic când erau instalate din npm. Testul a instalat `@qorechain/rdk-cli@0.6.2` într-un proiect gol și l-a rulat prin `node_modules/.bin/qorollup`; o instalare globală și `npx` folosesc aceeași legătură bin. Este necesar Node 20 sau mai nou.
+
+### Crearea scheletului unui proiect (testat)
+
+```bash
+npx create-qorechain-rollup my-rollup --template nft-rollup --network testnet --yes
+cd my-rollup && npm run doctor
+```
+
+Șabloanele sunt `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup` și `multivm-rollup`. Proiectul generat depinde de `@qorechain/rdk` `^0.6.1`, pe care o instalare nouă îl rezolvă la 0.6.2. Generarea `nft-rollup` a produs un proiect pe `@qorechain/rdk` 0.6.1, iar `npm run doctor` al acestuia a trecut față de testnet (REST accesibil, parametri citibili, rețeaua `qorechain-diana`; avertizează despre disponibilitatea datelor Celestia și despre lipsa unui semnatar); generarea `defi-rollup` și rularea `npm run typecheck` au trecut. **Nu folosiți încă `defi-rollup` pentru a lansa un rollup** (consultați [Limite](#limits)). Pentru a crea un rollup și a trimite batch-uri, urmați [Deploying a Rollup](/rollups/deploying-a-rollup); tranzacțiile necesită o cheie post-cuantică înregistrată și, în RDK, clientul TypeScript căruia i se oferă un `pqcKeypair`.
+
+## Cum se accesează {#how-to-access}
+
+**Rețele și endpoint-uri.** RDK comunică cu endpoint-urile publice ale celor două rețele; preseturile `mainnet` și `testnet` le includ deja.
+
+| Rețea | Chain id | EVM chain ID | Endpoint REST | Versiunea lanțului |
+| ------- | -------- | ------------ | ------------- | ------------- |
+| Mainnet | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.4 |
+| Testnet | `qorechain-diana` | 9800 | `https://api-testnet.qore.host` | v3.2.6 |
+
+Ambele rețele servesc interogările RDK (`/qorechain/rdk/v1/...`) prin REST, gRPC și CLI, deci citiri precum `rdk.params()` funcționează pe oricare dintre ele. Testnetul este o rețea de staging cu proprii parametri: fereastra de contestare implicită este de 3.600 de secunde pe testnet și 604.800 pe mainnet, pe testnet pot exista cel mult 200 de rollup-uri, iar pe mainnet 100, iar modulul multilayer permite 64 de straturi sidechain pe testnet și 10 pe mainnet (verificat la 27 octombrie 2026). Citiți `GET /qorechain/rdk/v1/params` pe rețeaua țintă.
+
+**Cerințe pentru crearea unui rollup.**
+
+| Cerință | Detalii |
+| ----------- | ------- |
+| **Cont alimentat** | Un cont cu suficient QOR pentru miză, miza stratului și comisioane. |
+| **Miză în escrow** | Crearea unui rollup blochează în escrow `min_stake_for_rollup`, **10.000 QOR** pe ambele rețele. **1 % din miză (100 QOR) este ars (burn)** la creare; restul rămâne în escrow și este returnat când rollup-ul este oprit. |
+| **Miza stratului** | Crearea înregistrează și stratul rollup-ului în modulul multilayer (miză minimă 1.000 QOR). Dacă stratul nu poate fi înregistrat, rollup-ul este totuși creat, dar nu are un strat real, deci batch-urile sale nu pot fi ancorate și nu se pot emite chitanțe. |
+| **Cheie post-cuantică înregistrată** | O cheie ML-DSA-87 înregistrată pentru cont. Tranzacțiile pe lane-ul nativ semnate doar cu cheia clasică sunt refuzate. |
+| **Comisioane** | Pragul minim al comisionului este 0,1 uqor per unitate de gaz; setați împreună limita de gaz și comisionul. |
+| **Unelte** | Node 20 sau mai nou pentru CLI și scaffolder; Python 3.10 sau mai nou (cu `liboqs`, vezi mai sus) pentru clientul Python; JDK 17 sau mai nou pentru Java; modulul Go `github.com/qorechain/qorechain-rdk/packages/go`. |
+
+Citirea stării nu are nevoie de niciuna dintre acestea. Puteți și să solicitați un rollup prin Dashboard (un formular de cerere, nu o tranzacție on-chain) sau să creați unul cu CLI-ul lanțului; consultați [Deploying a Rollup](/rollups/deploying-a-rollup) pentru fluxul complet, comenzile CLI și calea de semnare TypeScript.
+
+### Ce există astăzi {#what-exists-today}
 
 | | Stare |
 |---|---|
 | Rollup-uri înregistrate (mainnet și testnet) | Niciunul |
 | Modulul `x/rdk` și parametrii săi | Implementat pe ambele rețele; citiți-i cu `qorechaind query rdk config` |
-| Interogări RDK | Disponibile pe ambele rețele prin CLI, gRPC și REST (`/qorechain/rdk/v1/…`), deci citirile bazate pe REST, precum `rdk.params()` din TypeScript, funcționează pe mainnet |
-| Ancore de decontare scrise de RDK | Niciuna. Începând cu v3.2.2, un batch poate purta un `anchor_signature` și este atunci ancorat în `x/multilayer` în aceeași tranzacție; fără el, batch-ul se decontează neancorat. Nu există încă niciun rollup, strat sau ancoră. RDK TypeScript (0.6.0 și 0.6.1) trimite câmpul când clientul său semnează hibrid și este creatorul rollup-ului (netestat live); clienții Python, Go, Rust și Java nu îl trimit |
+| Interogări RDK | Disponibile pe ambele rețele prin CLI, gRPC și REST (`/qorechain/rdk/v1/...`), deci citirile bazate pe REST, precum `rdk.params()` din TypeScript, funcționează pe mainnet |
+| Ancore de decontare scrise de RDK | Niciuna. Începând cu v3.2.2, un batch poate purta un `anchor_signature` și este atunci ancorat în `x/multilayer` în aceeași tranzacție; fără el, batch-ul se decontează neancorat. Nu există încă niciun rollup, strat sau ancoră. RDK TypeScript (0.6.0 până la 0.6.2) trimite câmpul când clientul său semnează hibrid și este creatorul rollup-ului (netestat live); clienții Python, Go, Rust și Java nu îl trimit |
 | Straturi de rollup înregistrate în `x/multilayer` | Niciunul |
+| Decontare ZK | Nu poate fi folosită încă pe niciuna dintre rețele (nu există cum să se înregistreze o cheie de verificare; planificat pentru lanțul v3.2.7) |
 | Retrageri | Plătite dintr-un registru de escrow per rollup începând cu v3.2.3 (vezi [ZK / STARK și retrageri](/rollups/zk-stark-withdrawals)); niciuna nu a fost făcută, deoarece nu există niciun rollup |
 
-Pentru referința de nivel inferior a modulului — parametrii modulului, mecanismele interne ale ciclului de viață, integrarea burn și ancorarea multistrat — consultați pagina **[Rollup Development Kit](/architecture/rollup-development-kit)** din secțiunea Arhitectură. Această secțiune Rollups este ghidul practic orientat către dezvoltatori: ce este RDK, ce paradigmă să alegeți, cum să implementați, cum funcționează disponibilitatea datelor și cum se decontează retragerile de la L2 înapoi la L1.
+Pentru referința de nivel inferior a modulului (parametrii modulului, mecanismele interne ale ciclului de viață, integrarea burn și ancorarea multistrat) consultați pagina **[Rollup Development Kit](/architecture/rollup-development-kit)** din secțiunea Arhitectură. Această secțiune Rollups este ghidul practic orientat către dezvoltatori.
+
+## Unde este publicat {#where-published}
+
+Versiuni verificate pe registre la 27 octombrie 2026. Toate pachetele sunt Apache-2.0.
+
+| Registru | Pachet | Versiunea curentă | Link |
+| -------- | ------- | --------------- | ---- |
+| npm | `@qorechain/rdk` (client TypeScript) | 0.6.2 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
+| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.6.2 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
+| npm | `create-qorechain-rollup` (scaffolder) | 0.6.2 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
+| PyPI | `qorechain-rdk` (import `qorrdk`) | 0.6.2 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
+| crates.io | `qorechain-rdk` (biblioteca `qorechain_rdk`) | 0.6.2 | [crates.io](https://crates.io/crates/qorechain-rdk) |
+| Go module proxy | `github.com/qorechain/qorechain-rdk/packages/go` | v0.6.2 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
+| Maven Central | `io.github.qorechain:qorechain-rdk` | **0.6.1** (0.6.2 nu este încă disponibil acolo) | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
+
+Maven Central servește 0.6.1 până când 0.6.2 devine disponibil acolo; 0.6.2 nu conține nicio modificare Java. Sursa este publică la [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk), notele de lansare sunt la [v0.6.2](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.6.2), iar documentația proprie a kitului este la [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/). Pachetul TypeScript depinde de `@qorechain/sdk` `^0.9.0` și `@qorechain/evm` `^0.8.0` (o aplicație pe SDK 0.10.0 primește deci, împreună cu kitul, o a doua copie SDK 0.9.x, imbricată), iar pachetul Python de `qorechain-pqc` 0.2.x. Logica modulului `x/rdk` al lanțului nu face parte din kitul public.
+
+## Limite și probleme cunoscute {#limits}
+
+* **Decontarea ZK nu poate fi folosită încă pe niciuna dintre rețele.** Aceasta include profilul `defi`, șablonul `defi-rollup` și orice rollup creat cu decontare `zk`. Lanțul nu are cum să înregistreze o cheie de verificare pentru un rollup, așa că fiecare batch ZK este refuzat după ce comisionul a fost plătit. Înregistrarea cheilor este planificată pentru lanțul v3.2.7. Folosiți decontarea `optimistic` până atunci (consultați [ZK / STARK și retrageri](/rollups/zk-stark-withdrawals)).
+* **Niciun rollup nu a fost creat pe niciuna dintre rețele.** Căile de creare, batch, contestare, chitanță și retragere sunt acoperite de teste unitare și de vectori comuni, dar nu au fost exersate on-chain.
+* **Doar clientul TypeScript semnează tranzacții hibride.** Căile de tranzacții Python, Go, Rust și Java și comenzile de tranzacție `qorollup` (`create`, `pause`, `resume`, `stop`, `withdraw`) semnează doar clasic, ceea ce ambele rețele refuză. Citirile lor funcționează. Pentru tranzacții din acestea, construiți mesajul și cosemnați-l cu CLI-ul lanțului sau folosiți clientul TypeScript cu un `pqcKeypair`.
+* **(a) CLI-ul `qorollup` nu afișa nimic când era instalat din npm în 0.6.1 și anterioare.** Aceasta este **remediată în 0.6.2**: după `npm i -g @qorechain/rdk-cli`, `qorollup ...` funcționează, iar `qorollup --version` afișează 0.6.2.
+* **(b) Helperii Merkle pentru retrageri folosesc implicit SHA-256, în timp ce lanțul folosește SHAKE-256.** O dovadă construită cu valorile implicite nu se verifică; înlocuiți hash-ul și codificarea frunzelor (consultați [Leaf and node encoding](/rollups/zk-stark-withdrawals#leaf-and-node-encoding)).
+* **(c) `buildDaBlob` face hash cu SHA-256, în timp ce angajamentul blob-ului din lanț este SHAKE-256.** Nu are niciun efect practic astăzi, deoarece nicio tranzacție nu publică un blob; lăsați `dataHash` gol la disponibilitatea datelor `native` și `both` (consultați [Data Availability](/rollups/data-availability)).
+* **(d) Circuitul demonstrativ al șablonului `defi` nu poate verifica.** Este un multiplicator `snarkjs`, iar lanțul verifică Groth16 peste BLS12-381 cu rădăcina de stare anterioară, rădăcina de stare și hash-ul de date ca intrări publice, pe care acel circuit nu le expune. Chiar și după ce va fi livrată înregistrarea cheilor, aveți nevoie de propriul circuit.
+* **Pe mainnet doar creatorul rollup-ului poate rezolva o contestare.** Lanțul verifică el însuși dovada de fraudă, dar creatorul transmite rezoluția (consultați [Optimistic](#optimistic)).
+* **Nu pot fi folosite pe rețelele live:** disponibilitatea datelor Celestia (neimplementată), [QCAI Rollup Copilot](/rollups/qcai-copilot) (serviciile sale consultative nu sunt pe endpoint-urile publice), apelurile cross-VM (precompilarea de la `0x...0901` nu este activă), secvențiatorii partajați și based (lanțul admite doar secvențiatorul configurat sau, când nu este setat niciunul, creatorul) și `suggest-profile` (returnează `defi` ca fallback fix).
+* **Note de versiune.** Maven Central servește 0.6.1 până când 0.6.2 devine disponibil acolo. Folosiți 0.6.2 sau mai nou pentru chitanțe, Watchtower și calldata cross-VM; 0.5.0 și anterioare nu trebuie folosite pentru ele. Lista completă a ceea ce a schimbat fiecare versiune este în [RDK 0.6.2: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits).
 
 ---
 
-## Ce vă oferă RDK
+## Referință: din ce este alcătuit un rollup {#reference}
+
+### Ce vă oferă RDK
 
 Un rollup creat prin RDK grupează patru aspecte configurabile:
 
@@ -41,26 +268,22 @@ Un rollup creat prin RDK grupează patru aspecte configurabile:
 
 Fiecare rollup este înregistrat cu un `rollup-id` unic, susținut de o garanție de miză (stake bond) în QOR și primește un statut de ciclu de viață (`pending`, `active`, `paused`, `stopped`). Consultați **[Deploying a Rollup](/rollups/deploying-a-rollup)** pentru fluxul complet de creare și ciclu de viață.
 
----
+### Capabilități specifice QoreChain și starea lor
 
-## Ce diferențiază QoreChain RDK
+Dincolo de elementele standard ale oricărui kit de rollup, RDK include trei capabilități construite în jurul Layer 1-ului QoreChain, plus un auto-contestatar de tip watchtower. Starea lor diferă; tabelul spune ce funcționează astăzi.
 
-Dincolo de elementele standard ale oricărui kit de rollup, QoreChain RDK include trei capabilități specifice QoreChain, construite în jurul Layer 1-ului QoreChain — plus un auto-contestatar de tip watchtower. Starea lor diferă; tabelul spune ce funcționează astăzi. RDK este livrat în cinci limbaje (TypeScript, Python, Go, Rust, Java). **Versiunea 0.6.1 este publicată pe toate cele cinci registre** (verificat la 27 octombrie 2026: npm `@qorechain/rdk`, `@qorechain/rdk-cli` și `create-qorechain-rollup`; PyPI `qorechain-rdk`; crates.io `qorechain-rdk`; Maven Central `io.github.qorechain:qorechain-rdk`; modulul Go `v0.6.1`, pe care îl servește astăzi și `@latest` al proxy-ului; fixați explicit versiunea). Dintre cele cinci, doar clientul TypeScript semnează tranzacții hibride. Preseturile `mainnet` și `testnet` includ din fabrică endpoint-urile publice `qore.host`, astfel încât `createRdkClient({ network })` nu necesită nicio configurare manuală a endpoint-urilor, iar citirile sale REST funcționează pe ambele rețele.
-
-| Diferențiator | Ce face |
-| -------------- | ------------ |
-| **[Quantum-safe settlement receipts](/rollups/settlement-receipts)** | Împachetează o ancoră de decontare ca o chitanță portabilă care poartă o semnătură post-cuantică (ML-DSA-87 / Dilithium-5). Stadiu incipient: nu există încă nicio ancoră, deci nimic nu a fost verificat față de o ancoră reală; o chitanță este o afirmație care trebuie verificată față de starea lanțului, ceea ce face verificatorul din 0.6.1, câmp cu câmp. |
+| Capabilitate | Ce face |
+| ---------- | ------------ |
+| **[Settlement receipts](/rollups/settlement-receipts)** | Împachetează o ancoră de decontare ca o chitanță portabilă care poartă o semnătură post-cuantică (ML-DSA-87 / Dilithium-5). Stadiu incipient: nu există încă nicio ancoră, deci nimic nu a fost verificat față de o ancoră reală; o chitanță este o afirmație care trebuie verificată față de starea lanțului, ceea ce face verificatorul din 0.6.2, câmp cu câmp. |
 | **[QCAI Rollup Copilot](/rollups/qcai-copilot)** | Un ajutor consultativ read-only pentru un singur rollup (estimare de comisioane, recomandări, investigații de fraudă). Serviciile consultative pe care le citește nu sunt încă expuse pe endpoint-urile publice. |
-| **[Multi-VM cross-VM calls](/rollups/multi-vm)** | Unelte pentru codificarea unui apel EVM → QoreChain Native prin precompilarea cross-VM (`0x…0901`). Precompilarea nu este activată pe rețelele live, deci un apel nu face nimic; encoderul începând cu 0.6.0 corespunde structurii pe care o decodifică lanțul. |
-| **[Watchtower](/rollups/watchtower)** | Un cadru de auto-contestare pentru rollup-uri optimiste, care semnalează batch-urile noi și termenele ferestrei de contestare și contestă batch-urile invalide pe baza predicatului vostru de validitate. Citește prin REST, pe care îl servesc ambele rețele; de la 0.6.0 judecă fereastra fiecărui batch la fel ca lanțul (0.6.1 păstrează acest comportament). |
+| **[Multi-VM cross-VM calls](/rollups/multi-vm)** | Unelte pentru codificarea unui apel EVM către QoreChain Native prin precompilarea cross-VM (`0x...0901`). Precompilarea nu este activată pe rețelele live, deci un apel nu face nimic; encoderul începând cu 0.6.0 corespunde structurii pe care o decodifică lanțul. |
+| **[Watchtower](/rollups/watchtower)** | Un cadru de auto-contestare pentru rollup-uri optimiste, care semnalează batch-urile noi și termenele ferestrei de contestare și contestă batch-urile invalide pe baza predicatului vostru de validitate. Citește prin REST, pe care îl servesc ambele rețele; de la 0.6.0 judecă fereastra fiecărui batch la fel ca lanțul (0.6.2 păstrează acest comportament). |
 
 Consultați **[Why QoreChain RDK](/rollups/why)** pentru argumentația completă și exemple de cod.
 
----
+### Cele patru paradigme de decontare {#settlement-paradigms}
 
-## Cele patru paradigme de decontare
-
-QoreChain RDK acceptă patru moduri de decontare distincte, fiecare cu ipoteze de încredere, caracteristici de finalitate și cerințe de dovezi diferite. Combinația dintre modul de decontare și sistemul de dovezi este validată on-chain — o pereche incompatibilă este respinsă la creare. Diagrama de mai jos asociază fiecare mod de decontare cu sistemul de dovezi valid corespunzător.
+QoreChain RDK acceptă patru moduri de decontare distincte, fiecare cu ipoteze de încredere, caracteristici de finalitate și cerințe de dovezi diferite. Combinația dintre modul de decontare și sistemul de dovezi este validată on-chain, iar o pereche incompatibilă este respinsă la creare. Diagrama asociază fiecare mod de decontare cu sistemul de dovezi valid corespunzător.
 
 ```mermaid
 flowchart TD
@@ -75,62 +298,56 @@ flowchart TD
     SV --> SN["none<br/>(required)"]
 ```
 
-
-
-### Optimistic
+#### Optimistic {#optimistic}
 
 Rollup-urile optimiste presupun implicit că batch-urile trimise sunt valide și se bazează pe **dovezi de fraudă** pentru soluționarea disputelor.
 
-* **Sistem de dovezi**: `fraud` — dovezi de fraudă interactive
-* **Secvențiator**: `dedicated` sau `shared`
-* **Finalitate**: Întârziată până când o fereastră de contestare configurabilă expiră fără nicio contestare reușită
-* **Dispute**: Oricine poate contesta un batch trimis, în interiorul ferestrei, depunând o garanție (bond) și o dovadă de fraudă. O contestare îngheață batch-ul; creatorul rollup-ului o rezolvă apoi, iar lanțul verifică el însuși dovada — fraudă confirmată respinge batch-ul și îl plătește pe contestatar, o contestare respinsă readuce batch-ul la `submitted`. Consultați [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups).
-* **Lungimea ferestrei**: fereastra implicită este de 604.800 de „secunde” pe mainnet (`default_challenge_window` al modulului; implicitul testnet-ului este de 3.600 de secunde, citit la 27 octombrie 2026, iar un rollup își poate seta propria valoare). **Înainte de v3.2.4 (pe mainnet, înainte de înălțimea 3.742.566)** lanțul le convertește în blocuri la un raport fix de 6 secunde per bloc — **100.800 de blocuri** — deci timpul real scurs urmează timpul efectiv al blocurilor (aproximativ 3,7 zile la blocurile actuale de ≈3,2 s de pe mainnet); planificați în blocuri, nu în zile. **De la v3.2.4**, un batch trimis de la înălțimea upgrade-ului încolo primește o fereastră măsurată în secunde de timp de bloc (7 zile întregi); batch-urile anterioare păstrează regula numărului de blocuri. Înălțimea upgrade-ului este 8.337.253 pe testnet (din 19 octombrie 2026) și 3.742.566 pe mainnet (23 octombrie 2026), deci regula numărului de blocuri se aplică fiecărui batch trimis sub acea înălțime, iar regula timpului de bloc de la ea încolo.
+* **Sistem de dovezi**: `fraud` (dovezi de fraudă interactive).
+* **Secvențiator**: `dedicated` sau `shared`.
+* **Finalitate**: Întârziată până când o fereastră de contestare configurabilă expiră fără nicio contestare reușită.
+* **Dispute**: Oricine poate contesta un batch trimis, în interiorul ferestrei, depunând o garanție (bond) și o dovadă de fraudă. O contestare îngheață batch-ul; pe mainnet creatorul rollup-ului o rezolvă apoi, iar lanțul verifică el însuși dovada: fraudă confirmată respinge batch-ul și îl plătește pe contestatar, o contestare respinsă readuce batch-ul la `submitted`. Consultați [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups).
+* **Lungimea ferestrei**: fereastra implicită este de 604.800 de „secunde” pe mainnet (`default_challenge_window` al modulului; implicitul testnet-ului este de 3.600 de secunde, citit la 27 octombrie 2026, iar un rollup își poate seta propria valoare). **Înainte de v3.2.4 (pe mainnet, înainte de înălțimea 3.742.566)** lanțul le convertește în blocuri la un raport fix de 6 secunde per bloc, adică **100.800 de blocuri**, deci timpul real scurs urmează timpul efectiv al blocurilor (aproximativ 3,7 zile la blocurile actuale de ≈3,1 s de pe mainnet); planificați în blocuri, nu în zile. **De la v3.2.4**, un batch trimis de la înălțimea upgrade-ului încolo primește o fereastră măsurată în secunde de timp de bloc (7 zile întregi); batch-urile anterioare păstrează regula numărului de blocuri. Înălțimea upgrade-ului este 8.337.253 pe testnet (din 19 octombrie 2026) și 3.742.566 pe mainnet (23 octombrie 2026).
 
-### ZK (Zero-Knowledge)
+#### ZK (Zero-Knowledge) {#zk}
 
 Rollup-urile ZK atașează fiecărui batch o dovadă criptografică de validitate, demonstrând corectitudinea tranziției de stare fără re-execuție.
 
-* **Sistem de dovezi**: `snark` (dovezi succinte) sau `stark` (dovezi transparente, fără trusted setup)
-* **Secvențiator**: `dedicated` sau `shared`
-* **Finalitate**: La verificarea unei dovezi valide — nu este necesară o fereastră de contestare
-* **Maturitate**: Batch-urile SNARK sunt verificate on-chain (Groth16 peste BLS12-381) față de o cheie de verificare stocată împreună cu rollup-ul. Un rollup creat prin `create-rollup` nu poartă în prezent o cheie de verificare, deci batch-urile ZK nu pot fi încă finalizate cap-coadă. Verificarea STARK este experimentală: este opt-in și verifică un circuit demonstrativ, nu propria tranziție de stare a rollup-ului vostru. Tratați decontarea ZK ca nefiind pregătită pentru producție. Consultați **[ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)**.
+* **Sistem de dovezi**: `snark` (dovezi succinte) sau `stark` (dovezi transparente, fără trusted setup).
+* **Secvențiator**: `dedicated` sau `shared`.
+* **Finalitate**: La verificarea unei dovezi valide, fără fereastră de contestare.
+* **Maturitate**: **Decontarea ZK nu poate fi folosită încă pe niciuna dintre rețele.** Batch-urile SNARK sunt menite să fie verificate on-chain (Groth16 peste BLS12-381) față de o cheie de verificare stocată împreună cu rollup-ul, iar lanțul nu are încă cum să înregistreze una, așa că fiecare batch ZK este refuzat după ce comisionul a fost plătit. Înregistrarea cheilor este planificată pentru lanțul v3.2.7. Verificarea STARK este experimentală: este opt-in și verifică un circuit demonstrativ, nu propria tranziție de stare a rollup-ului vostru. Consultați **[ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)**.
 
-### Based
+#### Based {#based}
 
 Rollup-urile de tip based deleagă secvențierea tranzacțiilor către proponenții QoreChain (L1), moștenind liveness-ul și rezistența la cenzură ale lanțului gazdă.
 
-* **Sistem de dovezi**: `none` — proponenții L1 sunt sursa de adevăr pentru ordonare
-* **Secvențiator**: `based` (obligatoriu — impus prin validare on-chain)
-* **Finalitate**: Urmează confirmarea lanțului gazdă
-* **Compromis**: Cel mai simplu model operațional, întrucât validatorii QoreChain se ocupă de secvențiere, cu prețul renunțării la controlul latenței oferit de un secvențiator dedicat
-* **Starea de astăzi**: `based` este înregistrat în configurația rollup-ului, dar QoreChain nu admite încă proponenți L1 ca transmițători de batch-uri — transmite creatorul rollup-ului (consultați [Modurile de secvențiere](#sequencer-modes))
+* **Sistem de dovezi**: `none` (proponenții L1 sunt sursa de adevăr pentru ordonare).
+* **Secvențiator**: `based` (obligatoriu, impus prin validare on-chain).
+* **Finalitate**: Urmează confirmarea lanțului gazdă.
+* **Compromis**: Cel mai simplu model operațional, întrucât validatorii QoreChain se ocupă de secvențiere, cu prețul renunțării la controlul latenței oferit de un secvențiator dedicat.
+* **Starea de astăzi**: `based` este înregistrat în configurația rollup-ului, dar QoreChain nu admite încă proponenți L1 ca transmițători de batch-uri; transmite creatorul rollup-ului (consultați [Modurile de secvențiere](#sequencer-modes)).
 
-### Sovereign
+#### Sovereign {#sovereign}
 
 Rollup-urile suverane rulează propriul consens și se auto-secvențiază. Ele își ancorează starea pe QoreChain pentru verificabilitate, dar nu depind de lanțul gazdă pentru finalitate.
 
-* **Sistem de dovezi**: `none`
-* **Secvențiator**: gestionat autonom de rollup
-* **Finalitate**: Independentă — determinată de consensul propriu al rollup-ului
-* **Ancorarea stării**: Rădăcinile de stare sunt publicate pe QoreChain pentru transparență, dar lanțul gazdă nu le impune
+* **Sistem de dovezi**: `none`.
+* **Secvențiator**: gestionat autonom de rollup.
+* **Finalitate**: Independentă, determinată de consensul propriu al rollup-ului.
+* **Ancorarea stării**: Rădăcinile de stare sunt publicate pe QoreChain pentru transparență, dar lanțul gazdă nu le impune.
 
----
-
-## Compatibilitatea sistemelor de dovezi
+### Compatibilitatea sistemelor de dovezi
 
 Modul de decontare restrânge sistemele de dovezi valide. Aceste perechi sunt impuse la crearea unui rollup.
 
 | Mod de decontare | `fraud` | `snark` | `stark` | `none` |
 | --------------- | :-----: | :-----: | :-----: | :----: |
-| **optimistic**  | Obligatoriu | — | — | — |
-| **zk**          | — | Acceptat | Acceptat | — |
-| **based**       | — | — | — | Obligatoriu |
-| **sovereign**   | — | — | — | Obligatoriu |
+| **optimistic**  | Obligatoriu | - | - | - |
+| **zk**          | - | Acceptat | Acceptat | - |
+| **based**       | - | - | - | Obligatoriu |
+| **sovereign**   | - | - | - | Obligatoriu |
 
----
-
-## Modurile de secvențiere {#sequencer-modes}
+### Modurile de secvențiere {#sequencer-modes}
 
 Secvențiatorul determină cine ordonează tranzacțiile în interiorul unui bloc de rollup înainte de decontare.
 
@@ -144,24 +361,21 @@ Secvențiatorul determină cine ordonează tranzacțiile în interiorul unui blo
 On-chain, un batch poate fi transmis doar de adresa de secvențiator configurată a rollup-ului sau, atunci când nu este setată niciuna (cazul tuturor preseturilor), de creatorul acestuia. Modurile `shared` și `based` sunt înregistrate în configurația rollup-ului, dar QoreChain nu admite încă o listă de secvențiatori partajați sau proponenți L1 ca transmițători de batch-uri; aceste moduri descriu designul intenționat.
 :::
 
----
-
-## Alegerea unei paradigme
+### Alegerea unei paradigme
 
 | Dacă doriți... | Luați în considerare |
 | -------------- | -------- |
 | Cea mai simplă configurație operațională, cu validatorii QoreChain realizând secvențierea | **based** |
-| Finalitate rapidă cu garanții criptografice (încă nepregătit pentru producție) | **zk** (`snark` / `stark`) |
+| Finalitate rapidă cu garanții criptografice (încă nu poate fi folosită) | **zk** (`snark` / `stark`) |
 | Un model bine înțeles, cu soluționare economică a disputelor | **optimistic** (`fraud`) |
 | Independență totală cu propriul consens, ancorat pentru verificabilitate | **sovereign** |
 
-Nu știți de unde să începeți? RDK include **profiluri preset** care grupează aceste alegeri pentru categorii de aplicații uzuale — consultați **[Preset Profiles](/rollups/preset-profiles)** — și, atunci când RPC-ul consultativ este disponibil, un ajutor `suggest-profile` (în prezent returnează un fallback fix `defi`, deci alegeți din tabelul de profiluri).
-
-Pentru dezvoltatori, RDK este livrat și ca SDK public TypeScript **`@qorechain/rdk`**, împreună cu scaffolder-ul **`create-qorechain-rollup`**, care acționează același modul on-chain din cod — consultați **[Deploying a Rollup](/rollups/deploying-a-rollup#deploy-with-the-typescript-rdk-qorechainrdk)**.
+Nu știți de unde să începeți? RDK include **profiluri preset** care grupează aceste alegeri pentru categorii de aplicații uzuale; consultați **[Preset Profiles](/rollups/preset-profiles)**. Există un ajutor `suggest-profile`, dar în prezent returnează un fallback fix `defi` (iar `defi` nu poate fi folosit încă), deci alegeți din tabelul de profiluri.
 
 ## Pagini conexe
 
-* [Deploying a Rollup](/rollups/deploying-a-rollup) — lansați un rollup din CLI sau din RDK-ul TypeScript.
-* [Preset Profiles](/rollups/preset-profiles) — pachete gata configurate pentru categorii de aplicații uzuale.
-* [Data Availability](/rollups/data-availability) — routerul nativ de DA și stocarea blob-urilor.
-* [ZK / STARK Withdrawals](/rollups/zk-stark-withdrawals) — fluxuri de retragere susținute de dovezi.
+* [Deploying a Rollup](/rollups/deploying-a-rollup): lansați un rollup din CLI sau din RDK-ul TypeScript.
+* [Preset Profiles](/rollups/preset-profiles): pachete gata configurate pentru categorii de aplicații uzuale.
+* [Data Availability](/rollups/data-availability): routerul nativ de DA și stocarea blob-urilor.
+* [ZK / STARK Withdrawals](/rollups/zk-stark-withdrawals): fluxuri de retragere susținute de dovezi.
+* [Settlement receipts](/rollups/settlement-receipts), [Watchtower](/rollups/watchtower), [Multi-VM](/rollups/multi-vm) și [Why QoreChain RDK](/rollups/why).

@@ -283,7 +283,7 @@ A post-quantum signature cannot travel *with* an Ethereum transaction (wallets s
 | `max-txs`   | 1 – 1,000          | How many EVM transactions it admits |
 | `max-value` | above 0, in `uqor` | Total outflow it admits: transferred value **plus** the maximum fee each transaction could pay (gas limit × max fee per gas), converted to `uqor` and rounded up |
 
-Whichever bound runs out first closes the window. The three bounds are required; opening a window replaces an existing one; a transaction that is admitted and then fails still uses its slot and its value budget; contract deployments count like any other transaction. `blocks` is a block count, not a duration: 17,280 blocks is about 15 hours on mainnet (about 3.2 s per block) and about 6 hours on the testnet (about 1.3 s per block on 27 October 2026; the testnet block time varies).
+Whichever bound runs out first closes the window. The three bounds are required; opening a window replaces an existing one; a transaction that is admitted and then fails still uses its slot and its value budget; contract deployments count like any other transaction. `blocks` is a block count, not a duration: 17,280 blocks is about 15 hours on mainnet (about 3.1 s per block) and about 6 hours on the testnet (about 1.3 s per block on 27 October 2026; the testnet block time varies).
 
 **The value bound counts native QOR only.** A token transfer, an approval or any other contract call carries value zero, so it is not counted against `max-value` (only its maximum fee is). To bound those as well, narrow the window's **scope** (mainnet v3.2.3 and later):
 

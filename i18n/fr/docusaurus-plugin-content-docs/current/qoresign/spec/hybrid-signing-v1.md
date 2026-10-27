@@ -125,7 +125,7 @@ entièrement nulle est refusée, car ses signatures peuvent être falsifiées.
   ne portent donc aucune signature ML-DSA-87. Un compte doté d'une clé ML-DSA-87
   enregistrée peut ouvrir, depuis la voie native, une fenêtre d'autorisation EVM
   bornée (hauteur d'expiration, nombre maximal de transactions, valeur maximale).
-  Voir [Portefeuilles EVM : mode prêt pour le post-quantique](/qoresign/guides/evm-quantum-ready).
+  Voir [Portefeuilles EVM : fenêtre d'autorisation](/qoresign/guides/evm-quantum-ready).
 - Voie SVM : pas encore ouverte sur le réseau.
 
 ## Vecteurs de test {#test-vectors}

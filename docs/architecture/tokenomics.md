@@ -41,7 +41,7 @@ QoreChain has a **finite, capped supply path**. Genesis supply was **4,420,000,0
 | --- | --- |
 | Emission mode | `fixed` (since v3.1.94, height 2,122,074 — 26 August 2026) |
 | Emission per epoch | **86,000 QOR** (16,239 QOR until governance proposal 10; the first 86,000 QOR epoch starts at block 3,672,000) |
-| Epoch length | 43,200 blocks (about 38.6 hours at the current ≈3.2 s block time) |
+| Epoch length | 43,200 blocks (about 37.7 hours at the current ≈3.1 s block time) |
 | Cumulative cap (`max_total_emission`) | **590,000,000 QOR** (114,285,714 QOR until proposal 10) |
 | Minted so far (23 October 2026, epoch 86) | 105,420,896.21 QOR (17.87 % of the cap) |
 | Remaining under the cap | 484,579,103.79 QOR (about 5,635 epochs at 86,000 QOR per epoch; the last one is partial) |
@@ -137,7 +137,7 @@ Two amounts accumulated on mainnet before the v3.2.0 upgrade (25 September 2026,
 
 **Corrected remainder of the stranded share.** At the v3.2.3 upgrade (height 3,662,051, 20 October 2026) the chain recomputed the stranded-share record, which then stood at 3,807,496.785528 QOR (`reserved` in `GET /qorechain/burn/v1/stranded_rewards`, alongside `released`, 6,693,045.921330 QOR). Governance proposal 12 released that remainder, 3,807,496.785528 QOR, to the foundation: it passed (voting ended 21 October 2026 at 20:01 UTC) with all voting bonded stake in favour. The record can be checked at `GET /qorechain/burn/v1/stranded_rewards` and the proposal at `GET /cosmos/gov/v1/proposals/12`.
 
-**The light-node pool now.** From the v3.2.0 upgrade, light-node rewards are paid only from what accrued since the previous distribution run, bounded per node. Since v3.2.3 the bound is **2,000 QOR per node per 30 days** (`max_reward_per_month_per_node`), prorated by block time and the node's uptime; the per-block value (`max_reward_per_block_per_node`, 1,713 uqor) is still reported but no longer the rule. Whatever is not earned stays in the pool's reserve, which only a governance vote can release. After proposal 8 the reserve accrues again: on 20 October 2026 it held 487.2318 QOR (`reserved` in `GET /qorechain/lightnode/v1/reward_pool`) with nothing outstanding or payable, because no light node has registered yet. Registration is open and licence-gated (see [Light Node](/light-node/overview#reward-program-status)). A release before the upgrade snapshot, above the recorded amount, or to an invalid destination is refused.
+**The light-node pool now.** From the v3.2.0 upgrade, light-node rewards are paid only from what accrued since the previous distribution run, bounded per node. Since v3.2.3 the bound is **2,000 QOR per node per 30 days** (`max_reward_per_month_per_node`), prorated by block time and the node's uptime; the per-block value (`max_reward_per_block_per_node`, 1,713 uqor) is still reported but no longer the rule. Whatever is not earned stays in the pool's reserve, which only a governance vote can release. After proposal 8 the reserve accrues again: on 27 October 2026 the mainnet pool's `reserved` (in `GET /qorechain/lightnode/v1/reward_pool`) was about 13,380.9 QOR, with 0.06 QOR outstanding and nothing payable; one light node was registered on each network that day. Registration is open and licence-gated (see [Light Node](/light-node/overview#reward-program-status)). A release before the upgrade snapshot, above the recorded amount, or to an invalid destination is refused.
 
 ## x/xqore — Locked Staking and Governance Amplification {#x-xqore}
 
@@ -191,7 +191,7 @@ The `x/inflation` module mints the per-epoch emission (86,000 QOR since proposal
 
 ### Epoch Mechanics
 
-* **Epoch length**: 43,200 blocks (about 38.6 hours at ≈3.2 s per block).
+* **Epoch length**: 43,200 blocks (about 37.7 hours at ≈3.1 s per block).
 * At each epoch boundary the module mints the epoch emission (or the remainder up to the cap), updates the epoch record and stops minting once `total_minted` reaches the cap.
 * Since v3.2.3 the emission year is derived from the epoch length rather than a fixed block count.
 

@@ -92,7 +92,7 @@ limiti, le forme della CLI e i codici di rifiuto sono in
 
 Con l'SDK **0.8.2 o successivo** puoi aprire una finestra dal codice (la **0.9.0** aggiunge
 le opzioni di ambito qui sotto). La registrazione della chiave
-(una sola volta) è descritta in [Quantum-safe](/sdk/guides/quantum-safe); l'esempio
+(una sola volta) è descritta in [Firma ibrida](/sdk/guides/quantum-safe); l'esempio
 seguente apre poi una finestra per un account eth-native unificato (`npm i
 @cosmjs/stargate`):
 

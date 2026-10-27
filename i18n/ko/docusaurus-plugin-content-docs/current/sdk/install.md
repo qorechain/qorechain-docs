@@ -81,7 +81,7 @@ SDK 0.9.0은 체인 **v3.2.2**와 **v3.2.3**을 위한 클라이언트 릴리스
 | 영역 | 0.9.0(및 이후)에서 |
 | --- | --- |
 | 하이브리드 `TxClient` (TypeScript) | 계정의 키페어를 전달합니다: `client.connectTx(signer, { pqcKeypair })` 또는 `TxClient.connect({ …, pqcKeypair, rest })`. 그러면 모든 트랜잭션이 하이브리드로 서명되고 `fee: "auto"`는 하이브리드 트랜잭션 자체를 시뮬레이션합니다. 단독 키 등록은 클래식으로 유지됩니다(체인의 부트스트랩 경로). `bankSend`와 SDK의 롤업, 멀티레이어, 크로스 VM 클라이언트가 이를 사용합니다. 키페어가 없으면 아무것도 바뀌지 않습니다 |
-| 복구 가능한 PQC 키 | `derivePqcCanonical(address, mnemonic)`과 모든 언어의 대응 함수([양자 안전](/sdk/guides/quantum-safe#canonical-derivation) 참조) |
+| 복구 가능한 PQC 키 | `derivePqcCanonical(address, mnemonic)`과 모든 언어의 대응 함수([하이브리드 서명](/sdk/guides/quantum-safe#canonical-derivation) 참조) |
 | `ensurePqcRegistered` | 먼저 REST(`rest`)로 키 상태를 읽고, 판단할 수 없으면 등록을 거부하며, 계정에 이미 다른 키가 있으면 `PqcKeyMismatchError`를 던지고, 체인의 "이미 등록됨" 거부는 성공으로 처리합니다. 체인 v3.2.3부터는 **소유 증명**을 스스로 서명해 첨부하며, v3.2.3 이전에는 해당 필드를 비워 둡니다 |
 | 범위가 제한된 EVM 윈도우 | `openEvmWindowMsg`가 `nativeOnly`와 `allowedTargets`(최대 16개, 중복 불가)를 받고, `fetchEvmWindow`가 둘 다 다시 읽습니다([EVM 가이드](/sdk/guides/evm#evm-window) 참조) |
 | EIP-7702 동의 | `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`, `evmDelegationTupleNonce`, `classifyEvmDelegationRejection` |
@@ -261,7 +261,7 @@ implementation 'io.github.qorechain:qorechain-sdk:0.10.0'
 > Maven Central에 `io.github.qorechain:qorechain-sdk`로 게시되어 있습니다
 > (0.10.0이 최신이자 릴리스 버전입니다. 2026년 10월 27일 확인). Central에는 0.8.0
 > 또는 0.8.1 빌드가 없으므로, 라이브 네트워크에서는 0.8.2 이상을 사용하세요.
-> 0.9.1은 릴리스 노트에 따라 Bouncy Castle을 1.80에서 1.85로 올린 Java 전용
+> 0.9.1은 Bouncy Castle을 1.80에서 1.85로 올린 Java 전용
 > 릴리스였으며 API 변경은 없었습니다.
 
 ## 관련 패키지 {#related-packages}
@@ -270,12 +270,12 @@ implementation 'io.github.qorechain:qorechain-sdk:0.10.0'
 | --- | --- | --- |
 | `@qorechain/wallet-adapter` | 지갑 측 헬퍼: 지갑 생성(`generateQoreWallet`), `eth_secp256k1` 하이브리드 서명(`signHybridEth`, `QoreChainSigner`), MetaMask 네트워크 등록(`addQoreEvmToWallet`), 인증자 및 EVM 윈도우 메시지 빌더(`openEvmWindowMsg`는 범위 제한이 없는 형태만 만듭니다), v2 추상 계정 다이제스트. 소유 증명은 첨부하지 않습니다. 피어 의존성: `@cosmjs/proto-signing` 및 `@cosmjs/stargate` `^0.32`(SDK는 cosmjs 0.39를 사용하므로 한 프로젝트에 둘 다 설치하면 npm이 피어 충돌 `ERESOLVE`를 보고합니다. 별도 프로젝트에 두거나 `--legacy-peer-deps`를 전달하세요) | 0.4.0 |
 | `@qorechain/chain-bridge` | 백엔드용 서버 측 워커: PQC 키를 파생하고, 하이브리드 서명 후 브로드캐스트합니다(`sendTokens`, `registerPqc` 등). `cosmosRest`를 전달하세요. 전달하면 네트워크가 v3.2.3을 적용한 뒤 등록에 소유 증명이 포함되고, PQC로 보이는 거부는 재등록 전에 체인과 대조해 확인합니다(다른 키가 등록되어 있으면 두 번째 등록 비용을 내는 대신 `pqc_key_mismatch`를 발생시킵니다) | 0.2.3 |
-| `@qorechain/pqc` | 표준 전용 ML-DSA / ML-KEM / SHAKE-256 프리미티브와 `hybridSignBytes`([양자내성 서명](/developer-guide/post-quantum-signing) 참조). PyPI, crates.io, Maven Central, Go 프록시(Go `v0.2.3`)에도 같은 버전으로 있습니다 | 0.2.3 |
-| `@qorechain/handles` | 최초 사용 시 신뢰(trust-on-first-use) 고정을 갖춘 검증된 `@handle` 해석(`HandleClient`) | 0.1.0 |
-| `@qorechain/connect` | 지갑 어댑터 위에 구축된, EVM, Cosmos, SVM 지갑을 위한 단일 커넥터(피어 범위는 `@qorechain/wallet-adapter` `^0.2.1`이며 0.4.0은 포함하지 않습니다). [EVM 인증 윈도우](/sdk/guides/evm#evm-window)를 열지 않으므로, 이를 통한 EVM 전송은 계정에 등록된 키와 열린 윈도우가 생길 때까지 거부됩니다 | 0.2.1 |
-| `@qorechain/rdk` | 롤업 개발 키트(Rollup Development Kit) 클라이언트([롤업](/rollups/why) 참조). `@qorechain/sdk` `^0.9.0`과 `@qorechain/evm` `^0.8.0`에 의존합니다. 0.x 버전의 캐럿은 0.9 안에 머무르므로, SDK 0.10.0을 사용하는 앱은 키트와 함께 중첩된 두 번째 SDK 0.9.x 사본을 받습니다(SDK 0.9.x에 머무르는 앱은 사본 하나를 공유합니다). `pqcKeypair`를 전달할 때만 하이브리드로 서명하며, 읽기는 없어도 동작합니다. PyPI, crates.io, Maven Central에는 `qorechain-rdk`로, Go 모듈로도 게시되어 있습니다(`@v0.6.1`로 고정하세요). 이 네 클라이언트는 클래식 전용으로 서명합니다. [RDK 0.6.1: 변경 사항과 한계](/rollups/deploying-a-rollup#rdk-050-limits)를 참조하세요 | 0.6.1 |
-| `@qorechain/rdk-cli` | RDK용 `qorollup` 운영자 CLI. 트랜잭션 명령(`create`, `pause`, `resume`, `stop`, `withdraw`)은 클래식 전용으로 서명하며 네트워크가 이를 거부합니다 | 0.6.1 |
-| `create-qorechain-rollup` | 롤업 스타터 스캐폴더. 템플릿은 `@qorechain/rdk` `^0.6.1`에 의존하며, `QORE_MNEMONIC` 또는 `QORE_PQC_SEED_HEX`에서 양자내성 키를 확보할 수 있으면 하이브리드로 서명합니다 | 0.6.1 |
+| `@qorechain/pqc` | 표준 전용 ML-DSA / ML-KEM / SHAKE-256 프리미티브와 `hybridSignBytes`([포스트 양자 서명](/developer-guide/post-quantum-signing) 참조). PyPI, crates.io, Maven Central, Go 프록시(Go `v0.2.3`)에도 같은 버전으로 있습니다 | 0.2.3 |
+| `@qorechain/handles` | 검증된 `@handle` 해석(`HandleClient`): 레지스트리의 공개 키와 고정(pin) 저장소를 직접 제공하고, 사용자가 주소를 확인한 뒤에 고정합니다. 이 패키지는 스스로 고정하지 않습니다. [체인 브리지와 handle](/developer-tools/chain-bridge#handles)을 참조하세요 | 0.1.0 |
+| `@qorechain/connect` | **npm에서 더 이상 사용되지 않으며(deprecated) 유지보수도 중단되었습니다. 새 작업에는 사용하지 마세요. 대신 [`@qorechain/wallet-adapter`](/developer-tools/wallet-adapter)를 사용하세요(QoreX 연결의 대체 수단은 [개발자 도구 개요](/developer-tools/overview#group-connect)에 있습니다).** 지갑 어댑터 위에 구축된, EVM, Cosmos, SVM 지갑을 위한 단일 커넥터(피어 범위는 `@qorechain/wallet-adapter` `^0.2.1`이며 0.4.0은 포함하지 않습니다). [EVM 인증 윈도우](/sdk/guides/evm#evm-window)를 열지 않으므로, 이를 통한 EVM 전송은 계정에 등록된 키와 열린 윈도우가 생길 때까지 거부됩니다 | 0.2.1 |
+| `@qorechain/rdk` | 롤업 개발 키트(Rollup Development Kit) 클라이언트([롤업](/rollups/why) 참조). `@qorechain/sdk` `^0.9.0`과 `@qorechain/evm` `^0.8.0`에 의존합니다. 0.x 버전의 캐럿은 0.9 안에 머무르므로, SDK 0.10.0을 사용하는 앱은 키트와 함께 중첩된 두 번째 SDK 0.9.x 사본을 받습니다(SDK 0.9.x에 머무르는 앱은 사본 하나를 공유합니다). `pqcKeypair`를 전달할 때만 하이브리드로 서명하며, 읽기는 없어도 동작합니다. PyPI, crates.io, Maven Central에는 `qorechain-rdk`로, Go 모듈로도 게시되어 있습니다(`@v0.6.2`로 고정하세요. Maven Central은 0.6.2가 그곳에 올라올 때까지 0.6.1을 제공합니다). 이 네 클라이언트는 클래식 전용으로 서명합니다. [RDK 0.6.2: 변경 사항과 한계](/rollups/deploying-a-rollup#rdk-050-limits)를 참조하세요 | 0.6.2 |
+| `@qorechain/rdk-cli` | RDK용 `qorollup` 운영자 CLI. 트랜잭션 명령(`create`, `pause`, `resume`, `stop`, `withdraw`)은 클래식 전용으로 서명하며 네트워크가 이를 거부합니다. npm에서 설치하면 실행되며 `--version`이 0.6.2를 출력합니다(0.6.1 이하는 아무것도 출력하지 않았습니다) | 0.6.2 |
+| `create-qorechain-rollup` | 롤업 스타터 스캐폴더. 템플릿은 `@qorechain/rdk` `^0.6.1`에 의존하며, `QORE_MNEMONIC` 또는 `QORE_PQC_SEED_HEX`에서 포스트 양자 키를 확보할 수 있으면 하이브리드로 서명합니다 | 0.6.2 |
 
 ## 다음
 

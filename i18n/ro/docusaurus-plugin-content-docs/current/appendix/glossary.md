@@ -13,7 +13,7 @@ Referință alfabetică a termenilor, abrevierilor și acronimelor folosite în 
 
 **AMM** — Automated Market Maker (formator de piață automat). Modulul nativ on-chain de lichiditate al QoreChain (`x/amm`) care oferă pool-uri cu produs constant, swap-uri și furnizare de lichiditate direct la nivel de protocol, fără o implementare externă de smart-contract. Vezi [AMM](/architecture/amm).
 
-**Authorisation window (EVM) (fereastră de autorizare EVM)** — O permisiune delimitată (blocuri, număr de tranzacții, valoare totală), deschisă cu un mesaj de pe lane-ul Cosmos semnat post-cuantic, în interiorul căreia trebuie să se încadreze o tranzacție de pe lane-ul EVM începând cu v3.2.0. Începând cu v3.2.3, o fereastră poate fi restrânsă doar la transferuri native sau la o listă de destinatari. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
+**Authorisation window (EVM) (fereastră de autorizare EVM)** — O permisiune delimitată (blocuri, număr de tranzacții, valoare totală), deschisă cu un mesaj de pe lane-ul Cosmos care poartă o semnătură hibridă ML-DSA-87 (FIPS 204), în interiorul căreia trebuie să se încadreze o tranzacție de pe lane-ul EVM începând cu v3.2.0. Începând cu v3.2.3, o fereastră poate fi restrânsă doar la transferuri native sau la o listă de destinatari. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
 
 **BPF** — Berkeley Packet Filter. Formatul de bytecode folosit de runtime-ul SVM pentru a executa programe on-chain. Programele sunt compilate în BPF înainte de implementare.
 
@@ -39,11 +39,11 @@ Referință alfabetică a termenilor, abrevierilor și acronimelor folosite în 
 
 **IBC** — Inter-Blockchain Communication (comunicare între blockchain-uri). Un protocol pentru transmiterea autentificată de mesaje între blockchain-uri independente. QoreChain acceptă canale IBC pentru transferuri cross-chain de tokenuri și releu de date.
 
-**Light Node (nod light)** — Un client cu consum redus de resurse care urmărește lanțul verificând încrucișat antetele blocurilor la unul sau mai multe endpoint-uri RPC, fără a deține starea completă. Nu deservește interogări pentru alții. Împărțirea comisioanelor de protocol rezervă o cotă de **3%** pentru programul de recompense al nodurilor light. Înregistrarea pentru program este deschisă și condiționată de o licență `lightnode_operator` (50 USD, cumpărată din Dashboard); la 20 octombrie 2026 fuseseră acordate șase licențe pe mainnet, iar niciun nod light nu se înregistrase încă. Rularea unui nod nu necesită licență. Vezi [Nod light](/light-node/overview) și [starea programului de recompense](/light-node/overview#reward-program-status).
+**Light Node (nod light)** — Un client cu consum redus de resurse care urmărește lanțul verificând încrucișat antetele blocurilor la unul sau mai multe endpoint-uri RPC, fără a deține starea completă. Nu deservește interogări pentru alții. Împărțirea comisioanelor de protocol rezervă o cotă de **3%** pentru programul de recompense al nodurilor light. Înregistrarea pentru program este deschisă și condiționată de o licență `lightnode_operator` (50 USD, cumpărată din Dashboard); la 27 octombrie 2026 fuseseră acordate șapte licențe pe mainnet, iar câte un nod light era înregistrat pe fiecare rețea. Rularea unui nod nu necesită licență. Vezi [Nod light](/light-node/overview) și [starea programului de recompense](/light-node/overview#reward-program-status).
 
 **MEV** — Maximal Extractable Value (valoare maximă extractibilă). Profitul care poate fi obținut prin reordonarea, inserarea sau cenzurarea tranzacțiilor în cadrul unui bloc. Modulul FairBlock al QoreChain (criptare tIBE) este conceput pentru a atenua extragerea MEV; nu este încă activat.
 
-**ML-DSA-87** — Module-Lattice Digital Signature Algorithm (nivel de securitate 5). Schema de semnătură digitală post-cuantică standardizată de NIST, folosită de QoreChain pentru semnarea tranzacțiilor rezistentă cuantic. Produce semnături de 4.627 octeți cu chei publice de 2.592 octeți.
+**ML-DSA-87** — Module-Lattice Digital Signature Algorithm (nivel de securitate 5). Schema de semnătură digitală post-cuantică standardizată de NIST, folosită de QoreChain, împreună cu secp256k1, pentru semnăturile hibride ale tranzacțiilor pe lane-ul nativ. Produce semnături de 4.627 octeți cu chei publice de 2.592 octeți.
 
 **ML-KEM-1024** — Module-Lattice Key Encapsulation Mechanism (nivel de securitate 5). O schemă post-cuantică de încapsulare a cheilor standardizată de NIST, disponibilă în registrul de algoritmi PQC al QoreChain pentru viitoare canale de comunicare criptate.
 
@@ -79,7 +79,7 @@ Referință alfabetică a termenilor, abrevierilor și acronimelor folosite în 
 
 **SNARK** — Succinct Non-interactive Argument of Knowledge. Un tip de dovadă cu cunoaștere zero care poate fi verificată rapid cu o dimensiune mică a dovezii. Acceptată ca paradigmă de settlement în modulul RDK pentru zk-rollup-uri.
 
-**STARK** — Scalable Transparent Argument of Knowledge. Un sistem de dovadă cu cunoaștere zero care nu necesită un setup de încredere și este rezistent cuantic. Disponibil ca sistem de dovadă alternativ pentru settlement-ul zk-rollup în RDK.
+**STARK** — Scalable Transparent Argument of Knowledge. Un sistem de dovadă cu cunoaștere zero care nu necesită un setup de încredere și este construit pe funcții hash, nu pe curbe eliptice. Disponibil ca sistem de dovadă alternativ pentru settlement-ul zk-rollup în RDK.
 
 **Stranded staker share / reward-pool reserve (cota blocată a stakerilor / rezerva pool-ului de recompense)** — Sume înregistrate la upgrade-ul v3.2.0 care se mișcă doar printr-un vot de guvernanță; guvernanța le-a eliberat în octombrie 2026 (restul corectat al cotei blocate, recalculat la v3.2.3, a fost eliberat prin propunerea 12). Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 

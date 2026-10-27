@@ -7,105 +7,106 @@ sidebar_position: 8
 
 # Staking & Validatoren
 
-Die Seite **Validators** (`/validators`) ermöglicht es dir, die Validatoren des Netzwerks zu überprüfen – sie ist ein reiner Nur-Lese-Browser, ohne Wallet-Verbindung und ohne Delegieren-Schaltfläche. Die eigentlichen Staking-Aktionen (delegieren, Delegierung aufheben, einfordern) befinden sich stattdessen auf der Seite **Wallet**, in den Tabs **Stake / Delegate** und **Rewards**, sobald deine QoreX-Wallet dort verbunden ist. Delegieren trägt zur Sicherung des Netzwerks bei und bringt Staking-Belohnungen ein. Für die Konzepte hinter Delegation und Belohnungen siehe [Staking & Delegation](/user-guide/staking-and-delegation).
+Diese Seite behandelt das Staking über das Dashboard: dein QOR an einen Validator delegieren, es unbonden und Belohnungen einfordern. Die Aktionen befinden sich im **Mainnet** auf der Seite **Wallet** (Tabs **Stake / Delegate** und **Rewards**), mit verbundener QoreX-Wallet. Um Validatoren zuerst zu vergleichen, nutze die schreibgeschützte Seite [Validators](/dashboard/validators). Für die Konzepte hinter Delegation und Belohnungen siehe [Staking & Delegation](/user-guide/staking-and-delegation).
 
-QoreChain-Staking wird post-quantensicher signiert, sodass das Dashboard niemals einen Schlüssel besitzt, mit dem eine Delegation signiert werden könnte. Jede der folgenden Staking-Aktionen funktioniert nach demselben Muster: Du stellst die Anfrage im Dashboard zusammen (welcher Validator, wie viel), genehmigst und signierst sie dann **in deiner verbundenen QoreX-Wallet** – der App oder der Browser-Erweiterung (siehe [welche Version wo aktiv ist](/qorex/overview#platform-availability)) – genau wie beim [Sende-Ablauf](/dashboard/wallet#mainnet). Das Dashboard sendet nur die Parameter über einen `qorex://tx?...`-Link; QoreX rekonstruiert, signiert und sendet die eigentliche Transaktion selbst. Verbinde zuerst deine Wallet – siehe [Die Wallet im Mainnet verwenden](/dashboard/wallet#mainnet).
+## Innovationen {#innovations}
 
-Staking, Delegation und Validierung finden ausschließlich auf der Native-Schiene (Cosmos) statt, unter Verwendung der hybriden post-quantensicheren Signatur – niemals über ein EVM-Precompile. Dies ist eine dauerhafte Sicherheitseigenschaft und keine vorübergehende Lücke: Die EVM-Schiene läuft mit einem einzigen Ante-Decorator, sodass die Prüfungen für Validator-Lizenz, Mindest-Self-Bond und PQC, die im Ante der Native-Schiene verankert sind, allesamt umgangen würden, wenn Staking dort verfügbar gemacht würde. Eine mit MetaMask verknüpfte Adresse kann QOR empfangen und bei geöffnetem EVM-Fenster senden (siehe [Senden mit MetaMask](/dashboard/wallet#send-metamask)), kann aber nicht staken – das kann ausschließlich eine mit QoreX verbundene Adresse.
+- **Das Dashboard hält nie einen Staking-Schlüssel.** Du stellst die Anfrage (welcher Validator, wie viel) im Dashboard zusammen, und QoreX rekonstruiert, zeigt, signiert mit der hybriden ML-DSA-87-Signatur und sendet sie. Das Dashboard sendet nur Parameter über einen `qorex://tx?...`-Link und erfährt nur den Transaktions-Hash. Der Ablauf ist derselbe wie beim [Sende-Ablauf](/dashboard/wallet#send-mainnet).
+- **Dauerhaft nur die Native-Lane.** Staking, Delegation und Validator-Operationen finden ausschließlich auf der nativen (Cosmos-)Lane mit der hybriden Post-Quantum-Signatur statt, nie über einen EVM-Precompile. Eine mit MetaMask verknüpfte Adresse kann QOR empfangen und, bei geöffnetem EVM-Fenster, senden, aber nicht staken. Das kann nur eine mit QoreX verbundene Adresse.
+- **Die Validator-Reihenfolge verteilt den Stake.** Es werden nur gebondete, nicht gejailte Validatoren aufgelistet, der kleinste zuerst. Der oberste Platz wird serverseitig zufällig aus der kleineren Hälfte gezogen, sodass der größte Validator nie die Voreinstellung ist.
+- **Die Light-Node-Schwelle ist eine Gesamtsumme.** „Currently bonded“ wird gegen die Light-Node-Stake-Schwelle angezeigt, gezählt über alle deine Validatoren zusammen, sodass ein Fehlbetrag auf mehrere Validatoren verteilt werden kann.
+- **Die Unbonding-Zeit wird dort gezeigt, wo sie zählt.** Die 21-tägige Unbonding-Frist wird von der Chain gelesen und bei Delegate einmal und bei Unbond zweimal angezeigt, absichtlich, weil man sie genau dort braucht.
+- **Gebührenprüfung vor dem Signieren.** Das Panel liest dein verfügbares QOR (Vesting- und gebondete Coins ausgenommen) und hält **Continue in QoreX** deaktiviert, bis die Gebühr bezahlt werden kann.
 
-## Validatoren überprüfen
+## Anleitung {#how-to-use}
 
-:::caution Auf dem Mainnet zeigt diese Seite derzeit Testnet-Validatoren
-Die Seite **Validators** (`/validators`) zeigt das **Testnet**-Validatoren-Set, während das Dashboard auf dem Mainnet ist – ein Backend-Datenproblem, nichts, was mit deiner Verbindung oder deinem Konto zu tun hat. Die Zahlen auf den Übersichtskarten (aktive Validatoren, gebundenes QOR, Blockhöhe) stammen ebenfalls vom Testnet. Verwende diese Seite nicht, um zu entscheiden, wer die Validatoren des Mainnets sind; nutze stattdessen den [Block-Explorer](https://explore.qore.network) oder eine direkte Chain-Abfrage (`qorechaind query staking validators`). Es handelt sich jedoch rein um eine informative Diskrepanz: Der Validator-Auswahldialog im **Delegate**-Panel auf dem [Stake-Tab der Wallet-Seite](/dashboard/wallet#mainnet) liest eine andere, korrekte Route direkt von der Chain, sodass du dort tatsächlich keinen Validator auswählen oder an ihn delegieren kannst, der auf dem Mainnet gar nicht existiert – du siehst dort einfach eine andere (und korrekte) Liste, sobald du hinkommst.
-:::
+Voraussetzungen: angemeldet, Kopfzeile auf **Mainnet**, die [Bestätigung](/dashboard/overview#risk-acknowledgement) akzeptiert und eine QoreX-Wallet verbunden, wie unter [Die Wallet im Mainnet verwenden](/dashboard/wallet#mainnet) beschrieben.
 
-Die Seite öffnet sich mit Übersichtskarten zur Anzahl der aktiven Validatoren, zur insgesamt gebundenen QOR-Menge, zur durchschnittlichen Provision und zur durchschnittlichen Verfügbarkeit. Darunter befindet sich die Validatorenliste. Jede Validator-Zeile zeigt:
+### Einen Validator auswählen
 
-- Einen **Rang** und den **Moniker** (Namen) des Validators, mit seiner Adresse und einer Kopier-Schaltfläche.
-- **Voting Power** – der gebundene Stake des Validators und sein Anteil an der Gesamtmenge.
-- **Provision** – der Prozentsatz, den der Validator von den Belohnungen einbehält.
-- **APY** – wird als Gedankenstrich (—) angezeigt: Das Dashboard veröffentlicht keine berechnete Staking-Rendite, behandle daher jeden anderswo angegebenen Prozentsatz als unverifiziert.
-- **Status** – zum Beispiel aktiv oder gesperrt (jailed).
-- Betriebsdetails: Region, Verfügbarkeit, vorgeschlagene Blöcke, Softwareversion und zuletzt gesehen.
+Öffne [Validators](/dashboard/validators), um Provision, Voting Power und Status zu vergleichen. Die Seite liegt im Dashboard unter `/validators`: Sie erfordert, dass du angemeldet bist, hat keinen Seitenleisten-Link (gib die Adresse ein oder folge dem Link hier) und folgt dem in der Kopfzeile gewählten Netzwerk. Ihre APY-Spalte wird von der Chain gelesen und trägt den Hinweis „variable, not guaranteed, lock bonuses not included“ (oder lautet „From fees“); es wird keine Zahl versprochen. Beachte bei der Auswahl:
 
-Ein Suchfeld filtert die Liste nach Validatorname oder Adresse.
-
-Diese Seite dient ausschließlich dem Vergleich von Validatoren. Um tatsächlich an einen zu delegieren, geh zur Seite **Wallet** – siehe unten.
-
-## Einen Validator auswählen
-
-Wenn du einen Validator zum Delegieren auswählst, beachte Folgendes:
-
-- **Provision** – ein niedrigerer Satz lässt dir mehr Belohnungen, aber nachhaltig arbeitende Betreiber brauchen einen angemessenen Anteil.
-- **Verfügbarkeit und Status** – bevorzuge aktive Validatoren mit hoher Verfügbarkeit; ein gesperrter (jailed) Validator verdient nichts. Ein Validator wird gesperrt, wenn er weniger als 5% der Blöcke in einem 10.000-Block-Fenster signiert – mit anderen Worten, er hat mehr als 95% davon verpasst, was im Mainnet etwa 8,5 Stunden Offline-Zeit dauert (etwa 3,2 Sekunden pro Block; die Blockzeiten im Testnet weichen ab) – er verdient dann nichts, weder für dich noch für sich selbst, bis er entsperrt wird (unjail). Eine Downtime-Sperre dauert fest **600 Sekunden (10 Minuten)** und kostet den Validator **1% seines Stakes**; Double-Signing ist ein separates, schwerwiegenderes Vergehen, das mit **5%** geslasht wird. Diese Werte sind die aktuell live geltenden Chain-Parameter – behandle jeden anderswo gesehenen älteren Wert als überholt.
-- **Voting Power** – das Verteilen des Stakes auf mehrere Validatoren unterstützt die Dezentralisierung. Im Delegate-Panel rotiert der erste Platz unter der kleineren Hälfte der Validatoren – der größte kann ihn nie belegen – und die übrigen werden genau aus diesem Grund nach dem kleinsten zuerst aufgelistet.
-
-## Delegieren, Umdelegieren, Delegierung aufheben und Belohnungen einfordern
-
-Alle vier Aktionen befinden sich auf der Seite **Wallet** (`/wallet`), nicht auf der Validators-Seite. Öffne die Wallet, verbinde QoreX, falls noch nicht geschehen (siehe [Die Wallet im Mainnet verwenden](/dashboard/wallet#mainnet)), und verwende dann den Tab **Stake / Delegate** zum Delegieren und Aufheben der Delegierung sowie den Tab **Rewards** zum Einfordern.
+- **Provision:** Ein niedrigerer Satz lässt dir mehr Belohnungen, aber nachhaltig arbeitende Betreiber brauchen einen angemessenen Anteil.
+- **Status:** Ein Validator wird gejailt, wenn er weniger als 5% der Blöcke in einem 10.000-Block-Fenster signiert, das sind im Mainnet bei etwa 3,1 Sekunden pro Block rund 8,3 Stunden verpasster Blöcke. Ein Downtime-Jailing dauert fest **600 Sekunden** und kostet den Validator **1% seines Stakes**; Double-Signing ist ein separates, schwerwiegenderes Vergehen, das **5%** slasht. Dies sind die aktuellen Live-Parameter der Chain (geprüft am 27. Oktober 2026).
+- **Voting Power:** Den Stake auf mehrere Validatoren zu verteilen unterstützt die Dezentralisierung. Die Reihenfolge im Delegate-Panel hilft dabei.
 
 ### Delegieren {#delegate}
 
-1. Wähle auf der Seite **Wallet** den Tab **Stake / Delegate**.
-2. Prüfe im Panel **Delegate QOR** die Infobox oben – sie zeigt deinen aktuell gebundenen Gesamtbetrag im Vergleich zur Light-Node-Stake-Schwelle und ob du sie bereits erreichst. Diese Schwelle wird gegen deinen **insgesamt delegierten Stake über alle Validatoren hinweg** geprüft, nicht pro Validator, sodass ein Fehlbetrag auf mehrere verteilt werden kann – es gibt keine Möglichkeit, direkt „an einen Light Node zu delegieren“, da Delegation immer auf einen Validator zielt und die Light-Node-Berechtigung eine separate Prüfung deines Gesamtbetrags ist.
-3. Öffne das Dropdown **Validator** und wähle einen aus. Der erste Eintrag wird zufällig aus der kleineren Hälfte der Validatoren gezogen und kann sich beim Neuladen ändern; die übrigen werden nach dem kleinsten Stake zuerst aufgelistet. Gesperrte (jailed) Validatoren werden nicht angeboten.
+1. Öffne auf **Wallet** den Tab **Stake / Delegate** und suche das Panel **Delegate QOR**.
+2. Lies die Infobox: **Currently bonded** im Vergleich zur **Light-node threshold** und ob du sie erreichst. Die Schwelle wird gegen deinen insgesamt delegierten Stake über alle Validatoren geprüft. Es gibt keine Möglichkeit, direkt „an einen Light Node zu delegieren“: Delegation zielt immer auf einen Validator, und die Light-Node-Berechtigung ist eine separate Prüfung deiner Gesamtsumme.
+3. Öffne das Dropdown **Validator** und wähle einen aus. Der erste Eintrag wird zufällig aus der kleineren Hälfte der Validatoren gezogen und kann sich beim Neuladen ändern; die übrigen werden nach dem kleinsten Stake zuerst aufgelistet. Gejailte Validatoren werden nicht angeboten.
 4. Gib einen **Amount (QOR)** ein.
-5. Lies den Hinweis unter dem Betragsfeld: Das Unbonding dauert 21 Tage, und sobald QOR gebunden ist, kann es bis zum Ablauf dieser Frist weder bewegt noch verkauft werden.
-6. Wenn das Panel eine Warnung anzeigt, dass diese Adresse nicht über genug verfügbares (spendable) QOR verfügt, um die Gebühr zu decken, sende ihr zuerst etwas verfügbares QOR – Vesting- oder gebundene Coins können die Gebühr nicht bezahlen. Die Schaltfläche **Continue in QoreX** bleibt deaktiviert, bis dies behoben ist.
-7. Klicke auf **Continue in QoreX** (die Schaltfläche zeigt **Preparing…**, während die Anfrage erstellt wird).
-8. Das Panel zeigt jetzt **Approve it in QoreX** mit einem Link **Open QoreX** und einer Request-ID. QoreX zeigt dir vor dem Signieren den Validator und den Betrag – es wird nichts gesendet, bevor du es dort genehmigst. Wird die QoreX-Browser-Erweiterung erkannt, wird zusätzlich eine Schaltfläche **Approve in the browser extension** angeboten.
-9. Öffne QoreX (der Link/Deeplink erledigt das) und genehmige die Delegation. QoreX erstellt, signiert und sendet die Transaktion; das Dashboard bekommt deinen Schlüssel niemals zu Gesicht.
+5. Lies den Hinweis unter dem Betrag: Das Unbonding dauert 21 Tage, und gebondetes QOR kann bis zum Ablauf dieser Frist weder bewegt noch verkauft werden.
+6. Warnt das Panel, dass die Adresse nicht genug verfügbares QOR für die Gebühr hat, sende ihr zuerst etwas verfügbares QOR. **Continue in QoreX** bleibt deaktiviert, bis dies behoben ist.
+7. Wähle **Continue in QoreX** (es zeigt **Preparing...**, während die Anfrage erstellt wird).
+8. Das Panel zeigt "Approve it in QoreX" mit **Open QoreX**, der Request-ID und **Approve in the browser extension**, wenn die Erweiterung erkannt wird. QoreX zeigt Validator und Betrag vor dem Signieren; es wird nichts gesendet, bevor du genehmigst.
+9. Genehmige in QoreX. Es erstellt, signiert und sendet die Delegation.
+
+**Minimales Beispiel:** 10 QOR an den ersten aufgelisteten Validator delegieren und in QoreX genehmigen.
 
 :::note Zeitgesperrtes Staking ist nicht Teil des Dashboards
-Das Release v3.2.4 bringt ein optionales Modul für zeitgesperrtes Staking mit (auf dem Mainnet seit dem 23. Oktober 2026, auf dem Testnet seit dem 19. Oktober 2026) — siehe [Zeitgesperrtes Staking](/user-guide/staking-and-delegation#time-locked-staking). Weder das Dashboard noch QoreX haben dafür einen Bildschirm. Die hier vorgenommenen Delegationen sind gewöhnliche Delegationen ohne Sperrbindung; die einzige Wartezeit ist das 21-tägige Unbonding beim Ausstieg.
+Das Release v3.2.4 bringt ein optionales Modul für zeitgesperrtes Staking mit (im Mainnet seit dem 23. Oktober 2026, im Testnet seit dem 19. Oktober 2026); siehe [Zeitgesperrtes Staking](/user-guide/staking-and-delegation#time-locked-staking). Weder das Dashboard noch QoreX haben dafür einen Bildschirm. Die hier vorgenommenen Delegationen sind gewöhnliche Delegationen ohne Bindungsfrist; die einzige Wartezeit ist das 21-tägige Unbonding beim Ausstieg.
 :::
 
 ### Umdelegieren {#redelegate}
 
-Das Dashboard selbst hat kein eigenes Redelegate-Panel – das brauchst du aber auch nicht mehr. **QoreX selbst verschiebt Stake inzwischen direkt zwischen Validatoren** (App ab 1.0.8, Erweiterung ab 0.2.6): keine 21-tägige Unbonding-Wartezeit, keine verlorenen Belohnungen, und es kann eine Verschiebung sogar in einer einzigen Transaktion auf mehrere Ziel-Validatoren aufteilen. Öffne **Stake** in QoreX, tippe auf den Validator, den du verlassen möchtest, und wähle, wohin der Stake gehen soll – die vollständige Anleitung findest du unter [Stake zwischen Validatoren verschieben](/qorex/portfolio-and-staking#move-stake). Das ist eine bessere Lösung als alles, was der eigene Request-Vertrag des Dashboards bieten könnte – verwende dafür also direkt QoreX statt des unten stehenden Workarounds.
+Das Dashboard hat kein Redelegate-Panel. **QoreX verschiebt Stake direkt zwischen Validatoren** (App ab 1.0.8 und Erweiterung ab 0.2.6): keine 21-tägige Unbonding-Wartezeit, keine verlorenen Belohnungen, und es kann eine Verschiebung in einer Transaktion auf mehrere Ziel-Validatoren aufteilen. Öffne **Stake** in QoreX, tippe auf den Validator, den du verlassen möchtest, und wähle, wohin der Stake gehen soll; siehe [Stake zwischen Validatoren verschieben](/qorex/portfolio-and-staking#move-stake).
 
-Falls du noch eine ältere QoreX-Version ohne diese Funktion nutzt, verschiebe einen Stake stattdessen in zwei Schritten mithilfe der Abläufe auf dieser Seite zu einem anderen Validator:
-
-1. **[Hebe die Delegierung auf](#undelegate)** für den Betrag beim Validator, den du verlassen möchtest.
-2. Warte die in diesem Ablauf angezeigte Unbonding-Frist ab – das QOR ist während dieser Zeit weder bewegbar noch verdient es etwas.
-3. Sobald das entbundene QOR wieder verfügbar (spendable) ist, **[delegiere](#delegate)** es an den neuen Validator.
-
-Dieser Workaround kostet 21 Tage entgangene Belohnungen und mehr an Gebühren als eine direkte Verschiebung – aktualisiere daher QoreX, statt dich darauf zu verlassen, sofern möglich.
+Bei einem älteren QoreX-Build ohne diese Funktion verschiebst du den Stake stattdessen in zwei Schritten: [Delegierung aufheben](#undelegate), die Unbonding-Frist abwarten (das QOR ist währenddessen weder bewegbar noch verdient es etwas), dann an den neuen Validator [delegieren](#delegate). Dieser Workaround kostet 21 Tage Belohnungen und mehr Gebühren, aktualisiere QoreX also, wenn du kannst.
 
 ### Delegierung aufheben {#undelegate}
 
-Das Beenden einer Delegierung ist jetzt im Dashboard verfügbar – eine Zeit lang war es möglich, zu delegieren, aber von hier aus überhaupt nicht zu unbonden. Falls du dich erinnerst, dass das gefehlt hat, liegt es daran.
-
 :::caution 21-tägige Unbonding-Frist
-Undelegiertes QOR kommt nicht sofort an. Es verbringt zunächst eine **21-tägige Unbonding-Frist**, während der es keine Belohnungen verdient und weder bewegt noch verkauft werden kann. Das Panel weist absichtlich zweimal darauf hin – einmal als Untertitel, ein weiteres Mal direkt über der Bestätigungsschaltfläche –, weil genau diejenigen, die in Eile auf diesen Bildschirm zugreifen (ein fallender Markt, ein gesperrter Validator), es am dringendsten vor dem Signieren sehen müssen.
+Undelegiertes QOR kommt nicht sofort an. Es verbringt zunächst eine **21-tägige Unbonding-Frist**, während der es keine Belohnungen verdient und weder bewegt noch verkauft werden kann. Das Panel weist absichtlich zweimal darauf hin, einmal als Untertitel und noch einmal direkt über der Bestätigungsschaltfläche.
 :::
 
-1. Wähle auf der Seite **Wallet** den Tab **Stake / Delegate** und scrolle zum Panel **Unbond QOR** unterhalb von Delegate. Sein Untertitel wiederholt bereits die obige Warnung zur 21-tägigen Unbonding-Frist.
-2. Wenn diese Adresse keine aktiven Delegationen hat, weist das Panel darauf hin und endet hier.
-3. Öffne das Dropdown **Unbond from** und wähle die zu reduzierende Delegation – es listet nur Validatoren auf, an die du tatsächlich delegiert hast, jeweils mit dem gebundenen Betrag.
-4. Gib einen **Amount (QOR)** zum Unbonden ein, oder klicke auf **Unbond all `<amount>` QOR**, um den vollständigen gebundenen Betrag für diesen Validator einzutragen.
-5. Wenn du mehr eingibst, als bei diesem Validator gebunden ist, weist das Panel darauf hin und blockiert das Absenden.
-6. Direkt über der Bestätigungsschaltfläche erscheint die Warnung ein zweites Mal: Das QOR kommt in 21 Tagen an, nicht sofort, und verdient bis dahin nichts. Das ist eine bewusste Wiederholung, kein Tippfehler in der Dokumentation – lies sie noch einmal, bevor du fortfährst.
-7. Wenn die Adresse die Gebühr nicht decken kann (gebundene Coins können sie nicht bezahlen – du brauchst hier zuerst etwas verfügbares QOR), warnt dich das Panel und deaktiviert die Schaltfläche.
-8. Klicke auf **Continue in QoreX** (**Preparing…**, während die Anfrage erstellt wird).
-9. Das Panel zeigt **Approve it in QoreX** mit einem Link **Open QoreX** und einer Request-ID – QoreX zeigt den Validator und den Betrag an, bevor du signierst. Wird die QoreX-Browser-Erweiterung erkannt, wird zusätzlich eine Schaltfläche **Approve in the browser extension** angeboten.
-10. Öffne QoreX und genehmige. Es signiert und sendet das Undelegate; das QOR wird erst wieder verfügbar (spendable), nachdem die 21-tägige Unbonding-Frist abgelaufen ist.
+1. Öffne auf **Wallet** den Tab **Stake / Delegate** und scrolle zum Panel **Unbond QOR**, unterhalb von Delegate.
+2. Hast du von dieser Adresse keine aktiven Delegationen, weist das Panel darauf hin und endet hier.
+3. Öffne **Unbond from** und wähle die zu reduzierende Delegation. Es listet nur Validatoren auf, an die du delegiert hast, mit dem gebondeten Betrag.
+4. Gib einen Betrag ein oder wähle **Unbond all X QOR**, um den vollständigen gebondeten Betrag einzutragen.
+5. Die Eingabe von mehr als dem gebondeten Betrag blockiert das Absenden.
+6. Lies die zweite Warnung über der Bestätigungsschaltfläche: Das QOR kommt in 21 Tagen an, nicht heute.
+7. Kann die Adresse die Gebühr nicht decken (gebondete Coins können sie nicht bezahlen), warnt das Panel und deaktiviert die Schaltfläche.
+8. Wähle **Continue in QoreX** (**Preparing...**, während die Anfrage erstellt wird) und genehmige dann in QoreX über **Open QoreX** oder **Approve in the browser extension**.
+
+Das QOR wird erst wieder verfügbar, nachdem die 21-tägige Unbonding-Frist endet.
 
 ### Belohnungen einfordern {#claim}
 
-1. Wähle auf der Seite **Wallet** den Tab **Rewards**.
-2. Das Panel **Staking rewards** liest deine aufgelaufenen Belohnungen über alle Validatoren hinweg, an die du delegiert hast. Wenn von dieser Adresse nichts gestaked ist, weist es darauf hin, und es gibt nichts einzufordern.
-3. Andernfalls zeigt es den insgesamt zum Einfordern bereitstehenden Betrag, dazu eine Zeile pro Validator mit dem dort aufgelaufenen Betrag. Belohnungen laufen fortlaufend auf und gehen durch Warten nie verloren – es gibt keine Frist.
-4. Klicke auf **Claim in QoreX**. Das ist ein Claim-all: Es fordert die aufgelaufenen Belohnungen von allen angezeigten Validatoren in einer einzigen Anfrage ein – es gibt keine Schaltfläche zum Einfordern pro Validator.
-5. Genehmige den Claim in QoreX (über den Link **Open QoreX**), um ihn zu signieren und zu senden. Wird die QoreX-Browser-Erweiterung erkannt, wird zusätzlich eine Schaltfläche **Approve in the browser extension** angeboten.
+1. Öffne auf **Wallet** den Tab **Rewards**.
+2. Das Panel **Staking rewards** liest deine aufgelaufenen Belohnungen über jeden Validator, an den du delegiert hast. Ist von dieser Adresse nichts gestaket, weist es darauf hin.
+3. Andernfalls zeigt es die insgesamt wartende Summe plus eine Zeile pro Validator. Belohnungen laufen fortlaufend auf und gehen durch Warten nicht verloren.
+4. Wähle **Claim in QoreX**. Dies fordert von **allen** Validatoren auf einmal ein; es gibt kein Einfordern pro Validator.
+5. Genehmige den Claim in QoreX (**Open QoreX** oder **Approve in the browser extension**).
 
-:::note Unbonding-Frist
-Undelegiertes QOR durchläuft eine 21-tägige Unbonding-Frist, bevor es wieder verfügbar (spendable) ist; während dieser Zeit verdient es keine Belohnungen. Einzelheiten findest du unter [Staking & Delegation](/user-guide/staking-and-delegation).
-:::
+## Zugang {#how-to-access}
+
+- **Wo:** [dashboard.qorechain.io/wallet](https://dashboard.qorechain.io/wallet), Tabs **Stake / Delegate** und **Rewards**. Eine Anmeldung ist erforderlich.
+- **Netzwerk:** nur Mainnet, mit verknüpfter QoreX-Wallet. Testnet-Wallets haben keinen Staking-Bildschirm.
+- **Wallet:** QoreX (App oder Erweiterung). Keplr und MetaMask können im Dashboard nicht staken.
+- **Kosten:** die Netzwerkgebühr, bezahlt aus verfügbarem QOR (Untergrenze 0.1 uqor pro Gas). Das Dashboard berechnet nichts.
+- **Mittel:** Vesting-Guthaben zählen für das, was du delegieren kannst, können aber die Gebühr nicht bezahlen.
+
+## Wo es veröffentlicht ist {#where-published}
+
+| Oberfläche | Adresse | Netzwerk |
+| --- | --- | --- |
+| Delegate, Unbond, Rewards | `dashboard.qorechain.io/wallet` | Mainnet |
+| Validatoren vergleichen | `dashboard.qorechain.io/validators`, siehe [Validators](/dashboard/validators) | Folgt dem Netzwerk der Kopfzeile |
+| Stake zwischen Validatoren verschieben | QoreX, siehe [Portfolio & Staking](/qorex/portfolio-and-staking#move-stake) | Mainnet |
+
+## Grenzen und bekannte Probleme {#limits}
+
+- **Nicht im Dashboard:** Redelegation (nutze QoreX) und zeitgesperrtes Staking.
+- **Kein Staking mit Testnet-Wallets** im Dashboard.
+- **Schätzungen sind ungefähr:** Die im Panel angezeigte Gebührenschätzung und die Light-Node-Schwelle sind im Dashboard eingebaute Werte, nicht in diesem Moment von der Chain gelesen. QoreX zeigt die exakte Gebühr vor dem Signieren.
+- **Das Unbonding dauert 21 Tage** und kann nicht verkürzt werden.
+- **Claim ist Claim-all.**
 
 ## Verwandt
 
-- [Staking & Delegation](/user-guide/staking-and-delegation) – vollständige Staking-Konzepte.
-- [Die Wallet im Mainnet verwenden](/dashboard/wallet#mainnet) – verbinde QoreX, bevor du mit dem Staking beginnst.
-- [Explorer Validators](/dashboard/explorer#validators) – Validatoren ohne Wallet durchsuchen.
-- [Tools Hub](/dashboard/tools-hub) – bewirb dich, um deinen eigenen Validator zu betreiben.
+- [Validators](/dashboard/validators) - Validatoren, Provision und variable Rendite vergleichen.
+- [Staking & Delegation](/user-guide/staking-and-delegation) - vollständige Staking-Konzepte.
+- [Die Wallet im Mainnet verwenden](/dashboard/wallet#mainnet) - verbinde QoreX, bevor du mit dem Staking beginnst.
+- [Explorer Validators](/dashboard/explorer#validators) - Validatoren ohne Wallet durchsuchen.
+- [Nodes & Validators](/dashboard/tools-hub) - bewirb dich, um deinen eigenen Validator zu betreiben.

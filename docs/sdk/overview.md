@@ -8,8 +8,8 @@ sidebar_position: 1
 # QoreChain SDK
 
 The QoreChain SDK is the official multi-language developer kit for building
-decentralized applications on **QoreChain** — a quantum-safe, triple-VM Layer 1
-network.
+decentralized applications on **QoreChain** — a triple-VM Layer 1
+network with hybrid ML-DSA-87 (FIPS 204) signatures.
 
 This documentation covers how to install the SDK, connect to the network, read
 on-chain state, derive accounts, sign and send transactions, and work with each
@@ -56,7 +56,7 @@ and [What 0.10.0 adds](/sdk/install#whats-new-0100).
 Wallet and backend signing: see [QoreSign](/qoresign/overview).
 :::
 
-### Quantum-safe by design
+### Hybrid ML-DSA-87 signing
 
 QoreChain provides post-quantum cryptography (PQC) primitives based on
 **ML-DSA-87** (Dilithium-5, FIPS 204). Alongside classical secp256k1 signing,
@@ -85,9 +85,9 @@ QoreChain**, because they are built on protocol features no other Layer 1 has:
   `createCrossVMClient` calls a contract on any VM and `callAtomic` packs several
   cross-VM calls into a single atomic transaction signed once. See
   [Cross-VM calls](/sdk/guides/cross-vm).
-- **Quantum-safe DX** — make a signer post-quantum protected in one idempotent
+- **Hybrid-signing DX** — register a signer's ML-DSA-87 key in one idempotent
   call (`ensurePqcRegistered` / `migrateToHybrid`), with a drop-in React badge.
-  See [Quantum-safe](/sdk/guides/quantum-safe).
+  See [Hybrid signing](/sdk/guides/quantum-safe).
 
 Two more chain-level capabilities landed in 0.6.0 and 0.7.0 (the second is not
 usable on the live networks yet, see below):
@@ -103,7 +103,7 @@ usable on the live networks yet, see below):
   [Authenticators & delegated spending](/sdk/guides/authenticators).
 
 A new **`@qorechain/react`** kit (provider, hooks, `ConnectButton`,
-`QuantumSafeBadge`) makes building a quantum-safe dApp the default path — see the
+`QuantumSafeBadge`) makes building a dApp with hybrid ML-DSA-87 signing the default path — see the
 [React kit guide](/sdk/guides/react). For the full case, read
 [Why QoreChain SDK](/sdk/why).
 

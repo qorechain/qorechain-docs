@@ -18,10 +18,10 @@ QoreSign هو توقيع هجين يجمع secp256k1 وML-DSA-87 (FIPS 204) لل
 | المسار | ما الذي يفعله QoreSign حاليًا |
 |---|---|
 | **الأصلي** (Cosmos SDK) | التوقيع الهجين والتحقق منه. تشترط الشبكة توقيع ML-DSA-87 افتراضيًا. |
-| **EVM** | وضع الجاهزية للحوسبة الكمّية فقط: يسجّل الحساب مفتاح ML-DSA-87 ويفتح نافذة تفويض محدودة من المسار الأصلي. أما معاملات Ethereum نفسها فلا تحمل أي توقيع ML-DSA-87. |
+| **EVM** | نافذة التفويض فقط: يسجّل الحساب مفتاح ML-DSA-87 ويفتح نافذة تفويض محدودة من المسار الأصلي. أما معاملات Ethereum نفسها فلا تحمل أي توقيع ML-DSA-87. |
 | **SVM** | غير مفتوح على الشبكة بعد (`LANE_NOT_AVAILABLE`). |
 
-يتطلب التوقيع الهجين على EVM أن تدعم الشبكة أولًا PQC لكل مسار على حدة. راجع [محافظ EVM: وضع الجاهزية للحوسبة الكمّية](/qoresign/guides/evm-quantum-ready).
+يتطلب التوقيع الهجين على EVM أن تدعم الشبكة أولًا PQC لكل مسار على حدة. راجع [محافظ EVM: نافذة التفويض](/qoresign/guides/evm-quantum-ready).
 
 ## الحزم {#packages}
 
@@ -70,7 +70,7 @@ verifyHybridTx({
 - الأدلة
   - [إضافة التوقيع الهجين إلى محفظة متوافقة مع Keplr](/qoresign/guides/keplr-compatible-wallets)
   - [Sign In With QoreChain: التحقق على الخادم](/qoresign/guides/sign-in)
-  - [محافظ EVM: وضع الجاهزية للحوسبة الكمّية](/qoresign/guides/evm-quantum-ready)
+  - [محافظ EVM: نافذة التفويض](/qoresign/guides/evm-quantum-ready)
   - [اشتقاق المفاتيح: المفاتيح القياسية ومسودة HD](/qoresign/guides/key-derivation)
   - [الأحجام والنقل](/qoresign/guides/sizes-and-transport)
 - المواصفات

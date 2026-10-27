@@ -25,12 +25,12 @@ Sign In With QoreChain を実装できます。これは
 | レーン | 現時点で QoreSign が行うこと |
 |---|---|
 | **Native**（Cosmos SDK） | ハイブリッド署名と検証。ネットワークはデフォルトで ML-DSA-87 署名を必須とします。 |
-| **EVM** | 量子対応モードのみ: アカウントは ML-DSA-87 鍵を登録し、ネイティブレーンから期限付きの認可ウィンドウを開きます。Ethereum トランザクション自体には ML-DSA-87 署名は含まれません。 |
+| **EVM** | 認可ウィンドウのみ: アカウントは ML-DSA-87 鍵を登録し、ネイティブレーンから期限付きの認可ウィンドウを開きます。Ethereum トランザクション自体には ML-DSA-87 署名は含まれません。 |
 | **SVM** | ネットワークではまだ利用できません（`LANE_NOT_AVAILABLE`）。 |
 
 EVM でのハイブリッド署名には、まずネットワーク側でレーンごとの PQC サポートが
 必要です。詳しくは
-[EVM ウォレット: 量子対応モード](/qoresign/guides/evm-quantum-ready)を参照してください。
+[EVM ウォレット: 認可ウィンドウ](/qoresign/guides/evm-quantum-ready)を参照してください。
 
 ## パッケージ {#packages}
 
@@ -82,7 +82,7 @@ verifyHybridTx({
 - ガイド
   - [Keplr 互換ウォレットにハイブリッド署名を追加する](/qoresign/guides/keplr-compatible-wallets)
   - [Sign In With QoreChain: サーバー側の検証](/qoresign/guides/sign-in)
-  - [EVM ウォレット: 量子対応モード](/qoresign/guides/evm-quantum-ready)
+  - [EVM ウォレット: 認可ウィンドウ](/qoresign/guides/evm-quantum-ready)
   - [鍵導出: 正規鍵と HD ドラフト](/qoresign/guides/key-derivation)
   - [サイズとトランスポート](/qoresign/guides/sizes-and-transport)
 - 仕様

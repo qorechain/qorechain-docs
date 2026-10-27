@@ -94,7 +94,7 @@ Le commissioni di transazione su QoreChain vengono distribuite tra cinque destin
 | **Staker**        | 10%   | Distribuiti proporzionalmente a tutti i delegatori              |
 | **Light Node**    | 3%    | Ricompense dei light node (vedi la nota sotto) |
 
-La ripartizione si applica a tutto ciò che entra nel fee collector, che contiene le commissioni di transazione e l'emissione di staking coniata a ogni epoca. La quota dei light node si accumula nel pool di ricompense dei light node; la registrazione è aperta e vincolata a una licenza, ma nessun light node si è ancora registrato, quindi al momento nessun nodo viene pagato da esso (vedi [Light Node](/light-node/overview#reward-program-status)). Dall'aggiornamento v3.2.0 la quota degli staker viene pagata come una normale ricompensa di staking (vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+La ripartizione si applica a tutto ciò che entra nel fee collector, che contiene le commissioni di transazione e l'emissione di staking coniata a ogni epoca. La quota dei light node si accumula nel pool di ricompense dei light node; la registrazione è aperta e vincolata a una licenza; il 27 ottobre 2026 è stato registrato un light node su ciascuna rete (vedi [Light Node](/light-node/overview#reward-program-status)). Dall'aggiornamento v3.2.0 la quota degli staker viene pagata come una normale ricompensa di staking (vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canali di Burn
 

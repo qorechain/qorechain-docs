@@ -9,7 +9,7 @@ sidebar_position: 7
 
 `@qorechain/react` è il livello React ufficiale sopra `@qorechain/sdk`: un
 provider, una manciata di hook e due componenti pronti all'uso — incluso un badge
-**Quantum-safe** di una sola riga. Rende lo sviluppo di una dApp quantum-safe il percorso predefinito.
+di stato PQC di una sola riga. Rende lo sviluppo di una dApp con firma ibrida ML-DSA-87 il percorso predefinito.
 
 ```bash
 npm i @qorechain/react @qorechain/sdk react react-dom
@@ -27,7 +27,7 @@ solo con la firma classica, che le reti live rifiutano (il percorso Native
 richiede l'estensione ibrida ML-DSA-87): `send` / `sendTokens` non possono far confermare una
 transazione su mainnet o testnet. Per gli invii usa il `TxClient` ibrido dell'SDK
 (`client.connectTx(signer, { pqcKeypair })`, vedi
-[Quantum-safe](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` e `<QuantumSafeBadge/>` leggono lo stato tramite
+[Firma ibrida](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` e `<QuantumSafeBadge/>` leggono lo stato tramite
 `getPqcStatus` con il client composto del provider, che dall'SDK 0.9.0 legge tramite
 REST (`/qorechain/pqc/v1/account/{address}`), quindi funzionano contro `*.qore.host`
 (il kit 0.8.x leggeva `qor_getPQCKeyStatus`, che gli endpoint pubblici non servono, e
@@ -135,8 +135,8 @@ controllo:
 
 ### `<QuantumSafeBadge/>`
 
-Mostra un indicatore **Quantum-safe** quando l'indirizzo ha una chiave post-quantistica
-registrata (tramite `usePqcStatus`), altrimenti uno stato attenuato "Not quantum-safe". Per impostazione predefinita usa
+Mostra un indicatore di stato quando l'indirizzo ha una chiave post-quantistica
+registrata (tramite `usePqcStatus`), altrimenti uno stato attenuato "non registrata". Per impostazione predefinita usa
 l'account connesso.
 
 ```tsx
@@ -171,4 +171,4 @@ function Dashboard() {
 ```
 
 Vedi l'[esempio `react-dapp` eseguibile](https://github.com/qorechain/qorechain-sdk/tree/main/examples/react-dapp)
-e la [guida quantum-safe](/sdk/guides/quantum-safe) per le chiamate SDK sottostanti.
+e la [guida alla firma ibrida](/sdk/guides/quantum-safe) per le chiamate SDK sottostanti.

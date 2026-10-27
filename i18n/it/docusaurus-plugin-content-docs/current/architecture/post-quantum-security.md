@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain è costruita con la **crittografia post-quantistica (PQC) sin dal genesis** — non aggiunta successivamente come aggiornamento. Il modulo `x/pqc` fornisce firme digitali basate su reticoli e incapsulamento di chiavi come primitive crittografiche principali, con un framework di agilità degli algoritmi controllato dalla governance per una resilienza a lungo termine.
 
-La baseline PQC completa — **Dilithium-5 (firme) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — è ora completa ed è il valore predefinito della rete. Sulle reti in produzione (v3.2.x), le firme ibride sono **richieste per impostazione predefinita** sul percorso delle transazioni cosmos: `hybrid_signature_mode = required` e `allow_classical_fallback = false`. Ogni transazione del percorso cosmos deve recare una firma Dilithium-5 accanto alla sua firma classica secp256k1; le transazioni solo classiche da un account PQC vengono rifiutate e il percorso di downgrade classico è chiuso. La mainnet e la testnet eseguono entrambe la v3.2.4; ciò che le release v3.2.2 e v3.2.3 hanno aggiunto alle regole post-quantistiche (integrità delle chiavi, prova di possesso facoltativa, finestre EVM con ambito, consenso EIP-7702) è descritto in [Regole di integrità delle chiavi](#key-integrity), [Prova di possesso](#proof-of-possession) e [Delegazioni EIP-7702](#eip-7702).
+La baseline PQC completa — **Dilithium-5 (firme) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — è ora completa ed è il valore predefinito della rete. Sulle reti in produzione (v3.2.x), le firme ibride sono **richieste per impostazione predefinita** sul percorso delle transazioni cosmos: `hybrid_signature_mode = required` e `allow_classical_fallback = false`. Ogni transazione del percorso cosmos deve recare una firma Dilithium-5 accanto alla sua firma classica secp256k1; le transazioni solo classiche da un account PQC vengono rifiutate e il percorso di downgrade classico è chiuso. La mainnet esegue la v3.2.4 e la testnet la v3.2.6 (verificato il 27 ottobre 2026); ciò che le release v3.2.2 e v3.2.3 hanno aggiunto alle regole post-quantistiche (integrità delle chiavi, prova di possesso facoltativa, finestre EVM con ambito, consenso EIP-7702) è descritto in [Regole di integrità delle chiavi](#key-integrity), [Prova di possesso](#proof-of-possession) e [Delegazioni EIP-7702](#eip-7702).
 
 ## Principi di progettazione
 
@@ -228,7 +228,7 @@ active --> migrating --> deprecated --> disabled
 
 ### Migrazione a doppia firma
 
-Quando un algoritmo viene deprecato, inizia un **periodo di migrazione** (predefinito: 1.000.000 blocchi — circa 37 giorni con l'attuale tempo di blocco della mainnet di ≈3,2 s). Durante questo periodo:
+Quando un algoritmo viene deprecato, inizia un **periodo di migrazione** (predefinito: 1.000.000 blocchi — circa 36 giorni con l'attuale tempo di blocco della mainnet di ≈3,1 s). Durante questo periodo:
 
 1. Gli account con chiavi che utilizzano l'algoritmo deprecato devono migrare al sostitutivo.
 2. La migrazione richiede doppie firme (`MsgMigratePQCKey`): una dalla vecchia chiave e una dalla nuova chiave, a dimostrazione del possesso di entrambe.
@@ -254,7 +254,7 @@ L'aggiunta di un algoritmo richiede una release software che lo implementi dietr
 
 ## Hash SHAKE-256
 
-A partire dalla v3.1.73, **SHAKE-256** (funzione a output estendibile SHA-3) è l'**hash applicativo predefinito** in tutta QoreChain — fornito dal package `qorehash` — completando la baseline crittografica resistente ai quanti accanto alle firme Dilithium-5 e all'incapsulamento di chiavi ML-KEM-1024. Il modulo `x/pqc` fornisce utilità SHAKE-256 in puro Go:
+A partire dalla v3.1.73, **SHAKE-256** (funzione a output estendibile SHA-3) è l'**hash applicativo predefinito** in tutta QoreChain — fornito dal package `qorehash` — completando la baseline crittografica accanto alle firme Dilithium-5 e all'incapsulamento di chiavi ML-KEM-1024. Il modulo `x/pqc` fornisce utilità SHAKE-256 in puro Go:
 
 | Funzione                           | Descrizione                            | Output               |
 | ---------------------------------- | -------------------------------------- | -------------------- |

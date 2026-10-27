@@ -239,9 +239,9 @@ qorechaind tx pqc gen-key <name>
 qorechaind tx pqc register-key <pubkey_hex> <key_type> --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-`key_type`은 `hybrid`(권장) 또는 `pqc_only`입니다. `classical_only`는 거부됩니다(코드 230). 양자내성 키를 등록하지 않으므로 계정이 다시는 서명할 수 없게 되기 때문입니다. 2,592바이트 공개 키 때문에 등록은 전송보다 비용이 많이 들며, 그래서 더 큰 가스 한도가 필요합니다.
+`key_type`은 `hybrid`(권장) 또는 `pqc_only`입니다. `classical_only`는 거부됩니다(코드 230). 포스트 양자 키를 등록하지 않으므로 계정이 다시는 서명할 수 없게 되기 때문입니다. 2,592바이트 공개 키 때문에 등록은 전송보다 비용이 많이 들며, 그래서 더 큰 가스 한도가 필요합니다.
 
-체인은 양자내성 보호를 제공하지 않는 키(코드 230)와 이 계정이 이전에 사용한 키(코드 232)도 거부합니다. 클래식 키가 서명자 본인의 것이 아닌 등록도 거부합니다(코드 45).
+체인은 포스트 양자 보호를 제공하지 않는 키(코드 230)와 이 계정이 이전에 사용한 키(코드 232)도 거부합니다. 클래식 키가 서명자 본인의 것이 아닌 등록도 거부합니다(코드 45).
 
 ### register-key-v2
 
@@ -319,7 +319,7 @@ echo "<mnemonic>" | qorechaind tx pqc rotate-key --from mykey --old-derivation b
 | `--new-key-out`    | string | 무엇이든 전송되기 전에 새 개인 키를 `<home>/pqc/<name>.dilithium`으로 저장           |
 | `--sign-bytes`     | string | `auto`(기본값), `v1` 또는 `v2`                                                       |
 
-v3.2.3부터 교체(rotation)는 양자내성 보호를 제공하지 않는 새 키(코드 230)와 계정이 이전에 사용한 키(코드 232)를 거부합니다. 계정은 교체해 떠나온 키를 기억하므로, 교체를 재생하여 이전 키로 되돌아갈 수 없습니다.
+v3.2.3부터 교체(rotation)는 포스트 양자 보호를 제공하지 않는 새 키(코드 230)와 계정이 이전에 사용한 키(코드 232)를 거부합니다. 계정은 교체해 떠나온 키를 기억하므로, 교체를 재생하여 이전 키로 되돌아갈 수 없습니다.
 
 ### open-evm-window
 
@@ -364,7 +364,7 @@ qorechaind tx pqc cosign c.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 ### authorize-evm-delegation and clear-evm-delegation
 
-계정의 EIP-7702 위임은 본인의 양자내성 동의가 있어야만 효력이 발생합니다(메인넷 v3.2.2부터). `authorize-evm-delegation`은 하나의 위임 대상 주소에 대한 해당 동의를 기록하며, 1회용이고 지정한 블록 수가 지나면 만료되며 `close-evm-window`로 철회됩니다. `clear-evm-delegation`은 이미 설정된 위임을 제거합니다. 둘 다 하이브리드 서명이 필요한 Cosmos 경로 메시지입니다(`--generate-only` 후 `tx pqc cosign`).
+계정의 EIP-7702 위임은 본인의 포스트 양자 동의가 있어야만 효력이 발생합니다(메인넷 v3.2.2부터). `authorize-evm-delegation`은 하나의 위임 대상 주소에 대한 해당 동의를 기록하며, 1회용이고 지정한 블록 수가 지나면 만료되며 `close-evm-window`로 철회됩니다. `clear-evm-delegation`은 이미 설정된 위임을 제거합니다. 둘 다 하이브리드 서명이 필요한 Cosmos 경로 메시지입니다(`--generate-only` 후 `tx pqc cosign`).
 
 ```bash
 qorechaind tx pqc authorize-evm-delegation <delegate_0x_address> <blocks> --from mykey \
@@ -509,7 +509,7 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 
 `profile`은 `defi`, `gaming`, `nft`, `enterprise` 또는 `custom`이며, `stake_amount`는 uqor 단위입니다(현재 최소값은 `query rdk config`에 있습니다). 프로필 프리셋이 정산, 시퀀서, DA 및 가스 모델을 제공하며, 명령줄에서는 VM만 재정의할 수 있습니다. `finalize-batch` 명령어는 없습니다.
 
-데이터 가용성이 `native`(또는 `both`)인 롤업에서는 `--data-hash`를 비워 두십시오. 어떤 트랜잭션도 데이터 가용성 블롭을 게시하지 않으며, 체인은 그런 롤업에 대해 데이터 해시를 주장하는 배치를 거부합니다(이 글을 쓰는 시점의 메인넷 릴리스인 노드 릴리스 v3.2.4의 동작입니다). 옵티미스틱 롤업의 경우 `@qorechain/rdk` 클라이언트(0.6.1)가 배치의 상태 루트를 체인의 표준 전환 루트(RDK의 `batchTransitionRoot`)로 설정합니다. [롤업](/rollups/overview)을 참조하십시오.
+데이터 가용성이 `native`(또는 `both`)인 롤업에서는 `--data-hash`를 비워 두십시오. 어떤 트랜잭션도 데이터 가용성 블롭을 게시하지 않으며, 체인은 그런 롤업에 대해 데이터 해시를 주장하는 배치를 거부합니다(이 글을 쓰는 시점의 메인넷 릴리스인 노드 릴리스 v3.2.4의 동작입니다). 옵티미스틱 롤업의 경우 `@qorechain/rdk` 클라이언트(0.6.2)가 배치의 상태 루트를 체인의 표준 전환 루트(RDK의 `batchTransitionRoot`)로 설정합니다. [롤업](/rollups/overview)을 참조하십시오.
 
 `--anchor-signature`는 **v2 앵커 서명 바이트**에 대한 롤업 생성자의 ML-DSA 서명이며, 이를 지정하면 배치가 멀티레이어 모듈에도 앵커링됩니다. 서명할 정확한 바이트는 `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>`로 출력하세요. 값은 `submit-batch` 플래그와 일치해야 합니다. v3.2.3부터 모듈은 **롤업별 에스크로 원장**을 유지합니다. 출금은 해당 롤업의 원장이 보유한 금액에서만 지급되며, 디놈, 양수 금액, 증명 깊이, 형제 노드 크기가 검사됩니다. 롤업을 중지하면 원장에 남은 금액만 환불되고, 중지된 롤업은 더 이상 출금을 지급하지 않습니다. 이 글을 쓰는 시점에 두 네트워크 모두 롤업이 존재하지 않습니다.
 

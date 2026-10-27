@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain est conçue avec la **cryptographie post-quantique (PQC) dès le genesis** — et non ajoutée a posteriori sous forme de mise à niveau. Le module `x/pqc` fournit des signatures numériques fondées sur les réseaux euclidiens (lattices) et l'encapsulation de clés comme primitives cryptographiques principales, avec un cadre d'agilité algorithmique contrôlé par la gouvernance pour une résilience à long terme.
 
-La base PQC complète — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hachage)** — est désormais achevée et constitue la valeur par défaut du réseau. Sur les réseaux en production (v3.2.x), les signatures hybrides sont **requises par défaut** sur le chemin de transaction cosmos : `hybrid_signature_mode = required` et `allow_classical_fallback = false`. Chaque transaction du chemin cosmos doit porter une signature Dilithium-5 aux côtés de sa signature classique secp256k1 ; les transactions purement classiques émises depuis un compte PQC sont rejetées, et le chemin de rétrogradation classique est fermé. Le mainnet et le testnet exécutent tous deux la v3.2.4 ; ce que les versions v3.2.2 et v3.2.3 ont ajouté aux règles post-quantiques (intégrité des clés, preuve de possession optionnelle, fenêtres EVM à portée limitée, consentement EIP-7702) est décrit dans [Règles d'intégrité des clés](#key-integrity), [Preuve de possession](#proof-of-possession) et [Délégations EIP-7702](#eip-7702).
+La base PQC complète — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hachage)** — est désormais achevée et constitue la valeur par défaut du réseau. Sur les réseaux en production (v3.2.x), les signatures hybrides sont **requises par défaut** sur le chemin de transaction cosmos : `hybrid_signature_mode = required` et `allow_classical_fallback = false`. Chaque transaction du chemin cosmos doit porter une signature Dilithium-5 aux côtés de sa signature classique secp256k1 ; les transactions purement classiques émises depuis un compte PQC sont rejetées, et le chemin de rétrogradation classique est fermé. Le mainnet exécute la v3.2.4 et le testnet la v3.2.6 (vérifié le 27 octobre 2026) ; ce que les versions v3.2.2 et v3.2.3 ont ajouté aux règles post-quantiques (intégrité des clés, preuve de possession optionnelle, fenêtres EVM à portée limitée, consentement EIP-7702) est décrit dans [Règles d'intégrité des clés](#key-integrity), [Preuve de possession](#proof-of-possession) et [Délégations EIP-7702](#eip-7702).
 
 ## Principes de conception
 
@@ -228,7 +228,7 @@ active --> migrating --> deprecated --> disabled
 
 ### Migration par double signature
 
-Lorsqu'un algorithme est déprécié, une **période de migration** commence (par défaut : 1,000,000 blocs — environ 37 jours avec le temps de bloc actuel du mainnet, ≈3,2 s). Pendant cette période :
+Lorsqu'un algorithme est déprécié, une **période de migration** commence (par défaut : 1,000,000 blocs — environ 36 jours avec le temps de bloc actuel du mainnet, ≈3,1 s). Pendant cette période :
 
 1. Les comptes dont les clés utilisent l'algorithme déprécié doivent migrer vers le remplacement.
 2. La migration requiert des doubles signatures (`MsgMigratePQCKey`) : une de l'ancienne clé et une de la nouvelle clé, prouvant la possession des deux.
@@ -254,7 +254,7 @@ L'ajout d'un algorithme requiert une version logicielle qui l'implémente derri�
 
 ## Hachage SHAKE-256
 
-Depuis v3.1.73, **SHAKE-256** (fonction à sortie extensible de SHA-3) est le **hachage applicatif par défaut** à travers QoreChain — fourni par le package `qorehash` — complétant la base cryptographique résistante au quantique aux côtés des signatures Dilithium-5 et de l'encapsulation de clés ML-KEM-1024. Le module `x/pqc` fournit des utilitaires SHAKE-256 en pur Go :
+Depuis v3.1.73, **SHAKE-256** (fonction à sortie extensible de SHA-3) est le **hachage applicatif par défaut** à travers QoreChain — fourni par le package `qorehash` — complétant la base cryptographique aux côtés des signatures Dilithium-5 et de l'encapsulation de clés ML-KEM-1024. Le module `x/pqc` fournit des utilitaires SHAKE-256 en pur Go :
 
 | Fonction                           | Description                       | Sortie           |
 | ---------------------------------- | --------------------------------- | ---------------- |

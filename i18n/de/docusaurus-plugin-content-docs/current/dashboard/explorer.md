@@ -7,58 +7,117 @@ sidebar_position: 2
 
 # Explorer
 
-Der **Explorer** ist das Fenster des Dashboards zur Chain. Verwenden Sie ihn, um Blöcke, Transaktionen, Adressen und Validatoren nachzuschlagen und die Netzwerkaktivität in Echtzeit zu beobachten. Der Explorer ist schreibgeschützt — zum Durchsuchen ist keine Wallet-Verbindung erforderlich. Innerhalb des Dashboards setzt die Ansicht des Mainnets eine Anmeldung voraus; ein separater öffentlicher Explorer, der kein Konto benötigt, ist unter [explore.qore.network](https://explore.qore.network) verfügbar (er ist eine andere Anwendung mit eigenem Mainnet/Testnet-Umschalter).
+Der **Explorer** ist das schreibgeschützte Fenster zur Chain: Schlagen Sie Blöcke, Transaktionen, Adressen und Validatoren nach und beobachten Sie die Netzwerkaktivität. Er ist für alle gedacht, die eine Überweisung prüfen, ein Konto untersuchen, sehen möchten, welche Signatur eine Transaktion geschützt hat, oder sich die Validatorenmenge ansehen wollen. Es gibt zwei Explorer: den im Dashboard unter `dashboard.qorechain.io/explorer` und eine separate öffentliche App unter [explore.qore.network](https://explore.qore.network), die kein Konto benötigt. Es sind verschiedene Anwendungen, und sie wenden nicht dieselben Kennzeichnungsregeln an, daher behandelt diese Seite beide.
 
-## Die Übersichtsseite
+## Innovationen {#innovations}
 
-Öffnen Sie den **Explorer** im Dashboard, um eine Live-Momentaufnahme des Netzwerks zu sehen:
+- **Eine Signaturkennzeichnung nur, wenn die Chain sie verifiziert hat.** Im Dashboard-Explorer zeigt eine native Transaktion die Karte **PQC Verified** nur, wenn sie erfolgreich war (Code 0) **und** die Chain ein `pqc_hybrid_verify`-Event mit dem Status verifiziert ausgegeben hat. Eine fehlgeschlagene Transaktion erhält keine Post-Quantum-Aussage.
+- **EVM-Transaktionen zeigen das Fenster, das sie autorisiert hat.** Ab der Aktivierungshöhe (Testnet 5,920,000; Mainnet 2,981,742) zeigt eine EVM-Transaktion „Authorised by a PQC window“, mit einem Link „Window opened by“ zur nativen, mit ML-DSA-87 signierten Transaktion, die es geöffnet hat. Das angezeigte Fenster ist das letzte Fenster-Öffnen des Absenders auf oder unter der Transaktionshöhe, das nicht abgelaufen ist und seither nicht geschlossen wurde. Eine EVM-Transaktion wird nie als „PQC Verified“ gekennzeichnet: Sie trägt eine gewöhnliche secp256k1-Signatur. Siehe [EVM-Autorisierungsfenster](/developer-guide/evm-development#evm-window).
+- **Keine Post-Quantum-Kennzeichnung pro Block.** Blöcke werden mit Konsens-Schlüsseln signiert, daher wird der Schutz pro Transaktion angezeigt, nie pro Block.
+- **Post-Quantum-Status des Validators aus der Chain.** Die Adressseite eines Validators hat ein Feld „Post-Quantum Crypto“ (Enabled, Disabled oder N/A). Enabled bedeutet, dass der Betreiber einen registrierten ML-DSA-87-Schlüssel hat. Der Besitznachweis ist on-chain optional.
+- **Ein Konto, drei Schienen.** Ein `qor1...`-Verlauf führt native, EVM- und SVM-Aktivität zusammen, und die Adressseite zeigt den noch im Vesting befindlichen Betrag und das nächste Freigabedatum.
+- **Netzwerkdaten und Endpunkte in einem Panel.** Chain-ID, EVM-Chain-ID, Token, Dezimalstellen, Adresspräfix, Coin-Typ, minimaler Gaspreis und kopierbare öffentliche Endpunkte, mit einem Panel „Add QoreChain to your wallet“.
+- **Der eigenständige Explorer baut ausschließlich auf den öffentlichen Endpunkten auf.** [explore.qore.network](https://explore.qore.network) liest die öffentlichen Endpunkte der Chain und braucht kein Konto. Seine Adressseite zeigt die Formen `qor1`, `0x` und SVM eines Kontos mit einer Live-Paritätsprüfung (wei = uqor x 10^12; lamports = uqor x 1000), und seine Routen funktionieren als Wallet-Deep-Links.
 
-- **Netzwerkstatus** — Chain-ID, aktueller Status und ein Sicherheitsstatus-Chip.
-- **Block-Aktivität** — die neueste Blockhöhe, die durchschnittliche Blockzeit und die heute produzierten Blöcke.
-- **Supply** — gesamtes gebondetes QOR, das Bonded-Verhältnis und der zirkulierende Bestand.
-- **Eckdaten** — Gesamtzahl der Transaktionen, aktive und gesamte Validatoren sowie Gesamtzahl der Adressen.
-- **Neueste Blöcke** — eine Live-Liste mit Höhe, Zeit, Transaktionsanzahl und Proposer jedes Blocks.
-- **Neueste Transaktionen** — eine Live-Liste mit Hash, Typ, Block, Betrag und Absender jeder Transaktion.
+## Verwendung {#how-to-use}
 
-Klicken Sie auf eine beliebige Block- oder Transaktionszeile, um die zugehörige Detailseite zu öffnen. Ein Aktualisierungssteuerelement an jeder Liste ruft die neuesten Einträge ab.
+### Übersicht
 
-## Suche
+Öffnen Sie **Explorer** in der Seitenleiste. Die Übersicht zeigt:
 
-Das Suchfeld oben im Explorer akzeptiert eines der folgenden Elemente und leitet Sie automatisch zur richtigen Seite weiter:
+- den Netzwerkstatus mit einem Chip „Post-Quantum Secured“ (eine Kennzeichnung auf Netzwerkebene; die Aussage pro Transaktion steht auf der Transaktionsseite);
+- **Latest Block**, **Block Time** und **Blocks Today**;
+- **Total Bonded**, **Bonded Ratio** und **Circulating**;
+- **Transactions**, **Real Txs**, **Active Set** und **Total Addresses**;
+- **Latest Blocks** und **Latest Transactions**, mit Aktualisieren-Schaltflächen und automatischer Aktualisierung.
 
-- Eine **Adresse** (`qor1...`)
-- Einen **Transaktions-Hash**
-- Eine **Blockhöhe** (eine Zahl)
+Klicken Sie auf eine Block- oder Transaktionszeile, um die zugehörige Seite zu öffnen.
 
-## Transaktionsdetails
+### Suche
 
-Eine Transaktionsseite zeigt ihren Hash, Status, Betrag, Absender und Empfänger (beide anklickbar), Gebühr, Blockhöhe, Transaktionstyp und Memo, falls vorhanden. Sie können den Hash kopieren und eine Rohansicht der vollständigen Transaktion zur genaueren Untersuchung ein- und ausblenden.
+Das Suchfeld (Platzhalter „Search QoreChain (Address, Tx, Block)...“) leitet je nach Eingabe weiter:
 
-Die Seite zeigt auch, was die Transaktion geschützt hat, und sie macht nur eine Aussage, die die Chain belegt:
+- `qor...` öffnet die Adressseite.
+- `0x...` oder eine 64-stellige Zeichenfolge öffnet die Transaktionsseite.
+- Ziffern öffnen die Blockseite.
 
-* **PQC Verified.** Eine Transaktion auf der Native-Schiene zeigt diese Karte nur, wenn sie erfolgreich war **und** die Chain selbst ihre Hybridsignatur einschließlich des ML-DSA-87-Anteils verifiziert hat (die Chain zeichnet dafür ein Verifikations-Event auf). Eine fehlgeschlagene Transaktion oder eine ohne verifizierte Hybridsignatur zeigt stattdessen Standardsicherheit; der Explorer nimmt nicht an, dass eine Signatur post-quantum ist.
-* **Autorisiert durch ein PQC-Fenster.** Eine Transaktion, die von einer EVM-Wallet gesendet wird, trägt eine gewöhnliche secp256k1-Signatur und wird daher nie als „PQC Verified“ gekennzeichnet. Hatte der Absender beim Senden ein offenes [EVM-Autorisierungsfenster](/developer-guide/evm-development#evm-window), sagt die Seite, dass sie **durch ein PQC-Fenster autorisiert** wurde, und zeigt einen Link **Fenster geöffnet von** zu der post-quantum-signierten Transaktion, die das Fenster geöffnet hat. Das gilt ab den Aktivierungshöhen der Fenster-Funktion (Testnet 5,920,000; Mainnet 2,981,742).
-
-Diese Kennzeichnungen gelten nur für den Dashboard-Explorer unter dashboard.qorechain.io/explorer. Der separate Explorer unter explore.qore.network ist eine andere Anwendung und wendet diese Regeln nicht an.
-
-## Blockdetails
-
-Eine Blockseite zeigt ihre Höhe, ihren Zeitstempel, den Proposer, den Hash, die Transaktionsanzahl, das verbrauchte Gas und die Liste der enthaltenen Transaktionen sowie ihre Signaturanzahl. Blöcke tragen keine Post-Quantum-Kennzeichnung: Sie werden mit den Konsens-Schlüsseln der Validatoren signiert, und der Post-Quantum-Schutz wird pro Transaktion angezeigt, nicht pro Block. Steuerelemente für Zurück und Vor ermöglichen es Ihnen, die Chain Block für Block durchzugehen.
-
-## Adressdetails
-
-Eine QoreChain-Adresse ist ein einziges Konto mit drei Kodierungen — Native (`qor1...`), EVM (`0x...`) und SVM (base58) — und die Adressseite führt die Aktivität aller drei Schienen zu einer einzigen Ansicht dieser einen Identität zusammen.
-
-Die Seite zeigt die Adresse mit einem scanbaren QR-Code, ihren QOR-Kontostand, die Transaktionsanzahl sowie die Summen für eingehende und ausgehende Transfers. Darunter befindet sich der kombinierte Transaktionsverlauf der Adresse über die Native-, EVM- und SVM-Schienen — Transfers, Contract-Deployments, PQC-Schlüsselregistrierungen, Swaps, Faucet-Bezüge und mehr — jeweils mit Betrag, Zeit und Status. Sie können die Adresse kopieren, ihren QR-Code herunterladen und jede Transaktion für Details öffnen.
-
-## Validatoren {#validators}
-
-Die Validatoren-Ansicht listet die Validatoren des Netzwerks mit Übersichtskarten für die Anzahl der aktiven Validatoren, das gesamte gebondete QOR und die Konsens-Gesundheit auf. Die Tabelle zeigt Rang, Moniker, Voting Power, Provision und Status (zum Beispiel aktiv oder jailed) jedes Validators sowie einen Post-Quantum-Indikator. Ein Suchfeld filtert nach Validatorname oder -adresse. Um an einen Validator zu delegieren, siehe [Staking & Validatoren](/dashboard/staking-and-validators).
-
-:::note Die Validatorenliste des Dashboards kann die Menge des anderen Netzwerks anzeigen
-Verwenden Sie [explore.qore.network](https://explore.qore.network) für die maßgebliche Validatorenliste pro Netzwerk.
+:::note Eine 0x-Adresse landet bei „Transaction Not Found“
+Die Suche des Dashboards behandelt Eingaben mit `0x...` als Transaktions-Hash. Um eine EVM-Adresse nachzuschlagen, suchen Sie stattdessen nach ihrer `qor1...`-Form (eine `0x`-Adresse sind dieselben 20 Bytes wie ihre `qor1`-Form), oder verwenden Sie [explore.qore.network](https://explore.qore.network), dessen Adressseite beide akzeptiert.
 :::
 
-## Eigenständiger Explorer {#standalone-explorer}
+### Transaktionsseite
 
-Derselbe Explorer wird auch ohne das Dashboard unter [explore.qore.network](https://explore.qore.network) bereitgestellt: anonym, nur Explorer, mit Kurzlinks wie `/tx/…`, `/block/…`, `/address/…` und `/validators`. Er öffnet sich standardmäßig im Mainnet.
+Die Transaktionsseite zeigt den Hash (mit Kopieren), Status und Typ, Block Height, Interactions (From und To), Value & Fees, Memo, Gas Consumed, bei Bedarf eine Cross-Chain-Zeile sowie **Raw Data**. Sie zeigt auch, was die Transaktion geschützt hat, und sie macht nur eine Aussage, die die Chain belegt:
+
+- **PQC Verified.** Eine Transaktion auf der Native-Lane, die erfolgreich war und deren Hybridsignatur (einschließlich des ML-DSA-87-Anteils) die Chain selbst verifiziert hat. Eine fehlgeschlagene Transaktion oder eine ohne verifizierte Hybridsignatur zeigt stattdessen Standardsicherheit.
+- **Authorised by a PQC window.** Eine EVM-Transaktion, die gesendet wurde, während der Absender ein offenes [EVM-Autorisierungsfenster](/developer-guide/evm-development#evm-window) hatte, mit dem Link **Window opened by**.
+
+### Blockseite
+
+Pfeile für Zurück und Vor führen durch die Chain. **Core Information** enthält die Höhe, den Hash, den Proposer, die Signaturanzahl und das verbrauchte Gas; **Technical Hashes** und **Block Transactions** folgen. Blöcke tragen keine Post-Quantum-Kennzeichnung.
+
+### Adressseite
+
+Eine QoreChain-Adresse ist ein Konto mit drei Kodierungen, Native (`qor1...`), EVM (`0x...`) und SVM (base58), und die Adressseite führt die Aktivität aller drei zusammen.
+
+- **Copy address** und **Show QR Code** (ein Popover; es gibt keinen Download).
+- **Total Balance** und **Available** sowie eine Zeile für den noch im Vesting befindlichen Betrag mit dem nächsten Freigabedatum.
+- **Total Activity** und der kombinierte Verlauf (Methoden wie Transfer, Faucet Claim und Cross-Chain Swap).
+- Auf der Adressseite eines Validators (`/explorer/address/qorvaloper1...`) das Feld **Post-Quantum Crypto**.
+
+### Validatoren {#validators}
+
+`/explorer/validators` listet die Validatoren des Netzwerks auf. Übersichtskarten zeigen **Active Validators**, **Bonded Tokens** und **Consensus Health** (eine Statusbezeichnung, kein gemessener Wert). Die Tabelle hat Rank, Validator, Voting Power, Commission, Status und PQC (die PQC-Spalte der Tabelle ist in jeder Zeile abgedunkelt; den tatsächlichen Status finden Sie auf der Adressseite des Validators). Das Suchfeld lautet „Search validator...“. Die Liste folgt dem in der Kopfzeile gewählten Netzwerk. Zum Delegieren siehe [Staking & Validatoren](/dashboard/staking-and-validators); für einen breiteren Vergleich mit Rendite und Anmeldung siehe [Validators](/dashboard/validators).
+
+### Netzwerkdaten und Zur Wallet hinzufügen
+
+Die Übersicht enthält die Chain-Daten und die öffentlichen Endpunkte, jeweils kopierbar, sowie dasselbe Panel **Add QoreChain to your wallet** wie die Wallet-Seite (siehe [QoreChain zu Ihrer Wallet hinzufügen](/dashboard/wallet#add-network)).
+
+### Eigenständiger Explorer {#standalone-explorer}
+
+[explore.qore.network](https://explore.qore.network) ist eine separate Web-App nur für den Explorer. Sie öffnet sich im **Mainnet** und hat in ihrer Kopfzeile einen Umschalter **Testnet / Mainnet**. Routen:
+
+| Route | Was sie zeigt |
+| --- | --- |
+| `/` | Live-Höhe, Status, Supply, gebondeter Stake, neueste Blöcke und Transaktionen, Chain-Daten, öffentliche Endpunkte und Links zu Anleitungen. |
+| `/blocks`, `/block/{height}` | Blockliste und ein Block mit seinen Transaktionen. |
+| `/txs`, `/tx/{hash}` | Transaktionsliste und eine Transaktion mit Status, Gebühr, Gas, Nachrichten und der Rohantwort. |
+| `/address/{qor1... or 0x...}` | Die einheitliche Identitätsseite mit den drei Kodierungen und der Paritätsprüfung. `/account/*` leitet auf `/address/*` um. |
+| `/validators`, `/validator/{address}` | Die Validatorenmenge mit Voting Power und Provision sowie ein einzelner Validator. |
+| `/tokens`, `/token/{denom}`, `/assets` | Token- und Asset-Listen. |
+| `/contracts`, `/nfts`, `/collections` | Contracts, NFTs und Collections. |
+
+Die Suche akzeptiert eine Blockhöhe, einen 64-stelligen Hex-Hash (mit oder ohne `0x`), eine `qor1...`- oder `0x...`-Adresse oder eine `qorvaloper1...`-Adresse. Eine Suche nach `qorvaloper1...` öffnet die Validatorenliste, nicht die Seite dieses Validators. Ein Abschnitt **Add to wallet** bietet suggestChain (Keplr, Leap, Cosmostation), EIP-3085 (MetaMask und andere EVM-Wallets), SVM-Anleitungen für einen benutzerdefinierten RPC und die Kopplung per WalletConnect v2.
+
+Die Routen `/tx/`, `/block/` und `/address/` funktionieren mit EIP-3085-Block-Explorer-Links, sodass Wallets, die eine Explorer-URL öffnen, auf der richtigen Seite landen.
+
+:::caution Verwenden Sie /api/lcd des Explorers nicht aus Code
+Der eigenständige Explorer hat einen schreibgeschützten Proxy unter `/api/lcd/...`, der seine eigenen Seiten bedient und gemäß dem Netzwerk-Cookie des Browsers antwortet. Er ist keine öffentliche API: Er kann sich ändern, ist nicht für programmatische Nutzung ratenbegrenzt geplant und liefert das Netzwerk, das das Cookie nennt. Verwenden Sie für Skripte, Dienste und Wallets stattdessen die öffentlichen REST-Endpunkte: `https://api.qore.host` (Mainnet) und `https://api-testnet.qore.host` (Testnet). Siehe [REST- & gRPC-Endpunkte](/api-reference/rest-grpc-endpoints).
+:::
+
+:::note Der eigenständige Explorer wendet die PQC-Kennzeichnungsregeln des Dashboards noch nicht an
+Die Regeln unter [Innovationen](#innovations) (eine Post-Quantum-Kennzeichnung erst nach Verifikation durch die Chain und die Karte „Authorised by a PQC window“ für EVM-Transaktionen) sind im Dashboard-Explorer live. Der eigenständige Explorer unter explore.qore.network wurde dafür noch nicht aktualisiert: Seine Transaktionsseite zeigt eine Markierung für Hybridsignaturen, die eine fehlgeschlagene Transaktion noch nicht unterscheidet, und er kennzeichnet EVM-Transaktionen mit seiner älteren Formulierung. Betrachten Sie die Kennzeichnungen des Dashboard-Explorers als Referenz.
+:::
+
+## Zugang {#how-to-access}
+
+- **Dashboard-Explorer:** [dashboard.qorechain.io/explorer](https://dashboard.qorechain.io/explorer). Wählen Sie das Netzwerk in der Kopfzeile. Die **Übersicht** im Mainnet erfordert eine Anmeldung und den [einmaligen Hinweis](/dashboard/overview#risk-acknowledgement); die Übersicht im Testnet und **alle Detailseiten** (Transaktion, Block, Adresse, Validatoren) öffnen sich in beiden Netzwerken ohne Konto.
+- **Eigenständiger Explorer:** [explore.qore.network](https://explore.qore.network). Kein Konto, keine Wallet. Verwenden Sie den Umschalter in der Kopfzeile für das Testnet.
+- **Kosten:** kostenlos. Zum Lesen ist keine Wallet-Verbindung nötig.
+
+## Wo veröffentlicht {#where-published}
+
+| Oberfläche | Adresse | Netzwerke | Konto |
+| --- | --- | --- | --- |
+| Dashboard-Explorer | `dashboard.qorechain.io/explorer` (`/explorer/tx/<hash>`, `/explorer/block/<height>`, `/explorer/address/<address>`, `/explorer/validators`) | Mainnet und Testnet, Schalter in der Kopfzeile | Nur die Übersicht im Mainnet |
+| Eigenständiger Explorer | `explore.qore.network` | Mainnet (Standard) und Testnet-Umschalter | Keines |
+| Chain-Daten | `api.qore.host`, `api-testnet.qore.host` (REST), `rpc.qore.host`, `rpc-testnet.qore.host` (RPC) | Mainnet und Testnet | Keines |
+
+## Grenzen und bekannte Probleme {#limits}
+
+- **Eine in die Suche des Dashboards eingegebene `0x`-Adresse** landet bei „Transaction Not Found“. Verwenden Sie die `qor1...`-Form.
+- **Die PQC-Spalte** in der Validatorentabelle des Dashboards ist immer abgedunkelt. Den tatsächlichen Status eines Validators finden Sie auf seiner Adressseite.
+- **Nicht angezeigt:** ein Zähler für die Fensternutzung pro Transaktion, Post-Quantum-Beweise für Blöcke und ein Post-Quantum-Flag pro Validator in der Validatorentabelle.
+- **Der eigenständige Explorer** hat die Kennzeichnungsregeln des Dashboards noch nicht übernommen (siehe oben), und eine Suche nach `qorvaloper1...` öffnet die Validatorenliste.
+- **/api/lcd des eigenständigen Explorers** ist für die Website selbst gedacht, nicht für Programme.
+- **Das Netzwerk folgt der Kopfzeile** im Dashboard-Explorer: Ein Hash aus dem anderen Netzwerk zeigt „not found“.

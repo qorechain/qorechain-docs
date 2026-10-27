@@ -26,12 +26,12 @@ befinden sich im Repository [qorechain/qoresign](https://github.com/qorechain/qo
 | Lane | Was QoreSign heute leistet |
 |---|---|
 | **Native** (Cosmos SDK) | Hybrides Signieren und Prüfen. Das Netzwerk verlangt standardmäßig die ML-DSA-87-Signatur. |
-| **EVM** | Nur der Quantum-Ready-Modus: Das Konto registriert einen ML-DSA-87-Schlüssel und öffnet von der nativen Lane aus ein begrenztes Autorisierungsfenster. Ethereum-Transaktionen selbst tragen keine ML-DSA-87-Signatur. |
+| **EVM** | Nur Autorisierungsfenster: Das Konto registriert einen ML-DSA-87-Schlüssel und öffnet von der nativen Lane aus ein begrenztes Autorisierungsfenster. Ethereum-Transaktionen selbst tragen keine ML-DSA-87-Signatur. |
 | **SVM** | Im Netzwerk noch nicht geöffnet (`LANE_NOT_AVAILABLE`). |
 
 Hybrides EVM-Signieren setzt zuerst PQC-Unterstützung pro Lane im Netzwerk
 voraus. Siehe
-[EVM-Wallets: Quantum-Ready-Modus](/qoresign/guides/evm-quantum-ready).
+[EVM-Wallets: Autorisierungsfenster](/qoresign/guides/evm-quantum-ready).
 
 ## Pakete {#packages}
 
@@ -84,7 +84,7 @@ Prüfung von Anmeldungen gegen die Chain) befinden sich in
 - Anleitungen
   - [Hybrides Signieren in eine Keplr-kompatible Wallet einbauen](/qoresign/guides/keplr-compatible-wallets)
   - [Sign In With QoreChain: Prüfung auf dem Server](/qoresign/guides/sign-in)
-  - [EVM-Wallets: Quantum-Ready-Modus](/qoresign/guides/evm-quantum-ready)
+  - [EVM-Wallets: Autorisierungsfenster](/qoresign/guides/evm-quantum-ready)
   - [Schlüsselableitung: kanonische Schlüssel und der HD-Entwurf](/qoresign/guides/key-derivation)
   - [Größen und Transport](/qoresign/guides/sizes-and-transport)
 - Spezifikationen

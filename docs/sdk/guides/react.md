@@ -9,7 +9,7 @@ sidebar_position: 7
 
 `@qorechain/react` is the official React layer over `@qorechain/sdk`: one
 provider, a handful of hooks, and two drop-in components — including a one-line
-**Quantum-safe** badge. It makes building a quantum-safe dApp the default path.
+PQC-status badge. It makes building a dApp with hybrid ML-DSA-87 signing the default path.
 
 ```bash
 npm i @qorechain/react @qorechain/sdk react react-dom
@@ -27,7 +27,7 @@ with the classical signature only, which the live networks reject (the Native pa
 requires the hybrid ML-DSA-87 extension): `send` / `sendTokens` cannot land a
 transaction on mainnet or testnet. Send with the SDK's hybrid `TxClient`
 (`client.connectTx(signer, { pqcKeypair })`, see
-[Quantum-safe](/sdk/guides/quantum-safe#register-in-one-call)) for sends. `usePqcStatus` and `<QuantumSafeBadge/>` read the status through
+[Hybrid signing](/sdk/guides/quantum-safe#register-in-one-call)) for sends. `usePqcStatus` and `<QuantumSafeBadge/>` read the status through
 `getPqcStatus` with the provider's composed client, which since SDK 0.9.0 reads over
 REST (`/qorechain/pqc/v1/account/{address}`), so they work against `*.qore.host`
 (kit 0.8.x read `qor_getPQCKeyStatus`, which the public endpoints do not serve, and
@@ -135,8 +135,8 @@ control:
 
 ### `<QuantumSafeBadge/>`
 
-Shows a **Quantum-safe** indicator when the address has a registered post-quantum
-key (via `usePqcStatus`), otherwise a muted "Not quantum-safe" state. Defaults to
+Shows a status indicator when the address has a registered post-quantum
+key (via `usePqcStatus`), otherwise a muted "not registered" state. Defaults to
 the connected account.
 
 ```tsx
@@ -171,4 +171,4 @@ function Dashboard() {
 ```
 
 See the runnable [`react-dapp` example](https://github.com/qorechain/qorechain-sdk/tree/main/examples/react-dapp)
-and the [quantum-safe guide](/sdk/guides/quantum-safe) for the underlying SDK calls.
+and the [hybrid signing guide](/sdk/guides/quantum-safe) for the underlying SDK calls.

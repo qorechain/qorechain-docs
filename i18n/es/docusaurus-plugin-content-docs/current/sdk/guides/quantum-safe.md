@@ -1,22 +1,21 @@
 ---
 slug: /sdk/guides/quantum-safe
-title: Seguridad cuántica por defecto
-sidebar_label: Seguridad cuántica
+title: Firma híbrida por defecto
+sidebar_label: Firma híbrida
 sidebar_position: 6
 ---
 
-# Seguridad cuántica por defecto
+# Firma híbrida por defecto
 
 QoreChain trata la criptografía poscuántica como un esquema de firma de **primera clase**.
 Una cuenta registra en cadena una clave **ML-DSA-87 (Dilithium-5, NIST FIPS 204)**,
 tras lo cual sus transacciones pueden llevar una firma **híbrida** — la habitual
 firma clásica secp256k1 **más** una firma ML-DSA-87. El ante handler de la cadena
-verifica ambas, de modo que una cuenta con seguridad cuántica permanece totalmente compatible
-con la verificación clásica al tiempo que gana protección frente a un futuro adversario
-cuántico.
+verifica ambas, de modo que una cuenta con una clave registrada permanece totalmente compatible
+con la verificación clásica mientras sus transacciones también llevan una firma poscuántica.
 
-El SDK empaqueta esto en una superficie diminuta e idempotente para que una dApp se vuelva
-**segura frente a lo cuántico por defecto**: una sola llamada para estar protegido con PQC.
+El SDK empaqueta esto en una superficie diminuta e idempotente para que una dApp firme
+**en modo híbrido por defecto**: una sola llamada registra la clave.
 En las redes en producción esto no es opcional para las transacciones de la ruta Native: la
 clave debe registrarse **explícitamente** (no hay registro automático en la primera
 transacción), y después cada transacción de la ruta Native debe llevar la firma híbrida.
@@ -67,7 +66,7 @@ está activo en mainnet, y figura como activo en la testnet (comprobado el 27 de
 
 ## Registrar en una sola llamada {#register-in-one-call}
 
-`ensurePqcRegistered` hace que una cuenta sea segura frente a lo cuántico. Construye y difunde
+`ensurePqcRegistered` registra la clave ML-DSA-87 de la cuenta. Construye y difunde
 `MsgRegisterPQCKeyV2` con la clave pública ML-DSA-87 del firmante. Es **idempotente**:
 lee primero el estado de la cuenta (por REST cuando pasas `rest`), omite el
 registro cuando la cuenta ya tiene la clave de este par de claves, y por lo tanto es
@@ -275,7 +274,7 @@ await migratePqcKeyHybrid({
 
 El kit [`@qorechain/react`](/sdk/guides/react) expone todo esto en React: el
 hook `usePqcStatus` y el componente `<QuantumSafeBadge/>` muestran un indicador de
-**seguridad cuántica** siempre que la cuenta conectada tenga una clave PQC registrada. Ambos leen el
+estado siempre que la cuenta conectada tenga una clave PQC registrada. Ambos leen el
 estado mediante `getPqcStatus` con el cliente compuesto, así que desde `@qorechain/react`
 0.9.0 lo leen por REST y funcionan contra los endpoints públicos; la 0.8.x no
 podía confirmar una clave allí.

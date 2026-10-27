@@ -20,7 +20,7 @@ l'outillage :
 :::caution Stade précoce : lisez la colonne Statut
 Aucun rollup n'a encore été créé sur l'un ou l'autre réseau (vérifié le 27 octobre 2026).
 Le tableau ci-dessous indique ce qui fonctionne aujourd'hui ; ce que les clients
-0.6.x publiés ont changé et les limites qui subsistent sont rassemblées dans [RDK 0.6.1 : changements et limites](/rollups/deploying-a-rollup#rdk-050-limits). Si vous n'avez besoin que d'un
+0.6.x publiés ont changé et les limites qui subsistent sont rassemblées dans [RDK 0.6.2 : changements et limites](/rollups/deploying-a-rollup#rdk-050-limits). Si vous n'avez besoin que d'un
 rollup optimiste/zk générique, n'importe quel kit fera l'affaire ; les
 capacités décrites ici sont ce que le RDK ajoute par-dessus, en TypeScript,
 Python, Go, Rust et Java.
@@ -28,13 +28,13 @@ Python, Go, Rust et Java.
 
 | Capacité | Statut | Sur quoi elle repose |
 | --- | --- | --- |
-| **Reçus de règlement résistants au quantique** | 🟡 Stade précoce | Les ancrages sont signés avec ML-DSA-87, le schéma post-quantique de la Main Chain ; aucun ancrage n'existe encore, de sorte que le vérificateur de la 0.6.1 (qui vérifie par rapport à la chaîne) n'a jamais été exécuté sur un véritable ancrage |
+| **Reçus de règlement** | 🟡 Stade précoce | Les ancrages sont signés avec ML-DSA-87, le schéma post-quantique de la Main Chain ; aucun ancrage n'existe encore, de sorte que le vérificateur de la 0.6.2 (qui vérifie par rapport à la chaîne) n'a jamais été exécuté sur un véritable ancrage |
 | **Copilote de rollup QCAI** | 🟡 Pas encore disponible sur les points de terminaison publics | Des services consultatifs d'IA/RL on-chain que les points de terminaison publics n'exposent pas aujourd'hui |
 | **Appels inter-VM multi-VM** | 🟡 Pas encore utilisable sur les réseaux en production | Une précompilation inter-VM qui n'est pas activée (l'encodeur correspond depuis la 0.6.0 à la disposition de la chaîne), et le téléversement QoreChain Native est fermé |
 
 ---
 
-## 1. Reçus de règlement résistants au quantique
+## 1. Reçus de règlement
 
 > 🟡 **Conception construite sur la couche de base post-quantique de QoreChain.**
 > Les ancrages de règlement sont signés avec ML-DSA-87 (Dilithium-5, FIPS-204),
@@ -59,7 +59,7 @@ console.log(result.valid);
 `verifySettlementReceipt` vérifie par rapport à la chaîne et refuse de dire `valid`
 sans `client`. Dans la 0.5.0, son contrôle sur la chaîne ne pouvait pas aboutir face
 aux réseaux en service (il échouait de façon fermée au lieu de déclarer valide un
-reçu authentique) ; la 0.6.0 a corrigé cela et la 0.6.1 compare chaque champ du reçu, mais aucun ancrage n'existe encore ; ni l'une ni l'autre n'a donc été exécutée sur un véritable ancrage. Voir [Reçus de règlement résistants au quantique](/rollups/settlement-receipts)
+reçu authentique) ; la 0.6.0 a corrigé cela et la 0.6.1 (et donc la 0.6.2) compare chaque champ du reçu, mais aucun ancrage n'existe encore ; ni l'une ni l'autre n'a donc été exécutée sur un véritable ancrage. Voir [Reçus de règlement](/rollups/settlement-receipts)
 pour ce qu'un reçu prouve et ce qu'il ne prouve pas, ainsi que pour les limites exactes.
 
 ---
@@ -167,7 +167,7 @@ disponibilité des données (voir sa note de statut), un auto-challenger
 
 - [Déployer un rollup](/rollups/deploying-a-rollup) — installation par langage
   et parcours CLI jusqu'à un rollup testnet.
-- [Reçus de règlement résistants au quantique](/rollups/settlement-receipts) ·
+- [Reçus de règlement](/rollups/settlement-receipts) ·
   [Copilote QCAI](/rollups/qcai-copilot) ·
   [Multi-VM](/rollups/multi-vm) ·
   [Watchtower](/rollups/watchtower) — les analyses approfondies.

@@ -1,11 +1,11 @@
 ---
 slug: /qoresign/guides/evm-quantum-ready
-title: "EVM ウォレット: 量子対応モード"
-sidebar_label: EVM 量子対応モード
+title: "EVM ウォレット: 認可ウィンドウ"
+sidebar_label: EVM 認可ウィンドウ
 sidebar_position: 3
 ---
 
-# EVM ウォレット: 量子対応モード
+# EVM ウォレット: 認可ウィンドウ
 
 Ethereum トランザクションには 2 つ目の署名を載せられるフィールドがなく、
 ネットワークは PQC の設定をレーンごとではなくチェーン全体に適用します。そのため、
@@ -16,8 +16,8 @@ QoreSign は EVM のハイブリッド署名を提供しません（`assertHybri
 代わりに、ネットワークは、送信者が登録済みの ML-DSA-87 鍵と、そのトランザクション
 をカバーする有効な **EVM 認可ウィンドウ** を持つ場合にのみ、EVM トランザクション
 を受け付けます。このウィンドウは、ハイブリッド署名されたトランザクションによって
-ネイティブレーンから開かれるため、耐量子鍵があらかじめ EVM のアクティビティを
-認可することになります（「量子対応モード」）。
+ネイティブレーンから開かれるため、ポスト量子鍵があらかじめ EVM のアクティビティを
+認可することになります。EVM トランザクション自体は secp256k1 のみです。
 両方の公開ネットワークがこれを強制しています（プロトコル機能
 `evm-pqc-authorisation-window`。[QoreChain SDK](/sdk/overview) の
 `fetchProtocolFeatures`、または `/qorechain/pqc/v1/protocol_features` で確認できます）。

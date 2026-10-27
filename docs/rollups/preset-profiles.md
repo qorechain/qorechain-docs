@@ -27,7 +27,7 @@ Each preset bundles a settlement paradigm (and the proof system its settlement r
 
 | Profile | Settlement (proof) | Sequencer | DA | Gas model | VM | Intended use case |
 | ------- | ------------------ | --------- | -- | --------- | -- | ----------------- |
-| **`defi`** | zk (SNARK) | dedicated | native | EIP-1559 | EVM | DeFi and AMM-style applications — lending markets, DEXs, and derivatives where fast finality and predictable fees matter |
+| **`defi`** | zk (SNARK); **not usable yet, see below** | dedicated | native | EIP-1559 | EVM | DeFi and AMM-style applications — lending markets, DEXs, and derivatives where fast finality and predictable fees matter |
 | **`gaming`** | based | based | native | flat | custom | High-throughput, low-latency game state and in-game economies |
 | **`nft`** | optimistic (fraud) | dedicated | native (Celestia DA planned) | standard | QoreChain Native (`native`) | NFT minting, marketplaces, and digital collectibles |
 | **`enterprise`** | based | based | native | subsidized | EVM | Permissioned and consortium deployments with sponsored (subsidized) fees |
@@ -51,8 +51,8 @@ The [`create-qorechain-rollup`](/rollups/deploying-a-rollup#scaffold-a-project-w
 
 Some details are easy to assume and are worth knowing before you pick a profile:
 
-* **`defi` has no verifying key.** ZK batches need one, and a rollup created through `create-rollup` does not carry it, so ZK settlement cannot finalise end to end today (see [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)).
-* **`nft` and `custom`** settle optimistically with a 1,000 QOR challenge bond and a challenge window of 100,800 blocks on mainnet before v3.2.4 (the default 604,800 "seconds" converted at a fixed 6 seconds per block; about 3.7 days at mainnet's current ≈3.2 s blocks). From v3.2.4 a batch gets a window measured in seconds of block time instead: on the testnet from height 8,337,253 (19 October 2026), on mainnet from height 3,742,566 (23 October 2026). The module's default window is 604,800 seconds on mainnet and 3,600 seconds on the testnet (read on 27 October 2026), so check `GET /qorechain/rdk/v1/params` on the network you target.
+* **`defi` cannot be used on either network yet.** It settles with a ZK proof, which needs a verification key registered for the rollup. The chain has no way to register one, so every ZK batch from a `defi` rollup (and from the `defi-rollup` template) is refused after its fee is paid. Key registration is planned for chain v3.2.7. The template's demo circuit also cannot verify against the chain's public inputs. Until then choose `nft` or `custom` (optimistic settlement); see [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals).
+* **`nft` and `custom`** settle optimistically with a 1,000 QOR challenge bond and a challenge window of 100,800 blocks on mainnet before v3.2.4 (the default 604,800 "seconds" converted at a fixed 6 seconds per block; about 3.7 days at mainnet's current ≈3.1 s blocks). From v3.2.4 a batch gets a window measured in seconds of block time instead: on the testnet from height 8,337,253 (19 October 2026), on mainnet from height 3,742,566 (23 October 2026). The module's default window is 604,800 seconds on mainnet and 3,600 seconds on the testnet (read on 27 October 2026), so check `GET /qorechain/rdk/v1/params` on the network you target.
 * **`gaming` and `enterprise`** use `based` sequencing, which today means the rollup's creator submits batches.
 * **Block time and transaction limits** (for example `defi` 500 ms, `gaming` 200 ms, `nft` 2,000 ms, `enterprise` and `custom` 1,000 ms) are stored in the on-chain record. They describe the rollup's own chain and are not enforced by the host chain.
 

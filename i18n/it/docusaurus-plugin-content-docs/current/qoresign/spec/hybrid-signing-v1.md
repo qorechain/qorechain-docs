@@ -123,7 +123,7 @@ rifiutata, perché le sue firme possono essere falsificate.
   quindi non portano alcuna firma ML-DSA-87. Un account con una chiave ML-DSA-87
   registrata può aprire dalla corsia Native una finestra di autorizzazione EVM
   limitata (altezza di scadenza, numero massimo di transazioni, valore massimo).
-  Vedi [Wallet EVM: modalità quantum-ready](/qoresign/guides/evm-quantum-ready).
+  Vedi [Wallet EVM: finestra di autorizzazione](/qoresign/guides/evm-quantum-ready).
 - Corsia SVM: non ancora aperta sulla rete.
 
 ## Vettori di test {#test-vectors}

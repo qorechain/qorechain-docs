@@ -41,7 +41,7 @@ QoreChain hat einen **endlichen, gedeckelten Angebotspfad**. Das Genesis-Angebot
 | --- | --- |
 | Emissionsmodus | `fixed` (seit v3.1.94, Höhe 2.122.074 — 26. August 2026) |
 | Emission pro Epoche | **86.000 QOR** (16.239 QOR bis Governance-Vorschlag 10; die erste Epoche mit 86.000 QOR beginnt bei Block 3.672.000) |
-| Epochenlänge | 43.200 Blöcke (etwa 38,6 Stunden bei der aktuellen Blockzeit von ≈3,2 s) |
+| Epochenlänge | 43.200 Blöcke (etwa 37,7 Stunden bei der aktuellen Blockzeit von ≈3,1 s) |
 | Kumulative Obergrenze (`max_total_emission`) | **590.000.000 QOR** (bis Vorschlag 10: 114.285.714 QOR) |
 | Bisher geprägt (23. Oktober 2026, Epoche 86) | 105.420.896,21 QOR (17,87 % der Obergrenze) |
 | Verbleibend unter der Obergrenze | 484.579.103,79 QOR (etwa 5.635 Epochen bei 86.000 QOR pro Epoche; die letzte ist unvollständig) |
@@ -137,7 +137,7 @@ Zwei Beträge haben sich auf dem Mainnet vor dem Upgrade auf v3.2.0 (25. Septemb
 
 **Korrigierter Rest des gestrandeten Anteils.** Beim Upgrade auf v3.2.3 (Höhe 3.662.051, 20. Oktober 2026) hat die Chain den Datensatz des gestrandeten Anteils neu berechnet; er stand danach bei 3.807.496,785528 QOR (`reserved` in `GET /qorechain/burn/v1/stranded_rewards`, neben `released`, 6.693.045,921330 QOR). Governance-Vorschlag 12 hat diesen Rest, 3.807.496,785528 QOR, an die Foundation freigegeben: Er wurde angenommen (die Abstimmung endete am 21. Oktober 2026 um 20:01 UTC), und das gesamte abstimmende gebundene Stake stimmte dafür. Der Datensatz lässt sich unter `GET /qorechain/burn/v1/stranded_rewards` und der Vorschlag unter `GET /cosmos/gov/v1/proposals/12` prüfen.
 
-**Der Light-Node-Pool jetzt.** Ab dem Upgrade auf v3.2.0 werden Light-Node-Belohnungen nur aus dem gezahlt, was seit dem vorherigen Verteilungslauf angefallen ist, mit einer Obergrenze pro Node. Seit v3.2.3 beträgt die Grenze **2.000 QOR pro Node und 30 Tage** (`max_reward_per_month_per_node`), anteilig nach Blockzeit und Uptime des Nodes; der Wert pro Block (`max_reward_per_block_per_node`, 1.713 uqor) wird weiterhin gemeldet, ist aber nicht mehr die maßgebliche Regel. Was nicht verdient wird, bleibt in der Reserve des Pools, die nur eine Governance-Abstimmung freigeben kann. Nach Vorschlag 8 füllt sich die Reserve wieder: Am 20. Oktober 2026 enthielt sie 487,2318 QOR (`reserved` in `GET /qorechain/lightnode/v1/reward_pool`), ohne ausstehende oder zahlbare Beträge, da sich noch kein Light Node registriert hat. Die Registrierung ist offen und lizenzgebunden (siehe [Light Node](/light-node/overview#reward-program-status)). Eine Freigabe vor dem Upgrade-Snapshot, über dem verzeichneten Betrag oder an ein ungültiges Ziel wird abgelehnt.
+**Der Light-Node-Pool jetzt.** Ab dem Upgrade auf v3.2.0 werden Light-Node-Belohnungen nur aus dem gezahlt, was seit dem vorherigen Verteilungslauf angefallen ist, mit einer Obergrenze pro Node. Seit v3.2.3 beträgt die Grenze **2.000 QOR pro Node und 30 Tage** (`max_reward_per_month_per_node`), anteilig nach Blockzeit und Uptime des Nodes; der Wert pro Block (`max_reward_per_block_per_node`, 1.713 uqor) wird weiterhin gemeldet, ist aber nicht mehr die maßgebliche Regel. Was nicht verdient wird, bleibt in der Reserve des Pools, die nur eine Governance-Abstimmung freigeben kann. Nach Vorschlag 8 füllt sich die Reserve wieder: Am 27. Oktober 2026 betrug das `reserved` des Mainnet-Pools (in `GET /qorechain/lightnode/v1/reward_pool`) etwa 13.380,9 QOR, mit 0,06 QOR ausstehend und nichts zahlbar; an diesem Tag war in jedem Netzwerk ein Light Node registriert. Die Registrierung ist offen und lizenzgebunden (siehe [Light Node](/light-node/overview#reward-program-status)). Eine Freigabe vor dem Upgrade-Snapshot, über dem verzeichneten Betrag oder an ein ungültiges Ziel wird abgelehnt.
 
 ## x/xqore — Gesperrtes Staking und Governance-Verstärkung {#x-xqore}
 
@@ -191,7 +191,7 @@ Das `x/inflation`-Modul prägt die Emission pro Epoche (86.000 QOR seit Vorschla
 
 ### Epochen-Mechanik
 
-* **Epochenlänge**: 43.200 Blöcke (etwa 38,6 Stunden bei ≈3,2 s pro Block).
+* **Epochenlänge**: 43.200 Blöcke (etwa 37,7 Stunden bei ≈3,1 s pro Block).
 * An jeder Epochengrenze prägt das Modul die Epochen-Emission (oder den Rest bis zur Obergrenze), aktualisiert den Epochen-Datensatz und stellt das Prägen ein, sobald `total_minted` die Obergrenze erreicht.
 * Seit v3.2.3 wird das Emissionsjahr aus der Epochenlänge abgeleitet statt aus einer festen Blockanzahl.
 

@@ -243,7 +243,7 @@ Alle Funktionen arbeiten mit `cosmossdk.io/math.LegacyDec`-Werten und stellen id
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Maximale Parameteränderung im Autonomous-Modus          |
 | `circuit_breaker_window`         | uint64    | `50`         | Anzahl der vom Circuit Breaker überwachten letzten Blöcke |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Minimaler gesunder Blockanteil vor Auslösung        |
-| `default_block_time_ms`          | int64     | `5000`       | Standard-Ziel-Blockzeit (ms), die als Beobachtungsbasis dient; die tatsächliche Blockzeit beträgt im Mainnet etwa 3,2 s und im Testnet etwa 1,3 s |
+| `default_block_time_ms`          | int64     | `5000`       | Standard-Ziel-Blockzeit (ms), die als Beobachtungsbasis dient; die tatsächliche Blockzeit beträgt im Mainnet etwa 3,1 s und im Testnet etwa 1,3 s |
 | `default_base_gas_price`         | LegacyDec | `100`        | Standard-Basis-Gaspreis                             |
 | `default_validator_set_size`     | uint64    | `100`        | Standard-Ziel-Validatorenmengengröße                    |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Belohnungsgewicht für Durchsatzverbesserung             |

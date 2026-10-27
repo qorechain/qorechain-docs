@@ -33,7 +33,7 @@ Le RDK est livré avec cinq profils prédéfinis, chacun réglé pour une catég
 | **enterprise** | based               | based     | natif          | subventionné   | EVM      | Déploiements avec permissions et consortiums, avec frais sponsorisés |
 | **custom**     | valeurs par défaut : optimistic (fraude) | dédié | natif | standard | EVM | Valeurs par défaut de départ ; ajustez ce que le message permet |
 
-Voir [Profils prédéfinis](/rollups/preset-profiles) pour les détails et les notes de maturité (par exemple, un rollup `defi` créé via la CLI ne peut pas encore finaliser de lots ZK, et le séquençage `based` signifie actuellement que le créateur soumet).
+Voir [Profils prédéfinis](/rollups/preset-profiles) pour les détails et les notes de maturité (par exemple, le règlement ZK, et donc le profil `defi`, ne peut encore être utilisé sur aucun des deux réseaux, et le séquençage `based` signifie actuellement que le créateur soumet).
 
 ---
 
@@ -56,7 +56,7 @@ Voir [Profils prédéfinis](/rollups/preset-profiles) pour les détails et les n
 * Les lots se règlent sans ancrage, sauf si vous leur joignez la signature post-quantique du créateur (`--anchor-signature` sur `tx rdk submit-batch`, disponible depuis la v3.2.2). Voir [Ancrage d'état](/architecture/rollup-development-kit#state-anchoring).
 * Les retraits vers L1 (`tx rdk execute-withdrawal`) sont payés depuis le registre de séquestre de votre rollup et fonctionnent sur le mainnet depuis la v3.2.3 ; ils nécessitent un lot finalisé avec une racine de retraits et n'utilisent que `uqor`.
 * Le créateur du rollup est aujourd'hui celui qui soumet les lots (aucun profil prédéfini ne définit d'adresse de séquenceur) ; gardez donc la clé du créateur en sécurité : seul le créateur peut mettre en pause, reprendre ou arrêter le rollup.
-* Le RDK est publié en cinq langages (version 0.6.1 sur chaque registre, vérifié le 27 octobre 2026), mais seul le client TypeScript signe des transactions hybrides, et seulement lorsque vous lui fournissez votre paire de clés post-quantiques ; la CLI `qorollup` et les clients Python, Go, Rust et Java signent en classique uniquement, ce que les deux réseaux refusent. Voir [Changements et limites du RDK](/rollups/deploying-a-rollup#rdk-050-limits).
+* Le RDK est publié en cinq langages (version 0.6.2 sur npm, PyPI, crates.io et le proxy de modules Go, et 0.6.1 sur Maven Central jusqu'à ce que la 0.6.2 y soit disponible ; vérifié le 27 octobre 2026), mais seul le client TypeScript signe des transactions hybrides, et seulement lorsque vous lui fournissez votre paire de clés post-quantiques ; la CLI `qorollup` et les clients Python, Go, Rust et Java signent en classique uniquement, ce que les deux réseaux refusent. Voir [Changements et limites du RDK](/rollups/deploying-a-rollup#rdk-050-limits).
 * L'assistant `suggest-profile` renvoie actuellement un repli fixe `defi` sur les points de terminaison publics ; choisissez donc dans le tableau des profils.
 
 ---

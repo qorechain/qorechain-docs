@@ -59,7 +59,7 @@ Două setări contează începând cu v3.2.1: mențineți ceasul sistemului sinc
 
 ---
 
-## Hardware recomandat
+## Hardware recomandat {#recommended-hardware}
 
 | Profil                    | CPU      | RAM   | Disc (NVMe SSD)          | Rețea     |
 | -------------------------- | -------- | ----- | ------------------------- | --------- |
@@ -67,7 +67,7 @@ Două setări contează începând cu v3.2.1: mențineți ceasul sistemului sinc
 | Nod complet/arhivă         | 8 nuclee | 32 GB | 2 TB+ (crește în timp)    | 1 Gbps    |
 | Integrare de exchange      | 8 nuclee | 32 GB | 2 TB+ cu marjă suplimentară | 1 Gbps  |
 
-Un SSD NVMe este puternic recomandat — starea lanțului și magaziile EVM/SVM sunt intensive din punct de vedere I/O. Nodurile de arhivă (fără pruning, indexare completă a tranzacțiilor) cresc continuu; alocați spațiu pe disc cu marjă și monitorizare.
+Un SSD NVMe este puternic recomandat: starea lanțului și magaziile EVM/SVM sunt intensive din punct de vedere I/O. Cifrele de disc de mai sus sunt generoase. Măsurat pe mainnet (27 octombrie 2026): un validator care s-a alăturat prin state sync cu `pruning = "custom"` (keep-recent 100000) și `indexer = "null"` ocupă aproximativ 10 GB după două luni, iar un nod cu pruning implicit, care rulează de la genesis, ocupă aproximativ 100 până la 130 GB după patru luni. Dimensionarea validatorilor se găsește în [Rularea unui validator: hardware](/developer-guide/running-a-validator#hardware). Nodurile de arhivă (fără pruning, indexare completă a tranzacțiilor) cresc continuu; alocați spațiu pe disc cu marjă și monitorizare.
 
 ---
 
@@ -222,7 +222,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 
 ## Pornire rapidă (Fast Bootstrap)
 
-Sincronizarea de la genesis poate dura mult timp. Pentru integrări, folosiți **state sync** sau un **instantaneu (snapshot)** pentru o pornire rapidă la rece.
+Sincronizarea de la genesis poate dura mult timp. Folosiți **state sync** ca modalitate implicită de a vă alătura; un **instantaneu (snapshot)** este doar o variantă de rezervă (instantaneul mainnet este din 21 august 2026, iar testnet-ul nu publică niciunul).
 
 ### State sync
 
@@ -231,18 +231,22 @@ State sync preia un instantaneu recent al stării aplicației de la servere RPC 
 ```toml
 [statesync]
 enable = true
-rpc_servers = "https://rpc.qore.host:443,https://rpc.qore.host:443"
+rpc_servers = "https://rpc.qore.host:443,https://<a second RPC you run or trust>:26657"
 trust_height = <TRUSTED_BLOCK_HEIGHT>
 trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Preluați `trust_height` / `trust_hash` din câmpul `stateSync` al manifestului — este actualizat orar, deci este sursa preferată:
+Preluați `trust_height` / `trust_hash` din câmpul `stateSync` al manifestului. Este actualizat orar, deci este sursa preferată:
 
 ```bash
 TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
 TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 ```
+
+:::warning Două servere RPC diferite
+State sync verifică prin încrucișare punctul de încredere față de **două** servere RPC. Câmpul `stateSync.rpcServers` al manifestului listează `https://rpc.qore.host` de două ori pe mainnet (și `https://rpc-testnet.qore.host` de două ori pe testnet): două intrări identice satisfac numărul cerut, dar anulează verificarea încrucișată. Adăugați un al doilea RPC pe care îl rulați sau în care aveți încredere independent și comparați hash-ul de încredere cu o a doua sursă, de exemplu `curl -s "https://<second-rpc>/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash`, care trebuie să fie egal cu `$TRUST_HASH`.
+:::
 
 Ca alternativă/rezervă, puteți deriva singuri o înălțime și un hash de încredere din RPC-ul public:
 

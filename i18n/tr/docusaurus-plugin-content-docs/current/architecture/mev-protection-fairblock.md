@@ -91,7 +91,7 @@ QoreChain, işlemleri türe göre sınıflandıran ve her şeride bir öncelik d
 ### Şerit Açıklamaları
 
 **PQC Şeridi** (Öncelik 100, %15 blok alanı)\
-Hibrit kuantum sonrası kriptografik imzalarla imzalanan işlemler en yüksek önceliği alır. Bu, kuantuma dayanıklı işlem imzalamanın benimsenmesini teşvik eder ve PQC korumalı işlemlerin tıkanıklık sırasında asla sıkışıp kalmamasını sağlar.
+Hibrit kuantum sonrası kriptografik imzalarla imzalanan işlemler en yüksek önceliği alır. Bu, hibrit ML-DSA-87 işlem imzalamanın benimsenmesini teşvik eder ve hibrit imzalı işlemlerin tıkanıklık sırasında asla sıkışıp kalmamasını sağlar.
 
 **MEV Şeridi** (Öncelik 90, %20 blok alanı)\
 tIBE ile şifrelenmiş işlemler ikinci en yüksek önceliği ve en büyük ayrılmış tahsisi alır. Bu, MEV korumasını tercih eden kullanıcıların blok alanına garanti edilmesini sağlayarak şifreleme şemasının yaygın benimsenmesini teşvik eder.

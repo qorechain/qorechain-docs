@@ -283,7 +283,7 @@ Kuantum-sonrası bir imza, bir Ethereum işlemiyle *birlikte* gidemez (MetaMask 
 | `max-txs`   | 1 – 1.000          | Kaç EVM işlemini kabul edeceği |
 | `max-value` | 0'ın üzerinde, `uqor` cinsinden | Kabul ettiği toplam çıkış: aktarılan değer **artı** her işlemin ödeyebileceği azami ücret (gas limiti × gas başına azami ücret), `uqor`'a çevrilip yukarı yuvarlanır |
 
-Hangi sınır önce tükenirse pencereyi o kapatır. Üç sınır da zorunludur; bir pencere açmak mevcut pencerenin yerini alır; kabul edilip sonra başarısız olan bir işlem yine de yuvasını ve değer bütçesini kullanır; sözleşme dağıtımları diğer işlemler gibi sayılır. `blocks` bir süre değil, blok sayısıdır: 17.280 blok ana ağda yaklaşık 15 saat (blok başına yaklaşık 3,2 sn), test ağında ise yaklaşık 6 saattir (27 Ekim 2026'da blok başına yaklaşık 1,3 sn; test ağı blok süresi değişir).
+Hangi sınır önce tükenirse pencereyi o kapatır. Üç sınır da zorunludur; bir pencere açmak mevcut pencerenin yerini alır; kabul edilip sonra başarısız olan bir işlem yine de yuvasını ve değer bütçesini kullanır; sözleşme dağıtımları diğer işlemler gibi sayılır. `blocks` bir süre değil, blok sayısıdır: 17.280 blok ana ağda yaklaşık 15 saat (blok başına yaklaşık 3,1 sn), test ağında ise yaklaşık 6 saattir (27 Ekim 2026'da blok başına yaklaşık 1,3 sn; test ağı blok süresi değişir).
 
 **Değer sınırı yalnızca yerel QOR'u sayar.** Bir token transferi, bir onay (approval) veya başka herhangi bir sözleşme çağrısı sıfır değer taşır; bu nedenle `max-value` karşısında sayılmaz (yalnızca azami ücreti sayılır). Bunları da sınırlamak için pencerenin **kapsamını (scope)** daraltın (ana ağ v3.2.3 ve sonrası):
 

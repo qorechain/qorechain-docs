@@ -143,7 +143,7 @@ o la forma `0x` dello stesso account producono la stessa chiave.
 Ogni linguaggio ha la stessa funzione (Python `derive_pqc_canonical`, Go
 `authenticator.DerivePQCCanonical`, Rust `try_derive_pqc_canonical`, Java
 `Authenticator.derivePqcCanonical`; vedi la
-[tabella nella guida Quantum-safe](/sdk/guides/quantum-safe#canonical-derivation)),
+[tabella nella guida Firma ibrida](/sdk/guides/quantum-safe#canonical-derivation)),
 e lo stesso `{ address, mnemonic }` produce la stessa chiave in tutti (verificato
 per TypeScript, Python, Go e Rust a ottobre 2026).
 

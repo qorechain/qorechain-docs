@@ -43,7 +43,7 @@ Token di test solo per la testnet (FestUSD, FestETH e FestBTC, con 6, 18 e 8 dec
 
 ### Come eseguo un nodo, un validatore o un light node?
 
-Per un nodo completo, vedi [Esecuzione di un nodo](/developer-guide/running-a-node). Per un validatore, vedi [Esecuzione di un validatore](/developer-guide/running-a-validator). Per un light node, vedi [Light Node](/light-node/overview); la registrazione al programma di ricompense dei light node è aperta e subordinata a una licenza ([stato](/light-node/overview#reward-program-status)).
+Per un nodo completo, vedi [Esecuzione di un nodo](/developer-guide/running-a-node). Per un validatore, vedi [Esecuzione di un validatore](/developer-guide/running-a-validator). Per un light node, vedi [Light Node](/light-node/overview); la registrazione al programma di ricompense dei light node è aperta e subordinata a una licenza, e il 27 ottobre 2026 un light node era registrato su ciascuna rete ([stato](/light-node/overview#reward-program-status)).
 
 ### Quale schema di firma usa QoreChain?
 
@@ -51,7 +51,7 @@ QoreChain usa uno schema ibrido post-quantistico che combina il classico **secp2
 
 ### Perché la mia transazione EVM viene rifiutata con «no open EVM authorisation window»?
 
-Dalla v3.2.0 la lane EVM ammette una transazione solo da un account che abbia una chiave post-quantistica registrata e una finestra di autorizzazione aperta. Apri una finestra con una transazione della lane Cosmos firmata in modo post-quantistico, poi riprova. Vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
+Dalla v3.2.0 la lane EVM ammette una transazione solo da un account che abbia una chiave post-quantistica registrata e una finestra di autorizzazione aperta. Apri una finestra con una transazione della lane Cosmos con una firma ibrida ML-DSA-87 (FIPS 204), poi riprova. Vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
 
 ### Quanti validatori ha la mainnet?
 
@@ -59,7 +59,7 @@ Otto validatori bonded al 27 ottobre 2026, con circa 60,3 milioni di QOR in bond
 
 ### Quale block time devo aspettarmi?
 
-Circa 3,2 secondi sulla mainnet e circa 1,3 secondi sulla testnet (medie misurate, 27 ottobre 2026). Il block time è determinato dalla configurazione dei nodi dei validatori.
+Circa 3,1 secondi sulla mainnet e circa 1,3 secondi sulla testnet (medie misurate, 27 ottobre 2026). Il block time è determinato dalla configurazione dei nodi dei validatori.
 
 ### xQORE è disponibile?
 

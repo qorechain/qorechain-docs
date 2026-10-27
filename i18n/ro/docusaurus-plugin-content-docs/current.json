@@ -140,7 +140,15 @@
     "description": "The label for category 'QoreX Wallet' in sidebar 'docsSidebar'"
   },
   "sidebar.docsSidebar.category.QoreX Wallet.link.generated-index.description": {
-    "message": "QoreX — portofelul oficial non-custodial, sigur cuantic, pentru QoreChain: aplicație mobilă și extensie de browser. Configurare, trimitere și primire, staking, recuperare și conectare la dApp-uri.",
+    "message": "QoreX — portofelul oficial non-custodial pentru QoreChain, cu semnare hibridă ML-DSA-87 pe lane-ul nativ: aplicație mobilă și extensie de browser. Configurare, trimitere și primire, staking, recuperare și conectare la dApp-uri.",
     "description": "The generated-index page description for category 'QoreX Wallet' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages": {
+    "message": "Pachete pentru dezvoltatori",
+    "description": "The label for category 'Developer Packages' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Packages.link.generated-index.description": {
+    "message": "Toate pachetele publice QoreChain: ce sunt, ce este nou în ele, cum se folosesc, cum se accesează și unde sunt publicate.",
+    "description": "The generated-index page description for category 'Developer Packages' in sidebar 'docsSidebar'"
   }
 }

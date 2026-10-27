@@ -91,7 +91,7 @@ QoreChain met en œuvre une architecture de mempool à 5 voies qui catégorise l
 ### Description des voies
 
 **Voie PQC** (Priorité 100, 15 % de l'espace de bloc)\
-Les transactions signées avec des signatures cryptographiques hybrides post-quantiques reçoivent la priorité la plus élevée. Cela incite à l'adoption de la signature de transactions résistante au quantique et garantit que les opérations protégées par PQC ne sont jamais évincées en période de congestion.
+Les transactions signées avec des signatures cryptographiques hybrides post-quantiques reçoivent la priorité la plus élevée. Cela incite à l'adoption de la signature de transactions hybride ML-DSA-87 et garantit que les opérations signées de façon hybride ne sont jamais évincées en période de congestion.
 
 **Voie MEV** (Priorité 90, 20 % de l'espace de bloc)\
 Les transactions chiffrées tIBE reçoivent la deuxième priorité la plus élevée et la plus grande allocation réservée. Cela garantit que les utilisateurs qui optent pour la protection MEV se voient garantir un espace de bloc, encourageant l'adoption généralisée du schéma de chiffrement.

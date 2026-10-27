@@ -91,7 +91,7 @@ QoreChain implementează o arhitectură de mempool pe 5 benzi care clasifică tr
 ### Descrierea benzilor
 
 **Banda PQC** (Prioritate 100, 15% spațiu în bloc)\
-Tranzacțiile semnate cu semnături criptografice hibride post-cuantice primesc cea mai mare prioritate. Aceasta stimulează adoptarea semnării tranzacțiilor rezistente cuantic și asigură că operațiunile protejate PQC nu sunt niciodată marginalizate în timpul congestiei.
+Tranzacțiile semnate cu semnături criptografice hibride post-cuantice primesc cea mai mare prioritate. Aceasta stimulează adoptarea semnării tranzacțiilor hibride ML-DSA-87 și asigură că operațiunile semnate hibrid nu sunt niciodată marginalizate în timpul congestiei.
 
 **Banda MEV** (Prioritate 90, 20% spațiu în bloc)\
 Tranzacțiile criptate tIBE primesc a doua cea mai mare prioritate și cea mai mare alocare rezervată. Aceasta asigură că utilizatorii care optează pentru protecția MEV au garantat spațiu în bloc, încurajând adoptarea pe scară largă a schemei de criptare.

@@ -41,7 +41,7 @@ QoreChain suit une **trajectoire d'offre finie et plafonnée**. L'offre de genè
 | --- | --- |
 | Mode d'émission | `fixed` (depuis v3.1.94, hauteur 2 122 074 — 26 août 2026) |
 | Émission par époque | **86 000 QOR** (16 239 QOR jusqu'à la proposition de gouvernance 10 ; la première époque à 86 000 QOR commence au bloc 3 672 000) |
-| Longueur d'une époque | 43 200 blocs (environ 38,6 heures avec le temps de bloc actuel d'environ 3,2 s) |
+| Longueur d'une époque | 43 200 blocs (environ 37,7 heures avec le temps de bloc actuel d'environ 3,1 s) |
 | Plafond cumulatif (`max_total_emission`) | **590 000 000 QOR** (114 285 714 QOR jusqu'à la proposition 10) |
 | Frappé à ce jour (23 octobre 2026, époque 86) | 105 420 896,21 QOR (17,87 % du plafond) |
 | Restant sous le plafond | 484 579 103,79 QOR (environ 5 635 époques à 86 000 QOR par époque ; la dernière est partielle) |
@@ -137,7 +137,7 @@ Deux montants se sont accumulés sur le mainnet avant la mise à niveau v3.2.0 (
 
 **Reliquat corrigé de la part bloquée.** Lors de la mise à niveau v3.2.3 (hauteur 3 662 051, 20 octobre 2026), la chaîne a recalculé l'enregistrement de la part bloquée, qui s'élevait alors à 3 807 496,785528 QOR (`reserved` dans `GET /qorechain/burn/v1/stranded_rewards`, à côté de `released`, 6 693 045,921330 QOR). La proposition de gouvernance 12 a libéré ce reliquat, 3 807 496,785528 QOR, vers la fondation : elle a été adoptée (le vote s'est terminé le 21 octobre 2026 à 20:01 UTC) avec tout le stake lié ayant voté en sa faveur. L'enregistrement peut être consulté à `GET /qorechain/burn/v1/stranded_rewards` et la proposition à `GET /cosmos/gov/v1/proposals/12`.
 
-**Le pool des nœuds légers aujourd'hui.** À partir de la mise à niveau v3.2.0, les récompenses des nœuds légers ne sont versées qu'à partir de ce qui s'est accumulé depuis la précédente exécution de distribution, avec un plafond par nœud. Depuis v3.2.3, le plafond est de **2 000 QOR par nœud par 30 jours** (`max_reward_per_month_per_node`), au prorata du temps de bloc et de la disponibilité du nœud ; la valeur par bloc (`max_reward_per_block_per_node`, 1 713 uqor) est toujours indiquée mais n'est plus la règle. Tout ce qui n'est pas gagné reste dans la réserve du pool, que seul un vote de gouvernance peut libérer. Après la proposition 8, la réserve s'accumule de nouveau : le 20 octobre 2026, elle contenait 487,2318 QOR (`reserved` dans `GET /qorechain/lightnode/v1/reward_pool`) sans aucun montant en attente ni payable, car aucun nœud léger ne s'est encore enregistré. L'enregistrement est ouvert et soumis à licence (voir [Nœud léger](/light-node/overview#reward-program-status)). Une libération antérieure à l'instantané de la mise à niveau, supérieure au montant enregistré ou vers une destination invalide est refusée.
+**Le pool des nœuds légers aujourd'hui.** À partir de la mise à niveau v3.2.0, les récompenses des nœuds légers ne sont versées qu'à partir de ce qui s'est accumulé depuis la précédente exécution de distribution, avec un plafond par nœud. Depuis v3.2.3, le plafond est de **2 000 QOR par nœud par 30 jours** (`max_reward_per_month_per_node`), au prorata du temps de bloc et de la disponibilité du nœud ; la valeur par bloc (`max_reward_per_block_per_node`, 1 713 uqor) est toujours indiquée mais n'est plus la règle. Tout ce qui n'est pas gagné reste dans la réserve du pool, que seul un vote de gouvernance peut libérer. Après la proposition 8, la réserve s'accumule de nouveau : le 27 octobre 2026, le `reserved` du pool du mainnet (dans `GET /qorechain/lightnode/v1/reward_pool`) était d'environ 13 380,9 QOR, avec 0,06 QOR en attente et rien de payable ; un nœud léger a été enregistré sur chaque réseau ce jour-là. L'enregistrement est ouvert et soumis à licence (voir [Nœud léger](/light-node/overview#reward-program-status)). Une libération antérieure à l'instantané de la mise à niveau, supérieure au montant enregistré ou vers une destination invalide est refusée.
 
 ## x/xqore — Staking verrouillé et amplification de la gouvernance {#x-xqore}
 
@@ -191,7 +191,7 @@ Le module `x/inflation` frappe l'émission par époque (86 000 QOR depuis la pro
 
 ### Mécanique des époques
 
-* **Longueur d'une époque** : 43 200 blocs (environ 38,6 heures à ≈3,2 s par bloc).
+* **Longueur d'une époque** : 43 200 blocs (environ 37,7 heures à ≈3,1 s par bloc).
 * À chaque limite d'époque, le module frappe l'émission de l'époque (ou le reliquat jusqu'au plafond), met à jour l'enregistrement d'époque et cesse de frapper une fois que `total_minted` atteint le plafond.
 * Depuis v3.2.3, l'année d'émission est dérivée de la longueur d'époque plutôt que d'un nombre de blocs fixe.
 

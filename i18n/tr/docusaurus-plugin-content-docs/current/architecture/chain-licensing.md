@@ -38,7 +38,9 @@ Bir lisans ayrıca, hiç askıya alınmamış veya iptal edilmemiş olsa bile, `
 
 Lisansları verme, iptal etme, askıya alma ve sürdürme **yetkili işlemleridir**: bunlar gelişigüzel kullanıcılar tarafından değil, modülün lisans yetkilisi hesabı tarafından imzalanır. v3.2.3'ten itibaren yönetişim bu hesabı `MsgUpdateAuthority` ile değiştirebilir; bu, hesabın anahtarı kaybolursa kurtarma yoludur. Bu işlemler modülün komut yüzeyinin bir parçası olarak mevcuttur, ancak normal bir kullanıcı bunları doğrudan çağırmaz; yaşam döngüsü zincir üstünde yetkili tarafından yönetilir.
 
-Bir lisans **edinmek** için: hafif düğüm lisansı **Kontrol Paneli (Araçlar → Hafif Düğüm)** üzerinden satın alınır; `validator_operator` hibesi ise **Validator Program** aracılığıyla gelir (Araçlar → Doğrulayıcı Başvurusu: başvurun, seçilin, $1,000 program ücretini ödeyin). Ardından yetkili hibeyi zincir üstüne toplu halde kaydeder.
+Mainnet'te bir lisans **edinmek** için: hafif düğüm lisansı **Kontrol Paneli (Nodes & Validators → Light Node)** üzerinden satın alınır; `validator_operator` hibesi ise **Validator Program** aracılığıyla gelir (Nodes & Validators → Validator Application: başvurun, seçilin, $1,000 program ücretini ödeyin). Ardından yetkili hibeyi zincir üstüne toplu halde kaydeder.
+
+Testnet'te hafif düğüm lisansı ücretsizdir ve self-servistir: ağ Testnet olarak ayarlıyken **Nodes & Validators → Light Node** sekmesinde `qor1…` adresinizi girin ve **Request licence**'ı seçin. Hibe otomatik olarak imzalanır, genellikle birkaç dakika içinde, ve sekme durumunu gösterir (talep edildi, verildi veya imzalanamadı; bu durumda yeniden talep edebilirsiniz). Her hesap ve her adres tek bir talepte bulunabilir.
 
 Yetkili sınırlandırmalı işlemler şunlardır:
 

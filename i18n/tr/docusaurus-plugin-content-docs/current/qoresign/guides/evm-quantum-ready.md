@@ -1,11 +1,11 @@
 ---
 slug: /qoresign/guides/evm-quantum-ready
-title: "EVM cüzdanları: kuantuma hazır mod"
-sidebar_label: EVM kuantuma hazır mod
+title: "EVM cüzdanları: yetkilendirme penceresi"
+sidebar_label: EVM yetkilendirme penceresi
 sidebar_position: 3
 ---
 
-# EVM cüzdanları: kuantuma hazır mod
+# EVM cüzdanları: yetkilendirme penceresi
 
 Ethereum işlemlerinde ikinci bir imzanın taşınabileceği bir alan yoktur ve ağ,
 PQC ayarını hat başına değil zincir genelinde uygular. Bu nedenle QoreChain'in
@@ -16,7 +16,7 @@ hibrit bir EVM imzası sunmaz (`assertHybridLane("evm")` çağrısı
 Bunun yerine ağ, bir EVM işlemini yalnızca göndericisinin kayıtlı bir ML-DSA-87
 anahtarı ve işlemi kapsayan etkin bir **EVM yetkilendirme penceresi** varsa kabul
 eder. Pencere, yerel hattan hibrit imzalı bir işlemle açılır; böylece kuantum
-sonrası anahtar EVM etkinliğini önceden yetkilendirir ("kuantuma hazır mod").
+sonrası anahtar EVM etkinliğini önceden yetkilendirir. EVM işleminin kendisi yalnızca secp256k1 ile imzalanır.
 Her iki herkese açık ağ da bunu uygular (protokol özelliği
 `evm-pqc-authorisation-window`; [QoreChain SDK](/sdk/overview) içindeki
 `fetchProtocolFeatures` ile veya `/qorechain/pqc/v1/protocol_features`

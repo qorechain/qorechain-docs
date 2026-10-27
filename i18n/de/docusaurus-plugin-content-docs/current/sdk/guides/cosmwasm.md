@@ -117,7 +117,7 @@ Die genauen Argumentformen folgen `@cosmjs/cosmwasm-stargate`; das SDK fügt typ
 
 Füge die QoreChain Native-Nachrichtentypen zu einer Registry hinzu und sende die
 `MsgExecuteContract` über den Hybrid-Builder. Der ML-DSA-87-Schlüssel des Kontos
-muss zuvor registriert sein (siehe [Quantensicher](/sdk/guides/quantum-safe)).
+muss zuvor registriert sein (siehe [Hybrides Signieren](/sdk/guides/quantum-safe)).
 Benötigt
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:
 

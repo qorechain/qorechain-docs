@@ -144,7 +144,7 @@ mayúsculas o la forma `0x` de la misma cuenta produce la misma clave.
 Todos los lenguajes tienen la misma función (Python `derive_pqc_canonical`, Go
 `authenticator.DerivePQCCanonical`, Rust `try_derive_pqc_canonical`, Java
 `Authenticator.derivePqcCanonical`; consulta la
-[tabla de la guía Quantum-safe](/sdk/guides/quantum-safe#canonical-derivation)),
+[tabla de la guía Firma híbrida](/sdk/guides/quantum-safe#canonical-derivation)),
 y el mismo `{ address, mnemonic }` da la misma clave en todos ellos
 (comprobado para TypeScript, Python, Go y Rust en octubre de 2026).
 

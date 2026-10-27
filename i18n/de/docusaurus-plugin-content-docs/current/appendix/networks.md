@@ -18,7 +18,7 @@ Eine konsolidierte Referenz für die QoreChain-Netzwerke — Chain-Identifikator
 | **EVM-Chain-ID (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **Live seit** | 7. Juni 2026 | 1. Juli 2026 (seitdem durchgehend; kein Reset) |
 | **Chain-Version** | v3.2.4 (angewendet bei Höhe 3.742.566, 23. Oktober 2026, Governance-Vorschlag 13). v3.2.3 wurde bei Höhe 3.662.051 am 20. Oktober 2026 angewendet | v3.2.6 (angewendet bei Höhe 8.970.638, 27. Oktober 2026; v3.2.5 wurde bei Höhe 8.890.800 am 26. Oktober angewendet und v3.2.4 bei 8.337.253 am 19. Oktober) |
-| **Blockzeit (gemessener Durchschnitt)** | etwa 3,2 s | etwa 1,3 s |
+| **Blockzeit (gemessener Durchschnitt)** | etwa 3,1 s | etwa 1,3 s |
 | **Release-Manifest** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimaler Gaspreis** | `0.1uqor` | `0.1uqor` |

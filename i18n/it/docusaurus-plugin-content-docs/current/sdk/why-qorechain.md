@@ -106,14 +106,14 @@ l'istanziazione di QoreChain Native sono soggetti ad autorizzazione (l'istanziaz
 
 ---
 
-## 3. Sicurezza quantistica di default
+## 3. Firma ibrida di default
 
-**Rendi un signer protetto a livello post-quantistico con una sola chiamata.**
+**Registra la chiave ML-DSA-87 di un signer con una sola chiamata.**
 
 QoreChain impone firme ibride post-quantistiche (ML-DSA-87 + classiche) a
 livello di protocollo. L'SDK rende la loro adozione una one-liner: verifica,
-registra e migra alla firma ibrida — con un badge React per mostrare agli
-utenti che sono protetti.
+registra e migra alla firma ibrida — con un badge React che mostra se un
+indirizzo ha una chiave registrata.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -135,7 +135,7 @@ await hybrid.signAndBroadcastHybrid({
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// Shows a status badge when the address has a registered PQC key
 // (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
@@ -144,7 +144,8 @@ import { QuantumSafeBadge } from "@qorechain/react";
 obbligatoria sul percorso Native di QoreChain, non un esperimento, e l'SDK ne
 riduce l'adozione a una chiamata di registrazione più un percorso di invio
 ibrido. La registrazione è esplicita: non esiste una registrazione automatica
-alla prima transazione. Vedi [Quantum-safe](/sdk/guides/quantum-safe).
+alla prima transazione. Vedi
+[Firma ibrida](/sdk/guides/quantum-safe).
 
 ---
 
