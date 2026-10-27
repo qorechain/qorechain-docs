@@ -38,7 +38,9 @@ A license also stops being active once its `expires_at` height passes, even if i
 
 Granting, revoking, suspending, and resuming licenses are **authority operations**: they are signed by the module's licence authority account, not by arbitrary users. From v3.2.3 governance can replace that account with `MsgUpdateAuthority`, the recovery path if its key is ever lost. These transactions exist as part of the module's command surface, but a normal user does not call them directly; the lifecycle is administered on-chain by the authority.
 
-To **obtain** one: a light node licence is bought on the **Dashboard (Tools → Light Node)**, and a `validator_operator` grant comes through the **Validator Program** (Tools → Validator Application: apply, be selected, pay the $1,000 programme fee). The authority then records the grant on-chain, in batches.
+To **obtain** one on mainnet: a light node licence is bought on the **Dashboard (Nodes & Validators → Light Node)**, and a `validator_operator` grant comes through the **Validator Program** (Nodes & Validators → Validator Application: apply, be selected, pay the $1,000 programme fee). The authority then records the grant on-chain, in batches.
+
+On testnet a light node licence is free and self-service: in **Nodes & Validators → Light Node** with the network set to Testnet, enter your `qor1…` address and select **Request licence**. The grant is signed automatically, usually within minutes, and the tab shows its status (requested, granted, or could not be signed, in which case you can request again). Each account and each address can hold one request.
 
 The authority-gated transactions are:
 
