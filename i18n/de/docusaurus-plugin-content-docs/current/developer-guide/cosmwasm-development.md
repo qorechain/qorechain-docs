@@ -10,18 +10,20 @@ sidebar_position: 3
 QoreChain unterstützt **QoreChain Native**-Smart-Contracts. QoreChain Native ist der Name, den QoreChain für seine **CosmWasm**-Runtime verwendet: Entwickler schreiben sichere, sandboxed Programme in Rust gegen die Standard-CosmWasm-Bibliotheken (`cosmwasm-std`) und kompilieren sie zu WebAssembly. QoreChain Native-Contracts laufen innerhalb der Triple-VM-Architektur von QoreChain parallel zu EVM- und SVM-Programmen.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), auf dem das Node-Release **v3.2.4** seit dem 23. Oktober 2026 läuft (Governance-Vorschlag 13, Höhe 3.742.566). Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, auf dem seit dem 19. Oktober 2026 v3.2.4 läuft.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), auf dem das Node-Release **v3.2.4** seit dem 23. Oktober 2026 läuft (Governance-Vorschlag 13, Höhe 3.742.566). Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, auf dem v3.2.6 läuft (v3.2.4 seit dem 19. Oktober 2026).
 :::
 
-:::caution Code-Upload und Instanziierung erfordern derzeit eine explizite Berechtigung
-Zum Zeitpunkt der Erstellung dieses Dokuments sind `code_upload_access` und `instantiate_default_permission` sowohl im **Mainnet als auch im Testnet** auf **`Nobody`** gesetzt — das bedeutet, `MsgStoreCode` und `MsgInstantiateContract` stehen standardmäßig nicht beliebigen Accounts offen, im Anschluss an eine branchenweite Sicherheitswarnung für CosmWasm, die Runtime, auf der QoreChain Native aufbaut. Sie benötigen eine Governance-Entscheidung, um Ihrem Account (oder einer bestimmten Adressliste) die Upload-/Instanziierungsberechtigung zu erteilen, bevor die untenstehenden Schritte gelingen. Prüfen Sie zunächst die aktuellen Live-Parameter, da genau diese Einstellung durch Governance geändert werden kann (im Mainnet ist derzeit überhaupt kein Contract-Code gespeichert):
+:::caution Code-Upload und Instanziierung erfordern im Mainnet eine explizite Berechtigung; das Testnet weicht ab
+Zum Zeitpunkt der Erstellung dieses Dokuments (geprüft am 27. Oktober 2026) sind `code_upload_access` und `instantiate_default_permission` im **Mainnet** beide auf **`Nobody`** gesetzt — das bedeutet, `MsgStoreCode` und `MsgInstantiateContract` stehen nicht beliebigen Accounts offen, im Anschluss an eine branchenweite Sicherheitswarnung für CosmWasm, die Runtime, auf der QoreChain Native aufbaut. Im **Testnet `qorechain-diana`** weichen die Einstellungen ab: `code_upload_access` ist weiterhin `Nobody` (Code wird nur per Governance gespeichert), aber `instantiate_default_permission` ist **`Everybody`**, von der Testnet-Governance am 27. Oktober 2026 gesetzt, sodass jeder Account einen gespeicherten Code instanziieren kann, dessen eigene Berechtigung dies erlaubt. Sie benötigen eine Governance-Entscheidung, um Ihrem Account (oder einer bestimmten Adressliste) die Upload-/Instanziierungsberechtigung zu erteilen, bevor die untenstehenden Schritte gelingen. Prüfen Sie zunächst die aktuellen Live-Parameter, da genau diese Einstellung durch Governance geändert werden kann (im Mainnet ist derzeit überhaupt kein Contract-Code gespeichert):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
-Die Nachrichtentypen `MsgStoreCode`, `MsgInstantiateContract` und `MsgInstantiateContract2` sind in beiden Netzwerken außerdem durch den Circuit Breaker der Chain abgeschaltet (`qorechaind query circuit disabled-list`); die Berechtigung allein zu erweitern genügt daher nicht, solange diese Einträge nicht aufgehoben sind.
+Der Circuit Breaker der Chain schaltet außerdem Nachrichtentypen netzwerkweit ab (`qorechaind query circuit disabled-list`). Im **Mainnet** stehen `MsgStoreCode`, `MsgInstantiateContract` und `MsgInstantiateContract2` auf der Liste; die Berechtigung allein zu erweitern genügt daher nicht, solange diese Einträge nicht aufgehoben sind. Im **Testnet** steht nur `MsgStoreCode` auf der Liste: Die Instanziierung ist offen, der Upload nicht.
+
+**Testnet: von der Governance gespeicherte, geprüfte Contracts.** Da gewöhnliche Accounts im Testnet keinen Code hochladen können, hat die Governance fünf geprüfte Contracts gespeichert, die jeder instanziieren kann (`instantiate_permission` `Everybody`): cw20-base (Token), cw721-base (NFT-Kollektion), cw4-group, cw3-fixed-multisig und ein kleiner Zähler-Contract. Zum Zeitpunkt der Erstellung sind es die Code-IDs 859 bis 863, in dieser Reihenfolge, aufgelistet von `GET /cosmwasm/wasm/v1/code` mit dem Governance-Modulkonto als Ersteller und anhand ihres `data_hash` erkennbar; lesen Sie die IDs aus der Live-Liste, statt sie fest zu codieren. Sie existieren nur im Testnet. Das Mainnet hat keinen gespeicherten Code.
 
 Diese Einschränkung betrifft bereits instanziierte Contracts nicht — `execute` und `query` gegen einen bestehenden Contract funktionieren unabhängig von dieser Einstellung normal.
 :::
@@ -265,4 +267,4 @@ Dies ruft den `migrate`-Einstiegspunkt des neuen Codes mit dem bestehenden Contr
 
 * [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) — EVM- und SVM-Contracts von QoreChain Native aus aufrufen
 * [SVM-Entwicklung](/developer-guide/svm-development) — BPF-Programme auf QoreChain bereitstellen
-* [EVM-Precompiles](/developer-guide/evm-precompiles) — Referenz für die geplanten Solidity-Precompiles (noch ist keines aktiv)
+* [EVM-Precompiles](/developer-guide/evm-precompiles) — Referenz für die Solidity-Precompiles (im Mainnet ist keines aktiv; im Testnet sind drei aktiv)

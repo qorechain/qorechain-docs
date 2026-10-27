@@ -20,8 +20,10 @@ puntuar una transacción *antes* de que se firme o se difunda, usando únicament
 :::caution No disponible hoy en las redes públicas
 `simulateWithRiskScore`, `aiRiskScore` y `aiAnomalyCheck` leen los precompilados en
 `0x…0B01` / `0x…0B02`. Un precompilado estático solo responde cuando su dirección está en el
-parámetro `active_static_precompiles` del módulo EVM, y esa lista está vacía tanto en
-`qorechain-vladi` (red principal) como en `qorechain-diana` (red de pruebas). Contra los
+parámetro `active_static_precompiles` del módulo EVM. Esa lista está vacía en
+`qorechain-vladi` (red principal), y en `qorechain-diana` (red de pruebas) contiene solo los precompilados de PQC
+y de parámetros de consenso (`0x…0A01`, `0x…0A02`, `0x…0C01`), no el par de IA
+(comprobado el 27 de octubre de 2026). Contra los
 endpoints públicos una llamada devuelve datos vacíos (`0x`) y estos ayudantes lanzan un error (por ejemplo
 `returned no data ("0x")`). Solo funcionan en una red o nodo donde los
 precompilados se hayan activado. Comprueba primero `GET /cosmos/evm/vm/v1/params`, y consulta

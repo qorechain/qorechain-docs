@@ -59,7 +59,8 @@ if (!preflight.safe) {
 التجميع حتمية (`aiRiskScore` على العنوان `0x…0B01`، و`aiAnomalyCheck` على العنوان
 `0x…0B02`)، وليس كخدمة خارج السلسلة. إلى أن يتم تفعيل هذه العمليات المسبقة
 التجميع، تُطلق الدوال المساعدة أعلاه خطأً على الشبكات العامة
-(`returned no data ("0x")`). راجع [الفحص المسبق بالذكاء الاصطناعي](/sdk/guides/ai-preflight).
+(`returned no data ("0x")`؛ والعمليات المسبقة التجميع الثلاث المفعّلة على شبكة الاختبار
+هي الخاصة بـ PQC والإجماع، وليست هذه). راجع [الفحص المسبق بالذكاء الاصطناعي](/sdk/guides/ai-preflight).
 
 ---
 
@@ -94,10 +95,10 @@ await crossVM.callAtomic([
 
 **لماذا هذا مختلف:** تشغّل QoreChain ثلاث آلات افتراضية متعايشة مع وحدة جسر
 أصلية (`crossvm`، إضافةً إلى العملية مسبقة التجميع `CrossVMBridge` متى تم
-تفعيلها)، ولذلك تستطيع واجهة SDK واحدة مخاطبة الآلات الثلاث كلها. السلاسل ذات
+تفعيلها؛ وهي غير مفعّلة على أيٍّ من الشبكتين بعد)، ولذلك تستطيع واجهة SDK واحدة مخاطبة الآلات الثلاث كلها. السلاسل ذات
 الآلة الافتراضية الواحدة ليس لديها ما يماثل ذلك لتغليفه. واليوم يقتصر مدى
 الاستدعاء على المسار الذي يستهدفه: فرسالة `MsgCrossVMCall` معطّلة على الشبكة
-الرئيسية، ومعاملات SVM معطّلة، ورفع عقود QoreChain Native وإنشاء نسخ منها يتطلبان إذنًا.
+الرئيسية، ومعاملات SVM معطّلة، ورفع عقود QoreChain Native وإنشاء نسخ منها يتطلبان إذنًا (والإنشاء مفتوح على شبكة الاختبار).
 راجع [الاستدعاءات عبر الآلات الافتراضية](/sdk/guides/cross-vm).
 
 ---
@@ -131,7 +132,7 @@ await hybrid.signAndBroadcastHybrid({
 import { QuantumSafeBadge } from "@qorechain/react";
 
 // Shows a "Quantum-safe" indicator when the address has a registered PQC key
-// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0).
+// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
 
@@ -175,11 +176,12 @@ QoreChain فتعرض هوية واحدة من 20 بايت بثلاث صيغ مع
 **مفتاح Phantom أو MetaMask مرتبط يُنفق من الحساب القانوني الذي يشترط PQC،
 ضمن حدود، عبر مُرحِّل (relayer).** (SDK 0.7.0، السلسلة v3.1.85.)
 
-:::caution غير متاح على الشبكات الحية بعد
-وحدة `abstractaccount` معطّلة على `qorechain-vladi` و`qorechain-diana`
+:::caution غير متاح على الشبكة الرئيسية بعد
+وحدة `abstractaccount` معطّلة على `qorechain-vladi`
 (يعيد `GET /qorechain/abstractaccount/v1/config` القيمة `"enabled": false`)،
 وابتداءً من إصدار السلسلة v3.2.0 يُفرض هذا الإعداد على كل مسار، وبالتالي لا
-يمكن ربط مفتاح ولا استخدام المسارات أدناه. راجع
+يمكن على الشبكة الرئيسية ربط مفتاح ولا استخدام المسارات أدناه. والوحدة مفعّلة على
+شبكة الاختبار `qorechain-diana` (جرى التحقق في 27 أكتوبر 2026). راجع
 [دليل المُصادِقات](/sdk/guides/authenticators).
 :::
 

@@ -10,18 +10,20 @@ sidebar_position: 3
 QoreChain, **QoreChain Native** akıllı sözleşmelerini destekler. QoreChain Native, QoreChain'in **CosmWasm** çalışma zamanına verdiği addır: geliştiriciler standart CosmWasm kütüphanelerine (`cosmwasm-std`) karşı güvenli, sandbox'lanmış Rust programları yazar ve bunları WebAssembly'ye derler. QoreChain Native sözleşmeleri, QoreChain'in üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve 23 Ekim 2026'dan beri **v3.2.4** düğüm sürümünü çalıştıran (yönetişim önerisi 13, yükseklik 3.742.566) **`qorechain-vladi`** ana ağını kullanır. 19 Ekim 2026'dan beri v3.2.4 çalıştıran test ağı için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve 23 Ekim 2026'dan beri **v3.2.4** düğüm sürümünü çalıştıran (yönetişim önerisi 13, yükseklik 3.742.566) **`qorechain-vladi`** ana ağını kullanır. v3.2.6 çalıştıran (v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` kullanın.
 :::
 
-:::caution Kod yükleme ve örnekleme şu anda açık izin gerektirir
-Bu yazının kaleme alındığı sırada, `code_upload_access` ve `instantiate_default_permission` hem **ana ağda hem de test ağında** **`Nobody`** olarak ayarlanmıştır — yani `MsgStoreCode` ve `MsgInstantiateContract`, QoreChain Native'in üzerine inşa edildiği çalışma zamanı olan CosmWasm için sektör genelinde yayımlanan bir güvenlik uyarısının ardından varsayılan olarak keyfi hesaplara açık değildir. Aşağıdaki adımların başarılı olabilmesi için önce yönetişimin hesabınıza (veya belirli bir adres listesine) yükleme/örnekleme izni vermesi gerekir — önce canlı parametreleri kontrol edin, çünkü bu tam olarak yönetişimin değiştirebileceği türden bir ayardır (ana ağda şu anda hiç depolanmış sözleşme kodu yoktur):
+:::caution Kod yükleme ve örnekleme ana ağda açık izin gerektirir; test ağı farklıdır
+Bu yazının kaleme alındığı sırada (27 Ekim 2026'da kontrol edildi), `code_upload_access` ve `instantiate_default_permission` **ana ağda** **`Nobody`** olarak ayarlanmıştır, yani `MsgStoreCode` ve `MsgInstantiateContract`, QoreChain Native'in üzerine inşa edildiği çalışma zamanı olan CosmWasm için sektör genelinde yayımlanan bir güvenlik uyarısının ardından keyfi hesaplara açık değildir. **`qorechain-diana` test ağında** ayarlar farklıdır: `code_upload_access` hâlâ `Nobody`'dir (kod yalnızca yönetişim aracılığıyla depolanır), ancak `instantiate_default_permission` **`Everybody`**'dir ve test ağı yönetişimi tarafından 27 Ekim 2026'da ayarlanmıştır; dolayısıyla her hesap, kendi izni buna izin veren depolanmış bir kodu örnekleyebilir. Önce canlı parametreleri kontrol edin, çünkü bu tam olarak yönetişimin değiştirebileceği türden bir ayardır (ana ağda şu anda hiç depolanmış sözleşme kodu yoktur):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
-`MsgStoreCode`, `MsgInstantiateContract` ve `MsgInstantiateContract2` mesaj türleri de her iki ağda zincirin devre kesicisi (circuit breaker) tarafından kapatılmıştır (`qorechaind query circuit disabled-list`); bu nedenle bu girdiler kaldırılana kadar yalnızca izni yükseltmek yeterli değildir.
+Zincirin devre kesicisi (circuit breaker) mesaj türlerini ağ genelinde de kapatabilir (`qorechaind query circuit disabled-list`). **Ana ağda** `MsgStoreCode`, `MsgInstantiateContract` ve `MsgInstantiateContract2` listededir; bu nedenle bu girdiler kaldırılana kadar yalnızca izni yükseltmek yeterli değildir. **Test ağında** yalnızca `MsgStoreCode` listededir: örnekleme açıktır, yükleme değildir.
+
+**Test ağı: yönetişim tarafından depolanan gözden geçirilmiş sözleşmeler.** Test ağında sıradan hesaplar kod yükleyemediğinden, yönetişim herkesin örnekleyebileceği (`instantiate_permission` `Everybody`) beş gözden geçirilmiş sözleşme depoladı: cw20-base (token), cw721-base (NFT koleksiyonu), cw4-group, cw3-fixed-multisig ve küçük bir sayaç sözleşmesi. Bu yazı hazırlanırken bunlar, bu sırayla 859 ile 863 arası kod kimlikleridir; `GET /cosmwasm/wasm/v1/code` ile, oluşturucu olarak yönetişim modülü hesabıyla listelenir ve `data_hash` değerleriyle tanımlanır; kimlikleri koda sabitlemek yerine canlı listeden okuyun. Yalnızca test ağında vardırlar. Ana ağda depolanmış kod yoktur.
 
 Bu kısıtlama, zaten örneklenmiş sözleşmeleri etkilemez — mevcut bir sözleşmeye karşı `execute` ve `query` bu ayardan bağımsız olarak normal şekilde çalışır.
 :::
@@ -265,4 +267,4 @@ Bu, mevcut sözleşme durumuyla yeni kod üzerindeki `migrate` giriş noktasın�
 
 * [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — QoreChain Native'dan EVM ve SVM sözleşmelerini çağırın
 * [SVM Geliştirme](/developer-guide/svm-development) — QoreChain üzerinde BPF programları dağıtın
-* [EVM Precompile'ları](/developer-guide/evm-precompiles) — Planlanan Solidity precompile'ları için başvuru (henüz hiçbiri etkin değil)
+* [EVM Precompile'ları](/developer-guide/evm-precompiles) — Solidity precompile'ları için başvuru (ana ağda hiçbiri etkin değil; test ağında üç tanesi etkin)

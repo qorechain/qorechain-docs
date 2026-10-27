@@ -10,7 +10,7 @@ sidebar_position: 6
 Diese Anleitung ist eine kurze Orientierung zum Start eines anwendungsspezifischen Rollups, das mit dem Rollup Development Kit (RDK) auf QoreChain abgewickelt wird. Die Schritt-für-Schritt-Befehle finden Sie unter **[Ein Rollup bereitstellen](/rollups/deploying-a-rollup)**; diese Seite behandelt, was Sie vor dem Start benötigen.
 
 :::caution Frühe Entwicklungsphase
-Auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt (geprüft am 23. Oktober 2026). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 23. Oktober 2026 mit Chain-Version **v3.2.4**; das Testnet (**`qorechain-diana`**, EVM-Chain-ID **9800**) läuft seit dem 19. Oktober 2026 mit v3.2.4. Validieren Sie zuerst im Testnet; das Verhalten des Anfechtungsfensters ist im [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement) beschrieben.
+Auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt (geprüft am 27. Oktober 2026). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 23. Oktober 2026 mit Chain-Version **v3.2.4**; das Testnet (**`qorechain-diana`**, EVM-Chain-ID **9800**) läuft mit v3.2.6 (seit dem 27. Oktober 2026), und sein Standard-Anfechtungsfenster beträgt 1 Stunde statt 7 Tage. Validieren Sie zuerst im Testnet; das Verhalten des Anfechtungsfensters ist im [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement) beschrieben.
 :::
 
 ---
@@ -56,7 +56,7 @@ Siehe [Voreingestellte Profile](/rollups/preset-profiles) für Details und Hinwe
 * Batches werden ohne Anker abgewickelt, es sei denn, Sie senden die Post-Quantum-Signatur des Erstellers mit (`--anchor-signature` bei `tx rdk submit-batch`, verfügbar seit v3.2.2). Siehe [State Anchoring](/architecture/rollup-development-kit#state-anchoring).
 * Auszahlungen nach L1 (`tx rdk execute-withdrawal`) werden aus dem Escrow-Ledger Ihres Rollups bezahlt und funktionieren im Mainnet seit v3.2.3; sie benötigen einen finalisierten Batch mit einer Auszahlungs-Root und verwenden ausschließlich `uqor`.
 * Der Rollup-Ersteller ist derzeit der Batch-Einreicher (kein Preset setzt eine Sequenzer-Adresse), bewahren Sie den Schlüssel des Erstellers daher sicher auf: Nur der Ersteller kann das Rollup pausieren, fortsetzen oder stoppen.
-* Das RDK ist in fünf Sprachen veröffentlicht (Version 0.6.0 in jeder Registry, geprüft am 23. Oktober 2026), aber nur der TypeScript-Client signiert hybride Transaktionen, und zwar nur, wenn Sie ihm Ihr Post-Quantum-Schlüsselpaar geben; die `qorollup`-CLI und die Clients für Python, Go, Rust und Java signieren nur klassisch, was beide Netzwerke ablehnen. Siehe [RDK 0.6.0: Änderungen und Einschränkungen](/rollups/deploying-a-rollup#rdk-050-limits).
+* Das RDK ist in fünf Sprachen veröffentlicht (Version 0.6.1 in jeder Registry, geprüft am 27. Oktober 2026), aber nur der TypeScript-Client signiert hybride Transaktionen, und zwar nur, wenn Sie ihm Ihr Post-Quantum-Schlüsselpaar geben; die `qorollup`-CLI und die Clients für Python, Go, Rust und Java signieren nur klassisch, was beide Netzwerke ablehnen. Siehe [RDK: Änderungen und Einschränkungen](/rollups/deploying-a-rollup#rdk-050-limits).
 * Der Helfer `suggest-profile` liefert auf den öffentlichen Endpunkten derzeit einen festen `defi`-Fallback zurück, wählen Sie daher anhand der Profiltabelle.
 
 ---

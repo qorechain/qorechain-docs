@@ -18,9 +18,9 @@ l'outillage :
 - un environnement d'exécution **triple-VM** avec des appels inter-VM.
 
 :::caution Stade précoce : lisez la colonne Statut
-Aucun rollup n'a encore été créé sur l'un ou l'autre réseau (vérifié le 23 octobre 2026).
+Aucun rollup n'a encore été créé sur l'un ou l'autre réseau (vérifié le 27 octobre 2026).
 Le tableau ci-dessous indique ce qui fonctionne aujourd'hui ; ce que les clients
-0.6.0 publiés ont changé et les limites qui subsistent sont rassemblées dans [RDK 0.6.0 : changements et limites](/rollups/deploying-a-rollup#rdk-050-limits). Si vous n'avez besoin que d'un
+0.6.x publiés ont changé et les limites qui subsistent sont rassemblées dans [RDK 0.6.1 : changements et limites](/rollups/deploying-a-rollup#rdk-050-limits). Si vous n'avez besoin que d'un
 rollup optimiste/zk générique, n'importe quel kit fera l'affaire ; les
 capacités décrites ici sont ce que le RDK ajoute par-dessus, en TypeScript,
 Python, Go, Rust et Java.
@@ -28,9 +28,9 @@ Python, Go, Rust et Java.
 
 | Capacité | Statut | Sur quoi elle repose |
 | --- | --- | --- |
-| **Reçus de règlement résistants au quantique** | 🟡 Stade précoce | Les ancrages sont signés avec ML-DSA-87, le schéma post-quantique de la Main Chain ; aucun ancrage n'existe encore, de sorte que le vérificateur de la 0.6.0 (qui vérifie par rapport à la chaîne) n'a jamais été exécuté sur un véritable ancrage |
+| **Reçus de règlement résistants au quantique** | 🟡 Stade précoce | Les ancrages sont signés avec ML-DSA-87, le schéma post-quantique de la Main Chain ; aucun ancrage n'existe encore, de sorte que le vérificateur de la 0.6.1 (qui vérifie par rapport à la chaîne) n'a jamais été exécuté sur un véritable ancrage |
 | **Copilote de rollup QCAI** | 🟡 Pas encore disponible sur les points de terminaison publics | Des services consultatifs d'IA/RL on-chain que les points de terminaison publics n'exposent pas aujourd'hui |
-| **Appels inter-VM multi-VM** | 🟡 Pas encore utilisable sur les réseaux en production | Une précompilation inter-VM qui n'est pas activée, un encodeur 0.5.0 qui ne correspond pas à la disposition de la chaîne, et le téléversement QoreChain Native est fermé |
+| **Appels inter-VM multi-VM** | 🟡 Pas encore utilisable sur les réseaux en production | Une précompilation inter-VM qui n'est pas activée (l'encodeur correspond depuis la 0.6.0 à la disposition de la chaîne), et le téléversement QoreChain Native est fermé |
 
 ---
 
@@ -59,8 +59,7 @@ console.log(result.valid);
 `verifySettlementReceipt` vérifie par rapport à la chaîne et refuse de dire `valid`
 sans `client`. Dans la 0.5.0, son contrôle sur la chaîne ne pouvait pas aboutir face
 aux réseaux en service (il échouait de façon fermée au lieu de déclarer valide un
-reçu authentique) ; la 0.6.0 corrige cela, mais aucun ancrage n'existe encore, il
-n'a donc pas été exécuté sur un véritable ancrage. Voir [Reçus de règlement résistants au quantique](/rollups/settlement-receipts)
+reçu authentique) ; la 0.6.0 a corrigé cela et la 0.6.1 compare chaque champ du reçu, mais aucun ancrage n'existe encore ; ni l'une ni l'autre n'a donc été exécutée sur un véritable ancrage. Voir [Reçus de règlement résistants au quantique](/rollups/settlement-receipts)
 pour ce qu'un reçu prouve et ce qu'il ne prouve pas, ainsi que pour les limites exactes.
 
 ---
@@ -103,7 +102,7 @@ Cette précompilation n'est **pas active** sur le mainnet ni sur le testnet
 `eth_getCode` pour `0x…0901` renvoie `0x` sur les deux, et un appel de contrat
 vers cette adresse réussit sans aucun effet.
 
-L'utilitaire `encodeCrossVmCalldata` de la 0.6.0 construit les données d'appel
+L'utilitaire `encodeCrossVmCalldata` (depuis la 0.6.0) construit les données d'appel
 pour `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, la
 disposition que le nœud décode (la 0.5.0 et les versions antérieures encodaient une
 forme à deux arguments avec un sélecteur différent, qui n'aurait jamais pu atteindre

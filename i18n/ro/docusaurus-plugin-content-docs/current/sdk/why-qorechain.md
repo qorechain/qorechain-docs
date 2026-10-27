@@ -59,7 +59,7 @@ if (!preflight.safe) {
 lanțului* ca precompilare deterministă (`aiRiskScore` la `0x…0B01`,
 `aiAnomalyCheck` la `0x…0B02`), nu ca serviciu off-chain. Până când aceste
 precompilări sunt activate, helperii de mai sus aruncă eroare pe rețelele
-publice (`returned no data ("0x")`). Vezi [AI pre-flight](/sdk/guides/ai-preflight).
+publice (`returned no data ("0x")`; cele trei precompilări active pe testnet sunt cele PQC și de consens, nu acestea). Vezi [AI pre-flight](/sdk/guides/ai-preflight).
 
 ---
 
@@ -96,11 +96,11 @@ await crossVM.callAtomic([
 
 **De ce este diferit:** QoreChain rulează trei VM-uri co-rezidente cu un modul
 de bridge nativ (`crossvm`, plus precompilarea `CrossVMBridge` odată ce este
-activă), astfel încât o singură interfață SDK poate adresa toate cele trei.
+activă; încă nu este activă pe vreuna dintre rețele), astfel încât o singură interfață SDK poate adresa toate cele trei.
 Lanțurile cu un singur VM nu au nimic echivalent de încapsulat. Astăzi raza de
 acțiune a unui apel este limitată de banda pe care o vizează: `MsgCrossVMCall`
 este oprit pe mainnet, tranzacțiile SVM sunt dezactivate, iar încărcarea și
-instanțierea QoreChain Native sunt cu permisiuni. Vezi
+instanțierea QoreChain Native sunt cu permisiuni (instanțierea este deschisă pe testnet). Vezi
 [Apeluri cross-VM](/sdk/guides/cross-vm).
 
 ---
@@ -135,7 +135,7 @@ await hybrid.signAndBroadcastHybrid({
 import { QuantumSafeBadge } from "@qorechain/react";
 
 // Shows a "Quantum-safe" indicator when the address has a registered PQC key
-// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0).
+// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
 
@@ -181,11 +181,12 @@ autentificator limitat ([Autentificatori](/sdk/guides/authenticators)). Vezi
 **O cheie Phantom sau MetaMask conectată cheltuiește din contul canonic cu PQC
 obligatoriu, sub limite, printr-un relayer.** (SDK 0.7.0, chain v3.1.85.)
 
-:::caution Încă indisponibil pe rețelele live
-Modulul `abstractaccount` este oprit pe `qorechain-vladi` și `qorechain-diana`
+:::caution Încă indisponibil pe mainnet
+Modulul `abstractaccount` este oprit pe `qorechain-vladi`
 (`GET /qorechain/abstractaccount/v1/config` returnează `"enabled": false`), iar
-începând cu chain v3.2.0 acest indicator este impus pe orice cale, deci o cheie
-nu poate fi legată și benzile de mai jos nu pot fi folosite. Vezi
+începând cu chain v3.2.0 acest indicator este impus pe orice cale, deci pe mainnet o
+cheie nu poate fi legată și benzile de mai jos nu pot fi folosite. Modulul este activat
+pe testnet-ul `qorechain-diana` (verificat la 27 octombrie 2026). Vezi
 [ghidul Autentificatori](/sdk/guides/authenticators).
 :::
 

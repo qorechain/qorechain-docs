@@ -10,7 +10,7 @@ sidebar_position: 2
 This guide covers how to delegate QOR tokens to validators, redelegate between validators, unbond your stake, claim rewards, and understand which parts of QoreChain's staking design are live today.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.4** (applied on 23 October 2026); the testnet has run v3.2.4 since 19 October 2026. Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.4** (applied on 23 October 2026); the testnet runs v3.2.6 (since 27 October 2026). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`

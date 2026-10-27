@@ -258,10 +258,13 @@ QoreChain expose des précompilés appelables par contrat à des adresses fixes.
 `precompiles` fournit des liaisons typées, et les adresses ainsi que les ABI sont
 exportés.
 
-> **Pas encore actifs.** Les précompilés QoreChain sont compilés dans le nœud mais
-> pas encore activés sur le mainnet (`qorechain-vladi`) ni sur le testnet
-> (`qorechain-diana`) : un appel renvoie des données vides, de sorte que ces assistants lèvent
-> aussi une erreur sur les réseaux publics aujourd'hui. Voir
+> **Non actifs sur le mainnet ; trois sur le testnet.** Les précompilés QoreChain sont
+> compilés dans le nœud mais aucun n'est activé sur le mainnet (`qorechain-vladi`).
+> Sur le testnet (`qorechain-diana`), la liste `active_static_precompiles` contient
+> `0x…0A01` (vérification PQC), `0x…0A02` (statut de clé PQC) et `0x…0C01` (paramètres de
+> consensus), vérifié le 27 octobre 2026 ; la paire d'IA (`0x…0B01`, `0x…0B02`) et le
+> pont inter-VM (`0x…0901`) ne sont actifs sur aucun des deux réseaux. Un appel à une
+> adresse inactive renvoie des données vides, de sorte que ces assistants lèvent une erreur. Voir
 > [Précompilés EVM : état du réseau](/developer-guide/evm-precompiles#network-status).
 
 | Précompilé | Fonction | Adresse |
@@ -276,7 +279,7 @@ exportés.
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read consensus parameters (once 0x…0C01 is active).
+// Read consensus parameters (0x…0C01 is active on the testnet, not on mainnet).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
@@ -295,7 +298,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 Les ABI des précompilés sont exportés sous les noms `IQORE_PQC_ABI`, `IQORE_AI_ABI`, et
 `IQORE_CONSENSUS_ABI`.
 
-> Lorsqu'un précompilé n'est pas actif (aujourd'hui : tous les réseaux publics), ou sur un nœud
+> Lorsqu'un précompilé n'est pas actif (mainnet : tous ; testnet : la paire d'IA et
+> le pont inter-VM), ou sur un nœud
 > sans les précompilés QoreChain, ces appels lèvent une erreur « feature not present ».
 > Gérez cela appel par appel.
 

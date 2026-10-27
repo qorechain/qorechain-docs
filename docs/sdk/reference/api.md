@@ -49,7 +49,7 @@ The deliberate, supported exports of `@qorechain/sdk`:
   (`PROOF_OF_POSSESSION_DOMAIN`), `validateRegisteredPqcKey`,
   `isDegeneratePqcPublicKey`, `migrateToHybrid`, `migratePqcKeyHybrid`,
   `isUpgradeApplied` / `requireUpgradeApplied` (`CHAIN_UPGRADE_V3_2_2`,
-  `CHAIN_UPGRADE_V3_2_3`).
+  `CHAIN_UPGRADE_V3_2_3`, `CHAIN_UPGRADE_V3_2_4`).
 - **Read clients:** `RestClient` (incl. `getPermissionSchema`),
   `JsonRpcClient`, `QorClient`, HTTP helpers (`getJson`, `postJsonRpc`,
   `buildUrl`, `joinUrl`, `QoreHttpError`); typed query clients for every
@@ -71,7 +71,8 @@ The deliberate, supported exports of `@qorechain/sdk`:
   `MSG_SEND_TYPE_URL`, hybrid helpers (`encodeHybridExtension`,
   `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`);
   structured error decoding via `decodeTxError` (incl. `abstractaccount`
-  codes 5/6/10/11 and `pqc` code 21).
+  codes 5/6/10/11 and `pqc` code 21; since 0.10.0 it also names a refusal that arrives
+  as text during fee simulation).
 - **eth-native signing (0.6.0):** `signClassicalEth`, `signHybridEth`
   (secp256k1 over `keccak256(SignDoc)`, pubkey type
   `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`, plus the ML-DSA-87 hybrid
@@ -88,7 +89,7 @@ The deliberate, supported exports of `@qorechain/sdk`:
   (EIP-191 `personal_sign`); key rotation `rotatePqcKeyMsgFromMnemonic`,
   `derivePqcLegacy`. See the
   [Authenticators guide](/sdk/guides/authenticators) (the module behind these
-  lanes is switched off on both networks today).
+  lanes is switched off on mainnet and enabled on the testnet).
 - **Hybrid sign-bytes (0.8.0+):** the `signBytesVersion` option
   (`"auto" | "v1" | "v2"`) on `buildHybridTx`, `signAndBroadcastHybrid`,
   `signHybridEth` and `EthNativeSigner`; `resolveSignBytesVersion`,
@@ -105,6 +106,13 @@ The deliberate, supported exports of `@qorechain/sdk`:
   `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
 - **Abstract-account digest v2 (0.9.0):** `evmAuthSignBytesV2`,
   `resolveEvmAuthDigestVersion`; `validateSpendingRules`.
+- **Chain v3.2.4 (0.10.0):** staking tiers (`msg.stakingtier.lockDelegation` /
+  `unlockEarly` / `claimBonus` / `updateParams`, `validateLockDelegation`,
+  `STAKING_LOCK_MONTHS`, `fetchStakingTierParams`, `fetchStakingLocks`,
+  `fetchStakingTierPool`); `fetchAuthNonce`; `fetchProtocolFeatures` /
+  `isProtocolFeatureEnabled`; `possessionProven` on the PQC status;
+  `ibcTimeoutTimestamp`; `CHAIN_UPGRADE_V3_2_4`. See
+  [What 0.10.0 adds](/sdk/install#whats-new-0100).
 - **Canonical PQC derivation (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; the PQC registration message is
   `buildRegisterPqcKeyMsg` (used by `ensurePqcRegistered`). `derivePqcLegacy` is
@@ -132,10 +140,10 @@ constants.
 
 | Language | Generated docs | Install |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstrings on the public API | `pip install qorechain-sdk` at `0.9.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (tag `packages/go/v0.9.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; import `qorechain`) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.9.1` (the other languages are 0.9.0) |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstrings on the public API | `pip install qorechain-sdk` at `0.10.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (tag `packages/go/v0.10.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.10.0; import `qorechain`) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.10.0` |
 
 Each package mirrors the same surface (network presets, denom/address
 utilities, HD derivation — including unified eth-native accounts — PQC

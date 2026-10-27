@@ -118,5 +118,29 @@
   "sidebar.docsSidebar.category.Appendix.link.generated-index.description": {
     "message": "Material de referencia: glosario, parámetros de la cadena e historial de versiones.",
     "description": "The generated-index page description for category 'Appendix' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreSign": {
+    "message": "QoreSign",
+    "description": "The label for category 'QoreSign' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreSign.link.generated-index.description": {
+    "message": "Firma híbrida secp256k1 + ML-DSA-87 para carteras y backends: inicio rápido, guías, especificaciones de formato de red y vectores de prueba.",
+    "description": "The generated-index page description for category 'QoreSign' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.qoresign-guides": {
+    "message": "Guías",
+    "description": "The label for category 'Guides' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.qoresign-specifications": {
+    "message": "Especificaciones",
+    "description": "The label for category 'Specifications' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreX Wallet": {
+    "message": "QoreX Wallet",
+    "description": "The label for category 'QoreX Wallet' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreX Wallet.link.generated-index.description": {
+    "message": "QoreX: la cartera oficial no custodial y a prueba de computación cuántica para QoreChain: app móvil y extensión de navegador. Configura, envía y recibe, haz staking, recupera y conéctate a dApps.",
+    "description": "The generated-index page description for category 'QoreX Wallet' in sidebar 'docsSidebar'"
   }
 }

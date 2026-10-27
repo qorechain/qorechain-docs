@@ -10,7 +10,7 @@ sidebar_position: 8
 El RDK incluye utilidades TypeScript que codifican una llamada desde un contrato EVM al **precompilado cross-VM** en `0x0000000000000000000000000000000000000901`, diseñado para enrutarla a un contrato QoreChain Native en el runtime **QoreChain Native** (Wasm), y una plantilla de andamiaje `multivm-rollup` que las conecta. Las herramientas cubren únicamente **EVM → QoreChain Native**; SVM es un runtime independiente y no forma parte del precompilado.
 
 :::caution Todavía no se puede usar en las redes en producción
-El precompilado cross-VM **no está activado** en ninguna de las dos redes: la lista de precompilados estáticos activos del módulo EVM está vacía en mainnet y en testnet, `eth_getCode` para `0x…0901` devuelve `0x`, y una llamada a él termina con éxito con datos vacíos y no ejecuta nada. La subida de contratos QoreChain Native también está cerrada en ambas redes, y el carril de transacciones SVM está deshabilitado en toda la red. Hasta que el precompilado se active y se reabran las subidas de QoreChain Native, no hay nada a lo que llamar. Esta página documenta las herramientas para que puedas prepararte; no construyas flujos de producción sobre ellas. Consulta [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+El precompilado cross-VM **no está activado** en ninguna de las dos redes: la lista de precompilados estáticos activos del módulo EVM está vacía en mainnet, y en la testnet contiene solo `0x…0A01`, `0x…0A02` y `0x…0C01` (comprobado el 27 de octubre de 2026), por lo que `0x…0901` no figura en ninguna de las dos listas; `eth_getCode` para `0x…0901` devuelve `0x`, y una llamada a él termina con éxito con datos vacíos y no ejecuta nada. La subida de contratos QoreChain Native también está cerrada en ambas redes, y el carril de transacciones SVM está deshabilitado en toda la red. Hasta que el precompilado se active y se reabran las subidas de QoreChain Native, no hay nada a lo que llamar. Esta página documenta las herramientas para que puedas prepararte; no construyas flujos de producción sobre ellas. Consulta [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
 :::note El codificador coincide con el formato de la cadena desde la 0.6.0
@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 construye el mismo calldata por ti:
+`encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 y posteriores construye el mismo calldata por ti:
 
 ```ts
 import {
@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Como el precompilado está inactivo, un `.call` simple sobre él devuelve **éxito con datos vacíos y no hace nada**; el indicador `ok` no te dice que la llamada haya surtido efecto. La protección fiable dentro del contrato es un destino que siempre devuelva un acuse de recibo no vacío, con un `require(ret.length > 0)` después de la llamada, de modo que una respuesta vacía se trate como un fallo; la plantilla `multivm-rollup` de la 0.6.0 lo hace.
+Como el precompilado está inactivo, un `.call` simple sobre él devuelve **éxito con datos vacíos y no hace nada**; el indicador `ok` no te dice que la llamada haya surtido efecto. La protección fiable dentro del contrato es un destino que siempre devuelva un acuse de recibo no vacío, con un `require(ret.length > 0)` después de la llamada, de modo que una respuesta vacía se trate como un fallo; la plantilla `multivm-rollup` (0.6.0 y 0.6.1) lo hace.
 
 ## Generar el andamiaje de un rollup multi-VM
 
@@ -102,4 +102,4 @@ Como el precompilado está inactivo, un `.call` simple sobre él devuelve **éxi
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-La plantilla de la 0.6.0 incluye `src/crossvm-call.ts` (comprueba si el precompilado está activo y luego imprime el calldata) y un `contracts/CrossVmCaller.sol` que llama a `executeCrossVMCall(uint8,string,bytes)` y exige una respuesta no vacía del destino. No hace que una llamada funcione mientras el precompilado esté inactivo. Consulta [Desplegar un Rollup](/rollups/deploying-a-rollup) para ver todas las plantillas del generador de andamiaje.
+La plantilla `multivm-rollup` (0.6.0 y 0.6.1) incluye `src/crossvm-call.ts` (comprueba si el precompilado está activo y luego imprime el calldata) y un `contracts/CrossVmCaller.sol` que llama a `executeCrossVMCall(uint8,string,bytes)` y exige una respuesta no vacía del destino. No hace que una llamada funcione mientras el precompilado esté inactivo. Consulta [Desplegar un Rollup](/rollups/deploying-a-rollup) para ver todas las plantillas del generador de andamiaje.

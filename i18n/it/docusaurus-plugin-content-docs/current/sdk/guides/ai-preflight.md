@@ -19,8 +19,10 @@ dall'EVM. Due precompile EVM in sola lettura sono pensati per permetterti di ass
 :::caution Non disponibile oggi sulle reti pubbliche
 `simulateWithRiskScore`, `aiRiskScore` e `aiAnomalyCheck` leggono i precompile a
 `0x…0B01` / `0x…0B02`. Un precompile statico risponde solo se il suo indirizzo è nel
-parametro `active_static_precompiles` del modulo EVM, e quell'elenco è vuoto sia su
-`qorechain-vladi` (mainnet) sia su `qorechain-diana` (testnet). Sugli endpoint
+parametro `active_static_precompiles` del modulo EVM. Quell'elenco è vuoto su
+`qorechain-vladi` (mainnet), e su `qorechain-diana` (testnet) contiene solo i precompile PQC
+e dei parametri di consenso (`0x…0A01`, `0x…0A02`, `0x…0C01`), non la coppia AI
+(verificato il 27 ottobre 2026). Sugli endpoint
 pubblici una chiamata restituisce dati vuoti (`0x`) e questi helper generano un errore (ad esempio
 `returned no data ("0x")`). Funzionano solo su una rete o un nodo in cui i
 precompile sono stati attivati. Controlla prima `GET /cosmos/evm/vm/v1/params`, e vedi

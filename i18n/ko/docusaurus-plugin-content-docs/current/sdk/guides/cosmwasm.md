@@ -44,10 +44,14 @@ const result = await queryContractSmart(cw, contractAddress, { token_info: {} })
 ## 서명: 인스턴스화, 실행, 업로드
 
 :::caution 업로드와 인스턴스화는 권한이 필요합니다
-`code_upload_access`와 `instantiate_default_permission`은 `qorechain-vladi`와
-`qorechain-diana`에서 `Nobody`로 설정되어 있으며, `MsgStoreCode` /
+`qorechain-vladi`(메인넷)에서는 `code_upload_access`와
+`instantiate_default_permission`이 `Nobody`로 설정되어 있으며, `MsgStoreCode` /
 `MsgInstantiateContract` / `MsgInstantiateContract2`도 체인의 서킷 브레이커에 의해
-꺼져 있으므로, 일반 계정의 `uploadCode`와 `instantiate`는 거부됩니다. 이미 존재하는
+꺼져 있으므로, 일반 계정의 `uploadCode`와 `instantiate`는 거부됩니다.
+`qorechain-diana`(테스트넷, 2026년 10월 27일 확인)에서는
+`code_upload_access`가 `Nobody`이고 `MsgStoreCode`만 꺼져 있으며,
+`instantiate_default_permission`은 `Everybody`이므로 이미 존재하는 코드에 대해서는
+`instantiate`가 열려 있습니다. 이미 존재하는
 컨트랙트는 쿼리(위 참고)하고 실행할 수 있습니다. 현재 권한은
 `GET /cosmwasm/wasm/v1/codes/params`에서 확인하세요.
 [QoreChain Native 개발](/developer-guide/cosmwasm-development)을 참고하세요.

@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getReputationScore`      | Nicio rută de interogare publică (modulul reputation expune doar gRPC `Params`). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` și `anchor/{layer_id}`. Vezi [Modulul Multilayer](/api-reference/rest-grpc-endpoints#multilayer-module). |
 | `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`. Vezi [Modulul Bridge](/api-reference/rest-grpc-endpoints#bridge-module). Bridge-ul nu este încă activ. |
-| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`) pe un nod propriu; fără rută REST. |
+| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | Pe testnet (v3.2.6): `GET /qorechain/rlconsensus/v1/agent`, `/observation` și `/reward` (precum și `/params`, `/policy`, `/applied_params`, `/last_action`); vezi [Modulul RL Consensus](/api-reference/rest-grpc-endpoints#rlconsensus-module). Pe mainnet aceste rute răspund cu `501`: folosește gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`) pe un nod propriu. |
 | `qor_getPoolClassification`   | Nicio rută de interogare publică. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. Vezi [Modulul Burn](/api-reference/rest-grpc-endpoints#burn-module). |
 | `qor_getXQOREPosition`        | Niciuna. xQORE nu este activ (vezi [Staking xQORE](/user-guide/xqore-staking)). |
@@ -49,7 +49,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`, `/rollups`, `/batch/{id}/{index}`, `/latest_batch/{id}`, `/batches/{id}`, `/blob/{id}/{index}` (servite începând cu v3.2.2; vezi [Modulul RDK](/api-reference/rest-grpc-endpoints#rdk-module)), sau `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | Niciun serviciu public; vezi [Profiluri presetate](/rollups/preset-profiles). |
 | `qor_getBTCStakingPosition`   | Niciuna. Modulul de BTC restaking nu are încă un serviciu de interogare. |
-| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Conturile abstracte sunt dezactivate astăzi în ambele rețele. |
+| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Conturile abstracte sunt dezactivate pe mainnet și activate pe testnet (verificat la 27 octombrie 2026). |
 | `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config` (servită începând cu v3.2.2). Vezi [Modulul Gas Abstraction](/api-reference/rest-grpc-endpoints#gas-abstraction-module). |
 | `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | Niciuna. |
 

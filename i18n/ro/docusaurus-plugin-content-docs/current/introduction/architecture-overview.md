@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Prezentare generală a arhitecturii
 
-QoreChain este un nod blockchain modular compus din trei procese principale — nodul de chain, sidecar-ul AI și indexerul de blocuri — susținute de o bază de date Postgres și monitorizate prin Prometheus și Grafana. Mainnet-ul (`qorechain-vladi`, EVM chain ID **9801**) rulează live din 7 iunie 2026 pe versiunea **v3.2.4** (aplicată la înălțimea 3.742.566, pe 23 octombrie 2026), alături de un testnet paralel (`qorechain-diana`, EVM chain ID **9800**, care rulează v3.2.4 din 19 octombrie 2026). Chain-ul este construit pe Cosmos SDK v0.53. Diagrama de mai jos arată dispunerea componentelor la nivel înalt.
+QoreChain este un nod blockchain modular compus din trei procese principale — nodul de chain, sidecar-ul AI și indexerul de blocuri — susținute de o bază de date Postgres și monitorizate prin Prometheus și Grafana. Mainnet-ul (`qorechain-vladi`, EVM chain ID **9801**) rulează live din 7 iunie 2026 pe versiunea **v3.2.4** (aplicată la înălțimea 3.742.566, pe 23 octombrie 2026), alături de un testnet paralel (`qorechain-diana`, EVM chain ID **9800**, care rulează v3.2.6 din 27 octombrie 2026). Chain-ul este construit pe Cosmos SDK v0.53. Diagrama de mai jos arată dispunerea componentelor la nivel înalt.
 
 Ciclul de viață al tranzacției de mai jos rezumă modul în care o tranzacție trimisă traversează nodul — de la lanțul de decoratori AnteHandler (verificări de securitate și taxe) până la execuția în VM și decontarea on-chain:
 
@@ -181,9 +181,9 @@ QoreChain înregistrează **48 de module la genesis, dintre care 20 sunt specifi
 
 **Guvernanță și extensii de licențiere**
 
-* `x/abstractaccount` — Conturi inteligente: multisig, recuperare socială, chei de sesiune, reguli de cheltuire (oprit pe ambele rețele: `enabled = false`)
+* `x/abstractaccount` — Conturi inteligente: multisig, recuperare socială, chei de sesiune, reguli de cheltuire (oprit pe mainnet, `enabled = false`; activat pe testnet)
 * `x/fairblock` — Protecție MEV: framework de mempool criptat prin IBE cu prag (dezactivat pe ambele rețele)
-* `x/gasabstraction` — Design de plată de gas cu token multiplu: conversie taxe ibc/USDC, ibc/ATOM (nu este încă deschis niciun canal IBC, deci taxele se plătesc în QOR)
+* `x/gasabstraction` — Design de plată de gas cu token multiplu: conversie taxe ibc/USDC, ibc/ATOM (nu este încă acceptat niciun token de taxă IBC, deci taxele se plătesc în QOR)
 * `x/license` — Licențiere chain
 
 **Rollup-uri**

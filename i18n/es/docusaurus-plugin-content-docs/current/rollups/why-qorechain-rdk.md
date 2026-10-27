@@ -18,9 +18,9 @@ construidas en torno a la Layer 1 de QoreChain y no en torno a las herramientas:
 
 :::caution Etapa temprana: lee la columna de estado
 Todavía no se ha creado ningún rollup en ninguna de las dos redes (comprobado el
-23 de octubre de 2026). La tabla siguiente indica lo que funciona hoy; lo que
-cambiaron los clientes 0.6.0 publicados y los límites que persisten se recogen en
-[RDK 0.6.0: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits). Si solo
+27 de octubre de 2026). La tabla siguiente indica lo que funciona hoy; lo que
+cambiaron los clientes 0.6.x publicados y los límites que persisten se recogen en
+[RDK 0.6.1: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits). Si solo
 necesitas un rollup genérico optimista/zk, cualquier kit te sirve; las
 capacidades de aquí son lo que el RDK añade por encima, en TypeScript, Python,
 Go, Rust y Java.
@@ -28,9 +28,9 @@ Go, Rust y Java.
 
 | Capacidad | Estado | De qué depende |
 | --- | --- | --- |
-| **Recibos de liquidación resistentes a la computación cuántica** | 🟡 Etapa temprana | Los anclajes se firman con ML-DSA-87, el esquema post-cuántico de la Main Chain; todavía no existen anclajes, así que el verificador 0.6.0 (que comprueba contra la cadena) nunca se ha ejecutado con un anclaje real |
+| **Recibos de liquidación resistentes a la computación cuántica** | 🟡 Etapa temprana | Los anclajes se firman con ML-DSA-87, el esquema post-cuántico de la Main Chain; todavía no existen anclajes, así que el verificador 0.6.1 (que comprueba contra la cadena) nunca se ha ejecutado con un anclaje real |
 | **QCAI Rollup Copilot** | 🟡 Todavía no disponible en los endpoints públicos | Servicios de asesoría de IA/RL on-chain que los endpoints públicos no exponen hoy |
-| **Llamadas entre VMs multi-VM** | 🟡 Todavía no utilizable en las redes en vivo | Un precompile entre VMs que no está activado (el codificador 0.6.0 coincide con el formato de la cadena), y la subida de QoreChain Native está cerrada |
+| **Llamadas entre VMs multi-VM** | 🟡 Todavía no utilizable en las redes en vivo | Un precompile entre VMs que no está activado (el codificador desde la 0.6.0 coincide con el formato de la cadena), y la subida de QoreChain Native está cerrada |
 
 ---
 
@@ -59,8 +59,8 @@ console.log(result.valid);
 `verifySettlementReceipt` comprueba contra la cadena y se niega a decir `valid`
 sin un `client`. En 0.5.0 su comprobación contra la cadena no podía completarse
 en las redes en vivo (fallaba de forma cerrada en lugar de informar de que un
-recibo genuino es válido); la 0.6.0 lo corrige, pero todavía no existe ningún
-anclaje, así que no se ha ejecutado con uno real. Consulta
+recibo genuino es válido); la 0.6.0 lo corrigió y la 0.6.1 compara todos los campos del recibo, pero todavía no existe ningún
+anclaje, así que ninguna de las dos se ha ejecutado con uno real. Consulta
 [Recibos de liquidación resistentes a la computación cuántica](/rollups/settlement-receipts)
 para saber qué demuestra un recibo y qué no, y para conocer los límites exactos.
 
@@ -101,7 +101,7 @@ precompile **no está activo** en mainnet ni en testnet (consulta
 `eth_getCode` para `0x…0901` devuelve `0x` en ambas, y una llamada de contrato a
 él tiene éxito sin ningún efecto.
 
-El helper `encodeCrossVmCalldata` de 0.6.0 construye el calldata para
+El helper `encodeCrossVmCalldata` (desde la 0.6.0) construye el calldata para
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, el
 formato que decodifica el nodo (la 0.5.0 y anteriores codificaban una forma de dos
 argumentos con un selector distinto, que nunca habría podido llegar al precompile).

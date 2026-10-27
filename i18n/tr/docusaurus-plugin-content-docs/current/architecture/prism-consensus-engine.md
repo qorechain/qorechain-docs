@@ -9,8 +9,10 @@ sidebar_position: 2
 
 QoreChain, bir pekiştirmeli öğrenme optimizasyon katmanı olan **PRISM'i** (Policy-driven Reinforcement-learning for Intelligent State Machines), `x/rlconsensus` modülü aracılığıyla doğrudan konsensüs katmanına gömer. PRISM, her N blokta bir zincir metriklerini gözlemler ve sabit noktalı bir sinir ağı üzerinden çıkarım çalıştırıp konsensüs parametresi ayarlamaları önerecek şekilde tasarlanmıştır — hepsi deterministik olarak, konsensüs açısından kritik yollarda kayan nokta aritmetiği kullanmadan.
 
-:::note Mevcut durum (20 Ekim 2026'da kontrol edildi; her iki ağ da artık v3.2.4 çalıştırıyor)
-Hem mainnet'te hem de testnet'te ajan `conservative` modundadır, her 10 blokta bir gözlem ve ödül toplar ve **yüklenmiş politika ağırlığı yoktur**: 0 adım atmıştır ve hiçbir parametre değişikliği uygulamaz (her iki ağda `AgentStatus` ve `Policy` sorguları üzerinden kontrol edildi). Blok süresi PRISM tarafından değil, doğrulayıcıların düğüm yapılandırması tarafından belirlenir. Bir politika yüklemek, modu değiştirmek, ajanı yeniden başlatmak ve ödül ağırlıklarını güncellemek yönetişim eylemleridir ve şu anda mainnet'te devre kesici tarafından devre dışı bırakılmıştır; testnet'te devre dışı değildir.
+:::note Mevcut durum (mainnet v3.2.4, 20 Ekim 2026'da kontrol edildi ve o tarihten beri değişmedi; testnet v3.2.6, 27 Ekim 2026'da kontrol edildi)
+**Mainnet.** Ajan `conservative` modundadır, her 10 blokta bir gözlem ve ödül toplar ve **yüklenmiş politika ağırlığı yoktur**: 0 adım atmıştır ve hiçbir parametre değişikliği uygulamaz. Blok süresi PRISM tarafından değil, doğrulayıcıların düğüm yapılandırması tarafından belirlenir. Bir politika yüklemek, modu değiştirmek, ajanı yeniden başlatmak ve ödül ağırlıklarını güncellemek yönetişim eylemleridir ve şu anda mainnet'te devre kesici tarafından devre dışı bırakılmıştır (dört kontrol mesajı hâlâ devre dışı listesindedir), dolayısıyla ajanın durumu değişmiş olamaz. `/qorechain/rlconsensus/v1/` altındaki PRISM sorgu rotaları mainnet'te 501 (uygulanmadı) yanıtı verir.
+
+**Testnet.** Testnet yönetişimi ajanı **gölge moduna** aldı ve küçük bir gösterim politikası yükledi (25 girdi, 4 birimlik tek bir gizli katman, 5 çıktı, 129 ağırlık, epoch 1; bu, aşağıda anlatılan üretim ağı değil, altyapının bir testidir). Gölge modunda ajan her 10 blokta bir gözlem yapar, ödülünü ve önerilen bir eylemi hesaplar ve bunları hiçbir değeri değiştirmeden kaydeder (`rl_action_proposed` olayı): `applied_params` varsayılanlarını korur (blok süresi 5000 ms, gas fiyat tabanı 100) ve `last_action` `"applied": false` bildirir. v3.2.6'dan beri testnet, modülü REST üzerinden `/qorechain/rlconsensus/v1/` altında sunar: `agent` (mod, epoch, adım sayısı, devre kesici durumu), `params`, `observation`, `reward`, `policy`, `applied_params` ve `last_action`; ajan devre kesicisi düzeltildi ve geçmişi aynı sürümde sınırlandırıldı, ayrıca `rlConsensusParams` EVM precompile'ı (`0x…0C01`) artık modülün değerlerini döndürür.
 
 İki sürüm değişikliği, gelecekteki bir politika veya parametre değişikliğinin yapabileceklerini sıkılaştırır. v3.2.2'den beri bir yönetişim politikası güncellemesi denetimli aritmetikle doğrulanır. v3.2.3'ten beri yönetişim mesajlarının ham tel değeri (ajan modu) aralık denetiminden geçer ve her ödül ağırlığı 0 ile 1 arasında olmalıdır.
 :::
@@ -19,7 +21,7 @@ Hem mainnet'te hem de testnet'te ajan `conservative` modundadır, her 10 blokta 
 
 ```mermaid
 flowchart LR
-    A["Observation Collector<br/>25-dim state vector<br/>every 10 blocks"] --> B["Policy Network (MLP)<br/>int64 fixed-point<br/>2x256 hidden, ReLU/tanh"]
+    A["Observation Collector<br/>25-dim state vector<br/>every 10 blocks"] --> B["Policy Network (MLP)<br/>int64 fixed-point<br/>design: 2x256 hidden, ReLU/tanh"]
     B --> C["5-dim action vector<br/>clamped to mode bounds"]
     C --> D["Adjust consensus params<br/>block time, gas price,<br/>RPoS / DPoS pool weights"]
     D --> E["Reward Computer<br/>weighted multi-objective"]
@@ -49,6 +51,8 @@ Politika ağı, tamamen Go ile **int64 sabit noktalı aritmetik** (10^8 ile öl�
 
 ### Ağ Mimarisi
 
+Aşağıdaki tablo ve parametre sayısı, politika ağının **tasarım boyutunu** anlatır (256'şar birimlik iki gizli katman). Bu boyutta hiçbir politika her iki ağda da yüklü değildir: mainnet'te yüklü politika yoktur ve testnet küçük bir gösterim politikası çalıştırır (25 girdi, 4 birimlik tek bir gizli katman, 5 çıktı, 129 ağırlık).
+
 | Özellik             | Değer                              |
 | ------------------- | ---------------------------------- |
 | Girdi boyutları     | 25                                 |
@@ -77,7 +81,7 @@ Tüm MLP hesaplamaları, `FixedPointScale = 10^8` ile ölçeklenmiş `int64` de�
 * **ReLU**: `relu(x) = max(0, x)`
 * **tanh**: `|x| <= 2.5*SCALE` için Padé yaklaşımı `tanh(x) ~ x * (3*S - x^2) / (3*S + x^2)`, aksi halde +/- SCALE'e sıkıştırılır
 
-Politika ağırlıklarının zincir üzerinde düzleştirilmiş bir `[]int64` vektörü olarak saklanması ve yönetişim önerisi aracılığıyla güncellenmesi tasarlanmıştır. Bugün canlı ağlarda hiçbir politika yüklü değildir.
+Politika ağırlıklarının zincir üzerinde düzleştirilmiş bir `[]int64` vektörü olarak saklanması ve yönetişim önerisi aracılığıyla güncellenmesi tasarlanmıştır. Bugün mainnet'te hiçbir politika yüklü değildir; testnet, gölge modunda küçük bir gösterim politikası çalıştırır (yukarıdaki durum notuna bakın).
 
 ---
 
@@ -163,8 +167,8 @@ PRISM, yönetişim aracılığıyla kontrol edilebilen dört moddan birinde çal
 
 | Mod              | ID | Azami Değişiklik | Davranış                                                                                   |
 | ---------------- | -- | ---------------- | ------------------------------------------------------------------------------------------ |
-| **Shadow**       | 0  | %0               | Yalnızca önerileri gözlemle ve kaydet. Hiçbir parametre değiştirilmez. Kodda varsayılandır; canlı ağlar Conservative modunda çalışır (genesis ayarı). |
-| **Conservative** | 1  | +/- %10          | Parametre değişikliklerini sıkı sınırlar içinde uygula. İlk canlı dağıtım için uygundur.    |
+| **Shadow**       | 0  | %0               | Yalnızca önerileri gözlemle ve kaydet. Hiçbir parametre değiştirilmez. Kodda varsayılandır. 29 numaralı testnet yönetişim önerisinden beri **testnet ajanı Shadow modunda çalışır**; mainnet ajanı yüklü politika olmadan Conservative modundadır (genesis ayarı), bu yüzden hiçbir değişiklik uygulamaz. |
+| **Conservative** | 1  | +/- %10          | Parametre değişikliklerini sıkı sınırlar içinde uygula. İlk canlı dağıtım için uygundur (mainnet'in mevcut modu, yüklü politika olmadan). |
 | **Autonomous**   | 2  | +/- %25          | Parametre değişikliklerini daha geniş sınırlar içinde uygula. Doğrulanmış politikalara sahip olgun ağlar için. |
 | **Paused**       | 3  | %0               | PRISM tamamen boştadır. Hiçbir gözlem toplanmaz ve hiçbir çıkarım çalışmaz.                 |
 
@@ -234,12 +238,12 @@ Tüm fonksiyonlar `cosmossdk.io/math.LegacyDec` değerleri üzerinde çalışır
 | -------------------------------- | --------- | ------------ | ---------------------------------------------------- |
 | `enabled`                        | bool      | `true`       | PRISM'i etkinleştir                                  |
 | `observation_interval`           | uint64    | `10`         | Gözlem toplamaları arasındaki bloklar               |
-| `agent_mode`                     | PrismMode | `1` (Conservative), her iki ağda | Mevcut çalışma modu                  |
+| `agent_mode`                     | PrismMode | Mainnet: `1` (Conservative). Testnet: `0` (Shadow, öneri 29'dan beri; REST rotası bunu `shadow` olarak bildirir) | Mevcut çalışma modu                  |
 | `max_change_conservative`        | LegacyDec | `0.10`       | Conservative modda azami parametre değişikliği       |
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Autonomous modda azami parametre değişikliği         |
 | `circuit_breaker_window`         | uint64    | `50`         | Devre kesici tarafından izlenen son blok sayısı     |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Tetiklemeden önce asgari sağlıklı blok oranı        |
-| `default_block_time_ms`          | int64     | `5000`       | Gözlem temel çizgisi olarak kullanılan varsayılan hedef blok süresi (ms); gerçek blok süresi mainnet'te yaklaşık 3,2 sn, testnet'te 1,0 sn'dir |
+| `default_block_time_ms`          | int64     | `5000`       | Gözlem temel çizgisi olarak kullanılan varsayılan hedef blok süresi (ms); gerçek blok süresi mainnet'te yaklaşık 3,2 sn ve testnet'te yaklaşık 1,3 sn'dir |
 | `default_base_gas_price`         | LegacyDec | `100`        | Varsayılan temel gaz fiyatı                          |
 | `default_validator_set_size`     | uint64    | `100`        | Varsayılan hedef doğrulayıcı kümesi boyutu          |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Verim iyileştirmesi için ödül ağırlığı              |

@@ -226,7 +226,7 @@ Endpoint-urile publice sunt `rpc.qore.host` (RPC Native), `api.qore.host` (REST)
 Cardul **SVM wallets** îți permite și să legi o cheie Phantom la contul tău ca **semnatar legat** — un autentificator limitat în timp (30 de zile) și revocabil, nu o conexiune de portofel primară separată precum QoreX, Keplr sau MetaMask. Selectează **Connect Phantom**, apoi **Register authenticator**; portofelul tău existent semnează înregistrarea, iar Phantom nu devine niciodată propria sa identitate.
 
 :::caution Înregistrarea semnatarilor legați este momentan dezactivată pe lanț
-Funcțiile de cont inteligent și de portofele legate ale lanțului sunt implementate, dar dezactivate pe ambele rețele (`abstractaccount.enabled = false`; verifică `GET /qorechain/abstractaccount/v1/config`), iar lanțul refuză noile înregistrări de semnatari legați cât timp este așa. Tratează deocamdată cardul ca pe o previzualizare și nu te aștepta ca o înregistrare să reușească.
+Funcțiile de cont inteligent și de portofele legate ale lanțului sunt implementate, dar dezactivate pe mainnet și activate pe testnet (`abstractaccount.enabled` este `false` pe mainnet; verifică `GET /qorechain/abstractaccount/v1/config`), iar lanțul mainnet refuză noile înregistrări de semnatari legați cât timp este așa. Pe mainnet, tratează deocamdată cardul ca pe o previzualizare și nu te aștepta ca o înregistrare să reușească.
 :::
 
 :::caution Un semnatar legat este autoritate reală asupra contului

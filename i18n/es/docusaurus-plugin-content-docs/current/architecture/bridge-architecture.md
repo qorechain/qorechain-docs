@@ -10,7 +10,7 @@ sidebar_position: 7
 El módulo `x/bridge` está diseñado para conectar QoreChain con el ecosistema blockchain más amplio mediante **37 configuraciones de cadena (36 cadenas externas más Injective, alcanzada por IBC) y hasta 8 contrapartes IBC (Inter-Blockchain Communication)**. Cada operación del puente está diseñada para estar asegurada con criptografía poscuántica.
 
 :::caution No está activo en ninguna de las dos redes
-El módulo del puente está desplegado en mainnet y testnet, pero **ninguna ruta del puente está activa**: las 37 configuraciones de cadena están en estado `pending` sin ningún contrato de puente establecido, no hay validadores de puente registrados, nunca se ha creado ninguna operación del puente y no existen canales ni clientes IBC. Todo lo que sigue describe el diseño previsto. No envíe activos esperando que sean transferidos por el puente.
+El módulo del puente está desplegado en mainnet y testnet, pero **ninguna ruta del puente está activa**: las 37 configuraciones de cadena están en estado `pending` sin ningún contrato de puente establecido, no hay validadores de puente registrados, nunca se ha creado ninguna operación del puente y no existe ningún canal IBC en la mainnet (la testnet tiene un único canal de prueba ICS-20 hacia una cadena con ID `provider`, ninguno hacia las contrapartes que se indican más abajo). Todo lo que sigue describe el diseño previsto. No envíe activos esperando que sean transferidos por el puente.
 :::
 
 ## Estado actual {#current-status}
@@ -21,9 +21,9 @@ El módulo del puente está desplegado en mainnet y testnet, pero **ninguna ruta
 | Configuraciones de cadena | 37, todas `pending` | 37, todas `pending` |
 | Validadores de puente registrados | 0 | 0 |
 | Operaciones del puente | 0 | 0 |
-| Canales / clientes IBC | 0 / 0 | 0 / 0 |
+| Canales / clientes IBC | 0 / 0 | 1 / 1 (un canal de prueba hacia la testnet del Cosmos Hub) |
 
-(Comprobado el 23 de octubre de 2026 con la mainnet y la testnet, ambas en v3.2.4. Lea los valores en vivo con `qorechaind query bridge chains` y `qorechaind query bridge validators`, o por REST en `/qorechain/bridge/v1/chains` y `/qorechain/bridge/v1/validators`.) La configuración del módulo es la misma en ambas redes: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86.400 y `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). La pila IBC que usaría el módulo es ibc-go v10.7 (desde v3.2.2), pero no se ha creado ningún cliente ni canal.
+(Comprobado el 27 de octubre de 2026 con la mainnet (v3.2.4) y la testnet (v3.2.6). Lea los valores en vivo con `qorechaind query bridge chains` y `qorechaind query bridge validators`, o por REST en `/qorechain/bridge/v1/chains` y `/qorechain/bridge/v1/validators`.) La configuración del módulo es la misma en ambas redes: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86.400 y `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). La pila IBC que usaría el módulo es ibc-go v10.7 (desde v3.2.2), pero no se ha creado ningún cliente ni canal en la mainnet (la testnet tiene un cliente y un canal de prueba, véase más arriba).
 
 ## Resumen de Conexiones
 
@@ -38,7 +38,7 @@ Las **37 configuraciones de cadena** son las **36 cadenas externas** enumeradas 
 
 ## Canales IBC
 
-QoreChain está diseñado para mantener conexiones IBC con las siguientes 8 cadenas, retransmitidas vía Hermes v1.x. **Todavía no existe ningún canal ni cliente IBC en ninguna de las dos redes**, por lo que esta tabla enumera únicamente contrapartes planificadas:
+QoreChain está diseñado para mantener conexiones IBC con las siguientes 8 cadenas, retransmitidas vía Hermes v1.x. **Ninguna de estas contrapartes está conectada todavía** (la mainnet no tiene ningún canal ni cliente IBC; la testnet tiene un único canal de prueba ICS-20 hacia una cadena con ID `provider`, comprobado el 27 de octubre de 2026), por lo que esta tabla enumera únicamente contrapartes planificadas:
 
 | Cadena     | Descripción                    |
 | ---------- | ------------------------------ |

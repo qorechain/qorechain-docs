@@ -21,7 +21,7 @@ Aceste răspunsuri sunt **ilustrative** — parafrazări scurte, în limbaj simp
 
 **QCAIA răspunde:**
 
-> Bridge-ul QoreChain este conceput să mute active între QoreChain și alte rețele, combinând transferurile QCB cu IBC. Nu este încă live: toate configurațiile de lanț sunt încă în așteptare și niciun canal IBC nu este deschis pe niciuna dintre rețele. Pentru designul complet, vezi documentația bridge-ului.
+> Bridge-ul QoreChain este conceput să mute active între QoreChain și alte rețele, combinând transferurile QCB cu IBC. Nu este încă live: toate configurațiile de lanț sunt încă în așteptare și niciun canal IBC către vreo contraparte planificată nu este deschis (mainnet-ul nu are niciunul; testnet-ul are un singur canal de test). Pentru designul complet, vezi documentația bridge-ului.
 
 _Află mai multe: [Arhitectura bridge-ului](/architecture/bridge-architecture)._
 

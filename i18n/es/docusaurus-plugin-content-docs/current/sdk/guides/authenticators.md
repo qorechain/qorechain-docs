@@ -16,18 +16,18 @@ y revocables, **sin que la clave externa produzca jamás una co-firma ML-DSA**.
 Esta es la contraparte en el SDK del módulo de
 [abstracción de cuentas](/developer-guide/account-abstraction) de la cadena.
 
-:::danger No disponible en las redes en vivo
-El módulo `x/abstractaccount` está **desactivado** en `qorechain-vladi` y
-`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` devuelve
-`"enabled": false`). Desde la cadena v3.2.0 ese indicador se aplica en todas las
-rutas (crear una cuenta abstracta, vincular un authenticator, y tanto
-`MsgExecuteEVM` como `MsgExecuteCosmos`), y la cadena las rechaza con
-`abstract account module is
-disabled` (código 9). Ninguna transacción puede activarlo. Todo lo que sigue
-describe las interfaces del módulo solo como referencia: no construyas un flujo
-de clave vinculada ni de gasto delegado en las redes en vivo hasta que el módulo
-esté activado, y comprueba el indicador antes de ofrecer cualquier flujo de ese
-tipo.
+:::danger No disponible en la mainnet
+El módulo `x/abstractaccount` está **desactivado** en `qorechain-vladi` (mainnet):
+`GET /qorechain/abstractaccount/v1/config` devuelve `"enabled": false`. Desde la
+cadena v3.2.0 ese indicador se aplica en todas las rutas (crear una cuenta
+abstracta, vincular un authenticator, y tanto `MsgExecuteEVM` como
+`MsgExecuteCosmos`), y la cadena las rechaza con `abstract account module is
+disabled` (código 9). Ninguna transacción puede activarlo. En la testnet
+`qorechain-diana` la misma ruta devolvió `"enabled": true` el 27 de octubre de
+2026, así que los flujos siguientes se pueden probar allí. No construyas un flujo
+de clave vinculada ni de gasto delegado para la mainnet hasta que el módulo esté
+activado allí, y comprueba el indicador en la red a la que apuntas antes de
+ofrecer cualquier flujo de ese tipo.
 :::
 
 ## El modelo de relayer
@@ -324,10 +324,15 @@ incrementa con cada ejecución correcta.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` es el mismo tipo de contador.
 
-Todavía no existe una consulta para el contador, así que llévalo por clave
-vinculada: 0 para una clave recién vinculada, +1 tras cada ejecución que acepte la
-cadena. Enviar un valor que no sea el contador actual de la cadena produce un
-rechazo por replay (código 11 de `abstractaccount`, ver más abajo).
+Desde la cadena v3.2.4 (ambas redes sirven la ruta) y el SDK 0.10.0 puedes leer el
+contador en lugar de llevarlo tú: `fetchAuthNonce({ rest, address, pubkey })` llama
+a `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` y devuelve
+`{ nonce, linked }`. Una clave que nunca ejecutó lee 0, y el contador se conserva
+incluso para una clave que ya no está vinculada (`linked` indica cuál es el caso).
+Enviar un valor que no sea el contador actual de la cadena produce un rechazo por
+replay (código 11 de `abstractaccount`, ver más abajo). Con un SDK o una cadena más
+antiguos, llévalo por clave vinculada: 0 para una clave recién vinculada, +1 tras
+cada ejecución que acepte la cadena.
 
 ## El esquema de permisos
 

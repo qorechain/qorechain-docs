@@ -10,11 +10,11 @@ sidebar_position: 5
 Acest ghid descrie cum este proiectată mutarea activelor între QoreChain și alte rețele blockchain. Stratul de interoperabilitate al QoreChain este construit în jurul a **37 de configurații de lanț** (36 de lanțuri externe plus Injective, accesat prin IBC) și până la **8 contrapărți IBC** pentru lanțurile din ecosistemul Cosmos.
 
 :::caution Nu este activ pe nicio rețea
-Modulul de punte este implementat pe mainnet și testnet, dar **nicio rută de punte nu este activă**: toate cele 37 de configurații de lanț sunt în starea `pending`, fără niciun contract de punte setat, nu este înregistrat niciun validator de punte, nu a fost creată vreodată nicio operațiune de punte și nu există canale sau clienți IBC. Tot ce urmează descrie designul intenționat. Nu trimite active așteptând să fie transferate prin punte. Vezi [Arhitectura punții](/architecture/bridge-architecture) pentru tabelul stării curente.
+Modulul de punte este implementat pe mainnet și testnet, dar **nicio rută de punte nu este activă**: toate cele 37 de configurații de lanț sunt în starea `pending`, fără niciun contract de punte setat, nu este înregistrat niciun validator de punte, nu a fost creată vreodată nicio operațiune de punte și nu există niciun canal IBC pe mainnet (testnet-ul are un singur canal de test ICS-20 către un lanț cu ID `provider`, niciunul către contrapărțile numite mai jos). Tot ce urmează descrie designul intenționat. Nu trimite active așteptând să fie transferate prin punte. Vezi [Arhitectura punții](/architecture/bridge-architecture) pentru tabelul stării curente.
 :::
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea de lanț **v3.2.4**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) rulează versiunea de lanț **v3.2.4** (din 23 octombrie 2026). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** după ce o rută este activată. Stare verificată la 23 octombrie 2026: toate cele 37 de configurații de lanț sunt `pending` pe ambele rețele.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea de lanț **v3.2.6**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) rulează versiunea de lanț **v3.2.4** (din 23 octombrie 2026). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** după ce o rută este activată. Stare verificată la 27 octombrie 2026: toate cele 37 de configurații de lanț sunt `pending` pe ambele rețele.
 :::
 
 ---
@@ -34,7 +34,17 @@ O enumerare completă a fiecărei configurații de lanț se găsește pe pagina 
 
 ## IBC
 
-IBC face parte din design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), dar **nu există încă niciun canal sau client IBC pe nicio rețea**, așa că nu există nimic prin care să se poată transfera. Această pagină va lista canalele după ce vor fi deschise.
+IBC face parte din design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), dar **niciuna dintre aceste contrapărți nu este încă conectată**: mainnet-ul nu are niciun canal sau client IBC, iar testnet-ul are doar un singur canal de test ICS-20 către un lanț cu ID `provider` (verificat la 27 octombrie 2026), așa că pentru aceste lanțuri nu există nimic prin care să se poată transfera. Această pagină va lista canalele după ce vor fi deschise.
+
+### Completări IBC pe testnet (v3.2.6) {#ibc-testnet-v326}
+
+Trei funcționalități IBC există doar pe testnet; mainnet-ul nu le are (ruta sa `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` răspunde cu 501):
+
+* **Limită de rată IBC.** Guvernanța poate seta o cotă pe canal pentru transferurile IBC (un procent întreg din ofertă pe fereastră de ore). **Nu este automată**: nu este setată nicio limită în prezent, iar un set gol înseamnă nelimitat. Un pachet redirecționat este taxat pe ambele canale, iar o rambursare returnează cota. Aceasta este separată de întrerupătoarele automate ale punții descrise la [Modelul de securitate](#security-model).
+* **Redirecționarea pachetelor (packet forwarding).** Un transfer care sosește prin IBC v1 poate purta un memo de forma `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` pentru a fi trimis mai departe către alt lanț, cu rambursări către expeditor dacă un hop eșuează. Nu există reîncercări, iar un hop expiră implicit după 10 minute. Un token care se convertește într-un ERC-20 la sosire nu poate fi redirecționat.
+* **Clienți light 08-wasm.** Stocarea, migrarea și eliminarea unui binar de client light wasm sunt rezervate autorității, iar tipurile de client permise conțin doar clientul standard până când guvernanța adaugă `08-wasm`.
+
+Citește limitele cu `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` pe testnet (`\{"rate_limits":[]\}` astăzi).
 
 ---
 
@@ -106,7 +116,7 @@ Fiecare tranzacție pe lane-ul nativ necesită co-semnătura post-cuantică hibr
 
 ---
 
-## Modelul de securitate
+## Modelul de securitate {#security-model}
 
 Puntea QoreChain este proiectată să fie protejată prin mai multe straturi de apărare:
 
@@ -114,7 +124,7 @@ Puntea QoreChain este proiectată să fie protejată prin mai multe straturi de 
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Multisig PQC 7-din-10**    | Fiecare operațiune de punte necesită atestări de la cel puțin 7 din 10 validatori ai punții, fiecare folosind semnături criptografice post-cuantice.  |
 | **Perioadă de contestare de 24 de ore** | Transferurile care depășesc pragul pentru transferuri mari (100,000 QOR) intră într-o fereastră de contestare de 24 de ore, în care validatorii sau observatorii pot semnala tranzacții frauduloase. |
-| **Întrerupătoare automate**  | Limitatoare automate de rată opresc operațiunile punții dacă sunt detectate volume anormale sau tipare suspecte. Operațiunile punții sunt reluate după o verificare manuală. |
+| **Întrerupătoare automate**  | Proiectate pentru puntea QCB: limitatoare automate opresc operațiunile punții dacă sunt detectate volume anormale sau tipare suspecte, iar operațiunile sunt reluate după o verificare manuală. Se aplică punții QCB, nu IBC; limita de rată IBC (doar pe testnet) este setată de guvernanță, nu este automată și în prezent nu are nicio limită setată. |
 
 ---
 

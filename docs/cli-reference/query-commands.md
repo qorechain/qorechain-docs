@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Queries run against whichever node `--node` points to. Use a **`qorechain-vladi`** mainnet RPC endpoint for live data (for example `--node https://rpc.qore.host:443`), or a **`qorechain-diana`** testnet endpoint (`--node https://rpc-testnet.qore.host:443`) for testing. The default `tcp://localhost:26657` targets a node you run yourself. Mainnet runs node release v3.2.4 since 23 October 2026 (applied at height 3,742,566 by governance proposal 13); the testnet has run v3.2.4 since 19 October 2026. The v3.2.4 release adds a few routes and commands (marked **v3.2.4** below): they work on both networks, and a node still on an older release answers them with `Not Implemented`. The commands on this page were checked against the v3.2.3 release binary, run against `https://rpc.qore.host:443`; the v3.2.4 routes were checked over REST on 23 October 2026.
+Queries run against whichever node `--node` points to. Use a **`qorechain-vladi`** mainnet RPC endpoint for live data (for example `--node https://rpc.qore.host:443`), or a **`qorechain-diana`** testnet endpoint (`--node https://rpc-testnet.qore.host:443`) for testing. The default `tcp://localhost:26657` targets a node you run yourself. Mainnet runs node release v3.2.4 since 23 October 2026 (applied at height 3,742,566 by governance proposal 13), and mainnet governance proposal 14 would apply v3.2.5 at height 3,906,833; the testnet runs v3.2.6 (v3.2.4 since 19 October 2026, v3.2.5 since 26 October, v3.2.6 since 27 October). The v3.2.4 release adds a few routes and commands (marked **v3.2.4** below): they work on both networks, and a node still on an older release answers them with `Not Implemented`. The v3.2.6 release adds two commands (marked **v3.2.6**, testnet only until mainnet applies it). The commands on this page were checked against the v3.2.3 release binary, run against `https://rpc.qore.host:443`; the v3.2.4 routes were checked over REST on 23 October 2026 and the v3.2.6 commands against the v3.2.6 source.
 :::
 
 Common flags apply to every `query` subcommand:
@@ -149,7 +149,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mod
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
 ```
 
-On mainnet these report `emission_mode: "fixed"`, a fixed emission of 86,000 QOR per epoch of 43,200 blocks and a cumulative cap of 590,000,000 QOR (governance proposal 10, passed 19 October 2026; the first epoch at the new amount starts at block 3,672,000). Amounts are in `uqor`. The testnet still reports its own, different values; the v3.2.4 release adds a further emission mode (available on both networks), but a network only switches to it by its own governance vote, so mainnet keeps `fixed` until such a vote passes.
+On mainnet these report `emission_mode: "fixed"`, a fixed emission of 86,000 QOR per epoch of 43,200 blocks and a cumulative cap of 590,000,000 QOR (governance proposal 10, passed 19 October 2026; the first epoch at the new amount starts at block 3,672,000). Amounts are in `uqor`. The testnet reports its own, different values: it switched to the further emission mode that v3.2.4 added (`target_apy`) through its own governance (proposal 14, passed 20 October 2026). A network only switches modes by its own governance vote, so mainnet keeps `fixed` until such a vote passes (checked 27 October 2026).
 
 ---
 
@@ -272,13 +272,17 @@ qorechaind query rlconsensus observation
 qorechaind query rlconsensus reward
 qorechaind query rlconsensus params
 qorechaind query rlconsensus policy
+qorechaind query rlconsensus applied-params   # v3.2.6 (testnet)
+qorechaind query rlconsensus last-action      # v3.2.6 (testnet)
 ```
+
+`agent-status` reports the agent's mode, epoch and step count; `policy` reports the stored policy's epoch and weight count (not the weights). **v3.2.6 (testnet only until mainnet applies that release):** `applied-params` prints the values the agent holds as applied (block time, gas-price floor, pool weights) and `last-action` the action it proposed at its last step, which is recorded in every mode, including shadow, where nothing is applied. All of these are also served over REST on the testnet (see [RL Consensus Module](/api-reference/rest-grpc-endpoints#rlconsensus-module)); against a mainnet node the two new commands answer `Not Implemented` until mainnet applies that release.
 
 ---
 
 ## abstractaccount
 
-The abstract-account module is currently switched off on both networks (`config.enabled` is `false`), so these queries return no accounts.
+The abstract-account module is switched off on mainnet (`config.enabled` is `false`, so these queries return no accounts there) and switched on on the testnet by governance (`config.enabled` is `true`; checked 27 October 2026).
 
 ```bash
 qorechaind query abstractaccount config
@@ -318,7 +322,7 @@ qorechaind query amm quote-exact-in <pool_id> <denom_in> <amount_in>
 qorechaind query amm quote-exact-out <pool_id> <denom_out> <amount_out>
 ```
 
-No pool exists on either network at the time of writing.
+No pool exists on either network at the time of writing. On the testnet the three Fest test tokens are available as the second denomination of a pool (see [Testnet test tokens](/api-reference/rest-grpc-endpoints#fest-tokens)).
 
 ---
 
@@ -345,7 +349,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>` is the way to read when an upgrade took effect: on mainnet `v3.2.2` was applied at height 3,556,788, `v3.2.3` at height 3,662,051 and `v3.2.4` at height 3,742,566; on the testnet `v3.2.2` at 6,905,034, `v3.2.3` at 8,003,746 and `v3.2.4` at 8,337,253 (`0` means not applied). The mainnet circuit-breaker list (`disabled-list`) currently holds the vesting-account creation messages, QoreChain Native store and instantiate, AMM pool pause and resume, cross-VM call, multilayer layer-status update, PQC algorithm deprecate and disable, and the PRISM consensus governance messages; the testnet's holds only the three QoreChain Native messages.
+`query upgrade applied <name>` is the way to read when an upgrade took effect: on mainnet `v3.2.2` was applied at height 3,556,788, `v3.2.3` at height 3,662,051 and `v3.2.4` at height 3,742,566; on the testnet `v3.2.2` at 6,905,034, `v3.2.3` at 8,003,746, `v3.2.4` at 8,337,253, `v3.2.5` at 8,890,800 and `v3.2.6` at 8,970,638 (`0` means not applied; on mainnet `v3.2.5` is `0` at the time of writing, with governance proposal 14 in its voting period). The mainnet circuit-breaker list (`disabled-list`) currently holds the vesting-account creation messages, QoreChain Native store and instantiate, AMM pool pause and resume, cross-VM call, multilayer layer-status update, PQC algorithm deprecate and disable, and the PRISM consensus governance messages; the testnet's holds only the QoreChain Native `MsgStoreCode` message (checked 27 October 2026; instantiation was let through by testnet governance).
 
 ---
 
@@ -363,6 +367,8 @@ qorechaind query wasm list-contract-by-code <code_id>
 qorechaind query wasm contract <contract_address>
 qorechaind query wasm contract-state smart <contract_address> '<json_query>'
 ```
+
+`query erc20 token-pairs` is empty on mainnet; on the testnet it lists the three Fest test tokens (fUSD, fETH, fBTC) and one IBC token. Their bank denoms are `erc20:` plus the EIP-55 contract address and are case-sensitive; see [Testnet Fest test tokens](/developer-guide/evm-development#fest-tokens). On the testnet, `query wasm params` shows `code_upload_access` `Nobody` and `instantiate_default_permission` `Everybody`; on mainnet both are `Nobody` (see [QoreChain Native Development](/developer-guide/cosmwasm-development)).
 
 ---
 

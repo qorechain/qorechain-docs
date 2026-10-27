@@ -255,10 +255,14 @@ QoreChain definiert vertragsaufrufbare Precompiles an festen Adressen. Der
 `precompiles`-Namespace bietet typisierte Bindings, und die Adressen sowie ABIs werden
 exportiert.
 
-> **Noch nicht aktiv.** Die QoreChain-Precompiles sind in den Node einkompiliert,
-> aber weder im Mainnet (`qorechain-vladi`) noch im Testnet
-> (`qorechain-diana`) aktiviert: Ein Aufruf liefert leere Daten zurück, sodass diese Helfer
-> heute auch auf den öffentlichen Netzwerken Fehler werfen. Siehe
+> **Im Mainnet nicht aktiv; drei im Testnet.** Die QoreChain-Precompiles sind in den
+> Node einkompiliert, aber keines ist im Mainnet (`qorechain-vladi`) aktiviert.
+> Im Testnet (`qorechain-diana`) enthält die Liste `active_static_precompiles`
+> `0x…0A01` (PQC verify), `0x…0A02` (PQC key status) und `0x…0C01` (consensus
+> params), geprüft am 27. Oktober 2026; das KI-Paar (`0x…0B01`, `0x…0B02`) und die
+> Cross-VM-Bridge (`0x…0901`) sind in keinem der beiden Netzwerke aktiv. Ein Aufruf
+> an eine inaktive Adresse liefert leere Daten zurück, sodass diese Helfer Fehler
+> werfen. Siehe
 > [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
 
 | Precompile | Funktion | Adresse |
@@ -273,7 +277,7 @@ exportiert.
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read consensus parameters (once 0x…0C01 is active).
+// Read consensus parameters (0x…0C01 is active on the testnet, not on mainnet).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
@@ -292,7 +296,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 Die Precompile-ABIs werden als `IQORE_PQC_ABI`, `IQORE_AI_ABI` und
 `IQORE_CONSENSUS_ABI` exportiert.
 
-> Wo ein Precompile nicht aktiv ist (heute: jedes öffentliche Netzwerk) oder auf einem Node
+> Wo ein Precompile nicht aktiv ist (Mainnet: alle; Testnet: das KI-Paar und
+> die Cross-VM-Bridge) oder auf einem Node
 > ohne die QoreChain-Precompiles, werfen diese Aufrufe einen Fehler "feature not
 > present". Behandeln Sie dies pro Aufruf.
 

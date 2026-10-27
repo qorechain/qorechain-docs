@@ -10,7 +10,7 @@ sidebar_position: 5
 Bu kılavuz, QOR token gönderme, işlemleri sorgulama ve QoreChain ile yerel, EVM ve SVM arayüzleri üzerinden etkileşim kurma adımlarını anlatır.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve 23 Ekim 2026'dan beri v3.2.4 sürümünü çalıştırır (test ağı 19 Ekim 2026'dan beri v3.2.4 çalıştırır) — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ zincir kimliğini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve 23 Ekim 2026'dan beri v3.2.4 sürümünü çalıştırır (test ağı 27 Ekim 2026'dan beri v3.2.6 çalıştırır) — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ zincir kimliğini ve uç noktalarını kullanın.
 :::
 
 ## Bakiyenizi Kontrol Etme
@@ -139,7 +139,7 @@ EVM hattıyla ilgili geri kalan her şey aynıdır: MetaMask, ethers.js, Hardhat
 | `max-txs` | Kabul ettiği EVM işlemi sayısı | 1 – 1,000 |
 | `max-value` | Kabul ettiği toplam çıkış, uqor cinsinden: transfer edilen değer **artı** her işlemin ödeyebileceği azami ücret (gaz limiti × ücret üst sınırı), yukarı yuvarlanır | 0'dan büyük |
 
-* 17,280 blok, ana ağda yaklaşık 15 saat (blok başına yaklaşık 3.2 sn), test ağında ise yaklaşık 5 saattir (blok başına yaklaşık 1.0 sn).
+* 17,280 blok, ana ağda yaklaşık 15 saat (blok başına yaklaşık 3.2 sn), test ağında ise yaklaşık 6 saattir (blok başına yaklaşık 1.3 sn).
 * Kabul edilip sonra başarısız olan bir işlem de yuvasını ve değer bütçesini tüketir.
 * Yeni bir pencere açmak öncekinin **yerini alır**; tüketim sıfırdan yeniden başlar.
 * CLI, `max-value` değerini `uqor` veya `qor` cinsinden kabul eder (`1000qor` = 1,000,000,000 uqor).

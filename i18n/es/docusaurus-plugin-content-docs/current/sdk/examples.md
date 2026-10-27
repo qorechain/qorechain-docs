@@ -64,7 +64,7 @@ una cuenta con fondos. Este ejemplo firma únicamente con la firma **clásica**,
 por lo que funciona contra un nodo local o de desarrollo, pero mainnet y testnet
 lo rechazan, ya que exigen la firma híbrida en cada transacción de la ruta
 Native. Para las redes públicas conéctate con el keypair de la cuenta,
-`client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0), como en el
+`client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 o posterior), como en el
 [Quickstart](/sdk/quickstart#send-qor).
 
 ```ts
@@ -126,10 +126,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 Usa `@qorechain/evm` (una capa ligera sobre viem) para invocar precompilados de
 QoreChain de solo lectura y leer un saldo ERC-20. El chain id de EVM se detecta
-automáticamente mediante `eth_chainId`. Los precompilados aún no están activos
-en mainnet ni en testnet (consulta el
-[Estado de la red](/developer-guide/evm-precompiles#network-status)); hasta que
-lo estén, y en un nodo que no los tenga, esas llamadas lanzan "feature not
+automáticamente mediante `eth_chainId`. Los precompilados no están activos en mainnet, y en la testnet solo lo están los de verificación PQC, estado de clave PQC y parámetros de
+consenso (consulta el
+[Estado de la red](/developer-guide/evm-precompiles#network-status)); donde un
+precompilado no está activo, y en un nodo que no los tenga, esas llamadas lanzan "feature not
 present", y se informa por cada llamada.
 
 ```ts
@@ -266,8 +266,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 
 Construye un `MsgExecuteCosmos` enviado por un relayer en el carril de
 autenticadores Native (SDK 0.7.0, chain v3.1.85; el módulo `abstractaccount`
-está desactivado hoy en ambas redes, por lo que este carril aún no puede usarse
-allí): una clave ed25519 al estilo
+está desactivado en mainnet y activado en la testnet, por lo que este carril aún no puede usarse
+en mainnet): una clave ed25519 al estilo
 Phantom firma el digest de autenticación con separación de dominio, y el mensaje
 resultante queda listo para que un relayer lo difunda (el relayer paga las
 comisiones; la clave externa nunca produce una cofirma ML-DSA). Ejecución en

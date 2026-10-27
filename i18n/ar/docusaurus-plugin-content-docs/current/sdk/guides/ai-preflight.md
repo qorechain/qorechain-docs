@@ -19,8 +19,10 @@ sidebar_position: 5
 :::caution غير متاحة على الشبكات العامة اليوم
 تقرأ `simulateWithRiskScore` و`aiRiskScore` و`aiAnomalyCheck` الـ precompiles عند
 `0x…0B01` / `0x…0B02`. لا يستجيب precompile ثابت إلا إذا كان عنوانه ضمن معامل
-`active_static_precompiles` في وحدة EVM، وهذه القائمة فارغة على كل من
-`qorechain-vladi` (الشبكة الرئيسية) و`qorechain-diana` (شبكة الاختبار). وعند الاستدعاء
+`active_static_precompiles` في وحدة EVM. وهذه القائمة فارغة على
+`qorechain-vladi` (الشبكة الرئيسية)، وعلى `qorechain-diana` (شبكة الاختبار) لا تحتوي إلا على
+الـ precompiles الخاصة بـ PQC ومعاملات الإجماع (`0x…0A01` و`0x…0A02` و`0x…0C01`)، وليس زوج الذكاء الاصطناعي
+(جرى التحقق في 27 أكتوبر 2026). وعند الاستدعاء
 على نقاط النهاية العامة تُرجِع المكالمة بيانات فارغة (`0x`) وتُطلق هذه المساعِدات خطأً
 (مثل `returned no data ("0x")`). وهي تعمل فقط على شبكة أو عقدة جرى فيها تفعيل
 الـ precompiles. تحقّق أولًا من `GET /cosmos/evm/vm/v1/params`، وانظر

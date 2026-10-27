@@ -260,10 +260,13 @@ QoreChain espone precompilati richiamabili da contratto a indirizzi fissi. Il
 namespace `precompiles` fornisce binding tipizzati, e gli indirizzi e le ABI sono
 esportati.
 
-> **Non ancora attivi.** I precompilati di QoreChain sono compilati nel node ma
-> non ancora attivati su mainnet (`qorechain-vladi`) né su testnet
-> (`qorechain-diana`): una chiamata restituisce dati vuoti, quindi questi helper generano
-> un errore anche sulle reti pubbliche oggi. Vedi
+> **Non attivi sulla mainnet; tre sulla testnet.** I precompilati di QoreChain sono
+> compilati nel node ma nessuno è attivato sulla mainnet (`qorechain-vladi`).
+> Sulla testnet (`qorechain-diana`) l'elenco `active_static_precompiles` contiene
+> `0x…0A01` (verifica PQC), `0x…0A02` (stato chiave PQC) e `0x…0C01` (parametri di
+> consenso), verificato il 27 ottobre 2026; la coppia AI (`0x…0B01`, `0x…0B02`) e il
+> bridge cross-VM (`0x…0901`) non sono attivi su nessuna delle due reti. Una chiamata a un
+> indirizzo non attivo restituisce dati vuoti, quindi quegli helper generano un errore. Vedi
 > [Precompilati EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
 
 | Precompilato | Funzione | Indirizzo |
@@ -278,7 +281,7 @@ esportati.
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read consensus parameters (once 0x…0C01 is active).
+// Read consensus parameters (0x…0C01 is active on the testnet, not on mainnet).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
@@ -297,7 +300,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 Le ABI dei precompilati sono esportate come `IQORE_PQC_ABI`, `IQORE_AI_ABI` e
 `IQORE_CONSENSUS_ABI`.
 
-> Dove un precompilato non è attivo (oggi: ogni rete pubblica), oppure su un nodo
+> Dove un precompilato non è attivo (mainnet: tutti; testnet: la coppia AI e
+> il bridge cross-VM), oppure su un nodo
 > privo dei precompilati di QoreChain, queste chiamate generano un errore "feature not
 > present". Gestiscilo per ogni chiamata.
 

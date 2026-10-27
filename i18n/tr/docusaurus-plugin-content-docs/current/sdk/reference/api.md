@@ -49,7 +49,7 @@ projesinden de yeniden üretebilirsiniz.
   (`PROOF_OF_POSSESSION_DOMAIN`), `validateRegisteredPqcKey`,
   `isDegeneratePqcPublicKey`, `migrateToHybrid`, `migratePqcKeyHybrid`,
   `isUpgradeApplied` / `requireUpgradeApplied` (`CHAIN_UPGRADE_V3_2_2`,
-  `CHAIN_UPGRADE_V3_2_3`).
+  `CHAIN_UPGRADE_V3_2_3`, `CHAIN_UPGRADE_V3_2_4`).
 - **Okuma istemcileri:** `RestClient` (`getPermissionSchema` dahil),
   `JsonRpcClient`, `QorClient`, HTTP yardımcıları (`getJson`, `postJsonRpc`,
   `buildUrl`, `joinUrl`, `QoreHttpError`); `amm`, `license`, `abstractaccount`
@@ -72,7 +72,8 @@ projesinden de yeniden üretebilirsiniz.
   `MSG_SEND_TYPE_URL`, hibrit yardımcılar (`encodeHybridExtension`,
   `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`);
   `decodeTxError` ile yapılandırılmış hata çözümleme (`abstractaccount`
-  kodları 5/6/10/11 ve `pqc` kodu 21 dahil).
+  kodları 5/6/10/11 ve `pqc` kodu 21 dahil; 0.10.0'dan beri ücret simülasyonu sırasında
+  metin olarak gelen bir reddi de adlandırır).
 - **eth-native imzalama (0.6.0):** `signClassicalEth`, `signHybridEth`
   (`keccak256(SignDoc)` üzerinde secp256k1, pubkey tipi
   `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`, ayrıca ML-DSA-87 hibrit
@@ -90,7 +91,7 @@ projesinden de yeniden üretebilirsiniz.
   (EIP-191 `personal_sign`); anahtar rotasyonu `rotatePqcKeyMsgFromMnemonic`,
   `derivePqcLegacy`. Bkz.
   [Authenticator kılavuzu](/sdk/guides/authenticators) (bu hatların arkasındaki
-  modül bugün her iki ağda da kapalıdır).
+  modül mainnet'te kapalı, testnet'te etkindir).
 - **Hibrit imza baytları (0.8.0+):** `buildHybridTx`, `signAndBroadcastHybrid`,
   `signHybridEth` ve `EthNativeSigner` üzerindeki `signBytesVersion` seçeneği
   (`"auto" | "v1" | "v2"`); `resolveSignBytesVersion`,
@@ -107,6 +108,13 @@ projesinden de yeniden üretebilirsiniz.
   `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
 - **Abstract-account özeti v2 (0.9.0):** `evmAuthSignBytesV2`,
   `resolveEvmAuthDigestVersion`; `validateSpendingRules`.
+- **Zincir v3.2.4 (0.10.0):** staking katmanları (`msg.stakingtier.lockDelegation` /
+  `unlockEarly` / `claimBonus` / `updateParams`, `validateLockDelegation`,
+  `STAKING_LOCK_MONTHS`, `fetchStakingTierParams`, `fetchStakingLocks`,
+  `fetchStakingTierPool`); `fetchAuthNonce`; `fetchProtocolFeatures` /
+  `isProtocolFeatureEnabled`; PQC durumunda `possessionProven`;
+  `ibcTimeoutTimestamp`; `CHAIN_UPGRADE_V3_2_4`. Bkz.
+  [0.10.0'ın ekledikleri](/sdk/install#whats-new-0100).
 - **Kanonik PQC türetme (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; PQC kayıt mesajı
   `buildRegisterPqcKeyMsg`'dir (`ensurePqcRegistered` tarafından kullanılır).
@@ -134,10 +142,10 @@ sabitleri.
 
 | Dil | Oluşturulan dokümanlar | Kurulum |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — herkese açık API üzerinde docstring'ler | `0.9.0` sürümünde `pip install qorechain-sdk` (`qorsdk` olarak içe aktarılır) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (etiket `packages/go/v0.9.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; `qorechain` olarak içe aktarılır) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.9.1` (diğer diller 0.9.0) |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — herkese açık API üzerinde docstring'ler | `0.10.0` sürümünde `pip install qorechain-sdk` (`qorsdk` olarak içe aktarılır) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (etiket `packages/go/v0.10.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.10.0; `qorechain` olarak içe aktarılır) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.10.0` |
 
 Her paket aynı yüzeyi yansıtır (ağ hazır ayarları, denom/adres yardımcıları,
 HD türetme — birleşik eth-native hesaplar dahil — PQC temel bileşenleri ve

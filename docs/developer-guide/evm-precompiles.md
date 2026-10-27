@@ -9,22 +9,22 @@ sidebar_position: 6
 
 QoreChain extends the QoreChain EVM Engine with **six custom precompiled contracts** that expose protocol-level features directly to Solidity. These precompiles provide on-chain access to post-quantum cryptography, AI risk scoring, cross-VM messaging, and PRISM consensus parameters.
 
-:::warning Not active yet on mainnet or testnet
-The six QoreChain precompiles below are **compiled into the node but not yet activated** on the **`qorechain-vladi`** mainnet (EVM chain ID **9801**) or the **`qorechain-diana`** testnet (EVM chain ID **9800**). The EVM only dispatches addresses listed in the `active_static_precompiles` parameter, and that list is empty on both networks. Until a chain upgrade activates them, a call to any of these addresses **succeeds and returns empty data (`0x`)**; it does not revert and it does not return an error. See [Network status](#network-status) before relying on any of them.
+:::warning Not active on mainnet; three active on the testnet
+The six QoreChain precompiles below are **compiled into the node**, but the EVM only dispatches addresses listed in the `active_static_precompiles` parameter. On the **`qorechain-vladi`** mainnet (EVM chain ID **9801**) that list is empty at the time of writing, so **none is active there**. On the **`qorechain-diana`** testnet (EVM chain ID **9800**) three are active: PQC Verify, PQC Key Status and PRISM Consensus Params, activated by testnet governance proposal 21 (passed 27 October 2026). The other three are not active on either network. A call to an address that is not in the list **succeeds and returns empty data (`0x`)**; it does not revert and it does not return an error. See [Network status](#network-status) before relying on any of them.
 :::
 
 ## Network status {#network-status}
 
 | Precompile | Address | `qorechain-vladi` (mainnet) | `qorechain-diana` (testnet) |
 | --- | --- | --- | --- |
-| PQC Verify | `0x…0A01` | Not active | Not active |
-| PQC Key Status | `0x…0A02` | Not active | Not active |
+| PQC Verify | `0x…0A01` | Not active | **Active** (since 27 October 2026) |
+| PQC Key Status | `0x…0A02` | Not active | **Active** (since 27 October 2026) |
 | AI Risk Score | `0x…0B01` | Not active | Not active |
 | AI Anomaly Check | `0x…0B02` | Not active | Not active |
-| PRISM Consensus Params | `0x…0C01` | Not active | Not active |
+| PRISM Consensus Params | `0x…0C01` | Not active | **Active** (since 27 October 2026) |
 | CrossVM Bridge | `0x…0901` | Not active | Not active |
 
-Activation needs a chain upgrade and is planned in stages: the read-only PQC and consensus precompiles first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge last. The v3.2.3 release (mainnet, 20 October 2026) put the hardened versions of the CrossVM bridge and the AI anomaly precompile into the binary behind a protocol feature, **but it did not activate any precompile**: the `active_static_precompiles` list is still empty on both networks, and v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) does not change that. This table is updated in the same operation as the upgrade that activates any of them.
+Status as read from the live `active_static_precompiles` parameter on 27 October 2026. It is a chain parameter changed by governance, so each network's list changes only when a governance proposal passes; the testnet list was set by proposal 21, and no mainnet proposal changes it at the time of writing. The v3.2.3 release (mainnet, 20 October 2026) put the hardened versions of the CrossVM bridge and the AI anomaly precompile into the binary behind a protocol feature, but did not activate any precompile, and v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) does not change that. The read-only PQC and consensus precompiles come first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge last. This table lists only what is applied: a proposal that is still in its voting period is not a status.
 
 Check the live list yourself (an empty list means none is active):
 
@@ -45,6 +45,14 @@ require(ok && ret.length >= 96, "precompile not active");
 ```
 
 Do not send value to these addresses. They are not payable, and value sent to an inactive precompile address stays there with no way to recover it.
+
+On the testnet, a quick check that the three active precompiles answer (with Foundry's `cast`; on mainnet these addresses return empty data instead):
+
+```bash
+RPC=https://evm-testnet.qore.host
+cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
+```
 
 ---
 
@@ -95,7 +103,7 @@ interface IQorePQC {
 }
 ```
 
-From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026), once this precompile is active its output carries a fourth value, `bool possessionProven`, after `pubkey`: whether the account's current key was proven by a verified proof of possession (see [Post-Quantum Signing](/developer-guide/post-quantum-signing#proof-of-possession)). The interface above lists the first three outputs; a contract that must trust the key should read the fourth as well.
+From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026), the output of `pqcKeyStatus` carries a fourth value, `bool possessionProven`, after `pubkey`: whether the account's current key was proven by a verified proof of possession (see [Post-Quantum Signing](/developer-guide/post-quantum-signing#proof-of-possession)). It is returned wherever the precompile is active: on the testnet it is live (a call for an account without a key returns `false, 0, 0x, false`), on mainnet once an upgrade activates the precompile. The interface above lists the first three outputs; a contract that must trust the key should read the fourth as well.
 
 ### IQoreAI.sol
 
@@ -264,10 +272,10 @@ contract ConsensusReader {
 }
 ```
 
-**Gas cost:** 1,500 flat.
+**Gas cost:** 1,500 flat, plus the state reads the call performs at the standard cost.
 
-:::note
-In the current node build `rlConsensusParams` returns fixed placeholder defaults, not live PRISM-tuned values (for example, it does not report the measured block time, which is about 3.2 s on mainnet and about 1.0 s on the testnet). Wiring it to the live consensus parameters is part of the activation work.
+:::note What the four values are
+From v3.2.6 (the testnet; not yet on mainnet) `rlConsensusParams` returns the values held by the `rlconsensus` module instead of fixed placeholders: the applied block-time target in milliseconds, the applied gas-price floor, the module's `default_validator_set_size` and the agent's current epoch. On the testnet on 27 October 2026 it returned `5000`, `100`, `100`, `1` (the same applied values as `GET /qorechain/rlconsensus/v1/applied_params`, see [REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#rlconsensus-module)). These are the module's own settings, **not the measured block time** (about 3.2 s on mainnet and about 1.3 s on the testnet), and the agent runs in shadow mode on the testnet, so it applies nothing. On a node older than v3.2.6 the same call returns fixed placeholder defaults.
 :::
 
 ### CrossVM Bridge — Call QoreChain Native from EVM
@@ -315,4 +323,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) — Full cross-VM messaging documentation
 * [EVM Development](/developer-guide/evm-development) — Deploying Solidity contracts
-* [Account Abstraction](/developer-guide/account-abstraction) — Linked-wallet authenticators and spending rules (module currently disabled)
+* [Account Abstraction](/developer-guide/account-abstraction) — Linked-wallet authenticators and spending rules (enabled on the testnet, disabled on mainnet)

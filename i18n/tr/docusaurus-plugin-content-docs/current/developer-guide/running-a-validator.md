@@ -10,7 +10,7 @@ sidebar_position: 9
 Bu kılavuz, QoreChain ağında bir doğrulayıcı (validator) oluşturmayı, havuz sınıflandırma tasarımını anlamayı, kuantuma dayanıklı güvenlik için bir PQC anahtarı kaydetmeyi ve düğümünüzü izlemeyi kapsar.
 
 :::note
-Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 7 Haziran 2026'dan beri canlı olup **v3.2.4** düğüm sürümünü çalıştırır (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı; ondan önce v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Bir doğrulayıcının v3.2.4 ikili dosyasını çalıştırması gerekir; bkz. [Düğüm Çalıştırma: Yükseltmeler](/developer-guide/running-a-node#upgrades). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, 19 Ekim 2026'dan beri v3.2.4 çalıştırıyor), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn; bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
+Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 7 Haziran 2026'dan beri canlı olup **v3.2.4** düğüm sürümünü çalıştırır (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı; ondan önce v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Bir doğrulayıcının, bu yazı itibarıyla v3.2.4 ikili dosyasını çalıştırması gerekir; ana ağ yönetişim önerisi 14 v3.2.5'i 3,906,833 yüksekliğinde uygulayacaktır ve o zaman manifest, kurulacak ikili dosyayı belirtir (bkz. [Düğüm Çalıştırma: Yükseltmeler](/developer-guide/running-a-node#upgrades)). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) v3.2.6 çalıştırır (26 Ekim'de v3.2.5'ten sonra 27 Ekim 2026'da uygulandı) ve canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,3 sn (27 Ekim 2026; değişir); bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
 :::
 
 :::caution Kaynak derlemesi değil, yayın (release) ikili dosyasını kullanın
@@ -358,7 +358,7 @@ Ağ ücret tabanı gas birimi başına 0,1 uqor'dur. Kayıtlı PQC anahtarı **o
 ## Bağlı Ağları Doğrulama {#connected-networks}
 
 :::caution Henüz etkin bir bağlı ağ yok
-Köprü modülü ana ağda ve test ağında dağıtılmıştır, ancak **hiçbir köprü rotası etkin değildir**: 37 zincir yapılandırmasının tamamı `pending` durumundadır, kayıtlı köprü doğrulayıcısı yoktur, hiçbir köprü işlemi hiç oluşturulmamıştır ve hiçbir IBC kanalı yoktur. Aşağıdaki çerçeve tasarımı anlatır; bugün bağlı bir ağda doğrulanacak bir şey yoktur.
+Köprü modülü ana ağda ve test ağında dağıtılmıştır, ancak **hiçbir köprü rotası etkin değildir**: 37 zincir yapılandırmasının tamamı `pending` durumundadır, kayıtlı köprü doğrulayıcısı yoktur, hiçbir köprü işlemi hiç oluşturulmamıştır ve ana ağda hiçbir IBC kanalı açık değildir (test ağında bir transfer kanalı vardır, ancak bu bir köprü rotası değildir). Aşağıdaki çerçeve tasarımı anlatır; bugün bağlı bir ağda doğrulanacak bir şey yoktur.
 :::
 
 Tasarım (**v3.1.80** zincir sürümünden beri), bir QoreChain doğrulayıcısının [köprü](/architecture/bridge-architecture) aracılığıyla bağlanan ağların doğrulanmasına da yardımcı olmasına olanak tanır. Bu, **lisansa bağlı ve isteğe bağlı (opt-in)** bir işlevdir:

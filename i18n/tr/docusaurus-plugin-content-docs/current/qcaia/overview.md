@@ -22,7 +22,7 @@ QCAIA, yeni gelenlerin ve topluluk üyelerinin hızlıca yön bulmasına yardım
 
 Bir soru QCAIA'nın bildiklerinin dışında kalırsa, tahmin yürütmek yerine bunu belirtir. QCAIA bir topluluk yardımcısıdır; finansal veya yatırım tavsiyesi değildir.
 
-QCAIA'nın yanıtları QoreChain'in herkese açık belgelerini izler, bu nedenle bir sürümün gerisinde kalabilirler. Her ağda şu anda nelerin canlı olduğu için (mainnet `qorechain-vladi` 23 Ekim 2026'dan beri, testnet `qorechain-diana` ise 19 Ekim 2026'dan beri v3.2.4'ü çalıştırıyor) [Ağlar](/appendix/networks) ve [Sürüm Geçmişi](/appendix/version-history) sayfalarına bakın veya doğrudan bir düğümü sorgulayın. QCAIA'ya sorulan platformun köprü, AMM havuzları, rollup'lar ve xQORE gibi birkaç bölümü belgelerde tasarlandığı şekliyle anlatılır ancak henüz canlı değildir; QCAIA farklı bir yanıt verirse belgelere ve canlı ağa güvenin.
+QCAIA'nın yanıtları QoreChain'in herkese açık belgelerini izler, bu nedenle bir sürümün gerisinde kalabilirler. Her ağda şu anda nelerin canlı olduğu için (mainnet `qorechain-vladi` 23 Ekim 2026'dan beri, testnet `qorechain-diana` ise 27 Ekim 2026'dan beri v3.2.6'yı çalıştırıyor) [Ağlar](/appendix/networks) ve [Sürüm Geçmişi](/appendix/version-history) sayfalarına bakın veya doğrudan bir düğümü sorgulayın. QCAIA'ya sorulan platformun köprü, AMM havuzları, rollup'lar ve xQORE gibi birkaç bölümü belgelerde tasarlandığı şekliyle anlatılır ancak henüz canlı değildir; QCAIA farklı bir yanıt verirse belgelere ve canlı ağa güvenin.
 
 ## Çok dilli destek
 

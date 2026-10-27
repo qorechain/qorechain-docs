@@ -10,7 +10,7 @@ sidebar_position: 7
 Modulul `x/bridge` este conceput pentru a conecta QoreChain la ecosistemul blockchain mai larg prin **37 de configurații de lanț (36 de lanțuri externe plus Injective, accesat prin IBC) și până la 8 contrapărți IBC (Inter-Blockchain Communication)**. Fiecare operațiune a podului este concepută să fie securizată prin criptografie post-cuantică.
 
 :::caution Nu este live pe niciuna dintre rețele
-Modulul podului este implementat pe mainnet și testnet, dar **nicio rută de pod nu este activă**: toate cele 37 de configurații de lanț sunt în starea `pending`, fără contract de pod setat, nu este înregistrat niciun validator de pod, nu a fost creată vreodată nicio operațiune de pod și nu există canale sau clienți IBC. Tot ce urmează descrie designul intenționat. Nu trimiteți active așteptând să fie transferate prin pod.
+Modulul podului este implementat pe mainnet și testnet, dar **nicio rută de pod nu este activă**: toate cele 37 de configurații de lanț sunt în starea `pending`, fără contract de pod setat, nu este înregistrat niciun validator de pod, nu a fost creată vreodată nicio operațiune de pod și nu există niciun canal IBC pe mainnet (testnet-ul are un singur canal de test ICS-20 către un lanț cu ID `provider`, niciunul către contrapărțile de mai jos). Tot ce urmează descrie designul intenționat. Nu trimiteți active așteptând să fie transferate prin pod.
 :::
 
 ## Starea curentă {#current-status}
@@ -21,9 +21,9 @@ Modulul podului este implementat pe mainnet și testnet, dar **nicio rută de po
 | Configurații de lanț | 37, toate `pending` | 37, toate `pending` |
 | Validatori de pod înregistrați | 0 | 0 |
 | Operațiuni de pod | 0 | 0 |
-| Canale / clienți IBC | 0 / 0 | 0 / 0 |
+| Canale / clienți IBC | 0 / 0 | 1 / 1 (un canal de test către testnet-ul Cosmos Hub) |
 
-(Verificat la 23 octombrie 2026 pe mainnet și testnet, ambele v3.2.4. Citiți valorile live cu `qorechaind query bridge chains` și `qorechaind query bridge validators`, sau prin REST la `/qorechain/bridge/v1/chains` și `/qorechain/bridge/v1/validators`.) Configurația modulului este aceeași pe ambele rețele: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 și `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Stiva IBC pe care ar folosi-o modulul este ibc-go v10.7 (începând cu v3.2.2), dar nu a fost creat niciun client sau canal.
+(Verificat la 27 octombrie 2026 pe mainnet (v3.2.4) și testnet (v3.2.6). Citiți valorile live cu `qorechaind query bridge chains` și `qorechaind query bridge validators`, sau prin REST la `/qorechain/bridge/v1/chains` și `/qorechain/bridge/v1/validators`.) Configurația modulului este aceeași pe ambele rețele: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 și `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Stiva IBC pe care ar folosi-o modulul este ibc-go v10.7 (începând cu v3.2.2), dar nu a fost creat niciun client sau canal pe mainnet (testnet-ul are un client și un canal de test, vezi mai sus).
 
 ## Prezentare generală a conexiunilor
 
@@ -38,7 +38,7 @@ Cele **37 de configurații de lanț** sunt cele **36 de lanțuri externe** enume
 
 ## Canale IBC
 
-QoreChain este conceput să mențină conexiuni IBC către următoarele 8 lanțuri, retransmise prin Hermes v1.x. **Nu există încă niciun canal sau client IBC pe niciuna dintre rețele**, deci acest tabel enumeră doar contrapărțile planificate:
+QoreChain este conceput să mențină conexiuni IBC către următoarele 8 lanțuri, retransmise prin Hermes v1.x. **Niciuna dintre aceste contrapărți nu este încă conectată** (mainnet-ul nu are niciun canal sau client IBC; testnet-ul are un singur canal de test ICS-20 către un lanț cu ID `provider`, verificat la 27 octombrie 2026), deci acest tabel enumeră doar contrapărțile planificate:
 
 | Lanț       | Descriere                      |
 | ---------- | ------------------------------ |

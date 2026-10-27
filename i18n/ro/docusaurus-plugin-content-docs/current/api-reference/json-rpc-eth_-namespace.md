@@ -17,7 +17,7 @@ QoreChain implementează o interfață JSON-RPC compatibilă cu EVM, astfel înc
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`, versiunea de nod **v3.2.4** din 23 octombrie 2026, activ din 7 iunie 2026) și de testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, hex `0x2648`, versiunea de nod **v3.2.4** din 19 octombrie 2026). Adresele locale de mai sus se aplică unui nod pe care îl rulezi tu însuți. Endpoint-urile HTTP publice sunt `https://evm.qore.host` (mainnet) și `https://evm-testnet.qore.host` (testnet), listate în [Rețele](/appendix/networks#public-endpoints). Singurul WebSocket EVM public este cel al testnet-ului (`wss://evm-ws-testnet.qore.host`); nu există un WebSocket EVM public pentru mainnet.
+Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`, versiunea de nod **v3.2.4** din 23 octombrie 2026, activ din 7 iunie 2026; propunerea de guvernanță 14 de pe mainnet ar aplica v3.2.5 la înălțimea 3.906.833) și de testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, hex `0x2648`, versiunea de nod **v3.2.6** din 27 octombrie 2026). Adresele locale de mai sus se aplică unui nod pe care îl rulezi tu însuți. Endpoint-urile HTTP publice sunt `https://evm.qore.host` (mainnet) și `https://evm-testnet.qore.host` (testnet), listate în [Rețele](/appendix/networks#public-endpoints). Singurul WebSocket EVM public este cel al testnet-ului (`wss://evm-ws-testnet.qore.host`); nu există un WebSocket EVM public pentru mainnet.
 :::
 
 ## Spații de nume acceptate

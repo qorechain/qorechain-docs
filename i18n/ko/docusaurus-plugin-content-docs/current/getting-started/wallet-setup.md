@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain은 네이티브, EVM, SVM 실행 환경 전반에서 여러 지갑 유형을 지원합니다. 사용 목적에 맞는 지갑을 선택하세요.
 
 :::note
-아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 운영 중, 2026년 10월 23일부터 릴리스 v3.2.4)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 2026년 10월 19일부터 릴리스 v3.2.4)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
+아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 운영 중, 2026년 10월 23일부터 릴리스 v3.2.4)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 2026년 10월 27일부터 릴리스 v3.2.6)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
 :::
 
 ## QoreX (권장) {#qorex}
@@ -105,8 +105,8 @@ console.log(w.svm);                            // base58 (same identity)
 
 ## 연결된 지갑: 지출 키로 사용하는 Phantom과 MetaMask {#linked-wallets}
 
-:::caution 현재 두 네트워크 모두에서 꺼져 있습니다
-스마트 계정 및 연결된 지갑 기능은 구현되어 있지만 두 네트워크 모두에서 **꺼져 있습니다**(`abstractaccount.enabled = false`). 이 플래그가 꺼져 있는 동안에는 인증자 등록과 인증자를 통한 실행이 거부됩니다. 연결 흐름을 제공하기 전에 `GET /qorechain/abstractaccount/v1/config`를 확인하세요. 아래 섹션은 설계된 동작을 설명합니다.
+:::caution 메인넷에서는 꺼져 있고 테스트넷에서는 켜져 있습니다
+스마트 계정 및 연결된 지갑 기능은 구현되어 있지만 메인넷에서는 **꺼져 있습니다**(`abstractaccount.enabled = false`). 이 플래그가 꺼져 있는 동안에는 그곳에서 인증자 등록과 인증자를 통한 실행이 거부됩니다. 테스트넷에서는 **켜져 있으므로**(`enabled = true`, 2026년 10월 27일 확인) 그곳에서 연결 흐름을 시험해 볼 수 있습니다. 연결 흐름을 제공하기 전에 대상 네트워크에서 `GET /qorechain/abstractaccount/v1/config`를 확인하세요. 아래 섹션은 설계된 동작을 설명합니다.
 :::
 
 dApp에서 QoreChain 계정의 자금을 사용하기 위해 루트 키를 노출할 필요가 없도록 설계되었습니다(체인 버전 **v3.1.85**에서 도입). **Phantom**(ed25519) 또는 **MetaMask**(`personal_sign`을 통한 이더리움 주소 기반) 키를 계정의 **인증자(authenticator)로 등록**할 수 있으며 — 범위가 지정된 권한, 지출 한도, 만료 시각, 즉시 철회 기능과 함께 — 이후 dApp 백엔드가 중계하는 송금을 승인할 수 있습니다. 전체 모델과 코드는 [연결된 지갑 인증자](/developer-guide/account-abstraction#authenticators) 문서를, 종단 간 예제는 [SDK 인증자 가이드](/sdk/guides/authenticators)를 참고하세요.

@@ -141,10 +141,10 @@ Yalnızca belirli bir modülden gelen olayları almak için olay türüne göre 
 
 ## Modül Olayları Referansı
 
-Olaylar standart consensus-engine olayları olarak yayınlanır. Olay türü ve niteliğine göre filtrelenmiş bir `tm.event='Tx'` sorgusuyla abone olun (örneğin `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Blok düzeyindeki olaylar (aşağıdaki PRISM olayları gibi, blok sonu mantığı tarafından yayınlananlar) `Tx` ile değil, `tm.event='NewBlock'` ile iletilir. Aşağıdaki adlar ve nitelikler zincir sürümü v3.2.4'e aittir (mainnet 23 Ekim 2026'dan, testnet 19 Ekim 2026'dan beri); v3.2.4'te eklenen olaylar işaretlenmiştir.
+Olaylar standart consensus-engine olayları olarak yayınlanır. Olay türü ve niteliğine göre filtrelenmiş bir `tm.event='Tx'` sorgusuyla abone olun (örneğin `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Blok düzeyindeki olaylar (aşağıdaki PRISM olayları gibi, blok sonu mantığı tarafından yayınlananlar) `Tx` ile değil, `tm.event='NewBlock'` ile iletilir. Aşağıdaki adlar ve nitelikler zincir sürümü v3.2.4'e aittir (mainnet 23 Ekim 2026'dan, testnet 19 Ekim 2026'dan beri); v3.2.4'te eklenen olaylar işaretlenmiştir. Testnet (v3.2.6) bir olay daha yayınlar, `rl_action_proposed`; bu olay PRISM olaylarıyla birlikte listelenmiştir.
 
 :::note Gerçekte hangi olayları göreceksiniz
-Bu modüllerin çoğu herkese açık ağlarda boştadır: köprü canlı değildir, henüz kayıtlı bir multilayer katmanı veya rollup yoktur ve xQORE kullanılamaz. Bu modüllerin olayları tanımlıdır ancak etkinlik olana kadar tetiklenmez. PRISM gözlem ve ödül olayları (`rl_observation_collected`, `rl_reward_computed`) her iki ağda da yaklaşık her 10 blokta bir yayınlanır.
+Bu modüllerin çoğu herkese açık ağlarda boştadır: köprü canlı değildir, henüz kayıtlı bir multilayer katmanı veya rollup yoktur ve xQORE kullanılamaz. Bu modüllerin olayları tanımlıdır ancak etkinlik olana kadar tetiklenmez. PRISM gözlem ve ödül olayları (`rl_observation_collected`, `rl_reward_computed`) her iki ağda da yaklaşık her 10 blokta bir yayınlanır; testnet'te (v3.2.6) ajan ayrıca her adımda `rl_action_proposed` yayınlar.
 :::
 
 ### PQC Modülü
@@ -257,6 +257,7 @@ Bunlar blok sonu olaylarıdır ve `NewBlock` akışında iletilir.
 | `rl_agent_mode_changed`        | `height`, `agent_mode`  | Ajan modu değiştiğinde yayınlanır                             |
 | `rl_circuit_breaker_triggered` | `height`                | PRISM devre kesicisi bir eylemi engellediğinde yayınlanır     |
 | `rl_circuit_breaker_recovered` | `height`                | Devre kesici toparlandığında yayınlanır                       |
+| `rl_action_proposed`           | `height`, `agent_mode`, `applied`, `block_time_delta`, `gas_price_delta`, `validator_set_size_delta`, `pool_weight_rpos_delta`, `pool_weight_dpos_delta` | **v3.2.6 (yalnızca testnet).** Her modda her ajan adımında, önerilen eylemle birlikte yayınlanır; gölge modda `applied` değeri `false` olur. Mainnet bu sürümü uygulayana kadar yayınlamaz |
 
 ### AI Modülü
 

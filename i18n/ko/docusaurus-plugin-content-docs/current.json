@@ -118,5 +118,29 @@
   "sidebar.docsSidebar.category.Appendix.link.generated-index.description": {
     "message": "참고 자료 — 용어집, 체인 매개변수, 버전 기록.",
     "description": "The generated-index page description for category 'Appendix' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreSign": {
+    "message": "QoreSign",
+    "description": "The label for category 'QoreSign' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreSign.link.generated-index.description": {
+    "message": "지갑과 백엔드를 위한 하이브리드 secp256k1 + ML-DSA-87 서명: 빠른 시작, 가이드, 와이어 포맷 명세, 테스트 벡터.",
+    "description": "The generated-index page description for category 'QoreSign' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.qoresign-guides": {
+    "message": "가이드",
+    "description": "The label for category 'Guides' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.qoresign-specifications": {
+    "message": "명세",
+    "description": "The label for category 'Specifications' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreX Wallet": {
+    "message": "QoreX Wallet",
+    "description": "The label for category 'QoreX Wallet' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreX Wallet.link.generated-index.description": {
+    "message": "QoreX — QoreChain의 공식 비수탁형 양자 안전 지갑: 모바일 앱과 브라우저 확장 프로그램. 설정, 전송 및 수신, 스테이킹, 복구, dApp 연결.",
+    "description": "The generated-index page description for category 'QoreX Wallet' in sidebar 'docsSidebar'"
   }
 }

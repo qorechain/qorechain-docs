@@ -21,7 +21,7 @@ El motor QCAI (QoreChain AI) opera a través de tres capas:
 
 El nivel de consenso se documenta por separado en el [Motor de consenso PRISM](/architecture/prism-consensus-engine). Esta página cubre los niveles de red y de aplicación.
 
-:::note Qué se aplica en las redes en producción (mainnet y testnet v3.2.4)
+:::note Qué se aplica en las redes en producción (comprobado el 23 de octubre de 2026, con mainnet y testnet entonces ambas en v3.2.4; la testnet ha avanzado desde entonces a v3.2.6)
 Dos partes de `x/ai` actúan hoy sobre las transacciones, tanto en el carril Cosmos como en el carril EVM:
 
 * Un **límite de frecuencia por emisor**. El límite en producción es de **600 transacciones por minuto por emisor** (`max_tx_per_minute`; el carril EVM tiene su propio límite opcional, que no está configurado, por lo que se aplica el mismo valor). El «minuto» se cuenta sobre una ventana fija de bloques, no en tiempo real, porque la altura de bloque es el único reloj que comparten todos los validadores. A un emisor que alcanza el límite se le rechazan las transacciones siguientes hasta que las más antiguas salgan de la ventana. El límite se aplica en el carril Cosmos desde v3.2.0 y en ambos carriles desde v3.2.2.
@@ -177,10 +177,10 @@ Dos contratos precompilados exponen las capacidades de IA on-chain a los contrat
 | `aiAnomalyCheck` | `0x0B02` | Devuelve un indicador booleano de anomalía y una puntuación de confianza para una transacción |
 
 :::warning Aún no están activos
-Estos precompilados **no están activos** en la mainnet (`qorechain-vladi`) ni en la testnet (`qorechain-diana`); una llamada devuelve datos vacíos. Solo se activarán cuando dispongan de una ruta de puntuación de solo lectura en coma fija. Consulta [Precompilados de EVM: estado de la red](/developer-guide/evm-precompiles#network-status).
+Estos dos precompilados **no están activos** en la mainnet (`qorechain-vladi`) ni en la testnet (`qorechain-diana`), comprobado el 27 de octubre de 2026; una llamada devuelve datos vacíos. (Otros tres precompilados de QoreChain, el par PQC y los parámetros de PRISM, están activos solo en la testnet.) Solo se activarán cuando dispongan de una ruta de puntuación de solo lectura en coma fija. Consulta [Precompilados de EVM: estado de la red](/developer-guide/evm-precompiles#network-status).
 :::
 
-**Importante**: Los precompilados de EVM utilizan **únicamente el motor heurístico determinista**. Nunca llaman al sidecar, lo que garantiza que toda la ejecución de EVM siga siendo totalmente determinista y reproducible. Desde v3.2.3 el precompilado de comprobación de anomalías analiza una transacción sin escribir estado; el resto del refuerzo de los precompilados en esa versión (el puente CrossVM rechaza `STATICCALL`, mide su llamada anidada contra el gas del marco que llama y solo alcanza destinos QoreChain Native de una lista permitida) se aplica cuando se active el precompilado CrossVM. A fecha de 23 de octubre de 2026, la lista `active_static_precompiles` está vacía en ambas redes.
+**Importante**: Los precompilados de EVM utilizan **únicamente el motor heurístico determinista**. Nunca llaman al sidecar, lo que garantiza que toda la ejecución de EVM siga siendo totalmente determinista y reproducible. Desde v3.2.3 el precompilado de comprobación de anomalías analiza una transacción sin escribir estado; el resto del refuerzo de los precompilados en esa versión (el puente CrossVM rechaza `STATICCALL`, mide su llamada anidada contra el gas del marco que llama y solo alcanza destinos QoreChain Native de una lista permitida) se aplica cuando se active el precompilado CrossVM. A fecha de 27 de octubre de 2026, la lista `active_static_precompiles` está vacía en mainnet; en la testnet contiene tres entradas (PQC Verify `0x…0A01`, PQC Key Status `0x…0A02` y PRISM Consensus Params `0x…0C01`), ninguna de ellas un precompilado de IA.
 
 ## Atestación TEE
 

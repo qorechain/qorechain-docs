@@ -23,7 +23,7 @@ QoreChain'in ekonomik modeli yerel **QOR** token'ını merkeze alır ve **sonlu,
 | **Bech32 öneki**          | `qor` (hesaplar: `qor1...`, validatörler: `qorvaloper...`) |
 
 :::note
-Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana **v3.2.4** sürümünde canlı olan (23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı) **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'inin (EVM zincir ID **9800**, 19 Ekim 2026'dan beri sürüm **v3.2.4**) kendi emisyon ve arz geçmişi vardır (testnet arzı mainnet'inkinin çok üzerindedir ve emisyonu zaten üst sınırı aşmıştır), bu nedenle mainnet rakamlarını kullanın. Her blokla değişen tutarlar, okundukları tarihle işaretlenmiştir (23 Ekim 2026).
+Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana **v3.2.4** sürümünde canlı olan (23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı) **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'inin (EVM zincir ID **9800**, 27 Ekim 2026'dan beri sürüm **v3.2.6**) kendi emisyon ve arz geçmişi vardır (testnet arzı mainnet'inkinin çok üzerindedir ve emisyonu zaten üst sınırı aşmıştır), bu nedenle mainnet rakamlarını kullanın. Her blokla değişen tutarlar, okundukları tarihle işaretlenmiştir (23 Ekim 2026).
 :::
 
 ---
@@ -211,7 +211,7 @@ Bu, uzun vadeli sahipler için pozitif toplamlı bir dinamik yaratır: her erken
 Modülün parametreleri ve epoch kaydı, v3.2.3'ten beri mainnet'te REST üzerinden sunulur (`/qorechain/inflation/v1/params` ve `/qorechain/inflation/v1/epoch_info`); ayrıca RPC `abci_query` ham depo arayüzüyle (depo `inflation`, anahtarlar `inflation/params` ve `inflation/epoch`) zincir durumundan da okunabilirler.
 
 :::note v3.2.4 ve testnet'in emisyonu
-`qorechain-diana` testnet'i önceki emisyon ayarlarını korur (114.285.714 QOR üst sınırı altında epoch başına 16.239 QOR; üst sınıra orada zaten ulaşıldı); mainnet yukarıdaki değerleri kullanır. v3.2.4 sürümü, bir `target_apy_bps` parametresiyle üçüncü bir emisyon modu olan `target_apy`'yi ekler: testnet'te 19 Ekim 2026'dan beri ve mainnet'te 23 Ekim 2026'dan beri (yönetişim önerisi 13). Parametre her iki ağda da `0`'dır ve emisyonu yönlendirmez. Bir ağı bu moda geçirmek ayrı bir yönetişim oyudur ve mainnet'te önerilmemiştir; bir oy kabul edilene kadar mainnet, epoch başına 86.000 QOR ile `fixed` modunda kalır.
+`qorechain-diana` testnet'i test için ayarlanmıştır ve mainnet'ten farklıdır (27 Ekim 2026'da okundu): `target_apy` modundadır, `target_apy_bps` değeri `1667`'dir, `fixed_epoch_emission` hâlâ 16.239 QOR'dur ve `max_total_emission` 3.950.390.341.362.112.750 uqor'dur; bu, orada şimdiden basılmış miktara eşittir (`/qorechain/inflation/v1/epoch_info` içinde `remaining_emission` `0`'dır), dolayısıyla testnet artık daha fazla basmaz. Mainnet yukarıdaki değerleri kullanır. v3.2.4 sürümü, bir `target_apy_bps` parametresiyle üçüncü emisyon modu olan `target_apy`'yi ekler: testnet'te 19 Ekim 2026'dan beri ve mainnet'te 23 Ekim 2026'dan beri (yönetişim önerisi 13). Mainnet'te parametre `0`'dır ve emisyonu yönlendirmez. Mainnet'i bu moda geçirmek ayrı bir yönetişim oyudur ve önerilmemiştir; bir oy kabul edilene kadar mainnet, epoch başına 86.000 QOR ile `fixed` modunda kalır.
 :::
 
 ---

@@ -20,9 +20,11 @@ puanlamanıza olanak tanımak üzere tasarlanmıştır:
 :::caution Bugün herkese açık ağlarda kullanılamaz
 `simulateWithRiskScore`, `aiRiskScore` ve `aiAnomalyCheck`, `0x…0B01` / `0x…0B02`
 adreslerindeki precompile'ları okur. Statik bir precompile yalnızca adresi EVM
-modülünün `active_static_precompiles` parametresinde olduğunda yanıt verir ve bu
-liste hem `qorechain-vladi` (ana ağ) hem de `qorechain-diana` (test ağı) üzerinde
-boştur. Herkese açık uç noktalara yapılan bir çağrı boş veri (`0x`) döndürür ve bu
+modülünün `active_static_precompiles` parametresinde olduğunda yanıt verir. Bu
+liste `qorechain-vladi` (ana ağ) üzerinde boştur; `qorechain-diana` (test ağı)
+üzerinde ise yalnızca PQC ve konsensüs parametresi precompile'larını (`0x…0A01`,
+`0x…0A02`, `0x…0C01`) içerir, yapay zeka çiftini içermez (27 Ekim 2026'da
+kontrol edildi). Herkese açık uç noktalara yapılan bir çağrı boş veri (`0x`) döndürür ve bu
 yardımcılar hata fırlatır (örneğin `returned no data ("0x")`). Yalnızca
 precompile'ların etkinleştirildiği bir ağda veya düğümde çalışırlar. Önce
 `GET /cosmos/evm/vm/v1/params` adresini kontrol edin ve bkz.

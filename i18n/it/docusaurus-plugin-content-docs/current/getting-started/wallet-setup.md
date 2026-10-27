@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain supporta diversi tipi di wallet nei suoi ambienti di esecuzione nativo, EVM e SVM. Scegli il wallet più adatto al tuo caso d'uso.
 
 :::note
-I valori riportati di seguito coprono sia la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026, release v3.2.4 dal 23 ottobre 2026) sia la testnet **`qorechain-diana`** (chain ID EVM **9800**, release v3.2.4 dal 19 ottobre 2026). Gli endpoint pubblici di entrambe le reti sono elencati in [Reti](/appendix/networks#public-endpoints).
+I valori riportati di seguito coprono sia la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026, release v3.2.4 dal 23 ottobre 2026) sia la testnet **`qorechain-diana`** (chain ID EVM **9800**, release v3.2.6 dal 27 ottobre 2026). Gli endpoint pubblici di entrambe le reti sono elencati in [Reti](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (consigliato) {#qorex}
@@ -105,8 +105,8 @@ I fondi inviati a una qualsiasi delle tre forme confluiscono nello stesso saldo.
 
 ## Wallet collegati: Phantom e MetaMask come chiavi di spesa {#linked-wallets}
 
-:::caution Attualmente disattivato su entrambe le reti
-Le funzionalità di smart account e di wallet collegati sono implementate ma **disattivate** su entrambe le reti (`abstractaccount.enabled = false`): la registrazione di un authenticator e l'esecuzione tramite uno di essi vengono rifiutate finché il flag è disattivato. Controlla `GET /qorechain/abstractaccount/v1/config` prima di offrire un flusso di collegamento. La sezione seguente descrive il comportamento previsto.
+:::caution Disattivato sulla mainnet, attivo sulla testnet
+Le funzionalità di smart account e di wallet collegati sono implementate ma **disattivate sulla mainnet** (`abstractaccount.enabled = false`): lì la registrazione di un authenticator e l'esecuzione tramite uno di essi vengono rifiutate finché il flag è disattivato. Sulla testnet sono **attive** (`enabled = true`, verificato il 27 ottobre 2026), quindi puoi provare lì un flusso di collegamento. Controlla `GET /qorechain/abstractaccount/v1/config` sulla rete di destinazione prima di offrire un flusso di collegamento. La sezione seguente descrive il comportamento previsto.
 :::
 
 Progettato in modo che non sia necessario esporre la propria chiave radice per spendere da un account QoreChain in una dApp (introdotto nella versione della chain **v3.1.85**): una chiave **Phantom** (ed25519) o **MetaMask** (tramite il suo indirizzo Ethereum, via `personal_sign`) può essere **registrata come authenticator** sul tuo account — con permessi delimitati, limiti di spesa, una scadenza e revoca istantanea — e quindi autorizzare trasferimenti inoltrati dal backend della dApp. Consulta [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) per il modello completo e il codice, e la [guida agli authenticator dell'SDK](/sdk/guides/authenticators) per esempi end-to-end.

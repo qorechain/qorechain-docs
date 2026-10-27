@@ -10,7 +10,7 @@ sidebar_position: 1
 Acest ghid acoperă token-ul QOR, modul de trimitere și primire a token-urilor, interogarea soldurilor și înțelegerea modelului de distribuire a comisioanelor pe QoreChain.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.4** din 23 octombrie 2026; testnet-ul rulează **v3.2.4** din 19 octombrie 2026 — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când efectuați tranzacții pe mainnet.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.4** din 23 octombrie 2026; testnet-ul rulează **v3.2.6** (din 27 octombrie 2026) — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când efectuați tranzacții pe mainnet.
 :::
 
 :::caution Semnați cu `tx pqc cosign`
@@ -98,7 +98,7 @@ Comisioanele de tranzacție pe QoreChain sunt distribuite către cinci destinaț
 
 ## Canale de ardere
 
-Modulul de ardere al QoreChain definește 12 surse de ardere. QOR ars prin oricare dintre ele este eliminat permanent din circulație. Pe mainnet, până acum doar canalele comisioanelor de gaz și ale tranzacțiilor eșuate au înregistrat arderi; celelalte sunt definite, dar nu au înregistrat nimic. De la v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026) există o a treisprezecea sursă, `staking_tier_penalty`, pentru modulul opțional de staking cu blocare în timp.
+Modulul de ardere al QoreChain definește 12 surse de ardere. QOR ars prin oricare dintre ele este eliminat permanent din circulație. Pe mainnet, până acum doar canalele comisioanelor de gaz și ale tranzacțiilor eșuate au înregistrat arderi; celelalte sunt definite, dar nu au înregistrat nimic. De la v3.2.4 (testnet din 19 octombrie 2026, mainnet din 23 octombrie 2026) există o a treisprezecea sursă, `staking_tier_penalty`, pentru modulul opțional de staking cu blocare în timp.
 
 | Canal              | Descriere                                                                        |
 | ------------------ | -------------------------------------------------------------------------------- |

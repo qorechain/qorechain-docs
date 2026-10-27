@@ -10,18 +10,20 @@ sidebar_position: 3
 QoreChain supporta gli smart contract **QoreChain Native**. QoreChain Native è il nome che QoreChain dà al proprio runtime **CosmWasm**: gli sviluppatori scrivono programmi sicuri e isolati (sandboxed) in Rust, basati sulle librerie CosmWasm standard (`cosmwasm-std`), e li compilano in WebAssembly. I contratti QoreChain Native vengono eseguiti insieme ai programmi EVM e SVM all'interno dell'architettura tripla-VM di QoreChain.
 
 :::note
-I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release di nodo **v3.2.4** dal 23 ottobre 2026 (proposta di governance 13, altezza 3.742.566). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.4 dal 19 ottobre 2026.
+I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release di nodo **v3.2.4** dal 23 ottobre 2026 (proposta di governance 13, altezza 3.742.566). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.6 (la v3.2.4 dal 19 ottobre 2026).
 :::
 
-:::caution Il caricamento del codice e l'istanziazione richiedono attualmente un permesso esplicito
-Al momento della stesura, `code_upload_access` e `instantiate_default_permission` sono entrambi impostati su **`Nobody`** sia su **mainnet che su testnet** — il che significa che `MsgStoreCode` e `MsgInstantiateContract` non sono aperti di default ad account arbitrari, in seguito a un avviso di sicurezza valido per l'intero settore riguardante CosmWasm, il runtime su cui si basa QoreChain Native. Sarà necessario che la governance conceda al tuo account (o a un elenco specifico di indirizzi) il permesso di caricamento/istanziazione prima che i passaggi seguenti possano avere successo. Verifica prima i parametri live, poiché questo è esattamente il tipo di impostazione che la governance può modificare (la mainnet al momento non ha alcun codice di contratto archiviato):
+:::caution Il caricamento del codice e l'istanziazione richiedono un permesso esplicito sulla mainnet; la testnet è diversa
+Al momento della stesura (verificato il 27 ottobre 2026), `code_upload_access` e `instantiate_default_permission` sono entrambi impostati su **`Nobody`** sulla **mainnet**, il che significa che `MsgStoreCode` e `MsgInstantiateContract` non sono aperti ad account arbitrari, in seguito a un avviso di sicurezza valido per l'intero settore riguardante CosmWasm, il runtime su cui si basa QoreChain Native. Sulla **testnet `qorechain-diana`** le impostazioni sono diverse: `code_upload_access` è ancora `Nobody` (il codice viene archiviato solo tramite la governance), ma `instantiate_default_permission` è **`Everybody`**, impostato dalla governance della testnet il 27 ottobre 2026, quindi qualsiasi account può istanziare un codice archiviato il cui permesso lo consenta. Sulla mainnet sarà necessario che la governance conceda al tuo account (o a un elenco specifico di indirizzi) il permesso di caricamento/istanziazione prima che i passaggi seguenti possano avere successo. Verifica prima i parametri live, poiché questo è esattamente il tipo di impostazione che la governance può modificare (la mainnet al momento non ha alcun codice di contratto archiviato):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
-I tipi di messaggio `MsgStoreCode`, `MsgInstantiateContract` e `MsgInstantiateContract2` sono inoltre disattivati dal circuit breaker della chain su entrambe le reti (`qorechaind query circuit disabled-list`), quindi alzare il solo permesso non basta finché quelle voci non vengono rimosse.
+Il circuit breaker della chain disattiva inoltre dei tipi di messaggio a livello di rete (`qorechaind query circuit disabled-list`). Sulla **mainnet** `MsgStoreCode`, `MsgInstantiateContract` e `MsgInstantiateContract2` sono nell'elenco, quindi alzare il solo permesso non basta finché quelle voci non vengono rimosse. Sulla **testnet** nell'elenco c'è solo `MsgStoreCode`: l'istanziazione è aperta, il caricamento no.
+
+**Testnet: contratti verificati archiviati dalla governance.** Poiché gli account ordinari non possono caricare codice sulla testnet, la governance ha archiviato cinque contratti verificati che chiunque può istanziare (`instantiate_permission` `Everybody`): cw20-base (token), cw721-base (collezione NFT), cw4-group, cw3-fixed-multisig e un piccolo contratto contatore. Al momento della stesura sono i code id da 859 a 863, in quest'ordine, elencati da `GET /cosmwasm/wasm/v1/code` con l'account del modulo di governance come creatore e identificati dal loro `data_hash`; leggi gli id dall'elenco live invece di scriverli nel codice. Esistono solo sulla testnet. La mainnet non ha alcun codice archiviato.
 
 Questa restrizione non riguarda i contratti già istanziati — `execute` e `query` su un contratto esistente funzionano normalmente indipendentemente da questa impostazione.
 :::
@@ -265,4 +267,4 @@ Questo richiama l'entry point `migrate` sul nuovo codice utilizzando lo stato es
 
 * [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) — Chiama contratti EVM e SVM da QoreChain Native
 * [Sviluppo SVM](/developer-guide/svm-development) — Distribuisci programmi BPF su QoreChain
-* [Precompilati EVM](/developer-guide/evm-precompiles) — Riferimento per i precompilati Solidity pianificati (nessuno è ancora attivo)
+* [Precompilati EVM](/developer-guide/evm-precompiles) — Riferimento per i precompilati Solidity (nessuno è attivo sulla mainnet; tre sono attivi sulla testnet)

@@ -21,7 +21,7 @@ sidebar_position: 8
 :::
 
 :::caution まだプールは存在しません
-AMMモジュールはメインネットとテストネット（どちらも v3.2.4）で稼働していますが、**まだプールは作成されておらず**（2026年10月23日に確認：両方で`GET /qorechain/amm/v1/pools`は空のリストを返します）、以下の例のデノム（`uusdc`、`uusdt`）は説明用です。現在、そのような資産はネットワーク上に存在しません。プールが存在するまでは、すべてのスワップまたは流動性追加コマンドが、プールが見つからないというエラーで失敗します。
+AMMモジュールはメインネット（v3.2.4）とテストネット（v3.2.6）で稼働していますが、**まだプールは作成されておらず**（2026年10月27日に確認：両方で`GET /qorechain/amm/v1/pools`は空のリストを返します）、以下の例のデノム（`uusdc`、`uusdt`）は説明用です。現在、そのような資産はネットワーク上に存在しません。プールが存在するまでは、すべてのスワップまたは流動性追加コマンドが、プールが見つからないというエラーで失敗します。
 :::
 
 ## モジュールパラメータ {#parameters}
@@ -37,7 +37,7 @@ AMMモジュールはメインネットとテストネット（どちらも v3.2
 | `min_liquidity` | `1000` | 新規プールの2つの初期デポジットのうち小さい方は、少なくともこの基本単位数が必要です |
 | `max_pools_per_creator` | `50` | 1つのアカウントが作成できるプール数 |
 | `max_swap_impact_bps` | `500` | スワップが持ち得る最大の価格インパクト（5 %）。[スワップのルール](#swap-rules)を参照 |
-| `lp_token_decimals` | `6` | プールのLPトークンの小数桁数 |
+| `lp_token_decimals` | `6` | プールのLPシェアの表示小数桁数(表示上のみ:LPシェアは台帳上の記録であり、トークンではありません) |
 
 ## v3.2.2以降で強制されるスワップのルール {#swap-rules}
 
@@ -50,7 +50,11 @@ AMMモジュールはメインネットとテストネット（どちらも v3.2
 
 ## プールとLPシェア
 
-プールは2つのデノム（`token_a`、`token_b`、ソート順で保存）のリザーブを保持し、それらのリザーブに対する比例的な請求権を表す**LPトークン**をミントします。各プールには数値の`id`、`type`、`status`（`active`または`paused`）、および独自のLPデノムがあります。流動性を追加するとLPトークンを受け取り、流動性を引き出すときにはそれらをバーンしてリザーブのシェアを償還します。
+プールは2つのデノム（`token_a`、`token_b`、ソート順で保存）のリザーブを保持し、それらのリザーブに対する比例的な請求権を表す**LPシェア**を記録します。各プールには数値の`id`、`type`、`status`（`active`または`paused`）があります。流動性を追加するとそのプールでのLPシェア残高が増え、流動性を引き出すと減って、リザーブのシェアを受け取ります。
+
+:::note LPシェアはトークンではありません
+LPシェアは、AMMモジュール独自の台帳に、プールごと・アカウントごとに保持されるエントリです(内部キーは`amm-lp/<pool id>`)。**バンクコインでもERC-20トークンでもなく、バンク残高には表示されず、転送、他のアカウントへの送信、取引はできません**。シェアは、`lp-balance`クエリまたは下記の`/lp/{address}`ルートで確認できます。
+:::
 
 ### プールの作成
 
@@ -68,7 +72,7 @@ qorechaind tx amm create-pool stable_swap 1000000000uusdc 1000000000uusdt \
 
 ### 流動性の追加
 
-`add-liquidity`は、両サイドをプールに預け入れてLPトークンをミントします。最後の引数は受け入れる最小LP量です。これは、トランザクションが処理される前にプール比率がシフトすることに対する保護です。
+`add-liquidity`は、両サイドをプールに預け入れ、LPシェア残高に加算します。最後の引数は受け入れる最小LPシェア量です。これは、トランザクションが処理される前にプール比率がシフトすることに対する保護です。
 
 ```bash
 qorechaind tx amm add-liquidity 1 500000000uqor 500000000uusdc 100000 \
@@ -77,7 +81,7 @@ qorechaind tx amm add-liquidity 1 500000000uqor 500000000uusdc 100000 \
 
 ### 流動性の削除
 
-`remove-liquidity`は、LPトークンをバーンしてリザーブを引き出します。2つの`min`引数は、各サイドで受け取る最小量を設定します。
+`remove-liquidity`は、残高からLPシェアを差し引いてリザーブを引き出します。2つの`min`引数は、各サイドで受け取る最小量を設定します。
 
 ```bash
 qorechaind tx amm remove-liquidity 1 100000 490000000 490000000 \
@@ -147,7 +151,27 @@ qorechaind query amm pool-by-denoms uqor uusdc
 qorechaind query amm lp-balance 1 qor1youraddr...
 ```
 
-`pool`は、プールのリザーブ、LP供給量、タイプ、ステータス、および実行中の加重平均価格を返します。`lp-balance`は、アカウントがそのプールに対して保有するLPトークンの`balance`を返します。
+`pool`は、プールのリザーブ、LP供給量、タイプ、ステータス、および実行中の加重平均価格を返します。`lp-balance`は、アカウントがそのプールに対して保有するLPシェアの`balance`を返します。
+
+### REST ルート {#rest-routes}
+
+同じ読み取りは、メインネット（`https://api.qore.host`）とテストネット（`https://api-testnet.qore.host`）の**両方**で REST 経由でも提供されます。両方で2026年10月27日に確認しました。
+
+| ルート | 返す内容 |
+| --- | --- |
+| `GET /qorechain/amm/v1/params` | モジュールパラメータ |
+| `GET /qorechain/amm/v1/pools` | すべてのプール(存在しない間は空のリスト) |
+| `GET /qorechain/amm/v1/pools/{pool_id}` | 1つのプール(不明な場合は `404`) |
+| `GET /qorechain/amm/v1/pools/{pool_id}/lp/{address}` | そのプールにおけるアドレスの LP 残高(`{address}` は `qor1...` の bech32 アドレス) |
+| `GET /qorechain/amm/v1/pool_by_denoms?denom_a=&denom_b=` | デノムのペアに対するプール(なければ `404`) |
+| `GET /qorechain/amm/v1/quote/exact_in?pool_id=&denom_in=&amount_in=` | 入力量を固定した場合の出力量と手数料 |
+| `GET /qorechain/amm/v1/quote/exact_out?pool_id=&denom_out=&amount_out=` | 出力量を固定した場合の入力量と手数料 |
+
+存在しないプールに対する見積もりは、プールが見つからないというエラーで応答します。
+
+### テストネットの Fest トークン {#fest-tokens}
+
+テストネットのガバナンスは、3つのテスト用 ERC-20 コントラクト **fUSD**(小数桁 6)、**fETH**(18)、**fBTC**(8)を登録しました。これにより、大文字と小文字を区別するデノミネーション `erc20:<EIP-55 contract address>` のバンクコインとして存在します([フォーセット](/dashboard/faucet#fest-tokens)ページに一覧があります)。保有者は `MsgConvertERC20` でバンクコインを取得でき(送信者は `qor1...` の bech32 アドレスである必要があります)、通常の `create-pool` コマンドと 100 QOR の作成手数料で `uqor` とのプールを作成できます。これらはテストネット専用で価値のないテストトークンであり、これらのプールはまだ存在しません(2026年10月27日に確認)。メインネットにはこのようなトークンはありません。
 
 ## プールの一時停止と再開
 
@@ -161,8 +185,8 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 | コマンド | 目的 |
 | --- | --- |
 | `create-pool` | `constant_product`または`stable_swap`プールを作成する |
-| `add-liquidity` | リザーブを預け入れてLPトークンをミントする |
-| `remove-liquidity` | LPトークンをバーンしてリザーブを引き出す |
+| `add-liquidity` | リザーブを預け入れてLPシェアを加算する |
+| `remove-liquidity` | LPシェアを差し引いてリザーブを引き出す |
 | `swap-exact-in` | 固定された入力量をスワップする |
 | `swap-exact-out` | 固定された出力量にスワップする |
 | `pause-pool` | プールを一時停止する（ガバナンス権限。メインネットでは無効） |

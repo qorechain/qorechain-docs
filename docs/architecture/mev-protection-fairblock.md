@@ -9,8 +9,8 @@ sidebar_position: 10
 
 The `x/fairblock` module is QoreChain's design for defending against Maximal Extractable Value (MEV) attacks using threshold identity-based encryption. Combined with a 5-lane transaction prioritization system, it is intended to form an anti-MEV architecture that protects users from front-running, sandwich attacks, and other forms of mempool-based value extraction.
 
-:::note Current status (settings checked 20 October 2026; mainnet and testnet both run v3.2.4)
-FairBlock is **disabled on both mainnet and testnet** (`enabled = false`), and the 5-lane definitions are configuration only: block-space lanes are not enforced by the live mempool or proposal handler. The node serves no FairBlock transaction or query service, and no release up to v3.2.4, which both networks run, changes any of this. This page describes the intended design.
+:::note Current status (settings checked 20 October 2026 on v3.2.4; mainnet unchanged, the testnet now runs v3.2.6)
+FairBlock is **disabled on both mainnet and testnet** (`enabled = false`), and the 5-lane definitions are configuration only: block-space lanes are not enforced by the live mempool or proposal handler. The node serves no FairBlock transaction or query service, and no release up to v3.2.4 changes any of this on mainnet (the FairBlock REST routes also answer "not implemented" on the testnet, checked 27 October 2026). This page describes the intended design.
 
 What the live networks do instead for AMM swaps is described in [AMM & On-Chain Liquidity](/architecture/amm#swap-rules): a price-impact cap and a block-open price check for swaps that set no slippage bound. These are protocol rules on the swap, not transaction encryption.
 :::

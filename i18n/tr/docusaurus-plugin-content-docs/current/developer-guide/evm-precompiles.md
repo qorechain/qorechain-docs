@@ -9,22 +9,22 @@ sidebar_position: 6
 
 QoreChain, QoreChain EVM Engine'i protokol düzeyindeki özellikleri doğrudan Solidity'ye sunan **altı özel ön derlenmiş contract** ile genişletir. Bu ön derlemeler; kuantum sonrası kriptografiye, AI risk puanlamasına, VM'ler arası mesajlaşmaya ve PRISM konsensüs parametrelerine zincir üzerinde erişim sağlar.
 
-:::warning Ana ağda ve test ağında henüz etkin değil
-Aşağıdaki altı QoreChain ön derlemesi **düğüme derlenmiştir ancak henüz etkinleştirilmemiştir**; bu hem **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9801**) hem de **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için geçerlidir. EVM yalnızca `active_static_precompiles` parametresinde listelenen adresleri çalıştırır ve bu liste her iki ağda da boştur. Bir zincir yükseltmesi bunları etkinleştirene kadar, bu adreslere yapılan bir çağrı **başarılı olur ve boş veri (`0x`) döndürür**; geri alınmaz (revert) ve hata döndürmez. Herhangi birine güvenmeden önce [Ağ durumu](#network-status) bölümüne bakın.
+:::warning Ana ağda etkin değil; test ağında üçü etkin
+Aşağıdaki altı QoreChain ön derlemesi **düğüme derlenmiştir**, ancak EVM yalnızca `active_static_precompiles` parametresinde listelenen adresleri çalıştırır. **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**) bu liste yazım sırasında boştur, dolayısıyla orada **hiçbiri etkin değildir**. **`qorechain-diana`** test ağında (EVM zincir kimliği **9800**) üçü etkindir: PQC Verify, PQC Key Status ve PRISM Consensus Params; bunlar test ağı yönetişim önerisi 21 ile etkinleştirildi (27 Ekim 2026'da geçti). Diğer üçü her iki ağda da etkin değildir. Listede olmayan bir adrese yapılan çağrı **başarılı olur ve boş veri (`0x`) döndürür**; geri alınmaz (revert) ve hata döndürmez. Herhangi birine güvenmeden önce [Ağ durumu](#network-status) bölümüne bakın.
 :::
 
 ## Ağ durumu {#network-status}
 
 | Ön derleme | Adres | `qorechain-vladi` (ana ağ) | `qorechain-diana` (test ağı) |
 | --- | --- | --- | --- |
-| PQC Verify | `0x…0A01` | Etkin değil | Etkin değil |
-| PQC Key Status | `0x…0A02` | Etkin değil | Etkin değil |
+| PQC Verify | `0x…0A01` | Etkin değil | **Etkin** (27 Ekim 2026'dan beri) |
+| PQC Key Status | `0x…0A02` | Etkin değil | **Etkin** (27 Ekim 2026'dan beri) |
 | AI Risk Score | `0x…0B01` | Etkin değil | Etkin değil |
 | AI Anomaly Check | `0x…0B02` | Etkin değil | Etkin değil |
-| PRISM Consensus Params | `0x…0C01` | Etkin değil | Etkin değil |
+| PRISM Consensus Params | `0x…0C01` | Etkin değil | **Etkin** (27 Ekim 2026'dan beri) |
 | CrossVM Bridge | `0x…0901` | Etkin değil | Etkin değil |
 
-Etkinleştirme bir zincir yükseltmesi gerektirir ve aşamalı olarak planlanmıştır: önce salt okunur PQC ve konsensüs ön derlemeleri, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve en son CrossVM köprüsü. v3.2.3 sürümü (ana ağ, 20 Ekim 2026), CrossVM köprüsünün ve AI anomali ön derlemesinin güçlendirilmiş sürümlerini bir protokol özelliğinin arkasında ikili dosyaya koydu, **ancak hiçbir ön derlemeyi etkinleştirmedi**: `active_static_precompiles` listesi her iki ağda da hâlâ boştur ve v3.2.4 (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri) bunu değiştirmez. Bu tablo, herhangi birini etkinleştiren yükseltmeyle aynı işlemde güncellenir.
+Durum, 27 Ekim 2026'da canlı `active_static_precompiles` parametresinden okunduğu gibidir. Bu, yönetişimle değiştirilen bir zincir parametresidir; dolayısıyla her ağın listesi yalnızca bir yönetişim önerisi geçtiğinde değişir: test ağı listesi öneri 21 ile belirlendi ve yazım sırasında hiçbir ana ağ önerisi onu değiştirmiyor. v3.2.3 sürümü (ana ağ, 20 Ekim 2026), CrossVM köprüsünün ve AI anomali ön derlemesinin güçlendirilmiş sürümlerini bir protokol özelliğinin arkasında ikili dosyaya koydu, ancak hiçbir ön derlemeyi etkinleştirmedi ve v3.2.4 (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri) bunu değiştirmez. Önce salt okunur PQC ve konsensüs ön derlemeleri gelir, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve en son CrossVM köprüsü. Bu tablo yalnızca uygulanmış olanı listeler: hâlâ oylama döneminde olan bir öneri bir durum değildir.
 
 Güncel listeyi kendiniz kontrol edin (boşsa hiçbiri etkin değildir):
 
@@ -45,6 +45,14 @@ require(ok && ret.length >= 96, "precompile not active");
 ```
 
 Bu adreslere değer göndermeyin. Bunlar payable değildir ve etkin olmayan bir ön derleme adresine gönderilen değer orada kalır ve geri alınmasının bir yolu yoktur.
+
+Test ağında, etkin üç ön derlemenin yanıt verdiğini hızlıca denetlemek için (Foundry'nin `cast` aracıyla; ana ağda bu adresler bunun yerine boş veri döndürür):
+
+```bash
+RPC=https://evm-testnet.qore.host
+cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
+```
 
 ---
 
@@ -95,7 +103,7 @@ interface IQorePQC {
 }
 ```
 
-v3.2.4'ten itibaren (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri), bu ön derleme etkin hale geldiğinde çıktısı `pubkey` değerinden sonra dördüncü bir değer taşır, `bool possessionProven`: hesabın geçerli anahtarının doğrulanmış bir sahiplik kanıtıyla kanıtlanıp kanıtlanmadığı (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#proof-of-possession)). Yukarıdaki arayüz ilk üç çıktıyı listeler; anahtara güvenmesi gereken bir sözleşme dördüncüyü de okumalıdır.
+v3.2.4'ten itibaren (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri), `pqcKeyStatus` çıktısı `pubkey` değerinden sonra dördüncü bir değer taşır, `bool possessionProven`: hesabın geçerli anahtarının doğrulanmış bir sahiplik kanıtıyla kanıtlanıp kanıtlanmadığı (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#proof-of-possession)). Ön derlemenin etkin olduğu her yerde döndürülür: test ağında canlıdır (anahtarı olmayan bir hesap için yapılan çağrı `false, 0, 0x, false` döndürür), ana ağda ise bir yükseltme ön derlemeyi etkinleştirdiğinde. Yukarıdaki arayüz ilk üç çıktıyı listeler; anahtara güvenmesi gereken bir sözleşme dördüncüyü de okumalıdır.
 
 ### IQoreAI.sol
 
@@ -264,10 +272,10 @@ contract ConsensusReader {
 }
 ```
 
-**Gaz maliyeti:** 1,500 sabit.
+**Gaz maliyeti:** 1,500 sabit, artı çağrının yaptığı durum okumaları standart maliyetle.
 
-:::note
-Mevcut düğüm derlemesinde `rlConsensusParams`, canlı PRISM ile ayarlanmış değerler değil, sabit yer tutucu varsayılanlar döndürür (örneğin ölçülen blok süresini bildirmez; bu süre ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn'dir). Bunu canlı konsensüs parametrelerine bağlamak etkinleştirme çalışmasının bir parçasıdır.
+:::note Dört değerin anlamı
+v3.2.6'dan itibaren (test ağı; henüz ana ağda değil) `rlConsensusParams`, sabit yer tutucular yerine `rlconsensus` modülünün tuttuğu değerleri döndürür: uygulanan blok süresi hedefi (milisaniye), uygulanan gaz fiyatı tabanı, modülün `default_validator_set_size` değeri ve ajanın geçerli epoch'u. Test ağında 27 Ekim 2026'da `5000`, `100`, `100`, `1` döndürdü (`GET /qorechain/rlconsensus/v1/applied_params` ile aynı uygulanan değerler, bkz. [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#rlconsensus-module)). Bunlar modülün kendi ayarlarıdır, **ölçülen blok süresi değildir** (ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,3 sn) ve ajan test ağında gölge modunda çalışır, dolayısıyla hiçbir şey uygulamaz. v3.2.6'dan eski bir düğümde aynı çağrı sabit yer tutucu varsayılanlar döndürür.
 :::
 
 ### CrossVM Bridge — EVM'den QoreChain Native Çağırma
@@ -315,4 +323,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — Tam VM'ler arası mesajlaşma belgeleri
 * [EVM Geliştirme](/developer-guide/evm-development) — Solidity sözleşmelerini dağıtma
-* [Hesap Soyutlaması](/developer-guide/account-abstraction) — Bağlı cüzdan yetkilendiricileri ve harcama kuralları (modül şu anda devre dışı)
+* [Hesap Soyutlaması](/developer-guide/account-abstraction) — Bağlı cüzdan yetkilendiricileri ve harcama kuralları (test ağında etkin, ana ağda devre dışı)

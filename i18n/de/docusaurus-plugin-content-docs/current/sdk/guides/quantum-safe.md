@@ -61,8 +61,8 @@ Wiederholungsversuch als Fehler geworfen: Sie wird nie als „nicht registriert�
 Derselbe Status ist auf der EVM-Seite ebenfalls über das Precompile
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
 an `0x0000000000000000000000000000000000000A02` lesbar (in `@qorechain/evm` als
-`pqcKeyStatus` bereitgestellt), sobald dieses Precompile aktiv ist; auf Mainnet und
-Testnet ist es noch nicht aktiv (siehe
+`pqcKeyStatus` bereitgestellt), sobald dieses Precompile aktiv ist; im Mainnet ist es nicht
+aktiv, und im Testnet wird es als aktiv geführt (geprüft am 27. Oktober 2026; siehe
 [Netzwerkstatus](/developer-guide/evm-precompiles#network-status)).
 
 ## Registrierung in einem Aufruf {#register-in-one-call}

@@ -11,7 +11,7 @@ Domande generali su QoreChain, con risposte tratte dalla documentazione. Ogni ri
 
 ### La mainnet è attiva?
 
-Sì. La mainnet di QoreChain (chain `qorechain-vladi`, EVM chain ID 9801) è attiva dal 7 giugno 2026 ed esegue la release v3.2.4 (applicata all'altezza 3.742.566 il 23 ottobre 2026 dalla proposta di governance 13); la testnet, `qorechain-diana`, esegue la v3.2.4 dal 19 ottobre 2026. Vedi [Reti](/appendix/networks) e [Connessione alla mainnet](/getting-started/connecting-to-mainnet).
+Sì. La mainnet di QoreChain (chain `qorechain-vladi`, EVM chain ID 9801) è attiva dal 7 giugno 2026 ed esegue la release v3.2.4 (applicata all'altezza 3.742.566 il 23 ottobre 2026 dalla proposta di governance 13; la proposta di governance 14 applicherebbe la v3.2.5 all'altezza 3.906.833 ed era nel periodo di voto al momento della stesura); la testnet, `qorechain-diana`, esegue la v3.2.6 (applicata all'altezza 8.970.638 il 27 ottobre 2026). Vedi [Reti](/appendix/networks) e [Connessione alla mainnet](/getting-started/connecting-to-mainnet).
 
 ### Quali sono i chain ID e gli EVM chain ID?
 
@@ -27,7 +27,7 @@ PRISM è il livello di ottimizzazione basato sul reinforcement learning incorpor
 
 ### Il bridge cross-chain è attivo?
 
-No. Il modulo bridge è distribuito, ma tutte le 37 configurazioni di chain sono in sospeso, non è registrato alcun validatore del bridge e su nessuna delle due reti esistono canali IBC. È progettato attorno a 37 configurazioni di chain e fino a 8 controparti IBC; considera questi obiettivi come intento di progettazione. Vedi [Architettura del bridge](/architecture/bridge-architecture).
+No. Il modulo bridge è distribuito, ma tutte le 37 configurazioni di chain sono in sospeso, non è registrato alcun validatore del bridge e sulla mainnet non esiste alcun canale IBC (la testnet ha un solo canale di trasferimento ICS-20 verso una chain di test, aperto per i test IBC, e nessuno verso le controparti pianificate). È progettato attorno a 37 configurazioni di chain e fino a 8 controparti IBC; considera questi obiettivi come intento di progettazione. Vedi [Architettura del bridge](/architecture/bridge-architecture).
 
 ### Come collego un wallet?
 
@@ -36,6 +36,10 @@ Usa il wallet ufficiale [QoreX](/qorex/overview), oppure aggiungi una rete QoreC
 ### Come ottengo i token di testnet?
 
 Usa il faucet di testnet sulla Dashboard. Vedi [Faucet della Dashboard](/dashboard/faucet) e [Connessione alla testnet](/getting-started/connecting-to-testnet).
+
+### Cosa sono fUSD, fETH e fBTC?
+
+Token di test solo per la testnet (FestUSD, FestETH e FestBTC, con 6, 18 e 8 decimali) creati per il builder fest. Non hanno alcun valore, non esistono sulla mainnet e sono detenuti come bank coin con i denom sensibili alle maiuscole `erc20:<contract address>`. Il Faucet della testnet può inviarli insieme a un claim di QOR. Vedi [Token di test Fest](/dashboard/faucet#fest-tokens).
 
 ### Come eseguo un nodo, un validatore o un light node?
 
@@ -51,11 +55,11 @@ Dalla v3.2.0 la lane EVM ammette una transazione solo da un account che abbia un
 
 ### Quanti validatori ha la mainnet?
 
-Otto validatori bonded al 23 ottobre 2026, con circa 55,6 milioni di QOR in bonding (il set attivo può contenerne fino a 100). La testnet ne ha tre. Leggi il set in tempo reale su `GET /cosmos/staking/v1beta1/validators` all'indirizzo `https://api.qore.host`.
+Otto validatori bonded al 27 ottobre 2026, con circa 60,3 milioni di QOR in bonding (il set attivo può contenerne fino a 100). La testnet ne ha quattro. Leggi il set in tempo reale su `GET /cosmos/staking/v1beta1/validators` all'indirizzo `https://api.qore.host`.
 
 ### Quale block time devo aspettarmi?
 
-Circa 3,2 secondi sulla mainnet e circa 1 secondo sulla testnet (medie misurate, ottobre 2026). Il block time è determinato dalla configurazione dei nodi dei validatori.
+Circa 3,2 secondi sulla mainnet e circa 1,3 secondi sulla testnet (medie misurate, 27 ottobre 2026). Il block time è determinato dalla configurazione dei nodi dei validatori.
 
 ### xQORE è disponibile?
 

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **v3.2.4** sürümünü çalıştırır (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı; önceki sürüm v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) 8.337.253 yüksekliğinden (19 Ekim 2026) beri **v3.2.4** çalıştırır.
+QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **v3.2.4** sürümünü çalıştırır (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı; önceki sürüm v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Yönetişim önerisi 14, v3.2.5'i ana ağda 3.906.833 yüksekliğinde uygulayacaktır (yazım sırasında, 27 Ekim 2026'da oylama süresindedir). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) **v3.2.6** çalıştırır (27 Ekim 2026'da 8.970.638 yüksekliğinde uygulandı); v3.2.4 ona 8.337.253 yüksekliğinde (19 Ekim 2026), v3.2.5 ise 8.890.800 yüksekliğinde (26 Ekim 2026) ulaştı.
 
 :::note
 Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır. Yayın manifesti ([Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet)) etiketlemeden ayrı olarak yükseltilir ve bir etiketin gerisinde bir süre kalabilir — taze bir kurulumun gerçekte ne indirdiğini görmek için doğrudan kontrol edin.
@@ -15,7 +15,7 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 
 ## Ana ağ yönetişim zaman çizelgesi {#governance-timeline}
 
-14 Ekim 2026'dan bu yana çalışan ana ağı değiştiren öneriler. Yedisi de hızlandırılmış önerilerdir (bir günlük oylama süresi); 7 ila 13 numaralı öneriler, oy kullanan tüm bonded stake'in lehte oyuyla kabul edildi. Tam liste `https://api.qore.host` üzerinde `GET /cosmos/gov/v1/proposals` adresindedir.
+14 Ekim 2026'dan bu yana çalışan ana ağı değiştiren öneriler. Sekizi de hızlandırılmış önerilerdir (bir günlük oylama süresi); 7 ila 13 numaralı öneriler, oy kullanan tüm bonded stake'in lehte oyuyla kabul edildi, 14 numaralı öneri için ise yazım sırasında hâlâ oylama sürmektedir. Tam liste `https://api.qore.host` üzerinde `GET /cosmos/gov/v1/proposals` adresindedir.
 
 | Öneri | Ne yapar | Oylama | Sonuç |
 | --- | --- | --- | --- |
@@ -26,14 +26,39 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 | 11 | v3.2.3'ü 3.662.051 yüksekliğinde uygular | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi; 20 Ekim 2026'da uygulandı |
 | 12 | Düzeltilmiş sahipsiz stake sahibi payını (3.807.496,785528 QOR, v3.2.3 yüksekliğinde yeniden hesaplandı) vakfa aktarır | 20 Ekim 2026 20:01 UTC ile 21 Ekim 2026 20:01 UTC arası | Kabul edildi |
 | 13 | v3.2.4'e 3.742.566 yüksekliğinde koordineli yükseltme: isteğe bağlı zaman kilitli stake, kayıttan itibaren sayılan ışık düğümü ödül sınırı, kuantum-sonrası anahtarlar için bir sahiplik bayrağı, köprü doğrulayıcıları için sahiplik kanıtı, blok süresi cinsinden RDK itiraz penceresi ve düğüm-yerel sertleştirme | 20 Ekim 2026 21:18 UTC ile 21 Ekim 2026 21:18 UTC arası | Kabul edildi; 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı |
+| 14 | v3.2.5'e (build 2) 3.906.833 yüksekliğinde koordineli yükseltme (düğümler o yüksekliğe kadar v3.2.4'te kalır, orada durur ve v3.2.5 ile yeniden başlar; işlem imzalama değişmez) | 27 Ekim 2026 00:29 UTC ile 28 Ekim 2026 00:29 UTC arası | Yazım sırasında oylamada. v3.2.5'in içeriği, ana ağ onu uyguladığı gün belgelenir |
 
 Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve); nasıl oy verileceği için bkz. [Yönetişim](/user-guide/governance).
 
 ---
 
+## v3.2.5 ve v3.2.6 test ağı sürümleri (şimdilik yalnızca test ağı) {#testnet-v326}
+
+`qorechain-diana` test ağı her sürümü ana ağdan birkaç gün önce alır. Bu bölümdeki hiçbir şey ana ağı değiştirmez: bir yönetişim yükseltmesi aksini söyleyene kadar ana ağ v3.2.4 çalıştırır.
+
+### v3.2.6 — Sorgu Rotaları, Canlı PRISM Değerleri ve Test Tokenleri (test ağı)
+
+**Sürüm odağı:** Test ağında, test ağı yönetişim önerisi 28 ile **8.970.638** yüksekliğinde (27 Ekim 2026, 16:58 UTC) uygulandı. Test ağı manifestosu `version` ve `minCompatible` değerlerini 3.2.6, `upgradeHeight` değerini 8970638 olarak ayarlar; dolayısıyla test ağına katılan bir düğümün v3.2.6'ya ihtiyacı vardır. İmza biçimi, adresler, ondalık basamaklar, memolar ve ücretler değişmez.
+
+* **Yeni test ağı okuma rotaları.** `GET /qorechain/pqc/v1/params`, IBC v2 istemci rotası `/ibc/core/client/v2/counterparty_info/{client_id}` ve `/qorechain/rlconsensus/v1/` altındaki PRISM (`x/rlconsensus`) sorgularının tamamı (`agent`, `params`, `observation`, `reward`, `policy`, `applied_params`, `last_action`). Ana ağ; PRISM, kuantum-sonrası parametre ve IBC v2 istemci rotalarında 501 (uygulanmadı) yanıtı verir. `/qorechain/amm/v1/` altındaki AMM rotaları (`pools`, `quote/exact_in`, `pools/{id}/lp/{address}`) her iki ağda da yanıt verir. Bkz. [REST / gRPC başvurusu](/api-reference/rest-grpc-endpoints).
+* **PRISM ajanı.** Test ağı ajanı gölge modundadır (test ağı yönetişim önerisi 29 ile ayarlandı): her 10 blokta bir gözlem yapar, bir ödül ve önerilen bir eylem hesaplar ve hiçbir değeri değiştirmeden bunları kaydeder. Ajan devre kesicisi düzeltildi ve geçmişi sınırlandı. Bkz. [PRISM](/architecture/prism-consensus-engine).
+* **EVM'de canlı PRISM değerleri.** `rlConsensusParams` precompile'ı artık sabit sayılar yerine modülün uygulanan değerlerini döndürür.
+* **Kilitli stake için undelegation daha erken reddedilir.** Mempool, kilitli stake'in undelegation veya redelegation işlemini ücrete mal olmadan önce reddeder; bir işlem simülasyonu da türlü hata kodunu döndürür.
+* **RDK.** Toplu sorgular bir `withdrawals_bound` alanı kazanır.
+* **IBC hız sınırı (yalnızca test ağı).** IBC transferleri için kanal başına bir hız sınırlayıcı: kotalar, saat cinsinden pencere başına arzın tam bir yüzdesidir. **Sınırları yönetişim belirler; hiçbir şey otomatik değildir ve bugün hiçbir sınır ayarlanmamıştır** (boş küme sınırsız demektir). İletilen bir paket her iki kanalda da kotadan düşülür ve bir iade kotayı geri verir.
+* **IBC paket iletme (yalnızca test ağı).** Gelen bir IBC v1 transferi, onu başka bir kanala gönderen bir `forward` memosu (alıcı, port, kanal) taşıyabilir; bir atlama başarısız olursa iadeler göndericiye yapılır. Yeniden deneme yoktur ve varsayılan atlama zaman aşımı 10 dakikadır; varışta ERC-20'ye dönüşen bir token iletilemez.
+* **08-wasm hafif istemcileri (yalnızca test ağı).** 08-wasm hafif istemci mesajları (bir istemci ikili dosyasını depolama, taşıma ve kaldırma) eklenmiştir, yalnızca otorite içindir. İzin verilen istemci türleri hâlâ yalnızca standart istemciyi içerir; dolayısıyla yönetişim `08-wasm`'i ekleyene kadar hiçbir wasm hafif istemcisi oluşturulamaz.
+* **Fest test tokenleri.** Builder fest için dağıtılan üç ERC-20 sözleşmesi, test ağı yönetişimi (öneri 26) tarafından bank birimleri olarak kaydedildi: fUSD (6 ondalık), fETH (18) ve fBTC (8). Bunlar değeri olmayan, yalnızca test ağına özel test tokenleridir. Bkz. [Faucet](/dashboard/faucet#fest-tokens).
+
+### v3.2.5 (test ağı)
+
+**Sürüm odağı:** Test ağında, test ağı yönetişim önerisi 15 ile **8.890.800** yüksekliğinde (26 Ekim 2026) uygulandı. Ana ağda yönetişim önerisi 14, v3.2.5'i (build 2) 3.906.833 yüksekliğinde uygulayacaktır ve yazım sırasında oylama süresindeydi. v3.2.5'in özellikleri, ana ağ onu uyguladığı gün bu geçmişte belgelenir.
+
+---
+
 ## v3.2.4 — Işık Düğümü Kayıt Penceresi ve İsteğe Bağlı Zaman Kilitli Stake (ana ağ)
 
-**Sürüm odağı:** Her iki ağdaki güncel sürüm. Önce `qorechain-diana` test ağında çalıştı: test ağı yönetişim önerisi 13 bunu **8.337.253** yüksekliğinde (19 Ekim 2026) uyguladı. Ana ağda yönetişim önerisi 13 bunu 23 Ekim 2026'da **3.742.566** yüksekliğinde uyguladı: düğümler o bloğa kadar v3.2.3'te kaldı, orada durdu ve v3.2.4 ile yeniden başladı; işlem imzalama değişmez. Ana ağ ve test ağı manifestoları `minCompatible` değerini 3.2.4 olarak ayarlar; dolayısıyla artık her iki ağa katılan bir düğümün v3.2.4'e ihtiyacı vardır. Aşağıdaki her özellik her iki ağda da canlıdır.
+**Sürüm odağı:** Güncel ana ağ sürümü. Önce `qorechain-diana` test ağında çalıştı: test ağı yönetişim önerisi 13 bunu **8.337.253** yüksekliğinde (19 Ekim 2026) uyguladı. Ana ağda yönetişim önerisi 13 bunu 23 Ekim 2026'da **3.742.566** yüksekliğinde uyguladı: düğümler o bloğa kadar v3.2.3'te kaldı, orada durdu ve v3.2.4 ile yeniden başladı; işlem imzalama değişmez. Ana ağ manifestosu `minCompatible` değerini 3.2.4 olarak ayarlar; dolayısıyla artık ana ağa katılan bir düğümün v3.2.4'e ihtiyacı vardır (test ağı o tarihten sonra v3.2.6'ya geçmiştir). Aşağıdaki her özellik ana ağda ve test ağında canlıdır.
 
 * **Işık düğümü kayıt penceresi.** Bir ışık düğümünün ödül sınırı, önceki yerleşim ile düğümün kendi kaydından hangisi daha geçse oradan başlar; böylece yeni bir kayıt, katılmasından önceki birikmiş bir tutarı toplamaz.
 * **İsteğe bağlı zaman kilitli stake (`x/stakingtier`, yeni bir modül).** Bir delegatör, delegasyonunun bir kısmını 3, 6 veya 12 ay için kilitleyebilir; kilitli kısım delegasyondan çıkarılamaz veya yeniden delege edilemez, erken kilit açmaya ise yakılan bir ceza ile izin verilir. Asgari kilit 10 QOR'dur. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
@@ -137,7 +162,7 @@ v3.2.1 düğüm düğüm uygulandı ve yükseltme yüksekliği yoktur; ana ağda
 * **İzin şeması sorgusu** — `GET /qorechain/abstractaccount/v1/permission_schema` (ayrıca gRPC/CLI üzerinden), kurallı izin taksonomisini (11 izin), mesaj→izin eşlemesini ve devredilemez mesaj listesini döndürür; böylece cüzdanlar kapsamları sabit kodlamadan doğrulayabilir.
 * **Aynı algoritmalı PQC anahtar rotasyonu** — Yeni **`MsgRotatePQCKey`**, bir hesabın ML-DSA-87 anahtarını aynı algoritma içinde döndürür (eski ve yeni anahtarlarla çift imzalı); bu, eski türetilmiş anahtarların kurallı adrese bağlı türetmeye geçişini ve ele geçirilmiş bir anahtarın emekliye ayrılmasını sağlar. Yeni CLI: `tx pqc rotate-key` ve `tx pqc recover-key` (bir anımsatıcı ifadeden deterministik anahtar kurtarma).
 * **Kök anahtar işlemleri etkilenmedi** — Değişiklikler eklemelidir; normal cüzdan ve borsa akışları değişmemiştir. Düğüm operatörleri, ağ yükseltme yüksekliğine kadar **v3.1.85** sürümünde olmalıdır.
-* **Mevcut durum** — Akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır ancak şu anda her iki ağda da **kapalıdır** (`abstractaccount.enabled = false`); v3.2.0'dan itibaren bayrak kapalıyken her yetkilendirici yolu reddedilir. Bir bağlama akışı sunmadan önce `GET /qorechain/abstractaccount/v1/config` adresini kontrol edin.
+* **Mevcut durum** — Akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır ancak **ana ağda kapalıdır** (`abstractaccount.enabled = false`) ve test ağında açıktır (27 Ekim 2026'da kontrol edildi); ana ağda v3.2.0'dan itibaren bayrak kapalıyken her yetkilendirici yolu reddedilir. Bir bağlama akışı sunmadan önce `GET /qorechain/abstractaccount/v1/config` adresini kontrol edin.
 
 ## v3.1.84 — Yetkilendirici İzinleri ve Harcama Limitleri
 

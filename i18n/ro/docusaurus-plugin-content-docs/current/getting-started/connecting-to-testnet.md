@@ -10,7 +10,7 @@ sidebar_position: 4
 Alăturați-vă rețelei de test active QoreChain Diana configurând nodul cu fișierul genesis, partenerii și setările de rețea corecte.
 
 :::note
-Această pagină acoperă rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 (versiunea **v3.2.4** din 23 octombrie 2026) și are propria pagină dedicată **Conectarea la rețeaua principală**, cu genesis, parteneri și detalii de conectare separate. Rețeaua de test rulează **v3.2.4** din 19 octombrie 2026; manifestul său de lansare se află la [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Această pagină acoperă rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 (versiunea **v3.2.4** din 23 octombrie 2026) și are propria pagină dedicată **Conectarea la rețeaua principală**, cu genesis, parteneri și detalii de conectare separate. Rețeaua de test rulează **v3.2.6** (aplicată pe 27 octombrie 2026); manifestul său de lansare se află la [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Puncte finale publice
@@ -26,7 +26,7 @@ Dacă aveți nevoie doar să **interogați rețeaua de test sau să difuzați tr
 | SVM JSON-RPC (doar citire) | `https://svm-testnet.qore.host` |
 | Explorator de blocuri | [explore.qore.network](https://explore.qore.network) (comutați pe Testnet) |
 
-QOR pentru rețeaua de test este disponibil din [Faucetul din Dashboard](/dashboard/faucet).
+QOR pentru rețeaua de test este disponibil din [Faucetul din Dashboard](/dashboard/faucet), care poate trimite și [tokenurile de test Fest](/dashboard/faucet#fest-tokens) (fUSD, fETH, fBTC; fără valoare), valabile doar pe rețeaua de test.
 
 ---
 
@@ -52,7 +52,17 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-Rețeaua de test primește upgrade-uri coordonate prin propuneri de guvernanță, așa că manifestul său conține un `upgradeHeight` (v3.2.4 a fost aplicată la înălțimea 8.337.253, la 19 octombrie 2026; înaintea ei, v3.2.3 la 8.003.746 și v3.2.2 la 6.905.034), iar `minCompatible` este egal cu versiunea curentă (3.2.4). Un nod care se alătură acum are nevoie de versiunea din manifest. Păstrați ceasul sistemului sincronizat prin NTP. Rețeaua principală a aplicat v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026, dar manifestul ei este separat, așa că nu copiați niciodată un binar de pe o rețea pe cealaltă.
+Rețeaua de test primește upgrade-uri coordonate prin propuneri de guvernanță, așa că manifestul său conține un `upgradeHeight`, iar `minCompatible` este egal cu versiunea curentă. Un nod care se alătură acum are nevoie de versiunea din manifest. La momentul redactării (27 octombrie 2026), manifestul testnet-ului arată `version` 3.2.6, `minCompatible` 3.2.6 și `upgradeHeight` 8970638, iar nota lui spune „IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens”. Păstrați ceasul sistemului sincronizat prin NTP.
+
+| Versiune | Înălțime pe testnet | Data aplicării |
+| --- | --- | --- |
+| v3.2.2 | 6.905.034 | 2 octombrie 2026 |
+| v3.2.3 | 8.003.746 | 15 octombrie 2026 |
+| v3.2.4 | 8.337.253 | 19 octombrie 2026 |
+| v3.2.5 | 8.890.800 | 26 octombrie 2026 |
+| v3.2.6 | 8.970.638 | 27 octombrie 2026 (16:58 UTC) |
+
+Rețeaua de test primește fiecare versiune înaintea mainnet-ului. Rețeaua principală a aplicat v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026; propunerea 14 de guvernanță a mainnet-ului ar aplica v3.2.5 la înălțimea 3.906.833 și se afla în perioada de votare la momentul redactării. Manifestele sunt separate, așa că nu copiați niciodată un binar de pe o rețea pe cealaltă și nu vă așteptați ca mainnet-ul să accepte o funcționalitate disponibilă doar pe testnet (adăugirile v3.2.6 sunt listate în [Istoric versiuni](/appendix/version-history#testnet-v326)).
 
 ---
 
@@ -106,7 +116,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### Setări recomandate
 
-Un nod complet nu alege timpul de bloc — validatorii o fac (rețeaua de test produce în prezent un bloc aproximativ la fiecare 1 secundă). Lăsați timeout-urile de consens la valorile implicite, cu excepția cazului în care operați un validator și v-au fost date valori de către grupul de validatori. O setare utilă de mempool pentru un nod RPC public, în `config.toml`:
+Un nod complet nu alege timpul de bloc — validatorii o fac (rețeaua de test produce în prezent un bloc aproximativ la fiecare 1,3 secunde). Lăsați timeout-urile de consens la valorile implicite, cu excepția cazului în care operați un validator și v-au fost date valori de către grupul de validatori. O setare utilă de mempool pentru un nod RPC public, în `config.toml`:
 
 ```toml
 [mempool]

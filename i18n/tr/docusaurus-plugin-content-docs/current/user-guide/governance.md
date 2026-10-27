@@ -10,7 +10,7 @@ sidebar_position: 3
 Bu kılavuz, QoreChain üzerinde zincir üstü yönetişimin nasıl çalıştığını, oyların nasıl sayıldığını, tekliflerin nasıl gönderileceğini ve nasıl oy kullanılacağını açıklar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve 23 Ekim 2026'dan beri **v3.2.4** sürümünü çalıştırıyor; testnet 19 Ekim 2026'dan beri **v3.2.4** çalıştırıyor — mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve 23 Ekim 2026'dan beri **v3.2.4** sürümünü çalıştırıyor; testnet **v3.2.6** çalıştırıyor (27 Ekim 2026'dan beri) — mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -29,7 +29,7 @@ Teklifler **bonded stake** üzerinden sayılır: bonded bir doğrulayıcıya del
 | Eşik      | 50%          | Kabul için gereken, çekimser olmayan oylar içindeki "yes" payı              |
 | Veto      | 33.4%        | "no with veto" bu paya ulaşırsa teklif reddedilir ve depozitosu yakılır     |
 
-Bu değerler 23 Ekim 2026'da mainnet'ten okunmuştur (testnet'te de aynıdır); yönetişim bunları değiştirebileceğinden `qorechaind query gov params` ile doğrulayın.
+Bu değerler 27 Ekim 2026'da mainnet'ten okunmuştur. Testnet'te depozitolar, yeter sayı ve eşikler aynıdır, ancak oylama süreleri çok daha kısadır (oylama 4 saat, hızlandırılmış oylama 1 saat); yönetişim bunları değiştirebileceğinden `qorechaind query gov params` ile doğrulayın.
 
 :::note QDRW tasarlandı ancak etkin değil
 QoreChain'in tasarımı, büyük stake'leri sönümleyecek ve itibarı ağırlıklandıracak bir **Kuadratik Delegasyon-İtibar Ağırlıklı (QDRW)** oylama gücü formülü içerir: `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`. Bu formül `x/qca` modülünde uygulanmıştır ancak her iki ağda da **kapalıdır** (`qorechaind query qca config` içinde `qdrw_enabled` değeri `false`) ve yönetişim sayımının parçası değildir; dolayısıyla bugün hiçbir oyu etkilemez. xQORE da henüz yayında değildir (bkz. [xQORE Staking](/user-guide/xqore-staking)).
@@ -161,7 +161,7 @@ qorechaind query gov params
 
 Başlıca parametreler şunlardır:
 
-| Parametre            | Açıklama                                                         | Güncel değer (20 Eki 2026) |
+| Parametre            | Açıklama                                                         | Mainnet değeri (27 Eki 2026) |
 | -------------------- | ---------------------------------------------------------------- | -------------------------- |
 | `min_deposit`        | Bir teklifin oylamaya girmesi için gereken asgari depozito       | 10 QOR (`10000000uqor`)    |
 | `max_deposit_period` | Asgari depozitoya ulaşmak için tanınan zaman penceresi           | 2 gün                      |
@@ -175,7 +175,7 @@ Başlıca parametreler şunlardır:
 
 ## Mainnet'te şimdiye kadarki yönetişim {#mainnet-history}
 
-Mainnet yönetişimi; parametre değişiklikleri, devre kesici kararları, koordineli yükseltmeler ve Ekim 2026'dan itibaren zincirin v3.2.0 yükseltmesinde kaydettiği tutarların serbest bırakılması için kullanılmıştır. 7 ila 13 numaralı teklifler Ekim 2026'da mainnet'te kabul edildi; bunların arasında 12 numaralı (başka bir serbest bırakma, 21 Ekim'de kabul edildi) ve 13 numaralı (v3.2.4 yükseltmesi, 23 Ekim'de 3.742.566 yüksekliğinde uygulandı) teklifler de vardır; liste ve sonuçlar [Sürüm Geçmişi](/appendix/version-history#governance-timeline) sayfasındadır ve her teklif `GET /cosmos/gov/v1/proposals` adresinden canlı olarak okunabilir.
+Mainnet yönetişimi; parametre değişiklikleri, devre kesici kararları, koordineli yükseltmeler ve Ekim 2026'dan itibaren zincirin v3.2.0 yükseltmesinde kaydettiği tutarların serbest bırakılması için kullanılmıştır. 7 ila 13 numaralı teklifler Ekim 2026'da mainnet'te kabul edildi; bunların arasında 12 numaralı (başka bir serbest bırakma, 21 Ekim'de kabul edildi) ve 13 numaralı (v3.2.4 yükseltmesi, 23 Ekim'de 3.742.566 yüksekliğinde uygulandı) teklifler de vardır; 14 numaralı teklif (3.906.833 yüksekliğinde v3.2.5'e koordineli bir yükseltme) yazım sırasında oylama dönemindeydi; liste ve sonuçlar [Sürüm Geçmişi](/appendix/version-history#governance-timeline) sayfasındadır ve her teklif `GET /cosmos/gov/v1/proposals` adresinden canlı olarak okunabilir.
 
 ---
 

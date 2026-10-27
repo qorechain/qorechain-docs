@@ -29,7 +29,7 @@ QoreChain は **EVM、SVM、QoreChain Native を並行して**実行し、`x/cro
   代わりに `connectQueryClients(rpc).crossvm` でメッセージを読み取ってください。
 - すべての Native パスのトランザクションと同様に、クロス VM 呼び出しもハイブリッド署名を
   持たなければなりません。署名用クライアントをアカウントの鍵ペアと接続すると
-  （`client.connectTx(signer, { pqcKeypair })`、SDK 0.9.0）、クロス VM クライアントが
+  （`client.connectTx(signer, { pqcKeypair })`、SDK 0.9.0 以降）、クロス VM クライアントが
   ハイブリッドで署名します（[アカウントと PQC 署名](/sdk/concepts/accounts-pqc#hybrid-signing)を参照）。
   0.9.0 より前のリリースは古典署名で署名するため、公開ネットワークはこれを拒否します。
 :::

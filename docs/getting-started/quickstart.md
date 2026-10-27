@@ -76,7 +76,7 @@ This creates the default configuration and data directories under `~/.qorechaind
 The node starts with default settings. See [Connecting to Testnet](/getting-started/connecting-to-testnet) for joining the live network with proper genesis and peer configuration.
 
 :::note
-The examples on this page target the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 (release v3.2.4 since 23 October 2026; the testnet has run v3.2.4 since 19 October 2026) and has its own dedicated **Connecting to Mainnet** page.
+The examples on this page target the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 (release v3.2.4 since 23 October 2026; the testnet runs v3.2.6 since 27 October 2026) and has its own dedicated **Connecting to Mainnet** page.
 :::
 
 ---

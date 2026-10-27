@@ -271,9 +271,7 @@ Bu yardımcı programlar, varsayılan uygulama hash'ini destekler ve şunlar iç
 
 ## Köprü PQC
 
-Tüm çapraz zincir köprü kanıtlamaları ve durum taahhütleri **Dilithium-5** imzaları kullanır. `x/multilayer` modülü, her `MsgAnchorState` gönderiminde PQC toplu imzalar gerektirir ve ML-KEM taahhütleri, köprü aktarıcıları arasındaki anahtar değişim kanallarını güvence altına alır.
-
-Bu, köprü altyapısında klasik kriptografi kullanımıyla çapraz zincir güvenliğinin bozulmamasını sağlayarak protokol yığını genelinde kuantum direncini korur. Hiçbir köprü rotası canlı değildir (bkz. [Köprü Mimarisi](/architecture/bridge-architecture#current-status)); v3.2.4'ten itibaren (mainnet'te 23 Ekim 2026'dan beri, testnet'te 19 Ekim 2026'dan beri) bir köprü doğrulayıcısı kaydetmek, ayrıca PQC anahtarının sahiplik kanıtını da gerektirir.
+Köprü kanıtlamalarının (attestation), köprü altyapısında klasik kriptografi kullanımıyla çapraz zincir güvenliğinin bozulmaması için **Dilithium-5** (ML-DSA-87) imzaları kullanması tasarlanmıştır. Bu bir tasarım niyetidir: köprü doğrulayıcılarının nasıl kanıtlama yapması amaçlandığını anlatır, bugün canlı bir ağda deneyebileceğiniz bir davranış değildir. Hiçbir köprü rotası canlı değildir (bkz. [Köprü Mimarisi](/architecture/bridge-architecture#current-status)); v3.2.4'ten itibaren (mainnet'te 23 Ekim 2026'dan beri, testnet'te 19 Ekim 2026'dan beri) bir köprü doğrulayıcısı kaydetmek, ayrıca PQC anahtarının sahiplik kanıtını da gerektirir.
 
 ## Modül Parametreleri
 
@@ -285,6 +283,8 @@ Bu, köprü altyapısında klasik kriptografi kullanımıyla çapraz zincir güv
 | `default_migration_blocks` | int64               | `1,000,000`       | Blok cinsinden varsayılan çift imza geçiş süresi      |
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Yeni anahtar kayıtları için varsayılan imza algoritması |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Zincir genelinde hibrit imza uygulama düzeyi          |
+
+Test ağı bu aynı değerleri döndürür (27 Ekim 2026'da kontrol edildi). v3.2.6'dan beri test ağı bunları REST üzerinden de `GET /qorechain/pqc/v1/params` ile sunar; ana ağda bu rota 501 (uygulanmadı) yanıtı verir ve parametreler `qorechaind query pqc params` ile okunur.
 
 ## İlgili
 

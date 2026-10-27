@@ -141,10 +141,10 @@ Filter by event type to receive only events from a specific module:
 
 ## Module Events Reference
 
-Events are emitted as standard consensus-engine events. Subscribe with a `tm.event='Tx'` query filtered on the event type and attribute (for example `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Block-level events (those emitted by end-of-block logic, such as the PRISM events below) are delivered with `tm.event='NewBlock'`, not `Tx`. The names and attributes below are those of chain version v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026); events added in v3.2.4 are marked.
+Events are emitted as standard consensus-engine events. Subscribe with a `tm.event='Tx'` query filtered on the event type and attribute (for example `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Block-level events (those emitted by end-of-block logic, such as the PRISM events below) are delivered with `tm.event='NewBlock'`, not `Tx`. The names and attributes below are those of chain version v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026); events added in v3.2.4 are marked. The testnet (v3.2.6) emits one more event, `rl_action_proposed`, listed with the PRISM events.
 
 :::note Which events you will actually see
-Many of these modules are idle on the public networks: the bridge is not live, no multilayer layers or rollups are registered yet, and xQORE is not usable. Their events are defined but do not fire until there is activity. The PRISM observation and reward events (`rl_observation_collected`, `rl_reward_computed`) are emitted about every 10 blocks on both networks.
+Many of these modules are idle on the public networks: the bridge is not live, no multilayer layers or rollups are registered yet, and xQORE is not usable. Their events are defined but do not fire until there is activity. The PRISM observation and reward events (`rl_observation_collected`, `rl_reward_computed`) are emitted about every 10 blocks on both networks; on the testnet (v3.2.6) the agent also emits `rl_action_proposed` at each step.
 :::
 
 ### PQC Module
@@ -254,6 +254,7 @@ These are end-of-block events, delivered on the `NewBlock` stream.
 | `rl_observation_collected`     | `height`                | Emitted when a PRISM observation is taken (about every 10 blocks) |
 | `rl_reward_computed`           | `height`, `reward`      | Emitted when the PRISM reward is computed                     |
 | `rl_action_applied`            | `height`, `agent_mode`  | Emitted when the PRISM agent applies a parameter adjustment   |
+| `rl_action_proposed`           | `height`, `agent_mode`, `applied`, `block_time_delta`, `gas_price_delta`, `validator_set_size_delta`, `pool_weight_rpos_delta`, `pool_weight_dpos_delta` | **v3.2.6 (testnet only).** Emitted at every agent step in every mode, with the proposed action; `applied` is `false` in shadow mode. Mainnet does not emit it until it applies that release |
 | `rl_agent_mode_changed`        | `height`, `agent_mode`  | Emitted when the agent mode changes                           |
 | `rl_circuit_breaker_triggered` | `height`                | Emitted when the PRISM circuit breaker blocks an action       |
 | `rl_circuit_breaker_recovered` | `height`                | Emitted when the circuit breaker recovers                     |

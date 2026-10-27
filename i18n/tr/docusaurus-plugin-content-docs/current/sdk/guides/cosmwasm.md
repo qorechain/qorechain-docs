@@ -46,11 +46,14 @@ oluşturabilirsiniz.
 ## İmzalama: instantiate, execute, upload
 
 :::caution Yükleme ve instantiate izne tabidir
-`code_upload_access` ve `instantiate_default_permission`, `qorechain-vladi` ve
-`qorechain-diana` üzerinde `Nobody` olarak ayarlıdır; ayrıca `MsgStoreCode` /
+`qorechain-vladi` (mainnet) üzerinde `code_upload_access` ve
+`instantiate_default_permission` `Nobody` olarak ayarlıdır; ayrıca `MsgStoreCode` /
 `MsgInstantiateContract` / `MsgInstantiateContract2` zincirin devre kesicisi
 (circuit breaker) tarafından da kapatılmıştır, bu nedenle sıradan hesaplar için
-`uploadCode` ve `instantiate` reddedilir. Halihazırda var olan sözleşmeler
+`uploadCode` ve `instantiate` reddedilir. `qorechain-diana` (testnet, 27 Ekim 2026'da kontrol edildi)
+üzerinde `code_upload_access` `Nobody`'dir ve yalnızca `MsgStoreCode` kapatılmıştır;
+`instantiate_default_permission` ise `Everybody`'dir, dolayısıyla orada halihazırda var olan
+kod için `instantiate` açıktır. Halihazırda var olan sözleşmeler
 sorgulanabilir (yukarıda) ve yürütülebilir. Güncel izinler için
 `GET /cosmwasm/wasm/v1/codes/params` adresine bakın.
 Bkz. [QoreChain Native Geliştirme](/developer-guide/cosmwasm-development).

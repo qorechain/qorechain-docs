@@ -44,11 +44,14 @@ Vous pouvez également construire un client de lecture directement avec `createC
 ## Signature : instancier, exécuter, téléverser
 
 :::caution Le téléversement et l'instanciation sont soumis à permission
-`code_upload_access` et `instantiate_default_permission` valent `Nobody` sur
-`qorechain-vladi` et `qorechain-diana`, et `MsgStoreCode` /
+Sur `qorechain-vladi` (mainnet), `code_upload_access` et
+`instantiate_default_permission` valent `Nobody`, et `MsgStoreCode` /
 `MsgInstantiateContract` / `MsgInstantiateContract2` sont en outre désactivés par le
 disjoncteur de la chaîne ; `uploadCode` et `instantiate` sont donc refusés pour les
-comptes ordinaires. Les contrats qui existent déjà peuvent être interrogés (ci-dessus)
+comptes ordinaires. Sur `qorechain-diana` (testnet, vérifié le 27 octobre 2026),
+`code_upload_access` vaut `Nobody` et seul `MsgStoreCode` est désactivé, tandis que
+`instantiate_default_permission` vaut `Everybody` : `instantiate` y est donc ouvert pour
+du code qui existe déjà. Les contrats qui existent déjà peuvent être interrogés (ci-dessus)
 et exécutés. Consultez `GET /cosmwasm/wasm/v1/codes/params` pour connaître les
 permissions en vigueur.
 Voir [Développement QoreChain Native](/developer-guide/cosmwasm-development).

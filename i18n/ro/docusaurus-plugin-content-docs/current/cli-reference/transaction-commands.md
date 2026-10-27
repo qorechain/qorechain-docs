@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Setați `--chain-id qorechain-vladi` pentru a difuza tranzacția pe mainnet-ul live sau `--chain-id qorechain-diana` pentru testnet. Ambele rețele rulează linia v3.2: versiunea de nod pentru mainnet **v3.2.4** (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026 prin propunerea de guvernanță 13; v3.2.3 a fost aplicată la înălțimea 3.662.051 pe 20 octombrie 2026), testnet **v3.2.4** (aplicată la înălțimea 8.337.253 pe 19 octombrie 2026). Verificați `latest.json` de pe [download.qore.host](https://download.qore.host) pentru versiunea curentă. Dacă `--chain-id` este omis, clientul folosește `chain-id`-ul din configurația locală a clientului.
+Setați `--chain-id qorechain-vladi` pentru a difuza tranzacția pe mainnet-ul live sau `--chain-id qorechain-diana` pentru testnet. Ambele rețele rulează linia v3.2: versiunea de nod pentru mainnet **v3.2.4** (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026 prin propunerea de guvernanță 13; v3.2.3 a fost aplicată la înălțimea 3.662.051 pe 20 octombrie 2026; propunerea de guvernanță 14 ar aplica v3.2.5 la înălțimea 3.906.833 și se află în perioada de votare la momentul redactării), testnet **v3.2.6** (aplicată la înălțimea 8.970.638 pe 27 octombrie 2026, după v3.2.5 la înălțimea 8.890.800 pe 26 octombrie și v3.2.4 la înălțimea 8.337.253 pe 19 octombrie). Verificați `latest.json` de pe [download.qore.host](https://download.qore.host) pentru versiunea curentă. Dacă `--chain-id` este omis, clientul folosește `chain-id`-ul din configurația locală a clientului.
 
-Comenzile și flag-urile de pe această pagină au fost verificate pe binarul de release v3.2.3, plus completările din v3.2.4. Tot ce există doar începând cu v3.2.4 (pe mainnet din 23 octombrie 2026, pe testnet din 19 octombrie 2026) este marcat ca atare.
+Comenzile și flag-urile de pe această pagină au fost verificate pe binarul de release v3.2.3, plus completările din v3.2.4. Tot ce există doar începând cu v3.2.4 (pe mainnet din 23 octombrie 2026, pe testnet din 19 octombrie 2026) este marcat ca atare. Sursa v3.2.6 nu adaugă nicio comandă `tx` nouă; ea schimbă starea testnet-ului (token-uri de test, un modul abstract-account activat, instanțiere QoreChain Native deschisă), lucruri menționate în secțiunile de mai jos acolo unde contează.
 :::
 
 Flag-urile comune se aplică fiecărei subcomenzi `tx`:
@@ -435,7 +435,7 @@ Limitele sunt în unități de bază, iar `0` înseamnă nelimitat. Doar o rută
 qorechaind tx ibc-transfer transfer transfer <channel> <receiver> <amount> [flags]
 ```
 
-Primul `transfer` este subcomanda, iar al doilea este portul sursă. La momentul redactării, nu este deschis niciun canal IBC pe vreuna dintre rețele (`query ibc channel channels`).
+Primul `transfer` este subcomanda, iar al doilea este portul sursă. La momentul redactării, nu este deschis niciun canal IBC pe mainnet; testnet-ul are un canal de transfer deschis (`channel-0`), verificat la 27 octombrie 2026 cu `query ibc channel channels`.
 
 ---
 
@@ -452,6 +452,8 @@ qorechaind tx amm swap-exact-out <pool_id> <denom_in> <token_out> <max_in> [flag
 ```
 
 Începând cu v3.2.2, un swap trebuie să numească ambele denominații ale pool-ului, `max_swap_impact_bps` este impus, iar taxa de protocol este direcționată prin modulul burn.
+
+Pe testnet, un pool poate asocia `uqor` cu unul dintre cele trei token-uri de test Fest (fără valoare; doar testnet). Depozitul și sumele swap-ului folosesc denominația bank `erc20:<adresa 0x EIP-55>`, care ține cont de majuscule, de exemplu `qorechaind tx amm create-pool constant_product 1000000000uqor 2000000000erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA --from mykey --generate-only > tx.json` (apoi `tx pqc cosign`). Un token deținut pe partea EVM trebuie mai întâi convertit într-un coin bank cu `MsgConvertERC20`, al cărui expeditor este o adresă `qor1`; comanda CLI `qorechaind tx erc20 convert-erc20` din versiunea de nod v3.2.6 scrie expeditorul ca adresă `0x`, iar lanțul o refuză (`decoding bech32 failed`), așa că construiți acel mesaj cu expeditorul `qor1`. Detalii: [Dezvoltare EVM](/developer-guide/evm-development#fest-tokens). Crearea unui pool costă taxa de creare a pool-ului în plus față de depozite (`pool_creation_fee` în `query amm params`).
 
 ---
 
@@ -507,6 +509,8 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 
 `profile` este `defi`, `gaming`, `nft`, `enterprise` sau `custom`; `stake_amount` este în uqor (minimul curent se află în `query rdk config`). Presetarea profilului furnizează settlement-ul, sequencer-ul, DA și modelul de gas; doar VM-ul poate fi suprascris din linia de comandă. Nu există nicio comandă `finalize-batch`.
 
+Pe un rollup al cărui data availability este `native` (sau `both`), lăsați `--data-hash` gol: nicio tranzacție nu postează un blob de data availability, iar lanțul refuză un batch care declară un hash de date pentru un astfel de rollup (așa se comportă versiunea de nod v3.2.4, versiunea de mainnet la momentul redactării). Pentru un rollup optimistic, clientul `@qorechain/rdk` (0.6.1) setează state root-ul unui batch la rădăcina canonică de tranziție a lanțului (`batchTransitionRoot` în RDK); vezi [Rollup-uri](/rollups/overview).
+
 `--anchor-signature` este semnătura ML-DSA a creatorului rollup-ului peste **octeții de semnare v2 ai ancorei**; cu ea, batch-ul este ancorat și în modulul multilayer. Afișați octeții exacți de semnat cu `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>`; valorile trebuie să corespundă flag-urilor `submit-batch`. Începând cu v3.2.3, modulul ține un **registru de escrow per rollup**: o retragere se plătește doar din ceea ce conține registrul acelui rollup și este verificată pentru denominație, sumă pozitivă, adâncimea dovezii și dimensiunea nodurilor vecine; oprirea unui rollup restituie doar ceea ce a rămas în registrul său, iar un rollup oprit nu mai plătește retrageri. La momentul redactării nu există niciun rollup pe vreuna dintre rețele.
 
 ---
@@ -532,12 +536,12 @@ Unele comenzi există în binar, dar nu pot reuși pe rețelele live:
 
 | Comandă                                                   | Motiv                                                                                          |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | Permisiunea de upload și instanțiere este `Nobody` pe ambele rețele, iar tipurile de mesaj sunt și pe lista circuit breaker-ului |
+| `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | Mainnet: permisiunea de upload și instanțiere este `Nobody`, iar cele trei tipuri de mesaj sunt pe lista circuit breaker-ului. Testnet: upload-ul este `Nobody`, iar `MsgStoreCode` este pe listă (codul este stocat prin guvernanță), în timp ce instanțierea este deschisă (`Everybody`) și nu este pe listă |
 | `tx crossvm call`                                         | Dezactivată pe mainnet de circuit breaker; activată pe testnet                                 |
 | `tx vesting create-vesting-account`, `create-periodic-vesting-account`, `create-permanent-locked-account` | Pe lista circuit breaker-ului de mainnet; începând cu v3.2.3, un cont de vesting poate fi oricum creat doar pentru semnatarul însuși |
 | PQC `MsgDeprecateAlgorithm` / `MsgDisableAlgorithm`        | Mesaje de propunere de guvernanță (fără comandă CLI), pe lista circuit breaker-ului de mainnet; începând cu v3.2.3, guvernanța nu poate elimina nici ultimul algoritm de semnătură activ |
 | `tx svm deploy-program`, `execute`, `create-account`      | Calea de tranzacție SVM este dezactivată la nivelul întregii rețele                            |
-| `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | Modulul abstract-account este oprit (`query abstractaccount config` afișează `enabled: false`) |
+| `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | Mainnet: modulul abstract-account este oprit (`query abstractaccount config` afișează `enabled: false`). Testnet: pornit prin guvernanță (`enabled: true`, verificat la 27 octombrie 2026) |
 | `tx rlconsensus *`, `tx amm pause-pool`/`resume-pool`      | Mesaje cu autoritate de guvernanță; sunt și pe lista circuit breaker-ului de mainnet           |
 | `tx license *`                                            | Doar pentru autoritate (licențele sunt acordate de autoritatea de licențiere a rețelei; începând cu v3.2.3, guvernanța poate înlocui acea autoritate cu `MsgUpdateAuthority`) |
 

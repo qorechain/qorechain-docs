@@ -17,16 +17,17 @@ ML-DSA**.
 C'est le pendant côté SDK du module
 [d'abstraction de compte](/developer-guide/account-abstraction) de la chaîne.
 
-:::danger Non disponible sur les réseaux en production
-Le module `x/abstractaccount` est **désactivé** sur `qorechain-vladi` et
-`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` renvoie
-`"enabled": false`). À partir de la chaîne v3.2.0, cet indicateur est appliqué sur
-tous les chemins (création d'un compte abstrait, liaison d'un authentificateur, et
-`MsgExecuteEVM` / `MsgExecuteCosmos`), et la chaîne les refuse avec `abstract account
-module is disabled` (code 9). Aucune transaction ne peut l'activer. Tout ce qui suit
-décrit les interfaces du module à titre de référence : ne construisez pas de flux de
-clé liée ou de dépense déléguée sur les réseaux en production tant que le module
-n'est pas activé, et vérifiez l'indicateur avant de proposer un tel flux.
+:::danger Non disponible sur le mainnet
+Le module `x/abstractaccount` est **désactivé** sur `qorechain-vladi` (mainnet) :
+`GET /qorechain/abstractaccount/v1/config` renvoie `"enabled": false`. À partir de la
+chaîne v3.2.0, cet indicateur est appliqué sur tous les chemins (création d'un compte
+abstrait, liaison d'un authentificateur, et `MsgExecuteEVM` / `MsgExecuteCosmos`), et
+la chaîne les refuse avec `abstract account module is disabled` (code 9). Aucune
+transaction ne peut l'activer. Sur le testnet `qorechain-diana`, la même route a
+renvoyé `"enabled": true` le 27 octobre 2026 ; les flux ci-dessous peuvent donc y être
+essayés. Ne construisez pas de flux de clé liée ou de dépense déléguée pour le mainnet
+tant que le module n'y est pas activé, et vérifiez l'indicateur sur le réseau que vous
+ciblez avant de proposer un tel flux.
 :::
 
 ## Le modèle du relayeur
@@ -325,10 +326,13 @@ incrémenté à chaque exécution réussie.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` est un compteur du même type.
 
-Il n'existe pas encore de requête pour ce compteur ; suivez-le donc pour chaque clé
-liée : 0 pour une clé nouvellement liée, +1 après chaque exécution acceptée par la
-chaîne. Envoyer une valeur qui n'est pas le compteur actuel de la chaîne provoque un
-rejet pour rejeu (code 11 de `abstractaccount`, voir ci-dessous).
+Depuis la chaîne v3.2.4 (les deux réseaux servent la route) et le SDK 0.10.0, vous
+pouvez lire le compteur au lieu de le suivre : `fetchAuthNonce({ rest, address, pubkey })`
+appelle `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` et renvoie
+`{ nonce, linked }`. Une clé qui n'a jamais exécuté renvoie 0, et le compteur est conservé
+même pour une clé qui n'est plus liée (`linked` indique laquelle). Envoyer une valeur qui n'est pas le compteur actuel de la chaîne provoque un
+rejet pour rejeu (code 11 de `abstractaccount`, voir ci-dessous). Avec un SDK ou une chaîne plus ancien, suivez-le pour chaque clé liée : 0 pour une clé nouvellement liée,
++1 après chaque exécution acceptée par la chaîne.
 
 ## Le schéma de permissions
 

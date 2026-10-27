@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Chain-Parameter
 
-Konsolidierte Referenz der Modulparameter der QoreChain-Netzwerke, nach Modul gruppiert. Die Parameter können mit `qorechaind query <module> params` abgefragt werden, sofern das Modul eine Params-Abfrage besitzt (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` und `gasabstraction` verwenden `config`), und über REST nur für die in der [REST- / gRPC-Referenz](/api-reference/rest-grpc-endpoints) aufgeführten Routen. Die Parameter von `x/inflation` werden im Mainnet seit v3.2.3 ebenfalls über REST bereitgestellt (`/qorechain/inflation/v1/params`). REST ist für `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` und `xqore` nicht verfügbar.
+Konsolidierte Referenz der Modulparameter der QoreChain-Netzwerke, nach Modul gruppiert. Die Parameter können mit `qorechaind query <module> params` abgefragt werden, sofern das Modul eine Params-Abfrage besitzt (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` und `gasabstraction` verwenden `config`), und über REST nur für die in der [REST- / gRPC-Referenz](/api-reference/rest-grpc-endpoints) aufgeführten Routen. Die Parameter von `x/inflation` werden im Mainnet seit v3.2.3 ebenfalls über REST bereitgestellt (`/qorechain/inflation/v1/params`). Im Mainnet ist REST für `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` und `xqore` nicht verfügbar, ebenso wenig für die Parameter von `pqc` (das Testnet stellt die Parameter von `pqc`, `crossvm` und `rlconsensus` seit v3.2.6 über REST bereit).
 
 :::note
-Die angezeigten Werte wurden live aus dem Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, Release **v3.2.4**, angewendet am 23. Oktober 2026) am 23. Oktober 2026 ausgelesen (Genesis-Werte, sofern kein Governance-Vorschlag sie geändert hat; solche Fälle sind vermerkt). Sie sind auf dem Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**, Release **v3.2.4** seit dem 19. Oktober 2026) identisch, sofern nicht anders angegeben; die verbleibenden Unterschiede sind unter [Unterschiede zwischen Testnet und Mainnet](#testnet-differences) zusammengefasst. In Blöcken angegebene Dauern werden mit der gemessenen Mainnet-Blockzeit von etwa 3,2 Sekunden umgerechnet (das Testnet erzeugt etwa jede Sekunde einen Block).
+Die angezeigten Werte wurden live aus dem Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, Release **v3.2.4**, angewendet am 23. Oktober 2026) am 23. Oktober 2026 ausgelesen (Genesis-Werte, sofern kein Governance-Vorschlag sie geändert hat; solche Fälle sind vermerkt), und die Zeilen der Kernmodule wurden am 27. Oktober 2026 erneut ausgelesen. Der Governance-Vorschlag 14 würde v3.2.5 im Mainnet bei Blockhöhe 3,906,833 anwenden (zum Zeitpunkt der Erstellung in seiner Abstimmungsphase); diese Seite beschreibt das Mainnet, wie es heute ist, und wird aktualisiert, sobald dieses Upgrade angewendet wurde. Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) läuft mit dem Release **v3.2.6** (angewendet am 27. Oktober 2026). Seine Werte sind mit denen des Mainnets identisch, sofern nicht anders angegeben; die verbleibenden Unterschiede sind unter [Unterschiede zwischen Testnet und Mainnet](#testnet-differences) zusammengefasst. In Blöcken angegebene Dauern werden mit der gemessenen Mainnet-Blockzeit von etwa 3,2 Sekunden umgerechnet (das Testnet erzeugt etwa alle 1,3 Sekunden einen Block).
 :::
 
 ---
@@ -158,7 +158,7 @@ Das Modul prägt diese Emission in das Gebühren-Sammelkonto, bis die Obergrenze
 
 ## RL-Consensus-Modul (`x/rlconsensus`)
 
-Das Modul `x/rlconsensus` implementiert **PRISM**, die Reinforcement-Learning-Optimierungsschicht. In beiden Netzwerken befindet es sich im Beobachtungsmodus: Es sind keine Policy-Gewichte geladen, es stimmt also nichts ab. Die vier PRISM-Steuernachrichten sind im Mainnet durch den Circuit Breaker abgeschaltet (siehe [Circuit-Breaker-Status](#circuit-breaker)).
+Das Modul `x/rlconsensus` implementiert **PRISM**, die Reinforcement-Learning-Optimierungsschicht. Im Mainnet befindet es sich im Beobachtungsmodus: Es sind keine Policy-Gewichte geladen, es stimmt also nichts ab, und die vier PRISM-Steuernachrichten sind durch den Circuit Breaker abgeschaltet (siehe [Circuit-Breaker-Status](#circuit-breaker)). Im Testnet läuft der Agent im **Schattenmodus** mit einer kleinen geladenen Demonstrations-Policy: Er beobachtet alle 10 Blöcke und hält eine vorgeschlagene Aktion fest, ohne einen Wert zu ändern. Die Tabelle gibt die Mainnet-Werte an; das Testnet unterscheidet sich nur in `agent_mode` (`0`, Schattenmodus) und stellt sie über REST bereit (`GET /qorechain/rlconsensus/v1/params`, v3.2.6; das Mainnet antwortet mit 501).
 
 | Parameter                        | Wert           | Beschreibung                                                  |
 | -------------------------------- | -------------- | ------------------------------------------------------------- |
@@ -183,7 +183,7 @@ Das Modul `x/rlconsensus` implementiert **PRISM**, die Reinforcement-Learning-Op
 ## Bridge-Modul (`x/bridge`)
 
 :::caution Nicht live
-Alle 37 Chain-Konfigurationen haben den Status `pending`, es sind keine Bridge-Validatoren registriert, es wurde keine Bridge-Operation erstellt, und in keinem der beiden Netzwerke ist ein IBC-Kanal offen. Siehe [Bridge-Architektur](/architecture/bridge-architecture).
+Alle 37 Chain-Konfigurationen haben den Status `pending`, es sind keine Bridge-Validatoren registriert, es wurde keine Bridge-Operation erstellt, und im Mainnet ist kein IBC-Kanal offen (das Testnet hat einen einzigen ICS-20-Transferkanal (`channel-0`) zu einer Test-Gegenchain mit der Chain-ID `provider`, für IBC-Tests geöffnet (geprüft am 27. Oktober 2026)). Siehe [Bridge-Architektur](/architecture/bridge-architecture).
 :::
 
 `GET /qorechain/bridge/v1/config`:
@@ -204,7 +204,7 @@ Einstellungen pro Chain (`min_confirmations`, `max_single_transfer`, `daily_limi
 
 | Parameter                      | Wert             | Beschreibung                                      |
 | ------------------------------ | ---------------- | ------------------------------------------------- |
-| `max_sidechains`               | `10`             | Maximale Anzahl registrierter Sidechains          |
+| `max_sidechains`               | `10` (Testnet: `64`) | Maximale Anzahl registrierter Sidechains       |
 | `max_paychains`                | `50`             | Maximale Anzahl registrierter Paychains           |
 | `min_anchor_interval`          | `100`            | Minimales Verankerungsintervall (Blöcke)          |
 | `max_anchor_interval`          | `1000`           | Maximales Verankerungsintervall (Blöcke)          |
@@ -226,7 +226,7 @@ Einstellungen pro Chain (`min_confirmations`, `max_single_transfer`, `daily_limi
 | `queue_timeout_blocks`| `100`   | Blöcke, bevor eine ausstehende Nachricht abläuft |
 | `enabled`             | `true`  | Modul-Aktivierungsflag                         |
 
-`MsgCrossVMCall` ist im Mainnet durch den Circuit Breaker abgeschaltet (im Testnet aktiviert).
+`MsgCrossVMCall` ist im Mainnet durch den Circuit Breaker abgeschaltet (im Testnet aktiviert). Das Testnet stellt diese Werte über REST bereit (`GET /qorechain/crossvm/v1/params`); das Mainnet antwortet mit 501.
 
 ---
 
@@ -256,10 +256,10 @@ Die SVM-Transaktions-Lane ist netzwerkweit deaktiviert (siehe [Netzwerke](/appen
 
 | Parameter                   | Wert                 | Beschreibung                                  |
 | --------------------------- | -------------------- | --------------------------------------------- |
-| `max_rollups`               | `100`                | Maximale Anzahl registrierter Rollups         |
+| `max_rollups`               | `100` (Testnet: `200`) | Maximale Anzahl registrierter Rollups       |
 | `min_stake_for_rollup`      | `10,000,000,000 uqor`| Mindest-Operator-Stake (10.000 QOR)           |
 | `rollup_creation_burn_rate` | `0.01`               | Anteil des Erstellungs-Stakes, der verbrannt wird (1 %) |
-| `default_challenge_window`  | `604,800` s          | Standard-Anfechtungsfenster (7 Tage)          |
+| `default_challenge_window`  | `604,800` s (Testnet: `3,600` s) | Standard-Anfechtungsfenster (7 Tage; 1 Stunde im Testnet) |
 | `max_da_blob_size`          | `2,097,152`          | Maximale DA-Blob-Größe in Bytes (2 MB)        |
 | `blob_retention_blocks`     | `432,000`            | Blöcke zur Aufbewahrung von DA-Blobs (etwa 16 Tage bei Blöcken von ≈3,2 s) |
 | `max_batches_per_block`     | `10`                 | Maximal pro Block verarbeitete Batches        |
@@ -293,8 +293,8 @@ Genesis-Konfiguration (`enabled = true`, `native_denom = uqor`):
 
 Der Umrechnungskurs ist der Kurs, der beim Umrechnen einer in diesem Token gezahlten Gebühr verwendet wird.
 
-:::note Kein IBC-Kanal offen
-In keinem der beiden Netzwerke ist ein IBC-Kanal offen, daher kann es noch kein `ibc/USDC` oder `ibc/ATOM` geben; Gebühren werden in `uqor` bezahlt.
+:::note Kein akzeptierter IBC-Gebührentoken
+Im Mainnet ist kein IBC-Kanal offen, daher kann es dort kein `ibc/USDC` oder `ibc/ATOM` geben; der einzige Testkanal des Testnets trägt ein kleines Test-Voucher-Guthaben, doch auch seine Liste akzeptierter Token enthält nur `uqor`. Gebühren werden in `uqor` bezahlt.
 :::
 
 ---
@@ -323,7 +323,7 @@ Die Belohnungsbuchführung ist live. `GET /qorechain/lightnode/v1/reward_pool` m
 | `protocol_fee_bps`      | `10`                          | Anteil der Protokollgebühr (0,10 %) |
 | `min_liquidity`         | `1000`                        | Minimale Liquidität                 |
 | `max_pools_per_creator` | `50`                          | Maximale Anzahl Pools pro Ersteller |
-| `lp_token_decimals`     | `6`                           | Dezimalstellen des LP-Tokens        |
+| `lp_token_decimals`     | `6`                           | Anzeige-Dezimalstellen der LP-Anteile (Anteile sind Ledger-Einträge, keine Token) |
 | `pool_creation_fee`     | `100,000,000 uqor` (100 QOR)  | Gebühr zum Erstellen eines Pools    |
 | `max_swap_impact_bps`   | `500`                         | Maximale Preisauswirkung eines Swaps (5 %) |
 | `enabled`               | `true`                        | Modul-Aktivierungsflag              |
@@ -334,13 +334,13 @@ Weder im Mainnet noch im Testnet existieren bisher Pools, und `MsgPausePool` / `
 
 ## Smart Accounts (`x/abstractaccount`)
 
-:::caution Auf beiden Netzwerken abgeschaltet
-`enabled` ist `false`: Das Registrieren eines Authenticators, das Ausführen über einen solchen und das Erstellen eines Smart Accounts werden abgelehnt, solange das Modul ausgeschaltet ist. Prüfen Sie `GET /qorechain/abstractaccount/v1/config`, bevor Sie auf diesen Funktionen aufbauen.
+:::caution Im Mainnet abgeschaltet
+Im Mainnet ist `enabled` `false` (im Testnet ist es `true`, geprüft am 27. Oktober 2026): Das Registrieren eines Authenticators, das Ausführen über einen solchen und das Erstellen eines Smart Accounts werden abgelehnt, solange das Modul ausgeschaltet ist. Prüfen Sie `GET /qorechain/abstractaccount/v1/config`, bevor Sie auf diesen Funktionen aufbauen.
 :::
 
 | Parameter             | Wert     | Beschreibung                     |
 | --------------------- | -------- | -------------------------------- |
-| `enabled`             | `false`  | Modul-Aktivierungsflag           |
+| `enabled`             | `false` (Testnet: `true`) | Modul-Aktivierungsflag |
 | `max_session_keys`    | `10`     | Maximale Anzahl Session Keys pro Konto |
 | `max_spending_rules`  | `5`      | Maximale Anzahl Ausgabenregeln   |
 | `default_session_ttl` | `86400` s| Standard-Lebensdauer eines Session Keys |
@@ -349,7 +349,7 @@ Weder im Mainnet noch im Testnet existieren bisher Pools, und `MsgPausePool` / `
 
 ## Staking, Slashing, Governance, Gebühren und EVM {#core-modules}
 
-Standardmodule des Cosmos SDK und EVM-Module, am 23. Oktober 2026 live ausgelesen für die Zeilen zu Staking, Slashing, Governance und Distribution (die Zeilen zu Fee-Market, EVM, ERC-20 und QoreChain Native wurden zuletzt am 20. Oktober 2026 ausgelesen); auf beiden Netzwerken identisch, sofern nicht anders angegeben, und durch das Upgrade auf v3.2.4 unverändert.
+Standardmodule des Cosmos SDK und EVM-Module, alle am 27. Oktober 2026 live im Mainnet ausgelesen (unverändert gegenüber den früheren Messungen). Das Testnet stimmt überein, mit Ausnahme der Governance-Abstimmungsfristen, der aktiven EVM-Precompiles und der Instanziierungsberechtigung für QoreChain Native (siehe [Unterschiede zwischen Testnet und Mainnet](#testnet-differences)).
 
 | Modul | Parameter | Wert |
 | --- | --- | --- |
@@ -375,7 +375,7 @@ Standardmodule des Cosmos SDK und EVM-Module, am 23. Oktober 2026 live ausgelese
 | | `no_base_fee` | `false` |
 | EVM | `evm_denom` / `extended_denom` | `uqor` / `aqor` (18 Dezimalstellen) |
 | | Zugriff auf Vertragserstellung / -aufruf | erlaubnisfrei |
-| | `active_static_precompiles` | leer (kein EVM-Precompile ist aktiv) |
+| | `active_static_precompiles` | im Mainnet leer (kein EVM-Precompile ist aktiv; das Testnet hat drei aktive, siehe unten) |
 | | `history_serve_window` | 8,192 |
 | ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
 | QoreChain Native | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
@@ -386,9 +386,9 @@ Standardmodule des Cosmos SDK und EVM-Module, am 23. Oktober 2026 live ausgelese
 
 Die Chain kann einzelne Nachrichtentypen mit dem Circuit Breaker des Cosmos SDK abschalten; gesteuert wird er vom Betriebskonto der Foundation und per Governance. Ein deaktivierter Nachrichtentyp wird vom Ante-Handler auf jeder Lane abgelehnt. Die aktuelle Liste ist unter `GET /cosmos/circuit/v1/disable_list` abrufbar.
 
-**Mainnet (20. Oktober 2026, 16 Einträge, unverändert seit dem 14. Oktober):** Erstellung von Vesting-Konten (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; sowie die vier PRISM-Steuernachrichten (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). Die EVM-Lane (`MsgEthereumTx`) ist **offen**: Sie war vom 16. bis 25. September abgeschaltet und wurde durch das Upgrade v3.2.0 wieder geöffnet.
+**Mainnet (27. Oktober 2026, 16 Einträge, unverändert seit dem 14. Oktober):** Erstellung von Vesting-Konten (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; sowie die vier PRISM-Steuernachrichten (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). Die EVM-Lane (`MsgEthereumTx`) ist **offen**: Sie war vom 16. bis 25. September abgeschaltet und wurde durch das Upgrade v3.2.0 wieder geöffnet.
 
-**Testnet (20. Oktober 2026):** nur die drei QoreChain Native-Nachrichten.
+**Testnet (27. Oktober 2026, 1 Eintrag):** nur QoreChain Native `MsgStoreCode` (Contract-Upload); die Instanziierung ist dort nicht mehr abgeschaltet.
 
 Jeder andere Nachrichtentyp, einschließlich aller Standardnachrichten für Bank, Staking, Governance, Distribution, Authz und der `x/pqc`-Registrierung, ist aktiviert. Die Liste unterliegt der Governance und kann sich ändern; fragen Sie sie immer ab.
 
@@ -396,13 +396,21 @@ Jeder andere Nachrichtentyp, einschließlich aller Standardnachrichten für Bank
 
 ## Unterschiede zwischen Testnet und Mainnet {#testnet-differences}
 
-Beide Netzwerke laufen mit v3.2.4: das Testnet `qorechain-diana` seit Blockhöhe 8,337,253 (19. Oktober 2026), das Mainnet `qorechain-vladi` seit Blockhöhe 3,742,566 (23. Oktober 2026, Governance-Vorschlag 13). Die Ergänzungen von v3.2.4 sind daher auf beiden Netzwerken gleich: das optionale zeitgesperrte Staking-Modul `x/stakingtier` (49 Module statt 48; `GET /qorechain/stakingtier/v1/params`, Mindestsperre 10 QOR, Strafe bei vorzeitigem Entsperren 5 %), ein dritter `emission_mode` (`target_apy`, mit `target_apy_bps` bei `0` auf beiden Netzwerken), eine dreizehnte erfasste Burn-Quelle (`staking_tier_penalty`), zusätzliche Berichtsfelder des Light-Node-Belohnungspools (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`) mit einer Belohnungsobergrenze, die bei der eigenen Registrierung eines Nodes beginnt, das Flag `possession_proven` an PQC-Konten (der Besitznachweis bleibt für Kontoschlüssel optional und ist für Bridge-Validator-Schlüssel erforderlich), das in Blockzeit gezählte RDK-Anfechtungsfenster sowie die Abfragen `protocol_features` und `auth_nonce`. Siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking). Stand 23. Oktober 2026 unterscheiden sich die beiden Netzwerke nur noch in den folgenden Werten.
+Am 27. Oktober 2026 live ausgelesen. Das Mainnet `qorechain-vladi` läuft mit v3.2.4 (seit Blockhöhe 3,742,566, 23. Oktober 2026; der Governance-Vorschlag 14 würde v3.2.5 bei Blockhöhe 3,906,833 anwenden und befand sich zum Zeitpunkt der Erstellung in seiner Abstimmungsphase). Das Testnet `qorechain-diana` läuft mit **v3.2.6**: v3.2.4 erreichte es bei Blockhöhe 8,337,253 (19. Oktober 2026), v3.2.5 bei Blockhöhe 8,890,800 (26. Oktober) und v3.2.6 bei Blockhöhe 8,970,638 (27. Oktober). Das Testnet ist ein Staging-Netzwerk, das jedes Release als Erstes erhält und für Tests abgestimmt ist; daher weichen die folgenden Werte vom Mainnet ab. Dieser Abschnitt behandelt die Parametertabellen dieser Seite; die Funktionen von v3.2.5 werden an dem Tag dokumentiert, an dem das Mainnet dieses Release anwendet, und dieser Abschnitt wird dann überarbeitet. Jeder hier nicht aufgeführte Parameter ist auf beiden Netzwerken identisch (die Werte für Staking, Slashing, Distribution, Fee-Market, ERC-20, AMM, Burn, Light-Node, Bridge, Gas-Abstraction und zeitgesperrtes Staking wurden einzeln verglichen).
 
-Diese Werte sind testnetspezifisch:
+| Bereich | Mainnet | Testnet |
+| ---- | ------- | ------- |
+| Governance-Abstimmungsfristen | `voting_period` 172,800 s (2 Tage); `expedited_voting_period` 86,400 s (1 Tag) | `voting_period` 14,400 s (4 Stunden); `expedited_voting_period` 3,600 s (1 Stunde). Einlagen, Quorum und Schwellenwerte sind gleich |
+| `x/inflation` | `emission_mode` `fixed`; `fixed_epoch_emission` 86.000 QOR; `max_total_emission` 590.000.000 QOR; `target_apy_bps` `0` | `emission_mode` `target_apy`; `target_apy_bps` `1667`; `fixed_epoch_emission` 16.239 QOR; `max_total_emission` 3,950,390,341,362,112,750 uqor, bereits erreicht (`remaining_emission` `0` unter `/qorechain/inflation/v1/epoch_info`, das Testnet prägt also nichts mehr) |
+| Aktive statische EVM-Precompiles | keine (`[]`) | drei: der PRISM-Parameter-Precompile unter `0x0000000000000000000000000000000000000C01` sowie die Precompiles unter `0x...0a01` und `0x...0a02` |
+| PRISM-Agent (`x/rlconsensus`) | Beobachtungsmodus, keine Policy geladen; Steuernachrichten abgeschaltet | Schattenmodus mit einer Demonstrations-Policy (durch die Testnet-Governance gesetzt); `GET /qorechain/rlconsensus/v1/...` antwortet (das Mainnet antwortet mit 501) |
+| Smart Accounts (`x/abstractaccount`) | `enabled` `false` | `enabled` `true` |
+| RDK (`x/rdk`) | `max_rollups` 100; `default_challenge_window` 604,800 s | `max_rollups` 200; `default_challenge_window` 3,600 s |
+| Multilayer (`x/multilayer`) | `max_sidechains` 10 | `max_sidechains` 64 |
+| Instanziierungsberechtigung für QoreChain Native | `Nobody` | `Everybody` (der Code-Upload bleibt auf beiden `Nobody`) |
+| Circuit Breaker | 16 Einträge (siehe oben) | 1 Eintrag: QoreChain Native `MsgStoreCode` |
+| Parameterrouten über REST | Die Parameter von `x/pqc`, `x/crossvm` und `x/rlconsensus` antworten mit 501 | `GET /qorechain/pqc/v1/params`, `/qorechain/crossvm/v1/params` und `/qorechain/rlconsensus/v1/params` antworten (v3.2.6) |
+| Blockzeit und Validatoren | etwa 3,2 s; 8 gebondete Validatoren | etwa 1,3 s; 4 gebondete Validatoren |
+| Testtoken | keine | fUSD, fETH und fBTC (siehe [Faucet](/dashboard/faucet#fest-tokens)) |
 
-| Bereich | Testnet |
-| ---- | ------- |
-| `x/inflation`-Werte | Frühere Emissionswerte (16.239 QOR pro Epoche, Obergrenze 114.285.714 QOR, bereits erreicht); das Mainnet verwendet die durch Governance-Vorschlag 10 festgelegten Werte. |
-| Circuit Breaker | Nur die drei QoreChain Native-Nachrichten (siehe oben). |
-
-Jeder hier nicht aufgeführte Parameter ist auf beiden Netzwerken identisch.
+Beide Netzwerke enthalten die Ergänzungen von v3.2.4: das optionale zeitgesperrte Staking-Modul `x/stakingtier` (49 Module statt 48; `GET /qorechain/stakingtier/v1/params`, Mindestsperre 10 QOR, Strafe bei vorzeitigem Entsperren 5 %), eine dreizehnte erfasste Burn-Quelle (`staking_tier_penalty`), zusätzliche Berichtsfelder des Light-Node-Belohnungspools mit einer Belohnungsobergrenze, die bei der eigenen Registrierung eines Nodes beginnt, das Flag `possession_proven` an PQC-Konten (der Besitznachweis bleibt für Kontoschlüssel optional und ist für Bridge-Validator-Schlüssel erforderlich), das in Blockzeit gezählte RDK-Anfechtungsfenster sowie die Abfragen `protocol_features` und `auth_nonce`. Siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking). Die Ergänzungen von v3.2.6 im Testnet sind in der [Versionshistorie](/appendix/version-history#testnet-v326) zusammengefasst.

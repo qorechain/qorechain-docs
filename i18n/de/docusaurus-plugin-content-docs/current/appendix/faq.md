@@ -11,7 +11,7 @@ Allgemeine Fragen zu QoreChain, beantwortet anhand der Dokumentation. Jede Antwo
 
 ### Ist das Mainnet live?
 
-Ja. Das QoreChain-Mainnet (Chain `qorechain-vladi`, EVM-Chain-ID 9801) ist seit dem 7. Juni 2026 live und läuft mit Release v3.2.4 (angewendet auf Höhe 3.742.566 am 23. Oktober 2026 durch Governance-Vorschlag 13); das Testnet `qorechain-diana` läuft seit dem 19. Oktober 2026 mit v3.2.4. Siehe [Netzwerke](/appendix/networks) und [Verbindung mit dem Mainnet](/getting-started/connecting-to-mainnet).
+Ja. Das QoreChain-Mainnet (Chain `qorechain-vladi`, EVM-Chain-ID 9801) ist seit dem 7. Juni 2026 live und läuft mit Release v3.2.4 (angewendet auf Höhe 3.742.566 am 23. Oktober 2026 durch Governance-Vorschlag 13; der Governance-Vorschlag 14 würde v3.2.5 auf Höhe 3.906.833 anwenden und befand sich zum Zeitpunkt der Erstellung in seiner Abstimmungsphase); das Testnet `qorechain-diana` läuft mit v3.2.6 (angewendet auf Höhe 8.970.638 am 27. Oktober 2026). Siehe [Netzwerke](/appendix/networks) und [Verbindung mit dem Mainnet](/getting-started/connecting-to-mainnet).
 
 ### Welche Chain-IDs und EVM-Chain-IDs gibt es?
 
@@ -27,7 +27,7 @@ PRISM ist die Reinforcement-Learning-Optimierungsschicht, die in die QoreChain C
 
 ### Ist die Cross-Chain-Bridge live?
 
-Nein. Das Bridge-Modul ist bereitgestellt, aber alle 37 Chain-Konfigurationen stehen noch aus, es sind keine Bridge-Validatoren registriert, und in keinem der beiden Netzwerke existieren IBC-Channels. Sie ist um 37 Chain-Konfigurationen und bis zu 8 IBC-Gegenparteien herum konzipiert; behandeln Sie diese Zielwerte als Design-Absicht. Siehe [Bridge-Architektur](/architecture/bridge-architecture).
+Nein. Das Bridge-Modul ist bereitgestellt, aber alle 37 Chain-Konfigurationen stehen noch aus, es sind keine Bridge-Validatoren registriert, und im Mainnet existiert kein IBC-Channel (das Testnet hat einen einzelnen ICS-20-Transfer-Channel zu einer Test-Chain, der für IBC-Tests geöffnet wurde, und keinen zu den geplanten Gegenparteien). Sie ist um 37 Chain-Konfigurationen und bis zu 8 IBC-Gegenparteien herum konzipiert; behandeln Sie diese Zielwerte als Design-Absicht. Siehe [Bridge-Architektur](/architecture/bridge-architecture).
 
 ### Wie verbinde ich ein Wallet?
 
@@ -36,6 +36,10 @@ Verwenden Sie das offizielle [QoreX](/qorex/overview)-Wallet oder fügen Sie ein
 ### Wie erhalte ich Testnet-Token?
 
 Verwenden Sie den Testnet-Faucet im Dashboard. Siehe [Dashboard-Faucet](/dashboard/faucet) und [Verbindung mit dem Testnet](/getting-started/connecting-to-testnet).
+
+### Was sind fUSD, fETH und fBTC?
+
+Reine Testnet-Test-Token (FestUSD, FestETH und FestBTC, mit 6, 18 und 8 Dezimalstellen), die für den Builder Fest erstellt wurden. Sie haben keinen Wert, existieren nicht im Mainnet und werden als Bank-Coins mit den groß-/kleinschreibungsabhängigen Denominationen `erc20:<contract address>` gehalten. Der Testnet-Faucet kann sie zusammen mit einem QOR-Claim senden. Siehe [Fest-Test-Token](/dashboard/faucet#fest-tokens).
 
 ### Wie betreibe ich einen Node, Validator oder Light Node?
 
@@ -51,11 +55,11 @@ Seit v3.2.0 lässt die EVM-Lane eine Transaktion nur von einem Konto zu, das ein
 
 ### Wie viele Validatoren hat das Mainnet?
 
-Acht gebondete Validatoren am 23. Oktober 2026, mit etwa 55,6 Millionen gebondeten QOR (das aktive Set kann bis zu 100 umfassen). Das Testnet hat drei. Das aktuelle Set können Sie unter `GET /cosmos/staking/v1beta1/validators` auf `https://api.qore.host` auslesen.
+Acht gebondete Validatoren am 27. Oktober 2026, mit etwa 60,3 Millionen gebondeten QOR (das aktive Set kann bis zu 100 umfassen). Das Testnet hat vier. Das aktuelle Set können Sie unter `GET /cosmos/staking/v1beta1/validators` auf `https://api.qore.host` auslesen.
 
 ### Welche Blockzeit kann ich erwarten?
 
-Etwa 3,2 Sekunden im Mainnet und etwa 1 Sekunde im Testnet (gemessene Durchschnittswerte, Oktober 2026). Die Blockzeit wird durch die Node-Konfiguration der Validatoren festgelegt.
+Etwa 3,2 Sekunden im Mainnet und etwa 1,3 Sekunden im Testnet (gemessene Durchschnittswerte, 27. Oktober 2026). Die Blockzeit wird durch die Node-Konfiguration der Validatoren festgelegt.
 
 ### Ist xQORE verfügbar?
 

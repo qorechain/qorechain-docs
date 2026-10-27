@@ -271,9 +271,7 @@ These utilities back the default application hash and are used for:
 
 ## Bridge PQC
 
-All cross-chain bridge attestations and state commitments use **Dilithium-5** signatures. The `x/multilayer` module requires PQC aggregate signatures on every `MsgAnchorState` submission, and ML-KEM commitments secure key exchange channels between bridge relayers.
-
-This ensures that cross-chain security is not degraded by the use of classical cryptography in bridge infrastructure, maintaining quantum resistance across the entire protocol stack. No bridge route is live (see [Bridge Architecture](/architecture/bridge-architecture#current-status)); from v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026), registering a bridge validator also requires a proof of possession of its PQC key.
+Bridge attestations are designed to use **Dilithium-5** (ML-DSA-87) signatures, so that cross-chain security is not degraded by classical cryptography in bridge infrastructure. This is design intent: it describes how bridge validators are meant to attest, not a behaviour you can exercise on a live network today. No bridge route is live (see [Bridge Architecture](/architecture/bridge-architecture#current-status)); from v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026), registering a bridge validator also requires a proof of possession of its PQC key.
 
 ## Module Parameters
 
@@ -285,6 +283,8 @@ This ensures that cross-chain security is not degraded by the use of classical c
 | `default_migration_blocks` | int64               | `1,000,000`       | Default dual-signature migration period in blocks     |
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Default signature algorithm for new key registrations |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Chain-wide hybrid signature enforcement level         |
+
+The testnet returns these same values (checked 27 October 2026). Since v3.2.6 the testnet also serves them over REST at `GET /qorechain/pqc/v1/params`; on mainnet that route answers 501 (not implemented) and the parameters are read with `qorechaind query pqc params`.
 
 ## Related
 

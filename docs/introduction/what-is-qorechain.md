@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain is the first Layer 1 blockchain built with post-quantum cryptography at genesis, AI-native transaction processing, and a triple-VM runtime that executes EVM, QoreChain Native (the CosmWasm runtime), and SVM programs on a single chain. Rather than retrofitting quantum resistance onto an existing protocol, QoreChain was designed from the ground up to be secure against both classical and quantum adversaries while delivering the developer experience and interoperability expected of a modern general-purpose blockchain.
 
-Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 and runs chain release **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026). A public testnet (`qorechain-diana`, EVM chain ID **9800**, running v3.2.4 since 19 October 2026) runs in parallel for staging and integration testing. The native token is **QOR** (display) / **uqor** (base, 10^6), with Bech32 prefixes `qor` for accounts and `qorvaloper` for validators. The chain is built on the Cosmos SDK v0.53.
+Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 and runs chain release **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026). A public testnet (`qorechain-diana`, EVM chain ID **9800**, running v3.2.6 since 27 October 2026) runs in parallel for staging and integration testing. The native token is **QOR** (display) / **uqor** (base, 10^6), with Bech32 prefixes `qor` for accounts and `qorvaloper` for validators. The chain is built on the Cosmos SDK v0.53.
 
 ## Core Innovations
 
@@ -29,7 +29,7 @@ QoreChain is the only Layer 1 that natively runs three virtual machines within o
 * **QoreChain Native** — WebAssembly smart contracts written in Rust with full lifecycle support (instantiate, execute, query, migrate).
 * **SVM** — BPF program deployment and execution with a Solana-compatible JSON-RPC server on port 8899. Existing Solana clients and tooling work out of the box.
 
-Cross-VM messaging enables all three runtimes to communicate: EVM contracts call QoreChain Native via precompile (once that precompile is activated), QoreChain Native contracts call EVM via custom messages, and SVM programs participate through async event-based bridging. Today only the EVM runtime accepts transactions on the live networks: QoreChain Native code upload and instantiation are disabled, the SVM transaction lane is disabled, no EVM precompile is active, and the cross-VM call message is switched off on mainnet.
+Cross-VM messaging enables all three runtimes to communicate: EVM contracts call QoreChain Native via precompile (once that precompile is activated), QoreChain Native contracts call EVM via custom messages, and SVM programs participate through async event-based bridging. Today only the EVM runtime accepts transactions on the live networks: QoreChain Native code upload and instantiation are disabled, the SVM transaction lane is disabled, no EVM precompile is active on mainnet (the testnet has three active), and the cross-VM call message is switched off on mainnet.
 
 ### 4. Capped-Emission Tokenomics
 
@@ -39,7 +39,7 @@ QOR has a **finite supply path**: **4,420,000,000 QOR** at genesis (4,500,000,00
 
 ### 5. Cross-Chain Connectivity
 
-QoreChain is designed to connect to a broad set of blockchain ecosystems through two complementary protocols: native IBC and the QoreChain Bridge (QCB). The bridge layer defines **37 chain configurations (36 external chains plus Injective, reached over IBC)** and up to **8 IBC counterparties**. The cross-chain layer is **not live on either network**: all 37 chain configurations are in `pending` status and no IBC channel is open. The figures below describe the targeted coverage.
+QoreChain is designed to connect to a broad set of blockchain ecosystems through two complementary protocols: native IBC and the QoreChain Bridge (QCB). The bridge layer defines **37 chain configurations (36 external chains plus Injective, reached over IBC)** and up to **8 IBC counterparties**. The cross-chain layer is **not live on either network**: all 37 chain configurations are in `pending` status, mainnet has no IBC channel, and the testnet has a single test channel to a test chain. The figures below describe the targeted coverage.
 
 * **Up to 8 IBC counterparties** — Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, and Injective. Pre-configured relayer templates with client updates, misbehaviour detection, and automatic packet clearing.
 * **37 QCB chain configurations (36 external chains plus Injective over IBC)** — each endpoint is designed to include per-type address validation, configurable confirmation depth, circuit breaker volume caps, and PQC-signed validator attestations. The targeted external chains are:
@@ -63,7 +63,7 @@ Five preset profiles (**defi, gaming, nft, enterprise, custom**) enable one-clic
 
 ### 7. Account and Gas Abstraction
 
-Smart accounts with three programmable types (multisig, social recovery, session-based) support session keys with granular permissions and expiry, per-account spending rules, and denom allowlists. This enables wallet UX patterns impossible with standard accounts: dApp session keys for mobile, social recovery as a first-class account type, and programmable spend limits. Smart-account and linked-wallet features are implemented but currently **switched off** on both networks (`abstractaccount.enabled = false`; check `GET /qorechain/abstractaccount/v1/config`). Gas abstraction is designed to let users pay fees in an accepted non-native token (the configuration lists `ibc/USDC` and `ibc/ATOM`); no IBC channel is open yet, so fees are currently paid in QOR.
+Smart accounts with three programmable types (multisig, social recovery, session-based) support session keys with granular permissions and expiry, per-account spending rules, and denom allowlists. This enables wallet UX patterns impossible with standard accounts: dApp session keys for mobile, social recovery as a first-class account type, and programmable spend limits. Smart-account and linked-wallet features are implemented but **switched off on mainnet** (`abstractaccount.enabled = false`) and enabled on the testnet (check `GET /qorechain/abstractaccount/v1/config`). Gas abstraction is designed to let users pay fees in an accepted non-native token (the configuration lists `ibc/USDC` and `ibc/ATOM`); no IBC channel is open yet, so fees are currently paid in QOR.
 
 ## Ecosystem
 

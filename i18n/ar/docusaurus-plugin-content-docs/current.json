@@ -118,5 +118,29 @@
   "sidebar.docsSidebar.category.Appendix.link.generated-index.description": {
     "message": "مواد مرجعية — مسرد المصطلحات، ومعاملات السلسلة، وسجل الإصدارات.",
     "description": "The generated-index page description for category 'Appendix' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreSign": {
+    "message": "QoreSign",
+    "description": "The label for category 'QoreSign' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreSign.link.generated-index.description": {
+    "message": "توقيع هجين secp256k1 + ML-DSA-87 للمحافظ والخوادم الخلفية: البدء السريع، والأدلة، ومواصفات صيغ النقل، ونواقل الاختبار.",
+    "description": "The generated-index page description for category 'QoreSign' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.qoresign-guides": {
+    "message": "الأدلة",
+    "description": "The label for category 'Guides' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.qoresign-specifications": {
+    "message": "المواصفات",
+    "description": "The label for category 'Specifications' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreX Wallet": {
+    "message": "QoreX Wallet",
+    "description": "The label for category 'QoreX Wallet' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreX Wallet.link.generated-index.description": {
+    "message": "QoreX — المحفظة الرسمية غير الحافظة (non-custodial) والآمنة كمّيًا (quantum-safe) لـ QoreChain: تطبيق جوال وإضافة متصفح. الإعداد، والإرسال والاستلام، والتخزين (staking)، والاسترداد، والاتصال بتطبيقات dApp.",
+    "description": "The generated-index page description for category 'QoreX Wallet' in sidebar 'docsSidebar'"
   }
 }

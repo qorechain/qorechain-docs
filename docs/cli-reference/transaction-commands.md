@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Set `--chain-id qorechain-vladi` to broadcast against the live mainnet, or `--chain-id qorechain-diana` for the testnet. Both networks run the v3.2 line: mainnet node release **v3.2.4** (applied at height 3,742,566 on 23 October 2026 by governance proposal 13; v3.2.3 was applied at height 3,662,051 on 20 October 2026), testnet **v3.2.4** (applied at height 8,337,253 on 19 October 2026). Check `latest.json` under [download.qore.host](https://download.qore.host) for the current release. If `--chain-id` is omitted, the client uses the `chain-id` from your local client config.
+Set `--chain-id qorechain-vladi` to broadcast against the live mainnet, or `--chain-id qorechain-diana` for the testnet. Both networks run the v3.2 line: mainnet node release **v3.2.4** (applied at height 3,742,566 on 23 October 2026 by governance proposal 13; v3.2.3 was applied at height 3,662,051 on 20 October 2026; governance proposal 14 would apply v3.2.5 at height 3,906,833 and is in its voting period at the time of writing), testnet **v3.2.6** (applied at height 8,970,638 on 27 October 2026, after v3.2.5 at height 8,890,800 on 26 October and v3.2.4 at height 8,337,253 on 19 October). Check `latest.json` under [download.qore.host](https://download.qore.host) for the current release. If `--chain-id` is omitted, the client uses the `chain-id` from your local client config.
 
-The commands and flags on this page were checked against the v3.2.3 release binary, plus the v3.2.4 additions. Anything that exists only from v3.2.4 on (mainnet since 23 October 2026, testnet since 19 October 2026) is marked as such.
+The commands and flags on this page were checked against the v3.2.3 release binary, plus the v3.2.4 additions. Anything that exists only from v3.2.4 on (mainnet since 23 October 2026, testnet since 19 October 2026) is marked as such. The v3.2.6 source adds no new `tx` command; it changes the testnet's state (test tokens, an enabled abstract-account module, open QoreChain Native instantiation), which the sections below mention where it matters.
 :::
 
 Common flags apply to every `tx` subcommand:
@@ -435,7 +435,7 @@ Limits are in base units and `0` means unlimited. Only a route whose status is e
 qorechaind tx ibc-transfer transfer transfer <channel> <receiver> <amount> [flags]
 ```
 
-The first `transfer` is the subcommand and the second is the source port. No IBC channels are open on either network at the time of writing (`query ibc channel channels`).
+The first `transfer` is the subcommand and the second is the source port. No IBC channel is open on mainnet at the time of writing; the testnet has one open transfer channel (`channel-0`), checked 27 October 2026 with `query ibc channel channels`.
 
 ---
 
@@ -452,6 +452,8 @@ qorechaind tx amm swap-exact-out <pool_id> <denom_in> <token_out> <max_in> [flag
 ```
 
 Since v3.2.2 a swap must name both of the pool's denominations, `max_swap_impact_bps` is enforced and the protocol fee is routed through the burn module.
+
+On the testnet a pool can pair `uqor` with one of the three Fest test tokens (no value; testnet only). The deposit and the swap amounts use the bank denom `erc20:<EIP-55 0x address>`, which is case-sensitive, for example `qorechaind tx amm create-pool constant_product 1000000000uqor 2000000000erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA --from mykey --generate-only > tx.json` (then `tx pqc cosign`). A token held on the EVM side must first be converted to a bank coin with `MsgConvertERC20`, whose sender is a `qor1` address; the node release v3.2.6 CLI command `qorechaind tx erc20 convert-erc20` writes the sender as a `0x` address and the chain refuses it (`decoding bech32 failed`), so build that message with the `qor1` sender instead. Details: [Testnet Fest test tokens](/developer-guide/evm-development#fest-tokens). Creating a pool costs the pool-creation fee on top of the deposits (`pool_creation_fee` in `query amm params`).
 
 ---
 
@@ -507,6 +509,8 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 
 `profile` is `defi`, `gaming`, `nft`, `enterprise` or `custom`; `stake_amount` is in uqor (the current minimum is in `query rdk config`). The profile's preset supplies settlement, sequencer, DA and gas model; only the VM can be overridden on the command line. There is no `finalize-batch` command.
 
+On a rollup whose data availability is `native` (or `both`), leave `--data-hash` empty: no transaction posts a data-availability blob, and the chain refuses a batch that claims a data hash for such a rollup (this is how node release v3.2.4, the mainnet release at the time of writing, behaves). For an optimistic rollup, the `@qorechain/rdk` client (0.6.1) sets a batch's state root to the chain's canonical transition root (`batchTransitionRoot` in the RDK); see [Rollups](/rollups/overview).
+
 `--anchor-signature` is the rollup creator's ML-DSA signature over the **v2 anchor sign bytes**; with it the batch is also anchored in the multilayer module. Print the exact bytes to sign with `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>`; the values must match the `submit-batch` flags. Since v3.2.3 the module keeps a **per-rollup escrow ledger**: a withdrawal is paid only out of what that rollup's ledger holds, and it is checked for denomination, a positive amount, proof depth and sibling size; stopping a rollup refunds only what is left in its ledger, and a stopped rollup pays no further withdrawals. At the time of writing no rollup exists on either network.
 
 ---
@@ -532,12 +536,12 @@ Some commands exist in the binary but cannot succeed on the live networks:
 
 | Command                                                   | Reason                                                                                         |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | Upload and instantiate permission is `Nobody` on both networks, and the message types are also on the circuit-breaker list |
+| `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | Mainnet: upload and instantiate permission is `Nobody` and the three message types are on the circuit-breaker list. Testnet: upload is `Nobody` and `MsgStoreCode` is on the list (governance stores code), while instantiation is open (`Everybody`) and off the list |
 | `tx crossvm call`                                         | Disabled on mainnet by the circuit breaker; enabled on the testnet                             |
 | `tx vesting create-vesting-account`, `create-periodic-vesting-account`, `create-permanent-locked-account` | On the mainnet circuit-breaker list; since v3.2.3 a vesting account can in any case only be created for the signer itself |
 | PQC `MsgDeprecateAlgorithm` / `MsgDisableAlgorithm`        | Governance-proposal messages (no CLI command), on the mainnet circuit-breaker list; since v3.2.3 governance also cannot remove the last active signature algorithm |
 | `tx svm deploy-program`, `execute`, `create-account`      | The SVM transaction lane is disabled network-wide                                              |
-| `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | The abstract-account module is switched off (`query abstractaccount config` shows `enabled: false`) |
+| `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | Mainnet: the abstract-account module is switched off (`query abstractaccount config` shows `enabled: false`). Testnet: switched on by governance (`enabled: true`, checked 27 October 2026) |
 | `tx rlconsensus *`, `tx amm pause-pool`/`resume-pool`      | Governance-authority messages; also on the mainnet circuit-breaker list                        |
 | `tx license *`                                            | Authority-only (licences are granted by the network's licence authority; since v3.2.3 governance can replace that authority with `MsgUpdateAuthority`) |
 

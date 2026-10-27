@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getReputationScore`      | 공개 쿼리 경로가 없습니다(reputation 모듈은 gRPC `Params`만 노출합니다). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` 및 `anchor/{layer_id}`. [Multilayer 모듈](/api-reference/rest-grpc-endpoints#multilayer-module)을 참조하세요. |
 | `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`. [Bridge 모듈](/api-reference/rest-grpc-endpoints#bridge-module)을 참조하세요. 브리지는 아직 라이브가 아닙니다. |
-| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | 직접 운영하는 노드의 gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`); REST 경로는 없습니다. |
+| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | 테스트넷(v3.2.6)에서는 `GET /qorechain/rlconsensus/v1/agent`, `/observation`, `/reward`(그 외 `/params`, `/policy`, `/applied_params`, `/last_action`도 제공)를 사용합니다. [RL 컨센서스 모듈](/api-reference/rest-grpc-endpoints#rlconsensus-module)을 참고하십시오. 메인넷에서는 이 경로들이 `501`로 응답하므로, 직접 운영하는 노드의 gRPC `qorechain.rlconsensus.v1.Query`(`AgentStatus`, `Observation`, `Reward`)를 사용하십시오. |
 | `qor_getPoolClassification`   | 공개 쿼리 경로가 없습니다. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. [Burn 모듈](/api-reference/rest-grpc-endpoints#burn-module)을 참조하세요. |
 | `qor_getXQOREPosition`        | 없음. xQORE는 라이브가 아닙니다([xQORE 스테이킹](/user-guide/xqore-staking) 참조). |
@@ -49,7 +49,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`, `/rollups`, `/batch/{id}/{index}`, `/latest_batch/{id}`, `/batches/{id}`, `/blob/{id}/{index}`(v3.2.2부터 제공; [RDK 모듈](/api-reference/rest-grpc-endpoints#rdk-module) 참조) 또는 `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | 공개 서비스가 없습니다. [프리셋 프로필](/rollups/preset-profiles)을 참조하세요. |
 | `qor_getBTCStakingPosition`   | 없음. BTC 리스테이킹 모듈에는 아직 쿼리 서비스가 없습니다. |
-| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. 추상 계정은 현재 두 네트워크 모두에서 비활성화되어 있습니다. |
+| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. 추상 계정은 메인넷에서는 비활성화되어 있고 테스트넷에서는 활성화되어 있습니다(2026년 10월 27일 확인). |
 | `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config`(v3.2.2부터 제공). [Gas Abstraction 모듈](/api-reference/rest-grpc-endpoints#gas-abstraction-module)을 참조하세요. |
 | `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | 없음. |
 

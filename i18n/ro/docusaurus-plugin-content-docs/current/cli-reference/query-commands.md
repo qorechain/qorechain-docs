@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Interogările rulează pe nodul indicat de `--node`. Folosește un endpoint RPC mainnet **`qorechain-vladi`** pentru date live (de exemplu `--node https://rpc.qore.host:443`) sau un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) pentru testare. Valoarea implicită `tcp://localhost:26657` țintește un nod pe care îl rulezi tu însuți. Mainnet-ul rulează versiunea de nod v3.2.4 din 23 octombrie 2026 (aplicată la înălțimea 3.742.566 prin propunerea de guvernanță 13); testnet-ul rulează v3.2.4 din 19 octombrie 2026. Versiunea v3.2.4 adaugă câteva rute și comenzi (marcate **v3.2.4** mai jos): ele funcționează pe ambele rețele, iar un nod aflat încă pe o versiune mai veche le răspunde cu `Not Implemented`. Comenzile de pe această pagină au fost verificate pe binarul de release v3.2.3, rulat pe `https://rpc.qore.host:443`; rutele v3.2.4 au fost verificate prin REST pe 23 octombrie 2026.
+Interogările rulează pe nodul indicat de `--node`. Folosește un endpoint RPC mainnet **`qorechain-vladi`** pentru date live (de exemplu `--node https://rpc.qore.host:443`) sau un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) pentru testare. Valoarea implicită `tcp://localhost:26657` țintește un nod pe care îl rulezi tu însuți. Mainnet-ul rulează versiunea de nod v3.2.4 din 23 octombrie 2026 (aplicată la înălțimea 3.742.566 prin propunerea de guvernanță 13); propunerea 14 de guvernanță a mainnet-ului ar aplica v3.2.5 la înălțimea 3.906.833; testnet-ul rulează v3.2.6 (v3.2.4 din 19 octombrie 2026, v3.2.5 din 26 octombrie, v3.2.6 din 27 octombrie). Versiunea v3.2.4 adaugă câteva rute și comenzi (marcate **v3.2.4** mai jos): ele funcționează pe ambele rețele, iar un nod aflat încă pe o versiune mai veche le răspunde cu `Not Implemented`. Versiunea v3.2.6 adaugă două comenzi (marcate **v3.2.6**, doar pe testnet până când mainnet-ul o aplică). Comenzile de pe această pagină au fost verificate pe binarul de release v3.2.3, rulat pe `https://rpc.qore.host:443`; rutele v3.2.4 au fost verificate prin REST pe 23 octombrie 2026, iar comenzile v3.2.6 pe sursa v3.2.6.
 :::
 
 Flag-urile comune se aplică fiecărei subcomenzi `query`:
@@ -149,7 +149,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mod
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
 ```
 
-Pe mainnet acestea raportează `emission_mode: "fixed"`, o emisie fixă de 86.000 QOR per epocă de 43.200 de blocuri și un plafon cumulat de 590.000.000 QOR (propunerea de guvernanță 10, adoptată pe 19 octombrie 2026; prima epocă cu noua sumă începe la blocul 3.672.000). Sumele sunt în `uqor`. Testnet-ul raportează în continuare propriile valori, diferite; versiunea v3.2.4 adaugă un alt mod de emisie (disponibil pe ambele rețele), dar o rețea trece la el doar printr-un vot propriu de guvernanță, așa că mainnet-ul păstrează `fixed` până când un astfel de vot este adoptat.
+Pe mainnet acestea raportează `emission_mode: "fixed"`, o emisie fixă de 86.000 QOR per epocă de 43.200 de blocuri și un plafon cumulat de 590.000.000 QOR (propunerea de guvernanță 10, adoptată pe 19 octombrie 2026; prima epocă cu noua sumă începe la blocul 3.672.000). Sumele sunt în `uqor`. Testnet-ul raportează propriile valori, diferite: a trecut la celălalt mod de emisie adăugat de v3.2.4 (`target_apy`) prin propria guvernanță (propunerea 14, adoptată pe 20 octombrie 2026). O rețea schimbă modul doar printr-un vot propriu de guvernanță, așa că mainnet-ul păstrează `fixed` până când un astfel de vot este adoptat (verificat pe 27 octombrie 2026).
 
 ---
 
@@ -272,13 +272,17 @@ qorechaind query rlconsensus observation
 qorechaind query rlconsensus reward
 qorechaind query rlconsensus params
 qorechaind query rlconsensus policy
+qorechaind query rlconsensus applied-params   # v3.2.6 (testnet)
+qorechaind query rlconsensus last-action      # v3.2.6 (testnet)
 ```
+
+`agent-status` raportează modul, epoca și numărul de pași ai agentului; `policy` raportează epoca și numărul de ponderi ale politicii stocate (nu ponderile). **v3.2.6 (doar pe testnet până când mainnet-ul aplică acea versiune):** `applied-params` afișează valorile pe care agentul le consideră aplicate (timpul de bloc, pragul minim al prețului gazului, ponderile pool-urilor), iar `last-action` acțiunea propusă la ultimul său pas, care este înregistrată în orice mod, inclusiv în modul umbră, unde nu se aplică nimic. Toate acestea sunt servite și prin REST pe testnet (vezi [Modulul RL Consensus](/api-reference/rest-grpc-endpoints#rlconsensus-module)); față de un nod mainnet, cele două comenzi noi răspund `Not Implemented` până când mainnet-ul aplică acea versiune.
 
 ---
 
 ## abstractaccount
 
-Modulul de conturi abstracte este în prezent oprit pe ambele rețele (`config.enabled` este `false`), deci aceste interogări nu returnează conturi.
+Modulul de conturi abstracte este oprit pe mainnet (`config.enabled` este `false`, deci aceste interogări nu returnează acolo conturi) și pornit pe testnet prin guvernanță (`config.enabled` este `true`; verificat pe 27 octombrie 2026).
 
 ```bash
 qorechaind query abstractaccount config
@@ -318,7 +322,7 @@ qorechaind query amm quote-exact-in <pool_id> <denom_in> <amount_in>
 qorechaind query amm quote-exact-out <pool_id> <denom_out> <amount_out>
 ```
 
-La momentul redactării, nu există niciun pool pe niciuna dintre rețele.
+La momentul redactării, nu există niciun pool pe niciuna dintre rețele. Pe testnet, cele trei tokenuri de test Fest sunt disponibile ca a doua denominație a unui pool (vezi [Tokenuri de test pe testnet](/api-reference/rest-grpc-endpoints#fest-tokens)).
 
 ---
 
@@ -345,7 +349,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>` este modul de a citi când a intrat în vigoare un upgrade: pe mainnet `v3.2.2` a fost aplicat la înălțimea 3.556.788 și `v3.2.3` la înălțimea 3.662.051 și `v3.2.4` la înălțimea 3.742.566; pe testnet `v3.2.2` la 6.905.034, `v3.2.3` la 8.003.746 și `v3.2.4` la 8.337.253 (`0` înseamnă neaplicat). Lista circuit-breaker a mainnet-ului (`disabled-list`) conține în prezent mesajele de creare a conturilor de vesting, store și instantiate QoreChain Native, pauza și reluarea pool-urilor AMM, apelul cross-VM, actualizarea stării unui strat multilayer, depreciarea și dezactivarea algoritmilor PQC și mesajele de guvernanță a consensului PRISM; cea a testnet-ului conține doar cele trei mesaje QoreChain Native.
+`query upgrade applied <name>` este modul de a citi când a intrat în vigoare un upgrade: pe mainnet `v3.2.2` a fost aplicat la înălțimea 3.556.788 și `v3.2.3` la înălțimea 3.662.051 și `v3.2.4` la înălțimea 3.742.566; pe testnet `v3.2.2` la 6.905.034, `v3.2.3` la 8.003.746, `v3.2.4` la 8.337.253, `v3.2.5` la 8.890.800 și `v3.2.6` la 8.970.638 (`0` înseamnă neaplicat; pe mainnet `v3.2.5` este `0` la momentul redactării, propunerea de guvernanță 14 aflându-se în perioada de votare). Lista circuit-breaker a mainnet-ului (`disabled-list`) conține în prezent mesajele de creare a conturilor de vesting, store și instantiate QoreChain Native, pauza și reluarea pool-urilor AMM, apelul cross-VM, actualizarea stării unui strat multilayer, depreciarea și dezactivarea algoritmilor PQC și mesajele de guvernanță a consensului PRISM; cea a testnet-ului conține doar mesajul QoreChain Native `MsgStoreCode` (verificat pe 27 octombrie 2026; instanțierea a fost permisă prin guvernanța testnet-ului).
 
 ---
 
@@ -363,6 +367,8 @@ qorechaind query wasm list-contract-by-code <code_id>
 qorechaind query wasm contract <contract_address>
 qorechaind query wasm contract-state smart <contract_address> '<json_query>'
 ```
+
+`query erc20 token-pairs` este gol pe mainnet; pe testnet listează cele trei tokenuri de test Fest (fUSD, fETH, fBTC) și un token IBC. Denominațiile lor bank sunt `erc20:` plus adresa contractului EIP-55 și sunt sensibile la majuscule; vezi [Tokenurile de test Fest de pe testnet](/developer-guide/evm-development#fest-tokens). Pe testnet, `query wasm params` arată `code_upload_access` `Nobody` și `instantiate_default_permission` `Everybody`; pe mainnet ambele sunt `Nobody` (vezi [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development)).
 
 ---
 

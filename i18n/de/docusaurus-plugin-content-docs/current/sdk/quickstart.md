@@ -111,7 +111,7 @@ explizit: Es gibt keine automatische Registrierung bei der ersten Transaktion. E
 Transaktion, die nur klassisch signiert ist, wird von den Live-Netzwerken abgelehnt;
 geben Sie dem Transaktions-Client daher das ML-DSA-87-Schlüsselpaar des Kontos, und er
 signiert jede Transaktion hybrid. Die beiden folgenden Schritte erfordern
-**SDK 0.9.0 oder neuer** und ein finanziertes Konto:
+**SDK 0.9.0 oder neuer** (0.10.0 ist aktuell) und ein finanziertes Konto:
 
 ```bash
 npm i @qorechain/sdk

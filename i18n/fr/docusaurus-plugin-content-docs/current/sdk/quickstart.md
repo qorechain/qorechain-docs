@@ -109,7 +109,7 @@ L'enregistrement est explicite : il n'y a pas d'enregistrement automatique à la
 première transaction. Une transaction signée uniquement de façon classique
 est refusée par les réseaux en production ; donnez donc au client de transaction la
 paire de clés ML-DSA-87 du compte et il signera chaque transaction en mode hybride. Les deux étapes ci-dessous nécessitent
-le **SDK 0.9.0 ou ultérieur** et un compte approvisionné :
+le **SDK 0.9.0 ou ultérieur** (la 0.10.0 est la version actuelle) et un compte approvisionné :
 
 ```bash
 npm i @qorechain/sdk

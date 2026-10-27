@@ -49,7 +49,7 @@ Exporturile deliberate, suportate, ale `@qorechain/sdk`:
   (`PROOF_OF_POSSESSION_DOMAIN`), `validateRegisteredPqcKey`,
   `isDegeneratePqcPublicKey`, `migrateToHybrid`, `migratePqcKeyHybrid`,
   `isUpgradeApplied` / `requireUpgradeApplied` (`CHAIN_UPGRADE_V3_2_2`,
-  `CHAIN_UPGRADE_V3_2_3`).
+  `CHAIN_UPGRADE_V3_2_3`, `CHAIN_UPGRADE_V3_2_4`).
 - **Clienți de citire:** `RestClient` (incl. `getPermissionSchema`),
   `JsonRpcClient`, `QorClient`, funcții ajutătoare HTTP (`getJson`,
   `postJsonRpc`, `buildUrl`, `joinUrl`, `QoreHttpError`); clienți de
@@ -72,7 +72,8 @@ Exporturile deliberate, suportate, ale `@qorechain/sdk`:
   `MSG_SEND_TYPE_URL`, funcții ajutătoare hibride (`encodeHybridExtension`,
   `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`);
   decodare structurată a erorilor prin `decodeTxError` (incl. codurile
-  5/6/10/11 pentru `abstractaccount` și codul 21 pentru `pqc`).
+  5/6/10/11 pentru `abstractaccount` și codul 21 pentru `pqc`; începând cu 0.10.0 numește
+  și un refuz care sosește ca text în timpul simulării taxei).
 - **Semnare eth-native (0.6.0):** `signClassicalEth`, `signHybridEth`
   (secp256k1 peste `keccak256(SignDoc)`, tipul de cheie publică
   `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`, plus extensia hibridă
@@ -90,7 +91,7 @@ Exporturile deliberate, suportate, ale `@qorechain/sdk`:
   (`personal_sign` EIP-191); rotația cheilor `rotatePqcKeyMsgFromMnemonic`,
   `derivePqcLegacy`. Consultați
   [ghidul Authenticators](/sdk/guides/authenticators) (modulul din spatele
-  acestor benzi este dezactivat astăzi pe ambele rețele).
+  acestor benzi este dezactivat pe mainnet și activat pe testnet).
 - **Octeți de semnare hibrizi (0.8.0+):** opțiunea `signBytesVersion`
   (`"auto" | "v1" | "v2"`) la `buildHybridTx`, `signAndBroadcastHybrid`,
   `signHybridEth` și `EthNativeSigner`; `resolveSignBytesVersion`,
@@ -107,6 +108,13 @@ Exporturile deliberate, suportate, ale `@qorechain/sdk`:
   `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
 - **Digest v2 pentru abstract account (0.9.0):** `evmAuthSignBytesV2`,
   `resolveEvmAuthDigestVersion`; `validateSpendingRules`.
+- **Chain v3.2.4 (0.10.0):** staking tiers (`msg.stakingtier.lockDelegation` /
+  `unlockEarly` / `claimBonus` / `updateParams`, `validateLockDelegation`,
+  `STAKING_LOCK_MONTHS`, `fetchStakingTierParams`, `fetchStakingLocks`,
+  `fetchStakingTierPool`); `fetchAuthNonce`; `fetchProtocolFeatures` /
+  `isProtocolFeatureEnabled`; `possessionProven` pe starea PQC;
+  `ibcTimeoutTimestamp`; `CHAIN_UPGRADE_V3_2_4`. Vezi
+  [Ce adaugă 0.10.0](/sdk/install#whats-new-0100).
 - **Derivare PQC canonică (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; mesajul de înregistrare PQC este
   `buildRegisterPqcKeyMsg` (folosit de `ensurePqcRegistered`). `derivePqcLegacy`
@@ -135,10 +143,10 @@ program-id.
 
 | Limbaj | Documentație generată | Instalare |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.9.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (tag `packages/go/v0.9.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; import `qorechain`) |
-| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.9.1` (celelalte limbaje sunt 0.9.0) |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.10.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (tag `packages/go/v0.10.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.10.0; import `qorechain`) |
+| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.10.0` |
 
 Fiecare pachet oglindește aceeași suprafață (preseturi de rețea, utilitare
 denom/adrese, derivare HD — inclusiv conturi unificate eth-native — primitive

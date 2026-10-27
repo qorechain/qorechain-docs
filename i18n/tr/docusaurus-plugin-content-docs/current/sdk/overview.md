@@ -28,24 +28,32 @@ ortamına sahip bir Katman 1 blokzinciridir:
 
 Hesaplar, bakiyeler ve token'lar çalışma ortamları arasında paylaşılır ve
 zincir, zincirler arası birlikte çalışabilirlik için IBC modülünü içerir
-(mainnet veya testnet üzerinde henüz açık bir IBC kanalı yoktur).
+(mainnet üzerinde açık bir IBC kanalı yoktur; testnet'te test zincirine giden açık bir `transfer` kanalı vardır, 27 Ekim 2026'da kontrol edildi).
 
-:::note Canlı ağlarda bugün çalışanlar (mainnet ve testnet v3.2.4)
+:::note Canlı ağlarda bugün çalışanlar (mainnet v3.2.4, testnet v3.2.6)
 **Çalışır:** her şeritte okumalar, hibrit imzalı Native işlemler, birleşik
 hesaplar, bir [yetkilendirme penceresi](/sdk/guides/evm#evm-window) içindeki EVM
 işlemleri ve SVM okumaları.
-**Henüz kullanılamaz:** EVM ön derlemeleri (etkin değil), `qor_` JSON-RPC ad
+**Henüz kullanılamaz:** mainnet'te EVM ön derlemeleri (hiçbiri etkin değil; testnet'te
+üçü etkindir: PQC verify, PQC key status ve consensus parametreleri; AI çifti ve
+cross-VM köprüsü her iki ağda da etkin değildir), `qor_` JSON-RPC ad
 alanı, SVM işlemleri, mainnet'te VM'ler arası çağrılar (`MsgCrossVMCall`
 devre kesici tarafından kapatılmıştır), sıradan hesaplar için QoreChain Native yükleme ve
-örnekleme, authenticator / soyut hesap akışları (modül kapalı), xQORE ve gaz
-soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler.
+örnekleme (testnet'te instantiate açıktır, yükleme değildir), mainnet'te authenticator /
+soyut hesap akışları (modül orada kapalı, testnet'te açık), xQORE ve gaz
+soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler. 27 Ekim 2026'da canlı uç noktalara karşı kontrol edildi.
 
-Yayımlanan SDK (0.9.0, 21 Ekim 2026), her iki ağın doğruladığı biçimde imzalar
+Yayımlanan SDK (0.10.0, 26 Ekim 2026), her iki ağın doğruladığı biçimde imzalar
 (v2 hibrit sign-bytes, zincir durumundan çözümlenir); imzalama biçimi, adresler,
-ondalık basamaklar, memo'lar ve ücretler v3.2.3 veya v3.2.4'te değişmedi (mainnet 23 Ekim 2026'dan beri v3.2.4 çalıştırır). Sonraki
-kuantum sonrası kuralların istemci tarafını taşır (anahtar kaydında sahiplik
-kanıtı, kapsamlı EVM pencereleri, EIP-7702 onay mesajları); 0.9.0 öncesi
-sürümler taşımaz, bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090).
+ondalık basamaklar, memo'lar ve ücretler v3.2.3 veya v3.2.4'te değişmedi (mainnet 23 Ekim 2026'dan beri v3.2.4 çalıştırır;
+testnet, 27 Ekim'de uygulanan v3.2.6'yı çalıştırır). Sonraki
+kuantum sonrası kuralların istemci tarafını (anahtar kaydında sahiplik
+kanıtı, kapsamlı EVM pencereleri, EIP-7702 onay mesajları) ve v3.2.4'ün istemci tarafını (staking
+katmanları, authenticator nonce'u, protokol özelliği anahtarları) taşır; 0.9.0 öncesi
+sürümler ilk grubu taşımaz, bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)
+ve [0.10.0 neler ekliyor](/sdk/install#whats-new-0100).
+
+Cüzdan ve arka uç imzalama: bkz. [QoreSign](/qoresign/overview).
 :::
 
 ### Tasarım gereği kuantum güvenli
@@ -74,7 +82,7 @@ protokol özellikleri üzerine inşa edilmiştir:
   zincir üzerindeki AI ile tarayın. `simulateWithRiskScore`, deterministik
   EVM precompile'larından gelen gaz artı bir risk/anomali kararı döndürür;
   böylece bir cüzdan veya dApp, imzalamadan *önce* uyarabilir (veya
-  engelleyebilir). Precompile'lar mainnet veya testnet üzerinde henüz etkin
+  engelleyebilir). AI precompile'ları mainnet veya testnet üzerinde henüz etkin
   değildir. Bkz. [AI ön kontrolü](/sdk/guides/ai-preflight).
 - **Birleşik VM'ler arası çağrılar** — tek hesap, üç VM, tek işlem.
   `createCrossVMClient` herhangi bir VM üzerindeki bir sözleşmeyi çağırır ve
@@ -96,8 +104,8 @@ aşağıda belirtildiği gibi canlı ağlarda henüz kullanılamaz):
 - **Authenticator şeritleri** — bir Phantom veya MetaMask anahtarını
   PQC gerektiren kanonik hesaba bağlayın ve en az yetki ilkesine dayalı,
   harcama limitli, iptal edilebilir koşullar altında bir relayer üzerinden
-  harcama yapmasına izin verin. Arkasındaki `abstractaccount` modülü bugün
-  her iki ağda da kapalıdır. Bkz.
+  harcama yapmasına izin verin. Arkasındaki `abstractaccount` modülü mainnet'te
+  kapalı, testnet'te açıktır. Bkz.
   [Authenticator'lar ve yetkilendirilmiş harcama](/sdk/guides/authenticators).
 
 Yeni **`@qorechain/react`** kiti (provider, hook'lar, `ConnectButton`,
@@ -113,15 +121,15 @@ birim (denominasyon) matematiğini ve okuma yüzeylerini paylaşır.
 
 | Paket | Dil | Kurulum | Durum |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Yayında (npm, v0.9.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Yayında (PyPI, v0.9.0) |
-| `qorechain-sdk` (Go modülü) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Yayında (Go proxy, etiket `packages/go/v0.9.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Yayında (crates.io, v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | Yayında (Maven Central, v0.9.1; diğer diller 0.9.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Yayında (npm, v0.10.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Yayında (PyPI, v0.10.0) |
+| `qorechain-sdk` (Go modülü) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Yayında (Go proxy, etiket `packages/go/v0.10.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Yayında (crates.io, v0.10.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.10.0` | Yayında (Maven Central, v0.10.0) |
 | `@qorechain/evm` | TypeScript (EVM adaptörü) | `npm i @qorechain/evm viem` | Yayında (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (SVM adaptörü) | `npm i @qorechain/svm @solana/web3.js` | Yayında (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.9.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Yayında (npm, v0.9.0) |
+| `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.10.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Yayında (npm, v0.10.0) |
 
 > Python dağıtımı `qorechain-sdk` olarak kurulur ancak **`qorsdk` olarak
 > import edilir**. Tüm istemciler kendi kayıt defterlerinde yayınlanmıştır —
@@ -135,17 +143,17 @@ ve standart Cosmos modülleri için tipli mesaj oluşturucular, tipli sorgu
 istemcileri, eksiksiz işlem yaşam döngüsü (otomatik gaz, hata çözümleme,
 işlem takibi, blok/işlem arama), hibrit post-kuantum işlemler ve WebSocket
 abonelikleri. Bu istemcilerin tümü **yayınlanmıştır**: TypeScript npm'de
-(`@qorechain/sdk` 0.9.0), Python PyPI'da (`qorechain-sdk` 0.9.0, import
-`qorsdk`), Go modül proxy'sinde (etiket `packages/go/v0.9.0`), Rust
-crates.io'da (`qorechain-sdk` 0.9.0) ve Java Maven
-Central'da (`io.github.qorechain:qorechain-sdk` 0.9.1, yalnızca Java'ya özel bir güncelleme; diğer istemciler 0.9.0). EVM/SVM yürütme
+(`@qorechain/sdk` 0.10.0), Python PyPI'da (`qorechain-sdk` 0.10.0, import
+`qorsdk`), Go modül proxy'sinde (etiket `packages/go/v0.10.0`), Rust
+crates.io'da (`qorechain-sdk` 0.10.0) ve Java Maven
+Central'da (`io.github.qorechain:qorechain-sdk` 0.10.0). EVM/SVM yürütme
 adaptörleri (`@qorechain/evm`, `@qorechain/svm`, ikisi de 0.8.0),
-`@qorechain/react` kiti (0.9.0) ve `create-qorechain-dapp` iskele oluşturma
-CLI'si (0.9.0) yalnızca TypeScript içindir ve aynı şekilde npm'de
+`@qorechain/react` kiti (0.10.0) ve `create-qorechain-dapp` iskele oluşturma
+CLI'si (0.10.0) yalnızca TypeScript içindir ve aynı şekilde npm'de
 yayınlanmıştır. Yardımcı paketler için
 [Kurulum](/sdk/install#related-packages) sayfasına bakın.
 
-## 0.6, 0.7, 0.8 ve 0.9'daki yenilikler
+## 0.6, 0.7, 0.8, 0.9 ve 0.10'daki yenilikler
 
 **0.6.0 — birleşik eth-native hesaplar (zincir v3.1.83).** Tek bir
 `eth_secp256k1` anahtarı, üç adres kodlamasının tümü olarak gösterilen ve
@@ -174,7 +182,7 @@ oluşturulan hibrit işlemler **zincir üzerinde reddedilir** — yükseltme
 yapın.
 
 **0.7.0 — authenticator şeritleri (zincir v3.1.85).** Arkasındaki
-`abstractaccount` modülü şu anda her iki ağda da kapalıdır (bkz.
+`abstractaccount` modülü şu anda mainnet'te kapalı, testnet'te açıktır (bkz.
 [Authenticator kılavuzu](/sdk/guides/authenticators)). Bağlanmış bir Phantom
 (ed25519) veya MetaMask (secp256k1, 20 baytlık adresle) anahtarı, en az
 yetki ilkesine dayalı, harcama limitli, iptal edilebilir koşullar altında
@@ -191,7 +199,7 @@ Kopyala-yapıştır örneklerle eksiksiz anlatım:
 v3.2.0).** Hibrit bir işlemin kuantum sonrası yarısı artık hedef ağın doğruladığı
 biçimde imzalanır (v1 veya v2, `signBytesVersion: "auto" | "v1" | "v2"`).
 Her iki herkese açık ağ da v2 üzerindedir; bu yüzden mainnet'te işlem yapmak için
-SDK **0.8.1 veya daha yenisi** gereklidir (0.9.0'ı kullanın). **0.8.2**, EVM şeridinin
+SDK **0.8.1 veya daha yenisi** gereklidir (güncel sürümü kullanın). **0.8.2**, EVM şeridinin
 [yetkilendirme penceresi](/sdk/guides/evm#evm-window) için `openEvmWindowMsg`,
 `closeEvmWindowMsg`, `fetchEvmWindow` ve `classifyEvmWindowRejection` ekler.
 **0.8.0**, cüzdan imzasına dayalı hesap yardımcılarını (`connectPhantomUnified` ve
@@ -214,7 +222,17 @@ kapsar; `derivePqcCanonical(address, mnemonic)` ise her dilde mnemonic'ten
 kurtarabileceğiniz bir anahtar verir. PQC hesap rotası tekil
 `/qorechain/pqc/v1/account/{address}` biçimindedir, bir blok içindeki başarısızlıklar
 codespace'lerini korur ve `create-qorechain-dapp` güncel SDK üzerinde iskelet
-oluşturur. Bkz. [0.9.0 neler ekliyor](/sdk/install#whats-new-090).
+oluşturur. Bkz. [0.9.0'ın eklediği](/sdk/install#whats-new-090).
+
+**0.10.0 — zincir v3.2.4 için istemci desteği.** Staking katmanı oluşturucuları ve okumaları
+(`lockDelegation`, `unlockEarly`, `claimBonus`, `fetchStakingTierParams`,
+`fetchStakingLocks`), bağlı bir anahtarın sonraki sırası için `fetchAuthNonce`, bir
+ağın adıyla uyguladığı konsensüs kuralları için
+`fetchProtocolFeatures` / `isProtocolFeatureEnabled`, PQC durumunda `possessionProven` ve
+`ibcTimeoutTimestamp`. `ensurePqcRegistered` artık kayıtlı anahtarı karşılaştırır;
+anahtarı olmayan bir duruma güvenmez ve ücret simülasyonu sırasında metin olarak gelen bir zincir
+reddi her dilde adlandırılır. Bkz.
+[0.10.0 neler ekliyor](/sdk/install#whats-new-0100).
 
 ## Sonraki adımlar
 

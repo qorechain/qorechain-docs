@@ -10,7 +10,7 @@ sidebar_position: 5
 Acest ghid parcurge trimiterea de token-uri QOR, interogarea tranzacțiilor și interacțiunea cu QoreChain prin interfețele sale native, EVM și SVM.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 și rulează versiunea v3.2.4 din 23 octombrie 2026 (testnet-ul rulează v3.2.4 din 19 octombrie 2026) — înlocuiți ID-ul chain-ului și punctele finale ale rețelei principale de pe pagina **Conectarea la rețeaua principală** atunci când efectuați tranzacții pe rețeaua principală.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 și rulează versiunea v3.2.4 din 23 octombrie 2026 (testnet-ul rulează v3.2.6 din 27 octombrie 2026) — înlocuiți ID-ul chain-ului și punctele finale ale rețelei principale de pe pagina **Conectarea la rețeaua principală** atunci când efectuați tranzacții pe rețeaua principală.
 :::
 
 ## Verificarea soldului
@@ -139,7 +139,7 @@ Tot restul lane-ului EVM rămâne neschimbat: continuați să semnați cu MetaMa
 | `max-txs` | Câte tranzacții EVM admite | 1 – 1,000 |
 | `max-value` | Ieșirea totală pe care o admite, în uqor: valoarea transferată **plus** comisionul maxim pe care l-ar putea plăti fiecare tranzacție (limita de gaz × plafonul comisionului), rotunjit în sus | mai mare decât 0 |
 
-* 17,280 de blocuri înseamnă aproximativ 15 ore pe mainnet (aproximativ 3.2 s pe bloc) și aproximativ 5 ore pe testnet (aproximativ 1.0 s pe bloc).
+* 17,280 de blocuri înseamnă aproximativ 15 ore pe mainnet (aproximativ 3.2 s pe bloc) și aproximativ 6 ore pe testnet (aproximativ 1.3 s pe bloc).
 * O tranzacție care este admisă și apoi eșuează își consumă totuși slotul și bugetul de valoare.
 * Deschiderea unei ferestre noi **înlocuiește** fereastra anterioară; consumul reîncepe de la zero.
 * CLI acceptă `max-value` în `uqor` sau `qor` (`1000qor` = 1,000,000,000 uqor).

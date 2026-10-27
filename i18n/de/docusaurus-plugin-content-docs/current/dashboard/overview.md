@@ -78,7 +78,7 @@ Das Dashboard arbeitet mit zwei Netzwerken. Die Kopfzeile zeigt das Netzwerk, mi
 | Netzwerk | Chain-ID | Wann es zu verwenden ist |
 | --- | --- | --- |
 | **Mainnet** | `qorechain-vladi` | Live-Netzwerk (live seit dem 7. Juni 2026, läuft seit dem 23. Oktober 2026 mit Chain v3.2.4) für echten Wert und den produktiven Einsatz. Non-custodial: Sie verbinden Ihre eigene Wallet. |
-| **Testnet** | `qorechain-diana` | Kostenlose Umgebung zum Testen (läuft seit dem 19. Oktober 2026 mit Chain v3.2.4), mit einer vom Dashboard verwalteten Test-Wallet und dem [Faucet](/dashboard/faucet) für Test-Token. |
+| **Testnet** | `qorechain-diana` | Kostenlose Umgebung zum Testen (läuft seit dem 27. Oktober 2026 mit Chain v3.2.6), mit einer vom Dashboard verwalteten Test-Wallet und dem [Faucet](/dashboard/faucet) für Test-Token. |
 
 Das native Token ist **QOR** (Basiseinheit `uqor`, wobei 1 QOR = 10^6 uqor). Wenn Sie neu sind, beginnen Sie im Testnet, beantragen Sie Token beim Faucet und probieren Sie eine erste Überweisung aus, bevor Sie zum Mainnet wechseln.
 

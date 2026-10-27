@@ -23,7 +23,7 @@ QoreChain's economic model is centered on the native **QOR** token and has a **f
 | **Bech32 prefix**     | `qor` (accounts: `qor1...`, validators: `qorvaloper...`) |
 
 :::note
-The figures on this page describe the **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live since 7 June 2026 on release **v3.2.4** (applied at height 3,742,566 on 23 October 2026). The **`qorechain-diana`** testnet (EVM chain ID **9800**, release **v3.2.4** since 19 October 2026) has its own emission and supply history (testnet supply is far above mainnet's and its emission is already past the cap), so use the mainnet figures. Amounts that move with every block are marked with the date they were read (23 October 2026).
+The figures on this page describe the **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live since 7 June 2026 on release **v3.2.4** (applied at height 3,742,566 on 23 October 2026). The **`qorechain-diana`** testnet (EVM chain ID **9800**, release **v3.2.6** since 27 October 2026) has its own emission and supply history (testnet supply is far above mainnet's and its emission is already past the cap), so use the mainnet figures. Amounts that move with every block are marked with the date they were read (23 October 2026).
 :::
 
 ---
@@ -211,7 +211,7 @@ Read live on 23 October 2026 from `GET /qorechain/inflation/v1/params`:
 The module's parameters and epoch record are exposed over REST on mainnet since v3.2.3 (`/qorechain/inflation/v1/params` and `/qorechain/inflation/v1/epoch_info`); they can also be read from chain state with the RPC `abci_query` raw store interface (store `inflation`, keys `inflation/params` and `inflation/epoch`).
 
 :::note v3.2.4 and the testnet's emission
-The `qorechain-diana` testnet keeps its earlier emission settings (16,239 QOR per epoch under a 114,285,714 QOR cap, already reached there); mainnet uses the values above. The v3.2.4 release adds a third emission mode, `target_apy`, with a `target_apy_bps` parameter: on the testnet since 19 October 2026 and on mainnet since 23 October 2026 (governance proposal 13). The parameter is `0` on both networks and does not drive emission. Switching a network to that mode is a separate governance vote and has not been proposed on mainnet; until one passes, mainnet stays in `fixed` mode at 86,000 QOR per epoch.
+The `qorechain-diana` testnet is tuned for testing and differs from mainnet (read 27 October 2026): it is in `target_apy` mode with `target_apy_bps` `1667`, `fixed_epoch_emission` is still 16,239 QOR, and `max_total_emission` is 3,950,390,341,362,112,750 uqor, which equals the amount already minted there (`remaining_emission` is `0` at `/qorechain/inflation/v1/epoch_info`), so the testnet mints nothing more. Mainnet uses the values above. The v3.2.4 release adds the third emission mode, `target_apy`, with a `target_apy_bps` parameter: on the testnet since 19 October 2026 and on mainnet since 23 October 2026 (governance proposal 13). On mainnet the parameter is `0` and does not drive emission. Switching mainnet to that mode is a separate governance vote and has not been proposed; until one passes, mainnet stays in `fixed` mode at 86,000 QOR per epoch.
 :::
 
 ---

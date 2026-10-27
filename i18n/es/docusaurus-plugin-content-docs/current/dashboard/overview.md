@@ -78,7 +78,7 @@ El Panel funciona con dos redes. La cabecera muestra la red a la que estás cone
 | Red | Chain ID | Cuándo usarla |
 | --- | --- | --- |
 | **Mainnet** | `qorechain-vladi` | Red en vivo (en funcionamiento desde el 7 de junio de 2026, con la versión de cadena v3.2.4 desde el 23 de octubre de 2026) para valor real y uso en producción. No custodio: conectas tu propio monedero. |
-| **Testnet** | `qorechain-diana` | Entorno gratuito para pruebas (con la versión de cadena v3.2.4 desde el 19 de octubre de 2026), con un monedero de prueba gestionado por el panel y el [Faucet](/dashboard/faucet) para obtener tokens de prueba. |
+| **Testnet** | `qorechain-diana` | Entorno gratuito para pruebas (con la versión de cadena v3.2.6 desde el 27 de octubre de 2026), con un monedero de prueba gestionado por el panel y el [Faucet](/dashboard/faucet) para obtener tokens de prueba. |
 
 El token nativo es **QOR** (denominación base `uqor`, donde 1 QOR = 10^6 uqor). Si eres nuevo, empieza en testnet, reclama tokens del Faucet y prueba una primera transferencia antes de pasar a mainnet.
 

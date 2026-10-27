@@ -10,10 +10,10 @@ sidebar_position: 7
 Die Gas-Abstraktion erlaubt es einem Nutzer, eine Transaktionsgebühr in einem akzeptierten nicht-nativen Token statt in QOR zu bezahlen. Der Code für die Gebührenumrechnung ist Teil der Chain, aber **heute wird auf keinem der beiden Netzwerke ein nicht-nativer Token akzeptiert**, sodass jede Gebühr in QOR bezahlt wird. Diese Seite erklärt, was live ist, wie die Umrechnung wie gebaut funktioniert und was Sie stattdessen tun.
 
 :::caution Noch nicht nutzbar: Bezahlen Sie jede Gebühr in uqor
-Im Mainnet (**`qorechain-vladi`**) und im Testnet (**`qorechain-diana`**), beide auf Node-Release **v3.2.4**, geprüft am 23. Oktober 2026:
+Im Mainnet (**`qorechain-vladi`**) und im Testnet (**`qorechain-diana`**), auf Node-Release **v3.2.4** bzw. **v3.2.6**, geprüft am 27. Oktober 2026:
 
 * Die aktuell gültige Liste akzeptierter Token enthält **nur `uqor`**. Die Gebührenumrechnung wurde mit v3.2.2 eingeschaltet, aber nichts anderes ist aufgeführt, die Umrechnungsobergrenze pro Block ist `0` (Umrechnung aus), und der Umrechnungs-Float hält kein Guthaben. Eine in einer anderen Denomination bezahlte Gebühr wird mit dem Fehler „denom not accepted for fee payment" abgelehnt, sowohl in der Simulation als auch in einer echten Transaktion.
-* Auf keinem der beiden Netzwerke existiert ein IBC-Kanal oder IBC-Client, daher kann kein `ibc/…`-Guthaben existieren, mit dem sich bezahlen ließe.
+* Im Mainnet existiert kein IBC-Kanal, und der einzige Testkanal des Testnets macht keinen `ibc/…`-Token zu einem akzeptierten Gebührentoken (die Liste enthält nur `uqor`), sodass es nichts außer `uqor` gibt, womit sich bezahlen ließe.
 
 Bezahlen Sie jede Gebühr in `uqor`. Diese Seite wird aktualisiert, sobald ein Token auf einem Live-Netzwerk akzeptiert wird.
 :::
@@ -36,7 +36,7 @@ Signieren Sie sie anschließend hybrid und senden Sie sie mit `qorechaind tx pqc
 
 ## Die aktuelle Konfiguration {#live-configuration}
 
-Das Modul stellt seine Konfiguration über REST und gRPC bereit. Dies sind die Werte auf beiden Netzwerken am 23. Oktober 2026:
+Das Modul stellt seine Konfiguration über REST und gRPC bereit. Dies sind die Werte auf beiden Netzwerken am 27. Oktober 2026:
 
 | Feld | Wert | Bedeutung |
 | --- | --- | --- |

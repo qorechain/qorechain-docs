@@ -44,11 +44,14 @@ const result = await queryContractSmart(cw, contractAddress, { token_info: {} })
 ## التوقيع: instantiate وexecute وupload
 
 :::caution الرفع والإنشاء الأولي (instantiate) يتطلبان إذنًا
-القيمتان `code_upload_access` و`instantiate_default_permission` هما `Nobody` على
-`qorechain-vladi` و`qorechain-diana`، كما أن `MsgStoreCode` /
+على `qorechain-vladi` (الشبكة الرئيسية) تكون القيمتان `code_upload_access` و
+`instantiate_default_permission` هما `Nobody`، كما أن `MsgStoreCode` /
 `MsgInstantiateContract` / `MsgInstantiateContract2` معطّلة أيضًا بواسطة قاطع
 الدائرة (circuit breaker) في السلسلة، ولذلك يتم رفض `uploadCode` و`instantiate`
-للحسابات العادية. أما العقود الموجودة بالفعل فيمكن الاستعلام عنها (أعلاه)
+للحسابات العادية. وعلى `qorechain-diana` (شبكة الاختبار، فُحصت في 27 أكتوبر 2026)
+تكون قيمة `code_upload_access` هي `Nobody` والمعطَّلة هي `MsgStoreCode` وحدها، بينما
+قيمة `instantiate_default_permission` هي `Everybody`، ولذلك يكون `instantiate` مفتوحًا هناك
+للشيفرة الموجودة بالفعل. أما العقود الموجودة بالفعل فيمكن الاستعلام عنها (أعلاه)
 وتنفيذها. تحقّق من `GET /cosmwasm/wasm/v1/codes/params` لمعرفة الأذونات الحالية.
 راجع [تطوير QoreChain Native](/developer-guide/cosmwasm-development).
 :::

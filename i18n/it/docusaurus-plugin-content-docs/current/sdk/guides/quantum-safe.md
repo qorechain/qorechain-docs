@@ -62,7 +62,7 @@ Lo stesso stato è leggibile anche dal lato EVM tramite il precompilato
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
 a `0x0000000000000000000000000000000000000A02` (esposto come
 `pqcKeyStatus` in `@qorechain/evm`) una volta che quel precompilato sarà attivo; non è
-ancora attivo su mainnet né su testnet (vedi
+attivo sulla mainnet, ed è elencato come attivo sulla testnet (verificato il 27 ottobre 2026; vedi
 [Stato della rete](/developer-guide/evm-precompiles#network-status)).
 
 ## Registrare con una sola chiamata {#register-in-one-call}

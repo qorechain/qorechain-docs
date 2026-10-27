@@ -46,12 +46,15 @@ También puedes construir un cliente de lectura directamente con
 ## Firma: instanciar, ejecutar, subir
 
 :::caution Subir e instanciar requieren permiso
-`code_upload_access` e `instantiate_default_permission` están en `Nobody` en
-`qorechain-vladi` y `qorechain-diana`, y `MsgStoreCode` /
+En `qorechain-vladi` (mainnet), `code_upload_access` e
+`instantiate_default_permission` están en `Nobody`, y `MsgStoreCode` /
 `MsgInstantiateContract` / `MsgInstantiateContract2` además están desactivados por
 el cortacircuitos (circuit breaker) de la cadena, por lo que `uploadCode` e
-`instantiate` se rechazan para las cuentas normales. Los contratos que ya existen
-se pueden consultar (arriba) y ejecutar. Consulta `GET /cosmwasm/wasm/v1/codes/params`
+`instantiate` se rechazan para las cuentas normales. En `qorechain-diana` (testnet,
+comprobado el 27 de octubre de 2026), `code_upload_access` está en `Nobody` y solo
+`MsgStoreCode` está desactivado, mientras que `instantiate_default_permission` está
+en `Everybody`, por lo que `instantiate` está abierto allí para código que ya existe.
+Los contratos que ya existen se pueden consultar (arriba) y ejecutar. Consulta `GET /cosmwasm/wasm/v1/codes/params`
 para ver los permisos actuales. Consulta
 [Desarrollo con QoreChain Native](/developer-guide/cosmwasm-development).
 :::

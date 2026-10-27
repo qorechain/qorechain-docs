@@ -10,18 +10,20 @@ sidebar_position: 3
 QoreChain supports **QoreChain Native** smart contracts. QoreChain Native is QoreChain's name for its **CosmWasm** runtime: developers write secure, sandboxed programs in Rust against the standard CosmWasm libraries (`cosmwasm-std`) and compile them to WebAssembly. QoreChain Native contracts run alongside EVM and SVM programs within the QoreChain triple-VM architecture.
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.4** since 23 October 2026 (governance proposal 13, height 3,742,566). Substitute `--chain-id qorechain-diana` for the testnet, which has run v3.2.4 since 19 October 2026.
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.4** since 23 October 2026 (governance proposal 13, height 3,742,566). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.6 (v3.2.4 since 19 October 2026).
 :::
 
-:::caution Code upload and instantiation currently require explicit permission
-As of this writing, `code_upload_access` and `instantiate_default_permission` are both set to **`Nobody`** on **both mainnet and testnet** — meaning `MsgStoreCode` and `MsgInstantiateContract` are not open to arbitrary accounts by default, following an industry-wide security advisory for CosmWasm, the runtime that QoreChain Native is built on. You'll need governance to grant your account (or a specific address list) upload/instantiate permission before the steps below will succeed. Check the live parameters first, since this is exactly the kind of setting governance can change (mainnet currently has no stored contract code at all):
+:::caution Code upload and instantiation require explicit permission on mainnet; the testnet differs
+As of this writing (checked 27 October 2026), `code_upload_access` and `instantiate_default_permission` are both set to **`Nobody`** on **mainnet**, meaning `MsgStoreCode` and `MsgInstantiateContract` are not open to arbitrary accounts, following an industry-wide security advisory for CosmWasm, the runtime that QoreChain Native is built on. On the **`qorechain-diana` testnet** the settings differ: `code_upload_access` is still `Nobody` (code is stored only through governance), but `instantiate_default_permission` is **`Everybody`**, set by testnet governance on 27 October 2026, so any account can instantiate a stored code whose own permission allows it. Check the live parameters first, since this is exactly the kind of setting governance can change (mainnet currently has no stored contract code at all):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
-The `MsgStoreCode`, `MsgInstantiateContract` and `MsgInstantiateContract2` message types are also switched off by the chain's circuit breaker on both networks (`qorechaind query circuit disabled-list`), so raising the permission alone is not enough until those entries are lifted.
+The chain's circuit breaker also switches message types off network-wide (`qorechaind query circuit disabled-list`). On **mainnet** `MsgStoreCode`, `MsgInstantiateContract` and `MsgInstantiateContract2` are on the list, so raising the permission alone is not enough until those entries are lifted. On the **testnet** only `MsgStoreCode` is on the list: instantiation is open, upload is not.
+
+**Testnet: reviewed contracts stored by governance.** Because ordinary accounts cannot upload code on the testnet, governance stored five reviewed contracts that anyone can instantiate (`instantiate_permission` `Everybody`): cw20-base (token), cw721-base (NFT collection), cw4-group, cw3-fixed-multisig and a small counter contract. At the time of writing they are code ids 859 to 863, in that order, listed by `GET /cosmwasm/wasm/v1/code` with the governance module account as creator and identified by their `data_hash`; read the ids from the live list rather than hardcoding them. They exist on the testnet only. Mainnet has no stored code.
 
 This restriction doesn't affect already-instantiated contracts — `execute` and `query` against an existing contract work normally regardless of this setting.
 :::
@@ -265,4 +267,4 @@ This calls the `migrate` entry point on the new code with the existing contract 
 
 * [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) — Call EVM and SVM contracts from QoreChain Native
 * [SVM Development](/developer-guide/svm-development) — Deploy BPF programs on QoreChain
-* [EVM Precompiles](/developer-guide/evm-precompiles) — Reference for the planned Solidity precompiles (none are active yet)
+* [EVM Precompiles](/developer-guide/evm-precompiles) — Reference for the Solidity precompiles (none is active on mainnet; three are active on the testnet)

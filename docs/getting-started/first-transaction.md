@@ -10,7 +10,7 @@ sidebar_position: 5
 This guide walks through sending QOR tokens, querying transactions, and interacting with QoreChain across its native, EVM, and SVM interfaces.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release v3.2.4 since 23 October 2026 (the testnet has run v3.2.4 since 19 October 2026) — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release v3.2.4 since 23 October 2026 (the testnet runs v3.2.6 since 27 October 2026) — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
 :::
 
 ## Check Your Balance
@@ -139,7 +139,7 @@ Everything else about the EVM lane is unchanged: you keep signing with MetaMask,
 | `max-txs` | How many EVM transactions it admits | 1 – 1,000 |
 | `max-value` | Total outflow it admits, in uqor: transferred value **plus** the maximum fee each transaction could pay (gas limit × fee cap), rounded up | greater than 0 |
 
-* 17,280 blocks is about 15 hours on mainnet (about 3.2 s per block) and about 5 hours on the testnet (about 1.0 s per block).
+* 17,280 blocks is about 15 hours on mainnet (about 3.2 s per block) and about 6 hours on the testnet (about 1.3 s per block).
 * A transaction that is admitted and then fails still uses its slot and value budget.
 * Opening a new window **replaces** the previous one; consumption starts again from zero.
 * The CLI accepts `max-value` in `uqor` or `qor` (`1000qor` = 1,000,000,000 uqor).

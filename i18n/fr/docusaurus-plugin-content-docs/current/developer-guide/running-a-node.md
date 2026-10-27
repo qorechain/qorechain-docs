@@ -26,8 +26,8 @@ Le binaire actuel, le genesis, les pairs, les seeds et un point de confiance de 
 Les champs du manifeste incluent `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un point de confiance actualisé toutes les heures) et `minCompatible`. Les étapes d'installation et de connexion ci-dessous récupèrent ce manifeste et utilisent ses valeurs actuelles.
 :::
 
-:::caution Utilisez la version que nomme le manifeste : v3.2.4 sur les deux réseaux
-Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis un snapshot franchit plusieurs mises à niveau de gouvernance (voir [Mises à niveau](#upgrades) ci-dessous) : installez donc toujours le binaire vers lequel pointe le manifeste, car il porte tous les gestionnaires de mise à niveau. Sur le **mainnet**, `minCompatible` et `version` du manifeste valent tous deux `3.2.4` (la mise à niveau coordonnée appliquée à la hauteur 3,742,566 le 23 octobre 2026, proposition de gouvernance 13) ; un nœud qui rejoint le réseau maintenant a donc besoin de la v3.2.4 : un binaire plus ancien s'arrête à la hauteur de mise à niveau qu'il ne connaît pas. Sur le **testnet**, ils valent aussi tous deux `3.2.4` (appliquée à la hauteur 8,337,253 le 19 octobre 2026). N'exécutez pas un binaire de testnet sur le mainnet, ni l'inverse : chaque répertoire porte sa propre version (voir [Mises à niveau](#upgrades)). Le manifeste est promu de façon délibérée (d'abord sur testnet, puis sur mainnet après une période de rodage) ; vérifiez donc son champ `"version"` par rapport à `minCompatible` avant de faire confiance à `binary.url`.
+:::caution Utilisez la version que nomme le manifeste : v3.2.4 sur le mainnet, v3.2.6 sur le testnet
+Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis un snapshot franchit plusieurs mises à niveau de gouvernance (voir [Mises à niveau](#upgrades) ci-dessous) : installez donc toujours le binaire vers lequel pointe le manifeste, car il porte tous les gestionnaires de mise à niveau. Sur le **mainnet**, `minCompatible` et `version` du manifeste valent tous deux `3.2.4` (la mise à niveau coordonnée appliquée à la hauteur 3,742,566 le 23 octobre 2026, proposition de gouvernance 13) ; un nœud qui rejoint le réseau maintenant a donc besoin de la v3.2.4 : un binaire plus ancien s'arrête à la hauteur de mise à niveau qu'il ne connaît pas. La proposition de gouvernance 14 du mainnet est en période de vote et appliquerait la v3.2.5 à la hauteur 3,906,833 ; aucun plan de mise à niveau n'est programmé tant qu'elle n'est pas adoptée (`current_plan` vaut `null` au moment de la rédaction, le 27 octobre 2026), et lorsque le manifeste nomme une version plus récente, c'est ce binaire qu'il faut installer. Ce que change la v3.2.5 sera documenté une fois qu'elle aura été appliquée sur le mainnet. Sur le **testnet**, `minCompatible` et `version` du manifeste valent tous deux `3.2.6` (`upgradeHeight` 8,970,638 ; la v3.2.5 a été appliquée à la hauteur 8,890,800 le 26 octobre 2026 et la v3.2.6 le 27 octobre 2026) ; un nœud qui rejoint le testnet a donc besoin du binaire v3.2.6. N'exécutez pas un binaire de testnet sur le mainnet, ni l'inverse : chaque répertoire porte sa propre version (voir [Mises à niveau](#upgrades)). Le manifeste est promu de façon délibérée (d'abord sur testnet, puis sur mainnet après une période de rodage) ; vérifiez donc son champ `"version"` par rapport à `minCompatible` avant de faire confiance à `binary.url`.
 
 Un binaire compilé à partir des sources publiques (la compilation communautaire) refuse de démarrer sur l'un ou l'autre des réseaux publics (v3.2.3 et ultérieures) : il ne peut pas vérifier les signatures post-quantiques ni rejouer fidèlement les blocs des réseaux. Utilisez uniquement l'archive de release.
 
@@ -53,7 +53,7 @@ Deux paramètres comptent à partir de la v3.2.1 : gardez l'horloge système syn
 | Réseau   | Chain ID            | EVM chain ID         | Notes                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
 | Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — en direct depuis le 7 juin 2026 ; version de nœud v3.2.4 (depuis le 23 oct. 2026) |
-| Testnet  | `qorechain-diana`   | `9800`               | Répétez d'abord vos intégrations ici ; version de nœud v3.2.4 (depuis le 19 oct. 2026) |
+| Testnet  | `qorechain-diana`   | `9800`               | Répétez d'abord vos intégrations ici ; version de nœud v3.2.6 (depuis le 27 oct. 2026) |
 
 Remplacez le `--chain-id` approprié pour votre réseau cible tout au long de ce guide. Les exemples utilisent le mainnet par défaut.
 
@@ -75,7 +75,7 @@ Un SSD NVMe est fortement recommandé — l'état de la chaîne et les stores EV
 
 ### Docker Compose
 
-Un déploiement nœud uniquement avec Docker Compose. Il n'existe aucune image `qorechaind` publiée publiquement à récupérer (rien n'est publié sous l'organisation Docker Hub du projet). Le `Dockerfile` du dépôt public construit le binaire **communautaire** (sans bibliothèque post-quantique, keepers factices) : il convient au développement local mais ne peut pas suivre le mainnet ni le testnet, et depuis la v3.2.3 il refuse de démarrer sur ceux-ci. Pour un nœud de réseau, construisez votre propre image à partir de l'**archive de release** indiquée dans `latest.json`, étiquetez-la avec la version de la release (**v3.2.4** sur les deux réseaux), puis montez un volume persistant pour les données de la chaîne :
+Un déploiement nœud uniquement avec Docker Compose. Il n'existe aucune image `qorechaind` publiée publiquement à récupérer (rien n'est publié sous l'organisation Docker Hub du projet). Le `Dockerfile` du dépôt public construit le binaire **communautaire** (sans bibliothèque post-quantique, keepers factices) : il convient au développement local mais ne peut pas suivre le mainnet ni le testnet, et depuis la v3.2.3 il refuse de démarrer sur ceux-ci. Pour un nœud de réseau, construisez votre propre image à partir de l'**archive de release** indiquée dans `latest.json`, étiquetez-la avec la version de la release (**v3.2.4** sur le mainnet, **v3.2.6** sur le testnet, au moment de la rédaction), puis montez un volume persistant pour les données de la chaîne :
 
 ```bash
 # Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
@@ -282,13 +282,15 @@ Les changements de consensus arrivent sous forme de **mises à niveau de gouvern
 | v3.2.2 | hauteur 3,556,788 (16 octobre 2026) | hauteur 6,905,034 (2 octobre 2026) |
 | v3.2.3 | hauteur 3,662,051 (20 octobre 2026, proposition de gouvernance 11) | hauteur 8,003,746 (15 octobre 2026) |
 | v3.2.4 | hauteur 3,742,566 (23 octobre 2026, proposition de gouvernance 13) | hauteur 8,337,253 (19 octobre 2026, proposition de gouvernance 13) |
+| v3.2.5 | proposée : la proposition de gouvernance 14 (en période de vote le 27 oct. 2026) l'appliquerait à la hauteur 3,906,833 | hauteur 8,890,800 (26 oct. 2026) |
+| v3.2.6 | non appliquée | hauteur 8,970,638 (27 oct. 2026) |
 
 **Ce qu'a fait l'opérateur d'un nœud pour la v3.2.4 (hauteur mainnet 3,742,566).** La proposition de gouvernance 13 a nommé le plan `v3.2.4` à la hauteur 3,742,566 (appliqué le 23 octobre 2026) : les nœuds sont restés en v3.2.3 jusqu'à cette hauteur, s'y sont arrêtés, puis ont redémarré en v3.2.4. Pour la prochaine mise à niveau coordonnée, les étapes sont les mêmes :
 
 1. Surveillez le manifeste (`https://download.qore.host/mainnet/latest.json`) : tant qu'il ne nomme pas la nouvelle version, il n'y a rien à installer, et un binaire du répertoire testnet n'est pas la version du mainnet.
 2. Lorsque le manifeste nomme la version, téléchargez l'archive depuis son `binary.url`, vérifiez le `sha256` (le texte de la proposition publie aussi le sha256 du binaire) et préparez-la **avant** la hauteur. Consultez `GET /cosmos/upgrade/v1beta1/current_plan` pour le plan en attente (`name` et `height`) et la hauteur actuelle avec `GET /status` sur le RPC.
 3. À la hauteur du plan, un nœud encore sur l'ancien binaire **s'arrête** (c'est le comportement voulu du module de mise à niveau, pas une défaillance) ; un nœud déjà sur le nouveau binaire applique le gestionnaire de mise à niveau et continue. Si le vôtre s'est arrêté en premier, remplacez le binaire et redémarrez. Après la mise à niveau, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` renvoie la hauteur au lieu de `0` (3742566 sur le mainnet, 8337253 sur le testnet).
-4. Un nœud qui rejoint le mainnet maintenant installe la version que nomme le manifeste (v3.2.4 ; vérifiez `version` par rapport à `minCompatible`).
+4. Un nœud qui rejoint le mainnet maintenant installe la version que nomme le manifeste (v3.2.4 au moment de la rédaction ; vérifiez `version` par rapport à `minCompatible`).
 
 La signature des transactions, les adresses, les décimales, les memos et les frais ne changent pas avec la v3.2.4.
 
@@ -435,7 +437,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bonnes pratiques opérationnelles
 
-1. **Épinglez la version de la chaîne.** Exécutez la version que recommande le manifeste (**v3.2.4** sur les deux réseaux), suivez les versions officielles pour les mises à niveau coordonnées et gardez l'horloge système synchronisée via NTP.
+1. **Épinglez la version de la chaîne.** Exécutez la version que recommande le manifeste (**v3.2.4** sur le mainnet et **v3.2.6** sur le testnet au moment de la rédaction), suivez les versions officielles pour les mises à niveau coordonnées et gardez l'horloge système synchronisée via NTP.
 
 2. **Faites tourner des nœuds redondants.** Faites fonctionner au moins deux nœuds derrière un répartiteur de charge afin qu'un simple redémarrage ou une resynchronisation n'interrompe pas le trafic d'intégration.
 

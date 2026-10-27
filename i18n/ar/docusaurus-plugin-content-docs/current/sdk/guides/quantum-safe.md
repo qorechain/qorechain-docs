@@ -60,7 +60,7 @@ const status = await getPqcStatus(client, address);
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
 على العنوان `0x0000000000000000000000000000000000000A02` (مكشوف باسم
 `pqcKeyStatus` في `@qorechain/evm`) متى أصبح ذلك الـ precompile فعّالًا؛ وهو غير
-فعّال بعد على الشبكة الرئيسية ولا على الشبكة التجريبية (انظر
+فعّال على الشبكة الرئيسية، ومُدرج بوصفه فعّالًا على الشبكة التجريبية (جرى التحقق في 27 أكتوبر 2026؛ انظر
 [حالة الشبكة](/developer-guide/evm-precompiles#network-status)).
 
 ## التسجيل باستدعاء واحد {#register-in-one-call}

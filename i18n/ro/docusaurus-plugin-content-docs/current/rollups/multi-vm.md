@@ -10,7 +10,7 @@ sidebar_position: 8
 RDK include helperi TypeScript care codifică un apel dintr-un contract EVM către **precompilul cross-VM** de la adresa `0x0000000000000000000000000000000000000901`, conceput să îl direcționeze către un contract QoreChain Native de pe runtime-ul **QoreChain Native** (Wasm), precum și un șablon de schelet `multivm-rollup` care le conectează. Uneltele acoperă doar **EVM → QoreChain Native**; SVM este un runtime separat și nu face parte din precompil.
 
 :::caution Încă nu poate fi folosit în rețelele active
-Precompilul cross-VM **nu este activat** în niciuna dintre rețele: lista de precompilări statice active a modulului EVM este goală pe mainnet și pe testnet, `eth_getCode` pentru `0x…0901` întoarce `0x`, iar un apel către el reușește cu date goale și nu execută nimic. Încărcarea de contracte QoreChain Native este, de asemenea, închisă în ambele rețele, iar banda de tranzacții SVM este dezactivată la nivelul întregii rețele. Până când precompilul este activat și încărcările QoreChain Native sunt redeschise, nu există nimic de apelat. Această pagină documentează uneltele ca să te poți pregăti; nu construi fluxuri de producție pe ele. Vezi [Precompilări EVM: starea rețelei](/developer-guide/evm-precompiles#network-status).
+Precompilul cross-VM **nu este activat** în niciuna dintre rețele: lista de precompilări statice active a modulului EVM este goală pe mainnet, iar pe testnet conține doar `0x…0A01`, `0x…0A02` și `0x…0C01` (verificat la 27 octombrie 2026), deci `0x…0901` nu se află pe nicio listă; `eth_getCode` pentru `0x…0901` întoarce `0x`, iar un apel către el reușește cu date goale și nu execută nimic. Încărcarea de contracte QoreChain Native este, de asemenea, închisă în ambele rețele, iar banda de tranzacții SVM este dezactivată la nivelul întregii rețele. Până când precompilul este activat și încărcările QoreChain Native sunt redeschise, nu există nimic de apelat. Această pagină documentează uneltele ca să te poți pregăti; nu construi fluxuri de producție pe ele. Vezi [Precompilări EVM: starea rețelei](/developer-guide/evm-precompiles#network-status).
 :::
 
 :::note Encoderul corespunde structurii lanțului începând cu 0.6.0
@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` din `@qorechain/rdk` 0.6.0 construiește același calldata pentru tine:
+`encodeCrossVmCalldata` din `@qorechain/rdk` 0.6.0 și ulterior construiește același calldata pentru tine:
 
 ```ts
 import {
@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Deoarece precompilul este inactiv, un simplu `.call` către el întoarce **succes cu date goale și nu face nimic**; flag-ul `ok` nu îți spune dacă apelul a avut efect. Garda de încredere din interiorul contractului este o țintă care întoarce mereu o confirmare nevidă, cu un `require(ret.length > 0)` după apel, astfel încât un răspuns gol să fie tratat ca eșec; șablonul `multivm-rollup` din 0.6.0 face acest lucru.
+Deoarece precompilul este inactiv, un simplu `.call` către el întoarce **succes cu date goale și nu face nimic**; flag-ul `ok` nu îți spune dacă apelul a avut efect. Garda de încredere din interiorul contractului este o țintă care întoarce mereu o confirmare nevidă, cu un `require(ret.length > 0)` după apel, astfel încât un răspuns gol să fie tratat ca eșec; șablonul `multivm-rollup` (0.6.0 și 0.6.1) face acest lucru.
 
 ## Generarea unui rollup multi-VM
 
@@ -102,4 +102,4 @@ Deoarece precompilul este inactiv, un simplu `.call` către el întoarce **succe
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Șablonul 0.6.0 include `src/crossvm-call.ts` (verifică dacă precompilul este activ, apoi afișează calldata) și un `contracts/CrossVmCaller.sol` care apelează `executeCrossVMCall(uint8,string,bytes)` și cere un răspuns nevid de la țintă. Nu face ca un apel să funcționeze cât timp precompilul este inactiv. Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup) pentru toate șabloanele generatorului de schelet.
+Șablonul `multivm-rollup` (0.6.0 și 0.6.1) include `src/crossvm-call.ts` (verifică dacă precompilul este activ, apoi afișează calldata) și un `contracts/CrossVmCaller.sol` care apelează `executeCrossVMCall(uint8,string,bytes)` și cere un răspuns nevid de la țintă. Nu face ca un apel să funcționeze cât timp precompilul este inactiv. Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup) pentru toate șabloanele generatorului de schelet.

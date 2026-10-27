@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Istoric versiuni
 
-Istoricul public al versiunilor QoreChain. Mainnet-ul **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026) rulează **v3.2.4** (aplicată prin propunerea 13 de guvernanță la înălțimea 3.742.566, pe 23 octombrie 2026; versiunea anterioară, v3.2.3, a fost aplicată la înălțimea 3.662.051, pe 20 octombrie 2026). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) rulează **v3.2.4** de la înălțimea 8.337.253 (19 octombrie 2026).
+Istoricul public al versiunilor QoreChain. Mainnet-ul **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026) rulează **v3.2.4** (aplicată prin propunerea 13 de guvernanță la înălțimea 3.742.566, pe 23 octombrie 2026; versiunea anterioară, v3.2.3, a fost aplicată la înălțimea 3.662.051, pe 20 octombrie 2026). Propunerea 14 de guvernanță ar aplica v3.2.5 pe mainnet la înălțimea 3.906.833 (în perioada de votare la momentul redactării, 27 octombrie 2026). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) rulează **v3.2.6** (aplicată la înălțimea 8.970.638, pe 27 octombrie 2026); v3.2.4 a ajuns pe el la înălțimea 8.337.253 (19 octombrie 2026), iar v3.2.5 la înălțimea 8.890.800 (26 octombrie 2026).
 
 :::note
 Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intrările `v1.x` mai vechi sunt păstrate ca înregistrare istorică a liniei de lansări testnet care a precedat mainnet-ul. Manifestul de lansare ([Conectarea la Mainnet](/getting-started/connecting-to-mainnet)) este promovat separat de etichetare (tagging) și poate rămâne în urma unui tag pentru o perioadă — verificați-l direct pentru a afla ce descarcă efectiv o instalare nouă.
@@ -15,7 +15,7 @@ Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intr�
 
 ## Cronologia guvernanței mainnet {#governance-timeline}
 
-Propunerile care au modificat mainnet-ul aflat în funcțiune începând cu 14 octombrie 2026. Toate cele șapte sunt propuneri accelerate (perioadă de votare de o zi); propunerile 7 până la 13 au trecut cu tot stake-ul bonded care a votat în favoare. Lista completă se află la `GET /cosmos/gov/v1/proposals` pe `https://api.qore.host`.
+Propunerile care au modificat mainnet-ul aflat în funcțiune începând cu 14 octombrie 2026. Toate cele opt sunt propuneri accelerate (perioadă de votare de o zi); propunerile 7 până la 13 au trecut cu tot stake-ul bonded care a votat în favoare, iar propunerea 14 încă se votează la momentul redactării. Lista completă se află la `GET /cosmos/gov/v1/proposals` pe `https://api.qore.host`.
 
 | Propunere | Ce face | Votare | Rezultat |
 | --- | --- | --- | --- |
@@ -26,14 +26,39 @@ Propunerile care au modificat mainnet-ul aflat în funcțiune începând cu 14 o
 | 11 | Aplică v3.2.3 la înălțimea 3.662.051 | 18–19 octombrie 2026 (se încheie la 19:15 UTC) | Adoptată; aplicată pe 20 octombrie 2026 |
 | 12 | Eliberează cota blocată corectată a stakerilor (3.807.496,785528 QOR, recalculată la înălțimea v3.2.3) către fundație | 20 octombrie 2026, 20:01 UTC, până la 21 octombrie 2026, 20:01 UTC | Adoptată |
 | 13 | Upgrade coordonat la v3.2.4 la înălțimea 3.742.566: staking opțional cu blocare în timp, limita de recompensă a light node-urilor numărată de la înregistrare, un flag de deținere pentru cheile post-cuantice, dovada deținerii pentru validatorii de bridge, fereastra de contestare RDK în timp de bloc și consolidare locală nodului | 20 octombrie 2026, 21:18 UTC, până la 21 octombrie 2026, 21:18 UTC | Adoptată; aplicată pe 23 octombrie 2026, la înălțimea 3.742.566 |
+| 14 | Upgrade coordonat la v3.2.5 (build 2) la înălțimea 3.906.833 (nodurile rămân pe v3.2.4 până la acea înălțime, se opresc acolo și repornesc pe v3.2.5; semnarea tranzacțiilor rămâne neschimbată) | 27 octombrie 2026, 00:29 UTC, până la 28 octombrie 2026, 00:29 UTC | În votare la momentul redactării. Conținutul v3.2.5 este documentat în ziua în care mainnet-ul îl aplică |
 
 Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve) pentru ce înseamnă eliberările și [Guvernanță](/user-guide/governance) pentru cum se votează.
 
 ---
 
+## Versiunile de testnet v3.2.5 și v3.2.6 (deocamdată doar testnet) {#testnet-v326}
+
+Testnetul `qorechain-diana` primește fiecare versiune cu câteva zile înaintea mainnet-ului. Mainnet-ul nu este afectat de nimic din această secțiune: rulează v3.2.4 până când o decizie de guvernanță spune altceva.
+
+### v3.2.6 — Rute de interogare, valori PRISM live și tokenuri de test (testnet)
+
+**Focus lansare:** Aplicată pe testnet prin propunerea 28 de guvernanță a testnet-ului la înălțimea **8.970.638** (27 octombrie 2026, 16:58 UTC). Manifestul testnet setează `version` și `minCompatible` la 3.2.6, cu `upgradeHeight` 8970638, deci un nod care se alătură testnet-ului are nevoie de v3.2.6. Formatul de semnare, adresele, zecimalele, memo-urile și taxele rămân neschimbate.
+
+* **Rute noi de citire pe testnet.** `GET /qorechain/pqc/v1/params`, ruta clientului IBC v2 `/ibc/core/client/v2/counterparty_info/{client_id}` și setul complet de interogări PRISM (`x/rlconsensus`) de sub `/qorechain/rlconsensus/v1/` (`agent`, `params`, `observation`, `reward`, `policy`, `applied_params`, `last_action`). Mainnet-ul răspunde 501 (neimplementat) pe rutele PRISM, ale parametrilor PQC și ale clientului IBC v2. Rutele AMM de sub `/qorechain/amm/v1/` (`pools`, `quote/exact_in`, `pools/{id}/lp/{address}`) răspund pe ambele rețele. Vezi [Referința REST / gRPC](/api-reference/rest-grpc-endpoints).
+* **Agentul PRISM.** Agentul de pe testnet este în mod umbră (setat prin propunerea 29 de guvernanță a testnet-ului): observă la fiecare 10 blocuri, calculează o recompensă și o acțiune propusă și le înregistrează fără să schimbe nicio valoare. Disjunctorul agentului a fost corectat, iar istoricul lui este limitat. Vezi [PRISM](/architecture/prism-consensus-engine).
+* **Valori PRISM live în EVM.** Precompilarea `rlConsensusParams` returnează acum valorile aplicate ale modulului, în loc de numere fixe.
+* **Dezdelegarea stake-ului blocat este refuzată mai devreme.** Mempool-ul refuză o dezdelegare sau o redelegare a stake-ului blocat înainte ca aceasta să coste o taxă; o simulare de tranzacție returnează, de asemenea, codul de eroare tipizat.
+* **RDK.** Interogările de batch primesc un câmp `withdrawals_bound`.
+* **Limită de rată IBC (doar testnet).** Un limitator de rată per canal pentru transferurile IBC: cotele sunt un procent întreg din ofertă pe fereastră de ore. **Guvernanța stabilește limitele; nimic nu este automat și nu este setată nicio limită astăzi** (un set gol înseamnă nelimitat). Un pachet redirecționat este taxat pe ambele canale, iar o rambursare returnează cota.
+* **Redirecționarea pachetelor IBC (doar testnet).** Un transfer IBC v1 primit poate purta un memo `forward` (receptor, port, canal) care îl trimite mai departe pe alt canal, cu rambursări către expeditor dacă un hop eșuează. Nu există reîncercări, iar timeout-ul implicit al unui hop este de 10 minute; un token care se convertește într-un ERC-20 la sosire nu poate fi redirecționat.
+* **Clienți ușori 08-wasm (doar testnet).** Mesajele clienților ușori 08-wasm (stocarea, migrarea și eliminarea unui binar de client) sunt adăugate, doar pentru autoritate. Tipurile de client permise conțin în continuare doar clientul standard, deci nu se poate crea niciun client ușor wasm până când guvernanța adaugă `08-wasm`.
+* **Tokenuri de test Fest.** Trei contracte ERC-20 implementate pentru fest-ul builderilor au fost înregistrate prin guvernanța testnet-ului (propunerea 26) ca denominații bank: fUSD (6 zecimale), fETH (18) și fBTC (8). Sunt tokenuri de test doar pentru testnet, fără valoare. Vezi [Faucet](/dashboard/faucet#fest-tokens).
+
+### v3.2.5 (testnet)
+
+**Focus lansare:** Aplicată pe testnet prin propunerea 15 de guvernanță a testnet-ului la înălțimea **8.890.800** (26 octombrie 2026). Pe mainnet, propunerea 14 de guvernanță ar aplica v3.2.5 (build 2) la înălțimea 3.906.833 și se afla în perioada de votare la momentul redactării. Funcționalitățile v3.2.5 sunt documentate în acest istoric în ziua în care mainnet-ul o aplică.
+
+---
+
 ## v3.2.4 — Fereastra de înregistrare a light node-urilor și staking opțional cu blocare în timp (mainnet)
 
-**Focus lansare:** Versiunea curentă pe ambele rețele. A rulat mai întâi pe testnetul `qorechain-diana`: propunerea 13 de guvernanță a testnet-ului a aplicat-o la înălțimea **8.337.253** (19 octombrie 2026). Pe mainnet, propunerea 13 de guvernanță a aplicat-o la înălțimea **3.742.566**, pe 23 octombrie 2026: nodurile au rămas pe v3.2.3 până la acel bloc, s-au oprit acolo și au repornit pe v3.2.4, iar semnarea tranzacțiilor rămâne neschimbată. Manifestele mainnet și testnet setează ambele `minCompatible` la 3.2.4, deci un nod care se alătură oricăreia dintre rețele are acum nevoie de v3.2.4. Fiecare funcționalitate de mai jos este live pe ambele rețele.
+**Focus lansare:** Versiunea curentă de mainnet. A rulat mai întâi pe testnetul `qorechain-diana`: propunerea 13 de guvernanță a testnet-ului a aplicat-o la înălțimea **8.337.253** (19 octombrie 2026). Pe mainnet, propunerea 13 de guvernanță a aplicat-o la înălțimea **3.742.566**, pe 23 octombrie 2026: nodurile au rămas pe v3.2.3 până la acel bloc, s-au oprit acolo și au repornit pe v3.2.4, iar semnarea tranzacțiilor rămâne neschimbată. Manifestul mainnet setează `minCompatible` la 3.2.4, deci un nod care se alătură mainnet-ului are nevoie de v3.2.4 (testnetul a trecut între timp la v3.2.6). Fiecare funcționalitate de mai jos este live pe mainnet și pe testnet.
 
 * **Fereastra de înregistrare a light node-urilor.** Limita de recompensă a unui light node începe la cea mai târzie dintre decontarea anterioară și propria înregistrare a nodului, astfel încât o înregistrare nouă nu încasează o sumă acumulată înainte de alăturarea sa.
 * **Staking opțional cu blocare în timp (`x/stakingtier`, un modul nou).** Un delegator poate bloca o parte dintr-o delegare pentru 3, 6 sau 12 luni; partea blocată nu poate fi dezdelegată sau redelegată, iar deblocarea anticipată este permisă cu o penalitate care este arsă. Blocarea minimă este de 10 QOR. Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking).
@@ -137,7 +162,7 @@ v3.2.1 a fost aplicată nod cu nod și nu are înălțime de upgrade; a fost în
 * **Interogare schemă de permisiuni** — `GET /qorechain/abstractaccount/v1/permission_schema` (disponibil și prin gRPC/CLI) returnează taxonomia canonică de permisiuni (11 permisiuni), maparea mesaj→permisiune și lista mesajelor nedelegabile, astfel încât portofelele să valideze domeniile fără a le codifica dur (hardcoding).
 * **Rotația cheii PQC în același algoritm** — Noul mesaj **`MsgRotatePQCKey`** rotește cheia ML-DSA-87 a unui cont în cadrul aceluiași algoritm (semnat dublu de cheia veche și cea nouă), permițând migrarea cheilor derivate în formă veche către derivarea canonică legată de adresă și retragerea unei chei compromise. CLI nou: `tx pqc rotate-key` și `tx pqc recover-key` (recuperare deterministă a cheii dintr-un mnemonic).
 * **Tranzacțiile cu cheia rădăcină rămân neafectate** — Modificările sunt aditive; fluxurile normale de portofel și de exchange rămân neschimbate. Operatorii de noduri trebuie să fie pe **v3.1.85** până la înălțimea upgrade-ului de rețea.
-* **Stare curentă** — Funcționalitățile de cont inteligent și de portofel conectat sunt implementate, dar în prezent sunt **oprite** pe ambele rețele (`abstractaccount.enabled = false`); începând cu v3.2.0, fiecare cale de autenticator este refuzată cât timp flag-ul este oprit. Verifică `GET /qorechain/abstractaccount/v1/config` înainte de a oferi un flux de conectare.
+* **Stare curentă** — Funcționalitățile de cont inteligent și de portofel conectat sunt implementate, dar în prezent sunt **oprite pe mainnet** (`abstractaccount.enabled = false`) și activate pe testnet (verificat la 27 octombrie 2026); pe mainnet, începând cu v3.2.0, fiecare cale de autenticator este refuzată cât timp flag-ul este oprit. Verifică `GET /qorechain/abstractaccount/v1/config` înainte de a oferi un flux de conectare.
 
 ## v3.1.84 — Permisiuni și limite de cheltuire pentru autenticator
 

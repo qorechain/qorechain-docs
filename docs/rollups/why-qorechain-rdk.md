@@ -17,18 +17,18 @@ QoreChain's Layer 1 rather than the tooling:
 - a **triple-VM** runtime with cross-VM calls.
 
 :::caution Early stage: read the status column
-No rollup has been created on either network yet (checked 23 October 2026). The
-table below states what works today; what the released 0.6.0 clients changed and the
-limits that remain are collected in [RDK 0.6.0: changes and limits](/rollups/deploying-a-rollup#rdk-050-limits). If you only need a generic optimistic/zk rollup, any kit will do;
+No rollup has been created on either network yet (checked 27 October 2026). The
+table below states what works today; what the released 0.6.x clients changed and the
+limits that remain are collected in [RDK 0.6.1: changes and limits](/rollups/deploying-a-rollup#rdk-050-limits). If you only need a generic optimistic/zk rollup, any kit will do;
 the capabilities here are what the RDK adds on top, in TypeScript, Python, Go,
 Rust, and Java.
 :::
 
 | Capability | Status | What it relies on |
 | --- | --- | --- |
-| **Quantum-safe settlement receipts** | 🟡 Early stage | Anchors are signed with ML-DSA-87, the Main Chain's post-quantum scheme; no anchors exist yet, so the 0.6.0 verifier (which checks against the chain) has never been run on a real anchor |
+| **Quantum-safe settlement receipts** | 🟡 Early stage | Anchors are signed with ML-DSA-87, the Main Chain's post-quantum scheme; no anchors exist yet, so the 0.6.1 verifier (which checks against the chain) has never been run on a real anchor |
 | **QCAI Rollup Copilot** | 🟡 Not available on the public endpoints yet | On-chain AI/RL advisory services that the public endpoints do not expose today |
-| **Multi-VM cross-VM calls** | 🟡 Not usable on the live networks yet | A cross-VM precompile that is not activated (the 0.6.0 encoder matches the chain's layout), and QoreChain Native upload is closed |
+| **Multi-VM cross-VM calls** | 🟡 Not usable on the live networks yet | A cross-VM precompile that is not activated (the encoder since 0.6.0 matches the chain's layout), and QoreChain Native upload is closed |
 
 ---
 
@@ -56,7 +56,7 @@ console.log(result.valid);
 `verifySettlementReceipt` checks against the chain and refuses to say `valid`
 without a `client`. In 0.5.0 its chain check could not complete against the live
 networks (it failed closed rather than reporting a genuine receipt as valid);
-0.6.0 fixes that, but no anchor exists yet, so it has not been run on a real one.
+0.6.0 fixed that and 0.6.1 compares every field of the receipt, but no anchor exists yet, so neither has been run on a real one.
 See [Quantum-safe settlement receipts](/rollups/settlement-receipts) for what a
 receipt does and does not prove and for the exact limits.
 
@@ -96,7 +96,7 @@ The RDK includes helpers that encode a call from an EVM (Solidity) contract to a
 `eth_getCode` for `0x…0901` returns `0x` on both, and a contract call to it
 succeeds with no effect.
 
-The 0.6.0 helper `encodeCrossVmCalldata` builds calldata for
+The helper `encodeCrossVmCalldata` (since 0.6.0) builds calldata for
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, the layout
 the node decodes (0.5.0 and earlier encoded a two-argument form with a different
 selector, which could never have reached the precompile). You can encode the same call

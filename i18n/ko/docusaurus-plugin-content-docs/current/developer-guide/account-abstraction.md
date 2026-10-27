@@ -9,12 +9,12 @@ sidebar_position: 7
 
 QoreChain은 `x/abstractaccount` 모듈을 통해 **프로토콜 수준의 계정 추상화**를 제공합니다. 이 모듈은 지출 규칙이 설정된 추상 계정을 기록하고, 계정 소유자가 외부 키(**인증자**)를 연결하여 권한 및 지출 한도 범위 안에서 해당 계정으로부터 지출할 수 있도록 합니다. 외부 스마트 컨트랙트 인프라는 필요하지 않습니다.
 
-:::danger 메인넷과 테스트넷에서 활성화되어 있지 않음
-추상 계정 모듈은 현재 두 네트워크 모두에서 **꺼져 있습니다**. `qorechaind query abstractaccount config`(및 `GET /qorechain/abstractaccount/v1/config`)는 `qorechain-vladi`와 `qorechain-diana` 모두에서 `enabled: false`를 보고합니다. 체인 v3.2.0부터 이 플래그는 모든 경로에서 강제됩니다. 체인은 계정 생성, 인증자 등록, 두 실행 레인(`MsgExecuteEVM`, `MsgExecuteCosmos`)을 모두 `abstract accounts are disabled on this chain` 오류와 함께 거부합니다. 어떤 트랜잭션으로도 모듈을 켤 수 없으며, 메인넷에는 추상 계정 트랜잭션이 포함된 적이 한 번도 없습니다. 아래 내용은 모듈의 인터페이스를 참고용으로 설명한 것입니다. 모듈이 활성화되기 전까지는 실제 네트워크에서 연결 키 또는 위임 지출 흐름을 구축하지 말고, 먼저 플래그를 확인하십시오.
+:::danger 메인넷에서는 활성화되어 있지 않음; 테스트넷에서는 활성화됨
+추상 계정 모듈은 이 글을 쓰는 시점에 **`qorechain-vladi` 메인넷에서 꺼져 있습니다**(2026년 10월 27일 확인). `qorechaind query abstractaccount config`(및 `GET /qorechain/abstractaccount/v1/config`)는 `enabled: false`를 보고합니다. **`qorechain-diana` 테스트넷**에서는 거버넌스 결정(제안 18, 2026년 10월 27일 통과)으로 켜졌으며 `enabled: true`를 보고합니다. 체인 v3.2.0부터 이 플래그는 모든 경로에서 강제됩니다. `false`인 곳에서는 체인이 계정 생성, 인증자 등록, 두 실행 레인(`MsgExecuteEVM`, `MsgExecuteCosmos`)을 모두 `abstract accounts are disabled on this chain` 오류와 함께 거부합니다. 어떤 일반 트랜잭션으로도 모듈을 켤 수 없으며, 이 설정은 거버넌스 결정으로만 바뀝니다. 메인넷에는 추상 계정 트랜잭션이 포함된 적이 한 번도 없습니다. 아래 내용은 모듈의 인터페이스를 설명한 것입니다. 테스트넷에서 사용해 보되, 모듈이 메인넷에서 활성화되기 전까지는 메인넷용 연결 키 또는 위임 지출 흐름을 구축하지 마십시오. 항상 먼저 플래그를 확인하십시오.
 :::
 
 :::note
-아래 명령어는 2026년 6월 7일부터 운영 중이며 노드 릴리스 **v3.2.4**(2026년 10월 23일 높이 3,742,566에서 적용됨, 거버넌스 제안 13)를 실행하는 **`qorechain-vladi`** 메인넷을 기준으로 작성되었습니다. 2026년 10월 19일부터 v3.2.4를 실행하고 있는 테스트넷에서는 `--chain-id qorechain-diana`로 대체하십시오.
+아래 명령어는 2026년 6월 7일부터 운영 중이며 노드 릴리스 **v3.2.4**(2026년 10월 23일 높이 3,742,566에서 적용됨, 거버넌스 제안 13)를 실행하는 **`qorechain-vladi`** 메인넷을 기준으로 작성되었습니다. v3.2.6을 실행하는 테스트넷(v3.2.4는 2026년 10월 19일부터)에서는 `--chain-id qorechain-diana`로 대체하십시오.
 :::
 
 :::caution 모든 Cosmos 레인 트랜잭션에는 하이브리드 양자내성 공동 서명이 필요합니다
@@ -86,7 +86,7 @@ qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <p
 | ---------------- | ----------------------------------------------------- |
 | `daily_limit`    | UTC 달력 기준 하루당 최대 총 지출 금액                |
 | `per_tx_limit`   | 승인된 개별 실행당 최대 지출 금액                     |
-| `allowed_denoms` | 지출 가능한 토큰 단위(denom) 제한 (ERC-20은 `erc20/<contract>`로 표기) |
+| `allowed_denoms` | 지출 가능한 토큰 단위(denom) 제한 (ERC-20은 `erc20/<EIP-55 0x address>`로 표기하며, 이는 슬래시를 쓰는 지출 규칙 고유의 표기입니다. 체인은 주소를 EIP-55 형식으로 비교하므로, 입력한 대소문자가 다른 토큰을 만들어 내지는 않습니다. 이것은 등록된 토큰 쌍의 뱅크 denom이 아니며, 뱅크 denom은 콜론을 쓰는 `erc20:<EIP-55 0x address>`로 쓰고 대소문자를 구분합니다. [EVM 개발](/developer-guide/evm-development#fest-tokens) 참조) |
 | `denom_limits`   | 단위별 한도를 10진수 문자열로 지정(v3.2.2): `{"denom","per_tx_limit","daily_limit"}`. 이름을 지정한 단위에 대해서는 `per_tx_limit`와 `daily_limit`를 대체하므로, 소수점 18자리 토큰에도 상한을 둘 수 있습니다 |
 | `allowed_evm_calls` | 규칙에 묶인 키가 **호출 데이터와 함께** 수행할 수 있는 EVM 호출(v3.2.2). `0x<target>`(해당 컨트랙트의 모든 함수) 또는 `0x<target>/0x<selector>`(해당 함수만) 형식입니다. 항목이 없으면 규칙에 묶인 키는 값 전송, (`deploy` 권한이 있는 경우) 배포, `allowed_denoms`에 나열된 ERC-20 토큰 이동만 할 수 있습니다. 대상을 나열하면 그 대상에 대한 호출의 수신자를 포함한 모든 인자를 신뢰하게 됩니다 |
 
@@ -100,11 +100,11 @@ qorechaind tx abstractaccount update-rules <account-address> \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
-한도는 기본 단위(`uqor`)로 지정하며 승인된 실행마다 집계됩니다. 일일 한도는 UTC 달력 기준 하루의 총액을 제한합니다. 규칙은 저장된 규칙 전체를 교체하므로 생략한 필드는 제거됩니다. v3.2.2부터 EVM 레인은 `msg.value`만 보는 대신 호출이 실제로 이동시키는 것(네이티브 값, 계정의 네이티브 잔액 감소, 사용된 뱅크 코인, 나열된 모든 ERC-20의 잔액 또는 허용량 변화)을 측정하며, 컨트랙트 생성에는 별도의 `deploy` 권한이 필요합니다. 더 풍부한 예시:
+한도는 기본 단위(`uqor`)로 지정하며 승인된 실행마다 집계됩니다. 일일 한도는 UTC 달력 기준 하루의 총액을 제한합니다. 규칙은 저장된 규칙 전체를 교체하므로 생략한 필드는 제거됩니다. v3.2.2부터 EVM 레인은 `msg.value`만 보는 대신 호출이 실제로 이동시키는 것(네이티브 값, 계정의 네이티브 잔액 감소, 사용된 뱅크 코인, 나열된 모든 ERC-20의 잔액 또는 허용량 변화)을 측정하며, 컨트랙트 생성에는 별도의 `deploy` 권한이 필요합니다. 더 풍부한 예시(여기에 표시된 ERC-20은 테스트넷 fUSD 테스트 토큰입니다. 본인 토큰의 컨트랙트 주소를 사용하고, 규칙에서는 `erc20/<address>`처럼 슬래시를 쓰고 뱅크 denom `erc20:<address>`에서는 콜론을 쓴다는 점에 유의하세요):
 
 ```bash
 qorechaind tx abstractaccount update-rules <account-address> \
-  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0xTOKEN"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0xTOKEN","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
+  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0x97143B771D34ddb9130b807b135Ae675A5a963CA"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0x97143B771D34ddb9130b807b135Ae675A5a963CA","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
@@ -122,7 +122,7 @@ qorechaind query abstractaccount account <account-address>
 
 ## 연결된 지갑 인증자 — 위임된 지출 {#authenticators}
 
-인증자 설계는 체인 버전 **v3.1.85**(v3.1.84의 권한 모델을 기반으로 함)에서 도입되었습니다. 모듈이 꺼져 있는 동안에는 **실제 네트워크에서 사용할 수 없습니다**(이 페이지 상단의 상태 안내 참조). **연결된 외부 지갑 키** — Phantom(ed25519) 키 또는 MetaMask(secp256k1) 계정 — 는 최소 권한, 지출 한도 제한, 철회 가능한 조건 하에 **표준 양자내성 계정에서 지출**할 수 있습니다. 외부 키는 ML-DSA 서명을 생성하지 않습니다. **릴레이어**가 트랜잭션 봉투를 제출하고 수수료를 지불하며(릴레이어 자신의 하이브리드 PQC 서명이 체인의 서명 요구사항을 충족합니다), 인증자가 **도메인 분리되고 재전송 방지가 적용된 서명 바이트**에 대해 남긴 서명이 승인의 근거가 됩니다.
+인증자 설계는 체인 버전 **v3.1.85**(v3.1.84의 권한 모델을 기반으로 함)에서 도입되었습니다. 모듈이 꺼져 있는 동안에는 **메인넷에서 사용할 수 없으며**, 모듈이 활성화된 테스트넷에서는 사용할 수 있습니다(이 페이지 상단의 상태 안내 참조). **연결된 외부 지갑 키** — Phantom(ed25519) 키 또는 MetaMask(secp256k1) 계정 — 는 최소 권한, 지출 한도 제한, 철회 가능한 조건 하에 **표준 양자내성 계정에서 지출**할 수 있습니다. 외부 키는 ML-DSA 서명을 생성하지 않습니다. **릴레이어**가 트랜잭션 봉투를 제출하고 수수료를 지불하며(릴레이어 자신의 하이브리드 PQC 서명이 체인의 서명 요구사항을 충족합니다), 인증자가 **도메인 분리되고 재전송 방지가 적용된 서명 바이트**에 대해 남긴 서명이 승인의 근거가 됩니다.
 
 ### 인증자 등록 {#register-authenticator}
 
@@ -243,7 +243,7 @@ qorechaind tx abstractaccount execute-evm <account> <to-0xhex> <value-wei> <data
 | --- | --- | --- |
 | `5` | 지출 한도 초과(건당 또는 일일) | 남은 허용 한도를 표시 |
 | `6` | 인증자 만료 | "만료됨 — 지갑을 다시 연결하십시오" |
-| `9` | 모듈 비활성화(두 네트워크의 현재 상태) | "연결된 지갑은 아직 사용할 수 없습니다" |
+| `9` | 모듈 비활성화(메인넷의 현재 상태) | "연결된 지갑은 아직 사용할 수 없습니다" |
 | `10` | 권한 거부(범위 밖이거나 위임 불가능한 메시지) | 부족한 권한을 표시 |
 | `11` | 재전송 거부(오래된 논스/시퀀스) | 논스를 다시 조회하고 재서명 |
 
@@ -254,7 +254,7 @@ qorechaind tx abstractaccount execute-evm <account> <to-0xhex> <value-wei> <data
 모듈의 읽기 조회 기능은 REST를 통해 제공됩니다(**v3.1.85**부터).
 
 ```
-GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on both networks today
+GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on mainnet today; enabled: true on the testnet
 GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
@@ -275,7 +275,7 @@ qorechaind query abstractaccount account <address>
 qorechaind query abstractaccount accounts --page-limit 10
 ```
 
-메인넷에서는 계정 목록이 비어 있습니다. 테스트넷에는 활성화 플래그가 모든 경로에서 강제되기 전에 생성된 계정이 몇 개 나열됩니다.
+메인넷에서는 계정 목록이 비어 있습니다. 테스트넷에는 계정이 몇 개(2026년 10월 27일 기준 네 개) 나열되며, 그중 일부는 활성화 플래그가 모든 경로에서 강제되기 전에 생성되었습니다.
 
 ### JSON-RPC
 

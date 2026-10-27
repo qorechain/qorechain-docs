@@ -61,8 +61,7 @@ const status = await getPqcStatus(client, address);
 `0x0000000000000000000000000000000000000A02` にある
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
 プリコンパイル（`@qorechain/evm` では `pqcKeyStatus` として公開）が有効になれば、それを介して読み取れます。
-このプリコンパイルはメインネットでもテストネットでもまだ
-有効ではありません（
+このプリコンパイルはメインネットでは有効ではなく、テストネットでは有効として列挙されています（2026年10月27日に確認。
 [ネットワークの状況](/developer-guide/evm-precompiles#network-status)を参照）。
 
 ## 1 回の呼び出しで登録 {#register-in-one-call}

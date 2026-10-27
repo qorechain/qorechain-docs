@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getReputationScore`      | لا يوجد مسار استعلام عام (تتيح وحدة السمعة `Params` فقط عبر gRPC). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` و`anchor/{layer_id}`. راجع [وحدة Multilayer](/api-reference/rest-grpc-endpoints#multilayer-module). |
 | `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`. راجع [وحدة Bridge](/api-reference/rest-grpc-endpoints#bridge-module). الجسر ليس حيًّا بعد. |
-| `qor_getRLAgentStatus`، `qor_getRLObservation`، `qor_getRLReward` | gRPC ‏`qorechain.rlconsensus.v1.Query` ‏(`AgentStatus` و`Observation` و`Reward`) على عقدة تشغّلها؛ لا يوجد مسار REST. |
+| `qor_getRLAgentStatus`، `qor_getRLObservation`، `qor_getRLReward` | على شبكة الاختبار (v3.2.6): `GET /qorechain/rlconsensus/v1/agent` و`/observation` و`/reward` (وكذلك `/params` و`/policy` و`/applied_params` و`/last_action`)؛ راجع [وحدة RL Consensus](/api-reference/rest-grpc-endpoints#rlconsensus-module). أما على الشبكة الرئيسية فتردّ هذه المسارات بالرمز `501`: استخدم gRPC ‏`qorechain.rlconsensus.v1.Query` ‏(`AgentStatus` و`Observation` و`Reward`) على عقدة تشغّلها. |
 | `qor_getPoolClassification`   | لا يوجد مسار استعلام عام. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. راجع [وحدة Burn](/api-reference/rest-grpc-endpoints#burn-module). |
 | `qor_getXQOREPosition`        | لا شيء. xQORE غير مُفعَّل (راجع [الرهن عبر xQORE](/user-guide/xqore-staking)). |
@@ -49,7 +49,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getRollupStatus`، `qor_listRollups`، `qor_getSettlementBatch`، `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}` و`/rollups` و`/batch/{id}/{index}` و`/latest_batch/{id}` و`/batches/{id}` و`/blob/{id}/{index}` (متاحة منذ v3.2.2؛ راجع [وحدة RDK](/api-reference/rest-grpc-endpoints#rdk-module))، أو `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | لا توجد خدمة عامة؛ راجع [الملفات التعريفية الجاهزة](/rollups/preset-profiles). |
 | `qor_getBTCStakingPosition`   | لا شيء. وحدة إعادة الرهن بـ BTC لا تملك خدمة استعلام بعد. |
-| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. الحسابات المجرَّدة معطَّلة على الشبكتين اليوم. |
+| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. الحسابات المجرَّدة معطَّلة على الشبكة الرئيسية ومفعَّلة على شبكة الاختبار (جرى التحقق في 27 أكتوبر 2026). |
 | `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config` (متاح منذ v3.2.2). راجع [وحدة Gas Abstraction](/api-reference/rest-grpc-endpoints#gas-abstraction-module). |
 | `qor_getFairBlockStatus`، `qor_getLaneConfiguration` | لا شيء. |
 

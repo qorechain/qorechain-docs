@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-쿼리는 `--node`가 가리키는 노드를 대상으로 실행됩니다. 실시간 데이터를 조회하려면 **`qorechain-vladi`** 메인넷 RPC 엔드포인트(예: `--node https://rpc.qore.host:443`)를 사용하고, 테스트용으로는 **`qorechain-diana`** 테스트넷 엔드포인트(`--node https://rpc-testnet.qore.host:443`)를 사용하세요. 기본값인 `tcp://localhost:26657`은 직접 운영하는 노드를 대상으로 합니다. 메인넷은 2026년 10월 23일부터 노드 릴리스 v3.2.4를 실행하며(거버넌스 제안 13에 따라 높이 3,742,566에서 적용), 테스트넷은 2026년 10월 19일부터 v3.2.4를 실행하고 있습니다. v3.2.4 릴리스는 몇 가지 경로와 명령어를 추가하며(아래에 **v3.2.4**로 표시), 이는 두 네트워크 모두에서 동작하고, 이전 릴리스의 노드는 이에 `Not Implemented`로 응답합니다. 이 페이지의 명령어는 `https://rpc.qore.host:443`을 대상으로 실행한 v3.2.3 릴리스 바이너리를 기준으로 확인했으며, v3.2.4 경로는 2026년 10월 23일에 REST로 확인했습니다.
+쿼리는 `--node`가 가리키는 노드를 대상으로 실행됩니다. 실시간 데이터를 조회하려면 **`qorechain-vladi`** 메인넷 RPC 엔드포인트(예: `--node https://rpc.qore.host:443`)를 사용하고, 테스트용으로는 **`qorechain-diana`** 테스트넷 엔드포인트(`--node https://rpc-testnet.qore.host:443`)를 사용하세요. 기본값인 `tcp://localhost:26657`은 직접 운영하는 노드를 대상으로 합니다. 메인넷은 2026년 10월 23일부터 노드 릴리스 v3.2.4를 실행하며(거버넌스 제안 13에 따라 높이 3,742,566에서 적용), 메인넷 거버넌스 제안 14는 높이 3,906,833에서 v3.2.5를 적용하게 됩니다. 테스트넷은 v3.2.6을 실행합니다(v3.2.4는 2026년 10월 19일부터, v3.2.5는 10월 26일부터, v3.2.6은 10월 27일부터). v3.2.4 릴리스는 몇 가지 경로와 명령어를 추가하며(아래에 **v3.2.4**로 표시), 이는 두 네트워크 모두에서 동작하고, 이전 릴리스의 노드는 이에 `Not Implemented`로 응답합니다. v3.2.6 릴리스는 명령어 두 개를 추가합니다(**v3.2.6**으로 표시, 메인넷이 적용하기 전까지는 테스트넷 전용). 이 페이지의 명령어는 `https://rpc.qore.host:443`을 대상으로 실행한 v3.2.3 릴리스 바이너리를 기준으로 확인했으며, v3.2.4 경로는 2026년 10월 23일에 REST로 확인했고 v3.2.6 명령어는 v3.2.6 소스를 기준으로 확인했습니다.
 :::
 
 공통 플래그는 모든 `query` 하위 명령어에 적용됩니다.
@@ -149,7 +149,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mod
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
 ```
 
-메인넷에서는 `emission_mode: "fixed"`, 43,200블록으로 이루어진 에포크당 86,000 QOR의 고정 발행량, 누적 상한 590,000,000 QOR이 보고됩니다(거버넌스 제안 10, 2026년 10월 19일 통과. 새 발행량이 적용되는 첫 에포크는 블록 3,672,000에서 시작). 금액은 `uqor` 단위입니다. 테스트넷은 여전히 자체적인 다른 값을 보고하며, v3.2.4 릴리스에는 발행 모드가 추가로 포함되어 있습니다(두 네트워크 모두에서 사용 가능). 다만 네트워크는 자체 거버넌스 투표를 통해서만 이 모드로 전환하므로, 그러한 투표가 통과될 때까지 메인넷은 `fixed`를 유지합니다.
+메인넷에서는 `emission_mode: "fixed"`, 43,200블록으로 이루어진 에포크당 86,000 QOR의 고정 발행량, 누적 상한 590,000,000 QOR이 보고됩니다(거버넌스 제안 10, 2026년 10월 19일 통과. 새 발행량이 적용되는 첫 에포크는 블록 3,672,000에서 시작). 금액은 `uqor` 단위입니다. 테스트넷은 자체적인 다른 값을 보고합니다. 테스트넷은 v3.2.4가 추가한 발행 모드(`target_apy`)로 자체 거버넌스(제안 14, 2026년 10월 20일 통과)를 통해 전환했습니다. 네트워크는 자체 거버넌스 투표를 통해서만 모드를 전환하므로, 그러한 투표가 통과될 때까지 메인넷은 `fixed`를 유지합니다(2026년 10월 27일 확인).
 
 ---
 
@@ -272,13 +272,17 @@ qorechaind query rlconsensus observation
 qorechaind query rlconsensus reward
 qorechaind query rlconsensus params
 qorechaind query rlconsensus policy
+qorechaind query rlconsensus applied-params   # v3.2.6 (testnet)
+qorechaind query rlconsensus last-action      # v3.2.6 (testnet)
 ```
+
+`agent-status`는 에이전트의 모드, 에포크, 스텝 수를 보고하고, `policy`는 저장된 정책의 에포크와 가중치 개수를 보고합니다(가중치 자체는 아님). **v3.2.6(메인넷이 해당 릴리스를 적용하기 전까지는 테스트넷 전용):** `applied-params`는 에이전트가 적용된 것으로 보유한 값(블록 시간, 가스 가격 하한, 풀 가중치)을 출력하고, `last-action`은 에이전트가 마지막 스텝에서 제안한 행동을 출력합니다. 이 행동은 아무것도 적용되지 않는 섀도 모드를 포함한 모든 모드에서 기록됩니다. 이 모든 것은 테스트넷에서 REST로도 제공됩니다([RL 합의 모듈](/api-reference/rest-grpc-endpoints#rlconsensus-module) 참조). 메인넷 노드에 대해서는 메인넷이 해당 릴리스를 적용하기 전까지 두 새 명령어가 `Not Implemented`로 응답합니다.
 
 ---
 
 ## abstractaccount
 
-추상 계정 모듈은 현재 두 네트워크 모두에서 꺼져 있으므로(`config.enabled`가 `false`) 이 쿼리들은 계정을 반환하지 않습니다.
+추상 계정 모듈은 메인넷에서는 꺼져 있고(`config.enabled`가 `false`이므로 메인넷에서는 이 쿼리들이 계정을 반환하지 않습니다), 테스트넷에서는 거버넌스에 의해 켜져 있습니다(`config.enabled`가 `true`, 2026년 10월 27일 확인).
 
 ```bash
 qorechaind query abstractaccount config
@@ -318,7 +322,7 @@ qorechaind query amm quote-exact-in <pool_id> <denom_in> <amount_in>
 qorechaind query amm quote-exact-out <pool_id> <denom_out> <amount_out>
 ```
 
-이 문서를 작성하는 시점에는 어느 네트워크에도 풀이 존재하지 않습니다.
+이 문서를 작성하는 시점에는 어느 네트워크에도 풀이 존재하지 않습니다. 테스트넷에서는 세 개의 페스트 테스트 토큰을 풀의 두 번째 denom으로 사용할 수 있습니다([테스트넷 테스트 토큰](/api-reference/rest-grpc-endpoints#fest-tokens) 참조).
 
 ---
 
@@ -345,7 +349,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>`은 업그레이드가 언제 적용되었는지 확인하는 방법입니다. 메인넷에서는 `v3.2.2`가 높이 3,556,788에, `v3.2.3`이 높이 3,662,051에, `v3.2.4`가 높이 3,742,566에 적용되었고, 테스트넷에서는 `v3.2.2`가 6,905,034에, `v3.2.3`이 8,003,746에, `v3.2.4`가 8,337,253에 적용되었습니다(`0`은 적용되지 않았음을 의미). 메인넷의 서킷 브레이커 목록(`disabled-list`)에는 현재 베스팅 계정 생성 메시지, QoreChain Native 저장 및 인스턴스화, AMM 풀 일시 중지 및 재개, 크로스 VM 호출, 멀티레이어 레이어 상태 업데이트, PQC 알고리즘 사용 중단 및 비활성화, PRISM 합의 거버넌스 메시지가 들어 있으며, 테스트넷의 목록에는 QoreChain Native 메시지 세 개만 들어 있습니다.
+`query upgrade applied <name>`은 업그레이드가 언제 적용되었는지 확인하는 방법입니다. 메인넷에서는 `v3.2.2`가 높이 3,556,788에, `v3.2.3`이 높이 3,662,051에, `v3.2.4`가 높이 3,742,566에 적용되었고, 테스트넷에서는 `v3.2.2`가 6,905,034에, `v3.2.3`이 8,003,746에, `v3.2.4`가 8,337,253에, `v3.2.5`가 8,890,800에, `v3.2.6`이 8,970,638에 적용되었습니다(`0`은 적용되지 않았음을 의미하며, 메인넷의 `v3.2.5`는 이 글을 쓰는 시점에 `0`이고 거버넌스 제안 14가 투표 기간 중입니다). 메인넷의 서킷 브레이커 목록(`disabled-list`)에는 현재 베스팅 계정 생성 메시지, QoreChain Native 저장 및 인스턴스화, AMM 풀 일시 중지 및 재개, 크로스 VM 호출, 멀티레이어 레이어 상태 업데이트, PQC 알고리즘 사용 중단 및 비활성화, PRISM 합의 거버넌스 메시지가 들어 있으며, 테스트넷의 목록에는 QoreChain Native `MsgStoreCode` 메시지만 들어 있습니다(2026년 10월 27일 확인, 인스턴스화는 테스트넷 거버넌스가 허용했습니다).
 
 ---
 
@@ -363,6 +367,8 @@ qorechaind query wasm list-contract-by-code <code_id>
 qorechaind query wasm contract <contract_address>
 qorechaind query wasm contract-state smart <contract_address> '<json_query>'
 ```
+
+`query erc20 token-pairs`는 메인넷에서는 비어 있고, 테스트넷에서는 세 개의 페스트 테스트 토큰(fUSD, fETH, fBTC)과 하나의 IBC 토큰을 나열합니다. 이들의 뱅크 denom은 `erc20:`에 EIP-55 컨트랙트 주소를 붙인 형태이며 대소문자를 구분합니다. [테스트넷 페스트 테스트 토큰](/developer-guide/evm-development#fest-tokens)을 참조하세요. 테스트넷에서 `query wasm params`는 `code_upload_access`가 `Nobody`, `instantiate_default_permission`이 `Everybody`로 표시되고, 메인넷에서는 둘 다 `Nobody`입니다([QoreChain Native 개발](/developer-guide/cosmwasm-development) 참조).
 
 ---
 

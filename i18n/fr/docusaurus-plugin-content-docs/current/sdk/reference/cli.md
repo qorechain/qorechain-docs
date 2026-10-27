@@ -20,8 +20,8 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publié sur npm sous le nom `create-qorechain-dapp` (`0.9.0`). Les fichiers
-> `package.json` générés dépendent de `@qorechain/sdk` `^0.9.0` (le template EVM de
+> Publié sur npm sous le nom `create-qorechain-dapp` (`0.10.0`). Les fichiers
+> `package.json` générés dépendent de `@qorechain/sdk` `^0.10.0` (le template EVM de
 > `@qorechain/evm` `^0.8.0`). La version 0.8.0 du générateur écrivait des plages
 > `^0.3.0`, que npm résout vers une version 0.3 incapable de signer pour les réseaux
 > en service ; si vous avez échafaudé avec la 0.8.0, exécutez
@@ -35,7 +35,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `fullstack-web` | Une dApp Vite + React + TypeScript lisant les soldes et la tokenomique (`@qorechain/sdk`). |
 | `rollup-app` | Une application rollup + sidechain/paychain utilisant le `RollupClient` et l'assistant multilayer (`@qorechain/sdk`). |
 
-Le template `rollup-app` (0.9.0) exécute un essai à blanc par défaut. Avec
+Le template `rollup-app` (générateur 0.10.0) exécute un essai à blanc par défaut. Avec
 `QORE_BROADCAST=1`, il dérive la clé ML-DSA-87 du compte à partir du mnémonique,
 l'enregistre une fois et signe en hybride, ce que l'ancien template ne pouvait pas
 faire. Ses valeurs de rollup d'exemple (`profile: "default"`, le stake) sont

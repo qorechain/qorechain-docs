@@ -141,10 +141,10 @@ RPC 웹소켓은 QoreChain 컨센서스 엔진의 이벤트 구독 시스템을 
 
 ## 모듈 이벤트 레퍼런스
 
-이벤트는 표준 컨센서스 엔진 이벤트로 발생합니다. 이벤트 유형과 속성으로 필터링한 `tm.event='Tx'` 쿼리로 구독하십시오(예: `tm.event='Tx' AND bridge_deposit.chain EXISTS`). 블록 종료 로직에서 발생하는 블록 수준 이벤트(아래의 PRISM 이벤트 등)는 `Tx`가 아니라 `tm.event='NewBlock'`으로 전달됩니다. 아래의 이름과 속성은 체인 버전 v3.2.4(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) 기준이며, v3.2.4에서 추가된 이벤트는 따로 표시되어 있습니다.
+이벤트는 표준 컨센서스 엔진 이벤트로 발생합니다. 이벤트 유형과 속성으로 필터링한 `tm.event='Tx'` 쿼리로 구독하십시오(예: `tm.event='Tx' AND bridge_deposit.chain EXISTS`). 블록 종료 로직에서 발생하는 블록 수준 이벤트(아래의 PRISM 이벤트 등)는 `Tx`가 아니라 `tm.event='NewBlock'`으로 전달됩니다. 아래의 이름과 속성은 체인 버전 v3.2.4(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) 기준이며, v3.2.4에서 추가된 이벤트는 따로 표시되어 있습니다. 테스트넷(v3.2.6)은 이벤트를 하나 더 발생시키며(`rl_action_proposed`), PRISM 이벤트와 함께 나열되어 있습니다.
 
 :::note 실제로 볼 수 있는 이벤트
-이 모듈 중 상당수는 공개 네트워크에서 유휴 상태입니다. 브리지는 아직 가동되지 않았고, 등록된 멀티레이어 레이어나 롤업도 아직 없으며, xQORE는 사용할 수 없습니다. 이들 이벤트는 정의되어 있지만 활동이 생기기 전까지는 발생하지 않습니다. PRISM 관찰 및 보상 이벤트(`rl_observation_collected`, `rl_reward_computed`)는 두 네트워크 모두에서 약 10블록마다 발생합니다.
+이 모듈 중 상당수는 공개 네트워크에서 유휴 상태입니다. 브리지는 아직 가동되지 않았고, 등록된 멀티레이어 레이어나 롤업도 아직 없으며, xQORE는 사용할 수 없습니다. 이들 이벤트는 정의되어 있지만 활동이 생기기 전까지는 발생하지 않습니다. PRISM 관찰 및 보상 이벤트(`rl_observation_collected`, `rl_reward_computed`)는 두 네트워크 모두에서 약 10블록마다 발생하며, 테스트넷(v3.2.6)에서는 에이전트가 매 단계마다 `rl_action_proposed`도 발생시킵니다.
 :::
 
 ### PQC 모듈
@@ -254,6 +254,7 @@ PQC 키는 등록 트랜잭션으로 명시적으로 등록됩니다. 자동 등
 | `rl_observation_collected`     | `height`                | PRISM 관찰이 수행될 때 발생합니다 (약 10블록마다)             |
 | `rl_reward_computed`           | `height`, `reward`      | PRISM 보상이 계산될 때 발생합니다                             |
 | `rl_action_applied`            | `height`, `agent_mode`  | PRISM 에이전트가 파라미터 조정을 적용할 때 발생합니다         |
+| `rl_action_proposed`           | `height`, `agent_mode`, `applied`, `block_time_delta`, `gas_price_delta`, `validator_set_size_delta`, `pool_weight_rpos_delta`, `pool_weight_dpos_delta` | **v3.2.6(테스트넷 전용).** 모든 모드에서 에이전트의 매 단계마다 제안된 액션과 함께 발생합니다. 섀도 모드에서는 `applied`가 `false`입니다. 메인넷은 해당 릴리스를 적용하기 전까지 이 이벤트를 발생시키지 않습니다 |
 | `rl_agent_mode_changed`        | `height`, `agent_mode`  | 에이전트 모드가 변경될 때 발생합니다                          |
 | `rl_circuit_breaker_triggered` | `height`                | PRISM 서킷 브레이커가 작업을 차단할 때 발생합니다             |
 | `rl_circuit_breaker_recovered` | `height`                | 서킷 브레이커가 복구될 때 발생합니다                          |

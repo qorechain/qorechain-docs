@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getReputationScore`      | Nessuna route di query pubblica (il modulo reputation espone solo `Params` via gRPC). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` e `anchor/{layer_id}`. Vedi [Modulo Multilayer](/api-reference/rest-grpc-endpoints#multilayer-module). |
 | `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`. Vedi [Modulo Bridge](/api-reference/rest-grpc-endpoints#bridge-module). Il bridge non è ancora live. |
-| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`) su un nodo gestito da te; nessuna route REST. |
+| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | Sulla testnet (v3.2.6): `GET /qorechain/rlconsensus/v1/agent`, `/observation` e `/reward` (anche `/params`, `/policy`, `/applied_params`, `/last_action`); vedi [Modulo RL Consensus](/api-reference/rest-grpc-endpoints#rlconsensus-module). Sulla mainnet quelle route rispondono `501`: usa gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`) su un nodo gestito da te. |
 | `qor_getPoolClassification`   | Nessuna route di query pubblica. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. Vedi [Modulo Burn](/api-reference/rest-grpc-endpoints#burn-module). |
 | `qor_getXQOREPosition`        | Nessuna. xQORE non è live (vedi [Staking xQORE](/user-guide/xqore-staking)). |
@@ -49,7 +49,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`, `/rollups`, `/batch/{id}/{index}`, `/latest_batch/{id}`, `/batches/{id}`, `/blob/{id}/{index}` (servite dalla v3.2.2; vedi [Modulo RDK](/api-reference/rest-grpc-endpoints#rdk-module)), oppure `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | Nessun servizio pubblico; vedi [Profili preimpostati](/rollups/preset-profiles). |
 | `qor_getBTCStakingPosition`   | Nessuna. Il modulo di BTC restaking non ha ancora un servizio di query. |
-| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Gli account astratti sono disabilitati su entrambe le reti oggi. |
+| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Gli account astratti sono disabilitati sulla mainnet e abilitati sulla testnet (verificato il 27 ottobre 2026). |
 | `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config` (servita dalla v3.2.2). Vedi [Modulo Gas Abstraction](/api-reference/rest-grpc-endpoints#gas-abstraction-module). |
 | `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | Nessuna. |
 

@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain supports multiple wallet types across its native, EVM, and SVM execution environments. Choose the wallet that matches your use case.
 
 :::note
-The values below cover both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 7 June 2026, release v3.2.4 since 23 October 2026) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, release v3.2.4 since 19 October 2026). Public endpoints for both networks are listed in [Networks](/appendix/networks#public-endpoints).
+The values below cover both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 7 June 2026, release v3.2.4 since 23 October 2026) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, release v3.2.6 since 27 October 2026). Public endpoints for both networks are listed in [Networks](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recommended) {#qorex}
@@ -105,8 +105,8 @@ Funds sent to any of the three forms land in the same balance.
 
 ## Linked Wallets: Phantom & MetaMask as Spending Keys {#linked-wallets}
 
-:::caution Currently switched off on both networks
-Smart-account and linked-wallet features are implemented but **switched off** on both networks (`abstractaccount.enabled = false`): registering an authenticator and executing through one are refused while the flag is off. Check `GET /qorechain/abstractaccount/v1/config` before offering a linking flow. The section below describes the designed behaviour.
+:::caution Switched off on mainnet, enabled on the testnet
+Smart-account and linked-wallet features are implemented but **switched off on mainnet** (`abstractaccount.enabled = false`): registering an authenticator and executing through one are refused there while the flag is off. They are **enabled on the testnet** (`enabled = true`, checked 27 October 2026), so you can try a linking flow there. Check `GET /qorechain/abstractaccount/v1/config` on the network you target before offering a linking flow. The section below describes the designed behaviour.
 :::
 
 Designed so that you don't have to expose your root key to spend from a QoreChain account in a dApp (introduced in chain version **v3.1.85**): a **Phantom** (ed25519) or **MetaMask** (by its Ethereum address, via `personal_sign`) key can be **registered as an authenticator** on your account — with scoped permissions, spending limits, an expiry, and instant revocation — and then authorize transfers relayed by the dApp's backend. See [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) for the full model and code, and the [SDK Authenticators guide](/sdk/guides/authenticators) for end-to-end examples.

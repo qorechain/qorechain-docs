@@ -19,8 +19,8 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Pubblicato su npm come `create-qorechain-dapp` (`0.9.0`). I file
-> `package.json` generati dipendono da `@qorechain/sdk` `^0.9.0` (il template EVM da
+> Pubblicato su npm come `create-qorechain-dapp` (`0.10.0`). I file
+> `package.json` generati dipendono da `@qorechain/sdk` `^0.10.0` (il template EVM da
 > `@qorechain/evm` `^0.8.0`). La versione 0.8.0 dello scaffolder scriveva intervalli `^0.3.0`,
 > che npm risolve in una release 0.3 incapace di firmare per le reti attive; se
 > hai generato lo scaffolding con la 0.8.0, esegui `npm i @qorechain/sdk@latest`.
@@ -33,7 +33,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `fullstack-web` | Una dApp Vite + React + TypeScript che legge saldi e tokenomics (`@qorechain/sdk`). |
 | `rollup-app` | Un'app rollup + sidechain/paychain che usa il `RollupClient` e l'helper multilayer (`@qorechain/sdk`). |
 
-Il template `rollup-app` (0.9.0) esegue per impostazione predefinita una prova a vuoto (dry run). Con
+Il template `rollup-app` (scaffolder 0.10.0) esegue per impostazione predefinita una prova a vuoto (dry run). Con
 `QORE_BROADCAST=1` deriva la chiave ML-DSA-87 dell'account dal mnemonic, la registra una volta e firma
 in modo ibrido, cosa che il template precedente non poteva fare. I suoi valori di esempio per il rollup
 (`profile: "default"`, lo stake) sono illustrativi: prendi i nomi dei profili reali e lo

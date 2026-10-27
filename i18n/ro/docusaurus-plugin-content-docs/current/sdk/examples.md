@@ -63,7 +63,7 @@ RPC de consens accesibil, plus REST și un cont finanțat. Acest exemplu semneaz
 semnătura **clasică**, deci funcționează pe un nod local sau de dezvoltare, dar este
 refuzat de mainnet și de testnet, care cer semnătura hibridă pentru fiecare
 tranzacție pe calea Native. Pentru rețelele publice conectați-vă cu perechea de chei
-a contului, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0), ca în
+a contului, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 sau mai nou), ca în
 [Quickstart](/sdk/quickstart#send-qor).
 
 ```ts
@@ -124,9 +124,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 Folosiți `@qorechain/evm` (un strat subțire peste viem) pentru a apela precompile-urile
 QoreChain în mod read-only și pentru a citi un sold ERC-20. ID-ul de lanț EVM este detectat automat prin
-`eth_chainId`. Precompile-urile nu sunt încă active pe mainnet sau testnet (consultați
-[Starea rețelei](/developer-guide/evm-precompiles#network-status)); până când
-vor fi, și pe un nod fără ele, acele apeluri aruncă eroarea "feature not present",
+`eth_chainId`. Precompile-urile nu sunt active pe mainnet, iar pe testnet sunt active doar
+cele de verificare PQC, de stare a cheii PQC și de parametri de consens (consultați
+[Starea rețelei](/developer-guide/evm-precompiles#network-status)); acolo unde un
+precompile este inactiv, și pe un nod fără ele, acele apeluri aruncă eroarea "feature not present",
 raportată per apel.
 
 ```ts
@@ -259,8 +260,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 ## authenticator-spend
 
 Construiți un `MsgExecuteCosmos` trimis prin relayer pe culoarul de autentificatori Native
-(SDK 0.7.0, chain v3.1.85; modulul `abstractaccount` este dezactivat astăzi pe ambele
-rețele, deci acest culoar nu poate fi folosit încă acolo): o cheie ed25519 în stil Phantom semnează
+(SDK 0.7.0, chain v3.1.85; modulul `abstractaccount` este dezactivat pe mainnet și
+activat pe testnet, deci acest culoar nu poate fi folosit încă pe mainnet): o cheie ed25519 în stil Phantom semnează
 digestul de autentificare cu separare de domeniu, iar mesajul rezultat este gata pentru ca un relayer
 să îl difuzeze (relayer-ul plătește comisioanele; cheia externă nu produce niciodată o
 co-semnătură ML-DSA). Rulare de probă — nu necesită niciun nod.

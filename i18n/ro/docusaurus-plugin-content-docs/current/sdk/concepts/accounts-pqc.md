@@ -262,7 +262,7 @@ O semnătură ed25519 este deterministă și orice site poate cere portofelului 
 Dacă ați creat un cont astfel, considerați-l compromis de acum: creați un cont nou dintr-un mnemonic, mutați fondurile în el și apoi legați Phantom de noul cont ca autentificator (vezi mai jos). Contul vechi nu poate fi reparat, pentru că adresa lui este legată de cheia expusă, iar o rotire a cheii PQC înlocuiește doar jumătatea post-cuantică. Folosiți SDK 0.8.2 sau mai nou.
 :::
 
-Ca o cheie Phantom (sau MetaMask) să cheltuiască dintr-un cont, folosiți **benzile de autentificator**: înregistrați cheia portofelului cu `MsgRegisterAuthenticator`, apoi cheltuiți din contul PQC canonic prin `MsgExecuteCosmos` / `MsgExecuteEVM` sub o permisiune și o `SpendingRule`. Contul își păstrează propriile chei derivate din mnemonic, iar cheia portofelului poate fi revocată oricând. Vezi [Autentificatori și cheltuieli delegate](/sdk/guides/authenticators). Rețineți că modulul `abstractaccount` care oferă aceste benzi este momentan oprit pe ambele rețele (`GET /qorechain/abstractaccount/v1/config` arată `enabled: false`), deci o cheie de portofel nu poate fi încă legată; până atunci folosiți direct noul cont din mnemonic.
+Ca o cheie Phantom (sau MetaMask) să cheltuiască dintr-un cont, folosiți **benzile de autentificator**: înregistrați cheia portofelului cu `MsgRegisterAuthenticator`, apoi cheltuiți din contul PQC canonic prin `MsgExecuteCosmos` / `MsgExecuteEVM` sub o permisiune și o `SpendingRule`. Contul își păstrează propriile chei derivate din mnemonic, iar cheia portofelului poate fi revocată oricând. Vezi [Autentificatori și cheltuieli delegate](/sdk/guides/authenticators). Rețineți că modulul `abstractaccount` care oferă aceste benzi este oprit pe mainnet (`GET /qorechain/abstractaccount/v1/config` arată `enabled: false`; pe testnet este activat), deci o cheie de portofel nu poate fi încă legată pe mainnet; până atunci folosiți direct noul cont din mnemonic.
 
 ## Criptografie post-cuantică (PQC)
 
@@ -312,7 +312,7 @@ timp ce câștigă protecție post-cuantică. Partea post-cuantică călătoreș
 o extensie `PQCHybridSignature` pe tranzacție.
 
 :::caution Semnarea hibridă este obligatorie pe calea Native
-Începând cu versiunea de chain **v3.2.0** (mainnet-ul și testnet-ul rulează ambele v3.2.4), valoarea implicită a rețelei este `hybrid_signature_mode = required`,
+Începând cu versiunea de chain **v3.2.0** (mainnet-ul rulează v3.2.4, testnet-ul v3.2.6), valoarea implicită a rețelei este `hybrid_signature_mode = required`,
 cu `allow_classical_fallback = false`. Semnarea hibridă prin `buildHybridTx` /
 `signAndBroadcastHybrid` (transmite `rest`), sau `signHybridEth` /
 `EthNativeSigner` pentru conturile unificate eth-native, este **obligatorie**

@@ -271,9 +271,7 @@ Estas utilidades respaldan el hash de aplicación por defecto y se utilizan para
 
 ## PQC del Puente
 
-Todas las atestaciones de puente entre cadenas y los compromisos de estado utilizan firmas **Dilithium-5**. El módulo `x/multilayer` requiere firmas agregadas PQC en cada envío de `MsgAnchorState`, y los compromisos ML-KEM aseguran los canales de intercambio de claves entre los relayers del puente.
-
-Esto garantiza que la seguridad entre cadenas no se degrade por el uso de criptografía clásica en la infraestructura del puente, manteniendo la resistencia a la computación cuántica en toda la pila del protocolo. No hay ninguna ruta de puente activa (consulta [Arquitectura del Puente](/architecture/bridge-architecture#current-status)); desde la v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026), registrar un validador del puente requiere además una prueba de posesión de su clave PQC.
+Las atestaciones del puente están diseñadas para usar firmas **Dilithium-5** (ML-DSA-87), de modo que la seguridad entre cadenas no se degrade por el uso de criptografía clásica en la infraestructura del puente. Esto es una intención de diseño: describe cómo se pretende que atesten los validadores del puente, no un comportamiento que pueda ejercitarse hoy en una red en vivo. No hay ninguna ruta de puente activa (consulta [Arquitectura del Puente](/architecture/bridge-architecture#current-status)); desde la v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026), registrar un validador del puente requiere además una prueba de posesión de su clave PQC.
 
 ## Parámetros del Módulo
 
@@ -285,6 +283,8 @@ Esto garantiza que la seguridad entre cadenas no se degrade por el uso de cripto
 | `default_migration_blocks` | int64               | `1,000,000`       | Período de migración por doble firma por defecto en bloques |
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Algoritmo de firma por defecto para nuevos registros de claves |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Nivel de aplicación de firma híbrida de toda la cadena |
+
+La testnet devuelve estos mismos valores (comprobado el 27 de octubre de 2026). Desde la v3.2.6, la testnet también los sirve por REST en `GET /qorechain/pqc/v1/params`; en la mainnet esa ruta responde 501 (no implementada) y los parámetros se leen con `qorechaind query pqc params`.
 
 ## Relacionado
 

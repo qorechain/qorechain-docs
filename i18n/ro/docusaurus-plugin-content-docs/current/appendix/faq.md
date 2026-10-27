@@ -11,7 +11,7 @@ sidebar_position: 5
 
 ### Este mainnet-ul live?
 
-Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 7 iunie 2026 și rulează versiunea v3.2.4 (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, prin propunerea de guvernanță 13); testnet-ul, `qorechain-diana`, rulează v3.2.4 din 19 octombrie 2026. Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
+Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 7 iunie 2026 și rulează versiunea v3.2.4 (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, prin propunerea de guvernanță 13; propunerea de guvernanță 14 ar aplica v3.2.5 la înălțimea 3.906.833 și se afla în perioada de vot la momentul redactării); testnet-ul, `qorechain-diana`, rulează v3.2.6 (aplicată la înălțimea 8.970.638 pe 27 octombrie 2026). Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
 
 ### Care sunt chain ID-urile și EVM chain ID-urile?
 
@@ -27,7 +27,7 @@ PRISM este stratul de optimizare prin învățare prin întărire integrat în Q
 
 ### Este bridge-ul cross-chain live?
 
-Nu. Modulul de bridge este implementat, dar toate cele 37 de configurații de lanț sunt în așteptare, nu este înregistrat niciun validator de bridge și nu există canale IBC pe niciuna dintre rețele. Este conceput în jurul a 37 de configurații de lanț și până la 8 contrapărți IBC; tratați aceste ținte ca intenție de design. Vezi [Arhitectura bridge-ului](/architecture/bridge-architecture).
+Nu. Modulul de bridge este implementat, dar toate cele 37 de configurații de lanț sunt în așteptare, nu este înregistrat niciun validator de bridge și nu există niciun canal IBC pe mainnet (testnet-ul are un singur canal de transfer ICS-20 către un lanț de test, deschis pentru testarea IBC, și niciunul către contrapărțile planificate). Este conceput în jurul a 37 de configurații de lanț și până la 8 contrapărți IBC; tratați aceste ținte ca intenție de design. Vezi [Arhitectura bridge-ului](/architecture/bridge-architecture).
 
 ### Cum conectez un portofel?
 
@@ -36,6 +36,10 @@ Folosiți portofelul oficial [QoreX](/qorex/overview) sau adăugați o rețea Qo
 ### Cum obțin tokenuri de testnet?
 
 Folosiți faucet-ul de testnet din Dashboard. Vezi [Faucet Dashboard](/dashboard/faucet) și [Conectarea la testnet](/getting-started/connecting-to-testnet).
+
+### Ce sunt fUSD, fETH și fBTC?
+
+Tokenuri de test disponibile doar pe testnet (FestUSD, FestETH și FestBTC, cu 6, 18 și 8 zecimale), create pentru builder fest. Nu au nicio valoare, nu există pe mainnet și sunt păstrate ca monede bank, cu denominațiile sensibile la majuscule `erc20:<contract address>`. Faucet-ul de testnet le poate trimite împreună cu un claim de QOR. Vezi [Tokenuri de test Fest](/dashboard/faucet#fest-tokens).
 
 ### Cum rulez un nod, un validator sau un nod light?
 
@@ -51,11 +55,11 @@ QoreChain folosește o schemă hibridă post-cuantică care combină **secp256k1
 
 ### Câți validatori are mainnet-ul?
 
-Opt validatori bonded la 23 octombrie 2026, cu aproximativ 55,6 milioane de QOR bonded (setul activ poate cuprinde până la 100). Testnet-ul are trei. Citiți setul live la `GET /cosmos/staking/v1beta1/validators` pe `https://api.qore.host`.
+Opt validatori bonded la 27 octombrie 2026, cu aproximativ 60,3 milioane de QOR bonded (setul activ poate cuprinde până la 100). Testnet-ul are patru. Citiți setul live la `GET /cosmos/staking/v1beta1/validators` pe `https://api.qore.host`.
 
 ### Ce timp de bloc ar trebui să mă aștept?
 
-Aproximativ 3,2 secunde pe mainnet și aproximativ 1 secundă pe testnet (medii măsurate, octombrie 2026). Timpul de bloc este stabilit de configurația nodurilor validatorilor.
+Aproximativ 3,2 secunde pe mainnet și aproximativ 1,3 secunde pe testnet (medii măsurate, 27 octombrie 2026). Timpul de bloc este stabilit de configurația nodurilor validatorilor.
 
 ### Este xQORE disponibil?
 

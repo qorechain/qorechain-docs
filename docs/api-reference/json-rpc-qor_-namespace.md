@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getReputationScore`      | No public query route (the reputation module exposes gRPC `Params` only). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` and `anchor/{layer_id}`. See [Multilayer Module](/api-reference/rest-grpc-endpoints#multilayer-module). |
 | `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`. See [Bridge Module](/api-reference/rest-grpc-endpoints#bridge-module). The bridge is not live yet. |
-| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`) on a node you run; no REST route. |
+| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | On the testnet (v3.2.6): `GET /qorechain/rlconsensus/v1/agent`, `/observation` and `/reward` (also `/params`, `/policy`, `/applied_params`, `/last_action`); see [RL Consensus Module](/api-reference/rest-grpc-endpoints#rlconsensus-module). On mainnet those routes answer `501`: use gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`) on a node you run. |
 | `qor_getPoolClassification`   | No public query route. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. See [Burn Module](/api-reference/rest-grpc-endpoints#burn-module). |
 | `qor_getXQOREPosition`        | None. xQORE is not live (see [xQORE Staking](/user-guide/xqore-staking)). |
@@ -49,7 +49,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`, `/rollups`, `/batch/{id}/{index}`, `/latest_batch/{id}`, `/batches/{id}`, `/blob/{id}/{index}` (served since v3.2.2; see [RDK Module](/api-reference/rest-grpc-endpoints#rdk-module)), or `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | No public service; see [Preset Profiles](/rollups/preset-profiles). |
 | `qor_getBTCStakingPosition`   | None. The BTC-restaking module has no query service yet. |
-| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Abstract accounts are disabled on both networks today. |
+| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Abstract accounts are disabled on mainnet and enabled on the testnet (checked 27 October 2026). |
 | `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config` (served since v3.2.2). See [Gas Abstraction Module](/api-reference/rest-grpc-endpoints#gas-abstraction-module). |
 | `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | None. |
 

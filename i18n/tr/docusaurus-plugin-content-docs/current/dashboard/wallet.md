@@ -226,7 +226,7 @@ Genel uç noktalar `rpc.qore.host` (Native RPC), `api.qore.host` (REST), `evm.qo
 **SVM wallets** kartı ayrıca bir Phantom anahtarını hesabınıza **bağlı imzalayıcı (linked signer)** olarak bağlamanıza da olanak tanır — QoreX, Keplr veya MetaMask gibi ayrı bir birincil cüzdan bağlantısı değil, süre sınırlı (30 gün), iptal edilebilir bir yetkilendiricidir (authenticator). **Connect Phantom**'u, ardından **Register authenticator**'ı seçin; kaydı mevcut cüzdanınız imzalar ve Phantom hiçbir zaman kendi başına bir kimlik haline gelmez.
 
 :::caution Bağlı imzalayıcı kaydı şu anda zincirde kapalıdır
-Zincirin akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır ancak her iki ağda da kapalıdır (`abstractaccount.enabled = false`; `GET /qorechain/abstractaccount/v1/config` ile kontrol edin) ve bu durum sürdüğü sürece zincir yeni bağlı imzalayıcı kayıtlarını reddeder. Kartı şimdilik bir önizleme olarak değerlendirin ve bir kaydın başarılı olmasını beklemeyin.
+Zincirin akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır ancak ana ağda kapalı, test ağında etkindir (`abstractaccount.enabled` ana ağda `false`'tur; `GET /qorechain/abstractaccount/v1/config` ile kontrol edin) ve bu durum sürdüğü sürece ana ağ zinciri yeni bağlı imzalayıcı kayıtlarını reddeder. Ana ağda kartı şimdilik bir önizleme olarak değerlendirin ve bir kaydın başarılı olmasını beklemeyin.
 :::
 
 :::caution Bağlı bir imzalayıcı, hesap üzerinde gerçek bir yetkidir

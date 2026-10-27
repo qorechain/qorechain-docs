@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Visión general de la arquitectura
 
-QoreChain es un nodo de blockchain modular compuesto por tres procesos principales —el nodo de cadena, el sidecar de IA y el indexador de bloques— respaldados por una base de datos Postgres y monitorizados mediante Prometheus y Grafana. La mainnet (`qorechain-vladi`, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 con la versión **v3.2.4** (aplicada en la altura 3,742,566 el 23 de octubre de 2026), junto con una testnet en paralelo (`qorechain-diana`, EVM chain ID **9800**, que ejecuta v3.2.4 desde el 19 de octubre de 2026). La cadena está construida sobre Cosmos SDK v0.53. El siguiente diagrama muestra la disposición de los componentes a alto nivel.
+QoreChain es un nodo de blockchain modular compuesto por tres procesos principales —el nodo de cadena, el sidecar de IA y el indexador de bloques— respaldados por una base de datos Postgres y monitorizados mediante Prometheus y Grafana. La mainnet (`qorechain-vladi`, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 con la versión **v3.2.4** (aplicada en la altura 3,742,566 el 23 de octubre de 2026), junto con una testnet en paralelo (`qorechain-diana`, EVM chain ID **9800**, que ejecuta v3.2.6 desde el 27 de octubre de 2026). La cadena está construida sobre Cosmos SDK v0.53. El siguiente diagrama muestra la disposición de los componentes a alto nivel.
 
 El ciclo de vida de las transacciones que se muestra a continuación resume cómo fluye una transacción enviada a través del nodo: desde la cadena de decoradores del AnteHandler (comprobaciones de seguridad y comisiones) hasta la ejecución en la VM y la liquidación on-chain:
 
@@ -181,9 +181,9 @@ QoreChain registra **48 módulos de génesis, 20 de ellos específicos de QoreCh
 
 **Extensiones de gobernanza y licencias**
 
-* `x/abstractaccount` — Cuentas inteligentes: multifirma, recuperación social, claves de sesión, reglas de gasto (desactivado en ambas redes: `enabled = false`)
+* `x/abstractaccount` — Cuentas inteligentes: multifirma, recuperación social, claves de sesión, reglas de gasto (desactivado en mainnet, `enabled = false`; activado en la testnet)
 * `x/fairblock` — Protección MEV: framework de mempool cifrado con IBE de umbral (desactivado en ambas redes)
-* `x/gasabstraction` — Diseño de pago de gas multi-token: conversión de comisiones ibc/USDC, ibc/ATOM (aún no hay ningún canal IBC abierto, por lo que las comisiones se pagan en QOR)
+* `x/gasabstraction` — Diseño de pago de gas multi-token: conversión de comisiones ibc/USDC, ibc/ATOM (aún no se acepta ningún token de comisión IBC, por lo que las comisiones se pagan en QOR)
 * `x/license` — Licenciamiento de cadenas
 
 **Rollups**

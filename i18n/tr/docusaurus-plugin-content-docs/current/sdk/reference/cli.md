@@ -19,8 +19,8 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> npm'e `create-qorechain-dapp` (`0.9.0`) olarak yayınlandı. Oluşturulan
-> `package.json` dosyaları `@qorechain/sdk` `^0.9.0` sürümüne bağımlıdır (EVM şablonu
+> npm'e `create-qorechain-dapp` (`0.10.0`) olarak yayınlandı. Oluşturulan
+> `package.json` dosyaları `@qorechain/sdk` `^0.10.0` sürümüne bağımlıdır (EVM şablonu
 > ise `@qorechain/evm` `^0.8.0` sürümüne). İskeleleyicinin 0.8.0 sürümü `^0.3.0`
 > aralıkları yazıyordu; npm bunu canlı ağlar için imzalayamayan bir 0.3 sürümüne çözer.
 > 0.8.0 ile iskelelediyseniz `npm i @qorechain/sdk@latest` komutunu çalıştırın.
@@ -33,7 +33,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `fullstack-web` | Bakiyeleri ve tokenomik verileri okuyan bir Vite + React + TypeScript dApp'i (`@qorechain/sdk`). |
 | `rollup-app` | `RollupClient` ve multilayer yardımcısını kullanan bir rollup + sidechain/paychain uygulaması (`@qorechain/sdk`). |
 
-`rollup-app` şablonu (0.9.0) varsayılan olarak bir deneme çalıştırması yapar. `QORE_BROADCAST=1`
+`rollup-app` şablonu (iskelelayıcı 0.10.0) varsayılan olarak bir deneme çalıştırması yapar. `QORE_BROADCAST=1`
 ile hesabın ML-DSA-87 anahtarını mnemonic'ten türetir, bir kez kaydeder ve hibrit imzalar;
 önceki şablon bunu yapamıyordu. Örnek rollup değerleri (`profile: "default"`, stake) açıklayıcıdır:
 yayın yapmadan önce gerçek profil adlarını ve stake'i [Ön ayarlı profiller](/rollups/preset-profiles)

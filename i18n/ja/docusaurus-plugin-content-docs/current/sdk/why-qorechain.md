@@ -58,7 +58,7 @@ if (!preflight.safe) {
 プリコンパイル(`aiRiskScore` は `0x…0B01`、`aiAnomalyCheck` は `0x…0B02`)として
 *チェーンの内部で* 実行されるように設計されています。これらのプリコンパイルが
 有効化されるまで、上記のヘルパーはパブリックネットワークでエラーを投げます
-(`returned no data ("0x")`)。詳細は [AI プリフライト](/sdk/guides/ai-preflight) を
+(`returned no data ("0x")`。テストネットで有効な 3 つのプリコンパイルは PQC とコンセンサス用のもので、これらではありません)。詳細は [AI プリフライト](/sdk/guides/ai-preflight) を
 参照してください。
 
 ---
@@ -94,11 +94,11 @@ await crossVM.callAtomic([
 ```
 
 **他との違い:** QoreChain は、ネイティブブリッジモジュール(`crossvm`、および有効化
-後は `CrossVMBridge` プリコンパイル)を備えた 3 つの共存 VM を実行するため、1 つの
+後は `CrossVMBridge` プリコンパイル。どちらのネットワークでもまだ有効ではありません)を備えた 3 つの共存 VM を実行するため、1 つの
 SDK インターフェースで 3 つすべてを扱えます。単一 VM のチェーンには、ラップできる
 同等のものがありません。現時点では、呼び出しの到達範囲は対象とするレーンによって
 制限されます: `MsgCrossVMCall` はメインネットで無効化されており、SVM トランザクションは
-無効化されており、QoreChain Native のアップロードとインスタンス化は許可制です。詳細は
+無効化されており、QoreChain Native のアップロードとインスタンス化は許可制です(テストネットではインスタンス化は開放されています)。詳細は
 [クロス VM 呼び出し](/sdk/guides/cross-vm) を参照してください。
 
 ---
@@ -133,7 +133,7 @@ await hybrid.signAndBroadcastHybrid({
 import { QuantumSafeBadge } from "@qorechain/react";
 
 // Shows a "Quantum-safe" indicator when the address has a registered PQC key
-// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0).
+// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
 
@@ -177,11 +177,12 @@ account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
 **リンクされた Phantom や MetaMask の鍵が、PQC 必須の正規アカウントから、制限の
 範囲内で、リレイヤー経由で支出します。**(SDK 0.7.0、チェーン v3.1.85。)
 
-:::caution まだライブネットワークでは利用できません
-`abstractaccount` モジュールは `qorechain-vladi` と `qorechain-diana` で無効化されて
+:::caution メインネットではまだ利用できません
+`abstractaccount` モジュールは `qorechain-vladi` で無効化されて
 おり(`GET /qorechain/abstractaccount/v1/config` は `"enabled": false` を返します)、
-チェーン v3.2.0 以降はこのフラグがすべてのパスで強制されるため、鍵をリンクすることは
-できず、以下のレーンも利用できません。詳細は
+チェーン v3.2.0 以降はこのフラグがすべてのパスで強制されるため、メインネットでは鍵をリンクすることは
+できず、以下のレーンも利用できません。このモジュールは
+`qorechain-diana` テストネットでは有効化されています(2026 年 10 月 27 日に確認)。詳細は
 [オーセンティケーターガイド](/sdk/guides/authenticators) を参照してください。
 :::
 

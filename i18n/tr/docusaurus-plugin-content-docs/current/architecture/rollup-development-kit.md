@@ -10,7 +10,7 @@ sidebar_position: 12
 `x/rdk` modülü, geliştiricilerin QoreChain üzerinde uygulamaya özel rollup'lar dağıtmasına olanak tanıyan kapsamlı bir Rollup Geliştirme Kiti (RDK) sağlar. Dört uzlaşma (settlement) paradigmasını, birden fazla sıralayıcı (sequencer) modunu, takılabilir veri erişilebilirliği (data availability) arka uçlarını ve yapay zeka destekli yapılandırma optimizasyonunu destekler.
 
 :::caution Erken aşama yetenek
-Modül mainnet üzerinde (zincir sürümü 23 Ekim 2026'dan beri **v3.2.4**) ve testnet üzerinde (**v3.2.4**) dağıtılmıştır, ancak **her iki ağda da henüz hiçbir rollup oluşturulmamıştır** (23 Ekim 2026'da kontrol edildi: `GET /qorechain/rdk/v1/rollups` her ikisinde de boş bir liste döndürür). Aşağıda açıklanan çeşitli yetenekler bugün uçtan uca kullanılabilir değildir; durum, her biri anlatıldığı yerde belirtilmiştir. Geliştiricilere yönelik nasıl yapılır kılavuzu için [Rollup'lara Genel Bakış](/rollups/overview) bölümüne bakın.
+Modül mainnet üzerinde (zincir sürümü 23 Ekim 2026'dan beri **v3.2.4**) ve testnet üzerinde (27 Ekim 2026'dan beri **v3.2.6**) dağıtılmıştır, ancak **her iki ağda da henüz hiçbir rollup oluşturulmamıştır** (27 Ekim 2026'da kontrol edildi: `GET /qorechain/rdk/v1/rollups` her ikisinde de boş bir liste döndürür). Aşağıda açıklanan çeşitli yetenekler bugün uçtan uca kullanılabilir değildir; durum, her biri anlatıldığı yerde belirtilmiştir. Geliştiricilere yönelik nasıl yapılır kılavuzu için [Rollup'lara Genel Bakış](/rollups/overview) bölümüne bakın.
 :::
 
 ---
@@ -24,7 +24,7 @@ QoreChain RDK, her biri farklı güven varsayımlarına, kesinlik (finality) öz
 Optimistic rollup'lar işlemlerin varsayılan olarak geçerli olduğunu kabul eder ve anlaşmazlık çözümü için dolandırıcılık kanıtlarına (fraud proofs) dayanır.
 
 * **Kanıt sistemi**: Etkileşimli dolandırıcılık kanıtları
-* **İtiraz penceresi**: 604,800 saniye (varsayılan, 7 gün). **v3.2.4'ten önce:** zincir bunu blok başına sabit 6 saniyeden bloklara dönüştürür, yani **100,800 blok**; gerçek geçen süre fiili blok süresine bağlıdır (mainnet'in mevcut ≈3.2 sn'lik bloklarında yaklaşık 3.7 gün), bu nedenle günlere göre değil bloklara göre planlama yapın. **v3.2.4'ten itibaren:** yükseltme yüksekliğinden itibaren gönderilen bir parti için pencere, blok süresinin saniyeleriyle ölçülür (tam 7 gün). Daha önce gönderilen bir parti blok sayısı kuralını korur. Testnet v3.2.4'ü 8,337,253 yüksekliğinde (19 Ekim 2026) uyguladı; mainnet bunu 3,742,566 yüksekliğinde (23 Ekim 2026, yönetişim önerisi 13) uyguladı.
+* **İtiraz penceresi**: 604,800 saniye (varsayılan, 7 gün). **v3.2.4'ten önce:** zincir bunu blok başına sabit 6 saniyeden bloklara dönüştürür, yani **100,800 blok**; gerçek geçen süre fiili blok süresine bağlıdır (mainnet'in mevcut ≈3.2 sn'lik bloklarında yaklaşık 3.7 gün), bu nedenle günlere göre değil bloklara göre planlama yapın. **v3.2.4'ten itibaren:** yükseltme yüksekliğinden itibaren gönderilen bir parti için pencere, blok süresinin saniyeleriyle ölçülür (tam 7 gün). Daha önce gönderilen bir parti blok sayısı kuralını korur. Testnet v3.2.4'ü 8,337,253 yüksekliğinde (19 Ekim 2026) uyguladı; mainnet bunu 3,742,566 yüksekliğinde (23 Ekim 2026, yönetişim önerisi 13) uyguladı. Testnet'in yapılandırılmış varsayılanı daha kısadır, 3,600 saniye (1 saat); dolayısıyla bir testnet rollup'ı burada anlatılan 7 günden daha hızlı kesinleşir.
 * **İtiraz teminatı**: 1,000 QOR (1,000,000,000 uqor) — bir dolandırıcılık kanıtı itirazı göndermek için gereklidir (`nft` ve `custom` hazır profilleri; `defi`, `gaming` ve `enterprise` hazır profillerinde itiraz penceresi olmadığı için teminat belirlenmez)
 * **Kesinlik**: Geçerli bir itiraz olmadan itiraz penceresi sona erene kadar ertelenir
 * **Otomatik kesinleştirme**: `EndBlocker`, itiraz penceresi anlaşmazlık olmadan geçtiğinde partileri (batch) otomatik olarak kesinleştirir. İtiraz edilen bir parti asla otomatik olarak kesinleştirilmez: rollup oluşturucusu önce itirazı çözer ([Rollup Dağıtma](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups) bölümüne bakın).
@@ -152,7 +152,7 @@ QoreChain L1 önericileri rollup işlemlerini sıralar.
 QoreChain'in kendi içinde zincir üstü KV-deposu blob depolaması.
 
 :::caution Henüz blob göndermenin genel bir yolu yok
-Modül blob depolamayı, saklamayı ve budamayı tanımlar, ancak mevcut sürümlerde bir blob göndermek için işlem mesajı yoktur. `native` veya `both` rollup üzerinde bir veri karması belirten bir parti, eşleşen hiçbir blob saklanamayacağı için reddedilir. Bkz. [Veri Erişilebilirliği](/rollups/data-availability).
+Modül blob depolamayı, saklamayı ve budamayı tanımlar, ancak mevcut sürümlerde bir blob göndermek için işlem mesajı yoktur. `native` veya `both` rollup üzerinde bir veri karması belirten bir parti, eşleşen hiçbir blob saklanamayacağı için reddedilir. Bkz. [Veri Erişilebilirliği](/rollups/data-availability). Bu nedenle yerel veri erişilebilirliğinde bir parti `data_hash` alanını boş bırakmalıdır; RDK istemcisi (0.6.1) bunu yapar ve zincir bir tane iddia eden partiyi reddeder.
 :::
 
 | Parametre            | Değer                                                                                               |
@@ -215,6 +215,8 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Parti kanonik olarak kabul edildi                 |
 | **Rejected**   | Parti, başarılı bir itiraz ile geçersiz kılındı   |
 
+RDK 0.6.1 davranışı: optimistic bir rollup için istemci, durum kökü zincirin kanonik geçiş kökü (RDK'de `batchTransitionRoot`) olan bir parti oluşturur; kendi belirlediğiniz serbest biçimli bir değer değildir.
+
 ### Otomatik Kesinleştirme Kuralları
 
 | Uzlaşma Modu    | Kesinleştirme Tetikleyicisi                                  |
@@ -232,10 +234,10 @@ Otomatik kesinleştirme, optimistic ve based rollup'lar için `EndBlocker` için
 
 | Parametre                   |                        Varsayılan | Açıklama                                      |
 | --------------------------- | -------------------------------: | ------------------------------------------------ |
-| `max_rollups`               |                              100 | Kaydedilebilecek maksimum rollup sayısı          |
+| `max_rollups`               |                              100 (testnet: 200) | Kaydedilebilecek maksimum rollup sayısı          |
 | `min_stake_for_rollup`      | 10,000,000,000 uqor (10,000 QOR) | Bir rollup oluşturmak için gereken minimum teminat |
 | `rollup_creation_burn_rate` |                        0.01 (%1) | `x/burn` aracılığıyla yakılan oluşturma teminatının oranı |
-| `default_challenge_window`  | 604,800 (100,800 bloğa dönüştürülür) | Varsayılan optimistic itiraz penceresi           |
+| `default_challenge_window`  | 604,800 sn (testnet: 3,600 sn) | Varsayılan optimistic itiraz penceresi; v3.2.4'ten önce zincir bunu 100,800 bloğa dönüştürüyordu |
 | `max_da_blob_size`          |          2,097,152 bayt (2 MB)   | Maksimum veri erişilebilirliği blob boyutu       |
 | `blob_retention_blocks`     |                   432,000 blok   | DA blob'larının budanmasından önceki blok sayısı |
 | `max_batches_per_block`     |                               10 | Blok başına işlenen maksimum uzlaşma partisi     |

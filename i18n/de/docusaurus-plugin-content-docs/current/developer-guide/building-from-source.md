@@ -110,7 +110,7 @@ Tests, die die nativen Bibliotheken oder die proprietären Keeper ausführen, we
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-Der Befehl `init` sollte ohne Fehler eine Genesis-Datei und eine Knotenkonfiguration in `~/.qorechaind/` erstellen. Das obige Beispiel initialisiert gegen das **`qorechain-diana`**-Testnet — für das Mainnet ersetzen Sie `--chain-id qorechain-vladi`, das Live-Netzwerk (Knoten-Release **v3.2.4**).
+Der Befehl `init` sollte ohne Fehler eine Genesis-Datei und eine Knotenkonfiguration in `~/.qorechaind/` erstellen. Das obige Beispiel initialisiert gegen das **`qorechain-diana`**-Testnet — für das Mainnet ersetzen Sie `--chain-id qorechain-vladi`, das Live-Netzwerk (Knoten-Release **v3.2.4** zum Zeitpunkt der Erstellung; das Testnet läuft mit **v3.2.6**).
 
 ## Docker-Build
 

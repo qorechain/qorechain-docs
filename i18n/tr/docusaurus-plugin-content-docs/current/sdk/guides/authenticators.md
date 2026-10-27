@@ -18,15 +18,16 @@ Bu, zincirin
 [hesap soyutlama](/developer-guide/account-abstraction) modülünün SDK
 tarafındaki karşılığıdır.
 
-:::danger Canlı ağlarda kullanılamaz
-`x/abstractaccount` modülü `qorechain-vladi` ve `qorechain-diana` üzerinde
-**devre dışıdır** (`GET /qorechain/abstractaccount/v1/config` yanıtı
-`"enabled": false` döndürür). Zincir v3.2.0'dan itibaren bu bayrak her yolda
+:::danger Mainnet'te kullanılamaz
+`x/abstractaccount` modülü `qorechain-vladi` (mainnet) üzerinde
+**devre dışıdır**: `GET /qorechain/abstractaccount/v1/config` yanıtı
+`"enabled": false` döndürür. Zincir v3.2.0'dan itibaren bu bayrak her yolda
 uygulanır (soyut hesap oluşturma, bir kimlik doğrulayıcı bağlama ve hem
 `MsgExecuteEVM` hem de `MsgExecuteCosmos`) ve zincir bunları `abstract account module is disabled` (kod 9) hatasıyla reddeder. Hiçbir işlem bunu açamaz.
-Aşağıdaki her şey modülün arayüzlerini yalnızca başvuru için anlatır: modül
-etkinleştirilene kadar canlı ağlarda bağlı anahtar ya da yetkilendirilmiş
-harcama akışı oluşturmayın ve böyle bir akışı sunmadan önce bayrağı kontrol edin.
+`qorechain-diana` testnet'inde aynı rota 27 Ekim 2026'da
+`"enabled": true` döndürdü; bu nedenle aşağıdaki akışlar orada denenebilir. Modül
+orada etkinleştirilene kadar mainnet için bağlı anahtar ya da yetkilendirilmiş
+harcama akışı oluşturmayın ve böyle bir akışı sunmadan önce bayrağı hedeflediğiniz ağda kontrol edin.
 :::
 
 ## Aktarıcı (relayer) modeli
@@ -324,11 +325,15 @@ her başarılı yürütmede artırılan bir sayaç.
   (`eth_getTransactionCount`) **değildir**.
 - `MsgExecuteCosmos.nonce` aynı türden bir sayaçtır.
 
-Sayaç için henüz bir sorgu yoktur; bu yüzden onu bağlı anahtar başına kendiniz
-takip edin: yeni bağlanmış bir anahtar için 0, zincirin kabul ettiği her
-yürütmeden sonra +1. Zincirin güncel sayacı olmayan bir değer göndermek bir
-tekrar oynatma (replay) reddiyle sonuçlanır (`abstractaccount` kodu 11, aşağıya
-bakın).
+Zincir v3.2.4'ten (her iki ağ da rotayı sunar) ve SDK 0.10.0'dan itibaren sayacı
+takip etmek yerine okuyabilirsiniz: `fetchAuthNonce({ rest, address, pubkey })`,
+`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` adresini çağırır ve
+`{ nonce, linked }` döndürür. Hiç yürütmemiş bir anahtar 0 okur ve sayaç, artık
+bağlı olmayan bir anahtar için de tutulur (`linked` hangisi olduğunu söyler). Zincirin
+güncel sayacı olmayan bir değer göndermek bir tekrar oynatma (replay) reddiyle
+sonuçlanır (`abstractaccount` kodu 11, aşağıya bakın). Daha eski bir SDK veya zincirle
+onu bağlı anahtar başına kendiniz takip edin: yeni bağlanmış bir anahtar için 0,
+zincirin kabul ettiği her yürütmeden sonra +1.
 
 ## Yetki şeması
 

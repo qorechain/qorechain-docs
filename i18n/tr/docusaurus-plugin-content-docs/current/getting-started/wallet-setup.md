@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain; native, EVM ve SVM yürütme ortamlarında birden fazla cüzdan türünü destekler. Kullanım senaryonuza uygun cüzdanı seçin.
 
 :::note
-Aşağıdaki değerler hem **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri yayında, 23 Ekim 2026'dan beri v3.2.4 sürümü) hem de **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**, 19 Ekim 2026'dan beri v3.2.4 sürümü) kapsar. Her iki ağın herkese açık uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
+Aşağıdaki değerler hem **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri yayında, 23 Ekim 2026'dan beri v3.2.4 sürümü) hem de **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**, 27 Ekim 2026'dan beri v3.2.6 sürümü) kapsar. Her iki ağın herkese açık uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
 :::
 
 ## QoreX (önerilir) {#qorex}
@@ -105,8 +105,8 @@ console.log(w.svm);                            // base58 (same identity)
 
 ## Bağlı Cüzdanlar: Harcama Anahtarı Olarak Phantom ve MetaMask {#linked-wallets}
 
-:::caution Şu anda her iki ağda da kapalı
-Akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır ancak her iki ağda da **kapalıdır** (`abstractaccount.enabled = false`): bayrak kapalıyken bir kimlik doğrulayıcı (authenticator) kaydetmek ve onun üzerinden işlem yürütmek reddedilir. Bir bağlama akışı sunmadan önce `GET /qorechain/abstractaccount/v1/config` adresini kontrol edin. Aşağıdaki bölüm tasarlanan davranışı açıklar.
+:::caution Ana ağda kapalı, test ağında etkin
+Akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır ancak **ana ağda kapalıdır** (`abstractaccount.enabled = false`): bayrak kapalıyken orada bir kimlik doğrulayıcı (authenticator) kaydetmek ve onun üzerinden işlem yürütmek reddedilir. Test ağında **etkindir** (`enabled = true`, 27 Ekim 2026'da kontrol edildi), dolayısıyla orada bir bağlama akışını deneyebilirsiniz. Bir bağlama akışı sunmadan önce hedeflediğiniz ağda `GET /qorechain/abstractaccount/v1/config` adresini kontrol edin. Aşağıdaki bölüm tasarlanan davranışı açıklar.
 :::
 
 Bir dApp içinde QoreChain hesabınızdan harcama yapmak için kök anahtarınızı açığa çıkarmanız gerekmeyecek şekilde tasarlanmıştır (zincir sürümü **v3.1.85** ile tanıtıldı): bir **Phantom** (ed25519) veya **MetaMask** (Ethereum adresiyle, `personal_sign` üzerinden) anahtarı hesabınıza **kimlik doğrulayıcı (authenticator) olarak kaydedilebilir** — kapsamlandırılmış izinler, harcama limitleri, geçerlilik süresi ve anında iptal ile — ve ardından dApp'in arka ucu tarafından iletilen transferleri yetkilendirebilir. Modelin tamamı ve kod için [Bağlı Cüzdan Kimlik Doğrulayıcıları](/developer-guide/account-abstraction#authenticators) sayfasına, uçtan uca örnekler için [SDK Authenticators kılavuzuna](/sdk/guides/authenticators) bakın.

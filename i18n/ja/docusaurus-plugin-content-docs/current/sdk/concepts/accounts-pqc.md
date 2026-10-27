@@ -236,7 +236,7 @@ ed25519 署名は決定論的であり、どの Web サイトでもウォレッ�
 この方法でアカウントを作成した場合は、ただちに侵害されたものとして扱ってください。新しいニーモニックのアカウントを作成して資金を移し、その後 Phantom を新しいアカウントにオーセンティケーターとしてリンクしてください（下記）。古いアカウントは修復できません。アドレスが漏洩した鍵に結び付いており、PQC 鍵のローテーションはポスト量子の部分しか置き換えないためです。SDK 0.8.2 以降を使用してください。
 :::
 
-Phantom（または MetaMask）の鍵にアカウントから支払わせるには、**オーセンティケーターレーン**を使います。ウォレットの鍵を `MsgRegisterAuthenticator` で登録し、権限と `SpendingRule` の範囲内で `MsgExecuteCosmos` / `MsgExecuteEVM` を通じて正規の PQC アカウントから支払います。アカウントはニーモニックから導出した自身の鍵を保持し、ウォレットの鍵はいつでも取り消せます。[オーセンティケーターと委任支払い](/sdk/guides/authenticators)を参照してください。 なお、これらのレーンを提供する `abstractaccount` モジュールは現在両ネットワークで無効になっているため（`GET /qorechain/abstractaccount/v1/config` は `enabled: false` を返します）、ウォレットの鍵はまだリンクできません。それまでは新しいニーモニックのアカウントを直接使用してください。
+Phantom（または MetaMask）の鍵にアカウントから支払わせるには、**オーセンティケーターレーン**を使います。ウォレットの鍵を `MsgRegisterAuthenticator` で登録し、権限と `SpendingRule` の範囲内で `MsgExecuteCosmos` / `MsgExecuteEVM` を通じて正規の PQC アカウントから支払います。アカウントはニーモニックから導出した自身の鍵を保持し、ウォレットの鍵はいつでも取り消せます。[オーセンティケーターと委任支払い](/sdk/guides/authenticators)を参照してください。 なお、これらのレーンを提供する `abstractaccount` モジュールはメインネットでは無効になっているため（`GET /qorechain/abstractaccount/v1/config` は `enabled: false` を返します。テストネットでは有効です）、メインネットではウォレットの鍵はまだリンクできません。それまでは新しいニーモニックのアカウントを直接使用してください。
 
 ## ポスト量子暗号(PQC)
 
@@ -279,7 +279,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 ポスト量子部分は、トランザクションの`PQCHybridSignature`拡張として運ばれます。
 
 :::caution Nativeパスではハイブリッド署名が必須です
-チェーンバージョン**v3.2.0**(メインネットとテストネットはどちらもv3.2.4で稼働)以降、
+チェーンバージョン**v3.2.0**(メインネットはv3.2.4、テストネットはv3.2.6で稼働)以降、
 ネットワークのデフォルトは`hybrid_signature_mode = required`、
 `allow_classical_fallback = false`です。`buildHybridTx` / `signAndBroadcastHybrid`
 (`rest`を渡す)によるハイブリッド署名 — または統一eth-nativeアカウント向けの

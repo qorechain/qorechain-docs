@@ -51,7 +51,7 @@ Die bewusst gewählten, unterstützten Exporte von `@qorechain/sdk`:
   (`PROOF_OF_POSSESSION_DOMAIN`), `validateRegisteredPqcKey`,
   `isDegeneratePqcPublicKey`, `migrateToHybrid`, `migratePqcKeyHybrid`,
   `isUpgradeApplied` / `requireUpgradeApplied` (`CHAIN_UPGRADE_V3_2_2`,
-  `CHAIN_UPGRADE_V3_2_3`).
+  `CHAIN_UPGRADE_V3_2_3`, `CHAIN_UPGRADE_V3_2_4`).
 - **Read-Clients:** `RestClient` (inkl. `getPermissionSchema`),
   `JsonRpcClient`, `QorClient`, HTTP-Helfer (`getJson`, `postJsonRpc`,
   `buildUrl`, `joinUrl`, `QoreHttpError`); typisierte Query-Clients für jedes
@@ -74,7 +74,8 @@ Die bewusst gewählten, unterstützten Exporte von `@qorechain/sdk`:
   `MSG_SEND_TYPE_URL`, Hybrid-Helfer (`encodeHybridExtension`,
   `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`);
   strukturierte Fehlerdekodierung über `decodeTxError` (inkl. der
-  `abstractaccount`-Codes 5/6/10/11 und des `pqc`-Codes 21).
+  `abstractaccount`-Codes 5/6/10/11 und des `pqc`-Codes 21; seit 0.10.0 benennt sie auch
+  eine Ablehnung, die während der Gebührensimulation als Text eintrifft).
 - **eth-natives Signieren (0.6.0):** `signClassicalEth`, `signHybridEth`
   (secp256k1 über `keccak256(SignDoc)`, Pubkey-Typ
   `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`, plus die
@@ -91,7 +92,7 @@ Die bewusst gewählten, unterstützten Exporte von `@qorechain/sdk`:
   (EIP-191 `personal_sign`); Schlüsselrotation `rotatePqcKeyMsgFromMnemonic`,
   `derivePqcLegacy`. Siehe den
   [Authenticators-Leitfaden](/sdk/guides/authenticators) (das Modul hinter
-  diesen Lanes ist derzeit auf beiden Netzwerken abgeschaltet).
+  diesen Lanes ist im Mainnet abgeschaltet und im Testnet aktiviert).
 - **Hybride Sign-Bytes (0.8.0+):** die Option `signBytesVersion`
   (`"auto" | "v1" | "v2"`) bei `buildHybridTx`, `signAndBroadcastHybrid`,
   `signHybridEth` und `EthNativeSigner`; `resolveSignBytesVersion`,
@@ -108,6 +109,13 @@ Die bewusst gewählten, unterstützten Exporte von `@qorechain/sdk`:
   `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
 - **Abstract-Account-Digest v2 (0.9.0):** `evmAuthSignBytesV2`,
   `resolveEvmAuthDigestVersion`; `validateSpendingRules`.
+- **Chain v3.2.4 (0.10.0):** Staking-Tiers (`msg.stakingtier.lockDelegation` /
+  `unlockEarly` / `claimBonus` / `updateParams`, `validateLockDelegation`,
+  `STAKING_LOCK_MONTHS`, `fetchStakingTierParams`, `fetchStakingLocks`,
+  `fetchStakingTierPool`); `fetchAuthNonce`; `fetchProtocolFeatures` /
+  `isProtocolFeatureEnabled`; `possessionProven` im PQC-Status;
+  `ibcTimeoutTimestamp`; `CHAIN_UPGRADE_V3_2_4`. Siehe
+  [Was 0.10.0 hinzufügt](/sdk/install#whats-new-0100).
 - **Kanonische PQC-Ableitung (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; die PQC-Registrierungsnachricht ist
   `buildRegisterPqcKeyMsg` (verwendet von `ensurePqcRegistered`). `derivePqcLegacy` ist
@@ -136,10 +144,10 @@ Program-ID-Konstanten.
 
 | Sprache | Generierte Dokumentation | Installation |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — Docstrings auf der öffentlichen API | `pip install qorechain-sdk` in Version `0.9.0` (Import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (Tag `packages/go/v0.9.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; Import `qorechain`) |
-| Java | Maven-Central-Javadoc | `io.github.qorechain:qorechain-sdk:0.9.1` (die anderen Sprachen sind 0.9.0) |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — Docstrings auf der öffentlichen API | `pip install qorechain-sdk` in Version `0.10.0` (Import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (Tag `packages/go/v0.10.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.10.0; Import `qorechain`) |
+| Java | Maven-Central-Javadoc | `io.github.qorechain:qorechain-sdk:0.10.0` |
 
 Jedes Paket spiegelt dieselbe Oberfläche wider (Netzwerk-Presets,
 Denom-/Adress-Hilfsfunktionen, HD-Ableitung — einschließlich unified

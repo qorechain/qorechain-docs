@@ -20,7 +20,7 @@ karar vermez — sizin `validate` fonksiyonunuzu çağırır ve döndürdüğün
 göre hareket eder.
 
 :::caution Erken aşama: henüz izlenecek bir şey yok
-Watchtower yığınları RDK REST istemcisi aracılığıyla okur ve `/qorechain/rdk/v1/…` rotaları her iki ağda da sunulmaktadır. Hiçbir ağda rollup oluşturulmamıştır (23 Ekim 2026 itibarıyla kontrol edildi), dolayısıyla henüz izlenecek bir şey yoktur ve Watchtower canlı bir yığına karşı çalıştırılmamıştır. `@qorechain/rdk` 0.5.0 sürümünde son tarih mantığı yanlıştı (bir blok yüksekliğini Unix zaman damgası olarak okuyordu; bu yüzden `onDeadline` bir yığın ilk görüldüğü anda tetikleniyordu) ve yalnızca 50 yığınlık ilk sayfayı okuyordu; **0.6.0 ikisini de düzeltir** (aşağıya bakın). 0.6.0 veya üstünü kullanın.
+Watchtower yığınları RDK REST istemcisi aracılığıyla okur ve `/qorechain/rdk/v1/…` rotaları her iki ağda da sunulmaktadır. Hiçbir ağda rollup oluşturulmamıştır (27 Ekim 2026 itibarıyla kontrol edildi), dolayısıyla henüz izlenecek bir şey yoktur ve Watchtower canlı bir yığına karşı çalıştırılmamıştır. `@qorechain/rdk` 0.5.0 sürümünde son tarih mantığı yanlıştı (bir blok yüksekliğini Unix zaman damgası olarak okuyordu; bu yüzden `onDeadline` bir yığın ilk görüldüğü anda tetikleniyordu) ve yalnızca 50 yığınlık ilk sayfayı okuyordu; **0.6.0 ikisini de düzeltti** (aşağıya bakın). Güncel sürüm olan 0.6.1'i kullanın.
 :::
 
 ## `watchBatches`
@@ -32,7 +32,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.6.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.6.1: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
@@ -77,14 +77,14 @@ watcher.stop();
 - **geçersiz yığınlar** (sizin `validate` fonksiyonunuzun `false` döndürdüğü
   durumlar) `onInvalid` aracılığıyla.
 
-0.6.0'dan itibaren bir rollup'ın batch listesinin her sayfasını izler, bir batch'i son tarihi yaklaştıkça yeniden değerlendirir (her batch'i ilk görüşte bir kez yargılamak yerine, penceresi hâlâ açık olan en eski batch'ten itibaren ileriye doğru yoklamayı sürdürür) ve her pencereyi yerel saate göre değil, zincir ucuna (`getChainTip`, düğümün durumu) göre ölçer. Zaten `finalized` olan bir batch doğrulanmaz veya hakkında uyarı verilmez.
+0.6.0'dan itibaren (ve 0.6.1'de) bir rollup'ın batch listesinin her sayfasını izler, bir batch'i son tarihi yaklaştıkça yeniden değerlendirir (her batch'i ilk görüşte bir kez yargılamak yerine, penceresi hâlâ açık olan en eski batch'ten itibaren ileriye doğru yoklamayı sürdürür) ve her pencereyi yerel saate göre değil, zincir ucuna (`getChainTip`, düğümün durumu) göre ölçer. Zaten `finalized` olan bir batch doğrulanmaz veya hakkında uyarı verilmez.
 
 `onInvalid`'i bir itiraza bağlamak, Watchtower'ı eksiksiz bir otomatik
 itiraz aracına dönüştürür; yalnızca gözlem (observe-only) modunda çalıştırmak için
 onu ayarlanmamış bırakın.
 
 :::note İtiraz penceresi
-Zincir bir yığının penceresini iki yoldan biriyle ölçer ve `batchChallengeWindow` (Watchtower ve `qorollup status` arkasındaki sağlık kontrolü tarafından kullanılır) hangisinin geçerli olduğunu bildirir. **Blok sayısı penceresi, mainnet'te 3.742.566 yüksekliğinden önce gönderilen yığınlar için geçerli olan kural (v3.2.3 ve öncesi):** pencere, rollup'ın yapılandırılmış saniyelerinin blok başına sabit 6 saniye üzerinden bloğa dönüştürülmüş halidir; varsayılan 604.800 için **100.800 blok**, yığının `submitted_at` yüksekliğinden itibaren sayılır; gerçek süre blok süresini izler, bu nedenle ana ağın ≈3,2 sn'lik bloklarında "7 gün"den daha kısadır. Paket `open` ve `finalizable` durumlarını ayrı bildirir, çünkü uyguladığı kurala göre tek bir blok her ikisidir (bir itiraz `height - submitted_at <= window` iken açık sayılır, `height - submitted_at >= window` olduğunda sonlandırılabilir). **Zaman tabanlı pencere, v3.2.4'ten itibaren (test ağında 8.337.253 yüksekliğinden beri, mainnet'te 3.742.566 yüksekliğinden beri):** yükseltme yüksekliğinden itibaren gönderilen bir yığın kendi blok süresini kaydeder ve penceresi o kadar saniyelik blok süresidir. Watchtower, düğüm rollup'ın kendi penceresini bildirdiğinde onu kullanır (paket bunu v3.2.4 ve sonrası olarak belgeler); aksi halde modülün varsayılan penceresine döner, bu nedenle kendi penceresini yapılandırmış bir rollup için `challengeWindowSecs` geçin. Bir itiraz göndermek ayrıca rollup'ın itiraz teminatını (`nft` ve `custom` ön ayarları için 1.000 QOR) gerektirir.
+Zincir bir yığının penceresini iki yoldan biriyle ölçer ve `batchChallengeWindow` (Watchtower ve `qorollup status` arkasındaki sağlık kontrolü tarafından kullanılır) hangisinin geçerli olduğunu bildirir. **Blok sayısı penceresi, mainnet'te 3.742.566 yüksekliğinden önce gönderilen yığınlar için geçerli olan kural (v3.2.3 ve öncesi):** pencere, rollup'ın yapılandırılmış saniyelerinin blok başına sabit 6 saniye üzerinden bloğa dönüştürülmüş halidir; varsayılan 604.800 için **100.800 blok**, yığının `submitted_at` yüksekliğinden itibaren sayılır; gerçek süre blok süresini izler, bu nedenle ana ağın ≈3,2 sn'lik bloklarında "7 gün"den daha kısadır. Paket `open` ve `finalizable` durumlarını ayrı bildirir, çünkü uyguladığı kurala göre tek bir blok her ikisidir (bir itiraz `height - submitted_at <= window` iken açık sayılır, `height - submitted_at >= window` olduğunda sonlandırılabilir). **Zaman tabanlı pencere, v3.2.4'ten itibaren (test ağında 8.337.253 yüksekliğinden beri, mainnet'te 3.742.566 yüksekliğinden beri):** yükseltme yüksekliğinden itibaren gönderilen bir yığın kendi blok süresini kaydeder ve penceresi o kadar saniyelik blok süresidir. Watchtower, düğüm rollup'ın kendi penceresini bildirdiğinde onu kullanır (paket bunu v3.2.4 ve sonrası olarak belgeler); aksi halde modülün varsayılan penceresine döner, bu nedenle kendi penceresini yapılandırmış bir rollup için `challengeWindowSecs` geçin. Bir itiraz göndermek ayrıca rollup'ın itiraz teminatını (`nft` ve `custom` ön ayarları için 1.000 QOR) gerektirir. Modülün varsayılan penceresi mainnet'te 604.800 saniye, test ağında 3.600 saniyedir (bir saat; 27 Ekim 2026'da `GET /qorechain/rdk/v1/params` adresinden okundu); bu nedenle aynı rollup yapılandırması test ağında çok daha kısa bir pencereye sahiptir.
 :::
 
 ## CLI

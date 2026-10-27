@@ -107,7 +107,7 @@ artı ML-DSA-87) imza taşımalıdır ve hesabın ML-DSA-87 anahtarı önce
 otomatik kayıt yoktur. Yalnızca klasik imzalanmış bir işlem canlı ağlar
 tarafından reddedilir; bu nedenle işlem istemcisine hesabın ML-DSA-87 anahtar
 çiftini verin, o da her işlemi hibrit imzalasın. Aşağıdaki iki adım **SDK 0.9.0
-veya üstünü** ve bakiyesi olan bir hesabı gerektirir:
+veya üstünü** (güncel sürüm 0.10.0) ve bakiyesi olan bir hesabı gerektirir:
 
 ```bash
 npm i @qorechain/sdk

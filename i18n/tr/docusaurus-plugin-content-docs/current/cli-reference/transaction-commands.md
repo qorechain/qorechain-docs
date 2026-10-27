@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Canlı mainnet'e karşı yayınlamak için `--chain-id qorechain-vladi`, testnet için ise `--chain-id qorechain-diana` ayarlayın. Her iki ağ da v3.2 hattını çalıştırır: mainnet düğüm sürümü **v3.2.4** (23 Ekim 2026'da 3.742.566 yüksekliğinde yönetişim önerisi 13 ile uygulandı; v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı), testnet **v3.2.4** (19 Ekim 2026'da 8.337.253 yüksekliğinde uygulandı). Güncel sürüm için [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasına bakın. `--chain-id` belirtilmezse istemci, yerel istemci yapılandırmanızdaki `chain-id` değerini kullanır.
+Canlı mainnet'e karşı yayınlamak için `--chain-id qorechain-vladi`, testnet için ise `--chain-id qorechain-diana` ayarlayın. Her iki ağ da v3.2 hattını çalıştırır: mainnet düğüm sürümü **v3.2.4** (23 Ekim 2026'da 3.742.566 yüksekliğinde yönetişim önerisi 13 ile uygulandı; v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı; yönetişim önerisi 14, v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır ve bu yazı hazırlanırken oylama dönemindedir), testnet **v3.2.6** (27 Ekim 2026'da 8.970.638 yüksekliğinde uygulandı; öncesinde v3.2.5, 26 Ekim'de 8.890.800 yüksekliğinde ve v3.2.4, 19 Ekim'de 8.337.253 yüksekliğinde uygulanmıştı). Güncel sürüm için [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasına bakın. `--chain-id` belirtilmezse istemci, yerel istemci yapılandırmanızdaki `chain-id` değerini kullanır.
 
-Bu sayfadaki komutlar ve bayraklar v3.2.3 sürüm ikilisine karşı, ayrıca v3.2.4 eklemeleriyle denetlenmiştir. Yalnızca v3.2.4'ten itibaren bulunan her şey (mainnet'te 23 Ekim 2026'dan beri, testnet'te 19 Ekim 2026'dan beri) bu şekilde işaretlenmiştir.
+Bu sayfadaki komutlar ve bayraklar v3.2.3 sürüm ikilisine karşı, ayrıca v3.2.4 eklemeleriyle denetlenmiştir. Yalnızca v3.2.4'ten itibaren bulunan her şey (mainnet'te 23 Ekim 2026'dan beri, testnet'te 19 Ekim 2026'dan beri) bu şekilde işaretlenmiştir. v3.2.6 kaynağı yeni bir `tx` komutu eklemez; testnet'in durumunu değiştirir (test tokenları, etkinleştirilmiş bir soyut hesap modülü, açık QoreChain Native örnekleme), bunları aşağıdaki bölümler önemli oldukları yerde belirtir.
 :::
 
 Ortak bayraklar her `tx` alt komutu için geçerlidir:
@@ -435,7 +435,7 @@ Limitler temel birimlerdedir ve `0` sınırsız demektir. Yalnızca durumu tam o
 qorechaind tx ibc-transfer transfer transfer <channel> <receiver> <amount> [flags]
 ```
 
-İlk `transfer` alt komuttur, ikincisi ise kaynak bağlantı noktasıdır (port). Yazıldığı sırada her iki ağda da açık IBC kanalı yoktur (`query ibc channel channels`).
+İlk `transfer` alt komuttur, ikincisi ise kaynak bağlantı noktasıdır (port). Yazıldığı sırada mainnet'te açık IBC kanalı yoktur; testnet'te açık bir transfer kanalı (`channel-0`) vardır (27 Ekim 2026'da `query ibc channel channels` ile kontrol edildi).
 
 ---
 
@@ -452,6 +452,8 @@ qorechaind tx amm swap-exact-out <pool_id> <denom_in> <token_out> <max_in> [flag
 ```
 
 v3.2.2'den itibaren bir takas (swap), havuzun her iki denominasyonunu da belirtmelidir, `max_swap_impact_bps` uygulanır ve protokol ücreti burn modülü üzerinden yönlendirilir.
+
+Testnet'te bir havuz, `uqor` ile üç Fest test tokenından biriyle eşleşebilir (değeri yoktur; yalnızca testnet). Mevduat ve takas tutarları, büyük/küçük harfe duyarlı olan `erc20:<EIP-55 0x address>` bank denom'unu kullanır; örneğin `qorechaind tx amm create-pool constant_product 1000000000uqor 2000000000erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA --from mykey --generate-only > tx.json` (ardından `tx pqc cosign`). EVM tarafında tutulan bir token önce, göndereni `qor1` adresi olan `MsgConvertERC20` ile bir bank coin'ine dönüştürülmelidir; v3.2.6 düğüm sürümünün CLI komutu `qorechaind tx erc20 convert-erc20` göndereni `0x` adresi olarak yazar ve zincir bunu reddeder (`decoding bech32 failed`), bu nedenle o mesajı bunun yerine `qor1` göndericisiyle oluşturun. Ayrıntılar: [Testnet Fest test tokenları](/developer-guide/evm-development#fest-tokens). Bir havuz oluşturmak, mevduatlara ek olarak havuz oluşturma ücretine mal olur (`query amm params` içindeki `pool_creation_fee`).
 
 ---
 
@@ -509,6 +511,8 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 
 `--anchor-signature`, rollup oluşturucusunun **v2 çapa imza baytları** üzerindeki ML-DSA imzasıdır; bununla batch ayrıca multilayer modülünde de çapalanır. İmzalanacak tam baytları `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>` ile yazdırın; değerler `submit-batch` bayraklarıyla eşleşmelidir. v3.2.3'ten itibaren modül **rollup başına bir emanet defteri** tutar: bir çekim yalnızca o rollup'ın defterinde bulunandan ödenir ve denominasyon, pozitif tutar, kanıt derinliği ve kardeş (sibling) boyutu açısından kontrol edilir; bir rollup'ı durdurmak yalnızca defterinde kalanı iade eder ve durdurulmuş bir rollup başka çekim ödemez. Yazıldığı sırada her iki ağda da rollup yoktur.
 
+Veri erişilebilirliği `native` (veya `both`) olan bir rollup'ta `--data-hash` değerini boş bırakın: hiçbir işlem bir veri erişilebilirliği blob'u yayınlamaz ve zincir, böyle bir rollup için veri hash'i iddia eden bir batch'i reddeder (bu, yazıldığı sırada mainnet sürümü olan düğüm sürümü v3.2.4'ün davranışıdır). İyimser (optimistic) bir rollup için `@qorechain/rdk` istemcisi (0.6.1), bir batch'in durum kökünü zincirin kanonik geçiş köküne (RDK'daki `batchTransitionRoot`) ayarlar; bkz. [Rollup'lar](/rollups/overview).
+
 ---
 
 ## multilayer
@@ -532,12 +536,12 @@ Bazı komutlar ikilide mevcuttur ancak canlı ağlarda başarılı olamaz:
 
 | Komut                                                     | Neden                                                                                          |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | Yükleme ve örnekleme izni her iki ağda da `Nobody`'dir ve mesaj türleri ayrıca devre kesici listesindedir |
+| `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | Mainnet: yükleme ve örnekleme izni `Nobody`'dir ve üç mesaj türü devre kesici listesindedir. Testnet: yükleme `Nobody`'dir ve `MsgStoreCode` listededir (kodu yönetişim depolar), örnekleme ise açıktır (`Everybody`) ve listede değildir |
 | `tx crossvm call`                                         | Mainnet'te devre kesici tarafından devre dışı bırakılmıştır; testnet'te etkindir               |
 | `tx vesting create-vesting-account`, `create-periodic-vesting-account`, `create-permanent-locked-account` | Mainnet devre kesici listesindedir; v3.2.3'ten itibaren bir vesting hesabı zaten yalnızca imzalayanın kendisi için oluşturulabilir |
 | PQC `MsgDeprecateAlgorithm` / `MsgDisableAlgorithm`        | Yönetişim önerisi mesajlarıdır (CLI komutu yok), mainnet devre kesici listesindedir; v3.2.3'ten itibaren yönetişim ayrıca son etkin imza algoritmasını kaldıramaz |
 | `tx svm deploy-program`, `execute`, `create-account`      | SVM işlem yolu ağ genelinde devre dışıdır                                                      |
-| `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | Soyut hesap modülü kapalıdır (`query abstractaccount config` komutu `enabled: false` gösterir) |
+| `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | Mainnet: soyut hesap modülü kapalıdır (`query abstractaccount config` komutu `enabled: false` gösterir). Testnet: yönetişim tarafından açılmıştır (`enabled: true`, 27 Ekim 2026'da kontrol edildi) |
 | `tx rlconsensus *`, `tx amm pause-pool`/`resume-pool`      | Yönetişim yetkisi mesajlarıdır; ayrıca mainnet devre kesici listesindedir                      |
 | `tx license *`                                            | Yalnızca yetkili (lisanslar ağın lisans yetkilisi tarafından verilir; v3.2.3'ten itibaren yönetişim bu yetkiliyi `MsgUpdateAuthority` ile değiştirebilir) |
 

@@ -20,8 +20,10 @@ folosind doar `eth_call`:
 :::caution Nu este disponibil astăzi pe rețelele publice
 `simulateWithRiskScore`, `aiRiskScore` și `aiAnomalyCheck` citesc precompile-urile de la
 `0x…0B01` / `0x…0B02`. Un precompile static răspunde doar dacă adresa sa se află în
-parametrul `active_static_precompiles` al modulului EVM, iar această listă este goală
-atât pe `qorechain-vladi` (mainnet), cât și pe `qorechain-diana` (testnet). Pe
+parametrul `active_static_precompiles` al modulului EVM. Această listă este goală pe
+`qorechain-vladi` (mainnet), iar pe `qorechain-diana` (testnet) conține doar precompile-urile
+PQC și de parametri de consens (`0x…0A01`, `0x…0A02`, `0x…0C01`), nu perechea AI
+(verificat la 27 octombrie 2026). Pe
 endpoint-urile publice, un apel returnează date goale (`0x`), iar aceste helpere
 aruncă o eroare (de exemplu `returned no data ("0x")`). Funcționează doar pe o rețea
 sau pe un nod unde precompile-urile au fost activate. Verifică mai întâi

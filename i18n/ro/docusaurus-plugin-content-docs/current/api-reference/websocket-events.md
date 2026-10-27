@@ -141,10 +141,10 @@ Filtrează după tipul evenimentului pentru a primi doar evenimente dintr-un mod
 
 ## Referință evenimente pe module
 
-Evenimentele sunt emise ca evenimente standard ale motorului de consens. Abonează-te cu o interogare `tm.event='Tx'` filtrată după tipul și atributul evenimentului (de exemplu `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Evenimentele la nivel de bloc (cele emise de logica de la sfârșitul blocului, precum evenimentele PRISM de mai jos) sunt livrate cu `tm.event='NewBlock'`, nu cu `Tx`. Numele și atributele de mai jos sunt cele ale versiunii de chain v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026); evenimentele adăugate în v3.2.4 sunt marcate.
+Evenimentele sunt emise ca evenimente standard ale motorului de consens. Abonează-te cu o interogare `tm.event='Tx'` filtrată după tipul și atributul evenimentului (de exemplu `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Evenimentele la nivel de bloc (cele emise de logica de la sfârșitul blocului, precum evenimentele PRISM de mai jos) sunt livrate cu `tm.event='NewBlock'`, nu cu `Tx`. Numele și atributele de mai jos sunt cele ale versiunii de chain v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026); evenimentele adăugate în v3.2.4 sunt marcate. Testnet-ul (v3.2.6) emite încă un eveniment, `rl_action_proposed`, listat alături de evenimentele PRISM.
 
 :::note Ce evenimente vei vedea efectiv
-Multe dintre aceste module sunt inactive pe rețelele publice: bridge-ul nu este live, nu este încă înregistrat niciun layer multilayer sau rollup, iar xQORE nu poate fi folosit. Evenimentele lor sunt definite, dar nu se declanșează până nu există activitate. Evenimentele de observare și de recompensă PRISM (`rl_observation_collected`, `rl_reward_computed`) sunt emise aproximativ la fiecare 10 blocuri pe ambele rețele.
+Multe dintre aceste module sunt inactive pe rețelele publice: bridge-ul nu este live, nu este încă înregistrat niciun layer multilayer sau rollup, iar xQORE nu poate fi folosit. Evenimentele lor sunt definite, dar nu se declanșează până nu există activitate. Evenimentele de observare și de recompensă PRISM (`rl_observation_collected`, `rl_reward_computed`) sunt emise aproximativ la fiecare 10 blocuri pe ambele rețele; pe testnet (v3.2.6) agentul emite la fiecare pas și `rl_action_proposed`.
 :::
 
 ### Modulul PQC
@@ -254,6 +254,7 @@ Acestea sunt evenimente de la sfârșitul blocului, livrate pe fluxul `NewBlock`
 | `rl_observation_collected`     | `height`                | Emis atunci când este făcută o observație PRISM (aproximativ la fiecare 10 blocuri) |
 | `rl_reward_computed`           | `height`, `reward`      | Emis atunci când este calculată recompensa PRISM              |
 | `rl_action_applied`            | `height`, `agent_mode`  | Emis atunci când agentul PRISM aplică o ajustare de parametru |
+| `rl_action_proposed`           | `height`, `agent_mode`, `applied`, `block_time_delta`, `gas_price_delta`, `validator_set_size_delta`, `pool_weight_rpos_delta`, `pool_weight_dpos_delta` | **v3.2.6 (doar testnet).** Emis la fiecare pas al agentului, în orice mod, cu acțiunea propusă; `applied` este `false` în modul shadow. Mainnet-ul nu îl emite până când aplică acea versiune |
 | `rl_agent_mode_changed`        | `height`, `agent_mode`  | Emis atunci când se schimbă modul agentului                   |
 | `rl_circuit_breaker_triggered` | `height`                | Emis atunci când disjunctorul PRISM blochează o acțiune       |
 | `rl_circuit_breaker_recovered` | `height`                | Emis atunci când disjunctorul își revine                      |

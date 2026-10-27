@@ -10,18 +10,20 @@ sidebar_position: 3
 QoreChain acceptă contracte inteligente **QoreChain Native**. QoreChain Native este numele dat de QoreChain runtime-ului său **CosmWasm**: dezvoltatorii scriu programe sigure, izolate în sandbox, în Rust, folosind bibliotecile standard CosmWasm (`cosmwasm-std`), și le compilează în WebAssembly. Contractele QoreChain Native rulează alături de programele EVM și SVM în cadrul arhitecturii triple-VM a QoreChain.
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.4** din 23 octombrie 2026 (propunerea de guvernanță 13, înălțimea 3.742.566). Înlocuiește cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.4 din 19 octombrie 2026.
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.4** din 23 octombrie 2026 (propunerea de guvernanță 13, înălțimea 3.742.566). Înlocuiește cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.6 (v3.2.4 din 19 octombrie 2026).
 :::
 
-:::caution Încărcarea codului și instanțierea necesită momentan permisiune explicită
-La momentul redactării, `code_upload_access` și `instantiate_default_permission` sunt ambele setate la **`Nobody`** atât pe **mainnet, cât și pe testnet** — ceea ce înseamnă că `MsgStoreCode` și `MsgInstantiateContract` nu sunt deschise implicit oricărui cont, în urma unei alerte de securitate valabile la nivelul întregii industrii pentru CosmWasm, runtime-ul pe care este construit QoreChain Native. Va trebui ca guvernanța să acorde contului tău (sau unei liste specifice de adrese) permisiunea de încărcare/instanțiere înainte ca pașii de mai jos să reușească — verifică mai întâi parametrii live, deoarece aceasta este exact genul de setare pe care guvernanța o poate modifica (în prezent, mainnet-ul nu are deloc cod de contract stocat):
+:::caution Încărcarea codului și instanțierea necesită permisiune explicită pe mainnet; testnet-ul diferă
+La momentul redactării (verificat la 27 octombrie 2026), `code_upload_access` și `instantiate_default_permission` sunt ambele setate la **`Nobody`** pe **mainnet**, ceea ce înseamnă că `MsgStoreCode` și `MsgInstantiateContract` nu sunt deschise oricărui cont, în urma unei alerte de securitate valabile la nivelul întregii industrii pentru CosmWasm, runtime-ul pe care este construit QoreChain Native. Pe testnet-ul **`qorechain-diana`** setările diferă: `code_upload_access` este tot `Nobody` (codul este stocat doar prin guvernanță), dar `instantiate_default_permission` este **`Everybody`**, setat de guvernanța testnet-ului pe 27 octombrie 2026, așa că orice cont poate instanția un cod stocat a cărui permisiune proprie o permite. Va trebui ca guvernanța să acorde contului tău (sau unei liste specifice de adrese) permisiunea de încărcare/instanțiere înainte ca pașii de mai jos să reușească pe mainnet — verifică mai întâi parametrii live, deoarece aceasta este exact genul de setare pe care guvernanța o poate modifica (în prezent, mainnet-ul nu are deloc cod de contract stocat):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
-Tipurile de mesaje `MsgStoreCode`, `MsgInstantiateContract` și `MsgInstantiateContract2` sunt, de asemenea, dezactivate de întrerupătorul de circuit (circuit breaker) al lanțului pe ambele rețele (`qorechaind query circuit disabled-list`), așa că ridicarea permisiunii nu este suficientă până când aceste intrări nu sunt eliminate din listă.
+Întrerupătorul de circuit (circuit breaker) al lanțului dezactivează, de asemenea, tipuri de mesaje la nivelul întregii rețele (`qorechaind query circuit disabled-list`). Pe **mainnet**, `MsgStoreCode`, `MsgInstantiateContract` și `MsgInstantiateContract2` sunt pe listă, așa că ridicarea permisiunii nu este suficientă până când aceste intrări nu sunt eliminate din listă. Pe **testnet** doar `MsgStoreCode` este pe listă: instanțierea este deschisă, încărcarea nu.
+
+**Testnet: contracte revizuite, stocate prin guvernanță.** Deoarece conturile obișnuite nu pot încărca cod pe testnet, guvernanța a stocat cinci contracte revizuite pe care oricine le poate instanția (`instantiate_permission` `Everybody`): cw20-base (token), cw721-base (colecție NFT), cw4-group, cw3-fixed-multisig și un mic contract contor. La momentul redactării acestea sunt code id-urile 859–863, în această ordine, listate de `GET /cosmwasm/wasm/v1/code` cu contul de modul al guvernanței ca creator și identificate prin `data_hash`; citește id-urile din lista live, nu le scrie fix în cod. Există doar pe testnet. Mainnet-ul nu are cod stocat.
 
 Această restricție nu afectează contractele deja instanțiate — `execute` și `query` asupra unui contract existent funcționează normal, indiferent de această setare.
 :::
@@ -265,4 +267,4 @@ Acest lucru apelează punctul de intrare `migrate` din noul cod cu starea existe
 
 * [Interoperabilitate între VM-uri](/developer-guide/cross-vm-interoperability) — Apelează contracte EVM și SVM din QoreChain Native
 * [Dezvoltare SVM](/developer-guide/svm-development) — Implementează programe BPF pe QoreChain
-* [Precompile EVM](/developer-guide/evm-precompiles) — Referință pentru precompilatele Solidity planificate (încă niciunul nu este activ)
+* [Precompile EVM](/developer-guide/evm-precompiles) — Referință pentru precompilatele Solidity (niciunul nu este activ pe mainnet; trei sunt active pe testnet)

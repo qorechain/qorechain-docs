@@ -141,10 +141,10 @@ Filtrez par type d'événement pour ne recevoir que les événements d'un module
 
 ## Référence des événements de module
 
-Les événements sont émis comme des événements standard du moteur de consensus. Abonnez-vous avec une requête `tm.event='Tx'` filtrée sur le type d'événement et l'attribut (par exemple `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Les événements au niveau du bloc (ceux émis par la logique de fin de bloc, comme les événements PRISM ci-dessous) sont délivrés avec `tm.event='NewBlock'`, et non `Tx`. Les noms et attributs ci-dessous sont ceux de la version de chaîne v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026) ; les événements ajoutés dans la v3.2.4 sont signalés.
+Les événements sont émis comme des événements standard du moteur de consensus. Abonnez-vous avec une requête `tm.event='Tx'` filtrée sur le type d'événement et l'attribut (par exemple `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Les événements au niveau du bloc (ceux émis par la logique de fin de bloc, comme les événements PRISM ci-dessous) sont délivrés avec `tm.event='NewBlock'`, et non `Tx`. Les noms et attributs ci-dessous sont ceux de la version de chaîne v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026) ; les événements ajoutés dans la v3.2.4 sont signalés. Le testnet (v3.2.6) émet un événement de plus, `rl_action_proposed`, listé avec les événements PRISM.
 
 :::note Quels événements verrez-vous réellement
-Beaucoup de ces modules sont inactifs sur les réseaux publics : le bridge n'est pas en production, aucune couche multilayer ni aucun rollup n'est encore enregistré, et xQORE n'est pas utilisable. Leurs événements sont définis mais ne se déclenchent pas tant qu'il n'y a pas d'activité. Les événements d'observation et de récompense PRISM (`rl_observation_collected`, `rl_reward_computed`) sont émis environ tous les 10 blocs sur les deux réseaux.
+Beaucoup de ces modules sont inactifs sur les réseaux publics : le bridge n'est pas en production, aucune couche multilayer ni aucun rollup n'est encore enregistré, et xQORE n'est pas utilisable. Leurs événements sont définis mais ne se déclenchent pas tant qu'il n'y a pas d'activité. Les événements d'observation et de récompense PRISM (`rl_observation_collected`, `rl_reward_computed`) sont émis environ tous les 10 blocs sur les deux réseaux ; sur le testnet (v3.2.6), l'agent émet aussi `rl_action_proposed` à chaque pas.
 :::
 
 ### Module PQC
@@ -254,6 +254,7 @@ Ce sont des événements de fin de bloc, délivrés sur le flux `NewBlock`.
 | `rl_observation_collected`     | `height`                | Émis lorsqu'une observation PRISM est effectuée (environ tous les 10 blocs) |
 | `rl_reward_computed`           | `height`, `reward`      | Émis lorsque la récompense PRISM est calculée                     |
 | `rl_action_applied`            | `height`, `agent_mode`  | Émis lorsque l'agent PRISM applique un ajustement de paramètre   |
+| `rl_action_proposed`           | `height`, `agent_mode`, `applied`, `block_time_delta`, `gas_price_delta`, `validator_set_size_delta`, `pool_weight_rpos_delta`, `pool_weight_dpos_delta` | **v3.2.6 (testnet uniquement).** Émis à chaque pas de l'agent, quel que soit le mode, avec l'action proposée ; `applied` vaut `false` en mode shadow. Le mainnet ne l'émet pas tant qu'il n'a pas appliqué cette version |
 | `rl_agent_mode_changed`        | `height`, `agent_mode`  | Émis lorsque le mode de l'agent change                           |
 | `rl_circuit_breaker_triggered` | `height`                | Émis lorsque le coupe-circuit PRISM bloque une action       |
 | `rl_circuit_breaker_recovered` | `height`                | Émis lorsque le coupe-circuit se rétablit                     |

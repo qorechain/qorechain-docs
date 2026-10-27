@@ -45,12 +45,15 @@ De asemenea, poți construi un client de citire direct cu `createCosmWasmClient`
 ## Semnare: instanțiere, execuție, încărcare
 
 :::caution Încărcarea și instanțierea sunt permisionate
-`code_upload_access` și `instantiate_default_permission` sunt `Nobody` pe
-`qorechain-vladi` și `qorechain-diana`, iar `MsgStoreCode` /
+Pe `qorechain-vladi` (mainnet), `code_upload_access` și
+`instantiate_default_permission` sunt `Nobody`, iar `MsgStoreCode` /
 `MsgInstantiateContract` / `MsgInstantiateContract2` sunt oprite și de
 întrerupătorul de siguranță (circuit breaker) al lanțului, așa că `uploadCode` și
-`instantiate` sunt refuzate pentru conturile obișnuite. Contractele care există
-deja pot fi interogate (mai sus) și executate. Verifică
+`instantiate` sunt refuzate pentru conturile obișnuite. Pe `qorechain-diana`
+(testnet, verificat la 27 octombrie 2026) `code_upload_access` este `Nobody` și
+doar `MsgStoreCode` este oprit, în timp ce `instantiate_default_permission` este
+`Everybody`, deci `instantiate` este deschis acolo pentru codul care există deja.
+Contractele care există deja pot fi interogate (mai sus) și executate. Verifică
 `GET /cosmwasm/wasm/v1/codes/params` pentru permisiunile curente.
 Vezi [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development).
 :::

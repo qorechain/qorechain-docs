@@ -141,10 +141,10 @@ Filtre por tipo de evento para recibir únicamente los eventos de un módulo esp
 
 ## Referencia de eventos por módulo
 
-Los eventos se emiten como eventos estándar del motor de consenso. Suscríbase con una consulta `tm.event='Tx'` filtrada por el tipo de evento y el atributo (por ejemplo `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Los eventos a nivel de bloque (los emitidos por la lógica de fin de bloque, como los eventos de PRISM que se muestran más abajo) se entregan con `tm.event='NewBlock'`, no con `Tx`. Los nombres y atributos que se muestran a continuación corresponden a la versión de cadena v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026); los eventos añadidos en v3.2.4 están marcados.
+Los eventos se emiten como eventos estándar del motor de consenso. Suscríbase con una consulta `tm.event='Tx'` filtrada por el tipo de evento y el atributo (por ejemplo `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Los eventos a nivel de bloque (los emitidos por la lógica de fin de bloque, como los eventos de PRISM que se muestran más abajo) se entregan con `tm.event='NewBlock'`, no con `Tx`. Los nombres y atributos que se muestran a continuación corresponden a la versión de cadena v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026); los eventos añadidos en v3.2.4 están marcados. La testnet (v3.2.6) emite un evento más, `rl_action_proposed`, indicado junto con los eventos de PRISM.
 
 :::note Qué eventos verá realmente
-Muchos de estos módulos están inactivos en las redes públicas: el puente no está en producción, todavía no hay capas multilayer ni rollups registrados, y xQORE no se puede usar. Sus eventos están definidos, pero no se disparan hasta que haya actividad. Los eventos de observación y recompensa de PRISM (`rl_observation_collected`, `rl_reward_computed`) se emiten aproximadamente cada 10 bloques en ambas redes.
+Muchos de estos módulos están inactivos en las redes públicas: el puente no está en producción, todavía no hay capas multilayer ni rollups registrados, y xQORE no se puede usar. Sus eventos están definidos, pero no se disparan hasta que haya actividad. Los eventos de observación y recompensa de PRISM (`rl_observation_collected`, `rl_reward_computed`) se emiten aproximadamente cada 10 bloques en ambas redes; en la testnet (v3.2.6) el agente emite además `rl_action_proposed` en cada paso.
 :::
 
 ### Módulo PQC
@@ -254,6 +254,7 @@ Estos son eventos de fin de bloque, entregados en el flujo `NewBlock`.
 | `rl_observation_collected`     | `height`                | Se emite cuando se toma una observación de PRISM (aproximadamente cada 10 bloques) |
 | `rl_reward_computed`           | `height`, `reward`      | Se emite cuando se calcula la recompensa de PRISM                     |
 | `rl_action_applied`            | `height`, `agent_mode`  | Se emite cuando el agente PRISM aplica un ajuste de parámetro   |
+| `rl_action_proposed`           | `height`, `agent_mode`, `applied`, `block_time_delta`, `gas_price_delta`, `validator_set_size_delta`, `pool_weight_rpos_delta`, `pool_weight_dpos_delta` | **v3.2.6 (solo testnet).** Se emite en cada paso del agente en todos los modos, con la acción propuesta; `applied` es `false` en modo sombra. La mainnet no lo emite hasta que aplique esa versión |
 | `rl_agent_mode_changed`        | `height`, `agent_mode`  | Se emite cuando cambia el modo del agente                   |
 | `rl_circuit_breaker_triggered` | `height`                | Se emite cuando el disyuntor de PRISM bloquea una acción       |
 | `rl_circuit_breaker_recovered` | `height`                | Se emite cuando el disyuntor se recupera                     |

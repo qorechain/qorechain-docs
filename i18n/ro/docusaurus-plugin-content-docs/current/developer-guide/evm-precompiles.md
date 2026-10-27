@@ -9,22 +9,22 @@ sidebar_position: 6
 
 QoreChain extinde motorul QoreChain EVM Engine cu **șase contracte precompilate personalizate** care expun funcționalități la nivel de protocol direct în Solidity. Aceste precompilate oferă acces on-chain la criptografie post-cuantică, scoring de risc bazat pe AI, mesagerie cross-VM și parametrii de consens PRISM.
 
-:::warning Încă neactive pe mainnet sau testnet
-Cele șase precompilate QoreChain de mai jos sunt **compilate în nod, dar încă neactivate**, nici pe mainnet-ul **`qorechain-vladi`** (ID chain EVM **9801**), nici pe testnet-ul **`qorechain-diana`** (ID chain EVM **9800**). EVM-ul execută doar adresele din parametrul `active_static_precompiles`, iar această listă este goală pe ambele rețele. Până când un upgrade al lanțului le activează, **un apel către aceste adrese reușește și întoarce date goale (`0x`)**; nu face revert și nu întoarce o eroare. Vezi [Starea rețelei](#network-status) înainte de a te baza pe oricare dintre ele.
+:::warning Neactive pe mainnet; trei active pe testnet
+Cele șase precompilate QoreChain de mai jos sunt **compilate în nod**, dar EVM-ul execută doar adresele din parametrul `active_static_precompiles`. Pe mainnet-ul **`qorechain-vladi`** (ID chain EVM **9801**) această listă este goală la momentul redactării, deci **niciunul nu este activ acolo**. Pe testnet-ul **`qorechain-diana`** (ID chain EVM **9800**) trei sunt active: PQC Verify, PQC Key Status și PRISM Consensus Params, activate prin propunerea de guvernanță 21 a testnet-ului (aprobată la 27 octombrie 2026). Celelalte trei nu sunt active pe nicio rețea. Un apel către o adresă care nu se află în listă **reușește și întoarce date goale (`0x`)**; nu face revert și nu întoarce o eroare. Vezi [Starea rețelei](#network-status) înainte de a te baza pe oricare dintre ele.
 :::
 
 ## Starea rețelei {#network-status}
 
 | Precompilat | Adresă | `qorechain-vladi` (mainnet) | `qorechain-diana` (testnet) |
 | --- | --- | --- | --- |
-| PQC Verify | `0x…0A01` | Neactiv | Neactiv |
-| PQC Key Status | `0x…0A02` | Neactiv | Neactiv |
+| PQC Verify | `0x…0A01` | Neactiv | **Activ** (din 27 octombrie 2026) |
+| PQC Key Status | `0x…0A02` | Neactiv | **Activ** (din 27 octombrie 2026) |
 | AI Risk Score | `0x…0B01` | Neactiv | Neactiv |
 | AI Anomaly Check | `0x…0B02` | Neactiv | Neactiv |
-| PRISM Consensus Params | `0x…0C01` | Neactiv | Neactiv |
+| PRISM Consensus Params | `0x…0C01` | Neactiv | **Activ** (din 27 octombrie 2026) |
 | CrossVM Bridge | `0x…0901` | Neactiv | Neactiv |
 
-Activarea necesită un upgrade al lanțului și este planificată în etape: mai întâi precompilatele PQC și de consens, doar pentru citire, apoi perechea AI, odată ce calea lor de citire, în virgulă fixă, este pusă la punct, iar puntea CrossVM la final. Versiunea v3.2.3 (mainnet, 20 octombrie 2026) a introdus în binar, în spatele unei funcționalități de protocol, versiunile întărite ale punții CrossVM și ale precompilatului AI de anomalii, **dar nu a activat niciun precompilat**: lista `active_static_precompiles` este în continuare goală pe ambele rețele, iar v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026) nu schimbă acest lucru. Acest tabel se actualizează în aceeași operațiune cu upgrade-ul care activează oricare dintre ele.
+Starea este cea citită din parametrul live `active_static_precompiles` la 27 octombrie 2026. Este un parametru de lanț modificat prin guvernanță, deci lista fiecărei rețele se schimbă doar atunci când trece o propunere de guvernanță; lista testnet-ului a fost stabilită de propunerea 21, iar la momentul redactării nicio propunere de pe mainnet nu o modifică. Versiunea v3.2.3 (mainnet, 20 octombrie 2026) a introdus în binar, în spatele unei funcționalități de protocol, versiunile întărite ale punții CrossVM și ale precompilatului AI de anomalii, dar nu a activat niciun precompilat, iar v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026) nu schimbă acest lucru. Precompilatele PQC și de consens, doar pentru citire, vin primele, perechea AI odată ce calea lor de citire, în virgulă fixă, este pusă la punct, iar puntea CrossVM la final. Acest tabel listează doar ce este aplicat: o propunere aflată încă în perioada de vot nu reprezintă o stare.
 
 Verifică singur lista curentă (goală înseamnă că niciunul nu e activ):
 
@@ -45,6 +45,14 @@ require(ok && ret.length >= 96, "precompile not active");
 ```
 
 Nu trimite valoare către aceste adrese. Nu sunt payable, iar valoarea trimisă către o adresă de precompilat inactivă rămâne acolo, fără nicio posibilitate de recuperare.
+
+Pe testnet, o verificare rapidă că cele trei precompilate active răspund (cu `cast` din Foundry; pe mainnet aceste adrese întorc în schimb date goale):
+
+```bash
+RPC=https://evm-testnet.qore.host
+cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
+```
 
 ---
 
@@ -95,7 +103,7 @@ interface IQorePQC {
 }
 ```
 
-Începând cu v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026), odată ce acest precompilat este activ, ieșirea lui conține o a patra valoare, `bool possessionProven`, după `pubkey`: dacă cheia curentă a contului a fost dovedită printr-o dovadă de posesie verificată (vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing#proof-of-possession)). Interfața de mai sus listează primele trei ieșiri; un contract care trebuie să aibă încredere în cheie ar trebui să citească și a patra valoare.
+Începând cu v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026), ieșirea lui `pqcKeyStatus` conține o a patra valoare, `bool possessionProven`, după `pubkey`: dacă cheia curentă a contului a fost dovedită printr-o dovadă de posesie verificată (vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing#proof-of-possession)). Este returnată oriunde precompilatul este activ: pe testnet este live (un apel pentru un cont fără cheie returnează `false, 0, 0x, false`), iar pe mainnet după ce un upgrade activează precompilatul. Interfața de mai sus listează primele trei ieșiri; un contract care trebuie să aibă încredere în cheie ar trebui să citească și a patra valoare.
 
 ### IQoreAI.sol
 
@@ -264,10 +272,10 @@ contract ConsensusReader {
 }
 ```
 
-**Cost de gaz:** 1.500, fix.
+**Cost de gaz:** 1.500, fix, plus citirile de stare pe care le execută apelul, la costul standard.
 
-:::note
-În build-ul curent al nodului, `rlConsensusParams` returnează valori implicite fixe, de umplutură (placeholder), nu valori live ajustate de PRISM (de exemplu, nu raportează timpul de bloc măsurat, care este de aproximativ 3,2 s pe mainnet și de aproximativ 1,0 s pe testnet). Conectarea la parametrii de consens live face parte din munca de activare.
+:::note Ce reprezintă cele patru valori
+Începând cu v3.2.6 (testnet-ul; încă nu și mainnet-ul) `rlConsensusParams` returnează valorile deținute de modulul `rlconsensus`, în locul unor valori fixe de umplutură: ținta de timp de bloc aplicată, în milisecunde, pragul de preț al gazului aplicat, `default_validator_set_size` al modulului și epoca curentă a agentului. Pe testnet, la 27 octombrie 2026, a returnat `5000`, `100`, `100`, `1` (aceleași valori aplicate ca `GET /qorechain/rlconsensus/v1/applied_params`, vezi [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#rlconsensus-module)). Acestea sunt setările proprii ale modulului, **nu timpul de bloc măsurat** (aproximativ 3,2 s pe mainnet și aproximativ 1,3 s pe testnet), iar agentul rulează în mod shadow pe testnet, deci nu aplică nimic. Pe un nod mai vechi decât v3.2.6, același apel returnează valori implicite fixe, de umplutură.
 :::
 
 ### CrossVM Bridge — Apelarea QoreChain Native din EVM
@@ -315,4 +323,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) — Documentația completă a mesageriei cross-VM
 * [Dezvoltare EVM](/developer-guide/evm-development) — Implementarea contractelor Solidity
-* [Abstractizarea contului](/developer-guide/account-abstraction) — Autentificatori pentru portofele conectate și reguli de cheltuire (modulul este dezactivat în prezent)
+* [Abstractizarea contului](/developer-guide/account-abstraction) — Autentificatori pentru portofele conectate și reguli de cheltuire (activat pe testnet, dezactivat pe mainnet)

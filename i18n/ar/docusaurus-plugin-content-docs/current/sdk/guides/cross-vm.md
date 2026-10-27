@@ -29,7 +29,7 @@ sidebar_position: 4
   اقرأ الرسائل باستخدام `connectQueryClients(rpc).crossvm` بدلًا من ذلك.
 - مثل كل معاملة على المسار الأصلي (Native)، يجب أن تحمل استدعاءات cross-VM التوقيع
   الهجين: صِل عميل التوقيع بزوج مفاتيح الحساب
-  (`client.connectTx(signer, { pqcKeypair })`، SDK 0.9.0) كي يوقّع عميل cross-VM
+  (`client.connectTx(signer, { pqcKeypair })`، SDK 0.9.0 أو أحدث) كي يوقّع عميل cross-VM
   توقيعًا هجينًا (انظر [الحسابات وتوقيع PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
   وتوقّعها الإصدارات السابقة لـ 0.9.0 توقيعًا كلاسيكيًا وترفضها الشبكات العامة.
 :::

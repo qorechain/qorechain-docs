@@ -141,10 +141,10 @@ Filtern Sie nach Ereignistyp, um nur Ereignisse eines bestimmten Moduls zu erhal
 
 ## Referenz der Modul-Ereignisse
 
-Ereignisse werden als Standard-Ereignisse der Consensus Engine ausgegeben. Abonnieren Sie mit einer `tm.event='Tx'`-Query, die nach Ereignistyp und Attribut gefiltert ist (zum Beispiel `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Ereignisse auf Blockebene (also solche, die von der End-of-Block-Logik ausgegeben werden, wie die PRISM-Ereignisse unten) werden mit `tm.event='NewBlock'` zugestellt, nicht mit `Tx`. Die unten aufgeführten Namen und Attribute entsprechen der Chain-Version v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026); in v3.2.4 hinzugekommene Ereignisse sind gekennzeichnet.
+Ereignisse werden als Standard-Ereignisse der Consensus Engine ausgegeben. Abonnieren Sie mit einer `tm.event='Tx'`-Query, die nach Ereignistyp und Attribut gefiltert ist (zum Beispiel `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Ereignisse auf Blockebene (also solche, die von der End-of-Block-Logik ausgegeben werden, wie die PRISM-Ereignisse unten) werden mit `tm.event='NewBlock'` zugestellt, nicht mit `Tx`. Die unten aufgeführten Namen und Attribute entsprechen der Chain-Version v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026); in v3.2.4 hinzugekommene Ereignisse sind gekennzeichnet. Das Testnet (v3.2.6) gibt ein weiteres Ereignis aus, `rl_action_proposed`, aufgeführt bei den PRISM-Ereignissen.
 
 :::note Welche Ereignisse Sie tatsächlich sehen werden
-Viele dieser Module sind in den öffentlichen Netzwerken inaktiv: Die Bridge ist nicht live, es sind noch keine Multilayer-Layer oder Rollups registriert, und xQORE ist nicht nutzbar. Ihre Ereignisse sind zwar definiert, werden aber erst ausgelöst, wenn es Aktivität gibt. Die PRISM-Beobachtungs- und Belohnungsereignisse (`rl_observation_collected`, `rl_reward_computed`) werden in beiden Netzwerken etwa alle 10 Blöcke ausgegeben.
+Viele dieser Module sind in den öffentlichen Netzwerken inaktiv: Die Bridge ist nicht live, es sind noch keine Multilayer-Layer oder Rollups registriert, und xQORE ist nicht nutzbar. Ihre Ereignisse sind zwar definiert, werden aber erst ausgelöst, wenn es Aktivität gibt. Die PRISM-Beobachtungs- und Belohnungsereignisse (`rl_observation_collected`, `rl_reward_computed`) werden in beiden Netzwerken etwa alle 10 Blöcke ausgegeben; im Testnet (v3.2.6) gibt der Agent bei jedem Schritt zusätzlich `rl_action_proposed` aus.
 :::
 
 ### PQC-Modul
@@ -254,6 +254,7 @@ Dies sind End-of-Block-Ereignisse, die über den `NewBlock`-Stream zugestellt we
 | `rl_observation_collected`     | `height`                | Wird ausgegeben, wenn eine PRISM-Beobachtung erfasst wird (etwa alle 10 Blöcke) |
 | `rl_reward_computed`           | `height`, `reward`      | Wird ausgegeben, wenn die PRISM-Belohnung berechnet wird                     |
 | `rl_action_applied`            | `height`, `agent_mode`  | Wird ausgegeben, wenn der PRISM-Agent eine Parameteranpassung vornimmt   |
+| `rl_action_proposed`           | `height`, `agent_mode`, `applied`, `block_time_delta`, `gas_price_delta`, `validator_set_size_delta`, `pool_weight_rpos_delta`, `pool_weight_dpos_delta` | **v3.2.6 (nur Testnet).** Wird bei jedem Agentenschritt in jedem Modus ausgegeben, mit der vorgeschlagenen Aktion; `applied` ist im Shadow-Modus `false`. Das Mainnet gibt es erst aus, wenn es diese Version anwendet |
 | `rl_agent_mode_changed`        | `height`, `agent_mode`  | Wird ausgegeben, wenn sich der Agentenmodus ändert                   |
 | `rl_circuit_breaker_triggered` | `height`                | Wird ausgegeben, wenn der PRISM-Circuit-Breaker eine Aktion blockiert       |
 | `rl_circuit_breaker_recovered` | `height`                | Wird ausgegeben, wenn sich der Circuit-Breaker erholt                  |

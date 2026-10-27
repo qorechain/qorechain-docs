@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain acceptă mai multe tipuri de portofele în mediile sale de execuție native, EVM și SVM. Alege portofelul care se potrivește cazului tău de utilizare.
 
 :::note
-Valorile de mai jos acoperă atât mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, activ din 7 iunie 2026, versiunea v3.2.4 din 23 octombrie 2026), cât și testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea v3.2.4 din 19 octombrie 2026). Endpoint-urile publice pentru ambele rețele sunt listate în [Rețele](/appendix/networks#public-endpoints).
+Valorile de mai jos acoperă atât mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, activ din 7 iunie 2026, versiunea v3.2.4 din 23 octombrie 2026), cât și testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea v3.2.6 din 27 octombrie 2026). Endpoint-urile publice pentru ambele rețele sunt listate în [Rețele](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recomandat) {#qorex}
@@ -105,8 +105,8 @@ Fondurile trimise către oricare dintre cele trei forme ajung în același sold.
 
 ## Portofele conectate: Phantom și MetaMask drept chei de cheltuire {#linked-wallets}
 
-:::caution Dezactivat momentan pe ambele rețele
-Funcțiile de cont inteligent și de portofel conectat sunt implementate, dar **dezactivate** pe ambele rețele (`abstractaccount.enabled = false`): înregistrarea unui authenticator și execuția prin intermediul unuia sunt refuzate cât timp indicatorul este dezactivat. Verifică `GET /qorechain/abstractaccount/v1/config` înainte de a oferi un flux de conectare. Secțiunea de mai jos descrie comportamentul proiectat.
+:::caution Dezactivat pe mainnet, activat pe testnet
+Funcțiile de cont inteligent și de portofel conectat sunt implementate, dar **dezactivate** pe mainnet (`abstractaccount.enabled = false`): înregistrarea unui authenticator și execuția prin intermediul unuia sunt refuzate acolo cât timp indicatorul este dezactivat. Sunt **activate pe testnet** (`enabled = true`, verificat la 27 octombrie 2026), deci poți încerca acolo un flux de conectare. Verifică `GET /qorechain/abstractaccount/v1/config` pe rețeaua țintă înainte de a oferi un flux de conectare. Secțiunea de mai jos descrie comportamentul proiectat.
 :::
 
 Proiectat astfel încât să nu fii nevoit să îți expui cheia rădăcină pentru a cheltui dintr-un cont QoreChain într-un dApp (introdus în versiunea de lanț **v3.1.85**): o cheie **Phantom** (ed25519) sau **MetaMask** (prin adresa sa Ethereum, via `personal_sign`) poate fi **înregistrată ca authenticator** pe contul tău — cu permisiuni delimitate, limite de cheltuire, o dată de expirare și revocare instantanee — și apoi poate autoriza transferuri retransmise de backend-ul dApp-ului. Vezi [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) pentru modelul complet și cod, precum și [ghidul SDK Authenticators](/sdk/guides/authenticators) pentru exemple cap-coadă.

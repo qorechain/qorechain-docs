@@ -10,11 +10,11 @@ sidebar_position: 5
 This guide describes how moving assets between QoreChain and other blockchain networks is designed to work. QoreChain's interoperability layer is built around **37 chain configurations** (36 external chains plus Injective, reached over IBC) and up to **8 IBC counterparties** for Cosmos-ecosystem chains.
 
 :::caution Not live on either network
-The bridge module is deployed on mainnet and testnet, but **no bridge route is active**: all 37 chain configurations are in `pending` status with no bridge contract set, no bridge validators are registered, no bridge operation has ever been created, and no IBC channels or clients exist. Everything below describes the intended design. Do not send assets expecting them to be bridged. See [Bridge Architecture](/architecture/bridge-architecture) for the current status table.
+The bridge module is deployed on mainnet and testnet, but **no bridge route is active**: all 37 chain configurations are in `pending` status with no bridge contract set, no bridge validators are registered, no bridge operation has ever been created, and no IBC channel exists on mainnet (the testnet has a single ICS-20 test channel to a chain with ID `provider`, none to the counterparties named below). Everything below describes the intended design. Do not send assets expecting them to be bridged. See [Bridge Architecture](/architecture/bridge-architecture) for the current status table.
 :::
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**, chain version **v3.2.4**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.4** (since 23 October 2026). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page once a route is activated. Status checked 23 October 2026: all 37 chain configurations are `pending` on both networks.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**, chain version **v3.2.6**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.4** (since 23 October 2026). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page once a route is activated. Status checked 27 October 2026: all 37 chain configurations are `pending` on both networks.
 :::
 
 ---
@@ -34,7 +34,17 @@ A complete enumeration of every chain configuration lives on the **Bridge Archit
 
 ## IBC
 
-IBC is part of the design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), but **no IBC channel or client exists on either network yet**, so there is nothing to transfer over. This page will list channels once they are opened.
+IBC is part of the design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), but **none of these counterparties is connected yet**: mainnet has no IBC channel or client, and the testnet has only a single ICS-20 test channel to a chain with ID `provider` (checked 27 October 2026), so there is nothing to transfer over for these chains. This page will list channels once they are opened.
+
+### IBC additions on the testnet (v3.2.6) {#ibc-testnet-v326}
+
+Three IBC features exist on the testnet only; mainnet does not have them (its `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` route answers 501):
+
+* **IBC rate limit.** Governance can set a per-channel quota for IBC transfers (a whole percent of supply per window of hours). It is **not automatic**: no limits are set today, and an empty set means unlimited. A forwarded packet is charged on both channels and a refund returns the quota. This is separate from the bridge circuit breakers described under [Security Model](#security-model).
+* **Packet forwarding.** A transfer arriving over IBC v1 can carry a memo of the form `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` to be sent on to another chain, with refunds to the sender if a hop fails. There are no retries and a hop times out after 10 minutes by default. A token that converts to an ERC-20 on arrival cannot be forwarded.
+* **08-wasm light clients.** Storing, migrating and removing a wasm light-client binary are authority-only, and the allowed client types contain only the standard client until governance adds `08-wasm`.
+
+Read the limits with `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` on the testnet (`\{"rate_limits":[]\}` today).
 
 ---
 
@@ -106,7 +116,7 @@ Every native-lane transaction needs the hybrid post-quantum co-signature and a f
 
 ---
 
-## Security Model
+## Security Model {#security-model}
 
 The QoreChain Bridge is designed to be secured by multiple defense layers:
 
@@ -114,7 +124,7 @@ The QoreChain Bridge is designed to be secured by multiple defense layers:
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **7-of-10 PQC Multisig**     | Every bridge operation requires attestations from at least 7 of 10 bridge validators, each using post-quantum cryptographic signatures.               |
 | **24-Hour Challenge Period** | Transfers above the large-transfer threshold (100,000 QOR) enter a 24-hour challenge window during which validators or watchers can flag fraudulent transactions. |
-| **Circuit Breakers**         | Automated rate limiters halt bridge operations if abnormal volume or suspicious patterns are detected. Bridge operations resume after manual review.  |
+| **Circuit Breakers**         | Designed for the QCB bridge: automated limiters halt bridge operations if abnormal volume or suspicious patterns are detected, and operations resume after manual review. They apply to the QCB bridge, not to IBC; the IBC rate limit (testnet only) is set by governance, is not automatic, and has no limits set today. |
 
 ---
 

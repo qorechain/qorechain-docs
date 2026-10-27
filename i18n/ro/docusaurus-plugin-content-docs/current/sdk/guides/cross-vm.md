@@ -32,7 +32,7 @@ Apelurile cross-VM sunt disponibile doar în măsura în care este disponibilă 
   `connectQueryClients(rpc).crossvm`.
 - Ca orice tranzacție pe calea Native, un apel cross-VM trebuie să poarte semnătura
   hibridă: conectează clientul de semnare cu perechea de chei a contului
-  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0), astfel încât clientul
+  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0 sau mai nou), astfel încât clientul
   cross-VM să semneze hibrid (vezi
   [Conturi și semnare PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
   Versiunile anterioare lui 0.9.0 îl semnează clasic, iar rețelele publice îl refuză.

@@ -21,7 +21,7 @@ sidebar_position: 4
 
 **QCAIA 답변:**
 
-> QoreChain의 브리지는 QoreChain과 다른 네트워크 간에 자산을 이동하도록 설계되었으며, QCB 전송과 IBC를 결합합니다. 아직 라이브 상태가 아닙니다. 모든 체인 구성이 보류 중이며 어느 네트워크에서도 열린 IBC 채널이 없습니다. 전체 설계는 브리지 문서를 참조하세요.
+> QoreChain의 브리지는 QoreChain과 다른 네트워크 간에 자산을 이동하도록 설계되었으며, QCB 전송과 IBC를 결합합니다. 아직 라이브 상태가 아닙니다. 모든 체인 구성이 보류 중이며 계획된 어떤 상대방으로 가는 IBC 채널도 열려 있지 않습니다(메인넷에는 없고, 테스트넷에는 테스트 채널이 하나 있습니다). 전체 설계는 브리지 문서를 참조하세요.
 
 _자세히 알아보기: [Bridge Architecture](/architecture/bridge-architecture)._
 

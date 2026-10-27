@@ -109,7 +109,7 @@ debe estar **registrada primero on-chain**. El registro es explícito: no hay
 autorregistro en la primera transacción. Una transacción firmada solo de forma
 clásica es rechazada por las redes en producción, así que entrega al cliente de
 transacciones el keypair ML-DSA-87 de la cuenta y firmará cada transacción de forma
-híbrida. Los dos pasos siguientes requieren **SDK 0.9.0 o posterior** y una cuenta
+híbrida. Los dos pasos siguientes requieren **SDK 0.9.0 o posterior** (la 0.10.0 es la actual) y una cuenta
 con fondos:
 
 ```bash

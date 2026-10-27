@@ -9,12 +9,12 @@ sidebar_position: 7
 
 QoreChain, `x/abstractaccount` modülü aracılığıyla **protokol düzeyinde hesap soyutlama** sağlar. Modül, harcama kurallarına sahip soyut hesapları kaydeder ve hesap sahibinin, hesaptan izin ve harcama limiti sınırları içinde harcama yapabilen harici anahtarları (**kimlik doğrulayıcılar**) bağlamasına olanak tanır; harici akıllı sözleşme altyapısı gerekmez.
 
-:::danger Ana ağda veya test ağında etkin değil
-Soyut hesap modülü şu anda her iki ağda da **kapalıdır**: `qorechaind query abstractaccount config` (ve `GET /qorechain/abstractaccount/v1/config`), `qorechain-vladi` ve `qorechain-diana` üzerinde `enabled: false` bildirir. Zincir v3.2.0'dan itibaren bu bayrak her yolda uygulanır: zincir, hesap oluşturmayı, kimlik doğrulayıcı kaydını ve her iki yürütme hattını (`MsgExecuteEVM`, `MsgExecuteCosmos`) `abstract accounts are disabled on this chain` iletisiyle reddeder. Hiçbir işlem modülü açamaz ve ana ağa bugüne kadar hiçbir soyut hesap işlemi dahil edilmemiştir. Aşağıdaki her şey modülün arayüzlerini yalnızca başvuru amacıyla anlatır. Modül etkinleştirilene kadar canlı ağlarda bağlı anahtar veya devredilmiş harcama akışı oluşturmayın ve önce bayrağı kontrol edin.
+:::danger Ana ağda etkin değil; test ağında etkin
+Soyut hesap modülü, yazım sırasında **`qorechain-vladi` ana ağında kapalıdır** (27 Ekim 2026'da kontrol edildi): `qorechaind query abstractaccount config` (ve `GET /qorechain/abstractaccount/v1/config`) `enabled: false` bildirir. **`qorechain-diana` test ağında** bir yönetişim kararıyla (öneri 18, 27 Ekim 2026'da kabul edildi) açılmıştır ve `enabled: true` bildirir. Zincir v3.2.0'dan itibaren bu bayrak her yolda uygulanır: `false` olduğu yerde zincir, hesap oluşturmayı, kimlik doğrulayıcı kaydını ve her iki yürütme hattını (`MsgExecuteEVM`, `MsgExecuteCosmos`) `abstract accounts are disabled on this chain` iletisiyle reddeder. Hiçbir sıradan işlem modülü açamaz; ayar yalnızca bir yönetişim kararıyla değişir. Ana ağa bugüne kadar hiçbir soyut hesap işlemi dahil edilmemiştir. Aşağıdaki her şey modülün arayüzlerini anlatır; modülü test ağında deneyin ve orada etkinleştirilene kadar ana ağ için bağlı anahtar veya devredilmiş harcama akışı oluşturmayın. Her zaman önce bayrağı kontrol edin.
 :::
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve düğüm sürümü **v3.2.4**'ü çalıştıran (23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı, yönetişim önerisi 13) **`qorechain-vladi`** ana ağını kullanır. 19 Ekim 2026'dan beri v3.2.4 çalıştıran test ağı için `--chain-id qorechain-diana` ile değiştirin.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve düğüm sürümü **v3.2.4**'ü çalıştıran (23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı, yönetişim önerisi 13) **`qorechain-vladi`** ana ağını kullanır. v3.2.6 çalıştıran (v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` ile değiştirin.
 :::
 
 :::caution Her Cosmos hattı işlemi hibrit kuantum sonrası eş imza gerektirir
@@ -86,7 +86,7 @@ Harcama kuralları, soyut hesaplara finansal korumalar ekler:
 | ------------------ | ------------------------------------------------------ |
 | `daily_limit`      | UTC takvim günü başına maksimum toplam harcama          |
 | `per_tx_limit`     | Yetkilendirilmiş tek bir yürütme başına maksimum harcama |
-| `allowed_denoms`   | Harcanabilecek token birimlerini kısıtlar (bir ERC-20, `erc20/<contract>` olarak listelenir) |
+| `allowed_denoms`   | Harcanabilecek token birimlerini kısıtlar (bir ERC-20, `erc20/<EIP-55 0x address>` olarak listelenir; bu, harcama kuralının eğik çizgili kendi yazımıdır; zincir adresi EIP-55 biçiminde karşılaştırır, bu yüzden yazdığınız harf büyüklüğü farklı bir token oluşturmaz. Bu, kayıtlı bir token çiftinin bank birimi değildir; o `erc20:<EIP-55 0x address>` biçiminde iki nokta üst üste ile yazılır ve büyük/küçük harfe duyarlıdır, bkz. [EVM Geliştirme](/developer-guide/evm-development#fest-tokens)) |
 | `denom_limits`     | Ondalık dizeler olarak birim başına limitler (v3.2.2): `{"denom","per_tx_limit","daily_limit"}`; adlandırdıkları birimler için `per_tx_limit` ve `daily_limit` yerine geçerler, böylece 18 ondalıklı bir token sınırlandırılabilir |
 | `allowed_evm_calls` | Kurala bağlı bir anahtarın **çağrı verisiyle** yapabileceği EVM çağrıları (v3.2.2), `0x<target>` (o kontratın herhangi bir fonksiyonu) veya `0x<target>/0x<selector>` (yalnızca o fonksiyon) olarak. Bir girdi olmadan, kurala bağlı bir anahtar yalnızca değer gönderebilir, (`deploy` izniyle) dağıtım yapabilir ve `allowed_denoms` içinde listelenen ERC-20 token'larını taşıyabilir. Bir hedefi listelemek, ona yapılan çağrıların alıcılar dahil her argümanına güvenmek demektir |
 
@@ -100,11 +100,11 @@ qorechaind tx abstractaccount update-rules <account-address> \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
-Limitler temel birimle (`uqor`) belirtilir ve yetkilendirilmiş her yürütme için sayılır; günlük limit, UTC takvim günü başına toplamı sınırlar. Kurallar, saklanan kuralların tamamının yerine geçer; bu nedenle atladığınız bir alan kaldırılır. v3.2.2'den itibaren EVM hattı, yalnızca `msg.value` yerine bir çağrının gerçekte neyi hareket ettirdiğini ölçer (yerel değer, hesabın yerel bakiyesindeki azalma, harcanan bank coin'leri ve listelenen her ERC-20'nin bakiye veya izin (allowance) değişimi) ve kontrat oluşturma ayrı `deploy` iznini gerektirir. Daha zengin bir örnek:
+Limitler temel birimle (`uqor`) belirtilir ve yetkilendirilmiş her yürütme için sayılır; günlük limit, UTC takvim günü başına toplamı sınırlar. Kurallar, saklanan kuralların tamamının yerine geçer; bu nedenle atladığınız bir alan kaldırılır. v3.2.2'den itibaren EVM hattı, yalnızca `msg.value` yerine bir çağrının gerçekte neyi hareket ettirdiğini ölçer (yerel değer, hesabın yerel bakiyesindeki azalma, harcanan bank coin'leri ve listelenen her ERC-20'nin bakiye veya izin (allowance) değişimi) ve kontrat oluşturma ayrı `deploy` iznini gerektirir. Daha zengin bir örnek (gösterilen ERC-20, test ağındaki fUSD test tokenidir; kendi tokenınızın sözleşme adresini kullanın ve kuraldaki `erc20/<address>` içindeki eğik çizgi ile `erc20:<address>` bank biriminin iki nokta üst üstesini unutmayın):
 
 ```bash
 qorechaind tx abstractaccount update-rules <account-address> \
-  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0xTOKEN"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0xTOKEN","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
+  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0x97143B771D34ddb9130b807b135Ae675A5a963CA"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0x97143B771D34ddb9130b807b135Ae675A5a963CA","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
@@ -122,7 +122,7 @@ Zincir limiti şu sırayla belirler: kimlik doğrulayıcının kendi kuralı aya
 
 ## Bağlı Cüzdan Kimlik Doğrulayıcıları — Devredilmiş Harcama {#authenticators}
 
-Kimlik doğrulayıcı tasarımı **v3.1.85** zincir sürümünde tanıtıldı (v3.1.84 izin modeli üzerine inşa edilerek). Modül devre dışıyken **canlı ağlarda kullanılamaz** (bu sayfanın başındaki durum kutusuna bakın). **Bağlı bir harici cüzdan anahtarı** — bir Phantom (ed25519) anahtarı ya da bir MetaMask (secp256k1) hesabı — en az ayrıcalık, harcama limitli ve iptal edilebilir koşullar altında **kanonik kuantum sonrası hesaptan harcama yapabilir**. Harici anahtar hiçbir zaman bir ML-DSA imzası üretmez; bir **röle (relayer)** işlem zarfını gönderir ve ödemesini yapar (röle'nin kendi hibrit PQC imzası zincirin imzalama gereksinimlerini karşılar), kimlik doğrulayıcının **alan ayrımlı, tekrar oynatmaya karşı bağlanmış imza baytları** üzerindeki imzası ise yetkilendirmeyi oluşturur.
+Kimlik doğrulayıcı tasarımı **v3.1.85** zincir sürümünde tanıtıldı (v3.1.84 izin modeli üzerine inşa edilerek). Modül ana ağda devre dışıyken **ana ağda kullanılamaz**, modülün etkin olduğu test ağında ise kullanılabilir (bu sayfanın başındaki durum kutusuna bakın). **Bağlı bir harici cüzdan anahtarı** — bir Phantom (ed25519) anahtarı ya da bir MetaMask (secp256k1) hesabı — en az ayrıcalık, harcama limitli ve iptal edilebilir koşullar altında **kanonik kuantum sonrası hesaptan harcama yapabilir**. Harici anahtar hiçbir zaman bir ML-DSA imzası üretmez; bir **röle (relayer)** işlem zarfını gönderir ve ödemesini yapar (röle'nin kendi hibrit PQC imzası zincirin imzalama gereksinimlerini karşılar), kimlik doğrulayıcının **alan ayrımlı, tekrar oynatmaya karşı bağlanmış imza baytları** üzerindeki imzası ise yetkilendirmeyi oluşturur.
 
 ### Kimlik doğrulayıcı kaydetme {#register-authenticator}
 
@@ -243,7 +243,7 @@ Uygulama hataları, cüzdanların doğru mesajı gösterebilmesi için ayrı kod
 | --- | --- | --- |
 | `5` | Harcama limiti aşıldı (işlem başına veya günlük) | Kalan izni gösterin |
 | `6` | Kimlik doğrulayıcının süresi doldu | "Süresi doldu — cüzdanınızı yeniden bağlayın" |
-| `9` | Modül devre dışı (her iki ağdaki canlı durum) | "Bağlı cüzdanlar henüz kullanılabilir değil" |
+| `9` | Modül devre dışı (ana ağdaki canlı durum) | "Bağlı cüzdanlar henüz kullanılabilir değil" |
 | `10` | İzin reddedildi (kapsam veya devredilemeyen mesaj) | Eksik izni gösterin |
 | `11` | Tekrar oynatma reddedildi (eski nonce/sıra numarası) | Nonce'u yeniden sorgulayın ve yeniden imzalayın |
 
@@ -254,7 +254,7 @@ Uygulama hataları, cüzdanların doğru mesajı gösterebilmesi için ayrı kod
 Modülün okuma sorguları REST üzerinden sunulur (**v3.1.85**'ten itibaren):
 
 ```
-GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on both networks today
+GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on mainnet today; enabled: true on the testnet
 GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
@@ -275,7 +275,7 @@ qorechaind query abstractaccount account <address>
 qorechaind query abstractaccount accounts --page-limit 10
 ```
 
-Ana ağda hesap listesi boştur; test ağı, etkin bayrağı her yolda uygulanmadan önce oluşturulmuş birkaç hesabı listeler.
+Ana ağda hesap listesi boştur. Test ağı birkaç hesap listeler (27 Ekim 2026'da dört), bazıları etkin bayrağı her yolda uygulanmadan önce oluşturulmuştur.
 
 ### JSON-RPC
 

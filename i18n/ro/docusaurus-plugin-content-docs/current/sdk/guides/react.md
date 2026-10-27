@@ -16,13 +16,13 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
 `react` (>=18) este o dependență peer; `@qorechain/sdk` este o dependență directă
-(`^0.9.0` începând cu kit-ul 0.9.0; pe o versiune 0.x, caret-ul rămâne în interiorul
-lui 0.9, deci un patch al SDK-ului nu instalează o a doua copie). Folosește
-`@qorechain/react` **0.9.0**: 0.8.0 fixează SDK 0.8.0, care semnează forma hibridă
+(`^0.10.0` începând cu kit-ul 0.10.0; pe o versiune 0.x, caret-ul rămâne în interiorul
+lui 0.10, deci un patch al SDK-ului nu instalează o a doua copie). Folosește
+`@qorechain/react` **0.10.0** (0.9.0 funcționează la fel): 0.8.0 fixează SDK 0.8.0, care semnează forma hibridă
 greșită pe mainnet, iar versiunile 0.8.x anterioare pot afișa un sold sau o stare
 învechită după o schimbare de adresă.
 
-:::caution Limitele kit-ului React pe rețelele live (0.9.0)
+:::caution Limitele kit-ului React pe rețelele live (0.9.0 și 0.10.0)
 `useTx` se conectează cu semnatarul portofelului și fără o pereche de chei
 post-cuantice, deci trimite doar cu semnătura clasică, pe care rețelele live o resping
 (calea Native cere extensia hibridă ML-DSA-87): `send` / `sendTokens` nu pot înscrie o

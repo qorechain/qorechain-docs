@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain, QoreChain EVM Motoru üzerinde tam EVM uyumlu bir yürütme ortamı çalıştırır ve bu sayede tanıdık araçları kullanarak Solidity akıllı sözleşmelerini dağıtmanıza ve onlarla etkileşime geçmenize olanak tanır. EVM modülü, standart Ethereum geliştirme iş akışlarını destekleyen bir JSON-RPC arayüzünü **8545 portunda** (WebSocket için **8546** portunda) sunar.
 
 :::note
-Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve **v3.2.4** düğüm sürümünü çalıştıran (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı; v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı) **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı 8.337.253 yüksekliğinden (19 Ekim 2026) beri v3.2.4 çalıştırır; orada EVM zincir kimliği **9800**'ü kullanın. Kod örnekleri, kendi çalıştırdığınız bir düğüm için `http://localhost:8545` adresini kullanır; herkese açık ana ağ uç noktası `https://evm.qore.host`, test ağı uç noktası ise `https://evm-testnet.qore.host` adresidir.
+Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve **v3.2.4** düğüm sürümünü çalıştıran (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı; v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı; ana ağ yönetişim önerisi 14 v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır ve bu sürümün neyi değiştirdiği, uygulandıktan sonra belgelenecektir) **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı **v3.2.6** çalıştırır (v3.2.4: 19 Ekim 2026'da 8.337.253 yüksekliğinden beri, v3.2.5: 26 Ekim'de 8.890.800 yüksekliğinde, v3.2.6: 27 Ekim'de 8.970.638 yüksekliğinde); orada EVM zincir kimliği **9800**'ü kullanın. Bu sayfa ağlar arasında farklılık gösteren bir şeyi (testnet precompile'ları, Fest test token'ları) anlattığında bunu belirtir. Kod örnekleri, kendi çalıştırdığınız bir düğüm için `http://localhost:8545` adresini kullanır; herkese açık ana ağ uç noktası `https://evm.qore.host`, test ağı uç noktası ise `https://evm-testnet.qore.host` adresidir.
 :::
 
 :::caution Bir EVM işlemi, kayıtlı bir PQC anahtarı ve açık bir yetkilendirme penceresi gerektirir
@@ -160,7 +160,7 @@ Bu dönüşüm şeffaftır — `eth_getBalance` ile bir bakiyeyi kontrol ettiği
 
 ---
 
-## ERC-20 Token Çiftleri
+## ERC-20 Token Çiftleri {#erc20-token-pairs}
 
 `x/erc20` modülü, yerel Cosmos SDK birimleri ile ERC-20 sözleşmeleri arasında **token çiftleri** sağlar:
 
@@ -179,7 +179,86 @@ qorechaind tx erc20 convert-coin 1000000uqor --from mykey --gas 400000 --fees 40
 qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey --gas 400000 --fees 40000uqor
 ```
 
-Bunlar Cosmos şeridi işlemleridir: canlı ağlarda ayrıca hibrit kuantum-sonrası ortak imza (cosign) da gerekir (`--generate-only` ile oluşturun, ardından `qorechaind tx pqc cosign` çalıştırın; bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)). Token çiftleri izinli bir politika altında kaydedilir ve ana ağda henüz hiçbiri yoktur.
+Bunlar Cosmos şeridi işlemleridir: canlı ağlarda ayrıca hibrit kuantum-sonrası ortak imza (cosign) da gerekir (`--generate-only` ile oluşturun, ardından `qorechaind tx pqc cosign` çalıştırın; bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)). Yukarıdaki düz `convert-erc20` komutu, CLI göndericiyi `0x` olarak yazdığı için v3.2.6 düğüm sürümünde reddedilir; çalışan biçim için bkz. [İki biçim arasında dönüştürme](#fest-convert). Token çiftleri izinli bir politika altında kaydedilir (bunları yönetişim kaydeder). Yazım sırasında ana ağda hiçbiri yoktur; testnet'te [bir sonraki bölümdeki](#fest-tokens) Fest test token'ları vardır.
+
+## Fest test token'ları ve ERC20 dönüştürme {#fest-tokens}
+
+:::note Yalnızca testnet, değeri yok
+Bu bölümdeki token'lar yalnızca `qorechain-diana` testnet'inde (EVM zincir kimliği 9800) vardır. Bunlar geliştiriciler için test token'larıdır ve hiçbir değeri yoktur. Mainnet'te hiçbir ERC-20 token çifti yoktur (27 Ekim 2026'da kontrol edildi), dolayısıyla aşağıdaki birimlerin hiçbiri orada bulunmaz.
+:::
+
+27 Ekim 2026'da testnet yönetişimi (öneri 26) üç ERC-20 sözleşmesini token çifti olarak kaydetti. Bunlar, geliştiricilere bir [AMM havuzunda](/api-reference/rest-grpc-endpoints#amm-module) QOR ile eşleştirebilecekleri ikinci bir token verir:
+
+| Token | ERC-20 sözleşmesi (EIP-55) | Ondalık | Bank birimi |
+| ----- | ------------------------ | -------- | ---------- |
+| fUSD (FestUSD) | `0x97143B771D34ddb9130b807b135Ae675A5a963CA` | 6  | `erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA` |
+| fETH (FestETH) | `0x02292293c13880a26242690eb70a0e42B8E91c28` | 18 | `erc20:0x02292293c13880a26242690eb70a0e42B8E91c28` |
+| fBTC (FestBTC) | `0x4604e7E45b2ecdbfbDc157103f5B2b62cb16451A` | 8  | `erc20:0x4604e7E45b2ecdbfbDc157103f5B2b62cb16451A` |
+
+* **Bank birimi, iki nokta üst üste ile `erc20:<address>` biçimindedir ve adres, gösterilen tam EIP-55 karışık harf yazımında olmalıdır.** Birimler büyük/küçük harf duyarlıdır: `erc20:0x97143b771d34...` (küçük harf) farklı bir dizedir ve bunun için yapılan sorgu `404` yanıtı verir. Birimi, üç token'ı `symbol` (`fUSD`, `fETH`, `fBTC`), `display` adı (`FestUSD`, `FestETH`, `FestBTC`) ve ondalıklarıyla listeleyen `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` yanıtından kopyalayın.
+* **Musluk bank coin'leri öder.** Bir Fest token'ını EVM'den (MetaMask, Solidity) kullanmak için önce bank coin'ini `MsgConvertCoin` ile ERC-20 biçimine dönüştürün; bir ERC-20 bakiyesini bank biçimine geri koymak için (örneğin AMM'de eşleştirmek üzere) `MsgConvertERC20` kullanın. İkisi de aşağıda anlatılmıştır.
+* **Token'lar iki biçimde bulunur.** Bir ERC-20 bakiyesi, EVM JSON-RPC üzerinden sözleşmenin `balanceOf` fonksiyonuyla okunur; dönüştürülmüş bakiye ise `GET /cosmos/bank/v1beta1/balances/{address}` ile okunan bir bank coin'idir. AMM'de yalnızca bank coin biçimi eşleştirilebilir. Dönüştürme değeri iki biçim arasında taşır; yaratmaz.
+* **Tutarlar token'ın kendi ondalıklarını kullanır** (fUSD, fETH ve fBTC için sırasıyla 6, 18 ve 8), `uqor`'un 6 ondalığını değil.
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs
+curl -s "https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs/0x97143B771D34ddb9130b807b135Ae675A5a963CA"
+```
+
+### İki biçim arasında dönüştürme {#fest-convert}
+
+Her iki dönüştürme mesajı da Cosmos şeridi işlemleridir: kayıtlı kuantum-sonrası anahtarınızı ve hibrit ortak imzayı (cosign) her diğer yerel işlem gibi gerektirirler (oluşturun, ardından `qorechaind tx pqc cosign`; bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)). Ücretler en az gas × 0,1 uqor olmalıdır.
+
+:::note Nelerin çalıştırıldığı
+Bu sayfadaki REST okumaları (`token_pairs`, `denoms_metadata`) 27 Ekim 2026'da testnet'e karşı çalıştırıldı. Aşağıdaki iki dönüştürme komutu bu sayfa için uçtan uca **çalıştırılmadı**: mesaj biçimleri ve gönderici kuralı, v3.2.6 düğüm kaynağından ve zincir ekibinin başvuru belgesinden gelir. Bunları belgelenmiş biçim olarak değerlendirin ve önce küçük bir tutarla doğrulayın.
+:::
+
+**Bank coin'inden ERC-20'ye: `MsgConvertCoin`.** `coin`, tam ve büyük/küçük harf duyarlı bank birimidir (`erc20:<EIP-55 address>`), `sender` sizin `qor1...` adresinizdir (imzalayan), `receiver` ise ERC-20'yi tutacak `0x...` adresidir. Yaklaşık 432.000 gas kullanır; 600.000 gas sınırı belirleyin.
+
+```bash
+# Write the message by hand (not run for this page)
+cat > convert-coin.json <<'JSON'
+{
+  "body": {
+    "messages": [{
+      "@type": "/cosmos.evm.erc20.v1.MsgConvertCoin",
+      "coin": { "denom": "erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA", "amount": "1000000" },
+      "receiver": "0xYOUR_EVM_ADDRESS",
+      "sender": "qor1youraddr..."
+    }],
+    "memo": ""
+  },
+  "auth_info": { "signer_infos": [], "fee": { "amount": [{ "denom": "uqor", "amount": "60000" }], "gas_limit": "600000" } },
+  "signatures": []
+}
+JSON
+qorechaind tx pqc cosign convert-coin.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**ERC-20'den bank coin'ine: `MsgConvertERC20`.** Bunun `sender` alanı da hesabın `qor1...` bech32 adresi olmalıdır. Bir `0x` göndericisi `decoding bech32 failed` ile reddedilir. v3.2.6 düğüm sürümünde `qorechaind tx erc20 convert-erc20` CLI komutu ([ERC-20 Token Çiftleri](#erc20-token-pairs) bölümündeki düz örnek) göndericiyi `0x` biçiminde yazar ve bu nedenle reddedilir: onu kullanmayın. Mesajı, yukarıdakiyle aynı şekilde, göndericisi `qor1` adresi olacak biçimde kendiniz oluşturun:
+
+```bash
+# Workaround: write the message with a qor1 sender (not run for this page)
+cat > convert-erc20.json <<'JSON'
+{
+  "body": {
+    "messages": [{
+      "@type": "/cosmos.evm.erc20.v1.MsgConvertERC20",
+      "contract_address": "0x97143B771D34ddb9130b807b135Ae675A5a963CA",
+      "amount": "1000000",
+      "receiver": "qor1youraddr...",
+      "sender": "qor1youraddr..."
+    }],
+    "memo": ""
+  },
+  "auth_info": { "signer_infos": [], "fee": { "amount": [{ "denom": "uqor", "amount": "60000" }], "gas_limit": "600000" } },
+  "signatures": []
+}
+JSON
+qorechaind tx pqc cosign convert-erc20.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+Burada `receiver`, bank coin'ini alan `qor1...` hesabıdır (modül, bank coin'ine dönüştürmenin alıcısı için bech32 biçimini kabul eder). Tutar, token'ın kendi taban birimlerindedir (6, 18 veya 8 ondalık). `MsgConvertCoin` için birimi yalnızca `denoms_metadata` yanıtından kopyalayın; küçük harfli biçim `token pair not found` ile reddedilir.
 
 ---
 
@@ -189,7 +268,7 @@ EVM işlemleri **klasik ECDSA (secp256k1)** ile imzalanır; bu nedenle MetaMask,
 
 Sözleşmeler içinde kuantum-sonrası güvenlik için:
 
-* **PQC Verify precompile'ı** (`0x0000...0A01`), etkinleştirildiğinde Solidity'den zincir üzerinde ML-DSA-87 imzalarını doğrulayacaktır; ana ağda veya test ağında **henüz etkin değildir**. Bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+* **PQC Verify precompile'ı** (`0x0000...0A01`), Solidity'den zincir üzerinde ML-DSA-87 imzalarını doğrular. **Test ağında etkindir** (27 Ekim 2026'da kabul edilen yönetişim önerisi 21 ile etkinleştirildi) ve yazım sırasında ana ağda **etkin değildir**. Bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 * EVM'den QoreChain Native veya SVM'ye giden **VM'ler arası mesajlar** Cosmos şeridi işlemleridir ve diğerleri gibi hibrit imza taşır; mevcut kullanılabilirlikleri için bkz. [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability).
 
 ---
@@ -204,7 +283,7 @@ Kuantum-sonrası bir imza, bir Ethereum işlemiyle *birlikte* gidemez (MetaMask 
 | `max-txs`   | 1 – 1.000          | Kaç EVM işlemini kabul edeceği |
 | `max-value` | 0'ın üzerinde, `uqor` cinsinden | Kabul ettiği toplam çıkış: aktarılan değer **artı** her işlemin ödeyebileceği azami ücret (gas limiti × gas başına azami ücret), `uqor`'a çevrilip yukarı yuvarlanır |
 
-Hangi sınır önce tükenirse pencereyi o kapatır. Üç sınır da zorunludur; bir pencere açmak mevcut pencerenin yerini alır; kabul edilip sonra başarısız olan bir işlem yine de yuvasını ve değer bütçesini kullanır; sözleşme dağıtımları diğer işlemler gibi sayılır. `blocks` bir süre değil, blok sayısıdır: 17.280 blok ana ağda yaklaşık 15 saat (blok başına yaklaşık 3,2 sn), test ağında ise yaklaşık 5 saattir (blok başına yaklaşık 1,0 sn).
+Hangi sınır önce tükenirse pencereyi o kapatır. Üç sınır da zorunludur; bir pencere açmak mevcut pencerenin yerini alır; kabul edilip sonra başarısız olan bir işlem yine de yuvasını ve değer bütçesini kullanır; sözleşme dağıtımları diğer işlemler gibi sayılır. `blocks` bir süre değil, blok sayısıdır: 17.280 blok ana ağda yaklaşık 15 saat (blok başına yaklaşık 3,2 sn), test ağında ise yaklaşık 6 saattir (27 Ekim 2026'da blok başına yaklaşık 1,3 sn; test ağı blok süresi değişir).
 
 **Değer sınırı yalnızca yerel QOR'u sayar.** Bir token transferi, bir onay (approval) veya başka herhangi bir sözleşme çağrısı sıfır değer taşır; bu nedenle `max-value` karşısında sayılmaz (yalnızca azami ücreti sayılır). Bunları da sınırlamak için pencerenin **kapsamını (scope)** daraltın (ana ağ v3.2.3 ve sonrası):
 
@@ -283,6 +362,6 @@ curl -X POST http://localhost:8545 \
 
 ## Sonraki Adımlar
 
-* [EVM Precompile'ları](/developer-guide/evm-precompiles) — Ayrılmış precompile arayüzleri için başvuru (herkese açık ağlarda henüz etkin değil)
+* [EVM Precompile'ları](/developer-guide/evm-precompiles) — QoreChain precompile arayüzleri için başvuru (testnet'te üçü etkin, mainnet'te hiçbiri etkin değil)
 * [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — VM'ler arası çağrılar ve mevcut kullanılabilirlikleri
-* [Hesap Soyutlaması](/developer-guide/account-abstraction) — Bağlı cüzdan doğrulayıcıları ve harcama kuralları (modül şu anda devre dışı)
+* [Hesap Soyutlaması](/developer-guide/account-abstraction) — Bağlı cüzdan doğrulayıcıları ve harcama kuralları (testnet'te etkin, mainnet'te devre dışı)

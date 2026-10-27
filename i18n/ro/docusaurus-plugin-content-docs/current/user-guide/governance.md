@@ -10,7 +10,7 @@ sidebar_position: 3
 Acest ghid descrie cum funcționează guvernanța on-chain pe QoreChain: cum sunt numărate voturile, cum să trimiți propuneri și cum să votezi.
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.4** din 23 octombrie 2026; testnet-ul rulează **v3.2.4** din 19 octombrie 2026 — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.4** din 23 octombrie 2026; testnet-ul rulează **v3.2.6** (din 27 octombrie 2026) — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
 :::
 
 :::caution Semnează cu `tx pqc cosign`
@@ -29,7 +29,7 @@ Propunerile sunt numărate pe baza **stake-ului bonded**: fiecare QOR pe care l-
 | Prag      | 50%             | Partea de „yes" dintre voturile care nu se abțin, necesară pentru a trece   |
 | Veto      | 33.4%           | Dacă „no with veto" atinge această pondere, propunerea este respinsă și depozitul ei este ars |
 
-Aceste valori au fost citite de pe mainnet la 23 octombrie 2026 (și sunt aceleași pe testnet); confirmă-le cu `qorechaind query gov params`, deoarece guvernanța le poate modifica.
+Aceste valori au fost citite de pe mainnet la 27 octombrie 2026. Testnet-ul are aceleași depozite, cvorum și praguri, dar perioade de vot mult mai scurte (vot 4 ore, vot accelerat 1 oră); confirmă-le cu `qorechaind query gov params`, deoarece guvernanța le poate modifica.
 
 :::note QDRW este proiectat, dar nu este activ
 Designul QoreChain include o formulă de putere de vot **Quadratic Delegation-Reputation Weighted (QDRW)**, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, care ar atenua stake-urile mari și ar pondera reputația. Este implementată în modulul `x/qca`, dar este **dezactivată** pe ambele rețele (`qdrw_enabled` este `false` în `qorechaind query qca config`) și nu face parte din numărătoarea de guvernanță, deci nu afectează niciun vot în prezent. xQORE nu este nici el activ (vezi [Staking xQORE](/user-guide/xqore-staking)).
@@ -161,7 +161,7 @@ qorechaind query gov params
 
 Parametrii cheie includ:
 
-| Parametru            | Descriere                                                        | Valoare curentă (20 oct. 2026) |
+| Parametru            | Descriere                                                        | Valoare mainnet (27 oct. 2026) |
 | -------------------- | ---------------------------------------------------------------- | ------------------------------ |
 | `min_deposit`        | Depozitul minim necesar pentru ca o propunere să intre la vot    | 10 QOR (`10000000uqor`)        |
 | `max_deposit_period` | Fereastra de timp pentru atingerea depozitului minim             | 2 zile                         |
@@ -175,7 +175,7 @@ Parametrii cheie includ:
 
 ## Guvernanța pe mainnet până acum {#mainnet-history}
 
-Guvernanța mainnet-ului a fost folosită pentru modificări de parametri, decizii privind circuit breaker-ul, upgrade-uri coordonate și, din octombrie 2026, pentru eliberarea unor sume pe care lanțul le-a înregistrat la upgrade-ul v3.2.0. Propunerile 7 până la 13 au trecut pe mainnet în octombrie 2026, inclusiv propunerea 12 (o eliberare ulterioară, aprobată la 21 octombrie) și propunerea 13 (upgrade-ul v3.2.4, aplicat la înălțimea 3,742,566 pe 23 octombrie); lista și rezultatele se află în [Istoric versiuni](/appendix/version-history#governance-timeline), iar fiecare propunere poate fi citită live la `GET /cosmos/gov/v1/proposals`.
+Guvernanța mainnet-ului a fost folosită pentru modificări de parametri, decizii privind circuit breaker-ul, upgrade-uri coordonate și, din octombrie 2026, pentru eliberarea unor sume pe care lanțul le-a înregistrat la upgrade-ul v3.2.0. Propunerile 7 până la 13 au trecut pe mainnet în octombrie 2026, inclusiv propunerea 12 (o eliberare ulterioară, aprobată la 21 octombrie) și propunerea 13 (upgrade-ul v3.2.4, aplicat la înălțimea 3,742,566 pe 23 octombrie); propunerea 14 (un upgrade coordonat la v3.2.5 la înălțimea 3,906,833) se afla în perioada de vot la momentul redactării; lista și rezultatele se află în [Istoric versiuni](/appendix/version-history#governance-timeline), iar fiecare propunere poate fi citită live la `GET /cosmos/gov/v1/proposals`.
 
 ---
 

@@ -10,7 +10,7 @@ sidebar_position: 5
 Diese Anleitung führt durch das Senden von QOR-Token, das Abfragen von Transaktionen und die Interaktion mit QoreChain über seine nativen, EVM- und SVM-Schnittstellen.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 aktiv und läuft seit dem 23. Oktober 2026 auf Release v3.2.4 (das Testnet läuft seit dem 19. Oktober 2026 auf v3.2.4) — ersetzen Sie beim Durchführen von Transaktionen auf dem Mainnet die Chain-ID und die Endpunkte durch die des Mainnets von der Seite **Verbindung zum Mainnet**.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 aktiv und läuft seit dem 23. Oktober 2026 auf Release v3.2.4 (das Testnet läuft seit dem 27. Oktober 2026 auf v3.2.6) — ersetzen Sie beim Durchführen von Transaktionen auf dem Mainnet die Chain-ID und die Endpunkte durch die des Mainnets von der Seite **Verbindung zum Mainnet**.
 :::
 
 ## Ihr Guthaben prüfen
@@ -139,7 +139,7 @@ Alles andere am EVM-Pfad bleibt unverändert: Sie signieren weiterhin mit MetaMa
 | `max-txs` | Wie viele EVM-Transaktionen es zulässt | 1 – 1.000 |
 | `max-value` | Gesamter Abfluss, den es zulässt, in uqor: übertragener Wert **plus** die maximale Gebühr, die jede Transaktion zahlen könnte (Gas-Limit × Gebührenobergrenze), aufgerundet | größer als 0 |
 
-* 17.280 Blöcke entsprechen etwa 15 Stunden im Mainnet (etwa 3,2 s pro Block) und etwa 5 Stunden im Testnet (etwa 1,0 s pro Block).
+* 17.280 Blöcke entsprechen etwa 15 Stunden im Mainnet (etwa 3,2 s pro Block) und etwa 6 Stunden im Testnet (etwa 1,3 s pro Block).
 * Eine Transaktion, die zugelassen wird und dann fehlschlägt, verbraucht dennoch ihren Platz und ihr Wertbudget.
 * Das Öffnen eines neuen Fensters **ersetzt** das vorherige; der Verbrauch beginnt wieder bei null.
 * Die CLI akzeptiert `max-value` in `uqor` oder `qor` (`1000qor` = 1.000.000.000 uqor).

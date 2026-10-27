@@ -109,7 +109,7 @@ contului trebuie să fie **înregistrată mai întâi on-chain**. Înregistrarea
 explicită: nu există înregistrare automată la prima tranzacție. O tranzacție
 semnată doar clasic este refuzată de rețelele live, așa că dați clientului de
 tranzacții perechea de chei ML-DSA-87 a contului și acesta semnează hibrid fiecare
-tranzacție. Cei doi pași de mai jos necesită **SDK 0.9.0 sau mai nou** și un cont
+tranzacție. Cei doi pași de mai jos necesită **SDK 0.9.0 sau mai nou** (0.10.0 este cea curentă) și un cont
 alimentat cu fonduri:
 
 ```bash

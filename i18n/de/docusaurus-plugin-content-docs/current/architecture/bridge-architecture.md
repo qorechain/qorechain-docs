@@ -10,7 +10,7 @@ sidebar_position: 7
 Das `x/bridge`-Modul ist darauf ausgelegt, QoreChain über **37 Chain-Konfigurationen (36 externe Chains plus Injective, das über IBC angebunden wird) und bis zu 8 IBC-(Inter-Blockchain Communication-)Gegenparteien** mit dem breiteren Blockchain-Ökosystem zu verbinden. Jede Bridge-Operation ist darauf ausgelegt, durch Post-Quanten-Kryptografie abgesichert zu sein.
 
 :::caution Auf keinem der beiden Netzwerke live
-Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge-Route ist aktiv**: Alle 37 Chain-Konfigurationen haben den Status `pending`, es ist kein Bridge-Contract gesetzt, es sind keine Bridge-Validatoren registriert, es wurde noch nie eine Bridge-Operation erstellt, und es existieren weder IBC-Kanäle noch IBC-Clients. Alles Folgende beschreibt das beabsichtigte Design. Senden Sie keine Assets in der Erwartung, dass sie gebridged werden.
+Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge-Route ist aktiv**: Alle 37 Chain-Konfigurationen haben den Status `pending`, es ist kein Bridge-Contract gesetzt, es sind keine Bridge-Validatoren registriert, es wurde noch nie eine Bridge-Operation erstellt, und im Mainnet existiert kein IBC-Kanal (das Testnet hat einen einzigen ICS-20-Testkanal zu einer Chain mit der ID `provider`, keinen zu den unten genannten Gegenparteien). Alles Folgende beschreibt das beabsichtigte Design. Senden Sie keine Assets in der Erwartung, dass sie gebridged werden.
 :::
 
 ## Aktueller Status {#current-status}
@@ -21,9 +21,9 @@ Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge
 | Chain-Konfigurationen | 37, alle `pending` | 37, alle `pending` |
 | Registrierte Bridge-Validatoren | 0 | 0 |
 | Bridge-Operationen | 0 | 0 |
-| IBC-Kanäle / -Clients | 0 / 0 | 0 / 0 |
+| IBC-Kanäle / -Clients | 0 / 0 | 1 / 1 (ein Testkanal zum Cosmos-Hub-Testnet) |
 
-(Geprüft am 23. Oktober 2026 gegen Mainnet und Testnet, beide v3.2.4. Die Live-Werte lesen Sie mit `qorechaind query bridge chains` und `qorechaind query bridge validators` oder über REST unter `/qorechain/bridge/v1/chains` und `/qorechain/bridge/v1/validators`.) Die Modulkonfiguration ist auf beiden Netzwerken gleich: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 und `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Der IBC-Stack, den das Modul verwenden würde, ist ibc-go v10.7 (seit v3.2.2), es wurde jedoch noch kein Client und kein Kanal erstellt.
+(Geprüft am 27. Oktober 2026 gegen Mainnet (v3.2.4) und Testnet (v3.2.6). Die Live-Werte lesen Sie mit `qorechaind query bridge chains` und `qorechaind query bridge validators` oder über REST unter `/qorechain/bridge/v1/chains` und `/qorechain/bridge/v1/validators`.) Die Modulkonfiguration ist auf beiden Netzwerken gleich: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 und `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Der IBC-Stack, den das Modul verwenden würde, ist ibc-go v10.7 (seit v3.2.2), im Mainnet wurde jedoch noch kein Client und kein Kanal erstellt (das Testnet hat einen Test-Client und einen Test-Kanal, siehe oben).
 
 ## Verbindungsübersicht
 
@@ -38,7 +38,7 @@ Die **37 Chain-Konfigurationen** sind die unten aufgeführten **36 externen Chai
 
 ## IBC-Kanäle
 
-QoreChain ist darauf ausgelegt, IBC-Verbindungen zu den folgenden 8 Chains zu unterhalten, weitergeleitet über Hermes v1.x. **Auf keinem der beiden Netzwerke existiert bislang ein IBC-Kanal oder -Client**, daher listet diese Tabelle nur geplante Gegenparteien auf:
+QoreChain ist darauf ausgelegt, IBC-Verbindungen zu den folgenden 8 Chains zu unterhalten, weitergeleitet über Hermes v1.x. **Keine dieser Gegenparteien ist bislang verbunden** (das Mainnet hat keinen IBC-Kanal und keinen IBC-Client; das Testnet hat einen einzigen ICS-20-Testkanal zu einer Chain mit der ID `provider`, geprüft am 27. Oktober 2026), daher listet diese Tabelle nur geplante Gegenparteien auf:
 
 | Chain      | Beschreibung                    |
 | ---------- | ------------------------------- |

@@ -10,7 +10,7 @@ sidebar_position: 4
 Únete a la red de pruebas activa QoreChain Diana configurando tu nodo con el archivo génesis, los pares y la configuración de red correctos.
 
 :::note
-Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión **v3.2.4** desde el 23 de octubre de 2026) y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes. La red de pruebas ejecuta la versión **v3.2.4** desde el 19 de octubre de 2026; su manifiesto de versión está en [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión **v3.2.4** desde el 23 de octubre de 2026) y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes. La red de pruebas ejecuta la versión **v3.2.6** (aplicada el 27 de octubre de 2026); su manifiesto de versión está en [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Endpoints públicos
@@ -26,7 +26,7 @@ Si solo necesitas **consultar la red de pruebas o difundir transacciones**, util
 | JSON-RPC de SVM (solo lectura) | `https://svm-testnet.qore.host` |
 | Explorador de bloques | [explore.qore.network](https://explore.qore.network) (cambia a Testnet) |
 
-El QOR de la red de pruebas está disponible en el [faucet del panel de control](/dashboard/faucet).
+El QOR de la red de pruebas está disponible en el [faucet del panel de control](/dashboard/faucet), que también puede enviar los [tokens de prueba Fest](/dashboard/faucet#fest-tokens) exclusivos de la red de pruebas (fUSD, fETH, fBTC; sin valor).
 
 ---
 
@@ -52,7 +52,17 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-La red de pruebas recibe actualizaciones coordinadas mediante propuestas de gobernanza, por lo que su manifiesto incluye un `upgradeHeight` (v3.2.4 se aplicó en la altura 8,337,253 el 19 de octubre de 2026; antes, v3.2.3 en la 8,003,746 y v3.2.2 en la 6,905,034) y `minCompatible` es igual a la versión actual (3.2.4). Un nodo que se une ahora necesita la versión indicada en el manifiesto. Mantén el reloj del sistema sincronizado por NTP. La red principal aplicó v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026, pero su manifiesto es independiente, así que nunca copies un binario de una red a la otra.
+La red de pruebas recibe actualizaciones coordinadas mediante propuestas de gobernanza, por lo que su manifiesto incluye un `upgradeHeight` y `minCompatible` es igual a la versión actual. Un nodo que se une ahora necesita la versión indicada en el manifiesto. En el momento de escribir esto (27 de octubre de 2026) el manifiesto de la red de pruebas indica `version` 3.2.6, `minCompatible` 3.2.6 y `upgradeHeight` 8970638, y su nota dice "IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens". Mantén el reloj del sistema sincronizado por NTP.
+
+| Versión | Altura en la red de pruebas | Fecha de aplicación |
+| --- | --- | --- |
+| v3.2.2 | 6,905,034 | 2 de octubre de 2026 |
+| v3.2.3 | 8,003,746 | 15 de octubre de 2026 |
+| v3.2.4 | 8,337,253 | 19 de octubre de 2026 |
+| v3.2.5 | 8,890,800 | 26 de octubre de 2026 |
+| v3.2.6 | 8,970,638 | 27 de octubre de 2026 (16:58 UTC) |
+
+La red de pruebas recibe cada versión antes que la red principal. La red principal aplicó v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026; la propuesta de gobernanza 14 de la red principal aplicaría v3.2.5 en la altura 3,906,833 y estaba en su período de votación en el momento de escribir esto. Los manifiestos son independientes, así que nunca copies un binario de una red a la otra, y no esperes que la red principal acepte una función exclusiva de la red de pruebas (las novedades de v3.2.6 se enumeran en el [Historial de versiones](/appendix/version-history#testnet-v326)).
 
 ---
 
@@ -106,7 +116,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### Ajustes recomendados
 
-Un nodo completo no elige el tiempo de bloque — lo eligen los validadores (la red de pruebas produce actualmente un bloque aproximadamente cada 1 segundo). Deja los timeouts de consenso en sus valores predeterminados, a menos que operes un validador y el grupo de validadores te haya dado valores. Un ajuste útil de mempool para un nodo RPC público, en `config.toml`:
+Un nodo completo no elige el tiempo de bloque — lo eligen los validadores (la red de pruebas produce actualmente un bloque aproximadamente cada 1,3 segundos). Deja los timeouts de consenso en sus valores predeterminados, a menos que operes un validador y el grupo de validadores te haya dado valores. Un ajuste útil de mempool para un nodo RPC público, en `config.toml`:
 
 ```toml
 [mempool]

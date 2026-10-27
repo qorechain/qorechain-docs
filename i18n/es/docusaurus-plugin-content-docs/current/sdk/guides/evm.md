@@ -255,10 +255,14 @@ QoreChain define precompilados invocables por contrato en direcciones fijas. El
 espacio de nombres `precompiles` proporciona enlaces tipados, y las direcciones y los ABI están
 exportados.
 
-> **Aún no están activos.** Los precompilados de QoreChain están compilados en el nodo
-> pero todavía no activados en mainnet (`qorechain-vladi`) ni en testnet
-> (`qorechain-diana`): una llamada devuelve datos vacíos, por lo que estas utilidades
-> lanzan error hoy también en las redes públicas. Consulta
+> **No están activos en mainnet; tres en la testnet.** Los precompilados de QoreChain
+> están compilados en el nodo, pero ninguno está activado en mainnet (`qorechain-vladi`).
+> En la testnet (`qorechain-diana`), la lista `active_static_precompiles` contiene
+> `0x…0A01` (verificación PQC), `0x…0A02` (estado de clave PQC) y `0x…0C01` (parámetros
+> de consenso), comprobado el 27 de octubre de 2026; el par de IA (`0x…0B01`, `0x…0B02`)
+> y el puente entre VM (`0x…0901`) no están activos en ninguna de las dos redes. Una
+> llamada a una dirección inactiva devuelve datos vacíos, por lo que esas utilidades
+> lanzan error. Consulta
 > [Precompilados EVM: estado de la red](/developer-guide/evm-precompiles#network-status).
 
 | Precompilado | Función | Dirección |
@@ -273,7 +277,7 @@ exportados.
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read consensus parameters (once 0x…0C01 is active).
+// Read consensus parameters (0x…0C01 is active on the testnet, not on mainnet).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
@@ -292,7 +296,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 Los ABI de los precompilados se exportan como `IQORE_PQC_ABI`, `IQORE_AI_ABI` e
 `IQORE_CONSENSUS_ABI`.
 
-> Donde un precompilado no está activo (hoy: todas las redes públicas), o en un nodo
+> Donde un precompilado no está activo (mainnet: todos; testnet: el par de IA y
+> el puente entre VM), o en un nodo
 > sin los precompilados de QoreChain, estas llamadas lanzan un error de "feature not
 > present" (función no presente). Manéjalo por llamada.
 

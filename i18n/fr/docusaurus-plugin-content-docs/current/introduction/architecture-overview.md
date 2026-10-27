@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Vue d'ensemble de l'architecture
 
-QoreChain est un nœud blockchain modulaire composé de trois processus principaux — le nœud de la chaîne, le sidecar IA et l'indexeur de blocs — adossé à une base de données Postgres et surveillé via Prometheus et Grafana. Le mainnet (`qorechain-vladi`, ID de chaîne EVM **9801**) est en production depuis le 7 juin 2026 sur la version **v3.2.4** (appliquée à la hauteur 3 742 566 le 23 octobre 2026), avec un testnet parallèle (`qorechain-diana`, ID de chaîne EVM **9800**, qui exécute la v3.2.4 depuis le 19 octobre 2026). La chaîne est construite sur Cosmos SDK v0.53. Le diagramme suivant présente l'agencement des composants à haut niveau.
+QoreChain est un nœud blockchain modulaire composé de trois processus principaux — le nœud de la chaîne, le sidecar IA et l'indexeur de blocs — adossé à une base de données Postgres et surveillé via Prometheus et Grafana. Le mainnet (`qorechain-vladi`, ID de chaîne EVM **9801**) est en production depuis le 7 juin 2026 sur la version **v3.2.4** (appliquée à la hauteur 3 742 566 le 23 octobre 2026), avec un testnet parallèle (`qorechain-diana`, ID de chaîne EVM **9800**, qui exécute la v3.2.6 depuis le 27 octobre 2026). La chaîne est construite sur Cosmos SDK v0.53. Le diagramme suivant présente l'agencement des composants à haut niveau.
 
 Le cycle de vie de transaction ci-dessous résume la manière dont une transaction soumise traverse le nœud — depuis la chaîne de décorateurs AnteHandler (vérifications de sécurité et de frais) jusqu'à l'exécution sur la VM et au règlement on-chain :
 
@@ -181,9 +181,9 @@ QoreChain enregistre **48 modules de genèse, dont 20 propres à QoreChain**, re
 
 **Extensions de gouvernance et de licence**
 
-* `x/abstractaccount` — Comptes intelligents : multisig, récupération sociale, clés de session, règles de dépense (désactivé sur les deux réseaux : `enabled = false`)
+* `x/abstractaccount` — Comptes intelligents : multisig, récupération sociale, clés de session, règles de dépense (désactivé sur le mainnet, `enabled = false` ; activé sur le testnet)
 * `x/fairblock` — Protection contre le MEV : cadre de mempool chiffré par IBE à seuil (désactivé sur les deux réseaux)
-* `x/gasabstraction` — Conception du paiement de gas multi-tokens : conversion des frais ibc/USDC, ibc/ATOM (aucun canal IBC n'est encore ouvert, les frais sont donc payés en QOR)
+* `x/gasabstraction` — Conception du paiement de gas multi-tokens : conversion des frais ibc/USDC, ibc/ATOM (aucun jeton de frais IBC n'est encore accepté, les frais sont donc payés en QOR)
 * `x/license` — Licence de la chaîne
 
 **Rollups**

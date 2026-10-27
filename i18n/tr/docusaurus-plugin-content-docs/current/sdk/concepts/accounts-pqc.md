@@ -256,7 +256,7 @@ ed25519 imzası deterministiktir ve herhangi bir web sitesi cüzdandan aynı mes
 Bu yolla bir hesap oluşturduysanız, onu şimdiden ele geçirilmiş sayın: bir mnemonic ile yeni bir hesap oluşturun, fonları oraya taşıyın ve ardından Phantom'u yeni hesaba authenticator olarak bağlayın (aşağıya bakın). Eski hesap onarılamaz, çünkü adresi açığa çıkmış anahtara bağlıdır ve PQC anahtar rotasyonu yalnızca kuantum sonrası yarıyı değiştirir. SDK 0.8.2 veya üstünü kullanın.
 :::
 
-Bir Phantom (veya MetaMask) anahtarının bir hesaptan harcama yapabilmesi için **authenticator şeritlerini** kullanın: cüzdan anahtarını `MsgRegisterAuthenticator` ile kaydedin, ardından bir izin ve bir `SpendingRule` altında `MsgExecuteCosmos` / `MsgExecuteEVM` üzerinden kanonik PQC hesabından harcayın. Hesap, mnemonic'ten türetilen kendi anahtarlarını korur ve cüzdan anahtarı her an iptal edilebilir. Bkz. [Authenticator'lar ve devredilmiş harcama](/sdk/guides/authenticators). `abstractaccount` modülünün bu şeritleri sağladığını ve şu anda her iki ağda da kapalı olduğunu unutmayın (`GET /qorechain/abstractaccount/v1/config` `enabled: false` gösterir); bu nedenle bir cüzdan anahtarı henüz bağlanamaz. O zamana kadar yeni mnemonic hesabını doğrudan kullanın.
+Bir Phantom (veya MetaMask) anahtarının bir hesaptan harcama yapabilmesi için **authenticator şeritlerini** kullanın: cüzdan anahtarını `MsgRegisterAuthenticator` ile kaydedin, ardından bir izin ve bir `SpendingRule` altında `MsgExecuteCosmos` / `MsgExecuteEVM` üzerinden kanonik PQC hesabından harcayın. Hesap, mnemonic'ten türetilen kendi anahtarlarını korur ve cüzdan anahtarı her an iptal edilebilir. Bkz. [Authenticator'lar ve devredilmiş harcama](/sdk/guides/authenticators). `abstractaccount` modülünün bu şeritleri sağladığını ve mainnet'te kapalı olduğunu unutmayın (`GET /qorechain/abstractaccount/v1/config` `enabled: false` gösterir; testnet'te etkindir); bu nedenle bir cüzdan anahtarı mainnet'te henüz bağlanamaz. O zamana kadar yeni mnemonic hesabını doğrudan kullanın.
 
 ## Kuantum sonrası kriptografi (PQC)
 
@@ -300,7 +300,7 @@ sonrası koruma kazanır. Kuantum sonrası kısım, işlem üzerinde bir
 `PQCHybridSignature` uzantısı olarak taşınır.
 
 :::caution Native yolda hibrit imzalama zorunludur
-Zincir sürümü **v3.2.0** itibarıyla (mainnet ve testnet ikisi de v3.2.4 çalıştırır) ağ
+Zincir sürümü **v3.2.0** itibarıyla (mainnet v3.2.4, testnet v3.2.6 çalıştırır) ağ
 varsayılanı `hybrid_signature_mode = required` ve
 `allow_classical_fallback = false` şeklindedir. `buildHybridTx` /
 `signAndBroadcastHybrid` üzerinden (`rest` geçirerek) hibrit imzalama — veya

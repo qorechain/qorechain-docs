@@ -17,14 +17,15 @@ Eine konsolidierte Referenz für die QoreChain-Netzwerke — Chain-Identifikator
 | **Cosmos-Chain-ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM-Chain-ID (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **Live seit** | 7. Juni 2026 | 1. Juli 2026 (seitdem durchgehend; kein Reset) |
-| **Chain-Version** | v3.2.4 (angewendet bei Höhe 3.742.566, 23. Oktober 2026, Governance-Vorschlag 13). v3.2.3 wurde bei Höhe 3.662.051 am 20. Oktober 2026 angewendet | v3.2.4 (angewendet bei Höhe 8.337.253, 19. Oktober 2026) |
-| **Blockzeit (gemessener Durchschnitt)** | etwa 3,2 s | etwa 1,0 s |
+| **Chain-Version** | v3.2.4 (angewendet bei Höhe 3.742.566, 23. Oktober 2026, Governance-Vorschlag 13). v3.2.3 wurde bei Höhe 3.662.051 am 20. Oktober 2026 angewendet | v3.2.6 (angewendet bei Höhe 8.970.638, 27. Oktober 2026; v3.2.5 wurde bei Höhe 8.890.800 am 26. Oktober angewendet und v3.2.4 bei 8.337.253 am 19. Oktober) |
+| **Blockzeit (gemessener Durchschnitt)** | etwa 3,2 s | etwa 1,3 s |
 | **Release-Manifest** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimaler Gaspreis** | `0.1uqor` | `0.1uqor` |
+| **Testtoken** | Keine | Fest-Token fUSD, fETH und fBTC (ohne Wert; siehe [Faucet](/dashboard/faucet#fest-tokens)) |
 | **Verbindungsanleitung** | [Verbindung zum Mainnet](/getting-started/connecting-to-mainnet) | [Verbindung zum Testnet](/getting-started/connecting-to-testnet) |
 
-Beide Manifeste sind die maßgebliche Quelle für das Release, das ein neuer Node ausführen sollte. Beide Netzwerke erhalten koordinierte Upgrades über die Governance, daher enthält jedes Manifest die `upgradeHeight` seines aktuellen Releases und ein `minCompatible`, das diesem Release entspricht (auf beiden Netzwerken 3.2.4, geprüft am 23. Oktober 2026). Das Testnet läuft seit dem 19. Oktober 2026 mit v3.2.4 und das Mainnet seit dem 23. Oktober 2026.
+Beide Manifeste sind die maßgebliche Quelle für das Release, das ein neuer Node ausführen sollte. Beide Netzwerke erhalten koordinierte Upgrades über die Governance, daher enthält jedes Manifest die `upgradeHeight` seines aktuellen Releases und ein `minCompatible`, das diesem Release entspricht (3.2.4 im Mainnet und 3.2.6 im Testnet, geprüft am 27. Oktober 2026). Das Testnet erhält jedes Release zuerst: Das Mainnet läuft seit dem 23. Oktober 2026 mit v3.2.4, und der Governance-Vorschlag 14 würde v3.2.5 im Mainnet bei Höhe 3.906.833 anwenden (zum Zeitpunkt der Erstellung in seiner Abstimmungsphase); ein Node, der dem Mainnet beitritt, muss daher seinem eigenen Manifest folgen. Kopieren Sie niemals eine Binärdatei zwischen den Netzwerken.
 
 ## Öffentliche Endpunkte {#public-endpoints}
 

@@ -9,22 +9,22 @@ sidebar_position: 6
 
 QoreChain étend le QoreChain EVM Engine avec **six contrats précompilés personnalisés** qui exposent des fonctionnalités au niveau du protocole directement à Solidity. Ces précompilés fournissent un accès on-chain à la cryptographie post-quantique, au scoring de risque par IA, à la messagerie inter-VM et aux paramètres du consensus PRISM.
 
-:::warning Pas encore actifs sur le mainnet ni sur le testnet
-Les six précompilés QoreChain ci-dessous sont **compilés dans le nœud mais pas encore activés**, ni sur le mainnet **`qorechain-vladi`** (chain ID EVM **9801**) ni sur le testnet **`qorechain-diana`** (chain ID EVM **9800**). L'EVM n'exécute que les adresses listées dans le paramètre `active_static_precompiles`, et cette liste est vide sur les deux réseaux. Tant qu'une mise à niveau de la chaîne ne les active pas, **un appel à ces adresses réussit et renvoie des données vides (`0x`)** ; il ne revert pas et ne renvoie pas d'erreur. Consultez l'[État du réseau](#network-status) avant de vous appuyer sur l'un d'eux.
+:::warning Non actifs sur le mainnet ; trois actifs sur le testnet
+Les six précompilés QoreChain ci-dessous sont **compilés dans le nœud**, mais l'EVM n'exécute que les adresses listées dans le paramètre `active_static_precompiles`. Sur le mainnet **`qorechain-vladi`** (chain ID EVM **9801**), cette liste est vide au moment de la rédaction : **aucun n'y est donc actif**. Sur le testnet **`qorechain-diana`** (chain ID EVM **9800**), trois le sont : PQC Verify, PQC Key Status et PRISM Consensus Params, activés par la proposition de gouvernance 21 du testnet (adoptée le 27 octobre 2026). Les trois autres ne sont actifs sur aucun des deux réseaux. **Un appel à une adresse qui ne figure pas dans la liste réussit et renvoie des données vides (`0x`)** ; il ne revert pas et ne renvoie pas d'erreur. Consultez l'[État du réseau](#network-status) avant de vous appuyer sur l'un d'eux.
 :::
 
 ## État du réseau {#network-status}
 
 | Précompilé | Adresse | `qorechain-vladi` (mainnet) | `qorechain-diana` (testnet) |
 | --- | --- | --- | --- |
-| PQC Verify | `0x…0A01` | Non actif | Non actif |
-| PQC Key Status | `0x…0A02` | Non actif | Non actif |
+| PQC Verify | `0x…0A01` | Non actif | **Actif** (depuis le 27 octobre 2026) |
+| PQC Key Status | `0x…0A02` | Non actif | **Actif** (depuis le 27 octobre 2026) |
 | AI Risk Score | `0x…0B01` | Non actif | Non actif |
 | AI Anomaly Check | `0x…0B02` | Non actif | Non actif |
-| PRISM Consensus Params | `0x…0C01` | Non actif | Non actif |
+| PRISM Consensus Params | `0x…0C01` | Non actif | **Actif** (depuis le 27 octobre 2026) |
 | CrossVM Bridge | `0x…0901` | Non actif | Non actif |
 
-L'activation nécessite une mise à niveau de la chaîne et se fera par étapes : d'abord les précompilés PQC et de consensus en lecture seule, puis la paire IA une fois que leur chemin en lecture seule à virgule fixe sera en place, et le CrossVM bridge en dernier. La version v3.2.3 (mainnet, 20 octobre 2026) a intégré au binaire, derrière une fonctionnalité de protocole, les versions renforcées du CrossVM bridge et du précompilé AI anomaly, **mais elle n'a activé aucun précompilé** : la liste `active_static_precompiles` est toujours vide sur les deux réseaux, et la v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026) n'y change rien. Ce tableau est mis à jour dans la même opération que la mise à niveau qui en active un quelconque.
+État tel que lu dans le paramètre `active_static_precompiles` en direct le 27 octobre 2026. C'est un paramètre de la chaîne modifié par la gouvernance : la liste de chaque réseau ne change donc que lorsqu'une proposition de gouvernance est adoptée ; celle du testnet a été fixée par la proposition 21, et aucune proposition du mainnet ne la modifie au moment de la rédaction. La version v3.2.3 (mainnet, 20 octobre 2026) a intégré au binaire, derrière une fonctionnalité de protocole, les versions renforcées du CrossVM bridge et du précompilé AI anomaly, mais n'a activé aucun précompilé, et la v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026) n'y change rien. Les précompilés PQC et de consensus en lecture seule viennent en premier, la paire IA une fois que leur chemin en lecture seule à virgule fixe sera en place, et le CrossVM bridge en dernier. Ce tableau ne liste que ce qui est appliqué : une proposition encore en période de vote n'est pas un état.
 
 Vérifiez vous-même la liste actuelle (une liste vide signifie qu'aucun n'est actif) :
 
@@ -45,6 +45,14 @@ require(ok && ret.length >= 96, "precompile not active");
 ```
 
 N'envoyez pas de valeur à ces adresses. Elles ne sont pas payable, et la valeur envoyée à l'adresse d'un précompilé inactif y reste sans aucun moyen de la récupérer.
+
+Sur le testnet, une vérification rapide que les trois précompilés actifs répondent (avec le `cast` de Foundry ; sur le mainnet, ces adresses renvoient des données vides) :
+
+```bash
+RPC=https://evm-testnet.qore.host
+cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
+```
 
 ---
 
@@ -95,7 +103,7 @@ interface IQorePQC {
 }
 ```
 
-À partir de la v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026), une fois ce précompilé actif, sa sortie comporte une quatrième valeur, `bool possessionProven`, après `pubkey` : elle indique si la clé actuelle du compte a été prouvée par une preuve de possession vérifiée (voir [Signature post-quantique](/developer-guide/post-quantum-signing#proof-of-possession)). L'interface ci-dessus liste les trois premières sorties ; un contrat qui doit se fier à la clé devrait lire aussi la quatrième.
+À partir de la v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026), la sortie de `pqcKeyStatus` comporte une quatrième valeur, `bool possessionProven`, après `pubkey` : elle indique si la clé actuelle du compte a été prouvée par une preuve de possession vérifiée (voir [Signature post-quantique](/developer-guide/post-quantum-signing#proof-of-possession)). Elle est renvoyée partout où le précompilé est actif : sur le testnet, elle est en production (un appel pour un compte sans clé renvoie `false, 0, 0x, false`), sur le mainnet dès qu'une mise à niveau active le précompilé. L'interface ci-dessus liste les trois premières sorties ; un contrat qui doit se fier à la clé devrait lire aussi la quatrième.
 
 ### IQoreAI.sol
 
@@ -264,10 +272,10 @@ contract ConsensusReader {
 }
 ```
 
-**Coût en gas :** 1 500 forfaitaire.
+**Coût en gas :** 1 500 forfaitaire, plus les lectures d'état effectuées par l'appel au coût standard.
 
-:::note
-Dans la version actuelle du nœud, `rlConsensusParams` renvoie des valeurs par défaut fixes servant d'espace réservé, et non des valeurs réglées en direct par PRISM (par exemple, il ne rapporte pas le temps de bloc mesuré, qui est d'environ 3,2 s sur le mainnet et d'environ 1,0 s sur le testnet). Le raccorder aux paramètres de consensus en direct fait partie du travail d'activation.
+:::note Ce que sont les quatre valeurs
+À partir de la v3.2.6 (le testnet ; pas encore le mainnet), `rlConsensusParams` renvoie les valeurs détenues par le module `rlconsensus` au lieu de valeurs fixes servant d'espace réservé : la cible de temps de bloc appliquée en millisecondes, le plancher de prix du gas appliqué, le `default_validator_set_size` du module et l'époque courante de l'agent. Sur le testnet, le 27 octobre 2026, il a renvoyé `5000`, `100`, `100`, `1` (les mêmes valeurs appliquées que `GET /qorechain/rlconsensus/v1/applied_params`, voir [Points de terminaison REST / gRPC](/api-reference/rest-grpc-endpoints#rlconsensus-module)). Ce sont les propres réglages du module, **et non le temps de bloc mesuré** (environ 3,2 s sur le mainnet et environ 1,3 s sur le testnet), et l'agent fonctionne en mode shadow sur le testnet, il n'applique donc rien. Sur un nœud antérieur à la v3.2.6, le même appel renvoie des valeurs par défaut fixes servant d'espace réservé.
 :::
 
 ### CrossVM Bridge — Appeler QoreChain Native depuis l'EVM
@@ -315,4 +323,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) — Documentation complète sur la messagerie inter-VM
 * [Développement EVM](/developer-guide/evm-development) — Déployer des contrats Solidity
-* [Abstraction de compte](/developer-guide/account-abstraction) — Authentificateurs de portefeuilles liés et règles de dépense (module actuellement désactivé)
+* [Abstraction de compte](/developer-guide/account-abstraction) — Authentificateurs de portefeuilles liés et règles de dépense (activé sur le testnet, désactivé sur le mainnet)

@@ -76,7 +76,7 @@ Questo crea le directory di configurazione e dati predefinite in `~/.qorechaind/
 Il nodo si avvia con le impostazioni predefinite. Vedi [Connessione alla testnet](/getting-started/connecting-to-testnet) per unirti alla rete attiva con una corretta configurazione di genesis e peer.
 
 :::note
-Gli esempi in questa pagina sono rivolti alla testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 (release v3.2.4 dal 23 ottobre 2026; la testnet esegue la v3.2.4 dal 19 ottobre 2026) e ha una propria pagina dedicata **Connessione alla mainnet**.
+Gli esempi in questa pagina sono rivolti alla testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 (release v3.2.4 dal 23 ottobre 2026; la testnet esegue la v3.2.6 dal 27 ottobre 2026) e ha una propria pagina dedicata **Connessione alla mainnet**.
 :::
 
 ---

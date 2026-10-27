@@ -10,18 +10,20 @@ sidebar_position: 3
 QoreChain admite contratos inteligentes **QoreChain Native**. QoreChain Native es el nombre que QoreChain da a su runtime **CosmWasm**: los desarrolladores escriben programas seguros y aislados (sandboxed) en Rust con las bibliotecas estándar de CosmWasm (`cosmwasm-std`) y los compilan a WebAssembly. Los contratos QoreChain Native se ejecutan junto con los programas EVM y SVM dentro de la arquitectura triple-VM de QoreChain.
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.4** desde el 23 de octubre de 2026 (propuesta de gobernanza 13, altura 3,742,566). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta la v3.2.4 desde el 19 de octubre de 2026.
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.4** desde el 23 de octubre de 2026 (propuesta de gobernanza 13, altura 3,742,566). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta la v3.2.6 (v3.2.4 desde el 19 de octubre de 2026).
 :::
 
-:::caution La subida y la instanciación de código actualmente requieren permiso explícito
-En el momento de escribir esto, `code_upload_access` e `instantiate_default_permission` están configurados en **`Nobody`** tanto en **mainnet como en testnet**, lo que significa que `MsgStoreCode` y `MsgInstantiateContract` no están abiertos por defecto a cuentas arbitrarias, tras un aviso de seguridad a nivel de toda la industria para CosmWasm, el runtime sobre el que está construido QoreChain Native. Necesitará que la gobernanza otorgue a su cuenta (o a una lista específica de direcciones) permiso de subida/instanciación antes de que los pasos siguientes tengan éxito. Verifique primero los parámetros en vivo, ya que este es exactamente el tipo de configuración que la gobernanza puede cambiar (actualmente la mainnet no tiene ningún código de contrato almacenado):
+:::caution La subida y la instanciación de código requieren permiso explícito en la mainnet; la testnet difiere
+En el momento de escribir esto (comprobado el 27 de octubre de 2026), `code_upload_access` e `instantiate_default_permission` están configurados en **`Nobody`** en la **mainnet**, lo que significa que `MsgStoreCode` y `MsgInstantiateContract` no están abiertos a cuentas arbitrarias, tras un aviso de seguridad a nivel de toda la industria para CosmWasm, el runtime sobre el que está construido QoreChain Native. En la **testnet `qorechain-diana`** los ajustes difieren: `code_upload_access` sigue siendo `Nobody` (el código solo se almacena mediante gobernanza), pero `instantiate_default_permission` es **`Everybody`**, establecido por la gobernanza de la testnet el 27 de octubre de 2026, de modo que cualquier cuenta puede instanciar un código almacenado cuyo propio permiso lo permita. Verifique primero los parámetros en vivo, ya que este es exactamente el tipo de configuración que la gobernanza puede cambiar (actualmente la mainnet no tiene ningún código de contrato almacenado):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
-Los tipos de mensaje `MsgStoreCode`, `MsgInstantiateContract` y `MsgInstantiateContract2` también están desactivados por el interruptor de circuito (circuit breaker) de la cadena en ambas redes (`qorechaind query circuit disabled-list`), por lo que elevar el permiso por sí solo no basta mientras esas entradas no se levanten.
+El interruptor de circuito (circuit breaker) de la cadena también desactiva tipos de mensaje en toda la red (`qorechaind query circuit disabled-list`). En la **mainnet**, `MsgStoreCode`, `MsgInstantiateContract` y `MsgInstantiateContract2` están en la lista, por lo que elevar el permiso por sí solo no basta mientras esas entradas no se levanten. En la **testnet** solo `MsgStoreCode` está en la lista: la instanciación está abierta, la subida no.
+
+**Testnet: contratos revisados almacenados por la gobernanza.** Como las cuentas ordinarias no pueden subir código en la testnet, la gobernanza almacenó cinco contratos revisados que cualquiera puede instanciar (`instantiate_permission` `Everybody`): cw20-base (token), cw721-base (colección de NFT), cw4-group, cw3-fixed-multisig y un pequeño contrato contador. En el momento de escribir esto son los code ids 859 a 863, en ese orden, listados por `GET /cosmwasm/wasm/v1/code` con la cuenta del módulo de gobernanza como creador e identificados por su `data_hash`; lea los ids de la lista en vivo en lugar de fijarlos en el código. Existen solo en la testnet. La mainnet no tiene código almacenado.
 
 Esta restricción no afecta a los contratos ya instanciados: `execute` y `query` contra un contrato existente funcionan normalmente sin importar esta configuración.
 :::
@@ -265,4 +267,4 @@ Esto invoca el punto de entrada `migrate` en el nuevo código con el estado exis
 
 * [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) — Llame a contratos EVM y SVM desde QoreChain Native
 * [Desarrollo con SVM](/developer-guide/svm-development) — Despliegue programas BPF en QoreChain
-* [Precompilados EVM](/developer-guide/evm-precompiles) — Referencia de los precompilados de Solidity previstos (todavía no hay ninguno activo)
+* [Precompilados EVM](/developer-guide/evm-precompiles) — Referencia de los precompilados de Solidity (ninguno está activo en la mainnet; tres están activos en la testnet)

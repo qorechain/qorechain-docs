@@ -60,8 +60,8 @@ const status = await getPqcStatus(client, address);
 `0x0000000000000000000000000000000000000A02`에 있는
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
 프리컴파일(`@qorechain/evm`에서 `pqcKeyStatus`로 노출됨)이 활성화되면 읽을 수
-있습니다. 이 프리컴파일은 아직 메인넷이나 테스트넷에서 활성화되어 있지 않습니다
-([네트워크 상태](/developer-guide/evm-precompiles#network-status) 참조).
+있습니다. 이 프리컴파일은 메인넷에서 활성화되어 있지 않으며, 테스트넷에서는 활성으로 나열되어 있습니다(2026년 10월 27일 확인;
+[네트워크 상태](/developer-guide/evm-precompiles#network-status) 참조).
 
 ## 한 번의 호출로 등록 {#register-in-one-call}
 

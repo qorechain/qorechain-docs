@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Versionshistorie
 
-Öffentliche Versionshistorie für QoreChain. Das Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, live seit 7. Juni 2026) läuft mit **v3.2.4** (per Governance-Vorschlag 13 bei Höhe 3.742.566 am 23. Oktober 2026 angewendet; das vorherige Release v3.2.3 wurde bei Höhe 3.662.051 am 20. Oktober 2026 angewendet). Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) läuft seit Höhe 8.337.253 (19. Oktober 2026) mit **v3.2.4**.
+Öffentliche Versionshistorie für QoreChain. Das Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, live seit 7. Juni 2026) läuft mit **v3.2.4** (per Governance-Vorschlag 13 bei Höhe 3.742.566 am 23. Oktober 2026 angewendet; das vorherige Release v3.2.3 wurde bei Höhe 3.662.051 am 20. Oktober 2026 angewendet). Der Governance-Vorschlag 14 würde v3.2.5 auf dem Mainnet bei Höhe 3.906.833 anwenden (zum Zeitpunkt der Erstellung, 27. Oktober 2026, in seinem Abstimmungszeitraum). Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) läuft mit **v3.2.6** (bei Höhe 8.970.638 am 27. Oktober 2026 angewendet); v3.2.4 erreichte es bei Höhe 8.337.253 (19. Oktober 2026) und v3.2.5 bei Höhe 8.890.800 (26. Oktober 2026).
 
 :::note
 Die folgenden Einträge sind Zusammenfassungen der wichtigsten Funktionen auf hoher Ebene. Frühere `v1.x`-Einträge werden als historische Aufzeichnung der Testnet-Releaselinie vor dem Mainnet beibehalten. Das Release-Manifest ([Verbindung zum Mainnet](/getting-started/connecting-to-mainnet)) wird separat vom Taggen freigegeben und kann einem Tag zeitlich etwas hinterherhinken — prüfen Sie es direkt, um zu sehen, was eine frische Installation tatsächlich herunterlädt.
@@ -15,7 +15,7 @@ Die folgenden Einträge sind Zusammenfassungen der wichtigsten Funktionen auf ho
 
 ## Mainnet-Governance-Zeitleiste {#governance-timeline}
 
-Vorschläge, die das laufende Mainnet seit dem 14. Oktober 2026 verändert haben. Alle sieben sind beschleunigte Vorschläge (Abstimmungszeitraum von einem Tag); die Vorschläge 7 bis 13 wurden mit allen abstimmenden gebundenen Stakes dafür verabschiedet. Die vollständige Liste steht unter `GET /cosmos/gov/v1/proposals` auf `https://api.qore.host`.
+Vorschläge, die das laufende Mainnet seit dem 14. Oktober 2026 verändert haben. Alle acht sind beschleunigte Vorschläge (Abstimmungszeitraum von einem Tag); die Vorschläge 7 bis 13 wurden mit allen abstimmenden gebundenen Stakes dafür verabschiedet, und über den Vorschlag 14 wird zum Zeitpunkt der Erstellung noch abgestimmt. Die vollständige Liste steht unter `GET /cosmos/gov/v1/proposals` auf `https://api.qore.host`.
 
 | Vorschlag | Was er bewirkt | Abstimmung | Ergebnis |
 | --- | --- | --- | --- |
@@ -26,14 +26,39 @@ Vorschläge, die das laufende Mainnet seit dem 14. Oktober 2026 verändert haben
 | 11 | Wendet v3.2.3 bei Höhe 3.662.051 an | 18.–19. Oktober 2026 (endet 19:15 UTC) | Verabschiedet; angewendet am 20. Oktober 2026 |
 | 12 | Gibt den korrigierten gestrandeten Staker-Anteil (3.807.496,785528 QOR, bei der v3.2.3-Höhe neu berechnet) an die Foundation frei | 20. Oktober 2026 20:01 UTC bis 21. Oktober 2026 20:01 UTC | Verabschiedet |
 | 13 | Koordiniertes Upgrade auf v3.2.4 bei Höhe 3.742.566: optionales zeitgesperrtes Staking, Light-Node-Belohnungsgrenze ab der Registrierung gezählt, ein Besitz-Flag für Post-Quanten-Schlüssel, Besitznachweis für Bridge-Validatoren, das RDK-Challenge-Fenster in Blockzeit und node-lokale Härtung | 20. Oktober 2026 21:18 UTC bis 21. Oktober 2026 21:18 UTC | Verabschiedet; angewendet am 23. Oktober 2026 bei Höhe 3.742.566 |
+| 14 | Koordiniertes Upgrade auf v3.2.5 (Build 2) bei Höhe 3.906.833 (die Nodes bleiben bis zu dieser Höhe auf v3.2.4, halten dort an und starten mit v3.2.5 neu; die Transaktionssignierung bleibt unverändert) | 27. Oktober 2026 00:29 UTC bis 28. Oktober 2026 00:29 UTC | Zum Zeitpunkt der Erstellung in Abstimmung. Der Inhalt von v3.2.5 wird an dem Tag dokumentiert, an dem das Mainnet es anwendet |
 
 Siehe [Tokenomics](/architecture/tokenomics#stranded-and-reserve) dazu, was die Freigaben bedeuten, und [Governance](/user-guide/governance) dazu, wie man abstimmt.
 
 ---
 
+## Testnet-Releases v3.2.5 und v3.2.6 (bisher nur Testnet) {#testnet-v326}
+
+Das Testnet `qorechain-diana` übernimmt jedes Release einige Tage vor dem Mainnet. Das Mainnet bleibt von allem in diesem Abschnitt unberührt: Es läuft mit v3.2.4, bis ein Governance-Upgrade etwas anderes bestimmt.
+
+### v3.2.6 — Abfragerouten, Live-PRISM-Werte und Testtoken (Testnet)
+
+**Release-Schwerpunkt:** Auf dem Testnet per Testnet-Governance-Vorschlag 28 bei Höhe **8.970.638** angewendet (27. Oktober 2026, 16:58 UTC). Das Testnet-Manifest setzt `version` und `minCompatible` auf 3.2.6 mit `upgradeHeight` 8970638, sodass ein Node, der dem Testnet beitritt, v3.2.6 benötigt. Signaturformat, Adressen, Dezimalstellen, Memos und Gebühren bleiben unverändert.
+
+* **Neue Testnet-Leseroutes.** `GET /qorechain/pqc/v1/params`, die IBC-v2-Client-Route `/ibc/core/client/v2/counterparty_info/{client_id}` und der vollständige Satz der PRISM-Abfragen (`x/rlconsensus`) unter `/qorechain/rlconsensus/v1/` (`agent`, `params`, `observation`, `reward`, `policy`, `applied_params`, `last_action`). Das Mainnet antwortet auf den PRISM-, den PQC-Parameter- und den IBC-v2-Client-Routen mit 501 (nicht implementiert). Die AMM-Routen unter `/qorechain/amm/v1/` (`pools`, `quote/exact_in`, `pools/{id}/lp/{address}`) antworten auf beiden Netzwerken. Siehe [REST-/gRPC-Referenz](/api-reference/rest-grpc-endpoints).
+* **PRISM-Agent.** Der Testnet-Agent befindet sich im Schattenmodus (per Testnet-Governance-Vorschlag 29 gesetzt): Er beobachtet alle 10 Blöcke, berechnet eine Belohnung und eine vorgeschlagene Aktion und hält beides fest, ohne einen Wert zu ändern. Der Circuit Breaker des Agenten wurde korrigiert und sein Verlauf ist begrenzt. Siehe [PRISM](/architecture/prism-consensus-engine).
+* **Live-PRISM-Werte in der EVM.** Der Precompile `rlConsensusParams` liefert nun die angewendeten Werte des Moduls statt fester Zahlen.
+* **Undelegierung gesperrten Stakes früher abgelehnt.** Der Mempool lehnt eine Undelegierung oder Redelegierung gesperrten Stakes ab, bevor sie eine Gebühr kostet; eine Transaktionssimulation liefert ebenfalls den typisierten Fehlercode.
+* **RDK.** Batch-Abfragen erhalten ein Feld `withdrawals_bound`.
+* **IBC-Ratenlimit (nur Testnet).** Ein Ratenlimiter pro Channel für IBC-Transfers: Die Kontingente sind ein ganzzahliger Prozentsatz des Angebots pro Fenster von Stunden. **Die Governance legt die Limits fest; nichts geschieht automatisch, und heute sind keine Limits gesetzt** (eine leere Menge bedeutet unbegrenzt). Ein weitergeleitetes Paket wird auf beiden Channels belastet, und eine Rückerstattung gibt das Kontingent zurück.
+* **IBC-Paketweiterleitung (nur Testnet).** Ein eingehender IBC-v1-Transfer kann ein `forward`-Memo (Empfänger, Port, Channel) tragen, das ihn an einen anderen Channel weiterschickt, mit Rückerstattung an den Absender, falls ein Hop fehlschlägt. Es gibt keine Wiederholungen, und das Standard-Timeout pro Hop beträgt 10 Minuten; ein Token, das bei der Ankunft in ein ERC-20 umgewandelt wird, kann nicht weitergeleitet werden.
+* **08-wasm-Light-Clients (nur Testnet).** Die 08-wasm-Light-Client-Nachrichten (Client-Binary speichern, migrieren und entfernen) wurden hinzugefügt, nur für die Autorität. Die zulässigen Client-Typen enthalten weiterhin nur den Standard-Client, sodass kein wasm-Light-Client erstellt werden kann, bis die Governance `08-wasm` hinzufügt.
+* **Fest-Testtoken.** Drei ERC-20-Verträge, die für das Builder-Fest bereitgestellt wurden, wurden per Testnet-Governance (Vorschlag 26) als Bank-Denominationen registriert: fUSD (6 Dezimalstellen), fETH (18) und fBTC (8). Es sind reine Testnet-Testtoken ohne Wert. Siehe [Faucet](/dashboard/faucet#fest-tokens).
+
+### v3.2.5 (Testnet)
+
+**Release-Schwerpunkt:** Auf dem Testnet per Testnet-Governance-Vorschlag 15 bei Höhe **8.890.800** angewendet (26. Oktober 2026). Auf dem Mainnet würde der Governance-Vorschlag 14 v3.2.5 (Build 2) bei Höhe 3.906.833 anwenden und befand sich zum Zeitpunkt der Erstellung in seinem Abstimmungszeitraum. Die Funktionen von v3.2.5 werden in dieser Historie an dem Tag dokumentiert, an dem das Mainnet es anwendet.
+
+---
+
 ## v3.2.4 — Light-Node-Registrierungsfenster und optionales zeitgesperrtes Staking (Mainnet)
 
-**Release-Schwerpunkt:** Das aktuelle Release auf beiden Netzwerken. Es lief zuerst auf dem Testnet `qorechain-diana`: Der Testnet-Governance-Vorschlag 13 hat es bei Höhe **8.337.253** angewendet (19. Oktober 2026). Auf dem Mainnet hat der Governance-Vorschlag 13 es bei Höhe **3.742.566** am 23. Oktober 2026 angewendet: Die Nodes blieben bis zu diesem Block auf v3.2.3, hielten dort an und starteten mit v3.2.4 neu, und die Transaktionssignierung bleibt unverändert. Die Manifeste von Mainnet und Testnet setzen beide `minCompatible` auf 3.2.4, sodass ein Node, der einem der beiden Netzwerke beitritt, jetzt v3.2.4 benötigt. Jede der folgenden Funktionen ist auf beiden Netzwerken live.
+**Release-Schwerpunkt:** Das aktuelle Mainnet-Release. Es lief zuerst auf dem Testnet `qorechain-diana`: Der Testnet-Governance-Vorschlag 13 hat es bei Höhe **8.337.253** angewendet (19. Oktober 2026). Auf dem Mainnet hat der Governance-Vorschlag 13 es bei Höhe **3.742.566** am 23. Oktober 2026 angewendet: Die Nodes blieben bis zu diesem Block auf v3.2.3, hielten dort an und starteten mit v3.2.4 neu, und die Transaktionssignierung bleibt unverändert. Das Mainnet-Manifest setzt `minCompatible` auf 3.2.4, sodass ein Node, der dem Mainnet beitritt, v3.2.4 benötigt (das Testnet ist inzwischen auf v3.2.6 weitergezogen). Jede der folgenden Funktionen ist auf dem Mainnet und auf dem Testnet live.
 
 * **Light-Node-Registrierungsfenster.** Die Belohnungsgrenze eines Light-Nodes beginnt zum späteren Zeitpunkt aus der vorherigen Abrechnung und der eigenen Registrierung des Nodes, sodass eine neue Registrierung keinen aufgelaufenen Betrag aus der Zeit vor ihrem Beitritt erhält.
 * **Optionales zeitgesperrtes Staking (`x/stakingtier`, ein neues Modul).** Ein Delegator kann einen Teil einer Delegation für 3, 6 oder 12 Monate sperren; der gesperrte Teil kann weder undelegiert noch redelegiert werden, und eine vorzeitige Entsperrung ist mit einer Strafe möglich, die verbrannt wird. Die Mindestsperre beträgt 10 QOR. Siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking).
@@ -137,7 +162,7 @@ v3.2.1 wurde Node für Node angewendet und hat keine Upgrade-Höhe; es wurde auf
 * **Abfrage des Berechtigungsschemas** — `GET /qorechain/abstractaccount/v1/permission_schema` (auch gRPC/CLI) liefert die kanonische Berechtigungstaxonomie (11 Berechtigungen), die Zuordnung Nachricht→Berechtigung sowie die Liste nicht delegierbarer Nachrichten, sodass Wallets Bereiche validieren können, ohne sie hart zu codieren.
 * **PQC-Schlüsselrotation im selben Algorithmus** — Die neue **`MsgRotatePQCKey`** rotiert den ML-DSA-87-Schlüssel eines Kontos innerhalb desselben Algorithmus (doppelt signiert vom alten und neuen Schlüssel) und ermöglicht so die Migration legacy-abgeleiteter Schlüssel zur kanonischen adressgebundenen Ableitung sowie die Stilllegung eines kompromittierten Schlüssels. Neue CLI: `tx pqc rotate-key` und `tx pqc recover-key` (deterministische Schlüsselwiederherstellung aus einer Mnemonic).
 * **Root-Key-Transaktionen unverändert** — Die Änderungen sind additiv; normale Wallet- und Börsenabläufe bleiben unverändert. Node-Betreiber müssen bis zur Netzwerk-Upgrade-Höhe auf **v3.1.85** wechseln.
-* **Aktueller Status** — Die Smart-Account- und Linked-Wallet-Funktionen sind implementiert, derzeit aber auf beiden Netzwerken **abgeschaltet** (`abstractaccount.enabled = false`); ab v3.2.0 wird jeder Authenticator-Pfad abgelehnt, solange das Flag aus ist. Prüfen Sie `GET /qorechain/abstractaccount/v1/config`, bevor Sie einen Verknüpfungsablauf anbieten.
+* **Aktueller Status** — Die Smart-Account- und Linked-Wallet-Funktionen sind implementiert, aber im **Mainnet abgeschaltet** (`abstractaccount.enabled = false`) und im Testnet aktiviert (geprüft am 27. Oktober 2026); im Mainnet wird ab v3.2.0 jeder Authenticator-Pfad abgelehnt, solange das Flag aus ist. Prüfen Sie `GET /qorechain/abstractaccount/v1/config`, bevor Sie einen Verknüpfungsablauf anbieten.
 
 ## v3.1.84 — Authenticator-Berechtigungen & Ausgabenlimits
 

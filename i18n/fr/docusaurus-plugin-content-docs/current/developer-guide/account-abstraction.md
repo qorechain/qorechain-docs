@@ -9,12 +9,12 @@ sidebar_position: 7
 
 QoreChain fournit une **abstraction de compte au niveau du protocole** via le module `x/abstractaccount`. Le module enregistre des comptes abstraits assortis de règles de dépenses et permet au propriétaire du compte de lier des clés externes (**authentificateurs**) qui peuvent dépenser depuis le compte dans les limites de permissions et de dépenses définies, sans infrastructure externe de contrats intelligents.
 
-:::danger Non activé sur le mainnet ni sur le testnet
-Le module d'abstraction de compte est actuellement **désactivé** sur les deux réseaux : `qorechaind query abstractaccount config` (et `GET /qorechain/abstractaccount/v1/config`) renvoient `enabled: false` sur `qorechain-vladi` et `qorechain-diana`. À partir de la version de chaîne v3.2.0, ce paramètre est appliqué sur chaque chemin : la chaîne refuse la création de compte, l'enregistrement d'authentificateurs et les deux voies d'exécution (`MsgExecuteEVM`, `MsgExecuteCosmos`) avec `abstract accounts are disabled on this chain`. Aucune transaction ne peut activer le module, et aucune transaction de compte abstrait n'a jamais été incluse sur le mainnet. Tout ce qui suit décrit les interfaces du module à titre de référence. Ne construisez pas de flux de clé liée ou de dépenses déléguées sur les réseaux en production tant que le module n'est pas activé, et vérifiez d'abord ce paramètre.
+:::danger Non activé sur le mainnet ; activé sur le testnet
+Le module d'abstraction de compte est **désactivé sur le mainnet `qorechain-vladi`** au moment de la rédaction (vérifié le 27 octobre 2026) : `qorechaind query abstractaccount config` (et `GET /qorechain/abstractaccount/v1/config`) renvoient `enabled: false`. Sur le **testnet `qorechain-diana`**, il a été activé par une décision de gouvernance (proposition 18, adoptée le 27 octobre 2026) et renvoie `enabled: true`. À partir de la version de chaîne v3.2.0, ce paramètre est appliqué sur chaque chemin : lorsqu'il vaut `false`, la chaîne refuse la création de compte, l'enregistrement d'authentificateurs et les deux voies d'exécution (`MsgExecuteEVM`, `MsgExecuteCosmos`) avec `abstract accounts are disabled on this chain`. Aucune transaction ordinaire ne peut activer le module ; le paramètre ne change que par une décision de gouvernance. Aucune transaction de compte abstrait n'a jamais été incluse sur le mainnet. Tout ce qui suit décrit les interfaces du module ; essayez-le sur le testnet, et ne construisez pas de flux de clé liée ou de dépenses déléguées pour le mainnet tant que le module n'y est pas activé. Vérifiez toujours d'abord ce paramètre.
 :::
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.4** (appliquée à la hauteur 3 742 566 le 23 octobre 2026, proposition de gouvernance 13). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.4 depuis le 19 octobre 2026.
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.4** (appliquée à la hauteur 3 742 566 le 23 octobre 2026, proposition de gouvernance 13). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.6 (v3.2.4 depuis le 19 octobre 2026).
 :::
 
 :::caution Toute transaction sur la voie Cosmos exige la co-signature post-quantique hybride
@@ -86,7 +86,7 @@ Les règles de dépenses ajoutent des garde-fous financiers aux comptes abstrait
 | ---------------- | ----------------------------------------------------- |
 | `daily_limit`    | Dépense totale maximale par jour calendaire UTC       |
 | `per_tx_limit`   | Dépense maximale par exécution autorisée individuelle |
-| `allowed_denoms` | Restreint les dénominations de jetons pouvant être dépensées (un ERC-20 est listé sous la forme `erc20/<contract>`) |
+| `allowed_denoms` | Restreint les dénominations de jetons pouvant être dépensées (un ERC-20 est listé sous la forme `erc20/<adresse 0x EIP-55>`, l'écriture propre à la règle de dépense avec une barre oblique ; la chaîne compare l'adresse sous sa forme EIP-55, donc la casse que vous saisissez ne crée pas un autre token. Ce n'est pas le denom bank d'une paire de tokens enregistrée, qui s'écrit `erc20:<adresse 0x EIP-55>` avec deux-points et est sensible à la casse, voir [Développement EVM](/developer-guide/evm-development#fest-tokens)) |
 | `denom_limits`   | Limites par dénomination sous forme de chaînes décimales (v3.2.2) : `{"denom","per_tx_limit","daily_limit"}` ; elles remplacent `per_tx_limit` et `daily_limit` pour les dénominations qu'elles nomment, de sorte qu'un token à 18 décimales peut être plafonné |
 | `allowed_evm_calls` | Appels EVM qu'une clé liée à une règle peut effectuer **avec des données d'appel** (v3.2.2), sous la forme `0x<target>` (n'importe quelle fonction de ce contrat) ou `0x<target>/0x<selector>` (cette fonction uniquement). Sans entrée, une clé liée à une règle ne peut qu'envoyer de la valeur, déployer (avec la permission `deploy`) et déplacer les tokens ERC-20 listés dans `allowed_denoms`. Lister une cible fait confiance à tous les arguments des appels qui lui sont adressés, destinataires compris |
 
@@ -100,11 +100,11 @@ qorechaind tx abstractaccount update-rules <account-address> \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
-Les limites sont exprimées dans l'unité de base (`uqor`) et comptent par exécution autorisée ; la limite quotidienne borne le total par jour calendaire UTC. Les règles remplacent d'un bloc celles qui sont stockées, donc un champ que vous omettez est supprimé. Depuis la v3.2.2, la voie EVM mesure ce qu'un appel déplace réellement (valeur native, diminution du solde natif du compte, coins bancaires dépensés, et variation du solde ou de l'allowance de chaque ERC-20 listé) au lieu de se limiter à `msg.value`, et la création de contrat exige la permission distincte `deploy`. Un exemple plus riche :
+Les limites sont exprimées dans l'unité de base (`uqor`) et comptent par exécution autorisée ; la limite quotidienne borne le total par jour calendaire UTC. Les règles remplacent d'un bloc celles qui sont stockées, donc un champ que vous omettez est supprimé. Depuis la v3.2.2, la voie EVM mesure ce qu'un appel déplace réellement (valeur native, diminution du solde natif du compte, coins bancaires dépensés, et variation du solde ou de l'allowance de chaque ERC-20 listé) au lieu de se limiter à `msg.value`, et la création de contrat exige la permission distincte `deploy`. Un exemple plus riche (l'ERC-20 montré est le token de test fUSD du testnet ; utilisez l'adresse de contrat de votre propre token, et notez la barre oblique dans `erc20/<address>` dans une règle par opposition aux deux-points dans le denom bank `erc20:<address>`) :
 
 ```bash
 qorechaind tx abstractaccount update-rules <account-address> \
-  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0xTOKEN"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0xTOKEN","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
+  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0x97143B771D34ddb9130b807b135Ae675A5a963CA"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0x97143B771D34ddb9130b807b135Ae675A5a963CA","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
@@ -122,7 +122,7 @@ La chaîne résout la limite dans cet ordre : la règle propre à l'authentifica
 
 ## Authentificateurs de portefeuilles liés — dépenses déléguées {#authenticators}
 
-La conception des authentificateurs a été introduite dans la version de chaîne **v3.1.85** (qui s'appuie sur le modèle de permissions de la v3.1.84). Elle n'est **pas utilisable sur les réseaux en production tant que le module est désactivé** (voir l'encadré d'état en haut de cette page). Une **clé de portefeuille externe liée** — une clé Phantom (ed25519) ou un compte MetaMask (secp256k1) — peut **dépenser depuis le compte post-quantique canonique** selon des conditions révocables, à moindre privilège et à dépenses limitées. La clé externe ne produit jamais de signature ML-DSA ; un **relayeur** soumet et paie l'enveloppe de transaction (la propre signature PQC hybride du relayeur satisfait les exigences de signature de la chaîne), tandis que la signature de l'authentificateur sur des **octets de signature séparés par domaine et protégés contre le rejeu** constitue l'autorisation.
+La conception des authentificateurs a été introduite dans la version de chaîne **v3.1.85** (qui s'appuie sur le modèle de permissions de la v3.1.84). Elle n'est **pas utilisable sur le mainnet tant que le module y est désactivé**, et elle est disponible sur le testnet, où le module est activé (voir l'encadré d'état en haut de cette page). Une **clé de portefeuille externe liée** — une clé Phantom (ed25519) ou un compte MetaMask (secp256k1) — peut **dépenser depuis le compte post-quantique canonique** selon des conditions révocables, à moindre privilège et à dépenses limitées. La clé externe ne produit jamais de signature ML-DSA ; un **relayeur** soumet et paie l'enveloppe de transaction (la propre signature PQC hybride du relayeur satisfait les exigences de signature de la chaîne), tandis que la signature de l'authentificateur sur des **octets de signature séparés par domaine et protégés contre le rejeu** constitue l'autorisation.
 
 ### Enregistrer un authentificateur {#register-authenticator}
 
@@ -243,7 +243,7 @@ Les échecs d'application des règles renvoient des codes distincts (codespace `
 | --- | --- | --- |
 | `5` | Limite de dépenses dépassée (par transaction ou quotidienne) | Afficher l'allocation restante |
 | `6` | Authentificateur expiré | « Expiré — reliez à nouveau votre portefeuille » |
-| `9` | Module désactivé (l'état actuel sur les deux réseaux) | « Les portefeuilles liés ne sont pas encore disponibles » |
+| `9` | Module désactivé (l'état actuel sur le mainnet) | « Les portefeuilles liés ne sont pas encore disponibles » |
 | `10` | Permission refusée (portée ou message non délégable) | Afficher la permission manquante |
 | `11` | Rejeu refusé (nonce/séquence périmé) | Réinterroger le nonce et signer à nouveau |
 
@@ -254,7 +254,7 @@ Les échecs d'application des règles renvoient des codes distincts (codespace `
 Les requêtes en lecture du module sont servies via REST (depuis la **v3.1.85**) :
 
 ```
-GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on both networks today
+GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on mainnet today; enabled: true on the testnet
 GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
@@ -275,7 +275,7 @@ qorechaind query abstractaccount account <address>
 qorechaind query abstractaccount accounts --page-limit 10
 ```
 
-Sur le mainnet, la liste des comptes est vide ; le testnet liste quelques comptes créés avant que le paramètre d'activation ne soit appliqué sur chaque chemin.
+Sur le mainnet, la liste des comptes est vide. Le testnet liste quelques comptes (quatre le 27 octobre 2026), dont certains créés avant que le paramètre d'activation ne soit appliqué sur chaque chemin.
 
 ### JSON-RPC
 

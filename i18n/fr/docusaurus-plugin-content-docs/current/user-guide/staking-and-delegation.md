@@ -10,7 +10,7 @@ sidebar_position: 2
 Ce guide explique comment déléguer des tokens QOR à des validateurs, redéléguer entre validateurs, désengager votre mise, réclamer vos récompenses, et comprendre quelles parties de la conception du staking de QoreChain sont actives aujourd'hui.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est actif depuis le 7 juin 2026 et exécute la version **v3.2.4** (appliquée le 23 octobre 2026) ; le testnet exécute la v3.2.4 depuis le 19 octobre 2026. Substituez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au mainnet** lorsque vous staker sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est actif depuis le 7 juin 2026 et exécute la version **v3.2.4** (appliquée le 23 octobre 2026) ; le testnet exécute la v3.2.6 (depuis le 27 octobre 2026). Substituez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au mainnet** lorsque vous staker sur le mainnet.
 :::
 
 :::caution Signer avec `tx pqc cosign`

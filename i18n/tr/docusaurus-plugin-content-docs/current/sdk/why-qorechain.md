@@ -59,7 +59,8 @@ if (!preflight.safe) {
 deterministik bir precompile olarak *zincirin içinde* çalışacak şekilde
 tasarlanmıştır (`aiRiskScore` `0x…0B01` adresinde, `aiAnomalyCheck` `0x…0B02`
 adresinde). Bu precompile'lar etkinleştirilene kadar yukarıdaki yardımcılar
-genel ağlarda hata verir (`returned no data ("0x")`). Bkz.
+genel ağlarda hata verir (`returned no data ("0x")`; testnet'in
+etkin üç precompile'ı PQC ve konsensüs olanlarıdır, bunlar değil). Bkz.
 [AI pre-flight](/sdk/guides/ai-preflight).
 
 ---
@@ -96,12 +97,12 @@ await crossVM.callAtomic([
 ```
 
 **Neden farklı:** QoreChain, üç eş-yerleşik VM'i yerleşik bir köprü modülüyle
-(`crossvm`, ayrıca etkinleştirildiğinde `CrossVMBridge` precompile'ı)
+(`crossvm`, ayrıca etkinleştirildiğinde `CrossVMBridge` precompile'ı; henüz hiçbir ağda etkin değildir)
 çalıştırır; böylece tek bir SDK arayüzü üçünü de adresleyebilir. Tek VM'li
 zincirlerde sarmalanacak eşdeğer bir şey yoktur. Bugün bir çağrının erişimi,
 hedeflediği şerit tarafından sınırlanır: `MsgCrossVMCall` mainnet'te
 kapatılmıştır, SVM işlemleri devre dışıdır ve QoreChain Native yükleme ile örnekleme
-(instantiate) izne tabidir. Bkz. [Cross-VM calls](/sdk/guides/cross-vm).
+(instantiate) izne tabidir (testnet'te örnekleme açıktır). Bkz. [Cross-VM calls](/sdk/guides/cross-vm).
 
 ---
 
@@ -135,7 +136,7 @@ await hybrid.signAndBroadcastHybrid({
 import { QuantumSafeBadge } from "@qorechain/react";
 
 // Shows a "Quantum-safe" indicator when the address has a registered PQC key
-// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0).
+// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
 
@@ -181,11 +182,12 @@ authenticator olarak bağlanabilir ([Authenticator'lar](/sdk/guides/authenticato
 limitler dahilinde ve bir relayer aracılığıyla harcama yapar.** (SDK 0.7.0,
 zincir v3.1.85.)
 
-:::caution Henüz canlı ağlarda kullanılamaz
-`abstractaccount` modülü `qorechain-vladi` ve `qorechain-diana` üzerinde
-kapalıdır (`GET /qorechain/abstractaccount/v1/config` `"enabled": false`
+:::caution Henüz ana ağda kullanılamaz
+`abstractaccount` modülü `qorechain-vladi` üzerinde kapalıdır
+(`GET /qorechain/abstractaccount/v1/config` `"enabled": false`
 döndürür) ve zincir v3.2.0'dan itibaren bu bayrak her yolda zorunlu kılınır;
-dolayısıyla bir anahtar bağlanamaz ve aşağıdaki şeritler kullanılamaz. Bkz.
+dolayısıyla ana ağda bir anahtar bağlanamaz ve aşağıdaki şeritler kullanılamaz.
+Modül `qorechain-diana` test ağında etkindir (27 Ekim 2026'da kontrol edildi). Bkz.
 [Authenticators kılavuzu](/sdk/guides/authenticators).
 :::
 

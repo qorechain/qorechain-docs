@@ -14,10 +14,10 @@ Las llamadas entre VM solo están disponibles en la medida en que lo esté su la
 
 * `MsgCrossVMCall` está **desactivado en mainnet** por el disyuntor (circuit breaker) (`qorechaind query circuit disabled-list`); en la testnet está habilitado.
 * El **lane de SVM está deshabilitado** para transacciones en ambas redes, por lo que un tramo SVM no puede ejecutarse.
-* **La carga e instanciación de QoreChain Native requieren permisos** en ambas redes y la mainnet no tiene código de contrato almacenado, por lo que todavía no hay ningún contrato QoreChain Native al que llamar.
-* El **precompilado de EVM síncrono no está activo** (véase más abajo). Una versión reforzada está en el binario desde v3.2.3, pero no hay ningún precompilado activado en ninguna de las dos redes, y la v3.2.4 (testnet desde el 19 de octubre de 2026, mainnet desde el 23 de octubre de 2026) no lo cambia.
+* **La carga de QoreChain Native requiere permisos** en ambas redes y **la instanciación requiere permisos en la mainnet**, que no tiene código de contrato almacenado, por lo que todavía no hay ningún contrato QoreChain Native al que llamar en la mainnet. En la testnet, la gobernanza almacenó algunos contratos revisados que cualquier cuenta puede instanciar (véase [Desarrollo con QoreChain Native](/developer-guide/cosmwasm-development)), por lo que allí puede existir un destino QoreChain Native.
+* El **precompilado de EVM síncrono no está activo** (véase más abajo). Una versión reforzada está en el binario desde v3.2.3, pero el precompilado CrossVM no está activado en ninguna de las dos redes. (El 27 de octubre de 2026 la gobernanza de la testnet activó otros tres precompilados, PQC Verify, PQC Key Status y PRISM Consensus Params; la mainnet no tiene ninguno activo. La v3.2.4 no cambia qué precompilados están activos.)
 
-Las rutas REST del módulo (`/qorechain/crossvm/v1/...`) no las sirve la pasarela pública; lee los mensajes con la CLI o con un cliente de consultas gRPC/ABCI.
+En la mainnet, las rutas REST del módulo (`/qorechain/crossvm/v1/...`) no las sirve la pasarela pública (`501`); lee los mensajes con la CLI o con un cliente de consultas gRPC/ABCI.
 :::
 
 :::note
@@ -88,7 +88,7 @@ contract CrossVMCaller {
 
 Este es el formato que decodifica el nodo; es el mismo que construye el codificador de `@qorechain/rdk`, y el contrato anterior coincide con el starter de [Multi-VM](/rollups/multi-vm). No se pueden adjuntar fondos a través del precompilado (la ruta de mensajes `MsgCrossVMCall` admite `--funds`). El ejemplo no puede hacer nada hoy en ninguna de las dos redes, porque el precompilado no está activo (véase la advertencia anterior); la ABI aún puede cambiar antes de la activación.
 
-Una vez activo, el precompilado ejecuta el contrato QoreChain Native de inmediato y devuelve el resultado. (El helper `encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 construye el calldata; véase [Multi-VM](/rollups/multi-vm).) Coste de gas: **50.000 base + 4 por byte de entrada + coste de ejecución**.
+Una vez activo, el precompilado ejecuta el contrato QoreChain Native de inmediato y devuelve el resultado. (El helper `encodeCrossVmCalldata` de `@qorechain/rdk`, disponible desde la 0.6.0 y en la actual 0.6.1, construye el calldata; véase [Multi-VM](/rollups/multi-vm).) Coste de gas: **50.000 base + 4 por byte de entrada + coste de ejecución**.
 
 ---
 
@@ -108,7 +108,7 @@ qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
 Otros indicadores: `--funds <coins>` (solo para destinos QoreChain Native) y `--async` para poner la llamada en cola en lugar de ejecutarla ahora. Firma y difunde `tx.json` con `tx pqc cosign` (consulta [Firma poscuántica](/developer-guide/post-quantum-signing)); el mínimo de comisión es de 0.1 uqor por gas. Una llamada hacia el propio lane del llamante se rechaza (desde v3.2.3).
 
 :::caution Desactivado en mainnet
-`MsgCrossVMCall` está desactivado en mainnet por el disyuntor, por lo que el comando hoy no puede tener éxito allí. (Los binarios publicados antes de v3.2.3 además construían un mensaje que no superaba su propia validación porque la VM de origen estaba vacía; el binario v3.2.3 lo corrige.) En la testnet el mensaje está habilitado, pero sus destinos QoreChain Native y SVM no son utilizables (véase más arriba), por lo que solo se puede alcanzar un destino EVM.
+`MsgCrossVMCall` está desactivado en mainnet por el disyuntor, por lo que el comando hoy no puede tener éxito allí. (Los binarios publicados antes de v3.2.3 además construían un mensaje que no superaba su propia validación porque la VM de origen estaba vacía; el binario v3.2.3 lo corrige.) En la testnet el mensaje está habilitado, pero el lane de SVM está deshabilitado, por lo que no se puede alcanzar un destino SVM; sí se puede alcanzar un destino EVM y, una vez instanciado allí un contrato, un destino QoreChain Native.
 :::
 
 ---

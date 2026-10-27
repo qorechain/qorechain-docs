@@ -10,7 +10,7 @@ sidebar_position: 8
 ## 메인넷이 라이브 상태인가요?
 
 네, 메인넷은 **라이브** 상태입니다 (체인 ID `qorechain-vladi`, 2026년 6월 7일부터
-라이브이며, 체인 버전 v3.2.4를 실행합니다(2026년 10월 23일 높이 3,742,566에서 적용, 거버넌스 제안 13). 테스트넷은 2026년 10월 19일부터 v3.2.4를 실행하고 있습니다). 테스트넷 프리셋
+라이브이며, 체인 버전 v3.2.4를 실행합니다(2026년 10월 23일 높이 3,742,566에서 적용, 거버넌스 제안 13). 테스트넷은 v3.2.6을 실행합니다(2026년 10월 27일 적용)). 테스트넷 프리셋
 (`qorechain-diana`)도 계속 사용할 수 있습니다. 두 프리셋 모두 기본값으로
 localhost 엔드포인트를 사용하므로, `createClient({ network: "mainnet" })`으로
 네트워크를 선택하고 `endpoints`를 여러분의 노드 URL로 재정의하세요. 자세한 내용은
@@ -49,12 +49,14 @@ npm i @qorechain/svm @solana/web3.js
 
 ## 프리컴파일 호출에서 "returned no data" / "feature not present" 오류가 발생합니다
 
-QoreChain EVM 프리컴파일은 노드에 컴파일되어 있지만 메인넷이나 테스트넷에서는
-**아직 활성화되지 않았습니다**. 프리컴파일은 해당 주소가 EVM 모듈의
-`active_static_precompiles` 파라미터에 나열된 곳에서만 응답하며, 이 목록은 두
-네트워크 모두에서 비어 있습니다. 현재 이 호출은 빈 데이터를 반환하므로 viem은
-`returned no data ("0x")`를 보고하고, 헬퍼는 퍼블릭 네트워크에서도 오류를
-발생시킵니다([EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status)
+QoreChain EVM 프리컴파일은 노드에 컴파일되어 있지만 **메인넷에서는 활성화되지
+않았고**, 테스트넷에서는 세 개만 활성화되어 있습니다. 프리컴파일은 해당 주소가
+EVM 모듈의 `active_static_precompiles` 파라미터에 나열된 곳에서만 응답합니다.
+이 목록은 메인넷에서 비어 있고, 테스트넷에는 PQC 검증(`0x…0A01`), PQC 키 상태
+(`0x…0A02`), 합의 파라미터(`0x…0C01`) 프리컴파일이 들어 있으므로(2026년 10월 27일
+확인) AI 쌍과 크로스 VM 브리지는 그곳에서도 여전히 아무것도 응답하지 않습니다.
+프리컴파일이 비활성인 곳에서는 호출이 빈 데이터를 반환하므로 viem은
+`returned no data ("0x")`를 보고하고, 헬퍼는 오류를 발생시킵니다([EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status)
 참고). 일반 EVM 노드에서도 호출은 같은 방식으로 실패합니다.
 `GET /cosmos/evm/vm/v1/params`를 확인하고, 각 프리컴파일 호출을 감싸서 호출별로
 오류를 처리하세요.
@@ -83,14 +85,14 @@ EVM 런타임은 QOR를 **18** 자리 소수(EVM 관례)로 표현하며, 이는
 
 ## 어떤 패키지가 배포되어 있으며, 어디에 있나요?
 
-모두 배포되어 있습니다(2026년 10월 21일 확인). TypeScript 코어(`@qorechain/sdk`, 0.9.0),
-React 키트(`@qorechain/react`, 0.9.0), `create-qorechain-dapp` 스캐폴더(0.9.0),
+모두 배포되어 있습니다(2026년 10월 27일 확인). TypeScript 코어(`@qorechain/sdk`, 0.10.0),
+React 키트(`@qorechain/react`, 0.10.0), `create-qorechain-dapp` 스캐폴더(0.10.0),
 그리고 EVM/SVM 어댑터(`@qorechain/evm`, `@qorechain/svm`, 0.8.0)는 npm에 있습니다.
-Python 클라이언트는 PyPI에 있으며(`pip install qorechain-sdk`로 0.9.0 설치, `qorsdk`로
+Python 클라이언트는 PyPI에 있으며(`pip install qorechain-sdk`로 0.10.0 설치, `qorsdk`로
 import), Go 클라이언트는 모듈 프록시에 있습니다
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`). Rust 클라이언트는
-crates.io에 있으며(`cargo add qorechain-sdk`, 0.9.0), Java 클라이언트는 Maven Central에
-있습니다(`io.github.qorechain:qorechain-sdk:0.9.1`, 다른 언어는 0.9.0). 언어별 전체 설치 명령은
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.10.0`). Rust 클라이언트는
+crates.io에 있으며(`cargo add qorechain-sdk`, 0.10.0), Java 클라이언트는 Maven Central에
+있습니다(`io.github.qorechain:qorechain-sdk:0.10.0`). 언어별 전체 설치 명령은
 [설치](/sdk/install) 문서를 참고하세요.
 
 ## 니모닉이 거부됩니다
@@ -108,14 +110,14 @@ v3.2.0). 하이브리드 트랜잭션이 PQC 검증을 통과하려면 서명자
 **명시적으로 등록**되어 있어야 합니다. 공개키를 확장에 포함시키는 것
 (`includePqcPublicKey: true`)은 키를 등록하지 **않으며**, 체인은 최초 사용 시
 키를 등록하지 않습니다. TypeScript에서는 클라이언트에 키쌍을 전달하면
-(`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) 클라이언트가 보내는 모든
+(`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0 이상) 클라이언트가 보내는 모든
 트랜잭션이 하이브리드로 서명됩니다.
 체인은 헤지(hedged)든 결정론적이든 유효한 FIPS-204 ML-DSA-87 서명을 모두
 허용합니다. SDK는 (0.5.1부터) 기본적으로 결정론적으로 서명하므로 트랜잭션은 항상
 같은 서명과 tx 해시를 가집니다. 하이브리드 tx가 `pqc` 코드 21
 (`hybrid_verify_failed`)로 실패한다면 원인은 sign-bytes 버전, 체인 ID, 오래된 PQC
 라이브러리 또는 등록되지 않았거나 다른 키이며, 헤지 서명은 원인이 아닙니다.
-두 네트워크 모두 v2 sign-bytes 형식을 검증하므로 SDK **0.8.1 이상**(현재는 0.9.0)을
+두 네트워크 모두 v2 sign-bytes 형식을 검증하므로 SDK **0.8.1 이상**(현재는 0.10.0)을
 사용하고 `rest`(또는 `signBytesVersion`)를 전달하세요. 둘 중 하나가 없으면 빌더는
 `qorechain-vladi` / `qorechain-diana`에서 오류를 발생시킵니다. 자세한 내용은
 [코드 21 문제 해결](/developer-guide/post-quantum-signing#code-21) 및
@@ -140,21 +142,24 @@ SDK를 업그레이드하세요. **0.6.0 이하** 버전은
 
 ## SDK는 어떤 체인 버전과 함께 동작하나요?
 
-SDK **0.9.0**은 체인 v3.2.2와 v3.2.3을 위한 클라이언트 릴리스입니다. 메인넷과
-테스트넷 **v3.2.4**(메인넷은 2026년 10월 23일부터)에서 트랜잭션을 보낼 수 있으며, 등록 시의 선택적
-소유 증명(네트워크가 v3.2.3을 적용한 뒤에는 `ensurePqcRegistered`가 자동으로
-첨부), 범위 지정 EVM 윈도우, EIP-7702 동의 메시지를 위한 빌더가 있습니다.
+SDK **0.10.0**은 체인 **v3.2.4**(메인넷은 2026년 10월 23일 높이 3,742,566에서
+거버넌스 제안 13으로, 테스트넷은 10월 19일부터)를 위한 클라이언트 릴리스입니다.
+스테이킹 티어 빌더와 조회, `fetchAuthNonce`, 프로토콜 기능 조회가 추가되었으며
+([0.10.0의 추가 사항](/sdk/install#whats-new-0100) 참고), 그 위에 0.9.0이 v3.2.2와
+v3.2.3을 위해 추가한 것이 있습니다: 등록 시의 선택적 소유 증명(네트워크가 v3.2.3을
+적용한 뒤에는 `ensurePqcRegistered`가 자동으로 첨부), 범위 지정 EVM 윈도우,
+EIP-7702 동의 메시지를 위한 빌더입니다.
 SDK **0.8.1 이상**도 두 네트워크 모두에서 트랜잭션을 보낼 수 있지만(v2 하이브리드
 sign-bytes 형식, 등록, 하이브리드 전송, EVM 윈도우는 그대로 동작합니다) 이러한
 빌더는 없으므로, 해당 기능에는 CLI를 사용하세요([0.9.0 이전
-버전](/sdk/install#before-090) 참고). v3.2.4는 2026년 10월 19일부터 테스트넷에서
-실행 중이며 메인넷에서는 2026년 10월 23일(높이 3,742,566, 거버넌스 제안 13)부터 실행 중입니다. SDK는
-v3.2.4 필드를 설정하지 않으므로, SDK의 트랜잭션은 업그레이드 전후 모두
-유효합니다.
+버전](/sdk/install#before-090) 참고). 서명 형식은 v3.2.4에서 바뀌지 않았습니다.
+테스트넷은 v3.2.6을 실행합니다(v3.2.5는 2026년 10월 26일, v3.2.6은 10월 27일에
+적용). SDK에는 v3.2.4 이후에 도입된 것을 위한 빌더가 없으며, 다음 메인넷 릴리스의
+기능은 메인넷이 이를 적용하는 날 문서화됩니다.
 
 ## PQC 키 등록이 거부되었는데 수수료는 차감되었습니다
 
-이미 키를 보유한 계정의 등록은 수수료가 차감된 뒤에 체인이 거부합니다. 0.9.0의
+이미 키를 보유한 계정의 등록은 수수료가 차감된 뒤에 체인이 거부합니다. 0.9.0 이상의
 `ensurePqcRegistered`는 먼저 `GET /qorechain/pqc/v1/account/{address}`를 읽고
 (`rest`를 전달하세요), 이 키쌍의 키가 등록되어 있으면 등록을 건너뛰며, 다른 키가
 등록되어 있으면 `PqcKeyMismatchError`를 발생시킵니다. 이전 릴리스는 직접
@@ -165,7 +170,7 @@ v3.2.4 필드를 설정하지 않으므로, SDK의 트랜잭션은 업그레이�
 ## `create-qorechain-dapp`이 서명할 수 없는 SDK를 설치합니다
 
 스캐폴더의 0.8.0 버전만 그랬습니다. 이 버전은 `@qorechain/sdk`와 `@qorechain/evm`에
-`^0.3.0` 범위를 기록했는데, 0.x 버전에 대한 캐럿 범위는 0.3 안에 머뭅니다. 0.9.0
+`^0.3.0` 범위를 기록했는데, 0.x 버전에 대한 캐럿 범위는 0.3 안에 머뭅니다. 0.9.0 이상
 버전은 현재 SDK로 스캐폴딩합니다. 0.8.0을 사용했다면 스캐폴딩 후
 `npm i @qorechain/sdk@latest`(및 `@qorechain/evm@latest`)를 실행하세요.
 
@@ -176,18 +181,19 @@ v3.2.4 필드를 설정하지 않으므로, SDK의 트랜잭션은 업그레이�
 
 ## 인증자(authenticator) 지출이 `authenticator_replay`로 거부됩니다
 
-(`abstractaccount` 모듈은 현재 두 네트워크 모두에서 꺼져 있으며, 지출은 nonce가
-확인되기 전에 `abstract account module is disabled`로 거부됩니다.
-[인증자 및 위임 지출](/sdk/guides/authenticators)을 참고하세요. 아래 안내는
-모듈이 활성화된 이후에 적용됩니다.)
+(`abstractaccount` 모듈은 메인넷에서 꺼져 있으며, 그곳에서 지출은 nonce가
+확인되기 전에 `abstract account module is disabled`로 거부됩니다. 테스트넷에서는
+활성화되어 있습니다. [인증자 및 위임 지출](/sdk/guides/authenticators)을 참고하세요.
+아래 안내는 모듈이 활성화된 곳에서 적용됩니다.)
 
 nonce가 잘못되었습니다. `MsgExecuteEVM.nonce`와 `MsgExecuteCosmos.nonce`는 모두
 `(account, pubkey)`에 대한 연결된 키의 **인증자 시퀀스**입니다. 이는 체인이 연결된
 키마다 유지하는 카운터로, 0에서 시작하여 실행에 성공할 때마다 증가합니다. 계정의
-EVM nonce가 **아니며**, 아직 이를 조회하는 쿼리가 없으므로 연결된 키마다 직접
-추적하세요. v3.2.3부터 EVM 레인은 호출의 가스 한도를 바인딩하는
-`evmAuthSignBytesV2`에도 서명합니다(`resolveEvmAuthDigestVersion`이 형식을
-선택합니다). 해당 키에 대해 추적 중인 카운터를 사용하여 다시 서명하세요.
+EVM nonce가 **아닙니다**. `fetchAuthNonce`(SDK 0.10.0, 체인 v3.2.4 이상)로 조회하거나,
+이전 버전에서는 연결된 키마다 직접 추적하세요. v3.2.3부터 EVM 레인은 호출의 가스
+한도를 바인딩하는 `evmAuthSignBytesV2`에도 서명합니다(`resolveEvmAuthDigestVersion`이
+형식을 선택합니다). 해당 키에 대해 조회한(또는 추적 중인) 카운터를 사용하여 다시
+서명하세요.
 
 그 밖의 인증자 실패는 `decodeTxError`로 디코딩됩니다: `abstractaccount` 코드 5
 (`spending_limit_exceeded`), 6(`session_key_expired`), 10

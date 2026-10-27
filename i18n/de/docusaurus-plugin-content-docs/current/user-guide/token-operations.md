@@ -10,7 +10,7 @@ sidebar_position: 1
 Dieser Leitfaden behandelt den QOR-Token, das Senden und Empfangen von Token, das Abfragen von Guthaben sowie das Verständnis des Gebührenverteilungsmodells von QoreChain.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft seit dem 23. Oktober 2026 auf Release **v3.2.4**; das Testnet läuft seit dem 19. Oktober 2026 mit **v3.2.4** — ersetzen Sie die Mainnet-Chain-ID und -Endpunkte von der Seite **Connecting to Mainnet**, wenn Sie im Mainnet Transaktionen durchführen.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft seit dem 23. Oktober 2026 auf Release **v3.2.4**; das Testnet läuft (seit dem 27. Oktober 2026) mit **v3.2.6** — ersetzen Sie die Mainnet-Chain-ID und -Endpunkte von der Seite **Connecting to Mainnet**, wenn Sie im Mainnet Transaktionen durchführen.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -98,7 +98,7 @@ Die Aufteilung gilt für alles, was in den Fee Collector fließt, der die Transa
 
 ## Burn-Kanäle
 
-Das Burn-Modul von QoreChain definiert 12 Burn-Quellen. QOR, das über eine davon verbrannt wird, wird dauerhaft aus dem Umlauf entfernt. Im Mainnet haben bisher nur der Gas-Gebühren-Kanal und der Kanal für fehlgeschlagene Transaktionen Burns verzeichnet; die anderen sind definiert, haben aber nichts verzeichnet. Ab v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026) gibt es eine dreizehnte Quelle, `staking_tier_penalty`, für das optionale Modul für zeitgesperrtes Staking.
+Das Burn-Modul von QoreChain definiert 12 Burn-Quellen. QOR, das über eine davon verbrannt wird, wird dauerhaft aus dem Umlauf entfernt. Im Mainnet haben bisher nur der Gas-Gebühren-Kanal und der Kanal für fehlgeschlagene Transaktionen Burns verzeichnet; die anderen sind definiert, haben aber nichts verzeichnet. Ab v3.2.4 (Testnet seit dem 19. Oktober 2026, Mainnet seit dem 23. Oktober 2026) gibt es eine dreizehnte Quelle, `staking_tier_penalty`, für das optionale Modul für zeitgesperrtes Staking.
 
 | Kanal               | Beschreibung                                                                      |
 | ------------------ | -------------------------------------------------------------------------------- |

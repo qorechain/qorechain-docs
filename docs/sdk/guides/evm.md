@@ -257,10 +257,13 @@ QoreChain defines contract-callable precompiles at fixed addresses. The
 `precompiles` namespace provides typed bindings, and the addresses and ABIs are
 exported.
 
-> **Not active yet.** The QoreChain precompiles are compiled into the node but
-> not yet activated on mainnet (`qorechain-vladi`) or testnet
-> (`qorechain-diana`): a call returns empty data, so these helpers throw on the
-> public networks today as well. See
+> **Not active on mainnet; three on the testnet.** The QoreChain precompiles are
+> compiled into the node but none is activated on mainnet (`qorechain-vladi`).
+> On the testnet (`qorechain-diana`) the `active_static_precompiles` list holds
+> `0x…0A01` (PQC verify), `0x…0A02` (PQC key status) and `0x…0C01` (consensus
+> params), checked 27 October 2026; the AI pair (`0x…0B01`, `0x…0B02`) and the
+> cross-VM bridge (`0x…0901`) are not active on either network. A call to an
+> inactive address returns empty data, so those helpers throw. See
 > [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 
 | Precompile | Function | Address |
@@ -275,7 +278,7 @@ exported.
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read consensus parameters (once 0x…0C01 is active).
+// Read consensus parameters (0x…0C01 is active on the testnet, not on mainnet).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
@@ -294,7 +297,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 The precompile ABIs are exported as `IQORE_PQC_ABI`, `IQORE_AI_ABI`, and
 `IQORE_CONSENSUS_ABI`.
 
-> Where a precompile is not active (today: every public network), or on a node
+> Where a precompile is not active (mainnet: all of them; testnet: the AI pair and
+> the cross-VM bridge), or on a node
 > without the QoreChain precompiles, these calls throw a "feature not present"
 > error. Handle that per-call.
 

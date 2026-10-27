@@ -44,11 +44,15 @@ Du kannst einen Lese-Client auch direkt mit `createCosmWasmClient` konstruieren.
 ## Signieren: instanziieren, ausführen, hochladen
 
 :::caution Hochladen und Instanziieren sind berechtigungspflichtig
-`code_upload_access` und `instantiate_default_permission` sind auf
-`qorechain-vladi` und `qorechain-diana` auf `Nobody` gesetzt, und
+Auf `qorechain-vladi` (Mainnet) sind `code_upload_access` und
+`instantiate_default_permission` auf `Nobody` gesetzt, und
 `MsgStoreCode` / `MsgInstantiateContract` / `MsgInstantiateContract2` sind
 zusätzlich durch den Circuit Breaker der Chain abgeschaltet, sodass `uploadCode`
-und `instantiate` für gewöhnliche Konten abgelehnt werden. Bereits vorhandene
+und `instantiate` für gewöhnliche Konten abgelehnt werden. Auf `qorechain-diana`
+(Testnet, geprüft am 27. Oktober 2026) ist `code_upload_access` auf `Nobody`
+gesetzt und nur `MsgStoreCode` abgeschaltet, während
+`instantiate_default_permission` auf `Everybody` steht, sodass `instantiate` dort
+für bereits vorhandenen Code offen ist. Bereits vorhandene
 Verträge können abgefragt (siehe oben) und ausgeführt werden. Prüfe
 `GET /cosmwasm/wasm/v1/codes/params` für die aktuellen Berechtigungen.
 Siehe [QoreChain Native-Entwicklung](/developer-guide/cosmwasm-development).

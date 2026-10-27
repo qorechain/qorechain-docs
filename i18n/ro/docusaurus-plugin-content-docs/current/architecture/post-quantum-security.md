@@ -271,9 +271,7 @@ Aceste utilitare stau la baza hash-ului implicit al aplicației și sunt folosit
 
 ## PQC pentru bridge
 
-Toate atestările de bridge inter-lanț și angajamentele de stare folosesc semnături **Dilithium-5**. Modulul `x/multilayer` necesită semnături agregate PQC la fiecare trimitere `MsgAnchorState`, iar angajamentele ML-KEM securizează canalele de schimb de chei dintre relayer-ele de bridge.
-
-Aceasta asigură că securitatea inter-lanț nu este degradată de utilizarea criptografiei clasice în infrastructura de bridge, menținând rezistența cuantică pe întreaga stivă de protocol. Nicio rută de bridge nu este activă (vezi [Bridge Architecture](/architecture/bridge-architecture#current-status)); de la v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026), înregistrarea unui validator de bridge necesită și o dovadă a deținerii cheii sale PQC.
+Atestările de bridge sunt concepute să folosească semnături **Dilithium-5** (ML-DSA-87), astfel încât securitatea inter-lanț să nu fie degradată de criptografia clasică din infrastructura de bridge. Aceasta este intenție de proiectare: descrie cum sunt menite să ateste validatorii de bridge, nu un comportament pe care îl puteți exersa astăzi pe o rețea live. Nicio rută de bridge nu este activă (vezi [Bridge Architecture](/architecture/bridge-architecture#current-status)); de la v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026), înregistrarea unui validator de bridge necesită și o dovadă a deținerii cheii sale PQC.
 
 ## Parametrii modulului
 
@@ -285,6 +283,8 @@ Aceasta asigură că securitatea inter-lanț nu este degradată de utilizarea cr
 | `default_migration_blocks` | int64               | `1,000,000`       | Perioada implicită de migrare cu semnătură dublă în blocuri     |
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Algoritmul de semnătură implicit pentru noile înregistrări de chei |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Nivelul de impunere a semnăturii hibride la nivel de lanț         |
+
+Testnet-ul returnează aceleași valori (verificat la 27 octombrie 2026). Începând cu v3.2.6, testnet-ul le servește și prin REST la `GET /qorechain/pqc/v1/params`; pe mainnet această rută răspunde cu 501 (neimplementat), iar parametrii se citesc cu `qorechaind query pqc params`.
 
 ## Resurse conexe
 

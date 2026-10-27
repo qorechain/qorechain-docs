@@ -10,18 +10,20 @@ sidebar_position: 3
 QoreChainは**QoreChain Native**スマートコントラクトをサポートしています。QoreChain Nativeは、QoreChainが自身の**CosmWasm**ランタイムにつけた名称で、開発者は標準のCosmWasmライブラリ（`cosmwasm-std`）を使ってRustで安全かつサンドボックス化されたプログラムを記述し、WebAssemblyへコンパイルします。QoreChain Nativeコントラクトは、QoreChainのトリプルVMアーキテクチャの中でEVMおよびSVMプログラムと並行して実行されます。
 
 :::note
-以下のコマンドは、2026年6月7日から稼働しているメインネット**`qorechain-vladi`**（2026年10月23日からノードリリース**v3.2.4**を実行。ガバナンス提案13、高さ3,742,566）を対象としています。テストネット（2026年10月19日からv3.2.4を実行）の場合は `--chain-id qorechain-diana` に置き換えてください。
+以下のコマンドは、2026年6月7日から稼働しているメインネット**`qorechain-vladi`**（2026年10月23日からノードリリース**v3.2.4**を実行。ガバナンス提案13、高さ3,742,566）を対象としています。テストネット（v3.2.6を実行。2026年10月19日からv3.2.4）の場合は `--chain-id qorechain-diana` に置き換えてください。
 :::
 
-:::caution コードのアップロードとインスタンス化には現在、明示的な権限が必要です
-本稿執筆時点で、`code_upload_access` と `instantiate_default_permission` はメインネットとテストネットの**両方**で**`Nobody`**に設定されています。つまり、QoreChain Nativeが基盤とするランタイムであるCosmWasmに対する業界全体のセキュリティ勧告に従い、`MsgStoreCode` と `MsgInstantiateContract` はデフォルトでは任意のアカウントに開放されていません。以下の手順を成功させるには、事前にガバナンスによってアカウント（または特定のアドレスリスト）にアップロード/インスタンス化の権限を付与してもらう必要があります。これはまさにガバナンスによって変更され得る種類の設定であるため、まず現行のパラメータを確認してください（メインネットには現在、保存済みのコントラクトコードが一切ありません）。
+:::caution コードのアップロードとインスタンス化にはメインネットで明示的な権限が必要です。テストネットは異なります
+本稿執筆時点（2026年10月27日に確認）で、`code_upload_access` と `instantiate_default_permission` は**メインネット**で両方とも**`Nobody`**に設定されています。つまり、QoreChain Nativeが基盤とするランタイムであるCosmWasmに対する業界全体のセキュリティ勧告に従い、`MsgStoreCode` と `MsgInstantiateContract` は任意のアカウントに開放されていません。**`qorechain-diana` テストネット**では設定が異なります。`code_upload_access` は引き続き `Nobody` です（コードはガバナンスを通じてのみ保存されます）が、`instantiate_default_permission` は2026年10月27日にテストネットのガバナンスによって**`Everybody`**に設定されたため、保存済みコードのパーミッションが許可していれば、どのアカウントでもそのコードをインスタンス化できます。以下の手順を成功させるには、事前にガバナンスによってアカウント（または特定のアドレスリスト）にアップロード/インスタンス化の権限を付与してもらう必要があります。これはまさにガバナンスによって変更され得る種類の設定であるため、まず現行のパラメータを確認してください（メインネットには現在、保存済みのコントラクトコードが一切ありません）。
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
-`MsgStoreCode`、`MsgInstantiateContract`、`MsgInstantiateContract2` の各メッセージタイプも、両ネットワークでチェーンのサーキットブレーカーによって無効化されています（`qorechaind query circuit disabled-list`）。そのため、権限を引き上げるだけでは足りず、これらのエントリが解除されるまで実行できません。
+チェーンのサーキットブレーカーも、メッセージタイプをネットワーク全体で無効化します（`qorechaind query circuit disabled-list`）。**メインネット**では `MsgStoreCode`、`MsgInstantiateContract`、`MsgInstantiateContract2` がリストに含まれているため、権限を引き上げるだけでは足りず、これらのエントリが解除されるまで実行できません。**テストネット**ではリストに含まれるのは `MsgStoreCode` のみです。インスタンス化は開放されており、アップロードは開放されていません。
+
+**テストネット: ガバナンスが保存した審査済みコントラクト。** テストネットでは一般のアカウントがコードをアップロードできないため、ガバナンスが誰でもインスタンス化できる審査済みコントラクト5つを保存しました（`instantiate_permission` は `Everybody`）。cw20-base（トークン）、cw721-base（NFTコレクション）、cw4-group、cw3-fixed-multisig、そして小さなカウンターコントラクトです。本稿執筆時点では、この順にコードID 859から863で、`GET /cosmwasm/wasm/v1/code` の一覧に作成者をガバナンスモジュールアカウントとして表示され、`data_hash` で識別されます。IDはハードコードせず、ライブの一覧から読み取ってください。これらはテストネットにのみ存在します。メインネットには保存済みコードがありません。
 
 この制限は、既にインスタンス化済みのコントラクトには影響しません — 既存のコントラクトに対する `execute` と `query` は、この設定にかかわらず通常どおり動作します。
 :::
@@ -265,4 +267,4 @@ qorechaind tx wasm migrate <contract-addr> <new-code-id> \
 
 * [クロスVM相互運用性](/developer-guide/cross-vm-interoperability) — QoreChain NativeからEVMおよびSVMコントラクトを呼び出す
 * [SVM開発](/developer-guide/svm-development) — QoreChain上にBPFプログラムをデプロイする
-* [EVMプリコンパイル](/developer-guide/evm-precompiles) — 計画中のSolidityプリコンパイルのリファレンス（現時点で有効なものはありません）
+* [EVMプリコンパイル](/developer-guide/evm-precompiles) — Solidityプリコンパイルのリファレンス（メインネットで有効なものはなく、テストネットでは3つが有効です）

@@ -29,7 +29,7 @@ EVM→네이티브 라우팅은 여전히 `@qorechain/evm`의 **크로스-VM 브
   호출합니다. 대신 `connectQueryClients(rpc).crossvm`으로 메시지를 읽으세요.
 - 모든 Native 경로 트랜잭션과 마찬가지로, 크로스-VM 호출도 하이브리드 서명을 담아야
   합니다. 서명 클라이언트를 계정의 키쌍과 함께 연결하면
-  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) 크로스-VM 클라이언트가
+  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0 이상) 크로스-VM 클라이언트가
   하이브리드로 서명합니다([계정 및 PQC 서명](/sdk/concepts/accounts-pqc#hybrid-signing) 참조).
   0.9.0 이전 릴리스는 클래식 방식으로 서명하므로 공개 네트워크가 이를 거부합니다.
 :::

@@ -16,12 +16,12 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
 `react` (>=18) è una peer dependency; `@qorechain/sdk` è una dipendenza diretta
-(`^0.9.0` dal kit 0.9.0; su una versione 0.x il caret resta dentro la 0.9, quindi una
-patch dell'SDK non installa una seconda copia). Usa `@qorechain/react` **0.9.0**: la 0.8.0 blocca
+(`^0.10.0` dal kit 0.10.0; su una versione 0.x il caret resta dentro la 0.10, quindi una
+patch dell'SDK non installa una seconda copia). Usa `@qorechain/react` **0.10.0** (la 0.9.0 funziona allo stesso modo): la 0.8.0 blocca
 l'SDK 0.8.0, che firma la forma ibrida sbagliata sulla mainnet, e le
 release 0.8.x precedenti possono mostrare un saldo o uno stato obsoleto dopo un cambio di indirizzo.
 
-:::caution Limiti del kit React sulle reti live (0.9.0)
+:::caution Limiti del kit React sulle reti live (0.9.0 e 0.10.0)
 `useTx` si connette con il firmatario del wallet e senza alcuna coppia di chiavi post-quantistica, quindi invia
 solo con la firma classica, che le reti live rifiutano (il percorso Native
 richiede l'estensione ibrida ML-DSA-87): `send` / `sendTokens` non possono far confermare una

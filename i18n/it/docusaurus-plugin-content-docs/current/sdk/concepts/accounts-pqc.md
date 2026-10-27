@@ -260,7 +260,7 @@ Una firma ed25519 è deterministica e qualsiasi sito web può chiedere al wallet
 Se hai creato un account in questo modo, consideralo compromesso da subito: crea un nuovo account da un mnemonic, sposta i fondi lì e poi collega Phantom al nuovo account come authenticator (vedi sotto). Il vecchio account non si può riparare, perché il suo indirizzo è legato alla chiave esposta e una rotazione della chiave PQC sostituisce solo la metà post-quantistica. Usa l'SDK 0.8.2 o successivo.
 :::
 
-Per far spendere una chiave Phantom (o MetaMask) da un account, usa le **corsie authenticator**: registra la chiave del wallet con `MsgRegisterAuthenticator`, poi spendi dall'account PQC canonico tramite `MsgExecuteCosmos` / `MsgExecuteEVM` entro un permesso e una `SpendingRule`. L'account mantiene le proprie chiavi derivate dal mnemonic e la chiave del wallet può essere revocata in qualsiasi momento. Vedi [Authenticator e spesa delegata](/sdk/guides/authenticators). Nota che il modulo `abstractaccount` che fornisce queste corsie è attualmente disattivato su entrambe le reti (`GET /qorechain/abstractaccount/v1/config` mostra `enabled: false`), quindi una chiave del wallet non può ancora essere collegata; fino ad allora usa direttamente il nuovo account da mnemonic.
+Per far spendere una chiave Phantom (o MetaMask) da un account, usa le **corsie authenticator**: registra la chiave del wallet con `MsgRegisterAuthenticator`, poi spendi dall'account PQC canonico tramite `MsgExecuteCosmos` / `MsgExecuteEVM` entro un permesso e una `SpendingRule`. L'account mantiene le proprie chiavi derivate dal mnemonic e la chiave del wallet può essere revocata in qualsiasi momento. Vedi [Authenticator e spesa delegata](/sdk/guides/authenticators). Nota che il modulo `abstractaccount` che fornisce queste corsie è disattivato sulla mainnet (`GET /qorechain/abstractaccount/v1/config` mostra `enabled: false`; sulla testnet è attivo), quindi sulla mainnet una chiave del wallet non può ancora essere collegata; fino ad allora usa direttamente il nuovo account da mnemonic.
 
 ## Crittografia post-quantistica (PQC)
 
@@ -310,7 +310,7 @@ protezione post-quantistica. La parte post-quantistica viaggia come
 estensione `PQCHybridSignature` sulla transazione.
 
 :::caution La firma ibrida è obbligatoria sul percorso Native
-A partire dalla versione **v3.2.0** della chain (la mainnet e la testnet eseguono entrambe la v3.2.4), il valore predefinito di rete è
+A partire dalla versione **v3.2.0** della chain (la mainnet esegue la v3.2.4, la testnet la v3.2.6), il valore predefinito di rete è
 `hybrid_signature_mode = required` con `allow_classical_fallback = false`. La
 firma ibrida tramite `buildHybridTx` / `signAndBroadcastHybrid` (passa `rest`),
 oppure `signHybridEth` / `EthNativeSigner` per gli account unificati

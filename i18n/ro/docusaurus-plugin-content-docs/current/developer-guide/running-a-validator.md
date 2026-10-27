@@ -10,7 +10,7 @@ sidebar_position: 9
 Acest ghid acoperă modul de creare a unui validator pe rețeaua QoreChain, înțelegerea designului de clasificare pe pool-uri, înregistrarea unei chei PQC pentru securitate rezistentă la calculatoarele cuantice și monitorizarea nodului tău.
 
 :::note
-Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.4** (aplicată prin propunerea de guvernanță 13 la înălțimea 3.742.566, pe 23 octombrie 2026, după v3.2.3 la înălțimea 3.662.051, pe 20 octombrie 2026). Un validator trebuie să ruleze binarul v3.2.4; consultați [Rularea unui nod: Upgrade-uri](/developer-guide/running-a-node#upgrades). Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**, care rulează v3.2.4 din 19 octombrie 2026) este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă. Timpii de bloc diferă: aproximativ 3,2 s pe mainnet și aproximativ 1,0 s pe testnet, așa că convertește numărul de blocuri în timp separat pentru fiecare rețea.
+Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.4** (aplicată prin propunerea de guvernanță 13 la înălțimea 3.742.566, pe 23 octombrie 2026, după v3.2.3 la înălțimea 3.662.051, pe 20 octombrie 2026). La momentul scrierii, un validator trebuie să ruleze binarul v3.2.4; propunerea de guvernanță 14 de pe mainnet ar aplica v3.2.5 la înălțimea 3.906.833, iar manifestul numește atunci binarul de instalat (vezi [Rularea unui nod: Upgrade-uri](/developer-guide/running-a-node#upgrades)). Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**) rulează v3.2.6 (aplicată pe 27 octombrie 2026, după v3.2.5 pe 26 octombrie) și este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă. Timpii de bloc diferă: aproximativ 3,2 s pe mainnet și aproximativ 1,3 s pe testnet (27 octombrie 2026; variază), așa că convertește numărul de blocuri în timp separat pentru fiecare rețea.
 :::
 
 :::caution Folosește binarul de release, nu un build din sursă
@@ -358,7 +358,7 @@ Pragul minim de taxe al rețelei este de 0,1 uqor per unitate de gas. Un cont de
 ## Validarea Rețelelor Conectate {#connected-networks}
 
 :::caution Nicio rețea conectată nu este activă încă
-Modulul bridge este implementat pe mainnet și pe testnet, dar **nicio rută bridge nu este activă**: toate cele 37 de configurații de chain au statusul `pending`, nu este înregistrat niciun validator bridge, nicio operațiune bridge nu a fost creată vreodată și nu există canale IBC. Framework-ul de mai jos descrie designul; astăzi nu există nimic de validat pe o rețea conectată.
+Modulul bridge este implementat pe mainnet și pe testnet, dar **nicio rută bridge nu este activă**: toate cele 37 de configurații de chain au statusul `pending`, nu este înregistrat niciun validator bridge, nicio operațiune bridge nu a fost creată vreodată și nu este deschis niciun canal IBC pe mainnet (testnet-ul are un canal de transfer, care nu este o rută bridge). Framework-ul de mai jos descrie designul; astăzi nu există nimic de validat pe o rețea conectată.
 :::
 
 Designul (începând cu versiunea de chain **v3.1.80**) permite unui validator QoreChain să ajute și la validarea rețelelor conectate prin [bridge](/architecture/bridge-architecture). Este **condiționat de licență și opțional**:

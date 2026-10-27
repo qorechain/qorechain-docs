@@ -26,8 +26,8 @@ El binario actual, el génesis, los peers, las seeds y un punto de confianza par
 Los campos del manifiesto incluyen `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un punto de confianza actualizado cada hora) y `minCompatible`. Los pasos de instalación y unión a la red que siguen obtienen este manifiesto y usan sus valores actuales.
 :::
 
-:::caution Usa el lanzamiento que indica el manifiesto: v3.2.4 en ambas redes
-Un nodo que sincroniza desde el génesis o reproduce desde un snapshot atraviesa varias actualizaciones de gobernanza (consulta [Actualizaciones](#upgrades) más abajo), así que instala siempre el binario al que apunta el manifiesto: incluye todos los manejadores de actualización. En **mainnet**, `minCompatible` y `version` del manifiesto son ambos `3.2.4` (la actualización coordinada aplicada en la altura 3,742,566 el 23 de octubre de 2026, propuesta de gobernanza 13), por lo que un nodo que se une ahora necesita v3.2.4: un binario anterior se detiene en una altura de actualización que no conoce. En la **testnet** también son ambos `3.2.4` (aplicada en la altura 8,337,253 el 19 de octubre de 2026). No ejecutes un binario de testnet contra mainnet ni al revés: cada directorio lleva su propio lanzamiento (consulta [Actualizaciones](#upgrades)). El manifiesto se promueve de forma deliberada (primero testnet, mainnet después de un período de rodaje), así que comprueba su campo `"version"` frente a `minCompatible` antes de confiar en `binary.url`.
+:::caution Usa el lanzamiento que indica el manifiesto: v3.2.4 en mainnet, v3.2.6 en la testnet
+Un nodo que sincroniza desde el génesis o reproduce desde un snapshot atraviesa varias actualizaciones de gobernanza (consulta [Actualizaciones](#upgrades) más abajo), así que instala siempre el binario al que apunta el manifiesto: incluye todos los manejadores de actualización. En **mainnet**, `minCompatible` y `version` del manifiesto son ambos `3.2.4` (la actualización coordinada aplicada en la altura 3,742,566 el 23 de octubre de 2026, propuesta de gobernanza 13), por lo que un nodo que se une ahora necesita v3.2.4: un binario anterior se detiene en una altura de actualización que no conoce. La propuesta de gobernanza 14 de mainnet está en su período de votación y aplicaría v3.2.5 en la altura 3,906,833; no hay ningún plan de actualización programado hasta que se apruebe (`current_plan` es `null` en el momento de escribir esto, 27 de octubre de 2026), y cuando el manifiesto nombre un lanzamiento más reciente ese es el binario que hay que instalar. Lo que cambia v3.2.5 se documenta una vez que mainnet la haya aplicado. En la **testnet**, `minCompatible` y `version` del manifiesto son ambos `3.2.6` (`upgradeHeight` 8,970,638; v3.2.5 se aplicó en la altura 8,890,800 el 26 de octubre de 2026 y v3.2.6 el 27 de octubre de 2026), por lo que un nodo que se une a la testnet necesita el binario v3.2.6. No ejecutes un binario de testnet contra mainnet ni al revés: cada directorio lleva su propio lanzamiento (consulta [Actualizaciones](#upgrades)). El manifiesto se promueve de forma deliberada (primero testnet, mainnet después de un período de rodaje), así que comprueba su campo `"version"` frente a `minCompatible` antes de confiar en `binary.url`.
 
 Un binario compilado a partir del código fuente público (la compilación community) se niega a arrancar en cualquiera de las dos redes públicas (v3.2.3 y posteriores): no puede verificar firmas poscuánticas y no puede reproducir fielmente los bloques de las redes. Usa solo el archivo de lanzamiento.
 
@@ -53,7 +53,7 @@ Dos ajustes importan desde v3.2.1: mantén el reloj del sistema sincronizado con
 | Red      | Chain ID            | EVM chain ID          | Notas                              |
 | -------- | ------------------- | ---------------------- | ----------------------------------- |
 | Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — activa desde el 7 jun 2026; versión de nodo v3.2.4 (desde el 23 oct 2026) |
-| Testnet  | `qorechain-diana`   | `9800`                 | Ensaya aquí primero tus integraciones; versión de nodo v3.2.4 (desde el 19 oct 2026) |
+| Testnet  | `qorechain-diana`   | `9800`                 | Ensaya aquí primero tus integraciones; versión de nodo v3.2.6 (desde el 27 oct 2026) |
 
 Sustituye el `--chain-id` apropiado para tu red objetivo a lo largo de esta guía. Los ejemplos usan mainnet por defecto.
 
@@ -75,7 +75,7 @@ Se recomienda encarecidamente SSD NVMe — el estado de la cadena y los almacene
 
 ### Docker Compose
 
-Un despliegue de solo nodo con Docker Compose. No hay ninguna imagen `qorechaind` publicada públicamente para descargar (no se publica nada bajo la organización del proyecto en Docker Hub). El `Dockerfile` del repositorio público compila el binario **community** (sin biblioteca poscuántica, keepers stub): sirve para el desarrollo local, pero no puede seguir mainnet ni testnet, y desde v3.2.3 se niega a arrancar en ellas. Para un nodo de red, compila tu propia imagen a partir del **archivo de lanzamiento** indicado en `latest.json`, etiquétala con la versión del lanzamiento (**v3.2.4** en ambas redes) y luego monta un volumen persistente para los datos de la cadena:
+Un despliegue de solo nodo con Docker Compose. No hay ninguna imagen `qorechaind` publicada públicamente para descargar (no se publica nada bajo la organización del proyecto en Docker Hub). El `Dockerfile` del repositorio público compila el binario **community** (sin biblioteca poscuántica, keepers stub): sirve para el desarrollo local, pero no puede seguir mainnet ni testnet, y desde v3.2.3 se niega a arrancar en ellas. Para un nodo de red, compila tu propia imagen a partir del **archivo de lanzamiento** indicado en `latest.json`, etiquétala con la versión del lanzamiento (**v3.2.4** en mainnet, **v3.2.6** en la testnet, en el momento de escribir esto) y luego monta un volumen persistente para los datos de la cadena:
 
 ```bash
 # Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
@@ -282,13 +282,15 @@ Los cambios de consenso llegan como **actualizaciones de gobernanza coordinadas*
 | v3.2.2 | altura 3,556,788 (16 oct 2026) | altura 6,905,034 (2 oct 2026) |
 | v3.2.3 | altura 3,662,051 (20 oct 2026, propuesta de gobernanza 11) | altura 8,003,746 (15 oct 2026) |
 | v3.2.4 | altura 3,742,566 (23 oct 2026, propuesta de gobernanza 13) | altura 8,337,253 (19 oct 2026, propuesta de gobernanza 13) |
+| v3.2.5 | propuesta: la propuesta de gobernanza 14 (en su período de votación el 27 oct 2026) la aplicaría en la altura 3,906,833 | altura 8,890,800 (26 oct 2026) |
+| v3.2.6 | no aplicada | altura 8,970,638 (27 oct 2026) |
 
 **Qué hizo el operador de un nodo para v3.2.4 (altura 3,742,566 de mainnet).** La propuesta de gobernanza 13 nombró el plan `v3.2.4` en la altura 3,742,566 (aplicada el 23 de octubre de 2026): los nodos permanecieron en v3.2.3 hasta esa altura, se detuvieron allí y se reiniciaron con v3.2.4. Para la próxima actualización coordinada los pasos son los mismos:
 
 1. Vigila el manifiesto (`https://download.qore.host/mainnet/latest.json`): hasta que nombre el nuevo lanzamiento no hay nada que instalar, y un binario del directorio de testnet no es el lanzamiento de mainnet.
 2. Cuando el manifiesto nombre el lanzamiento, descarga el archivo desde su `binary.url`, verifica el `sha256` (el texto de la propuesta también publica el sha256 del binario) y déjalo preparado **antes** de la altura. Consulta el plan pendiente (`name` y `height`) con `GET /cosmos/upgrade/v1beta1/current_plan` y la altura actual con `GET /status` en el RPC.
 3. En la altura del plan, un nodo que siga con el binario antiguo **se detiene** (es el comportamiento previsto del módulo de actualización, no un fallo); un nodo que ya tenga el nuevo binario aplica el manejador de actualización y continúa. Si el tuyo se detuvo primero, cambia el binario y reinícialo. Tras la actualización, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` devuelve la altura en lugar de `0` (3742566 en mainnet, 8337253 en la testnet).
-4. Un nodo que se une ahora a mainnet instala el lanzamiento que nombra el manifiesto (v3.2.4; comprueba `version` frente a `minCompatible`).
+4. Un nodo que se une ahora a mainnet instala el lanzamiento que nombra el manifiesto (v3.2.4 en el momento de escribir esto; comprueba `version` frente a `minCompatible`).
 
 La firma de transacciones, las direcciones, los decimales, los memos y las comisiones no cambian con v3.2.4.
 
@@ -435,7 +437,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Buenas prácticas operativas
 
-1. **Fija la versión de la cadena.** Ejecuta el lanzamiento que recomienda el manifiesto (**v3.2.4** en ambas redes), sigue los lanzamientos oficiales para las actualizaciones coordinadas y mantén el reloj del sistema sincronizado con NTP.
+1. **Fija la versión de la cadena.** Ejecuta el lanzamiento que recomienda el manifiesto (**v3.2.4** en mainnet y **v3.2.6** en la testnet en el momento de escribir esto), sigue los lanzamientos oficiales para las actualizaciones coordinadas y mantén el reloj del sistema sincronizado con NTP.
 
 2. **Ejecuta nodos redundantes.** Opera al menos dos nodos detrás de un balanceador de carga para que un único reinicio o resincronización no interrumpa el tráfico de integración.
 

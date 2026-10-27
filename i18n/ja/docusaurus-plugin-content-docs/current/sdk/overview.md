@@ -26,24 +26,30 @@ QoreChain は、単一のチェーン上に 3 つのファーストクラスな�
 - **SVM** — Solana スタイルの JSON-RPC を備えた Solana 互換ランタイム。
 
 アカウント、残高、トークンはランタイム間で共有され、チェーンにはクロスチェーン
-相互運用性のための IBC モジュールが含まれています（メインネットでもテストネットでも、
-IBC チャネルはまだ開かれていません）。
+相互運用性のための IBC モジュールが含まれています（メインネットでは IBC チャネルは
+開かれていません。テストネットには、テスト用チェーンへの `transfer` チャネルが 1 本開かれています。2026年10月27日に確認）。
 
-:::note 現在ライブネットワークで動作するもの（メインネットとテストネットは v3.2.4）
+:::note 現在ライブネットワークで動作するもの（メインネットは v3.2.4、テストネットは v3.2.6）
 **動作するもの:** すべてのレーンでの読み取り、ハイブリッド署名されたネイティブトランザクション、統合
 アカウント、[認可ウィンドウ](/sdk/guides/evm#evm-window)内での EVM トランザクション、
 SVM の読み取り。
-**まだ利用できないもの:** EVM プリコンパイル（無効）、`qor_` JSON-RPC 名前空間、SVM トランザクション、メインネットでのクロス VM 呼び出し（`MsgCrossVMCall` は
-サーキットブレーカーによって停止されています）、通常のアカウントによる QoreChain Native のアップロードとインスタンス化、
-オーセンティケーター／抽象アカウントのフロー（モジュールは停止中）、xQORE、
+**まだ利用できないもの:** メインネットの EVM プリコンパイル（メインネットではどれも有効ではありません。テストネットでは PQC 検証、PQC 鍵ステータス、コンセンサスパラメータの 3 つが有効で、AI の 2 つとクロス VM ブリッジは両方のネットワークで無効です）、`qor_` JSON-RPC 名前空間、SVM トランザクション、メインネットでのクロス VM 呼び出し（`MsgCrossVMCall` は
+サーキットブレーカーによって停止されています）、通常のアカウントによる QoreChain Native のアップロードとインスタンス化（テストネットではインスタンス化は開放されていますが、アップロードは開放されていません）、
+メインネットでのオーセンティケーター／抽象アカウントのフロー（メインネットではモジュールは停止中で、テストネットでは有効）、xQORE、
 ガスアブストラクション。各ガイドでは、該当する箇所で改めて注意点を示しています。
+2026年10月27日にライブエンドポイントに対して確認しました。
 
-公開されている SDK（0.9.0、2026年10月21日）は、両ネットワークが検証する形式
+公開されている SDK（0.10.0、2026年10月26日）は、両ネットワークが検証する形式
 （チェーンの状態から解決される v2 ハイブリッド sign-bytes）で署名します。署名形式、
-アドレス、小数桁数、メモ、手数料は v3.2.3 でも v3.2.4 でも変わっていません（メインネットは 2026年10月23日から v3.2.4 を実行しています）。
+アドレス、小数桁数、メモ、手数料は v3.2.3 でも v3.2.4 でも変わっていません（メインネットは 2026年10月23日から v3.2.4 を実行しており、
+テストネットは 10月27日に適用された v3.2.6 を実行しています）。
 後続のポスト量子ルールに対するクライアント側（鍵登録時の所有証明、スコープ付き EVM ウィンドウ、
-EIP-7702 の同意メッセージ）に対応していますが、0.9.0 より前のバージョンは
-対応していません。[0.9.0 より前のバージョン](/sdk/install#before-090)を参照してください。
+EIP-7702 の同意メッセージ）と、v3.2.4 に対するクライアント側（ステーキングティア、
+オーセンティケーターのノンス、プロトコル機能スイッチ）に対応していますが、0.9.0 より前のバージョンは
+前者のグループに対応していません。[0.9.0 より前のバージョン](/sdk/install#before-090)
+および[0.10.0 の新機能](/sdk/install#whats-new-0100)を参照してください。
+
+ウォレットとバックエンドの署名については、[QoreSign](/qoresign/overview)を参照してください。
 :::
 
 ### 設計段階からの量子耐性
@@ -71,7 +77,7 @@ ML-DSA-87 鍵を事前に登録しておく必要があります。詳細は
 - **AI プリフライトリスクスコアリング** — ブロードキャストの前に、オンチェーン
   AI でトランザクションをスキャンします。`simulateWithRiskScore` は、決定論的な
   EVM プリコンパイルによるリスク／異常判定とガスの両方を返すため、ウォレットや
-  dApp は署名の*前*に警告（またはブロック）できます。プリコンパイルはメインネットでも
+  dApp は署名の*前*に警告（またはブロック）できます。AI プリコンパイルはメインネットでも
   テストネットでもまだ有効ではありません。
   [AI プリフライト](/sdk/guides/ai-preflight) を参照してください。
 - **統合クロス VM 呼び出し** — 1 つのアカウント、3 つの VM、1 つのトランザク
@@ -95,7 +101,7 @@ ML-DSA-87 鍵を事前に登録しておく必要があります。詳細は
 - **オーセンティケーターレーン** — Phantom または MetaMask の鍵を、PQC 必須の
   正規アカウントにリンクし、最小権限・支出制限付き・取り消し可能な条件のもと、
   リレイヤー経由で支出できるようにします。その背後にある
-  `abstractaccount` モジュールは、現在どちらのネットワークでも停止されています。
+  `abstractaccount` モジュールは、メインネットでは停止されており、テストネットでは有効です。
   [オーセンティケーターと委任支出](/sdk/guides/authenticators) を参照して
   ください。
 
@@ -112,15 +118,15 @@ SDK は、好みの言語で開発できるようにパッケージファミリ�
 
 | パッケージ | 言語 | インストール | ステータス |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | 公開済み（npm、v0.9.0） |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk`（インポートは `qorsdk`） | 公開済み（PyPI、v0.9.0） |
-| `qorechain-sdk`（Go モジュール） | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 公開済み（Go proxy、タグ `packages/go/v0.9.0`） |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk`（インポートは `qorechain`） | 公開済み（crates.io、v0.9.0） |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | 公開済み（Maven Central、v0.9.1。他の言語は 0.9.0） |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | 公開済み（npm、v0.10.0） |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk`（インポートは `qorsdk`） | 公開済み（PyPI、v0.10.0） |
+| `qorechain-sdk`（Go モジュール） | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 公開済み（Go proxy、タグ `packages/go/v0.10.0`） |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk`（インポートは `qorechain`） | 公開済み（crates.io、v0.10.0） |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.10.0` | 公開済み（Maven Central、v0.10.0） |
 | `@qorechain/evm` | TypeScript（EVM アダプター） | `npm i @qorechain/evm viem` | 公開済み（npm、v0.8.0） |
 | `@qorechain/svm` | TypeScript（SVM アダプター） | `npm i @qorechain/svm @solana/web3.js` | 公開済み（npm、v0.8.0） |
-| `@qorechain/react` | TypeScript（React キット） | `npm i @qorechain/react` | 公開済み（npm、v0.9.0） |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 公開済み（npm、v0.9.0） |
+| `@qorechain/react` | TypeScript（React キット） | `npm i @qorechain/react` | 公開済み（npm、v0.10.0） |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 公開済み（npm、v0.10.0） |
 
 > Python ディストリビューションは `qorechain-sdk` としてインストールされますが、
 > **インポート名は `qorsdk`** です。すべてのクライアントは各レジストリに公開
@@ -136,17 +142,17 @@ Python、Go、Rust、Java の各クライアントは、TypeScript との**完�
 ライフサイクル（自動ガス、エラーデコード、tx 追跡、ブロック／tx 検索）、
 ハイブリッドポスト量子トランザクション、そして WebSocket サブスクリプション
 です。これらのクライアントはすべて**公開済み**です。TypeScript は npm
-（`@qorechain/sdk` 0.9.0）、Python は PyPI（`qorechain-sdk` 0.9.0、インポート
-は `qorsdk`）、Go はモジュールプロキシ（タグ `packages/go/v0.9.0`）、Rust は
-crates.io（`qorechain-sdk` 0.9.0）、Java は Maven
-Central（`io.github.qorechain:qorechain-sdk` 0.9.1。Java 専用のアップデートで、他のクライアントは 0.9.0）に公開されています。
+（`@qorechain/sdk` 0.10.0）、Python は PyPI（`qorechain-sdk` 0.10.0、インポート
+は `qorsdk`）、Go はモジュールプロキシ（タグ `packages/go/v0.10.0`）、Rust は
+crates.io（`qorechain-sdk` 0.10.0）、Java は Maven
+Central（`io.github.qorechain:qorechain-sdk` 0.10.0）に公開されています。
 EVM/SVM 実行アダプター（`@qorechain/evm`、`@qorechain/svm`、いずれも 0.8.0）、
-`@qorechain/react` キット（0.9.0）、および `create-qorechain-dapp`
-スキャフォールディング CLI（0.9.0）は TypeScript 専用で、同様に npm に公開
+`@qorechain/react` キット（0.10.0）、および `create-qorechain-dapp`
+スキャフォールディング CLI（0.10.0）は TypeScript 専用で、同様に npm に公開
 されています。関連パッケージについては
 [インストール](/sdk/install#related-packages) を参照してください。
 
-## 0.6、0.7、0.8、0.9 の新機能
+## 0.6、0.7、0.8、0.9、0.10 の新機能
 
 **0.6.0 — 統合 eth ネイティブアカウント（チェーン v3.1.83）。** 1 つの
 `eth_secp256k1` 鍵が 1 つの 20 バイトのアイデンティティとなり、3 つすべての
@@ -175,7 +181,7 @@ Phantom や MetaMask の鍵はオーセンティケーターとしてアカウ�
 **オンチェーンで拒否されます** — アップグレードしてください。
 
 **0.7.0 — オーセンティケーターレーン（チェーン v3.1.85）。** その背後にある
-`abstractaccount` モジュールは、現在どちらのネットワークでも停止されています
+`abstractaccount` モジュールは、現在メインネットでは停止されており、テストネットでは有効です
 （[オーセンティケーターガイド](/sdk/guides/authenticators) を参照）。リンクされた
 Phantom（ed25519）または MetaMask（secp256k1、20 バイトアドレス指定）の鍵が、
 最小権限・支出制限付き・取り消し可能な条件のもと、リレイヤーを通じて PQC 必須
@@ -192,7 +198,7 @@ Phantom（ed25519）または MetaMask（secp256k1、20 バイトアドレス指
 v3.2.0）。** ハイブリッドトランザクションのポスト量子側の署名は、対象ネットワークが
 検証する形式（v1 または v2、`signBytesVersion: "auto" | "v1" | "v2"`）で署名される
 ようになりました。両方の公開ネットワークは v2 であるため、メインネットで
-トランザクションを実行するには SDK **0.8.1 以降**が必要です（0.9.0 を使用してください）。**0.8.2** は、EVM レーンの
+トランザクションを実行するには SDK **0.8.1 以降**が必要です（現行リリースを使用してください）。**0.8.2** は、EVM レーンの
 [認可ウィンドウ](/sdk/guides/evm#evm-window)向けに `openEvmWindowMsg`、`closeEvmWindowMsg`、
 `fetchEvmWindow`、`classifyEvmWindowRejection` を追加します。
 **0.8.0** は、ウォレット署名によるアカウントヘルパー（`connectPhantomUnified` と
@@ -213,7 +219,17 @@ EIP-7702 の同意メッセージに対応し、`derivePqcCanonical(address, mne
 すべての言語でニーモニックから復元できる鍵を提供します。PQC アカウントのルートは
 単数形の `/qorechain/pqc/v1/account/{address}` で、ブロック内での失敗はコードスペースを保持し、
 `create-qorechain-dapp` は現行の SDK でスキャフォールドします。
-[0.9.0 の新機能](/sdk/install#whats-new-090)を参照してください。
+[0.9.0 で追加された内容](/sdk/install#whats-new-090)を参照してください。
+
+**0.10.0 — チェーン v3.2.4 に対するクライアントサポート。** ステーキングティアのコンポーザーと読み取り
+（`lockDelegation`、`unlockEarly`、`claimBonus`、`fetchStakingTierParams`、
+`fetchStakingLocks`）、リンクされた鍵の次のシーケンスを取得する `fetchAuthNonce`、
+ネットワークが名前で強制するコンセンサスルールを調べる
+`fetchProtocolFeatures` / `isProtocolFeatureEnabled`、PQC ステータスの `possessionProven`、
+そして `ibcTimeoutTimestamp` です。`ensurePqcRegistered` は、鍵のないステータスを
+信用する代わりに、登録済みの鍵を比較するようになり、手数料シミュレーション中に
+テキストとして届くチェーンの拒否は、すべての言語で名前が付けられます。
+[0.10.0 の新機能](/sdk/install#whats-new-0100)を参照してください。
 
 ## 次に読むもの
 

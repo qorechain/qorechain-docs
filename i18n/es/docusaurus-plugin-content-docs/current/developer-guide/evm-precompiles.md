@@ -9,22 +9,22 @@ sidebar_position: 6
 
 QoreChain extiende el QoreChain EVM Engine con **seis contratos precompilados personalizados** que exponen funciones a nivel de protocolo directamente a Solidity. Estos precompilados brindan acceso on-chain a criptografía post-cuántica, puntuación de riesgo por IA, mensajería cross-VM y parámetros de consenso PRISM.
 
-:::warning Aún no activos en mainnet ni en testnet
-Los seis precompilados de QoreChain que se describen a continuación están **compilados en el nodo pero aún no activados**, ni en la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**) ni en la testnet **`qorechain-diana`** (ID de cadena EVM **9800**). La EVM solo despacha las direcciones listadas en el parámetro `active_static_precompiles`, y esa lista está vacía en ambas redes. Hasta que una actualización de la cadena los active, **una llamada a cualquiera de estas direcciones tiene éxito y devuelve datos vacíos (`0x`)**; no revierte ni devuelve un error. Consulte [Estado de la red](#network-status) antes de depender de cualquiera de ellos.
+:::warning No activos en la mainnet; tres activos en la testnet
+Los seis precompilados de QoreChain que se describen a continuación están **compilados en el nodo**, pero la EVM solo despacha las direcciones listadas en el parámetro `active_static_precompiles`. En la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**) esa lista está vacía en el momento de escribir esto, así que **ninguno está activo allí**. En la testnet **`qorechain-diana`** (ID de cadena EVM **9800**) hay tres activos: PQC Verify, PQC Key Status y PRISM Consensus Params, activados por la propuesta de gobernanza 21 de la testnet (aprobada el 27 de octubre de 2026). Los otros tres no están activos en ninguna de las dos redes. **Una llamada a una dirección que no figura en la lista tiene éxito y devuelve datos vacíos (`0x`)**; no revierte ni devuelve un error. Consulte [Estado de la red](#network-status) antes de depender de cualquiera de ellos.
 :::
 
 ## Estado de la red {#network-status}
 
 | Precompilado | Dirección | `qorechain-vladi` (mainnet) | `qorechain-diana` (testnet) |
 | --- | --- | --- | --- |
-| PQC Verify | `0x…0A01` | No activo | No activo |
-| PQC Key Status | `0x…0A02` | No activo | No activo |
+| PQC Verify | `0x…0A01` | No activo | **Activo** (desde el 27 de octubre de 2026) |
+| PQC Key Status | `0x…0A02` | No activo | **Activo** (desde el 27 de octubre de 2026) |
 | AI Risk Score | `0x…0B01` | No activo | No activo |
 | AI Anomaly Check | `0x…0B02` | No activo | No activo |
-| PRISM Consensus Params | `0x…0C01` | No activo | No activo |
+| PRISM Consensus Params | `0x…0C01` | No activo | **Activo** (desde el 27 de octubre de 2026) |
 | CrossVM Bridge | `0x…0901` | No activo | No activo |
 
-La activación requiere una actualización de la cadena y está planificada por etapas: primero los precompilados de PQC y de consenso de solo lectura, el par de IA una vez que esté lista su ruta de solo lectura en punto fijo, y el CrossVM Bridge en último lugar. La versión v3.2.3 (mainnet, 20 de octubre de 2026) incluyó en el binario las versiones reforzadas del CrossVM Bridge y del precompilado AI Anomaly Check, detrás de una función de protocolo, **pero no activó ningún precompilado**: la lista `active_static_precompiles` sigue vacía en ambas redes, y la v3.2.4 (en la mainnet desde el 23 de octubre de 2026, en la testnet desde el 19 de octubre de 2026) no lo cambia. Esta tabla se actualiza en la misma operación que la actualización que active cualquiera de ellos.
+Estado leído del parámetro `active_static_precompiles` en vivo el 27 de octubre de 2026. Es un parámetro de la cadena que cambia la gobernanza, así que la lista de cada red solo cambia cuando se aprueba una propuesta de gobernanza; la lista de la testnet la fijó la propuesta 21, y ninguna propuesta de la mainnet la cambia en el momento de escribir esto. La versión v3.2.3 (mainnet, 20 de octubre de 2026) incluyó en el binario las versiones reforzadas del CrossVM Bridge y del precompilado AI Anomaly Check, detrás de una función de protocolo, pero no activó ningún precompilado, y la v3.2.4 (en la mainnet desde el 23 de octubre de 2026, en la testnet desde el 19 de octubre de 2026) no lo cambia. Primero van los precompilados de PQC y de consenso de solo lectura, el par de IA una vez que esté lista su ruta de solo lectura en punto fijo, y el CrossVM Bridge en último lugar. Esta tabla enumera solo lo que está aplicado: una propuesta que sigue en su periodo de votación no es un estado.
 
 Compruebe usted mismo la lista actual (una lista vacía significa que ninguno está activo):
 
@@ -45,6 +45,14 @@ require(ok && ret.length >= 96, "precompile not active");
 ```
 
 No envíe valor a estas direcciones. No son payable, y el valor enviado a una dirección de precompilado inactiva se queda allí sin forma de recuperarlo.
+
+En la testnet, una comprobación rápida de que los tres precompilados activos responden (con `cast` de Foundry; en la mainnet estas direcciones devuelven datos vacíos):
+
+```bash
+RPC=https://evm-testnet.qore.host
+cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
+```
 
 ---
 
@@ -95,7 +103,7 @@ interface IQorePQC {
 }
 ```
 
-Desde v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026), una vez que este precompilado esté activo, su salida incluye un cuarto valor, `bool possessionProven`, después de `pubkey`: si la clave actual de la cuenta fue demostrada mediante una prueba de posesión verificada (consulte [Firma post-cuántica](/developer-guide/post-quantum-signing#proof-of-possession)). La interfaz anterior enumera las tres primeras salidas; un contrato que deba confiar en la clave debería leer también la cuarta.
+Desde v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026), la salida de `pqcKeyStatus` incluye un cuarto valor, `bool possessionProven`, después de `pubkey`: si la clave actual de la cuenta fue demostrada mediante una prueba de posesión verificada (consulte [Firma post-cuántica](/developer-guide/post-quantum-signing#proof-of-possession)). Se devuelve allí donde el precompilado esté activo: en la testnet ya está en vivo (una llamada para una cuenta sin clave devuelve `false, 0, 0x, false`), y en la mainnet lo estará cuando una actualización active el precompilado. La interfaz anterior enumera las tres primeras salidas; un contrato que deba confiar en la clave debería leer también la cuarta.
 
 ### IQoreAI.sol
 
@@ -264,10 +272,10 @@ contract ConsensusReader {
 }
 ```
 
-**Costo de gas:** 1,500 fijo.
+**Costo de gas:** 1,500 fijo, más las lecturas de estado que realiza la llamada al costo estándar.
 
-:::note
-En la compilación actual del nodo, `rlConsensusParams` devuelve valores predeterminados fijos de marcador de posición, no valores en vivo ajustados por PRISM (por ejemplo, no informa el tiempo de bloque medido, que es de aproximadamente 3,2 s en mainnet y de aproximadamente 1,0 s en la testnet). Conectarlo a los parámetros de consenso en vivo forma parte del trabajo de activación.
+:::note Qué son los cuatro valores
+Desde la v3.2.6 (la testnet; todavía no la mainnet) `rlConsensusParams` devuelve los valores que mantiene el módulo `rlconsensus` en lugar de marcadores de posición fijos: el objetivo de tiempo de bloque aplicado en milisegundos, el piso de precio del gas aplicado, el `default_validator_set_size` del módulo y la época actual del agente. En la testnet, el 27 de octubre de 2026, devolvió `5000`, `100`, `100`, `1` (los mismos valores aplicados que `GET /qorechain/rlconsensus/v1/applied_params`, consulte [Endpoints REST / gRPC](/api-reference/rest-grpc-endpoints#rlconsensus-module)). Son los ajustes propios del módulo, **no el tiempo de bloque medido** (aproximadamente 3,2 s en la mainnet y aproximadamente 1,3 s en la testnet), y el agente funciona en modo sombra en la testnet, por lo que no aplica nada. En un nodo anterior a la v3.2.6, la misma llamada devuelve valores predeterminados fijos de marcador de posición.
 :::
 
 ### CrossVM Bridge — Llamar a QoreChain Native desde EVM
@@ -315,4 +323,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [Interoperabilidad Cross-VM](/developer-guide/cross-vm-interoperability) — Documentación completa de mensajería cross-VM
 * [Desarrollo en EVM](/developer-guide/evm-development) — Despliegue de contratos Solidity
-* [Abstracción de cuentas](/developer-guide/account-abstraction) — Autenticadores de billeteras vinculadas y reglas de gasto (módulo actualmente deshabilitado)
+* [Abstracción de cuentas](/developer-guide/account-abstraction) — Autenticadores de billeteras vinculadas y reglas de gasto (habilitado en la testnet, deshabilitado en la mainnet)

@@ -26,8 +26,8 @@ The current binary, genesis, peers, seeds, and a state-sync trust point are publ
 The manifest's fields include `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (a trust point refreshed hourly), and `minCompatible`. The install and join steps below fetch this manifest and use its current values.
 :::
 
-:::caution Use the release the manifest names: v3.2.4 on both networks
-A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (see [Upgrades](#upgrades) below), so always install the binary the manifest points to: it carries every upgrade handler. On **mainnet** the manifest's `minCompatible` and `version` are both `3.2.4` (the coordinated upgrade applied at height 3,742,566 on 23 October 2026, governance proposal 13), so a node joining now needs v3.2.4: an older binary stops at an upgrade height it does not know. On the **testnet** they are both `3.2.4` too (applied at height 8,337,253 on 19 October 2026). Do not run a testnet binary against mainnet or the reverse: each directory carries its own release (see [Upgrades](#upgrades)). The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`.
+:::caution Use the release the manifest names: v3.2.4 on mainnet, v3.2.6 on the testnet
+A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (see [Upgrades](#upgrades) below), so always install the binary the manifest points to: it carries every upgrade handler. On **mainnet** the manifest's `minCompatible` and `version` are both `3.2.4` (the coordinated upgrade applied at height 3,742,566 on 23 October 2026, governance proposal 13), so a node joining now needs v3.2.4: an older binary stops at an upgrade height it does not know. Mainnet governance proposal 14 is in its voting period and would apply v3.2.5 at height 3,906,833; no upgrade plan is scheduled until it passes (`current_plan` is `null` at the time of writing, 27 October 2026), and when the manifest names a newer release that is the binary to install. What v3.2.5 changes is documented once mainnet has applied it. On the **testnet** the manifest's `minCompatible` and `version` are both `3.2.6` (`upgradeHeight` 8,970,638; v3.2.5 was applied at height 8,890,800 on 26 October 2026 and v3.2.6 on 27 October 2026), so a node joining the testnet needs the v3.2.6 binary. Do not run a testnet binary against mainnet or the reverse: each directory carries its own release (see [Upgrades](#upgrades)). The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`.
 
 A binary built from the public source (the community build) refuses to start on either public network (v3.2.3 and later): it cannot verify post-quantum signatures and cannot replay the networks' blocks faithfully. Use the release archive only.
 
@@ -53,7 +53,7 @@ Two settings matter from v3.2.1 on: keep the system clock synchronised with NTP 
 | Network  | Chain ID            | EVM chain ID         | Notes                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
 | Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primary — live since 7 Jun 2026; node release v3.2.4 (since 23 Oct 2026) |
-| Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first; node release v3.2.4 (since 19 Oct 2026) |
+| Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first; node release v3.2.6 (since 27 Oct 2026) |
 
 Substitute the appropriate `--chain-id` for your target network throughout this guide. The examples default to mainnet.
 
@@ -75,7 +75,7 @@ NVMe SSD is strongly recommended — chain state and the EVM/SVM stores are I/O 
 
 ### Docker Compose
 
-A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull (nothing is published under the project's Docker Hub organisation). The `Dockerfile` in the public repository builds the **community** binary (no post-quantum library, stub keepers): that is suitable for local development but it cannot follow mainnet or testnet, and since v3.2.3 it refuses to start on them. For a network node, build your own image from the **release archive** named in `latest.json`, tag it to the release version (**v3.2.4** on both networks), then mount a persistent volume for chain data:
+A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull (nothing is published under the project's Docker Hub organisation). The `Dockerfile` in the public repository builds the **community** binary (no post-quantum library, stub keepers): that is suitable for local development but it cannot follow mainnet or testnet, and since v3.2.3 it refuses to start on them. For a network node, build your own image from the **release archive** named in `latest.json`, tag it to the release version (**v3.2.4** on mainnet, **v3.2.6** on the testnet, at the time of writing), then mount a persistent volume for chain data:
 
 ```bash
 # Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
@@ -282,13 +282,15 @@ Consensus changes arrive as **coordinated governance upgrades**: a passed propos
 | v3.2.2 | height 3,556,788 (16 Oct 2026) | height 6,905,034 (2 Oct 2026) |
 | v3.2.3 | height 3,662,051 (20 Oct 2026, governance proposal 11) | height 8,003,746 (15 Oct 2026) |
 | v3.2.4 | height 3,742,566 (23 Oct 2026, governance proposal 13) | height 8,337,253 (19 Oct 2026, governance proposal 13) |
+| v3.2.5 | proposed: governance proposal 14 (in its voting period on 27 Oct 2026) would apply it at height 3,906,833 | height 8,890,800 (26 Oct 2026) |
+| v3.2.6 | not applied | height 8,970,638 (27 Oct 2026) |
 
 **What a node operator did for v3.2.4 (mainnet height 3,742,566).** Governance proposal 13 named the plan `v3.2.4` at height 3,742,566 (applied on 23 October 2026): nodes stayed on v3.2.3 until that height, halted there, and restarted on v3.2.4. For the next coordinated upgrade the steps are the same:
 
 1. Watch the manifest (`https://download.qore.host/mainnet/latest.json`): until it names the new release there is nothing to install, and a binary from the testnet directory is not the mainnet release.
 2. When the manifest names the release, download the archive from its `binary.url`, verify the `sha256` (the proposal text also publishes the binary's sha256), and stage it **before** the height. Check `GET /cosmos/upgrade/v1beta1/current_plan` for the pending plan (`name` and `height`) and the current height with `GET /status` on the RPC.
 3. At the plan height a node still on the old binary **halts** (this is the intended behaviour of the upgrade module, not a failure); a node already on the new binary applies the upgrade handler and continues. If yours halted first, swap the binary and restart. After the upgrade, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` returns the height instead of `0` (3742566 on mainnet, 8337253 on the testnet).
-4. A node that joins mainnet now installs the release the manifest names (v3.2.4; check `version` against `minCompatible`).
+4. A node that joins mainnet now installs the release the manifest names (v3.2.4 at the time of writing; check `version` against `minCompatible`).
 
 Transaction signing, addresses, decimals, memos and fees are unchanged by v3.2.4.
 
@@ -435,7 +437,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operational Best Practices
 
-1. **Pin the chain version.** Run the release the manifest recommends (**v3.2.4** on both networks), track official releases for coordinated upgrades, and keep the system clock NTP-synchronised.
+1. **Pin the chain version.** Run the release the manifest recommends (**v3.2.4** on mainnet and **v3.2.6** on the testnet at the time of writing), track official releases for coordinated upgrades, and keep the system clock NTP-synchronised.
 
 2. **Run redundant nodes.** Operate at least two nodes behind a load balancer so a single restart or resync does not interrupt integration traffic.
 

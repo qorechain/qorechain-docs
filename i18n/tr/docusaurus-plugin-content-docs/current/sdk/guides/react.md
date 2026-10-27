@@ -16,12 +16,12 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
 `react` (>=18) bir eş bağımlılıktır; `@qorechain/sdk` doğrudan bir bağımlılıktır
-(kit 0.9.0'dan beri `^0.9.0`; 0.x bir sürümde şapka işareti 0.9 içinde kalır, dolayısıyla bir SDK
-yaması ikinci bir kopya kurmaz). `@qorechain/react` **0.9.0** sürümünü kullanın: 0.8.0,
+(kit 0.10.0'dan beri `^0.10.0`; 0.x bir sürümde şapka işareti 0.10 içinde kalır, dolayısıyla bir SDK
+yaması ikinci bir kopya kurmaz). `@qorechain/react` **0.10.0** sürümünü kullanın (0.9.0 aynı şekilde çalışır): 0.8.0,
 mainnet'te yanlış hibrit biçimiyle imzalayan SDK 0.8.0'a sabitlenir; daha eski 0.8.x
 sürümleri ise adres değişikliğinden sonra eski bir bakiye veya durum gösterebilir.
 
-:::caution React kitinin canlı ağ sınırlamaları (0.9.0)
+:::caution React kitinin canlı ağ sınırlamaları (0.9.0 ve 0.10.0)
 `useTx`, cüzdanın imzalayanıyla ve post-kuantum anahtar çifti olmadan bağlanır; bu yüzden
 yalnızca klasik imzayla gönderir ve canlı ağlar bunu reddeder (Native yolu hibrit ML-DSA-87
 uzantısını gerektirir): `send` / `sendTokens` mainnet veya testnet üzerinde bir işlemi

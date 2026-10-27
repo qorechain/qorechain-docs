@@ -27,26 +27,35 @@ inteligente de primă clasă pe un singur lanț:
 - **SVM** — un runtime compatibil Solana, cu un JSON-RPC în stil Solana.
 
 Conturile, soldurile și token-urile sunt partajate între runtime-uri, iar lanțul
-include modulul IBC pentru interoperabilitate cross-chain (încă nu este deschis
-niciun canal IBC pe mainnet sau testnet).
+include modulul IBC pentru interoperabilitate cross-chain (niciun canal IBC nu este
+deschis pe mainnet; testnet-ul are un canal `transfer` deschis către un lanț de test, verificat la 27 octombrie 2026).
 
-:::note Ce funcționează astăzi pe rețelele live (mainnet și testnet v3.2.4)
+:::note Ce funcționează astăzi pe rețelele live (mainnet v3.2.4, testnet v3.2.6)
 **Funcționează:** citiri pe fiecare bandă, tranzacții Native semnate hibrid,
 conturi unificate, tranzacții EVM în interiorul unei
 [ferestre de autorizare](/sdk/guides/evm#evm-window) și citiri SVM.
-**Încă indisponibile:** precompilele EVM (inactive), spațiul de nume JSON-RPC
+**Încă indisponibile:** precompilele EVM pe mainnet (niciuna nu este activă acolo;
+testnet-ul are trei active, verificare PQC, starea cheii PQC și parametrii de consens,
+iar perechea AI și puntea cross-VM sunt inactive pe ambele), spațiul de nume JSON-RPC
 `qor_`, tranzacțiile SVM, apelurile cross-VM pe mainnet (`MsgCrossVMCall` este
 oprit de circuit breaker), încărcarea și instanțierea QoreChain Native pentru conturile
-obișnuite, fluxurile de autentificator / cont abstract (modul oprit), xQORE și
-abstractizarea gazului. Fiecare ghid repetă avertismentul acolo unde se aplică.
+obișnuite (pe testnet, instanțierea este deschisă, iar încărcarea nu), fluxurile de
+autentificator / cont abstract pe mainnet (modul oprit acolo, activat pe testnet), xQORE
+și abstractizarea gazului. Fiecare ghid repetă avertismentul acolo unde se aplică.
+Verificat față de endpoint-urile live la 27 octombrie 2026.
 
-SDK-ul publicat (0.9.0, 21 octombrie 2026) semnează în forma pe care o verifică
+SDK-ul publicat (0.10.0, 26 octombrie 2026) semnează în forma pe care o verifică
 ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul
 de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în
-v3.2.3 sau v3.2.4 (mainnet-ul rulează v3.2.4 din 23 octombrie 2026). Poartă partea de client a regulilor post-cuantice ulterioare
+v3.2.3 sau v3.2.4 (mainnet-ul rulează v3.2.4 din 23 octombrie 2026;
+testnet-ul rulează v3.2.6, aplicată pe 27 octombrie). Poartă partea de client a regulilor post-cuantice ulterioare
 (dovada de posesie la înregistrarea cheii, ferestre EVM cu domeniu restrâns,
-mesaje de consimțământ EIP-7702); versiunile anterioare lui 0.9.0 nu o au, vezi
-[Versiuni anterioare lui 0.9.0](/sdk/install#before-090).
+mesaje de consimțământ EIP-7702) și a lui v3.2.4 (niveluri de staking, nonce-ul
+autentificatorului, comutatoarele de funcționalități de protocol); versiunile anterioare lui 0.9.0
+nu o au pe prima, vezi [Versiuni anterioare lui 0.9.0](/sdk/install#before-090)
+și [Ce adaugă 0.10.0](/sdk/install#whats-new-0100).
+
+Semnare pentru portofele și backend-uri: vezi [QoreSign](/qoresign/overview).
 :::
 
 ### Rezistent la atacuri cuantice prin design
@@ -76,7 +85,7 @@ care niciun alt Layer 1 nu le are:
   on-chain înainte de a o difuza. `simulateWithRiskScore` returnează gazul plus
   un verdict de risc/anomalie de la precompilări EVM deterministe, astfel încât
   un portofel sau un dApp poate avertiza (sau bloca) *înainte* de semnare.
-  Precompilele nu sunt încă active pe mainnet sau testnet. Vezi
+  Precompilele AI nu sunt încă active pe mainnet sau testnet. Vezi
   [AI pre-flight](/sdk/guides/ai-preflight).
 - **Apeluri cross-VM unificate** — un cont, trei VM-uri, o singură tranzacție.
   `createCrossVMClient` apelează un contract pe oricare VM, iar `callAtomic`
@@ -97,7 +106,7 @@ poate fi folosită încă pe rețelele live, vezi mai jos):
 - **Benzi de autentificatori** — leagă o cheie Phantom sau MetaMask de contul
   canonic cu PQC obligatoriu și las-o să cheltuiască printr-un relayer, în
   condiții de privilegii minime, cu limite de cheltuieli și revocabile. Modulul
-  `abstractaccount` din spatele ei este oprit astăzi pe ambele rețele. Vezi
+  `abstractaccount` din spatele ei este oprit pe mainnet și activat pe testnet. Vezi
   [Autentificatori și cheltuire delegată](/sdk/guides/authenticators).
 
 Un nou kit **`@qorechain/react`** (provider, hooks, `ConnectButton`,
@@ -113,15 +122,15 @@ derivare, aritmetică a denominărilor și suprafețe de citire.
 
 | Pachet | Limbaj | Instalare | Stare |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Publicat (npm, v0.9.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Publicat (PyPI, v0.9.0) |
-| `qorechain-sdk` (modul Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicat (Go proxy, tag `packages/go/v0.9.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Publicat (crates.io, v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | Publicat (Maven Central, v0.9.1; celelalte limbaje sunt 0.9.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Publicat (npm, v0.10.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Publicat (PyPI, v0.10.0) |
+| `qorechain-sdk` (modul Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicat (Go proxy, tag `packages/go/v0.10.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Publicat (crates.io, v0.10.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.10.0` | Publicat (Maven Central, v0.10.0) |
 | `@qorechain/evm` | TypeScript (adaptor EVM) | `npm i @qorechain/evm viem` | Publicat (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (adaptor SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicat (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.9.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicat (npm, v0.9.0) |
+| `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.10.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicat (npm, v0.10.0) |
 
 > Distribuția Python se instalează ca `qorechain-sdk`, dar **se importă ca
 > `qorsdk`**. Toți clienții sunt publicați în registrele lor — vezi
@@ -136,16 +145,16 @@ plus modulele Cosmos standard, clienți de interogare tipizați, ciclul de viaț
 complet al tranzacției (auto-gas, decodarea erorilor, urmărirea tranzacțiilor,
 căutare de blocuri/tranzacții), tranzacții post-cuantice hibride și abonamente
 WebSocket. Toți acești clienți sunt **publicați**: TypeScript pe npm
-(`@qorechain/sdk` 0.9.0), Python pe PyPI (`qorechain-sdk` 0.9.0, import
-`qorsdk`), Go pe module proxy (tag `packages/go/v0.9.0`), Rust pe crates.io
-(`qorechain-sdk` 0.9.0) și Java pe Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.9.1, o actualizare doar pentru Java; ceilalți clienți sunt 0.9.0). Adaptoarele de
+(`@qorechain/sdk` 0.10.0), Python pe PyPI (`qorechain-sdk` 0.10.0, import
+`qorsdk`), Go pe module proxy (tag `packages/go/v0.10.0`), Rust pe crates.io
+(`qorechain-sdk` 0.10.0) și Java pe Maven Central
+(`io.github.qorechain:qorechain-sdk` 0.10.0). Adaptoarele de
 execuție EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambele 0.8.0), kitul
-`@qorechain/react` (0.9.0) și CLI-ul de schelet `create-qorechain-dapp`
-(0.9.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi
+`@qorechain/react` (0.10.0) și CLI-ul de schelet `create-qorechain-dapp`
+(0.10.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi
 [Instalare](/sdk/install#related-packages) pentru pachetele însoțitoare.
 
-## Noutăți în 0.6, 0.7, 0.8 și 0.9
+## Noutăți în 0.6, 0.7, 0.8, 0.9 și 0.10
 
 **0.6.0 — conturi eth-native unificate (lanț v3.1.83).** O singură cheie
 `eth_secp256k1` este o singură identitate de 20 de octeți redată ca toate cele
@@ -173,7 +182,7 @@ respinsă la CheckTx). Tranzacțiile hibride construite cu SDK ≤ 0.6.0 sunt
 **respinse on-chain** — actualizează.
 
 **0.7.0 — benzi de autentificatori (lanț v3.1.85).** Modulul `abstractaccount`
-din spatele lor este oprit în prezent pe ambele rețele (vezi
+din spatele lor este oprit în prezent pe mainnet și activat pe testnet (vezi
 [ghidul Autentificatori](/sdk/guides/authenticators)). O cheie legată Phantom
 (ed25519) sau MetaMask (secp256k1, după adresa de 20 de octeți) poate cheltui
 din contul canonic cu PQC obligatoriu printr-un relayer, în condiții de
@@ -189,7 +198,7 @@ portofel TypeScript (`buildPhantomExecuteCosmos`, `buildMetaMaskExecuteEvm`,
 v3.2.0).** Jumătatea post-cuantică a unei tranzacții hibride este acum semnată în
 forma pe care o verifică rețeaua țintă (v1 sau v2, `signBytesVersion: "auto" | "v1" | "v2"`).
 Ambele rețele publice sunt pe v2, așa că este necesar SDK **0.8.1 sau mai nou**
-pentru a tranzacționa pe mainnet (folosește 0.9.0). **0.8.2** adaugă `openEvmWindowMsg`,
+pentru a tranzacționa pe mainnet (folosește versiunea curentă). **0.8.2** adaugă `openEvmWindowMsg`,
 `closeEvmWindowMsg`, `fetchEvmWindow` și `classifyEvmWindowRejection` pentru
 [fereastra de autorizare](/sdk/guides/evm#evm-window) a benzii EVM.
 **0.8.0** a eliminat helperii de cont bazați pe semnătura portofelului (`connectPhantomUnified` și
@@ -213,7 +222,17 @@ rețeaua a aplicat v3.2.3. Constructori noi acoperă ferestrele EVM cu domeniu r
 poți recupera din mnemonic. Ruta contului PQC este cea la singular
 `/qorechain/pqc/v1/account/{address}`, eșecurile din interiorul unui bloc își păstrează
 codespace-ul, iar `create-qorechain-dapp` generează proiecte pe SDK-ul curent. Vezi
-[Ce adaugă 0.9.0](/sdk/install#whats-new-090).
+[Ce a adăugat 0.9.0](/sdk/install#whats-new-090).
+
+**0.10.0 — suport de client pentru chain v3.2.4.** Compozitori și citiri pentru
+nivelurile de staking (`lockDelegation`, `unlockEarly`, `claimBonus`,
+`fetchStakingTierParams`, `fetchStakingLocks`), `fetchAuthNonce` pentru următoarea
+secvență a unei chei legate, `fetchProtocolFeatures` / `isProtocolFeatureEnabled`
+pentru regulile de consens pe care o rețea le aplică după nume, `possessionProven`
+în starea PQC și `ibcTimeoutTimestamp`. `ensurePqcRegistered` compară acum cheia
+înregistrată în loc să se bazeze pe o stare fără ea, iar o refuzare din partea
+lanțului care sosește ca text în timpul simulării taxei este numită în fiecare limbaj.
+Vezi [Ce adaugă 0.10.0](/sdk/install#whats-new-0100).
 
 ## Unde să mergi mai departe
 

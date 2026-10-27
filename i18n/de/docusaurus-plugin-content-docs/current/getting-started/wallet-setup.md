@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain unterstützt mehrere Wallet-Typen über seine nativen, EVM- und SVM-Ausführungsumgebungen hinweg. Wählen Sie das Wallet, das zu Ihrem Anwendungsfall passt.
 
 :::note
-Die folgenden Werte gelten sowohl für das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live seit dem 7. Juni 2026, Release v3.2.4 seit dem 23. Oktober 2026) als auch für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Release v3.2.4 seit dem 19. Oktober 2026). Öffentliche Endpunkte für beide Netzwerke sind unter [Netzwerke](/appendix/networks#public-endpoints) aufgeführt.
+Die folgenden Werte gelten sowohl für das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live seit dem 7. Juni 2026, Release v3.2.4 seit dem 23. Oktober 2026) als auch für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Release v3.2.6 seit dem 27. Oktober 2026). Öffentliche Endpunkte für beide Netzwerke sind unter [Netzwerke](/appendix/networks#public-endpoints) aufgeführt.
 :::
 
 ## QoreX (empfohlen) {#qorex}
@@ -105,8 +105,8 @@ Gelder, die an eine der drei Formen gesendet werden, landen im selben Guthaben.
 
 ## Verknüpfte Wallets: Phantom & MetaMask als Ausgabeschlüssel {#linked-wallets}
 
-:::caution Derzeit in beiden Netzwerken abgeschaltet
-Smart-Account- und Linked-Wallet-Funktionen sind implementiert, aber in beiden Netzwerken **abgeschaltet** (`abstractaccount.enabled = false`): Das Registrieren eines Authenticators und das Ausführen über einen solchen werden abgelehnt, solange das Flag aus ist. Prüfen Sie `GET /qorechain/abstractaccount/v1/config`, bevor Sie einen Verknüpfungsablauf anbieten. Der folgende Abschnitt beschreibt das vorgesehene Verhalten.
+:::caution Im Mainnet abgeschaltet, im Testnet aktiviert
+Smart-Account- und Linked-Wallet-Funktionen sind implementiert, aber im **Mainnet abgeschaltet** (`abstractaccount.enabled = false`): Das Registrieren eines Authenticators und das Ausführen über einen solchen werden dort abgelehnt, solange das Flag aus ist. Im **Testnet sind sie aktiviert** (`enabled = true`, geprüft am 27. Oktober 2026), sodass Sie dort einen Verknüpfungsablauf ausprobieren können. Prüfen Sie `GET /qorechain/abstractaccount/v1/config` auf dem Netzwerk, das Sie ansteuern, bevor Sie einen Verknüpfungsablauf anbieten. Der folgende Abschnitt beschreibt das vorgesehene Verhalten.
 :::
 
 Entworfen, damit Sie Ihren Root-Schlüssel nicht preisgeben müssen, um in einer dApp von einem QoreChain-Konto auszugeben (eingeführt in Chain-Version **v3.1.85**): Ein **Phantom**-Schlüssel (ed25519) oder ein **MetaMask**-Schlüssel (über seine Ethereum-Adresse, via `personal_sign`) kann **als Authenticator auf Ihrem Konto registriert werden** — mit eingegrenzten Berechtigungen, Ausgabelimits, einem Ablaufdatum und sofortiger Widerrufbarkeit — und anschließend Überweisungen autorisieren, die vom Backend der dApp weitergeleitet werden. Siehe [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) für das vollständige Modell samt Code sowie den [SDK-Authenticators-Leitfaden](/sdk/guides/authenticators) für End-to-End-Beispiele.

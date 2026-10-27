@@ -10,11 +10,11 @@ sidebar_position: 5
 Questa guida descrive come è progettato il funzionamento dello spostamento di asset tra QoreChain e altre reti blockchain. Il livello di interoperabilità di QoreChain è costruito attorno a **37 configurazioni di chain** (36 chain esterne più Injective, raggiunta tramite IBC) e fino a **8 controparti IBC** per le chain dell'ecosistema Cosmos.
 
 :::caution Non attivo su nessuna delle due reti
-Il modulo bridge è distribuito su mainnet e testnet, ma **nessuna route del bridge è attiva**: tutte le 37 configurazioni di chain sono in stato `pending` senza alcun contratto bridge impostato, non è registrato alcun validatore del bridge, non è mai stata creata alcuna operazione del bridge e non esistono canali o client IBC. Tutto ciò che segue descrive il design previsto. Non inviare asset aspettandoti che vengano trasferiti tramite bridge. Vedi [Architettura del Bridge](/architecture/bridge-architecture) per la tabella dello stato attuale.
+Il modulo bridge è distribuito su mainnet e testnet, ma **nessuna route del bridge è attiva**: tutte le 37 configurazioni di chain sono in stato `pending` senza alcun contratto bridge impostato, non è registrato alcun validatore del bridge, non è mai stata creata alcuna operazione del bridge e sulla mainnet non esiste alcun canale IBC (la testnet ha un solo canale di test ICS-20 verso una chain con ID `provider`, nessuno verso le controparti nominate sotto). Tutto ciò che segue descrive il design previsto. Non inviare asset aspettandoti che vengano trasferiti tramite bridge. Vedi [Architettura del Bridge](/architecture/bridge-architecture) per la tabella dello stato attuale.
 :::
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**, versione della chain **v3.2.4**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) esegue la versione della chain **v3.2.4** (dal 23 ottobre 2026). Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** una volta attivata una route. Stato verificato il 23 ottobre 2026: tutte le 37 configurazioni di chain sono `pending` su entrambe le reti.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**, versione della chain **v3.2.6**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) esegue la versione della chain **v3.2.4** (dal 23 ottobre 2026). Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** una volta attivata una route. Stato verificato il 27 ottobre 2026: tutte le 37 configurazioni di chain sono `pending` su entrambe le reti.
 :::
 
 ---
@@ -34,7 +34,17 @@ Un elenco completo di ogni configurazione di chain è disponibile nella pagina *
 
 ## IBC
 
-IBC fa parte del design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), ma **su nessuna delle due reti esiste ancora alcun canale o client IBC**, quindi non c'è nulla da trasferire. Questa pagina elencherà i canali una volta aperti.
+IBC fa parte del design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), ma **nessuna di queste controparti è ancora connessa**: la mainnet non ha alcun canale o client IBC, e la testnet ha solo un singolo canale di test ICS-20 verso una chain con ID `provider` (verificato il 27 ottobre 2026), quindi non c'è nulla da trasferire per queste chain. Questa pagina elencherà i canali una volta aperti.
+
+### Novità IBC sulla testnet (v3.2.6) {#ibc-testnet-v326}
+
+Tre funzionalità IBC esistono solo sulla testnet; la mainnet non le ha (la sua route `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` risponde 501):
+
+* **Limite di frequenza IBC.** La governance può fissare una quota per canale per i trasferimenti IBC (una percentuale intera dell'offerta per finestra di ore). **Non è automatico**: oggi non è impostato alcun limite, e un insieme vuoto significa nessun limite. Un pacchetto inoltrato viene addebitato su entrambi i canali e un rimborso restituisce la quota. È distinto dai circuit breaker del bridge descritti in [Modello di sicurezza](#security-model).
+* **Inoltro dei pacchetti.** Un trasferimento in arrivo via IBC v1 può portare un memo della forma `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` per essere inviato a un'altra chain, con rimborso al mittente se un salto fallisce. Non ci sono ritentativi e un salto scade per default dopo 10 minuti. Un token che all'arrivo si converte in un ERC-20 non può essere inoltrato.
+* **Light client 08-wasm.** Archiviare, migrare e rimuovere il binario di un light client wasm sono operazioni riservate all'autorità, e i tipi di client consentiti contengono solo il client standard finché la governance non aggiunge `08-wasm`.
+
+Leggi i limiti con `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` sulla testnet (`\{"rate_limits":[]\}` oggi).
 
 ---
 
@@ -106,7 +116,7 @@ Ogni transazione della lane nativa richiede la co-firma post-quantistica ibrida 
 
 ---
 
-## Modello di Sicurezza
+## Modello di Sicurezza {#security-model}
 
 Il QoreChain Bridge è progettato per essere protetto da più livelli di difesa:
 
@@ -114,7 +124,7 @@ Il QoreChain Bridge è progettato per essere protetto da più livelli di difesa:
 | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Multisig PQC 7-su-10**                      | Ogni operazione del bridge richiede attestazioni da almeno 7 dei 10 validatori del bridge, ciascuno utilizzando firme crittografiche post-quantistiche.                                                                      |
 | **Periodo di Contestazione di 24 Ore**        | I trasferimenti che superano la soglia di trasferimento elevato (100.000 QOR) entrano in una finestra di contestazione di 24 ore durante la quale i validatori o gli osservatori possono segnalare transazioni fraudolente. |
-| **Interruttori Automatici (Circuit Breaker)** | Limitatori di velocità automatici bloccano le operazioni del bridge in caso di volumi anomali o pattern sospetti. Le operazioni del bridge riprendono dopo una revisione manuale.                                            |
+| **Interruttori Automatici (Circuit Breaker)** | Progettati per il bridge QCB: limitatori automatici bloccano le operazioni del bridge in caso di volumi anomali o pattern sospetti, e le operazioni riprendono dopo una revisione manuale. Si applicano al bridge QCB, non all'IBC; il limite di frequenza IBC (solo testnet) è fissato dalla governance, non è automatico e oggi non ha alcun limite impostato. |
 
 ---
 

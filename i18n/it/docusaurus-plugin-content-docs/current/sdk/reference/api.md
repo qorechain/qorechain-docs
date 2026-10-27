@@ -50,7 +50,7 @@ Gli export deliberati e supportati di `@qorechain/sdk`:
   (`PROOF_OF_POSSESSION_DOMAIN`), `validateRegisteredPqcKey`,
   `isDegeneratePqcPublicKey`, `migrateToHybrid`, `migratePqcKeyHybrid`,
   `isUpgradeApplied` / `requireUpgradeApplied` (`CHAIN_UPGRADE_V3_2_2`,
-  `CHAIN_UPGRADE_V3_2_3`).
+  `CHAIN_UPGRADE_V3_2_3`, `CHAIN_UPGRADE_V3_2_4`).
 - **Client di lettura:** `RestClient` (incl. `getPermissionSchema`),
   `JsonRpcClient`, `QorClient`, helper HTTP (`getJson`, `postJsonRpc`,
   `buildUrl`, `joinUrl`, `QoreHttpError`); client di query tipizzati per ogni
@@ -72,7 +72,8 @@ Gli export deliberati e supportati di `@qorechain/sdk`:
   `MSG_SEND_TYPE_URL`, helper ibridi (`encodeHybridExtension`,
   `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`);
   decodifica strutturata degli errori tramite `decodeTxError` (incl. i codici
-  `abstractaccount` 5/6/10/11 e il codice `pqc` 21).
+  `abstractaccount` 5/6/10/11 e il codice `pqc` 21; dalla 0.10.0 nomina anche un rifiuto che arriva
+  come testo durante la simulazione della commissione).
 - **Firma eth-native (0.6.0):** `signClassicalEth`, `signHybridEth`
   (secp256k1 su `keccak256(SignDoc)`, tipo di pubkey
   `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`, più l'estensione ibrida
@@ -89,7 +90,7 @@ Gli export deliberati e supportati di `@qorechain/sdk`:
   (`personal_sign` EIP-191); rotazione delle chiavi
   `rotatePqcKeyMsgFromMnemonic`, `derivePqcLegacy`. Vedi la
   [guida agli Authenticator](/sdk/guides/authenticators) (il modulo alla base
-  di queste corsie oggi è disattivato su entrambe le reti).
+  di queste corsie è disattivato sulla mainnet e abilitato sulla testnet).
 - **Sign-bytes ibridi (0.8.0+):** l'opzione `signBytesVersion`
   (`"auto" | "v1" | "v2"`) su `buildHybridTx`, `signAndBroadcastHybrid`,
   `signHybridEth` e `EthNativeSigner`; `resolveSignBytesVersion`,
@@ -106,6 +107,13 @@ Gli export deliberati e supportati di `@qorechain/sdk`:
   `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
 - **Digest v2 dell'abstract account (0.9.0):** `evmAuthSignBytesV2`,
   `resolveEvmAuthDigestVersion`; `validateSpendingRules`.
+- **Chain v3.2.4 (0.10.0):** staking tier (`msg.stakingtier.lockDelegation` /
+  `unlockEarly` / `claimBonus` / `updateParams`, `validateLockDelegation`,
+  `STAKING_LOCK_MONTHS`, `fetchStakingTierParams`, `fetchStakingLocks`,
+  `fetchStakingTierPool`); `fetchAuthNonce`; `fetchProtocolFeatures` /
+  `isProtocolFeatureEnabled`; `possessionProven` sullo stato PQC;
+  `ibcTimeoutTimestamp`; `CHAIN_UPGRADE_V3_2_4`. Vedi
+  [Novità della 0.10.0](/sdk/install#whats-new-0100).
 - **Derivazione PQC canonica (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; il messaggio di registrazione PQC è
   `buildRegisterPqcKeyMsg` (usato da `ensurePqcRegistered`). `derivePqcLegacy` è
@@ -134,10 +142,10 @@ program-id.
 
 | Linguaggio | Documentazione generata | Installazione |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring sull'API pubblica | `pip install qorechain-sdk` alla `0.9.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (tag `packages/go/v0.9.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; import `qorechain`) |
-| Java | Javadoc su Maven Central | `io.github.qorechain:qorechain-sdk:0.9.1` (gli altri linguaggi sono alla 0.9.0) |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring sull'API pubblica | `pip install qorechain-sdk` alla `0.10.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (tag `packages/go/v0.10.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.10.0; import `qorechain`) |
+| Java | Javadoc su Maven Central | `io.github.qorechain:qorechain-sdk:0.10.0` |
 
 Ogni pacchetto rispecchia la stessa superficie (preset di rete, utility per
 denom/indirizzi, derivazione HD — inclusi gli account unificati eth-native —

@@ -263,7 +263,7 @@ Une signature ed25519 est déterministe et n'importe quel site web peut demander
 Si vous avez créé un compte de cette façon, considérez-le dès maintenant comme compromis : créez un nouveau compte à partir d'une mnémonique, transférez-y les fonds, puis liez Phantom au nouveau compte en tant qu'authenticator (voir ci-dessous). L'ancien compte ne peut pas être réparé, car son adresse est liée à la clé exposée et une rotation de clé PQC ne remplace que la moitié post-quantique. Utilisez le SDK 0.8.2 ou ultérieur.
 :::
 
-Pour qu'une clé Phantom (ou MetaMask) dépense depuis un compte, utilisez les **voies d'authenticator** : enregistrez la clé du wallet avec `MsgRegisterAuthenticator`, puis dépensez depuis le compte PQC canonique via `MsgExecuteCosmos` / `MsgExecuteEVM` sous une permission et une `SpendingRule`. Le compte conserve ses propres clés dérivées de la mnémonique, et la clé du wallet peut être révoquée à tout moment. Voir [Authenticators et dépenses déléguées](/sdk/guides/authenticators). Notez que le module `abstractaccount` qui fournit ces voies est actuellement désactivé sur les deux réseaux (`GET /qorechain/abstractaccount/v1/config` indique `enabled: false`) : une clé de wallet ne peut donc pas encore être liée ; d'ici là, utilisez directement le nouveau compte issu de la mnémonique.
+Pour qu'une clé Phantom (ou MetaMask) dépense depuis un compte, utilisez les **voies d'authenticator** : enregistrez la clé du wallet avec `MsgRegisterAuthenticator`, puis dépensez depuis le compte PQC canonique via `MsgExecuteCosmos` / `MsgExecuteEVM` sous une permission et une `SpendingRule`. Le compte conserve ses propres clés dérivées de la mnémonique, et la clé du wallet peut être révoquée à tout moment. Voir [Authenticators et dépenses déléguées](/sdk/guides/authenticators). Notez que le module `abstractaccount` qui fournit ces voies est désactivé sur le mainnet (`GET /qorechain/abstractaccount/v1/config` indique `enabled: false` ; il est activé sur le testnet) : une clé de wallet ne peut donc pas encore être liée sur le mainnet ; d'ici là, utilisez directement le nouveau compte issu de la mnémonique.
 
 ## Cryptographie post-quantique (PQC)
 
@@ -309,8 +309,8 @@ post-quantique voyage sous forme d'extension `PQCHybridSignature` sur la
 transaction.
 
 :::caution La signature hybride est obligatoire sur le chemin Native
-Depuis la version **v3.2.0** de la chaîne (le mainnet et le
-testnet exécutent tous deux la v3.2.4), la valeur par défaut du réseau est
+Depuis la version **v3.2.0** de la chaîne (le mainnet exécute la v3.2.4,
+le testnet la v3.2.6), la valeur par défaut du réseau est
 `hybrid_signature_mode = required` avec `allow_classical_fallback = false`. La
 signature hybride via `buildHybridTx` / `signAndBroadcastHybrid` (passez
 `rest`), ou `signHybridEth` / `EthNativeSigner` pour les comptes unifiés

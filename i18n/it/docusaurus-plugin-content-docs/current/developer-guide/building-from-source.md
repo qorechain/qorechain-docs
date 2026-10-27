@@ -110,7 +110,7 @@ Dopo una build riuscita, verifica il binario:
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-Il comando `init` dovrebbe creare un file genesis e la configurazione del nodo in `~/.qorechaind/` senza errori. L'esempio sopra inizializza rispetto alla testnet **`qorechain-diana`** — per la mainnet, sostituisci con `--chain-id qorechain-vladi`, la rete attiva (release del nodo **v3.2.4**).
+Il comando `init` dovrebbe creare un file genesis e la configurazione del nodo in `~/.qorechaind/` senza errori. L'esempio sopra inizializza rispetto alla testnet **`qorechain-diana`** — per la mainnet, sostituisci con `--chain-id qorechain-vladi`, la rete attiva (release del nodo **v3.2.4** al momento della stesura; la testnet esegue la **v3.2.6**).
 
 ## Build con Docker
 

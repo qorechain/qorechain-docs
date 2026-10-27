@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | ネットワークプリセット | `mainnet` |
 | チェーン ID | `qorechain-vladi`（2026年6月7日から稼働） |
-| チェーンバージョン（2026年10月23日） | v3.2.4（2026年10月23日の高さ 3,742,566 以降、ガバナンス提案 13） |
+| チェーンバージョン（2026年10月27日） | v3.2.4（2026年10月23日の高さ 3,742,566 以降、ガバナンス提案 13）。ガバナンス提案 14 は高さ 3,906,833 で v3.2.5 を適用する予定で、執筆時点では投票期間中でした。v3.2.5 で追加される内容は、メインネットが適用した日に文書化されます |
 | EVM チェーン ID | `9801` |
 | 表示トークン | `QOR` |
 | 基本額面 | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | ネットワークプリセット | `testnet` |
 | チェーン ID | `qorechain-diana`（稼働中） |
-| チェーンバージョン（2026年10月23日） | v3.2.4（高さ 8,337,253 以降、2026年10月19日） |
+| チェーンバージョン（2026年10月27日） | v3.2.6（2026年10月27日の高さ 8,970,638 以降。v3.2.5 は10月26日の高さ 8,890,800 で、v3.2.4 は10月19日の高さ 8,337,253 で適用） |
 | EVM チェーン ID | `9800` |
 | 表示トークン | `QOR` |
 | 基本額面 | `uqor` |
@@ -47,6 +47,14 @@ sidebar_position: 1
 
 EVM エンドポイントは `eth_`、`net_`、`web3_`、`txpool_` を提供します。`qor_`
 名前空間は有効化されていません。[ネットワーク](/appendix/networks#public-endpoints)も参照してください。
+
+### クライアントにとって重要なテストネット専用の違い {#testnet-only}
+
+テストネットはステージングネットワークでメインネットより先行して動作するため、そこで読み取れるいくつかの内容はメインネットにはありません（2026年10月27日に確認。完全な一覧は[テストネットとメインネットの差異](/appendix/chain-parameters#testnet-differences)にあります）。
+
+* **REST ルート。** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`、`GET /qorechain/pqc/v1/params`、`GET /qorechain/crossvm/v1/params` はテストネットで応答します。メインネットはこれらに HTTP 501 を返します。`/qorechain/amm/v1/` 配下の AMM ルート（`pools`、`params`）は両方のネットワークで応答します。
+* **テストトークン。** 価値のない 3 つのトークンがテストネットにのみ存在し、`erc20:<EIP-55 contract address>`（大文字と小文字を区別）という名前のバンクデノミネーションとして登録されています。fUSD（小数桁 6）、fETH（18）、fBTC（8）です。`GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` でそれらを一覧できます。メインネットのバンクデノミネーションは `uqor` のみです。[テストネットのテストトークン（Fest）](/api-reference/rest-grpc-endpoints#fest-tokens)を参照してください。
+* **有効化されているモジュール。** `abstractaccount` モジュールはテストネットでは有効、メインネットでは無効です。EVM プリコンパイルはテストネットで 3 つが有効、メインネットでは 1 つも有効ではありません。また、QoreChain Native のインスタンス化はテストネットで開放されています。
 
 ## デフォルトのポート
 

@@ -44,10 +44,14 @@ const result = await queryContractSmart(cw, contractAddress, { token_info: {} })
 ## 署名: インスタンス化、実行、アップロード
 
 :::caution アップロードとインスタンス化は許可制です
-`code_upload_access` と `instantiate_default_permission` は、`qorechain-vladi` と
-`qorechain-diana` では `Nobody` です。さらに `MsgStoreCode` /
+`qorechain-vladi`（メインネット）では `code_upload_access` と
+`instantiate_default_permission` は `Nobody` です。さらに `MsgStoreCode` /
 `MsgInstantiateContract` / `MsgInstantiateContract2` はチェーンのサーキットブレーカーによっても
 無効化されているため、一般のアカウントでは `uploadCode` と `instantiate` は拒否されます。
+`qorechain-diana`（テストネット、2026年10月27日に確認）では
+`code_upload_access` は `Nobody` で、無効化されているのは `MsgStoreCode` のみです。
+一方 `instantiate_default_permission` は `Everybody` なので、すでに存在するコードに対する
+`instantiate` はそこでは開放されています。
 すでに存在するコントラクトは、クエリ（上記）と実行が可能です。現在の許可設定は
 `GET /cosmwasm/wasm/v1/codes/params` で確認してください。
 [QoreChain Native 開発](/developer-guide/cosmwasm-development) を参照してください。

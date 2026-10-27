@@ -10,7 +10,7 @@ sidebar_position: 5
 Ce guide explique comment envoyer des tokens QOR, interroger des transactions et interagir avec QoreChain via ses interfaces native, EVM et SVM.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version v3.2.4 depuis le 23 octobre 2026 (le testnet exécute la v3.2.4 depuis le 19 octobre 2026) — remplacez le chain ID et les endpoints par ceux du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous transactez sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version v3.2.4 depuis le 23 octobre 2026 (le testnet exécute la v3.2.6 depuis le 27 octobre 2026) — remplacez le chain ID et les endpoints par ceux du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous transactez sur le mainnet.
 :::
 
 ## Vérifier votre solde
@@ -139,7 +139,7 @@ Tout le reste de la voie EVM est inchangé : vous continuez à signer avec MetaM
 | `max-txs` | Nombre de transactions EVM qu'elle admet | 1 – 1,000 |
 | `max-value` | Sortie totale qu'elle admet, en uqor : valeur transférée **plus** les frais maximaux que chaque transaction pourrait payer (limite de gas × plafond de frais), arrondi à l'unité supérieure | supérieur à 0 |
 
-* 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,2 s par bloc) et environ 5 heures sur le testnet (environ 1,0 s par bloc).
+* 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,2 s par bloc) et environ 6 heures sur le testnet (environ 1,3 s par bloc).
 * Une transaction admise qui échoue consomme tout de même son emplacement et son budget de valeur.
 * L'ouverture d'une nouvelle fenêtre **remplace** la précédente ; la consommation repart de zéro.
 * Le CLI accepte `max-value` en `uqor` ou en `qor` (`1000qor` = 1,000,000,000 uqor).

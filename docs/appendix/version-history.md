@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026; the previous release, v3.2.3, was applied at height 3,662,051 on 20 October 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) has run **v3.2.4** since height 8,337,253 (19 October 2026).
+Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026; the previous release, v3.2.3, was applied at height 3,662,051 on 20 October 2026). Governance proposal 14 would apply v3.2.5 on mainnet at height 3,906,833 (in its voting period at the time of writing, 27 October 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) runs **v3.2.6** (applied at height 8,970,638 on 27 October 2026); v3.2.4 reached it at height 8,337,253 (19 October 2026) and v3.2.5 at height 8,890,800 (26 October 2026).
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet. The release manifest ([Connecting to Mainnet](/getting-started/connecting-to-mainnet)) is promoted separately from tagging and can lag a tag by some time — check it directly for what a fresh install actually downloads.
@@ -15,7 +15,7 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ## Mainnet governance timeline {#governance-timeline}
 
-Proposals that changed the running mainnet since 14 October 2026. All seven are expedited proposals (one-day voting period); proposals 7 to 13 passed with all voting bonded stake in favour. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
+Proposals that changed the running mainnet since 14 October 2026. All eight are expedited proposals (one-day voting period); proposals 7 to 13 passed with all voting bonded stake in favour, and proposal 14 is still being voted on at the time of writing. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
 
 | Proposal | What it does | Voting | Outcome |
 | --- | --- | --- | --- |
@@ -26,14 +26,39 @@ Proposals that changed the running mainnet since 14 October 2026. All seven are 
 | 11 | Applies v3.2.3 at height 3,662,051 | 18–19 October 2026 (ends 19:15 UTC) | Passed; applied 20 October 2026 |
 | 12 | Releases the corrected stranded staker share (3,807,496.785528 QOR, recomputed at the v3.2.3 height) to the foundation | 20 October 2026 20:01 UTC to 21 October 2026 20:01 UTC | Passed |
 | 13 | Coordinated upgrade to v3.2.4 at height 3,742,566: optional time-locked staking, light-node reward bound counted from registration, a possession flag for post-quantum keys, proof of possession for bridge validators, the RDK challenge window in block time, and node-local hardening | 20 October 2026 21:18 UTC to 21 October 2026 21:18 UTC | Passed; applied 23 October 2026 at height 3,742,566 |
+| 14 | Coordinated upgrade to v3.2.5 (build 2) at height 3,906,833 (nodes stay on v3.2.4 until that height, halt there and restart on v3.2.5; transaction signing is unchanged) | 27 October 2026 00:29 UTC to 28 October 2026 00:29 UTC | In voting at the time of writing. The content of v3.2.5 is documented on the day mainnet applies it |
 
 See [Tokenomics](/architecture/tokenomics#stranded-and-reserve) for what the releases mean and [Governance](/user-guide/governance) for how to vote.
 
 ---
 
+## Testnet releases v3.2.5 and v3.2.6 (testnet only so far) {#testnet-v326}
+
+The testnet `qorechain-diana` takes each release a few days before mainnet. Mainnet is unchanged by anything in this section: it runs v3.2.4 until a governance upgrade says otherwise.
+
+### v3.2.6 — Query Routes, Live PRISM Values and Test Tokens (testnet)
+
+**Release focus:** Applied on the testnet by testnet governance proposal 28 at height **8,970,638** (27 October 2026, 16:58 UTC). The testnet manifest sets `version` and `minCompatible` to 3.2.6 with `upgradeHeight` 8970638, so a node joining the testnet needs v3.2.6. Signing format, addresses, decimals, memos and fees are unchanged.
+
+* **New testnet read routes.** `GET /qorechain/pqc/v1/params`, the IBC v2 client route `/ibc/core/client/v2/counterparty_info/{client_id}`, and the full set of PRISM (`x/rlconsensus`) queries under `/qorechain/rlconsensus/v1/` (`agent`, `params`, `observation`, `reward`, `policy`, `applied_params`, `last_action`). Mainnet answers 501 (not implemented) on the PRISM, PQC parameter and IBC v2 client routes. The AMM routes under `/qorechain/amm/v1/` (`pools`, `quote/exact_in`, `pools/{id}/lp/{address}`) answer on both networks. See [REST / gRPC reference](/api-reference/rest-grpc-endpoints).
+* **PRISM agent.** The testnet agent is in shadow mode (set by testnet governance proposal 29): it observes every 10 blocks, computes a reward and a proposed action, and records them without changing any value. The agent circuit breaker was corrected and its history is bounded. See [PRISM](/architecture/prism-consensus-engine).
+* **Live PRISM values in the EVM.** The `rlConsensusParams` precompile now returns the module's applied values instead of fixed numbers.
+* **Locked-stake undelegation refused earlier.** The mempool refuses an undelegation or redelegation of locked stake before it costs a fee; a transaction simulation also returns the typed error code.
+* **RDK.** Batch queries gain a `withdrawals_bound` field.
+* **IBC rate limit (testnet only).** A per-channel rate limiter for IBC transfers: quotas are a whole percent of supply per window of hours. **Governance sets the limits; nothing is automatic, and no limits are set today** (an empty set means unlimited). A forwarded packet is charged on both channels, and a refund returns the quota.
+* **IBC packet forwarding (testnet only).** An incoming IBC v1 transfer can carry a `forward` memo (receiver, port, channel) that sends it on to another channel, with refunds to the sender if a hop fails. There are no retries and the default hop timeout is 10 minutes; a token that converts to an ERC-20 on arrival cannot be forwarded.
+* **08-wasm light clients (testnet only).** The 08-wasm light-client messages (store, migrate and remove a client binary) are added, authority-only. The allowed client types still hold only the standard client, so no wasm light client can be created until governance adds `08-wasm`.
+* **Fest test tokens.** Three ERC-20 contracts deployed for the builder fest were registered by testnet governance (proposal 26) as bank denominations: fUSD (6 decimals), fETH (18) and fBTC (8). They are testnet-only test tokens with no value. See [Faucet](/dashboard/faucet#fest-tokens).
+
+### v3.2.5 (testnet)
+
+**Release focus:** Applied on the testnet by testnet governance proposal 15 at height **8,890,800** (26 October 2026). On mainnet, governance proposal 14 would apply v3.2.5 (build 2) at height 3,906,833 and was in its voting period at the time of writing. The features of v3.2.5 are documented in this history on the day mainnet applies it.
+
+---
+
 ## v3.2.4 — Light-Node Registration Window and Optional Time-Locked Staking (mainnet)
 
-**Release focus:** The current release on both networks. It ran on the testnet `qorechain-diana` first: testnet governance proposal 13 applied it at height **8,337,253** (19 October 2026). On mainnet, governance proposal 13 applied it at height **3,742,566** on 23 October 2026: nodes stayed on v3.2.3 until that block, halted there and restarted on v3.2.4, and transaction signing is unchanged. The mainnet and testnet manifests both set `minCompatible` to 3.2.4, so a node joining either network now needs v3.2.4. Every feature below is live on both networks.
+**Release focus:** The current mainnet release. It ran on the testnet `qorechain-diana` first: testnet governance proposal 13 applied it at height **8,337,253** (19 October 2026). On mainnet, governance proposal 13 applied it at height **3,742,566** on 23 October 2026: nodes stayed on v3.2.3 until that block, halted there and restarted on v3.2.4, and transaction signing is unchanged. The mainnet manifest sets `minCompatible` to 3.2.4, so a node joining mainnet needs v3.2.4 (the testnet has since moved on to v3.2.6). Every feature below is live on mainnet and on the testnet.
 
 * **Light-node registration window.** A light node's reward bound starts at the later of the previous settlement and the node's own registration, so a new registration does not collect an accumulated amount from before it joined.
 * **Optional time-locked staking (`x/stakingtier`, a new module).** A delegator may lock part of a delegation for 3, 6 or 12 months; the locked part cannot be undelegated or redelegated, and an early unlock is allowed with a penalty that is burned. The minimum lock is 10 QOR. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking).
@@ -137,7 +162,7 @@ v3.2.1 was applied node by node and has no upgrade height; it was superseded on 
 * **Permission schema query** — `GET /qorechain/abstractaccount/v1/permission_schema` (also gRPC/CLI) returns the canonical permission taxonomy (11 permissions), the message→permission map, and the non-delegable message list, so wallets validate scopes without hardcoding.
 * **Same-algorithm PQC key rotation** — New **`MsgRotatePQCKey`** rotates an account's ML-DSA-87 key within the same algorithm (dual-signed by the old and new keys), enabling migration of legacy-derived keys to the canonical address-bound derivation and retirement of a compromised key. New CLI: `tx pqc rotate-key` and `tx pqc recover-key` (deterministic key recovery from a mnemonic).
 * **Root-key transactions unaffected** — The changes are additive; normal wallet and exchange flows are unchanged. Node operators must be on **v3.1.85** by the network upgrade height.
-* **Current status** — The smart-account and linked-wallet features are implemented but currently **switched off** on both networks (`abstractaccount.enabled = false`); from v3.2.0 every authenticator path is refused while the flag is off. Check `GET /qorechain/abstractaccount/v1/config` before offering a linking flow.
+* **Current status** — The smart-account and linked-wallet features are implemented but **switched off on mainnet** (`abstractaccount.enabled = false`) and enabled on the testnet (checked 27 October 2026); on mainnet, from v3.2.0 every authenticator path is refused while the flag is off. Check `GET /qorechain/abstractaccount/v1/config` before offering a linking flow.
 
 ## v3.1.84 — Authenticator Permissions & Spending Limits
 

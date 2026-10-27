@@ -10,7 +10,7 @@ sidebar_position: 4
 Unisciti alla testnet Diana di QoreChain configurando il tuo nodo con il file genesis, i peer e le impostazioni di rete corretti.
 
 :::note
-Questa pagina riguarda la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è attiva dal 7 giugno 2026 (release **v3.2.4** dal 23 ottobre 2026) e dispone di una pagina dedicata **Connessione alla Mainnet** con genesis, peer e dettagli di connessione separati. La testnet esegue la **v3.2.4** dal 19 ottobre 2026; il suo manifesto di rilascio si trova all'indirizzo [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Questa pagina riguarda la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è attiva dal 7 giugno 2026 (release **v3.2.4** dal 23 ottobre 2026) e dispone di una pagina dedicata **Connessione alla Mainnet** con genesis, peer e dettagli di connessione separati. La testnet esegue la **v3.2.6** (applicata il 27 ottobre 2026); il suo manifesto di rilascio si trova all'indirizzo [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Endpoint Pubblici
@@ -26,7 +26,7 @@ Se hai solo bisogno di **interrogare la testnet o trasmettere transazioni**, uti
 | SVM JSON-RPC (sola lettura) | `https://svm-testnet.qore.host` |
 | Block explorer | [explore.qore.network](https://explore.qore.network) (passa a Testnet) |
 
-I QOR di testnet sono disponibili tramite il [Faucet della Dashboard](/dashboard/faucet).
+I QOR di testnet sono disponibili tramite il [Faucet della Dashboard](/dashboard/faucet), che può inviare anche i [token di test Fest](/dashboard/faucet#fest-tokens) solo testnet (fUSD, fETH, fBTC; senza valore).
 
 ---
 
@@ -52,7 +52,17 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-La testnet adotta aggiornamenti coordinati tramite proposte di governance, quindi il suo manifesto riporta un campo `upgradeHeight` (la v3.2.4 è stata applicata all'altezza 8.337.253 il 19 ottobre 2026; prima di essa la v3.2.3 all'altezza 8.003.746 e la v3.2.2 all'altezza 6.905.034) e `minCompatible` è uguale alla versione attuale (3.2.4). Un nodo che si unisce ora ha bisogno della release indicata nel manifesto. Mantieni l'orologio di sistema sincronizzato via NTP. La mainnet ha applicato la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026, ma il suo manifesto è separato, quindi non copiare mai un binario da una rete all'altra.
+La testnet adotta aggiornamenti coordinati tramite proposte di governance, quindi il suo manifesto riporta un campo `upgradeHeight` e `minCompatible` è uguale alla versione attuale. Un nodo che si unisce ora ha bisogno della release indicata nel manifesto. Al momento della stesura (27 ottobre 2026) il manifesto della testnet riporta `version` 3.2.6, `minCompatible` 3.2.6 e `upgradeHeight` 8970638, e la sua nota dice "IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens". Mantieni l'orologio di sistema sincronizzato via NTP.
+
+| Release | Altezza sulla testnet | Data di applicazione |
+| --- | --- | --- |
+| v3.2.2 | 6.905.034 | 2 ottobre 2026 |
+| v3.2.3 | 8.003.746 | 15 ottobre 2026 |
+| v3.2.4 | 8.337.253 | 19 ottobre 2026 |
+| v3.2.5 | 8.890.800 | 26 ottobre 2026 |
+| v3.2.6 | 8.970.638 | 27 ottobre 2026 (16:58 UTC) |
+
+La testnet adotta ogni release prima della mainnet. La mainnet ha applicato la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026; la proposta di governance 14 della mainnet applicherebbe la v3.2.5 all'altezza 3.906.833 ed era nel suo periodo di votazione al momento della stesura. I manifesti sono separati, quindi non copiare mai un binario da una rete all'altra e non aspettarti che la mainnet accetti una funzionalità solo testnet (le aggiunte della v3.2.6 sono elencate in [Cronologia delle Versioni](/appendix/version-history#testnet-v326)).
 
 ---
 
@@ -106,7 +116,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### Impostazioni Consigliate
 
-Un full node non sceglie il tempo di blocco — lo scelgono i validatori (la testnet produce attualmente un blocco circa ogni 1 secondo). Lascia i timeout di consenso ai valori predefiniti, a meno che tu non gestisca un validatore e il gruppo dei validatori ti abbia fornito dei valori. Un'impostazione utile del mempool per un nodo RPC pubblico, in `config.toml`:
+Un full node non sceglie il tempo di blocco — lo scelgono i validatori (la testnet produce attualmente un blocco circa ogni 1,3 secondi). Lascia i timeout di consenso ai valori predefiniti, a meno che tu non gestisca un validatore e il gruppo dei validatori ti abbia fornito dei valori. Un'impostazione utile del mempool per un nodo RPC pubblico, in `config.toml`:
 
 ```toml
 [mempool]

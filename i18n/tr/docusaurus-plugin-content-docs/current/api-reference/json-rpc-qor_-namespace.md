@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getReputationScore`      | Genel bir sorgu rotası yok (reputation modülü yalnızca gRPC `Params` sunar). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` ve `anchor/{layer_id}`. Bkz. [Multilayer Modülü](/api-reference/rest-grpc-endpoints#multilayer-module). |
 | `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`. Bkz. [Bridge Modülü](/api-reference/rest-grpc-endpoints#bridge-module). Köprü henüz canlı değil. |
-| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`); REST rotası yok. |
+| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | Testnet'te (v3.2.6): `GET /qorechain/rlconsensus/v1/agent`, `/observation` ve `/reward` (ayrıca `/params`, `/policy`, `/applied_params`, `/last_action`); bkz. [RL Consensus Modülü](/api-reference/rest-grpc-endpoints#rlconsensus-module). Mainnet'te bu rotalar `501` döndürür: kendi çalıştırdığınız bir düğümde gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`) kullanın. |
 | `qor_getPoolClassification`   | Genel bir sorgu rotası yok. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. Bkz. [Burn Modülü](/api-reference/rest-grpc-endpoints#burn-module). |
 | `qor_getXQOREPosition`        | Yok. xQORE canlı değil (bkz. [xQORE Staking](/user-guide/xqore-staking)). |
@@ -49,7 +49,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`, `/rollups`, `/batch/{id}/{index}`, `/latest_batch/{id}`, `/batches/{id}`, `/blob/{id}/{index}` (v3.2.2'den beri sunuluyor; bkz. [RDK Modülü](/api-reference/rest-grpc-endpoints#rdk-module)) veya `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | Genel bir hizmet yok; bkz. [Hazır Profiller](/rollups/preset-profiles). |
 | `qor_getBTCStakingPosition`   | Yok. BTC yeniden stake etme (restaking) modülünün henüz bir sorgu hizmeti yok. |
-| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Soyut hesaplar bugün her iki ağda da devre dışıdır. |
+| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Soyut hesaplar mainnet'te devre dışıdır, testnet'te etkindir (27 Ekim 2026'da kontrol edildi). |
 | `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config` (v3.2.2'den beri sunuluyor). Bkz. [Gas Abstraction Modülü](/api-reference/rest-grpc-endpoints#gas-abstraction-module). |
 | `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | Yok. |
 

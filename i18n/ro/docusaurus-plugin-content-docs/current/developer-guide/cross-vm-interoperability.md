@@ -14,10 +14,10 @@ Apelurile între VM-uri sunt disponibile doar în măsura în care este disponib
 
 * `MsgCrossVMCall` este **oprit pe mainnet** de circuit breaker (`qorechaind query circuit disabled-list`); pe testnet este activat.
 * **Lane-ul SVM este dezactivat** pentru tranzacții pe ambele rețele, deci un segment SVM nu poate rula.
-* **Încărcarea și instanțierea QoreChain Native sunt permisionate** pe ambele rețele, iar mainnet-ul nu are cod de contract stocat, deci nu există încă niciun contract QoreChain Native de apelat.
-* **Precompile-ul EVM sincron nu este activ** (vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3, dar niciun precompile nu este activat pe vreuna dintre rețele, iar v3.2.4 (testnet din 19 octombrie 2026, mainnet din 23 octombrie 2026) nu schimbă acest lucru.
+* **Încărcarea QoreChain Native este permisionată** pe ambele rețele, iar **instanțierea este permisionată pe mainnet**, care nu are cod de contract stocat, deci nu există încă niciun contract QoreChain Native de apelat pe mainnet. Pe testnet, guvernanța a stocat câteva contracte revizuite pe care orice cont le poate instanția (vezi [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development)), deci acolo poate exista o țintă QoreChain Native.
+* **Precompile-ul EVM sincron nu este activ** (vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3, dar precompile-ul CrossVM nu este activat pe vreuna dintre rețele. (Pe 27 octombrie 2026, guvernanța testnet-ului a activat alte trei precompile-uri, PQC Verify, PQC Key Status și PRISM Consensus Params; mainnet-ul nu are niciunul activ. v3.2.4 nu schimbă care precompile-uri sunt active.)
 
-Rutele REST ale modulului (`/qorechain/crossvm/v1/...`) nu sunt servite de gateway-ul public; citește mesajele cu CLI-ul sau cu un client de interogare gRPC/ABCI.
+Pe mainnet, rutele REST ale modulului (`/qorechain/crossvm/v1/...`) nu sunt servite de gateway-ul public (`501`); citește mesajele cu CLI-ul sau cu un client de interogare gRPC/ABCI.
 :::
 
 :::note
@@ -88,7 +88,7 @@ contract CrossVMCaller {
 
 Aceasta este structura pe care o decodifică nodul; este aceeași structură pe care o construiește encoderul `@qorechain/rdk`, iar contractul de mai sus corespunde șablonului de pornire din [Multi-VM](/rollups/multi-vm). Fondurile nu pot fi atașate prin precompile (calea prin mesajul `MsgCrossVMCall` acceptă `--funds`). Exemplul nu poate face nimic pe nicio rețea astăzi, deoarece precompile-ul nu este activ (vezi avertismentul de mai sus); ABI-ul se mai poate schimba înainte de activare.
 
-Odată activ, precompile-ul execută imediat contractul QoreChain Native și returnează rezultatul. (Helperul `encodeCrossVmCalldata` din `@qorechain/rdk` 0.6.0 construiește calldata; vezi [Multi-VM](/rollups/multi-vm).) Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
+Odată activ, precompile-ul execută imediat contractul QoreChain Native și returnează rezultatul. (Helperul `encodeCrossVmCalldata` din `@qorechain/rdk`, disponibil din 0.6.0 și în curentul 0.6.1, construiește calldata; vezi [Multi-VM](/rollups/multi-vm).) Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
 
 ---
 
@@ -108,7 +108,7 @@ qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
 Alte flag-uri: `--funds <coins>` (doar pentru ținte QoreChain Native) și `--async` pentru a pune apelul în coadă în loc să fie executat acum. Semnează și transmite `tx.json` cu `tx pqc cosign` (vezi [Semnare post-cuantică](/developer-guide/post-quantum-signing)); pragul taxei este de 0.1 uqor per gaz. Un apel către propriul lane al apelantului este refuzat (începând cu v3.2.3).
 
 :::caution Dezactivat pe mainnet
-`MsgCrossVMCall` este oprit pe mainnet de circuit breaker, deci comanda nu poate reuși acolo astăzi. (Binarele de release anterioare v3.2.3 construiau și un mesaj care nu trecea de propria validare, deoarece VM-ul sursă era gol; binarul v3.2.3 corectează acest lucru.) Pe testnet mesajul este activat, dar țintele sale QoreChain Native și SVM nu sunt utilizabile (vezi mai sus), așa că poate fi atinsă doar o țintă EVM.
+`MsgCrossVMCall` este oprit pe mainnet de circuit breaker, deci comanda nu poate reuși acolo astăzi. (Binarele de release anterioare v3.2.3 construiau și un mesaj care nu trecea de propria validare, deoarece VM-ul sursă era gol; binarul v3.2.3 corectează acest lucru.) Pe testnet mesajul este activat, dar lane-ul SVM este dezactivat, deci o țintă SVM nu poate fi atinsă; o țintă EVM, și o țintă QoreChain Native după ce acolo a fost instanțiat un contract, pot fi atinse.
 :::
 
 ---

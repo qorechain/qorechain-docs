@@ -9,8 +9,10 @@ sidebar_position: 2
 
 QoreChain integra **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), una capa de optimización por aprendizaje por refuerzo, directamente en la capa de consenso a través del módulo `x/rlconsensus`. PRISM observa las métricas de la cadena cada N bloques y está diseñado para ejecutar inferencia mediante una red neuronal de punto fijo y proponer ajustes de parámetros de consenso — todo de forma determinista, sin aritmética de punto flotante en las rutas críticas para el consenso.
 
-:::note Estado actual (comprobado el 20 de octubre de 2026; ambas redes ejecutan ahora v3.2.4)
-Tanto en mainnet como en testnet el agente está en modo `conservative`, recopila una observación y una recompensa cada 10 bloques y **no tiene pesos de política cargados**: ha dado 0 pasos y no aplica ningún cambio de parámetros (comprobado mediante las consultas `AgentStatus` y `Policy` en ambas redes). El tiempo de bloque lo determina la configuración de los nodos de los validadores, no PRISM. Cargar una política, cambiar el modo, reanudar el agente y actualizar los pesos de recompensa son acciones de gobernanza que actualmente están deshabilitadas en mainnet por el circuit breaker; no están deshabilitadas en la testnet.
+:::note Estado actual (mainnet v3.2.4, comprobado el 20 de octubre de 2026 y sin cambios desde entonces; testnet v3.2.6, comprobado el 27 de octubre de 2026)
+**Mainnet.** El agente está en modo `conservative`, recopila una observación y una recompensa cada 10 bloques y **no tiene pesos de política cargados**: ha dado 0 pasos y no aplica ningún cambio de parámetros. El tiempo de bloque lo determina la configuración de los nodos de los validadores, no PRISM. Cargar una política, cambiar el modo, reanudar el agente y actualizar los pesos de recompensa son acciones de gobernanza que actualmente están deshabilitadas en mainnet por el circuit breaker (los cuatro mensajes de control siguen en la lista de deshabilitados), por lo que el estado del agente no puede haber cambiado. Las rutas de consulta de PRISM bajo `/qorechain/rlconsensus/v1/` responden 501 (no implementado) en mainnet.
+
+**Testnet.** La gobernanza de la testnet puso el agente en **modo shadow** y cargó una pequeña política de demostración (25 entradas, una capa oculta de 4 unidades, 5 salidas, 129 pesos, época 1; es una prueba de la infraestructura, no la red de producción descrita a continuación). En modo shadow el agente observa cada 10 bloques, calcula su recompensa y una acción propuesta, y las registra (evento `rl_action_proposed`) sin cambiar ningún valor: `applied_params` conserva sus valores por defecto (tiempo de bloque 5000 ms, suelo del precio del gas 100) y `last_action` informa `"applied": false`. Desde v3.2.6 la testnet sirve el módulo por REST bajo `/qorechain/rlconsensus/v1/`: `agent` (modo, época, número de pasos, estado del circuit breaker), `params`, `observation`, `reward`, `policy`, `applied_params` y `last_action`; en la misma versión se corrigió el circuit breaker del agente y se limitó su historial, y el precompile EVM `rlConsensusParams` (`0x…0C01`) ahora devuelve los valores del módulo.
 
 Dos cambios de versión restringen lo que puede hacer un futuro cambio de política o de parámetros. Desde v3.2.2, una actualización de política por gobernanza se valida con aritmética comprobada. Desde v3.2.3, los mensajes de gobernanza se comprueban por rango sobre el valor en bruto de la transmisión (el modo del agente) y cada peso de recompensa debe estar entre 0 y 1.
 :::
@@ -19,7 +21,7 @@ Dos cambios de versión restringen lo que puede hacer un futuro cambio de polít
 
 ```mermaid
 flowchart LR
-    A["Observation Collector<br/>25-dim state vector<br/>every 10 blocks"] --> B["Policy Network (MLP)<br/>int64 fixed-point<br/>2x256 hidden, ReLU/tanh"]
+    A["Observation Collector<br/>25-dim state vector<br/>every 10 blocks"] --> B["Policy Network (MLP)<br/>int64 fixed-point<br/>design: 2x256 hidden, ReLU/tanh"]
     B --> C["5-dim action vector<br/>clamped to mode bounds"]
     C --> D["Adjust consensus params<br/>block time, gas price,<br/>RPoS / DPoS pool weights"]
     D --> E["Reward Computer<br/>weighted multi-objective"]
@@ -49,6 +51,8 @@ La red de política es un perceptrón multicapa (MLP) feedforward implementado e
 
 ### Arquitectura de la Red
 
+La tabla y el recuento de parámetros que siguen describen el **tamaño de diseño** de la red de política (dos capas ocultas de 256 unidades). Ninguna política de este tamaño está cargada en ninguna de las redes: mainnet no tiene ninguna política cargada, y la testnet ejecuta una pequeña política de demostración (25 entradas, una capa oculta de 4 unidades, 5 salidas, 129 pesos).
+
 | Propiedad           | Valor                              |
 | ------------------- | ---------------------------------- |
 | Dimensiones de entrada    | 25                                 |
@@ -77,7 +81,7 @@ Todos los cálculos del MLP usan valores `int64` escalados por `FixedPointScale 
 * **ReLU**: `relu(x) = max(0, x)`
 * **tanh**: Aproximante de Padé `tanh(x) ~ x * (3*S - x^2) / (3*S + x^2)` para `|x| <= 2.5*SCALE`, restringido a +/- SCALE en caso contrario
 
-Los pesos de la política están diseñados para almacenarse on-chain como un vector `[]int64` aplanado y actualizarse mediante propuesta de gobernanza. Hoy no hay ninguna política cargada en las redes en vivo.
+Los pesos de la política están diseñados para almacenarse on-chain como un vector `[]int64` aplanado y actualizarse mediante propuesta de gobernanza. Hoy no hay ninguna política cargada en la mainnet; la testnet ejecuta una pequeña política de demostración en modo shadow (consulte la nota de estado anterior).
 
 ---
 
@@ -163,8 +167,8 @@ PRISM opera en uno de cuatro modos, controlables mediante gobernanza (el mensaje
 
 | Modo             | ID | Cambio Máx. | Comportamiento                                                                             |
 | ---------------- | -- | ---------- | ------------------------------------------------------------------------------------------ |
-| **Shadow**       | 0  | 0%         | Solo observa y registra recomendaciones. No se cambian parámetros. Es el valor por defecto en el código; las redes en vivo ejecutan Conservative (configuración de génesis). |
-| **Conservative** | 1  | +/- 10%    | Aplica cambios de parámetros dentro de límites estrictos. Adecuado para el despliegue inicial en vivo. |
+| **Shadow**       | 0  | 0%         | Solo observa y registra recomendaciones. No se cambian parámetros. Es el valor por defecto en el código. Desde la propuesta de gobernanza 29 de testnet, el **agente de la testnet funciona en modo Shadow**; el agente de mainnet está en modo Conservative (configuración de génesis) sin ninguna política cargada, por lo que no aplica ningún cambio. |
+| **Conservative** | 1  | +/- 10%    | Aplica cambios de parámetros dentro de límites estrictos. Adecuado para el despliegue inicial en vivo (el modo actual de mainnet, sin ninguna política cargada). |
 | **Autonomous**   | 2  | +/- 25%    | Aplica cambios de parámetros dentro de límites más amplios. Para redes maduras con políticas validadas. |
 | **Paused**       | 3  | 0%         | PRISM está completamente inactivo. No se recopilan observaciones ni se ejecuta inferencia. |
 
@@ -234,12 +238,12 @@ Todas las funciones operan sobre valores `cosmossdk.io/math.LegacyDec`, garantiz
 | -------------------------------- | --------- | ------------ | ---------------------------------------------------- |
 | `enabled`                        | bool      | `true`       | Habilita PRISM                                       |
 | `observation_interval`           | uint64    | `10`         | Bloques entre recopilaciones de observación          |
-| `agent_mode`                     | PrismMode | `1` (Conservative) en ambas redes | Modo de operación actual                |
+| `agent_mode`                     | PrismMode | Mainnet: `1` (Conservative). Testnet: `0` (Shadow, desde la propuesta 29; la ruta REST lo informa como `shadow`) | Modo de operación actual                |
 | `max_change_conservative`        | LegacyDec | `0.10`       | Cambio máximo de parámetro en modo Conservative      |
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Cambio máximo de parámetro en modo Autonomous        |
 | `circuit_breaker_window`         | uint64    | `50`         | Número de bloques recientes supervisados por el circuit breaker |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Fracción mínima de bloques sanos antes de la activación |
-| `default_block_time_ms`          | int64     | `5000`       | Tiempo de bloque objetivo por defecto (ms) usado como línea base de observación; el tiempo de bloque real es de unos 3,2 s en mainnet y 1,0 s en testnet |
+| `default_block_time_ms`          | int64     | `5000`       | Tiempo de bloque objetivo por defecto (ms) usado como línea base de observación; el tiempo de bloque real es de unos 3,2 s en mainnet y de unos 1,3 s en testnet |
 | `default_base_gas_price`         | LegacyDec | `100`        | Precio de gas base por defecto                       |
 | `default_validator_set_size`     | uint64    | `100`        | Tamaño objetivo del conjunto de validadores por defecto |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Peso de recompensa por mejora de rendimiento         |

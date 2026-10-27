@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChainは、QoreChain EVM Engine上で完全にEVM互換の実行環境を稼働しており、使い慣れたツールを使ってSolidityスマートコントラクトをデプロイ・操作できます。EVMモジュールは、標準的なEthereum開発ワークフローをサポートするJSON-RPCインターフェースを**ポート8545**（WebSocketは**8546**）で公開しています。
 
 :::note
-以下の例は、2026年6月7日から稼働している**`qorechain-vladi`**メインネット（EVMチェーンID**9801**）を対象としています。このネットワークはノードリリース**v3.2.4**（2026年10月23日、ガバナンス提案13により高さ3,742,566で適用。v3.2.3は2026年10月20日、高さ3,662,051で適用済み）を実行しています。**`qorechain-diana`**テストネットは、高さ8,337,253（2026年10月19日）以降v3.2.4を実行しています。そちらではEVMチェーンID**9800**を使用してください。コードサンプルでは、ご自身で運用するノード向けに `http://localhost:8545` を使用しています。公開メインネットのエンドポイントは `https://evm.qore.host`、テストネットのエンドポイントは `https://evm-testnet.qore.host` です。
+以下の例は、2026年6月7日から稼働している**`qorechain-vladi`**メインネット（EVMチェーンID**9801**）を対象としています。このネットワークは本稿執筆時点でノードリリース**v3.2.4**（2026年10月23日、ガバナンス提案13により高さ3,742,566で適用。v3.2.3は2026年10月20日、高さ3,662,051で適用済み。メインネットのガバナンス提案14は高さ3,906,833でv3.2.5を適用するもので、そのリリースによる変更は、適用された時点で文書化されます）を実行しています。**`qorechain-diana`**テストネットは**v3.2.6**を実行しています（2026年10月19日に高さ8,337,253でv3.2.4、10月26日に高さ8,890,800でv3.2.5、10月27日に高さ8,970,638でv3.2.6）。そちらではEVMチェーンID**9800**を使用してください。このページでネットワーク間で異なるもの（テストネットのプリコンパイル、Festテストトークン）を説明する場合は、その旨を明記しています。コードサンプルでは、ご自身で運用するノード向けに `http://localhost:8545` を使用しています。公開メインネットのエンドポイントは `https://evm.qore.host`、テストネットのエンドポイントは `https://evm-testnet.qore.host` です。
 :::
 
 :::caution EVMトランザクションには、登録済みのPQC鍵と、開いている認可ウィンドウが必要です
@@ -160,7 +160,7 @@ QoreChainは、EVMトランザクションに**EIP-1559動的ベースフィー*
 
 ---
 
-## ERC-20トークンペア
+## ERC-20トークンペア {#erc20-token-pairs}
 
 `x/erc20`モジュールは、ネイティブのCosmos SDK単位とERC-20コントラクトの間の**トークンペア**を提供します。
 
@@ -179,7 +179,86 @@ qorechaind tx erc20 convert-coin 1000000uqor --from mykey --gas 400000 --fees 40
 qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey --gas 400000 --fees 40000uqor
 ```
 
-これらはCosmosレーンのトランザクションです。稼働中のネットワークでは、ハイブリッドのポスト量子コサインも必要です（`--generate-only` で構築し、その後 `qorechaind tx pqc cosign` を実行します。[ポスト量子署名](/developer-guide/post-quantum-signing)を参照してください）。トークンペアは許可制のポリシーの下で登録され、メインネットにはまだ存在しません。
+これらはCosmosレーンのトランザクションです。稼働中のネットワークでは、ハイブリッドのポスト量子コサインも必要です（`--generate-only` で構築し、その後 `qorechaind tx pqc cosign` を実行します。[ポスト量子署名](/developer-guide/post-quantum-signing)を参照してください）。上記の単純な `convert-erc20` コマンドは、CLI が `0x` の送信者を書き込むため、ノードリリース v3.2.6 では拒否されます。動作する形については[2つの形式間の変換](#fest-convert)を参照してください。トークンペアは許可制のポリシーの下で登録されます（ガバナンスが登録します）。本稿執筆時点でメインネットには存在しません。テストネットには、[次のセクション](#fest-tokens)のFestテストトークンがあります。
+
+## FestテストトークンとERC20変換 {#fest-tokens}
+
+:::note テストネットのみ、価値なし
+このセクションのトークンは`qorechain-diana`テストネット（EVMチェーンID 9800）にのみ存在します。ビルダー向けのテストトークンで、価値はありません。メインネットにはERC-20トークンペアがないため（2026年10月27日に確認）、以下のdenomはどれもメインネットには存在しません。
+:::
+
+2026年10月27日、テストネットのガバナンス（提案26）が3つのERC-20コントラクトをトークンペアとして登録しました。これにより、ビルダーは[AMMプール](/api-reference/rest-grpc-endpoints#amm-module)でQORと組み合わせる2つ目のトークンを使えます。
+
+| トークン | ERC-20コントラクト（EIP-55） | 小数桁数 | バンクdenom |
+| ----- | ------------------------ | -------- | ---------- |
+| fUSD (FestUSD) | `0x97143B771D34ddb9130b807b135Ae675A5a963CA` | 6  | `erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA` |
+| fETH (FestETH) | `0x02292293c13880a26242690eb70a0e42B8E91c28` | 18 | `erc20:0x02292293c13880a26242690eb70a0e42B8E91c28` |
+| fBTC (FestBTC) | `0x4604e7E45b2ecdbfbDc157103f5B2b62cb16451A` | 8  | `erc20:0x4604e7E45b2ecdbfbDc157103f5B2b62cb16451A` |
+
+* **バンクdenomはコロン付きの`erc20:<address>`で、アドレスは上に示したEIP-55の大文字小文字混在の表記と正確に一致していなければなりません。** denomは大文字小文字を区別します。`erc20:0x97143b771d34...`（小文字）は別の文字列であり、それをクエリすると`404`が返ります。denomは`GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata`からコピーしてください。ここには3つのトークンが`symbol`（`fUSD`、`fETH`、`fBTC`）、`display`名（`FestUSD`、`FestETH`、`FestBTC`）、小数桁数とともに一覧されます。
+* **フォーセットが支払うのはバンクコインです。** EVM（MetaMask、Solidity）でFestトークンを使うには、まず`MsgConvertCoin`でバンクコインをそのERC-20形式に変換します。ERC-20の残高をバンク形式に戻すには（例えばAMMでペアにするため）、`MsgConvertERC20`を使います。どちらも次に説明します。
+* **トークンは2つの形式で存在します。** ERC-20の残高はEVM JSON-RPC経由でコントラクトの`balanceOf`で読み取ります。変換後の残高はバンクコインで、`GET /cosmos/bank/v1beta1/balances/{address}`で読み取ります。AMMでペアにできるのはバンクコイン形式のみです。変換は2つの形式の間で価値を移すだけで、価値を生み出すものではありません。
+* **金額はトークン自身の小数桁数を使用します**（fUSD、fETH、fBTCでそれぞれ6、18、8）。`uqor`の6桁ではありません。
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs
+curl -s "https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs/0x97143B771D34ddb9130b807b135Ae675A5a963CA"
+```
+
+### 2つの形式間の変換 {#fest-convert}
+
+2つの変換メッセージはどちらもCosmosレーンのトランザクションです。他のネイティブトランザクションと同様に、登録済みのポスト量子鍵とハイブリッドのコサインが必要です（構築後、`qorechaind tx pqc cosign`。[ポスト量子署名](/developer-guide/post-quantum-signing)を参照してください）。手数料は少なくともガス × 0.1 uqorが必要です。
+
+:::note 実行済みの内容
+このページのREST読み取り（`token_pairs`、`denoms_metadata`）は、2026年10月27日にテストネットに対して実行されました。以下の2つの変換コマンドは、このページのためにエンドツーエンドでは実行**されていません**。メッセージの形式と送信者のルールは、v3.2.6のノードソースとチェーンチームのリファレンスに基づいています。文書化された形式として扱い、まず少額で確認してください。
+:::
+
+**バンクコインからERC-20へ：`MsgConvertCoin`。** `coin`は大文字小文字を区別する正確なバンクdenom（`erc20:<EIP-55アドレス>`）、`sender`はあなたの`qor1...`アドレス（署名者）、`receiver`はERC-20を保有する`0x...`アドレスです。約432,000ガスを使用します。ガスリミットは600,000に設定してください。
+
+```bash
+# Write the message by hand (not run for this page)
+cat > convert-coin.json <<'JSON'
+{
+  "body": {
+    "messages": [{
+      "@type": "/cosmos.evm.erc20.v1.MsgConvertCoin",
+      "coin": { "denom": "erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA", "amount": "1000000" },
+      "receiver": "0xYOUR_EVM_ADDRESS",
+      "sender": "qor1youraddr..."
+    }],
+    "memo": ""
+  },
+  "auth_info": { "signer_infos": [], "fee": { "amount": [{ "denom": "uqor", "amount": "60000" }], "gas_limit": "600000" } },
+  "signatures": []
+}
+JSON
+qorechaind tx pqc cosign convert-coin.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**ERC-20からバンクコインへ：`MsgConvertERC20`。** その`sender`フィールドも、アカウントの`qor1...`bech32アドレスでなければなりません。`0x`の送信者は`decoding bech32 failed`で拒否されます。ノードリリースv3.2.6では、CLIコマンド`qorechaind tx erc20 convert-erc20`（[ERC-20トークンペア](#erc20-token-pairs)の単純な例）は送信者を`0x`形式で書き込むため、その理由で拒否されます。使用しないでください。上記と同じ方法で、`qor1`アドレスを送信者としてメッセージを自分で構築します。
+
+```bash
+# Workaround: write the message with a qor1 sender (not run for this page)
+cat > convert-erc20.json <<'JSON'
+{
+  "body": {
+    "messages": [{
+      "@type": "/cosmos.evm.erc20.v1.MsgConvertERC20",
+      "contract_address": "0x97143B771D34ddb9130b807b135Ae675A5a963CA",
+      "amount": "1000000",
+      "receiver": "qor1youraddr...",
+      "sender": "qor1youraddr..."
+    }],
+    "memo": ""
+  },
+  "auth_info": { "signer_infos": [], "fee": { "amount": [{ "denom": "uqor", "amount": "60000" }], "gas_limit": "600000" } },
+  "signatures": []
+}
+JSON
+qorechaind tx pqc cosign convert-erc20.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+ここで`receiver`は、バンクコインを受け取る`qor1...`アカウントです（バンクコインへの変換の受取人には、モジュールはbech32形式を受け付けます）。金額はトークン自身の基本単位（小数桁数6、18、8）です。`MsgConvertCoin`のdenomは`denoms_metadata`からのみコピーしてください。小文字の形式は`token pair not found`で拒否されます。
 
 ---
 
@@ -189,7 +268,7 @@ EVMトランザクションは**従来のECDSA（secp256k1）**で署名され�
 
 コントラクト内でのポスト量子セキュリティについて:
 
-* **PQC Verifyプリコンパイル**（`0x0000...0A01`）は、有効化された後は、SolidityからオンチェーンでML-DSA-87署名を検証します。メインネットでもテストネットでも**まだ有効ではありません**。[EVMプリコンパイル：ネットワークの状況](/developer-guide/evm-precompiles#network-status)を参照してください。
+* **PQC Verifyプリコンパイル**（`0x0000...0A01`）は、SolidityからオンチェーンでML-DSA-87署名を検証します。**テストネットでは有効**（ガバナンス提案21により有効化、2026年10月27日可決）で、本稿執筆時点で**メインネットでは有効ではありません**。[EVMプリコンパイル：ネットワークの状況](/developer-guide/evm-precompiles#network-status)を参照してください。
 * EVMからQoreChain NativeまたはSVMへの**クロスVMメッセージ**はCosmosレーンのトランザクションであり、他のトランザクションと同様にハイブリッド署名を伴います。現在の利用可否については[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。
 
 ---
@@ -204,7 +283,7 @@ EVMトランザクションは**従来のECDSA（secp256k1）**で署名され�
 | `max-txs`   | 1 – 1,000          | ウィンドウが受け付けるEVMトランザクションの件数 |
 | `max-value` | 0より大きい値、`uqor`単位 | ウィンドウが受け付ける総流出額：送金額**に加えて**、各トランザクションが支払い得る最大手数料（ガスリミット × ガスあたりの最大手数料）を `uqor` に換算し、切り上げた値 |
 
-いずれかの上限が先に尽きた時点で、ウィンドウは閉じます。3つの上限はすべて必須です。ウィンドウを開くと既存のウィンドウは置き換えられます。受け付けられた後に失敗したトランザクションも、スロットと金額の予算を消費します。コントラクトのデプロイも他のトランザクションと同様に数えられます。`blocks` はブロック数であり、時間ではありません。17,280ブロックは、メインネットでは約15時間（1ブロックあたり約3.2秒）、テストネットでは約5時間（1ブロックあたり約1.0秒）です。
+いずれかの上限が先に尽きた時点で、ウィンドウは閉じます。3つの上限はすべて必須です。ウィンドウを開くと既存のウィンドウは置き換えられます。受け付けられた後に失敗したトランザクションも、スロットと金額の予算を消費します。コントラクトのデプロイも他のトランザクションと同様に数えられます。`blocks` はブロック数であり、時間ではありません。17,280ブロックは、メインネットでは約15時間（1ブロックあたり約3.2秒）、テストネットでは約6時間（1ブロックあたり約1.3秒。2026年10月27日時点で、テストネットのブロック時間は変動します）です。
 
 **金額の上限はネイティブのQORのみを数えます。** トークン送金、approve、その他のコントラクト呼び出しは金額がゼロであるため、`max-value` には数えられません（最大手数料のみが数えられます）。これらにも上限を設けるには、ウィンドウの**スコープ**を絞り込みます（メインネットv3.2.3以降）。
 
@@ -283,6 +362,6 @@ curl -X POST http://localhost:8545 \
 
 ## 次のステップ
 
-* [EVM Precompiles](/developer-guide/evm-precompiles) — 予約済みのプリコンパイルインターフェースのリファレンス（公開ネットワークではまだ有効ではありません）
+* [EVM Precompiles](/developer-guide/evm-precompiles) — QoreChainのプリコンパイルインターフェースのリファレンス（テストネットでは3つが有効、メインネットでは無効）
 * [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) — クロスVM呼び出しと現在の利用可否
-* [Account Abstraction](/developer-guide/account-abstraction) — リンク済みウォレットのオーセンティケーターと支出ルール（モジュールは現在無効）
+* [Account Abstraction](/developer-guide/account-abstraction) — リンク済みウォレットのオーセンティケーターと支出ルール（テストネットでは有効、メインネットでは無効）

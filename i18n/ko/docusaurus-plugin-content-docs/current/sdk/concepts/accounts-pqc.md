@@ -252,7 +252,7 @@ ed25519 서명은 결정론적이고 어떤 웹사이트든 지갑에 같은 메
 이 방식으로 계정을 만들었다면 지금 바로 유출된 것으로 간주하세요. 새 니모닉으로 계정을 만들어 자금을 옮긴 뒤, Phantom을 새 계정에 인증자로 연결하세요(아래 참고). 기존 계정은 복구할 수 없습니다. 주소가 노출된 키에 묶여 있고, PQC 키 로테이션은 포스트 퀀텀 부분만 교체하기 때문입니다. SDK 0.8.2 이상을 사용하세요.
 :::
 
-Phantom(또는 MetaMask) 키로 계정에서 지출하게 하려면 **인증자 레인**을 사용하세요. 지갑 키를 `MsgRegisterAuthenticator`로 등록한 다음, 권한과 `SpendingRule` 범위 안에서 `MsgExecuteCosmos` / `MsgExecuteEVM`으로 정식 PQC 계정에서 지출합니다. 계정은 니모닉에서 파생한 자체 키를 유지하며, 지갑 키는 언제든 취소할 수 있습니다. [인증자 & 위임 지출](/sdk/guides/authenticators)을 참고하세요. 참고로 이 레인을 제공하는 `abstractaccount` 모듈은 현재 두 네트워크 모두에서 꺼져 있으므로(`GET /qorechain/abstractaccount/v1/config`가 `enabled: false`를 표시) 아직 지갑 키를 연결할 수 없습니다. 그때까지는 새 니모닉 계정을 직접 사용하세요.
+Phantom(또는 MetaMask) 키로 계정에서 지출하게 하려면 **인증자 레인**을 사용하세요. 지갑 키를 `MsgRegisterAuthenticator`로 등록한 다음, 권한과 `SpendingRule` 범위 안에서 `MsgExecuteCosmos` / `MsgExecuteEVM`으로 정식 PQC 계정에서 지출합니다. 계정은 니모닉에서 파생한 자체 키를 유지하며, 지갑 키는 언제든 취소할 수 있습니다. [인증자 & 위임 지출](/sdk/guides/authenticators)을 참고하세요. 참고로 이 레인을 제공하는 `abstractaccount` 모듈은 메인넷에서 꺼져 있으므로(`GET /qorechain/abstractaccount/v1/config`가 `enabled: false`를 표시하며, 테스트넷에서는 켜져 있습니다) 메인넷에서는 아직 지갑 키를 연결할 수 없습니다. 그때까지는 새 니모닉 계정을 직접 사용하세요.
 
 ## 양자내성암호(PQC)
 
@@ -301,7 +301,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 전달됩니다.
 
 :::caution Native 경로에서는 하이브리드 서명이 필수입니다
-체인 버전 **v3.2.0**(메인넷과 테스트넷 모두 v3.2.4 실행 중) 이후, 네트워크
+체인 버전 **v3.2.0**(메인넷은 v3.2.4, 테스트넷은 v3.2.6 실행 중) 이후, 네트워크
 기본값은 `hybrid_signature_mode = required`이며
 `allow_classical_fallback = false`입니다. `buildHybridTx` /
 `signAndBroadcastHybrid`(`rest` 전달)를 통한 하이브리드 서명 —

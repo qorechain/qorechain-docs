@@ -14,10 +14,10 @@ Cross-VM calls are only as available as their target lane:
 
 * `MsgCrossVMCall` is **switched off on mainnet** by the circuit breaker (`qorechaind query circuit disabled-list`); it is enabled on the testnet.
 * The **SVM lane is disabled** for transactions on both networks, so an SVM leg cannot run.
-* **QoreChain Native upload and instantiate are permissioned** on both networks and mainnet has no stored contract code, so there is no QoreChain Native contract to call yet.
-* The synchronous **EVM precompile is not active** (see below). A hardened version has been in the binary since v3.2.3, but no precompile is activated on either network, and v3.2.4 (testnet since 19 October 2026, mainnet since 23 October 2026) does not change that.
+* **QoreChain Native upload is permissioned** on both networks and **instantiation is permissioned on mainnet**, which has no stored contract code, so there is no QoreChain Native contract to call on mainnet yet. On the testnet, governance stored a few reviewed contracts that any account can instantiate (see [QoreChain Native Development](/developer-guide/cosmwasm-development)), so a QoreChain Native target can exist there.
+* The synchronous **EVM precompile is not active** (see below). A hardened version has been in the binary since v3.2.3, but the CrossVM precompile is not activated on either network. (On 27 October 2026 testnet governance activated three other precompiles, PQC Verify, PQC Key Status and PRISM Consensus Params; mainnet has none active. v3.2.4 does not change which precompiles are active.)
 
-The module's REST routes (`/qorechain/crossvm/v1/...`) are not served by the public gateway; read messages with the CLI or a gRPC/ABCI query client.
+On mainnet the module's REST routes (`/qorechain/crossvm/v1/...`) are not served by the public gateway (`501`); read messages with the CLI or a gRPC/ABCI query client.
 :::
 
 :::note
@@ -88,7 +88,7 @@ contract CrossVMCaller {
 
 This is the layout the node decodes; it is the same layout the `@qorechain/rdk` encoder builds, and the contract above matches the starter in [Multi-VM](/rollups/multi-vm). Funds cannot be attached through the precompile (the `MsgCrossVMCall` message path takes `--funds`). The sample cannot do anything on either network today, because the precompile is not active (see the warning above); the ABI may still change before activation.
 
-Once active, the precompile executes the QoreChain Native contract immediately and returns the result. (The `@qorechain/rdk` 0.6.0 helper `encodeCrossVmCalldata` builds the calldata; see [Multi-VM](/rollups/multi-vm).) Gas cost: **50,000 base + 4 per input byte + execution cost**.
+Once active, the precompile executes the QoreChain Native contract immediately and returns the result. (The `@qorechain/rdk` helper `encodeCrossVmCalldata`, available from 0.6.0 and in the current 0.6.1, builds the calldata; see [Multi-VM](/rollups/multi-vm).) Gas cost: **50,000 base + 4 per input byte + execution cost**.
 
 ---
 
@@ -108,7 +108,7 @@ qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
 Other flags: `--funds <coins>` (QoreChain Native targets only) and `--async` to queue the call instead of executing it now. Sign and broadcast `tx.json` with `tx pqc cosign` (see [Post-Quantum Signing](/developer-guide/post-quantum-signing)); the fee floor is 0.1 uqor per gas. A call into the caller's own lane is refused (since v3.2.3).
 
 :::caution Disabled on mainnet
-`MsgCrossVMCall` is switched off on mainnet by the circuit breaker, so the command cannot succeed there today. (Release binaries before v3.2.3 also built a message that failed its own validation because the source VM was empty; the v3.2.3 binary fixes that.) On the testnet the message is enabled, but its QoreChain Native and SVM targets are not usable (see above), so only an EVM target can be reached.
+`MsgCrossVMCall` is switched off on mainnet by the circuit breaker, so the command cannot succeed there today. (Release binaries before v3.2.3 also built a message that failed its own validation because the source VM was empty; the v3.2.3 binary fixes that.) On the testnet the message is enabled, but the SVM lane is disabled, so an SVM target cannot be reached; an EVM target, and a QoreChain Native target once a contract has been instantiated there, can.
 :::
 
 ---

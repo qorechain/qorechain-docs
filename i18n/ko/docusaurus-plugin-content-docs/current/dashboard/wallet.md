@@ -226,7 +226,7 @@ QoreChain을 추가하려면:
 **SVM 지갑** 카드에서는 Phantom 키를 계정에 **연결된 서명자(linked signer)**로 연결할 수도 있습니다 — 이는 기간이 제한(30일)되고 철회 가능한 인증자(authenticator)이며, QoreX, Keplr, MetaMask처럼 별도의 기본 지갑 연결이 아닙니다. **Phantom 연결**을 선택한 다음 **인증자 등록**을 선택하세요. 기존 지갑이 등록에 서명하며, Phantom이 자체적인 아이덴티티가 되는 것은 아닙니다.
 
 :::caution 연결된 서명자 등록은 현재 체인에서 꺼져 있습니다
-체인의 스마트 계정 및 연결된 지갑 기능은 구현되어 있지만 두 네트워크 모두에서 꺼져 있으며(`abstractaccount.enabled = false`; `GET /qorechain/abstractaccount/v1/config`로 확인), 그동안 체인은 새 연결된 서명자 등록을 거부합니다. 지금은 이 카드를 미리보기로 간주하고 등록이 성공하기를 기대하지 마세요.
+체인의 스마트 계정 및 연결된 지갑 기능은 구현되어 있지만 메인넷에서는 꺼져 있고 테스트넷에서는 켜져 있으며(메인넷에서 `abstractaccount.enabled`는 `false`; `GET /qorechain/abstractaccount/v1/config`로 확인), 그동안 메인넷 체인은 새 연결된 서명자 등록을 거부합니다. 메인넷에서는 지금은 이 카드를 미리보기로 간주하고 등록이 성공하기를 기대하지 마세요.
 :::
 
 :::caution 연결된 서명자는 계정에 대한 실질적인 권한입니다

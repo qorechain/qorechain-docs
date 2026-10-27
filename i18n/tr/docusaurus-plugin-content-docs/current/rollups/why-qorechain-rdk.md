@@ -17,9 +17,9 @@ Katmanı (Layer 1) etrafında inşa edilmiş, QoreChain'e özgü üç yetenek ek
 - zincirler arası VM çağrılarına sahip **üçlü-VM** çalışma zamanı.
 
 :::caution Erken aşama: durum sütununu okuyun
-Henüz hiçbir ağda rollup oluşturulmadı (23 Ekim 2026 itibarıyla kontrol edildi).
-Aşağıdaki tablo bugün nelerin çalıştığını belirtir; yayınlanmış 0.6.0
-istemcilerinin neyi değiştirdiği ve kalan sınırlar [RDK 0.6.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits)
+Henüz hiçbir ağda rollup oluşturulmadı (27 Ekim 2026 itibarıyla kontrol edildi).
+Aşağıdaki tablo bugün nelerin çalıştığını belirtir; yayınlanmış 0.6.x
+istemcilerinin neyi değiştirdiği ve kalan sınırlar [RDK 0.6.1: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits)
 bölümünde toplanmıştır. Yalnızca genel bir optimistic/zk rollup'a ihtiyacınız varsa,
 herhangi bir kit işinizi görür; buradaki yetenekler RDK'nın bunun üzerine eklediği
 şeylerdir ve TypeScript, Python, Go, Rust ve Java dillerinde sunulur.
@@ -27,9 +27,9 @@ herhangi bir kit işinizi görür; buradaki yetenekler RDK'nın bunun üzerine e
 
 | Yetenek | Durum | Neye dayanır |
 | --- | --- | --- |
-| **Kuantum güvenli yerleşim makbuzları** | 🟡 Erken aşama | Sabitlemeler (anchor), Ana Zincirin kuantum sonrası şeması olan ML-DSA-87 ile imzalanır; henüz sabitleme yok, dolayısıyla zincire karşı kontrol yapan 0.6.0 doğrulayıcısı gerçek bir sabitleme üzerinde hiç çalıştırılmadı |
+| **Kuantum güvenli yerleşim makbuzları** | 🟡 Erken aşama | Sabitlemeler (anchor), Ana Zincirin kuantum sonrası şeması olan ML-DSA-87 ile imzalanır; henüz sabitleme yok, dolayısıyla zincire karşı kontrol yapan 0.6.1 doğrulayıcısı gerçek bir sabitleme üzerinde hiç çalıştırılmadı |
 | **QCAI Rollup Copilot** | 🟡 Genel uç noktalarda henüz mevcut değil | Genel uç noktaların bugün sunmadığı zincir üstü AI/RL danışma servisleri |
-| **Çoklu-VM zincirler arası VM çağrıları** | 🟡 Canlı ağlarda henüz kullanılamaz | Etkinleştirilmemiş bir zincirler arası VM precompile'ı (0.6.0 kodlayıcısı zincirin yerleşimiyle eşleşir) ve kapalı QoreChain Native yüklemesi |
+| **Çoklu-VM zincirler arası VM çağrıları** | 🟡 Canlı ağlarda henüz kullanılamaz | Etkinleştirilmemiş bir zincirler arası VM precompile'ı (0.6.0'dan beri kodlayıcı zincirin yerleşimiyle eşleşir) ve kapalı QoreChain Native yüklemesi |
 
 ---
 
@@ -58,8 +58,8 @@ console.log(result.valid);
 `verifySettlementReceipt` zincire karşı kontrol eder ve bir `client` olmadan
 `valid` demeyi reddeder. 0.5.0'da zincir kontrolü canlı ağlara karşı
 tamamlanamıyordu (gerçek bir makbuzu geçerli olarak bildirmek yerine güvenli
-biçimde başarısız oluyordu, fail closed); 0.6.0 bunu düzeltir, ancak henüz hiçbir
-çapa mevcut olmadığından gerçek bir çapa üzerinde çalıştırılmamıştır. Bir makbuzun neyi kanıtlayıp neyi
+biçimde başarısız oluyordu, fail closed); 0.6.0 bunu düzeltti ve 0.6.1 makbuzun her alanını karşılaştırır, ancak henüz hiçbir
+çapa mevcut olmadığından hiçbiri gerçek bir çapa üzerinde çalıştırılmamıştır. Bir makbuzun neyi kanıtlayıp neyi
 kanıtlamadığı ve tam sınırlar için bkz.
 [Kuantum güvenli yerleşim makbuzları](/rollups/settlement-receipts).
 
@@ -99,7 +99,7 @@ değildir** (bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precom
 `0x…0901` için `eth_getCode` her ikisinde de `0x` döndürür ve ona yapılan bir
 sözleşme çağrısı hiçbir etki olmadan başarılı olur.
 
-0.6.0'daki `encodeCrossVmCalldata` yardımcısı, düğümün çözdüğü yerleşim olan
+`encodeCrossVmCalldata` yardımcısı (0.6.0'dan beri), düğümün çözdüğü yerleşim olan
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`
 için çağrı verisi (calldata) oluşturur (0.5.0 ve öncesi, farklı bir seçiciye sahip
 iki argümanlı bir biçimi kodluyordu; bu, precompile'a hiçbir zaman ulaşamazdı).

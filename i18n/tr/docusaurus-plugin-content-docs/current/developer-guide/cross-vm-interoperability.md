@@ -14,10 +14,10 @@ VM'ler arası çağrılar yalnızca hedef şeritlerinin (lane) sunulabildiği ö
 
 * `MsgCrossVMCall`, devre kesici tarafından **ana ağda kapatılmıştır** (`qorechaind query circuit disabled-list`); test ağında etkindir.
 * **SVM şeridi, her iki ağda da işlemler için devre dışıdır**, bu nedenle bir SVM adımı çalışamaz.
-* **QoreChain Native yükleme ve örnekleme (instantiate) her iki ağda da izne tabidir** ve ana ağda kayıtlı sözleşme kodu yoktur, dolayısıyla henüz çağrılacak bir QoreChain Native sözleşmesi bulunmamaktadır.
-* Senkron **EVM önderlenmiş işlevi etkin değildir** (aşağıya bakın). Güçlendirilmiş bir sürüm v3.2.3'ten beri ikili dosyada bulunur, ancak hiçbir ağda hiçbir önderlenmiş işlev etkinleştirilmemiştir ve v3.2.4 (test ağında 19 Ekim 2026'dan beri, ana ağda 23 Ekim 2026'dan beri) bunu değiştirmez.
+* **QoreChain Native yükleme her iki ağda da izne tabidir**, **örnekleme (instantiate) ise ana ağda izne tabidir** ve ana ağda kayıtlı sözleşme kodu yoktur, dolayısıyla ana ağda henüz çağrılacak bir QoreChain Native sözleşmesi bulunmamaktadır. Test ağında yönetişim, herhangi bir hesabın örnekleyebileceği birkaç gözden geçirilmiş sözleşme depolamıştır ([QoreChain Native Geliştirme](/developer-guide/cosmwasm-development) sayfasına bakın), dolayısıyla orada bir QoreChain Native hedefi bulunabilir.
+* Senkron **EVM önderlenmiş işlevi etkin değildir** (aşağıya bakın). Güçlendirilmiş bir sürüm v3.2.3'ten beri ikili dosyada bulunur, ancak CrossVM önderlenmiş işlevi hiçbir ağda etkinleştirilmemiştir. (27 Ekim 2026'da test ağı yönetişimi diğer üç önderlenmiş işlevi etkinleştirdi: PQC Verify, PQC Key Status ve PRISM Consensus Params; ana ağda hiçbiri etkin değildir. v3.2.4, hangi önderlenmiş işlevlerin etkin olduğunu değiştirmez.)
 
-Modülün REST rotaları (`/qorechain/crossvm/v1/...`) genel ağ geçidi tarafından sunulmaz; mesajları CLI ile veya bir gRPC/ABCI sorgu istemcisiyle okuyun.
+Ana ağda modülün REST rotaları (`/qorechain/crossvm/v1/...`) genel ağ geçidi tarafından sunulmaz (`501`); mesajları CLI ile veya bir gRPC/ABCI sorgu istemcisiyle okuyun.
 :::
 
 :::note
@@ -88,7 +88,7 @@ contract CrossVMCaller {
 
 Bu, düğümün çözdüğü düzendir; `@qorechain/rdk` kodlayıcısının oluşturduğu düzenle aynıdır ve yukarıdaki sözleşme [Multi-VM](/rollups/multi-vm) sayfasındaki başlangıç şablonuyla eşleşir. Önderlenmiş işlev üzerinden fon eklenemez (`MsgCrossVMCall` mesaj yolu `--funds` alır). Önderlenmiş işlev etkin olmadığı için örnek bugün hiçbir ağda bir şey yapamaz (yukarıdaki uyarıya bakın); ABI etkinleştirmeden önce yine de değişebilir.
 
-Etkinleştirildiğinde, önderlenmiş işlev QoreChain Native sözleşmesini hemen yürütür ve sonucu döndürür. (`@qorechain/rdk` 0.6.0'ın `encodeCrossVmCalldata` yardımcısı calldata'yı oluşturur; bkz. [Multi-VM](/rollups/multi-vm).) Gaz maliyeti: **50.000 taban + girdi baytı başına 4 + yürütme maliyeti**.
+Etkinleştirildiğinde, önderlenmiş işlev QoreChain Native sözleşmesini hemen yürütür ve sonucu döndürür. (`@qorechain/rdk`'nin 0.6.0'dan itibaren bulunan ve güncel 0.6.1'de yer alan `encodeCrossVmCalldata` yardımcısı calldata'yı oluşturur; bkz. [Multi-VM](/rollups/multi-vm).) Gaz maliyeti: **50.000 taban + girdi baytı başına 4 + yürütme maliyeti**.
 
 ---
 
@@ -108,7 +108,7 @@ qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
 Diğer bayraklar: `--funds <coins>` (yalnızca QoreChain Native hedefleri için) ve çağrıyı şimdi yürütmek yerine kuyruğa almak için `--async`. `tx.json` dosyasını `tx pqc cosign` ile imzalayıp yayınlayın (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)); ücret tabanı gaz başına 0.1 uqor'dur. Çağıranın kendi şeridine yapılan bir çağrı reddedilir (v3.2.3'ten beri).
 
 :::caution Ana ağda devre dışı
-`MsgCrossVMCall`, devre kesici tarafından ana ağda kapatılmıştır; bu nedenle komut bugün orada başarılı olamaz. (v3.2.3 öncesi sürüm ikili dosyaları ayrıca, kaynak VM boş olduğu için kendi doğrulamasından geçemeyen bir mesaj oluşturuyordu; v3.2.3 ikili dosyası bunu düzeltir.) Test ağında mesaj etkindir, ancak QoreChain Native ve SVM hedefleri kullanılamaz (yukarıya bakın); bu nedenle yalnızca bir EVM hedefine ulaşılabilir.
+`MsgCrossVMCall`, devre kesici tarafından ana ağda kapatılmıştır; bu nedenle komut bugün orada başarılı olamaz. (v3.2.3 öncesi sürüm ikili dosyaları ayrıca, kaynak VM boş olduğu için kendi doğrulamasından geçemeyen bir mesaj oluşturuyordu; v3.2.3 ikili dosyası bunu düzeltir.) Test ağında mesaj etkindir, ancak SVM şeridi devre dışıdır, bu nedenle bir SVM hedefine ulaşılamaz; bir EVM hedefine ve orada bir sözleşme örneklendikten sonra bir QoreChain Native hedefine ulaşılabilir.
 :::
 
 ---

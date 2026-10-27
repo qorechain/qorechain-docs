@@ -10,7 +10,7 @@ sidebar_position: 3
 Dieser Leitfaden erklärt, wie die On-Chain-Governance bei QoreChain funktioniert: wie Stimmen ausgezählt werden, wie man Vorschläge einreicht und wie man abstimmt.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live und seit dem 23. Oktober 2026 auf Release **v3.2.4**; das Testnet läuft seit dem 19. Oktober 2026 mit **v3.2.4** — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live und seit dem 23. Oktober 2026 auf Release **v3.2.4**; das Testnet läuft mit **v3.2.6** (seit dem 27. Oktober 2026) — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -29,7 +29,7 @@ Vorschläge werden anhand des **gebondeten Stakes** ausgezählt: Jedes QOR, das 
 | Schwellenwert | 50%   | Anteil der „Ja“-Stimmen unter den nicht enthaltenen Stimmen, der zur Annahme nötig ist |
 | Veto      | 33.4%      | Erreicht „Nein mit Veto“ diesen Anteil, wird der Vorschlag abgelehnt und seine Einzahlung verbrannt |
 
-Diese Werte wurden am 23. Oktober 2026 vom Mainnet ausgelesen (und sind im Testnet dieselben); bestätige sie mit `qorechaind query gov params`, da die Governance sie ändern kann.
+Diese Werte wurden am 27. Oktober 2026 vom Mainnet ausgelesen. Das Testnet hat dieselben Einlagen, dasselbe Quorum und dieselben Schwellenwerte, aber deutlich kürzere Abstimmungsfristen (Abstimmung 4 Stunden, beschleunigte Abstimmung 1 Stunde); bestätige sie mit `qorechaind query gov params`, da die Governance sie ändern kann.
 
 :::note QDRW ist entworfen, aber nicht aktiv
 Das Design von QoreChain sieht eine Stimmgewicht-Formel **Quadratic Delegation-Reputation Weighted (QDRW)** vor, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, die große Stakes dämpfen und Reputation gewichten würde. Sie ist im Modul `x/qca` implementiert, aber auf beiden Netzwerken **abgeschaltet** (`qdrw_enabled` ist in `qorechaind query qca config` `false`) und nicht Teil der Governance-Auszählung, beeinflusst also heute keine Abstimmung. xQORE ist ebenfalls noch nicht live (siehe [xQORE-Staking](/user-guide/xqore-staking)).
@@ -161,7 +161,7 @@ qorechaind query gov params
 
 Wichtige Parameter sind unter anderem:
 
-| Parameter             | Beschreibung                                                                    | Aktueller Wert (20. Okt. 2026) |
+| Parameter             | Beschreibung                                                                    | Mainnet-Wert (27. Okt. 2026) |
 | ---------------------- | ----------------------------------------------------------------------------------- | ------------------------ |
 | `min_deposit`          | Mindesteinzahlung, damit ein Vorschlag in die Abstimmung eintritt                   | 10 QOR (`10000000uqor`)  |
 | `max_deposit_period`   | Zeitfenster zum Erreichen der Mindesteinzahlung                                     | 2 Tage                   |
@@ -175,7 +175,7 @@ Wichtige Parameter sind unter anderem:
 
 ## Governance im Mainnet bisher {#mainnet-history}
 
-Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 13 wurden im Oktober 2026 im Mainnet angenommen, darunter Vorschlag 12 (eine weitere Freigabe, angenommen am 21. Oktober) und Vorschlag 13 (das Upgrade auf v3.2.4, angewendet auf Höhe 3.742.566 am 23. Oktober); die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
+Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 13 wurden im Oktober 2026 im Mainnet angenommen, darunter Vorschlag 12 (eine weitere Freigabe, angenommen am 21. Oktober) und Vorschlag 13 (das Upgrade auf v3.2.4, angewendet auf Höhe 3.742.566 am 23. Oktober); Vorschlag 14 (ein koordiniertes Upgrade auf v3.2.5 auf Höhe 3.906.833) befand sich zum Zeitpunkt der Erstellung in seiner Abstimmungsphase; die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
 
 ---
 

@@ -10,7 +10,7 @@ sidebar_position: 4
 Düğümünüzü doğru genesis dosyası, eşler ve ağ ayarlarıyla yapılandırarak canlı QoreChain Diana test ağına katılın.
 
 :::note
-Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır (sürüm **v3.2.4**, 23 Ekim 2026'dan beri) ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı 19 Ekim 2026'dan beri **v3.2.4** sürümünü çalıştırmaktadır; sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
+Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır (sürüm **v3.2.4**, 23 Ekim 2026'dan beri) ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı **v3.2.6** sürümünü çalıştırmaktadır (27 Ekim 2026'da uygulandı); sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
 :::
 
 ## Genel Uç Noktalar
@@ -26,7 +26,7 @@ Yalnızca **test ağını sorgulamanız veya işlem yayınlamanız** gerekiyorsa
 | SVM JSON-RPC (salt okunur) | `https://svm-testnet.qore.host` |
 | Blok gezgini | [explore.qore.network](https://explore.qore.network) (Testnet'e geçiş yapın) |
 
-Test ağı QOR'u [Panel Musluğu](/dashboard/faucet) üzerinden edinilebilir.
+Test ağı QOR'u [Panel Musluğu](/dashboard/faucet) üzerinden edinilebilir; musluk ayrıca yalnızca test ağına özel [Fest test tokenlerini](/dashboard/faucet#fest-tokens) (fUSD, fETH, fBTC; değersiz) da gönderebilir.
 
 ---
 
@@ -52,7 +52,17 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-Test ağı, governance önerileri aracılığıyla koordineli yükseltmeler alır; bu nedenle manifestosunda bir `upgradeHeight` bulunur (v3.2.4, 19 Ekim 2026'da 8.337.253 yüksekliğinde uygulandı; ondan önce v3.2.3 8.003.746'da ve v3.2.2 6.905.034'te uygulanmıştı) ve `minCompatible` güncel sürüme eşittir (3.2.4). Şimdi katılan bir düğümün manifestodaki sürüme ihtiyacı vardır. Sistem saatini NTP ile senkronize tutun. Ana ağ v3.2.4'ü 23 Ekim 2026'da 3.742.566 yüksekliğinde uyguladı, ancak manifestosu ayrıdır; bu yüzden ikili dosyayı asla iki ağ arasında kopyalamayın.
+Test ağı, governance önerileri aracılığıyla koordineli yükseltmeler alır; bu nedenle manifestosunda bir `upgradeHeight` bulunur ve `minCompatible` güncel sürüme eşittir. Şimdi katılan bir düğümün manifestodaki sürüme ihtiyacı vardır. Yazım sırasında (27 Ekim 2026) test ağı manifestosunda `version` 3.2.6, `minCompatible` 3.2.6 ve `upgradeHeight` 8970638 yazar; notu ise "IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens" ifadesidir. Sistem saatini NTP ile senkronize tutun.
+
+| Sürüm | Test ağı yüksekliği | Uygulanma tarihi |
+| --- | --- | --- |
+| v3.2.2 | 6.905.034 | 2 Ekim 2026 |
+| v3.2.3 | 8.003.746 | 15 Ekim 2026 |
+| v3.2.4 | 8.337.253 | 19 Ekim 2026 |
+| v3.2.5 | 8.890.800 | 26 Ekim 2026 |
+| v3.2.6 | 8.970.638 | 27 Ekim 2026 (16:58 UTC) |
+
+Test ağı her sürümü ana ağdan önce alır. Ana ağ v3.2.4'ü 23 Ekim 2026'da 3.742.566 yüksekliğinde uyguladı; ana ağ yönetişim önerisi 14, v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır ve yazım sırasında oylama süresindeydi. Manifestolar ayrıdır; bu yüzden ikili dosyayı asla iki ağ arasında kopyalamayın ve ana ağın yalnızca test ağına özel bir özelliği kabul etmesini beklemeyin (v3.2.6 eklemeleri [Sürüm Geçmişi](/appendix/version-history#testnet-v326) sayfasında listelenmiştir).
 
 ---
 
@@ -106,7 +116,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### Önerilen Ayarlar
 
-Tam bir düğüm blok süresini seçmez — bunu doğrulayıcılar belirler (test ağı şu anda yaklaşık her 1 saniyede bir blok üretir). Bir doğrulayıcı işletmiyorsanız ve doğrulayıcı grubu tarafından size değerler verilmediyse konsensüs zaman aşımlarını varsayılan değerlerinde bırakın. Genel bir RPC düğümü için `config.toml` içinde yararlı bir mempool ayarı:
+Tam bir düğüm blok süresini seçmez — bunu doğrulayıcılar belirler (test ağı şu anda yaklaşık her 1,3 saniyede bir blok üretir). Bir doğrulayıcı işletmiyorsanız ve doğrulayıcı grubu tarafından size değerler verilmediyse konsensüs zaman aşımlarını varsayılan değerlerinde bırakın. Genel bir RPC düğümü için `config.toml` içinde yararlı bir mempool ayarı:
 
 ```toml
 [mempool]

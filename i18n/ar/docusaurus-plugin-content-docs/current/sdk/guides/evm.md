@@ -256,10 +256,14 @@ const tupleNonce = evmDelegationTupleNonce(consent, /* sponsored */ true);
 ثابتة. يوفّر فضاء الأسماء `precompiles` ارتباطات مُصنّفة، وتُصدَّر العناوين
 وملفّات ABI.
 
-> **غير مفعَّلة بعد.** مكوّنات ما قبل التجميع في QoreChain مُترجَمة داخل العقدة
-> لكنها لم تُفعَّل بعد على الشبكة الرئيسية (`qorechain-vladi`) ولا على شبكة الاختبار
-> (`qorechain-diana`): يعيد الاستدعاء بيانات فارغة، لذا تُطلق هذه المساعدات
-> أخطاءً على الشبكات العامة اليوم أيضًا. راجع
+> **غير مفعَّلة على الشبكة الرئيسية؛ وثلاثة منها مفعَّلة على شبكة الاختبار.** مكوّنات
+> ما قبل التجميع في QoreChain مُترجَمة داخل العقدة لكن أيًا منها غير مفعَّل على الشبكة
+> الرئيسية (`qorechain-vladi`). وعلى شبكة الاختبار (`qorechain-diana`) تحوي القائمة
+> `active_static_precompiles` العناوين `0x…0A01` (التحقق من PQC) و`0x…0A02` (حالة
+> مفتاح PQC) و`0x…0C01` (معاملات الإجماع)، وفق الفحص في 27 أكتوبر 2026؛ أما زوج
+> الذكاء الاصطناعي (`0x…0B01` و`0x…0B02`) وجسر الآلات الافتراضية (`0x…0901`) فغير
+> مفعَّلين على أي من الشبكتين. يعيد الاستدعاء إلى عنوان غير مفعَّل بيانات فارغة،
+> لذا تُطلق تلك المساعدات أخطاءً. راجع
 > [مكوّنات EVM ما قبل التجميع: حالة الشبكة](/developer-guide/evm-precompiles#network-status).
 
 | ما قبل التجميع | الدالة | العنوان |
@@ -274,7 +278,7 @@ const tupleNonce = evmDelegationTupleNonce(consent, /* sponsored */ true);
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read consensus parameters (once 0x…0C01 is active).
+// Read consensus parameters (0x…0C01 is active on the testnet, not on mainnet).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
@@ -293,7 +297,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 تُصدَّر ملفّات ABI لما قبل التجميع باسم `IQORE_PQC_ABI` و`IQORE_AI_ABI` و
 `IQORE_CONSENSUS_ABI`.
 
-> حيث لا يكون مكوّن ما قبل التجميع مفعَّلًا (اليوم: كل شبكة عامة)، أو على عقدة
+> حيث لا يكون مكوّن ما قبل التجميع مفعَّلًا (الشبكة الرئيسية: كلها؛ شبكة الاختبار: زوج
+> الذكاء الاصطناعي وجسر الآلات الافتراضية)، أو على عقدة
 > بلا مكوّنات ما قبل التجميع الخاصة بـ QoreChain، تُطلِق هذه الاستدعاءات خطأ
 > "feature not present". عالج ذلك لكلّ استدعاء على حدة.
 

@@ -29,7 +29,7 @@ Le chiamate cross-VM sono disponibili solo quanto la loro corsia di destinazione
   Leggi invece i messaggi con `connectQueryClients(rpc).crossvm`.
 - Come ogni transazione del percorso Native, una chiamata cross-VM deve portare la firma
   ibrida: connetti il client di firma con la coppia di chiavi dell'account
-  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) così che il client cross-VM firmi
+  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0 o successivo) così che il client cross-VM firmi
   in modalità ibrida (vedi [Account e firma PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
   Le release precedenti alla 0.9.0 la firmano in modo classico e le reti pubbliche la rifiutano.
 :::

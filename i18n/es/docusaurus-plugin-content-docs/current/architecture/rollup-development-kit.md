@@ -10,7 +10,7 @@ sidebar_position: 12
 El módulo `x/rdk` proporciona un Rollup Development Kit (RDK) completo que permite a los desarrolladores desplegar rollups específicos de aplicación en QoreChain. Admite cuatro paradigmas de liquidación, múltiples modos de secuenciador, backends de disponibilidad de datos conectables y optimización de configuración asistida por IA.
 
 :::caution Capacidad en fase temprana
-El módulo está desplegado en mainnet (versión de cadena **v3.2.4** desde el 23 de octubre de 2026) y en testnet (**v3.2.4**), pero **todavía no se ha creado ningún rollup en ninguna de las dos redes** (comprobado el 23 de octubre de 2026: `GET /qorechain/rdk/v1/rollups` devuelve una lista vacía en ambas). Varias de las capacidades descritas a continuación no son utilizables de extremo a extremo hoy; el estado se indica donde se describe cada una. Para la guía práctica dirigida a desarrolladores, consulte [Rollups Overview](/rollups/overview).
+El módulo está desplegado en mainnet (versión de cadena **v3.2.4** desde el 23 de octubre de 2026) y en testnet (**v3.2.6** desde el 27 de octubre de 2026), pero **todavía no se ha creado ningún rollup en ninguna de las dos redes** (comprobado el 27 de octubre de 2026: `GET /qorechain/rdk/v1/rollups` devuelve una lista vacía en ambas). Varias de las capacidades descritas a continuación no son utilizables de extremo a extremo hoy; el estado se indica donde se describe cada una. Para la guía práctica dirigida a desarrolladores, consulte [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ El RDK de QoreChain admite cuatro modos de liquidación distintos — **optimist
 Los rollups optimistas asumen que las transacciones son válidas por defecto y dependen de pruebas de fraude para la resolución de disputas.
 
 * **Sistema de pruebas**: pruebas de fraude interactivas
-* **Ventana de impugnación**: 604,800 segundos (por defecto, 7 días). **Antes de v3.2.4:** la cadena lo convierte a bloques a razón fija de 6 segundos por bloque, **100,800 bloques**, así que el tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,2 s de mainnet); planifique en bloques, no en días. **Desde v3.2.4:** para un lote enviado a partir de la altura de la actualización, la ventana se mide en segundos de tiempo de bloque (7 días completos). Un lote enviado antes conserva la regla del número de bloques. La testnet aplicó la v3.2.4 en la altura 8,337,253 (19 de octubre de 2026); mainnet la aplicó en la altura 3,742,566 (23 de octubre de 2026, propuesta de gobernanza 13).
+* **Ventana de impugnación**: 604,800 segundos (por defecto, 7 días). **Antes de v3.2.4:** la cadena lo convierte a bloques a razón fija de 6 segundos por bloque, **100,800 bloques**, así que el tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,2 s de mainnet); planifique en bloques, no en días. **Desde v3.2.4:** para un lote enviado a partir de la altura de la actualización, la ventana se mide en segundos de tiempo de bloque (7 días completos). Un lote enviado antes conserva la regla del número de bloques. La testnet aplicó la v3.2.4 en la altura 8,337,253 (19 de octubre de 2026); mainnet la aplicó en la altura 3,742,566 (23 de octubre de 2026, propuesta de gobernanza 13). El valor por defecto configurado en la testnet es más corto, 3,600 segundos (1 hora), de modo que un rollup de testnet finaliza más rápido que los 7 días descritos aquí.
 * **Fianza de impugnación**: 1,000 QOR (1,000,000,000 uqor) — requerida para presentar una impugnación con prueba de fraude (presets `nft` y `custom`; los presets `defi`, `gaming` y `enterprise` no establecen fianza porque no tienen ventana de impugnación)
 * **Finalidad**: retrasada hasta que expire la ventana de impugnación sin una impugnación válida
 * **Auto-finalización**: el `EndBlocker` finaliza automáticamente los lotes una vez que la ventana de impugnación ha pasado sin disputa. Un lote impugnado nunca se finaliza automáticamente: el creador del rollup resuelve primero la impugnación (consulte [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -152,7 +152,7 @@ Los proponentes de L1 de QoreChain secuencian las transacciones del rollup.
 Almacenamiento de blobs en el KV-store on-chain dentro de la propia QoreChain.
 
 :::caution Todavía no hay una forma pública de publicar un blob
-El módulo define el almacenamiento, la retención y la poda de blobs, pero en las versiones actuales no existe ningún mensaje de transacción para publicar un blob. Un lote que nombre un hash de datos en un rollup `native` o `both` es rechazado porque no se puede almacenar ningún blob coincidente. Consulte [Data Availability](/rollups/data-availability).
+El módulo define el almacenamiento, la retención y la poda de blobs, pero en las versiones actuales no existe ningún mensaje de transacción para publicar un blob. Un lote que nombre un hash de datos en un rollup `native` o `both` es rechazado porque no se puede almacenar ningún blob coincidente. Consulte [Data Availability](/rollups/data-availability). Por tanto, con disponibilidad de datos native un lote debe dejar `data_hash` vacío; el cliente RDK (0.6.1) lo hace así, y la cadena rechaza un lote que declare uno.
 :::
 
 | Parámetro            | Valor                                                                                               |
@@ -215,6 +215,8 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Lote aceptado como canónico                        |
 | **Rejected**   | Lote invalidado por una impugnación exitosa        |
 
+Comportamiento del RDK 0.6.1: para un rollup optimistic, el cliente construye un lote cuya raíz de estado es la raíz de transición canónica de la cadena (`batchTransitionRoot` en el RDK), no un valor libre propio.
+
 ### Reglas de auto-finalización
 
 | Modo de liquidación | Disparador de finalización                                   |
@@ -232,10 +234,10 @@ La auto-finalización se ejecuta en el `EndBlocker` para los rollups optimistic 
 
 | Parámetro                   |                       Por defecto | Descripción                                      |
 | --------------------------- | -------------------------------: | ------------------------------------------------ |
-| `max_rollups`               |                              100 | Número máximo de rollups que pueden registrarse  |
+| `max_rollups`               |                              100 (testnet: 200) | Número máximo de rollups que pueden registrarse  |
 | `min_stake_for_rollup`      | 10,000,000,000 uqor (10,000 QOR) | Stake mínimo requerido para crear un rollup      |
 | `rollup_creation_burn_rate` |                        0.01 (1%) | Fracción del stake de creación quemada vía `x/burn` |
-| `default_challenge_window`  | 604,800 (convertidos a 100,800 bloques) | Ventana de impugnación optimista por defecto |
+| `default_challenge_window`  | 604,800 s (testnet: 3,600 s) | Ventana de impugnación optimista por defecto; antes de v3.2.4 la cadena la convertía a 100,800 bloques |
 | `max_da_blob_size`          |           2,097,152 bytes (2 MB) | Tamaño máximo de blob de disponibilidad de datos |
 | `blob_retention_blocks`     |                   432,000 bloques | Bloques antes de que se poden los blobs de DA    |
 | `max_batches_per_block`     |                               10 | Lotes máximos de liquidación procesados por bloque |

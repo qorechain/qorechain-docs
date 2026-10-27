@@ -18,7 +18,7 @@ QoreChain はプログラムからのアクセス向けに、3つの主要なイ
 すべての REST エンドポイントは JSON を返します。gRPC エンドポイントは Protocol Buffers を使用し、任意の gRPC クライアントで利用できます。RPC インターフェースはコンセンサスレベルのクエリとトランザクションのブロードキャストを提供します。
 
 :::note
-これらのインターフェースは、**`qorechain-vladi`** メインネット（2026年6月7日より稼働中）と **`qorechain-diana`** テストネットの両方で利用でき、どちらもノードリリース **v3.2.4** を実行しています（2026年10月23日に確認）。メインネットは 2026年10月23日にブロック高 3,742,566 で v3.2.4 を適用しました（ガバナンス提案 13）。テストネットは 2026年10月19日から実行しています。以下のベース URL はローカルで実行中のノードを前提としています。公開ホスト型エンドポイントは `https://api.qore.host` / `https://api-testnet.qore.host`（REST）と `https://rpc.qore.host` / `https://rpc-testnet.qore.host`（RPC）で、[ネットワーク](/appendix/networks#public-endpoints)に掲載されています。**公開の gRPC エンドポイントはありません**。ホスト名 `grpc.qore.host` と `grpc-testnet.qore.host` は存在しないため、gRPC が必要な場合は自分のノードを実行してください。
+これらのインターフェースは、**`qorechain-vladi`** メインネット（2026年6月7日より稼働中）と **`qorechain-diana`** テストネットの両方で利用できます。本稿執筆時点（2026年10月27日に確認）で、メインネットはノードリリース **v3.2.4** を実行しており（2026年10月23日にブロック高 3,742,566 で適用、ガバナンス提案 13）、メインネットのガバナンス提案 14 は投票期間中です。この提案はブロック高 3,906,833 で v3.2.5 を適用するものです。テストネットは **v3.2.6** を実行しています。v3.2.5 は 2026年10月26日にブロック高 8,890,800 で、v3.2.6 は 2026年10月27日にブロック高 8,970,638 で適用されました。リリースで追加されたルートやフィールドは、そのネットワークがリリースを適用して初めて現れます。このページでは、テストネット専用のものを明示しています。以下のベース URL はローカルで実行中のノードを前提としています。公開ホスト型エンドポイントは `https://api.qore.host` / `https://api-testnet.qore.host`（REST）と `https://rpc.qore.host` / `https://rpc-testnet.qore.host`（RPC）で、[ネットワーク](/appendix/networks#public-endpoints)に掲載されています。**公開の gRPC エンドポイントはありません**。ホスト名 `grpc.qore.host` と `grpc-testnet.qore.host` は存在しないため、gRPC が必要な場合は自分のノードを実行してください。
 :::
 
 ## ベース URL
@@ -35,7 +35,7 @@ QoreChain 固有のモジュールは `/qorechain/<module>/v1/...` プレフィ�
 
 存在しないルートは、HTTP `501` と `{"code":12,"message":"Not Implemented"}` で応答します。これはルートが提供されていないことを意味し、クエリの結果が空だったという意味ではありません。`/qorechain/` プレフィックスのない短縮パス（例: `/bridge/v1/chains` や `/pqc/v1/params`）は提供**されません**。存在するルートで未知のレコードを指定すると、HTTP `404` と `{"code":5,"message":"... not found"}` が返ります。
 
-以下の例は公開メインネットのホストを使用しています。テストネットでは `https://api-testnet.qore.host` に置き換えてください。サンプルの値は 2026年10月20日から23日の間に実際のネットワークから読み取ったもので、時間とともに変化します。レスポンスの形を示すものとしてご利用ください。v3.2.4 リリースでは、いくつかのルートとフィールドが追加されます。これらは以下で **v3.2.4** と表記しており、テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から提供されています。古いリリースのままのノードは、新しいルートに `501` で応答します。
+以下の例は公開メインネットのホストを使用しています。テストネットでは `https://api-testnet.qore.host` に置き換えてください。サンプルの値は 2026年10月20日から27日の間に実際のネットワークから読み取ったもので、時間とともに変化します。レスポンスの形を示すものとしてご利用ください。v3.2.4 リリースでは、いくつかのルートとフィールドが追加されました。これらは以下で **v3.2.4** と表記しており、テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から提供されています。v3.2.6 リリースではさらに追加されており、**v3.2.6 (testnet)** と表記しています。これらはテストネットでのみ応答し、メインネットがそのリリースを適用するまでは `501` で応答します。古いリリースのままのノードは、新しいルートに `501` で応答します。
 
 ## PQC モジュール {#pqc-module}
 
@@ -45,8 +45,9 @@ QoreChain 固有のモジュールは `/qorechain/<module>/v1/...` プレフィ�
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | アカウントの EVM レーン認可ウィンドウと、その残り          |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | アカウントの EIP-7702 委任の同意、現在の委任、EVM ノンス（v3.2.2 以降） |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4**（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から。古いノードでは `501`）。バイナリが認識しているすべてのプロトコル機能と、`enabled`、`known`、`staged` フラグ |
+| GET    | `/qorechain/pqc/v1/params`               | **v3.2.6 (testnet)**。モジュールパラメータ。本稿執筆時点のメインネットでは `501` |
 
-パスのセグメントは単数形の `account` である点に注意してください。`/qorechain/pqc/v1/params` や `/stats` のルートはありません（これらには `qorechaind query pqc params` と `stats` を使用してください）。
+パスのセグメントは単数形の `account` である点に注意してください。`/qorechain/pqc/v1/stats` のルートはありません（`qorechaind query pqc stats` を使用してください）。`/qorechain/pqc/v1/params` は v3.2.6 から提供されるため、今のところテストネットのみです。メインネットでは、そのリリースを適用するまで、ノードに対して `qorechaind query pqc params` を使用してください。
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -188,7 +189,7 @@ curl -s https://api.qore.host/qorechain/multilayer/v1/params
 }
 ```
 
-本稿執筆時点では、両ネットワークとも `layers` は空のリストです。
+本稿執筆時点では、両ネットワークとも `layers` は空のリストです。サンプルはメインネットのレスポンスです。テストネットでは `max_sidechains` は `64` です（ビルダーイベントのためにガバナンス提案 16 で引き上げられ、2026年10月25日に可決）。
 
 ## Burn モジュール {#burn-module}
 
@@ -254,8 +255,8 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/config
 { "config": { "enabled": false, "max_session_keys": 10, "max_spending_rules": 5, "default_session_ttl": "86400" } }
 ```
 
-:::note 両ネットワークで無効
-現在、`enabled` はメインネットとテストネットの両方で `false` であるため、リンク済みウォレットからの支出などのアブストラクトアカウント機能は利用できません。このモジュールに依存する前に、`config.enabled` を機能プローブとして使用してください。[アカウントアブストラクション](/developer-guide/account-abstraction)を参照してください。
+:::note メインネットでは無効、テストネットでは有効
+上記のサンプルはメインネットのレスポンスです。メインネットでは `enabled` は `false`（`accounts` は空のリスト）であるため、リンク済みウォレットからの支出などのアブストラクトアカウント機能はメインネットでは利用できません。テストネットでは、ガバナンス提案 18（2026年10月27日可決）以降 `enabled` は `true` で、`accounts` にはこれまでに作成されたアカウントが一覧されます（2026年10月27日に確認）。このモジュールに依存する前に、`config.enabled` を機能プローブとして使用してください。[アカウントアブストラクション](/developer-guide/account-abstraction)を参照してください。
 :::
 
 ## AMM モジュール {#amm-module}
@@ -289,7 +290,9 @@ curl -s https://api.qore.host/qorechain/amm/v1/params
 }
 ```
 
-本稿執筆時点では、どちらのネットワークにもプールは存在せず（`{"pools": []}`）、不明なプールに対する見積もりは HTTP `400` と `{"code":3,"message":"pool not found"}` を返します。
+7つの AMM ルートはすべて両ネットワークで応答します（2026年10月27日に確認）。本稿執筆時点では、どちらのネットワークにもプールは存在しません（`{"pools": []}`）。一致するものがない入力に対する応答は次のとおりです。不明な ID を指定した `pools/{pool_id}` は HTTP `404` を返します（`{"code":5,"message":"pool 1 not found"}`）。ペアのプールがない `pool_by_denoms` は `404` を返します（`no pool for uqor/foo`）。不明なプールに対する見積もりは HTTP `400` と `{"code":3,"message":"pool not found"}` を返します。LP ポジションのないアドレスに対する `pools/{pool_id}/lp/{address}` は `{"balance":"0"}` を返します（アドレスは有効な `qor1` bech32 アドレスである必要があり、そうでない場合は `400`）。2つの見積もりルートと `pool_by_denoms` は入力をクエリ文字列から読み取るため、パラメータが必要です。`amount_in` / `amount_out` がないと `400`（`invalid amount_in` / `invalid amount_out`）で応答します。
+
+テストネットでは、プールに必要な2つ目の denom が v3.2.6 から利用できます。ガバナンスが登録した3つのテストトークンです。[テストネットのテストトークン（Fest）](#fest-tokens)を参照してください。メインネットには同等のものはなく、バンクの denom は `uqor` のみです。
 
 ## Licence モジュール {#licence-module}
 
@@ -374,7 +377,7 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/reward_pool
 `reserved` はプールのうち留保されていて、ガバナンス投票でしか動かせない部分です。ノードごとの上限は `uqor` 単位です。`max_reward_per_block_per_node` はブロックごとの上限で、v3.2.3 以降は `max_reward_per_month_per_node`（`2000000000` uqor = 30 日あたり 2,000 QOR）が月ごとの上限となり、ブロック時間と稼働率に応じて按分されるため、ブロックの生成速度に左右されなくなりました。上限は約束された金額ではありません。サンプルは、ガバナンスが以前の準備金を解放した後（提案 8、2026年10月19日）の、2026年10月23日に読み取った実際のメインネットのレスポンスです。v3.2.4 以降（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）は、レスポンスに `monthly_cap_active`、`last_distribution_time`、`last_distribution_height` も含まれ、ノードの上限はそのノード自身の登録時から始まります。
 
 :::note 登録にはライセンスが必要です
-チェーンは、有効な `lightnode_operator` ライセンスの付与がないライトノード登録を拒否します（`holders/lightnode_operator` で付与を一覧できます）。2026年10月23日時点で、`stats` はメインネットとテストネットの両方で `"total_registered": "1"` を報告しています。プログラムの状況については[ライトノード](/light-node/overview)を参照してください。
+チェーンは、有効な `lightnode_operator` ライセンスの付与がないライトノード登録を拒否します（`holders/lightnode_operator` で付与を一覧できます）。2026年10月27日時点で、`stats` はメインネットとテストネットの両方で `"total_registered": "1"` を報告しています。プログラムの状況については[ライトノード](/light-node/overview)を参照してください。
 :::
 
 ## RDK モジュール {#rdk-module}
@@ -409,7 +412,7 @@ curl -s https://api.qore.host/qorechain/rdk/v1/params
 }
 ```
 
-本稿執筆時点では、両ネットワークとも `rollups` は空のリストであるため、ロールアップごとのルートは `404` で応答します（例: `{"code":5,"message":"rollup foo not found"}`）。`default_challenge_window` は秒単位で表されます（`604800`）。v3.2.4 以降、新たに送信されたバッチのオプティミスティックのチャレンジウィンドウはブロック時間で計測されます。テストネットではブロック高 8,337,253（2026年10月19日）から、メインネットではブロック高 3,742,566（2026年10月23日）からです。アップグレード前は、チェーンは秒単位の値を 1 ブロックあたり 6 秒の固定でブロック数に換算していました。
+本稿執筆時点では、両ネットワークとも `rollups` は空のリストであるため、ロールアップごとのルートは `404` で応答します（例: `{"code":5,"message":"rollup foo not found"}`）。`default_challenge_window` は秒単位で表されます（`604800`）。v3.2.4 以降、新たに送信されたバッチのオプティミスティックのチャレンジウィンドウはブロック時間で計測されます。テストネットではブロック高 8,337,253（2026年10月19日）から、メインネットではブロック高 3,742,566（2026年10月23日）からです。アップグレード前は、チェーンは秒単位の値を 1 ブロックあたり 6 秒の固定でブロック数に換算していました。テストネットでは、ビルダーイベントのためにガバナンス提案 17（2026年10月27日可決）が `default_challenge_window` を `3600`（1時間）に、`max_rollups` を `200` に設定したため、上記のサンプル（メインネット）とは異なります。本稿執筆時点では、テストネットでも `rollups` は空のままです。
 
 ## Inflation モジュール {#inflation-module}
 
@@ -425,7 +428,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info
 ```
 
-メインネットでは、`emission_mode` は `"fixed"`、`fixed_epoch_emission` は `"86000000000"`（1エポックあたり 86,000 QOR）、`epoch_length` は `"43200"` ブロック、`max_total_emission` は `"590000000000000"`（590,000,000 QOR、累積の上限）です。これらはガバナンス提案 10（2026年10月19日可決）で設定されました。新しい固定額を使用する最初のエポックはブロック 3,672,000 から始まり、`epoch_info` は進行中のエポックとこれまでにミントされた量を示します。レスポンス内の `schedule` リストは元の `schedule` モードに属するもので、固定モードのエポックがミントする量を表すものではありません。すべての金額は `uqor` 単位です。テストネットは、それとは異なる独自の値を報告します。v3.2.4 からは、3つ目のモード `target_apy` があり、`target_apy_bps` フィールドを持ちます（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）。ネットワークがこのモードに切り替わるのは、そのネットワーク自身のガバナンス投票によってのみです。そのため、そのような投票が可決されるまでメインネットは `fixed` のままです（2026年10月23日に確認: まだ `fixed`）。テストネットは、本稿執筆時点で `"emission_mode": "fixed"` を報告しています。
+メインネットでは、`emission_mode` は `"fixed"`、`fixed_epoch_emission` は `"86000000000"`（1エポックあたり 86,000 QOR）、`epoch_length` は `"43200"` ブロック、`max_total_emission` は `"590000000000000"`（590,000,000 QOR、累積の上限）です。これらはガバナンス提案 10（2026年10月19日可決）で設定されました。新しい固定額を使用する最初のエポックはブロック 3,672,000 から始まり、`epoch_info` は進行中のエポックとこれまでにミントされた量を示します。レスポンス内の `schedule` リストは元の `schedule` モードに属するもので、固定モードのエポックがミントする量を表すものではありません。すべての金額は `uqor` 単位です。テストネットは、それとは異なる独自の値を報告します。v3.2.4 からは、3つ目のモード `target_apy` があり、`target_apy_bps` フィールドを持ちます（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）。ネットワークがこのモードに切り替わるのは、そのネットワーク自身のガバナンス投票によってのみです。そのため、そのような投票が可決されるまでメインネットは `fixed` のままです（2026年10月27日に確認: まだ `fixed`）。テストネットは独自のガバナンス（提案 14、2026年10月20日可決）で `target_apy` に切り替わっており、本稿執筆時点で `"emission_mode": "target_apy"` を報告しています。`epoch_info` は累積上限にすでに到達していることを示しています（`remaining_emission` は `0`）。
 
 ## Gas Abstraction モジュール {#gas-abstraction-module}
 
@@ -458,6 +461,39 @@ curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
 
 受け入れリストには、両ネットワークともネイティブの `uqor` のみが含まれているため、手数料は `uqor` で支払われ、変換は行われません。ガバナンスはトークンを追加します（プール、最小流動性、時間加重価格とスポット価格の最大乖離とともに）。そのようなトークンで支払われた手数料は QOR フロートを通じて変換され、AMM プールを通じて補充されます。`?denom=` なしの `conversion_rate` は `500`（`denom is required`）で応答します。
 
+## RL Consensus モジュール（v3.2.6、テストネット） {#rlconsensus-module}
+
+:::note 今のところテストネットのみ
+`rlconsensus` モジュールの REST ゲートウェイは **v3.2.6** で追加されました。`qorechain-diana` テストネットは 2026年10月27日にブロック高 8,970,638 でこれを適用しました。メインネットでは、本稿執筆時点（2026年10月27日に確認）で以下のすべてのルートが HTTP `501`（`{"code":12,"message":"Not Implemented"}`）で応答し、そこではこのモジュールには gRPC のみで到達できます。7つのルートはすべてテストネットで応答し、パラメータは不要です。
+:::
+
+| メソッド | エンドポイント                                  | 説明                                                              |
+| ------ | ----------------------------------------- | ------------------------------------------------------------------------ |
+| GET    | `/qorechain/rlconsensus/v1/agent`         | エージェントの状態: `mode`、`current_epoch`、`total_steps`、`last_observation_at`、`last_action_at`、`circuit_breaker_active`、`blocks_since_revert` |
+| GET    | `/qorechain/rlconsensus/v1/params`        | モジュールパラメータ: 観測間隔、エージェントモード、ステップ上限、サーキットブレーカーのウィンドウとしきい値、報酬の重み、デフォルトのブロック時間、ガス価格、バリデーターセットのサイズ |
+| GET    | `/qorechain/rlconsensus/v1/observation`   | 最新の観測ベクトル（`height` と 25 個の `values`）                 |
+| GET    | `/qorechain/rlconsensus/v1/reward`        | 最新の報酬シグナルとその構成要素                              |
+| GET    | `/qorechain/rlconsensus/v1/policy`        | 保存されているポリシーネットワーク: `epoch`、`updated_at`、`weight_count`（重み自体は返されません） |
+| GET    | `/qorechain/rlconsensus/v1/applied_params` | エージェントが適用済みとして保持している値: `block_time_ms`、`gas_limit`、`gas_price_floor`、`pool_weight_rpos`、`pool_weight_dpos` |
+| GET    | `/qorechain/rlconsensus/v1/last_action`   | エージェントが直近のステップで提案したアクション: `height`、`mode`、5 個の `values`、`applied` |
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/agent
+curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
+```
+
+```json
+{ "mode": "shadow", "current_epoch": "1", "total_steps": "209", "last_observation_at": "8975660",
+  "last_action_at": "8975660", "circuit_breaker_active": false, "blocks_since_revert": "0" }
+```
+
+```json
+{ "height": "8975660", "mode": "shadow", "values": ["-0.334711810000000000", "-0.500000000000000000",
+  "0.000000000000000000", "0.000000000000000000", "0.000000000000000000"], "applied": false }
+```
+
+エージェントは `observation_interval` ブロック（10）ごとに1ステップを実行します。`shadow` モードではアクションを計算して記録するだけで何も適用しないため、`applied` は `false` で、`applied_params` はデフォルト値のままです（`block_time_ms` は `5000`、`gas_price_floor` は `100`、プールの重みは `0.40` と `0.35`）。テストネットでは、エージェントはガバナンス提案 29（2026年10月27日可決）により、保存済みポリシーとともにシャドウモードで起動されました。`circuit_breaker_active` は `false` です。金額と値は文字列です。このリリースでは、適用された値は参考情報です。チェーン上の唯一の読み取り側は、読み取り専用の [`rlConsensusParams` プリコンパイル](/developer-guide/evm-precompiles#network-status)です。対応する gRPC メソッドは `AgentStatus`、`Params`、`Observation`、`Reward`、`Policy`、`AppliedParams`、`LastAction`（サービス `qorechain.rlconsensus.v1.Query`）で、CLI コマンドは[クエリコマンド](/cli-reference/query-commands#rlconsensus)にあります。
+
 ## Staking Tiers モジュール（v3.2.4） {#stakingtier-module}
 
 :::note v3.2.4 から利用可能
@@ -474,9 +510,9 @@ Staking Tiers モジュールは **v3.2.4** の一部です。これらのルー
 
 ## gRPC 専用モジュール {#grpc-only-modules}
 
-これらのモジュールには gRPC の `Query` サービスはありますが、**REST ルートはありません**。サービス名は `qorechain.<module>.v1.Query` の形式です。
+メインネット（ノードリリース v3.2.4、2026年10月27日に確認）では、これらのモジュールには gRPC の `Query` サービスはありますが、**REST ルートはありません**。サービス名は `qorechain.<module>.v1.Query` の形式です。
 
-| モジュール        | gRPC クエリメソッド（チェーンバージョン v3.2.4）              |
+| モジュール        | gRPC クエリメソッド（メインネット、チェーンバージョン v3.2.4）     |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
@@ -485,7 +521,7 @@ Staking Tiers モジュールは **v3.2.4** の一部です。これらのルー
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |
 
-自分のノードに対して `grpcurl` を使用するか、[CLI クエリコマンド](/cli-reference/query-commands)を使用してください。`rdk` のクエリは REST でも利用できます（[RDK モジュール](#rdk-module)を参照）。v3.2.2 より前は gRPC のみでした。
+`rlconsensus` のクエリは、v3.2.6 以降テストネットで REST で提供されています（`AppliedParams` と `LastAction` の2つのメソッドが追加）。[RL Consensus モジュール](#rlconsensus-module)を参照してください。メインネットは、そのリリースを適用するまで `501` で応答します。自分のノードに対して `grpcurl` を使用するか、[CLI クエリコマンド](/cli-reference/query-commands)を使用してください。`rdk` のクエリは REST でも利用できます（[RDK モジュール](#rdk-module)を参照）。v3.2.2 より前は gRPC のみでした。
 
 xQORE、BTC リステーキング（Babylon）、FairBlock の各モジュールには、現在のリリースではクエリサービス自体がなく、REST でも gRPC でも利用できません。v3.2.2 より前はクエリサービスがなかったインフレーションモジュールとガスアブストラクションモジュールは、REST で提供されています（[Inflation モジュール](#inflation-module)と [Gas Abstraction モジュール](#gas-abstraction-module)を参照）。
 
@@ -511,8 +547,49 @@ xQORE、BTC リステーキング（Babylon）、FairBlock の各モジュール
 | `/cosmos/evm/feemarket/v1/params`                     | EVM フィーマーケットパラメータ                     |
 | `/cosmwasm/wasm/v1/codes/params`                      | QoreChain Native のアップロード/インスタンス化の権限       |
 | `/ibc/apps/transfer/v1/params`                        | IBC 転送パラメータ                       |
+| `/ibc/core/client/v2/counterparty_info/{client_id}`   | **v3.2.6 (testnet)**。クライアントに登録された IBC v2 のカウンターパーティ（なければ `404`、メインネットでは `501`） |
+| `/ibc/core/client/v2/config/{client_id}`              | **v3.2.6 (testnet)**。IBC v2 クライアント設定（`allowed_relayers`、メインネットでは `501`） |
+| `/cosmos/evm/erc20/v1/token_pairs`, `/token_pairs/{token}` | ERC20 トークンペア（テストネット: 3つの Fest テストトークンと1つの IBC トークン、メインネット: なし） |
 
 QoreChain Native のプレフィックスは `/cosmwasm/wasm/v1/...` です。`/cosmos/wasm/v1/...` は提供されていません。
+
+### IBC v2 クライアントルート（v3.2.6、テストネット） {#ibc-v2-routes}
+
+IBC v2 クライアントのクエリサービスはこれまでも gRPC で提供されていましたが、REST ルートはありませんでした。v3.2.6 でこれらがマウントされます。リレイヤーは、ここからクライアントのカウンターパーティを読み取ります。どちらのルートもパスにクライアント ID を取ります（例: `07-<type>-0`）。指定しない場合は、両ネットワークで `501` で応答します。2026年10月27日に確認:
+
+| ルート | テストネット（v3.2.6） | メインネット（v3.2.4） |
+| --- | --- | --- |
+| `/ibc/core/client/v2/counterparty_info/{client_id}` | カウンターパーティとともに `200`。登録されていないクライアントには `404`（`client 07-<type>-0 counterparty not found`）。空の ID は `400` で応答 | `501` |
+| `/ibc/core/client/v2/config/{client_id}` | `200`、`{"config":{"allowed_relayers":[]}}`（空のリストは任意のリレイヤーを意味します） | `501` |
+| `/ibc/core/channel/v2/clients/{client_id}/next_sequence_send`、`/packet_commitments`、およびその他の IBC v2 チャネルルート | 応答する（クライアントに記録がなければ `404`、コミットメントは空のリストで `200`） | 応答する、同じ形 |
+
+IBC v1 のルート（`/ibc/core/client/v1/...`、`/ibc/core/channel/v1/...`）は両ネットワークで応答します。本稿執筆時点で、テストネットには IBC クライアントが1つ、開いている転送チャネルが1つ（`channel-0`、IBC 建てのトークン1つ）あり、メインネットには IBC クライアント、チャネル、IBC 建てトークンはありません。テストネットでは、レート制限モジュールが `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` で応答し（空のリスト: 制限は設定されていません）、08-wasm のチェックサム一覧は `/ibc/lightclients/wasm/v1/checksums` で応答します（空）。メインネットはどちらにも `501` で応答します。
+
+### テストネットのテストトークン（Fest） {#fest-tokens}
+
+:::note テストネットのみ、価値なし
+以下の3つのトークンは `qorechain-diana` テストネットにのみ存在します。これらはビルダー向けのテストトークンで、価値はなく、メインネットには ERC20 トークンペアが一切ありません（2026年10月27日に確認: `token_pairs` は空で、バンクの供給量は `uqor` のみです）。ガバナンスは 2026年10月27日にこれらを ERC20 トークンペアとして登録しました（提案 26）。
+:::
+
+テストネットでは、登録された ERC20 トークンはバンクコインとしても存在するため、保有、送信、そして [AMM プール](#amm-module)の2つ目の denom として使用できます。バンクの denom は `erc20:` に続けてコントラクトアドレスを **EIP-55 の大文字小文字混在チェックサム形式**で記したもので、denom 文字列は**大文字と小文字が区別されます**。すべて小文字の表記は別の文字列であり、見つかりません。
+
+| トークン | コントラクトアドレス | バンク denom | 小数桁数 |
+| --- | --- | --- | --- |
+| fUSD (FestUSD) | `0x97143B771D34ddb9130b807b135Ae675A5a963CA` | `erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA` | 6 |
+| fETH (FestETH) | `0x02292293c13880a26242690eb70a0e42B8E91c28` | `erc20:0x02292293c13880a26242690eb70a0e42B8E91c28` | 18 |
+| fBTC (FestBTC) | `0x4604e7E45b2ecdbfbDc157103f5B2b62cb16451A` | `erc20:0x4604e7E45b2ecdbfbDc157103f5B2b62cb16451A` | 8 |
+
+```bash
+# the three tokens and their display names / decimals
+curl -s https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata
+# one denom: the case matters (this returns the metadata, the lowercase spelling returns 404)
+curl -s "https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata/erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA"
+# the ERC20 token pairs, and the supply of one denom
+curl -s https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs
+curl -s "https://api-testnet.qore.host/cosmos/bank/v1beta1/supply/by_denom?denom=erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA"
+```
+
+`denoms_metadata` は各トークンを、`symbol` が `fUSD` / `fETH` / `fBTC`、`display` が `FestUSD` / `FestETH` / `FestBTC`、小数桁数が表示単位の指数として一覧します。残高クエリ（`/cosmos/bank/v1beta1/balances/{address}`）は、保有者の残高のうち変換済みの部分を `erc20:...` denom の下に表示します。まだ EVM 側に保有されているトークンは、ERC20 コントラクト自身の `balanceOf` に表示されます。2つの形式間の変換は `MsgConvertERC20`（EVM からバンクへ）と `MsgConvertCoin`（バンクから EVM へ）で行い、`MsgConvertERC20` の送信者は `qor1` bech32 アドレスで記述する必要があります。[EVM 開発](/developer-guide/evm-development#fest-tokens)を参照してください。
 
 ## gRPC リフレクション
 
@@ -528,7 +605,7 @@ grpcurl -plaintext localhost:9090 list
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` にはv3.2.3 のノードで `Account`、`EVMWindow`、`EVMDelegationConsent` の3つのメソッドがあり、v3.2.4 から（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）4つ目の `ProtocolFeatures` があります。`Params` メソッドはありません。
+`qorechain.pqc.v1.Query` にはv3.2.3 のノードで `Account`、`EVMWindow`、`EVMDelegationConsent` の3つのメソッドがあり、v3.2.4 から（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）4つ目の `ProtocolFeatures` があります。`Params` メソッドは v3.2.6 で追加されます（今のところテストネットのみ）。メインネットのノードには `Params` メソッドはありません。
 
 ## 認証
 

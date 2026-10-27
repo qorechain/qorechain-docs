@@ -141,10 +141,10 @@ RPC WebSocketはQoreChain Consensus Engineのイベントサブスクリプシ�
 
 ## モジュールイベントリファレンス
 
-イベントは標準のコンセンサスエンジンイベントとして発行されます。イベントタイプと属性でフィルタした `tm.event='Tx'` クエリでサブスクライブしてください（例: `tm.event='Tx' AND bridge_deposit.chain EXISTS`）。ブロックレベルのイベント（下記のPRISMイベントなど、ブロック終了時のロジックが発行するもの）は、`Tx` ではなく `tm.event='NewBlock'` で配信されます。以下のイベント名と属性は、チェーンバージョン v3.2.4（メインネットでは 2026年10月23日から、テストネットでは 2026年10月19日から）のものです。v3.2.4 で追加されたイベントには、その旨を記載しています。
+イベントは標準のコンセンサスエンジンイベントとして発行されます。イベントタイプと属性でフィルタした `tm.event='Tx'` クエリでサブスクライブしてください（例: `tm.event='Tx' AND bridge_deposit.chain EXISTS`）。ブロックレベルのイベント（下記のPRISMイベントなど、ブロック終了時のロジックが発行するもの）は、`Tx` ではなく `tm.event='NewBlock'` で配信されます。以下のイベント名と属性は、チェーンバージョン v3.2.4（メインネットでは 2026年10月23日から、テストネットでは 2026年10月19日から）のものです。v3.2.4 で追加されたイベントには、その旨を記載しています。テストネット（v3.2.6）はさらに1つのイベント `rl_action_proposed` を発行します。これはPRISMイベントとともに記載しています。
 
 :::note 実際に目にするイベント
-これらのモジュールの多くは、公開ネットワークでは稼働していません。ブリッジは稼働しておらず、マルチレイヤーのレイヤーやロールアップはまだ登録されておらず、xQOREも利用できません。これらのイベントは定義されていますが、アクティビティが発生するまで発行されません。PRISMの観測イベントと報酬イベント（`rl_observation_collected`、`rl_reward_computed`）は、両ネットワークで約10ブロックごとに発行されます。
+これらのモジュールの多くは、公開ネットワークでは稼働していません。ブリッジは稼働しておらず、マルチレイヤーのレイヤーやロールアップはまだ登録されておらず、xQOREも利用できません。これらのイベントは定義されていますが、アクティビティが発生するまで発行されません。PRISMの観測イベントと報酬イベント（`rl_observation_collected`、`rl_reward_computed`）は、両ネットワークで約10ブロックごとに発行されます。テストネット（v3.2.6）では、エージェントは各ステップで `rl_action_proposed` も発行します。
 :::
 
 ### PQCモジュール
@@ -254,6 +254,7 @@ PQC鍵は登録トランザクションで明示的に登録されます。自�
 | `rl_observation_collected`     | `height`                | PRISMの観測が行われた際に発行（約10ブロックごと）                |
 | `rl_reward_computed`           | `height`、`reward`      | PRISMの報酬が計算された際に発行                                 |
 | `rl_action_applied`            | `height`、`agent_mode`  | PRISMエージェントがパラメータ調整を適用した際に発行             |
+| `rl_action_proposed`           | `height`、`agent_mode`、`applied`、`block_time_delta`、`gas_price_delta`、`validator_set_size_delta`、`pool_weight_rpos_delta`、`pool_weight_dpos_delta` | **v3.2.6（テストネットのみ）。** すべてのモードで、エージェントの各ステップごとに、提案されたアクションとともに発行されます。シャドウモードでは `applied` は `false` です。メインネットは、そのリリースを適用するまでこのイベントを発行しません |
 | `rl_agent_mode_changed`        | `height`、`agent_mode`  | エージェントのモードが変化した際に発行                          |
 | `rl_circuit_breaker_triggered` | `height`                | PRISMサーキットブレーカーがアクションをブロックした際に発行     |
 | `rl_circuit_breaker_recovered` | `height`                | サーキットブレーカーが復旧した際に発行                          |

@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-クエリは `--node` が指す先のノードに対して実行されます。ライブデータには **`qorechain-vladi`** メインネットの RPC エンドポイント(例: `--node https://rpc.qore.host:443`)を、テストには **`qorechain-diana`** テストネットのエンドポイント(`--node https://rpc-testnet.qore.host:443`)を使用してください。デフォルトの `tcp://localhost:26657` は、自分で運用しているノードを指します。メインネットは 2026年10月23日からノードリリース v3.2.4 で動作しています(ガバナンス提案 13 により高さ 3,742,566 で適用)。テストネットは 2026年10月19日から v3.2.4 で動作しています。v3.2.4 リリースでは、ルートやコマンドがいくつか追加されます(以下では **v3.2.4** と明記)。これらは両ネットワークで動作し、それより古いリリースのままのノードは `Not Implemented` で応答します。このページのコマンドは、`https://rpc.qore.host:443` に対して実行した v3.2.3 リリースバイナリで確認しており、v3.2.4 のルートは 2026年10月23日に REST で確認しました。
+クエリは `--node` が指す先のノードに対して実行されます。ライブデータには **`qorechain-vladi`** メインネットの RPC エンドポイント(例: `--node https://rpc.qore.host:443`)を、テストには **`qorechain-diana`** テストネットのエンドポイント(`--node https://rpc-testnet.qore.host:443`)を使用してください。デフォルトの `tcp://localhost:26657` は、自分で運用しているノードを指します。メインネットは 2026年10月23日からノードリリース v3.2.4 で動作しています(ガバナンス提案 13 により高さ 3,742,566 で適用)。メインネットのガバナンス提案 14 は高さ 3,906,833 で v3.2.5 を適用する予定です。テストネットは v3.2.6 で動作しています(v3.2.4 は 2026年10月19日から、v3.2.5 は 10月26日から、v3.2.6 は 10月27日から)。v3.2.4 リリースでは、ルートやコマンドがいくつか追加されます(以下では **v3.2.4** と明記)。これらは両ネットワークで動作し、それより古いリリースのままのノードは `Not Implemented` で応答します。v3.2.6 リリースではコマンドが 2 つ追加されます(**v3.2.6** と明記。メインネットが適用するまではテストネットのみ)。このページのコマンドは、`https://rpc.qore.host:443` に対して実行した v3.2.3 リリースバイナリで確認しており、v3.2.4 のルートは 2026年10月23日に REST で確認し、v3.2.6 のコマンドは v3.2.6 のソースに対して確認しました。
 :::
 
 すべての `query` サブコマンドに共通のフラグがあります。
@@ -149,7 +149,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mod
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
 ```
 
-メインネットでは、これらは `emission_mode: "fixed"`、43,200 ブロックのエポックごとに 86,000 QOR の固定発行、累積上限 590,000,000 QOR を報告します(ガバナンス提案 10、2026年10月19日に可決。新しい発行量での最初のエポックはブロック 3,672,000 から開始)。金額の単位は `uqor` です。テストネットは引き続き、それとは異なる独自の値を報告します。v3.2.4 リリースでは発行モードがさらに追加されます(両ネットワークで利用可能)が、ネットワークがそのモードに切り替わるのは各ネットワーク自身のガバナンス投票によってのみであるため、そのような投票が可決されるまでメインネットは `fixed` のままです。
+メインネットでは、これらは `emission_mode: "fixed"`、43,200 ブロックのエポックごとに 86,000 QOR の固定発行、累積上限 590,000,000 QOR を報告します(ガバナンス提案 10、2026年10月19日に可決。新しい発行量での最初のエポックはブロック 3,672,000 から開始)。金額の単位は `uqor` です。テストネットは、それとは異なる独自の値を報告します。テストネットは、v3.2.4 で追加された発行モード(`target_apy`)に、自身のガバナンス(提案 14、2026年10月20日に可決)によって切り替えました。ネットワークがモードを切り替えるのは各ネットワーク自身のガバナンス投票によってのみであるため、そのような投票が可決されるまでメインネットは `fixed` のままです(2026年10月27日に確認)。
 
 ---
 
@@ -272,13 +272,17 @@ qorechaind query rlconsensus observation
 qorechaind query rlconsensus reward
 qorechaind query rlconsensus params
 qorechaind query rlconsensus policy
+qorechaind query rlconsensus applied-params   # v3.2.6 (testnet)
+qorechaind query rlconsensus last-action      # v3.2.6 (testnet)
 ```
+
+`agent-status` はエージェントのモード、エポック、ステップ数を報告します。`policy` は保存されているポリシーのエポックと重みの数を報告します(重みそのものではありません)。**v3.2.6(メインネットがそのリリースを適用するまではテストネットのみ):** `applied-params` はエージェントが適用済みとして保持している値(ブロック時間、ガス価格の下限、プールの重み)を表示し、`last-action` は直近のステップでエージェントが提案したアクションを表示します。このアクションは、何も適用されないシャドーモードを含むすべてのモードで記録されます。これらはすべてテストネットでは REST でも提供されます([RL コンセンサスモジュール](/api-reference/rest-grpc-endpoints#rlconsensus-module)を参照)。メインネットのノードに対しては、メインネットがそのリリースを適用するまで、この 2 つの新しいコマンドは `Not Implemented` で応答します。
 
 ---
 
 ## abstractaccount
 
-アブストラクトアカウントモジュールは現在、両ネットワークで無効になっています(`config.enabled` は `false`)。そのため、これらのクエリはアカウントを返しません。
+アブストラクトアカウントモジュールは、メインネットでは無効になっており(`config.enabled` は `false` のため、メインネットではこれらのクエリはアカウントを返しません)、テストネットではガバナンスによって有効になっています(`config.enabled` は `true`。2026年10月27日に確認)。
 
 ```bash
 qorechaind query abstractaccount config
@@ -318,7 +322,7 @@ qorechaind query amm quote-exact-in <pool_id> <denom_in> <amount_in>
 qorechaind query amm quote-exact-out <pool_id> <denom_out> <amount_out>
 ```
 
-執筆時点では、どちらのネットワークにもプールは存在しません。
+執筆時点では、どちらのネットワークにもプールは存在しません。テストネットでは、3 つの Fest テストトークンをプールの 2 番目のデノミネーションとして利用できます([テストネットのテストトークン](/api-reference/rest-grpc-endpoints#fest-tokens)を参照)。
 
 ---
 
@@ -345,7 +349,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>` は、アップグレードがいつ有効になったかを読み取る方法です。メインネットでは `v3.2.2` がブロック高 3,556,788 で、`v3.2.3` がブロック高 3,662,051 で、`v3.2.4` がブロック高 3,742,566 で適用されました。テストネットでは `v3.2.2` が 6,905,034、`v3.2.3` が 8,003,746、`v3.2.4` が 8,337,253 で適用されています(`0` は未適用を意味します)。メインネットのサーキットブレーカーリスト(`disabled-list`)には現在、ベスティングアカウント作成メッセージ、QoreChain Native の store と instantiate、AMM プールの一時停止と再開、クロス VM 呼び出し、マルチレイヤーのレイヤーステータス更新、PQC アルゴリズムの非推奨化と無効化、PRISM コンセンサスのガバナンスメッセージが含まれています。テストネットのリストには QoreChain Native の 3 つのメッセージだけが含まれています。
+`query upgrade applied <name>` は、アップグレードがいつ有効になったかを読み取る方法です。メインネットでは `v3.2.2` がブロック高 3,556,788 で、`v3.2.3` がブロック高 3,662,051 で、`v3.2.4` がブロック高 3,742,566 で適用されました。テストネットでは `v3.2.2` が 6,905,034、`v3.2.3` が 8,003,746、`v3.2.4` が 8,337,253、`v3.2.5` が 8,890,800、`v3.2.6` が 8,970,638 で適用されています(`0` は未適用を意味します。メインネットの `v3.2.5` は執筆時点で `0` で、ガバナンス提案 14 は投票期間中です)。メインネットのサーキットブレーカーリスト(`disabled-list`)には現在、ベスティングアカウント作成メッセージ、QoreChain Native の store と instantiate、AMM プールの一時停止と再開、クロス VM 呼び出し、マルチレイヤーのレイヤーステータス更新、PQC アルゴリズムの非推奨化と無効化、PRISM コンセンサスのガバナンスメッセージが含まれています。テストネットのリストには QoreChain Native の `MsgStoreCode` メッセージだけが含まれています(2026年10月27日に確認。インスタンス化はテストネットのガバナンスによって許可されました)。
 
 ---
 
@@ -363,6 +367,8 @@ qorechaind query wasm list-contract-by-code <code_id>
 qorechaind query wasm contract <contract_address>
 qorechaind query wasm contract-state smart <contract_address> '<json_query>'
 ```
+
+`query erc20 token-pairs` はメインネットでは空です。テストネットでは、3 つの Fest テストトークン(fUSD、fETH、fBTC)と 1 つの IBC トークンが一覧に表示されます。それらのバンクデノミネーションは `erc20:` に EIP-55 コントラクトアドレスを続けたもので、大文字と小文字が区別されます。[テストネットのFestテストトークン](/developer-guide/evm-development#fest-tokens)を参照してください。テストネットでは、`query wasm params` は `code_upload_access` が `Nobody`、`instantiate_default_permission` が `Everybody` と表示します。メインネットではどちらも `Nobody` です([QoreChain Native開発](/developer-guide/cosmwasm-development)を参照)。
 
 ---
 

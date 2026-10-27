@@ -65,7 +65,7 @@ Cet exemple signe uniquement avec la signature **classique** ; il fonctionne don
 contre un nœud local ou de développement, mais est refusé par le mainnet et le
 testnet, qui exigent la signature hybride sur chaque transaction de la voie
 Native. Pour les réseaux publics, connectez-vous avec la paire de clés du compte,
-`client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0), comme dans le
+`client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 ou ultérieur), comme dans le
 [Démarrage rapide](/sdk/quickstart#send-qor).
 
 ```ts
@@ -128,9 +128,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 Utilisez `@qorechain/evm` (une fine couche au-dessus de viem) pour appeler des
 précompilés QoreChain en lecture seule et lire un solde ERC-20. L'identifiant de
 chaîne EVM est détecté automatiquement via `eth_chainId`. Les précompilés ne
-sont pas encore actifs sur le mainnet ni sur le testnet (voir
-[État du réseau](/developer-guide/evm-precompiles#network-status)) ; tant qu'ils
-ne le sont pas, et sur un nœud qui en est dépourvu, ces appels lèvent une erreur
+sont pas actifs sur le mainnet, et sur le testnet seuls ceux de vérification PQC,
+d'état des clés PQC et des paramètres de consensus le sont (voir
+[État du réseau](/developer-guide/evm-precompiles#network-status)) ; là où un
+précompilé est inactif, et sur un nœud qui en est dépourvu, ces appels lèvent une erreur
 « feature not present », signalée appel par appel.
 
 ```ts
@@ -266,8 +267,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 
 Construisez un `MsgExecuteCosmos` soumis par un relayer sur la voie
 d'authentificateur Native (SDK 0.7.0, chaîne v3.1.85 ; le module
-`abstractaccount` est aujourd'hui désactivé sur les deux réseaux, cette voie ne
-peut donc pas encore y être utilisée) : une clé ed25519 de type
+`abstractaccount` est désactivé sur le mainnet et activé sur le testnet, cette voie
+ne peut donc pas encore être utilisée sur le mainnet) : une clé ed25519 de type
 Phantom signe le digest d'authentification à séparation de domaine, et le
 message résultant est prêt à être diffusé par un relayer (le relayer paie les
 frais ; la clé externe ne produit jamais de co-signature ML-DSA). Exécution à

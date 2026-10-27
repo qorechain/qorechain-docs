@@ -23,7 +23,7 @@ Il modello economico di QoreChain è incentrato sul token nativo **QOR** e segue
 | **Prefisso Bech32**     | `qor` (account: `qor1...`, validatori: `qorvaloper...`) |
 
 :::note
-Le cifre riportate in questa pagina descrivono la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live dal 7 giugno 2026 sulla release **v3.2.4** (applicata all'altezza 3.742.566 il 23 ottobre 2026). La testnet **`qorechain-diana`** (EVM chain ID **9800**, release **v3.2.4** dal 19 ottobre 2026) ha una propria storia di emissione e di offerta (l'offerta della testnet è molto superiore a quella della mainnet e la sua emissione ha già superato il tetto), quindi usa le cifre della mainnet. Gli importi che cambiano a ogni blocco sono contrassegnati con la data in cui sono stati letti (23 ottobre 2026).
+Le cifre riportate in questa pagina descrivono la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live dal 7 giugno 2026 sulla release **v3.2.4** (applicata all'altezza 3.742.566 il 23 ottobre 2026). La testnet **`qorechain-diana`** (EVM chain ID **9800**, release **v3.2.6** dal 27 ottobre 2026) ha una propria storia di emissione e di offerta (l'offerta della testnet è molto superiore a quella della mainnet e la sua emissione ha già superato il tetto), quindi usa le cifre della mainnet. Gli importi che cambiano a ogni blocco sono contrassegnati con la data in cui sono stati letti (23 ottobre 2026).
 :::
 
 ---
@@ -44,7 +44,7 @@ QoreChain ha un **percorso di offerta finito e con tetto massimo**. L'offerta di
 | Lunghezza dell'epoca | 43.200 blocchi (circa 38,6 ore con l'attuale tempo di blocco di ≈3,2 s) |
 | Tetto cumulativo (`max_total_emission`) | **590.000.000 QOR** (114.285.714 QOR fino alla proposta 10) |
 | Coniati finora (23 ottobre 2026, epoca 86) | 105.420.896,21 QOR (17,87% del tetto) |
-| Rimanenti sotto il tetto | 484.751.103,79 QOR (circa 5.637 epoche a 86.000 QOR per epoca; l'ultima è parziale) |
+| Rimanenti sotto il tetto | 484.579.103,79 QOR (circa 5.635 epoche a 86.000 QOR per epoca; l'ultima è parziale) |
 
 Una volta raggiunto il tetto, il modulo smette definitivamente di coniare; da quel momento le ricompense provengono unicamente dalle commissioni di transazione. I valori di emissione sono stati fissati dalla governance: la proposta n. 4 (26 agosto 2026) ha sostituito il programma decrescente originale con un importo fisso sotto un tetto rigido, e la proposta n. 10 (approvata il 19 ottobre 2026 con tutto lo stake bonded a favore) ha portato tale importo da 16.239 QOR a 86.000 QOR per epoca e ha alzato il tetto da 114.285.714 QOR a 590.000.000 QOR. La lunghezza dell'epoca non è cambiata. I valori del programma (17,5%, 11%, 7%, 7%, 2% per gli anni 1–5) restano memorizzati nei parametri del modulo ma non sono usati in modalità `fixed`.
 
@@ -211,7 +211,7 @@ Letti dal vivo il 23 ottobre 2026 da `GET /qorechain/inflation/v1/params`:
 I parametri e il record di epoca del modulo sono esposti via REST sulla mainnet dalla v3.2.3 (`/qorechain/inflation/v1/params` e `/qorechain/inflation/v1/epoch_info`); possono anche essere letti dallo stato della chain con l'interfaccia di store grezzo RPC `abci_query` (store `inflation`, chiavi `inflation/params` e `inflation/epoch`).
 
 :::note v3.2.4 e l'emissione della testnet
-La testnet `qorechain-diana` mantiene le proprie impostazioni di emissione precedenti (16.239 QOR per epoca sotto un tetto di 114.285.714 QOR, già raggiunto lì); la mainnet usa i valori qui sopra. La release v3.2.4 aggiunge una terza modalità di emissione, `target_apy`, con un parametro `target_apy_bps`: sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026 (proposta di governance 13). Il parametro è `0` su entrambe le reti e non guida l'emissione. Portare una rete su quella modalità è un voto di governance separato e non è stato proposto sulla mainnet; finché uno non passa, la mainnet resta in modalità `fixed` a 86.000 QOR per epoca.
+La testnet `qorechain-diana` è configurata per i test e differisce dalla mainnet (letta il 27 ottobre 2026): è in modalità `target_apy` con `target_apy_bps` `1667`, `fixed_epoch_emission` è ancora 16.239 QOR e `max_total_emission` è 3.950.390.341.362.112.750 uqor, pari all'importo già coniato lì (`remaining_emission` è `0` su `/qorechain/inflation/v1/epoch_info`), quindi la testnet non conia altro. La mainnet usa i valori qui sopra. La release v3.2.4 aggiunge la terza modalità di emissione, `target_apy`, con un parametro `target_apy_bps`: sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026 (proposta di governance 13). Sulla mainnet il parametro è `0` e non guida l'emissione. Portare la mainnet su quella modalità è un voto di governance separato e non è stato proposto; finché uno non passa, la mainnet resta in modalità `fixed` a 86.000 QOR per epoca.
 :::
 
 ---

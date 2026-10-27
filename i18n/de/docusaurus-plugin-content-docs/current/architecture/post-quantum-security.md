@@ -271,9 +271,7 @@ Diese Utilities bilden die Grundlage des Standard-Anwendungs-Hashes und werden v
 
 ## Bridge-PQC
 
-Alle Cross-Chain-Bridge-Attestierungen und State-Commitments verwenden **Dilithium-5**-Signaturen. Das Modul `x/multilayer` verlangt PQC-Aggregatsignaturen bei jeder `MsgAnchorState`-Übermittlung, und ML-KEM-Commitments sichern die Schlüsselaustauschkanäle zwischen Bridge-Relayern ab.
-
-Dies stellt sicher, dass die Cross-Chain-Sicherheit nicht durch die Verwendung klassischer Kryptografie in der Bridge-Infrastruktur beeinträchtigt wird, und erhält die Quantenresistenz über den gesamten Protokoll-Stack hinweg. Keine Bridge-Route ist live (siehe [Bridge-Architektur](/architecture/bridge-architecture#current-status)); ab v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026) erfordert die Registrierung eines Bridge-Validators zusätzlich einen Besitznachweis für dessen PQC-Schlüssel.
+Bridge-Attestierungen sind darauf ausgelegt, **Dilithium-5**-Signaturen (ML-DSA-87) zu verwenden, damit die Cross-Chain-Sicherheit nicht durch klassische Kryptografie in der Bridge-Infrastruktur beeinträchtigt wird. Das ist Design-Absicht: Es beschreibt, wie Bridge-Validatoren attestieren sollen, und kein Verhalten, das Sie heute auf einem Live-Netzwerk ausprobieren können. Keine Bridge-Route ist live (siehe [Bridge-Architektur](/architecture/bridge-architecture#current-status)); ab v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026) erfordert die Registrierung eines Bridge-Validators zusätzlich einen Besitznachweis für dessen PQC-Schlüssel.
 
 ## Modulparameter
 
@@ -285,6 +283,8 @@ Dies stellt sicher, dass die Cross-Chain-Sicherheit nicht durch die Verwendung k
 | `default_migration_blocks` | int64               | `1,000,000`       | Standard-Doppelsignatur-Migrationsperiode in Blöcken     |
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Standard-Signaturalgorithmus für neue Schlüsselregistrierungen |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Chainweites Durchsetzungslevel für Hybridsignaturen         |
+
+Das Testnet gibt dieselben Werte zurück (geprüft am 27. Oktober 2026). Seit v3.2.6 stellt das Testnet sie zusätzlich über REST unter `GET /qorechain/pqc/v1/params` bereit; im Mainnet antwortet diese Route mit 501 (nicht implementiert), und die Parameter werden mit `qorechaind query pqc params` gelesen.
 
 ## Verwandt
 

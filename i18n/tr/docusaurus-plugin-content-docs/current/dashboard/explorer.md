@@ -7,13 +7,13 @@ sidebar_position: 2
 
 # Gezgin
 
-**Gezgin**, Panel'in zincire açılan penceresidir. Blokları, işlemleri, adresleri ve doğrulayıcıları aramak ve ağ etkinliğini gerçek zamanlı izlemek için kullanın. Gezgin salt okunurdur — göz atmak için cüzdan bağlantısı gerekmez. Panel içinde mainnet'i görüntülemek için oturum açmış olmak gerekir; aynı Gezgin, herhangi bir hesap olmadan da [explore.qore.network](https://explore.qore.network) adresinde kullanılabilir.
+**Gezgin**, Panel'in zincire açılan penceresidir. Blokları, işlemleri, adresleri ve doğrulayıcıları aramak ve ağ etkinliğini gerçek zamanlı izlemek için kullanın. Gezgin salt okunurdur — göz atmak için cüzdan bağlantısı gerekmez. Panel içinde mainnet'i görüntülemek için oturum açmış olmak gerekir; hesap gerektirmeyen ayrı bir herkese açık gezgin [explore.qore.network](https://explore.qore.network) adresinde bulunur (bu farklı bir uygulamadır ve kendi Mainnet/Testnet geçişi vardır).
 
 ## Genel bakış sayfası
 
 Ağın canlı bir anlık görüntüsünü görmek için Panel'den **Gezgin**'i açın:
 
-- **Ağ durumu** — zincir kimliği, mevcut durum ve kuantum güvenli göstergesi.
+- **Ağ durumu** — zincir kimliği, mevcut durum ve bir güvenlik durumu etiketi.
 - **Blok etkinliği** — en son blok yüksekliği, ortalama blok süresi ve bugün üretilen bloklar.
 - **Arz** — toplam bağlı QOR, bağlı oran ve dolaşımdaki arz.
 - **Öne çıkan istatistikler** — toplam işlemler, aktif ve toplam doğrulayıcılar ve toplam adresler.
@@ -34,9 +34,16 @@ Gezgin'in üst kısmındaki arama kutusu aşağıdakilerden herhangi birini kabu
 
 Bir işlem sayfası; karmasını, durumunu, tutarını, göndericisini ve alıcısını (ikisi de tıklanabilir), ücretini, blok yüksekliğini, işlem türünü ve varsa notu gösterir. Karmayı kopyalayabilir ve daha derin inceleme için tüm işlemin ham görünümünü açıp kapatabilirsiniz.
 
+Sayfa ayrıca işlemi neyin koruduğunu da gösterir ve yalnızca zincirin doğruladığı bir iddiada bulunur:
+
+* **PQC Verified.** Bir native şerit işlemi bu kartı yalnızca başarılı olduğunda **ve** zincirin kendisi hibrit imzasını, ML-DSA-87 kısmı dahil, doğruladığında gösterir (zincir bunun için bir doğrulama olayı kaydeder). Başarısız bir işlem veya doğrulanmış hibrit imzası olmayan bir işlem bunun yerine standart güvenlik gösterir; Gezgin bir imzanın kuantum sonrası olduğunu varsaymaz.
+* **Authorised by a PQC window.** Bir EVM cüzdanından gönderilen işlem sıradan bir secp256k1 imzası taşır, bu yüzden asla "PQC Verified" olarak etiketlenmez. Gönderen, işlem gönderildiğinde açık bir [EVM yetkilendirme penceresine](/developer-guide/evm-development#evm-window) sahipse, sayfa işlemin **bir PQC penceresiyle yetkilendirildiğini** söyler ve pencereyi açan, kuantum sonrası imzalı işleme giden bir **Window opened by** bağlantısı gösterir. Bu, pencere özelliğinin etkinleşme yüksekliklerinden itibaren geçerlidir (testnet 5,920,000; mainnet 2,981,742).
+
+Bu etiketler dashboard.qorechain.io/explorer adresindeki Panel Gezgini'ne özgüdür. explore.qore.network adresindeki ayrı gezgin farklı bir uygulamadır ve bu kuralları uygulamaz.
+
 ## Blok detayları
 
-Bir blok sayfası; yüksekliğini, zaman damgasını, önericisini, karmasını, işlem sayısını, kullanılan gas'ı ve içerdiği işlemler listesini, mutabakat ve kuantum sonrası imza bilgileriyle birlikte gösterir. Önceki ve sonraki kontrolleri, zinciri blok blok ilerlemenizi sağlar.
+Bir blok sayfası; yüksekliğini, zaman damgasını, önericisini, karmasını, işlem sayısını, kullanılan gas'ı ve içerdiği işlemler listesini, imza sayısıyla birlikte gösterir. Bloklar kuantum sonrası etiket taşımaz: doğrulayıcıların mutabakat anahtarlarıyla imzalanırlar ve kuantum sonrası koruma blok başına değil, işlem başına gösterilir. Önceki ve sonraki kontrolleri, zinciri blok blok ilerlemenizi sağlar.
 
 ## Adres detayları
 

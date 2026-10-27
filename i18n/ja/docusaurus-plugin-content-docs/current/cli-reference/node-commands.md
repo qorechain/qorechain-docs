@@ -10,9 +10,9 @@ sidebar_position: 1
 QoreChainノードの初期化・設定・運用に使用する `qorechaind` コマンドのリファレンスです。
 
 :::note
-QoreChainは2つのネットワークを運用しています。**`qorechain-vladi`** メインネット(2026年6月7日から稼働中、ノードリリース **v3.2.4**、2026年10月23日にガバナンス提案 13 によりブロック高 3,742,566 で適用。v3.2.3 は2026年10月20日にブロック高 3,662,051 で適用)と、**`qorechain-diana`** テストネット(ノードリリース **v3.2.4**、2026年10月19日にブロック高 8,337,253 で適用)です。参加するネットワークに応じて適切な `--chain-id` を指定してください — 以下の例はテストネットを対象としています。メインネットの場合は `--chain-id qorechain-vladi` を使用してください。各ネットワークの現在のリリースは、[download.qore.host](https://download.qore.host) の `latest.json` に記載されています。
+QoreChainは2つのネットワークを運用しています。**`qorechain-vladi`** メインネット(2026年6月7日から稼働中、ノードリリース **v3.2.4**、2026年10月23日にガバナンス提案 13 によりブロック高 3,742,566 で適用。v3.2.3 は2026年10月20日にブロック高 3,662,051 で適用)と、**`qorechain-diana`** テストネット(ノードリリース **v3.2.6**、2026年10月27日にブロック高 8,970,638 で適用。その前に v3.2.5 が10月26日にブロック高 8,890,800 で、v3.2.4 が10月19日にブロック高 8,337,253 で適用)です。メインネットのガバナンス提案 14 は投票期間中です。この提案はブロック高 3,906,833 で v3.2.5 を適用するもので、そのリリースによる変更は、メインネットが適用した時点で文書化されます。参加するネットワークに応じて適切な `--chain-id` を指定してください — 以下の例はテストネットを対象としています。メインネットの場合は `--chain-id qorechain-vladi` を使用してください。各ネットワークの現在のリリースは、[download.qore.host](https://download.qore.host) の `latest.json` に記載されています。
 
-このページのコマンドは、v3.2.3 のリリースバイナリで確認しています。v3.2.4 バイナリには、v3.2.3 バイナリにはないコマンド(例: `stakingtier`)が追加されています。これらは両ネットワークで動作します(テストネットでは2026年10月19日から、メインネットでは2026年10月23日から)。このマニュアルでそれに触れる箇所には、その旨を明記しています。
+このページのコマンドは、v3.2.3 のリリースバイナリで確認しています。v3.2.4 バイナリには、v3.2.3 バイナリにはないコマンド(例: `stakingtier`)が追加されています。これらは両ネットワークで動作します(テストネットでは2026年10月19日から、メインネットでは2026年10月23日から)。このマニュアルでそれに触れる箇所には、その旨を明記しています。v3.2.6 バイナリ(テストネット)には、さらに2つのクエリコマンド `query rlconsensus applied-params` と `last-action` が追加されています。これらはメインネットがそのリリースを適用するまでテストネット専用です([クエリコマンド](/cli-reference/query-commands#rlconsensus)を参照)。このページのそれ以外はすべて、両リリースで同じように動作します。
 :::
 
 ---
@@ -70,7 +70,7 @@ qorechaind start [flags]
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height?
+# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"}, e.g. v3.2.5 today)
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 ```

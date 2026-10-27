@@ -226,7 +226,7 @@ Los endpoints públicos son `rpc.qore.host` (RPC Native), `api.qore.host` (REST)
 La tarjeta **SVM wallets** también te permite vincular una clave de Phantom a tu cuenta como **firmante vinculado** — un autenticador con límite de tiempo (30 días) y revocable, no una conexión de monedero principal independiente como QoreX, Keplr o MetaMask. Selecciona **Connect Phantom** y luego **Register authenticator**; tu monedero existente firma el registro, y Phantom nunca se convierte en su propia identidad.
 
 :::caution El registro de firmantes vinculados está actualmente desactivado en la cadena
-Las funciones de cuenta inteligente y de monedero vinculado de la cadena están implementadas pero desactivadas en ambas redes (`abstractaccount.enabled = false`; comprueba `GET /qorechain/abstractaccount/v1/config`), y la cadena rechaza nuevos registros de firmantes vinculados mientras sea así. Trata la tarjeta como una vista previa por ahora y no esperes que un registro tenga éxito.
+Las funciones de cuenta inteligente y de monedero vinculado de la cadena están implementadas pero desactivadas en mainnet y activadas en la testnet (`abstractaccount.enabled` es `false` en mainnet; comprueba `GET /qorechain/abstractaccount/v1/config`), y la cadena de mainnet rechaza nuevos registros de firmantes vinculados mientras sea así. En mainnet, trata la tarjeta como una vista previa por ahora y no esperes que un registro tenga éxito.
 :::
 
 :::caution Un firmante vinculado es autoridad real sobre la cuenta

@@ -226,7 +226,7 @@ Die öffentlichen Endpunkte sind `rpc.qore.host` (Native RPC), `api.qore.host` (
 Mit der Karte **SVM-Wallets** können Sie außerdem einen Phantom-Schlüssel als **verknüpften Signierer** mit Ihrem Konto verbinden — ein zeitlich begrenzter (30 Tage), widerrufbarer Authenticator, keine separate primäre Wallet-Verbindung wie QoreX, Keplr oder MetaMask. Wählen Sie **Phantom verbinden** und dann **Authenticator registrieren**; Ihre bestehende Wallet signiert die Registrierung, und Phantom wird nie zu einer eigenen Identität.
 
 :::caution Die Registrierung verknüpfter Signierer ist derzeit auf der Chain abgeschaltet
-Die Smart-Account- und Linked-Wallet-Funktionen der Chain sind implementiert, aber in beiden Netzwerken abgeschaltet (`abstractaccount.enabled = false`; prüfen Sie `GET /qorechain/abstractaccount/v1/config`), und die Chain lehnt neue Registrierungen verknüpfter Signierer ab, solange das der Fall ist. Betrachten Sie die Karte vorerst als Vorschau und erwarten Sie nicht, dass eine Registrierung gelingt.
+Die Smart-Account- und Linked-Wallet-Funktionen der Chain sind implementiert, aber im Mainnet abgeschaltet und im Testnet aktiviert (`abstractaccount.enabled` ist im Mainnet `false`; prüfen Sie `GET /qorechain/abstractaccount/v1/config`), und die Mainnet-Chain lehnt neue Registrierungen verknüpfter Signierer ab, solange das der Fall ist. Betrachten Sie die Karte im Mainnet vorerst als Vorschau und erwarten Sie nicht, dass eine Registrierung gelingt.
 :::
 
 :::caution Ein verknüpfter Signierer ist echte Autorität über das Konto

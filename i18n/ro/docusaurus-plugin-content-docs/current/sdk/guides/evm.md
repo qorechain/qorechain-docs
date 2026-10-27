@@ -258,10 +258,13 @@ QoreChain definește precompile apelabile din contracte la adrese fixe. Spațiul
 `precompiles` oferă legături tipizate, iar adresele și ABI-urile sunt
 exportate.
 
-> **Încă inactive.** Precompilele QoreChain sunt compilate în nod, dar
-> nu sunt încă activate pe mainnet (`qorechain-vladi`) sau pe testnet
-> (`qorechain-diana`): un apel returnează date goale, deci aceste helpere
-> aruncă eroare și pe rețelele publice, în prezent. Vezi
+> **Inactive pe mainnet; trei pe testnet.** Precompilele QoreChain sunt compilate
+> în nod, dar niciuna nu este activată pe mainnet (`qorechain-vladi`). Pe testnet
+> (`qorechain-diana`), lista `active_static_precompiles` conține `0x…0A01`
+> (verificare PQC), `0x…0A02` (starea cheii PQC) și `0x…0C01` (parametrii de
+> consens), verificat la 27 octombrie 2026; perechea AI (`0x…0B01`, `0x…0B02`) și
+> puntea cross-VM (`0x…0901`) nu sunt active pe niciuna dintre rețele. Un apel către
+> o adresă inactivă returnează date goale, deci acele helpere aruncă eroare. Vezi
 > [Precompile EVM: Starea rețelei](/developer-guide/evm-precompiles#network-status).
 
 | Precompilă | Funcție | Adresă |
@@ -276,7 +279,7 @@ exportate.
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read consensus parameters (once 0x…0C01 is active).
+// Read consensus parameters (0x…0C01 is active on the testnet, not on mainnet).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
@@ -295,7 +298,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 ABI-urile precompilelor sunt exportate ca `IQORE_PQC_ABI`, `IQORE_AI_ABI` și
 `IQORE_CONSENSUS_ABI`.
 
-> Acolo unde o precompilă nu este activă (în prezent: orice rețea publică), sau pe un
+> Acolo unde o precompilă nu este activă (mainnet: toate; testnet: perechea AI și
+> puntea cross-VM), sau pe un
 > nod fără precompilele QoreChain, aceste apeluri aruncă o eroare „feature not
 > present”. Tratează acest lucru per apel.
 

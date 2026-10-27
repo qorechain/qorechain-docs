@@ -21,7 +21,7 @@ Les commandes ci-dessous utilisent `qorechaind`. Ajoutez les indicateurs de tran
 :::
 
 :::caution Aucun pool n'existe encore
-Le module AMM est en production sur le mainnet et le testnet (tous deux en v3.2.4), mais **aucun pool n'a encore été créé** (vérifié le 23 octobre 2026 : `GET /qorechain/amm/v1/pools` renvoie une liste vide sur les deux), et les denoms des exemples ci-dessous (`uusdc`, `uusdt`) sont illustratifs : aucun actif de ce type n'existe aujourd'hui sur les réseaux. Tant qu'aucun pool n'existe, toute commande de swap ou d'ajout de liquidité échoue avec une erreur de pool introuvable.
+Le module AMM est en production sur le mainnet (v3.2.4) et le testnet (v3.2.6), mais **aucun pool n'a encore été créé** (vérifié le 27 octobre 2026 : `GET /qorechain/amm/v1/pools` renvoie une liste vide sur les deux), et les denoms des exemples ci-dessous (`uusdc`, `uusdt`) sont illustratifs : aucun actif de ce type n'existe aujourd'hui sur les réseaux. Tant qu'aucun pool n'existe, toute commande de swap ou d'ajout de liquidité échoue avec une erreur de pool introuvable.
 :::
 
 ## Paramètres du module {#parameters}
@@ -37,7 +37,7 @@ Lisez les valeurs en vigueur avec `qorechaind query amm params` ou `GET /qorecha
 | `min_liquidity` | `1000` | Le plus petit des deux dépôts initiaux d'un nouveau pool doit atteindre au moins ce nombre d'unités de base |
 | `max_pools_per_creator` | `50` | Pools qu'un compte peut créer |
 | `max_swap_impact_bps` | `500` | Impact de prix maximal d'un swap (5 %) ; voir [Règles de swap](#swap-rules) |
-| `lp_token_decimals` | `6` | Décimales du jeton LP d'un pool |
+| `lp_token_decimals` | `6` | Décimales d'affichage des parts LP d'un pool (purement cosmétique : les parts LP sont des entrées de registre, pas des jetons) |
 
 ## Règles de swap appliquées depuis v3.2.2 {#swap-rules}
 
@@ -50,7 +50,11 @@ Les correctifs d'intégrité de l'AMM ci-dessous ont été appliqués au mainnet
 
 ## Pools et parts LP
 
-Un pool détient les réserves de deux denoms (`token_a`, `token_b`, stockés dans l'ordre trié) et émet des **jetons LP** qui représentent une créance proportionnelle sur ces réserves. Chaque pool a un `id` numérique, un `type`, un `status` (`active` ou `paused`), et son propre denom LP. Lorsque vous ajoutez de la liquidité, vous recevez des jetons LP ; lorsque vous retirez de la liquidité, vous les brûlez pour récupérer votre part des réserves.
+Un pool détient les réserves de deux denoms (`token_a`, `token_b`, stockés dans l'ordre trié) et enregistre des **parts LP** qui représentent une créance proportionnelle sur ces réserves. Chaque pool a un `id` numérique, un `type` et un `status` (`active` ou `paused`). Lorsque vous ajoutez de la liquidité, votre solde de parts LP dans ce pool augmente ; lorsque vous retirez de la liquidité, il diminue et vous recevez votre part des réserves.
+
+:::note Les parts LP ne sont pas des jetons
+Les parts LP sont des entrées du registre propre au module AMM, tenues par pool et par compte (la clé interne est `amm-lp/<pool id>`). Ce **ne sont ni des coins bank ni des jetons ERC-20, elles n'apparaissent pas dans votre solde bank, et elles ne peuvent être ni transférées, ni envoyées à un autre compte, ni échangées**. Lisez votre part avec la requête `lp-balance` ou la route `/lp/{address}` ci-dessous.
+:::
 
 ### Créer un pool
 
@@ -68,7 +72,7 @@ qorechaind tx amm create-pool stable_swap 1000000000uusdc 1000000000uusdt \
 
 ### Ajouter de la liquidité
 
-`add-liquidity` dépose les deux côtés dans un pool et émet des jetons LP. Le dernier argument correspond au montant LP minimal que vous accepterez — votre protection contre le décalage du ratio du pool avant que votre transaction ne soit confirmée.
+`add-liquidity` dépose les deux côtés dans un pool et crédite votre solde de parts LP. Le dernier argument correspond au montant minimal de parts LP que vous accepterez — votre protection contre le décalage du ratio du pool avant que votre transaction ne soit confirmée.
 
 ```bash
 qorechaind tx amm add-liquidity 1 500000000uqor 500000000uusdc 100000 \
@@ -77,7 +81,7 @@ qorechaind tx amm add-liquidity 1 500000000uqor 500000000uusdc 100000 \
 
 ### Retirer de la liquidité
 
-`remove-liquidity` brûle des jetons LP et retire des réserves. Les deux arguments `min` fixent le montant minimal de chaque côté que vous accepterez de récupérer.
+`remove-liquidity` débite des parts LP de votre solde et retire des réserves. Les deux arguments `min` fixent le montant minimal de chaque côté que vous accepterez de récupérer.
 
 ```bash
 qorechaind tx amm remove-liquidity 1 100000 490000000 490000000 \
@@ -147,7 +151,27 @@ qorechaind query amm pool-by-denoms uqor uusdc
 qorechaind query amm lp-balance 1 qor1youraddr...
 ```
 
-`pool` renvoie les réserves du pool, l'offre LP, le type, le statut et un prix moyen pondéré courant. `lp-balance` renvoie le `balance` de jetons LP qu'un compte détient pour ce pool.
+`pool` renvoie les réserves du pool, l'offre LP, le type, le statut et un prix moyen pondéré courant. `lp-balance` renvoie le `balance` de parts LP qu'un compte détient pour ce pool.
+
+### Routes REST {#rest-routes}
+
+Les mêmes lectures sont servies en REST sur le mainnet (`https://api.qore.host`) **et** sur le testnet (`https://api-testnet.qore.host`) ; elles ont été vérifiées sur les deux le 27 octobre 2026 :
+
+| Route | Renvoie |
+| --- | --- |
+| `GET /qorechain/amm/v1/params` | Paramètres du module |
+| `GET /qorechain/amm/v1/pools` | Tous les pools (une liste vide tant qu'aucun n'existe) |
+| `GET /qorechain/amm/v1/pools/{pool_id}` | Un pool (`404` s'il est inconnu) |
+| `GET /qorechain/amm/v1/pools/{pool_id}/lp/{address}` | Le solde LP d'une adresse dans le pool (`{address}` est une adresse bech32 `qor1...`) |
+| `GET /qorechain/amm/v1/pool_by_denoms?denom_a=&denom_b=` | Le pool d'une paire de denoms (`404` s'il n'y en a pas) |
+| `GET /qorechain/amm/v1/quote/exact_in?pool_id=&denom_in=&amount_in=` | Sortie et frais pour une entrée exacte |
+| `GET /qorechain/amm/v1/quote/exact_out?pool_id=&denom_out=&amount_out=` | Entrée et frais pour une sortie exacte |
+
+Un devis sur un pool qui n'existe pas renvoie une erreur de pool introuvable.
+
+### Jetons Fest du testnet {#fest-tokens}
+
+La gouvernance du testnet a enregistré trois contrats ERC-20 de test, **fUSD** (6 décimales), **fETH** (18) et **fBTC** (8), afin qu'ils existent comme coins bank avec les dénominations sensibles à la casse `erc20:<adresse du contrat EIP-55>` (listées sur la page [Faucet](/dashboard/faucet#fest-tokens)). Les détenteurs obtiennent le coin bank avec `MsgConvertERC20` (l'expéditeur doit être une adresse bech32 `qor1...`) et peuvent créer un pool contre `uqor` avec la commande habituelle `create-pool` et les 100 QOR de frais de création. Ce sont des jetons de test réservés au testnet, sans aucune valeur, et aucun pool pour eux n'existe encore (vérifié le 27 octobre 2026). Le mainnet n'a pas de tels jetons.
 
 ## Mettre en pause et reprendre un pool
 
@@ -161,8 +185,8 @@ Les pools peuvent être mis en pause et repris par l'autorité de gouvernance. S
 | Commande | Objectif |
 | --- | --- |
 | `create-pool` | Créer un pool `constant_product` ou `stable_swap` |
-| `add-liquidity` | Déposer des réserves et émettre des jetons LP |
-| `remove-liquidity` | Brûler des jetons LP et retirer des réserves |
+| `add-liquidity` | Déposer des réserves et créditer des parts LP |
+| `remove-liquidity` | Débiter des parts LP et retirer des réserves |
 | `swap-exact-in` | Échanger un montant d'entrée fixe |
 | `swap-exact-out` | Échanger vers un montant de sortie fixe |
 | `pause-pool` | Mettre un pool en pause (autorité de gouvernance ; désactivé sur le mainnet) |

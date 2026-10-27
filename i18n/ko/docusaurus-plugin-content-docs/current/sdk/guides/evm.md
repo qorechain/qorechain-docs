@@ -255,10 +255,14 @@ QoreChain은 고정된 주소에서 컨트랙트로 호출 가능한 프리컴�
 `precompiles` 네임스페이스가 타입드 바인딩을 제공하며, 주소와 ABI도
 내보내집니다.
 
-> **아직 활성화되지 않았습니다.** QoreChain 프리컴파일은 노드에 컴파일되어
-> 있지만 메인넷(`qorechain-vladi`)이나 테스트넷(`qorechain-diana`)에서는 아직
-> 활성화되지 않았습니다. 호출은 빈 데이터를 반환하므로, 오늘날 퍼블릭
-> 네트워크에서는 이 헬퍼들도 오류를 던집니다.
+> **메인넷에서는 활성화되지 않았고, 테스트넷에서는 세 개가 활성화되어 있습니다.**
+> QoreChain 프리컴파일은 노드에 컴파일되어 있지만 메인넷(`qorechain-vladi`)에서는
+> 어느 것도 활성화되지 않았습니다. 테스트넷(`qorechain-diana`)에서는
+> `active_static_precompiles` 목록에 `0x…0A01`(PQC 검증), `0x…0A02`(PQC 키 상태),
+> `0x…0C01`(합의 파라미터)이 들어 있으며(2026년 10월 27일 확인), AI 쌍(`0x…0B01`,
+> `0x…0B02`)과 크로스 VM 브리지(`0x…0901`)는 어느 네트워크에서도 활성화되지
+> 않았습니다. 비활성 주소에 대한 호출은 빈 데이터를 반환하므로 해당 헬퍼들은
+> 오류를 던집니다.
 > [EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status)를
 > 참고하세요.
 
@@ -274,7 +278,7 @@ QoreChain은 고정된 주소에서 컨트랙트로 호출 가능한 프리컴�
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read consensus parameters (once 0x…0C01 is active).
+// Read consensus parameters (0x…0C01 is active on the testnet, not on mainnet).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
@@ -293,7 +297,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 프리컴파일 ABI는 `IQORE_PQC_ABI`, `IQORE_AI_ABI`, `IQORE_CONSENSUS_ABI`로
 내보내집니다.
 
-> 프리컴파일이 활성화되지 않은 곳(오늘날에는 모든 퍼블릭 네트워크)이나
+> 프리컴파일이 활성화되지 않은 곳(메인넷: 전부, 테스트넷: AI 쌍과
+> 크로스 VM 브리지)이나
 > QoreChain 프리컴파일이 없는 노드에서는 이러한 호출이 "feature not
 > present" 오류를 던집니다. 호출별로 이를 처리하세요.
 

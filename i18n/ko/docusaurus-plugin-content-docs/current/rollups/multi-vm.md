@@ -10,7 +10,7 @@ sidebar_position: 8
 RDK에는 EVM 컨트랙트에서 `0x0000000000000000000000000000000000000901` 주소의 **크로스 VM 프리컴파일**로 향하는 호출을 인코딩하는 TypeScript 헬퍼가 포함되어 있으며, 이 프리컴파일은 해당 호출을 **QoreChain Native**(Wasm) 런타임의 QoreChain Native 컨트랙트로 라우팅하도록 설계되었습니다. 또한 이를 연결해 주는 `multivm-rollup` 스캐폴드 템플릿도 있습니다. 이 툴링은 **EVM → QoreChain Native**만을 다룹니다. SVM은 별도의 런타임이며 프리컴파일의 일부가 아닙니다.
 
 :::caution 아직 라이브 네트워크에서 사용할 수 없음
-크로스 VM 프리컴파일은 어느 네트워크에서도 **활성화되지 않았습니다**: EVM 모듈의 활성 정적 프리컴파일 목록은 메인넷과 테스트넷 모두에서 비어 있고, `0x…0901`에 대한 `eth_getCode`는 `0x`를 반환하며, 이 주소에 대한 호출은 빈 데이터와 함께 성공하지만 아무것도 실행하지 않습니다. QoreChain Native 컨트랙트 업로드도 두 네트워크 모두에서 닫혀 있으며, SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습니다. 프리컴파일이 활성화되고 QoreChain Native 업로드가 다시 열리기 전까지는 호출할 대상이 없습니다. 이 페이지는 준비할 수 있도록 툴링을 문서화한 것이며, 이를 기반으로 프로덕션 흐름을 구축하지 마세요. [EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status)를 참조하세요.
+크로스 VM 프리컴파일은 어느 네트워크에서도 **활성화되지 않았습니다**: EVM 모듈의 활성 정적 프리컴파일 목록은 메인넷에서 비어 있고 테스트넷에서는 `0x…0A01`, `0x…0A02`, `0x…0C01`만 들어 있으므로(2026년 10월 27일 확인) `0x…0901`은 어느 목록에도 없습니다. `0x…0901`에 대한 `eth_getCode`는 `0x`를 반환하며, 이 주소에 대한 호출은 빈 데이터와 함께 성공하지만 아무것도 실행하지 않습니다. QoreChain Native 컨트랙트 업로드도 두 네트워크 모두에서 닫혀 있으며, SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습니다. 프리컴파일이 활성화되고 QoreChain Native 업로드가 다시 열리기 전까지는 호출할 대상이 없습니다. 이 페이지는 준비할 수 있도록 툴링을 문서화한 것이며, 이를 기반으로 프로덕션 흐름을 구축하지 마세요. [EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status)를 참조하세요.
 :::
 
 :::note 인코더는 0.6.0부터 체인의 레이아웃과 일치합니다
@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`@qorechain/rdk` 0.6.0의 `encodeCrossVmCalldata`가 같은 calldata를 대신 빌드해 줍니다:
+`@qorechain/rdk` 0.6.0 이상의 `encodeCrossVmCalldata`가 같은 calldata를 대신 빌드해 줍니다:
 
 ```ts
 import {
@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-프리컴파일이 비활성 상태이므로 이에 대한 일반 `.call`은 **빈 데이터와 함께 성공을 반환하고 아무 일도 하지 않습니다**. `ok` 플래그만으로는 호출이 실제로 적용되었는지 알 수 없습니다. 컨트랙트 안에서 신뢰할 수 있는 방어책은 항상 비어 있지 않은 확인 응답을 반환하는 대상을 사용하고, 호출 뒤에 `require(ret.length > 0)`를 두어 빈 응답을 실패로 처리하는 것입니다. 0.6.0의 `multivm-rollup` 템플릿이 이렇게 합니다.
+프리컴파일이 비활성 상태이므로 이에 대한 일반 `.call`은 **빈 데이터와 함께 성공을 반환하고 아무 일도 하지 않습니다**. `ok` 플래그만으로는 호출이 실제로 적용되었는지 알 수 없습니다. 컨트랙트 안에서 신뢰할 수 있는 방어책은 항상 비어 있지 않은 확인 응답을 반환하는 대상을 사용하고, 호출 뒤에 `require(ret.length > 0)`를 두어 빈 응답을 실패로 처리하는 것입니다. `multivm-rollup` 템플릿(0.6.0 및 0.6.1)이 이렇게 합니다.
 
 ## 멀티 VM 롤업 스캐폴딩
 
@@ -102,4 +102,4 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-0.6.0 템플릿에는 `src/crossvm-call.ts`(프리컴파일이 라이브인지 확인한 뒤 calldata를 출력합니다)와 `executeCrossVMCall(uint8,string,bytes)`를 호출하고 대상으로부터 비어 있지 않은 응답을 요구하는 `contracts/CrossVmCaller.sol`이 포함되어 있습니다. 프리컴파일이 비활성인 동안에는 호출이 동작하게 만들어 주지 않습니다. 모든 스캐폴더 템플릿은 [롤업 배포하기](/rollups/deploying-a-rollup)를 참고하세요.
+`multivm-rollup` 템플릿(0.6.0 및 0.6.1)에는 `src/crossvm-call.ts`(프리컴파일이 라이브인지 확인한 뒤 calldata를 출력합니다)와 `executeCrossVMCall(uint8,string,bytes)`를 호출하고 대상으로부터 비어 있지 않은 응답을 요구하는 `contracts/CrossVmCaller.sol`이 포함되어 있습니다. 프리컴파일이 비활성인 동안에는 호출이 동작하게 만들어 주지 않습니다. 모든 스캐폴더 템플릿은 [롤업 배포하기](/rollups/deploying-a-rollup)를 참고하세요.

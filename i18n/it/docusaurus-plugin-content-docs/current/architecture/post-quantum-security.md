@@ -271,9 +271,7 @@ Queste utilità supportano l'hash applicativo predefinito e vengono utilizzate p
 
 ## Bridge PQC
 
-Tutte le attestazioni e i commitment di stato del bridge cross-chain utilizzano firme **Dilithium-5**. Il modulo `x/multilayer` richiede firme aggregate PQC su ogni invio di `MsgAnchorState`, e i commitment ML-KEM proteggono i canali di scambio di chiavi tra i relayer del bridge.
-
-Ciò garantisce che la sicurezza cross-chain non venga degradata dall'uso della crittografia classica nell'infrastruttura del bridge, mantenendo la resistenza ai quanti su tutto lo stack del protocollo. Nessuna rotta del bridge è attiva (vedi [Architettura del bridge](/architecture/bridge-architecture#current-status)); dalla v3.2.4 (mainnet dal 23 ottobre 2026, testnet dal 19 ottobre 2026), la registrazione di un validatore del bridge richiede anche una prova di possesso della sua chiave PQC.
+Le attestazioni del bridge sono progettate per usare firme **Dilithium-5** (ML-DSA-87), in modo che la sicurezza cross-chain non venga degradata dalla crittografia classica nell'infrastruttura del bridge. Questa è un'intenzione di progetto: descrive come i validatori del bridge dovrebbero attestare, non un comportamento che si possa esercitare oggi su una rete live. Nessuna rotta del bridge è attiva (vedi [Architettura del bridge](/architecture/bridge-architecture#current-status)); dalla v3.2.4 (mainnet dal 23 ottobre 2026, testnet dal 19 ottobre 2026), la registrazione di un validatore del bridge richiede anche una prova di possesso della sua chiave PQC.
 
 ## Parametri del modulo
 
@@ -285,6 +283,8 @@ Ciò garantisce che la sicurezza cross-chain non venga degradata dall'uso della 
 | `default_migration_blocks` | int64               | `1,000,000`       | Periodo di migrazione a doppia firma predefinito in blocchi           |
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Algoritmo di firma predefinito per le nuove registrazioni di chiavi   |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Livello di applicazione delle firme ibride a livello di chain         |
+
+La testnet restituisce questi stessi valori (verificato il 27 ottobre 2026). Dalla v3.2.6 la testnet li serve anche via REST su `GET /qorechain/pqc/v1/params`; sulla mainnet quella route risponde 501 (non implementata) e i parametri si leggono con `qorechaind query pqc params`.
 
 ## Correlati
 

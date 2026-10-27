@@ -106,7 +106,7 @@ must be **registered on-chain first**. Registration is explicit: there is no
 auto-registration on the first transaction. A transaction signed classically only
 is refused by the live networks, so give the transaction client the account's
 ML-DSA-87 keypair and it signs every transaction hybrid. The two steps below need
-**SDK 0.9.0 or later** and a funded account:
+**SDK 0.9.0 or later** (0.10.0 is current) and a funded account:
 
 ```bash
 npm i @qorechain/sdk

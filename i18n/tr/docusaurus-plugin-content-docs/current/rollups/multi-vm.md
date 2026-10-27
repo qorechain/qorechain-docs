@@ -10,7 +10,7 @@ sidebar_position: 8
 RDK, bir EVM sözleşmesinden `0x0000000000000000000000000000000000000901` adresindeki **VM'ler arası ön derlemeye (precompile)** yapılan bir çağrıyı kodlayan TypeScript yardımcılarını içerir; bu ön derleme, çağrıyı **QoreChain Native** (Wasm) çalışma zamanındaki bir QoreChain Native sözleşmesine yönlendirmek üzere tasarlanmıştır. Bunları birbirine bağlayan bir `multivm-rollup` iskelet şablonu da vardır. Araçlar yalnızca **EVM → QoreChain Native** kapsamını içerir; SVM ayrı bir çalışma zamanıdır ve ön derlemenin bir parçası değildir.
 
 :::caution Canlı ağlarda henüz kullanılamaz
-VM'ler arası ön derleme hiçbir ağda **etkinleştirilmemiştir**: EVM modülünün etkin statik ön derlemeler listesi ana ağda ve test ağında boştur, `0x…0901` için `eth_getCode` `0x` döndürür ve ona yapılan bir çağrı boş veriyle başarılı olur ve hiçbir şey yürütmez. QoreChain Native sözleşme yükleme de her iki ağda kapalıdır ve SVM işlem şeridi ağ genelinde devre dışıdır. Ön derleme etkinleştirilip QoreChain Native yüklemeleri yeniden açılana kadar çağrılacak bir şey yoktur. Bu sayfa, hazırlanabilmeniz için araçları belgeler; üzerine üretim akışları kurmayın. Bkz. [EVM Ön Derlemeleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+VM'ler arası ön derleme hiçbir ağda **etkinleştirilmemiştir**: EVM modülünün etkin statik ön derlemeler listesi ana ağda boştur, test ağında ise yalnızca `0x…0A01`, `0x…0A02` ve `0x…0C01` içerir (27 Ekim 2026'da kontrol edildi); dolayısıyla `0x…0901` iki listede de yoktur; `0x…0901` için `eth_getCode` `0x` döndürür ve ona yapılan bir çağrı boş veriyle başarılı olur ve hiçbir şey yürütmez. QoreChain Native sözleşme yükleme de her iki ağda kapalıdır ve SVM işlem şeridi ağ genelinde devre dışıdır. Ön derleme etkinleştirilip QoreChain Native yüklemeleri yeniden açılana kadar çağrılacak bir şey yoktur. Bu sayfa, hazırlanabilmeniz için araçları belgeler; üzerine üretim akışları kurmayın. Bkz. [EVM Ön Derlemeleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 :::
 
 :::note Kodlayıcı, 0.6.0'dan beri zincirin düzeniyle eşleşiyor
@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`@qorechain/rdk` 0.6.0 içindeki `encodeCrossVmCalldata` aynı calldata'yı sizin için oluşturur:
+`@qorechain/rdk` 0.6.0 ve sonrasındaki `encodeCrossVmCalldata` aynı calldata'yı sizin için oluşturur:
 
 ```ts
 import {
@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Ön derleme etkin olmadığından, ona yapılan düz bir `.call` **boş veriyle başarı döndürür ve hiçbir şey yapmaz**; `ok` bayrağı çağrının etkili olduğunu söylemez. Sözleşme içindeki güvenilir koruma, her zaman boş olmayan bir onay döndüren bir hedeftir; çağrıdan sonra `require(ret.length > 0)` konur, böylece boş bir yanıt başarısızlık sayılır; 0.6.0'ın `multivm-rollup` şablonu bunu yapar.
+Ön derleme etkin olmadığından, ona yapılan düz bir `.call` **boş veriyle başarı döndürür ve hiçbir şey yapmaz**; `ok` bayrağı çağrının etkili olduğunu söylemez. Sözleşme içindeki güvenilir koruma, her zaman boş olmayan bir onay döndüren bir hedeftir; çağrıdan sonra `require(ret.length > 0)` konur, böylece boş bir yanıt başarısızlık sayılır; `multivm-rollup` şablonu (0.6.0 ve 0.6.1) bunu yapar.
 
 ## Çoklu-VM rollup iskeleti oluşturma
 
@@ -102,4 +102,4 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-0.6.0 şablonu `src/crossvm-call.ts` dosyasını (ön derlemenin canlı olup olmadığını denetler, ardından calldata'yı yazdırır) ve `executeCrossVMCall(uint8,string,bytes)` işlevini çağıran ve hedeften boş olmayan bir yanıt zorunlu kılan bir `contracts/CrossVmCaller.sol` dosyasını içerir. Ön derleme etkin değilken bir çağrının çalışmasını sağlamaz. Tüm iskelet oluşturucu şablonları için [Bir Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasına bakın.
+`multivm-rollup` şablonu (0.6.0 ve 0.6.1) `src/crossvm-call.ts` dosyasını (ön derlemenin canlı olup olmadığını denetler, ardından calldata'yı yazdırır) ve `executeCrossVMCall(uint8,string,bytes)` işlevini çağıran ve hedeften boş olmayan bir yanıt zorunlu kılan bir `contracts/CrossVmCaller.sol` dosyasını içerir. Ön derleme etkin değilken bir çağrının çalışmasını sağlamaz. Tüm iskelet oluşturucu şablonları için [Bir Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasına bakın.

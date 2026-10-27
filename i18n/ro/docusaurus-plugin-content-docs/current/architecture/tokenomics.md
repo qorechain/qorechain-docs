@@ -23,7 +23,7 @@ Modelul economic al QoreChain este centrat pe tokenul nativ **QOR** și are o **
 | **Prefix Bech32**     | `qor` (conturi: `qor1...`, validatori: `qorvaloper...`) |
 
 :::note
-Cifrele de pe această pagină descriu **mainnet-ul** (`qorechain-vladi`, EVM chain ID **9801**), live din 7 iunie 2026 pe versiunea **v3.2.4** (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026). Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.4** din 19 octombrie 2026) are propriul istoric de emisie și ofertă (oferta testnet-ului este cu mult peste cea a mainnet-ului, iar emisia sa a depășit deja plafonul), așa că folosește cifrele mainnet-ului. Sumele care se schimbă cu fiecare bloc sunt marcate cu data la care au fost citite (23 octombrie 2026).
+Cifrele de pe această pagină descriu **mainnet-ul** (`qorechain-vladi`, EVM chain ID **9801**), live din 7 iunie 2026 pe versiunea **v3.2.4** (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026). Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.6** din 27 octombrie 2026) are propriul istoric de emisie și ofertă (oferta testnet-ului este cu mult peste cea a mainnet-ului, iar emisia sa a depășit deja plafonul), așa că folosește cifrele mainnet-ului. Sumele care se schimbă cu fiecare bloc sunt marcate cu data la care au fost citite (23 octombrie 2026).
 :::
 
 ---
@@ -211,7 +211,7 @@ Citiți live pe 23 octombrie 2026 din `GET /qorechain/inflation/v1/params`:
 Parametrii modulului și înregistrarea epocii sunt expuse prin REST pe mainnet din v3.2.3 (`/qorechain/inflation/v1/params` și `/qorechain/inflation/v1/epoch_info`); pot fi citite și din starea lanțului prin interfața raw store a RPC-ului `abci_query` (store `inflation`, cheile `inflation/params` și `inflation/epoch`).
 
 :::note v3.2.4 și emisia testnet-ului
-Testnet-ul `qorechain-diana` își păstrează setările anterioare de emisie (16.239 QOR per epocă sub un plafon de 114.285.714 QOR, deja atins acolo); mainnet-ul folosește valorile de mai sus. Versiunea v3.2.4 adaugă un al treilea mod de emisie, `target_apy`, cu un parametru `target_apy_bps`: pe testnet din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026 (propunerea de guvernanță 13). Parametrul este `0` pe ambele rețele și nu determină emisia. Trecerea unei rețele la acel mod este un vot separat de guvernanță și nu a fost propusă pe mainnet; până când unul este aprobat, mainnet-ul rămâne în modul `fixed`, la 86.000 QOR per epocă.
+Testnet-ul `qorechain-diana` este reglat pentru testare și diferă de mainnet (citit la 27 octombrie 2026): este în modul `target_apy` cu `target_apy_bps` `1667`, `fixed_epoch_emission` este în continuare 16.239 QOR, iar `max_total_emission` este 3.950.390.341.362.112.750 uqor, egal cu suma deja emisă acolo (`remaining_emission` este `0` la `/qorechain/inflation/v1/epoch_info`), deci testnet-ul nu mai emite nimic. Mainnet-ul folosește valorile de mai sus. Versiunea v3.2.4 adaugă al treilea mod de emisie, `target_apy`, cu un parametru `target_apy_bps`: pe testnet din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026 (propunerea de guvernanță 13). Pe mainnet parametrul este `0` și nu determină emisia. Trecerea mainnet-ului la acel mod este un vot separat de guvernanță și nu a fost propusă; până când unul este aprobat, mainnet-ul rămâne în modul `fixed`, la 86.000 QOR per epocă.
 :::
 
 ---

@@ -17,7 +17,7 @@ QoreChain, EVM uyumlu bir JSON-RPC arayüzü uygular; böylece standart Ethereum
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9801**, onaltılık `0x2649`, düğüm sürümü **v3.2.4**, 23 Ekim 2026'dan beri, 7 Haziran 2026'dan beri canlı) ve **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, onaltılık `0x2648`, düğüm sürümü **v3.2.4**, 19 Ekim 2026'dan beri) tarafından sunulur. Yukarıdaki yerel adresler kendi çalıştırdığınız bir düğüm için geçerlidir. Genel HTTP uç noktaları `https://evm.qore.host` (ana ağ) ve `https://evm-testnet.qore.host` (test ağı) olup [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir. Tek genel EVM WebSocket'i test ağınındır (`wss://evm-ws-testnet.qore.host`); genel bir ana ağ EVM WebSocket'i yoktur.
+EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9801**, onaltılık `0x2649`, düğüm sürümü **v3.2.4**, 23 Ekim 2026'dan beri, 7 Haziran 2026'dan beri canlı; ana ağ yönetişim önerisi 14, v3.2.5'i 3.906.833 numaralı yükseklikte uygulayacaktır) ve **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, onaltılık `0x2648`, düğüm sürümü **v3.2.6**, 27 Ekim 2026'dan beri) tarafından sunulur. Yukarıdaki yerel adresler kendi çalıştırdığınız bir düğüm için geçerlidir. Genel HTTP uç noktaları `https://evm.qore.host` (ana ağ) ve `https://evm-testnet.qore.host` (test ağı) olup [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir. Tek genel EVM WebSocket'i test ağınındır (`wss://evm-ws-testnet.qore.host`); genel bir ana ağ EVM WebSocket'i yoktur.
 :::
 
 ## Desteklenen Ad Alanları

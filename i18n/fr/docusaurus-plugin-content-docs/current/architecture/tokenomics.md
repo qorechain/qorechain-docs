@@ -23,7 +23,7 @@ Le modèle économique de QoreChain est centré sur le jeton natif **QOR** et su
 | **Préfixe Bech32**     | `qor` (comptes : `qor1...`, validateurs : `qorvaloper...`) |
 
 :::note
-Les chiffres de cette page décrivent le **mainnet** (`qorechain-vladi`, ID de chaîne EVM **9801**), actif depuis le 7 juin 2026 sur la version **v3.2.4** (appliquée à la hauteur 3 742 566 le 23 octobre 2026). Le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version **v3.2.4** depuis le 19 octobre 2026) a son propre historique d'offre et d'émission (l'offre du testnet est très supérieure à celle du mainnet et son émission a déjà dépassé le plafond), utilisez donc les chiffres du mainnet. Les montants qui évoluent à chaque bloc sont accompagnés de la date à laquelle ils ont été lus (23 octobre 2026).
+Les chiffres de cette page décrivent le **mainnet** (`qorechain-vladi`, ID de chaîne EVM **9801**), actif depuis le 7 juin 2026 sur la version **v3.2.4** (appliquée à la hauteur 3 742 566 le 23 octobre 2026). Le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version **v3.2.6** depuis le 27 octobre 2026) a son propre historique d'offre et d'émission (l'offre du testnet est très supérieure à celle du mainnet et son émission a déjà dépassé le plafond), utilisez donc les chiffres du mainnet. Les montants qui évoluent à chaque bloc sont accompagnés de la date à laquelle ils ont été lus (23 octobre 2026).
 :::
 
 ---
@@ -211,7 +211,7 @@ Lus en direct le 23 octobre 2026 à `GET /qorechain/inflation/v1/params` :
 Les paramètres du module et l'enregistrement d'époque sont exposés via REST sur le mainnet depuis v3.2.3 (`/qorechain/inflation/v1/params` et `/qorechain/inflation/v1/epoch_info`) ; ils peuvent aussi être lus dans l'état de la chaîne avec l'interface de store brut RPC `abci_query` (store `inflation`, clés `inflation/params` et `inflation/epoch`).
 
 :::note v3.2.4 et l'émission du testnet
-Le testnet `qorechain-diana` conserve ses paramètres d'émission antérieurs (16 239 QOR par époque sous un plafond de 114 285 714 QOR, déjà atteint là-bas) ; le mainnet utilise les valeurs ci-dessus. La version v3.2.4 ajoute un troisième mode d'émission, `target_apy`, avec un paramètre `target_apy_bps` : sur le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026 (proposition de gouvernance 13). Le paramètre vaut `0` sur les deux réseaux et ne pilote pas l'émission. Faire passer un réseau à ce mode relève d'un vote de gouvernance distinct, qui n'a pas été proposé sur le mainnet ; tant qu'aucun n'est adopté, le mainnet reste en mode `fixed` à 86 000 QOR par époque.
+Le testnet `qorechain-diana` est réglé pour les tests et diffère du mainnet (lu le 27 octobre 2026) : il est en mode `target_apy` avec `target_apy_bps` à `1667`, `fixed_epoch_emission` vaut toujours 16 239 QOR, et `max_total_emission` vaut 3 950 390 341 362 112 750 uqor, ce qui égale le montant déjà émis là-bas (`remaining_emission` vaut `0` sur `/qorechain/inflation/v1/epoch_info`) ; le testnet n'émet donc plus rien. Le mainnet utilise les valeurs ci-dessus. La version v3.2.4 ajoute le troisième mode d'émission, `target_apy`, avec un paramètre `target_apy_bps` : sur le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026 (proposition de gouvernance 13). Sur le mainnet, le paramètre vaut `0` et ne pilote pas l'émission. Faire passer le mainnet à ce mode relève d'un vote de gouvernance distinct, qui n'a pas été proposé ; tant qu'aucun n'est adopté, le mainnet reste en mode `fixed` à 86 000 QOR par époque.
 :::
 
 ---

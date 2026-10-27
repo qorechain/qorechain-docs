@@ -16,7 +16,7 @@ Veri kullanılabilirliği (DA), bir rollup'ın durumunun arkasındaki işlem ver
 | **`both`** | Yedeklilik için native ve Celestia birlikte | Bugün tam olarak `native` gibi davranır |
 
 :::caution Erken aşama yeteneği
-Henüz hiçbir ağda bir rollup oluşturulmamıştır (23 Ekim 2026 itibarıyla kontrol edildi) ve DA arka uçları yalnızca kısmen uygulanmıştır. Her arka ucun durumu aşağıda belirtilmiştir; herhangi birine güvenmeden önce **`qorechain-diana`** testnet üzerinde doğrulayın.
+Henüz hiçbir ağda bir rollup oluşturulmamıştır (27 Ekim 2026 itibarıyla kontrol edildi) ve DA arka uçları yalnızca kısmen uygulanmıştır. Her arka ucun durumu aşağıda belirtilmiştir; herhangi birine güvenmeden önce **`qorechain-diana`** testnet üzerinde doğrulayın.
 :::
 
 ---
@@ -26,13 +26,15 @@ Henüz hiçbir ağda bir rollup oluşturulmamıştır (23 Ekim 2026 itibarıyla 
 Native DA, `x/rdk` içindeki zincir üstü blob deposudur: her blob rollup kimliği ve blob dizini ile anahtarlanır, baytlarının bir **SHAKE-256 taahhüdünü** taşır ve saklama penceresinden sonra budanırken taahhüdü korunur.
 
 :::caution Henüz bir blob göndermenin genel bir yolu yok
-Modül blob depolamayı, saklamayı ve budamayı tanımlar, ancak mevcut sürümlerde **bir blob göndermek için bir işlem mesajı yoktur**. Bir gönderme mesajı yayınlanana kadar bir uzlaşma toplu işlemi `data_hash` alanını boş bırakmalıdır — bir `native` veya `both` rollup'ında veri karması belirten bir toplu işlem, eşleşen hiçbir blob depolanamayacağı için reddedilir.
+Modül blob depolamayı, saklamayı ve budamayı tanımlar, ancak mevcut sürümlerde (mainnet v3.2.4 ve testnet v3.2.6; modülün mesajları zincir kaynağında kontrol edildi) **bir blob göndermek için bir işlem mesajı yoktur**. Zincir, bir `native` veya `both` rollup'ında boş olmayan bir `data_hash` değerini yalnızca eşleşen bir blob zincir üzerinde depolanmışsa kabul eder ve hiçbir şey bir blob depolayamaz. Dolayısıyla böyle bir rollup'taki bir uzlaşma toplu işlemi `data_hash` alanını **boş bırakmalıdır**: bir veri karması belirten bir toplu işlem, işlem ücreti ödendikten sonra veri kullanılamıyor gerekçesiyle reddedilir.
+
+RDK bunu **0.6.1**'den itibaren izler: `SubmitBatchInput.dataHash` isteğe bağlıdır (atlanırsa boş demektir), altı başlangıç şablonunun tümü onu boş bırakır, `dataHashError` (`data_hash_error`, `DataHashError`, `Rules.dataHashError`) kuralı beş dilin tümünde sunar ve `RdkTxClient.submitBatch`, rollup'ı okuyabildiğinde (REST uç noktası olan hibrit bir istemci) böyle bir toplu işlemi yayınlamadan önce reddeder. Önceki şablon sürümleri toplu işlemlerine bir veri karması koyuyordu ve zincir bunları reddediyordu.
 :::
 
 Temel kavramlar:
 
 * **Blob'lar.** Bir blob bir rollup kimliği ve bir blob dizini ile ilişkilendirilir.
-* **Taahhütler.** Her blob, verilerinin 32 baytlık bir SHAKE-256 taahhüdünü taşır, böylece bir blob, depolayan tarafa güvenmeden taahhüt edilenle karşılaştırılarak doğrulanabilir. (TypeScript yardımcısı `buildDaBlob()` şu anda SHA-256 ile karma alır, bu nedenle `dataHash` değeri zincirin taahhüdüyle eşleşmez.)
+* **Taahhütler.** Her blob, verilerinin 32 baytlık bir SHAKE-256 taahhüdünü taşır, böylece bir blob, depolayan tarafa güvenmeden taahhüt edilenle karşılaştırılarak doğrulanabilir. (TypeScript yardımcısı `buildDaBlob()` şu anda SHA-256 ile karma alır, bu nedenle `dataHash` değeri zincirin taahhüdüyle eşleşmez ve hiçbir işlem bir blob göndermediğinden, o karmayı zaten bir `native` veya `both` rollup'ındaki bir toplu işlemde göndermemelisiniz.)
 * **Ad alanları.** Blob'lar rollup'a özgü bir ad alanı taşıyabilir, böylece her rollup'ın verileri paylaşılan depolama içinde mantıksal olarak ayrı tutulur.
 * **Saklama ve budama.** Native blob'lar `blob_retention_blocks` boyunca saklanır (432.000 blok — ana ağın mevcut ≈3,2 sn blok süresinde yaklaşık 16 gün; rakam blok süresiyle birlikte değişir) ve ardından zincir üstü depolamayı sürdürülebilir tutmak için budanır. Budamadan sonra ham blob verileri kaldırılır, ancak taahhüt meta verileri saklanır, böylece baytlar artık zincir üstünde depolanmasa bile geçmiş taahhüt doğrulanabilir kalır.
 
@@ -48,7 +50,7 @@ Blob meta verileri (baytlar değil) her iki ağın da sunduğu `/qorechain/rdk/v
 
 ## Celestia DA (Celestia'ya IBC)
 
-Celestia DA **uygulanmamıştır**. DA arka ucu `celestia` olan bir rollup veri gönderemez (modül bir hata döndürür). Planlanan tasarım, uzlaşmayı yine de QoreChain'e bağlarken veri kullanılabilirliğini IBC üzerinden özel modüler bir DA ağı olan **Celestia**'ya yayınlar; bugün hiçbir ağda IBC kanalı yoktur (bkz. [Köprü Mimarisi](/architecture/bridge-architecture)). `native` kullanın.
+Celestia DA **uygulanmamıştır**. DA arka ucu `celestia` olan bir rollup veri gönderemez (modül bir hata döndürür). Planlanan tasarım, uzlaşmayı yine de QoreChain'e bağlarken veri kullanılabilirliğini IBC üzerinden özel modüler bir DA ağı olan **Celestia**'ya yayınlar; mainnet'te açık bir IBC kanalı yoktur ve testnet'teki tek açık kanal (27 Ekim 2026'da kontrol edildi) bir token-transfer (`ics20-1`) kanalıdır, veri kullanılabilirliği kanalı değildir (bkz. [Köprü Mimarisi](/architecture/bridge-architecture)). `native` kullanın.
 
 ---
 

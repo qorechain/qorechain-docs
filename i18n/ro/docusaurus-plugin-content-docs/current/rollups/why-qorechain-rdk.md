@@ -17,19 +17,19 @@ construite în jurul Layer 1-ului QoreChain, nu al uneltelor:
 - un runtime **triple-VM** cu apeluri cross-VM.
 
 :::caution Etapă timpurie: citește coloana de stare
-Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 23
+Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 27
 octombrie 2026). Tabelul de mai jos arată ce funcționează astăzi; ce au schimbat
-clienții 0.6.0 publicați și limitele care rămân sunt adunate în
-[RDK 0.6.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits). Dacă ai nevoie doar de un rollup
+clienții 0.6.x publicați și limitele care rămân sunt adunate în
+[RDK 0.6.1: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits). Dacă ai nevoie doar de un rollup
 optimistic/zk generic, orice kit e suficient; capabilitățile de aici sunt ceea
 ce adaugă RDK-ul în plus, în TypeScript, Python, Go, Rust și Java.
 :::
 
 | Capabilitate | Stare | Pe ce se bazează |
 | --- | --- | --- |
-| **Chitanțe de decontare sigure cuantic** | 🟡 Etapă timpurie | Ancorele sunt semnate cu ML-DSA-87, schema post-cuantică a Main Chain; încă nu există ancore, deci verificatorul 0.6.0 (care verifică față de lanț) nu a rulat niciodată pe o ancoră reală |
+| **Chitanțe de decontare sigure cuantic** | 🟡 Etapă timpurie | Ancorele sunt semnate cu ML-DSA-87, schema post-cuantică a Main Chain; încă nu există ancore, deci verificatorul 0.6.1 (care verifică față de lanț) nu a rulat niciodată pe o ancoră reală |
 | **QCAI Rollup Copilot** | 🟡 Încă indisponibil pe endpoint-urile publice | Servicii de consultanță AI/RL on-chain pe care endpoint-urile publice nu le expun astăzi |
-| **Apeluri cross-VM multi-VM** | 🟡 Încă inutilizabil pe rețelele live | Un precompile cross-VM care nu este activat (encoderul 0.6.0 se potrivește cu structura lanțului), iar încărcarea QoreChain Native este închisă |
+| **Apeluri cross-VM multi-VM** | 🟡 Încă inutilizabil pe rețelele live | Un precompile cross-VM care nu este activat (encoderul din 0.6.0 se potrivește cu structura lanțului), iar încărcarea QoreChain Native este închisă |
 
 ---
 
@@ -58,8 +58,7 @@ console.log(result.valid);
 `verifySettlementReceipt` verifică față de lanț și refuză să spună `valid`
 fără un `client`. În 0.5.0, verificarea sa în lanț nu se putea finaliza pe
 rețelele live (eșua închis în loc să raporteze o chitanță autentică drept
-validă); 0.6.0 corectează acest lucru, dar nu există încă nicio ancoră, deci nu a
-rulat pe una reală. Vezi [Chitanțe de decontare sigure cuantic](/rollups/settlement-receipts) pentru
+validă); 0.6.0 a corectat acest lucru, iar 0.6.1 compară fiecare câmp al chitanței, dar nu există încă nicio ancoră, deci niciuna dintre ele nu a rulat pe una reală. Vezi [Chitanțe de decontare sigure cuantic](/rollups/settlement-receipts) pentru
 ce dovedește și ce nu dovedește o chitanță și pentru limitele exacte.
 
 ---
@@ -99,7 +98,7 @@ precompile **nu este activ** pe mainnet sau testnet (vezi
 `eth_getCode` pentru `0x…0901` returnează `0x` pe ambele, iar un apel de contract
 către el reușește fără niciun efect.
 
-Helperul 0.6.0 `encodeCrossVmCalldata` construiește calldata pentru
+Helperul `encodeCrossVmCalldata` (din 0.6.0) construiește calldata pentru
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, structura
 pe care o decodifică nodul (0.5.0 și versiunile anterioare codificau o formă cu două
 argumente, cu alt selector, care nu ar fi putut ajunge niciodată la precompile).

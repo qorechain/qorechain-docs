@@ -78,7 +78,7 @@ Le Dashboard fonctionne avec deux réseaux. L'en-tête affiche le réseau auquel
 | Réseau | ID de la chaîne | Quand l'utiliser |
 | --- | --- | --- |
 | **Mainnet** | `qorechain-vladi` | Réseau en direct (en ligne depuis le 7 juin 2026, exécutant la chaîne v3.2.4 depuis le 23 octobre 2026) pour la valeur réelle et l'usage en production. Non custodial : vous connectez votre propre portefeuille. |
-| **Testnet** | `qorechain-diana` | Environnement gratuit pour les tests (exécutant la chaîne v3.2.4 depuis le 19 octobre 2026), avec un portefeuille de test géré par le dashboard et le [Faucet](/dashboard/faucet) pour les jetons de test. |
+| **Testnet** | `qorechain-diana` | Environnement gratuit pour les tests (exécutant la chaîne v3.2.6 depuis le 27 octobre 2026), avec un portefeuille de test géré par le dashboard et le [Faucet](/dashboard/faucet) pour les jetons de test. |
 
 Le jeton natif est **QOR** (dénomination de base `uqor`, où 1 QOR = 10^6 uqor). Si vous débutez, commencez sur le testnet, réclamez des jetons au Faucet et essayez un premier transfert avant de passer au mainnet.
 

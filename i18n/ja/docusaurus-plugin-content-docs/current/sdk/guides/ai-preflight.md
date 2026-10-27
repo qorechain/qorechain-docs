@@ -19,8 +19,10 @@ QoreChain は、dApp が EVM から読み取れる**オンチェーンの AI リ
 :::caution 現在、公開ネットワークでは利用できません
 `simulateWithRiskScore`、`aiRiskScore`、`aiAnomalyCheck` は
 `0x…0B01` / `0x…0B02` のプリコンパイルを読み取ります。静的プリコンパイルは、そのアドレスが
-EVM モジュールの `active_static_precompiles` パラメーターに含まれている場合にのみ応答しますが、そのリストは
-`qorechain-vladi`(メインネット)と `qorechain-diana`(テストネット)の両方で空です。公開
+EVM モジュールの `active_static_precompiles` パラメーターに含まれている場合にのみ応答します。そのリストは
+`qorechain-vladi`(メインネット)では空で、`qorechain-diana`(テストネット)にあるのは PQC と
+コンセンサスパラメーターのプリコンパイル(`0x…0A01`、`0x…0A02`、`0x…0C01`)だけで、AI の2つは含まれていません
+(2026 年 10 月 27 日に確認)。公開
 エンドポイントに対しては、呼び出しは空のデータ(`0x`)を返し、これらのヘルパーはエラーをスローします(例:
 `returned no data ("0x")`)。プリコンパイルが有効化されているネットワークまたはノードでのみ動作します。
 まず `GET /cosmos/evm/vm/v1/params` を確認し、

@@ -10,10 +10,10 @@ sidebar_position: 7
 Gas abstraction lets a user pay a transaction fee in an accepted non-native token instead of QOR. The fee-conversion code is part of the chain, but **no non-native token is accepted on either network today**, so every fee is paid in QOR. This page explains what is live, how conversion works as built, and what you do instead.
 
 :::caution Not usable yet: pay every fee in uqor
-On mainnet (**`qorechain-vladi`**) and on the testnet (**`qorechain-diana`**), both on node release **v3.2.4**, checked 23 October 2026:
+On mainnet (**`qorechain-vladi`**) and on the testnet (**`qorechain-diana`**), on node release **v3.2.4** and **v3.2.6** respectively, checked 27 October 2026:
 
 * The live accepted-token list contains **only `uqor`**. Fee conversion switched on with v3.2.2, but nothing else is listed, the per-block conversion cap is `0` (conversion off) and the conversion float holds no balance. A fee paid in any other denomination is refused with a "denom not accepted for fee payment" error, in simulation as well as in a real transaction.
-* No IBC channel or client exists on either network, so no `ibc/…` balance can exist to pay with.
+* No IBC channel exists on mainnet, and the testnet's single test channel does not make any `ibc/…` token an accepted fee token (the list is `uqor` only), so there is nothing but `uqor` to pay with.
 
 Pay every fee in `uqor`. This page will be updated when a token is accepted on a live network.
 :::
@@ -36,7 +36,7 @@ Then hybrid-sign and broadcast it with `qorechaind tx pqc cosign`, as described 
 
 ## The live configuration {#live-configuration}
 
-The module serves its configuration over REST and gRPC. These are the values on both networks on 23 October 2026:
+The module serves its configuration over REST and gRPC. These are the values on both networks on 27 October 2026:
 
 | Field | Value | Meaning |
 | --- | --- | --- |

@@ -10,7 +10,7 @@ sidebar_position: 8
 RDK には、EVM コントラクトから、アドレス `0x0000000000000000000000000000000000000901` の **クロスVMプリコンパイル** への呼び出しをエンコードする TypeScript ヘルパーが含まれています。このプリコンパイルは、**QoreChain Native**（Wasm）ランタイム上の QoreChain Native コントラクトへ呼び出しをルーティングするよう設計されています。また、これらを配線する `multivm-rollup` スキャフォールドテンプレートも付属しています。このツールは **EVM → QoreChain Native** のみを対象とします。SVM は別個のランタイムであり、プリコンパイルには含まれません。
 
 :::caution 稼働中のネットワークではまだ使用できません
-クロスVMプリコンパイルは、どちらのネットワークでも**有効化されていません**。EVM モジュールの有効な静的プリコンパイルの一覧は、メインネットとテストネットの両方で空であり、`0x…0901` に対する `eth_getCode` は `0x` を返し、それへの呼び出しは空のデータで成功して何も実行しません。QoreChain Native コントラクトのアップロードも両ネットワークで閉じられており、SVM のトランザクションレーンはネットワーク全体で無効になっています。プリコンパイルが有効化され、QoreChain Native のアップロードが再開されるまで、呼び出す対象はありません。このページは準備のためにツールを説明するものです。本番のフローをこれに基づいて構築しないでください。[EVM プリコンパイル：ネットワークステータス](/developer-guide/evm-precompiles#network-status)を参照してください。
+クロスVMプリコンパイルは、どちらのネットワークでも**有効化されていません**。EVM モジュールの有効な静的プリコンパイルの一覧は、メインネットでは空で、テストネットでは `0x…0A01`、`0x…0A02`、`0x…0C01` のみです（2026年10月27日に確認）。したがって `0x…0901` はどちらの一覧にもありません。`0x…0901` に対する `eth_getCode` は `0x` を返し、それへの呼び出しは空のデータで成功して何も実行しません。QoreChain Native コントラクトのアップロードも両ネットワークで閉じられており、SVM のトランザクションレーンはネットワーク全体で無効になっています。プリコンパイルが有効化され、QoreChain Native のアップロードが再開されるまで、呼び出す対象はありません。このページは準備のためにツールを説明するものです。本番のフローをこれに基づいて構築しないでください。[EVM プリコンパイル：ネットワークステータス](/developer-guide/evm-precompiles#network-status)を参照してください。
 :::
 
 :::note エンコーダーは 0.6.0 以降チェーンのレイアウトと一致します
@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`@qorechain/rdk` 0.6.0 の `encodeCrossVmCalldata` は、同じコールデータを代わりに構築します:
+`@qorechain/rdk` 0.6.0 以降の `encodeCrossVmCalldata` は、同じコールデータを代わりに構築します:
 
 ```ts
 import {
@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-プリコンパイルは無効なため、それに対する単純な `.call` は**空のデータとともに成功を返し、何も行いません**。`ok` フラグは、呼び出しが効果を持ったことを示すものではありません。コントラクト内で頼れるガードは、常に空でない確認応答を返すターゲットを用意し、呼び出しの後に `require(ret.length > 0)` を置いて、空の応答を失敗として扱うことです。0.6.0 の `multivm-rollup` テンプレートはこれを行っています。
+プリコンパイルは無効なため、それに対する単純な `.call` は**空のデータとともに成功を返し、何も行いません**。`ok` フラグは、呼び出しが効果を持ったことを示すものではありません。コントラクト内で頼れるガードは、常に空でない確認応答を返すターゲットを用意し、呼び出しの後に `require(ret.length > 0)` を置いて、空の応答を失敗として扱うことです。`multivm-rollup` テンプレート（0.6.0 と 0.6.1）はこれを行っています。
 
 ## マルチVMロールアップのスキャフォールド
 
@@ -102,4 +102,4 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-0.6.0 のテンプレートには、`src/crossvm-call.ts`（プリコンパイルが稼働しているかを確認し、その後コールデータを出力します）と、`executeCrossVMCall(uint8,string,bytes)` を呼び出してターゲットから空でない応答を要求する `contracts/CrossVmCaller.sol` が含まれています。プリコンパイルが無効な間は、呼び出しを機能させるものではありません。すべてのスキャフォールダーテンプレートについては [ロールアップのデプロイ](/rollups/deploying-a-rollup) を参照してください。
+`multivm-rollup` テンプレート（0.6.0 と 0.6.1）には、`src/crossvm-call.ts`（プリコンパイルが稼働しているかを確認し、その後コールデータを出力します）と、`executeCrossVMCall(uint8,string,bytes)` を呼び出してターゲットから空でない応答を要求する `contracts/CrossVmCaller.sol` が含まれています。プリコンパイルが無効な間は、呼び出しを機能させるものではありません。すべてのスキャフォールダーテンプレートについては [ロールアップのデプロイ](/rollups/deploying-a-rollup) を参照してください。

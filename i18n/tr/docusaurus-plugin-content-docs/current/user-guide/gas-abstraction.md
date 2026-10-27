@@ -10,10 +10,10 @@ sidebar_position: 7
 Gas soyutlama, bir kullanıcının işlem ücretini QOR yerine kabul edilen yerel olmayan bir tokenla ödemesine olanak tanır. Ücret dönüştürme kodu zincirin bir parçasıdır, ancak **bugün hiçbir ağda yerel olmayan hiçbir token kabul edilmemektedir**; bu nedenle her ücret QOR ile ödenir. Bu sayfa nelerin canlı olduğunu, dönüştürmenin inşa edildiği şekliyle nasıl çalıştığını ve bunun yerine ne yapacağınızı açıklar.
 
 :::caution Henüz kullanılamıyor: her ücreti uqor ile ödeyin
-Ana ağda (**`qorechain-vladi`**) ve test ağında (**`qorechain-diana`**), ikisi de düğüm sürümü **v3.2.4** üzerinde, 23 Ekim 2026'da kontrol edildi:
+Ana ağda (**`qorechain-vladi`**) ve test ağında (**`qorechain-diana`**), sırasıyla düğüm sürümü **v3.2.4** ve **v3.2.6** üzerinde, 27 Ekim 2026'da kontrol edildi:
 
 * Canlı kabul edilen token listesi **yalnızca `uqor`** içerir. Ücret dönüştürme v3.2.2 ile açıldı, ancak başka hiçbir şey listelenmemiştir, blok başına dönüştürme sınırı `0`'dır (dönüştürme kapalı) ve dönüştürme float'ında bakiye yoktur. Başka herhangi bir birimde ödenen bir ücret, simülasyonda olduğu gibi gerçek bir işlemde de "denom not accepted for fee payment" hatasıyla reddedilir.
-* Hiçbir ağda IBC kanalı veya istemcisi yoktur; bu nedenle ödeme yapılabilecek hiçbir `ibc/…` bakiyesi var olamaz.
+* Ana ağda IBC kanalı yoktur ve testnet'in tek test kanalı hiçbir `ibc/…` tokenını kabul edilen bir ücret tokenı yapmaz (liste yalnızca `uqor`'dur); bu nedenle `uqor`'dan başka ödeme yapılabilecek bir şey yoktur.
 
 Her ücreti `uqor` ile ödeyin. Canlı bir ağda bir token kabul edildiğinde bu sayfa güncellenecektir.
 :::
@@ -36,7 +36,7 @@ Ardından [İşlem Komutları](/cli-reference/transaction-commands#hybrid-signin
 
 ## Canlı yapılandırma {#live-configuration}
 
-Modül yapılandırmasını REST ve gRPC üzerinden sunar. Bunlar, her iki ağdaki 23 Ekim 2026 tarihli değerlerdir:
+Modül yapılandırmasını REST ve gRPC üzerinden sunar. Bunlar, her iki ağdaki 27 Ekim 2026 tarihli değerlerdir:
 
 | Alan | Değer | Anlamı |
 | --- | --- | --- |

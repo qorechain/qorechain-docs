@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain runs a fully EVM-compatible execution environment on the QoreChain EVM Engine, allowing you to deploy and interact with Solidity smart contracts using familiar tooling. The EVM module exposes a JSON-RPC interface on **port 8545** (WebSocket on **8546**) that supports standard Ethereum development workflows.
 
 :::note
-The examples below target the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026; v3.2.3 had been applied at height 3,662,051 on 20 October 2026). The **`qorechain-diana`** testnet has run v3.2.4 since height 8,337,253 (19 October 2026); use EVM chain ID **9800** there. The code samples use `http://localhost:8545` for a node you run yourself; the public mainnet endpoint is `https://evm.qore.host` and the testnet endpoint is `https://evm-testnet.qore.host`.
+The examples below target the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.4** at the time of writing (applied by governance proposal 13 at height 3,742,566 on 23 October 2026; v3.2.3 had been applied at height 3,662,051 on 20 October 2026; mainnet governance proposal 14 would apply v3.2.5 at height 3,906,833, and what that release changes is documented once it is applied). The **`qorechain-diana`** testnet runs **v3.2.6** (v3.2.4 since height 8,337,253 on 19 October 2026, v3.2.5 at height 8,890,800 on 26 October, v3.2.6 at height 8,970,638 on 27 October); use EVM chain ID **9800** there. Where this page describes something that differs between the networks (the testnet precompiles, the Fest test tokens), it says so. The code samples use `http://localhost:8545` for a node you run yourself; the public mainnet endpoint is `https://evm.qore.host` and the testnet endpoint is `https://evm-testnet.qore.host`.
 :::
 
 :::caution An EVM transaction needs a registered PQC key and an open authorisation window
@@ -160,7 +160,7 @@ This conversion is transparent — when you check a balance via `eth_getBalance`
 
 ---
 
-## ERC-20 Token Pairs
+## ERC-20 Token Pairs {#erc20-token-pairs}
 
 The `x/erc20` module provides **token pairs** between native Cosmos SDK denominations and ERC-20 contracts:
 
@@ -179,7 +179,86 @@ qorechaind tx erc20 convert-coin 1000000uqor --from mykey --gas 400000 --fees 40
 qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey --gas 400000 --fees 40000uqor
 ```
 
-These are Cosmos-lane transactions: on the live networks they also need the hybrid post-quantum cosign (build with `--generate-only`, then `qorechaind tx pqc cosign`; see [Post-Quantum Signing](/developer-guide/post-quantum-signing)). Token pairs are registered under a permissioned policy and none exist on mainnet yet.
+These are Cosmos-lane transactions: on the live networks they also need the hybrid post-quantum cosign (build with `--generate-only`, then `qorechaind tx pqc cosign`; see [Post-Quantum Signing](/developer-guide/post-quantum-signing)). The plain `convert-erc20` command above is refused on node release v3.2.6 because the CLI writes a `0x` sender; see [Converting between the two forms](#fest-convert) for the working form. Token pairs are registered under a permissioned policy (governance registers them). None exist on mainnet at the time of writing; the testnet has the Fest test tokens in [the next section](#fest-tokens).
+
+## Fest test tokens and ERC20 conversion {#fest-tokens}
+
+:::note Testnet only, no value
+The tokens in this section exist only on the `qorechain-diana` testnet (EVM chain ID 9800). They are test tokens for builders and have no value. Mainnet has no ERC-20 token pair (checked 27 October 2026), so none of the denoms below exists there.
+:::
+
+On 27 October 2026 testnet governance (proposal 26) registered three ERC-20 contracts as token pairs. They give builders a second token to pair with QOR in an [AMM pool](/api-reference/rest-grpc-endpoints#amm-module):
+
+| Token | ERC-20 contract (EIP-55) | Decimals | Bank denom |
+| ----- | ------------------------ | -------- | ---------- |
+| fUSD (FestUSD) | `0x97143B771D34ddb9130b807b135Ae675A5a963CA` | 6  | `erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA` |
+| fETH (FestETH) | `0x02292293c13880a26242690eb70a0e42B8E91c28` | 18 | `erc20:0x02292293c13880a26242690eb70a0e42B8E91c28` |
+| fBTC (FestBTC) | `0x4604e7E45b2ecdbfbDc157103f5B2b62cb16451A` | 8  | `erc20:0x4604e7E45b2ecdbfbDc157103f5B2b62cb16451A` |
+
+* **The bank denom is `erc20:<address>` with a colon, and the address must be in the exact EIP-55 mixed-case spelling shown.** Denoms are case-sensitive: `erc20:0x97143b771d34...` (lowercase) is a different string, and a query for it answers `404`. Copy the denom from `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata`, which lists the three tokens with their `symbol` (`fUSD`, `fETH`, `fBTC`), `display` name (`FestUSD`, `FestETH`, `FestBTC`) and decimals.
+* **The faucet pays bank coins.** To use a Fest token from EVM (MetaMask, Solidity), convert the bank coin to its ERC-20 form first with `MsgConvertCoin`; to put an ERC-20 balance back into bank form (for example to pair it in the AMM), use `MsgConvertERC20`. Both are described next.
+* **Tokens exist in two forms.** An ERC-20 balance is read with the contract's `balanceOf` over EVM JSON-RPC; the converted balance is a bank coin, read with `GET /cosmos/bank/v1beta1/balances/{address}`. Only the bank-coin form can be paired in the AMM. Converting moves value between the two forms; it does not create it.
+* **Amounts use the token's own decimals** (6, 18 and 8 for fUSD, fETH and fBTC), not the 6 decimals of `uqor`.
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs
+curl -s "https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs/0x97143B771D34ddb9130b807b135Ae675A5a963CA"
+```
+
+### Converting between the two forms {#fest-convert}
+
+Both conversion messages are Cosmos-lane transactions: they need your registered post-quantum key and the hybrid cosign, like any other native transaction (build, then `qorechaind tx pqc cosign`; see [Post-Quantum Signing](/developer-guide/post-quantum-signing)). Fees must be at least gas × 0.1 uqor.
+
+:::note What has been run
+The REST reads on this page (`token_pairs`, `denoms_metadata`) were run against the testnet on 27 October 2026. The two conversion commands below were **not** run end to end for this page: their message shapes and the sender rule come from the v3.2.6 node source and the chain team's reference. Treat them as the documented shape and confirm with a small amount first.
+:::
+
+**Bank coin to ERC-20: `MsgConvertCoin`.** The `coin` is the exact, case-sensitive bank denom (`erc20:<EIP-55 address>`), the `sender` is your `qor1...` address (the signer), and the `receiver` is a `0x...` address that will hold the ERC-20. It uses about 432,000 gas; set a gas limit of 600,000.
+
+```bash
+# Write the message by hand (not run for this page)
+cat > convert-coin.json <<'JSON'
+{
+  "body": {
+    "messages": [{
+      "@type": "/cosmos.evm.erc20.v1.MsgConvertCoin",
+      "coin": { "denom": "erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA", "amount": "1000000" },
+      "receiver": "0xYOUR_EVM_ADDRESS",
+      "sender": "qor1youraddr..."
+    }],
+    "memo": ""
+  },
+  "auth_info": { "signer_infos": [], "fee": { "amount": [{ "denom": "uqor", "amount": "60000" }], "gas_limit": "600000" } },
+  "signatures": []
+}
+JSON
+qorechaind tx pqc cosign convert-coin.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**ERC-20 to bank coin: `MsgConvertERC20`.** Its `sender` field must also be the account's `qor1...` bech32 address. A `0x` sender is refused with `decoding bech32 failed`. In node release v3.2.6 the CLI command `qorechaind tx erc20 convert-erc20` (the plain example in [ERC-20 Token Pairs](#erc20-token-pairs)) writes the sender in `0x` form, so it is refused for that reason: do not use it. Build the message yourself with the `qor1` address as the sender, the same way as above:
+
+```bash
+# Workaround: write the message with a qor1 sender (not run for this page)
+cat > convert-erc20.json <<'JSON'
+{
+  "body": {
+    "messages": [{
+      "@type": "/cosmos.evm.erc20.v1.MsgConvertERC20",
+      "contract_address": "0x97143B771D34ddb9130b807b135Ae675A5a963CA",
+      "amount": "1000000",
+      "receiver": "qor1youraddr...",
+      "sender": "qor1youraddr..."
+    }],
+    "memo": ""
+  },
+  "auth_info": { "signer_infos": [], "fee": { "amount": [{ "denom": "uqor", "amount": "60000" }], "gas_limit": "600000" } },
+  "signatures": []
+}
+JSON
+qorechaind tx pqc cosign convert-erc20.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+Here `receiver` is the `qor1...` account that receives the bank coin (the module accepts the bech32 form for the receiver of a conversion to a bank coin). The amount is in the token's own base units (6, 18 or 8 decimals). Copy the denom for `MsgConvertCoin` only from `denoms_metadata`; the lowercase form is refused with `token pair not found`.
 
 ---
 
@@ -189,7 +268,7 @@ EVM transactions are signed with **classical ECDSA (secp256k1)**, so MetaMask, H
 
 For post-quantum security inside contracts:
 
-* The **PQC Verify precompile** (`0x0000...0A01`) will verify ML-DSA-87 signatures on-chain from Solidity once it is activated; it is **not active yet** on mainnet or testnet. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+* The **PQC Verify precompile** (`0x0000...0A01`) verifies ML-DSA-87 signatures on-chain from Solidity. It is **active on the testnet** (activated by governance proposal 21, passed 27 October 2026) and **not active on mainnet** at the time of writing. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 * **Cross-VM messages** from EVM to QoreChain Native or SVM are Cosmos-lane transactions and carry the hybrid signature like any other; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for their current availability.
 
 ---
@@ -204,7 +283,7 @@ A post-quantum signature cannot travel *with* an Ethereum transaction (wallets s
 | `max-txs`   | 1 – 1,000          | How many EVM transactions it admits |
 | `max-value` | above 0, in `uqor` | Total outflow it admits: transferred value **plus** the maximum fee each transaction could pay (gas limit × max fee per gas), converted to `uqor` and rounded up |
 
-Whichever bound runs out first closes the window. The three bounds are required; opening a window replaces an existing one; a transaction that is admitted and then fails still uses its slot and its value budget; contract deployments count like any other transaction. `blocks` is a block count, not a duration: 17,280 blocks is about 15 hours on mainnet (about 3.2 s per block) and about 5 hours on the testnet (about 1.0 s per block).
+Whichever bound runs out first closes the window. The three bounds are required; opening a window replaces an existing one; a transaction that is admitted and then fails still uses its slot and its value budget; contract deployments count like any other transaction. `blocks` is a block count, not a duration: 17,280 blocks is about 15 hours on mainnet (about 3.2 s per block) and about 6 hours on the testnet (about 1.3 s per block on 27 October 2026; the testnet block time varies).
 
 **The value bound counts native QOR only.** A token transfer, an approval or any other contract call carries value zero, so it is not counted against `max-value` (only its maximum fee is). To bound those as well, narrow the window's **scope** (mainnet v3.2.3 and later):
 
@@ -283,6 +362,6 @@ curl -X POST http://localhost:8545 \
 
 ## Next Steps
 
-* [EVM Precompiles](/developer-guide/evm-precompiles) — Reference for the reserved precompile interfaces (not active on the public networks yet)
+* [EVM Precompiles](/developer-guide/evm-precompiles) — Reference for the QoreChain precompile interfaces (three active on the testnet, none on mainnet)
 * [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) — Cross-VM calls and their current availability
-* [Account Abstraction](/developer-guide/account-abstraction) — Linked-wallet authenticators and spending rules (module currently disabled)
+* [Account Abstraction](/developer-guide/account-abstraction) — Linked-wallet authenticators and spending rules (enabled on the testnet, disabled on mainnet)

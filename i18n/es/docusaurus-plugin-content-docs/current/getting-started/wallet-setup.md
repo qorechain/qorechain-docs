@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain admite múltiples tipos de billeteras en sus entornos de ejecución nativo, EVM y SVM. Elige la billetera que se ajuste a tu caso de uso.
 
 :::note
-Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026, versión v3.2.4 desde el 23 de octubre de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**, versión v3.2.4 desde el 19 de octubre de 2026). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
+Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026, versión v3.2.4 desde el 23 de octubre de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**, versión v3.2.6 desde el 27 de octubre de 2026). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recomendada) {#qorex}
@@ -105,8 +105,8 @@ Los fondos enviados a cualquiera de las tres formas llegan al mismo saldo.
 
 ## Billeteras vinculadas: Phantom y MetaMask como claves de gasto {#linked-wallets}
 
-:::caution Actualmente desactivado en ambas redes
-Las funciones de cuenta inteligente y de billetera vinculada están implementadas, pero **desactivadas** en ambas redes (`abstractaccount.enabled = false`): mientras el indicador esté desactivado, se rechazan tanto el registro de un autenticador como la ejecución a través de uno. Consulta `GET /qorechain/abstractaccount/v1/config` antes de ofrecer un flujo de vinculación. La sección siguiente describe el comportamiento diseñado.
+:::caution Desactivado en mainnet, activado en la testnet
+Las funciones de cuenta inteligente y de billetera vinculada están implementadas, pero **desactivadas en mainnet** (`abstractaccount.enabled = false`): allí, mientras el indicador esté desactivado, se rechazan tanto el registro de un autenticador como la ejecución a través de uno. Están **activadas en la testnet** (`enabled = true`, comprobado el 27 de octubre de 2026), por lo que puedes probar allí un flujo de vinculación. Consulta `GET /qorechain/abstractaccount/v1/config` en la red a la que te dirijas antes de ofrecer un flujo de vinculación. La sección siguiente describe el comportamiento diseñado.
 :::
 
 Diseñado para que no tengas que exponer tu clave raíz al gastar desde una cuenta de QoreChain en una dApp (introducido en la versión de cadena **v3.1.85**): una clave de **Phantom** (ed25519) o de **MetaMask** (por su dirección de Ethereum, mediante `personal_sign`) puede **registrarse como autenticador** en tu cuenta — con permisos delimitados, límites de gasto, una fecha de expiración y revocación instantánea — y luego autorizar transferencias retransmitidas por el backend de la dApp. Consulta [Autenticadores de billeteras vinculadas](/developer-guide/account-abstraction#authenticators) para el modelo completo y el código, y la [guía de Autenticadores del SDK](/sdk/guides/authenticators) para ejemplos de principio a fin.

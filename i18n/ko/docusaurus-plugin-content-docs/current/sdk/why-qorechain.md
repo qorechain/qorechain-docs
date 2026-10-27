@@ -56,7 +56,7 @@ if (!preflight.safe) {
 프리컴파일(`0x…0B01`의 `aiRiskScore`, `0x…0B02`의 `aiAnomalyCheck`)로
 *체인 내부에서* 실행되도록 설계되었습니다. 해당 프리컴파일이 활성화되기 전까지
 위의 헬퍼는 퍼블릭 네트워크에서 오류를 발생시킵니다
-(`returned no data ("0x")`). [AI 사전 검사](/sdk/guides/ai-preflight)를
+(`returned no data ("0x")`. 테스트넷에서 활성화된 세 프리컴파일은 PQC와 컨센서스용이며 이것들이 아닙니다). [AI 사전 검사](/sdk/guides/ai-preflight)를
 참조하세요.
 
 ---
@@ -93,11 +93,11 @@ await crossVM.callAtomic([
 ```
 
 **이것이 특별한 이유:** QoreChain은 세 개의 공존 VM을 네이티브 브리지
-모듈(`crossvm`, 그리고 활성화되면 `CrossVMBridge` 프리컴파일)과 함께
+모듈(`crossvm`, 그리고 활성화되면 `CrossVMBridge` 프리컴파일, 아직 어느 네트워크에서도 활성화되어 있지 않음)과 함께
 실행하므로, 하나의 SDK 인터페이스로 세 VM 모두를 다룰 수 있습니다. 단일 VM
 체인에는 감쌀 만한 대응물이 없습니다. 현재 호출의 도달 범위는 대상 레인에
 의해 제한됩니다. `MsgCrossVMCall`은 메인넷에서 꺼져 있고, SVM 트랜잭션은
-비활성화되어 있으며, QoreChain Native 업로드와 인스턴스화는 허가제입니다.
+비활성화되어 있으며, QoreChain Native 업로드와 인스턴스화는 허가제입니다(테스트넷에서는 인스턴스화가 열려 있음).
 [크로스 VM 호출](/sdk/guides/cross-vm)을 참조하세요.
 
 ---
@@ -132,7 +132,7 @@ await hybrid.signAndBroadcastHybrid({
 import { QuantumSafeBadge } from "@qorechain/react";
 
 // Shows a "Quantum-safe" indicator when the address has a registered PQC key
-// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0).
+// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 이상).
 <QuantumSafeBadge address={account.address} />
 ```
 
@@ -178,11 +178,12 @@ account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
 **연결된 Phantom 또는 MetaMask 키가 릴레이어를 통해, 한도 내에서, PQC 필수
 정식 계정에서 지출합니다.** (SDK 0.7.0, 체인 v3.1.85.)
 
-:::caution 라이브 네트워크에서는 아직 사용할 수 없습니다
-`abstractaccount` 모듈은 `qorechain-vladi`와 `qorechain-diana`에서 꺼져
+:::caution 메인넷에서는 아직 사용할 수 없습니다
+`abstractaccount` 모듈은 `qorechain-vladi`에서 꺼져
 있으며(`GET /qorechain/abstractaccount/v1/config`가 `"enabled": false`를
-반환합니다), 체인 v3.2.0부터는 이 플래그가 모든 경로에서 강제되므로 키를
-연결할 수 없고 아래의 레인도 사용할 수 없습니다.
+반환합니다), 체인 v3.2.0부터는 이 플래그가 모든 경로에서 강제되므로 메인넷에서는
+키를 연결할 수 없고 아래의 레인도 사용할 수 없습니다. 이 모듈은
+`qorechain-diana` 테스트넷에서 활성화되어 있습니다(2026년 10월 27일 확인).
 [인증자 가이드](/sdk/guides/authenticators)를 참조하세요.
 :::
 

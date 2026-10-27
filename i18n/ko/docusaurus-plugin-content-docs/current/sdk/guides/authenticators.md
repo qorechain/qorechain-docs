@@ -16,15 +16,17 @@ Phantom **ed25519** 키 또는 MetaMask / EVM **secp256k1** 키 — 가 최소 �
 이는 체인의 [계정 추상화](/developer-guide/account-abstraction) 모듈에
 대응하는 SDK 기능입니다.
 
-:::danger 라이브 네트워크에서는 사용할 수 없습니다
-`x/abstractaccount` 모듈은 `qorechain-vladi`와 `qorechain-diana`에서 **비활성화**되어
-있습니다(`GET /qorechain/abstractaccount/v1/config`가 `"enabled": false`를
-반환합니다). 체인 v3.2.0부터 이 플래그는 모든 경로(추상 계정 생성, 인증자 연결,
+:::danger 메인넷에서는 사용할 수 없습니다
+`x/abstractaccount` 모듈은 `qorechain-vladi`(메인넷)에서 **비활성화**되어
+있습니다. `GET /qorechain/abstractaccount/v1/config`가 `"enabled": false`를
+반환합니다. 체인 v3.2.0부터 이 플래그는 모든 경로(추상 계정 생성, 인증자 연결,
 `MsgExecuteEVM` / `MsgExecuteCosmos` 모두)에서 강제되며, 체인은 이러한 요청을
 `abstract account module is disabled`(코드 9)로 거부합니다. 어떤 트랜잭션으로도
-이를 켤 수 없습니다. 아래 내용은 참고용으로 모듈의 인터페이스를 설명한 것입니다.
-모듈이 활성화되기 전까지는 라이브 네트워크에서 연결된 키 또는 위임 지출 흐름을
-구축하지 마시고, 그러한 흐름을 제공하기 전에 이 플래그를 확인하세요.
+이를 켤 수 없습니다. `qorechain-diana` 테스트넷에서는 2026년 10월 27일에 같은
+경로가 `"enabled": true`를 반환했으므로, 아래 흐름을 그곳에서 시험해 볼 수 있습니다.
+메인넷에서 모듈이 활성화되기 전까지는 메인넷용 연결된 키 또는 위임 지출 흐름을
+구축하지 마시고, 그러한 흐름을 제공하기 전에 대상 네트워크에서 이 플래그를
+확인하세요.
 :::
 
 ## 릴레이어 모델
@@ -317,10 +319,14 @@ qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
   이 카운터입니다.
 - `MsgExecuteCosmos.nonce`도 같은 종류의 카운터입니다.
 
-아직 이 카운터를 조회하는 쿼리가 없으므로 연결된 키별로 직접 추적하세요.
-새로 연결된 키는 0이고, 체인이 수락한 실행마다 +1입니다. 체인의 현재 카운터가
-아닌 값을 보내면 리플레이 거부(`abstractaccount` 코드 11, 아래 참조)가
-발생합니다.
+체인 v3.2.4(두 네트워크 모두 이 경로를 제공합니다)와 SDK 0.10.0부터는 카운터를
+추적하는 대신 읽을 수 있습니다. `fetchAuthNonce({ rest, address, pubkey })`는
+`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`를 호출하고
+`{ nonce, linked }`를 반환합니다. 한 번도 실행하지 않은 키는 0으로 읽히며, 카운터는
+더 이상 연결되어 있지 않은 키에 대해서도 유지됩니다(`linked`가 어느 쪽인지 알려
+줍니다). 체인의 현재 카운터가 아닌 값을 보내면 리플레이 거부(`abstractaccount`
+코드 11, 아래 참조)가 발생합니다. 이전 SDK나 체인에서는 연결된 키별로 직접
+추적하세요. 새로 연결된 키는 0이고, 체인이 수락한 실행마다 +1입니다.
 
 ## 권한 스키마
 

@@ -20,8 +20,10 @@ QoreChain은 dApp이 EVM에서 읽을 수 있는 **온체인 AI 위험/이상 �
 :::caution 현재 공개 네트워크에서는 사용할 수 없습니다
 `simulateWithRiskScore`, `aiRiskScore`, `aiAnomalyCheck`는 `0x…0B01` / `0x…0B02`의
 프리컴파일을 읽습니다. 정적 프리컴파일은 해당 주소가 EVM 모듈의
-`active_static_precompiles` 파라미터에 있을 때만 응답하는데, 이 목록은
-`qorechain-vladi`(메인넷)와 `qorechain-diana`(테스트넷) 모두에서 비어 있습니다.
+`active_static_precompiles` 파라미터에 있을 때만 응답합니다. 이 목록은
+`qorechain-vladi`(메인넷)에서는 비어 있고, `qorechain-diana`(테스트넷)에는 PQC 및 컨센서스 파라미터
+프리컴파일(`0x…0A01`, `0x…0A02`, `0x…0C01`)만 들어 있으며 AI 쌍은 없습니다
+(2026년 10월 27일 확인).
 공개 엔드포인트에 호출하면 빈 데이터(`0x`)가 반환되고 이 헬퍼들은 에러를 던집니다
 (예: `returned no data ("0x")`). 프리컴파일이 활성화된 네트워크나 노드에서만
 동작합니다. 먼저 `GET /cosmos/evm/vm/v1/params`를 확인하고,

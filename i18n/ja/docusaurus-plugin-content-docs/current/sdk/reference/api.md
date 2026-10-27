@@ -41,7 +41,7 @@ pnpm --filter @qorechain/sdk docs:api
   （`PROOF_OF_POSSESSION_DOMAIN`）、`validateRegisteredPqcKey`、
   `isDegeneratePqcPublicKey`、`migrateToHybrid`、`migratePqcKeyHybrid`、
   `isUpgradeApplied` / `requireUpgradeApplied`（`CHAIN_UPGRADE_V3_2_2`、
-  `CHAIN_UPGRADE_V3_2_3`）。
+  `CHAIN_UPGRADE_V3_2_3`、`CHAIN_UPGRADE_V3_2_4`）。
 - **読み取りクライアント:** `RestClient`（`getPermissionSchema`を含む）、
   `JsonRpcClient`、`QorClient`、HTTPヘルパー（`getJson`、`postJsonRpc`、
   `buildUrl`、`joinUrl`、`QoreHttpError`）。また、`amm`、`license`、
@@ -64,7 +64,8 @@ pnpm --filter @qorechain/sdk docs:api
   `MSG_SEND_TYPE_URL`、ハイブリッドヘルパー（`encodeHybridExtension`、
   `attachHybridExtension`、`buildHybridTx`、`signAndBroadcastHybrid`）。
   `decodeTxError`による構造化エラーデコード（`abstractaccount`の
-  コード5/6/10/11および`pqc`のコード21を含む）。
+  コード5/6/10/11および`pqc`のコード21を含む。0.10.0 以降は、手数料シミュレーション中に
+  テキストとして返される拒否も名前で示します）。
 - **ethネイティブ署名（0.6.0）:** `signClassicalEth`、`signHybridEth`
   （`keccak256(SignDoc)`に対するsecp256k1、公開鍵タイプ
   `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`、さらにML-DSA-87ハイブリッド
@@ -82,7 +83,7 @@ pnpm --filter @qorechain/sdk docs:api
   （EIP-191 `personal_sign`）。鍵ローテーション `rotatePqcKeyMsgFromMnemonic`、
   `derivePqcLegacy`。詳細は
   [オーセンティケータガイド](/sdk/guides/authenticators)を参照してください
-  （これらのレーンの基盤となるモジュールは、現在どちらのネットワークでも無効になっています）。
+  （これらのレーンの基盤となるモジュールは、メインネットでは無効で、テストネットでは有効です）。
 - **ハイブリッド署名バイト列（0.8.0+）:** `buildHybridTx`、`signAndBroadcastHybrid`、
   `signHybridEth`、`EthNativeSigner` の `signBytesVersion` オプション
   （`"auto" | "v1" | "v2"`）。`resolveSignBytesVersion`、
@@ -99,6 +100,13 @@ pnpm --filter @qorechain/sdk docs:api
   `MAX_EVM_DELEGATION_CONSENT_BLOCKS`。
 - **アブストラクトアカウントのダイジェストv2（0.9.0）:** `evmAuthSignBytesV2`、
   `resolveEvmAuthDigestVersion`、`validateSpendingRules`。
+- **チェーン v3.2.4（0.10.0）:** Staking Tier（`msg.stakingtier.lockDelegation` /
+  `unlockEarly` / `claimBonus` / `updateParams`、`validateLockDelegation`、
+  `STAKING_LOCK_MONTHS`、`fetchStakingTierParams`、`fetchStakingLocks`、
+  `fetchStakingTierPool`）、`fetchAuthNonce`、`fetchProtocolFeatures` /
+  `isProtocolFeatureEnabled`、PQC ステータスの `possessionProven`、
+  `ibcTimeoutTimestamp`、`CHAIN_UPGRADE_V3_2_4`。詳細は
+  [0.10.0 の追加内容](/sdk/install#whats-new-0100)を参照してください。
 - **正規PQC導出（0.8.3+）:** `derivePqcCanonical(account, mnemonic)`、
   `canonicalAccount(account)`。PQC登録メッセージは
   `buildRegisterPqcKeyMsg`（`ensurePqcRegistered`が使用）です。`derivePqcLegacy`は
@@ -116,9 +124,9 @@ pnpm --filter @qorechain/sdk docs:api
 
 | 言語 | 生成ドキュメント | インストール |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 公開APIにdocstringを完備 | `pip install qorechain-sdk`（バージョン`0.9.0`、インポート名は`qorsdk`） |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go)（godoc） | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0`（タグ `packages/go/v0.9.0`） |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk)（rustdoc） | `cargo add qorechain-sdk`（0.9.0、インポート名は`qorechain`） |
-| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.9.1`（他の言語は 0.9.0） |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 公開APIにdocstringを完備 | `pip install qorechain-sdk`（バージョン`0.10.0`、インポート名は`qorsdk`） |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go)（godoc） | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0`（タグ `packages/go/v0.10.0`） |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk)（rustdoc） | `cargo add qorechain-sdk`（0.10.0、インポート名は`qorechain`） |
+| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.10.0` |
 
 各パッケージは同一のサーフェス（ネットワークプリセット、denom／アドレスユーティリティ、HD導出 — 統合ethネイティブアカウントを含む — PQCプリミティブとハイブリッド署名、型付きメッセージとクエリ、オーセンティケータレーン、REST + `qor_` JSON-RPC読み取りクライアント）を提供し、各言語ネイティブのドキュメントツールでレンダリングされるようソース内にインラインで文書化されています。TypeScriptのウォレットビルダー（`buildPhantom*` / `buildMetaMask*`）とブラウザウォレットアダプタはTypeScript専用です。

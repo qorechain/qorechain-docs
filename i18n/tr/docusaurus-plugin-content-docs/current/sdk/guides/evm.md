@@ -259,10 +259,13 @@ sayfasındaki CLI biçimlerini kullanın.
 QoreChain, sabit adreslerde sözleşmeden çağrılabilir ön derlemeler tanımlar. `precompiles`
 ad alanı tipli bağlamalar sağlar ve adresler ile ABI'ler dışa aktarılır.
 
-> **Henüz etkin değil.** QoreChain ön derlemeleri düğüme derlenmiştir ancak
-> mainnet (`qorechain-vladi`) veya testnet (`qorechain-diana`) üzerinde henüz
-> etkinleştirilmemiştir: bir çağrı boş veri döndürür, bu nedenle bu yardımcılar
-> bugün herkese açık ağlarda da hata fırlatır. Bkz.
+> **Mainnet'te etkin değil; testnet'te üçü etkin.** QoreChain ön derlemeleri düğüme
+> derlenmiştir ancak hiçbiri mainnet'te (`qorechain-vladi`) etkinleştirilmemiştir.
+> Testnet'te (`qorechain-diana`) `active_static_precompiles` listesi
+> `0x…0A01` (PQC verify), `0x…0A02` (PQC key status) ve `0x…0C01` (consensus
+> params) adreslerini içerir (27 Ekim 2026'da kontrol edildi); AI çifti (`0x…0B01`, `0x…0B02`)
+> ve cross-VM köprüsü (`0x…0901`) her iki ağda da etkin değildir. Etkin olmayan bir
+> adrese yapılan çağrı boş veri döndürür, bu nedenle bu yardımcılar hata fırlatır. Bkz.
 > [EVM Ön Derlemeleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 
 | Ön derleme | İşlev | Adres |
@@ -277,7 +280,7 @@ ad alanı tipli bağlamalar sağlar ve adresler ile ABI'ler dışa aktarılır.
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read consensus parameters (once 0x…0C01 is active).
+// Read consensus parameters (0x…0C01 is active on the testnet, not on mainnet).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
@@ -296,7 +299,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 Ön derleme ABI'leri `IQORE_PQC_ABI`, `IQORE_AI_ABI` ve
 `IQORE_CONSENSUS_ABI` olarak dışa aktarılır.
 
-> Bir ön derlemenin etkin olmadığı yerlerde (bugün: her herkese açık ağ) veya
+> Bir ön derlemenin etkin olmadığı yerlerde (mainnet: hepsi; testnet: AI çifti ve
+> cross-VM köprüsü) veya
 > QoreChain ön derlemeleri olmayan bir düğümde, bu çağrılar bir "feature not
 > present" hatası fırlatır. Bunu çağrı başına ele alın.
 

@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain prend en charge plusieurs types de portefeuilles dans ses environnements d'exécution natif, EVM et SVM. Choisissez le portefeuille adapté à votre cas d'usage.
 
 :::note
-Les valeurs ci-dessous couvrent à la fois le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, actif depuis le 7 juin 2026, version v3.2.4 depuis le 23 octobre 2026) et le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version v3.2.4 depuis le 19 octobre 2026). Les points de terminaison publics des deux réseaux sont répertoriés dans [Réseaux](/appendix/networks#public-endpoints).
+Les valeurs ci-dessous couvrent à la fois le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, actif depuis le 7 juin 2026, version v3.2.4 depuis le 23 octobre 2026) et le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version v3.2.6 depuis le 27 octobre 2026). Les points de terminaison publics des deux réseaux sont répertoriés dans [Réseaux](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recommandé) {#qorex}
@@ -105,8 +105,8 @@ Les fonds envoyés vers l'une des trois formes atterrissent dans le même solde.
 
 ## Portefeuilles liés : Phantom et MetaMask comme clés de dépense {#linked-wallets}
 
-:::caution Actuellement désactivé sur les deux réseaux
-Les fonctionnalités de compte intelligent et de portefeuille lié sont implémentées mais **désactivées** sur les deux réseaux (`abstractaccount.enabled = false`) : l'enregistrement d'un authentificateur et l'exécution via l'un d'eux sont refusés tant que l'indicateur est désactivé. Vérifiez `GET /qorechain/abstractaccount/v1/config` avant de proposer un flux de liaison. La section ci-dessous décrit le comportement prévu.
+:::caution Désactivé sur le mainnet, activé sur le testnet
+Les fonctionnalités de compte intelligent et de portefeuille lié sont implémentées mais **désactivées sur le mainnet** (`abstractaccount.enabled = false`) : l'enregistrement d'un authentificateur et l'exécution via l'un d'eux y sont refusés tant que l'indicateur est désactivé. Elles sont **activées sur le testnet** (`enabled = true`, vérifié le 27 octobre 2026) ; vous pouvez donc y essayer un flux de liaison. Vérifiez `GET /qorechain/abstractaccount/v1/config` sur le réseau visé avant de proposer un flux de liaison. La section ci-dessous décrit le comportement prévu.
 :::
 
 Conçu pour que vous n'ayez pas à exposer votre clé racine pour dépenser depuis un compte QoreChain dans une dApp (introduit dans la version de chaîne **v3.1.85**) : une clé **Phantom** (ed25519) ou **MetaMask** (via son adresse Ethereum, par `personal_sign`) peut être **enregistrée comme authentificateur** sur votre compte — avec des permissions limitées, des plafonds de dépense, une expiration et une révocation instantanée — puis autoriser des transferts relayés par le backend de la dApp. Consultez [Authentificateurs de portefeuilles liés](/developer-guide/account-abstraction#authenticators) pour le modèle complet et le code, ainsi que le [guide des authentificateurs du SDK](/sdk/guides/authenticators) pour des exemples de bout en bout.

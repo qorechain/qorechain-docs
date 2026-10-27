@@ -10,7 +10,7 @@ sidebar_position: 7
 `x/bridge` 모듈은 **37개의 체인 구성(36개의 외부 체인과 IBC를 통해 연결되는 Injective)과 최대 8개의 IBC(Inter-Blockchain Communication) 카운터파티**를 통해 QoreChain을 더 넓은 블록체인 생태계에 연결하도록 설계되었습니다. 모든 브리지 작업은 포스트 양자 암호화로 보호되도록 설계되었습니다.
 
 :::caution 어느 네트워크에서도 아직 라이브 아님
-브리지 모듈은 메인넷과 테스트넷에 배포되어 있지만 **활성화된 브리지 경로는 없습니다**. 37개의 체인 구성이 모두 `pending` 상태이며 브리지 컨트랙트가 설정되어 있지 않고, 등록된 브리지 검증인이 없으며, 생성된 브리지 작업이 한 건도 없고, IBC 채널이나 클라이언트도 존재하지 않습니다. 아래 내용은 모두 의도된 설계를 설명합니다. 브리징될 것을 기대하고 자산을 보내지 마십시오.
+브리지 모듈은 메인넷과 테스트넷에 배포되어 있지만 **활성화된 브리지 경로는 없습니다**. 37개의 체인 구성이 모두 `pending` 상태이며 브리지 컨트랙트가 설정되어 있지 않고, 등록된 브리지 검증인이 없으며, 생성된 브리지 작업이 한 건도 없고, 메인넷에는 IBC 채널이 존재하지 않습니다(테스트넷에는 ID가 `provider`인 체인으로 향하는 ICS-20 테스트 채널이 하나 있을 뿐이며, 아래의 카운터파티와 연결된 채널은 없습니다). 아래 내용은 모두 의도된 설계를 설명합니다. 브리징될 것을 기대하고 자산을 보내지 마십시오.
 :::
 
 ## 현재 상태 {#current-status}
@@ -21,9 +21,9 @@ sidebar_position: 7
 | 체인 구성 | 37개, 모두 `pending` | 37개, 모두 `pending` |
 | 등록된 브리지 검증인 | 0 | 0 |
 | 브리지 작업 | 0 | 0 |
-| IBC 채널 / 클라이언트 | 0 / 0 | 0 / 0 |
+| IBC 채널 / 클라이언트 | 0 / 0 | 1 / 1 (Cosmos Hub 테스트넷으로 향하는 테스트 채널) |
 
-(2026년 10월 23일에 메인넷과 테스트넷(둘 다 v3.2.4)을 기준으로 확인했습니다. 라이브 값은 `qorechaind query bridge chains` 및 `qorechaind query bridge validators`로 읽거나, REST의 `/qorechain/bridge/v1/chains` 및 `/qorechain/bridge/v1/validators`로 읽을 수 있습니다.) 모듈 구성은 두 네트워크에서 동일합니다. `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400, `large_transfer_threshold` 100,000 QOR(`100000000000` uqor)입니다. 모듈이 사용하게 될 IBC 스택은 ibc-go v10.7(v3.2.2부터)이지만, 생성된 클라이언트나 채널은 없습니다.
+(2026년 10월 27일에 메인넷(v3.2.4)과 테스트넷(v3.2.6)을 기준으로 확인했습니다. 라이브 값은 `qorechaind query bridge chains` 및 `qorechaind query bridge validators`로 읽거나, REST의 `/qorechain/bridge/v1/chains` 및 `/qorechain/bridge/v1/validators`로 읽을 수 있습니다.) 모듈 구성은 두 네트워크에서 동일합니다. `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400, `large_transfer_threshold` 100,000 QOR(`100000000000` uqor)입니다. 모듈이 사용하게 될 IBC 스택은 ibc-go v10.7(v3.2.2부터)이지만, 메인넷에는 생성된 클라이언트나 채널이 없습니다(테스트넷에는 테스트 클라이언트와 채널이 하나 있습니다. 위를 참고하십시오).
 
 ## 연결 개요
 
@@ -38,7 +38,7 @@ QoreChain은 두 가지 브리지 프로토콜이 병렬로 작동하도록 설�
 
 ## IBC 채널
 
-QoreChain은 Hermes v1.x를 통해 릴레이되는 다음 8개 체인에 대한 IBC 연결을 유지하도록 설계되었습니다. **두 네트워크 모두에 아직 IBC 채널이나 클라이언트가 존재하지 않으므로**, 이 표는 계획된 카운터파티만 나열합니다:
+QoreChain은 Hermes v1.x를 통해 릴레이되는 다음 8개 체인에 대한 IBC 연결을 유지하도록 설계되었습니다. **이 카운터파티 중 아직 연결된 곳은 없으므로**(메인넷에는 IBC 채널이나 클라이언트가 없고, 테스트넷에는 ID가 `provider`인 체인으로 향하는 ICS-20 테스트 채널이 하나 있습니다. 2026년 10월 27일 확인), 이 표는 계획된 카운터파티만 나열합니다:
 
 | 체인       | 설명                           |
 | ---------- | ------------------------------ |

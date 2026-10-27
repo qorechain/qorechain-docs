@@ -9,12 +9,12 @@ sidebar_position: 7
 
 QoreChain provides **protocol-level account abstraction** through the `x/abstractaccount` module. The module records abstract accounts with spending rules and lets the account owner link foreign keys (**authenticators**) that can spend from the account within permission and spending-limit bounds, without external smart contract infrastructure.
 
-:::danger Not enabled on mainnet or testnet
-The abstract-account module is currently **switched off** on both networks: `qorechaind query abstractaccount config` (and `GET /qorechain/abstractaccount/v1/config`) report `enabled: false` on `qorechain-vladi` and `qorechain-diana`. From chain v3.2.0 the flag is enforced on every path: the chain refuses account creation, authenticator registration and both execute lanes (`MsgExecuteEVM`, `MsgExecuteCosmos`) with `abstract accounts are disabled on this chain`. No transaction can switch the module on, and no abstract-account transaction has ever been included on mainnet. Everything below describes the module's interfaces for reference. Do not build a linked-key or delegated-spending flow on the live networks until the module is enabled, and check the flag first.
+:::danger Not enabled on mainnet; enabled on the testnet
+The abstract-account module is **switched off on the `qorechain-vladi` mainnet** at the time of writing (checked 27 October 2026): `qorechaind query abstractaccount config` (and `GET /qorechain/abstractaccount/v1/config`) report `enabled: false`. On the **`qorechain-diana` testnet** it was switched on by a governance decision (proposal 18, passed 27 October 2026) and reports `enabled: true`. From chain v3.2.0 the flag is enforced on every path: where it is `false` the chain refuses account creation, authenticator registration and both execute lanes (`MsgExecuteEVM`, `MsgExecuteCosmos`) with `abstract accounts are disabled on this chain`. No ordinary transaction can switch the module on; the setting changes only by a governance decision. No abstract-account transaction has ever been included on mainnet. Everything below describes the module's interfaces; try it on the testnet, and do not build a linked-key or delegated-spending flow for mainnet until the module is enabled there. Always check the flag first.
 :::
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.4** (applied at height 3,742,566 on 23 October 2026, governance proposal 13). Substitute `--chain-id qorechain-diana` for the testnet, which has run v3.2.4 since 19 October 2026.
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.4** (applied at height 3,742,566 on 23 October 2026, governance proposal 13). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.6 (v3.2.4 since 19 October 2026).
 :::
 
 :::caution Every Cosmos-lane transaction needs the hybrid post-quantum cosign
@@ -86,7 +86,7 @@ Spending rules add financial guardrails to abstract accounts:
 | ---------------- | ----------------------------------------------------- |
 | `daily_limit`    | Maximum total spend per UTC calendar day              |
 | `per_tx_limit`   | Maximum spend per individual authorised execution     |
-| `allowed_denoms` | Restrict which token denominations can be spent (an ERC-20 is listed as `erc20/<contract>`) |
+| `allowed_denoms` | Restrict which token denominations can be spent (an ERC-20 is listed as `erc20/<EIP-55 0x address>`, the spending rule's own spelling with a slash; the chain compares the address in its EIP-55 form, so the letter case you type does not create a different token. This is not the bank denom of a registered token pair, which is written `erc20:<EIP-55 0x address>` with a colon and is case-sensitive, see [EVM Development](/developer-guide/evm-development#fest-tokens)) |
 | `denom_limits`   | Per-denomination limits as decimal strings (v3.2.2): `{"denom","per_tx_limit","daily_limit"}`; they replace `per_tx_limit` and `daily_limit` for the denominations they name, so an 18-decimal token can be capped |
 | `allowed_evm_calls` | EVM calls a rule-bound key may make **with call data** (v3.2.2), as `0x<target>` (any function of that contract) or `0x<target>/0x<selector>` (that function only). Without an entry a rule-bound key can only send value, deploy (with the `deploy` permission) and move the ERC-20 tokens listed in `allowed_denoms`. Listing a target trusts every argument of calls made to it, recipients included |
 
@@ -100,11 +100,11 @@ qorechaind tx abstractaccount update-rules <account-address> \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
-Limits are in the base unit (`uqor`) and count per authorised execution; the daily limit bounds the total per UTC calendar day. The rules replace the stored ones as a whole, so a field you leave out is removed. Since v3.2.2 the EVM lane measures what a call actually moves (native value, the account's native balance decrease, bank coins spent, and the balance or allowance change of every listed ERC-20) instead of only `msg.value`, and contract creation needs the separate `deploy` permission. A richer example:
+Limits are in the base unit (`uqor`) and count per authorised execution; the daily limit bounds the total per UTC calendar day. The rules replace the stored ones as a whole, so a field you leave out is removed. Since v3.2.2 the EVM lane measures what a call actually moves (native value, the account's native balance decrease, bank coins spent, and the balance or allowance change of every listed ERC-20) instead of only `msg.value`, and contract creation needs the separate `deploy` permission. A richer example (the ERC-20 shown is the testnet fUSD test token; use your own token's contract address, and note the slash in `erc20/<address>` in a rule versus the colon in the bank denom `erc20:<address>`):
 
 ```bash
 qorechaind tx abstractaccount update-rules <account-address> \
-  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0xTOKEN"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0xTOKEN","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
+  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0x97143B771D34ddb9130b807b135Ae675A5a963CA"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0x97143B771D34ddb9130b807b135Ae675A5a963CA","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
@@ -122,7 +122,7 @@ The chain resolves the limit in this order: the authenticator's own rule if set 
 
 ## Linked Wallet Authenticators — Delegated Spending {#authenticators}
 
-The authenticator design was introduced in chain version **v3.1.85** (building on the v3.1.84 permission model). It is **not usable on the live networks while the module is disabled** (see the status box at the top of this page). A **linked external wallet key** — a Phantom (ed25519) key or a MetaMask (secp256k1) account — can **spend from the canonical post-quantum account** under least-privilege, spending-limited, revocable terms. The external key never produces an ML-DSA signature; a **relayer** submits and pays for the transaction envelope (the relayer's own hybrid PQC signature satisfies the chain's signing requirements), while the authenticator's signature over **domain-separated, replay-bound sign bytes** is the authorization.
+The authenticator design was introduced in chain version **v3.1.85** (building on the v3.1.84 permission model). It is **not usable on mainnet while the module is disabled there**, and is available on the testnet, where the module is enabled (see the status box at the top of this page). A **linked external wallet key** — a Phantom (ed25519) key or a MetaMask (secp256k1) account — can **spend from the canonical post-quantum account** under least-privilege, spending-limited, revocable terms. The external key never produces an ML-DSA signature; a **relayer** submits and pays for the transaction envelope (the relayer's own hybrid PQC signature satisfies the chain's signing requirements), while the authenticator's signature over **domain-separated, replay-bound sign bytes** is the authorization.
 
 ### Register an authenticator {#register-authenticator}
 
@@ -243,7 +243,7 @@ Enforcement failures return distinct codes (codespace `abstractaccount`) so wall
 | --- | --- | --- |
 | `5` | Spending limit exceeded (per-tx or daily) | Show the remaining allowance |
 | `6` | Authenticator expired | "Expired — re-link your wallet" |
-| `9` | Module disabled (the live state on both networks) | "Linked wallets are not available yet" |
+| `9` | Module disabled (the live state on mainnet) | "Linked wallets are not available yet" |
 | `10` | Permission denied (scope or non-delegable msg) | Show the missing permission |
 | `11` | Replay rejected (stale nonce/sequence) | Re-query the nonce and re-sign |
 
@@ -254,7 +254,7 @@ Enforcement failures return distinct codes (codespace `abstractaccount`) so wall
 The module's read queries are served over REST (since **v3.1.85**):
 
 ```
-GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on both networks today
+GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on mainnet today; enabled: true on the testnet
 GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
@@ -275,7 +275,7 @@ qorechaind query abstractaccount account <address>
 qorechaind query abstractaccount accounts --page-limit 10
 ```
 
-On mainnet the account list is empty; the testnet lists a few accounts created before the enabled flag was enforced on every path.
+On mainnet the account list is empty. The testnet lists a few accounts (four on 27 October 2026), some created before the enabled flag was enforced on every path.
 
 ### JSON-RPC
 

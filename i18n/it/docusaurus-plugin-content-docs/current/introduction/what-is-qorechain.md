@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain è la prima blockchain Layer 1 costruita con crittografia post-quantistica fin dal genesis, elaborazione delle transazioni nativa per l'IA e un runtime a tripla VM che esegue programmi EVM, QoreChain Native (il runtime CosmWasm) e SVM su un'unica chain. Anziché innestare la resistenza quantistica su un protocollo esistente, QoreChain è stata progettata da zero per essere sicura contro avversari sia classici sia quantistici, offrendo al contempo l'esperienza di sviluppo e l'interoperabilità attese da una blockchain generalista moderna.
 
-La mainnet (`qorechain-vladi`, EVM chain ID **9801**) è live dal 7 giugno 2026 ed esegue la versione della chain **v3.2.4** (applicata dalla proposta di governance 13 all'altezza 3.742.566 il 23 ottobre 2026). Una testnet pubblica (`qorechain-diana`, EVM chain ID **9800**, che esegue la v3.2.4 dal 19 ottobre 2026) opera in parallelo per lo staging e i test di integrazione. Il token nativo è **QOR** (visualizzazione) / **uqor** (unità base, 10^6), con prefissi Bech32 `qor` per gli account e `qorvaloper` per i validatori. La chain è costruita sul Cosmos SDK v0.53.
+La mainnet (`qorechain-vladi`, EVM chain ID **9801**) è live dal 7 giugno 2026 ed esegue la versione della chain **v3.2.4** (applicata dalla proposta di governance 13 all'altezza 3.742.566 il 23 ottobre 2026). Una testnet pubblica (`qorechain-diana`, EVM chain ID **9800**, che esegue la v3.2.6 dal 27 ottobre 2026) opera in parallelo per lo staging e i test di integrazione. Il token nativo è **QOR** (visualizzazione) / **uqor** (unità base, 10^6), con prefissi Bech32 `qor` per gli account e `qorvaloper` per i validatori. La chain è costruita sul Cosmos SDK v0.53.
 
 ## Innovazioni principali
 
@@ -29,7 +29,7 @@ QoreChain è l'unica Layer 1 che esegue nativamente tre macchine virtuali all'in
 * **QoreChain Native** — Smart contract WebAssembly scritti in Rust con pieno supporto del ciclo di vita (instantiate, execute, query, migrate).
 * **SVM** — Distribuzione ed esecuzione di programmi BPF con un server JSON-RPC compatibile con Solana sulla porta 8899. I client e gli strumenti Solana esistenti funzionano immediatamente.
 
-Il messaging cross-VM consente a tutti e tre i runtime di comunicare: i contratti EVM chiamano QoreChain Native tramite precompile (una volta attivato quel precompile), i contratti QoreChain Native chiamano EVM tramite messaggi personalizzati e i programmi SVM partecipano tramite bridging asincrono basato su eventi. Oggi solo il runtime EVM accetta transazioni sulle reti live: il caricamento e l'istanziazione di codice QoreChain Native sono disabilitati, la corsia di transazioni SVM è disabilitata, nessun precompile EVM è attivo e il messaggio di chiamata cross-VM è disattivato sulla mainnet.
+Il messaging cross-VM consente a tutti e tre i runtime di comunicare: i contratti EVM chiamano QoreChain Native tramite precompile (una volta attivato quel precompile), i contratti QoreChain Native chiamano EVM tramite messaggi personalizzati e i programmi SVM partecipano tramite bridging asincrono basato su eventi. Oggi solo il runtime EVM accetta transazioni sulle reti live: il caricamento e l'istanziazione di codice QoreChain Native sono disabilitati, la corsia di transazioni SVM è disabilitata, nessun precompile EVM è attivo sulla mainnet (la testnet ne ha tre attivi) e il messaggio di chiamata cross-VM è disattivato sulla mainnet.
 
 ### 4. Tokenomics a emissione limitata
 
@@ -39,7 +39,7 @@ QOR ha un **percorso di offerta finito**: **4.420.000.000 QOR** al genesis (4.50
 
 ### 5. Connettività cross-chain
 
-QoreChain è progettata per connettersi a un ampio insieme di ecosistemi blockchain tramite due protocolli complementari: IBC nativo e il QoreChain Bridge (QCB). Il livello del bridge definisce **37 configurazioni di chain (36 chain esterne più Injective, raggiunta tramite IBC)** e fino a **8 controparti IBC**. Il livello cross-chain **non è live su nessuna delle due reti**: tutte e 37 le configurazioni di chain sono in stato `pending` e nessun canale IBC è aperto. Le cifre seguenti descrivono la copertura target.
+QoreChain è progettata per connettersi a un ampio insieme di ecosistemi blockchain tramite due protocolli complementari: IBC nativo e il QoreChain Bridge (QCB). Il livello del bridge definisce **37 configurazioni di chain (36 chain esterne più Injective, raggiunta tramite IBC)** e fino a **8 controparti IBC**. Il livello cross-chain **non è live su nessuna delle due reti**: tutte e 37 le configurazioni di chain sono in stato `pending`, la mainnet non ha alcun canale IBC e la testnet ha un solo canale di test verso una chain di test. Le cifre seguenti descrivono la copertura target.
 
 * **Fino a 8 controparti IBC** — Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon e Injective. Template di relayer preconfigurati con aggiornamenti del client, rilevamento di comportamenti scorretti e clearing automatico dei pacchetti.
 * **37 configurazioni di chain QCB (36 chain esterne più Injective tramite IBC)** — ogni endpoint è progettato per includere validazione degli indirizzi per tipo, profondità di conferma configurabile, limiti di volume tramite circuit breaker e attestazioni dei validatori firmate con PQC. Le chain esterne target sono:
@@ -63,7 +63,7 @@ Cinque profili preimpostati (**defi, gaming, nft, enterprise, custom**) consento
 
 ### 7. Astrazione degli account e del gas
 
-Gli smart account con tre tipi programmabili (multisig, recupero sociale, basato su sessione) supportano session key con permessi granulari e scadenza, regole di spesa per account e allowlist dei denom. Questo abilita pattern di UX del wallet impossibili con account standard: session key dApp per mobile, recupero sociale come tipo di account di prima classe e limiti di spesa programmabili. Le funzionalità di smart account e di wallet collegati sono implementate ma attualmente **disattivate** su entrambe le reti (`abstractaccount.enabled = false`; consulta `GET /qorechain/abstractaccount/v1/config`). L'astrazione del gas è progettata per consentire agli utenti di pagare le fee in un token non nativo accettato (la configurazione elenca `ibc/USDC` e `ibc/ATOM`); nessun canale IBC è ancora aperto, quindi le fee vengono attualmente pagate in QOR.
+Gli smart account con tre tipi programmabili (multisig, recupero sociale, basato su sessione) supportano session key con permessi granulari e scadenza, regole di spesa per account e allowlist dei denom. Questo abilita pattern di UX del wallet impossibili con account standard: session key dApp per mobile, recupero sociale come tipo di account di prima classe e limiti di spesa programmabili. Le funzionalità di smart account e di wallet collegati sono implementate ma **disattivate sulla mainnet** (`abstractaccount.enabled = false`) e attive sulla testnet (consulta `GET /qorechain/abstractaccount/v1/config`). L'astrazione del gas è progettata per consentire agli utenti di pagare le fee in un token non nativo accettato (la configurazione elenca `ibc/USDC` e `ibc/ATOM`); nessun canale IBC è ancora aperto, quindi le fee vengono attualmente pagate in QOR.
 
 ## Ecosistema
 

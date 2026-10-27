@@ -9,12 +9,12 @@ sidebar_position: 7
 
 QoreChain oferă **abstractizare de cont la nivel de protocol** prin modulul `x/abstractaccount`. Modulul înregistrează conturi abstracte cu reguli de cheltuieli și permite proprietarului contului să conecteze chei externe (**autentificatori**) care pot cheltui din cont în limitele permisiunilor și ale plafoanelor de cheltuieli, fără infrastructură externă de contracte inteligente.
 
-:::danger Neactivat pe mainnet sau testnet
-Modulul de conturi abstracte este în prezent **oprit** pe ambele rețele: `qorechaind query abstractaccount config` (și `GET /qorechain/abstractaccount/v1/config`) raportează `enabled: false` pe `qorechain-vladi` și `qorechain-diana`. Începând cu chain v3.2.0, indicatorul este aplicat pe fiecare cale: chain-ul refuză crearea de conturi, înregistrarea autentificatorilor și ambele lane-uri de execuție (`MsgExecuteEVM`, `MsgExecuteCosmos`) cu mesajul `abstract accounts are disabled on this chain`. Nicio tranzacție nu poate porni modulul și nicio tranzacție de cont abstract nu a fost vreodată inclusă pe mainnet. Tot ce urmează descrie interfețele modulului doar pentru referință. Nu construiți un flux de cheie conectată sau de cheltuieli delegate pe rețelele live până când modulul nu este activat și verificați mai întâi indicatorul.
+:::danger Neactivat pe mainnet; activat pe testnet
+Modulul de conturi abstracte este **oprit pe mainnet-ul `qorechain-vladi`** la momentul redactării (verificat la 27 octombrie 2026): `qorechaind query abstractaccount config` (și `GET /qorechain/abstractaccount/v1/config`) raportează `enabled: false`. Pe **testnet-ul `qorechain-diana`** a fost pornit printr-o decizie de guvernanță (propunerea 18, adoptată pe 27 octombrie 2026) și raportează `enabled: true`. Începând cu chain v3.2.0, indicatorul este aplicat pe fiecare cale: acolo unde este `false`, chain-ul refuză crearea de conturi, înregistrarea autentificatorilor și ambele lane-uri de execuție (`MsgExecuteEVM`, `MsgExecuteCosmos`) cu mesajul `abstract accounts are disabled on this chain`. Nicio tranzacție obișnuită nu poate porni modulul; setarea se schimbă doar printr-o decizie de guvernanță. Nicio tranzacție de cont abstract nu a fost vreodată inclusă pe mainnet. Tot ce urmează descrie interfețele modulului; încercați-l pe testnet și nu construiți un flux de cheie conectată sau de cheltuieli delegate pentru mainnet până când modulul nu este activat acolo. Verificați întotdeauna mai întâi indicatorul.
 :::
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.4** (aplicată la înălțimea 3,742,566 pe 23 octombrie 2026, propunerea de guvernanță 13). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.4 din 19 octombrie 2026.
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.4** (aplicată la înălțimea 3,742,566 pe 23 octombrie 2026, propunerea de guvernanță 13). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.6 (v3.2.4 din 19 octombrie 2026).
 :::
 
 :::caution Fiecare tranzacție pe lane-ul Cosmos necesită cosemnătura hibridă post-cuantică
@@ -86,7 +86,7 @@ Regulile de cheltuieli adaugă limite de siguranță financiară conturilor abst
 | ------------------ | ------------------------------------------------------------------ |
 | `daily_limit`      | Cheltuiala totală maximă pe zi calendaristică UTC                  |
 | `per_tx_limit`     | Cheltuiala maximă per execuție individuală autorizată              |
-| `allowed_denoms`   | Restricționează denominările de token care pot fi cheltuite (un ERC-20 este listat ca `erc20/<contract>`) |
+| `allowed_denoms`   | Restricționează denominările de token care pot fi cheltuite (un ERC-20 este listat ca `erc20/<EIP-55 0x address>`, scrierea proprie a regulii de cheltuieli, cu bară oblică; lanțul compară adresa în forma ei EIP-55, deci majusculele pe care le tastați nu creează un alt token. Aceasta nu este denominația bank a unei perechi de tokenuri înregistrate, care se scrie `erc20:<EIP-55 0x address>` cu două puncte și este sensibilă la majuscule, vezi [Dezvoltare EVM](/developer-guide/evm-development#fest-tokens)) |
 | `denom_limits`     | Limite per denominare ca șiruri zecimale (v3.2.2): `{"denom","per_tx_limit","daily_limit"}`; înlocuiesc `per_tx_limit` și `daily_limit` pentru denominările pe care le numesc, astfel încât un token cu 18 zecimale poate fi plafonat |
 | `allowed_evm_calls` | Apeluri EVM pe care o cheie legată de regulă le poate face **cu date de apel** (v3.2.2), ca `0x<target>` (orice funcție a acelui contract) sau `0x<target>/0x<selector>` (doar acea funcție). Fără o intrare, o cheie legată de regulă poate doar să trimită valoare, să desfășoare contracte (cu permisiunea `deploy`) și să mute tokenii ERC-20 listați în `allowed_denoms`. Listarea unei ținte presupune încredere în fiecare argument al apelurilor făcute către ea, destinatarii incluși |
 
@@ -100,11 +100,11 @@ qorechaind tx abstractaccount update-rules <account-address> \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
-Limitele sunt exprimate în unitatea de bază (`uqor`) și se contorizează per execuție autorizată; limita zilnică plafonează totalul pe zi calendaristică UTC. Regulile înlocuiesc în bloc regulile stocate, deci un câmp omis este eliminat. Începând cu v3.2.2, lane-ul EVM măsoară ce mută efectiv un apel (valoarea nativă, scăderea soldului nativ al contului, monedele bancare cheltuite și modificarea soldului sau a alocației fiecărui ERC-20 listat) în loc de doar `msg.value`, iar crearea de contracte necesită permisiunea separată `deploy`. Un exemplu mai bogat:
+Limitele sunt exprimate în unitatea de bază (`uqor`) și se contorizează per execuție autorizată; limita zilnică plafonează totalul pe zi calendaristică UTC. Regulile înlocuiesc în bloc regulile stocate, deci un câmp omis este eliminat. Începând cu v3.2.2, lane-ul EVM măsoară ce mută efectiv un apel (valoarea nativă, scăderea soldului nativ al contului, monedele bancare cheltuite și modificarea soldului sau a alocației fiecărui ERC-20 listat) în loc de doar `msg.value`, iar crearea de contracte necesită permisiunea separată `deploy`. Un exemplu mai bogat (ERC-20 afișat este tokenul de test fUSD de pe testnet; folosiți adresa contractului propriului token și rețineți bara oblică din `erc20/<address>` într-o regulă față de cele două puncte din denominația bank `erc20:<address>`):
 
 ```bash
 qorechaind tx abstractaccount update-rules <account-address> \
-  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0xTOKEN"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0xTOKEN","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
+  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0x97143B771D34ddb9130b807b135Ae675A5a963CA"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0x97143B771D34ddb9130b807b135Ae675A5a963CA","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
@@ -122,7 +122,7 @@ Chain-ul determină limita în această ordine: regula proprie a autentificatoru
 
 ## Autentificatori de Portofel Conectat — Cheltuieli Delegate {#authenticators}
 
-Designul autentificatorilor a fost introdus în versiunea de chain **v3.1.85** (bazat pe modelul de permisiuni v3.1.84). **Nu poate fi folosit pe rețelele live cât timp modulul este dezactivat** (vezi caseta de stare de la începutul acestei pagini). O **cheie de portofel extern conectată** — o cheie Phantom (ed25519) sau un cont MetaMask (secp256k1) — poate **cheltui din contul canonic post-cuantic** în condiții de privilegiu minim, cu limite de cheltuieli și revocabile. Cheia externă nu produce niciodată o semnătură ML-DSA; un **releu (relayer)** trimite și plătește plicul tranzacției (semnătura hibridă PQC proprie a releului satisface cerințele de semnare ale chain-ului), în timp ce semnătura autentificatorului asupra **octeților de semnare separați pe domeniu, legați de protecția anti-replay** reprezintă autorizarea.
+Designul autentificatorilor a fost introdus în versiunea de chain **v3.1.85** (bazat pe modelul de permisiuni v3.1.84). **Nu poate fi folosit pe mainnet cât timp modulul este dezactivat acolo**, și este disponibil pe testnet, unde modulul este activat (vezi caseta de stare de la începutul acestei pagini). O **cheie de portofel extern conectată** — o cheie Phantom (ed25519) sau un cont MetaMask (secp256k1) — poate **cheltui din contul canonic post-cuantic** în condiții de privilegiu minim, cu limite de cheltuieli și revocabile. Cheia externă nu produce niciodată o semnătură ML-DSA; un **releu (relayer)** trimite și plătește plicul tranzacției (semnătura hibridă PQC proprie a releului satisface cerințele de semnare ale chain-ului), în timp ce semnătura autentificatorului asupra **octeților de semnare separați pe domeniu, legați de protecția anti-replay** reprezintă autorizarea.
 
 ### Înregistrarea unui autentificator {#register-authenticator}
 
@@ -243,7 +243,7 @@ Eșecurile de aplicare a regulilor returnează coduri distincte (codespace `abst
 | --- | --- | --- |
 | `5` | Limită de cheltuieli depășită (per tranzacție sau zilnică) | Afișați alocarea rămasă |
 | `6` | Autentificator expirat | „Expirat — reconectați portofelul” |
-| `9` | Modul dezactivat (starea curentă pe ambele rețele) | „Portofelele conectate nu sunt încă disponibile” |
+| `9` | Modul dezactivat (starea curentă pe mainnet) | „Portofelele conectate nu sunt încă disponibile” |
 | `10` | Permisiune refuzată (domeniu sau mesaj nedelegabil) | Afișați permisiunea lipsă |
 | `11` | Replay respins (nonce/secvență învechită) | Reinterogați nonce-ul și resemnați |
 
@@ -254,7 +254,7 @@ Eșecurile de aplicare a regulilor returnează coduri distincte (codespace `abst
 Interogările de citire ale modulului sunt servite prin REST (începând cu **v3.1.85**):
 
 ```
-GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on both networks today
+GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on mainnet today; enabled: true on the testnet
 GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
@@ -275,7 +275,7 @@ qorechaind query abstractaccount account <address>
 qorechaind query abstractaccount accounts --page-limit 10
 ```
 
-Pe mainnet lista de conturi este goală; testnet-ul listează câteva conturi create înainte ca indicatorul de activare să fie aplicat pe fiecare cale.
+Pe mainnet lista de conturi este goală. Testnet-ul listează câteva conturi (patru la 27 octombrie 2026), unele create înainte ca indicatorul de activare să fie aplicat pe fiecare cale.
 
 ### JSON-RPC
 

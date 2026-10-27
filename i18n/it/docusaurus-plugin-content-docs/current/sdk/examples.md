@@ -64,7 +64,7 @@ Questo esempio firma solo con la firma **classica**, quindi funziona contro un
 nodo locale o di sviluppo ma viene rifiutato da mainnet e testnet, che
 richiedono la firma ibrida su ogni transazione del percorso Native. Per le
 reti pubbliche connettiti con la coppia di chiavi dell'account,
-`client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0), come nella
+`client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 o successivo), come nella
 [Guida rapida](/sdk/quickstart#send-qor).
 
 ```ts
@@ -126,9 +126,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 Usa `@qorechain/evm` (un livello sottile sopra viem) per chiamare i precompile
 di sola lettura di QoreChain e leggere un saldo ERC-20. L'id della chain EVM
 viene rilevato automaticamente tramite `eth_chainId`. I precompile non sono
-ancora attivi su mainnet o testnet (vedi
-[Stato della rete](/developer-guide/evm-precompiles#network-status)); finché
-non lo saranno, e su un nodo che ne è privo, quelle chiamate lanciano "feature
+attivi sulla mainnet, e sulla testnet lo sono solo quelli di verifica PQC, di stato
+delle chiavi PQC e dei parametri di consenso (vedi
+[Stato della rete](/developer-guide/evm-precompiles#network-status)); dove un
+precompile è inattivo, e su un nodo che ne è privo, quelle chiamate lanciano "feature
 not present", segnalato per singola chiamata.
 
 ```ts
@@ -265,8 +266,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 
 Costruisci un `MsgExecuteCosmos` inviato tramite relayer sulla corsia degli
 authenticator Native (SDK 0.7.0, chain v3.1.85; il modulo `abstractaccount` è
-oggi disattivato su entrambe le reti, quindi questa corsia non può ancora
-essere usata lì): una chiave ed25519 in stile
+disattivato sulla mainnet e abilitato sulla testnet, quindi questa corsia non può ancora
+essere usata sulla mainnet): una chiave ed25519 in stile
 Phantom firma il digest di autenticazione con separazione di dominio, e il
 messaggio risultante è pronto perché un relayer lo trasmetta (il relayer paga
 le fee; la chiave esterna non produce mai una co-firma ML-DSA). Esecuzione a

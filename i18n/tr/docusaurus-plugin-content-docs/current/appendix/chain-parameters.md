@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Zincir Parametreleri
 
-QoreChain ağlarının modül parametrelerinin, modüle göre gruplanmış birleştirilmiş referansı. Parametreler, modülün bir params sorgusu olduğu yerlerde `qorechaind query <module> params` ile sorgulanabilir (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` ve `gasabstraction` `config` kullanır), REST üzerinden ise yalnızca [REST / gRPC başvurusunda](/api-reference/rest-grpc-endpoints) listelenen rotalar için sorgulanabilir. `x/inflation` parametreleri de v3.2.3'ten beri ana ağda REST üzerinden sunulur (`/qorechain/inflation/v1/params`). `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ve `xqore` için REST kullanılamaz.
+QoreChain ağlarının modül parametrelerinin, modüle göre gruplanmış birleştirilmiş referansı. Parametreler, modülün bir params sorgusu olduğu yerlerde `qorechaind query <module> params` ile sorgulanabilir (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` ve `gasabstraction` `config` kullanır), REST üzerinden ise yalnızca [REST / gRPC başvurusunda](/api-reference/rest-grpc-endpoints) listelenen rotalar için sorgulanabilir. `x/inflation` parametreleri de v3.2.3'ten beri ana ağda REST üzerinden sunulur (`/qorechain/inflation/v1/params`). Ana ağda `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ve `xqore` için, ayrıca `pqc` parametreleri için REST kullanılamaz (test ağı `pqc`, `crossvm` ve `rlconsensus` parametrelerini v3.2.6'dan beri REST üzerinden sunar).
 
 :::note
-Gösterilen değerler 23 Ekim 2026 tarihinde ana ağ **`qorechain-vladi`**'den (EVM zincir kimliği **9801**, sürüm **v3.2.4**, 23 Ekim 2026'da uygulandı) canlı olarak okunmuştur (bir yönetişim önerisinin değiştirdikleri dışında genesis değerleridir; değişenler ayrıca belirtilmiştir). Belirtilen durumlar dışında test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**, sürüm **v3.2.4**, 19 Ekim 2026'dan beri) üzerinde de aynıdır; kalan farklar [Test ağı ile ana ağ arasındaki farklar](#testnet-differences) bölümünde toplanmıştır. Blok cinsinden verilen süreler, ölçülen ana ağ blok süresi olan yaklaşık 3,2 saniyeye göre çevrilmiştir (test ağı yaklaşık her saniye bir blok üretir).
+Gösterilen değerler 23 Ekim 2026 tarihinde ana ağ **`qorechain-vladi`**'den (EVM zincir kimliği **9801**, sürüm **v3.2.4**, 23 Ekim 2026'da uygulandı) canlı olarak okunmuştur (bir yönetişim önerisinin değiştirdikleri dışında genesis değerleridir; değişenler ayrıca belirtilmiştir) ve çekirdek modül satırları 27 Ekim 2026'da yeniden okunmuştur. Yönetişim önerisi 14, v3.2.5'i ana ağda 3.906.833 yüksekliğinde uygulayacaktır (bu yazı hazırlanırken oylama döneminde); bu sayfa ana ağı bugün olduğu haliyle anlatır ve bu yükseltme uygulandığında güncellenir. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) **v3.2.6** sürümünü çalıştırır (27 Ekim 2026'da uygulandı). Değerleri, belirtilen durumlar dışında ana ağınkilerle aynıdır; kalan farklar [Test ağı ile ana ağ arasındaki farklar](#testnet-differences) bölümünde toplanmıştır. Blok cinsinden verilen süreler, ölçülen ana ağ blok süresi olan yaklaşık 3,2 saniyeye göre çevrilmiştir (test ağı yaklaşık her 1,3 saniyede bir blok üretir).
 :::
 
 ---
@@ -158,7 +158,7 @@ Modül, üst sınıra ulaşılana kadar bu emisyonu ücret toplayıcısına basa
 
 ## RL Konsensüs Modülü (`x/rlconsensus`)
 
-`x/rlconsensus` modülü, pekiştirmeli öğrenme optimizasyon katmanı olan **PRISM**'i uygular. Her iki ağda da gözlem modundadır: hiçbir politika ağırlığı yüklenmemiştir, dolayısıyla hiçbir şeyi ayarlamaz. Dört PRISM kontrol mesajı ana ağda devre kesici tarafından kapatılmıştır ([Devre Kesici Durumu](#circuit-breaker) bölümüne bakın).
+`x/rlconsensus` modülü, pekiştirmeli öğrenme optimizasyon katmanı olan **PRISM**'i uygular. Ana ağda gözlem modundadır: hiçbir politika ağırlığı yüklenmemiştir, dolayısıyla hiçbir şeyi ayarlamaz ve dört PRISM kontrol mesajı devre kesici tarafından kapatılmıştır ([Devre Kesici Durumu](#circuit-breaker) bölümüne bakın). Test ağında ajan, küçük bir gösterim politikası yüklenmiş olarak **gölge modunda** çalışır: her 10 blokta bir gözlem yapar ve hiçbir değeri değiştirmeden önerilen bir eylemi kaydeder. Tablo ana ağ değerlerini verir; test ağı yalnızca `agent_mode` bakımından (`0`, gölge) farklıdır ve bunları REST üzerinden sunar (`GET /qorechain/rlconsensus/v1/params`, v3.2.6; ana ağ 501 döndürür).
 
 | Parametre                        | Değer          | Açıklama                                                      |
 | -------------------------------- | -------------- | ------------------------------------------------------------- |
@@ -183,7 +183,7 @@ Modül, üst sınıra ulaşılana kadar bu emisyonu ücret toplayıcısına basa
 ## Köprü Modülü (`x/bridge`)
 
 :::caution Canlı değil
-37 zincir yapılandırmasının tamamı `pending` durumundadır, hiçbir köprü doğrulayıcısı kayıtlı değildir, hiçbir köprü işlemi oluşturulmamıştır ve her iki ağda da açık bir IBC kanalı yoktur. Bkz. [Köprü Mimarisi](/architecture/bridge-architecture).
+37 zincir yapılandırmasının tamamı `pending` durumundadır, hiçbir köprü doğrulayıcısı kayıtlı değildir, hiçbir köprü işlemi oluşturulmamıştır ve ana ağda açık bir IBC kanalı yoktur (test ağında, IBC testi için açılmış, kimliği `provider` olan bir test karşı taraf zincire giden tek bir ICS-20 transfer kanalı (`channel-0`) vardır (27 Ekim 2026'da kontrol edildi)). Bkz. [Köprü Mimarisi](/architecture/bridge-architecture).
 :::
 
 `GET /qorechain/bridge/v1/config`:
@@ -204,7 +204,7 @@ Zincir başına ayarlar (`min_confirmations`, `max_single_transfer`, `daily_limi
 
 | Parametre                      | Değer            | Açıklama                                          |
 | ------------------------------ | ---------------- | ------------------------------------------------- |
-| `max_sidechains`               | `10`             | Maksimum kayıtlı yan zincir sayısı                |
+| `max_sidechains`               | `10` (test ağı: `64`) | Maksimum kayıtlı yan zincir sayısı           |
 | `max_paychains`                | `50`             | Maksimum kayıtlı ödeme zinciri sayısı             |
 | `min_anchor_interval`          | `100`            | Minimum çapa aralığı (blok)                       |
 | `max_anchor_interval`          | `1000`           | Maksimum çapa aralığı (blok)                      |
@@ -226,7 +226,7 @@ Zincir başına ayarlar (`min_confirmations`, `max_single_transfer`, `daily_limi
 | `queue_timeout_blocks`| `100`   | Bekleyen bir mesajın zaman aşımına uğramasından önceki blok sayısı |
 | `enabled`             | `true`  | Modül etkinleştirme bayrağı                    |
 
-`MsgCrossVMCall` ana ağda devre kesici tarafından kapatılmıştır (test ağında etkindir).
+`MsgCrossVMCall` ana ağda devre kesici tarafından kapatılmıştır (test ağında etkindir). Test ağı bu değerleri REST üzerinden sunar (`GET /qorechain/crossvm/v1/params`); ana ağ 501 döndürür.
 
 ---
 
@@ -256,10 +256,10 @@ SVM işlem hattı ağ genelinde devre dışıdır (bkz. [Ağlar](/appendix/netwo
 
 | Parametre                   | Değer                | Açıklama                                      |
 | --------------------------- | -------------------- | --------------------------------------------- |
-| `max_rollups`               | `100`                | Maksimum kayıtlı rollup sayısı                |
+| `max_rollups`               | `100` (test ağı: `200`) | Maksimum kayıtlı rollup sayısı             |
 | `min_stake_for_rollup`      | `10,000,000,000 uqor`| Minimum operatör stake'i (10.000 QOR)         |
 | `rollup_creation_burn_rate` | `0.01`               | Oluşturma stake'inin yakılan oranı (%1)       |
-| `default_challenge_window`  | `604,800` s          | Varsayılan itiraz penceresi (7 gün)           |
+| `default_challenge_window`  | `604,800` s (test ağı: `3,600` s) | Varsayılan itiraz penceresi (7 gün; test ağında 1 saat) |
 | `max_da_blob_size`          | `2,097,152`          | Bayt cinsinden maksimum DA blob boyutu (2 MB) |
 | `blob_retention_blocks`     | `432,000`            | DA bloblarının saklanacağı blok sayısı (≈3,2 sn bloklarda yaklaşık 16 gün) |
 | `max_batches_per_block`     | `10`                 | Blok başına işlenen maksimum parti sayısı     |
@@ -293,8 +293,8 @@ Genesis yapılandırması (`enabled = true`, `native_denom = uqor`):
 
 Dönüşüm oranı, o tokenle ödenen bir ücret dönüştürülürken kullanılan orandır.
 
-:::note Açık IBC kanalı yok
-Her iki ağda da açık bir IBC kanalı olmadığından henüz `ibc/USDC` veya `ibc/ATOM` var olamaz; ücretler `uqor` ile ödenir.
+:::note Kabul edilen IBC ücret tokenı yok
+Ana ağda açık bir IBC kanalı olmadığından orada `ibc/USDC` veya `ibc/ATOM` var olamaz; test ağının tek test kanalı küçük bir test voucher bakiyesi taşır, ancak kabul edilen token listesi orada da yalnızca `uqor`'dur. Ücretler `uqor` ile ödenir.
 :::
 
 ---
@@ -323,7 +323,7 @@ Her iki ağda da açık bir IBC kanalı olmadığından henüz `ibc/USDC` veya `
 | `protocol_fee_bps`      | `10`                          | Protokol ücreti payı (%0,10)        |
 | `min_liquidity`         | `1000`                        | Minimum likidite                    |
 | `max_pools_per_creator` | `50`                          | Oluşturan başına maksimum havuz sayısı |
-| `lp_token_decimals`     | `6`                           | LP token ondalık basamağı           |
+| `lp_token_decimals`     | `6`                           | LP payı görüntüleme ondalık basamağı (paylar defter kayıtlarıdır, token değildir) |
 | `pool_creation_fee`     | `100,000,000 uqor` (100 QOR)  | Havuz oluşturma ücreti              |
 | `max_swap_impact_bps`   | `500`                         | Bir takasın maksimum fiyat etkisi (%5) |
 | `enabled`               | `true`                        | Modül etkinleştirme bayrağı         |
@@ -334,13 +334,13 @@ Ana ağda da test ağında da henüz havuz yoktur ve `MsgPausePool` / `MsgResume
 
 ## Akıllı Hesaplar (`x/abstractaccount`)
 
-:::caution Her iki ağda da kapalı
-`enabled` değeri `false`'tur: bir kimlik doğrulayıcı kaydetme, bir kimlik doğrulayıcı üzerinden yürütme ve akıllı hesap oluşturma, modül kapalıyken reddedilir. Bu özellikler üzerine geliştirme yapmadan önce `GET /qorechain/abstractaccount/v1/config` adresini kontrol edin.
+:::caution Ana ağda kapalı
+Ana ağda `enabled` değeri `false`'tur (test ağında `true`'dur, 27 Ekim 2026'da kontrol edildi): bir kimlik doğrulayıcı kaydetme, bir kimlik doğrulayıcı üzerinden yürütme ve akıllı hesap oluşturma, modül kapalıyken reddedilir. Bu özellikler üzerine geliştirme yapmadan önce `GET /qorechain/abstractaccount/v1/config` adresini kontrol edin.
 :::
 
 | Parametre             | Değer    | Açıklama                         |
 | --------------------- | -------- | -------------------------------- |
-| `enabled`             | `false`  | Modül etkinleştirme bayrağı      |
+| `enabled`             | `false` (test ağı: `true`) | Modül etkinleştirme bayrağı |
 | `max_session_keys`    | `10`     | Hesap başına maksimum oturum anahtarı sayısı |
 | `max_spending_rules`  | `5`      | Maksimum harcama kuralı sayısı   |
 | `default_session_ttl` | `86400` s| Varsayılan oturum anahtarı ömrü  |
@@ -349,7 +349,7 @@ Ana ağda da test ağında da henüz havuz yoktur ve `MsgPausePool` / `MsgResume
 
 ## Stake, Slashing, Yönetişim, Ücretler ve EVM {#core-modules}
 
-Standart Cosmos SDK ve EVM modülleri; stake, slashing, yönetişim ve dağıtım satırları 23 Ekim 2026'da canlı olarak okunmuştur (fee-market, EVM, ERC-20 ve QoreChain Native satırları en son 20 Ekim 2026'da okunmuştur); belirtilen durumlar dışında her iki ağda aynıdır ve v3.2.4 yükseltmesinden etkilenmemiştir.
+Standart Cosmos SDK ve EVM modülleri; tümü 27 Ekim 2026'da ana ağdan canlı olarak okunmuştur (önceki okumalardan değişmemiştir). Test ağı; yönetişim oylama süreleri, etkin EVM precompile'ları ve QoreChain Native instantiate izni dışında aynıdır ([Test ağı ile ana ağ arasındaki farklar](#testnet-differences) bölümüne bakın).
 
 | Modül | Parametre | Değer |
 | --- | --- | --- |
@@ -375,7 +375,7 @@ Standart Cosmos SDK ve EVM modülleri; stake, slashing, yönetişim ve dağıtı
 | | `no_base_fee` | `false` |
 | EVM | `evm_denom` / `extended_denom` | `uqor` / `aqor` (18 ondalık) |
 | | kontrat oluşturma / çağırma erişimi | izinsiz (permissionless) |
-| | `active_static_precompiles` | boş (hiçbir EVM precompile'ı etkin değil) |
+| | `active_static_precompiles` | ana ağda boş (hiçbir EVM precompile'ı etkin değil; test ağında üç tanesi etkin, aşağıya bakın) |
 | | `history_serve_window` | 8,192 |
 | ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
 | QoreChain Native | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
@@ -386,9 +386,9 @@ Standart Cosmos SDK ve EVM modülleri; stake, slashing, yönetişim ve dağıtı
 
 Zincir, vakıf operasyon hesabı ve yönetişim tarafından kontrol edilen Cosmos SDK devre kesicisiyle tekil mesaj türlerini kapatabilir. Devre dışı bırakılmış bir mesaj türü, her hatta ante handler'da reddedilir. Canlı liste `GET /cosmos/circuit/v1/disable_list` adresindedir.
 
-**Ana ağ (20 Ekim 2026, 16 kayıt, 14 Ekim'den beri değişmedi):** vesting hesabı oluşturma (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; ve dört PRISM kontrol mesajı (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). EVM hattı (`MsgEthereumTx`) **açıktır**: 16 ile 25 Eylül arasında kapatılmış ve v3.2.0 yükseltmesiyle yeniden açılmıştır.
+**Ana ağ (27 Ekim 2026, 16 kayıt, 14 Ekim'den beri değişmedi):** vesting hesabı oluşturma (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; ve dört PRISM kontrol mesajı (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). EVM hattı (`MsgEthereumTx`) **açıktır**: 16 ile 25 Eylül arasında kapatılmış ve v3.2.0 yükseltmesiyle yeniden açılmıştır.
 
-**Test ağı (20 Ekim 2026):** yalnızca üç QoreChain Native mesajı.
+**Test ağı (27 Ekim 2026, 1 kayıt):** yalnızca QoreChain Native `MsgStoreCode` (kontrat yükleme); instantiate artık orada kapatılmış değildir.
 
 Standart bank, staking, governance, distribution, authz ve `x/pqc` kayıt mesajlarının tümü dahil diğer her mesaj türü etkindir. Liste yönetişim tarafından kontrol edilir ve değişebilir; her zaman sorgulayın.
 
@@ -396,13 +396,21 @@ Standart bank, staking, governance, distribution, authz ve `x/pqc` kayıt mesajl
 
 ## Test Ağı ile Ana Ağ Arasındaki Farklar {#testnet-differences}
 
-Her iki ağ da v3.2.4 çalıştırır: `qorechain-diana` test ağı 8.337.253 yüksekliğinden (19 Ekim 2026) beri, `qorechain-vladi` ana ağı 3.742.566 yüksekliğinden (23 Ekim 2026, yönetişim önerisi 13) beri. Dolayısıyla v3.2.4 eklemeleri her iki ağda da aynıdır: isteğe bağlı zaman kilitli stake modülü `x/stakingtier` (48 yerine 49 modül; `GET /qorechain/stakingtier/v1/params`, minimum kilit 10 QOR, erken kilit açma cezası %5), üçüncü bir `emission_mode` (`target_apy`; `target_apy_bps` her iki ağda `0`), on üçüncü bir kayıtlı yakım kaynağı (`staking_tier_penalty`), ek hafif düğüm ödül havuzu raporlama alanları (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`) ve bir düğümün kendi kaydıyla başlayan ödül sınırı, PQC hesaplarında `possession_proven` bayrağı (sahiplik kanıtı hesap anahtarları için isteğe bağlı kalır, köprü doğrulayıcı anahtarları için zorunludur), blok süresi cinsinden sayılan RDK itiraz penceresi ve `protocol_features` ile `auth_nonce` sorguları. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking). 23 Ekim 2026 itibarıyla iki ağ yalnızca aşağıdaki değerlerde farklıdır.
+27 Ekim 2026'da canlı olarak okunmuştur. Ana ağ `qorechain-vladi` v3.2.4 çalıştırır (3.742.566 yüksekliğinden, 23 Ekim 2026'dan beri; yönetişim önerisi 14, v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır ve bu yazı hazırlanırken oylama döneminde idi). Test ağı `qorechain-diana` **v3.2.6** çalıştırır: v3.2.4 ona 8.337.253 yüksekliğinde (19 Ekim 2026), v3.2.5 8.890.800 yüksekliğinde (26 Ekim) ve v3.2.6 8.970.638 yüksekliğinde (27 Ekim) ulaştı. Test ağı, her sürümü önce alan ve test için ayarlanmış bir hazırlık ağıdır; bu nedenle aşağıdaki değerler ana ağdan farklıdır. Bu bölüm bu sayfanın parametre tablolarını kapsar; v3.2.5 özellikleri, ana ağ o sürümü uyguladığı gün belgelenir ve bu bölüm o zaman gözden geçirilir. Burada listelenmeyen her parametre her iki ağda aynıdır (stake, slashing, dağıtım, fee-market, ERC-20, AMM, yakım, hafif düğüm, köprü, gaz soyutlama ve zaman kilitli stake değerleri tek tek karşılaştırılmıştır).
 
-Bu değerler test ağına özgüdür:
+| Alan | Ana ağ | Test ağı |
+| ---- | ------- | ------- |
+| Yönetişim oylama süreleri | `voting_period` 172,800 s (2 gün); `expedited_voting_period` 86,400 s (1 gün) | `voting_period` 14,400 s (4 saat); `expedited_voting_period` 3,600 s (1 saat). Depozitolar, yeter sayı ve eşikler aynıdır |
+| `x/inflation` | `emission_mode` `fixed`; `fixed_epoch_emission` 86.000 QOR; `max_total_emission` 590.000.000 QOR; `target_apy_bps` `0` | `emission_mode` `target_apy`; `target_apy_bps` `1667`; `fixed_epoch_emission` 16.239 QOR; `max_total_emission` 3,950,390,341,362,112,750 uqor, çoktan ulaşılmış (`/qorechain/inflation/v1/epoch_info` adresinde `remaining_emission` `0`, yani test ağı artık hiçbir şey basmaz) |
+| EVM etkin statik precompile'lar | yok (`[]`) | üç tane: `0x0000000000000000000000000000000000000C01` adresindeki PRISM parametreleri precompile'ı ile `0x...0a01` ve `0x...0a02` adreslerindeki precompile'lar |
+| PRISM ajanı (`x/rlconsensus`) | Gözlem modu, politika yüklenmemiş; kontrol mesajları kapalı | Bir gösterim politikasıyla gölge modu (test ağı yönetişimi tarafından ayarlanmış); `GET /qorechain/rlconsensus/v1/...` yanıt verir (ana ağ 501 döndürür) |
+| Akıllı hesaplar (`x/abstractaccount`) | `enabled` `false` | `enabled` `true` |
+| RDK (`x/rdk`) | `max_rollups` 100; `default_challenge_window` 604,800 s | `max_rollups` 200; `default_challenge_window` 3,600 s |
+| Multilayer (`x/multilayer`) | `max_sidechains` 10 | `max_sidechains` 64 |
+| QoreChain Native instantiate izni | `Nobody` | `Everybody` (kod yükleme her iki ağda `Nobody` kalır) |
+| Devre kesici | 16 kayıt (yukarıya bakın) | 1 kayıt: QoreChain Native `MsgStoreCode` |
+| REST üzerinden parametre rotaları | `x/pqc`, `x/crossvm` ve `x/rlconsensus` parametreleri 501 döndürür | `GET /qorechain/pqc/v1/params`, `/qorechain/crossvm/v1/params` ve `/qorechain/rlconsensus/v1/params` yanıt verir (v3.2.6) |
+| Blok süresi ve doğrulayıcılar | yaklaşık 3,2 sn; 8 bağlı doğrulayıcı | yaklaşık 1,3 sn; 4 bağlı doğrulayıcı |
+| Test tokenları | yok | fUSD, fETH ve fBTC (bkz. [Faucet](/dashboard/faucet#fest-tokens)) |
 
-| Alan | Test ağı |
-| ---- | ------- |
-| `x/inflation` değerleri | Daha önceki emisyon değerleri (dönem başına 16.239 QOR, üst sınır 114.285.714 QOR, çoktan ulaşılmış); ana ağ, yönetişim önerisi 10 ile belirlenen değerleri kullanır. |
-| Devre kesici | Yalnızca üç QoreChain Native mesajı (yukarıya bakın). |
-
-Burada listelenmeyen her parametre her iki ağda aynıdır.
+Her iki ağ da v3.2.4 eklemelerini taşır: isteğe bağlı zaman kilitli stake modülü `x/stakingtier` (48 yerine 49 modül; `GET /qorechain/stakingtier/v1/params`, minimum kilit 10 QOR, erken kilit açma cezası %5), on üçüncü bir kayıtlı yakım kaynağı (`staking_tier_penalty`), bir düğümün kendi kaydıyla başlayan ödül sınırına sahip ek hafif düğüm ödül havuzu raporlama alanları, PQC hesaplarında `possession_proven` bayrağı (sahiplik kanıtı hesap anahtarları için isteğe bağlı kalır, köprü doğrulayıcı anahtarları için zorunludur), blok süresi cinsinden sayılan RDK itiraz penceresi ve `protocol_features` ile `auth_nonce` sorguları. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking). Test ağındaki v3.2.6 eklemeleri [Sürüm Geçmişi](/appendix/version-history#testnet-v326) bölümünde özetlenmiştir.

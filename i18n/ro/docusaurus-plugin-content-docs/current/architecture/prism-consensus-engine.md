@@ -9,8 +9,10 @@ sidebar_position: 2
 
 QoreChain integrează **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), un strat de optimizare prin învățare prin întărire, direct în stratul de consens prin modulul `x/rlconsensus`. PRISM observă metricile lanțului la fiecare N blocuri și este conceput să ruleze inferența printr-o rețea neuronală cu virgulă fixă și să propună ajustări ale parametrilor de consens — toate în mod determinist, fără aritmetică cu virgulă mobilă în căile critice pentru consens.
 
-:::note Stare curentă (verificat la 20 octombrie 2026; ambele rețele rulează acum v3.2.4)
-Atât pe mainnet, cât și pe testnet agentul este în modul `conservative`, colectează o observație și o recompensă la fiecare 10 blocuri și **nu are ponderi de politică încărcate**: a făcut 0 pași și nu aplică nicio modificare de parametri (verificat prin interogările `AgentStatus` și `Policy` pe ambele rețele). Timpul blocului este determinat de configurația nodurilor validatorilor, nu de PRISM. Încărcarea unei politici, schimbarea modului, reluarea agentului și actualizarea ponderilor de recompensă sunt acțiuni de guvernanță care sunt în prezent dezactivate pe mainnet de circuit breaker; pe testnet nu sunt dezactivate.
+:::note Stare curentă (mainnet v3.2.4, verificat la 20 octombrie 2026 și neschimbat de atunci; testnet v3.2.6, verificat la 27 octombrie 2026)
+**Mainnet.** Agentul este în modul `conservative`, colectează o observație și o recompensă la fiecare 10 blocuri și **nu are ponderi de politică încărcate**: a făcut 0 pași și nu aplică nicio modificare de parametri. Timpul blocului este determinat de configurația nodurilor validatorilor, nu de PRISM. Încărcarea unei politici, schimbarea modului, reluarea agentului și actualizarea ponderilor de recompensă sunt acțiuni de guvernanță care sunt în prezent dezactivate pe mainnet de circuit breaker (cele patru mesaje de control sunt încă pe lista de dezactivare), deci starea agentului nu a putut să se schimbe. Rutele de interogare PRISM de sub `/qorechain/rlconsensus/v1/` răspund 501 (neimplementat) pe mainnet.
+
+**Testnet.** Guvernanța testnet-ului a setat agentul în **modul shadow** și a încărcat o mică politică demonstrativă (25 de intrări, un strat ascuns de 4 unități, 5 ieșiri, 129 de ponderi, epoca 1; este un test al conductei, nu rețeaua de producție descrisă mai jos). În modul shadow agentul observă la fiecare 10 blocuri, își calculează recompensa și o acțiune propusă și le înregistrează (evenimentul `rl_action_proposed`) fără să schimbe nicio valoare: `applied_params` își păstrează valorile implicite (timp de bloc 5000 ms, prag minim al prețului gazului 100), iar `last_action` raportează `"applied": false`. Începând cu v3.2.6, testnet-ul servește modulul prin REST sub `/qorechain/rlconsensus/v1/`: `agent` (mod, epocă, număr de pași, starea circuit breaker-ului), `params`, `observation`, `reward`, `policy`, `applied_params` și `last_action`; circuit breaker-ul agentului a fost corectat, iar istoricul său este mărginit în aceeași versiune, iar precompilarea EVM `rlConsensusParams` (`0x…0C01`) returnează acum valorile modulului.
 
 Două modificări de versiune strâng limitele a ceea ce poate face o politică sau o schimbare de parametri viitoare. Începând cu v3.2.2, o actualizare de politică prin guvernanță este validată cu aritmetică verificată. Începând cu v3.2.3, mesajele de guvernanță sunt verificate ca interval pe valoarea brută din mesaj (modul agentului), iar fiecare pondere de recompensă trebuie să fie între 0 și 1.
 :::
@@ -19,7 +21,7 @@ Două modificări de versiune strâng limitele a ceea ce poate face o politică 
 
 ```mermaid
 flowchart LR
-    A["Observation Collector<br/>25-dim state vector<br/>every 10 blocks"] --> B["Policy Network (MLP)<br/>int64 fixed-point<br/>2x256 hidden, ReLU/tanh"]
+    A["Observation Collector<br/>25-dim state vector<br/>every 10 blocks"] --> B["Policy Network (MLP)<br/>int64 fixed-point<br/>design: 2x256 hidden, ReLU/tanh"]
     B --> C["5-dim action vector<br/>clamped to mode bounds"]
     C --> D["Adjust consensus params<br/>block time, gas price,<br/>RPoS / DPoS pool weights"]
     D --> E["Reward Computer<br/>weighted multi-objective"]
@@ -49,6 +51,8 @@ Rețeaua de politică este un perceptron multistrat (MLP) de tip feedforward, im
 
 ### Arhitectura rețelei
 
+Tabelul și numărul de parametri de mai jos descriu **dimensiunea de proiectare** a rețelei de politică (două straturi ascunse de câte 256 de unități). Nicio politică de această dimensiune nu este încărcată pe vreuna dintre rețele: mainnet-ul nu are nicio politică încărcată, iar testnet-ul rulează o mică politică demonstrativă (25 de intrări, un strat ascuns de 4 unități, 5 ieșiri, 129 de ponderi).
+
 | Proprietate            | Valoare                              |
 | ------------------- | ---------------------------------- |
 | Dimensiuni de intrare    | 25                                 |
@@ -77,7 +81,7 @@ Toate calculele MLP folosesc valori `int64` scalate cu `FixedPointScale = 10^8`.
 * **ReLU**: `relu(x) = max(0, x)`
 * **tanh**: aproximantă Padé `tanh(x) ~ x * (3*S - x^2) / (3*S + x^2)` pentru `|x| <= 2.5*SCALE`, limitată la +/- SCALE în rest
 
-Ponderile de politică sunt concepute să fie stocate on-chain ca un vector aplatizat `[]int64` și actualizate prin propunere de guvernanță. Nicio politică nu este încărcată astăzi pe rețelele live.
+Ponderile de politică sunt concepute să fie stocate on-chain ca un vector aplatizat `[]int64` și actualizate prin propunere de guvernanță. Nicio politică nu este încărcată astăzi pe mainnet; testnet-ul rulează o mică politică demonstrativă în modul shadow (vezi nota de stare de mai sus).
 
 ---
 
@@ -163,8 +167,8 @@ PRISM operează în unul dintre patru moduri, controlabil prin guvernanță (mes
 
 | Mod             | ID | Modificare max | Comportament                                                                                   |
 | ---------------- | -- | ---------- | ------------------------------------------------------------------------------------------ |
-| **Shadow**       | 0  | 0%         | Doar observă și înregistrează recomandări. Niciun parametru nu este modificat. Implicit în cod; rețelele live rulează Conservative (setare din genesis). |
-| **Conservative** | 1  | +/- 10%    | Aplică modificări de parametri în limite stricte. Potrivit pentru implementarea live inițială.         |
+| **Shadow**       | 0  | 0%         | Doar observă și înregistrează recomandări. Niciun parametru nu este modificat. Implicit în cod. De la propunerea 29 de guvernanță a testnet-ului, **agentul de pe testnet rulează în modul Shadow**; agentul de pe mainnet este în modul Conservative (setare din genesis), fără nicio politică încărcată, deci nu aplică nicio modificare. |
+| **Conservative** | 1  | +/- 10%    | Aplică modificări de parametri în limite stricte. Potrivit pentru implementarea live inițială (modul curent al mainnet-ului, fără nicio politică încărcată). |
 | **Autonomous**   | 2  | +/- 25%    | Aplică modificări de parametri în limite mai largi. Pentru rețele mature cu politici validate.  |
 | **Paused**       | 3  | 0%         | PRISM este complet inactiv. Nu se colectează observații și nu rulează nicio inferență.             |
 
@@ -234,12 +238,12 @@ Toate funcțiile operează pe valori `cosmossdk.io/math.LegacyDec`, asigurând r
 | -------------------------------- | --------- | ------------ | ---------------------------------------------------- |
 | `enabled`                        | bool      | `true`       | Activează PRISM                                          |
 | `observation_interval`           | uint64    | `10`         | Blocuri între colectările de observații               |
-| `agent_mode`                     | PrismMode | `1` (Conservative) pe ambele rețele | Modul de operare curent                  |
+| `agent_mode`                     | PrismMode | Mainnet: `1` (Conservative). Testnet: `0` (Shadow, de la propunerea 29; ruta REST îl raportează ca `shadow`) | Modul de operare curent                  |
 | `max_change_conservative`        | LegacyDec | `0.10`       | Modificarea maximă a parametrilor în modul Conservative        |
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Modificarea maximă a parametrilor în modul Autonomous          |
 | `circuit_breaker_window`         | uint64    | `50`         | Numărul de blocuri recente monitorizate de circuit breaker |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Fracțiunea minimă de blocuri sănătoase înainte de declanșare        |
-| `default_block_time_ms`          | int64     | `5000`       | Timpul țintă implicit al blocului (ms), folosit ca bază de observație; timpul real al blocului este de aproximativ 3,2 s pe mainnet și 1,0 s pe testnet |
+| `default_block_time_ms`          | int64     | `5000`       | Timpul țintă implicit al blocului (ms), folosit ca bază de observație; timpul real al blocului este de aproximativ 3,2 s pe mainnet și aproximativ 1,3 s pe testnet |
 | `default_base_gas_price`         | LegacyDec | `100`        | Prețul de bază implicit al gazului                       |
 | `default_validator_set_size`     | uint64    | `100`        | Dimensiunea țintă implicită a setului de validatori                    |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Ponderea de recompensă pentru îmbunătățirea throughput-ului             |

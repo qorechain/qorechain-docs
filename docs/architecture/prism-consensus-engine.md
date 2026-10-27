@@ -9,8 +9,10 @@ sidebar_position: 2
 
 QoreChain embeds **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), a reinforcement-learning optimization layer, directly into the consensus layer via the `x/rlconsensus` module. PRISM observes chain metrics every N blocks and is designed to run inference through a fixed-point neural network and propose consensus parameter adjustments — all deterministically, with no floating-point arithmetic in consensus-critical paths.
 
-:::note Current status (checked 20 October 2026; both networks now run v3.2.4)
-On both mainnet and testnet the agent is in `conservative` mode, collects an observation and a reward every 10 blocks, and has **no policy weights loaded**: it has taken 0 steps and applies no parameter change (checked through the `AgentStatus` and `Policy` queries on both networks). Block time is determined by the validators' node configuration, not by PRISM. Loading a policy, changing the mode, resuming the agent and updating the reward weights are governance actions that are currently disabled on mainnet by the circuit breaker; they are not disabled on the testnet.
+:::note Current status (mainnet v3.2.4, checked 20 October 2026 and unchanged since; testnet v3.2.6, checked 27 October 2026)
+**Mainnet.** The agent is in `conservative` mode, collects an observation and a reward every 10 blocks, and has **no policy weights loaded**: it has taken 0 steps and applies no parameter change. Block time is determined by the validators' node configuration, not by PRISM. Loading a policy, changing the mode, resuming the agent and updating the reward weights are governance actions that are currently disabled on mainnet by the circuit breaker (the four control messages are still on the disabled list), so the agent's state cannot have changed. The PRISM query routes under `/qorechain/rlconsensus/v1/` answer 501 (not implemented) on mainnet.
+
+**Testnet.** Testnet governance set the agent to **shadow mode** and loaded a small demonstration policy (25 inputs, one hidden layer of 4 units, 5 outputs, 129 weights, epoch 1; it is a test of the plumbing, not the production network described below). In shadow mode the agent observes every 10 blocks, computes its reward and a proposed action, and records them (`rl_action_proposed` event) without changing any value: `applied_params` keeps its defaults (block time 5000 ms, gas price floor 100) and `last_action` reports `"applied": false`. Since v3.2.6 the testnet serves the module over REST under `/qorechain/rlconsensus/v1/`: `agent` (mode, epoch, step count, circuit-breaker state), `params`, `observation`, `reward`, `policy`, `applied_params` and `last_action`; the agent circuit breaker was corrected and its history is bounded in the same release, and the `rlConsensusParams` EVM precompile (`0x…0C01`) now returns the module's values.
 
 Two release changes tighten what a future policy or parameter change can do. Since v3.2.2 a governance policy update is validated with checked arithmetic. Since v3.2.3 the governance messages are range-checked on the raw wire value (the agent mode) and each reward weight must lie between 0 and 1.
 :::
@@ -19,7 +21,7 @@ Two release changes tighten what a future policy or parameter change can do. Sin
 
 ```mermaid
 flowchart LR
-    A["Observation Collector<br/>25-dim state vector<br/>every 10 blocks"] --> B["Policy Network (MLP)<br/>int64 fixed-point<br/>2x256 hidden, ReLU/tanh"]
+    A["Observation Collector<br/>25-dim state vector<br/>every 10 blocks"] --> B["Policy Network (MLP)<br/>int64 fixed-point<br/>design: 2x256 hidden, ReLU/tanh"]
     B --> C["5-dim action vector<br/>clamped to mode bounds"]
     C --> D["Adjust consensus params<br/>block time, gas price,<br/>RPoS / DPoS pool weights"]
     D --> E["Reward Computer<br/>weighted multi-objective"]
@@ -49,6 +51,8 @@ The policy network is a feedforward multi-layer perceptron (MLP) implemented ent
 
 ### Network Architecture
 
+The table and parameter count below describe the **design size** of the policy network (two hidden layers of 256 units). No policy of this size is loaded on either network: mainnet has no policy loaded, and the testnet runs a small demonstration policy (25 inputs, one hidden layer of 4 units, 5 outputs, 129 weights).
+
 | Property            | Value                              |
 | ------------------- | ---------------------------------- |
 | Input dimensions    | 25                                 |
@@ -77,7 +81,7 @@ All MLP computations use `int64` values scaled by `FixedPointScale = 10^8`. This
 * **ReLU**: `relu(x) = max(0, x)`
 * **tanh**: Pade approximant `tanh(x) ~ x * (3*S - x^2) / (3*S + x^2)` for `|x| <= 2.5*SCALE`, clamped to +/- SCALE otherwise
 
-Policy weights are designed to be stored on-chain as a flattened `[]int64` vector and updated via governance proposal. No policy is loaded on the live networks today.
+Policy weights are designed to be stored on-chain as a flattened `[]int64` vector and updated via governance proposal. No policy is loaded on mainnet today; the testnet runs a small demonstration policy in shadow mode (see the status note above).
 
 ---
 
@@ -163,8 +167,8 @@ PRISM operates in one of four modes, controllable via governance (the mode-chang
 
 | Mode             | ID | Max Change | Behavior                                                                                   |
 | ---------------- | -- | ---------- | ------------------------------------------------------------------------------------------ |
-| **Shadow**       | 0  | 0%         | Observe and log recommendations only. No parameters are changed. Default in code; the live networks run Conservative (genesis setting). |
-| **Conservative** | 1  | +/- 10%    | Apply parameter changes within tight bounds. Suitable for initial live deployment.         |
+| **Shadow**       | 0  | 0%         | Observe and log recommendations only. No parameters are changed. Default in code. Since testnet governance proposal 29 the **testnet agent runs in Shadow mode**; the mainnet agent is in Conservative mode (genesis setting) with no policy loaded, so it applies no change. |
+| **Conservative** | 1  | +/- 10%    | Apply parameter changes within tight bounds. Suitable for initial live deployment (mainnet's current mode, with no policy loaded). |
 | **Autonomous**   | 2  | +/- 25%    | Apply parameter changes within wider bounds. For mature networks with validated policies.  |
 | **Paused**       | 3  | 0%         | PRISM is completely idle. No observations are collected and no inference runs.             |
 
@@ -234,12 +238,12 @@ All functions operate on `cosmossdk.io/math.LegacyDec` values, ensuring identica
 | -------------------------------- | --------- | ------------ | ---------------------------------------------------- |
 | `enabled`                        | bool      | `true`       | Enable PRISM                                          |
 | `observation_interval`           | uint64    | `10`         | Blocks between observation collections               |
-| `agent_mode`                     | PrismMode | `1` (Conservative) on both networks | Current operating mode                  |
+| `agent_mode`                     | PrismMode | Mainnet: `1` (Conservative). Testnet: `0` (Shadow, since proposal 29; the REST route reports it as `shadow`) | Current operating mode                  |
 | `max_change_conservative`        | LegacyDec | `0.10`       | Maximum parameter change in Conservative mode        |
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Maximum parameter change in Autonomous mode          |
 | `circuit_breaker_window`         | uint64    | `50`         | Number of recent blocks monitored by circuit breaker |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Minimum healthy block fraction before trigger        |
-| `default_block_time_ms`          | int64     | `5000`       | Default target block time (ms) used as the observation baseline; the live block time is about 3.2 s on mainnet and 1.0 s on testnet |
+| `default_block_time_ms`          | int64     | `5000`       | Default target block time (ms) used as the observation baseline; the live block time is about 3.2 s on mainnet and about 1.3 s on testnet |
 | `default_base_gas_price`         | LegacyDec | `100`        | Default base gas price                               |
 | `default_validator_set_size`     | uint64    | `100`        | Default target validator set size                    |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Reward weight for throughput improvement             |

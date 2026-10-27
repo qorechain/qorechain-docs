@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-稼働中のメインネットに対してブロードキャストするには `--chain-id qorechain-vladi` を設定し、テストネットには `--chain-id qorechain-diana` を設定します。どちらのネットワークもv3.2系で稼働しています。メインネットのノードリリースは **v3.2.4**(ガバナンス提案 13 により2026年10月23日にブロック高 3,742,566 で適用。v3.2.3 は2026年10月20日にブロック高 3,662,051 で適用されました)、テストネットは **v3.2.4**(2026年10月19日にブロック高 8,337,253 で適用)です。現在のリリースは [download.qore.host](https://download.qore.host) 配下の `latest.json` で確認してください。`--chain-id` を省略した場合、クライアントはローカルのクライアント設定にある `chain-id` を使用します。
+稼働中のメインネットに対してブロードキャストするには `--chain-id qorechain-vladi` を設定し、テストネットには `--chain-id qorechain-diana` を設定します。どちらのネットワークもv3.2系で稼働しています。メインネットのノードリリースは **v3.2.4**(ガバナンス提案 13 により2026年10月23日にブロック高 3,742,566 で適用。v3.2.3 は2026年10月20日にブロック高 3,662,051 で適用されました。ガバナンス提案 14 は、ブロック高 3,906,833 で v3.2.5 を適用する予定で、本稿執筆時点では投票期間中です)、テストネットは **v3.2.6**(2026年10月27日にブロック高 8,970,638 で適用。それ以前に、v3.2.5 が10月26日にブロック高 8,890,800 で、v3.2.4 が10月19日にブロック高 8,337,253 で適用されました)です。現在のリリースは [download.qore.host](https://download.qore.host) 配下の `latest.json` で確認してください。`--chain-id` を省略した場合、クライアントはローカルのクライアント設定にある `chain-id` を使用します。
 
-このページのコマンドとフラグは、v3.2.3 のリリースバイナリで確認し、v3.2.4 での追加分を加えています。v3.2.4 以降にのみ存在するもの(メインネットでは2026年10月23日から、テストネットでは2026年10月19日から)には、その旨を明記しています。
+このページのコマンドとフラグは、v3.2.3 のリリースバイナリで確認し、v3.2.4 での追加分を加えています。v3.2.4 以降にのみ存在するもの(メインネットでは2026年10月23日から、テストネットでは2026年10月19日から)には、その旨を明記しています。v3.2.6 のソースには新しい `tx` コマンドは追加されていません。変更されたのはテストネットの状態(テストトークン、有効化されたアブストラクトアカウントモジュール、開放された QoreChain Native のインスタンス化)で、重要な箇所では以下のセクションで触れています。
 :::
 
 共通フラグはすべての `tx` サブコマンドに適用されます。
@@ -435,7 +435,7 @@ qorechaind tx bridge update-circuit-breaker-limits <chain_id> <max_single_transf
 qorechaind tx ibc-transfer transfer transfer <channel> <receiver> <amount> [flags]
 ```
 
-最初の `transfer` はサブコマンド、2番目は送信元ポートです。本稿執筆時点では、どちらのネットワークでもIBCチャネルは開いていません(`query ibc channel channels`)。
+最初の `transfer` はサブコマンド、2番目は送信元ポートです。本稿執筆時点で、メインネットにはIBCチャネルが開いていません。テストネットには開いている転送チャネルが1つあります(`channel-0`、2026年10月27日に `query ibc channel channels` で確認)。
 
 ---
 
@@ -452,6 +452,8 @@ qorechaind tx amm swap-exact-out <pool_id> <denom_in> <token_out> <max_in> [flag
 ```
 
 v3.2.2 以降、スワップではプールの両方のデノミネーションを指定する必要があり、`max_swap_impact_bps` が強制され、プロトコル手数料はバーンモジュールを経由して処理されます。
+
+テストネットでは、プールは `uqor` と3つの Fest テストトークン(価値なし、テストネットのみ)のいずれかとをペアにできます。デポジットとスワップの金額には、大文字小文字を区別するバンクデノミネーション `erc20:<EIP-55 0x address>` を使用します。例: `qorechaind tx amm create-pool constant_product 1000000000uqor 2000000000erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA --from mykey --generate-only > tx.json`(その後 `tx pqc cosign`)。EVM 側に保有されているトークンは、まず `MsgConvertERC20` でバンクコインに変換する必要があります。その送信者は `qor1` アドレスです。ノードリリース v3.2.6 の CLI コマンド `qorechaind tx erc20 convert-erc20` は送信者を `0x` アドレスとして書き込み、チェーンはこれを拒否します(`decoding bech32 failed`)。そのため、代わりに `qor1` の送信者でこのメッセージを構築してください。詳細: [テストネットの Fest テストトークン](/developer-guide/evm-development#fest-tokens)。プールの作成には、デポジットに加えてプール作成手数料がかかります(`query amm params` の `pool_creation_fee`)。
 
 ---
 
@@ -507,6 +509,8 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 
 `profile` は `defi`、`gaming`、`nft`、`enterprise`、または `custom` です。`stake_amount` はuqor単位です(現在の最小値は `query rdk config` にあります)。プロファイルのプリセットが決済、シーケンサー、DA、ガスモデルを提供し、コマンドラインで上書きできるのはVMのみです。`finalize-batch` コマンドはありません。
 
+データ可用性が `native`(または `both`)のロールアップでは、`--data-hash` を空のままにしてください。データ可用性ブロブを投稿するトランザクションはなく、そのようなロールアップに対してデータハッシュを主張するバッチは、チェーンに拒否されます(本稿執筆時点のメインネットリリースであるノードリリース v3.2.4 の動作です)。オプティミスティックロールアップでは、`@qorechain/rdk` クライアント(0.6.1)がバッチのステートルートをチェーンの正規の遷移ルート(RDK の `batchTransitionRoot`)に設定します。[ロールアップ](/rollups/overview)を参照してください。
+
 `--anchor-signature` は、**v2のアンカー署名バイト列**に対するロールアップ作成者のML-DSA署名です。これを付けると、バッチはマルチレイヤーモジュールにもアンカーされます。署名すべき正確なバイト列は `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>` で出力できます。値は `submit-batch` のフラグと一致していなければなりません。v3.2.3 以降、モジュールは**ロールアップごとのエスクロー台帳**を保持します。引き出しはそのロールアップの台帳が保持している範囲からのみ支払われ、デノミネーション、正の金額、証明の深さ、兄弟ノードのサイズが検査されます。ロールアップを停止すると、その台帳に残っているものだけが返金され、停止したロールアップはそれ以上の引き出しを支払いません。執筆時点では、どちらのネットワークにもロールアップは存在しません。
 
 ---
@@ -532,12 +536,12 @@ qorechaind tx multilayer update-layer-status <layer_id> <new_status> <reason> [f
 
 | コマンド                                                  | 理由                                                                                           |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `tx wasm store`、`tx wasm instantiate`、`instantiate2`    | アップロードとインスタンス化の権限は両ネットワークで `Nobody` であり、これらのメッセージタイプはサーキットブレーカーのリストにも含まれています |
+| `tx wasm store`、`tx wasm instantiate`、`instantiate2`    | メインネット: アップロードとインスタンス化の権限は `Nobody` で、3 つのメッセージタイプはサーキットブレーカーのリストに含まれています。テストネット: アップロードは `Nobody` で `MsgStoreCode` がリストに含まれています(コードの保存はガバナンスが行います)。一方、インスタンス化は開放されており(`Everybody`)、リストにも含まれていません |
 | `tx crossvm call`                                         | サーキットブレーカーによりメインネットで無効。テストネットでは有効                             |
 | `tx vesting create-vesting-account`、`create-periodic-vesting-account`、`create-permanent-locked-account` | メインネットのサーキットブレーカーのリストに含まれています。v3.2.3 以降は、いずれにしてもベスティングアカウントは署名者自身に対してしか作成できません |
 | PQC `MsgDeprecateAlgorithm` / `MsgDisableAlgorithm`        | ガバナンス提案のメッセージ(CLIコマンドなし)で、メインネットのサーキットブレーカーのリストに含まれています。v3.2.3 以降、ガバナンスでも最後の有効な署名アルゴリズムは削除できません |
 | `tx svm deploy-program`、`execute`、`create-account`      | SVMトランザクションレーンはネットワーク全体で無効                                              |
-| `tx abstractaccount create`、`register-authenticator`、`execute-cosmos`、`execute-evm` | アブストラクトアカウントモジュールはオフになっています(`query abstractaccount config` は `enabled: false` を示します) |
+| `tx abstractaccount create`、`register-authenticator`、`execute-cosmos`、`execute-evm` | メインネット: アブストラクトアカウントモジュールはオフになっています(`query abstractaccount config` は `enabled: false` を示します)。テストネット: ガバナンスによりオンになっています(`enabled: true`、2026年10月27日に確認) |
 | `tx rlconsensus *`、`tx amm pause-pool`/`resume-pool`      | ガバナンス権限のメッセージ。メインネットのサーキットブレーカーのリストにも含まれています       |
 | `tx license *`                                            | 権限者専用(ライセンスはネットワークのライセンス権限者によって付与されます。v3.2.3 以降、ガバナンスは `MsgUpdateAuthority` でその権限者を置き換えられます) |
 

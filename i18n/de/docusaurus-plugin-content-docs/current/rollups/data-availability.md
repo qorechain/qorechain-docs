@@ -16,7 +16,7 @@ Datenverfügbarkeit (Data Availability, DA) ist die Garantie, dass die Transakti
 | **`both`** | Native und Celestia zusammen, zur Redundanz | Verhält sich heute exakt wie `native` |
 
 :::caution Fähigkeit im frühen Stadium
-Auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt (geprüft am 23. Oktober 2026), und die DA-Backends sind nur teilweise implementiert. Der Status jedes Backends ist unten angegeben; validieren Sie auf dem **`qorechain-diana`**-Testnet, bevor Sie sich auf eines davon verlassen.
+Auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt (geprüft am 27. Oktober 2026), und die DA-Backends sind nur teilweise implementiert. Der Status jedes Backends ist unten angegeben; validieren Sie auf dem **`qorechain-diana`**-Testnet, bevor Sie sich auf eines davon verlassen.
 :::
 
 ---
@@ -26,13 +26,15 @@ Auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt (geprüft am 23
 Native DA ist der On-Chain-Blob-Speicher innerhalb von `x/rdk`: Jeder Blob wird über Rollup-ID und Blob-Index adressiert, trägt ein **SHAKE-256-Commitment** seiner Bytes und wird nach dem Aufbewahrungsfenster geprunt, während sein Commitment erhalten bleibt.
 
 :::caution Noch keine öffentliche Möglichkeit, einen Blob zu senden
-Das Modul definiert Blob-Speicherung, Aufbewahrung und Pruning, doch in den aktuellen Releases gibt es **keine Transaktionsnachricht zum Senden eines Blobs**. Solange keine Submit-Nachricht ausgeliefert wird, muss ein Settlement-Batch `data_hash` leer lassen — ein Batch, der auf einem `native`- oder `both`-Rollup einen Datenhash nennt, wird abgelehnt, weil kein passender Blob gespeichert werden kann.
+Das Modul definiert Blob-Speicherung, Aufbewahrung und Pruning, doch in den aktuellen Releases gibt es **keine Transaktionsnachricht zum Senden eines Blobs** (Mainnet v3.2.4 und Testnet v3.2.6; die Nachrichten des Moduls sind im Chain-Quellcode geprüft). Die Chain akzeptiert auf einem `native`- oder `both`-Rollup einen nicht leeren `data_hash` nur, wenn ein passender Blob On-Chain gespeichert ist, und nichts kann einen speichern. Ein Settlement-Batch auf einem solchen Rollup **muss daher `data_hash` leer lassen**: Ein Batch, der einen Datenhash nennt, wird als Daten nicht verfügbar abgelehnt, nachdem die Transaktionsgebühr bezahlt wurde.
+
+Das RDK folgt dem ab **0.6.1**: `SubmitBatchInput.dataHash` ist optional (weggelassen bedeutet leer), alle sechs Starter-Vorlagen lassen es leer, `dataHashError` (`data_hash_error`, `DataHashError`, `Rules.dataHashError`) stellt die Regel in allen fünf Sprachen bereit, und `RdkTxClient.submitBatch` lehnt einen solchen Batch vor dem Broadcast ab, wenn es das Rollup lesen kann (ein hybrider Client mit einem REST-Endpunkt). Frühere Vorlagen-Releases setzten einen Datenhash auf ihre Batches, den die Chain ablehnte.
 :::
 
 Schlüsselkonzepte:
 
 * **Blobs.** Ein Blob ist einer Rollup-ID und einem Blob-Index zugeordnet.
-* **Commitments.** Jeder Blob trägt ein 32-Byte-SHAKE-256-Commitment seiner Daten, sodass ein Blob gegen das verifiziert werden kann, was committet wurde, ohne dem Speichernden vertrauen zu müssen. (Der TypeScript-Helfer `buildDaBlob()` hasht derzeit mit SHA-256, sodass sein `dataHash` nicht mit dem Commitment der Chain übereinstimmt.)
+* **Commitments.** Jeder Blob trägt ein 32-Byte-SHAKE-256-Commitment seiner Daten, sodass ein Blob gegen das verifiziert werden kann, was committet wurde, ohne dem Speichernden vertrauen zu müssen. (Der TypeScript-Helfer `buildDaBlob()` hasht derzeit mit SHA-256, sodass sein `dataHash` nicht mit dem Commitment der Chain übereinstimmt, und da keine Transaktion einen Blob sendet, sollten Sie diesen Hash ohnehin nicht in einem Batch auf einem `native`- oder `both`-Rollup senden.)
 * **Namespaces.** Blobs können einen rollup-spezifischen Namespace tragen, wodurch die Daten jedes Rollups innerhalb des gemeinsam genutzten Speichers logisch getrennt bleiben.
 * **Aufbewahrung und Pruning.** Native Blobs werden für `blob_retention_blocks` aufbewahrt (432,000 Blöcke — etwa 16 Tage bei der aktuellen Blockzeit des Mainnets von ≈3.2 s; der Wert ändert sich mit der Blockzeit) und dann geprunt, um den On-Chain-Speicher nachhaltig zu halten. Nach dem Pruning werden die rohen Blob-Daten entfernt, während die Commitment-Metadaten erhalten bleiben, sodass das historische Commitment verifizierbar bleibt, auch wenn die Bytes nicht mehr on-chain gespeichert sind.
 
@@ -48,7 +50,7 @@ Blob-Metadaten (nicht die Bytes) sind über REST unter `/qorechain/rdk/v1/blob/{
 
 ## Celestia DA (IBC zu Celestia)
 
-Celestia DA ist **nicht implementiert**. Ein Rollup, dessen DA-Backend `celestia` ist, kann keine Daten senden (das Modul gibt einen Fehler zurück). Das geplante Design veröffentlicht Datenverfügbarkeit über IBC zu **Celestia**, einem dedizierten modularen DA-Netzwerk, und verankert das Settlement weiterhin auf QoreChain; auf keinem der beiden Netzwerke existiert heute ein IBC-Kanal (siehe [Bridge-Architektur](/architecture/bridge-architecture)). Verwenden Sie `native`.
+Celestia DA ist **nicht implementiert**. Ein Rollup, dessen DA-Backend `celestia` ist, kann keine Daten senden (das Modul gibt einen Fehler zurück). Das geplante Design veröffentlicht Datenverfügbarkeit über IBC zu **Celestia**, einem dedizierten modularen DA-Netzwerk, und verankert das Settlement weiterhin auf QoreChain; im Mainnet ist kein IBC-Kanal geöffnet, und der eine offene Kanal im Testnet (geprüft am 27. Oktober 2026) ist ein Token-Transfer-Kanal (`ics20-1`), kein Datenverfügbarkeits-Kanal (siehe [Bridge-Architektur](/architecture/bridge-architecture)). Verwenden Sie `native`.
 
 ---
 

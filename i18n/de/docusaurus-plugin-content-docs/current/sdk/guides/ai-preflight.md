@@ -19,8 +19,10 @@ sie signiert oder gesendet wird, und das nur mit `eth_call`:
 :::caution Heute in den öffentlichen Netzwerken nicht verfügbar
 `simulateWithRiskScore`, `aiRiskScore` und `aiAnomalyCheck` lesen die Precompiles unter
 `0x…0B01` / `0x…0B02`. Ein statisches Precompile antwortet nur, wenn seine Adresse im Parameter
-`active_static_precompiles` des EVM-Moduls steht, und diese Liste ist sowohl auf
-`qorechain-vladi` (Mainnet) als auch auf `qorechain-diana` (Testnet) leer. Gegen die öffentlichen
+`active_static_precompiles` des EVM-Moduls steht. Diese Liste ist auf
+`qorechain-vladi` (Mainnet) leer, und auf `qorechain-diana` (Testnet) enthält sie nur die PQC-
+und Konsensparameter-Precompiles (`0x…0A01`, `0x…0A02`, `0x…0C01`), nicht das AI-Paar
+(geprüft am 27. Oktober 2026). Gegen die öffentlichen
 Endpunkte liefert ein Aufruf leere Daten (`0x`) zurück, und diese Helfer werfen einen Fehler (zum Beispiel
 `returned no data ("0x")`). Sie funktionieren nur in einem Netzwerk oder auf einem Node, auf dem die
 Precompiles aktiviert wurden. Prüfe zuerst `GET /cosmos/evm/vm/v1/params` und siehe

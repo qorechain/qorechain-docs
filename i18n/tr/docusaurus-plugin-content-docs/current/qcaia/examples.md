@@ -21,7 +21,7 @@ Bu yanıtlar **açıklayıcıdır** — QoreChain'in herkese açık belgelerinin
 
 **QCAIA yanıtlar:**
 
-> QoreChain'in köprüsü, varlıkları QoreChain ile diğer ağlar arasında taşımak üzere tasarlanmıştır ve QCB transferlerini IBC ile birleştirir. Henüz canlı değildir: tüm zincir yapılandırmaları hâlâ beklemededir ve her iki ağda da açık bir IBC kanalı yoktur. Tam tasarım için köprü belgelerine bakın.
+> QoreChain'in köprüsü, varlıkları QoreChain ile diğer ağlar arasında taşımak üzere tasarlanmıştır ve QCB transferlerini IBC ile birleştirir. Henüz canlı değildir: tüm zincir yapılandırmaları hâlâ beklemededir ve planlanan hiçbir karşı tarafa açık bir IBC kanalı yoktur (mainnet'te hiç yok; testnet'te tek bir test kanalı var). Tam tasarım için köprü belgelerine bakın.
 
 _Daha fazla bilgi: [Bridge Architecture](/architecture/bridge-architecture)._
 

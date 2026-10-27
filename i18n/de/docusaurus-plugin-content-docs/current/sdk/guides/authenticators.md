@@ -17,18 +17,18 @@ externe Schlüssel jemals eine ML-DSA-Co-Signatur erzeugt**.
 Dies ist das SDK-Gegenstück zum
 [Account-Abstraction](/developer-guide/account-abstraction)-Modul der Chain.
 
-:::danger Auf den Live-Netzwerken nicht verfügbar
-Das Modul `x/abstractaccount` ist auf `qorechain-vladi` und
-`qorechain-diana` **deaktiviert** (`GET /qorechain/abstractaccount/v1/config`
-liefert `"enabled": false`). Ab Chain v3.2.0 wird dieses Flag auf jedem Pfad
-durchgesetzt (Erstellen eines Abstract Accounts, Verknüpfen eines Authenticators
-sowie `MsgExecuteEVM` / `MsgExecuteCosmos`), und die Chain weist sie mit
-`abstract account module is
-disabled` (Code 9) ab. Keine Transaktion kann es einschalten. Alles Folgende
-beschreibt die Schnittstellen des Moduls nur zur Referenz: Bauen Sie auf den
-Live-Netzwerken keinen Ablauf mit verknüpften Schlüsseln oder delegiertem
-Ausgeben, solange das Modul nicht aktiviert ist, und prüfen Sie das Flag, bevor
-Sie einen solchen Ablauf anbieten.
+:::danger Im Mainnet nicht verfügbar
+Das Modul `x/abstractaccount` ist auf `qorechain-vladi` (Mainnet) **deaktiviert**:
+`GET /qorechain/abstractaccount/v1/config` liefert `"enabled": false`. Ab Chain
+v3.2.0 wird dieses Flag auf jedem Pfad durchgesetzt (Erstellen eines Abstract
+Accounts, Verknüpfen eines Authenticators sowie `MsgExecuteEVM` /
+`MsgExecuteCosmos`), und die Chain weist sie mit `abstract account module is
+disabled` (Code 9) ab. Keine Transaktion kann es einschalten. Auf dem Testnet
+`qorechain-diana` lieferte dieselbe Route am 27. Oktober 2026 `"enabled": true`,
+sodass die folgenden Abläufe dort ausprobiert werden können. Bauen Sie für das
+Mainnet keinen Ablauf mit verknüpften Schlüsseln oder delegiertem Ausgeben, solange
+das Modul dort nicht aktiviert ist, und prüfen Sie das Flag auf dem Netzwerk, das
+Sie ansprechen, bevor Sie einen solchen Ablauf anbieten.
 :::
 
 ## Das Relayer-Modell
@@ -328,11 +328,16 @@ beginnt und bei jeder erfolgreichen Ausführung inkrementiert wird.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` ist derselbe Zähler-Typ.
 
-Für den Zähler gibt es noch keine Abfrage, verfolgen Sie ihn daher pro
-verknüpftem Schlüssel: 0 für einen neu verknüpften Schlüssel, +1 nach jeder
-Ausführung, die die Chain akzeptiert. Einen Wert zu senden, der nicht dem
+Seit Chain v3.2.4 (beide Netzwerke stellen die Route bereit) und SDK 0.10.0 können
+Sie den Zähler lesen, statt ihn mitzuführen: `fetchAuthNonce({ rest, address, pubkey })`
+ruft `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` auf und
+liefert `{ nonce, linked }`. Ein Schlüssel, der nie ausgeführt hat, liest 0, und der
+Zähler bleibt auch für einen Schlüssel erhalten, der nicht mehr verknüpft ist
+(`linked` gibt an, welcher Fall vorliegt). Einen Wert zu senden, der nicht dem
 aktuellen Zähler der Chain entspricht, ist eine Replay-Ablehnung
-(`abstractaccount` Code 11, siehe unten).
+(`abstractaccount` Code 11, siehe unten). Mit einem älteren SDK oder einer älteren
+Chain verfolgen Sie ihn pro verknüpftem Schlüssel: 0 für einen neu verknüpften
+Schlüssel, +1 nach jeder Ausführung, die die Chain akzeptiert.
 
 ## Das Permission-Schema
 

@@ -271,9 +271,7 @@ v3.1.73 기준으로, **SHAKE-256**(SHA-3 확장 출력 함수)은 QoreChain 전
 
 ## 브리지 PQC
 
-모든 교차 체인 브리지 어테스테이션과 상태 커밋먼트는 **Dilithium-5** 서명을 사용합니다. `x/multilayer` 모듈은 모든 `MsgAnchorState` 제출에 대해 PQC 집계 서명을 요구하며, ML-KEM 커밋먼트는 브리지 릴레이어 간의 키 교환 채널을 보호합니다.
-
-이는 브리지 인프라에서 고전적 암호화를 사용함으로써 교차 체인 보안이 저하되지 않도록 보장하여, 전체 프로토콜 스택에 걸쳐 양자 저항성을 유지합니다. 라이브 브리지 경로는 없습니다([Bridge Architecture](/architecture/bridge-architecture#current-status) 참조). v3.2.4부터(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) 브리지 검증자를 등록할 때 PQC 키의 소유 증명도 필요합니다.
+브리지 어테스테이션은 브리지 인프라에서 고전적 암호화를 사용함으로써 교차 체인 보안이 저하되지 않도록 **Dilithium-5**(ML-DSA-87) 서명을 사용하도록 설계되었습니다. 이는 설계 의도이며, 브리지 검증자가 어떻게 어테스테이션하도록 되어 있는지를 설명할 뿐 오늘날 라이브 네트워크에서 직접 사용해 볼 수 있는 동작이 아닙니다. 라이브 브리지 경로는 없습니다([Bridge Architecture](/architecture/bridge-architecture#current-status) 참조). v3.2.4부터(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) 브리지 검증자를 등록할 때 PQC 키의 소유 증명도 필요합니다.
 
 ## 모듈 파라미터
 
@@ -285,6 +283,8 @@ v3.1.73 기준으로, **SHAKE-256**(SHA-3 확장 출력 함수)은 QoreChain 전
 | `default_migration_blocks` | int64               | `1,000,000`       | 기본 이중 서명 마이그레이션 기간(블록)                   |
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | 새 키 등록을 위한 기본 서명 알고리즘                     |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | 체인 전체 하이브리드 서명 강제 수준                      |
+
+테스트넷도 동일한 값을 반환합니다(2026년 10월 27일 확인). v3.2.6부터 테스트넷은 이를 REST의 `GET /qorechain/pqc/v1/params`로도 제공합니다. 메인넷에서는 이 경로가 501(미구현)로 응답하며, 파라미터는 `qorechaind query pqc params`로 읽습니다.
 
 ## 관련 문서
 

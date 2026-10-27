@@ -261,7 +261,7 @@ Una firma ed25519 es determinista y cualquier sitio web puede pedir al wallet qu
 Si creaste una cuenta de esta forma, considérala comprometida desde ya: crea una cuenta nueva a partir de un mnemónico, mueve los fondos a ella y después vincula Phantom a la nueva cuenta como autenticador (ver abajo). La cuenta antigua no se puede reparar, porque su dirección está ligada a la clave expuesta y una rotación de la clave PQC solo sustituye la mitad poscuántica. Usa el SDK 0.8.2 o posterior.
 :::
 
-Para que una clave de Phantom (o MetaMask) gaste desde una cuenta, usa los **carriles de autenticador**: registra la clave del wallet con `MsgRegisterAuthenticator` y luego gasta desde la cuenta PQC canónica mediante `MsgExecuteCosmos` / `MsgExecuteEVM` bajo un permiso y una `SpendingRule`. La cuenta conserva sus propias claves derivadas del mnemónico y la clave del wallet se puede revocar en cualquier momento. Consulta [Autenticadores y gasto delegado](/sdk/guides/authenticators). Ten en cuenta que el módulo `abstractaccount` que ofrece estos carriles está desactivado en ambas redes (`GET /qorechain/abstractaccount/v1/config` muestra `enabled: false`), así que todavía no se puede vincular una clave de wallet; hasta entonces, usa directamente la nueva cuenta del mnemónico.
+Para que una clave de Phantom (o MetaMask) gaste desde una cuenta, usa los **carriles de autenticador**: registra la clave del wallet con `MsgRegisterAuthenticator` y luego gasta desde la cuenta PQC canónica mediante `MsgExecuteCosmos` / `MsgExecuteEVM` bajo un permiso y una `SpendingRule`. La cuenta conserva sus propias claves derivadas del mnemónico y la clave del wallet se puede revocar en cualquier momento. Consulta [Autenticadores y gasto delegado](/sdk/guides/authenticators). Ten en cuenta que el módulo `abstractaccount` que ofrece estos carriles está desactivado en mainnet (`GET /qorechain/abstractaccount/v1/config` muestra `enabled: false`; en la testnet está activado), así que todavía no se puede vincular una clave de wallet en mainnet; hasta entonces, usa directamente la nueva cuenta del mnemónico.
 
 ## Criptografía poscuántica (PQC)
 
@@ -311,8 +311,7 @@ mientras gana protección poscuántica. La parte poscuántica viaja como una
 extensión `PQCHybridSignature` en la transacción.
 
 :::caution La firma híbrida es obligatoria en la ruta Native
-Desde la versión de cadena **v3.2.0** (la mainnet y la testnet
-ejecutan la v3.2.4), el valor predeterminado de la red es `hybrid_signature_mode = required` con
+Desde la versión de cadena **v3.2.0** (la mainnet ejecuta la v3.2.4, la testnet la v3.2.6), el valor predeterminado de la red es `hybrid_signature_mode = required` con
 `allow_classical_fallback = false`. La firma híbrida mediante
 `buildHybridTx` / `signAndBroadcastHybrid` (pasa `rest`), o `signHybridEth` /
 `EthNativeSigner` para cuentas unificadas eth-native, es **obligatoria** para

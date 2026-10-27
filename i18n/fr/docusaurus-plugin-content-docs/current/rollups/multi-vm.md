@@ -10,7 +10,7 @@ sidebar_position: 8
 Le RDK inclut des assistants TypeScript qui encodent un appel d'un contrat EVM vers le **précompilé inter-VM** à l'adresse `0x0000000000000000000000000000000000000901`, conçu pour l'acheminer vers un contrat QoreChain Native sur le runtime **QoreChain Native** (Wasm), ainsi qu'un modèle de structure (scaffold) `multivm-rollup` qui les câble. L'outillage couvre uniquement **EVM → QoreChain Native** ; la SVM est un environnement d'exécution distinct et ne fait pas partie du précompilé.
 
 :::caution Pas encore utilisable sur les réseaux en service
-Le précompilé inter-VM **n'est pas activé** sur l'un ou l'autre réseau : la liste des précompilés statiques actifs du module EVM est vide sur le mainnet et le testnet, `eth_getCode` pour `0x…0901` renvoie `0x`, et un appel vers cette adresse réussit avec des données vides et n'exécute rien. Le téléversement de contrats QoreChain Native est également fermé sur les deux réseaux, et la voie de transaction SVM est désactivée sur l'ensemble du réseau. Tant que le précompilé n'est pas activé et que les téléversements QoreChain Native ne sont pas rouverts, il n'y a rien à appeler. Cette page documente l'outillage pour que vous puissiez vous préparer ; ne construisez pas de flux de production dessus. Voir [Précompilés EVM : statut du réseau](/developer-guide/evm-precompiles#network-status).
+Le précompilé inter-VM **n'est pas activé** sur l'un ou l'autre réseau : la liste des précompilés statiques actifs du module EVM est vide sur le mainnet, et sur le testnet elle ne contient que `0x…0A01`, `0x…0A02` et `0x…0C01` (vérifié le 27 octobre 2026), de sorte que `0x…0901` ne figure sur aucune des deux listes ; `eth_getCode` pour `0x…0901` renvoie `0x`, et un appel vers cette adresse réussit avec des données vides et n'exécute rien. Le téléversement de contrats QoreChain Native est également fermé sur les deux réseaux, et la voie de transaction SVM est désactivée sur l'ensemble du réseau. Tant que le précompilé n'est pas activé et que les téléversements QoreChain Native ne sont pas rouverts, il n'y a rien à appeler. Cette page documente l'outillage pour que vous puissiez vous préparer ; ne construisez pas de flux de production dessus. Voir [Précompilés EVM : statut du réseau](/developer-guide/evm-precompiles#network-status).
 :::
 
 :::note L'encodeur correspond à la disposition de la chaîne depuis la 0.6.0
@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 construit pour vous les mêmes calldata :
+`encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 et ultérieures construit pour vous les mêmes calldata :
 
 ```ts
 import {
@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Comme le précompilé est inactif, un simple `.call` vers celui-ci renvoie un **succès avec des données vides et ne fait rien** ; l'indicateur `ok` ne vous dit pas que l'appel a pris effet. La protection fiable côté contrat est une cible qui renvoie toujours un accusé de réception non vide, avec un `require(ret.length > 0)` après l'appel, de sorte qu'une réponse vide soit traitée comme un échec ; le modèle `multivm-rollup` de la 0.6.0 fait cela.
+Comme le précompilé est inactif, un simple `.call` vers celui-ci renvoie un **succès avec des données vides et ne fait rien** ; l'indicateur `ok` ne vous dit pas que l'appel a pris effet. La protection fiable côté contrat est une cible qui renvoie toujours un accusé de réception non vide, avec un `require(ret.length > 0)` après l'appel, de sorte qu'une réponse vide soit traitée comme un échec ; le modèle `multivm-rollup` (0.6.0 et 0.6.1) fait cela.
 
 ## Générer un rollup multi-VM
 
@@ -102,4 +102,4 @@ Comme le précompilé est inactif, un simple `.call` vers celui-ci renvoie un **
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Le modèle de la 0.6.0 inclut `src/crossvm-call.ts` (il vérifie si le précompilé est actif, puis affiche les calldata) et un `contracts/CrossVmCaller.sol` qui appelle `executeCrossVMCall(uint8,string,bytes)` et exige une réponse non vide de la cible. Il ne fait pas fonctionner un appel tant que le précompilé est inactif. Consultez [Déployer un Rollup](/rollups/deploying-a-rollup) pour tous les modèles du générateur de structure.
+Le modèle `multivm-rollup` (0.6.0 et 0.6.1) inclut `src/crossvm-call.ts` (il vérifie si le précompilé est actif, puis affiche les calldata) et un `contracts/CrossVmCaller.sol` qui appelle `executeCrossVMCall(uint8,string,bytes)` et exige une réponse non vide de la cible. Il ne fait pas fonctionner un appel tant que le précompilé est inactif. Consultez [Déployer un Rollup](/rollups/deploying-a-rollup) pour tous les modèles du générateur de structure.

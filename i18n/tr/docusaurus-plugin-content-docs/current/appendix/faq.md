@@ -11,7 +11,7 @@ QoreChain hakkında dokümantasyondan yanıtlanan genel sorular. Her yanıt, ayr
 
 ### Ana ağ canlı mı?
 
-Evet. QoreChain ana ağı (zincir `qorechain-vladi`, EVM zincir kimliği 9801) 7 Haziran 2026'dan beri canlıdır ve v3.2.4 sürümünü çalıştırır (23 Ekim 2026'da 3.742.566 numaralı yükseklikte yönetişim önerisi 13 ile uygulandı); test ağı `qorechain-diana` 19 Ekim 2026'dan beri v3.2.4 çalıştırır. Bkz. [Ağlar](/appendix/networks) ve [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
+Evet. QoreChain ana ağı (zincir `qorechain-vladi`, EVM zincir kimliği 9801) 7 Haziran 2026'dan beri canlıdır ve v3.2.4 sürümünü çalıştırır (23 Ekim 2026'da 3.742.566 numaralı yükseklikte yönetişim önerisi 13 ile uygulandı; yönetişim önerisi 14, v3.2.5'i 3.906.833 numaralı yükseklikte uygulayacaktır ve yazım sırasında oylama dönemindeydi); test ağı `qorechain-diana` v3.2.6 çalıştırır (27 Ekim 2026'da 8.970.638 numaralı yükseklikte uygulandı). Bkz. [Ağlar](/appendix/networks) ve [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
 
 ### Zincir kimlikleri ve EVM zincir kimlikleri nelerdir?
 
@@ -27,7 +27,7 @@ PRISM, QoreChain Konsensüs Motoruna gömülü pekiştirmeli öğrenme optimizas
 
 ### Çapraz zincir köprüsü canlı mı?
 
-Hayır. Köprü modülü dağıtılmıştır, ancak 37 zincir yapılandırmasının tümü beklemededir, hiçbir köprü doğrulayıcısı kayıtlı değildir ve her iki ağda da IBC kanalı yoktur. 37 zincir yapılandırması ve en fazla 8 IBC karşı tarafı etrafında tasarlanmıştır; hedefleri tasarım niyeti olarak ele alın. Bkz. [Köprü Mimarisi](/architecture/bridge-architecture).
+Hayır. Köprü modülü dağıtılmıştır, ancak 37 zincir yapılandırmasının tümü beklemededir, hiçbir köprü doğrulayıcısı kayıtlı değildir ve ana ağda IBC kanalı yoktur (test ağında, IBC testi için açılmış, bir test zincirine giden tek bir ICS-20 transfer kanalı vardır; planlanan karşı taraflara giden kanal yoktur). 37 zincir yapılandırması ve en fazla 8 IBC karşı tarafı etrafında tasarlanmıştır; hedefleri tasarım niyeti olarak ele alın. Bkz. [Köprü Mimarisi](/architecture/bridge-architecture).
 
 ### Bir cüzdanı nasıl bağlarım?
 
@@ -36,6 +36,10 @@ Resmi [QoreX](/qorex/overview) cüzdanını kullanın veya EVM zincir kimlikleri
 ### Test ağı tokenlarını nasıl alırım?
 
 Dashboard'daki test ağı musluğunu kullanın. Bkz. [Dashboard Musluğu](/dashboard/faucet) ve [Test Ağına Bağlanma](/getting-started/connecting-to-testnet).
+
+### fUSD, fETH ve fBTC nedir?
+
+Yalnızca test ağında bulunan test tokenları (6, 18 ve 8 ondalıklı FestUSD, FestETH ve FestBTC); builder fest için oluşturuldular. Hiçbir değerleri yoktur, ana ağda bulunmazlar ve büyük/küçük harfe duyarlı `erc20:<contract address>` denominasyonlarıyla bank coin'i olarak tutulurlar. Test ağı Musluğu bunları bir QOR talebiyle birlikte gönderebilir. Bkz. [Fest test tokenları](/dashboard/faucet#fest-tokens).
 
 ### Bir düğümü, doğrulayıcıyı veya hafif düğümü nasıl çalıştırırım?
 
@@ -51,11 +55,11 @@ v3.2.0'dan itibaren EVM hattı, bir işlemi yalnızca kayıtlı bir kuantum sonr
 
 ### Ana ağda kaç doğrulayıcı var?
 
-23 Ekim 2026'da sekiz bağlı (bonded) doğrulayıcı vardı ve yaklaşık 55,6 milyon QOR bağlanmıştı (aktif küme en fazla 100 doğrulayıcı alabilir). Test ağında üç tane var. Canlı kümeyi `https://api.qore.host` üzerinde `GET /cosmos/staking/v1beta1/validators` adresinden okuyun.
+27 Ekim 2026'da sekiz bağlı (bonded) doğrulayıcı vardı ve yaklaşık 60,3 milyon QOR bağlanmıştı (aktif küme en fazla 100 doğrulayıcı alabilir). Test ağında dört tane var. Canlı kümeyi `https://api.qore.host` üzerinde `GET /cosmos/staking/v1beta1/validators` adresinden okuyun.
 
 ### Ne kadar blok süresi beklemeliyim?
 
-Ana ağda yaklaşık 3,2 saniye, test ağında yaklaşık 1 saniye (ölçülmüş ortalamalar, Ekim 2026). Blok süresi, doğrulayıcıların node yapılandırması tarafından belirlenir.
+Ana ağda yaklaşık 3,2 saniye, test ağında yaklaşık 1,3 saniye (ölçülmüş ortalamalar, 27 Ekim 2026). Blok süresi, doğrulayıcıların node yapılandırması tarafından belirlenir.
 
 ### xQORE kullanılabilir mi?
 

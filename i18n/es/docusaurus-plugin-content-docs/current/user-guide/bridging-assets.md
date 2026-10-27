@@ -10,11 +10,11 @@ sidebar_position: 5
 Esta guía describe cómo está diseñado el movimiento de activos entre QoreChain y otras redes blockchain. La capa de interoperabilidad de QoreChain se construye en torno a **37 configuraciones de cadena** (36 cadenas externas más Injective, a la que se llega por IBC) y hasta **8 contrapartes IBC** para cadenas del ecosistema Cosmos.
 
 :::caution No está activo en ninguna de las dos redes
-El módulo del puente está desplegado en mainnet y testnet, pero **ninguna ruta del puente está activa**: las 37 configuraciones de cadena están en estado `pending` sin contrato de puente establecido, no hay validadores del puente registrados, nunca se ha creado ninguna operación del puente y no existen canales ni clientes IBC. Todo lo que sigue describe el diseño previsto. No envíes activos esperando que se transfieran por el puente. Consulta [Arquitectura del puente](/architecture/bridge-architecture) para ver la tabla de estado actual.
+El módulo del puente está desplegado en mainnet y testnet, pero **ninguna ruta del puente está activa**: las 37 configuraciones de cadena están en estado `pending` sin contrato de puente establecido, no hay validadores del puente registrados, nunca se ha creado ninguna operación del puente y no existe ningún canal IBC en mainnet (la testnet tiene un único canal de prueba ICS-20 hacia una cadena con ID `provider`, y ninguno hacia las contrapartes que se nombran más abajo). Todo lo que sigue describe el diseño previsto. No envíes activos esperando que se transfieran por el puente. Consulta [Arquitectura del puente](/architecture/bridge-architecture) para ver la tabla de estado actual.
 :::
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**, versión de cadena **v3.2.4**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) ejecuta la versión de cadena **v3.2.4** (desde el 23 de octubre de 2026). Sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** una vez que se active una ruta. Estado comprobado el 23 de octubre de 2026: las 37 configuraciones de cadena están en `pending` en ambas redes.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**, versión de cadena **v3.2.6**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) ejecuta la versión de cadena **v3.2.4** (desde el 23 de octubre de 2026). Sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** una vez que se active una ruta. Estado comprobado el 27 de octubre de 2026: las 37 configuraciones de cadena están en `pending` en ambas redes.
 :::
 
 ---
@@ -34,7 +34,17 @@ Una enumeración completa de cada configuración de cadena se encuentra en la p�
 
 ## IBC
 
-IBC forma parte del diseño (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), pero **todavía no existe ningún canal ni cliente IBC en ninguna de las dos redes**, así que no hay nada que transferir. Esta página listará los canales cuando se abran.
+IBC forma parte del diseño (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), pero **ninguna de estas contrapartes está conectada todavía**: la mainnet no tiene ningún canal ni cliente IBC, y la testnet solo tiene un único canal de prueba ICS-20 hacia una cadena con ID `provider` (comprobado el 27 de octubre de 2026), así que no hay nada que transferir para estas cadenas. Esta página listará los canales cuando se abran.
+
+### Novedades de IBC en la testnet (v3.2.6) {#ibc-testnet-v326}
+
+Tres funciones de IBC existen solo en la testnet; mainnet no las tiene (su ruta `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` responde 501):
+
+* **Límite de tasa IBC.** La gobernanza puede fijar una cuota por canal para las transferencias IBC (un porcentaje entero del suministro por ventana de horas). **No es automático**: hoy no hay ningún límite fijado, y un conjunto vacío significa sin límite. Un paquete reenviado se cobra en ambos canales y un reembolso devuelve la cuota. Es independiente de los interruptores automáticos del puente descritos en [Modelo de seguridad](#security-model).
+* **Reenvío de paquetes.** Una transferencia que llega por IBC v1 puede llevar un memo con la forma `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` para enviarse a otra cadena, con reembolso al remitente si falla un salto. No hay reintentos y un salto expira por defecto a los 10 minutos. Un token que se convierte en un ERC-20 al llegar no puede reenviarse.
+* **Clientes ligeros 08-wasm.** Almacenar, migrar y eliminar un binario de cliente ligero wasm son operaciones solo para la autoridad, y los tipos de cliente permitidos contienen únicamente el cliente estándar hasta que la gobernanza añada `08-wasm`.
+
+Lee los límites con `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` en la testnet (hoy `\{"rate_limits":[]\}`).
 
 ---
 
@@ -106,7 +116,7 @@ Toda transacción del carril nativo necesita la cofirma poscuántica híbrida y 
 
 ---
 
-## Modelo de seguridad
+## Modelo de seguridad {#security-model}
 
 El QoreChain Bridge está diseñado para estar protegido por múltiples capas de defensa:
 
@@ -114,7 +124,7 @@ El QoreChain Bridge está diseñado para estar protegido por múltiples capas de
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Multifirma PQC 7-de-10**   | Cada operación del puente requiere atestaciones de al menos 7 de 10 validadores del puente, cada uno usando firmas criptográficas poscuánticas.       |
 | **Período de impugnación de 24 horas** | Las transferencias que superan el umbral de transferencia grande (100,000 QOR) entran en una ventana de impugnación de 24 horas durante la cual los validadores u observadores pueden señalar transacciones fraudulentas. |
-| **Interruptores automáticos** | Limitadores de tasa automatizados detienen las operaciones del puente si se detectan volúmenes anómalos o patrones sospechosos. Las operaciones del puente se reanudan tras una revisión manual. |
+| **Interruptores automáticos** | Diseñados para el puente QCB: limitadores automatizados detienen las operaciones del puente si se detectan volúmenes anómalos o patrones sospechosos, y las operaciones se reanudan tras una revisión manual. Se aplican al puente QCB, no a IBC; el límite de tasa IBC (solo testnet) lo fija la gobernanza, no es automático y hoy no tiene ningún límite fijado. |
 
 ---
 

@@ -10,7 +10,7 @@ sidebar_position: 6
 Bir **uzlaşma makbuzu**, bir rollup'un uzlaşma partisinin kuantum sonrası bir imza altında Ana Zincire çapalandığına dair taşınabilir bir kayıttır. Rollup'u, partiyi ve çapayı adlandırır ve çapanın **ML-DSA-87** (Dilithium-5, FIPS-204) imzasını taşır; bu, Ana Zincirin kullandığı şemanın aynısıdır.
 
 :::caution Erken aşama: henüz hiçbir çapa yok
-Makbuzlar çapalara bağlıdır ve **henüz hiçbir ağda bir rollup veya çapa yoktur** (23 Ekim 2026 itibarıyla kontrol edildi). v3.2.2'den beri (her iki ağda da canlı) `anchor_signature` ile gönderilen bir parti, aynı işlemde `x/multilayer` içinde çapalanır; bu olmadan gönderilen bir parti çapasız olarak uzlaşır. TypeScript RDK (0.6.0), işlem istemcisi hibrit imzaladığında ve rollup'ın oluşturucusu olduğunda bu alanı gönderir, aksi halde çapasız gönderir; Python, Go, Rust ve Java istemcileri yalnızca klasik imzalar ve bu alanı oluşturmaz. Bunların hiçbiri canlı bir rollup üzerinde denenmemiştir. Bu sayfayı bugün güvenebileceğiniz bir hizmetin değil, tasarımın ve yapı taşlarının bir açıklaması olarak değerlendirin.
+Makbuzlar çapalara bağlıdır ve **henüz hiçbir ağda bir rollup veya çapa yoktur** (27 Ekim 2026 itibarıyla kontrol edildi). v3.2.2'den beri (her iki ağda da canlı) `anchor_signature` ile gönderilen bir parti, aynı işlemde `x/multilayer` içinde çapalanır; bu olmadan gönderilen bir parti çapasız olarak uzlaşır. TypeScript RDK (0.6.1), işlem istemcisi hibrit imzaladığında ve rollup'ın oluşturucusu olduğunda bu alanı gönderir, aksi halde çapasız gönderir; Python, Go, Rust ve Java istemcileri yalnızca klasik imzalar ve bu alanı oluşturmaz. Bunların hiçbiri canlı bir rollup üzerinde denenmemiştir. Bu sayfayı bugün güvenebileceğiniz bir hizmetin değil, tasarımın ve yapı taşlarının bir açıklaması olarak değerlendirin.
 :::
 
 ## Bir makbuz kanıt değil, bir iddiadır {#a-receipt-is-a-claim}
@@ -46,25 +46,29 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Her doğrulama için bir `client` iletin. Makbuz API'si ve kontrolleri sürümler arasında değişmiştir; bu nedenle 0.6.0 veya sonrasını kullanın: 0.5.0 zincir kontrolünü tamamlayamıyordu (aşağıya bakın). Python, Go, Rust ve Java istemcileri aynı oluşturma/doğrulama yüzeyini sunar; 0.6.0 sürümleri aynı tekil anahtar arama rotasını ve çapa mesajının aynı yüksekliğe dayalı seçimini kullanır.
+Her doğrulama için bir `client` iletin. Makbuz API'si ve kontrolleri sürümler arasında değişmiştir; bu nedenle 0.6.1'i (güncel sürüm) kullanın: 0.5.0 zincir kontrolünü tamamlayamıyordu ve 0.6.0 makbuzun her alanını karşılaştırmıyordu (aşağıya bakın). Python, Go, Rust ve Java istemcileri aynı oluşturma/doğrulama yüzeyini sunar; 0.6.1 sürümleri aynı tekil anahtar arama rotasını, çapa mesajının aynı yüksekliğe dayalı seçimini ve aynı alan alan karşılaştırmayı kullanır.
 
-### 0.6.0 neyi doğrular {#what-060-verifies}
+### 0.6.1 neyi doğrular {#what-060-verifies}
 
 `verifySettlementReceipt`, yalnızca makbuza dayanarak asla `valid` bildirmez: `client` olmadan sonuç `mode: "signature-only"` ve `valid: false` olur. Bir `client` ile zinciri yeniden okur ve her kontrolü ayrı ayrı bildirir:
 
 * `rollupLayerBinding`: zincir, rollup'ın makbuzun katmanına ait olduğunu söyler;
 * `batchStateRoot`: zincirdeki parti, makbuzun durum kökünü taşır;
-* `anchorOnChain`: o durum köküne, yüksekliğe ve imzaya sahip bir çapa zincirde mevcuttur;
+* `anchorOnChain`: makbuzun belirttiği **her** çapa alanıyla eşleşen bir çapa zincirde mevcuttur: durum kökü, katman yüksekliği, doğrulayıcı kümesi karması, imza, Ana Zincir yüksekliği, çapa zamanı, algoritma ve sürüm; sürüm 2 makbuzunda ayrıca işlem sayısı ve sıkıştırılmış durum kanıtı. Bir uyuşmazlık, alanı adıyla bildirir;
 * `creatorAuthority`: imza anahtarı makbuzdan alınmadı, zincirden (`/qorechain/pqc/v1/account/{address}`) okundu;
 * `pqcSignature`: ML-DSA-87 imzası, kurallı (canonical) çapa mesajı üzerinde doğrulanır;
 * `chainBinding`: makbuz, gerçekten sorgulanan zinciri adlandırır.
 
-Çapa mesajı, çapanın kaydedildiği yüksekliğe göre seçilir (v3.2.2 geçişinin altında v1, geçişten itibaren v2); asla ikisi de denenerek seçilmez, çünkü bir v1 imzası zincir kimliği taşımaz ve her zincirde doğrulanırdı. Paket, ana ağ (3,556,788) ve testnet (6,905,034) için geçiş yüksekliğini taşır. Sonuç, kullandığı biçimi `signBytesVersion` olarak bildirir. Makbuz şeması v2, `chainId` kaydeder; sürüm 1 makbuz hiçbirini taşımaz, bu nedenle `chainBinding` kontrolünü yalnızca çapası sorguladığınız zincirde bulunduğu için geçer. Doğrulama, başka bir zincirin düğümüne karşı kontrol edilen bir makbuzu reddeder.
+Çapa mesajı, çapanın kaydedildiği yüksekliğe göre seçilir (v3.2.2 geçişinin altında v1, geçişten itibaren v2); asla ikisi de denenerek seçilmez, çünkü bir v1 imzası zincir kimliği taşımaz ve her zincirde doğrulanırdı. Paket, ana ağ (3,556,788) ve testnet (6,905,034) için geçiş yüksekliğini taşır. Sonuç, kullandığı biçimi `signBytesVersion` olarak bildirir. Makbuz şeması v2, `chainId` kaydeder; sürüm 1 makbuz hiçbirini taşımaz, bu nedenle `chainBinding` kontrolünü yalnızca çapası sorguladığınız zincirde bulunduğu için geçer. Doğrulama, başka bir zincirin düğümüne karşı kontrol edilen bir makbuzu reddeder. Zincirden herhangi bir şey okunmadan önce `receiptSchemaError`, bilinmeyen bir `version`'a, `ML-DSA-87` dışında bir `algorithm`'a veya (sürüm 2'de) `chainId`'si olmayan bir makbuza itiraz eder.
+
+0.6.1'den itibaren sonuç ayrıca zincirin kendi `anchor` kaydını ve `valid` true olduğunda zincir durumundan yeniden oluşturulmuş bir `verifiedReceipt` değerini (Python ve Rust'ta `verified_receipt`, Go'da `VerifiedReceipt`) taşır: olguları size verilen makbuzdan değil, bunlardan okuyun. `qorollup receipt verify --json`, dosyayı yansıtmak yerine zincirden okunan bu makbuzu `receipt` olarak döndürür (makbuz geçerli değilse `null`). İşlem sayısından ve kanıttan önce düzenlenmiş sürüm 1 makbuzları yine de doğrulanır.
 
 Hiçbir ağda çapa yoktur; bu nedenle bu yalnızca paket koduna karşı ve çevrimdışı kontrol edilmiştir, gerçek bir çapaya karşı değil. `buildSettlementReceipt` yalnızca bir çapa partiyi kapsadığında çalışır.
 
-:::note 0.6.0 öncesi sürümler
-0.5.0'daki `verifySettlementReceipt`, canlı ağlara karşı güvenli biçimde başarısız oluyordu (fail closed); bunun iki nedeni vardı ve ikisi de zincirde değil, istemcideydi: oluşturucunun anahtarını, kuantum sonrası hesap rotasının ağların sunmadığı çoğul bir `accounts` biçimi üzerinden arıyordu (HTTP 501) ve yalnızca v1 mesajını yeniden oluşturuyordu; zincir bunu v3.2.2'den beri çapalar için artık kabul etmez. Dolayısıyla gerçek bir makbuz doğrulanamıyordu, sahte olan ise yine reddediliyordu. 0.6.0 veya sonrasını kullanın.
+:::note 0.6.1 öncesi sürümler
+0.6.0'daki `verifySettlementReceipt`, zincirin çapasını durum köküne, katman yüksekliğine, doğrulayıcı kümesi karmasına ve imzaya göre eşleştiriyordu, ancak bir makbuzun gösterdiği diğer alanları (Ana Zincir yüksekliği, çapa zamanı, algoritma, sürüm ve sürüm 2 makbuzunda işlem sayısı ile sıkıştırılmış durum kanıtı) karşılaştırmıyordu ve parti durum kökünü bilgilendirici sayıyordu. Uzlaşma iddiasının kendisi (durum kökü, çapa imzası, oluşturucu anahtarı) her zaman bağlıydı; 0.6.0'ın söyleyemediği, yanında yazdırılan üst verinin zincirle eşleşip eşleşmediğiydi. 0.6.1'i kullanın.
+
+0.5.0'daki `verifySettlementReceipt`, canlı ağlara karşı güvenli biçimde başarısız oluyordu (fail closed); bunun iki nedeni vardı ve ikisi de zincirde değil, istemcideydi: oluşturucunun anahtarını, kuantum sonrası hesap rotasının ağların sunmadığı çoğul bir `accounts` biçimi üzerinden arıyordu (HTTP 501) ve yalnızca v1 mesajını yeniden oluşturuyordu; zincir bunu v3.2.2'den beri çapalar için artık kabul etmez. Dolayısıyla gerçek bir makbuz doğrulanamıyordu, sahte olan ise yine reddediliyordu. 0.6.1'i kullanın.
 :::
 
 ## CLI {#cli}

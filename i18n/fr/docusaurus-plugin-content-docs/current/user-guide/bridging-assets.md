@@ -10,11 +10,11 @@ sidebar_position: 5
 Ce guide décrit la manière dont le déplacement d'actifs entre QoreChain et d'autres réseaux blockchain est conçu pour fonctionner. La couche d'interopérabilité de QoreChain repose sur **37 configurations de chaînes** (36 chaînes externes plus Injective, atteinte via IBC) et jusqu'à **8 contreparties IBC** pour les chaînes de l'écosystème Cosmos.
 
 :::caution Pas en service sur aucun des deux réseaux
-Le module de pont est déployé sur le mainnet et le testnet, mais **aucune route de pont n'est active** : les 37 configurations de chaînes sont au statut `pending` sans contrat de pont défini, aucun validateur de pont n'est enregistré, aucune opération de pont n'a jamais été créée, et il n'existe ni canal ni client IBC. Tout ce qui suit décrit la conception prévue. N'envoyez pas d'actifs en comptant sur leur transfert par pont. Voir [Architecture du Pont](/architecture/bridge-architecture) pour le tableau de statut actuel.
+Le module de pont est déployé sur le mainnet et le testnet, mais **aucune route de pont n'est active** : les 37 configurations de chaînes sont au statut `pending` sans contrat de pont défini, aucun validateur de pont n'est enregistré, aucune opération de pont n'a jamais été créée, et il n'existe aucun canal IBC sur le mainnet (le testnet a un unique canal de test ICS-20 vers une chaîne d'ID `provider`, aucun vers les contreparties nommées ci-dessous). Tout ce qui suit décrit la conception prévue. N'envoyez pas d'actifs en comptant sur leur transfert par pont. Voir [Architecture du Pont](/architecture/bridge-architecture) pour le tableau de statut actuel.
 :::
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**, version de chaîne **v3.2.4**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) exécute la version de chaîne **v3.2.4** (depuis le 23 octobre 2026). Substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** une fois qu'une route est activée. Statut vérifié le 23 octobre 2026 : les 37 configurations de chaînes sont `pending` sur les deux réseaux.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**, version de chaîne **v3.2.6**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) exécute la version de chaîne **v3.2.4** (depuis le 23 octobre 2026). Substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** une fois qu'une route est activée. Statut vérifié le 27 octobre 2026 : les 37 configurations de chaînes sont `pending` sur les deux réseaux.
 :::
 
 ---
@@ -34,7 +34,17 @@ Une énumération complète de chaque configuration de chaîne se trouve sur la 
 
 ## IBC
 
-IBC fait partie de la conception (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), mais **aucun canal ni client IBC n'existe encore sur l'un ou l'autre réseau**, il n'y a donc rien à transférer. Cette page listera les canaux une fois qu'ils seront ouverts.
+IBC fait partie de la conception (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), mais **aucune de ces contreparties n'est encore connectée** : le mainnet n'a ni canal ni client IBC, et le testnet n'a qu'un unique canal de test ICS-20 vers une chaîne d'ID `provider` (vérifié le 27 octobre 2026) ; il n'y a donc rien à transférer pour ces chaînes. Cette page listera les canaux une fois qu'ils seront ouverts.
+
+### Ajouts IBC sur le testnet (v3.2.6) {#ibc-testnet-v326}
+
+Trois fonctionnalités IBC n'existent que sur le testnet ; le mainnet ne les a pas (sa route `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` répond 501) :
+
+* **Limite de débit IBC.** La gouvernance peut fixer un quota par canal pour les transferts IBC (un pourcentage entier de l'offre par fenêtre de quelques heures). Ce n'est **pas automatique** : aucune limite n'est définie aujourd'hui, et un ensemble vide signifie illimité. Un paquet relayé est comptabilisé sur les deux canaux et un remboursement restitue le quota. Cela est distinct des disjoncteurs du pont décrits dans [Modèle de sécurité](#security-model).
+* **Transfert de paquets.** Un transfert arrivant par IBC v1 peut porter un mémo de la forme `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` pour être envoyé vers une autre chaîne, avec remboursement à l'expéditeur si un saut échoue. Il n'y a aucune nouvelle tentative et un saut expire par défaut au bout de 10 minutes. Un token qui se convertit en ERC-20 à l'arrivée ne peut pas être transféré.
+* **Clients légers 08-wasm.** Enregistrer, migrer et supprimer un binaire de client léger wasm est réservé à l'autorité, et les types de client autorisés ne contiennent que le client standard tant que la gouvernance n'ajoute pas `08-wasm`.
+
+Lisez les limites avec `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` sur le testnet (`\{"rate_limits":[]\}` aujourd'hui).
 
 ---
 
@@ -106,7 +116,7 @@ Chaque transaction de la voie native nécessite la co-signature post-quantique h
 
 ---
 
-## Modèle de sécurité
+## Modèle de sécurité {#security-model}
 
 Le QoreChain Bridge est conçu pour être sécurisé par plusieurs couches de défense :
 
@@ -114,7 +124,7 @@ Le QoreChain Bridge est conçu pour être sécurisé par plusieurs couches de d�
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Multisig PQC 7-sur-10**     | Chaque opération de pont nécessite des attestations d'au moins 7 des 10 validateurs du pont, chacun utilisant des signatures cryptographiques post-quantiques.               |
 | **Période de contestation de 24 heures** | Les transferts dépassant le seuil de gros transfert (100 000 QOR) entrent dans une fenêtre de contestation de 24 heures pendant laquelle les validateurs ou les observateurs peuvent signaler des transactions frauduleuses. |
-| **Disjoncteurs**         | Des limiteurs de débit automatisés interrompent les opérations du pont en cas de volume anormal ou de schémas suspects détectés. Les opérations du pont reprennent après une revue manuelle.  |
+| **Disjoncteurs**         | Conçus pour le pont QCB : des limiteurs automatisés interrompent les opérations du pont en cas de volume anormal ou de schémas suspects détectés, et les opérations reprennent après une revue manuelle. Ils s'appliquent au pont QCB, pas à IBC ; la limite de débit IBC (testnet uniquement) est fixée par la gouvernance, n'est pas automatique et n'a aucune limite définie aujourd'hui. |
 
 ---
 

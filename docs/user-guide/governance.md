@@ -10,7 +10,7 @@ sidebar_position: 3
 This guide covers how on-chain governance works on QoreChain: how votes are tallied, how to submit proposals, and how to vote.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.4** since 23 October 2026; the testnet has run **v3.2.4** since 19 October 2026 — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when participating in governance on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.4** since 23 October 2026; the testnet runs **v3.2.6** (since 27 October 2026) — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when participating in governance on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`
@@ -29,7 +29,7 @@ Proposals are tallied on **bonded stake**: each QOR you have delegated to a bond
 | Threshold | 50%        | Share of "yes" among the non-abstaining votes needed to pass                  |
 | Veto      | 33.4%      | If "no with veto" reaches this share, the proposal is rejected and its deposit is burned |
 
-These values were read from mainnet on 23 October 2026 (and are the same on the testnet); confirm them with `qorechaind query gov params`, since governance can change them.
+These values were read from mainnet on 27 October 2026. The testnet has the same deposits, quorum and thresholds but much shorter voting periods (voting 4 hours, expedited voting 1 hour); confirm them with `qorechaind query gov params`, since governance can change them.
 
 :::note QDRW is designed but not active
 QoreChain's design includes a **Quadratic Delegation-Reputation Weighted (QDRW)** voting-power formula, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, that would dampen large stakes and weight reputation. It is implemented in the `x/qca` module but is **switched off** on both networks (`qdrw_enabled` is `false` in `qorechaind query qca config`) and is not part of the governance tally, so it does not affect any vote today. xQORE is also not live (see [xQORE Staking](/user-guide/xqore-staking)).
@@ -161,7 +161,7 @@ qorechaind query gov params
 
 Key parameters include:
 
-| Parameter            | Description                                                      | Live value (20 Oct 2026) |
+| Parameter            | Description                                                      | Mainnet value (27 Oct 2026) |
 | -------------------- | ---------------------------------------------------------------- | ------------------------ |
 | `min_deposit`        | Minimum deposit required for a proposal to enter voting          | 10 QOR (`10000000uqor`)  |
 | `max_deposit_period` | Time window for reaching the minimum deposit                     | 2 days                   |
@@ -175,7 +175,7 @@ Key parameters include:
 
 ## Governance on mainnet so far {#mainnet-history}
 
-Mainnet governance has been used for parameter changes, circuit-breaker decisions, coordinated upgrades and, since October 2026, for releasing amounts that the chain recorded at the v3.2.0 upgrade. Proposals 7 to 13 passed on mainnet in October 2026, including proposal 12 (a further release, passed 21 October) and proposal 13 (the v3.2.4 upgrade, applied at height 3,742,566 on 23 October); the list and the outcomes are in [Version History](/appendix/version-history#governance-timeline), and every proposal can be read live at `GET /cosmos/gov/v1/proposals`.
+Mainnet governance has been used for parameter changes, circuit-breaker decisions, coordinated upgrades and, since October 2026, for releasing amounts that the chain recorded at the v3.2.0 upgrade. Proposals 7 to 13 passed on mainnet in October 2026, including proposal 12 (a further release, passed 21 October) and proposal 13 (the v3.2.4 upgrade, applied at height 3,742,566 on 23 October); proposal 14 (a coordinated upgrade to v3.2.5 at height 3,906,833) was in its voting period at the time of writing; the list and the outcomes are in [Version History](/appendix/version-history#governance-timeline), and every proposal can be read live at `GET /cosmos/gov/v1/proposals`.
 
 ---
 

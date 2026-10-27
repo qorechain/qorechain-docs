@@ -10,7 +10,7 @@ sidebar_position: 4
 Join the live QoreChain Diana testnet by configuring your node with the correct genesis file, peers, and network settings.
 
 :::note
-This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 (release **v3.2.4** since 23 October 2026) and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details. The testnet has run **v3.2.4** since 19 October 2026; its release manifest is at [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 (release **v3.2.4** since 23 October 2026) and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details. The testnet runs **v3.2.6** (applied on 27 October 2026); its release manifest is at [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Public Endpoints
@@ -26,7 +26,7 @@ If you only need to **query the testnet or broadcast transactions**, use the pub
 | SVM JSON-RPC (read-only) | `https://svm-testnet.qore.host` |
 | Block explorer | [explore.qore.network](https://explore.qore.network) (toggle to Testnet) |
 
-Testnet QOR is available from the [Dashboard Faucet](/dashboard/faucet).
+Testnet QOR is available from the [Dashboard Faucet](/dashboard/faucet), which can also send the testnet-only [Fest test tokens](/dashboard/faucet#fest-tokens) (fUSD, fETH, fBTC; no value).
 
 ---
 
@@ -52,7 +52,17 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-The testnet takes coordinated upgrades through governance proposals, so its manifest carries an `upgradeHeight` (v3.2.4 was applied at height 8,337,253 on 19 October 2026; v3.2.3 at 8,003,746 and v3.2.2 at 6,905,034 before it) and `minCompatible` equals the current version (3.2.4). A node that joins now needs the release in the manifest. Keep the system clock NTP-synchronised. Mainnet applied v3.2.4 at height 3,742,566 on 23 October 2026, but its manifest is separate, so never copy a binary between the two networks.
+The testnet takes coordinated upgrades through governance proposals, so its manifest carries an `upgradeHeight` and `minCompatible` equals the current version. A node that joins now needs the release in the manifest. At the time of writing (27 October 2026) the testnet manifest reads `version` 3.2.6, `minCompatible` 3.2.6 and `upgradeHeight` 8970638, and its note says "IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens". Keep the system clock NTP-synchronised.
+
+| Release | Testnet height | Date applied |
+| --- | --- | --- |
+| v3.2.2 | 6,905,034 | 2 October 2026 |
+| v3.2.3 | 8,003,746 | 15 October 2026 |
+| v3.2.4 | 8,337,253 | 19 October 2026 |
+| v3.2.5 | 8,890,800 | 26 October 2026 |
+| v3.2.6 | 8,970,638 | 27 October 2026 (16:58 UTC) |
+
+The testnet takes each release before mainnet. Mainnet applied v3.2.4 at height 3,742,566 on 23 October 2026; mainnet governance proposal 14 would apply v3.2.5 at height 3,906,833 and was in its voting period at the time of writing. The manifests are separate, so never copy a binary between the two networks, and do not expect mainnet to accept a testnet-only feature (the v3.2.6 additions are listed in [Version History](/appendix/version-history#testnet-v326)).
 
 ---
 
@@ -106,7 +116,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### Recommended Settings
 
-A full node does not choose the block time — validators do (the testnet currently produces a block about every 1 second). Leave the consensus timeouts at their defaults unless you operate a validator and have been given values by the validator group. A useful mempool setting for a public RPC node, in `config.toml`:
+A full node does not choose the block time — validators do (the testnet currently produces a block about every 1.3 seconds). Leave the consensus timeouts at their defaults unless you operate a validator and have been given values by the validator group. A useful mempool setting for a public RPC node, in `config.toml`:
 
 ```toml
 [mempool]

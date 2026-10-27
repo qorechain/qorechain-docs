@@ -65,7 +65,7 @@ mit Guthaben. Dieses Beispiel signiert nur mit der **klassischen** Signatur,
 funktioniert daher gegen einen lokalen oder Dev-Node, wird aber von Mainnet und
 Testnet abgelehnt, die für jede Transaktion auf dem Native-Pfad die hybride
 Signatur verlangen. Für die öffentlichen Netzwerke verbinden Sie sich mit dem
-Schlüsselpaar des Kontos, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0),
+Schlüsselpaar des Kontos, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 oder neuer),
 wie im [Quickstart](/sdk/quickstart#send-qor).
 
 ```ts
@@ -128,9 +128,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 `@qorechain/evm` (eine dünne Schicht über viem) verwenden, um schreibgeschützte
 QoreChain-Precompiles aufzurufen und ein ERC-20-Guthaben zu lesen. Die
 EVM-Chain-ID wird automatisch über `eth_chainId` erkannt. Die Precompiles sind
-auf Mainnet und Testnet noch nicht aktiv (siehe
-[Netzwerkstatus](/developer-guide/evm-precompiles#network-status)); solange das
-so ist, und auf einem Node ohne sie, werfen diese Aufrufe "feature not present",
+im Mainnet nicht aktiv, und im Testnet sind es nur die für PQC-Verifizierung,
+PQC-Schlüsselstatus und Konsensparameter (siehe
+[Netzwerkstatus](/developer-guide/evm-precompiles#network-status)); wo ein
+Precompile inaktiv ist, und auf einem Node ohne sie, werfen diese Aufrufe "feature not present",
 was pro Aufruf gemeldet wird.
 
 ```ts
@@ -267,7 +268,7 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 
 Eine relayer-eingereichte `MsgExecuteCosmos` auf der nativen
 Authenticator-Lane bauen (SDK 0.7.0, Chain v3.1.85; das Modul `abstractaccount`
-ist heute auf beiden Netzwerken abgeschaltet, diese Lane kann dort also noch
+ist im Mainnet abgeschaltet und im Testnet aktiviert, diese Lane kann im Mainnet also noch
 nicht genutzt werden): ein Phantom-artiger
 ed25519-Schlüssel signiert den domänenseparierten Auth-Digest, und die
 resultierende Nachricht ist bereit, von einem Relayer gebroadcastet zu werden

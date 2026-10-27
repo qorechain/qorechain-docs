@@ -10,7 +10,7 @@ sidebar_position: 12
 Das `x/rdk`-Modul stellt ein umfassendes Rollup Development Kit (RDK) bereit, mit dem Entwickler anwendungsspezifische Rollups auf QoreChain bereitstellen können. Es unterstützt vier Settlement-Paradigmen, mehrere Sequencer-Modi, austauschbare Datenverfügbarkeits-Backends und KI-gestützte Konfigurationsoptimierung.
 
 :::caution Frühphasige Funktion
-Das Modul ist auf Mainnet (Chain-Version **v3.2.4** seit dem 23. Oktober 2026) und Testnet (**v3.2.4**) bereitgestellt, aber **auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt** (geprüft am 23. Oktober 2026: `GET /qorechain/rdk/v1/rollups` liefert auf beiden eine leere Liste). Mehrere der unten beschriebenen Funktionen sind heute nicht Ende-zu-Ende nutzbar; der jeweilige Status ist dort angegeben, wo die Funktion beschrieben wird. Die Anleitung für Entwickler finden Sie unter [Rollups Overview](/rollups/overview).
+Das Modul ist auf Mainnet (Chain-Version **v3.2.4** seit dem 23. Oktober 2026) und Testnet (**v3.2.6** seit dem 27. Oktober 2026) bereitgestellt, aber **auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt** (geprüft am 27. Oktober 2026: `GET /qorechain/rdk/v1/rollups` liefert auf beiden eine leere Liste). Mehrere der unten beschriebenen Funktionen sind heute nicht Ende-zu-Ende nutzbar; der jeweilige Status ist dort angegeben, wo die Funktion beschrieben wird. Die Anleitung für Entwickler finden Sie unter [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ QoreChain RDK unterstützt vier unterschiedliche Settlement-Modi — **optimisti
 Optimistic Rollups gehen standardmäßig davon aus, dass Transaktionen gültig sind, und verlassen sich für die Streitbeilegung auf Betrugsbeweise (Fraud Proofs).
 
 * **Beweissystem**: Interaktive Betrugsbeweise
-* **Challenge-Fenster**: 604.800 Sekunden (Standard, 7 Tage). **Vor v3.2.4:** Die Chain rechnet dies mit festen 6 Sekunden pro Block in Blöcke um, **100.800 Blöcke**, sodass die tatsächlich verstreichende Zeit von der realen Blockzeit abhängt (etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets); planen Sie daher in Blöcken, nicht in Tagen. **Ab v3.2.4:** Für einen Batch, der ab der Upgrade-Höhe eingereicht wird, wird das Fenster in Sekunden der Blockzeit gemessen (volle 7 Tage). Ein früher eingereichter Batch behält die Regel nach Blockanzahl. Das Testnet hat v3.2.4 auf Höhe 8.337.253 angewendet (19. Oktober 2026); das Mainnet hat es auf Höhe 3.742.566 angewendet (23. Oktober 2026, Governance-Vorschlag 13).
+* **Challenge-Fenster**: 604.800 Sekunden (Standard, 7 Tage). **Vor v3.2.4:** Die Chain rechnet dies mit festen 6 Sekunden pro Block in Blöcke um, **100.800 Blöcke**, sodass die tatsächlich verstreichende Zeit von der realen Blockzeit abhängt (etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets); planen Sie daher in Blöcken, nicht in Tagen. **Ab v3.2.4:** Für einen Batch, der ab der Upgrade-Höhe eingereicht wird, wird das Fenster in Sekunden der Blockzeit gemessen (volle 7 Tage). Ein früher eingereichter Batch behält die Regel nach Blockanzahl. Das Testnet hat v3.2.4 auf Höhe 8.337.253 angewendet (19. Oktober 2026); das Mainnet hat es auf Höhe 3.742.566 angewendet (23. Oktober 2026, Governance-Vorschlag 13). Der konfigurierte Standard des Testnets ist kürzer, nämlich 3.600 Sekunden (1 Stunde), sodass ein Testnet-Rollup schneller finalisiert als die hier beschriebenen 7 Tage.
 * **Challenge-Bond**: 1.000 QOR (1.000.000.000 uqor) — erforderlich, um eine Betrugsbeweis-Anfechtung einzureichen (Presets `nft` und `custom`; die Presets `defi`, `gaming` und `enterprise` setzen keinen Bond, da sie kein Challenge-Fenster haben)
 * **Finalität**: Verzögert, bis das Challenge-Fenster ohne gültige Anfechtung abläuft
 * **Auto-Finalisierung**: Der `EndBlocker` finalisiert Batches automatisch, sobald das Challenge-Fenster ohne Streitfall abgelaufen ist. Ein angefochtener Batch wird nie automatisch finalisiert: Der Ersteller des Rollups löst die Anfechtung zuerst auf (siehe [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -152,7 +152,7 @@ QoreChain-L1-Proposer sequenzieren Rollup-Transaktionen.
 On-Chain-KV-Store-Blob-Speicherung innerhalb von QoreChain selbst.
 
 :::caution Noch kein öffentlicher Weg, einen Blob zu veröffentlichen
-Das Modul definiert Blob-Speicherung, Aufbewahrung und Pruning, aber es gibt in den aktuellen Releases keine Transaktionsnachricht zum Veröffentlichen eines Blobs. Ein Batch, der bei einem `native`- oder `both`-Rollup einen Daten-Hash nennt, wird abgelehnt, weil kein passender Blob gespeichert werden kann. Siehe [Data Availability](/rollups/data-availability).
+Das Modul definiert Blob-Speicherung, Aufbewahrung und Pruning, aber es gibt in den aktuellen Releases keine Transaktionsnachricht zum Veröffentlichen eines Blobs. Ein Batch, der bei einem `native`- oder `both`-Rollup einen Daten-Hash nennt, wird abgelehnt, weil kein passender Blob gespeichert werden kann. Siehe [Data Availability](/rollups/data-availability). Bei nativer Datenverfügbarkeit muss ein Batch daher `data_hash` leer lassen; der RDK-Client (0.6.1) tut das, und die Chain lehnt einen Batch ab, der einen angibt.
 :::
 
 | Parameter            | Wert                                                                                               |
@@ -208,6 +208,8 @@ Submitted → Finalized                              (happy path)
 Submitted → Challenged → Rejected                  (fraud detected)
 ```
 
+Verhalten ab RDK 0.6.1: Für ein Optimistic Rollup baut der Client einen Batch, dessen State-Root die kanonische Übergangs-Root der Chain ist (`batchTransitionRoot` im RDK), kein frei gewählter eigener Wert.
+
 | Zustand          | Beschreibung                                       |
 | -------------- | ------------------------------------------------- |
 | **Submitted**  | Batch an QoreChain übermittelt, wartet auf Finalisierung  |
@@ -232,10 +234,10 @@ Die Auto-Finalisierung wird im `EndBlocker` für optimistic und based Rollups au
 
 | Parameter                   |                          Standard | Beschreibung                                      |
 | --------------------------- | -------------------------------: | ------------------------------------------------ |
-| `max_rollups`               |                              100 | Maximale Anzahl registrierbarer Rollups |
+| `max_rollups`               |                              100 (Testnet: 200) | Maximale Anzahl registrierbarer Rollups |
 | `min_stake_for_rollup`      | 10.000.000.000 uqor (10.000 QOR) | Mindest-Stake zum Erstellen eines Rollups        |
 | `rollup_creation_burn_rate` |                        0.01 (1%) | Anteil des Erstellungs-Stakes, der über `x/burn` verbrannt wird   |
-| `default_challenge_window`  | 604.800 (umgerechnet in 100.800 Blöcke) | Standardmäßiges optimistic Challenge-Fenster              |
+| `default_challenge_window`  | 604.800 s (Testnet: 3.600 s) | Standardmäßiges optimistic Challenge-Fenster; vor v3.2.4 rechnete die Chain es in 100.800 Blöcke um |
 | `max_da_blob_size`          |           2.097.152 Bytes (2 MB) | Maximale Datenverfügbarkeits-Blob-Größe              |
 | `blob_retention_blocks`     |                   432.000 Blöcke | Blöcke, bevor DA-Blobs entfernt werden                  |
 | `max_batches_per_block`     |                               10 | Maximale Anzahl pro Block verarbeiteter Settlement-Batches   |

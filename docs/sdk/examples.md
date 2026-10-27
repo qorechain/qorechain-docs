@@ -63,7 +63,7 @@ reachable consensus RPC plus REST and a funded account. This example signs with
 the **classical** signature only, so it works against a local or dev node but is
 refused by mainnet and testnet, which require the hybrid signature on every
 Native-path transaction. For the public networks connect with the account's
-keypair, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0), as in the
+keypair, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 or later), as in the
 [Quickstart](/sdk/quickstart#send-qor).
 
 ```ts
@@ -124,9 +124,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 Use `@qorechain/evm` (a thin layer over viem) to call read-only QoreChain
 precompiles and read an ERC-20 balance. The EVM chain id is auto-detected via
-`eth_chainId`. The precompiles are not yet active on mainnet or testnet (see
-[Network status](/developer-guide/evm-precompiles#network-status)); until they
-are, and on a node without them, those calls throw "feature not present",
+`eth_chainId`. The precompiles are not active on mainnet, and on the testnet only
+the PQC verify, PQC key status and consensus-parameters ones are (see
+[Network status](/developer-guide/evm-precompiles#network-status)); where a
+precompile is inactive, and on a node without them, those calls throw "feature not present",
 reported per-call.
 
 ```ts
@@ -258,8 +259,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 ## authenticator-spend
 
 Build a relayer-submitted `MsgExecuteCosmos` on the Native authenticator lane
-(SDK 0.7.0, chain v3.1.85; the `abstractaccount` module is switched off on both
-networks today, so this lane cannot be used there yet): a Phantom-style ed25519 key signs the
+(SDK 0.7.0, chain v3.1.85; the `abstractaccount` module is switched off on mainnet and
+enabled on the testnet, so this lane cannot be used on mainnet yet): a Phantom-style ed25519 key signs the
 domain-separated auth digest, and the resulting message is ready for a relayer
 to broadcast (the relayer pays fees; the external key never produces an ML-DSA
 co-signature). Dry run — no node required.

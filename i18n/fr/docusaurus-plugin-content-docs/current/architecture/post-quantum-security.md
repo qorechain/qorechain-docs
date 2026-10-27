@@ -271,9 +271,7 @@ Ces utilitaires sous-tendent le hachage applicatif par défaut et sont utilisés
 
 ## PQC du bridge
 
-Toutes les attestations de bridge inter-chaînes et les engagements d'état utilisent des signatures **Dilithium-5**. Le module `x/multilayer` requiert des signatures agrégées PQC sur chaque soumission `MsgAnchorState`, et les engagements ML-KEM sécurisent les canaux d'échange de clés entre les relayers de bridge.
-
-Cela garantit que la sécurité inter-chaînes n'est pas dégradée par l'usage de cryptographie classique dans l'infrastructure de bridge, maintenant la résistance au quantique sur l'ensemble de la pile du protocole. Aucune route de bridge n'est active (voir [Architecture du bridge](/architecture/bridge-architecture#current-status)) ; à partir de la v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026), l'enregistrement d'un validateur de bridge exige aussi une preuve de possession de sa clé PQC.
+Les attestations de bridge sont conçues pour utiliser des signatures **Dilithium-5** (ML-DSA-87), afin que la sécurité inter-chaînes ne soit pas dégradée par l'usage de cryptographie classique dans l'infrastructure de bridge. Il s'agit d'une intention de conception : cela décrit comment les validateurs de bridge sont censés attester, et non un comportement que vous pouvez exercer aujourd'hui sur un réseau en production. Aucune route de bridge n'est active (voir [Architecture du bridge](/architecture/bridge-architecture#current-status)) ; à partir de la v3.2.4 (mainnet depuis le 23 octobre 2026, testnet depuis le 19 octobre 2026), l'enregistrement d'un validateur de bridge exige aussi une preuve de possession de sa clé PQC.
 
 ## Paramètres du module
 
@@ -285,6 +283,8 @@ Cela garantit que la sécurité inter-chaînes n'est pas dégradée par l'usage 
 | `default_migration_blocks` | int64               | `1,000,000`       | Période de migration par double signature par défaut en blocs |
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Algorithme de signature par défaut pour les nouveaux enregistrements de clé |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Niveau d'application des signatures hybrides à l'échelle de la chaîne |
+
+Le testnet renvoie ces mêmes valeurs (vérifié le 27 octobre 2026). Depuis la v3.2.6, le testnet les sert aussi en REST à `GET /qorechain/pqc/v1/params` ; sur le mainnet, cette route répond 501 (non implémentée) et les paramètres se lisent avec `qorechaind query pqc params`.
 
 ## Pour aller plus loin
 

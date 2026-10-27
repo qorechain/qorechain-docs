@@ -59,7 +59,7 @@ if (!preflight.safe) {
 *all'interno della chain* come precompile deterministico (`aiRiskScore` a
 `0x…0B01`, `aiAnomalyCheck` a `0x…0B02`), non come servizio off-chain. Finché
 quei precompile non vengono attivati, gli helper qui sopra generano un errore
-sulle reti pubbliche (`returned no data ("0x")`). Vedi
+sulle reti pubbliche (`returned no data ("0x")`; i tre precompile attivi della testnet sono quelli PQC e di consenso, non questi). Vedi
 [AI pre-flight](/sdk/guides/ai-preflight).
 
 ---
@@ -96,12 +96,12 @@ await crossVM.callAtomic([
 ```
 
 **Perché è diverso:** QoreChain esegue tre VM co-residenti con un modulo bridge
-nativo (`crossvm`, più il precompile `CrossVMBridge` una volta attivo), così
+nativo (`crossvm`, più il precompile `CrossVMBridge` una volta attivo; non è ancora attivo su nessuna delle due reti), così
 un'unica interfaccia dell'SDK può indirizzarle tutte e tre. Le chain a VM
 singola non hanno nulla di equivalente da incapsulare. Oggi la portata di una
 chiamata è limitata dalla corsia a cui è destinata: `MsgCrossVMCall` è
 disattivato su mainnet, le transazioni SVM sono disabilitate e il caricamento e
-l'istanziazione di QoreChain Native sono soggetti ad autorizzazione. Vedi
+l'istanziazione di QoreChain Native sono soggetti ad autorizzazione (l'istanziazione è aperta sulla testnet). Vedi
 [Chiamate cross-VM](/sdk/guides/cross-vm).
 
 ---
@@ -136,7 +136,7 @@ await hybrid.signAndBroadcastHybrid({
 import { QuantumSafeBadge } from "@qorechain/react";
 
 // Shows a "Quantum-safe" indicator when the address has a registered PQC key
-// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0).
+// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
 
@@ -182,12 +182,13 @@ authenticator limitato ([Authenticator](/sdk/guides/authenticators)). Vedi
 richiede la PQC, entro limiti, tramite un relayer.** (SDK 0.7.0, chain
 v3.1.85.)
 
-:::caution Non ancora disponibile sulle reti attive
-Il modulo `abstractaccount` è disattivato su `qorechain-vladi` e
-`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` restituisce
-`"enabled": false`), e dalla chain v3.2.0 quel flag viene applicato su ogni
-percorso, quindi una chiave non può essere collegata e le corsie qui sotto non
-possono essere usate. Vedi la
+:::caution Non ancora disponibile sulla mainnet
+Il modulo `abstractaccount` è disattivato su `qorechain-vladi`
+(`GET /qorechain/abstractaccount/v1/config` restituisce `"enabled": false`), e
+dalla chain v3.2.0 quel flag viene applicato su ogni percorso, quindi sulla
+mainnet una chiave non può essere collegata e le corsie qui sotto non possono
+essere usate. Il modulo è abilitato sulla testnet `qorechain-diana` (verificato
+il 27 ottobre 2026). Vedi la
 [guida agli Authenticator](/sdk/guides/authenticators).
 :::
 

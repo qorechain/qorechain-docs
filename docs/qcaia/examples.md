@@ -21,7 +21,7 @@ These answers are **illustrative** — short, plain-language paraphrases of Qore
 
 **QCAIA replies:**
 
-> QoreChain's bridge is designed to move assets between QoreChain and other networks, combining QCB transfers with IBC. It is not live yet: all chain configurations are still pending and no IBC channel is open on either network. For the full design, see the bridge documentation.
+> QoreChain's bridge is designed to move assets between QoreChain and other networks, combining QCB transfers with IBC. It is not live yet: all chain configurations are still pending and no IBC channel to any planned counterparty is open (mainnet has none; the testnet has a single test channel). For the full design, see the bridge documentation.
 
 _Learn more: [Bridge Architecture](/architecture/bridge-architecture)._
 

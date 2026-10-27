@@ -260,7 +260,7 @@ Eine ed25519-Signatur ist deterministisch, und jede Website kann die Wallet bitt
 Wenn Sie ein Konto auf diese Weise erstellt haben, behandeln Sie es ab sofort als kompromittiert: Erstellen Sie ein neues Konto aus einer Mnemonic, verschieben Sie die Mittel dorthin und verknüpfen Sie Phantom anschließend als Authenticator mit dem neuen Konto (siehe unten). Das alte Konto lässt sich nicht reparieren, weil seine Adresse an den offengelegten Schlüssel gebunden ist und eine PQC-Schlüsselrotation nur die Post-Quanten-Hälfte ersetzt. Verwenden Sie SDK 0.8.2 oder neuer.
 :::
 
-Damit ein Phantom- (oder MetaMask-)Schlüssel von einem Konto ausgeben kann, nutzen Sie die **Authenticator-Lanes**: Registrieren Sie den Wallet-Schlüssel mit `MsgRegisterAuthenticator` und geben Sie dann vom kanonischen PQC-Konto über `MsgExecuteCosmos` / `MsgExecuteEVM` unter einer Berechtigung und einer `SpendingRule` aus. Das Konto behält seine eigenen, aus der Mnemonic abgeleiteten Schlüssel, und der Wallet-Schlüssel kann jederzeit widerrufen werden. Siehe [Authenticators & delegiertes Ausgeben](/sdk/guides/authenticators). Beachten Sie, dass das `abstractaccount`-Modul hinter diesen Lanes derzeit in beiden Netzwerken abgeschaltet ist (`GET /qorechain/abstractaccount/v1/config` zeigt `enabled: false`); ein Wallet-Schlüssel kann also noch nicht verknüpft werden. Bis dahin verwenden Sie das neue Mnemonic-Konto direkt.
+Damit ein Phantom- (oder MetaMask-)Schlüssel von einem Konto ausgeben kann, nutzen Sie die **Authenticator-Lanes**: Registrieren Sie den Wallet-Schlüssel mit `MsgRegisterAuthenticator` und geben Sie dann vom kanonischen PQC-Konto über `MsgExecuteCosmos` / `MsgExecuteEVM` unter einer Berechtigung und einer `SpendingRule` aus. Das Konto behält seine eigenen, aus der Mnemonic abgeleiteten Schlüssel, und der Wallet-Schlüssel kann jederzeit widerrufen werden. Siehe [Authenticators & delegiertes Ausgeben](/sdk/guides/authenticators). Beachten Sie, dass das `abstractaccount`-Modul hinter diesen Lanes im Mainnet abgeschaltet ist (`GET /qorechain/abstractaccount/v1/config` zeigt `enabled: false`; im Testnet ist es aktiviert); ein Wallet-Schlüssel kann im Mainnet also noch nicht verknüpft werden. Bis dahin verwenden Sie das neue Mnemonic-Konto direkt.
 
 ## Post-Quanten-Kryptografie (PQC)
 
@@ -305,7 +305,7 @@ gültig bleibt und gleichzeitig Post-Quanten-Schutz erhält. Der Post-Quanten-
 Teil wird als `PQCHybridSignature`-Erweiterung an der Transaktion mitgeführt.
 
 :::caution Hybrid-Signierung ist auf dem Native-Pfad erforderlich
-Ab Chain-Version **v3.2.0** (Mainnet und Testnet laufen beide auf v3.2.4) ist die
+Ab Chain-Version **v3.2.0** (das Mainnet läuft auf v3.2.4, das Testnet auf v3.2.6) ist die
 Netzwerk-Voreinstellung `hybrid_signature_mode = required` mit
 `allow_classical_fallback = false`. Hybrid-Signierung über `buildHybridTx` /
 `signAndBroadcastHybrid` (übergeben Sie `rest`) oder `signHybridEth` /

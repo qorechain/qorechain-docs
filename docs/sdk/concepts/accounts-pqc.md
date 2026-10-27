@@ -252,7 +252,7 @@ An ed25519 signature is deterministic and any website can ask the wallet to sign
 If you created an account this way, treat it as compromised now: create a fresh mnemonic account, move the funds to it, and then link Phantom to the new account as an authenticator (below). The old account cannot be repaired, because its address is bound to the exposed key and a PQC key rotation replaces only the post-quantum half. Use SDK 0.8.2 or later.
 :::
 
-To let a Phantom (or MetaMask) key spend from an account, use the **authenticator lanes**: register the wallet key with `MsgRegisterAuthenticator`, then spend from the canonical PQC account through `MsgExecuteCosmos` / `MsgExecuteEVM` under a permission and a `SpendingRule`. The account keeps its own mnemonic-derived keys, and the wallet key can be revoked at any time. See [Authenticators & delegated spending](/sdk/guides/authenticators). Note that the `abstractaccount` module behind these lanes is currently switched off on both networks (`GET /qorechain/abstractaccount/v1/config` shows `enabled: false`), so a wallet key cannot be linked yet; until it can, use the fresh mnemonic account directly.
+To let a Phantom (or MetaMask) key spend from an account, use the **authenticator lanes**: register the wallet key with `MsgRegisterAuthenticator`, then spend from the canonical PQC account through `MsgExecuteCosmos` / `MsgExecuteEVM` under a permission and a `SpendingRule`. The account keeps its own mnemonic-derived keys, and the wallet key can be revoked at any time. See [Authenticators & delegated spending](/sdk/guides/authenticators). Note that the `abstractaccount` module behind these lanes is switched off on mainnet (`GET /qorechain/abstractaccount/v1/config` shows `enabled: false`; it is enabled on the testnet), so a wallet key cannot be linked on mainnet yet; until it can, use the fresh mnemonic account directly.
 
 ## Post-quantum cryptography (PQC)
 
@@ -297,7 +297,7 @@ gaining post-quantum protection. The post-quantum part travels as a
 `PQCHybridSignature` extension on the transaction.
 
 :::caution Hybrid signing is required on the Native path
-Since chain version **v3.2.0** (mainnet and the testnet both run v3.2.4), the network
+Since chain version **v3.2.0** (mainnet runs v3.2.4, the testnet v3.2.6), the network
 default is `hybrid_signature_mode = required` with
 `allow_classical_fallback = false`. Hybrid signing via `buildHybridTx` /
 `signAndBroadcastHybrid` (pass `rest`), or `signHybridEth` / `EthNativeSigner`

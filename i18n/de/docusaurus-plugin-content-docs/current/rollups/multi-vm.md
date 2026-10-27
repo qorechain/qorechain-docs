@@ -10,7 +10,7 @@ sidebar_position: 8
 Das RDK enthält TypeScript-Helfer, die einen Aufruf aus einem EVM-Contract in das **VM-übergreifende Precompile** unter `0x0000000000000000000000000000000000000901` kodieren, das dafür ausgelegt ist, ihn an einen QoreChain Native-Contract auf der **QoreChain Native**-Laufzeitumgebung (Wasm) weiterzuleiten, sowie eine `multivm-rollup`-Scaffold-Vorlage, die sie verdrahtet. Das Tooling deckt ausschließlich **EVM → QoreChain Native** ab; SVM ist eine eigene Laufzeitumgebung und nicht Teil des Precompiles.
 
 :::caution Auf den Live-Netzwerken noch nicht nutzbar
-Das VM-übergreifende Precompile ist auf keinem der beiden Netzwerke **aktiviert**: Die Liste der aktiven statischen Precompiles des EVM-Moduls ist im Mainnet und im Testnet leer, `eth_getCode` für `0x…0901` gibt `0x` zurück, und ein Aufruf davon gelingt mit leeren Daten und führt nichts aus. Der QoreChain Native-Contract-Upload ist ebenfalls auf beiden Netzwerken geschlossen, und die SVM-Transaktionsspur ist netzwerkweit deaktiviert. Solange das Precompile nicht aktiviert und QoreChain Native-Uploads nicht wieder geöffnet sind, gibt es nichts aufzurufen. Diese Seite dokumentiert das Tooling, damit Sie sich vorbereiten können; bauen Sie darauf keine Produktionsabläufe auf. Siehe [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+Das VM-übergreifende Precompile ist auf keinem der beiden Netzwerke **aktiviert**: Die Liste der aktiven statischen Precompiles des EVM-Moduls ist im Mainnet leer und enthält im Testnet nur `0x…0A01`, `0x…0A02` und `0x…0C01` (geprüft am 27. Oktober 2026), sodass `0x…0901` auf keiner der beiden Listen steht; `eth_getCode` für `0x…0901` gibt `0x` zurück, und ein Aufruf davon gelingt mit leeren Daten und führt nichts aus. Der QoreChain Native-Contract-Upload ist ebenfalls auf beiden Netzwerken geschlossen, und die SVM-Transaktionsspur ist netzwerkweit deaktiviert. Solange das Precompile nicht aktiviert und QoreChain Native-Uploads nicht wieder geöffnet sind, gibt es nichts aufzurufen. Diese Seite dokumentiert das Tooling, damit Sie sich vorbereiten können; bauen Sie darauf keine Produktionsabläufe auf. Siehe [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
 :::note Der Encoder entspricht seit 0.6.0 dem Layout der Chain
@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` aus `@qorechain/rdk` 0.6.0 erstellt dieselbe Calldata für Sie:
+`encodeCrossVmCalldata` aus `@qorechain/rdk` 0.6.0 und neuer erstellt dieselbe Calldata für Sie:
 
 ```ts
 import {
@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit leeren Daten zurück und bewirkt nichts**; das `ok`-Flag sagt Ihnen nicht, ob der Aufruf eine Wirkung hatte. Der verlässliche Schutz im Contract ist ein Ziel, das stets eine nicht leere Bestätigung zurückgibt, mit einem `require(ret.length > 0)` nach dem Aufruf, sodass eine leere Antwort als Fehler behandelt wird; die `multivm-rollup`-Vorlage von 0.6.0 tut dies.
+Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit leeren Daten zurück und bewirkt nichts**; das `ok`-Flag sagt Ihnen nicht, ob der Aufruf eine Wirkung hatte. Der verlässliche Schutz im Contract ist ein Ziel, das stets eine nicht leere Bestätigung zurückgibt, mit einem `require(ret.length > 0)` nach dem Aufruf, sodass eine leere Antwort als Fehler behandelt wird; die `multivm-rollup`-Vorlage (0.6.0 und 0.6.1) tut dies.
 
 ## Ein Multi-VM-Rollup per Scaffold erstellen
 
@@ -102,4 +102,4 @@ Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit le
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Die Vorlage von 0.6.0 enthält `src/crossvm-call.ts` (es prüft, ob das Precompile aktiv ist, und gibt dann die Calldata aus) und einen `contracts/CrossVmCaller.sol`, der `executeCrossVMCall(uint8,string,bytes)` aufruft und eine nicht leere Antwort des Ziels verlangt. Er lässt einen Aufruf nicht funktionieren, solange das Precompile inaktiv ist. Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für alle Scaffolder-Vorlagen.
+Die `multivm-rollup`-Vorlage (0.6.0 und 0.6.1) enthält `src/crossvm-call.ts` (es prüft, ob das Precompile aktiv ist, und gibt dann die Calldata aus) und einen `contracts/CrossVmCaller.sol`, der `executeCrossVMCall(uint8,string,bytes)` aufruft und eine nicht leere Antwort des Ziels verlangt. Er lässt einen Aufruf nicht funktionieren, solange das Precompile inaktiv ist. Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für alle Scaffolder-Vorlagen.

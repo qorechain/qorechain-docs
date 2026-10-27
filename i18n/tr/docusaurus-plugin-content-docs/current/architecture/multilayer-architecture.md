@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain, `x/multilayer` modülü aracılığıyla **4 katmanlı hiyerarşik zincir mimarisi** uygular. Ana zincir, uzlaştırma ve güven kökü olarak hizmet ederken, alt katmanlar (yan zincirler, ödeme zincirleri ve rollup'lar) farklı performans ve güvenlik dengeleriyle özelleşmiş iş yüklerini ele alır.
 
 :::caution Erken aşama yeteneği
-Modül ana ağda (zincir sürümü 23 Ekim 2026'dan beri **v3.2.4**) ve test ağında (**v3.2.4**) dağıtılmıştır, ancak **her iki ağda da henüz hiçbir katman ve hiçbir bağlantı (anchor) yoktur** (23 Ekim 2026'da kontrol edildi: `GET /qorechain/multilayer/v1/layers` her ikisinde de boş bir liste döndürür). Aşağıdakilerin tamamı modülü inşa edildiği şekliyle anlatır; parametreler canlı değerlerdir. Ana ağda `MsgUpdateLayerStatus` mesajı şu anda devre kesici tarafından kapatılmıştır (bkz. [Zincir Parametreleri](/appendix/chain-parameters#circuit-breaker)); test ağında kapatılmamıştır.
+Modül ana ağda (zincir sürümü 23 Ekim 2026'dan beri **v3.2.4**) ve test ağında (27 Ekim 2026'dan beri **v3.2.6**) dağıtılmıştır, ancak **her iki ağda da henüz hiçbir katman ve hiçbir bağlantı (anchor) yoktur** (27 Ekim 2026'da kontrol edildi: `GET /qorechain/multilayer/v1/layers` her ikisinde de boş bir liste döndürür). Aşağıdakilerin tamamı modülü inşa edildiği şekliyle anlatır; parametreler canlı değerlerdir. Ana ağda `MsgUpdateLayerStatus` mesajı şu anda devre kesici tarafından kapatılmıştır (bkz. [Zincir Parametreleri](/appendix/chain-parameters#circuit-breaker)); test ağında kapatılmamıştır.
 :::
 
 ---
@@ -64,7 +64,7 @@ Ana zincir, tüm QoreChain ekosisteminin güven köküdür.
 | Uzlaşma    | QoreChain uzlaşması (bugün devrede olanlar için bkz. [Uzlaşma Mekanizması](/architecture/consensus-mechanism)) |
 | Güvenlik   | Dilithium-5 imzalarıyla PQC güvenceli                                          |
 | Rol        | Uzlaştırma katmanı, durum bağlantısı (anchor) depolama, QCAI yönlendirme motoru, güven kökü |
-| Blok süresi | Ağa bağlıdır: ana ağda yaklaşık 3.2 saniye, test ağında yaklaşık 1.0 saniye (23 Ekim 2026'da ölçülmüştür) |
+| Blok süresi | Ağa bağlıdır: ana ağda yaklaşık 3.2 saniye, test ağında yaklaşık 1.3 saniye (27 Ekim 2026'da ölçülmüştür) |
 
 Tüm alt katmanlar, durum köklerini Hiyerarşik Bağlılık Şemaları (HCS) aracılığıyla periyodik olarak ana zincire bağlar.
 

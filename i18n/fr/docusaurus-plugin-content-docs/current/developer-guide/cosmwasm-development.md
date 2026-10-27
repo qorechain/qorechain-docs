@@ -10,18 +10,20 @@ sidebar_position: 3
 QoreChain prend en charge les contrats intelligents **QoreChain Native**. QoreChain Native est le nom que QoreChain donne à son runtime **CosmWasm** : les développeurs écrivent des programmes sécurisés et isolés (sandboxed) en Rust avec les bibliothèques CosmWasm standard (`cosmwasm-std`) et les compilent vers WebAssembly. Les contrats QoreChain Native s'exécutent aux côtés des programmes EVM et SVM au sein de l'architecture triple-VM de QoreChain.
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (actif depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.4** depuis le 23 octobre 2026 (proposition de gouvernance 13, hauteur 3 742 566). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.4 depuis le 19 octobre 2026.
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (actif depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.4** depuis le 23 octobre 2026 (proposition de gouvernance 13, hauteur 3 742 566). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.6 (v3.2.4 depuis le 19 octobre 2026).
 :::
 
-:::caution Le téléversement et l'instanciation de code nécessitent actuellement une permission explicite
-Au moment de la rédaction, `code_upload_access` et `instantiate_default_permission` sont tous deux définis sur **`Nobody`** à la fois sur **le mainnet et le testnet** — ce qui signifie que `MsgStoreCode` et `MsgInstantiateContract` ne sont pas ouverts par défaut à des comptes arbitraires, suite à un avis de sécurité de l'industrie portant sur CosmWasm, le runtime sur lequel QoreChain Native est construit. Vous devrez obtenir de la gouvernance qu'elle accorde à votre compte (ou à une liste d'adresses spécifique) la permission de téléversement/instanciation avant que les étapes ci-dessous ne puissent réussir. Vérifiez d'abord les paramètres en vigueur, car c'est exactement le type de réglage que la gouvernance peut modifier (le mainnet ne contient actuellement aucun code de contrat stocké) :
+:::caution Le téléversement et l'instanciation de code nécessitent une permission explicite sur le mainnet ; le testnet diffère
+Au moment de la rédaction (vérifié le 27 octobre 2026), `code_upload_access` et `instantiate_default_permission` sont tous deux définis sur **`Nobody`** sur le **mainnet**, ce qui signifie que `MsgStoreCode` et `MsgInstantiateContract` ne sont pas ouverts à des comptes arbitraires, suite à un avis de sécurité de l'industrie portant sur CosmWasm, le runtime sur lequel QoreChain Native est construit. Sur le **testnet `qorechain-diana`**, les réglages diffèrent : `code_upload_access` reste `Nobody` (le code n'est stocké que par la gouvernance), mais `instantiate_default_permission` est **`Everybody`**, défini par la gouvernance du testnet le 27 octobre 2026 ; tout compte peut donc instancier un code stocké dont la propre permission l'autorise. Vérifiez d'abord les paramètres en vigueur, car c'est exactement le type de réglage que la gouvernance peut modifier (le mainnet ne contient actuellement aucun code de contrat stocké) :
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
-Les types de message `MsgStoreCode`, `MsgInstantiateContract` et `MsgInstantiateContract2` sont également désactivés par le disjoncteur (circuit breaker) de la chaîne sur les deux réseaux (`qorechaind query circuit disabled-list`) ; relever la permission seule ne suffit donc pas tant que ces entrées ne sont pas levées.
+Le disjoncteur (circuit breaker) de la chaîne désactive aussi des types de message à l'échelle du réseau (`qorechaind query circuit disabled-list`). Sur le **mainnet**, `MsgStoreCode`, `MsgInstantiateContract` et `MsgInstantiateContract2` figurent sur la liste ; relever la permission seule ne suffit donc pas tant que ces entrées ne sont pas levées. Sur le **testnet**, seul `MsgStoreCode` figure sur la liste : l'instanciation est ouverte, pas le téléversement.
+
+**Testnet : contrats revus et stockés par la gouvernance.** Les comptes ordinaires ne pouvant pas téléverser de code sur le testnet, la gouvernance a stocké cinq contrats revus que n'importe qui peut instancier (`instantiate_permission` `Everybody`) : cw20-base (jeton), cw721-base (collection de NFT), cw4-group, cw3-fixed-multisig et un petit contrat compteur. Au moment de la rédaction, ce sont les code ids 859 à 863, dans cet ordre, listés par `GET /cosmwasm/wasm/v1/code` avec le compte de module de gouvernance comme créateur et identifiés par leur `data_hash` ; lisez les ids dans la liste en direct plutôt que de les coder en dur. Ils n'existent que sur le testnet. Le mainnet n'a aucun code stocké.
 
 Cette restriction n'affecte pas les contrats déjà instanciés — `execute` et `query` sur un contrat existant fonctionnent normalement quel que soit ce réglage.
 :::
@@ -265,4 +267,4 @@ Cela appelle le point d'entrée `migrate` sur le nouveau code avec l'état exist
 
 * [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) — Appeler des contrats EVM et SVM depuis QoreChain Native
 * [Développement SVM](/developer-guide/svm-development) — Déployer des programmes BPF sur QoreChain
-* [Précompilés EVM](/developer-guide/evm-precompiles) — Référence des précompilés Solidity prévus (aucun n'est encore actif)
+* [Précompilés EVM](/developer-guide/evm-precompiles) — Référence des précompilés Solidity (aucun n'est actif sur le mainnet ; trois le sont sur le testnet)

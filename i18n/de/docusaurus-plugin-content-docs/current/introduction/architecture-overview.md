@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Architektur-Überblick
 
-QoreChain ist ein modularer Blockchain-Node, der aus drei primären Prozessen besteht — dem Chain-Node, dem AI-Sidecar und dem Block-Indexer — abgesichert durch eine Postgres-Datenbank und überwacht mittels Prometheus und Grafana. Das Mainnet (`qorechain-vladi`, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live, auf Release **v3.2.4** (angewendet bei Höhe 3.742.566 am 23. Oktober 2026), mit einem parallelen Testnet (`qorechain-diana`, EVM-Chain-ID **9800**, das seit dem 19. Oktober 2026 v3.2.4 ausführt). Die Chain basiert auf dem Cosmos SDK v0.53. Das folgende Diagramm zeigt den Aufbau der Komponenten auf hoher Ebene.
+QoreChain ist ein modularer Blockchain-Node, der aus drei primären Prozessen besteht — dem Chain-Node, dem AI-Sidecar und dem Block-Indexer — abgesichert durch eine Postgres-Datenbank und überwacht mittels Prometheus und Grafana. Das Mainnet (`qorechain-vladi`, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live, auf Release **v3.2.4** (angewendet bei Höhe 3.742.566 am 23. Oktober 2026), mit einem parallelen Testnet (`qorechain-diana`, EVM-Chain-ID **9800**, das seit dem 27. Oktober 2026 v3.2.6 ausführt). Die Chain basiert auf dem Cosmos SDK v0.53. Das folgende Diagramm zeigt den Aufbau der Komponenten auf hoher Ebene.
 
 Der nachfolgende Transaktions-Lebenszyklus fasst zusammen, wie eine übermittelte Transaktion durch den Node läuft — von der AnteHandler-Decorator-Kette (Sicherheits- und Gebührenprüfungen) über die VM-Ausführung bis zur On-Chain-Abwicklung:
 
@@ -181,9 +181,9 @@ QoreChain registriert **48 Genesis-Module, davon 20 QoreChain-spezifische**, gru
 
 **Governance- und Lizenz-Erweiterungen**
 
-* `x/abstractaccount` — Smart Accounts: Multisig, Social Recovery, Session Keys, Spending Rules (in beiden Netzwerken abgeschaltet: `enabled = false`)
+* `x/abstractaccount` — Smart Accounts: Multisig, Social Recovery, Session Keys, Spending Rules (im Mainnet abgeschaltet, `enabled = false`; im Testnet aktiviert)
 * `x/fairblock` — MEV-Schutz: Threshold-IBE-verschlüsseltes Mempool-Framework (in beiden Netzwerken deaktiviert)
-* `x/gasabstraction` — Design für Gebührenzahlung mit mehreren Token: ibc/USDC-, ibc/ATOM-Gebührenkonvertierung (es ist noch kein IBC-Kanal offen, daher werden Gebühren in QOR bezahlt)
+* `x/gasabstraction` — Design für Gebührenzahlung mit mehreren Token: ibc/USDC-, ibc/ATOM-Gebührenkonvertierung (es wird noch kein IBC-Gebührentoken akzeptiert, daher werden Gebühren in QOR bezahlt)
 * `x/license` — Chain-Lizenzierung
 
 **Rollups**

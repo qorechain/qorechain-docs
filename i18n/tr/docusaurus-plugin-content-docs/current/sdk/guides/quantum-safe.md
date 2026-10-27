@@ -60,7 +60,7 @@ denemeden sonra hata olarak fırlatılır: asla "kayıtlı değil" olarak okunma
 Aynı durum EVM tarafında da `0x0000000000000000000000000000000000000A02` adresindeki
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
 ön derlemesi (`@qorechain/evm` içinde `pqcKeyStatus` olarak sunulur) etkinleştiğinde
-okunabilir; bu ön derleme henüz mainnet veya testnet üzerinde etkin değildir (bkz.
+okunabilir; bu ön derleme mainnet üzerinde etkin değildir ve testnet üzerinde etkin olarak listelenir (27 Ekim 2026'da kontrol edildi; bkz.
 [Ağ durumu](/developer-guide/evm-precompiles#network-status)).
 
 ## Tek çağrıda kaydedin {#register-in-one-call}

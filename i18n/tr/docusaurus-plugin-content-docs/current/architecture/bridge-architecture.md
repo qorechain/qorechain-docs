@@ -10,7 +10,7 @@ sidebar_position: 7
 `x/bridge` modülü, QoreChain'i **37 zincir yapılandırması (36 harici zincir ile IBC üzerinden erişilen Injective) ve en fazla 8 IBC (Inter-Blockchain Communication) karşı tarafı** aracılığıyla daha geniş blok zinciri ekosistemine bağlamak için tasarlanmıştır. Her köprü işlemi, kuantum sonrası kriptografi ile güvence altına alınacak şekilde tasarlanmıştır.
 
 :::caution Her iki ağda da canlı değil
-Köprü modülü mainnet ve testnet üzerinde dağıtılmıştır, ancak **hiçbir köprü rotası etkin değildir**: 37 zincir yapılandırmasının tümü `pending` durumundadır ve köprü sözleşmesi ayarlanmamıştır, kayıtlı köprü doğrulayıcısı yoktur, bugüne kadar hiçbir köprü işlemi oluşturulmamıştır ve IBC kanalı ya da istemcisi bulunmamaktadır. Aşağıdaki her şey amaçlanan tasarımı anlatır. Köprülenmesini bekleyerek varlık göndermeyin.
+Köprü modülü mainnet ve testnet üzerinde dağıtılmıştır, ancak **hiçbir köprü rotası etkin değildir**: 37 zincir yapılandırmasının tümü `pending` durumundadır ve köprü sözleşmesi ayarlanmamıştır, kayıtlı köprü doğrulayıcısı yoktur, bugüne kadar hiçbir köprü işlemi oluşturulmamıştır ve mainnet'te IBC kanalı yoktur (testnet'te, kimliği `provider` olan bir zincire giden tek bir ICS-20 test kanalı vardır; aşağıdaki karşı taraflardan hiçbirine kanal yoktur). Aşağıdaki her şey amaçlanan tasarımı anlatır. Köprülenmesini bekleyerek varlık göndermeyin.
 :::
 
 ## Mevcut durum {#current-status}
@@ -21,9 +21,9 @@ Köprü modülü mainnet ve testnet üzerinde dağıtılmıştır, ancak **hiçb
 | Zincir yapılandırmaları | 37, tümü `pending` | 37, tümü `pending` |
 | Kayıtlı köprü doğrulayıcıları | 0 | 0 |
 | Köprü işlemleri | 0 | 0 |
-| IBC kanalları / istemcileri | 0 / 0 | 0 / 0 |
+| IBC kanalları / istemcileri | 0 / 0 | 1 / 1 (Cosmos Hub testnet'ine bir test kanalı) |
 
-(23 Ekim 2026'da mainnet ve testnet üzerinde, ikisi de v3.2.4, kontrol edildi. Canlı değerleri `qorechaind query bridge chains` ve `qorechaind query bridge validators` ile ya da REST üzerinden `/qorechain/bridge/v1/chains` ve `/qorechain/bridge/v1/validators` adreslerinden okuyun.) Modül yapılandırması her iki ağda aynıdır: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 ve `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Modülün kullanacağı IBC yığını ibc-go v10.7'dir (v3.2.2'den beri), ancak henüz hiçbir istemci veya kanal oluşturulmamıştır.
+(27 Ekim 2026'da mainnet (v3.2.4) ve testnet (v3.2.6) üzerinde kontrol edildi. Canlı değerleri `qorechaind query bridge chains` ve `qorechaind query bridge validators` ile ya da REST üzerinden `/qorechain/bridge/v1/chains` ve `/qorechain/bridge/v1/validators` adreslerinden okuyun.) Modül yapılandırması her iki ağda aynıdır: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 ve `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Modülün kullanacağı IBC yığını ibc-go v10.7'dir (v3.2.2'den beri), ancak mainnet'te henüz hiçbir istemci veya kanal oluşturulmamıştır (testnet'te bir test istemcisi ve kanalı vardır, yukarıya bakın).
 
 ## Bağlantıya Genel Bakış
 
@@ -38,7 +38,7 @@ QoreChain, paralel olarak çalışan iki köprü protokolünü desteklemek üzer
 
 ## IBC Kanalları
 
-QoreChain, Hermes v1.x aracılığıyla aktarılan aşağıdaki 8 zincire IBC bağlantıları sürdürmek üzere tasarlanmıştır. **Her iki ağda da henüz IBC kanalı veya istemcisi yoktur**, bu nedenle bu tablo yalnızca planlanan karşı tarafları listeler:
+QoreChain, Hermes v1.x aracılığıyla aktarılan aşağıdaki 8 zincire IBC bağlantıları sürdürmek üzere tasarlanmıştır. **Bu karşı tarafların hiçbiri henüz bağlı değildir** (mainnet'te IBC kanalı veya istemcisi yoktur; testnet'te kimliği `provider` olan bir zincire giden tek bir ICS-20 test kanalı vardır, 27 Ekim 2026'da kontrol edildi), bu nedenle bu tablo yalnızca planlanan karşı tarafları listeler:
 
 | Zincir     | Açıklama                       |
 | ---------- | ------------------------------ |

@@ -26,27 +26,37 @@ inteligentes de primera clase en una sola cadena:
 - **SVM** — un runtime compatible con Solana con un JSON-RPC al estilo de Solana.
 
 Las cuentas, los saldos y los tokens se comparten entre los runtimes, y la
-cadena incluye el módulo IBC para la interoperabilidad entre cadenas (aún no hay
-canales IBC abiertos en mainnet ni en testnet).
+cadena incluye el módulo IBC para la interoperabilidad entre cadenas (no hay ningún
+canal IBC abierto en mainnet; la testnet tiene un canal `transfer` abierto hacia una
+cadena de prueba, comprobado el 27 de octubre de 2026).
 
-:::note Qué funciona hoy en las redes en vivo (mainnet y testnet v3.2.4)
+:::note Qué funciona hoy en las redes en vivo (mainnet v3.2.4, testnet v3.2.6)
 **Funciona:** lecturas en todos los carriles, transacciones Native con firma
 híbrida, cuentas unificadas, transacciones EVM dentro de una
 [ventana de autorización](/sdk/guides/evm#evm-window) y lecturas de SVM.
-**Aún no disponible:** los precompilados EVM (inactivos), el espacio de nombres
+**Aún no disponible:** los precompilados EVM en mainnet (ninguno está activo allí; la
+testnet tiene tres activos, verificación PQC, estado de clave PQC y parámetros de
+consenso, y el par de IA y el puente cross-VM están inactivos en ambas), el espacio de nombres
 JSON-RPC `qor_`, las transacciones SVM, las llamadas cross-VM en mainnet
 (`MsgCrossVMCall` está desactivado por el circuit breaker), la subida e
-instanciación de QoreChain Native para cuentas ordinarias, los flujos de autenticador /
-cuenta abstracta (módulo desactivado), xQORE y la abstracción de gas. Cada guía
-repite la advertencia donde corresponde.
+instanciación de QoreChain Native para cuentas ordinarias (en la testnet, la
+instanciación está abierta y la subida no), los flujos de autenticador /
+cuenta abstracta en mainnet (módulo desactivado allí, habilitado en la
+testnet), xQORE y la abstracción de gas. Cada guía repite la advertencia donde
+corresponde. Comprobado contra los endpoints en vivo el 27 de octubre de 2026.
 
-El SDK publicado (0.9.0, 21 de octubre de 2026) firma en la forma que verifican ambas
+El SDK publicado (0.10.0, 26 de octubre de 2026) firma en la forma que verifican ambas
 redes (sign-bytes híbridos v2, resueltos a partir del estado de la cadena), y el
 formato de firma, las direcciones, los decimales, los memos y las comisiones no
-cambiaron en la v3.2.3 ni en la v3.2.4 (la mainnet ejecuta la v3.2.4 desde el 23 de octubre de 2026). Incluye el lado cliente de las reglas
+cambiaron en la v3.2.3 ni en la v3.2.4 (la mainnet ejecuta la v3.2.4 desde el 23 de octubre de 2026;
+la testnet ejecuta la v3.2.6, aplicada el 27 de octubre). Incluye el lado cliente de las reglas
 poscuánticas posteriores (la prueba de posesión en el registro de claves, las ventanas
-EVM con alcance, los mensajes de consentimiento EIP-7702); las versiones anteriores
-a la 0.9.0 no lo incluyen, consulta [Versiones anteriores a la 0.9.0](/sdk/install#before-090).
+EVM con alcance, los mensajes de consentimiento EIP-7702) y de la v3.2.4 (niveles
+de staking, el nonce del autenticador, interruptores de funciones del protocolo); las versiones anteriores
+a la 0.9.0 no incluyen el primer grupo, consulta [Versiones anteriores a la 0.9.0](/sdk/install#before-090)
+y [Qué añade la 0.10.0](/sdk/install#whats-new-0100).
+
+Firma para wallets y backends: consulta [QoreSign](/qoresign/overview).
 :::
 
 ### Resistente a la computación cuántica por diseño
@@ -75,7 +85,7 @@ ninguna otra Layer 1 tiene:
   IA on-chain antes de difundirla. `simulateWithRiskScore` devuelve el gas más
   un veredicto de riesgo/anomalía procedente de precompilados EVM
   deterministas, de modo que una wallet o dApp puede advertir (o bloquear)
-  *antes* de firmar. Los precompilados aún no están activos en mainnet ni en
+  *antes* de firmar. Los precompilados de IA aún no están activos en mainnet ni en
   testnet. Consulta [AI pre-flight](/sdk/guides/ai-preflight).
 - **Llamadas unificadas entre VMs** — una cuenta, tres VMs, una transacción.
   `createCrossVMClient` llama a un contrato en cualquier VM y `callAtomic`
@@ -96,7 +106,7 @@ aún no se puede usar en las redes en vivo, véase más abajo):
 - **Carriles de autenticadores** — vincula una clave de Phantom o MetaMask a la
   cuenta canónica que requiere PQC y permite que gaste a través de un relayer
   bajo condiciones de privilegio mínimo, con límites de gasto y revocables. El
-  módulo `abstractaccount` que lo sustenta está desactivado hoy en ambas redes.
+  módulo `abstractaccount` que lo sustenta está desactivado en mainnet y habilitado en la testnet.
   Consulta
   [Autenticadores y gasto delegado](/sdk/guides/authenticators).
 
@@ -114,15 +124,15 @@ derivación, aritmética de denominaciones y superficies de lectura.
 
 | Paquete | Lenguaje | Instalación | Estado |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Publicado (npm, v0.9.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (se importa como `qorsdk`) | Publicado (PyPI, v0.9.0) |
-| `qorechain-sdk` (módulo Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicado (proxy de Go, tag `packages/go/v0.9.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (se importa como `qorechain`) | Publicado (crates.io, v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | Publicado (Maven Central, v0.9.1; los demás lenguajes son 0.9.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Publicado (npm, v0.10.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (se importa como `qorsdk`) | Publicado (PyPI, v0.10.0) |
+| `qorechain-sdk` (módulo Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicado (proxy de Go, tag `packages/go/v0.10.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (se importa como `qorechain`) | Publicado (crates.io, v0.10.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.10.0` | Publicado (Maven Central, v0.10.0) |
 | `@qorechain/evm` | TypeScript (adaptador EVM) | `npm i @qorechain/evm viem` | Publicado (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (adaptador SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicado (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (kit de React) | `npm i @qorechain/react` | Publicado (npm, v0.9.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicado (npm, v0.9.0) |
+| `@qorechain/react` | TypeScript (kit de React) | `npm i @qorechain/react` | Publicado (npm, v0.10.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicado (npm, v0.10.0) |
 
 > La distribución de Python se instala como `qorechain-sdk` pero **se importa
 > como `qorsdk`**. Todos los clientes están publicados en sus registros —
@@ -137,17 +147,17 @@ cada módulo personalizado más los módulos estándar de Cosmos, clientes de
 consulta tipados, el ciclo de vida completo de la transacción (auto-gas,
 decodificación de errores, seguimiento de tx, búsqueda de bloques/tx),
 transacciones poscuánticas híbridas y suscripciones WebSocket. Todos estos
-clientes están **publicados**: TypeScript en npm (`@qorechain/sdk` 0.9.0),
-Python en PyPI (`qorechain-sdk` 0.9.0, se importa como `qorsdk`), Go en el
-proxy de módulos (tag `packages/go/v0.9.0`), Rust en crates.io
-(`qorechain-sdk` 0.9.0) y Java en Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.9.1, una actualización solo de Java; los demás clientes son 0.9.0). Los adaptadores
+clientes están **publicados**: TypeScript en npm (`@qorechain/sdk` 0.10.0),
+Python en PyPI (`qorechain-sdk` 0.10.0, se importa como `qorsdk`), Go en el
+proxy de módulos (tag `packages/go/v0.10.0`), Rust en crates.io
+(`qorechain-sdk` 0.10.0) y Java en Maven Central
+(`io.github.qorechain:qorechain-sdk` 0.10.0). Los adaptadores
 de ejecución EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambos 0.8.0), el kit
-`@qorechain/react` (0.9.0) y la CLI de scaffolding `create-qorechain-dapp`
-(0.9.0) son solo para TypeScript y también están publicados en npm. Consulta
+`@qorechain/react` (0.10.0) y la CLI de scaffolding `create-qorechain-dapp`
+(0.10.0) son solo para TypeScript y también están publicados en npm. Consulta
 [Instalación](/sdk/install#related-packages) para los paquetes complementarios.
 
-## Novedades en 0.6, 0.7, 0.8 y 0.9
+## Novedades en 0.6, 0.7, 0.8, 0.9 y 0.10
 
 **0.6.0 — cuentas unificadas eth-nativas (cadena v3.1.83).** Una clave
 `eth_secp256k1` es una única identidad de 20 bytes representada en las tres
@@ -175,7 +185,7 @@ JSON y era rechazada en CheckTx). Las transacciones híbridas construidas con
 SDK ≤ 0.6.0 son **rechazadas on-chain** — actualiza.
 
 **0.7.0 — carriles de autenticadores (cadena v3.1.85).** El módulo
-`abstractaccount` que los sustenta está actualmente desactivado en ambas redes
+`abstractaccount` que los sustenta está actualmente desactivado en mainnet y habilitado en la testnet
 (consulta la [guía de Autenticadores](/sdk/guides/authenticators)). Una clave
 vinculada de Phantom (ed25519) o MetaMask (secp256k1, por dirección de 20
 bytes) puede gastar desde la cuenta canónica que requiere PQC a través de un
@@ -192,7 +202,7 @@ con ejemplos listos para copiar y pegar:
 (cadena v3.2.0).** La mitad poscuántica de una transacción híbrida ahora se
 firma en la forma que verifica la red de destino (v1 o v2,
 `signBytesVersion: "auto" | "v1" | "v2"`). Ambas redes públicas están en v2, así
-que se requiere el SDK **0.8.1 o posterior** para operar en mainnet (usa la 0.9.0). **0.8.2**
+que se requiere el SDK **0.8.1 o posterior** para operar en mainnet (usa la versión actual). **0.8.2**
 añade `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow` y
 `classifyEvmWindowRejection` para la
 [ventana de autorización](/sdk/guides/evm#evm-window) del carril EVM.
@@ -217,7 +227,17 @@ consentimiento EIP-7702, y `derivePqcCanonical(address, mnemonic)` da una clave 
 puedes recuperar a partir del mnemónico en todos los lenguajes. La ruta de cuenta
 PQC es la singular `/qorechain/pqc/v1/account/{address}`, los fallos dentro de un
 bloque conservan su codespace y `create-qorechain-dapp` genera proyectos sobre el
-SDK actual. Consulta [Qué añade la 0.9.0](/sdk/install#whats-new-090).
+SDK actual. Consulta [Qué añadió la 0.9.0](/sdk/install#whats-new-090).
+
+**0.10.0 — soporte de cliente para la cadena v3.2.4.** Compositores y lecturas de
+niveles de staking (`lockDelegation`, `unlockEarly`, `claimBonus`,
+`fetchStakingTierParams`, `fetchStakingLocks`), `fetchAuthNonce` para la siguiente
+secuencia de una clave vinculada, `fetchProtocolFeatures` / `isProtocolFeatureEnabled`
+para las reglas de consenso que una red aplica por nombre, `possessionProven` en el
+estado PQC e `ibcTimeoutTimestamp`. `ensurePqcRegistered` ahora compara la clave
+registrada en lugar de confiar en un estado sin una, y un rechazo de la cadena que llega como
+texto durante la simulación de comisiones se nombra en todos los lenguajes. Consulta
+[Qué añade la 0.10.0](/sdk/install#whats-new-0100).
 
 ## Próximos pasos
 

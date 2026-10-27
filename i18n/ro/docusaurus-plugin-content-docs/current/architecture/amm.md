@@ -21,7 +21,7 @@ Comenzile de mai jos folosesc `qorechaind`. Adăugați flag-urile uzuale de tran
 :::
 
 :::caution Nu există încă pool-uri
-Modulul AMM este activ pe mainnet și pe testnet (ambele v3.2.4), dar **nu a fost creat încă niciun pool** (verificat pe 23 octombrie 2026: `GET /qorechain/amm/v1/pools` returnează o listă goală pe ambele), iar denom-urile din exemplele de mai jos (`uusdc`, `uusdt`) sunt ilustrative: astăzi nu există astfel de active pe rețele. Până când există un pool, orice comandă de schimb sau de adăugare de lichiditate eșuează cu o eroare de tip pool negăsit.
+Modulul AMM este activ pe mainnet (v3.2.4) și pe testnet (v3.2.6), dar **nu a fost creat încă niciun pool** (verificat pe 27 octombrie 2026: `GET /qorechain/amm/v1/pools` returnează o listă goală pe ambele), iar denom-urile din exemplele de mai jos (`uusdc`, `uusdt`) sunt ilustrative: astăzi nu există astfel de active pe rețele. Până când există un pool, orice comandă de schimb sau de adăugare de lichiditate eșuează cu o eroare de tip pool negăsit.
 :::
 
 ## Parametrii modulului {#parameters}
@@ -37,7 +37,7 @@ Citiți valorile curente cu `qorechaind query amm params` sau `GET /qorechain/am
 | `min_liquidity` | `1000` | Cel mai mic dintre cele două depozite inițiale ale unui pool nou trebuie să fie de cel puțin atâtea unități de bază |
 | `max_pools_per_creator` | `50` | Pool-uri pe care le poate crea un cont |
 | `max_swap_impact_bps` | `500` | Cel mai mare impact asupra prețului pe care îl poate avea un schimb (5 %); vedeți [Regulile de schimb](#swap-rules) |
-| `lp_token_decimals` | `6` | Zecimalele token-ului LP al unui pool |
+| `lp_token_decimals` | `6` | Zecimale de afișare ale cotelor LP ale unui pool (cosmetic: cotele LP sunt înregistrări de registru, nu token-uri) |
 
 ## Regulile de schimb aplicate începând cu v3.2.2 {#swap-rules}
 
@@ -50,7 +50,11 @@ Corecțiile de integritate AMM de mai jos au fost aplicate pe mainnet cu v3.2.2 
 
 ## Pool-uri și cote LP
 
-Un pool deține rezerve de două denom-uri (`token_a`, `token_b`, stocate în ordine sortată) și emite **token-uri LP** care reprezintă o creanță proporțională asupra acelor rezerve. Fiecare pool are un `id` numeric, un `type`, un `status` (`active` sau `paused`) și propriul denom LP. Când adăugați lichiditate primiți token-uri LP; când eliminați lichiditate le ardeți pentru a vă răscumpăra cota din rezerve.
+Un pool deține rezerve de două denom-uri (`token_a`, `token_b`, stocate în ordine sortată) și înregistrează **cote LP** care reprezintă o creanță proporțională asupra acelor rezerve. Fiecare pool are un `id` numeric, un `type` și un `status` (`active` sau `paused`). Când adăugați lichiditate, soldul dumneavoastră de cote LP din acel pool crește; când eliminați lichiditate, scade și primiți cota dumneavoastră din rezerve.
+
+:::note Cotele LP nu sunt token-uri
+Cotele LP sunt intrări în registrul propriu al modulului AMM, ținut per pool și per cont (cheia internă este `amm-lp/<pool id>`). Ele **nu sunt monede bank și nu sunt token-uri ERC-20, nu apar în soldul dumneavoastră bank și nu pot fi transferate, trimise către un alt cont sau tranzacționate**. Citiți-vă cota cu interogarea `lp-balance` sau cu ruta `/lp/{address}` de mai jos.
+:::
 
 ### Crearea unui pool
 
@@ -68,7 +72,7 @@ qorechaind tx amm create-pool stable_swap 1000000000uusdc 1000000000uusdt \
 
 ### Adăugarea de lichiditate
 
-`add-liquidity` depune ambele părți într-un pool și emite token-uri LP. Argumentul final este suma minimă de LP pe care o veți accepta — protecția dumneavoastră împotriva modificării raportului pool-ului înainte ca tranzacția să fie procesată.
+`add-liquidity` depune ambele părți într-un pool și creditează soldul dumneavoastră de cote LP. Argumentul final este suma minimă de cote LP pe care o veți accepta — protecția dumneavoastră împotriva modificării raportului pool-ului înainte ca tranzacția să fie procesată.
 
 ```bash
 qorechaind tx amm add-liquidity 1 500000000uqor 500000000uusdc 100000 \
@@ -77,7 +81,7 @@ qorechaind tx amm add-liquidity 1 500000000uqor 500000000uusdc 100000 \
 
 ### Eliminarea de lichiditate
 
-`remove-liquidity` arde token-uri LP și retrage rezerve. Cele două argumente `min` setează suma minimă din fiecare parte pe care o veți accepta înapoi.
+`remove-liquidity` debitează cote LP din soldul dumneavoastră și retrage rezerve. Cele două argumente `min` setează suma minimă din fiecare parte pe care o veți accepta înapoi.
 
 ```bash
 qorechaind tx amm remove-liquidity 1 100000 490000000 490000000 \
@@ -147,7 +151,27 @@ qorechaind query amm pool-by-denoms uqor uusdc
 qorechaind query amm lp-balance 1 qor1youraddr...
 ```
 
-`pool` returnează rezervele pool-ului, oferta de LP, tipul, statusul și un preț mediu ponderat curent. `lp-balance` returnează `balance`-ul de token-uri LP pe care un cont îl deține pentru acel pool.
+`pool` returnează rezervele pool-ului, oferta de LP, tipul, statusul și un preț mediu ponderat curent. `lp-balance` returnează `balance`-ul de cote LP pe care un cont îl deține pentru acel pool.
+
+### Rute REST {#rest-routes}
+
+Aceleași citiri sunt servite prin REST pe **ambele** rețele, mainnet (`https://api.qore.host`) și testnet (`https://api-testnet.qore.host`); au fost verificate pe ambele la 27 octombrie 2026:
+
+| Rută | Returnează |
+| --- | --- |
+| `GET /qorechain/amm/v1/params` | Parametrii modulului |
+| `GET /qorechain/amm/v1/pools` | Toate pool-urile (o listă goală cât timp nu există niciunul) |
+| `GET /qorechain/amm/v1/pools/{pool_id}` | Un pool (`404` dacă nu este cunoscut) |
+| `GET /qorechain/amm/v1/pools/{pool_id}/lp/{address}` | Soldul LP al unei adrese în pool (`{address}` este o adresă bech32 `qor1...`) |
+| `GET /qorechain/amm/v1/pool_by_denoms?denom_a=&denom_b=` | Pool-ul pentru o pereche de denom-uri (`404` dacă nu există) |
+| `GET /qorechain/amm/v1/quote/exact_in?pool_id=&denom_in=&amount_in=` | Ieșirea și taxa pentru o intrare exactă |
+| `GET /qorechain/amm/v1/quote/exact_out?pool_id=&denom_out=&amount_out=` | Intrarea și taxa pentru o ieșire exactă |
+
+O cotație față de un pool care nu există răspunde cu o eroare de tip pool negăsit.
+
+### Tokenurile Fest de pe testnet {#fest-tokens}
+
+Guvernanța testnet-ului a înregistrat trei contracte ERC-20 de test, **fUSD** (6 zecimale), **fETH** (18) și **fBTC** (8), astfel încât să existe ca monede bank cu denominațiile sensibile la majuscule `erc20:<EIP-55 contract address>` (listate pe pagina [Faucet](/dashboard/faucet#fest-tokens)). Deținătorii obțin moneda bank cu `MsgConvertERC20` (expeditorul trebuie să fie o adresă bech32 `qor1...`) și pot crea un pool față de `uqor` cu comanda obișnuită `create-pool` și taxa de creare de 100 QOR. Sunt tokenuri de test doar pentru testnet, fără valoare, și încă nu există niciun pool pentru ele (verificat la 27 octombrie 2026). Mainnet-ul nu are astfel de tokenuri.
 
 ## Suspendarea și reluarea unui pool
 
@@ -161,8 +185,8 @@ Pool-urile pot fi suspendate și reluate de către autoritatea de guvernanță. 
 | Comandă | Scop |
 | --- | --- |
 | `create-pool` | Creează un pool `constant_product` sau `stable_swap` |
-| `add-liquidity` | Depune rezerve și emite token-uri LP |
-| `remove-liquidity` | Arde token-uri LP și retrage rezerve |
+| `add-liquidity` | Depune rezerve și creditează cote LP |
+| `remove-liquidity` | Debitează cote LP și retrage rezerve |
 | `swap-exact-in` | Schimbă o sumă de intrare fixă |
 | `swap-exact-out` | Schimbă către o sumă de ieșire fixă |
 | `pause-pool` | Suspendă un pool (autoritate de guvernanță; dezactivat pe mainnet) |

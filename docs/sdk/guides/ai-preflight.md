@@ -19,8 +19,10 @@ the EVM. Two read-only EVM precompiles are meant to let you score a transaction
 :::caution Not available on the public networks today
 `simulateWithRiskScore`, `aiRiskScore` and `aiAnomalyCheck` read the precompiles at
 `0x…0B01` / `0x…0B02`. A static precompile answers only when its address is in the
-EVM module's `active_static_precompiles` parameter, and that list is empty on both
-`qorechain-vladi` (mainnet) and `qorechain-diana` (testnet). Against the public
+EVM module's `active_static_precompiles` parameter. That list is empty on
+`qorechain-vladi` (mainnet), and on `qorechain-diana` (testnet) it holds only the PQC
+and consensus-parameter precompiles (`0x…0A01`, `0x…0A02`, `0x…0C01`), not the AI pair
+(checked 27 October 2026). Against the public
 endpoints a call returns empty data (`0x`) and these helpers throw (for example
 `returned no data ("0x")`). They work only on a network or node where the
 precompiles have been activated. Check `GET /cosmos/evm/vm/v1/params` first, and see

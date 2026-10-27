@@ -64,7 +64,7 @@ const burn = await client.rest.getBurnStats(); // GET /qorechain/burn/v1/stats
 動作しますが、Native パスのすべてのトランザクションにハイブリッド署名を要求する
 メインネットとテストネットでは拒否されます。公開ネットワークでは、
 [クイックスタート](/sdk/quickstart#send-qor)のように、アカウントの
-鍵ペアを使って `client.connectTx(signer, { pqcKeypair })`（SDK 0.9.0）で接続してください。
+鍵ペアを使って `client.connectTx(signer, { pqcKeypair })`（SDK 0.9.0 以降）で接続してください。
 
 ```ts
 import {
@@ -123,8 +123,9 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 `@qorechain/evm`（viem の薄いラッパー）を使って、読み取り専用の QoreChain
 プリコンパイルを呼び出し、ERC-20 残高を読み取ります。EVM チェーン ID は
-`eth_chainId` で自動検出されます。プリコンパイルはメインネットとテストネットではまだ有効化されていません
-（[ネットワークの状況](/developer-guide/evm-precompiles#network-status)を参照）。有効化されるまでの間、
+`eth_chainId` で自動検出されます。プリコンパイルはメインネットでは有効化されておらず、テストネットで有効なのは
+PQC 検証、PQC 鍵ステータス、コンセンサスパラメーターのものだけです
+（[ネットワークの状況](/developer-guide/evm-precompiles#network-status)を参照）。プリコンパイルが無効な場合、
 およびプリコンパイルのないノードでは、該当する呼び出しは
 "feature not present" をスローし、呼び出しごとに報告されます。
 
@@ -258,8 +259,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 ## authenticator-spend
 
 Native オーセンティケーターレーン上で、リレイヤーが送信する `MsgExecuteCosmos` を
-構築します（SDK 0.7.0、チェーン v3.1.85。`abstractaccount` モジュールは現在どちらの
-ネットワークでも無効化されているため、このレーンはまだそこでは使用できません）: Phantom 形式の ed25519 鍵が
+構築します（SDK 0.7.0、チェーン v3.1.85。`abstractaccount` モジュールはメインネットでは無効化、
+テストネットでは有効化されているため、このレーンはメインネットではまだ使用できません）: Phantom 形式の ed25519 鍵が
 ドメイン分離された認証ダイジェストに署名し、生成されたメッセージはリレイヤーが
 ブロードキャストできる状態になります（手数料はリレイヤーが支払い、外部鍵が ML-DSA の
 共同署名を生成することはありません）。ドライラン — ノードは不要です。

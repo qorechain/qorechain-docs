@@ -10,7 +10,7 @@ sidebar_position: 12
 Modulul `x/rdk` oferă un Rollup Development Kit (RDK) cuprinzător, care permite dezvoltatorilor să implementeze rollup-uri specifice aplicațiilor pe QoreChain. Suportă patru paradigme de decontare, mai multe moduri de secvențiere, backend-uri de disponibilitate a datelor conectabile și optimizare a configurației asistată de AI.
 
 :::caution Capabilitate în stadiu incipient
-Modulul este implementat pe mainnet (versiunea de lanț **v3.2.4** din 23 octombrie 2026) și pe testnet (**v3.2.4**), dar **niciun rollup nu a fost creat încă pe niciuna dintre rețele** (verificat la 23 octombrie 2026: `GET /qorechain/rdk/v1/rollups` returnează o listă goală pe ambele). Mai multe capabilități descrise mai jos nu pot fi folosite în prezent de la un capăt la altul; starea este indicată acolo unde fiecare este descrisă. Pentru ghidul practic destinat dezvoltatorilor, consultați [Prezentare generală a rollup-urilor](/rollups/overview).
+Modulul este implementat pe mainnet (versiunea de lanț **v3.2.4** din 23 octombrie 2026) și pe testnet (**v3.2.6** din 27 octombrie 2026), dar **niciun rollup nu a fost creat încă pe niciuna dintre rețele** (verificat la 27 octombrie 2026: `GET /qorechain/rdk/v1/rollups` returnează o listă goală pe ambele). Mai multe capabilități descrise mai jos nu pot fi folosite în prezent de la un capăt la altul; starea este indicată acolo unde fiecare este descrisă. Pentru ghidul practic destinat dezvoltatorilor, consultați [Prezentare generală a rollup-urilor](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ QoreChain RDK suportă patru moduri distincte de decontare — **optimistic**, *
 Rollup-urile optimiste presupun că tranzacțiile sunt valide în mod implicit și se bazează pe demonstrații de fraudă pentru rezolvarea disputelor.
 
 * **Sistem de demonstrare**: Demonstrații de fraudă interactive
-* **Fereastră de contestare**: 604,800 de secunde (implicit, 7 zile). **Înainte de v3.2.4:** lanțul o convertește în blocuri la un raport fix de 6 secunde per bloc, **100,800 de blocuri**, deci timpul real scurs depinde de timpul efectiv al blocurilor (aproximativ 3,7 zile la blocurile actuale de ≈3.2 s de pe mainnet); planificați în blocuri, nu în zile. **De la v3.2.4:** pentru un lot trimis începând cu înălțimea upgrade-ului, fereastra este măsurată în secunde de timp de bloc (7 zile întregi). Un lot trimis mai devreme păstrează regula numărului de blocuri. Testnet-ul a aplicat v3.2.4 la înălțimea 8,337,253 (19 octombrie 2026); mainnet-ul a aplicat-o la înălțimea 3,742,566 (23 octombrie 2026, propunerea de guvernanță 13).
+* **Fereastră de contestare**: 604,800 de secunde (implicit, 7 zile). **Înainte de v3.2.4:** lanțul o convertește în blocuri la un raport fix de 6 secunde per bloc, **100,800 de blocuri**, deci timpul real scurs depinde de timpul efectiv al blocurilor (aproximativ 3,7 zile la blocurile actuale de ≈3.2 s de pe mainnet); planificați în blocuri, nu în zile. **De la v3.2.4:** pentru un lot trimis începând cu înălțimea upgrade-ului, fereastra este măsurată în secunde de timp de bloc (7 zile întregi). Un lot trimis mai devreme păstrează regula numărului de blocuri. Testnet-ul a aplicat v3.2.4 la înălțimea 8,337,253 (19 octombrie 2026); mainnet-ul a aplicat-o la înălțimea 3,742,566 (23 octombrie 2026, propunerea de guvernanță 13). Valoarea implicită configurată pe testnet este mai scurtă, 3,600 de secunde (1 oră), așa că un rollup de pe testnet se finalizează mai repede decât cele 7 zile descrise aici.
 * **Garanție de contestare**: 1,000 QOR (1,000,000,000 uqor) — necesară pentru a depune o contestare prin demonstrație de fraudă (profilurile `nft` și `custom`; profilurile `defi`, `gaming` și `enterprise` nu setează nicio garanție deoarece nu au fereastră de contestare)
 * **Finalitate**: Întârziată până la expirarea ferestrei de contestare fără o contestare validă
 * **Auto-finalizare**: `EndBlocker` finalizează automat loturile odată ce fereastra de contestare a trecut fără dispută. Un lot contestat nu este niciodată finalizat automat: creatorul rollup-ului rezolvă mai întâi contestarea (vezi [Implementarea unui rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -152,7 +152,7 @@ Proponenții L1 QoreChain secvențiază tranzacțiile rollup-ului.
 Stocare de blob-uri în KV-store on-chain în interiorul QoreChain.
 
 :::caution Încă nu există o modalitate publică de a publica un blob
-Modulul definește stocarea, păstrarea și curățarea blob-urilor, dar în versiunile actuale nu există niciun mesaj de tranzacție pentru publicarea unui blob. Un lot care indică un hash de date pe un rollup `native` sau `both` este refuzat deoarece nu poate fi stocat niciun blob corespunzător. Vezi [Disponibilitatea datelor](/rollups/data-availability).
+Modulul definește stocarea, păstrarea și curățarea blob-urilor, dar în versiunile actuale nu există niciun mesaj de tranzacție pentru publicarea unui blob. Un lot care indică un hash de date pe un rollup `native` sau `both` este refuzat deoarece nu poate fi stocat niciun blob corespunzător. Vezi [Disponibilitatea datelor](/rollups/data-availability). Pe disponibilitatea nativă a datelor, un lot trebuie deci să lase `data_hash` gol; clientul RDK (0.6.1) face acest lucru, iar lanțul refuză un lot care pretinde unul.
 :::
 
 | Parametru            | Valoare                                                                                               |
@@ -215,6 +215,8 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Lot acceptat ca fiind canonic                       |
 | **Rejected**   | Lot invalidat printr-o contestare reușită         |
 
+Comportamentul RDK 0.6.1: pentru un rollup optimistic, clientul construiește un lot a cărui rădăcină de stare este rădăcina canonică de tranziție a lanțului (`batchTransitionRoot` în RDK), nu o valoare liberă proprie.
+
 ### Reguli de auto-finalizare
 
 | Mod de decontare | Declanșator de finalizare                                        |
@@ -232,10 +234,10 @@ Auto-finalizarea este executată în `EndBlocker` pentru rollup-urile optimistic
 
 | Parametru                   |                          Implicit | Descriere                                      |
 | --------------------------- | -------------------------------: | ------------------------------------------------ |
-| `max_rollups`               |                              100 | Numărul maxim de rollup-uri care pot fi înregistrate |
+| `max_rollups`               |                              100 (testnet: 200) | Numărul maxim de rollup-uri care pot fi înregistrate |
 | `min_stake_for_rollup`      | 10,000,000,000 uqor (10,000 QOR) | Stake minim necesar pentru a crea un rollup        |
 | `rollup_creation_burn_rate` |                        0.01 (1%) | Fracțiunea din stake-ul de creare ars prin `x/burn`   |
-| `default_challenge_window`  | 604,800 (convertit în 100,800 de blocuri) | Fereastra implicită de contestare optimistă              |
+| `default_challenge_window`  | 604,800 s (testnet: 3,600 s) | Fereastra implicită de contestare optimistă; înainte de v3.2.4 lanțul o convertea în 100,800 de blocuri |
 | `max_da_blob_size`          |           2,097,152 octeți (2 MB) | Dimensiunea maximă a blob-ului de disponibilitate a datelor              |
 | `blob_retention_blocks`     |                   432,000 de blocuri | Blocuri înainte ca blob-urile DA să fie curățate                |
 | `max_batches_per_block`     |                               10 | Numărul maxim de loturi de decontare procesate per bloc   |

@@ -10,7 +10,7 @@ sidebar_position: 8
 The RDK includes TypeScript helpers that encode a call from an EVM contract into the **cross-VM precompile** at `0x0000000000000000000000000000000000000901`, which is designed to route it to a QoreChain Native contract on the **QoreChain Native** (Wasm) runtime, and a `multivm-rollup` scaffold template that wires them up. The tooling covers **EVM → QoreChain Native** only; SVM is a separate runtime and is not part of the precompile.
 
 :::caution Not usable on the live networks yet
-The cross-VM precompile is **not activated** on either network: the EVM module's list of active static precompiles is empty on mainnet and testnet, `eth_getCode` for `0x…0901` returns `0x`, and a call to it succeeds with empty data and executes nothing. QoreChain Native contract upload is also closed on both networks, and the SVM transaction lane is disabled network-wide. Until the precompile is activated and QoreChain Native uploads are re-opened, there is nothing to call. This page documents the tooling so you can prepare; do not build production flows on it. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+The cross-VM precompile is **not activated** on either network: the EVM module's list of active static precompiles is empty on mainnet, and on the testnet it holds only `0x…0A01`, `0x…0A02` and `0x…0C01` (checked 27 October 2026), so `0x…0901` is on neither list; `eth_getCode` for `0x…0901` returns `0x`, and a call to it succeeds with empty data and executes nothing. QoreChain Native contract upload is also closed on both networks, and the SVM transaction lane is disabled network-wide. Until the precompile is activated and QoreChain Native uploads are re-opened, there is nothing to call. This page documents the tooling so you can prepare; do not build production flows on it. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
 :::note The encoder matches the chain's layout since 0.6.0
@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` from `@qorechain/rdk` 0.6.0 builds the same calldata for you:
+`encodeCrossVmCalldata` from `@qorechain/rdk` 0.6.0 and later builds the same calldata for you:
 
 ```ts
 import {
@@ -94,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Because the precompile is inactive, a plain `.call` to it returns **success with empty data and does nothing**; the `ok` flag does not tell you the call took effect. The dependable in-contract guard is a target that always returns a non-empty acknowledgement, with a `require(ret.length > 0)` after the call, so that an empty reply is treated as a failure; the `multivm-rollup` template of 0.6.0 does this.
+Because the precompile is inactive, a plain `.call` to it returns **success with empty data and does nothing**; the `ok` flag does not tell you the call took effect. The dependable in-contract guard is a target that always returns a non-empty acknowledgement, with a `require(ret.length > 0)` after the call, so that an empty reply is treated as a failure; the `multivm-rollup` template (0.6.0 and 0.6.1) does this.
 
 ## Scaffold a multi-VM rollup
 
@@ -102,4 +102,4 @@ Because the precompile is inactive, a plain `.call` to it returns **success with
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-The 0.6.0 template includes `src/crossvm-call.ts` (it checks whether the precompile is live, then prints the calldata) and a `contracts/CrossVmCaller.sol` that calls `executeCrossVMCall(uint8,string,bytes)` and requires a non-empty reply from the target. It does not make a call work while the precompile is inactive. See [Deploying a Rollup](/rollups/deploying-a-rollup) for all scaffolder templates.
+The `multivm-rollup` template (0.6.0 and 0.6.1) includes `src/crossvm-call.ts` (it checks whether the precompile is live, then prints the calldata) and a `contracts/CrossVmCaller.sol` that calls `executeCrossVMCall(uint8,string,bytes)` and requires a non-empty reply from the target. It does not make a call work while the precompile is inactive. See [Deploying a Rollup](/rollups/deploying-a-rollup) for all scaffolder templates.

@@ -10,7 +10,7 @@ sidebar_position: 6
 Ce guide est une courte présentation du lancement d'un rollup spécifique à une application qui se règle sur QoreChain à l'aide du Rollup Development Kit (RDK). Les commandes pas à pas se trouvent dans **[Déployer un rollup](/rollups/deploying-a-rollup)** ; cette page couvre ce dont vous avez besoin avant de commencer.
 
 :::caution Capacité à un stade précoce
-Aucun rollup n'a encore été créé sur l'un ou l'autre réseau (vérifié le 23 octobre 2026). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) exécute la version de chaîne **v3.2.4** depuis le 23 octobre 2026 ; le testnet (**`qorechain-diana`**, EVM chain ID **9800**) exécute la v3.2.4 depuis le 19 octobre 2026. Validez d'abord sur le testnet ; le comportement de la fenêtre de contestation est décrit dans [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement)).
+Aucun rollup n'a encore été créé sur l'un ou l'autre réseau (vérifié le 27 octobre 2026). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) exécute la version de chaîne **v3.2.4** depuis le 23 octobre 2026 ; le testnet (**`qorechain-diana`**, EVM chain ID **9800**) exécute la v3.2.6 (depuis le 27 octobre 2026), et sa fenêtre de contestation par défaut est de 1 heure plutôt que de 7 jours. Validez d'abord sur le testnet ; le comportement de la fenêtre de contestation est décrit dans [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement).
 :::
 
 ---
@@ -56,7 +56,7 @@ Voir [Profils prédéfinis](/rollups/preset-profiles) pour les détails et les n
 * Les lots se règlent sans ancrage, sauf si vous leur joignez la signature post-quantique du créateur (`--anchor-signature` sur `tx rdk submit-batch`, disponible depuis la v3.2.2). Voir [Ancrage d'état](/architecture/rollup-development-kit#state-anchoring).
 * Les retraits vers L1 (`tx rdk execute-withdrawal`) sont payés depuis le registre de séquestre de votre rollup et fonctionnent sur le mainnet depuis la v3.2.3 ; ils nécessitent un lot finalisé avec une racine de retraits et n'utilisent que `uqor`.
 * Le créateur du rollup est aujourd'hui celui qui soumet les lots (aucun profil prédéfini ne définit d'adresse de séquenceur) ; gardez donc la clé du créateur en sécurité : seul le créateur peut mettre en pause, reprendre ou arrêter le rollup.
-* Le RDK est publié en cinq langages (version 0.6.0 sur chaque registre, vérifié le 23 octobre 2026), mais seul le client TypeScript signe des transactions hybrides, et seulement lorsque vous lui fournissez votre paire de clés post-quantiques ; la CLI `qorollup` et les clients Python, Go, Rust et Java signent en classique uniquement, ce que les deux réseaux refusent. Voir [RDK 0.6.0 : changements et limites](/rollups/deploying-a-rollup#rdk-050-limits).
+* Le RDK est publié en cinq langages (version 0.6.1 sur chaque registre, vérifié le 27 octobre 2026), mais seul le client TypeScript signe des transactions hybrides, et seulement lorsque vous lui fournissez votre paire de clés post-quantiques ; la CLI `qorollup` et les clients Python, Go, Rust et Java signent en classique uniquement, ce que les deux réseaux refusent. Voir [Changements et limites du RDK](/rollups/deploying-a-rollup#rdk-050-limits).
 * L'assistant `suggest-profile` renvoie actuellement un repli fixe `defi` sur les points de terminaison publics ; choisissez donc dans le tableau des profils.
 
 ---

@@ -59,7 +59,8 @@ if (!preflight.safe) {
 de la chaîne* sous forme de precompile déterministe (`aiRiskScore` à `0x…0B01`,
 `aiAnomalyCheck` à `0x…0B02`), et non comme un service off-chain. Tant que ces
 precompiles ne sont pas activés, les helpers ci-dessus échouent sur les réseaux
-publics (`returned no data ("0x")`). Voir
+publics (`returned no data ("0x")` ; les trois precompiles actifs du testnet
+sont ceux de PQC et de consensus, pas ceux-ci). Voir
 [Pré-vérification IA](/sdk/guides/ai-preflight).
 
 ---
@@ -97,11 +98,11 @@ await crossVM.callAtomic([
 
 **Pourquoi c'est différent :** QoreChain exécute trois VM co-résidentes avec un
 module de pont natif (`crossvm`, plus le precompile `CrossVMBridge` une fois
-actif), de sorte qu'une seule interface du SDK peut adresser les trois. Les
+actif ; il n'est encore actif sur aucun des deux réseaux), de sorte qu'une seule interface du SDK peut adresser les trois. Les
 chaînes mono-VM n'ont rien d'équivalent à encapsuler. Aujourd'hui, la portée d'un
 appel est limitée par la voie qu'il cible : `MsgCrossVMCall` est désactivé sur le
 mainnet, les transactions SVM sont désactivées, et le téléversement et
-l'instanciation QoreChain Native sont soumis à autorisation. Voir
+l'instanciation QoreChain Native sont soumis à autorisation (l'instanciation est ouverte sur le testnet). Voir
 [Appels cross-VM](/sdk/guides/cross-vm).
 
 ---
@@ -136,7 +137,7 @@ await hybrid.signAndBroadcastHybrid({
 import { QuantumSafeBadge } from "@qorechain/react";
 
 // Shows a "Quantum-safe" indicator when the address has a registered PQC key
-// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0).
+// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
 
@@ -182,12 +183,13 @@ qu'authenticator limité ([Authenticators](/sdk/guides/authenticators)). Voir
 **Une clé Phantom ou MetaMask liée dépense depuis le compte canonique soumis au
 PQC, sous limites, via un relayeur.** (SDK 0.7.0, chaîne v3.1.85.)
 
-:::caution Pas encore disponible sur les réseaux en service
-Le module `abstractaccount` est désactivé sur `qorechain-vladi` et
-`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` renvoie
-`"enabled": false`), et à partir de la chaîne v3.2.0 ce drapeau est appliqué sur
-tous les chemins : une clé ne peut donc pas être liée et les voies ci-dessous ne
-peuvent pas être utilisées. Voir le
+:::caution Pas encore disponible sur le mainnet
+Le module `abstractaccount` est désactivé sur `qorechain-vladi`
+(`GET /qorechain/abstractaccount/v1/config` renvoie `"enabled": false`), et à
+partir de la chaîne v3.2.0 ce drapeau est appliqué sur tous les chemins : sur le
+mainnet, une clé ne peut donc pas être liée et les voies ci-dessous ne peuvent pas
+être utilisées. Le module est activé sur le testnet `qorechain-diana` (vérifié le
+27 octobre 2026). Voir le
 [guide des authentificateurs](/sdk/guides/authenticators).
 :::
 

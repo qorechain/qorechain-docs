@@ -12,9 +12,8 @@ sidebar_position: 8
 これはチェーン側の
 [アカウント抽象化](/developer-guide/account-abstraction)モジュールに対応する SDK 側の機能です。
 
-:::danger 稼働中のネットワークでは利用できません
-`x/abstractaccount` モジュールは `qorechain-vladi` および `qorechain-diana` で**無効**です（`GET /qorechain/abstractaccount/v1/config` は `"enabled": false` を返します）。チェーン v3.2.0 以降、このフラグはすべてのパス（抽象アカウントの作成、オーセンティケーターのリンク、`MsgExecuteEVM` / `MsgExecuteCosmos` の両方）で強制され、チェーンは `abstract account
-module is disabled`（コード 9）でそれらを拒否します。トランザクションでこれを有効にすることはできません。以下の内容はすべて、参照用にモジュールのインターフェースを説明するものです。モジュールが有効になるまでは、稼働中のネットワーク上でリンクキーや委任支出のフローを構築しないでください。また、そのようなフローを提供する前にフラグを確認してください。
+:::danger メインネットでは利用できません
+`x/abstractaccount` モジュールは `qorechain-vladi`（メインネット）で**無効**です。`GET /qorechain/abstractaccount/v1/config` は `"enabled": false` を返します。チェーン v3.2.0 以降、このフラグはすべてのパス（抽象アカウントの作成、オーセンティケーターのリンク、`MsgExecuteEVM` / `MsgExecuteCosmos` の両方）で強制され、チェーンは `abstract account module is disabled`（コード 9）でそれらを拒否します。トランザクションでこれを有効にすることはできません。`qorechain-diana` テストネットでは、2026 年 10 月 27 日に同じルートが `"enabled": true` を返したため、以下のフローはそこで試せます。メインネットでモジュールが有効になるまでは、メインネット向けのリンクキーや委任支出のフローを構築しないでください。また、そのようなフローを提供する前に、対象とするネットワークでフラグを確認してください。
 :::
 
 ## リレイヤーモデル
@@ -279,8 +278,8 @@ qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
   （`eth_getTransactionCount`）では**ありません**。
 - `MsgExecuteCosmos.nonce` も同種のカウンターです。
 
-このカウンターを照会するクエリはまだないため、リンク済みキーごとに自分で追跡してください。新しくリンクしたキーは 0 で、チェーンが受理した実行のたびに +1 します。チェーンの現在のカウンターと異なる値を送ると、リプレイとして拒否されます
-（`abstractaccount` コード 11、下記参照）。
+チェーン v3.2.4 以降（両ネットワークがこのルートを提供）と SDK 0.10.0 では、カウンターを自分で追跡する代わりに読み取れます。`fetchAuthNonce({ rest, address, pubkey })` は `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` を呼び出し、`{ nonce, linked }` を返します。一度も実行していないキーは 0 と読み取られ、リンクが解除されたキーでもカウンターは保持されます（`linked` がそのどちらかを示します）。チェーンの現在のカウンターと異なる値を送ると、リプレイとして拒否されます
+（`abstractaccount` コード 11、下記参照）。古い SDK やチェーンでは、リンク済みキーごとに自分で追跡してください。新しくリンクしたキーは 0 で、チェーンが受理した実行のたびに +1 します。
 
 ## パーミッションスキーマ
 

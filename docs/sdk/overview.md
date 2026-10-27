@@ -26,25 +26,34 @@ runtimes on a single chain:
 - **SVM** — a Solana-compatible runtime with a Solana-style JSON-RPC.
 
 Accounts, balances, and tokens are shared across the runtimes, and the chain
-includes the IBC module for cross-chain interoperability (no IBC channels are
-open on mainnet or testnet yet).
+includes the IBC module for cross-chain interoperability (no IBC channel is
+open on mainnet; the testnet has one open `transfer` channel to a test chain, checked 27 October 2026).
 
-:::note What works on the live networks today (mainnet and testnet v3.2.4)
+:::note What works on the live networks today (mainnet v3.2.4, testnet v3.2.6)
 **Works:** reads on every lane, hybrid-signed Native transactions, unified
 accounts, EVM transactions inside an
 [authorization window](/sdk/guides/evm#evm-window), and SVM reads.
-**Not available yet:** the EVM precompiles (inactive), the `qor_` JSON-RPC
+**Not available yet:** the EVM precompiles on mainnet (none is active there; the
+testnet has three active, PQC verify, PQC key status and consensus parameters, and
+the AI pair and the cross-VM bridge are inactive on both), the `qor_` JSON-RPC
 namespace, SVM transactions, cross-VM calls on mainnet (`MsgCrossVMCall` is
 switched off by the circuit breaker), QoreChain Native upload and instantiate for ordinary
-accounts, the authenticator / abstract-account flows (module switched off), xQORE
-and gas abstraction. Each guide repeats the caveat where it applies.
+accounts (on the testnet, instantiate is open and upload is not), the authenticator /
+abstract-account flows on mainnet (module switched off there, enabled on the
+testnet), xQORE and gas abstraction. Each guide repeats the caveat where it
+applies. Checked against the live endpoints on 27 October 2026.
 
-The published SDK (0.9.0, 21 October 2026) signs in the form both networks verify
+The published SDK (0.10.0, 26 October 2026) signs in the form both networks verify
 (v2 hybrid sign-bytes, resolved from chain state), and the signing format,
-addresses, decimals, memos and fees did not change in v3.2.3 or v3.2.4 (mainnet has run v3.2.4 since 23 October 2026). It carries
+addresses, decimals, memos and fees did not change in v3.2.3 or v3.2.4 (mainnet has run v3.2.4 since 23 October 2026;
+the testnet runs v3.2.6, applied on 27 October). It carries
 the client side of the later post-quantum rules (the proof of possession on key
-registration, scoped EVM windows, EIP-7702 consent messages); versions before 0.9.0
-do not, see [Versions before 0.9.0](/sdk/install#before-090).
+registration, scoped EVM windows, EIP-7702 consent messages) and of v3.2.4 (staking
+tiers, the authenticator nonce, protocol feature switches); versions before 0.9.0
+do not carry the first group, see [Versions before 0.9.0](/sdk/install#before-090)
+and [What 0.10.0 adds](/sdk/install#whats-new-0100).
+
+Wallet and backend signing: see [QoreSign](/qoresign/overview).
 :::
 
 ### Quantum-safe by design
@@ -70,7 +79,7 @@ QoreChain**, because they are built on protocol features no other Layer 1 has:
 - **AI pre-flight risk scoring** — scan a transaction with on-chain AI before you
   broadcast it. `simulateWithRiskScore` returns gas plus a risk/anomaly verdict
   from deterministic EVM precompiles, so a wallet or dApp can warn (or block)
-  *before* signing. The precompiles are not active yet on mainnet or testnet. See
+  *before* signing. The AI precompiles are not active yet on mainnet or testnet. See
   [AI pre-flight](/sdk/guides/ai-preflight).
 - **Unified cross-VM calls** — one account, three VMs, one transaction.
   `createCrossVMClient` calls a contract on any VM and `callAtomic` packs several
@@ -90,7 +99,7 @@ usable on the live networks yet, see below):
 - **Authenticator lanes** — link a Phantom or MetaMask key to the canonical
   PQC-required account and let it spend through a relayer under
   least-privilege, spending-limited, revocable terms. The `abstractaccount`
-  module behind it is switched off on both networks today. See
+  module behind it is switched off on mainnet and enabled on the testnet. See
   [Authenticators & delegated spending](/sdk/guides/authenticators).
 
 A new **`@qorechain/react`** kit (provider, hooks, `ConnectButton`,
@@ -106,15 +115,15 @@ math, and read surfaces.
 
 | Package | Language | Install | Status |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Published (npm, v0.9.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.9.0) |
-| `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, tag `packages/go/v0.9.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Published (crates.io, v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | Published (Maven Central, v0.9.1; the other languages are 0.9.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Published (npm, v0.10.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.10.0) |
+| `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, tag `packages/go/v0.10.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Published (crates.io, v0.10.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.10.0` | Published (Maven Central, v0.10.0) |
 | `@qorechain/evm` | TypeScript (EVM adapter) | `npm i @qorechain/evm viem` | Published (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (SVM adapter) | `npm i @qorechain/svm @solana/web3.js` | Published (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (React kit) | `npm i @qorechain/react` | Published (npm, v0.9.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Published (npm, v0.9.0) |
+| `@qorechain/react` | TypeScript (React kit) | `npm i @qorechain/react` | Published (npm, v0.10.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Published (npm, v0.10.0) |
 
 > The Python distribution installs as `qorechain-sdk` but **imports as
 > `qorsdk`**. All clients are published to their registries — see
@@ -128,16 +137,16 @@ for every custom module plus the standard Cosmos modules, typed query clients,
 the complete transaction lifecycle (auto-gas, error decoding, tx tracking,
 block/tx search), hybrid post-quantum transactions, and WebSocket
 subscriptions. All of these clients are **published**: TypeScript to npm
-(`@qorechain/sdk` 0.9.0), Python to PyPI (`qorechain-sdk` 0.9.0, import
-`qorsdk`), Go to the module proxy (tag `packages/go/v0.9.0`), Rust to crates.io
-(`qorechain-sdk` 0.9.0), and Java to Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.9.1, a Java-only update; the other clients are 0.9.0). The EVM/SVM execution adapters
+(`@qorechain/sdk` 0.10.0), Python to PyPI (`qorechain-sdk` 0.10.0, import
+`qorsdk`), Go to the module proxy (tag `packages/go/v0.10.0`), Rust to crates.io
+(`qorechain-sdk` 0.10.0), and Java to Maven Central
+(`io.github.qorechain:qorechain-sdk` 0.10.0). The EVM/SVM execution adapters
 (`@qorechain/evm`, `@qorechain/svm`, both 0.8.0), the `@qorechain/react` kit
-(0.9.0), and the `create-qorechain-dapp` scaffolding CLI (0.9.0) are
+(0.10.0), and the `create-qorechain-dapp` scaffolding CLI (0.10.0) are
 TypeScript-only and likewise published to npm. See
 [Install](/sdk/install#related-packages) for the companion packages.
 
-## What's new in 0.6, 0.7, 0.8 and 0.9
+## What's new in 0.6, 0.7, 0.8, 0.9 and 0.10
 
 **0.6.0 — unified eth-native accounts (chain v3.1.83).** One `eth_secp256k1`
 key is one 20-byte identity rendered as all three address encodings, sharing
@@ -163,7 +172,7 @@ is now protobuf-encoded (it was JSON-encoded and rejected at CheckTx). Hybrid
 transactions built with SDK ≤ 0.6.0 are **rejected on-chain** — upgrade.
 
 **0.7.0 — authenticator lanes (chain v3.1.85).** The `abstractaccount` module
-behind them is currently switched off on both networks (see the
+behind them is currently switched off on mainnet and enabled on the testnet (see the
 [Authenticators guide](/sdk/guides/authenticators)). A linked Phantom (ed25519) or
 MetaMask (secp256k1, by 20-byte address) key can spend from the canonical
 PQC-required account through a relayer, under least-privilege, spending-limited,
@@ -178,7 +187,7 @@ and TypeScript wallet builders (`buildPhantomExecuteCosmos`,
 v3.2.0).** The post-quantum half of a hybrid transaction is now signed in the form
 the target network verifies (v1 or v2, `signBytesVersion: "auto" | "v1" | "v2"`).
 Both public networks are on v2, so SDK **0.8.1 or later** is required to
-transact on mainnet (use 0.9.0). **0.8.2** adds `openEvmWindowMsg`, `closeEvmWindowMsg`,
+transact on mainnet (use the current release). **0.8.2** adds `openEvmWindowMsg`, `closeEvmWindowMsg`,
 `fetchEvmWindow` and `classifyEvmWindowRejection` for the EVM-lane
 [authorization window](/sdk/guides/evm#evm-window).
 **0.8.0** removed the wallet-signature account helpers (`connectPhantomUnified` and
@@ -200,7 +209,17 @@ the EIP-7702 consent messages, and `derivePqcCanonical(address, mnemonic)` gives
 key you can recover from the mnemonic in every language. The PQC account route is
 the singular `/qorechain/pqc/v1/account/{address}`, failures inside a block keep
 their codespace, and `create-qorechain-dapp` scaffolds on the current SDK. See
-[What 0.9.0 adds](/sdk/install#whats-new-090).
+[What 0.9.0 added](/sdk/install#whats-new-090).
+
+**0.10.0 — client support for chain v3.2.4.** Staking-tier composers and reads
+(`lockDelegation`, `unlockEarly`, `claimBonus`, `fetchStakingTierParams`,
+`fetchStakingLocks`), `fetchAuthNonce` for a linked key's next sequence,
+`fetchProtocolFeatures` / `isProtocolFeatureEnabled` for the consensus rules a
+network enforces by name, `possessionProven` on the PQC status, and
+`ibcTimeoutTimestamp`. `ensurePqcRegistered` now compares the registered key
+instead of trusting a status without one, and a chain refusal that arrives as
+text during fee simulation is named in every language. See
+[What 0.10.0 adds](/sdk/install#whats-new-0100).
 
 ## Where to go next
 

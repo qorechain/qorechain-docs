@@ -10,7 +10,7 @@ sidebar_position: 6
 A **settlement receipt** is a portable record that a rollup's settlement batch was anchored to the Main Chain under a post-quantum signature. It names the rollup, the batch and the anchor, and carries the anchor's **ML-DSA-87** (Dilithium-5, FIPS-204) signature, the same scheme the Main Chain uses.
 
 :::caution Early-stage: no anchors exist yet
-Receipts depend on anchors, and **no rollup or anchor exists on either network yet** (checked 23 October 2026). Since v3.2.2 (live on both networks) a batch submitted with an `anchor_signature` is anchored in `x/multilayer` in the same transaction; a batch submitted without one settles unanchored. The TypeScript RDK (0.6.0) sends that field when its transaction client signs hybrid and is the rollup's creator, and submits unanchored otherwise; the Python, Go, Rust and Java clients sign classical-only and do not build the field. None of this has been exercised on a live rollup. Treat this page as a description of the design and of the building blocks, not of a service you can rely on today.
+Receipts depend on anchors, and **no rollup or anchor exists on either network yet** (checked 27 October 2026). Since v3.2.2 (live on both networks) a batch submitted with an `anchor_signature` is anchored in `x/multilayer` in the same transaction; a batch submitted without one settles unanchored. The TypeScript RDK (0.6.1) sends that field when its transaction client signs hybrid and is the rollup's creator, and submits unanchored otherwise; the Python, Go, Rust and Java clients sign classical-only and do not build the field. None of this has been exercised on a live rollup. Treat this page as a description of the design and of the building blocks, not of a service you can rely on today.
 :::
 
 ## A receipt is a claim, not evidence {#a-receipt-is-a-claim}
@@ -46,25 +46,29 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Pass a `client` for every verification. The receipt API and its checks have changed between releases, so use 0.6.0 or later: 0.5.0 could not complete the chain check (see below). The Python, Go, Rust and Java clients expose the same build/verify surface; their 0.6.0 releases use the same singular key-lookup route and the same height-based choice of anchor message.
+Pass a `client` for every verification. The receipt API and its checks have changed between releases, so use 0.6.1 (the current release): 0.5.0 could not complete the chain check, and 0.6.0 did not compare every field of the receipt (see below). The Python, Go, Rust and Java clients expose the same build/verify surface; their 0.6.1 releases use the same singular key-lookup route, the same height-based choice of anchor message and the same field-by-field comparison.
 
-### What 0.6.0 verifies {#what-060-verifies}
+### What 0.6.1 verifies {#what-060-verifies}
 
 `verifySettlementReceipt` never reports `valid` from the receipt alone: without a `client` the result is `mode: "signature-only"` and `valid: false`. With a `client` it re-reads the chain and reports each check separately:
 
 * `rollupLayerBinding`: the chain says the rollup belongs to the receipt's layer;
 * `batchStateRoot`: the chain's batch carries the receipt's state root;
-* `anchorOnChain`: an anchor with that state root, height and signature exists on the chain;
+* `anchorOnChain`: an anchor exists on the chain that matches **every** anchor field the receipt states: state root, layer height, validator-set hash, signature, Main Chain height, anchor time, algorithm and version, and on a version-2 receipt the transaction count and compressed state proof. A mismatch names the field;
 * `creatorAuthority`: the signing key was read from the chain (`/qorechain/pqc/v1/account/{address}`), not taken from the receipt;
 * `pqcSignature`: the ML-DSA-87 signature verifies over the canonical anchor message;
 * `chainBinding`: the receipt names the chain that was actually queried.
 
-The anchor message is chosen by the height the anchor was recorded at (v1 below the v3.2.2 switch, v2 from it), never by trying both, because a v1 signature carries no chain id and would verify on every chain. The package carries the switch height for mainnet (3,556,788) and testnet (6,905,034). The result reports the form it used as `signBytesVersion`. Receipt schema v2 records `chainId`; a version-1 receipt carries none, so it passes `chainBinding` only because its anchor was found on the chain you queried. Verification refuses a receipt checked against a node of another chain.
+The anchor message is chosen by the height the anchor was recorded at (v1 below the v3.2.2 switch, v2 from it), never by trying both, because a v1 signature carries no chain id and would verify on every chain. The package carries the switch height for mainnet (3,556,788) and testnet (6,905,034). The result reports the form it used as `signBytesVersion`. Receipt schema v2 records `chainId`; a version-1 receipt carries none, so it passes `chainBinding` only because its anchor was found on the chain you queried. Verification refuses a receipt checked against a node of another chain. Before anything is read from the chain, `receiptSchemaError` refuses a receipt with an unknown `version`, an `algorithm` other than `ML-DSA-87`, or (version 2) no `chainId`.
+
+Since 0.6.1 the result also carries the chain's own `anchor` and, when `valid` is true, a `verifiedReceipt` rebuilt from chain state (`verified_receipt` in Python and Rust, `VerifiedReceipt` in Go): read facts from those, not from the receipt you were handed. `qorollup receipt verify --json` returns that chain-read receipt as `receipt` (`null` when the receipt is not valid) instead of echoing the file. Version-1 receipts, which predate the transaction count and the proof, still verify.
 
 No anchor exists on either network, so this has only been checked against the package code and offline, not against a real anchor. `buildSettlementReceipt` works only once an anchor covers the batch.
 
-:::note Releases before 0.6.0
-`verifySettlementReceipt` in 0.5.0 failed closed against the live networks, for two reasons that were in the client, not the chain: it looked the creator's key up through a plural `accounts` form of the post-quantum account route, which the networks do not serve (HTTP 501), and it rebuilt only the v1 message, which the chain no longer accepts for anchors since v3.2.2. A genuine receipt therefore could not verify, and a forged one was still refused. Use 0.6.0 or later.
+:::note Releases before 0.6.1
+`verifySettlementReceipt` in 0.6.0 matched the chain's anchor on its state root, layer height, validator-set hash and signature, but did not compare the other fields a receipt shows (Main Chain height, anchor time, algorithm, version, and on a version-2 receipt the transaction count and compressed state proof), and it treated the batch state root as informational. The settlement claim itself (state root, anchor signature, creator key) was always bound; what 0.6.0 could not tell you was whether the metadata printed next to it matched the chain. Use 0.6.1.
+
+`verifySettlementReceipt` in 0.5.0 failed closed against the live networks, for two reasons that were in the client, not the chain: it looked the creator's key up through a plural `accounts` form of the post-quantum account route, which the networks do not serve (HTTP 501), and it rebuilt only the v1 message, which the chain no longer accepts for anchors since v3.2.2. A genuine receipt therefore could not verify, and a forged one was still refused. Use 0.6.1.
 :::
 
 ## CLI {#cli}

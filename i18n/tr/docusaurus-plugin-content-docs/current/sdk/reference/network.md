@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `mainnet` |
 | Chain id | `qorechain-vladi` (7 Haziran 2026'dan beri yayında) |
-| Zincir sürümü (23 Ekim 2026) | v3.2.4 (3.742.566 yüksekliğinden beri, 23 Ekim 2026, yönetişim önerisi 13) |
+| Zincir sürümü (27 Ekim 2026) | v3.2.4 (3.742.566 yüksekliğinden beri, 23 Ekim 2026, yönetişim önerisi 13). Yönetişim önerisi 14, v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır ve yazım sırasında oylama süresindeydi; v3.2.5'in neler eklediği, mainnet onu uyguladığı gün belgelenir |
 | EVM zincir kimliği | `9801` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `testnet` |
 | Chain id | `qorechain-diana` (yayında) |
-| Zincir sürümü (23 Ekim 2026) | v3.2.4 (8.337.253 yüksekliğinden beri, 19 Ekim 2026) |
+| Zincir sürümü (27 Ekim 2026) | v3.2.6 (8.970.638 yüksekliğinden beri, 27 Ekim 2026; v3.2.5 26 Ekim'de 8.890.800 yüksekliğinde, v3.2.4 ise 19 Ekim'de 8.337.253 yüksekliğinde uygulandı) |
 | EVM zincir kimliği | `9800` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |
@@ -47,6 +47,14 @@ sidebar_position: 1
 
 EVM uç noktaları `eth_`, `net_`, `web3_` ve `txpool_` sunar; `qor_` ad alanı
 etkin değildir. Ayrıca bkz. [Ağlar](/appendix/networks#public-endpoints).
+
+### Bir istemci için önemli olan yalnızca-testnet farkları {#testnet-only}
+
+Testnet bir hazırlık (staging) ağıdır ve mainnet'in önünde çalışır; bu nedenle orada okuyabileceğiniz birkaç şey mainnet'te yoktur (27 Ekim 2026'da kontrol edildi; tam liste [Testnet ve mainnet arasındaki farklar](/appendix/chain-parameters#testnet-differences) sayfasındadır):
+
+* **REST rotaları.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` ve `GET /qorechain/crossvm/v1/params` testnet'te yanıt verir; mainnet bunlara HTTP 501 yanıtı verir. `/qorechain/amm/v1/` altındaki AMM rotaları (`pools`, `params`) her iki ağda da yanıt verir.
+* **Test tokenleri.** Değeri olmayan üç token yalnızca testnet'te vardır; `erc20:<EIP-55 contract address>` adlı (büyük/küçük harfe duyarlı) bank birimleri olarak: fUSD (6 ondalık), fETH (18) ve fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` bunları listeler. Mainnet'in tek bank birimi `uqor`'dur. Bkz. [Testnet test tokenleri (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
+* **Açık modüller.** `abstractaccount` modülü testnet'te etkin, mainnet'te kapalıdır; testnet'te üç EVM precompile'ı etkindir, mainnet'te hiçbiri değildir ve QoreChain Native instantiate testnet'te açıktır.
 
 ## Varsayılan portlar
 

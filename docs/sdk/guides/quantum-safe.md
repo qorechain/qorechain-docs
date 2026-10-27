@@ -62,7 +62,7 @@ The same status is also readable on the EVM side via the
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
 precompile at `0x0000000000000000000000000000000000000A02` (exposed as
 `pqcKeyStatus` in `@qorechain/evm`) once that precompile is active; it is not
-active yet on mainnet or testnet (see
+active on mainnet, and it is listed as active on the testnet (checked 27 October 2026; see
 [Network status](/developer-guide/evm-precompiles#network-status)).
 
 ## Register in one call {#register-in-one-call}

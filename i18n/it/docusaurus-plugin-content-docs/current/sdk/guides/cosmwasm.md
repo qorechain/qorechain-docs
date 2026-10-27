@@ -44,11 +44,14 @@ Puoi anche costruire un client di lettura direttamente con `createCosmWasmClient
 ## Firma: instantiate, execute, upload
 
 :::caution Upload e instantiate sono soggetti a permessi
-`code_upload_access` e `instantiate_default_permission` sono `Nobody` su
-`qorechain-vladi` e `qorechain-diana`, e anche `MsgStoreCode` /
+Su `qorechain-vladi` (mainnet) `code_upload_access` e
+`instantiate_default_permission` sono `Nobody`, e anche `MsgStoreCode` /
 `MsgInstantiateContract` / `MsgInstantiateContract2` sono disattivati dal
 circuit breaker della chain, quindi `uploadCode` e `instantiate` vengono rifiutati
-per gli account ordinari. I contratti già esistenti possono essere interrogati
+per gli account ordinari. Su `qorechain-diana` (testnet, verificato il 27 ottobre 2026)
+`code_upload_access` è `Nobody` e solo `MsgStoreCode` è disattivato, mentre
+`instantiate_default_permission` è `Everybody`, quindi lì `instantiate` è aperto per
+il codice già esistente. I contratti già esistenti possono essere interrogati
 (sopra) ed eseguiti. Controlla `GET /cosmwasm/wasm/v1/codes/params` per i permessi
 attuali.
 Vedi [Sviluppo QoreChain Native](/developer-guide/cosmwasm-development).

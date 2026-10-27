@@ -55,7 +55,8 @@ if (!preflight.safe) {
 **Why it's different:** the scoring is designed to run *inside the chain* as a
 deterministic precompile (`aiRiskScore` at `0x…0B01`, `aiAnomalyCheck` at
 `0x…0B02`), not as an off-chain service. Until those precompiles are activated, the
-helpers above throw on the public networks (`returned no data ("0x")`). See
+helpers above throw on the public networks (`returned no data ("0x")`; the testnet's
+three active precompiles are the PQC and consensus ones, not these). See
 [AI pre-flight](/sdk/guides/ai-preflight).
 
 ---
@@ -90,11 +91,11 @@ await crossVM.callAtomic([
 ```
 
 **Why it's different:** QoreChain runs three co-resident VMs with a native bridge
-module (`crossvm`, plus the `CrossVMBridge` precompile once it is active), so one
+module (`crossvm`, plus the `CrossVMBridge` precompile once it is active; it is not active on either network yet), so one
 SDK interface can address all three. Single-VM chains have nothing equivalent to
 wrap. Today the reach of a call is limited by the lane it targets: `MsgCrossVMCall`
 is switched off on mainnet, SVM transactions are disabled, and QoreChain Native upload and
-instantiate are permissioned. See [Cross-VM calls](/sdk/guides/cross-vm).
+instantiate are permissioned (instantiate is open on the testnet). See [Cross-VM calls](/sdk/guides/cross-vm).
 
 ---
 
@@ -127,7 +128,7 @@ await hybrid.signAndBroadcastHybrid({
 import { QuantumSafeBadge } from "@qorechain/react";
 
 // Shows a "Quantum-safe" indicator when the address has a registered PQC key
-// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0).
+// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
 <QuantumSafeBadge address={account.address} />
 ```
 
@@ -172,11 +173,12 @@ limited authenticator ([Authenticators](/sdk/guides/authenticators)). See
 **A linked Phantom or MetaMask key spends from the canonical PQC-required
 account, under limits, via a relayer.** (SDK 0.7.0, chain v3.1.85.)
 
-:::caution Not available on the live networks yet
-The `abstractaccount` module is switched off on `qorechain-vladi` and
-`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` returns
-`"enabled": false`), and from chain v3.2.0 that flag is enforced on every path, so a
-key cannot be linked and the lanes below cannot be used. See the
+:::caution Not available on mainnet yet
+The `abstractaccount` module is switched off on `qorechain-vladi`
+(`GET /qorechain/abstractaccount/v1/config` returns `"enabled": false`), and from
+chain v3.2.0 that flag is enforced on every path, so on mainnet a key cannot be
+linked and the lanes below cannot be used. The module is enabled on the
+`qorechain-diana` testnet (checked 27 October 2026). See the
 [Authenticators guide](/sdk/guides/authenticators).
 :::
 

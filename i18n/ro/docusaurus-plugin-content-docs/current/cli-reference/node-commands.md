@@ -10,9 +10,9 @@ sidebar_position: 1
 Referință pentru comenzile `qorechaind` utilizate pentru inițializarea, configurarea și operarea unui nod QoreChain.
 
 :::note
-QoreChain rulează două rețele: mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026; versiunea nodului **v3.2.4**, aplicată la înălțimea 3.742.566 pe 23 octombrie 2026 prin propunerea de guvernanță 13; v3.2.3 a fost aplicată la înălțimea 3.662.051 pe 20 octombrie 2026) și testnet-ul **`qorechain-diana`** (versiunea nodului **v3.2.4**, aplicată la înălțimea 8.337.253 pe 19 octombrie 2026). Transmite `--chain-id` corespunzător rețelei la care intenționezi să te alături — exemplele de mai jos vizează testnet-ul; folosește `--chain-id qorechain-vladi` pentru mainnet. Versiunea curentă pentru fiecare rețea este listată în `latest.json` de pe [download.qore.host](https://download.qore.host).
+QoreChain rulează două rețele: mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026; versiunea nodului **v3.2.4**, aplicată la înălțimea 3.742.566 pe 23 octombrie 2026 prin propunerea de guvernanță 13; v3.2.3 a fost aplicată la înălțimea 3.662.051 pe 20 octombrie 2026) și testnet-ul **`qorechain-diana`** (versiunea nodului **v3.2.6**, aplicată la înălțimea 8.970.638 pe 27 octombrie 2026, după v3.2.5 la înălțimea 8.890.800 pe 26 octombrie și v3.2.4 la înălțimea 8.337.253 pe 19 octombrie). Propunerea de guvernanță 14 de pe mainnet se află în perioada de vot; ea ar aplica v3.2.5 la înălțimea 3.906.833, iar ce schimbă acea versiune va fi documentat după ce mainnet-ul o aplică. Transmite `--chain-id` corespunzător rețelei la care intenționezi să te alături — exemplele de mai jos vizează testnet-ul; folosește `--chain-id qorechain-vladi` pentru mainnet. Versiunea curentă pentru fiecare rețea este listată în `latest.json` de pe [download.qore.host](https://download.qore.host).
 
-Comenzile de pe această pagină au fost verificate pe binarul de release v3.2.3. Binarul v3.2.4 adaugă comenzi pe care un binar v3.2.3 nu le are (de exemplu `stakingtier`); ele rulează pe ambele rețele (testnet din 19 octombrie 2026, mainnet din 23 octombrie 2026), iar unde acest manual menționează una dintre ele, o spune.
+Comenzile de pe această pagină au fost verificate pe binarul de release v3.2.3. Binarul v3.2.4 adaugă comenzi pe care un binar v3.2.3 nu le are (de exemplu `stakingtier`); ele rulează pe ambele rețele (testnet din 19 octombrie 2026, mainnet din 23 octombrie 2026), iar unde acest manual menționează una dintre ele, o spune. Binarul v3.2.6 (testnet-ul) adaugă încă două comenzi de interogare, `query rlconsensus applied-params` și `last-action`; ele sunt doar pe testnet până când mainnet-ul aplică acea versiune (vezi [Comenzi de interogare](/cli-reference/query-commands#rlconsensus)). Tot restul de pe această pagină se comportă la fel pe ambele versiuni.
 :::
 
 ---
@@ -70,7 +70,7 @@ Un binar compilat din arborele sursă public (build-ul comunității) refuză s�
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height?
+# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"}, e.g. v3.2.5 today)
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 ```

@@ -49,7 +49,7 @@ pnpm --filter @qorechain/sdk docs:api
   (‏`PROOF_OF_POSSESSION_DOMAIN`)، `validateRegisteredPqcKey`،
   `isDegeneratePqcPublicKey`، `migrateToHybrid`، `migratePqcKeyHybrid`،
   `isUpgradeApplied` / `requireUpgradeApplied` (‏`CHAIN_UPGRADE_V3_2_2`،
-  `CHAIN_UPGRADE_V3_2_3`).
+  `CHAIN_UPGRADE_V3_2_3`، `CHAIN_UPGRADE_V3_2_4`).
 - **عملاء القراءة (Read clients):** ‏`RestClient` (بما في ذلك `getPermissionSchema`)،
   `JsonRpcClient`، `QorClient`، ودوال HTTP المساعدة (`getJson`، `postJsonRpc`،
   `buildUrl`، `joinUrl`، `QoreHttpError`)؛ وعملاء استعلام منمّطون لكل
@@ -71,7 +71,8 @@ pnpm --filter @qorechain/sdk docs:api
   `MSG_SEND_TYPE_URL`، والدوال الهجينة المساعدة (`encodeHybridExtension`،
   `attachHybridExtension`، `buildHybridTx`، `signAndBroadcastHybrid`)؛
   وفكّ ترميز الأخطاء المهيكل عبر `decodeTxError` (بما في ذلك رموز `abstractaccount`
-  ‏5/6/10/11 ورمز `pqc` ‏21).
+  ‏5/6/10/11 ورمز `pqc` ‏21؛ ومنذ 0.10.0 تسمّي أيضًا الرفض الذي يصل
+  نصًّا أثناء محاكاة الرسوم).
 - **التوقيع الأصيل بنمط eth ‏(0.6.0):** ‏`signClassicalEth`، `signHybridEth`
   (‏secp256k1 فوق `keccak256(SignDoc)`، ونوع المفتاح العام
   `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`، إضافةً إلى امتداد ML-DSA-87
@@ -88,7 +89,7 @@ pnpm --filter @qorechain/sdk docs:api
   (‏EIP-191 عبر `personal_sign`)؛ وتدوير المفاتيح `rotatePqcKeyMsgFromMnemonic`،
   `derivePqcLegacy`. راجع
   [دليل المصادِقات](/sdk/guides/authenticators) (الوحدة الكامنة وراء هذه
-  المسارات متوقفة اليوم على كلتا الشبكتين).
+  المسارات متوقفة على الشبكة الرئيسية ومفعَّلة على شبكة الاختبار).
 - **بايتات التوقيع الهجينة (Hybrid sign-bytes) ‏(0.8.0+):** الخيار `signBytesVersion`
   (‏`"auto" | "v1" | "v2"`) في `buildHybridTx` و`signAndBroadcastHybrid` و
   `signHybridEth` و`EthNativeSigner`؛ و`resolveSignBytesVersion`،
@@ -105,6 +106,13 @@ pnpm --filter @qorechain/sdk docs:api
   `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
 - **ملخّص الحساب المجرَّد v2 ‏(0.9.0):** ‏`evmAuthSignBytesV2`،
   `resolveEvmAuthDigestVersion`؛ `validateSpendingRules`.
+- **السلسلة v3.2.4 ‏(0.10.0):** مستويات الرهن (`msg.stakingtier.lockDelegation` /
+  `unlockEarly` / `claimBonus` / `updateParams`، `validateLockDelegation`،
+  `STAKING_LOCK_MONTHS`، `fetchStakingTierParams`، `fetchStakingLocks`،
+  `fetchStakingTierPool`)؛ و`fetchAuthNonce`؛ و`fetchProtocolFeatures` /
+  `isProtocolFeatureEnabled`؛ و`possessionProven` في حالة PQC؛
+  و`ibcTimeoutTimestamp`؛ و`CHAIN_UPGRADE_V3_2_4`. راجع
+  [ما الذي يضيفه 0.10.0](/sdk/install#whats-new-0100).
 - **الاشتقاق القياسي لـ PQC ‏(0.8.3+):** ‏`derivePqcCanonical(account, mnemonic)`،
   `canonicalAccount(account)`؛ ورسالة تسجيل PQC هي
   `buildRegisterPqcKeyMsg` (تستخدمها `ensurePqcRegistered`). `derivePqcLegacy`
@@ -132,10 +140,10 @@ pnpm --filter @qorechain/sdk docs:api
 
 | اللغة | التوثيق المولَّد | التثبيت |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.9.0` (الاستيراد `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (الوسم `packages/go/v0.9.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.9.0؛ الاستيراد `qorechain`) |
-| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.9.1` (أما اللغات الأخرى فـ 0.9.0) |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.10.0` (الاستيراد `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (الوسم `packages/go/v0.10.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.10.0؛ الاستيراد `qorechain`) |
+| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.10.0` |
 
 كل حزمة تعكس الواجهة نفسها (الإعدادات المسبقة للشبكات، وأدوات الفئات
 النقدية/العناوين، والاشتقاق الهرمي الحتمي HD — بما في ذلك الحسابات الموحّدة الأصيلة بنمط eth — وأساسيات

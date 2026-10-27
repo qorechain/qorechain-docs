@@ -226,7 +226,7 @@ The public endpoints are `rpc.qore.host` (Native RPC), `api.qore.host` (REST), `
 The **SVM wallets** card also lets you link a Phantom key to your account as a **linked signer** — a time-bounded (30-day), revocable authenticator, not a separate primary wallet connection like QoreX, Keplr, or MetaMask. Select **Connect Phantom**, then **Register authenticator**; your existing wallet signs the registration, and Phantom never becomes its own identity.
 
 :::caution Linked-signer registration is currently switched off on the chain
-The chain's smart-account and linked-wallet features are implemented but switched off on both networks (`abstractaccount.enabled = false`; check `GET /qorechain/abstractaccount/v1/config`), and the chain refuses new linked-signer registrations while that is the case. Treat the card as a preview for now and do not expect a registration to succeed.
+The chain's smart-account and linked-wallet features are implemented but switched off on mainnet and enabled on the testnet (`abstractaccount.enabled` is `false` on mainnet; check `GET /qorechain/abstractaccount/v1/config`), and the mainnet chain refuses new linked-signer registrations while that is the case. On mainnet, treat the card as a preview for now and do not expect a registration to succeed.
 :::
 
 :::caution A linked signer is real authority over the account

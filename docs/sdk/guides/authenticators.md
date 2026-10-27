@@ -16,16 +16,16 @@ ML-DSA co-signature**.
 This is the SDK counterpart of the chain's
 [account abstraction](/developer-guide/account-abstraction) module.
 
-:::danger Not available on the live networks
-The `x/abstractaccount` module is **disabled** on `qorechain-vladi` and
-`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` returns
-`"enabled": false`). From chain v3.2.0 that flag is enforced on every path
-(creating an abstract account, linking an authenticator, and both `MsgExecuteEVM` /
-`MsgExecuteCosmos`), and the chain refuses them with `abstract account module is
-disabled` (code 9). No transaction can switch it on. Everything below describes the
-module's interfaces for reference: do not build a linked-key or delegated-spending
-flow on the live networks until the module is enabled, and check the flag before
-offering any such flow.
+:::danger Not available on mainnet
+The `x/abstractaccount` module is **disabled** on `qorechain-vladi` (mainnet):
+`GET /qorechain/abstractaccount/v1/config` returns `"enabled": false`. From chain
+v3.2.0 that flag is enforced on every path (creating an abstract account, linking
+an authenticator, and both `MsgExecuteEVM` / `MsgExecuteCosmos`), and the chain
+refuses them with `abstract account module is disabled` (code 9). No transaction can
+switch it on. On the `qorechain-diana` testnet the same route returned
+`"enabled": true` on 27 October 2026, so the flows below can be tried there. Do not
+build a linked-key or delegated-spending flow for mainnet until the module is enabled
+there, and check the flag on the network you target before offering any such flow.
 :::
 
 ## The relayer model
@@ -317,10 +317,14 @@ execution.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` is the same kind of counter.
 
-There is no query for the counter yet, so track it per linked key: 0 for a newly
-linked key, +1 after each execution the chain accepts. Sending a value that is not
+Since chain v3.2.4 (both networks serve the route) and SDK 0.10.0 you can read the
+counter instead of tracking it: `fetchAuthNonce({ rest, address, pubkey })` calls
+`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` and returns
+`{ nonce, linked }`. A key that never executed reads 0, and the counter is kept even
+for a key that is no longer linked (`linked` says which). Sending a value that is not
 the chain's current counter is a replay rejection (`abstractaccount` code 11, see
-below).
+below). With an older SDK or chain, track it per linked key: 0 for a newly linked key,
++1 after each execution the chain accepts.
 
 ## The permission schema
 

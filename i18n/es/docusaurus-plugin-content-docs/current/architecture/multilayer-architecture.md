@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implementa una **arquitectura jerárquica de cadenas de 4 niveles** a través del módulo `x/multilayer`. La cadena principal actúa como la raíz de liquidación y de confianza, mientras que las capas subsidiarias (sidechains, paychains y rollups) gestionan cargas de trabajo especializadas con diferentes compromisos de rendimiento y seguridad.
 
 :::caution Capacidad en fase temprana
-El módulo está desplegado en la mainnet (versión de cadena **v3.2.4** desde el 23 de octubre de 2026) y en la testnet (**v3.2.4**), pero **todavía no existe ninguna capa ni ningún ancla en ninguna de las dos redes** (comprobado el 23 de octubre de 2026: `GET /qorechain/multilayer/v1/layers` devuelve una lista vacía en ambas). Todo lo que sigue describe el módulo tal como está construido; los parámetros son los valores vigentes. En la mainnet el mensaje `MsgUpdateLayerStatus` está actualmente desactivado por el interruptor de circuito (consulta [Parámetros de la cadena](/appendix/chain-parameters#circuit-breaker)); en la testnet no lo está.
+El módulo está desplegado en la mainnet (versión de cadena **v3.2.4** desde el 23 de octubre de 2026) y en la testnet (**v3.2.6** desde el 27 de octubre de 2026), pero **todavía no existe ninguna capa ni ningún ancla en ninguna de las dos redes** (comprobado el 27 de octubre de 2026: `GET /qorechain/multilayer/v1/layers` devuelve una lista vacía en ambas). Todo lo que sigue describe el módulo tal como está construido; los parámetros son los valores vigentes. En la mainnet el mensaje `MsgUpdateLayerStatus` está actualmente desactivado por el interruptor de circuito (consulta [Parámetros de la cadena](/appendix/chain-parameters#circuit-breaker)); en la testnet no lo está.
 :::
 
 ---
@@ -64,7 +64,7 @@ La cadena principal es la raíz de confianza para todo el ecosistema de QoreChai
 | Consenso            | Consenso de QoreChain (ver [Mecanismo de Consenso](/architecture/consensus-mechanism) para lo que está conectado hoy) |
 | Seguridad           | Protegida con PQC mediante firmas Dilithium-5                                  |
 | Función             | Capa de liquidación, almacenamiento de anclas de estado, motor de enrutamiento QCAI, raíz de confianza |
-| Tiempo de bloque    | Depende de la red: unos 3,2 segundos en la mainnet y unos 1,0 segundos en la testnet (medido el 23 de octubre de 2026) |
+| Tiempo de bloque    | Depende de la red: unos 3,2 segundos en la mainnet y unos 1,3 segundos en la testnet (medido el 27 de octubre de 2026) |
 
 Todas las capas subsidiarias anclan periódicamente sus raíces de estado a la cadena principal mediante Esquemas de Compromiso Jerárquico (HCS).
 

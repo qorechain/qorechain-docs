@@ -10,7 +10,7 @@ sidebar_position: 9
 This guide covers how to create a validator on the QoreChain network, understand the pool classification design, register a PQC key for quantum-resistant security, and monitor your node.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026, after v3.2.3 at height 3,662,051 on 20 October 2026). A validator must run the v3.2.4 binary; see [Running a Node: Upgrades](/developer-guide/running-a-node#upgrades). The **`qorechain-diana`** testnet (EVM chain ID **9800**, running v3.2.4 since 19 October 2026) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network. Block times differ: about 3.2 s on mainnet and about 1.0 s on the testnet, so convert block counts to time per network.
+This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026, after v3.2.3 at height 3,662,051 on 20 October 2026). A validator must run the v3.2.4 binary at the time of writing; mainnet governance proposal 14 would apply v3.2.5 at height 3,906,833, and the manifest then names the binary to install (see [Running a Node: Upgrades](/developer-guide/running-a-node#upgrades)). The **`qorechain-diana`** testnet (EVM chain ID **9800**) runs v3.2.6 (applied 27 October 2026, after v3.2.5 on 26 October) and is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network. Block times differ: about 3.2 s on mainnet and about 1.3 s on the testnet (27 October 2026; it varies), so convert block counts to time per network.
 :::
 
 :::caution Use the release binary, not a source build
@@ -358,7 +358,7 @@ The network fee floor is 0.1 uqor per unit of gas. An operator account that has 
 ## Validating Connected Networks {#connected-networks}
 
 :::caution No connected network is active yet
-The bridge module is deployed on mainnet and testnet, but **no bridge route is active**: all 37 chain configurations are in `pending` status, no bridge validators are registered, no bridge operation has ever been created, and no IBC channels exist. The framework below describes the design; there is nothing to validate on a connected network today.
+The bridge module is deployed on mainnet and testnet, but **no bridge route is active**: all 37 chain configurations are in `pending` status, no bridge validators are registered, no bridge operation has ever been created, and no IBC channel is open on mainnet (the testnet has one transfer channel, which is not a bridge route). The framework below describes the design; there is nothing to validate on a connected network today.
 :::
 
 The design (since chain version **v3.1.80**) lets a QoreChain validator also help validate the networks connected through the [bridge](/architecture/bridge-architecture). It is **license-gated and opt-in**:

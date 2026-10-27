@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Le mainnet est-il en ligne ?
 
 Oui. Le mainnet est **en ligne** (identifiant de chaîne `qorechain-vladi`, en
-production depuis le 7 juin 2026) et exécute la version de chaîne v3.2.4 (appliquée à la hauteur 3,742,566 le 23 octobre 2026, proposition de gouvernance 13) ; le testnet exécute la v3.2.4 depuis le 19 octobre 2026. Le préréglage testnet (`qorechain-diana`) reste également
+production depuis le 7 juin 2026) et exécute la version de chaîne v3.2.4 (appliquée à la hauteur 3,742,566 le 23 octobre 2026, proposition de gouvernance 13) ; le testnet exécute la v3.2.6 (appliquée le 27 octobre 2026). Le préréglage testnet (`qorechain-diana`) reste également
 disponible. Les deux préréglages utilisent par défaut des points de terminaison
 localhost ; sélectionnez le réseau avec `createClient({ network: "mainnet" })` et
 remplacez `endpoints` par les URL de vos nœuds. Voir
@@ -51,11 +51,15 @@ npm i @qorechain/svm @solana/web3.js
 ## Un appel à un précompilé lève « returned no data » / « feature not present »
 
 Les précompilés EVM de QoreChain sont compilés dans le nœud mais ne sont **pas
-encore actifs** sur le mainnet ni sur le testnet : ils ne répondent que là où
-leurs adresses figurent dans le paramètre `active_static_precompiles` du module
-EVM, et cette liste est vide sur les deux réseaux. Aujourd'hui, l'appel renvoie
+actifs sur le mainnet**, et seuls trois sont actifs sur le testnet : ils ne
+répondent que là où leurs adresses figurent dans le paramètre
+`active_static_precompiles` du module EVM. Cette liste est vide sur le mainnet ;
+sur le testnet, elle contient les précompilés de vérification PQC
+(`0x…0A01`), d'état de clé PQC (`0x…0A02`) et de paramètres de consensus
+(`0x…0C01`) (vérifié le 27 octobre 2026) : la paire IA et le pont cross-VM n'y
+répondent donc toujours rien. Là où un précompilé est inactif, l'appel renvoie
 des données vides ; viem signale donc `returned no data ("0x")` et le helper
-lève une erreur aussi sur les réseaux publics (voir
+lève une erreur (voir
 [Précompilés EVM : statut réseau](/developer-guide/evm-precompiles#network-status)).
 Sur un nœud EVM standard, les appels échouent de la même façon. Consultez
 `GET /cosmos/evm/vm/v1/params` et encapsulez chaque appel de précompilé afin que
@@ -86,14 +90,14 @@ décimales (convention EVM), ce qui est distinct de la base native `uqor` de
 
 ## Quels paquets sont publiés, et où ?
 
-Tous (vérifié le 21 octobre 2026). Le cœur TypeScript (`@qorechain/sdk`, 0.9.0),
-le kit React (`@qorechain/react`, 0.9.0), le générateur `create-qorechain-dapp`
-(0.9.0) et les adaptateurs EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.8.0)
+Tous (vérifié le 27 octobre 2026). Le cœur TypeScript (`@qorechain/sdk`, 0.10.0),
+le kit React (`@qorechain/react`, 0.10.0), le générateur `create-qorechain-dapp`
+(0.10.0) et les adaptateurs EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.8.0)
 sont sur npm ; le client Python est sur PyPI (`pip install qorechain-sdk` en
-version 0.9.0, import `qorsdk`) ; le client Go est sur le proxy de modules
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`) ; le client Rust
-est sur crates.io (`cargo add qorechain-sdk`, 0.9.0) ; et le client Java est sur
-Maven Central (`io.github.qorechain:qorechain-sdk:0.9.1` ; les autres langages sont en 0.9.0). Voir
+version 0.10.0, import `qorsdk`) ; le client Go est sur le proxy de modules
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.10.0`) ; le client Rust
+est sur crates.io (`cargo add qorechain-sdk`, 0.10.0) ; et le client Java est sur
+Maven Central (`io.github.qorechain:qorechain-sdk:0.10.0`). Voir
 [Installation](/sdk/install) pour la liste complète des commandes par
 langage.
 
@@ -115,7 +119,7 @@ du signataire doit être **enregistrée explicitement** avec
 de la signature hybride) ; intégrer la clé publique dans l'extension
 (`includePqcPublicKey: true`) ne l'enregistre **pas**, et la chaîne
 n'enregistre pas de clé à la première utilisation. En TypeScript, donnez la paire
-de clés au client (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) et
+de clés au client (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0 ou ultérieur) et
 chaque transaction qu'il envoie est signée en mode hybride.
 La chaîne accepte toute signature ML-DSA-87 valide selon FIPS-204, hedged ou
 déterministe. Le SDK signe de manière déterministe par défaut (depuis la 0.5.1)
@@ -124,7 +128,7 @@ une tx hybride échoue avec le code `pqc` 21 (`hybrid_verify_failed`), la cause
 est la version des sign-bytes, le chain-id, une bibliothèque PQC obsolète ou une
 clé non enregistrée ou différente, jamais la signature hedged.
 Les deux réseaux vérifient la forme v2 des sign-bytes ; utilisez donc le SDK
-**0.8.1 ou ultérieur** (la 0.9.0 est la version actuelle) et passez `rest` (ou
+**0.8.1 ou ultérieur** (la 0.10.0 est la version actuelle) et passez `rest` (ou
 `signBytesVersion`) : les builders lèvent une erreur sur `qorechain-vladi` /
 `qorechain-diana` sans l'un des deux.
 Voir
@@ -152,23 +156,29 @@ rejetées on-chain, sur toutes les voies (y compris eth-native).
 
 ## Avec quelles versions de chaîne le SDK fonctionne-t-il ?
 
-Le SDK **0.9.0** est la version cliente pour la chaîne v3.2.2 et v3.2.3 : il
-transige sur le mainnet et le testnet **v3.2.4** (mainnet depuis le 23 octobre 2026), et dispose de
-constructeurs pour la preuve de possession facultative à l'enregistrement
+Le SDK **0.10.0** est la version cliente pour la chaîne **v3.2.4** (mainnet depuis
+le 23 octobre 2026 à la hauteur 3,742,566, proposition de gouvernance 13 ; testnet
+depuis le 19 octobre). Il ajoute les constructeurs et lectures de staking tiers,
+`fetchAuthNonce` et les lectures des fonctionnalités de protocole (voir
+[Ce qu'ajoute la 0.10.0](/sdk/install#whats-new-0100)), en plus de ce qu'avait
+ajouté la 0.9.0 pour la v3.2.2 et la v3.2.3 : des constructeurs pour la preuve de
+possession facultative à l'enregistrement
 (jointe automatiquement par `ensurePqcRegistered` une fois que le réseau a
 appliqué la v3.2.3), les fenêtres EVM à portée limitée et les messages de
 consentement EIP-7702. Le SDK **0.8.1 ou ultérieur** transige aussi sur les deux
 réseaux (la forme v2 des sign-bytes hybrides, l'enregistrement, les envois
 hybrides et la fenêtre EVM fonctionnent sans changement), mais n'a aucun de ces
 constructeurs : utilisez la CLI pour ceux-ci (voir
-[Versions antérieures à la 0.9.0](/sdk/install#before-090)). La v3.2.4 s'exécute sur
-le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026 (hauteur 3,742,566, proposition de gouvernance 13) ; le SDK ne définit aucun
-champ de la v3.2.4, de sorte que ses transactions sont valides avant et après la mise à niveau.
+[Versions antérieures à la 0.9.0](/sdk/install#before-090)). Le format de signature
+n'a pas changé dans la v3.2.4. Le testnet exécute la v3.2.6 (la v3.2.5 y a été
+appliquée le 26 octobre 2026 et la v3.2.6 le 27 octobre) ; le SDK n'a aucun
+constructeur pour ce qui a été introduit après la v3.2.4, et les fonctionnalités de
+la prochaine version du mainnet seront documentées le jour où le mainnet l'appliquera.
 
 ## Mon enregistrement de clé PQC a été refusé mais les frais ont été prélevés
 
 Un enregistrement pour un compte qui détient déjà une clé est refusé par la
-chaîne après la déduction des frais. `ensurePqcRegistered` en 0.9.0 lit d'abord
+chaîne après la déduction des frais. `ensurePqcRegistered` en 0.9.0 et ultérieur lit d'abord
 `GET /qorechain/pqc/v1/account/{address}` (passez `rest`), ignore
 l'enregistrement lorsque la clé de cette paire de clés est enregistrée, et lève
 `PqcKeyMismatchError` lorsqu'une autre l'est. Les versions antérieures ne
@@ -181,7 +191,7 @@ clés issues de `derivePqcCanonical` ou de `tx pqc gen-key` conviennent.
 
 Seule la version 0.8.0 du générateur le faisait : elle écrivait des plages
 `^0.3.0` pour `@qorechain/sdk` et `@qorechain/evm`, et une plage caret sur une
-version 0.x reste dans la 0.3. La version 0.9.0 génère sur le SDK actuel ; si
+version 0.x reste dans la 0.3. Les versions 0.9.0 et ultérieures génèrent sur le SDK actuel ; si
 vous avez utilisé la 0.8.0, exécutez `npm i @qorechain/sdk@latest` (et
 `@qorechain/evm@latest`) après la génération.
 
@@ -193,20 +203,20 @@ antérieures, lisez la version installée dans `package.json`.
 
 ## Ma dépense via authenticator est rejetée avec `authenticator_replay`
 
-(Le module `abstractaccount` est désactivé sur les deux réseaux aujourd'hui ;
-une dépense est refusée avec `abstract account module is disabled` avant que
-le moindre nonce ne soit vérifié. Voir
+(Le module `abstractaccount` est désactivé sur le mainnet ; une dépense y est
+refusée avec `abstract account module is disabled` avant que le moindre nonce ne
+soit vérifié. Il est activé sur le testnet. Voir
 [Authenticators et dépense déléguée](/sdk/guides/authenticators). Les
-indications ci-dessous s'appliquent une fois le module activé.)
+indications ci-dessous s'appliquent partout où le module est activé.)
 
 Le nonce est incorrect. `MsgExecuteEVM.nonce` et `MsgExecuteCosmos.nonce` sont
 tous deux la **séquence d'authenticator** de la clé liée pour
 `(account, pubkey)` : un compteur que la chaîne tient par clé liée, qui démarre
 à 0 et est incrémenté à chaque exécution réussie. Ce n'est **pas** le nonce EVM
-du compte, et il n'existe pas encore de requête pour le lire ; suivez-le donc par
-clé liée. Depuis la v3.2.3, la voie EVM signe aussi `evmAuthSignBytesV2`, qui lie
+du compte. Lisez-le avec `fetchAuthNonce` (SDK 0.10.0, chaîne v3.2.4 ou
+ultérieure), ou suivez-le par clé liée sur les versions plus anciennes. Depuis la v3.2.3, la voie EVM signe aussi `evmAuthSignBytesV2`, qui lie
 la limite de gas de l'appel (`resolveEvmAuthDigestVersion` choisit la forme).
-Utilisez le compteur que vous suivez pour cette clé et re-signez.
+Utilisez le compteur que vous lisez (ou suivez) pour cette clé et re-signez.
 
 Les autres échecs d'authenticator se décodent via `decodeTxError` : codes
 `abstractaccount` 5 (`spending_limit_exceeded`), 6 (`session_key_expired`), et 10

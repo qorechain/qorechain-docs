@@ -21,7 +21,7 @@ Die QCAI-Engine (QoreChain AI) arbeitet über drei Schichten hinweg:
 
 Die Konsensebene wird separat in der [PRISM Consensus Engine](/architecture/prism-consensus-engine) dokumentiert. Diese Seite behandelt die Netzwerk- und Anwendungsebene.
 
-:::note Was in den Live-Netzwerken durchgesetzt wird (Mainnet und Testnet v3.2.4)
+:::note Was in den Live-Netzwerken durchgesetzt wird (geprüft am 23. Oktober 2026, Mainnet und Testnet liefen damals beide mit v3.2.4; das Testnet ist inzwischen auf v3.2.6 weitergezogen)
 Zwei Teile von `x/ai` wirken heute auf Transaktionen, sowohl auf der Cosmos-Lane als auch auf der EVM-Lane:
 
 * Ein **Ratenlimit pro Sender**. Das aktuell gültige Limit beträgt **600 Transaktionen pro Minute und Sender** (`max_tx_per_minute`; die EVM-Lane hat ein eigenes optionales Limit, das nicht gesetzt ist, daher gilt derselbe Wert). Die „Minute" wird über ein festes Fenster von Blöcken gezählt, nicht in Echtzeit, weil die Blockhöhe die einzige Uhr ist, die alle Validatoren teilen. Bei einem Sender am Limit werden weitere Transaktionen abgelehnt, bis ältere das Fenster verlassen. Das Limit wird auf der Cosmos-Lane seit v3.2.0 und auf beiden Lanes seit v3.2.2 durchgesetzt.
@@ -177,10 +177,10 @@ Zwei vorkompilierte Verträge stellen EVM-Smart-Contracts On-Chain-KI-Funktionen
 | `aiAnomalyCheck` | `0x0B02` | Gibt ein boolesches Anomalie-Flag und einen Konfidenzscore für eine Transaktion zurück |
 
 :::warning Noch nicht aktiv
-Diese Precompiles sind im Mainnet (`qorechain-vladi`) und im Testnet (`qorechain-diana`) **nicht aktiv**; ein Aufruf liefert leere Daten. Sie werden erst aktiviert, nachdem sie einen schreibgeschützten Scoring-Pfad mit Festkommaarithmetik erhalten haben. Siehe [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
+Diese beiden Precompiles sind im Mainnet (`qorechain-vladi`) und im Testnet (`qorechain-diana`) **nicht aktiv** (geprüft am 27. Oktober 2026); ein Aufruf liefert leere Daten. (Drei weitere QoreChain-Precompiles, das PQC-Paar und die PRISM-Parameter, sind nur im Testnet aktiv.) Sie werden erst aktiviert, nachdem sie einen schreibgeschützten Scoring-Pfad mit Festkommaarithmetik erhalten haben. Siehe [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
 :::
 
-**Wichtig**: EVM-Precompiles verwenden **ausschließlich die deterministische heuristische Engine**. Sie rufen niemals das Sidecar auf und stellen so sicher, dass die gesamte EVM-Ausführung vollständig deterministisch und reproduzierbar bleibt. Seit v3.2.3 analysiert der Anomaly-Check-Precompile eine Transaktion, ohne State zu schreiben; die übrige Härtung der Precompiles in dieser Version (die CrossVM-Bridge lehnt `STATICCALL` ab, rechnet ihren verschachtelten Aufruf auf das Gas des aufrufenden Frames an und erreicht nur QoreChain Native-Ziele auf der Allowlist) greift, sobald der CrossVM-Precompile aktiviert wird. Stand 23. Oktober 2026 ist die Liste `active_static_precompiles` in beiden Netzwerken leer.
+**Wichtig**: EVM-Precompiles verwenden **ausschließlich die deterministische heuristische Engine**. Sie rufen niemals das Sidecar auf und stellen so sicher, dass die gesamte EVM-Ausführung vollständig deterministisch und reproduzierbar bleibt. Seit v3.2.3 analysiert der Anomaly-Check-Precompile eine Transaktion, ohne State zu schreiben; die übrige Härtung der Precompiles in dieser Version (die CrossVM-Bridge lehnt `STATICCALL` ab, rechnet ihren verschachtelten Aufruf auf das Gas des aufrufenden Frames an und erreicht nur QoreChain Native-Ziele auf der Allowlist) greift, sobald der CrossVM-Precompile aktiviert wird. Stand 27. Oktober 2026 ist die Liste `active_static_precompiles` im Mainnet leer; im Testnet enthält sie drei Einträge (PQC Verify `0x…0A01`, PQC Key Status `0x…0A02` und PRISM Consensus Params `0x…0C01`), von denen keiner ein KI-Precompile ist.
 
 ## TEE-Attestierung
 

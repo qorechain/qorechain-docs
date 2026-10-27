@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain; genesis'te kuantum sonrası kriptografi, AI-yerel işlem işleme ve tek bir zincir üzerinde EVM, QoreChain Native (CosmWasm çalışma zamanı) ile SVM programlarını yürüten üçlü VM çalışma zamanıyla inşa edilmiş ilk Katman 1 (Layer 1) blok zinciridir. QoreChain, mevcut bir protokole kuantum direncini sonradan eklemek yerine, modern genel amaçlı bir blok zincirinden beklenen geliştirici deneyimi ve birlikte çalışabilirliği sunarken hem klasik hem de kuantum saldırganlarına karşı güvenli olacak şekilde sıfırdan tasarlanmıştır.
 
-Ana ağ (`qorechain-vladi`, EVM chain ID **9801**) 7 Haziran 2026'dan beri yayında ve zincir sürümü **v3.2.4**'ü çalıştırıyor (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı). Hazırlama (staging) ve entegrasyon testi için paralel olarak bir genel test ağı (`qorechain-diana`, EVM chain ID **9800**, 19 Ekim 2026'dan beri v3.2.4 çalıştırıyor) çalışmaktadır. Yerel token, hesaplar için `qor` ve doğrulayıcılar için `qorvaloper` Bech32 önekleriyle **QOR** (görüntüleme) / **uqor** (taban, 10^6)'dur. Zincir, Cosmos SDK v0.53 üzerine kuruludur.
+Ana ağ (`qorechain-vladi`, EVM chain ID **9801**) 7 Haziran 2026'dan beri yayında ve zincir sürümü **v3.2.4**'ü çalıştırıyor (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı). Hazırlama (staging) ve entegrasyon testi için paralel olarak bir genel test ağı (`qorechain-diana`, EVM chain ID **9800**, 27 Ekim 2026'dan beri v3.2.6 çalıştırıyor) çalışmaktadır. Yerel token, hesaplar için `qor` ve doğrulayıcılar için `qorvaloper` Bech32 önekleriyle **QOR** (görüntüleme) / **uqor** (taban, 10^6)'dur. Zincir, Cosmos SDK v0.53 üzerine kuruludur.
 
 ## Çekirdek Yenilikler
 
@@ -29,7 +29,7 @@ QoreChain, tek bir uzlaşı içinde üç sanal makineyi yerel olarak çalıştı
 * **QoreChain Native** — Tam yaşam döngüsü desteğiyle (örnekleme, yürütme, sorgulama, geçiş) Rust ile yazılmış WebAssembly akıllı sözleşmeleri.
 * **SVM** — 8899 portunda Solana uyumlu bir JSON-RPC sunucusuyla BPF programı dağıtımı ve yürütmesi. Mevcut Solana istemcileri ve araçları kutudan çıktığı gibi çalışır.
 
-VM'ler arası mesajlaşma, üç çalışma zamanının tamamının iletişim kurmasını sağlar: EVM sözleşmeleri precompile aracılığıyla QoreChain Native'ı çağırır (bu precompile etkinleştirildiğinde), QoreChain Native sözleşmeleri özel mesajlar aracılığıyla EVM'i çağırır ve SVM programları asenkron olay tabanlı köprüleme yoluyla katılır. Bugün canlı ağlarda yalnızca EVM çalışma zamanı işlem kabul eder: QoreChain Native kodu yükleme ve örnekleme devre dışıdır, SVM işlem şeridi devre dışıdır, hiçbir EVM precompile'ı etkin değildir ve VM'ler arası çağrı mesajı ana ağda kapalıdır.
+VM'ler arası mesajlaşma, üç çalışma zamanının tamamının iletişim kurmasını sağlar: EVM sözleşmeleri precompile aracılığıyla QoreChain Native'ı çağırır (bu precompile etkinleştirildiğinde), QoreChain Native sözleşmeleri özel mesajlar aracılığıyla EVM'i çağırır ve SVM programları asenkron olay tabanlı köprüleme yoluyla katılır. Bugün canlı ağlarda yalnızca EVM çalışma zamanı işlem kabul eder: QoreChain Native kodu yükleme ve örnekleme devre dışıdır, SVM işlem şeridi devre dışıdır, ana ağda hiçbir EVM precompile'ı etkin değildir (testnet'te üç tanesi etkindir) ve VM'ler arası çağrı mesajı ana ağda kapalıdır.
 
 ### 4. Sabit Üst Sınırlı Emisyonlu Tokenomik
 
@@ -39,7 +39,7 @@ QOR'un **sonlu bir arz yolu** vardır: genesis'te **4,420,000,000 QOR** (4,500,0
 
 ### 5. Zincirler Arası Bağlantı
 
-QoreChain, iki tamamlayıcı protokol aracılığıyla geniş bir blok zinciri ekosistemi grubuna bağlanacak şekilde tasarlanmıştır: yerel IBC ve QoreChain Bridge (QCB). Köprü katmanı **37 zincir yapılandırması (36 harici zincir artı IBC üzerinden ulaşılan Injective)** ve en fazla **8 IBC karşı tarafı** tanımlar. Zincirler arası katman **hiçbir ağda canlı değildir**: 37 zincir yapılandırmasının tamamı `pending` durumundadır ve hiçbir IBC kanalı açık değildir. Aşağıdaki rakamlar hedeflenen kapsamı açıklar.
+QoreChain, iki tamamlayıcı protokol aracılığıyla geniş bir blok zinciri ekosistemi grubuna bağlanacak şekilde tasarlanmıştır: yerel IBC ve QoreChain Bridge (QCB). Köprü katmanı **37 zincir yapılandırması (36 harici zincir artı IBC üzerinden ulaşılan Injective)** ve en fazla **8 IBC karşı tarafı** tanımlar. Zincirler arası katman **hiçbir ağda canlı değildir**: 37 zincir yapılandırmasının tamamı `pending` durumundadır, ana ağda hiçbir IBC kanalı yoktur ve testnet'te bir test zincirine giden tek bir test kanalı vardır. Aşağıdaki rakamlar hedeflenen kapsamı açıklar.
 
 * **En fazla 8 IBC karşı tarafı** — Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon ve Injective. İstemci güncellemeleri, hatalı davranış (misbehaviour) tespiti ve otomatik paket temizleme ile önceden yapılandırılmış aktarıcı (relayer) şablonları.
 * **37 QCB zincir yapılandırması (36 harici zincir artı IBC üzerinden Injective)** — her uç nokta, tür başına adres doğrulaması, yapılandırılabilir onay derinliği, devre kesici hacim sınırları ve PQC imzalı doğrulayıcı doğrulamaları (attestations) içerecek şekilde tasarlanmıştır. Hedeflenen harici zincirler şunlardır:
@@ -63,7 +63,7 @@ Beş hazır profil (**defi, gaming, nft, enterprise, custom**), önceden yapıla
 
 ### 7. Hesap ve Gaz Soyutlama
 
-Üç programlanabilir türe (çoklu imza, sosyal kurtarma, oturum tabanlı) sahip akıllı hesaplar; granüler izinler ve sona erme ile oturum anahtarlarını, hesap başına harcama kurallarını ve denom izin listelerini destekler. Bu, standart hesaplarla imkânsız olan cüzdan UX örüntülerini mümkün kılar: mobil için dApp oturum anahtarları, birinci sınıf bir hesap türü olarak sosyal kurtarma ve programlanabilir harcama limitleri. Akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır, ancak şu anda her iki ağda da **kapalıdır** (`abstractaccount.enabled = false`; `GET /qorechain/abstractaccount/v1/config` adresini kontrol edin). Gaz soyutlama, kullanıcıların ücretleri kabul edilen yerel olmayan bir tokenla ödemesine olanak tanımak üzere tasarlanmıştır (yapılandırma `ibc/USDC` ve `ibc/ATOM` değerlerini listeler); henüz hiçbir IBC kanalı açık değildir, bu nedenle ücretler şu anda QOR ile ödenir.
+Üç programlanabilir türe (çoklu imza, sosyal kurtarma, oturum tabanlı) sahip akıllı hesaplar; granüler izinler ve sona erme ile oturum anahtarlarını, hesap başına harcama kurallarını ve denom izin listelerini destekler. Bu, standart hesaplarla imkânsız olan cüzdan UX örüntülerini mümkün kılar: mobil için dApp oturum anahtarları, birinci sınıf bir hesap türü olarak sosyal kurtarma ve programlanabilir harcama limitleri. Akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır, ancak **ana ağda kapalıdır** (`abstractaccount.enabled = false`) ve testnet'te etkindir (`GET /qorechain/abstractaccount/v1/config` adresini kontrol edin). Gaz soyutlama, kullanıcıların ücretleri kabul edilen yerel olmayan bir tokenla ödemesine olanak tanımak üzere tasarlanmıştır (yapılandırma `ibc/USDC` ve `ibc/ATOM` değerlerini listeler); henüz hiçbir IBC kanalı açık değildir, bu nedenle ücretler şu anda QOR ile ödenir.
 
 ## Ekosistem
 

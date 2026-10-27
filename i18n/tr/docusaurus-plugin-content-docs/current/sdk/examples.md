@@ -64,7 +64,7 @@ Bu örnek yalnızca **klasik** imzayla imzalar; bu nedenle yerel veya geliştirm
 düğümüne karşı çalışır, ancak her Native yol işleminde hibrit imza isteyen
 mainnet ve testnet tarafından reddedilir. Herkese açık ağlar için hesabın
 anahtar çiftiyle bağlanın: `client.connectTx(signer, { pqcKeypair })`
-(SDK 0.9.0), [Hızlı Başlangıç](/sdk/quickstart#send-qor) sayfasındaki gibi.
+(SDK 0.9.0 veya sonrası), [Hızlı Başlangıç](/sdk/quickstart#send-qor) sayfasındaki gibi.
 
 ```ts
 import {
@@ -125,9 +125,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 Salt okunur QoreChain precompile'larını çağırmak ve bir ERC-20 bakiyesini
 okumak için `@qorechain/evm` paketini (viem üzerinde ince bir katman) kullanın.
 EVM zincir kimliği `eth_chainId` aracılığıyla otomatik olarak algılanır.
-Precompile'lar henüz mainnet veya testnet'te etkin değildir
+Precompile'lar mainnet'te etkin değildir ve testnet'te yalnızca PQC doğrulama,
+PQC anahtar durumu ve konsensüs parametreleri precompile'ları etkindir
 ([Ağ durumu](/developer-guide/evm-precompiles#network-status) bölümüne bakın);
-etkinleşene kadar ve precompile'ların bulunmadığı bir düğümde bu çağrılar, her
+bir precompile'ın etkin olmadığı yerde ve precompile'ların bulunmadığı bir düğümde bu çağrılar, her
 çağrı için ayrı ayrı raporlanan "feature not present" hatası fırlatır.
 
 ```ts
@@ -263,7 +264,7 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 
 Native authenticator hattında, relayer tarafından gönderilen bir
 `MsgExecuteCosmos` oluşturun (SDK 0.7.0, zincir v3.1.85; `abstractaccount`
-modülü bugün her iki ağda da kapalıdır, bu nedenle bu hat orada henüz
+modülü mainnet'te kapalı, testnet'te etkindir, bu nedenle bu hat mainnet'te henüz
 kullanılamaz): Phantom tarzı bir
 ed25519 anahtarı, alan ayrımlı (domain-separated) kimlik doğrulama özetini
 imzalar ve ortaya çıkan mesaj, bir relayer'ın yayınlamasına hazır hale gelir

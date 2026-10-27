@@ -14,10 +14,10 @@ QoreChain의 **트리플 VM 아키텍처**(EVM, QoreChain Native, SVM)는 어떤
 
 * `MsgCrossVMCall`은 서킷 브레이커에 의해 **메인넷에서 꺼져 있으며**(`qorechaind query circuit disabled-list`), 테스트넷에서는 활성화되어 있습니다.
 * **SVM 레인은 두 네트워크 모두에서 트랜잭션에 대해 비활성화**되어 있으므로 SVM 구간은 실행될 수 없습니다.
-* **QoreChain Native 업로드와 인스턴스화는 두 네트워크 모두에서 허가제**이고 메인넷에는 저장된 컨트랙트 코드가 없으므로, 아직 호출할 QoreChain Native 컨트랙트가 없습니다.
-* 동기식 **EVM 프리컴파일은 활성화되어 있지 않습니다**(아래 참조). 강화된 버전이 v3.2.3부터 바이너리에 들어 있지만, 어느 네트워크에서도 프리컴파일은 활성화되어 있지 않으며, v3.2.4(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터)도 이를 바꾸지 않습니다.
+* **QoreChain Native 업로드는 두 네트워크 모두에서 허가제**이고 **인스턴스화는 메인넷에서 허가제**이며 메인넷에는 저장된 컨트랙트 코드가 없으므로, 메인넷에는 아직 호출할 QoreChain Native 컨트랙트가 없습니다. 테스트넷에서는 거버넌스가 어떤 계정이든 인스턴스화할 수 있는 검토된 컨트랙트 몇 개를 저장했으므로([QoreChain Native 개발](/developer-guide/cosmwasm-development) 참조) 그곳에는 QoreChain Native 대상이 존재할 수 있습니다.
+* 동기식 **EVM 프리컴파일은 활성화되어 있지 않습니다**(아래 참조). 강화된 버전이 v3.2.3부터 바이너리에 들어 있지만, CrossVM 프리컴파일은 어느 네트워크에서도 활성화되어 있지 않습니다. (2026년 10월 27일 테스트넷 거버넌스가 다른 프리컴파일 세 개, 즉 PQC Verify, PQC Key Status, PRISM Consensus Params를 활성화했으며, 메인넷에서 활성화된 것은 없습니다. v3.2.4는 어떤 프리컴파일이 활성화되어 있는지를 바꾸지 않습니다.)
 
-이 모듈의 REST 경로(`/qorechain/crossvm/v1/...`)는 공개 게이트웨이에서 제공되지 않습니다. CLI 또는 gRPC/ABCI 조회 클라이언트로 메시지를 읽으세요.
+메인넷에서는 이 모듈의 REST 경로(`/qorechain/crossvm/v1/...`)가 공개 게이트웨이에서 제공되지 않습니다(`501`). CLI 또는 gRPC/ABCI 조회 클라이언트로 메시지를 읽으세요.
 :::
 
 :::note
@@ -88,7 +88,7 @@ contract CrossVMCaller {
 
 이것은 노드가 디코딩하는 레이아웃이며 `@qorechain/rdk` 인코더가 만드는 레이아웃과 같고, 위의 컨트랙트는 [Multi-VM](/rollups/multi-vm)의 스타터와 일치합니다. 프리컴파일을 통해서는 자금을 첨부할 수 없습니다(`MsgCrossVMCall` 메시지 경로는 `--funds`를 받습니다). 프리컴파일이 활성화되어 있지 않으므로(위 경고 참조) 이 샘플은 현재 어느 네트워크에서도 아무것도 할 수 없으며, ABI는 활성화 전에 변경될 수 있습니다.
 
-활성화되면 프리컴파일은 QoreChain Native 컨트랙트를 즉시 실행하고 결과를 반환합니다. (`@qorechain/rdk` 0.6.0 헬퍼 `encodeCrossVmCalldata`가 calldata를 만듭니다. [Multi-VM](/rollups/multi-vm) 참조.) 가스 비용: **기본 50,000 + 입력 바이트당 4 + 실행 비용**.
+활성화되면 프리컴파일은 QoreChain Native 컨트랙트를 즉시 실행하고 결과를 반환합니다. (`@qorechain/rdk` 헬퍼 `encodeCrossVmCalldata`(0.6.0부터 제공되며 현재 0.6.1에 있음)가 calldata를 만듭니다. [Multi-VM](/rollups/multi-vm) 참조.) 가스 비용: **기본 50,000 + 입력 바이트당 4 + 실행 비용**.
 
 ---
 
@@ -108,7 +108,7 @@ qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
 기타 플래그: `--funds <coins>`(QoreChain Native 대상에만 해당)와, 호출을 즉시 실행하는 대신 큐에 넣는 `--async`. `tx.json`은 `tx pqc cosign`으로 서명하고 브로드캐스트하세요([양자내성 서명](/developer-guide/post-quantum-signing) 참조). 수수료 하한은 가스당 0.1 uqor입니다. 호출자 자신의 레인으로 향하는 호출은 거부됩니다(v3.2.3부터).
 
 :::caution 메인넷에서 비활성화됨
-`MsgCrossVMCall`은 서킷 브레이커에 의해 메인넷에서 꺼져 있으므로, 이 명령은 현재 그곳에서 성공할 수 없습니다. (v3.2.3 이전 릴리스 바이너리는 소스 VM이 비어 있어 메시지 자체의 검증에 실패하는 메시지도 만들었으며, v3.2.3 바이너리에서 이 문제가 수정되었습니다.) 테스트넷에서는 메시지가 활성화되어 있지만 QoreChain Native와 SVM 대상은 사용할 수 없으므로(위 참조), EVM 대상에만 도달할 수 있습니다.
+`MsgCrossVMCall`은 서킷 브레이커에 의해 메인넷에서 꺼져 있으므로, 이 명령은 현재 그곳에서 성공할 수 없습니다. (v3.2.3 이전 릴리스 바이너리는 소스 VM이 비어 있어 메시지 자체의 검증에 실패하는 메시지도 만들었으며, v3.2.3 바이너리에서 이 문제가 수정되었습니다.) 테스트넷에서는 메시지가 활성화되어 있지만 SVM 레인이 비활성화되어 있으므로 SVM 대상에는 도달할 수 없습니다. EVM 대상과, 컨트랙트가 인스턴스화된 뒤의 QoreChain Native 대상에는 도달할 수 있습니다.
 :::
 
 ---

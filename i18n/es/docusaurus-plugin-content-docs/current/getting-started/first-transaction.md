@@ -10,7 +10,7 @@ sidebar_position: 5
 Esta guía explica cómo enviar tokens QOR, consultar transacciones e interactuar con QoreChain a través de sus interfaces nativa, EVM y SVM.
 
 :::note
-Los comandos siguientes usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está en vivo desde el 7 de junio de 2026 y ejecuta la versión v3.2.4 desde el 23 de octubre de 2026 (la testnet ejecuta v3.2.4 desde el 19 de octubre de 2026) — sustituye el chain ID y los endpoints de mainnet indicados en la página **Conexión a Mainnet** al operar en mainnet.
+Los comandos siguientes usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está en vivo desde el 7 de junio de 2026 y ejecuta la versión v3.2.4 desde el 23 de octubre de 2026 (la testnet ejecuta v3.2.6 desde el 27 de octubre de 2026) — sustituye el chain ID y los endpoints de mainnet indicados en la página **Conexión a Mainnet** al operar en mainnet.
 :::
 
 ## Consultar tu Saldo
@@ -139,7 +139,7 @@ Todo lo demás de la vía EVM permanece igual: sigues firmando con MetaMask, eth
 | `max-txs` | Cuántas transacciones EVM admite | 1 – 1.000 |
 | `max-value` | Salida total que admite, en uqor: valor transferido **más** la comisión máxima que podría pagar cada transacción (límite de gas × tope de comisión), redondeado hacia arriba | mayor que 0 |
 
-* 17.280 bloques son unas 15 horas en mainnet (unos 3,2 s por bloque) y unas 5 horas en la testnet (aproximadamente 1,0 s por bloque).
+* 17.280 bloques son unas 15 horas en mainnet (unos 3,2 s por bloque) y unas 6 horas en la testnet (aproximadamente 1,3 s por bloque).
 * Una transacción que se admite y luego falla consume igualmente su hueco y su presupuesto de valor.
 * Abrir una nueva ventana **reemplaza** a la anterior; el consumo vuelve a empezar desde cero.
 * La CLI acepta `max-value` en `uqor` o `qor` (`1000qor` = 1.000.000.000 uqor).

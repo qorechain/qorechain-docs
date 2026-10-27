@@ -10,7 +10,7 @@ sidebar_position: 4
 Treten Sie dem laufenden QoreChain-Diana-Testnet bei, indem Sie Ihren Node mit der korrekten Genesis-Datei, den richtigen Peers und Netzwerkeinstellungen konfigurieren.
 
 :::note
-Diese Seite behandelt das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live (Release **v3.2.4** seit dem 23. Oktober 2026) und hat eine eigene Seite **Verbindung zum Mainnet** mit separater Genesis, eigenen Peers und Verbindungsdetails. Das Testnet läuft seit dem 19. Oktober 2026 mit **v3.2.4**; sein Release-Manifest finden Sie unter [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Diese Seite behandelt das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live (Release **v3.2.4** seit dem 23. Oktober 2026) und hat eine eigene Seite **Verbindung zum Mainnet** mit separater Genesis, eigenen Peers und Verbindungsdetails. Das Testnet läuft mit **v3.2.6** (am 27. Oktober 2026 angewendet); sein Release-Manifest finden Sie unter [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Öffentliche Endpunkte
@@ -26,7 +26,7 @@ Wenn Sie lediglich **das Testnet abfragen oder Transaktionen broadcasten** möch
 | SVM JSON-RPC (nur lesend) | `https://svm-testnet.qore.host` |
 | Block-Explorer | [explore.qore.network](https://explore.qore.network) (auf Testnet umschalten) |
 
-Testnet-QOR erhalten Sie über den [Dashboard-Faucet](/dashboard/faucet).
+Testnet-QOR erhalten Sie über den [Dashboard-Faucet](/dashboard/faucet), der auch die reinen Testnet-[Fest-Testtoken](/dashboard/faucet#fest-tokens) (fUSD, fETH, fBTC; ohne Wert) senden kann.
 
 ---
 
@@ -52,7 +52,17 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-Das Testnet erhält koordinierte Upgrades über Governance-Vorschläge, daher enthält sein Manifest eine `upgradeHeight` (v3.2.4 wurde am 19. Oktober 2026 bei Höhe 8.337.253 angewendet; davor v3.2.3 bei 8.003.746 und v3.2.2 bei 6.905.034), und `minCompatible` entspricht der aktuellen Version (3.2.4). Ein Node, der jetzt beitritt, benötigt das im Manifest genannte Release. Halten Sie die Systemuhr per NTP synchronisiert. Das Mainnet hat v3.2.4 am 23. Oktober 2026 bei Höhe 3.742.566 angewendet, doch sein Manifest ist ein separates; kopieren Sie daher niemals ein Binary von einem Netzwerk ins andere.
+Das Testnet erhält koordinierte Upgrades über Governance-Vorschläge, daher enthält sein Manifest eine `upgradeHeight`, und `minCompatible` entspricht der aktuellen Version. Ein Node, der jetzt beitritt, benötigt das im Manifest genannte Release. Zum Zeitpunkt der Erstellung (27. Oktober 2026) lautet das Testnet-Manifest `version` 3.2.6, `minCompatible` 3.2.6 und `upgradeHeight` 8970638, und sein Hinweis lautet „IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens". Halten Sie die Systemuhr per NTP synchronisiert.
+
+| Release | Testnet-Höhe | Angewendet am |
+| --- | --- | --- |
+| v3.2.2 | 6.905.034 | 2. Oktober 2026 |
+| v3.2.3 | 8.003.746 | 15. Oktober 2026 |
+| v3.2.4 | 8.337.253 | 19. Oktober 2026 |
+| v3.2.5 | 8.890.800 | 26. Oktober 2026 |
+| v3.2.6 | 8.970.638 | 27. Oktober 2026 (16:58 UTC) |
+
+Das Testnet übernimmt jedes Release vor dem Mainnet. Das Mainnet hat v3.2.4 am 23. Oktober 2026 bei Höhe 3.742.566 angewendet; der Mainnet-Governance-Vorschlag 14 würde v3.2.5 bei Höhe 3.906.833 anwenden und befand sich zum Zeitpunkt der Erstellung in seinem Abstimmungszeitraum. Die Manifeste sind getrennt; kopieren Sie daher niemals ein Binary von einem Netzwerk ins andere, und erwarten Sie nicht, dass das Mainnet eine Funktion akzeptiert, die es nur im Testnet gibt (die Ergänzungen von v3.2.6 sind in der [Versionshistorie](/appendix/version-history#testnet-v326) aufgeführt).
 
 ---
 
@@ -106,7 +116,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### Empfohlene Einstellungen
 
-Ein Full Node bestimmt die Blockzeit nicht selbst — das tun die Validatoren (das Testnet erzeugt derzeit etwa jede Sekunde einen Block). Belassen Sie die Konsens-Timeouts bei ihren Standardwerten, es sei denn, Sie betreiben einen Validator und haben von der Validator-Gruppe Werte erhalten. Eine nützliche Mempool-Einstellung für einen öffentlichen RPC-Node, in der `config.toml`:
+Ein Full Node bestimmt die Blockzeit nicht selbst — das tun die Validatoren (das Testnet erzeugt derzeit etwa alle 1,3 Sekunden einen Block). Belassen Sie die Konsens-Timeouts bei ihren Standardwerten, es sei denn, Sie betreiben einen Validator und haben von der Validator-Gruppe Werte erhalten. Eine nützliche Mempool-Einstellung für einen öffentlichen RPC-Node, in der `config.toml`:
 
 ```toml
 [mempool]

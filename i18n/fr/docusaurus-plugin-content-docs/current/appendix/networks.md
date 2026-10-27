@@ -17,14 +17,15 @@ Une référence consolidée pour les réseaux QoreChain — identifiants de cha�
 | **ID de chaîne Cosmos** | `qorechain-vladi` | `qorechain-diana` |
 | **ID de chaîne EVM (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **En production depuis** | 7 juin 2026 | 1er juillet 2026 (en continu depuis ; sans réinitialisation) |
-| **Version de la chaîne** | v3.2.4 (appliquée à la hauteur 3 742 566, le 23 octobre 2026, proposition de gouvernance 13). La v3.2.3 a été appliquée à la hauteur 3 662 051 le 20 octobre 2026 | v3.2.4 (appliquée à la hauteur 8 337 253, le 19 octobre 2026) |
-| **Temps de bloc (moyenne mesurée)** | environ 3,2 s | environ 1,0 s |
+| **Version de la chaîne** | v3.2.4 (appliquée à la hauteur 3 742 566, le 23 octobre 2026, proposition de gouvernance 13). La v3.2.3 a été appliquée à la hauteur 3 662 051 le 20 octobre 2026 | v3.2.6 (appliquée à la hauteur 8 970 638, le 27 octobre 2026 ; la v3.2.5 a été appliquée à la hauteur 8 890 800 le 26 octobre et la v3.2.4 à 8 337 253 le 19 octobre) |
+| **Temps de bloc (moyenne mesurée)** | environ 3,2 s | environ 1,3 s |
 | **Manifeste de version** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Prix de gaz minimum** | `0.1uqor` | `0.1uqor` |
+| **Jetons de test** | Aucun | Jetons Fest fUSD, fETH et fBTC (sans valeur ; voir [Faucet](/dashboard/faucet#fest-tokens)) |
 | **Guide de connexion** | [Se connecter au Mainnet](/getting-started/connecting-to-mainnet) | [Se connecter au Testnet](/getting-started/connecting-to-testnet) |
 
-Les deux manifestes font foi pour la version qu'un nouveau nœud doit exécuter. Les deux réseaux reçoivent des mises à niveau coordonnées via la gouvernance ; chaque manifeste comporte donc le `upgradeHeight` de sa version actuelle et un `minCompatible` égal à cette version (3.2.4 sur les deux réseaux, vérifié le 23 octobre 2026). Le testnet exécute la v3.2.4 depuis le 19 octobre 2026 et le mainnet depuis le 23 octobre 2026.
+Les deux manifestes font foi pour la version qu'un nouveau nœud doit exécuter. Les deux réseaux reçoivent des mises à niveau coordonnées via la gouvernance ; chaque manifeste comporte donc le `upgradeHeight` de sa version actuelle et un `minCompatible` égal à cette version (3.2.4 sur le mainnet et 3.2.6 sur le testnet, vérifié le 27 octobre 2026). Le testnet reçoit chaque version en premier : le mainnet exécute la v3.2.4 depuis le 23 octobre 2026, et la proposition de gouvernance 14 appliquerait la v3.2.5 sur le mainnet à la hauteur 3 906 833 (en période de vote au moment de la rédaction), un nœud qui rejoint le mainnet doit donc continuer à suivre son propre manifeste. Ne copiez jamais un binaire d'un réseau à l'autre.
 
 ## Points de terminaison publics {#public-endpoints}
 

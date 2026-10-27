@@ -7,13 +7,13 @@ sidebar_position: 2
 
 # Explorer
 
-L'**Explorer** est la fenêtre du Dashboard sur la chaîne. Utilisez-le pour rechercher des blocs, des transactions, des adresses et des validateurs, et pour observer l'activité du réseau en temps réel. L'Explorer est en lecture seule — aucune connexion de portefeuille n'est nécessaire pour le parcourir. Dans le Dashboard, consulter le mainnet exige d'être connecté ; le même Explorer est aussi disponible sans aucun compte sur [explore.qore.network](https://explore.qore.network).
+L'**Explorer** est la fenêtre du Dashboard sur la chaîne. Utilisez-le pour rechercher des blocs, des transactions, des adresses et des validateurs, et pour observer l'activité du réseau en temps réel. L'Explorer est en lecture seule — aucune connexion de portefeuille n'est nécessaire pour le parcourir. Dans le Dashboard, consulter le mainnet exige d'être connecté ; un explorateur public distinct, qui ne nécessite aucun compte, est disponible sur [explore.qore.network](https://explore.qore.network) (c'est une application différente, avec son propre sélecteur Mainnet/Testnet).
 
 ## La page de présentation
 
 Ouvrez l'**Explorer** depuis le Dashboard pour voir un instantané en direct du réseau :
 
-- **État du réseau** — ID de la chaîne, état actuel et indicateur de résistance quantique.
+- **État du réseau** — ID de la chaîne, état actuel et pastille d'état de sécurité.
 - **Activité des blocs** — la hauteur du dernier bloc, le temps moyen entre blocs et les blocs produits aujourd'hui.
 - **Offre** — total de QOR mis en jeu (bonded), le ratio de mise en jeu et l'offre en circulation.
 - **Statistiques principales** — total des transactions, validateurs actifs et totaux, et total des adresses.
@@ -34,9 +34,16 @@ La zone de recherche en haut de l'Explorer accepte l'un quelconque des élément
 
 Une page de transaction affiche son hash, son statut, son montant, l'expéditeur et le destinataire (tous deux cliquables), les frais, la hauteur du bloc, le type de transaction et le mémo s'il est présent. Vous pouvez copier le hash et basculer vers une vue brute de la transaction complète pour une inspection plus approfondie.
 
+La page indique aussi ce qui a protégé la transaction, et elle n'avance une affirmation que si la chaîne la confirme :
+
+* **PQC Verified.** Une transaction de la voie native n'affiche cette carte que si elle a réussi **et** si la chaîne elle-même a vérifié sa signature hybride, y compris la partie ML-DSA-87 (la chaîne enregistre un événement de vérification pour elle). Une transaction échouée, ou sans signature hybride vérifiée, affiche à la place une sécurité standard ; l'Explorer ne suppose pas qu'une signature est post-quantique.
+* **Autorisée par une fenêtre PQC.** Une transaction envoyée depuis un portefeuille EVM porte une signature secp256k1 ordinaire ; elle n'est donc jamais étiquetée « PQC Verified ». Si l'expéditeur avait une [fenêtre d'autorisation EVM](/developer-guide/evm-development#evm-window) ouverte au moment de l'envoi, la page indique qu'elle a été **autorisée par une fenêtre PQC** et affiche un lien **Window opened by** vers la transaction signée en post-quantique qui a ouvert la fenêtre. Cela s'applique à partir des hauteurs d'activation de la fonctionnalité de fenêtre (testnet 5,920,000 ; mainnet 2,981,742).
+
+Ces libellés sont propres à l'Explorer du Dashboard sur dashboard.qorechain.io/explorer. L'explorateur distinct sur explore.qore.network est une application différente et n'applique pas ces règles.
+
 ## Détails d'un bloc
 
-Une page de bloc affiche sa hauteur, son horodatage, son proposant, son hash, son nombre de transactions, le gas utilisé et la liste des transactions qu'il contient, ainsi que des informations sur le consensus et la signature post-quantique. Les commandes Précédent et Suivant vous permettent de parcourir la chaîne bloc par bloc.
+Une page de bloc affiche sa hauteur, son horodatage, son proposant, son hash, son nombre de transactions, le gas utilisé et la liste des transactions qu'il contient, ainsi que son nombre de signatures. Les blocs ne portent aucun libellé post-quantique : ils sont signés par les clés de consensus des validateurs, et la protection post-quantique est indiquée par transaction, pas par bloc. Les commandes Précédent et Suivant vous permettent de parcourir la chaîne bloc par bloc.
 
 ## Détails d'une adresse
 

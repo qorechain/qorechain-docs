@@ -10,7 +10,7 @@ sidebar_position: 9
 Esta guía cubre cómo crear un validador en la red QoreChain, entender el diseño de clasificación de pools, registrar una clave PQC para seguridad resistente a la computación cuántica, y monitorear tu nodo.
 
 :::note
-Esta guía está orientada a la mainnet **`qorechain-vladi`** (chain ID EVM **9801**), activa desde el 7 de junio de 2026 y ejecutando la versión de nodo **v3.2.4** (aplicada por la propuesta de gobernanza 13 en la altura 3,742,566 el 23 de octubre de 2026, tras v3.2.3 en la altura 3,662,051 el 20 de octubre de 2026). Un validador debe ejecutar el binario v3.2.4; consulta [Ejecutar un Nodo: Actualizaciones](/developer-guide/running-a-node#upgrades). Se recomienda la testnet **`qorechain-diana`** (chain ID EVM **9800**, ejecutando v3.2.4 desde el 19 de octubre de 2026) para ensayar tu configuración antes de pasar a producción. Sustituye el `--chain-id` adecuado según tu red objetivo. Los tiempos de bloque difieren: unos 3.2 s en la mainnet y unos 1.0 s en la testnet, así que convierte los recuentos de bloques a tiempo según cada red.
+Esta guía está orientada a la mainnet **`qorechain-vladi`** (chain ID EVM **9801**), activa desde el 7 de junio de 2026 y ejecutando la versión de nodo **v3.2.4** (aplicada por la propuesta de gobernanza 13 en la altura 3,742,566 el 23 de octubre de 2026, tras v3.2.3 en la altura 3,662,051 el 20 de octubre de 2026). En el momento de redactar esto, un validador debe ejecutar el binario v3.2.4; la propuesta de gobernanza 14 de la mainnet aplicaría v3.2.5 en la altura 3,906,833, y entonces el manifiesto indica el binario que hay que instalar (consulta [Ejecutar un Nodo: Actualizaciones](/developer-guide/running-a-node#upgrades)). La testnet **`qorechain-diana`** (chain ID EVM **9800**) ejecuta v3.2.6 (aplicada el 27 de octubre de 2026, tras v3.2.5 el 26 de octubre) y se recomienda para ensayar tu configuración antes de pasar a producción. Sustituye el `--chain-id` adecuado según tu red objetivo. Los tiempos de bloque difieren: unos 3.2 s en la mainnet y unos 1.3 s en la testnet (27 de octubre de 2026; varía), así que convierte los recuentos de bloques a tiempo según cada red.
 :::
 
 :::caution Usa el binario de release, no una compilación desde el código fuente
@@ -358,7 +358,7 @@ El mínimo de comisión de la red es de 0.1 uqor por unidad de gas. Una cuenta d
 ## Validar Redes Conectadas {#connected-networks}
 
 :::caution Ninguna red conectada está activa todavía
-El módulo del bridge está desplegado en mainnet y testnet, pero **ninguna ruta del bridge está activa**: las 37 configuraciones de cadena están en estado `pending`, no hay validadores del bridge registrados, nunca se ha creado ninguna operación del bridge y no existen canales IBC. El framework de abajo describe el diseño; hoy no hay nada que validar en una red conectada.
+El módulo del bridge está desplegado en mainnet y testnet, pero **ninguna ruta del bridge está activa**: las 37 configuraciones de cadena están en estado `pending`, no hay validadores del bridge registrados, nunca se ha creado ninguna operación del bridge y no hay ningún canal IBC abierto en mainnet (la testnet tiene un canal de transferencia, que no es una ruta del bridge). El framework de abajo describe el diseño; hoy no hay nada que validar en una red conectada.
 :::
 
 El diseño (desde la versión de cadena **v3.1.80**) permite que un validador de QoreChain también ayude a validar las redes conectadas a través del [bridge](/architecture/bridge-architecture). Es **opt-in y está sujeto a licencia**:

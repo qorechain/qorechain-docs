@@ -10,11 +10,11 @@ sidebar_position: 5
 Bu kılavuz, QoreChain ile diğer blokzincir ağları arasında varlık taşımanın nasıl çalışacak şekilde tasarlandığını açıklar. QoreChain'in birlikte çalışabilirlik katmanı, **37 zincir yapılandırması** (36 harici zincir ve IBC üzerinden erişilen Injective) ile Cosmos ekosistemi zincirleri için en fazla **8 IBC karşı tarafı** etrafında inşa edilmiştir.
 
 :::caution Hiçbir ağda canlı değil
-Köprü modülü mainnet ve testnet'te dağıtılmıştır, ancak **hiçbir köprü rotası aktif değildir**: 37 zincir yapılandırmasının tamamı köprü sözleşmesi ayarlanmamış `pending` durumundadır, kayıtlı köprü doğrulayıcısı yoktur, bugüne kadar hiçbir köprü işlemi oluşturulmamıştır ve hiçbir IBC kanalı ya da istemcisi mevcut değildir. Aşağıdakilerin tümü amaçlanan tasarımı anlatır. Varlıkların köprüleneceğini umarak varlık göndermeyin. Güncel durum tablosu için [Bridge Architecture](/architecture/bridge-architecture) bölümüne bakın.
+Köprü modülü mainnet ve testnet'te dağıtılmıştır, ancak **hiçbir köprü rotası aktif değildir**: 37 zincir yapılandırmasının tamamı köprü sözleşmesi ayarlanmamış `pending` durumundadır, kayıtlı köprü doğrulayıcısı yoktur, bugüne kadar hiçbir köprü işlemi oluşturulmamıştır ve mainnet'te hiçbir IBC kanalı mevcut değildir (testnet'te, kimliği `provider` olan bir zincire giden tek bir ICS-20 test kanalı vardır; aşağıda adı geçen karşı taraflara giden kanal yoktur). Aşağıdakilerin tümü amaçlanan tasarımı anlatır. Varlıkların köprüleneceğini umarak varlık göndermeyin. Güncel durum tablosu için [Bridge Architecture](/architecture/bridge-architecture) bölümüne bakın.
 :::
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**, zincir sürümü **v3.2.4**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 23 Ekim 2026'dan beri **v3.2.4** zincir sürümünü çalıştırır. Bir rota etkinleştirildiğinde **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın. Durum 23 Ekim 2026'da kontrol edildi: her iki ağda da 37 zincir yapılandırmasının tamamı `pending` durumundadır.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**, zincir sürümü **v3.2.6**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 23 Ekim 2026'dan beri **v3.2.4** zincir sürümünü çalıştırır. Bir rota etkinleştirildiğinde **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın. Durum 27 Ekim 2026'da kontrol edildi: her iki ağda da 37 zincir yapılandırmasının tamamı `pending` durumundadır.
 :::
 
 ---
@@ -34,7 +34,17 @@ Her zincir yapılandırmasının eksiksiz bir listesi **Bridge Architecture** sa
 
 ## IBC
 
-IBC tasarımın bir parçasıdır (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), ancak **hiçbir ağda henüz IBC kanalı veya istemcisi yoktur**; dolayısıyla üzerinden transfer yapılabilecek bir şey yoktur. Kanallar açıldığında bu sayfada listelenecektir.
+IBC tasarımın bir parçasıdır (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), ancak **bu karşı tarafların hiçbiri henüz bağlı değildir**: mainnet'te IBC kanalı veya istemcisi yoktur ve testnet'te yalnızca kimliği `provider` olan bir zincire giden tek bir ICS-20 test kanalı vardır (27 Ekim 2026'da kontrol edildi); dolayısıyla bu zincirler için üzerinden transfer yapılabilecek bir şey yoktur. Kanallar açıldığında bu sayfada listelenecektir.
+
+### Testnet'teki IBC eklemeleri (v3.2.6) {#ibc-testnet-v326}
+
+Üç IBC özelliği yalnızca testnet'te vardır; mainnet'te yoktur (`/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` rotası 501 yanıtı verir):
+
+* **IBC hız sınırı.** Yönetişim, IBC transferleri için kanal başına bir kota belirleyebilir (saat cinsinden bir pencere başına arzın tam sayı yüzdesi). Bu **otomatik değildir**: bugün hiçbir sınır ayarlı değildir ve boş küme sınırsız anlamına gelir. İletilen bir paket her iki kanalda da ücretlendirilir ve bir iade kotayı geri verir. Bu, [Güvenlik Modeli](#security-model) altında anlatılan köprü devre kesicilerinden ayrıdır.
+* **Paket iletme (forwarding).** IBC v1 üzerinden gelen bir transfer, başka bir zincire gönderilmek üzere `\{"forward":\{"receiver":"...","port":"transfer","channel":"channel-N"\}\}` biçiminde bir memo taşıyabilir; bir atlama başarısız olursa göndericiye iade yapılır. Yeniden deneme yoktur ve bir atlama varsayılan olarak 10 dakika sonra zaman aşımına uğrar. Varışta ERC-20'ye dönüşen bir token iletilemez.
+* **08-wasm hafif istemcileri.** Bir wasm hafif istemci ikilisini saklamak, taşımak ve kaldırmak yalnızca yetkili makama aittir ve izin verilen istemci türleri, yönetişim `08-wasm` ekleyene kadar yalnızca standart istemciyi içerir.
+
+Sınırları testnet'te `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` ile okuyun (bugün `\{"rate_limits":[]\}`).
 
 ---
 
@@ -106,7 +116,7 @@ Her yerel şerit işlemi, hibrit kuantum sonrası ortak imzayı ve gaz birimi ba
 
 ---
 
-## Güvenlik Modeli
+## Güvenlik Modeli {#security-model}
 
 QoreChain Bridge'in birden fazla savunma katmanıyla güvence altına alınması tasarlanmıştır:
 
@@ -114,7 +124,7 @@ QoreChain Bridge'in birden fazla savunma katmanıyla güvence altına alınması
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **7'de 10 PQC Multisig**     | Her köprü işlemi, her biri kuantum sonrası kriptografik imzalar kullanan 10 köprü doğrulayıcısından en az 7'sinin onayını gerektirir.                  |
 | **24 Saatlik İtiraz Süresi** | Büyük transfer eşiğini (100,000 QOR) aşan transferler, doğrulayıcıların veya gözlemcilerin hileli işlemleri işaretleyebileceği 24 saatlik bir itiraz penceresine girer. |
-| **Devre Kesiciler**          | Otomatik hız sınırlayıcılar, anormal hacim veya şüpheli desenler tespit edilirse köprü işlemlerini durdurur. Köprü işlemleri manuel inceleme sonrasında devam eder. |
+| **Devre Kesiciler**          | QCB köprüsü için tasarlanmıştır: otomatik sınırlayıcılar, anormal hacim veya şüpheli desenler tespit edilirse köprü işlemlerini durdurur ve işlemler manuel inceleme sonrasında devam eder. QCB köprüsü için geçerlidir, IBC için değil; IBC hız sınırı (yalnızca testnet) yönetişim tarafından belirlenir, otomatik değildir ve bugün hiçbir sınır ayarlı değildir. |
 
 ---
 

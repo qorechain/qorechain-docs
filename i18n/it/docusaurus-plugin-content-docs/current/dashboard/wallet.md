@@ -226,7 +226,7 @@ Gli endpoint pubblici sono `rpc.qore.host` (RPC Native), `api.qore.host` (REST),
 La scheda **SVM wallets** ti permette anche di collegare una chiave Phantom al tuo account come **firmatario collegato** — un autenticatore revocabile e limitato nel tempo (30 giorni), non una connessione wallet primaria separata come QoreX, Keplr o MetaMask. Seleziona **Connect Phantom**, poi **Register authenticator**; il tuo wallet esistente firma la registrazione, e Phantom non diventa mai una propria identità.
 
 :::caution La registrazione dei firmatari collegati è attualmente disattivata sulla chain
-Le funzionalità di smart account e di wallet collegati della chain sono implementate ma disattivate su entrambe le reti (`abstractaccount.enabled = false`; controlla `GET /qorechain/abstractaccount/v1/config`), e la chain rifiuta le nuove registrazioni di firmatari collegati finché è così. Considera per ora la scheda un'anteprima e non aspettarti che una registrazione vada a buon fine.
+Le funzionalità di smart account e di wallet collegati della chain sono implementate ma disattivate sulla mainnet e attivate sulla testnet (`abstractaccount.enabled` è `false` sulla mainnet; controlla `GET /qorechain/abstractaccount/v1/config`), e la chain della mainnet rifiuta le nuove registrazioni di firmatari collegati finché è così. Sulla mainnet, considera per ora la scheda un'anteprima e non aspettarti che una registrazione vada a buon fine.
 :::
 
 :::caution Un firmatario collegato è un'autorità reale sull'account

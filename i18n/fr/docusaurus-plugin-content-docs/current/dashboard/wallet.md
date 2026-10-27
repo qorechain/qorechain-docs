@@ -226,7 +226,7 @@ Les points de terminaison publics sont `rpc.qore.host` (RPC Native), `api.qore.h
 La carte **SVM wallets** vous permet aussi de lier une clé Phantom à votre compte en tant que **signataire lié** — un authentificateur révocable et limité dans le temps (30 jours), et non une connexion de portefeuille principal distincte comme QoreX, Keplr ou MetaMask. Sélectionnez **Connect Phantom**, puis **Register authenticator** ; votre portefeuille existant signe l'enregistrement, et Phantom ne devient jamais sa propre identité.
 
 :::caution L'enregistrement de signataires liés est actuellement désactivé sur la chaîne
-Les fonctionnalités de compte intelligent et de portefeuilles liés de la chaîne sont implémentées mais désactivées sur les deux réseaux (`abstractaccount.enabled = false` ; vérifiez `GET /qorechain/abstractaccount/v1/config`), et la chaîne refuse les nouveaux enregistrements de signataires liés tant qu'il en est ainsi. Considérez la carte comme un aperçu pour l'instant et ne vous attendez pas à ce qu'un enregistrement aboutisse.
+Les fonctionnalités de compte intelligent et de portefeuilles liés de la chaîne sont implémentées mais désactivées sur le mainnet et activées sur le testnet (`abstractaccount.enabled` vaut `false` sur le mainnet ; vérifiez `GET /qorechain/abstractaccount/v1/config`), et la chaîne du mainnet refuse les nouveaux enregistrements de signataires liés tant qu'il en est ainsi. Sur le mainnet, considérez la carte comme un aperçu pour l'instant et ne vous attendez pas à ce qu'un enregistrement aboutisse.
 :::
 
 :::caution Un signataire lié est une véritable autorité sur le compte

@@ -29,7 +29,7 @@ Cross-VM-Aufrufe sind nur so verfügbar wie ihre Ziel-Lane:
   Lesen Sie Nachrichten stattdessen mit `connectQueryClients(rpc).crossvm`.
 - Wie jede Transaktion auf dem Native-Pfad muss ein Cross-VM-Aufruf die hybride
   Signatur tragen: Verbinde den signierenden Client mit dem Schlüsselpaar des Kontos
-  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0), damit der Cross-VM-Client
+  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0 oder neuer), damit der Cross-VM-Client
   hybrid signiert (siehe [Konten & PQC-Signierung](/sdk/concepts/accounts-pqc#hybrid-signing)).
   Releases vor 0.9.0 signieren ihn klassisch, und die öffentlichen Netzwerke lehnen ihn ab.
 :::

@@ -7,13 +7,13 @@ sidebar_position: 2
 
 # Explorer
 
-L'**Explorer** è la finestra della Dashboard sulla chain. Usalo per cercare blocchi, transazioni, indirizzi e validatori, e per osservare l'attività della rete in tempo reale. L'Explorer è in sola lettura — non è necessaria alcuna connessione del wallet per navigarlo. All'interno della Dashboard, per visualizzare la mainnet è necessario aver effettuato l'accesso; lo stesso Explorer è disponibile anche senza alcun account su [explore.qore.network](https://explore.qore.network).
+L'**Explorer** è la finestra della Dashboard sulla chain. Usalo per cercare blocchi, transazioni, indirizzi e validatori, e per osservare l'attività della rete in tempo reale. L'Explorer è in sola lettura — non è necessaria alcuna connessione del wallet per navigarlo. All'interno della Dashboard, per visualizzare la mainnet è necessario aver effettuato l'accesso; un explorer pubblico separato, che non richiede alcun account, è disponibile su [explore.qore.network](https://explore.qore.network) (è un'applicazione diversa, con il proprio selettore Mainnet/Testnet).
 
 ## La pagina di panoramica
 
 Apri **Explorer** dalla Dashboard per vedere un'istantanea in tempo reale della rete:
 
-- **Stato della rete** — chain ID, stato corrente e un indicatore quantum-safe.
+- **Stato della rete** — chain ID, stato corrente e un chip di stato della sicurezza.
 - **Attività dei blocchi** — l'altezza dell'ultimo blocco, il tempo medio di blocco e i blocchi prodotti oggi.
 - **Offerta** — QOR totali in bonding, il rapporto di bonding e l'offerta circolante.
 - **Statistiche principali** — transazioni totali, validatori attivi e totali, e indirizzi totali.
@@ -34,9 +34,16 @@ La casella di ricerca in cima all'Explorer accetta uno qualsiasi dei seguenti el
 
 La pagina di una transazione mostra hash, stato, importo, mittente e destinatario (entrambi cliccabili), commissione, altezza del blocco, tipo di transazione e memo se presente. Puoi copiare l'hash e attivare una vista raw della transazione completa per un'ispezione più approfondita.
 
+La pagina mostra anche che cosa ha protetto la transazione, e afferma solo ciò che la chain conferma:
+
+* **PQC Verified.** Una transazione sul lane nativo mostra questa scheda solo quando è riuscita **e** la chain stessa ha verificato la sua firma ibrida, inclusa la parte ML-DSA-87 (la chain registra un evento di verifica per essa). Una transazione fallita, o senza una firma ibrida verificata, mostra invece la sicurezza standard; l'Explorer non presume che una firma sia post-quantum.
+* **Authorised by a PQC window.** Una transazione inviata da un wallet EVM porta una normale firma secp256k1, quindi non è mai etichettata "PQC Verified". Se al momento dell'invio il mittente aveva aperta una [finestra di autorizzazione EVM](/developer-guide/evm-development#evm-window), la pagina indica che è stata **autorizzata da una finestra PQC** e mostra un link **Window opened by** alla transazione firmata post-quantum che ha aperto la finestra. Ciò vale a partire dalle altezze di attivazione della funzione finestra (testnet 5.920.000; mainnet 2.981.742).
+
+Queste etichette sono specifiche dell'Explorer della Dashboard su dashboard.qorechain.io/explorer. L'explorer separato su explore.qore.network è un'applicazione diversa e non applica queste regole.
+
 ## Dettagli del blocco
 
-La pagina di un blocco mostra altezza, timestamp, proposer, hash, numero di transazioni, gas utilizzato e l'elenco delle transazioni che contiene, insieme alle informazioni sul consenso e sulle firme post-quantum. I controlli precedente e successivo ti permettono di scorrere la chain blocco per blocco.
+La pagina di un blocco mostra altezza, timestamp, proposer, hash, numero di transazioni, gas utilizzato e l'elenco delle transazioni che contiene, insieme al numero di firme. I blocchi non portano alcuna etichetta post-quantum: sono firmati dalle chiavi di consenso dei validatori, e la protezione post-quantum è mostrata per transazione, non per blocco. I controlli precedente e successivo ti permettono di scorrere la chain blocco per blocco.
 
 ## Dettagli dell'indirizzo
 

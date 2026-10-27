@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-라이브 메인넷에 브로드캐스트하려면 `--chain-id qorechain-vladi`를, 테스트넷에는 `--chain-id qorechain-diana`를 설정하세요. 두 네트워크 모두 v3.2 라인을 실행합니다. 메인넷 노드 릴리스는 **v3.2.4**(2026년 10월 23일 거버넌스 제안 13에 의해 높이 3,742,566에서 적용됨. v3.2.3은 2026년 10월 20일 높이 3,662,051에서 적용됨), 테스트넷은 **v3.2.4**(2026년 10월 19일 높이 8,337,253에서 적용됨)입니다. 현재 릴리스는 [download.qore.host](https://download.qore.host)의 `latest.json`에서 확인하세요. `--chain-id`를 생략하면 클라이언트는 로컬 클라이언트 설정의 `chain-id`를 사용합니다.
+라이브 메인넷에 브로드캐스트하려면 `--chain-id qorechain-vladi`를, 테스트넷에는 `--chain-id qorechain-diana`를 설정하세요. 두 네트워크 모두 v3.2 라인을 실행합니다. 메인넷 노드 릴리스는 **v3.2.4**(2026년 10월 23일 거버넌스 제안 13에 의해 높이 3,742,566에서 적용됨. v3.2.3은 2026년 10월 20일 높이 3,662,051에서 적용됨. 거버넌스 제안 14가 높이 3,906,833에서 v3.2.5를 적용하게 되며 작성 시점에는 투표 기간 중), 테스트넷은 **v3.2.6**(2026년 10월 27일 높이 8,970,638에서 적용됨. 그에 앞서 v3.2.5가 10월 26일 높이 8,890,800에서, v3.2.4가 10월 19일 높이 8,337,253에서 적용됨)입니다. 현재 릴리스는 [download.qore.host](https://download.qore.host)의 `latest.json`에서 확인하세요. `--chain-id`를 생략하면 클라이언트는 로컬 클라이언트 설정의 `chain-id`를 사용합니다.
 
-이 페이지의 명령어와 플래그는 v3.2.3 릴리스 바이너리에 v3.2.4 추가분을 더해 확인했습니다. v3.2.4부터만 존재하는 항목(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터)에는 그렇게 표시합니다.
+이 페이지의 명령어와 플래그는 v3.2.3 릴리스 바이너리에 v3.2.4 추가분을 더해 확인했습니다. v3.2.4부터만 존재하는 항목(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터)에는 그렇게 표시합니다. v3.2.6 소스는 새로운 `tx` 명령어를 추가하지 않습니다. 대신 테스트넷의 상태(테스트 토큰, 활성화된 추상 계정 모듈, 열린 QoreChain Native 인스턴스화)를 바꾸며, 아래 섹션에서 관련이 있는 곳에 언급합니다.
 :::
 
 공통 플래그는 모든 `tx` 하위 명령어에 적용됩니다:
@@ -435,7 +435,7 @@ qorechaind tx bridge update-circuit-breaker-limits <chain_id> <max_single_transf
 qorechaind tx ibc-transfer transfer transfer <channel> <receiver> <amount> [flags]
 ```
 
-첫 번째 `transfer`는 하위 명령어이고 두 번째는 소스 포트입니다. 이 글을 쓰는 시점에 두 네트워크 모두 열려 있는 IBC 채널이 없습니다(`query ibc channel channels`).
+첫 번째 `transfer`는 하위 명령어이고 두 번째는 소스 포트입니다. 이 글을 쓰는 시점에 메인넷에는 열려 있는 IBC 채널이 없습니다. 테스트넷에는 열려 있는 transfer 채널이 하나(`channel-0`) 있으며, 2026년 10월 27일에 `query ibc channel channels`로 확인했습니다.
 
 ---
 
@@ -452,6 +452,8 @@ qorechaind tx amm swap-exact-out <pool_id> <denom_in> <token_out> <max_in> [flag
 ```
 
 v3.2.2부터 스왑은 풀의 두 디놈을 모두 명시해야 하고, `max_swap_impact_bps`가 강제되며, 프로토콜 수수료는 소각 모듈을 통해 처리됩니다.
+
+테스트넷에서는 풀이 `uqor`와 세 가지 Fest 테스트 토큰 중 하나를 짝지을 수 있습니다(가치 없음, 테스트넷 전용). 예치금과 스왑 금액에는 대소문자를 구분하는 뱅크 디놈 `erc20:<EIP-55 0x address>`를 사용하며, 예를 들면 `qorechaind tx amm create-pool constant_product 1000000000uqor 2000000000erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA --from mykey --generate-only > tx.json`입니다(이후 `tx pqc cosign`). EVM 쪽에 있는 토큰은 먼저 `MsgConvertERC20`으로 뱅크 코인으로 변환해야 하며, 이 메시지의 발신자는 `qor1` 주소입니다. 노드 릴리스 v3.2.6의 CLI 명령어 `qorechaind tx erc20 convert-erc20`는 발신자를 `0x` 주소로 기록하여 체인이 이를 거부하므로(`decoding bech32 failed`), 해당 메시지는 `qor1` 발신자로 직접 구성하십시오. 자세한 내용: [테스트넷 Fest 테스트 토큰](/developer-guide/evm-development#fest-tokens). 풀을 만들 때는 예치금에 더해 풀 생성 수수료가 듭니다(`query amm params`의 `pool_creation_fee`).
 
 ---
 
@@ -507,6 +509,8 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 
 `profile`은 `defi`, `gaming`, `nft`, `enterprise` 또는 `custom`이며, `stake_amount`는 uqor 단위입니다(현재 최소값은 `query rdk config`에 있습니다). 프로필 프리셋이 정산, 시퀀서, DA 및 가스 모델을 제공하며, 명령줄에서는 VM만 재정의할 수 있습니다. `finalize-batch` 명령어는 없습니다.
 
+데이터 가용성이 `native`(또는 `both`)인 롤업에서는 `--data-hash`를 비워 두십시오. 어떤 트랜잭션도 데이터 가용성 블롭을 게시하지 않으며, 체인은 그런 롤업에 대해 데이터 해시를 주장하는 배치를 거부합니다(이 글을 쓰는 시점의 메인넷 릴리스인 노드 릴리스 v3.2.4의 동작입니다). 옵티미스틱 롤업의 경우 `@qorechain/rdk` 클라이언트(0.6.1)가 배치의 상태 루트를 체인의 표준 전환 루트(RDK의 `batchTransitionRoot`)로 설정합니다. [롤업](/rollups/overview)을 참조하십시오.
+
 `--anchor-signature`는 **v2 앵커 서명 바이트**에 대한 롤업 생성자의 ML-DSA 서명이며, 이를 지정하면 배치가 멀티레이어 모듈에도 앵커링됩니다. 서명할 정확한 바이트는 `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>`로 출력하세요. 값은 `submit-batch` 플래그와 일치해야 합니다. v3.2.3부터 모듈은 **롤업별 에스크로 원장**을 유지합니다. 출금은 해당 롤업의 원장이 보유한 금액에서만 지급되며, 디놈, 양수 금액, 증명 깊이, 형제 노드 크기가 검사됩니다. 롤업을 중지하면 원장에 남은 금액만 환불되고, 중지된 롤업은 더 이상 출금을 지급하지 않습니다. 이 글을 쓰는 시점에 두 네트워크 모두 롤업이 존재하지 않습니다.
 
 ---
@@ -532,12 +536,12 @@ qorechaind tx multilayer update-layer-status <layer_id> <new_status> <reason> [f
 
 | 명령어                                                    | 사유                                                                                           |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | 업로드 및 인스턴스화 권한이 두 네트워크 모두에서 `Nobody`이며, 해당 메시지 타입은 서킷 브레이커 목록에도 올라 있습니다 |
+| `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | 메인넷: 업로드 및 인스턴스화 권한이 `Nobody`이며 세 메시지 타입 모두 서킷 브레이커 목록에 올라 있습니다. 테스트넷: 업로드는 `Nobody`이고 `MsgStoreCode`가 목록에 올라 있으며(코드는 거버넌스가 저장), 인스턴스화는 열려 있고(`Everybody`) 목록에 없습니다 |
 | `tx crossvm call`                                         | 메인넷에서 서킷 브레이커에 의해 비활성화됨. 테스트넷에서는 활성화됨                            |
 | `tx vesting create-vesting-account`, `create-periodic-vesting-account`, `create-permanent-locked-account` | 메인넷 서킷 브레이커 목록에 올라 있음. v3.2.3부터는 어떤 경우든 베스팅 계정을 서명자 본인에게만 만들 수 있음 |
 | PQC `MsgDeprecateAlgorithm` / `MsgDisableAlgorithm`        | 거버넌스 제안 메시지(CLI 명령어 없음)이며 메인넷 서킷 브레이커 목록에 올라 있음. v3.2.3부터 거버넌스도 마지막 활성 서명 알고리즘은 제거할 수 없음 |
 | `tx svm deploy-program`, `execute`, `create-account`      | SVM 트랜잭션 경로가 네트워크 전체에서 비활성화됨                                               |
-| `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | 추상 계정 모듈이 꺼져 있음 (`query abstractaccount config`가 `enabled: false`를 표시) |
+| `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | 메인넷: 추상 계정 모듈이 꺼져 있음 (`query abstractaccount config`가 `enabled: false`를 표시). 테스트넷: 거버넌스로 켜짐(`enabled: true`, 2026년 10월 27일 확인) |
 | `tx rlconsensus *`, `tx amm pause-pool`/`resume-pool`      | 거버넌스 권한 메시지. 메인넷 서킷 브레이커 목록에도 올라 있음                                  |
 | `tx license *`                                            | 권한 전용 (라이선스는 네트워크의 라이선스 권한자가 부여하며, v3.2.3부터 거버넌스가 `MsgUpdateAuthority`로 그 권한자를 교체할 수 있음) |
 

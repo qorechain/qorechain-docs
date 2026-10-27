@@ -16,16 +16,17 @@ externe conectate — o cheie Phantom **ed25519** sau o cheie MetaMask / EVM
 Aceasta este contrapartea din SDK a modulului de
 [abstractizare a conturilor](/developer-guide/account-abstraction) de pe chain.
 
-:::danger Indisponibil pe rețelele live
-Modulul `x/abstractaccount` este **dezactivat** pe `qorechain-vladi` și
-`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` returnează
-`"enabled": false`). Începând cu chain v3.2.0, acest indicator este aplicat pe
-fiecare cale (crearea unui cont abstract, conectarea unui autentificator și atât
-`MsgExecuteEVM`, cât și `MsgExecuteCosmos`), iar chain-ul le refuză cu `abstract account module is disabled` (cod 9). Nicio tranzacție nu îl poate activa.
-Tot ce urmează descrie interfețele modulului doar cu titlu de referință: nu
-construiți un flux cu cheie conectată sau cu cheltuieli delegate pe rețelele live
-până când modulul nu este activat și verificați indicatorul înainte de a oferi
-un astfel de flux.
+:::danger Indisponibil pe mainnet
+Modulul `x/abstractaccount` este **dezactivat** pe `qorechain-vladi` (mainnet):
+`GET /qorechain/abstractaccount/v1/config` returnează `"enabled": false`. Începând cu
+chain v3.2.0, acest indicator este aplicat pe fiecare cale (crearea unui cont abstract,
+conectarea unui autentificator și atât `MsgExecuteEVM`, cât și `MsgExecuteCosmos`), iar
+chain-ul le refuză cu `abstract account module is disabled` (cod 9). Nicio tranzacție
+nu îl poate activa. Pe testnet-ul `qorechain-diana`, aceeași rută a returnat
+`"enabled": true` pe 27 octombrie 2026, deci fluxurile de mai jos pot fi încercate
+acolo. Nu construiți un flux cu cheie conectată sau cu cheltuieli delegate pentru
+mainnet până când modulul nu este activat acolo și verificați indicatorul pe rețeaua
+țintă înainte de a oferi un astfel de flux.
 :::
 
 ## Modelul cu relayer
@@ -322,10 +323,16 @@ la 0 și incrementat la fiecare execuție reușită.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` este același tip de contor.
 
-Nu există încă o interogare pentru contor, deci urmăriți-l pentru fiecare cheie
+Începând cu chain v3.2.4 (ambele rețele servesc ruta) și SDK 0.10.0 puteți citi
+contorul în loc să îl urmăriți: `fetchAuthNonce({ rest, address, pubkey })` apelează
+`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` și returnează
+`{ nonce, linked }`. O cheie care nu a executat niciodată nimic citește 0, iar
+contorul este păstrat chiar și pentru o cheie care nu mai este conectată (`linked`
+spune care este cazul). Trimiterea unei valori care nu este contorul curent al
+chain-ului este o respingere pentru reluare (replay) (`abstractaccount` cod 11, vezi
+mai jos). Cu un SDK sau un chain mai vechi, urmăriți-l pentru fiecare cheie
 conectată: 0 pentru o cheie nou conectată, +1 după fiecare execuție acceptată de
-chain. Trimiterea unei valori care nu este contorul curent al chain-ului este o
-respingere pentru reluare (replay) (`abstractaccount` cod 11, vezi mai jos).
+chain.
 
 ## Schema de permisiuni
 

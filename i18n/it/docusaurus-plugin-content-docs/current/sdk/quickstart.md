@@ -108,7 +108,7 @@ esplicita: non esiste alcuna registrazione automatica alla prima transazione. Un
 transazione firmata solo in modo classico viene rifiutata dalle reti live, quindi
 dai al client delle transazioni la coppia di chiavi ML-DSA-87 dell'account e
 firmerà ogni transazione in modo ibrido. I due passaggi seguenti richiedono
-**SDK 0.9.0 o successivo** e un account con fondi:
+**SDK 0.9.0 o successivo** (la 0.10.0 è quella attuale) e un account con fondi:
 
 ```bash
 npm i @qorechain/sdk

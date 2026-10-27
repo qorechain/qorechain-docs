@@ -254,10 +254,14 @@ QoreChain は固定アドレスでコントラクトから呼び出し可能な�
 `precompiles` 名前空間が型付きバインディングを提供し、アドレスと ABI が
 エクスポートされています。
 
-> **まだ有効ではありません。** QoreChain のプリコンパイルはノードにコンパイルされて
-> いますが、メインネット（`qorechain-vladi`）でもテストネット
-> （`qorechain-diana`）でもまだ有効化されていません。呼び出しは空のデータを返すため、
-> これらのヘルパーは現在、公開ネットワークでもスローします。
+> **メインネットでは有効ではなく、テストネットでは 3 つが有効です。** QoreChain の
+> プリコンパイルはノードにコンパイルされていますが、メインネット（`qorechain-vladi`）では
+> どれも有効化されていません。テストネット（`qorechain-diana`）では、
+> `active_static_precompiles` のリストに `0x…0A01`（PQC 検証）、`0x…0A02`（PQC 鍵ステータス）、
+> `0x…0C01`（コンセンサスパラメータ）が含まれています（2026年10月27日に確認）。AI の 2 つ
+> （`0x…0B01`、`0x…0B02`）とクロス VM ブリッジ（`0x…0901`）は、どちらのネットワークでも
+> 有効ではありません。有効でないアドレスへの呼び出しは空のデータを返すため、それらの
+> ヘルパーはスローします。
 > [EVM プリコンパイル: ネットワークステータス](/developer-guide/evm-precompiles#network-status)を参照してください。
 
 | プリコンパイル | 関数 | アドレス |
@@ -272,7 +276,7 @@ QoreChain は固定アドレスでコントラクトから呼び出し可能な�
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read consensus parameters (once 0x…0C01 is active).
+// Read consensus parameters (0x…0C01 is active on the testnet, not on mainnet).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
@@ -291,7 +295,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 プリコンパイルの ABI は `IQORE_PQC_ABI`、`IQORE_AI_ABI`、
 `IQORE_CONSENSUS_ABI` としてエクスポートされています。
 
-> プリコンパイルが有効でない場合（現在はすべての公開ネットワーク）、または QoreChain
+> プリコンパイルが有効でない場合（メインネット: すべて。テストネット: AI の 2 つと
+> クロス VM ブリッジ）、または QoreChain
 > プリコンパイルを持たないノードでは、これらの呼び出しは「feature not
 > present」エラーをスローします。呼び出しごとに処理してください。
 

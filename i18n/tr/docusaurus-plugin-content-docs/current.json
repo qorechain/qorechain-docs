@@ -118,5 +118,29 @@
   "sidebar.docsSidebar.category.Appendix.link.generated-index.description": {
     "message": "Referans materyali — sözlük, zincir parametreleri ve sürüm geçmişi.",
     "description": "The generated-index page description for category 'Appendix' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreSign": {
+    "message": "QoreSign",
+    "description": "The label for category 'QoreSign' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreSign.link.generated-index.description": {
+    "message": "Cüzdanlar ve arka uç servisleri için hibrit secp256k1 + ML-DSA-87 imzalama: hızlı başlangıç, kılavuzlar, kablo biçimi spesifikasyonları ve test vektörleri.",
+    "description": "The generated-index page description for category 'QoreSign' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.qoresign-guides": {
+    "message": "Kılavuzlar",
+    "description": "The label for category 'Guides' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.qoresign-specifications": {
+    "message": "Spesifikasyonlar",
+    "description": "The label for category 'Specifications' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreX Wallet": {
+    "message": "QoreX Wallet",
+    "description": "The label for category 'QoreX Wallet' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreX Wallet.link.generated-index.description": {
+    "message": "QoreX — QoreChain için resmi, saklamasız (non-custodial), kuantum güvenli cüzdan: mobil uygulama ve tarayıcı uzantısı. Kurulum, gönderme ve alma, stake etme, kurtarma ve dApp'lere bağlanma.",
+    "description": "The generated-index page description for category 'QoreX Wallet' in sidebar 'docsSidebar'"
   }
 }

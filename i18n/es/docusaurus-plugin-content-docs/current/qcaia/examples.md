@@ -21,7 +21,7 @@ Estas respuestas son **ilustrativas** — paráfrasis breves y en lenguaje senci
 
 **QCAIA responde:**
 
-> El puente de QoreChain está diseñado para mover activos entre QoreChain y otras redes, combinando transferencias QCB con IBC. Todavía no está en funcionamiento: todas las configuraciones de cadena siguen pendientes y no hay ningún canal IBC abierto en ninguna de las dos redes. Para conocer el diseño completo, consulta la documentación del puente.
+> El puente de QoreChain está diseñado para mover activos entre QoreChain y otras redes, combinando transferencias QCB con IBC. Todavía no está en funcionamiento: todas las configuraciones de cadena siguen pendientes y no hay ningún canal IBC abierto hacia ninguna contraparte prevista (la mainnet no tiene ninguno; la testnet tiene un único canal de prueba). Para conocer el diseño completo, consulta la documentación del puente.
 
 _Más información: [Arquitectura del puente](/architecture/bridge-architecture)._
 

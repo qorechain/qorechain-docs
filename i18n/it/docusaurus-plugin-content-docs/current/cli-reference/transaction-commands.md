@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Imposta `--chain-id qorechain-vladi` per trasmettere sulla mainnet attiva, oppure `--chain-id qorechain-diana` per la testnet. Entrambe le reti eseguono la linea v3.2: release del nodo mainnet **v3.2.4** (applicata all'altezza 3.742.566 il 23 ottobre 2026 dalla proposta di governance 13; la v3.2.3 era stata applicata all'altezza 3.662.051 il 20 ottobre 2026), testnet **v3.2.4** (applicata all'altezza 8.337.253 il 19 ottobre 2026). Consulta `latest.json` sotto [download.qore.host](https://download.qore.host) per la release corrente. Se `--chain-id` è omesso, il client usa il `chain-id` della tua configurazione client locale.
+Imposta `--chain-id qorechain-vladi` per trasmettere sulla mainnet attiva, oppure `--chain-id qorechain-diana` per la testnet. Entrambe le reti eseguono la linea v3.2: release del nodo mainnet **v3.2.4** (applicata all'altezza 3.742.566 il 23 ottobre 2026 dalla proposta di governance 13; la v3.2.3 era stata applicata all'altezza 3.662.051 il 20 ottobre 2026; la proposta di governance 14 applicherebbe la v3.2.5 all'altezza 3.906.833 ed è in periodo di voto al momento della scrittura), testnet **v3.2.6** (applicata all'altezza 8.970.638 il 27 ottobre 2026, dopo la v3.2.5 all'altezza 8.890.800 il 26 ottobre e la v3.2.4 all'altezza 8.337.253 il 19 ottobre). Consulta `latest.json` sotto [download.qore.host](https://download.qore.host) per la release corrente. Se `--chain-id` è omesso, il client usa il `chain-id` della tua configurazione client locale.
 
-I comandi e i flag di questa pagina sono stati verificati con il binario della release v3.2.3, più le aggiunte della v3.2.4. Tutto ciò che esiste solo dalla v3.2.4 in poi (la mainnet dal 23 ottobre 2026, la testnet dal 19 ottobre 2026) è contrassegnato come tale.
+I comandi e i flag di questa pagina sono stati verificati con il binario della release v3.2.3, più le aggiunte della v3.2.4. Tutto ciò che esiste solo dalla v3.2.4 in poi (la mainnet dal 23 ottobre 2026, la testnet dal 19 ottobre 2026) è contrassegnato come tale. Il sorgente v3.2.6 non aggiunge alcun nuovo comando `tx`; cambia lo stato della testnet (token di test, modulo abstract-account abilitato, istanziazione QoreChain Native aperta), cosa che le sezioni seguenti segnalano dove conta.
 :::
 
 I flag comuni si applicano a ogni sottocomando `tx`:
@@ -435,7 +435,7 @@ I limiti sono in unità base e `0` significa illimitato. Solo una route il cui s
 qorechaind tx ibc-transfer transfer transfer <channel> <receiver> <amount> [flags]
 ```
 
-Il primo `transfer` è il sottocomando e il secondo è la porta di origine. Al momento della stesura non è aperto alcun canale IBC su nessuna delle due reti (`query ibc channel channels`).
+Il primo `transfer` è il sottocomando e il secondo è la porta di origine. Al momento della stesura non è aperto alcun canale IBC sulla mainnet; la testnet ha un canale di trasferimento aperto (`channel-0`), verificato il 27 ottobre 2026 con `query ibc channel channels`.
 
 ---
 
@@ -452,6 +452,8 @@ qorechaind tx amm swap-exact-out <pool_id> <denom_in> <token_out> <max_in> [flag
 ```
 
 Dalla v3.2.2 uno swap deve indicare entrambe le denominazioni del pool, `max_swap_impact_bps` viene applicato e la commissione di protocollo è instradata attraverso il modulo burn.
+
+Sulla testnet un pool può abbinare `uqor` a uno dei tre token di test Fest (senza valore; solo testnet). Il deposito e gli importi dello swap usano il bank denom `erc20:<indirizzo 0x EIP-55>`, che distingue maiuscole e minuscole, ad esempio `qorechaind tx amm create-pool constant_product 1000000000uqor 2000000000erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA --from mykey --generate-only > tx.json` (poi `tx pqc cosign`). Un token detenuto sul lato EVM deve prima essere convertito in un bank coin con `MsgConvertERC20`, il cui mittente è un indirizzo `qor1`; il comando CLI `qorechaind tx erc20 convert-erc20` della release del nodo v3.2.6 scrive il mittente come indirizzo `0x` e la chain lo rifiuta (`decoding bech32 failed`), quindi costruisci quel messaggio con il mittente `qor1`. Dettagli: [Token di test Fest della testnet](/developer-guide/evm-development#fest-tokens). La creazione di un pool costa la commissione di creazione del pool oltre ai depositi (`pool_creation_fee` in `query amm params`).
 
 ---
 
@@ -507,6 +509,8 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 
 `profile` è `defi`, `gaming`, `nft`, `enterprise` oppure `custom`; `stake_amount` è espresso in uqor (il minimo attuale si trova in `query rdk config`). Il preset del profilo fornisce settlement, sequencer, DA e modello del gas; da riga di comando si può sovrascrivere solo la VM. Non esiste alcun comando `finalize-batch`.
 
+Su un rollup la cui disponibilità dei dati è `native` (o `both`), lascia vuoto `--data-hash`: nessuna transazione pubblica un blob di disponibilità dei dati, e la chain rifiuta un batch che dichiara un data hash per un tale rollup (è così che si comporta la release del nodo v3.2.4, la release mainnet al momento della stesura). Per un rollup optimistic, il client `@qorechain/rdk` (0.6.1) imposta la state root di un batch sulla transition root canonica della chain (`batchTransitionRoot` nell'RDK); vedi [Rollup](/rollups/overview).
+
 `--anchor-signature` è la firma ML-DSA del creatore del rollup sui **sign bytes v2 dell'ancora**; con essa il batch viene ancorato anche nel modulo multilayer. Stampa i byte esatti da firmare con `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>`; i valori devono corrispondere ai flag di `submit-batch`. Dalla v3.2.3 il modulo mantiene un **registro di escrow per rollup**: un prelievo viene pagato solo con quanto contiene il registro di quel rollup, e vengono controllati denominazione, importo positivo, profondità della prova e dimensione dei sibling; l'arresto di un rollup rimborsa solo ciò che resta nel suo registro, e un rollup arrestato non paga ulteriori prelievi. Al momento della stesura non esiste alcun rollup su nessuna delle due reti.
 
 ---
@@ -532,12 +536,12 @@ Alcuni comandi esistono nel binario ma non possono andare a buon fine sulle reti
 
 | Comando                                                   | Motivo                                                                                         |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | Il permesso di upload e istanziazione è `Nobody` su entrambe le reti, e i tipi di messaggio sono anche nell'elenco del circuit breaker |
+| `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | Mainnet: il permesso di upload e istanziazione è `Nobody` e i tre tipi di messaggio sono nell'elenco del circuit breaker. Testnet: l'upload è `Nobody` e `MsgStoreCode` è nell'elenco (il codice lo salva la governance), mentre l'istanziazione è aperta (`Everybody`) e fuori dall'elenco |
 | `tx crossvm call`                                         | Disabilitato sulla mainnet dal circuit breaker; abilitato sulla testnet                        |
 | `tx vesting create-vesting-account`, `create-periodic-vesting-account`, `create-permanent-locked-account` | Nell'elenco del circuit breaker della mainnet; dalla v3.2.3 un account in vesting può comunque essere creato solo per il firmatario stesso |
 | PQC `MsgDeprecateAlgorithm` / `MsgDisableAlgorithm`        | Messaggi di proposta di governance (nessun comando CLI), nell'elenco del circuit breaker della mainnet; dalla v3.2.3 la governance non può inoltre rimuovere l'ultimo algoritmo di firma attivo |
 | `tx svm deploy-program`, `execute`, `create-account`      | La lane di transazioni SVM è disabilitata su tutta la rete                                     |
-| `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | Il modulo abstract-account è disattivato (`query abstractaccount config` mostra `enabled: false`) |
+| `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | Mainnet: il modulo abstract-account è disattivato (`query abstractaccount config` mostra `enabled: false`). Testnet: attivato dalla governance (`enabled: true`, verificato il 27 ottobre 2026) |
 | `tx rlconsensus *`, `tx amm pause-pool`/`resume-pool`      | Messaggi dell'autorità di governance; anch'essi nell'elenco del circuit breaker della mainnet  |
 | `tx license *`                                            | Riservato all'autorità (le licenze sono concesse dall'autorità delle licenze della rete; dalla v3.2.3 la governance può sostituire tale autorità con `MsgUpdateAuthority`) |
 

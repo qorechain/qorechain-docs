@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain exécute un environnement d'exécution entièrement compatible EVM sur le QoreChain EVM Engine, ce qui vous permet de déployer des contrats intelligents Solidity et d'interagir avec eux à l'aide d'outils familiers. Le module EVM expose une interface JSON-RPC sur le **port 8545** (WebSocket sur le **8546**) qui prend en charge les flux de travail de développement Ethereum standard.
 
 :::note
-Les exemples ci-dessous ciblent le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026, qui exécute la version de nœud **v3.2.4** (appliquée par la proposition de gouvernance 13 à la hauteur 3,742,566 le 23 octobre 2026 ; la v3.2.3 avait été appliquée à la hauteur 3,662,051 le 20 octobre 2026). Le testnet **`qorechain-diana`** exécute la v3.2.4 depuis la hauteur 8,337,253 (19 octobre 2026) ; utilisez-y l'EVM chain ID **9800**. Les exemples de code utilisent `http://localhost:8545` pour un nœud que vous exploitez vous-même ; le point de terminaison public du mainnet est `https://evm.qore.host` et celui du testnet est `https://evm-testnet.qore.host`.
+Les exemples ci-dessous ciblent le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026, qui exécute la version de nœud **v3.2.4** au moment de la rédaction (appliquée par la proposition de gouvernance 13 à la hauteur 3,742,566 le 23 octobre 2026 ; la v3.2.3 avait été appliquée à la hauteur 3,662,051 le 20 octobre 2026 ; la proposition de gouvernance 14 du mainnet appliquerait la v3.2.5 à la hauteur 3,906,833, et ce que cette version change sera documenté une fois qu'elle aura été appliquée). Le testnet **`qorechain-diana`** exécute la **v3.2.6** (v3.2.4 depuis la hauteur 8,337,253 le 19 octobre 2026, v3.2.5 à la hauteur 8,890,800 le 26 octobre, v3.2.6 à la hauteur 8,970,638 le 27 octobre) ; utilisez-y l'EVM chain ID **9800**. Lorsque cette page décrit quelque chose qui diffère entre les réseaux (les précompilés du testnet, les tokens de test Fest), elle l'indique. Les exemples de code utilisent `http://localhost:8545` pour un nœud que vous exploitez vous-même ; le point de terminaison public du mainnet est `https://evm.qore.host` et celui du testnet est `https://evm-testnet.qore.host`.
 :::
 
 :::caution Une transaction EVM exige une clé PQC enregistrée et une fenêtre d'autorisation ouverte
@@ -160,7 +160,7 @@ Cette conversion est transparente : lorsque vous vérifiez un solde via `eth_get
 
 ---
 
-## Paires de jetons ERC-20
+## Paires de jetons ERC-20 {#erc20-token-pairs}
 
 Le module `x/erc20` fournit des **paires de jetons** entre les dénominations natives Cosmos SDK et les contrats ERC-20 :
 
@@ -179,17 +179,96 @@ qorechaind tx erc20 convert-coin 1000000uqor --from mykey --gas 400000 --fees 40
 qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey --gas 400000 --fees 40000uqor
 ```
 
-Ce sont des transactions de la voie Cosmos : sur les réseaux en production, elles nécessitent aussi la cosignature post-quantique hybride (construisez avec `--generate-only`, puis `qorechaind tx pqc cosign` ; voir [Signature post-quantique](/developer-guide/post-quantum-signing)). Les paires de jetons sont enregistrées selon une politique avec permissions, et aucune n'existe encore sur le mainnet.
+Ce sont des transactions de la voie Cosmos : sur les réseaux en production, elles nécessitent aussi la cosignature post-quantique hybride (construisez avec `--generate-only`, puis `qorechaind tx pqc cosign` ; voir [Signature post-quantique](/developer-guide/post-quantum-signing)). La commande simple `convert-erc20` ci-dessus est refusée dans la version de nœud v3.2.6, car la CLI écrit un expéditeur `0x` ; voir [Convertir entre les deux formes](#fest-convert) pour la forme qui fonctionne. Les paires de jetons sont enregistrées selon une politique avec permissions (c'est la gouvernance qui les enregistre). Aucune n'existe sur le mainnet au moment de la rédaction ; le testnet dispose des tokens de test Fest dans [la section suivante](#fest-tokens).
+
+## Tokens de test Fest et conversion ERC20 {#fest-tokens}
+
+:::note Testnet uniquement, sans valeur
+Les tokens de cette section n'existent que sur le testnet `qorechain-diana` (EVM chain ID 9800). Ce sont des tokens de test pour les builders et ils n'ont aucune valeur. Le mainnet n'a aucune paire de tokens ERC-20 (vérifié le 27 octobre 2026) ; aucune des dénominations ci-dessous n'y existe donc.
+:::
+
+Le 27 octobre 2026, la gouvernance du testnet (proposition 26) a enregistré trois contrats ERC-20 comme paires de tokens. Ils donnent aux builders un second token à associer au QOR dans un [pool AMM](/api-reference/rest-grpc-endpoints#amm-module) :
+
+| Token | Contrat ERC-20 (EIP-55) | Décimales | Dénomination bancaire |
+| ----- | ------------------------ | -------- | ---------- |
+| fUSD (FestUSD) | `0x97143B771D34ddb9130b807b135Ae675A5a963CA` | 6  | `erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA` |
+| fETH (FestETH) | `0x02292293c13880a26242690eb70a0e42B8E91c28` | 18 | `erc20:0x02292293c13880a26242690eb70a0e42B8E91c28` |
+| fBTC (FestBTC) | `0x4604e7E45b2ecdbfbDc157103f5B2b62cb16451A` | 8  | `erc20:0x4604e7E45b2ecdbfbDc157103f5B2b62cb16451A` |
+
+* **La dénomination bancaire est `erc20:<address>` avec deux-points, et l'adresse doit être exactement en casse mixte EIP-55 comme indiqué.** Les dénominations sont sensibles à la casse : `erc20:0x97143b771d34...` (en minuscules) est une chaîne différente, et une requête pour elle répond `404`. Copiez la dénomination depuis `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata`, qui liste les trois tokens avec leur `symbol` (`fUSD`, `fETH`, `fBTC`), leur nom d'affichage `display` (`FestUSD`, `FestETH`, `FestBTC`) et leurs décimales.
+* **Le faucet verse des coins bancaires.** Pour utiliser un token Fest depuis l'EVM (MetaMask, Solidity), convertissez d'abord le coin bancaire en sa forme ERC-20 avec `MsgConvertCoin` ; pour remettre un solde ERC-20 sous forme bancaire (par exemple pour l'associer dans l'AMM), utilisez `MsgConvertERC20`. Les deux sont décrits ci-dessous.
+* **Les tokens existent sous deux formes.** Un solde ERC-20 se lit avec le `balanceOf` du contrat via le JSON-RPC EVM ; le solde converti est un coin bancaire, lu avec `GET /cosmos/bank/v1beta1/balances/{address}`. Seule la forme coin bancaire peut être associée dans l'AMM. La conversion déplace de la valeur entre les deux formes ; elle n'en crée pas.
+* **Les montants utilisent les décimales propres au token** (6, 18 et 8 pour fUSD, fETH et fBTC), et non les 6 décimales de `uqor`.
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs
+curl -s "https://api-testnet.qore.host/cosmos/evm/erc20/v1/token_pairs/0x97143B771D34ddb9130b807b135Ae675A5a963CA"
+```
+
+### Convertir entre les deux formes {#fest-convert}
+
+Les deux messages de conversion sont des transactions de la voie Cosmos : ils nécessitent votre clé post-quantique enregistrée et la cosignature hybride, comme toute autre transaction native (construction, puis `qorechaind tx pqc cosign` ; voir [Signature post-quantique](/developer-guide/post-quantum-signing)). Les frais doivent être d'au moins gas × 0.1 uqor.
+
+:::note Ce qui a été exécuté
+Les lectures REST de cette page (`token_pairs`, `denoms_metadata`) ont été exécutées sur le testnet le 27 octobre 2026. Les deux commandes de conversion ci-dessous n'ont **pas** été exécutées de bout en bout pour cette page : la forme de leurs messages et la règle de l'expéditeur proviennent du code source du nœud v3.2.6 et de la référence de l'équipe de la chaîne. Considérez-les comme la forme documentée et confirmez d'abord avec un petit montant.
+:::
+
+**Coin bancaire vers ERC-20 : `MsgConvertCoin`.** Le `coin` est la dénomination bancaire exacte, sensible à la casse (`erc20:<adresse EIP-55>`), le `sender` est votre adresse `qor1...` (le signataire), et le `receiver` est une adresse `0x...` qui détiendra l'ERC-20. Il consomme environ 432,000 gas ; fixez une limite de gas de 600,000.
+
+```bash
+# Write the message by hand (not run for this page)
+cat > convert-coin.json <<'JSON'
+{
+  "body": {
+    "messages": [{
+      "@type": "/cosmos.evm.erc20.v1.MsgConvertCoin",
+      "coin": { "denom": "erc20:0x97143B771D34ddb9130b807b135Ae675A5a963CA", "amount": "1000000" },
+      "receiver": "0xYOUR_EVM_ADDRESS",
+      "sender": "qor1youraddr..."
+    }],
+    "memo": ""
+  },
+  "auth_info": { "signer_infos": [], "fee": { "amount": [{ "denom": "uqor", "amount": "60000" }], "gas_limit": "600000" } },
+  "signatures": []
+}
+JSON
+qorechaind tx pqc cosign convert-coin.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**ERC-20 vers coin bancaire : `MsgConvertERC20`.** Son champ `sender` doit aussi être l'adresse bech32 `qor1...` du compte. Un expéditeur `0x` est refusé avec `decoding bech32 failed`. Dans la version de nœud v3.2.6, la commande CLI `qorechaind tx erc20 convert-erc20` (l'exemple simple de [Paires de jetons ERC-20](#erc20-token-pairs)) écrit l'expéditeur sous la forme `0x` et est donc refusée pour cette raison : ne l'utilisez pas. Construisez vous-même le message avec l'adresse `qor1` comme expéditeur, de la même manière que ci-dessus :
+
+```bash
+# Workaround: write the message with a qor1 sender (not run for this page)
+cat > convert-erc20.json <<'JSON'
+{
+  "body": {
+    "messages": [{
+      "@type": "/cosmos.evm.erc20.v1.MsgConvertERC20",
+      "contract_address": "0x97143B771D34ddb9130b807b135Ae675A5a963CA",
+      "amount": "1000000",
+      "receiver": "qor1youraddr...",
+      "sender": "qor1youraddr..."
+    }],
+    "memo": ""
+  },
+  "auth_info": { "signer_infos": [], "fee": { "amount": [{ "denom": "uqor", "amount": "60000" }], "gas_limit": "600000" } },
+  "signatures": []
+}
+JSON
+qorechaind tx pqc cosign convert-erc20.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+Ici, `receiver` est le compte `qor1...` qui reçoit le coin bancaire (le module accepte la forme bech32 pour le destinataire d'une conversion vers un coin bancaire). Le montant est exprimé dans les unités de base propres au token (6, 18 ou 8 décimales). Copiez la dénomination pour `MsgConvertCoin` uniquement depuis `denoms_metadata` ; la forme en minuscules est refusée avec `token pair not found`.
 
 ---
 
-## PQC et compatibilité EVM
+## PQC et compatibilité EVM {#pqc-and-evm-compatibility}
 
 Les transactions EVM sont signées avec **ECDSA classique (secp256k1)** ; MetaMask, Hardhat, Foundry, ethers.js et les autres outils standard les construisent et les signent donc sans modification. Ce qui a changé avec la **v3.2.0**, c'est l'*admission* : une transaction n'est acceptée que si son expéditeur possède une clé post-quantique enregistrée et une fenêtre d'autorisation active (section suivante). L'enregistrement d'une clé et l'ouverture d'une fenêtre sont des transactions de la voie Cosmos et exigent la signature hybride (ML-DSA-87 + secp256k1).
 
 Pour la sécurité post-quantique au sein des contrats :
 
-* Le **précompilé PQC Verify** (`0x0000...0A01`) vérifiera les signatures ML-DSA-87 on-chain depuis Solidity une fois activé ; il n'est **pas encore actif** sur le mainnet ni sur le testnet. Voir [Précompilés EVM : état du réseau](/developer-guide/evm-precompiles#network-status).
+* Le **précompilé PQC Verify** (`0x0000...0A01`) vérifie les signatures ML-DSA-87 on-chain depuis Solidity. Il est **actif sur le testnet** (activé par la proposition de gouvernance 21, adoptée le 27 octobre 2026) et **non actif sur le mainnet** au moment de la rédaction. Voir [Précompilés EVM : état du réseau](/developer-guide/evm-precompiles#network-status).
 * Les **messages cross-VM** de l'EVM vers QoreChain Native ou la SVM sont des transactions de la voie Cosmos et portent la signature hybride comme toutes les autres ; voir [Interopérabilité cross-VM](/developer-guide/cross-vm-interoperability) pour leur disponibilité actuelle.
 
 ---
@@ -204,7 +283,7 @@ Une signature post-quantique ne peut pas voyager *avec* une transaction Ethereum
 | `max-txs`   | 1 – 1,000          | Nombre de transactions EVM qu'elle admet |
 | `max-value` | supérieur à 0, en `uqor` | Sortie totale qu'elle admet : valeur transférée **plus** les frais maximaux que chaque transaction pourrait payer (limite de gas × frais max par gas), convertis en `uqor` et arrondis à l'unité supérieure |
 
-La première borne atteinte ferme la fenêtre. Les trois bornes sont obligatoires ; ouvrir une fenêtre remplace celle qui existe ; une transaction admise puis en échec consomme tout de même son emplacement et son budget de valeur ; les déploiements de contrat comptent comme n'importe quelle autre transaction. `blocks` est un nombre de blocs, pas une durée : 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,2 s par bloc) et environ 5 heures sur le testnet (environ 1,0 s par bloc).
+La première borne atteinte ferme la fenêtre. Les trois bornes sont obligatoires ; ouvrir une fenêtre remplace celle qui existe ; une transaction admise puis en échec consomme tout de même son emplacement et son budget de valeur ; les déploiements de contrat comptent comme n'importe quelle autre transaction. `blocks` est un nombre de blocs, pas une durée : 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,2 s par bloc) et environ 6 heures sur le testnet (environ 1,3 s par bloc le 27 octobre 2026 ; le temps de bloc du testnet varie).
 
 **La borne de valeur ne compte que le QOR natif.** Un transfert de jeton, une approbation ou tout autre appel de contrat porte une valeur nulle ; il n'est donc pas décompté de `max-value` (seuls ses frais maximaux le sont). Pour borner aussi ces opérations, restreignez la **portée** de la fenêtre (mainnet v3.2.3 et ultérieures) :
 
@@ -283,6 +362,6 @@ curl -X POST http://localhost:8545 \
 
 ## Étapes suivantes
 
-* [Précompilés EVM](/developer-guide/evm-precompiles) — Référence des interfaces de précompilés réservées (pas encore actives sur les réseaux publics)
+* [Précompilés EVM](/developer-guide/evm-precompiles) — Référence des interfaces de précompilés QoreChain (trois actifs sur le testnet, aucun sur le mainnet)
 * [Interopérabilité cross-VM](/developer-guide/cross-vm-interoperability) — Appels cross-VM et leur disponibilité actuelle
-* [Abstraction de compte](/developer-guide/account-abstraction) — Authentificateurs de portefeuilles liés et règles de dépense (module actuellement désactivé)
+* [Abstraction de compte](/developer-guide/account-abstraction) — Authentificateurs de portefeuilles liés et règles de dépense (activé sur le testnet, désactivé sur le mainnet)

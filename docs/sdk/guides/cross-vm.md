@@ -29,7 +29,7 @@ Cross-VM calls are only as available as their target lane:
   Read messages with `connectQueryClients(rpc).crossvm` instead.
 - Like every Native-path transaction, a cross-VM call must carry the hybrid
   signature: connect the signing client with the account's keypair
-  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) so the cross-VM client signs
+  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0 or later) so the cross-VM client signs
   hybrid (see [Accounts & PQC signing](/sdk/concepts/accounts-pqc#hybrid-signing)).
   Releases before 0.9.0 sign it classically and the public networks refuse it.
 :::

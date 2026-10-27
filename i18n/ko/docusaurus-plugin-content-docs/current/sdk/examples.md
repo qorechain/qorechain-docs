@@ -62,7 +62,7 @@ REST, 그리고 자금이 있는 계정이 필요합니다. 이 예제는 **클�
 서명하므로 로컬 또는 개발 노드에서는 동작하지만, 모든 Native 경로 트랜잭션에
 하이브리드 서명을 요구하는 메인넷과 테스트넷에서는 거부됩니다. 공개
 네트워크에서는 [퀵스타트](/sdk/quickstart#send-qor)와 같이 계정의
-키페어로 `client.connectTx(signer, { pqcKeypair })`(SDK 0.9.0)를 사용해
+키페어로 `client.connectTx(signer, { pqcKeypair })`(SDK 0.9.0 이상)를 사용해
 연결하세요.
 
 ```ts
@@ -123,9 +123,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 `@qorechain/evm`(viem 위의 얇은 레이어)을 사용하여 읽기 전용 QoreChain
 프리컴파일을 호출하고 ERC-20 잔액을 읽습니다. EVM 체인 ID는 `eth_chainId`를
-통해 자동 감지됩니다. 프리컴파일은 아직 메인넷이나 테스트넷에서 활성화되지
-않았습니다([네트워크 상태](/developer-guide/evm-precompiles#network-status)
-참조). 활성화되기 전까지, 그리고 프리컴파일이 없는 노드에서는 해당 호출이
+통해 자동 감지됩니다. 프리컴파일은 메인넷에서 활성화되어 있지 않고, 테스트넷에서는
+PQC 검증, PQC 키 상태, 컨센서스 파라미터 프리컴파일만 활성화되어 있습니다
+([네트워크 상태](/developer-guide/evm-precompiles#network-status) 참조).
+프리컴파일이 비활성화된 곳과 프리컴파일이 없는 노드에서는 해당 호출이
 "feature not present" 오류를 던지며, 호출별로 보고됩니다.
 
 ```ts
@@ -259,8 +260,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 
 Native 인증자(authenticator) 레인에서 릴레이어가 제출하는
 `MsgExecuteCosmos`를 구성합니다(SDK 0.7.0, 체인 v3.1.85; `abstractaccount`
-모듈은 현재 두 네트워크 모두에서 꺼져 있으므로 이 레인은 아직 해당
-네트워크에서 사용할 수 없습니다): Phantom 방식의
+모듈은 메인넷에서는 꺼져 있고 테스트넷에서는 켜져 있으므로 이 레인은 아직
+메인넷에서 사용할 수 없습니다): Phantom 방식의
 ed25519 키가 도메인 분리된 인증 다이제스트에 서명하고, 생성된 메시지는
 릴레이어가 브로드캐스트할 수 있도록 준비됩니다(수수료는 릴레이어가 지불하며,
 외부 키는 절대 ML-DSA 공동 서명을 생성하지 않습니다). 드라이 런 — 노드가
