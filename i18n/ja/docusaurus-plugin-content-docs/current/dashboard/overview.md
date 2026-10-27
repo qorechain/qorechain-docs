@@ -120,7 +120,7 @@ sidebar_position: 1
 - **Bridge 画面はありません。** [Bridge](/dashboard/bridge) を参照してください。
 - **Trade はネットワークの切り替えに従いません。** ヘッダーが Mainnet でも、テストネットの内容を表示します。[Trade](/dashboard/trade) を参照してください。
 - **アプリ内の FAQ は短いヘルプページです。** FAQ とこのマニュアルの内容が異なる場合は、このマニュアルに従ってください。
-- **まだ提供されていないもの:** Developers ページの Transaction inspector と MCP サーバー（Developers ページには、公開されていないと表示されています）。
+- **まだ提供されていないもの:** Developers ページの Transaction inspector。
 - **メインネットの制限。** メインネットでのステーキング、送金、コントラクトのデプロイはページごとに説明されています。いくつかのフロー (Native や SVM のデプロイ、再委任、タイムロック付きステーキング) は、ダッシュボードでは提供されていません。
 - **テストネットに実際の価値はありません。** 実際の QOR をテストネットのアドレスに送らないでください。形式は同一です。[Wallet](/dashboard/wallet#testnet) を参照してください。
 

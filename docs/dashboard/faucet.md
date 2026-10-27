@@ -15,10 +15,10 @@ Testnet QOR has **no real value**. The Faucet never touches mainnet: there is no
 
 ## Innovations {#innovations}
 
-- **One claim, two kinds of token.** A claim pays 100 QOR, and in a separate transaction 1,000 fUSD, 0.5 fETH and 0.02 fBTC. If the fest send fails, the QOR still arrives and the result card says so.
+- **One claim, two kinds of token.** A claim pays 100 QOR, and in a separate transaction 1000 fUSD, 0.5 fETH and 0.02 fBTC. If the fest send fails, the QOR still arrives and the result card says so.
 - **A double cooldown.** One claim per 24 hours per account **and** per address. The slot is reserved before anything is sent and released if the send fails, so a failed claim does not use up your day.
 - **Fest tokens are native bank coins.** They are `erc20:0x...` bank denominations that the on-chain AMM, bank sends, IBC and QoreChain Native contracts use as they are. MetaMask or an EVM DEX see them only after a `MsgConvertCoin` conversion (see [Fest test tokens](#fest-tokens)).
-- **No wrong numbers.** If the Faucet's info cannot be loaded, the page shows "..." instead of an amount, never a guessed one.
+- **The amounts are fixed per claim.** 100 QOR per claim, once every 24 hours per account **and** per address, plus 1000 fUSD, 0.5 fETH and 0.02 fBTC per claim (testnet only, sign-in required).
 - **A `0x` recipient is paid on its `qor1` twin.** A `0x` address is the same 20 bytes as its `qor1` form, so the service pays the same account. The Dashboard form itself only accepts `qor1...`.
 
 ## How to use {#how-to-use}

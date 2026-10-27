@@ -29,12 +29,12 @@ Requisitos previos: haber iniciado sesión y tener una billetera de prueba (cons
 1. El banner ofrece **Get test tokens**; úsalo primero.
 2. Elige el token con el que vas a pagar e introduce una cantidad. El par por defecto, QOR a USDC, es un par de **práctica** que no se liquida on-chain. Elige **WQOR** y **QUSDC** (o cualquier par de los cinco) para un intercambio on-chain.
 3. Elige el token que quieres recibir; la cantidad de salida se cotiza automáticamente.
-4. Opcionalmente, ajusta la **tolerancia al deslizamiento** (por defecto 0,5%).
+4. Opcionalmente, ajusta la **tolerancia al deslizamiento** (la página tiene un valor por defecto).
 5. Selecciona **Swap Now** y luego **Confirm Swap**. El resultado muestra "Swap Confirmed" con **View Transaction**.
 
 **Recent Swaps** enumera los intercambios de todos los usuarios; **Show My History** lo filtra a los tuyos.
 
-**Ejemplo mínimo:** en la testnet, selecciona **Get test tokens**, vende 10 WQOR por QUSDC, **Swap Now**, **Confirm Swap**.
+**Ejemplo mínimo:** en la testnet, selecciona **Get test tokens**, vende algo de WQOR por QUSDC, **Swap Now**, **Confirm Swap**.
 
 :::tip Deslizamiento
 Una mayor tolerancia hace que un intercambio tenga más probabilidades de completarse en mercados que se mueven rápido, pero puedes recibir un precio peor. El valor por defecto es adecuado para la mayoría de los pares.
@@ -42,12 +42,12 @@ Una mayor tolerancia hace que un intercambio tenga más probabilidades de comple
 
 ### Pools
 
-Explora las tarjetas de pool: par de trading, liquidez total, volumen de 24 horas, número de proveedores y también un APR, una comisión, un ID de pool, un precio y las reservas. Un cuadro de búsqueda filtra por símbolo de token. Son cifras de práctica; no las interpretes como rendimientos.
+Explora las tarjetas de pool para ver el par de trading y sus detalles. Un cuadro de búsqueda filtra por símbolo de token. Estos pools son una zona de práctica, no liquidez on-chain, y las cifras que muestran no son datos de mercado.
 
 ### Add Liquidity
 
 1. Selecciona dos tokens para emparejar (uno es QOR por defecto). Usa **Create Pool** para un par nuevo.
-2. Introduce una cantidad para el primer token; el segundo se completa para coincidir con la proporción del pool. La página indica "Minimum 1000 QOR required".
+2. Introduce una cantidad para el primer token; el segundo se completa para coincidir con la proporción del pool. La página indica un mínimo para crear un pool.
 3. Revisa tu participación y confirma.
 
 ### My Positions
@@ -74,7 +74,7 @@ Cada entrada muestra el par de tokens, la cantidad de cada token, tu participaci
 - **No hay trading en la mainnet.** La página ignora el selector de red y muestra contenido de la testnet también en la mainnet.
 - **Solo cinco tokens se liquidan on-chain.** Los tokens del fest del [Faucet](/dashboard/faucet#fest-tokens) no están en esta página.
 - **El AMM nativo no tiene pools** en ninguna de las dos redes. Los pools reales se describirán cuando existan.
-- **Las cifras de práctica** (precios, APR, volumen) no son datos de mercado.
+- **Las cifras de los pools** son datos de práctica, no datos de mercado.
 - **Los tokens de la testnet no tienen valor** y no se pueden cambiar por nada.
 
 ## Relacionado

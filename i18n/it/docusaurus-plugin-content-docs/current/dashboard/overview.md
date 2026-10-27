@@ -120,7 +120,7 @@ Pagine di questa sezione: [Explorer](/dashboard/explorer), [Wallet](/dashboard/w
 - **Non esiste una schermata Bridge.** Vedi [Bridge](/dashboard/bridge).
 - **Trade non segue il selettore di rete.** Mostra contenuti di testnet anche con l'intestazione su Mainnet. Vedi [Trade](/dashboard/trade).
 - **Le FAQ nell'app sono una breve pagina di aiuto.** Dove differiscono da questo manuale, segui questo manuale.
-- **Non ancora attivi:** il Transaction inspector nella pagina Developers e il server MCP (la pagina Developers indica che non è pubblicato).
+- **Non ancora attivi:** il Transaction inspector nella pagina Developers.
 - **Restrizioni della mainnet.** Staking, invio e deploy di contratti su mainnet sono descritti pagina per pagina; diversi flussi (deploy Native o SVM, redelegation, staking con blocco temporale) non sono offerti sulla Dashboard.
 - **La testnet non ha valore reale.** Non inviare mai QOR reali a un indirizzo di testnet: i formati sono identici. Vedi [Wallet](/dashboard/wallet#testnet).
 

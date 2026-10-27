@@ -120,7 +120,7 @@ Paginile acestei secțiuni: [Explorer](/dashboard/explorer), [Wallet](/dashboard
 - **Nu există un ecran Bridge.** Vezi [Bridge](/dashboard/bridge).
 - **Trade nu urmează comutatorul de rețea.** Arată conținut de testnet chiar și cu antetul pe Mainnet. Vezi [Trade](/dashboard/trade).
 - **FAQ-ul din aplicație este o scurtă pagină de ajutor.** Unde el și acest manual diferă, urmează acest manual.
-- **Încă nu sunt disponibile:** inspectorul de tranzacții de pe pagina Developers și serverul MCP (pagina Developers spune că nu este publicat).
+- **Încă nu sunt disponibile:** inspectorul de tranzacții de pe pagina Developers.
 - **Restricții pe mainnet.** Staking-ul, trimiterea și deploy-urile de contracte pe mainnet sunt descrise pe fiecare pagină; mai multe fluxuri (deploy-uri Native sau SVM, redelegarea, staking-ul cu blocare în timp) nu sunt oferite în Dashboard.
 - **Testnet-ul nu are valoare reală.** Nu trimite niciodată QOR real la o adresă de testnet: formatele sunt identice. Vezi [Wallet](/dashboard/wallet#testnet).
 

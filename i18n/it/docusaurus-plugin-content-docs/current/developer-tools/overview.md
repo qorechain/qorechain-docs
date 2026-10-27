@@ -32,6 +32,8 @@ Scegli in base a ciò che stai costruendo.
 | Permettere alla tua dApp di usare il wallet QoreX | Integrazioni QoreX | [QoreX, per gli sviluppatori](/qorex/overview#developers) |
 | Creare e gestire un rollup applicativo | RDK | [Panoramica dei rollup](/rollups/overview), [Distribuire un rollup](/rollups/deploying-a-rollup) |
 | Usare da sole le primitive post-quantistiche (ML-DSA, ML-KEM, SHAKE-256) | `qorechain-pqc` | [Firma post-quantistica](/developer-guide/post-quantum-signing) |
+| Permettere a un agente AI o a uno strumento per sviluppatori di leggere la chain (blocchi, transazioni, account, stato della firma ibrida, simulazione, trasferimenti non firmati) | Server MCP di QoreChain | [Server MCP di QoreChain](/developer-tools/mcp) |
+| Leggere la chain da un terminale o da uno script di shell, con output JSON | CLI `qore` | [CLI di QoreChain](/developer-tools/qore-cli) |
 
 Installa un pacchetto ed esegui prima il suo quickstart sulla testnet pubblica. Le letture non richiedono né account, né chiave, né commissione.
 
@@ -60,7 +62,7 @@ La dashboard ha una pagina pubblica su [dashboard.qorechain.io/developers](https
 - **Simulator:** esegue una simulazione di una transazione firmata (`TxRaw` in base64 o esadecimale) e mostra il consumo di gas e le variazioni di saldo. Non viene trasmesso nulla.
 - **Signing playground:** solo testnet. Genera nel browser una chiave ibrida usa e getta, tenuta in memoria, per firmare e verificare messaggi e richieste Sign In With QoreChain.
 - **QoreX test wallet:** solo testnet. Inietta nella scheda un wallet di test (`window.qorex`, annunciato tramite EIP-6963 come "QoreX (mock)") così puoi provare i flussi delle dApp.
-- **AI agents (MCP):** una pagina per il server MCP, che non è ancora pubblicato (vedi [Pianificati](#planned)).
+- **AI agents (MCP):** lo stato del server MCP di QoreChain (pubblicato) e la configurazione per un client MCP: prima `npx` in locale, più un endpoint testnet ospitato che richiede una chiave API. Vedi [Server MCP di QoreChain](/developer-tools/mcp).
 
 L'**ispettore di transazioni** (incolli un hash e vedi ogni messaggio, il firmatario, la commissione e se la firma post-quantistica si verifica) **non è ancora attivo**. Le tabelle qui sotto e l'hub SDK mostrano gli stessi dati; le tabelle sono state verificate sui registri il 27 ottobre 2026.
 
@@ -181,14 +183,22 @@ Guida: [QoreX, per gli sviluppatori](/qorex/overview#developers). Sorgente: [qor
 | dApp Cosmos | `@qorechain/qorex-interchain-kit` (oppure `@qorechain/qorex-cosmos-kit`) |
 | Firma ibrida nel tuo wallet o backend | `@qorechain/qoresign` |
 
+### Server MCP e CLI {#group-mcp}
+
+Pagine: [Server MCP di QoreChain](/developer-tools/mcp), [CLI di QoreChain](/developer-tools/qore-cli). Sorgente: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp) (pubblico). Entrambi leggono la chain e nessuno dei due firma, custodisce chiavi o trasmette. Pubblicati il 27 ottobre 2026.
+
+| Pacchetto | Linguaggio | Versione | Installazione | Stato |
+|---|---|---|---|---|
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (server Node.js, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Pubblicato. stdio e Streamable HTTP. Un endpoint ospitato, `https://mcp.qorechain.io/mcp`, richiede una chiave API |
+| [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (oppure `uvx qorechain-mcp`) | Pubblicato. Gli stessi strumenti del pacchetto npm; solo stdio |
+| [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | Pubblicato. Output `--json` identico all'output degli strumenti MCP |
+
 ### Pianificati (non pubblicati) {#planned}
 
-Questi nomi sono riservati a strumenti che non sono ancora su un registro. Ciascuno ha restituito 404 sul proprio registro il 27 ottobre 2026, quindi non c'è nulla da installare e il comportamento indicato non può ancora essere usato.
+Questo nome è riservato a uno strumento che non è ancora su un registro. Ha restituito 404 sul proprio registro il 27 ottobre 2026, quindi non c'è nulla da installare e il comportamento indicato non può ancora essere usato.
 
 | Pacchetto | Uso previsto | Stato |
 |---|---|---|
-| `@qorechain/mcp` | Un server Model Context Protocol con accesso in lettura a QoreChain (blocchi, transazioni, account, validatori, livelli di staking, stato della firma ibrida, simulazione, trasferimenti non firmati). Non firmerebbe né trasmetterebbe mai. È pianificato anche un endpoint ospitato | Non pubblicato. Il repository sorgente non è pubblico. L'endpoint ospitato non è attivo |
-| `@qorechain/qore-cli` (comando `qore`) | Letture da riga di comando con output JSON stabile sugli stessi dati | Non pubblicato |
 | `qorechain-qoresign` su PyPI | QoreSign per Python | Non pubblicato (previsto per la 0.1.1) |
 
 ## Come ottenere le versioni live {#live-versions}
@@ -209,7 +219,7 @@ Per un nome npm con scope mantieni la `@`, ad esempio `https://registry.npmjs.or
 ## Limiti e problemi noti {#limits}
 
 - **Due reti live, versioni diverse.** La mainnet esegue la v3.2.4 e la testnet esegue la v3.2.6. Una funzionalità che esiste solo sulla testnet è indicata nella sua pagina. Non dare per scontato il comportamento della v3.2.5 sulla mainnet.
-- **Non ancora attivi:** l'ispettore di transazioni nella pagina sviluppatori della dashboard, il server MCP e la CLI `qore`, QoreSign per Python, le transazioni SVM e i precompile EVM sulla mainnet (vedi la [panoramica dell'SDK](/sdk/overview) per l'elenco rail per rail).
+- **Non ancora attivi:** l'ispettore di transazioni nella pagina sviluppatori della dashboard, QoreSign per Python, le transazioni SVM e i precompile EVM sulla mainnet (vedi la [panoramica dell'SDK](/sdk/overview) per l'elenco rail per rail).
 - **Esempi non eseguiti:** delle 34 voci di quickstart, 31 sono state eseguite e hanno avuto successo il 27 ottobre 2026. L'esempio Python di QoreSign non è stato eseguito (il pacchetto non è pubblicato) e l'esempio Android di QoreSign non è stato eseguito su un dispositivo. Il wallet adapter, il chain bridge e handles non hanno un quickstart, quindi i loro esempi in questo manuale provengono dalle tipizzazioni e dal sorgente dei pacchetti e non sono stati eseguiti end to end.
 - **`@qorechain/rdk-cli` prima della 0.6.2** non stampava nulla se avviato tramite il link bin di npm, e il suo `--version` stampava 0.4.1. **`@qorechain/rdk` prima della 0.7.0** costruiva prove di prelievo che non venivano mai verificate sulla chain. Usa la 0.7.0.
 - **Conflitto di versione di cosmjs.** `@qorechain/wallet-adapter` e `@qorechain/chain-bridge` usano cosmjs 0.32; l'SDK usa cosmjs 0.39. Installare l'adapter accanto all'SDK nello stesso progetto fa segnalare a npm `ERESOLVE`. Tienili in progetti separati oppure passa `--legacy-peer-deps`.

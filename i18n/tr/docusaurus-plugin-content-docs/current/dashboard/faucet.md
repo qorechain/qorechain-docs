@@ -15,10 +15,10 @@ Testnet QOR'un **gerçek bir değeri yoktur**. Musluk asla mainnet'e dokunmaz: m
 
 ## Yenilikler {#innovations}
 
-- **Tek talep, iki tür token.** Bir talep 100 QOR öder; ayrı bir işlemde ise 1.000 fUSD, 0,5 fETH ve 0,02 fBTC öder. Fest gönderimi başarısız olursa QOR yine de ulaşır ve sonuç kartı bunu belirtir.
+- **Tek talep, iki tür token.** Bir talep 100 QOR öder; ayrı bir işlemde ise 1000 fUSD, 0,5 fETH ve 0,02 fBTC öder. Fest gönderimi başarısız olursa QOR yine de ulaşır ve sonuç kartı bunu belirtir.
 - **Çift bekleme süresi.** Hesap başına **ve** adres başına 24 saatte bir talep. Yuva, herhangi bir şey gönderilmeden önce ayrılır ve gönderim başarısız olursa serbest bırakılır; böylece başarısız bir talep gününüzü tüketmez.
 - **Fest token'ları yerel bank coin'leridir.** Bunlar, zincir üzerindeki AMM'nin, bank gönderimlerinin, IBC'nin ve QoreChain Native sözleşmelerinin olduğu gibi kullandığı `erc20:0x...` bank birimleridir. MetaMask veya bir EVM DEX bunları yalnızca bir `MsgConvertCoin` dönüşümünden sonra görür (bkz. [Fest test token'ları](#fest-tokens)).
-- **Yanlış rakam yok.** Musluğun bilgisi yüklenemezse sayfa bir tutar yerine "..." gösterir, asla tahmin edilmiş bir tutar göstermez.
+- **Tutarlar talep başına sabittir.** Talep başına 100 QOR, hesap başına **ve** adres başına 24 saatte bir; ayrıca talep başına 1000 fUSD, 0,5 fETH ve 0,02 fBTC (yalnızca testnet, oturum açmak gerekir).
 - **Bir `0x` alıcı, `qor1` ikizi üzerinden ödenir.** Bir `0x` adresi, `qor1` biçimiyle aynı 20 baytıdır; bu nedenle servis aynı hesabı öder. Panel formunun kendisi yalnızca `qor1...` kabul eder.
 
 ## Nasıl kullanılır {#how-to-use}

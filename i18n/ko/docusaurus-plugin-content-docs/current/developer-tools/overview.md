@@ -32,6 +32,8 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 | dApp에서 QoreX 지갑 사용 | QoreX 통합 | [개발자를 위한 QoreX](/qorex/overview#developers) |
 | 애플리케이션 롤업 생성 및 운영 | RDK | [롤업 개요](/rollups/overview), [롤업 배포](/rollups/deploying-a-rollup) |
 | 포스트 퀀텀 프리미티브(ML-DSA, ML-KEM, SHAKE-256)만 단독으로 사용 | `qorechain-pqc` | [포스트 퀀텀 서명](/developer-guide/post-quantum-signing) |
+| AI 에이전트나 개발자 도구가 체인을 읽게 하기(블록, 트랜잭션, 계정, 하이브리드 서명 상태, 시뮬레이션, 서명되지 않은 전송) | QoreChain MCP 서버 | [QoreChain MCP 서버](/developer-tools/mcp) |
+| 터미널이나 셸 스크립트에서 JSON 출력으로 체인 읽기 | `qore` CLI | [QoreChain CLI](/developer-tools/qore-cli) |
 
 패키지 하나를 설치하고 먼저 공개 테스트넷에서 퀵스타트를 실행해 보세요. 읽기에는 계정도, 키도, 수수료도 필요하지 않습니다.
 
@@ -60,7 +62,7 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 - **시뮬레이터:** 서명된 트랜잭션(base64 또는 hex `TxRaw`)을 시험 실행하여 가스 사용량과 잔액 변화를 보여줍니다. 아무것도 브로드캐스트되지 않습니다.
 - **서명 플레이그라운드:** 테스트넷 전용. 브라우저에서 메모리에만 보관되는 일회용 하이브리드 키를 생성하여 메시지와 Sign In With QoreChain 요청에 서명하고 검증합니다.
 - **QoreX 테스트 지갑:** 테스트넷 전용. 탭에 테스트 지갑(`window.qorex`, EIP-6963으로 "QoreX (mock)"로 알림)을 주입하여 dApp 흐름을 시험해 볼 수 있습니다.
-- **AI 에이전트(MCP):** 아직 게시되지 않은 MCP 서버를 위한 페이지입니다([예정](#planned) 참조).
+- **AI 에이전트(MCP):** QoreChain MCP 서버의 상태(게시됨)와 MCP 클라이언트 설정입니다. 로컬 `npx`가 우선이며, API 키가 필요한 호스팅 테스트넷 엔드포인트도 있습니다. [QoreChain MCP 서버](/developer-tools/mcp)를 참고하세요.
 
 **트랜잭션 인스펙터**(해시를 붙여 넣으면 모든 메시지, 서명자, 수수료, 포스트 퀀텀 서명의 검증 여부를 보여줌)는 **아직 라이브가 아닙니다**. 아래의 표와 SDK 허브는 같은 데이터를 보여주며, 표는 2026년 10월 27일에 레지스트리와 대조해 확인했습니다.
 
@@ -181,14 +183,22 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 | Cosmos dApp | `@qorechain/qorex-interchain-kit` (또는 `@qorechain/qorex-cosmos-kit`) |
 | 자체 지갑이나 백엔드에서의 하이브리드 서명 | `@qorechain/qoresign` |
 
+### MCP 서버와 CLI {#group-mcp}
+
+페이지: [QoreChain MCP 서버](/developer-tools/mcp), [QoreChain CLI](/developer-tools/qore-cli). 소스: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp)(공개). 둘 다 체인을 읽기만 하며 서명하거나, 키를 보관하거나, 브로드캐스트하지 않습니다. 2026년 10월 27일에 게시되었습니다.
+
+| 패키지 | 언어 | 버전 | 설치 | 상태 |
+|---|---|---|---|---|
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (Node.js 서버, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Published. stdio와 Streamable HTTP. 호스팅 엔드포인트 `https://mcp.qorechain.io/mcp`에는 API 키가 필요함 |
+| [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (또는 `uvx qorechain-mcp`) | Published. npm 패키지와 같은 도구. stdio 전용 |
+| [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | Published. `--json` 출력은 MCP 도구 출력과 동일 |
+
 ### 예정 (게시되지 않음) {#planned}
 
-이 이름들은 아직 레지스트리에 없는 도구를 위해 예약되어 있습니다. 각각 2026년 10월 27일에 해당 레지스트리에서 404를 반환했으므로, 설치할 것이 없고 나열된 동작은 아직 사용할 수 없습니다.
+이 이름은 아직 레지스트리에 없는 도구를 위해 예약되어 있습니다. 2026년 10월 27일에 해당 레지스트리에서 404를 반환했으므로, 설치할 것이 없고 나열된 동작은 아직 사용할 수 없습니다.
 
 | 패키지 | 의도된 용도 | 상태 |
 |---|---|---|
-| `@qorechain/mcp` | QoreChain에 대한 읽기 접근(블록, 트랜잭션, 계정, 검증인, 스테이킹 티어, 하이브리드 서명 상태, 시뮬레이션, 서명되지 않은 전송)을 제공하는 Model Context Protocol 서버. 서명이나 브로드캐스트는 절대 하지 않습니다. 호스팅 엔드포인트도 계획되어 있습니다 | 게시되지 않음. 소스 저장소는 공개되어 있지 않음. 호스팅 엔드포인트는 라이브가 아님 |
-| `@qorechain/qore-cli` (명령 `qore`) | 같은 데이터에 대해 안정적인 JSON 출력을 제공하는 명령줄 읽기 | 게시되지 않음 |
 | PyPI의 `qorechain-qoresign` | Python용 QoreSign | 게시되지 않음 (0.1.1 예정) |
 
 ## 실시간 버전 확인 방법 {#live-versions}
@@ -209,7 +219,7 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 ## 제한 사항 및 알려진 문제 {#limits}
 
 - **두 라이브 네트워크, 서로 다른 버전.** 메인넷은 v3.2.4를, 테스트넷은 v3.2.6을 실행합니다. 테스트넷에만 있는 기능은 해당 페이지에 표시됩니다. 메인넷에서 v3.2.5 동작을 가정하지 마세요.
-- **아직 라이브가 아닌 것:** 대시보드 개발자 페이지의 트랜잭션 인스펙터, MCP 서버와 `qore` CLI, Python용 QoreSign, SVM 트랜잭션, 메인넷의 EVM 프리컴파일(레인별 목록은 [SDK 개요](/sdk/overview) 참조).
+- **아직 라이브가 아닌 것:** 대시보드 개발자 페이지의 트랜잭션 인스펙터, Python용 QoreSign, SVM 트랜잭션, 메인넷의 EVM 프리컴파일(레인별 목록은 [SDK 개요](/sdk/overview) 참조).
 - **실행하지 않은 예제:** 34개 퀵스타트 항목 중 31개가 2026년 10월 27일에 실행되어 통과했습니다. QoreSign Python 예제는 실행하지 않았고(패키지가 게시되지 않음), QoreSign Android 예제는 기기에서 실행하지 않았습니다. 지갑 어댑터, 체인 브리지, handles에는 퀵스타트가 없으므로, 이 매뉴얼의 해당 예제는 패키지 타입 정의와 소스에서 가져온 것이며 끝까지 실행하지 않았습니다.
 - **0.6.2 이전의 `@qorechain/rdk-cli`**는 npm bin 링크로 시작하면 아무것도 출력하지 않았고, `--version`은 0.4.1을 출력했습니다. **0.7.0 이전의 `@qorechain/rdk`**는 체인에서 한 번도 검증되지 않는 출금 증명을 만들었습니다. 0.7.0을 사용하세요.
 - **cosmjs 버전 충돌.** `@qorechain/wallet-adapter`와 `@qorechain/chain-bridge`는 cosmjs 0.32를 사용하고, SDK는 cosmjs 0.39를 사용합니다. 한 프로젝트에 어댑터를 SDK와 함께 설치하면 npm이 `ERESOLVE`를 보고합니다. 별도의 프로젝트로 유지하거나 `--legacy-peer-deps`를 전달하세요.

@@ -15,10 +15,10 @@ El QOR de testnet **no tiene valor real**. El Grifo nunca toca mainnet: no exist
 
 ## Innovaciones {#innovations}
 
-- **Una solicitud, dos tipos de token.** Una solicitud paga 100 QOR y, en una transacción aparte, 1,000 fUSD, 0.5 fETH y 0.02 fBTC. Si falla el envío del fest, el QOR llega igualmente y la tarjeta de resultado lo indica.
+- **Una solicitud, dos tipos de token.** Una solicitud paga 100 QOR y, en una transacción aparte, 1000 fUSD, 0.5 fETH y 0.02 fBTC. Si falla el envío del fest, el QOR llega igualmente y la tarjeta de resultado lo indica.
 - **Un doble periodo de espera.** Una solicitud cada 24 horas por cuenta **y** por dirección. El hueco se reserva antes de enviar nada y se libera si el envío falla, así que una solicitud fallida no consume tu día.
 - **Los tokens del fest son monedas bank nativas.** Son denominaciones bank `erc20:0x...` que el AMM on-chain, los envíos bank, IBC y los contratos de QoreChain Native usan tal cual. MetaMask o un DEX de EVM solo los ven tras una conversión con `MsgConvertCoin` (consulta [Tokens de prueba del fest](#fest-tokens)).
-- **Sin cifras erróneas.** Si no se puede cargar la información del Grifo, la página muestra "..." en lugar de una cantidad, nunca una cantidad supuesta.
+- **Las cantidades son fijas por solicitud.** 100 QOR por solicitud, una vez cada 24 horas por cuenta **y** por dirección, más 1000 fUSD, 0.5 fETH y 0.02 fBTC por solicitud (solo testnet, requiere iniciar sesión).
 - **Un destinatario `0x` se paga en su gemela `qor1`.** Una dirección `0x` son los mismos 20 bytes que su forma `qor1`, así que el servicio paga a la misma cuenta. El propio formulario del Panel solo acepta `qor1...`.
 
 ## Cómo usarlo {#how-to-use}

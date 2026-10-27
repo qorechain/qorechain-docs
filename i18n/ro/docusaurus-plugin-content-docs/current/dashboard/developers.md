@@ -14,7 +14,7 @@ Pagina **Developers** (`/developers`, bara laterală **Build**, intrarea **Devel
 - **Un gateway doar pentru citire către lanț.** Uneltele citesc date publice ale lanțului și simulează o tranzacție printr-un gateway doar pentru citire, pe căile de interogare `cosmos/`, `cosmwasm/` și `qorechain/`, plus apelul de simulare. Nimic de pe pagină nu poate transmite o tranzacție. Gateway-ul există pentru că endpoint-urile REST ale lanțului nu trimit anteturi CORS pentru browser.
 - **Chei care nu părăsesc niciodată browserul.** Cheile pentru signing playground și pentru portofelul de test sunt generate în browserul tău și păstrate doar în memorie. Nu sunt niciodată salvate sau trimise și dispar la reîncărcare. Cele două tab-uri sunt doar pentru testnet și refuză mainnet-ul.
 - **Biblioteca de semnare din producție, nu o demonstrație.** Playground-ul folosește [QoreSign](/qoresign/overview), aceeași bibliotecă open-source ca integrările din producție. Produce și verifică semnături hibride: o semnătură secp256k1 plus o semnătură ML-DSA-87 peste același mesaj.
-- **Un hub de pachete generat din date testate.** Tab-ul **SDKs** listează 40 de pachete dintr-un singur manifest. Versiunile sunt citite live din fiecare registru (reîmprospătate la fiecare 10 minute, cu ultima versiune verificată și data ei afișate dacă un registru nu poate fi contactat), iar fiecare ghid rapid (quickstart) a fost rulat de echipa SDK pe registrele publice, cu rezultatul observat afișat alături.
+- **Un hub de pachete generat din date testate.** Tab-ul **SDKs** listează aproximativ 40 de pachete dintr-un singur manifest. Versiunile sunt citite live din fiecare registru (reîmprospătate la fiecare 10 minute, cu ultima versiune verificată și data ei afișate dacă un registru nu poate fi contactat), iar fiecare ghid rapid (quickstart) a fost rulat de echipa SDK pe registrele publice, cu rezultatul observat afișat alături.
 - **Răspunsuri din lanț, nu presupuneri.** **PQ key status** citește cheia ML-DSA-87 înregistrată și starea ferestrei EVM din rutele de interogare proprii ale nodului, astfel încât poți vedea de ce o tranzacție EVM ar fi refuzată înainte de a o trimite.
 
 ## Cum se folosește {#how-to-use}
@@ -23,7 +23,7 @@ Deschide [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/deve
 
 ### SDKs {#sdks}
 
-**Ce face.** Listează fiecare bibliotecă QoreChain, grupată pe produs. Manifestul conține 40 de pachete în TypeScript, Python, Go, Rust, Java, Kotlin și Swift: 36 stabile, 1 depreciat și 3 încă nepublicate (QoreSign pentru Python, serverul MCP și instrumentul în linie de comandă `qore`). Produsele, în ordinea afișată, sunt: QoreChain SDK (core, hook-uri React, EVM, SVM, starterul dApp și portările Python, Rust, Go și Java), QoreSign, RDK (kitul de dezvoltare pentru rollup-uri, instrumentul său în linie de comandă, starterul de rollup și portările Python, Rust, Go și Java), biblioteca PQC, wallet adapter, chain bridge, Handles, integrările QoreX, precum și MCP și CLI-ul `qore`.
+**Ce face.** Listează fiecare bibliotecă QoreChain, grupată pe produs. Manifestul conține aproximativ 40 de pachete în TypeScript, Python, Go, Rust, Java, Kotlin și Swift. Cele mai multe sunt stabile; unul este depreciat, iar un pachet care nu este încă în registrul său este marcat ca atare. Produsele, în ordinea afișată, sunt: QoreChain SDK (core, hook-uri React, EVM, SVM, starterul dApp și portările Python, Rust, Go și Java), QoreSign, RDK (kitul de dezvoltare pentru rollup-uri, instrumentul său în linie de comandă, starterul de rollup și portările Python, Rust, Go și Java), biblioteca PQC, wallet adapter, chain bridge, Handles, integrările QoreX, precum și MCP și CLI-ul `qore`.
 
 **Cum funcționează.** Fiecare produs este o cartelă. Dacă produsul apare în mai multe limbaje, un selector de limbaj (pastile) schimbă pachetul afișat. Fiecare pachet arată:
 
@@ -119,11 +119,15 @@ Ai nevoie mai întâi de octeți semnați: construiește și semnează cu un SDK
 
 ### AI agents (MCP) {#mcp}
 
-**Ce face.** Îți spune dacă serverul MCP QoreChain este disponibil și, odată ce este, cum îl configurezi într-un client MCP.
+**Ce face.** Arată starea serverului MCP QoreChain (un server Model Context Protocol care permite unui client MCP să citească date din lanțul QoreChain și să folosească uneltele pentru dezvoltatori) și cum îl configurezi într-un client MCP.
 
-**Cum funcționează.** Când deschizi tab-ul, pagina interoghează live registrul de pachete. În prezent pachetul nu este publicat, așa că tab-ul afișează **Not published** și „The QoreChain MCP server is not published yet.”, cu o scurtă descriere a ceea ce va oferi. Nu afișează nicio comandă de instalare. Când pachetul va fi publicat, tab-ul va afișa versiunea sa (**Published**) și configurarea pentru un client MCP: una locală (stdio) și una auto-găzduită (Streamable HTTP).
+**Cum funcționează.** Când deschizi tab-ul, pagina interoghează live registrul de pachete și afișează starea (**Published**) cu versiunea curentă (`@qorechain/mcp`, 0.1.0 la momentul scrierii, care se găsește și pe PyPI ca `qorechain-mcp`). Apoi afișează configurarea pentru un client MCP, ca blocuri de copiat:
 
-**Pași.** Deschide tab-ul și citește starea. Nu e nevoie de nimic altceva până când serverul este publicat. Hub-ul din tab-ul **SDKs** arată același pachet ca „Not published yet”.
+- **Local (stdio), opțiunea principală.** Adaugă `{ "mcpServers": { "qorechain": { "command": "npx", "args": ["-y", "@qorechain/mcp"] } } }` în configurația de servere a clientului tău MCP. Nu necesită nicio cheie.
+- **Auto-găzduit (Streamable HTTP).** Rulează `qorechain-mcp serve --port 8787` și îndreaptă clientul către `http://localhost:8787/mcp`.
+- **Endpoint găzduit.** `https://mcp.qorechain.io/mcp` servește implicit testnet-ul. Fiecare cerere are nevoie de o cheie API, trimisă ca antet `Authorization: Bearer`; cheile se emit la cerere. Pentru majoritatea utilizărilor, configurarea locală nu necesită nicio cheie.
+
+**Pași.** Deschide tab-ul, copiază configurația locală în clientul tău MCP, repornește-l și cere-i să citească un bloc sau un cont. Pentru detalii despre unelte și opțiuni vezi [Serverul MCP QoreChain](/developer-tools/mcp). **Exemplu minimal:** lipește blocul stdio în clientul tău, repornește-l și cere-i ultimul bloc.
 
 ## Cum se accesează {#how-to-access}
 
@@ -142,15 +146,15 @@ Ai nevoie mai întâi de octeți semnați: construiește și semnează cu un SDK
 | Biblioteca de semnare | npm `@qorechain/qoresign`, sursa `github.com/qorechain/qoresign`, vezi [QoreSign](/qoresign/overview) | n/a |
 | Pachetul de portofel de test | npm `@qorechain/qorex-wallet-mock`, sursa `github.com/qorechain/qorex-integrations` | Testnet |
 | Indexul de pachete | [Pachete pentru dezvoltatori](/developer-tools/overview) | n/a |
-| Server MCP | `@qorechain/mcp`: încă nepublicat | n/a |
+| Server MCP | npm `@qorechain/mcp` 0.1.0 și `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0; ghid: [Serverul MCP QoreChain](/developer-tools/mcp) | Implicit testnet |
 
 Versiunile pachetelor se schimbă; citește-le pe cele curente în tab-ul **SDKs** sau în registre.
 
 ## Limite și probleme cunoscute {#limits}
 
 - **Transaction inspector: în curând, încă nu este activ.** Planificat: lipești un hash și vezi fiecare mesaj, semnatarul, comisionul, dacă semnătura post-cuantică se verifică în raport cu cheia înregistrată a semnatarului și nivelul de securitate. Apare odată cu următoarea versiune QoreSign.
-- **Serverul MCP nu este publicat,** deci nu există nimic de instalat; QoreSign pentru Python și instrumentul în linie de comandă `qore` nu sunt nici ele publicate încă și nu afișează nicio comandă de instalare.
-- **Două quickstart-uri sunt marcate „Not tested”:** QoreSign pentru Android (același cod a fost rulat doar pe artefactul JVM, nu pe un dispozitiv) și QoreSign pentru Python (pachetul nu este publicat). Celelalte 32 de intrări quickstart au rulat și au trecut.
+- **Endpoint-ul MCP găzduit are nevoie de o cheie API,** emisă la cerere; configurarea locală nu are nevoie de niciuna. Folosește configurarea locală pentru majoritatea lucrărilor.
+- **Două quickstart-uri sunt marcate „Not tested”:** QoreSign pentru Android (același cod a fost rulat doar pe artefactul JVM, nu pe un dispozitiv) și QoreSign pentru Python. Celelalte 32 de intrări quickstart au rulat și au trecut.
 - **Simulatorul are nevoie de octeți semnați.** Nu poate semna în locul tău și nu transmite niciodată.
 - **Playground-ul și portofelul de test sunt doar pe testnet,** folosesc chei de unică folosință care dispar la reîncărcare și nu pot deține sau muta fonduri reale.
 - **O extensie QoreX reală din același tab este înlocuită** de portofelul de test până când reîncarci pagina.

@@ -29,12 +29,12 @@ Bu sayfadaki her şey, üst bilgi hangi ağı gösterirse göstersin **testnet**
 1. Banner, **Get test tokens** düğmesini sunar; önce bunu kullanın.
 2. Ödeme yapacağınız token'ı seçin ve bir miktar girin. Varsayılan çift olan QOR - USDC, zincir üstünde sonuçlanmayan bir **alıştırma** çiftidir. Zincir üstü bir takas için **WQOR** ve **QUSDC** seçin (veya beş token'dan herhangi bir çifti).
 3. Almak istediğiniz token'ı seçin; çıktı otomatik olarak fiyatlanır.
-4. İsteğe bağlı olarak **kayma toleransını** ayarlayın (varsayılan %0,5).
+4. İsteğe bağlı olarak **kayma toleransını** ayarlayın (sayfanın bir varsayılanı vardır).
 5. **Swap Now** öğesini, ardından **Confirm Swap** öğesini seçin. Sonuç, **View Transaction** ile birlikte "Swap Confirmed" gösterir.
 
 **Recent Swaps**, tüm kullanıcıların takaslarını listeler; **Show My History** listeyi sizinkilerle sınırlar.
 
-**Asgari örnek:** testnet'te **Get test tokens** öğesini seçin, 10 WQOR'u QUSDC karşılığında satın, **Swap Now**, **Confirm Swap**.
+**Asgari örnek:** testnet'te **Get test tokens** öğesini seçin, biraz WQOR'u QUSDC karşılığında satın, **Swap Now**, **Confirm Swap**.
 
 :::tip Kayma
 Daha yüksek bir tolerans, hızlı hareket eden piyasalarda bir takasın gerçekleşme olasılığını artırır, ancak daha kötü bir fiyat alabilirsiniz. Varsayılan değer çoğu çift için uygundur.
@@ -42,12 +42,12 @@ Daha yüksek bir tolerans, hızlı hareket eden piyasalarda bir takasın gerçek
 
 ### Pools
 
-Havuz kartlarına göz atın: işlem çifti, toplam likidite, 24 saatlik hacim, sağlayıcı sayısı ve ayrıca bir APR, bir ücret, bir havuz kimliği, bir fiyat ve rezervler. Bir arama kutusu, token sembolüne göre filtreler. Bunlar alıştırma rakamlarıdır; getiri olarak okumayın.
+İşlem çifti ve ayrıntıları için havuz kartlarına göz atın. Bir arama kutusu, token sembolüne göre filtreler. Bu havuzlar bir alıştırma alanıdır, zincir üstü likidite değildir ve üzerlerindeki rakamlar piyasa verisi değildir.
 
 ### Add Liquidity
 
 1. Eşleştirilecek iki token'ı seçin (biri varsayılan olarak QOR'dur). Yeni bir çift için **Create Pool** kullanın.
-2. İlk token için bir miktar girin; ikincisi havuz oranına uyacak şekilde dolar. Sayfa "Minimum 1000 QOR required" notunu düşer.
+2. İlk token için bir miktar girin; ikincisi havuz oranına uyacak şekilde dolar. Sayfa, bir havuz oluşturmak için bir asgari tutar belirtir.
 3. Payınızı inceleyin, ardından onaylayın.
 
 ### My Positions
@@ -74,7 +74,7 @@ Her girdi token çiftini, her token'ın miktarını, payınızı ve kazanılan �
 - **Mainnet ticareti yok.** Sayfa ağ anahtarını yok sayar ve mainnet'te de testnet içeriğini gösterir.
 - **Yalnızca beş token zincir üstünde sonuçlanır.** [Faucet](/dashboard/faucet#fest-tokens)'teki fest token'ları bu sayfada yoktur.
 - **Yerel AMM'nin** her iki ağda da **havuzu yoktur**. Gerçek havuzlar var olduklarında açıklanacaktır.
-- **Alıştırma rakamları** (fiyatlar, APR, hacim) piyasa verisi değildir.
+- **Havuz rakamları** alıştırma verisidir, piyasa verisi değildir.
 - **Testnet token'larının değeri yoktur** ve hiçbir şeyle takas edilemez.
 
 ## İlgili

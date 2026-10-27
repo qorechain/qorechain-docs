@@ -14,7 +14,7 @@ Die Seite **Developers** (`/developers`, Seitenleiste **Build**, Eintrag **Devel
 - **Ein schreibgeschütztes Gateway zur Chain.** Die Tools lesen öffentliche Chain-Daten und simulieren eine Transaktion über ein schreibgeschütztes Gateway unter den Abfragepfaden `cosmos/`, `cosmwasm/` und `qorechain/` sowie dem Simulate-Aufruf. Nichts auf der Seite kann eine Transaktion senden. Das Gateway gibt es, weil die REST-Endpunkte der Chain keine Browser-CORS-Header senden.
 - **Schlüssel, die den Browser nie verlassen.** Die Schlüssel für den Signing playground und die Test-Wallet werden in deinem Browser erzeugt und nur im Arbeitsspeicher gehalten. Sie werden nie gespeichert oder gesendet und verschwinden beim Neuladen. Diese beiden Tabs gelten nur für das Testnet und lehnen das Mainnet ab.
 - **Die Signierbibliothek aus der Produktion, keine Demo.** Der Playground verwendet [QoreSign](/qoresign/overview), dieselbe Open-Source-Bibliothek wie Produktionsintegrationen. Sie erzeugt und verifiziert hybride Signaturen: eine secp256k1-Signatur plus eine ML-DSA-87-Signatur über dieselbe Nachricht.
-- **Ein Paket-Hub aus getesteten Daten.** Der Tab **SDKs** listet 40 Pakete aus einem einzigen Manifest. Die Versionen werden live aus jeder Registry gelesen (alle 10 Minuten aktualisiert; ist eine Registry nicht erreichbar, werden die zuletzt geprüfte Version und ihr Datum angezeigt), und jeder Quickstart wurde vom SDK-Team gegen die öffentlichen Registries ausgeführt, mit der beobachteten Ausgabe daneben.
+- **Ein Paket-Hub aus getesteten Daten.** Der Tab **SDKs** listet etwa 40 Pakete aus einem einzigen Manifest. Die Versionen werden live aus jeder Registry gelesen (alle 10 Minuten aktualisiert; ist eine Registry nicht erreichbar, werden die zuletzt geprüfte Version und ihr Datum angezeigt), und jeder Quickstart wurde vom SDK-Team gegen die öffentlichen Registries ausgeführt, mit der beobachteten Ausgabe daneben.
 - **Antworten der Chain, keine Vermutungen.** **PQ key status** liest den registrierten ML-DSA-87-Schlüssel und den Zustand des EVM-Fensters aus den eigenen Abfrage-Routen des Knotens, sodass du siehst, warum eine EVM-Transaktion abgelehnt würde, bevor du sie sendest.
 
 ## Anleitung {#how-to-use}
@@ -23,7 +23,7 @@ Die Seite **Developers** (`/developers`, Seitenleiste **Build**, Eintrag **Devel
 
 ### SDKs {#sdks}
 
-**Was es tut.** Listet jede QoreChain-Bibliothek, nach Produkt gruppiert. Das Manifest enthält 40 Pakete in TypeScript, Python, Go, Rust, Java, Kotlin und Swift: 36 stabil, 1 veraltet und 3 noch nicht veröffentlicht (QoreSign für Python, der MCP-Server und das Kommandozeilenwerkzeug `qore`). Die Produkte in der angezeigten Reihenfolge sind: QoreChain SDK (Core, React-Hooks, EVM, SVM, der dApp-Starter und die Ports für Python, Rust, Go und Java), QoreSign, RDK (das Rollup Development Kit, sein Kommandozeilenwerkzeug, der Rollup-Starter und die Ports für Python, Rust, Go und Java), die PQC-Bibliothek, der Wallet-Adapter, die Chain-Bridge, Handles, QoreX-Integrationen sowie MCP und die `qore`-CLI.
+**Was es tut.** Listet jede QoreChain-Bibliothek, nach Produkt gruppiert. Das Manifest enthält etwa 40 Pakete in TypeScript, Python, Go, Rust, Java, Kotlin und Swift. Die meisten sind stabil, eines ist veraltet, und ein Paket, das noch nicht in seiner Registry liegt, ist entsprechend gekennzeichnet. Die Produkte in der angezeigten Reihenfolge sind: QoreChain SDK (Core, React-Hooks, EVM, SVM, der dApp-Starter und die Ports für Python, Rust, Go und Java), QoreSign, RDK (das Rollup Development Kit, sein Kommandozeilenwerkzeug, der Rollup-Starter und die Ports für Python, Rust, Go und Java), die PQC-Bibliothek, der Wallet-Adapter, die Chain-Bridge, Handles, QoreX-Integrationen sowie MCP und die `qore`-CLI.
 
 **Wie es funktioniert.** Jedes Produkt ist eine Karte. Wenn das Produkt in mehreren Sprachen erscheint, schaltet eine Sprachauswahl (Pills) das angezeigte Paket um. Jedes Paket zeigt:
 
@@ -119,11 +119,15 @@ Du brauchst zuerst signierte Bytes: Erstelle und signiere sie mit einem SDK oder
 
 ### AI agents (MCP) {#mcp}
 
-**Was es tut.** Sagt dir, ob der QoreChain-MCP-Server verfügbar ist und, sobald er es ist, wie du ihn in einem MCP-Client einrichtest.
+**Was es tut.** Zeigt den Status des QoreChain-MCP-Servers (ein Model-Context-Protocol-Server, mit dem ein MCP-Client QoreChain-Chain-Daten lesen und die Entwicklerwerkzeuge nutzen kann) und wie du ihn in einem MCP-Client einrichtest.
 
-**Wie es funktioniert.** Beim Öffnen des Tabs fragt die Seite die Paket-Registry live ab. Heute ist das Paket nicht veröffentlicht, daher steht im Tab **Not published** und „The QoreChain MCP server is not published yet." mit einer kurzen Beschreibung dessen, was er bieten wird. Er zeigt keinen Installationsbefehl. Sobald das Paket veröffentlicht ist, zeigt der Tab seine Version (**Published**) und die Einrichtung für einen MCP-Client: eine lokale Konfiguration (stdio) und eine selbst gehostete (Streamable HTTP).
+**Wie es funktioniert.** Beim Öffnen des Tabs fragt die Seite die Paket-Registry live ab und zeigt den Status (**Published**) mit der aktuellen Version (`@qorechain/mcp`, zum Zeitpunkt des Schreibens 0.1.0, das auch auf PyPI als `qorechain-mcp` liegt). Danach zeigt sie die Einrichtung für einen MCP-Client als kopierbare Blöcke:
 
-**Schritte.** Öffne den Tab und lies den Status. Mehr ist nicht nötig, bis der Server veröffentlicht ist. Der Hub im Tab **SDKs** zeigt dasselbe Paket als „Not published yet".
+- **Lokal (stdio), die Hauptoption.** Füge `{ "mcpServers": { "qorechain": { "command": "npx", "args": ["-y", "@qorechain/mcp"] } } }` in die Server-Konfiguration deines MCP-Clients ein. Es braucht keinen Schlüssel.
+- **Selbst gehostet (Streamable HTTP).** Führe `qorechain-mcp serve --port 8787` aus und richte den Client auf `http://localhost:8787/mcp`.
+- **Gehosteter Endpunkt.** `https://mcp.qorechain.io/mcp` bedient standardmäßig das Testnet. Jede Anfrage braucht einen API-Schlüssel, der als `Authorization: Bearer`-Header gesendet wird; Schlüssel werden auf Anfrage ausgestellt. Für die meisten Anwendungen braucht die lokale Einrichtung keinen Schlüssel.
+
+**Schritte.** Öffne den Tab, kopiere die lokale Konfiguration in deinen MCP-Client, starte ihn neu und bitte ihn, einen Block oder ein Konto zu lesen. Details zu den Tools und Optionen findest du unter [QoreChain-MCP-Server](/developer-tools/mcp). **Minimales Beispiel:** Füge den stdio-Block in deinen Client ein, starte ihn neu und bitte ihn um den neuesten Block.
 
 ## Zugang {#how-to-access}
 
@@ -142,15 +146,15 @@ Du brauchst zuerst signierte Bytes: Erstelle und signiere sie mit einem SDK oder
 | Signier-Bibliothek | npm `@qorechain/qoresign`, Quelle `github.com/qorechain/qoresign`, siehe [QoreSign](/qoresign/overview) | n/a |
 | Test-Wallet-Paket | npm `@qorechain/qorex-wallet-mock`, Quelle `github.com/qorechain/qorex-integrations` | Testnet |
 | Paketindex | [Developer Packages](/developer-tools/overview) | n/a |
-| MCP-Server | `@qorechain/mcp`: noch nicht veröffentlicht | n/a |
+| MCP-Server | npm `@qorechain/mcp` 0.1.0 und `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0; Anleitung: [QoreChain-MCP-Server](/developer-tools/mcp) | Standardmäßig Testnet |
 
 Paketversionen ändern sich; lies die aktuellen im Tab **SDKs** oder in den Registries.
 
 ## Grenzen und bekannte Probleme {#limits}
 
 - **Transaction inspector: in Planung, nicht live.** Geplant: einen Hash einfügen und jede Nachricht, den Signer, die Gebühr, ob die Post-Quantum-Signatur gegen den registrierten Schlüssel des Signers verifiziert, und die Sicherheitsstufe sehen. Er kommt mit dem nächsten QoreSign-Release.
-- **Der MCP-Server ist nicht veröffentlicht,** es gibt also nichts zu installieren; QoreSign für Python und das Kommandozeilenwerkzeug `qore` sind ebenfalls noch nicht veröffentlicht und zeigen keinen Installationsbefehl.
-- **Zwei Quickstarts sind als „Not tested" markiert:** QoreSign für Android (derselbe Code wurde nur auf dem JVM-Artefakt ausgeführt, nicht auf einem Gerät) und QoreSign für Python (das Paket ist nicht veröffentlicht). Die anderen 32 Quickstart-Einträge liefen und bestanden.
+- **Der gehostete MCP-Endpunkt braucht einen API-Schlüssel,** der auf Anfrage ausgestellt wird; die lokale Einrichtung braucht keinen. Nutze für die meiste Arbeit die lokale Einrichtung.
+- **Zwei Quickstarts sind als „Not tested" markiert:** QoreSign für Android (derselbe Code wurde nur auf dem JVM-Artefakt ausgeführt, nicht auf einem Gerät) und QoreSign für Python. Die anderen 32 Quickstart-Einträge liefen und bestanden.
 - **Der Simulator braucht signierte Bytes.** Er kann nicht für dich signieren und sendet nie.
 - **Der Playground und die Test-Wallet gelten nur für das Testnet,** verwenden Wegwerfschlüssel, die beim Neuladen verschwinden, und können keine echten Mittel halten oder bewegen.
 - **Eine echte QoreX-Erweiterung im selben Tab wird ersetzt,** durch die Test-Wallet, bis du die Seite neu lädst.

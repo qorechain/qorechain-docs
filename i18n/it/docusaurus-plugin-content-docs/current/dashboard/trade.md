@@ -29,12 +29,12 @@ Prerequisiti: accesso effettuato e un wallet di test (vedi [Wallet](/dashboard/w
 1. Il banner offre **Get test tokens**; usalo per prima cosa.
 2. Scegli il token con cui paghi e inserisci un importo. La coppia predefinita, da QOR a USDC, è una coppia **di prova** che non viene regolata on-chain. Scegli **WQOR** e **QUSDC** (o una qualsiasi coppia tra i cinque) per uno swap on-chain.
 3. Scegli il token da ricevere; l'importo in uscita viene quotato automaticamente.
-4. Facoltativamente, regola la **tolleranza allo slippage** (predefinita 0,5%).
+4. Facoltativamente, regola la **tolleranza allo slippage** (la pagina ha un valore predefinito).
 5. Seleziona **Swap Now**, poi **Confirm Swap**. Il risultato mostra "Swap Confirmed" con **View Transaction**.
 
 **Recent Swaps** elenca gli swap di tutti gli utenti; **Show My History** lo filtra sui tuoi.
 
-**Esempio minimo:** sulla testnet seleziona **Get test tokens**, vendi 10 WQOR per QUSDC, **Swap Now**, **Confirm Swap**.
+**Esempio minimo:** sulla testnet seleziona **Get test tokens**, vendi un po' di WQOR per QUSDC, **Swap Now**, **Confirm Swap**.
 
 :::tip Slippage
 Una tolleranza più alta rende più probabile che uno swap vada a buon fine in mercati con movimenti rapidi, ma potresti ricevere un prezzo peggiore. Il valore predefinito è adatto alla maggior parte delle coppie.
@@ -42,12 +42,12 @@ Una tolleranza più alta rende più probabile che uno swap vada a buon fine in m
 
 ### Pools
 
-Sfoglia le card dei pool: coppia di trading, liquidità totale, volume delle 24 ore, numero di provider, e anche un APR, una commissione, un ID del pool, un prezzo e le riserve. Una casella di ricerca filtra per simbolo del token. Sono cifre di prova; non interpretarle come rendimenti.
+Sfoglia le card dei pool per la coppia di trading e i suoi dettagli. Una casella di ricerca filtra per simbolo del token. Questi pool sono un'area di prova, non liquidità on-chain, e le cifre che riportano non sono dati di mercato.
 
 ### Add Liquidity
 
 1. Seleziona due token da accoppiare (uno è impostato per default su QOR). Usa **Create Pool** per una nuova coppia.
-2. Inserisci un importo per il primo token; il secondo si compila per corrispondere al rapporto del pool. La pagina riporta "Minimum 1000 QOR required".
+2. Inserisci un importo per il primo token; il secondo si compila per corrispondere al rapporto del pool. La pagina indica un minimo per creare un pool.
 3. Esamina la tua quota, poi conferma.
 
 ### My Positions
@@ -74,7 +74,7 @@ Ogni voce mostra la coppia di token, l'importo di ciascun token, la tua quota e 
 - **Nessun trading su mainnet.** La pagina ignora l'interruttore di rete e mostra contenuti della testnet anche sulla mainnet.
 - **Solo cinque token vengono regolati on-chain.** I token del fest dal [Faucet](/dashboard/faucet#fest-tokens) non sono in questa pagina.
 - **L'AMM nativo non ha pool** su nessuna delle due reti. I pool reali verranno descritti quando esisteranno.
-- **Le cifre di prova** (prezzi, APR, volume) non sono dati di mercato.
+- **Le cifre dei pool** sono dati di prova, non dati di mercato.
 - **I token della testnet non hanno valore** e non possono essere scambiati con nulla.
 
 ## Correlati

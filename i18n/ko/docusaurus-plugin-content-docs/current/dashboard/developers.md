@@ -14,7 +14,7 @@ sidebar_position: 13
 - **체인에 대한 읽기 전용 게이트웨이.** 도구들은 공개 체인 데이터를 읽고, `cosmos/`, `cosmwasm/`, `qorechain/` 쿼리 경로와 시뮬레이트 호출에 한해 읽기 전용 게이트웨이를 통해 트랜잭션을 시뮬레이션합니다. 이 페이지의 어떤 것도 트랜잭션을 브로드캐스트할 수 없습니다. 체인의 REST 엔드포인트가 브라우저 CORS 헤더를 보내지 않기 때문에 이 게이트웨이가 존재합니다.
 - **브라우저를 떠나지 않는 키.** 서명 플레이그라운드와 테스트 지갑의 키는 브라우저에서 생성되며 메모리에만 보관됩니다. 저장되거나 전송되지 않으며, 새로고침하면 사라집니다. 이 두 탭은 테스트넷 전용이며 메인넷을 거부합니다.
 - **데모가 아닌 프로덕션 서명 라이브러리.** 플레이그라운드는 프로덕션 통합과 동일한 오픈 소스 라이브러리인 [QoreSign](/qoresign/overview)을 사용합니다. 같은 메시지에 대한 secp256k1 서명과 ML-DSA-87 서명으로 이루어진 하이브리드 서명을 생성하고 검증합니다.
-- **테스트된 데이터에서 생성되는 패키지 허브.** **SDKs** 탭은 하나의 매니페스트에서 40개의 패키지를 나열합니다. 버전은 각 레지스트리에서 실시간으로 읽어오며(10분마다 갱신되고, 레지스트리에 연결할 수 없으면 마지막으로 확인한 버전과 그 날짜가 표시됩니다), 각 퀵스타트는 SDK 팀이 공개 레지스트리를 대상으로 실행했고 그들이 관찰한 출력이 옆에 함께 표시됩니다.
+- **테스트된 데이터에서 생성되는 패키지 허브.** **SDKs** 탭은 하나의 매니페스트에서 약 40개의 패키지를 나열합니다. 버전은 각 레지스트리에서 실시간으로 읽어오며(10분마다 갱신되고, 레지스트리에 연결할 수 없으면 마지막으로 확인한 버전과 그 날짜가 표시됩니다), 각 퀵스타트는 SDK 팀이 공개 레지스트리를 대상으로 실행했고 그들이 관찰한 출력이 옆에 함께 표시됩니다.
 - **추측이 아닌 체인의 답.** **PQ key status**는 등록된 ML-DSA-87 키와 EVM 창 상태를 노드 자체의 쿼리 경로에서 읽어오므로, EVM 트랜잭션을 보내기 전에 왜 거부될지 확인할 수 있습니다.
 
 ## 사용 방법 {#how-to-use}
@@ -23,7 +23,7 @@ sidebar_position: 13
 
 ### SDKs {#sdks}
 
-**기능.** 모든 QoreChain 라이브러리를 제품별로 묶어 나열합니다. 매니페스트에는 TypeScript, Python, Go, Rust, Java, Kotlin, Swift에 걸쳐 40개의 패키지가 있습니다: 안정 36개, 지원 중단 1개, 아직 게시되지 않은 것 3개(Python용 QoreSign, MCP 서버, `qore` 명령줄 도구)입니다. 표시되는 순서대로 제품은 다음과 같습니다: QoreChain SDK(코어, React 훅, EVM, SVM, dApp 스타터, Python·Rust·Go·Java 포트), QoreSign, RDK(롤업 개발 키트, 그 명령줄 도구, 롤업 스타터, Python·Rust·Go·Java 포트), PQC 라이브러리, 지갑 어댑터, 체인 브리지, Handles, QoreX 통합, 그리고 MCP와 `qore` CLI.
+**기능.** 모든 QoreChain 라이브러리를 제품별로 묶어 나열합니다. 매니페스트에는 TypeScript, Python, Go, Rust, Java, Kotlin, Swift에 걸쳐 약 40개의 패키지가 있습니다. 대부분은 안정 버전이고, 하나는 지원 중단되었으며, 아직 레지스트리에 없는 패키지는 그렇게 표시됩니다. 표시되는 순서대로 제품은 다음과 같습니다: QoreChain SDK(코어, React 훅, EVM, SVM, dApp 스타터, Python·Rust·Go·Java 포트), QoreSign, RDK(롤업 개발 키트, 그 명령줄 도구, 롤업 스타터, Python·Rust·Go·Java 포트), PQC 라이브러리, 지갑 어댑터, 체인 브리지, Handles, QoreX 통합, 그리고 MCP와 `qore` CLI.
 
 **작동 방식.** 각 제품은 카드입니다. 제품이 여러 언어로 제공되면 언어 선택기(알약 모양)로 표시되는 패키지를 전환합니다. 각 패키지는 다음을 보여줍니다:
 
@@ -119,11 +119,15 @@ sidebar_position: 13
 
 ### AI agents (MCP) {#mcp}
 
-**기능.** QoreChain MCP 서버를 사용할 수 있는지, 그리고 사용할 수 있게 되면 MCP 클라이언트에서 어떻게 설정하는지 알려줍니다.
+**기능.** QoreChain MCP 서버(MCP 클라이언트가 QoreChain 체인 데이터를 읽고 개발자 도구를 사용할 수 있게 해 주는 Model Context Protocol 서버)의 상태와 MCP 클라이언트에서의 설정 방법을 보여줍니다.
 
-**작동 방식.** 탭을 열면 페이지가 패키지 레지스트리에 실시간으로 질의합니다. 현재 이 패키지는 게시되지 않았으므로, 탭에는 **Not published**와 제공될 기능에 대한 짧은 설명과 함께 "The QoreChain MCP server is not published yet."가 표시됩니다. 설치 명령은 표시되지 않습니다. 패키지가 게시되면 탭에 버전(**Published**)과 MCP 클라이언트용 설정이 표시됩니다: 로컬(stdio) 구성과 자체 호스팅(Streamable HTTP) 구성입니다.
+**작동 방식.** 탭을 열면 페이지가 패키지 레지스트리에 실시간으로 질의하여 현재 버전과 함께 상태(**Published**)를 보여줍니다(`@qorechain/mcp`, 작성 시점에는 0.1.0이며 PyPI에도 `qorechain-mcp`로 게시되어 있습니다). 이어서 MCP 클라이언트용 설정을 복사 가능한 블록으로 보여줍니다:
 
-**단계.** 탭을 열고 상태를 읽습니다. 서버가 게시될 때까지 다른 것은 필요하지 않습니다. **SDKs** 탭의 허브에는 같은 패키지가 "Not published yet"으로 표시됩니다.
+- **로컬(stdio), 기본 옵션.** `{ "mcpServers": { "qorechain": { "command": "npx", "args": ["-y", "@qorechain/mcp"] } } }`를 MCP 클라이언트의 서버 구성에 추가합니다. 키가 필요 없습니다.
+- **자체 호스팅(Streamable HTTP).** `qorechain-mcp serve --port 8787`을 실행하고 클라이언트가 `http://localhost:8787/mcp`를 가리키게 합니다.
+- **호스팅 엔드포인트.** `https://mcp.qorechain.io/mcp`는 기본적으로 테스트넷을 제공합니다. 모든 요청에는 `Authorization: Bearer` 헤더로 보내는 API 키가 필요하며, 키는 요청 시 발급됩니다. 대부분의 용도에서는 로컬 설정에 키가 필요하지 않습니다.
+
+**단계.** 탭을 열고, 로컬 구성을 MCP 클라이언트에 복사한 뒤 클라이언트를 다시 시작하고, 블록이나 계정을 읽어 달라고 요청합니다. 도구 세부 정보와 옵션은 [QoreChain MCP 서버](/developer-tools/mcp)를 참고하세요. **최소 예제:** stdio 블록을 클라이언트에 붙여 넣고, 다시 시작한 뒤, 최신 블록을 요청합니다.
 
 ## 접근 방법 {#how-to-access}
 
@@ -142,15 +146,15 @@ sidebar_position: 13
 | 서명 라이브러리 | npm `@qorechain/qoresign`, 소스 `github.com/qorechain/qoresign`, [QoreSign](/qoresign/overview) 참고 | 해당 없음 |
 | 테스트 지갑 패키지 | npm `@qorechain/qorex-wallet-mock`, 소스 `github.com/qorechain/qorex-integrations` | 테스트넷 |
 | 패키지 색인 | [개발자 패키지](/developer-tools/overview) | 해당 없음 |
-| MCP 서버 | `@qorechain/mcp`: 아직 게시되지 않음 | 해당 없음 |
+| MCP 서버 | npm `@qorechain/mcp` 0.1.0과 `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0, 가이드: [QoreChain MCP 서버](/developer-tools/mcp) | 기본값 테스트넷 |
 
 패키지 버전은 바뀝니다. 현재 버전은 **SDKs** 탭이나 각 레지스트리에서 확인하세요.
 
 ## 제한 사항 및 알려진 문제 {#limits}
 
 - **Transaction inspector: 예정, 아직 라이브가 아닙니다.** 계획: 해시를 붙여넣으면 모든 메시지, 서명자, 수수료, 포스트 양자 서명이 서명자의 등록된 키에 대해 검증되는지 여부, 그리고 보안 등급을 볼 수 있습니다. 다음 QoreSign 릴리스와 함께 제공됩니다.
-- **MCP 서버는 게시되지 않았으므로** 설치할 것이 없습니다. Python용 QoreSign과 `qore` 명령줄 도구도 아직 게시되지 않았으며 설치 명령이 표시되지 않습니다.
-- **두 개의 퀵스타트가 "Not tested"로 표시됩니다:** Android용 QoreSign(같은 코드를 JVM 아티팩트에서만 실행했고 실제 기기에서는 실행하지 않았습니다)과 Python용 QoreSign(패키지가 게시되지 않았습니다). 나머지 32개의 퀵스타트 항목은 실행되어 통과했습니다.
+- **호스팅 MCP 엔드포인트에는 API 키가 필요하며** 요청 시 발급됩니다. 로컬 설정에는 키가 필요 없습니다. 대부분의 작업에는 로컬 설정을 사용하세요.
+- **두 개의 퀵스타트가 "Not tested"로 표시됩니다:** Android용 QoreSign(같은 코드를 JVM 아티팩트에서만 실행했고 실제 기기에서는 실행하지 않았습니다)과 Python용 QoreSign. 나머지 32개의 퀵스타트 항목은 실행되어 통과했습니다.
 - **시뮬레이터는 서명된 바이트가 필요합니다.** 대신 서명해 주지 않으며 브로드캐스트하지 않습니다.
 - **플레이그라운드와 테스트 지갑은 테스트넷 전용**이며 새로고침하면 사라지는 일회용 키를 사용하고, 실제 자금을 보유하거나 이동할 수 없습니다.
 - **같은 탭의 실제 QoreX 확장 프로그램은 대체됩니다.** 다시 로드할 때까지 테스트 지갑이 그 자리를 차지합니다.

@@ -32,6 +32,8 @@ Ne geliştirdiğinize göre seçin.
 | dApp'inizin QoreX cüzdanını kullanmasını sağlamak | QoreX entegrasyonları | [Geliştiriciler için QoreX](/qorex/overview#developers) |
 | Bir uygulama rollup'ı oluşturmak ve işletmek | RDK | [Rollup'lara genel bakış](/rollups/overview), [Rollup dağıtma](/rollups/deploying-a-rollup) |
 | Kuantum sonrası ilkelleri tek başına kullanmak (ML-DSA, ML-KEM, SHAKE-256) | `qorechain-pqc` | [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) |
+| Bir yapay zeka ajanının veya geliştirici aracının zinciri okumasını sağlamak (bloklar, işlemler, hesaplar, hibrit imza durumu, simülasyon, imzasız transferler) | QoreChain MCP sunucusu | [QoreChain MCP sunucusu](/developer-tools/mcp) |
+| Zinciri bir terminalden veya bir kabuk betiğinden JSON çıktısıyla okumak | `qore` CLI | [QoreChain CLI](/developer-tools/qore-cli) |
 
 Bir paket kurun ve önce hızlı başlangıcını genel testnet üzerinde çalıştırın. Okumalar için hesap, anahtar veya ücret gerekmez.
 
@@ -60,7 +62,7 @@ Dashboard'un [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/
 - **Simulator:** imzalı bir işlemi (base64 veya hex `TxRaw`) deneme olarak çalıştırır ve gaz kullanımını ile bakiye değişikliklerini gösterir. Hiçbir şey yayınlanmaz.
 - **Signing playground:** yalnızca testnet. Tarayıcıda, bellekte tutulan geçici bir hibrit anahtar üretir; mesajları ve Sign In With QoreChain isteklerini imzalamak ve doğrulamak için kullanılır.
 - **QoreX test wallet:** yalnızca testnet. dApp akışlarını deneyebilmeniz için sekmeye bir test cüzdanı (`window.qorex`, EIP-6963 üzerinden "QoreX (mock)" olarak duyurulur) ekler.
-- **AI agents (MCP):** henüz yayınlanmamış olan MCP sunucusu için bir sayfa ([Planlanan](#planned) bölümüne bakın).
+- **AI agents (MCP):** QoreChain MCP sunucusunun durumu (yayımlandı) ve bir MCP istemcisi için kurulum: önce yerel `npx`, ayrıca bir API anahtarı gerektiren barındırılan bir testnet uç noktası. Bkz. [QoreChain MCP sunucusu](/developer-tools/mcp).
 
 **İşlem denetçisi** (bir hash yapıştırın; her mesajı, imzalayanı, ücreti ve kuantum sonrası imzanın doğrulanıp doğrulanmadığını görün) **henüz canlı değildir**. Aşağıdaki tablolar ve SDK merkezi aynı veriyi gösterir; tablolar 27 Ekim 2026'da kayıt defterlerine karşı kontrol edilmiştir.
 
@@ -181,14 +183,22 @@ Kılavuz: [Geliştiriciler için QoreX](/qorex/overview#developers). Kaynak: [qo
 | Cosmos dApp'leri | `@qorechain/qorex-interchain-kit` (veya `@qorechain/qorex-cosmos-kit`) |
 | Kendi cüzdanınızda veya arka ucunuzda hibrit imzalama | `@qorechain/qoresign` |
 
+### MCP sunucusu ve CLI {#group-mcp}
+
+Sayfalar: [QoreChain MCP sunucusu](/developer-tools/mcp), [QoreChain CLI](/developer-tools/qore-cli). Kaynak: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp) (herkese açık). İkisi de zinciri okur; hiçbiri imzalamaz, anahtar tutmaz veya yayınlamaz. 27 Ekim 2026'da yayımlandı.
+
+| Paket | Dil | Sürüm | Kurulum | Durum |
+|---|---|---|---|---|
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (Node.js sunucusu, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Yayımlandı. stdio ve Streamable HTTP. Barındırılan bir uç nokta olan `https://mcp.qorechain.io/mcp` bir API anahtarı gerektirir |
+| [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (veya `uvx qorechain-mcp`) | Yayımlandı. npm paketiyle aynı araçlar; yalnızca stdio |
+| [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | Yayımlandı. `--json` çıktısı MCP araç çıktısıyla aynıdır |
+
 ### Planlanan (yayınlanmadı) {#planned}
 
-Bu adlar, henüz bir kayıt defterinde bulunmayan araçlar için ayrılmıştır. Her biri 27 Ekim 2026'da kayıt defterinde 404 döndürdü; dolayısıyla kurulacak bir şey yoktur ve listelenen davranış henüz kullanılamaz.
+Bu ad, henüz bir kayıt defterinde bulunmayan bir araç için ayrılmıştır. Kayıt defterinde 27 Ekim 2026'da 404 döndürdü; dolayısıyla kurulacak bir şey yoktur ve listelenen davranış henüz kullanılamaz.
 
 | Paket | Amaçlanan kullanım | Durum |
 |---|---|---|
-| `@qorechain/mcp` | QoreChain'e okuma erişimi olan bir Model Context Protocol sunucusu (bloklar, işlemler, hesaplar, doğrulayıcılar, stake kademeleri, hibrit imza durumu, simülasyon, imzasız transferler). Asla imzalamaz veya yayınlamaz. Barındırılan bir uç nokta da planlanmaktadır | Yayınlanmadı. Kaynak deposu herkese açık değil. Barındırılan uç nokta canlı değil |
-| `@qorechain/qore-cli` (komut `qore`) | Aynı veri üzerinde kararlı JSON çıktısıyla komut satırı okumaları | Yayınlanmadı |
 | PyPI üzerinde `qorechain-qoresign` | Python için QoreSign | Yayınlanmadı (0.1.1 planlandı) |
 
 ## Canlı sürümler nasıl alınır {#live-versions}
@@ -209,7 +219,7 @@ Kapsamlı (scoped) bir npm adı için `@` işaretini koruyun, örneğin `https:/
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 - **İki canlı ağ, farklı sürümler.** Mainnet v3.2.4, testnet v3.2.6 çalıştırır. Yalnızca testnet'te bulunan bir özellik kendi sayfasında işaretlenir. Mainnet'te v3.2.5 davranışını varsaymayın.
-- **Henüz canlı değil:** dashboard geliştirici sayfasındaki işlem denetçisi, MCP sunucusu ve `qore` CLI, Python için QoreSign, SVM işlemleri ve mainnet üzerindeki EVM precompile'ları (ray ray liste için [SDK genel bakış](/sdk/overview) sayfasına bakın).
+- **Henüz canlı değil:** dashboard geliştirici sayfasındaki işlem denetçisi, Python için QoreSign, SVM işlemleri ve mainnet üzerindeki EVM precompile'ları (ray ray liste için [SDK genel bakış](/sdk/overview) sayfasına bakın).
 - **Çalıştırılmayan örnekler:** 34 hızlı başlangıç girdisinden 31'i 27 Ekim 2026'da çalıştı ve geçti. QoreSign Python örneği çalıştırılmadı (paket yayınlanmadı) ve QoreSign Android örneği bir cihazda çalıştırılmadı. Cüzdan adaptörü, chain bridge ve handle'ların hızlı başlangıcı yoktur; bu nedenle bu kılavuzdaki örnekleri paket tür tanımlarından ve kaynaktan gelir ve uçtan uca çalıştırılmamıştır.
 - **0.6.2 öncesi `@qorechain/rdk-cli`,** npm bin bağlantısı üzerinden başlatıldığında hiçbir şey yazdırmadı ve `--version` çıktısı 0.4.1 idi. **0.7.0 öncesi `@qorechain/rdk`** zincirde hiç doğrulanmayan çekim kanıtları üretiyordu. 0.7.0 kullanın.
 - **cosmjs sürüm çakışması.** `@qorechain/wallet-adapter` ve `@qorechain/chain-bridge` cosmjs 0.32 kullanır; SDK cosmjs 0.39 kullanır. Adaptörü SDK'nın yanına aynı projeye kurmak npm'in `ERESOLVE` bildirmesine yol açar. Bunları ayrı projelerde tutun veya `--legacy-peer-deps` geçirin.

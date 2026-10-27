@@ -32,6 +32,8 @@ Alege în funcție de ce construiești.
 | Lași dApp-ul tău să folosească portofelul QoreX | Integrările QoreX | [QoreX, pentru dezvoltatori](/qorex/overview#developers) |
 | Creezi și operezi un rollup de aplicație | RDK | [Prezentarea rollup-urilor](/rollups/overview), [Implementarea unui rollup](/rollups/deploying-a-rollup) |
 | Folosești separat primitivele post-cuantice (ML-DSA, ML-KEM, SHAKE-256) | `qorechain-pqc` | [Semnare post-cuantică](/developer-guide/post-quantum-signing) |
+| Lași un agent AI sau o unealtă pentru dezvoltatori să citească lanțul (blocuri, tranzacții, conturi, starea semnăturii hibride, simulare, transferuri nesemnate) | Serverul MCP QoreChain | [Serverul MCP QoreChain](/developer-tools/mcp) |
+| Citești lanțul dintr-un terminal sau dintr-un script shell, cu ieșire JSON | CLI-ul `qore` | [CLI-ul QoreChain](/developer-tools/qore-cli) |
 
 Instalează un singur pachet și rulează-i quickstart-ul mai întâi pe testnet-ul public. Citirile nu necesită cont, cheie sau comision.
 
@@ -60,7 +62,7 @@ Dashboard-ul are o pagină publică la [dashboard.qorechain.io/developers](https
 - **Simulator:** simulează o tranzacție semnată (`TxRaw` în base64 sau hex) și afișează consumul de gas și modificările de sold. Nimic nu este transmis în rețea.
 - **Signing playground:** doar testnet. Generează în browser o cheie hibridă de unică folosință, ținută în memorie, pentru a semna și verifica mesaje și cereri Sign In With QoreChain.
 - **QoreX test wallet:** doar testnet. Injectează în filă un portofel de test (`window.qorex`, anunțat prin EIP-6963 ca „QoreX (mock)") pentru a putea încerca fluxuri de dApp.
-- **AI agents (MCP):** o pagină pentru serverul MCP, care nu este încă publicat (vezi [Planificate](#planned)).
+- **AI agents (MCP):** starea serverului MCP QoreChain (publicat) și configurarea pentru un client MCP: mai întâi `npx` local, plus un endpoint găzduit de testnet care are nevoie de o cheie API. Vezi [Serverul MCP QoreChain](/developer-tools/mcp).
 
 **Inspectorul de tranzacții** (lipești un hash și vezi fiecare mesaj, semnatarul, taxa și dacă semnătura post-cuantică se verifică) **nu este încă live**. Tabelele de mai jos și hub-ul SDK afișează aceleași date; tabelele au fost verificate față de registre la 27 octombrie 2026.
 
@@ -181,14 +183,22 @@ Ghid: [QoreX, pentru dezvoltatori](/qorex/overview#developers). Sursă: [qorecha
 | dApp-uri Cosmos | `@qorechain/qorex-interchain-kit` (sau `@qorechain/qorex-cosmos-kit`) |
 | Semnare hibridă în propriul portofel sau backend | `@qorechain/qoresign` |
 
+### Server MCP și CLI {#group-mcp}
+
+Pagini: [Serverul MCP QoreChain](/developer-tools/mcp), [CLI-ul QoreChain](/developer-tools/qore-cli). Sursa: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp) (public). Ambele citesc lanțul și niciunul nu semnează, nu ține chei și nu transmite. Publicate la 27 octombrie 2026.
+
+| Pachet | Limbaj | Versiune | Instalare | Stare |
+|---|---|---|---|---|
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (server Node.js, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Publicat. stdio și Streamable HTTP. Un endpoint găzduit, `https://mcp.qorechain.io/mcp`, are nevoie de o cheie API |
+| [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (sau `uvx qorechain-mcp`) | Publicat. Aceleași unelte ca pachetul npm; doar stdio |
+| [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | Publicat. Ieșire `--json` identică cu ieșirea uneltei MCP |
+
 ### Planificate (nepublicate) {#planned}
 
-Aceste nume sunt rezervate pentru unelte care nu sunt încă într-un registru. Fiecare a returnat 404 în registrul său la 27 octombrie 2026, așa că nu există nimic de instalat, iar comportamentul listat nu poate fi folosit încă.
+Acest nume este rezervat pentru o unealtă care nu este încă într-un registru. A returnat 404 în registrul său la 27 octombrie 2026, așa că nu există nimic de instalat, iar comportamentul listat nu poate fi folosit încă.
 
 | Pachet | Utilizare intenționată | Stare |
 |---|---|---|
-| `@qorechain/mcp` | Un server Model Context Protocol cu acces de citire la QoreChain (blocuri, tranzacții, conturi, validatori, niveluri de staking, starea semnăturii hibride, simulare, transferuri nesemnate). Nu ar semna și nu ar transmite niciodată. Este planificat și un endpoint găzduit | Nepublicat. Repository-ul sursă nu este public. Endpoint-ul găzduit nu este live |
-| `@qorechain/qore-cli` (comanda `qore`) | Citiri din linia de comandă cu ieșire JSON stabilă peste aceleași date | Nepublicat |
 | `qorechain-qoresign` pe PyPI | QoreSign pentru Python | Nepublicat (planificat 0.1.1) |
 
 ## Cum obții versiunile live {#live-versions}
@@ -209,7 +219,7 @@ Pentru un nume npm cu scope păstrează `@`, de exemplu `https://registry.npmjs.
 ## Limite și probleme cunoscute {#limits}
 
 - **Două rețele live, versiuni diferite.** Mainnet-ul rulează v3.2.4, iar testnet-ul rulează v3.2.6. O funcție care există doar pe testnet este marcată pe pagina ei. Nu presupune comportamentul v3.2.5 pe mainnet.
-- **Încă nu sunt live:** inspectorul de tranzacții din pagina pentru dezvoltatori a dashboard-ului, serverul MCP și CLI-ul `qore`, QoreSign pentru Python, tranzacțiile SVM și precompilările EVM pe mainnet (vezi [prezentarea SDK](/sdk/overview) pentru lista pe trasee).
+- **Încă nu sunt live:** inspectorul de tranzacții din pagina pentru dezvoltatori a dashboard-ului, QoreSign pentru Python, tranzacțiile SVM și precompilările EVM pe mainnet (vezi [prezentarea SDK](/sdk/overview) pentru lista pe trasee).
 - **Exemple nerulate:** din cele 34 de intrări de quickstart, 31 au rulat și au trecut la 27 octombrie 2026. Exemplul QoreSign pentru Python nu a fost rulat (pachetul nu este publicat), iar exemplul QoreSign pentru Android nu a fost rulat pe un dispozitiv. Wallet adapter-ul, chain bridge-ul și handle-urile nu au quickstart, așa că exemplele lor din acest manual provin din tipurile și sursa pachetelor și nu au fost rulate end to end.
 - **`@qorechain/rdk-cli` înainte de 0.6.2** nu afișa nimic când era pornit prin link-ul bin npm, iar `--version` afișa 0.4.1. **`@qorechain/rdk` înainte de 0.7.0** construia dovezi de retragere care nu s-au verificat niciodată on-chain. Folosește 0.7.0.
 - **Conflict de versiune cosmjs.** `@qorechain/wallet-adapter` și `@qorechain/chain-bridge` folosesc cosmjs 0.32; SDK-ul folosește cosmjs 0.39. Instalarea adapter-ului lângă SDK în același proiect face ca npm să raporteze `ERESOLVE`. Păstrează-le în proiecte separate sau pasează `--legacy-peer-deps`.

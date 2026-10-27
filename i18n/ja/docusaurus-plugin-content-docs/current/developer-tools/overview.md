@@ -32,6 +32,8 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 | dAppでQoreXウォレットを使えるようにする | QoreX連携 | [開発者向けQoreX](/qorex/overview#developers) |
 | アプリケーションロールアップの作成と運用 | RDK | [ロールアップ概要](/rollups/overview)、[ロールアップのデプロイ](/rollups/deploying-a-rollup) |
 | ポスト量子のプリミティブ(ML-DSA、ML-KEM、SHAKE-256)を単体で使う | `qorechain-pqc` | [ポスト量子署名](/developer-guide/post-quantum-signing) |
+| AIエージェントや開発者ツールにチェーンを読み取らせる(ブロック、トランザクション、アカウント、ハイブリッド署名のステータス、シミュレーション、未署名の送金) | QoreChain MCPサーバー | [QoreChain MCPサーバー](/developer-tools/mcp) |
+| ターミナルやシェルスクリプトからJSON出力でチェーンを読み取る | `qore` CLI | [QoreChain CLI](/developer-tools/qore-cli) |
 
 まず1つのパッケージをインストールし、そのクイックスタートを公開テストネットに対して実行してください。読み取りにはアカウントも鍵も手数料も不要です。
 
@@ -60,7 +62,7 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 - **Simulator:** 署名済みトランザクション(base64またはhexの`TxRaw`)をドライランし、ガス使用量と残高の変化を表示します。ブロードキャストは行われません。
 - **Signing playground:** テストネット専用です。ブラウザ内で使い捨てのハイブリッド鍵(メモリ内にのみ保持)を生成し、メッセージとSign In With QoreChainリクエストの署名と検証を行います。
 - **QoreX test wallet:** テストネット専用です。テストウォレット(`window.qorex`、EIP-6963で「QoreX (mock)」として通知)をタブに注入し、dAppのフローを試せます。
-- **AI agents (MCP):** MCPサーバーのためのページですが、サーバーはまだ公開されていません([計画中](#planned)を参照)。
+- **AI agents (MCP):** QoreChain MCPサーバーのステータス(公開済み)と、MCPクライアント向けのセットアップです。まずローカルの`npx`、加えてAPIキーが必要なホスト型テストネットエンドポイントがあります。[QoreChain MCPサーバー](/developer-tools/mcp)を参照してください。
 
 **トランザクションインスペクター**(ハッシュを貼り付けると、すべてのメッセージ、署名者、手数料、ポスト量子署名が検証されるかどうかを表示)は**まだ公開されていません**。以下の表とSDKハブは同じデータを示しており、表は2026年10月27日にレジストリと照合済みです。
 
@@ -181,14 +183,22 @@ TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあ�
 | Cosmos dApp | `@qorechain/qorex-interchain-kit`(または`@qorechain/qorex-cosmos-kit`) |
 | 自前のウォレットやバックエンドでのハイブリッド署名 | `@qorechain/qoresign` |
 
+### MCPサーバーとCLI {#group-mcp}
+
+ページ: [QoreChain MCPサーバー](/developer-tools/mcp)、[QoreChain CLI](/developer-tools/qore-cli)。ソース: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp)(公開)。どちらもチェーンを読み取るだけで、署名も、鍵の保持も、ブロードキャストも行いません。2026年10月27日に公開されました。
+
+| パッケージ | 言語 | バージョン | インストール | ステータス |
+|---|---|---|---|---|
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript(Node.jsサーバー、bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | 公開済み。stdioとStreamable HTTP。ホスト型エンドポイント`https://mcp.qorechain.io/mcp`にはAPIキーが必要です |
+| [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python(3.10+) | 0.1.0 | `pip install qorechain-mcp`(または`uvx qorechain-mcp`) | 公開済み。npmパッケージと同じツール。stdioのみ |
+| [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript(CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | 公開済み。`--json`出力はMCPツールの出力と同一です |
+
 ### 計画中(未公開) {#planned}
 
-これらの名前は、まだレジストリにないツールのために予約されています。いずれも2026年10月27日にレジストリで404を返したため、インストールできるものはなく、記載されている動作はまだ利用できません。
+この名前は、まだレジストリにないツールのために予約されています。2026年10月27日にレジストリで404を返したため、インストールできるものはなく、記載されている動作はまだ利用できません。
 
 | パッケージ | 想定用途 | ステータス |
 |---|---|---|
-| `@qorechain/mcp` | QoreChainへの読み取りアクセス(ブロック、トランザクション、アカウント、バリデーター、ステーキング階層、ハイブリッド署名のステータス、シミュレーション、未署名の送金)を持つModel Context Protocolサーバー。署名やブロードキャストは決して行いません。ホスト型エンドポイントも計画されています | 未公開。ソースリポジトリは公開されていません。ホスト型エンドポイントは稼働していません |
-| `@qorechain/qore-cli`(コマンド`qore`) | 同じデータに対する、安定したJSON出力のコマンドライン読み取り | 未公開 |
 | PyPIの`qorechain-qoresign` | Python版QoreSign | 未公開(0.1.1で予定) |
 
 ## ライブのバージョンを取得する方法 {#live-versions}
@@ -209,7 +219,7 @@ TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあ�
 ## 制限事項と既知の問題 {#limits}
 
 - **稼働中の2つのネットワークでバージョンが異なります。** メインネットはv3.2.4、テストネットはv3.2.6で稼働しています。テストネットにしかない機能は、その機能自身のページに明記されています。メインネットでv3.2.5の動作を前提にしないでください。
-- **まだ公開されていないもの:** ダッシュボードの開発者ページのトランザクションインスペクター、MCPサーバーと`qore` CLI、Python版QoreSign、SVMトランザクション、メインネットのEVMプリコンパイル(レーンごとの一覧は[SDK概要](/sdk/overview)を参照)。
+- **まだ公開されていないもの:** ダッシュボードの開発者ページのトランザクションインスペクター、Python版QoreSign、SVMトランザクション、メインネットのEVMプリコンパイル(レーンごとの一覧は[SDK概要](/sdk/overview)を参照)。
 - **実行していない例:** 34件のクイックスタート項目のうち、31件が2026年10月27日に実行されて成功しました。Python版QoreSignの例は実行しておらず(パッケージが未公開のため)、QoreSignのAndroidの例はデバイスでは実行していません。ウォレットアダプター、チェーンブリッジ、ハンドルにはクイックスタートがないため、このマニュアルのそれらの例はパッケージの型定義とソースに基づいており、エンドツーエンドでは実行していません。
 - **0.6.2より前の`@qorechain/rdk-cli`**は、npmのbinリンク経由で起動しても何も出力せず、`--version`は0.4.1を出力していました。**0.7.0より前の`@qorechain/rdk`**は、チェーン上で一度も検証を通らない出金証明を構築していました。0.7.0を使用してください。
 - **cosmjsのバージョン競合。** `@qorechain/wallet-adapter`と`@qorechain/chain-bridge`はcosmjs 0.32を使い、SDKはcosmjs 0.39を使います。1つのプロジェクトでアダプターをSDKと並べてインストールすると、npmが`ERESOLVE`を報告します。別々のプロジェクトに分けるか、`--legacy-peer-deps`を渡してください。

@@ -29,12 +29,12 @@ Prerequisites: signed in and a test wallet (see [Wallet](/dashboard/wallet#testn
 1. The banner offers **Get test tokens**; use it first.
 2. Pick the token you pay with and enter an amount. The default pair, QOR to USDC, is a **practice** pair that does not settle on chain. Pick **WQOR** and **QUSDC** (or any pair of the five) for an on-chain swap.
 3. Pick the token to receive; the output is quoted automatically.
-4. Optionally adjust **slippage tolerance** (default 0.5%).
+4. Optionally adjust the **slippage tolerance** (the page has a default).
 5. Select **Swap Now**, then **Confirm Swap**. The result shows "Swap Confirmed" with **View Transaction**.
 
 **Recent Swaps** lists swaps across all users; **Show My History** filters it to yours.
 
-**Minimal example:** on testnet select **Get test tokens**, sell 10 WQOR for QUSDC, **Swap Now**, **Confirm Swap**.
+**Minimal example:** on testnet select **Get test tokens**, sell some WQOR for QUSDC, **Swap Now**, **Confirm Swap**.
 
 :::tip Slippage
 A higher tolerance makes a swap more likely to go through in fast-moving markets, but you may receive a worse price. The default suits most pairs.
@@ -42,12 +42,12 @@ A higher tolerance makes a swap more likely to go through in fast-moving markets
 
 ### Pools
 
-Browse pool cards: trading pair, total liquidity, 24-hour volume, number of providers, and also an APR, a fee, a pool ID, a price and the reserves. A search box filters by token symbol. These are practice figures; do not read them as yields.
+Browse the pool cards for the trading pair and its details. A search box filters by token symbol. These pools are a practice area, not on-chain liquidity, and the figures on them are not market data.
 
 ### Add Liquidity
 
 1. Select two tokens to pair (one defaults to QOR). Use **Create Pool** for a new pair.
-2. Enter an amount for the first token; the second fills in to match the pool ratio. The page notes "Minimum 1000 QOR required".
+2. Enter an amount for the first token; the second fills in to match the pool ratio. The page states a minimum for creating a pool.
 3. Review your share, then confirm.
 
 ### My Positions
@@ -74,7 +74,7 @@ Each entry shows the token pair, the amount of each token, your share and fees e
 - **No mainnet trading.** The page ignores the network switch and shows testnet content on mainnet too.
 - **Only five tokens settle on chain.** The fest tokens from the [Faucet](/dashboard/faucet#fest-tokens) are not on this page.
 - **The native AMM has no pools** on either network. Real pools will be described when they exist.
-- **Practice figures** (prices, APR, volume) are not market data.
+- **Pool figures** are practice data, not market data.
 - **Testnet tokens have no value** and cannot be exchanged for anything.
 
 ## Related

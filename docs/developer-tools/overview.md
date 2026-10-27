@@ -32,6 +32,8 @@ Pick by what you are building.
 | Let your dApp use the QoreX wallet | QoreX integrations | [QoreX, for developers](/qorex/overview#developers) |
 | Create and operate an application rollup | RDK | [Rollups overview](/rollups/overview), [Deploying a rollup](/rollups/deploying-a-rollup) |
 | Use the post-quantum primitives alone (ML-DSA, ML-KEM, SHAKE-256) | `qorechain-pqc` | [Post-Quantum Signing](/developer-guide/post-quantum-signing) |
+| Let an AI agent or developer tool read the chain (blocks, transactions, accounts, hybrid signature status, simulation, unsigned transfers) | QoreChain MCP server | [QoreChain MCP server](/developer-tools/mcp) |
+| Read the chain from a terminal or a shell script, with JSON output | `qore` CLI | [QoreChain CLI](/developer-tools/qore-cli) |
 
 Install one package and run its quickstart against the public testnet first. Reads need no account, no key and no fee.
 
@@ -60,7 +62,7 @@ The dashboard has a public page at [dashboard.qorechain.io/developers](https://d
 - **Simulator:** dry-runs a signed transaction (base64 or hex `TxRaw`) and shows gas use and balance changes. Nothing is broadcast.
 - **Signing playground:** testnet only. Generates a throwaway hybrid key in the browser, kept in memory, to sign and verify messages and Sign In With QoreChain requests.
 - **QoreX test wallet:** testnet only. Injects a test wallet (`window.qorex`, announced over EIP-6963 as "QoreX (mock)") into the tab so you can try dApp flows.
-- **AI agents (MCP):** a page for the MCP server, which is not published yet (see [Planned](#planned)).
+- **AI agents (MCP):** the status of the QoreChain MCP server (published) and the setup for an MCP client: local `npx` first, plus a hosted testnet endpoint that needs an API key. See [QoreChain MCP server](/developer-tools/mcp).
 
 The **Transaction inspector** (paste a hash, see every message, the signer, the fee and whether the post-quantum signature verifies) is **not live yet**. The tables below and the SDK hub show the same data; the tables were checked against the registries on 27 October 2026.
 
@@ -181,14 +183,22 @@ Guide: [QoreX, for developers](/qorex/overview#developers). Source: [qorechain/q
 | Cosmos dApps | `@qorechain/qorex-interchain-kit` (or `@qorechain/qorex-cosmos-kit`) |
 | Hybrid signing in your own wallet or backend | `@qorechain/qoresign` |
 
+### MCP server and CLI {#group-mcp}
+
+Pages: [QoreChain MCP server](/developer-tools/mcp), [QoreChain CLI](/developer-tools/qore-cli). Source: [qorechain/qorechain-mcp](https://github.com/qorechain/qorechain-mcp) (public). Both read the chain and neither signs, holds keys or broadcasts. Published on 27 October 2026.
+
+| Package | Language | Version | Install | Status |
+|---|---|---|---|---|
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (Node.js server, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Published. stdio and Streamable HTTP. A hosted endpoint, `https://mcp.qorechain.io/mcp`, needs an API key |
+| [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (or `uvx qorechain-mcp`) | Published. Same tools as the npm package; stdio only |
+| [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | Published. `--json` output identical to the MCP tool output |
+
 ### Planned (not published) {#planned}
 
-These names are reserved for tools that are not on a registry yet. Each returned 404 on its registry on 27 October 2026, so there is nothing to install and the listed behaviour cannot be used yet.
+This name is reserved for a tool that is not on a registry yet. It returned 404 on its registry on 27 October 2026, so there is nothing to install and the listed behaviour cannot be used yet.
 
 | Package | Intended use | Status |
 |---|---|---|
-| `@qorechain/mcp` | A Model Context Protocol server with read access to QoreChain (blocks, transactions, accounts, validators, staking tiers, hybrid signature status, simulation, unsigned transfers). It would never sign or broadcast. A hosted endpoint is also planned | Not published. The source repository is not public. The hosted endpoint is not live |
-| `@qorechain/qore-cli` (command `qore`) | Command-line reads with stable JSON output over the same data | Not published |
 | `qorechain-qoresign` on PyPI | QoreSign for Python | Not published (planned 0.1.1) |
 
 ## How to get live versions {#live-versions}
@@ -209,7 +219,7 @@ For a scoped npm name keep the `@`, for example `https://registry.npmjs.org/@qor
 ## Limits and known issues {#limits}
 
 - **Two live networks, different versions.** Mainnet runs v3.2.4 and testnet runs v3.2.6. A feature that exists only on testnet is marked on its own page. Do not assume v3.2.5 behaviour on mainnet.
-- **Not live yet:** the transaction inspector on the dashboard developer page, the MCP server and `qore` CLI, QoreSign for Python, SVM transactions, and the EVM precompiles on mainnet (see the [SDK overview](/sdk/overview) for the lane-by-lane list).
+- **Not live yet:** the transaction inspector on the dashboard developer page, QoreSign for Python, SVM transactions, and the EVM precompiles on mainnet (see the [SDK overview](/sdk/overview) for the lane-by-lane list).
 - **Examples not run:** of the 34 quickstart entries, 31 ran and passed on 27 October 2026. The QoreSign Python example was not run (the package is not published) and the QoreSign Android example was not run on a device. The wallet adapter, chain bridge and handles have no quickstart, so their examples in this manual come from the package typings and source and were not run end to end.
 - **`@qorechain/rdk-cli` before 0.6.2** printed nothing when started through the npm bin link, and its `--version` printed 0.4.1. **`@qorechain/rdk` before 0.7.0** built withdrawal proofs that never verified on chain. Use 0.7.0.
 - **cosmjs version conflict.** `@qorechain/wallet-adapter` and `@qorechain/chain-bridge` use cosmjs 0.32; the SDK uses cosmjs 0.39. Installing the adapter next to the SDK in one project makes npm report `ERESOLVE`. Keep them in separate projects or pass `--legacy-peer-deps`.

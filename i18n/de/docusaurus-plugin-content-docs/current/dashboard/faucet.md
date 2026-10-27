@@ -15,10 +15,10 @@ Testnet-QOR hat **keinen realen Wert**. Der Faucet berührt niemals das Mainnet:
 
 ## Innovationen {#innovations}
 
-- **Ein Claim, zwei Arten von Token.** Ein Claim zahlt 100 QOR aus, und in einer separaten Transaktion 1.000 fUSD, 0,5 fETH und 0,02 fBTC. Schlägt der Fest-Versand fehl, kommen die QOR trotzdem an, und die Ergebniskarte weist darauf hin.
+- **Ein Claim, zwei Arten von Token.** Ein Claim zahlt 100 QOR aus, und in einer separaten Transaktion 1000 fUSD, 0,5 fETH und 0,02 fBTC. Schlägt der Fest-Versand fehl, kommen die QOR trotzdem an, und die Ergebniskarte weist darauf hin.
 - **Eine doppelte Abklingzeit.** Ein Claim pro 24 Stunden pro Konto **und** pro Adresse. Der Slot wird reserviert, bevor etwas gesendet wird, und freigegeben, wenn der Versand fehlschlägt; ein fehlgeschlagener Claim verbraucht Ihren Tag also nicht.
 - **Fest-Token sind native Bank-Coins.** Es sind Bank-Denominationen der Form `erc20:0x...`, die die On-Chain-AMM, Bank-Sends, IBC und QoreChain-Native-Contracts unverändert verwenden. MetaMask oder eine EVM-DEX sehen sie erst nach einer Umwandlung per `MsgConvertCoin` (siehe [Fest-Test-Token](#fest-tokens)).
-- **Keine falschen Zahlen.** Lassen sich die Infos des Faucets nicht laden, zeigt die Seite „...“ statt eines Betrags, nie einen geschätzten.
+- **Die Beträge sind pro Claim fest.** 100 QOR pro Claim, einmal alle 24 Stunden pro Konto **und** pro Adresse, dazu 1000 fUSD, 0,5 fETH und 0,02 fBTC pro Claim (nur Testnet, Anmeldung erforderlich).
 - **Ein `0x`-Empfänger wird auf seinem `qor1`-Zwilling bezahlt.** Eine `0x`-Adresse sind dieselben 20 Bytes wie ihre `qor1`-Form, daher bezahlt der Dienst dasselbe Konto. Das Dashboard-Formular selbst akzeptiert nur `qor1...`.
 
 ## So verwenden Sie es {#how-to-use}

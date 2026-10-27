@@ -14,7 +14,7 @@ sidebar_position: 13
 - **Zincire salt okunur bir ağ geçidi.** Araçlar, herkese açık zincir verilerini okur ve bir işlemi, `cosmos/`, `cosmwasm/` ve `qorechain/` sorgu yolları ile simulate çağrısı altında salt okunur bir ağ geçidi üzerinden simüle eder. Sayfadaki hiçbir şey bir işlemi yayınlayamaz. Ağ geçidi, zincirin REST uç noktaları tarayıcı CORS başlıkları göndermediği için vardır.
 - **Tarayıcıdan asla çıkmayan anahtarlar.** Signing playground ve test cüzdanının anahtarları tarayıcınızda üretilir ve yalnızca bellekte tutulur. Asla kaydedilmez veya gönderilmez ve yeniden yüklemede kaybolurlar. Bu iki sekme yalnızca testnet içindir ve mainnet'i reddeder.
 - **Bir demo değil, üretimdeki imzalama kütüphanesi.** Playground, üretim entegrasyonlarıyla aynı açık kaynaklı kütüphane olan [QoreSign](/qoresign/overview) kütüphanesini kullanır. Hibrit imzalar üretir ve doğrular: aynı mesaj üzerinde bir secp256k1 imzası artı bir ML-DSA-87 imzası.
-- **Test edilmiş verilerden üretilen bir paket merkezi.** **SDKs** sekmesi, tek bir manifestodan 40 paket listeler. Sürümler her kayıt defterinden canlı okunur (10 dakikada bir yenilenir; bir kayıt defterine ulaşılamazsa son kontrol edilen sürüm ve tarihi gösterilir) ve her hızlı başlangıç SDK ekibi tarafından herkese açık kayıt defterlerine karşı çalıştırılmıştır; gözlemledikleri çıktı yanında gösterilir.
+- **Test edilmiş verilerden üretilen bir paket merkezi.** **SDKs** sekmesi, tek bir manifestodan yaklaşık 40 paket listeler. Sürümler her kayıt defterinden canlı okunur (10 dakikada bir yenilenir; bir kayıt defterine ulaşılamazsa son kontrol edilen sürüm ve tarihi gösterilir) ve her hızlı başlangıç SDK ekibi tarafından herkese açık kayıt defterlerine karşı çalıştırılmıştır; gözlemledikleri çıktı yanında gösterilir.
 - **Tahmin değil, zincirin yanıtları.** **PQ key status**, kayıtlı ML-DSA-87 anahtarını ve EVM penceresi durumunu düğümün kendi sorgu rotalarından okur; böylece bir EVM işleminin neden reddedileceğini göndermeden önce görebilirsiniz.
 
 ## Nasıl kullanılır {#how-to-use}
@@ -23,7 +23,7 @@ sidebar_position: 13
 
 ### SDKs {#sdks}
 
-**Ne yapar.** Her QoreChain kütüphanesini ürüne göre gruplayarak listeler. Manifesto, TypeScript, Python, Go, Rust, Java, Kotlin ve Swift genelinde 40 paket içerir: 36 kararlı, 1 kullanımdan kaldırılmış ve 3 henüz yayımlanmamış (Python için QoreSign, MCP sunucusu ve `qore` komut satırı aracı). Ürünler, gösterildikleri sırayla şunlardır: QoreChain SDK (çekirdek, React hook'ları, EVM, SVM, dApp başlangıç şablonu ve Python, Rust, Go ve Java portları), QoreSign, RDK (rollup geliştirme kiti, komut satırı aracı, rollup başlangıç şablonu ve Python, Rust, Go ve Java portları), PQC kütüphanesi, cüzdan adaptörü, zincir köprüsü, Handles, QoreX entegrasyonları ve MCP ile `qore` CLI.
+**Ne yapar.** Her QoreChain kütüphanesini ürüne göre gruplayarak listeler. Manifesto, TypeScript, Python, Go, Rust, Java, Kotlin ve Swift genelinde yaklaşık 40 paket içerir. Çoğu kararlıdır; biri kullanımdan kaldırılmıştır ve henüz kayıt defterinde olmayan bir paket bu şekilde işaretlenir. Ürünler, gösterildikleri sırayla şunlardır: QoreChain SDK (çekirdek, React hook'ları, EVM, SVM, dApp başlangıç şablonu ve Python, Rust, Go ve Java portları), QoreSign, RDK (rollup geliştirme kiti, komut satırı aracı, rollup başlangıç şablonu ve Python, Rust, Go ve Java portları), PQC kütüphanesi, cüzdan adaptörü, zincir köprüsü, Handles, QoreX entegrasyonları ve MCP ile `qore` CLI.
 
 **Nasıl çalışır.** Her ürün bir karttır. Ürün birden çok dilde sunuluyorsa, bir dil seçici (hap düğmeler) gösterilen paketi değiştirir. Her paket şunları gösterir:
 
@@ -119,11 +119,15 @@ Pencere, hesabın ML-DSA-87 anahtarıyla native hattan açılır ve blok sınır
 
 ### AI agents (MCP) {#mcp}
 
-**Ne yapar.** QoreChain MCP sunucusunun mevcut olup olmadığını ve mevcut olduğunda bir MCP istemcisinde nasıl kurulacağını söyler.
+**Ne yapar.** QoreChain MCP sunucusunun durumunu (bir MCP istemcisinin QoreChain zincir verilerini okumasını ve geliştirici araçlarını kullanmasını sağlayan bir Model Context Protocol sunucusu) ve bir MCP istemcisinde nasıl kurulacağını gösterir.
 
-**Nasıl çalışır.** Sekmeyi açtığınızda sayfa paket kayıt defterine canlı sorar. Bugün paket yayımlanmamıştır; bu nedenle sekme **Not published** ve "The QoreChain MCP server is not published yet." mesajını, sunacaklarının kısa bir açıklamasıyla birlikte gösterir. Hiçbir kurulum komutu göstermez. Paket yayımlandığında sekme sürümünü (**Published**) ve bir MCP istemcisi için kurulumu gösterecek: yerel (stdio) bir yapılandırma ve kendi barındırdığınız (Streamable HTTP) bir yapılandırma.
+**Nasıl çalışır.** Sekmeyi açtığınızda sayfa paket kayıt defterine canlı sorar ve durumu (**Published**) güncel sürümle birlikte gösterir (`@qorechain/mcp`, yazım sırasında 0.1.0; aynı zamanda PyPI üzerinde `qorechain-mcp` adıyla da bulunur). Ardından bir MCP istemcisi için kurulumu kopyalanabilir bloklar olarak gösterir:
 
-**Adımlar.** Sekmeyi açın ve durumu okuyun. Sunucu yayımlanana kadar başka bir şey gerekmez. **SDKs** sekmesindeki merkez aynı paketi "Not published yet" olarak gösterir.
+- **Yerel (stdio), birincil seçenek.** MCP istemcinizin sunucu yapılandırmasına `{ "mcpServers": { "qorechain": { "command": "npx", "args": ["-y", "@qorechain/mcp"] } } }` ekleyin. Anahtar gerektirmez.
+- **Kendi barındırdığınız (Streamable HTTP).** `qorechain-mcp serve --port 8787` komutunu çalıştırın ve istemciyi `http://localhost:8787/mcp` adresine yönlendirin.
+- **Barındırılan uç nokta.** `https://mcp.qorechain.io/mcp` varsayılan olarak testnet'e hizmet verir. Her istek, `Authorization: Bearer` başlığı olarak gönderilen bir API anahtarı gerektirir; anahtarlar talep üzerine verilir. Çoğu kullanımda yerel kurulum anahtar gerektirmez.
+
+**Adımlar.** Sekmeyi açın, yerel yapılandırmayı MCP istemcinize kopyalayın, istemciyi yeniden başlatın ve ondan bir blok veya bir hesap okumasını isteyin. Araç ayrıntıları ve seçenekler için bkz. [QoreChain MCP sunucusu](/developer-tools/mcp). **Asgari örnek:** stdio bloğunu istemcinize yapıştırın, yeniden başlatın ve ondan en son bloğu isteyin.
 
 ## Nasıl erişilir {#how-to-access}
 
@@ -142,15 +146,15 @@ Pencere, hesabın ML-DSA-87 anahtarıyla native hattan açılır ve blok sınır
 | İmzalama kütüphanesi | npm `@qorechain/qoresign`, kaynak `github.com/qorechain/qoresign`, bkz. [QoreSign](/qoresign/overview) | yok |
 | Test cüzdanı paketi | npm `@qorechain/qorex-wallet-mock`, kaynak `github.com/qorechain/qorex-integrations` | Testnet |
 | Paket dizini | [Geliştirici Paketleri](/developer-tools/overview) | yok |
-| MCP sunucusu | `@qorechain/mcp`: henüz yayımlanmadı | yok |
+| MCP sunucusu | npm `@qorechain/mcp` 0.1.0 ve `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0; kılavuz: [QoreChain MCP sunucusu](/developer-tools/mcp) | Varsayılan olarak testnet |
 
 Paket sürümleri değişir; güncel olanları **SDKs** sekmesinde veya kayıt defterlerinde okuyun.
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 - **Transaction inspector: yakında gelecek, henüz canlı değil.** Planlanan: bir karma yapıştırın ve her mesajı, imzalayanı, ücreti, kuantum sonrası imzanın imzalayanın kayıtlı anahtarına karşı doğrulanıp doğrulanmadığını ve güvenlik katmanını görün. Bir sonraki QoreSign sürümüyle gelir.
-- **MCP sunucusu yayımlanmadı,** bu nedenle kurulacak bir şey yok; Python için QoreSign ve `qore` komut satırı aracı da henüz yayımlanmadı ve kurulum komutu göstermez.
-- **İki hızlı başlangıç "Not tested" olarak işaretlidir:** Android için QoreSign (aynı kod yalnızca JVM artefaktında çalıştırıldı, bir cihazda değil) ve Python için QoreSign (paket yayımlanmadı). Diğer 32 hızlı başlangıç girdisi çalıştı ve geçti.
+- **Barındırılan MCP uç noktası bir API anahtarı gerektirir,** talep üzerine verilir; yerel kurulum gerektirmez. Çoğu iş için yerel kurulumu kullanın.
+- **İki hızlı başlangıç "Not tested" olarak işaretlidir:** Android için QoreSign (aynı kod yalnızca JVM artefaktında çalıştırıldı, bir cihazda değil) ve Python için QoreSign. Diğer 32 hızlı başlangıç girdisi çalıştı ve geçti.
 - **Simulator imzalı bayt gerektirir.** Sizin yerinize imzalayamaz ve asla yayınlamaz.
 - **Playground ve test wallet yalnızca testnet içindir,** yeniden yüklemede kaybolan tek kullanımlık anahtarlar kullanır ve gerçek fon tutamaz veya taşıyamaz.
 - **Aynı sekmedeki gerçek bir QoreX eklentisinin yerini** siz yeniden yükleyene kadar test wallet alır.

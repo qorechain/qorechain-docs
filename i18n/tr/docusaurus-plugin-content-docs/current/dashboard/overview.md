@@ -120,7 +120,7 @@ Bu bölümün sayfaları: [Explorer](/dashboard/explorer), [Wallet](/dashboard/w
 - **Bridge ekranı yoktur.** Bkz. [Bridge](/dashboard/bridge).
 - **Trade ağ anahtarını izlemez.** Başlık Mainnet'te olsa bile testnet içeriği gösterir. Bkz. [Trade](/dashboard/trade).
 - **Uygulama içi FAQ kısa bir yardım sayfasıdır.** Onunla bu kılavuz farklılaştığında bu kılavuzu izleyin.
-- **Henüz canlı değil:** Developers sayfasındaki Transaction inspector ve MCP sunucusu (Developers sayfası bunun yayımlanmadığını belirtir).
+- **Henüz canlı değil:** Developers sayfasındaki Transaction inspector.
 - **Mainnet kısıtlamaları.** Mainnet'te staking, gönderme ve sözleşme dağıtımları sayfa başına açıklanır; birkaç akış (Native veya SVM dağıtımları, redelegation, zaman kilitli staking) Dashboard'da sunulmaz.
 - **Testnet'in gerçek değeri yoktur.** Bir testnet adresine asla gerçek QOR göndermeyin: biçimler aynıdır. Bkz. [Wallet](/dashboard/wallet#testnet).
 

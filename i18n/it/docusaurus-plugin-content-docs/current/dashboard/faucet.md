@@ -15,10 +15,10 @@ Il QOR di testnet **non ha alcun valore reale**. Il Faucet non tocca mai la main
 
 ## Innovazioni {#innovations}
 
-- **Una richiesta, due tipi di token.** Una richiesta paga 100 QOR e, in una transazione separata, 1.000 fUSD, 0,5 fETH e 0,02 fBTC. Se l'invio dei token fest fallisce, il QOR arriva comunque e la scheda del risultato lo indica.
+- **Una richiesta, due tipi di token.** Una richiesta paga 100 QOR e, in una transazione separata, 1000 fUSD, 0,5 fETH e 0,02 fBTC. Se l'invio dei token fest fallisce, il QOR arriva comunque e la scheda del risultato lo indica.
 - **Un doppio cooldown.** Una richiesta ogni 24 ore per account **e** per indirizzo. Lo slot viene riservato prima che venga inviato qualsiasi cosa e rilasciato se l'invio fallisce, quindi una richiesta fallita non consuma la tua giornata.
 - **I token fest sono coin bank nativi.** Sono denominazioni bank `erc20:0x...` che l'AMM on-chain, gli invii bank, IBC e i contratti QoreChain Native usano così come sono. MetaMask o un DEX EVM li vedono solo dopo una conversione `MsgConvertCoin` (vedi [Token di test Fest](#fest-tokens)).
-- **Nessun numero sbagliato.** Se le informazioni del Faucet non possono essere caricate, la pagina mostra «...» al posto di un importo, mai uno ipotizzato.
+- **Gli importi sono fissi per ogni richiesta.** 100 QOR per richiesta, una volta ogni 24 ore per account **e** per indirizzo, più 1000 fUSD, 0,5 fETH e 0,02 fBTC per richiesta (solo testnet, accesso richiesto).
 - **Un destinatario `0x` viene pagato sul suo gemello `qor1`.** Un indirizzo `0x` corrisponde agli stessi 20 byte della sua forma `qor1`, quindi il servizio paga lo stesso account. Il modulo della Dashboard accetta però solo `qor1...`.
 
 ## Come si usa {#how-to-use}

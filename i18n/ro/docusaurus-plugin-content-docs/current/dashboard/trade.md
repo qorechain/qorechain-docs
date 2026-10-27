@@ -29,12 +29,12 @@ Cerințe: să fii autentificat și să ai un portofel de test (vezi [Portofel](/
 1. Bannerul oferă **Get test tokens**; folosește-l mai întâi.
 2. Alege tokenul cu care plătești și introdu o sumă. Perechea implicită, QOR către USDC, este o pereche de **exersare** care nu se decontează on-chain. Alege **WQOR** și **QUSDC** (sau orice pereche dintre cele cinci) pentru un schimb on-chain.
 3. Alege tokenul pe care îl primești; ieșirea este cotată automat.
-4. Opțional, ajustează **toleranța la slippage** (implicit 0.5%).
+4. Opțional, ajustează **toleranța la slippage** (pagina are o valoare implicită).
 5. Selectează **Swap Now**, apoi **Confirm Swap**. Rezultatul afișează „Swap Confirmed" cu **View Transaction**.
 
 **Recent Swaps** listează schimburile tuturor utilizatorilor; **Show My History** îl filtrează la ale tale.
 
-**Exemplu minimal:** pe testnet selectează **Get test tokens**, vinde 10 WQOR pentru QUSDC, **Swap Now**, **Confirm Swap**.
+**Exemplu minimal:** pe testnet selectează **Get test tokens**, vinde niște WQOR pentru QUSDC, **Swap Now**, **Confirm Swap**.
 
 :::tip Slippage
 O toleranță mai mare face ca un schimb să aibă șanse mai mari să se efectueze pe piețele cu mișcare rapidă, dar este posibil să primești un preț mai prost. Valoarea implicită este potrivită pentru majoritatea perechilor.
@@ -42,12 +42,12 @@ O toleranță mai mare face ca un schimb să aibă șanse mai mari să se efectu
 
 ### Pools
 
-Răsfoiește cardurile de pool: perechea de tranzacționare, lichiditatea totală, volumul pe 24 de ore, numărul de furnizori, precum și un APR, un comision, un ID de pool, un preț și rezervele. O casetă de căutare filtrează după simbolul tokenului. Acestea sunt cifre de exersare; nu le interpreta ca randamente.
+Răsfoiește cardurile de pool pentru perechea de tranzacționare și detaliile ei. O casetă de căutare filtrează după simbolul tokenului. Aceste pool-uri sunt o zonă de exersare, nu lichiditate on-chain, iar cifrele de pe ele nu sunt date de piață.
 
 ### Add Liquidity
 
 1. Selectează două tokenuri de împerecheat (unul este implicit QOR). Folosește **Create Pool** pentru o pereche nouă.
-2. Introdu o sumă pentru primul token; al doilea se completează pentru a corespunde raportului pool-ului. Pagina notează „Minimum 1000 QOR required".
+2. Introdu o sumă pentru primul token; al doilea se completează pentru a corespunde raportului pool-ului. Pagina indică un minim pentru crearea unui pool.
 3. Analizează ponderea ta, apoi confirmă.
 
 ### My Positions
@@ -74,7 +74,7 @@ Fiecare intrare afișează perechea de tokenuri, suma din fiecare token, pondere
 - **Fără tranzacționare pe mainnet.** Pagina ignoră comutatorul de rețea și afișează conținut de testnet și pe mainnet.
 - **Doar cinci tokenuri se decontează on-chain.** Tokenurile Fest din [Faucet](/dashboard/faucet#fest-tokens) nu sunt pe această pagină.
 - **AMM-ul nativ nu are pool-uri** pe niciuna dintre rețele. Pool-urile reale vor fi descrise când vor exista.
-- **Cifrele de exersare** (prețuri, APR, volum) nu sunt date de piață.
+- **Cifrele pool-urilor** sunt date de exersare, nu date de piață.
 - **Tokenurile de testnet nu au valoare** și nu pot fi schimbate pe nimic.
 
 ## Înrudite

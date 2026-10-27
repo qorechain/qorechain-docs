@@ -29,12 +29,12 @@ Prérequis : être connecté et disposer d'un portefeuille de test (voir [Portef
 1. La bannière propose **Get test tokens** ; utilisez-le en premier.
 2. Choisissez le jeton avec lequel vous payez et saisissez un montant. La paire par défaut, QOR vers USDC, est une paire d'**entraînement** qui n'est pas réglée on-chain. Choisissez **WQOR** et **QUSDC** (ou toute paire parmi les cinq) pour un échange on-chain.
 3. Choisissez le jeton à recevoir ; la sortie est cotée automatiquement.
-4. Ajustez éventuellement la **tolérance de slippage** (0,5 % par défaut).
+4. Ajustez éventuellement la **tolérance de slippage** (la page propose une valeur par défaut).
 5. Sélectionnez **Swap Now**, puis **Confirm Swap**. Le résultat affiche « Swap Confirmed » avec **View Transaction**.
 
 **Recent Swaps** liste les échanges de tous les utilisateurs ; **Show My History** le filtre sur les vôtres.
 
-**Exemple minimal :** sur le testnet, sélectionnez **Get test tokens**, vendez 10 WQOR contre du QUSDC, **Swap Now**, **Confirm Swap**.
+**Exemple minimal :** sur le testnet, sélectionnez **Get test tokens**, vendez un peu de WQOR contre du QUSDC, **Swap Now**, **Confirm Swap**.
 
 :::tip Slippage
 Une tolérance plus élevée augmente les chances qu'un échange aboutisse dans des marchés à évolution rapide, mais vous pourriez recevoir un prix moins favorable. La valeur par défaut convient à la plupart des paires.
@@ -42,12 +42,12 @@ Une tolérance plus élevée augmente les chances qu'un échange aboutisse dans 
 
 ### Pools
 
-Parcourez les cartes de pool : paire de trading, liquidité totale, volume sur 24 heures, nombre de fournisseurs, ainsi qu'un APR, des frais, un ID de pool, un prix et les réserves. Un champ de recherche filtre par symbole de jeton. Ce sont des chiffres d'entraînement ; ne les interprétez pas comme des rendements.
+Parcourez les cartes de pool pour voir la paire de trading et ses détails. Un champ de recherche filtre par symbole de jeton. Ces pools sont une zone d'entraînement, pas de la liquidité on-chain, et les chiffres qu'ils affichent ne sont pas des données de marché.
 
 ### Add Liquidity
 
 1. Sélectionnez deux jetons à apparier (l'un est QOR par défaut). Utilisez **Create Pool** pour une nouvelle paire.
-2. Saisissez un montant pour le premier jeton ; le second se remplit pour correspondre au ratio du pool. La page indique « Minimum 1000 QOR required ».
+2. Saisissez un montant pour le premier jeton ; le second se remplit pour correspondre au ratio du pool. La page indique un minimum pour créer un pool.
 3. Examinez votre part, puis confirmez.
 
 ### My Positions
@@ -74,7 +74,7 @@ Chaque entrée affiche la paire de jetons, le montant de chaque jeton, votre par
 - **Pas de trading sur le mainnet.** La page ignore le sélecteur de réseau et affiche aussi le contenu du testnet sur le mainnet.
 - **Seuls cinq jetons sont réglés on-chain.** Les jetons du fest du [Faucet](/dashboard/faucet#fest-tokens) ne figurent pas sur cette page.
 - **L'AMM natif n'a aucun pool** sur l'un ou l'autre réseau. Les vrais pools seront décrits lorsqu'ils existeront.
-- **Les chiffres d'entraînement** (prix, APR, volume) ne sont pas des données de marché.
+- **Les chiffres des pools** sont des données d'entraînement, pas des données de marché.
 - **Les jetons de testnet n'ont aucune valeur** et ne peuvent être échangés contre rien.
 
 ## Liens connexes

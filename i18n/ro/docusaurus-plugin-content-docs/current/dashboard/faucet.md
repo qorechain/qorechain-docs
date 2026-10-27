@@ -15,10 +15,10 @@ QOR de testnet **nu are valoare reală**. Faucet-ul nu atinge niciodată mainnet
 
 ## Inovații {#innovations}
 
-- **O singură solicitare, două feluri de token.** O solicitare plătește 100 QOR și, într-o tranzacție separată, 1.000 fUSD, 0,5 fETH și 0,02 fBTC. Dacă trimiterea tokenurilor Fest eșuează, QOR ajunge oricum, iar cardul de rezultat o spune.
+- **O singură solicitare, două feluri de token.** O solicitare plătește 100 QOR și, într-o tranzacție separată, 1000 fUSD, 0,5 fETH și 0,02 fBTC. Dacă trimiterea tokenurilor Fest eșuează, QOR ajunge oricum, iar cardul de rezultat o spune.
 - **Un cooldown dublu.** O solicitare per 24 de ore per cont **și** per adresă. Slotul este rezervat înainte de a se trimite ceva și eliberat dacă trimiterea eșuează, deci o solicitare eșuată nu îți consumă ziua.
 - **Tokenurile Fest sunt monede bank native.** Sunt denominații bank `erc20:0x...` pe care AMM-ul on-chain, transferurile bank, IBC și contractele QoreChain Native le folosesc ca atare. MetaMask sau un DEX EVM le văd doar după o conversie `MsgConvertCoin` (vezi [Tokenuri de test Fest](#fest-tokens)).
-- **Fără numere greșite.** Dacă informațiile Faucet-ului nu pot fi încărcate, pagina arată „..." în loc de o sumă, niciodată una ghicită.
+- **Sumele sunt fixe pentru fiecare solicitare.** 100 QOR per solicitare, o dată la 24 de ore per cont **și** per adresă, plus 1000 fUSD, 0,5 fETH și 0,02 fBTC per solicitare (doar testnet, autentificare necesară).
 - **Un destinatar `0x` este plătit pe geamănul său `qor1`.** O adresă `0x` reprezintă aceiași 20 de octeți ca forma sa `qor1`, deci serviciul plătește același cont. Formularul din Dashboard acceptă el însuși doar `qor1...`.
 
 ## Cum se folosește {#how-to-use}

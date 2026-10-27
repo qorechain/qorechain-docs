@@ -212,6 +212,8 @@ const sidebars: SidebarsConfig = {
         "developer-tools/pqc-library",
         "developer-tools/scaffolders-and-cli",
         "developer-tools/qorex-integrations",
+        "developer-tools/mcp",
+        "developer-tools/qore-cli",
       ],
     },
     {

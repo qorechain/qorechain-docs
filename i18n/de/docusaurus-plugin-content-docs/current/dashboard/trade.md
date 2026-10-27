@@ -29,12 +29,12 @@ Voraussetzungen: angemeldet und eine Test-Wallet (siehe [Wallet](/dashboard/wall
 1. Das Banner bietet **Get test tokens** an; nutze es zuerst.
 2. Wähle den Token, mit dem du bezahlst, und gib einen Betrag ein. Das Standardpaar, QOR zu USDC, ist ein **Übungs**paar, das nicht on-chain abgewickelt wird. Wähle **WQOR** und **QUSDC** (oder ein beliebiges Paar der fünf) für einen On-Chain-Swap.
 3. Wähle den Token, den du erhalten möchtest; die Ausgabe wird automatisch berechnet.
-4. Passe optional die **Slippage-Toleranz** an (Standard 0,5 %).
+4. Passe optional die **Slippage-Toleranz** an (die Seite hat einen Standardwert).
 5. Wähle **Swap Now**, dann **Confirm Swap**. Das Ergebnis zeigt "Swap Confirmed" mit **View Transaction**.
 
 **Recent Swaps** listet Swaps aller Nutzer; **Show My History** filtert auf deine eigenen.
 
-**Minimales Beispiel:** Wähle im Testnet **Get test tokens**, verkaufe 10 WQOR gegen QUSDC, **Swap Now**, **Confirm Swap**.
+**Minimales Beispiel:** Wähle im Testnet **Get test tokens**, verkaufe etwas WQOR gegen QUSDC, **Swap Now**, **Confirm Swap**.
 
 :::tip Slippage
 Eine höhere Toleranz erhöht in sich schnell bewegenden Märkten die Wahrscheinlichkeit, dass ein Swap durchgeht, aber du erhältst möglicherweise einen schlechteren Preis. Der Standardwert passt für die meisten Paare.
@@ -42,12 +42,12 @@ Eine höhere Toleranz erhöht in sich schnell bewegenden Märkten die Wahrschein
 
 ### Pools
 
-Durchsuche die Pool-Karten: Handelspaar, Gesamtliquidität, 24-Stunden-Volumen, Anzahl der Anbieter sowie außerdem ein APR, eine Gebühr, eine Pool-ID, ein Preis und die Reserven. Ein Suchfeld filtert nach Token-Symbol. Das sind Übungswerte; lies sie nicht als Renditen.
+Durchsuche die Pool-Karten nach dem Handelspaar und seinen Details. Ein Suchfeld filtert nach Token-Symbol. Diese Pools sind ein Übungsbereich, keine On-Chain-Liquidität, und die Zahlen darauf sind keine Marktdaten.
 
 ### Add Liquidity
 
 1. Wähle zwei Token für das Paar (einer ist standardmäßig QOR). Mit **Create Pool** legst du ein neues Paar an.
-2. Gib einen Betrag für den ersten Token ein; der zweite wird passend zum Pool-Verhältnis ausgefüllt. Die Seite weist darauf hin: "Minimum 1000 QOR required".
+2. Gib einen Betrag für den ersten Token ein; der zweite wird passend zum Pool-Verhältnis ausgefüllt. Die Seite nennt ein Minimum für das Anlegen eines Pools.
 3. Überprüfe deinen Anteil und bestätige dann.
 
 ### My Positions
@@ -74,7 +74,7 @@ Jeder Eintrag zeigt das Token-Paar, den Betrag jedes Tokens, deinen Anteil und d
 - **Kein Mainnet-Handel.** Die Seite ignoriert den Netzwerkschalter und zeigt auch im Mainnet Testnet-Inhalte.
 - **Nur fünf Token werden on-chain abgewickelt.** Die Fest-Token aus dem [Faucet](/dashboard/faucet#fest-tokens) sind auf dieser Seite nicht enthalten.
 - **Das native AMM hat auf keinem Netzwerk Pools.** Echte Pools werden beschrieben, sobald sie existieren.
-- **Übungswerte** (Preise, APR, Volumen) sind keine Marktdaten.
+- **Pool-Zahlen** sind Übungsdaten, keine Marktdaten.
 - **Testnet-Token haben keinen Wert** und lassen sich gegen nichts eintauschen.
 
 ## Verwandt
