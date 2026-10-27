@@ -197,6 +197,46 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "QoreSign",
+      link: {
+        type: "generated-index",
+        slug: "/qoresign",
+        description:
+          "Hybrid secp256k1 + ML-DSA-87 signing for wallets and backends: quickstart, guides, wire-format specifications, and test vectors.",
+      },
+      items: [
+        "qoresign/overview",
+        "qoresign/quickstart",
+        {
+          type: "category",
+          label: "Guides",
+          key: "qoresign-guides",
+          link: { type: "generated-index", slug: "/qoresign/guides" },
+          items: [
+            "qoresign/guides/keplr-compatible-wallets",
+            "qoresign/guides/sign-in",
+            "qoresign/guides/evm-quantum-ready",
+            "qoresign/guides/key-derivation",
+            "qoresign/guides/sizes-and-transport",
+          ],
+        },
+        {
+          type: "category",
+          label: "Specifications",
+          key: "qoresign-specifications",
+          link: { type: "generated-index", slug: "/qoresign/spec" },
+          items: [
+            "qoresign/spec/hybrid-signing-v1",
+            "qoresign/spec/siwq-v1",
+            "qoresign/spec/message-signing-v1",
+            "qoresign/spec/hd-derivation-draft",
+          ],
+        },
+        "qoresign/vectors",
+      ],
+    },
+    {
+      type: "category",
       label: "Dashboard",
       link: {
         type: "generated-index",
