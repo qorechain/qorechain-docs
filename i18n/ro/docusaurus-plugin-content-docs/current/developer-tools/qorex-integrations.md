@@ -22,6 +22,37 @@ Ce nu fac: nu dețin chei și nu transformă QoreX în mai mult decât este ast�
 * **Fixture-uri Playwright în stilul Synpress v4** (`qorexMockFixtures`) injectează mock-ul înainte de navigare, așa că un test cap-coadă nu are nevoie de nicio extensie de browser.
 * **Conturi conduse de portofel, fără evenimente.** Deoarece QoreX nu emite încă `accountsChanged` sau `chainChanged`, portofelul RainbowKit are un `pollAccountsOnFocus` opt-in, care recitește `eth_accounts` și `eth_chainId` când pagina recapătă focusul.
 
+## La ce se folosește {#use-cases}
+
+1. **Un dApp wagmi și RainbowKit adaugă QoreX.** Adăugați `qorexWallet` în lista de portofele RainbowKit și `QOREX_CHAINS` în configurația wagmi. Utilizatorii care au QoreX se conectează, iar dApp-ul le citește adresa `0x` și chain id-ul (9801 sau 9800). Utilizatorii fără QoreX văd linkurile către magazine.
+2. **Un dApp Cosmos pe Interchain Kit sau cosmos-kit adaugă QoreX.** Adăugați portofelul QoreX în `ChainProvider` și trimiteți tranzacții QoreChain cu `qorexSignAndBroadcast`: QoreX construiește tranzacția, adaugă semnătura hibridă și o transmite, deoarece o pagină nu poate deține cheia ML-DSA-87.
+3. **Un dApp care acceptă deja Keplr.** `window.qorex.native` urmează modelul Keplr (`enable`, `getKey`, `signDirect`), așa că integrarea înseamnă câteva rânduri. Ghidul din repository listează fiecare diferență.
+4. **Teste CI ale fluxurilor de portofel, fără extensie.** O echipă QA rulează Playwright cu `qorexMockFixtures({ profile: "current" })`, apasă Connect și verifică dacă pagina afișează `qorex.addresses.evm`. `qorex.rejectNext()` testează calea de refuz.
+5. **Construit în avans față de funcțiile noi QoreX.** Rulați aceeași suită cu `profile: "planned"` pentru a exersa funcțiile anunțate (semnare EVM, evenimente de schimbare a contului, `signDirect` care adaugă stratul hibrid) înainte ca QoreX să le livreze.
+6. **Testarea transmiterilor reale pe testnet.** Cu o mnemonică de testnet alimentată, proprie, o echipă lasă mock-ul să facă `signAndBroadcast` pentru o tranzacție semnată hibrid către `qorechain-diana` și verifică rezultatul în pagină.
+7. **Detecție de funcții în loc de verificări de versiune.** Un dApp afișează un buton Send pe QoreChain când `hasCapability(native, "signAndBroadcast")` este adevărat, astfel încât build-urile noi QoreX activează funcții fără nicio schimbare în dApp.
+
+## Cum funcționează {#how-it-works}
+
+* **Lane-ul EVM.** QoreX nu scrie niciodată `window.ethereum`. Anunță un provider EIP-1193 prin EIP-6963 cu numele reverse-DNS `network.qore.qorex`; `qorexWallet()` și `discoverQorexEip1193()` selectează exact acel provider. Același obiect se găsește și la `window.qorex.evm`.
+* **Lane-ul nativ.** `window.qorex.native` este un provider în modelul Keplr (nu este un alias pentru `window.keplr`). QoreChain cere o semnătură hibridă secp256k1 plus ML-DSA-87 pe tranzacțiile din lane-ul nativ, iar cheia ML-DSA-87 o deține doar portofelul, deci dApp-ul trimite mesajele către `signAndBroadcast`. QoreX le afișează, stabilește comisionul, semnează cu ambele chei, transmite și raportează `shield`.
+* **Solana.** QoreX înregistrează un portofel Solana Wallet Standard pe `solana:mainnet` (Solana propriu-zisă). Lane-ul SVM al QoreChain nu este deschis pentru tranzacții și nu are un chain id Wallet Standard.
+* **Capabilități, nu versiuni.** Kiturile citesc `window.qorex.native.capabilities` prin `hasCapability`. Un build QoreX poate declara `listAccounts`, `connectProofPicksAccount`, `executeRequest` și `signAndBroadcast`.
+* **Amino este refuzat prin design**, deoarece Amino JSON nu poate purta semnătura hibridă ML-DSA-87. Kiturile răspund fiecărei cereri de signer cu un signer direct.
+* **`signDirect` și stratul post-cuantic, precis.** Astăzi `signDirect` din QoreX semnează SignDoc-ul așa cum este, cu cheia secp256k1. Pe QoreChain, corpul trebuie să conțină deja un strat hibrid ML-DSA-87 valid pentru cheia înregistrată a semnatarului, lucru pe care o pagină nu îl poate produce. Așadar, pe `qorechain-vladi` și `qorechain-diana`, `signDirect` al signerului offline din kituri aruncă `QOREX_USE_SIGN_AND_BROADCAST` înainte să ajungă la QoreX; `getAccounts` funcționează pe orice chain. Pe alte chain id-uri, kiturile trimit `signDirect` către QoreX, care astăzi servește doar cele două chain id-uri QoreChain. O versiune viitoare QoreX este planificată să adauge ea însăși stratul în `signDirect` și să declare capabilitatea `signDirectAddsPqcLayer`; niciun build actual nu o declară. Kiturile o verifică deja, iar când este declarată, signerul offline trimite SignDoc-urile QoreChain către QoreX. QoreX poate atunci să reestimeze gazul și să mărească limita de gaz și comisionul, așa că transmiteți întotdeauna documentul `signed` primit înapoi.
+* **Stările `shield`** returnate de `signAndBroadcast`: `shielded` (tranzacția confirmată poartă stratul hibrid), `pending` (transmisă, verificarea nu s-a încheiat), `downgraded` (confirmată fără strat; tratați-o ca pe o alertă) și `classical` (un lane în care stratul nu se aplică).
+* **Mock-ul** își construiește conturile dintr-o mnemonică BIP-39 (implicit: fraza de test publică) așa cum o face QoreX: `m/44'/118'/0'/0/i` cu cheia ML-DSA-87 canonică a acelei adrese `qor1`, `m/44'/60'/0'/0/i` pentru EVM și `m/44'/501'/i'/0'` pentru Solana. `signAndBroadcast` al său citește cheia ML-DSA-87 a contului din REST, o înregistrează o singură dată cu `MsgRegisterPQCKeyV2` dacă lipsește, semnează hibrid cu [QoreSign](/qoresign/overview), transmite (reîncercând o dată cu cealaltă versiune de sign-bytes dacă rețeaua o cere), așteaptă includerea și returnează `{ txHash, code, height, shield }`.
+
+### Ce acceptă QoreX astăzi {#qorex-today}
+
+| Suprafață | Astăzi | Planificat de echipa QoreX |
+|---|---|---|
+| EVM (EIP-1193 prin EIP-6963, `network.qore.qorex`) | connect (`eth_requestAccounts`), `eth_accounts`, `eth_chainId`, `wallet_switchEthereumChain` către rețeaua deja selectată în QoreX | evenimentele `accountsChanged` și `chainChanged`, codurile de eroare EIP-1193 4200 și 4902 la fiecare refuz, `personal_sign`, `eth_signTypedData_v4`, `eth_sendTransaction`, `wallet_addEthereumChain` |
+| Lane-ul nativ QoreChain (`window.qorex.native`) | `enable`, `getKey`, `signAndBroadcast`, `listAccounts`, `experimentalSuggestChain` (id-uri QoreChain), `signDirect` (SignDoc-ul trebuie să poarte deja stratul hibrid) | `signDirect` care adaugă singur stratul ML-DSA-87, semnarea mesajelor (ADR-36 plus ML-DSA-87) |
+| Solana (Wallet Standard, `solana:mainnet`) | connect, `signMessage`, `signTransaction` | `solana:signIn` |
+
+Pe partea EVM, semnarea și trimiterea eșuează în prezent cu „QoreX: EVM method ... not yet supported”. Pentru tranzacții pe QoreChain folosiți lane-ul nativ. Pe lane-ul EVM al QoreChain, o tranzacție este acceptată când expeditorul are o cheie ML-DSA-87 înregistrată și o fereastră de autorizare EVM deschisă din lane-ul nativ. Utilizatorul schimbă rețeaua în QoreX; dApp-ul nu o poate schimba.
+
 ## Cum se folosește {#how-to-use}
 
 Blocurile de cod de mai jos sunt quickstart-urile din hub-ul pentru dezvoltatori. Fiecare a fost verificat de tip cu `tsc` și rulat pe 27 octombrie 2026, după instalarea din registrul npm public (Node 26; jsdom 30 și `react-dom/client` pentru codul de browser; Playwright 1.64 cu Chromium pentru fixture) și a trecut. Niciunul nu trimite o tranzacție și niciunul nu are nevoie de o cheie alimentată. Rezultatul observat este dat la fiecare. Comportamentul de partea portofelului (un QoreX real într-un browser real) nu a fost testat pentru această pagină.
@@ -180,6 +211,92 @@ test("connects", async ({ page, qorex }) => {
 
 Observat: `1 passed`, față de o pagină locală al cărei buton Connect apelează `eth_requestAccounts` (Playwright 1.64, Chromium). Pentru a combina fixture-urile cu Synpress, instalați `@synthetixio/synpress@4.1.2` și învelițile în `testWithSynpress`. Fixture-ul `qorex` expune `addresses`, `approveNext()`, `rejectNext()`, `requests()`, `switchAccount(i)` și `disconnect()`. Dependență peer: `@playwright/test` 1.48 sau mai nou. Starea trăiește în pagină, deci fiecare navigare pornește un mock proaspăt.
 
+### Trimiterea unei tranzacții pe QoreChain {#send-transaction}
+
+Același apel există în `@qorechain/qorex-interchain-kit`, `@qorechain/qorex-cosmos-kit` și `@qorechain/qorex-types`:
+
+```ts
+import { qorexSignAndBroadcast } from "@qorechain/qorex-interchain-kit";
+
+const { txHash, code, height, shield } = await qorexSignAndBroadcast({
+  chainId: "qorechain-diana",
+  messages: [{ typeUrl: "/cosmos.bank.v1beta1.MsgSend", value: MsgSend.encode(msg).finish() }],
+  memo: "",
+  gasLimit: 200000,
+});
+```
+
+* `value` este mesajul codificat protobuf: un `Uint8Array`, un `number[]` sau base64.
+* De la 1 la 32 de mesaje; un memo de cel mult 256 de octeți; `gasLimit` este limitat între 100.000 și 5.000.000 (400.000 dacă este omis). QoreX stabilește comisionul și îl afișează înainte de semnare.
+* `chainId` trebuie să corespundă rețelei selectate în QoreX.
+* Mesajele care gestionează cheia ML-DSA-87 a contului țin de portofel și sunt refuzate, inclusiv în interiorul unui `MsgExec`. Tipurile de mesaje pe care QoreX nu le poate afișa sunt refuzate.
+* Fără un kit, apelați `window.qorex.native.signAndBroadcast(request)` după ce verificați `hasCapability(native, "signAndBroadcast")`. `getKey` returnează `pubKey` și `address` ca `number[]`; convertiți cu `Uint8Array.from(key.pubKey)` (kiturile fac asta pentru dvs.).
+
+### Mock-ul în Playwright fără fixture-uri {#mock-playwright}
+
+```ts
+import { createQorexMock } from "@qorechain/qorex-wallet-mock";
+
+const mock = createQorexMock({ profile: "current" });
+await page.addInitScript({ content: mock.initScript() });
+await page.goto("http://localhost:5173");
+await page.evaluate(() => window.__qorexMock!.rejectNext());
+```
+
+## API principal {#main-api}
+
+| Pachet | Nume | Ce face |
+|---|---|---|
+| types | `discoverQorexEip1193({ timeoutMs })`, `findQorexEip1193()` | descoperire EIP-6963 asincronă a providerului EVM QoreX și o sondare sincronă a acestuia |
+| types | `getQorexNative()`, `isQorexInstalled()`, `hasCapability(native, capability)` | citesc `window.qorex.native`, verifică prezența QoreX, testează o capabilitate |
+| types | `qorexSignAndBroadcast(request, { native? })` | predă mesajele către QoreX; aruncă `QOREX_NOT_INSTALLED` fără QoreX și `QOREX_NOT_SUPPORTED_YET` pe un QoreX anterior acestei funcții |
+| types | `QorexIntegrationError`, `isQorexIntegrationError(err, code)` | erorile acestor pachete, cu coduri stabile |
+| types | `isQorexUnsupportedMethodError`, `isQorexUnrecognizedChainError`, `QOREX_EVM_ERROR_CODES` | clasifică refuzurile QoreX EVM: verifică `code` (4200, 4902), apoi revin la textul mesajelor de astăzi |
+| types | `QorexEip1193Provider`, `QorexNativeProvider`, `QorexSolanaStandardWallet`, `QorexSvmProvider`; `@qorechain/qorex-types/icon` | tipurile a ceea ce injectează QoreX; pictograma QoreX ca data URI |
+| rainbowkit | `qorexWallet(options?)`, `createQorexConnector`, `getQorexEip1193Provider` | portofelul RainbowKit (opțiunea `pollAccountsOnFocus`), conectorul wagmi și providerul pe care îl folosește |
+| rainbowkit | `qorechain`, `qorechainTestnet`, `QOREX_CHAINS` | chain-urile viem 9801 și 9800 |
+| interchain-kit | `qorexWallet`, `createQorexWallet()`, `QorexCosmosWallet` | portofel Interchain Kit |
+| cosmos-kit | `wallets`, `qorexExtension`, `QorexExtensionWallet`, `QorexClient` | portofel cosmos-kit |
+| ambele kituri | `qorexSignAndBroadcast`, `QOREX_CAPABILITY_SIGN_DIRECT_ADDS_PQC_LAYER`, constantele chain id, ajutoarele pentru erori | reexportate din `qorex-types` |
+| wallet-mock | `createQorexMock(options)` | returnează `{ install(window), initScript(), addresses(), ... }` |
+| wallet-mock | `window.__qorexMock` | `approveNext()`, `rejectNext()`, `pendingApprovals`, `requests`, `clearRequests()`, `switchAccount(i)`, `switchNetwork(chainId)`, `disconnect()`, `addresses()` |
+| wallet-mock | `PUBLIC_TEST_MNEMONIC` | fraza de test BIP-39 publică (nu o alimentați niciodată) |
+| synpress | `qorexMockFixtures(options)` | un `test` Playwright cu un fixture `qorex` automat |
+| synpress | `qorex.addresses`, `approveNext()`, `rejectNext()`, `waitForApproval()`, `pendingApprovals()`, `requests()`, `clearRequests()`, `switchAccount(i)`, `switchNetwork(chainId)`, `disconnect()`, `mock` | controalele fixture-ului |
+| synpress | `qorexExtensionFixtures({ extensionPath })` | interfață planificată pentru extensia reală; aruncă astăzi `QorexExtensionModeUnavailableError` |
+
+Cu Synpress v4, îmbinați fixture-urile ca `testWithSynpress(qorexMockFixtures({ profile: "planned" }))`. Cu `autoApprove: false`, apelați `await qorex.waitForApproval()` pentru a inspecta starea în așteptare, apoi `qorex.approveNext()`. Rulați suita în ambele profiluri pentru a acoperi QoreX de astăzi și versiunea următoare.
+
+### Comportamentul signerului din kituri {#kit-signer}
+
+| Apel | Interchain Kit | cosmos-kit |
+|---|---|---|
+| `connect` sau `enable`, `getAccount`, `getKey` | `enable` și `getKey` din QoreX, octeții convertiți în `Uint8Array` | la fel |
+| `getOfflineSigner(chainId)` | signer direct pentru orice preferință | signer direct pentru orice preferință, inclusiv `"amino"`, implicitul cosmos-kit |
+| `signDirect` al signerului pe QoreChain | aruncă `QOREX_USE_SIGN_AND_BROADCAST` (până când QoreX declară `signDirectAddsPqcLayer`) | la fel |
+| `signDirect` al signerului pe alt chain id | trimis către `signDirect` din QoreX | la fel |
+| `signAmino`, `getOfflineSignerAmino` | aruncă `QOREX_AMINO_REFUSED` | la fel |
+| `signArbitrary` (ADR-36) | aruncă `QOREX_NOT_SUPPORTED_YET` (la fel `verifyArbitrary`) | aruncă `QOREX_NOT_SUPPORTED_YET` |
+| `sendTx` | aruncă `QOREX_NOT_SUPPORTED_YET`; transmiteți prin propriul endpoint RPC | nu este oferit |
+
+### Opțiunile mock-ului de portofel {#mock-options}
+
+| Opțiune | Implicit | Semnificație |
+|---|---|---|
+| `profile` | `"current"` | `"current"` este QoreX de astăzi; `"planned"` adaugă funcțiile anunțate |
+| `mnemonic` | fraza de test BIP-39 publică | folosiți-o pe a dvs. pentru orice alimentați |
+| `accountIndex` | `0` | același index pe fiecare lane |
+| `chainId` | `"qorechain-diana"` | rețeaua selectată în mock |
+| `rest` | `https://api-testnet.qore.host` | endpoint REST pentru `signAndBroadcast` și căutări de chei |
+| `evmRpc` | `https://evm-testnet.qore.host` | folosit de `eth_sendTransaction` (profilul planned) |
+| `allowMainnet` | `false` | fără ea, semnarea pentru `qorechain-vladi` este refuzată |
+| `autoApprove` | `true` | când este `false`, aprobările așteaptă `approveNext()` sau `rejectNext()` |
+| `inclusionTimeoutMs`, `pollIntervalMs` | `30000`, `1500` | cum așteaptă `signAndBroadcast` includerea |
+
+### Coduri de eroare {#error-codes}
+
+Din aceste pachete (`QorexIntegrationError.code`): `QOREX_NOT_INSTALLED`, `QOREX_USE_SIGN_AND_BROADCAST`, `QOREX_AMINO_REFUSED` și `QOREX_NOT_SUPPORTED_YET`; din `qorex-synpress`: `QOREX_EXTENSION_MODE_UNAVAILABLE`. Erorile proprii ale QoreX sunt obiecte `Error` simple al căror mesaj începe cu `QoreX`, de exemplu `QoreX: connection rejected`, `QoreX: signature rejected`, `QoreX: wallet is locked` și `QoreX: unsupported chain <id>`. Astăzi, un chain necunoscut (4902) este singurul caz care poartă un cod numeric, iar refuzul utilizatorului nu are codul EIP-1193 4001, așa că potriviți mesajul. Mesajele care încep cu `QoreX (mock):` provin de la mock, niciodată de la QoreX.
+
 ## Cum se accesează {#how-to-access}
 
 * **Un portofel QoreX pentru utilizare reală.** Conectorii comunică cu extensia de browser sau aplicația QoreX pe care utilizatorul le-a instalat; vedeți pagina [Extensia de browser QoreX](/qorex/browser-extension) pentru instalări și versiunile din magazine. Pachetele de testare nu au nevoie de niciun portofel.
@@ -187,7 +304,30 @@ Observat: `1 passed`, față de o pagină locală al cărei buton Connect apelea
 * **Chei și fonduri.** Pachetele nu dețin nicio cheie. Mock-ul folosește fraza de test BIP-39 publică (`abandon` repetat de 11 ori, apoi `about`), care derivă `qor19rl4cm2hmr8afy4kldpxz3fka4jguq0agt672h`; nu o alimentați niciodată. Pentru un test care transmite tranzacții, dați mock-ului propria dvs. mnemonică de testnet.
 * **Alte conturi.** RainbowKit cu WalletConnect are nevoie de un id de proiect WalletConnect de la WalletConnect.
 * **Cerințe preliminare.** Node.js (scriptul dintr-un singur fișier al mock-ului are nevoie de 20.16 sau mai nou), o aplicație React pentru cei trei conectori și pachetele peer listate la fiecare quickstart. Utilizatorii TypeScript primesc tipurile din `@qorechain/qorex-types`.
-* **Costuri.** Pachetele sunt gratuite. O tranzacție trimisă prin QoreX plătește comisionul obișnuit (prag minim 0,1 uqor per gas).
+* **Costuri.** Pachetele sunt gratuite. O tranzacție trimisă prin QoreX plătește comisionul obișnuit (prag minim 0,1 uqor per gas; QoreX își stabilește propriile tranzacții la 0,15 uqor per gas).
+
+### Rețele {#networks}
+
+| | Mainnet | Testnet |
+|---|---|---|
+| Chain id nativ | `qorechain-vladi` | `qorechain-diana` |
+| EVM chain id | 9801 (`0x2649`) | 9800 (`0x2648`) |
+| REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
+| RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
+| EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
+| Explorer | `https://explore.qore.network` | la fel, cu testnet selectat |
+
+Prefix Bech32 `qor` (validatori `qorvaloper`), coin type 118, denom `uqor` cu 6 zecimale pe lane-ul nativ și QOR cu 18 zecimale pe EVM. Pentru utilizare reală, utilizatorii au nevoie de extensia QoreX (0.3.x); testele au nevoie doar de mock. Pentru transmiteri reale din mock, contul are nevoie de QOR de testnet de la [Faucet](/dashboard/faucet) (necesită autentificare); folosiți propria mnemonică, niciodată fraza de test publică.
+
+## Note de securitate {#security}
+
+* dApp-ul nu deține niciodată cheia ML-DSA-87: QoreX semnează tranzacțiile QoreChain în interiorul portofelului, prin `signAndBroadcast`.
+* QoreX refuză cererile paginii pentru mesaje care gestionează cheia ML-DSA-87 a contului.
+* `qorexWallet()` nu revine niciodată la `window.ethereum`, deci alt portofel injectat nu este luat drept QoreX. Mock-ul folosește un nume reverse-DNS distinct, astfel încât un dublu de test să nu fie luat niciodată drept portofel.
+* Metodele `connectProof`, `executeTransfer` și `executeRequest` există pentru dashboardul QoreChain și sunt refuzate pe orice altă origine.
+* Urmăriți rezultatul `shield`. `downgraded` înseamnă că tranzacția a fost confirmată fără stratul hibrid; tratați-o ca pe o alertă.
+* Mnemonica implicită a mock-ului este publică, iar mock-ul refuză semnarea pe mainnet dacă nu este setat `allowMainnet: true`. Nu alimentați niciodată fraza de test publică; folosiți o mnemonică de testnet separată pentru testele live.
+* Raportați vulnerabilitățile în privat la security@qore.network.
 
 ## Unde este publicat {#where-published}
 
@@ -200,7 +340,7 @@ Observat: `1 passed`, față de o pagină locală al cărei buton Connect apelea
 | npm | `@qorechain/qorex-wallet-mock` | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-wallet-mock |
 | npm | `@qorechain/qorex-synpress` | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-synpress |
 
-Sursa: https://github.com/qorechain/qorex-integrations (tag `v0.1.0`, foldere sub `packages/`; conține și un dApp demonstrativ, exemple și fișiere cu intrări chain-registry). Versiunile au fost citite din registrul npm pe 27 octombrie 2026. Ele înlocuiesc `@qorechain/connect`, care este depreciat pe npm: folosiți `qorex-types` pentru a detecta QoreX, `qorex-rainbowkit` pentru dApp-uri EVM, `qorex-interchain-kit` (sau `qorex-cosmos-kit`) pentru dApp-uri Cosmos și [QoreSign](/qoresign/overview) pentru semnare hibridă în propriul portofel sau backend.
+Sursa: https://github.com/qorechain/qorex-integrations (public, release `v0.1.0` publicat pe 27 octombrie 2026, foldere sub `packages/`). Conține și ghiduri (adăugați QoreX lângă MetaMask, Keplr sau Phantom; testare cap-coadă; erori și chain id-uri), un dApp demonstrativ care exersează fiecare suprafață QoreX pe testnet, exemple (`examples/wagmi-rainbowkit`, `examples/playwright-e2e`) și fișiere cu intrări chain-registry. Licență Apache-2.0; mentenanță QoreChain Association. Versiunile au fost citite din registrul npm pe 27 octombrie 2026. Ele înlocuiesc `@qorechain/connect`, care este depreciat pe npm: folosiți `qorex-types` pentru a detecta QoreX, `qorex-rainbowkit` pentru dApp-uri EVM, `qorex-interchain-kit` (sau `qorex-cosmos-kit`) pentru dApp-uri Cosmos și [QoreSign](/qoresign/overview) pentru semnare hibridă în propriul portofel sau backend.
 
 ## Limite și probleme cunoscute {#limits}
 
@@ -224,3 +364,13 @@ Sursa: https://github.com/qorechain/qorex-integrations (tag `v0.1.0`, foldere su
 **Diferențe între mock și portofel:** fără ecran de blocare sau fereastră de aprobare (aprobările se fac cu `approveNext`, `rejectNext` sau `autoApprove`); `signDirect` raportează un tip de cheie secp256k1 simplu; `signAndSendTransaction` Solana este refuzat; mesajele care încep cu „QoreX (mock):” sunt ale mock-ului însuși. Rezultatele testelor făcute cu mock-ul arată cum se comportă pagina dvs. față de interfața descrisă, nu că un build QoreX real se comportă la fel.
 
 **Altele:** toate cele șase pachete sunt o versiune inițială (0.1.0), așa că așteptați-vă ca interfețele lor să crească odată cu QoreX. Niciun quickstart testat nu acoperă `qorexSignAndBroadcast` față de o rețea live sau un portofel real.
+
+## Pagini conexe {#related}
+
+* [Portofelul QoreX](/qorex/overview) și [Extensia de browser QoreX](/qorex/browser-extension): portofelul cu care comunică aceste pachete.
+* [QoreSign](/qoresign/overview): signerul hibrid folosit de mock.
+* [QoreChain SDK](/sdk/overview): codificarea mesajelor precum `MsgSend` pentru `signAndBroadcast`.
+* [Dezvoltare EVM](/developer-guide/evm-development#evm-window): înregistrarea cheii ML-DSA-87 și ferestrele de autorizare EVM.
+* [Faucet](/dashboard/faucet): QOR de testnet.
+* [Serverul MCP QoreChain](/developer-tools/mcp): citiți rezultatul unei transmiteri cu `get_pq_status`.
+* [Prezentare generală a pachetelor pentru dezvoltatori](/developer-tools/overview).

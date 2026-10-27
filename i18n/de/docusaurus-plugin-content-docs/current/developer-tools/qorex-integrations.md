@@ -22,6 +22,37 @@ Was sie nicht tun: Sie halten keine Schlüssel, und sie machen QoreX nicht zu me
 * **Playwright-Fixtures im Stil von Synpress v4** (`qorexMockFixtures`) injizieren den Mock vor der Navigation, sodass ein End-to-End-Test keine Browser-Erweiterung benötigt.
 * **Wallet-gesteuerte Konten ohne Events.** Weil QoreX `accountsChanged` oder `chainChanged` noch nicht aussendet, hat die RainbowKit-Wallet ein optionales `pollAccountsOnFocus`, das `eth_accounts` und `eth_chainId` erneut liest, wenn die Seite den Fokus zurückerhält.
 
+## Wofür es verwendet wird {#use-cases}
+
+1. **Eine wagmi- und RainbowKit-dApp ergänzt QoreX.** Fügen Sie `qorexWallet` zur RainbowKit-Wallet-Liste und `QOREX_CHAINS` zur wagmi-Konfiguration hinzu. Nutzer mit QoreX verbinden sich, und die dApp liest ihre `0x`-Adresse und die Chain-ID (9801 oder 9800). Nutzer ohne QoreX sehen die Store-Links.
+2. **Eine Cosmos-dApp mit Interchain Kit oder cosmos-kit ergänzt QoreX.** Fügen Sie die QoreX-Wallet zu `ChainProvider` hinzu und senden Sie QoreChain-Transaktionen mit `qorexSignAndBroadcast`: QoreX baut die Transaktion, ergänzt die hybride Signatur und sendet sie, weil eine Seite den ML-DSA-87-Schlüssel nicht halten kann.
+3. **Eine dApp, die bereits Keplr unterstützt.** `window.qorex.native` folgt dem Keplr-Muster (`enable`, `getKey`, `signDirect`), die Integration besteht also aus wenigen Zeilen. Der Leitfaden im Repository listet jeden Unterschied auf.
+4. **CI-Tests von Wallet-Abläufen ohne Erweiterung.** Ein QA-Team führt Playwright mit `qorexMockFixtures({ profile: "current" })` aus, klickt auf Connect und prüft, dass die Seite `qorex.addresses.evm` anzeigt. `qorex.rejectNext()` testet den Ablehnungspfad.
+5. **Vorausbauen für neue QoreX-Funktionen.** Führen Sie dieselbe Suite mit `profile: "planned"` aus, um angekündigte Funktionen (EVM-Signieren, Konto-Änderungs-Events, `signDirect` mit hybrider Schicht) zu erproben, bevor QoreX sie ausliefert.
+6. **Echte Broadcasts im Testnet testen.** Mit einer eigenen, finanzierten Testnet-Mnemonic lässt ein Team den Mock eine hybrid signierte Transaktion per `signAndBroadcast` an `qorechain-diana` senden und prüft das Ergebnis in der Seite.
+7. **Funktionserkennung statt Versionsprüfungen.** Eine dApp zeigt auf QoreChain einen Senden-Button, wenn `hasCapability(native, "signAndBroadcast")` wahr ist, sodass neue QoreX-Builds Funktionen ohne Änderung der dApp freischalten.
+
+## Funktionsweise {#how-it-works}
+
+* **EVM-Lane.** QoreX schreibt nie `window.ethereum`. Es meldet einen EIP-1193-Provider über EIP-6963 mit dem Reverse-DNS-Namen `network.qore.qorex` an; `qorexWallet()` und `discoverQorexEip1193()` wählen genau diesen Provider. Dasselbe Objekt liegt auch unter `window.qorex.evm`.
+* **Native Lane.** `window.qorex.native` ist ein Provider im Keplr-Muster (er ist nicht als Alias auf `window.keplr` gesetzt). QoreChain verlangt für Transaktionen auf der nativen Lane eine hybride Signatur aus secp256k1 plus ML-DSA-87, und nur die Wallet hält den ML-DSA-87-Schlüssel, daher sendet die dApp Nachrichten an `signAndBroadcast`. QoreX zeigt sie an, setzt die Gebühr, signiert mit beiden Schlüsseln, sendet und meldet `shield`.
+* **Solana.** QoreX registriert eine Solana-Wallet-Standard-Wallet auf `solana:mainnet` (Solana selbst). Die eigene SVM-Lane von QoreChain ist für Transaktionen nicht geöffnet und hat keine Wallet-Standard-Chain-ID.
+* **Fähigkeiten, nicht Versionen.** Die Kits lesen `window.qorex.native.capabilities` über `hasCapability`. Ein QoreX-Build kann `listAccounts`, `connectProofPicksAccount`, `executeRequest` und `signAndBroadcast` deklarieren.
+* **Amino wird bewusst abgelehnt**, weil Amino JSON die hybride ML-DSA-87-Signatur nicht tragen kann. Die Kits bedienen jede Signer-Anfrage mit einem Direct-Signer.
+* **`signDirect` und die Post-Quanten-Schicht, genau betrachtet.** Heute signiert QoreX `signDirect` das SignDoc unverändert mit dem secp256k1-Schlüssel. Auf QoreChain muss der Body bereits eine gültige hybride ML-DSA-87-Schicht für den registrierten Schlüssel des Signers enthalten, was eine Seite nicht erzeugen kann. Daher wirft auf `qorechain-vladi` und `qorechain-diana` das `signDirect` des Offline-Signers der Kits `QOREX_USE_SIGN_AND_BROADCAST`, bevor es QoreX erreicht; `getAccounts` funktioniert auf jeder Chain. Bei anderen Chain-IDs leiten die Kits `signDirect` an QoreX weiter, das heute nur die zwei QoreChain-Chain-IDs bedient. Ein künftiges QoreX-Release soll die Schicht selbst in `signDirect` ergänzen und die Fähigkeit `signDirectAddsPqcLayer` deklarieren; kein aktueller Build deklariert sie. Die Kits prüfen bereits darauf, und wenn sie deklariert ist, leitet der Offline-Signer QoreChain-SignDocs an QoreX weiter. QoreX kann dann das Gas neu schätzen und das Gaslimit sowie die Gebühr erhöhen, senden Sie daher immer das zurückgegebene Dokument `signed`.
+* **`shield`-Zustände**, die `signAndBroadcast` zurückgibt: `shielded` (die festgeschriebene Transaktion trägt die hybride Schicht), `pending` (gesendet, Prüfung nicht abgeschlossen), `downgraded` (ohne die Schicht festgeschrieben; behandeln Sie es als Alarm) und `classical` (eine Lane, in der die Schicht nicht gilt).
+* **Der Mock** baut seine Konten aus einer BIP-39-Mnemonic (Standard: die öffentliche Testphrase) so, wie QoreX es tut: `m/44'/118'/0'/0/i` mit dem kanonischen ML-DSA-87-Schlüssel dieser `qor1`-Adresse, `m/44'/60'/0'/0/i` für EVM und `m/44'/501'/i'/0'` für Solana. Sein `signAndBroadcast` liest den ML-DSA-87-Schlüssel des Kontos per REST, registriert ihn einmalig mit `MsgRegisterPQCKeyV2`, falls er fehlt, signiert hybrid mit [QoreSign](/qoresign/overview), sendet (einmal erneut mit der anderen Sign-Bytes-Version, falls das Netzwerk danach fragt), wartet auf die Aufnahme und gibt `{ txHash, code, height, shield }` zurück.
+
+### Was QoreX heute unterstützt {#qorex-today}
+
+| Oberfläche | Heute | Vom QoreX-Team geplant |
+|---|---|---|
+| EVM (EIP-1193 über EIP-6963, `network.qore.qorex`) | Verbinden (`eth_requestAccounts`), `eth_accounts`, `eth_chainId`, `wallet_switchEthereumChain` auf das in QoreX bereits gewählte Netzwerk | Events `accountsChanged` und `chainChanged`, EIP-1193-Fehlercodes 4200 und 4902 bei jeder Ablehnung, `personal_sign`, `eth_signTypedData_v4`, `eth_sendTransaction`, `wallet_addEthereumChain` |
+| Native Lane von QoreChain (`window.qorex.native`) | `enable`, `getKey`, `signAndBroadcast`, `listAccounts`, `experimentalSuggestChain` (QoreChain-IDs), `signDirect` (das SignDoc muss bereits die hybride Schicht tragen) | `signDirect` ergänzt die ML-DSA-87-Schicht selbst, Nachrichtensignierung (ADR-36 plus ML-DSA-87) |
+| Solana (Wallet Standard, `solana:mainnet`) | Verbinden, `signMessage`, `signTransaction` | `solana:signIn` |
+
+Auf der EVM-Seite schlagen Signieren und Senden derzeit mit „QoreX: EVM method ... not yet supported“ fehl. Für Transaktionen auf QoreChain verwenden Sie die native Lane. Auf der EVM-Lane von QoreChain wird eine Transaktion akzeptiert, wenn der Absender einen registrierten ML-DSA-87-Schlüssel und ein von der nativen Lane aus geöffnetes EVM-Autorisierungsfenster hat. Der Nutzer wechselt das Netzwerk in QoreX; die dApp kann es nicht umschalten.
+
 ## Anwendung {#how-to-use}
 
 Die folgenden Codeblöcke sind die Quickstarts aus dem Developer Hub. Jeder wurde mit `tsc` typgeprüft und am 27. Oktober 2026 nach der Installation aus der öffentlichen npm-Registry ausgeführt (Node 26; jsdom 30 und `react-dom/client` für Browsercode; Playwright 1.64 mit Chromium für die Fixture) und lief durch. Keiner sendet eine Transaktion oder benötigt einen finanzierten Schlüssel. Das beobachtete Ergebnis ist jeweils angegeben. Das wallet-seitige Verhalten (ein echtes QoreX in einem echten Browser) wurde für diese Seite nicht getestet.
@@ -180,6 +211,92 @@ test("connects", async ({ page, qorex }) => {
 
 Beobachtet: `1 passed`, gegen eine lokale Seite, deren Connect-Button `eth_requestAccounts` aufruft (Playwright 1.64, Chromium). Um die Fixtures mit Synpress zu kombinieren, installieren Sie `@synthetixio/synpress@4.1.2` und umschließen sie mit `testWithSynpress`. Die Fixture `qorex` stellt `addresses`, `approveNext()`, `rejectNext()`, `requests()`, `switchAccount(i)` und `disconnect()` bereit. Peer-Abhängigkeit: `@playwright/test` 1.48 oder neuer. Der Zustand lebt in der Seite, daher startet jede Navigation mit einem frischen Mock.
 
+### Eine Transaktion auf QoreChain senden {#send-transaction}
+
+Derselbe Aufruf existiert in `@qorechain/qorex-interchain-kit`, `@qorechain/qorex-cosmos-kit` und `@qorechain/qorex-types`:
+
+```ts
+import { qorexSignAndBroadcast } from "@qorechain/qorex-interchain-kit";
+
+const { txHash, code, height, shield } = await qorexSignAndBroadcast({
+  chainId: "qorechain-diana",
+  messages: [{ typeUrl: "/cosmos.bank.v1beta1.MsgSend", value: MsgSend.encode(msg).finish() }],
+  memo: "",
+  gasLimit: 200000,
+});
+```
+
+* `value` ist die Protobuf-kodierte Nachricht: ein `Uint8Array`, ein `number[]` oder Base64.
+* 1 bis 32 Nachrichten; ein Memo von bis zu 256 Byte; `gasLimit` wird auf 100.000 bis 5.000.000 begrenzt (400.000, wenn weggelassen). QoreX setzt die Gebühr und zeigt sie vor dem Signieren an.
+* `chainId` muss mit dem in QoreX gewählten Netzwerk übereinstimmen.
+* Nachrichten, die den ML-DSA-87-Schlüssel des Kontos verwalten, sind wallet-seitig und werden abgelehnt, auch innerhalb von `MsgExec`. Nachrichtentypen, die QoreX nicht anzeigen kann, werden abgelehnt.
+* Ohne ein Kit rufen Sie `window.qorex.native.signAndBroadcast(request)` auf, nachdem Sie `hasCapability(native, "signAndBroadcast")` geprüft haben. `getKey` gibt `pubKey` und `address` als `number[]` zurück; konvertieren Sie mit `Uint8Array.from(key.pubKey)` (die Kits erledigen das für Sie).
+
+### Der Mock in Playwright ohne die Fixtures {#mock-playwright}
+
+```ts
+import { createQorexMock } from "@qorechain/qorex-wallet-mock";
+
+const mock = createQorexMock({ profile: "current" });
+await page.addInitScript({ content: mock.initScript() });
+await page.goto("http://localhost:5173");
+await page.evaluate(() => window.__qorexMock!.rejectNext());
+```
+
+## Haupt-API {#main-api}
+
+| Paket | Name | Was es tut |
+|---|---|---|
+| types | `discoverQorexEip1193({ timeoutMs })`, `findQorexEip1193()` | asynchrone EIP-6963-Erkennung des QoreX-EVM-Providers und eine synchrone Abfrage dafür |
+| types | `getQorexNative()`, `isQorexInstalled()`, `hasCapability(native, capability)` | `window.qorex.native` lesen, prüfen, ob QoreX vorhanden ist, eine Fähigkeit testen |
+| types | `qorexSignAndBroadcast(request, { native? })` | übergibt Nachrichten an QoreX; wirft `QOREX_NOT_INSTALLED` ohne QoreX und `QOREX_NOT_SUPPORTED_YET` bei einem QoreX, das älter ist |
+| types | `QorexIntegrationError`, `isQorexIntegrationError(err, code)` | Fehler aus diesen Paketen, mit stabilen Codes |
+| types | `isQorexUnsupportedMethodError`, `isQorexUnrecognizedChainError`, `QOREX_EVM_ERROR_CODES` | QoreX-EVM-Ablehnungen klassifizieren: prüft `code` (4200, 4902) und fällt dann auf den heutigen Meldungstext zurück |
+| types | `QorexEip1193Provider`, `QorexNativeProvider`, `QorexSolanaStandardWallet`, `QorexSvmProvider`; `@qorechain/qorex-types/icon` | Typen dessen, was QoreX injiziert; das QoreX-Icon als Data-URI |
+| rainbowkit | `qorexWallet(options?)`, `createQorexConnector`, `getQorexEip1193Provider` | die RainbowKit-Wallet (Option `pollAccountsOnFocus`), der wagmi-Connector und der Provider, den er verwendet |
+| rainbowkit | `qorechain`, `qorechainTestnet`, `QOREX_CHAINS` | viem-Chains 9801 und 9800 |
+| interchain-kit | `qorexWallet`, `createQorexWallet()`, `QorexCosmosWallet` | Interchain-Kit-Wallet |
+| cosmos-kit | `wallets`, `qorexExtension`, `QorexExtensionWallet`, `QorexClient` | cosmos-kit-Wallet |
+| beide Kits | `qorexSignAndBroadcast`, `QOREX_CAPABILITY_SIGN_DIRECT_ADDS_PQC_LAYER`, Chain-ID-Konstanten, Fehlerhelfer | aus `qorex-types` re-exportiert |
+| wallet-mock | `createQorexMock(options)` | gibt `{ install(window), initScript(), addresses(), ... }` zurück |
+| wallet-mock | `window.__qorexMock` | `approveNext()`, `rejectNext()`, `pendingApprovals`, `requests`, `clearRequests()`, `switchAccount(i)`, `switchNetwork(chainId)`, `disconnect()`, `addresses()` |
+| wallet-mock | `PUBLIC_TEST_MNEMONIC` | die öffentliche BIP-39-Testphrase (niemals finanzieren) |
+| synpress | `qorexMockFixtures(options)` | ein Playwright-`test` mit einer automatischen Fixture `qorex` |
+| synpress | `qorex.addresses`, `approveNext()`, `rejectNext()`, `waitForApproval()`, `pendingApprovals()`, `requests()`, `clearRequests()`, `switchAccount(i)`, `switchNetwork(chainId)`, `disconnect()`, `mock` | die Steuerung der Fixture |
+| synpress | `qorexExtensionFixtures({ extensionPath })` | geplante Schnittstelle für die echte Erweiterung; wirft heute `QorexExtensionModeUnavailableError` |
+
+Mit Synpress v4 führen Sie die Fixtures als `testWithSynpress(qorexMockFixtures({ profile: "planned" }))` zusammen. Mit `autoApprove: false` rufen Sie `await qorex.waitForApproval()` auf, um den ausstehenden Zustand zu prüfen, danach `qorex.approveNext()`. Führen Sie die Suite in beiden Profilen aus, um das heutige QoreX und das nächste Release abzudecken.
+
+### Verhalten des Kit-Signers {#kit-signer}
+
+| Aufruf | Interchain Kit | cosmos-kit |
+|---|---|---|
+| `connect` oder `enable`, `getAccount`, `getKey` | QoreX `enable` und `getKey`, Bytes in `Uint8Array` konvertiert | gleich |
+| `getOfflineSigner(chainId)` | Direct-Signer für jede Präferenz | Direct-Signer für jede Präferenz, auch für den Standard `"amino"` von cosmos-kit |
+| Signer-`signDirect` auf QoreChain | wirft `QOREX_USE_SIGN_AND_BROADCAST` (bis QoreX `signDirectAddsPqcLayer` deklariert) | gleich |
+| Signer-`signDirect` auf einer anderen Chain-ID | an QoreX `signDirect` weitergeleitet | gleich |
+| `signAmino`, `getOfflineSignerAmino` | wirft `QOREX_AMINO_REFUSED` | gleich |
+| `signArbitrary` (ADR-36) | wirft `QOREX_NOT_SUPPORTED_YET` (ebenso `verifyArbitrary`) | wirft `QOREX_NOT_SUPPORTED_YET` |
+| `sendTx` | wirft `QOREX_NOT_SUPPORTED_YET`; senden Sie über Ihren RPC-Endpunkt | nicht bereitgestellt |
+
+### Optionen des Wallet-Mocks {#mock-options}
+
+| Option | Standard | Bedeutung |
+|---|---|---|
+| `profile` | `"current"` | `"current"` ist QoreX von heute; `"planned"` ergänzt angekündigte Funktionen |
+| `mnemonic` | die öffentliche BIP-39-Testphrase | verwenden Sie Ihre eigene für alles, was Sie finanzieren |
+| `accountIndex` | `0` | derselbe Index auf jeder Lane |
+| `chainId` | `"qorechain-diana"` | das im Mock gewählte Netzwerk |
+| `rest` | `https://api-testnet.qore.host` | REST-Endpunkt für `signAndBroadcast` und Schlüsselabfragen |
+| `evmRpc` | `https://evm-testnet.qore.host` | wird von `eth_sendTransaction` verwendet (Profil planned) |
+| `allowMainnet` | `false` | ohne sie wird das Signieren für `qorechain-vladi` abgelehnt |
+| `autoApprove` | `true` | bei `false` warten Bestätigungen auf `approveNext()` oder `rejectNext()` |
+| `inclusionTimeoutMs`, `pollIntervalMs` | `30000`, `1500` | wie `signAndBroadcast` auf die Aufnahme wartet |
+
+### Fehlercodes {#error-codes}
+
+Aus diesen Paketen (`QorexIntegrationError.code`): `QOREX_NOT_INSTALLED`, `QOREX_USE_SIGN_AND_BROADCAST`, `QOREX_AMINO_REFUSED` und `QOREX_NOT_SUPPORTED_YET`; aus `qorex-synpress`: `QOREX_EXTENSION_MODE_UNAVAILABLE`. Die eigenen Fehler von QoreX sind einfache `Error`-Objekte, deren Meldung mit `QoreX` beginnt, zum Beispiel `QoreX: connection rejected`, `QoreX: signature rejected`, `QoreX: wallet is locked` und `QoreX: unsupported chain <id>`. Heute ist eine unbekannte Chain (4902) der einzige Fall mit numerischem Code, und eine Ablehnung durch den Nutzer hat keinen EIP-1193-Code 4001, vergleichen Sie also die Meldung. Meldungen, die mit `QoreX (mock):` beginnen, stammen vom Mock, nie von QoreX.
+
 ## Zugang {#how-to-access}
 
 * **Eine QoreX-Wallet für den echten Einsatz.** Die Connectoren sprechen mit der QoreX-Browser-Erweiterung oder -App, die ein Nutzer installiert hat; siehe die Seite [QoreX-Browser-Erweiterung](/qorex/browser-extension) für Installationen und Store-Versionen. Die Test-Pakete benötigen keine Wallet.
@@ -187,7 +304,30 @@ Beobachtet: `1 passed`, gegen eine lokale Seite, deren Connect-Button `eth_reque
 * **Schlüssel und Guthaben.** Die Pakete halten keinen Schlüssel. Der Mock verwendet die öffentliche BIP-39-Testphrase (`abandon` 11-mal wiederholt, dann `about`), die `qor19rl4cm2hmr8afy4kldpxz3fka4jguq0agt672h` ableitet; finanzieren Sie sie niemals. Für einen Test, der sendet, geben Sie dem Mock Ihre eigene Testnet-Mnemonic.
 * **Weitere Konten.** RainbowKit mit WalletConnect benötigt eine WalletConnect-Projekt-ID von WalletConnect.
 * **Voraussetzungen.** Node.js (das Ein-Datei-Skript des Mocks benötigt 20.16 oder neuer), eine React-App für die drei Connectoren und die unter jedem Quickstart aufgeführten Peer-Pakete. TypeScript-Nutzer erhalten die Typen aus `@qorechain/qorex-types`.
-* **Kosten.** Die Pakete sind kostenlos. Eine über QoreX gesendete Transaktion zahlt die übliche Gebühr (Untergrenze 0,1 uqor pro Gas).
+* **Kosten.** Die Pakete sind kostenlos. Eine über QoreX gesendete Transaktion zahlt die übliche Gebühr (Untergrenze 0,1 uqor pro Gas; QoreX berechnet seine eigenen Transaktionen mit 0,15 uqor pro Gas).
+
+### Netzwerke {#networks}
+
+| | Mainnet | Testnet |
+|---|---|---|
+| Native Chain-ID | `qorechain-vladi` | `qorechain-diana` |
+| EVM-Chain-ID | 9801 (`0x2649`) | 9800 (`0x2648`) |
+| REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
+| RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
+| EVM-JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
+| Explorer | `https://explore.qore.network` | gleich, mit gewähltem Testnet |
+
+Bech32-Präfix `qor` (Validatoren `qorvaloper`), Coin-Typ 118, Denom `uqor` mit 6 Dezimalstellen auf der nativen Lane und QOR mit 18 Dezimalstellen auf EVM. Nutzer benötigen für den echten Einsatz die QoreX-Erweiterung (0.3.x); Tests benötigen nur den Mock. Für echte Broadcasts vom Mock braucht das Konto Testnet-QOR vom [Faucet](/dashboard/faucet) (Anmeldung erforderlich); verwenden Sie Ihre eigene Mnemonic, niemals die öffentliche Testphrase.
+
+## Sicherheitshinweise {#security}
+
+* Die dApp hält nie den ML-DSA-87-Schlüssel: QoreX signiert QoreChain-Transaktionen innerhalb der Wallet über `signAndBroadcast`.
+* QoreX lehnt Seitenanfragen für Nachrichten ab, die den ML-DSA-87-Schlüssel des Kontos verwalten.
+* `qorexWallet()` fällt nie auf `window.ethereum` zurück, sodass eine andere injizierte Wallet nicht für QoreX gehalten wird. Der Mock verwendet einen eigenen Reverse-DNS-Namen, sodass ein Test-Double nie für die Wallet gehalten wird.
+* Die Methoden `connectProof`, `executeTransfer` und `executeRequest` existieren für das QoreChain-Dashboard und werden von jedem anderen Origin abgelehnt.
+* Beachten Sie das Ergebnis `shield`. `downgraded` bedeutet, dass die Transaktion ohne die hybride Schicht festgeschrieben wurde; behandeln Sie es als Alarm.
+* Die Standard-Mnemonic des Mocks ist öffentlich, und der Mock lehnt das Signieren für das Mainnet ab, sofern nicht `allowMainnet: true` gesetzt ist. Finanzieren Sie niemals die öffentliche Testphrase; verwenden Sie für Live-Tests eine separate Testnet-Mnemonic.
+* Melden Sie Schwachstellen vertraulich an security@qore.network.
 
 ## Wo es veröffentlicht ist {#where-published}
 
@@ -200,7 +340,7 @@ Beobachtet: `1 passed`, gegen eine lokale Seite, deren Connect-Button `eth_reque
 | npm | `@qorechain/qorex-wallet-mock` | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-wallet-mock |
 | npm | `@qorechain/qorex-synpress` | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-synpress |
 
-Quellcode: https://github.com/qorechain/qorex-integrations (Tag `v0.1.0`, Ordner unter `packages/`; er enthält außerdem eine Demo-dApp, Beispiele und Dateien mit Chain-Registry-Einträgen). Versionen am 27. Oktober 2026 aus der npm-Registry gelesen. Sie ersetzen `@qorechain/connect`, das auf npm als veraltet markiert ist: Verwenden Sie `qorex-types`, um QoreX zu erkennen, `qorex-rainbowkit` für EVM-dApps, `qorex-interchain-kit` (oder `qorex-cosmos-kit`) für Cosmos-dApps und [QoreSign](/qoresign/overview) für hybrides Signieren in Ihrer eigenen Wallet oder Ihrem Backend.
+Quellcode: https://github.com/qorechain/qorex-integrations (öffentlich, Release `v0.1.0` am 27. Oktober 2026 veröffentlicht, Ordner unter `packages/`). Er enthält außerdem Leitfäden (QoreX neben MetaMask, Keplr oder Phantom ergänzen; End-to-End-Tests; Fehler und Chain-IDs), eine Demo-dApp, die jede QoreX-Oberfläche im Testnet erprobt, Beispiele (`examples/wagmi-rainbowkit`, `examples/playwright-e2e`) und Dateien mit Chain-Registry-Einträgen. Lizenz Apache-2.0; Maintainer QoreChain Association. Versionen am 27. Oktober 2026 aus der npm-Registry gelesen. Sie ersetzen `@qorechain/connect`, das auf npm als veraltet markiert ist: Verwenden Sie `qorex-types`, um QoreX zu erkennen, `qorex-rainbowkit` für EVM-dApps, `qorex-interchain-kit` (oder `qorex-cosmos-kit`) für Cosmos-dApps und [QoreSign](/qoresign/overview) für hybrides Signieren in Ihrer eigenen Wallet oder Ihrem Backend.
 
 ## Einschränkungen und bekannte Probleme {#limits}
 
@@ -224,3 +364,13 @@ Quellcode: https://github.com/qorechain/qorex-integrations (Tag `v0.1.0`, Ordner
 **Unterschiede zwischen dem Mock und der Wallet:** kein Sperrbildschirm und kein Bestätigungsfenster (Bestätigungen laufen über `approveNext`, `rejectNext` oder `autoApprove`); `signDirect` meldet einen einfachen secp256k1-Schlüsseltyp; Solana `signAndSendTransaction` wird abgelehnt; Nachrichten, die mit „QoreX (mock):“ beginnen, stammen vom Mock selbst. Testergebnisse des Mocks zeigen, wie sich Ihre Seite gegen die beschriebene Schnittstelle verhält, nicht dass sich ein echter QoreX-Build genauso verhält.
 
 **Sonstiges:** Alle sechs Pakete sind ein erstes Release (0.1.0), rechnen Sie also damit, dass ihre Schnittstellen mit QoreX wachsen. Kein getesteter Quickstart deckt `qorexSignAndBroadcast` gegen ein Live-Netzwerk oder eine echte Wallet ab.
+
+## Verwandte Seiten {#related}
+
+* [QoreX-Wallet](/qorex/overview) und die [QoreX-Browser-Erweiterung](/qorex/browser-extension): die Wallet, mit der diese Pakete sprechen.
+* [QoreSign](/qoresign/overview): der hybride Signer, den der Mock verwendet.
+* [QoreChain SDK](/sdk/overview): Nachrichten wie `MsgSend` für `signAndBroadcast` kodieren.
+* [EVM-Entwicklung](/developer-guide/evm-development#evm-window): Registrierung des ML-DSA-87-Schlüssels und EVM-Autorisierungsfenster.
+* [Faucet](/dashboard/faucet): Testnet-QOR.
+* [QoreChain MCP-Server](/developer-tools/mcp): das Ergebnis eines Broadcasts mit `get_pq_status` lesen.
+* [Überblick über die Entwickler-Pakete](/developer-tools/overview).

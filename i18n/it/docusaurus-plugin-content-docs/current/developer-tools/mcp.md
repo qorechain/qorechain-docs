@@ -20,6 +20,25 @@ Il server non firma mai, non custodisce chiavi e non trasmette mai una transazio
 - **I segreti vengono rifiutati prima che qualcosa lasci la macchina.** Un input che sembra una frase di recupero (12 o più parole BIP-39 consecutive) o una chiave privata nuda da 32 byte viene respinto con `INVALID_INPUT` prima di qualsiasi richiesta, e l'errore dice all'utente di considerare quel segreto compromesso.
 - **Risposte costruite campo per campo.** Ogni output è assemblato a partire da campi con nome della risposta della chain. I corpi di errore a monte e gli stack trace non raggiungono mai il client; i guasti corrispondono a sette codici di errore stabili.
 
+## A cosa serve {#use-cases}
+
+1. **Chiedere a un assistente di programmazione lo stato della chain.** Uno sviluppatore aggiunge il server a un editor compatibile con MCP e chiede "qual è l'ultimo blocco sulla mainnet?" oppure "mostra i saldi di qor1... sulla testnet". `get_block` e `get_address_info` rispondono dagli endpoint pubblici, con i link all'explorer.
+2. **Verificare che una transazione contenesse la firma ibrida.** Uno sviluppatore di wallet o SDK ha appena trasmesso una transazione e vuole confermare che contenga esattamente un livello ML-DSA-87 e che il livello si verifichi rispetto alla chiave registrata. `get_pq_status` (o `qore pq status <hash>`) riporta il livello di firma e il risultato della verifica locale.
+3. **Preparare un trasferimento che l'utente deve firmare.** Un assistente costruito su QoreChain deve aiutare un utente a inviare QOR senza toccare le chiavi. `prepare_transfer` restituisce un SignDoc non firmato con un riepilogo leggibile, controlli e avvisi (compreso uno per la mainnet), e `estimate_fee` fornisce la commissione. L'utente firma nel proprio wallet.
+4. **Fare il debug di una transazione rifiutata.** Un team backend ha una transazione codificata che la rete rifiuta. `simulate_tx` restituisce il gas, le variazioni di saldo per indirizzo e un rifiuto decodificato, e non trasmette nulla.
+5. **Leggere contratti da uno script o da un job di CI.** Un team di dApp controlla il saldo di un token o una view di un contratto con `qore read-contract --to 0x... --function "balanceOf(address)" --arg 0x... --returns uint256 --json` e analizza il JSON con `jq`.
+6. **Dashboard di validatori e staking.** Un analista elenca i validatori bonded con la loro quota di potere di voto e la commissione (`get_validators`) e legge i parametri dei livelli di staking e i blocchi di un singolo titolare (`get_staking_tiers`).
+7. **Gestire un endpoint di team.** Un'azienda esegue `qorechain-mcp serve` dietro il proprio reverse proxy, con chiavi API e limiti di frequenza, così più strumenti interni condividono un unico endpoint MCP che punta ai propri nodi.
+
+## Come funziona {#how-it-works}
+
+* Il server è un lettore sottile e senza stato sopra gli endpoint pubblici di QoreChain (REST, RPC di consenso e JSON-RPC EVM). Ogni chiamata a monte è una singola richiesta con un timeout di 10 secondi, un limite di risposta di 4 MiB e nessun nuovo tentativo.
+* Le risposte sono costruite campo per campo a partire dalla risposta della chain. I corpi di errore a monte, gli stack trace e i messaggi delle librerie non raggiungono mai il client; un guasto imprevisto diventa `INTERNAL_ERROR`. Gli errori tornano come risultato dello strumento con `isError: true` e un corpo JSON.
+* I controlli della firma ibrida girano in locale con [QoreSign](/qoresign/overview): il server recupera la transazione e la chiave ML-DSA-87 registrata dal firmatario, ricostruisce i sign-bytes (v1 o v2) e verifica.
+* Simulazione: su una chain alla v3.2.5 o successiva la simulazione include già il costo di verifica ML-DSA-87 (`exact_gas_simulation: true` in `get_chain_info`), quindi il limite di gas suggerito è esatto; su una chain più vecchia viene aggiunto un margine. Quando un corpo non ha un livello ML-DSA-87, `simulate_tx` aggiunge un livello segnaposto della dimensione corretta (mai trasmesso) così che il gas corrisponda alla transazione che il wallet firmerà (`assume_pqc_layer`, predefinito true). Il server rileva da solo la versione della chain.
+* Le precompile EVM `0x...0A01` (verifica ML-DSA-87) e `0x...0A02` (stato della chiave) sono attive solo sulla testnet; sulla mainnet una chiamata a esse restituisce dati vuoti.
+* Gli schemi degli strumenti leggibili da una macchina sono nel repository come `spec/tools.json`, generato dalla risposta `tools/list` del server stesso. Il riferimento leggibile da una persona è `docs/tools.md`.
+
 ## Come si usa {#how-to-use}
 
 Serve Node.js 20 o successivo per il pacchetto npm, oppure Python 3.10 o successivo per il pacchetto Python.
@@ -130,6 +149,42 @@ Tutti i 14 strumenti sono in sola lettura e accettano un `network` opzionale. I 
 
 Gli errori sono risultati dello strumento con `isError: true` e un corpo JSON `{"error": {"code", "message", "details?"}}`. I codici sono `NOT_FOUND`, `INVALID_INPUT`, `UPSTREAM_UNAVAILABLE`, `NOT_AVAILABLE_ON_CHAIN`, `RATE_LIMITED`, `UNAUTHORIZED` e `INTERNAL_ERROR`.
 
+### Usarlo come libreria {#library}
+
+Il pacchetto npm esporta `createServer({ defaultNetwork })` (un'istanza di server MCP per qualsiasi trasporto MCP), `createHttpHandler({ apiKeyHashes, rateLimitPerMinute })` (un handler Fetch API, `(Request) => Promise<Response>`) e `startNodeServer(...)` (il server HTTP Node che usa `serve`). Le opzioni condivise sono `defaultNetwork`, `endpoints` (per puntare una rete ai tuoi nodi), `upstream` (`timeoutMs`, `maxResponseBytes`, `fetch`) e `onToolCall` (riceve il nome dello strumento, lo stato e la latenza).
+
+Il pacchetto Python può essere usato allo stesso modo tramite `run_tool`:
+
+```python
+import anyio
+from qorechain_mcp import Context, run_tool
+
+async def main():
+    out = await run_tool("get_chain_info", {"network": "mainnet"}, Context())
+    print(out["latest_block"])
+
+anyio.run(main)
+```
+
+### Provare l'endpoint ospitato da un terminale {#test-hosted}
+
+```bash
+curl -s -X POST https://mcp.qorechain.io/mcp \
+  -H "Authorization: Bearer $QORECHAIN_MCP_KEY" \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+Senza una chiave valida l'endpoint risponde HTTP 401 con un errore JSON-RPC il cui messaggio inizia con `UNAUTHORIZED`.
+
+### Risoluzione dei problemi {#troubleshooting}
+
+* `UPSTREAM_UNAVAILABLE`: l'endpoint pubblico non ha risposto entro 10 secondi. Riprova.
+* `NOT_FOUND` su un vecchio blocco della testnet: i nodi della testnet eliminano la cronologia, e l'errore indica l'altezza minima disponibile. `get_chain_info` riporta `earliest_available_height`.
+* Nessuno strumento elencato nel client: esegui `npx -y @qorechain/mcp --help` in un terminale per verificare che Node e npm funzionino, poi leggi il log MCP del client.
+* `UNAUTHORIZED` sull'endpoint ospitato: la chiave manca, è sbagliata, è stata revocata o non è ancora attiva (una nuova chiave può impiegare uno o due minuti).
+
 ### Cosa è stato eseguito {#what-was-run}
 
 Il 27 ottobre 2026 i pacchetti pubblicati sono stati installati dai registri ed eseguiti sugli endpoint pubblici di testnet e mainnet:
@@ -144,7 +199,7 @@ Il 27 ottobre 2026 i pacchetti pubblicati sono stati installati dai registri ed 
 
 - **Locale (opzione principale).** stdio tramite `npx -y @qorechain/mcp` o `uvx qorechain-mcp`. Non richiede account né chiave API. Legge gli endpoint pubblici di QoreChain, quindi serve HTTPS in uscita.
 - **Il tuo server HTTP.** `qorechain-mcp serve`, come sopra, con chiavi API e limiti di frequenza che configuri tu.
-- **Endpoint ospitato.** `https://mcp.qorechain.io/mcp` serve il trasporto Streamable HTTP. Usa la testnet a meno che una chiamata non indichi `"network": "mainnet"`. Ogni richiesta richiede una chiave API inviata come `Authorization: Bearer <key>`; richiedine una dalla tua dashboard (vedi sotto). Senza chiave l'endpoint risponde HTTP 401 (`UNAUTHORIZED`), che era la risposta del 27 ottobre 2026. Ogni chiave è limitata a 10 richieste al secondo (burst 20) e 100.000 richieste al giorno, con una chiave attiva per account. Per la maggior parte degli usi l'installazione locale non richiede alcuna chiave ed è la scelta più semplice.
+- **Endpoint ospitato.** `https://mcp.qorechain.io/mcp` serve il trasporto Streamable HTTP. Usa la testnet a meno che una chiamata non indichi `"network": "mainnet"`. Ogni richiesta richiede una chiave API inviata come `Authorization: Bearer <key>`; richiedine una dalla tua dashboard (vedi sotto). Senza chiave l'endpoint risponde HTTP 401 (`UNAUTHORIZED`), che era la risposta del 27 ottobre 2026. C'è una chiave attiva per account, e ogni chiave è limitata a 10 richieste al secondo (burst 20) e 100.000 richieste al giorno. Per la maggior parte degli usi l'installazione locale non richiede alcuna chiave ed è la scelta più semplice.
 
   Per ottenere una chiave, accedi su [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers), apri la scheda **AI agents (MCP)** e compila il modulo **API key** (nome o organizzazione, un contatto, uso previsto, volume atteso), quindi premi **Request API key**. Il team QoreChain approva o rifiuta la richiesta; un rifiuto mostra la sua nota e puoi fare una nuova richiesta. Dopo l'approvazione premi **Generate key**: la chiave viene mostrata una sola volta, con un pulsante di copia e uno snippet di configurazione pronto, e diventa attiva entro un minuto o due. QoreChain conserva solo un'impronta (un hash), quindi una chiave persa non può essere mostrata di nuovo; revocala (ha effetto in circa un minuto) e richiedine una nuova. Vedi [Pagina Developers](/dashboard/developers#mcp).
 
@@ -174,6 +229,18 @@ Il server legge da questi endpoint pubblici:
 
 Costo: il server è gratuito. Le letture non costano nulla. Se trasmetti una transazione costruita da `prepare_transfer`, si applica la commissione di rete (il minimo è 0.1 uqor per gas).
 
+## Note sulla sicurezza {#security}
+
+* **Non esiste alcun percorso di firma** nel server né nella CLI. Nulla viene firmato, nessuna chiave viene conservata e nulla viene trasmesso.
+* **I segreti vengono rifiutati.** Un input che sembra una frase di recupero (12 o più parole BIP-39 consecutive) o una chiave privata esadecimale nuda da 32 byte viene respinto con `INVALID_INPUT` prima di qualsiasi richiesta, e l'errore dice all'utente di considerare quel segreto compromesso. Non inserire mai una frase di recupero o una chiave privata nella configurazione di un client; nessuno strumento di QoreChain ne ha bisogno.
+* **Il testo degli errori a monte non viene mai inoltrato**; le risposte sono costruite campo per campo.
+* **Log.** I log HTTP riportano il metodo JSON-RPC, il nome dello strumento, lo stato e la latenza. Input, output, chiavi e indirizzi dei client non vengono registrati.
+* **Le chiavi API** di un server in self-hosting sono conservate come hash SHA-256, mai in chiaro. CORS è chiuso per impostazione predefinita, il che protegge anche un server collegato a localhost dal DNS rebinding.
+* **La mainnet va indicata esplicitamente**, e `prepare_transfer` aggiunge un avviso per i trasferimenti su mainnet.
+* **I memo sono pubblici e permanenti.** Non inserire mai un segreto in un memo.
+* **Tratta una chiave API ospitata come una password.** Conservala in una variabile d'ambiente o in un archivio di segreti e revocala dalla dashboard se viene esposta.
+* Segnala le vulnerabilità in privato a security@qore.network, mai in una issue pubblica.
+
 ## Dove è pubblicato {#where-published}
 
 | Registro | Pacchetto | Versione | Esecuzione | Note |
@@ -197,4 +264,12 @@ Sorgenti: [github.com/qorechain/qorechain-mcp](https://github.com/qorechain/qore
 - **Non è pubblicata alcuna immagine container.** Esegui il server con `npx` o `pip`.
 - **Versione.** 0.1.0 è la prima release; i nomi degli strumenti e gli schemi possono cambiare nelle versioni successive, e il file generato `spec/tools.json` nel repository è il riferimento per la versione che hai installato.
 
-Pagine correlate: [Panoramica dei pacchetti per sviluppatori](/developer-tools/overview), [CLI di QoreChain](/developer-tools/qore-cli), [QoreSign](/qoresign/overview), [Pagina Sviluppatori nella dashboard](/dashboard/developers#mcp).
+## Pagine correlate {#related}
+
+* [CLI di QoreChain](/developer-tools/qore-cli): gli stessi strumenti da un terminale.
+* [QoreSign](/qoresign/overview): il verificatore ibrido usato da `get_pq_status`.
+* [SDK di QoreChain](/sdk/overview): costruisci e firma le transazioni che questo server legge e simula.
+* [Integrazioni QoreX](/developer-tools/qorex-integrations): il wallet che firma ciò che `prepare_transfer` prepara.
+* [Custody kit](/developer-tools/custody-kit): rilevamento dei depositi e verifica dei prelievi per i custodi.
+* [Faucet](/dashboard/faucet) e la [Pagina Sviluppatori nella dashboard](/dashboard/developers#mcp): QOR di testnet e chiavi API MCP.
+* [Panoramica dei pacchetti per sviluppatori](/developer-tools/overview).

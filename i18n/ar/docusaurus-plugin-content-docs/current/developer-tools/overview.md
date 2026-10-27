@@ -13,7 +13,7 @@ sidebar_position: 1
 
 ## الابتكارات {#innovations}
 
-- **صيغة توقيع هجينة واحدة في كل لغة.** تشترط السلسلة توقيع secp256k1 مع توقيع ML-DSA-87 (FIPS 204) على معاملات مسار Native. يعيد QoreSign إنتاج متجهات الاختبار المنشورة له بايتاً ببايت في TypeScript وRust وGo وSwift وKotlin، وتشغّل `qorechain-pqc` مجموعة متجهات مشتركة واحدة في روابطها الستة، لذا فإن مفتاحاً أو توقيعاً أُنتج بلغة ما يُتحقَّق منه في اللغات الأخرى.
+- **صيغة توقيع هجينة واحدة في كل لغة.** تشترط السلسلة توقيع secp256k1 مع توقيع ML-DSA-87 (FIPS 204) على معاملات مسار Native. يعيد QoreSign إنتاج متجهات الاختبار المنشورة له بايتاً ببايت في TypeScript وRust وGo وSwift وKotlin وPython، وتشغّل `qorechain-pqc` مجموعة متجهات مشتركة واحدة في روابطها الستة، لذا فإن مفتاحاً أو توقيعاً أُنتج بلغة ما يُتحقَّق منه في اللغات الأخرى.
 - **صيغة sign-bytes تُختار من حالة السلسلة، لا بالتخمين.** يسأل كلٌّ من SDK ومحوّل المحفظة و`chain-bridge` ومساعدات الشبكة في QoreSign العقدةَ عبر `GET /cosmos/upgrade/v1beta1/applied_plan/{name}` عن اسمَي الترقية (`v3.2.0` و`v3.1.98`) ويوقّعون بالصيغة v2 عندما يكون أحد الارتفاعين أكبر من صفر. وإذا لم تتوفر نقطة نهاية REST على هاتين السلسلتين فإنها تُطلق خطأً بدلاً من التخمين. وتتحقق الشبكتان كلتاهما من v2 اليوم (جرى التحقق في 27 أكتوبر 2026: طُبّقت `v3.2.0` على الشبكة الرئيسية عند الارتفاع 2,981,742 وطُبّقت `v3.1.98` على شبكة الاختبار عند الارتفاع 5,746,000).
 - **بدايات سريعة جرى تشغيلها فعلاً، لا مجرد كتابتها.** للحزم التي لها مثال، شُغّل المثال في 27 أكتوبر 2026 بعد التثبيت من السجل العام. نجح 31 من أصل 34 إدخالاً من إدخالات البدء السريع؛ ويسجّل البيان أي ثلاثة لم تنجح (راجع [الحدود](#limits)).
 - **بيان واحد وراء الجداول.** أسماء الحزم والإصدارات وأوامر التثبيت في هذه الصفحة تأتي من بيان واحد مقروء آلياً مع نقطة نهاية إصدار حية لكل حزمة، وهي البيانات نفسها التي يُبنى منها مركز SDK في [صفحة المطورين في لوحة التحكم](/dashboard/developers#sdks).
@@ -29,11 +29,17 @@ sidebar_position: 1
 | تضيف QoreChain إلى Keplr أو Leap أو Cosmostation، وتنشئ محافظ موحّدة، وتبني رسائل نافذة EVM والمفاتيح المرتبطة | محوّل المحفظة | [محوّل المحفظة](/developer-tools/wallet-adapter) |
 | تشغّل مهمة على خادم ترسل QOR أو تسجّل المفاتيح أو تنشر العقود | Chain bridge (أو SDK) | [Chain bridge والـ handles](/developer-tools/chain-bridge) |
 | تحلّ `@handle` إلى عنوان موثَّق | Handles | [Chain bridge والـ handles](/developer-tools/chain-bridge#handles) |
-| تتيح لتطبيق dApp لديك استخدام محفظة QoreX | تكاملات QoreX | [QoreX للمطورين](/qorex/overview#developers) |
+| تتيح لتطبيق dApp لديك استخدام محفظة QoreX، أو تختبره بلا إضافة متصفح | تكاملات QoreX | [تكاملات QoreX](/developer-tools/qorex-integrations)، [QoreX للمطورين](/qorex/overview#developers) |
 | تنشئ تجميعاً للتطبيقات وتشغّله | RDK | [نظرة عامة على التجميعات](/rollups/overview)، [نشر تجميع](/rollups/deploying-a-rollup) |
 | تستخدم الأساسيات ما بعد الكمّية وحدها (ML-DSA وML-KEM وSHAKE-256) | `qorechain-pqc` | [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing) |
 | تتيح لوكيل ذكاء اصطناعي أو لأداة مطورين قراءة السلسلة (الكتل والمعاملات والحسابات وحالة التوقيع الهجين والمحاكاة والتحويلات غير الموقّعة) | خادم MCP الخاص بـ QoreChain | [خادم MCP الخاص بـ QoreChain](/developer-tools/mcp) |
 | تقرأ السلسلة من الطرفية أو من سكربت shell بمخرجات JSON | أداة `qore` CLI | [QoreChain CLI](/developer-tools/qore-cli) |
+| تقرأ كيف جرت حماية معاملة مثبَّتة (الرسائل والموقّع والرسوم وطبقة ML-DSA-87 والمستوى) | مفتش معاملات QoreSign (`inspectTransaction`) | [نظرة عامة على QoreSign](/qoresign/overview#inspector) |
+| تشفّر البيانات إلى حسابات QoreChain أو مجموعات خاصة أو سلاسل جانبية باستخدام ML-KEM-1024 | QoreSeal | [QoreSeal](/developer-tools/qoreseal) |
+| تراجع أو تختبر تصميم عميل خفيف ما بعد كمّي (التحقق من نقاط التحقق) | PQ light client | [PQ light client](/developer-tools/pq-light-client) |
+| تدمج QoreChain بصفتك جهة حفظ أو منصة تداول (فحص العناوين، والتحقق من السحوبات، واحتساب الإيداعات) | Custody kit | [Custody kit](/developer-tools/custody-kit) |
+| تجرد التشفير في عقدة أو شبكة أو مصادر Solidity على شكل CycloneDX CBOM | QoreScan | [QoreScan](/developer-tools/qorescan) |
+| تبني وتختبر مشاريع Solidity أو CosmWasm على QoreChain باستخدام Foundry أو Hardhat أو viem | Chain developer kit (SDK 0.11.0، قريباً) | [Chain developer kit](/developer-tools/chain-dev-sdk) |
 
 ثبّت حزمة واحدة وشغّل بدايتها السريعة على شبكة الاختبار العامة أولاً. القراءات لا تحتاج حساباً ولا مفتاحاً ولا رسوماً.
 
@@ -64,7 +70,7 @@ sidebar_position: 1
 - **QoreX test wallet:** لشبكة الاختبار فقط. تحقن محفظة اختبار (`window.qorex`، تُعلَن عبر EIP-6963 باسم "QoreX (mock)") في علامة التبويب لتجرّب تدفقات dApp.
 - **AI agents (MCP):** حالة خادم MCP الخاص بـ QoreChain (منشور) وإعداد عميل MCP: الإعداد المحلي عبر `npx` أولاً، إضافة إلى نقطة نهاية مستضافة للشبكة التجريبية تحتاج إلى مفتاح API. راجع [خادم MCP الخاص بـ QoreChain](/developer-tools/mcp).
 
-**مفتش المعاملات (Transaction inspector)** (الصق تجزئة لترى كل رسالة والموقّع والرسوم وهل يتحقق التوقيع ما بعد الكمّي) **غير متاح بعد**. تعرض الجداول أدناه ومركز SDK البيانات نفسها؛ وقد جرى التحقق من الجداول مقابل السجلات في 27 أكتوبر 2026.
+علامة تبويب **مفتش المعاملات (Transaction inspector)** (الصق تجزئة لترى كل رسالة والموقّع والرسوم وهل يتحقق التوقيع ما بعد الكمّي) ليست في صفحة لوحة التحكم بعد؛ ففي 27 أكتوبر 2026 كانت الصفحة لا تزال تعرض علامات التبويب الست أعلاه. أما الفحص نفسه فهو متاح الآن كدالة مكتبة، `inspectTransaction`، في QoreSign 0.1.1 (TypeScript): راجع [مفتش المعاملات](/qoresign/overview#inspector). تعرض الجداول أدناه ومركز SDK بيانات الحزم نفسها؛ وقد جرى التحقق من الجداول مقابل السجلات في 27 أكتوبر 2026.
 
 ## أين يُنشر {#where-published}
 
@@ -88,19 +94,71 @@ sidebar_position: 1
 
 ### QoreSign {#group-qoresign}
 
-الأدلة: [نظرة عامة على QoreSign](/qoresign/overview)، [البدء السريع](/qoresign/quickstart)، [متجهات الاختبار](/qoresign/vectors). المصدر: [qorechain/qoresign](https://github.com/qorechain/qoresign). يوقّع QoreSign محلياً؛ فهو لا يحتفظ بأي مفاتيح نيابةً عنك ولا يجري توقيعاً بعتبة أو MPC أو بمحفظة عتادية.
+الأدلة: [نظرة عامة على QoreSign](/qoresign/overview)، [البدء السريع](/qoresign/quickstart)، [متجهات الاختبار](/qoresign/vectors). المصدر: [qorechain/qoresign](https://github.com/qorechain/qoresign). نُشر الإصدار 0.1.1 في 27 أكتوبر 2026. يوقّع QoreSign محلياً؛ فهو لا يحتفظ بأي مفاتيح نيابةً عنك ولا يجري توقيعاً بعتبة أو MPC أو بمحفظة عتادية.
 
 | الحزمة | اللغة | الإصدار | التثبيت | الحالة |
 |---|---|---|---|---|
-| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.0 | `npm install @qorechain/qoresign` | منشورة |
-| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (تُستورد باسم `qoresign`) | 0.1.0 | `cargo add qorechain-qoresign` | منشورة |
-| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.0 | `go get github.com/qorechain/qoresign/go` | منشورة |
-| `QoreSign` (حزمة Swift) | Swift (iOS 16+، macOS 13+) | 0.1.0 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.0")`, product `QoreSign` | منشورة كإصدار على GitHub؛ ويُنزَّل الإطار الثنائي منه |
-| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+) | 0.1.0 | `implementation("io.github.qorechain:qoresign:0.1.0")` | منشورة |
-| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+) | 0.1.0 | `implementation("io.github.qorechain:qoresign-android:0.1.0")` | منشورة. واجهة API نفسها كما في حزمة JVM؛ وقد شُغّل مثالها على حزمة JVM فقط، لا على جهاز Android |
-| `qorechain-qoresign` (PyPI) | Python | لا يوجد بعد | لا يوجد | **غير منشورة.** أعاد مشروع PyPI الخطأ 404 في 27 أكتوبر 2026. مخطط لها في 0.1.1 |
+| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.1 | `npm install @qorechain/qoresign` | منشورة. تتضمن `inspectTransaction` و`fetchEvmWindow` (جديدتان في 0.1.1) |
+| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (تُستورد باسم `qoresign`) | 0.1.1 | `cargo add qorechain-qoresign` | منشورة |
+| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.1 | `go get github.com/qorechain/qoresign/go@v0.1.1` | منشورة |
+| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+ (تُستورد باسم `qoresign`) | 0.1.1 | `pip install qorechain-qoresign` | منشورة، جديدة في 0.1.1. عجلات (wheels) لنظام macOS (arm64 وx86_64) ولنظام Linux (x86_64 وaarch64)؛ ولا توجد عجلة لنظام Windows بعد. دوال بلا اتصال بالشبكة فقط |
+| `QoreSign` (حزمة Swift) | Swift (iOS 16+، macOS 13+) | 0.1.1 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, product `QoreSign` | منشورة كإصدار على GitHub؛ ويُنزَّل الإطار الثنائي منه |
+| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+، Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign:0.1.1")` | منشورة |
+| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+، Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | منشورة. واجهة API نفسها كما في حزمة JVM؛ وقد شُغّل مثالها على حزمة JVM فقط، لا على جهاز Android |
 
-تحتوي حزمة TypeScript على مسار فرعي `@qorechain/qoresign/network`، وفي وحدة Go المساعدات نفسها: `fetchPqKeyStatus` و`resolveSignBytesVersion` و`simulateTx` (مع تغيّرات الأرصدة) و`suggestGasLimit` و`broadcastTx` و`submitWithSignBytesFallback` (بديل احتياطي واحد ثم يتوقف) و`verifySiwqWithChain` و`verifyMessageWithChain`. ولا تحتوي حزمة Rust على شيفرة شبكة.
+تحتاج حزم Kotlin وAndroid إلى مترجم Kotlin 2.3 أو أحدث في مشروعك؛ أما المشروع على Kotlin 2.1 فتفشل ترجمته مقابلها.
+
+تحتوي حزمة TypeScript على مسار فرعي `@qorechain/qoresign/network`، وفي وحدة Go المساعدات نفسها باستثناء `inspectTransaction` و`fetchEvmWindow`: `fetchPqKeyStatus` و`resolveSignBytesVersion` و`simulateTx` (مع تغيّرات الأرصدة) و`suggestGasLimit` و`broadcastTx` و`submitWithSignBytesFallback` (بديل احتياطي واحد ثم يتوقف) و`verifySiwqWithChain` و`verifyMessageWithChain`. ولا تحتوي حزم Rust وSwift وKotlin وPython على شيفرة شبكة.
+
+### QoreSeal {#group-qoreseal}
+
+الصفحة: [QoreSeal](/developer-tools/qoreseal). المصدر: [qorechain/qoreseal](https://github.com/qorechain/qoreseal). يشفّر QoreSeal 0.1.0 البيانات إلى حسابات QoreChain والمجموعات الخاصة والسلاسل الجانبية باستخدام ML-KEM-1024 (FIPS 203). يعمل التشفير دون اتصال بالشبكة؛ أما قراءة مفتاح المستلم من السلسلة فتحتاج إلى سجل مفاتيح KEM، وهو يعمل على شبكة الاختبار وسيأتي إلى الشبكة الرئيسية بعد ترقية v3.2.5. والبنية بانتظار مراجعة خارجية قبل 1.0.
+
+| الحزمة | اللغة | الإصدار | التثبيت | الحالة |
+|---|---|---|---|---|
+| [`qorechain-qoreseal`](https://crates.io/crates/qorechain-qoreseal) | Rust (تُستورد باسم `qoreseal`) | 0.1.0 | `cargo add qorechain-qoreseal` | منشورة |
+| [`github.com/qorechain/qoreseal/go`](https://pkg.go.dev/github.com/qorechain/qoreseal/go) | Go | v0.1.0 | `go get github.com/qorechain/qoreseal/go@v0.1.0` | منشورة |
+| [`qorechain-qoreseal`](https://pypi.org/project/qorechain-qoreseal/) | Python 3.9+ (تُستورد باسم `qoreseal`) | 0.1.0 | `pip install qorechain-qoreseal` | منشورة. عجلات (wheels) لنظام macOS (arm64 وx86_64) ولنظام Linux (x86_64 وaarch64)؛ ولا توجد عجلة لنظام Windows بعد |
+| `QoreSeal` (حزمة Swift) | Swift (iOS 16+، macOS 13+) | 0.1.0 | `.package(url: "https://github.com/qorechain/qoreseal", from: "0.1.0")`, product `QoreSeal` | منشورة كإصدار على GitHub؛ ويُنزَّل الإطار الثنائي منه |
+| [`io.github.qorechain:qoreseal`](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal) | Kotlin / JVM (JVM 17+، Kotlin 2.3+) | 0.1.0 | `implementation("io.github.qorechain:qoreseal:0.1.0")` | منشورة على Maven Central |
+| [`io.github.qorechain:qoreseal-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal-android) | Kotlin (Android API 24+، Kotlin 2.3+) | 0.1.0 | `implementation("io.github.qorechain:qoreseal-android:0.1.0")` | منشورة على Maven Central |
+| `@qorechain/qoreseal` | TypeScript | لا يوجد بعد | لا يوجد | **غير منشورة** على npm (الخطأ 404 في 27 أكتوبر 2026). المصدر موجود في المستودع |
+
+### PQ light client {#group-pq-light-client}
+
+الصفحة: [PQ light client](/developer-tools/pq-light-client). المصدر: [qorechain/qorechain-pq-light-client](https://github.com/qorechain/qorechain-pq-light-client). مواصفة مسودة وأدوات تحقق مرجعية لنقاط التحقق الموقّعة بـ ML-DSA-87. لا يتصل بالشبكة الرئيسية ولا بشبكة الاختبار: فـ QoreChain لا تنتج نقاط التحقق التي يتحقق منها ولا يوجد دعم على السلسلة مجدول لها. ويعمل مقابل مجموعات مدققين محاكاة ومتجهات اختبار مشتركة.
+
+| الحزمة | اللغة | الإصدار | التثبيت | الحالة |
+|---|---|---|---|---|
+| [`@qorechain/pq-light-client`](https://www.npmjs.com/package/@qorechain/pq-light-client) | TypeScript | 0.1.0 | `npm install @qorechain/pq-light-client` | منشورة. تعتمد على `@qorechain/pqc` 0.2.3 |
+| [`qorechain-pq-light-client`](https://crates.io/crates/qorechain-pq-light-client) | Rust (المكتبة `qorechain_pq_light_client`) | 0.1.0 | `cargo add qorechain-pq-light-client` | منشورة |
+| [`github.com/qorechain/qorechain-pq-light-client/go`](https://pkg.go.dev/github.com/qorechain/qorechain-pq-light-client/go) | Go (الحزمة `pqlightclient`) | v0.1.0 | `go get github.com/qorechain/qorechain-pq-light-client/go@v0.1.0` | منشورة |
+
+### Custody kit {#group-custody-kit}
+
+الصفحة: [Custody kit](/developer-tools/custody-kit). المصدر: [qorechain/qorechain-custody-kit](https://github.com/qorechain/qorechain-custody-kit). دليل تكامل وشيفرة مرجعية ومتجهات اختبار لجهات الحفظ ومنصات التداول، بلغات TypeScript وPython وGo وRust وJava. إنها شيفرة مرجعية تُقرأ أو تُنسخ أو تُضمَّن في مشروعك، وليست مجموعة حزم: الإدخال الوحيد في السجلات هو وحدة Go.
+
+| الحزمة | اللغة | الإصدار | التثبيت | الحالة |
+|---|---|---|---|---|
+| إصدار GitHub `v0.1.0` | TypeScript وPython وGo وRust وJava | 0.1.0 | `git clone https://github.com/qorechain/qorechain-custody-kit`، ثم ابنِ المجلد الخاص بلغتك | منشورة، 27 أكتوبر 2026. لا توجد حزمة npm أو PyPI أو crates.io أو Maven، وذلك عن قصد |
+| [`github.com/qorechain/qorechain-custody-kit/code/go`](https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go) | Go (الحزمة `custodykit`) | v0.1.0 | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0` | منشورة |
+
+### QoreScan {#group-qorescan}
+
+الصفحة: [QoreScan](/developer-tools/qorescan). المصدر: [qorechain/qorescan](https://github.com/qorechain/qorescan). يجرد QoreScan Community 0.1.0 التشفير في نشر QoreChain (مجلد العقدة الرئيسي وحالة الشبكة الحية ونقاط نهاية TLS ومصادر Solidity) ويكتب CycloneDX 1.6 CBOM وتقارير Markdown. إنه أداة مساعدة للجرد، وليس شهادة اعتماد ولا تدقيقاً.
+
+| الحزمة | اللغة | الإصدار | التثبيت | الحالة |
+|---|---|---|---|---|
+| [إصدار GitHub `v0.1.0`](https://github.com/qorechain/qorescan/releases/tag/v0.1.0) | ملفات ثنائية لأنظمة macOS وLinux وWindows (amd64 وarm64) | 0.1.0 | نزّل الملف وتحقق منه مقابل `qorescan_0.1.0_checksums.txt` | منشورة، 27 أكتوبر 2026 |
+| [`@qorechain/qorescan`](https://www.npmjs.com/package/@qorechain/qorescan) | غلاف npm (Node.js 18+) | 0.1.0 | `npx @qorechain/qorescan scan ...` | منشورة. ينزّل الملف الثنائي للإصدار ويتحقق منه عند أول تشغيل |
+| [`qorescan`](https://pypi.org/project/qorescan/) | غلاف PyPI (Python 3.9+) | 0.1.0 | `pipx run qorescan scan ...` أو `pip install qorescan` | منشورة. السلوك نفسه كما في غلاف npm |
+| [`github.com/qorechain/qorescan`](https://pkg.go.dev/github.com/qorechain/qorescan) | Go | v0.1.0 | `go install github.com/qorechain/qorescan/cmd/qorescan@v0.1.0` | منشورة. Go 1.26 |
+
+### Chain developer kit (SDK 0.11.0) {#group-chain-dev-sdk}
+
+الصفحة: [Chain developer kit](/developer-tools/chain-dev-sdk). المصدر: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). الجزء من QoreChain SDK 0.11.0 الموجّه لفرق Solidity والعقود الذكية: تعريفات سلسلة viem ومساعدات نافذة تفويض EVM في `@qorechain/evm`، وأربعة قوالب جديدة في `create-qorechain-dapp` (Foundry وHardhat 3 وviem مع wagmi، ورمز QoreChain Native)، وبدايات سريعة لـ EVM، وصفحة عن اختلاف EVM في QoreChain عن Ethereum.
+
+**قريباً.** وُسم SDK 0.11.0 على GitHub (`v0.11.0`) وإصداره على npm معلّق: ففي 27 أكتوبر 2026 كان npm يقدّم `@qorechain/sdk` 0.10.0 و`@qorechain/evm` 0.8.0 و`create-qorechain-dapp` 0.10.0، وأعاد `@qorechain/sdk@0.11.0` الخطأ 404. وإلى أن يعرض npm الإصدار 0.11.0 لا يمكن تثبيت تعريفات السلسلة ومساعدات النافذة والقوالب الجديدة؛ والمتاح اليوم هو حزم 0.10.0 في [جدول SDK](#group-sdk). يغيّر 0.11.0 حزم npm فقط: تبقى SDK لغات Python وRust وGo وJava على 0.10.0.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 
@@ -195,11 +253,12 @@ sidebar_position: 1
 
 ### المخطط لها (غير منشورة) {#planned}
 
-هذا الاسم محجوز لأداة ليست على أي سجل بعد. أعاد الخطأ 404 على سجله في 27 أكتوبر 2026، فلا شيء للتثبيت ولا يمكن استخدام السلوك المذكور بعد.
+هذه الحزم ليست على سجلاتها بعد، فلا شيء للتثبيت ولا يمكن استخدام السلوك الموصوف لها بعد. أعادت كل منها الخطأ 404 (أو لم تكن مدرجة) في 27 أكتوبر 2026.
 
 | الحزمة | الاستخدام المقصود | الحالة |
 |---|---|---|
-| `qorechain-qoresign` على PyPI | QoreSign للغة Python | غير منشورة (مخطط لها في 0.1.1) |
+| `@qorechain/qoreseal` على npm | QoreSeal للغة TypeScript | غير منشورة؛ المصدر موجود في المستودع |
+| `@qorechain/sdk` و`@qorechain/evm` و`@qorechain/react` و`@qorechain/svm` و`create-qorechain-dapp` الإصدار 0.11.0 على npm | [chain developer kit](/developer-tools/chain-dev-sdk) | موسومة على GitHub، وإصدار npm معلّق |
 
 ## كيف تحصل على الإصدارات الحية {#live-versions}
 
@@ -219,8 +278,11 @@ sidebar_position: 1
 ## الحدود والمشكلات المعروفة {#limits}
 
 - **شبكتان حيتان بإصدارين مختلفين.** تعمل الشبكة الرئيسية على v3.2.4 وتعمل شبكة الاختبار على v3.2.6. تُوسَم الميزة الموجودة على شبكة الاختبار فقط في صفحتها. لا تفترض سلوك v3.2.5 على الشبكة الرئيسية.
-- **غير متاح بعد:** مفتش المعاملات في صفحة المطورين بلوحة التحكم، وQoreSign للغة Python، ومعاملات SVM، ومُسبقات EVM (precompiles) على الشبكة الرئيسية (راجع [نظرة عامة على SDK](/sdk/overview) للقائمة مساراً بمسار).
-- **أمثلة لم تُشغَّل:** من إدخالات البدء السريع الـ 34، شُغّل 31 ونجحت في 27 أكتوبر 2026. لم يُشغَّل مثال QoreSign بلغة Python (الحزمة غير منشورة) ولم يُشغَّل مثال QoreSign لـ Android على جهاز. ولمحوّل المحفظة وchain bridge وhandles لا توجد بداية سريعة، لذا فإن أمثلتها في هذا الدليل مأخوذة من تعريفات أنواع الحزم ومصدرها ولم تُشغَّل من البداية إلى النهاية.
+- **غير متاح بعد:** علامة تبويب Transaction inspector في صفحة المطورين بلوحة التحكم (أما دالة المكتبة `inspectTransaction` في QoreSign 0.1.1 فمنشورة)، و`@qorechain/qoreseal` على npm، وSDK 0.11.0 (chain developer kit) على npm، ومعاملات SVM، ومُسبقات EVM (precompiles) على الشبكة الرئيسية (وهي فعّالة على شبكة الاختبار فقط؛ راجع [نظرة عامة على SDK](/sdk/overview) للقائمة مساراً بمسار).
+- **سجل QoreSeal وPQ light client.** يحتاج التشفير إلى عنوان مقروء من السلسلة إلى سجل مفاتيح KEM، وهو يعمل على شبكة الاختبار وسيأتي إلى الشبكة الرئيسية بعد v3.2.5. ولا يتصل PQ light client بأي من الشبكتين؛ ولا يوجد دعم مجدول على السلسلة لنقاط التحقق الخاصة به.
+- **Kotlin 2.3 أو أحدث.** تحتاج حزم Kotlin وAndroid الخاصة بـ QoreSign وQoreSeal إلى مترجم Kotlin 2.3 أو أحدث؛ ويفشل Kotlin 2.1 في الترجمة مقابلها.
+- **لا عجلات لنظام Windows.** لحزمتي Python الخاصتين بـ QoreSign وQoreSeal عجلات (wheels) لنظامَي macOS وLinux فقط؛ وتُبنى المنصات الأخرى من توزيعة المصدر، وهي تحتاج إلى Rust.
+- **أمثلة لم تُشغَّل:** من إدخالات البدء السريع الـ 34، شُغّل 31 ونجحت في 27 أكتوبر 2026. شُغّل مثال QoreSign بلغة Python بعد نشر الحزمة (macOS arm64 وLinux aarch64)، ولم يُشغَّل مثال QoreSign لـ Android على جهاز. ولمحوّل المحفظة وchain bridge وhandles لا توجد بداية سريعة، لذا فإن أمثلتها في هذا الدليل مأخوذة من تعريفات أنواع الحزم ومصدرها ولم تُشغَّل من البداية إلى النهاية.
 - **`@qorechain/rdk-cli` قبل 0.6.2** لم يطبع شيئاً عند تشغيله عبر رابط npm bin، وطبع `--version` فيه 0.4.1. و**`@qorechain/rdk` قبل 0.7.0** كان يبني براهين سحب لا تجتاز التحقق على السلسلة أبداً. استخدم 0.7.0.
 - **تعارض إصدارات cosmjs.** يستخدم `@qorechain/wallet-adapter` و`@qorechain/chain-bridge` الإصدار 0.32 من cosmjs؛ ويستخدم SDK الإصدار 0.39. تثبيت المحوّل بجانب SDK في مشروع واحد يجعل npm يبلّغ عن `ERESOLVE`. أبقِهما في مشروعين منفصلين أو مرّر `--legacy-peer-deps`.
 - **نسخة SDK متداخلة في إصدارات RDK الأقدم.** يعتمد `@qorechain/rdk` 0.6.2 وما قبله على `@qorechain/sdk` `^0.9.0`، لذا كان تطبيق على SDK 0.10.0 يحصل على نسخة SDK 0.9.x ثانية متداخلة. ومنذ 0.7.0 تعتمد الحزمة على `@qorechain/sdk` `^0.10.0` وتشارك نسخة واحدة.

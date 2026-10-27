@@ -7,7 +7,7 @@ sidebar_position: 5
 
 # نواقل الاختبار
 
-الملف [`qoresign-v1.json`](https://github.com/qorechain/qoresign/blob/main/vectors/qoresign-v1.json) مولَّد من تنفيذ TypeScript (`pnpm build && pnpm vectors`) وتتحقق منه مجموعات اختبار TypeScript وRust وGo وSwift وKotlin. أي تغيير في الملف هو تغيير في صيغة النقل: أضف ملفًا جديدًا بإصدار جديد بدلًا من تعديل هذا الملف.
+الملف [`qoresign-v1.json`](https://github.com/qorechain/qoresign/blob/main/vectors/qoresign-v1.json) مولَّد من تنفيذ TypeScript (`pnpm build && pnpm vectors`) وتتحقق منه مجموعات اختبار TypeScript وRust وGo وSwift وKotlin وPython. أي تغيير في الملف هو تغيير في صيغة النقل: أضف ملفًا جديدًا بإصدار جديد بدلًا من تعديل هذا الملف.
 
 اشتُق كل مفتاح من عبارة الاختبار العامة BIP-39 (`abandon ... about`). لا ترسل أموالًا إلى هذه الحسابات أبدًا.
 

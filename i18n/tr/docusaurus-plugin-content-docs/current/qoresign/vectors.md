@@ -9,7 +9,7 @@ sidebar_position: 5
 
 [`qoresign-v1.json`](https://github.com/qorechain/qoresign/blob/main/vectors/qoresign-v1.json)
 TypeScript uygulamasından üretilir (`pnpm build && pnpm vectors`) ve TypeScript,
-Rust, Go, Swift ve Kotlin test paketleri tarafından denetlenir. Dosyada yapılan
+Rust, Go, Swift, Kotlin ve Python test paketleri tarafından denetlenir. Dosyada yapılan
 bir değişiklik kablo biçiminde yapılmış bir değişikliktir: bu dosyayı düzenlemek
 yerine yeni bir sürümle yeni bir dosya ekleyin.
 

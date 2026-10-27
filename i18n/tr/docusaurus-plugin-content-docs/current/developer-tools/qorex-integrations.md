@@ -22,6 +22,37 @@ Yapmadıkları şeyler: anahtar tutmazlar ve QoreX'i bugün olduğundan fazlası
 * **Synpress v4 tarzında Playwright fikstürleri** (`qorexMockFixtures`) mock'u gezinmeden önce enjekte eder; böylece uçtan uca bir test için tarayıcı eklentisine gerek kalmaz.
 * **Olaysız cüzdan güdümlü hesaplar.** QoreX henüz `accountsChanged` veya `chainChanged` yaymadığı için RainbowKit cüzdanında, sayfa odağı geri kazandığında `eth_accounts` ve `eth_chainId` değerlerini yeniden okuyan, isteğe bağlı bir `pollAccountsOnFocus` seçeneği vardır.
 
+## Ne için kullanılır {#use-cases}
+
+1. **Bir wagmi ve RainbowKit dApp'i QoreX'i ekler.** `qorexWallet` değerini RainbowKit cüzdan listesine ve `QOREX_CHAINS` değerini wagmi yapılandırmasına ekleyin. QoreX'i olan kullanıcılar bağlanır ve dApp onların `0x` adresini ve zincir kimliğini (9801 veya 9800) okur. QoreX'i olmayan kullanıcılar mağaza bağlantılarını görür.
+2. **Interchain Kit veya cosmos-kit üzerindeki bir Cosmos dApp'i QoreX'i ekler.** QoreX cüzdanını `ChainProvider` içine ekleyin ve QoreChain işlemlerini `qorexSignAndBroadcast` ile gönderin: QoreX işlemi oluşturur, hibrit imzayı ekler ve yayınlar, çünkü bir sayfa ML-DSA-87 anahtarını tutamaz.
+3. **Keplr'ı zaten destekleyen bir dApp.** `window.qorex.native`, Keplr kalıbını izler (`enable`, `getKey`, `signDirect`); bu nedenle entegrasyon birkaç satırdır. Depo kılavuzu her farkı listeler.
+4. **Eklenti olmadan cüzdan akışlarının CI testleri.** Bir QA ekibi Playwright'ı `qorexMockFixtures({ profile: "current" })` ile çalıştırır, Connect düğmesine tıklar ve sayfanın `qorex.addresses.evm` değerini gösterdiğini doğrular. `qorex.rejectNext()` reddetme yolunu test eder.
+5. **Yeni QoreX özelliklerine ileriden hazırlanmak.** Aynı paketi `profile: "planned"` ile çalıştırarak duyurulan özellikleri (EVM imzalama, hesap değişikliği olayları, hibrit katmanı ekleyen `signDirect`) QoreX bunları yayınlamadan önce deneyin.
+6. **Test ağında gerçek yayınları test etmek.** Kendi fonlanmış test ağı anımsatıcı ifadesiyle bir ekip, mock'un `qorechain-diana` ağına hibrit imzalı bir işlemi `signAndBroadcast` etmesini sağlar ve sonucu sayfada kontrol eder.
+7. **Sürüm kontrolleri yerine özellik algılama.** Bir dApp, `hasCapability(native, "signAndBroadcast")` doğru olduğunda QoreChain'de bir Gönder düğmesi gösterir; böylece yeni QoreX sürümleri dApp'te değişiklik gerekmeden özellikleri açar.
+
+## Nasıl çalışır {#how-it-works}
+
+* **EVM lane'i.** QoreX `window.ethereum` değerini asla yazmaz. EIP-6963 üzerinden `network.qore.qorex` ters-DNS adıyla bir EIP-1193 sağlayıcısı duyurur; `qorexWallet()` ve `discoverQorexEip1193()` tam olarak bu sağlayıcıyı seçer. Aynı nesne ayrıca `window.qorex.evm` konumundadır.
+* **Yerel lane.** `window.qorex.native`, Keplr kalıbında bir sağlayıcıdır (`window.keplr` için takma ad değildir). QoreChain, yerel lane işlemlerinde hibrit bir secp256k1 artı ML-DSA-87 imzası gerektirir ve ML-DSA-87 anahtarını yalnızca cüzdan tutar; bu yüzden dApp mesajları `signAndBroadcast` çağrısına gönderir. QoreX bunları gösterir, ücreti belirler, iki anahtarla imzalar, yayınlar ve `shield` değerini bildirir.
+* **Solana.** QoreX, `solana:mainnet` (Solana'nın kendisi) üzerinde bir Solana Wallet Standard cüzdanı kaydeder. QoreChain'in kendi SVM lane'i işlemlere açık değildir ve Wallet Standard zincir kimliği yoktur.
+* **Sürümler değil, yetenekler.** Kitler `window.qorex.native.capabilities` değerini `hasCapability` üzerinden okur. Bir QoreX sürümü `listAccounts`, `connectProofPicksAccount`, `executeRequest` ve `signAndBroadcast` yeteneklerini bildirebilir.
+* **Amino tasarım gereği reddedilir**, çünkü Amino JSON hibrit ML-DSA-87 imzasını taşıyamaz. Kitler her imzalayıcı isteğini bir doğrudan imzalayıcıyla (direct signer) karşılar.
+* **`signDirect` ve post-kuantum katmanı, tam olarak.** Bugün QoreX `signDirect`, SignDoc'u olduğu gibi secp256k1 anahtarıyla imzalar. QoreChain'de gövde, imzalayanın kayıtlı anahtarı için zaten geçerli bir hibrit ML-DSA-87 katmanı içermelidir; bir sayfa bunu üretemez. Bu yüzden `qorechain-vladi` ve `qorechain-diana` üzerinde kitlerin çevrimdışı imzalayıcısının `signDirect` çağrısı QoreX'e ulaşmadan `QOREX_USE_SIGN_AND_BROADCAST` fırlatır; `getAccounts` her zincirde çalışır. Diğer zincir kimliklerinde kitler `signDirect` çağrısını, bugün yalnızca iki QoreChain zincir kimliğine hizmet veren QoreX'e iletir. Gelecekteki bir QoreX sürümünün katmanı `signDirect` içinde kendisinin eklemesi ve `signDirectAddsPqcLayer` yeteneğini bildirmesi planlanmaktadır; hiçbir güncel sürüm bunu bildirmez. Kitler bunu şimdiden kontrol eder ve bildirildiğinde çevrimdışı imzalayıcı QoreChain SignDoc'larını QoreX'e iletir. QoreX bu durumda gas'i yeniden tahmin edip gas sınırını ve ücreti yükseltebilir; bu yüzden geri dönen `signed` belgesini her zaman yayınlayın.
+* **`shield` durumları** (`signAndBroadcast` tarafından döndürülür): `shielded` (onaylanan işlem hibrit katmanı taşır), `pending` (yayın yapıldı, kontrol tamamlanmadı), `downgraded` (katman olmadan onaylandı; bunu bir alarm olarak değerlendirin) ve `classical` (katmanın uygulanmadığı bir lane).
+* **Mock**, hesaplarını QoreX'in yaptığı gibi bir BIP-39 anımsatıcı ifadesinden (varsayılan: herkese açık test ifadesi) oluşturur: o `qor1` adresinin kanonik ML-DSA-87 anahtarıyla `m/44'/118'/0'/0/i`, EVM için `m/44'/60'/0'/0/i` ve Solana için `m/44'/501'/i'/0'`. Mock'un `signAndBroadcast` çağrısı hesabın ML-DSA-87 anahtarını REST'ten okur, eksikse `MsgRegisterPQCKeyV2` ile bir kez kaydeder, [QoreSign](/qoresign/overview) ile hibrit imzalar, yayınlar (ağ isterse diğer sign-bytes sürümüyle bir kez yeniden dener), dahil edilmeyi bekler ve `{ txHash, code, height, shield }` döndürür.
+
+### QoreX bugün neyi destekliyor {#qorex-today}
+
+| Yüzey | Bugün | QoreX ekibinin planladığı |
+|---|---|---|
+| EVM (EIP-6963 üzerinden EIP-1193, `network.qore.qorex`) | bağlanma (`eth_requestAccounts`), `eth_accounts`, `eth_chainId`, QoreX'te zaten seçili ağa `wallet_switchEthereumChain` | `accountsChanged` ve `chainChanged` olayları, her reddetmede EIP-1193 hata kodları 4200 ve 4902, `personal_sign`, `eth_signTypedData_v4`, `eth_sendTransaction`, `wallet_addEthereumChain` |
+| QoreChain yerel lane'i (`window.qorex.native`) | `enable`, `getKey`, `signAndBroadcast`, `listAccounts`, `experimentalSuggestChain` (QoreChain kimlikleri), `signDirect` (SignDoc hibrit katmanı zaten taşımalıdır) | ML-DSA-87 katmanını kendisi ekleyen `signDirect`, mesaj imzalama (ADR-36 artı ML-DSA-87) |
+| Solana (Wallet Standard, `solana:mainnet`) | bağlanma, `signMessage`, `signTransaction` | `solana:signIn` |
+
+EVM tarafında, imzalama ve gönderme şu an "QoreX: EVM method ... not yet supported" ile başarısız olur. QoreChain'deki işlemler için yerel lane'i kullanın. QoreChain'in EVM lane'inde bir işlem, gönderenin kayıtlı bir ML-DSA-87 anahtarı ve yerel lane'den açılmış bir EVM yetkilendirme penceresi olduğunda kabul edilir. Kullanıcı ağı QoreX içinden değiştirir; dApp bunu değiştiremez.
+
 ## Nasıl kullanılır {#how-to-use}
 
 Aşağıdaki kod blokları geliştirici merkezindeki hızlı başlangıçlardır. Her biri `tsc` ile tip kontrolünden geçirildi ve 27 Ekim 2026'da herkese açık npm kayıt defterinden kurulduktan sonra çalıştırıldı (Node 26; tarayıcı kodu için jsdom 30 ve `react-dom/client`; fikstür için Chromium ile Playwright 1.64) ve geçti. Hiçbiri bir işlem göndermez ve fonlanmış bir anahtara ihtiyaç duymaz. Gözlenen sonuç her birinin yanında verilmiştir. Cüzdan tarafı davranışı (gerçek bir tarayıcıda gerçek bir QoreX) bu sayfa için test edilmedi.
@@ -180,6 +211,92 @@ test("connects", async ({ page, qorex }) => {
 
 Gözlenen: `1 passed`, Connect düğmesi `eth_requestAccounts` çağıran yerel bir sayfaya karşı (Playwright 1.64, Chromium). Fikstürleri Synpress ile birleştirmek için `@synthetixio/synpress@4.1.2` kurun ve bunları `testWithSynpress` ile sarmalayın. `qorex` fikstürü `addresses`, `approveNext()`, `rejectNext()`, `requests()`, `switchAccount(i)` ve `disconnect()` sunar. Eş bağımlılık: `@playwright/test` 1.48 veya üstü. Durum sayfada yaşar, bu yüzden her gezinme yeni bir mock ile başlar.
 
+### QoreChain'de işlem göndermek {#send-transaction}
+
+Aynı çağrı `@qorechain/qorex-interchain-kit`, `@qorechain/qorex-cosmos-kit` ve `@qorechain/qorex-types` paketlerinde bulunur:
+
+```ts
+import { qorexSignAndBroadcast } from "@qorechain/qorex-interchain-kit";
+
+const { txHash, code, height, shield } = await qorexSignAndBroadcast({
+  chainId: "qorechain-diana",
+  messages: [{ typeUrl: "/cosmos.bank.v1beta1.MsgSend", value: MsgSend.encode(msg).finish() }],
+  memo: "",
+  gasLimit: 200000,
+});
+```
+
+* `value`, protobuf ile kodlanmış mesajdır: bir `Uint8Array`, bir `number[]` veya base64.
+* 1 ila 32 mesaj; en fazla 256 baytlık bir not (memo); `gasLimit` 100.000 ile 5.000.000 arasına sıkıştırılır (belirtilmezse 400.000). Ücreti QoreX belirler ve imzalamadan önce gösterir.
+* `chainId`, QoreX'te seçili ağla eşleşmelidir.
+* Hesabın ML-DSA-87 anahtarını yöneten mesajlar cüzdan tarafındadır ve reddedilir; `MsgExec` içinde de reddedilir. QoreX'in gösteremediği mesaj türleri reddedilir.
+* Kit kullanmadan, `hasCapability(native, "signAndBroadcast")` değerini kontrol ettikten sonra `window.qorex.native.signAndBroadcast(request)` çağrısını yapın. `getKey`, `pubKey` ve `address` değerlerini `number[]` olarak döndürür; `Uint8Array.from(key.pubKey)` ile dönüştürün (kitler bunu sizin için yapar).
+
+### Mock'un fikstürler olmadan Playwright'ta kullanımı {#mock-playwright}
+
+```ts
+import { createQorexMock } from "@qorechain/qorex-wallet-mock";
+
+const mock = createQorexMock({ profile: "current" });
+await page.addInitScript({ content: mock.initScript() });
+await page.goto("http://localhost:5173");
+await page.evaluate(() => window.__qorexMock!.rejectNext());
+```
+
+## Ana API {#main-api}
+
+| Paket | Ad | Ne yapar |
+|---|---|---|
+| types | `discoverQorexEip1193({ timeoutMs })`, `findQorexEip1193()` | QoreX EVM sağlayıcısının eşzamansız EIP-6963 keşfi ve bunun için eşzamanlı bir yoklama |
+| types | `getQorexNative()`, `isQorexInstalled()`, `hasCapability(native, capability)` | `window.qorex.native` değerini okur, QoreX'in mevcut olduğunu kontrol eder, bir yeteneği sınar |
+| types | `qorexSignAndBroadcast(request, { native? })` | mesajları QoreX'e verir; QoreX yoksa `QOREX_NOT_INSTALLED`, bunu desteklemeyen eski bir QoreX'te `QOREX_NOT_SUPPORTED_YET` fırlatır |
+| types | `QorexIntegrationError`, `isQorexIntegrationError(err, code)` | bu paketlerden gelen hatalar, sabit kodlarla |
+| types | `isQorexUnsupportedMethodError`, `isQorexUnrecognizedChainError`, `QOREX_EVM_ERROR_CODES` | QoreX EVM reddetmelerini sınıflandırır: önce `code` değerine (4200, 4902) bakar, sonra bugünkü mesaj metnine döner |
+| types | `QorexEip1193Provider`, `QorexNativeProvider`, `QorexSolanaStandardWallet`, `QorexSvmProvider`; `@qorechain/qorex-types/icon` | QoreX'in enjekte ettiklerinin tipleri; QoreX simgesi bir data URI olarak |
+| rainbowkit | `qorexWallet(options?)`, `createQorexConnector`, `getQorexEip1193Provider` | RainbowKit cüzdanı (seçenek `pollAccountsOnFocus`), wagmi bağlayıcısı ve kullandığı sağlayıcı |
+| rainbowkit | `qorechain`, `qorechainTestnet`, `QOREX_CHAINS` | viem zincirleri 9801 ve 9800 |
+| interchain-kit | `qorexWallet`, `createQorexWallet()`, `QorexCosmosWallet` | Interchain Kit cüzdanı |
+| cosmos-kit | `wallets`, `qorexExtension`, `QorexExtensionWallet`, `QorexClient` | cosmos-kit cüzdanı |
+| her iki kit | `qorexSignAndBroadcast`, `QOREX_CAPABILITY_SIGN_DIRECT_ADDS_PQC_LAYER`, zincir kimliği sabitleri, hata yardımcıları | `qorex-types` üzerinden yeniden dışa aktarılır |
+| wallet-mock | `createQorexMock(options)` | `{ install(window), initScript(), addresses(), ... }` döndürür |
+| wallet-mock | `window.__qorexMock` | `approveNext()`, `rejectNext()`, `pendingApprovals`, `requests`, `clearRequests()`, `switchAccount(i)`, `switchNetwork(chainId)`, `disconnect()`, `addresses()` |
+| wallet-mock | `PUBLIC_TEST_MNEMONIC` | herkese açık BIP-39 test ifadesi (asla fonlamayın) |
+| synpress | `qorexMockFixtures(options)` | otomatik bir `qorex` fikstürü olan bir Playwright `test` |
+| synpress | `qorex.addresses`, `approveNext()`, `rejectNext()`, `waitForApproval()`, `pendingApprovals()`, `requests()`, `clearRequests()`, `switchAccount(i)`, `switchNetwork(chainId)`, `disconnect()`, `mock` | fikstür denetimleri |
+| synpress | `qorexExtensionFixtures({ extensionPath })` | gerçek eklenti için planlanan arayüz; bugün `QorexExtensionModeUnavailableError` fırlatır |
+
+Synpress v4 ile fikstürleri `testWithSynpress(qorexMockFixtures({ profile: "planned" }))` olarak birleştirin. `autoApprove: false` iken bekleyen durumu incelemek için `await qorex.waitForApproval()` çağırın, ardından `qorex.approveNext()` çağırın. Hem bugünkü QoreX'i hem de bir sonraki sürümü kapsamak için paketi iki profilde de çalıştırın.
+
+### Kit imzalayıcısının davranışı {#kit-signer}
+
+| Çağrı | Interchain Kit | cosmos-kit |
+|---|---|---|
+| `connect` veya `enable`, `getAccount`, `getKey` | QoreX `enable` ve `getKey`, baytlar `Uint8Array` olarak dönüştürülür | aynı |
+| `getOfflineSigner(chainId)` | her tercih için doğrudan imzalayıcı | her tercih için doğrudan imzalayıcı, cosmos-kit'in varsayılanı `"amino"` dahil |
+| QoreChain'de imzalayıcı `signDirect` | `QOREX_USE_SIGN_AND_BROADCAST` fırlatır (QoreX `signDirectAddsPqcLayer` bildirene kadar) | aynı |
+| başka bir zincir kimliğinde imzalayıcı `signDirect` | QoreX `signDirect` çağrısına iletilir | aynı |
+| `signAmino`, `getOfflineSignerAmino` | `QOREX_AMINO_REFUSED` fırlatır | aynı |
+| `signArbitrary` (ADR-36) | `QOREX_NOT_SUPPORTED_YET` fırlatır (`verifyArbitrary` da) | `QOREX_NOT_SUPPORTED_YET` fırlatır |
+| `sendTx` | `QOREX_NOT_SUPPORTED_YET` fırlatır; kendi RPC uç noktanız üzerinden yayınlayın | sağlanmaz |
+
+### Mock cüzdan seçenekleri {#mock-options}
+
+| Seçenek | Varsayılan | Anlamı |
+|---|---|---|
+| `profile` | `"current"` | `"current"` bugünkü QoreX'tir; `"planned"` duyurulan özellikleri ekler |
+| `mnemonic` | herkese açık BIP-39 test ifadesi | fonladığınız her şey için kendi ifadenizi kullanın |
+| `accountIndex` | `0` | her lane'de aynı indeks |
+| `chainId` | `"qorechain-diana"` | mock'ta seçili ağ |
+| `rest` | `https://api-testnet.qore.host` | `signAndBroadcast` ve anahtar sorguları için REST uç noktası |
+| `evmRpc` | `https://evm-testnet.qore.host` | `eth_sendTransaction` tarafından kullanılır (planned profili) |
+| `allowMainnet` | `false` | bu olmadan `qorechain-vladi` için imzalama reddedilir |
+| `autoApprove` | `true` | `false` olduğunda onaylar `approveNext()` veya `rejectNext()` çağrısını bekler |
+| `inclusionTimeoutMs`, `pollIntervalMs` | `30000`, `1500` | `signAndBroadcast` çağrısının dahil edilmeyi nasıl beklediği |
+
+### Hata kodları {#error-codes}
+
+Bu paketlerden (`QorexIntegrationError.code`): `QOREX_NOT_INSTALLED`, `QOREX_USE_SIGN_AND_BROADCAST`, `QOREX_AMINO_REFUSED` ve `QOREX_NOT_SUPPORTED_YET`; `qorex-synpress` paketinden: `QOREX_EXTENSION_MODE_UNAVAILABLE`. QoreX'in kendi hataları, mesajı `QoreX` ile başlayan düz `Error` nesneleridir; örneğin `QoreX: connection rejected`, `QoreX: signature rejected`, `QoreX: wallet is locked` ve `QoreX: unsupported chain <id>`. Bugün sayısal kod taşıyan tek durum bilinmeyen bir zincirdir (4902) ve bir kullanıcı reddetmesinin EIP-1193 4001 kodu yoktur; bu yüzden mesajla eşleştirin. `QoreX (mock):` ile başlayan mesajlar mock'tan gelir, asla QoreX'ten gelmez.
+
 ## Nasıl erişilir {#how-to-access}
 
 * **Gerçek kullanım için bir QoreX cüzdanı.** Bağlayıcılar, kullanıcının kurduğu QoreX tarayıcı eklentisi veya uygulamasıyla konuşur; kurulumlar ve mağaza sürümleri için [QoreX Tarayıcı Eklentisi](/qorex/browser-extension) sayfasına bakın. Test paketleri cüzdana ihtiyaç duymaz.
@@ -187,7 +304,30 @@ Gözlenen: `1 passed`, Connect düğmesi `eth_requestAccounts` çağıran yerel 
 * **Anahtarlar ve fonlar.** Paketler hiçbir anahtar tutmaz. Mock, `qor19rl4cm2hmr8afy4kldpxz3fka4jguq0agt672h` adresini türeten herkese açık BIP-39 test ifadesini kullanır (`abandon` 11 kez tekrarlanır, ardından `about`); onu asla fonlamayın. Yayın yapan bir test için mock'a kendi test ağı anımsatıcı ifadenizi verin.
 * **Diğer hesaplar.** WalletConnect'li RainbowKit, WalletConnect'ten alınan bir WalletConnect proje kimliği gerektirir.
 * **Ön koşullar.** Node.js (mock'un tek dosyalık betiği 20.16 veya üstünü gerektirir), üç bağlayıcı için bir React uygulaması ve her hızlı başlangıcın altında listelenen eş paketler. TypeScript kullanıcıları tipleri `@qorechain/qorex-types` paketinden alır.
-* **Maliyetler.** Paketler ücretsizdir. QoreX üzerinden gönderilen bir işlem olağan ücreti öder (taban gas başına 0,1 uqor).
+* **Maliyetler.** Paketler ücretsizdir. QoreX üzerinden gönderilen bir işlem olağan ücreti öder (taban gas başına 0,1 uqor; QoreX kendi işlemlerini gas başına 0,15 uqor ile fiyatlar).
+
+### Ağlar {#networks}
+
+| | Ana ağ | Test ağı |
+|---|---|---|
+| Yerel zincir kimliği | `qorechain-vladi` | `qorechain-diana` |
+| EVM zincir kimliği | 9801 (`0x2649`) | 9800 (`0x2648`) |
+| REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
+| RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
+| EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
+| Gezgin | `https://explore.qore.network` | aynı, test ağı seçili olarak |
+
+Bech32 öneki `qor` (doğrulayıcılar için `qorvaloper`), coin türü 118, yerel lane'de 6 ondalıklı `uqor` ve EVM'de 18 ondalıklı QOR birimi. Kullanıcılar gerçek kullanım için QoreX eklentisine (0.3.x) ihtiyaç duyar; testler yalnızca mock'a ihtiyaç duyar. Mock'tan gerçek yayınlar için hesabın [Musluk](/dashboard/faucet) üzerinden test ağı QOR'una ihtiyacı vardır (oturum açma gerekir); kendi anımsatıcı ifadenizi kullanın, asla herkese açık test ifadesini değil.
+
+## Güvenlik notları {#security}
+
+* dApp, ML-DSA-87 anahtarını asla tutmaz: QoreX, QoreChain işlemlerini cüzdanın içinde `signAndBroadcast` ile imzalar.
+* QoreX, hesabın ML-DSA-87 anahtarını yöneten mesajlar için sayfa isteklerini reddeder.
+* `qorexWallet()` asla `window.ethereum`'a geri dönmez; böylece enjekte edilmiş başka bir cüzdan QoreX sanılmaz. Mock, bir test ikizinin cüzdanla karıştırılmaması için farklı bir ters-DNS adı kullanır.
+* `connectProof`, `executeTransfer` ve `executeRequest` yöntemleri QoreChain paneli için vardır ve diğer tüm kaynaklarda (origin) reddedilir.
+* `shield` sonucunu izleyin. `downgraded`, işlemin hibrit katman olmadan onaylandığı anlamına gelir; bunu bir alarm olarak değerlendirin.
+* Mock'un varsayılan anımsatıcı ifadesi herkese açıktır ve mock, `allowMainnet: true` verilmedikçe ana ağ imzalamasını reddeder. Herkese açık test ifadesini asla fonlamayın; canlı testler için ayrı bir test ağı anımsatıcı ifadesi kullanın.
+* Güvenlik açıklarını özel olarak security@qore.network adresine bildirin.
 
 ## Nerede yayımlanır {#where-published}
 
@@ -200,7 +340,7 @@ Gözlenen: `1 passed`, Connect düğmesi `eth_requestAccounts` çağıran yerel 
 | npm | `@qorechain/qorex-wallet-mock` | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-wallet-mock |
 | npm | `@qorechain/qorex-synpress` | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-synpress |
 
-Kaynak: https://github.com/qorechain/qorex-integrations (etiket `v0.1.0`, `packages/` altındaki klasörler; ayrıca bir demo dApp, örnekler ve chain-registry girdi dosyaları içerir). Sürümler 27 Ekim 2026'da npm kayıt defterinden okunmuştur. Bunlar, npm'de kullanımdan kaldırılmış (deprecated) olan `@qorechain/connect` paketinin yerini alır: QoreX'i algılamak için `qorex-types`, EVM dApp'leri için `qorex-rainbowkit`, Cosmos dApp'leri için `qorex-interchain-kit` (veya `qorex-cosmos-kit`) ve kendi cüzdanınızda ya da arka ucunuzda hibrit imzalama için [QoreSign](/qoresign/overview) kullanın.
+Kaynak: https://github.com/qorechain/qorex-integrations (herkese açık, `v0.1.0` sürümü 27 Ekim 2026'da yayımlandı, `packages/` altındaki klasörler). Ayrıca kılavuzlar (QoreX'i MetaMask, Keplr veya Phantom'un yanına eklemek; uçtan uca test; hatalar ve zincir kimlikleri), testnet üzerinde her QoreX yüzeyini deneyen bir demo dApp, örnekler (`examples/wagmi-rainbowkit`, `examples/playwright-e2e`) ve chain-registry girdi dosyaları içerir. Lisans Apache-2.0; bakımcı QoreChain Association. Sürümler 27 Ekim 2026'da npm kayıt defterinden okunmuştur. Bunlar, npm'de kullanımdan kaldırılmış (deprecated) olan `@qorechain/connect` paketinin yerini alır: QoreX'i algılamak için `qorex-types`, EVM dApp'leri için `qorex-rainbowkit`, Cosmos dApp'leri için `qorex-interchain-kit` (veya `qorex-cosmos-kit`) ve kendi cüzdanınızda ya da arka ucunuzda hibrit imzalama için [QoreSign](/qoresign/overview) kullanın.
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
@@ -224,3 +364,13 @@ Kaynak: https://github.com/qorechain/qorex-integrations (etiket `v0.1.0`, `packa
 **Mock ile cüzdan arasındaki farklar:** kilit ekranı veya onay penceresi yok (onaylar `approveNext`, `rejectNext` veya `autoApprove` ile yapılır); `signDirect` düz bir secp256k1 anahtar türü bildirir; Solana `signAndSendTransaction` reddedilir; "QoreX (mock):" ile başlayan mesajlar mock'un kendisine aittir. Mock'tan gelen test sonuçları, sayfanızın tanımlanan arayüze karşı nasıl davrandığını gösterir; gerçek bir QoreX sürümünün aynı şekilde davrandığını göstermez.
 
 **Diğer:** altı paketin hepsi ilk sürümdür (0.1.0), bu yüzden arayüzlerinin QoreX büyüdükçe genişlemesini bekleyin. Hiçbir test edilmiş hızlı başlangıç, `qorexSignAndBroadcast` değerini canlı bir ağa veya gerçek bir cüzdana karşı kapsamaz.
+
+## İlgili sayfalar {#related}
+
+* [QoreX cüzdanı](/qorex/overview) ve [QoreX Tarayıcı Eklentisi](/qorex/browser-extension): bu paketlerin konuştuğu cüzdan.
+* [QoreSign](/qoresign/overview): mock'un kullandığı hibrit imzalayıcı.
+* [QoreChain SDK](/sdk/overview): `signAndBroadcast` için `MsgSend` gibi mesajların kodlanması.
+* [EVM Geliştirme](/developer-guide/evm-development#evm-window): ML-DSA-87 anahtar kaydı ve EVM yetkilendirme pencereleri.
+* [Musluk](/dashboard/faucet): test ağı QOR'u.
+* [QoreChain MCP sunucusu](/developer-tools/mcp): bir yayının sonucunu `get_pq_status` ile okuyun.
+* [Geliştirici paketlerine genel bakış](/developer-tools/overview).

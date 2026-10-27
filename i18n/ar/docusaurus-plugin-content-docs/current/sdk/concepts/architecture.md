@@ -29,8 +29,11 @@ QoreChain هي سلسلة طبقة أولى (Layer 1) واحدة تُشغّل ث
 - **Consensus RPC** — يُستخدم لتوقيع/بث المعاملات الأصلية ولعميل قراءة
   QoreChain Native.
 - **EVM JSON-RPC** — استدعاءات `eth_*` و`net_*` و`web3_*` و`txpool_*` المعيارية
-  على نقاط النهاية العامة. مساحة الأسماء `qor_*` الخاصة بـ QoreChain وأجهزة EVM
-  precompiles غير متاحة هناك بعد (انظر أدناه).
+  على نقاط النهاية العامة. مساحة الأسماء `qor_*` الخاصة بـ QoreChain غير مُقدَّمة
+  هناك (انظر أدناه). أما EVM precompiles المسمّاة `pqcVerify` (`0x0A01`)
+  و`pqcKeyStatus` (`0x0A02`) فهي مفعّلة على شبكة الاختبار فقط؛ ولا يوجد أي
+  precompile مفعّل على الشبكة الرئيسية (التفعيل يحتاج إلى قرار حوكمة، دون موعد محدد).
+  راجع [EVM Precompiles](/developer-guide/evm-precompiles#network-status).
 - **SVM JSON-RPC** — RPC متوافق مع Solana لزمن تشغيل SVM (للقراءة فقط على نقاط
   النهاية العامة؛ إرسال معاملات SVM معطّل على مستوى الشبكة بأكملها).
 

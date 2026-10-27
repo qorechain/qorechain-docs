@@ -13,7 +13,7 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 
 ## 革新点 {#innovations}
 
-- **すべての言語で単一のハイブリッド署名フォーマット。** チェーンは、Nativeレーンのトランザクションにsecp256k1署名とML-DSA-87(FIPS 204)署名の両方を要求します。QoreSignは、公開しているテストベクターをTypeScript、Rust、Go、Swift、Kotlinでバイト単位で再現し、`qorechain-pqc`は6つのバインディングで共通のベクターセットを実行します。そのため、ある言語で作成した鍵や署名は、他の言語でも検証できます。
+- **すべての言語で単一のハイブリッド署名フォーマット。** チェーンは、Nativeレーンのトランザクションにsecp256k1署名とML-DSA-87(FIPS 204)署名の両方を要求します。QoreSignは、公開しているテストベクターをTypeScript、Rust、Go、Swift、Kotlin、Pythonでバイト単位で再現し、`qorechain-pqc`は6つのバインディングで共通のベクターセットを実行します。そのため、ある言語で作成した鍵や署名は、他の言語でも検証できます。
 - **署名対象バイト列の形式は推測ではなく、チェーンの状態から決定します。** SDK、ウォレットアダプター、`chain-bridge`、QoreSignのネットワークヘルパーは、ノードに対して両方のアップグレード名(`v3.2.0`と`v3.1.98`)について`GET /cosmos/upgrade/v1beta1/applied_plan/{name}`を問い合わせ、いずれかの高さが0より大きければv2形式で署名します。これら2つのチェーンでRESTエンドポイントがない場合は、推測せずにエラーを投げます。現在、両ネットワークともv2を検証します(2026年10月27日に確認: `v3.2.0`はメインネットで高さ2,981,742、`v3.1.98`はテストネットで高さ5,746,000で適用済み)。
 - **書いただけでなく、実行したクイックスタート。** クイックスタートがあるパッケージについては、公開レジストリからインストールした後の2026年10月27日に例を実行しました。34件のクイックスタート項目のうち31件が実行されて成功し、実行されなかった3件はマニフェストに記録されています([制限事項](#limits)を参照)。
 - **表の背後にある1つのマニフェスト。** このページのパッケージ名、バージョン、インストールコマンドは、パッケージごとにライブのバージョンエンドポイントを持つ、機械可読な1つのマニフェストから取得しています。[ダッシュボードの開発者ページ](/dashboard/developers#sdks)のSDKハブも、同じデータから構築されています。
@@ -29,11 +29,17 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 | QoreChainをKeplr、Leap、Cosmostationに追加、統合ウォレットの生成、EVMウィンドウとリンク済み鍵のメッセージの構築 | ウォレットアダプター | [ウォレットアダプター](/developer-tools/wallet-adapter) |
 | QORの送金、鍵の登録、コントラクトのデプロイを行うサーバージョブの実行 | チェーンブリッジ(またはSDK) | [チェーンブリッジとハンドル](/developer-tools/chain-bridge) |
 | `@handle`を検証済みアドレスに解決 | ハンドル | [チェーンブリッジとハンドル](/developer-tools/chain-bridge#handles) |
-| dAppでQoreXウォレットを使えるようにする | QoreX連携 | [開発者向けQoreX](/qorex/overview#developers) |
+| dAppでQoreXウォレットを使えるようにする、または拡張機能なしでテストする | QoreX連携 | [QoreX連携](/developer-tools/qorex-integrations)、[開発者向けQoreX](/qorex/overview#developers) |
 | アプリケーションロールアップの作成と運用 | RDK | [ロールアップ概要](/rollups/overview)、[ロールアップのデプロイ](/rollups/deploying-a-rollup) |
 | ポスト量子のプリミティブ(ML-DSA、ML-KEM、SHAKE-256)を単体で使う | `qorechain-pqc` | [ポスト量子署名](/developer-guide/post-quantum-signing) |
 | AIエージェントや開発者ツールにチェーンを読み取らせる(ブロック、トランザクション、アカウント、ハイブリッド署名のステータス、シミュレーション、未署名の送金) | QoreChain MCPサーバー | [QoreChain MCPサーバー](/developer-tools/mcp) |
 | ターミナルやシェルスクリプトからJSON出力でチェーンを読み取る | `qore` CLI | [QoreChain CLI](/developer-tools/qore-cli) |
+| コミット済みトランザクションがどのように保護されていたかを読み戻す(メッセージ、署名者、手数料、ML-DSA-87レイヤー、ティア) | QoreSignトランザクションインスペクター(`inspectTransaction`) | [QoreSign概要](/qoresign/overview#inspector) |
+| ML-KEM-1024でQoreChainのアカウント、プライベートグループ、サイドチェーン宛てにデータを暗号化する | QoreSeal | [QoreSeal](/developer-tools/qoreseal) |
+| ポスト量子ライトクライアントの設計(チェックポイントの検証)をレビューまたはテストする | PQライトクライアント | [PQライトクライアント](/developer-tools/pq-light-client) |
+| QoreChainをカストディアンまたは取引所として統合する(アドレスチェック、出金の検証、入金の計上) | カストディキット | [カストディキット](/developer-tools/custody-kit) |
+| ノード、ネットワーク、Solidityソースの暗号を、CycloneDX CBOMとして棚卸しする | QoreScan | [QoreScan](/developer-tools/qorescan) |
+| Foundry、Hardhat、viemを使って、QoreChain上でSolidityまたはCosmWasmのプロジェクトをビルドしてテストする | チェーン開発者キット(SDK 0.11.0、近日公開) | [チェーン開発者キット](/developer-tools/chain-dev-sdk) |
 
 まず1つのパッケージをインストールし、そのクイックスタートを公開テストネットに対して実行してください。読み取りにはアカウントも鍵も手数料も不要です。
 
@@ -64,7 +70,7 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 - **QoreX test wallet:** テストネット専用です。テストウォレット(`window.qorex`、EIP-6963で「QoreX (mock)」として通知)をタブに注入し、dAppのフローを試せます。
 - **AI agents (MCP):** QoreChain MCPサーバーのステータス(公開済み)と、MCPクライアント向けのセットアップです。まずローカルの`npx`、加えてAPIキーが必要なホスト型テストネットエンドポイントがあります。[QoreChain MCPサーバー](/developer-tools/mcp)を参照してください。
 
-**トランザクションインスペクター**(ハッシュを貼り付けると、すべてのメッセージ、署名者、手数料、ポスト量子署名が検証されるかどうかを表示)は**まだ公開されていません**。以下の表とSDKハブは同じデータを示しており、表は2026年10月27日にレジストリと照合済みです。
+**トランザクションインスペクター**タブ(ハッシュを貼り付けると、すべてのメッセージ、署名者、手数料、ポスト量子署名が検証されるかどうかを表示)は、まだダッシュボードのページにはありません。2026年10月27日の時点では、ページには上記の6つのタブのみが表示されていました。同じ確認は、QoreSign 0.1.1(TypeScript)のライブラリ関数`inspectTransaction`として今すぐ利用できます。[トランザクションインスペクター](/qoresign/overview#inspector)を参照してください。以下の表とSDKハブは同じパッケージデータを示しており、表は2026年10月27日にレジストリと照合済みです。
 
 ## 公開場所 {#where-published}
 
@@ -88,19 +94,71 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 
 ### QoreSign {#group-qoresign}
 
-ガイド: [QoreSign概要](/qoresign/overview)、[クイックスタート](/qoresign/quickstart)、[テストベクター](/qoresign/vectors)。ソース: [qorechain/qoresign](https://github.com/qorechain/qoresign)。QoreSignはローカルで署名します。鍵を代わりに保管することはなく、しきい値署名、MPC署名、ハードウェアウォレット署名は行いません。
+ガイド: [QoreSign概要](/qoresign/overview)、[クイックスタート](/qoresign/quickstart)、[テストベクター](/qoresign/vectors)。ソース: [qorechain/qoresign](https://github.com/qorechain/qoresign)。バージョン0.1.1は2026年10月27日に公開されました。QoreSignはローカルで署名します。鍵を代わりに保管することはなく、しきい値署名、MPC署名、ハードウェアウォレット署名は行いません。
 
 | パッケージ | 言語 | バージョン | インストール | ステータス |
 |---|---|---|---|---|
-| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.0 | `npm install @qorechain/qoresign` | 公開済み |
-| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust(`qoresign`としてインポート) | 0.1.0 | `cargo add qorechain-qoresign` | 公開済み |
-| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.0 | `go get github.com/qorechain/qoresign/go` | 公開済み |
-| `QoreSign` (Swift package) | Swift (iOS 16+, macOS 13+) | 0.1.0 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.0")`, product `QoreSign` | GitHubリリースとして公開。バイナリフレームワークはそこからダウンロードされます |
-| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+) | 0.1.0 | `implementation("io.github.qorechain:qoresign:0.1.0")` | 公開済み |
-| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+) | 0.1.0 | `implementation("io.github.qorechain:qoresign-android:0.1.0")` | 公開済み。JVMアーティファクトと同じAPI。例はJVMアーティファクトでのみ実行し、Androidデバイスでは実行していません |
-| `qorechain-qoresign` (PyPI) | Python | まだありません | なし | **未公開。** PyPIプロジェクトは2026年10月27日に404を返しました。0.1.1で予定 |
+| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.1 | `npm install @qorechain/qoresign` | 公開済み。`inspectTransaction`と`fetchEvmWindow`を含みます(0.1.1で追加) |
+| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust(`qoresign`としてインポート) | 0.1.1 | `cargo add qorechain-qoresign` | 公開済み |
+| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.1 | `go get github.com/qorechain/qoresign/go@v0.1.1` | 公開済み |
+| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+(`qoresign`としてインポート) | 0.1.1 | `pip install qorechain-qoresign` | 公開済み、0.1.1で追加。macOS(arm64、x86_64)とLinux(x86_64、aarch64)向けのホイール。Windows向けのホイールはまだありません。オフライン関数のみ |
+| `QoreSign` (Swift package) | Swift (iOS 16+, macOS 13+) | 0.1.1 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, product `QoreSign` | GitHubリリースとして公開。バイナリフレームワークはそこからダウンロードされます |
+| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign:0.1.1")` | 公開済み |
+| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | 公開済み。JVMアーティファクトと同じAPI。例はJVMアーティファクトでのみ実行し、Androidデバイスでは実行していません |
 
-TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあり、Goモジュールにも同じヘルパーがあります: `fetchPqKeyStatus`、`resolveSignBytesVersion`、`simulateTx`(残高の変化つき)、`suggestGasLimit`、`broadcastTx`、`submitWithSignBytesFallback`(フォールバックは1回のみで、その後は停止)、`verifySiwqWithChain`、`verifyMessageWithChain`。Rustクレートにはネットワークコードがありません。
+KotlinおよびAndroidのアーティファクトには、プロジェクトでKotlin 2.3以降のコンパイラが必要です。Kotlin 2.1のプロジェクトでは、これらに対するコンパイルが失敗します。
+
+TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあり、Goモジュールにも`inspectTransaction`と`fetchEvmWindow`を除いて同じヘルパーがあります: `fetchPqKeyStatus`、`resolveSignBytesVersion`、`simulateTx`(残高の変化つき)、`suggestGasLimit`、`broadcastTx`、`submitWithSignBytesFallback`(フォールバックは1回のみで、その後は停止)、`verifySiwqWithChain`、`verifyMessageWithChain`。Rust、Swift、Kotlin、Pythonのパッケージにはネットワークコードがありません。
+
+### QoreSeal {#group-qoreseal}
+
+ページ: [QoreSeal](/developer-tools/qoreseal)。ソース: [qorechain/qoreseal](https://github.com/qorechain/qoreseal)。QoreSeal 0.1.0は、ML-KEM-1024(FIPS 203)でQoreChainのアカウント、プライベートグループ、サイドチェーン宛てにデータを暗号化します。暗号化はオフラインで動作します。チェーンから受信者の鍵を読み取るにはKEM鍵レジストリが必要で、これはテストネットで稼働しており、メインネットにはv3.2.5アップグレードの後に提供されます。この構成は、1.0の前に外部レビューを受ける予定です。
+
+| パッケージ | 言語 | バージョン | インストール | ステータス |
+|---|---|---|---|---|
+| [`qorechain-qoreseal`](https://crates.io/crates/qorechain-qoreseal) | Rust(`qoreseal`としてインポート) | 0.1.0 | `cargo add qorechain-qoreseal` | 公開済み |
+| [`github.com/qorechain/qoreseal/go`](https://pkg.go.dev/github.com/qorechain/qoreseal/go) | Go | v0.1.0 | `go get github.com/qorechain/qoreseal/go@v0.1.0` | 公開済み |
+| [`qorechain-qoreseal`](https://pypi.org/project/qorechain-qoreseal/) | Python 3.9+(`qoreseal`としてインポート) | 0.1.0 | `pip install qorechain-qoreseal` | 公開済み。macOS(arm64、x86_64)とLinux(x86_64、aarch64)向けのホイール。Windows向けのホイールはまだありません |
+| `QoreSeal` (Swift package) | Swift (iOS 16+, macOS 13+) | 0.1.0 | `.package(url: "https://github.com/qorechain/qoreseal", from: "0.1.0")`, product `QoreSeal` | GitHubリリースとして公開。バイナリフレームワークはそこからダウンロードされます |
+| [`io.github.qorechain:qoreseal`](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.1.0 | `implementation("io.github.qorechain:qoreseal:0.1.0")` | Maven Centralで公開済み |
+| [`io.github.qorechain:qoreseal-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.1.0 | `implementation("io.github.qorechain:qoreseal-android:0.1.0")` | Maven Centralで公開済み |
+| `@qorechain/qoreseal` | TypeScript | まだありません | なし | npmには**未公開**(2026年10月27日に404)。ソースはリポジトリにあります |
+
+### PQライトクライアント {#group-pq-light-client}
+
+ページ: [PQライトクライアント](/developer-tools/pq-light-client)。ソース: [qorechain/qorechain-pq-light-client](https://github.com/qorechain/qorechain-pq-light-client)。ML-DSA-87で署名されたチェックポイントのための、仕様のドラフトとリファレンス検証器です。メインネットにもテストネットにも接続しません。QoreChainは検証対象のチェックポイントを生成せず、チェーン側のサポートも予定されていません。シミュレートされたバリデーターセットと共通のテストベクターに対して実行されます。
+
+| パッケージ | 言語 | バージョン | インストール | ステータス |
+|---|---|---|---|---|
+| [`@qorechain/pq-light-client`](https://www.npmjs.com/package/@qorechain/pq-light-client) | TypeScript | 0.1.0 | `npm install @qorechain/pq-light-client` | 公開済み。`@qorechain/pqc` 0.2.3に依存します |
+| [`qorechain-pq-light-client`](https://crates.io/crates/qorechain-pq-light-client) | Rust(ライブラリ`qorechain_pq_light_client`) | 0.1.0 | `cargo add qorechain-pq-light-client` | 公開済み |
+| [`github.com/qorechain/qorechain-pq-light-client/go`](https://pkg.go.dev/github.com/qorechain/qorechain-pq-light-client/go) | Go(パッケージ`pqlightclient`) | v0.1.0 | `go get github.com/qorechain/qorechain-pq-light-client/go@v0.1.0` | 公開済み |
+
+### カストディキット {#group-custody-kit}
+
+ページ: [カストディキット](/developer-tools/custody-kit)。ソース: [qorechain/qorechain-custody-kit](https://github.com/qorechain/qorechain-custody-kit)。カストディアンと取引所向けの、統合ガイド、リファレンスコード、テストベクターです。TypeScript、Python、Go、Rust、Javaで提供されます。読む、コピーする、またはベンダリングするためのリファレンスコードであり、パッケージ群ではありません。レジストリに登録されているのはGoモジュールのみです。
+
+| パッケージ | 言語 | バージョン | インストール | ステータス |
+|---|---|---|---|---|
+| GitHubリリース`v0.1.0` | TypeScript, Python, Go, Rust, Java | 0.1.0 | `git clone https://github.com/qorechain/qorechain-custody-kit`、その後お使いの言語のフォルダーをビルド | 2026年10月27日に公開。意図的に、npm、PyPI、crates.io、Mavenのパッケージはありません |
+| [`github.com/qorechain/qorechain-custody-kit/code/go`](https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go) | Go(パッケージ`custodykit`) | v0.1.0 | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0` | 公開済み |
+
+### QoreScan {#group-qorescan}
+
+ページ: [QoreScan](/developer-tools/qorescan)。ソース: [qorechain/qorescan](https://github.com/qorechain/qorescan)。QoreScan Community 0.1.0は、QoreChainのデプロイ(ノードのホームディレクトリ、稼働中のネットワーク状態、TLSエンドポイント、Solidityソース)の暗号を棚卸しし、CycloneDX 1.6のCBOMとMarkdownレポートを出力します。棚卸しを補助するツールであり、認証でも監査でもありません。
+
+| パッケージ | 言語 | バージョン | インストール | ステータス |
+|---|---|---|---|---|
+| [GitHubリリース`v0.1.0`](https://github.com/qorechain/qorescan/releases/tag/v0.1.0) | macOS、Linux、Windows向けバイナリ(amd64、arm64) | 0.1.0 | ダウンロードし、`qorescan_0.1.0_checksums.txt`と照合 | 2026年10月27日に公開 |
+| [`@qorechain/qorescan`](https://www.npmjs.com/package/@qorechain/qorescan) | npmラッパー(Node.js 18+) | 0.1.0 | `npx @qorechain/qorescan scan ...` | 公開済み。初回実行時にリリースのバイナリをダウンロードして検証します |
+| [`qorescan`](https://pypi.org/project/qorescan/) | PyPIラッパー(Python 3.9+) | 0.1.0 | `pipx run qorescan scan ...`または`pip install qorescan` | 公開済み。npmラッパーと同じ動作 |
+| [`github.com/qorechain/qorescan`](https://pkg.go.dev/github.com/qorechain/qorescan) | Go | v0.1.0 | `go install github.com/qorechain/qorescan/cmd/qorescan@v0.1.0` | 公開済み。Go 1.26 |
+
+### チェーン開発者キット(SDK 0.11.0) {#group-chain-dev-sdk}
+
+ページ: [チェーン開発者キット](/developer-tools/chain-dev-sdk)。ソース: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk)。QoreChain SDK 0.11.0のうち、Solidityやスマートコントラクトのチーム向けの部分です。`@qorechain/evm`のviemチェーン定義とEVM認可ウィンドウのヘルパー、4つの新しい`create-qorechain-dapp`テンプレート(Foundry、Hardhat 3、wagmi付きviem、QoreChain Nativeトークン)、EVMのクイックスタート、QoreChainのEVMがEthereumとどう違うかを説明するページが含まれます。
+
+**近日公開。** SDK 0.11.0はGitHubでタグ付けされており(`v0.11.0`)、npmでのリリースは保留中です。2026年10月27日の時点で、npmは`@qorechain/sdk` 0.10.0、`@qorechain/evm` 0.8.0、`create-qorechain-dapp` 0.10.0を配信しており、`@qorechain/sdk@0.11.0`は404を返しました。npmに0.11.0が表示されるまでは、新しいチェーン定義、ウィンドウのヘルパー、テンプレートはインストールできません。現時点で入手できるのは、[SDKの表](#group-sdk)にある0.10.0のパッケージです。0.11.0が変更するのはnpmパッケージのみで、Python、Rust、Go、JavaのSDKは0.10.0のままです。
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 
@@ -195,11 +253,12 @@ TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあ�
 
 ### 計画中(未公開) {#planned}
 
-この名前は、まだレジストリにないツールのために予約されています。2026年10月27日にレジストリで404を返したため、インストールできるものはなく、記載されている動作はまだ利用できません。
+以下はまだレジストリにないため、インストールできるものはなく、記載されている動作はまだ利用できません。いずれも2026年10月27日に404を返しました(または一覧にありませんでした)。
 
 | パッケージ | 想定用途 | ステータス |
 |---|---|---|
-| PyPIの`qorechain-qoresign` | Python版QoreSign | 未公開(0.1.1で予定) |
+| npmの`@qorechain/qoreseal` | TypeScript版QoreSeal | 未公開。ソースはリポジトリにあります |
+| npmの`@qorechain/sdk`、`@qorechain/evm`、`@qorechain/react`、`@qorechain/svm`、`create-qorechain-dapp` 0.11.0 | [チェーン開発者キット](/developer-tools/chain-dev-sdk) | GitHubでタグ付け済み、npmでのリリースは保留中 |
 
 ## ライブのバージョンを取得する方法 {#live-versions}
 
@@ -219,8 +278,11 @@ TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあ�
 ## 制限事項と既知の問題 {#limits}
 
 - **稼働中の2つのネットワークでバージョンが異なります。** メインネットはv3.2.4、テストネットはv3.2.6で稼働しています。テストネットにしかない機能は、その機能自身のページに明記されています。メインネットでv3.2.5の動作を前提にしないでください。
-- **まだ公開されていないもの:** ダッシュボードの開発者ページのトランザクションインスペクター、Python版QoreSign、SVMトランザクション、メインネットのEVMプリコンパイル(レーンごとの一覧は[SDK概要](/sdk/overview)を参照)。
-- **実行していない例:** 34件のクイックスタート項目のうち、31件が2026年10月27日に実行されて成功しました。Python版QoreSignの例は実行しておらず(パッケージが未公開のため)、QoreSignのAndroidの例はデバイスでは実行していません。ウォレットアダプター、チェーンブリッジ、ハンドルにはクイックスタートがないため、このマニュアルのそれらの例はパッケージの型定義とソースに基づいており、エンドツーエンドでは実行していません。
+- **まだ公開されていないもの:** ダッシュボードの開発者ページのトランザクションインスペクターのタブ(QoreSign 0.1.1のライブラリ関数`inspectTransaction`は公開済み)、npmの`@qorechain/qoreseal`、npmのSDK 0.11.0(チェーン開発者キット)、SVMトランザクション、メインネットのEVMプリコンパイル(テストネットでのみ有効。レーンごとの一覧は[SDK概要](/sdk/overview)を参照)。
+- **QoreSealのレジストリとPQライトクライアント。** チェーンから読み取ったアドレス宛てに暗号化するにはKEM鍵レジストリが必要で、これはテストネットで稼働しており、メインネットにはv3.2.5の後に提供されます。PQライトクライアントはどちらのネットワークにも接続せず、そのチェックポイントに対するチェーン側のサポートも予定されていません。
+- **Kotlin 2.3以降。** QoreSignとQoreSealのKotlinおよびAndroidのアーティファクトには、Kotlin 2.3以降のコンパイラが必要です。Kotlin 2.1では、これらに対するコンパイルが失敗します。
+- **Windows向けのホイールはありません。** QoreSignとQoreSealのPythonパッケージのホイールはmacOSとLinux向けのみです。それ以外のプラットフォームではソース配布物からビルドされ、Rustが必要です。
+- **実行していない例:** 34件のクイックスタート項目のうち、31件が2026年10月27日に実行されて成功しました。Python版QoreSignの例はパッケージの公開後に実行され(macOS arm64とLinux aarch64)、QoreSignのAndroidの例はデバイスでは実行していません。ウォレットアダプター、チェーンブリッジ、ハンドルにはクイックスタートがないため、このマニュアルのそれらの例はパッケージの型定義とソースに基づいており、エンドツーエンドでは実行していません。
 - **0.6.2より前の`@qorechain/rdk-cli`**は、npmのbinリンク経由で起動しても何も出力せず、`--version`は0.4.1を出力していました。**0.7.0より前の`@qorechain/rdk`**は、チェーン上で一度も検証を通らない出金証明を構築していました。0.7.0を使用してください。
 - **cosmjsのバージョン競合。** `@qorechain/wallet-adapter`と`@qorechain/chain-bridge`はcosmjs 0.32を使い、SDKはcosmjs 0.39を使います。1つのプロジェクトでアダプターをSDKと並べてインストールすると、npmが`ERESOLVE`を報告します。別々のプロジェクトに分けるか、`--legacy-peer-deps`を渡してください。
 - **古いRDKリリースでのSDKのネストされたコピー。** `@qorechain/rdk` 0.6.2以前は`@qorechain/sdk`の`^0.9.0`に依存していたため、SDK 0.10.0を使うアプリには、ネストされた2つ目のSDK 0.9.xのコピーが入っていました。0.7.0からはキットが`@qorechain/sdk`の`^0.10.0`に依存し、コピーは1つを共有します。

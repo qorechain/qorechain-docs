@@ -30,8 +30,11 @@ SDK, bir node ile birkaç uç nokta aracılığıyla iletişim kurar:
 - **Konsensüs RPC (Consensus RPC)** — yerel işlemleri imzalamak/yayınlamak ve
   QoreChain Native okuma istemcisi için kullanılır.
 - **EVM JSON-RPC** — herkese açık uç noktalarda standart `eth_*`, `net_*`, `web3_*`
-  ve `txpool_*` çağrıları. QoreChain `qor_*` ad alanı (namespace) ve EVM
-  precompile'ları orada henüz kullanılamıyor (aşağıya bakın).
+  ve `txpool_*` çağrıları. QoreChain `qor_*` ad alanı (namespace) orada sunulmaz
+  (aşağıya bakın). `pqcVerify` (`0x0A01`) ve `pqcKeyStatus` (`0x0A02`) EVM
+  precompile'ları yalnızca test ağında etkindir; ana ağda hiçbiri etkin değildir
+  (etkinleştirme bir yönetişim kararı gerektirir, tarih yoktur). Bkz.
+  [EVM Precompile'ları](/developer-guide/evm-precompiles#network-status).
 - **SVM JSON-RPC** — SVM çalışma zamanı için Solana uyumlu RPC (herkese açık
   uç noktalarda salt okunur; SVM işlem gönderimi ağ genelinde devre dışıdır).
 

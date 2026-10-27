@@ -9,7 +9,7 @@ sidebar_position: 5
 
 [`qoresign-v1.json`](https://github.com/qorechain/qoresign/blob/main/vectors/qoresign-v1.json)
 se genera a partir de la implementación en TypeScript (`pnpm build && pnpm vectors`)
-y lo comprueban las suites de pruebas de TypeScript, Rust, Go, Swift y Kotlin.
+y lo comprueban las suites de pruebas de TypeScript, Rust, Go, Swift, Kotlin y Python.
 Un cambio en el archivo es un cambio en el formato de red: añade un archivo
 nuevo con una versión nueva en lugar de editar este.
 

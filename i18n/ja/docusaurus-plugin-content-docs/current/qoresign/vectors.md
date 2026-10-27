@@ -9,7 +9,7 @@ sidebar_position: 5
 
 [`qoresign-v1.json`](https://github.com/qorechain/qoresign/blob/main/vectors/qoresign-v1.json)
 は TypeScript 実装から生成され（`pnpm build && pnpm vectors`）、TypeScript、
-Rust、Go、Swift、Kotlin のテストスイートで検証されます。このファイルの変更は
+Rust、Go、Swift、Kotlin、Python のテストスイートで検証されます。このファイルの変更は
 ワイヤーフォーマットの変更を意味します。編集せず、新しいバージョンの新しい
 ファイルを追加してください。
 

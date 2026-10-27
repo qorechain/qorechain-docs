@@ -29,8 +29,11 @@ SDK는 여러 엔드포인트를 통해 노드와 통신합니다:
 - **합의 RPC** — 네이티브 트랜잭션 서명/브로드캐스트 및 QoreChain Native 읽기 클라이언트에
   사용.
 - **EVM JSON-RPC** — 공개 엔드포인트의 표준 `eth_*`, `net_*`, `web3_*`, `txpool_*`
-  호출. QoreChain `qor_*` 네임스페이스와 EVM 프리컴파일은 아직 그곳에서
-  사용할 수 없습니다(아래 참조).
+  호출. QoreChain `qor_*` 네임스페이스는 그곳에서 제공되지 않습니다(아래 참조).
+  EVM 프리컴파일 `pqcVerify`(`0x0A01`)와 `pqcKeyStatus`(`0x0A02`)는 테스트넷에서만
+  활성화되어 있으며, 메인넷에서는 어느 것도 활성화되어 있지 않습니다(활성화에는
+  거버넌스 결정이 필요하며 날짜는 정해지지 않았습니다).
+  [EVM 프리컴파일](/developer-guide/evm-precompiles#network-status)을 참조하세요.
 - **SVM JSON-RPC** — SVM 런타임을 위한 Solana 호환 RPC(공개 엔드포인트에서는
   읽기 전용이며, SVM 트랜잭션 제출은 네트워크 전체에서 비활성화되어 있습니다).
 

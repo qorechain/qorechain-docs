@@ -18,6 +18,18 @@ sidebar_position: 24
 * **키가 필요 없는 전송 파이프라인.** `prepare-transfer --json`이 미서명 전송을 파일로 쓰고 `simulate`가 그 파일을 받으므로, 셸 스크립트에서 전송을 만들고, 점검하고, 가격을 산정할 수 있습니다. 서명 단계는 지갑이나 [QoreSign](/qoresign/overview)에 남아 있습니다.
 * **안정적인 종료 코드.** 0은 성공, 1은 `NOT_FOUND`나 `INVALID_INPUT` 같은 안정적인 코드를 담은 도구 오류, 2는 사용법 오류이므로 스크립트가 결과에 따라 분기할 수 있습니다.
 
+## 활용 사례 {#use-cases}
+
+1. **트랜잭션에 하이브리드 서명이 있었는지 확인.** 브로드캐스트 직후 `qore pq status <hash>`가 서명 티어와 ML-DSA-87 레이어가 서명자가 등록한 키에 대해 검증되는지 보고합니다.
+2. **터미널에서 체인 상태 조회.** `qore block`, `qore account <address>`, `qore validators`, `qore search <query>`는 탐색기를 열거나 코드를 작성하지 않고도 간단한 질문에 답합니다.
+3. **서명하기 전에 전송의 가격 산정과 점검.** `prepare-transfer`가 미서명 전송을 쓰고, `simulate`가 가스, 잔액 변화, 해석된 거부 사유를 보여 주며, `estimate-fee`가 권장 수수료를 알려 줍니다. 서명은 자신의 지갑이나 [QoreSign](/qoresign/overview)으로 합니다.
+4. **스크립트나 CI 작업에서 컨트랙트 읽기.** `qore read-contract --to 0x... --function "balanceOf(address)" --arg 0x... --returns uint256 --json | jq`로 토큰 잔액이나 컨트랙트 뷰를 확인하고 결과를 파싱합니다.
+5. **셸 스크립트와 모니터링.** `--json` 출력과 안정적인 종료 코드(0, 1, 2)로 스크립트가 결과에 따라 분기할 수 있습니다. 같은 JSON을 [MCP 서버](/developer-tools/mcp)가 반환하므로 AI 클라이언트와 스크립트가 같은 데이터를 봅니다.
+
+## 작동 방식 {#how-it-works}
+
+모든 `qore` 명령은 선택한 네트워크의 공개 REST, RPC, EVM JSON-RPC 엔드포인트를 대상으로, 사용자의 프로세스 안에서 MCP 서버의 공유 코어에 있는 도구 하나를 실행합니다. 응답은 체인의 응답에서 필드 단위로 구성되고, 업스트림 오류 텍스트는 출력되지 않으며, 실패는 일곱 가지 안정적인 오류 코드(`NOT_FOUND`, `INVALID_INPUT`, `UPSTREAM_UNAVAILABLE`, `NOT_AVAILABLE_ON_CHAIN`, `RATE_LIMITED`, `UNAUTHORIZED`, `INTERNAL_ERROR`) 중 하나로 매핑됩니다. 각 업스트림 요청에는 10초 타임아웃(`--timeout`으로 변경), 4 MiB 응답 제한이 있고 재시도는 없습니다. 하이브리드 서명 검사는 [QoreSign](/qoresign/overview)으로 로컬에서 실행됩니다. 아무것도 서명되거나 전송되지 않습니다. 각 도구의 자세한 내용은 [MCP 서버 페이지](/developer-tools/mcp#how-it-works)에 있습니다.
+
 ## 사용 방법 {#how-to-use}
 
 설치 없이 실행하거나 한 번 설치하세요.
@@ -51,6 +63,40 @@ qore estimate-fee --from qor1... --to qor1... --amount 1.5
 ```
 
 금액은 `1.5` 또는 `1.5 QOR`(QOR, 소수점 6자리까지) 또는 `1500000uqor`입니다. 주소는 `qor1...` 또는 `0x...`를 사용할 수 있습니다.
+
+### 계정과 트랜잭션을 확인하는 스크립트 {#script}
+
+저장소에는 이를 수행하는 전체 스크립트(`examples/cli/pq-check.sh`)가 있습니다. 핵심 부분은 다음과 같습니다.
+
+```bash
+net=testnet
+qore() { npx -y @qorechain/qore-cli "$@" --network "$net" --json; }
+
+qore account "$addr" | jq '{exists, balances: [.balances[] | {denom, amount, display}], pq_key_registered}'
+qore pq status "$addr" | jq '.address_status | {registered, algorithm, key_type, possession_proven, evm_window: .evm_window.live}'
+qore pq status "$tx" | jq '.transaction_status | {tier, has_exactly_one_pqc_layer, signer, verified: .verification.verified, reason: .verification.reason}'
+
+# An unsigned transfer to yourself, then its fee (nothing is signed or sent).
+qore prepare-transfer --from "$addr" --to "$addr" --amount 0.000001 > transfer.json
+qore simulate transfer.json | jq '{ok, gas_used, suggested_gas_limit, refusal}'
+```
+
+`qore block --network mainnet --json`의 예(2026년 10월 27일):
+
+```json
+{
+  "network": "mainnet",
+  "height": "3858155",
+  "hash": "1DA8CA5049ACF8844A3B775E2E138B2B118EDC1FC8C1F3602369B0C18D0B90C2",
+  "time": "2026-10-27T21:32:48.831948088Z",
+  "chain_id": "qorechain-vladi",
+  "proposer_address": "B1CDC8C45DA1FFF9BA5A01320F16FC7460E90B8F",
+  "tx_count": 0,
+  "tx_hashes": [],
+  "tx_hashes_truncated": false,
+  "explorer_url": "https://explore.qore.network/block/3858155"
+}
+```
 
 ### 명령 {#commands}
 
@@ -90,6 +136,15 @@ qore estimate-fee --from qor1... --to qor1... --amount 1.5
 * **사전 요구 사항.** Node.js 20 이상과 아웃바운드 HTTPS.
 * **비용.** 무료입니다. 준비한 전송을 보내려면 자신의 지갑에서 네트워크 수수료(하한은 가스당 0.1 uqor)를 지불하며, CLI는 그 단계를 수행하지 않습니다.
 
+## 보안 참고 사항 {#security}
+
+* **서명 코드 경로 없음.** CLI는 키를 보관하지 않고, 아무것도 서명하지 않으며, 아무것도 브로드캐스트하지 않습니다. `prepare-transfer`는 미서명 문서를 반환합니다.
+* **비밀 정보는 거부됩니다.** 복구 문구처럼 보이는 입력(연속된 BIP-39 단어 12개 이상)이나 32바이트 개인 키 단독 입력은 요청이 전송되기 전에 `INVALID_INPUT`으로 거부됩니다. 그래도 명령줄에 넣지 마세요. 셸 기록에 남으며, 오류 메시지는 해당 비밀 정보가 노출된 것으로 간주하라고 안내합니다.
+* **공개 데이터만 컴퓨터를 떠납니다.** 사용자가 전달한 주소, 해시, 인코딩된 트랜잭션이 공개 QoreChain 엔드포인트로 전송됩니다.
+* **메인넷은 명시적으로 지정.** `--network mainnet`을 지정하지 않으면 호출은 테스트넷으로 가며, 메인넷용으로 준비한 전송에는 경고가 붙습니다.
+* **메모는 공개되고 영구적입니다.** `--memo`에 비밀 정보를 넣지 마세요.
+* 취약점은 공개 이슈가 아닌 security@qore.network로 비공개로 보고하세요.
+
 ## 게시 위치 {#where-published}
 
 | 레지스트리 | 패키지 | 버전 | 설치 | 비고 |
@@ -109,4 +164,10 @@ qore estimate-fee --from qor1... --to qor1... --amount 1.5
 * **EVM 포스트 퀀텀 프리컴파일** `0x...0A01`과 `0x...0A02`는 테스트넷에서만 활성화되어 있습니다.
 * **첫 번째 릴리스.** 0.1.0: 이후 버전에서 명령 이름과 옵션이 바뀔 수 있습니다. 스크립트에는 `--json`과 종료 코드를 사용하고 버전을 고정하세요.
 
-관련 페이지: [QoreChain MCP 서버](/developer-tools/mcp), [개발자 패키지 개요](/developer-tools/overview), [SDK CLI 레퍼런스](/sdk/reference/cli), [Faucet](/dashboard/faucet).
+## 관련 페이지 {#related}
+
+* [QoreChain MCP 서버](/developer-tools/mcp): AI 클라이언트용 같은 도구와 호스팅 엔드포인트.
+* [QoreSign](/qoresign/overview): `prepare-transfer`가 쓴 전송에 서명합니다.
+* [SDK CLI 레퍼런스](/sdk/reference/cli): SDK 자체의 명령줄.
+* [Faucet](/dashboard/faucet): 테스트넷 QOR.
+* [개발자 패키지 개요](/developer-tools/overview).

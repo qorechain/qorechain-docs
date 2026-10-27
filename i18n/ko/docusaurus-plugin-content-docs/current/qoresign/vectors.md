@@ -9,7 +9,7 @@ sidebar_position: 5
 
 [`qoresign-v1.json`](https://github.com/qorechain/qoresign/blob/main/vectors/qoresign-v1.json)은
 TypeScript 구현(`pnpm build && pnpm vectors`)에서 생성되며
-TypeScript, Rust, Go, Swift, Kotlin 테스트 스위트가 이를 검사합니다. 이 파일을 바꾸는 것은
+TypeScript, Rust, Go, Swift, Kotlin, Python 테스트 스위트가 이를 검사합니다. 이 파일을 바꾸는 것은
 와이어 포맷을 바꾸는 것입니다. 이 파일을 수정하지 말고 새 버전의 새 파일을 추가하세요.
 
 모든 키는 공개된 BIP-39 테스트 니모닉(`abandon ... about`)에서 파생됩니다.

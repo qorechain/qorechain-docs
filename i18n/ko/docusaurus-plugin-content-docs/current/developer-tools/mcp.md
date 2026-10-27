@@ -20,6 +20,25 @@ QoreChain MCP 서버는 [Model Context Protocol](https://modelcontextprotocol.io
 * **비밀 정보는 컴퓨터를 떠나기 전에 거부.** 복구 문구처럼 보이는 입력(연속된 BIP-39 단어 12개 이상)이나 32바이트 개인 키 단독 입력은 요청이 전송되기 전에 `INVALID_INPUT`으로 거부되며, 오류 메시지는 해당 비밀 정보가 노출된 것으로 간주하라고 안내합니다.
 * **필드 단위로 구성되는 응답.** 모든 출력은 체인 응답의 지정된 필드로 조립됩니다. 업스트림 오류 본문과 스택 트레이스는 클라이언트에 전달되지 않으며, 실패는 일곱 가지 안정적인 오류 코드로 매핑됩니다.
 
+## 활용 사례 {#use-cases}
+
+1. **코딩 어시스턴트에게 체인 상태 묻기.** 개발자가 MCP 호환 편집기에 서버를 추가하고 "메인넷의 최신 블록은 무엇인가요?" 또는 "테스트넷에서 qor1...의 잔액을 보여 주세요"라고 묻습니다. `get_block`과 `get_address_info`가 공개 엔드포인트에서 읽어 탐색기 링크와 함께 답합니다.
+2. **트랜잭션에 하이브리드 서명이 있었는지 확인.** 지갑 또는 SDK 개발자가 방금 트랜잭션을 브로드캐스트했고, ML-DSA-87 레이어가 정확히 하나 있으며 그 레이어가 등록된 키에 대해 검증되는지 확인하려고 합니다. `get_pq_status`(또는 `qore pq status <hash>`)가 서명 티어와 로컬 검증 결과를 보고합니다.
+3. **사용자가 서명할 전송 준비.** QoreChain 기반으로 만든 어시스턴트가 키를 건드리지 않고 사용자의 QOR 전송을 도와야 합니다. `prepare_transfer`는 읽기 쉬운 요약, 점검 결과, 경고(메인넷용 경고 포함)가 담긴 미서명 SignDoc을 반환하고, `estimate_fee`가 수수료를 알려 줍니다. 사용자는 자신의 지갑에서 서명합니다.
+4. **거부된 트랜잭션 디버깅.** 백엔드 팀에 네트워크가 거부하는 인코딩된 트랜잭션이 있습니다. `simulate_tx`는 가스, 주소별 잔액 변화, 해석된 거부 사유를 반환하며 아무것도 브로드캐스트하지 않습니다.
+5. **스크립트나 CI 작업에서 컨트랙트 읽기.** dApp 팀이 `qore read-contract --to 0x... --function "balanceOf(address)" --arg 0x... --returns uint256 --json`으로 토큰 잔액이나 컨트랙트 뷰를 확인하고 `jq`로 JSON을 파싱합니다.
+6. **검증자 및 스테이킹 대시보드.** 분석가가 본딩된 검증자를 투표권 비율과 수수료율과 함께 나열하고(`get_validators`), 스테이킹 티어 파라미터와 한 보유자의 락업을 읽습니다(`get_staking_tiers`).
+7. **팀용 엔드포인트 운영.** 회사가 자체 리버스 프록시 뒤에서 API 키와 속도 제한을 적용해 `qorechain-mcp serve`를 실행하므로, 여러 내부 도구가 자사 노드를 가리키는 하나의 MCP 엔드포인트를 공유합니다.
+
+## 작동 방식 {#how-it-works}
+
+* 서버는 공개 QoreChain 엔드포인트(REST, 합의 RPC, EVM JSON-RPC) 위에서 동작하는 얇은 상태 비저장 리더입니다. 각 업스트림 호출은 10초 타임아웃, 4 MiB 응답 제한, 재시도 없음의 요청 하나입니다.
+* 응답은 체인의 응답에서 필드 단위로 구성됩니다. 업스트림 오류 본문, 스택 트레이스, 라이브러리 메시지는 클라이언트에 전달되지 않으며, 예상치 못한 실패는 `INTERNAL_ERROR`가 됩니다. 오류는 `isError: true`인 도구 결과와 JSON 본문으로 돌아옵니다.
+* 하이브리드 서명 검사는 [QoreSign](/qoresign/overview)으로 로컬에서 실행됩니다. 서버는 트랜잭션과 서명자가 등록한 ML-DSA-87 키를 가져와 sign-bytes(v1 또는 v2)를 다시 만들고 검증합니다.
+* 시뮬레이션: v3.2.5 이상의 체인에서는 시뮬레이션에 이미 ML-DSA-87 검증 비용이 포함되어(`get_chain_info`의 `exact_gas_simulation: true`) 권장 가스 한도가 정확하며, 이전 체인에서는 여유분이 붙습니다. 본문에 ML-DSA-87 레이어가 없으면 `simulate_tx`는 올바른 크기의 자리표시자 레이어(브로드캐스트되지 않음)를 추가하여 가스가 지갑이 서명할 트랜잭션과 일치하도록 합니다(`assume_pqc_layer`, 기본값 true). 서버는 체인의 버전을 스스로 감지합니다.
+* EVM 프리컴파일 `0x...0A01`(ML-DSA-87 검증)과 `0x...0A02`(키 상태)는 테스트넷에서만 활성화되어 있으며, 메인넷에서 호출하면 빈 데이터를 반환합니다.
+* 기계가 읽을 수 있는 도구 스키마는 저장소에 `spec/tools.json`으로 있으며, 서버 자체의 `tools/list` 응답에서 생성됩니다. 사람이 읽는 레퍼런스는 `docs/tools.md`입니다.
+
 ## 사용 방법 {#how-to-use}
 
 npm 패키지는 Node.js 20 이상, Python 패키지는 Python 3.10 이상이 필요합니다.
@@ -130,6 +149,42 @@ npx -y @qorechain/mcp serve --api-keys-file api-keys.txt
 
 오류는 `isError: true`인 도구 결과이며 JSON 본문은 `{"error": {"code", "message", "details?"}}`입니다. 코드는 `NOT_FOUND`, `INVALID_INPUT`, `UPSTREAM_UNAVAILABLE`, `NOT_AVAILABLE_ON_CHAIN`, `RATE_LIMITED`, `UNAUTHORIZED`, `INTERNAL_ERROR`입니다.
 
+### 라이브러리로 사용 {#library}
+
+npm 패키지는 `createServer({ defaultNetwork })`(모든 MCP 전송에서 쓸 수 있는 MCP 서버 인스턴스), `createHttpHandler({ apiKeyHashes, rateLimitPerMinute })`(Fetch API 핸들러, `(Request) => Promise<Response>`), `startNodeServer(...)`(`serve`가 사용하는 Node HTTP 서버)를 내보냅니다. 공통 옵션은 `defaultNetwork`, `endpoints`(네트워크가 자신의 노드를 가리키게 함), `upstream`(`timeoutMs`, `maxResponseBytes`, `fetch`), `onToolCall`(도구 이름, 상태, 지연 시간을 받음)입니다.
+
+Python 패키지도 `run_tool`을 통해 같은 방식으로 사용할 수 있습니다.
+
+```python
+import anyio
+from qorechain_mcp import Context, run_tool
+
+async def main():
+    out = await run_tool("get_chain_info", {"network": "mainnet"}, Context())
+    print(out["latest_block"])
+
+anyio.run(main)
+```
+
+### 터미널에서 호스팅 엔드포인트 테스트 {#test-hosted}
+
+```bash
+curl -s -X POST https://mcp.qorechain.io/mcp \
+  -H "Authorization: Bearer $QORECHAIN_MCP_KEY" \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+유효한 키가 없으면 엔드포인트는 메시지가 `UNAUTHORIZED`로 시작하는 JSON-RPC 오류와 함께 HTTP 401로 응답합니다.
+
+### 문제 해결 {#troubleshooting}
+
+* `UPSTREAM_UNAVAILABLE`: 공개 엔드포인트가 10초 안에 응답하지 않았습니다. 다시 시도하세요.
+* 오래된 테스트넷 블록에서 `NOT_FOUND`: 테스트넷 노드는 기록을 정리하며, 오류에 조회 가능한 가장 낮은 높이가 표시됩니다. `get_chain_info`는 `earliest_available_height`를 보고합니다.
+* 클라이언트에 도구가 표시되지 않음: 터미널에서 `npx -y @qorechain/mcp --help`를 실행해 Node와 npm이 동작하는지 확인한 다음, 클라이언트의 MCP 로그를 확인하세요.
+* 호스팅 엔드포인트에서 `UNAUTHORIZED`: 키가 없거나, 잘못되었거나, 폐기되었거나, 아직 활성화되지 않았습니다(새 키는 1~2분이 걸릴 수 있습니다).
+
 ### 실행한 내용 {#what-was-run}
 
 2026년 10월 27일에 게시된 패키지를 레지스트리에서 설치하여 공개 테스트넷과 메인넷 엔드포인트에 대해 실행했습니다.
@@ -144,7 +199,7 @@ npx -y @qorechain/mcp serve --api-keys-file api-keys.txt
 
 * **로컬(기본 옵션).** `npx -y @qorechain/mcp` 또는 `uvx qorechain-mcp`를 통한 stdio. 계정도 API 키도 필요하지 않습니다. 공개 QoreChain 엔드포인트를 읽으므로 아웃바운드 HTTPS가 필요합니다.
 * **직접 운영하는 HTTP 서버.** 위에서 설명한 `qorechain-mcp serve`이며, API 키와 속도 제한을 직접 설정합니다.
-* **호스팅 엔드포인트.** `https://mcp.qorechain.io/mcp`는 Streamable HTTP 전송을 제공합니다. 호출에서 `"network": "mainnet"`을 지정하지 않으면 테스트넷을 사용합니다. 모든 요청에 `Authorization: Bearer <key>`로 보내는 API 키가 필요하며, 키는 대시보드에서 요청합니다(아래 참고). 키가 없으면 엔드포인트는 HTTP 401(`UNAUTHORIZED`)로 응답하며, 2026년 10월 27일에도 그러했습니다. 각 키는 초당 요청 10회(버스트 20)와 하루 요청 100,000회로 제한되며, 계정당 활성 키는 1개입니다. 대부분의 용도에서는 키가 필요 없는 로컬 설정이 더 간단한 선택입니다.
+* **호스팅 엔드포인트.** `https://mcp.qorechain.io/mcp`는 Streamable HTTP 전송을 제공합니다. 호출에서 `"network": "mainnet"`을 지정하지 않으면 테스트넷을 사용합니다. 모든 요청에 `Authorization: Bearer <key>`로 보내는 API 키가 필요하며, 키는 대시보드에서 요청합니다(아래 참고). 키가 없으면 엔드포인트는 HTTP 401(`UNAUTHORIZED`)로 응답하며, 2026년 10월 27일에도 그러했습니다. 계정당 활성 키는 1개이며, 각 키는 초당 요청 10회(버스트 20)와 하루 요청 100,000회로 제한됩니다. 대부분의 용도에서는 키가 필요 없는 로컬 설정이 더 간단한 선택입니다.
 
   키를 받으려면 [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers)에 로그인하고 **AI agents (MCP)** 탭을 연 다음 **API key** 양식(이름 또는 조직, 연락처, 사용 목적, 예상 사용량)을 작성하고 **Request API key**를 누릅니다. QoreChain 팀이 요청을 승인하거나 거절하며, 거절되면 그 사유 메모가 표시되고 다시 요청할 수 있습니다. 승인되면 **Generate key**를 누릅니다. 키는 한 번만 표시되며, 복사 버튼과 바로 사용할 수 있는 구성 스니펫이 함께 제공되고, 1~2분 이내에 활성화됩니다. QoreChain은 지문(해시)만 보관하므로 분실한 키는 다시 표시할 수 없습니다. 키를 폐기(약 1분 안에 적용)하고 새로 요청하세요. [개발자 페이지](/dashboard/developers#mcp)를 참고하세요.
 
@@ -174,6 +229,18 @@ npx -y @qorechain/mcp serve --api-keys-file api-keys.txt
 
 비용: 서버는 무료입니다. 읽기에는 비용이 들지 않습니다. `prepare_transfer`가 만든 트랜잭션을 브로드캐스트하면 네트워크 수수료가 적용됩니다(수수료 하한은 가스당 0.1 uqor).
 
+## 보안 참고 사항 {#security}
+
+* **서명 코드 경로가 존재하지 않습니다.** 서버와 CLI 모두에 없습니다. 아무것도 서명되지 않고, 키가 저장되지 않으며, 아무것도 브로드캐스트되지 않습니다.
+* **비밀 정보는 거부됩니다.** 복구 문구처럼 보이는 입력(연속된 BIP-39 단어 12개 이상)이나 32바이트 16진수 개인 키 단독 입력은 요청이 전송되기 전에 `INVALID_INPUT`으로 거부되며, 오류 메시지는 해당 비밀 정보가 노출된 것으로 간주하라고 안내합니다. 복구 문구나 개인 키를 클라이언트 설정에 넣지 마세요. QoreChain 도구에는 그런 것이 필요하지 않습니다.
+* **업스트림 오류 텍스트는 전달되지 않으며**, 응답은 필드 단위로 구성됩니다.
+* **로그.** HTTP 로그에는 JSON-RPC 메서드, 도구 이름, 상태, 지연 시간이 기록됩니다. 입력, 출력, 키, 클라이언트 주소는 기록되지 않습니다.
+* 셀프 호스팅 서버의 **API 키**는 평문이 아니라 SHA-256 해시로 저장됩니다. CORS는 기본적으로 닫혀 있어, localhost에 바인드된 서버를 DNS 리바인딩으로부터도 보호합니다.
+* **메인넷은 명시적으로 지정해야 하며**, `prepare_transfer`는 메인넷 전송에 경고를 추가합니다.
+* **메모는 공개되고 영구적입니다.** 메모에 비밀 정보를 넣지 마세요.
+* **호스팅 API 키는 비밀번호처럼 취급하세요.** 환경 변수나 비밀 저장소에 보관하고, 유출되면 대시보드에서 폐기하세요.
+* 취약점은 공개 이슈가 아닌 security@qore.network로 비공개로 보고하세요.
+
 ## 게시 위치 {#where-published}
 
 | 레지스트리 | 패키지 | 버전 | 실행 | 비고 |
@@ -197,4 +264,12 @@ npx -y @qorechain/mcp serve --api-keys-file api-keys.txt
 * **컨테이너 이미지는 게시되지 않습니다.** `npx` 또는 `pip`로 서버를 실행하세요.
 * **버전.** 0.1.0은 첫 번째 릴리스입니다. 이후 버전에서 도구 이름과 스키마가 바뀔 수 있으며, 저장소의 생성된 `spec/tools.json`이 설치한 버전의 레퍼런스입니다.
 
-관련 페이지: [개발자 패키지 개요](/developer-tools/overview), [QoreChain CLI](/developer-tools/qore-cli), [QoreSign](/qoresign/overview), [대시보드의 개발자 페이지](/dashboard/developers#mcp).
+## 관련 페이지 {#related}
+
+* [QoreChain CLI](/developer-tools/qore-cli): 터미널에서 사용하는 같은 도구.
+* [QoreSign](/qoresign/overview): `get_pq_status`가 사용하는 하이브리드 검증기.
+* [QoreChain SDK](/sdk/overview): 이 서버가 읽고 시뮬레이션하는 트랜잭션을 만들고 서명합니다.
+* [QoreX 통합](/developer-tools/qorex-integrations): `prepare_transfer`가 준비한 것에 서명하는 지갑.
+* [수탁 키트](/developer-tools/custody-kit): 수탁 기관을 위한 입금 감지와 출금 검증.
+* [Faucet](/dashboard/faucet)과 [대시보드의 개발자 페이지](/dashboard/developers#mcp): 테스트넷 QOR와 MCP API 키.
+* [개발자 패키지 개요](/developer-tools/overview).

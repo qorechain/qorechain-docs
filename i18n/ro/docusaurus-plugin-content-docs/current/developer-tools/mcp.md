@@ -20,6 +20,25 @@ Serverul nu semnează niciodată, nu ține chei și nu transmite nicio tranzacț
 - **Secretele sunt refuzate înainte ca ceva să iasă de pe mașină.** O intrare care arată ca o frază de recuperare (12 sau mai multe cuvinte BIP-39 consecutive) sau ca o cheie privată brută de 32 de octeți este respinsă cu `INVALID_INPUT` înainte de orice cerere, iar eroarea îi spune utilizatorului să considere acel secret expus.
 - **Răspunsuri construite câmp cu câmp.** Fiecare ieșire este asamblată din câmpuri denumite ale răspunsului lanțului. Corpurile de eroare din amonte și stack trace-urile nu ajung niciodată la client; eșecurile se mapează pe șapte coduri de eroare stabile.
 
+## Pentru ce se folosește {#use-cases}
+
+1. **Întrebări către un asistent de programare despre starea lanțului.** Un dezvoltator adaugă serverul într-un editor compatibil MCP și întreabă "care este ultimul bloc din mainnet?" sau "arată soldurile adresei qor1... pe testnet". `get_block` și `get_address_info` răspund din endpoint-urile publice, cu linkuri către explorer.
+2. **Verificarea faptului că o tranzacție a purtat semnătura hibridă.** Un dezvoltator de portofel sau de SDK tocmai a transmis o tranzacție și vrea să confirme că aceasta conține exact un strat ML-DSA-87 și că stratul se verifică față de cheia înregistrată. `get_pq_status` (sau `qore pq status <hash>`) raportează nivelul semnăturii și rezultatul verificării locale.
+3. **Pregătirea unui transfer pe care utilizatorul îl semnează.** Un asistent construit pe QoreChain trebuie să ajute un utilizator să trimită QOR fără să atingă cheile. `prepare_transfer` returnează un SignDoc nesemnat, cu un rezumat lizibil, verificări și avertismente (inclusiv unul pentru mainnet), iar `estimate_fee` oferă taxa. Utilizatorul semnează în propriul portofel.
+4. **Depanarea unei tranzacții refuzate.** O echipă de backend are o tranzacție codificată pe care rețeaua o respinge. `simulate_tx` returnează gazul, variațiile de sold pe adresă și un refuz decodat, și nu transmite nimic în rețea.
+5. **Citirea contractelor dintr-un script sau dintr-un job de CI.** O echipă de dApp verifică un sold de token sau o vizualizare de contract cu `qore read-contract --to 0x... --function "balanceOf(address)" --arg 0x... --returns uint256 --json` și parsează JSON-ul cu `jq`.
+6. **Tablouri de bord pentru validatori și staking.** Un analist listează validatorii bonded cu ponderea lor în puterea de vot și cu comisionul (`get_validators`) și citește parametrii nivelurilor de staking și blocările unui deținător (`get_staking_tiers`).
+7. **Rularea unui endpoint pentru echipă.** O companie rulează `qorechain-mcp serve` în spatele propriului reverse proxy, cu chei API și limite de rată, astfel încât mai multe unelte interne să folosească același endpoint MCP, care indică propriile noduri.
+
+## Cum funcționează {#how-it-works}
+
+* Serverul este un cititor subțire și fără stare peste endpoint-urile publice QoreChain (REST, RPC de consens și EVM JSON-RPC). Fiecare apel în amonte este o singură cerere, cu un timeout de 10 secunde, o limită de răspuns de 4 MiB și fără reîncercări.
+* Răspunsurile sunt construite câmp cu câmp din răspunsul lanțului. Corpurile de eroare din amonte, stack trace-urile și mesajele bibliotecilor nu ajung niciodată la client; un eșec neașteptat devine `INTERNAL_ERROR`. Erorile revin ca rezultat de unealtă cu `isError: true` și un corp JSON.
+* Verificările semnăturii hibride rulează local cu [QoreSign](/qoresign/overview): serverul preia tranzacția și cheia ML-DSA-87 înregistrată a semnatarului, reconstruiește sign-bytes (v1 sau v2) și verifică.
+* Simulare: pe un lanț la v3.2.5 sau mai nou, simularea include deja costul de verificare ML-DSA-87 (`exact_gas_simulation: true` în `get_chain_info`), deci limita de gaz sugerată este exactă; pe un lanț mai vechi se adaugă o marjă. Când un body nu are strat ML-DSA-87, `simulate_tx` adaugă un strat provizoriu de mărimea corectă (niciodată transmis în rețea), astfel încât gazul să corespundă tranzacției pe care o va semna portofelul (`assume_pqc_layer`, implicit true). Serverul detectează singur versiunea lanțului.
+* Precompilările EVM `0x...0A01` (verificare ML-DSA-87) și `0x...0A02` (starea cheii) sunt active doar pe testnet; pe mainnet un apel către ele returnează date goale.
+* Schemele uneltelor, în format citibil de mașini, se află în depozit ca `spec/tools.json`, generat din propriul răspuns `tools/list` al serverului. Referința destinată oamenilor este `docs/tools.md`.
+
 ## Cum se utilizează {#how-to-use}
 
 Ai nevoie de Node.js 20 sau mai nou pentru pachetul npm, ori de Python 3.10 sau mai nou pentru pachetul Python.
@@ -130,6 +149,42 @@ Toate cele 14 unelte sunt doar în citire și primesc un `network` opțional. In
 
 Erorile sunt rezultate de unealtă cu `isError: true` și un corp JSON `{"error": {"code", "message", "details?"}}`. Codurile sunt `NOT_FOUND`, `INVALID_INPUT`, `UPSTREAM_UNAVAILABLE`, `NOT_AVAILABLE_ON_CHAIN`, `RATE_LIMITED`, `UNAUTHORIZED` și `INTERNAL_ERROR`.
 
+### Folosește-l ca bibliotecă {#library}
+
+Pachetul npm exportă `createServer({ defaultNetwork })` (o instanță de server MCP pentru orice transport MCP), `createHttpHandler({ apiKeyHashes, rateLimitPerMinute })` (un handler Fetch API, `(Request) => Promise<Response>`) și `startNodeServer(...)` (serverul HTTP Node pe care îl folosește `serve`). Opțiunile comune sunt `defaultNetwork`, `endpoints` (indică o rețea spre propriile noduri), `upstream` (`timeoutMs`, `maxResponseBytes`, `fetch`) și `onToolCall` (primește numele uneltei, starea și latența).
+
+Pachetul Python poate fi folosit în același fel prin `run_tool`:
+
+```python
+import anyio
+from qorechain_mcp import Context, run_tool
+
+async def main():
+    out = await run_tool("get_chain_info", {"network": "mainnet"}, Context())
+    print(out["latest_block"])
+
+anyio.run(main)
+```
+
+### Testează endpoint-ul găzduit dintr-un terminal {#test-hosted}
+
+```bash
+curl -s -X POST https://mcp.qorechain.io/mcp \
+  -H "Authorization: Bearer $QORECHAIN_MCP_KEY" \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+Fără o cheie validă, endpoint-ul răspunde HTTP 401 cu o eroare JSON-RPC al cărei mesaj începe cu `UNAUTHORIZED`.
+
+### Depanare {#troubleshooting}
+
+* `UPSTREAM_UNAVAILABLE`: endpoint-ul public nu a răspuns în 10 secunde. Încearcă din nou.
+* `NOT_FOUND` pe un bloc vechi de testnet: nodurile de testnet taie istoricul, iar eroarea numește cea mai mică înălțime disponibilă. `get_chain_info` raportează `earliest_available_height`.
+* Nicio unealtă listată în client: rulează `npx -y @qorechain/mcp --help` într-un terminal ca să verifici că Node și npm funcționează, apoi citește jurnalul MCP al clientului.
+* `UNAUTHORIZED` pe endpoint-ul găzduit: cheia lipsește, este greșită, revocată sau încă nu este activă (o cheie nouă poate dura un minut sau două).
+
 ### Ce a fost rulat {#what-was-run}
 
 Pe 27 octombrie 2026 pachetele publicate au fost instalate din registre și rulate pe endpoint-urile publice de testnet și mainnet:
@@ -144,7 +199,7 @@ Pe 27 octombrie 2026 pachetele publicate au fost instalate din registre și rula
 
 - **Local (opțiunea principală).** stdio prin `npx -y @qorechain/mcp` sau `uvx qorechain-mcp`. Nu are nevoie de cont și nici de cheie API. Citește endpoint-urile publice QoreChain, deci are nevoie de HTTPS de ieșire.
 - **Propriul tău server HTTP.** `qorechain-mcp serve`, ca mai sus, cu chei API și limite de rată pe care le configurezi tu.
-- **Endpoint găzduit.** `https://mcp.qorechain.io/mcp` expune transportul Streamable HTTP. Folosește testnet, cu excepția cazului în care un apel numește `"network": "mainnet"`. Fiecare cerere are nevoie de o cheie API trimisă ca `Authorization: Bearer <key>`; solicită una din dashboard-ul tău (mai jos). Fără cheie, endpoint-ul răspunde HTTP 401 (`UNAUTHORIZED`), acesta fiind răspunsul din 27 octombrie 2026. Fiecare cheie este limitată la 10 cereri pe secundă (rafală de 20) și 100.000 de cereri pe zi, cu o cheie activă pe cont. Pentru majoritatea utilizărilor, configurarea locală nu are nevoie de cheie și este alegerea mai simplă.
+- **Endpoint găzduit.** `https://mcp.qorechain.io/mcp` expune transportul Streamable HTTP. Folosește testnet, cu excepția cazului în care un apel numește `"network": "mainnet"`. Fiecare cerere are nevoie de o cheie API trimisă ca `Authorization: Bearer <key>`; solicită una din dashboard-ul tău (mai jos). Fără cheie, endpoint-ul răspunde HTTP 401 (`UNAUTHORIZED`), acesta fiind răspunsul din 27 octombrie 2026. Există o singură cheie activă pe cont, iar fiecare cheie este limitată la 10 cereri pe secundă (rafală de 20) și 100.000 de cereri pe zi. Pentru majoritatea utilizărilor, configurarea locală nu are nevoie de cheie și este alegerea mai simplă.
 
   Pentru a obține o cheie, autentifică-te la [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers), deschide tab-ul **AI agents (MCP)** și completează formularul **API key** (nume sau organizație, un contact, utilizarea intenționată, volumul estimat), apoi apasă **Request API key**. Echipa QoreChain aprobă sau respinge cererea; o respingere afișează nota sa și poți face o nouă cerere. După aprobare apasă **Generate key**: cheia este afișată o singură dată, cu un buton de copiere și un fragment de configurare gata de folosit, și devine activă în decurs de un minut sau două. QoreChain păstrează doar o amprentă (un hash), așa că o cheie pierdută nu mai poate fi afișată din nou; revoc-o (intră în vigoare în aproximativ un minut) și solicită una nouă. Vezi [Pagina Developers](/dashboard/developers#mcp).
 
@@ -174,6 +229,18 @@ Serverul citește din aceste endpoint-uri publice:
 
 Cost: serverul este gratuit. Citirile nu costă nimic. Dacă transmiți în rețea o tranzacție construită de `prepare_transfer`, se aplică taxa de rețea (pragul minim al taxei este 0.1 uqor per gaz).
 
+## Note de securitate {#security}
+
+* **Nu există nicio cale de cod pentru semnare** în server sau în CLI. Nimic nu este semnat, nicio cheie nu este stocată și nimic nu este transmis în rețea.
+* **Secretele sunt refuzate.** O intrare care arată ca o frază de recuperare (12 sau mai multe cuvinte BIP-39 consecutive) sau ca o cheie privată hex brută de 32 de octeți este respinsă cu `INVALID_INPUT` înainte de orice cerere, iar eroarea îi spune utilizatorului să considere acel secret expus. Nu pune niciodată o frază de recuperare sau o cheie privată într-o configurare de client; nicio unealtă QoreChain nu are nevoie de ele.
+* **Textul erorilor din amonte nu este niciodată redirecționat**; răspunsurile sunt construite câmp cu câmp.
+* **Jurnale.** Jurnalele HTTP conțin metoda JSON-RPC, numele uneltei, starea și latența. Intrările, ieșirile, cheile și adresele clienților nu sunt înregistrate.
+* **Cheile API** ale unui server auto-găzduit sunt stocate ca hash-uri SHA-256, niciodată în text clar. CORS este închis implicit, ceea ce protejează și un server legat la localhost împotriva DNS rebinding.
+* **Mainnet-ul trebuie numit explicit**, iar `prepare_transfer` adaugă un avertisment pentru transferurile pe mainnet.
+* **Memo-urile sunt publice și permanente.** Nu pune niciodată un secret într-un memo.
+* **Tratează o cheie API găzduită ca pe o parolă.** Păstreaz-o într-o variabilă de mediu sau într-un depozit de secrete și revoc-o din dashboard dacă se scurge.
+* Raportează vulnerabilitățile în privat la security@qore.network, niciodată într-un issue public.
+
 ## Unde este publicat {#where-published}
 
 | Registru | Pachet | Versiune | Rulare | Note |
@@ -197,4 +264,12 @@ Sursa: [github.com/qorechain/qorechain-mcp](https://github.com/qorechain/qorecha
 - **Nu este publicată nicio imagine de container.** Rulează serverul cu `npx` sau `pip`.
 - **Versiune.** 0.1.0 este prima versiune; numele uneltelor și schemele se pot schimba în versiunile următoare, iar fișierul generat `spec/tools.json` din depozit este referința pentru versiunea pe care ai instalat-o.
 
-Pagini conexe: [Prezentarea pachetelor pentru dezvoltatori](/developer-tools/overview), [CLI-ul QoreChain](/developer-tools/qore-cli), [QoreSign](/qoresign/overview), [Pagina Developers din dashboard](/dashboard/developers#mcp).
+## Pagini conexe {#related}
+
+* [CLI-ul QoreChain](/developer-tools/qore-cli): aceleași unelte dintr-un terminal.
+* [QoreSign](/qoresign/overview): verificatorul hibrid folosit de `get_pq_status`.
+* [SDK-ul QoreChain](/sdk/overview): construiește și semnează tranzacțiile pe care acest server le citește și le simulează.
+* [Integrări QoreX](/developer-tools/qorex-integrations): portofelul care semnează ce pregătește `prepare_transfer`.
+* [Custody kit](/developer-tools/custody-kit): detectarea depunerilor și verificarea retragerilor pentru custozi.
+* [Faucet](/dashboard/faucet) și [Pagina Developers din dashboard](/dashboard/developers#mcp): QOR de testnet și chei API MCP.
+* [Prezentarea pachetelor pentru dezvoltatori](/developer-tools/overview).

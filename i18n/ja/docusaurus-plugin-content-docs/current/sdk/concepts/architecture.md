@@ -25,7 +25,7 @@ SDK は、いくつかのエンドポイントを通じてノードと通信し�
 
 - **Cosmos REST (LCD)** — 銀行残高、アカウント情報、モジュールクエリ。
 - **コンセンサス RPC** — ネイティブトランザクションの署名/ブロードキャスト、および QoreChain Native 読み取りクライアントに使用されます。
-- **EVM JSON-RPC** — 公開エンドポイント上の標準的な `eth_*`、`net_*`、`web3_*`、`txpool_*` 呼び出し。QoreChain の `qor_*` 名前空間と EVM プリコンパイルは、現時点ではそこでは利用できません（下記参照）。
+- **EVM JSON-RPC** — 公開エンドポイント上の標準的な `eth_*`、`net_*`、`web3_*`、`txpool_*` 呼び出し。QoreChain の `qor_*` 名前空間は、そこでは提供されていません（下記参照）。EVM プリコンパイル `pqcVerify`（`0x0A01`）と `pqcKeyStatus`（`0x0A02`）はテストネットでのみ有効で、メインネットで有効なものはありません（有効化にはガバナンスの決定が必要で、日付は未定です）。[EVM プリコンパイル](/developer-guide/evm-precompiles#network-status)を参照してください。
 - **SVM JSON-RPC** — SVM ランタイム向けの Solana 互換 RPC（公開エンドポイントでは読み取り専用。SVM トランザクションの送信はネットワーク全体で無効化されています）。
 
 これを有効にしているノードでは、`qor_*` JSON-RPC 名前空間が、トークノミクス、PQC 鍵ステータス、ハイブリッド署名モード、クロス VM メッセージ、ネットワーク統計など、QoreChain 固有の読み取りを公開します。TypeScript では、これらは `client.qor`（`QorClient`）上の型付きメソッドです。同じ面が Python、Go、Rust の SDK にも存在します。公開エンドポイントに対しては、代わりに REST ルートを使用してください（例: PQC 鍵ステータスには `GET /qorechain/pqc/v1/account/{address}`、バーン統計には `GET /qorechain/burn/v1/stats`）。

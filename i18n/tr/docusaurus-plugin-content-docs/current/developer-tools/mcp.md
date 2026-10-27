@@ -20,6 +20,25 @@ Sunucu asla imzalamaz, asla anahtar tutmaz ve asla bir işlemi yayınlamaz. Maki
 - **Gizli bilgiler, makineden hiçbir şey çıkmadan önce reddedilir.** Kurtarma ifadesine benzeyen girdi (12 veya daha fazla ardışık BIP-39 sözcüğü) ya da çıplak bir 32 baytlık özel anahtar, herhangi bir istek yapılmadan önce `INVALID_INPUT` ile reddedilir ve hata, kullanıcıya o gizli bilgiyi ifşa olmuş saymasını söyler.
 - **Alan alan oluşturulan yanıtlar.** Her çıktı, zincirin yanıtındaki adlandırılmış alanlardan derlenir. Üst akış hata gövdeleri ve yığın izleri istemciye asla ulaşmaz; hatalar yedi kararlı hata koduna eşlenir.
 
+## Ne için kullanılır {#use-cases}
+
+1. **Bir kodlama asistanına zincir durumunu sormak.** Bir geliştirici sunucuyu MCP uyumlu bir düzenleyiciye ekler ve "mainnet üzerindeki son blok nedir?" ya da "qor1... adresinin testnet bakiyelerini göster" diye sorar. `get_block` ve `get_address_info`, genel uç noktalardan, gezgin bağlantılarıyla birlikte yanıt verir.
+2. **Bir işlemin hibrit imzayı taşıdığını denetlemek.** Bir cüzdan veya SDK geliştiricisi az önce bir işlem yayınlamıştır ve tam olarak bir ML-DSA-87 katmanı taşıdığını ve bu katmanın kayıtlı anahtara karşı doğrulandığını teyit etmek ister. `get_pq_status` (veya `qore pq status <hash>`) imza katmanını ve yerel doğrulama sonucunu bildirir.
+3. **Bir kullanıcının imzalaması için transfer hazırlamak.** QoreChain üzerinde kurulu bir asistanın, bir kullanıcının anahtarlara dokunmadan QOR göndermesine yardım etmesi gerekir. `prepare_transfer`, okunabilir bir özet, denetimler ve uyarılarla (mainnet için olan dahil) imzasız bir SignDoc döndürür; `estimate_fee` ise ücreti verir. Kullanıcı kendi cüzdanında imzalar.
+4. **Reddedilen bir işlemin hatasını ayıklamak.** Bir arka uç ekibinin ağın reddettiği kodlanmış bir işlemi vardır. `simulate_tx` gas'i, adres başına bakiye değişimlerini ve çözülmüş bir ret nedenini döndürür ve hiçbir şey yayınlamaz.
+5. **Sözleşmeleri bir betikten veya CI işinden okumak.** Bir dApp ekibi, `qore read-contract --to 0x... --function "balanceOf(address)" --arg 0x... --returns uint256 --json` ile bir token bakiyesini veya bir sözleşme görünümünü denetler ve JSON'u `jq` ile ayrıştırır.
+6. **Doğrulayıcı ve staking panoları.** Bir analist, bonded doğrulayıcıları oy gücü payları ve komisyonlarıyla listeler (`get_validators`) ve staking katmanı parametrelerini ile bir sahibin kilitlerini okur (`get_staking_tiers`).
+7. **Bir ekip uç noktası işletmek.** Bir şirket `qorechain-mcp serve` komutunu kendi ters proxy'sinin arkasında, API anahtarları ve hız sınırlarıyla çalıştırır; böylece birkaç iç araç, kendi düğümlerine işaret eden tek bir MCP uç noktasını paylaşır.
+
+## Nasıl çalışır {#how-it-works}
+
+* Sunucu, genel QoreChain uç noktaları (REST, konsensüs RPC ve EVM JSON-RPC) üzerinde ince, durumsuz bir okuyucudur. Her üst akış çağrısı tek bir istektir; 10 saniyelik zaman aşımı, 4 MiB yanıt sınırı vardır ve yeniden deneme yoktur.
+* Yanıtlar, zincirin cevabından alan alan oluşturulur. Üst akış hata gövdeleri, yığın izleri ve kitaplık iletileri istemciye asla ulaşmaz; beklenmedik bir hata `INTERNAL_ERROR` olur. Hatalar, `isError: true` taşıyan ve gövdesi JSON olan bir araç sonucu olarak döner.
+* Hibrit imza denetimleri [QoreSign](/qoresign/overview) ile yerel olarak çalışır: sunucu işlemi ve imzalayanın kayıtlı ML-DSA-87 anahtarını getirir, imzalanacak baytları (v1 veya v2) yeniden oluşturur ve doğrular.
+* Simülasyon: v3.2.5 veya daha yeni bir zincirde simülasyon ML-DSA-87 doğrulama maliyetini zaten içerir (`get_chain_info` içinde `exact_gas_simulation: true`), bu yüzden önerilen gas sınırı kesindir; daha eski bir zincirde bir pay eklenir. Bir gövdenin ML-DSA-87 katmanı yoksa `simulate_tx` doğru boyutta bir yer tutucu katman ekler (asla yayınlanmaz); böylece gas, cüzdanın imzalayacağı işlemle eşleşir (`assume_pqc_layer`, varsayılan true). Sunucu zincirin sürümünü kendisi algılar.
+* EVM precompile'ları `0x...0A01` (ML-DSA-87 doğrulama) ve `0x...0A02` (anahtar durumu) yalnızca testnet'te etkindir; mainnet'te onlara yapılan bir çağrı boş veri döndürür.
+* Makine tarafından okunabilir araç şemaları depoda `spec/tools.json` olarak bulunur ve sunucunun kendi `tools/list` yanıtından üretilir. İnsanlar için okunabilir başvuru `docs/tools.md` dosyasıdır.
+
 ## Nasıl kullanılır {#how-to-use}
 
 npm paketi için Node.js 20 veya üzeri, Python paketi için Python 3.10 veya üzeri gerekir.
@@ -130,6 +149,42 @@ Mainnet `qorechain-vladi` (EVM zincir kimliği 9801), testnet ise `qorechain-dia
 
 Hatalar, `isError: true` taşıyan araç sonuçlarıdır ve gövdeleri `{"error": {"code", "message", "details?"}}` biçiminde bir JSON'dur. Kodlar `NOT_FOUND`, `INVALID_INPUT`, `UPSTREAM_UNAVAILABLE`, `NOT_AVAILABLE_ON_CHAIN`, `RATE_LIMITED`, `UNAUTHORIZED` ve `INTERNAL_ERROR`'dır.
 
+### Kitaplık olarak kullanın {#library}
+
+npm paketi şunları dışa aktarır: `createServer({ defaultNetwork })` (herhangi bir MCP aktarımı için bir MCP sunucu örneği), `createHttpHandler({ apiKeyHashes, rateLimitPerMinute })` (bir Fetch API işleyicisi, `(Request) => Promise<Response>`) ve `startNodeServer(...)` (`serve` komutunun kullandığı Node HTTP sunucusu). Ortak seçenekler `defaultNetwork`, `endpoints` (bir ağı kendi düğümlerinize yönlendirin), `upstream` (`timeoutMs`, `maxResponseBytes`, `fetch`) ve `onToolCall`'dır (araç adını, durumu ve gecikmeyi alır).
+
+Python paketi aynı şekilde `run_tool` aracılığıyla kullanılabilir:
+
+```python
+import anyio
+from qorechain_mcp import Context, run_tool
+
+async def main():
+    out = await run_tool("get_chain_info", {"network": "mainnet"}, Context())
+    print(out["latest_block"])
+
+anyio.run(main)
+```
+
+### Barındırılan uç noktayı bir terminalden test edin {#test-hosted}
+
+```bash
+curl -s -X POST https://mcp.qorechain.io/mcp \
+  -H "Authorization: Bearer $QORECHAIN_MCP_KEY" \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+Geçerli bir anahtar olmadan uç nokta, iletisi `UNAUTHORIZED` ile başlayan bir JSON-RPC hatasıyla HTTP 401 yanıtı verir.
+
+### Sorun giderme {#troubleshooting}
+
+* `UPSTREAM_UNAVAILABLE`: genel uç nokta 10 saniye içinde yanıt vermedi. Yeniden deneyin.
+* Eski bir testnet bloğunda `NOT_FOUND`: testnet düğümleri geçmişi budar ve hata, mevcut en düşük yüksekliği belirtir. `get_chain_info`, `earliest_available_height` değerini bildirir.
+* İstemcide hiç araç listelenmiyor: Node ve npm'in çalıştığını denetlemek için bir terminalde `npx -y @qorechain/mcp --help` çalıştırın, ardından istemcinin MCP günlüğünü okuyun.
+* Barındırılan uç noktada `UNAUTHORIZED`: anahtar eksik, yanlış, iptal edilmiş veya henüz etkin değil (yeni bir anahtarın etkinleşmesi bir iki dakika sürebilir).
+
 ### Ne çalıştırıldı {#what-was-run}
 
 27 Ekim 2026'da yayınlanan paketler kayıt defterlerinden kuruldu ve genel testnet ile mainnet uç noktalarına karşı çalıştırıldı:
@@ -144,7 +199,7 @@ Hatalar, `isError: true` taşıyan araç sonuçlarıdır ve gövdeleri `{"error"
 
 - **Yerel (birincil seçenek).** `npx -y @qorechain/mcp` veya `uvx qorechain-mcp` ile stdio. Hesap veya API anahtarı gerekmez. Genel QoreChain uç noktalarını okur, bu yüzden giden HTTPS gerekir.
 - **Kendi HTTP sunucunuz.** Yukarıdaki gibi `qorechain-mcp serve`, yapılandırdığınız API anahtarları ve hız sınırlarıyla.
-- **Barındırılan uç nokta.** `https://mcp.qorechain.io/mcp`, Streamable HTTP aktarımını sunar. Bir çağrı `"network": "mainnet"` belirtmedikçe testnet kullanır. Her istek, `Authorization: Bearer <key>` olarak gönderilen bir API anahtarı gerektirir; bir tanesini dashboard'unuzdan talep edin (aşağıda). Anahtar olmadan uç nokta HTTP 401 (`UNAUTHORIZED`) yanıtı verir; 27 Ekim 2026'daki yanıt buydu. Her anahtar saniyede 10 istek (ani yük 20) ve günde 100.000 istekle sınırlıdır; hesap başına bir etkin anahtar bulunur. Çoğu kullanım için yerel kurulum anahtar gerektirmez ve daha basit seçimdir.
+- **Barındırılan uç nokta.** `https://mcp.qorechain.io/mcp`, Streamable HTTP aktarımını sunar. Bir çağrı `"network": "mainnet"` belirtmedikçe testnet kullanır. Her istek, `Authorization: Bearer <key>` olarak gönderilen bir API anahtarı gerektirir; bir tanesini dashboard'unuzdan talep edin (aşağıda). Anahtar olmadan uç nokta HTTP 401 (`UNAUTHORIZED`) yanıtı verir; 27 Ekim 2026'daki yanıt buydu. Hesap başına bir etkin anahtar bulunur ve her anahtar saniyede 10 istek (ani yük 20) ve günde 100.000 istekle sınırlıdır. Çoğu kullanım için yerel kurulum anahtar gerektirmez ve daha basit seçimdir.
 
   Anahtar almak için [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) adresinde oturum açın, **AI agents (MCP)** sekmesini açın ve **API key** formunu doldurun (ad veya kuruluş, bir iletişim bilgisi, amaçlanan kullanım, beklenen hacim), ardından **Request API key**'e basın. QoreChain ekibi talebi onaylar veya reddeder; ret notuyla birlikte gösterilir ve yeniden talep edebilirsiniz. Onaydan sonra **Generate key**'e basın: anahtar yalnızca bir kez gösterilir; yanında bir kopyalama düğmesi ve hazır bir yapılandırma parçacığı bulunur ve bir iki dakika içinde etkinleşir. QoreChain yalnızca bir parmak izi (bir karma) tutar; bu nedenle kaybolan bir anahtar yeniden gösterilemez: iptal edin (yaklaşık bir dakika içinde etkili olur) ve yenisini talep edin. Bkz. [Geliştiriciler sayfası](/dashboard/developers#mcp).
 
@@ -174,6 +229,18 @@ Sunucu şu genel uç noktalardan okur:
 
 Maliyet: sunucu ücretsizdir. Okumalar hiçbir şeye mal olmaz. `prepare_transfer` ile oluşturulan bir işlemi yayınlarsanız ağ ücreti uygulanır (ücret tabanı gas başına 0,1 uqor'dur).
 
+## Güvenlik notları {#security}
+
+* **Sunucuda veya CLI'da imzalama kod yolu yoktur.** Hiçbir şey imzalanmaz, hiçbir anahtar saklanmaz ve hiçbir şey yayınlanmaz.
+* **Gizli bilgiler reddedilir.** Kurtarma ifadesine (12 veya daha fazla ardışık BIP-39 sözcüğü) ya da çıplak bir 32 baytlık onaltılık özel anahtara benzeyen girdi, herhangi bir istek yapılmadan önce `INVALID_INPUT` ile reddedilir ve hata, kullanıcıya o gizli bilgiyi ifşa olmuş saymasını söyler. Bir istemci yapılandırmasına asla kurtarma ifadesi veya özel anahtar koymayın; hiçbir QoreChain aracı buna ihtiyaç duymaz.
+* **Üst akış hata metni asla iletilmez**; yanıtlar alan alan oluşturulur.
+* **Günlükler.** HTTP günlükleri JSON-RPC yöntemini, araç adını, durumu ve gecikmeyi taşır. Girdiler, çıktılar, anahtarlar ve istemci adresleri günlüğe yazılmaz.
+* Kendi barındırdığınız bir sunucunun **API anahtarları** SHA-256 karmaları olarak saklanır, asla düz metin olarak değil. CORS varsayılan olarak kapalıdır; bu, localhost'a bağlı bir sunucuyu DNS rebinding'e karşı da korur.
+* **Mainnet açıkça belirtilmelidir** ve `prepare_transfer`, mainnet transferleri için bir uyarı ekler.
+* **Notlar herkese açık ve kalıcıdır.** Bir nota asla bir gizli bilgi koymayın.
+* **Barındırılan bir API anahtarına bir parola gibi davranın.** Onu bir ortam değişkeninde veya bir gizli bilgi deposunda tutun ve sızarsa dashboard'dan iptal edin.
+* Güvenlik açıklarını herkese açık bir issue'da değil, security@qore.network adresine özel olarak bildirin.
+
 ## Nerede yayınlandı {#where-published}
 
 | Kayıt defteri | Paket | Sürüm | Çalıştırma | Notlar |
@@ -197,4 +264,12 @@ Kaynak: [github.com/qorechain/qorechain-mcp](https://github.com/qorechain/qorech
 - **Kapsayıcı imajı yayınlanmamıştır.** Sunucuyu `npx` veya `pip` ile çalıştırın.
 - **Sürüm.** 0.1.0 ilk sürümdür; araç adları ve şemalar sonraki sürümlerde değişebilir ve depodaki üretilmiş `spec/tools.json`, kurduğunuz sürüm için başvuru kaynağıdır.
 
-İlgili sayfalar: [Geliştirici paketlerine genel bakış](/developer-tools/overview), [QoreChain CLI](/developer-tools/qore-cli), [QoreSign](/qoresign/overview), [dashboard'daki Geliştiriciler sayfası](/dashboard/developers#mcp).
+## İlgili sayfalar {#related}
+
+* [QoreChain CLI](/developer-tools/qore-cli): aynı araçlar bir terminalden.
+* [QoreSign](/qoresign/overview): `get_pq_status` tarafından kullanılan hibrit doğrulayıcı.
+* [QoreChain SDK](/sdk/overview): bu sunucunun okuduğu ve simüle ettiği işlemleri oluşturun ve imzalayın.
+* [QoreX entegrasyonları](/developer-tools/qorex-integrations): `prepare_transfer` ile hazırlananı imzalayan cüzdan.
+* [Custody kit](/developer-tools/custody-kit): saklama kuruluşları için yatırım algılama ve çekim doğrulama.
+* [Faucet](/dashboard/faucet) ve [dashboard'daki Geliştiriciler sayfası](/dashboard/developers#mcp): testnet QOR ve MCP API anahtarları.
+* [Geliştirici paketlerine genel bakış](/developer-tools/overview).

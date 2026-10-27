@@ -13,7 +13,7 @@ Versiunile din tabele au fost citite din registre la 27 octombrie 2026. Mainnet-
 
 ## Inovații {#innovations}
 
-- **Un singur format de semnătură hibridă în fiecare limbaj.** Lanțul cere o semnătură secp256k1 plus o semnătură ML-DSA-87 (FIPS 204) pentru tranzacțiile de pe traseul native. QoreSign reproduce vectorii săi de test publicați octet cu octet în TypeScript, Rust, Go, Swift și Kotlin, iar `qorechain-pqc` rulează un singur set comun de vectori în cele șase binding-uri ale sale, astfel încât o cheie sau o semnătură făcută într-un limbaj se verifică în celelalte.
+- **Un singur format de semnătură hibridă în fiecare limbaj.** Lanțul cere o semnătură secp256k1 plus o semnătură ML-DSA-87 (FIPS 204) pentru tranzacțiile de pe traseul native. QoreSign reproduce vectorii săi de test publicați octet cu octet în TypeScript, Rust, Go, Swift, Kotlin și Python, iar `qorechain-pqc` rulează un singur set comun de vectori în cele șase binding-uri ale sale, astfel încât o cheie sau o semnătură făcută într-un limbaj se verifică în celelalte.
 - **Forma sign-bytes este aleasă pe baza stării lanțului, nu ghicită.** SDK-ul, wallet adapter-ul, `chain-bridge` și helper-ele de rețea QoreSign cer nodului `GET /cosmos/upgrade/v1beta1/applied_plan/{name}` pentru ambele nume de upgrade (`v3.2.0` și `v3.1.98`) și semnează în forma v2 când oricare dintre înălțimi este mai mare decât zero. Fără un endpoint REST pe aceste două lanțuri, ele aruncă o eroare în loc să ghicească. Ambele rețele verifică v2 astăzi (verificat la 27 octombrie 2026: `v3.2.0` aplicat pe mainnet la înălțimea 2,981,742 și `v3.1.98` pe testnet la înălțimea 5,746,000).
 - **Quickstart-uri care au fost rulate, nu doar scrise.** Pentru pachetele care au unul, exemplul a fost rulat la 27 octombrie 2026 după instalarea din registrul public. 31 din 34 de intrări de quickstart au rulat și au trecut; manifestul consemnează care trei nu au rulat (vezi [Limite](#limits)).
 - **Un singur manifest în spatele tabelelor.** Numele pachetelor, versiunile și comenzile de instalare de pe această pagină provin dintr-un singur manifest care poate fi citit automat, cu un endpoint de versiune live pentru fiecare pachet, aceleași date din care este construit hub-ul SDK de pe [pagina Developers din dashboard](/dashboard/developers#sdks).
@@ -29,11 +29,17 @@ Alege în funcție de ce construiești.
 | Adaugi QoreChain în Keplr, Leap sau Cosmostation, generezi portofele unificate, construiești mesaje pentru fereastra EVM și chei legate | Wallet adapter | [Wallet adapter](/developer-tools/wallet-adapter) |
 | Rulezi un job de server care trimite QOR, înregistrează chei sau implementează contracte | Chain bridge (sau SDK) | [Chain bridge și handle-uri](/developer-tools/chain-bridge) |
 | Rezolvi un `@handle` către o adresă verificată | Handles | [Chain bridge și handle-uri](/developer-tools/chain-bridge#handles) |
-| Lași dApp-ul tău să folosească portofelul QoreX | Integrările QoreX | [QoreX, pentru dezvoltatori](/qorex/overview#developers) |
+| Lași dApp-ul tău să folosească portofelul QoreX sau îl testezi fără o extensie | Integrările QoreX | [Integrările QoreX](/developer-tools/qorex-integrations), [QoreX, pentru dezvoltatori](/qorex/overview#developers) |
 | Creezi și operezi un rollup de aplicație | RDK | [Prezentarea rollup-urilor](/rollups/overview), [Implementarea unui rollup](/rollups/deploying-a-rollup) |
 | Folosești separat primitivele post-cuantice (ML-DSA, ML-KEM, SHAKE-256) | `qorechain-pqc` | [Semnare post-cuantică](/developer-guide/post-quantum-signing) |
 | Lași un agent AI sau o unealtă pentru dezvoltatori să citească lanțul (blocuri, tranzacții, conturi, starea semnăturii hibride, simulare, transferuri nesemnate) | Serverul MCP QoreChain | [Serverul MCP QoreChain](/developer-tools/mcp) |
 | Citești lanțul dintr-un terminal sau dintr-un script shell, cu ieșire JSON | CLI-ul `qore` | [CLI-ul QoreChain](/developer-tools/qore-cli) |
+| Citești înapoi cum a fost protejată o tranzacție confirmată (mesaje, semnatar, taxă, stratul ML-DSA-87, nivel) | Inspectorul de tranzacții QoreSign (`inspectTransaction`) | [Prezentarea QoreSign](/qoresign/overview#inspector) |
+| Criptezi date către conturi QoreChain, grupuri private sau sidechain-uri cu ML-KEM-1024 | QoreSeal | [QoreSeal](/developer-tools/qoreseal) |
+| Revizuiești sau testezi un design de light client post-cuantic (verificarea checkpoint-urilor) | PQ light client | [PQ light client](/developer-tools/pq-light-client) |
+| Integrezi QoreChain ca custode sau bursă (verificări de adrese, verificarea retragerilor, creditarea depunerilor) | Custody kit | [Custody kit](/developer-tools/custody-kit) |
+| Inventariezi criptografia unui nod, a unei rețele sau a surselor Solidity ca un CBOM CycloneDX | QoreScan | [QoreScan](/developer-tools/qorescan) |
+| Construiești și testezi proiecte Solidity sau CosmWasm pe QoreChain cu Foundry, Hardhat sau viem | Chain developer kit (SDK 0.11.0, în curând) | [Chain developer kit](/developer-tools/chain-dev-sdk) |
 
 Instalează un singur pachet și rulează-i quickstart-ul mai întâi pe testnet-ul public. Citirile nu necesită cont, cheie sau comision.
 
@@ -64,7 +70,7 @@ Dashboard-ul are o pagină publică la [dashboard.qorechain.io/developers](https
 - **QoreX test wallet:** doar testnet. Injectează în filă un portofel de test (`window.qorex`, anunțat prin EIP-6963 ca „QoreX (mock)") pentru a putea încerca fluxuri de dApp.
 - **AI agents (MCP):** starea serverului MCP QoreChain (publicat) și configurarea pentru un client MCP: mai întâi `npx` local, plus un endpoint găzduit de testnet care are nevoie de o cheie API. Vezi [Serverul MCP QoreChain](/developer-tools/mcp).
 
-**Inspectorul de tranzacții** (lipești un hash și vezi fiecare mesaj, semnatarul, taxa și dacă semnătura post-cuantică se verifică) **nu este încă live**. Tabelele de mai jos și hub-ul SDK afișează aceleași date; tabelele au fost verificate față de registre la 27 octombrie 2026.
+O filă **Transaction inspector** (lipești un hash și vezi fiecare mesaj, semnatarul, taxa și dacă semnătura post-cuantică se verifică) nu se află încă pe pagina din dashboard; la 27 octombrie 2026 pagina arăta în continuare cele șase file de mai sus. Aceeași verificare este disponibilă acum ca funcție de bibliotecă, `inspectTransaction`, în QoreSign 0.1.1 (TypeScript): vezi [Inspectorul de tranzacții](/qoresign/overview#inspector). Tabelele de mai jos și hub-ul SDK afișează aceleași date despre pachete; tabelele au fost verificate față de registre la 27 octombrie 2026.
 
 ## Unde este publicat {#where-published}
 
@@ -88,19 +94,71 @@ Ghiduri: [Prezentarea SDK](/sdk/overview), [Instalare](/sdk/install), [Ghid Reac
 
 ### QoreSign {#group-qoresign}
 
-Ghiduri: [Prezentarea QoreSign](/qoresign/overview), [Pornire rapidă](/qoresign/quickstart), [Vectori de test](/qoresign/vectors). Sursă: [qorechain/qoresign](https://github.com/qorechain/qoresign). QoreSign semnează local; nu păstrează chei în locul tău și nu face semnare threshold, MPC sau cu portofel hardware.
+Ghiduri: [Prezentarea QoreSign](/qoresign/overview), [Pornire rapidă](/qoresign/quickstart), [Vectori de test](/qoresign/vectors). Sursă: [qorechain/qoresign](https://github.com/qorechain/qoresign). Versiunea 0.1.1 a fost publicată la 27 octombrie 2026. QoreSign semnează local; nu păstrează chei în locul tău și nu face semnare threshold, MPC sau cu portofel hardware.
 
 | Pachet | Limbaj | Versiune | Instalare | Stare |
 |---|---|---|---|---|
-| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.0 | `npm install @qorechain/qoresign` | Publicat |
-| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (se importă ca `qoresign`) | 0.1.0 | `cargo add qorechain-qoresign` | Publicat |
-| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.0 | `go get github.com/qorechain/qoresign/go` | Publicat |
-| `QoreSign` (pachet Swift) | Swift (iOS 16+, macOS 13+) | 0.1.0 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.0")`, produs `QoreSign` | Publicat ca release GitHub; framework-ul binar se descarcă de acolo |
-| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+) | 0.1.0 | `implementation("io.github.qorechain:qoresign:0.1.0")` | Publicat |
-| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+) | 0.1.0 | `implementation("io.github.qorechain:qoresign-android:0.1.0")` | Publicat. Același API ca artefactul JVM; exemplul său a fost rulat doar pe artefactul JVM, nu pe un dispozitiv Android |
-| `qorechain-qoresign` (PyPI) | Python | încă nu există | niciuna | **Nepublicat.** Proiectul PyPI a returnat 404 la 27 octombrie 2026. Planificat pentru 0.1.1 |
+| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.1 | `npm install @qorechain/qoresign` | Publicat. Include `inspectTransaction` și `fetchEvmWindow` (noi în 0.1.1) |
+| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (se importă ca `qoresign`) | 0.1.1 | `cargo add qorechain-qoresign` | Publicat |
+| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.1 | `go get github.com/qorechain/qoresign/go@v0.1.1` | Publicat |
+| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+ (se importă ca `qoresign`) | 0.1.1 | `pip install qorechain-qoresign` | Publicat, nou în 0.1.1. Wheel-uri pentru macOS (arm64, x86_64) și Linux (x86_64, aarch64); încă nu există wheel pentru Windows. Doar funcții offline |
+| `QoreSign` (pachet Swift) | Swift (iOS 16+, macOS 13+) | 0.1.1 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, produs `QoreSign` | Publicat ca release GitHub; framework-ul binar se descarcă de acolo |
+| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign:0.1.1")` | Publicat |
+| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | Publicat. Același API ca artefactul JVM; exemplul său a fost rulat doar pe artefactul JVM, nu pe un dispozitiv Android |
 
-Pachetul TypeScript are un subpath `@qorechain/qoresign/network`, iar modulul Go are aceleași helper-e: `fetchPqKeyStatus`, `resolveSignBytesVersion`, `simulateTx` (cu modificările de sold), `suggestGasLimit`, `broadcastTx`, `submitWithSignBytesFallback` (un singur fallback, apoi se oprește), `verifySiwqWithChain` și `verifyMessageWithChain`. Crate-ul Rust nu are cod de rețea.
+Artefactele Kotlin și Android au nevoie în proiectul tău de compilatorul Kotlin 2.3 sau mai nou; un proiect pe Kotlin 2.1 nu se compilează împotriva lor.
+
+Pachetul TypeScript are un subpath `@qorechain/qoresign/network`, iar modulul Go are aceleași helper-e, cu excepția `inspectTransaction` și `fetchEvmWindow`: `fetchPqKeyStatus`, `resolveSignBytesVersion`, `simulateTx` (cu modificările de sold), `suggestGasLimit`, `broadcastTx`, `submitWithSignBytesFallback` (un singur fallback, apoi se oprește), `verifySiwqWithChain` și `verifyMessageWithChain`. Pachetele Rust, Swift, Kotlin și Python nu au cod de rețea.
+
+### QoreSeal {#group-qoreseal}
+
+Pagină: [QoreSeal](/developer-tools/qoreseal). Sursă: [qorechain/qoreseal](https://github.com/qorechain/qoreseal). QoreSeal 0.1.0 criptează date către conturi QoreChain, grupuri private și sidechain-uri cu ML-KEM-1024 (FIPS 203). Criptarea funcționează offline; citirea cheii unui destinatar din lanț necesită registrul de chei KEM, care este live pe testnet și ajunge pe mainnet după upgrade-ul v3.2.5. Construcția așteaptă o revizuire externă înainte de 1.0.
+
+| Pachet | Limbaj | Versiune | Instalare | Stare |
+|---|---|---|---|---|
+| [`qorechain-qoreseal`](https://crates.io/crates/qorechain-qoreseal) | Rust (se importă ca `qoreseal`) | 0.1.0 | `cargo add qorechain-qoreseal` | Publicat |
+| [`github.com/qorechain/qoreseal/go`](https://pkg.go.dev/github.com/qorechain/qoreseal/go) | Go | v0.1.0 | `go get github.com/qorechain/qoreseal/go@v0.1.0` | Publicat |
+| [`qorechain-qoreseal`](https://pypi.org/project/qorechain-qoreseal/) | Python 3.9+ (se importă ca `qoreseal`) | 0.1.0 | `pip install qorechain-qoreseal` | Publicat. Wheel-uri pentru macOS (arm64, x86_64) și Linux (x86_64, aarch64); încă nu există wheel pentru Windows |
+| `QoreSeal` (pachet Swift) | Swift (iOS 16+, macOS 13+) | 0.1.0 | `.package(url: "https://github.com/qorechain/qoreseal", from: "0.1.0")`, produs `QoreSeal` | Publicat ca release GitHub; framework-ul binar se descarcă de acolo |
+| [`io.github.qorechain:qoreseal`](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.1.0 | `implementation("io.github.qorechain:qoreseal:0.1.0")` | Publicat pe Maven Central |
+| [`io.github.qorechain:qoreseal-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.1.0 | `implementation("io.github.qorechain:qoreseal-android:0.1.0")` | Publicat pe Maven Central |
+| `@qorechain/qoreseal` | TypeScript | încă nu există | niciuna | **Nepublicat** pe npm (404 la 27 octombrie 2026). Sursa se află în repository |
+
+### PQ light client {#group-pq-light-client}
+
+Pagină: [PQ light client](/developer-tools/pq-light-client). Sursă: [qorechain/qorechain-pq-light-client](https://github.com/qorechain/qorechain-pq-light-client). O specificație în ciornă și verificatori de referință pentru checkpoint-uri semnate cu ML-DSA-87. Nu se conectează la mainnet sau testnet: QoreChain nu produce checkpoint-urile pe care le verifică și nu este programat niciun suport în lanț. Rulează pe seturi simulate de validatori și pe vectori de test comuni.
+
+| Pachet | Limbaj | Versiune | Instalare | Stare |
+|---|---|---|---|---|
+| [`@qorechain/pq-light-client`](https://www.npmjs.com/package/@qorechain/pq-light-client) | TypeScript | 0.1.0 | `npm install @qorechain/pq-light-client` | Publicat. Depinde de `@qorechain/pqc` 0.2.3 |
+| [`qorechain-pq-light-client`](https://crates.io/crates/qorechain-pq-light-client) | Rust (biblioteca `qorechain_pq_light_client`) | 0.1.0 | `cargo add qorechain-pq-light-client` | Publicat |
+| [`github.com/qorechain/qorechain-pq-light-client/go`](https://pkg.go.dev/github.com/qorechain/qorechain-pq-light-client/go) | Go (pachetul `pqlightclient`) | v0.1.0 | `go get github.com/qorechain/qorechain-pq-light-client/go@v0.1.0` | Publicat |
+
+### Custody kit {#group-custody-kit}
+
+Pagină: [Custody kit](/developer-tools/custody-kit). Sursă: [qorechain/qorechain-custody-kit](https://github.com/qorechain/qorechain-custody-kit). Un ghid de integrare, cod de referință și vectori de test pentru custozi și burse, în TypeScript, Python, Go, Rust și Java. Este cod de referință pe care îl citești, îl copiezi sau îl incluzi în proiect (vendor), nu un set de pachete: singura intrare într-un registru este modulul Go.
+
+| Pachet | Limbaj | Versiune | Instalare | Stare |
+|---|---|---|---|---|
+| Release GitHub `v0.1.0` | TypeScript, Python, Go, Rust, Java | 0.1.0 | `git clone https://github.com/qorechain/qorechain-custody-kit`, apoi construiește folderul pentru limbajul tău | Publicat, 27 octombrie 2026. Fără pachet npm, PyPI, crates.io sau Maven, în mod intenționat |
+| [`github.com/qorechain/qorechain-custody-kit/code/go`](https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go) | Go (pachetul `custodykit`) | v0.1.0 | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0` | Publicat |
+
+### QoreScan {#group-qorescan}
+
+Pagină: [QoreScan](/developer-tools/qorescan). Sursă: [qorechain/qorescan](https://github.com/qorechain/qorescan). QoreScan Community 0.1.0 inventariază criptografia unei implementări QoreChain (un director home de nod, starea live a rețelei, endpoint-uri TLS și surse Solidity) și scrie un CBOM CycloneDX 1.6 și rapoarte Markdown. Este un ajutor de inventariere, nu o certificare sau un audit.
+
+| Pachet | Limbaj | Versiune | Instalare | Stare |
+|---|---|---|---|---|
+| [Release GitHub `v0.1.0`](https://github.com/qorechain/qorescan/releases/tag/v0.1.0) | Binare pentru macOS, Linux și Windows (amd64, arm64) | 0.1.0 | descarcă și verifică față de `qorescan_0.1.0_checksums.txt` | Publicat, 27 octombrie 2026 |
+| [`@qorechain/qorescan`](https://www.npmjs.com/package/@qorechain/qorescan) | wrapper npm (Node.js 18+) | 0.1.0 | `npx @qorechain/qorescan scan ...` | Publicat. Descarcă și verifică binarul din release la prima rulare |
+| [`qorescan`](https://pypi.org/project/qorescan/) | wrapper PyPI (Python 3.9+) | 0.1.0 | `pipx run qorescan scan ...` sau `pip install qorescan` | Publicat. Același comportament ca wrapper-ul npm |
+| [`github.com/qorechain/qorescan`](https://pkg.go.dev/github.com/qorechain/qorescan) | Go | v0.1.0 | `go install github.com/qorechain/qorescan/cmd/qorescan@v0.1.0` | Publicat. Go 1.26 |
+
+### Chain developer kit (SDK 0.11.0) {#group-chain-dev-sdk}
+
+Pagină: [Chain developer kit](/developer-tools/chain-dev-sdk). Sursă: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). Partea din QoreChain SDK 0.11.0 pentru echipele de Solidity și contracte inteligente: definiții de lanț viem și helper-e pentru fereastra de autorizare EVM în `@qorechain/evm`, patru șabloane noi `create-qorechain-dapp` (Foundry, Hardhat 3, viem cu wagmi și un token QoreChain Native), quickstart-uri EVM și o pagină despre cum diferă EVM-ul QoreChain de Ethereum.
+
+**În curând.** SDK 0.11.0 este etichetat pe GitHub (`v0.11.0`), iar release-ul său npm este în așteptare: la 27 octombrie 2026 npm servea `@qorechain/sdk` 0.10.0, `@qorechain/evm` 0.8.0 și `create-qorechain-dapp` 0.10.0, iar `@qorechain/sdk@0.11.0` returna 404. Până când npm afișează 0.11.0, noile definiții de lanț, helper-ele pentru fereastră și șabloanele nu pot fi instalate; ceea ce primești astăzi sunt pachetele 0.10.0 din [tabelul SDK](#group-sdk). 0.11.0 modifică doar pachetele npm: SDK-urile Python, Rust, Go și Java rămân la 0.10.0.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 
@@ -195,11 +253,12 @@ Pagini: [Serverul MCP QoreChain](/developer-tools/mcp), [CLI-ul QoreChain](/deve
 
 ### Planificate (nepublicate) {#planned}
 
-Acest nume este rezervat pentru o unealtă care nu este încă într-un registru. A returnat 404 în registrul său la 27 octombrie 2026, așa că nu există nimic de instalat, iar comportamentul listat nu poate fi folosit încă.
+Acestea nu sunt încă într-un registru, așa că nu există nimic de instalat, iar comportamentul descris pentru ele nu poate fi folosit încă. Fiecare a returnat 404 (sau nu era listat) la 27 octombrie 2026.
 
 | Pachet | Utilizare intenționată | Stare |
 |---|---|---|
-| `qorechain-qoresign` pe PyPI | QoreSign pentru Python | Nepublicat (planificat 0.1.1) |
+| `@qorechain/qoreseal` pe npm | QoreSeal pentru TypeScript | Nepublicat; sursa se află în repository |
+| `@qorechain/sdk`, `@qorechain/evm`, `@qorechain/react`, `@qorechain/svm`, `create-qorechain-dapp` 0.11.0 pe npm | [Chain developer kit](/developer-tools/chain-dev-sdk) | Etichetat pe GitHub, release-ul npm în așteptare |
 
 ## Cum obții versiunile live {#live-versions}
 
@@ -219,8 +278,11 @@ Pentru un nume npm cu scope păstrează `@`, de exemplu `https://registry.npmjs.
 ## Limite și probleme cunoscute {#limits}
 
 - **Două rețele live, versiuni diferite.** Mainnet-ul rulează v3.2.4, iar testnet-ul rulează v3.2.6. O funcție care există doar pe testnet este marcată pe pagina ei. Nu presupune comportamentul v3.2.5 pe mainnet.
-- **Încă nu sunt live:** inspectorul de tranzacții din pagina pentru dezvoltatori a dashboard-ului, QoreSign pentru Python, tranzacțiile SVM și precompilările EVM pe mainnet (vezi [prezentarea SDK](/sdk/overview) pentru lista pe trasee).
-- **Exemple nerulate:** din cele 34 de intrări de quickstart, 31 au rulat și au trecut la 27 octombrie 2026. Exemplul QoreSign pentru Python nu a fost rulat (pachetul nu este publicat), iar exemplul QoreSign pentru Android nu a fost rulat pe un dispozitiv. Wallet adapter-ul, chain bridge-ul și handle-urile nu au quickstart, așa că exemplele lor din acest manual provin din tipurile și sursa pachetelor și nu au fost rulate end to end.
+- **Încă nu sunt live:** fila Transaction inspector din pagina pentru dezvoltatori a dashboard-ului (funcția de bibliotecă `inspectTransaction` din QoreSign 0.1.1 este publicată), `@qorechain/qoreseal` pe npm, SDK 0.11.0 (chain developer kit) pe npm, tranzacțiile SVM și precompilările EVM pe mainnet (sunt active doar pe testnet; vezi [prezentarea SDK](/sdk/overview) pentru lista pe trasee).
+- **Registrul QoreSeal și PQ light client.** Criptarea către o adresă citită din lanț necesită registrul de chei KEM, live pe testnet și care ajunge pe mainnet după v3.2.5. PQ light client nu se conectează la niciuna dintre rețele; nu este programat niciun suport în lanț pentru checkpoint-urile sale.
+- **Kotlin 2.3 sau mai nou.** Artefactele Kotlin și Android QoreSign și QoreSeal au nevoie de compilatorul Kotlin 2.3 sau mai nou; Kotlin 2.1 nu se compilează împotriva lor.
+- **Fără wheel-uri pentru Windows.** Pachetele Python QoreSign și QoreSeal au wheel-uri doar pentru macOS și Linux; pe alte platforme se construiesc din distribuția sursă, care necesită Rust.
+- **Exemple nerulate:** din cele 34 de intrări de quickstart, 31 au rulat și au trecut la 27 octombrie 2026. Exemplul QoreSign pentru Python a fost rulat după publicarea pachetului (macOS arm64 și Linux aarch64), iar exemplul QoreSign pentru Android nu a fost rulat pe un dispozitiv. Wallet adapter-ul, chain bridge-ul și handle-urile nu au quickstart, așa că exemplele lor din acest manual provin din tipurile și sursa pachetelor și nu au fost rulate end to end.
 - **`@qorechain/rdk-cli` înainte de 0.6.2** nu afișa nimic când era pornit prin link-ul bin npm, iar `--version` afișa 0.4.1. **`@qorechain/rdk` înainte de 0.7.0** construia dovezi de retragere care nu s-au verificat niciodată on-chain. Folosește 0.7.0.
 - **Conflict de versiune cosmjs.** `@qorechain/wallet-adapter` și `@qorechain/chain-bridge` folosesc cosmjs 0.32; SDK-ul folosește cosmjs 0.39. Instalarea adapter-ului lângă SDK în același proiect face ca npm să raporteze `ERESOLVE`. Păstrează-le în proiecte separate sau pasează `--legacy-peer-deps`.
 - **Copie SDK imbricată în versiunile mai vechi ale RDK.** `@qorechain/rdk` 0.6.2 și versiunile anterioare depind de `@qorechain/sdk` `^0.9.0`, așa că o aplicație pe SDK 0.10.0 primea o a doua copie SDK 0.9.x imbricată. De la 0.7.0 kitul depinde de `@qorechain/sdk` `^0.10.0` și împarte o singură copie.

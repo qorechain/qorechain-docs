@@ -47,8 +47,24 @@ import (
     "github.com/qorechain/qoresign/go/network"
 )
 
-fields, err := network.VerifySiwqWithChain(ctx, network.Options{REST: "https://api.qore.host"}, address, message, signature,
-    qoresign.VerifySiwqOptions{Domain: "app.example.com", Nonce: nonce, ChainID: "qorechain-vladi"})
+// The network helpers are methods on a client.
+client := network.NewClient("https://api.qore.host")
+
+var sig qoresign.SiwqSignature
+if err := json.Unmarshal(signatureJSON, &sig); err != nil {
+    return err
+}
+result, err := client.VerifySiwqWithChain(ctx, address, qoresign.VerifySiwqOptions{
+    Message:   message,
+    Signature: sig,
+    Domain:    "app.example.com", // the host the request came to
+    Nonce:     issuedNonce,       // the nonce your server issued
+    ChainID:   "qorechain-vladi",
+})
+if qoresign.IsCode(err, qoresign.CodeSiwqExpired) {
+    // ask the user to sign in again
+}
+// result.Address signed in; result.PossessionProven reports how the key was registered.
 ```
 
 ## Conturi doar cu cheie clasică {#classical-only}

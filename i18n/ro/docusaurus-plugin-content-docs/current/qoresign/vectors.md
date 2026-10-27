@@ -9,7 +9,7 @@ sidebar_position: 5
 
 [`qoresign-v1.json`](https://github.com/qorechain/qoresign/blob/main/vectors/qoresign-v1.json)
 este generat din implementarea TypeScript (`pnpm build && pnpm vectors`) și
-verificat de suitele de teste TypeScript, Rust, Go, Swift și Kotlin. O
+verificat de suitele de teste TypeScript, Rust, Go, Swift, Kotlin și Python. O
 modificare a fișierului este o modificare a formatului de transmisie: adăugați
 în schimb un fișier nou cu o versiune nouă, în loc să îl editați pe acesta.
 

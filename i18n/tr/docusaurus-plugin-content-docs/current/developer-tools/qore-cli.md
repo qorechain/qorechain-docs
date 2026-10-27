@@ -18,6 +18,18 @@ Hiçbir şey asla imzalanmaz veya yayınlanmaz ve CLI anahtar tutmaz. Sürüm **
 - **Anahtar gerektirmeyen bir transfer hattı.** `prepare-transfer --json` imzasız bir transfer yazar ve `simulate` bu dosyayı kabul eder; böylece bir kabuk betiğinden bir transferi oluşturabilir, denetleyebilir ve fiyatlandırabilirsiniz. İmzalama adımı cüzdanınızda veya [QoreSign](/qoresign/overview) içinde kalır.
 - **Kararlı çıkış kodları.** 0 başarıdır, 1 `NOT_FOUND` veya `INVALID_INPUT` gibi kararlı bir kod taşıyan bir araç hatasıdır ve 2 bir kullanım hatasıdır; böylece bir betik sonuca göre dallanabilir.
 
+## Ne için kullanılır {#use-cases}
+
+1. **Bir işlemin hibrit imzayı taşıdığını denetlemek.** Yayından hemen sonra `qore pq status <hash>`, imza katmanını ve ML-DSA-87 katmanının imzalayanın kayıtlı anahtarına karşı doğrulanıp doğrulanmadığını bildirir.
+2. **Terminalden zincir durumuna bakmak.** `qore block`, `qore account <address>`, `qore validators` ve `qore search <query>`, bir gezgin açmadan veya kod yazmadan hızlı bir soruyu yanıtlar.
+3. **Bir transferi imzalamadan önce fiyatlandırmak ve denetlemek.** `prepare-transfer` imzasız bir transfer yazar, `simulate` gas'i, bakiye değişimlerini ve çözülmüş bir ret nedenini gösterir, `estimate-fee` ise önerilen ücreti verir. Kendi cüzdanınızda veya [QoreSign](/qoresign/overview) ile imzalarsınız.
+4. **Sözleşmeleri bir betikten veya CI işinden okumak.** `qore read-contract --to 0x... --function "balanceOf(address)" --arg 0x... --returns uint256 --json | jq`, bir token bakiyesini veya bir sözleşme görünümünü denetler ve sonucu ayrıştırır.
+5. **Kabuk betikleri ve izleme.** `--json` çıktısı ile kararlı çıkış kodları (0, 1, 2), bir betiğin sonuca göre dallanmasını sağlar. Aynı JSON, [MCP sunucusunun](/developer-tools/mcp) döndürdüğü JSON'dur; bu yüzden bir yapay zeka istemcisi ve bir betik aynı veriyi görür.
+
+## Nasıl çalışır {#how-it-works}
+
+Her `qore` komutu, MCP sunucusunun ortak çekirdeğinin bir aracını, sizin işleminizde, seçtiğiniz ağın genel REST, RPC ve EVM JSON-RPC uç noktalarına karşı çalıştırır. Yanıtlar zincirin cevabından alan alan oluşturulur, üst akış hata metni asla yazdırılmaz ve bir hata yedi kararlı hata kodundan birine eşlenir (`NOT_FOUND`, `INVALID_INPUT`, `UPSTREAM_UNAVAILABLE`, `NOT_AVAILABLE_ON_CHAIN`, `RATE_LIMITED`, `UNAUTHORIZED`, `INTERNAL_ERROR`). Her üst akış isteğinin 10 saniyelik bir zaman aşımı (`--timeout` ile değiştirilir), 4 MiB'lık bir yanıt sınırı vardır ve yeniden deneme yoktur. Hibrit imza denetimleri [QoreSign](/qoresign/overview) ile yerel olarak çalışır. Hiçbir şey imzalanmaz veya gönderilmez. Her aracın ayrıntıları [MCP sunucusu sayfasındadır](/developer-tools/mcp#how-it-works).
+
 ## Nasıl kullanılır {#how-to-use}
 
 Kurmadan çalıştırın ya da bir kez kurun:
@@ -51,6 +63,40 @@ qore estimate-fee --from qor1... --to qor1... --amount 1.5
 ```
 
 Tutarlar `1.5` veya `1.5 QOR` (QOR, en fazla 6 ondalık) ya da `1500000uqor` biçimindedir. Adresler `qor1...` veya `0x...` olabilir.
+
+### Bir hesabı ve bir işlemi denetleyen betik {#script}
+
+Depoda bunu yapan tam bir betik (`examples/cli/pq-check.sh`) bulunur. Özü şudur:
+
+```bash
+net=testnet
+qore() { npx -y @qorechain/qore-cli "$@" --network "$net" --json; }
+
+qore account "$addr" | jq '{exists, balances: [.balances[] | {denom, amount, display}], pq_key_registered}'
+qore pq status "$addr" | jq '.address_status | {registered, algorithm, key_type, possession_proven, evm_window: .evm_window.live}'
+qore pq status "$tx" | jq '.transaction_status | {tier, has_exactly_one_pqc_layer, signer, verified: .verification.verified, reason: .verification.reason}'
+
+# An unsigned transfer to yourself, then its fee (nothing is signed or sent).
+qore prepare-transfer --from "$addr" --to "$addr" --amount 0.000001 > transfer.json
+qore simulate transfer.json | jq '{ok, gas_used, suggested_gas_limit, refusal}'
+```
+
+`qore block --network mainnet --json` komutunun bir örneği (27 Ekim 2026):
+
+```json
+{
+  "network": "mainnet",
+  "height": "3858155",
+  "hash": "1DA8CA5049ACF8844A3B775E2E138B2B118EDC1FC8C1F3602369B0C18D0B90C2",
+  "time": "2026-10-27T21:32:48.831948088Z",
+  "chain_id": "qorechain-vladi",
+  "proposer_address": "B1CDC8C45DA1FFF9BA5A01320F16FC7460E90B8F",
+  "tx_count": 0,
+  "tx_hashes": [],
+  "tx_hashes_truncated": false,
+  "explorer_url": "https://explore.qore.network/block/3858155"
+}
+```
 
 ### Komutlar {#commands}
 
@@ -90,6 +136,15 @@ Genel seçenekler: `--network testnet|mainnet` (varsayılan `testnet`), `--json`
 - **Önkoşullar.** Node.js 20 veya üzeri ve giden HTTPS.
 - **Maliyet.** Ücretsiz. Hazırladığınız transferi göndermek için ağ ücretini (taban gas başına 0,1 uqor) kendi cüzdanınızdan ödersiniz; CLI bu adımı yapmaz.
 
+## Güvenlik notları {#security}
+
+* **İmzalama kod yolu yok.** CLI anahtar tutmaz, hiçbir şey imzalamaz ve hiçbir şey yayınlamaz; `prepare-transfer` imzasız bir belge döndürür.
+* **Gizli bilgiler reddedilir.** Kurtarma ifadesine (12 veya daha fazla ardışık BIP-39 sözcüğü) ya da çıplak bir 32 baytlık özel anahtara benzeyen girdi, herhangi bir istek yapılmadan önce `INVALID_INPUT` ile reddedilir. Yine de birini komut satırına koymayın: kabuk geçmişiniz onu saklar ve hata, o gizli bilgiyi ifşa olmuş saymanızı söyler.
+* **Makinenizden yalnızca herkese açık veriler çıkar:** sizin verdiğiniz adresler, karmalar ve kodlanmış işlemler, genel QoreChain uç noktalarına gönderilir.
+* **Mainnet açıkça belirtilir.** `--network mainnet` vermedikçe çağrılar testnet'e gider ve mainnet için hazırlanan bir transfer bir uyarı taşır.
+* **Notlar herkese açık ve kalıcıdır.** Bir `--memo` içine asla bir gizli bilgi koymayın.
+* Güvenlik açıklarını herkese açık bir issue'da değil, security@qore.network adresine özel olarak bildirin.
+
 ## Nerede yayınlandı {#where-published}
 
 | Kayıt defteri | Paket | Sürüm | Kurulum | Notlar |
@@ -109,4 +164,10 @@ Kaynak: [github.com/qorechain/qorechain-mcp](https://github.com/qorechain/qorech
 - **EVM kuantum sonrası precompile'ları** `0x...0A01` ve `0x...0A02` yalnızca testnet'te etkindir.
 - **İlk sürüm.** 0.1.0: komut adları ve seçenekler sonraki sürümlerde değişebilir. Betikler için `--json` ve çıkış kodlarını kullanın ve sürümü sabitleyin.
 
-İlgili sayfalar: [QoreChain MCP sunucusu](/developer-tools/mcp), [Geliştirici paketlerine genel bakış](/developer-tools/overview), [SDK CLI başvurusu](/sdk/reference/cli), [Faucet](/dashboard/faucet).
+## İlgili sayfalar {#related}
+
+* [QoreChain MCP sunucusu](/developer-tools/mcp): yapay zeka istemcileri için aynı araçlar, barındırılan bir uç noktayla.
+* [QoreSign](/qoresign/overview): `prepare-transfer` komutunun yazdığı transferi imzalayın.
+* [SDK CLI başvurusu](/sdk/reference/cli): SDK'nın kendi komut satırı.
+* [Faucet](/dashboard/faucet): testnet QOR.
+* [Geliştirici paketlerine genel bakış](/developer-tools/overview).

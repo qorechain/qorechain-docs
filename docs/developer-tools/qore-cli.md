@@ -18,6 +18,18 @@ Nothing is ever signed or broadcast, and the CLI holds no keys. Version **0.1.0*
 - **A pipeline for a transfer that needs no key.** `prepare-transfer --json` writes an unsigned transfer and `simulate` accepts that file, so you can build, check and price a transfer from a shell script. The signing step stays in your wallet or in [QoreSign](/qoresign/overview).
 - **Stable exit codes.** 0 is success, 1 is a tool error that carries a stable code such as `NOT_FOUND` or `INVALID_INPUT`, and 2 is a usage error, so a script can branch on the result.
 
+## What it is used for {#use-cases}
+
+1. **Checking that a transaction carried the hybrid signature.** Right after a broadcast, `qore pq status <hash>` reports the signature tier and whether the ML-DSA-87 layer verifies against the signer's registered key.
+2. **Looking up chain state from a terminal.** `qore block`, `qore account <address>`, `qore validators` and `qore search <query>` answer a quick question without opening an explorer or writing code.
+3. **Pricing and checking a transfer before you sign it.** `prepare-transfer` writes an unsigned transfer, `simulate` shows the gas, the balance changes and any decoded refusal, and `estimate-fee` gives the suggested fee. You sign in your own wallet or with [QoreSign](/qoresign/overview).
+4. **Reading contracts from a script or a CI job.** `qore read-contract --to 0x... --function "balanceOf(address)" --arg 0x... --returns uint256 --json | jq` checks a token balance or a contract view and parses the result.
+5. **Shell scripts and monitoring.** `--json` output plus stable exit codes (0, 1, 2) let a script branch on the result. The same JSON is what the [MCP server](/developer-tools/mcp) returns, so an AI client and a script see the same data.
+
+## How it works {#how-it-works}
+
+Every `qore` command runs one tool of the MCP server's shared core, in your process, against the public REST, RPC and EVM JSON-RPC endpoints of the network you choose. Responses are built field by field from the chain's answer, upstream error text is never printed, and a failure maps to one of seven stable error codes (`NOT_FOUND`, `INVALID_INPUT`, `UPSTREAM_UNAVAILABLE`, `NOT_AVAILABLE_ON_CHAIN`, `RATE_LIMITED`, `UNAUTHORIZED`, `INTERNAL_ERROR`). Each upstream request has a 10 second timeout (`--timeout` changes it), a 4 MiB response limit and no retries. Hybrid signature checks run locally with [QoreSign](/qoresign/overview). Nothing is signed or sent. Details of each tool are in the [MCP server page](/developer-tools/mcp#how-it-works).
+
 ## How to use {#how-to-use}
 
 Run it without installing, or install it once:
@@ -51,6 +63,40 @@ qore estimate-fee --from qor1... --to qor1... --amount 1.5
 ```
 
 Amounts are `1.5` or `1.5 QOR` (QOR, up to 6 decimals) or `1500000uqor`. Addresses can be `qor1...` or `0x...`.
+
+### A script that checks an account and a transaction {#script}
+
+The repository has a full script (`examples/cli/pq-check.sh`) that does this. The core of it:
+
+```bash
+net=testnet
+qore() { npx -y @qorechain/qore-cli "$@" --network "$net" --json; }
+
+qore account "$addr" | jq '{exists, balances: [.balances[] | {denom, amount, display}], pq_key_registered}'
+qore pq status "$addr" | jq '.address_status | {registered, algorithm, key_type, possession_proven, evm_window: .evm_window.live}'
+qore pq status "$tx" | jq '.transaction_status | {tier, has_exactly_one_pqc_layer, signer, verified: .verification.verified, reason: .verification.reason}'
+
+# An unsigned transfer to yourself, then its fee (nothing is signed or sent).
+qore prepare-transfer --from "$addr" --to "$addr" --amount 0.000001 > transfer.json
+qore simulate transfer.json | jq '{ok, gas_used, suggested_gas_limit, refusal}'
+```
+
+An example of `qore block --network mainnet --json` (27 October 2026):
+
+```json
+{
+  "network": "mainnet",
+  "height": "3858155",
+  "hash": "1DA8CA5049ACF8844A3B775E2E138B2B118EDC1FC8C1F3602369B0C18D0B90C2",
+  "time": "2026-10-27T21:32:48.831948088Z",
+  "chain_id": "qorechain-vladi",
+  "proposer_address": "B1CDC8C45DA1FFF9BA5A01320F16FC7460E90B8F",
+  "tx_count": 0,
+  "tx_hashes": [],
+  "tx_hashes_truncated": false,
+  "explorer_url": "https://explore.qore.network/block/3858155"
+}
+```
 
 ### Commands {#commands}
 
@@ -90,6 +136,15 @@ On 27 October 2026 `@qorechain/qore-cli` 0.1.0 and `@qorechain/mcp` 0.1.0 were i
 - **Prerequisites.** Node.js 20 or later and outbound HTTPS.
 - **Cost.** Free. To send the transfer you prepared you pay the network fee (floor 0.1 uqor per gas) from your own wallet; the CLI does not do that step.
 
+## Security notes {#security}
+
+* **No signing code path.** The CLI holds no keys, signs nothing and broadcasts nothing; `prepare-transfer` returns an unsigned document.
+* **Secrets are refused.** Input that looks like a recovery phrase (12 or more consecutive BIP-39 words) or a bare 32-byte private key is rejected with `INVALID_INPUT` before any request is made. Do not put one in a command line anyway: your shell history keeps it, and the error tells you to treat that secret as exposed.
+* **Only public data leaves your machine:** addresses, hashes and encoded transactions that you pass in, sent to the public QoreChain endpoints.
+* **Mainnet is explicit.** Calls go to testnet unless you pass `--network mainnet`, and a transfer prepared for mainnet carries a warning.
+* **Memos are public and permanent.** Never put a secret in a `--memo`.
+* Report vulnerabilities privately to security@qore.network, never in a public issue.
+
 ## Where it is published {#where-published}
 
 | Registry | Package | Version | Install | Notes |
@@ -109,4 +164,10 @@ Source: [github.com/qorechain/qorechain-mcp](https://github.com/qorechain/qorech
 - **EVM post-quantum precompiles** `0x...0A01` and `0x...0A02` are active on testnet only.
 - **First release.** 0.1.0: command names and options can change in later versions. Use `--json` and the exit codes for scripts, and pin the version.
 
-Related pages: [QoreChain MCP server](/developer-tools/mcp), [Developer packages overview](/developer-tools/overview), [SDK CLI reference](/sdk/reference/cli), [Faucet](/dashboard/faucet).
+## Related pages {#related}
+
+* [QoreChain MCP server](/developer-tools/mcp): the same tools for AI clients, with a hosted endpoint.
+* [QoreSign](/qoresign/overview): sign the transfer that `prepare-transfer` writes.
+* [SDK CLI reference](/sdk/reference/cli): the SDK's own command line.
+* [Faucet](/dashboard/faucet): testnet QOR.
+* [Developer packages overview](/developer-tools/overview).

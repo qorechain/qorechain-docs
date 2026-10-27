@@ -214,6 +214,11 @@ const sidebars: SidebarsConfig = {
         "developer-tools/qorex-integrations",
         "developer-tools/mcp",
         "developer-tools/qore-cli",
+        "developer-tools/qoreseal",
+        "developer-tools/pq-light-client",
+        "developer-tools/custody-kit",
+        "developer-tools/qorescan",
+        "developer-tools/chain-dev-sdk",
       ],
     },
     {

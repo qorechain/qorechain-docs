@@ -9,7 +9,7 @@ sidebar_position: 5
 
 [`qoresign-v1.json`](https://github.com/qorechain/qoresign/blob/main/vectors/qoresign-v1.json)
 is generated from the TypeScript implementation (`pnpm build && pnpm vectors`)
-and checked by the TypeScript, Rust, Go, Swift and Kotlin test suites. A change
+and checked by the TypeScript, Rust, Go, Swift, Kotlin and Python test suites. A change
 to the file is a change to the wire format: add a new file with a new version
 instead of editing this one.
 

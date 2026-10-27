@@ -29,8 +29,11 @@ The SDK talks to a node through several endpoints:
 - **Consensus RPC** — used for signing/broadcasting native transactions and for
   the QoreChain Native read client.
 - **EVM JSON-RPC** — standard `eth_*`, `net_*`, `web3_*` and `txpool_*` calls on
-  the public endpoints. The QoreChain `qor_*` namespace and the EVM precompiles are
-  not available there yet (see below).
+  the public endpoints. The QoreChain `qor_*` namespace is not served there (see
+  below). The EVM precompiles `pqcVerify` (`0x0A01`) and `pqcKeyStatus` (`0x0A02`)
+  are active on the testnet only; none is active on mainnet (activation needs a
+  governance decision, with no date). See
+  [EVM Precompiles](/developer-guide/evm-precompiles#network-status).
 - **SVM JSON-RPC** — Solana-compatible RPC for the SVM runtime (read-only on the
   public endpoints; SVM transaction submission is disabled network-wide).
 

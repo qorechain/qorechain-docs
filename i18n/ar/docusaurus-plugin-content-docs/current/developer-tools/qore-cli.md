@@ -18,6 +18,18 @@ sidebar_position: 24
 - **خط أنابيب لتحويل لا يحتاج إلى مفتاح.** يكتب `prepare-transfer --json` تحويلًا غير موقّع ويقبل `simulate` ذلك الملف، فتستطيع بناء تحويل وفحصه وتسعيره من سكربت شِل. وتبقى خطوة التوقيع في محفظتك أو في [QoreSign](/qoresign/overview).
 - **رموز خروج ثابتة.** 0 نجاح، و1 خطأ أداة يحمل رمزًا ثابتًا مثل `NOT_FOUND` أو `INVALID_INPUT`، و2 خطأ استخدام، فيستطيع السكربت التفرّع بحسب النتيجة.
 
+## فيمَ تُستخدم {#use-cases}
+
+1. **التحقق من أن معاملة حملت التوقيع الهجين.** مباشرة بعد البثّ، تبلّغ `qore pq status <hash>` عن فئة التوقيع وعمّا إذا كانت طبقة ML-DSA-87 تتحقق مقابل المفتاح المسجّل للموقّع.
+2. **الاطلاع على حالة السلسلة من الطرفية.** تجيب `qore block` و`qore account <address>` و`qore validators` و`qore search <query>` عن سؤال سريع دون فتح مستكشف أو كتابة شيفرة.
+3. **تسعير تحويل وفحصه قبل توقيعه.** يكتب `prepare-transfer` تحويلًا غير موقّع، ويعرض `simulate` الغاز وتغيّرات الرصيد وأي رفض مفكوك الترميز، وتعطي `estimate-fee` الرسم المقترح. وتوقّع في محفظتك أو بواسطة [QoreSign](/qoresign/overview).
+4. **قراءة العقود من سكربت أو مهمة CI.** يفحص الأمر `qore read-contract --to 0x... --function "balanceOf(address)" --arg 0x... --returns uint256 --json | jq` رصيد رمز أو دالة عرض في عقد ويحلّل النتيجة.
+5. **سكربتات الشِل والمراقبة.** مخرجات `--json` مع رموز الخروج الثابتة (0 و1 و2) تتيح للسكربت التفرّع بحسب النتيجة. وJSON نفسه هو ما يعيده [خادم MCP](/developer-tools/mcp)، فيرى عميل الذكاء الاصطناعي والسكربت البيانات نفسها.
+
+## كيف تعمل {#how-it-works}
+
+يشغّل كل أمر `qore` أداة واحدة من النواة المشتركة لخادم MCP، داخل عمليتك، مقابل نقاط REST وRPC وEVM JSON-RPC العامة للشبكة التي تختارها. تُبنى الاستجابات حقلًا حقلًا من جواب السلسلة، ولا يُطبع نص أخطاء المنبع أبدًا، ويُحوَّل الإخفاق إلى واحد من سبعة رموز أخطاء ثابتة (`NOT_FOUND` و`INVALID_INPUT` و`UPSTREAM_UNAVAILABLE` و`NOT_AVAILABLE_ON_CHAIN` و`RATE_LIMITED` و`UNAUTHORIZED` و`INTERNAL_ERROR`). لكل طلب إلى المنبع مهلة 10 ثوانٍ (يغيّرها `--timeout`) وحد استجابة 4 MiB وبلا إعادة محاولة. وتعمل فحوصات التوقيع الهجين محليًا بواسطة [QoreSign](/qoresign/overview). لا يُوقَّع شيء ولا يُرسَل شيء. تفاصيل كل أداة في [صفحة خادم MCP](/developer-tools/mcp#how-it-works).
+
 ## كيفية الاستخدام {#how-to-use}
 
 شغّلها دون تثبيت، أو ثبّتها مرة واحدة:
@@ -51,6 +63,40 @@ qore estimate-fee --from qor1... --to qor1... --amount 1.5
 ```
 
 المبالغ تُكتب `1.5` أو `1.5 QOR` (QOR، حتى 6 منازل عشرية) أو `1500000uqor`. ويمكن أن تكون العناوين `qor1...` أو `0x...`.
+
+### سكربت يفحص حسابًا ومعاملة {#script}
+
+في المستودع سكربت كامل (`examples/cli/pq-check.sh`) يفعل ذلك. وهذا لبّه:
+
+```bash
+net=testnet
+qore() { npx -y @qorechain/qore-cli "$@" --network "$net" --json; }
+
+qore account "$addr" | jq '{exists, balances: [.balances[] | {denom, amount, display}], pq_key_registered}'
+qore pq status "$addr" | jq '.address_status | {registered, algorithm, key_type, possession_proven, evm_window: .evm_window.live}'
+qore pq status "$tx" | jq '.transaction_status | {tier, has_exactly_one_pqc_layer, signer, verified: .verification.verified, reason: .verification.reason}'
+
+# An unsigned transfer to yourself, then its fee (nothing is signed or sent).
+qore prepare-transfer --from "$addr" --to "$addr" --amount 0.000001 > transfer.json
+qore simulate transfer.json | jq '{ok, gas_used, suggested_gas_limit, refusal}'
+```
+
+مثال على مخرجات `qore block --network mainnet --json` (27 أكتوبر 2026):
+
+```json
+{
+  "network": "mainnet",
+  "height": "3858155",
+  "hash": "1DA8CA5049ACF8844A3B775E2E138B2B118EDC1FC8C1F3602369B0C18D0B90C2",
+  "time": "2026-10-27T21:32:48.831948088Z",
+  "chain_id": "qorechain-vladi",
+  "proposer_address": "B1CDC8C45DA1FFF9BA5A01320F16FC7460E90B8F",
+  "tx_count": 0,
+  "tx_hashes": [],
+  "tx_hashes_truncated": false,
+  "explorer_url": "https://explore.qore.network/block/3858155"
+}
+```
 
 ### الأوامر {#commands}
 
@@ -90,6 +136,15 @@ qore estimate-fee --from qor1... --to qor1... --amount 1.5
 - **المتطلبات.** Node.js 20 أو أحدث وHTTPS صادر.
 - **التكلفة.** مجانية. ولإرسال التحويل الذي جهّزته تدفع رسم الشبكة (الحد الأدنى 0.1 uqor لكل وحدة غاز) من محفظتك أنت؛ والأداة لا تنفّذ تلك الخطوة.
 
+## ملاحظات أمنية {#security}
+
+* **لا يوجد مسار شيفرة للتوقيع.** لا تحتفظ الأداة بمفاتيح، ولا توقّع شيئًا، ولا تبثّ شيئًا؛ ويعيد `prepare-transfer` مستندًا غير موقّع.
+* **تُرفض الأسرار.** الإدخال الذي يشبه عبارة استرداد (12 كلمة BIP-39 متتالية أو أكثر) أو مفتاحًا خاصًا مجرّدًا من 32 بايت يُرفض بالرمز `INVALID_INPUT` قبل إجراء أي طلب. ومع ذلك لا تضع واحدًا في سطر أوامر: سجل الشِل يحتفظ به، وتطلب رسالة الخطأ منك معاملة ذلك السر على أنه مكشوف.
+* **البيانات العامة فقط هي التي تغادر جهازك:** العناوين والتجزئات والمعاملات المرمَّزة التي تمرّرها، وتُرسل إلى نقاط QoreChain العامة.
+* **الشبكة الرئيسية صريحة.** تذهب الاستدعاءات إلى الشبكة التجريبية ما لم تمرّر `--network mainnet`، والتحويل المجهّز للشبكة الرئيسية يحمل تحذيرًا.
+* **المذكرات عامة ودائمة.** لا تضع سرًا في `--memo` أبدًا.
+* أبلغ عن الثغرات بشكل خاص إلى security@qore.network، وليس أبدًا في بلاغ عام.
+
 ## أين نُشرت {#where-published}
 
 | السجل | الحزمة | الإصدار | التثبيت | ملاحظات |
@@ -109,4 +164,10 @@ qore estimate-fee --from qor1... --to qor1... --amount 1.5
 - **precompiles ما بعد الكمّي في EVM** `0x...0A01` و`0x...0A02` نشطان على الشبكة التجريبية فقط.
 - **الإصدار الأول.** 0.1.0: قد تتغير أسماء الأوامر وخياراتها في إصدارات لاحقة. استخدم `--json` ورموز الخروج في السكربتات، وثبّت الإصدار.
 
-صفحات ذات صلة: [خادم MCP لـ QoreChain](/developer-tools/mcp)، [نظرة عامة على حزم المطورين](/developer-tools/overview)، [مرجع CLI الخاص بـ SDK](/sdk/reference/cli)، [الصنبور](/dashboard/faucet).
+## صفحات ذات صلة {#related}
+
+* [خادم MCP لـ QoreChain](/developer-tools/mcp): الأدوات نفسها لعملاء الذكاء الاصطناعي، مع نقطة نهاية مستضافة.
+* [QoreSign](/qoresign/overview): وقّع التحويل الذي يكتبه `prepare-transfer`.
+* [مرجع CLI الخاص بـ SDK](/sdk/reference/cli): سطر الأوامر الخاص بـ SDK.
+* [الصنبور](/dashboard/faucet): QOR للشبكة التجريبية.
+* [نظرة عامة على حزم المطورين](/developer-tools/overview).

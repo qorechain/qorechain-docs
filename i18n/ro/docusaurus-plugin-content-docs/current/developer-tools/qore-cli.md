@@ -18,6 +18,18 @@ Nimic nu este semnat sau transmis în rețea vreodată, iar CLI-ul nu ține chei
 - **O conductă pentru un transfer care nu are nevoie de cheie.** `prepare-transfer --json` scrie un transfer nesemnat, iar `simulate` acceptă acel fișier, astfel încât poți construi, verifica și evalua costul unui transfer dintr-un script shell. Pasul de semnare rămâne în portofelul tău sau în [QoreSign](/qoresign/overview).
 - **Coduri de ieșire stabile.** 0 înseamnă succes, 1 este o eroare de unealtă care poartă un cod stabil precum `NOT_FOUND` sau `INVALID_INPUT`, iar 2 este o eroare de utilizare, astfel încât un script poate ramifica în funcție de rezultat.
 
+## Pentru ce se folosește {#use-cases}
+
+1. **Verificarea faptului că o tranzacție a purtat semnătura hibridă.** Imediat după o transmitere, `qore pq status <hash>` raportează nivelul semnăturii și dacă stratul ML-DSA-87 se verifică față de cheia înregistrată a semnatarului.
+2. **Căutarea stării lanțului din terminal.** `qore block`, `qore account <address>`, `qore validators` și `qore search <query>` răspund la o întrebare rapidă fără să deschizi un explorer sau să scrii cod.
+3. **Evaluarea costului și verificarea unui transfer înainte să-l semnezi.** `prepare-transfer` scrie un transfer nesemnat, `simulate` arată gazul, variațiile de sold și orice refuz decodat, iar `estimate-fee` oferă taxa sugerată. Semnezi în propriul portofel sau cu [QoreSign](/qoresign/overview).
+4. **Citirea contractelor dintr-un script sau dintr-un job de CI.** `qore read-contract --to 0x... --function "balanceOf(address)" --arg 0x... --returns uint256 --json | jq` verifică un sold de token sau o vizualizare de contract și parsează rezultatul.
+5. **Scripturi shell și monitorizare.** Ieșirea `--json` plus codurile de ieșire stabile (0, 1, 2) permit unui script să ramifice în funcție de rezultat. Același JSON este cel pe care îl returnează [serverul MCP](/developer-tools/mcp), deci un client AI și un script văd aceleași date.
+
+## Cum funcționează {#how-it-works}
+
+Fiecare comandă `qore` rulează o unealtă a nucleului comun al serverului MCP, în procesul tău, față de endpoint-urile publice REST, RPC și EVM JSON-RPC ale rețelei alese de tine. Răspunsurile sunt construite câmp cu câmp din răspunsul lanțului, textul erorilor din amonte nu este niciodată afișat, iar un eșec se mapează pe unul dintre cele șapte coduri de eroare stabile (`NOT_FOUND`, `INVALID_INPUT`, `UPSTREAM_UNAVAILABLE`, `NOT_AVAILABLE_ON_CHAIN`, `RATE_LIMITED`, `UNAUTHORIZED`, `INTERNAL_ERROR`). Fiecare cerere în amonte are un timeout de 10 secunde (`--timeout` îl schimbă), o limită de răspuns de 4 MiB și nicio reîncercare. Verificările semnăturii hibride rulează local cu [QoreSign](/qoresign/overview). Nimic nu este semnat sau trimis. Detaliile fiecărei unelte sunt în [pagina serverului MCP](/developer-tools/mcp#how-it-works).
+
 ## Cum se utilizează {#how-to-use}
 
 Rulează-l fără instalare sau instalează-l o singură dată:
@@ -51,6 +63,40 @@ qore estimate-fee --from qor1... --to qor1... --amount 1.5
 ```
 
 Sumele sunt `1.5` sau `1.5 QOR` (QOR, până la 6 zecimale) ori `1500000uqor`. Adresele pot fi `qor1...` sau `0x...`.
+
+### Un script care verifică un cont și o tranzacție {#script}
+
+Depozitul conține un script complet (`examples/cli/pq-check.sh`) care face acest lucru. Esența lui:
+
+```bash
+net=testnet
+qore() { npx -y @qorechain/qore-cli "$@" --network "$net" --json; }
+
+qore account "$addr" | jq '{exists, balances: [.balances[] | {denom, amount, display}], pq_key_registered}'
+qore pq status "$addr" | jq '.address_status | {registered, algorithm, key_type, possession_proven, evm_window: .evm_window.live}'
+qore pq status "$tx" | jq '.transaction_status | {tier, has_exactly_one_pqc_layer, signer, verified: .verification.verified, reason: .verification.reason}'
+
+# An unsigned transfer to yourself, then its fee (nothing is signed or sent).
+qore prepare-transfer --from "$addr" --to "$addr" --amount 0.000001 > transfer.json
+qore simulate transfer.json | jq '{ok, gas_used, suggested_gas_limit, refusal}'
+```
+
+Un exemplu de `qore block --network mainnet --json` (27 octombrie 2026):
+
+```json
+{
+  "network": "mainnet",
+  "height": "3858155",
+  "hash": "1DA8CA5049ACF8844A3B775E2E138B2B118EDC1FC8C1F3602369B0C18D0B90C2",
+  "time": "2026-10-27T21:32:48.831948088Z",
+  "chain_id": "qorechain-vladi",
+  "proposer_address": "B1CDC8C45DA1FFF9BA5A01320F16FC7460E90B8F",
+  "tx_count": 0,
+  "tx_hashes": [],
+  "tx_hashes_truncated": false,
+  "explorer_url": "https://explore.qore.network/block/3858155"
+}
+```
 
 ### Comenzi {#commands}
 
@@ -90,6 +136,15 @@ Pe 27 octombrie 2026 `@qorechain/qore-cli` 0.1.0 și `@qorechain/mcp` 0.1.0 au f
 - **Cerințe.** Node.js 20 sau mai nou și HTTPS de ieșire.
 - **Cost.** Gratuit. Ca să trimiți transferul pe care l-ai pregătit, plătești taxa de rețea (prag minim 0.1 uqor per gaz) din propriul portofel; CLI-ul nu face acel pas.
 
+## Note de securitate {#security}
+
+* **Nicio cale de cod pentru semnare.** CLI-ul nu ține chei, nu semnează nimic și nu transmite nimic în rețea; `prepare-transfer` returnează un document nesemnat.
+* **Secretele sunt refuzate.** O intrare care arată ca o frază de recuperare (12 sau mai multe cuvinte BIP-39 consecutive) sau ca o cheie privată brută de 32 de octeți este respinsă cu `INVALID_INPUT` înainte de orice cerere. Nu pune una într-o linie de comandă oricum: istoricul shell-ului o păstrează, iar eroarea îți spune să consideri acel secret expus.
+* **Doar date publice părăsesc mașina ta:** adresele, hash-urile și tranzacțiile codificate pe care le transmiți, trimise către endpoint-urile publice QoreChain.
+* **Mainnet-ul este explicit.** Apelurile merg pe testnet, cu excepția cazului în care transmiți `--network mainnet`, iar un transfer pregătit pentru mainnet poartă un avertisment.
+* **Memo-urile sunt publice și permanente.** Nu pune niciodată un secret într-un `--memo`.
+* Raportează vulnerabilitățile în privat la security@qore.network, niciodată într-un issue public.
+
 ## Unde este publicat {#where-published}
 
 | Registru | Pachet | Versiune | Instalare | Note |
@@ -109,4 +164,10 @@ Sursa: [github.com/qorechain/qorechain-mcp](https://github.com/qorechain/qorecha
 - **Precompilările EVM post-cuantice** `0x...0A01` și `0x...0A02` sunt active doar pe testnet.
 - **Prima versiune.** 0.1.0: numele comenzilor și opțiunile se pot schimba în versiunile următoare. Folosește `--json` și codurile de ieșire pentru scripturi și fixează versiunea.
 
-Pagini conexe: [Serverul MCP QoreChain](/developer-tools/mcp), [Prezentarea pachetelor pentru dezvoltatori](/developer-tools/overview), [Referința CLI a SDK-ului](/sdk/reference/cli), [Faucet](/dashboard/faucet).
+## Pagini conexe {#related}
+
+* [Serverul MCP QoreChain](/developer-tools/mcp): aceleași unelte pentru clienții AI, cu un endpoint găzduit.
+* [QoreSign](/qoresign/overview): semnează transferul pe care îl scrie `prepare-transfer`.
+* [Referința CLI a SDK-ului](/sdk/reference/cli): linia de comandă proprie a SDK-ului.
+* [Faucet](/dashboard/faucet): QOR de testnet.
+* [Prezentarea pachetelor pentru dezvoltatori](/developer-tools/overview).
