@@ -125,14 +125,23 @@ Il faut d'abord des octets signés : construisez et signez avec un SDK ou `qorec
 
 - **Local (stdio), l'option principale.** Ajoutez `{ "mcpServers": { "qorechain": { "command": "npx", "args": ["-y", "@qorechain/mcp"] } } }` à la configuration des serveurs de votre client MCP. Aucune clé n'est nécessaire.
 - **Auto-hébergé (Streamable HTTP).** Lancez `qorechain-mcp serve --port 8787` et pointez le client vers `http://localhost:8787/mcp`.
-- **Point de terminaison hébergé.** `https://mcp.qorechain.io/mcp` sert le testnet par défaut. Chaque requête exige une clé d'API, envoyée dans un en-tête `Authorization: Bearer` ; les clés sont délivrées sur demande. Pour la plupart des usages, la configuration locale n'a besoin d'aucune clé.
+- **Point de terminaison hébergé.** `https://mcp.qorechain.io/mcp` sert le testnet par défaut. Chaque requête exige une clé d'API, envoyée dans un en-tête `Authorization: Bearer <key>`. Demandez-en une depuis votre tableau de bord (voir le déroulement ci-dessous). Pour la plupart des usages, la configuration locale n'a besoin d'aucune clé.
+
+**Clé d'API pour le point de terminaison hébergé.** Connectez-vous, puis, dans la section **API key** de l'onglet :
+
+1. Renseignez le nom ou l'organisation, un contact, l'usage prévu et le volume attendu, puis appuyez sur **Request API key**. Le statut indique « waiting for approval ».
+2. L'équipe QoreChain approuve ou rejette la demande. Un rejet affiche sa note, et vous pouvez refaire une demande.
+3. Après approbation, appuyez sur **Generate key**. La clé n'est affichée qu'une seule fois, avec un bouton de copie et un extrait de configuration prêt à l'emploi, et devient active en une à deux minutes. QoreChain ne conserve aucune copie de la clé, seulement une empreinte (un hash) : une clé perdue ne peut donc pas être réaffichée, il faut la révoquer et en demander une nouvelle.
+4. **Revoke key** est disponible à tout moment et prend effet en environ une minute.
+
+Limites : une seule clé active par compte, 10 requêtes par seconde (rafale de 20) et 100 000 requêtes par jour.
 
 **Étapes.** Ouvrez l'onglet, copiez la configuration locale dans votre client MCP, redémarrez-le, puis demandez-lui de lire un bloc ou un compte. Pour le détail des outils et des options, voir [Serveur MCP QoreChain](/developer-tools/mcp). **Exemple minimal :** collez le bloc stdio dans votre client, redémarrez-le et demandez-lui le dernier bloc.
 
 ## Comment y accéder {#how-to-access}
 
 - **URL :** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers), ou **Developers** dans le groupe **Build** de la barre latérale (et dans le menu mobile).
-- **Connexion :** aucune. La page est ouverte à tous.
+- **Connexion :** aucune pour la page et ses outils. La demande d'une clé d'API pour le point de terminaison MCP hébergé exige une connexion.
 - **Réseau :** **PQ key status** et **Simulator** fonctionnent sur le mainnet ou le testnet via le sélecteur de l'onglet (testnet par défaut). **Signing playground** et **QoreX test wallet** sont réservés au testnet. **SDKs** et **AI agents (MCP)** ne dépendent d'aucun réseau.
 - **Portefeuille :** aucun. Les outils génèrent leurs propres clés jetables.
 - **Coût :** gratuit. Rien n'est envoyé à la chaîne en dehors des requêtes de lecture et des appels de simulation.
@@ -153,7 +162,7 @@ Les versions des packages évoluent ; consultez les versions actuelles dans l'on
 ## Limites et problèmes connus {#limits}
 
 - **Transaction inspector : à venir, pas encore disponible.** Prévu : coller un hash et voir chaque message, le signataire, les frais, si la signature post-quantique est vérifiée par rapport à la clé enregistrée du signataire, et le niveau de sécurité. Il arrivera avec la prochaine version de QoreSign.
-- **Le point de terminaison MCP hébergé exige une clé d'API,** délivrée sur demande ; la configuration locale n'en demande aucune. Utilisez la configuration locale pour la plupart des tâches.
+- **Le point de terminaison MCP hébergé exige une clé d'API.** Demandez-en une depuis votre tableau de bord (une clé active par compte, 10 requêtes par seconde, 100 000 par jour) ; la configuration locale n'en demande aucune. Utilisez la configuration locale pour la plupart des tâches.
 - **Deux guides de démarrage sont marqués « Not tested » :** QoreSign pour Android (le même code n'a été exécuté que sur l'artefact JVM, pas sur un appareil) et QoreSign pour Python. Les 32 autres entrées de guide de démarrage ont été exécutées et ont réussi.
 - **Le simulateur a besoin d'octets signés.** Il ne peut pas signer à votre place et ne diffuse jamais rien.
 - **Le playground et le faux portefeuille sont réservés au testnet,** utilisent des clés jetables qui disparaissent au rechargement, et ne peuvent ni détenir ni déplacer de vrais fonds.

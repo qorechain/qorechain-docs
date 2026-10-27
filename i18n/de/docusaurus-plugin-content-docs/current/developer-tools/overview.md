@@ -189,7 +189,7 @@ Seiten: [QoreChain-MCP-Server](/developer-tools/mcp), [QoreChain-CLI](/developer
 
 | Paket | Sprache | Version | Installation | Status |
 |---|---|---|---|---|
-| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (Node.js-Server, Bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Veröffentlicht. stdio und Streamable HTTP. Ein gehosteter Endpunkt, `https://mcp.qorechain.io/mcp`, braucht einen API-Schlüssel |
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (Node.js-Server, Bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Veröffentlicht. stdio und Streamable HTTP. Ein gehosteter Endpunkt, `https://mcp.qorechain.io/mcp`, braucht einen API-Schlüssel, der in deinem Dashboard angefordert wird |
 | [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (oder `uvx qorechain-mcp`) | Veröffentlicht. Dieselben Tools wie das npm-Paket; nur stdio |
 | [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | Veröffentlicht. `--json`-Ausgabe identisch mit der Ausgabe der MCP-Tools |
 

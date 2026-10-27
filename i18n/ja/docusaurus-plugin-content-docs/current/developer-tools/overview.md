@@ -189,7 +189,7 @@ TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあ�
 
 | パッケージ | 言語 | バージョン | インストール | ステータス |
 |---|---|---|---|---|
-| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript(Node.jsサーバー、bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | 公開済み。stdioとStreamable HTTP。ホスト型エンドポイント`https://mcp.qorechain.io/mcp`にはAPIキーが必要です |
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript(Node.jsサーバー、bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | 公開済み。stdioとStreamable HTTP。ホスト型エンドポイント`https://mcp.qorechain.io/mcp`にはAPIキーが必要で、ダッシュボードから申請します |
 | [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python(3.10+) | 0.1.0 | `pip install qorechain-mcp`(または`uvx qorechain-mcp`) | 公開済み。npmパッケージと同じツール。stdioのみ |
 | [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript(CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | 公開済み。`--json`出力はMCPツールの出力と同一です |
 

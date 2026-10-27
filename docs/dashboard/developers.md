@@ -125,14 +125,23 @@ You need signed bytes first: build and sign with an SDK or `qorechaind` (see [Po
 
 - **Local (stdio), the primary option.** Add `{ "mcpServers": { "qorechain": { "command": "npx", "args": ["-y", "@qorechain/mcp"] } } }` to your MCP client's server configuration. It needs no key.
 - **Self-hosted (Streamable HTTP).** Run `qorechain-mcp serve --port 8787` and point the client at `http://localhost:8787/mcp`.
-- **Hosted endpoint.** `https://mcp.qorechain.io/mcp` serves testnet by default. Every request needs an API key, sent as an `Authorization: Bearer` header; keys are issued on request. For most uses the local setup needs no key.
+- **Hosted endpoint.** `https://mcp.qorechain.io/mcp` serves testnet by default. Every request needs an API key, sent as an `Authorization: Bearer <key>` header. Request one from your dashboard (see the key flow below). For most uses the local setup needs no key.
+
+**API key for the hosted endpoint.** Sign in, then in the **API key** section of the tab:
+
+1. Fill in the name or organisation, a contact, the intended use and the expected volume, then press **Request API key**. The status reads "waiting for approval".
+2. The QoreChain team approves or rejects the request. A rejection shows its note, and you can request again.
+3. After approval, press **Generate key**. The key is shown once, with a copy button and a ready configuration snippet, and becomes active within a minute or two. QoreChain keeps no copy of the key, only a fingerprint (a hash), so a lost key cannot be shown again: revoke it and request a new one.
+4. **Revoke key** is available at any time and takes effect in about a minute.
+
+Limits: one active key per account, 10 requests per second (burst 20) and 100,000 requests per day.
 
 **Steps.** Open the tab, copy the local configuration into your MCP client, restart it, and ask it to read a block or an account. For tool details and options see [QoreChain MCP server](/developer-tools/mcp). **Minimal example:** paste the stdio block into your client, restart, and ask it for the latest block.
 
 ## How to access {#how-to-access}
 
 - **URL:** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers), or **Developers** in the sidebar **Build** group (and the mobile menu).
-- **Sign-in:** none. The page is open to everyone.
+- **Sign-in:** none for the page and its tools. Requesting an API key for the hosted MCP endpoint needs sign-in.
 - **Network:** **PQ key status** and **Simulator** work on mainnet or testnet via the toggle on the tab (default testnet). **Signing playground** and **QoreX test wallet** are testnet only. **SDKs** and **AI agents (MCP)** do not depend on a network.
 - **Wallet:** none. The tools generate their own throwaway keys.
 - **Cost:** free. Nothing is sent to the chain except read queries and simulate calls.
@@ -153,7 +162,7 @@ Package versions change; read the current ones on the **SDKs** tab or on the reg
 ## Limits and known issues {#limits}
 
 - **Transaction inspector: upcoming, not live.** Planned: paste a hash and see every message, the signer, the fee, whether the post-quantum signature verifies against the signer's registered key, and the security tier. It arrives with the next QoreSign release.
-- **The hosted MCP endpoint needs an API key,** issued on request; the local setup needs none. Use the local setup for most work.
+- **The hosted MCP endpoint needs an API key.** Request one from your dashboard (one active key per account, 10 requests per second, 100,000 per day); the local setup needs no key. Use the local setup for most work.
 - **Two quickstarts are marked "Not tested":** QoreSign for Android (the same code was run on the JVM artifact only, not on a device) and QoreSign for Python. The other 32 quickstart entries ran and passed.
 - **The simulator needs signed bytes.** It cannot sign for you and never broadcasts.
 - **The playground and test wallet are testnet only,** use throwaway keys that vanish on reload, and cannot hold or move real funds.

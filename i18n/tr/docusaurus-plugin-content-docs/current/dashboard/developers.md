@@ -125,14 +125,23 @@ Pencere, hesabın ML-DSA-87 anahtarıyla native hattan açılır ve blok sınır
 
 - **Yerel (stdio), birincil seçenek.** MCP istemcinizin sunucu yapılandırmasına `{ "mcpServers": { "qorechain": { "command": "npx", "args": ["-y", "@qorechain/mcp"] } } }` ekleyin. Anahtar gerektirmez.
 - **Kendi barındırdığınız (Streamable HTTP).** `qorechain-mcp serve --port 8787` komutunu çalıştırın ve istemciyi `http://localhost:8787/mcp` adresine yönlendirin.
-- **Barındırılan uç nokta.** `https://mcp.qorechain.io/mcp` varsayılan olarak testnet'e hizmet verir. Her istek, `Authorization: Bearer` başlığı olarak gönderilen bir API anahtarı gerektirir; anahtarlar talep üzerine verilir. Çoğu kullanımda yerel kurulum anahtar gerektirmez.
+- **Barındırılan uç nokta.** `https://mcp.qorechain.io/mcp` varsayılan olarak testnet'e hizmet verir. Her istek, `Authorization: Bearer <key>` başlığı olarak gönderilen bir API anahtarı gerektirir. Bir tanesini dashboard'unuzdan talep edin (aşağıdaki anahtar akışına bakın). Çoğu kullanımda yerel kurulum anahtar gerektirmez.
+
+**Barındırılan uç nokta için API anahtarı.** Oturum açın, ardından sekmedeki **API key** bölümünde:
+
+1. Ad veya kuruluş, bir iletişim bilgisi, amaçlanan kullanım ve beklenen hacmi doldurun, ardından **Request API key**'e basın. Durum "onay bekleniyor" olarak görünür.
+2. QoreChain ekibi talebi onaylar veya reddeder. Ret, notuyla birlikte gösterilir ve yeniden talep edebilirsiniz.
+3. Onaydan sonra **Generate key**'e basın. Anahtar yalnızca bir kez gösterilir; yanında bir kopyalama düğmesi ve hazır bir yapılandırma parçacığı bulunur ve bir iki dakika içinde etkinleşir. QoreChain anahtarın bir kopyasını tutmaz, yalnızca bir parmak izi (bir karma) saklar; bu nedenle kaybolan bir anahtar yeniden gösterilemez: iptal edin ve yenisini talep edin.
+4. **Revoke key** her zaman kullanılabilir ve yaklaşık bir dakika içinde etkili olur.
+
+Sınırlar: hesap başına bir etkin anahtar, saniyede 10 istek (ani yük 20) ve günde 100.000 istek.
 
 **Adımlar.** Sekmeyi açın, yerel yapılandırmayı MCP istemcinize kopyalayın, istemciyi yeniden başlatın ve ondan bir blok veya bir hesap okumasını isteyin. Araç ayrıntıları ve seçenekler için bkz. [QoreChain MCP sunucusu](/developer-tools/mcp). **Asgari örnek:** stdio bloğunu istemcinize yapıştırın, yeniden başlatın ve ondan en son bloğu isteyin.
 
 ## Nasıl erişilir {#how-to-access}
 
 - **URL:** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) veya kenar çubuğu **Build** grubunda (ve mobil menüde) **Developers**.
-- **Oturum açma:** yok. Sayfa herkese açıktır.
+- **Oturum açma:** sayfa ve araçları için yok. Barındırılan MCP uç noktası için bir API anahtarı talep etmek oturum açmayı gerektirir.
 - **Ağ:** **PQ key status** ve **Simulator**, sekmedeki anahtar aracılığıyla mainnet veya testnet üzerinde çalışır (varsayılan testnet). **Signing playground** ve **QoreX test wallet** yalnızca testnet içindir. **SDKs** ve **AI agents (MCP)** bir ağa bağlı değildir.
 - **Cüzdan:** yok. Araçlar kendi tek kullanımlık anahtarlarını üretir.
 - **Maliyet:** ücretsiz. Zincire okuma sorguları ve simulate çağrıları dışında hiçbir şey gönderilmez.
@@ -153,7 +162,7 @@ Paket sürümleri değişir; güncel olanları **SDKs** sekmesinde veya kayıt d
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 - **Transaction inspector: yakında gelecek, henüz canlı değil.** Planlanan: bir karma yapıştırın ve her mesajı, imzalayanı, ücreti, kuantum sonrası imzanın imzalayanın kayıtlı anahtarına karşı doğrulanıp doğrulanmadığını ve güvenlik katmanını görün. Bir sonraki QoreSign sürümüyle gelir.
-- **Barındırılan MCP uç noktası bir API anahtarı gerektirir,** talep üzerine verilir; yerel kurulum gerektirmez. Çoğu iş için yerel kurulumu kullanın.
+- **Barındırılan MCP uç noktası bir API anahtarı gerektirir.** Bir tanesini dashboard'unuzdan talep edin (hesap başına bir etkin anahtar, saniyede 10 istek, günde 100.000); yerel kurulum anahtar gerektirmez. Çoğu iş için yerel kurulumu kullanın.
 - **İki hızlı başlangıç "Not tested" olarak işaretlidir:** Android için QoreSign (aynı kod yalnızca JVM artefaktında çalıştırıldı, bir cihazda değil) ve Python için QoreSign. Diğer 32 hızlı başlangıç girdisi çalıştı ve geçti.
 - **Simulator imzalı bayt gerektirir.** Sizin yerinize imzalayamaz ve asla yayınlamaz.
 - **Playground ve test wallet yalnızca testnet içindir,** yeniden yüklemede kaybolan tek kullanımlık anahtarlar kullanır ve gerçek fon tutamaz veya taşıyamaz.

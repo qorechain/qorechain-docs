@@ -125,14 +125,23 @@ Primero necesitas los bytes firmados: construye y firma con un SDK o `qorechaind
 
 - **Local (stdio), la opción principal.** Añade `{ "mcpServers": { "qorechain": { "command": "npx", "args": ["-y", "@qorechain/mcp"] } } }` a la configuración de servidores de tu cliente MCP. No necesita clave.
 - **Autoalojado (Streamable HTTP).** Ejecuta `qorechain-mcp serve --port 8787` y apunta el cliente a `http://localhost:8787/mcp`.
-- **Endpoint alojado.** `https://mcp.qorechain.io/mcp` sirve la testnet por defecto. Cada solicitud necesita una clave de API, enviada en una cabecera `Authorization: Bearer`; las claves se emiten bajo petición. Para la mayoría de los usos, la configuración local no necesita clave.
+- **Endpoint alojado.** `https://mcp.qorechain.io/mcp` sirve la testnet por defecto. Cada solicitud necesita una clave de API, enviada en una cabecera `Authorization: Bearer <key>`. Solicita una desde tu panel (consulta el flujo de la clave más abajo). Para la mayoría de los usos, la configuración local no necesita clave.
+
+**Clave de API para el endpoint alojado.** Inicia sesión y, en la sección **API key** de la pestaña:
+
+1. Rellena el nombre o la organización, un contacto, el uso previsto y el volumen esperado, y pulsa **Request API key**. El estado indica "waiting for approval".
+2. El equipo de QoreChain aprueba o rechaza la solicitud. Un rechazo muestra su nota, y puedes volver a solicitarla.
+3. Tras la aprobación, pulsa **Generate key**. La clave se muestra una sola vez, con un botón de copiar y un fragmento de configuración listo para usar, y queda activa en uno o dos minutos. QoreChain no conserva ninguna copia de la clave, solo una huella (un hash), así que una clave perdida no puede volver a mostrarse: revócala y solicita una nueva.
+4. **Revoke key** está disponible en cualquier momento y surte efecto en aproximadamente un minuto.
+
+Límites: una clave activa por cuenta, 10 solicitudes por segundo (ráfaga de 20) y 100 000 solicitudes por día.
 
 **Pasos.** Abre la pestaña, copia la configuración local en tu cliente MCP, reinícialo y pídele que lea un bloque o una cuenta. Para los detalles de las herramientas y las opciones consulta [Servidor MCP de QoreChain](/developer-tools/mcp). **Ejemplo mínimo:** pega el bloque stdio en tu cliente, reinícialo y pídele el último bloque.
 
 ## Cómo acceder {#how-to-access}
 
 - **URL:** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers), o **Developers** en el grupo **Build** de la barra lateral (y en el menú móvil).
-- **Inicio de sesión:** ninguno. La página está abierta a todos.
+- **Inicio de sesión:** ninguno para la página y sus herramientas. Solicitar una clave de API para el endpoint MCP alojado requiere iniciar sesión.
 - **Red:** **PQ key status** y **Simulator** funcionan en mainnet o testnet mediante el selector de la pestaña (por defecto testnet). **Signing playground** y **QoreX test wallet** son solo de testnet. **SDKs** y **AI agents (MCP)** no dependen de una red.
 - **Wallet:** ninguna. Las herramientas generan sus propias claves desechables.
 - **Coste:** gratis. No se envía nada a la cadena salvo consultas de lectura y llamadas de simulación.
@@ -153,7 +162,7 @@ Las versiones de los paquetes cambian; consulta las actuales en la pestaña **SD
 ## Límites y problemas conocidos {#limits}
 
 - **Transaction inspector: próximamente, todavía no activo.** Previsto: pegar un hash y ver cada mensaje, el firmante, la comisión, si la firma post-cuántica se verifica contra la clave registrada del firmante, y el nivel de seguridad. Llegará con la próxima versión de QoreSign.
-- **El endpoint MCP alojado necesita una clave de API,** emitida bajo petición; la configuración local no necesita ninguna. Usa la configuración local para la mayor parte del trabajo.
+- **El endpoint MCP alojado necesita una clave de API.** Solicita una desde tu panel (una clave activa por cuenta, 10 solicitudes por segundo, 100 000 por día); la configuración local no necesita ninguna. Usa la configuración local para la mayor parte del trabajo.
 - **Dos inicios rápidos están marcados como "Not tested":** QoreSign para Android (el mismo código se ejecutó solo en el artefacto JVM, no en un dispositivo) y QoreSign para Python. Las otras 32 entradas de inicio rápido se ejecutaron y pasaron.
 - **El simulador necesita bytes firmados.** No puede firmar por ti y nunca transmite.
 - **El playground y la test wallet son solo de testnet,** usan claves desechables que desaparecen al recargar y no pueden guardar ni mover fondos reales.

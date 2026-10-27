@@ -189,7 +189,7 @@ Sayfalar: [QoreChain MCP sunucusu](/developer-tools/mcp), [QoreChain CLI](/devel
 
 | Paket | Dil | Sürüm | Kurulum | Durum |
 |---|---|---|---|---|
-| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (Node.js sunucusu, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Yayımlandı. stdio ve Streamable HTTP. Barındırılan bir uç nokta olan `https://mcp.qorechain.io/mcp` bir API anahtarı gerektirir |
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (Node.js sunucusu, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Yayımlandı. stdio ve Streamable HTTP. Barındırılan bir uç nokta olan `https://mcp.qorechain.io/mcp` bir API anahtarı gerektirir, dashboard'unuzdan talep edilir |
 | [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (veya `uvx qorechain-mcp`) | Yayımlandı. npm paketiyle aynı araçlar; yalnızca stdio |
 | [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | Yayımlandı. `--json` çıktısı MCP araç çıktısıyla aynıdır |
 

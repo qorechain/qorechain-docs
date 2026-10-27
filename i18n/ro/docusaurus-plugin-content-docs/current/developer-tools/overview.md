@@ -189,7 +189,7 @@ Pagini: [Serverul MCP QoreChain](/developer-tools/mcp), [CLI-ul QoreChain](/deve
 
 | Pachet | Limbaj | Versiune | Instalare | Stare |
 |---|---|---|---|---|
-| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (server Node.js, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Publicat. stdio și Streamable HTTP. Un endpoint găzduit, `https://mcp.qorechain.io/mcp`, are nevoie de o cheie API |
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (server Node.js, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Publicat. stdio și Streamable HTTP. Un endpoint găzduit, `https://mcp.qorechain.io/mcp`, are nevoie de o cheie API, solicitată din dashboard-ul tău |
 | [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (sau `uvx qorechain-mcp`) | Publicat. Aceleași unelte ca pachetul npm; doar stdio |
 | [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | Publicat. Ieșire `--json` identică cu ieșirea uneltei MCP |
 

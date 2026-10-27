@@ -189,7 +189,7 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 
 | 패키지 | 언어 | 버전 | 설치 | 상태 |
 |---|---|---|---|---|
-| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (Node.js 서버, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Published. stdio와 Streamable HTTP. 호스팅 엔드포인트 `https://mcp.qorechain.io/mcp`에는 API 키가 필요함 |
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (Node.js 서버, bin `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | Published. stdio와 Streamable HTTP. 호스팅 엔드포인트 `https://mcp.qorechain.io/mcp`에는 대시보드에서 요청하는 API 키가 필요함 |
 | [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (또는 `uvx qorechain-mcp`) | Published. npm 패키지와 같은 도구. stdio 전용 |
 | [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | Published. `--json` 출력은 MCP 도구 출력과 동일 |
 

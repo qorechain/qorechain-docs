@@ -189,7 +189,7 @@ sidebar_position: 1
 
 | الحزمة | اللغة | الإصدار | التثبيت | الحالة |
 |---|---|---|---|---|
-| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (خادم Node.js، الأمر `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | منشورة. تدعم stdio وStreamable HTTP. نقطة نهاية مستضافة، `https://mcp.qorechain.io/mcp`، تحتاج إلى مفتاح API |
+| [`@qorechain/mcp`](https://www.npmjs.com/package/@qorechain/mcp) | TypeScript (خادم Node.js، الأمر `qorechain-mcp`) | 0.1.0 | `npx -y @qorechain/mcp` | منشورة. تدعم stdio وStreamable HTTP. نقطة نهاية مستضافة، `https://mcp.qorechain.io/mcp`، تحتاج إلى مفتاح API يُطلب من لوحة التحكم |
 | [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (أو `uvx qorechain-mcp`) | منشورة. الأدوات نفسها الموجودة في حزمة npm؛ وstdio فقط |
 | [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (أداة CLI باسم `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | منشورة. مخرجات `--json` مطابقة لمخرجات أداة MCP |
 

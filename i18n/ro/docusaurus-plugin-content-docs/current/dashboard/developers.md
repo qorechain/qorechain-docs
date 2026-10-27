@@ -125,14 +125,23 @@ Ai nevoie mai întâi de octeți semnați: construiește și semnează cu un SDK
 
 - **Local (stdio), opțiunea principală.** Adaugă `{ "mcpServers": { "qorechain": { "command": "npx", "args": ["-y", "@qorechain/mcp"] } } }` în configurația de servere a clientului tău MCP. Nu necesită nicio cheie.
 - **Auto-găzduit (Streamable HTTP).** Rulează `qorechain-mcp serve --port 8787` și îndreaptă clientul către `http://localhost:8787/mcp`.
-- **Endpoint găzduit.** `https://mcp.qorechain.io/mcp` servește implicit testnet-ul. Fiecare cerere are nevoie de o cheie API, trimisă ca antet `Authorization: Bearer`; cheile se emit la cerere. Pentru majoritatea utilizărilor, configurarea locală nu necesită nicio cheie.
+- **Endpoint găzduit.** `https://mcp.qorechain.io/mcp` servește implicit testnet-ul. Fiecare cerere are nevoie de o cheie API, trimisă ca antet `Authorization: Bearer <key>`. Solicită una din dashboard-ul tău (vezi fluxul cheii mai jos). Pentru majoritatea utilizărilor, configurarea locală nu necesită nicio cheie.
+
+**Cheia API pentru endpoint-ul găzduit.** Autentifică-te, apoi, în secțiunea **API key** a tab-ului:
+
+1. Completează numele sau organizația, un contact, utilizarea intenționată și volumul estimat, apoi apasă **Request API key**. Starea afișează „waiting for approval”.
+2. Echipa QoreChain aprobă sau respinge cererea. O respingere afișează nota sa, iar tu poți face o nouă cerere.
+3. După aprobare, apasă **Generate key**. Cheia este afișată o singură dată, cu un buton de copiere și un fragment de configurare gata de folosit, și devine activă în decurs de un minut sau două. QoreChain nu păstrează nicio copie a cheii, ci doar o amprentă (un hash), așa că o cheie pierdută nu mai poate fi afișată din nou: revoc-o și solicită una nouă.
+4. **Revoke key** este disponibil oricând și intră în vigoare în aproximativ un minut.
+
+Limite: o cheie activă pe cont, 10 cereri pe secundă (rafală de 20) și 100.000 de cereri pe zi.
 
 **Pași.** Deschide tab-ul, copiază configurația locală în clientul tău MCP, repornește-l și cere-i să citească un bloc sau un cont. Pentru detalii despre unelte și opțiuni vezi [Serverul MCP QoreChain](/developer-tools/mcp). **Exemplu minimal:** lipește blocul stdio în clientul tău, repornește-l și cere-i ultimul bloc.
 
 ## Cum se accesează {#how-to-access}
 
 - **URL:** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) sau **Developers** în grupul **Build** din bara laterală (și în meniul mobil).
-- **Autentificare:** niciuna. Pagina este deschisă tuturor.
+- **Autentificare:** niciuna pentru pagină și uneltele ei. Solicitarea unei chei API pentru endpoint-ul MCP găzduit necesită autentificare.
 - **Rețea:** **PQ key status** și **Simulator** funcționează pe mainnet sau testnet prin comutatorul din tab (implicit testnet). **Signing playground** și **QoreX test wallet** sunt doar pe testnet. **SDKs** și **AI agents (MCP)** nu depind de o rețea.
 - **Portofel:** niciunul. Uneltele își generează propriile chei de unică folosință.
 - **Cost:** gratuit. Nu se trimite nimic către lanț în afară de interogări de citire și apeluri de simulare.
@@ -153,7 +162,7 @@ Versiunile pachetelor se schimbă; citește-le pe cele curente în tab-ul **SDKs
 ## Limite și probleme cunoscute {#limits}
 
 - **Transaction inspector: în curând, încă nu este activ.** Planificat: lipești un hash și vezi fiecare mesaj, semnatarul, comisionul, dacă semnătura post-cuantică se verifică în raport cu cheia înregistrată a semnatarului și nivelul de securitate. Apare odată cu următoarea versiune QoreSign.
-- **Endpoint-ul MCP găzduit are nevoie de o cheie API,** emisă la cerere; configurarea locală nu are nevoie de niciuna. Folosește configurarea locală pentru majoritatea lucrărilor.
+- **Endpoint-ul MCP găzduit are nevoie de o cheie API.** Solicită una din dashboard-ul tău (o cheie activă pe cont, 10 cereri pe secundă, 100.000 pe zi); configurarea locală nu are nevoie de nicio cheie. Folosește configurarea locală pentru majoritatea lucrărilor.
 - **Două quickstart-uri sunt marcate „Not tested”:** QoreSign pentru Android (același cod a fost rulat doar pe artefactul JVM, nu pe un dispozitiv) și QoreSign pentru Python. Celelalte 32 de intrări quickstart au rulat și au trecut.
 - **Simulatorul are nevoie de octeți semnați.** Nu poate semna în locul tău și nu transmite niciodată.
 - **Playground-ul și portofelul de test sunt doar pe testnet,** folosesc chei de unică folosință care dispar la reîncărcare și nu pot deține sau muta fonduri reale.

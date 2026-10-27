@@ -125,14 +125,23 @@ Du brauchst zuerst signierte Bytes: Erstelle und signiere sie mit einem SDK oder
 
 - **Lokal (stdio), die Hauptoption.** Füge `{ "mcpServers": { "qorechain": { "command": "npx", "args": ["-y", "@qorechain/mcp"] } } }` in die Server-Konfiguration deines MCP-Clients ein. Es braucht keinen Schlüssel.
 - **Selbst gehostet (Streamable HTTP).** Führe `qorechain-mcp serve --port 8787` aus und richte den Client auf `http://localhost:8787/mcp`.
-- **Gehosteter Endpunkt.** `https://mcp.qorechain.io/mcp` bedient standardmäßig das Testnet. Jede Anfrage braucht einen API-Schlüssel, der als `Authorization: Bearer`-Header gesendet wird; Schlüssel werden auf Anfrage ausgestellt. Für die meisten Anwendungen braucht die lokale Einrichtung keinen Schlüssel.
+- **Gehosteter Endpunkt.** `https://mcp.qorechain.io/mcp` bedient standardmäßig das Testnet. Jede Anfrage braucht einen API-Schlüssel, der als `Authorization: Bearer <key>`-Header gesendet wird. Fordere einen in deinem Dashboard an (siehe den Ablauf unten). Für die meisten Anwendungen braucht die lokale Einrichtung keinen Schlüssel.
+
+**API-Schlüssel für den gehosteten Endpunkt.** Melde dich an und gehe dann im Tab zum Abschnitt **API key**:
+
+1. Fülle Name oder Organisation, einen Kontakt, den Verwendungszweck und das erwartete Volumen aus und drücke dann **Request API key**. Der Status lautet „waiting for approval".
+2. Das QoreChain-Team genehmigt oder lehnt die Anfrage ab. Bei einer Ablehnung wird deren Hinweis angezeigt, und du kannst erneut anfragen.
+3. Drücke nach der Genehmigung **Generate key**. Der Schlüssel wird einmalig angezeigt, mit einer Kopierschaltfläche und einem fertigen Konfigurationsausschnitt, und wird innerhalb von ein bis zwei Minuten aktiv. QoreChain behält keine Kopie des Schlüssels, nur einen Fingerabdruck (einen Hash), sodass ein verlorener Schlüssel nicht erneut angezeigt werden kann: Widerrufe ihn und fordere einen neuen an.
+4. **Revoke key** ist jederzeit verfügbar und wirkt nach etwa einer Minute.
+
+Grenzen: ein aktiver Schlüssel pro Konto, 10 Anfragen pro Sekunde (Burst 20) und 100.000 Anfragen pro Tag.
 
 **Schritte.** Öffne den Tab, kopiere die lokale Konfiguration in deinen MCP-Client, starte ihn neu und bitte ihn, einen Block oder ein Konto zu lesen. Details zu den Tools und Optionen findest du unter [QoreChain-MCP-Server](/developer-tools/mcp). **Minimales Beispiel:** Füge den stdio-Block in deinen Client ein, starte ihn neu und bitte ihn um den neuesten Block.
 
 ## Zugang {#how-to-access}
 
 - **URL:** [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers), oder **Developers** in der Seitenleistengruppe **Build** (und im mobilen Menü).
-- **Anmeldung:** keine. Die Seite steht allen offen.
+- **Anmeldung:** keine für die Seite und ihre Tools. Für die Anfrage eines API-Schlüssels für den gehosteten MCP-Endpunkt ist eine Anmeldung nötig.
 - **Netzwerk:** **PQ key status** und **Simulator** funktionieren im Mainnet oder Testnet über den Schalter auf dem Tab (Standard Testnet). **Signing playground** und **QoreX test wallet** gelten nur für das Testnet. **SDKs** und **AI agents (MCP)** hängen von keinem Netzwerk ab.
 - **Wallet:** keine. Die Tools erzeugen ihre eigenen Wegwerfschlüssel.
 - **Kosten:** kostenlos. Es wird nichts an die Chain gesendet außer Leseabfragen und Simulate-Aufrufen.
@@ -153,7 +162,7 @@ Paketversionen ändern sich; lies die aktuellen im Tab **SDKs** oder in den Regi
 ## Grenzen und bekannte Probleme {#limits}
 
 - **Transaction inspector: in Planung, nicht live.** Geplant: einen Hash einfügen und jede Nachricht, den Signer, die Gebühr, ob die Post-Quantum-Signatur gegen den registrierten Schlüssel des Signers verifiziert, und die Sicherheitsstufe sehen. Er kommt mit dem nächsten QoreSign-Release.
-- **Der gehostete MCP-Endpunkt braucht einen API-Schlüssel,** der auf Anfrage ausgestellt wird; die lokale Einrichtung braucht keinen. Nutze für die meiste Arbeit die lokale Einrichtung.
+- **Der gehostete MCP-Endpunkt braucht einen API-Schlüssel.** Fordere einen in deinem Dashboard an (ein aktiver Schlüssel pro Konto, 10 Anfragen pro Sekunde, 100.000 pro Tag); die lokale Einrichtung braucht keinen. Nutze für die meiste Arbeit die lokale Einrichtung.
 - **Zwei Quickstarts sind als „Not tested" markiert:** QoreSign für Android (derselbe Code wurde nur auf dem JVM-Artefakt ausgeführt, nicht auf einem Gerät) und QoreSign für Python. Die anderen 32 Quickstart-Einträge liefen und bestanden.
 - **Der Simulator braucht signierte Bytes.** Er kann nicht für dich signieren und sendet nie.
 - **Der Playground und die Test-Wallet gelten nur für das Testnet,** verwenden Wegwerfschlüssel, die beim Neuladen verschwinden, und können keine echten Mittel halten oder bewegen.
