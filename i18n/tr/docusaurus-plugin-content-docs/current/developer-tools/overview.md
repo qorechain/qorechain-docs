@@ -39,6 +39,7 @@ Ne geliştirdiğinize göre seçin.
 | Kuantum sonrası bir hafif istemci tasarımını (kontrol noktası doğrulaması) incelemek veya test etmek | PQ hafif istemci | [PQ hafif istemci](/developer-tools/pq-light-client) |
 | QoreChain'i saklama kuruluşu veya borsa olarak entegre etmek (adres kontrolleri, çekim doğrulaması, para yatırma kaydı) | Saklama kiti | [Saklama kiti](/developer-tools/custody-kit) |
 | Bir düğümün, bir ağın veya Solidity kaynaklarının kriptografisini CycloneDX CBOM olarak envantere almak | QoreScan | [QoreScan](/developer-tools/qorescan) |
+| Testnet üzerinde izinli bir gerçek dünya varlığı token'ının prototipini yapmak (ERC-3643, CMTAT, kısıtlı paylı kasalar, kuantum sonrası hamil kontrolü) | Asset Kit | [Asset Kit](/developer-tools/asset-kit) |
 | QoreChain üzerinde Foundry, Hardhat veya viem ile Solidity ya da CosmWasm projeleri geliştirmek ve test etmek | Zincir geliştirici kiti (SDK 0.11.0, yakında) | [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk) |
 
 Bir paket kurun ve önce hızlı başlangıcını genel testnet üzerinde çalıştırın. Okumalar için hesap, anahtar veya ücret gerekmez.
@@ -155,6 +156,18 @@ Sayfa: [QoreScan](/developer-tools/qorescan). Kaynak: [qorechain/qorescan](https
 | [`qorescan`](https://pypi.org/project/qorescan/) | PyPI sarmalayıcısı (Python 3.9+) | 0.1.0 | `pipx run qorescan scan ...` veya `pip install qorescan` | Yayınlandı. npm sarmalayıcısıyla aynı davranış |
 | [`github.com/qorechain/qorescan`](https://pkg.go.dev/github.com/qorechain/qorescan) | Go | v0.1.0 | `go install github.com/qorechain/qorescan/cmd/qorescan@v0.1.0` | Yayınlandı. Go 1.26 |
 
+### Asset Kit {#group-asset-kit}
+
+Sayfa: [Asset Kit](/developer-tools/asset-kit). Kaynak: [qorechain/qorechain-asset-kit](https://github.com/qorechain/qorechain-asset-kit). QoreChain Asset Kit 0.1.0, izinli gerçek dünya varlığı token'ları için açık kaynaklı bir araç takımıdır: EVM sözleşmeleri (bir ERC-3643 modülü, bir CMTAT kuralı ve kayıtlı bir ML-DSA-87 anahtarı gerektiren bir guard üzerinde kısıtlı paylı kasalar), Foundry dağıtım betikleri ve bir ihraççı konsolu; ayrıca planlanmamış ve hiçbir ağda bulunmayan yerel modüllerin (`x/asset`, `x/identity`, `x/compliance`, `x/settlement`, `x/attest`) bir **önerisi** için istemciler. Sözleşmeler yalnızca testnet'te çalışır: `0x0A02` precompile'ı mainnet'te etkin değildir ve orada guard kapalı başarısızlık yapar. 1.0 öncesi, denetlenmemiş; depodaki hukuki şablonlar incelenmemiş taslaklardır, hukuki tavsiye değildir.
+
+| Paket | Dil | Sürüm | Kurulum | Durum |
+|---|---|---|---|---|
+| [GitHub sürümü `v0.1.0`](https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0) | Solidity sözleşmeleri, ihraççı konsolu, protolar, belgeler | 0.1.0 | `git clone --recurse-submodules https://github.com/qorechain/qorechain-asset-kit` veya `forge install qorechain/qorechain-asset-kit@v0.1.0` | Yayınlandı. Sözleşmeler ve konsol depodan kullanılır |
+| [`io.github.qorechain:asset-kit`](https://central.sonatype.com/artifact/io.github.qorechain/asset-kit) | Java 17 (öneri için istemci) | 0.1.0 | `implementation("io.github.qorechain:asset-kit:0.1.0")` | Yayınlandı |
+| [`github.com/qorechain/qorechain-asset-kit/clients/go`](https://pkg.go.dev/github.com/qorechain/qorechain-asset-kit/clients/go) | Go (paket `assetkit`, öneri için istemci) | v0.1.0 | `go get github.com/qorechain/qorechain-asset-kit/clients/go@v0.1.0` | Yayınlandı |
+| PyPI'da `qorechain-asset-kit` | Python | henüz yok | yok | Yakında. PyPI'da yok (28 Ekim 2026'da 404) |
+| npm'de `@qorechain/asset-kit` | TypeScript | henüz yok | yok | Yakında. Yayınlanmadı (28 Ekim 2026'da 404) |
+
 ### Zincir geliştirici kiti (SDK 0.11.0) {#group-chain-dev-sdk}
 
 Sayfa: [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk). Kaynak: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). QoreChain SDK 0.11.0'ın Solidity ve akıllı sözleşme ekiplerine yönelik bölümü: `@qorechain/evm` içinde viem zincir tanımları ve EVM yetkilendirme penceresi yardımcıları, dört yeni `create-qorechain-dapp` şablonu (Foundry, Hardhat 3, wagmi'li viem ve bir QoreChain Native token'ı), EVM hızlı başlangıçları ve QoreChain EVM'in Ethereum'dan nasıl farklılaştığını anlatan bir sayfa.
@@ -265,6 +278,7 @@ Bunlar henüz kayıt defterlerinde bulunmuyor; dolayısıyla kurulacak bir şey 
 | Paket | Amaçlanan kullanım | Durum |
 |---|---|---|
 | npm üzerinde `@qorechain/qoreseal` | TypeScript için QoreSeal | Yayınlanmadı; kaynak depodadır |
+| PyPI'da `qorechain-asset-kit`, npm'de `@qorechain/asset-kit` | Python ve TypeScript için [Asset Kit](/developer-tools/asset-kit) istemcileri | Yayınlanmadı; deponun bir klonunu kullanın |
 | npm üzerinde `@qorechain/sdk`, `@qorechain/evm`, `@qorechain/react`, `@qorechain/svm`, `create-qorechain-dapp` 0.11.0 | [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk) | GitHub'da etiketlendi, npm sürümü beklemede |
 
 ## Canlı sürümler nasıl alınır {#live-versions}
@@ -285,7 +299,7 @@ Kapsamlı (scoped) bir npm adı için `@` işaretini koruyun, örneğin `https:/
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 - **İki canlı ağ, farklı sürümler.** Mainnet v3.2.4, testnet v3.2.6 çalıştırır. Yalnızca testnet'te bulunan bir özellik kendi sayfasında işaretlenir. Mainnet'te v3.2.5 davranışını varsaymayın.
-- **Henüz canlı değil:** npm üzerinde `@qorechain/qoreseal`, npm üzerinde SDK 0.11.0 (zincir geliştirici kiti), SVM işlemleri ve mainnet üzerindeki EVM precompile'ları (yalnızca testnet'te etkindir; ray ray liste için [SDK genel bakış](/sdk/overview) sayfasına bakın).
+- **Henüz canlı değil:** npm üzerinde `@qorechain/qoreseal`, PyPI ve npm üzerinde Asset Kit (ve planlanmamış bir öneri olan yerel modülleri), npm üzerinde SDK 0.11.0 (zincir geliştirici kiti), SVM işlemleri ve mainnet üzerindeki EVM precompile'ları (yalnızca testnet'te etkindir; ray ray liste için [SDK genel bakış](/sdk/overview) sayfasına bakın).
 - **QoreSeal kayıt defteri ve PQ hafif istemci.** Zincirden okunan bir adrese şifrelemek, testnet'te canlı olan ve v3.2.5 sonrasında mainnet'e gelecek olan KEM anahtar kayıt defterini gerektirir. PQ hafif istemci iki ağdan hiçbirine bağlanmaz; kontrol noktaları için planlanmış bir zincir desteği yoktur.
 - **Kotlin 2.3 veya daha yeni.** QoreSign ve QoreSeal Kotlin ile Android yapıtları Kotlin 2.3 veya daha yeni derleyiciyi gerektirir; Kotlin 2.1 bunlara karşı derlenemez.
 - **Windows wheel'i yok.** QoreSign ve QoreSeal Python paketlerinin yalnızca macOS ve Linux için wheel'leri vardır; diğer platformlar, Rust gerektiren kaynak dağıtımından derlenir.

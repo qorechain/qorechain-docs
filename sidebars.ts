@@ -219,6 +219,7 @@ const sidebars: SidebarsConfig = {
         "developer-tools/custody-kit",
         "developer-tools/qorescan",
         "developer-tools/chain-dev-sdk",
+        "developer-tools/asset-kit",
       ],
     },
     {

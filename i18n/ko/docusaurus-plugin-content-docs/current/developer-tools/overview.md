@@ -39,6 +39,7 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 | 포스트 퀀텀 라이트 클라이언트 설계(체크포인트 검증) 검토 또는 테스트 | PQ 라이트 클라이언트 | [PQ 라이트 클라이언트](/developer-tools/pq-light-client) |
 | QoreChain을 수탁 기관이나 거래소로서 통합(주소 검사, 출금 검증, 입금 반영) | 커스터디 키트 | [커스터디 키트](/developer-tools/custody-kit) |
 | 노드, 네트워크, Solidity 소스의 암호화 자산을 CycloneDX CBOM으로 목록화 | QoreScan | [QoreScan](/developer-tools/qorescan) |
+| 테스트넷에서 허가형 실물 자산 토큰 프로토타입 제작(ERC-3643, CMTAT, 지분 제한 볼트, 포스트 퀀텀 보유자 검사) | Asset Kit | [Asset Kit](/developer-tools/asset-kit) |
 | Foundry, Hardhat, viem으로 QoreChain에서 Solidity 또는 CosmWasm 프로젝트를 빌드하고 테스트 | 체인 개발자 키트(SDK 0.11.0, 출시 예정) | [체인 개발자 키트](/developer-tools/chain-dev-sdk) |
 
 패키지 하나를 설치하고 먼저 공개 테스트넷에서 퀵스타트를 실행해 보세요. 읽기에는 계정도, 키도, 수수료도 필요하지 않습니다.
@@ -155,6 +156,18 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 | [`qorescan`](https://pypi.org/project/qorescan/) | PyPI 래퍼 (Python 3.9+) | 0.1.0 | `pipx run qorescan scan ...` 또는 `pip install qorescan` | Published. npm 래퍼와 동작이 같음 |
 | [`github.com/qorechain/qorescan`](https://pkg.go.dev/github.com/qorechain/qorescan) | Go | v0.1.0 | `go install github.com/qorechain/qorescan/cmd/qorescan@v0.1.0` | Published. Go 1.26 |
 
+### Asset Kit {#group-asset-kit}
+
+페이지: [Asset Kit](/developer-tools/asset-kit). 소스: [qorechain/qorechain-asset-kit](https://github.com/qorechain/qorechain-asset-kit). QoreChain Asset Kit 0.1.0은 허가형 실물 자산 토큰을 위한 오픈 소스 도구입니다. EVM 컨트랙트(ERC-3643 모듈, CMTAT 규칙, 등록된 ML-DSA-87 키를 요구하는 가드 위에 구성된 지분 제한 볼트), Foundry 배포 스크립트, 발행자 콘솔과 함께, 네이티브 모듈(`x/asset`, `x/identity`, `x/compliance`, `x/settlement`, `x/attest`)의 **제안**을 위한 클라이언트를 제공합니다. 이 제안은 일정이 잡혀 있지 않으며 어느 네트워크에도 존재하지 않습니다. 컨트랙트는 테스트넷에서만 동작합니다. `0x0A02` 프리컴파일은 메인넷에서 활성화되어 있지 않으며, 메인넷에서 가드는 fail closed로 동작합니다. 1.0 이전 버전이고 감사를 받지 않았습니다. 저장소의 법률 템플릿은 검토되지 않은 초안이며 법률 자문이 아닙니다.
+
+| 패키지 | 언어 | 버전 | 설치 | 상태 |
+|---|---|---|---|---|
+| [GitHub release `v0.1.0`](https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0) | Solidity 컨트랙트, 발행자 콘솔, protos, 문서 | 0.1.0 | `git clone --recurse-submodules https://github.com/qorechain/qorechain-asset-kit` 또는 `forge install qorechain/qorechain-asset-kit@v0.1.0` | Published. 컨트랙트와 콘솔은 저장소에서 사용함 |
+| [`io.github.qorechain:asset-kit`](https://central.sonatype.com/artifact/io.github.qorechain/asset-kit) | Java 17 (제안용 클라이언트) | 0.1.0 | `implementation("io.github.qorechain:asset-kit:0.1.0")` | Published |
+| [`github.com/qorechain/qorechain-asset-kit/clients/go`](https://pkg.go.dev/github.com/qorechain/qorechain-asset-kit/clients/go) | Go (패키지 `assetkit`, 제안용 클라이언트) | v0.1.0 | `go get github.com/qorechain/qorechain-asset-kit/clients/go@v0.1.0` | Published |
+| PyPI의 `qorechain-asset-kit` | Python | 아직 없음 | 없음 | 출시 예정. PyPI에 없음(2026년 10월 28일에 404) |
+| npm의 `@qorechain/asset-kit` | TypeScript | 아직 없음 | 없음 | 출시 예정. 게시되지 않음(2026년 10월 28일에 404) |
+
 ### 체인 개발자 키트 (SDK 0.11.0) {#group-chain-dev-sdk}
 
 페이지: [체인 개발자 키트](/developer-tools/chain-dev-sdk). 소스: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). Solidity 및 스마트 컨트랙트 팀을 위한 QoreChain SDK 0.11.0의 일부입니다. `@qorechain/evm`의 viem 체인 정의와 EVM 인가 윈도우 헬퍼, 새로운 `create-qorechain-dapp` 템플릿 네 가지(Foundry, Hardhat 3, wagmi를 쓰는 viem, QoreChain Native 토큰), EVM 퀵스타트, 그리고 QoreChain EVM이 Ethereum과 어떻게 다른지 설명하는 페이지로 구성됩니다.
@@ -265,6 +278,7 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 | 패키지 | 의도된 용도 | 상태 |
 |---|---|---|
 | npm의 `@qorechain/qoreseal` | TypeScript용 QoreSeal | 게시되지 않음. 소스는 저장소에 있음 |
+| PyPI의 `qorechain-asset-kit`, npm의 `@qorechain/asset-kit` | Python 및 TypeScript용 [Asset Kit](/developer-tools/asset-kit) 클라이언트 | 게시되지 않음. 저장소의 복제본을 사용하세요 |
 | npm의 `@qorechain/sdk`, `@qorechain/evm`, `@qorechain/react`, `@qorechain/svm`, `create-qorechain-dapp` 0.11.0 | [체인 개발자 키트](/developer-tools/chain-dev-sdk) | GitHub에 태그됨, npm 릴리스 대기 중 |
 
 ## 실시간 버전 확인 방법 {#live-versions}
@@ -285,7 +299,7 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 ## 제한 사항 및 알려진 문제 {#limits}
 
 - **두 라이브 네트워크, 서로 다른 버전.** 메인넷은 v3.2.4를, 테스트넷은 v3.2.6을 실행합니다. 테스트넷에만 있는 기능은 해당 페이지에 표시됩니다. 메인넷에서 v3.2.5 동작을 가정하지 마세요.
-- **아직 라이브가 아닌 것:** npm의 `@qorechain/qoreseal`, npm의 SDK 0.11.0(체인 개발자 키트), SVM 트랜잭션, 메인넷의 EVM 프리컴파일(테스트넷에서만 활성. 레인별 목록은 [SDK 개요](/sdk/overview) 참조).
+- **아직 라이브가 아닌 것:** npm의 `@qorechain/qoreseal`, PyPI와 npm의 Asset Kit(그리고 일정이 잡혀 있지 않은 제안인 네이티브 모듈), npm의 SDK 0.11.0(체인 개발자 키트), SVM 트랜잭션, 메인넷의 EVM 프리컴파일(테스트넷에서만 활성. 레인별 목록은 [SDK 개요](/sdk/overview) 참조).
 - **QoreSeal 레지스트리와 PQ 라이트 클라이언트.** 체인에서 읽은 주소로 암호화하려면 KEM 키 레지스트리가 필요하며, 이는 테스트넷에서 라이브이고 v3.2.5 이후 메인넷에 적용됩니다. PQ 라이트 클라이언트는 어느 네트워크에도 연결되지 않으며, 해당 체크포인트에 대한 체인 지원은 예정되어 있지 않습니다.
 - **Kotlin 2.3 이상.** QoreSign과 QoreSeal의 Kotlin 및 Android 아티팩트에는 Kotlin 2.3 이상 컴파일러가 필요합니다. Kotlin 2.1은 이를 대상으로 컴파일에 실패합니다.
 - **Windows wheel 없음.** QoreSign과 QoreSeal Python 패키지의 wheel은 macOS와 Linux용만 있으며, 다른 플랫폼은 소스 배포본에서 빌드하고 이때 Rust가 필요합니다.

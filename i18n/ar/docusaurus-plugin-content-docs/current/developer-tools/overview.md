@@ -39,6 +39,7 @@ sidebar_position: 1
 | تراجع أو تختبر تصميم عميل خفيف ما بعد كمّي (التحقق من نقاط التحقق) | PQ light client | [PQ light client](/developer-tools/pq-light-client) |
 | تدمج QoreChain بصفتك جهة حفظ أو منصة تداول (فحص العناوين، والتحقق من السحوبات، واحتساب الإيداعات) | Custody kit | [Custody kit](/developer-tools/custody-kit) |
 | تجرد التشفير في عقدة أو شبكة أو مصادر Solidity على شكل CycloneDX CBOM | QoreScan | [QoreScan](/developer-tools/qorescan) |
+| تنشئ نموذجاً أولياً لرمز أصل حقيقي مقيَّد الصلاحيات على شبكة الاختبار (ERC-3643 وCMTAT وخزائن بحصص مقيَّدة وفحص حامل ما بعد كمّي) | Asset Kit | [Asset Kit](/developer-tools/asset-kit) |
 | تبني وتختبر مشاريع Solidity أو CosmWasm على QoreChain باستخدام Foundry أو Hardhat أو viem | Chain developer kit (SDK 0.11.0، قريباً) | [Chain developer kit](/developer-tools/chain-dev-sdk) |
 
 ثبّت حزمة واحدة وشغّل بدايتها السريعة على شبكة الاختبار العامة أولاً. القراءات لا تحتاج حساباً ولا مفتاحاً ولا رسوماً.
@@ -155,6 +156,18 @@ sidebar_position: 1
 | [`qorescan`](https://pypi.org/project/qorescan/) | غلاف PyPI (Python 3.9+) | 0.1.0 | `pipx run qorescan scan ...` أو `pip install qorescan` | منشورة. السلوك نفسه كما في غلاف npm |
 | [`github.com/qorechain/qorescan`](https://pkg.go.dev/github.com/qorechain/qorescan) | Go | v0.1.0 | `go install github.com/qorechain/qorescan/cmd/qorescan@v0.1.0` | منشورة. Go 1.26 |
 
+### Asset Kit {#group-asset-kit}
+
+الصفحة: [Asset Kit](/developer-tools/asset-kit). المصدر: [qorechain/qorechain-asset-kit](https://github.com/qorechain/qorechain-asset-kit). QoreChain Asset Kit 0.1.0 أدوات مفتوحة المصدر لرموز الأصول الحقيقية المقيَّدة الصلاحيات: عقود EVM (وحدة ERC-3643 وقاعدة CMTAT وخزائن بحصص مقيَّدة فوق ضابط يشترط مفتاح ML-DSA-87 مسجَّلاً)، وسكربتات نشر بـ Foundry ووحدة تحكم للمُصدِر، إضافة إلى عملاء لـ**مقترح** وحدات أصلية (`x/asset` و`x/identity` و`x/compliance` و`x/settlement` و`x/attest`) غير مجدول وغير موجود على أي شبكة. تعمل العقود على شبكة الاختبار فقط: فالمُسبَق `0x0A02` غير فعّال على الشبكة الرئيسية، حيث يفشل الضابط مغلقاً. ما قبل 1.0 ولم تُدقَّق؛ والقوالب القانونية في المستودع مسودات لم تُراجَع، وليست استشارة قانونية.
+
+| الحزمة | اللغة | الإصدار | التثبيت | الحالة |
+|---|---|---|---|---|
+| [إصدار GitHub `v0.1.0`](https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0) | عقود Solidity ووحدة تحكم المُصدِر وملفات proto والمستندات | 0.1.0 | `git clone --recurse-submodules https://github.com/qorechain/qorechain-asset-kit`، أو `forge install qorechain/qorechain-asset-kit@v0.1.0` | منشورة. تُستخدم العقود ووحدة التحكم من المستودع |
+| [`io.github.qorechain:asset-kit`](https://central.sonatype.com/artifact/io.github.qorechain/asset-kit) | Java 17 (عميل للمقترح) | 0.1.0 | `implementation("io.github.qorechain:asset-kit:0.1.0")` | منشورة |
+| [`github.com/qorechain/qorechain-asset-kit/clients/go`](https://pkg.go.dev/github.com/qorechain/qorechain-asset-kit/clients/go) | Go (الحزمة `assetkit`، عميل للمقترح) | v0.1.0 | `go get github.com/qorechain/qorechain-asset-kit/clients/go@v0.1.0` | منشورة |
+| `qorechain-asset-kit` على PyPI | Python | لا يوجد بعد | لا يوجد | قريباً. ليست على PyPI (الخطأ 404 في 28 أكتوبر 2026) |
+| `@qorechain/asset-kit` على npm | TypeScript | لا يوجد بعد | لا يوجد | قريباً. غير منشورة (الخطأ 404 في 28 أكتوبر 2026) |
+
 ### Chain developer kit (SDK 0.11.0) {#group-chain-dev-sdk}
 
 الصفحة: [Chain developer kit](/developer-tools/chain-dev-sdk). المصدر: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). الجزء من QoreChain SDK 0.11.0 الموجّه لفرق Solidity والعقود الذكية: تعريفات سلسلة viem ومساعدات نافذة تفويض EVM في `@qorechain/evm`، وأربعة قوالب جديدة في `create-qorechain-dapp` (Foundry وHardhat 3 وviem مع wagmi، ورمز QoreChain Native)، وبدايات سريعة لـ EVM، وصفحة عن اختلاف EVM في QoreChain عن Ethereum.
@@ -265,6 +278,7 @@ sidebar_position: 1
 | الحزمة | الاستخدام المقصود | الحالة |
 |---|---|---|
 | `@qorechain/qoreseal` على npm | QoreSeal للغة TypeScript | غير منشورة؛ المصدر موجود في المستودع |
+| `qorechain-asset-kit` على PyPI، و`@qorechain/asset-kit` على npm | عملاء [Asset Kit](/developer-tools/asset-kit) للغتي Python وTypeScript | غير منشورين؛ استخدم نسخة مستنسخة من المستودع |
 | `@qorechain/sdk` و`@qorechain/evm` و`@qorechain/react` و`@qorechain/svm` و`create-qorechain-dapp` الإصدار 0.11.0 على npm | [chain developer kit](/developer-tools/chain-dev-sdk) | موسومة على GitHub، وإصدار npm معلّق |
 
 ## كيف تحصل على الإصدارات الحية {#live-versions}
@@ -285,7 +299,7 @@ sidebar_position: 1
 ## الحدود والمشكلات المعروفة {#limits}
 
 - **شبكتان حيتان بإصدارين مختلفين.** تعمل الشبكة الرئيسية على v3.2.4 وتعمل شبكة الاختبار على v3.2.6. تُوسَم الميزة الموجودة على شبكة الاختبار فقط في صفحتها. لا تفترض سلوك v3.2.5 على الشبكة الرئيسية.
-- **غير متاح بعد:** `@qorechain/qoreseal` على npm، وSDK 0.11.0 (chain developer kit) على npm، ومعاملات SVM، ومُسبقات EVM (precompiles) على الشبكة الرئيسية (وهي فعّالة على شبكة الاختبار فقط؛ راجع [نظرة عامة على SDK](/sdk/overview) للقائمة مساراً بمسار).
+- **غير متاح بعد:** `@qorechain/qoreseal` على npm، وAsset Kit على PyPI وnpm (ووحداته الأصلية، وهي مقترح غير مجدول)، وSDK 0.11.0 (chain developer kit) على npm، ومعاملات SVM، ومُسبقات EVM (precompiles) على الشبكة الرئيسية (وهي فعّالة على شبكة الاختبار فقط؛ راجع [نظرة عامة على SDK](/sdk/overview) للقائمة مساراً بمسار).
 - **سجل QoreSeal وPQ light client.** يحتاج التشفير إلى عنوان مقروء من السلسلة إلى سجل مفاتيح KEM، وهو يعمل على شبكة الاختبار وسيأتي إلى الشبكة الرئيسية بعد v3.2.5. ولا يتصل PQ light client بأي من الشبكتين؛ ولا يوجد دعم مجدول على السلسلة لنقاط التحقق الخاصة به.
 - **Kotlin 2.3 أو أحدث.** تحتاج حزم Kotlin وAndroid الخاصة بـ QoreSign وQoreSeal إلى مترجم Kotlin 2.3 أو أحدث؛ ويفشل Kotlin 2.1 في الترجمة مقابلها.
 - **لا عجلات لنظام Windows.** لحزمتي Python الخاصتين بـ QoreSign وQoreSeal عجلات (wheels) لنظامَي macOS وLinux فقط؛ وتُبنى المنصات الأخرى من توزيعة المصدر، وهي تحتاج إلى Rust.
