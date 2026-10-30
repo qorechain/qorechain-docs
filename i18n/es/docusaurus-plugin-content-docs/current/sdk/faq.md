@@ -10,7 +10,7 @@ sidebar_position: 8
 ## ¿Está la mainnet en funcionamiento?
 
 Sí. La mainnet está **en funcionamiento** (id de cadena `qorechain-vladi`, en
-funcionamiento desde el 7 de junio de 2026) y ejecuta la versión de cadena v3.2.4 (aplicada en la altura 3,742,566 el 23 de octubre de 2026, propuesta de gobernanza 13); la testnet ejecuta v3.2.6 (aplicada el 27 de octubre de 2026). El preajuste de testnet (`qorechain-diana`)
+funcionamiento desde el 7 de junio de 2026) y ejecuta la versión de cadena v3.2.5 (aplicada en la altura 3,906,833 el 29 de octubre de 2026, propuesta de gobernanza 14; la v3.2.4 se aplicó en la altura 3,742,566 el 23 de octubre de 2026); la testnet ejecuta v3.2.6 (aplicada el 27 de octubre de 2026). El preajuste de testnet (`qorechain-diana`)
 también sigue disponible. Ambos preajustes incluyen endpoints predeterminados de
 localhost; selecciona la red con `createClient({ network: "mainnet" })` y
 sobrescribe `endpoints` con las URL de tus nodos. Consulta
@@ -153,7 +153,7 @@ eth-native).
 
 El SDK **0.10.0** es la versión de cliente para la cadena **v3.2.4** (la mainnet
 desde el 23 de octubre de 2026 en la altura 3,742,566, propuesta de gobernanza 13; la
-testnet desde el 19 de octubre). Añade los constructores y lecturas de los niveles de
+testnet desde el 19 de octubre). La mainnet ejecuta la v3.2.5 desde el 29 de octubre de 2026; el formato de firma no cambió, así que la 0.10.0 sigue funcionando allí. Añade los constructores y lecturas de los niveles de
 staking, `fetchAuthNonce` y las lecturas de funcionalidades del protocolo (consulta
 [Qué añade la 0.10.0](/sdk/install#whats-new-0100)), además de lo que la 0.9.0 añadió
 para v3.2.2 y v3.2.3: constructores para la prueba de posesión opcional en el registro
@@ -163,10 +163,9 @@ también opera en ambas redes (la forma v2 de los sign-bytes híbridos, el regis
 los envíos híbridos y la ventana EVM funcionan sin cambios), pero no tiene ninguno
 de esos constructores: usa la CLI para ellos (consulta
 [Versiones anteriores a la 0.9.0](/sdk/install#before-090)). El formato de firma no
-cambió en v3.2.4. La testnet ejecuta v3.2.6 (la v3.2.5 se aplicó allí el 26 de octubre
+cambió en v3.2.4 ni en v3.2.5. La testnet ejecuta v3.2.6 (la v3.2.5 se aplicó allí el 26 de octubre
 de 2026 y la v3.2.6 el 27 de octubre); el SDK no tiene ningún constructor para nada
-introducido después de v3.2.4, y las funcionalidades de la próxima versión de la
-mainnet se documentan el día en que la mainnet la aplique.
+introducido después de v3.2.4, así que las novedades de la v3.2.5 (por ejemplo el registro de claves ML-KEM y las rutas gobernadas de CrossVM y de contratos) todavía no tienen constructor en el SDK y se usan con la CLI.
 
 ## Mi registro de clave PQC fue rechazado pero se cobró la comisión
 

@@ -86,7 +86,7 @@ Kit hiçbir imza şeması uygulamaz. ML-DSA-87 ve secp256k1 doğrulaması QoreSi
 ### Çekimler ve gaz {#withdrawals}
 
 - Ücret = `uqor` cinsinden ceil(gaz limiti x gaz fiyatı). Asgari gaz fiyatı 0,1 uqor'dur ve gaz limiti üzerinden alınır.
-- Gaz limitini, tamamen imzalanmış işlemin bir simülasyonundan alın. v3.2.5 yükseltmesini uygulamış düğümlerde (şimdi testnet, uygulandıktan sonra mainnet) `ceil(gas_used x 1.02) + 2000` kullanın, çünkü simülasyon ML-DSA-87 doğrulamasını içerir. Bundan önce `ceil((gas_used + 40000) x 1.4)` kullanın. Hangisinin geçerli olduğunu tarihe göre değil, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5` ile tespit edin.
+- Gaz limitini, tamamen imzalanmış işlemin bir simülasyonundan alın. v3.2.5 yükseltmesini uygulamış düğümlerde (her iki ağ da 29 Ekim 2026'dan beri) `ceil(gas_used x 1.02) + 2000` kullanın, çünkü simülasyon ML-DSA-87 doğrulamasını içerir. Bundan önce `ceil((gas_used + 40000) x 1.4)` kullanın. Hangisinin geçerli olduğunu tarihe göre değil, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5` ile tespit edin.
 - Gaz limitini seçtikten sonra `AuthInfo`'yu yeniden oluşturun ve yeniden imzalayın: her iki imza da ücreti kapsar.
 - Sıra numaraları: sıcak adres başına bir imzalayıcı kuyruğu çalıştırın veya paralel ödemeler için birkaç sıcak adres kullanın.
 
@@ -271,12 +271,12 @@ Codespace ve kod üzerinden birlikte dallanın ve ham günlüğü saklayın.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Düğüm sürümü | v3.2.4 (v3.2.5 henüz uygulanmadı) | v3.2.6 (v3.2.5 uygulandı) |
+| Düğüm sürümü | v3.2.5 (29 Ekim 2026'da uygulandı) | v3.2.6 (v3.2.5 uygulandı) |
 
 - Birim `uqor`'dur (1 QOR = 10^6 uqor; EVM rayında 1 uqor = 10^12 wei). Asgari gaz fiyatı 0,1 uqor, unbonding süresi 21 gün ve memo sınırı 256 karakterdir. Bu değerler 27 Ekim 2026'da her iki ağdan okundu ve yönetişimle değişebilir; bu yüzden üretimde bunları zincirden okuyun.
 - Para yatırmalar anahtar veya kayıt gerektirmez. Göndermek, sıcak adres başına kayıtlı bir ML-DSA-87 anahtarı gerektirir.
 - Üretim için kendi tam düğümlerinizi çalıştırın. Genel uç noktalar hız sınırlıdır ve geliştirme içindir. Bir betik `403 Forbidden` alırsa açık bir `User-Agent` başlığı ayarlayın. Bkz. [düğüm çalıştırma](/developer-guide/running-a-node) ve [mainnet'e bağlanma](/getting-started/connecting-to-mainnet).
-- Testnet her düğüm sürümünü mainnet'ten önce alır. Gaz kurallarını tarihe göre değil, uygulanmış yükseltmeyi kontrol ederek değiştirin.
+- Testnet her düğüm sürümünü mainnet'ten önce alır. Gaz kurallarını tarihe göre değil, uygulanmış yükseltmeyi kontrol ederek değiştirin (her iki ağ da v3.2.5'i uyguladı).
 - Testnet üzerindeki test token'ları (`erc20:0x...` biçimindeki bank denom'ları, bir IBC token'ı) mainnet'te yoktur. Her iki ağda da `uqor` kaydedin.
 - Testnet QOR'u QoreChain dashboard faucet'inden gelir ve değeri yoktur. Bkz. [testnet'e bağlanma](/getting-started/connecting-to-testnet).
 

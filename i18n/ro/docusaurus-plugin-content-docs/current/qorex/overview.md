@@ -160,7 +160,7 @@ Noutăți principale față de 1.0.9 / 0.2.6:
 - Ecrane de aprobare care arată fiecare mesaj, comisionul, limitele de cheltuire și expirarea, și refuză ceea ce QoreX nu poate afișa; **`signAndBroadcast`** pentru dApp-uri; **Site-uri conectate** cu Revocare (extensia); **fereastra de acces EVM** - vezi [Securitate și recuperare](/qorex/security-and-recovery) și [Extensia de browser](/qorex/browser-extension).
 - Remedieri: un cont alimentat putea dispărea momentan din „Conturile tale" (1.0.9); butonul hardware Înapoi de pe Android revine acum cu un ecran (1.1.1); fraza de recuperare este ascunsă serviciilor care nu sunt de accesibilitate pe Android 14 și versiunile ulterioare (1.1.6).
 
-QoreX funcționează pe mainnet `qorechain-vladi` (activ din 7 iunie 2026), care rulează chain **v3.2.4** din 23 octombrie 2026. Formatul de semnare, adresele, zecimalele, memo-urile și comisioanele nu se schimbă în aceste actualizări, așa că nu este necesară nicio actualizare QoreX pentru ele.
+QoreX funcționează pe mainnet `qorechain-vladi` (activ din 7 iunie 2026), care rulează chain **v3.2.5** din 29 octombrie 2026 (v3.2.4 din 23 octombrie 2026). Formatul de semnare, adresele, zecimalele, memo-urile și comisioanele nu se schimbă în aceste actualizări, așa că nu este necesară nicio actualizare QoreX pentru ele.
 
 ## Pentru dezvoltatori {#developers}
 

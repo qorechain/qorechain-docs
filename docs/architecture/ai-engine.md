@@ -21,7 +21,7 @@ The QCAI (QoreChain AI) engine operates across three layers:
 
 The consensus level is documented separately in the [PRISM Consensus Engine](/architecture/prism-consensus-engine). This page covers the network and application levels.
 
-:::note What is enforced on the live networks (checked 23 October 2026, mainnet and testnet then both on v3.2.4; the testnet has since moved to v3.2.6)
+:::note What is enforced on the live networks (checked 23 October 2026, mainnet and testnet then both on v3.2.4; the testnet has since moved to v3.2.6 and mainnet to v3.2.5)
 Two parts of `x/ai` act on transactions today, on both the Cosmos lane and the EVM lane:
 
 * A **per-sender rate limit**. The live limit is **600 transactions per minute per sender** (`max_tx_per_minute`; the EVM lane has its own optional limit, which is not set, so the same value applies). The "minute" is counted over a fixed window of blocks, not wall-clock time, because block height is the only clock every validator shares. A sender at the limit has further transactions refused until older ones leave the window. The limit has been enforced on the Cosmos lane since v3.2.0 and on both lanes since v3.2.2.

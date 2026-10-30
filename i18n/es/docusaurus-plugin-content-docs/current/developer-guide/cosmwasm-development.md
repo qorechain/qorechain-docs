@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain admite contratos inteligentes **QoreChain Native**. QoreChain Native es el nombre que QoreChain da a su runtime **CosmWasm**: los desarrolladores escriben programas seguros y aislados (sandboxed) en Rust con las bibliotecas estándar de CosmWasm (`cosmwasm-std`) y los compilan a WebAssembly. Los contratos QoreChain Native se ejecutan junto con los programas EVM y SVM dentro de la arquitectura triple-VM de QoreChain.
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.4** desde el 23 de octubre de 2026 (propuesta de gobernanza 13, altura 3,742,566). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta la v3.2.6 (v3.2.4 desde el 19 de octubre de 2026).
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.5** desde el 29 de octubre de 2026 (propuesta de gobernanza 14, altura 3,906,833; v3.2.4 desde el 23 de octubre de 2026). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta la v3.2.6 (v3.2.4 desde el 19 de octubre de 2026).
 :::
 
 :::caution La subida y la instanciación de código requieren permiso explícito en la mainnet; la testnet difiere

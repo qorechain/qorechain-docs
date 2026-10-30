@@ -10,7 +10,7 @@ sidebar_position: 9
 This guide covers how to create a validator on the QoreChain network, understand the pool classification design, register a PQC key (hybrid ML-DSA-87 signatures, FIPS 204), and monitor your node.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026, after v3.2.3 at height 3,662,051 on 20 October 2026). A validator must run the v3.2.4 binary at the time of writing; mainnet governance proposal 14 would apply v3.2.5 at height 3,906,833, and the manifest then names the binary to install (see [Running a Node: Upgrades](/developer-guide/running-a-node#upgrades)). The **`qorechain-diana`** testnet (EVM chain ID **9800**) runs v3.2.6 (applied 27 October 2026, after v3.2.5 on 26 October) and is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network. Block times differ: about 3.1 s on mainnet (the last 1,000 blocks took 52 minutes 21 seconds on 27 October 2026) and about 1.3 s on the testnet; both vary, so convert block counts to time per network.
+This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.5** (applied by governance proposal 14 at height 3,906,833 on 29 October 2026, after v3.2.4 at height 3,742,566 on 23 October 2026 and v3.2.3 at height 3,662,051 on 20 October 2026). A validator must run the v3.2.5 binary (the manifest's `minCompatible` is 3.2.5); a node still on v3.2.4 halts at height 3,906,833 and needs the v3.2.5 bundle (see [Running a Node: Upgrades](/developer-guide/running-a-node#upgrades)). The **`qorechain-diana`** testnet (EVM chain ID **9800**) runs v3.2.6 (applied 27 October 2026, after v3.2.5 on 26 October) and is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network. Block times differ: about 3.1 s on mainnet (the last 1,000 blocks took 52 minutes 21 seconds on 27 October 2026) and about 1.3 s on the testnet; both vary, so convert block counts to time per network.
 :::
 
 :::caution Use the release binary, not a source build
@@ -68,7 +68,7 @@ Keep the system clock synchronised with NTP: from v3.2.1 the node stops when its
 
 ## Network Parameters {#parameters}
 
-These values were read from the mainnet REST API on 27 October 2026 (`qorechain-vladi`, v3.2.4). Read them live before you rely on them: `qorechaind query staking params`, `qorechaind query slashing params`, or `GET /cosmos/staking/v1beta1/params` and `GET /cosmos/slashing/v1beta1/params`.
+These values were read from the mainnet REST API on 27 October 2026 (`qorechain-vladi`, then on v3.2.4; v3.2.5 has run since 29 October 2026). Read them live before you rely on them: `qorechaind query staking params`, `qorechaind query slashing params`, or `GET /cosmos/staking/v1beta1/params` and `GET /cosmos/slashing/v1beta1/params`.
 
 | Item | Value |
 | --- | --- |

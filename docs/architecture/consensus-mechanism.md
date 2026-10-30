@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain implements **Triple-Pool Composite Proof-of-Stake (CPoS)**, a consensus mechanism that classifies validators into three specialized pools and uses reputation-weighted selection to balance security, decentralization, and performance. CPoS is implemented in the `x/qca` module and operates on top of the **QoreChain Consensus Engine**.
 
-:::note Current status (mainnet v3.2.4, checked 23 October 2026; the testnet runs v3.2.6)
+:::note Current status (mainnet checked 23 October 2026 on v3.2.4, and on v3.2.5 since 29 October 2026; the testnet runs v3.2.6)
 The Triple-Pool CPoS logic described on this page — pool classification, pool-weighted proposer selection, the reward bonding curve, progressive slashing and QDRW tallying — is implemented in the `x/qca` module and its parameters are on chain, but **it is not yet wired into block production, rewards, slashing or the governance tally**. Today the proposer rotation is the standard stake-weighted validator rotation, slashing follows the standard `x/slashing` parameters (downtime window 10,000 blocks, jailed below 5 % signed, 1 % downtime and 5 % double-sign slash, 10-minute jail) and proposals are tallied on bonded stake (quorum 33.4 %, threshold 50 %, veto 33.4 %). The design below describes where the module is heading. No release up to v3.2.4 on mainnet changes this, and the testnet's staking, slashing and governance parameters match mainnet's (checked 27 October 2026, apart from shorter governance voting periods); the rules that **are** enforced today are listed in [Validator admission and staking rules in force](#admission).
 :::
 

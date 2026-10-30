@@ -86,11 +86,11 @@ El valor de `--proof` es la prueba de inclusión: los hashes hermanos a lo largo
 
 ### Codificación de hojas y nodos {#leaf-and-node-encoding}
 
-* **Hoja (primera forma, la regla de la mainnet hoy)** = SHAKE-256 (32 bytes) de `rollup_id`, un byte `0x00`, el índice de retiro (8 bytes, big-endian), la cadena `recipient`, `0x00`, la cadena `denom`, `0x00` y el `amount` (8 bytes, big-endian).
-* **Hoja (segunda forma, testnet ahora, mainnet tras la actualización a la v3.2.5)**: para los lotes de la v3.2.5 de la cadena la hoja también nombra el chain id. El RDK construye ambas formas (`withdrawalLeafV1`, `withdrawalLeafV2`).
+* **Hoja (primera forma, para los lotes anteriores a la v3.2.5 de la cadena)** = SHAKE-256 (32 bytes) de `rollup_id`, un byte `0x00`, el índice de retiro (8 bytes, big-endian), la cadena `recipient`, `0x00`, la cadena `denom`, `0x00` y el `amount` (8 bytes, big-endian).
+* **Hoja (segunda forma, desde la v3.2.5 de la cadena en ambas redes)**: para los lotes de la v3.2.5 de la cadena la hoja también nombra el chain id. El RDK construye ambas formas (`withdrawalLeafV1`, `withdrawalLeafV2`).
 * **Padre** = SHAKE-256 de `left || right`. En cada nivel, el bit correspondiente del índice de retiro decide el lado: `0` significa que la hoja (o el hash acumulado) es el nodo izquierdo, de modo que la posición de la hoja en el árbol es su índice de retiro.
 * Cada hash hermano debe tener exactamente 32 bytes.
-* **Raíz de retiros (testnet ahora, mainnet tras la actualización):** desde la v3.2.5 de la cadena, el `withdrawals_root` de un lote está vacío o mide exactamente 32 bytes; en la mainnet (v3.2.4) esa regla de longitud todavía no se aplica.
+* **Raíz de retiros (desde la v3.2.5 de la cadena, ambas redes):** el `withdrawals_root` de un lote está vacío o mide exactamente 32 bytes; antes de v3.2.5 esa regla de longitud no se aplicaba.
 
 No construyas este árbol a mano. `withdrawalsTree` en `@qorechain/rdk` 0.7.0 (y sus equivalentes en Python, Go, Rust y Java) construye la raíz de retiros de un lote y cada prueba exactamente como lo hace la cadena, y se comprobó contra el propio verificador de la cadena; `assembleWithdrawalProof` construye por defecto el árbol de la cadena, y los helpers genéricos de Merkle ahora usan SHAKE-256 por defecto.
 
@@ -121,7 +121,7 @@ flowchart LR
 ```
 
 1. **Liquidar un lote.** El operador del rollup envía un lote de liquidación con `submit-batch`. El lote puede comprometer una raíz de retiros sobre sus mensajes salientes L2 → L1.
-2. **Finalizar.** El lote se finaliza según el modo de liquidación del rollup: con la verificación de una prueba válida para `zk`, o tras la ventana de impugnación para `optimistic` (durante la cual `challenge-batch` puede disputarlo). En la testnet desde la v3.2.5 de la cadena (mainnet tras la actualización), los lotes también se finalizan estrictamente en orden de índice, así que un lote espera a cualquier lote anterior que siga en `submitted` o `challenged`. La ventana optimista es de 100,800 bloques por defecto para un lote enviado antes de la actualización v3.2.4; desde v3.2.4 se mide en segundos de tiempo de bloque para los lotes enviados a partir de la altura de la actualización (testnet desde la altura 8,337,253, el 19 de octubre de 2026; mainnet desde la altura 3,742,566, el 23 de octubre de 2026).
+2. **Finalizar.** El lote se finaliza según el modo de liquidación del rollup: con la verificación de una prueba válida para `zk`, o tras la ventana de impugnación para `optimistic` (durante la cual `challenge-batch` puede disputarlo). Desde la v3.2.5 de la cadena (testnet desde el 26 de octubre de 2026, mainnet desde el 29 de octubre de 2026), los lotes también se finalizan estrictamente en orden de índice, así que un lote espera a cualquier lote anterior que siga en `submitted` o `challenged`. La ventana optimista es de 100,800 bloques por defecto para un lote enviado antes de la actualización v3.2.4; desde v3.2.4 se mide en segundos de tiempo de bloque para los lotes enviados a partir de la altura de la actualización (testnet desde la altura 8,337,253, el 19 de octubre de 2026; mainnet desde la altura 3,742,566, el 23 de octubre de 2026).
 3. **Demostrar y ejecutar.** Una vez finalizado, cualquiera envía `execute-withdrawal` con la prueba de inclusión de Merkle (`--proof`) para la hoja de retiro específica. El módulo verifica la inclusión contra la raíz de retiros del lote finalizado y paga al destinatario desde el escrow.
 
 Como el paso 3 es sin permisos y basado en pruebas, un retiro no depende de la cooperación del operador del rollup una vez que el lote que lo transporta está finalizado.

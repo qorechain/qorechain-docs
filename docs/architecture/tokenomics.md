@@ -23,7 +23,7 @@ QoreChain's economic model is centered on the native **QOR** token and has a **f
 | **Bech32 prefix**     | `qor` (accounts: `qor1...`, validators: `qorvaloper...`) |
 
 :::note
-The figures on this page describe the **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live since 7 June 2026 on release **v3.2.4** (applied at height 3,742,566 on 23 October 2026). The **`qorechain-diana`** testnet (EVM chain ID **9800**, release **v3.2.6** since 27 October 2026) has its own emission and supply history (testnet supply is far above mainnet's and its emission is already past the cap), so use the mainnet figures. Amounts that move with every block are marked with the date they were read (23 October 2026).
+The figures on this page describe the **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live since 7 June 2026, on release **v3.2.5** since 29 October 2026 (height 3,906,833, governance proposal 14; v3.2.4 was applied at height 3,742,566 on 23 October 2026). The **`qorechain-diana`** testnet (EVM chain ID **9800**, release **v3.2.6** since 27 October 2026) has its own emission and supply history (testnet supply is far above mainnet's and its emission is already past the cap), so use the mainnet figures. Amounts that move with every block are marked with the date they were read (23 October 2026).
 :::
 
 ---

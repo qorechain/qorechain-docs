@@ -152,7 +152,7 @@ qorel keys pqc-status --chain qorechain-diana
 
 QoreChain berechnet die gesamte Gebühr (Gaslimit mal Preis) ohne Rückerstattung, halten Sie den Multiplikator daher knapp.
 
-- Im Testnet (v3.2.6) stimmt die Simulation mit der Ausführung bis auf wenige hundert Gas überein. Der lokale End-to-End-Test auf einem Build dieser Linie besteht mit `1.05` (jede Relay-Transaktion verbrauchte 95 % ihres Limits).
+- Auf Chain v3.2.5 und später (die folgende Messung wurde im Testnet mit v3.2.6 vorgenommen; das Mainnet hat v3.2.5 am 29. Oktober 2026 angewendet, aber QORel hat dort noch nicht relayt) stimmt die Simulation mit der Ausführung bis auf wenige hundert Gas überein. Der lokale End-to-End-Test auf einem Build dieser Linie besteht mit `1.05` (jede Relay-Transaktion verbrauchte 95 % ihres Limits).
 - Frühere Builds melden etwa 8 bis 10 % zu wenig (gemessen auf einem Pre-Release-Devnet, wo `1.15` 4 bis 7 % Spielraum ließ). Verwenden Sie `1.15`, bis Sie Ihre eigenen Nodes gemessen haben.
 - `health-check` meldet jeden Multiplikator unter `1.1` bei einem QoreChain-Eintrag als mögliche Fehlkonfiguration. Das ist eine Warnung, und das Relaying funktioniert weiter. `1.1`, der Wert in der Beispielkonfiguration, hält die Meldung für etwa 5 % mehr Gebühr als `1.05` sauber.
 - Die einmalige Transaktion `keys register-pqc` verwendet mindestens `1.1`, was auch immer die Konfiguration sagt.

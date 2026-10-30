@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implementează o **arhitectură ierarhică de lanțuri pe 4 niveluri** prin modulul `x/multilayer`. Lanțul principal servește drept rădăcină de decontare și de încredere, în timp ce straturile subsidiare (sidechain-uri, paychain-uri și rollup-uri) gestionează sarcini de lucru specializate, cu compromisuri diferite de performanță și securitate.
 
 :::caution Capabilitate în stadiu incipient
-Modulul este implementat pe mainnet (versiunea de lanț **v3.2.4** din 23 octombrie 2026) și pe testnet (**v3.2.6** din 27 octombrie 2026), dar **încă nu există niciun strat și nicio ancoră în niciuna dintre rețele** (verificat la 27 octombrie 2026: `GET /qorechain/multilayer/v1/layers` returnează o listă goală pe ambele). Tot ce urmează descrie modulul așa cum a fost construit; parametrii sunt valorile live. Pe mainnet, mesajul `MsgUpdateLayerStatus` este în prezent oprit de circuit breaker (vezi [Parametrii lanțului](/appendix/chain-parameters#circuit-breaker)); pe testnet nu este.
+Modulul este implementat pe mainnet (versiunea de lanț **v3.2.5** din 29 octombrie 2026) și pe testnet (**v3.2.6** din 27 octombrie 2026), dar **încă nu există niciun strat și nicio ancoră în niciuna dintre rețele** (verificat la 30 octombrie 2026: `GET /qorechain/multilayer/v1/layers` returnează o listă goală pe ambele). Tot ce urmează descrie modulul așa cum a fost construit; parametrii sunt valorile live. Pe mainnet, mesajul `MsgUpdateLayerStatus` este în prezent oprit de circuit breaker (vezi [Parametrii lanțului](/appendix/chain-parameters#circuit-breaker)); pe testnet nu este.
 :::
 
 ---

@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Este mainnet-ul activ?
 
 Da. Mainnet-ul este **activ** (chain id `qorechain-vladi`, activ din 7 iunie 2026)
-și rulează versiunea de chain v3.2.4 (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, propunerea de guvernanță 13); testnet-ul rulează v3.2.6 (aplicată pe 27 octombrie 2026). Presetul de testnet
+și rulează versiunea de chain v3.2.5 (aplicată la înălțimea 3.906.833 pe 29 octombrie 2026, propunerea de guvernanță 14; v3.2.4 a fost aplicată la înălțimea 3.742.566 pe 23 octombrie 2026); testnet-ul rulează v3.2.6 (aplicată pe 27 octombrie 2026). Presetul de testnet
 (`qorechain-diana`) rămâne de asemenea disponibil. Ambele preseturi vin cu
 endpoint-uri implicite pe localhost; selectați rețeaua cu
 `createClient({ network: "mainnet" })` și suprascrieți `endpoints` cu URL-urile
@@ -151,7 +151,7 @@ vechi sunt respinse on-chain, pe fiecare cale (inclusiv eth-native).
 ## Cu ce versiuni de chain funcționează SDK-ul?
 
 SDK **0.10.0** este versiunea de client pentru chain **v3.2.4** (mainnet din 23 octombrie
-2026, la înălțimea 3.742.566, propunerea de guvernanță 13; testnet din 19 octombrie). Adaugă
+2026, la înălțimea 3.742.566, propunerea de guvernanță 13; testnet din 19 octombrie). Mainnet rulează v3.2.5 din 29 octombrie 2026; formatul de semnare nu s-a schimbat, așa că 0.10.0 continuă să funcționeze acolo. Adaugă
 constructorii și citirile pentru staking-tier, `fetchAuthNonce` și citirile de protocol-feature
 (vedeți [Ce adaugă 0.10.0](/sdk/install#whats-new-0100)), peste ce a adăugat 0.9.0 pentru
 v3.2.2 și v3.2.3: constructori pentru dovada de
@@ -163,9 +163,9 @@ sign-bytes hibride, înregistrarea, trimiterile hibride și fereastra EVM funcț
 neschimbat), dar nu are niciunul dintre acei constructori: folosiți CLI-ul pentru ei
 (vedeți
 [Versiuni anterioare lui 0.9.0](/sdk/install#before-090)). Formatul de semnare nu s-a schimbat
-în v3.2.4. Testnet-ul rulează v3.2.6 (v3.2.5 a fost aplicată acolo pe 26 octombrie 2026, iar
+în v3.2.4 sau v3.2.5. Testnet-ul rulează v3.2.6 (v3.2.5 a fost aplicată acolo pe 26 octombrie 2026, iar
 v3.2.6 pe 27 octombrie); SDK-ul nu are constructori pentru nimic introdus după v3.2.4,
-iar funcționalitățile următoarei versiuni de mainnet sunt documentate în ziua în care mainnet-ul o aplică.
+deci adăugirile v3.2.5 (de exemplu registrul de chei ML-KEM și căile guvernate cross-VM și de contracte) nu au încă un constructor în SDK și se accesează prin CLI.
 
 ## Înregistrarea cheii mele PQC a fost refuzată, dar taxa a fost luată
 

@@ -160,7 +160,7 @@ Mağazalar her zaman güncel sürümlerini gösterir ve hâlâ eski bir yapı su
 - Her mesajı, ücreti, harcama limitlerini ve son kullanma süresini gösteren ve QoreX'in görüntüleyemediği şeyleri reddeden onay ekranları; dApp'ler için **`signAndBroadcast`**; İptal özellikli **Bağlı siteler** (eklenti); **EVM erişim penceresi** - bkz. [Güvenlik ve Kurtarma](/qorex/security-and-recovery) ve [Tarayıcı Eklentisi](/qorex/browser-extension).
 - Düzeltmeler: fonlanmış bir hesap "Hesaplarınız" listesinden anlık olarak kaybolabiliyordu (1.0.9); Android donanım Geri tuşu artık bir ekran geri gidiyor (1.1.1); kurtarma ifadesi Android 14 ve sonrasında erişilebilirlik hizmeti olmayan hizmetlerden gizleniyor (1.1.6).
 
-QoreX, 7 Haziran 2026'dan beri canlı olan ve 23 Ekim 2026'dan beri zincir **v3.2.4** sürümünü çalıştıran mainnet `qorechain-vladi` üzerinde çalışır. İmza biçimi, adresler, ondalık basamaklar, memolar ve ücretler bu yükseltmelerde değişmez; bu nedenle bunlar için bir QoreX güncellemesi gerekmez.
+QoreX, 7 Haziran 2026'dan beri canlı olan ve 29 Ekim 2026'dan beri zincir **v3.2.5** sürümünü çalıştıran (v3.2.4, 23 Ekim 2026'dan) mainnet `qorechain-vladi` üzerinde çalışır. İmza biçimi, adresler, ondalık basamaklar, memolar ve ücretler bu yükseltmelerde değişmez; bu nedenle bunlar için bir QoreX güncellemesi gerekmez.
 
 ## Geliştiriciler için {#developers}
 

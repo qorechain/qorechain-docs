@@ -10,7 +10,7 @@ sidebar_position: 3
 Esta guía explica cómo funciona la gobernanza on-chain en QoreChain: cómo se cuentan los votos, cómo presentar propuestas y cómo votar.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.4** desde el 23 de octubre de 2026; la testnet ejecuta **v3.2.6** (desde el 27 de octubre de 2026) — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** al participar en la gobernanza en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.5** desde el 29 de octubre de 2026 (v3.2.4 desde el 23 de octubre); la testnet ejecuta **v3.2.6** (desde el 27 de octubre de 2026) — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** al participar en la gobernanza en mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -119,7 +119,7 @@ Una propuesta lleva cero o más mensajes que se ejecutan si se aprueba. Casos ha
 | **Cambio de parámetro** | El mensaje `MsgUpdateParams` de un módulo, enviado por la cuenta del módulo de gobernanza. Reemplaza todo el conjunto de parámetros de ese módulo. |
 | **Actualización de software** | Un mensaje `MsgSoftwareUpgrade` que programa una actualización coordinada de la cadena a una altura de bloque especificada.   |
 | **Gasto comunitario** | Un mensaje `MsgCommunityPoolSpend` que envía fondos del pool comunitario a una dirección de destinatario.   |
-| **Expedita**        | Establece `"expedited": true` para un período de votación más corto con un depósito y un umbral de aprobación más altos (ver más abajo). |
+| **Expedita**        | Establece `"expedited": true` para un período de votación más corto con un depósito y un umbral de aprobación más altos (ver más abajo). Desde v3.2.5 (ambas redes), una propuesta expedita que no supera el recuento y se convierte en propuesta regular conserva los votos ya emitidos; antes de v3.2.5 esos votos se perdían. |
 
 ---
 
@@ -175,7 +175,7 @@ Los parámetros clave incluyen:
 
 ## La gobernanza en mainnet hasta ahora {#mainnet-history}
 
-La gobernanza de mainnet se ha usado para cambios de parámetros, decisiones de cortacircuitos, actualizaciones coordinadas y, desde octubre de 2026, para liberar cantidades que la cadena registró en la actualización v3.2.0. Las propuestas 7 a 13 se aprobaron en mainnet en octubre de 2026, incluidas la propuesta 12 (otra liberación, aprobada el 21 de octubre) y la propuesta 13 (la actualización v3.2.4, aplicada en la altura 3,742,566 el 23 de octubre); la propuesta 14 (una actualización coordinada a la v3.2.5 en la altura 3,906,833) estaba en su periodo de votación en el momento de escribir esto; la lista y los resultados están en el [Historial de versiones](/appendix/version-history#governance-timeline), y cada propuesta puede leerse en vivo en `GET /cosmos/gov/v1/proposals`.
+La gobernanza de mainnet se ha usado para cambios de parámetros, decisiones de cortacircuitos, actualizaciones coordinadas y, desde octubre de 2026, para liberar cantidades que la cadena registró en la actualización v3.2.0. Las propuestas 7 a 14 se aprobaron en mainnet en octubre de 2026, incluidas la propuesta 12 (otra liberación, aprobada el 21 de octubre) y la propuesta 13 (la actualización v3.2.4, aplicada en la altura 3,742,566 el 23 de octubre) y la propuesta 14 (la actualización v3.2.5, aplicada en la altura 3,906,833 el 29 de octubre de 2026); la lista y los resultados están en el [Historial de versiones](/appendix/version-history#governance-timeline), y cada propuesta puede leerse en vivo en `GET /cosmos/gov/v1/proposals`.
 
 ---
 

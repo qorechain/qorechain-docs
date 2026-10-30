@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Caracteristici principale
 
-Tabelul următor enumeră fiecare caracteristică majoră din QoreChain, organizată după faza de lansare în care a fost introdusă. Mainnet-ul (`qorechain-vladi`, EVM chain ID 9801), activ din 7 iunie 2026, rulează **v3.2.4** (aplicată la înălțimea 3.742.566, pe 23 octombrie 2026); rețeaua de test paralelă (`qorechain-diana`, EVM chain ID 9800) rulează v3.2.6 din 27 octombrie 2026. Tabelul [Starea funcționalităților](#feature-status) de la finalul listei arată ce este activ astăzi pe rețelele live.
+Tabelul următor enumeră fiecare caracteristică majoră din QoreChain, organizată după faza de lansare în care a fost introdusă. Mainnet-ul (`qorechain-vladi`, EVM chain ID 9801), activ din 7 iunie 2026, rulează **v3.2.5** (aplicată la înălțimea 3.906.833, pe 29 octombrie 2026; v3.2.4 fusese aplicată la înălțimea 3.742.566, pe 23 octombrie); rețeaua de test paralelă (`qorechain-diana`, EVM chain ID 9800) rulează v3.2.6 din 27 octombrie 2026. Tabelul [Starea funcționalităților](#feature-status) de la finalul listei arată ce este activ astăzi pe rețelele live.
 
 | Caracteristică             | Introdusă în        | Descriere                                                                                                                                                                                                                                                                                                                                                                                        |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -36,13 +36,14 @@ Tabelul următor enumeră fiecare caracteristică majoră din QoreChain, organiz
 
 ## Starea funcționalităților (octombrie 2026) {#feature-status}
 
-Verificat pe rețelele live la 20 octombrie 2026 (mainnet v3.2.4), cu notele specifice testnet-ului din rânduri reverificate la 27 octombrie 2026 (testnet v3.2.6). „Live” înseamnă că funcționalitatea este activă pe mainnet (și, cu excepția cazului în care un rând spune altfel, pe testnet); descrierile de mai sus spun ce este conceput să facă fiecare funcționalitate.
+Verificat pe rețelele live la 20 octombrie 2026 (mainnet v3.2.4; rândurile pe care le afectează v3.2.5 au fost reverificate pe mainnet la 30 octombrie 2026), cu notele specifice testnet-ului din rânduri reverificate la 27 octombrie 2026 (testnet v3.2.6). „Live” înseamnă că funcționalitatea este activă pe mainnet (și, cu excepția cazului în care un rând spune altfel, pe testnet); descrierile de mai sus spun ce este conceput să facă fiecare funcționalitate.
 
 | Capabilitate | Starea pe rețelele live |
 | --- | --- |
 | Semnături hibride ML-DSA-87 + secp256k1 (lane-ul Cosmos) | **Live**, obligatorii (`hybrid_signature_mode = required`) |
 | Fereastra de autorizare EVM | **Live** începând cu v3.2.0 (restrângere opțională a domeniului începând cu v3.2.3) |
 | Staking cu blocare în timp (`x/stakingtier`, opțional) | **Live** începând cu v3.2.4 (testnet din 19 octombrie 2026, mainnet din 23 octombrie 2026) |
+| Funcționalitățile de protocol v3.2.5 (registrul nativ de chei ML-KEM, lista de permisiuni cross-VM guvernată, implementarea CosmWasm guvernată, decontarea RDK în ordinea loturilor cu rezolvare deschisă a contestațiilor, propuneri accelerate care își păstrează voturile) | **Live** pe mainnet din 29 octombrie 2026 (înălțimea 3,906,833) și pe testnet din 26 octombrie 2026. Apelul cross-VM și instanțierea CosmWasm sunt încă oprite pe mainnet și nicio precompilare EVM nu este activă; vezi [Istoric versiuni](/appendix/version-history#v325) |
 | Runtime-urile EVM, QoreChain Native, SVM | EVM **live**; încărcarea codului și instanțierea QoreChain Native **dezactivate** (setare de guvernanță plus întrerupător de circuit); lane-ul de tranzacții SVM **dezactivat** (citirile funcționează) |
 | Motorul de ardere și împărțirea taxelor (37/30/20/10/3) | **Live**; doar canalele de ardere a taxelor de gaz și a tranzacțiilor eșuate au arderi înregistrate pe mainnet |
 | Emisii plafonate (`x/inflation`) | **Live**, fix 86.000 QOR per epocă, până la un plafon de 590.000.000 QOR (mainnet) |

@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Le query vengono eseguite sul nodo indicato da `--node`. Usa un endpoint RPC mainnet **`qorechain-vladi`** per i dati live (ad esempio `--node https://rpc.qore.host:443`), oppure un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) per i test. Il valore predefinito `tcp://localhost:26657` punta a un nodo eseguito da te. La mainnet esegue la release del nodo v3.2.4 dal 23 ottobre 2026 (applicata all'altezza 3.742.566 dalla proposta di governance 13), e la proposta di governance 14 della mainnet applicherebbe la v3.2.5 all'altezza 3.906.833; la testnet esegue la v3.2.6 (v3.2.4 dal 19 ottobre 2026, v3.2.5 dal 26 ottobre, v3.2.6 dal 27 ottobre). La release v3.2.4 aggiunge alcune route e comandi (contrassegnati come **v3.2.4** più sotto): funzionano su entrambe le reti, mentre un nodo ancora su una release precedente risponde con `Not Implemented`. La release v3.2.6 aggiunge due comandi (contrassegnati come **v3.2.6**, solo testnet finché la mainnet non la applica). I comandi di questa pagina sono stati verificati con il binario della release v3.2.3, eseguito su `https://rpc.qore.host:443`; le route v3.2.4 sono state verificate tramite REST il 23 ottobre 2026 e i comandi v3.2.6 rispetto al sorgente v3.2.6.
+Le query vengono eseguite sul nodo indicato da `--node`. Usa un endpoint RPC mainnet **`qorechain-vladi`** per i dati live (ad esempio `--node https://rpc.qore.host:443`), oppure un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) per i test. Il valore predefinito `tcp://localhost:26657` punta a un nodo eseguito da te. La mainnet esegue la release del nodo v3.2.5 dal 29 ottobre 2026 (applicata all'altezza 3.906.833 dalla proposta di governance 14; la v3.2.4 era stata applicata all'altezza 3.742.566 il 23 ottobre 2026); la testnet esegue la v3.2.6 (v3.2.4 dal 19 ottobre 2026, v3.2.5 dal 26 ottobre, v3.2.6 dal 27 ottobre). La release v3.2.4 aggiunge alcune route e comandi (contrassegnati come **v3.2.4** più sotto): funzionano su entrambe le reti, mentre un nodo ancora su una release precedente risponde con `Not Implemented`. La release v3.2.6 aggiunge due comandi (contrassegnati come **v3.2.6**, solo testnet finché la mainnet non la applica). I comandi di questa pagina sono stati verificati con il binario della release v3.2.3, eseguito su `https://rpc.qore.host:443`; le route v3.2.4 sono state verificate tramite REST il 23 ottobre 2026 e i comandi v3.2.6 rispetto al sorgente v3.2.6.
 :::
 
 Flag comuni si applicano a ogni sottocomando `query`:
@@ -170,6 +170,8 @@ qorechaind query qca config
 ```
 
 Non esistono query di reputazione per singolo validatore né di classificazione dei pool.
+
+`query reputation params` (REST `GET /qorechain/reputation/v1/params`) risponde solo sulla testnet. Sulla mainnet la route risponde `Not Implemented` (verificato il 30 ottobre 2026, dopo la v3.2.5), quindi parte sulla mainnet con una release di chain successiva.
 
 ---
 
@@ -349,7 +351,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>` è il modo per leggere quando un upgrade è entrato in vigore: sulla mainnet `v3.2.2` è stato applicato all'altezza 3.556.788, `v3.2.3` all'altezza 3.662.051 e `v3.2.4` all'altezza 3.742.566; sulla testnet `v3.2.2` a 6.905.034, `v3.2.3` a 8.003.746, `v3.2.4` a 8.337.253, `v3.2.5` a 8.890.800 e `v3.2.6` a 8.970.638 (`0` significa non applicato; sulla mainnet `v3.2.5` è `0` al momento della stesura, con la proposta di governance 14 nel suo periodo di votazione). L'elenco del circuit breaker della mainnet (`disabled-list`) contiene attualmente i messaggi di creazione degli account in vesting, lo store e l'istanziazione di QoreChain Native, la pausa e la ripresa dei pool AMM, la chiamata cross-VM, l'aggiornamento dello stato dei layer multilayer, la deprecazione e la disabilitazione degli algoritmi PQC e i messaggi di governance del consenso PRISM; quello della testnet contiene solo il messaggio QoreChain Native `MsgStoreCode` (verificato il 27 ottobre 2026; l'istanziazione è stata consentita dalla governance della testnet).
+`query upgrade applied <name>` è il modo per leggere quando un upgrade è entrato in vigore: sulla mainnet `v3.2.2` è stato applicato all'altezza 3.556.788, `v3.2.3` all'altezza 3.662.051 e `v3.2.4` all'altezza 3.742.566 e `v3.2.5` all'altezza 3.906.833; sulla testnet `v3.2.2` a 6.905.034, `v3.2.3` a 8.003.746, `v3.2.4` a 8.337.253, `v3.2.5` a 8.890.800 e `v3.2.6` a 8.970.638 (`0` significa non applicato; sulla mainnet `v3.2.6` è `0` al momento della stesura). L'elenco del circuit breaker della mainnet (`disabled-list`) contiene attualmente i messaggi di creazione degli account in vesting, lo store e l'istanziazione di QoreChain Native, la pausa e la ripresa dei pool AMM, la chiamata cross-VM, l'aggiornamento dello stato dei layer multilayer, la deprecazione e la disabilitazione degli algoritmi PQC e i messaggi di governance del consenso PRISM; quello della testnet contiene solo il messaggio QoreChain Native `MsgStoreCode` (verificato il 27 ottobre 2026; l'istanziazione è stata consentita dalla governance della testnet).
 
 ---
 

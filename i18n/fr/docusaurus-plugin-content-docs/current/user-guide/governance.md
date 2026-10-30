@@ -10,7 +10,7 @@ sidebar_position: 3
 Ce guide explique le fonctionnement de la gouvernance on-chain sur QoreChain : comment les votes sont décomptés, comment soumettre des propositions et comment voter.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.4** depuis le 23 octobre 2026 ; le testnet exécute la **v3.2.6** (depuis le 27 octobre 2026) — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous participez à la gouvernance sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.5** depuis le 29 octobre 2026 (v3.2.4 à partir du 23 octobre) ; le testnet exécute la **v3.2.6** (depuis le 27 octobre 2026) — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous participez à la gouvernance sur le mainnet.
 :::
 
 :::caution Signez avec `tx pqc cosign`
@@ -119,7 +119,7 @@ Une proposition contient zéro, un ou plusieurs messages qui s'exécutent si ell
 | **Parameter change**     | Un message `MsgUpdateParams` d'un module, envoyé par le compte de module de gouvernance. Il remplace l'ensemble complet des paramètres de ce module. |
 | **Software upgrade**     | Un message `MsgSoftwareUpgrade` qui planifie une mise à niveau coordonnée de la chaîne à une hauteur de bloc spécifiée. |
 | **Community spend**      | Un message `MsgCommunityPoolSpend` qui envoie des fonds du pool communautaire vers une adresse de destinataire. |
-| **Expedited**            | Définissez `"expedited": true` pour une période de vote plus courte, avec un dépôt et un seuil d'adoption plus élevés (voir ci-dessous). |
+| **Expedited**            | Définissez `"expedited": true` pour une période de vote plus courte, avec un dépôt et un seuil d'adoption plus élevés (voir ci-dessous). Depuis la v3.2.5 (sur les deux réseaux), une proposition accélérée qui échoue au décompte et se convertit en proposition ordinaire conserve les votes déjà exprimés ; avant la v3.2.5, ces votes étaient perdus. |
 
 ---
 
@@ -175,7 +175,7 @@ Paramètres clés :
 
 ## La gouvernance sur le mainnet jusqu'ici {#mainnet-history}
 
-La gouvernance du mainnet a servi à des changements de paramètres, à des décisions de disjoncteur, à des mises à niveau coordonnées et, depuis octobre 2026, à la libération de montants que la chaîne avait enregistrés lors de la mise à niveau v3.2.0. Les propositions 7 à 13 ont été adoptées sur le mainnet en octobre 2026, dont la proposition 12 (une nouvelle libération, adoptée le 21 octobre) et la proposition 13 (la mise à niveau v3.2.4, appliquée à la hauteur 3 742 566 le 23 octobre) ; la proposition 14 (une mise à niveau coordonnée vers la v3.2.5 à la hauteur 3 906 833) était en période de vote au moment de la rédaction ; la liste et les résultats se trouvent dans l'[Historique des versions](/appendix/version-history#governance-timeline), et chaque proposition peut être lue en direct à `GET /cosmos/gov/v1/proposals`.
+La gouvernance du mainnet a servi à des changements de paramètres, à des décisions de disjoncteur, à des mises à niveau coordonnées et, depuis octobre 2026, à la libération de montants que la chaîne avait enregistrés lors de la mise à niveau v3.2.0. Les propositions 7 à 14 ont été adoptées sur le mainnet en octobre 2026, dont la proposition 12 (une nouvelle libération, adoptée le 21 octobre), la proposition 13 (la mise à niveau v3.2.4, appliquée à la hauteur 3 742 566 le 23 octobre) et la proposition 14 (la mise à niveau v3.2.5, appliquée à la hauteur 3 906 833 le 29 octobre 2026) ; la liste et les résultats se trouvent dans l'[Historique des versions](/appendix/version-history#governance-timeline), et chaque proposition peut être lue en direct à `GET /cosmos/gov/v1/proposals`.
 
 ---
 

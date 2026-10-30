@@ -159,7 +159,7 @@ const signBytes = hybridSignBytes(version, chainId, bodyWithoutPqcExt, authInfoB
 ## Cum se accesează {#how-to-access}
 
 * **Nu este nevoie de rețea, cont sau cheie pentru a folosi biblioteca.** Rulează offline. O pereche de chei creată de ea este doar o cheie; pentru a o folosi pe QoreChain, contul trebuie să înregistreze o singură dată cheia publică (vedeți [Semnare post-cuantică](/developer-guide/post-quantum-signing#pqc-key-registration)), iar o tranzacție pe lane-ul Cosmos are apoi nevoie de semnătura secp256k1 plus semnătura ML-DSA-87 (hibrid).
-* **Rețele.** Ajutoarele pentru sign-bytes și vectorii corespund mainnet `qorechain-vladi` (v3.2.4) și testnet `qorechain-diana` (v3.2.6). Vedeți [Rețele](/appendix/networks) pentru endpoint-uri.
+* **Rețele.** Ajutoarele pentru sign-bytes și vectorii corespund mainnet `qorechain-vladi` (v3.2.5) și testnet `qorechain-diana` (v3.2.6). Vedeți [Rețele](/appendix/networks) pentru endpoint-uri.
 * **Python are nevoie de biblioteca partajată liboqs.** `pip install qorechain-pqc` depinde de `liboqs-python`, care compilează liboqs la primul import când lipsește; asta cere `git`, CMake și un compilator C pe mașină. În medii restricționate, instalați liboqs din managerul de pachete al sistemului sau compilați-l în avans. Binding-ul Python citește cheile din generatorul de numere aleatorii al sistemului și nu are generare de chei din seed în 0.2.3.
 * **Go cere Go 1.25 sau mai nou** (o cerință din 0.2.1, împreună cu CIRCL 1.6.5 sau mai nou).
 * **Java** a fost rulat cu JDK 21. Cheia secretă ML-DSA din binding-ul Java este seed-ul FIPS 204 de 32 de octeți, nu cheia expandată de 4.896 de octeți pe care o folosesc celelalte binding-uri; orice altă intrare este refuzată.

@@ -10,7 +10,7 @@ sidebar_position: 6
 Esta guía es una breve orientación para lanzar un rollup específico de aplicación que se liquida en QoreChain con el Rollup Development Kit (RDK). Los comandos paso a paso están en **[Desplegar un Rollup](/rollups/deploying-a-rollup)**; esta página cubre lo que necesitas antes de empezar.
 
 :::caution Capacidad en una fase temprana
-Todavía no se ha creado ningún rollup en ninguna de las dos redes (comprobado el 27 de octubre de 2026). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) ejecuta la versión de cadena **v3.2.4** desde el 23 de octubre de 2026; la testnet (**`qorechain-diana`**, EVM chain ID **9800**) ejecuta v3.2.6 (desde el 27 de octubre de 2026), y su ventana de desafío por defecto es de 1 hora en lugar de 7 días. Valida primero en testnet; el comportamiento de la ventana de desafío se describe en [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement)).
+Todavía no se ha creado ningún rollup en ninguna de las dos redes (comprobado el 27 de octubre de 2026 en la testnet y el 30 de octubre de 2026 en la mainnet). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) ejecuta la versión de cadena **v3.2.5** desde el 29 de octubre de 2026, que trae las reglas de liquidación de [comportamiento de la cadena v3.2.5](/rollups/overview#v325) (cualquier cuenta puede resolver un desafío, los lotes se finalizan en orden); la testnet (**`qorechain-diana`**, EVM chain ID **9800**) ejecuta v3.2.6 (desde el 27 de octubre de 2026), y su ventana de desafío por defecto es de 1 hora en lugar de 7 días. Valida primero en testnet; el comportamiento de la ventana de desafío se describe en [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement)).
 :::
 
 ---

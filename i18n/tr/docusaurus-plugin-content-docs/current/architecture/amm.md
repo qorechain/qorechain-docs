@@ -20,8 +20,8 @@ Tüm tutarlar QoreChain'in yerel birimlerini kullanır. Stake ve ücret tokenı 
 Aşağıdaki komutlar `qorechaind` kullanır. Ortamınız için olağan işlem bayraklarını (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) ekleyin — örneğin ana ağa karşı `--chain-id qorechain-vladi --gas 400000 --fees 40000uqor` (ağ ücret tabanı, gaz birimi başına 0,1 uqor'dur). Her `tx amm` komutu bir Cosmos hattı işlemidir, bu nedenle hibrit kuantum sonrası imza gerektirir: `--generate-only > tx.json` ekleyin, ardından `qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>` komutunu çalıştırın (bkz. [İlk İşlem](/getting-started/first-transaction#send-qor)).
 :::
 
-:::caution Henüz hiç havuz yok
-AMM modülü ana ağda (v3.2.4) ve test ağında (v3.2.6) canlıdır, ancak **henüz hiçbir havuz oluşturulmamıştır** (27 Ekim 2026'da kontrol edildi: `GET /qorechain/amm/v1/pools` her ikisinde de boş bir liste döndürür) ve aşağıdaki örneklerdeki birimler (`uusdc`, `uusdt`) açıklayıcıdır: bugün ağlarda böyle varlıklar bulunmaz. Bir havuz oluşana kadar her takas veya likidite ekleme komutu, havuz bulunamadı hatasıyla başarısız olur.
+:::caution Ana ağda henüz hiç havuz yok
+AMM modülü ana ağda (v3.2.5) ve test ağında (v3.2.6) canlıdır. **Ana ağda henüz hiçbir havuz oluşturulmamıştır** (30 Ekim 2026'da kontrol edildi: `GET /qorechain/amm/v1/pools` orada boş bir liste döndürür). Test ağında bir havuz vardır (kimlik 1, `uqor` karşısında bir Fest test tokenı; yalnızca test ağı, değeri yoktur). Aşağıdaki örneklerdeki birimler (`uusdc`, `uusdt`) açıklayıcıdır: bugün ağlarda böyle varlıklar bulunmaz. Bir havuz oluşana kadar her takas veya likidite ekleme komutu, havuz bulunamadı hatasıyla başarısız olur.
 :::
 
 ## Modül parametreleri {#parameters}

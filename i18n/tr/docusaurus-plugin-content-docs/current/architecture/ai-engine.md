@@ -21,7 +21,7 @@ QCAI (QoreChain AI) motoru üç katmanda çalışır:
 
 Konsensüs seviyesi ayrı olarak [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine) sayfasında belgelenmiştir. Bu sayfa ağ ve uygulama seviyelerini kapsar.
 
-:::note Canlı ağlarda neler uygulanıyor (23 Ekim 2026'da kontrol edildi, ana ağ ve test ağı o zaman ikisi de v3.2.4'teydi; test ağı o tarihten sonra v3.2.6'ya geçti)
+:::note Canlı ağlarda neler uygulanıyor (23 Ekim 2026'da kontrol edildi, ana ağ ve test ağı o zaman ikisi de v3.2.4'teydi; test ağı o tarihten sonra v3.2.6'ya, ana ağ ise v3.2.5'e geçti)
 `x/ai` modülünün iki parçası bugün işlemler üzerinde etkilidir; hem Cosmos hattında hem de EVM hattında:
 
 * **Gönderen başına hız sınırı**. Canlı sınır **gönderen başına dakikada 600 işlemdir** (`max_tx_per_minute`; EVM hattının kendi isteğe bağlı sınırı vardır, ancak ayarlanmamıştır, bu yüzden aynı değer geçerlidir). "Dakika", duvar saati süresiyle değil, sabit bir blok penceresi üzerinden sayılır, çünkü blok yüksekliği her doğrulayıcının paylaştığı tek saattir. Sınıra ulaşan bir gönderenin daha eski işlemleri pencereden çıkana kadar sonraki işlemleri reddedilir. Sınır, Cosmos hattında v3.2.0'dan beri, her iki hatta ise v3.2.2'den beri uygulanmaktadır.

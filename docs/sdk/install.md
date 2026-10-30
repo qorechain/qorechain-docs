@@ -39,7 +39,7 @@ Hybrid builders take a `signBytesVersion` option (`"auto"` | `"v1"` | `"v2"`); `
 asks the network and therefore needs the REST endpoint (`rest`) on
 `qorechain-vladi` / `qorechain-diana`: it throws instead of guessing. See
 [Which sign-bytes form?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-The form did not change in chain v3.2.3 or v3.2.4 (v3.2.4 runs on the testnet since 19 October 2026 and on mainnet since 23 October 2026): `"auto"`
+The form did not change in chain v3.2.3 or v3.2.4 (v3.2.4 runs on the testnet since 19 October 2026 and on mainnet since 23 October 2026; v3.2.5 changed nothing here and runs on mainnet since 29 October 2026): `"auto"`
 resolves to v2 on both networks, because both applied the upgrade that switched to it.
 :::
 
@@ -50,10 +50,8 @@ height 3,742,566 on 23 October 2026 (the testnet applied it at height 8,337,253
 on 19 October). The signing format, addresses, decimals, memos and fees did not
 change, and a transaction built with 0.9.0 stays valid. The release was checked in
 every language with real transactions on the testnet. It has no builders for
-anything introduced after v3.2.4. The testnet has moved on to v3.2.6 (v3.2.5 and
-v3.2.6 were applied there on 26 and 27 October 2026); mainnet governance proposal
-14 would apply v3.2.5 at height 3,906,833 at the time of writing, and what that
-release adds is documented when mainnet applies it. What is new in 0.10.0:
+anything introduced after v3.2.4. Mainnet has run v3.2.5 since 29 October 2026 (height 3,906,833, governance proposal 14) and 0.10.0 keeps working there because the signing format did not change; the v3.2.5 additions have no SDK builder yet. The testnet has moved on to v3.2.6 (v3.2.5 and
+v3.2.6 were applied there on 26 and 27 October 2026). What is new in 0.10.0:
 
 | Area | In 0.10.0 |
 | --- | --- |
@@ -72,7 +70,7 @@ depends on `@qorechain/sdk` `^0.10.0`, and the scaffolder's templates do too).
 ## What 0.9.0 added {#whats-new-090}
 
 SDK 0.9.0 was the client release for chain **v3.2.2** and **v3.2.3** (mainnet
-applied them at heights 3,556,788 and 3,662,051; mainnet has run v3.2.4 since 23 October 2026 at height 3,742,566, and the testnet has run v3.2.4 or later since 19 October 2026). The
+applied them at heights 3,556,788 and 3,662,051; mainnet ran v3.2.4 from 23 October 2026 (height 3,742,566) and has run v3.2.5 since 29 October 2026, and the testnet has run v3.2.4 or later since 19 October 2026). The
 signing format, addresses, decimals, memos and fees did not change, so the
 v2 hybrid sign-bytes form that 0.8.1 and later sign is still the right one.
 What is new:

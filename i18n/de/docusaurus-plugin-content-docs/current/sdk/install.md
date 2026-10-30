@@ -40,7 +40,7 @@ akzeptieren die Option `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`); `"auto"`
 Netzwerk ab und benötigt daher den REST-Endpunkt (`rest`) auf
 `qorechain-vladi` / `qorechain-diana`: Es wirft einen Fehler, statt zu raten. Siehe
 [Welche Sign-Bytes-Form?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-Die Form hat sich in Chain v3.2.3 oder v3.2.4 (v3.2.4 läuft im Testnet seit dem 19. Oktober 2026 und im Mainnet seit dem 23. Oktober 2026) nicht geändert: `"auto"`
+Die Form hat sich in Chain v3.2.3 oder v3.2.4 (v3.2.4 läuft im Testnet seit dem 19. Oktober 2026 und im Mainnet seit dem 23. Oktober 2026; v3.2.5 hat hier nichts geändert und läuft im Mainnet seit dem 29. Oktober 2026) nicht geändert: `"auto"`
 wird auf beiden Netzwerken zu v2 aufgelöst, weil beide das Upgrade angewendet haben, das darauf umgestellt hat.
 :::
 
@@ -51,10 +51,8 @@ bei Höhe 3.742.566 angewendet hat (das Testnet hat sie am 19. Oktober bei Höhe
 angewendet). Signaturformat, Adressen, Dezimalstellen, Memos und Gebühren haben sich nicht
 geändert, und eine mit 0.9.0 erstellte Transaktion bleibt gültig. Das Release wurde in jeder
 Sprache mit echten Transaktionen auf dem Testnet geprüft. Es hat keine Builder für alles,
-was nach v3.2.4 eingeführt wurde. Das Testnet ist zu v3.2.6 weitergezogen (v3.2.5 und
-v3.2.6 wurden dort am 26. und 27. Oktober 2026 angewendet); der Mainnet-Governance-Vorschlag
-14 würde zum Zeitpunkt der Erstellung v3.2.5 auf Höhe 3.906.833 anwenden, und was dieses
-Release hinzufügt, wird dokumentiert, wenn das Mainnet es anwendet. Neu in 0.10.0 ist:
+was nach v3.2.4 eingeführt wurde. Das Mainnet läuft seit dem 29. Oktober 2026 mit v3.2.5 (Höhe 3.906.833, Governance-Vorschlag 14), und 0.10.0 funktioniert dort weiter, weil sich das Signaturformat nicht geändert hat; für die Ergänzungen von v3.2.5 gibt es noch keinen SDK-Builder. Das Testnet ist zu v3.2.6 weitergezogen (v3.2.5 und
+v3.2.6 wurden dort am 26. und 27. Oktober 2026 angewendet). Neu in 0.10.0 ist:
 
 | Bereich | In 0.10.0 |
 | --- | --- |
@@ -73,7 +71,7 @@ hängt von `@qorechain/sdk` `^0.10.0` ab, und die Vorlagen des Scaffolders ebenf
 ## Was 0.9.0 brachte {#whats-new-090}
 
 SDK 0.9.0 war das Client-Release für die Chain-Versionen **v3.2.2** und **v3.2.3** (das Mainnet
-hat sie bei den Höhen 3,556,788 und 3,662,051 angewendet; das Mainnet läuft seit dem 23. Oktober 2026 bei Höhe 3.742.566 mit v3.2.4, und das Testnet läuft seit dem 19. Oktober 2026 mit v3.2.4 oder neuer). Signaturformat,
+hat sie bei den Höhen 3,556,788 und 3,662,051 angewendet; das Mainnet lief seit dem 23. Oktober 2026 (Höhe 3.742.566) mit v3.2.4 und läuft seit dem 29. Oktober 2026 mit v3.2.5, und das Testnet läuft seit dem 19. Oktober 2026 mit v3.2.4 oder neuer). Signaturformat,
 Adressen, Dezimalstellen, Memos und Gebühren haben sich nicht geändert, sodass die hybride
 v2-Sign-Bytes-Form, die 0.8.1 und neuer signieren, weiterhin die richtige ist.
 Neu ist Folgendes:

@@ -10,7 +10,7 @@ sidebar_position: 2
 Ce guide explique comment déléguer des tokens QOR à des validateurs, redéléguer entre validateurs, désengager votre mise, réclamer vos récompenses, et comprendre quelles parties de la conception du staking de QoreChain sont actives aujourd'hui.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est actif depuis le 7 juin 2026 et exécute la version **v3.2.4** (appliquée le 23 octobre 2026) ; le testnet exécute la v3.2.6 (depuis le 27 octobre 2026). Substituez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au mainnet** lorsque vous staker sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est actif depuis le 7 juin 2026 et exécute la version **v3.2.5** (appliquée le 29 octobre 2026 ; la v3.2.4 le 23 octobre) ; le testnet exécute la v3.2.6 (depuis le 27 octobre 2026). Substituez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au mainnet** lorsque vous staker sur le mainnet.
 :::
 
 :::caution Signer avec `tx pqc cosign`
@@ -126,7 +126,7 @@ Les récompenses de staking sont financées par deux sources : le budget d'émis
 ## Staking à verrouillage temporel (v3.2.4) {#time-locked-staking}
 
 :::note Quand cela s'applique
-La version v3.2.4 ajoute un module optionnel de staking à verrouillage temporel, `x/stakingtier`. Il est en service sur le **testnet `qorechain-diana`** depuis le 19 octobre 2026 et sur le **mainnet** depuis le 23 octobre 2026 (appliqué à la hauteur 3,742,566 par la proposition de gouvernance 13). Le verrouillage est disponible en option et la délégation ordinaire reste sans verrouillage (voir [ci-dessus](#lock-in-period)). Le mécanisme ci-dessous a été vérifié par rapport aux paramètres en service du mainnet et du testnet le 23 octobre 2026.
+La version v3.2.4 ajoute un module optionnel de staking à verrouillage temporel, `x/stakingtier`. Il est en service sur le **testnet `qorechain-diana`** depuis le 19 octobre 2026 et sur le **mainnet** depuis le 23 octobre 2026 (appliqué à la hauteur 3,742,566 par la proposition de gouvernance 13) ; le mainnet exécute la v3.2.5 depuis le 29 octobre 2026, qui le laisse inchangé. Le verrouillage est disponible en option et la délégation ordinaire reste sans verrouillage (voir [ci-dessus](#lock-in-period)). Le mécanisme ci-dessous a été vérifié par rapport aux paramètres en service du mainnet et du testnet le 23 octobre 2026.
 :::
 
 Un délégant peut engager une partie d'une délégation existante auprès d'un validateur pour une durée fixe de 3, 6 ou 12 mois. Les durées et les montants sont des paramètres de la chaîne ; lisez les valeurs actuelles depuis `GET /qorechain/stakingtier/v1/params` plutôt que depuis cette page.
@@ -158,7 +158,7 @@ L'identifiant de chaîne ci-dessus est celui du testnet ; utilisez `qorechain-vl
 
 **Où cela fonctionne, vérifié le 27 octobre 2026.**
 
-| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | Module actif | Oui, depuis la hauteur 3,742,566 | Oui, depuis la v3.2.4 (hauteur 8,337,253) |
 | Verrous ouverts | Aucun pour l'instant | 3 verrous de test |

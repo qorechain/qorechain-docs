@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Fonctionnalités clés
 
-Le tableau suivant répertorie toutes les fonctionnalités majeures de QoreChain, organisées par phase de version dans laquelle elles ont été introduites. Le mainnet (`qorechain-vladi`, EVM chain ID 9801), en service depuis le 7 juin 2026, exécute la **v3.2.4** (appliquée à la hauteur 3,742,566 le 23 octobre 2026) ; le testnet parallèle (`qorechain-diana`, EVM chain ID 9800) exécute la v3.2.6 depuis le 27 octobre 2026. Le tableau [État des fonctionnalités](#feature-status) à la fin de la liste des fonctionnalités indique ce qui est actif aujourd'hui sur les réseaux en production.
+Le tableau suivant répertorie toutes les fonctionnalités majeures de QoreChain, organisées par phase de version dans laquelle elles ont été introduites. Le mainnet (`qorechain-vladi`, EVM chain ID 9801), en service depuis le 7 juin 2026, exécute la **v3.2.5** (appliquée à la hauteur 3,906,833 le 29 octobre 2026 ; la v3.2.4 avait été appliquée à la hauteur 3,742,566 le 23 octobre) ; le testnet parallèle (`qorechain-diana`, EVM chain ID 9800) exécute la v3.2.6 depuis le 27 octobre 2026. Le tableau [État des fonctionnalités](#feature-status) à la fin de la liste des fonctionnalités indique ce qui est actif aujourd'hui sur les réseaux en production.
 
 | Fonctionnalité             | Introduite dans     | Description                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -36,13 +36,14 @@ Le tableau suivant répertorie toutes les fonctionnalités majeures de QoreChain
 
 ## État des fonctionnalités (octobre 2026) {#feature-status}
 
-Vérifié sur les réseaux en production le 20 octobre 2026 (mainnet v3.2.4), les notes propres au testnet dans les lignes ayant été revérifiées le 27 octobre 2026 (testnet v3.2.6). « En production » signifie que la capacité est active sur le mainnet (et, sauf indication contraire dans une ligne, sur le testnet) ; les descriptions ci-dessus indiquent ce que chaque fonctionnalité est conçue pour faire.
+Vérifié sur les réseaux en production le 20 octobre 2026 (mainnet v3.2.4 ; les lignes concernées par la v3.2.5 ont été revérifiées sur le mainnet le 30 octobre 2026), les notes propres au testnet dans les lignes ayant été revérifiées le 27 octobre 2026 (testnet v3.2.6). « En production » signifie que la capacité est active sur le mainnet (et, sauf indication contraire dans une ligne, sur le testnet) ; les descriptions ci-dessus indiquent ce que chaque fonctionnalité est conçue pour faire.
 
 | Capacité | État sur les réseaux en production |
 | --- | --- |
 | Signatures hybrides ML-DSA-87 + secp256k1 (voie Cosmos) | **En production**, requises (`hybrid_signature_mode = required`) |
 | Fenêtre d'autorisation EVM | **En production** depuis la v3.2.0 (périmètre facultatif depuis la v3.2.3) |
 | Staking à verrouillage temporel (`x/stakingtier`, facultatif) | **En production** depuis la v3.2.4 (testnet depuis le 19 octobre 2026, mainnet depuis le 23 octobre 2026) |
+| Fonctionnalités de protocole de la v3.2.5 (registre natif de clés ML-KEM, liste d'autorisation cross-VM gouvernée, déploiement CosmWasm gouverné, règlement RDK dans l'ordre des lots avec résolution ouverte des contestations, propositions accélérées qui conservent leurs votes) | **En production** sur le mainnet depuis le 29 octobre 2026 (hauteur 3,906,833) et sur le testnet depuis le 26 octobre 2026. L'appel cross-VM et l'instanciation CosmWasm sont toujours désactivés sur le mainnet et aucun précompilé EVM n'est actif ; voir [Historique des versions](/appendix/version-history#v325) |
 | Environnements d'exécution EVM, QoreChain Native, SVM | EVM **en production** ; téléversement de code et instanciation QoreChain Native **désactivés** (paramètre de gouvernance plus disjoncteur) ; voie de transaction SVM **désactivée** (les lectures fonctionnent) |
 | Moteur de burn et répartition des frais (37/30/20/10/3) | **En production** ; seuls les canaux de burn des frais de gas et des transactions échouées ont enregistré des burns sur le mainnet |
 | Émission plafonnée (`x/inflation`) | **En production**, fixe à 86 000 QOR par epoch jusqu'à un plafond de 590 000 000 QOR (mainnet) |

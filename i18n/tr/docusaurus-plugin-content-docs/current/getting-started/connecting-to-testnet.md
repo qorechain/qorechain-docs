@@ -10,7 +10,7 @@ sidebar_position: 4
 Düğümünüzü doğru genesis dosyası, eşler ve ağ ayarlarıyla yapılandırarak canlı QoreChain Diana test ağına katılın.
 
 :::note
-Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır (sürüm **v3.2.4**, 23 Ekim 2026'dan beri) ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı **v3.2.6** sürümünü çalıştırmaktadır (27 Ekim 2026'da uygulandı); sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
+Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır (sürüm **v3.2.5**, 29 Ekim 2026'dan beri) ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı **v3.2.6** sürümünü çalıştırmaktadır (27 Ekim 2026'da uygulandı); sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
 :::
 
 ## Genel Uç Noktalar
@@ -62,7 +62,7 @@ Test ağı, governance önerileri aracılığıyla koordineli yükseltmeler alı
 | v3.2.5 | 8.890.800 | 26 Ekim 2026 |
 | v3.2.6 | 8.970.638 | 27 Ekim 2026 (16:58 UTC) |
 
-Test ağı her sürümü ana ağdan önce alır. Ana ağ v3.2.4'ü 23 Ekim 2026'da 3.742.566 yüksekliğinde uyguladı; ana ağ yönetişim önerisi 14, v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır ve yazım sırasında oylama süresindeydi. Manifestolar ayrıdır; bu yüzden ikili dosyayı asla iki ağ arasında kopyalamayın ve ana ağın yalnızca test ağına özel bir özelliği kabul etmesini beklemeyin (v3.2.6 eklemeleri [Sürüm Geçmişi](/appendix/version-history#testnet-v326) sayfasında listelenmiştir).
+Test ağı her sürümü ana ağdan önce alır. Ana ağ v3.2.4'ü 23 Ekim 2026'da 3.742.566 yüksekliğinde ve v3.2.5'i 29 Ekim 2026'da 3.906.833 yüksekliğinde uyguladı (yönetişim önerisi 14); dolayısıyla v3.2.6, test ağında olup ana ağda olmayan tek sürümdür. Manifestolar ayrıdır; bu yüzden ikili dosyayı asla iki ağ arasında kopyalamayın ve ana ağın yalnızca test ağına özel bir özelliği kabul etmesini beklemeyin (v3.2.6 eklemeleri [Sürüm Geçmişi](/appendix/version-history#testnet-v326) sayfasında listelenmiştir).
 
 ---
 

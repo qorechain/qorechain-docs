@@ -10,7 +10,7 @@ sidebar_position: 7
 Gas soyutlama, bir kullanıcının işlem ücretini QOR yerine kabul edilen yerel olmayan bir tokenla ödemesine olanak tanır. Ücret dönüştürme kodu zincirin bir parçasıdır, ancak **bugün hiçbir ağda yerel olmayan hiçbir token kabul edilmemektedir**; bu nedenle her ücret QOR ile ödenir. Bu sayfa nelerin canlı olduğunu, dönüştürmenin inşa edildiği şekliyle nasıl çalıştığını ve bunun yerine ne yapacağınızı açıklar.
 
 :::caution Henüz kullanılamıyor: her ücreti uqor ile ödeyin
-Ana ağda (**`qorechain-vladi`**) ve test ağında (**`qorechain-diana`**), sırasıyla düğüm sürümü **v3.2.4** ve **v3.2.6** üzerinde, 27 Ekim 2026'da kontrol edildi:
+Ana ağda (**`qorechain-vladi`**) ve test ağında (**`qorechain-diana`**), sırasıyla düğüm sürümü **v3.2.5** ve **v3.2.6** üzerinde (mainnet v3.2.5 yükseltmesinden sonra 30 Ekim 2026'da, testnet 27 Ekim 2026'da yeniden kontrol edildi):
 
 * Canlı kabul edilen token listesi **yalnızca `uqor`** içerir. Ücret dönüştürme v3.2.2 ile açıldı, ancak başka hiçbir şey listelenmemiştir, blok başına dönüştürme sınırı `0`'dır (dönüştürme kapalı) ve dönüştürme float'ında bakiye yoktur. Başka herhangi bir birimde ödenen bir ücret, simülasyonda olduğu gibi gerçek bir işlemde de "denom not accepted for fee payment" hatasıyla reddedilir.
 * Ana ağda IBC kanalı yoktur ve testnet'in tek test kanalı hiçbir `ibc/…` tokenını kabul edilen bir ücret tokenı yapmaz (liste yalnızca `uqor`'dur); bu nedenle `uqor`'dan başka ödeme yapılabilecek bir şey yoktur.

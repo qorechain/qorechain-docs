@@ -75,7 +75,7 @@ The framework surfaces:
 
 Since 0.6.0 (and in every release after it) it follows every page of a rollup's batch list, re-judges a batch as its deadline approaches (it keeps polling forward from the oldest batch whose window is still open, rather than judging each batch once on first sight), and measures each window against the chain tip (`getChainTip`, the node's status) instead of the local clock. A batch that is already `finalized` is not validated or warned about.
 
-**Resubmitted batches (0.7.0).** From chain v3.2.5 (testnet now; mainnet after the upgrade) an upheld fraud rejects the batch and every later unfinalized one, and the sequencer resubmits under the same indexes. Releases before 0.7.0 told batches apart by index only and so missed a batch resubmitted at a rejected index; 0.7.0 tells them apart by index and state root, and never validates a rejected batch.
+**Resubmitted batches (0.7.0).** From chain v3.2.5 (both networks) an upheld fraud rejects the batch and every later unfinalized one, and the sequencer resubmits under the same indexes. Releases before 0.7.0 told batches apart by index only and so missed a batch resubmitted at a rejected index; 0.7.0 tells them apart by index and state root, and never validates a rejected batch.
 
 **Applying the chain's fraud rule (0.7.0).** `transitionRootValidator` is a ready-made `validate` predicate that applies the chain's own rule (a batch is fraudulent when its state root is not the canonical transition root), and `fraudProofForBatch` returns the proof that wins, or none for an honest batch, so you can pass it to `challengeBatch`.
 

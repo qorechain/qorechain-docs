@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Presetare de rețea | `mainnet` |
 | Chain id | `qorechain-vladi` (live din 7 iunie 2026) |
-| Versiune lanț (27 octombrie 2026) | v3.2.4 (de la înălțimea 3,742,566, 23 octombrie 2026, propunerea de guvernanță 13). Propunerea de guvernanță 14 ar aplica v3.2.5 la înălțimea 3,906,833 și se afla în perioada de votare la momentul redactării; ce adaugă v3.2.5 este documentat în ziua în care mainnet-ul o aplică |
+| Versiune lanț (30 octombrie 2026) | v3.2.5 (de la înălțimea 3,906,833, 29 octombrie 2026, propunerea de guvernanță 14; v3.2.4 a fost aplicată la înălțimea 3,742,566 pe 23 octombrie). SDK 0.10.0 este clientul pentru v3.2.4 și continuă să funcționeze; nu are constructori pentru adăugirile din v3.2.5 |
 | ID lanț EVM | `9801` |
 | Token afișat | `QOR` |
 | Denominare de bază | `uqor` |

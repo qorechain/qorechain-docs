@@ -14,7 +14,7 @@ Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge
 :::
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Chain-Version **v3.2.6**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft mit Chain-Version **v3.2.4** (seit dem 23. Oktober 2026). Ersetze die Mainnet-Chain-ID und die Endpunkte anhand der Seite **Verbindung zum Mainnet**, sobald eine Route aktiviert ist. Status geprüft am 27. Oktober 2026: Alle 37 Chain-Konfigurationen sind auf beiden Netzwerken `pending`.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Chain-Version **v3.2.6**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft mit Chain-Version **v3.2.5** (seit dem 29. Oktober 2026). Ersetze die Mainnet-Chain-ID und die Endpunkte anhand der Seite **Verbindung zum Mainnet**, sobald eine Route aktiviert ist. Status geprüft am 27. Oktober 2026: Alle 37 Chain-Konfigurationen sind auf beiden Netzwerken `pending`.
 :::
 
 ---
@@ -48,7 +48,7 @@ Lesen Sie die Limits mit `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimit
 
 **Welches Netzwerk was hat (geprüft am 27. Oktober 2026).**
 
-| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | ICS-20-Transfer (IBC v1) | Eingebaut, aber kein Kanal ist offen | Eingebaut, ein Kanal ist offen |
 | IBC-Ratenlimit | Nicht verfügbar (501) | Verfügbar, keine Limits gesetzt |

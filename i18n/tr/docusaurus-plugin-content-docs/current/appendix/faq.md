@@ -11,7 +11,7 @@ QoreChain hakkında dokümantasyondan yanıtlanan genel sorular. Her yanıt, ayr
 
 ### Ana ağ canlı mı?
 
-Evet. QoreChain ana ağı (zincir `qorechain-vladi`, EVM zincir kimliği 9801) 7 Haziran 2026'dan beri canlıdır ve v3.2.4 sürümünü çalıştırır (23 Ekim 2026'da 3.742.566 numaralı yükseklikte yönetişim önerisi 13 ile uygulandı; yönetişim önerisi 14, v3.2.5'i 3.906.833 numaralı yükseklikte uygulayacaktır ve yazım sırasında oylama dönemindeydi); test ağı `qorechain-diana` v3.2.6 çalıştırır (27 Ekim 2026'da 8.970.638 numaralı yükseklikte uygulandı). Bkz. [Ağlar](/appendix/networks) ve [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
+Evet. QoreChain ana ağı (zincir `qorechain-vladi`, EVM zincir kimliği 9801) 7 Haziran 2026'dan beri canlıdır ve v3.2.5 sürümünü çalıştırır (29 Ekim 2026'da 3.906.833 numaralı yükseklikte yönetişim önerisi 14 ile uygulandı; v3.2.4, 23 Ekim 2026'da 3.742.566 numaralı yükseklikte öneri 13 ile uygulanmıştı); test ağı `qorechain-diana` v3.2.6 çalıştırır (27 Ekim 2026'da 8.970.638 numaralı yükseklikte uygulandı). Bkz. [Ağlar](/appendix/networks) ve [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
 
 ### Zincir kimlikleri ve EVM zincir kimlikleri nelerdir?
 

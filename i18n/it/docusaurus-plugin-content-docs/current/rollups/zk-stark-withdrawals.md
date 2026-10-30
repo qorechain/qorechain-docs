@@ -86,11 +86,11 @@ Il valore di `--proof` è la inclusion proof: i sibling hash lungo il percorso d
 
 ### Codifica di foglie e nodi {#leaf-and-node-encoding}
 
-* **Foglia (prima forma, la regola oggi sulla mainnet)** = SHAKE-256 (32 byte) di `rollup_id`, un byte `0x00`, l'indice di prelievo (8 byte big-endian), la stringa `recipient`, `0x00`, la stringa `denom`, `0x00`, e l'`amount` (8 byte big-endian).
-* **Foglia (seconda forma, ora sulla testnet, sulla mainnet dopo l'upgrade v3.2.5)**: per i batch dalla chain v3.2.5 la foglia nomina anche il chain id. L'RDK costruisce entrambe le forme (`withdrawalLeafV1`, `withdrawalLeafV2`).
+* **Foglia (prima forma, per i batch precedenti alla chain v3.2.5)** = SHAKE-256 (32 byte) di `rollup_id`, un byte `0x00`, l'indice di prelievo (8 byte big-endian), la stringa `recipient`, `0x00`, la stringa `denom`, `0x00`, e l'`amount` (8 byte big-endian).
+* **Foglia (seconda forma, dalla chain v3.2.5 su entrambe le reti)**: per i batch dalla chain v3.2.5 la foglia nomina anche il chain id. L'RDK costruisce entrambe le forme (`withdrawalLeafV1`, `withdrawalLeafV2`).
 * **Genitore** = SHAKE-256 di `left || right`. A ogni livello il bit corrispondente dell'indice di prelievo decide il lato: `0` significa che la foglia (o l'hash corrente) è il nodo sinistro, quindi la posizione della foglia nell'albero è il suo indice di prelievo.
 * Ogni sibling hash deve essere esattamente di 32 byte.
-* **Withdrawals root (ora sulla testnet, sulla mainnet dopo l'upgrade):** dalla chain v3.2.5 la `withdrawals_root` di un batch è vuota oppure di esattamente 32 byte; sulla mainnet (v3.2.4) quella regola di lunghezza non è ancora imposta.
+* **Withdrawals root (dalla chain v3.2.5, entrambe le reti):** la `withdrawals_root` di un batch è vuota oppure di esattamente 32 byte; prima della v3.2.5 quella regola di lunghezza non era imposta.
 
 Non costruire questo albero a mano. `withdrawalsTree` in `@qorechain/rdk` 0.7.0 (e i suoi equivalenti in Python, Go, Rust e Java) costruisce la root dei prelievi di un batch e ogni proof esattamente come fa la chain, ed è stato verificato rispetto al verificatore della chain stessa; `assembleWithdrawalProof` costruisce per impostazione predefinita l'albero della chain, e gli helper Merkle generici ora usano per impostazione predefinita SHAKE-256.
 
@@ -121,7 +121,7 @@ flowchart LR
 ```
 
 1. **Effettua il settlement di un batch.** L'operatore del rollup sottomette un batch di settlement con `submit-batch`. Il batch può fare il commit di una root dei prelievi sui suoi messaggi L2 → L1 in uscita.
-2. **Finalizza.** Il batch si finalizza in base alla modalità di settlement del rollup — alla verifica di una proof valida per `zk`, oppure dopo la finestra di contestazione per `optimistic` (durante la quale `challenge-batch` può contestarlo). Sulla testnet dalla chain v3.2.5 (sulla mainnet dopo l'upgrade), i batch si finalizzano inoltre rigorosamente in ordine di indice, quindi un batch attende ogni batch precedente che sia ancora `submitted` o `challenged`. La finestra optimistic è per impostazione predefinita di 100.800 blocchi per un batch sottomesso prima dell'upgrade v3.2.4; dalla v3.2.4 è misurata in secondi di tempo di blocco per i batch sottomessi dall'altezza di upgrade in poi (testnet dall'altezza 8.337.253 il 19 ottobre 2026, mainnet dall'altezza 3.742.566 il 23 ottobre 2026).
+2. **Finalizza.** Il batch si finalizza in base alla modalità di settlement del rollup — alla verifica di una proof valida per `zk`, oppure dopo la finestra di contestazione per `optimistic` (durante la quale `challenge-batch` può contestarlo). Dalla chain v3.2.5 (testnet dal 26 ottobre 2026, mainnet dal 29 ottobre 2026), i batch si finalizzano inoltre rigorosamente in ordine di indice, quindi un batch attende ogni batch precedente che sia ancora `submitted` o `challenged`. La finestra optimistic è per impostazione predefinita di 100.800 blocchi per un batch sottomesso prima dell'upgrade v3.2.4; dalla v3.2.4 è misurata in secondi di tempo di blocco per i batch sottomessi dall'altezza di upgrade in poi (testnet dall'altezza 8.337.253 il 19 ottobre 2026, mainnet dall'altezza 3.742.566 il 23 ottobre 2026).
 3. **Dimostra ed esegui.** Una volta finalizzato, chiunque sottomette `execute-withdrawal` con la Merkle inclusion proof (`--proof`) per la specifica foglia di prelievo. Il modulo verifica l'inclusione rispetto alla root dei prelievi del batch finalizzato e paga il destinatario dall'escrow.
 
 Poiché il passaggio 3 è permissionless e basato su proof, un prelievo non dipende dalla cooperazione dell'operatore del rollup una volta che il batch che lo trasporta è finalizzato.

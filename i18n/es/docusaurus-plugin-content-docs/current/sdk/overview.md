@@ -30,7 +30,7 @@ cadena incluye el módulo IBC para la interoperabilidad entre cadenas (no hay ni
 canal IBC abierto en mainnet; la testnet tiene un canal `transfer` abierto hacia una
 cadena de prueba, comprobado el 27 de octubre de 2026).
 
-:::note Qué funciona hoy en las redes en vivo (mainnet v3.2.4, testnet v3.2.6)
+:::note Qué funciona hoy en las redes en vivo (mainnet v3.2.5, testnet v3.2.6)
 **Funciona:** lecturas en todos los carriles, transacciones Native con firma
 híbrida, cuentas unificadas, transacciones EVM dentro de una
 [ventana de autorización](/sdk/guides/evm#evm-window) y lecturas de SVM.
@@ -48,7 +48,7 @@ corresponde. Comprobado contra los endpoints en vivo el 27 de octubre de 2026.
 El SDK publicado (0.10.0, 26 de octubre de 2026) firma en la forma que verifican ambas
 redes (sign-bytes híbridos v2, resueltos a partir del estado de la cadena), y el
 formato de firma, las direcciones, los decimales, los memos y las comisiones no
-cambiaron en la v3.2.3 ni en la v3.2.4 (la mainnet ejecuta la v3.2.4 desde el 23 de octubre de 2026;
+cambiaron en la v3.2.3, la v3.2.4 ni la v3.2.5 (la mainnet ejecuta la v3.2.5 desde el 29 de octubre de 2026;
 la testnet ejecuta la v3.2.6, aplicada el 27 de octubre). Incluye el lado cliente de las reglas
 poscuánticas posteriores (la prueba de posesión en el registro de claves, las ventanas
 EVM con alcance, los mensajes de consentimiento EIP-7702) y de la v3.2.4 (niveles

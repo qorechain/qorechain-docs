@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal est une bibliothèque open source qui chiffre des données à destination de comptes QoreChain avec ML-KEM-1024 (FIPS 203). Un compte publie sa clé publique ML-KEM-1024 sur la chaîne ; n'importe qui peut alors chiffrer une charge utile que ce compte, et tout autre destinataire ajouté par l'expéditeur, peut lire. Elle s'adresse aux développeurs de dApps qui ont besoin de charges utiles confidentielles (mémos, factures, documents, offres), aux auditeurs qui ont besoin d'un accès en lecture, et aux opérateurs de groupes privés et de sidechains. Elle compose des primitives standard et n'en implémente aucune elle-même. Version **0.1.0**, Apache-2.0, maintenue par la QoreChain Association.
 
-Où elle en est au 27 octobre 2026 : le chiffrement lui-même fonctionne hors ligne partout, sans réseau ni compte. Chiffrer vers une adresse lue sur la chaîne nécessite le registre de clés KEM, qui est **en service sur le testnet** (`qorechain-diana`) et **arrive sur le mainnet (`qorechain-vladi`) après la mise à niveau v3.2.5**, sans date. Le paquet est publié pour Rust, Go, Python, Swift, Kotlin/JVM et Android. Le paquet TypeScript `@qorechain/qoreseal` est **à venir** et n'est pas encore sur npm. La construction est un brouillon en attente d'une revue externe avant la 1.0.
+Où elle en est au 30 octobre 2026 : le chiffrement lui-même fonctionne hors ligne partout, sans réseau ni compte. Chiffrer vers une adresse lue sur la chaîne nécessite le registre de clés KEM, qui est **en service sur le testnet** (`qorechain-diana`) et, depuis que le mainnet (`qorechain-vladi`) a appliqué la v3.2.5 le 29 octobre 2026, **dont la route de lecture répond aussi sur le mainnet** (aucun compte n'y avait publié de clé que cette page ait pu trouver). Le paquet est publié pour Rust, Go, Python, Swift, Kotlin/JVM et Android. Le paquet TypeScript `@qorechain/qoreseal` est **à venir** et n'est pas encore sur npm. La construction est un brouillon en attente d'une revue externe avant la 1.0.
 
 QoreSeal protège le contenu d'une charge utile, rien d'autre. Les adresses, l'horodatage des transactions, les montants des transferts, la taille des enveloppes et le nombre de destinataires restent publics sur la chaîne. Ce n'est pas un moyen de rendre les transactions privées.
 
@@ -207,7 +207,7 @@ Il vous faut un compte `qorechain-diana` que vous contrôlez, avec un peu de QOR
 5. Côté expéditeur : `sealToAddresses({ rest: "https://api-testnet.qore.host", chainId: "qorechain-diana", purpose: "note", recipients: [{ address, card }], plaintext })`. Sans carte, passez `mode: "mlkem"`.
 6. Côté destinataire : `open({ chainId: "qorechain-diana", purpose: "note", envelope, keys: sealKeys })`.
 
-Le parcours complet exécutable est l'exemple du dépôt `examples/register-and-encrypt`. Il refuse le mainnet tant que ce réseau n'a pas appliqué v3.2.5. Go offre le même côté expéditeur avec `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})`. Rust, Swift, Kotlin et Python fonctionnent hors ligne : lisez vous-même `/qorechain/pqc/v1/kem/{address}` et `/qorechain/pqc/v1/account/{address}`, vérifiez la carte (`verify_recipient_card`), puis scellez.
+Le parcours complet exécutable est l'exemple du dépôt `examples/register-and-encrypt`. Le mainnet a appliqué la v3.2.5 le 29 octobre 2026 ; consultez le README de l'exemple pour connaître la version qui lève sa protection contre le mainnet. Go offre le même côté expéditeur avec `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})`. Rust, Swift, Kotlin et Python fonctionnent hors ligne : lisez vous-même `/qorechain/pqc/v1/kem/{address}` et `/qorechain/pqc/v1/account/{address}`, vérifiez la carte (`verify_recipient_card`), puis scellez.
 
 ### API principale {#api}
 
@@ -243,17 +243,17 @@ Les erreurs Python lèvent `QoreSealError.Failure` avec un `code` stable ; les e
 
 | | Mainnet `qorechain-vladi` | Testnet `qorechain-diana` |
 |---|---|---|
-| Registre de clés KEM | après la mise à niveau v3.2.5 (pas encore appliquée, sans date) | en service |
+| Registre de clés KEM | en service depuis la v3.2.5 (appliquée le 29 octobre 2026, hauteur 3 906 833) ; route de lecture vérifiée, voir ci-dessous | en service |
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host` (chain ID 9801) | `https://evm-testnet.qore.host` (chain ID 9800) |
 
-Le 27 octobre 2026, la requête du registre sur le testnet a répondu `{"found":false,"key":null}` pour un compte sans clé, et la même requête sur le mainnet a répondu « Not Implemented ».
+Le 30 octobre 2026, la requête du registre a répondu `{"found":false,"key":null}` pour un compte sans clé sur les deux réseaux (le 27 octobre, le mainnet répondait encore « Not Implemented »). Une recherche dans les transactions du mainnet le 30 octobre n'a trouvé aucun `MsgRegisterKEMKey` pour l'instant ; la publication d'une clé sur le mainnet n'a donc pas été éprouvée de bout en bout par cette page.
 
 - Le scellement et l'ouverture hors ligne, y compris les clés d'auditeur passées directement, les groupes privés et les lots, n'ont besoin ni de réseau ni de compte.
 - Chiffrer vers une adresse nécessite que le destinataire ait publié une clé ML-KEM-1024 dans le registre et, pour le mode hybride, une carte de destinataire.
-- Publier une clé nécessite un compte avec du QOR de testnet (sur le mainnet, du QOR après la mise à niveau), une clé ML-DSA-87 enregistrée, et QoreSign pour signer la transaction en hybride. Le plancher de frais est de 0,1 uqor par gas. Obtenez du QOR de testnet depuis le [Faucet](/dashboard/faucet).
-- Tant que le mainnet n'a pas appliqué v3.2.5, la requête du registre sur le mainnet n'est pas disponible et l'enregistrement est refusé (code 250).
+- Publier une clé nécessite un compte avec du QOR de testnet (sur le mainnet, du QOR), une clé ML-DSA-87 enregistrée, et QoreSign pour signer la transaction en hybride. Le plancher de frais est de 0,1 uqor par gas. Obtenez du QOR de testnet depuis le [Faucet](/dashboard/faucet).
+- L'enregistrement sur le mainnet n'est accepté que par une chaîne qui possède le registre ; si un refus avec le code 250 apparaît, le registre n'est pas activé sur cette chaîne.
 
 ## Où elle est publiée {#where-published}
 
@@ -285,7 +285,7 @@ Source : [github.com/qorechain/qoreseal](https://github.com/qorechain/qoreseal) 
 - **Retirer ou faire pivoter une clé n'efface ni ne rechiffre rien.** Les données scellées pour une ancienne clé restent lisibles par quiconque la détient ; conservez les anciennes graines ou indices.
 - **Les membres retirés d'un groupe** gardent les clés des époques auxquelles ils appartenaient. Les nouveaux membres lisent à partir de leur époque d'arrivée, sauf si les clés plus anciennes leur sont scellées.
 - **L'identifiant de chaîne et l'objectif ne sont pas dans l'enveloppe ;** le destinataire doit les connaître.
-- **Registre sur le mainnet :** indisponible tant que le mainnet n'a pas appliqué v3.2.5.
+- **Registre sur le mainnet :** la route de lecture est en service depuis la v3.2.5 ; aucune clé n'avait été publiée sur le mainnet au moment de la vérification, et l'espace de noms JSON-RPC EVM `qor_` n'est pas exposé sur `evm.qore.host` (utilisez la route REST).
 - **Avant la 1.0, construction en attente de revue externe.** Les versions mineures peuvent changer l'API. Lisez la spécification avant de vous y fier.
 - **Pas encore de paquet npm** ni de wheel Python pour Windows.
 

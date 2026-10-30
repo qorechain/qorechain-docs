@@ -22,7 +22,7 @@ QCAIA wurde entwickelt, um Neulingen und Community-Mitgliedern zu helfen, sich s
 
 Wenn eine Frage außerhalb dessen liegt, was QCAIA weiß, wird er das sagen, anstatt zu raten. QCAIA ist ein Community-Helfer, keine Finanz- oder Anlageberatung.
 
-Die Antworten von QCAIA folgen der öffentlichen Dokumentation von QoreChain und können daher einem Release hinterherhinken. Was gerade in jedem Netzwerk live ist (das Mainnet `qorechain-vladi` läuft seit dem 23. Oktober 2026 auf v3.2.4; das Testnet `qorechain-diana` läuft seit dem 27. Oktober 2026 auf v3.2.6), entnehmen Sie [Netzwerke](/appendix/networks) und [Versionsverlauf](/appendix/version-history), oder fragen Sie einen Node direkt ab. Mehrere Teile der Plattform, nach denen QCAIA gefragt wird, wie die Bridge, die AMM-Pools, Rollups und xQORE, sind in der Dokumentation als konzipiert beschrieben, aber noch nicht live; wenn QCAIA etwas anderes antwortet, vertrauen Sie der Dokumentation und dem Live-Netzwerk.
+Die Antworten von QCAIA folgen der öffentlichen Dokumentation von QoreChain und können daher einem Release hinterherhinken. Was gerade in jedem Netzwerk live ist (das Mainnet `qorechain-vladi` läuft seit dem 29. Oktober 2026 auf v3.2.5; das Testnet `qorechain-diana` läuft seit dem 27. Oktober 2026 auf v3.2.6), entnehmen Sie [Netzwerke](/appendix/networks) und [Versionsverlauf](/appendix/version-history), oder fragen Sie einen Node direkt ab. Mehrere Teile der Plattform, nach denen QCAIA gefragt wird, wie die Bridge, die AMM-Pools, Rollups und xQORE, sind in der Dokumentation als konzipiert beschrieben, aber noch nicht live; wenn QCAIA etwas anderes antwortet, vertrauen Sie der Dokumentation und dem Live-Netzwerk.
 
 ## Mehrsprachige Unterstützung
 

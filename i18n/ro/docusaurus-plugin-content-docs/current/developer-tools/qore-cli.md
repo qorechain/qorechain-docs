@@ -158,7 +158,7 @@ Sursa: [github.com/qorechain/qorechain-mcp](https://github.com/qorechain/qorecha
 - **Doar citire.** Nicio comandă nu semnează și nu transmite în rețea. `prepare-transfer` construiește doar un `MsgSend` de uqor pe traseul native; nu pregătește tranzacții EVM, SVM, de staking, de guvernanță sau de contract. `simulate` și `estimate-fee` acceptă orice tranzacție codificată de pe traseul native.
 - **Fără faucet și fără listare a deținătorilor de token.** Aceste două unelte MCP nu au comandă CLI. QOR de testnet vine de la [Faucet](/dashboard/faucet).
 - **Istoricul testnet-ului este tăiat.** Un bloc sau o tranzacție veche de testnet returnează `NOT_FOUND` împreună cu cea mai mică înălțime disponibilă; mainnet-ul a servit de la înălțimea 1 la verificare.
-- **Valorile gazului diferă în funcție de rețea.** Simularea pe testnet include deja costul de verificare ML-DSA-87; simularea pe mainnet nu îl include, așa că limita de gaz sugerată poartă o marjă.
+- **Valorile gazului urmează versiunea lanțului.** Ambele rețele au aplicat v3.2.5, așa că simularea include costul de verificare ML-DSA-87; față de un nod mai vechi, limita de gaz sugerată poartă o marjă.
 - **Limite de ieșire.** Cel mult 100 de hash-uri de tranzacții pe bloc, 50 de mesaje pe tranzacție, 100 de solduri pe cont, 200 de validatori pe apel. Fiecare cerere are un timeout implicit de 10 secunde, o limită de răspuns de 4 MiB și nicio reîncercare.
 - **Secretele sunt refuzate.** O intrare care arată ca o frază de recuperare sau ca o cheie privată brută este respinsă cu `INVALID_INPUT`. Nu pune una într-o linie de comandă: istoricul shell-ului o păstrează.
 - **Precompilările EVM post-cuantice** `0x...0A01` și `0x...0A02` sunt active doar pe testnet.

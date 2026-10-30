@@ -39,7 +39,7 @@ I builder ibridi accettano un'opzione `signBytesVersion` (`"auto"` | `"v1"` | `"
 interroga la rete e quindi richiede l'endpoint REST (`rest`) su
 `qorechain-vladi` / `qorechain-diana`: solleva un errore invece di tirare a indovinare. Vedi
 [Quale forma di sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-La forma non è cambiata nella chain v3.2.3 né nella v3.2.4 (la v3.2.4 gira sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026): `"auto"`
+La forma non è cambiata nella chain v3.2.3 né nella v3.2.4 (la v3.2.4 gira sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026; la v3.2.5 non ha cambiato nulla qui e gira sulla mainnet dal 29 ottobre 2026): `"auto"`
 si risolve in v2 su entrambe le reti, perché entrambe hanno applicato l'aggiornamento che è passato a essa.
 :::
 
@@ -50,10 +50,8 @@ all'altezza 3.742.566 il 23 ottobre 2026 (la testnet l'ha applicata all'altezza 
 il 19 ottobre). Il formato di firma, gli indirizzi, i decimali, i memo e le commissioni non sono
 cambiati, e una transazione costruita con la 0.9.0 resta valida. La release è stata verificata in
 ogni linguaggio con transazioni reali sulla testnet. Non ha builder per
-nulla di introdotto dopo la v3.2.4. La testnet è passata alla v3.2.6 (la v3.2.5 e la
-v3.2.6 vi sono state applicate il 26 e 27 ottobre 2026); la proposta di governance 14 della mainnet
-applicherebbe la v3.2.5 all'altezza 3.906.833 al momento della stesura, e ciò che quella
-release aggiunge sarà documentato quando la mainnet la applica. Le novità della 0.10.0:
+nulla di introdotto dopo la v3.2.4. La mainnet esegue la v3.2.5 dal 29 ottobre 2026 (altezza 3.906.833, proposta di governance 14) e la 0.10.0 continua a funzionare lì perché il formato di firma non è cambiato; le aggiunte della v3.2.5 non hanno ancora un builder nell'SDK. La testnet è passata alla v3.2.6 (la v3.2.5 e la
+v3.2.6 vi sono state applicate il 26 e 27 ottobre 2026). Le novità della 0.10.0:
 
 | Area | Nella 0.10.0 |
 | --- | --- |
@@ -72,7 +70,7 @@ dipende da `@qorechain/sdk` `^0.10.0`, e così fanno anche i template dello scaf
 ## Cosa ha aggiunto la 0.9.0 {#whats-new-090}
 
 L'SDK 0.9.0 era la release client per la chain **v3.2.2** e **v3.2.3** (la mainnet le
-ha applicate alle altezze 3.556.788 e 3.662.051; la mainnet esegue la v3.2.4 dal 23 ottobre 2026 all'altezza 3.742.566, e la testnet esegue la v3.2.4 o successive dal 19 ottobre 2026). Il
+ha applicate alle altezze 3.556.788 e 3.662.051; la mainnet ha eseguito la v3.2.4 dal 23 ottobre 2026 (altezza 3.742.566) e esegue la v3.2.5 dal 29 ottobre 2026, e la testnet esegue la v3.2.4 o successive dal 19 ottobre 2026). Il
 formato di firma, gli indirizzi, i decimali, i memo e le commissioni non sono
 cambiati, quindi la forma sign-bytes ibrida v2 che firmano la 0.8.1 e le successive
 è ancora quella giusta. Le novità:

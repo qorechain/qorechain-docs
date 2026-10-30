@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal は、ML-KEM-1024（FIPS 203）でデータを QoreChain アカウント宛てに暗号化するオープンソースのライブラリです。アカウントは ML-KEM-1024 公開鍵をチェーン上に公開します。すると誰でも、そのアカウントと、送信者が追加した他の受信者が読めるペイロードを暗号化できます。機密性の高いペイロード（メモ、請求書、ドキュメント、入札）を必要とする dApp 開発者、閲覧アクセスを必要とする監査人、プライベートグループやサイドチェーンの運営者向けです。標準のプリミティブを組み合わせるもので、独自のプリミティブは一切実装していません。バージョン **0.1.0**、Apache-2.0、QoreChain Association がメンテナンスしています。
 
-2026年10月27日時点の状況: 暗号化そのものは、ネットワークもアカウントも不要で、どこでもオフラインで動作します。チェーンから読み取ったアドレス宛てに暗号化するには KEM 鍵レジストリが必要で、これは**テストネット**（`qorechain-diana`）では**稼働中**、**メインネット（`qorechain-vladi`）には v3.2.5 のアップグレード後に導入されます**（日付は未定）。パッケージは Rust、Go、Python、Swift、Kotlin/JVM、Android 向けに公開されています。TypeScript パッケージ `@qorechain/qoreseal` は**近日公開**で、まだ npm にはありません。この構成は、1.0 に先立つ外部レビューを待つドラフトです。
+2026年10月30日時点の状況: 暗号化そのものは、ネットワークもアカウントも不要で、どこでもオフラインで動作します。チェーンから読み取ったアドレス宛てに暗号化するには KEM 鍵レジストリが必要で、これは**テストネット**（`qorechain-diana`）では**稼働中**、メインネット（`qorechain-vladi`）が 2026年10月29日に v3.2.5 を適用したことで、**その読み取りルートはメインネットでも応答します**（このページで確認できた限り、メインネットではまだ鍵を公開したアカウントはありません）。パッケージは Rust、Go、Python、Swift、Kotlin/JVM、Android 向けに公開されています。TypeScript パッケージ `@qorechain/qoreseal` は**近日公開**で、まだ npm にはありません。この構成は、1.0 に先立つ外部レビューを待つドラフトです。
 
 QoreSeal が保護するのはペイロードの内容だけで、それ以外は保護しません。アドレス、トランザクションのタイミング、送金額、エンベロープのサイズ、受信者の数はチェーン上で公開されたままです。トランザクションを秘匿する手段ではありません。
 
@@ -207,7 +207,7 @@ const msg = submitBatchMsg({ sequencer, rollupId: "my-rollup", batchIndex, state
 5. 送信者側: `sealToAddresses({ rest: "https://api-testnet.qore.host", chainId: "qorechain-diana", purpose: "note", recipients: [{ address, card }], plaintext })`。カードがない場合は `mode: "mlkem"` を渡します。
 6. 受信者側: `open({ chainId: "qorechain-diana", purpose: "note", envelope, keys: sealKeys })`。
 
-実行可能な完全なフローは、リポジトリのサンプル `examples/register-and-encrypt` です。メインネットが v3.2.5 を適用するまで、このサンプルはメインネットでの実行を拒否します。Go は、`network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})` で同じ送信者側を提供します。Rust、Swift、Kotlin、Python はオフラインです。`/qorechain/pqc/v1/kem/{address}` と `/qorechain/pqc/v1/account/{address}` を自分で読み取り、カードを検証（`verify_recipient_card`）してから封印してください。
+実行可能な完全なフローは、リポジトリのサンプル `examples/register-and-encrypt` です。メインネットは 2026年10月29日に v3.2.5 を適用しました。メインネットでの実行制限が外れるリリースについては、サンプル自身の README を確認してください。Go は、`network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})` で同じ送信者側を提供します。Rust、Swift、Kotlin、Python はオフラインです。`/qorechain/pqc/v1/kem/{address}` と `/qorechain/pqc/v1/account/{address}` を自分で読み取り、カードを検証（`verify_recipient_card`）してから封印してください。
 
 ### 主な API {#api}
 
@@ -243,17 +243,17 @@ Python のエラーは安定した `code` を持つ `QoreSealError.Failure` を�
 
 | | メインネット `qorechain-vladi` | テストネット `qorechain-diana` |
 |---|---|---|
-| KEM 鍵レジストリ | v3.2.5 のアップグレード後（まだ適用されておらず、日付は未定） | 稼働中 |
+| KEM 鍵レジストリ | v3.2.5 以降稼働中（2026年10月29日、ブロック高 3,906,833 で適用）。読み取りルートは確認済み、下記参照 | 稼働中 |
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host`（チェーン ID 9801） | `https://evm-testnet.qore.host`（チェーン ID 9800） |
 
-2026年10月27日、テストネットのレジストリクエリは、鍵のないアカウントに対して `{"found":false,"key":null}` を返し、メインネットでの同じクエリは "Not Implemented" を返しました。
+2026年10月30日、レジストリクエリは、鍵のないアカウントに対して両ネットワークで `{"found":false,"key":null}` を返しました（10月27日の時点では、メインネットは "Not Implemented" を返していました）。10月30日にメインネットのトランザクションを検索しましたが、`MsgRegisterKEMKey` はまだ見つからなかったため、メインネットでの鍵の公開は、このページではエンドツーエンドで検証されていません。
 
 - オフラインでの封印と開封は、直接渡す監査人鍵、プライベートグループ、バッチを含め、ネットワークもアカウントも不要です。
 - アドレス宛てに暗号化するには、受信者が ML-KEM-1024 鍵をレジストリに公開していることが必要で、ハイブリッドモードでは受信者カードも必要です。
-- 鍵を公開するには、テストネット QOR（メインネットではアップグレード後の QOR）を持つアカウント、登録済みの ML-DSA-87 鍵、そしてトランザクションにハイブリッド署名するための QoreSign が必要です。手数料の下限はガス 1 あたり 0.1 uqor です。テストネット QOR は[フォーセット](/dashboard/faucet)から入手してください。
-- メインネットが v3.2.5 を適用するまで、メインネットではレジストリクエリは利用できず、登録は拒否されます（コード 250）。
+- 鍵を公開するには、テストネット QOR（メインネットでは QOR）を持つアカウント、登録済みの ML-DSA-87 鍵、そしてトランザクションにハイブリッド署名するための QoreSign が必要です。手数料の下限はガス 1 あたり 0.1 uqor です。テストネット QOR は[フォーセット](/dashboard/faucet)から入手してください。
+- メインネットでの登録は、レジストリを持つチェーンでのみ受け付けられます。コード 250 の拒否が表示された場合、そのチェーンではレジストリが有効になっていません。
 
 ## 公開場所 {#where-published}
 
@@ -285,7 +285,7 @@ Python のエラーは安定した `code` を持つ `QoreSealError.Failure` を�
 - **鍵の削除やローテーションは、何も消去も再暗号化もしません。** 古い鍵宛てに封印されたデータは、その鍵を持つ人には引き続き読めます。古いシードやインデックスは保管してください。
 - **削除されたグループメンバー**は、所属していたエポックの鍵を保持します。新しいメンバーは、古い鍵が自分宛てに封印されない限り、参加したエポック以降を読みます。
 - **チェーン ID と目的はエンベロープに含まれません。** 受信者がそれらを知っている必要があります。
-- **メインネットのレジストリ:** メインネットが v3.2.5 を適用するまで利用できません。
+- **メインネットのレジストリ:** 読み取りルートは v3.2.5 以降稼働中です。確認した時点でメインネットに公開された鍵はなく、EVM JSON-RPC の `qor_` 名前空間は `evm.qore.host` では公開されていません（REST ルートを使用してください）。
 - **1.0 より前で、構成は外部レビュー待ちです。** マイナーバージョンで API が変わることがあります。依存する前に仕様を読んでください。
 - **npm パッケージはまだなく**、Windows 用の Python ホイールもまだありません。
 

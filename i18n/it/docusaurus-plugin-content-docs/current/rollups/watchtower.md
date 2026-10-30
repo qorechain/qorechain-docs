@@ -76,7 +76,7 @@ Il framework segnala:
 
 Dalla 0.6.0 (e in ogni release successiva) segue ogni pagina dell'elenco dei batch di un rollup, rivaluta un batch man mano che la sua scadenza si avvicina (continua a interrogare in avanti a partire dal batch più vecchio la cui finestra è ancora aperta, anziché giudicare ciascun batch una sola volta alla prima occasione), e misura ogni finestra rispetto alla punta della chain (`getChainTip`, lo stato del nodo) anziché rispetto all'orologio locale. Un batch già `finalized` non viene validato né segnalato.
 
-**Batch rinviati (0.7.0).** Dalla chain v3.2.5 (testnet ora; mainnet dopo l'upgrade) una frode confermata rifiuta il batch e ogni batch successivo non finalizzato, e il sequencer li rinvia con gli stessi indici. Le release precedenti alla 0.7.0 distinguevano i batch solo per indice e quindi perdevano un batch rinviato a un indice rifiutato; la 0.7.0 li distingue per indice e state root e non valida mai un batch rifiutato.
+**Batch rinviati (0.7.0).** Dalla chain v3.2.5 (entrambe le reti) una frode confermata rifiuta il batch e ogni batch successivo non finalizzato, e il sequencer li rinvia con gli stessi indici. Le release precedenti alla 0.7.0 distinguevano i batch solo per indice e quindi perdevano un batch rinviato a un indice rifiutato; la 0.7.0 li distingue per indice e state root e non valida mai un batch rifiutato.
 
 **Applicare la regola antifrode della chain (0.7.0).** `transitionRootValidator` è un predicato `validate` già pronto che applica la regola della chain stessa (un batch è fraudolento quando la sua state root non è la transition root canonica), e `fraudProofForBatch` restituisce la prova vincente, o nessuna per un batch onesto, così puoi passarla a `challengeBatch`.
 

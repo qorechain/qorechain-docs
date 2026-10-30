@@ -10,7 +10,7 @@ sidebar_position: 1
 Bir QoreChain düğümünü başlatmak, yapılandırmak ve işletmek için kullanılan `qorechaind` komutlarına yönelik referans.
 
 :::note
-QoreChain iki ağ çalıştırır: **`qorechain-vladi`** ana ağı (7 Haziran 2026'dan beri canlı; düğüm sürümü **v3.2.4**, yönetişim önerisi 13 ile 23 Ekim 2026'da 3,742,566 yüksekliğinde uygulandı; v3.2.3, 20 Ekim 2026'da 3,662,051 yüksekliğinde uygulanmıştı) ve **`qorechain-diana`** test ağı (düğüm sürümü **v3.2.6**, 27 Ekim 2026'da 8,970,638 yüksekliğinde uygulandı; öncesinde v3.2.5, 26 Ekim'de 8,890,800 yüksekliğinde ve v3.2.4, 19 Ekim'de 8,337,253 yüksekliğinde uygulanmıştı). Ana ağ yönetişim önerisi 14 oylama döneminde; onaylanırsa v3.2.5'i 3,906,833 yüksekliğinde uygulayacaktır ve bu sürümün neyi değiştirdiği, ana ağ onu uyguladıktan sonra belgelenecektir. Katılmak istediğiniz ağ için uygun `--chain-id` değerini geçirin — aşağıdaki örnekler test ağını hedefler; ana ağ için `--chain-id qorechain-vladi` kullanın. Her ağın güncel sürümü, [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasında listelenir.
+QoreChain iki ağ çalıştırır: **`qorechain-vladi`** ana ağı (7 Haziran 2026'dan beri canlı; düğüm sürümü **v3.2.5**, yönetişim önerisi 14 ile 29 Ekim 2026'da 3,906,833 yüksekliğinde uygulandı; v3.2.4, 23 Ekim 2026'da 3,742,566 yüksekliğinde ve v3.2.3, 20 Ekim 2026'da 3,662,051 yüksekliğinde uygulanmıştı) ve **`qorechain-diana`** test ağı (düğüm sürümü **v3.2.6**, 27 Ekim 2026'da 8,970,638 yüksekliğinde uygulandı; öncesinde v3.2.5, 26 Ekim'de 8,890,800 yüksekliğinde ve v3.2.4, 19 Ekim'de 8,337,253 yüksekliğinde uygulanmıştı). Katılmak istediğiniz ağ için uygun `--chain-id` değerini geçirin — aşağıdaki örnekler test ağını hedefler; ana ağ için `--chain-id qorechain-vladi` kullanın. Her ağın güncel sürümü, [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasında listelenir.
 
 Bu sayfadaki komutlar, v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir. v3.2.4 ikili dosyası, v3.2.3 ikili dosyasında bulunmayan komutlar ekler (örneğin `stakingtier`); bunlar her iki ağda da çalışır (test ağında 19 Ekim 2026'dan beri, ana ağda 23 Ekim 2026'dan beri) ve bu kılavuz bunlardan birini andığında bunu belirtir. v3.2.6 ikili dosyası (test ağı) iki sorgu komutu daha ekler: `query rlconsensus applied-params` ve `last-action`; ana ağ bu sürümü uygulayana kadar yalnızca test ağında bulunurlar (bkz. [Sorgu Komutları](/cli-reference/query-commands#rlconsensus)). Bu sayfadaki diğer her şey iki sürümde de aynı davranır.
 :::
@@ -70,7 +70,7 @@ Genel kaynak ağacından derlenen bir ikili dosya (topluluk derlemesi), `qorecha
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"}, e.g. v3.2.5 today)
+# has v3.2.3 / v3.2.4 / v3.2.5 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"}, e.g. v3.2.6 on mainnet today)
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 ```

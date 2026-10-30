@@ -20,8 +20,8 @@ Toate sumele folosesc unitățile native ale QoreChain. Token-ul de staking și 
 Comenzile de mai jos folosesc `qorechaind`. Adăugați flag-urile uzuale de tranzacție (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) pentru mediul dumneavoastră — de exemplu `--chain-id qorechain-vladi --gas 400000 --fees 40000uqor` pe mainnet (pragul minim de taxă al rețelei este 0,1 uqor per unitate de gas). Fiecare comandă `tx amm` este o tranzacție pe lane-ul Cosmos, deci necesită semnătura hibridă post-cuantică: adăugați `--generate-only > tx.json`, apoi rulați `qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>` (vedeți [First Transaction](/getting-started/first-transaction#send-qor)).
 :::
 
-:::caution Nu există încă pool-uri
-Modulul AMM este activ pe mainnet (v3.2.4) și pe testnet (v3.2.6), dar **nu a fost creat încă niciun pool** (verificat pe 27 octombrie 2026: `GET /qorechain/amm/v1/pools` returnează o listă goală pe ambele), iar denom-urile din exemplele de mai jos (`uusdc`, `uusdt`) sunt ilustrative: astăzi nu există astfel de active pe rețele. Până când există un pool, orice comandă de schimb sau de adăugare de lichiditate eșuează cu o eroare de tip pool negăsit.
+:::caution Nu există încă pool-uri pe mainnet
+Modulul AMM este activ pe mainnet (v3.2.5) și pe testnet (v3.2.6). **Pe mainnet nu a fost creat încă niciun pool** (verificat pe 30 octombrie 2026: `GET /qorechain/amm/v1/pools` returnează acolo o listă goală). Testnet-ul are un pool (id 1, `uqor` contra unui token de test Fest; doar testnet, fără valoare). Denom-urile din exemplele de mai jos (`uusdc`, `uusdt`) sunt ilustrative: astăzi nu există astfel de active pe rețele. Până când există un pool, orice comandă de schimb sau de adăugare de lichiditate eșuează cu o eroare de tip pool negăsit.
 :::
 
 ## Parametrii modulului {#parameters}

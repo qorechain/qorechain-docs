@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Queries run against whichever node `--node` points to. Use a **`qorechain-vladi`** mainnet RPC endpoint for live data (for example `--node https://rpc.qore.host:443`), or a **`qorechain-diana`** testnet endpoint (`--node https://rpc-testnet.qore.host:443`) for testing. The default `tcp://localhost:26657` targets a node you run yourself. Mainnet runs node release v3.2.4 since 23 October 2026 (applied at height 3,742,566 by governance proposal 13), and mainnet governance proposal 14 would apply v3.2.5 at height 3,906,833; the testnet runs v3.2.6 (v3.2.4 since 19 October 2026, v3.2.5 since 26 October, v3.2.6 since 27 October). The v3.2.4 release adds a few routes and commands (marked **v3.2.4** below): they work on both networks, and a node still on an older release answers them with `Not Implemented`. The v3.2.6 release adds two commands (marked **v3.2.6**, testnet only until mainnet applies it). The commands on this page were checked against the v3.2.3 release binary, run against `https://rpc.qore.host:443`; the v3.2.4 routes were checked over REST on 23 October 2026 and the v3.2.6 commands against the v3.2.6 source.
+Queries run against whichever node `--node` points to. Use a **`qorechain-vladi`** mainnet RPC endpoint for live data (for example `--node https://rpc.qore.host:443`), or a **`qorechain-diana`** testnet endpoint (`--node https://rpc-testnet.qore.host:443`) for testing. The default `tcp://localhost:26657` targets a node you run yourself. Mainnet runs node release v3.2.5 since 29 October 2026 (applied at height 3,906,833 by governance proposal 14; v3.2.4 was applied at height 3,742,566 on 23 October 2026); the testnet runs v3.2.6 (v3.2.4 since 19 October 2026, v3.2.5 since 26 October, v3.2.6 since 27 October). The v3.2.4 release adds a few routes and commands (marked **v3.2.4** below): they work on both networks, and a node still on an older release answers them with `Not Implemented`. The v3.2.6 release adds two commands (marked **v3.2.6**, testnet only until mainnet applies it). The commands on this page were checked against the v3.2.3 release binary, run against `https://rpc.qore.host:443`; the v3.2.4 routes were checked over REST on 23 October 2026 and the v3.2.6 commands against the v3.2.6 source.
 :::
 
 Common flags apply to every `query` subcommand:
@@ -170,6 +170,8 @@ qorechaind query qca config
 ```
 
 There are no per-validator reputation or pool-classification queries.
+
+`query reputation params` (REST `GET /qorechain/reputation/v1/params`) answers on the testnet only. On mainnet the route answers `Not Implemented` (checked 30 October 2026, after v3.2.5), so it starts on mainnet with a later chain release.
 
 ---
 
@@ -349,7 +351,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>` is the way to read when an upgrade took effect: on mainnet `v3.2.2` was applied at height 3,556,788, `v3.2.3` at height 3,662,051 and `v3.2.4` at height 3,742,566; on the testnet `v3.2.2` at 6,905,034, `v3.2.3` at 8,003,746, `v3.2.4` at 8,337,253, `v3.2.5` at 8,890,800 and `v3.2.6` at 8,970,638 (`0` means not applied; on mainnet `v3.2.5` is `0` at the time of writing, with governance proposal 14 in its voting period). The mainnet circuit-breaker list (`disabled-list`) currently holds the vesting-account creation messages, QoreChain Native store and instantiate, AMM pool pause and resume, cross-VM call, multilayer layer-status update, PQC algorithm deprecate and disable, and the PRISM consensus governance messages; the testnet's holds only the QoreChain Native `MsgStoreCode` message (checked 27 October 2026; instantiation was let through by testnet governance).
+`query upgrade applied <name>` is the way to read when an upgrade took effect: on mainnet `v3.2.2` was applied at height 3,556,788, `v3.2.3` at height 3,662,051 and `v3.2.4` at height 3,742,566 and `v3.2.5` at height 3,906,833; on the testnet `v3.2.2` at 6,905,034, `v3.2.3` at 8,003,746, `v3.2.4` at 8,337,253, `v3.2.5` at 8,890,800 and `v3.2.6` at 8,970,638 (`0` means not applied; on mainnet `v3.2.6` is `0` at the time of writing). The mainnet circuit-breaker list (`disabled-list`) currently holds the vesting-account creation messages, QoreChain Native store and instantiate, AMM pool pause and resume, cross-VM call, multilayer layer-status update, PQC algorithm deprecate and disable, and the PRISM consensus governance messages; the testnet's holds only the QoreChain Native `MsgStoreCode` message (checked 27 October 2026; instantiation was let through by testnet governance).
 
 ---
 

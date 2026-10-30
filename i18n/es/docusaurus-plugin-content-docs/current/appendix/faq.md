@@ -11,7 +11,7 @@ Preguntas generales sobre QoreChain, respondidas a partir de la documentación. 
 
 ### ¿Está la mainnet en funcionamiento?
 
-Sí. La mainnet de QoreChain (cadena `qorechain-vladi`, EVM chain ID 9801) está en funcionamiento desde el 7 de junio de 2026 y ejecuta la versión v3.2.4 (aplicada en la altura 3.742.566 el 23 de octubre de 2026 por la propuesta de gobernanza 13; la propuesta de gobernanza 14 aplicaría la v3.2.5 en la altura 3.906.833 y estaba en su periodo de votación en el momento de escribir esto); la testnet, `qorechain-diana`, ejecuta la v3.2.6 (aplicada en la altura 8.970.638 el 27 de octubre de 2026). Consulta [Redes](/appendix/networks) y [Conectarse a la mainnet](/getting-started/connecting-to-mainnet).
+Sí. La mainnet de QoreChain (cadena `qorechain-vladi`, EVM chain ID 9801) está en funcionamiento desde el 7 de junio de 2026 y ejecuta la versión v3.2.5 (aplicada en la altura 3.906.833 el 29 de octubre de 2026 por la propuesta de gobernanza 14; la v3.2.4 se había aplicado en la altura 3.742.566 el 23 de octubre de 2026 por la propuesta 13); la testnet, `qorechain-diana`, ejecuta la v3.2.6 (aplicada en la altura 8.970.638 el 27 de octubre de 2026). Consulta [Redes](/appendix/networks) y [Conectarse a la mainnet](/getting-started/connecting-to-mainnet).
 
 ### ¿Cuáles son los chain ID y los EVM chain ID?
 

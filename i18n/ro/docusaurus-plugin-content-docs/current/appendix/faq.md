@@ -11,7 +11,7 @@ sidebar_position: 5
 
 ### Este mainnet-ul live?
 
-Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 7 iunie 2026 și rulează versiunea v3.2.4 (aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, prin propunerea de guvernanță 13; propunerea de guvernanță 14 ar aplica v3.2.5 la înălțimea 3.906.833 și se afla în perioada de vot la momentul redactării); testnet-ul, `qorechain-diana`, rulează v3.2.6 (aplicată la înălțimea 8.970.638 pe 27 octombrie 2026). Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
+Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 7 iunie 2026 și rulează versiunea v3.2.5 (aplicată la înălțimea 3.906.833 pe 29 octombrie 2026, prin propunerea de guvernanță 14; v3.2.4 fusese aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, prin propunerea 13); testnet-ul, `qorechain-diana`, rulează v3.2.6 (aplicată la înălțimea 8.970.638 pe 27 octombrie 2026). Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
 
 ### Care sunt chain ID-urile și EVM chain ID-urile?
 

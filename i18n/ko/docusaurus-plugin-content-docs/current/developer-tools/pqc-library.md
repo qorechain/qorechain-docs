@@ -159,7 +159,7 @@ const signBytes = hybridSignBytes(version, chainId, bodyWithoutPqcExt, authInfoB
 ## 접근 방법 {#how-to-access}
 
 * **라이브러리를 사용하는 데 네트워크, 계정, 키가 필요하지 않습니다.** 오프라인에서 실행됩니다. 라이브러리가 만든 키 쌍은 단지 키일 뿐입니다. QoreChain에서 사용하려면 계정이 공개 키를 한 번 등록해야 하며([포스트 퀀텀 서명](/developer-guide/post-quantum-signing#pqc-key-registration) 참조), 이후 Cosmos 레인 트랜잭션에는 secp256k1 서명과 ML-DSA-87 서명(하이브리드)이 모두 필요합니다.
-* **네트워크.** 서명 바이트 헬퍼와 벡터는 메인넷 `qorechain-vladi`(v3.2.4)와 테스트넷 `qorechain-diana`(v3.2.6)에 맞춰져 있습니다. 엔드포인트는 [네트워크](/appendix/networks)를 참조하세요.
+* **네트워크.** 서명 바이트 헬퍼와 벡터는 메인넷 `qorechain-vladi`(v3.2.5)와 테스트넷 `qorechain-diana`(v3.2.6)에 맞춰져 있습니다. 엔드포인트는 [네트워크](/appendix/networks)를 참조하세요.
 * **Python에는 liboqs 공유 라이브러리가 필요합니다.** `pip install qorechain-pqc`는 `liboqs-python`에 의존하며, 이 패키지는 liboqs가 없으면 첫 가져오기 때 이를 빌드합니다. 이를 위해 머신에 `git`, CMake, C 컴파일러가 필요합니다. 제한된 환경에서는 시스템 패키지 관리자로 liboqs를 설치하거나 미리 빌드해 두세요. Python 바인딩은 시스템 난수 생성기에서 키를 읽으며 0.2.3에는 시드 기반 키 생성이 없습니다.
 * **Go는 Go 1.25 이상이 필요합니다**(0.2.1부터의 요구 사항이며, CIRCL 1.6.5 이상과 함께).
 * **Java**는 JDK 21로 실행해 보았습니다. Java 바인딩의 ML-DSA 비밀 키는 다른 바인딩이 사용하는 4,896바이트 확장 키가 아니라 32바이트 FIPS 204 시드이며, 그 외의 입력은 거부됩니다.

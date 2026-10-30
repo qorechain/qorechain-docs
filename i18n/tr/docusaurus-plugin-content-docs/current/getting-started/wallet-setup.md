@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain; native, EVM ve SVM yürütme ortamlarında birden fazla cüzdan türünü destekler. Kullanım senaryonuza uygun cüzdanı seçin.
 
 :::note
-Aşağıdaki değerler hem **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri yayında, 23 Ekim 2026'dan beri v3.2.4 sürümü) hem de **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**, 27 Ekim 2026'dan beri v3.2.6 sürümü) kapsar. Her iki ağın herkese açık uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
+Aşağıdaki değerler hem **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri yayında, 29 Ekim 2026'dan beri v3.2.5 sürümü) hem de **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**, 27 Ekim 2026'dan beri v3.2.6 sürümü) kapsar. Her iki ağın herkese açık uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
 :::
 
 ## QoreX (önerilir) {#qorex}

@@ -66,7 +66,7 @@ Non. `pqc.sign_bytes = 'auto'` la lit depuis la chaîne, la relit chaque minute 
 QORel n'a pas pu lire les enregistrements de mise à niveau de la chaîne. Vérifiez que `rpc_addr` de l'entrée QoreChain répond et pointe vers le bon réseau (`qorechain-diana` sur le testnet). QORel ne signera pas sans version connue.
 
 **Quel multiplicateur de gas utiliser ?**
-`1.1` est la valeur par défaut de l'exemple et garde `health-check` silencieux. Sur le testnet (v3.2.6), une valeur plus basse comme `1.05` fonctionne. Les builds antérieurs sous-estiment le gas simulé : utilisez donc `1.15` sur un nœud qui en exécute un. Voir [Gas](/qorel/configuration#gas).
+`1.1` est la valeur par défaut de l'exemple et garde `health-check` silencieux. Sur la chaîne v3.2.5 ou suivante (désormais les deux réseaux ; mesuré sur le testnet en v3.2.6), une valeur plus basse comme `1.05` fonctionne. Les builds antérieurs sous-estiment le gas simulé : utilisez donc `1.15` sur un nœud qui en exécute un. Voir [Gas](/qorel/configuration#gas).
 
 **`health-check` avertit à propos du multiplicateur de gas.**
 Il est inférieur à 1.1 sur une entrée QoreChain. Ce n'est qu'un avertissement ; le relais fonctionne. Augmentez-le si vous constatez des échecs par manque de gas.

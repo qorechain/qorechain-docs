@@ -17,7 +17,7 @@ O referință consolidată pentru rețelele QoreChain — identificatori de lan�
 | **ID lanț Cosmos** | `qorechain-vladi` | `qorechain-diana` |
 | **ID lanț EVM (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **Activă din** | 7 iunie 2026 | 1 iulie 2026 (continuu de atunci; fără reset) |
-| **Versiune lanț** | v3.2.4 (aplicată la înălțimea 3.742.566, 23 octombrie 2026, propunerea de guvernanță 13). v3.2.3 a fost aplicată la înălțimea 3.662.051 pe 20 octombrie 2026 | v3.2.6 (aplicată la înălțimea 8.970.638, 27 octombrie 2026; v3.2.5 a fost aplicată la înălțimea 8.890.800 pe 26 octombrie, iar v3.2.4 la 8.337.253 pe 19 octombrie) |
+| **Versiune lanț** | v3.2.5 (aplicată la înălțimea 3.906.833, 29 octombrie 2026, propunerea de guvernanță 14). v3.2.4 a fost aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, iar v3.2.3 la înălțimea 3.662.051 pe 20 octombrie 2026 | v3.2.6 (aplicată la înălțimea 8.970.638, 27 octombrie 2026; v3.2.5 a fost aplicată la înălțimea 8.890.800 pe 26 octombrie, iar v3.2.4 la 8.337.253 pe 19 octombrie) |
 | **Timp de bloc (medie măsurată)** | aproximativ 3,1 s | aproximativ 1,3 s |
 | **Manifest de versiune** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
@@ -25,7 +25,7 @@ O referință consolidată pentru rețelele QoreChain — identificatori de lan�
 | **Token-uri de test** | Niciunul | Token-urile Fest fUSD, fETH și fBTC (fără valoare; vezi [Faucet Dashboard](/dashboard/faucet#fest-tokens)) |
 | **Ghid de conectare** | [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) | [Conectarea la Testnet](/getting-started/connecting-to-testnet) |
 
-Ambele manifeste sunt sursa de adevăr pentru versiunea pe care ar trebui să o ruleze un nod nou. Ambele rețele primesc upgrade-uri coordonate prin guvernanță, așa că fiecare manifest conține `upgradeHeight` pentru versiunea sa curentă și un `minCompatible` egal cu acea versiune (3.2.4 pe mainnet și 3.2.6 pe testnet, verificat la 27 octombrie 2026). Testnet-ul primește fiecare versiune primul: mainnet-ul rulează v3.2.4 din 23 octombrie 2026, iar propunerea de guvernanță 14 ar aplica v3.2.5 pe mainnet la înălțimea 3.906.833 (în perioada de votare la momentul scrierii), așa că un nod care se alătură mainnet-ului trebuie să urmeze propriul manifest. Nu copia niciodată un binar între cele două rețele.
+Ambele manifeste sunt sursa de adevăr pentru versiunea pe care ar trebui să o ruleze un nod nou. Ambele rețele primesc upgrade-uri coordonate prin guvernanță, așa că fiecare manifest conține `upgradeHeight` pentru versiunea sa curentă și un `minCompatible` egal cu acea versiune (3.2.5 pe mainnet, verificat la 30 octombrie 2026, și 3.2.6 pe testnet, verificat la 27 octombrie 2026). Testnet-ul primește fiecare versiune primul: mainnet-ul rulează v3.2.5 din 29 octombrie 2026 (înălțimea 3.906.833, propunerea de guvernanță 14), așa că un nod care se alătură mainnet-ului trebuie să urmeze propriul manifest. Nu copia niciodată un binar între cele două rețele.
 
 ## Puncte finale publice {#public-endpoints}
 

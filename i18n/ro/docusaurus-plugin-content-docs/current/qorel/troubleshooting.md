@@ -66,7 +66,7 @@ Nu. `pqc.sign_bytes = 'auto'` o citește din lanț, o recitește în fiecare min
 QORel nu a putut citi înregistrările de upgrade ale lanțului. Verificați că `rpc_addr` din intrarea QoreChain răspunde și indică rețeaua corectă (`qorechain-diana` pe testnet). QORel nu va semna fără o versiune cunoscută.
 
 **Ce multiplicator de gas să folosesc?**
-`1.1` este valoarea implicită din exemplu și menține `health-check` liniștit. Pe testnet (v3.2.6) o valoare mai mică, precum `1.05`, funcționează. Build-urile anterioare raportează mai puțin decât în realitate gas-ul simulat, deci folosiți `1.15` pe un nod care rulează unul. Vezi [Gas](/qorel/configuration#gas).
+`1.1` este valoarea implicită din exemplu și menține `health-check` liniștit. Pe lanțul v3.2.5 sau mai nou (acum ambele rețele; măsurat pe testnet la v3.2.6) o valoare mai mică, precum `1.05`, funcționează. Build-urile anterioare raportează mai puțin decât în realitate gas-ul simulat, deci folosiți `1.15` pe un nod care rulează unul. Vezi [Gas](/qorel/configuration#gas).
 
 **`health-check` avertizează despre multiplicatorul de gas.**
 Este sub 1.1 pe o intrare QoreChain. Este doar un avertisment; relay-ul funcționează. Măriți-l dacă vedeți eșecuri de tip out-of-gas.

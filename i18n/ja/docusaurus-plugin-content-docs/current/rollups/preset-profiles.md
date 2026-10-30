@@ -38,7 +38,7 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 RDK v0.4.2 以降、Wasm VM オプション（QoreChain Native コントラクトを実行するランタイム）は **`native`** — QoreChain Native — という名前になりました。`cosmwasm` は引き続きレガシーエイリアスとして受け付けられ、どちらもワイヤ上では `cosmwasm` にマップされるため、チェーン、エクスプローラー、Dashboard に変更はありません。
 
 :::note
-プリセットごとの構成は、v3.2.3 のソースにあるチェーンのプロファイル表と照合して確認されました。この表は、v3.2.4 のソース（メインネット）と v3.2.6 のソース（テストネット）でも変わっていません（2026年10月27日に確認）。その中で `create-rollup` がプロファイルのプリセットを自動的に適用します: **`defi` = zk + EVM、`gaming` = based + カスタム VM、`nft` = optimistic + QoreChain Native (Wasm)、`enterprise` = based + EVM、`custom` = optimistic + EVM（デフォルト）**。`custom` プリセットはすべてのフィールドが自由に設定可能で、記載の値はその初期デフォルトです。
+プリセットごとの構成は、v3.2.3 のソースにあるチェーンのプロファイル表と照合して確認されました。この表は、v3.2.4 のソースと v3.2.6 のソース（テストネット）でも変わっていません（2026年10月27日に確認）。メインネットは現在、その間にある v3.2.5 で稼働しています。その中で `create-rollup` がプロファイルのプリセットを自動的に適用します: **`defi` = zk + EVM、`gaming` = based + カスタム VM、`nft` = optimistic + QoreChain Native (Wasm)、`enterprise` = based + EVM、`custom` = optimistic + EVM（デフォルト）**。`custom` プリセットはすべてのフィールドが自由に設定可能で、記載の値はその初期デフォルトです。
 :::
 
 4 つのドメイン向けプリセットは妥当な出発点として、**`custom`** プロファイルは完全に自由なオプションとして扱ってください。バンドルされる正確なパラメータはリリース間で変わる可能性があります。正式な値については（下記の）`rdk config` を照会し、最も近いプリセットから始めて調整してください。

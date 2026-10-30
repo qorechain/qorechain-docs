@@ -152,7 +152,7 @@ qorel keys pqc-status --chain qorechain-diana
 
 QoreChain ücretin tamamını (gas sınırı çarpı fiyat) iade etmeden tahsil eder, bu yüzden çarpanı dar tutun.
 
-- Testnet'te (v3.2.6) simülasyon, teslimatla birkaç yüz gas içinde eşleşir. O hattaki bir derlemede yerel uçtan uca test `1.05` ile geçer (her röle işlemi sınırının %95'ini kullandı).
+- Zincir v3.2.5 ve sonrasında (aşağıdaki ölçüm testnet'te v3.2.6 üzerinde alındı; mainnet v3.2.5'i 29 Ekim 2026'da uyguladı ancak QORel orada röle yapmadı) simülasyon, teslimatla birkaç yüz gas içinde eşleşir. O hattaki bir derlemede yerel uçtan uca test `1.05` ile geçer (her röle işlemi sınırının %95'ini kullandı).
 - Önceki derlemeler yaklaşık %8 ila 10 eksik bildirir (bir sürüm öncesi devnet'te ölçüldü; orada `1.15`, %4 ila 7 pay bıraktı). Kendi düğümlerinizi ölçene kadar `1.15` kullanın.
 - `health-check`, bir QoreChain girişinde `1.1`'in altındaki her çarpanı olası bir yanlış yapılandırma olarak bildirir. Bu bir uyarıdır ve röle çalışmaya devam eder. Örnek yapılandırmadaki değer olan `1.1`, `1.05`'e göre yaklaşık %5 daha fazla ücrete karşılık bunu temiz tutar.
 - Tek seferlik `keys register-pqc` işlemi, yapılandırma ne derse desin en az `1.1` kullanır.

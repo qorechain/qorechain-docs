@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Paramètres de la chaîne
 
-Référence consolidée des paramètres de module des réseaux QoreChain, regroupés par module. Les paramètres peuvent être interrogés avec `qorechaind query <module> params` lorsque le module dispose d'une requête params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus` ; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` et `gasabstraction` utilisent `config`), et via REST uniquement pour les routes listées dans la [référence REST / gRPC](/api-reference/rest-grpc-endpoints). Les paramètres de `x/inflation` sont également servis via REST sur le mainnet depuis v3.2.3 (`/qorechain/inflation/v1/params`). REST n'est pas disponible sur le mainnet pour `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ni `xqore`, ni pour les paramètres de `pqc` (le testnet sert les paramètres de `pqc`, `crossvm` et `rlconsensus` via REST depuis la v3.2.6).
+Référence consolidée des paramètres de module des réseaux QoreChain, regroupés par module. Les paramètres peuvent être interrogés avec `qorechaind query <module> params` lorsque le module dispose d'une requête params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus` ; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` et `gasabstraction` utilisent `config`), et via REST uniquement pour les routes listées dans la [référence REST / gRPC](/api-reference/rest-grpc-endpoints). Les paramètres de `x/inflation` sont également servis via REST sur le mainnet depuis v3.2.3 (`/qorechain/inflation/v1/params`). REST n'est pas disponible sur le mainnet pour `ai`, `qca`, `reputation`, `rlconsensus`, `fairblock` ni `xqore`, ni pour les paramètres de `pqc` (le testnet sert les paramètres de `pqc` et `rlconsensus` via REST depuis la v3.2.6 ; les paramètres de `crossvm` et `rdk` sont servis sur les deux réseaux depuis la v3.2.5).
 
 :::note
-Les valeurs affichées ont été lues en direct sur le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, version **v3.2.4**, appliquée le 23 octobre 2026) le 23 octobre 2026 (valeurs du genesis, sauf si une proposition de gouvernance les a modifiées ; ces cas sont signalés), et les lignes des modules cœur ont été relues le 27 octobre 2026. La proposition de gouvernance 14 appliquerait la v3.2.5 sur le mainnet à la hauteur 3,906,833 (en période de vote au moment de la rédaction) ; cette page décrit le mainnet tel qu'il est aujourd'hui et sera mise à jour lorsque cette mise à niveau sera appliquée. Le testnet **`qorechain-diana`** (EVM chain ID **9800**) exécute la version **v3.2.6** (appliquée le 27 octobre 2026). Ses valeurs sont identiques à celles du mainnet sauf indication contraire ; les différences restantes sont regroupées dans [Différences entre testnet et mainnet](#testnet-differences). Les durées exprimées en blocs sont converties au temps de bloc mesuré du mainnet, d'environ 3,1 secondes (le testnet produit un bloc environ toutes les 1,3 secondes).
+Les valeurs affichées ont été lues en direct sur le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, version **v3.2.5**, appliquée à la hauteur 3,906,833 le 29 octobre 2026 par la proposition de gouvernance 14) le 23 octobre 2026 (valeurs du genesis, sauf si une proposition de gouvernance les a modifiées ; ces cas sont signalés), les lignes des modules cœur ont été relues le 27 octobre 2026, et les lignes qui dépendent de la v3.2.5 ont été relues le 30 octobre 2026. Le testnet **`qorechain-diana`** (EVM chain ID **9800**) exécute la version **v3.2.6** (appliquée le 27 octobre 2026). Ses valeurs sont identiques à celles du mainnet sauf indication contraire ; les différences restantes sont regroupées dans [Différences entre testnet et mainnet](#testnet-differences). Les durées exprimées en blocs sont converties au temps de bloc mesuré du mainnet, d'environ 3,1 secondes (le testnet produit un bloc environ toutes les 1,3 secondes).
 :::
 
 ---
@@ -225,8 +225,9 @@ Les paramètres propres à chaque chaîne (`min_confirmations`, `max_single_tran
 | `max_queue_size`      | `1000`  | Nombre maximal de messages en attente dans la file cross-VM |
 | `queue_timeout_blocks`| `100`   | Blocs avant l'expiration d'un message en attente |
 | `enabled`             | `true`  | Indicateur d'activation du module              |
+| `bridge_allowed_targets` | `[]` (vide) | Liste d'autorisation, gérée par la gouvernance, des contrats cibles que le pont cross-VM peut appeler (v3.2.5) ; une liste vide n'en autorise aucun |
 
-`MsgCrossVMCall` est désactivé sur le mainnet par le disjoncteur (activé sur le testnet). Le testnet sert ces valeurs via REST (`GET /qorechain/crossvm/v1/params`) ; le mainnet répond 501.
+`MsgCrossVMCall` est toujours désactivé sur le mainnet par le disjoncteur (activé sur le testnet, vérifié le 30 octobre 2026). Depuis la v3.2.5, les deux réseaux servent ces valeurs via REST (`GET /qorechain/crossvm/v1/params`) ; avant la v3.2.5, le mainnet répondait 501.
 
 ---
 
@@ -264,7 +265,7 @@ La voie de transactions SVM est désactivée sur l'ensemble du réseau (voir [R�
 | `blob_retention_blocks`     | `432,000`            | Blocs de conservation des blobs DA (environ 16 jours à des blocs de ≈3,1 s) |
 | `max_batches_per_block`     | `10`                 | Nombre maximal de lots traités par bloc       |
 
-Aucun rollup n'a encore été créé sur l'un ou l'autre réseau.
+Les mêmes valeurs sont servies via REST à `GET /qorechain/rdk/v1/params` sur les deux réseaux depuis la v3.2.5 (vérifié le 30 octobre 2026). Depuis la v3.2.5, ces paramètres du RDK sont modifiés par la gouvernance. Aucun rollup n'a encore été créé sur l'un ou l'autre réseau.
 
 ---
 
@@ -386,7 +387,7 @@ Modules standard du Cosmos SDK et de l'EVM, tous lus en direct sur le mainnet le
 
 La chaîne peut désactiver des types de messages individuels grâce au disjoncteur du Cosmos SDK, contrôlé par le compte d'opérations de la fondation et par la gouvernance. Un type de message désactivé est rejeté au niveau de l'ante handler sur toutes les voies. La liste en direct se trouve à `GET /cosmos/circuit/v1/disable_list`.
 
-**Mainnet (27 octobre 2026, 16 entrées, inchangées depuis le 14 octobre) :** création de comptes de vesting (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`) ; QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2` ; AMM `MsgPausePool`, `MsgResumePool` ; `crossvm.MsgCrossVMCall` ; `multilayer.MsgUpdateLayerStatus` ; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm` ; et les quatre messages de contrôle de PRISM (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). La voie EVM (`MsgEthereumTx`) est **ouverte** : elle a été désactivée du 16 au 25 septembre et rouverte par la mise à niveau v3.2.0.
+**Mainnet (30 octobre 2026, 16 entrées, inchangées depuis le 14 octobre et non modifiées par la mise à niveau v3.2.5) :** création de comptes de vesting (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`) ; QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2` ; AMM `MsgPausePool`, `MsgResumePool` ; `crossvm.MsgCrossVMCall` ; `multilayer.MsgUpdateLayerStatus` ; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm` ; et les quatre messages de contrôle de PRISM (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). La voie EVM (`MsgEthereumTx`) est **ouverte** : elle a été désactivée du 16 au 25 septembre et rouverte par la mise à niveau v3.2.0.
 
 **Testnet (27 octobre 2026, 1 entrée) :** uniquement `MsgStoreCode` de QoreChain Native (envoi de contrat) ; l'instanciation n'y est plus désactivée.
 
@@ -396,7 +397,7 @@ Tous les autres types de messages, y compris l'ensemble des messages standard de
 
 ## Différences entre testnet et mainnet {#testnet-differences}
 
-Lu en direct le 27 octobre 2026. Le mainnet `qorechain-vladi` exécute la v3.2.4 (depuis la hauteur 3,742,566, 23 octobre 2026 ; la proposition de gouvernance 14 appliquerait la v3.2.5 à la hauteur 3,906,833 et était en période de vote au moment de la rédaction). Le testnet `qorechain-diana` exécute la **v3.2.6** : la v3.2.4 l'a atteint à la hauteur 8,337,253 (19 octobre 2026), la v3.2.5 à la hauteur 8,890,800 (26 octobre) et la v3.2.6 à la hauteur 8,970,638 (27 octobre). Le testnet est un réseau de préproduction qui reçoit chaque version en premier et est réglé pour les tests ; les valeurs ci-dessous diffèrent donc de celles du mainnet. Cette section couvre les tableaux de paramètres de cette page ; les fonctionnalités de la v3.2.5 sont documentées le jour où le mainnet applique cette version, et cette section est alors révisée. Tout paramètre non listé ici est identique sur les deux réseaux (les valeurs de staking, de slashing, de distribution, de fee-market, d'ERC-20, d'AMM, de burn, de light node, de bridge, de gas-abstraction et de staking à verrouillage temporel ont été comparées une à une).
+Lu en direct le 27 octobre 2026 et revérifié le 30 octobre 2026 après la mise à niveau v3.2.5. Le mainnet `qorechain-vladi` exécute la v3.2.5 (depuis la hauteur 3,906,833, 29 octobre 2026, proposition de gouvernance 14 ; la v3.2.4 avait été appliquée à la hauteur 3,742,566 le 23 octobre 2026). Le testnet `qorechain-diana` exécute la **v3.2.6** : la v3.2.4 l'a atteint à la hauteur 8,337,253 (19 octobre 2026), la v3.2.5 à la hauteur 8,890,800 (26 octobre) et la v3.2.6 à la hauteur 8,970,638 (27 octobre). Le testnet est un réseau de préproduction qui reçoit chaque version en premier et est réglé pour les tests ; les valeurs ci-dessous diffèrent donc de celles du mainnet. Cette section couvre les tableaux de paramètres de cette page ; les deux réseaux portent désormais la v3.2.5 : les différences restantes viennent de la version v3.2.6, propre au testnet, et du réglage du testnet. Tout paramètre non listé ici est identique sur les deux réseaux (les valeurs de staking, de slashing, de distribution, de fee-market, d'ERC-20, d'AMM, de burn, de light node, de bridge, de gas-abstraction et de staking à verrouillage temporel ont été comparées une à une).
 
 | Domaine | Mainnet | Testnet |
 | ---- | ------- | ------- |
@@ -408,8 +409,8 @@ Lu en direct le 27 octobre 2026. Le mainnet `qorechain-vladi` exécute la v3.2.4
 | RDK (`x/rdk`) | `max_rollups` 100 ; `default_challenge_window` 604,800 s | `max_rollups` 200 ; `default_challenge_window` 3,600 s |
 | Multilayer (`x/multilayer`) | `max_sidechains` 10 | `max_sidechains` 64 |
 | Permission d'instanciation de QoreChain Native | `Nobody` | `Everybody` (l'envoi de code reste `Nobody` sur les deux) |
-| Disjoncteur | 16 entrées (voir ci-dessus) | 1 entrée : `MsgStoreCode` de QoreChain Native |
-| Routes de paramètres via REST | les paramètres de `x/pqc`, `x/crossvm` et `x/rlconsensus` répondent 501 | `GET /qorechain/pqc/v1/params`, `/qorechain/crossvm/v1/params` et `/qorechain/rlconsensus/v1/params` répondent (v3.2.6) |
+| Disjoncteur | 16 entrées (voir ci-dessus), dont `MsgCrossVMCall`, `MsgInstantiateContract` et `MsgInstantiateContract2` | 1 entrée : `MsgStoreCode` de QoreChain Native |
+| Routes de paramètres via REST | les paramètres de `x/pqc` et `x/rlconsensus` répondent 501 (`/qorechain/crossvm/v1/params` et `/qorechain/rdk/v1/params` répondent depuis la v3.2.5) | `GET /qorechain/pqc/v1/params` et `/qorechain/rlconsensus/v1/params` répondent aussi (v3.2.6) |
 | Temps de bloc et validateurs | environ 3,1 s ; 8 validateurs bondés | environ 1,3 s ; 4 validateurs bondés |
 | Jetons de test | aucun | fUSD, fETH et fBTC (voir [Faucet](/dashboard/faucet#fest-tokens)) |
 

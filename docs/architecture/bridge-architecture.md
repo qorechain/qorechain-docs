@@ -23,7 +23,7 @@ The bridge module is deployed on mainnet and testnet, but **no bridge route is a
 | Bridge operations | 0 | 0 |
 | IBC channels / clients | 0 / 0 | 1 / 1 (a test channel to the Cosmos Hub testnet) |
 
-(Checked 27 October 2026 against mainnet (v3.2.4) and testnet (v3.2.6). Read the live values with `qorechaind query bridge chains` and `qorechaind query bridge validators`, or over REST at `/qorechain/bridge/v1/chains` and `/qorechain/bridge/v1/validators`.) The module configuration is the same on both networks: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 and `large_transfer_threshold` 100,000 QOR (`100000000000` uqor). The IBC stack the module would use is ibc-go v10.7 (since v3.2.2), but no mainnet client or channel has been created (the testnet has one test client and channel, see above).
+(Checked 27 October 2026 against mainnet (v3.2.4; v3.2.5 since 29 October 2026) and testnet (v3.2.6). Read the live values with `qorechaind query bridge chains` and `qorechaind query bridge validators`, or over REST at `/qorechain/bridge/v1/chains` and `/qorechain/bridge/v1/validators`.) The module configuration is the same on both networks: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 and `large_transfer_threshold` 100,000 QOR (`100000000000` uqor). The IBC stack the module would use is ibc-go v10.7 (since v3.2.2), but no mainnet client or channel has been created (the testnet has one test client and channel, see above).
 
 ## Connection Overview
 

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Historial de versiones
 
-Historial de versiones público de QoreChain. La mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026) ejecuta **v3.2.4** (aplicada mediante la propuesta de gobernanza 13 en la altura 3,742,566 el 23 de octubre de 2026; la versión anterior, v3.2.3, se aplicó en la altura 3,662,051 el 20 de octubre de 2026). La propuesta de gobernanza 14 aplicaría v3.2.5 en mainnet en la altura 3,906,833 (en su período de votación en el momento de escribir esto, 27 de octubre de 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) ejecuta **v3.2.6** (aplicada en la altura 8,970,638 el 27 de octubre de 2026); v3.2.4 llegó a ella en la altura 8,337,253 (19 de octubre de 2026) y v3.2.5 en la altura 8,890,800 (26 de octubre de 2026).
+Historial de versiones público de QoreChain. La mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026) ejecuta **v3.2.5** (aplicada mediante la propuesta de gobernanza 14 en la altura 3,906,833 el 29 de octubre de 2026; la versión anterior, v3.2.4, se aplicó en la altura 3,742,566 el 23 de octubre de 2026 y v3.2.3 en la altura 3,662,051 el 20 de octubre de 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) ejecuta **v3.2.6** (aplicada en la altura 8,970,638 el 27 de octubre de 2026); v3.2.4 llegó a ella en la altura 8,337,253 (19 de octubre de 2026) y v3.2.5 en la altura 8,890,800 (26 de octubre de 2026).
 
 :::note
 Las entradas siguientes son resúmenes de capacidades de alto nivel. Las entradas anteriores `v1.x` se conservan como registro histórico de la línea de versiones de testnet que precedió a la mainnet. El manifiesto de la versión ([Conexión a mainnet](/getting-started/connecting-to-mainnet)) se publica por separado del etiquetado y puede ir con retraso respecto a un tag durante algún tiempo — consúltelo directamente para saber qué descarga realmente una instalación nueva.
@@ -15,7 +15,7 @@ Las entradas siguientes son resúmenes de capacidades de alto nivel. Las entrada
 
 ## Cronología de gobernanza de mainnet {#governance-timeline}
 
-Propuestas que modificaron la mainnet en ejecución desde el 14 de octubre de 2026. Las ocho son propuestas aceleradas (período de votación de un día); las propuestas 7 a 13 se aprobaron con todo el stake bonded que votó a favor, y la propuesta 14 sigue en votación en el momento de escribir esto. La lista completa está en `GET /cosmos/gov/v1/proposals` en `https://api.qore.host`.
+Propuestas que modificaron la mainnet en ejecución desde el 14 de octubre de 2026. Las ocho son propuestas aceleradas (período de votación de un día) y las ocho se aprobaron con todo el stake bonded que votó a favor. La lista completa está en `GET /cosmos/gov/v1/proposals` en `https://api.qore.host`.
 
 | Propuesta | Qué hace | Votación | Resultado |
 | --- | --- | --- | --- |
@@ -26,15 +26,15 @@ Propuestas que modificaron la mainnet en ejecución desde el 14 de octubre de 20
 | 11 | Aplica v3.2.3 en la altura 3,662,051 | 18–19 de octubre de 2026 (termina a las 19:15 UTC) | Aprobada; aplicada el 20 de octubre de 2026 |
 | 12 | Libera la parte corregida de los stakers atascada (3,807,496.785528 QOR, recalculada en la altura de v3.2.3) a la fundación | 20 de octubre de 2026 20:01 UTC a 21 de octubre de 2026 20:01 UTC | Aprobada |
 | 13 | Actualización coordinada a v3.2.4 en la altura 3,742,566: staking con bloqueo temporal opcional, límite de recompensa de nodos ligeros contado desde el registro, un indicador de posesión para las claves post-cuánticas, prueba de posesión para los validadores de puente, la ventana de desafío del RDK en tiempo de bloque y endurecimiento local del nodo | 20 de octubre de 2026 21:18 UTC a 21 de octubre de 2026 21:18 UTC | Aprobada; aplicada el 23 de octubre de 2026 en la altura 3,742,566 |
-| 14 | Actualización coordinada a v3.2.5 (build 2) en la altura 3,906,833 (los nodos permanecen en v3.2.4 hasta esa altura, se detienen allí y se reinician con v3.2.5; la firma de transacciones no cambia) | 27 de octubre de 2026 00:29 UTC a 28 de octubre de 2026 00:29 UTC | En votación en el momento de escribir esto. El contenido de v3.2.5 se documenta el día en que mainnet lo aplica |
+| 14 | Actualización coordinada a v3.2.5 (build 2) en la altura 3,906,833 (los nodos permanecieron en v3.2.4 hasta esa altura, se detuvieron allí y se reiniciaron con v3.2.5; la firma de transacciones no cambia). El contenido se detalla en [v3.2.5](#v325) | 27 de octubre de 2026 00:29 UTC a 28 de octubre de 2026 00:29 UTC | Aprobada; aplicada el 29 de octubre de 2026 en la altura 3,906,833 |
 
 Consulte [Tokenomics](/architecture/tokenomics#stranded-and-reserve) para saber qué significan las liberaciones y [Gobernanza](/user-guide/governance) para saber cómo votar.
 
 ---
 
-## Versiones de testnet v3.2.5 y v3.2.6 (hasta ahora solo testnet) {#testnet-v326}
+## Versión de testnet v3.2.6 (hasta ahora solo testnet) {#testnet-v326}
 
-La testnet `qorechain-diana` recibe cada versión unos días antes que mainnet. Nada de lo que contiene esta sección cambia mainnet: ejecuta v3.2.4 hasta que una actualización de gobernanza indique otra cosa.
+La testnet `qorechain-diana` recibe cada versión unos días antes que mainnet. Nada de lo que contiene esta sección cambia mainnet: ejecuta v3.2.5 hasta que una actualización de gobernanza indique otra cosa. Todo lo de v3.2.5 ya está activo en ambas redes (consulte [v3.2.5](#v325) más abajo).
 
 ### v3.2.6 — Rutas de consulta, valores PRISM en vivo y tokens de prueba (testnet)
 
@@ -50,15 +50,25 @@ La testnet `qorechain-diana` recibe cada versión unos días antes que mainnet. 
 * **Clientes ligeros 08-wasm (solo testnet).** Se añaden los mensajes de cliente ligero 08-wasm (almacenar, migrar y eliminar un binario de cliente), solo para la autoridad. Los tipos de cliente permitidos siguen conteniendo únicamente el cliente estándar, por lo que no se puede crear ningún cliente ligero wasm hasta que la gobernanza añada `08-wasm`.
 * **Tokens de prueba de la fest.** Tres contratos ERC-20 desplegados para la fest de constructores fueron registrados por la gobernanza de testnet (propuesta 26) como denominaciones de bank: fUSD (6 decimales), fETH (18) y fBTC (8). Son tokens de prueba exclusivos de testnet y sin valor. Consulte [Faucet](/dashboard/faucet#fest-tokens).
 
-### v3.2.5 (testnet)
-
-**Enfoque de la versión:** Aplicada en la testnet mediante la propuesta de gobernanza 15 de testnet en la altura **8,890,800** (26 de octubre de 2026). En mainnet, la propuesta de gobernanza 14 aplicaría v3.2.5 (build 2) en la altura 3,906,833 y estaba en su período de votación en el momento de escribir esto. Las funciones de v3.2.5 se documentan en este historial el día en que mainnet la aplique.
-
 ---
 
-## v3.2.4 — Ventana de registro de nodos ligeros y staking con bloqueo temporal opcional (mainnet)
+## v3.2.5: registro nativo de claves, cross-VM y contratos gobernados, desafíos abiertos del RDK (mainnet) {#v325}
 
-**Enfoque de la versión:** La versión actual de mainnet. Se ejecutó primero en la testnet `qorechain-diana`: la propuesta de gobernanza 13 de testnet la aplicó en la altura **8,337,253** (19 de octubre de 2026). En mainnet, la propuesta de gobernanza 13 la aplicó en la altura **3,742,566** el 23 de octubre de 2026: los nodos permanecieron en v3.2.3 hasta ese bloque, se detuvieron allí y se reiniciaron con v3.2.4, y la firma de transacciones no cambia. El manifiesto de mainnet establece `minCompatible` en 3.2.4, por lo que un nodo que se une a mainnet necesita v3.2.4 (la testnet ha avanzado desde entonces a v3.2.6). Cada función siguiente está activa en mainnet y en la testnet.
+**Enfoque de la versión:** La versión actual de mainnet. La propuesta de gobernanza 14 la aplicó en mainnet en la altura **3,906,833** el 29 de octubre de 2026 (hacia las 16:04 UTC): los nodos permanecieron en v3.2.4 hasta ese bloque, se detuvieron allí y se reiniciaron con v3.2.5, y la firma de transacciones no cambia. La testnet `qorechain-diana` la recibió primero, mediante la propuesta de gobernanza 15 de testnet en la altura 8,890,800 (26 de octubre de 2026); desde entonces la testnet ha avanzado a v3.2.6. El manifiesto de mainnet establece `minCompatible` en 3.2.5, por lo que un nodo que se une a mainnet necesita v3.2.5. La actualización activa sus funciones de protocolo en la altura de la actualización (83 están activadas en mainnet, listadas en `GET /qorechain/pqc/v1/protocol_features`). **Esta actualización no activa ningún precompilado de EVM**: cada uno necesita su propia votación de gobernanza, y la lista de precompilados estáticos activos en mainnet sigue vacía.
+
+* **Registro nativo de claves ML-KEM.** Una cuenta puede registrar en la cadena una clave de cifrado post-cuántica (ML-KEM) para que otros la consulten por dirección.
+* **Cuentas abstractas bajo gobernanza.** La gobernanza controla la configuración de las cuentas abstractas, y las reglas de gasto se comprueban con más rigor: se rechaza una regla que no limita nada, y una entrada de límite vacía o toda en cero ya no elimina los límites reales. Las cuentas inteligentes siguen desactivadas en mainnet (`enabled` es `false`).
+* **Llamadas cross-VM bajo gobernanza.** La lista de contratos permitidos a los que el puente cross-VM puede llamar la gestiona la gobernanza y se sirve en `GET /qorechain/crossvm/v1/params` (antes de v3.2.5 mainnet respondía 501). La llamada cross-VM tiene un formato de respuesta canónico (`abi.encode(bytes)`, con `Error(string)` en caso de rechazo), se ejecuta de forma atómica con una ejecución acotada, y las entradas finalizadas se podan. La lista de permitidos está vacía, el precompilado cross-VM `0x...0901` no está activo y `MsgCrossVMCall` sigue desactivado por el circuit breaker, así que todavía nada puede llamar entre VMs en mainnet.
+* **Despliegue gobernado de CosmWasm.** La subida de contratos sigue siendo solo por gobernanza; la instanciación de código aprobado es la vía prevista. En mainnet, la instanciación sigue desactivada por el circuit breaker y el permiso de instanciación por defecto sigue siendo `Nobody`.
+* **Liquidación del RDK.** Los lotes de rollup se liquidan en orden, cualquier cuenta puede resolver un desafío (la cadena comprueba por sí misma la prueba de fraude), los retiros quedan ligados a las pruebas de fraude, y los parámetros del RDK son gobernables y se sirven en `GET /qorechain/rdk/v1/params`. Consulte [comportamiento de la cadena v3.2.5 para los rollups](/rollups/overview#v325). Todavía no se ha creado ningún rollup en mainnet.
+* **Las propuestas aceleradas conservan sus votos.** Una propuesta acelerada que no supera su recuento breve y se convierte en propuesta regular conserva los votos ya emitidos.
+* **Reglas de los precompilados de EVM.** Las llamadas a precompilados se acotan mediante la ventana de autorización de EVM, y el circuit breaker se les aplica.
+* **La verificación post-cuántica se cobra una vez por firmante**, y **gas de simulación exacto**: el gas que informa la simulación de una transacción ahora coincide con el que la transacción usa.
+* **Endurecimiento** a partir de dos auditorías de seguridad, que abarcan el carril compatible con Solana (SVM), cross-VM, los rollups y la fijación de comisiones: las comisiones pagadas en otros tokens se valoran a partir del tipo correcto de pool, la quema de una transacción fallida usa la comisión convertida, y los despliegues, la ejecución y el cómputo de SVM están acotados.
+
+## v3.2.4 — Ventana de registro de nodos ligeros y staking con bloqueo temporal opcional
+
+**Enfoque de la versión:** La versión de mainnet del 23 al 29 de octubre de 2026. Se ejecutó primero en la testnet `qorechain-diana`: la propuesta de gobernanza 13 de testnet la aplicó en la altura **8,337,253** (19 de octubre de 2026). En mainnet, la propuesta de gobernanza 13 la aplicó en la altura **3,742,566** el 23 de octubre de 2026: los nodos permanecieron en v3.2.3 hasta ese bloque, se detuvieron allí y se reiniciaron con v3.2.4, y la firma de transacciones no cambia. Cada función siguiente está activa en mainnet y en la testnet.
 
 * **Ventana de registro de nodos ligeros.** El límite de recompensa de un nodo ligero comienza en el más tardío entre la liquidación anterior y el propio registro del nodo, de modo que un registro nuevo no cobra un monto acumulado de antes de incorporarse.
 * **Staking con bloqueo temporal opcional (`x/stakingtier`, un módulo nuevo).** Un delegador puede bloquear parte de una delegación durante 3, 6 o 12 meses; la parte bloqueada no puede deshacer su delegación ni redelegarse, y se permite un desbloqueo anticipado con una penalización que se quema. El bloqueo mínimo es de 10 QOR. Consulte [Staking y delegación](/user-guide/staking-and-delegation#time-locked-staking).
@@ -98,7 +108,7 @@ La testnet `qorechain-diana` recibe cada versión unos días antes que mainnet. 
 * Actualiza la dependencia del motor de consenso; mantenga el reloj del sistema sincronizado por NTP (un desfase de más de 60 segundos detiene el nodo).
 * Recomendada para todos los operadores; `minCompatible` en el manifiesto de mainnet era 3.2.0 en ese momento.
 
-v3.2.1 se aplicó nodo por nodo y no tiene altura de actualización; fue reemplazada en mainnet por v3.2.2 (16 de octubre), v3.2.3 (20 de octubre) y v3.2.4 (23 de octubre).
+v3.2.1 se aplicó nodo por nodo y no tiene altura de actualización; fue reemplazada en mainnet por v3.2.2 (16 de octubre), v3.2.3 (20 de octubre), v3.2.4 (23 de octubre) y v3.2.5 (29 de octubre).
 
 ## v3.2.0 — Ventana de autorización EVM y correcciones de contabilidad
 

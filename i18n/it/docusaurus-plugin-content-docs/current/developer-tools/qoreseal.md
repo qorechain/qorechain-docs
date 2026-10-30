@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal è una libreria open source che cifra i dati verso gli account QoreChain con ML-KEM-1024 (FIPS 203). Un account pubblica on-chain la propria chiave pubblica ML-KEM-1024; chiunque può quindi cifrare un payload che quell'account, e ogni altro destinatario aggiunto dal mittente, può leggere. È pensata per gli sviluppatori di dApp che hanno bisogno di payload riservati (memo, fatture, documenti, offerte), per i revisori che hanno bisogno di un accesso in sola lettura e per chi gestisce gruppi privati e sidechain. Compone primitive standard e non ne implementa nessuna di proprie. Versione **0.1.0**, Apache-2.0, mantenuta dalla QoreChain Association.
 
-Stato al 27 ottobre 2026: la cifratura in sé funziona offline ovunque, senza rete e senza account. Cifrare verso un indirizzo letto dalla chain richiede il registro delle chiavi KEM, che è **live sulla testnet** (`qorechain-diana`) e **arriva sulla mainnet (`qorechain-vladi`) dopo l'aggiornamento v3.2.5**, senza una data. Il pacchetto è pubblicato per Rust, Go, Python, Swift, Kotlin/JVM e Android. Il pacchetto TypeScript `@qorechain/qoreseal` è **in arrivo** e non è ancora su npm. La costruzione è una bozza in attesa di una revisione esterna prima della 1.0.
+Stato al 30 ottobre 2026: la cifratura in sé funziona offline ovunque, senza rete e senza account. Cifrare verso un indirizzo letto dalla chain richiede il registro delle chiavi KEM, che è **live sulla testnet** (`qorechain-diana`) e, da quando la mainnet (`qorechain-vladi`) ha applicato la v3.2.5 il 29 ottobre 2026, **la sua route di lettura risponde anche sulla mainnet** (nessun account vi ha ancora pubblicato una chiave che questa pagina abbia potuto trovare). Il pacchetto è pubblicato per Rust, Go, Python, Swift, Kotlin/JVM e Android. Il pacchetto TypeScript `@qorechain/qoreseal` è **in arrivo** e non è ancora su npm. La costruzione è una bozza in attesa di una revisione esterna prima della 1.0.
 
 QoreSeal protegge il contenuto di un payload, nient'altro. Indirizzi, tempi delle transazioni, importi dei trasferimenti, dimensioni delle envelope e numero di destinatari restano pubblici on-chain. Non è un modo per rendere private le transazioni.
 
@@ -207,7 +207,7 @@ Ti serve un account `qorechain-diana` sotto il tuo controllo con un po' di QOR d
 5. Lato mittente: `sealToAddresses({ rest: "https://api-testnet.qore.host", chainId: "qorechain-diana", purpose: "note", recipients: [{ address, card }], plaintext })`. Senza una scheda, passa `mode: "mlkem"`.
 6. Lato destinatario: `open({ chainId: "qorechain-diana", purpose: "note", envelope, keys: sealKeys })`.
 
-Il flusso completo eseguibile è l'esempio del repository `examples/register-and-encrypt`. Rifiuta la mainnet finché quella rete non ha applicato la v3.2.5. Go offre lo stesso lato mittente con `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})`. Rust, Swift, Kotlin e Python sono offline: leggi tu stesso `/qorechain/pqc/v1/kem/{address}` e `/qorechain/pqc/v1/account/{address}`, verifica la scheda (`verify_recipient_card`), poi sigilla.
+Il flusso completo eseguibile è l'esempio del repository `examples/register-and-encrypt`. La mainnet ha applicato la v3.2.5 il 29 ottobre 2026; consulta il README dell'esempio per la release che rimuove il suo blocco sulla mainnet. Go offre lo stesso lato mittente con `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})`. Rust, Swift, Kotlin e Python sono offline: leggi tu stesso `/qorechain/pqc/v1/kem/{address}` e `/qorechain/pqc/v1/account/{address}`, verifica la scheda (`verify_recipient_card`), poi sigilla.
 
 ### API principale {#api}
 
@@ -243,17 +243,17 @@ Gli errori Python sollevano `QoreSealError.Failure` con un `code` stabile; gli e
 
 | | Mainnet `qorechain-vladi` | Testnet `qorechain-diana` |
 |---|---|---|
-| Registro delle chiavi KEM | dopo l'aggiornamento v3.2.5 (non ancora applicato, senza data) | live |
+| Registro delle chiavi KEM | live dalla v3.2.5 (applicata il 29 ottobre 2026, altezza 3.906.833); route di lettura verificata, vedi sotto | live |
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host` (chain ID 9801) | `https://evm-testnet.qore.host` (chain ID 9800) |
 
-Il 27 ottobre 2026 la query del registro sulla testnet ha risposto `{"found":false,"key":null}` per un account senza chiave, e la stessa query sulla mainnet ha risposto "Not Implemented".
+Il 30 ottobre 2026 la query del registro ha risposto `{"found":false,"key":null}` per un account senza chiave su entrambe le reti (il 27 ottobre la mainnet rispondeva ancora "Not Implemented"). Una ricerca nelle transazioni della mainnet il 30 ottobre non ha trovato ancora alcun `MsgRegisterKEMKey`, quindi la pubblicazione di una chiave sulla mainnet non è stata ancora provata end to end da questa pagina.
 
 - Sigillare e aprire offline, incluse le chiavi del revisore passate direttamente, i gruppi privati e i batch, non richiede rete né account.
 - Cifrare verso un indirizzo richiede che il destinatario abbia pubblicato una chiave ML-KEM-1024 nel registro e, per la modalità ibrida, una scheda del destinatario.
-- Pubblicare una chiave richiede un account con QOR di testnet (su mainnet, QOR dopo l'aggiornamento), una chiave ML-DSA-87 registrata e QoreSign per firmare la transazione in modo ibrido. La soglia minima della commissione è 0,1 uqor per gas. Ottieni QOR di testnet dal [Faucet](/dashboard/faucet).
-- Finché la mainnet non applica la v3.2.5, la query del registro sulla mainnet non è disponibile e la registrazione viene rifiutata (codice 250).
+- Pubblicare una chiave richiede un account con QOR di testnet (su mainnet, QOR), una chiave ML-DSA-87 registrata e QoreSign per firmare la transazione in modo ibrido. La soglia minima della commissione è 0,1 uqor per gas. Ottieni QOR di testnet dal [Faucet](/dashboard/faucet).
+- La registrazione sulla mainnet è accettata solo da una chain che dispone del registro; se compare un rifiuto con codice 250, il registro non è abilitato su quella chain.
 
 ## Dove è pubblicata {#where-published}
 
@@ -285,7 +285,7 @@ Sorgente: [github.com/qorechain/qoreseal](https://github.com/qorechain/qoreseal)
 - **Rimuovere o ruotare una chiave non cancella né ricifra nulla.** I dati sigillati per una vecchia chiave restano leggibili da chi la detiene; conserva i vecchi seed o indici.
 - **I membri rimossi dal gruppo** conservano le chiavi delle epoche a cui appartenevano. I nuovi membri leggono dall'epoca in cui entrano, a meno che le chiavi più vecchie non siano sigillate per loro.
 - **Chain id e purpose non sono nell'envelope;** il destinatario deve conoscerli.
-- **Registro su mainnet:** non disponibile finché la mainnet non applica la v3.2.5.
+- **Registro su mainnet:** la route di lettura è live dalla v3.2.5; al momento della verifica nessuna chiave era stata pubblicata sulla mainnet, e il namespace JSON-RPC EVM `qor_` non è esposto su `evm.qore.host` (usa la route REST).
 - **Pre-1.0, costruzione in attesa di revisione esterna.** Le versioni minori possono cambiare l'API. Leggi la specifica prima di farvi affidamento.
 - **Ancora nessun pacchetto npm** e nessuna wheel Python per Windows.
 

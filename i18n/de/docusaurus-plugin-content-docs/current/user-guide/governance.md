@@ -10,7 +10,7 @@ sidebar_position: 3
 Dieser Leitfaden erklärt, wie die On-Chain-Governance bei QoreChain funktioniert: wie Stimmen ausgezählt werden, wie man Vorschläge einreicht und wie man abstimmt.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live und seit dem 23. Oktober 2026 auf Release **v3.2.4**; das Testnet läuft mit **v3.2.6** (seit dem 27. Oktober 2026) — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live und seit dem 29. Oktober 2026 auf Release **v3.2.5** (v3.2.4 ab dem 23. Oktober); das Testnet läuft mit **v3.2.6** (seit dem 27. Oktober 2026) — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -119,7 +119,7 @@ Ein Vorschlag enthält null oder mehr Nachrichten, die ausgeführt werden, wenn 
 | **Parameter Change**    | Die `MsgUpdateParams`-Nachricht eines Moduls, gesendet vom Modulkonto der Governance. Sie ersetzt den gesamten Parametersatz dieses Moduls. |
 | **Software Upgrade**    | Eine `MsgSoftwareUpgrade`-Nachricht, die ein koordiniertes Chain-Upgrade zu einer bestimmten Blockhöhe plant. |
 | **Community Spend**     | Eine `MsgCommunityPoolSpend`-Nachricht, die Mittel aus dem Community-Pool an eine Empfängeradresse sendet. |
-| **Expedited**           | Setze `"expedited": true` für eine kürzere Abstimmungsphase mit höherer Einzahlung und höherem Annahme-Schwellenwert (siehe unten). |
+| **Expedited**           | Setze `"expedited": true` für eine kürzere Abstimmungsphase mit höherer Einzahlung und höherem Annahme-Schwellenwert (siehe unten). Seit v3.2.5 (beide Netzwerke) behält ein beschleunigter Vorschlag, der seine Auszählung nicht besteht und in einen regulären Vorschlag umgewandelt wird, die bereits abgegebenen Stimmen; vor v3.2.5 gingen diese Stimmen verloren. |
 
 ---
 
@@ -175,7 +175,7 @@ Wichtige Parameter sind unter anderem:
 
 ## Governance im Mainnet bisher {#mainnet-history}
 
-Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 13 wurden im Oktober 2026 im Mainnet angenommen, darunter Vorschlag 12 (eine weitere Freigabe, angenommen am 21. Oktober) und Vorschlag 13 (das Upgrade auf v3.2.4, angewendet auf Höhe 3.742.566 am 23. Oktober); Vorschlag 14 (ein koordiniertes Upgrade auf v3.2.5 auf Höhe 3.906.833) befand sich zum Zeitpunkt der Erstellung in seiner Abstimmungsphase; die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
+Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 14 wurden im Oktober 2026 im Mainnet angenommen, darunter Vorschlag 12 (eine weitere Freigabe, angenommen am 21. Oktober) und Vorschlag 13 (das Upgrade auf v3.2.4, angewendet auf Höhe 3.742.566 am 23. Oktober) und Vorschlag 14 (das Upgrade auf v3.2.5, angewendet auf Höhe 3.906.833 am 29. Oktober 2026); die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
 
 ---
 

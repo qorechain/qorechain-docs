@@ -75,11 +75,11 @@ const calldata = encodeCrossVmCalldata({
 
 `isCrossVmPrecompileActive(restBase)`, EVM parametresi `active_static_precompiles` değerini REST üzerinden okur ve yalnızca ön derlemenin adresi listelenmişse `active: true` yanıtını verir. Bu, tek güvenilir denetimdir ve zincir dışında yapılması gerekir: ön derleme hedefin ham yanıtını döndürür, dolayısıyla boş bir yanıt, etkin olmayan bir ön derlemeyi hiçbir şey döndürmeyen bir sözleşmeye yapılan gerçek bir çağrıdan ayırt edemez ve bir ön derlemenin etkin olsun olmasın bayt kodu yoktur. `active: true` bildirse bile, paket belgelerinde, zincir v3.2.3'ten itibaren bir çağrının yalnızca yönetişimin izin listesine aldığı hedeflere ulaştığı (VM'ler arası parametre `bridge_allowed_targets`, her girdi `<vm>:<contract>`) ve EVM'den EVM'e çağrının reddedildiği belirtilir.
 
-### Zincir v3.2.5: izin listesi, yanıt biçimi ve retler (şimdi testnet'te, mainnet'te yükseltmeden sonra) {#chain-v325}
+### Zincir v3.2.5: izin listesi, yanıt biçimi ve retler (her iki ağda) {#chain-v325}
 
-Zincir v3.2.5 köprünün davranışını değiştirir. Testnet onu çalıştırır; **mainnet (v3.2.4), yönetişim önerisi 14 uygulanana kadar çalıştırmaz** ve bu sayfanın başka yerlerinde ön derlemenin hedefin ham yanıtını döndürdüğünü söyleyen açıklamalar bugünkü mainnet'i anlatır.
+Zincir v3.2.5 köprünün davranışını değiştirir. Mainnet onu 29 Ekim 2026'dan beri (yönetişim önerisi 14, yükseklik 3,906,833), testnet ise 26 Ekim'den beri çalıştırır. Ön derleme iki ağda da etkin olmadığından, aşağıdaki yanıt biçimi ve ret biçimi sürümün davranışıdır ve canlı bir çağrıyla denenmemiştir; bu sayfanın başka yerlerinde ön derlemenin hedefin ham yanıtını döndürdüğünü söyleyen açıklamalar v3.2.5 öncesi sürümleri anlatır.
 
-* **Bir izin listesi rotası.** `GET /qorechain/crossvm/v1/params`, hedeflerin izin listesi dahil köprü parametrelerini sunar. Testnet'te izin listesi boştur (27 Ekim 2026'da kontrol edildi), yani henüz hiçbir hedefe izin verilmemiştir.
+* **Bir izin listesi rotası.** `GET /qorechain/crossvm/v1/params`, hedeflerin izin listesi dahil köprü parametrelerini sunar. Her iki ağda da izin listesi boştur (mainnet ve testnet 30 Ekim 2026'da kontrol edildi), yani henüz hiçbir hedefe izin verilmemiştir.
 * **Sabit bir yanıt biçimi.** Ön derleme `abi.encode(bytes)` döndürür; böylece bir yanıt her zaman en az 64 bayttır ve boş bir yanıt, eksik bir yanıttan ayırt edilebilir; onu `abi.decode(ret, (bytes))` ile çözün.
 * **Retler bir gerekçe taşır.** Köprü bir çağrıyı reddettiğinde bir sözleşmenin okuyup iletebileceği `Error(string)` ile geri döner (revert).
 * **Ön derleme hâlâ etkin değil.** `0x...0901`, her iki ağda da etkin ön derleme listesinde yoktur; bu yüzden bunların hiçbiri uçtan uca çalıştırılmamıştır.

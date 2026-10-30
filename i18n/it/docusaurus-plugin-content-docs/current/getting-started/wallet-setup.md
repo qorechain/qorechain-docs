@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain supporta diversi tipi di wallet nei suoi ambienti di esecuzione nativo, EVM e SVM. Scegli il wallet più adatto al tuo caso d'uso.
 
 :::note
-I valori riportati di seguito coprono sia la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026, release v3.2.4 dal 23 ottobre 2026) sia la testnet **`qorechain-diana`** (chain ID EVM **9800**, release v3.2.6 dal 27 ottobre 2026). Gli endpoint pubblici di entrambe le reti sono elencati in [Reti](/appendix/networks#public-endpoints).
+I valori riportati di seguito coprono sia la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026, release v3.2.5 dal 29 ottobre 2026) sia la testnet **`qorechain-diana`** (chain ID EVM **9800**, release v3.2.6 dal 27 ottobre 2026). Gli endpoint pubblici di entrambe le reti sono elencati in [Reti](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (consigliato) {#qorex}

@@ -159,7 +159,7 @@ const signBytes = hybridSignBytes(version, chainId, bodyWithoutPqcExt, authInfoB
 ## Nasıl erişilir {#how-to-access}
 
 * **Kütüphaneyi kullanmak için ağ, hesap veya anahtar gerekmez.** Çevrimdışı çalışır. Oluşturduğu bir anahtar çifti yalnızca bir anahtardır; QoreChain'de kullanmak için hesabın açık anahtarı bir kez kaydetmesi gerekir ([Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#pqc-key-registration) sayfasına bakın) ve bir Cosmos ray işlemi bundan sonra secp256k1 imzasını artı ML-DSA-87 imzasını (hibrit) gerektirir.
-* **Ağlar.** Sign-bytes yardımcıları ve vektörler, ana ağ `qorechain-vladi` (v3.2.4) ve test ağı `qorechain-diana` (v3.2.6) ile eşleşir. Uç noktalar için [Ağlar](/appendix/networks) sayfasına bakın.
+* **Ağlar.** Sign-bytes yardımcıları ve vektörler, ana ağ `qorechain-vladi` (v3.2.5) ve test ağı `qorechain-diana` (v3.2.6) ile eşleşir. Uç noktalar için [Ağlar](/appendix/networks) sayfasına bakın.
 * **Python, liboqs paylaşımlı kütüphanesini gerektirir.** `pip install qorechain-pqc`, eksik olduğunda liboqs'u ilk içe aktarmada derleyen `liboqs-python`'a bağlıdır; bunun için makinede `git`, CMake ve bir C derleyicisi gerekir. Kilitli ortamlarda liboqs'u sistem paket yöneticinizden kurun veya önceden derleyin. Python bağlaması anahtarları sistemin rastgele sayı üretecinden okur ve 0.2.3'te tohumlu anahtar üretimi yoktur.
 * **Go, Go 1.25 veya üstünü gerektirir** (CIRCL 1.6.5 veya üstüyle birlikte, 0.2.1'den beri geçerli bir gereksinim).
 * **Java**, JDK 21 ile çalıştırılmıştır. Java bağlamasındaki ML-DSA gizli anahtarı, diğer bağlamaların kullandığı 4.896 baytlık genişletilmiş anahtar değil, 32 baytlık FIPS 204 tohumudur; başka herhangi bir girdi reddedilir.

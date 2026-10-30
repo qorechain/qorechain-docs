@@ -66,7 +66,7 @@ No. `pqc.sign_bytes = 'auto'` la lee de la cadena, la vuelve a leer cada minuto 
 QORel no pudo leer los registros de actualizaciones de la cadena. Comprueba que el `rpc_addr` de la entrada de QoreChain responde y apunta a la red correcta (`qorechain-diana` en la testnet). QORel no firmará sin una versión conocida.
 
 **¿Qué multiplicador de gas debería usar?**
-`1.1` es el valor por defecto del ejemplo y mantiene tranquilo a `health-check`. En la testnet (v3.2.6) funciona un valor menor como `1.05`. Las compilaciones anteriores subestiman el gas simulado, así que usa `1.15` en un nodo que ejecute una. Consulta [Gas](/qorel/configuration#gas).
+`1.1` es el valor por defecto del ejemplo y mantiene tranquilo a `health-check`. En la cadena v3.2.5 o posterior (ahora ambas redes; medido en la testnet con v3.2.6) funciona un valor menor como `1.05`. Las compilaciones anteriores subestiman el gas simulado, así que usa `1.15` en un nodo que ejecute una. Consulta [Gas](/qorel/configuration#gas).
 
 **`health-check` avisa sobre el multiplicador de gas.**
 Es inferior a 1.1 en una entrada de QoreChain. Es solo un aviso; el relé funciona. Súbelo si ves fallos por falta de gas.

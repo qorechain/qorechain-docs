@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.4** (applied by governance proposal 13 at height 3,742,566 on 23 October 2026; the previous release, v3.2.3, was applied at height 3,662,051 on 20 October 2026). Governance proposal 14 would apply v3.2.5 on mainnet at height 3,906,833 (in its voting period at the time of writing, 27 October 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) runs **v3.2.6** (applied at height 8,970,638 on 27 October 2026); v3.2.4 reached it at height 8,337,253 (19 October 2026) and v3.2.5 at height 8,890,800 (26 October 2026).
+Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.5** (applied by governance proposal 14 at height 3,906,833 on 29 October 2026; the previous release, v3.2.4, was applied at height 3,742,566 on 23 October 2026 and v3.2.3 at height 3,662,051 on 20 October 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) runs **v3.2.6** (applied at height 8,970,638 on 27 October 2026); v3.2.4 reached it at height 8,337,253 (19 October 2026) and v3.2.5 at height 8,890,800 (26 October 2026).
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet. The release manifest ([Connecting to Mainnet](/getting-started/connecting-to-mainnet)) is promoted separately from tagging and can lag a tag by some time — check it directly for what a fresh install actually downloads.
@@ -15,7 +15,7 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ## Mainnet governance timeline {#governance-timeline}
 
-Proposals that changed the running mainnet since 14 October 2026. All eight are expedited proposals (one-day voting period); proposals 7 to 13 passed with all voting bonded stake in favour, and proposal 14 is still being voted on at the time of writing. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
+Proposals that changed the running mainnet since 14 October 2026. All eight are expedited proposals (one-day voting period) and all eight passed with all voting bonded stake in favour. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
 
 | Proposal | What it does | Voting | Outcome |
 | --- | --- | --- | --- |
@@ -26,15 +26,15 @@ Proposals that changed the running mainnet since 14 October 2026. All eight are 
 | 11 | Applies v3.2.3 at height 3,662,051 | 18–19 October 2026 (ends 19:15 UTC) | Passed; applied 20 October 2026 |
 | 12 | Releases the corrected stranded staker share (3,807,496.785528 QOR, recomputed at the v3.2.3 height) to the foundation | 20 October 2026 20:01 UTC to 21 October 2026 20:01 UTC | Passed |
 | 13 | Coordinated upgrade to v3.2.4 at height 3,742,566: optional time-locked staking, light-node reward bound counted from registration, a possession flag for post-quantum keys, proof of possession for bridge validators, the RDK challenge window in block time, and node-local hardening | 20 October 2026 21:18 UTC to 21 October 2026 21:18 UTC | Passed; applied 23 October 2026 at height 3,742,566 |
-| 14 | Coordinated upgrade to v3.2.5 (build 2) at height 3,906,833 (nodes stay on v3.2.4 until that height, halt there and restart on v3.2.5; transaction signing is unchanged) | 27 October 2026 00:29 UTC to 28 October 2026 00:29 UTC | In voting at the time of writing. The content of v3.2.5 is documented on the day mainnet applies it |
+| 14 | Coordinated upgrade to v3.2.5 (build 2) at height 3,906,833 (nodes stayed on v3.2.4 until that height, halted there and restarted on v3.2.5; transaction signing is unchanged). The content is listed under [v3.2.5](#v325) | 27 October 2026 00:29 UTC to 28 October 2026 00:29 UTC | Passed; applied 29 October 2026 at height 3,906,833 |
 
 See [Tokenomics](/architecture/tokenomics#stranded-and-reserve) for what the releases mean and [Governance](/user-guide/governance) for how to vote.
 
 ---
 
-## Testnet releases v3.2.5 and v3.2.6 (testnet only so far) {#testnet-v326}
+## Testnet release v3.2.6 (testnet only so far) {#testnet-v326}
 
-The testnet `qorechain-diana` takes each release a few days before mainnet. Mainnet is unchanged by anything in this section: it runs v3.2.4 until a governance upgrade says otherwise.
+The testnet `qorechain-diana` takes each release a few days before mainnet. Mainnet is unchanged by anything in this section: it runs v3.2.5 until a governance upgrade says otherwise. Everything in v3.2.5 is already live on both networks (see [v3.2.5](#v325) below).
 
 ### v3.2.6 — Query Routes, Live PRISM Values and Test Tokens (testnet)
 
@@ -50,15 +50,25 @@ The testnet `qorechain-diana` takes each release a few days before mainnet. Main
 * **08-wasm light clients (testnet only).** The 08-wasm light-client messages (store, migrate and remove a client binary) are added, authority-only. The allowed client types still hold only the standard client, so no wasm light client can be created until governance adds `08-wasm`.
 * **Fest test tokens.** Three ERC-20 contracts deployed for the builder fest were registered by testnet governance (proposal 26) as bank denominations: fUSD (6 decimals), fETH (18) and fBTC (8). They are testnet-only test tokens with no value. See [Faucet](/dashboard/faucet#fest-tokens).
 
-### v3.2.5 (testnet)
-
-**Release focus:** Applied on the testnet by testnet governance proposal 15 at height **8,890,800** (26 October 2026). On mainnet, governance proposal 14 would apply v3.2.5 (build 2) at height 3,906,833 and was in its voting period at the time of writing. The features of v3.2.5 are documented in this history on the day mainnet applies it.
-
 ---
 
-## v3.2.4 — Light-Node Registration Window and Optional Time-Locked Staking (mainnet)
+## v3.2.5: Native Key Registry, Governed Cross-VM and Contracts, Open RDK Challenges (mainnet) {#v325}
 
-**Release focus:** The current mainnet release. It ran on the testnet `qorechain-diana` first: testnet governance proposal 13 applied it at height **8,337,253** (19 October 2026). On mainnet, governance proposal 13 applied it at height **3,742,566** on 23 October 2026: nodes stayed on v3.2.3 until that block, halted there and restarted on v3.2.4, and transaction signing is unchanged. The mainnet manifest sets `minCompatible` to 3.2.4, so a node joining mainnet needs v3.2.4 (the testnet has since moved on to v3.2.6). Every feature below is live on mainnet and on the testnet.
+**Release focus:** The current mainnet release. Governance proposal 14 applied it on mainnet at height **3,906,833** on 29 October 2026 (about 16:04 UTC): nodes stayed on v3.2.4 until that block, halted there and restarted on v3.2.5, and transaction signing is unchanged. The testnet `qorechain-diana` took it first, by testnet governance proposal 15 at height 8,890,800 (26 October 2026); the testnet has since moved on to v3.2.6. The mainnet manifest sets `minCompatible` to 3.2.5, so a node joining mainnet needs v3.2.5. The upgrade enables its protocol features at the upgrade height (83 are enabled on mainnet, listed at `GET /qorechain/pqc/v1/protocol_features`). **No EVM precompile is activated by this upgrade**: each one needs its own governance vote, and the list of active static precompiles on mainnet is still empty.
+
+* **Native ML-KEM key registry.** An account can register a post-quantum encryption key (ML-KEM) on the chain so that others can look it up by address.
+* **Abstract accounts under governance.** Governance controls the abstract-account configuration, and spending rules are checked more strictly: a rule that bounds nothing is refused, and an empty or all-zero limit entry no longer removes the real limits. Smart accounts are still switched off on mainnet (`enabled` is `false`).
+* **Cross-VM calls under governance.** The allowlist of contracts the cross-VM bridge may call is managed by governance and served at `GET /qorechain/crossvm/v1/params` (before v3.2.5 mainnet answered 501). The cross-VM call has a canonical reply format (`abi.encode(bytes)`, with `Error(string)` on refusal), runs atomically with bounded execution, and finished entries are pruned. The allowlist is empty, the cross-VM precompile `0x...0901` is not active, and `MsgCrossVMCall` is still switched off by the circuit breaker, so nothing can call across VMs on mainnet yet.
+* **Governed CosmWasm deployment.** Contract upload stays governance-only; instantiation of approved code is the intended path. On mainnet, instantiation is still switched off by the circuit breaker and the default instantiate permission is still `Nobody`.
+* **RDK settlement.** Rollup batches settle in order, any account can resolve a challenge (the chain checks the fraud proof itself), withdrawals are bound into fraud proofs, and the RDK parameters are governable and served at `GET /qorechain/rdk/v1/params`. See [chain v3.2.5 behaviour for rollups](/rollups/overview#v325). No rollup has been created on mainnet yet.
+* **Expedited proposals keep their votes.** An expedited proposal that fails its short tally and converts to a regular proposal keeps the votes already cast.
+* **EVM precompile rules.** Precompile calls are scoped by the EVM authorisation window, and the circuit breaker applies to them.
+* **Post-quantum verification charged once per signer**, and **exact simulation gas**: the gas a transaction simulation reports now matches what the transaction uses.
+* **Hardening** from two security audits, covering the Solana-compatible (SVM) lane, cross-VM, rollups and fee pricing: fees paid in other tokens are priced from the right kind of pool, the burn on a failed transaction uses the converted fee, and SVM deployments, execution and compute are bounded.
+
+## v3.2.4 — Light-Node Registration Window and Optional Time-Locked Staking
+
+**Release focus:** The mainnet release from 23 October to 29 October 2026. It ran on the testnet `qorechain-diana` first: testnet governance proposal 13 applied it at height **8,337,253** (19 October 2026). On mainnet, governance proposal 13 applied it at height **3,742,566** on 23 October 2026: nodes stayed on v3.2.3 until that block, halted there and restarted on v3.2.4, and transaction signing is unchanged. Every feature below is live on mainnet and on the testnet.
 
 * **Light-node registration window.** A light node's reward bound starts at the later of the previous settlement and the node's own registration, so a new registration does not collect an accumulated amount from before it joined.
 * **Optional time-locked staking (`x/stakingtier`, a new module).** A delegator may lock part of a delegation for 3, 6 or 12 months; the locked part cannot be undelegated or redelegated, and an early unlock is allowed with a penalty that is burned. The minimum lock is 10 QOR. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking).
@@ -98,7 +108,7 @@ The testnet `qorechain-diana` takes each release a few days before mainnet. Main
 * Updates the consensus-engine dependency; keep the system clock NTP-synchronised (a skew of more than 60 seconds stops the node).
 * Recommended for every operator; `minCompatible` in the mainnet manifest was 3.2.0 at the time.
 
-v3.2.1 was applied node by node and has no upgrade height; it was superseded on mainnet by v3.2.2 (16 October), v3.2.3 (20 October) and v3.2.4 (23 October).
+v3.2.1 was applied node by node and has no upgrade height; it was superseded on mainnet by v3.2.2 (16 October), v3.2.3 (20 October), v3.2.4 (23 October) and v3.2.5 (29 October).
 
 ## v3.2.0 — EVM Authorisation Window and Accounting Fixes
 

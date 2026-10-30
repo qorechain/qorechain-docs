@@ -152,7 +152,7 @@ qorel keys pqc-status --chain qorechain-diana
 
 QoreChain charges the whole fee (gas limit times price) with no refund, so keep the multiplier tight.
 
-- On the testnet (v3.2.6), simulation matches delivery to within a few hundred gas. The local end-to-end test on a build of that line passes with `1.05` (every relay transaction used 95% of its limit).
+- On chain v3.2.5 and later (the measurement below was taken on the testnet at v3.2.6; mainnet applied v3.2.5 on 29 October 2026 but QORel has not relayed there), simulation matches delivery to within a few hundred gas. The local end-to-end test on a build of that line passes with `1.05` (every relay transaction used 95% of its limit).
 - Earlier builds under-report by about 8 to 10% (measured on a pre-release devnet, where `1.15` left 4 to 7% headroom). Use `1.15` until you have measured your own nodes.
 - `health-check` reports any multiplier below `1.1` on a QoreChain entry as a possible misconfiguration. That is a warning and relaying still works. `1.1`, the value in the example config, keeps it clean for about 5% more fee than `1.05`.
 - The one-time `keys register-pqc` transaction uses at least `1.1` whatever the config says.

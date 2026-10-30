@@ -23,7 +23,7 @@ sidebar_position: 7
 | 브리지 작업 | 0 | 0 |
 | IBC 채널 / 클라이언트 | 0 / 0 | 1 / 1 (Cosmos Hub 테스트넷으로 향하는 테스트 채널) |
 
-(2026년 10월 27일에 메인넷(v3.2.4)과 테스트넷(v3.2.6)을 기준으로 확인했습니다. 라이브 값은 `qorechaind query bridge chains` 및 `qorechaind query bridge validators`로 읽거나, REST의 `/qorechain/bridge/v1/chains` 및 `/qorechain/bridge/v1/validators`로 읽을 수 있습니다.) 모듈 구성은 두 네트워크에서 동일합니다. `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400, `large_transfer_threshold` 100,000 QOR(`100000000000` uqor)입니다. 모듈이 사용하게 될 IBC 스택은 ibc-go v10.7(v3.2.2부터)이지만, 메인넷에는 생성된 클라이언트나 채널이 없습니다(테스트넷에는 테스트 클라이언트와 채널이 하나 있습니다. 위를 참고하십시오).
+(2026년 10월 27일에 메인넷(v3.2.4. 2026년 10월 29일부터 v3.2.5)과 테스트넷(v3.2.6)을 기준으로 확인했습니다. 라이브 값은 `qorechaind query bridge chains` 및 `qorechaind query bridge validators`로 읽거나, REST의 `/qorechain/bridge/v1/chains` 및 `/qorechain/bridge/v1/validators`로 읽을 수 있습니다.) 모듈 구성은 두 네트워크에서 동일합니다. `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400, `large_transfer_threshold` 100,000 QOR(`100000000000` uqor)입니다. 모듈이 사용하게 될 IBC 스택은 ibc-go v10.7(v3.2.2부터)이지만, 메인넷에는 생성된 클라이언트나 채널이 없습니다(테스트넷에는 테스트 클라이언트와 채널이 하나 있습니다. 위를 참고하십시오).
 
 ## 연결 개요
 

@@ -66,7 +66,7 @@ No. `pqc.sign_bytes = 'auto'` reads it from the chain, re-reads it every minute 
 QORel could not read the chain's upgrade records. Check that `rpc_addr` for the QoreChain entry answers and points at the right network (`qorechain-diana` on the testnet). QORel will not sign without a known version.
 
 **Which gas multiplier should I use?**
-`1.1` is the example default and keeps `health-check` quiet. On the testnet (v3.2.6) a lower value such as `1.05` works. Earlier builds under-report simulated gas, so use `1.15` on a node that runs one. See [Gas](/qorel/configuration#gas).
+`1.1` is the example default and keeps `health-check` quiet. On chain v3.2.5 or later (both networks now; measured on the testnet at v3.2.6) a lower value such as `1.05` works. Earlier builds under-report simulated gas, so use `1.15` on a node that runs one. See [Gas](/qorel/configuration#gas).
 
 **`health-check` warns about the gas multiplier.**
 It is below 1.1 on a QoreChain entry. It is a warning only; relaying works. Raise it if you see out-of-gas failures.

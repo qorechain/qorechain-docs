@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain admite múltiples tipos de billeteras en sus entornos de ejecución nativo, EVM y SVM. Elige la billetera que se ajuste a tu caso de uso.
 
 :::note
-Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026, versión v3.2.4 desde el 23 de octubre de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**, versión v3.2.6 desde el 27 de octubre de 2026). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
+Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026, versión v3.2.5 desde el 29 de octubre de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**, versión v3.2.6 desde el 27 de octubre de 2026). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recomendada) {#qorex}

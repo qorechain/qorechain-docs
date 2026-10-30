@@ -10,7 +10,7 @@ sidebar_position: 4
 Bu sayfa, QOR sahiplerinin tokenlarını gelişmiş yönetişim gücü için kilitleyeceği ve uzun vadeli katılımcıları ödüllendiren bir PvP rebase modeline sahip, **tasarlanmış** xQORE yönetişim stake etme mekanizmasını açıklar. **xQORE bugün hiçbir ağda kullanılamaz**; bu sayfadaki hiçbir şey henüz yapabileceğiniz bir şey değildir.
 
 :::warning Henüz canlı değil
-xQORE genesis'te etkindir ancak ana ağda (`qorechain-vladi`, düğüm sürümü **v3.2.4**) ve test ağında (`qorechain-diana`, düğüm sürümü **v3.2.6**) **henüz kullanılamaz**; hiçbir sürüm bunu değiştirmez (her ikisinde 23 Ekim 2026'da ve test ağı için 27 Ekim 2026'da yeniden kontrol edildi). Düğümde bunun için işlem, sorgu, CLI veya RPC giriş noktası yoktur (`/qorechain/xqore/v1/params` REST rotası her iki ağda da `Not Implemented` döndürür); bu yüzden `tx xqore lock` / `unlock` yoktur, `query xqore ...` yoktur, xQORE REST rotası yoktur ve `qor_getXQOREPosition` yöntemi yoktur, hiçbir QOR kilitlenemez ve kimse xQORE tutmaz. Gelecekteki bir zincir sürümü için planlanmıştır; bu sürüm aynı zamanda çıkış cezalarının nasıl yeniden dağıtıldığını da değiştirecek, böylece kaç sahip olursa olsun kilit açma ucuz kalacaktır. Sürüm çıktığında burada belirtilecektir.
+xQORE genesis'te etkindir ancak ana ağda (`qorechain-vladi`, düğüm sürümü **v3.2.5**) ve test ağında (`qorechain-diana`, düğüm sürümü **v3.2.6**) **henüz kullanılamaz**; hiçbir sürüm bunu değiştirmez (her ikisinde 23 Ekim 2026'da, test ağı için 27 Ekim 2026'da ve v3.2.5 sonrasında ana ağ için 30 Ekim 2026'da yeniden kontrol edildi). Düğümde bunun için işlem, sorgu, CLI veya RPC giriş noktası yoktur (`/qorechain/xqore/v1/params` REST rotası her iki ağda da `Not Implemented` döndürür); bu yüzden `tx xqore lock` / `unlock` yoktur, `query xqore ...` yoktur, xQORE REST rotası yoktur ve `qor_getXQOREPosition` yöntemi yoktur, hiçbir QOR kilitlenemez ve kimse xQORE tutmaz. Gelecekteki bir zincir sürümü için planlanmıştır; bu sürüm aynı zamanda çıkış cezalarının nasıl yeniden dağıtıldığını da değiştirecek, böylece kaç sahip olursa olsun kilit açma ucuz kalacaktır. Sürüm çıktığında burada belirtilecektir.
 :::
 
 ---
@@ -54,7 +54,7 @@ Tasarıma göre cezalar **yakılmaz** (`penalty_burn_rate` değeri `0`'dır): ce
 
 ## Zamana kilitli stake etme farklı bir özelliktir (v3.2.4) {#staking-tiers}
 
-19 Ekim 2026'dan beri testnet'te, 23 Ekim 2026'dan beri mainnet'te (yükseklik 3.742.566, yönetişim önerisi 13) çalışan **v3.2.4** sürümü, **isteğe bağlı zamana kilitli stake etme** için ayrı bir modül olan `x/stakingtier`'ı ekler. Bu xQORE değildir: xQORE basmaz, oy gücünü değiştirmez ve yukarıdaki xQORE parametrelerine dokunmaz. Özetle:
+19 Ekim 2026'dan beri testnet'te, 23 Ekim 2026'dan beri mainnet'te (yükseklik 3.742.566, yönetişim önerisi 13; ana ağ 29 Ekim 2026'dan beri v3.2.5 çalıştırıyor) çalışan **v3.2.4** sürümü, **isteğe bağlı zamana kilitli stake etme** için ayrı bir modül olan `x/stakingtier`'ı ekler. Bu xQORE değildir: xQORE basmaz, oy gücünü değiştirmez ve yukarıdaki xQORE parametrelerine dokunmaz. Özetle:
 
 * Bir delegatör, bir validatöre yaptığı delegasyonu seçilen bir süre için kilitler (modül 3, 6 ve 12 ay sunar). Kilit sürerken, kilitli tutar hiçbir mesaj yolu üzerinden (bir işlem, authz, bir sözleşme veya yönetişim) delegasyondan çıkarılamaz veya yeniden delege edilemez.
 * Kilitlerin asgari bir boyutu ve bir delegatörün tutabileceği sayıya bir sınır vardır; bunları `GET /qorechain/stakingtier/v1/params` ile okuyun.

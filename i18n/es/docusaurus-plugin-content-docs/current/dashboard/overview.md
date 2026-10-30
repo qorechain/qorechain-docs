@@ -59,7 +59,7 @@ La cabecera muestra la red en la que estás y te permite cambiar. La elección s
 
 | Red | Chain ID | Cuándo usarla |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Red en vivo (en funcionamiento desde el 7 de junio de 2026, con la versión de cadena v3.2.4 desde el 23 de octubre de 2026) para valor real. No custodio: conectas tu propio monedero. |
+| **Mainnet** | `qorechain-vladi` | Red en vivo (en funcionamiento desde el 7 de junio de 2026, con la versión de cadena v3.2.5 desde el 29 de octubre de 2026) para valor real. No custodio: conectas tu propio monedero. |
 | **Testnet** | `qorechain-diana` | Entorno gratuito (con la versión de cadena v3.2.6 desde el 27 de octubre de 2026) con un monedero de prueba gestionado por el Panel y el [Faucet](/dashboard/faucet). |
 
 El token nativo es **QOR** (denominación base `uqor`, 1 QOR = 10^6 uqor). Si eres nuevo, empieza en testnet, reclama tokens del Faucet y prueba una primera transferencia antes de pasar a mainnet.

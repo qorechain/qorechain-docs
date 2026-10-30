@@ -20,8 +20,8 @@ All amounts use QoreChain's native units. The staking and fee token is **QOR**, 
 Commands below use `qorechaind`. Append the usual transaction flags (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) for your environment — for example `--chain-id qorechain-vladi --gas 400000 --fees 40000uqor` against mainnet (the network fee floor is 0.1 uqor per unit of gas). Every `tx amm` command is a Cosmos-lane transaction, so it needs the hybrid post-quantum signature: add `--generate-only > tx.json`, then run `qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>` (see [First Transaction](/getting-started/first-transaction#send-qor)).
 :::
 
-:::caution No pools exist yet
-The AMM module is live on mainnet (v3.2.4) and the testnet (v3.2.6), but **no pools have been created yet** (checked 27 October 2026: `GET /qorechain/amm/v1/pools` returns an empty list on both), and the denoms in the examples below (`uusdc`, `uusdt`) are illustrative: no such assets exist on the networks today. Until a pool exists, every swap or add-liquidity command fails with a pool-not-found error.
+:::caution No pools exist on mainnet yet
+The AMM module is live on mainnet (v3.2.5) and the testnet (v3.2.6). **No pool has been created on mainnet yet** (checked 30 October 2026: `GET /qorechain/amm/v1/pools` returns an empty list there). The testnet has one pool (id 1, `uqor` against a Fest test token; testnet only, no value). The denoms in the examples below (`uusdc`, `uusdt`) are illustrative: no such assets exist on the networks today. Until a pool exists, every swap or add-liquidity command fails with a pool-not-found error.
 :::
 
 ## Module parameters {#parameters}

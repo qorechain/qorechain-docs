@@ -158,7 +158,7 @@ Quelle: [github.com/qorechain/qorechain-mcp](https://github.com/qorechain/qorech
 - **Nur lesend.** Kein Befehl signiert oder sendet. `prepare-transfer` baut nur ein `MsgSend` von uqor auf der nativen Lane; es bereitet keine EVM-, SVM-, Staking-, Governance- oder Contract-Transaktionen vor. `simulate` und `estimate-fee` akzeptieren jede kodierte Transaktion der nativen Lane.
 - **Kein Faucet und keine Token-Inhaberliste.** Für diese beiden MCP-Tools gibt es keinen CLI-Befehl. Test-QOR kommt vom [Faucet](/dashboard/faucet).
 - **Die Testnet-Historie wird bereinigt.** Ein alter Testnet-Block oder eine alte Transaktion liefert `NOT_FOUND` mit der niedrigsten verfügbaren Höhe; Mainnet lieferte bei der Prüfung ab Höhe 1.
-- **Gaswerte unterscheiden sich je Netzwerk.** Die Simulation im Testnet enthält bereits die Kosten der ML-DSA-87-Verifikation; die Simulation im Mainnet nicht, daher trägt das vorgeschlagene Gas-Limit einen Spielraum.
+- **Gaswerte folgen der Chain-Version.** Beide Netzwerke haben v3.2.5 angewendet, daher enthält die Simulation die Kosten der ML-DSA-87-Verifikation; gegenüber einem älteren Node trägt das vorgeschlagene Gas-Limit einen Spielraum.
 - **Ausgabelimits.** Höchstens 100 Transaktions-Hashes pro Block, 50 Nachrichten pro Transaktion, 100 Salden pro Konto, 200 Validatoren pro Aufruf. Jede Anfrage hat ein Standard-Timeout von 10 Sekunden, ein Antwortlimit von 4 MiB und keine Wiederholungen.
 - **Geheimnisse werden abgelehnt.** Eingaben, die wie eine Wiederherstellungsphrase oder ein nackter Private Key aussehen, werden mit `INVALID_INPUT` abgewiesen. Legen Sie keine in einer Kommandozeile ab: Die Shell-Historie behält sie.
 - **EVM-Post-Quanten-Precompiles** `0x...0A01` und `0x...0A02` sind nur im Testnet aktiv.

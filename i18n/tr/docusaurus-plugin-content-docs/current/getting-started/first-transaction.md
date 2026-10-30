@@ -10,7 +10,7 @@ sidebar_position: 5
 Bu kılavuz, QOR token gönderme, işlemleri sorgulama ve QoreChain ile yerel, EVM ve SVM arayüzleri üzerinden etkileşim kurma adımlarını anlatır.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve 23 Ekim 2026'dan beri v3.2.4 sürümünü çalıştırır (test ağı 27 Ekim 2026'dan beri v3.2.6 çalıştırır) — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ zincir kimliğini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve 29 Ekim 2026'dan beri v3.2.5 sürümünü çalıştırır (test ağı 27 Ekim 2026'dan beri v3.2.6 çalıştırır) — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ zincir kimliğini ve uç noktalarını kullanın.
 :::
 
 ## Bakiyenizi Kontrol Etme

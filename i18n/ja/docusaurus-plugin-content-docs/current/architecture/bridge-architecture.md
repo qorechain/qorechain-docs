@@ -23,7 +23,7 @@ sidebar_position: 7
 | ブリッジ操作 | 0 | 0 |
 | IBC チャネル / クライアント | 0 / 0 | 1 / 1(Cosmos Hub テストネットへのテスト用チャネル) |
 
-（2026 年 10 月 27 日に、メインネット（v3.2.4）とテストネット（v3.2.6）で確認。ライブの値は `qorechaind query bridge chains` と `qorechaind query bridge validators` で、または REST の `/qorechain/bridge/v1/chains` と `/qorechain/bridge/v1/validators` で読み取ってください。）モジュールの構成は両ネットワークで同一です：`min_validators` 10、`attestation_threshold` 7、`challenge_period_secs` 86,400、`large_transfer_threshold` 100,000 QOR（`100000000000` uqor）。モジュールが使用することになる IBC スタックは ibc-go v10.7（v3.2.2 以降）ですが、メインネットではクライアントもチャネルも作成されていません（テストネットにはテスト用のクライアントとチャネルが 1 つずつあります。上記を参照）。
+（2026 年 10 月 27 日に、メインネット（v3.2.4。2026 年 10 月 29 日から v3.2.5）とテストネット（v3.2.6）で確認。ライブの値は `qorechaind query bridge chains` と `qorechaind query bridge validators` で、または REST の `/qorechain/bridge/v1/chains` と `/qorechain/bridge/v1/validators` で読み取ってください。）モジュールの構成は両ネットワークで同一です：`min_validators` 10、`attestation_threshold` 7、`challenge_period_secs` 86,400、`large_transfer_threshold` 100,000 QOR（`100000000000` uqor）。モジュールが使用することになる IBC スタックは ibc-go v10.7（v3.2.2 以降）ですが、メインネットではクライアントもチャネルも作成されていません（テストネットにはテスト用のクライアントとチャネルが 1 つずつあります。上記を参照）。
 
 ## 接続の概要
 

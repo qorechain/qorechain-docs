@@ -23,7 +23,7 @@ Il modulo bridge è distribuito su mainnet e testnet, ma **nessuna rotta del bri
 | Operazioni del bridge | 0 | 0 |
 | Canali / client IBC | 0 / 0 | 1 / 1 (un canale di test verso la testnet del Cosmos Hub) |
 
-(Verificato il 27 ottobre 2026 su mainnet (v3.2.4) e testnet (v3.2.6). Leggete i valori live con `qorechaind query bridge chains` e `qorechaind query bridge validators`, oppure tramite REST su `/qorechain/bridge/v1/chains` e `/qorechain/bridge/v1/validators`.) La configurazione del modulo è la stessa su entrambe le reti: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 e `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Lo stack IBC che il modulo utilizzerebbe è ibc-go v10.7 (dalla v3.2.2), ma non è stato creato alcun client né canale sulla mainnet (la testnet ha un client e un canale di test, vedi sopra).
+(Verificato il 27 ottobre 2026 su mainnet (v3.2.4; v3.2.5 dal 29 ottobre 2026) e testnet (v3.2.6). Leggete i valori live con `qorechaind query bridge chains` e `qorechaind query bridge validators`, oppure tramite REST su `/qorechain/bridge/v1/chains` e `/qorechain/bridge/v1/validators`.) La configurazione del modulo è la stessa su entrambe le reti: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 e `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Lo stack IBC che il modulo utilizzerebbe è ibc-go v10.7 (dalla v3.2.2), ma non è stato creato alcun client né canale sulla mainnet (la testnet ha un client e un canale di test, vedi sopra).
 
 ## Panoramica delle Connessioni
 

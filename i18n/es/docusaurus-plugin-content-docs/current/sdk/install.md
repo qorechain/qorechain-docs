@@ -41,7 +41,7 @@ híbridos aceptan una opción `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`); `
 consulta a la red y por tanto necesita el endpoint REST (`rest`) en
 `qorechain-vladi` / `qorechain-diana`: lanza un error en lugar de adivinar. Consulta
 [¿Qué forma de sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-La forma no cambió en la v3.2.3 ni en la v3.2.4 de la cadena (v3.2.4 se ejecuta en la testnet desde el 19 de octubre de 2026 y en la mainnet desde el 23 de octubre de 2026): `"auto"`
+La forma no cambió en la v3.2.3 ni en la v3.2.4 de la cadena (v3.2.4 se ejecuta en la testnet desde el 19 de octubre de 2026 y en la mainnet desde el 23 de octubre de 2026; la v3.2.5 no cambió nada aquí y se ejecuta en la mainnet desde el 29 de octubre de 2026): `"auto"`
 se resuelve en v2 en ambas redes, porque ambas aplicaron la actualización que cambió a esa forma.
 :::
 
@@ -53,10 +53,8 @@ altura 8,337,253 el 19 de octubre). El formato de firma, las direcciones, los
 decimales, los memos y las comisiones no cambiaron, y una transacción construida con
 la 0.9.0 sigue siendo válida. La versión se comprobó en todos los lenguajes con
 transacciones reales en la testnet. No tiene constructores para nada introducido
-después de la v3.2.4. La testnet ya pasó a la v3.2.6 (la v3.2.5 y la v3.2.6 se
-aplicaron allí el 26 y el 27 de octubre de 2026); la propuesta de gobernanza 14 de la
-mainnet aplicaría la v3.2.5 en la altura 3,906,833 en el momento de escribir esto, y
-lo que añade esa versión se documenta cuando la mainnet la aplique. Lo nuevo en la
+después de la v3.2.4. La mainnet ejecuta la v3.2.5 desde el 29 de octubre de 2026 (altura 3,906,833, propuesta de gobernanza 14) y la 0.10.0 sigue funcionando allí porque el formato de firma no cambió; las novedades de la v3.2.5 todavía no tienen constructor en el SDK. La testnet ya pasó a la v3.2.6 (la v3.2.5 y la v3.2.6 se
+aplicaron allí el 26 y el 27 de octubre de 2026). Lo nuevo en la
 0.10.0:
 
 | Área | En la 0.10.0 |
@@ -76,7 +74,7 @@ depende de `@qorechain/sdk` `^0.10.0`, y las plantillas del generador también).
 ## Qué añadió la 0.9.0 {#whats-new-090}
 
 El SDK 0.9.0 fue la versión de cliente para la cadena **v3.2.2** y **v3.2.3** (mainnet
-las aplicó en las alturas 3,556,788 y 3,662,051; la mainnet ejecuta la v3.2.4 desde el 23 de octubre de 2026 en la altura 3,742,566, y la testnet ejecuta la v3.2.4 o posterior desde el 19 de octubre de 2026). El
+las aplicó en las alturas 3,556,788 y 3,662,051; la mainnet ejecutó la v3.2.4 desde el 23 de octubre de 2026 (altura 3,742,566) y ejecuta la v3.2.5 desde el 29 de octubre de 2026, y la testnet ejecuta la v3.2.4 o posterior desde el 19 de octubre de 2026). El
 formato de firma, las direcciones, los decimales, los memos y las comisiones no
 cambiaron, así que la forma de sign-bytes híbridos v2 que firman la 0.8.1 y las
 posteriores sigue siendo la correcta. Lo nuevo:

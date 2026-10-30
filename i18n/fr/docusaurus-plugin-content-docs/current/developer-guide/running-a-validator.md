@@ -10,7 +10,7 @@ sidebar_position: 9
 Ce guide explique comment créer un validateur sur le réseau QoreChain, comprendre la conception de la classification des pools, enregistrer une clé PQC (signatures hybrides ML-DSA-87, FIPS 204), et surveiller votre nœud.
 
 :::note
-Ce guide cible le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026, qui exécute la version de nœud **v3.2.4** (appliquée par la proposition de gouvernance 13 à la hauteur 3 742 566 le 23 octobre 2026, après la v3.2.3 à la hauteur 3 662 051 le 20 octobre 2026). Un validateur doit exécuter le binaire v3.2.4 au moment de la rédaction ; la proposition de gouvernance 14 du mainnet appliquerait la v3.2.5 à la hauteur 3 906 833, et le manifeste indique alors le binaire à installer (voir [Exécuter un nœud : mises à niveau](/developer-guide/running-a-node#upgrades)). Le testnet **`qorechain-diana`** (EVM chain ID **9800**) exécute la v3.2.6 (appliquée le 27 octobre 2026, après la v3.2.5 le 26 octobre) et est recommandé pour répéter votre configuration avant la mise en production. Remplacez `--chain-id` par la valeur appropriée pour votre réseau cible. Les temps de bloc diffèrent : environ 3,1 s sur le mainnet (les 1 000 derniers blocs ont pris 52 minutes 21 secondes le 27 octobre 2026) et environ 1,3 s sur le testnet ; les deux varient, convertissez donc les nombres de blocs en durée pour chaque réseau.
+Ce guide cible le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026, qui exécute la version de nœud **v3.2.5** (appliquée par la proposition de gouvernance 14 à la hauteur 3 906 833 le 29 octobre 2026, après la v3.2.4 à la hauteur 3 742 566 le 23 octobre 2026 et la v3.2.3 à la hauteur 3 662 051 le 20 octobre 2026). Un validateur doit exécuter le binaire v3.2.5 (le `minCompatible` du manifeste est 3.2.5) ; un nœud encore en v3.2.4 s'arrête à la hauteur 3 906 833 et a besoin du bundle v3.2.5 (voir [Exécuter un nœud : mises à niveau](/developer-guide/running-a-node#upgrades)). Le testnet **`qorechain-diana`** (EVM chain ID **9800**) exécute la v3.2.6 (appliquée le 27 octobre 2026, après la v3.2.5 le 26 octobre) et est recommandé pour répéter votre configuration avant la mise en production. Remplacez `--chain-id` par la valeur appropriée pour votre réseau cible. Les temps de bloc diffèrent : environ 3,1 s sur le mainnet (les 1 000 derniers blocs ont pris 52 minutes 21 secondes le 27 octobre 2026) et environ 1,3 s sur le testnet ; les deux varient, convertissez donc les nombres de blocs en durée pour chaque réseau.
 :::
 
 :::caution Utilisez le binaire de release, pas une compilation depuis les sources
@@ -68,7 +68,7 @@ Gardez l'horloge système synchronisée par NTP : à partir de la v3.2.1, le nœ
 
 ## Paramètres du réseau {#parameters}
 
-Ces valeurs ont été lues sur l'API REST du mainnet le 27 octobre 2026 (`qorechain-vladi`, v3.2.4). Lisez-les en direct avant de vous y fier : `qorechaind query staking params`, `qorechaind query slashing params`, ou `GET /cosmos/staking/v1beta1/params` et `GET /cosmos/slashing/v1beta1/params`.
+Ces valeurs ont été lues sur l'API REST du mainnet le 27 octobre 2026 (`qorechain-vladi`, alors en v3.2.4 ; la v3.2.5 est en service depuis le 29 octobre 2026). Lisez-les en direct avant de vous y fier : `qorechaind query staking params`, `qorechaind query slashing params`, ou `GET /cosmos/staking/v1beta1/params` et `GET /cosmos/slashing/v1beta1/params`.
 
 | Élément | Valeur |
 | --- | --- |

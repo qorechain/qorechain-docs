@@ -10,7 +10,7 @@ sidebar_position: 6
 Bu kılavuz, Rollup Development Kit (RDK) ile QoreChain üzerinde uzlaşan (settle olan) uygulamaya özel bir rollup'ı başlatmaya yönelik kısa bir yönlendirmedir. Adım adım komutlar **[Bir Rollup Dağıtma](/rollups/deploying-a-rollup)** sayfasında yer alır; bu sayfa ise başlamadan önce neye ihtiyacınız olduğunu kapsar.
 
 :::caution Erken aşama yeteneği
-Henüz hiçbir ağda rollup oluşturulmamıştır (27 Ekim 2026'da kontrol edildi). Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 23 Ekim 2026'dan beri **v3.2.4** zincir sürümünü çalıştırır; test ağı (**`qorechain-diana`**, EVM zincir kimliği **9800**) v3.2.6 çalıştırır (27 Ekim 2026'dan beri) ve varsayılan itiraz penceresi 7 gün değil 1 saattir. Önce test ağında doğrulayın; itiraz penceresi davranışı [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement) sayfasında açıklanmıştır.
+Henüz hiçbir ağda rollup oluşturulmamıştır (test ağında 27 Ekim 2026'da, mainnet'te 30 Ekim 2026'da kontrol edildi). Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 29 Ekim 2026'dan beri **v3.2.5** zincir sürümünü çalıştırır; bu sürüm [zincir v3.2.5 davranışı](/rollups/overview#v325) sayfasındaki uzlaşma kurallarını getirir (herhangi bir hesap bir itirazı sonuçlandırabilir, batch'ler sırayla sonlandırılır); test ağı (**`qorechain-diana`**, EVM zincir kimliği **9800**) v3.2.6 çalıştırır (27 Ekim 2026'dan beri) ve varsayılan itiraz penceresi 7 gün değil 1 saattir. Önce test ağında doğrulayın; itiraz penceresi davranışı [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement) sayfasında açıklanmıştır.
 :::
 
 ---

@@ -10,7 +10,7 @@ sidebar_position: 7
 Die Gas-Abstraktion erlaubt es einem Nutzer, eine Transaktionsgebühr in einem akzeptierten nicht-nativen Token statt in QOR zu bezahlen. Der Code für die Gebührenumrechnung ist Teil der Chain, aber **heute wird auf keinem der beiden Netzwerke ein nicht-nativer Token akzeptiert**, sodass jede Gebühr in QOR bezahlt wird. Diese Seite erklärt, was live ist, wie die Umrechnung wie gebaut funktioniert und was Sie stattdessen tun.
 
 :::caution Noch nicht nutzbar: Bezahlen Sie jede Gebühr in uqor
-Im Mainnet (**`qorechain-vladi`**) und im Testnet (**`qorechain-diana`**), auf Node-Release **v3.2.4** bzw. **v3.2.6**, geprüft am 27. Oktober 2026:
+Im Mainnet (**`qorechain-vladi`**) und im Testnet (**`qorechain-diana`**), auf Node-Release **v3.2.5** bzw. **v3.2.6** (Mainnet am 30. Oktober 2026 nach dem v3.2.5-Upgrade erneut geprüft, Testnet am 27. Oktober 2026):
 
 * Die aktuell gültige Liste akzeptierter Token enthält **nur `uqor`**. Die Gebührenumrechnung wurde mit v3.2.2 eingeschaltet, aber nichts anderes ist aufgeführt, die Umrechnungsobergrenze pro Block ist `0` (Umrechnung aus), und der Umrechnungs-Float hält kein Guthaben. Eine in einer anderen Denomination bezahlte Gebühr wird mit dem Fehler „denom not accepted for fee payment" abgelehnt, sowohl in der Simulation als auch in einer echten Transaktion.
 * Im Mainnet existiert kein IBC-Kanal, und der einzige Testkanal des Testnets macht keinen `ibc/…`-Token zu einem akzeptierten Gebührentoken (die Liste enthält nur `uqor`), sodass es nichts außer `uqor` gibt, womit sich bezahlen ließe.

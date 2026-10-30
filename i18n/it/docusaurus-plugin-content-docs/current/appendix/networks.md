@@ -17,7 +17,7 @@ Un riferimento consolidato per le reti QoreChain — identificatori di chain, ch
 | **Chain ID Cosmos** | `qorechain-vladi` | `qorechain-diana` |
 | **Chain ID EVM (EIP-155)** | **9801** (esadecimale `0x2649`) | **9800** (esadecimale `0x2648`) |
 | **Attiva dal** | 7 giugno 2026 | 1 luglio 2026 (in continuo da allora; nessun reset) |
-| **Versione della chain** | v3.2.4 (applicata all'altezza 3.742.566, 23 ottobre 2026, proposta di governance 13). La v3.2.3 è stata applicata all'altezza 3.662.051 il 20 ottobre 2026 | v3.2.6 (applicata all'altezza 8.970.638, 27 ottobre 2026; la v3.2.5 è stata applicata all'altezza 8.890.800 il 26 ottobre e la v3.2.4 all'altezza 8.337.253 il 19 ottobre) |
+| **Versione della chain** | v3.2.5 (applicata all'altezza 3.906.833, 29 ottobre 2026, proposta di governance 14). La v3.2.4 è stata applicata all'altezza 3.742.566 il 23 ottobre 2026 e la v3.2.3 all'altezza 3.662.051 il 20 ottobre 2026 | v3.2.6 (applicata all'altezza 8.970.638, 27 ottobre 2026; la v3.2.5 è stata applicata all'altezza 8.890.800 il 26 ottobre e la v3.2.4 all'altezza 8.337.253 il 19 ottobre) |
 | **Tempo di blocco (media misurata)** | circa 3,1 s | circa 1,3 s |
 | **Manifest di rilascio** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
@@ -25,7 +25,7 @@ Un riferimento consolidato per le reti QoreChain — identificatori di chain, ch
 | **Token di test** | Nessuno | Token Fest fUSD, fETH e fBTC (senza valore; vedi [Faucet](/dashboard/faucet#fest-tokens)) |
 | **Guida alla connessione** | [Connessione alla Mainnet](/getting-started/connecting-to-mainnet) | [Connessione alla Testnet](/getting-started/connecting-to-testnet) |
 
-Entrambi i manifest sono la fonte di verità per la release che un nodo nuovo deve eseguire. Entrambe le reti ricevono upgrade coordinati tramite la governance, quindi ogni manifest riporta l'`upgradeHeight` della propria release corrente e un `minCompatible` uguale a quella release (3.2.4 sulla mainnet e 3.2.6 sulla testnet, verificato il 27 ottobre 2026). La testnet riceve ogni release per prima: la mainnet esegue la v3.2.4 dal 23 ottobre 2026, e la proposta di governance 14 applicherebbe la v3.2.5 sulla mainnet all'altezza 3.906.833 (in periodo di voto al momento della scrittura), quindi un nodo che si unisce alla mainnet deve continuare a seguire il proprio manifest. Non copiate mai un binario da una rete all'altra.
+Entrambi i manifest sono la fonte di verità per la release che un nodo nuovo deve eseguire. Entrambe le reti ricevono upgrade coordinati tramite la governance, quindi ogni manifest riporta l'`upgradeHeight` della propria release corrente e un `minCompatible` uguale a quella release (3.2.5 sulla mainnet, verificato il 30 ottobre 2026, e 3.2.6 sulla testnet, verificato il 27 ottobre 2026). La testnet riceve ogni release per prima: la mainnet esegue la v3.2.5 dal 29 ottobre 2026 (altezza 3.906.833, proposta di governance 14), quindi un nodo che si unisce alla mainnet deve continuare a seguire il proprio manifest. Non copiate mai un binario da una rete all'altra.
 
 ## Endpoint pubblici {#public-endpoints}
 

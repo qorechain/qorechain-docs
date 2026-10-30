@@ -66,7 +66,7 @@ Hayır. `pqc.sign_bytes = 'auto'` onu zincirden okur, her dakika ve her reddin a
 QORel zincirin yükseltme kayıtlarını okuyamadı. QoreChain girişinin `rpc_addr` adresinin yanıt verdiğini ve doğru ağı gösterdiğini kontrol edin (testnet'te `qorechain-diana`). QORel bilinen bir sürüm olmadan imzalamaz.
 
 **Hangi gas çarpanını kullanmalıyım?**
-`1.1` örnek varsayılandır ve `health-check`'i sessiz tutar. Testnet'te (v3.2.6) `1.05` gibi daha düşük bir değer çalışır. Önceki derlemeler simüle edilen gas'ı eksik bildirir, bu yüzden birini çalıştıran bir düğümde `1.15` kullanın. Bkz. [Gas](/qorel/configuration#gas).
+`1.1` örnek varsayılandır ve `health-check`'i sessiz tutar. Zincir v3.2.5 ve sonrasında (artık her iki ağda; testnet'te v3.2.6 üzerinde ölçüldü) `1.05` gibi daha düşük bir değer çalışır. Önceki derlemeler simüle edilen gas'ı eksik bildirir, bu yüzden birini çalıştıran bir düğümde `1.15` kullanın. Bkz. [Gas](/qorel/configuration#gas).
 
 **`health-check` gas çarpanı hakkında uyarıyor.**
 Bir QoreChain girişinde 1,1'in altında. Yalnızca bir uyarıdır; röle çalışır. Gas yetersizliği hataları görürseniz yükseltin.

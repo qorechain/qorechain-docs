@@ -10,7 +10,7 @@ sidebar_position: 1
 Esta guía cubre el token QOR, cómo enviar y recibir tokens, consultar saldos y comprender el modelo de distribución de comisiones en QoreChain.
 
 :::note
-Los comandos siguientes utilizan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.4** desde el 23 de octubre de 2026; la testnet ejecuta **v3.2.6** (desde el 27 de octubre de 2026) — sustituye el chain ID y los endpoints de mainnet de la página **Conectarse a la Mainnet** cuando realices transacciones en mainnet.
+Los comandos siguientes utilizan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.5** desde el 29 de octubre de 2026 (v3.2.4 desde el 23 de octubre); la testnet ejecuta **v3.2.6** (desde el 27 de octubre de 2026) — sustituye el chain ID y los endpoints de mainnet de la página **Conectarse a la Mainnet** cuando realices transacciones en mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`

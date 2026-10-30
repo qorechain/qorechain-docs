@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Hauptfunktionen
 
-Die folgende Tabelle listet jede wichtige Funktion in QoreChain auf, organisiert nach der Release-Phase, in der sie eingeführt wurde. Das Mainnet (`qorechain-vladi`, EVM-Chain-ID 9801), live seit dem 7. Juni 2026, läuft mit **v3.2.4** (angewendet bei Höhe 3.742.566 am 23. Oktober 2026); das parallele Testnet (`qorechain-diana`, EVM-Chain-ID 9800) läuft seit dem 27. Oktober 2026 mit v3.2.6. Die Tabelle [Funktionsstatus](#feature-status) am Ende der Funktionsliste zeigt, was heute auf den Live-Netzwerken aktiv ist.
+Die folgende Tabelle listet jede wichtige Funktion in QoreChain auf, organisiert nach der Release-Phase, in der sie eingeführt wurde. Das Mainnet (`qorechain-vladi`, EVM-Chain-ID 9801), live seit dem 7. Juni 2026, läuft mit **v3.2.5** (angewendet bei Höhe 3.906.833 am 29. Oktober 2026; v3.2.4 war bei Höhe 3.742.566 am 23. Oktober angewendet worden); das parallele Testnet (`qorechain-diana`, EVM-Chain-ID 9800) läuft seit dem 27. Oktober 2026 mit v3.2.6. Die Tabelle [Funktionsstatus](#feature-status) am Ende der Funktionsliste zeigt, was heute auf den Live-Netzwerken aktiv ist.
 
 | Funktion                   | Eingeführt in       | Beschreibung                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -36,13 +36,14 @@ Die folgende Tabelle listet jede wichtige Funktion in QoreChain auf, organisiert
 
 ## Funktionsstatus (Oktober 2026) {#feature-status}
 
-Am 20. Oktober 2026 anhand der Live-Netzwerke überprüft (Mainnet v3.2.4), wobei die testnetspezifischen Hinweise in den Zeilen am 27. Oktober 2026 erneut geprüft wurden (Testnet v3.2.6). „Live“ bedeutet, dass die Fähigkeit auf dem Mainnet (und, sofern eine Zeile nichts anderes sagt, auf dem Testnet) aktiv ist; die obigen Beschreibungen geben an, was jede Funktion leisten soll.
+Am 20. Oktober 2026 anhand der Live-Netzwerke überprüft (Mainnet v3.2.4; die Zeilen, die v3.2.5 betrifft, wurden am 30. Oktober 2026 im Mainnet erneut geprüft), wobei die testnetspezifischen Hinweise in den Zeilen am 27. Oktober 2026 erneut geprüft wurden (Testnet v3.2.6). „Live“ bedeutet, dass die Fähigkeit auf dem Mainnet (und, sofern eine Zeile nichts anderes sagt, auf dem Testnet) aktiv ist; die obigen Beschreibungen geben an, was jede Funktion leisten soll.
 
 | Fähigkeit | Status auf den Live-Netzwerken |
 | --- | --- |
 | Hybride ML-DSA-87- + secp256k1-Signaturen (Cosmos-Lane) | **Live**, erforderlich (`hybrid_signature_mode = required`) |
 | EVM-Autorisierungsfenster | **Live** seit v3.2.0 (optionale Eingrenzung seit v3.2.3) |
 | Zeitgesperrtes Staking (`x/stakingtier`, optional) | **Live** seit v3.2.4 (Testnet seit dem 19. Oktober 2026, Mainnet seit dem 23. Oktober 2026) |
+| v3.2.5-Protokollfunktionen (native ML-KEM-Schlüsselregistry, per Governance verwaltete Cross-VM-Allowlist, per Governance verwaltetes CosmWasm-Deployment, RDK-Settlement in Batch-Reihenfolge mit offener Challenge-Auflösung, beschleunigte Vorschläge, die ihre Stimmen behalten) | **Live** im Mainnet seit dem 29. Oktober 2026 (Höhe 3.906.833) und im Testnet seit dem 26. Oktober 2026. Der Cross-VM-Aufruf und die CosmWasm-Instanziierung sind im Mainnet weiterhin abgeschaltet, und es ist kein EVM-Precompile aktiv; siehe [Versionshistorie](/appendix/version-history#v325) |
 | EVM-, QoreChain Native-, SVM-Laufzeiten | EVM **live**; QoreChain Native-Code-Upload und Instanziierung **deaktiviert** (Governance-Einstellung plus Schutzschalter); SVM-Transaktionspfad **deaktiviert** (Lesezugriffe funktionieren) |
 | Burn-Engine und Gebührenaufteilung (37/30/20/10/3) | **Live**; im Mainnet haben nur die Burn-Kanäle für Gasgebühren und fehlgeschlagene Transaktionen Burns verzeichnet |
 | Begrenzte Emission (`x/inflation`) | **Live**, fest 86.000 QOR pro Epoche bis zu einer Obergrenze von 590.000.000 QOR (Mainnet) |

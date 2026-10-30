@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Sorgular, `--node` parametresinin işaret ettiği düğüme karşı çalışır. Canlı veriler için bir **`qorechain-vladi`** ana ağ RPC uç noktası (örneğin `--node https://rpc.qore.host:443`) veya test için bir **`qorechain-diana`** test ağı uç noktası (`--node https://rpc-testnet.qore.host:443`) kullanın. Varsayılan `tcp://localhost:26657` kendi çalıştırdığınız bir düğümü hedefler. Ana ağ, 23 Ekim 2026'dan beri düğüm sürümü v3.2.4'ü çalıştırır (3.742.566 yüksekliğinde yönetişim önerisi 13 ile uygulandı) ve ana ağ yönetişim önerisi 14, v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır; test ağı v3.2.6'yı çalıştırır (v3.2.4 19 Ekim 2026'dan, v3.2.5 26 Ekim'den, v3.2.6 27 Ekim'den beri). v3.2.4 sürümü birkaç yol ve komut ekler (aşağıda **v3.2.4** olarak işaretlenmiştir): bunlar her iki ağda da çalışır; daha eski bir sürümde olan bir düğüm bunlara `Not Implemented` ile yanıt verir. v3.2.6 sürümü iki komut ekler (**v3.2.6** olarak işaretlenmiştir, ana ağ onu uygulayana kadar yalnızca test ağında). Bu sayfadaki komutlar, `https://rpc.qore.host:443` adresine karşı çalıştırılan v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir; v3.2.4 yolları 23 Ekim 2026'da REST üzerinden, v3.2.6 komutları ise v3.2.6 kaynağına karşı denetlenmiştir.
+Sorgular, `--node` parametresinin işaret ettiği düğüme karşı çalışır. Canlı veriler için bir **`qorechain-vladi`** ana ağ RPC uç noktası (örneğin `--node https://rpc.qore.host:443`) veya test için bir **`qorechain-diana`** test ağı uç noktası (`--node https://rpc-testnet.qore.host:443`) kullanın. Varsayılan `tcp://localhost:26657` kendi çalıştırdığınız bir düğümü hedefler. Ana ağ, 29 Ekim 2026'dan beri düğüm sürümü v3.2.5'i çalıştırır (3.906.833 yüksekliğinde yönetişim önerisi 14 ile uygulandı; v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı); test ağı v3.2.6'yı çalıştırır (v3.2.4 19 Ekim 2026'dan, v3.2.5 26 Ekim'den, v3.2.6 27 Ekim'den beri). v3.2.4 sürümü birkaç yol ve komut ekler (aşağıda **v3.2.4** olarak işaretlenmiştir): bunlar her iki ağda da çalışır; daha eski bir sürümde olan bir düğüm bunlara `Not Implemented` ile yanıt verir. v3.2.6 sürümü iki komut ekler (**v3.2.6** olarak işaretlenmiştir, ana ağ onu uygulayana kadar yalnızca test ağında). Bu sayfadaki komutlar, `https://rpc.qore.host:443` adresine karşı çalıştırılan v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir; v3.2.4 yolları 23 Ekim 2026'da REST üzerinden, v3.2.6 komutları ise v3.2.6 kaynağına karşı denetlenmiştir.
 :::
 
 Ortak bayraklar her `query` alt komutu için geçerlidir:
@@ -170,6 +170,8 @@ qorechaind query qca config
 ```
 
 Validator başına itibar veya havuz sınıflandırma sorguları yoktur.
+
+`query reputation params` (REST `GET /qorechain/reputation/v1/params`) yalnızca test ağında yanıt verir. Ana ağda rota `Not Implemented` yanıtını verir (30 Ekim 2026'da, v3.2.5'ten sonra kontrol edildi); dolayısıyla ana ağda daha sonraki bir zincir sürümüyle başlar.
 
 ---
 
@@ -349,7 +351,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>`, bir yükseltmenin ne zaman yürürlüğe girdiğini okumanın yoludur: ana ağda `v3.2.2` 3,556,788 yüksekliğinde, `v3.2.3` 3,662,051 yüksekliğinde ve `v3.2.4` 3,742,566 yüksekliğinde uygulandı; test ağında `v3.2.2` 6,905,034'te, `v3.2.3` 8,003,746'da, `v3.2.4` 8,337,253'te, `v3.2.5` 8,890,800'de ve `v3.2.6` 8,970,638'de uygulandı (`0` uygulanmadı demektir; ana ağda `v3.2.5`, bu yazının hazırlandığı sırada `0`'dır ve yönetişim önerisi 14 oylama süresindedir). Ana ağ devre kesici listesi (`disabled-list`) şu anda vesting hesabı oluşturma mesajlarını, QoreChain Native store ve instantiate'i, AMM havuzunu duraklatma ve sürdürmeyi, cross-VM çağrısını, multilayer katman durumu güncellemesini, PQC algoritmasını kullanımdan kaldırma ve devre dışı bırakmayı ve PRISM uzlaşma yönetişim mesajlarını içerir; test ağınınki ise yalnızca QoreChain Native `MsgStoreCode` mesajını içerir (27 Ekim 2026'da kontrol edildi; instantiate'e test ağı yönetişimi izin verdi).
+`query upgrade applied <name>`, bir yükseltmenin ne zaman yürürlüğe girdiğini okumanın yoludur: ana ağda `v3.2.2` 3,556,788 yüksekliğinde, `v3.2.3` 3,662,051 yüksekliğinde ve `v3.2.4` 3,742,566 yüksekliğinde ve `v3.2.5` 3,906,833 yüksekliğinde uygulandı; test ağında `v3.2.2` 6,905,034'te, `v3.2.3` 8,003,746'da, `v3.2.4` 8,337,253'te, `v3.2.5` 8,890,800'de ve `v3.2.6` 8,970,638'de uygulandı (`0` uygulanmadı demektir; ana ağda `v3.2.6`, bu yazının hazırlandığı sırada `0`'dır). Ana ağ devre kesici listesi (`disabled-list`) şu anda vesting hesabı oluşturma mesajlarını, QoreChain Native store ve instantiate'i, AMM havuzunu duraklatma ve sürdürmeyi, cross-VM çağrısını, multilayer katman durumu güncellemesini, PQC algoritmasını kullanımdan kaldırma ve devre dışı bırakmayı ve PRISM uzlaşma yönetişim mesajlarını içerir; test ağınınki ise yalnızca QoreChain Native `MsgStoreCode` mesajını içerir (27 Ekim 2026'da kontrol edildi; instantiate'e test ağı yönetişimi izin verdi).
 
 ---
 

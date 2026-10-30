@@ -86,11 +86,11 @@ qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain
 
 ### Yaprak ve düğüm kodlaması {#leaf-and-node-encoding}
 
-* **Yaprak (ilk biçim, bugün ana ağda geçerli kural)** = `rollup_id`, bir `0x00` baytı, para çekme indeksi (8 bayt big-endian), `recipient` dizesi, `0x00`, `denom` dizesi, `0x00` ve `amount` (8 bayt big-endian) değerlerinin SHAKE-256'sı (32 bayt).
-* **Yaprak (ikinci biçim, şimdilik testnet'te, v3.2.5 yükseltmesinden sonra ana ağda)**: zincir v3.2.5'ten gelen yığınlar için yaprak ayrıca zincir kimliğini belirtir. RDK her iki biçimi de oluşturur (`withdrawalLeafV1`, `withdrawalLeafV2`).
+* **Yaprak (ilk biçim, zincir v3.2.5 öncesi yığınlar için)** = `rollup_id`, bir `0x00` baytı, para çekme indeksi (8 bayt big-endian), `recipient` dizesi, `0x00`, `denom` dizesi, `0x00` ve `amount` (8 bayt big-endian) değerlerinin SHAKE-256'sı (32 bayt).
+* **Yaprak (ikinci biçim, zincir v3.2.5'ten itibaren her iki ağda)**: zincir v3.2.5'ten gelen yığınlar için yaprak ayrıca zincir kimliğini belirtir. RDK her iki biçimi de oluşturur (`withdrawalLeafV1`, `withdrawalLeafV2`).
 * **Ebeveyn** = `left || right` değerinin SHAKE-256'sı. Her seviyede para çekme indeksinin ilgili biti tarafı belirler: `0`, yaprağın (veya o ana kadarki hash'in) sol düğüm olduğu anlamına gelir; dolayısıyla yaprağın ağaçtaki konumu para çekme indeksidir.
 * Her kardeş hash tam olarak 32 bayt olmalıdır.
-* **Para çekme kökü (şimdilik testnet'te, yükseltmeden sonra ana ağda):** zincir v3.2.5'ten itibaren bir yığının `withdrawals_root` değeri ya boştur ya da tam olarak 32 bayttır; ana ağda (v3.2.4) bu uzunluk kuralı henüz uygulanmaz.
+* **Para çekme kökü (zincir v3.2.5'ten itibaren, her iki ağda):** bir yığının `withdrawals_root` değeri ya boştur ya da tam olarak 32 bayttır; v3.2.5'ten önce bu uzunluk kuralı uygulanmıyordu.
 
 Bu ağacı elle kurmayın. `@qorechain/rdk` 0.7.0'daki `withdrawalsTree` (ve Python, Go, Rust ve Java karşılıkları) bir yığının para çekme kökünü ve her kanıtı tam olarak zincirin yaptığı gibi oluşturur ve zincirin kendi doğrulayıcısına karşı kontrol edilmiştir; `assembleWithdrawalProof` varsayılan olarak zincirin ağacını oluşturur ve genel Merkle yardımcıları artık varsayılan olarak SHAKE-256 kullanır.
 
@@ -121,7 +121,7 @@ flowchart LR
 ```
 
 1. **Bir yığını çözümleyin.** Rollup operatörü, `submit-batch` ile bir çözüm yığını gönderir. Yığın, giden L2 → L1 mesajları üzerinde bir para çekme kökü işleyebilir.
-2. **Sonuçlandırın.** Yığın, rollup'ın çözüm moduna göre sonuçlandırılır — `zk` için geçerli kanıt doğrulamasıyla veya `optimistic` için itiraz penceresinden sonra (bu sırada `challenge-batch` ona itiraz edebilir). Testnet'te zincir v3.2.5'ten beri (ana ağda yükseltmeden sonra) yığınlar ayrıca kesinlikle dizin sırasıyla sonuçlandırılır; bu yüzden bir yığın, hâlâ `submitted` veya `challenged` durumundaki daha önceki her yığını bekler. Optimistic pencere, v3.2.4 yükseltmesinden önce gönderilen bir yığın için varsayılan olarak 100,800 bloktur; v3.2.4'ten itibaren, yükseltme yüksekliğinden itibaren gönderilen yığınlar için blok zamanının saniyesi cinsinden ölçülür (testnet'te 19 Ekim 2026'da 8,337,253 yüksekliğinden, ana ağda 23 Ekim 2026'da 3,742,566 yüksekliğinden itibaren).
+2. **Sonuçlandırın.** Yığın, rollup'ın çözüm moduna göre sonuçlandırılır — `zk` için geçerli kanıt doğrulamasıyla veya `optimistic` için itiraz penceresinden sonra (bu sırada `challenge-batch` ona itiraz edebilir). Zincir v3.2.5'ten beri (testnet'te 26 Ekim 2026'dan, ana ağda 29 Ekim 2026'dan itibaren) yığınlar ayrıca kesinlikle dizin sırasıyla sonuçlandırılır; bu yüzden bir yığın, hâlâ `submitted` veya `challenged` durumundaki daha önceki her yığını bekler. Optimistic pencere, v3.2.4 yükseltmesinden önce gönderilen bir yığın için varsayılan olarak 100,800 bloktur; v3.2.4'ten itibaren, yükseltme yüksekliğinden itibaren gönderilen yığınlar için blok zamanının saniyesi cinsinden ölçülür (testnet'te 19 Ekim 2026'da 8,337,253 yüksekliğinden, ana ağda 23 Ekim 2026'da 3,742,566 yüksekliğinden itibaren).
 3. **Kanıtlayın ve yürütün.** Sonuçlandırıldığında, herkes belirli para çekme yaprağı için Merkle dahil etme kanıtıyla (`--proof`) `execute-withdrawal`'ı gönderir. Modül, dahil etmeyi sonuçlandırılmış yığının para çekme köküne karşı doğrular ve alıcıya emanetten ödeme yapar.
 
 Adım 3 izinsiz ve kanıt tabanlı olduğundan, onu taşıyan yığın sonuçlandırıldıktan sonra bir para çekme işlemi rollup operatörünün işbirliğine bağlı değildir.

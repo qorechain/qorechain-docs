@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `mainnet` |
 | Chain id | `qorechain-vladi` (7 Haziran 2026'dan beri yayında) |
-| Zincir sürümü (27 Ekim 2026) | v3.2.4 (3.742.566 yüksekliğinden beri, 23 Ekim 2026, yönetişim önerisi 13). Yönetişim önerisi 14, v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır ve yazım sırasında oylama süresindeydi; v3.2.5'in neler eklediği, mainnet onu uyguladığı gün belgelenir |
+| Zincir sürümü (30 Ekim 2026) | v3.2.5 (3.906.833 yüksekliğinden beri, 29 Ekim 2026, yönetişim önerisi 14; v3.2.4, 23 Ekim'de 3.742.566 yüksekliğinde uygulanmıştı). SDK 0.10.0 v3.2.4 için istemcidir ve çalışmaya devam eder; v3.2.5 eklemeleri için oluşturucuları (builder) yoktur |
 | EVM zincir kimliği | `9801` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |

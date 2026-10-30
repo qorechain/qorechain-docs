@@ -10,7 +10,7 @@ sidebar_position: 9
 Questa guida spiega come creare un validatore sulla rete QoreChain, comprendere il sistema di classificazione a pool, registrare una chiave PQC (firme ibride ML-DSA-87, FIPS 204) e monitorare il proprio nodo.
 
 :::note
-Questa guida si riferisce alla mainnet **`qorechain-vladi`** (EVM chain ID **9801**), attiva dal 7 giugno 2026, che esegue la release di nodo **v3.2.4** (applicata dalla proposta di governance 13 all'altezza 3.742.566 il 23 ottobre 2026, dopo la v3.2.3 all'altezza 3.662.051 il 20 ottobre 2026). Al momento della stesura un validatore deve eseguire il binario v3.2.4; la proposta di governance 14 della mainnet applicherebbe la v3.2.5 all'altezza 3.906.833, e il manifest indicherebbe allora il binario da installare (vedi [Esecuzione di un nodo: Upgrade](/developer-guide/running-a-node#upgrades)). La testnet **`qorechain-diana`** (EVM chain ID **9800**) esegue la v3.2.6 (applicata il 27 ottobre 2026, dopo la v3.2.5 il 26 ottobre) ed è consigliata per provare la configurazione prima di andare in produzione. Sostituisci il `--chain-id` appropriato per la rete di destinazione. I tempi di blocco differiscono: circa 3,1 s sulla mainnet (gli ultimi 1.000 blocchi hanno richiesto 52 minuti e 21 secondi il 27 ottobre 2026) e circa 1,3 s sulla testnet; entrambi variano, quindi converti il numero di blocchi in tempo per ciascuna rete.
+Questa guida si riferisce alla mainnet **`qorechain-vladi`** (EVM chain ID **9801**), attiva dal 7 giugno 2026, che esegue la release di nodo **v3.2.5** (applicata dalla proposta di governance 14 all'altezza 3.906.833 il 29 ottobre 2026, dopo la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026 e la v3.2.3 all'altezza 3.662.051 il 20 ottobre 2026). Un validatore deve eseguire il binario v3.2.5 (il `minCompatible` del manifest è 3.2.5); un nodo ancora sulla v3.2.4 si ferma all'altezza 3.906.833 e ha bisogno del bundle v3.2.5 (vedi [Esecuzione di un nodo: Upgrade](/developer-guide/running-a-node#upgrades)). La testnet **`qorechain-diana`** (EVM chain ID **9800**) esegue la v3.2.6 (applicata il 27 ottobre 2026, dopo la v3.2.5 il 26 ottobre) ed è consigliata per provare la configurazione prima di andare in produzione. Sostituisci il `--chain-id` appropriato per la rete di destinazione. I tempi di blocco differiscono: circa 3,1 s sulla mainnet (gli ultimi 1.000 blocchi hanno richiesto 52 minuti e 21 secondi il 27 ottobre 2026) e circa 1,3 s sulla testnet; entrambi variano, quindi converti il numero di blocchi in tempo per ciascuna rete.
 :::
 
 :::caution Usa il binario di release, non una build dal sorgente
@@ -68,7 +68,7 @@ Mantieni l'orologio di sistema sincronizzato via NTP: dalla v3.2.1 il nodo si fe
 
 ## Parametri di Rete {#parameters}
 
-Questi valori sono stati letti dalla REST API della mainnet il 27 ottobre 2026 (`qorechain-vladi`, v3.2.4). Leggili in tempo reale prima di farvi affidamento: `qorechaind query staking params`, `qorechaind query slashing params`, oppure `GET /cosmos/staking/v1beta1/params` e `GET /cosmos/slashing/v1beta1/params`.
+Questi valori sono stati letti dalla REST API della mainnet il 27 ottobre 2026 (`qorechain-vladi`, allora sulla v3.2.4; la v3.2.5 è attiva dal 29 ottobre 2026). Leggili in tempo reale prima di farvi affidamento: `qorechaind query staking params`, `qorechaind query slashing params`, oppure `GET /cosmos/staking/v1beta1/params` e `GET /cosmos/slashing/v1beta1/params`.
 
 | Voce | Valore |
 | --- | --- |

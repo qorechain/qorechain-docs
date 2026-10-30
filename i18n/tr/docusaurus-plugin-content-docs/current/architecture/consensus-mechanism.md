@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain, doğrulayıcıları üç uzmanlaşmış havuza ayıran ve güvenlik, merkeziyetsizlik ile performansı dengelemek için itibar ağırlıklı seçim kullanan bir konsensüs mekanizması olan **Üçlü Havuz Bileşik Hisse Kanıtı'nı (Triple-Pool Composite Proof-of-Stake, CPoS)** uygular. CPoS, `x/qca` modülünde uygulanır ve **QoreChain Konsensüs Motoru** üzerinde çalışır.
 
-:::note Güncel durum (ana ağ v3.2.4, 23 Ekim 2026'da kontrol edildi; test ağı v3.2.6 çalıştırıyor)
+:::note Güncel durum (ana ağ 23 Ekim 2026'da v3.2.4 üzerinde kontrol edildi ve 29 Ekim 2026'dan beri v3.2.5 çalıştırıyor; test ağı v3.2.6 çalıştırıyor)
 Bu sayfada açıklanan Üçlü Havuz CPoS mantığı — havuz sınıflandırması, havuz ağırlıklı öneren seçimi, ödül bağlanma eğrisi, aşamalı kesme ve QDRW sayımı — `x/qca` modülünde uygulanmıştır ve parametreleri zincir üzerindedir, ancak **henüz blok üretimine, ödüllere, kesmeye veya yönetişim sayımına bağlanmamıştır**. Bugün öneren rotasyonu standart hisse ağırlıklı doğrulayıcı rotasyonudur, kesme standart `x/slashing` parametrelerini izler (kesinti penceresi 10,000 blok, imzalanan oran %5'in altına düştüğünde hapis, %1 kesinti kesmesi ve %5 çift imza kesmesi, 10 dakikalık hapis) ve öneriler bağlanmış hisse üzerinden sayılır (yeter sayı %33.4, eşik %50, veto %33.4). Aşağıdaki tasarım, modülün nereye doğru ilerlediğini açıklar. Ana ağda v3.2.4'e kadar hiçbir sürüm bunu değiştirmemiştir ve test ağının staking, kesme ve yönetişim parametreleri ana ağınkilerle aynıdır (27 Ekim 2026'da kontrol edildi, daha kısa yönetişim oylama süreleri hariç); bugün uygulanan **kurallar** [Yürürlükteki doğrulayıcı kabul ve staking kuralları](#admission) bölümünde listelenmiştir.
 :::
 

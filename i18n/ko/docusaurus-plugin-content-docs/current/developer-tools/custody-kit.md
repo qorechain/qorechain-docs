@@ -86,7 +86,7 @@ QoreChain 커스터디 키트는 QoreChain에서 고객 자금을 보관하는 �
 ### 출금과 가스 {#withdrawals}
 
 - 수수료 = ceil(가스 한도 x 가스 가격), 단위는 `uqor`입니다. 최소 가스 가격은 0.1 uqor이며 가스 한도에 부과됩니다.
-- 가스 한도는 완전히 서명된 트랜잭션의 시뮬레이션에서 가져옵니다. v3.2.5 업그레이드를 적용한 노드(지금은 테스트넷, 적용 후에는 메인넷)에서는 시뮬레이션에 ML-DSA-87 검증이 포함되므로 `ceil(gas_used x 1.02) + 2000`을 사용합니다. 그 전에는 `ceil((gas_used + 40000) x 1.4)`를 사용합니다. 어느 쪽이 해당하는지는 날짜가 아니라 `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`로 확인합니다.
+- 가스 한도는 완전히 서명된 트랜잭션의 시뮬레이션에서 가져옵니다. v3.2.5 업그레이드를 적용한 노드(2026년 10월 29일부터 두 네트워크 모두)에서는 시뮬레이션에 ML-DSA-87 검증이 포함되므로 `ceil(gas_used x 1.02) + 2000`을 사용합니다. 그 전에는 `ceil((gas_used + 40000) x 1.4)`를 사용합니다. 어느 쪽이 해당하는지는 날짜가 아니라 `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`로 확인합니다.
 - 가스 한도를 정한 뒤에는 `AuthInfo`를 다시 만들고 다시 서명합니다. 두 서명 모두 수수료를 포함하기 때문입니다.
 - 시퀀스: 핫 주소마다 서명자 큐를 하나씩 운영하거나, 병렬 지급을 위해 여러 핫 주소를 사용합니다.
 
@@ -271,12 +271,12 @@ QORE_LIVE_TEST=1 go test -run Live ./...     # live reads against testnet
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| 노드 릴리스 | v3.2.4 (v3.2.5 아직 미적용) | v3.2.6 (v3.2.5 적용됨) |
+| 노드 릴리스 | v3.2.5 (2026년 10월 29일 적용) | v3.2.6 (v3.2.5 적용됨) |
 
 - 단위는 `uqor`입니다(1 QOR = 10^6 uqor, EVM 레인에서는 1 uqor = 10^12 wei). 최소 가스 가격은 0.1 uqor, 언본딩 기간은 21일, 메모 제한은 256자입니다. 이 값들은 2026년 10월 27일에 두 네트워크에서 읽은 것이며 거버넌스로 바뀔 수 있으므로, 프로덕션에서는 체인에서 읽으세요.
 - 입금에는 키도 등록도 필요하지 않습니다. 전송하려면 핫 주소마다 등록된 ML-DSA-87 키가 필요합니다.
 - 프로덕션에서는 자체 풀 노드를 운영하세요. 공개 엔드포인트는 요청 속도가 제한되며 개발용입니다. 스크립트가 `403 Forbidden`을 받으면 명시적인 `User-Agent` 헤더를 설정하세요. [노드 운영](/developer-guide/running-a-node)과 [메인넷 연결](/getting-started/connecting-to-mainnet)을 참조하세요.
-- 테스트넷은 각 노드 릴리스를 메인넷보다 먼저 받습니다. 가스 규칙은 날짜가 아니라 적용된 업그레이드를 확인해서 전환하세요.
+- 테스트넷은 각 노드 릴리스를 메인넷보다 먼저 받습니다. 가스 규칙은 날짜가 아니라 적용된 업그레이드를 확인해서 전환하세요(두 네트워크 모두 v3.2.5를 적용했습니다).
 - 테스트넷의 테스트 토큰(`erc20:0x...` 형식의 뱅크 denom, IBC 토큰)은 메인넷에 존재하지 않습니다. 두 네트워크 모두에서 `uqor`를 반영하세요.
 - 테스트넷 QOR은 QoreChain 대시보드 faucet에서 받으며 가치가 없습니다. [테스트넷 연결](/getting-started/connecting-to-testnet)을 참조하세요.
 

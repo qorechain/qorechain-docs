@@ -75,11 +75,11 @@ const calldata = encodeCrossVmCalldata({
 
 `isCrossVmPrecompileActive(restBase)` legge via REST il parametro EVM `active_static_precompiles` e risponde `active: true` solo quando l'indirizzo del precompile è elencato. È l'unico controllo affidabile e deve avvenire off-chain: il precompile restituisce la risposta grezza del target, quindi una risposta vuota non permette di distinguere un precompile inattivo da una chiamata genuina a un contratto che non restituisce nulla, e un precompile non ha bytecode che sia attivo o no. Anche quando riporta `active: true`, il pacchetto documenta che dalla v3.2.3 della chain una chiamata raggiunge solo i target in allowlist per la governance (il parametro cross-VM `bridge_allowed_targets`, ogni voce `<vm>:<contract>`), e che EVM-verso-EVM viene rifiutato.
 
-### Chain v3.2.5: allowlist, formato della risposta e rifiuti (testnet ora, mainnet dopo l'upgrade) {#chain-v325}
+### Chain v3.2.5: allowlist, formato della risposta e rifiuti (entrambe le reti) {#chain-v325}
 
-La chain v3.2.5 cambia il comportamento del bridge. Il testnet la esegue; **il mainnet (v3.2.4) no, finché la proposta di governance 14 non viene applicata**, e le descrizioni altrove in questa pagina secondo cui il precompile restituisce la risposta grezza del target descrivono il mainnet di oggi.
+La chain v3.2.5 cambia il comportamento del bridge. Il mainnet la esegue dal 29 ottobre 2026 (proposta di governance 14, altezza 3.906.833) e il testnet dal 26 ottobre. Poiché il precompile non è attivo su nessuna delle due reti, il formato della risposta e quello dei rifiuti descritti sotto sono il comportamento della release e non sono stati verificati con una chiamata reale; ovunque questa pagina dica che il precompile restituisce la risposta grezza del target, ciò descrive le release precedenti alla v3.2.5.
 
-* **Una route per l'allowlist.** `GET /qorechain/crossvm/v1/params` serve i parametri del bridge, inclusa l'allowlist dei target. Sul testnet l'allowlist è vuota (verificato il 27 ottobre 2026), quindi nessun target è ancora consentito.
+* **Una route per l'allowlist.** `GET /qorechain/crossvm/v1/params` serve i parametri del bridge, inclusa l'allowlist dei target. Su entrambe le reti l'allowlist è vuota (mainnet e testnet verificati il 30 ottobre 2026), quindi nessun target è ancora consentito.
 * **Un formato di risposta fisso.** Il precompile restituisce `abi.encode(bytes)`, quindi una risposta è sempre di almeno 64 byte e una risposta vuota si distingue da una assente; decodificala con `abi.decode(ret, (bytes))`.
 * **I rifiuti riportano un motivo.** Quando il bridge rifiuta una chiamata, fa revert con `Error(string)`, che un contratto può leggere e inoltrare.
 * **Il precompile non è ancora attivo.** `0x...0901` non è nell'elenco dei precompile attivi su nessuna delle due reti, quindi nulla di tutto ciò è stato eseguito end to end.

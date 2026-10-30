@@ -14,7 +14,7 @@ Le module d'abstraction de compte est **désactivé sur le mainnet `qorechain-vl
 :::
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.4** (appliquée à la hauteur 3 742 566 le 23 octobre 2026, proposition de gouvernance 13). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.6 (v3.2.4 depuis le 19 octobre 2026).
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.5** (appliquée à la hauteur 3 906 833 le 29 octobre 2026, proposition de gouvernance 14 ; la v3.2.4 a été appliquée à la hauteur 3 742 566 le 23 octobre 2026). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.6 (v3.2.4 depuis le 19 octobre 2026).
 :::
 
 :::caution Toute transaction sur la voie Cosmos exige la co-signature post-quantique hybride

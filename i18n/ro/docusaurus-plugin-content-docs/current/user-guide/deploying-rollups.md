@@ -10,7 +10,7 @@ sidebar_position: 6
 Acest ghid este o scurtă orientare pentru lansarea unui rollup specific unei aplicații, care se decontează pe QoreChain, folosind Rollup Development Kit (RDK). Comenzile pas cu pas se găsesc în **[Implementarea unui Rollup](/rollups/deploying-a-rollup)**; această pagină acoperă ce ai nevoie înainte de a începe.
 
 :::caution Capabilitate în stadiu incipient
-Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 27 octombrie 2026). Mainnet-ul (**`qorechain-vladi`**, chain ID EVM **9801**) rulează versiunea de chain **v3.2.4** din 23 octombrie 2026; testnet-ul (**`qorechain-diana`**, chain ID EVM **9800**) rulează v3.2.6 (din 27 octombrie 2026), iar fereastra sa de contestare implicită este de 1 oră, nu de 7 zile. Validează mai întâi pe testnet; comportamentul ferestrei de contestare este descris în [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement)).
+Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 27 octombrie 2026 pe testnet și la 30 octombrie 2026 pe mainnet). Mainnet-ul (**`qorechain-vladi`**, chain ID EVM **9801**) rulează versiunea de chain **v3.2.5** din 29 octombrie 2026, care aduce regulile de decontare din [comportamentul lanțului v3.2.5](/rollups/overview#v325) (orice cont poate rezolva o contestare, loturile se finalizează în ordine); testnet-ul (**`qorechain-diana`**, chain ID EVM **9800**) rulează v3.2.6 (din 27 octombrie 2026), iar fereastra sa de contestare implicită este de 1 oră, nu de 7 zile. Validează mai întâi pe testnet; comportamentul ferestrei de contestare este descris în [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement)).
 :::
 
 ---

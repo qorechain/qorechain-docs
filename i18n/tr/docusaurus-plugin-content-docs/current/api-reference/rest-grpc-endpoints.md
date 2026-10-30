@@ -18,7 +18,7 @@ QoreChain, programatik erişim için üç temel arayüz sunar:
 Tüm REST uç noktaları JSON döndürür. gRPC uç noktaları Protocol Buffers kullanır ve herhangi bir gRPC istemcisiyle tüketilebilir. RPC arayüzü, konsensüs düzeyinde sorgular ve işlem yayını sağlar.
 
 :::note
-Bu arayüzler hem **`qorechain-vladi`** ana ağında (7 Haziran 2026'dan beri canlı) hem de **`qorechain-diana`** test ağında kullanılabilir. Bu yazının hazırlandığı sırada (27 Ekim 2026'da kontrol edildi) ana ağ **v3.2.4** düğüm sürümünü çalıştırır (23 Ekim 2026'da 3.742.566 numaralı yükseklikte uygulandı, yönetişim önerisi 13) ve ana ağ yönetişim önerisi 14 oylama döneminde; v3.2.5'i 3.906.833 numaralı yükseklikte uygulayacaktır. Test ağı **v3.2.6** çalıştırır: v3.2.5'i 26 Ekim 2026'da 8.890.800 numaralı yükseklikte, v3.2.6'yı ise 27 Ekim 2026'da 8.970.638 numaralı yükseklikte uyguladı. Bir sürümün eklediği rotalar ve alanlar, bir ağda ancak o ağ sürümü uyguladıktan sonra görünür; bu sayfa yalnızca test ağında bulunanları işaretler. Aşağıdaki temel URL'ler yerel olarak çalışan bir düğüm varsayar. Herkese açık barındırılan uç noktalar `https://api.qore.host` / `https://api-testnet.qore.host` (REST) ve `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC) adresleridir ve [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir. **Herkese açık bir gRPC uç noktası yoktur**: `grpc.qore.host` ve `grpc-testnet.qore.host` ana bilgisayar adları mevcut değildir, bu nedenle gRPC'ye ihtiyacınız varsa kendi düğümünüzü çalıştırın.
+Bu arayüzler hem **`qorechain-vladi`** ana ağında (7 Haziran 2026'dan beri canlı) hem de **`qorechain-diana`** test ağında kullanılabilir. Bu yazının hazırlandığı sırada (30 Ekim 2026'da kontrol edildi) ana ağ **v3.2.5** düğüm sürümünü çalıştırır (29 Ekim 2026'da 3.906.833 numaralı yükseklikte uygulandı, yönetişim önerisi 14; v3.2.4, 23 Ekim 2026'da 3.742.566 numaralı yükseklikte uygulanmıştı). Test ağı **v3.2.6** çalıştırır: v3.2.5'i 26 Ekim 2026'da 8.890.800 numaralı yükseklikte, v3.2.6'yı ise 27 Ekim 2026'da 8.970.638 numaralı yükseklikte uyguladı. Bir sürümün eklediği rotalar ve alanlar, bir ağda ancak o ağ sürümü uyguladıktan sonra görünür; bu sayfa yalnızca test ağında bulunanları işaretler. Aşağıdaki temel URL'ler yerel olarak çalışan bir düğüm varsayar. Herkese açık barındırılan uç noktalar `https://api.qore.host` / `https://api-testnet.qore.host` (REST) ve `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC) adresleridir ve [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir. **Herkese açık bir gRPC uç noktası yoktur**: `grpc.qore.host` ve `grpc-testnet.qore.host` ana bilgisayar adları mevcut değildir, bu nedenle gRPC'ye ihtiyacınız varsa kendi düğümünüzü çalıştırın.
 :::
 
 ## Temel URL'ler
@@ -35,7 +35,7 @@ QoreChain'e özgü modüller REST üzerinden `/qorechain/<module>/v1/...` öneki
 
 Var olmayan bir rota HTTP `501` ve `{"code":12,"message":"Not Implemented"}` ile yanıt verir. Bu, rotanın sunulmadığı anlamına gelir; sorgunun boş döndüğü anlamına gelmez. `/qorechain/` öneki olmayan kısaltılmış yollar (örneğin `/bridge/v1/chains` veya `/pqc/v1/params`) **sunulmaz**. Var olan bir rotada bilinmeyen bir kayıt HTTP `404` ve `{"code":5,"message":"... not found"}` döndürür.
 
-Aşağıdaki örnekler herkese açık ana ağ adresini kullanır; test ağı için bunu `https://api-testnet.qore.host` ile değiştirin. Örneklerdeki değerler 20 ile 27 Ekim 2026 arasında canlı ağlardan okunmuştur ve zamanla değişir; bunları yanıtın biçimini görmek için kullanın. v3.2.4 sürümü birkaç rota ve alan ekledi. Bunlar aşağıda **v3.2.4** olarak işaretlenmiştir: test ağı bunları 19 Ekim 2026'dan beri, ana ağ ise 23 Ekim 2026'dan beri sunar. v3.2.6 sürümü daha fazlasını ekledi; bunlar **v3.2.6 (testnet)** olarak işaretlenmiştir: yalnızca test ağında yanıt verirler ve ana ağ bu sürümü uygulayana kadar onlara `501` ile yanıt verir. Daha eski bir sürümde kalmış bir düğüm yeni bir rotaya `501` ile yanıt verir.
+Aşağıdaki örnekler herkese açık ana ağ adresini kullanır; test ağı için bunu `https://api-testnet.qore.host` ile değiştirin. Örneklerdeki değerler 20 ile 27 Ekim 2026 arasında canlı ağlardan okunmuştur ve zamanla değişir; bunları yanıtın biçimini görmek için kullanın. v3.2.4 sürümü birkaç rota ve alan ekledi. Bunlar aşağıda **v3.2.4** olarak işaretlenmiştir: test ağı bunları 19 Ekim 2026'dan beri, ana ağ ise 23 Ekim 2026'dan beri sunar. v3.2.5 sürümü (ana ağda 29 Ekim 2026'dan, test ağında 26 Ekim'den beri) cross-VM parametre ve mesaj rotalarını ile yerel anahtar kayıt defteri rotasını ekledi; bunlar **v3.2.5** olarak işaretlenmiştir. v3.2.6 sürümü daha fazlasını ekledi; bunlar **v3.2.6 (testnet)** olarak işaretlenmiştir: yalnızca test ağında yanıt verirler ve ana ağ bu sürümü uygulayana kadar onlara `501` ile yanıt verir. Daha eski bir sürümde kalmış bir düğüm yeni bir rotaya `501` ile yanıt verir.
 
 ## PQC Modülü {#pqc-module}
 
@@ -45,6 +45,7 @@ Aşağıdaki örnekler herkese açık ana ağ adresini kullanır; test ağı iç
 | GET   | `/qorechain/pqc/v1/evm_window/{address}` | Hesabın EVM şeridi yetkilendirme penceresi ve bunun kalan kısmı             |
 | GET   | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | Hesabın EIP-7702 delegasyon onayı, geçerli delegasyonu ve EVM nonce değeri (v3.2.2'den beri) |
 | GET   | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (test ağında 19 Ekim 2026'dan beri; ana ağda 23 Ekim 2026'dan beri; eski bir düğümde `501`). İkili dosyanın bildiği her protokol özelliği; `enabled`, `known` ve `staged` bayraklarıyla |
+| GET   | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (her iki ağda: ana ağda 29 Ekim 2026'dan beri, test ağında 26 Ekim'den beri; eski bir düğümde `501`). Bir adres için yerel anahtar kayıt defterinde kayıtlı ML-KEM şifreleme anahtarı: hiçbiri kayıtlı değilse `{"found":false,"key":null}` |
 | GET   | `/qorechain/pqc/v1/params`               | **v3.2.6 (testnet)**. Modül parametreleri; bu yazının hazırlandığı sırada ana ağda `501` |
 
 Yol bölümünün tekil `account` olduğuna dikkat edin. `/qorechain/pqc/v1/stats` rotası yoktur (bunun için `qorechaind query pqc stats` kullanın). `/qorechain/pqc/v1/params` v3.2.6'dan itibaren sunulur, dolayısıyla şimdilik yalnızca test ağında; ana ağda, o sürümü uygulayana kadar bir düğüme karşı `qorechaind query pqc params` kullanın.
@@ -510,7 +511,7 @@ Staking-tiers modülü **v3.2.4** sürümünün parçasıdır. Bu rotalar test a
 
 ## İtibar Modülü {#reputation-module}
 
-İtibar modülünün REST rotaları **test ağında** (`qorechain-diana`, zincir v3.2.6) sunulur. Ana ağda her `/qorechain/reputation/v1/...` rotası, yazım sırasında (27 Ekim 2026) HTTP `501` ile yanıt verir (`{"code":12,"message":"Not Implemented"}`); orada modüle yalnızca gRPC üzerinden ulaşılır (`Params`, aşağıya bakın). Daha sonraki bir ana ağ sürümünün bunları sunması beklenir; sunduğunda bu sayfa güncellenecektir.
+İtibar modülünün REST rotaları **test ağında** (`qorechain-diana`, zincir v3.2.6) sunulur. Ana ağda her `/qorechain/reputation/v1/...` rotası, yazım sırasında (27 Ekim 2026) HTTP `501` ile yanıt verir (`{"code":12,"message":"Not Implemented"}`); orada modüle yalnızca gRPC üzerinden ulaşılır (`Params`, aşağıya bakın). Ana ağ v3.2.5 bunları eklemedi (30 Ekim 2026'da kontrol edildi); bir ana ağ sürümü bunları sunduğunda bu sayfa güncellenecektir.
 
 | Metot | Uç Nokta | Açıklama |
 | ------ | -------- | ----------- |
@@ -522,12 +523,12 @@ Skorlar 0 ile 1 arasında ondalık dizelerdir. Light node, delege edilmiş bir d
 
 ## Yalnızca gRPC modülleri {#grpc-only-modules}
 
-Ana ağda (düğüm sürümü v3.2.4, 27 Ekim 2026'da kontrol edildi) bu modüllerin bir gRPC `Query` servisi vardır ancak **REST rotası yoktur**. Servis adları `qorechain.<module>.v1.Query` biçimini izler.
+Ana ağda (düğüm sürümü v3.2.5, 30 Ekim 2026'da kontrol edildi) bu modüllerin bir gRPC `Query` servisi vardır ancak **REST rotası yoktur**. Servis adları `qorechain.<module>.v1.Query` biçimini izler.
 
-| Modül         | gRPC sorgu metotları (ana ağ, zincir sürümü v3.2.4)    |
+| Modül         | gRPC sorgu metotları (ana ağ, zincir sürümü v3.2.5)    |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
-| `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
+| `crossvm`     | `PendingMessages` (v3.2.5'ten beri REST üzerinden: `Params`, `/qorechain/crossvm/v1/params` adresinde ve `Message`, `/qorechain/crossvm/v1/message/{id}` adresinde) |
 | `reputation`  | `Params` (REST rotaları yalnızca test ağında vardır, bkz. [İtibar Modülü](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                           |
@@ -569,7 +570,7 @@ QoreChain Native öneki `/cosmwasm/wasm/v1/...` şeklindedir; `/cosmos/wasm/v1/.
 
 IBC v2 istemci sorgu servisi daha önce gRPC üzerinden sunuluyordu, ancak REST rotaları eksikti; v3.2.6 bunları bağlar. Bir röle, bir istemcinin karşı tarafını buradan okur. Her iki rota da istemci kimliğini yolda alır (örneğin `07-<type>-0`); bu olmadan her iki ağda da `501` ile yanıt verirler. 27 Ekim 2026'da kontrol edildi:
 
-| Rota | Test ağı (v3.2.6) | Ana ağ (v3.2.4) |
+| Rota | Test ağı (v3.2.6) | Ana ağ (v3.2.5) |
 | --- | --- | --- |
 | `/ibc/core/client/v2/counterparty_info/{client_id}` | karşı tarafla `200`, ya da kayıtlı karşı tarafı olmayan bir istemci için `404` (`client 07-<type>-0 counterparty not found`); boş bir kimlik `400` ile yanıt verir | `501` |
 | `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}` (boş liste, herhangi bir röle anlamına gelir) | `501` |

@@ -10,7 +10,7 @@ sidebar_position: 3
 Questa guida illustra come funziona la governance on-chain su QoreChain: come vengono conteggiati i voti, come presentare proposte e come votare.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la release **v3.2.4** dal 23 ottobre 2026; la testnet esegue la **v3.2.6** (dal 27 ottobre 2026) — sostituisci il chain ID e gli endpoint della mainnet dalla pagina **Connessione alla Mainnet** quando partecipi alla governance sulla mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la release **v3.2.5** dal 29 ottobre 2026 (v3.2.4 dal 23 ottobre); la testnet esegue la **v3.2.6** (dal 27 ottobre 2026) — sostituisci il chain ID e gli endpoint della mainnet dalla pagina **Connessione alla Mainnet** quando partecipi alla governance sulla mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -119,7 +119,7 @@ Una proposta contiene zero o più messaggi che vengono eseguiti se viene approva
 | **Parameter change** | Un messaggio `MsgUpdateParams` di un modulo, inviato dall'account del modulo di governance. Sostituisce l'intero insieme di parametri di quel modulo. |
 | **Software upgrade** | Un messaggio `MsgSoftwareUpgrade` che pianifica un upgrade coordinato della chain a una specifica altezza di blocco. |
 | **Community spend**  | Un messaggio `MsgCommunityPoolSpend` che invia fondi dal community pool a un indirizzo destinatario. |
-| **Expedited**        | Imposta `"expedited": true` per un periodo di voto più breve, con un deposito e una soglia di approvazione più alti (vedi sotto). |
+| **Expedited**        | Imposta `"expedited": true` per un periodo di voto più breve, con un deposito e una soglia di approvazione più alti (vedi sotto). Dalla v3.2.5 (entrambe le reti), una proposta expedited che non supera il conteggio e passa a proposta regolare mantiene i voti già espressi; prima della v3.2.5 quei voti andavano persi. |
 
 ---
 
@@ -175,7 +175,7 @@ I parametri principali includono:
 
 ## La governance sulla mainnet finora {#mainnet-history}
 
-La governance della mainnet è stata usata per modifiche ai parametri, decisioni sui circuit breaker, upgrade coordinati e, da ottobre 2026, per rilasciare importi che la chain aveva registrato all'upgrade v3.2.0. Le proposte da 7 a 13 sono state approvate sulla mainnet a ottobre 2026, incluse la proposta 12 (un ulteriore rilascio, approvata il 21 ottobre) e la proposta 13 (l'upgrade v3.2.4, applicato all'altezza 3.742.566 il 23 ottobre); la proposta 14 (un upgrade coordinato alla v3.2.5 all'altezza 3.906.833) era nel periodo di voto al momento della stesura; l'elenco e gli esiti sono in [Cronologia delle Versioni](/appendix/version-history#governance-timeline), e ogni proposta può essere letta in tempo reale a `GET /cosmos/gov/v1/proposals`.
+La governance della mainnet è stata usata per modifiche ai parametri, decisioni sui circuit breaker, upgrade coordinati e, da ottobre 2026, per rilasciare importi che la chain aveva registrato all'upgrade v3.2.0. Le proposte da 7 a 14 sono state approvate sulla mainnet a ottobre 2026, incluse la proposta 12 (un ulteriore rilascio, approvata il 21 ottobre) e la proposta 13 (l'upgrade v3.2.4, applicato all'altezza 3.742.566 il 23 ottobre) e la proposta 14 (l'upgrade v3.2.5, applicato all'altezza 3.906.833 il 29 ottobre 2026); l'elenco e gli esiti sono in [Cronologia delle Versioni](/appendix/version-history#governance-timeline), e ogni proposta può essere letta in tempo reale a `GET /cosmos/gov/v1/proposals`.
 
 ---
 

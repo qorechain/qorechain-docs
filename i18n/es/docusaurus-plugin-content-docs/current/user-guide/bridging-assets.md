@@ -14,7 +14,7 @@ El módulo del puente está desplegado en mainnet y testnet, pero **ninguna ruta
 :::
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**, versión de cadena **v3.2.6**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) ejecuta la versión de cadena **v3.2.4** (desde el 23 de octubre de 2026). Sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** una vez que se active una ruta. Estado comprobado el 27 de octubre de 2026: las 37 configuraciones de cadena están en `pending` en ambas redes.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**, versión de cadena **v3.2.6**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) ejecuta la versión de cadena **v3.2.5** (desde el 29 de octubre de 2026). Sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** una vez que se active una ruta. Estado comprobado el 27 de octubre de 2026: las 37 configuraciones de cadena están en `pending` en ambas redes.
 :::
 
 ---
@@ -48,7 +48,7 @@ Lee los límites con `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` e
 
 **Qué red tiene qué (comprobado el 27 de octubre de 2026).**
 
-| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | Transferencia ICS-20 (IBC v1) | Integrada, pero no hay ningún canal abierto | Integrada, un canal abierto |
 | Límite de tasa IBC | No disponible (501) | Disponible, sin límites fijados |

@@ -10,7 +10,7 @@ sidebar_position: 7
 La abstracción de gas permite a un usuario pagar la comisión de una transacción en un token no nativo aceptado en lugar de QOR. El código de conversión de comisiones forma parte de la cadena, pero **hoy no se acepta ningún token no nativo en ninguna de las dos redes**, por lo que toda comisión se paga en QOR. Esta página explica qué está activo, cómo funciona la conversión tal como está construida y qué hacer en su lugar.
 
 :::caution Todavía no se puede usar: pague cada comisión en uqor
-En mainnet (**`qorechain-vladi`**) y en la testnet (**`qorechain-diana`**), en las versiones de nodo **v3.2.4** y **v3.2.6** respectivamente, comprobado el 27 de octubre de 2026:
+En mainnet (**`qorechain-vladi`**) y en la testnet (**`qorechain-diana`**), en las versiones de nodo **v3.2.5** y **v3.2.6** respectivamente (mainnet comprobada de nuevo el 30 de octubre de 2026 tras la actualización a v3.2.5, testnet el 27 de octubre de 2026):
 
 * La lista de tokens aceptados en producción contiene **solo `uqor`**. La conversión de comisiones se activó con v3.2.2, pero no hay nada más en la lista, el tope de conversión por bloque es `0` (conversión desactivada) y el float de conversión no tiene saldo. Una comisión pagada en cualquier otra denominación es rechazada con un error «denom not accepted for fee payment», tanto en simulación como en una transacción real.
 * No existe ningún canal IBC en mainnet, y el único canal de prueba de la testnet no convierte ningún token `ibc/…` en un token de comisión aceptado (la lista es solo `uqor`), por lo que no hay nada más que `uqor` con lo que pagar.

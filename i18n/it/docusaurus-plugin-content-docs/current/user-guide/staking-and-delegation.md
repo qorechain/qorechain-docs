@@ -10,7 +10,7 @@ sidebar_position: 2
 Questa guida illustra come delegare token QOR ai validatori, ridelegare tra validatori, effettuare l'unbonding dello stake, riscuotere le ricompense e capire quali parti del design di staking di QoreChain sono attive oggi.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.4** (applicata il 23 ottobre 2026); la testnet esegue la v3.2.6 (dal 27 ottobre 2026). Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando esegui lo staking su mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.5** (applicata il 29 ottobre 2026; la v3.2.4 il 23 ottobre); la testnet esegue la v3.2.6 (dal 27 ottobre 2026). Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando esegui lo staking su mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -126,7 +126,7 @@ Le ricompense di staking sono finanziate da due fonti: il budget di emissione li
 ## Staking con blocco temporale (v3.2.4) {#time-locked-staking}
 
 :::note Quando si applica
-La release v3.2.4 aggiunge un modulo facoltativo di staking con blocco temporale, `x/stakingtier`. È attivo sulla **testnet `qorechain-diana`** dal 19 ottobre 2026 e sulla **mainnet** dal 23 ottobre 2026 (applicato all'altezza 3.742.566 dalla proposta di governance 13). Il blocco è disponibile come opzione e la delega ordinaria resta senza blocco (vedi [sopra](#lock-in-period)). Il meccanismo descritto sotto è stato verificato rispetto ai parametri live della mainnet e della testnet il 23 ottobre 2026.
+La release v3.2.4 aggiunge un modulo facoltativo di staking con blocco temporale, `x/stakingtier`. È attivo sulla **testnet `qorechain-diana`** dal 19 ottobre 2026 e sulla **mainnet** dal 23 ottobre 2026 (applicato all'altezza 3.742.566 dalla proposta di governance 13); la mainnet esegue la v3.2.5 dal 29 ottobre 2026, che lo lascia invariato. Il blocco è disponibile come opzione e la delega ordinaria resta senza blocco (vedi [sopra](#lock-in-period)). Il meccanismo descritto sotto è stato verificato rispetto ai parametri live della mainnet e della testnet il 23 ottobre 2026.
 :::
 
 Un delegatore può vincolare una parte di una delega esistente a un validatore per un termine fisso di 3, 6 o 12 mesi. Termini e importi sono parametri della chain; leggi quelli attuali da `GET /qorechain/stakingtier/v1/params` anziché da questa pagina.
@@ -158,7 +158,7 @@ L'ID di chain qui sopra è quello della testnet; usa `qorechain-vladi` sulla mai
 
 **Dove funziona, verificato il 27 ottobre 2026.**
 
-| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | Modulo attivo | Sì, dall'altezza 3.742.566 | Sì, dalla v3.2.4 (altezza 8.337.253) |
 | Blocchi aperti | Nessuno finora | 3 blocchi di test |

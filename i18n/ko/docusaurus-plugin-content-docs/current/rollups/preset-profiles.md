@@ -38,7 +38,7 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 RDK v0.4.2부터 Wasm VM 옵션(QoreChain Native 컨트랙트를 실행하는 런타임)의 이름은 **`native`** — QoreChain Native 입니다. `cosmwasm`은 여전히 허용되는 레거시 별칭이며, 두 값 모두 와이어 상에서는 `cosmwasm`으로 매핑되므로 체인, 익스플로러, Dashboard는 변경되지 않습니다.
 
 :::note
-프리셋별 구성은 v3.2.3 소스의 체인 프로필 표를 기준으로 검증되었으며, 이 표는 v3.2.4 소스(메인넷)와 v3.2.6 소스(테스트넷)에서도 바뀌지 않았습니다(2026년 10월 27일 확인). 이 표에서 `create-rollup`은 프로필의 프리셋을 자동으로 적용합니다: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (기본값)**. `custom` 프리셋은 모든 필드를 열어 두며, 표시된 값은 그 시작 기본값일 뿐입니다.
+프리셋별 구성은 v3.2.3 소스의 체인 프로필 표를 기준으로 검증되었으며, 이 표는 v3.2.4 소스와 v3.2.6 소스(테스트넷)에서도 바뀌지 않았습니다(2026년 10월 27일 확인). 메인넷은 이제 그 둘 사이에 있는 v3.2.5를 실행합니다. 이 표에서 `create-rollup`은 프로필의 프리셋을 자동으로 적용합니다: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (기본값)**. `custom` 프리셋은 모든 필드를 열어 두며, 표시된 값은 그 시작 기본값일 뿐입니다.
 :::
 
 네 가지 도메인 프리셋은 합리적인 출발점으로, **`custom`** 프로필은 완전히 열린 옵션으로 생각하세요. 번들된 정확한 파라미터는 릴리스 간에 변경될 수 있으므로, 신뢰할 수 있는 값은 아래의 `rdk config` 조회로 확인한 뒤, 가장 가까운 프리셋에서 시작하여 다듬어 나가세요.

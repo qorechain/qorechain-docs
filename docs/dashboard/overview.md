@@ -59,7 +59,7 @@ The header shows the network you are on and lets you switch. The choice is remem
 
 | Network | Chain ID | When to use it |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Live network (live since 7 June 2026, running chain v3.2.4 since 23 October 2026) for real value. Non-custodial: you connect your own wallet. |
+| **Mainnet** | `qorechain-vladi` | Live network (live since 7 June 2026, running chain v3.2.5 since 29 October 2026) for real value. Non-custodial: you connect your own wallet. |
 | **Testnet** | `qorechain-diana` | Free environment (running chain v3.2.6 since 27 October 2026) with a Dashboard-managed test wallet and the [Faucet](/dashboard/faucet). |
 
 The native token is **QOR** (base denomination `uqor`, 1 QOR = 10^6 uqor). If you are new, start on testnet, claim tokens from the Faucet and try a first transfer before moving to mainnet.

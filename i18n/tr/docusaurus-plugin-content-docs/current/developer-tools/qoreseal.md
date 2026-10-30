@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal, verileri QoreChain hesaplarına ML-KEM-1024 (FIPS 203) ile şifreleyen açık kaynaklı bir kütüphanedir. Bir hesap ML-KEM-1024 genel anahtarını zincirde yayımlar; ardından herkes, o hesabın ve gönderenin eklediği diğer alıcıların okuyabileceği bir yük (payload) şifreleyebilir. Gizli yükler (notlar, faturalar, belgeler, teklifler) gerektiren dApp geliştiricileri, görüntüleme erişimine ihtiyaç duyan denetçiler ve özel grupların ve yan zincirlerin operatörleri için tasarlanmıştır. Standart ilkelleri bir araya getirir ve kendisi hiçbirini uygulamaz. Sürüm **0.1.0**, Apache-2.0, bakımını QoreChain Association yapar.
 
-27 Ekim 2026 itibarıyla durumu: şifrelemenin kendisi ağ ve hesap olmadan, her yerde çevrimdışı çalışır. Zincirden okunan bir adrese şifrelemek için KEM anahtar kayıt defteri gerekir; bu kayıt defteri **test ağında canlıdır** (`qorechain-diana`) ve **v3.2.5 yükseltmesinden sonra ana ağa (`qorechain-vladi`) gelir**, tarih verilmemiştir. Paket Rust, Go, Python, Swift, Kotlin/JVM ve Android için yayımlanmıştır. TypeScript paketi `@qorechain/qoreseal` **yakında** gelecektir ve henüz npm'de değildir. Yapı, 1.0 öncesinde harici bir incelemeyi bekleyen bir taslaktır.
+30 Ekim 2026 itibarıyla durumu: şifrelemenin kendisi ağ ve hesap olmadan, her yerde çevrimdışı çalışır. Zincirden okunan bir adrese şifrelemek için KEM anahtar kayıt defteri gerekir; bu kayıt defteri **test ağında canlıdır** (`qorechain-diana`) ve ana ağ (`qorechain-vladi`) 29 Ekim 2026'da v3.2.5'i uyguladığından beri **okuma rotası ana ağda da yanıt verir** (orada henüz bir anahtar yayımlayan hesap yok; bu sayfa bulamadı). Paket Rust, Go, Python, Swift, Kotlin/JVM ve Android için yayımlanmıştır. TypeScript paketi `@qorechain/qoreseal` **yakında** gelecektir ve henüz npm'de değildir. Yapı, 1.0 öncesinde harici bir incelemeyi bekleyen bir taslaktır.
 
 QoreSeal yalnızca bir yükün içeriğini korur, başka bir şeyi değil. Adresler, işlem zamanlaması, transfer tutarları, zarf (envelope) boyutları ve alıcı sayısı zincirde herkese açık kalır. İşlemleri gizli yapmanın bir yolu değildir.
 
@@ -207,7 +207,7 @@ Kontrol ettiğiniz, biraz test ağı QOR'u olan ve kayıtlı bir ML-DSA-87 anaht
 5. Gönderici tarafı: `sealToAddresses({ rest: "https://api-testnet.qore.host", chainId: "qorechain-diana", purpose: "note", recipients: [{ address, card }], plaintext })`. Kart yoksa `mode: "mlkem"` verin.
 6. Alıcı tarafı: `open({ chainId: "qorechain-diana", purpose: "note", envelope, keys: sealKeys })`.
 
-Eksiksiz çalıştırılabilir akış, depo örneği `examples/register-and-encrypt` örneğidir. Bu ağ v3.2.5'i uygulayana kadar ana ağı reddeder. Go aynı gönderici tarafını `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})` ile sunar. Rust, Swift, Kotlin ve Python çevrimdışıdır: `/qorechain/pqc/v1/kem/{address}` ve `/qorechain/pqc/v1/account/{address}` adreslerini kendiniz okuyun, kartı doğrulayın (`verify_recipient_card`), sonra mühürleyin.
+Eksiksiz çalıştırılabilir akış, depo örneği `examples/register-and-encrypt` örneğidir. Ana ağ v3.2.5'i 29 Ekim 2026'da uyguladı; ana ağ korumasını kaldıran sürüm için örneğin kendi README'sine bakın. Go aynı gönderici tarafını `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})` ile sunar. Rust, Swift, Kotlin ve Python çevrimdışıdır: `/qorechain/pqc/v1/kem/{address}` ve `/qorechain/pqc/v1/account/{address}` adreslerini kendiniz okuyun, kartı doğrulayın (`verify_recipient_card`), sonra mühürleyin.
 
 ### Ana API {#api}
 
@@ -243,17 +243,17 @@ Python hataları sabit bir `code` ile `QoreSealError.Failure` fırlatır; Go hat
 
 | | Ana ağ `qorechain-vladi` | Test ağı `qorechain-diana` |
 |---|---|---|
-| KEM anahtar kayıt defteri | v3.2.5 yükseltmesinden sonra (henüz uygulanmadı, tarih yok) | canlı |
+| KEM anahtar kayıt defteri | v3.2.5'ten beri canlı (29 Ekim 2026'da, 3,906,833 yüksekliğinde uygulandı); okuma rotası doğrulandı, aşağıya bakın | canlı |
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host` (zincir kimliği 9801) | `https://evm-testnet.qore.host` (zincir kimliği 9800) |
 
-27 Ekim 2026'da test ağı kayıt defteri sorgusu, anahtarı olmayan bir hesap için `{"found":false,"key":null}` yanıtını verdi; ana ağda aynı sorgu "Not Implemented" yanıtını verdi.
+30 Ekim 2026'da kayıt defteri sorgusu, anahtarı olmayan bir hesap için her iki ağda da `{"found":false,"key":null}` yanıtını verdi (27 Ekim'de ana ağ hâlâ "Not Implemented" yanıtını veriyordu). 30 Ekim'de ana ağ işlemlerinde yapılan bir aramada henüz `MsgRegisterKEMKey` bulunamadı; dolayısıyla ana ağda bir anahtar yayımlamak bu sayfa tarafından uçtan uca denenmemiştir.
 
 - Doğrudan geçirilen denetçi anahtarları dahil çevrimdışı mühürleme ve açma, özel gruplar ve batch'ler ağ veya hesap gerektirmez.
 - Bir adrese şifrelemek için alıcının kayıt defterine bir ML-KEM-1024 anahtarı yayımlamış olması ve hibrit mod için bir alıcı kartı bulunması gerekir.
-- Bir anahtar yayımlamak için test ağı QOR'u olan bir hesap (ana ağda yükseltmeden sonra QOR), kayıtlı bir ML-DSA-87 anahtarı ve işlemi hibrit imzalamak için QoreSign gerekir. Ücret tabanı gas başına 0,1 uqor'dur. Test ağı QOR'unu [Musluk](/dashboard/faucet) üzerinden alın.
-- Ana ağ v3.2.5'i uygulayana kadar ana ağdaki kayıt defteri sorgusu kullanılamaz ve kayıt reddedilir (kod 250).
+- Bir anahtar yayımlamak için test ağı QOR'u olan bir hesap (ana ağda QOR), kayıtlı bir ML-DSA-87 anahtarı ve işlemi hibrit imzalamak için QoreSign gerekir. Ücret tabanı gas başına 0,1 uqor'dur. Test ağı QOR'unu [Musluk](/dashboard/faucet) üzerinden alın.
+- Ana ağ kaydı yalnızca kayıt defterine sahip bir zincir tarafından kabul edilir; kod 250 ile bir ret görünürse kayıt defteri o zincirde etkin değildir.
 
 ## Nerede yayımlanır {#where-published}
 
@@ -285,7 +285,7 @@ Kaynak: [github.com/qorechain/qoreseal](https://github.com/qorechain/qoreseal) (
 - **Bir anahtarı kaldırmak veya döndürmek hiçbir şeyi silmez veya yeniden şifrelemez.** Eski bir anahtara mühürlenen veri, onu elinde tutan herkes tarafından okunabilir kalır; eski tohumları veya indeksleri saklayın.
 - **Çıkarılan grup üyeleri** ait oldukları dönemlerin anahtarlarını saklar. Yeni üyeler, kendilerine daha eski anahtarlar mühürlenmedikçe katıldıkları dönemden itibaren okur.
 - **Zincir kimliği ve amaç zarfta değildir;** alıcı bunları bilmelidir.
-- **Ana ağ kayıt defteri:** ana ağ v3.2.5'i uygulayana kadar kullanılamaz.
+- **Ana ağ kayıt defteri:** okuma rotası v3.2.5'ten beri canlıdır; bu kontrol edildiğinde ana ağda henüz bir anahtar yayımlanmamıştı ve EVM JSON-RPC `qor_` ad alanı `evm.qore.host` üzerinde sunulmaz (REST rotasını kullanın).
 - **1.0 öncesi, yapı harici incelemeyi bekliyor.** Küçük sürümler API'yi değiştirebilir. Güvenmeden önce spesifikasyonu okuyun.
 - **Henüz npm paketi yok** ve henüz Windows için Python wheel'i yok.
 

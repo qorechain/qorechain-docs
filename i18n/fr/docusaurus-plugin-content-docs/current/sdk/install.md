@@ -39,7 +39,7 @@ hybrides acceptent une option `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`) ; 
 interroge le réseau et nécessite donc le point d'accès REST (`rest`) sur
 `qorechain-vladi` / `qorechain-diana` : il lève une erreur au lieu de deviner. Voir
 [Quelle forme de sign-bytes ?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-La forme n'a pas changé dans la chaîne v3.2.3 ni v3.2.4 (la v3.2.4 s'exécute sur le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026) : `"auto"`
+La forme n'a pas changé dans la chaîne v3.2.3 ni v3.2.4 (la v3.2.4 s'exécute sur le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026 ; la v3.2.5 n'a rien changé ici et s'exécute sur le mainnet depuis le 29 octobre 2026) : `"auto"`
 se résout en v2 sur les deux réseaux, car les deux ont appliqué la mise à niveau qui y a basculé.
 :::
 
@@ -50,10 +50,8 @@ hauteur 3,742,566 le 23 octobre 2026 (le testnet l'a appliquée à la hauteur 8,
 le 19 octobre). Le format de signature, les adresses, les décimales, les memos et les frais n'ont pas
 changé, et une transaction construite avec la 0.9.0 reste valide. La version a été vérifiée dans
 chaque langage avec de vraies transactions sur le testnet. Elle n'a pas de constructeurs pour
-quoi que ce soit introduit après la v3.2.4. Le testnet est passé à la v3.2.6 (la v3.2.5 et
-la v3.2.6 y ont été appliquées les 26 et 27 octobre 2026) ; la proposition de gouvernance 14 du
-mainnet appliquerait la v3.2.5 à la hauteur 3,906,833 au moment de la rédaction, et ce que cette
-version ajoute sera documenté lorsque le mainnet l'appliquera. Voici les nouveautés de la 0.10.0 :
+quoi que ce soit introduit après la v3.2.4. Le mainnet exécute la v3.2.5 depuis le 29 octobre 2026 (hauteur 3,906,833, proposition de gouvernance 14) et la 0.10.0 y continue de fonctionner, car le format de signature n'a pas changé ; les ajouts de la v3.2.5 n'ont pas encore de constructeur dans le SDK. Le testnet est passé à la v3.2.6 (la v3.2.5 et
+la v3.2.6 y ont été appliquées les 26 et 27 octobre 2026). Voici les nouveautés de la 0.10.0 :
 
 | Domaine | Dans la 0.10.0 |
 | --- | --- |
@@ -72,7 +70,7 @@ dépend de `@qorechain/sdk` `^0.10.0`, et les modèles du générateur aussi).
 ## Ce qu'a ajouté la 0.9.0 {#whats-new-090}
 
 Le SDK 0.9.0 était la version cliente pour les chaînes **v3.2.2** et **v3.2.3** (le mainnet
-les a appliquées aux hauteurs 3,556,788 et 3,662,051 ; le mainnet exécute la v3.2.4 depuis le 23 octobre 2026 à la hauteur 3,742,566, et le testnet exécute la v3.2.4 ou une version ultérieure depuis le 19 octobre 2026). Le
+les a appliquées aux hauteurs 3,556,788 et 3,662,051 ; le mainnet a exécuté la v3.2.4 à partir du 23 octobre 2026 (hauteur 3,742,566) et exécute la v3.2.5 depuis le 29 octobre 2026, et le testnet exécute la v3.2.4 ou une version ultérieure depuis le 19 octobre 2026). Le
 format de signature, les adresses, les décimales, les memos et les frais n'ont pas changé,
 si bien que la forme sign-bytes hybride v2 que signent la 0.8.1 et les versions suivantes
 reste la bonne.

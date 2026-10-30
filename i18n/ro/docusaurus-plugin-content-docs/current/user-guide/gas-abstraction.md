@@ -10,7 +10,7 @@ sidebar_position: 7
 Abstractizarea gazului îi permite unui utilizator să plătească o taxă de tranzacție într-un token non-nativ acceptat, în loc de QOR. Codul de conversie a taxelor face parte din lanț, dar **astăzi nu este acceptat niciun token non-nativ în niciuna dintre rețele**, deci fiecare taxă se plătește în QOR. Această pagină explică ce este activ, cum funcționează conversia așa cum a fost construită și ce faceți în schimb.
 
 :::caution Încă indisponibil: plătiți fiecare taxă în uqor
-Pe mainnet (**`qorechain-vladi`**) și pe testnet (**`qorechain-diana`**), pe versiunea de nod **v3.2.4**, respectiv **v3.2.6**, verificat la 27 octombrie 2026:
+Pe mainnet (**`qorechain-vladi`**) și pe testnet (**`qorechain-diana`**), pe versiunea de nod **v3.2.5**, respectiv **v3.2.6** (mainnet re-verificat la 30 octombrie 2026, după upgrade-ul v3.2.5, testnet la 27 octombrie 2026):
 
 * Lista activă a tokenurilor acceptate conține **doar `uqor`**. Conversia taxelor a fost activată cu v3.2.2, dar nimic altceva nu este listat, plafonul de conversie per bloc este `0` (conversie oprită), iar float-ul de conversie nu deține niciun sold. O taxă plătită în orice altă denominare este refuzată cu o eroare „denom not accepted for fee payment”, atât în simulare, cât și într-o tranzacție reală.
 * Pe mainnet nu există niciun canal IBC, iar singurul canal de test al testnet-ului nu face ca vreun token `ibc/…` să fie token de taxă acceptat (lista conține doar `uqor`), deci nu există nimic în afară de `uqor` cu care să se plătească.

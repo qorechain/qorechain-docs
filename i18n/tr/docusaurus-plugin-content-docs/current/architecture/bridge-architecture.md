@@ -23,7 +23,7 @@ Köprü modülü mainnet ve testnet üzerinde dağıtılmıştır, ancak **hiçb
 | Köprü işlemleri | 0 | 0 |
 | IBC kanalları / istemcileri | 0 / 0 | 1 / 1 (Cosmos Hub testnet'ine bir test kanalı) |
 
-(27 Ekim 2026'da mainnet (v3.2.4) ve testnet (v3.2.6) üzerinde kontrol edildi. Canlı değerleri `qorechaind query bridge chains` ve `qorechaind query bridge validators` ile ya da REST üzerinden `/qorechain/bridge/v1/chains` ve `/qorechain/bridge/v1/validators` adreslerinden okuyun.) Modül yapılandırması her iki ağda aynıdır: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 ve `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Modülün kullanacağı IBC yığını ibc-go v10.7'dir (v3.2.2'den beri), ancak mainnet'te henüz hiçbir istemci veya kanal oluşturulmamıştır (testnet'te bir test istemcisi ve kanalı vardır, yukarıya bakın).
+(27 Ekim 2026'da mainnet (v3.2.4; 29 Ekim 2026'dan beri v3.2.5) ve testnet (v3.2.6) üzerinde kontrol edildi. Canlı değerleri `qorechaind query bridge chains` ve `qorechaind query bridge validators` ile ya da REST üzerinden `/qorechain/bridge/v1/chains` ve `/qorechain/bridge/v1/validators` adreslerinden okuyun.) Modül yapılandırması her iki ağda aynıdır: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 ve `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Modülün kullanacağı IBC yığını ibc-go v10.7'dir (v3.2.2'den beri), ancak mainnet'te henüz hiçbir istemci veya kanal oluşturulmamıştır (testnet'te bir test istemcisi ve kanalı vardır, yukarıya bakın).
 
 ## Bağlantıya Genel Bakış
 

@@ -38,7 +38,7 @@ A few constraints follow from the [settlement → proof matrix](/rollups/overvie
 As of RDK v0.4.2, the Wasm VM option (the runtime that executes QoreChain Native contracts) is named **`native`** — QoreChain Native. `cosmwasm` remains an accepted legacy alias, and both map to `cosmwasm` on the wire, so the chain, explorer, and Dashboard are unchanged.
 
 :::note
-Per-preset configuration was checked against the chain's profile table in the v3.2.3 source; the table is unchanged in the v3.2.4 source (mainnet) and the v3.2.6 source (testnet), checked 27 October 2026. In it, `create-rollup` applies the profile's preset automatically: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (defaults)**. The `custom` preset leaves every field open — the values shown are its starting defaults.
+Per-preset configuration was checked against the chain's profile table in the v3.2.3 source; the table is unchanged in the v3.2.4 source and the v3.2.6 source (testnet), checked 27 October 2026; mainnet now runs v3.2.5, which sits between the two. In it, `create-rollup` applies the profile's preset automatically: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (defaults)**. The `custom` preset leaves every field open — the values shown are its starting defaults.
 :::
 
 Treat the four domain presets as sensible starting points and the **`custom`** profile as the fully open option. The precise bundled parameters can change between releases — query `rdk config` (below) for the authoritative values, then start from the closest preset and refine.

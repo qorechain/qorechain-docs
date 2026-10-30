@@ -59,7 +59,7 @@ Başlık, hangi ağda olduğunuzu gösterir ve geçiş yapmanıza olanak tanır.
 
 | Ağ | Chain ID | Ne zaman kullanılır |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Gerçek değer için canlı ağ (7 Haziran 2026'dan beri canlı, 23 Ekim 2026'dan beri zincir v3.2.4 çalıştırıyor). Non-custodial: kendi cüzdanınızı bağlarsınız. |
+| **Mainnet** | `qorechain-vladi` | Gerçek değer için canlı ağ (7 Haziran 2026'dan beri canlı, 29 Ekim 2026'dan beri zincir v3.2.5 çalıştırıyor). Non-custodial: kendi cüzdanınızı bağlarsınız. |
 | **Testnet** | `qorechain-diana` | Dashboard tarafından yönetilen bir test cüzdanı ve [Faucet](/dashboard/faucet) ile ücretsiz ortam (27 Ekim 2026'dan beri zincir v3.2.6 çalıştırıyor). |
 
 Yerel token **QOR**'dur (temel birim `uqor`, 1 QOR = 10^6 uqor). Yeniyseniz, testnet ile başlayın, Faucet'ten token talep edin ve mainnet'e geçmeden önce ilk bir transfer deneyin.

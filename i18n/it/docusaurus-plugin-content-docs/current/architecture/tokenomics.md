@@ -23,7 +23,7 @@ Il modello economico di QoreChain è incentrato sul token nativo **QOR** e segue
 | **Prefisso Bech32**     | `qor` (account: `qor1...`, validatori: `qorvaloper...`) |
 
 :::note
-Le cifre riportate in questa pagina descrivono la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live dal 7 giugno 2026 sulla release **v3.2.4** (applicata all'altezza 3.742.566 il 23 ottobre 2026). La testnet **`qorechain-diana`** (EVM chain ID **9800**, release **v3.2.6** dal 27 ottobre 2026) ha una propria storia di emissione e di offerta (l'offerta della testnet è molto superiore a quella della mainnet e la sua emissione ha già superato il tetto), quindi usa le cifre della mainnet. Gli importi che cambiano a ogni blocco sono contrassegnati con la data in cui sono stati letti (23 ottobre 2026).
+Le cifre riportate in questa pagina descrivono la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live dal 7 giugno 2026, sulla release **v3.2.5** dal 29 ottobre 2026 (altezza 3.906.833, proposta di governance 14; la v3.2.4 è stata applicata all'altezza 3.742.566 il 23 ottobre 2026). La testnet **`qorechain-diana`** (EVM chain ID **9800**, release **v3.2.6** dal 27 ottobre 2026) ha una propria storia di emissione e di offerta (l'offerta della testnet è molto superiore a quella della mainnet e la sua emissione ha già superato il tetto), quindi usa le cifre della mainnet. Gli importi che cambiano a ogni blocco sono contrassegnati con la data in cui sono stati letti (23 ottobre 2026).
 :::
 
 ---

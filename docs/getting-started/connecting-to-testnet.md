@@ -10,7 +10,7 @@ sidebar_position: 4
 Join the live QoreChain Diana testnet by configuring your node with the correct genesis file, peers, and network settings.
 
 :::note
-This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 (release **v3.2.4** since 23 October 2026) and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details. The testnet runs **v3.2.6** (applied on 27 October 2026); its release manifest is at [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 (release **v3.2.5** since 29 October 2026) and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details. The testnet runs **v3.2.6** (applied on 27 October 2026); its release manifest is at [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Public Endpoints
@@ -62,7 +62,7 @@ The testnet takes coordinated upgrades through governance proposals, so its mani
 | v3.2.5 | 8,890,800 | 26 October 2026 |
 | v3.2.6 | 8,970,638 | 27 October 2026 (16:58 UTC) |
 
-The testnet takes each release before mainnet. Mainnet applied v3.2.4 at height 3,742,566 on 23 October 2026; mainnet governance proposal 14 would apply v3.2.5 at height 3,906,833 and was in its voting period at the time of writing. The manifests are separate, so never copy a binary between the two networks, and do not expect mainnet to accept a testnet-only feature (the v3.2.6 additions are listed in [Version History](/appendix/version-history#testnet-v326)).
+The testnet takes each release before mainnet. Mainnet applied v3.2.4 at height 3,742,566 on 23 October 2026 and v3.2.5 at height 3,906,833 on 29 October 2026 (governance proposal 14), so v3.2.6 is the only release the testnet has that mainnet does not. The manifests are separate, so never copy a binary between the two networks, and do not expect mainnet to accept a testnet-only feature (the v3.2.6 additions are listed in [Version History](/appendix/version-history#testnet-v326)).
 
 ---
 

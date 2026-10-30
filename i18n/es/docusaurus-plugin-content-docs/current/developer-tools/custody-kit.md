@@ -86,7 +86,7 @@ El kit no implementa ningún esquema de firma. La verificación de ML-DSA-87 y s
 ### Retiros y gas {#withdrawals}
 
 - Comisión = ceil(límite de gas x precio del gas) en `uqor`. El precio mínimo del gas es 0.1 uqor, cobrado sobre el límite de gas.
-- Toma el límite de gas de una simulación de la transacción totalmente firmada. En los nodos que han aplicado la actualización v3.2.5 (testnet ahora, mainnet cuando se aplique) usa `ceil(gas_used x 1.02) + 2000`, porque la simulación incluye la verificación ML-DSA-87. Antes de eso usa `ceil((gas_used + 40000) x 1.4)`. Detecta cuál aplica con `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`, no por fecha.
+- Toma el límite de gas de una simulación de la transacción totalmente firmada. En los nodos que han aplicado la actualización v3.2.5 (ambas redes desde el 29 de octubre de 2026) usa `ceil(gas_used x 1.02) + 2000`, porque la simulación incluye la verificación ML-DSA-87. Antes de eso usa `ceil((gas_used + 40000) x 1.4)`. Detecta cuál aplica con `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`, no por fecha.
 - Tras elegir el límite de gas, reconstruye `AuthInfo` y firma de nuevo: ambas firmas cubren la comisión.
 - Secuencias: ejecuta una cola de firma por dirección hot, o varias direcciones hot para pagos en paralelo.
 
@@ -271,12 +271,12 @@ Ramifica según el codespace y el código juntos, y conserva el log en bruto.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | JSON-RPC EVM | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Versión del nodo | v3.2.4 (v3.2.5 todavía no aplicada) | v3.2.6 (v3.2.5 aplicada) |
+| Versión del nodo | v3.2.5 (aplicada el 29 de octubre de 2026) | v3.2.6 (v3.2.5 aplicada) |
 
 - La denominación es `uqor` (1 QOR = 10^6 uqor; en el carril EVM 1 uqor = 10^12 wei). El precio mínimo del gas es 0.1 uqor, el periodo de unbonding es de 21 días y el límite del memo es de 256 caracteres. Estos valores se leyeron en ambas redes el 27 de octubre de 2026 y pueden cambiar por gobernanza, así que léelos de la cadena en producción.
 - Los depósitos no necesitan claves ni registro. Enviar necesita una clave ML-DSA-87 registrada por dirección hot.
 - Ejecuta tus propios nodos completos para producción. Los endpoints públicos tienen límite de peticiones y están pensados para desarrollo. Si un script recibe `403 Forbidden`, define una cabecera `User-Agent` explícita. Consulta [ejecutar un nodo](/developer-guide/running-a-node) y [conectarse a mainnet](/getting-started/connecting-to-mainnet).
-- La testnet recibe cada versión de nodo antes que mainnet. Cambia las reglas de gas comprobando la actualización aplicada, no por fecha.
+- La testnet recibe cada versión de nodo antes que mainnet. Cambia las reglas de gas comprobando la actualización aplicada, no por fecha (ambas redes han aplicado la v3.2.5).
 - Los tokens de prueba de testnet (denominaciones de bank con la forma `erc20:0x...`, un token IBC) no existen en mainnet. Acredita `uqor` en ambas redes.
 - El QOR de testnet viene del faucet del panel de QoreChain y no tiene valor. Consulta [conectarse a testnet](/getting-started/connecting-to-testnet).
 

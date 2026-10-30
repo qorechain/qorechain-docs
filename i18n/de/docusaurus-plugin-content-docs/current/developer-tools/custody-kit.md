@@ -86,7 +86,7 @@ Das Kit implementiert kein Signaturverfahren. Die Verifikation von ML-DSA-87 und
 ### Auszahlungen und Gas {#withdrawals}
 
 - Gebühr = ceil(Gaslimit x Gaspreis) in `uqor`. Der Mindest-Gaspreis beträgt 0,1 uqor, berechnet auf das Gaslimit.
-- Nehmen Sie das Gaslimit aus einer Simulation der vollständig signierten Transaktion. Verwenden Sie auf Nodes, die das Upgrade v3.2.5 angewendet haben (Testnet jetzt, Mainnet nach der Anwendung), `ceil(gas_used x 1.02) + 2000`, weil die Simulation die ML-DSA-87-Verifikation einschließt. Davor verwenden Sie `ceil((gas_used + 40000) x 1.4)`. Welche Regel gilt, erkennen Sie mit `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`, nicht nach Datum.
+- Nehmen Sie das Gaslimit aus einer Simulation der vollständig signierten Transaktion. Verwenden Sie auf Nodes, die das Upgrade v3.2.5 angewendet haben (beide Netzwerke seit dem 29. Oktober 2026), `ceil(gas_used x 1.02) + 2000`, weil die Simulation die ML-DSA-87-Verifikation einschließt. Davor verwenden Sie `ceil((gas_used + 40000) x 1.4)`. Welche Regel gilt, erkennen Sie mit `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`, nicht nach Datum.
 - Bauen Sie nach der Wahl des Gaslimits `AuthInfo` neu und signieren Sie erneut: Beide Signaturen decken die Gebühr ab.
 - Sequenzen: Betreiben Sie eine Signierer-Warteschlange pro Hot-Adresse oder mehrere Hot-Adressen für parallele Auszahlungen.
 
@@ -271,7 +271,7 @@ Verzweigen Sie auf Codespace und Code zusammen und bewahren Sie das Roh-Log auf.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Node-Release | v3.2.4 (v3.2.5 noch nicht angewendet) | v3.2.6 (v3.2.5 angewendet) |
+| Node-Release | v3.2.5 (angewendet am 29. Oktober 2026) | v3.2.6 (v3.2.5 angewendet) |
 
 - Die Denomination ist `uqor` (1 QOR = 10^6 uqor; auf der EVM-Lane 1 uqor = 10^12 wei). Der Mindest-Gaspreis beträgt 0,1 uqor, die Unbonding-Frist 21 Tage und das Memo-Limit 256 Zeichen. Diese Werte wurden am 27. Oktober 2026 aus beiden Netzwerken gelesen und können sich per Governance ändern, lesen Sie sie in der Produktion daher von der Chain.
 - Einzahlungen brauchen weder Schlüssel noch Registrierung. Zum Senden ist pro Hot-Adresse ein registrierter ML-DSA-87-Schlüssel nötig.

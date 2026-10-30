@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal은 ML-KEM-1024(FIPS 203)로 QoreChain 계정에 데이터를 암호화하는 오픈 소스 라이브러리입니다. 계정이 자신의 ML-KEM-1024 공개 키를 체인에 게시하면, 누구든 그 계정과 발신자가 추가한 다른 수신자들이 읽을 수 있는 페이로드를 암호화할 수 있습니다. 기밀 페이로드(메모, 청구서, 문서, 입찰)가 필요한 dApp 개발자, 열람 권한이 필요한 감사인, 비공개 그룹과 사이드체인 운영자를 위한 것입니다. 표준 프리미티브를 조합할 뿐 자체 프리미티브는 구현하지 않습니다. 버전 **0.1.0**, Apache-2.0, QoreChain Association이 관리합니다.
 
-2026년 10월 27일 현재 상태: 암호화 자체는 네트워크도 계정도 없이 어디서나 오프라인으로 작동합니다. 체인에서 읽은 주소로 암호화하려면 KEM 키 레지스트리가 필요한데, 이는 **테스트넷**(`qorechain-diana`)에서 **라이브**이며 **메인넷(`qorechain-vladi`)에는 v3.2.5 업그레이드 이후** 적용됩니다. 날짜는 정해지지 않았습니다. 패키지는 Rust, Go, Python, Swift, Kotlin/JVM, Android용으로 게시되어 있습니다. TypeScript 패키지 `@qorechain/qoreseal`은 **출시 예정**이며 아직 npm에 없습니다. 이 구성은 1.0 이전에 외부 검토를 기다리는 초안입니다.
+2026년 10월 30일 현재 상태: 암호화 자체는 네트워크도 계정도 없이 어디서나 오프라인으로 작동합니다. 체인에서 읽은 주소로 암호화하려면 KEM 키 레지스트리가 필요한데, 이는 **테스트넷**(`qorechain-diana`)에서 **라이브**이며, 메인넷(`qorechain-vladi`)이 2026년 10월 29일 v3.2.5를 적용한 이후로 **읽기 라우트가 메인넷에서도 응답합니다**(이 페이지가 찾을 수 있는 한, 아직 어떤 계정도 그곳에 키를 게시하지 않았습니다). 패키지는 Rust, Go, Python, Swift, Kotlin/JVM, Android용으로 게시되어 있습니다. TypeScript 패키지 `@qorechain/qoreseal`은 **출시 예정**이며 아직 npm에 없습니다. 이 구성은 1.0 이전에 외부 검토를 기다리는 초안입니다.
 
 QoreSeal은 페이로드의 내용만 보호하며 그 외에는 아무것도 보호하지 않습니다. 주소, 트랜잭션 시점, 전송 금액, 엔벨로프 크기, 수신자 수는 체인에서 공개로 남습니다. 트랜잭션을 비공개로 만드는 방법이 아닙니다.
 
@@ -207,7 +207,7 @@ const msg = submitBatchMsg({ sequencer, rollupId: "my-rollup", batchIndex, state
 5. 발신자 쪽: `sealToAddresses({ rest: "https://api-testnet.qore.host", chainId: "qorechain-diana", purpose: "note", recipients: [{ address, card }], plaintext })`. 카드가 없으면 `mode: "mlkem"`을 전달합니다.
 6. 수신자 쪽: `open({ chainId: "qorechain-diana", purpose: "note", envelope, keys: sealKeys })`.
 
-완전히 실행 가능한 흐름은 저장소 예제 `examples/register-and-encrypt`입니다. 해당 네트워크가 v3.2.5를 적용하기 전까지 이 예제는 메인넷을 거부합니다. Go는 `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})`로 같은 발신자 쪽을 제공합니다. Rust, Swift, Kotlin, Python은 오프라인입니다. `/qorechain/pqc/v1/kem/{address}`와 `/qorechain/pqc/v1/account/{address}`를 직접 읽고, 카드를 검증한(`verify_recipient_card`) 다음 봉인하세요.
+완전히 실행 가능한 흐름은 저장소 예제 `examples/register-and-encrypt`입니다. 메인넷은 2026년 10월 29일 v3.2.5를 적용했습니다. 메인넷 가드를 해제하는 릴리스는 예제 자체의 README를 확인하세요. Go는 `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})`로 같은 발신자 쪽을 제공합니다. Rust, Swift, Kotlin, Python은 오프라인입니다. `/qorechain/pqc/v1/kem/{address}`와 `/qorechain/pqc/v1/account/{address}`를 직접 읽고, 카드를 검증한(`verify_recipient_card`) 다음 봉인하세요.
 
 ### 주요 API {#api}
 
@@ -243,17 +243,17 @@ Python 오류는 안정적인 `code`를 가진 `QoreSealError.Failure`를 발생
 
 | | 메인넷 `qorechain-vladi` | 테스트넷 `qorechain-diana` |
 |---|---|---|
-| KEM 키 레지스트리 | v3.2.5 업그레이드 이후(아직 적용되지 않음, 날짜 없음) | 라이브 |
+| KEM 키 레지스트리 | v3.2.5부터 라이브(2026년 10월 29일 높이 3,906,833에서 적용). 읽기 라우트 확인됨, 아래 참조 | 라이브 |
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host` (체인 ID 9801) | `https://evm-testnet.qore.host` (체인 ID 9800) |
 
-2026년 10월 27일에 테스트넷 레지스트리 쿼리는 키가 없는 계정에 `{"found":false,"key":null}`로 응답했고, 메인넷에서 같은 쿼리는 "Not Implemented"로 응답했습니다.
+2026년 10월 30일에 레지스트리 쿼리는 두 네트워크 모두에서 키가 없는 계정에 `{"found":false,"key":null}`로 응답했습니다(10월 27일에는 메인넷이 여전히 "Not Implemented"로 응답했습니다). 10월 30일에 메인넷 트랜잭션을 검색했을 때 `MsgRegisterKEMKey`는 아직 없었으므로, 메인넷에서의 키 게시는 이 페이지에서 처음부터 끝까지 실행해 보지 않았습니다.
 
 - 오프라인 봉인과 열기(직접 전달하는 감사인 키, 비공개 그룹, 배치 포함)에는 네트워크도 계정도 필요하지 않습니다.
 - 주소로 암호화하려면 수신자가 ML-KEM-1024 키를 레지스트리에 게시했어야 하며, 하이브리드 모드에서는 수신자 카드도 필요합니다.
-- 키를 게시하려면 테스트넷 QOR(메인넷에서는 업그레이드 이후의 QOR)이 있는 계정, 등록된 ML-DSA-87 키, 그리고 트랜잭션에 하이브리드 서명하는 QoreSign이 필요합니다. 수수료 하한은 가스당 0.1 uqor입니다. 테스트넷 QOR은 [Faucet](/dashboard/faucet)에서 받으세요.
-- 메인넷이 v3.2.5를 적용하기 전까지는 메인넷에서 레지스트리 쿼리를 사용할 수 없고 등록은 거부됩니다(코드 250).
+- 키를 게시하려면 테스트넷 QOR(메인넷에서는 QOR)이 있는 계정, 등록된 ML-DSA-87 키, 그리고 트랜잭션에 하이브리드 서명하는 QoreSign이 필요합니다. 수수료 하한은 가스당 0.1 uqor입니다. 테스트넷 QOR은 [Faucet](/dashboard/faucet)에서 받으세요.
+- 메인넷 등록은 레지스트리가 있는 체인에서만 수락됩니다. 코드 250으로 거부되면 해당 체인에서 레지스트리가 활성화되지 않은 것입니다.
 
 ## 게시 위치 {#where-published}
 
@@ -285,7 +285,7 @@ Python 오류는 안정적인 `code`를 가진 `QoreSealError.Failure`를 발생
 - **키를 제거하거나 교체해도 아무것도 지워지거나 다시 암호화되지 않습니다.** 이전 키에 봉인된 데이터는 그 키를 가진 사람이 계속 읽을 수 있으므로, 이전 시드나 인덱스를 보관하세요.
 - **제거된 그룹 구성원**은 자신이 속했던 에포크의 키를 유지합니다. 새 구성원은 이전 키가 그들에게 봉인되지 않는 한 합류한 에포크부터 읽습니다.
 - **체인 ID와 목적은 엔벨로프에 없습니다.** 수신자가 이를 알아야 합니다.
-- **메인넷 레지스트리:** 메인넷이 v3.2.5를 적용하기 전까지 사용할 수 없습니다.
+- **메인넷 레지스트리:** 읽기 라우트는 v3.2.5부터 라이브입니다. 확인 시점에 메인넷에는 게시된 키가 없었고, EVM JSON-RPC `qor_` 네임스페이스는 `evm.qore.host`에서 제공되지 않습니다(REST 라우트를 사용하세요).
 - **1.0 이전, 구성은 외부 검토 대기 중.** 마이너 버전에서 API가 바뀔 수 있습니다. 의존하기 전에 명세를 읽으세요.
 - **아직 npm 패키지가 없고** Windows용 Python 휠도 아직 없습니다.
 

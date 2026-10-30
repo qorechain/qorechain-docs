@@ -158,7 +158,7 @@ Kaynak: [github.com/qorechain/qorechain-mcp](https://github.com/qorechain/qorech
 - **Salt okunur.** Hiçbir komut imzalamaz veya yayınlamaz. `prepare-transfer` yalnızca uqor cinsinden native lane `MsgSend` oluşturur; EVM, SVM, staking, yönetişim veya sözleşme işlemleri hazırlamaz. `simulate` ve `estimate-fee`, kodlanmış herhangi bir native lane işlemini kabul eder.
 - **Faucet ve token sahibi listesi yok.** Bu iki MCP aracının CLI komutu yoktur. Testnet QOR, [Faucet](/dashboard/faucet) sayfasından alınır.
 - **Testnet geçmişi budanır.** Eski bir testnet bloğu veya işlemi, mevcut en düşük yükseklikle birlikte `NOT_FOUND` döndürür; mainnet, kontrol edildiğinde 1. yükseklikten itibaren sunuluyordu.
-- **Gas rakamları ağa göre farklıdır.** Testnet simülasyonu ML-DSA-87 doğrulama maliyetini zaten içerir; mainnet simülasyonu içermez, bu yüzden önerilen gas sınırı bir pay taşır.
+- **Gas rakamları zincir sürümünü izler.** Her iki ağ da v3.2.5'i uygulamıştır; bu yüzden simülasyon ML-DSA-87 doğrulama maliyetini içerir, daha eski bir düğümde ise önerilen gas sınırı bir pay taşır.
 - **Çıktı sınırları.** Blok başına en fazla 100 işlem karması, işlem başına 50 mesaj, hesap başına 100 bakiye, çağrı başına 200 doğrulayıcı. Her isteğin varsayılan 10 saniyelik bir zaman aşımı, 4 MiB'lık bir yanıt sınırı vardır ve yeniden deneme yoktur.
 - **Gizli bilgiler reddedilir.** Kurtarma ifadesine veya çıplak bir özel anahtara benzeyen girdi `INVALID_INPUT` ile reddedilir. Birini komut satırına koymayın: kabuk geçmişi onu saklar.
 - **EVM kuantum sonrası precompile'ları** `0x...0A01` ve `0x...0A02` yalnızca testnet'te etkindir.

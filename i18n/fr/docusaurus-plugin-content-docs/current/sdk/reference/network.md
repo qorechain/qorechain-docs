@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Préréglage réseau | `mainnet` |
 | Chain id | `qorechain-vladi` (en ligne depuis le 7 juin 2026) |
-| Version de la chaîne (27 octobre 2026) | v3.2.4 (depuis la hauteur 3,742,566, 23 octobre 2026, proposition de gouvernance 13). La proposition de gouvernance 14 appliquerait la v3.2.5 à la hauteur 3,906,833 et était en période de vote au moment de la rédaction ; ce qu'ajoute la v3.2.5 sera documenté le jour où le mainnet l'applique |
+| Version de la chaîne (30 octobre 2026) | v3.2.5 (depuis la hauteur 3,906,833, 29 octobre 2026, proposition de gouvernance 14 ; la v3.2.4 a été appliquée à la hauteur 3,742,566 le 23 octobre). Le SDK 0.10.0 est le client de la v3.2.4 et continue de fonctionner ; il n'a pas de builders pour les ajouts de la v3.2.5 |
 | EVM chain ID | `9801` |
 | Token d'affichage | `QOR` |
 | Dénomination de base | `uqor` |

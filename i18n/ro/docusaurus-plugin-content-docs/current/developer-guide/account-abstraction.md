@@ -14,7 +14,7 @@ Modulul de conturi abstracte este **oprit pe mainnet-ul `qorechain-vladi`** la m
 :::
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.4** (aplicată la înălțimea 3,742,566 pe 23 octombrie 2026, propunerea de guvernanță 13). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.6 (v3.2.4 din 19 octombrie 2026).
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.5** (aplicată la înălțimea 3,906,833 pe 29 octombrie 2026, propunerea de guvernanță 14; v3.2.4 a fost aplicată la înălțimea 3,742,566 pe 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.6 (v3.2.4 din 19 octombrie 2026).
 :::
 
 :::caution Fiecare tranzacție pe lane-ul Cosmos necesită cosemnătura hibridă post-cuantică

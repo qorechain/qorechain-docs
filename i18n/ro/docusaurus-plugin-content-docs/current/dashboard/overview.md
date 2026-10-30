@@ -59,7 +59,7 @@ Antetul afișează rețeaua pe care te afli și îți permite să comuți. Alege
 
 | Rețea | Chain ID | Când se folosește |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Rețeaua live (live din 7 iunie 2026, rulează chain v3.2.4 din 23 octombrie 2026) pentru valoare reală. Non-custodial: îți conectezi propriul portofel. |
+| **Mainnet** | `qorechain-vladi` | Rețeaua live (live din 7 iunie 2026, rulează chain v3.2.5 din 29 octombrie 2026) pentru valoare reală. Non-custodial: îți conectezi propriul portofel. |
 | **Testnet** | `qorechain-diana` | Mediu gratuit (rulează chain v3.2.6 din 27 octombrie 2026), cu un portofel de test gestionat de Dashboard și [Faucet](/dashboard/faucet). |
 
 Tokenul nativ este **QOR** (denominarea de bază `uqor`, 1 QOR = 10^6 uqor). Dacă ești nou, începe pe testnet, revendică tokenuri de la Faucet și încearcă un prim transfer înainte de a trece pe mainnet.

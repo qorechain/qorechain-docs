@@ -14,7 +14,7 @@ Köprü modülü mainnet ve testnet'te dağıtılmıştır, ancak **hiçbir köp
 :::
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**, zincir sürümü **v3.2.6**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 23 Ekim 2026'dan beri **v3.2.4** zincir sürümünü çalıştırır. Bir rota etkinleştirildiğinde **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın. Durum 27 Ekim 2026'da kontrol edildi: her iki ağda da 37 zincir yapılandırmasının tamamı `pending` durumundadır.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**, zincir sürümü **v3.2.6**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 29 Ekim 2026'dan beri **v3.2.5** zincir sürümünü çalıştırır. Bir rota etkinleştirildiğinde **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın. Durum 27 Ekim 2026'da kontrol edildi: her iki ağda da 37 zincir yapılandırmasının tamamı `pending` durumundadır.
 :::
 
 ---
@@ -48,7 +48,7 @@ Sınırları testnet'te `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits
 
 **Hangi ağda ne var (27 Ekim 2026'da kontrol edildi).**
 
-| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | ICS-20 transferi (IBC v1) | Yerleşik, ancak açık kanal yok | Yerleşik, bir kanal açık |
 | IBC hız sınırı | Mevcut değil (501) | Mevcut, ayarlı sınır yok |

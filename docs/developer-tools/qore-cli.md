@@ -158,7 +158,7 @@ Source: [github.com/qorechain/qorechain-mcp](https://github.com/qorechain/qorech
 - **Read only.** No command signs or broadcasts. `prepare-transfer` builds a native-lane `MsgSend` of uqor only; it does not prepare EVM, SVM, staking, governance or contract transactions. `simulate` and `estimate-fee` accept any encoded native-lane transaction.
 - **No faucet and no token-holder listing.** Those two MCP tools have no CLI command. Testnet QOR comes from the [Faucet](/dashboard/faucet).
 - **Testnet history is pruned.** An old testnet block or transaction returns `NOT_FOUND` with the lowest available height; mainnet served from height 1 when checked.
-- **Gas figures differ by network.** Testnet simulation already includes the ML-DSA-87 verification cost; mainnet simulation does not, so the suggested gas limit carries a margin.
+- **Gas figures follow the chain version.** Both networks have applied v3.2.5, so simulation includes the ML-DSA-87 verification cost; against an older node the suggested gas limit carries a margin.
 - **Output limits.** At most 100 transaction hashes per block, 50 messages per transaction, 100 balances per account, 200 validators per call. Each request has a 10 second default timeout, a 4 MiB response limit and no retries.
 - **Secrets are refused.** Input that looks like a recovery phrase or a bare private key is rejected with `INVALID_INPUT`. Do not put one in a command line: shell history keeps it.
 - **EVM post-quantum precompiles** `0x...0A01` and `0x...0A02` are active on testnet only.

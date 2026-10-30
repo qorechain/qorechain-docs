@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain은 **QoreChain Native** 스마트 컨트랙트를 지원합니다. QoreChain Native는 QoreChain이 자사의 **CosmWasm** 런타임에 붙인 이름으로, 개발자는 표준 CosmWasm 라이브러리(`cosmwasm-std`)를 기반으로 안전하고 샌드박스화된 프로그램을 Rust로 작성하고 이를 WebAssembly로 컴파일합니다. QoreChain Native 컨트랙트는 QoreChain의 트리플 VM 아키텍처 내에서 EVM 및 SVM 프로그램과 함께 실행됩니다.
 
 :::note
-아래 명령은 2026년 6월 7일부터 운영 중이며 2026년 10월 23일부터 노드 릴리스 **v3.2.4**(거버넌스 제안 13, 높이 3,742,566)를 실행하는 **`qorechain-vladi`** 메인넷을 사용합니다. v3.2.6을 실행하는 테스트넷(2026년 10월 19일부터 v3.2.4)의 경우 `--chain-id qorechain-diana`로 대체하세요.
+아래 명령은 2026년 6월 7일부터 운영 중이며 2026년 10월 29일부터 노드 릴리스 **v3.2.5**(거버넌스 제안 14, 높이 3,906,833. v3.2.4는 2026년 10월 23일부터)를 실행하는 **`qorechain-vladi`** 메인넷을 사용합니다. v3.2.6을 실행하는 테스트넷(2026년 10월 19일부터 v3.2.4)의 경우 `--chain-id qorechain-diana`로 대체하세요.
 :::
 
 :::caution 코드 업로드 및 인스턴스화에는 메인넷에서 명시적 권한이 필요하며, 테스트넷은 다릅니다

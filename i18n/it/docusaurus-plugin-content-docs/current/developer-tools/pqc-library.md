@@ -159,7 +159,7 @@ const signBytes = hybridSignBytes(version, chainId, bodyWithoutPqcExt, authInfoB
 ## Come accedere {#how-to-access}
 
 * **Per usare la libreria non servono rete, account né chiave.** Funziona offline. Una coppia di chiavi che crea è solo una chiave; per usarla su QoreChain l'account deve registrare la chiave pubblica una volta (vedi [Firma Post-Quantistica](/developer-guide/post-quantum-signing#pqc-key-registration)), e una transazione sulla lane Cosmos richiede poi la firma secp256k1 più la firma ML-DSA-87 (ibrida).
-* **Reti.** Gli helper dei sign-bytes e i vettori corrispondono alla mainnet `qorechain-vladi` (v3.2.4) e alla testnet `qorechain-diana` (v3.2.6). Per gli endpoint vedi [Reti](/appendix/networks).
+* **Reti.** Gli helper dei sign-bytes e i vettori corrispondono alla mainnet `qorechain-vladi` (v3.2.5) e alla testnet `qorechain-diana` (v3.2.6). Per gli endpoint vedi [Reti](/appendix/networks).
 * **Python richiede la libreria condivisa liboqs.** `pip install qorechain-pqc` dipende da `liboqs-python`, che compila liboqs al primo import se manca; questo richiede `git`, CMake e un compilatore C sulla macchina. Negli ambienti blindati installa liboqs dal gestore di pacchetti di sistema, oppure compilala in anticipo. Il binding Python legge le chiavi dal generatore di numeri casuali di sistema e nella 0.2.3 non ha la generazione di chiavi da seed.
 * **Go richiede Go 1.25 o successivo** (un requisito dalla 0.2.1, insieme a CIRCL 1.6.5 o successivo).
 * **Java** è stato eseguito con JDK 21. La chiave segreta ML-DSA nel binding Java è il seed FIPS 204 da 32 byte, non la chiave espansa da 4.896 byte usata dagli altri binding; qualsiasi altro input viene rifiutato.

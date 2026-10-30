@@ -23,7 +23,7 @@ Modulul podului este implementat pe mainnet și testnet, dar **nicio rută de po
 | Operațiuni de pod | 0 | 0 |
 | Canale / clienți IBC | 0 / 0 | 1 / 1 (un canal de test către testnet-ul Cosmos Hub) |
 
-(Verificat la 27 octombrie 2026 pe mainnet (v3.2.4) și testnet (v3.2.6). Citiți valorile live cu `qorechaind query bridge chains` și `qorechaind query bridge validators`, sau prin REST la `/qorechain/bridge/v1/chains` și `/qorechain/bridge/v1/validators`.) Configurația modulului este aceeași pe ambele rețele: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 și `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Stiva IBC pe care ar folosi-o modulul este ibc-go v10.7 (începând cu v3.2.2), dar nu a fost creat niciun client sau canal pe mainnet (testnet-ul are un client și un canal de test, vezi mai sus).
+(Verificat la 27 octombrie 2026 pe mainnet (v3.2.4; v3.2.5 din 29 octombrie 2026) și testnet (v3.2.6). Citiți valorile live cu `qorechaind query bridge chains` și `qorechaind query bridge validators`, sau prin REST la `/qorechain/bridge/v1/chains` și `/qorechain/bridge/v1/validators`.) Configurația modulului este aceeași pe ambele rețele: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 și `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Stiva IBC pe care ar folosi-o modulul este ibc-go v10.7 (începând cu v3.2.2), dar nu a fost creat niciun client sau canal pe mainnet (testnet-ul are un client și un canal de test, vezi mai sus).
 
 ## Prezentare generală a conexiunilor
 

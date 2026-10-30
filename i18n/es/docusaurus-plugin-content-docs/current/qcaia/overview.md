@@ -22,7 +22,7 @@ QCAIA está diseñado para ayudar a los recién llegados y a los miembros de la 
 
 Si una pregunta queda fuera de lo que QCAIA conoce, lo dirá en lugar de adivinar. QCAIA es un ayudante comunitario, no asesoramiento financiero ni de inversión.
 
-Las respuestas de QCAIA siguen la documentación pública de QoreChain, por lo que pueden ir por detrás de una versión. Para saber qué está activo ahora mismo en cada red (la mainnet `qorechain-vladi` ejecuta v3.2.4 desde el 23 de octubre de 2026; la testnet `qorechain-diana` ejecuta v3.2.6 desde el 27 de octubre de 2026), consulta [Redes](/appendix/networks) y [Historial de versiones](/appendix/version-history), o consulta un nodo directamente. Varias partes de la plataforma sobre las que se le pregunta a QCAIA, como el puente, los pools del AMM, los rollups y xQORE, se describen en la documentación como diseñadas pero todavía no están activas; si QCAIA da una respuesta distinta, confía en la documentación y en la red en vivo.
+Las respuestas de QCAIA siguen la documentación pública de QoreChain, por lo que pueden ir por detrás de una versión. Para saber qué está activo ahora mismo en cada red (la mainnet `qorechain-vladi` ejecuta v3.2.5 desde el 29 de octubre de 2026; la testnet `qorechain-diana` ejecuta v3.2.6 desde el 27 de octubre de 2026), consulta [Redes](/appendix/networks) y [Historial de versiones](/appendix/version-history), o consulta un nodo directamente. Varias partes de la plataforma sobre las que se le pregunta a QCAIA, como el puente, los pools del AMM, los rollups y xQORE, se describen en la documentación como diseñadas pero todavía no están activas; si QCAIA da una respuesta distinta, confía en la documentación y en la red en vivo.
 
 ## Soporte multilingüe
 

@@ -86,11 +86,11 @@ Valoarea `--proof` este demonstrația de incluziune: hash-urile de frați de-a l
 
 ### Codificarea frunzelor și a nodurilor {#leaf-and-node-encoding}
 
-* **Frunză (prima formă, regula de pe mainnet astăzi)** = SHAKE-256 (32 de octeți) din `rollup_id`, un octet `0x00`, indexul retragerii (8 octeți big-endian), șirul `recipient`, `0x00`, șirul `denom`, `0x00` și `amount` (8 octeți big-endian).
-* **Frunză (a doua formă, testnet acum, mainnet după upgrade-ul v3.2.5)**: pentru loturile de la chain v3.2.5, frunza numește și chain id-ul. RDK le construiește pe ambele forme (`withdrawalLeafV1`, `withdrawalLeafV2`).
+* **Frunză (prima formă, pentru loturile dinainte de chain v3.2.5)** = SHAKE-256 (32 de octeți) din `rollup_id`, un octet `0x00`, indexul retragerii (8 octeți big-endian), șirul `recipient`, `0x00`, șirul `denom`, `0x00` și `amount` (8 octeți big-endian).
+* **Frunză (a doua formă, de la chain v3.2.5 pe ambele rețele)**: pentru loturile de la chain v3.2.5, frunza numește și chain id-ul. RDK le construiește pe ambele forme (`withdrawalLeafV1`, `withdrawalLeafV2`).
 * **Părinte** = SHAKE-256 din `left || right`. La fiecare nivel, bitul corespunzător din indexul retragerii decide partea: `0` înseamnă că frunza (sau hash-ul curent) este nodul din stânga, deci poziția frunzei în arbore este indexul ei de retragere.
 * Fiecare hash de frate trebuie să aibă exact 32 de octeți.
-* **Rădăcina retragerilor (testnet acum, mainnet după upgrade):** începând cu chain v3.2.5, `withdrawals_root` al unui lot este fie gol, fie de exact 32 de octeți; pe mainnet (v3.2.4) această regulă de lungime nu este încă impusă.
+* **Rădăcina retragerilor (de la chain v3.2.5, ambele rețele):** `withdrawals_root` al unui lot este fie gol, fie de exact 32 de octeți; înainte de v3.2.5 această regulă de lungime nu era impusă.
 
 Nu construi acest arbore de mână. `withdrawalsTree` din `@qorechain/rdk` 0.7.0 (și echivalentele sale din Python, Go, Rust și Java) construiește rădăcina retragerilor unui lot și fiecare demonstrație exact așa cum o face lanțul și a fost verificat față de propriul verificator al lanțului; `assembleWithdrawalProof` construiește implicit arborele lanțului, iar helperele Merkle generice folosesc acum implicit SHAKE-256.
 
@@ -121,7 +121,7 @@ flowchart LR
 ```
 
 1. **Decontează un lot.** Operatorul rollup-ului trimite un lot de decontare cu `submit-batch`. Lotul poate angaja o rădăcină de retrageri peste mesajele sale de ieșire L2 → L1.
-2. **Finalizează.** Lotul se finalizează conform modului de decontare al rollup-ului — la verificarea unei demonstrații valide pentru `zk` sau după fereastra de contestare pentru `optimistic` (în timpul căreia `challenge-batch` îl poate disputa). Pe testnet începând cu chain v3.2.5 (mainnet după upgrade), loturile se finalizează și strict în ordinea indexului, deci un lot așteaptă orice lot anterior care este încă `submitted` sau `challenged`. Fereastra optimistă este implicit de 100,800 de blocuri pentru un lot trimis înainte de upgrade-ul v3.2.4; începând cu v3.2.4 se măsoară în secunde de timp de bloc pentru loturile trimise de la înălțimea upgrade-ului încolo (testnet de la înălțimea 8,337,253, 19 octombrie 2026, mainnet de la înălțimea 3,742,566, 23 octombrie 2026).
+2. **Finalizează.** Lotul se finalizează conform modului de decontare al rollup-ului — la verificarea unei demonstrații valide pentru `zk` sau după fereastra de contestare pentru `optimistic` (în timpul căreia `challenge-batch` îl poate disputa). Începând cu chain v3.2.5 (testnet din 26 octombrie 2026, mainnet din 29 octombrie 2026), loturile se finalizează și strict în ordinea indexului, deci un lot așteaptă orice lot anterior care este încă `submitted` sau `challenged`. Fereastra optimistă este implicit de 100,800 de blocuri pentru un lot trimis înainte de upgrade-ul v3.2.4; începând cu v3.2.4 se măsoară în secunde de timp de bloc pentru loturile trimise de la înălțimea upgrade-ului încolo (testnet de la înălțimea 8,337,253, 19 octombrie 2026, mainnet de la înălțimea 3,742,566, 23 octombrie 2026).
 3. **Dovedește și execută.** Odată finalizat, oricine trimite `execute-withdrawal` cu demonstrația de incluziune Merkle (`--proof`) pentru frunza de retragere specifică. Modulul verifică incluziunea față de rădăcina de retrageri a lotului finalizat și plătește destinatarul din escrow.
 
 Deoarece pasul 3 este fără permisiuni și bazat pe demonstrație, o retragere nu depinde de cooperarea operatorului rollup-ului odată ce lotul care o transportă este finalizat.

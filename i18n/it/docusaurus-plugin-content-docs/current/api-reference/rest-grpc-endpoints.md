@@ -18,7 +18,7 @@ QoreChain espone tre interfacce principali per l'accesso programmatico:
 Tutti gli endpoint REST restituiscono JSON. Gli endpoint gRPC utilizzano Protocol Buffers e possono essere consumati con qualsiasi client gRPC. L'interfaccia RPC fornisce query a livello di consenso e la trasmissione delle transazioni.
 
 :::note
-Queste interfacce sono disponibili sia sulla mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026) sia sulla testnet **`qorechain-diana`**. Al momento della stesura (verificato il 27 ottobre 2026) la mainnet esegue la release del nodo **v3.2.4** (applicata all'altezza 3.742.566 il 23 ottobre 2026, proposta di governance 13), e la proposta di governance 14 della mainnet è nel periodo di voto; applicherebbe la v3.2.5 all'altezza 3.906.833. La testnet esegue la **v3.2.6**: ha applicato la v3.2.5 all'altezza 8.890.800 il 26 ottobre 2026 e la v3.2.6 all'altezza 8.970.638 il 27 ottobre 2026. Le route e i campi aggiunti da una release compaiono su una rete solo dopo che quella rete ha applicato la release; questa pagina indica ciò che è solo testnet. Gli URL di base riportati di seguito presuppongono un nodo in esecuzione locale. Gli endpoint pubblici ospitati sono `https://api.qore.host` / `https://api-testnet.qore.host` (REST) e `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), elencati in [Reti](/appendix/networks#public-endpoints). **Non esiste alcun endpoint gRPC pubblico**: gli hostname `grpc.qore.host` e `grpc-testnet.qore.host` non esistono, quindi esegui un tuo nodo se ti serve gRPC.
+Queste interfacce sono disponibili sia sulla mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026) sia sulla testnet **`qorechain-diana`**. Al momento della stesura (verificato il 30 ottobre 2026) la mainnet esegue la release del nodo **v3.2.5** (applicata all'altezza 3.906.833 il 29 ottobre 2026, proposta di governance 14; la v3.2.4 era stata applicata all'altezza 3.742.566 il 23 ottobre 2026). La testnet esegue la **v3.2.6**: ha applicato la v3.2.5 all'altezza 8.890.800 il 26 ottobre 2026 e la v3.2.6 all'altezza 8.970.638 il 27 ottobre 2026. Le route e i campi aggiunti da una release compaiono su una rete solo dopo che quella rete ha applicato la release; questa pagina indica ciò che è solo testnet. Gli URL di base riportati di seguito presuppongono un nodo in esecuzione locale. Gli endpoint pubblici ospitati sono `https://api.qore.host` / `https://api-testnet.qore.host` (REST) e `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), elencati in [Reti](/appendix/networks#public-endpoints). **Non esiste alcun endpoint gRPC pubblico**: gli hostname `grpc.qore.host` e `grpc-testnet.qore.host` non esistono, quindi esegui un tuo nodo se ti serve gRPC.
 :::
 
 ## URL di base
@@ -35,7 +35,7 @@ I moduli specifici di QoreChain sono esposti via REST sotto il prefisso `/qorech
 
 Una route che non esiste risponde con HTTP `501` e `{"code":12,"message":"Not Implemented"}`. Significa che la route non è servita, non che la query abbia restituito un risultato vuoto. I percorsi abbreviati senza il prefisso `/qorechain/` (ad esempio `/bridge/v1/chains` o `/pqc/v1/params`) **non** sono serviti. Un record sconosciuto su una route che esiste restituisce HTTP `404` con `{"code":5,"message":"... not found"}`.
 
-Gli esempi seguenti usano l'host pubblico della mainnet; sostituiscilo con `https://api-testnet.qore.host` per la testnet. I valori negli esempi sono stati letti dalle reti live tra il 20 e il 27 ottobre 2026 e cambiano nel tempo; usali per la forma di una risposta. La release v3.2.4 ha aggiunto alcune route e campi. Sono contrassegnati qui sotto come **v3.2.4**: la testnet li serve dal 19 ottobre 2026 e la mainnet dal 23 ottobre 2026. La release v3.2.6 ne ha aggiunti altri, contrassegnati come **v3.2.6 (testnet)**: rispondono solo sulla testnet, e la mainnet risponde `501` finché non applica quella release. Un nodo ancora su una release precedente risponde `501` a una nuova route.
+Gli esempi seguenti usano l'host pubblico della mainnet; sostituiscilo con `https://api-testnet.qore.host` per la testnet. I valori negli esempi sono stati letti dalle reti live tra il 20 e il 27 ottobre 2026 e cambiano nel tempo; usali per la forma di una risposta. La release v3.2.4 ha aggiunto alcune route e campi. Sono contrassegnati qui sotto come **v3.2.4**: la testnet li serve dal 19 ottobre 2026 e la mainnet dal 23 ottobre 2026. La release v3.2.5 (mainnet dal 29 ottobre 2026, testnet dal 26 ottobre) ha aggiunto le route dei parametri e dei messaggi cross-VM e la route del registro nativo delle chiavi, contrassegnate come **v3.2.5**. La release v3.2.6 ne ha aggiunti altri, contrassegnati come **v3.2.6 (testnet)**: rispondono solo sulla testnet, e la mainnet risponde `501` finché non applica quella release. Un nodo ancora su una release precedente risponde `501` a una nuova route.
 
 ## Modulo PQC {#pqc-module}
 
@@ -45,6 +45,7 @@ Gli esempi seguenti usano l'host pubblico della mainnet; sostituiscilo con `http
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | La finestra di autorizzazione dell'account sulla corsia EVM e ciò che ne resta |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | Il consenso dell'account alla delega EIP-7702, la delega corrente e il nonce EVM (dalla v3.2.2) |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (testnet dal 19 ottobre 2026; mainnet dal 23 ottobre 2026; `501` su un nodo con una release precedente). Ogni funzionalità di protocollo che il binario conosce, con i flag `enabled`, `known` e `staged` |
+| GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (entrambe le reti: sulla mainnet dal 29 ottobre 2026, sulla testnet dal 26 ottobre; `501` su un nodo con una release precedente). La chiave di cifratura ML-KEM registrata per un indirizzo nel registro nativo delle chiavi: `{"found":false,"key":null}` quando non ne è registrata nessuna |
 | GET    | `/qorechain/pqc/v1/params`               | **v3.2.6 (testnet)**. I parametri del modulo; `501` sulla mainnet al momento della stesura |
 
 Nota che il segmento del percorso è il singolare `account`. Non esiste alcuna route `/qorechain/pqc/v1/stats` (usa `qorechaind query pqc stats`). `/qorechain/pqc/v1/params` è servita dalla v3.2.6, quindi per ora solo sulla testnet; sulla mainnet usa `qorechaind query pqc params` su un nodo finché non applica quella release.
@@ -510,7 +511,7 @@ Il modulo staking-tiers fa parte della **v3.2.4**. Queste route sono servite dal
 
 ## Modulo Reputation {#reputation-module}
 
-Le route REST del modulo reputation sono servite dalla **testnet** (`qorechain-diana`, chain v3.2.6). Sulla mainnet ogni route `/qorechain/reputation/v1/...` risponde HTTP `501` (`{"code":12,"message":"Not Implemented"}`) al momento della stesura (27 ottobre 2026); lì il modulo è raggiungibile solo tramite gRPC (`Params`, vedi sotto). Si prevede che una release mainnet successiva le serva; questa pagina viene aggiornata non appena ciò accade.
+Le route REST del modulo reputation sono servite dalla **testnet** (`qorechain-diana`, chain v3.2.6). Sulla mainnet ogni route `/qorechain/reputation/v1/...` risponde HTTP `501` (`{"code":12,"message":"Not Implemented"}`) al momento della stesura (27 ottobre 2026); lì il modulo è raggiungibile solo tramite gRPC (`Params`, vedi sotto). La v3.2.5 della mainnet non le ha aggiunte (verificato il 30 ottobre 2026); questa pagina viene aggiornata non appena una release mainnet le serve.
 
 | Metodo | Endpoint | Descrizione |
 | ------ | -------- | ----------- |
@@ -522,12 +523,12 @@ I punteggi sono stringhe decimali comprese tra 0 e 1. Il light node legge la rou
 
 ## Moduli solo gRPC {#grpc-only-modules}
 
-Sulla mainnet (release del nodo v3.2.4, verificato il 27 ottobre 2026) questi moduli hanno un servizio `Query` gRPC ma **nessuna route REST**. I nomi dei servizi seguono il formato `qorechain.<module>.v1.Query`.
+Sulla mainnet (release del nodo v3.2.5, verificato il 30 ottobre 2026) questi moduli hanno un servizio `Query` gRPC ma **nessuna route REST**. I nomi dei servizi seguono il formato `qorechain.<module>.v1.Query`.
 
-| Modulo        | Metodi di query gRPC (mainnet, versione di chain v3.2.4) |
+| Modulo        | Metodi di query gRPC (mainnet, versione di chain v3.2.5) |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
-| `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
+| `crossvm`     | `PendingMessages` (via REST dalla v3.2.5: `Params` a `/qorechain/crossvm/v1/params` e `Message` a `/qorechain/crossvm/v1/message/{id}`) |
 | `reputation`  | `Params` (le route REST esistono solo sulla testnet, vedi [Modulo Reputation](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
 | `svm`         | `Slot`, `Account`, `Program`                           |
@@ -569,7 +570,7 @@ Il prefisso QoreChain Native è `/cosmwasm/wasm/v1/...`; `/cosmos/wasm/v1/...` n
 
 Il servizio di query dei client IBC v2 era servito prima via gRPC, ma le sue route REST mancavano; la v3.2.6 le monta. Un relayer legge da qui la controparte di un client. Entrambe le route prendono l'ID del client nel percorso (ad esempio `07-<type>-0`); senza di esso rispondono `501` su entrambe le reti. Verificato il 27 ottobre 2026:
 
-| Route | Testnet (v3.2.6) | Mainnet (v3.2.4) |
+| Route | Testnet (v3.2.6) | Mainnet (v3.2.5) |
 | --- | --- | --- |
 | `/ibc/core/client/v2/counterparty_info/{client_id}` | `200` con la controparte, oppure `404` (`client 07-<type>-0 counterparty not found`) per un client che non ne ha una registrata; un ID vuoto risponde `400` | `501` |
 | `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}` (un elenco vuoto significa qualsiasi relayer) | `501` |

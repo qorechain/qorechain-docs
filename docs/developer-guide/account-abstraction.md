@@ -14,7 +14,7 @@ The abstract-account module is **switched off on the `qorechain-vladi` mainnet**
 :::
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.4** (applied at height 3,742,566 on 23 October 2026, governance proposal 13). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.6 (v3.2.4 since 19 October 2026).
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.5** (applied at height 3,906,833 on 29 October 2026, governance proposal 14; v3.2.4 was applied at height 3,742,566 on 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.6 (v3.2.4 since 19 October 2026).
 :::
 
 :::caution Every Cosmos-lane transaction needs the hybrid post-quantum cosign

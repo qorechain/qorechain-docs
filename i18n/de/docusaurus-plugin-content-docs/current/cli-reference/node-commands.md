@@ -10,7 +10,7 @@ sidebar_position: 1
 Referenz für `qorechaind`-Befehle zum Initialisieren, Konfigurieren und Betreiben eines QoreChain-Node.
 
 :::note
-QoreChain betreibt zwei Netzwerke: das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026; Node-Version **v3.2.4**, angewendet bei Höhe 3.742.566 am 23. Oktober 2026 durch den Governance-Vorschlag 13; v3.2.3 wurde bei Höhe 3.662.051 am 20. Oktober 2026 angewendet) und das **`qorechain-diana`**-Testnet (Node-Version **v3.2.6**, angewendet bei Höhe 8.970.638 am 27. Oktober 2026, nach v3.2.5 bei Höhe 8.890.800 am 26. Oktober und v3.2.4 bei Höhe 8.337.253 am 19. Oktober). Der Mainnet-Governance-Vorschlag 14 befindet sich in der Abstimmungsphase; er würde v3.2.5 bei Höhe 3.906.833 anwenden, und was dieses Release ändert, wird dokumentiert, sobald das Mainnet es angewendet hat. Übergeben Sie die passende `--chain-id` für das Netzwerk, dem Sie beitreten möchten — die folgenden Beispiele zielen auf das Testnet ab; verwenden Sie `--chain-id qorechain-vladi` für das Mainnet. Die aktuelle Version jedes Netzwerks ist in `latest.json` unter [download.qore.host](https://download.qore.host) aufgeführt.
+QoreChain betreibt zwei Netzwerke: das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026; Node-Version **v3.2.5**, angewendet bei Höhe 3.906.833 am 29. Oktober 2026 durch den Governance-Vorschlag 14; v3.2.4 wurde bei Höhe 3.742.566 am 23. Oktober 2026 und v3.2.3 bei Höhe 3.662.051 am 20. Oktober 2026 angewendet) und das **`qorechain-diana`**-Testnet (Node-Version **v3.2.6**, angewendet bei Höhe 8.970.638 am 27. Oktober 2026, nach v3.2.5 bei Höhe 8.890.800 am 26. Oktober und v3.2.4 bei Höhe 8.337.253 am 19. Oktober). Übergeben Sie die passende `--chain-id` für das Netzwerk, dem Sie beitreten möchten — die folgenden Beispiele zielen auf das Testnet ab; verwenden Sie `--chain-id qorechain-vladi` für das Mainnet. Die aktuelle Version jedes Netzwerks ist in `latest.json` unter [download.qore.host](https://download.qore.host) aufgeführt.
 
 Die Befehle auf dieser Seite wurden gegen die Release-Binary v3.2.3 geprüft. Die v3.2.4-Binary enthält Befehle, die eine v3.2.3-Binary nicht hat (zum Beispiel `stakingtier`); sie laufen auf beiden Netzwerken (Testnet seit dem 19. Oktober 2026, Mainnet seit dem 23. Oktober 2026), und wo dieses Handbuch einen solchen erwähnt, wird das angegeben. Die v3.2.6-Binary (das Testnet) fügt zwei weitere Abfragebefehle hinzu, `query rlconsensus applied-params` und `last-action`; sie sind nur im Testnet verfügbar, bis das Mainnet dieses Release anwendet (siehe [Abfragebefehle](/cli-reference/query-commands#rlconsensus)). Alles Übrige auf dieser Seite verhält sich in beiden Releases gleich.
 :::
@@ -70,7 +70,7 @@ Eine aus dem öffentlichen Quellbaum gebaute Binary (der Community-Build) weiger
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"}, e.g. v3.2.5 today)
+# has v3.2.3 / v3.2.4 / v3.2.5 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"}, e.g. v3.2.6 on mainnet today)
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 ```

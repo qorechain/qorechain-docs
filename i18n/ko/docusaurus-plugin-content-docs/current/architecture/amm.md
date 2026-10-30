@@ -20,8 +20,8 @@ sidebar_position: 8
 아래 명령어는 `qorechaind`를 사용합니다. 사용 환경에 맞는 일반적인 트랜잭션 플래그(`--from`, `--chain-id`, `--gas`, `--fees`, `--node`)를 추가하세요 — 예를 들어 메인넷에 대해서는 `--chain-id qorechain-vladi --gas 400000 --fees 40000uqor`(네트워크 수수료 하한은 가스 단위당 0.1 uqor입니다). 모든 `tx amm` 명령은 Cosmos 레인 트랜잭션이므로 하이브리드 포스트 퀀텀 서명이 필요합니다. `--generate-only > tx.json`을 추가한 다음 `qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>`를 실행하세요([첫 트랜잭션](/getting-started/first-transaction#send-qor) 참고).
 :::
 
-:::caution 아직 존재하는 풀이 없습니다
-AMM 모듈은 메인넷(v3.2.4)과 테스트넷(v3.2.6)에서 라이브 상태이지만, **아직 생성된 풀이 없으며**(2026년 10월 27일 확인: `GET /qorechain/amm/v1/pools`는 양쪽 모두에서 빈 목록을 반환합니다), 아래 예시의 denom(`uusdc`, `uusdt`)은 설명용입니다. 현재 네트워크에는 그러한 자산이 존재하지 않습니다. 풀이 생길 때까지 모든 스왑 또는 유동성 추가 명령은 풀을 찾을 수 없다는 오류와 함께 실패합니다.
+:::caution 메인넷에는 아직 존재하는 풀이 없습니다
+AMM 모듈은 메인넷(v3.2.5)과 테스트넷(v3.2.6)에서 라이브 상태입니다. **메인넷에는 아직 생성된 풀이 없습니다**(2026년 10월 30일 확인: `GET /qorechain/amm/v1/pools`는 메인넷에서 빈 목록을 반환합니다). 테스트넷에는 풀이 하나 있습니다(id 1, `uqor`와 Fest 테스트 토큰의 쌍이며 테스트넷 전용이고 가치가 없습니다). 아래 예시의 denom(`uusdc`, `uusdt`)은 설명용입니다. 현재 네트워크에는 그러한 자산이 존재하지 않습니다. 풀이 생길 때까지 모든 스왑 또는 유동성 추가 명령은 풀을 찾을 수 없다는 오류와 함께 실패합니다.
 :::
 
 ## 모듈 파라미터 {#parameters}

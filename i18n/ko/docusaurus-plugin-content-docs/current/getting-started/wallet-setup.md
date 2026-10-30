@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain은 네이티브, EVM, SVM 실행 환경 전반에서 여러 지갑 유형을 지원합니다. 사용 목적에 맞는 지갑을 선택하세요.
 
 :::note
-아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 운영 중, 2026년 10월 23일부터 릴리스 v3.2.4)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 2026년 10월 27일부터 릴리스 v3.2.6)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
+아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 운영 중, 2026년 10월 29일부터 릴리스 v3.2.5)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 2026년 10월 27일부터 릴리스 v3.2.6)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
 :::
 
 ## QoreX (권장) {#qorex}

@@ -21,7 +21,7 @@ Le moteur QCAI (QoreChain AI) fonctionne sur trois couches :
 
 Le niveau consensus est documenté séparément dans le [Moteur de consensus PRISM](/architecture/prism-consensus-engine). Cette page couvre les niveaux réseau et application.
 
-:::note Ce qui est appliqué sur les réseaux en production (vérifié le 23 octobre 2026, mainnet et testnet alors tous deux en v3.2.4 ; le testnet est depuis passé à v3.2.6)
+:::note Ce qui est appliqué sur les réseaux en production (vérifié le 23 octobre 2026, mainnet et testnet alors tous deux en v3.2.4 ; le testnet est depuis passé à v3.2.6 et le mainnet à v3.2.5)
 Deux parties de `x/ai` agissent aujourd'hui sur les transactions, sur la voie Cosmos comme sur la voie EVM :
 
 * Une **limite de débit par expéditeur**. La limite en vigueur est de **600 transactions par minute et par expéditeur** (`max_tx_per_minute` ; la voie EVM dispose de sa propre limite optionnelle, qui n'est pas définie, de sorte que la même valeur s'applique). La « minute » est comptée sur une fenêtre fixe de blocs, et non en temps réel, car la hauteur de bloc est la seule horloge que tous les validateurs partagent. Un expéditeur qui atteint la limite voit ses transactions suivantes refusées jusqu'à ce que les plus anciennes sortent de la fenêtre. La limite est appliquée sur la voie Cosmos depuis la v3.2.0 et sur les deux voies depuis la v3.2.2.

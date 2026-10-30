@@ -10,7 +10,7 @@ sidebar_position: 9
 Acest ghid acoperă modul de creare a unui validator pe rețeaua QoreChain, înțelegerea designului de clasificare pe pool-uri, înregistrarea unei chei PQC (semnături hibride ML-DSA-87, FIPS 204) și monitorizarea nodului tău.
 
 :::note
-Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.4** (aplicată prin propunerea de guvernanță 13 la înălțimea 3.742.566, pe 23 octombrie 2026, după v3.2.3 la înălțimea 3.662.051, pe 20 octombrie 2026). La momentul scrierii, un validator trebuie să ruleze binarul v3.2.4; propunerea de guvernanță 14 de pe mainnet ar aplica v3.2.5 la înălțimea 3.906.833, iar manifestul numește atunci binarul de instalat (vezi [Rularea unui nod: Upgrade-uri](/developer-guide/running-a-node#upgrades)). Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**) rulează v3.2.6 (aplicată pe 27 octombrie 2026, după v3.2.5 pe 26 octombrie) și este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă. Timpii de bloc diferă: aproximativ 3,1 s pe mainnet (ultimele 1.000 de blocuri au durat 52 de minute și 21 de secunde pe 27 octombrie 2026) și aproximativ 1,3 s pe testnet; ambele variază, așa că convertește numărul de blocuri în timp separat pentru fiecare rețea.
+Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.5** (aplicată prin propunerea de guvernanță 14 la înălțimea 3.906.833, pe 29 octombrie 2026, după v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026 și v3.2.3 la înălțimea 3.662.051, pe 20 octombrie 2026). Un validator trebuie să ruleze binarul v3.2.5 (`minCompatible` din manifest este 3.2.5); un nod rămas pe v3.2.4 se oprește la înălțimea 3.906.833 și are nevoie de pachetul v3.2.5 (vezi [Rularea unui nod: Upgrade-uri](/developer-guide/running-a-node#upgrades)). Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**) rulează v3.2.6 (aplicată pe 27 octombrie 2026, după v3.2.5 pe 26 octombrie) și este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă. Timpii de bloc diferă: aproximativ 3,1 s pe mainnet (ultimele 1.000 de blocuri au durat 52 de minute și 21 de secunde pe 27 octombrie 2026) și aproximativ 1,3 s pe testnet; ambele variază, așa că convertește numărul de blocuri în timp separat pentru fiecare rețea.
 :::
 
 :::caution Folosește binarul de release, nu un build din sursă
@@ -68,7 +68,7 @@ State sync verifică încrucișat punctul de încredere cu **două** servere RPC
 
 ## Parametrii rețelei {#parameters}
 
-Aceste valori au fost citite din API-ul REST al mainnet-ului pe 27 octombrie 2026 (`qorechain-vladi`, v3.2.4). Citește-le live înainte să te bazezi pe ele: `qorechaind query staking params`, `qorechaind query slashing params`, sau `GET /cosmos/staking/v1beta1/params` și `GET /cosmos/slashing/v1beta1/params`.
+Aceste valori au fost citite din API-ul REST al mainnet-ului pe 27 octombrie 2026 (`qorechain-vladi`, atunci pe v3.2.4; v3.2.5 rulează din 29 octombrie 2026). Citește-le live înainte să te bazezi pe ele: `qorechaind query staking params`, `qorechaind query slashing params`, sau `GET /cosmos/staking/v1beta1/params` și `GET /cosmos/slashing/v1beta1/params`.
 
 | Element | Valoare |
 | --- | --- |

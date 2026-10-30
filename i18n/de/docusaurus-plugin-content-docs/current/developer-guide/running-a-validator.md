@@ -10,7 +10,7 @@ sidebar_position: 9
 Dieser Leitfaden erklärt, wie man einen Validator im QoreChain-Netzwerk erstellt, das Design der Pool-Klassifizierung versteht, einen PQC-Schlüssel (hybride ML-DSA-87-Signaturen, FIPS 204) registriert und den eigenen Node überwacht.
 
 :::note
-Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und das das Node-Release **v3.2.4** betreibt (per Governance-Vorschlag 13 bei Höhe 3.742.566 am 23. Oktober 2026 angewendet, nach v3.2.3 bei Höhe 3.662.051 am 20. Oktober 2026). Ein Validator muss zum Zeitpunkt der Erstellung das v3.2.4-Binary betreiben; der Mainnet-Governance-Vorschlag 14 würde v3.2.5 auf Höhe 3.906.833 anwenden, und das Manifest nennt dann das zu installierende Binary (siehe [Einen Node betreiben: Upgrades](/developer-guide/running-a-node#upgrades)). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) läuft mit v3.2.6 (angewendet am 27. Oktober 2026, nach v3.2.5 am 26. Oktober) und wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Blockzeiten unterscheiden sich: etwa 3,1 s im Mainnet (die letzten 1.000 Blöcke brauchten am 27. Oktober 2026 52 Minuten 21 Sekunden) und etwa 1,3 s im Testnet; beide schwanken, rechnen Sie Blockanzahlen daher pro Netzwerk in Zeit um.
+Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und das das Node-Release **v3.2.5** betreibt (per Governance-Vorschlag 14 bei Höhe 3.906.833 am 29. Oktober 2026 angewendet, nach v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026 und v3.2.3 bei Höhe 3.662.051 am 20. Oktober 2026). Ein Validator muss das v3.2.5-Binary betreiben (das `minCompatible` des Manifests ist 3.2.5); ein Node, der noch auf v3.2.4 läuft, hält bei Höhe 3.906.833 an und braucht das v3.2.5-Bundle (siehe [Einen Node betreiben: Upgrades](/developer-guide/running-a-node#upgrades)). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) läuft mit v3.2.6 (angewendet am 27. Oktober 2026, nach v3.2.5 am 26. Oktober) und wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Blockzeiten unterscheiden sich: etwa 3,1 s im Mainnet (die letzten 1.000 Blöcke brauchten am 27. Oktober 2026 52 Minuten 21 Sekunden) und etwa 1,3 s im Testnet; beide schwanken, rechnen Sie Blockanzahlen daher pro Netzwerk in Zeit um.
 :::
 
 :::caution Das Release-Binary verwenden, keinen Build aus dem Quellcode
@@ -68,7 +68,7 @@ Halten Sie die Systemuhr per NTP synchronisiert: Ab v3.2.1 stoppt der Node, wenn
 
 ## Netzwerkparameter {#parameters}
 
-Diese Werte wurden am 27. Oktober 2026 aus der Mainnet-REST-API gelesen (`qorechain-vladi`, v3.2.4). Lesen Sie sie live aus, bevor Sie sich darauf verlassen: `qorechaind query staking params`, `qorechaind query slashing params` oder `GET /cosmos/staking/v1beta1/params` und `GET /cosmos/slashing/v1beta1/params`.
+Diese Werte wurden am 27. Oktober 2026 aus der Mainnet-REST-API gelesen (`qorechain-vladi`, damals mit v3.2.4; v3.2.5 läuft seit dem 29. Oktober 2026). Lesen Sie sie live aus, bevor Sie sich darauf verlassen: `qorechaind query staking params`, `qorechaind query slashing params` oder `GET /cosmos/staking/v1beta1/params` und `GET /cosmos/slashing/v1beta1/params`.
 
 | Eintrag | Wert |
 | --- | --- |

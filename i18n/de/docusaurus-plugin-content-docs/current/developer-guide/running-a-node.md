@@ -26,8 +26,8 @@ Das aktuelle Binary, Genesis, Peers, Seeds und ein State-Sync-Trust-Point werden
 Die Felder des Manifests umfassen `binary` (URL + sha256), `genesis` (URL + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (ein stündlich aktualisierter Trust-Point) und `minCompatible`. Die Installations- und Beitrittsschritte unten rufen dieses Manifest ab und verwenden dessen aktuelle Werte.
 :::
 
-:::caution Verwenden Sie das Release, das das Manifest nennt: v3.2.4 im Mainnet, v3.2.6 im Testnet
-Ein Node, der ab Genesis synchronisiert oder aus einem Snapshot repliziert, durchläuft mehrere Governance-Upgrades (siehe [Upgrades](#upgrades) unten). Installieren Sie daher immer das Binary, auf das das Manifest verweist: Es enthält jeden Upgrade-Handler. Im **Mainnet** sind `minCompatible` und `version` des Manifests beide `3.2.4` (das koordinierte Upgrade, angewendet auf Höhe 3,742,566 am 23. Oktober 2026, Governance-Vorschlag 13), ein jetzt beitretender Node benötigt also v3.2.4: Ein älteres Binary stoppt auf einer Upgrade-Höhe, die es nicht kennt. Der Mainnet-Governance-Vorschlag 14 befindet sich in seinem Abstimmungszeitraum und würde v3.2.5 auf Höhe 3,906,833 anwenden; solange er nicht angenommen ist, ist kein Upgrade-Plan angesetzt (`current_plan` ist zum Zeitpunkt der Erstellung, 27. Oktober 2026, `null`), und wenn das Manifest ein neueres Release nennt, ist das das Binary, das zu installieren ist. Was v3.2.5 ändert, wird dokumentiert, sobald das Mainnet es angewendet hat. Im **Testnet** sind `minCompatible` und `version` des Manifests beide `3.2.6` (`upgradeHeight` 8,970,638; v3.2.5 wurde auf Höhe 8,890,800 am 26. Oktober 2026 angewendet und v3.2.6 am 27. Oktober 2026), ein dem Testnet beitretender Node benötigt also das v3.2.6-Binary. Betreiben Sie kein Testnet-Binary gegen das Mainnet oder umgekehrt: Jedes Verzeichnis führt sein eigenes Release (siehe [Upgrades](#upgrades)). Das Manifest wird bewusst gestaffelt befördert (zuerst Testnet, danach Mainnet nach einer Einlaufphase). Prüfen Sie daher sein Feld `"version"` gegen `minCompatible`, bevor Sie `binary.url` vertrauen.
+:::caution Verwenden Sie das Release, das das Manifest nennt: v3.2.5 im Mainnet, v3.2.6 im Testnet
+Ein Node, der ab Genesis synchronisiert oder aus einem Snapshot repliziert, durchläuft mehrere Governance-Upgrades (siehe [Upgrades](#upgrades) unten). Installieren Sie daher immer das Binary, auf das das Manifest verweist: Es enthält jeden Upgrade-Handler. Im **Mainnet** sind `minCompatible` und `version` des Manifests beide `3.2.5` (angewendet auf Höhe 3,906,833 am 29. Oktober 2026, Governance-Vorschlag 14), ein jetzt beitretender Node benötigt also v3.2.5: Ein älteres Binary stoppt auf einer Upgrade-Höhe, die es nicht kennt. Das Release ist das Bundle `qorechaind-v3.2.5-b2-linux-amd64.tar.gz` (97.965.547 Bytes, SHA-256 `4448db60b5ec50009f3943ca1fb5849f9a2790966b3ea433a8c3d55a85115382`, am 30. Oktober 2026 aus dem Manifest gelesen; das Live-Manifest ist die maßgebliche Quelle). Es enthält `qorechaind` und `lib/` mit `libqorepqc.so`, `libqoresvm.so` und `libwasmvm.x86_64.so`. Ein Node, der noch auf v3.2.4 läuft, hält auf Höhe 3,906,833 mit `UPGRADE "v3.2.5" NEEDED` an: Installieren Sie das Bundle und starten Sie neu, sein State bleibt erhalten. Es ist kein weiteres Mainnet-Upgrade angesetzt (`current_plan` ist `null`, geprüft am 30. Oktober 2026); wenn das Manifest ein neueres Release nennt, ist das das Binary, das zu installieren ist. Im **Testnet** sind `minCompatible` und `version` des Manifests beide `3.2.6` (`upgradeHeight` 8,970,638; v3.2.5 wurde auf Höhe 8,890,800 am 26. Oktober 2026 angewendet und v3.2.6 am 27. Oktober 2026), ein dem Testnet beitretender Node benötigt also das v3.2.6-Binary. Betreiben Sie kein Testnet-Binary gegen das Mainnet oder umgekehrt: Jedes Verzeichnis führt sein eigenes Release (siehe [Upgrades](#upgrades)). Das Manifest wird bewusst gestaffelt befördert (zuerst Testnet, danach Mainnet nach einer Einlaufphase). Prüfen Sie daher sein Feld `"version"` gegen `minCompatible`, bevor Sie `binary.url` vertrauen.
 
 Ein aus dem öffentlichen Quellcode gebautes Binary (der Community-Build) verweigert den Start in beiden öffentlichen Netzwerken (v3.2.3 und später): Es kann keine Post-Quanten-Signaturen verifizieren und die Blöcke der Netzwerke nicht originalgetreu replizieren. Verwenden Sie ausschließlich das Release-Archiv.
 
@@ -52,7 +52,7 @@ Ab v3.2.1 sind zwei Einstellungen wichtig: Halten Sie die Systemuhr per NTP sync
 
 | Netzwerk | Chain-ID            | EVM-Chain-ID         | Hinweise                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primär — live seit 7. Juni 2026; Node-Release v3.2.4 (seit 23. Okt. 2026) |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primär — live seit 7. Juni 2026; Node-Release v3.2.5 (seit 29. Okt. 2026) |
 | Testnet  | `qorechain-diana`   | `9800`               | Integrationen zuerst hier erproben; Node-Release v3.2.6 (seit 27. Okt. 2026) |
 
 Setzen Sie in diesem Leitfaden durchgehend die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Beispiele verwenden standardmäßig das Mainnet.
@@ -75,7 +75,7 @@ Eine NVMe-SSD wird dringend empfohlen: Der Chain-State und die EVM-/SVM-Stores s
 
 ### Docker Compose
 
-Ein reines Node-Deployment mit Docker Compose. Es gibt kein öffentlich veröffentlichtes `qorechaind`-Image zum Herunterladen (unter der Docker-Hub-Organisation des Projekts ist nichts veröffentlicht). Das `Dockerfile` im öffentlichen Repository baut das **Community**-Binary (keine Post-Quanten-Bibliothek, Stub-Keeper): Das eignet sich für die lokale Entwicklung, kann aber weder dem Mainnet noch dem Testnet folgen, und seit v3.2.3 verweigert es dort den Start. Bauen Sie für einen Netzwerk-Node ein eigenes Image aus dem in `latest.json` genannten **Release-Archiv**, taggen Sie es auf die Release-Version (**v3.2.4** im Mainnet, **v3.2.6** im Testnet, zum Zeitpunkt der Erstellung) und mounten Sie dann ein persistentes Volume für die Chain-Daten:
+Ein reines Node-Deployment mit Docker Compose. Es gibt kein öffentlich veröffentlichtes `qorechaind`-Image zum Herunterladen (unter der Docker-Hub-Organisation des Projekts ist nichts veröffentlicht). Das `Dockerfile` im öffentlichen Repository baut das **Community**-Binary (keine Post-Quanten-Bibliothek, Stub-Keeper): Das eignet sich für die lokale Entwicklung, kann aber weder dem Mainnet noch dem Testnet folgen, und seit v3.2.3 verweigert es dort den Start. Bauen Sie für einen Netzwerk-Node ein eigenes Image aus dem in `latest.json` genannten **Release-Archiv**, taggen Sie es auf die Release-Version (**v3.2.5** im Mainnet, **v3.2.6** im Testnet, zum Zeitpunkt der Erstellung) und mounten Sie dann ein persistentes Volume für die Chain-Daten:
 
 ```bash
 # Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
@@ -92,7 +92,7 @@ COPY lib/ /opt/qorechain/lib/
 ENV LD_LIBRARY_PATH=/opt/qorechain/lib
 ENTRYPOINT ["qorechaind"]
 EOF
-docker build -t qorechain-node:v3.2.4 release/
+docker build -t qorechain-node:v3.2.5 release/
 ```
 
 Das Archiv enthält `qorechaind` und ein Verzeichnis `lib/` mit den zugehörigen Shared Libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); das obige Image ist, wie das Release-Archiv, nur für `linux/amd64`.
@@ -101,7 +101,7 @@ Das Archiv enthält `qorechaind` und ein Verzeichnis `lib/` mit den zugehörigen
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.2.4
+    image: qorechain-node:v3.2.5
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -286,7 +286,7 @@ Konsensänderungen kommen als **koordinierte Governance-Upgrades**: Ein angenomm
 | v3.2.2 | Höhe 3,556,788 (16. Okt. 2026) | Höhe 6,905,034 (2. Okt. 2026) |
 | v3.2.3 | Höhe 3,662,051 (20. Okt. 2026, Governance-Vorschlag 11) | Höhe 8,003,746 (15. Okt. 2026) |
 | v3.2.4 | Höhe 3,742,566 (23. Okt. 2026, Governance-Vorschlag 13) | Höhe 8,337,253 (19. Okt. 2026, Governance-Vorschlag 13) |
-| v3.2.5 | vorgeschlagen: Governance-Vorschlag 14 (am 27. Okt. 2026 in seinem Abstimmungszeitraum) würde es auf Höhe 3,906,833 anwenden | Höhe 8,890,800 (26. Okt. 2026) |
+| v3.2.5 | Höhe 3,906,833 (29. Okt. 2026, Governance-Vorschlag 14) | Höhe 8,890,800 (26. Okt. 2026) |
 | v3.2.6 | nicht angewendet | Höhe 8,970,638 (27. Okt. 2026) |
 
 **Was ein Node-Betreiber für v3.2.4 getan hat (Mainnet-Höhe 3,742,566).** Der Governance-Vorschlag 13 nannte den Plan `v3.2.4` bei Höhe 3,742,566 (angewendet am 23. Oktober 2026): Nodes blieben bis zu dieser Höhe auf v3.2.3, hielten dort an und starteten auf v3.2.4 neu. Für das nächste koordinierte Upgrade sind die Schritte dieselben:
@@ -294,9 +294,11 @@ Konsensänderungen kommen als **koordinierte Governance-Upgrades**: Ein angenomm
 1. Beobachten Sie das Manifest (`https://download.qore.host/mainnet/latest.json`): Solange es das neue Release nicht nennt, gibt es nichts zu installieren, und ein Binary aus dem Testnet-Verzeichnis ist nicht das Mainnet-Release.
 2. Wenn das Manifest das Release nennt, laden Sie das Archiv von dessen `binary.url` herunter, verifizieren Sie den `sha256` (der Vorschlagstext veröffentlicht ebenfalls den sha256 des Binarys) und stellen Sie es **vor** der Höhe bereit. Prüfen Sie mit `GET /cosmos/upgrade/v1beta1/current_plan` den anstehenden Plan (`name` und `height`) und mit `GET /status` auf dem RPC die aktuelle Höhe.
 3. Auf der Plan-Höhe **hält** ein Node, der noch das alte Binary nutzt, **an** (das ist das beabsichtigte Verhalten des Upgrade-Moduls, kein Fehler); ein Node, der bereits das neue Binary nutzt, wendet den Upgrade-Handler an und läuft weiter. Falls Ihrer zuvor angehalten hat, tauschen Sie das Binary aus und starten Sie neu. Nach dem Upgrade liefert `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` die Höhe statt `0` (3742566 im Mainnet, 8337253 im Testnet).
-4. Ein Node, der dem Mainnet jetzt beitritt, installiert das Release, das das Manifest nennt (v3.2.4 zum Zeitpunkt der Erstellung; prüfen Sie `version` gegen `minCompatible`).
+4. Ein Node, der dem Mainnet jetzt beitritt, installiert das Release, das das Manifest nennt (v3.2.5 zum Zeitpunkt der Erstellung; prüfen Sie `version` gegen `minCompatible`).
 
 Transaktionssignierung, Adressen, Dezimalstellen, Memos und Gebühren bleiben durch v3.2.4 unverändert.
+
+**v3.2.5 im Mainnet (Höhe 3,906,833, 29. Oktober 2026, Governance-Vorschlag 14).** Es galten dieselben Schritte: Das Manifest nannte `3.2.5` als `version` und als `minCompatible`, und ein Node, der noch auf v3.2.4 lief, hielt auf der Plan-Höhe mit `UPGRADE "v3.2.5" NEEDED` an. Die Lösung ist, das v3.2.5-Bundle zu installieren (es liefert `qorechaind` und die Shared Libraries unter `lib/` zusammen aus; halten Sie sie nebeneinander) und neu zu starten; der State des Nodes bleibt erhalten. Es ist kein weiteres Mainnet-Upgrade angesetzt.
 
 Lesen Sie den Live-Stand mit `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = nicht angewendet) und einen anstehenden Plan mit `GET /cosmos/upgrade/v1beta1/current_plan`. v3.2.2 hat die Abhängigkeiten der Konsens-Engine, des Cosmos SDK (v0.53.8) und von IBC angehoben, und die strengeren Transaktionsprüfungen des SDK führen dazu, dass dieses Release das vorherige Binary auf der Upgrade-Höhe ersetzt und nicht Node für Node. Transaktionssignierung, Adressen, Dezimalstellen, Memos und Gebühren haben sich in v3.2.2 und v3.2.3 nicht geändert.
 
@@ -441,7 +443,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bewährte Betriebspraktiken
 
-1. **Pinnen Sie die Chain-Version.** Betreiben Sie das vom Manifest empfohlene Release (**v3.2.4** im Mainnet und **v3.2.6** im Testnet zum Zeitpunkt der Erstellung), verfolgen Sie offizielle Releases für koordinierte Upgrades und halten Sie die Systemuhr per NTP synchronisiert.
+1. **Pinnen Sie die Chain-Version.** Betreiben Sie das vom Manifest empfohlene Release (**v3.2.5** im Mainnet und **v3.2.6** im Testnet zum Zeitpunkt der Erstellung), verfolgen Sie offizielle Releases für koordinierte Upgrades und halten Sie die Systemuhr per NTP synchronisiert.
 
 2. **Betreiben Sie redundante Nodes.** Betreiben Sie mindestens zwei Nodes hinter einem Load Balancer, damit ein einzelner Neustart oder Resync den Integrationsverkehr nicht unterbricht.
 

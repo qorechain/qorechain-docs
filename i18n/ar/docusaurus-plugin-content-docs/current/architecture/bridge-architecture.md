@@ -23,7 +23,7 @@ sidebar_position: 7
 | عمليات الجسر | 0 | 0 |
 | قنوات / عملاء IBC | 0 / 0 | 1 / 1 (قناة اختبار إلى شبكة اختبار Cosmos Hub) |
 
-(جرى التحقق بتاريخ 27 أكتوبر 2026 على الشبكة الرئيسية (v3.2.4) وشبكة الاختبار (v3.2.6). اقرأ القيم الحية عبر `qorechaind query bridge chains` و`qorechaind query bridge validators`، أو عبر REST على `/qorechain/bridge/v1/chains` و`/qorechain/bridge/v1/validators`.) إعدادات الوحدة هي نفسها على الشبكتين: `min_validators` يساوي 10، و`attestation_threshold` يساوي 7، و`challenge_period_secs` يساوي 86,400، و`large_transfer_threshold` يساوي 100,000 QOR (`100000000000` uqor). حزمة IBC التي ستستخدمها الوحدة هي ibc-go v10.7 (منذ v3.2.2)، لكن لم يُنشأ أي عميل أو قناة على الشبكة الرئيسية (لدى شبكة الاختبار عميل وقناة اختبار واحدان، انظر أعلاه).
+(جرى التحقق بتاريخ 27 أكتوبر 2026 على الشبكة الرئيسية (v3.2.4؛ v3.2.5 منذ 29 أكتوبر 2026) وشبكة الاختبار (v3.2.6). اقرأ القيم الحية عبر `qorechaind query bridge chains` و`qorechaind query bridge validators`، أو عبر REST على `/qorechain/bridge/v1/chains` و`/qorechain/bridge/v1/validators`.) إعدادات الوحدة هي نفسها على الشبكتين: `min_validators` يساوي 10، و`attestation_threshold` يساوي 7، و`challenge_period_secs` يساوي 86,400، و`large_transfer_threshold` يساوي 100,000 QOR (`100000000000` uqor). حزمة IBC التي ستستخدمها الوحدة هي ibc-go v10.7 (منذ v3.2.2)، لكن لم يُنشأ أي عميل أو قناة على الشبكة الرئيسية (لدى شبكة الاختبار عميل وقناة اختبار واحدان، انظر أعلاه).
 
 ## نظرة عامة على الاتصال
 

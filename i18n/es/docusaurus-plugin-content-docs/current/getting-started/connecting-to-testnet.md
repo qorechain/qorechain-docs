@@ -10,7 +10,7 @@ sidebar_position: 4
 Únete a la red de pruebas activa QoreChain Diana configurando tu nodo con el archivo génesis, los pares y la configuración de red correctos.
 
 :::note
-Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión **v3.2.4** desde el 23 de octubre de 2026) y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes. La red de pruebas ejecuta la versión **v3.2.6** (aplicada el 27 de octubre de 2026); su manifiesto de versión está en [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión **v3.2.5** desde el 29 de octubre de 2026) y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes. La red de pruebas ejecuta la versión **v3.2.6** (aplicada el 27 de octubre de 2026); su manifiesto de versión está en [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Endpoints públicos
@@ -62,7 +62,7 @@ La red de pruebas recibe actualizaciones coordinadas mediante propuestas de gobe
 | v3.2.5 | 8,890,800 | 26 de octubre de 2026 |
 | v3.2.6 | 8,970,638 | 27 de octubre de 2026 (16:58 UTC) |
 
-La red de pruebas recibe cada versión antes que la red principal. La red principal aplicó v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026; la propuesta de gobernanza 14 de la red principal aplicaría v3.2.5 en la altura 3,906,833 y estaba en su período de votación en el momento de escribir esto. Los manifiestos son independientes, así que nunca copies un binario de una red a la otra, y no esperes que la red principal acepte una función exclusiva de la red de pruebas (las novedades de v3.2.6 se enumeran en el [Historial de versiones](/appendix/version-history#testnet-v326)).
+La red de pruebas recibe cada versión antes que la red principal. La red principal aplicó v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026 y v3.2.5 en la altura 3,906,833 el 29 de octubre de 2026 (propuesta de gobernanza 14), así que v3.2.6 es la única versión que tiene la red de pruebas y la red principal no. Los manifiestos son independientes, así que nunca copies un binario de una red a la otra, y no esperes que la red principal acepte una función exclusiva de la red de pruebas (las novedades de v3.2.6 se enumeran en el [Historial de versiones](/appendix/version-history#testnet-v326)).
 
 ---
 

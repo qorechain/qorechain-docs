@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Key Features
 
-The following table lists every major feature in QoreChain, organized by the release phase in which it was introduced. Mainnet (`qorechain-vladi`, EVM chain ID 9801), live since 7 June 2026, runs **v3.2.4** (applied at height 3,742,566 on 23 October 2026); the parallel testnet (`qorechain-diana`, EVM chain ID 9800) runs v3.2.6 since 27 October 2026. The [Feature Status](#feature-status) table at the end of the feature list shows what is active on the live networks today.
+The following table lists every major feature in QoreChain, organized by the release phase in which it was introduced. Mainnet (`qorechain-vladi`, EVM chain ID 9801), live since 7 June 2026, runs **v3.2.5** (applied at height 3,906,833 on 29 October 2026; v3.2.4 had been applied at height 3,742,566 on 23 October); the parallel testnet (`qorechain-diana`, EVM chain ID 9800) runs v3.2.6 since 27 October 2026. The [Feature Status](#feature-status) table at the end of the feature list shows what is active on the live networks today.
 
 | Feature                    | Introduced in       | Description                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -36,13 +36,14 @@ The following table lists every major feature in QoreChain, organized by the rel
 
 ## Feature Status (October 2026) {#feature-status}
 
-Verified against the live networks on 20 October 2026 (mainnet v3.2.4), with the testnet-specific notes in the rows re-checked on 27 October 2026 (testnet v3.2.6). "Live" means the capability is active on mainnet (and, unless a row says otherwise, on testnet); the descriptions above say what each feature is designed to do.
+Verified against the live networks on 20 October 2026 (mainnet v3.2.4; the rows that v3.2.5 affects were re-checked on mainnet on 30 October 2026), with the testnet-specific notes in the rows re-checked on 27 October 2026 (testnet v3.2.6). "Live" means the capability is active on mainnet (and, unless a row says otherwise, on testnet); the descriptions above say what each feature is designed to do.
 
 | Capability | Status on the live networks |
 | --- | --- |
 | Hybrid ML-DSA-87 + secp256k1 signatures (Cosmos lane) | **Live**, required (`hybrid_signature_mode = required`) |
 | EVM authorisation window | **Live** since v3.2.0 (optional scoping since v3.2.3) |
 | Time-locked staking (`x/stakingtier`, optional) | **Live** since v3.2.4 (testnet since 19 October 2026, mainnet since 23 October 2026) |
+| v3.2.5 protocol features (native ML-KEM key registry, governed cross-VM allowlist, governed CosmWasm deployment, RDK settlement in batch order with open challenge resolution, expedited proposals that keep their votes) | **Live** on mainnet since 29 October 2026 (height 3,906,833) and on the testnet since 26 October 2026. The cross-VM call and CosmWasm instantiation are still switched off on mainnet and no EVM precompile is active; see [Version History](/appendix/version-history#v325) |
 | EVM, QoreChain Native, SVM runtimes | EVM **live**; QoreChain Native code upload and instantiation **disabled** (governance setting plus circuit breaker); SVM transaction lane **disabled** (reads work) |
 | Burn engine and fee split (37/30/20/10/3) | **Live**; only the gas-fee and failed-transaction burn channels have recorded burns on mainnet |
 | Capped emission (`x/inflation`) | **Live**, fixed 86,000 QOR per epoch up to a 590,000,000 QOR cap (mainnet) |

@@ -10,7 +10,7 @@ sidebar_position: 9
 Bu kılavuz, QoreChain ağında bir doğrulayıcı (validator) oluşturmayı, havuz sınıflandırma tasarımını anlamayı, bir PQC anahtarı (hibrit ML-DSA-87 imzaları, FIPS 204) kaydetmeyi ve düğümünüzü izlemeyi kapsar.
 
 :::note
-Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 7 Haziran 2026'dan beri canlı olup **v3.2.4** düğüm sürümünü çalıştırır (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı; ondan önce v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Bir doğrulayıcının, bu yazı itibarıyla v3.2.4 ikili dosyasını çalıştırması gerekir; ana ağ yönetişim önerisi 14 v3.2.5'i 3.906.833 yüksekliğinde uygulayacaktır ve o zaman manifest, kurulacak ikili dosyayı belirtir (bkz. [Düğüm Çalıştırma: Yükseltmeler](/developer-guide/running-a-node#upgrades)). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) v3.2.6 çalıştırır (26 Ekim'de v3.2.5'ten sonra 27 Ekim 2026'da uygulandı) ve canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,1 sn (27 Ekim 2026'da son 1.000 blok 52 dakika 21 saniye sürdü), test ağında yaklaşık 1,3 sn; ikisi de değişir, bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
+Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 7 Haziran 2026'dan beri canlı olup **v3.2.5** düğüm sürümünü çalıştırır (yönetişim önerisi 14 ile 29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı; ondan önce v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde ve v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Bir doğrulayıcının v3.2.5 ikili dosyasını çalıştırması gerekir (manifestteki `minCompatible` değeri 3.2.5'tir); hâlâ v3.2.4 üzerinde olan bir düğüm 3.906.833 yüksekliğinde durur ve v3.2.5 paketine ihtiyaç duyar (bkz. [Düğüm Çalıştırma: Yükseltmeler](/developer-guide/running-a-node#upgrades)). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) v3.2.6 çalıştırır (26 Ekim'de v3.2.5'ten sonra 27 Ekim 2026'da uygulandı) ve canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,1 sn (27 Ekim 2026'da son 1.000 blok 52 dakika 21 saniye sürdü), test ağında yaklaşık 1,3 sn; ikisi de değişir, bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
 :::
 
 :::caution Kaynak derlemesi değil, yayın (release) ikili dosyasını kullanın
@@ -68,7 +68,7 @@ Sistem saatini NTP ile senkronize tutun: v3.2.1'den itibaren düğüm, saati 60 
 
 ## Ağ Parametreleri {#parameters}
 
-Bu değerler 27 Ekim 2026'da ana ağ REST API'sinden okunmuştur (`qorechain-vladi`, v3.2.4). Güvenmeden önce bunları canlı okuyun: `qorechaind query staking params`, `qorechaind query slashing params` veya `GET /cosmos/staking/v1beta1/params` ve `GET /cosmos/slashing/v1beta1/params`.
+Bu değerler 27 Ekim 2026'da ana ağ REST API'sinden okunmuştur (`qorechain-vladi`, o sırada v3.2.4 üzerindeydi; v3.2.5, 29 Ekim 2026'dan beri çalışıyor). Güvenmeden önce bunları canlı okuyun: `qorechaind query staking params`, `qorechaind query slashing params` veya `GET /cosmos/staking/v1beta1/params` ve `GET /cosmos/slashing/v1beta1/params`.
 
 | Öğe | Değer |
 | --- | --- |

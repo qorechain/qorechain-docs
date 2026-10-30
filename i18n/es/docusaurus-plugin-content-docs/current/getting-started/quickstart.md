@@ -76,7 +76,7 @@ Esto crea la configuración y los directorios de datos por defecto en `~/.qorech
 El nodo se inicia con la configuración por defecto. Consulta [Conexión a la red de pruebas](/getting-started/connecting-to-testnet) para unirte a la red activa con la configuración adecuada de génesis y pares.
 
 :::note
-Los ejemplos de esta página se dirigen a la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión v3.2.4 desde el 23 de octubre de 2026; la red de pruebas ejecuta v3.2.6 desde el 27 de octubre de 2026) y tiene su propia página dedicada **Conexión a la red principal**.
+Los ejemplos de esta página se dirigen a la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión v3.2.5 desde el 29 de octubre de 2026; la red de pruebas ejecuta v3.2.6 desde el 27 de octubre de 2026) y tiene su propia página dedicada **Conexión a la red principal**.
 :::
 
 ---

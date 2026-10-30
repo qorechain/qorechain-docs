@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Is mainnet live?
 
 Yes. Mainnet is **live** (chain id `qorechain-vladi`, live since 7 June 2026) and
-runs chain version v3.2.4 (applied at height 3,742,566 on 23 October 2026, governance proposal 13); the testnet runs v3.2.6 (applied on 27 October 2026). The testnet preset
+runs chain version v3.2.5 (applied at height 3,906,833 on 29 October 2026, governance proposal 14; v3.2.4 was applied at height 3,742,566 on 23 October 2026); the testnet runs v3.2.6 (applied on 27 October 2026). The testnet preset
 (`qorechain-diana`) also remains available. Both presets ship localhost endpoint
 defaults; select the network with `createClient({ network: "mainnet" })` and
 override `endpoints` with your node URLs. See
@@ -144,7 +144,7 @@ eth-native).
 ## Which chain versions does the SDK work with?
 
 SDK **0.10.0** is the client release for chain **v3.2.4** (mainnet since 23 October
-2026 at height 3,742,566, governance proposal 13; the testnet since 19 October). It
+2026 at height 3,742,566, governance proposal 13; the testnet since 19 October). Mainnet has run v3.2.5 since 29 October 2026; the signing format did not change, so 0.10.0 keeps working there. It
 adds the staking-tier builders and reads, `fetchAuthNonce` and the protocol-feature
 reads (see [What 0.10.0 adds](/sdk/install#whats-new-0100)), on top of what 0.9.0
 added for v3.2.2 and v3.2.3: builders for the optional proof of
@@ -154,9 +154,9 @@ SDK **0.8.1 or later** also transacts on both networks (the v2 hybrid sign-bytes
 form, registration, hybrid sends and the EVM window work unchanged), but it has none
 of those builders: use the CLI for them (see
 [Versions before 0.9.0](/sdk/install#before-090)). The signing format did not change
-in v3.2.4. The testnet runs v3.2.6 (v3.2.5 was applied there on 26 October 2026 and
+in v3.2.4 or v3.2.5. The testnet runs v3.2.6 (v3.2.5 was applied there on 26 October 2026 and
 v3.2.6 on 27 October); the SDK has no builder for anything introduced after v3.2.4,
-and the features of the next mainnet release are documented the day mainnet applies it.
+so the v3.2.5 additions (for example the ML-KEM key registry and the governed cross-VM and contract paths) have no SDK builder yet and are reached with the CLI.
 
 ## My PQC key registration was refused but the fee was taken
 

@@ -20,8 +20,8 @@ Todos los montos utilizan las unidades nativas de QoreChain. El token de staking
 Los comandos a continuación utilizan `qorechaind`. Añade los indicadores de transacción habituales (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) según tu entorno; por ejemplo `--chain-id qorechain-vladi --gas 400000 --fees 40000uqor` contra mainnet (el mínimo de comisión de la red es 0,1 uqor por unidad de gas). Cada comando `tx amm` es una transacción de la vía Cosmos, por lo que necesita la firma híbrida poscuántica: añade `--generate-only > tx.json` y luego ejecuta `qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>` (consulta [Primera transacción](/getting-started/first-transaction#send-qor)).
 :::
 
-:::caution Todavía no existen pools
-El módulo AMM está activo en mainnet (v3.2.4) y en la testnet (v3.2.6), pero **todavía no se ha creado ningún pool** (comprobado el 27 de octubre de 2026: `GET /qorechain/amm/v1/pools` devuelve una lista vacía en ambas), y los denoms de los ejemplos siguientes (`uusdc`, `uusdt`) son ilustrativos: hoy no existen tales activos en las redes. Mientras no exista un pool, todo comando de swap o de aportar liquidez falla con un error de pool no encontrado.
+:::caution Todavía no existen pools en la mainnet
+El módulo AMM está activo en mainnet (v3.2.5) y en la testnet (v3.2.6). **Todavía no se ha creado ningún pool en la mainnet** (comprobado el 30 de octubre de 2026: `GET /qorechain/amm/v1/pools` devuelve allí una lista vacía). La testnet tiene un pool (id 1, `uqor` frente a un token de prueba de Fest; solo testnet, sin valor). Los denoms de los ejemplos siguientes (`uusdc`, `uusdt`) son ilustrativos: hoy no existen tales activos en las redes. Mientras no exista un pool, todo comando de swap o de aportar liquidez falla con un error de pool no encontrado.
 :::
 
 ## Parámetros del módulo {#parameters}

@@ -59,7 +59,7 @@ L'en-tête affiche le réseau sur lequel vous êtes et vous permet d'en changer.
 
 | Réseau | ID de la chaîne | Quand l'utiliser |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Réseau en direct (en ligne depuis le 7 juin 2026, exécutant la chaîne v3.2.4 depuis le 23 octobre 2026) pour la valeur réelle. Non custodial : vous connectez votre propre portefeuille. |
+| **Mainnet** | `qorechain-vladi` | Réseau en direct (en ligne depuis le 7 juin 2026, exécutant la chaîne v3.2.5 depuis le 29 octobre 2026) pour la valeur réelle. Non custodial : vous connectez votre propre portefeuille. |
 | **Testnet** | `qorechain-diana` | Environnement gratuit (exécutant la chaîne v3.2.6 depuis le 27 octobre 2026) avec un portefeuille de test géré par le Dashboard et le [Faucet](/dashboard/faucet). |
 
 Le jeton natif est **QOR** (dénomination de base `uqor`, 1 QOR = 10^6 uqor). Si vous débutez, commencez sur le testnet, réclamez des jetons au Faucet et essayez un premier transfert avant de passer au mainnet.

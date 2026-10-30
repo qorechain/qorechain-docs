@@ -10,7 +10,7 @@ sidebar_position: 6
 Diese Anleitung ist eine kurze Orientierung zum Start eines anwendungsspezifischen Rollups, das mit dem Rollup Development Kit (RDK) auf QoreChain abgewickelt wird. Die Schritt-für-Schritt-Befehle finden Sie unter **[Ein Rollup bereitstellen](/rollups/deploying-a-rollup)**; diese Seite behandelt, was Sie vor dem Start benötigen.
 
 :::caution Frühe Entwicklungsphase
-Auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt (geprüft am 27. Oktober 2026). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 23. Oktober 2026 mit Chain-Version **v3.2.4**; das Testnet (**`qorechain-diana`**, EVM-Chain-ID **9800**) läuft mit v3.2.6 (seit dem 27. Oktober 2026), und sein Standard-Anfechtungsfenster beträgt 1 Stunde statt 7 Tage. Validieren Sie zuerst im Testnet; das Verhalten des Anfechtungsfensters ist im [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement) beschrieben.
+Auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt (geprüft am 27. Oktober 2026 im Testnet und am 30. Oktober 2026 im Mainnet). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 29. Oktober 2026 mit Chain-Version **v3.2.5**, die die Settlement-Regeln in [Verhalten von Chain v3.2.5](/rollups/overview#v325) mitbringt (jedes Konto kann eine Challenge auflösen, Batches werden in Reihenfolge finalisiert); das Testnet (**`qorechain-diana`**, EVM-Chain-ID **9800**) läuft mit v3.2.6 (seit dem 27. Oktober 2026), und sein Standard-Anfechtungsfenster beträgt 1 Stunde statt 7 Tage. Validieren Sie zuerst im Testnet; das Verhalten des Anfechtungsfensters ist im [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement) beschrieben.
 :::
 
 ---

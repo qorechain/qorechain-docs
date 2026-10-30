@@ -21,7 +21,7 @@ Motorul QCAI (QoreChain AI) operează pe trei straturi:
 
 Nivelul de consens este documentat separat în [Motorul de consens PRISM](/architecture/prism-consensus-engine). Această pagină acoperă nivelurile de rețea și de aplicație.
 
-:::note Ce este aplicat pe rețelele live (verificat la 23 octombrie 2026, când mainnet-ul și testnetul erau amândouă pe v3.2.4; testnetul a trecut între timp la v3.2.6)
+:::note Ce este aplicat pe rețelele live (verificat la 23 octombrie 2026, când mainnet-ul și testnetul erau amândouă pe v3.2.4; testnetul a trecut între timp la v3.2.6, iar mainnet-ul la v3.2.5)
 Două părți din `x/ai` acționează astăzi asupra tranzacțiilor, atât pe lane-ul Cosmos, cât și pe lane-ul EVM:
 
 * O **limită de rată per expeditor**. Limita live este de **600 de tranzacții pe minut per expeditor** (`max_tx_per_minute`; lane-ul EVM are propria limită opțională, care nu este setată, deci se aplică aceeași valoare). „Minutul” este numărat pe o fereastră fixă de blocuri, nu pe timpul real al ceasului, deoarece înălțimea blocului este singurul ceas pe care îl împărtășesc toți validatorii. Unui expeditor aflat la limită i se refuză tranzacțiile următoare până când cele mai vechi ies din fereastră. Limita este aplicată pe lane-ul Cosmos începând cu v3.2.0 și pe ambele lane-uri începând cu v3.2.2.

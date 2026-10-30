@@ -86,11 +86,11 @@ Der `--proof`-Wert ist der Inklusionsbeweis: die Geschwister-Hashes entlang des 
 
 ### Blatt- und Knoten-Kodierung {#leaf-and-node-encoding}
 
-* **Blatt (erste Form, die heute im Mainnet geltende Regel)** = SHAKE-256 (32 Bytes) aus `rollup_id`, einem `0x00`-Byte, dem Auszahlungs-Index (8 Bytes, Big-Endian), dem `recipient`-String, `0x00`, dem `denom`-String, `0x00` und dem `amount` (8 Bytes, Big-Endian).
-* **Blatt (zweite Form, jetzt im Testnet, im Mainnet nach dem Upgrade auf v3.2.5)**: Bei Batches ab Chain v3.2.5 nennt das Blatt zusätzlich die Chain-ID. Das RDK baut beide Formen (`withdrawalLeafV1`, `withdrawalLeafV2`).
+* **Blatt (erste Form, für Batches vor Chain v3.2.5)** = SHAKE-256 (32 Bytes) aus `rollup_id`, einem `0x00`-Byte, dem Auszahlungs-Index (8 Bytes, Big-Endian), dem `recipient`-String, `0x00`, dem `denom`-String, `0x00` und dem `amount` (8 Bytes, Big-Endian).
+* **Blatt (zweite Form, ab Chain v3.2.5 auf beiden Netzwerken)**: Bei Batches ab Chain v3.2.5 nennt das Blatt zusätzlich die Chain-ID. Das RDK baut beide Formen (`withdrawalLeafV1`, `withdrawalLeafV2`).
 * **Elternknoten** = SHAKE-256 aus `left || right`. Auf jeder Ebene entscheidet das entsprechende Bit des Auszahlungs-Index über die Seite: `0` bedeutet, dass das Blatt (oder der laufende Hash) der linke Knoten ist, die Position des Blatts im Baum ist also sein Auszahlungs-Index.
 * Jeder Geschwister-Hash muss genau 32 Bytes lang sein.
-* **Auszahlungs-Root (jetzt im Testnet, im Mainnet nach dem Upgrade):** Ab Chain v3.2.5 ist die `withdrawals_root` eines Batches entweder leer oder genau 32 Bytes lang; im Mainnet (v3.2.4) wird diese Längenregel noch nicht erzwungen.
+* **Auszahlungs-Root (ab Chain v3.2.5, beide Netzwerke):** Ab Chain v3.2.5 ist die `withdrawals_root` eines Batches entweder leer oder genau 32 Bytes lang; vor v3.2.5 wurde diese Längenregel nicht erzwungen.
 
 Bauen Sie diesen Baum nicht von Hand. `withdrawalsTree` in `@qorechain/rdk` 0.7.0 (und seine Entsprechungen in Python, Go, Rust und Java) baut die Auszahlungs-Root eines Batches und jeden Beweis genau so wie die Chain und wurde gegen den eigenen Verifizierer der Chain geprüft; `assembleWithdrawalProof` baut standardmäßig den Baum der Chain, und die generischen Merkle-Helfer verwenden jetzt standardmäßig SHAKE-256.
 
@@ -121,7 +121,7 @@ flowchart LR
 ```
 
 1. **Einen Batch settlen.** Der Rollup-Operator reicht mit `submit-batch` einen Settlement-Batch ein. Der Batch kann eine Auszahlungs-Root über seine ausgehenden L2 → L1-Nachrichten committen.
-2. **Finalisieren.** Der Batch finalisiert gemäß dem Settlement-Modus des Rollups — bei erfolgreicher Beweisverifikation für `zk` oder nach dem Challenge-Window für `optimistic` (während dessen `challenge-batch` ihn bestreiten kann). Im Testnet seit Chain v3.2.5 (im Mainnet nach dem Upgrade) finalisieren Batches außerdem strikt in Indexreihenfolge, ein Batch wartet also auf jeden früheren Batch, der noch `submitted` oder `challenged` ist. Das optimistische Fenster beträgt für einen Batch, der vor dem Upgrade auf v3.2.4 eingereicht wird, standardmäßig 100,800 Blöcke; ab v3.2.4 wird es für Batches, die ab der Upgrade-Höhe eingereicht werden, in Sekunden Blockzeit gemessen (im Testnet seit Höhe 8,337,253 am 19. Oktober 2026, im Mainnet seit Höhe 3,742,566 am 23. Oktober 2026).
+2. **Finalisieren.** Der Batch finalisiert gemäß dem Settlement-Modus des Rollups — bei erfolgreicher Beweisverifikation für `zk` oder nach dem Challenge-Window für `optimistic` (während dessen `challenge-batch` ihn bestreiten kann). Seit Chain v3.2.5 (Testnet ab dem 26. Oktober 2026, Mainnet ab dem 29. Oktober 2026) finalisieren Batches außerdem strikt in Indexreihenfolge, ein Batch wartet also auf jeden früheren Batch, der noch `submitted` oder `challenged` ist. Das optimistische Fenster beträgt für einen Batch, der vor dem Upgrade auf v3.2.4 eingereicht wird, standardmäßig 100,800 Blöcke; ab v3.2.4 wird es für Batches, die ab der Upgrade-Höhe eingereicht werden, in Sekunden Blockzeit gemessen (im Testnet seit Höhe 8,337,253 am 19. Oktober 2026, im Mainnet seit Höhe 3,742,566 am 23. Oktober 2026).
 3. **Beweisen und ausführen.** Sobald finalisiert, reicht jeder `execute-withdrawal` mit dem Merkle-Inklusionsbeweis (`--proof`) für das bestimmte Auszahlungs-Blatt ein. Das Modul verifiziert die Inklusion gegen die Auszahlungs-Root des finalisierten Batches und zahlt den Empfänger aus dem Escrow aus.
 
 Da Schritt 3 permissionless und beweisbasiert ist, hängt eine Auszahlung nicht von der Kooperation des Rollup-Operators ab, sobald der sie tragende Batch finalisiert ist.

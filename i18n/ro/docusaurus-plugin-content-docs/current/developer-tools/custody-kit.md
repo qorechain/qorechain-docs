@@ -86,7 +86,7 @@ Kitul nu implementează nicio schemă de semnătură. Verificarea ML-DSA-87 și 
 ### Retrageri și gas {#withdrawals}
 
 - Taxa = ceil(limita de gas x prețul gas-ului) în `uqor`. Prețul minim al gas-ului este 0.1 uqor, aplicat la limita de gas.
-- Ia limita de gas dintr-o simulare a tranzacției complet semnate. Pe nodurile care au aplicat upgrade-ul v3.2.5 (acum testnet, mainnet după ce este aplicat) folosește `ceil(gas_used x 1.02) + 2000`, deoarece simularea include verificarea ML-DSA-87. Înainte de aceasta folosește `ceil((gas_used + 40000) x 1.4)`. Detectează care se aplică cu `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`, nu după dată.
+- Ia limita de gas dintr-o simulare a tranzacției complet semnate. Pe nodurile care au aplicat upgrade-ul v3.2.5 (ambele rețele din 29 octombrie 2026) folosește `ceil(gas_used x 1.02) + 2000`, deoarece simularea include verificarea ML-DSA-87. Înainte de aceasta folosește `ceil((gas_used + 40000) x 1.4)`. Detectează care se aplică cu `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`, nu după dată.
 - După alegerea limitei de gas, reconstruiește `AuthInfo` și semnează din nou: ambele semnături acoperă taxa.
 - Secvențe: rulează o coadă de semnatar per adresă hot sau mai multe adrese hot pentru plăți în paralel.
 
@@ -271,12 +271,12 @@ Ramifică logica după codespace și cod împreună și păstrează log-ul brut.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Versiunea nodului | v3.2.4 (v3.2.5 încă neaplicat) | v3.2.6 (v3.2.5 aplicat) |
+| Versiunea nodului | v3.2.5 (aplicată pe 29 octombrie 2026) | v3.2.6 (v3.2.5 aplicat) |
 
 - Denominația este `uqor` (1 QOR = 10^6 uqor; pe traseul EVM 1 uqor = 10^12 wei). Prețul minim al gas-ului este 0.1 uqor, perioada de unbonding este de 21 de zile, iar limita memo este de 256 de caractere. Aceste valori au fost citite de pe ambele rețele la 27 octombrie 2026 și pot fi schimbate prin guvernanță, așa că în producție citește-le din lanț.
 - Depunerile nu necesită chei și nici înregistrare. Trimiterea necesită o cheie ML-DSA-87 înregistrată pentru fiecare adresă hot.
 - Rulează propriile noduri complete pentru producție. Endpoint-urile publice au limită de rată și sunt destinate dezvoltării. Dacă un script primește `403 Forbidden`, setează un header `User-Agent` explicit. Vezi [rularea unui nod](/developer-guide/running-a-node) și [conectarea la mainnet](/getting-started/connecting-to-mainnet).
-- Testnet-ul primește fiecare versiune de nod înaintea mainnet-ului. Schimbă regulile de gas verificând upgrade-ul aplicat, nu după dată.
+- Testnet-ul primește fiecare versiune de nod înaintea mainnet-ului. Schimbă regulile de gas verificând upgrade-ul aplicat, nu după dată (ambele rețele au aplicat v3.2.5).
 - Tokenurile de test de pe testnet (denom-uri bank de forma `erc20:0x...`, un token IBC) nu există pe mainnet. Creditează `uqor` pe ambele rețele.
 - QOR de testnet vine din faucet-ul din dashboard-ul QoreChain și nu are valoare. Vezi [conectarea la testnet](/getting-started/connecting-to-testnet).
 

@@ -10,7 +10,7 @@ sidebar_position: 3
 Bu kılavuz, QoreChain üzerinde zincir üstü yönetişimin nasıl çalıştığını, oyların nasıl sayıldığını, tekliflerin nasıl gönderileceğini ve nasıl oy kullanılacağını açıklar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve 23 Ekim 2026'dan beri **v3.2.4** sürümünü çalıştırıyor; testnet **v3.2.6** çalıştırıyor (27 Ekim 2026'dan beri) — mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve 29 Ekim 2026'dan beri **v3.2.5** sürümünü çalıştırıyor (v3.2.4, 23 Ekim'den); testnet **v3.2.6** çalıştırıyor (27 Ekim 2026'dan beri) — mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -119,7 +119,7 @@ Bir teklif, kabul edilirse yürütülen sıfır veya daha fazla mesaj taşır. Y
 | **Parametre Değişikliği** | Yönetişim modülü hesabı tarafından gönderilen, bir modülün `MsgUpdateParams` mesajı. O modülün parametre kümesinin tamamını değiştirir. |
 | **Yazılım Yükseltmesi** | Belirtilen bir blok yüksekliğinde koordineli bir zincir yükseltmesini planlayan bir `MsgSoftwareUpgrade` mesajı. |
 | **Topluluk Harcaması** | Topluluk havuzundan bir alıcı adrese fon gönderen bir `MsgCommunityPoolSpend` mesajı.         |
-| **Hızlandırılmış (Expedited)** | Daha kısa bir oylama dönemi, daha yüksek bir depozito ve kabul eşiği için `"expedited": true` olarak ayarlayın (aşağıya bakın). |
+| **Hızlandırılmış (Expedited)** | Daha kısa bir oylama dönemi, daha yüksek bir depozito ve kabul eşiği için `"expedited": true` olarak ayarlayın (aşağıya bakın). v3.2.5'ten beri (her iki ağda), oylamasını kaybedip normal teklife dönüşen hızlandırılmış bir teklif o ana kadar verilen oyları korur; v3.2.5'ten önce bu oylar kayboluyordu. |
 
 ---
 
@@ -175,7 +175,7 @@ Başlıca parametreler şunlardır:
 
 ## Mainnet'te şimdiye kadarki yönetişim {#mainnet-history}
 
-Mainnet yönetişimi; parametre değişiklikleri, devre kesici kararları, koordineli yükseltmeler ve Ekim 2026'dan itibaren zincirin v3.2.0 yükseltmesinde kaydettiği tutarların serbest bırakılması için kullanılmıştır. 7 ila 13 numaralı teklifler Ekim 2026'da mainnet'te kabul edildi; bunların arasında 12 numaralı (başka bir serbest bırakma, 21 Ekim'de kabul edildi) ve 13 numaralı (v3.2.4 yükseltmesi, 23 Ekim'de 3.742.566 yüksekliğinde uygulandı) teklifler de vardır; 14 numaralı teklif (3.906.833 yüksekliğinde v3.2.5'e koordineli bir yükseltme) yazım sırasında oylama dönemindeydi; liste ve sonuçlar [Sürüm Geçmişi](/appendix/version-history#governance-timeline) sayfasındadır ve her teklif `GET /cosmos/gov/v1/proposals` adresinden canlı olarak okunabilir.
+Mainnet yönetişimi; parametre değişiklikleri, devre kesici kararları, koordineli yükseltmeler ve Ekim 2026'dan itibaren zincirin v3.2.0 yükseltmesinde kaydettiği tutarların serbest bırakılması için kullanılmıştır. 7 ila 14 numaralı teklifler Ekim 2026'da mainnet'te kabul edildi; bunların arasında 12 numaralı (başka bir serbest bırakma, 21 Ekim'de kabul edildi), 13 numaralı (v3.2.4 yükseltmesi, 23 Ekim'de 3.742.566 yüksekliğinde uygulandı) ve 14 numaralı (v3.2.5 yükseltmesi, 29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı) teklifler de vardır; liste ve sonuçlar [Sürüm Geçmişi](/appendix/version-history#governance-timeline) sayfasındadır ve her teklif `GET /cosmos/gov/v1/proposals` adresinden canlı olarak okunabilir.
 
 ---
 

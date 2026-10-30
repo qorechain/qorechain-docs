@@ -10,7 +10,7 @@ sidebar_position: 3
 This guide covers how on-chain governance works on QoreChain: how votes are tallied, how to submit proposals, and how to vote.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.4** since 23 October 2026; the testnet runs **v3.2.6** (since 27 October 2026) — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when participating in governance on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.5** since 29 October 2026 (v3.2.4 from 23 October); the testnet runs **v3.2.6** (since 27 October 2026) — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when participating in governance on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`
@@ -119,7 +119,7 @@ A proposal carries zero or more messages that execute if it passes. Common cases
 | **Parameter change** | A module's `MsgUpdateParams` message, sent by the governance module account. It replaces that module's whole parameter set. |
 | **Software upgrade** | A `MsgSoftwareUpgrade` message that schedules a coordinated chain upgrade at a specified block height. |
 | **Community spend**  | A `MsgCommunityPoolSpend` message that sends funds from the community pool to a recipient address. |
-| **Expedited**        | Set `"expedited": true` for a shorter voting period with a higher deposit and pass threshold (see below). |
+| **Expedited**        | Set `"expedited": true` for a shorter voting period with a higher deposit and pass threshold (see below). Since v3.2.5 (both networks), an expedited proposal that fails its tally and converts to a regular proposal keeps the votes already cast; before v3.2.5 those votes were lost. |
 
 ---
 
@@ -175,7 +175,7 @@ Key parameters include:
 
 ## Governance on mainnet so far {#mainnet-history}
 
-Mainnet governance has been used for parameter changes, circuit-breaker decisions, coordinated upgrades and, since October 2026, for releasing amounts that the chain recorded at the v3.2.0 upgrade. Proposals 7 to 13 passed on mainnet in October 2026, including proposal 12 (a further release, passed 21 October) and proposal 13 (the v3.2.4 upgrade, applied at height 3,742,566 on 23 October); proposal 14 (a coordinated upgrade to v3.2.5 at height 3,906,833) was in its voting period at the time of writing; the list and the outcomes are in [Version History](/appendix/version-history#governance-timeline), and every proposal can be read live at `GET /cosmos/gov/v1/proposals`.
+Mainnet governance has been used for parameter changes, circuit-breaker decisions, coordinated upgrades and, since October 2026, for releasing amounts that the chain recorded at the v3.2.0 upgrade. Proposals 7 to 14 passed on mainnet in October 2026, including proposal 12 (a further release, passed 21 October) and proposal 13 (the v3.2.4 upgrade, applied at height 3,742,566 on 23 October) and proposal 14 (the v3.2.5 upgrade, applied at height 3,906,833 on 29 October 2026); the list and the outcomes are in [Version History](/appendix/version-history#governance-timeline), and every proposal can be read live at `GET /cosmos/gov/v1/proposals`.
 
 ---
 

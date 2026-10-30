@@ -86,11 +86,11 @@ The `--proof` value is the inclusion proof: the sibling hashes along the path fr
 
 ### Leaf and node encoding {#leaf-and-node-encoding}
 
-* **Leaf (first form, the rule on mainnet today)** = SHAKE-256 (32 bytes) of `rollup_id`, a `0x00` byte, the withdrawal index (8-byte big-endian), the `recipient` string, `0x00`, the `denom` string, `0x00`, and the `amount` (8-byte big-endian).
-* **Leaf (second form, testnet now, mainnet after the v3.2.5 upgrade)**: for batches from chain v3.2.5 the leaf also names the chain id. The RDK builds both forms (`withdrawalLeafV1`, `withdrawalLeafV2`).
+* **Leaf (first form, for batches before chain v3.2.5)** = SHAKE-256 (32 bytes) of `rollup_id`, a `0x00` byte, the withdrawal index (8-byte big-endian), the `recipient` string, `0x00`, the `denom` string, `0x00`, and the `amount` (8-byte big-endian).
+* **Leaf (second form, from chain v3.2.5 on both networks)**: for batches from chain v3.2.5 the leaf also names the chain id. The RDK builds both forms (`withdrawalLeafV1`, `withdrawalLeafV2`).
 * **Parent** = SHAKE-256 of `left || right`. At each level the corresponding bit of the withdrawal index decides the side: `0` means the leaf (or running hash) is the left node, so the leaf's position in the tree is its withdrawal index.
 * Every sibling hash must be exactly 32 bytes.
-* **Withdrawals root (testnet now, mainnet after the upgrade):** from chain v3.2.5 a batch's `withdrawals_root` is either empty or exactly 32 bytes; on mainnet (v3.2.4) that length rule is not enforced yet.
+* **Withdrawals root (from chain v3.2.5, both networks):** a batch's `withdrawals_root` is either empty or exactly 32 bytes; before v3.2.5 that length rule was not enforced.
 
 Do not hand-roll this tree. `withdrawalsTree` in `@qorechain/rdk` 0.7.0 (and its Python, Go, Rust and Java equivalents) builds a batch's withdrawals root and every proof exactly as the chain does, and was checked against the chain's own verifier; `assembleWithdrawalProof` builds the chain's tree by default, and the generic Merkle helpers now default to SHAKE-256.
 
@@ -121,7 +121,7 @@ flowchart LR
 ```
 
 1. **Settle a batch.** The rollup operator submits a settlement batch with `submit-batch`. The batch can commit a withdrawals root over its outbound L2 → L1 messages.
-2. **Finalize.** The batch finalizes according to the rollup's settlement mode — on valid proof verification for `zk`, or after the challenge window for `optimistic` (during which `challenge-batch` may dispute it). On the testnet since chain v3.2.5 (mainnet after the upgrade), batches also finalize strictly in index order, so a batch waits for any earlier batch that is still `submitted` or `challenged`. The optimistic window is 100,800 blocks by default for a batch submitted before the v3.2.4 upgrade; from v3.2.4 it is measured in seconds of block time for batches submitted from the upgrade height on (testnet since height 8,337,253 on 19 October 2026, mainnet since height 3,742,566 on 23 October 2026).
+2. **Finalize.** The batch finalizes according to the rollup's settlement mode — on valid proof verification for `zk`, or after the challenge window for `optimistic` (during which `challenge-batch` may dispute it). Since chain v3.2.5 (testnet from 26 October 2026, mainnet from 29 October 2026), batches also finalize strictly in index order, so a batch waits for any earlier batch that is still `submitted` or `challenged`. The optimistic window is 100,800 blocks by default for a batch submitted before the v3.2.4 upgrade; from v3.2.4 it is measured in seconds of block time for batches submitted from the upgrade height on (testnet since height 8,337,253 on 19 October 2026, mainnet since height 3,742,566 on 23 October 2026).
 3. **Prove and execute.** Once finalized, anyone submits `execute-withdrawal` with the Merkle inclusion proof (`--proof`) for the specific withdrawal leaf. The module verifies inclusion against the finalized batch's withdrawals root and pays the recipient from escrow.
 
 Because step 3 is permissionless and proof-based, a withdrawal does not depend on the rollup operator's cooperation once the batch carrying it is finalized.

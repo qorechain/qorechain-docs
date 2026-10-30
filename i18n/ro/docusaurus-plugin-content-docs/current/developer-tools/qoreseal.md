@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal este o bibliotecă open-source care criptează date către conturi QoreChain cu ML-KEM-1024 (FIPS 203). Un cont își publică pe lanț cheia publică ML-KEM-1024; oricine poate apoi cripta o sarcină utilă pe care acel cont, și orice alt destinatar adăugat de expeditor, o poate citi. Este pentru dezvoltatorii de dApp-uri care au nevoie de sarcini utile confidențiale (memo-uri, facturi, documente, oferte), pentru auditori care au nevoie de acces de vizualizare și pentru operatorii de grupuri private și sidechain-uri. Compune primitive standard și nu implementează niciuna proprie. Versiunea **0.1.0**, Apache-2.0, întreținută de QoreChain Association.
 
-Situația la 27 octombrie 2026: criptarea în sine funcționează offline oriunde, fără rețea și fără cont. Criptarea către o adresă citită de pe lanț are nevoie de registrul de chei KEM, care este **live pe testnet** (`qorechain-diana`) și **ajunge pe mainnet (`qorechain-vladi`) după upgrade-ul v3.2.5**, fără dată. Pachetul este publicat pentru Rust, Go, Python, Swift, Kotlin/JVM și Android. Pachetul TypeScript `@qorechain/qoreseal` **urmează** și nu este încă pe npm. Construcția este o schiță, în așteptarea unei revizuiri externe înainte de 1.0.
+Situația la 30 octombrie 2026: criptarea în sine funcționează offline oriunde, fără rețea și fără cont. Criptarea către o adresă citită de pe lanț are nevoie de registrul de chei KEM, care este **live pe testnet** (`qorechain-diana`) și, de când mainnet-ul (`qorechain-vladi`) a aplicat v3.2.5 pe 29 octombrie 2026, **ruta sa de citire răspunde și pe mainnet** (niciun cont nu a publicat acolo o cheie pe care această pagină să o poată găsi). Pachetul este publicat pentru Rust, Go, Python, Swift, Kotlin/JVM și Android. Pachetul TypeScript `@qorechain/qoreseal` **urmează** și nu este încă pe npm. Construcția este o schiță, în așteptarea unei revizuiri externe înainte de 1.0.
 
 QoreSeal protejează conținutul unei sarcini utile, nimic altceva. Adresele, momentul tranzacțiilor, sumele transferurilor, dimensiunile plicurilor și numărul de destinatari rămân publice pe lanț. Nu este o metodă de a face tranzacțiile private.
 
@@ -207,7 +207,7 @@ Aveți nevoie de un cont `qorechain-diana` pe care îl controlați, cu puțin QO
 5. Partea expeditorului: `sealToAddresses({ rest: "https://api-testnet.qore.host", chainId: "qorechain-diana", purpose: "note", recipients: [{ address, card }], plaintext })`. Fără carte, transmiteți `mode: "mlkem"`.
 6. Partea destinatarului: `open({ chainId: "qorechain-diana", purpose: "note", envelope, keys: sealKeys })`.
 
-Fluxul complet rulabil este exemplul din repository `examples/register-and-encrypt`. Refuză mainnet-ul până când acea rețea aplică v3.2.5. Go oferă aceeași parte de expeditor cu `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})`. Rust, Swift, Kotlin și Python sunt offline: citiți singuri `/qorechain/pqc/v1/kem/{address}` și `/qorechain/pqc/v1/account/{address}`, verificați cartea (`verify_recipient_card`), apoi sigilați.
+Fluxul complet rulabil este exemplul din repository `examples/register-and-encrypt`. Mainnet-ul a aplicat v3.2.5 pe 29 octombrie 2026; verificați README-ul propriu al exemplului pentru versiunea care ridică restricția sa pentru mainnet. Go oferă aceeași parte de expeditor cu `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})`. Rust, Swift, Kotlin și Python sunt offline: citiți singuri `/qorechain/pqc/v1/kem/{address}` și `/qorechain/pqc/v1/account/{address}`, verificați cartea (`verify_recipient_card`), apoi sigilați.
 
 ### API principal {#api}
 
@@ -243,17 +243,17 @@ Erorile Python ridică `QoreSealError.Failure` cu un `code` stabil; erorile Go s
 
 | | Mainnet `qorechain-vladi` | Testnet `qorechain-diana` |
 |---|---|---|
-| Registrul de chei KEM | după upgrade-ul v3.2.5 (încă neaplicat, fără dată) | live |
+| Registrul de chei KEM | live din v3.2.5 (aplicată pe 29 octombrie 2026, înălțimea 3,906,833); ruta de citire verificată, vezi mai jos | live |
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host` (chain ID 9801) | `https://evm-testnet.qore.host` (chain ID 9800) |
 
-Pe 27 octombrie 2026, interogarea registrului de pe testnet a răspuns `{"found":false,"key":null}` pentru un cont fără cheie, iar aceeași interogare pe mainnet a răspuns „Not Implemented”.
+Pe 30 octombrie 2026, interogarea registrului a răspuns `{"found":false,"key":null}` pentru un cont fără cheie pe ambele rețele (pe 27 octombrie mainnet-ul încă răspundea „Not Implemented”). O căutare în tranzacțiile mainnet-ului din 30 octombrie nu a găsit încă niciun `MsgRegisterKEMKey`, deci publicarea unei chei pe mainnet nu a fost exersată cap-coadă de această pagină.
 
 - Sigilarea și deschiderea offline, inclusiv cheile de auditor transmise direct, grupurile private și loturile, nu au nevoie de rețea și nici de cont.
 - Criptarea către o adresă cere ca destinatarul să fi publicat în registru o cheie ML-KEM-1024 și, pentru modul hibrid, o carte de destinatar.
-- Publicarea unei chei are nevoie de un cont cu QOR de testnet (pe mainnet, QOR după upgrade), o cheie ML-DSA-87 înregistrată și QoreSign pentru a semna tranzacția hibrid. Pragul minim al comisionului este 0,1 uqor per gas. Obțineți QOR de testnet de la [Faucet](/dashboard/faucet).
-- Până când mainnet-ul aplică v3.2.5, interogarea registrului pe mainnet nu este disponibilă, iar înregistrarea este refuzată (codul 250).
+- Publicarea unei chei are nevoie de un cont cu QOR de testnet (pe mainnet, QOR), o cheie ML-DSA-87 înregistrată și QoreSign pentru a semna tranzacția hibrid. Pragul minim al comisionului este 0,1 uqor per gas. Obțineți QOR de testnet de la [Faucet](/dashboard/faucet).
+- Înregistrarea pe mainnet este acceptată doar de un lanț care are registrul; dacă apare un refuz cu codul 250, registrul nu este activat pe acel lanț.
 
 ## Unde este publicat {#where-published}
 
@@ -285,7 +285,7 @@ Sursa: [github.com/qorechain/qoreseal](https://github.com/qorechain/qoreseal) (r
 - **Eliminarea sau rotirea unei chei nu șterge și nu recriptează nimic.** Datele sigilate către o cheie veche rămân lizibile de oricine o deține; păstrați seed-urile sau indexurile vechi.
 - **Membrii eliminați din grup** păstrează cheile epocilor din care au făcut parte. Membrii noi citesc începând cu epoca alăturării, cu excepția cazului în care li se sigilează chei mai vechi.
 - **Chain id-ul și scopul nu sunt în plic;** destinatarul trebuie să le cunoască.
-- **Registrul pe mainnet:** indisponibil până când mainnet-ul aplică v3.2.5.
+- **Registrul pe mainnet:** ruta de citire este live din v3.2.5; nicio cheie nu fusese publicată pe mainnet la verificare, iar spațiul de nume EVM JSON-RPC `qor_` nu este expus pe `evm.qore.host` (folosiți ruta REST).
 - **Pre-1.0, construcția în așteptarea revizuirii externe.** Versiunile minore pot schimba API-ul. Citiți specificația înainte de a vă baza pe ea.
 - **Încă fără pachet npm** și încă fără wheel Python pentru Windows.
 

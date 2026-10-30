@@ -10,7 +10,7 @@ sidebar_position: 2
 Acest ghid acoperă modul de delegare a token-urilor QOR către validatori, redelegarea între validatori, debondarea stake-ului, revendicarea recompenselor și înțelegerea părților din designul de staking al QoreChain care sunt active astăzi.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.4** (aplicată pe 23 octombrie 2026); testnet-ul rulează v3.2.6 (din 27 octombrie 2026). Înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.5** (aplicată pe 29 octombrie 2026; v3.2.4 pe 23 octombrie); testnet-ul rulează v3.2.6 (din 27 octombrie 2026). Înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
 :::
 
 :::caution Semnați cu `tx pqc cosign`
@@ -126,7 +126,7 @@ Recompensele de staking sunt finanțate din două surse: bugetul de emisie plafo
 ## Staking cu blocare în timp (v3.2.4) {#time-locked-staking}
 
 :::note Când se aplică
-Versiunea v3.2.4 adaugă un modul opțional de staking cu blocare în timp, `x/stakingtier`. Este activ pe **testnet-ul `qorechain-diana`** din 19 octombrie 2026 și pe **mainnet** din 23 octombrie 2026 (aplicat la înălțimea 3.742.566 prin propunerea de guvernanță 13). Blocarea este disponibilă ca opțiune, iar delegarea obișnuită rămâne fără blocare (vezi [mai sus](#lock-in-period)). Mecanismul de mai jos a fost verificat față de parametrii live ai mainnet-ului și ai testnet-ului pe 23 octombrie 2026.
+Versiunea v3.2.4 adaugă un modul opțional de staking cu blocare în timp, `x/stakingtier`. Este activ pe **testnet-ul `qorechain-diana`** din 19 octombrie 2026 și pe **mainnet** din 23 octombrie 2026 (aplicat la înălțimea 3.742.566 prin propunerea de guvernanță 13); mainnet rulează v3.2.5 din 29 octombrie 2026, care îl lasă neschimbat. Blocarea este disponibilă ca opțiune, iar delegarea obișnuită rămâne fără blocare (vezi [mai sus](#lock-in-period)). Mecanismul de mai jos a fost verificat față de parametrii live ai mainnet-ului și ai testnet-ului pe 23 octombrie 2026.
 :::
 
 Un delegator poate angaja o parte dintr-o delegare existentă către un validator pentru un termen fix de 3, 6 sau 12 luni. Termenele și sumele sunt parametri ai chain-ului; citiți-i pe cei actuali de la `GET /qorechain/stakingtier/v1/params`, nu de pe această pagină.
@@ -158,7 +158,7 @@ ID-ul de chain de mai sus este cel al testnet-ului; folosiți `qorechain-vladi` 
 
 **Unde funcționează, verificat la 27 octombrie 2026.**
 
-| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | Modul activ | Da, din înălțimea 3.742.566 | Da, din v3.2.4 (înălțimea 8.337.253) |
 | Blocări deschise | Încă niciuna | 3 blocări de test |

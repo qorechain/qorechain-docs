@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain își publică uneltele pentru dezvoltatori sub formă de pachete mici în registrele publice (npm, PyPI, crates.io, proxy-ul de module Go, Maven Central și Swift Package Manager). Această pagină este indexul: la ce folosește fiecare pachet, numele său exact din registru, limbajul, versiunea curentă, comanda de instalare și starea, plus unde poți citi cum se folosește. Este pentru dezvoltatorii care construiesc dApp-uri, portofele, backend-uri și rollup-uri pe QoreChain și vor să aleagă pachetul potrivit înainte de a citi un ghid.
 
-Versiunile din tabele au fost citite din registre la 27 octombrie 2026. Mainnet-ul `qorechain-vladi` rulează v3.2.4, iar testnet-ul `qorechain-diana` rulează v3.2.6. Fiecare pachet listat ca publicat are licența Apache-2.0.
+Versiunile din tabele au fost citite din registre la 27 octombrie 2026. Mainnet-ul `qorechain-vladi` rulează v3.2.5 (aplicată pe 29 octombrie 2026), iar testnet-ul `qorechain-diana` rulează v3.2.6. Fiecare pachet listat ca publicat are licența Apache-2.0.
 
 ## Inovații {#innovations}
 
@@ -114,7 +114,7 @@ Pachetul TypeScript are un subpath `@qorechain/qoresign/network`, iar modulul Go
 
 ### QoreSeal {#group-qoreseal}
 
-Pagină: [QoreSeal](/developer-tools/qoreseal). Sursă: [qorechain/qoreseal](https://github.com/qorechain/qoreseal). QoreSeal 0.1.0 criptează date către conturi QoreChain, grupuri private și sidechain-uri cu ML-KEM-1024 (FIPS 203). Criptarea funcționează offline; citirea cheii unui destinatar din lanț necesită registrul de chei KEM, care este live pe testnet și ajunge pe mainnet după upgrade-ul v3.2.5. Construcția așteaptă o revizuire externă înainte de 1.0.
+Pagină: [QoreSeal](/developer-tools/qoreseal). Sursă: [qorechain/qoreseal](https://github.com/qorechain/qoreseal). QoreSeal 0.1.0 criptează date către conturi QoreChain, grupuri private și sidechain-uri cu ML-KEM-1024 (FIPS 203). Criptarea funcționează offline; citirea cheii unui destinatar din lanț necesită registrul de chei KEM, care este live pe testnet și a cărui rută de citire răspunde pe mainnet începând cu v3.2.5 (aplicată pe 29 octombrie 2026; nicio cheie nu era publicată acolo la verificare). Construcția așteaptă o revizuire externă înainte de 1.0.
 
 | Pachet | Limbaj | Versiune | Instalare | Stare |
 |---|---|---|---|---|
@@ -298,9 +298,9 @@ Pentru un nume npm cu scope păstrează `@`, de exemplu `https://registry.npmjs.
 
 ## Limite și probleme cunoscute {#limits}
 
-- **Două rețele live, versiuni diferite.** Mainnet-ul rulează v3.2.4, iar testnet-ul rulează v3.2.6. O funcție care există doar pe testnet este marcată pe pagina ei. Nu presupune comportamentul v3.2.5 pe mainnet.
+- **Două rețele live, versiuni diferite.** Mainnet-ul rulează v3.2.5 (din 29 octombrie 2026), iar testnet-ul rulează v3.2.6. O funcție care există doar pe testnet (elementele v3.2.6, precompilările EVM PQC) este marcată pe pagina ei.
 - **Încă nu sunt live:** `@qorechain/qoreseal` pe npm, Asset Kit pe PyPI și npm (și modulele sale native, o propunere care nu este programată), SDK 0.11.0 (chain developer kit) pe npm, tranzacțiile SVM și precompilările EVM pe mainnet (sunt active doar pe testnet; vezi [prezentarea SDK](/sdk/overview) pentru lista pe trasee).
-- **Registrul QoreSeal și PQ light client.** Criptarea către o adresă citită din lanț necesită registrul de chei KEM, live pe testnet și care ajunge pe mainnet după v3.2.5. PQ light client nu se conectează la niciuna dintre rețele; nu este programat niciun suport în lanț pentru checkpoint-urile sale.
+- **Registrul QoreSeal și PQ light client.** Criptarea către o adresă citită din lanț necesită registrul de chei KEM, live pe testnet, iar ruta sa de citire răspunde pe mainnet începând cu v3.2.5. PQ light client nu se conectează la niciuna dintre rețele; nu este programat niciun suport în lanț pentru checkpoint-urile sale.
 - **Kotlin 2.3 sau mai nou.** Artefactele Kotlin și Android QoreSign și QoreSeal au nevoie de compilatorul Kotlin 2.3 sau mai nou; Kotlin 2.1 nu se compilează împotriva lor.
 - **Fără wheel-uri pentru Windows.** Pachetele Python QoreSign și QoreSeal au wheel-uri doar pentru macOS și Linux; pe alte platforme se construiesc din distribuția sursă, care necesită Rust.
 - **Exemple nerulate:** din cele 34 de intrări de quickstart, 31 au rulat și au trecut la 27 octombrie 2026. Exemplul QoreSign pentru Python a fost rulat după publicarea pachetului (macOS arm64 și Linux aarch64), iar exemplul QoreSign pentru Android nu a fost rulat pe un dispozitiv. Wallet adapter-ul, chain bridge-ul și handle-urile nu au quickstart, așa că exemplele lor din acest manual provin din tipurile și sursa pachetelor și nu au fost rulate end to end.

@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain veröffentlicht sein Entwickler-Tooling als kleine Pakete in den öffentlichen Registries (npm, PyPI, crates.io, Go-Modul-Proxy, Maven Central und Swift Package Manager). Diese Seite ist der Index: wofür jedes Paket gedacht ist, sein exakter Registry-Name, die Sprache, die aktuelle Version, der Installationsbefehl und der Status sowie wo Sie nachlesen, wie man es verwendet. Sie richtet sich an Entwickler, die dApps, Wallets, Backends und Rollups auf QoreChain bauen und vor dem Lesen einer Anleitung das passende Paket auswählen möchten.
 
-Die Versionen in den Tabellen wurden am 27. Oktober 2026 aus den Registries gelesen. Das Mainnet `qorechain-vladi` läuft auf v3.2.4 und das Testnet `qorechain-diana` auf v3.2.6. Jedes als veröffentlicht aufgeführte Paket steht unter der Apache-2.0-Lizenz.
+Die Versionen in den Tabellen wurden am 27. Oktober 2026 aus den Registries gelesen. Das Mainnet `qorechain-vladi` läuft auf v3.2.5 (angewendet am 29. Oktober 2026) und das Testnet `qorechain-diana` auf v3.2.6. Jedes als veröffentlicht aufgeführte Paket steht unter der Apache-2.0-Lizenz.
 
 ## Innovationen {#innovations}
 
@@ -114,7 +114,7 @@ Das TypeScript-Paket hat einen Unterpfad `@qorechain/qoresign/network`, und das 
 
 ### QoreSeal {#group-qoreseal}
 
-Seite: [QoreSeal](/developer-tools/qoreseal). Quellcode: [qorechain/qoreseal](https://github.com/qorechain/qoreseal). QoreSeal 0.1.0 verschlüsselt Daten mit ML-KEM-1024 (FIPS 203) an QoreChain-Konten, private Gruppen und Sidechains. Die Verschlüsselung funktioniert offline; das Lesen des Schlüssels eines Empfängers von der Chain braucht das KEM-Schlüsselregister, das im Testnet live ist und nach dem Upgrade auf v3.2.5 ins Mainnet kommt. Die Konstruktion wartet vor 1.0 auf eine externe Prüfung.
+Seite: [QoreSeal](/developer-tools/qoreseal). Quellcode: [qorechain/qoreseal](https://github.com/qorechain/qoreseal). QoreSeal 0.1.0 verschlüsselt Daten mit ML-KEM-1024 (FIPS 203) an QoreChain-Konten, private Gruppen und Sidechains. Die Verschlüsselung funktioniert offline; das Lesen des Schlüssels eines Empfängers von der Chain braucht das KEM-Schlüsselregister, das im Testnet live ist und dessen Leseroute im Mainnet seit v3.2.5 antwortet (angewendet am 29. Oktober 2026; dort war beim Prüfen noch kein Schlüssel veröffentlicht). Die Konstruktion wartet vor 1.0 auf eine externe Prüfung.
 
 | Paket | Sprache | Version | Installation | Status |
 |---|---|---|---|---|
@@ -298,9 +298,9 @@ Behalten Sie bei einem npm-Namen mit Scope das `@`, zum Beispiel `https://regist
 
 ## Grenzen und bekannte Probleme {#limits}
 
-- **Zwei Live-Netzwerke, unterschiedliche Versionen.** Das Mainnet läuft auf v3.2.4 und das Testnet auf v3.2.6. Eine Funktion, die nur im Testnet existiert, ist auf ihrer eigenen Seite gekennzeichnet. Nehmen Sie im Mainnet kein v3.2.5-Verhalten an.
+- **Zwei Live-Netzwerke, unterschiedliche Versionen.** Das Mainnet läuft auf v3.2.5 (seit dem 29. Oktober 2026) und das Testnet auf v3.2.6. Eine Funktion, die nur im Testnet existiert (v3.2.6-Elemente, die EVM-PQC-Precompiles), ist auf ihrer eigenen Seite gekennzeichnet.
 - **Noch nicht live:** `@qorechain/qoreseal` auf npm, das Asset Kit auf PyPI und npm (und seine nativen Module, ein Vorschlag, der nicht eingeplant ist), SDK 0.11.0 (das Chain Developer Kit) auf npm, SVM-Transaktionen und die EVM-Precompiles im Mainnet (sie sind nur im Testnet aktiv; die Liste nach Lane finden Sie im [SDK-Überblick](/sdk/overview)).
-- **QoreSeal-Register und der PQ-Light-Client.** Das Verschlüsseln an eine von der Chain gelesene Adresse braucht das KEM-Schlüsselregister, das im Testnet live ist und nach v3.2.5 ins Mainnet kommt. Der PQ-Light-Client verbindet sich mit keinem der beiden Netzwerke; für seine Checkpoints ist keine Chain-Unterstützung geplant.
+- **QoreSeal-Register und der PQ-Light-Client.** Das Verschlüsseln an eine von der Chain gelesene Adresse braucht das KEM-Schlüsselregister, das im Testnet live ist, und dessen Leseroute im Mainnet seit v3.2.5 antwortet. Der PQ-Light-Client verbindet sich mit keinem der beiden Netzwerke; für seine Checkpoints ist keine Chain-Unterstützung geplant.
 - **Kotlin 2.3 oder neuer.** Die Kotlin- und Android-Artefakte von QoreSign und QoreSeal benötigen den Kotlin-Compiler 2.3 oder neuer; mit Kotlin 2.1 lassen sie sich nicht kompilieren.
 - **Keine Windows-Wheels.** Die Python-Pakete von QoreSign und QoreSeal haben Wheels nur für macOS und Linux; andere Plattformen bauen aus der Quellcode-Distribution, die Rust benötigt.
 - **Nicht ausgeführte Beispiele:** Von den 34 Quickstart-Einträgen liefen 31 am 27. Oktober 2026 und bestanden. Das QoreSign-Python-Beispiel wurde nach der Veröffentlichung des Pakets ausgeführt (macOS arm64 und Linux aarch64), und das QoreSign-Android-Beispiel wurde nicht auf einem Gerät ausgeführt. Wallet-Adapter, Chain-Bridge und Handles haben keinen Quickstart, daher stammen ihre Beispiele in diesem Handbuch aus den Typings und dem Quellcode des Pakets und wurden nicht Ende zu Ende ausgeführt.

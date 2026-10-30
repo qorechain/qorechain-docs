@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Mainnet yayında mı?
 
 Evet. Mainnet **yayında** (zincir kimliği `qorechain-vladi`, 7 Haziran 2026'dan beri
-canlı) zincir sürümü v3.2.4'ü çalıştırıyor (23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı, yönetişim önerisi 13); testnet v3.2.6'yı çalıştırıyor (27 Ekim 2026'da uygulandı). Testnet hazır
+canlı) zincir sürümü v3.2.5'i çalıştırıyor (29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı, yönetişim önerisi 14; v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı); testnet v3.2.6'yı çalıştırıyor (27 Ekim 2026'da uygulandı). Testnet hazır
 ayarı (`qorechain-diana`) da kullanılabilir durumda kalmaya devam eder. Her iki hazır
 ayar da localhost uç nokta varsayılanlarıyla gelir; ağı
 `createClient({ network: "mainnet" })` ile seçin ve `endpoints`'i kendi düğüm
@@ -149,7 +149,7 @@ serileştiriyordu ve zincirin tx kod çözücüsü bunu CheckTx aşamasında red
 ## SDK hangi zincir sürümleriyle çalışır?
 
 SDK **0.10.0**, zincir **v3.2.4** için istemci sürümüdür (mainnet'te 23 Ekim 2026'dan beri,
-3.742.566 yüksekliğinde, yönetişim önerisi 13; testnet'te 19 Ekim'den beri). Staking katmanı
+3.742.566 yüksekliğinde, yönetişim önerisi 13; testnet'te 19 Ekim'den beri). Mainnet 29 Ekim 2026'dan beri v3.2.5 çalıştırıyor; imzalama biçimi değişmedi, bu yüzden 0.10.0 orada çalışmaya devam eder. Staking katmanı
 oluşturucularını ve okumalarını, `fetchAuthNonce` işlevini ve protokol özelliği okumalarını
 ekler ([0.10.0'ın ekledikleri](/sdk/install#whats-new-0100) bölümüne bakın); bunlar, 0.9.0'ın
 v3.2.2 ve v3.2.3 için eklediklerinin üzerine gelir: kayıt sırasında isteğe bağlı sahiplik
@@ -159,9 +159,9 @@ SDK **0.8.1 veya daha yenisi** de her iki ağda işlem
 yapar (v2 hibrit sign-bytes biçimi, kayıt, hibrit gönderimler ve EVM penceresi
 değişmeden çalışır), ancak bu oluşturucuların hiçbirine sahip değildir: bunlar için
 CLI'yı kullanın (bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)). İmzalama biçimi
-v3.2.4'te değişmedi. Testnet v3.2.6'yı çalıştırır (v3.2.5 orada 26 Ekim 2026'da, v3.2.6 ise
-27 Ekim'de uygulandı); SDK'nın v3.2.4'ten sonra getirilen hiçbir şey için oluşturucusu yoktur
-ve bir sonraki mainnet sürümünün özellikleri, mainnet onu uyguladığı gün belgelenir.
+v3.2.4 veya v3.2.5'te değişmedi. Testnet v3.2.6'yı çalıştırır (v3.2.5 orada 26 Ekim 2026'da, v3.2.6 ise
+27 Ekim'de uygulandı); SDK'nın v3.2.4'ten sonra getirilen hiçbir şey için oluşturucusu yoktur;
+bu yüzden v3.2.5 eklerinin (örneğin ML-KEM anahtar kayıt defteri ile yönetişimle yönetilen cross-VM ve sözleşme yolları) henüz bir SDK oluşturucusu yoktur ve bunlara CLI ile ulaşılır.
 
 ## PQC anahtar kaydım reddedildi ama ücret alındı
 

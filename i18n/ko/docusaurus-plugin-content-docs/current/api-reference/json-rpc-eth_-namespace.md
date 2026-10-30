@@ -17,7 +17,7 @@ QoreChain은 EVM 호환 JSON-RPC 인터페이스를 구현하여, 표준 이더�
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPC 인터페이스는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 16진수 `0x2649`, 노드 릴리스 **v3.2.4**, 2026년 10월 23일부터, 2026년 6월 7일부터 운영 중. 메인넷 거버넌스 제안 14는 높이 3,906,833에서 v3.2.5를 적용할 예정입니다)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 16진수 `0x2648`, 노드 릴리스 **v3.2.6**, 2026년 10월 27일부터)에서 제공됩니다. 위의 로컬 주소는 직접 실행하는 노드에 적용됩니다. 공개 HTTP 엔드포인트는 `https://evm.qore.host`(메인넷)와 `https://evm-testnet.qore.host`(테스트넷)이며, [네트워크](/appendix/networks#public-endpoints)에 나열되어 있습니다. 공개 EVM WebSocket은 테스트넷 것(`wss://evm-ws-testnet.qore.host`)뿐이며, 공개 메인넷 EVM WebSocket은 없습니다.
+EVM JSON-RPC 인터페이스는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 16진수 `0x2649`, 노드 릴리스 **v3.2.5**, 2026년 10월 29일 높이 3,906,833부터, 2026년 6월 7일부터 운영 중)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 16진수 `0x2648`, 노드 릴리스 **v3.2.6**, 2026년 10월 27일부터)에서 제공됩니다. 위의 로컬 주소는 직접 실행하는 노드에 적용됩니다. 공개 HTTP 엔드포인트는 `https://evm.qore.host`(메인넷)와 `https://evm-testnet.qore.host`(테스트넷)이며, [네트워크](/appendix/networks#public-endpoints)에 나열되어 있습니다. 공개 EVM WebSocket은 테스트넷 것(`wss://evm-ws-testnet.qore.host`)뿐이며, 공개 메인넷 EVM WebSocket은 없습니다.
 :::
 
 ## 지원되는 네임스페이스

@@ -10,7 +10,7 @@ sidebar_position: 3
 Acest ghid descrie cum funcționează guvernanța on-chain pe QoreChain: cum sunt numărate voturile, cum să trimiți propuneri și cum să votezi.
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.4** din 23 octombrie 2026; testnet-ul rulează **v3.2.6** (din 27 octombrie 2026) — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.5** din 29 octombrie 2026 (v3.2.4 din 23 octombrie); testnet-ul rulează **v3.2.6** (din 27 octombrie 2026) — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
 :::
 
 :::caution Semnează cu `tx pqc cosign`
@@ -119,7 +119,7 @@ O propunere conține zero sau mai multe mesaje care se execută dacă trece. Caz
 | **Modificare de parametri** | Mesajul `MsgUpdateParams` al unui modul, trimis de contul de modul al guvernanței. Înlocuiește întregul set de parametri al acelui modul. |
 | **Actualizare software**    | Un mesaj `MsgSoftwareUpgrade` care programează o actualizare coordonată a lanțului la o anumită înălțime de bloc. |
 | **Cheltuială comunitară**   | Un mesaj `MsgCommunityPoolSpend` care trimite fonduri din community pool către o adresă de destinatar. |
-| **Expedited (accelerată)**  | Setează `"expedited": true` pentru o perioadă de vot mai scurtă, cu un depozit și un prag de trecere mai mari (vezi mai jos). |
+| **Expedited (accelerată)**  | Setează `"expedited": true` pentru o perioadă de vot mai scurtă, cu un depozit și un prag de trecere mai mari (vezi mai jos). Începând cu v3.2.5 (ambele rețele), o propunere accelerată care nu trece la numărare și se convertește într-o propunere obișnuită păstrează voturile deja exprimate; înainte de v3.2.5 acele voturi se pierdeau. |
 
 ---
 
@@ -175,7 +175,7 @@ Parametrii cheie includ:
 
 ## Guvernanța pe mainnet până acum {#mainnet-history}
 
-Guvernanța mainnet-ului a fost folosită pentru modificări de parametri, decizii privind circuit breaker-ul, upgrade-uri coordonate și, din octombrie 2026, pentru eliberarea unor sume pe care lanțul le-a înregistrat la upgrade-ul v3.2.0. Propunerile 7 până la 13 au trecut pe mainnet în octombrie 2026, inclusiv propunerea 12 (o eliberare ulterioară, aprobată la 21 octombrie) și propunerea 13 (upgrade-ul v3.2.4, aplicat la înălțimea 3,742,566 pe 23 octombrie); propunerea 14 (un upgrade coordonat la v3.2.5 la înălțimea 3,906,833) se afla în perioada de vot la momentul redactării; lista și rezultatele se află în [Istoric versiuni](/appendix/version-history#governance-timeline), iar fiecare propunere poate fi citită live la `GET /cosmos/gov/v1/proposals`.
+Guvernanța mainnet-ului a fost folosită pentru modificări de parametri, decizii privind circuit breaker-ul, upgrade-uri coordonate și, din octombrie 2026, pentru eliberarea unor sume pe care lanțul le-a înregistrat la upgrade-ul v3.2.0. Propunerile 7 până la 14 au trecut pe mainnet în octombrie 2026, inclusiv propunerea 12 (o eliberare ulterioară, aprobată la 21 octombrie), propunerea 13 (upgrade-ul v3.2.4, aplicat la înălțimea 3,742,566 pe 23 octombrie) și propunerea 14 (upgrade-ul v3.2.5, aplicat la înălțimea 3,906,833 pe 29 octombrie 2026); lista și rezultatele se află în [Istoric versiuni](/appendix/version-history#governance-timeline), iar fiecare propunere poate fi citită live la `GET /cosmos/gov/v1/proposals`.
 
 ---
 

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **v3.2.4** sürümünü çalıştırır (yönetişim önerisi 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı; önceki sürüm v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Yönetişim önerisi 14, v3.2.5'i ana ağda 3.906.833 yüksekliğinde uygulayacaktır (yazım sırasında, 27 Ekim 2026'da oylama süresindedir). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) **v3.2.6** çalıştırır (27 Ekim 2026'da 8.970.638 yüksekliğinde uygulandı); v3.2.4 ona 8.337.253 yüksekliğinde (19 Ekim 2026), v3.2.5 ise 8.890.800 yüksekliğinde (26 Ekim 2026) ulaştı.
+QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **v3.2.5** sürümünü çalıştırır (yönetişim önerisi 14 ile 29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı; önceki sürüm v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde, v3.2.3 ise 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) **v3.2.6** çalıştırır (27 Ekim 2026'da 8.970.638 yüksekliğinde uygulandı); v3.2.4 ona 8.337.253 yüksekliğinde (19 Ekim 2026), v3.2.5 ise 8.890.800 yüksekliğinde (26 Ekim 2026) ulaştı.
 
 :::note
 Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır. Yayın manifesti ([Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet)) etiketlemeden ayrı olarak yükseltilir ve bir etiketin gerisinde bir süre kalabilir — taze bir kurulumun gerçekte ne indirdiğini görmek için doğrudan kontrol edin.
@@ -15,7 +15,7 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 
 ## Ana ağ yönetişim zaman çizelgesi {#governance-timeline}
 
-14 Ekim 2026'dan bu yana çalışan ana ağı değiştiren öneriler. Sekizi de hızlandırılmış önerilerdir (bir günlük oylama süresi); 7 ila 13 numaralı öneriler, oy kullanan tüm bonded stake'in lehte oyuyla kabul edildi, 14 numaralı öneri için ise yazım sırasında hâlâ oylama sürmektedir. Tam liste `https://api.qore.host` üzerinde `GET /cosmos/gov/v1/proposals` adresindedir.
+14 Ekim 2026'dan bu yana çalışan ana ağı değiştiren öneriler. Sekizi de hızlandırılmış önerilerdir (bir günlük oylama süresi) ve sekizi de oy kullanan tüm bonded stake'in lehte oyuyla kabul edildi. Tam liste `https://api.qore.host` üzerinde `GET /cosmos/gov/v1/proposals` adresindedir.
 
 | Öneri | Ne yapar | Oylama | Sonuç |
 | --- | --- | --- | --- |
@@ -26,15 +26,15 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 | 11 | v3.2.3'ü 3.662.051 yüksekliğinde uygular | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi; 20 Ekim 2026'da uygulandı |
 | 12 | Düzeltilmiş sahipsiz stake sahibi payını (3.807.496,785528 QOR, v3.2.3 yüksekliğinde yeniden hesaplandı) vakfa aktarır | 20 Ekim 2026 20:01 UTC ile 21 Ekim 2026 20:01 UTC arası | Kabul edildi |
 | 13 | v3.2.4'e 3.742.566 yüksekliğinde koordineli yükseltme: isteğe bağlı zaman kilitli stake, kayıttan itibaren sayılan ışık düğümü ödül sınırı, kuantum-sonrası anahtarlar için bir sahiplik bayrağı, köprü doğrulayıcıları için sahiplik kanıtı, blok süresi cinsinden RDK itiraz penceresi ve düğüm-yerel sertleştirme | 20 Ekim 2026 21:18 UTC ile 21 Ekim 2026 21:18 UTC arası | Kabul edildi; 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulandı |
-| 14 | v3.2.5'e (build 2) 3.906.833 yüksekliğinde koordineli yükseltme (düğümler o yüksekliğe kadar v3.2.4'te kalır, orada durur ve v3.2.5 ile yeniden başlar; işlem imzalama değişmez) | 27 Ekim 2026 00:29 UTC ile 28 Ekim 2026 00:29 UTC arası | Yazım sırasında oylamada. v3.2.5'in içeriği, ana ağ onu uyguladığı gün belgelenir |
+| 14 | v3.2.5'e (build 2) 3.906.833 yüksekliğinde koordineli yükseltme (düğümler o yüksekliğe kadar v3.2.4'te kaldı, orada durdu ve v3.2.5 ile yeniden başladı; işlem imzalama değişmez). İçeriği [v3.2.5](#v325) altında listelenir | 27 Ekim 2026 00:29 UTC ile 28 Ekim 2026 00:29 UTC arası | Kabul edildi; 29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı |
 
 Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve); nasıl oy verileceği için bkz. [Yönetişim](/user-guide/governance).
 
 ---
 
-## v3.2.5 ve v3.2.6 test ağı sürümleri (şimdilik yalnızca test ağı) {#testnet-v326}
+## v3.2.6 test ağı sürümü (şimdilik yalnızca test ağı) {#testnet-v326}
 
-`qorechain-diana` test ağı her sürümü ana ağdan birkaç gün önce alır. Bu bölümdeki hiçbir şey ana ağı değiştirmez: bir yönetişim yükseltmesi aksini söyleyene kadar ana ağ v3.2.4 çalıştırır.
+`qorechain-diana` test ağı her sürümü ana ağdan birkaç gün önce alır. Bu bölümdeki hiçbir şey ana ağı değiştirmez: bir yönetişim yükseltmesi aksini söyleyene kadar ana ağ v3.2.5 çalıştırır. v3.2.5'teki her şey zaten her iki ağda da canlıdır (aşağıda [v3.2.5](#v325) bölümüne bakın).
 
 ### v3.2.6 — Sorgu Rotaları, Canlı PRISM Değerleri ve Test Tokenleri (test ağı)
 
@@ -50,15 +50,25 @@ Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics
 * **08-wasm hafif istemcileri (yalnızca test ağı).** 08-wasm hafif istemci mesajları (bir istemci ikili dosyasını depolama, taşıma ve kaldırma) eklenmiştir, yalnızca otorite içindir. İzin verilen istemci türleri hâlâ yalnızca standart istemciyi içerir; dolayısıyla yönetişim `08-wasm`'i ekleyene kadar hiçbir wasm hafif istemcisi oluşturulamaz.
 * **Fest test tokenleri.** Builder fest için dağıtılan üç ERC-20 sözleşmesi, test ağı yönetişimi (öneri 26) tarafından bank birimleri olarak kaydedildi: fUSD (6 ondalık), fETH (18) ve fBTC (8). Bunlar değeri olmayan, yalnızca test ağına özel test tokenleridir. Bkz. [Faucet](/dashboard/faucet#fest-tokens).
 
-### v3.2.5 (test ağı)
-
-**Sürüm odağı:** Test ağında, test ağı yönetişim önerisi 15 ile **8.890.800** yüksekliğinde (26 Ekim 2026) uygulandı. Ana ağda yönetişim önerisi 14, v3.2.5'i (build 2) 3.906.833 yüksekliğinde uygulayacaktır ve yazım sırasında oylama süresindeydi. v3.2.5'in özellikleri, ana ağ onu uyguladığı gün bu geçmişte belgelenir.
-
 ---
 
-## v3.2.4 — Işık Düğümü Kayıt Penceresi ve İsteğe Bağlı Zaman Kilitli Stake (ana ağ)
+## v3.2.5: Yerel Anahtar Kayıt Defteri, Yönetişimle Yönetilen Çapraz-VM ve Sözleşmeler, Açık RDK İtirazları (ana ağ) {#v325}
 
-**Sürüm odağı:** Güncel ana ağ sürümü. Önce `qorechain-diana` test ağında çalıştı: test ağı yönetişim önerisi 13 bunu **8.337.253** yüksekliğinde (19 Ekim 2026) uyguladı. Ana ağda yönetişim önerisi 13 bunu 23 Ekim 2026'da **3.742.566** yüksekliğinde uyguladı: düğümler o bloğa kadar v3.2.3'te kaldı, orada durdu ve v3.2.4 ile yeniden başladı; işlem imzalama değişmez. Ana ağ manifestosu `minCompatible` değerini 3.2.4 olarak ayarlar; dolayısıyla artık ana ağa katılan bir düğümün v3.2.4'e ihtiyacı vardır (test ağı o tarihten sonra v3.2.6'ya geçmiştir). Aşağıdaki her özellik ana ağda ve test ağında canlıdır.
+**Sürüm odağı:** Güncel ana ağ sürümü. Yönetişim önerisi 14 bunu ana ağda 29 Ekim 2026'da (yaklaşık 16:04 UTC) **3.906.833** yüksekliğinde uyguladı: düğümler o bloğa kadar v3.2.4'te kaldı, orada durdu ve v3.2.5 ile yeniden başladı; işlem imzalama değişmez. `qorechain-diana` test ağı onu önce aldı, test ağı yönetişim önerisi 15 ile 8.890.800 yüksekliğinde (26 Ekim 2026); test ağı o tarihten sonra v3.2.6'ya geçmiştir. Ana ağ manifestosu `minCompatible` değerini 3.2.5 olarak ayarlar; dolayısıyla ana ağa katılan bir düğümün v3.2.5'e ihtiyacı vardır. Yükseltme, protokol özelliklerini yükseltme yüksekliğinde etkinleştirir (ana ağda 83 tanesi etkindir, `GET /qorechain/pqc/v1/protocol_features` adresinde listelenir). **Bu yükseltmeyle hiçbir EVM precompile etkinleştirilmez**: her biri kendi yönetişim oylamasını gerektirir ve ana ağda etkin statik precompile listesi hâlâ boştur.
+
+* **Yerel ML-KEM anahtar kayıt defteri.** Bir hesap, başkalarının adresine göre arayabilmesi için zincirde bir kuantum-sonrası şifreleme anahtarı (ML-KEM) kaydedebilir.
+* **Yönetişim altında soyut hesaplar.** Soyut hesap yapılandırmasını yönetişim denetler ve harcama kuralları daha sıkı denetlenir: hiçbir şeyi sınırlamayan bir kural reddedilir ve boş veya tümü sıfır olan bir limit girdisi artık gerçek limitleri kaldırmaz. Akıllı hesaplar ana ağda hâlâ kapalıdır (`enabled` değeri `false`).
+* **Yönetişim altında çapraz-VM çağrıları.** Çapraz-VM köprüsünün çağırabileceği sözleşmelerin izin listesi yönetişim tarafından yönetilir ve `GET /qorechain/crossvm/v1/params` adresinde sunulur (v3.2.5'ten önce ana ağ 501 yanıtı veriyordu). Çapraz-VM çağrısının kurallı bir yanıt biçimi vardır (`abi.encode(bytes)`, reddedildiğinde `Error(string)`), sınırlı yürütmeyle atomik olarak çalışır ve tamamlanan girdiler budanır. İzin listesi boştur, `0x...0901` çapraz-VM precompile'ı etkin değildir ve `MsgCrossVMCall` devre kesici tarafından hâlâ kapalıdır; dolayısıyla ana ağda henüz hiçbir şey VM'ler arasında çağrı yapamaz.
+* **Yönetişimle yönetilen CosmWasm dağıtımı.** Sözleşme yükleme yalnızca yönetişime açık kalır; onaylı kodun örneklenmesi amaçlanan yoldur. Ana ağda örnekleme hâlâ devre kesici tarafından kapalıdır ve varsayılan örnekleme izni hâlâ `Nobody`'dir.
+* **RDK yerleşimi.** Rollup batch'leri sırayla yerleşir, herhangi bir hesap bir itirazı çözebilir (zincir sahtecilik ispatını kendisi kontrol eder), çekimler sahtecilik ispatlarına bağlanır ve RDK parametreleri yönetişimle değiştirilebilir olup `GET /qorechain/rdk/v1/params` adresinde sunulur. Bkz. [rollup'lar için zincir v3.2.5 davranışı](/rollups/overview#v325). Ana ağda henüz hiç rollup oluşturulmamıştır.
+* **Hızlandırılmış öneriler oylarını korur.** Kısa sayımında başarısız olup normal bir öneriye dönüşen hızlandırılmış bir öneri, o ana kadar verilmiş oyları korur.
+* **EVM precompile kuralları.** Precompile çağrıları EVM yetkilendirme penceresiyle sınırlandırılır ve devre kesici bunlara da uygulanır.
+* **Kuantum-sonrası doğrulama imzalayan başına bir kez ücretlendirilir** ve **tam simülasyon gazı**: bir işlem simülasyonunun bildirdiği gaz artık işlemin kullandığıyla eşleşir.
+* **Sertleştirme**, Solana uyumlu (SVM) hattı, çapraz-VM, rollup'ları ve ücret fiyatlamasını kapsayan iki güvenlik denetiminden: diğer tokenlerle ödenen ücretler doğru türde havuzlardan fiyatlanır, başarısız bir işlemdeki yakım dönüştürülmüş ücreti kullanır ve SVM dağıtımları, yürütme ve hesaplama sınırlandırılır.
+
+## v3.2.4 — Işık Düğümü Kayıt Penceresi ve İsteğe Bağlı Zaman Kilitli Stake
+
+**Sürüm odağı:** 23 Ekim'den 29 Ekim 2026'ya kadar olan ana ağ sürümü. Önce `qorechain-diana` test ağında çalıştı: test ağı yönetişim önerisi 13 bunu **8.337.253** yüksekliğinde (19 Ekim 2026) uyguladı. Ana ağda yönetişim önerisi 13 bunu 23 Ekim 2026'da **3.742.566** yüksekliğinde uyguladı: düğümler o bloğa kadar v3.2.3'te kaldı, orada durdu ve v3.2.4 ile yeniden başladı; işlem imzalama değişmez. Aşağıdaki her özellik ana ağda ve test ağında canlıdır.
 
 * **Işık düğümü kayıt penceresi.** Bir ışık düğümünün ödül sınırı, önceki yerleşim ile düğümün kendi kaydından hangisi daha geçse oradan başlar; böylece yeni bir kayıt, katılmasından önceki birikmiş bir tutarı toplamaz.
 * **İsteğe bağlı zaman kilitli stake (`x/stakingtier`, yeni bir modül).** Bir delegatör, delegasyonunun bir kısmını 3, 6 veya 12 ay için kilitleyebilir; kilitli kısım delegasyondan çıkarılamaz veya yeniden delege edilemez, erken kilit açmaya ise yakılan bir ceza ile izin verilir. Asgari kilit 10 QOR'dur. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
@@ -98,7 +108,7 @@ Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics
 * Konsensüs motoru bağımlılığını günceller; sistem saatini NTP ile senkronize tutun (60 saniyeden fazla sapma düğümü durdurur).
 * Her operatör için önerilir; ana ağ manifestosundaki `minCompatible` değeri o sırada 3.2.0'dı.
 
-v3.2.1 düğüm düğüm uygulandı ve yükseltme yüksekliği yoktur; ana ağda v3.2.2 (16 Ekim), v3.2.3 (20 Ekim) ve v3.2.4 (23 Ekim) tarafından geçersiz kılındı.
+v3.2.1 düğüm düğüm uygulandı ve yükseltme yüksekliği yoktur; ana ağda v3.2.2 (16 Ekim), v3.2.3 (20 Ekim), v3.2.4 (23 Ekim) ve v3.2.5 (29 Ekim) tarafından geçersiz kılındı.
 
 ## v3.2.0 — EVM Yetkilendirme Penceresi ve Muhasebe Düzeltmeleri
 

@@ -59,7 +59,7 @@ L'intestazione mostra la rete su cui ti trovi e ti permette di cambiarla. La sce
 
 | Rete | Chain ID | Quando usarla |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Rete live (attiva dal 7 giugno 2026, con la chain v3.2.4 dal 23 ottobre 2026) per valore reale. Non-custodial: colleghi il tuo wallet personale. |
+| **Mainnet** | `qorechain-vladi` | Rete live (attiva dal 7 giugno 2026, con la chain v3.2.5 dal 29 ottobre 2026) per valore reale. Non-custodial: colleghi il tuo wallet personale. |
 | **Testnet** | `qorechain-diana` | Ambiente gratuito (con la chain v3.2.6 dal 27 ottobre 2026) con un wallet di test gestito dalla Dashboard e il [Faucet](/dashboard/faucet). |
 
 Il token nativo è **QOR** (denominazione base `uqor`, 1 QOR = 10^6 uqor). Se sei alle prime armi, inizia su testnet, richiedi token dal Faucet e prova un primo trasferimento prima di passare a mainnet.

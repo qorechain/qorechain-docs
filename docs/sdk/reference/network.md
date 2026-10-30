@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Network preset | `mainnet` |
 | Chain id | `qorechain-vladi` (live since 7 June 2026) |
-| Chain version (27 October 2026) | v3.2.4 (since height 3,742,566, 23 October 2026, governance proposal 13). Governance proposal 14 would apply v3.2.5 at height 3,906,833 and was in its voting period at the time of writing; what v3.2.5 adds is documented the day mainnet applies it |
+| Chain version (30 October 2026) | v3.2.5 (since height 3,906,833, 29 October 2026, governance proposal 14; v3.2.4 was applied at height 3,742,566 on 23 October). SDK 0.10.0 is the client for v3.2.4 and keeps working; it has no builders for the v3.2.5 additions |
 | EVM chain ID | `9801` |
 | Display token | `QOR` |
 | Base denomination | `uqor` |

@@ -152,7 +152,7 @@ qorel keys pqc-status --chain qorechain-diana
 
 QoreChain percepe întreaga taxă (limita de gas înmulțită cu prețul) fără rambursare, deci păstrați multiplicatorul strâns.
 
-- Pe testnet (v3.2.6), simularea corespunde livrării cu o diferență de câteva sute de unități de gas. Testul end-to-end local pe un build al acestei linii trece cu `1.05` (fiecare tranzacție de relay a folosit 95% din limita ei).
+- Pe lanțul v3.2.5 și mai nou (măsurătoarea de mai jos a fost făcută pe testnet la v3.2.6; mainnet-ul a aplicat v3.2.5 pe 29 octombrie 2026, dar QORel nu a transmis acolo), simularea corespunde livrării cu o diferență de câteva sute de unități de gas. Testul end-to-end local pe un build al acestei linii trece cu `1.05` (fiecare tranzacție de relay a folosit 95% din limita ei).
 - Build-urile anterioare raportează cu aproximativ 8 până la 10% mai puțin (măsurat pe un devnet de pre-lansare, unde `1.15` a lăsat o marjă de 4 până la 7%). Folosiți `1.15` până când vă măsurați propriile noduri.
 - `health-check` raportează orice multiplicator sub `1.1` pe o intrare QoreChain ca o posibilă configurare greșită. Este un avertisment și relay-ul funcționează în continuare. `1.1`, valoarea din configurația exemplu, îl menține curat pentru o taxă cu aproximativ 5% mai mare decât `1.05`.
 - Tranzacția unică `keys register-pqc` folosește cel puțin `1.1`, indiferent ce spune configurația.

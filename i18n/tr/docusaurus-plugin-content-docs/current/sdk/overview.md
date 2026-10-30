@@ -30,7 +30,7 @@ Hesaplar, bakiyeler ve token'lar çalışma ortamları arasında paylaşılır v
 zincir, zincirler arası birlikte çalışabilirlik için IBC modülünü içerir
 (mainnet üzerinde açık bir IBC kanalı yoktur; testnet'te test zincirine giden açık bir `transfer` kanalı vardır, 27 Ekim 2026'da kontrol edildi).
 
-:::note Canlı ağlarda bugün çalışanlar (mainnet v3.2.4, testnet v3.2.6)
+:::note Canlı ağlarda bugün çalışanlar (mainnet v3.2.5, testnet v3.2.6)
 **Çalışır:** her şeritte okumalar, hibrit imzalı Native işlemler, birleşik
 hesaplar, bir [yetkilendirme penceresi](/sdk/guides/evm#evm-window) içindeki EVM
 işlemleri ve SVM okumaları.
@@ -45,7 +45,7 @@ soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler. 27 Ekim
 
 Yayımlanan SDK (0.10.0, 26 Ekim 2026), her iki ağın doğruladığı biçimde imzalar
 (v2 hibrit sign-bytes, zincir durumundan çözümlenir); imzalama biçimi, adresler,
-ondalık basamaklar, memo'lar ve ücretler v3.2.3 veya v3.2.4'te değişmedi (mainnet 23 Ekim 2026'dan beri v3.2.4 çalıştırır;
+ondalık basamaklar, memo'lar ve ücretler v3.2.3, v3.2.4 veya v3.2.5'te değişmedi (mainnet 29 Ekim 2026'dan beri v3.2.5 çalıştırır;
 testnet, 27 Ekim'de uygulanan v3.2.6'yı çalıştırır). Sonraki
 kuantum sonrası kuralların istemci tarafını (anahtar kaydında sahiplik
 kanıtı, kapsamlı EVM pencereleri, EIP-7702 onay mesajları) ve v3.2.4'ün istemci tarafını (staking

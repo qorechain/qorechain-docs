@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Ist das Mainnet live?
 
 Ja. Das Mainnet ist **live** (Chain-ID `qorechain-vladi`, live seit dem 7. Juni 2026)
-und läuft mit der Chain-Version v3.2.4 (angewendet bei Höhe 3.742.566 am 23. Oktober 2026, Governance-Vorschlag 13); das Testnet läuft mit v3.2.6 (angewendet am 27. Oktober 2026). Das Testnet-Preset
+und läuft mit der Chain-Version v3.2.5 (angewendet bei Höhe 3.906.833 am 29. Oktober 2026, Governance-Vorschlag 14; v3.2.4 wurde bei Höhe 3.742.566 am 23. Oktober 2026 angewendet); das Testnet läuft mit v3.2.6 (angewendet am 27. Oktober 2026). Das Testnet-Preset
 (`qorechain-diana`) bleibt ebenfalls verfügbar. Beide Presets werden mit
 Localhost-Endpoint-Standardwerten ausgeliefert; wählen Sie das Netzwerk mit
 `createClient({ network: "mainnet" })` und überschreiben Sie `endpoints` mit den
@@ -153,7 +153,7 @@ werden on-chain abgelehnt, und zwar in jeder Lane (einschließlich eth-native).
 
 SDK **0.10.0** ist das Client-Release für die Chain **v3.2.4** (Mainnet seit dem
 23. Oktober 2026 auf Höhe 3.742.566, Governance-Vorschlag 13; das Testnet seit dem
-19. Oktober). Es fügt die Staking-Tier-Builder und -Lesezugriffe, `fetchAuthNonce`
+19. Oktober). Das Mainnet läuft seit dem 29. Oktober 2026 mit v3.2.5; das Signaturformat hat sich nicht geändert, daher funktioniert 0.10.0 dort weiter. Es fügt die Staking-Tier-Builder und -Lesezugriffe, `fetchAuthNonce`
 und die Protocol-Feature-Lesezugriffe hinzu (siehe
 [Was 0.10.0 hinzufügt](/sdk/install#whats-new-0100)), zusätzlich zu dem, was 0.9.0 für
 v3.2.2 und v3.2.3 hinzugefügt hat: Builder für den optionalen Besitznachweis (Proof of Possession) bei der Registrierung (automatisch
@@ -164,10 +164,8 @@ Sign-Bytes-Form v2 für Hybrid, die Registrierung, hybride Sendungen und das
 EVM-Fenster funktionieren unverändert), hat aber keinen dieser Builder: Verwenden Sie
 dafür die CLI (siehe
 [Versionen vor 0.9.0](/sdk/install#before-090)). Das Signaturformat hat sich in v3.2.4
-nicht geändert. Das Testnet läuft mit v3.2.6 (v3.2.5 wurde dort am 26. Oktober 2026
-angewendet und v3.2.6 am 27. Oktober); das SDK hat keinen Builder für etwas, das nach
-v3.2.4 eingeführt wurde, und die Funktionen des nächsten Mainnet-Releases werden an
-dem Tag dokumentiert, an dem das Mainnet es anwendet.
+oder v3.2.5 nicht geändert. Das Testnet läuft mit v3.2.6 (v3.2.5 wurde dort am 26. Oktober 2026
+angewendet und v3.2.6 am 27. Oktober); daher haben die Ergänzungen von v3.2.5 (zum Beispiel das ML-KEM-Schlüsselregister und die governancegesteuerten CrossVM- und Contract-Pfade) noch keinen SDK-Builder und werden über die CLI erreicht.
 
 ## Meine PQC-Schlüsselregistrierung wurde abgelehnt, aber die Gebühr wurde abgebucht
 

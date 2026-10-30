@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain acceptă mai multe tipuri de portofele în mediile sale de execuție native, EVM și SVM. Alege portofelul care se potrivește cazului tău de utilizare.
 
 :::note
-Valorile de mai jos acoperă atât mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, activ din 7 iunie 2026, versiunea v3.2.4 din 23 octombrie 2026), cât și testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea v3.2.6 din 27 octombrie 2026). Endpoint-urile publice pentru ambele rețele sunt listate în [Rețele](/appendix/networks#public-endpoints).
+Valorile de mai jos acoperă atât mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, activ din 7 iunie 2026, versiunea v3.2.5 din 29 octombrie 2026), cât și testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea v3.2.6 din 27 octombrie 2026). Endpoint-urile publice pentru ambele rețele sunt listate în [Rețele](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recomandat) {#qorex}

@@ -10,7 +10,7 @@ sidebar_position: 8
 ## La mainnet è attiva?
 
 Sì. La mainnet è **attiva** (chain id `qorechain-vladi`, attiva dal 7 giugno
-2026) esegue la versione della chain v3.2.4 (applicata all'altezza 3.742.566 il 23 ottobre 2026, proposta di governance 13); la testnet esegue la v3.2.6 (applicata il 27 ottobre 2026). Anche il
+2026) esegue la versione della chain v3.2.5 (applicata all'altezza 3.906.833 il 29 ottobre 2026, proposta di governance 14; la v3.2.4 è stata applicata all'altezza 3.742.566 il 23 ottobre 2026); la testnet esegue la v3.2.6 (applicata il 27 ottobre 2026). Anche il
 preset testnet (`qorechain-diana`) rimane disponibile. Entrambi i preset
 forniscono endpoint predefiniti su localhost; seleziona la rete con
 `createClient({ network: "mainnet" })` e sovrascrivi `endpoints` con gli URL
@@ -153,7 +153,7 @@ rifiutate on-chain, in ogni lane (incluso eth-native).
 
 L'SDK **0.10.0** è la release client per la chain **v3.2.4** (mainnet dal 23
 ottobre 2026 all'altezza 3.742.566, proposta di governance 13; la testnet dal 19
-ottobre). Aggiunge i builder e le letture dello staking-tier, `fetchAuthNonce` e
+ottobre). La mainnet esegue la v3.2.5 dal 29 ottobre 2026; il formato di firma non è cambiato, quindi la 0.10.0 continua a funzionare lì. Aggiunge i builder e le letture dello staking-tier, `fetchAuthNonce` e
 le letture delle funzionalità di protocollo (vedi
 [Novità della 0.10.0](/sdk/install#whats-new-0100)), in aggiunta a ciò che la
 0.9.0 ha aggiunto per la v3.2.2 e la v3.2.3: builder per la prova di
@@ -164,11 +164,9 @@ L'SDK **0.8.1 o successivo** transa anch'esso su entrambe le reti (la forma v2
 dei sign-bytes ibridi, la registrazione, gli invii ibridi e la finestra EVM
 funzionano senza modifiche), ma non ha nessuno di quei builder: usa la CLI per
 quelli (vedi [Versioni precedenti alla 0.9.0](/sdk/install#before-090)). Il
-formato di firma non è cambiato nella v3.2.4. La testnet esegue la v3.2.6 (la
+formato di firma non è cambiato nella v3.2.4 né nella v3.2.5. La testnet esegue la v3.2.6 (la
 v3.2.5 vi è stata applicata il 26 ottobre 2026 e la v3.2.6 il 27 ottobre); l'SDK
-non ha alcun builder per ciò che è stato introdotto dopo la v3.2.4, e le
-funzionalità della prossima release della mainnet saranno documentate il giorno
-in cui la mainnet la applica.
+non ha alcun builder per ciò che è stato introdotto dopo la v3.2.4, quindi le aggiunte della v3.2.5 (per esempio il registro delle chiavi ML-KEM e i percorsi governati cross-VM e dei contratti) non hanno ancora un builder nell'SDK e si raggiungono con la CLI.
 
 ## La registrazione della mia chiave PQC è stata rifiutata ma la fee è stata prelevata
 

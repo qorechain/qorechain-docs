@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain publishes its developer tooling as small packages on the public registries (npm, PyPI, crates.io, the Go module proxy, Maven Central and Swift Package Manager). This page is the index: what each package is for, its exact registry name, language, current version, install command and status, and where to read how to use it. It is for developers who build dApps, wallets, backends and rollups on QoreChain and want to pick the right package before they read a guide.
 
-Versions in the tables were read from the registries on 27 October 2026. Mainnet `qorechain-vladi` runs v3.2.4 and testnet `qorechain-diana` runs v3.2.6. Every package listed as published is licensed Apache-2.0.
+Versions in the tables were read from the registries on 27 October 2026. Mainnet `qorechain-vladi` runs v3.2.5 (applied on 29 October 2026) and testnet `qorechain-diana` runs v3.2.6. Every package listed as published is licensed Apache-2.0.
 
 ## Innovations {#innovations}
 
@@ -114,7 +114,7 @@ The TypeScript package has a `@qorechain/qoresign/network` subpath, and the Go m
 
 ### QoreSeal {#group-qoreseal}
 
-Page: [QoreSeal](/developer-tools/qoreseal). Source: [qorechain/qoreseal](https://github.com/qorechain/qoreseal). QoreSeal 0.1.0 encrypts data to QoreChain accounts, private groups and sidechains with ML-KEM-1024 (FIPS 203). The encryption works offline; reading a recipient's key from the chain needs the KEM key registry, which is live on the testnet and comes to mainnet after the v3.2.5 upgrade. The construction is pending an external review before 1.0.
+Page: [QoreSeal](/developer-tools/qoreseal). Source: [qorechain/qoreseal](https://github.com/qorechain/qoreseal). QoreSeal 0.1.0 encrypts data to QoreChain accounts, private groups and sidechains with ML-KEM-1024 (FIPS 203). The encryption works offline; reading a recipient's key from the chain needs the KEM key registry, which is live on the testnet and whose read route answers on mainnet since v3.2.5 (applied 29 October 2026; no key published there yet when checked). The construction is pending an external review before 1.0.
 
 | Package | Language | Version | Install | Status |
 |---|---|---|---|---|
@@ -298,9 +298,9 @@ For a scoped npm name keep the `@`, for example `https://registry.npmjs.org/@qor
 
 ## Limits and known issues {#limits}
 
-- **Two live networks, different versions.** Mainnet runs v3.2.4 and testnet runs v3.2.6. A feature that exists only on testnet is marked on its own page. Do not assume v3.2.5 behaviour on mainnet.
+- **Two live networks, different versions.** Mainnet runs v3.2.5 (since 29 October 2026) and testnet runs v3.2.6. A feature that exists only on testnet (v3.2.6 items, the EVM PQC precompiles) is marked on its own page.
 - **Not live yet:** `@qorechain/qoreseal` on npm, the Asset Kit on PyPI and npm (and its native modules, a proposal that is not scheduled), SDK 0.11.0 (the chain developer kit) on npm, SVM transactions, and the EVM precompiles on mainnet (they are active on testnet only; see the [SDK overview](/sdk/overview) for the lane-by-lane list).
-- **QoreSeal registry and the PQ light client.** Encrypting to an address read from the chain needs the KEM key registry, live on testnet and coming to mainnet after v3.2.5. The PQ light client does not connect to either network; no chain support for its checkpoints is scheduled.
+- **QoreSeal registry and the PQ light client.** Encrypting to an address read from the chain needs the KEM key registry, live on testnet, and its read route answers on mainnet since v3.2.5. The PQ light client does not connect to either network; no chain support for its checkpoints is scheduled.
 - **Kotlin 2.3 or later.** The QoreSign and QoreSeal Kotlin and Android artifacts need the Kotlin 2.3 or later compiler; Kotlin 2.1 fails to compile against them.
 - **No Windows wheels.** The QoreSign and QoreSeal Python packages have wheels for macOS and Linux only; other platforms build from the source distribution, which needs Rust.
 - **Examples not run:** of the 34 quickstart entries, 31 ran and passed on 27 October 2026. The QoreSign Python example was run after the package was published (macOS arm64 and Linux aarch64), and the QoreSign Android example was not run on a device. The wallet adapter, chain bridge and handles have no quickstart, so their examples in this manual come from the package typings and source and were not run end to end.

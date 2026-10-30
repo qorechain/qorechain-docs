@@ -10,7 +10,7 @@ sidebar_position: 12
 The `x/rdk` module provides a comprehensive Rollup Development Kit (RDK) that allows developers to deploy application-specific rollups on QoreChain. It supports four settlement paradigms, multiple sequencer modes, pluggable data availability backends, and AI-assisted configuration optimization.
 
 :::caution Early-stage capability
-The module is deployed on mainnet (chain version **v3.2.4** since 23 October 2026) and testnet (**v3.2.6** since 27 October 2026), but **no rollup has been created on either network yet** (checked 27 October 2026: `GET /qorechain/rdk/v1/rollups` returns an empty list on both). Several capabilities described below are not usable end to end today; the status is stated where each is described. For the developer-facing how-to, see [Rollups Overview](/rollups/overview).
+The module is deployed on mainnet (chain version **v3.2.5** since 29 October 2026) and testnet (**v3.2.6** since 27 October 2026), but **no rollup has been created on either network yet** (checked 30 October 2026: `GET /qorechain/rdk/v1/rollups` returns an empty list on both). Several capabilities described below are not usable end to end today; the status is stated where each is described. For the developer-facing how-to, see [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -27,7 +27,7 @@ Optimistic rollups assume transactions are valid by default and rely on fraud pr
 * **Challenge window**: 604,800 seconds (default, 7 days). **Before v3.2.4:** the chain converts this to blocks at a fixed 6 seconds per block, **100,800 blocks**, so the real elapsed time depends on actual block time (about 3.7 days at mainnet's current ≈3.1 s blocks); plan in blocks, not days. **From v3.2.4:** for a batch submitted from the upgrade height on, the window is measured in seconds of block time (a full 7 days). A batch submitted earlier keeps the block-count rule. The testnet applied v3.2.4 at height 8,337,253 (19 October 2026); mainnet applied it at height 3,742,566 (23 October 2026, governance proposal 13). The testnet's configured default is shorter, 3,600 seconds (1 hour), so a testnet rollup finalises faster than the 7 days described here.
 * **Challenge bond**: 1,000 QOR (1,000,000,000 uqor) — required to submit a fraud proof challenge (`nft` and `custom` presets; the `defi`, `gaming` and `enterprise` presets set no bond because they have no challenge window)
 * **Finality**: Delayed until the challenge window expires with no valid challenge
-* **Auto-finalization**: The `EndBlocker` automatically finalizes batches once the challenge window has passed without dispute. A challenged batch is never auto-finalised: it must be resolved first, by the rollup creator on mainnet (v3.2.4) and by any account on the testnet (v3.2.5 and later; mainnet follows when governance proposal 14 applies v3.2.5) (see [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
+* **Auto-finalization**: The `EndBlocker` automatically finalizes batches once the challenge window has passed without dispute. A challenged batch is never auto-finalised: it must be resolved first, by any account (from v3.2.5, on mainnet since 29 October 2026 and on the testnet since 26 October; before v3.2.5 only the rollup creator could) (see [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
 
 **Batch lifecycle**:
 

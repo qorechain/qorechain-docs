@@ -297,7 +297,7 @@ gaining post-quantum protection. The post-quantum part travels as a
 `PQCHybridSignature` extension on the transaction.
 
 :::caution Hybrid signing is required on the Native path
-Since chain version **v3.2.0** (mainnet runs v3.2.4, the testnet v3.2.6), the network
+Since chain version **v3.2.0** (mainnet runs v3.2.5, the testnet v3.2.6), the network
 default is `hybrid_signature_mode = required` with
 `allow_classical_fallback = false`. Hybrid signing via `buildHybridTx` /
 `signAndBroadcastHybrid` (pass `rest`), or `signHybridEth` / `EthNativeSigner`

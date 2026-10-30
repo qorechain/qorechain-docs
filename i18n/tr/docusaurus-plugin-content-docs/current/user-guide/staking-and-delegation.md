@@ -10,7 +10,7 @@ sidebar_position: 2
 Bu kılavuz, QOR token'larını doğrulayıcılara (validator) delege etme, doğrulayıcılar arasında yeniden delege etme (redelegate), stake'inizi çözme (unbond), ödülleri talep etme ve QoreChain'in stake tasarımının hangi bölümlerinin bugün canlı olduğunu anlama konularını kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve **v3.2.4** sürümünü çalıştırır (23 Ekim 2026'da uygulandı); testnet v3.2.6 çalıştırır (27 Ekim 2026'dan beri). Mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve **v3.2.5** sürümünü çalıştırır (29 Ekim 2026'da uygulandı; v3.2.4, 23 Ekim'de); testnet v3.2.6 çalıştırır (27 Ekim 2026'dan beri). Mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -126,7 +126,7 @@ Stake ödülleri iki kaynaktan finanse edilir: protokolün sınırlandırılmı�
 ## Zamana kilitli stake (v3.2.4) {#time-locked-staking}
 
 :::note Bu ne zaman geçerli olur
-v3.2.4 sürümü, isteğe bağlı bir zamana kilitli stake modülü olan `x/stakingtier`'ı ekler. **`qorechain-diana` testnet'inde** 19 Ekim 2026'dan beri, **mainnet'te** ise 23 Ekim 2026'dan beri canlıdır (yönetişim önerisi 13 ile 3,742,566 yüksekliğinde uygulandı). Kilitleme bir seçenek olarak sunulur ve olağan delegasyon kilitsiz kalır (bkz. [yukarıda](#lock-in-period)). Aşağıdaki mekanizma, 23 Ekim 2026'da canlı mainnet ve testnet parametrelerine karşı kontrol edilmiştir.
+v3.2.4 sürümü, isteğe bağlı bir zamana kilitli stake modülü olan `x/stakingtier`'ı ekler. **`qorechain-diana` testnet'inde** 19 Ekim 2026'dan beri, **mainnet'te** ise 23 Ekim 2026'dan beri canlıdır (yönetişim önerisi 13 ile 3,742,566 yüksekliğinde uygulandı); mainnet 29 Ekim 2026'dan beri v3.2.5 çalıştırıyor ve bu sürüm onu değiştirmeden bırakır. Kilitleme bir seçenek olarak sunulur ve olağan delegasyon kilitsiz kalır (bkz. [yukarıda](#lock-in-period)). Aşağıdaki mekanizma, 23 Ekim 2026'da canlı mainnet ve testnet parametrelerine karşı kontrol edilmiştir.
 :::
 
 Bir delegatör, bir doğrulayıcıya yaptığı mevcut bir delegasyonun bir kısmını 3, 6 veya 12 aylık sabit bir vade için taahhüt edebilir. Vadeler ve tutarlar zincir parametreleridir; güncel olanları bu sayfadan değil `GET /qorechain/stakingtier/v1/params` adresinden okuyun.
@@ -158,7 +158,7 @@ Yukarıdaki zincir kimliği testnet'e aittir; mainnet'te `qorechain-vladi` kulla
 
 **Nerede çalışır, 27 Ekim 2026'da kontrol edildi.**
 
-| | Mainnet `qorechain-vladi` (v3.2.4) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | Modül canlı | Evet, 3,742,566 yüksekliğinden beri | Evet, v3.2.4'ten beri (yükseklik 8,337,253) |
 | Açık kilitler | Henüz yok | 3 test kilidi |

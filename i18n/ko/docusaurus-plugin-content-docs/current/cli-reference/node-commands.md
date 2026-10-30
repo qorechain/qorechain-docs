@@ -10,7 +10,7 @@ sidebar_position: 1
 QoreChain 노드를 초기화, 설정, 운영하는 데 사용하는 `qorechaind` 명령어 레퍼런스입니다.
 
 :::note
-QoreChain은 두 개의 네트워크를 운영합니다: **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 운영 중이며, 노드 릴리스 **v3.2.4**는 2026년 10월 23일 높이 3,742,566에서 거버넌스 제안 13으로 적용됨. v3.2.3은 2026년 10월 20일 높이 3,662,051에서 적용됨)과 **`qorechain-diana`** 테스트넷(노드 릴리스 **v3.2.6**은 2026년 10월 27일 높이 8,970,638에서 적용됨. 그 전에 v3.2.5가 2026년 10월 26일 높이 8,890,800에서, v3.2.4가 2026년 10월 19일 높이 8,337,253에서 적용됨)입니다. 메인넷 거버넌스 제안 14가 투표 기간 중이며, 이 제안은 높이 3,906,833에서 v3.2.5를 적용합니다. 해당 릴리스가 바꾸는 내용은 메인넷이 이를 적용한 뒤에 문서화됩니다. 참여하려는 네트워크에 맞는 `--chain-id`를 지정하세요 — 아래 예시는 테스트넷을 대상으로 하며, 메인넷의 경우 `--chain-id qorechain-vladi`를 사용하세요. 각 네트워크의 현재 릴리스는 [download.qore.host](https://download.qore.host)의 `latest.json`에 나와 있습니다.
+QoreChain은 두 개의 네트워크를 운영합니다: **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 운영 중이며, 노드 릴리스 **v3.2.5**는 2026년 10월 29일 높이 3,906,833에서 거버넌스 제안 14로 적용됨. v3.2.4는 2026년 10월 23일 높이 3,742,566에서, v3.2.3은 2026년 10월 20일 높이 3,662,051에서 적용됨)과 **`qorechain-diana`** 테스트넷(노드 릴리스 **v3.2.6**은 2026년 10월 27일 높이 8,970,638에서 적용됨. 그 전에 v3.2.5가 2026년 10월 26일 높이 8,890,800에서, v3.2.4가 2026년 10월 19일 높이 8,337,253에서 적용됨)입니다. 참여하려는 네트워크에 맞는 `--chain-id`를 지정하세요 — 아래 예시는 테스트넷을 대상으로 하며, 메인넷의 경우 `--chain-id qorechain-vladi`를 사용하세요. 각 네트워크의 현재 릴리스는 [download.qore.host](https://download.qore.host)의 `latest.json`에 나와 있습니다.
 
 이 페이지의 명령어는 v3.2.3 릴리스 바이너리를 기준으로 확인했습니다. v3.2.4 바이너리에는 v3.2.3 바이너리에 없는 명령어가 추가되어 있으며(예: `stakingtier`), 이러한 명령어는 두 네트워크 모두에서 실행됩니다(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터). 이 매뉴얼에서 그런 명령어를 언급하는 경우 이를 명시합니다. v3.2.6 바이너리(테스트넷)는 두 가지 쿼리 명령어 `query rlconsensus applied-params`와 `last-action`을 추가합니다. 이들은 메인넷이 해당 릴리스를 적용할 때까지 테스트넷 전용입니다([쿼리 명령어](/cli-reference/query-commands#rlconsensus) 참조). 이 페이지의 나머지 내용은 두 릴리스에서 동일하게 동작합니다.
 :::
@@ -70,7 +70,7 @@ qorechaind start [flags]
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 / v3.2.4 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"}, e.g. v3.2.5 today)
+# has v3.2.3 / v3.2.4 / v3.2.5 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"}, e.g. v3.2.6 on mainnet today)
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 ```

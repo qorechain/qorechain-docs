@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal is an open-source library that encrypts data to QoreChain accounts with ML-KEM-1024 (FIPS 203). An account publishes its ML-KEM-1024 public key on chain; anyone can then encrypt a payload that this account, and any other recipient the sender adds, can read. It is for dApp developers who need confidential payloads (memos, invoices, documents, bids), for auditors who need view access, and for operators of private groups and sidechains. It composes standard primitives and implements none of its own. Version **0.1.0**, Apache-2.0, maintained by the QoreChain Association.
 
-Where it stands on 27 October 2026: the encryption itself works offline anywhere, with no network and no account. Encrypting to an address read from the chain needs the KEM key registry, which is **live on testnet** (`qorechain-diana`) and **comes to mainnet (`qorechain-vladi`) after the v3.2.5 upgrade**, with no date. The package is published for Rust, Go, Python, Swift, Kotlin/JVM and Android. The TypeScript package `@qorechain/qoreseal` is **coming** and is not on npm yet. The construction is a draft pending an external review before 1.0.
+Where it stands on 30 October 2026: the encryption itself works offline anywhere, with no network and no account. Encrypting to an address read from the chain needs the KEM key registry, which is **live on testnet** (`qorechain-diana`) and, since mainnet (`qorechain-vladi`) applied v3.2.5 on 29 October 2026, **its read route answers on mainnet too** (no account has published a key there yet that this page could find). The package is published for Rust, Go, Python, Swift, Kotlin/JVM and Android. The TypeScript package `@qorechain/qoreseal` is **coming** and is not on npm yet. The construction is a draft pending an external review before 1.0.
 
 QoreSeal protects the content of a payload, nothing else. Addresses, transaction timing, transfer amounts, envelope sizes and the number of recipients stay public on chain. It is not a way to make transactions private.
 
@@ -207,7 +207,7 @@ You need a `qorechain-diana` account you control with a little testnet QOR and a
 5. Sender side: `sealToAddresses({ rest: "https://api-testnet.qore.host", chainId: "qorechain-diana", purpose: "note", recipients: [{ address, card }], plaintext })`. Without a card, pass `mode: "mlkem"`.
 6. Recipient side: `open({ chainId: "qorechain-diana", purpose: "note", envelope, keys: sealKeys })`.
 
-The complete runnable flow is the repository example `examples/register-and-encrypt`. It refuses mainnet until that network has applied v3.2.5. Go offers the same sender side with `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})`. Rust, Swift, Kotlin and Python are offline: read `/qorechain/pqc/v1/kem/{address}` and `/qorechain/pqc/v1/account/{address}` yourself, verify the card (`verify_recipient_card`), then seal.
+The complete runnable flow is the repository example `examples/register-and-encrypt`. Mainnet applied v3.2.5 on 29 October 2026; check the example's own README for the release that lifts its mainnet guard. Go offers the same sender side with `network.NewClient(rest).SealToAddresses(ctx, network.SealToArgs{...})`. Rust, Swift, Kotlin and Python are offline: read `/qorechain/pqc/v1/kem/{address}` and `/qorechain/pqc/v1/account/{address}` yourself, verify the card (`verify_recipient_card`), then seal.
 
 ### Main API {#api}
 
@@ -243,17 +243,17 @@ Python errors raise `QoreSealError.Failure` with a stable `code`; Go errors comp
 
 | | Mainnet `qorechain-vladi` | Testnet `qorechain-diana` |
 |---|---|---|
-| KEM key registry | after the v3.2.5 upgrade (not applied yet, no date) | live |
+| KEM key registry | live since v3.2.5 (applied 29 October 2026, height 3,906,833); read route verified, see below | live |
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host` (chain ID 9801) | `https://evm-testnet.qore.host` (chain ID 9800) |
 
-On 27 October 2026 the testnet registry query answered `{"found":false,"key":null}` for an account with no key, and the same query on mainnet answered "Not Implemented".
+On 30 October 2026 the registry query answered `{"found":false,"key":null}` for an account with no key on both networks (on 27 October mainnet still answered "Not Implemented"). A search of mainnet transactions on 30 October found no `MsgRegisterKEMKey` yet, so publishing a key on mainnet has not been exercised end to end by this page.
 
 - Offline sealing and opening, including auditor keys passed directly, private groups and batches, need no network and no account.
 - Encrypting to an address needs the recipient to have published an ML-KEM-1024 key to the registry and, for hybrid mode, a recipient card.
-- Publishing a key needs an account with testnet QOR (on mainnet, QOR after the upgrade), a registered ML-DSA-87 key, and QoreSign to sign the transaction hybrid. The fee floor is 0.1 uqor per gas. Get testnet QOR from the [Faucet](/dashboard/faucet).
-- Until mainnet applies v3.2.5, the registry query on mainnet is not available and registration is refused (code 250).
+- Publishing a key needs an account with testnet QOR (on mainnet, QOR), a registered ML-DSA-87 key, and QoreSign to sign the transaction hybrid. The fee floor is 0.1 uqor per gas. Get testnet QOR from the [Faucet](/dashboard/faucet).
+- Mainnet registration is accepted only by a chain that has the registry; if a refusal with code 250 appears, the registry is not enabled on that chain.
 
 ## Where it is published {#where-published}
 
@@ -285,7 +285,7 @@ Source: [github.com/qorechain/qoreseal](https://github.com/qorechain/qoreseal) (
 - **Removing or rotating a key does not erase or re-encrypt anything.** Data sealed to an old key stays readable by whoever holds it; keep old seeds or indexes.
 - **Removed group members** keep the keys of the epochs they belonged to. New members read from their joining epoch on unless older keys are sealed to them.
 - **Chain id and purpose are not in the envelope;** the recipient must know them.
-- **Mainnet registry:** not available until mainnet applies v3.2.5.
+- **Mainnet registry:** the read route is live since v3.2.5; no key had been published on mainnet when this was checked, and the EVM JSON-RPC `qor_` namespace is not exposed on `evm.qore.host` (use the REST route).
 - **Pre-1.0, construction pending external review.** Minor versions may change the API. Read the specification before relying on it.
 - **No npm package yet** and no Python wheel for Windows yet.
 

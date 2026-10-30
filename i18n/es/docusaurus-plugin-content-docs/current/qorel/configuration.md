@@ -152,7 +152,7 @@ qorel keys pqc-status --chain qorechain-diana
 
 QoreChain cobra la comisión completa (límite de gas por precio) sin reembolso, así que mantén el multiplicador ajustado.
 
-- En la testnet (v3.2.6), la simulación coincide con la entrega con una diferencia de unos pocos cientos de unidades de gas. La prueba de extremo a extremo local sobre una compilación de esa línea pasa con `1.05` (cada transacción de relé usó el 95 % de su límite).
+- En la cadena v3.2.5 y posteriores (la medición siguiente se realizó en la testnet con v3.2.6; la mainnet aplicó la v3.2.5 el 29 de octubre de 2026, pero QORel no ha hecho de relé allí), la simulación coincide con la entrega con una diferencia de unos pocos cientos de unidades de gas. La prueba de extremo a extremo local sobre una compilación de esa línea pasa con `1.05` (cada transacción de relé usó el 95 % de su límite).
 - Las compilaciones anteriores subestiman en torno a un 8 a 10 % (medido en una devnet de preversión, donde `1.15` dejó un margen del 4 al 7 %). Usa `1.15` hasta que hayas medido tus propios nodos.
 - `health-check` señala cualquier multiplicador inferior a `1.1` en una entrada de QoreChain como una posible configuración errónea. Es un aviso y el relé sigue funcionando. `1.1`, el valor de la configuración de ejemplo, lo mantiene limpio por aproximadamente un 5 % más de comisión que `1.05`.
 - La transacción única `keys register-pqc` usa al menos `1.1`, sea cual sea el valor de la configuración.

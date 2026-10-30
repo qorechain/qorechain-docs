@@ -31,7 +31,7 @@ Konten, Guthaben und Token werden über die Laufzeitumgebungen hinweg geteilt,
 und die Chain enthält das IBC-Modul für Cross-Chain-Interoperabilität (im
 Mainnet ist kein IBC-Channel geöffnet; das Testnet hat einen geöffneten `transfer`-Channel zu einer Test-Chain, geprüft am 27. Oktober 2026).
 
-:::note Was heute auf den Live-Netzwerken funktioniert (Mainnet v3.2.4, Testnet v3.2.6)
+:::note Was heute auf den Live-Netzwerken funktioniert (Mainnet v3.2.5, Testnet v3.2.6)
 **Funktioniert:** Lesezugriffe auf jeder Lane, hybrid-signierte Native-Transaktionen,
 vereinheitlichte Konten, EVM-Transaktionen innerhalb eines
 [Autorisierungsfensters](/sdk/guides/evm#evm-window) und SVM-Lesezugriffe.
@@ -48,7 +48,7 @@ Vorbehalt dort, wo er zutrifft. Geprüft gegen die Live-Endpunkte am 27. Oktober
 Das veröffentlichte SDK (0.10.0, 26. Oktober 2026) signiert in der Form, die beide
 Netzwerke verifizieren (v2-Hybrid-Sign-Bytes, aus dem Chain-Zustand aufgelöst),
 und das Signaturformat, die Adressen, Dezimalstellen, Memos und Gebühren haben
-sich in v3.2.3 oder v3.2.4 nicht geändert (das Mainnet läuft seit dem 23. Oktober 2026 mit v3.2.4;
+sich in v3.2.3, v3.2.4 oder v3.2.5 nicht geändert (das Mainnet läuft seit dem 29. Oktober 2026 mit v3.2.5;
 das Testnet läuft mit v3.2.6, angewendet am 27. Oktober). Es enthält die Client-Seite der
 späteren Post-Quanten-Regeln (den Besitznachweis bei der Schlüsselregistrierung,
 EVM-Fenster mit Gültigkeitsbereich, EIP-7702-Einwilligungsnachrichten) und von v3.2.4 (Staking-

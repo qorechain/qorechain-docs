@@ -160,7 +160,7 @@ Points marquants depuis 1.0.9 / 0.2.6 :
 - Des écrans d'approbation qui affichent chaque message, les frais, les limites de dépense et l'expiration, et refusent ce que QoreX ne peut pas afficher ; **`signAndBroadcast`** pour les dApps ; **Sites connectés** avec Révoquer (extension) ; la **fenêtre d'accès EVM** - voir [Sécurité et récupération](/qorex/security-and-recovery) et l'[Extension de navigateur](/qorex/browser-extension).
 - Correctifs : un compte financé pouvait momentanément disparaître de « Vos comptes » (1.0.9) ; le bouton Retour matériel d'Android revient désormais d'un écran en arrière (1.1.1) ; la phrase de récupération est masquée aux services hors accessibilité sur Android 14 et versions ultérieures (1.1.6).
 
-QoreX fonctionne sur le mainnet `qorechain-vladi` (en ligne depuis le 7 juin 2026), qui exécute la chaîne **v3.2.4** depuis le 23 octobre 2026. Le format de signature, les adresses, les décimales, les mémos et les frais ne changent pas lors de ces mises à niveau ; aucune mise à jour de QoreX n'est donc nécessaire pour elles.
+QoreX fonctionne sur le mainnet `qorechain-vladi` (en ligne depuis le 7 juin 2026), qui exécute la chaîne **v3.2.5** depuis le 29 octobre 2026 (v3.2.4 à partir du 23 octobre 2026). Le format de signature, les adresses, les décimales, les mémos et les frais ne changent pas lors de ces mises à niveau ; aucune mise à jour de QoreX n'est donc nécessaire pour elles.
 
 ## Pour les développeurs {#developers}
 

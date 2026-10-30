@@ -11,7 +11,7 @@ The **QoreChain Light Node** is a small client that follows a QoreChain network 
 
 Running and syncing a node needs no licence. Taking part in the reward share is a separate step: it needs a `lightnode_operator` licence, stake delegated to bonded validators, and an on-chain registration (see [How to access](#how-to-access)).
 
-The light node has its **own version line**, separate from the chain release. At the time of writing (27 October 2026) both networks' release channels carry light node **3.1.12** (chain `v3.2.4` on mainnet, `v3.2.6` on the testnet). Treat the two numbers as unrelated.
+The light node has its **own version line**, separate from the chain release. At the time of writing (27 October 2026) both networks' release channels carry light node **3.1.12** (chain `v3.2.5` on mainnet, `v3.2.6` on the testnet). Treat the two numbers as unrelated.
 
 ## Innovations {#innovations}
 
@@ -23,7 +23,7 @@ Each item below is a mechanism you can check in the source or by running the nod
 - **Heartbeats are timed from the chain's own record.** The daemon sends a heartbeat once 1,000 blocks have passed since the chain's `last_heartbeat` for the node, checks every 60 seconds, and reports a heartbeat only once it is in a block. A restart neither sends a duplicate nor waits a whole interval.
 - **Header cross-checking across endpoints.** The node fetches the same height from its primary endpoint and from every configured witness endpoint, and stores the header only if all of them return the same hash. A witness on the same host as the primary, or on a remote plaintext `http://` address, is refused. The mode is logged per header at debug level as `assurance` (`trusted-single-source` or `corroborated-across-sources`). This is **not** consensus verification: see [Limits](#limits).
 - **Signed self-update.** From light node 3.1.11 the daemon reads its network's `latest.json` every 6 hours. It installs a new release only if `v<version>/SHA256SUMS.sig` verifies as an Ed25519 signature from a release key built into the binary (the signature binds the network, the version and the contents of `SHA256SUMS`), the downloaded binary matches its signed checksum, and the new binary runs and reports exactly `v<version>`. The previous binary is kept as `<name>.old`, and the node restarts in place (the same process on Linux and macOS; on Windows the new binary starts and the old one exits). `[update] mode` is `auto` (default), `notify` or `off`; `lightnode-sx update --check` and `lightnode-sx update` do the same by hand. In a container, or where the binary's folder is not writable, the node only announces a release (log line, `GET /api/update` on the local API, and a banner on the UX dashboard).
-- **Warnings that match what the chain does.** With `[delegation] rebalance_enabled` on (the default) the node warns when a validator you delegate to is jailed, when it is not in the active set, and when your bonded stake falls below `min_delegated_stake` (1,000 QOR). In all three cases the chain stops crediting the node without any message. A warning is logged when it appears, hourly while it lasts, and once when it clears. A fourth warning, a delegated validator's reputation score below `min_reputation` (default `0.5`), reads `GET /qorechain/reputation/v1/validator/<valoper>`: it is live on the **testnet** now and reaches mainnet only with a chain release after v3.2.5; until the route is served the node notes that once and asks again every 6 hours.
+- **Warnings that match what the chain does.** With `[delegation] rebalance_enabled` on (the default) the node warns when a validator you delegate to is jailed, when it is not in the active set, and when your bonded stake falls below `min_delegated_stake` (1,000 QOR). In all three cases the chain stops crediting the node without any message. A warning is logged when it appears, hourly while it lasts, and once when it clears. A fourth warning, a delegated validator's reputation score below `min_reputation` (default `0.5`), reads `GET /qorechain/reputation/v1/validator/<valoper>`: it is live on the **testnet** now and reaches mainnet only with a later chain release (mainnet runs v3.2.5 and does not serve it yet); until the route is served the node notes that once and asks again every 6 hours.
 
 ### Why run a light node, and how to read the cross-check {#why-run-a-light-node}
 
@@ -74,7 +74,7 @@ The chain RPC for `onboard` is `https://rpc.qore.host` (mainnet) or `https://rpc
 
 | | Mainnet | Testnet |
 | --- | --- | --- |
-| Chain | `qorechain-vladi` (chain `v3.2.4`) | `qorechain-diana` (chain `v3.2.6`) |
+| Chain | `qorechain-vladi` (chain `v3.2.5`) | `qorechain-diana` (chain `v3.2.6`) |
 | RPC for the node | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | REST for queries | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | Light node release | 3.1.12 | 3.1.12 |
@@ -98,7 +98,7 @@ You can also check a licence directly: `GET /qorechain/license/v1/check/<address
 ### Status of the reward program {#reward-program-status}
 
 :::note Registration is open
-Registration is open on mainnet (`qorechain-vladi`, chain v3.2.4) and on testnet (`qorechain-diana`, chain v3.2.6). On 27 October 2026 seven `lightnode_operator` licences had been granted on mainnet and one light node was registered on each network (`total_registered` is `1` in `GET /qorechain/lightnode/v1/stats` on both). Reward accounting has been live on both networks since the v3.2.0 upgrade. Uptime is counted **from the block your node is registered**, so running a node beforehand does not earn credit. Since chain v3.2.4 the per-node bound also starts at the node's own registration: the first settlement after registering credits only what accrued since then.
+Registration is open on mainnet (`qorechain-vladi`, chain v3.2.5) and on testnet (`qorechain-diana`, chain v3.2.6). On 27 October 2026 seven `lightnode_operator` licences had been granted on mainnet and one light node was registered on each network (`total_registered` is `1` in `GET /qorechain/lightnode/v1/stats` on both). Reward accounting has been live on both networks since the v3.2.0 upgrade. Uptime is counted **from the block your node is registered**, so running a node beforehand does not earn credit. Since chain v3.2.4 the per-node bound also starts at the node's own registration: the first settlement after registering credits only what accrued since then.
 
 The release manifest (`https://download.qore.host/<net>/lightnode/latest.json`) carries the official signal in its `registration.open` field. For the live state query `GET /qorechain/license/v1/holders/lightnode_operator` and `GET /qorechain/lightnode/v1/stats` on `https://api.qore.host` (mainnet) or `https://api-testnet.qore.host` (testnet).
 :::
@@ -129,7 +129,7 @@ Check the `version` in the manifest of your network before you download, rather 
 - **Not a protocol light client.** The node corroborates block hashes across endpoints. It does not check commit signatures, validator-set changes or a trust period, so it does not verify the chain's consensus. `trust_period` and `max_clock_drift` in the config are accepted but not used.
 - **Rewards are a ceiling.** The per-node bound (2,000 QOR per 30 days) is a maximum, and the node is paid only what accrues to the pool and only while eligible.
 - **A heartbeat is a liveness signature.** It proves the operator key signed on time, not that the full software ran continuously.
-- **Reputation warnings are testnet-only for now.** Mainnet does not serve per-validator reputation scores yet, so on mainnet that one check does not run and the node says so in its log. The jailed, not-in-the-active-set and low-stake warnings do not depend on it. Node versions before 3.1.11 logged a failed reputation check every five minutes and never warned about anything.
+- **Reputation warnings are testnet-only for now.** Mainnet (on v3.2.5 too) does not serve per-validator reputation scores yet, so on mainnet that one check does not run and the node says so in its log. The jailed, not-in-the-active-set and low-stake warnings do not depend on it. Node versions before 3.1.11 logged a failed reputation check every five minutes and never warned about anything.
 - **Self-update starts at 3.1.11.** A node on 3.1.10 or earlier does not update itself and needs one manual install of 3.1.12. In a container or an unwritable folder the node only announces new releases.
 - **Docker nodes do not update themselves.** They are told about a new release, and the update is `docker compose pull && docker compose up -d`.
 - **Android is a preview** and does not register or earn.

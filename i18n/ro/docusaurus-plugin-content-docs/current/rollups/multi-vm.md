@@ -75,11 +75,11 @@ const calldata = encodeCrossVmCalldata({
 
 `isCrossVmPrecompileActive(restBase)` citește parametrul EVM `active_static_precompiles` prin REST și răspunde `active: true` doar când adresa precompilului este listată. Aceasta este singura verificare de încredere și trebuie făcută în afara lanțului: precompilul întoarce răspunsul brut al țintei, deci un răspuns gol nu poate deosebi un precompil inactiv de un apel real către un contract care nu întoarce nimic, iar un precompil nu are bytecode indiferent dacă este activ sau nu. Chiar și când raportează `active: true`, pachetul documentează că, începând cu lanțul v3.2.3, un apel ajunge doar la țintele pe care guvernanța le-a pus pe lista permisă (parametrul cross-VM `bridge_allowed_targets`, fiecare intrare având forma `<vm>:<contract>`) și că EVM-către-EVM este refuzat.
 
-### Lanțul v3.2.5: lista permisă, formatul răspunsului și refuzurile (acum pe testnet, pe mainnet după upgrade) {#chain-v325}
+### Lanțul v3.2.5: lista permisă, formatul răspunsului și refuzurile (ambele rețele) {#chain-v325}
 
-Lanțul v3.2.5 schimbă comportamentul bridge-ului. Testnet-ul îl rulează; **mainnet-ul (v3.2.4) nu îl rulează până când propunerea de guvernanță 14 este aplicată**, iar descrierile din alte locuri ale acestei pagini, care spun că precompilul întoarce răspunsul brut al țintei, descriu mainnet-ul de astăzi.
+Lanțul v3.2.5 schimbă comportamentul bridge-ului. Mainnet-ul îl rulează din 29 octombrie 2026 (propunerea de guvernanță 14, înălțimea 3.906.833), iar testnet-ul din 26 octombrie. Deoarece precompilul nu este activ pe niciuna dintre rețele, formatul răspunsului și formatul refuzului de mai jos sunt comportamentul versiunii și nu au fost exersate printr-un apel live; oriunde această pagină spune că precompilul întoarce răspunsul brut al țintei, aceasta descrie versiunile dinaintea v3.2.5.
 
-* **O rută pentru lista permisă.** `GET /qorechain/crossvm/v1/params` servește parametrii bridge-ului, inclusiv lista permisă a țintelor. Pe testnet lista permisă este goală (verificat la 27 octombrie 2026), deci nicio țintă nu este încă permisă.
+* **O rută pentru lista permisă.** `GET /qorechain/crossvm/v1/params` servește parametrii bridge-ului, inclusiv lista permisă a țintelor. Pe ambele rețele lista permisă este goală (mainnet și testnet verificate la 30 octombrie 2026), deci nicio țintă nu este încă permisă.
 * **Un format fix al răspunsului.** Precompilul întoarce `abi.encode(bytes)`, deci un răspuns are mereu cel puțin 64 de octeți și un răspuns gol poate fi deosebit de unul lipsă; decodează-l cu `abi.decode(ret, (bytes))`.
 * **Refuzurile au un motiv.** Când bridge-ul refuză un apel, face revert cu `Error(string)`, pe care un contract îl poate citi și transmite mai departe.
 * **Precompilul tot nu este activ.** `0x...0901` nu se află în lista precompilurilor active pe niciuna dintre rețele, deci nimic din acestea nu a rulat de la un capăt la altul.

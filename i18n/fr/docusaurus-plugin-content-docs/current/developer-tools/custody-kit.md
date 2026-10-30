@@ -86,7 +86,7 @@ Le kit n'implémente aucun schéma de signature. La vérification ML-DSA-87 et s
 ### Retraits et gas {#withdrawals}
 
 - Frais = ceil(limite de gas x prix du gas) en `uqor`. Le prix minimal du gas est de 0.1 uqor, facturé sur la limite de gas.
-- Prenez la limite de gas à partir d'une simulation de la transaction entièrement signée. Sur les nœuds qui ont appliqué la mise à niveau v3.2.5 (le testnet maintenant, le mainnet une fois appliquée), utilisez `ceil(gas_used x 1.02) + 2000`, car la simulation inclut la vérification ML-DSA-87. Avant cela, utilisez `ceil((gas_used + 40000) x 1.4)`. Détectez laquelle s'applique avec `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`, pas d'après la date.
+- Prenez la limite de gas à partir d'une simulation de la transaction entièrement signée. Sur les nœuds qui ont appliqué la mise à niveau v3.2.5 (les deux réseaux depuis le 29 octobre 2026), utilisez `ceil(gas_used x 1.02) + 2000`, car la simulation inclut la vérification ML-DSA-87. Avant cela, utilisez `ceil((gas_used + 40000) x 1.4)`. Détectez laquelle s'applique avec `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`, pas d'après la date.
 - Après avoir choisi la limite de gas, reconstruisez `AuthInfo` et signez à nouveau : les deux signatures couvrent les frais.
 - Séquences : exécutez une file de signature par adresse chaude, ou plusieurs adresses chaudes pour des paiements en parallèle.
 
@@ -271,12 +271,12 @@ Raisonnez sur le codespace et le code ensemble, et conservez le log brut.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | JSON-RPC EVM | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Version du nœud | v3.2.4 (v3.2.5 pas encore appliquée) | v3.2.6 (v3.2.5 appliquée) |
+| Version du nœud | v3.2.5 (appliquée le 29 octobre 2026) | v3.2.6 (v3.2.5 appliquée) |
 
 - La dénomination est `uqor` (1 QOR = 10^6 uqor ; sur la voie EVM, 1 uqor = 10^12 wei). Le prix minimal du gas est de 0.1 uqor, la période de unbonding est de 21 jours et la limite du mémo est de 256 caractères. Ces valeurs ont été lues sur les deux réseaux le 27 octobre 2026 et peuvent changer par gouvernance ; lisez-les donc depuis la chaîne en production.
 - Les dépôts ne nécessitent ni clés ni enregistrement. L'envoi nécessite une clé ML-DSA-87 enregistrée par adresse chaude.
 - Exécutez vos propres nœuds complets en production. Les points de terminaison publics sont limités en débit et destinés au développement. Si un script obtient `403 Forbidden`, définissez un en-tête `User-Agent` explicite. Voir [exécuter un nœud](/developer-guide/running-a-node) et [se connecter au mainnet](/getting-started/connecting-to-mainnet).
-- Le testnet reçoit chaque version de nœud avant le mainnet. Changez de règles de gas en vérifiant la mise à niveau appliquée, pas la date.
+- Le testnet reçoit chaque version de nœud avant le mainnet. Changez de règles de gas en vérifiant la mise à niveau appliquée, pas la date (les deux réseaux ont appliqué la v3.2.5).
 - Les jetons de test sur le testnet (dénominations bank de la forme `erc20:0x...`, un jeton IBC) n'existent pas sur le mainnet. Créditez `uqor` sur les deux réseaux.
 - Les QOR de testnet proviennent du faucet du dashboard QoreChain et n'ont aucune valeur. Voir [se connecter au testnet](/getting-started/connecting-to-testnet).
 
