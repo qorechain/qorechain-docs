@@ -10,15 +10,15 @@ sidebar_position: 21
 Tres herramientas de línea de comandos llevan un proyecto de QoreChain de la nada a un punto de partida tipado y compilable. Son para desarrolladores de aplicaciones (dApps) y operadores de rollups que trabajan en Node.js:
 
 * **`create-qorechain-dapp`** (0.10.0) genera una dApp a partir de una de tres plantillas, construidas sobre el [SDK de QoreChain](/sdk/overview).
-* **`create-qorechain-rollup`** (0.7.0) genera un proyecto de rollup a partir de una de seis plantillas, construidas sobre el [Rollup Development Kit](/rollups/overview) de TypeScript.
-* **`qorollup`**, el comando del paquete `@qorechain/rdk-cli` (0.7.0), es la línea de comandos del operador: comprobaciones previas, creación y monitorización de un rollup, lectura de parámetros en vivo.
+* **`create-qorechain-rollup`** (0.8.0) genera un proyecto de rollup a partir de una de seis plantillas, construidas sobre el [Rollup Development Kit](/rollups/overview) de TypeScript.
+* **`qorollup`**, el comando del paquete `@qorechain/rdk-cli` (0.8.0), es la línea de comandos del operador: comprobaciones previas, creación y monitorización de un rollup, lectura de parámetros en vivo.
 
 La página refleja los paquetes publicados tal como se instalan desde npm el 27 de octubre de 2026. Las guías conceptuales son [Desplegar un rollup](/rollups/deploying-a-rollup) y la [referencia de la CLI del SDK](/sdk/reference/cli).
 
 ## Innovaciones {#innovations}
 
 * **Generación no interactiva para CI.** Cada pregunta tiene un indicador: `--template`, `--network`, `--package-manager`, `--yes` (aceptar los valores predeterminados) y `--no-install`. Un pipeline puede generar y compilar un proyecto con un solo comando y sin terminal.
-* **Las plantillas están fijadas a los paquetes actuales.** Las plantillas de dApp dependen de `@qorechain/sdk` `^0.10.0` (la plantilla EVM, de `@qorechain/evm`) y las plantillas de rollup de `@qorechain/rdk` `^0.7.0`. Un generador anterior (0.8.0) escribía rangos que se resolvían a un SDK que no podía firmar para las redes en vivo; con el actual eso no ocurre.
+* **Las plantillas están fijadas a los paquetes actuales.** Las plantillas de dApp dependen de `@qorechain/sdk` `^0.10.0` (la plantilla EVM, de `@qorechain/evm`) y las plantillas de rollup de `@qorechain/rdk` `^0.8.0`. Un generador anterior (0.8.0) escribía rangos que se resolvían a un SDK que no podía firmar para las redes en vivo; con el actual eso no ocurre.
 * **Las plantillas de rollup codifican una configuración válida para cada caso de uso.** Cada plantilla de rollup establece una combinación de liquidación, secuenciador, disponibilidad de datos, gas y VM que acepta la matriz de compatibilidad del RDK, y el generador imprime el stake y la quema de creación en vivo antes de que crees nada.
 * **Un comando de comprobación previa que nombra lo que falta.** `qorollup doctor` (y `npm run doctor` dentro de una plantilla de rollup) comprueba que el endpoint REST responde, que se pueden leer los parámetros del módulo, que el endpoint es la red que pediste y que hay un firmante configurado, e imprime una línea por comprobación. Dentro de una plantilla también valida la configuración del rollup contra la matriz de compatibilidad.
 * **Firma híbrida integrada en las plantillas.** Las plantillas de rollup se conectan mediante un pequeño `signer.ts` que deriva la clave ML-DSA-87 de la cuenta a partir de tu mnemónico (o toma una semilla junto con una clave privada en bruto) y firma de forma híbrida, que es lo que exigen las redes en el carril nativo. La plantilla de dApp `rollup-app` hace lo mismo y se ejecuta como simulacro salvo que establezcas `QORE_BROADCAST=1`.
@@ -94,7 +94,7 @@ Siguientes pasos, tal como los imprime el generador: `npm install`, rellenar la 
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # 0.7.0
+qorollup --version          # imprime la versión instalada (la actual es la 0.8.0)
 qorollup doctor --network testnet
 ```
 
@@ -159,19 +159,19 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | Registro | Paquete | Versión | Enlace |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (comando `create-qorechain-dapp`) | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (comando `create-qorechain-rollup`) | 0.7.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (comando `qorollup`) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (biblioteca que usan las plantillas) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (comando `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (comando `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (biblioteca que usan las plantillas) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-Código fuente: https://github.com/qorechain/qorechain-sdk/tree/main/cli (generador de dApps), https://github.com/qorechain/qorechain-rdk/tree/main/cli (generador de rollups) y https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). La versión 0.7.0 del RDK también está en PyPI, crates.io, Maven Central y el proxy de módulos de Go (comprobado el 27 de octubre de 2026). Todos son Apache-2.0.
+Código fuente: https://github.com/qorechain/qorechain-sdk/tree/main/cli (generador de dApps), https://github.com/qorechain/qorechain-rdk/tree/main/cli (generador de rollups) y https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). La versión 0.8.0 del RDK también está en PyPI, crates.io, Maven Central y el proxy de módulos de Go (comprobado el 31 de octubre de 2026). Todos son Apache-2.0.
 
 ## Límites y problemas conocidos {#limits}
 
 * **`--network mainnet` no cambió los archivos generados en una prueba.** El 27 de octubre de 2026 se generaron `fullstack-web` y `custom-rollup` con `--network mainnet`; el `.env` generado seguía con endpoints de localhost (dApp) o `QORE_NETWORK=testnet` con los endpoints de la testnet (rollup), y el `App.tsx` de la dApp creaba un cliente `testnet`. Establece tú mismo la red y los endpoints en `.env` y, para la plantilla web, en `src/App.tsx`.
-* **Todavía no existe ningún rollup en ninguna de las dos redes** (comprobado el 27 de octubre de 2026). Ninguna ruta de transacción de las herramientas de rollup se ha ejercitado en un rollup en vivo. Valida todo primero en la testnet y lee [RDK 0.7.0: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits).
+* **Todavía no existe ningún rollup en ninguna de las dos redes** (comprobado el 27 de octubre de 2026). Ninguna ruta de transacción de las herramientas de rollup se ha ejercitado en un rollup en vivo. Valida todo primero en la testnet y lee [RDK 0.8.0: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits).
 * **La plantilla `defi-rollup` no puede liquidar un lote.** La liquidación ZK todavía no se puede usar en ninguna de las dos redes (el registro de claves está previsto para la v3.2.7 de la cadena), y su circuito de demostración no podría superar la comprobación de pruebas de la cadena en cualquier caso. Desde la 0.7.0 la plantilla se detiene antes de enviar, así que ya no gasta una comisión en un lote que la cadena rechaza siempre. Usa una plantilla con liquidación `optimistic` hasta que eso cambie (consulta [ZK, STARK y Retiros](/rollups/zk-stark-withdrawals)).
 * **La plantilla `multivm-rollup` depende de algo que no está en producción.** El precompile entre VMs en `0x0000000000000000000000000000000000000901` no está activo en ninguna de las dos redes, así que una llamada desde un contrato no hace nada; la plantilla lo comprueba y su contrato está escrito para revertir en lugar de fallar en silencio (consulta [Multi-VM](/rollups/multi-vm)).
-* **Los comandos de transacción de `qorollup` firman solo de forma clásica.** `create`, `pause`, `resume`, `stop` y `withdraw` se conectan sin una clave poscuántica, algo que ambas redes rechazan en el carril nativo. Las lecturas, `doctor`, `params`, `receipt` y `--dry-run` no se ven afectados. Para enviar transacciones, usa un proyecto generado (sus scripts firman de forma híbrida), el RDK de TypeScript con un `pqcKeypair`, o la CLI de la cadena.
+* **Los comandos de transacción de `qorollup` necesitan una clave poscuántica (0.7.1 y posteriores).** `create`, `pause`, `resume`, `stop` y `withdraw` firman en híbrido (ML-DSA-87 + secp256k1) como exigen ambas redes, usando una clave derivada de `--mnemonic` / `QORE_MNEMONIC` y contrastada con la cadena, o `--pqc-seed` / `QORE_PQC_SEED_HEX` junto con `--key`; sin una de ellas el comando se niega a enviar. En 0.7.0 y anteriores estos comandos firmaban solo en clásico y las redes rechazaban todos; actualiza, o usa un proyecto generado (sus scripts firman en híbrido), el RDK de TypeScript con un `pqcKeypair`, o la CLI de la cadena. Las lecturas, `doctor`, `params`, `receipt` y `--dry-run` nunca necesitaron una clave. No probado en vivo: no existe ningún rollup.
 * **Algunos auxiliares de `qorollup` todavía no tienen con qué comunicarse.** `advise` contra la testnet el 27 de octubre imprimió "advisory unavailable" para las superficies de comisión, red, fraude y agente RL (el nodo respondió 501 o "method does not exist") y para un rollup que no existe. `suggest` devolvió un perfil con `source: fallback`, lo que indica que se usó la lista predeterminada incorporada en lugar del servicio de asistente. Lee las advertencias.
 * **`rollup-app` difunde solo cuando lo pides.** Ejecuta un simulacro por defecto; con `QORE_BROADCAST=1` registra una vez la clave ML-DSA-87 de la cuenta y firma de forma híbrida. Sus valores de rollup de ejemplo son ilustrativos: toma los nombres de perfil reales y el stake de [Perfiles predefinidos](/rollups/preset-profiles).
 * **`fullstack-web` muestra un error en su botón de tokenomics.** Ese panel llama a un método JSON-RPC `qor_` que los endpoints públicos no sirven; la consulta de saldo funciona. Sustitúyelo por una lectura REST como `client.rest.getBurnStats()`.

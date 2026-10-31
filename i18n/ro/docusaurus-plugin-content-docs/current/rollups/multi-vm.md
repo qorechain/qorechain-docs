@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` din `@qorechain/rdk` 0.6.0 și ulterior (0.7.0 este versiunea curentă) construiește același calldata pentru tine:
+`encodeCrossVmCalldata` din `@qorechain/rdk` 0.6.0 și ulterior (0.8.0 este versiunea curentă) construiește același calldata pentru tine:
 
 ```ts
 import {
@@ -84,7 +84,7 @@ Lanțul v3.2.5 schimbă comportamentul bridge-ului. Mainnet-ul îl rulează din 
 * **Refuzurile au un motiv.** Când bridge-ul refuză un apel, face revert cu `Error(string)`, pe care un contract îl poate citi și transmite mai departe.
 * **Precompilul tot nu este activ.** `0x...0901` nu se află în lista precompilurilor active pe niciuna dintre rețele, deci nimic din acestea nu a rulat de la un capăt la altul.
 
-`@qorechain/rdk` 0.7.0 are helperi pentru acestea (verificați față de codificările produse de Solidity): `getCrossVmParams` (lista permisă), `crossVmTargetReady` (precompil activ, bridge activat și ținta pe lista permisă, cu motivul care blochează când nu este), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) și `decodeRevertReason` (`Error(string)`).
+`@qorechain/rdk` 0.7.0 și ulterior au helperi pentru acestea (verificați față de codificările produse de Solidity): `getCrossVmParams` (lista permisă), `crossVmTargetReady` (precompil activ, bridge activat și ținta pe lista permisă, cu motivul care blochează când nu este), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) și `decodeRevertReason` (`Error(string)`).
 
 ## Partea de Solidity
 

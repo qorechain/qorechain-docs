@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` di `@qorechain/rdk` 0.6.0 e successive (la 0.7.0 è la release attuale) costruisce per te gli stessi calldata:
+`encodeCrossVmCalldata` di `@qorechain/rdk` 0.6.0 e successive (la 0.8.0 è la release attuale) costruisce per te gli stessi calldata:
 
 ```ts
 import {
@@ -84,7 +84,7 @@ La chain v3.2.5 cambia il comportamento del bridge. Il mainnet la esegue dal 29 
 * **I rifiuti riportano un motivo.** Quando il bridge rifiuta una chiamata, fa revert con `Error(string)`, che un contratto può leggere e inoltrare.
 * **Il precompile non è ancora attivo.** `0x...0901` non è nell'elenco dei precompile attivi su nessuna delle due reti, quindi nulla di tutto ciò è stato eseguito end to end.
 
-`@qorechain/rdk` 0.7.0 ha helper per questi aspetti (verificati rispetto a codifiche prodotte da Solidity): `getCrossVmParams` (l'allowlist), `crossVmTargetReady` (precompile attivo, bridge abilitato e target in allowlist, con il motivo del blocco quando non lo è), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) e `decodeRevertReason` (`Error(string)`).
+`@qorechain/rdk` 0.7.0 e successive hanno helper per questi aspetti (verificati rispetto a codifiche prodotte da Solidity): `getCrossVmParams` (l'allowlist), `crossVmTargetReady` (precompile attivo, bridge abilitato e target in allowlist, con il motivo del blocco quando non lo è), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) e `decodeRevertReason` (`Error(string)`).
 
 ## Il lato Solidity
 

@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-تبني الدالة `encodeCrossVmCalldata` من `@qorechain/rdk` الإصدار 0.6.0 وما بعده (و0.7.0 هو الحالي) بيانات الاستدعاء نفسها نيابةً عنك:
+تبني الدالة `encodeCrossVmCalldata` من `@qorechain/rdk` الإصدار 0.6.0 وما بعده (و0.8.0 هو الحالي) بيانات الاستدعاء نفسها نيابةً عنك:
 
 ```ts
 import {
@@ -84,7 +84,7 @@ const calldata = encodeCrossVmCalldata({
 * **حالات الرفض تحمل سببًا.** عندما يرفض الجسر استدعاءً فإنه يعيده بـ `Error(string)` (revert)، ويستطيع العقد قراءته وتمريره.
 * **الـ precompile ما زال غير نشط.** العنوان `0x...0901` غير مدرج في قائمة الـ precompile النشطة على أي من الشبكتين، ولذلك لم يُشغَّل شيء من هذا من البداية إلى النهاية.
 
-في `@qorechain/rdk` 0.7.0 مساعدات لهذا (جرى التحقق منها مقابل ترميزات أنتجها Solidity): `getCrossVmParams` (قائمة السماح) و`crossVmTargetReady` (الـ precompile نشط والجسر مفعّل والهدف في قائمة السماح، مع سبب الحظر عندما لا يكون كذلك) و`decodeCrossVmResult` (`abi.decode(ret, (bytes))`) و`decodeRevertReason` (`Error(string)`).
+في `@qorechain/rdk` 0.7.0 وما بعده مساعدات لهذا (جرى التحقق منها مقابل ترميزات أنتجها Solidity): `getCrossVmParams` (قائمة السماح) و`crossVmTargetReady` (الـ precompile نشط والجسر مفعّل والهدف في قائمة السماح، مع سبب الحظر عندما لا يكون كذلك) و`decodeCrossVmResult` (`abi.decode(ret, (bytes))`) و`decodeRevertReason` (`Error(string)`).
 
 ## جانب Solidity
 

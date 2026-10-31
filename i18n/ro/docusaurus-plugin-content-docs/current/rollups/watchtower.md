@@ -18,7 +18,7 @@ Watchtower nu decide niciodată de unul singur că un lot este fraudulos — ape
 funcția ta `validate` și acționează pe baza a ceea ce returnezi.
 
 :::caution Stadiu incipient: nu există încă nimic de urmărit
-Watchtower citește loturile prin clientul REST RDK, iar rutele `/qorechain/rdk/v1/…` sunt servite pe ambele rețele. Nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 27 octombrie 2026), deci nu există încă nimic de urmărit, iar Watchtower nu a rulat împotriva unui lot real. În `@qorechain/rdk` 0.5.0, logica sa de termen-limită era greșită (citea o înălțime de bloc ca timestamp Unix, așa că `onDeadline` se declanșa imediat ce un lot era văzut prima dată) și citea doar prima pagină de 50 de loturi; **0.6.0 le-a corectat pe amândouă** (vezi mai jos). Folosește 0.7.0, versiunea curentă.
+Watchtower citește loturile prin clientul REST RDK, iar rutele `/qorechain/rdk/v1/…` sunt servite pe ambele rețele. Nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 27 octombrie 2026), deci nu există încă nimic de urmărit, iar Watchtower nu a rulat împotriva unui lot real. În `@qorechain/rdk` 0.5.0, logica sa de termen-limită era greșită (citea o înălțime de bloc ca timestamp Unix, așa că `onDeadline` se declanșa imediat ce un lot era văzut prima dată) și citea doar prima pagină de 50 de loturi; **0.6.0 le-a corectat pe amândouă** (vezi mai jos). Folosește 0.8.0, versiunea curentă (Watchtower în sine s-a schimbat ultima oară în 0.7.0).
 :::
 
 ## `watchBatches`
@@ -30,7 +30,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.8.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;

@@ -152,7 +152,7 @@ QoreChain L1 proposers sequence rollup transactions.
 On-chain KV-store blob storage within QoreChain itself.
 
 :::caution No public way to post a blob yet
-The module defines blob storage, retention and pruning, but there is no transaction message for posting a blob in the current releases. A batch that names a data hash on a `native` or `both` rollup is refused because no matching blob can be stored. See [Data Availability](/rollups/data-availability). On native data availability a batch must therefore leave `data_hash` empty; the RDK client (0.7.0) does so, and the chain refuses a batch that claims one.
+The module defines blob storage, retention and pruning, but there is no transaction message for posting a blob in the current releases. A batch that names a data hash on a `native` or `both` rollup is refused because no matching blob can be stored. See [Data Availability](/rollups/data-availability). On native data availability a batch must therefore leave `data_hash` empty; the RDK client (0.8.0) does so, and the chain refuses a batch that claims one.
 :::
 
 | Parameter            | Value                                                                                               |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Batch accepted as canonical                       |
 | **Rejected**   | Batch invalidated by successful challenge         |
 
-RDK 0.6.1 and later behaviour (0.7.0 is current): for an optimistic rollup the client builds a batch whose state root is the chain's canonical transition root (`batchTransitionRoot` in the RDK), not a free-form value of your own.
+RDK 0.6.1 and later behaviour (0.8.0 is current): for an optimistic rollup the client builds a batch whose state root is the chain's canonical transition root (`batchTransitionRoot` in the RDK), not a free-form value of your own.
 
 ### Auto-Finalization Rules
 
@@ -264,7 +264,7 @@ Registration is **non-fatal**: if it fails (insufficient balance or limit reache
 A settlement batch can be anchored to `x/multilayer`, which records the layer ID, layer height (the batch index), state root, validator-set hash and transaction count under a post-quantum signature by the rollup creator.
 
 * **Since v3.2.2 (live on mainnet and testnet):** `MsgSubmitBatch` has two optional fields. `anchor_signature` is the creator's ML-DSA-87 signature over the **v2 anchor sign bytes** of the batch (see [Reading Anchors](/architecture/multilayer-architecture#reading-anchors)); when it is present the batch is anchored in `x/multilayer` in the **same transaction**, and a refused anchor refuses the batch. `validator_set_hash` is the rollup's validator-set commitment carried in the anchor and covered by the signature. On the CLI: `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` prints the bytes to sign (`<layer-id>` is the rollup's layer id, which equals the rollup id for rollups created through the RDK), and `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` submits them.
-* **Without the signature** the batch settles unanchored, exactly as before. A client that does not send the field produces unanchored batches, so check that the toolkit you use supports it: the TypeScript `@qorechain/rdk` 0.6.0 signs the anchor when its client signs hybrid and is the rollup's creator (and otherwise submits unanchored), while the Python, Go, Rust and Java clients do not build the field. No rollup, layer or anchor exists on either network yet, so no anchor has been written and that path is untested live.
+* **Without the signature** the batch settles unanchored, exactly as before. A client that does not send the field produces unanchored batches, so check that the toolkit you use supports it: the TypeScript `@qorechain/rdk` 0.6.0 signs the anchor when its client signs hybrid and is the rollup's creator (and otherwise submits unanchored), while the Python, Go, Rust and Java clients (which sign hybrid from 0.8.0) do not build the field (checked for Python). No rollup, layer or anchor exists on either network yet, so no anchor has been written and that path is untested live.
 
 See [Settlement Receipts](/rollups/settlement-receipts) for what an anchor does and does not prove.
 

@@ -152,7 +152,7 @@ I proposer L1 di QoreChain eseguono il sequencing delle transazioni del rollup.
 Archiviazione di blob on-chain in un KV-store all'interno di QoreChain stessa.
 
 :::caution Ancora nessun modo pubblico per pubblicare un blob
-Il modulo definisce l'archiviazione, la conservazione e il pruning dei blob, ma nelle versioni attuali non esiste alcun messaggio di transazione per pubblicare un blob. Un batch che indica un hash di dati su un rollup `native` o `both` viene rifiutato perché non è possibile archiviare alcun blob corrispondente. Vedi [Disponibilità dei Dati](/rollups/data-availability). Con la disponibilità dei dati nativa, un batch deve quindi lasciare `data_hash` vuoto; il client RDK (0.7.0) lo fa, e la catena rifiuta un batch che ne dichiari uno.
+Il modulo definisce l'archiviazione, la conservazione e il pruning dei blob, ma nelle versioni attuali non esiste alcun messaggio di transazione per pubblicare un blob. Un batch che indica un hash di dati su un rollup `native` o `both` viene rifiutato perché non è possibile archiviare alcun blob corrispondente. Vedi [Disponibilità dei Dati](/rollups/data-availability). Con la disponibilità dei dati nativa, un batch deve quindi lasciare `data_hash` vuoto; il client RDK (0.8.0) lo fa, e la catena rifiuta un batch che ne dichiari uno.
 :::
 
 | Parametro                    | Valore                                                                                                                      |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Batch accettato come canonico                                  |
 | **Rejected**   | Batch invalidato da una contestazione riuscita                 |
 
-Comportamento di RDK 0.6.1 e successive (la 0.7.0 è l'attuale): per un rollup optimistic il client costruisce un batch la cui radice di stato è la radice di transizione canonica della catena (`batchTransitionRoot` nell'RDK), non un valore libero a tua scelta.
+Comportamento di RDK 0.6.1 e successive (la 0.8.0 è l'attuale): per un rollup optimistic il client costruisce un batch la cui radice di stato è la radice di transizione canonica della catena (`batchTransitionRoot` nell'RDK), non un valore libero a tua scelta.
 
 ### Regole di finalizzazione automatica
 
@@ -264,7 +264,7 @@ La registrazione è **non fatale**: se fallisce (saldo insufficiente o limite ra
 Un batch di settlement può essere ancorato a `x/multilayer`, che registra l'ID del livello, l'altezza del livello (l'indice del batch), la radice di stato, l'hash dell'insieme di validatori e il conteggio delle transazioni sotto una firma post-quantistica del creatore del rollup.
 
 * **Dalla v3.2.2 (attiva su mainnet e testnet):** `MsgSubmitBatch` ha due campi facoltativi. `anchor_signature` è la firma ML-DSA-87 del creatore sui **byte di firma dell'anchor v2** del batch (vedi [Lettura degli anchor](/architecture/multilayer-architecture#reading-anchors)); quando è presente il batch viene ancorato in `x/multilayer` nella **stessa transazione**, e un anchor rifiutato rifiuta il batch. `validator_set_hash` è l'impegno sull'insieme di validatori del rollup, riportato nell'anchor e coperto dalla firma. Da CLI: `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` stampa i byte da firmare (`<layer-id>` è l'id del layer del rollup, che coincide con l'id del rollup per i rollup creati tramite l'RDK), e `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` li invia.
-* **Senza la firma** il batch viene regolato senza anchor, esattamente come prima. Un client che non invia il campo produce batch senza anchor, quindi verifica che il toolkit che usi lo supporti: il `@qorechain/rdk` TypeScript 0.6.0 firma l'anchor quando il suo client firma in modalità ibrida ed è il creatore del rollup (altrimenti invia senza anchor), mentre i client Python, Go, Rust e Java non costruiscono il campo. Su nessuna delle due reti esiste ancora alcun rollup, livello o anchor, quindi nessun anchor è stato scritto e quel percorso non è stato testato dal vivo.
+* **Senza la firma** il batch viene regolato senza anchor, esattamente come prima. Un client che non invia il campo produce batch senza anchor, quindi verifica che il toolkit che usi lo supporti: il `@qorechain/rdk` TypeScript 0.6.0 firma l'anchor quando il suo client firma in modalità ibrida ed è il creatore del rollup (altrimenti invia senza anchor), mentre i client Python, Go, Rust e Java (che firmano in modalità ibrida dalla 0.8.0) non costruiscono il campo (verificato per Python). Su nessuna delle due reti esiste ancora alcun rollup, livello o anchor, quindi nessun anchor è stato scritto e quel percorso non è stato testato dal vivo.
 
 Vedi [Ricevute di Settlement](/rollups/settlement-receipts) per ciò che un anchor dimostra e ciò che non dimostra.
 

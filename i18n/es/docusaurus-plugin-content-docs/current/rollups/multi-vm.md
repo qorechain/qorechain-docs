@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 y posteriores (la actual es la 0.7.0) construye el mismo calldata por ti:
+`encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 y posteriores (la actual es la 0.8.0) construye el mismo calldata por ti:
 
 ```ts
 import {
@@ -84,7 +84,7 @@ La cadena v3.2.5 cambia el comportamiento del puente. La mainnet la ejecuta desd
 * **Los rechazos llevan un motivo.** Cuando el puente rechaza una llamada, revierte con `Error(string)`, que un contrato puede leer y transmitir.
 * **El precompilado sigue sin estar activo.** `0x...0901` no figura en la lista de precompilados activos de ninguna de las dos redes, así que nada de esto se ha ejecutado de extremo a extremo.
 
-`@qorechain/rdk` 0.7.0 incluye utilidades para ello (comprobadas con codificaciones que produjo Solidity): `getCrossVmParams` (la lista de permitidos), `crossVmTargetReady` (precompilado activo, puente habilitado y destino en la lista de permitidos, con el motivo del bloqueo cuando no), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) y `decodeRevertReason` (`Error(string)`).
+`@qorechain/rdk` 0.7.0 y posteriores incluyen utilidades para ello (comprobadas con codificaciones que produjo Solidity): `getCrossVmParams` (la lista de permitidos), `crossVmTargetReady` (precompilado activo, puente habilitado y destino en la lista de permitidos, con el motivo del bloqueo cuando no), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) y `decodeRevertReason` (`Error(string)`).
 
 ## El lado de Solidity
 

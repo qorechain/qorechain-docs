@@ -18,7 +18,7 @@ RDK は両方のネットワークにデプロイされていますが、**ど�
 ## 革新点 {#innovations}
 
 * **ポスト量子決済レシート。** バッチの状態アンカーは、ロールアップ作成者の登録済み鍵によって ML-DSA-87 で署名されます。`verifySettlementReceipt` は、レシートのすべてのフィールド（ロールアップ、レイヤー、バッチルート、そしてアンカー: 状態ルート、レイヤーの高さ、メインチェーンの高さ、アンカー時刻、バリデータセットのハッシュ、トランザクション数、証明、署名）をチェーンから読み直します。検証鍵はチェーンから取得され、レシートからは決して取得されません。レシートは、クエリするネットワークを指定していなければなりません。未知のレシートバージョンや ML-DSA-87 以外のアルゴリズムは、読み取りの前に拒否されます。署名のみのチェックが有効と報告されることはありません。アンカーのメッセージには、チェーン v3.2.2 の高さより下で使われる第一の形式と、それ以降で使われる（チェーン ID も束縛する）第二の形式があり、どちらを使うかはアンカーの高さによって決まります。[決済レシート](/rollups/settlement-receipts)を参照してください。
-* **2 種類の鍵導出によるハイブリッド署名。** トランザクションは secp256k1 と ML-DSA-87 で署名されます。ポスト量子鍵は、ニーモニックから正規の方法（`qorechain:pqc:v1|`、アドレス、ニーモニックに対する SHAKE-256）とレガシーな方法の両方で導出され、クライアントはチェーンがそのアカウントに登録している鍵を使用します。現時点でハイブリッド署名を行うのは TypeScript クライアントだけです。
+* **2 種類の鍵導出によるハイブリッド署名。** トランザクションは secp256k1 と ML-DSA-87 で署名されます。ポスト量子鍵は、ニーモニックから正規の方法（`qorechain:pqc:v1|`、アドレス、ニーモニックに対する SHAKE-256）とレガシーな方法の両方で導出され、クライアントはチェーンがそのアカウントに登録している鍵を使用します。Python、Go、Rust、Java のクライアントは 0.8.0 から、CLI は 0.7.1 からハイブリッド署名を行います。それ以前は TypeScript クライアントだけが対応していました。
 * **正規のトランジションルート。** `batchTransitionRoot` は、チェーンがオプティミスティックバッチを判定する際の正確な状態ルートを計算します（メインネットが現在適用している形式は、前の状態ルート、データハッシュ、トランザクション数に対する SHAKE-256 コミットメントです。`transitionRootVersionFor` は接続先ネットワークが適用する形式を選択します）。`fraudProof` はそこから 64 バイトの証明を構築します。どちらも、チェーン自身のコードが生成したベクターに対してテストされています。
 * **チェーンが構築するとおりに構築される出金証明。** `withdrawalsTree`（0.7.0、5 言語すべて）は、バッチの出金ルートとすべての証明をチェーンとまったく同じように構築します。リーフの位置は出金インデックスで、ノードは SHAKE-256 でハッシュされ、チェーン v3.2.5 のバッチはチェーン ID も含む第二の形式のリーフを使います。チェーン自身のコードが生成したベクターに対してテストされており、そのベクターのすべての証明がチェーンの検証器に受理されています。`qorollup withdraw` は、その結果がバッチのオンチェーンの `withdrawals_root` と一致しない場合、手数料を支払う前に拒否します。
 * **チェーンと同一のチャレンジウィンドウ。** `batchChallengeWindow` は、チェーンと同じ方法でバッチのウィンドウを計算し（時間ベース: ブロックタイムが提出時刻にウィンドウを加えた値を下回る間は開いています。古いバッチでは、提出高さからのブロック数でウィンドウを 6 で割った値）、ローカルの時計ではなく RPC `/status` から読み取ったチェーンの先頭に対して判定します。[ウォッチタワー](/rollups/watchtower)とヘルスモニターがこれを使用します。0.7.0 以降、`getRollupHealth` は、チェーンの順序どおりのファイナリティ（v3.2.5、両ネットワーク、[チェーン v3.2.5 の挙動](#v325)を参照）がバッチを保留している場合に `heldBackBy` も報告し、`qorollup watchtower --canonical` は、チャレンジが成功するバッチを報告します。
@@ -28,7 +28,7 @@ RDK は両方のネットワークにデプロイされていますが、**ど�
 
 ## 使い方 {#how-to-use}
 
-読み取りには鍵も資金も不要です。以下のスニペットは、公開テストネット（`qorechain-diana`）の稼働中の `rdk` モジュールパラメータとロールアップ一覧を読み取るもので、2026年10月27日に公開済みパッケージから実行しました（現在のバージョンは 0.7.0 です。TypeScript のスニペットとコマンドラインは npm から 0.7.0 で再実行し、Python、Rust、Go、Java のスニペットは、開発者ハブに同じリリースで成功したと記録されています）。いずれもテストネットのパラメータ（ロールアップ最大数 200、最小ステーク 10,000 QOR、作成時バーン率 0.01、デフォルトのチャレンジウィンドウ 3,600 秒、DA ブロブの最大サイズ 2,097,152 バイト、ブロブ保持期間 432,000 ブロック、1 ブロックあたり最大 10 バッチ）と `0 rollups` を出力しました。
+読み取りには鍵も資金も不要です。以下のスニペットは、公開テストネット（`qorechain-diana`）の稼働中の `rdk` モジュールパラメータとロールアップ一覧を読み取るもので、2026年10月27日に公開済みパッケージから実行しました（これらの実行は 0.7.0 を使用しました。現在のバージョンは 0.8.0 で、Python、Go、Rust、Java のクライアントにハイブリッド署名を追加しますが、ここに示した読み取り呼び出しは変わりません。ただし、スニペットは 0.8.0 では再実行していません）。いずれもテストネットのパラメータ（ロールアップ最大数 200、最小ステーク 10,000 QOR、作成時バーン率 0.01、デフォルトのチャレンジウィンドウ 3,600 秒、DA ブロブの最大サイズ 2,097,152 バイト、ブロブ保持期間 432,000 ブロック、1 ブロックあたり最大 10 バッチ）と `0 rollups` を出力しました。
 
 ### TypeScript（検証済み）
 
@@ -76,7 +76,7 @@ Python 3.10 以降。`qorechain-rdk` は `qorechain-pqc` に依存し、これ�
 ### Go（検証済み）
 
 ```bash
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.7.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
 ```
 
 ```go
@@ -138,7 +138,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```kotlin
 // build.gradle.kts
-implementation("io.github.qorechain:qorechain-rdk:0.7.0")
+implementation("io.github.qorechain:qorechain-rdk:0.8.0")
 ```
 
 ```java
@@ -164,7 +164,7 @@ public class RdkQuickstart {
 }
 ```
 
-JDK 17 以降。JDK 21 と、Maven Central から解決する Gradle 9.6 で検証しました。ファイル名は `RdkQuickstart.java` にする必要があります。Maven Central は 0.6.2 と 0.7.0 を提供しています（2026年10月27日に確認）。
+Java 21 以降（0.8.0 から。0.7.1 以前は JDK 17 で動作しました）。JDK 21 と、Maven Central から解決する Gradle 9.6 で検証しました。ファイル名は `RdkQuickstart.java` にする必要があります。Maven Central は 0.7.0、0.7.1、0.8.0 を提供しています（2026年10月31日に確認）。
 
 ### コマンドライン（検証済み）
 
@@ -174,7 +174,7 @@ qorollup --version
 qorollup params --network testnet
 ```
 
-`qorollup --version` は `0.7.0` を出力し、`qorollup params --network testnet` は稼働中のモジュールパラメータを出力します。**これは 0.6.2 から動作します。** 0.6.1 以前のリリースは、npm からインストールすると終了コード 0 で何も出力しませんでした。検証では、空のプロジェクトに `@qorechain/rdk-cli@0.7.0` をインストールし、`node_modules/.bin/qorollup` 経由で実行しました。グローバルインストールと `npx` も同じ bin リンクを使用します。Node 20 以降が必要です。
+`qorollup --version` はインストールされているバージョンを出力し（テスト実行では `0.7.0`）、`qorollup params --network testnet` は稼働中のモジュールパラメータを出力します。**これは 0.6.2 から動作します。** 0.6.1 以前のリリースは、npm からインストールすると終了コード 0 で何も出力しませんでした。検証では、空のプロジェクトに `@qorechain/rdk-cli@0.7.0` をインストールし、`node_modules/.bin/qorollup` 経由で実行しました。グローバルインストールと `npx` も同じ bin リンクを使用します。Node 20 以降が必要です。
 
 ### プロジェクトのスキャフォールド（検証済み）
 
@@ -183,7 +183,7 @@ npx create-qorechain-rollup my-rollup --template nft-rollup --network testnet --
 cd my-rollup && npm run doctor
 ```
 
-テンプレートは `defi-rollup`、`gaming-rollup`、`nft-rollup`、`enterprise-rollup`、`custom-rollup`、`multivm-rollup` です。スキャフォールドされたプロジェクトは `@qorechain/rdk` `^0.7.0` に依存します。0.6.1 のスキャフォルダーで `nft-rollup` をスキャフォールドして生成されたプロジェクトの `npm run doctor` は、テストネットに対して成功しました（REST に到達可能、パラメータを読み取り可能、ネットワークは `qorechain-diana`。Celestia データ可用性と署名者の欠如について警告が出ます）。`defi-rollup` をスキャフォールドして `npm run typecheck` を実行した場合も、2026年10月27日に現行リリースで再び成功しました。**まだ `defi-rollup` を使ってロールアップを起動しないでください**（[制限](#limits)を参照）。ロールアップを作成してバッチを提出するには、[ロールアップのデプロイ](/rollups/deploying-a-rollup)に従ってください。トランザクションには登録済みのポスト量子鍵が必要で、RDK では TypeScript クライアントに `pqcKeypair` を渡す必要があります。
+テンプレートは `defi-rollup`、`gaming-rollup`、`nft-rollup`、`enterprise-rollup`、`custom-rollup`、`multivm-rollup` です。スキャフォールドされたプロジェクトは `@qorechain/rdk` `^0.8.0` に依存します（0.8.0 より前は `^0.7.0`）。0.6.1 のスキャフォルダーで `nft-rollup` をスキャフォールドして生成されたプロジェクトの `npm run doctor` は、テストネットに対して成功しました（REST に到達可能、パラメータを読み取り可能、ネットワークは `qorechain-diana`。Celestia データ可用性と署名者の欠如について警告が出ます）。`defi-rollup` をスキャフォールドして `npm run typecheck` を実行した場合も、2026年10月27日に現行リリースで再び成功しました。**まだ `defi-rollup` を使ってロールアップを起動しないでください**（[制限](#limits)を参照）。ロールアップを作成してバッチを提出するには、[ロールアップのデプロイ](/rollups/deploying-a-rollup)に従ってください。トランザクションには登録済みのポスト量子鍵が必要で、RDK では TypeScript クライアントに `pqcKeypair` を渡す必要があります。
 
 ## アクセス方法 {#how-to-access}
 
@@ -205,13 +205,13 @@ cd my-rollup && npm run doctor
 | **レイヤーステーク** | 作成時には、ロールアップのレイヤーもマルチレイヤーモジュールに登録されます（最小ステーク 1,000 QOR）。レイヤーを登録できない場合でもロールアップは作成されますが、実際のレイヤーを持たないため、そのバッチはアンカーできず、レシートも発行できません。 |
 | **登録済みのポスト量子鍵** | アカウントに登録された ML-DSA-87 鍵。従来型の鍵のみで署名されたネイティブレーンのトランザクションは拒否されます。 |
 | **手数料** | 手数料の下限はガス 1 単位あたり 0.1 uqor です。ガスリミットと手数料は一緒に設定してください。 |
-| **ツール** | CLI とスキャフォールダーには Node 20 以降。Python クライアントには Python 3.10 以降（`liboqs` 付き、上記参照）。Java には JDK 17 以降。Go モジュールは `github.com/qorechain/qorechain-rdk/packages/go`。 |
+| **ツール** | CLI とスキャフォールダーには Node 20 以降。Python クライアントには Python 3.10 以降（`liboqs` 付き、上記参照）。Java（RDK 0.8.0 から）には Java 21 以降。Go モジュールは `github.com/qorechain/qorechain-rdk/packages/go`。 |
 
 状態の読み取りには、これらは一切不要です。ダッシュボードからロールアップをリクエストする（リクエストフォームであり、オンチェーントランザクションではありません）か、チェーン CLI で作成することもできます。完全なフロー、CLI コマンド、TypeScript の署名パスについては[ロールアップのデプロイ](/rollups/deploying-a-rollup)を参照してください。
 
 ### チェーン v3.2.5 の挙動: 両ネットワークで稼働中 {#v325}
 
-チェーン v3.2.5 は、メインネット（2026年10月29日に高さ 3,906,833 で適用、ガバナンス提案 14）とテストネット（2026年10月26日から）で稼働しています。テストネットは v3.2.6 で稼働しており、これには v3.2.5 が含まれます。RDK 0.7.0 は両方に対応しています。これらのルールは両方のネットワークに適用されます。メインネットではまだロールアップが作成されていない（`GET /qorechain/rdk/v1/rollups` は空のリストを返します。2026年10月30日に確認）ため、以下のルールはこのリリースのルールであり、メインネットの稼働中のロールアップではまだ実際に試されていません。ロールアップ開発者向けの内容は次のとおりです。
+チェーン v3.2.5 は、メインネット（2026年10月29日に高さ 3,906,833 で適用、ガバナンス提案 14）とテストネット（2026年10月26日から）で稼働しています。テストネットは v3.2.6 で稼働しており、これには v3.2.5 が含まれます。RDK 0.7.0 以降は両方に対応しています。これらのルールは両方のネットワークに適用されます。メインネットではまだロールアップが作成されていない（`GET /qorechain/rdk/v1/rollups` は空のリストを返します。2026年10月30日に確認）ため、以下のルールはこのリリースのルールであり、メインネットの稼働中のロールアップではまだ実際に試されていません。ロールアップ開発者向けの内容は次のとおりです。
 
 | 挙動 | 両ネットワーク（v3.2.5 以降） |
 | --------- | -------------------------------- |
@@ -233,7 +233,7 @@ cd my-rollup && npm run doctor
 | 登録済みのロールアップ（メインネットおよびテストネット） | なし |
 | `x/rdk` モジュールとそのパラメータ | 両方のネットワークにデプロイ済み。`qorechaind query rdk config` で確認できます |
 | RDK クエリ | 両方のネットワークで CLI、gRPC、REST（`/qorechain/rdk/v1/...`）経由で提供されているため、TypeScript の `rdk.params()` のような REST ベースの読み取りはメインネットに対しても機能します |
-| RDK が書き込む決済アンカー | なし。v3.2.2 以降、バッチは `anchor_signature` を持つことができ、その場合は同じトランザクション内で `x/multilayer` にアンカーされます。持たない場合、バッチはアンカーされないまま決済されます。ロールアップ、レイヤー、アンカーはまだ存在しません。TypeScript の RDK（0.6.0 から 0.7.0）は、クライアントがハイブリッド署名を行い、かつロールアップの作成者である場合にこのフィールドを送信します（ライブでは未検証）。Python、Go、Rust、Java のクライアントは送信しません |
+| RDK が書き込む決済アンカー | なし。v3.2.2 以降、バッチは `anchor_signature` を持つことができ、その場合は同じトランザクション内で `x/multilayer` にアンカーされます。持たない場合、バッチはアンカーされないまま決済されます。ロールアップ、レイヤー、アンカーはまだ存在しません。TypeScript の RDK（0.6.0 以降）は、クライアントがハイブリッド署名を行い、かつロールアップの作成者である場合にこのフィールドを送信します（ライブでは未検証）。Python、Go、Rust、Java のクライアントは 0.8.0 からハイブリッド署名を行いますが、送信しません（Python で確認済み） |
 | `x/multilayer` に登録されたロールアップレイヤー | なし |
 | ZK 決済 | どちらのネットワークでもまだ使用できません（検証鍵を登録する手段がなく、チェーン v3.2.7 で予定） |
 | 出金 | v3.2.3 以降、ロールアップごとのエスクロー台帳から支払われます（[ZK / STARK と出金](/rollups/zk-stark-withdrawals)を参照）。ロールアップが存在しないため、まだ行われていません |
@@ -246,28 +246,28 @@ cd my-rollup && npm run doctor
 
 | レジストリ | パッケージ | 現在のバージョン | リンク |
 | -------- | ------- | --------------- | ---- |
-| npm | `@qorechain/rdk`（TypeScript クライアント） | 0.7.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
-| npm | `@qorechain/rdk-cli`（`qorollup`） | 0.7.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
-| npm | `create-qorechain-rollup`（スキャフォールダー） | 0.7.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
-| PyPI | `qorechain-rdk`（インポート名 `qorrdk`） | 0.7.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
-| crates.io | `qorechain-rdk`（ライブラリ `qorechain_rdk`） | 0.7.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
-| Go モジュールプロキシ | `github.com/qorechain/qorechain-rdk/packages/go` | v0.7.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
-| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.7.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
+| npm | `@qorechain/rdk`（TypeScript クライアント） | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
+| npm | `@qorechain/rdk-cli`（`qorollup`） | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
+| npm | `create-qorechain-rollup`（スキャフォールダー） | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
+| PyPI | `qorechain-rdk`（インポート名 `qorrdk`） | 0.8.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
+| crates.io | `qorechain-rdk`（ライブラリ `qorechain_rdk`） | 0.8.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
+| Go モジュールプロキシ | `github.com/qorechain/qorechain-rdk/packages/go` | v0.8.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
+| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.8.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
 
-Maven Central は、以前のバージョンに加えて 0.6.2 と 0.7.0 を提供しています。Go プロキシの `@latest` は新しいタグに遅れることがあるため、Go のバージョンは固定してください。ソースは [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk) で公開されており、リリースノートは [v0.7.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.0)、キット自身のドキュメントは [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/) にあります。TypeScript パッケージは `@qorechain/sdk` `^0.10.0`（0.7.0 から。0.6.x は `^0.9.0` を使用）と `@qorechain/evm` `^0.8.0` に依存し、Python パッケージは `qorechain-pqc` 0.2.x に依存します。チェーンの `x/rdk` モジュールのロジック自体は、公開キットには含まれません。
+Maven Central は、以前のバージョンに加えて 0.7.0、0.7.1、0.8.0 を提供しています。Go プロキシの `@latest` は新しいタグに遅れることがあるため、Go のバージョンは固定してください。ソースは [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk) で公開されており、リリースノートは [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0)（および [v0.7.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.1)）、キット自身のドキュメントは [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/) にあります。TypeScript パッケージは `@qorechain/sdk` `^0.10.0`（0.7.0 から。0.6.x は `^0.9.0` を使用。Python、Go、Rust、Java のパッケージは 0.8.0 から対応する QoreChain SDK 0.10.x を使用）と `@qorechain/evm` `^0.8.0` に依存し、Python パッケージは `qorechain-pqc` 0.2.x に依存します。チェーンの `x/rdk` モジュールのロジック自体は、公開キットには含まれません。
 
 ## 制限と既知の問題 {#limits}
 
 * **ZK 決済は、どちらのネットワークでもまだ使用できません。** これには `defi` プロファイル、`defi-rollup` テンプレート、`zk` 決済で作成されたすべてのロールアップが含まれます。チェーンにはロールアップの検証鍵を登録する手段がないため、すべての ZK バッチは手数料が支払われた後に拒否されます。鍵の登録はチェーン v3.2.7 で予定されています。それまでは `optimistic` 決済を使用してください（[ZK / STARK と出金](/rollups/zk-stark-withdrawals)を参照）。
 * **どちらのネットワークでもロールアップはまだ作成されていません。** 作成、バッチ、チャレンジ、レシート、出金の各パスはユニットテストと共有ベクターでカバーされていますが、オンチェーンではまだ検証されていません。
-* **ハイブリッドトランザクションに署名するのは TypeScript クライアントだけです。** Python、Go、Rust、Java のトランザクションパスと、`qorollup` のトランザクションコマンド（`create`、`pause`、`resume`、`stop`、`withdraw`）は従来型のみで署名するため、どちらのネットワークも拒否します。読み取りは機能します。これらからトランザクションを送るには、メッセージを構築してチェーン CLI で共同署名するか、`pqcKeypair` を指定した TypeScript クライアントを使用してください。
+* **ハイブリッド署名にはポスト量子鍵が必要です。** RDK 0.8.0 からは、5 つのクライアントすべてがポスト量子キーペアを渡した場合にハイブリッドで署名し、`qorollup` のトランザクションコマンド（`create`、`pause`、`resume`、`stop`、`withdraw`）は 0.7.1 から同様です。鍵がない場合や以前のバージョンでは、トランザクションは従来型のみとなり、どちらのネットワークも拒否します。どのクライアントのハイブリッドトランザクションも、稼働中のロールアップでは送信されたことがありません。アンカー付きのバッチを送信できるのは TypeScript クライアントだけです。
 * **(a) `qorollup` CLI は、0.6.1 以前では npm からインストールすると何も出力しませんでした。** これは **0.6.2 で修正されています**。`npm i -g @qorechain/rdk-cli` の後、`qorollup ...` は動作し、`qorollup --version` は 0.6.2 を出力します。
 * **(b) 出金の Merkle ヘルパーは、0.6.2 以前ではデフォルトで SHA-256 を使用していましたが、チェーンは SHAKE-256 を使用します。** それらのデフォルトで構築した証明は、オンチェーンで一度も検証に通りませんでした。**0.7.0 で修正されています。** `withdrawalsTree` はチェーンとまったく同じツリーを構築し、チェーン自身の検証器と照合して確認されています（[リーフとノードのエンコーディング](/rollups/zk-stark-withdrawals#leaf-and-node-encoding)を参照）。アップグレードしてください。SHA-256 のデフォルトに依存していたコードは、今後は `hash` を明示的に渡す必要があります。
 * **(c) `buildDaBlob` は、0.6.2 以前では SHA-256 でハッシュしていましたが、チェーンのブロブコミットメントは SHAKE-256 です。** **0.7.0 で修正され**、そのコミットメントはチェーンのものになりました。ブロブを投稿するトランザクションがないため、実用上の影響は一度もありませんでした。`native` と `both` のデータ可用性では `dataHash` を空のままにしてください（[データ可用性](/rollups/data-availability)を参照）。
 * **(d) `defi` テンプレートのデモ回路は検証できません。** これは `snarkjs` の乗算器であり、チェーンは前の状態ルート、状態ルート、データハッシュを公開入力とする BLS12-381 上の Groth16 を検査しますが、その回路はそれらを公開していません。鍵の登録が提供された後でも、独自の回路が必要です。
 * **任意のアカウントがチャレンジを解決できます（v3.2.5 以降、両ネットワーク）。** チェーンは不正証明自体を検証します。v3.2.5 より前は、解決を提出できるのはロールアップの作成者だけでした（[チェーン v3.2.5 の挙動](#v325)と [Optimistic](#optimistic)を参照）。
 * **ライブネットワークでは使用できないもの:** Celestia データ可用性（未実装）、[QCAI ロールアップ・コパイロット](/rollups/qcai-copilot)（そのアドバイザリサービスは公開エンドポイントにありません）、クロス VM 呼び出し（`0x...0901` のプリコンパイルは有効ではありません）、共有シーケンサーとベースドシーケンサー（チェーンが認めるのは設定されたシーケンサー、設定がない場合は作成者のみです）、`suggest-profile`（固定のフォールバックとして `defi` を返します）。
-* **バージョンに関する注記。** すべてに 0.7.0 を使用してください。0.6.2 以前は、オンチェーンで一度も検証に通らない出金証明を構築し、0.6.1 以前は npm からインストールすると `qorollup` が何も出力しません。0.5.0 以前は、レシート、ウォッチタワー、クロス VM コールデータに使用すべきではありません。各リリースの変更点の全一覧は [RDK 0.7.0：変更点と制限](/rollups/deploying-a-rollup#rdk-050-limits)にあります。
+* **バージョンに関する注記。** すべてに 0.8.0 を使用してください（0.7.0 以前は、ネットワークが受け付ける `qorollup` のトランザクションを送信できず、0.8.0 より前は Python、Go、Rust、Java のクライアントがトランザクションを一切送信できません）。0.6.2 以前は、オンチェーンで一度も検証に通らない出金証明を構築し、0.6.1 以前は npm からインストールすると `qorollup` が何も出力しません。0.5.0 以前は、レシート、ウォッチタワー、クロス VM コールデータに使用すべきではありません。各リリースの変更点の全一覧は [RDK 0.8.0：変更点と制限](/rollups/deploying-a-rollup#rdk-050-limits)にあります。
 
 ---
 

@@ -10,15 +10,15 @@ sidebar_position: 21
 Trois outils en ligne de commande font passer un projet QoreChain de rien à un point de départ typé et compilable. Ils s'adressent aux développeurs d'applications (dApps) et aux opérateurs de rollups qui travaillent avec Node.js :
 
 * **`create-qorechain-dapp`** (0.10.0) génère une dApp à partir de l'un des trois modèles, construite sur le [SDK QoreChain](/sdk/overview).
-* **`create-qorechain-rollup`** (0.7.0) génère un projet de rollup à partir de l'un des six modèles, construit sur le [Rollup Development Kit](/rollups/overview) TypeScript.
-* **`qorollup`**, la commande du paquet `@qorechain/rdk-cli` (0.7.0), est la ligne de commande de l'opérateur : vérifications préalables, création et suivi d'un rollup, lecture des paramètres en direct.
+* **`create-qorechain-rollup`** (0.8.0) génère un projet de rollup à partir de l'un des six modèles, construit sur le [Rollup Development Kit](/rollups/overview) TypeScript.
+* **`qorollup`**, la commande du paquet `@qorechain/rdk-cli` (0.8.0), est la ligne de commande de l'opérateur : vérifications préalables, création et suivi d'un rollup, lecture des paramètres en direct.
 
 La page reflète les paquets publiés tels qu'installés depuis npm le 27 octobre 2026. Les guides conceptuels sont [Déployer un Rollup](/rollups/deploying-a-rollup) et la [référence de la CLI du SDK](/sdk/reference/cli).
 
 ## Innovations {#innovations}
 
 * **Génération non interactive pour la CI.** Chaque question a un drapeau : `--template`, `--network`, `--package-manager`, `--yes` (accepter les valeurs par défaut) et `--no-install`. Un pipeline peut générer et compiler un projet avec une seule commande et sans terminal.
-* **Les modèles sont épinglés sur les paquets actuels.** Les modèles de dApp dépendent de `@qorechain/sdk` `^0.10.0` (le modèle EVM de `@qorechain/evm`) et les modèles de rollup de `@qorechain/rdk` `^0.7.0`. Un générateur antérieur (0.8.0) écrivait des plages qui se résolvaient vers un SDK incapable de signer pour les réseaux en service ; ce n'est plus le cas avec le générateur actuel.
+* **Les modèles sont épinglés sur les paquets actuels.** Les modèles de dApp dépendent de `@qorechain/sdk` `^0.10.0` (le modèle EVM de `@qorechain/evm`) et les modèles de rollup de `@qorechain/rdk` `^0.8.0`. Un générateur antérieur (0.8.0) écrivait des plages qui se résolvaient vers un SDK incapable de signer pour les réseaux en service ; ce n'est plus le cas avec le générateur actuel.
 * **Les modèles de rollup encodent une configuration valide par cas d'usage.** Chaque modèle de rollup fixe une combinaison de règlement, de séquenceur, de disponibilité des données, de gas et de VM que la matrice de compatibilité du RDK accepte, et le générateur affiche le stake et le burn de création en direct avant que vous ne créiez quoi que ce soit.
 * **Une commande de vérification préalable qui nomme ce qui manque.** `qorollup doctor` (et `npm run doctor` dans un modèle de rollup) vérifie que le point de terminaison REST répond, que les paramètres du module peuvent être lus, que le point de terminaison est bien le réseau demandé et qu'un signataire est configuré, et affiche une ligne par vérification. Dans un modèle, il valide aussi la configuration du rollup par rapport à la matrice de compatibilité.
 * **Signature hybride câblée dans les modèles.** Les modèles de rollup se connectent via un petit `signer.ts` qui dérive la clé ML-DSA-87 du compte à partir de votre mnémonique (ou prend une graine avec une clé privée brute) et signe de façon hybride, ce que les réseaux exigent sur la voie native. Le modèle de dApp `rollup-app` fait de même et s'exécute à blanc sauf si vous définissez `QORE_BROADCAST=1`.
@@ -94,7 +94,7 @@ cd my-rollup && npm run typecheck
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # 0.7.0
+qorollup --version          # affiche la version installée (la 0.8.0 est l'actuelle)
 qorollup doctor --network testnet
 ```
 
@@ -159,19 +159,19 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | Registre | Paquet | Version | Lien |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (commande `create-qorechain-dapp`) | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (commande `create-qorechain-rollup`) | 0.7.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (commande `qorollup`) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (bibliothèque utilisée par les modèles) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (commande `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (commande `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (bibliothèque utilisée par les modèles) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-Code source : https://github.com/qorechain/qorechain-sdk/tree/main/cli (générateur de dApp), https://github.com/qorechain/qorechain-rdk/tree/main/cli (générateur de rollup) et https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). La version 0.7.0 du RDK est aussi sur PyPI, crates.io, Maven Central et le proxy de modules Go (vérifié le 27 octobre 2026). Tous sont sous Apache-2.0.
+Code source : https://github.com/qorechain/qorechain-sdk/tree/main/cli (générateur de dApp), https://github.com/qorechain/qorechain-rdk/tree/main/cli (générateur de rollup) et https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). La version 0.8.0 du RDK est aussi sur PyPI, crates.io, Maven Central et le proxy de modules Go (vérifié le 31 octobre 2026). Tous sont sous Apache-2.0.
 
 ## Limites et problèmes connus {#limits}
 
 * **`--network mainnet` n'a pas modifié les fichiers générés lors d'un essai.** Le 27 octobre 2026, `fullstack-web` et `custom-rollup` ont été générés avec `--network mainnet` ; le `.env` généré contenait toujours des points de terminaison localhost (dApp) ou `QORE_NETWORK=testnet` avec les points de terminaison du testnet (rollup), et le `App.tsx` de la dApp créait un client `testnet`. Définissez vous-même le réseau et les points de terminaison dans `.env` et, pour le modèle web, dans `src/App.tsx`.
-* **Aucun rollup n'existe encore sur l'un ou l'autre réseau** (vérifié le 27 octobre 2026). Aucun chemin de transaction des outils de rollup n'a été exercé sur un rollup en service. Validez tout d'abord sur le testnet, et lisez [RDK 0.7.0 : changements et limites](/rollups/deploying-a-rollup#rdk-050-limits).
+* **Aucun rollup n'existe encore sur l'un ou l'autre réseau** (vérifié le 27 octobre 2026). Aucun chemin de transaction des outils de rollup n'a été exercé sur un rollup en service. Validez tout d'abord sur le testnet, et lisez [RDK 0.8.0 : changements et limites](/rollups/deploying-a-rollup#rdk-050-limits).
 * **Le modèle `defi-rollup` ne peut pas régler un lot.** Le règlement ZK n'est encore utilisable sur aucun des deux réseaux (l'enregistrement des clés est prévu pour la version de chaîne v3.2.7), et son circuit de démonstration ne pourrait de toute façon pas passer la vérification de preuve de la chaîne. À partir de la 0.7.0, le modèle s'arrête avant l'envoi, de sorte qu'il ne dépense plus de frais pour un lot que la chaîne refuse toujours. Utilisez un modèle avec règlement `optimistic` jusqu'à ce que cela change (voir [ZK / STARK et retraits](/rollups/zk-stark-withdrawals)).
 * **Le modèle `multivm-rollup` dépend de quelque chose qui n'est pas en service.** Le precompile cross-VM à `0x0000000000000000000000000000000000000901` n'est actif sur aucun des deux réseaux ; un appel depuis un contrat ne fait donc rien ; le modèle le vérifie et son contrat est écrit pour revert au lieu d'échouer silencieusement (voir [Multi-VM](/rollups/multi-vm)).
-* **Les commandes de transaction de `qorollup` signent uniquement en classique.** `create`, `pause`, `resume`, `stop` et `withdraw` se connectent sans clé post-quantique, ce que les deux réseaux refusent sur la voie native. Les lectures, `doctor`, `params`, `receipt` et `--dry-run` ne sont pas concernés. Pour envoyer des transactions, utilisez un projet généré (ses scripts signent de façon hybride), le RDK TypeScript avec un `pqcKeypair`, ou la CLI de la chaîne.
+* **Les commandes de transaction de `qorollup` exigent une clé post-quantique (0.7.1 et ultérieur).** `create`, `pause`, `resume`, `stop` et `withdraw` signent en hybride (ML-DSA-87 + secp256k1) comme l'exigent les deux réseaux, avec une clé dérivée de `--mnemonic` / `QORE_MNEMONIC` et confrontée à la chaîne, ou `--pqc-seed` / `QORE_PQC_SEED_HEX` accompagné de `--key` ; sans l'une d'elles, la commande refuse d'envoyer. Dans la 0.7.0 et les versions antérieures, ces commandes signaient en classique uniquement et les réseaux refusaient chacune d'elles ; mettez à jour, ou utilisez un projet généré (ses scripts signent de façon hybride), le RDK TypeScript avec un `pqcKeypair`, ou la CLI de la chaîne. Les lectures, `doctor`, `params`, `receipt` et `--dry-run` n'ont jamais eu besoin de clé. Non testé en conditions réelles : aucun rollup n'existe.
 * **Certains utilitaires de `qorollup` n'ont encore rien à interroger.** `advise` contre le testnet le 27 octobre a affiché « advisory unavailable » pour les surfaces de frais, de réseau, de fraude et d'agent RL (le nœud répondait 501 ou « method does not exist ») et pour un rollup qui n'existe pas. `suggest` a renvoyé un profil avec `source: fallback`, ce qui indique que la liste par défaut intégrée a été utilisée à la place du service d'assistant. Lisez les avertissements.
 * **`rollup-app` ne diffuse que si vous le demandez.** Il s'exécute à blanc par défaut ; avec `QORE_BROADCAST=1`, il enregistre une fois la clé ML-DSA-87 du compte et signe de façon hybride. Ses valeurs d'exemple de rollup sont illustratives : prenez les vrais noms de profils et le stake dans [Profils prédéfinis](/rollups/preset-profiles).
 * **`fullstack-web` affiche une erreur sur son bouton de tokenomics.** Ce panneau appelle une méthode JSON-RPC `qor_` que les points de terminaison publics ne servent pas ; la consultation du solde fonctionne. Remplacez-le par une lecture REST telle que `client.rest.getBurnStats()`.

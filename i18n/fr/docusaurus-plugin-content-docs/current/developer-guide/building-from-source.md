@@ -68,6 +68,8 @@ QoreChain suit un modèle **open-core** :
 
 Les deux compilations produisent un binaire portant le même nom `qorechaind` et exposent les mêmes commandes CLI. La différence réside dans le comportement à l'exécution de la logique des keepers derrière ces interfaces.
 
+Le tag `v3.2.5` de [github.com/qorechain/qorechain-core](https://github.com/qorechain/qorechain-core) est la source open-core de la version qu'exécute le mainnet. La compilation publique utilise des keepers factices (stub) et ne peut pas reproduire l'état de consensus ; un nœud doit donc utiliser le bundle de release nommé dans le manifeste (`latest.json` sur [download.qore.host](https://download.qore.host/mainnet/latest.json)), et non un binaire compilé à partir de ce tag.
+
 ## Compilation communautaire
 
 ```bash

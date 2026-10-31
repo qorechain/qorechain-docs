@@ -20,7 +20,7 @@ karar vermez — sizin `validate` fonksiyonunuzu çağırır ve döndürdüğün
 göre hareket eder.
 
 :::caution Erken aşama: henüz izlenecek bir şey yok
-Watchtower yığınları RDK REST istemcisi aracılığıyla okur ve `/qorechain/rdk/v1/…` rotaları her iki ağda da sunulmaktadır. Hiçbir ağda rollup oluşturulmamıştır (27 Ekim 2026 itibarıyla kontrol edildi), dolayısıyla henüz izlenecek bir şey yoktur ve Watchtower canlı bir yığına karşı çalıştırılmamıştır. `@qorechain/rdk` 0.5.0 sürümünde son tarih mantığı yanlıştı (bir blok yüksekliğini Unix zaman damgası olarak okuyordu; bu yüzden `onDeadline` bir yığın ilk görüldüğü anda tetikleniyordu) ve yalnızca 50 yığınlık ilk sayfayı okuyordu; **0.6.0 ikisini de düzeltti** (aşağıya bakın). Güncel sürüm olan 0.7.0'ı kullanın.
+Watchtower yığınları RDK REST istemcisi aracılığıyla okur ve `/qorechain/rdk/v1/…` rotaları her iki ağda da sunulmaktadır. Hiçbir ağda rollup oluşturulmamıştır (27 Ekim 2026 itibarıyla kontrol edildi), dolayısıyla henüz izlenecek bir şey yoktur ve Watchtower canlı bir yığına karşı çalıştırılmamıştır. `@qorechain/rdk` 0.5.0 sürümünde son tarih mantığı yanlıştı (bir blok yüksekliğini Unix zaman damgası olarak okuyordu; bu yüzden `onDeadline` bir yığın ilk görüldüğü anda tetikleniyordu) ve yalnızca 50 yığınlık ilk sayfayı okuyordu; **0.6.0 ikisini de düzeltti** (aşağıya bakın). Güncel sürüm olan 0.8.0'ı kullanın (Watchtower'ın kendisi en son 0.7.0'da değişti).
 :::
 
 ## `watchBatches`
@@ -32,7 +32,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.8.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;

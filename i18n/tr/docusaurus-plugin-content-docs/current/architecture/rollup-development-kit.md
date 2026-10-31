@@ -152,7 +152,7 @@ QoreChain L1 önericileri rollup işlemlerini sıralar.
 QoreChain'in kendi içinde zincir üstü KV-deposu blob depolaması.
 
 :::caution Henüz blob göndermenin genel bir yolu yok
-Modül blob depolamayı, saklamayı ve budamayı tanımlar, ancak mevcut sürümlerde bir blob göndermek için işlem mesajı yoktur. `native` veya `both` rollup üzerinde bir veri karması belirten bir parti, eşleşen hiçbir blob saklanamayacağı için reddedilir. Bkz. [Veri Erişilebilirliği](/rollups/data-availability). Bu nedenle yerel veri erişilebilirliğinde bir parti `data_hash` alanını boş bırakmalıdır; RDK istemcisi (0.7.0) bunu yapar ve zincir bir tane iddia eden partiyi reddeder.
+Modül blob depolamayı, saklamayı ve budamayı tanımlar, ancak mevcut sürümlerde bir blob göndermek için işlem mesajı yoktur. `native` veya `both` rollup üzerinde bir veri karması belirten bir parti, eşleşen hiçbir blob saklanamayacağı için reddedilir. Bkz. [Veri Erişilebilirliği](/rollups/data-availability). Bu nedenle yerel veri erişilebilirliğinde bir parti `data_hash` alanını boş bırakmalıdır; RDK istemcisi (0.8.0) bunu yapar ve zincir bir tane iddia eden partiyi reddeder.
 :::
 
 | Parametre            | Değer                                                                                               |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Parti kanonik olarak kabul edildi                 |
 | **Rejected**   | Parti, başarılı bir itiraz ile geçersiz kılındı   |
 
-RDK 0.6.1 ve sonraki davranışı (güncel sürüm 0.7.0): optimistic bir rollup için istemci, durum kökü zincirin kanonik geçiş kökü (RDK'de `batchTransitionRoot`) olan bir parti oluşturur; kendi belirlediğiniz serbest biçimli bir değer değildir.
+RDK 0.6.1 ve sonraki davranışı (güncel sürüm 0.8.0): optimistic bir rollup için istemci, durum kökü zincirin kanonik geçiş kökü (RDK'de `batchTransitionRoot`) olan bir parti oluşturur; kendi belirlediğiniz serbest biçimli bir değer değildir.
 
 ### Otomatik Kesinleştirme Kuralları
 
@@ -264,7 +264,7 @@ Kayıt **ölümcül değildir**: başarısız olursa (yetersiz bakiye veya sın�
 Bir uzlaşma partisi `x/multilayer`'a demirlenebilir; bu, rollup oluşturucusunun kuantum sonrası imzası altında katman kimliğini, katman yüksekliğini (parti indeksi), durum kökünü, doğrulayıcı kümesi karmasını ve işlem sayısını kaydeder.
 
 * **v3.2.2'den beri (mainnet ve testnet'te canlı):** `MsgSubmitBatch` iki isteğe bağlı alana sahiptir. `anchor_signature`, oluşturucunun partinin **v2 demir imza baytları** üzerindeki ML-DSA-87 imzasıdır ([Bağlantıları Okuma](/architecture/multilayer-architecture#reading-anchors) bölümüne bakın); mevcut olduğunda parti `x/multilayer` içinde **aynı işlemde** demirlenir ve reddedilen bir demir partiyi de reddeder. `validator_set_hash`, demirde taşınan ve imzayla kapsanan rollup'ın doğrulayıcı kümesi taahhüdüdür. CLI'da: `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` imzalanacak baytları yazdırır (`<layer-id>`, rollup'ın katman kimliğidir; RDK ile oluşturulan rollup'larda rollup kimliğine eşittir) ve `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` bunları gönderir.
-* **İmza olmadan** parti, eskisi gibi demirlenmeden uzlaştırılır. Alanı göndermeyen bir istemci demirlenmemiş partiler üretir, bu nedenle kullandığınız araç setinin bunu desteklediğini kontrol edin: TypeScript `@qorechain/rdk` 0.6.0, istemcisi hibrit imzaladığında ve rollup'ın oluşturucusu olduğunda demiri imzalar (aksi halde demirlenmeden gönderir); Python, Go, Rust ve Java istemcileri ise alanı oluşturmaz. Her iki ağda da henüz hiçbir rollup, katman veya demir yoktur, dolayısıyla hiçbir demir yazılmamıştır ve bu yol canlıda test edilmemiştir.
+* **İmza olmadan** parti, eskisi gibi demirlenmeden uzlaştırılır. Alanı göndermeyen bir istemci demirlenmemiş partiler üretir, bu nedenle kullandığınız araç setinin bunu desteklediğini kontrol edin: TypeScript `@qorechain/rdk` 0.6.0, istemcisi hibrit imzaladığında ve rollup'ın oluşturucusu olduğunda demiri imzalar (aksi halde demirlenmeden gönderir); Python, Go, Rust ve Java istemcileri (0.8.0'dan itibaren hibrit imzalarlar) ise alanı oluşturmaz (Python için kontrol edildi). Her iki ağda da henüz hiçbir rollup, katman veya demir yoktur, dolayısıyla hiçbir demir yazılmamıştır ve bu yol canlıda test edilmemiştir.
 
 Bir demirin neyi kanıtlayıp neyi kanıtlamadığı için [Uzlaşma Makbuzları](/rollups/settlement-receipts) bölümüne bakın.
 

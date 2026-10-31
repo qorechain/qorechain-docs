@@ -19,7 +19,7 @@ betrügerisch ist — er ruft deine `validate`-Funktion auf und handelt anhand
 dessen, was du zurückgibst.
 
 :::caution Frühes Stadium: noch nichts zu beobachten
-Der Watchtower liest Batches über den RDK-REST-Client, und die Routen `/qorechain/rdk/v1/…` werden auf beiden Netzwerken bereitgestellt. In keinem der beiden Netzwerke wurde ein Rollup erstellt (geprüft am 27. Oktober 2026), es gibt also noch nichts zu beobachten, und der Watchtower ist noch nie gegen einen Live-Batch gelaufen. In `@qorechain/rdk` 0.5.0 war seine Fristlogik falsch (sie las eine Blockhöhe als Unix-Zeitstempel, sodass `onDeadline` ausgelöst wurde, sobald ein Batch zum ersten Mal gesehen wurde), und er las nur die erste Seite mit 50 Batches; **0.6.0 hat beides behoben** (siehe unten). Verwende 0.7.0, das aktuelle Release.
+Der Watchtower liest Batches über den RDK-REST-Client, und die Routen `/qorechain/rdk/v1/…` werden auf beiden Netzwerken bereitgestellt. In keinem der beiden Netzwerke wurde ein Rollup erstellt (geprüft am 27. Oktober 2026), es gibt also noch nichts zu beobachten, und der Watchtower ist noch nie gegen einen Live-Batch gelaufen. In `@qorechain/rdk` 0.5.0 war seine Fristlogik falsch (sie las eine Blockhöhe als Unix-Zeitstempel, sodass `onDeadline` ausgelöst wurde, sobald ein Batch zum ersten Mal gesehen wurde), und er las nur die erste Seite mit 50 Batches; **0.6.0 hat beides behoben** (siehe unten). Verwende 0.8.0, das aktuelle Release (der Watchtower selbst hat sich zuletzt in 0.7.0 geändert).
 :::
 
 ## `watchBatches`
@@ -31,7 +31,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.8.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;

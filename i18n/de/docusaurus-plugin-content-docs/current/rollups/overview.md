@@ -18,7 +18,7 @@ Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**, live seit dem 7. Juni
 ## Innovationen {#innovations}
 
 * **Post-Quanten-Settlement-Quittungen.** Der State Anchor eines Batches wird mit ML-DSA-87 durch den registrierten Schlüssel des Rollup-Erstellers signiert. `verifySettlementReceipt` liest jedes Feld der Quittung erneut von der Chain (Rollup, Layer, Batch-Root und den Anker: State Root, Layer-Höhe, Höhe der Main Chain, Ankerzeit, Hash des Validator-Sets, Transaktionsanzahl, Beweis, Signatur). Der verifizierende Schlüssel stammt von der Chain und nie aus der Quittung; die Quittung muss das Netzwerk nennen, das Sie abfragen; eine unbekannte Quittungsversion oder ein anderer Algorithmus als ML-DSA-87 wird vor jedem Lesezugriff abgelehnt; und eine reine Signaturprüfung wird nie als gültig gemeldet. Die Ankernachricht hat unterhalb der Höhe von Chain v3.2.2 eine erste Form und ab dieser Höhe eine zweite Form, die zusätzlich die Chain-ID bindet; die Version wird anhand der Höhe des Ankers gewählt. Siehe [Settlement-Quittungen](/rollups/settlement-receipts).
-* **Hybrides Signieren mit zwei Schlüsselableitungen.** Transaktionen werden mit secp256k1 plus ML-DSA-87 signiert. Der Post-Quanten-Schlüssel wird aus der Mnemonic sowohl auf kanonische Weise (SHAKE-256 über `qorechain:pqc:v1|`, die Adresse und die Mnemonic) als auch auf die Legacy-Weise abgeleitet, und der Client verwendet denjenigen Schlüssel, den die Chain für das Konto registriert hat. Heute signiert nur der TypeScript-Client hybrid.
+* **Hybrides Signieren mit zwei Schlüsselableitungen.** Transaktionen werden mit secp256k1 plus ML-DSA-87 signiert. Der Post-Quanten-Schlüssel wird aus der Mnemonic sowohl auf kanonische Weise (SHAKE-256 über `qorechain:pqc:v1|`, die Adresse und die Mnemonic) als auch auf die Legacy-Weise abgeleitet, und der Client verwendet denjenigen Schlüssel, den die Chain für das Konto registriert hat. Die Clients für Python, Go, Rust und Java signieren ab 0.8.0 hybrid und die CLI ab 0.7.1; davor tat dies nur der TypeScript-Client.
 * **Abhebungsbeweise, gebaut wie die Chain sie baut.** `withdrawalsTree` (0.7.0, alle fünf Sprachen) baut die Abhebungs-Root eines Batches und jeden Beweis genau so wie die Chain: Die Blattposition ist der Abhebungsindex, die Knoten werden mit SHAKE-256 gehasht, und Batches ab Chain v3.2.5 verwenden Blätter der zweiten Form, die zusätzlich die Chain-ID nennen. Es wurde gegen Vektoren getestet, die vom eigenen Code der Chain erzeugt wurden, und jeder Beweis in diesen Vektoren wird vom Verifizierer der Chain akzeptiert. `qorollup withdraw` bricht vor dem Bezahlen einer Gebühr ab, wenn sein Ergebnis nicht dem On-Chain-Wert `withdrawals_root` des Batches entspricht.
 * **Kanonische Transition Root.** `batchTransitionRoot` berechnet exakt die State Root, nach der die Chain einen optimistischen Batch beurteilt (die heute im Mainnet angewendete Form ist eine SHAKE-256-Verpflichtung auf die vorherige State Root, den Daten-Hash und die Transaktionsanzahl; `transitionRootVersionFor` wählt die Form, die das verbundene Netzwerk anwendet), und `fraudProof` baut daraus den 64-Byte-Beweis. Beides wurde gegen Vektoren getestet, die vom eigenen Code der Chain erzeugt wurden.
 * **Chain-exakte Challenge-Fenster.** `batchChallengeWindow` berechnet das Fenster eines Batches so, wie es die Chain tut (zeitbasiert: offen, solange die Blockzeit unter der Einreichungszeit plus Fenster liegt; bei älteren Batches das Fenster geteilt durch sechs, in Blöcken ab der Einreichungshöhe), und beurteilt es gegen die Chain-Spitze aus dem RPC `/status`, nicht gegen die lokale Uhr. Der [Watchtower](/rollups/watchtower) und der Health-Monitor verwenden es. Ab 0.7.0 meldet `getRollupHealth` zusätzlich `heldBackBy`, wenn die Finalität in Reihenfolge der Chain (v3.2.5, beide Netzwerke, siehe [Verhalten von Chain v3.2.5](#v325)) einen Batch zurückhält, und `qorollup watchtower --canonical` meldet die Batches, bei denen eine Anfechtung gewinnen würde.
@@ -28,7 +28,7 @@ Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**, live seit dem 7. Juni
 
 ## Anwendung {#how-to-use}
 
-Lesezugriffe brauchen weder einen Schlüssel noch Guthaben. Die folgenden Snippets lesen die Live-Parameter des Moduls `rdk` und die Liste der Rollups im öffentlichen Testnet (`qorechain-diana`) und wurden am 27. Oktober 2026 aus den veröffentlichten Paketen ausgeführt (die aktuelle Version ist 0.7.0; das TypeScript-Snippet und die Kommandozeile wurden mit 0.7.0 aus npm erneut ausgeführt, und der Developer Hub verzeichnet die Snippets für Python, Rust, Go und Java als bestanden gegen dasselbe Release). Jedes gab die Testnet-Parameter aus (maximale Rollups 200, Mindest-Stake 10.000 QOR, Burn-Rate bei der Erstellung 0,01, Standard-Challenge-Fenster 3.600 Sekunden, maximale DA-Blob-Größe 2.097.152 Byte, Blob-Aufbewahrung 432.000 Blöcke, höchstens 10 Batches pro Block) und `0 rollups`.
+Lesezugriffe brauchen weder einen Schlüssel noch Guthaben. Die folgenden Snippets lesen die Live-Parameter des Moduls `rdk` und die Liste der Rollups im öffentlichen Testnet (`qorechain-diana`) und wurden am 27. Oktober 2026 aus den veröffentlichten Paketen ausgeführt (diese Läufe verwendeten 0.7.0; die aktuelle Version ist 0.8.0, die den Clients für Python, Go, Rust und Java hybrides Signieren hinzufügt und die hier gezeigten Lese-Aufrufe unverändert lässt, aber die Snippets wurden damit nicht erneut ausgeführt). Jedes gab die Testnet-Parameter aus (maximale Rollups 200, Mindest-Stake 10.000 QOR, Burn-Rate bei der Erstellung 0,01, Standard-Challenge-Fenster 3.600 Sekunden, maximale DA-Blob-Größe 2.097.152 Byte, Blob-Aufbewahrung 432.000 Blöcke, höchstens 10 Batches pro Block) und `0 rollups`.
 
 ### TypeScript (getestet)
 
@@ -76,7 +76,7 @@ Python 3.10 oder neuer. `qorechain-rdk` hängt von `qorechain-pqc` ab, das `libo
 ### Go (getestet)
 
 ```bash
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.7.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
 ```
 
 ```go
@@ -138,7 +138,7 @@ Die Bibliothek heißt `qorechain_rdk`. Getestet mit Rust 1.95, gebaut gegen crat
 
 ```kotlin
 // build.gradle.kts
-implementation("io.github.qorechain:qorechain-rdk:0.7.0")
+implementation("io.github.qorechain:qorechain-rdk:0.8.0")
 ```
 
 ```java
@@ -164,7 +164,7 @@ public class RdkQuickstart {
 }
 ```
 
-JDK 17 oder neuer; getestet mit JDK 21 und Gradle 9.6, aufgelöst aus Maven Central. Die Datei muss `RdkQuickstart.java` heißen. Maven Central liefert 0.6.2 und 0.7.0 aus (geprüft am 27. Oktober 2026).
+Java 21 oder neuer ab 0.8.0 (0.7.1 und früher liefen mit JDK 17); getestet mit JDK 21 und Gradle 9.6, aufgelöst aus Maven Central. Die Datei muss `RdkQuickstart.java` heißen. Maven Central liefert 0.7.0, 0.7.1 und 0.8.0 aus (geprüft am 31. Oktober 2026).
 
 ### Kommandozeile (getestet)
 
@@ -174,7 +174,7 @@ qorollup --version
 qorollup params --network testnet
 ```
 
-`qorollup --version` gibt `0.7.0` aus, und `qorollup params --network testnet` gibt die Live-Modulparameter aus. **Das funktioniert ab 0.6.2.** Die Releases 0.6.1 und früher beendeten sich mit Code 0 und gaben nichts aus, wenn sie aus npm installiert wurden. Der Test installierte `@qorechain/rdk-cli@0.7.0` in einem leeren Projekt und führte es über `node_modules/.bin/qorollup` aus; eine globale Installation und `npx` verwenden denselben Bin-Link. Node 20 oder neuer ist erforderlich.
+`qorollup --version` gibt die installierte Version aus (`0.7.0` im Testlauf), und `qorollup params --network testnet` gibt die Live-Modulparameter aus. **Das funktioniert ab 0.6.2.** Die Releases 0.6.1 und früher beendeten sich mit Code 0 und gaben nichts aus, wenn sie aus npm installiert wurden. Der Test installierte `@qorechain/rdk-cli@0.7.0` in einem leeren Projekt und führte es über `node_modules/.bin/qorollup` aus; eine globale Installation und `npx` verwenden denselben Bin-Link. Node 20 oder neuer ist erforderlich.
 
 ### Ein Projekt aufsetzen (getestet)
 
@@ -183,7 +183,7 @@ npx create-qorechain-rollup my-rollup --template nft-rollup --network testnet --
 cd my-rollup && npm run doctor
 ```
 
-Die Templates sind `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup` und `multivm-rollup`. Das aufgesetzte Projekt hängt von `@qorechain/rdk` `^0.7.0` ab. Das Aufsetzen von `nft-rollup` mit dem Scaffolder 0.6.1 erzeugte ein Projekt, dessen `npm run doctor` gegen das Testnet durchlief (REST erreichbar, Parameter lesbar, Netzwerk `qorechain-diana`; es warnt vor Celestia-Datenverfügbarkeit und einem fehlenden Signer); das Aufsetzen von `defi-rollup` und `npm run typecheck` liefen am 27. Oktober 2026 mit dem aktuellen Release erneut durch. **Verwenden Sie `defi-rollup` noch nicht, um ein Rollup zu starten** (siehe [Einschränkungen](#limits)). Um ein Rollup zu erstellen und Batches einzureichen, folgen Sie [Ein Rollup deployen](/rollups/deploying-a-rollup); Transaktionen benötigen einen registrierten Post-Quanten-Schlüssel und im RDK den TypeScript-Client mit einem `pqcKeypair`.
+Die Templates sind `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup` und `multivm-rollup`. Das aufgesetzte Projekt hängt von `@qorechain/rdk` `^0.8.0` ab (`^0.7.0` vor 0.8.0). Das Aufsetzen von `nft-rollup` mit dem Scaffolder 0.6.1 erzeugte ein Projekt, dessen `npm run doctor` gegen das Testnet durchlief (REST erreichbar, Parameter lesbar, Netzwerk `qorechain-diana`; es warnt vor Celestia-Datenverfügbarkeit und einem fehlenden Signer); das Aufsetzen von `defi-rollup` und `npm run typecheck` liefen am 27. Oktober 2026 mit dem aktuellen Release erneut durch. **Verwenden Sie `defi-rollup` noch nicht, um ein Rollup zu starten** (siehe [Einschränkungen](#limits)). Um ein Rollup zu erstellen und Batches einzureichen, folgen Sie [Ein Rollup deployen](/rollups/deploying-a-rollup); Transaktionen benötigen einen registrierten Post-Quanten-Schlüssel und im RDK den TypeScript-Client mit einem `pqcKeypair`.
 
 ## Zugang {#how-to-access}
 
@@ -205,13 +205,13 @@ Beide Netzwerke bedienen die RDK-Abfragen (`/qorechain/rdk/v1/...`) über REST, 
 | **Layer-Stake** | Die Erstellung registriert außerdem den Layer des Rollups im Multilayer-Modul (Mindest-Stake 1.000 QOR). Kann der Layer nicht registriert werden, wird das Rollup dennoch erstellt, hat aber keinen echten Layer, sodass seine Batches nicht verankert und keine Quittungen ausgestellt werden können. |
 | **Registrierter Post-Quanten-Schlüssel** | Ein für das Konto registrierter ML-DSA-87-Schlüssel. Transaktionen auf der nativen Lane, die nur mit dem klassischen Schlüssel signiert sind, werden abgelehnt. |
 | **Gebühren** | Die Gebührenuntergrenze beträgt 0,1 uqor pro Gas-Einheit; setzen Sie Gaslimit und Gebühr gemeinsam. |
-| **Tooling** | Node 20 oder neuer für die CLI und den Scaffolder; Python 3.10 oder neuer (mit `liboqs`, siehe oben) für den Python-Client; JDK 17 oder neuer für Java; das Go-Modul `github.com/qorechain/qorechain-rdk/packages/go`. |
+| **Tooling** | Node 20 oder neuer für die CLI und den Scaffolder; Python 3.10 oder neuer (mit `liboqs`, siehe oben) für den Python-Client; Java 21 oder neuer für Java (ab RDK 0.8.0); das Go-Modul `github.com/qorechain/qorechain-rdk/packages/go`. |
 
 Für Lesezugriffe braucht man nichts davon. Sie können ein Rollup auch über das Dashboard anfordern (ein Anfrageformular, keine On-Chain-Transaktion) oder mit der Chain-CLI erstellen; den vollständigen Ablauf, die CLI-Befehle und den TypeScript-Signierpfad finden Sie unter [Ein Rollup deployen](/rollups/deploying-a-rollup).
 
 ### Verhalten von Chain v3.2.5: live in beiden Netzwerken {#v325}
 
-Chain v3.2.5 ist im Mainnet live (angewendet auf Höhe 3.906.833 am 29. Oktober 2026, Governance-Vorschlag 14) und im Testnet (seit dem 26. Oktober 2026). Das Testnet läuft mit v3.2.6, die sie enthält. RDK 0.7.0 unterstützt beide. Diese Regeln gelten in beiden Netzwerken; im Mainnet wurde noch kein Rollup erstellt (`GET /qorechain/rdk/v1/rollups` liefert eine leere Liste, geprüft am 30. Oktober 2026), sodass die folgenden Regeln die Regeln des Releases sind und von einem live betriebenen Mainnet-Rollup noch nicht erprobt wurden. Für einen Rollup-Entwickler:
+Chain v3.2.5 ist im Mainnet live (angewendet auf Höhe 3.906.833 am 29. Oktober 2026, Governance-Vorschlag 14) und im Testnet (seit dem 26. Oktober 2026). Das Testnet läuft mit v3.2.6, die sie enthält. RDK 0.7.0 und neuer unterstützen beide. Diese Regeln gelten in beiden Netzwerken; im Mainnet wurde noch kein Rollup erstellt (`GET /qorechain/rdk/v1/rollups` liefert eine leere Liste, geprüft am 30. Oktober 2026), sodass die folgenden Regeln die Regeln des Releases sind und von einem live betriebenen Mainnet-Rollup noch nicht erprobt wurden. Für einen Rollup-Entwickler:
 
 | Verhalten | Beide Netzwerke (v3.2.5 und später) |
 | --------- | -------------------------------- |
@@ -233,7 +233,7 @@ Was weiterhin nur im Testnet gilt, ist v3.2.6 (zum Beispiel das IBC-Ratenlimit, 
 | Registrierte Rollups (Mainnet und Testnet) | Keine |
 | Modul `x/rdk` und seine Parameter | Auf beiden Netzwerken bereitgestellt; lesen Sie sie mit `qorechaind query rdk config` |
 | RDK-Abfragen | Auf beiden Netzwerken über die CLI, gRPC und REST (`/qorechain/rdk/v1/...`) verfügbar, sodass REST-basierte Lesezugriffe wie das TypeScript-`rdk.params()` gegen das Mainnet funktionieren |
-| Vom RDK geschriebene Settlement-Anker | Keine. Seit v3.2.2 kann ein Batch eine `anchor_signature` tragen und wird dann in derselben Transaktion in `x/multilayer` verankert; ohne sie wird der Batch unverankert abgewickelt. Es existiert noch kein Rollup, kein Layer und kein Anker. Das TypeScript-RDK (0.6.0 bis 0.7.0) sendet das Feld, wenn sein Client hybrid signiert und der Ersteller des Rollups ist (live nicht getestet); die Clients für Python, Go, Rust und Java senden es nicht |
+| Vom RDK geschriebene Settlement-Anker | Keine. Seit v3.2.2 kann ein Batch eine `anchor_signature` tragen und wird dann in derselben Transaktion in `x/multilayer` verankert; ohne sie wird der Batch unverankert abgewickelt. Es existiert noch kein Rollup, kein Layer und kein Anker. Das TypeScript-RDK (0.6.0 und neuer) sendet das Feld, wenn sein Client hybrid signiert und der Ersteller des Rollups ist (live nicht getestet); die Clients für Python, Go, Rust und Java signieren ab 0.8.0 hybrid, senden das Feld aber nicht (für Python geprüft) |
 | In `x/multilayer` registrierte Rollup-Layer | Keine |
 | ZK-Settlement | Kann auf keinem der beiden Netzwerke bisher genutzt werden (keine Möglichkeit, einen Verifikationsschlüssel zu registrieren; für Chain v3.2.7 geplant) |
 | Abhebungen | Werden seit v3.2.3 aus einem Escrow-Ledger je Rollup ausgezahlt (siehe [ZK / STARK & Abhebungen](/rollups/zk-stark-withdrawals)); es wurde keine vorgenommen, da kein Rollup existiert |
@@ -246,28 +246,28 @@ Versionen auf den Registries am 27. Oktober 2026 geprüft. Alle Pakete stehen un
 
 | Registry | Paket | Aktuelle Version | Link |
 | -------- | ------- | --------------- | ---- |
-| npm | `@qorechain/rdk` (TypeScript-Client) | 0.7.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
-| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.7.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
-| npm | `create-qorechain-rollup` (Scaffolder) | 0.7.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
-| PyPI | `qorechain-rdk` (Import `qorrdk`) | 0.7.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
-| crates.io | `qorechain-rdk` (Bibliothek `qorechain_rdk`) | 0.7.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
-| Go-Modul-Proxy | `github.com/qorechain/qorechain-rdk/packages/go` | v0.7.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
-| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.7.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
+| npm | `@qorechain/rdk` (TypeScript-Client) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
+| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
+| npm | `create-qorechain-rollup` (Scaffolder) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
+| PyPI | `qorechain-rdk` (Import `qorrdk`) | 0.8.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
+| crates.io | `qorechain-rdk` (Bibliothek `qorechain_rdk`) | 0.8.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
+| Go-Modul-Proxy | `github.com/qorechain/qorechain-rdk/packages/go` | v0.8.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
+| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.8.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
 
-Maven Central liefert 0.6.2 und 0.7.0 sowie frühere Versionen aus, und das `@latest` des Go-Proxys kann einem neuen Tag hinterherhinken, daher sollten Sie die Go-Version festlegen. Der Quellcode ist öffentlich unter [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk), die Release-Hinweise stehen unter [v0.7.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.0), und die eigene Dokumentation des Kits befindet sich unter [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/). Das TypeScript-Paket hängt von `@qorechain/sdk` `^0.10.0` (ab 0.7.0; 0.6.x verwendete `^0.9.0`) und `@qorechain/evm` `^0.8.0` ab, und das Python-Paket von `qorechain-pqc` 0.2.x. Die Modullogik `x/rdk` der Chain selbst ist nicht Teil des öffentlichen Kits.
+Maven Central liefert 0.7.0, 0.7.1 und 0.8.0 sowie frühere Versionen aus, und das `@latest` des Go-Proxys kann einem neuen Tag hinterherhinken, daher sollten Sie die Go-Version festlegen. Der Quellcode ist öffentlich unter [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk), die Release-Hinweise stehen unter [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0) (und [v0.7.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.1)), und die eigene Dokumentation des Kits befindet sich unter [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/). Das TypeScript-Paket hängt von `@qorechain/sdk` `^0.10.0` (ab 0.7.0; 0.6.x verwendete `^0.9.0`; die Pakete für Python, Go, Rust und Java verwenden ab 0.8.0 das passende QoreChain-SDK 0.10.x) und `@qorechain/evm` `^0.8.0` ab, und das Python-Paket von `qorechain-pqc` 0.2.x. Die Modullogik `x/rdk` der Chain selbst ist nicht Teil des öffentlichen Kits.
 
 ## Einschränkungen und bekannte Probleme {#limits}
 
 * **ZK-Settlement kann auf keinem der beiden Netzwerke bisher genutzt werden.** Das betrifft das Profil `defi`, das Template `defi-rollup` und jedes mit `zk`-Settlement erstellte Rollup. Die Chain hat keine Möglichkeit, einen Verifikationsschlüssel für ein Rollup zu registrieren, sodass jeder ZK-Batch abgelehnt wird, nachdem seine Gebühr bezahlt wurde. Die Schlüsselregistrierung ist für Chain v3.2.7 geplant. Verwenden Sie bis dahin `optimistic`-Settlement (siehe [ZK / STARK & Abhebungen](/rollups/zk-stark-withdrawals)).
 * **Auf keinem Netzwerk wurde ein Rollup erstellt.** Die Pfade für Erstellen, Batch, Challenge, Quittung und Abhebung sind durch Unit-Tests und gemeinsame Vektoren abgedeckt, wurden aber on-chain nicht erprobt.
-* **Nur der TypeScript-Client signiert hybride Transaktionen.** Die Transaktionspfade für Python, Go, Rust und Java sowie die Transaktionsbefehle von `qorollup` (`create`, `pause`, `resume`, `stop`, `withdraw`) signieren nur klassisch, was beide Netzwerke ablehnen. Ihre Lesezugriffe funktionieren. Für Transaktionen aus diesen Clients bauen Sie die Nachricht und signieren sie gemeinsam mit der Chain-CLI, oder verwenden Sie den TypeScript-Client mit einem `pqcKeypair`.
+* **Hybrides Signieren braucht Ihren Post-Quanten-Schlüssel.** Ab RDK 0.8.0 signieren alle fünf Clients hybrid, wenn ihnen ein Post-Quanten-Schlüsselpaar übergeben wird, und die Transaktionsbefehle von `qorollup` (`create`, `pause`, `resume`, `stop`, `withdraw`) tun dies ab 0.7.1; ohne Schlüssel oder in früheren Versionen ist eine Transaktion nur klassisch signiert, und beide Netzwerke lehnen sie ab. Keine hybride Transaktion eines Clients wurde über ein Live-Rollup gesendet. Verankerte Batches sendet nur der TypeScript-Client.
 * **(a) Die CLI `qorollup` gab in 0.6.1 und früher nichts aus, wenn sie aus npm installiert wurde.** Das ist **in 0.6.2 behoben**: Nach `npm i -g @qorechain/rdk-cli` funktioniert `qorollup ...`, und `qorollup --version` gibt 0.6.2 aus.
 * **(b) Die Merkle-Helfer für Abhebungen verwendeten in 0.6.2 und früher standardmäßig SHA-256, während die Chain SHAKE-256 verwendet.** Ein mit diesen Standardwerten gebauter Beweis wurde on-chain nie verifiziert. **In 0.7.0 behoben:** `withdrawalsTree` baut den exakten Baum der Chain und wurde gegen den eigenen Verifizierer der Chain geprüft (siehe [Blatt- und Knoten-Kodierung](/rollups/zk-stark-withdrawals#leaf-and-node-encoding)). Aktualisieren Sie; Code, der sich auf die SHA-256-Standardwerte stützte, muss jetzt `hash` ausdrücklich übergeben.
 * **(c) `buildDaBlob` hashte in 0.6.2 und früher mit SHA-256, während die Blob-Verpflichtung der Chain SHAKE-256 ist.** **In 0.7.0 behoben**, wo seine Verpflichtung die der Chain ist. Es hatte nie eine praktische Wirkung, da keine Transaktion einen Blob veröffentlicht; lassen Sie `dataHash` bei `native` und `both` Datenverfügbarkeit leer (siehe [Datenverfügbarkeit](/rollups/data-availability)).
 * **(d) Die Demo-Schaltung des Templates `defi` kann nicht verifizieren.** Es ist ein `snarkjs`-Multiplikator, und die Chain prüft Groth16 über BLS12-381 mit der vorherigen State Root, der State Root und dem Daten-Hash als öffentlichen Eingaben, die diese Schaltung nicht bereitstellt. Selbst nachdem die Schlüsselregistrierung ausgeliefert ist, benötigen Sie Ihre eigene Schaltung.
 * **Jedes Konto kann eine Anfechtung auflösen (v3.2.5 und später, beide Netzwerke).** Die Chain prüft den Fraud Proof selbst; vor v3.2.5 konnte nur der Ersteller des Rollups die Auflösung einreichen (siehe [Verhalten von Chain v3.2.5](#v325) und [Optimistic](#optimistic)).
 * **Auf den Live-Netzwerken nicht nutzbar:** Celestia-Datenverfügbarkeit (nicht implementiert), der [QCAI Rollup Copilot](/rollups/qcai-copilot) (seine Beratungsdienste sind auf den öffentlichen Endpunkten nicht verfügbar), Cross-VM-Aufrufe (das Precompile unter `0x...0901` ist nicht aktiv), gemeinsame und Based-Sequencer (die Chain lässt nur den konfigurierten Sequencer zu oder, wenn keiner gesetzt ist, den Ersteller) und `suggest-profile` (es liefert `defi` als festen Fallback).
-* **Versionshinweise.** Verwenden Sie 0.7.0 für alles: 0.6.2 und früher bauen Abhebungsbeweise, die on-chain nie verifiziert werden, und 0.6.1 und früher geben nichts aus `qorollup` aus, wenn es aus npm installiert wurde. 0.5.0 und früher sollten nicht für Quittungen, den Watchtower oder Cross-VM-Calldata verwendet werden. Die vollständige Liste dessen, was jedes Release geändert hat, steht unter [RDK 0.7.0: Änderungen und Einschränkungen](/rollups/deploying-a-rollup#rdk-050-limits).
+* **Versionshinweise.** Verwenden Sie 0.8.0 für alles (0.7.0 und früher können keine `qorollup`-Transaktionen senden, die die Netzwerke akzeptieren, und vor 0.8.0 können die Clients für Python, Go, Rust und Java gar keine Transaktion senden): 0.6.2 und früher bauen Abhebungsbeweise, die on-chain nie verifiziert werden, und 0.6.1 und früher geben nichts aus `qorollup` aus, wenn es aus npm installiert wurde. 0.5.0 und früher sollten nicht für Quittungen, den Watchtower oder Cross-VM-Calldata verwendet werden. Die vollständige Liste dessen, was jedes Release geändert hat, steht unter [RDK 0.8.0: Änderungen und Einschränkungen](/rollups/deploying-a-rollup#rdk-050-limits).
 
 ---
 

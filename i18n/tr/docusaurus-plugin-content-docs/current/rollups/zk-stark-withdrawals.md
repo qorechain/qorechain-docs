@@ -92,7 +92,7 @@ qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain
 * Her kardeş hash tam olarak 32 bayt olmalıdır.
 * **Para çekme kökü (zincir v3.2.5'ten itibaren, her iki ağda):** bir yığının `withdrawals_root` değeri ya boştur ya da tam olarak 32 bayttır; v3.2.5'ten önce bu uzunluk kuralı uygulanmıyordu.
 
-Bu ağacı elle kurmayın. `@qorechain/rdk` 0.7.0'daki `withdrawalsTree` (ve Python, Go, Rust ve Java karşılıkları) bir yığının para çekme kökünü ve her kanıtı tam olarak zincirin yaptığı gibi oluşturur ve zincirin kendi doğrulayıcısına karşı kontrol edilmiştir; `assembleWithdrawalProof` varsayılan olarak zincirin ağacını oluşturur ve genel Merkle yardımcıları artık varsayılan olarak SHAKE-256 kullanır.
+Bu ağacı elle kurmayın. `@qorechain/rdk` 0.7.0 ve sonrasındaki `withdrawalsTree` (ve Python, Go, Rust ve Java karşılıkları) bir yığının para çekme kökünü ve her kanıtı tam olarak zincirin yaptığı gibi oluşturur ve zincirin kendi doğrulayıcısına karşı kontrol edilmiştir; `assembleWithdrawalProof` varsayılan olarak zincirin ağacını oluşturur ve genel Merkle yardımcıları artık varsayılan olarak SHAKE-256 kullanır.
 
 :::caution 0.7.0 öncesi sürümler
 `@qorechain/rdk` 0.6.2 ve öncesinde genel `binaryMerkleRoot` / `binaryMerkleProof` yardımcıları (ve Python, Go, Rust ve Java karşılıkları) varsayılan olarak tek düğümleri çoğaltan SHA-256 kullanıyor ve her yaprağı yeniden hash'liyordu; oysa zincir SHAKE-256 kullanır ve yapraklarını para çekme işleminden kurar, bu yüzden bu varsayılanlarla oluşturulan bir kanıt zincir üstünde hiçbir zaman doğrulanmadı. 0.7.0'a yükseltin veya hash'i ve yaprak kodlamasını yukarıdaki kurallara göre geçersiz kılın, aksi halde kanıt zincir üstünde doğrulanmaz.

@@ -152,7 +152,7 @@ Proponenții L1 QoreChain secvențiază tranzacțiile rollup-ului.
 Stocare de blob-uri în KV-store on-chain în interiorul QoreChain.
 
 :::caution Încă nu există o modalitate publică de a publica un blob
-Modulul definește stocarea, păstrarea și curățarea blob-urilor, dar în versiunile actuale nu există niciun mesaj de tranzacție pentru publicarea unui blob. Un lot care indică un hash de date pe un rollup `native` sau `both` este refuzat deoarece nu poate fi stocat niciun blob corespunzător. Vezi [Disponibilitatea datelor](/rollups/data-availability). Pe disponibilitatea nativă a datelor, un lot trebuie deci să lase `data_hash` gol; clientul RDK (0.7.0) face acest lucru, iar lanțul refuză un lot care pretinde unul.
+Modulul definește stocarea, păstrarea și curățarea blob-urilor, dar în versiunile actuale nu există niciun mesaj de tranzacție pentru publicarea unui blob. Un lot care indică un hash de date pe un rollup `native` sau `both` este refuzat deoarece nu poate fi stocat niciun blob corespunzător. Vezi [Disponibilitatea datelor](/rollups/data-availability). Pe disponibilitatea nativă a datelor, un lot trebuie deci să lase `data_hash` gol; clientul RDK (0.8.0) face acest lucru, iar lanțul refuză un lot care pretinde unul.
 :::
 
 | Parametru            | Valoare                                                                                               |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Lot acceptat ca fiind canonic                       |
 | **Rejected**   | Lot invalidat printr-o contestare reușită         |
 
-Comportamentul RDK 0.6.1 și ulterior (0.7.0 este versiunea curentă): pentru un rollup optimistic, clientul construiește un lot a cărui rădăcină de stare este rădăcina canonică de tranziție a lanțului (`batchTransitionRoot` în RDK), nu o valoare liberă proprie.
+Comportamentul RDK 0.6.1 și ulterior (0.8.0 este versiunea curentă): pentru un rollup optimistic, clientul construiește un lot a cărui rădăcină de stare este rădăcina canonică de tranziție a lanțului (`batchTransitionRoot` în RDK), nu o valoare liberă proprie.
 
 ### Reguli de auto-finalizare
 

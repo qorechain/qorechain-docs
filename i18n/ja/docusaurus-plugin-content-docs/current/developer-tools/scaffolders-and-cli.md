@@ -10,15 +10,15 @@ sidebar_position: 21
 3つのコマンドラインツールで、QoreChain プロジェクトを何もない状態から、型付きでビルド可能な出発点まで進められます。Node.js で作業するアプリケーション開発者（dApp）とロールアップオペレーター向けです。
 
 * **`create-qorechain-dapp`**（0.10.0）は、[QoreChain SDK](/sdk/overview) をベースにした3つのテンプレートから dApp をスキャフォールドします。
-* **`create-qorechain-rollup`**（0.7.0）は、TypeScript の[ロールアップ開発キット](/rollups/overview)をベースにした6つのテンプレートからロールアップのプロジェクトをスキャフォールドします。
-* **`qorollup`** は `@qorechain/rdk-cli` パッケージ（0.7.0）のコマンドで、オペレーター向けのコマンドラインです。プリフライトチェック、ロールアップの作成と監視、ライブパラメータの読み取りを行います。
+* **`create-qorechain-rollup`**（0.8.0）は、TypeScript の[ロールアップ開発キット](/rollups/overview)をベースにした6つのテンプレートからロールアップのプロジェクトをスキャフォールドします。
+* **`qorollup`** は `@qorechain/rdk-cli` パッケージ（0.8.0）のコマンドで、オペレーター向けのコマンドラインです。プリフライトチェック、ロールアップの作成と監視、ライブパラメータの読み取りを行います。
 
 このページは、2026年10月27日に npm からインストールした公開パッケージの内容を反映しています。概念的なガイドは[ロールアップのデプロイ](/rollups/deploying-a-rollup)と [SDK CLI リファレンス](/sdk/reference/cli)です。
 
 ## 革新的な点 {#innovations}
 
 * **CI 向けの非対話型スキャフォールド。** すべてのプロンプトにフラグがあります: `--template`、`--network`、`--package-manager`、`--yes`（デフォルトを受け入れる）、`--no-install`。パイプラインは、ターミナルなしで1つのコマンドからプロジェクトを生成してビルドできます。
-* **テンプレートは最新のパッケージに固定されています。** dApp テンプレートは `@qorechain/sdk` `^0.10.0`（EVM テンプレートは `@qorechain/evm`）に、ロールアップテンプレートは `@qorechain/rdk` `^0.7.0` に依存しています。以前のスキャフォルダー（0.8.0）は、稼働中のネットワークに署名できない SDK に解決される範囲指定を書き出していましたが、現行のものではそうなりません。
+* **テンプレートは最新のパッケージに固定されています。** dApp テンプレートは `@qorechain/sdk` `^0.10.0`（EVM テンプレートは `@qorechain/evm`）に、ロールアップテンプレートは `@qorechain/rdk` `^0.8.0` に依存しています。以前のスキャフォルダー（0.8.0）は、稼働中のネットワークに署名できない SDK に解決される範囲指定を書き出していましたが、現行のものではそうなりません。
 * **ロールアップテンプレートはユースケースごとに有効な設定を備えています。** 各ロールアップテンプレートは、RDK の互換性マトリクスが受け入れる、決済、シーケンサー、データアベイラビリティ、ガス、VM の組み合わせを設定しており、スキャフォルダーは何かを作成する前に、現時点のステークと作成時のバーン額を表示します。
 * **足りないものを名指しするプリフライトコマンド。** `qorollup doctor`（ロールアップテンプレート内では `npm run doctor`）は、REST エンドポイントが応答すること、モジュールパラメータを読み取れること、エンドポイントが指定したネットワークであること、署名者が設定されていることを確認し、チェックごとに1行を出力します。テンプレート内では、ロールアップの設定を互換性マトリクスに照らして検証することもします。
 * **ハイブリッド署名がテンプレートに組み込まれています。** ロールアップテンプレートは、小さな `signer.ts` を通じて接続します。これはニーモニックからアカウントの ML-DSA-87 鍵を導出し（または生の秘密鍵とともにシードを受け取り）、両ネットワークが Native レーンで必須とするハイブリッド署名を行います。`rollup-app` dApp テンプレートも同じことを行い、`QORE_BROADCAST=1` を設定しない限りドライランとして動作します。
@@ -94,7 +94,7 @@ cd my-rollup && npm run typecheck
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # 0.7.0
+qorollup --version          # インストールされているバージョンを表示（現行は 0.8.0）
 qorollup doctor --network testnet
 ```
 
@@ -159,19 +159,19 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | レジストリ | パッケージ | バージョン | リンク |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp`（コマンド `create-qorechain-dapp`） | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup`（コマンド `create-qorechain-rollup`） | 0.7.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli`（コマンド `qorollup`） | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk`（テンプレートが使用するライブラリ） | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup`（コマンド `create-qorechain-rollup`） | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli`（コマンド `qorollup`） | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk`（テンプレートが使用するライブラリ） | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-ソース: https://github.com/qorechain/qorechain-sdk/tree/main/cli（dApp スキャフォルダー）、https://github.com/qorechain/qorechain-rdk/tree/main/cli（ロールアップスキャフォルダー）、https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli（`qorollup`）。RDK の 0.7.0 リリースは PyPI、crates.io、Maven Central、Go モジュールプロキシにも公開されています（2026年10月27日に確認）。いずれも Apache-2.0 です。
+ソース: https://github.com/qorechain/qorechain-sdk/tree/main/cli（dApp スキャフォルダー）、https://github.com/qorechain/qorechain-rdk/tree/main/cli（ロールアップスキャフォルダー）、https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli（`qorollup`）。RDK の 0.8.0 リリースは PyPI、crates.io、Maven Central、Go モジュールプロキシにも公開されています（2026年10月31日に確認）。いずれも Apache-2.0 です。
 
 ## 制限事項と既知の問題 {#limits}
 
 * **テスト実行では、`--network mainnet` を指定しても生成されるファイルは変わりませんでした。** 2026年10月27日に `fullstack-web` と `custom-rollup` を `--network mainnet` でスキャフォールドしたところ、生成された `.env` には依然として localhost のエンドポイント（dApp）、またはテストネットのエンドポイントとともに `QORE_NETWORK=testnet`（ロールアップ）が入っており、dApp の `App.tsx` は `testnet` クライアントを作成していました。ネットワークとエンドポイントは、`.env` で、ウェブテンプレートでは `src/App.tsx` でも、ご自身で設定してください。
-* **どちらのネットワークにも、ロールアップはまだ存在しません**（2026年10月27日に確認）。ロールアップツールのトランザクション経路は、稼働中のロールアップでは一つも実行されていません。すべてをまずテストネットで検証し、[RDK 0.7.0: 変更点と制限事項](/rollups/deploying-a-rollup#rdk-050-limits)をお読みください。
+* **どちらのネットワークにも、ロールアップはまだ存在しません**（2026年10月27日に確認）。ロールアップツールのトランザクション経路は、稼働中のロールアップでは一つも実行されていません。すべてをまずテストネットで検証し、[RDK 0.8.0: 変更点と制限事項](/rollups/deploying-a-rollup#rdk-050-limits)をお読みください。
 * **`defi-rollup` テンプレートはバッチを決済できません。** ZK 決済はどちらのネットワークでもまだ使用できず（鍵の登録はチェーン v3.2.7 で予定されています）、そのデモ用回路は、いずれにしてもチェーンの証明チェックを通過できません。0.7.0 以降、このテンプレートは送信の前で停止するため、チェーンが必ず拒否するバッチに手数料を使うことはなくなりました。状況が変わるまでは、`optimistic` 決済のテンプレートを使用してください（[ZK、STARK、引き出し](/rollups/zk-stark-withdrawals)を参照）。
 * **`multivm-rollup` テンプレートは、まだ稼働していないものに依存しています。** `0x0000000000000000000000000000000000000901` のクロス VM プリコンパイルはどちらのネットワークでも有効ではないため、コントラクトからの呼び出しは何も行いません。テンプレートはこれを確認し、そのコントラクトは黙って失敗するのではなく revert するように書かれています（[マルチ VM](/rollups/multi-vm)を参照）。
-* **`qorollup` のトランザクションコマンドは従来型の署名のみです。** `create`、`pause`、`resume`、`stop`、`withdraw` はポスト量子鍵なしで接続しますが、どちらのネットワークも Native レーンではこれを拒否します。読み取り、`doctor`、`params`、`receipt`、`--dry-run` は影響を受けません。トランザクションを送信するには、スキャフォールドしたプロジェクト（そのスクリプトはハイブリッド署名を行います）、`pqcKeypair` を使った TypeScript の RDK、またはチェーンの CLI を使用してください。
+* **`qorollup` のトランザクションコマンドにはポスト量子鍵が必要です（0.7.1 以降）。** `create`、`pause`、`resume`、`stop`、`withdraw` は、両ネットワークが要求するとおり、ハイブリッド（ML-DSA-87 + secp256k1）で署名します。鍵は `--mnemonic` / `QORE_MNEMONIC` から導出されてチェーンと照合されるか、`--key` と併せた `--pqc-seed` / `QORE_PQC_SEED_HEX` で指定します。鍵がない場合、コマンドは送信を拒否します。0.7.0 以前では、これらのコマンドは従来型のみで署名し、ネットワークはすべてを拒否していました。アップグレードするか、スキャフォールドしたプロジェクト（そのスクリプトはハイブリッド署名を行います）、`pqcKeypair` を使った TypeScript の RDK、またはチェーンの CLI を使用してください。読み取り、`doctor`、`params`、`receipt`、`--dry-run` は鍵を必要としたことがありません。実ネットワークでは未テストです。ロールアップが存在しないためです。
 * **一部の `qorollup` ヘルパーは、まだ接続先がありません。** 10月27日にテストネットに対して実行した `advise` は、手数料、ネットワーク、不正、RL エージェントの各サーフェス（ノードが 501 または "method does not exist" を返しました）と、存在しないロールアップについて「advisory unavailable」と表示しました。`suggest` は `source: fallback` のプロファイルを返しました。これは、アシスタントサービスではなく組み込みのデフォルトリストが使われたことを示します。警告をお読みください。
 * **`rollup-app` は、求めたときだけブロードキャストします。** デフォルトではドライランを実行します。`QORE_BROADCAST=1` を指定すると、アカウントの ML-DSA-87 鍵を一度登録し、ハイブリッド署名を行います。そのサンプルのロールアップ値は例示用です。実際のプロファイル名とステークは[プリセットプロファイル](/rollups/preset-profiles)から取得してください。
 * **`fullstack-web` のトークノミクスボタンはエラーを表示します。** そのパネルは、公開エンドポイントが提供していない `qor_` JSON-RPC メソッドを呼び出しています。残高の取得は動作します。`client.rest.getBurnStats()` のような REST の読み取りに置き換えてください。

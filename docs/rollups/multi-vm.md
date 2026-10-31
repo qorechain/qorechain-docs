@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` from `@qorechain/rdk` 0.6.0 and later (0.7.0 is current) builds the same calldata for you:
+`encodeCrossVmCalldata` from `@qorechain/rdk` 0.6.0 and later (0.8.0 is current) builds the same calldata for you:
 
 ```ts
 import {
@@ -84,7 +84,7 @@ Chain v3.2.5 changes how the bridge behaves. Mainnet has run it since 29 October
 * **Refusals carry a reason.** When the bridge refuses a call it reverts with `Error(string)`, which a contract can read and pass on.
 * **The precompile is still not active.** `0x...0901` is not in the active precompile list on either network, so none of this has run end to end.
 
-`@qorechain/rdk` 0.7.0 has helpers for these (checked against encodings Solidity produced): `getCrossVmParams` (the allowlist), `crossVmTargetReady` (precompile active, bridge enabled and the target allowlisted, with the blocking reason when not), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) and `decodeRevertReason` (`Error(string)`).
+`@qorechain/rdk` 0.7.0 and later have helpers for these (checked against encodings Solidity produced): `getCrossVmParams` (the allowlist), `crossVmTargetReady` (precompile active, bridge enabled and the target allowlisted, with the blocking reason when not), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) and `decodeRevertReason` (`Error(string)`).
 
 ## The Solidity side
 

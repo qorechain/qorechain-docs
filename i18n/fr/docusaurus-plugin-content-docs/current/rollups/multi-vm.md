@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 et ultérieures (la 0.7.0 est la version actuelle) construit pour vous les mêmes calldata :
+`encodeCrossVmCalldata` de `@qorechain/rdk` 0.6.0 et ultérieures (la 0.8.0 est la version actuelle) construit pour vous les mêmes calldata :
 
 ```ts
 import {
@@ -84,7 +84,7 @@ La chaîne v3.2.5 change le comportement du pont. Le mainnet l'exécute depuis l
 * **Les refus portent un motif.** Lorsque le pont refuse un appel, il annule avec `Error(string)`, qu'un contrat peut lire et transmettre.
 * **Le précompilé n'est toujours pas actif.** `0x...0901` ne figure dans la liste des précompilés actifs d'aucun des deux réseaux : rien de tout cela n'a donc été exécuté de bout en bout.
 
-`@qorechain/rdk` 0.7.0 fournit des assistants pour cela (vérifiés par rapport à des encodages produits par Solidity) : `getCrossVmParams` (la liste d'autorisation), `crossVmTargetReady` (précompilé actif, pont activé et cible sur la liste d'autorisation, avec le motif bloquant dans le cas contraire), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) et `decodeRevertReason` (`Error(string)`).
+`@qorechain/rdk` 0.7.0 et ultérieures fournissent des assistants pour cela (vérifiés par rapport à des encodages produits par Solidity) : `getCrossVmParams` (la liste d'autorisation), `crossVmTargetReady` (précompilé actif, pont activé et cible sur la liste d'autorisation, avec le motif bloquant dans le cas contraire), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) et `decodeRevertReason` (`Error(string)`).
 
 ## Le côté Solidity
 

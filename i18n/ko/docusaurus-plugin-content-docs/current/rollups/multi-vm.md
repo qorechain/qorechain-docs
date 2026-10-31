@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`@qorechain/rdk` 0.6.0 이상(현재는 0.7.0)의 `encodeCrossVmCalldata`가 같은 calldata를 대신 빌드해 줍니다:
+`@qorechain/rdk` 0.6.0 이상(현재는 0.8.0)의 `encodeCrossVmCalldata`가 같은 calldata를 대신 빌드해 줍니다:
 
 ```ts
 import {
@@ -84,7 +84,7 @@ const calldata = encodeCrossVmCalldata({
 * **거부에는 사유가 담깁니다.** 브리지가 호출을 거부하면 `Error(string)`으로 리버트하며, 컨트랙트가 이를 읽고 전달할 수 있습니다.
 * **프리컴파일은 여전히 활성 상태가 아닙니다.** `0x...0901`은 어느 네트워크의 활성 프리컴파일 목록에도 없으므로, 이 중 어느 것도 종단 간으로 실행된 적이 없습니다.
 
-`@qorechain/rdk` 0.7.0에는 이를 위한 헬퍼가 있습니다(Solidity가 만든 인코딩에 대해 확인됨): `getCrossVmParams`(허용 목록), `crossVmTargetReady`(프리컴파일 활성, 브리지 활성화, 대상이 허용 목록에 있는지를 확인하며, 그렇지 않으면 막는 사유를 함께 반환), `decodeCrossVmResult`(`abi.decode(ret, (bytes))`), `decodeRevertReason`(`Error(string)`).
+`@qorechain/rdk` 0.7.0 이상에는 이를 위한 헬퍼가 있습니다(Solidity가 만든 인코딩에 대해 확인됨): `getCrossVmParams`(허용 목록), `crossVmTargetReady`(프리컴파일 활성, 브리지 활성화, 대상이 허용 목록에 있는지를 확인하며, 그렇지 않으면 막는 사유를 함께 반환), `decodeCrossVmResult`(`abi.decode(ret, (bytes))`), `decodeRevertReason`(`Error(string)`).
 
 ## Solidity 측
 

@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`@qorechain/rdk` 0.6.0 以降（現行は 0.7.0）の `encodeCrossVmCalldata` は、同じコールデータを代わりに構築します:
+`@qorechain/rdk` 0.6.0 以降（現行は 0.8.0）の `encodeCrossVmCalldata` は、同じコールデータを代わりに構築します:
 
 ```ts
 import {
@@ -84,7 +84,7 @@ const calldata = encodeCrossVmCalldata({
 * **拒否には理由が付きます。** ブリッジが呼び出しを拒否すると、`Error(string)` でリバートします。コントラクトはこれを読み取って、そのまま伝えることができます。
 * **プリコンパイルはまだ有効ではありません。** `0x...0901` はどちらのネットワークでも有効なプリコンパイルの一覧に含まれていないため、これらはいずれもエンドツーエンドで実行されたことがありません。
 
-`@qorechain/rdk` 0.7.0 には、これらのためのヘルパーがあります（Solidity が生成したエンコーディングに対して確認済み）: `getCrossVmParams`（許可リスト）、`crossVmTargetReady`（プリコンパイルが有効で、ブリッジが有効で、ターゲットが許可リストに載っていること。そうでない場合は、阻害している理由を返します）、`decodeCrossVmResult`（`abi.decode(ret, (bytes))`）、`decodeRevertReason`（`Error(string)`）。
+`@qorechain/rdk` 0.7.0 以降には、これらのためのヘルパーがあります（Solidity が生成したエンコーディングに対して確認済み）: `getCrossVmParams`（許可リスト）、`crossVmTargetReady`（プリコンパイルが有効で、ブリッジが有効で、ターゲットが許可リストに載っていること。そうでない場合は、阻害している理由を返します）、`decodeCrossVmResult`（`abi.decode(ret, (bytes))`）、`decodeRevertReason`（`Error(string)`）。
 
 ## Solidity 側
 

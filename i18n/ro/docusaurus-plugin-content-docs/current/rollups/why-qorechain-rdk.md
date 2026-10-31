@@ -20,14 +20,14 @@ construite în jurul Layer 1-ului QoreChain, nu al uneltelor:
 Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 27
 octombrie 2026). Tabelul de mai jos arată ce funcționează astăzi; ce au schimbat
 clienții 0.6.x publicați și limitele care rămân sunt adunate în
-[RDK 0.7.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits). Dacă ai nevoie doar de un rollup
+[RDK 0.8.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits). Dacă ai nevoie doar de un rollup
 optimistic/zk generic, orice kit e suficient; capabilitățile de aici sunt ceea
 ce adaugă RDK-ul în plus, în TypeScript, Python, Go, Rust și Java.
 :::
 
 | Capabilitate | Stare | Pe ce se bazează |
 | --- | --- | --- |
-| **Chitanțe de decontare** | 🟡 Etapă timpurie | Ancorele sunt semnate cu ML-DSA-87, schema post-cuantică a Main Chain; încă nu există ancore, deci verificatorul 0.7.0 (care verifică față de lanț) nu a rulat niciodată pe o ancoră reală |
+| **Chitanțe de decontare** | 🟡 Etapă timpurie | Ancorele sunt semnate cu ML-DSA-87, schema post-cuantică a Main Chain; încă nu există ancore, deci verificatorul curent (care verifică față de lanț) nu a rulat niciodată pe o ancoră reală |
 | **QCAI Rollup Copilot** | 🟡 Încă indisponibil pe endpoint-urile publice | Servicii de consultanță AI/RL on-chain pe care endpoint-urile publice nu le expun astăzi |
 | **Apeluri cross-VM multi-VM** | 🟡 Încă inutilizabil pe rețelele live | Un precompile cross-VM care nu este activat (encoderul din 0.6.0 se potrivește cu structura lanțului), iar încărcarea QoreChain Native este închisă |
 

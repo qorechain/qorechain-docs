@@ -20,14 +20,14 @@ che agli strumenti:
 :::caution Fase iniziale: leggi la colonna Stato
 Nessun rollup è ancora stato creato su nessuna delle due reti (verificato il 27
 ottobre 2026). La tabella qui sotto indica cosa funziona oggi; ciò che i client
-0.6.x pubblicati hanno cambiato e i limiti che restano sono raccolti in [RDK 0.7.0: modifiche e limiti](/rollups/deploying-a-rollup#rdk-050-limits). Se ti serve solo un generico rollup optimistic/zk,
+0.6.x pubblicati hanno cambiato e i limiti che restano sono raccolti in [RDK 0.8.0: modifiche e limiti](/rollups/deploying-a-rollup#rdk-050-limits). Se ti serve solo un generico rollup optimistic/zk,
 qualunque kit va bene; le funzionalità descritte qui sono ciò
 che l'RDK aggiunge in più, in TypeScript, Python, Go, Rust e Java.
 :::
 
 | Funzionalità | Stato | Su cosa si basa |
 | --- | --- | --- |
-| **Ricevute di regolamento** | 🟡 Fase iniziale | Gli ancoraggi sono firmati con ML-DSA-87, lo schema post-quantistico della Main Chain; non esiste ancora nessun ancoraggio, quindi il verificatore della 0.7.0 (che verifica rispetto alla chain) non è mai stato eseguito su un ancoraggio reale |
+| **Ricevute di regolamento** | 🟡 Fase iniziale | Gli ancoraggi sono firmati con ML-DSA-87, lo schema post-quantistico della Main Chain; non esiste ancora nessun ancoraggio, quindi il verificatore attuale (che verifica rispetto alla chain) non è mai stato eseguito su un ancoraggio reale |
 | **QCAI Rollup Copilot** | 🟡 Non ancora disponibile sugli endpoint pubblici | Servizi consultivi di AI/RL on-chain che gli endpoint pubblici oggi non espongono |
 | **Chiamate cross-VM multi-VM** | 🟡 Non ancora utilizzabile sulle reti live | Un precompile cross-VM che non è attivato (l'encoder dalla 0.6.0 corrisponde al layout della chain), e il caricamento di QoreChain Native è chiuso |
 

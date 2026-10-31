@@ -10,15 +10,15 @@ sidebar_position: 21
 Trei instrumente de linie de comandă duc un proiect QoreChain de la zero la un punct de pornire tipizat și compilabil. Sunt pentru dezvoltatorii de aplicații (dApp-uri) și pentru operatorii de rollup-uri care lucrează în Node.js:
 
 * **`create-qorechain-dapp`** (0.10.0) generează un dApp pornind de la unul din trei șabloane, construit pe [SDK-ul QoreChain](/sdk/overview).
-* **`create-qorechain-rollup`** (0.7.0) generează un proiect de rollup pornind de la unul din șase șabloane, construit pe [Rollup Development Kit](/rollups/overview) în TypeScript.
-* **`qorollup`**, comanda pachetului `@qorechain/rdk-cli` (0.7.0), este linia de comandă a operatorului: verificări preliminare, crearea și monitorizarea unui rollup, citirea parametrilor live.
+* **`create-qorechain-rollup`** (0.8.0) generează un proiect de rollup pornind de la unul din șase șabloane, construit pe [Rollup Development Kit](/rollups/overview) în TypeScript.
+* **`qorollup`**, comanda pachetului `@qorechain/rdk-cli` (0.8.0), este linia de comandă a operatorului: verificări preliminare, crearea și monitorizarea unui rollup, citirea parametrilor live.
 
 Pagina reflectă pachetele publicate, așa cum sunt instalate din npm la 27 octombrie 2026. Ghidurile conceptuale sunt [Implementarea unui Rollup](/rollups/deploying-a-rollup) și [Referința CLI a SDK-ului](/sdk/reference/cli).
 
 ## Inovații {#innovations}
 
 * **Generare non-interactivă pentru CI.** Fiecare întrebare are un flag: `--template`, `--network`, `--package-manager`, `--yes` (acceptă valorile implicite) și `--no-install`. Un pipeline poate genera și compila un proiect cu o singură comandă și fără terminal.
-* **Șabloanele sunt fixate pe pachetele curente.** Șabloanele de dApp depind de `@qorechain/sdk` `^0.10.0` (șablonul EVM de `@qorechain/evm`), iar șabloanele de rollup de `@qorechain/rdk` `^0.7.0`. Un generator anterior (0.8.0) scria intervale care se rezolvau la un SDK ce nu putea semna pentru rețelele live; acest lucru nu se mai întâmplă cu cel curent.
+* **Șabloanele sunt fixate pe pachetele curente.** Șabloanele de dApp depind de `@qorechain/sdk` `^0.10.0` (șablonul EVM de `@qorechain/evm`), iar șabloanele de rollup de `@qorechain/rdk` `^0.8.0`. Un generator anterior (0.8.0) scria intervale care se rezolvau la un SDK ce nu putea semna pentru rețelele live; acest lucru nu se mai întâmplă cu cel curent.
 * **Șabloanele de rollup codifică o configurație validă pentru fiecare caz de utilizare.** Fiecare șablon de rollup stabilește o combinație de settlement, sequencer, disponibilitate a datelor, gaz și VM pe care matricea de compatibilitate a RDK o acceptă, iar generatorul afișează stake-ul live și arderea la creare înainte de a crea ceva.
 * **O comandă de verificare preliminară care numește ce lipsește.** `qorollup doctor` (și `npm run doctor` într-un șablon de rollup) verifică dacă punctul final REST răspunde, dacă parametrii modulului pot fi citiți, dacă punctul final este rețeaua pe care ai cerut-o și dacă un semnatar este configurat, și afișează o linie pentru fiecare verificare. Într-un șablon validează și configurația rollup-ului față de matricea de compatibilitate.
 * **Semnare hibridă integrată în șabloane.** Șabloanele de rollup se conectează printr-un mic `signer.ts` care derivă cheia ML-DSA-87 a contului din mnemonic (sau primește un seed împreună cu o cheie privată brută) și semnează hibrid, ceea ce rețelele cer pe lane-ul nativ. Șablonul de dApp `rollup-app` face același lucru și rulează ca rulare de probă, dacă nu setezi `QORE_BROADCAST=1`.
@@ -94,7 +94,7 @@ Pașii următori, așa cum îi afișează generatorul: `npm install`, completeaz
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # 0.7.0
+qorollup --version          # afișează versiunea instalată (0.8.0 este cea curentă)
 qorollup doctor --network testnet
 ```
 
@@ -159,19 +159,19 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | Registru | Pachet | Versiune | Link |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (comanda `create-qorechain-dapp`) | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (comanda `create-qorechain-rollup`) | 0.7.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (comanda `qorollup`) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (biblioteca folosită de șabloane) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (comanda `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (comanda `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (biblioteca folosită de șabloane) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-Sursa: https://github.com/qorechain/qorechain-sdk/tree/main/cli (generatorul de dApp-uri), https://github.com/qorechain/qorechain-rdk/tree/main/cli (generatorul de rollup-uri) și https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). Versiunea 0.7.0 a RDK este publicată și pe PyPI, crates.io, Maven Central și proxy-ul de module Go (verificat la 27 octombrie 2026). Toate sunt Apache-2.0.
+Sursa: https://github.com/qorechain/qorechain-sdk/tree/main/cli (generatorul de dApp-uri), https://github.com/qorechain/qorechain-rdk/tree/main/cli (generatorul de rollup-uri) și https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). Versiunea 0.8.0 a RDK este publicată și pe PyPI, crates.io, Maven Central și proxy-ul de module Go (verificat la 31 octombrie 2026). Toate sunt Apache-2.0.
 
 ## Limite și probleme cunoscute {#limits}
 
 * **`--network mainnet` nu a schimbat fișierele generate într-o rulare de test.** La 27 octombrie 2026, `fullstack-web` și `custom-rollup` au fost generate cu `--network mainnet`; fișierul `.env` generat conținea în continuare puncte finale localhost (dApp) sau `QORE_NETWORK=testnet` cu punctele finale de testnet (rollup), iar `App.tsx` al dApp-ului crea un client `testnet`. Setează singur rețeaua și punctele finale în `.env` și, pentru șablonul web, în `src/App.tsx`.
-* **Niciun rollup nu există încă pe vreuna dintre rețele** (verificat la 27 octombrie 2026). Nicio cale de tranzacție a instrumentelor de rollup nu a fost exersată pe un rollup live. Validează totul mai întâi pe testnet și citește [RDK 0.7.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits).
+* **Niciun rollup nu există încă pe vreuna dintre rețele** (verificat la 27 octombrie 2026). Nicio cale de tranzacție a instrumentelor de rollup nu a fost exersată pe un rollup live. Validează totul mai întâi pe testnet și citește [RDK 0.8.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits).
 * **Șablonul `defi-rollup` nu poate deconta un batch.** Settlement-ul ZK nu este încă utilizabil pe vreuna dintre rețele (înregistrarea cheilor este planificată pentru lanțul v3.2.7), iar circuitul său demonstrativ nu ar putea oricum trece verificarea dovezii de către lanț. De la 0.7.0 șablonul se oprește înainte de trimitere, deci nu mai cheltuiește un comision pe un batch pe care lanțul îl refuză întotdeauna. Folosește un șablon cu settlement `optimistic` până când se schimbă acest lucru (vezi [ZK, STARK și retrageri](/rollups/zk-stark-withdrawals)).
 * **Șablonul `multivm-rollup` depinde de ceva care nu este live.** Precompile-ul cross-VM de la `0x0000000000000000000000000000000000000901` nu este activ pe vreuna dintre rețele, deci un apel dintr-un contract nu face nimic; șablonul verifică acest lucru, iar contractul său este scris să dea revert în loc să eșueze în tăcere (vezi [Multi-VM](/rollups/multi-vm)).
-* **Comenzile de tranzacție `qorollup` semnează doar clasic.** `create`, `pause`, `resume`, `stop` și `withdraw` se conectează fără cheie post-cuantică, pe care ambele rețele o refuză pe lane-ul nativ. Citirile, `doctor`, `params`, `receipt` și `--dry-run` nu sunt afectate. Pentru a trimite tranzacții, folosește un proiect generat (scripturile lui semnează hibrid), RDK-ul TypeScript cu un `pqcKeypair` sau CLI-ul lanțului.
+* **Comenzile de tranzacție `qorollup` au nevoie de o cheie post-cuantică (0.7.1 și ulterior).** `create`, `pause`, `resume`, `stop` și `withdraw` semnează hibrid (ML-DSA-87 + secp256k1), așa cum cer ambele rețele, folosind o cheie derivată din `--mnemonic` / `QORE_MNEMONIC` și confruntată cu lanțul, sau `--pqc-seed` / `QORE_PQC_SEED_HEX` împreună cu `--key`; fără una, comanda refuză să trimită. În 0.7.0 și versiunile anterioare aceste comenzi semnau doar clasic, iar rețelele le refuzau pe toate; fă upgrade sau folosește un proiect generat (scripturile lui semnează hibrid), RDK-ul TypeScript cu un `pqcKeypair` sau CLI-ul lanțului. Citirile, `doctor`, `params`, `receipt` și `--dry-run` nu au avut niciodată nevoie de o cheie. Netestat live: nu există niciun rollup.
 * **Unele ajutoare `qorollup` nu au încă cu cine să vorbească.** `advise` pe testnet, la 27 octombrie, a afișat „advisory unavailable" pentru suprafețele de taxe, rețea, fraudă și agentul RL (nodul a răspuns 501 sau „method does not exist") și pentru un rollup care nu există. `suggest` a returnat un profil cu `source: fallback`, ceea ce indică faptul că a fost folosită lista implicită încorporată în loc de serviciul de asistent. Citește avertismentele.
 * **`rollup-app` transmite doar când ceri.** Rulează implicit o rulare de probă; cu `QORE_BROADCAST=1` înregistrează o dată cheia ML-DSA-87 a contului și semnează hibrid. Valorile sale de rollup din exemplu sunt ilustrative: ia numele reale ale profilurilor și stake-ul din [Profiluri predefinite](/rollups/preset-profiles).
 * **`fullstack-web` afișează o eroare la butonul de tokenomică.** Acel panou apelează o metodă JSON-RPC `qor_` pe care punctele finale publice nu o servesc; căutarea soldului funcționează. Înlocuiește-l cu o citire REST precum `client.rest.getBurnStats()`.

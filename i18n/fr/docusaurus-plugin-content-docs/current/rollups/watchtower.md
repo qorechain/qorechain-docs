@@ -19,7 +19,7 @@ lot est frauduleux — elle appelle votre fonction `validate` et agit selon ce q
 vous renvoyez.
 
 :::caution Stade précoce : rien à surveiller pour l'instant
-La Tour de guet lit les lots via le client REST du RDK, et les routes `/qorechain/rdk/v1/…` sont servies sur les deux réseaux. Aucun rollup n'a été créé sur l'un ou l'autre réseau (vérifié le 27 octobre 2026) ; il n'y a donc encore rien à surveiller et la Tour de guet n'a jamais tourné face à un lot réel. Dans `@qorechain/rdk` 0.5.0, sa logique d'échéance était erronée (elle lisait une hauteur de bloc comme un horodatage Unix, de sorte que `onDeadline` se déclenchait dès qu'un lot était vu pour la première fois) et elle ne lisait que la première page de 50 lots ; **la 0.6.0 a corrigé les deux** (voir ci-dessous). Utilisez la 0.7.0, la version actuelle.
+La Tour de guet lit les lots via le client REST du RDK, et les routes `/qorechain/rdk/v1/…` sont servies sur les deux réseaux. Aucun rollup n'a été créé sur l'un ou l'autre réseau (vérifié le 27 octobre 2026) ; il n'y a donc encore rien à surveiller et la Tour de guet n'a jamais tourné face à un lot réel. Dans `@qorechain/rdk` 0.5.0, sa logique d'échéance était erronée (elle lisait une hauteur de bloc comme un horodatage Unix, de sorte que `onDeadline` se déclenchait dès qu'un lot était vu pour la première fois) et elle ne lisait que la première page de 50 lots ; **la 0.6.0 a corrigé les deux** (voir ci-dessous). Utilisez la 0.8.0, la version actuelle (la Tour de guet elle-même a changé pour la dernière fois dans la 0.7.0).
 :::
 
 ## `watchBatches`
@@ -31,7 +31,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.8.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;

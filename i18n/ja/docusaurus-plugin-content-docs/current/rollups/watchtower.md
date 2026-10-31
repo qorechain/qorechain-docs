@@ -12,7 +12,7 @@ sidebar_position: 9
 フレームワークは監視と*いつ*行うかの判断を担い、**有効性チェックはあなたが提供します**。ウォッチタワーは、バッチが不正であると自ら判断することは決してありません。あなたの `validate` 関数を呼び出し、その戻り値に基づいて動作します。
 
 :::caution 初期段階: まだ監視対象はありません
-ウォッチタワーは RDK の REST クライアントを通じてバッチを読み取ります。`/qorechain/rdk/v1/…` のルートは両方のネットワークで提供されています。どちらのネットワークにもロールアップは作成されていないため（2026年10月27日確認）、まだ監視対象はなく、ウォッチタワーは実際のバッチに対して動作したことがありません。`@qorechain/rdk` 0.5.0 では、その期限ロジックが誤っており（ブロック高を Unix タイムスタンプとして読んでいたため、`onDeadline` はバッチが最初に検出された時点ですぐに発火しました）、読み取るのもバッチの最初の 50 件のページだけでした。**0.6.0 でその両方が修正されました**（下記を参照）。現行リリースの 0.7.0 を使用してください。
+ウォッチタワーは RDK の REST クライアントを通じてバッチを読み取ります。`/qorechain/rdk/v1/…` のルートは両方のネットワークで提供されています。どちらのネットワークにもロールアップは作成されていないため（2026年10月27日確認）、まだ監視対象はなく、ウォッチタワーは実際のバッチに対して動作したことがありません。`@qorechain/rdk` 0.5.0 では、その期限ロジックが誤っており（ブロック高を Unix タイムスタンプとして読んでいたため、`onDeadline` はバッチが最初に検出された時点ですぐに発火しました）、読み取るのもバッチの最初の 50 件のページだけでした。**0.6.0 でその両方が修正されました**（下記を参照）。現行リリースの 0.8.0 を使用してください(ウォッチタワー自体が最後に変更されたのは 0.7.0 です)。
 :::
 
 ## `watchBatches`
@@ -24,7 +24,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.8.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;

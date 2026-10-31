@@ -92,7 +92,7 @@ qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain
 * 모든 형제 해시는 정확히 32바이트여야 합니다.
 * **출금 루트(체인 v3.2.5부터, 두 네트워크 모두):** 배치의 `withdrawals_root`는 비어 있거나 정확히 32바이트입니다. v3.2.5 이전에는 이 길이 규칙이 적용되지 않았습니다.
 
-이 트리를 직접 만들지 마세요. `@qorechain/rdk` 0.7.0의 `withdrawalsTree`(그리고 Python, Go, Rust, Java의 대응 함수)는 배치의 출금 루트와 모든 증명을 체인과 정확히 같은 방식으로 만들며, 체인 자체의 검증기로 확인되었습니다. `assembleWithdrawalProof`는 기본적으로 체인의 트리를 만들고, 일반 머클 헬퍼는 이제 기본값이 SHAKE-256입니다.
+이 트리를 직접 만들지 마세요. `@qorechain/rdk` 0.7.0 이상의 `withdrawalsTree`(그리고 Python, Go, Rust, Java의 대응 함수)는 배치의 출금 루트와 모든 증명을 체인과 정확히 같은 방식으로 만들며, 체인 자체의 검증기로 확인되었습니다. `assembleWithdrawalProof`는 기본적으로 체인의 트리를 만들고, 일반 머클 헬퍼는 이제 기본값이 SHAKE-256입니다.
 
 :::caution 0.7.0 이전 릴리스
 `@qorechain/rdk` 0.6.2 이하에서는 일반 `binaryMerkleRoot` / `binaryMerkleProof` 헬퍼(및 Python, Go, Rust, Java의 대응 함수)가 기본적으로 홀수 노드를 복제하는 SHA-256을 사용하고 각 리프를 다시 해시했지만, 체인은 SHAKE-256을 사용하고 출금으로부터 리프를 만들기 때문에, 그 기본값으로 만든 증명은 체인에서 검증된 적이 없습니다. 0.7.0으로 업그레이드하거나, 해시와 리프 인코딩을 위 규칙에 맞게 재정의하세요. 그렇지 않으면 증명이 온체인에서 검증되지 않습니다.

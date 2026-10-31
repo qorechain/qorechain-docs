@@ -18,7 +18,7 @@ validità**. Il Watchtower non decide mai da solo che un batch è fraudolento �
 chiama la tua funzione `validate` e agisce in base a ciò che restituisci.
 
 :::caution Fase iniziale: ancora nulla da osservare
-Il Watchtower legge i batch tramite il client REST dell'RDK, e le route `/qorechain/rdk/v1/…` sono servite su entrambe le reti. Non è stato creato alcun rollup su nessuna delle due reti (verificato il 27 ottobre 2026), quindi non c'è ancora nulla da osservare e il Watchtower non è mai stato eseguito su un batch live. In `@qorechain/rdk` 0.5.0 la sua logica di scadenza era errata (leggeva un'altezza di blocco come timestamp Unix, quindi `onDeadline` scattava non appena un batch veniva visto per la prima volta) e leggeva solo la prima pagina di 50 batch; **la 0.6.0 ha corretto entrambe le cose** (vedi sotto). Usa la 0.7.0, la release attuale.
+Il Watchtower legge i batch tramite il client REST dell'RDK, e le route `/qorechain/rdk/v1/…` sono servite su entrambe le reti. Non è stato creato alcun rollup su nessuna delle due reti (verificato il 27 ottobre 2026), quindi non c'è ancora nulla da osservare e il Watchtower non è mai stato eseguito su un batch live. In `@qorechain/rdk` 0.5.0 la sua logica di scadenza era errata (leggeva un'altezza di blocco come timestamp Unix, quindi `onDeadline` scattava non appena un batch veniva visto per la prima volta) e leggeva solo la prima pagina di 50 batch; **la 0.6.0 ha corretto entrambe le cose** (vedi sotto). Usa la 0.8.0, la release attuale (il Watchtower stesso è cambiato per l'ultima volta nella 0.7.0).
 :::
 
 ## `watchBatches`
@@ -30,7 +30,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.8.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;

@@ -10,15 +10,15 @@ sidebar_position: 21
 تنقل ثلاث أدوات سطر أوامر مشروع QoreChain من الصفر إلى نقطة بداية مكتوبة الأنواع وقابلة للبناء. وهي موجّهة لمطوري التطبيقات (dApps) ومشغّلي rollup الذين يعملون بـ Node.js:
 
 * **`create-qorechain-dapp`** (0.10.0) يولّد تطبيقًا لامركزيًا من أحد ثلاثة قوالب، مبنيًا على [QoreChain SDK](/sdk/overview).
-* **`create-qorechain-rollup`** (0.7.0) يولّد مشروع rollup من أحد ستة قوالب، مبنيًا على [حزمة تطوير Rollup](/rollups/overview) بلغة TypeScript.
-* **`qorollup`**، أمر الحزمة `@qorechain/rdk-cli` (0.7.0)، هو سطر أوامر المشغّل: فحوص ما قبل التشغيل، وإنشاء rollup ومراقبته، وقراءة المعاملات الحية.
+* **`create-qorechain-rollup`** (0.8.0) يولّد مشروع rollup من أحد ستة قوالب، مبنيًا على [حزمة تطوير Rollup](/rollups/overview) بلغة TypeScript.
+* **`qorollup`**، أمر الحزمة `@qorechain/rdk-cli` (0.8.0)، هو سطر أوامر المشغّل: فحوص ما قبل التشغيل، وإنشاء rollup ومراقبته، وقراءة المعاملات الحية.
 
 تعكس الصفحة الحزم المنشورة كما ثُبّتت من npm في 27 أكتوبر 2026. الأدلة المفاهيمية هي [نشر Rollup](/rollups/deploying-a-rollup) و[مرجع SDK CLI](/sdk/reference/cli).
 
 ## الابتكارات {#innovations}
 
 * **توليد غير تفاعلي لأنظمة CI.** لكل سؤال علَم مقابل: `--template` و`--network` و`--package-manager` و`--yes` (قبول القيم الافتراضية) و`--no-install`. يستطيع خط إنتاج توليد مشروع وبناءه بأمر واحد ودون طرفية.
-* **القوالب مثبَّتة على الحزم الحالية.** تعتمد قوالب dApp على `@qorechain/sdk` ‏`^0.10.0` (وقالب EVM على `@qorechain/evm`) وقوالب rollup على `@qorechain/rdk` ‏`^0.7.0`. كان مولّد سابق (0.8.0) يكتب نطاقات تُحَلّ إلى SDK لا يستطيع التوقيع للشبكات الحية؛ ولا يحدث ذلك مع المولّد الحالي.
+* **القوالب مثبَّتة على الحزم الحالية.** تعتمد قوالب dApp على `@qorechain/sdk` ‏`^0.10.0` (وقالب EVM على `@qorechain/evm`) وقوالب rollup على `@qorechain/rdk` ‏`^0.8.0`. كان مولّد سابق (0.8.0) يكتب نطاقات تُحَلّ إلى SDK لا يستطيع التوقيع للشبكات الحية؛ ولا يحدث ذلك مع المولّد الحالي.
 * **قوالب rollup تُرمّز إعدادًا صالحًا لكل حالة استخدام.** يضبط كل قالب rollup توليفة من التسوية والمُسلسِل (sequencer) وإتاحة البيانات والغاز والآلة الافتراضية تقبلها مصفوفة التوافق في RDK، ويطبع المولّد الرهان الحي وحرق الإنشاء قبل أن تنشئ أي شيء.
 * **أمر ما قبل التشغيل يسمّي ما هو مفقود.** يفحص `qorollup doctor` (و`npm run doctor` داخل قالب rollup) أن نقطة REST تردّ، وأن معاملات الوحدة قابلة للقراءة، وأن نقطة النهاية هي الشبكة التي طلبتها، وأن موقّعًا مُعدّ، ويطبع سطرًا واحدًا لكل فحص. وداخل القالب يتحقق أيضًا من إعداد rollup مقابل مصفوفة التوافق.
 * **توقيع هجين موصول في القوالب.** تتصل قوالب rollup عبر `signer.ts` صغير يشتق مفتاح ML-DSA-87 للحساب من عبارتك الاسترجاعية (أو يأخذ بذرة مع مفتاح خاص خام) ويوقّع توقيعًا هجينًا، وهو ما تشترطه الشبكات على مسار Native. ويفعل قالب dApp ‏`rollup-app` الشيء نفسه ويعمل كتجربة جافة ما لم تضبط `QORE_BROADCAST=1`.
@@ -94,7 +94,7 @@ cd my-rollup && npm run typecheck
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # 0.7.0
+qorollup --version          # prints the installed version (0.8.0 is current)
 qorollup doctor --network testnet
 ```
 
@@ -159,19 +159,19 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | السجل | الحزمة | الإصدار | الرابط |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (الأمر `create-qorechain-dapp`) | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (الأمر `create-qorechain-rollup`) | 0.7.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (الأمر `qorollup`) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (المكتبة التي تستخدمها القوالب) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (الأمر `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (الأمر `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (المكتبة التي تستخدمها القوالب) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-المصدر: https://github.com/qorechain/qorechain-sdk/tree/main/cli (مولّد dApp) وhttps://github.com/qorechain/qorechain-rdk/tree/main/cli (مولّد rollup) وhttps://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). إصدار RDK 0.7.0 منشور أيضًا على PyPI وcrates.io وMaven Central ووكيل وحدات Go (جرى التحقق في 27 أكتوبر 2026). وجميعها Apache-2.0.
+المصدر: https://github.com/qorechain/qorechain-sdk/tree/main/cli (مولّد dApp) وhttps://github.com/qorechain/qorechain-rdk/tree/main/cli (مولّد rollup) وhttps://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). إصدار RDK 0.8.0 منشور أيضًا على PyPI وcrates.io وMaven Central ووكيل وحدات Go (جرى التحقق في 31 أكتوبر 2026). وجميعها Apache-2.0.
 
 ## الحدود والمشكلات المعروفة {#limits}
 
 * **الخيار `--network mainnet` لم يغيّر الملفات المولَّدة في تشغيل اختباري.** في 27 أكتوبر 2026 وُلّد `fullstack-web` و`custom-rollup` مع `--network mainnet`؛ وظل `.env` المولَّد يحمل نقاط نهاية localhost (dApp) أو `QORE_NETWORK=testnet` مع نقاط نهاية الشبكة التجريبية (rollup)، وأنشأ `App.tsx` الخاص بـ dApp عميلًا من نوع `testnet`. اضبط الشبكة ونقاط النهاية بنفسك في `.env`، وفي `src/App.tsx` لقالب الويب.
-* **لا يوجد rollup على أي من الشبكتين بعد** (جرى التحقق في 27 أكتوبر 2026). لم يُجرَّب أي مسار معاملات في أدوات rollup على rollup حي. تحقق من كل شيء على الشبكة التجريبية أولًا، واقرأ [RDK 0.7.0: التغييرات والحدود](/rollups/deploying-a-rollup#rdk-050-limits).
+* **لا يوجد rollup على أي من الشبكتين بعد** (جرى التحقق في 27 أكتوبر 2026). لم يُجرَّب أي مسار معاملات في أدوات rollup على rollup حي. تحقق من كل شيء على الشبكة التجريبية أولًا، واقرأ [RDK 0.8.0: التغييرات والحدود](/rollups/deploying-a-rollup#rdk-050-limits).
 * **قالب `defi-rollup` لا يستطيع تسوية دفعة.** تسوية ZK غير قابلة للاستخدام بعد على أي من الشبكتين (تسجيل المفاتيح مخطط له في إصدار السلسلة v3.2.7)، ولم تكن دائرته التجريبية لتجتاز فحص الإثبات في السلسلة على أي حال. ابتداءً من 0.7.0 يتوقف القالب قبل الإرسال، فلا ينفق بعد الآن رسومًا على دفعة ترفضها السلسلة دائمًا. استخدم قالبًا بتسوية `optimistic` إلى أن يتغير ذلك (راجع [ZK وSTARK وعمليات السحب](/rollups/zk-stark-withdrawals)).
 * **قالب `multivm-rollup` يعتمد على شيء غير مفعَّل.** precompile الاستدعاء بين الآلات الافتراضية على `0x0000000000000000000000000000000000000901` غير مفعَّل على أي من الشبكتين، لذا لا يفعل الاستدعاء من عقد شيئًا؛ ويتحقق القالب من ذلك وعقده مكتوب ليتراجع (revert) بدلًا من أن يفشل بصمت (راجع [متعدد الأجهزة الافتراضية](/rollups/multi-vm)).
-* **أوامر المعاملات في `qorollup` توقّع توقيعًا كلاسيكيًا فقط.** تتصل `create` و`pause` و`resume` و`stop` و`withdraw` دون مفتاح ما بعد الكم، وهو ما ترفضه الشبكتان على مسار Native. القراءات و`doctor` و`params` و`receipt` و`--dry-run` لا تتأثر. لإرسال المعاملات استخدم مشروعًا مولَّدًا (سكربتاته توقّع توقيعًا هجينًا)، أو RDK بلغة TypeScript مع `pqcKeypair`، أو CLI السلسلة.
+* **أوامر المعاملات في `qorollup` تحتاج إلى مفتاح ما بعد الكم (0.7.1 وما بعده).** تُوقّع `create` و`pause` و`resume` و`stop` و`withdraw` توقيعًا هجينًا (ML-DSA-87 + secp256k1) كما تتطلب الشبكتان، باستخدام مفتاح مُستخرج من `--mnemonic` / `QORE_MNEMONIC` ومطابَق مع السلسلة، أو `--pqc-seed` / `QORE_PQC_SEED_HEX` مع `--key`؛ وبدون ذلك يرفض الأمر الإرسال. في 0.7.0 وما قبله كانت هذه الأوامر توقّع توقيعًا كلاسيكيًا فقط وكانت الشبكتان ترفض كل واحدة منها؛ قم بالترقية، أو استخدم مشروعًا مولَّدًا (سكربتاته توقّع توقيعًا هجينًا)، أو RDK بلغة TypeScript مع `pqcKeypair`، أو CLI السلسلة. أما القراءات و`doctor` و`params` و`receipt` و`--dry-run` فلم تكن تحتاج إلى مفتاح قط. لم يُختبر على شبكة حية: لا يوجد rollup.
 * **بعض مساعدات `qorollup` ليس لديها ما تتحدث إليه بعد.** طبع `advise` مقابل الشبكة التجريبية في 27 أكتوبر "advisory unavailable" لأسطح الرسوم والشبكة والاحتيال ووكيل RL (ردّت العقدة بـ 501 أو "method does not exist") ولـ rollup غير موجود. وأعاد `suggest` ملفًا تعريفيًا مع `source: fallback`، مما يدل على استخدام القائمة الافتراضية المضمّنة بدلًا من خدمة المساعد. اقرأ التحذيرات.
 * **`rollup-app` لا يبثّ إلا حين تطلب.** يعمل كتجربة جافة افتراضيًا؛ ومع `QORE_BROADCAST=1` يسجّل مفتاح ML-DSA-87 للحساب مرة واحدة ويوقّع توقيعًا هجينًا. قيم rollup النموذجية فيه توضيحية: خذ أسماء الملفات التعريفية الحقيقية والرهان من [الإعدادات المسبقة](/rollups/preset-profiles).
 * **`fullstack-web` يعرض خطأ على زر الاقتصاد الرمزي.** تستدعي تلك اللوحة دالة JSON-RPC من نوع `qor_` لا تقدّمها نقاط النهاية العامة؛ أما البحث عن الرصيد فيعمل. استبدلها بقراءة REST مثل `client.rest.getBurnStats()`.

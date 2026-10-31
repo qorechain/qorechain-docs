@@ -180,13 +180,13 @@ Guides: [Rollups overview](/rollups/overview), [Deploying a rollup](/rollups/dep
 
 | Package | Language | Version | Install | Status |
 |---|---|---|---|---|
-| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.7.0 | `npm install @qorechain/rdk` | Published. The only RDK client that signs hybrid, and only when you pass a `pqcKeypair` |
-| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.7.0 | `npm install -g @qorechain/rdk-cli` | Published. Since 0.6.2 it launches through the npm bin link (0.6.1 and earlier printed nothing). Its transaction commands sign classical only, which the networks refuse |
-| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.7.0 | `npx create-qorechain-rollup my-rollup` | Published |
-| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, imports `qorrdk`) | 0.7.0 | `pip install qorechain-rdk` | Published. Reads work; transactions sign classical only |
-| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.7.0 | `cargo add qorechain-rdk` | Published. Reads work; transactions sign classical only |
-| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.7.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.7.0` | Published. Reads work; transactions sign classical only |
-| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.7.0 | `implementation("io.github.qorechain:qorechain-rdk:0.7.0")` | Published. Reads work; transactions sign classical only |
+| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.8.0 | `npm install @qorechain/rdk` | Published. Signs hybrid when you pass a `pqcKeypair`; reads need no key |
+| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.8.0 | `npm install -g @qorechain/rdk-cli` | Published. Since 0.6.2 it launches through the npm bin link (0.6.1 and earlier printed nothing). Since 0.7.1 its transaction commands sign hybrid when they resolve your post-quantum key (0.7.0 and earlier signed classical only, which the networks refused) |
+| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.8.0 | `npx create-qorechain-rollup my-rollup` | Published |
+| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, imports `qorrdk`) | 0.8.0 | `pip install qorechain-rdk` | Published. Reads work; from 0.8.0 transactions sign hybrid when you pass a post-quantum keypair (earlier versions signed classical only) |
+| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.8.0 | `cargo add qorechain-rdk` | Published. Reads work; from 0.8.0 transactions sign hybrid when you pass a post-quantum keypair (earlier versions signed classical only) |
+| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.8.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0` | Published. Reads work; from 0.8.0 transactions sign hybrid when you pass a post-quantum keypair (earlier versions signed classical only) |
+| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (Java 21+) | 0.8.0 | `implementation("io.github.qorechain:qorechain-rdk:0.8.0")` | Published. Reads work; from 0.8.0 transactions sign hybrid when you pass a post-quantum keypair (earlier versions signed classical only, and needed Java 17) |
 
 ### Post-quantum primitives (`qorechain-pqc`) {#group-pqc}
 
@@ -304,9 +304,9 @@ For a scoped npm name keep the `@`, for example `https://registry.npmjs.org/@qor
 - **Kotlin 2.3 or later.** The QoreSign and QoreSeal Kotlin and Android artifacts need the Kotlin 2.3 or later compiler; Kotlin 2.1 fails to compile against them.
 - **No Windows wheels.** The QoreSign and QoreSeal Python packages have wheels for macOS and Linux only; other platforms build from the source distribution, which needs Rust.
 - **Examples not run:** of the 34 quickstart entries, 31 ran and passed on 27 October 2026. The QoreSign Python example was run after the package was published (macOS arm64 and Linux aarch64), and the QoreSign Android example was not run on a device. The wallet adapter, chain bridge and handles have no quickstart, so their examples in this manual come from the package typings and source and were not run end to end.
-- **`@qorechain/rdk-cli` before 0.6.2** printed nothing when started through the npm bin link, and its `--version` printed 0.4.1. **`@qorechain/rdk` before 0.7.0** built withdrawal proofs that never verified on chain. Use 0.7.0.
+- **`@qorechain/rdk-cli` before 0.6.2** printed nothing when started through the npm bin link, and its `--version` printed 0.4.1. **`@qorechain/rdk` before 0.7.0** built withdrawal proofs that never verified on chain. Use 0.8.0.
 - **cosmjs version conflict.** `@qorechain/wallet-adapter` and `@qorechain/chain-bridge` use cosmjs 0.32; the SDK uses cosmjs 0.39. Installing the adapter next to the SDK in one project makes npm report `ERESOLVE`. Keep them in separate projects or pass `--legacy-peer-deps`.
 - **Nested SDK copy in older RDK releases.** `@qorechain/rdk` 0.6.2 and earlier depend on `@qorechain/sdk` `^0.9.0`, so an app on SDK 0.10.0 got a second, nested SDK 0.9.x copy. From 0.7.0 the kit depends on `@qorechain/sdk` `^0.10.0` and shares one copy.
-- **Classical-only RDK clients.** The Python, Rust, Go and Java RDK clients sign classical only, which the native lane refuses on both networks; use them for reads, or use the TypeScript client with a `pqcKeypair` for transactions.
+- **Classical-only RDK clients before 0.8.0.** The Python, Rust, Go and Java RDK clients before 0.8.0 sign classical only, which the native lane refuses on both networks (and `qorollup` did so before 0.7.1); upgrade to 0.8.0, which signs hybrid in all five languages when given a post-quantum keypair.
 - **Packages without a public source repository.** `@qorechain/chain-bridge` and `@qorechain/handles` list no source repository in their registry metadata. You can read the published package contents on npm.
 - **Python `qorechain-pqc`** has no seeded key generation in 0.2.3, and it needs liboqs.

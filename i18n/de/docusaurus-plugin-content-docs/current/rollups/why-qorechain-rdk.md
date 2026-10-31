@@ -20,7 +20,7 @@ Fähigkeiten, die um QoreChains Layer 1 herum gebaut sind und nicht um das Tooli
 Bisher wurde auf keinem der beiden Netzwerke ein Rollup erstellt (geprüft am
 27. Oktober 2026). Die folgende Tabelle gibt an, was heute funktioniert; was die
 veröffentlichten 0.6.x-Clients geändert haben und welche Grenzen bleiben, ist unter
-[RDK 0.7.0: Änderungen und Grenzen](/rollups/deploying-a-rollup#rdk-050-limits) zusammengefasst.
+[RDK 0.8.0: Änderungen und Grenzen](/rollups/deploying-a-rollup#rdk-050-limits) zusammengefasst.
 Wenn Sie nur ein generisches optimistisches/zk-Rollup benötigen, tut es jedes Kit;
 die hier genannten Fähigkeiten sind das, was das RDK obendrauf bietet — in
 TypeScript, Python, Go, Rust und Java.
@@ -28,7 +28,7 @@ TypeScript, Python, Go, Rust und Java.
 
 | Fähigkeit | Status | Wovon sie abhängt |
 | --- | --- | --- |
-| **Abwicklungsquittungen** | 🟡 Frühe Phase | Anker werden mit ML-DSA-87 signiert, dem Post-Quanten-Schema der Main Chain; es existieren noch keine Anker, daher wurde der 0.7.0-Verifizierer (der gegen die Chain prüft) noch nie an einem echten Anker ausgeführt |
+| **Abwicklungsquittungen** | 🟡 Frühe Phase | Anker werden mit ML-DSA-87 signiert, dem Post-Quanten-Schema der Main Chain; es existieren noch keine Anker, daher wurde der aktuelle Verifizierer (der gegen die Chain prüft) noch nie an einem echten Anker ausgeführt |
 | **QCAI Rollup Copilot** | 🟡 Auf den öffentlichen Endpunkten noch nicht verfügbar | On-Chain-KI/RL-Beratungsdienste, die die öffentlichen Endpunkte heute nicht bereitstellen |
 | **Multi-VM: VM-übergreifende Aufrufe** | 🟡 Auf den Live-Netzwerken noch nicht nutzbar | Ein VM-übergreifendes Precompile, das nicht aktiviert ist (der Encoder seit 0.6.0 passt zum Layout der Chain), und der QoreChain Native-Upload ist geschlossen |
 

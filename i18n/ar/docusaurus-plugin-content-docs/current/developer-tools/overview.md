@@ -180,13 +180,13 @@ sidebar_position: 1
 
 | الحزمة | اللغة | الإصدار | التثبيت | الحالة |
 |---|---|---|---|---|
-| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.7.0 | `npm install @qorechain/rdk` | منشورة. عميل RDK الوحيد الذي يوقّع هجيناً، وفقط عند تمرير `pqcKeypair` |
-| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.7.0 | `npm install -g @qorechain/rdk-cli` | منشورة. يعمل عبر رابط npm bin منذ 0.6.2 (ولم يكن 0.6.1 وما قبله يطبع شيئاً). تُوقّع أوامر المعاملات فيه توقيعاً كلاسيكياً فقط، وهو ما ترفضه الشبكتان |
-| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.7.0 | `npx create-qorechain-rollup my-rollup` | منشورة |
-| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+، تُستورد باسم `qorrdk`) | 0.7.0 | `pip install qorechain-rdk` | منشورة. القراءات تعمل؛ والمعاملات تُوقَّع توقيعاً كلاسيكياً فقط |
-| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.7.0 | `cargo add qorechain-rdk` | منشورة. القراءات تعمل؛ والمعاملات تُوقَّع توقيعاً كلاسيكياً فقط |
-| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.7.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.7.0` | منشورة. القراءات تعمل؛ والمعاملات تُوقَّع توقيعاً كلاسيكياً فقط |
-| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (JDK 17+) | 0.7.0 | `implementation("io.github.qorechain:qorechain-rdk:0.7.0")` | منشورة. القراءات تعمل؛ والمعاملات تُوقَّع توقيعاً كلاسيكياً فقط |
+| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.8.0 | `npm install @qorechain/rdk` | منشورة. توقّع هجيناً عند تمرير `pqcKeypair`؛ والقراءات لا تحتاج إلى مفتاح |
+| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.8.0 | `npm install -g @qorechain/rdk-cli` | منشورة. يعمل عبر رابط npm bin منذ 0.6.2 (ولم يكن 0.6.1 وما قبله يطبع شيئاً). ومنذ 0.7.1 تُوقّع أوامر المعاملات فيه توقيعاً هجيناً عندما تستخرج مفتاحك ما بعد الكمي (كان 0.7.0 وما قبله يوقّع توقيعاً كلاسيكياً فقط، وهو ما كانت الشبكتان ترفضه) |
+| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.8.0 | `npx create-qorechain-rollup my-rollup` | منشورة |
+| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+، تُستورد باسم `qorrdk`) | 0.8.0 | `pip install qorechain-rdk` | منشورة. القراءات تعمل؛ ومنذ 0.8.0 تُوقَّع المعاملات توقيعاً هجيناً عند تمرير زوج مفاتيح ما بعد كمي (كانت الإصدارات السابقة توقّع توقيعاً كلاسيكياً فقط) |
+| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.8.0 | `cargo add qorechain-rdk` | منشورة. القراءات تعمل؛ ومنذ 0.8.0 تُوقَّع المعاملات توقيعاً هجيناً عند تمرير زوج مفاتيح ما بعد كمي (كانت الإصدارات السابقة توقّع توقيعاً كلاسيكياً فقط) |
+| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.8.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0` | منشورة. القراءات تعمل؛ ومنذ 0.8.0 تُوقَّع المعاملات توقيعاً هجيناً عند تمرير زوج مفاتيح ما بعد كمي (كانت الإصدارات السابقة توقّع توقيعاً كلاسيكياً فقط) |
+| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (Java 21+) | 0.8.0 | `implementation("io.github.qorechain:qorechain-rdk:0.8.0")` | منشورة. القراءات تعمل؛ ومنذ 0.8.0 تُوقَّع المعاملات توقيعاً هجيناً عند تمرير زوج مفاتيح ما بعد كمي (كانت الإصدارات السابقة توقّع توقيعاً كلاسيكياً فقط، وتتطلب Java 17) |
 
 ### الأساسيات ما بعد الكمّية (`qorechain-pqc`) {#group-pqc}
 
@@ -304,9 +304,9 @@ sidebar_position: 1
 - **Kotlin 2.3 أو أحدث.** تحتاج حزم Kotlin وAndroid الخاصة بـ QoreSign وQoreSeal إلى مترجم Kotlin 2.3 أو أحدث؛ ويفشل Kotlin 2.1 في الترجمة مقابلها.
 - **لا عجلات لنظام Windows.** لحزمتي Python الخاصتين بـ QoreSign وQoreSeal عجلات (wheels) لنظامَي macOS وLinux فقط؛ وتُبنى المنصات الأخرى من توزيعة المصدر، وهي تحتاج إلى Rust.
 - **أمثلة لم تُشغَّل:** من إدخالات البدء السريع الـ 34، شُغّل 31 ونجحت في 27 أكتوبر 2026. شُغّل مثال QoreSign بلغة Python بعد نشر الحزمة (macOS arm64 وLinux aarch64)، ولم يُشغَّل مثال QoreSign لـ Android على جهاز. ولمحوّل المحفظة وchain bridge وhandles لا توجد بداية سريعة، لذا فإن أمثلتها في هذا الدليل مأخوذة من تعريفات أنواع الحزم ومصدرها ولم تُشغَّل من البداية إلى النهاية.
-- **`@qorechain/rdk-cli` قبل 0.6.2** لم يطبع شيئاً عند تشغيله عبر رابط npm bin، وطبع `--version` فيه 0.4.1. و**`@qorechain/rdk` قبل 0.7.0** كان يبني براهين سحب لا تجتاز التحقق على السلسلة أبداً. استخدم 0.7.0.
+- **`@qorechain/rdk-cli` قبل 0.6.2** لم يطبع شيئاً عند تشغيله عبر رابط npm bin، وطبع `--version` فيه 0.4.1. و**`@qorechain/rdk` قبل 0.7.0** كان يبني براهين سحب لا تجتاز التحقق على السلسلة أبداً. استخدم 0.8.0.
 - **تعارض إصدارات cosmjs.** يستخدم `@qorechain/wallet-adapter` و`@qorechain/chain-bridge` الإصدار 0.32 من cosmjs؛ ويستخدم SDK الإصدار 0.39. تثبيت المحوّل بجانب SDK في مشروع واحد يجعل npm يبلّغ عن `ERESOLVE`. أبقِهما في مشروعين منفصلين أو مرّر `--legacy-peer-deps`.
 - **نسخة SDK متداخلة في إصدارات RDK الأقدم.** يعتمد `@qorechain/rdk` 0.6.2 وما قبله على `@qorechain/sdk` `^0.9.0`، لذا كان تطبيق على SDK 0.10.0 يحصل على نسخة SDK 0.9.x ثانية متداخلة. ومنذ 0.7.0 تعتمد الحزمة على `@qorechain/sdk` `^0.10.0` وتشارك نسخة واحدة.
-- **عملاء RDK الكلاسيكيون فقط.** تُوقّع عملاء RDK في Python وRust وGo وJava توقيعاً كلاسيكياً فقط، وهو ما يرفضه مسار Native على الشبكتين؛ استخدمها للقراءات، أو استخدم عميل TypeScript مع `pqcKeypair` للمعاملات.
+- **عملاء RDK الكلاسيكيون فقط قبل 0.8.0.** كانت عملاء RDK في Python وRust وGo وJava قبل 0.8.0 توقّع توقيعاً كلاسيكياً فقط، وهو ما يرفضه مسار Native على الشبكتين (وكذلك كان يفعل `qorollup` قبل 0.7.1)؛ قم بالترقية إلى 0.8.0 الذي يوقّع توقيعاً هجيناً في اللغات الخمس عند تزويده بزوج مفاتيح ما بعد كمي.
 - **حزم بلا مستودع مصدر عام.** لا تذكر `@qorechain/chain-bridge` و`@qorechain/handles` أي مستودع مصدر في بيانات سجلهما الوصفية. يمكنك قراءة محتويات الحزمة المنشورة على npm.
 - **حزمة Python `qorechain-pqc`** ليس فيها توليد مفاتيح من بذرة في 0.2.3، وتحتاج إلى liboqs.

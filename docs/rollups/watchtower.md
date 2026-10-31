@@ -17,7 +17,7 @@ Watchtower never decides on its own that a batch is fraudulent — it calls your
 `validate` function and acts on what you return.
 
 :::caution Early-stage: nothing to watch yet
-The Watchtower reads batches through the RDK REST client, and the `/qorechain/rdk/v1/…` routes are served on both networks. No rollup has been created on either network (checked 27 October 2026), so there is nothing to watch yet and the Watchtower has not run against a live batch. In `@qorechain/rdk` 0.5.0 its deadline logic was wrong (it read a block height as a Unix timestamp, so `onDeadline` fired as soon as a batch was first seen) and it read only the first page of 50 batches; **0.6.0 fixed both** (see below). Use 0.7.0, the current release.
+The Watchtower reads batches through the RDK REST client, and the `/qorechain/rdk/v1/…` routes are served on both networks. No rollup has been created on either network (checked 27 October 2026), so there is nothing to watch yet and the Watchtower has not run against a live batch. In `@qorechain/rdk` 0.5.0 its deadline logic was wrong (it read a block height as a Unix timestamp, so `onDeadline` fired as soon as a batch was first seen) and it read only the first page of 50 batches; **0.6.0 fixed both** (see below). Use 0.8.0, the current release (the Watchtower itself last changed in 0.7.0).
 :::
 
 ## `watchBatches`
@@ -29,7 +29,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.8.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;

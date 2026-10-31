@@ -92,7 +92,7 @@ qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain
 * すべての兄弟ハッシュは、ちょうど 32 バイトでなければなりません。
 * **出金ルート（チェーン v3.2.5 以降、両ネットワーク）:** バッチの `withdrawals_root` は空か、ちょうど 32 バイトのいずれかです。v3.2.5 より前は、この長さのルールは適用されていませんでした。
 
-このツリーを自前で組み立てないでください。`@qorechain/rdk` 0.7.0 の `withdrawalsTree`（および Python、Go、Rust、Java の同等のもの）は、バッチの出金ルートとすべての証明をチェーンとまったく同じように構築し、チェーン自身の検証器と照合して確認されています。`assembleWithdrawalProof` はデフォルトでチェーンのツリーを構築し、汎用の Merkle ヘルパーもデフォルトで SHAKE-256 を使うようになりました。
+このツリーを自前で組み立てないでください。`@qorechain/rdk` 0.7.0 以降の `withdrawalsTree`（および Python、Go、Rust、Java の同等のもの）は、バッチの出金ルートとすべての証明をチェーンとまったく同じように構築し、チェーン自身の検証器と照合して確認されています。`assembleWithdrawalProof` はデフォルトでチェーンのツリーを構築し、汎用の Merkle ヘルパーもデフォルトで SHAKE-256 を使うようになりました。
 
 :::caution 0.7.0 より前のリリース
 `@qorechain/rdk` 0.6.2 以前では、汎用の `binaryMerkleRoot` / `binaryMerkleProof` ヘルパー（および Python、Go、Rust、Java の同等のもの）は、デフォルトで SHA-256 を使い、奇数ノードを複製し、各リーフを再ハッシュしていましたが、チェーンは SHAKE-256 を使い、リーフを出金から構築します。そのため、これらのデフォルトで構築した証明はオンチェーンで検証されませんでした。0.7.0 にアップグレードするか、ハッシュとリーフのエンコーディングを上記のルールに合わせて上書きしてください。そうしないと、証明はオンチェーンで検証されません。

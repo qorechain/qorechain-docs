@@ -51,7 +51,7 @@ const calldata = encodeFunctionData({
 });
 ```
 
-`@qorechain/rdk` 0.6.0 ve sonrasındaki (güncel olan 0.7.0) `encodeCrossVmCalldata` aynı calldata'yı sizin için oluşturur:
+`@qorechain/rdk` 0.6.0 ve sonrasındaki (güncel olan 0.8.0) `encodeCrossVmCalldata` aynı calldata'yı sizin için oluşturur:
 
 ```ts
 import {
@@ -84,7 +84,7 @@ Zincir v3.2.5 köprünün davranışını değiştirir. Mainnet onu 29 Ekim 2026
 * **Retler bir gerekçe taşır.** Köprü bir çağrıyı reddettiğinde bir sözleşmenin okuyup iletebileceği `Error(string)` ile geri döner (revert).
 * **Ön derleme hâlâ etkin değil.** `0x...0901`, her iki ağda da etkin ön derleme listesinde yoktur; bu yüzden bunların hiçbiri uçtan uca çalıştırılmamıştır.
 
-`@qorechain/rdk` 0.7.0, bunlar için yardımcılar içerir (Solidity'nin ürettiği kodlamalara karşı denetlendi): `getCrossVmParams` (izin listesi), `crossVmTargetReady` (ön derleme etkin, köprü açık ve hedef izin listesinde; değilse engelleyen gerekçeyle birlikte), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) ve `decodeRevertReason` (`Error(string)`).
+`@qorechain/rdk` 0.7.0 ve sonrası bunlar için yardımcılar içerir (Solidity'nin ürettiği kodlamalara karşı denetlendi): `getCrossVmParams` (izin listesi), `crossVmTargetReady` (ön derleme etkin, köprü açık ve hedef izin listesinde; değilse engelleyen gerekçeyle birlikte), `decodeCrossVmResult` (`abi.decode(ret, (bytes))`) ve `decodeRevertReason` (`Error(string)`).
 
 ## Solidity tarafı
 

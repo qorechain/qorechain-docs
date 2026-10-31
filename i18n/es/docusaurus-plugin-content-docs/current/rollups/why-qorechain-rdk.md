@@ -20,7 +20,7 @@ construidas en torno a la Layer 1 de QoreChain y no en torno a las herramientas:
 Todavía no se ha creado ningún rollup en ninguna de las dos redes (comprobado el
 27 de octubre de 2026). La tabla siguiente indica lo que funciona hoy; lo que
 cambiaron los clientes 0.6.x publicados y los límites que persisten se recogen en
-[RDK 0.7.0: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits). Si solo
+[RDK 0.8.0: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits). Si solo
 necesitas un rollup genérico optimista/zk, cualquier kit te sirve; las
 capacidades de aquí son lo que el RDK añade por encima, en TypeScript, Python,
 Go, Rust y Java.
@@ -28,7 +28,7 @@ Go, Rust y Java.
 
 | Capacidad | Estado | De qué depende |
 | --- | --- | --- |
-| **Recibos de liquidación** | 🟡 Etapa temprana | Los anclajes se firman con ML-DSA-87, el esquema post-cuántico de la Main Chain; todavía no existen anclajes, así que el verificador 0.7.0 (que comprueba contra la cadena) nunca se ha ejecutado con un anclaje real |
+| **Recibos de liquidación** | 🟡 Etapa temprana | Los anclajes se firman con ML-DSA-87, el esquema post-cuántico de la Main Chain; todavía no existen anclajes, así que el verificador actual (que comprueba contra la cadena) nunca se ha ejecutado con un anclaje real |
 | **QCAI Rollup Copilot** | 🟡 Todavía no disponible en los endpoints públicos | Servicios de asesoría de IA/RL on-chain que los endpoints públicos no exponen hoy |
 | **Llamadas entre VMs multi-VM** | 🟡 Todavía no utilizable en las redes en vivo | Un precompile entre VMs que no está activado (el codificador desde la 0.6.0 coincide con el formato de la cadena), y la subida de QoreChain Native está cerrada |
 

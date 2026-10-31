@@ -152,7 +152,7 @@ QoreChain-L1-Proposer sequenzieren Rollup-Transaktionen.
 On-Chain-KV-Store-Blob-Speicherung innerhalb von QoreChain selbst.
 
 :::caution Noch kein öffentlicher Weg, einen Blob zu veröffentlichen
-Das Modul definiert Blob-Speicherung, Aufbewahrung und Pruning, aber es gibt in den aktuellen Releases keine Transaktionsnachricht zum Veröffentlichen eines Blobs. Ein Batch, der bei einem `native`- oder `both`-Rollup einen Daten-Hash nennt, wird abgelehnt, weil kein passender Blob gespeichert werden kann. Siehe [Data Availability](/rollups/data-availability). Bei nativer Datenverfügbarkeit muss ein Batch daher `data_hash` leer lassen; der RDK-Client (0.7.0) tut das, und die Chain lehnt einen Batch ab, der einen angibt.
+Das Modul definiert Blob-Speicherung, Aufbewahrung und Pruning, aber es gibt in den aktuellen Releases keine Transaktionsnachricht zum Veröffentlichen eines Blobs. Ein Batch, der bei einem `native`- oder `both`-Rollup einen Daten-Hash nennt, wird abgelehnt, weil kein passender Blob gespeichert werden kann. Siehe [Data Availability](/rollups/data-availability). Bei nativer Datenverfügbarkeit muss ein Batch daher `data_hash` leer lassen; der RDK-Client (0.8.0) tut das, und die Chain lehnt einen Batch ab, der einen angibt.
 :::
 
 | Parameter            | Wert                                                                                               |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Batch als kanonisch akzeptiert                       |
 | **Rejected**   | Batch durch erfolgreiche Anfechtung für ungültig erklärt         |
 
-Verhalten von RDK 0.6.1 und später (0.7.0 ist aktuell): Für ein Optimistic Rollup baut der Client einen Batch, dessen State-Root die kanonische Übergangs-Root der Chain ist (`batchTransitionRoot` im RDK), kein frei gewählter eigener Wert.
+Verhalten von RDK 0.6.1 und später (0.8.0 ist aktuell): Für ein Optimistic Rollup baut der Client einen Batch, dessen State-Root die kanonische Übergangs-Root der Chain ist (`batchTransitionRoot` im RDK), kein frei gewählter eigener Wert.
 
 ### Regeln zur Auto-Finalisierung
 
@@ -264,7 +264,7 @@ Die Registrierung ist **nicht fatal**: Schlägt sie fehl (unzureichendes Guthabe
 Ein Settlement-Batch kann in `x/multilayer` verankert werden, das Layer-ID, Schichthöhe (den Batch-Index), State-Root, Hash des Validator-Sets und Transaktionsanzahl unter einer Post-Quantum-Signatur des Rollup-Erstellers erfasst.
 
 * **Seit v3.2.2 (live auf Mainnet und Testnet):** `MsgSubmitBatch` hat zwei optionale Felder. `anchor_signature` ist die ML-DSA-87-Signatur des Erstellers über die **v2-Anchor-Sign-Bytes** des Batches (siehe [Lesen von Anchors](/architecture/multilayer-architecture#reading-anchors)); ist sie vorhanden, wird der Batch in **derselben Transaktion** in `x/multilayer` verankert, und ein abgelehnter Anchor lehnt den Batch ab. `validator_set_hash` ist das Commitment des Validator-Sets des Rollups, das im Anchor mitgeführt und von der Signatur abgedeckt wird. In der CLI: `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` gibt die zu signierenden Bytes aus (`<layer-id>` ist die Layer-ID des Rollups, die bei über das RDK erstellten Rollups der Rollup-ID entspricht), und `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` übermittelt sie.
-* **Ohne die Signatur** wird der Batch unverankert abgewickelt, genau wie zuvor. Ein Client, der das Feld nicht sendet, erzeugt unverankerte Batches; prüfen Sie daher, ob das von Ihnen verwendete Toolkit es unterstützt: das TypeScript-Paket `@qorechain/rdk` 0.6.0 signiert den Anchor, wenn sein Client hybrid signiert und der Ersteller des Rollups ist (andernfalls übermittelt es unverankert), während die Clients für Python, Go, Rust und Java das Feld nicht aufbauen. In keinem der beiden Netzwerke existiert bisher ein Rollup, eine Schicht oder ein Anchor, daher wurde noch kein Anchor geschrieben und dieser Pfad ist live ungetestet.
+* **Ohne die Signatur** wird der Batch unverankert abgewickelt, genau wie zuvor. Ein Client, der das Feld nicht sendet, erzeugt unverankerte Batches; prüfen Sie daher, ob das von Ihnen verwendete Toolkit es unterstützt: das TypeScript-Paket `@qorechain/rdk` 0.6.0 signiert den Anchor, wenn sein Client hybrid signiert und der Ersteller des Rollups ist (andernfalls übermittelt es unverankert), während die Clients für Python, Go, Rust und Java (die ab 0.8.0 hybrid signieren) das Feld nicht aufbauen (für Python geprüft). In keinem der beiden Netzwerke existiert bisher ein Rollup, eine Schicht oder ein Anchor, daher wurde noch kein Anchor geschrieben und dieser Pfad ist live ungetestet.
 
 Siehe [Settlement Receipts](/rollups/settlement-receipts), was ein Anchor beweist und was nicht.
 

@@ -18,7 +18,7 @@ El Watchtower nunca decide por sí solo que un lote es fraudulento — llama a t
 función `validate` y actúa según lo que devuelvas.
 
 :::caution Etapa temprana: todavía nada que vigilar
-El Watchtower lee los lotes a través del cliente REST del RDK, y las rutas `/qorechain/rdk/v1/…` se sirven en ambas redes. No se ha creado ningún rollup en ninguna de las dos redes (comprobado el 27 de octubre de 2026), así que todavía no hay nada que vigilar y el Watchtower no se ha ejecutado contra un lote real. En `@qorechain/rdk` 0.5.0 su lógica de fecha límite era incorrecta (leía una altura de bloque como una marca de tiempo Unix, por lo que `onDeadline` se disparaba en cuanto se veía un lote por primera vez) y solo leía la primera página de 50 lotes; **la 0.6.0 corrigió ambas cosas** (véase abajo). Usa la 0.7.0, la versión actual.
+El Watchtower lee los lotes a través del cliente REST del RDK, y las rutas `/qorechain/rdk/v1/…` se sirven en ambas redes. No se ha creado ningún rollup en ninguna de las dos redes (comprobado el 27 de octubre de 2026), así que todavía no hay nada que vigilar y el Watchtower no se ha ejecutado contra un lote real. En `@qorechain/rdk` 0.5.0 su lógica de fecha límite era incorrecta (leía una altura de bloque como una marca de tiempo Unix, por lo que `onDeadline` se disparaba en cuanto se veía un lote por primera vez) y solo leía la primera página de 50 lotes; **la 0.6.0 corrigió ambas cosas** (véase abajo). Usa la 0.8.0, la versión actual (el propio Watchtower cambió por última vez en la 0.7.0).
 :::
 
 ## `watchBatches`
@@ -30,7 +30,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.8.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;

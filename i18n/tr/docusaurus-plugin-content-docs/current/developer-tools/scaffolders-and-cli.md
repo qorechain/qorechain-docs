@@ -10,15 +10,15 @@ sidebar_position: 21
 Üç komut satırı aracı, bir QoreChain projesini sıfırdan tipli, derlenebilir bir başlangıç noktasına getirir. Node.js ile çalışan uygulama geliştiricileri (dApp'ler) ve rollup operatörleri içindir:
 
 * **`create-qorechain-dapp`** (0.10.0), [QoreChain SDK](/sdk/overview) üzerine kurulu üç şablondan biriyle bir dApp iskeleti oluşturur.
-* **`create-qorechain-rollup`** (0.7.0), TypeScript [Rollup Geliştirme Kiti](/rollups/overview) üzerine kurulu altı şablondan biriyle bir rollup projesi iskeleti oluşturur.
-* **`qorollup`**, `@qorechain/rdk-cli` paketinin (0.7.0) komutudur; operatör komut satırıdır: ön kontroller, bir rollup oluşturma ve izleme, canlı parametreleri okuma.
+* **`create-qorechain-rollup`** (0.8.0), TypeScript [Rollup Geliştirme Kiti](/rollups/overview) üzerine kurulu altı şablondan biriyle bir rollup projesi iskeleti oluşturur.
+* **`qorollup`**, `@qorechain/rdk-cli` paketinin (0.8.0) komutudur; operatör komut satırıdır: ön kontroller, bir rollup oluşturma ve izleme, canlı parametreleri okuma.
 
 Bu sayfa, 27 Ekim 2026'da npm'den kurulan yayımlanmış paketleri yansıtır. Kavramsal kılavuzlar [Rollup Dağıtımı](/rollups/deploying-a-rollup) ve [SDK CLI başvurusu](/sdk/reference/cli) sayfalarıdır.
 
 ## Yenilikler {#innovations}
 
 * **CI için etkileşimsiz iskele oluşturma.** Her soru için bir bayrak vardır: `--template`, `--network`, `--package-manager`, `--yes` (varsayılanları kabul et) ve `--no-install`. Bir işlem hattı (pipeline) tek komutla ve terminal olmadan bir proje üretip derleyebilir.
-* **Şablonlar güncel paketlere sabitlenmiştir.** dApp şablonları `@qorechain/sdk` `^0.10.0` sürümüne (EVM şablonu `@qorechain/evm` sürümüne), rollup şablonları ise `@qorechain/rdk` `^0.7.0` sürümüne bağlıdır. Önceki bir iskele aracı (0.8.0), canlı ağlar için imzalayamayan bir SDK'ya çözülen aralıklar yazıyordu; güncel sürümde bu olmaz.
+* **Şablonlar güncel paketlere sabitlenmiştir.** dApp şablonları `@qorechain/sdk` `^0.10.0` sürümüne (EVM şablonu `@qorechain/evm` sürümüne), rollup şablonları ise `@qorechain/rdk` `^0.8.0` sürümüne bağlıdır. Önceki bir iskele aracı (0.8.0), canlı ağlar için imzalayamayan bir SDK'ya çözülen aralıklar yazıyordu; güncel sürümde bu olmaz.
 * **Rollup şablonları her kullanım senaryosu için geçerli bir yapılandırma kodlar.** Her rollup şablonu, RDK'nın uyumluluk matrisinin kabul ettiği bir settlement, sequencer, veri erişilebilirliği, gaz ve VM birleşimi ayarlar ve iskele aracı, siz herhangi bir şey oluşturmadan önce canlı stake'i ve oluşturma yakımını yazdırır.
 * **Neyin eksik olduğunu söyleyen bir ön kontrol komutu.** `qorollup doctor` (ve bir rollup şablonunun içinde `npm run doctor`), REST uç noktasının yanıt verdiğini, modül parametrelerinin okunabildiğini, uç noktanın istediğiniz ağ olduğunu ve bir imzacının yapılandırıldığını kontrol eder ve her kontrol için bir satır yazdırır. Bir şablonun içinde ayrıca rollup yapılandırmasını uyumluluk matrisine karşı doğrular.
 * **Şablonlara bağlanmış hibrit imzalama.** Rollup şablonları, hesabın ML-DSA-87 anahtarını mnemonic'inizden türeten (veya ham özel anahtarla bir seed alan) ve ağların native lane üzerinde zorunlu kıldığı hibrit imzayı atan küçük bir `signer.ts` üzerinden bağlanır. `rollup-app` dApp şablonu da aynısını yapar ve `QORE_BROADCAST=1` ayarlamadığınız sürece bir deneme çalıştırması (dry run) olarak çalışır.
@@ -94,7 +94,7 @@ cd my-rollup && npm run typecheck
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # 0.7.0
+qorollup --version          # kurulu sürümü yazdırır (güncel: 0.8.0)
 qorollup doctor --network testnet
 ```
 
@@ -159,19 +159,19 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (komut `create-qorechain-dapp`) | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (komut `create-qorechain-rollup`) | 0.7.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (komut `qorollup`) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (şablonların kullandığı kütüphane) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (komut `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (komut `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (şablonların kullandığı kütüphane) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-Kaynak: https://github.com/qorechain/qorechain-sdk/tree/main/cli (dApp iskele aracı), https://github.com/qorechain/qorechain-rdk/tree/main/cli (rollup iskele aracı) ve https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). RDK'nın 0.7.0 sürümü ayrıca PyPI, crates.io, Maven Central ve Go modül proxy'sindedir (27 Ekim 2026'da kontrol edildi). Hepsi Apache-2.0'dır.
+Kaynak: https://github.com/qorechain/qorechain-sdk/tree/main/cli (dApp iskele aracı), https://github.com/qorechain/qorechain-rdk/tree/main/cli (rollup iskele aracı) ve https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). RDK'nın 0.8.0 sürümü ayrıca PyPI, crates.io, Maven Central ve Go modül proxy'sindedir (31 Ekim 2026'da kontrol edildi). Hepsi Apache-2.0'dır.
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 * **`--network mainnet`, bir test çalıştırmasında üretilen dosyaları değiştirmedi.** 27 Ekim 2026'da `fullstack-web` ve `custom-rollup` şablonlarının iskeleti `--network mainnet` ile oluşturuldu; üretilen `.env` hâlâ localhost uç noktalarını (dApp) veya test ağı uç noktalarıyla `QORE_NETWORK=testnet` değerini (rollup) taşıyordu ve dApp'in `App.tsx` dosyası bir `testnet` istemcisi oluşturdu. Ağı ve uç noktaları `.env` içinde ve web şablonu için `src/App.tsx` içinde kendiniz ayarlayın.
-* **Henüz hiçbir ağda bir rollup yok** (27 Ekim 2026'da kontrol edildi). Rollup araçlarının hiçbir işlem yolu canlı bir rollup üzerinde denenmemiştir. Her şeyi önce test ağında doğrulayın ve [RDK 0.7.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits) bölümünü okuyun.
+* **Henüz hiçbir ağda bir rollup yok** (27 Ekim 2026'da kontrol edildi). Rollup araçlarının hiçbir işlem yolu canlı bir rollup üzerinde denenmemiştir. Her şeyi önce test ağında doğrulayın ve [RDK 0.8.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits) bölümünü okuyun.
 * **`defi-rollup` şablonu bir batch'i çözümleyemez (settle).** ZK settlement henüz iki ağda da kullanılamaz (anahtar kaydı zincir v3.2.7 için planlanmıştır) ve demo devresi her halükarda zincirin kanıt kontrolünü geçemezdi. 0.7.0'dan itibaren şablon göndermeden önce durur; böylece zincirin her zaman reddedeceği bir batch için artık ücret harcamaz. Bu değişene kadar `optimistic` settlement'lı bir şablon kullanın (bkz. [ZK, STARK ve Çekimler](/rollups/zk-stark-withdrawals)).
 * **`multivm-rollup` şablonu canlı olmayan bir şeye bağlıdır.** `0x0000000000000000000000000000000000000901` adresindeki cross-VM precompile iki ağda da etkin değildir; bu yüzden bir kontrattan yapılan çağrı hiçbir şey yapmaz. Şablon bunu kontrol eder ve kontratı sessizce başarısız olmak yerine geri alacak (revert) şekilde yazılmıştır (bkz. [Multi-VM](/rollups/multi-vm)).
-* **`qorollup` işlem komutları yalnızca klasik imzalar.** `create`, `pause`, `resume`, `stop` ve `withdraw`, iki ağın da native lane üzerinde reddettiği kuantum sonrası anahtar olmadan bağlanır. Okumalar, `doctor`, `params`, `receipt` ve `--dry-run` etkilenmez. İşlem göndermek için iskelesi oluşturulmuş bir proje (betikleri hibrit imzalar), `pqcKeypair` ile TypeScript RDK veya zincir CLI'si kullanın.
+* **`qorollup` işlem komutları kuantum sonrası bir anahtar gerektirir (0.7.1 ve sonrası).** `create`, `pause`, `resume`, `stop` ve `withdraw`, her iki ağın gerektirdiği gibi hibrit (ML-DSA-87 + secp256k1) imzalar; bunun için `--mnemonic` / `QORE_MNEMONIC` değerinden türetilip zincire karşı eşleştirilen bir anahtar ya da `--key` ile birlikte `--pqc-seed` / `QORE_PQC_SEED_HEX` kullanılır; anahtar yoksa komut göndermeyi reddeder. 0.7.0 ve öncesinde bu komutlar yalnızca klasik imzalıyordu ve ağlar hepsini reddetti; yükseltin veya iskelesi oluşturulmuş bir proje (betikleri hibrit imzalar), `pqcKeypair` ile TypeScript RDK veya zincir CLI'si kullanın. Okumalar, `doctor`, `params`, `receipt` ve `--dry-run` hiçbir zaman anahtar gerektirmedi. Canlıda denenmedi: hiçbir rollup yoktur.
 * **Bazı `qorollup` yardımcılarının henüz konuşacağı bir şey yok.** 27 Ekim'de test ağına karşı `advise`, ücret, ağ, sahtekârlık ve RL-ajan yüzeyleri için (düğüm 501 veya "method does not exist" yanıtladı) ve var olmayan bir rollup için "advisory unavailable" yazdırdı. `suggest`, `source: fallback` ile bir profil döndürdü; bu, asistan hizmeti yerine yerleşik varsayılan listenin kullanıldığını gösterir. Uyarıları okuyun.
 * **`rollup-app` yalnızca istediğinizde yayınlar.** Varsayılan olarak deneme çalıştırması yapar; `QORE_BROADCAST=1` ile hesabın ML-DSA-87 anahtarını bir kez kaydeder ve hibrit imzalar. Örnek rollup değerleri açıklayıcıdır: gerçek profil adlarını ve stake'i [Hazır Profiller](/rollups/preset-profiles) sayfasından alın.
 * **`fullstack-web`, tokenomik düğmesinde bir hata gösterir.** O panel, herkese açık uç noktaların sunmadığı bir `qor_` JSON-RPC yöntemini çağırır; bakiye sorgusu çalışır. Bunu `client.rest.getBurnStats()` gibi bir REST okumasıyla değiştirin.

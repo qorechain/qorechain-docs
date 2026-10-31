@@ -152,7 +152,7 @@ Los proponentes de L1 de QoreChain secuencian las transacciones del rollup.
 Almacenamiento de blobs en el KV-store on-chain dentro de la propia QoreChain.
 
 :::caution Todavía no hay una forma pública de publicar un blob
-El módulo define el almacenamiento, la retención y la poda de blobs, pero en las versiones actuales no existe ningún mensaje de transacción para publicar un blob. Un lote que nombre un hash de datos en un rollup `native` o `both` es rechazado porque no se puede almacenar ningún blob coincidente. Consulte [Data Availability](/rollups/data-availability). Por tanto, con disponibilidad de datos native un lote debe dejar `data_hash` vacío; el cliente RDK (0.7.0) lo hace así, y la cadena rechaza un lote que declare uno.
+El módulo define el almacenamiento, la retención y la poda de blobs, pero en las versiones actuales no existe ningún mensaje de transacción para publicar un blob. Un lote que nombre un hash de datos en un rollup `native` o `both` es rechazado porque no se puede almacenar ningún blob coincidente. Consulte [Data Availability](/rollups/data-availability). Por tanto, con disponibilidad de datos native un lote debe dejar `data_hash` vacío; el cliente RDK (0.8.0) lo hace así, y la cadena rechaza un lote que declare uno.
 :::
 
 | Parámetro            | Valor                                                                                               |
@@ -215,7 +215,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 | **Finalized**  | Lote aceptado como canónico                        |
 | **Rejected**   | Lote invalidado por una impugnación exitosa        |
 
-Comportamiento del RDK 0.6.1 y posteriores (la 0.7.0 es la actual): para un rollup optimistic, el cliente construye un lote cuya raíz de estado es la raíz de transición canónica de la cadena (`batchTransitionRoot` en el RDK), no un valor libre propio.
+Comportamiento del RDK 0.6.1 y posteriores (la 0.8.0 es la actual): para un rollup optimistic, el cliente construye un lote cuya raíz de estado es la raíz de transición canónica de la cadena (`batchTransitionRoot` en el RDK), no un valor libre propio.
 
 ### Reglas de auto-finalización
 
@@ -264,7 +264,7 @@ El registro es **no fatal**: si falla (saldo insuficiente o límite alcanzado), 
 Un lote de liquidación puede anclarse a `x/multilayer`, que registra el ID de capa, la altura de capa (el índice del lote), la raíz de estado, el hash del conjunto de validadores y el recuento de transacciones bajo una firma post-cuántica del creador del rollup.
 
 * **Desde v3.2.2 (activo en mainnet y testnet):** `MsgSubmitBatch` tiene dos campos opcionales. `anchor_signature` es la firma ML-DSA-87 del creador sobre los **bytes de firma de ancla v2** del lote (consulte [Lectura de Anclas](/architecture/multilayer-architecture#reading-anchors)); cuando está presente, el lote se ancla en `x/multilayer` en la **misma transacción**, y un ancla rechazada rechaza el lote. `validator_set_hash` es el compromiso del conjunto de validadores del rollup que se incluye en el ancla y queda cubierto por la firma. En la CLI: `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` imprime los bytes que hay que firmar (`<layer-id>` es el id de capa del rollup, que coincide con el id del rollup en los rollups creados mediante el RDK), y `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` los envía.
-* **Sin la firma** el lote se liquida sin anclar, exactamente como antes. Un cliente que no envía el campo produce lotes sin anclar, así que compruebe que el toolkit que usa lo admite: el `@qorechain/rdk` 0.6.0 de TypeScript firma el ancla cuando su cliente firma en modo híbrido y es el creador del rollup (y en caso contrario envía el lote sin anclar), mientras que los clientes de Python, Go, Rust y Java no construyen el campo. Todavía no existe ningún rollup, capa ni ancla en ninguna de las dos redes, por lo que no se ha escrito ningún ancla y esa vía no se ha probado en vivo.
+* **Sin la firma** el lote se liquida sin anclar, exactamente como antes. Un cliente que no envía el campo produce lotes sin anclar, así que compruebe que el toolkit que usa lo admite: el `@qorechain/rdk` 0.6.0 de TypeScript firma el ancla cuando su cliente firma en modo híbrido y es el creador del rollup (y en caso contrario envía el lote sin anclar), mientras que los clientes de Python, Go, Rust y Java (que firman en híbrido desde la 0.8.0) no construyen el campo (comprobado en Python). Todavía no existe ningún rollup, capa ni ancla en ninguna de las dos redes, por lo que no se ha escrito ningún ancla y esa vía no se ha probado en vivo.
 
 Consulte [Settlement Receipts](/rollups/settlement-receipts) para saber qué prueba y qué no prueba un ancla.
 

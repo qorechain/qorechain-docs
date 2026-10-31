@@ -10,15 +10,15 @@ sidebar_position: 21
 명령줄 도구 세 가지로 아무것도 없는 상태에서 타입이 지정되고 빌드 가능한 QoreChain 프로젝트의 시작점까지 갈 수 있습니다. Node.js로 작업하는 애플리케이션 개발자(dApp)와 롤업 운영자를 위한 도구입니다.
 
 * **`create-qorechain-dapp`**(0.10.0)은 [QoreChain SDK](/sdk/overview)를 기반으로 하는 세 가지 템플릿 중 하나로 dApp을 스캐폴딩합니다.
-* **`create-qorechain-rollup`**(0.7.0)은 TypeScript [롤업 개발 키트](/rollups/overview)를 기반으로 하는 여섯 가지 템플릿 중 하나로 롤업 프로젝트를 스캐폴딩합니다.
-* **`qorollup`**은 `@qorechain/rdk-cli` 패키지(0.7.0)의 명령으로, 사전 점검, 롤업 생성 및 모니터링, 실시간 파라미터 조회를 제공하는 운영자용 명령줄입니다.
+* **`create-qorechain-rollup`**(0.8.0)은 TypeScript [롤업 개발 키트](/rollups/overview)를 기반으로 하는 여섯 가지 템플릿 중 하나로 롤업 프로젝트를 스캐폴딩합니다.
+* **`qorollup`**은 `@qorechain/rdk-cli` 패키지(0.8.0)의 명령으로, 사전 점검, 롤업 생성 및 모니터링, 실시간 파라미터 조회를 제공하는 운영자용 명령줄입니다.
 
 이 페이지는 2026년 10월 27일에 npm에서 설치한 게시된 패키지를 기준으로 합니다. 개념 가이드는 [롤업 배포하기](/rollups/deploying-a-rollup)와 [SDK CLI 레퍼런스](/sdk/reference/cli)입니다.
 
 ## 혁신 요소 {#innovations}
 
 * **CI를 위한 비대화형 스캐폴딩.** 모든 프롬프트에는 플래그가 있습니다. `--template`, `--network`, `--package-manager`, `--yes`(기본값 수락), `--no-install`입니다. 파이프라인은 터미널 없이 명령 하나로 프로젝트를 생성하고 빌드할 수 있습니다.
-* **템플릿은 현재 패키지에 고정되어 있습니다.** dApp 템플릿은 `@qorechain/sdk` `^0.10.0`(EVM 템플릿은 `@qorechain/evm`)에, 롤업 템플릿은 `@qorechain/rdk` `^0.7.0`에 의존합니다. 이전 스캐폴더(0.8.0)는 라이브 네트워크에 서명할 수 없는 SDK로 해석되는 범위를 기록했지만, 현재 버전에서는 그런 일이 없습니다.
+* **템플릿은 현재 패키지에 고정되어 있습니다.** dApp 템플릿은 `@qorechain/sdk` `^0.10.0`(EVM 템플릿은 `@qorechain/evm`)에, 롤업 템플릿은 `@qorechain/rdk` `^0.8.0`에 의존합니다. 이전 스캐폴더(0.8.0)는 라이브 네트워크에 서명할 수 없는 SDK로 해석되는 범위를 기록했지만, 현재 버전에서는 그런 일이 없습니다.
 * **롤업 템플릿은 사용 사례별로 유효한 구성을 담고 있습니다.** 각 롤업 템플릿은 RDK의 호환성 매트릭스가 허용하는 정산, 시퀀서, 데이터 가용성, 가스, VM 조합을 설정하며, 스캐폴더는 무언가를 생성하기 전에 실시간 스테이크와 생성 소각량을 출력합니다.
 * **무엇이 빠졌는지 알려 주는 사전 점검 명령.** `qorollup doctor`(그리고 롤업 템플릿 안의 `npm run doctor`)는 REST 엔드포인트가 응답하는지, 모듈 파라미터를 읽을 수 있는지, 엔드포인트가 요청한 네트워크인지, 서명자가 구성되어 있는지 확인하고 점검마다 한 줄씩 출력합니다. 템플릿 안에서는 롤업 구성도 호환성 매트릭스에 대해 검증합니다.
 * **템플릿에 연결된 하이브리드 서명.** 롤업 템플릿은 작은 `signer.ts`를 통해 연결되며, 이 파일은 니모닉에서 계정의 ML-DSA-87 키를 파생하고(또는 원시 개인 키와 함께 시드를 받아) 네이티브 레인에서 네트워크가 요구하는 하이브리드 서명을 합니다. `rollup-app` dApp 템플릿도 같은 방식이며 `QORE_BROADCAST=1`을 설정하지 않으면 드라이런으로 실행됩니다.
@@ -94,7 +94,7 @@ cd my-rollup && npm run typecheck
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # 0.7.0
+qorollup --version          # prints the installed version (0.8.0 is current)
 qorollup doctor --network testnet
 ```
 
@@ -159,19 +159,19 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | 레지스트리 | 패키지 | 버전 | 링크 |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (명령 `create-qorechain-dapp`) | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (명령 `create-qorechain-rollup`) | 0.7.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (명령 `qorollup`) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (템플릿이 사용하는 라이브러리) | 0.7.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (명령 `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (명령 `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (템플릿이 사용하는 라이브러리) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-소스: https://github.com/qorechain/qorechain-sdk/tree/main/cli (dApp 스캐폴더), https://github.com/qorechain/qorechain-rdk/tree/main/cli (롤업 스캐폴더), https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). RDK 0.7.0 릴리스는 PyPI, crates.io, Maven Central, Go 모듈 프록시에도 있습니다(2026년 10월 27일 확인). 모두 Apache-2.0입니다.
+소스: https://github.com/qorechain/qorechain-sdk/tree/main/cli (dApp 스캐폴더), https://github.com/qorechain/qorechain-rdk/tree/main/cli (롤업 스캐폴더), https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). RDK 0.8.0 릴리스는 PyPI, crates.io, Maven Central, Go 모듈 프록시에도 있습니다(2026년 10월 31일 확인). 모두 Apache-2.0입니다.
 
 ## 제한 사항 및 알려진 문제 {#limits}
 
 * **테스트 실행에서 `--network mainnet`은 생성된 파일을 바꾸지 않았습니다.** 2026년 10월 27일에 `fullstack-web`과 `custom-rollup`을 `--network mainnet`으로 스캐폴딩했는데, 생성된 `.env`는 여전히 localhost 엔드포인트(dApp) 또는 테스트넷 엔드포인트와 함께 `QORE_NETWORK=testnet`(롤업)을 담고 있었고, dApp의 `App.tsx`는 `testnet` 클라이언트를 생성했습니다. `.env`에서, 웹 템플릿은 `src/App.tsx`에서도 네트워크와 엔드포인트를 직접 설정하세요.
-* **아직 두 네트워크 어디에도 롤업이 없습니다**(2026년 10월 27일 확인). 롤업 도구의 어떤 트랜잭션 경로도 라이브 롤업에서 실행해 본 적이 없습니다. 먼저 테스트넷에서 모든 것을 검증하고 [RDK 0.7.0: 변경 사항 및 제한](/rollups/deploying-a-rollup#rdk-050-limits)을 읽으세요.
+* **아직 두 네트워크 어디에도 롤업이 없습니다**(2026년 10월 27일 확인). 롤업 도구의 어떤 트랜잭션 경로도 라이브 롤업에서 실행해 본 적이 없습니다. 먼저 테스트넷에서 모든 것을 검증하고 [RDK 0.8.0: 변경 사항 및 제한](/rollups/deploying-a-rollup#rdk-050-limits)을 읽으세요.
 * **`defi-rollup` 템플릿은 배치를 정산할 수 없습니다.** ZK 정산은 아직 어느 네트워크에서도 사용할 수 없으며(키 등록은 체인 v3.2.7에서 제공될 예정), 데모 회로는 어떤 경우에도 체인의 증명 검사를 통과할 수 없습니다. 0.7.0부터 템플릿은 전송 전에 멈추므로, 체인이 항상 거부하는 배치에 더 이상 수수료를 쓰지 않습니다. 상황이 바뀔 때까지는 `optimistic` 정산을 쓰는 템플릿을 사용하세요([ZK, STARK 및 출금](/rollups/zk-stark-withdrawals) 참조).
 * **`multivm-rollup` 템플릿은 아직 라이브가 아닌 것에 의존합니다.** `0x0000000000000000000000000000000000000901`의 크로스 VM 프리컴파일은 어느 네트워크에서도 활성화되어 있지 않으므로 컨트랙트에서의 호출은 아무 일도 하지 않습니다. 템플릿은 이를 확인하며 컨트랙트는 조용히 실패하는 대신 되돌려지도록(revert) 작성되어 있습니다([멀티 VM](/rollups/multi-vm) 참조).
-* **`qorollup` 트랜잭션 명령은 고전 서명만 합니다.** `create`, `pause`, `resume`, `stop`, `withdraw`는 포스트 양자 키 없이 연결되며, 두 네트워크 모두 네이티브 레인에서 이를 거부합니다. 읽기, `doctor`, `params`, `receipt`, `--dry-run`은 영향을 받지 않습니다. 트랜잭션을 보내려면 스캐폴딩된 프로젝트(그 스크립트는 하이브리드로 서명함), `pqcKeypair`를 사용하는 TypeScript RDK, 또는 체인 CLI를 사용하세요.
+* **`qorollup` 트랜잭션 명령에는 포스트 양자 키가 필요합니다(0.7.1 이상).** `create`, `pause`, `resume`, `stop`, `withdraw`는 두 네트워크가 요구하는 대로 하이브리드(ML-DSA-87 + secp256k1)로 서명하며, `--mnemonic` / `QORE_MNEMONIC`에서 파생되어 체인과 대조된 키를 사용하거나, `--key`와 함께 `--pqc-seed` / `QORE_PQC_SEED_HEX`를 사용합니다. 키가 없으면 명령은 전송을 거부합니다. 0.7.0 이전에는 이 명령들이 클래식 서명만 해서 네트워크가 모두 거부했습니다. 업그레이드하거나, 스캐폴딩된 프로젝트(그 스크립트는 하이브리드로 서명함), `pqcKeypair`를 사용하는 TypeScript RDK, 또는 체인 CLI를 사용하세요. 읽기, `doctor`, `params`, `receipt`, `--dry-run`에는 키가 필요 없었습니다. 실제 네트워크에서는 검증되지 않았습니다. 롤업이 없기 때문입니다.
 * **일부 `qorollup` 도우미는 아직 연결할 대상이 없습니다.** 10월 27일 테스트넷에 대한 `advise`는 수수료, 네트워크, 사기, RL 에이전트 항목(노드가 501 또는 "method does not exist"로 응답)과 존재하지 않는 롤업에 대해 "advisory unavailable"을 출력했습니다. `suggest`는 `source: fallback`인 프로필을 반환했으며, 이는 어시스턴트 서비스 대신 내장 기본 목록이 사용되었음을 나타냅니다. 경고를 읽으세요.
 * **`rollup-app`은 요청할 때만 브로드캐스트합니다.** 기본값은 드라이런이며, `QORE_BROADCAST=1`이면 계정의 ML-DSA-87 키를 한 번 등록하고 하이브리드로 서명합니다. 샘플 롤업 값은 예시일 뿐이므로 실제 프로필 이름과 스테이크는 [프리셋 프로필](/rollups/preset-profiles)에서 가져오세요.
 * **`fullstack-web`은 토크노믹스 버튼에서 오류를 표시합니다.** 해당 패널은 공개 엔드포인트가 제공하지 않는 `qor_` JSON-RPC 메서드를 호출하며, 잔액 조회는 동작합니다. `client.rest.getBurnStats()` 같은 REST 읽기로 대체하세요.

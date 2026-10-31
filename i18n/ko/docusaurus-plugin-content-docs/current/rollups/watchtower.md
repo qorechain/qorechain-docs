@@ -17,7 +17,7 @@ Watchtower는 옵티미스틱 롤업을 위한 자동 챌린저 프레임워크�
 `validate` 함수를 호출하고 여러분이 반환한 값에 따라 행동할 뿐입니다.
 
 :::caution 초기 단계: 아직 감시할 대상이 없음
-Watchtower는 RDK REST 클라이언트를 통해 배치를 읽으며, `/qorechain/rdk/v1/…` 경로는 두 네트워크 모두에서 제공됩니다. 어느 네트워크에서도 롤업이 생성된 적이 없으므로(2026년 10월 27일 확인) 아직 감시할 대상이 없으며 Watchtower가 실제 배치를 상대로 실행된 적도 없습니다. `@qorechain/rdk` 0.5.0에서는 마감 로직이 잘못되어 있었고(블록 높이를 Unix 타임스탬프로 읽어서 `onDeadline`이 배치가 처음 감지되는 즉시 발생했습니다) 첫 페이지의 50개 배치만 읽었습니다. **0.6.0이 둘 다 수정했습니다**(아래 참조). 현재 릴리스인 0.7.0을 사용하세요.
+Watchtower는 RDK REST 클라이언트를 통해 배치를 읽으며, `/qorechain/rdk/v1/…` 경로는 두 네트워크 모두에서 제공됩니다. 어느 네트워크에서도 롤업이 생성된 적이 없으므로(2026년 10월 27일 확인) 아직 감시할 대상이 없으며 Watchtower가 실제 배치를 상대로 실행된 적도 없습니다. `@qorechain/rdk` 0.5.0에서는 마감 로직이 잘못되어 있었고(블록 높이를 Unix 타임스탬프로 읽어서 `onDeadline`이 배치가 처음 감지되는 즉시 발생했습니다) 첫 페이지의 50개 배치만 읽었습니다. **0.6.0이 둘 다 수정했습니다**(아래 참조). 현재 릴리스인 0.8.0을 사용하세요(Watchtower 자체는 0.7.0에서 마지막으로 변경되었습니다).
 :::
 
 ## `watchBatches`
@@ -29,7 +29,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.8.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;

@@ -92,7 +92,7 @@ The `--proof` value is the inclusion proof: the sibling hashes along the path fr
 * Every sibling hash must be exactly 32 bytes.
 * **Withdrawals root (from chain v3.2.5, both networks):** a batch's `withdrawals_root` is either empty or exactly 32 bytes; before v3.2.5 that length rule was not enforced.
 
-Do not hand-roll this tree. `withdrawalsTree` in `@qorechain/rdk` 0.7.0 (and its Python, Go, Rust and Java equivalents) builds a batch's withdrawals root and every proof exactly as the chain does, and was checked against the chain's own verifier; `assembleWithdrawalProof` builds the chain's tree by default, and the generic Merkle helpers now default to SHAKE-256.
+Do not hand-roll this tree. `withdrawalsTree` in `@qorechain/rdk` 0.7.0 and later (and its Python, Go, Rust and Java equivalents) builds a batch's withdrawals root and every proof exactly as the chain does, and was checked against the chain's own verifier; `assembleWithdrawalProof` builds the chain's tree by default, and the generic Merkle helpers now default to SHAKE-256.
 
 :::caution Releases before 0.7.0
 In `@qorechain/rdk` 0.6.2 and earlier, the generic `binaryMerkleRoot` / `binaryMerkleProof` helpers (and their Python, Go, Rust and Java equivalents) defaulted to SHA-256 with duplicated odd nodes and re-hashed each leaf, while the chain uses SHAKE-256 and builds its leaves from the withdrawal, so a proof built with those defaults never verified on chain. Upgrade to 0.7.0, or override the hash and leaf encoding to the rules above, or the proof will not verify on-chain.

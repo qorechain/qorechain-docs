@@ -92,7 +92,7 @@ El valor de `--proof` es la prueba de inclusión: los hashes hermanos a lo largo
 * Cada hash hermano debe tener exactamente 32 bytes.
 * **Raíz de retiros (desde la v3.2.5 de la cadena, ambas redes):** el `withdrawals_root` de un lote está vacío o mide exactamente 32 bytes; antes de v3.2.5 esa regla de longitud no se aplicaba.
 
-No construyas este árbol a mano. `withdrawalsTree` en `@qorechain/rdk` 0.7.0 (y sus equivalentes en Python, Go, Rust y Java) construye la raíz de retiros de un lote y cada prueba exactamente como lo hace la cadena, y se comprobó contra el propio verificador de la cadena; `assembleWithdrawalProof` construye por defecto el árbol de la cadena, y los helpers genéricos de Merkle ahora usan SHAKE-256 por defecto.
+No construyas este árbol a mano. `withdrawalsTree` en `@qorechain/rdk` 0.7.0 y posteriores (y sus equivalentes en Python, Go, Rust y Java) construye la raíz de retiros de un lote y cada prueba exactamente como lo hace la cadena, y se comprobó contra el propio verificador de la cadena; `assembleWithdrawalProof` construye por defecto el árbol de la cadena, y los helpers genéricos de Merkle ahora usan SHAKE-256 por defecto.
 
 :::caution Versiones anteriores a la 0.7.0
 En `@qorechain/rdk` 0.6.2 y anteriores, los helpers genéricos `binaryMerkleRoot` / `binaryMerkleProof` (y sus equivalentes en Python, Go, Rust y Java) usaban por defecto SHA-256 con nodos impares duplicados y volvían a calcular el hash de cada hoja, mientras que la cadena usa SHAKE-256 y construye sus hojas a partir del retiro, así que una prueba construida con esos valores por defecto nunca se verificó on-chain. Actualiza a la 0.7.0, o sobrescribe el hash y la codificación de hojas con las reglas anteriores, o la prueba no se verificará on-chain.

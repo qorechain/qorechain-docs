@@ -12,7 +12,7 @@ sidebar_position: 9
 يُراقب الإطار ويقرر *متى*؛ بينما **أنت من يوفّر فحص الصلاحية**. لا يقرر برج المراقبة من تلقاء نفسه أبدًا أن دُفعةً ما احتيالية — بل يستدعي دالة `validate` لديك ويتصرف بناءً على ما تُعيده.
 
 :::caution مرحلة مبكرة: لا يوجد ما يمكن مراقبته بعد
-يقرأ برج المراقبة الدُفعات عبر عميل REST الخاص بالـ RDK، ومسارات `/qorechain/rdk/v1/…` تُقدَّم على الشبكتين. لم يتم إنشاء أي تجميع (rollup) على أي من الشبكتين (تم التحقق في 27 أكتوبر 2026)، ولذلك لا يوجد ما يمكن مراقبته بعد ولم يعمل برج المراقبة على دُفعة حيّة. وفي `@qorechain/rdk` 0.5.0 كان منطق الموعد النهائي فيه خاطئًا (إذ كان يقرأ ارتفاع كتلة على أنه طابع زمني Unix، فيُطلَق `onDeadline` بمجرد رؤية الدُفعة لأول مرة) وكان يقرأ الصفحة الأولى فقط من 50 دُفعة؛ و**الإصدار 0.6.0 أصلح الأمرين** (انظر أدناه). استخدم 0.7.0، وهو الإصدار الحالي.
+يقرأ برج المراقبة الدُفعات عبر عميل REST الخاص بالـ RDK، ومسارات `/qorechain/rdk/v1/…` تُقدَّم على الشبكتين. لم يتم إنشاء أي تجميع (rollup) على أي من الشبكتين (تم التحقق في 27 أكتوبر 2026)، ولذلك لا يوجد ما يمكن مراقبته بعد ولم يعمل برج المراقبة على دُفعة حيّة. وفي `@qorechain/rdk` 0.5.0 كان منطق الموعد النهائي فيه خاطئًا (إذ كان يقرأ ارتفاع كتلة على أنه طابع زمني Unix، فيُطلَق `onDeadline` بمجرد رؤية الدُفعة لأول مرة) وكان يقرأ الصفحة الأولى فقط من 50 دُفعة؛ و**الإصدار 0.6.0 أصلح الأمرين** (انظر أدناه). استخدم 0.8.0، وهو الإصدار الحالي (وآخر تغيير في برج المراقبة نفسه كان في 0.7.0).
 :::
 
 ## `watchBatches`
@@ -24,7 +24,7 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.7.0: changes and limits" in Deploying a Rollup). Without it the
+// "RDK 0.8.0: changes and limits" in Deploying a Rollup). Without it the
 // transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;

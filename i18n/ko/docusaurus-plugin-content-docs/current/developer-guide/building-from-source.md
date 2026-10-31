@@ -68,6 +68,8 @@ QoreChain은 **오픈 코어** 모델을 따릅니다:
 
 두 빌드 모두 동일한 `qorechaind` 바이너리 이름을 생성하고 동일한 CLI 명령을 노출합니다. 차이점은 해당 인터페이스 뒤에 있는 keeper 로직의 런타임 동작에 있습니다.
 
+[github.com/qorechain/qorechain-core](https://github.com/qorechain/qorechain-core)의 `v3.2.5` 태그는 메인넷이 실행 중인 릴리스의 오픈 코어 소스입니다. 공개 빌드는 스텁 keeper를 사용하므로 합의 상태를 재현할 수 없으며, 따라서 노드는 이 태그로 빌드한 바이너리가 아니라 매니페스트(`latest.json`, [download.qore.host](https://download.qore.host/mainnet/latest.json))에 명시된 릴리스 번들을 사용해야 합니다.
+
 ## 커뮤니티 빌드
 
 ```bash
