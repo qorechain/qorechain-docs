@@ -325,7 +325,7 @@ her başarılı yürütmede artırılan bir sayaç.
   (`eth_getTransactionCount`) **değildir**.
 - `MsgExecuteCosmos.nonce` aynı türden bir sayaçtır.
 
-Zincir v3.2.4'ten (her iki ağ da rotayı sunar) ve SDK 0.10.0'dan itibaren sayacı
+Zincir v3.2.4'ten (her iki ağ da rotayı sunar) ve SDK 0.10.0 veya sonrasından itibaren sayacı
 takip etmek yerine okuyabilirsiniz: `fetchAuthNonce({ rest, address, pubkey })`,
 `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` adresini çağırır ve
 `{ nonce, linked }` döndürür. Hiç yürütmemiş bir anahtar 0 okur ve sayaç, artık
@@ -334,6 +334,24 @@ güncel sayacı olmayan bir değer göndermek bir tekrar oynatma (replay) reddiy
 sonuçlanır (`abstractaccount` kodu 11, aşağıya bakın). Daha eski bir SDK veya zincirle
 onu bağlı anahtar başına kendiniz takip edin: yeni bağlanmış bir anahtar için 0,
 zincirin kabul ettiği her yürütmeden sonra +1.
+
+## Saklanan kuralları ve bağlı anahtarları okuma {#reads}
+
+Zincir v3.2.5'ten (SDK 0.12.0) itibaren her iki ağa, bir hesabın sakladıklarını
+işlemlerden yeniden kurmak yerine doğrudan sorabilirsiniz:
+
+* `fetchSpendingRules({ rest, address })`, harcama kurallarını hesap genelinde ve
+  bağlı anahtar başına okur (`GET /qorechain/abstractaccount/v1/accounts/{address}/spending_rules`).
+* `fetchAuthenticators({ rest, address })`, bağlı anahtarları, iptal edilenler dahil
+  okur (`.../accounts/{address}/authenticators`).
+* `msg.abstractaccount.updateConfig`, modülün sınırlarını belirleyen yönetişim
+  mesajıdır (yetkili, yönetişim modülü hesabıdır; bu yüzden sıradan bir hesap onu
+  gönderemez). SDK değerleri imzalamadan önce denetler.
+
+Kurallar zincirin denetlediği gibi denetlenir: bir `erc20/`, `erc721/` veya `erc1155/` denom'u
+bir `0x` sözleşme adresi belirtmelidir ve modülün 8 (geçersiz harcama kuralı)
+ve 9 (modül devre dışı) kodları adlandırılır. Modül mainnet'te hâlâ kapalıdır
+ve testnet'te etkindir.
 
 ## Yetki şeması
 

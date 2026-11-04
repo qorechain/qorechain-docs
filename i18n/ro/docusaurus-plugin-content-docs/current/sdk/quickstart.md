@@ -15,30 +15,33 @@ Python, Go și Rust urmează la final.
 
 `createClient()` rezolvă o rețea și compune clienții de citire, un helper
 pentru taxe și un punct de intrare pentru semnare inițializat leneș (lazy).
-Vizează implicit testnetul public (`qorechain-diana`). Endpoint-urile implicite
-indică spre **localhost**, așa că transmiteți `endpoints` pentru a comunica cu
-un nod real. Endpoint-urile publice sunt listate în
+Vizează implicit testnetul public (`qorechain-diana`), pe endpoint-urile publice (acest lucru s-a schimbat în SDK
+0.12.0: versiunile anterioare foloseau implicit **localhost** și cereau `endpoints`). Transmiteți
+`endpoints` pentru a folosi propriul nod sau selectați `localnet` pentru un nod de pe mașina dumneavoastră.
+Endpoint-urile publice sunt listate în
 [referința rețelei](/sdk/reference/network#public-endpoints).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
 
-// Testnet (chain id "qorechain-diana"), default localhost endpoints.
+// Testnet (chain id "qorechain-diana"), public testnet endpoints (SDK 0.12.0+).
 const client = createClient();
 
-// Point at the public testnet by overriding endpoints.
+// A node on this machine (chain id "qorechain-devnet", localhost ports).
+const local = createClient({ network: "localnet" });
+
+// Your own node: override any endpoint, the rest keep the preset's values.
 const remote = createClient({
   endpoints: {
-    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
-    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
-    evmRpc: "https://evm-testnet.qore.host", // EVM JSON-RPC (eth_*)
+    rest: "https://lcd.my-node.example",   // Native REST (LCD)
+    rpc: "https://rpc.my-node.example",    // consensus RPC (for signing)
   },
 });
 ```
 
-Mainnetul (chain id `qorechain-vladi`) este live. Selectați-l și suprascrieți
-valorile implicite localhost cu endpoint-urile publice (sau cu propriul
-dumneavoastră nod):
+Mainnetul (chain id `qorechain-vladi`) este live. Selectați-l; presetarea poartă
+endpoint-urile publice de mainnet. Apelul de mai jos le scrie explicit, ceea ce un SDK anterior lui
+0.12.0 are nevoie:
 
 ```ts
 const main = createClient({
@@ -109,7 +112,7 @@ contului trebuie să fie **înregistrată mai întâi on-chain**. Înregistrarea
 explicită: nu există înregistrare automată la prima tranzacție. O tranzacție
 semnată doar clasic este refuzată de rețelele live, așa că dați clientului de
 tranzacții perechea de chei ML-DSA-87 a contului și acesta semnează hibrid fiecare
-tranzacție. Cei doi pași de mai jos necesită **SDK 0.9.0 sau mai nou** (0.10.0 este cea curentă) și un cont
+tranzacție. Cei doi pași de mai jos necesită **SDK 0.9.0 sau mai nou** (0.12.0 este cea curentă) și un cont
 alimentat cu fonduri:
 
 ```bash
@@ -163,8 +166,11 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 ### 4b. Trimiterea cu semnătură hibridă
 
 `tx.bankSend` semnează acum hibrid. Taxa este implicit `"auto"`: clientul simulează
-chiar tranzacția hibridă și adaugă gazul verificării post-cuantice, pe care
-simularea nu îl taxează. Prețul minim al gazului în rețea este de 0,1 uqor per
+chiar tranzacția hibridă. Pe o rețea care a aplicat v3.2.5 (ambele au aplicat-o), SDK
+0.12.0 stabilește limita de gaz la `ceil(simulated x 1.02) + 2000`, deoarece simularea
+taxează deja verificarea post-cuantică: un transfer bancar hibrid cere aproximativ
+171.600 de gaz. Pe rețelele mai vechi și cu SDK 0.10.0 sau mai vechi, clientul adaugă singur
+gazul verificării post-cuantice (aproximativ 289.000 pentru același transfer). Prețul minim al gazului în rețea este de 0,1 uqor per
 unitate de gaz (clientul calculează la 0,15). Folosiți `toBase("1.5")` pentru a
 converti QOR în `uqor` de bază.
 

@@ -166,7 +166,7 @@ L'identifiant de chaîne ci-dessus est celui du testnet ; utilisez `qorechain-vl
 
 Les deux réseaux répondent à `GET /qorechain/stakingtier/v1/params` avec les mêmes réglages : trois durées, un minimum de 10 QOR (`min_lock_amount` `"10000000"` uqor), une pénalité de sortie anticipée de 500 points de base (5 %) et `enabled: true`. La réponse contient aussi les réglages de bonus en points de base ; ce manuel ne les cite pas, car un bonus n'est pas un rendement promis et les réglages peuvent être modifiés par la gouvernance. `GET /qorechain/stakingtier/v1/pool` montre le pool qui paie les récompenses des verrous.
 
-**Clients.** La ligne de commande (ci-dessus) et `@qorechain/sdk` 0.10.0, qui propose les composeurs `lockDelegation`, `unlockEarly` et `claimBonus` ainsi que les lectures `fetchStakingTierParams`, `fetchStakingLocks` et `fetchStakingTierPool` (voir [Installation du SDK](/sdk/install)). Aucune version publiée de QoreX ou du Dashboard n'a d'écran de verrouillage aujourd'hui : le verrouillage sur le mainnet se fait donc avec la CLI ou le SDK.
+**Clients.** La ligne de commande (ci-dessus) et `@qorechain/sdk` (0.10.0 ou ultérieur ; la 0.12.0 est la version actuelle), qui propose les composeurs `lockDelegation`, `unlockEarly` et `claimBonus` ainsi que les lectures `fetchStakingTierParams`, `fetchStakingLocks` et `fetchStakingTierPool` (voir [Installation du SDK](/sdk/install)). Aucune version publiée de QoreX ou du Dashboard n'a d'écran de verrouillage aujourd'hui : le verrouillage sur le mainnet se fait donc avec la CLI ou le SDK.
 
 **Ne confondez pas** avec le [staking xQORE](/user-guide/xqore-staking), qui est un mécanisme conçu mais non actif, ni avec la classification à triple pool ci-dessous, qui ne change pas ce que vous recevez.
 

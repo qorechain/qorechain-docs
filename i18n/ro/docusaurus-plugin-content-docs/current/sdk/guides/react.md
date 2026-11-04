@@ -16,20 +16,20 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
 `react` (>=18) este o dependență peer; `@qorechain/sdk` este o dependență directă
-(`^0.10.0` începând cu kit-ul 0.10.0; pe o versiune 0.x, caret-ul rămâne în interiorul
-lui 0.10, deci un patch al SDK-ului nu instalează o a doua copie). Folosește
-`@qorechain/react` **0.10.0** (0.9.0 funcționează la fel): 0.8.0 fixează SDK 0.8.0, care semnează forma hibridă
+(`^0.12.0` începând cu kit-ul 0.12.0; pe o versiune 0.x, caret-ul rămâne în interiorul
+lui 0.12, deci un patch al SDK-ului nu instalează o a doua copie). Folosește
+`@qorechain/react` **0.12.0** (0.9.0 și versiunile ulterioare funcționează la fel): 0.8.0 fixează SDK 0.8.0, care semnează forma hibridă
 greșită pe mainnet, iar versiunile 0.8.x anterioare pot afișa un sold sau o stare
 învechită după o schimbare de adresă.
 
-:::caution Limitele kit-ului React pe rețelele live (0.9.0 și 0.10.0)
+:::caution Limitele kit-ului React pe rețelele live (0.9.0 până la 0.12.0)
 `useTx` se conectează cu semnatarul portofelului și fără o pereche de chei
 post-cuantice, deci trimite doar cu semnătura clasică, pe care rețelele live o resping
 (calea Native cere extensia hibridă ML-DSA-87): `send` / `sendTokens` nu pot înscrie o
 tranzacție pe mainnet sau testnet. Pentru trimiteri folosește `TxClient`-ul hibrid al
 SDK-ului (`client.connectTx(signer, { pqcKeypair })`, vezi
 [Semnare hibridă](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` și
-`<QuantumSafeBadge/>` citesc starea prin `getPqcStatus` cu clientul compus al
+`<PqcStatusBadge/>` citesc starea prin `getPqcStatus` cu clientul compus al
 provider-ului, care începând cu SDK 0.9.0 citește prin REST
 (`/qorechain/pqc/v1/account/{address}`), deci funcționează față de `*.qore.host`
 (kit-ul 0.8.x citea `qor_getPQCKeyStatus`, pe care endpoint-urile publice nu îl
@@ -135,23 +135,29 @@ total:
 <ConnectButton wallets={["keplr", "leap", "evm"]} />
 ```
 
-### `<QuantumSafeBadge/>`
+### `<PqcStatusBadge/>` {#pqc-status-badge}
 
 Afișează un indicator de stare atunci când adresa are o cheie post-cuantică
 înregistrată (prin `usePqcStatus`), altfel o stare estompată „not registered”. Implicit la
-contul conectat.
+contul conectat. Etichetele implicite sunt „PQC key registered” și „No PQC key”
+(suprascrieți-le cu `safeLabel` / `unsafeLabel`); elementul rădăcină poartă
+`data-pqc-status` și `data-quantum-safe`, cu aceleași valori.
 
 ```tsx
-<QuantumSafeBadge />
-<QuantumSafeBadge address="qor1…" hideWhenUnsafe />
+<PqcStatusBadge />
+<PqcStatusBadge address="qor1…" hideWhenUnsafe />
 ```
+
+`PqcStatusBadge` a apărut în kit 0.11.0. `QuantumSafeBadge` (împreună cu `QuantumSafeBadgeProps`
+și `QuantumSafeRenderState`) este în continuare exportat ca alias depreciat al aceleiași
+componente, astfel încât codul existent continuă să funcționeze.
 
 ## Punând totul cap la cap
 
 ```tsx
 import {
   ConnectButton,
-  QuantumSafeBadge,
+  PqcStatusBadge,
   useAccount,
   useBalance,
 } from "@qorechain/react";
@@ -164,7 +170,7 @@ function Dashboard() {
       <ConnectButton wallets={["keplr", "leap", "evm"]} />
       {isConnected && (
         <p>
-          {balance?.amount ?? "…"} {balance?.denom} <QuantumSafeBadge />
+          {balance?.amount ?? "…"} {balance?.denom} <PqcStatusBadge />
         </p>
       )}
     </>

@@ -16,18 +16,18 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
 `react`（>=18）はピア依存です。`@qorechain/sdk` は直接の依存です
-（キット 0.10.0 以降は `^0.10.0`。0.x バージョンではキャレットは 0.10 の内側にとどまるため、SDK の
-パッチリリースで 2 つ目のコピーがインストールされることはありません）。`@qorechain/react` は **0.10.0** を使用してください（0.9.0 も同様に動作します）。0.8.0 は SDK 0.8.0 に
+（キット 0.12.0 以降は `^0.12.0`。0.x バージョンではキャレットは 0.12 の内側にとどまるため、SDK の
+パッチリリースで 2 つ目のコピーがインストールされることはありません）。`@qorechain/react` は **0.12.0** を使用してください（0.9.0 以降も同様に動作します）。0.8.0 は SDK 0.8.0 に
 固定されており、これはメインネットで誤ったハイブリッド形式で署名します。また、それ以前の 0.8.x
 リリースでは、アドレス変更後に古い残高やステータスが表示されることがあります。
 
-:::caution React キットのライブネットワークにおける制限（0.9.0 および 0.10.0）
+:::caution React キットのライブネットワークにおける制限（0.9.0 から 0.12.0）
 `useTx` はウォレットの署名者で接続し、ポスト量子鍵ペアは持たないため、従来型署名のみで送信しますが、
 ライブネットワークはこれを拒否します（Native パスはハイブリッド ML-DSA-87 拡張を必要とします）。そのため、
 `send` / `sendTokens` ではメインネットでもテストネットでもトランザクションを確定できません。送信には SDK の
 ハイブリッド `TxClient`
 （`client.connectTx(signer, { pqcKeypair })`、
-[ハイブリッド署名](/sdk/guides/quantum-safe#register-in-one-call)を参照）を使用してください。`usePqcStatus` と `<QuantumSafeBadge/>` は、
+[ハイブリッド署名](/sdk/guides/quantum-safe#register-in-one-call)を参照）を使用してください。`usePqcStatus` と `<PqcStatusBadge/>` は、
 プロバイダーの合成クライアントとともに
 `getPqcStatus` を通じてステータスを読み取ります。これは SDK 0.9.0 以降 REST
 （`/qorechain/pqc/v1/account/{address}`）経由で読み取るため、`*.qore.host` に対して動作します
@@ -134,23 +134,29 @@ function Send() {
 <ConnectButton wallets={["keplr", "leap", "evm"]} />
 ```
 
-### `<QuantumSafeBadge/>`
+### `<PqcStatusBadge/>` {#pqc-status-badge}
 
 アドレスに登録済みのポスト量子鍵がある場合（`usePqcStatus` を介して）にステータス
 インジケーターを表示し、そうでない場合は控えめな「未登録」状態を表示します。
-デフォルトでは接続中のアカウントを対象とします。
+デフォルトでは接続中のアカウントを対象とします。既定のラベルは「PQC key registered」と「No PQC key」です
+（`safeLabel` / `unsafeLabel` で上書きできます）。ルート要素は `data-pqc-status` と `data-quantum-safe` を持ち、
+値は同じです。
 
 ```tsx
-<QuantumSafeBadge />
-<QuantumSafeBadge address="qor1…" hideWhenUnsafe />
+<PqcStatusBadge />
+<PqcStatusBadge address="qor1…" hideWhenUnsafe />
 ```
+
+`PqcStatusBadge` はキット 0.11.0 で登場しました。`QuantumSafeBadge`（`QuantumSafeBadgeProps` と
+`QuantumSafeRenderState` を含む）は、同じコンポーネントの非推奨エイリアスとして引き続きエクスポートされているため、
+既存のコードはそのまま動作します。
 
 ## まとめて使う
 
 ```tsx
 import {
   ConnectButton,
-  QuantumSafeBadge,
+  PqcStatusBadge,
   useAccount,
   useBalance,
 } from "@qorechain/react";
@@ -163,7 +169,7 @@ function Dashboard() {
       <ConnectButton wallets={["keplr", "leap", "evm"]} />
       {isConnected && (
         <p>
-          {balance?.amount ?? "…"} {balance?.denom} <QuantumSafeBadge />
+          {balance?.amount ?? "…"} {balance?.denom} <PqcStatusBadge />
         </p>
       )}
     </>

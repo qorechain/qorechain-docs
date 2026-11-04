@@ -16,19 +16,19 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
 إنّ `react` (>=18) هو اعتمادية نظيرة؛ و`@qorechain/sdk` اعتمادية مباشرة
-(`^0.10.0` منذ العدّة 0.10.0؛ وعلى إصدار 0.x يبقى رمز caret ضمن 0.10، فلا تثبّت
-تحديثة SDK نسخة ثانية). استخدم `@qorechain/react` **الإصدار 0.10.0** (ويعمل 0.9.0 بالطريقة نفسها): فالإصدار 0.8.0
+(`^0.12.0` منذ العدّة 0.12.0؛ وعلى إصدار 0.x يبقى رمز caret ضمن 0.12، فلا تثبّت
+تحديثة SDK نسخة ثانية). استخدم `@qorechain/react` **الإصدار 0.12.0** (ويعمل 0.9.0 وما بعده بالطريقة نفسها): فالإصدار 0.8.0
 يثبّت SDK 0.8.0، الذي يوقّع الصيغة الهجينة الخاطئة على الشبكة الرئيسية،
 وقد تعرض إصدارات 0.8.x الأقدم رصيدًا أو حالة قديمة بعد تغيير العنوان.
 
-:::caution حدود العدّة React على الشبكات الحيّة (0.9.0 و0.10.0)
+:::caution حدود العدّة React على الشبكات الحيّة (من 0.9.0 إلى 0.12.0)
 يتصل `useTx` بموقّع المحفظة ودون زوج مفاتيح ما بعد كمّي، ولذلك يرسل
 بالتوقيع الكلاسيكي فقط، وهو ما ترفضه الشبكات الحيّة (يتطلّب المسار الأصلي امتداد
 ML-DSA-87 الهجين): لا يمكن لـ `send` / `sendTokens` إدراج معاملة على الشبكة
 الرئيسية أو شبكة الاختبار. أرسل باستخدام `TxClient` الهجين في الـ SDK
 (`client.connectTx(signer, { pqcKeypair })`، انظر
 [التوقيع الهجين](/sdk/guides/quantum-safe#register-in-one-call)) لعمليات الإرسال.
-يقرأ `usePqcStatus` و`<QuantumSafeBadge/>` الحالة عبر
+يقرأ `usePqcStatus` و`<PqcStatusBadge/>` الحالة عبر
 `getPqcStatus` مع العميل المُركّب للمزوّد، الذي يقرأ منذ SDK 0.9.0 عبر
 REST (`/qorechain/pqc/v1/account/{address}`)، ولذلك يعملان مقابل `*.qore.host`
 (كانت العدّة 0.8.x تقرأ `qor_getPQCKeyStatus`، التي لا تقدّمها نقاط النهاية
@@ -134,23 +134,29 @@ function Send() {
 <ConnectButton wallets={["keplr", "leap", "evm"]} />
 ```
 
-### `<QuantumSafeBadge/>`
+### `<PqcStatusBadge/>` {#pqc-status-badge}
 
 يُظهِر مؤشر حالة عندما يكون للعنوان مفتاح ما بعد كمّي مسجّل
 (عبر `usePqcStatus`)، وإلّا حالة "غير مسجّل" مكتومة. القيمة الافتراضية هي
-الحساب المتّصل.
+الحساب المتّصل. التسميتان الافتراضيتان هما "PQC key registered" و"No PQC key"
+(يمكن تجاوزهما بـ `safeLabel` / `unsafeLabel`)؛ ويحمل العنصر الجذري
+`data-pqc-status` و`data-quantum-safe` بالقيم نفسها.
 
 ```tsx
-<QuantumSafeBadge />
-<QuantumSafeBadge address="qor1…" hideWhenUnsafe />
+<PqcStatusBadge />
+<PqcStatusBadge address="qor1…" hideWhenUnsafe />
 ```
+
+جاء `PqcStatusBadge` مع العدّة 0.11.0. ولا يزال `QuantumSafeBadge` (مع `QuantumSafeBadgeProps`
+و`QuantumSafeRenderState`) مُصدَّرًا كاسم بديل مهجور للمكوّن نفسه،
+فتستمر الشيفرة الحالية في العمل.
 
 ## تجميع كلّ ذلك معًا
 
 ```tsx
 import {
   ConnectButton,
-  QuantumSafeBadge,
+  PqcStatusBadge,
   useAccount,
   useBalance,
 } from "@qorechain/react";
@@ -163,7 +169,7 @@ function Dashboard() {
       <ConnectButton wallets={["keplr", "leap", "evm"]} />
       {isConnected && (
         <p>
-          {balance?.amount ?? "…"} {balance?.denom} <QuantumSafeBadge />
+          {balance?.amount ?? "…"} {balance?.denom} <PqcStatusBadge />
         </p>
       )}
     </>

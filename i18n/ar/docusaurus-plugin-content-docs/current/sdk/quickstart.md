@@ -14,28 +14,33 @@ sidebar_position: 3
 
 تقوم الدالة `createClient()` بتحديد الشبكة وتجميع عملاء القراءة، وأداة مساعدة للرسوم،
 ونقطة دخول كسولة للتوقيع. وهي تستهدف شبكة الاختبار العامة
-(`qorechain-diana`) افتراضيًا. تشير نقاط النهاية الافتراضية إلى **localhost**، لذا
-مرِّر `endpoints` للتواصل مع عقدة حقيقية. نقاط النهاية العامة مدرجة في
+(`qorechain-diana`) افتراضيًا، على نقاط النهاية العامة (تغيّر هذا في SDK
+0.12.0: كانت الإصدارات الأقدم تستخدم **localhost** افتراضيًا وتحتاج `endpoints`). مرِّر
+`endpoints` لاستخدام عقدتك الخاصة، أو اختر `localnet` لعقدة على جهازك.
+نقاط النهاية العامة مدرجة في
 [مرجع الشبكة](/sdk/reference/network#public-endpoints).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
 
-// Testnet (chain id "qorechain-diana"), default localhost endpoints.
+// Testnet (chain id "qorechain-diana"), public testnet endpoints (SDK 0.12.0+).
 const client = createClient();
 
-// Point at the public testnet by overriding endpoints.
+// A node on this machine (chain id "qorechain-devnet", localhost ports).
+const local = createClient({ network: "localnet" });
+
+// Your own node: override any endpoint, the rest keep the preset's values.
 const remote = createClient({
   endpoints: {
-    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
-    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
-    evmRpc: "https://evm-testnet.qore.host", // EVM JSON-RPC (eth_*)
+    rest: "https://lcd.my-node.example",   // Native REST (LCD)
+    rpc: "https://rpc.my-node.example",    // consensus RPC (for signing)
   },
 });
 ```
 
-الشبكة الرئيسية (معرّف السلسلة `qorechain-vladi`) تعمل الآن. اخترها وتجاوز
-إعدادات localhost الافتراضية باستخدام نقاط النهاية العامة (أو عقدتك الخاصة):
+الشبكة الرئيسية (معرّف السلسلة `qorechain-vladi`) تعمل الآن. اخترها؛ ويحمل الإعداد المسبق
+نقاط نهاية الشبكة الرئيسية العامة. يذكرها الاستدعاء أدناه صراحةً، وهو ما يحتاجه SDK قبل
+0.12.0:
 
 ```ts
 const main = createClient({
@@ -104,7 +109,7 @@ const burn = await client.rest.getBurnStats();
 **تسجيل مفتاح ML-DSA-87 الخاص بالحساب على السلسلة أولًا**. التسجيل صريح: لا
 يوجد تسجيل تلقائي عند أول معاملة. وترفض الشبكات الحية المعاملة الموقَّعة توقيعًا
 كلاسيكيًا فقط، لذا مرّر إلى عميل المعاملات زوج مفاتيح ML-DSA-87 الخاص بالحساب
-فيوقّع كل معاملة توقيعًا هجينًا. تتطلب الخطوتان أدناه **SDK 0.9.0 أو أحدث** (والحالي 0.10.0) وحسابًا ممولًا:
+فيوقّع كل معاملة توقيعًا هجينًا. تتطلب الخطوتان أدناه **SDK 0.9.0 أو أحدث** (والحالي 0.12.0) وحسابًا ممولًا:
 
 ```bash
 npm i @qorechain/sdk
@@ -156,8 +161,11 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 ### 4b. أرسل بتوقيع هجين
 
 ترسل `tx.bankSend` الآن بتوقيع هجين. تكون الرسوم افتراضيًا `"auto"`: يحاكي العميل
-المعاملة الهجينة بنفسه ويضيف غاز التحقق ما بعد الكمّي، الذي لا تحتسبه المحاكاة.
-الحدّ الأدنى لسعر الغاز في الشبكة هو 0.1 uqor لكل وحدة غاز (ويسعّر العميل عند 0.15).
+المعاملة الهجينة بنفسه. وعلى شبكة طبّقت v3.2.5 (وقد طبّقتها الشبكتان)، يضبط SDK
+0.12.0 حدّ الغاز على `ceil(simulated x 1.02) + 2000`، لأن المحاكاة
+تحتسب أصلًا التحقق ما بعد الكمّي: يطلب إرسال bank هجين نحو
+171,600 غاز. أما على الشبكات الأقدم ومع SDK 0.10.0 أو أقدم، فيضيف العميل
+بنفسه غاز التحقق ما بعد الكمّي (نحو 289,000 للإرسال نفسه). الحدّ الأدنى لسعر الغاز في الشبكة هو 0.1 uqor لكل وحدة غاز (ويسعّر العميل عند 0.15).
 استخدم `toBase("1.5")` لتحويل QOR إلى وحدة الأساس `uqor`.
 
 ```ts

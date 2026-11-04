@@ -293,7 +293,7 @@ Distingui in base a codespace e codice insieme, e conserva il log grezzo.
 
 ## Dove è pubblicato {#where-published}
 
-Verificato sui registri il 27 ottobre 2026.
+Verificato sui registri il 4 novembre 2026 (versioni e tag invariati dal 27 ottobre).
 
 | Registro | Pacchetto | Versione | Link |
 |---|---|---|---|

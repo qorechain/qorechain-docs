@@ -11,15 +11,17 @@ sidebar_position: 8
 
 네, 메인넷은 **라이브** 상태입니다 (체인 ID `qorechain-vladi`, 2026년 6월 7일부터
 라이브이며, 체인 버전 v3.2.6을 실행합니다(2026년 11월 4일 높이 4,020,000에서 적용, 거버넌스 제안 15. v3.2.5는 2026년 10월 29일 높이 3,906,833에서, v3.2.4는 2026년 10월 23일 높이 3,742,566에서 적용). 테스트넷은 2026년 10월 27일부터 v3.2.6을 실행해 왔습니다). 테스트넷 프리셋
-(`qorechain-diana`)도 계속 사용할 수 있습니다. 두 프리셋 모두 기본값으로
-localhost 엔드포인트를 사용하므로, `createClient({ network: "mainnet" })`으로
-네트워크를 선택하고 `endpoints`를 여러분의 노드 URL로 재정의하세요. 자세한 내용은
+(`qorechain-diana`)도 계속 사용할 수 있습니다. SDK 0.12.0부터 두 프리셋 모두 기본값으로
+공개 엔드포인트를 사용하므로, `createClient({ network: "mainnet" })`으로
+네트워크를 선택하고 `endpoints`는 여러분의 노드에 대해서만 재정의하세요. 자세한 내용은
 [네트워크 및 엔드포인트](/sdk/reference/network) 문서를 참고하세요.
 
 ## 왜 호출이 localhost로 전송되나요?
 
-`createClient()`는 기본적으로 **localhost** 엔드포인트를 사용합니다. 실제 노드와
-통신하려면 `endpoints` 객체를 전달하세요:
+**0.12.0 이전**의 SDK를 사용 중이며, 그 프리셋은 기본값으로 **localhost** 엔드포인트를 사용합니다.
+업그레이드하거나 `endpoints` 객체를 전달하세요. 0.12.0부터 `createClient()`와
+`createClient({ network: "mainnet" })`는 공개 엔드포인트를 사용하고, localhost를 사용하는 것은
+`localnet` 프리셋입니다.
 
 ```ts
 const client = createClient({
@@ -30,6 +32,10 @@ const client = createClient({
   },
 });
 ```
+
+대신 "endpoint ... is not configured for the mainnet preset"가 표시된다면, 공개 프리셋이 설정하지 않는
+엔드포인트(gRPC, SVM RPC, 메인넷 EVM WebSocket)가 호출에 필요한 것이므로
+`endpoints`로 전달하세요.
 
 서명 경로(`connectTx`)는 컨센서스 **`rpc`** 엔드포인트가 필요하며, QoreChain Native 읽기
 작업도 이를 사용합니다. REST 읽기 작업은 `rest`를 사용하고, EVM 호출은
@@ -85,14 +91,14 @@ EVM 런타임은 QOR를 **18** 자리 소수(EVM 관례)로 표현하며, 이는
 
 ## 어떤 패키지가 배포되어 있으며, 어디에 있나요?
 
-모두 배포되어 있습니다(2026년 10월 27일 확인). TypeScript 코어(`@qorechain/sdk`, 0.10.0),
-React 키트(`@qorechain/react`, 0.10.0), `create-qorechain-dapp` 스캐폴더(0.10.0),
-그리고 EVM/SVM 어댑터(`@qorechain/evm`, `@qorechain/svm`, 0.8.0)는 npm에 있습니다.
-Python 클라이언트는 PyPI에 있으며(`pip install qorechain-sdk`로 0.10.0 설치, `qorsdk`로
+모두 배포되어 있습니다(2026년 11월 4일 확인). TypeScript 코어(`@qorechain/sdk`, 0.12.0),
+React 키트(`@qorechain/react`, 0.12.0), `create-qorechain-dapp` 스캐폴더(0.12.0),
+그리고 EVM/SVM 어댑터(`@qorechain/evm`, `@qorechain/svm`, 0.12.0)는 npm에 있습니다.
+Python 클라이언트는 PyPI에 있으며(`pip install qorechain-sdk`로 0.12.0 설치, `qorsdk`로
 import), Go 클라이언트는 모듈 프록시에 있습니다
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.10.0`). Rust 클라이언트는
-crates.io에 있으며(`cargo add qorechain-sdk`, 0.10.0), Java 클라이언트는 Maven Central에
-있습니다(`io.github.qorechain:qorechain-sdk:0.10.0`). 언어별 전체 설치 명령은
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`). Rust 클라이언트는
+crates.io에 있으며(`cargo add qorechain-sdk`, 0.12.0), Java 클라이언트는 Maven Central에
+있습니다(`io.github.qorechain:qorechain-sdk:0.12.0`, JDK 17 이상). 언어별 전체 설치 명령은
 [설치](/sdk/install) 문서를 참고하세요.
 
 ## 니모닉이 거부됩니다
@@ -117,7 +123,7 @@ v3.2.0). 하이브리드 트랜잭션이 PQC 검증을 통과하려면 서명자
 같은 서명과 tx 해시를 가집니다. 하이브리드 tx가 `pqc` 코드 21
 (`hybrid_verify_failed`)로 실패한다면 원인은 sign-bytes 버전, 체인 ID, 오래된 PQC
 라이브러리 또는 등록되지 않았거나 다른 키이며, 헤지 서명은 원인이 아닙니다.
-두 네트워크 모두 v2 sign-bytes 형식을 검증하므로 SDK **0.8.1 이상**(현재는 0.10.0)을
+두 네트워크 모두 v2 sign-bytes 형식을 검증하므로 SDK **0.8.1 이상**(현재는 0.12.0)을
 사용하고 `rest`(또는 `signBytesVersion`)를 전달하세요. 둘 중 하나가 없으면 빌더는
 `qorechain-vladi` / `qorechain-diana`에서 오류를 발생시킵니다. 자세한 내용은
 [코드 21 문제 해결](/developer-guide/post-quantum-signing#code-21) 및
@@ -142,11 +148,15 @@ SDK를 업그레이드하세요. **0.6.0 이하** 버전은
 
 ## SDK는 어떤 체인 버전과 함께 동작하나요?
 
-SDK **0.10.0**은 체인 **v3.2.4**(메인넷은 2026년 10월 23일 높이 3,742,566에서
-거버넌스 제안 13으로, 테스트넷은 10월 19일부터)를 위한 클라이언트 릴리스입니다. 메인넷은 2026년 11월 4일부터 v3.2.6을 실행 중이며(v3.2.5는 10월 29일부터) 서명 형식이 바뀌지 않았으므로 0.10.0은 그곳에서 계속 동작합니다.
-스테이킹 티어 빌더와 조회, `fetchAuthNonce`, 프로토콜 기능 조회가 추가되었으며
-([0.10.0의 추가 사항](/sdk/install#whats-new-0100) 참고), 그 위에 0.9.0이 v3.2.2와
-v3.2.3을 위해 추가한 것이 있습니다: 등록 시의 선택적 소유 증명(네트워크가 v3.2.3을
+SDK **0.12.0**은 체인 **v3.2.5**(메인넷은 2026년 10월 29일 높이 3,906,833에서,
+테스트넷은 10월 26일부터)를 위한 클라이언트 릴리스입니다. 두 네트워크 모두 v3.2.6을 실행하며
+(메인넷은 11월 4일부터, 테스트넷은 10월 27일부터) 서명 형식이 바뀌지 않았으므로
+0.12.0은 둘 다에서 동작합니다. 하이브리드 트랜잭션의 정확한 가스 규칙,
+ML-KEM 키 레지스트리 빌더와 조회, 어카운트 추상화 조회, 검증된
+거버넌스 파라미터 빌더가 추가되었으며([0.12.0의 추가 사항](/sdk/install#whats-new-0120) 참고),
+그 위에 0.10.0이 v3.2.4를 위해 추가한 것(스테이킹 티어 빌더와 조회,
+`fetchAuthNonce`, 프로토콜 기능 조회, [0.10.0에서 추가된 사항](/sdk/install#whats-new-0100) 참고)과
+0.9.0이 v3.2.2와 v3.2.3을 위해 추가한 것이 있습니다: 등록 시의 선택적 소유 증명(네트워크가 v3.2.3을
 적용한 뒤에는 `ensurePqcRegistered`가 자동으로 첨부), 범위 지정 EVM 윈도우,
 EIP-7702 동의 메시지를 위한 빌더입니다.
 SDK **0.8.1 이상**도 두 네트워크 모두에서 트랜잭션을 보낼 수 있지만(v2 하이브리드
@@ -154,7 +164,8 @@ sign-bytes 형식, 등록, 하이브리드 전송, EVM 윈도우는 그대로 �
 빌더는 없으므로, 해당 기능에는 CLI를 사용하세요([0.9.0 이전
 버전](/sdk/install#before-090) 참고). 서명 형식은 v3.2.4, v3.2.5 또는 v3.2.6에서 바뀌지 않았습니다.
 두 네트워크 모두 v3.2.6을 실행합니다(테스트넷은 v3.2.5를 2026년 10월 26일에, v3.2.6을 10월 27일에
-적용했고, 메인넷은 v3.2.5를 10월 29일에, v3.2.6을 11월 4일에 적용했습니다). SDK에는 v3.2.4 이후에 도입된 것을 위한 빌더가 없으므로, v3.2.5에서 추가된 것(예: ML-KEM 키 레지스트리와 거버넌스로 관리되는 cross-VM 및 컨트랙트 경로)에 대한 SDK 빌더는 아직 없으며 CLI로 사용합니다.
+적용했고, 메인넷은 v3.2.5를 10월 29일에, v3.2.6을 11월 4일에 적용했습니다). SDK 0.10.0과 0.9.0은 이들에서 계속 동작하지만 v3.2.5에서 추가된 것(ML-KEM 키 레지스트리, 정확한 가스 규칙)에 대한 빌더가 없으므로,
+해당 릴리스에서는 CLI를 사용하거나 0.12.0으로 업그레이드하세요. 0.12.0은 v3.2.5를 기준으로 빌드되고 검증되었습니다.
 
 ## PQC 키 등록이 거부되었는데 수수료는 차감되었습니다
 
@@ -188,7 +199,7 @@ sign-bytes 형식, 등록, 하이브리드 전송, EVM 윈도우는 그대로 �
 nonce가 잘못되었습니다. `MsgExecuteEVM.nonce`와 `MsgExecuteCosmos.nonce`는 모두
 `(account, pubkey)`에 대한 연결된 키의 **인증자 시퀀스**입니다. 이는 체인이 연결된
 키마다 유지하는 카운터로, 0에서 시작하여 실행에 성공할 때마다 증가합니다. 계정의
-EVM nonce가 **아닙니다**. `fetchAuthNonce`(SDK 0.10.0, 체인 v3.2.4 이상)로 조회하거나,
+EVM nonce가 **아닙니다**. `fetchAuthNonce`(SDK 0.10.0 이상, 체인 v3.2.4 이상)로 조회하거나,
 이전 버전에서는 연결된 키마다 직접 추적하세요. v3.2.3부터 EVM 레인은 호출의 가스
 한도를 바인딩하는 `evmAuthSignBytesV2`에도 서명합니다(`resolveEvmAuthDigestVersion`이
 형식을 선택합니다). 해당 키에 대해 조회한(또는 추적 중인) 카운터를 사용하여 다시

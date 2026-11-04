@@ -17,6 +17,26 @@ EVM プリコンパイル向けの型付きバインディングを追加しま�
 npm i @qorechain/evm viem
 ```
 
+## チェーン定義とウィンドウヘルパー（0.12.0）
+
+`@qorechain/evm` は、viem のチェーン定義 `qorechain`（チェーン ID 9801）と
+`qorechainTestnet`（9800）に加えて、`QORECHAIN_CHAINS` と `QORECHAIN_REST_ENDPOINTS` をエクスポートするため、
+viem や wagmi のアプリで手書きする必要はありません。
+
+```ts
+import { createPublicClient, http } from "viem";
+import { qorechainTestnet } from "@qorechain/evm";
+
+const publicClient = createPublicClient({ chain: qorechainTestnet, transport: http() });
+```
+
+[認可ウィンドウ](#evm-window)のヘルパーも含まれています。`evmWindowStatus` はアカウントのウィンドウを REST で読み取り、
+`openEvmWindowMessage` はチェーンの上限を確認して、ハイブリッドで署名する Native レーンの `MsgOpenEVMWindow` を組み立てます。
+`evmWindowCost` と `weiToUqorCeil` はウィンドウの規模を見積もり、`toQorAddress` / `toEvmAddress` は
+eth-native アカウントを 2 つのエンコード間で変換します。ウィンドウヘルパーは、viem なしの
+`@qorechain/evm/window` としても公開されています。これらは npm のみで公開された 0.11.0 で登場し、
+0.12.0 に含まれています。
+
 ## クライアントの作成
 
 `createEvmClient` は viem を基盤としたクライアントバンドルを返します。`chainId` を

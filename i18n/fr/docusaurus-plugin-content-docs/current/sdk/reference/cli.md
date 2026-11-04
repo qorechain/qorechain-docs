@@ -20,9 +20,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publié sur npm sous le nom `create-qorechain-dapp` (`0.10.0`). Les fichiers
-> `package.json` générés dépendent de `@qorechain/sdk` `^0.10.0` (le template EVM de
-> `@qorechain/evm` `^0.8.0`). La version 0.8.0 du générateur écrivait des plages
+> Publié sur npm sous le nom `create-qorechain-dapp` (`0.12.0`). Les fichiers
+> `package.json` générés dépendent de `@qorechain/sdk` `^0.12.0` (les templates EVM de
+> `@qorechain/evm` `^0.12.0`). La version 0.8.0 du générateur écrivait des plages
 > `^0.3.0`, que npm résout vers une version 0.3 incapable de signer pour les réseaux
 > en service ; si vous avez échafaudé avec la 0.8.0, exécutez
 > `npm i @qorechain/sdk@latest`.
@@ -34,8 +34,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | Un contrat Solidity `Counter` + un script de déploiement/interaction viem (`@qorechain/evm`). |
 | `fullstack-web` | Une dApp Vite + React + TypeScript lisant les soldes et la tokenomique (`@qorechain/sdk`). |
 | `rollup-app` | Une application rollup + sidechain/paychain utilisant le `RollupClient` et l'assistant multilayer (`@qorechain/sdk`). |
+| `foundry` | Un projet Foundry pour l'EVM Engine de QoreChain. `pnpm window` enregistre la clé ML-DSA-87 du compte et ouvre la [fenêtre d'autorisation EVM](/sdk/guides/evm#evm-window) avant un déploiement (ajouté dans la 0.11.0, npm uniquement). |
+| `hardhat` | La même chose pour Hardhat 3, avec `pnpm window status`, `register` et `open`. |
+| `viem-wagmi` | Une dApp web sur viem et wagmi utilisant les chaînes `qorechain` et `qorechainTestnet` de `@qorechain/evm`. |
+| `cosmwasm` | Un projet de contrat QoreChain Native (Wasm). Sur les réseaux en service, le téléversement de code est réservé à la gouvernance ; voir le [guide QoreChain Native](/sdk/guides/cosmwasm). |
 
-Le template `rollup-app` (générateur 0.10.0) exécute un essai à blanc par défaut. Avec
+Le template `rollup-app` (depuis le générateur 0.10.0) exécute un essai à blanc par défaut. Avec
 `QORE_BROADCAST=1`, il dérive la clé ML-DSA-87 du compte à partir du mnémonique,
 l'enregistre une fois et signe en hybride, ce que l'ancien template ne pouvait pas
 faire. Ses valeurs de rollup d'exemple (`profile: "default"`, le stake) sont
@@ -53,7 +57,7 @@ solde fonctionne. Remplacez-le par une lecture REST telle que
 
 | Flag | Description |
 | --- | --- |
-| `-t, --template <name>` | Template à utiliser (`evm-solidity` \| `fullstack-web` \| `rollup-app`). |
+| `-t, --template <name>` | Template à utiliser (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
 | `--network <name>` | Préréglage réseau (`testnet` \| `mainnet`). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Ignorer les invites et utiliser les valeurs par défaut. |

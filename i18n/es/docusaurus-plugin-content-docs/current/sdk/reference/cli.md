@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publicado en npm como `create-qorechain-dapp` (`0.10.0`). Los archivos
-> `package.json` generados dependen de `@qorechain/sdk` `^0.10.0` (la plantilla EVM, de
-> `@qorechain/evm` `^0.8.0`). La versión 0.8.0 del generador escribía rangos `^0.3.0`,
+> Publicado en npm como `create-qorechain-dapp` (`0.12.0`). Los archivos
+> `package.json` generados dependen de `@qorechain/sdk` `^0.12.0` (las plantillas EVM, de
+> `@qorechain/evm` `^0.12.0`). La versión 0.8.0 del generador escribía rangos `^0.3.0`,
 > que npm resuelve a una versión 0.3 que no puede firmar para las redes en vivo; si
 > generaste el andamiaje con la 0.8.0, ejecuta `npm i @qorechain/sdk@latest`.
 
@@ -32,8 +32,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | Un contrato `Counter` de Solidity + un script de despliegue/interacción con viem (`@qorechain/evm`). |
 | `fullstack-web` | Una dApp Vite + React + TypeScript que lee saldos y tokenomics (`@qorechain/sdk`). |
 | `rollup-app` | Una app de rollup + sidechain/paychain que usa el `RollupClient` y el asistente multilayer (`@qorechain/sdk`). |
+| `foundry` | Un proyecto de Foundry para el EVM Engine de QoreChain. `pnpm window` registra la clave ML-DSA-87 de la cuenta y abre la [ventana de autorización EVM](/sdk/guides/evm#evm-window) antes de un despliegue (añadido en la 0.11.0, solo en npm). |
+| `hardhat` | Lo mismo para Hardhat 3, con `pnpm window status`, `register` y `open`. |
+| `viem-wagmi` | Una dApp web sobre viem y wagmi que usa las cadenas `qorechain` y `qorechainTestnet` de `@qorechain/evm`. |
+| `cosmwasm` | Un proyecto de contrato de QoreChain Native (Wasm). En las redes en vivo la subida de código es solo por gobernanza; consulta la [guía de QoreChain Native](/sdk/guides/cosmwasm). |
 
-La plantilla `rollup-app` (generador 0.10.0) ejecuta una simulación por defecto. Con `QORE_BROADCAST=1`
+La plantilla `rollup-app` (desde el generador 0.10.0) ejecuta una simulación por defecto. Con `QORE_BROADCAST=1`
 deriva la clave ML-DSA-87 de la cuenta a partir del mnemónico, la registra una vez y firma de
 forma híbrida, algo que la plantilla anterior no podía hacer. Sus valores de rollup de ejemplo
 (`profile: "default"`, el stake) son ilustrativos: toma los nombres de perfil y el stake reales
@@ -49,7 +53,7 @@ como `client.rest.getBurnStats()` para las redes públicas.
 
 | Flag | Descripción |
 | --- | --- |
-| `-t, --template <name>` | Plantilla a usar (`evm-solidity` \| `fullstack-web` \| `rollup-app`). |
+| `-t, --template <name>` | Plantilla a usar (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
 | `--network <name>` | Preajuste de red (`testnet` \| `mainnet`). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Omitir los prompts y usar los valores por defecto. |

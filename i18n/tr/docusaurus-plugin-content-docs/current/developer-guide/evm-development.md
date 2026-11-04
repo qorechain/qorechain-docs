@@ -324,7 +324,7 @@ Hesabınızın bir EIP-7702 delegasyonu (type-4 işlem), v3.2.2'den beri yalnız
 | code 27 | Pencerenin süresi dolmuş veya tükenmiş (mesaj hangi sınırın aşıldığını gösterir) ya da işlem pencerenin kapsamı dışında |
 | code 28 | Pencere açılırken geçersiz sınırlar veya o anda kayıtlı anahtar yok |
 
-TypeScript SDK ile (0.8.2 ve sonrası): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` ve `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). SDK 0.9.0, `openEvmWindowMsg`'ye kapsam seçeneklerini (`nativeOnly`, `allowedTargets`) ve EIP-7702 onay oluşturucularını (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`) ekler; 0.9.0 öncesi sürümler yalnızca kapsamsız pencereyi oluşturur, bu yüzden geri kalanı için `qorechaind` kullanın (bkz. [SDK EVM kılavuzu](/sdk/guides/evm#evm-window-scope)).
+TypeScript SDK ile (0.8.2 ve sonrası): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` ve `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). SDK 0.9.0 ve sonrası (güncel sürüm 0.12.0) `openEvmWindowMsg`'ye kapsam seçeneklerini (`nativeOnly`, `allowedTargets`) ve EIP-7702 onay oluşturucularını (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`) ekler; 0.9.0 öncesi sürümler yalnızca kapsamsız pencereyi oluşturur, bu yüzden geri kalanı için `qorechaind` kullanın (bkz. [SDK EVM kılavuzu](/sdk/guides/evm#evm-window-scope)).
 
 ---
 

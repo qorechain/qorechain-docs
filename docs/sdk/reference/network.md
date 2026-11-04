@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Network preset | `mainnet` |
 | Chain id | `qorechain-vladi` (live since 7 June 2026) |
-| Chain version (4 November 2026) | v3.2.6 (since height 4,020,000, 4 November 2026, governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October and v3.2.4 at height 3,742,566 on 23 October). SDK 0.10.0 is the client for v3.2.4 and keeps working; it has no builders for the v3.2.5 or v3.2.6 additions |
+| Chain version (4 November 2026) | v3.2.6 (since height 4,020,000, 4 November 2026, governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October and v3.2.4 at height 3,742,566 on 23 October). SDK 0.12.0 is the client for v3.2.5 and works on v3.2.6 (the signing format did not change); 0.10.0 was the client for v3.2.4 |
 | EVM chain ID | `9801` |
 | Display token | `QOR` |
 | Base denomination | `uqor` |
@@ -48,6 +48,14 @@ sidebar_position: 1
 The EVM endpoints serve `eth_`, `net_`, `web3_` and `txpool_`; the `qor_`
 namespace is not enabled. See also [Networks](/appendix/networks#public-endpoints).
 
+From SDK 0.12.0 the `mainnet` and `testnet` presets use these REST, consensus RPC and
+EVM JSON-RPC URLs (and the testnet EVM WebSocket) by default. The presets set **no**
+gRPC endpoint and **no** SVM endpoint, even though the read-only SVM URLs above exist
+(SVM transactions are not open): code that needs one of them fails with an error that
+names the endpoint to pass. The testnet endpoints are rate limited per IP; run or
+use your own node for production traffic. Before 0.12.0 every preset defaulted to
+localhost.
+
 ### Testnet-only differences that matter to a client {#testnet-only}
 
 The testnet is a staging network and runs ahead of mainnet, so a few things you can
@@ -58,10 +66,12 @@ read there are not on mainnet (checked 27 October 2026; the full list is in
 * **Test tokens.** Three tokens with no value exist only on the testnet, as bank denominations named `erc20:<EIP-55 contract address>` (case-sensitive): fUSD (6 decimals), fETH (18) and fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` lists them. Mainnet's only bank denomination is `uqor`. See [Testnet test tokens (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
 * **Modules switched on.** The `abstractaccount` module is enabled on the testnet and off on mainnet, EVM precompiles are active on the testnet (three on 27 October, four on 4 November) and none on mainnet, and QoreChain Native instantiate is open on the testnet.
 
-## Default ports
+## Default ports (the `localnet` preset) {#default-ports}
 
-`createClient()` uses these localhost ports by default. Override `endpoints` to
-point at a real node.
+The `localnet` preset (chain id `qorechain-devnet`, no EVM chain id set) uses these
+localhost ports, for a node on your own machine. Before SDK 0.12.0 every preset used
+them by default; since 0.12.0 only `localnet` does. Override `endpoints` to point at
+another node.
 
 | Endpoint | Port | Purpose |
 | --- | --- | --- |
@@ -71,6 +81,10 @@ point at a real node.
 | EVM JSON-RPC | `8545` | `eth_*` (and `qor_*` / precompiles on nodes that enable them) |
 | EVM JSON-RPC (WS) | `8546` | EVM WebSocket subscriptions |
 | SVM JSON-RPC | `8899` | Solana-compatible RPC |
+
+```ts
+const local = createClient({ network: "localnet" }); // a node on this machine
+```
 
 Example with explicit endpoints:
 
@@ -94,8 +108,9 @@ the equivalents are `create_client` / `CreateClient` / `ClientBuilder` plus the
 
 ## Targeting mainnet
 
-Both presets ship the same localhost defaults; select `mainnet` and override the
-endpoints with the public URLs (or your own node):
+Select `mainnet` to target it. From SDK 0.12.0 the preset already carries the public
+URLs, so the endpoints below are the defaults; pass `endpoints` only for your own node
+(an SDK before 0.12.0 defaults to localhost and needs them):
 
 ```ts
 const main = createClient({

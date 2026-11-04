@@ -11,16 +11,18 @@ sidebar_position: 8
 
 Da. Mainnet-ul este **activ** (chain id `qorechain-vladi`, activ din 7 iunie 2026)
 și rulează versiunea de chain v3.2.6 (aplicată la înălțimea 4.020.000 pe 4 noiembrie 2026, propunerea de guvernanță 15; v3.2.5 a fost aplicată la înălțimea 3.906.833 pe 29 octombrie 2026 și v3.2.4 la înălțimea 3.742.566 pe 23 octombrie 2026); testnet-ul rulează v3.2.6 din 27 octombrie 2026. Presetul de testnet
-(`qorechain-diana`) rămâne de asemenea disponibil. Ambele preseturi vin cu
-endpoint-uri implicite pe localhost; selectați rețeaua cu
-`createClient({ network: "mainnet" })` și suprascrieți `endpoints` cu URL-urile
-nodurilor dvs. Vedeți
+(`qorechain-diana`) rămâne de asemenea disponibil. Începând cu SDK 0.12.0, ambele preseturi folosesc implicit
+endpoint-urile publice; selectați rețeaua cu
+`createClient({ network: "mainnet" })` și suprascrieți `endpoints` doar pentru
+propriul nod. Vedeți
 [Rețea și endpoint-uri](/sdk/reference/network).
 
 ## De ce apelurile mele merg către localhost?
 
-`createClient()` folosește implicit endpoint-uri **localhost**. Pentru a
-comunica cu un nod real, transmiteți un obiect `endpoints`:
+Folosiți un SDK **anterior lui 0.12.0**, ale cărui preseturi folosesc implicit endpoint-uri **localhost**:
+actualizați-l sau transmiteți un obiect `endpoints`. Începând cu 0.12.0, `createClient()` și
+`createClient({ network: "mainnet" })` folosesc endpoint-urile publice, iar presetul
+`localnet` este cel care folosește localhost.
 
 ```ts
 const client = createClient({
@@ -31,6 +33,10 @@ const client = createClient({
   },
 });
 ```
+
+Dacă în schimb primiți „endpoint ... is not configured for the mainnet preset”, apelul
+are nevoie de un endpoint pe care presetările publice nu îl setează (gRPC, un RPC SVM, WebSocket-ul
+EVM de mainnet); transmiteți-l în `endpoints`.
 
 Calea de semnare (`connectTx`) are nevoie de endpoint-ul de consens **`rpc`**;
 citirile QoreChain Native îl folosesc de asemenea. Citirile REST folosesc `rest`;
@@ -88,14 +94,14 @@ ceea ce este diferit de baza `uqor` Native de 10^6.
 
 ## Ce pachete sunt publicate și unde?
 
-Toate (verificat la 27 octombrie 2026). Nucleul TypeScript (`@qorechain/sdk`, 0.10.0),
-kitul React (`@qorechain/react`, 0.10.0), scaffolder-ul `create-qorechain-dapp`
-(0.10.0) și adaptoarele EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.8.0) sunt pe
-npm; clientul Python este pe PyPI (`pip install qorechain-sdk` la 0.10.0, import
+Toate (verificat la 4 noiembrie 2026). Nucleul TypeScript (`@qorechain/sdk`, 0.12.0),
+kitul React (`@qorechain/react`, 0.12.0), scaffolder-ul `create-qorechain-dapp`
+(0.12.0) și adaptoarele EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.12.0) sunt pe
+npm; clientul Python este pe PyPI (`pip install qorechain-sdk` la 0.12.0, import
 `qorsdk`); clientul Go este pe module proxy
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.10.0`); clientul Rust este
-pe crates.io (`cargo add qorechain-sdk`, 0.10.0); iar clientul Java este pe Maven
-Central (`io.github.qorechain:qorechain-sdk:0.10.0`). Vedeți [Instalare](/sdk/install) pentru comenzile complete
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`); clientul Rust este
+pe crates.io (`cargo add qorechain-sdk`, 0.12.0); iar clientul Java este pe Maven
+Central (`io.github.qorechain:qorechain-sdk:0.12.0`, JDK 17 sau mai nou). Vedeți [Instalare](/sdk/install) pentru comenzile complete
 pentru fiecare limbaj.
 
 ## Mnemonicul meu este respins
@@ -124,7 +130,7 @@ Dacă o tx hibridă eșuează cu `pqc` cod 21 (`hybrid_verify_failed`), cauza es
 versiunea sign-bytes, chain-id-ul, o bibliotecă PQC învechită sau o cheie
 neînregistrată ori diferită, niciodată semnarea hedged.
 Ambele rețele verifică forma v2 a sign-bytes, așa că folosiți SDK **0.8.1 sau
-mai nou** (0.10.0 este cel curent) și transmiteți `rest` (sau `signBytesVersion`):
+mai nou** (0.12.0 este cel curent) și transmiteți `rest` (sau `signBytesVersion`):
 builder-ele aruncă o eroare pe `qorechain-vladi` / `qorechain-diana` dacă lipsesc
 amândouă. Vedeți
 [Depanarea codului 21](/developer-guide/post-quantum-signing#code-21) și
@@ -150,10 +156,15 @@ vechi sunt respinse on-chain, pe fiecare cale (inclusiv eth-native).
 
 ## Cu ce versiuni de chain funcționează SDK-ul?
 
-SDK **0.10.0** este versiunea de client pentru chain **v3.2.4** (mainnet din 23 octombrie
-2026, la înălțimea 3.742.566, propunerea de guvernanță 13; testnet din 19 octombrie). Mainnet rulează v3.2.6 din 4 noiembrie 2026 (v3.2.5 din 29 octombrie); formatul de semnare nu s-a schimbat, așa că 0.10.0 continuă să funcționeze acolo. Adaugă
-constructorii și citirile pentru staking-tier, `fetchAuthNonce` și citirile de protocol-feature
-(vedeți [Ce adaugă 0.10.0](/sdk/install#whats-new-0100)), peste ce a adăugat 0.9.0 pentru
+SDK **0.12.0** este versiunea de client pentru chain **v3.2.5** (mainnet din 29 octombrie
+2026, la înălțimea 3.906.833; testnet din 26 octombrie). Ambele rețele rulează v3.2.6
+(mainnet din 4 noiembrie, testnet din 27 octombrie); formatul de semnare nu s-a
+schimbat, așa că 0.12.0 funcționează pe ambele. Adaugă regula exactă de gaz pentru
+tranzacțiile hibride, constructorii și citirea registrului de chei ML-KEM, citirile
+de cont abstract și constructorii verificați pentru parametrii de guvernanță (vedeți
+[Ce adaugă 0.12.0](/sdk/install#whats-new-0120)), peste ce a adăugat 0.10.0 pentru v3.2.4
+(constructorii și citirile pentru staking-tier, `fetchAuthNonce` și citirile de
+protocol-feature, vedeți [Ce a adăugat 0.10.0](/sdk/install#whats-new-0100)) și 0.9.0 pentru
 v3.2.2 și v3.2.3: constructori pentru dovada de
 posesie opțională la înregistrare (atașată automat de `ensurePqcRegistered` odată ce
 rețeaua a aplicat v3.2.3), pentru ferestrele EVM cu domeniu limitat și pentru mesajele
@@ -164,8 +175,8 @@ neschimbat), dar nu are niciunul dintre acei constructori: folosiți CLI-ul pent
 (vedeți
 [Versiuni anterioare lui 0.9.0](/sdk/install#before-090)). Formatul de semnare nu s-a schimbat
 în v3.2.4, v3.2.5 sau v3.2.6. Ambele rețele rulează v3.2.6 (testnet-ul a aplicat v3.2.5 pe 26 octombrie 2026 și
-v3.2.6 pe 27 octombrie; mainnet-ul a aplicat v3.2.5 pe 29 octombrie și v3.2.6 pe 4 noiembrie); SDK-ul nu are constructori pentru nimic introdus după v3.2.4,
-deci adăugirile v3.2.5 (de exemplu registrul de chei ML-KEM și căile guvernate cross-VM și de contracte) nu au încă un constructor în SDK și se accesează prin CLI.
+v3.2.6 pe 27 octombrie; mainnet-ul a aplicat v3.2.5 pe 29 octombrie și v3.2.6 pe 4 noiembrie). SDK 0.10.0 și 0.9.0 continuă să funcționeze pe ele, dar nu au constructori pentru
+adăugirile v3.2.5 (registrul de chei ML-KEM, regula exactă de gaz); cu acele versiuni folosiți CLI-ul sau actualizați la 0.12.0. 0.12.0 a fost construit și verificat împotriva v3.2.5.
 
 ## Înregistrarea cheii mele PQC a fost refuzată, dar taxa a fost luată
 
@@ -202,7 +213,7 @@ Indicațiile de mai jos se aplică oriunde modulul este activat.)
 Nonce-ul este greșit. Atât `MsgExecuteEVM.nonce`, cât și `MsgExecuteCosmos.nonce`
 sunt **secvența de authenticator** a cheii legate pentru `(account, pubkey)`: un
 contor pe care chain-ul îl ține pentru fiecare cheie legată, pornind de la 0 și
-incrementat la fiecare execuție reușită. **Nu** este nonce-ul EVM al contului. Citiți-l cu `fetchAuthNonce` (SDK 0.10.0, chain
+incrementat la fiecare execuție reușită. **Nu** este nonce-ul EVM al contului. Citiți-l cu `fetchAuthNonce` (SDK 0.10.0 sau mai nou, chain
 v3.2.4 sau mai nou) sau urmăriți-l pentru fiecare cheie legată pe versiunile mai vechi.
 Începând cu v3.2.3, lane-ul EVM semnează și `evmAuthSignBytesV2`, care leagă limita
 de gas a apelului (`resolveEvmAuthDigestVersion` alege forma). Folosiți contorul pe

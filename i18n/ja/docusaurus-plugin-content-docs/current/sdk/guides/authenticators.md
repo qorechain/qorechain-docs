@@ -278,8 +278,24 @@ qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
   （`eth_getTransactionCount`）では**ありません**。
 - `MsgExecuteCosmos.nonce` も同種のカウンターです。
 
-チェーン v3.2.4 以降（両ネットワークがこのルートを提供）と SDK 0.10.0 では、カウンターを自分で追跡する代わりに読み取れます。`fetchAuthNonce({ rest, address, pubkey })` は `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` を呼び出し、`{ nonce, linked }` を返します。一度も実行していないキーは 0 と読み取られ、リンクが解除されたキーでもカウンターは保持されます（`linked` がそのどちらかを示します）。チェーンの現在のカウンターと異なる値を送ると、リプレイとして拒否されます
+チェーン v3.2.4 以降（両ネットワークがこのルートを提供）と SDK 0.10.0 以降では、カウンターを自分で追跡する代わりに読み取れます。`fetchAuthNonce({ rest, address, pubkey })` は `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` を呼び出し、`{ nonce, linked }` を返します。一度も実行していないキーは 0 と読み取られ、リンクが解除されたキーでもカウンターは保持されます（`linked` がそのどちらかを示します）。チェーンの現在のカウンターと異なる値を送ると、リプレイとして拒否されます
 （`abstractaccount` コード 11、下記参照）。古い SDK やチェーンでは、リンク済みキーごとに自分で追跡してください。新しくリンクしたキーは 0 で、チェーンが受理した実行のたびに +1 します。
+
+## 保存されたルールとリンク済みキーの読み取り {#reads}
+
+チェーン v3.2.5（SDK 0.12.0）以降、トランザクションから再構築する代わりに、両ネットワークに対して
+アカウントが保存している内容を問い合わせることができます。
+
+* `fetchSpendingRules({ rest, address })` は、アカウント全体およびリンク済みキーごとの支出ルールを読み取ります
+  （`GET /qorechain/abstractaccount/v1/accounts/{address}/spending_rules`）。
+* `fetchAuthenticators({ rest, address })` は、取り消されたものを含むリンク済みキーを読み取ります
+  （`.../accounts/{address}/authenticators`）。
+* `msg.abstractaccount.updateConfig` は、モジュールの上限を設定するガバナンスメッセージです
+  （権限者はガバナンスモジュールアカウントであるため、通常のアカウントは送信できません）。SDK は署名前に値を検証します。
+
+ルールはチェーンと同じ方法で検証されます。`erc20/`、`erc721/`、`erc1155/` の denom は `0x` で始まる
+コントラクトアドレスを指定する必要があり、モジュールのコード 8（無効な支出ルール）と 9（モジュール無効）には名前が付いています。
+このモジュールは、メインネットでは引き続き無効で、テストネットでは有効です。
 
 ## パーミッションスキーマ
 

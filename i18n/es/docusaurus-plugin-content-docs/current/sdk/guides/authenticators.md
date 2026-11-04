@@ -324,7 +324,7 @@ incrementa con cada ejecución correcta.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` es el mismo tipo de contador.
 
-Desde la cadena v3.2.4 (ambas redes sirven la ruta) y el SDK 0.10.0 puedes leer el
+Desde la cadena v3.2.4 (ambas redes sirven la ruta) y el SDK 0.10.0 o posterior puedes leer el
 contador en lugar de llevarlo tú: `fetchAuthNonce({ rest, address, pubkey })` llama
 a `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` y devuelve
 `{ nonce, linked }`. Una clave que nunca ejecutó lee 0, y el contador se conserva
@@ -333,6 +333,24 @@ Enviar un valor que no sea el contador actual de la cadena produce un rechazo po
 replay (código 11 de `abstractaccount`, ver más abajo). Con un SDK o una cadena más
 antiguos, llévalo por clave vinculada: 0 para una clave recién vinculada, +1 tras
 cada ejecución que acepte la cadena.
+
+## Leer las reglas almacenadas y las claves vinculadas {#reads}
+
+Desde la cadena v3.2.5 (SDK 0.12.0), en ambas redes se puede preguntar qué almacenó
+una cuenta, en lugar de reconstruirlo a partir de las transacciones:
+
+* `fetchSpendingRules({ rest, address })` lee las reglas de gasto, de toda la cuenta y
+  por clave vinculada (`GET /qorechain/abstractaccount/v1/accounts/{address}/spending_rules`).
+* `fetchAuthenticators({ rest, address })` lee las claves vinculadas, incluidas las
+  revocadas (`.../accounts/{address}/authenticators`).
+* `msg.abstractaccount.updateConfig` es el mensaje de gobernanza que fija los límites
+  del módulo (la autoridad es la cuenta del módulo de gobernanza, así que una cuenta
+  ordinaria no puede enviarlo). El SDK comprueba los valores antes de firmar.
+
+Las reglas se comprueban como las comprueba la cadena: un denom `erc20/`, `erc721/` o
+`erc1155/` debe nombrar una dirección de contrato `0x`, y los códigos 8 (regla de gasto
+no válida) y 9 (módulo deshabilitado) del módulo tienen nombre. El módulo sigue
+desactivado en la mainnet y activado en la testnet.
 
 ## El esquema de permisos
 

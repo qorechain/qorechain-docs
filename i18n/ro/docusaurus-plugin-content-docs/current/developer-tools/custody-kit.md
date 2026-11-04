@@ -293,7 +293,7 @@ Ramifică logica după codespace și cod împreună și păstrează log-ul brut.
 
 ## Unde este publicat {#where-published}
 
-Verificat față de registre la 27 octombrie 2026.
+Verificat față de registre la 4 noiembrie 2026 (versiuni și etichete neschimbate din 27 octombrie).
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|

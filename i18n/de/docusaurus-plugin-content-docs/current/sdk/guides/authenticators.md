@@ -328,7 +328,7 @@ beginnt und bei jeder erfolgreichen Ausführung inkrementiert wird.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` ist derselbe Zähler-Typ.
 
-Seit Chain v3.2.4 (beide Netzwerke stellen die Route bereit) und SDK 0.10.0 können
+Seit Chain v3.2.4 (beide Netzwerke stellen die Route bereit) und SDK 0.10.0 oder neuer können
 Sie den Zähler lesen, statt ihn mitzuführen: `fetchAuthNonce({ rest, address, pubkey })`
 ruft `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` auf und
 liefert `{ nonce, linked }`. Ein Schlüssel, der nie ausgeführt hat, liest 0, und der
@@ -338,6 +338,24 @@ aktuellen Zähler der Chain entspricht, ist eine Replay-Ablehnung
 (`abstractaccount` Code 11, siehe unten). Mit einem älteren SDK oder einer älteren
 Chain verfolgen Sie ihn pro verknüpftem Schlüssel: 0 für einen neu verknüpften
 Schlüssel, +1 nach jeder Ausführung, die die Chain akzeptiert.
+
+## Gespeicherte Regeln und verknüpfte Schlüssel lesen {#reads}
+
+Ab Chain v3.2.5 (SDK 0.12.0) kann auf beiden Netzwerken abgefragt werden, was ein Konto
+gespeichert hat, statt es aus Transaktionen zu rekonstruieren:
+
+* `fetchSpendingRules({ rest, address })` liest die Spending-Regeln, kontoweit und
+  pro verknüpftem Schlüssel (`GET /qorechain/abstractaccount/v1/accounts/{address}/spending_rules`).
+* `fetchAuthenticators({ rest, address })` liest die verknüpften Schlüssel, einschließlich
+  widerrufener (`.../accounts/{address}/authenticators`).
+* `msg.abstractaccount.updateConfig` ist die Governance-Nachricht, die die Grenzen des Moduls
+  festlegt (die Autorität ist das Governance-Modulkonto, ein gewöhnliches Konto
+  kann sie also nicht senden). Das SDK prüft die Werte vor dem Signieren.
+
+Regeln werden so geprüft, wie die Chain sie prüft: ein Denom `erc20/`, `erc721/` oder `erc1155/`
+muss eine `0x`-Contract-Adresse nennen, und die Codes 8 (ungültige Spending-Regel)
+und 9 (Modul deaktiviert) des Moduls werden benannt. Das Modul ist auf dem Mainnet weiterhin ausgeschaltet
+und auf dem Testnet aktiviert.
 
 ## Das Permission-Schema
 

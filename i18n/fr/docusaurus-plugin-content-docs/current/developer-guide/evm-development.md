@@ -324,7 +324,7 @@ Depuis la v3.2.2, une délégation EIP-7702 de votre compte (une transaction de 
 | code 27 | La fenêtre est expirée ou épuisée (le message indique quelle borne), ou la transaction est hors de la portée de la fenêtre |
 | code 28 | Bornes de fenêtre invalides à l'ouverture, ou aucune clé enregistrée à ce moment |
 
-Avec le SDK TypeScript (0.8.2 et versions ultérieures) : `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` et `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). Le SDK 0.9.0 ajoute à `openEvmWindowMsg` les options de portée (`nativeOnly`, `allowedTargets`) ainsi que les constructeurs de consentement EIP-7702 (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`) ; les versions antérieures à la 0.9.0 ne construisent que la fenêtre sans portée, utilisez donc `qorechaind` pour le reste (voir le [guide EVM du SDK](/sdk/guides/evm#evm-window-scope)).
+Avec le SDK TypeScript (0.8.2 et versions ultérieures) : `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` et `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). Le SDK 0.9.0 et les versions ultérieures (la 0.12.0 est la version actuelle) ajoutent à `openEvmWindowMsg` les options de portée (`nativeOnly`, `allowedTargets`) ainsi que les constructeurs de consentement EIP-7702 (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`) ; les versions antérieures à la 0.9.0 ne construisent que la fenêtre sans portée, utilisez donc `qorechaind` pour le reste (voir le [guide EVM du SDK](/sdk/guides/evm#evm-window-scope)).
 
 ---
 

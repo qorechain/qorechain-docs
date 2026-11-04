@@ -293,7 +293,7 @@ Branch on the codespace and code together, and keep the raw log.
 
 ## Where it is published {#where-published}
 
-Checked against the registries on 27 October 2026.
+Checked against the registries on 4 November 2026 (versions and tags unchanged since 27 October).
 
 | Registry | Package | Version | Link |
 |---|---|---|---|

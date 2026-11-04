@@ -324,7 +324,7 @@ O delegare EIP-7702 a contului vostru (o tranzacție de tip 4) intră în vigoar
 | code 27 | Fereastra a expirat sau este epuizată (mesajul arată care limită) sau tranzacția este în afara domeniului ferestrei |
 | code 28 | Limite invalide la deschiderea unei ferestre sau nicio cheie înregistrată în acel moment |
 
-Cu SDK-ul TypeScript (0.8.2 și ulterior): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` și `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). SDK 0.9.0 adaugă opțiunile de domeniu (`nativeOnly`, `allowedTargets`) la `openEvmWindowMsg` și constructorii de consimțământ EIP-7702 (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); versiunile anterioare lui 0.9.0 construiesc doar fereastra fără domeniu, așa că folosiți `qorechaind` pentru restul (vedeți [ghidul SDK pentru EVM](/sdk/guides/evm#evm-window-scope)).
+Cu SDK-ul TypeScript (0.8.2 și ulterior): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` și `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). SDK 0.9.0 și ulterior (0.12.0 este versiunea curentă) adaugă opțiunile de domeniu (`nativeOnly`, `allowedTargets`) la `openEvmWindowMsg` și constructorii de consimțământ EIP-7702 (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); versiunile anterioare lui 0.9.0 construiesc doar fereastra fără domeniu, așa că folosiți `qorechaind` pentru restul (vedeți [ghidul SDK pentru EVM](/sdk/guides/evm#evm-window-scope)).
 
 ---
 

@@ -14,7 +14,7 @@ sidebar_position: 13
 - **체인에 대한 읽기 전용 게이트웨이.** 도구들은 공개 체인 데이터를 읽고, `cosmos/`, `cosmwasm/`, `qorechain/` 쿼리 경로와 시뮬레이트 호출에 한해 읽기 전용 게이트웨이를 통해 트랜잭션을 시뮬레이션합니다. 이 페이지의 어떤 것도 트랜잭션을 브로드캐스트할 수 없습니다. 체인의 REST 엔드포인트가 브라우저 CORS 헤더를 보내지 않기 때문에 이 게이트웨이가 존재합니다.
 - **브라우저를 떠나지 않는 키.** 서명 플레이그라운드와 테스트 지갑의 키는 브라우저에서 생성되며 메모리에만 보관됩니다. 저장되거나 전송되지 않으며, 새로고침하면 사라집니다. 이 두 탭은 테스트넷 전용이며 메인넷을 거부합니다.
 - **데모가 아닌 프로덕션 서명 라이브러리.** 플레이그라운드는 프로덕션 통합과 동일한 오픈 소스 라이브러리인 [QoreSign](/qoresign/overview)을 사용합니다. 같은 메시지에 대한 secp256k1 서명과 ML-DSA-87 서명으로 이루어진 하이브리드 서명을 생성하고 검증합니다.
-- **테스트된 데이터에서 생성되는 패키지 허브.** **SDKs** 탭은 하나의 매니페스트에서 48개의 패키지를 나열합니다. 버전은 각 레지스트리에서 실시간으로 읽어오며(10분마다 갱신되고, 레지스트리에 연결할 수 없으면 마지막으로 확인한 버전과 그 날짜가 표시됩니다), 각 퀵스타트는 SDK 팀이 공개 레지스트리를 대상으로 실행했고 그들이 관찰한 출력이 옆에 함께 표시됩니다.
+- **테스트된 데이터에서 생성되는 패키지 허브.** **SDKs** 탭은 하나의 매니페스트(2026년 10월 30일자 매니페스트)에서 60개의 패키지를 나열합니다. 버전은 각 레지스트리에서 실시간으로 읽어오며(10분마다 갱신되고, 레지스트리에 연결할 수 없으면 마지막으로 확인한 버전과 그 날짜가 표시됩니다), 각 퀵스타트는 SDK 팀이 공개 레지스트리를 대상으로 실행했고 그들이 관찰한 출력이 옆에 함께 표시됩니다.
 - **재현할 수 있는 판정.** **Transaction inspector**는 커밋된 트랜잭션을 읽고, 그 ML-DSA-87 계층이 서명자가 등록한 키에 대해 검증되는지를 보고하며, 검증되지 않을 때는 sign-bytes 버전과 그 이유를 함께 알려줍니다. [QoreSign](/qoresign/overview) 0.1.1의 `inspectTransaction` 함수를 사용하므로 같은 검사를 자체 코드에서도 실행할 수 있습니다. 읽기 전용입니다.
 - **추측이 아닌 체인의 답.** **PQ key status**는 등록된 ML-DSA-87 키와 EVM 창 상태를 노드 자체의 쿼리 경로에서 읽어오므로, EVM 트랜잭션을 보내기 전에 왜 거부될지 확인할 수 있습니다.
 
@@ -24,7 +24,7 @@ sidebar_position: 13
 
 ### SDKs {#sdks}
 
-**기능.** 모든 QoreChain 라이브러리를 제품별로 묶어 나열합니다. 매니페스트에는 TypeScript, Python, Go, Rust, Java, Kotlin, Swift에 걸쳐 48개의 패키지가 있습니다. 46개는 안정 버전이고, 1개는 지원 중단되었으며, 1개는 아직 레지스트리에 없어 **Not published yet**로 표시됩니다(npm용 QoreSeal). 표시되는 순서대로 제품은 다음과 같습니다: QoreChain SDK(코어, React 훅, EVM, SVM, dApp 스타터, Python·Rust·Go·Java 포트), QoreSign(Python용 QoreSign 포함), QoreSeal(ML-KEM-1024로 계정에 암호화, 테스트넷; [QoreSeal](/developer-tools/qoreseal) 참고, Rust, Go, Python, Swift, Kotlin, Android), RDK(롤업 개발 키트, 그 명령줄 도구, 롤업 스타터, Python·Rust·Go·Java 포트), PQC 라이브러리, 지갑 어댑터, 체인 브리지, Handles, QoreX 통합, 그리고 MCP와 `qore` CLI.
+**기능.** 모든 QoreChain 라이브러리를 제품별로 묶어 나열합니다. 2026년 10월 30일자 매니페스트에는 TypeScript, Python, Go, Rust, Java, Kotlin, Swift, Solidity에 걸쳐 60개의 패키지가 있습니다. 59개는 안정 버전이고 1개는 지원 중단되었으며, **Not published yet**로 표시된 패키지는 없습니다(여기에 해당했던 npm용 QoreSeal은 0.1.0으로 공개되었습니다). 표시되는 순서대로 제품은 다음과 같습니다: QoreChain SDK(코어, React 훅, EVM, SVM, dApp 스타터, Python·Rust·Go·Java 포트, 모두 0.12.0), QoreSign(Python용 QoreSign 포함), QoreSeal(ML-KEM-1024로 계정에 암호화, 테스트넷; [QoreSeal](/developer-tools/qoreseal) 참고, TypeScript, Rust, Go, Python, Swift, Kotlin, Android), Asset Kit([Asset Kit](/developer-tools/asset-kit)), PQ 라이트 클라이언트, 커스터디 키트, QoreScan, RDK(롤업 개발 키트, 그 명령줄 도구, 롤업 스타터, Python·Rust·Go·Java 포트), PQC 라이브러리, 지갑 어댑터, 체인 브리지, Handles, QoreX 통합, 그리고 MCP와 `qore` CLI.
 
 **작동 방식.** 각 제품은 카드입니다. 제품이 여러 언어로 제공되면 언어 선택기(알약 모양)로 표시되는 패키지를 전환합니다. 각 패키지는 다음을 보여줍니다:
 

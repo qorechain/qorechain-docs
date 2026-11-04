@@ -177,7 +177,7 @@ const signBytes = hybridSignBytes(version, chainId, bodyWithoutPqcExt, authInfoB
 | Maven Central | `io.github.qorechain:qorechain-pqc` | 0.2.3 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-pqc |
 | C | ソースのみ、パッケージレジストリなし | タグ `v0.2.3` | https://github.com/qorechain/qorechain-pqc |
 
-ソース: https://github.com/qorechain/qorechain-pqc（フォルダ `js`、`python`、`rust`、`go`、`java`、`c`、`vectors`）。すべてのパッケージは Apache-2.0 です。バージョンは 2026年10月27日に各レジストリから読み取りました。鍵導出とローテーションを含む、同じライブラリの概念ガイドは[ポスト量子署名](/developer-guide/post-quantum-signing)です。これを使用する SDK については [SDK の概要](/sdk/overview)で説明しています。
+ソース: https://github.com/qorechain/qorechain-pqc（フォルダ `js`、`python`、`rust`、`go`、`java`、`c`、`vectors`）。すべてのパッケージは Apache-2.0 です。バージョンは 2026年11月4日に各レジストリから読み取りました(10月27日から変更なし)。鍵導出とローテーションを含む、同じライブラリの概念ガイドは[ポスト量子署名](/developer-guide/post-quantum-signing)です。これを使用する SDK については [SDK の概要](/sdk/overview)で説明しています。
 
 ## 制限と既知の問題 {#limits}
 

@@ -293,7 +293,7 @@ Codespace ve kod üzerinden birlikte dallanın ve ham günlüğü saklayın.
 
 ## Nerede yayınlanıyor {#where-published}
 
-27 Ekim 2026'da kayıt defterlerine karşı kontrol edildi.
+4 Kasım 2026'da kayıt defterlerine karşı kontrol edildi (sürümler ve etiketler 27 Ekim'den beri değişmedi).
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|

@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal は、ML-KEM-1024（FIPS 203）でデータを QoreChain アカウント宛てに暗号化するオープンソースのライブラリです。アカウントは ML-KEM-1024 公開鍵をチェーン上に公開します。すると誰でも、そのアカウントと、送信者が追加した他の受信者が読めるペイロードを暗号化できます。機密性の高いペイロード（メモ、請求書、ドキュメント、入札）を必要とする dApp 開発者、閲覧アクセスを必要とする監査人、プライベートグループやサイドチェーンの運営者向けです。標準のプリミティブを組み合わせるもので、独自のプリミティブは一切実装していません。バージョン **0.1.0**、Apache-2.0、QoreChain Association がメンテナンスしています。
 
-2026年10月30日時点の状況（メインネットは 11月4日から v3.2.6 を実行しており、読み取りルートはその日も応答しました）: 暗号化そのものは、ネットワークもアカウントも不要で、どこでもオフラインで動作します。チェーンから読み取ったアドレス宛てに暗号化するには KEM 鍵レジストリが必要で、これは**テストネット**（`qorechain-diana`）では**稼働中**、メインネット（`qorechain-vladi`）が 2026年10月29日に v3.2.5 を適用したことで、**その読み取りルートはメインネットでも応答します**（このページで確認できた限り、メインネットではまだ鍵を公開したアカウントはありません）。パッケージは Rust、Go、Python、Swift、Kotlin/JVM、Android 向けに公開されています。TypeScript パッケージ `@qorechain/qoreseal` は**近日公開**で、まだ npm にはありません。この構成は、1.0 に先立つ外部レビューを待つドラフトです。
+2026年11月4日時点の状況: 暗号化そのものは、ネットワークもアカウントも不要で、どこでもオフラインで動作します。チェーンから読み取ったアドレス宛てに暗号化するには KEM 鍵レジストリが必要で、これはテストネット(`qorechain-diana`)で**稼働中**であり、メインネット(`qorechain-vladi`。2026年10月29日に v3.2.5、11月4日に v3.2.6 を適用)でも**稼働中**です。読み取りルートは両方で応答します。このページで確認できた限り、メインネットではまだ鍵を公開したアカウントはありません。パッケージは TypeScript、Rust、Go、Python、Swift、Kotlin/JVM、Android 向けに公開されています。この構成は、1.0 に先立つ外部レビューを待つドラフトです。
 
 QoreSeal が保護するのはペイロードの内容だけで、それ以外は保護しません。アドレス、トランザクションのタイミング、送金額、エンベロープのサイズ、受信者の数はチェーン上で公開されたままです。トランザクションを秘匿する手段ではありません。
 
@@ -72,15 +72,35 @@ QoreSeal が保護するのはペイロードの内容だけで、それ以外�
 
 | 言語 | インストール | 最小プラットフォーム |
 |---|---|---|
+| TypeScript | `npm install @qorechain/qoreseal` | Node.js 20 以降。ES モジュールと CommonJS。サブパス `/network` と `/testing` |
 | Rust | `cargo add qorechain-qoreseal`（ライブラリ名は `qoreseal`） | stable Rust |
 | Go | `go get github.com/qorechain/qoreseal/go@v0.1.0` | Go 1.25 |
 | Python | `pip install qorechain-qoreseal`（import は `qoreseal`） | Python 3.9 以降。macOS 11 以降（arm64、x86_64）と Linux manylinux2014（x86_64、aarch64）向けのホイール。Windows 用ホイールはまだありません |
 | Swift | `.package(url: "https://github.com/qorechain/qoreseal", from: "0.1.0")`、プロダクト `QoreSeal` | iOS 16、macOS 13 |
 | Kotlin / JVM | `implementation("io.github.qorechain:qoreseal:0.1.0")` | Java 17。Kotlin 2.3 以降のコンパイラ（Kotlin 2.1 ではコンパイルに失敗します） |
 | Android | `implementation("io.github.qorechain:qoreseal-android:0.1.0")` | API 24。R8 の keep ルールを同梱。Kotlin 2.3 以降のコンパイラ |
-| TypeScript | **近日公開**: `@qorechain/qoreseal` はまだ npm になく、インストールコマンドはありません | |
 
-TypeScript のソース、サンプル、ネットワークヘルパーはリポジトリにあり、`pnpm install && pnpm build` の後にそこから実行できます。npm パッケージが公開されるまでは、TypeScript の使い方としてリポジトリを利用し、上記のパッケージ名が使われることを想定してください。
+TypeScript パッケージにはネットワークヘルパー(`@qorechain/qoreseal/network`: `fetchKemKey`、`fetchMlkemPublicKey`、`resolveRecipient`、`sealToAddresses`)が含まれます。依存関係は `@qorechain/pqc` 0.2.3、`@qorechain/qoresign` 0.1.0、および noble と scure のライブラリです。
+
+### オフラインでの封印と開封(TypeScript) {#quickstart-typescript}
+
+開発者ハブのテスト済みクイックスタートです(マニフェストでは2026年10月29日にテスト済みとされています)。2026年11月4日に、空のプロジェクトへ `npm install @qorechain/qoreseal@0.1.0` を実行した後、Node.js 26 で再度実行しました。ネットワークもアカウントも不要です。
+
+```ts
+import { generateSealKeys, open, recipientOf, seal, envelopeToText } from "@qorechain/qoreseal";
+
+const alice = generateSealKeys(), bob = generateSealKeys();
+const envelope = seal({
+  chainId: "qorechain-diana",
+  purpose: "invoice",
+  recipients: [recipientOf(alice), recipientOf(bob)],
+  plaintext: new TextEncoder().encode("amount due: 120 QOR"),
+});
+const pt = open({ chainId: "qorechain-diana", purpose: "invoice", envelope, keys: bob });
+console.log(envelopeToText(envelope).slice(0, 9), new TextDecoder().decode(pt));
+```
+
+`qoreseal: amount due: 120 QOR` と出力されました。
 
 ### クイックスタート 1: オフラインでの封印と開封（Python） {#quickstart-python}
 
@@ -248,7 +268,7 @@ Python のエラーは安定した `code` を持つ `QoreSealError.Failure` を�
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host`（チェーン ID 9801） | `https://evm-testnet.qore.host`（チェーン ID 9800） |
 
-2026年10月30日、レジストリクエリは、鍵のないアカウントに対して両ネットワークで `{"found":false,"key":null}` を返しました（10月27日の時点では、メインネットは "Not Implemented" を返していました）。10月30日にメインネットのトランザクションを検索しましたが、`MsgRegisterKEMKey` はまだ見つからなかったため、メインネットでの鍵の公開は、このページではエンドツーエンドで検証されていません。
+2026年11月4日、レジストリクエリは、鍵のないアカウントに対して両ネットワークで `{"found":false,"key":null}` を返しました（10月27日の時点では、メインネットは "Not Implemented" を返していました）。11月4日にメインネットのトランザクションを検索しましたが、`MsgRegisterKEMKey` はまだ見つからなかったため、メインネットでの鍵の公開は、このページではエンドツーエンドで検証されていません。
 
 - オフラインでの封印と開封は、直接渡す監査人鍵、プライベートグループ、バッチを含め、ネットワークもアカウントも不要です。
 - アドレス宛てに暗号化するには、受信者が ML-KEM-1024 鍵をレジストリに公開していることが必要で、ハイブリッドモードでは受信者カードも必要です。
@@ -257,17 +277,17 @@ Python のエラーは安定した `code` を持つ `QoreSealError.Failure` を�
 
 ## 公開場所 {#where-published}
 
-2026年10月27日に、各レジストリで確認しました。
+2026年11月4日に、各レジストリで確認しました。7つのエントリすべてが 0.1.0 を提供しています。
 
 | レジストリ | パッケージ | バージョン | リンク |
 |---|---|---|---|
+| npm | `@qorechain/qoreseal` | 0.1.0 | [npmjs.com/package/@qorechain/qoreseal](https://www.npmjs.com/package/@qorechain/qoreseal) |
 | crates.io | `qorechain-qoreseal` | 0.1.0 | [crates.io/crates/qorechain-qoreseal](https://crates.io/crates/qorechain-qoreseal) |
 | Go モジュールプロキシ | `github.com/qorechain/qoreseal/go` | v0.1.0（タグ `go/v0.1.0`） | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoreseal/go) |
 | PyPI | `qorechain-qoreseal` | 0.1.0（macOS arm64 と x86_64、Linux x86_64 と aarch64 向けのホイール、およびソース） | [pypi.org/project/qorechain-qoreseal](https://pypi.org/project/qorechain-qoreseal/) |
 | Swift Package Manager | `github.com/qorechain/qoreseal` の `QoreSeal` | 0.1.0（GitHub リリースのバイナリ `QoreSealFFI.xcframework.zip`） | [release v0.1.0](https://github.com/qorechain/qoreseal/releases/tag/v0.1.0) |
 | Maven Central | `io.github.qorechain:qoreseal` | 0.1.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal) |
 | Maven Central | `io.github.qorechain:qoreseal-android` | 0.1.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal-android) |
-| npm | `@qorechain/qoreseal` | まだ公開されていません（近日公開） | |
 
 どちらの Maven アーティファクトを使うプロジェクトも、Kotlin 2.3 以降のコンパイラが必要です。Kotlin/JVM アーティファクトは、macOS（arm64、x86_64）、Linux（x86_64、arm64）、Windows（x86_64）向けのネイティブライブラリを同梱しています。Android アーティファクトは arm64-v8a、armeabi-v7a、x86_64 をカバーします。
 
@@ -285,9 +305,9 @@ Python のエラーは安定した `code` を持つ `QoreSealError.Failure` を�
 - **鍵の削除やローテーションは、何も消去も再暗号化もしません。** 古い鍵宛てに封印されたデータは、その鍵を持つ人には引き続き読めます。古いシードやインデックスは保管してください。
 - **削除されたグループメンバー**は、所属していたエポックの鍵を保持します。新しいメンバーは、古い鍵が自分宛てに封印されない限り、参加したエポック以降を読みます。
 - **チェーン ID と目的はエンベロープに含まれません。** 受信者がそれらを知っている必要があります。
-- **メインネットのレジストリ:** 読み取りルートは v3.2.5 以降稼働中です。確認した時点でメインネットに公開された鍵はなく、EVM JSON-RPC の `qor_` 名前空間は `evm.qore.host` では公開されていません（REST ルートを使用してください）。
+- **メインネットのレジストリ:** 読み取りルートは v3.2.5 以降稼働中です。2026年11月4日に確認した時点でメインネットに公開された鍵はなく、EVM JSON-RPC の `qor_` 名前空間は `evm.qore.host` では公開されていません（REST ルートを使用してください）。
 - **1.0 より前で、構成は外部レビュー待ちです。** マイナーバージョンで API が変わることがあります。依存する前に仕様を読んでください。
-- **npm パッケージはまだなく**、Windows 用の Python ホイールもまだありません。
+- **Windows 用の Python ホイールはまだありません**(macOS と Linux のみ。それ以外のプラットフォームはソース配布物からビルドされ、Rust が必要です)。
 
 ## セキュリティに関する注意 {#security}
 

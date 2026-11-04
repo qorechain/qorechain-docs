@@ -15,28 +15,33 @@ follow at the end.
 
 `createClient()` resolves a network and composes the read clients, a fee helper,
 and a lazy signing entrypoint. It targets the public testnet
-(`qorechain-diana`) by default. The default endpoints point at **localhost**, so
-pass `endpoints` to talk to a real node. The public endpoints are listed in the
+(`qorechain-diana`) by default, on the public endpoints (this changed in SDK
+0.12.0: earlier releases defaulted to **localhost** and needed `endpoints`). Pass
+`endpoints` to use your own node, or select `localnet` for a node on your machine.
+The public endpoints are listed in the
 [network reference](/sdk/reference/network#public-endpoints).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
 
-// Testnet (chain id "qorechain-diana"), default localhost endpoints.
+// Testnet (chain id "qorechain-diana"), public testnet endpoints (SDK 0.12.0+).
 const client = createClient();
 
-// Point at the public testnet by overriding endpoints.
+// A node on this machine (chain id "qorechain-devnet", localhost ports).
+const local = createClient({ network: "localnet" });
+
+// Your own node: override any endpoint, the rest keep the preset's values.
 const remote = createClient({
   endpoints: {
-    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
-    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
-    evmRpc: "https://evm-testnet.qore.host", // EVM JSON-RPC (eth_*)
+    rest: "https://lcd.my-node.example",   // Native REST (LCD)
+    rpc: "https://rpc.my-node.example",    // consensus RPC (for signing)
   },
 });
 ```
 
-Mainnet (chain id `qorechain-vladi`) is live. Select it and override the
-localhost defaults with the public endpoints (or your own node):
+Mainnet (chain id `qorechain-vladi`) is live. Select it; the preset carries the
+public mainnet endpoints. The call below spells them out, which an SDK before
+0.12.0 needs:
 
 ```ts
 const main = createClient({
@@ -106,7 +111,7 @@ must be **registered on-chain first**. Registration is explicit: there is no
 auto-registration on the first transaction. A transaction signed classically only
 is refused by the live networks, so give the transaction client the account's
 ML-DSA-87 keypair and it signs every transaction hybrid. The two steps below need
-**SDK 0.9.0 or later** (0.10.0 is current) and a funded account:
+**SDK 0.9.0 or later** (0.12.0 is current) and a funded account:
 
 ```bash
 npm i @qorechain/sdk
@@ -159,8 +164,11 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 ### 4b. Send with a hybrid signature
 
 `tx.bankSend` now signs hybrid. The fee defaults to `"auto"`: the client simulates
-the hybrid transaction itself and adds the gas of the post-quantum verification,
-which simulation does not charge. The network's minimum gas price is 0.1 uqor per
+the hybrid transaction itself. On a network that has applied v3.2.5 (both have), SDK
+0.12.0 sets the gas limit to `ceil(simulated x 1.02) + 2000`, because the simulation
+already charges the post-quantum verification: a hybrid bank send asks for about
+171,600 gas. On older networks, and with SDK 0.10.0 or earlier, the client adds the
+gas of the post-quantum verification itself (about 289,000 for the same send). The network's minimum gas price is 0.1 uqor per
 unit of gas (the client prices at 0.15). Use `toBase("1.5")` to convert QOR to base
 `uqor`.
 

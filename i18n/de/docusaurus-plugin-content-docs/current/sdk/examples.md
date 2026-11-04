@@ -16,7 +16,7 @@ ein eigenständiges Workspace-Paket mit eigener `README.md`, `.env.example` und
 einer einzigen `index.ts`. Die Beispiele lesen Endpunkte und Mnemonics aus
 Umgebungsvariablen mit sinnvollen localhost-Standardwerten, und die
 netzwerkabhängigen Beispiele schlagen mit einem Hinweis kontrolliert fehl, wenn
-kein Node erreichbar ist.
+kein Node erreichbar ist. Seit SDK 0.12.0 zeigen die Presets bereits auf die öffentlichen Endpoints; in Ihrem eigenen Code können Sie daher die Fallbacks `?? "http://localhost:..."` aus den Snippets unten weglassen und `network: "testnet"` oder `"mainnet"` wählen; behalten Sie sie bei (oder wählen Sie `localnet`), wenn Sie gegen einen Node auf Ihrem Rechner entwickeln.
 
 Vom Repo-Root aus einmal installieren, dann kann jedes Beispiel gestartet werden:
 

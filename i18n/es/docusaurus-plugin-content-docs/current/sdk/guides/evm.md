@@ -17,6 +17,27 @@ enlaces tipados para los precompilados EVM de QoreChain.
 npm i @qorechain/evm viem
 ```
 
+## Definiciones de cadena y auxiliares de ventana (0.12.0)
+
+`@qorechain/evm` exporta las definiciones de cadena de viem `qorechain` (chain id 9801) y
+`qorechainTestnet` (9800), además de `QORECHAIN_CHAINS` y `QORECHAIN_REST_ENDPOINTS`, para
+que una app de viem o wagmi no tenga que escribirlas a mano:
+
+```ts
+import { createPublicClient, http } from "viem";
+import { qorechainTestnet } from "@qorechain/evm";
+
+const publicClient = createPublicClient({ chain: qorechainTestnet, transport: http() });
+```
+
+También incluye los auxiliares de la [ventana de autorización](#evm-window): `evmWindowStatus` lee
+la ventana de una cuenta por REST, `openEvmWindowMessage` comprueba los límites de la cadena y
+compone el `MsgOpenEVMWindow` del carril Native para firmarlo de forma híbrida, `evmWindowCost` y
+`weiToUqorCeil` dimensionan una ventana, y `toQorAddress` / `toEvmAddress` convierten una
+cuenta eth-native entre sus dos codificaciones. Los auxiliares de ventana también se publican
+sin viem como `@qorechain/evm/window`. Llegaron en la 0.11.0, solo en npm, y están en la
+0.12.0.
+
 ## Crear un cliente
 
 `createEvmClient` devuelve un paquete de cliente respaldado por viem. Autodetecta el

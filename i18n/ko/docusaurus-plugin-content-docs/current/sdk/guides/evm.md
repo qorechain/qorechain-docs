@@ -17,6 +17,26 @@ sidebar_position: 1
 npm i @qorechain/evm viem
 ```
 
+## 체인 정의와 윈도우 헬퍼 (0.12.0)
+
+`@qorechain/evm`은 viem 체인 정의 `qorechain`(체인 ID 9801)과
+`qorechainTestnet`(9800), 그리고 `QORECHAIN_CHAINS`와 `QORECHAIN_REST_ENDPOINTS`를 내보내므로
+viem 또는 wagmi 앱에서 직접 작성할 필요가 없습니다:
+
+```ts
+import { createPublicClient, http } from "viem";
+import { qorechainTestnet } from "@qorechain/evm";
+
+const publicClient = createPublicClient({ chain: qorechainTestnet, transport: http() });
+```
+
+[인가 윈도우](#evm-window) 헬퍼도 포함합니다. `evmWindowStatus`는 REST로 계정의 윈도우를 읽고,
+`openEvmWindowMessage`는 체인의 한도를 확인한 뒤 하이브리드로 서명할 Native 레인
+`MsgOpenEVMWindow`를 구성하며, `evmWindowCost`와 `weiToUqorCeil`은 윈도우의 크기를 산정하고,
+`toQorAddress` / `toEvmAddress`는 eth-native 계정을 두 가지 인코딩 사이에서
+변환합니다. 윈도우 헬퍼는 viem 없이도 `@qorechain/evm/window`로 게시됩니다. npm 전용 0.11.0에서
+도입되었고 0.12.0에 포함되어 있습니다.
+
 ## 클라이언트 생성
 
 `createEvmClient`는 viem을 기반으로 하는 클라이언트 번들을 반환합니다. `chainId`를

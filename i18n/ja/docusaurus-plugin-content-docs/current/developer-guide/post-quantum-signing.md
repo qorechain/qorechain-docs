@@ -186,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-SDK 0.9.0 と `@qorechain/wallet-adapter` 0.4.0 のローテーションヘルパーは、レガシー導出を**新しい**鍵として使うことを拒否します（アカウントに束縛されていないため）。レガシー鍵を旧鍵として使うことは引き続き可能です。ローテーションが成功すると、新しい鍵での署名は成功し（code 0）、古い鍵は拒否されます（`pqc` code 21）。v3.2.3 以降、ローテーションは（移行と同様に）ポスト量子保護を提供しない新しい鍵（コード 230）とアカウントが以前に使用した鍵（コード 232）を拒否し、`authz` を通じて送信することもできません。
+SDK 0.9.0 以降と `@qorechain/wallet-adapter` 0.4.0 のローテーションヘルパーは、レガシー導出を**新しい**鍵として使うことを拒否します（アカウントに束縛されていないため）。レガシー鍵を旧鍵として使うことは引き続き可能です。ローテーションが成功すると、新しい鍵での署名は成功し（code 0）、古い鍵は拒否されます（`pqc` code 21）。v3.2.3 以降、ローテーションは（移行と同様に）ポスト量子保護を提供しない新しい鍵（コード 230）とアカウントが以前に使用した鍵（コード 232）を拒否し、`authz` を通じて送信することもできません。
 
 ## 一貫した API
 
@@ -262,7 +262,7 @@ QoreChain のウォレット互換な**ハイブリッド拡張 sign-bytes フ�
 このハイブリッド署名を生成する方法は 3 つあります:
 
 * **CLI** — `qorechaind tx pqc cosign` がトランザクションに Dilithium-5 の副署名を添付してブロードキャストします（事前に `qorechaind tx pqc gen-key` を実行し、鍵を登録しておきます）。リリース版バイナリにのみ含まれています。[トランザクションコマンド](/cli-reference/transaction-commands)を参照してください。
-* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid`（sign-bytes の形式が解決されるよう `rest` を渡します）が TypeScript、Python、Go、Rust、Java で同等の処理を行います。TypeScript では、`client.connectTx(signer, { pqcKeypair })`（SDK 0.9.0）がすべてのトランザクションをハイブリッド署名します。先に鍵を登録してください（上記参照）。[SDK アカウントと PQC 署名](/sdk/concepts/accounts-pqc)を参照してください。
+* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid`（sign-bytes の形式が解決されるよう `rest` を渡します）が TypeScript、Python、Go、Rust、Java で同等の処理を行います。TypeScript では、`client.connectTx(signer, { pqcKeypair })`（SDK 0.9.0 以降。現在のリリースは 0.12.0）がすべてのトランザクションをハイブリッド署名します。先に鍵を登録してください（上記参照）。[SDK アカウントと PQC 署名](/sdk/concepts/accounts-pqc)を参照してください。
 * **`qorechain-pqc` を直接使用** — サポートされている 6 言語のいずれかで SDK 外のツールを構築する場合は、`hybridSignBytes` で sign bytes をフレーミングし、`mldsa.sign` で Dilithium-5 署名を生成してください。
 
 ## オンチェーンフットプリントの最適化

@@ -114,7 +114,16 @@ Exporturile deliberate, suportate, ale `@qorechain/sdk`:
   `fetchStakingTierPool`); `fetchAuthNonce`; `fetchProtocolFeatures` /
   `isProtocolFeatureEnabled`; `possessionProven` pe starea PQC;
   `ibcTimeoutTimestamp`; `CHAIN_UPGRADE_V3_2_4`. Vezi
-  [Ce adaugă 0.10.0](/sdk/install#whats-new-0100).
+  [Ce a adăugat 0.10.0](/sdk/install#whats-new-0100).
+- **Chain v3.2.5 (0.12.0):** registrul de chei ML-KEM-1024 (`msg.pqc.registerKemKey` /
+  `removeKemKey`, `validateKemPublicKey`, `fetchKemKey`, `parseKemKey`,
+  `KEM_ALGORITHM_ML_KEM_1024`, `ML_KEM_1024_PUBLIC_KEY_SIZE`); gaz exact pentru tranzacțiile
+  hibride (`exactHybridGas`, `EXACT_GAS_MULTIPLIER`, `EXACT_GAS_HEADROOM`,
+  `TxClient.estimateGasDetails`); citiri abstract-account (`fetchSpendingRules`,
+  `fetchAuthenticators`) și `msg.abstractaccount.updateConfig`; constructori verificați pentru
+  parametrii de guvernanță (`validateCrossVmUpdateParams`, `validateRdkUpdateParams`);
+  `CHAIN_UPGRADE_V3_2_5`; presetarea `localnet`. Vezi
+  [Ce adaugă 0.12.0](/sdk/install#whats-new-0120).
 - **Derivare PQC canonică (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; mesajul de înregistrare PQC este
   `buildRegisterPqcKeyMsg` (folosit de `ensurePqcRegistered`). `derivePqcLegacy`
@@ -143,10 +152,10 @@ program-id.
 
 | Limbaj | Documentație generată | Instalare |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.10.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (tag `packages/go/v0.10.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.10.0; import `qorechain`) |
-| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.10.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.12.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.12.0` (tag `packages/go/v0.12.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.12.0; import `qorechain`) |
+| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.12.0` |
 
 Fiecare pachet oglindește aceeași suprafață (preseturi de rețea, utilitare
 denom/adrese, derivare HD — inclusiv conturi unificate eth-native — primitive

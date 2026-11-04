@@ -45,16 +45,17 @@ Authenticator-/Abstract-Account-Abläufe im Mainnet (Modul dort abgeschaltet, im
 Testnet aktiviert), xQORE und Gas-Abstraktion. Jeder Leitfaden wiederholt den
 Vorbehalt dort, wo er zutrifft. Geprüft gegen die Live-Endpunkte am 27. Oktober 2026; am 4. November 2026 war die Liste der aktiven Precompiles des Mainnets weiterhin leer, während die Liste des Testnets auch die Cross-VM-Bridge `0x…0901` enthielt (nicht erneut getestet).
 
-Das veröffentlichte SDK (0.10.0, 26. Oktober 2026) signiert in der Form, die beide
+Das veröffentlichte SDK (0.12.0, 30. Oktober 2026) signiert in der Form, die beide
 Netzwerke verifizieren (v2-Hybrid-Sign-Bytes, aus dem Chain-Zustand aufgelöst),
 und das Signaturformat, die Adressen, Dezimalstellen, Memos und Gebühren haben
 sich in v3.2.3, v3.2.4, v3.2.5 oder v3.2.6 nicht geändert (das Mainnet läuft seit dem 4. November 2026 mit v3.2.6,
 Höhe 4.020.000, Governance-Vorschlag 15; das Testnet seit dem 27. Oktober). Es enthält die Client-Seite der
 späteren Post-Quanten-Regeln (den Besitznachweis bei der Schlüsselregistrierung,
 EVM-Fenster mit Gültigkeitsbereich, EIP-7702-Einwilligungsnachrichten) und von v3.2.4 (Staking-
-Stufen, die Authenticator-Nonce, Schalter für Protokollfunktionen); Versionen
+Stufen, die Authenticator-Nonce, Schalter für Protokollfunktionen) und v3.2.5 (exaktes Gas für
+Hybrid-Transaktionen, das ML-KEM-Schlüsselregister); Versionen
 vor 0.9.0 enthalten die erste Gruppe nicht, siehe [Versionen vor 0.9.0](/sdk/install#before-090)
-und [Was 0.10.0 neu bringt](/sdk/install#whats-new-0100).
+und [Was 0.12.0 neu bringt](/sdk/install#whats-new-0120).
 
 Wallet- und Backend-Signierung: siehe [QoreSign](/qoresign/overview).
 :::
@@ -113,7 +114,7 @@ zweite ist auf den Live-Netzwerken noch nicht nutzbar, siehe unten):
   [Authenticators & delegiertes Ausgeben](/sdk/guides/authenticators).
 
 Ein neues **`@qorechain/react`**-Kit (Provider, Hooks, `ConnectButton`,
-`QuantumSafeBadge`) macht den Bau einer dApp mit hybrider ML-DSA-87-Signierung zum Standardweg —
+`PqcStatusBadge`) macht den Bau einer dApp mit hybrider ML-DSA-87-Signierung zum Standardweg —
 siehe den [React-Kit-Guide](/sdk/guides/react). Die vollständige Argumentation
 finden Sie unter [Warum QoreChain SDK](/sdk/why).
 
@@ -125,15 +126,15 @@ Ableitungsschemata, Denominations-Arithmetik und Lese-Schnittstellen.
 
 | Paket | Sprache | Installation | Status |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Veröffentlicht (npm, v0.10.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (Import `qorsdk`) | Veröffentlicht (PyPI, v0.10.0) |
-| `qorechain-sdk` (Go-Modul) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Veröffentlicht (Go-Proxy, Tag `packages/go/v0.10.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (Import `qorechain`) | Veröffentlicht (crates.io, v0.10.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.10.0` | Veröffentlicht (Maven Central, v0.10.0) |
-| `@qorechain/evm` | TypeScript (EVM-Adapter) | `npm i @qorechain/evm viem` | Veröffentlicht (npm, v0.8.0) |
-| `@qorechain/svm` | TypeScript (SVM-Adapter) | `npm i @qorechain/svm @solana/web3.js` | Veröffentlicht (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (React-Kit) | `npm i @qorechain/react` | Veröffentlicht (npm, v0.10.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Veröffentlicht (npm, v0.10.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Veröffentlicht (npm, v0.12.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (Import `qorsdk`) | Veröffentlicht (PyPI, v0.12.0) |
+| `qorechain-sdk` (Go-Modul) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Veröffentlicht (Go-Proxy, Tag `packages/go/v0.12.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (Import `qorechain`) | Veröffentlicht (crates.io, v0.12.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.12.0` | Veröffentlicht (Maven Central, v0.12.0; JDK 17+) |
+| `@qorechain/evm` | TypeScript (EVM-Adapter) | `npm i @qorechain/evm viem` | Veröffentlicht (npm, v0.12.0) |
+| `@qorechain/svm` | TypeScript (SVM-Adapter) | `npm i @qorechain/svm @solana/web3.js` | Veröffentlicht (npm, v0.12.0) |
+| `@qorechain/react` | TypeScript (React-Kit) | `npm i @qorechain/react` | Veröffentlicht (npm, v0.12.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Veröffentlicht (npm, v0.12.0) |
 
 > Die Python-Distribution wird als `qorechain-sdk` installiert, aber **als
 > `qorsdk` importiert**. Alle Clients sind in ihren Registries veröffentlicht —
@@ -148,17 +149,17 @@ Standard-Cosmos-Module, typisierte Query-Clients, den kompletten
 Transaktionslebenszyklus (Auto-Gas, Fehlerdecodierung, Tx-Tracking,
 Block-/Tx-Suche), hybride Post-Quanten-Transaktionen und
 WebSocket-Subscriptions. Alle diese Clients sind **veröffentlicht**: TypeScript
-auf npm (`@qorechain/sdk` 0.10.0), Python auf PyPI (`qorechain-sdk` 0.10.0,
-Import `qorsdk`), Go auf dem Modul-Proxy (Tag `packages/go/v0.10.0`), Rust auf
-crates.io (`qorechain-sdk` 0.10.0) und Java auf Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.10.0). Die
-EVM-/SVM-Ausführungsadapter (`@qorechain/evm`, `@qorechain/svm`, beide 0.8.0),
-das `@qorechain/react`-Kit (0.10.0) und die
-`create-qorechain-dapp`-Scaffolding-CLI (0.10.0) sind reine TypeScript-Pakete
+auf npm (`@qorechain/sdk` 0.12.0), Python auf PyPI (`qorechain-sdk` 0.12.0,
+Import `qorsdk`), Go auf dem Modul-Proxy (Tag `packages/go/v0.12.0`), Rust auf
+crates.io (`qorechain-sdk` 0.12.0) und Java auf Maven Central
+(`io.github.qorechain:qorechain-sdk` 0.12.0). Die
+EVM-/SVM-Ausführungsadapter (`@qorechain/evm`, `@qorechain/svm`, beide 0.12.0),
+das `@qorechain/react`-Kit (0.12.0) und die
+`create-qorechain-dapp`-Scaffolding-CLI (0.12.0) sind reine TypeScript-Pakete
 und ebenfalls auf npm veröffentlicht. Die Begleitpakete finden Sie unter
 [Installation](/sdk/install#related-packages).
 
-## Neu in 0.6, 0.7, 0.8, 0.9 und 0.10
+## Neu in 0.6 bis 0.12 {#whats-new-in-06-07-08-09-and-010}
 
 **0.6.0 — vereinheitlichte eth-native Konten (Chain v3.1.83).** Ein
 `eth_secp256k1`-Schlüssel ist eine 20-Byte-Identität, dargestellt in allen drei
@@ -238,7 +239,20 @@ durchsetzt, `possessionProven` im PQC-Status und `ibcTimeoutTimestamp`.
 `ensurePqcRegistered` vergleicht jetzt den registrierten Schlüssel, statt einem
 Status ohne einen solchen zu vertrauen, und eine Ablehnung durch die Chain, die
 während der Gebührensimulation als Text eintrifft, wird in jeder Sprache
-benannt. Siehe [Was 0.10.0 neu bringt](/sdk/install#whats-new-0100).
+benannt. Siehe [Was 0.10.0 hinzugefügt hat](/sdk/install#whats-new-0100).
+
+**0.12.0, Client-Unterstützung für Chain v3.2.5.** Die Presets `mainnet` und `testnet`
+verwenden jetzt standardmäßig die öffentlichen Endpoints (ein Preset `localnet`, Chain-ID
+`qorechain-devnet`, behält die alten localhost-Ports). Die `"auto"`-Gebühr einer Hybrid-Transaktion
+nutzt auf Netzwerken, die v3.2.5 angewendet haben, die exakte Gas-Regel
+(`ceil(simulated x 1.02) + 2000`, etwa 171.600 Gas für eine hybride Bank-Überweisung statt
+etwa 289.000). Das ML-KEM-1024-Schlüsselregister hat Composer (`msg.pqc.registerKemKey`,
+`msg.pqc.removeKemKey`) und einen Lesezugriff (`fetchKemKey`), der auf dem Mainnet antwortet. Es gibt
+Lesezugriffe für die Spending-Regeln und verknüpften Schlüssel von Abstract Accounts sowie geprüfte Builder
+für die CrossVM- und Rollup-Parametervorschläge. Das Chain Developer Kit
+(EVM- und QoreChain-Native-Vorlagen, viem-Chains für beide Netzwerke) ist Teil davon.
+Außerhalb von npm gab es kein 0.11.0; die anderen Sprachen gingen von 0.10.0 auf 0.12.0. Siehe
+[Was 0.12.0 neu bringt](/sdk/install#whats-new-0120).
 
 ## Nächste Schritte
 

@@ -16,18 +16,18 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
 `react` (>=18) bir eş bağımlılıktır; `@qorechain/sdk` doğrudan bir bağımlılıktır
-(kit 0.10.0'dan beri `^0.10.0`; 0.x bir sürümde şapka işareti 0.10 içinde kalır, dolayısıyla bir SDK
-yaması ikinci bir kopya kurmaz). `@qorechain/react` **0.10.0** sürümünü kullanın (0.9.0 aynı şekilde çalışır): 0.8.0,
+(kit 0.12.0'dan beri `^0.12.0`; 0.x bir sürümde şapka işareti 0.12 içinde kalır, dolayısıyla bir SDK
+yaması ikinci bir kopya kurmaz). `@qorechain/react` **0.12.0** sürümünü kullanın (0.9.0 ve sonrası aynı şekilde çalışır): 0.8.0,
 mainnet'te yanlış hibrit biçimiyle imzalayan SDK 0.8.0'a sabitlenir; daha eski 0.8.x
 sürümleri ise adres değişikliğinden sonra eski bir bakiye veya durum gösterebilir.
 
-:::caution React kitinin canlı ağ sınırlamaları (0.9.0 ve 0.10.0)
+:::caution React kitinin canlı ağ sınırlamaları (0.9.0 ile 0.12.0 arası)
 `useTx`, cüzdanın imzalayanıyla ve post-kuantum anahtar çifti olmadan bağlanır; bu yüzden
 yalnızca klasik imzayla gönderir ve canlı ağlar bunu reddeder (Native yolu hibrit ML-DSA-87
 uzantısını gerektirir): `send` / `sendTokens` mainnet veya testnet üzerinde bir işlemi
 işleyemez. Gönderimler için SDK'nin hibrit `TxClient`'ını kullanın
 (`client.connectTx(signer, { pqcKeypair })`, bkz.
-[Hibrit imzalama](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` ve `<QuantumSafeBadge/>`,
+[Hibrit imzalama](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` ve `<PqcStatusBadge/>`,
 durumu sağlayıcının oluşturulmuş istemcisiyle `getPqcStatus` üzerinden okur; bu çağrı SDK 0.9.0'dan
 itibaren REST üzerinden okur (`/qorechain/pqc/v1/account/{address}`), bu nedenle
 `*.qore.host` karşısında çalışırlar (kit 0.8.x, genel uç noktaların sunmadığı
@@ -133,23 +133,29 @@ render-prop'u geçin:
 <ConnectButton wallets={["keplr", "leap", "evm"]} />
 ```
 
-### `<QuantumSafeBadge/>`
+### `<PqcStatusBadge/>` {#pqc-status-badge}
 
 Adresin kayıtlı bir post-kuantum anahtarı olduğunda (`usePqcStatus` aracılığıyla) bir
 durum göstergesi gösterir; aksi takdirde sönük bir "kayıtlı değil"
-durumu gösterir. Varsayılan olarak bağlı hesabı kullanır.
+durumu gösterir. Varsayılan olarak bağlı hesabı kullanır. Varsayılan etiketler "PQC key registered" ve "No PQC key"
+metinleridir (`safeLabel` / `unsafeLabel` ile geçersiz kılın); kök öğe `data-pqc-status` ve `data-quantum-safe`
+özniteliklerini aynı değerlerle taşır.
 
 ```tsx
-<QuantumSafeBadge />
-<QuantumSafeBadge address="qor1…" hideWhenUnsafe />
+<PqcStatusBadge />
+<PqcStatusBadge address="qor1…" hideWhenUnsafe />
 ```
+
+`PqcStatusBadge` kit 0.11.0 ile geldi. `QuantumSafeBadge` (`QuantumSafeBadgeProps` ve `QuantumSafeRenderState`
+ile birlikte) aynı bileşenin kullanımdan kaldırılmış bir takma adı olarak hâlâ dışa aktarılır;
+bu yüzden mevcut kod çalışmaya devam eder.
 
 ## Bir araya getirme
 
 ```tsx
 import {
   ConnectButton,
-  QuantumSafeBadge,
+  PqcStatusBadge,
   useAccount,
   useBalance,
 } from "@qorechain/react";
@@ -162,7 +168,7 @@ function Dashboard() {
       <ConnectButton wallets={["keplr", "leap", "evm"]} />
       {isConnected && (
         <p>
-          {balance?.amount ?? "…"} {balance?.denom} <QuantumSafeBadge />
+          {balance?.amount ?? "…"} {balance?.denom} <PqcStatusBadge />
         </p>
       )}
     </>

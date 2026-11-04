@@ -112,7 +112,16 @@ pnpm --filter @qorechain/sdk docs:api
   `fetchStakingTierPool`)؛ و`fetchAuthNonce`؛ و`fetchProtocolFeatures` /
   `isProtocolFeatureEnabled`؛ و`possessionProven` في حالة PQC؛
   و`ibcTimeoutTimestamp`؛ و`CHAIN_UPGRADE_V3_2_4`. راجع
-  [ما الذي يضيفه 0.10.0](/sdk/install#whats-new-0100).
+  [ما الذي أضافه 0.10.0](/sdk/install#whats-new-0100).
+- **السلسلة v3.2.5 ‏(0.12.0):** سجل مفاتيح ML-KEM-1024 (`msg.pqc.registerKemKey` /
+  `removeKemKey`، و`validateKemPublicKey`، و`fetchKemKey`، و`parseKemKey`،
+  و`KEM_ALGORITHM_ML_KEM_1024`، و`ML_KEM_1024_PUBLIC_KEY_SIZE`)؛ والغاز الدقيق للمعاملات
+  الهجينة (`exactHybridGas`، و`EXACT_GAS_MULTIPLIER`، و`EXACT_GAS_HEADROOM`،
+  و`TxClient.estimateGasDetails`)؛ وقراءات الحساب المجرّد (`fetchSpendingRules`،
+  و`fetchAuthenticators`) و`msg.abstractaccount.updateConfig`؛ وبُناة معاملات الحوكمة
+  المفحوصون (`validateCrossVmUpdateParams`، و`validateRdkUpdateParams`)؛
+  و`CHAIN_UPGRADE_V3_2_5`؛ والإعداد المسبق `localnet`. راجع
+  [ما الذي يضيفه 0.12.0](/sdk/install#whats-new-0120).
 - **الاشتقاق القياسي لـ PQC ‏(0.8.3+):** ‏`derivePqcCanonical(account, mnemonic)`،
   `canonicalAccount(account)`؛ ورسالة تسجيل PQC هي
   `buildRegisterPqcKeyMsg` (تستخدمها `ensurePqcRegistered`). `derivePqcLegacy`
@@ -140,10 +149,10 @@ pnpm --filter @qorechain/sdk docs:api
 
 | اللغة | التوثيق المولَّد | التثبيت |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.10.0` (الاستيراد `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (الوسم `packages/go/v0.10.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.10.0؛ الاستيراد `qorechain`) |
-| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.10.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.12.0` (الاستيراد `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.12.0` (الوسم `packages/go/v0.12.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.12.0؛ الاستيراد `qorechain`) |
+| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.12.0` |
 
 كل حزمة تعكس الواجهة نفسها (الإعدادات المسبقة للشبكات، وأدوات الفئات
 النقدية/العناوين، والاشتقاق الهرمي الحتمي HD — بما في ذلك الحسابات الموحّدة الأصيلة بنمط eth — وأساسيات

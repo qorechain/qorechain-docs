@@ -196,7 +196,7 @@ Codes d'erreur, communs aux trois langages, et ce qu'un relayeur doit faire (d'a
 
 ## Où il est publié {#where-published}
 
-Vérifié le 27 octobre 2026 auprès de chaque registre.
+Vérifié auprès de chaque registre le 4 novembre 2026 (inchangé depuis le 27 octobre).
 
 | Registre | Paquet | Version | Lien |
 |---|---|---|---|

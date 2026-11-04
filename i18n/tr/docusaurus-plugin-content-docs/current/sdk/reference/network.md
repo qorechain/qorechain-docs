@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `mainnet` |
 | Chain id | `qorechain-vladi` (7 Haziran 2026'dan beri yayında) |
-| Zincir sürümü (4 Kasım 2026) | v3.2.6 (4.020.000 yüksekliğinden beri, 4 Kasım 2026, yönetişim önerisi 15; v3.2.5, 29 Ekim'de 3.906.833 yüksekliğinde ve v3.2.4 23 Ekim'de 3.742.566 yüksekliğinde uygulanmıştı). SDK 0.10.0 v3.2.4 için istemcidir ve çalışmaya devam eder; v3.2.5 veya v3.2.6 eklemeleri için oluşturucuları (builder) yoktur |
+| Zincir sürümü (4 Kasım 2026) | v3.2.6 (4.020.000 yüksekliğinden beri, 4 Kasım 2026, yönetişim önerisi 15; v3.2.5, 29 Ekim'de 3.906.833 yüksekliğinde ve v3.2.4 23 Ekim'de 3.742.566 yüksekliğinde uygulanmıştı). SDK 0.12.0 v3.2.5 için istemcidir ve v3.2.6 üzerinde çalışır (imzalama biçimi değişmedi); 0.10.0, v3.2.4 için istemciydi |
 | EVM zincir kimliği | `9801` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |
@@ -48,6 +48,14 @@ sidebar_position: 1
 EVM uç noktaları `eth_`, `net_`, `web3_` ve `txpool_` sunar; `qor_` ad alanı
 etkin değildir. Ayrıca bkz. [Ağlar](/appendix/networks#public-endpoints).
 
+SDK 0.12.0'dan itibaren `mainnet` ve `testnet` hazır ayarları varsayılan olarak bu REST, consensus RPC ve
+EVM JSON-RPC URL'lerini (ve testnet EVM WebSocket'ini) kullanır. Hazır ayarlar, yukarıdaki salt okunur SVM URL'leri mevcut olsa da
+**hiçbir** gRPC uç noktası ve **hiçbir** SVM uç noktası belirlemez
+(SVM işlemleri açık değildir): bunlardan birine ihtiyaç duyan kod, geçirilecek uç noktayı
+adlandıran bir hatayla başarısız olur. Testnet uç noktaları IP başına hız sınırlıdır; üretim trafiği için kendi
+düğümünüzü çalıştırın veya kullanın. 0.12.0 öncesinde her hazır ayar varsayılan olarak
+localhost kullanıyordu.
+
 ### Bir istemci için önemli olan yalnızca-testnet farkları {#testnet-only}
 
 Testnet bir hazırlık (staging) ağıdır ve mainnet'in önünde çalışır; bu nedenle orada okuyabileceğiniz birkaç şey mainnet'te yoktur (27 Ekim 2026'da kontrol edildi; tam liste [Testnet ve mainnet arasındaki farklar](/appendix/chain-parameters#testnet-differences) sayfasındadır):
@@ -56,10 +64,12 @@ Testnet bir hazırlık (staging) ağıdır ve mainnet'in önünde çalışır; b
 * **Test tokenleri.** Değeri olmayan üç token yalnızca testnet'te vardır; `erc20:<EIP-55 contract address>` adlı (büyük/küçük harfe duyarlı) bank birimleri olarak: fUSD (6 ondalık), fETH (18) ve fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` bunları listeler. Mainnet'in tek bank birimi `uqor`'dur. Bkz. [Testnet test tokenleri (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
 * **Açık modüller.** `abstractaccount` modülü testnet'te etkin, mainnet'te kapalıdır; testnet'te EVM precompile'ları etkindir (27 Ekim'de üç, 4 Kasım'da dört), mainnet'te hiçbiri değildir ve QoreChain Native instantiate testnet'te açıktır.
 
-## Varsayılan portlar
+## Varsayılan portlar (`localnet` hazır ayarı) {#default-ports}
 
-`createClient()` varsayılan olarak bu localhost portlarını kullanır. Gerçek bir
-düğüme işaret etmek için `endpoints` parametresini geçersiz kılın.
+`localnet` hazır ayarı (zincir kimliği `qorechain-devnet`, EVM zincir kimliği ayarlanmamış) bu
+localhost portlarını kullanır; kendi makinenizdeki bir düğüm içindir. SDK 0.12.0 öncesinde her hazır ayar
+varsayılan olarak bunları kullanıyordu; 0.12.0'dan beri yalnızca `localnet` kullanır. Başka bir düğüme
+işaret etmek için `endpoints` parametresini geçersiz kılın.
 
 | Uç nokta | Port | Amaç |
 | --- | --- | --- |
@@ -69,6 +79,10 @@ düğüme işaret etmek için `endpoints` parametresini geçersiz kılın.
 | EVM JSON-RPC | `8545` | `eth_*` (ve bunları etkinleştiren düğümlerde `qor_*` / precompile'lar) |
 | EVM JSON-RPC (WS) | `8546` | EVM WebSocket abonelikleri |
 | SVM JSON-RPC | `8899` | Solana uyumlu RPC |
+
+```ts
+const local = createClient({ network: "localnet" }); // a node on this machine
+```
 
 Açık uç noktalarla örnek:
 
@@ -92,8 +106,9 @@ aktarılır) sunar, böylece ağları programatik olarak listeleyebilir ve
 
 ## Mainnet'i hedefleme
 
-Her iki ön ayar da aynı localhost varsayılanlarıyla gelir; `mainnet`'i seçin ve
-uç noktaları genel URL'lerle (veya kendi düğümünüzle) geçersiz kılın:
+Hedeflemek için `mainnet`'i seçin. SDK 0.12.0'dan itibaren hazır ayar genel
+URL'leri zaten taşır; bu yüzden aşağıdaki uç noktalar varsayılanlardır; `endpoints` parametresini yalnızca kendi düğümünüz için geçirin
+(0.12.0 öncesi bir SDK varsayılan olarak localhost kullanır ve bunlara ihtiyaç duyar):
 
 ```ts
 const main = createClient({

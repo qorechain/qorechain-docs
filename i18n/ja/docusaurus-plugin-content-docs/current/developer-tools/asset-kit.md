@@ -108,11 +108,11 @@ QoreChainのすべてのEVMトランザクションは、送信者が次の両�
 | Solidityコントラクト(GitHubから) | `git clone --recurse-submodules https://github.com/qorechain/qorechain-asset-kit`(タグ`v0.1.0`)、またはFoundryの依存関係として: `forge install qorechain/qorechain-asset-kit@v0.1.0` | Foundry、solc 0.8.28(T-REXとONCHAINIDのファイルは0.8.17を使用)、`evm_version = "cancun"` |
 | Java | `implementation("io.github.qorechain:asset-kit:0.1.0")`(Maven `io.github.qorechain:asset-kit:0.1.0`) | Java 17 |
 | Go | `go get github.com/qorechain/qorechain-asset-kit/clients/go@v0.1.0`(パッケージ`assetkit`) | Go 1.23 |
-| Python | PyPIで`qorechain-asset-kit`として**近日公開**。まだ公開されていません。現時点ではクローンから: `cd clients/python && python -m pip install .`(インポートは`qorechain_asset_kit`) | Python 3.10 |
-| TypeScript | npmで`@qorechain/asset-kit`として**近日公開**。まだ公開されていません。現時点ではクローンから: `pnpm install && pnpm -r build` | Node.js 22.12 |
+| Python | `pip install qorechain-asset-kit`(インポートは`qorechain_asset_kit`) | Python 3.10 以降 |
+| TypeScript | `npm install @qorechain/asset-kit` | Node.js 26 で実行。ES モジュールと CommonJS |
 | 発行者コンソール | クローンから: `pnpm install`、続けて`pnpm --filter @qorechain/issuer-console dev`(パッケージとしては公開されていません) | EIP-6963ウォレットを備えたブラウザ |
 
-リポジトリのREADMEとTypeScriptクライアントのREADMEは、`@qorechain/asset-kit`がインストール済みであるかのようにインポートしています。これはnpmでのリリースまで、クローンからのみ動作します。
+Python、TypeScript、Go、Java のパッケージは、**提案中の**ネイティブモジュール専用のクライアントです。コントラクトは含まれません。Solidityコントラクトと発行者コンソールはリポジトリから入手してください。
 
 `forge install`を使うと、コントラクトは`lib/qorechain-asset-kit/contracts/`の下に、それ自身の依存関係は`lib/qorechain-asset-kit/contracts/lib/`の下に置かれます。ガード、CMTATのルール、ボールトをコンパイルできるリマッピングは次のとおりです。
 
@@ -163,7 +163,7 @@ EIP-6963ウォレットを接続し、QoreChain Testnetに切り替えてから�
 
 ### クイックスタート4: MockChainで提案されたモジュールに対して構築する(Python、オフライン) {#quickstart-python}
 
-PythonクライアントのREADMEからです。PyPIでのリリースまでは、クローンからインストールしてください([インストール](#install)を参照)。
+PythonクライアントのREADMEからです。`pip install qorechain-asset-kit`でインストールします。2026年11月4日に、新しい仮想環境でPyPIの0.1.0パッケージを使って実行しました。
 
 ```python
 from qorechain_asset_kit import MockChain, MockChainError, asset
@@ -179,6 +179,30 @@ except MockChainError as e:
 ```
 
 観測された出力: `ERROR_CODE_ADDRESS_FROZEN`。同じ呼び出しを`ChainClient()`で行うと、`module == "x/asset"`、`code == "CHAIN_UPGRADE_REQUIRED"`の`ChainUpgradeRequired`が発生します。
+
+### クイックスタート4b: TypeScriptでの同じ例(オフライン) {#quickstart-typescript}
+
+開発者ハブのテスト済みクイックスタートからです(マニフェストでは2026年10月29日にテスト済みとされています。`npm install @qorechain/asset-kit@0.1.0`の後、Node.js 26で2026年11月4日に再度実行しました)。
+
+```ts
+import { ChainClient, ChainUpgradeRequired, MockChain, asset } from "@qorechain/asset-kit";
+
+const issuer = "qor1issuer", alice = "qor1alice", bob = "qor1bob";
+
+// Today: a controlled failure, no network request.
+await new ChainClient().asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "10" })
+  .catch((e) => e instanceof ChainUpgradeRequired); // e.module === "x/asset"
+
+// Development: the proposed rules, in memory.
+const chain = new MockChain();
+await chain.asset.createAsset({ issuer, assetId: "bond-2030", flags: { freezable: true, pausable: true } });
+await chain.asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "100" });
+await chain.asset.freeze({ agent: issuer, assetId: "bond-2030", holder: alice, frozen: true });
+const q = await chain.asset.canTransfer({ assetId: "bond-2030", from: alice, to: bob, amount: "1" });
+console.log("asset-kit: frozen transfer allowed =", q.allowed, "code =", q.code);
+```
+
+`asset-kit: frozen transfer allowed = false code = 6`と出力されました(`6`は`asset.ErrorCode.ERROR_CODE_ADDRESS_FROZEN`です)。
 
 ### クイックスタート5: Goでの同じ例(モジュールプロキシ v0.1.0) {#quickstart-go}
 
@@ -214,7 +238,7 @@ func main() {
 観測された出力: `mock mint error: <nil>`に続いて`true x/asset`。JavaクライアントのREADMEには、`MockChain`、`MsgCreateAsset.newBuilder()`、`MockChainError.code()`を使った同等の例があります。
 
 :::note
-リポジトリのGoとTypeScriptのREADMEのスニペットには小さな誤りがあり、0.1.1で修正される予定です。上のGoの例は修正済みのバージョンです。
+リポジトリのGoのREADMEと、0.1.0のnpmパッケージに同梱されているREADMEのスニペットには、小さな誤りがあります。上のGoとTypeScriptの例は修正済みのバージョンです。
 :::
 
 ## 主なAPI {#main-api}
@@ -267,15 +291,15 @@ EVMトランザクションを送信するすべての操作の要件: 登録済
 
 ## 公開場所 {#where-published}
 
-2026年10月28日にライブで確認しました(GitHubリリース、Maven Central、Goプロキシは0.1.0を配信しており、PyPIとnpmは404を返します)。
+2026年11月4日に各レジストリで確認しました。すべてのエントリが0.1.0を配信しています。
 
 | レジストリ | パッケージ | バージョン | リンク |
 |---|---|---|---|
+| npm | `@qorechain/asset-kit` | 0.1.0 | https://www.npmjs.com/package/@qorechain/asset-kit |
+| PyPI | `qorechain-asset-kit` | 0.1.0(純粋なPythonのホイールとソース) | https://pypi.org/project/qorechain-asset-kit/ |
 | Maven Central | `io.github.qorechain:asset-kit` | 0.1.0 | https://central.sonatype.com/artifact/io.github.qorechain/asset-kit |
 | Goモジュールプロキシ | `github.com/qorechain/qorechain-asset-kit/clients/go` | v0.1.0(タグ`clients/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-asset-kit/clients/go |
-| PyPI | `qorechain-asset-kit` | **近日公開**(PyPIにはまだありません) | |
-| npm | `@qorechain/asset-kit` | **近日公開**(未公開) | |
-| GitHub(Solidityコントラクト、発行者コンソール、proto、ドキュメント、法務テンプレート) | `qorechain/qorechain-asset-kit` | リリースv0.1.0 | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
+| GitHub(Solidityコントラクト、発行者コンソール、proto、ドキュメント、法務テンプレート) | `qorechain/qorechain-asset-kit` | リリースv0.1.0。`forge install qorechain/qorechain-asset-kit@v0.1.0` | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
 
 リポジトリ: https://github.com/qorechain/qorechain-asset-kit。メンテナー: QoreChain Association。
 
@@ -294,8 +318,8 @@ EVMトランザクションを送信するすべての操作の要件: 登録済
 - **ERC-7518はインターフェーススケッチであり**、実装ではありません。パーティションは今日、1つのアイデンティティレジストリまたはルールを共有する、クラスやトランシェごとに1つのトークンでモデル化できます。
 - **CMTA RuleEngine v3**は依然としてリリース候補として公開されています。このルールはトークンの`ruleEngine`として直接動作し、両方のルールインターフェースid(`0x2497d6cb`、`0xb1a69752`)を通知します。
 - **発行者コンソール**は、鍵の登録、ウィンドウの開設、ERC-3643スイートやボールトのデプロイ、CMTATのロール、部分凍結、ドキュメント、スナップショットの管理を行いません。
-- **PythonとTypeScriptは、それぞれのレジストリにありません。** PyPIとnpmでのリリースまではクローンを使ってください。このページでは、それらにレジストリ経由のインストールコマンドを示していません。
-- **READMEの誤り。** リポジトリのREADMEにあるGoとTypeScriptのスニペットには小さな誤りがあり、0.1.1で修正される予定です。このページのクイックスタートを使ってください。
+- **レジストリのパッケージには提案用のクライアントだけが含まれます。** コントラクト、デプロイスクリプト、発行者コンソールはどのパッケージにも含まれません。リポジトリを使ってください。
+- **READMEの誤り。** リポジトリのGoのREADMEとnpmパッケージのREADMEのスニペットには、小さな誤りがあります。このページのクイックスタートを使ってください。
 - **法務テンプレート。** `legal/`には、議論のための3つのドラフトがあります。スイスの台帳型証券(債務法第973d条から第973i条)、TVTGに基づくリヒテンシュタインのトークン条件(「トークンコンテナ」アプローチ)、EU DLTパイロット制度(規則(EU) 2022/858)の下でのオペレーター向けの委託契約の骨子です。これらは弁護士のレビューを受けておらず、法的助言ではなく、いかなる利用の前にも、当該法域の有資格の弁護士によるレビューが必要です。これらやこのキットを使うことは、特定の発行が法的要件を満たすかどうかについて何も意味しません。QoreChain Associationは、いかなる資産についても、発行者、登録機関、カストディアン、取引の場、法律顧問として行動しません。
 - **1.0より前の版。** 提案されているprotoは、どのマイナーバージョンでも変更される可能性があります。
 
@@ -318,7 +342,7 @@ EVMトランザクションを送信するすべての操作の要件: 登録済
 - [ポスト量子署名](/developer-guide/post-quantum-signing)と[アカウントとPQC署名](/sdk/concepts/accounts-pqc): 鍵の登録とハイブリッド署名。
 - [EVM開発](/developer-guide/evm-development#evm-window): EVM認可ウィンドウ。
 - [EVMプリコンパイル](/developer-guide/evm-precompiles): `0x0A01`と`0x0A02`。テストネットでのみ有効です。
-- [チェーン開発者キット](/developer-tools/chain-dev-sdk): Foundry、Hardhat、viemのテンプレートとウィンドウのヘルパー(SDK 0.11.0、近日公開)。
+- [チェーン開発者キット](/developer-tools/chain-dev-sdk): Foundry、Hardhat、viemのテンプレートとウィンドウのヘルパー(SDK 0.12.0に含まれます)。
 - [カストディキット](/developer-tools/custody-kit)と[QoreScan](/developer-tools/qorescan): カストディアン向け、および暗号の棚卸し向けの、隣接するキット。
 - [開発者パッケージ](/developer-tools/overview): すべてのパッケージとそのレジストリのステータス。
 - 上流の標準: ERC-3643、CMTAT、ERC-4626、ERC-7540、ERC-7518。

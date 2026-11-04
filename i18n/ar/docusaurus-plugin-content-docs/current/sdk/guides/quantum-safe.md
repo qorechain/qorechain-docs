@@ -182,7 +182,7 @@ result = ensure_pqc_registered(
 
 مع وجود `pqcKeypair` على العميل، توقّع `tx.bankSend(...)` و
 `tx.signAndBroadcast([messages], "auto")` توقيعًا هجينًا (يحاكي مسار `fee: "auto"`
-المعاملة الهجينة ويضيف غاز التحقق ما بعد الكمّي). يُحسب التوقيع الهجين على صيغة
+المعاملة الهجينة؛ ومنذ SDK 0.12.0 على شبكة v3.2.5 يكون الحدّ هو القاعدة الدقيقة `ceil(simulated x 1.02) + 2000`، وقبل ذلك كان العميل يضيف بنفسه غاز التحقق ما بعد الكمّي). يُحسب التوقيع الهجين على صيغة
 بايتات التوقيع التي تتحقق منها الشبكة (انظر
 [أي صيغة لبايتات التوقيع؟](/sdk/concepts/accounts-pqc#sign-bytes-versions))؛
 ويسأل العميل الشبكة عبر نقطة نهاية REST الخاصة بها.
@@ -267,10 +267,47 @@ await migratePqcKeyHybrid({
 });
 ```
 
+## نشر مفتاح ML-KEM-1024 {#kem-key}
+
+يثبت التوقيع من أرسل المعاملة؛ أما التشفير فيحتاج مفتاحًا مختلفًا. ابتداءً من السلسلة
+v3.2.5 يستطيع الحساب نشر مفتاح تغليف واحد من نوع **ML-KEM-1024** (معرّف الخوارزمية 2،
+1,568 بايت) في سجل KEM على السلسلة، فيستطيع أي شخص تشفير حمولة إليه.
+يؤلّف SDK 0.12.0 الرسالتين ويقرأ السجل؛ لكنه **لا** يشفّر ولا يفك التشفير
+(للحمولات المختومة راجع [QoreSeal](/developer-tools/qoreseal)).
+المسار والرسائل متاحة على الشبكة الرئيسية وشبكة الاختبار.
+
+* تنشر `msg.pqc.registerKemKey({ sender, publicKey })` المفتاح (استدعاء ثانٍ
+  يستبدله). يفحص المؤلِّف المفتاح أولًا كما تفعل السلسلة: الحجم الدقيق،
+  وكل معامل أصغر من 3329، وألا يكون كله أصفارًا (تجري `validateKemPublicKey` الفحص
+  نفسه بمفردها).
+* تسحبه `msg.pqc.removeKemKey({ sender })`.
+* تقرأ `fetchKemKey({ rest, address })` المسار `/qorechain/pqc/v1/kem/{address}` (عنوان
+  bech32 أو `0x`) وتعيد `{ found, key? }`، مع الخوارزمية وبايتات المفتاح
+  وارتفاع التسجيل.
+
+تحتاج الرسالتان كلتاهما إلى التوقيع **الهجين** للحساب، فأرسلهما عبر
+`TxClient` الهجين (`client.connectTx(signer, { pqcKeypair })`) مثل أي معاملة
+أصلية أخرى، وسجّل مفتاح ML-DSA-87 للحساب أولًا. تسمّي `decodeTxError` رفوض السلسلة `pqc` ‏250
+إلى 254. وتحمل اللغات الأربع الأخرى الرسائل نفسها
+والقراءة نفسها.
+
+```ts
+import { msg, fetchKemKey } from "@qorechain/sdk";
+
+// `kemPublicKey` is a 1,568-byte ML-KEM-1024 public key you generated (for example with
+// `@qorechain/pqc`); `tx` is a hybrid TxClient.
+await tx.signAndBroadcast(
+  [msg.pqc.registerKemKey({ sender: account.address, publicKey: kemPublicKey })],
+  "auto",
+);
+
+const { found, key } = await fetchKemKey({ rest: "https://api.qore.host", address: account.address });
+```
+
 ## في واجهة المستخدم
 
 تكشف عدّة [`@qorechain/react`](/sdk/guides/react) عن كلّ هذا في React: يُظهِر
-خطّاف `usePqcStatus` ومكوّن `<QuantumSafeBadge/>` مؤشر حالة
+خطّاف `usePqcStatus` ومكوّن `<PqcStatusBadge/>` (و`<QuantumSafeBadge/>` اسم بديل مهجور) مؤشر حالة
 كلّما كان للحساب المتّصل مفتاح PQC مسجّل. كلاهما يقرأ الحالة عبر
 `getPqcStatus` مع العميل المُركّب، لذا ابتداءً من `@qorechain/react`
 0.9.0 يقرآنها عبر REST ويعملان مقابل نقاط النهاية العامة؛ أما 0.8.x فلم تكن

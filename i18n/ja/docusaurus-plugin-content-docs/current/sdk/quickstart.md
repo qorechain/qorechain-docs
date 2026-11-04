@@ -15,29 +15,33 @@ sidebar_position: 3
 
 `createClient()` はネットワークを解決し、読み取りクライアント、手数料ヘルパー、
 遅延初期化される署名エントリーポイントを構成します。デフォルトでは公開テストネット
-（`qorechain-diana`）を対象とします。デフォルトのエンドポイントは
-**localhost** を指すため、実際のノードと通信するには `endpoints` を渡してください。
+（`qorechain-diana`）を公開エンドポイントで対象とします（これは SDK 0.12.0 で変わりました。
+以前のリリースは **localhost** がデフォルトで、`endpoints` が必要でした）。自前のノードを使うには
+`endpoints` を渡すか、お使いのマシン上のノードには `localnet` を選択してください。
 公開エンドポイントは[ネットワークリファレンス](/sdk/reference/network#public-endpoints)に
 掲載されています。
 
 ```ts
 import { createClient } from "@qorechain/sdk";
 
-// Testnet (chain id "qorechain-diana"), default localhost endpoints.
+// Testnet (chain id "qorechain-diana"), public testnet endpoints (SDK 0.12.0+).
 const client = createClient();
 
-// Point at the public testnet by overriding endpoints.
+// A node on this machine (chain id "qorechain-devnet", localhost ports).
+const local = createClient({ network: "localnet" });
+
+// Your own node: override any endpoint, the rest keep the preset's values.
 const remote = createClient({
   endpoints: {
-    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
-    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
-    evmRpc: "https://evm-testnet.qore.host", // EVM JSON-RPC (eth_*)
+    rest: "https://lcd.my-node.example",   // Native REST (LCD)
+    rpc: "https://rpc.my-node.example",    // consensus RPC (for signing)
   },
 });
 ```
 
-メインネット（チェーン ID `qorechain-vladi`）は稼働中です。メインネットを選択し、
-localhost のデフォルトを公開エンドポイント（または自前のノード）で上書きしてください：
+メインネット（チェーン ID `qorechain-vladi`）は稼働中です。メインネットを選択してください。プリセットには
+公開メインネットのエンドポイントが含まれています。以下の呼び出しはそれらを明示しており、
+0.12.0 より前の SDK ではこれが必要です：
 
 ```ts
 const main = createClient({
@@ -107,7 +111,7 @@ const burn = await client.rest.getBurnStats();
 トランザクション時の自動登録はありません。古典署名のみのトランザクションは稼働中の
 ネットワークに拒否されるため、トランザクションクライアントにアカウントの
 ML-DSA-87 鍵ペアを渡すと、すべてのトランザクションをハイブリッドで署名します。以下の 2 つのステップには
-**SDK 0.9.0 以降**（現行は 0.10.0）と、資金のあるアカウントが必要です：
+**SDK 0.9.0 以降**（現行は 0.12.0）と、資金のあるアカウントが必要です：
 
 ```bash
 npm i @qorechain/sdk
@@ -158,8 +162,10 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 ### 4b. ハイブリッド署名での送信
 
 `tx.bankSend` はハイブリッドで署名するようになりました。手数料のデフォルトは `"auto"` です。クライアントは
-ハイブリッドトランザクションそのものをシミュレートし、シミュレーションでは課金されない
-ポスト量子検証のガスを加算します。ネットワークの最低ガス価格はガス 1 単位あたり 0.1 uqor です
+ハイブリッドトランザクションそのものをシミュレートします。v3.2.5 を適用したネットワーク（両方とも適用済み）では、SDK
+0.12.0 はガスリミットを `ceil(simulated x 1.02) + 2000` に設定します。シミュレーションがすでにポスト量子検証を
+課金するためです。ハイブリッドの bank 送信は約 171,600 のガスを要求します。古いネットワークや SDK 0.10.0 以前では、
+クライアントがポスト量子検証のガスを自分で加算します（同じ送信で約 289,000）。ネットワークの最低ガス価格は
 （クライアントは 0.15 で価格設定します）。QOR を基本単位の `uqor` に変換するには `toBase("1.5")` を使用します。
 
 ```ts

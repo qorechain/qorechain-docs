@@ -319,7 +319,7 @@ qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
   이 카운터입니다.
 - `MsgExecuteCosmos.nonce`도 같은 종류의 카운터입니다.
 
-체인 v3.2.4(두 네트워크 모두 이 경로를 제공합니다)와 SDK 0.10.0부터는 카운터를
+체인 v3.2.4(두 네트워크 모두 이 경로를 제공합니다)와 SDK 0.10.0 이상부터는 카운터를
 추적하는 대신 읽을 수 있습니다. `fetchAuthNonce({ rest, address, pubkey })`는
 `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`를 호출하고
 `{ nonce, linked }`를 반환합니다. 한 번도 실행하지 않은 키는 0으로 읽히며, 카운터는
@@ -327,6 +327,23 @@ qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
 줍니다). 체인의 현재 카운터가 아닌 값을 보내면 리플레이 거부(`abstractaccount`
 코드 11, 아래 참조)가 발생합니다. 이전 SDK나 체인에서는 연결된 키별로 직접
 추적하세요. 새로 연결된 키는 0이고, 체인이 수락한 실행마다 +1입니다.
+
+## 저장된 규칙과 연결된 키 읽기 {#reads}
+
+체인 v3.2.5(SDK 0.12.0)부터 두 네트워크 모두에서 트랜잭션으로부터 재구성하는 대신
+계정이 저장한 내용을 직접 조회할 수 있습니다.
+
+* `fetchSpendingRules({ rest, address })`는 계정 전체 및 연결된 키별 지출 규칙을 읽습니다
+  (`GET /qorechain/abstractaccount/v1/accounts/{address}/spending_rules`).
+* `fetchAuthenticators({ rest, address })`는 해지된 키를 포함하여 연결된 키를 읽습니다
+  (`.../accounts/{address}/authenticators`).
+* `msg.abstractaccount.updateConfig`는 모듈의 한도를 설정하는 거버넌스 메시지입니다
+  (권한 주체는 거버넌스 모듈 계정이므로 일반 계정은 보낼 수 없습니다). SDK는 서명하기 전에 값을 확인합니다.
+
+규칙은 체인이 확인하는 방식 그대로 확인됩니다. `erc20/`, `erc721/` 또는 `erc1155/` denom은
+`0x` 컨트랙트 주소를 지정해야 하며, 모듈의 코드 8(잘못된 지출 규칙)과 9(모듈 비활성화)에
+이름이 붙어 있습니다. 모듈은 여전히 메인넷에서 꺼져 있고
+테스트넷에서는 활성화되어 있습니다.
 
 ## 권한 스키마
 

@@ -9,13 +9,13 @@ sidebar_position: 1
 
 QoreChain publie ses outils pour développeurs sous forme de petits packages sur les registres publics (npm, PyPI, crates.io, le proxy de modules Go, Maven Central et Swift Package Manager). Cette page en est l'index : à quoi sert chaque package, son nom exact dans le registre, son langage, sa version actuelle, sa commande d'installation et son statut, ainsi que l'endroit où lire comment l'utiliser. Elle s'adresse aux développeurs qui créent des dApps, des portefeuilles, des backends et des rollups sur QoreChain et veulent choisir le bon package avant de lire un guide.
 
-Les versions des tableaux ont été lues sur les registres le 27 octobre 2026. Les deux réseaux exécutent la v3.2.6 : le mainnet `qorechain-vladi` l'a appliquée le 4 novembre 2026 (la v3.2.5 le 29 octobre) et le testnet `qorechain-diana` le 27 octobre. Chaque package indiqué comme publié est sous licence Apache-2.0.
+Les versions des tableaux ont été lues sur les registres le 4 novembre 2026. Les deux réseaux exécutent la v3.2.6 : le mainnet `qorechain-vladi` l'a appliquée le 4 novembre 2026 (la v3.2.5 le 29 octobre) et le testnet `qorechain-diana` le 27 octobre. Chaque package indiqué comme publié est sous licence Apache-2.0.
 
 ## Innovations {#innovations}
 
 - **Un seul format de signature hybride dans tous les langages.** La chaîne exige une signature secp256k1 plus une signature ML-DSA-87 (FIPS 204) sur les transactions de la voie native. QoreSign reproduit ses vecteurs de test publiés octet pour octet en TypeScript, Rust, Go, Swift, Kotlin et Python, et `qorechain-pqc` exécute un même jeu de vecteurs dans ses six bindings, de sorte qu'une clé ou une signature produite dans un langage se vérifie dans les autres.
 - **Forme des sign-bytes choisie d'après l'état de la chaîne, sans deviner.** Le SDK, l'adaptateur de portefeuille, `chain-bridge` et les assistants réseau de QoreSign demandent au nœud `GET /cosmos/upgrade/v1beta1/applied_plan/{name}` pour les deux noms de mise à niveau (`v3.2.0` et `v3.1.98`) et signent la forme v2 lorsque l'une des deux hauteurs est supérieure à zéro. Sans point de terminaison REST sur ces deux chaînes, ils lèvent une erreur au lieu de deviner. Les deux réseaux vérifient la v2 aujourd'hui (vérifié le 27 octobre 2026 : `v3.2.0` appliquée sur le mainnet à la hauteur 2,981,742 et `v3.1.98` sur le testnet à la hauteur 5,746,000).
-- **Des quickstarts exécutés, pas seulement écrits.** Pour les packages qui en ont un, l'exemple a été exécuté le 27 octobre 2026 après installation depuis le registre public. 31 des 34 entrées de quickstart se sont exécutées avec succès ; le manifeste indique lesquelles trois ne l'ont pas été (voir [Limites](#limits)).
+- **Des quickstarts exécutés, pas seulement écrits.** Pour les packages qui en ont un, l'exemple a été exécuté après installation depuis le registre public (du 27 au 29 octobre 2026). 43 des 45 entrées de quickstart du manifeste se sont exécutées avec succès ; les deux qui ne l'ont pas été sont les exemples Android (voir [Limites](#limits)).
 - **Un seul manifeste derrière les tableaux.** Les noms de packages, les versions et les commandes d'installation de cette page proviennent d'un unique manifeste lisible par machine, avec un point de terminaison de version en direct par package, les mêmes données que celles à partir desquelles le hub SDK de la [page Développeurs du dashboard](/dashboard/developers#sdks) est construit.
 
 ## Comment l'utiliser {#how-to-use}
@@ -40,7 +40,7 @@ Choisissez selon ce que vous construisez.
 | Intégrer QoreChain en tant que dépositaire ou plateforme d'échange (vérification d'adresses, vérification des retraits, crédit des dépôts) | Custody kit | [Custody kit](/developer-tools/custody-kit) |
 | Inventorier la cryptographie d'un nœud, d'un réseau ou de sources Solidity sous forme de CBOM CycloneDX | QoreScan | [QoreScan](/developer-tools/qorescan) |
 | Prototyper sur testnet un jeton permissionné d'actif réel (ERC-3643, CMTAT, vaults à parts restreintes, contrôle de détenteur post-quantique) | Asset Kit | [Asset Kit](/developer-tools/asset-kit) |
-| Construire et tester des projets Solidity ou CosmWasm sur QoreChain avec Foundry, Hardhat ou viem | Chain developer kit (SDK 0.11.0, à venir) | [Chain developer kit](/developer-tools/chain-dev-sdk) |
+| Construire et tester des projets Solidity ou CosmWasm sur QoreChain avec Foundry, Hardhat ou viem | Chain developer kit (inclus dans le SDK 0.12.0) | [Chain developer kit](/developer-tools/chain-dev-sdk) |
 
 Installez un package et exécutez d'abord son quickstart sur le testnet public. Les lectures ne nécessitent ni compte, ni clé, ni frais.
 
@@ -72,7 +72,7 @@ Le dashboard dispose d'une page publique à l'adresse [dashboard.qorechain.io/de
 - **QoreX test wallet :** testnet uniquement. Injecte dans l'onglet un portefeuille de test (`window.qorex`, annoncé via EIP-6963 sous le nom « QoreX (mock) ») pour que vous puissiez essayer des flux de dApp.
 - **AI agents (MCP) :** le statut du serveur MCP de QoreChain (publié) et la configuration pour un client MCP : d'abord `npx` en local, plus un point de terminaison de testnet hébergé qui exige une clé d'API. Voir [Serveur MCP QoreChain](/developer-tools/mcp).
 
-La même vérification de l'inspecteur est disponible en code sous la forme de la fonction de bibliothèque `inspectTransaction` dans QoreSign 0.1.1 (TypeScript). Les tableaux ci-dessous et le hub SDK affichent les mêmes données de packages ; les tableaux ont été vérifiés auprès des registres le 27 octobre 2026.
+La même vérification de l'inspecteur est disponible en code sous la forme de la fonction de bibliothèque `inspectTransaction` dans QoreSign 0.1.1 (TypeScript). Les tableaux ci-dessous et le hub SDK affichent les mêmes données de packages ; les tableaux ont été vérifiés auprès des registres le 4 novembre 2026.
 
 ## Où c'est publié {#where-published}
 
@@ -84,15 +84,17 @@ Guides : [Présentation du SDK](/sdk/overview), [Installation](/sdk/install), [G
 
 | Package | Langage | Version | Installation | Statut |
 |---|---|---|---|---|
-| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.10.0 | `npm install @qorechain/sdk` | Publié |
-| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.10.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Publié. Provider, hooks, `ConnectButton` et le badge d'état PQC (exporté sous le nom `QuantumSafeBadge` dans la 0.10.0) |
-| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.8.0 | `npm install @qorechain/evm viem` | Publié |
-| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.8.0 | `npm install @qorechain/svm @solana/web3.js` | Publié. Lectures uniquement sur les réseaux en ligne |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.10.0 | `npx create-qorechain-dapp my-dapp` | Publié |
-| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.10.0 | `pip install qorechain-sdk` | Publié |
-| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.10.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Publié |
-| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.10.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@latest` | Publié |
-| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java | 0.10.0 | `implementation("io.github.qorechain:qorechain-sdk:0.10.0")` | Publié |
+| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.12.0 | `npm install @qorechain/sdk` | Publié |
+| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.12.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Publié. Provider, hooks, `ConnectButton` et le badge d'état PQC (`PqcStatusBadge`, et `QuantumSafeBadge` conservé depuis la 0.10.0) |
+| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.12.0 | `npm install @qorechain/evm viem` | Publié. Inclut les définitions de chaîne viem et les assistants de fenêtre EVM (voir [Chain developer kit](#group-chain-dev-sdk)) |
+| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.12.0 | `npm install @qorechain/svm @solana/web3.js` | Publié. Lectures uniquement sur les réseaux en ligne |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.12.0 | `npx create-qorechain-dapp my-dapp` | Publié. Sept templates |
+| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.12.0 | `pip install qorechain-sdk` | Publié |
+| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.12.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Publié |
+| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.12.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0` | Publié |
+| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.12.0 | `implementation("io.github.qorechain:qorechain-sdk:0.12.0")` | Publié |
+
+Le SDK 0.12.0 est la version actuelle depuis le 30 octobre 2026. Par rapport à la 0.10.0, les presets utilisent par défaut les endpoints publics (mainnet `api.qore.host`, `rpc.qore.host`, `evm.qore.host` ; testnet les hôtes `-testnet` ; avant, la valeur par défaut était localhost), le preset local a pour chain id `qorechain-devnet`, le gaz est exact sur les nœuds en v3.2.5 ou ultérieure (simulation multipliée par 1.02 plus 2,000 ; l'ancien chemin reste pour les nœuds plus anciens), le registre de clés ML-KEM-1024 est pris en charge (enregistrer, supprimer et interroger `/qorechain/pqc/v1/kem/\{address\}`), et le [chain developer kit](#group-chain-dev-sdk) est inclus. La signature hybride est inchangée. Les packages Python, Rust, Go et Java sont passés directement de la 0.10.0 à la 0.12.0 ; les cinq packages npm ont aussi une 0.11.0 (29 octobre 2026) avec le contenu du kit, que la 0.12.0 remplace.
 
 ### QoreSign {#group-qoresign}
 
@@ -114,17 +116,17 @@ Le package TypeScript dispose d'un sous-chemin `@qorechain/qoresign/network`, et
 
 ### QoreSeal {#group-qoreseal}
 
-Page : [QoreSeal](/developer-tools/qoreseal). Source : [qorechain/qoreseal](https://github.com/qorechain/qoreseal). QoreSeal 0.1.0 chiffre des données vers des comptes QoreChain, des groupes privés et des sidechains avec ML-KEM-1024 (FIPS 203). Le chiffrement fonctionne hors ligne ; lire depuis la chaîne la clé d'un destinataire nécessite le registre de clés KEM, qui est en ligne sur le testnet et dont la route de lecture répond sur le mainnet depuis la v3.2.5 (appliquée le 29 octobre 2026 ; aucune clé n'y était encore publiée lors de la vérification). La construction attend une revue externe avant la 1.0.
+Page : [QoreSeal](/developer-tools/qoreseal). Source : [qorechain/qoreseal](https://github.com/qorechain/qoreseal). QoreSeal 0.1.0 chiffre des données vers des comptes QoreChain, des groupes privés et des sidechains avec ML-KEM-1024 (FIPS 203). Le chiffrement fonctionne hors ligne ; lire depuis la chaîne la clé d'un destinataire nécessite le registre de clés KEM, qui est en ligne sur le testnet et dont la route de lecture répond sur le mainnet depuis la v3.2.5 (appliquée le 29 octobre 2026 ; aucune clé n'y était encore publiée lors de la vérification du 4 novembre 2026). La construction attend une revue externe avant la 1.0.
 
 | Package | Langage | Version | Installation | Statut |
 |---|---|---|---|---|
+| [`@qorechain/qoreseal`](https://www.npmjs.com/package/@qorechain/qoreseal) | TypeScript (Node.js 20+) | 0.1.0 | `npm install @qorechain/qoreseal` | Publié. Inclut les assistants `/network` |
 | [`qorechain-qoreseal`](https://crates.io/crates/qorechain-qoreseal) | Rust (s'importe sous le nom `qoreseal`) | 0.1.0 | `cargo add qorechain-qoreseal` | Publié |
 | [`github.com/qorechain/qoreseal/go`](https://pkg.go.dev/github.com/qorechain/qoreseal/go) | Go | v0.1.0 | `go get github.com/qorechain/qoreseal/go@v0.1.0` | Publié |
 | [`qorechain-qoreseal`](https://pypi.org/project/qorechain-qoreseal/) | Python 3.9+ (s'importe sous le nom `qoreseal`) | 0.1.0 | `pip install qorechain-qoreseal` | Publié. Wheels pour macOS (arm64, x86_64) et Linux (x86_64, aarch64) ; pas encore de wheel Windows |
 | `QoreSeal` (package Swift) | Swift (iOS 16+, macOS 13+) | 0.1.0 | `.package(url: "https://github.com/qorechain/qoreseal", from: "0.1.0")`, product `QoreSeal` | Publié comme release GitHub ; le framework binaire se télécharge depuis celle-ci |
 | [`io.github.qorechain:qoreseal`](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.1.0 | `implementation("io.github.qorechain:qoreseal:0.1.0")` | Publié sur Maven Central |
 | [`io.github.qorechain:qoreseal-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.1.0 | `implementation("io.github.qorechain:qoreseal-android:0.1.0")` | Publié sur Maven Central |
-| `@qorechain/qoreseal` | TypeScript | aucune pour l'instant | aucune | **Non publié** sur npm (404 le 27 octobre 2026). Le source est dans le dépôt |
 
 ### Client léger PQ {#group-pq-light-client}
 
@@ -158,21 +160,21 @@ Page : [QoreScan](/developer-tools/qorescan). Source : [qorechain/qorescan](http
 
 ### Asset Kit {#group-asset-kit}
 
-Page : [Asset Kit](/developer-tools/asset-kit). Source : [qorechain/qorechain-asset-kit](https://github.com/qorechain/qorechain-asset-kit). QoreChain Asset Kit 0.1.0 est un outillage open source pour des jetons permissionnés d'actifs réels : des contrats EVM (un module ERC-3643, une règle CMTAT et des vaults à parts restreintes, au-dessus d'un guard qui exige une clé ML-DSA-87 enregistrée), des scripts de déploiement Foundry et une console d'émetteur, ainsi que des clients pour une **proposition** de modules natifs (`x/asset`, `x/identity`, `x/compliance`, `x/settlement`, `x/attest`) qui n'est pas planifiée et n'existe sur aucun réseau. Les contrats ne fonctionnent que sur le testnet : le précompilé `0x0A02` n'est pas actif sur le mainnet, où le guard échoue en mode fermé. Pré-1.0, non audité ; les modèles juridiques du dépôt sont des brouillons non relus, pas un conseil juridique.
+Page : [Asset Kit](/developer-tools/asset-kit). Source : [qorechain/qorechain-asset-kit](https://github.com/qorechain/qorechain-asset-kit). QoreChain Asset Kit 0.1.0 est un outillage open source pour des jetons permissionnés d'actifs réels : des contrats EVM (un module ERC-3643, une règle CMTAT et des vaults à parts restreintes, au-dessus d'un guard qui exige une clé ML-DSA-87 enregistrée), des scripts de déploiement Foundry et une console d'émetteur, ainsi que des clients (TypeScript, Python, Go, Java) pour une **proposition** de modules natifs (`x/asset`, `x/identity`, `x/compliance`, `x/settlement`, `x/attest`) qui n'est pas planifiée et n'existe sur aucun réseau. Les contrats ne fonctionnent que sur le testnet : le précompilé `0x0A02` n'est pas actif sur le mainnet, où le guard échoue en mode fermé. Pré-1.0, non audité ; les modèles juridiques du dépôt sont des brouillons non relus, pas un conseil juridique.
 
 | Package | Langage | Version | Installation | Statut |
 |---|---|---|---|---|
 | [Release GitHub `v0.1.0`](https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0) | Contrats Solidity, console d'émetteur, protos, docs | 0.1.0 | `git clone --recurse-submodules https://github.com/qorechain/qorechain-asset-kit`, ou `forge install qorechain/qorechain-asset-kit@v0.1.0` | Publié. Les contrats et la console s'utilisent depuis le dépôt |
 | [`io.github.qorechain:asset-kit`](https://central.sonatype.com/artifact/io.github.qorechain/asset-kit) | Java 17 (client de la proposition) | 0.1.0 | `implementation("io.github.qorechain:asset-kit:0.1.0")` | Publié |
 | [`github.com/qorechain/qorechain-asset-kit/clients/go`](https://pkg.go.dev/github.com/qorechain/qorechain-asset-kit/clients/go) | Go (package `assetkit`, client de la proposition) | v0.1.0 | `go get github.com/qorechain/qorechain-asset-kit/clients/go@v0.1.0` | Publié |
-| `qorechain-asset-kit` sur PyPI | Python | aucune pour l'instant | aucune | À venir. Absent de PyPI (404 le 28 octobre 2026) |
-| `@qorechain/asset-kit` sur npm | TypeScript | aucune pour l'instant | aucune | À venir. Non publié (404 le 28 octobre 2026) |
+| [`@qorechain/asset-kit`](https://www.npmjs.com/package/@qorechain/asset-kit) | TypeScript (client de la proposition) | 0.1.0 | `npm install @qorechain/asset-kit` | Publié |
+| [`qorechain-asset-kit`](https://pypi.org/project/qorechain-asset-kit/) | Python 3.10+ (client de la proposition ; s'importe sous le nom `qorechain_asset_kit`) | 0.1.0 | `pip install qorechain-asset-kit` | Publié |
 
-### Chain developer kit (SDK 0.11.0) {#group-chain-dev-sdk}
+### Chain developer kit (SDK 0.12.0) {#group-chain-dev-sdk}
 
-Page : [Chain developer kit](/developer-tools/chain-dev-sdk). Source : [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). La partie du SDK QoreChain 0.11.0 destinée aux équipes Solidity et smart contracts : définitions de chaîne viem et assistants de fenêtre d'autorisation EVM dans `@qorechain/evm`, quatre nouveaux templates `create-qorechain-dapp` (Foundry, Hardhat 3, viem avec wagmi, et un jeton QoreChain Native), des quickstarts EVM et une page sur les différences entre l'EVM de QoreChain et Ethereum.
+Page : [Chain developer kit](/developer-tools/chain-dev-sdk). Source : [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). La partie du SDK QoreChain destinée aux équipes Solidity et smart contracts : définitions de chaîne viem et assistants de fenêtre d'autorisation EVM dans `@qorechain/evm`, quatre templates `create-qorechain-dapp` (Foundry, Hardhat 3, viem avec wagmi, et un jeton QoreChain Native), des quickstarts EVM et une page sur les différences entre l'EVM de QoreChain et Ethereum.
 
-**À venir.** Le SDK 0.11.0 est tagué sur GitHub (`v0.11.0`) et sa release npm est en attente : le 27 octobre 2026, npm servait `@qorechain/sdk` 0.10.0, `@qorechain/evm` 0.8.0 et `create-qorechain-dapp` 0.10.0, et `@qorechain/sdk@0.11.0` renvoyait 404. Tant que npm n'affiche pas la 0.11.0, les nouvelles définitions de chaîne, les assistants de fenêtre et les templates ne peuvent pas être installés ; les packages 0.10.0 du [tableau du SDK](#group-sdk) sont ce que vous obtenez aujourd'hui. La 0.11.0 ne modifie que les packages npm : les SDK Python, Rust, Go et Java restent en 0.10.0.
+Il est **en service et inclus dans le SDK 0.12.0** : il n'y a pas de package séparé. Installez les packages du [tableau du SDK](#group-sdk) (`@qorechain/evm` 0.12.0 pour les définitions de chaîne et les assistants de fenêtre, `create-qorechain-dapp` 0.12.0 pour les templates). Le contenu du kit est d'abord apparu en 0.11.0 sur npm (29 octobre 2026) ; la 0.12.0 la remplace.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 
@@ -271,15 +273,15 @@ Pages : [Serveur MCP QoreChain](/developer-tools/mcp), [CLI QoreChain](/develope
 | [`qorechain-mcp`](https://pypi.org/project/qorechain-mcp/) | Python (3.10+) | 0.1.0 | `pip install qorechain-mcp` (ou `uvx qorechain-mcp`) | Publié. Mêmes outils que le package npm ; stdio uniquement |
 | [`@qorechain/qore-cli`](https://www.npmjs.com/package/@qorechain/qore-cli) | TypeScript (CLI `qore`) | 0.1.0 | `npm install -g @qorechain/qore-cli` | Publié. Sortie `--json` identique à la sortie des outils MCP |
 
-### Prévu (non publié) {#planned}
+### Pas encore disponible {#planned}
 
-Ces packages ne sont pas encore sur leur registre ; il n'y a donc rien à installer et le comportement indiqué pour eux ne peut pas encore être utilisé. Chacun a renvoyé 404 (ou n'était pas listé) le 27 octobre 2026.
+Tous les packages listés ci-dessus sont publiés. Ce qui n'est pas encore disponible :
 
-| Package | Usage prévu | Statut |
-|---|---|---|
-| `@qorechain/qoreseal` sur npm | QoreSeal pour TypeScript | Non publié ; le source est dans le dépôt |
-| `qorechain-asset-kit` sur PyPI, `@qorechain/asset-kit` sur npm | Les clients Python et TypeScript de l'[Asset Kit](/developer-tools/asset-kit) | Non publiés ; utilisez un clone du dépôt |
-| `@qorechain/sdk`, `@qorechain/evm`, `@qorechain/react`, `@qorechain/svm`, `create-qorechain-dapp` 0.11.0 sur npm | Le [chain developer kit](/developer-tools/chain-dev-sdk) | Tagué sur GitHub, release npm en attente |
+| Élément | Statut |
+|---|---|
+| Wheels Python de QoreSeal et QoreSign pour Windows | Non compilées ; wheels macOS et Linux uniquement. Les autres plateformes compilent depuis la distribution source, qui nécessite Rust |
+| Modules natifs de l'Asset Kit (`x/asset`, `x/identity`, `x/compliance`, `x/settlement`, `x/attest`) | Une proposition ; ils n'existent sur aucun réseau et aucune mise à niveau les ajoutant n'est planifiée |
+| Mode extension de QoreX synpress | Lève une erreur aujourd'hui (voir le tableau des intégrations QoreX) |
 
 ## Comment obtenir les versions en direct {#live-versions}
 
@@ -299,14 +301,14 @@ Pour un nom npm avec scope, conservez le `@`, par exemple `https://registry.npmj
 ## Limites et problèmes connus {#limits}
 
 - **Deux réseaux en ligne, une seule version de chaîne.** Les deux exécutent la v3.2.6 (le mainnet depuis le 4 novembre 2026, le testnet depuis le 27 octobre). Une fonctionnalité qui n'existe que sur le testnet (les précompilés PQC de l'EVM, par exemple) est signalée sur sa propre page.
-- **Pas encore en ligne :** `@qorechain/qoreseal` sur npm, l'Asset Kit sur PyPI et npm (et ses modules natifs, une proposition non planifiée), le SDK 0.11.0 (le chain developer kit) sur npm, les transactions SVM, et les précompilés EVM sur le mainnet (ils ne sont actifs que sur le testnet ; voir la [Présentation du SDK](/sdk/overview) pour la liste voie par voie).
-- **Registre QoreSeal et client léger PQ.** Chiffrer vers une adresse lue depuis la chaîne nécessite le registre de clés KEM, en ligne sur le testnet, et sa route de lecture répond sur le mainnet depuis la v3.2.5 (revérifié le 4 novembre 2026). Le client léger PQ ne se connecte à aucun des deux réseaux ; aucun support côté chaîne n'est prévu pour ses checkpoints.
+- **Pas encore en ligne :** les modules natifs de l'Asset Kit (une proposition non planifiée), les wheels Windows des packages Python QoreSign et QoreSeal, les transactions SVM, et les précompilés EVM sur le mainnet (ils ne sont actifs que sur le testnet ; voir la [Présentation du SDK](/sdk/overview) pour la liste voie par voie).
+- **Registre QoreSeal et client léger PQ.** Chiffrer vers une adresse lue depuis la chaîne nécessite le registre de clés KEM, en ligne sur le testnet, et sa route de lecture répond sur le mainnet depuis la v3.2.5 (revérifié le 4 novembre 2026 : aucune clé n'avait été publiée sur le mainnet). Le client léger PQ ne se connecte à aucun des deux réseaux ; aucun support côté chaîne n'est prévu pour ses checkpoints.
 - **Kotlin 2.3 ou plus récent.** Les artefacts Kotlin et Android de QoreSign et QoreSeal nécessitent le compilateur Kotlin 2.3 ou plus récent ; Kotlin 2.1 échoue à la compilation avec eux.
 - **Pas de wheels Windows.** Les packages Python de QoreSign et QoreSeal ont des wheels pour macOS et Linux uniquement ; les autres plateformes compilent depuis la distribution source, qui nécessite Rust.
-- **Exemples non exécutés :** sur les 34 entrées de quickstart, 31 se sont exécutées avec succès le 27 octobre 2026. L'exemple Python de QoreSign a été exécuté après la publication du package (macOS arm64 et Linux aarch64), et l'exemple Android de QoreSign n'a pas été exécuté sur un appareil. L'adaptateur de portefeuille, chain bridge et handles n'ont pas de quickstart ; leurs exemples dans ce manuel proviennent donc des typages et du source des packages et n'ont pas été exécutés de bout en bout.
+- **Exemples non exécutés :** sur les 45 entrées de quickstart du manifeste, 43 se sont exécutées avec succès (du 27 au 29 octobre 2026). Les deux exemples Android (QoreSign et QoreSeal) partagent leur code avec les exemples des artefacts JVM et n'ont pas été exécutés sur un appareil. L'adaptateur de portefeuille, chain bridge, handles, le serveur MCP et la CLI n'ont pas d'entrée de quickstart ; leurs exemples dans ce manuel proviennent donc des typages et du source des packages et n'ont pas été exécutés de bout en bout.
 - **`@qorechain/rdk-cli` avant la 0.6.2** n'affichait rien lorsqu'il était lancé via le lien bin de npm, et son `--version` affichait 0.4.1. **`@qorechain/rdk` avant la 0.7.0** construisait des preuves de retrait qui ne se vérifiaient jamais on-chain. Utilisez la 0.8.0.
 - **Conflit de version cosmjs.** `@qorechain/wallet-adapter` et `@qorechain/chain-bridge` utilisent cosmjs 0.32 ; le SDK utilise cosmjs 0.39. Installer l'adaptateur à côté du SDK dans un même projet fait signaler `ERESOLVE` par npm. Gardez-les dans des projets séparés ou passez `--legacy-peer-deps`.
-- **Copie imbriquée du SDK dans les anciennes versions du RDK.** `@qorechain/rdk` 0.6.2 et les versions antérieures dépendent de `@qorechain/sdk` `^0.9.0` ; une application sur le SDK 0.10.0 obtenait donc une seconde copie imbriquée du SDK 0.9.x. À partir de la 0.7.0, le kit dépend de `@qorechain/sdk` `^0.10.0` et partage une seule copie.
+- **Copie imbriquée du SDK dans les anciennes versions du RDK.** `@qorechain/rdk` 0.6.2 et les versions antérieures dépendent de `@qorechain/sdk` `^0.9.0` ; une application sur le SDK 0.10.0 obtenait donc une seconde copie imbriquée du SDK 0.9.x. À partir de la 0.7.0, le kit dépend de `@qorechain/sdk` `^0.10.0` et partage une seule copie. **`@qorechain/rdk` 0.8.0 dépend toujours de `@qorechain/sdk` `^0.10.0`** ; une application sur le SDK 0.12.0 qui l'installe obtient donc aussi un SDK 0.10.0 imbriqué (et `@qorechain/evm` 0.8.0) ; une plage caret sur une version 0.x ne prend pas les mineures plus récentes (vérifié avec `npm ls` le 4 novembre 2026).
 - **Clients RDK en classique uniquement avant la 0.8.0.** Les clients RDK Python, Rust, Go et Java antérieurs à la 0.8.0 signent en classique uniquement, ce que la voie native refuse sur les deux réseaux (et `qorollup` en faisait de même avant la 0.7.1) ; passez à la 0.8.0, qui signe en hybride dans les cinq langages lorsqu'on lui fournit une paire de clés post-quantique.
 - **Packages sans dépôt source public.** `@qorechain/chain-bridge` et `@qorechain/handles` n'indiquent aucun dépôt source dans leurs métadonnées de registre. Vous pouvez lire le contenu publié des packages sur npm.
 - **Python `qorechain-pqc`** n'a pas de génération de clé à partir d'une graine en 0.2.3, et il nécessite liboqs.

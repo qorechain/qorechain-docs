@@ -16,7 +16,10 @@ kendi `README.md`, `.env.example` dosyaları ve tek bir `index.ts` içeren,
 kendi kendine yeten bir workspace paketidir. Uç noktaları ve mnemonic'leri
 makul localhost varsayılanlarıyla ortam değişkenlerinden okurlar; ağa bağımlı
 olanlar, erişilebilir bir düğüm yoksa bir ipucu vererek düzgün şekilde
-sonlanır.
+sonlanır. SDK 0.12.0'dan beri hazır ayarlar zaten herkese açık uç noktaları gösterir; bu yüzden
+kendi kodunuzda aşağıdaki parçacıklarda görünen `?? "http://localhost:..."`
+yedeklerini bırakıp `network: "testnet"` veya `"mainnet"` seçebilirsiniz; makinenizdeki
+bir düğüme karşı geliştirirken onları tutun (veya `localnet` seçin).
 
 Depo kökünden bir kez kurulum yapın, ardından herhangi bir örneği çalıştırın:
 

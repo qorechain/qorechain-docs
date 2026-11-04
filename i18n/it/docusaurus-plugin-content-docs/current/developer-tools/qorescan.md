@@ -231,7 +231,7 @@ Codici di uscita: `0` successo, `1` un errore di scansione o di I/O, `2` un erro
 
 ## Dove è pubblicato {#where-published}
 
-Le versioni sono state lette da ciascun registry il 27 ottobre 2026.
+Le versioni sono state lette da ciascun registry il 4 novembre 2026 (invariate dal 27 ottobre).
 
 | Registry | Pacchetto | Versione | Link |
 |---|---|---|---|

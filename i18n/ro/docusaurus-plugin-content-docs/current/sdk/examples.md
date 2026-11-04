@@ -16,7 +16,7 @@ un pachet workspace de sine stătător,
 cu propriul `README.md`, `.env.example` și un singur `index.ts`. Ele citesc
 endpoint-urile și mnemonicele din variabile de mediu, cu valori implicite rezonabile pe localhost,
 iar cele care depind de rețea eșuează elegant, cu un indiciu, atunci când niciun nod nu este
-accesibil.
+accesibil. Începând cu SDK 0.12.0, presetările indică deja endpoint-urile publice, așa că în codul dvs. puteți elimina valorile de rezervă `?? "http://localhost:..."` care apar în fragmentele de mai jos și puteți selecta `network: "testnet"` sau `"mainnet"`; păstrați-le (sau selectați `localnet`) când dezvoltați împotriva unui nod de pe mașina dvs.
 
 Din rădăcina repo-ului, instalați o singură dată, apoi rulați orice exemplu:
 

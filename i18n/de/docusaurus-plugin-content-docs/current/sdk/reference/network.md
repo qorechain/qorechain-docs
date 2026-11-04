@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Netzwerk-Voreinstellung | `mainnet` |
 | Chain-ID | `qorechain-vladi` (live seit 7. Juni 2026) |
-| Chain-Version (4. November 2026) | v3.2.6 (seit Höhe 4.020.000, 4. November 2026, Governance-Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober und v3.2.4 bei Höhe 3.742.566 am 23. Oktober angewendet). SDK 0.10.0 ist der Client für v3.2.4 und funktioniert weiterhin; es hat keine Builder für die Ergänzungen von v3.2.5 oder v3.2.6 |
+| Chain-Version (4. November 2026) | v3.2.6 (seit Höhe 4.020.000, 4. November 2026, Governance-Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober und v3.2.4 bei Höhe 3.742.566 am 23. Oktober angewendet). SDK 0.12.0 ist der Client für v3.2.5 und funktioniert auf v3.2.6 (das Signaturformat hat sich nicht geändert); 0.10.0 war der Client für v3.2.4 |
 | EVM-Chain-ID | `9801` |
 | Anzeige-Token | `QOR` |
 | Basis-Denomination | `uqor` |
@@ -48,6 +48,14 @@ sidebar_position: 1
 Die EVM-Endpunkte bedienen `eth_`, `net_`, `web3_` und `txpool_`; der `qor_`-Namespace
 ist nicht aktiviert. Siehe auch [Netzwerke](/appendix/networks#public-endpoints).
 
+Ab SDK 0.12.0 verwenden die Presets `mainnet` und `testnet` standardmäßig diese REST-, Konsens-RPC- und
+EVM-JSON-RPC-URLs (und den EVM-WebSocket des Testnets). Die Presets setzen **keinen**
+gRPC-Endpunkt und **keinen** SVM-Endpunkt, auch wenn die oben genannten schreibgeschützten SVM-URLs existieren
+(SVM-Transaktionen sind nicht offen): Code, der einen davon braucht, schlägt mit einem Fehler fehl, der
+den zu übergebenden Endpunkt nennt. Die Testnet-Endpunkte sind pro IP ratenbegrenzt; betreiben oder
+verwenden Sie für Produktionsverkehr Ihren eigenen Node. Vor 0.12.0 verwendete jedes Preset standardmäßig
+localhost.
+
 ### Unterschiede, die nur das Testnet betreffen und für einen Client wichtig sind {#testnet-only}
 
 Das Testnet ist ein Staging-Netzwerk und läuft dem Mainnet voraus, sodass einiges, was Sie
@@ -58,10 +66,12 @@ dort lesen können, im Mainnet nicht vorhanden ist (geprüft am 27. Oktober 2026
 * **Testtoken.** Drei Token ohne Wert existieren nur im Testnet, als Bank-Denominationen mit dem Namen `erc20:<EIP-55 contract address>` (Groß-/Kleinschreibung beachten): fUSD (6 Dezimalstellen), fETH (18) und fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` listet sie auf. Die einzige Bank-Denomination des Mainnets ist `uqor`. Siehe [Testnet-Testtoken (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
 * **Eingeschaltete Module.** Das Modul `abstractaccount` ist im Testnet aktiviert und im Mainnet aus, EVM-Precompiles sind im Testnet aktiv (drei am 27. Oktober, vier am 4. November) und keines im Mainnet, und die Instanziierung von QoreChain Native ist im Testnet offen.
 
-## Standard-Ports
+## Standard-Ports (das Preset `localnet`) {#default-ports}
 
-`createClient()` verwendet standardmäßig diese localhost-Ports. Überschreiben Sie
-`endpoints`, um auf einen echten Node zu zeigen.
+Das Preset `localnet` (Chain-ID `qorechain-devnet`, keine EVM-Chain-ID gesetzt) verwendet diese
+localhost-Ports, für einen Node auf Ihrem eigenen Rechner. Vor SDK 0.12.0 verwendete jedes Preset sie
+standardmäßig; seit 0.12.0 tut das nur noch `localnet`. Überschreiben Sie `endpoints`, um auf
+einen anderen Node zu zeigen.
 
 | Endpunkt | Port | Zweck |
 | --- | --- | --- |
@@ -71,6 +81,10 @@ dort lesen können, im Mainnet nicht vorhanden ist (geprüft am 27. Oktober 2026
 | EVM JSON-RPC | `8545` | `eth_*` (sowie `qor_*` / Precompiles auf Nodes, die sie aktivieren) |
 | EVM JSON-RPC (WS) | `8546` | EVM-WebSocket-Subscriptions |
 | SVM JSON-RPC | `8899` | Solana-kompatibles RPC |
+
+```ts
+const local = createClient({ network: "localnet" }); // a node on this machine
+```
 
 Beispiel mit expliziten Endpunkten:
 
@@ -94,8 +108,9 @@ In Python/Go/Rust sind die Entsprechungen `create_client` / `CreateClient` /
 
 ## Auf Mainnet zielen
 
-Beide Voreinstellungen liefern dieselben localhost-Standardwerte; wählen Sie `mainnet`
-und überschreiben Sie die Endpunkte mit den öffentlichen URLs (oder Ihrem eigenen Node):
+Wählen Sie `mainnet`, um es anzusprechen. Ab SDK 0.12.0 enthält das Preset bereits die öffentlichen
+URLs, die Endpunkte unten sind also die Standardwerte; übergeben Sie `endpoints` nur für Ihren eigenen Node
+(ein SDK vor 0.12.0 verwendet standardmäßig localhost und braucht sie):
 
 ```ts
 const main = createClient({

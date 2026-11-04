@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> منشورة على npm باسم `create-qorechain-dapp` (`0.10.0`). تعتمد ملفات
-> `package.json` المُنشأة على `@qorechain/sdk` ‏`^0.10.0` (وقالب EVM على
-> `@qorechain/evm` ‏`^0.8.0`). كان الإصدار 0.8.0 من أداة الهيكلة يكتب نطاقات `^0.3.0`،
+> منشورة على npm باسم `create-qorechain-dapp` (`0.12.0`). تعتمد ملفات
+> `package.json` المُنشأة على `@qorechain/sdk` ‏`^0.12.0` (وقوالب EVM على
+> `@qorechain/evm` ‏`^0.12.0`). كان الإصدار 0.8.0 من أداة الهيكلة يكتب نطاقات `^0.3.0`،
 > وهو ما يحلّه npm إلى إصدار 0.3 لا يستطيع التوقيع للشبكات الحيّة؛ وإن كنت قد
 > أنشأت الهيكل بـ 0.8.0، فنفّذ `npm i @qorechain/sdk@latest`.
 
@@ -32,8 +32,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | عقد `Counter` بلغة Solidity + سكربت نشر/تفاعل بـ viem (`@qorechain/evm`). |
 | `fullstack-web` | تطبيق لامركزي بـ Vite + React + TypeScript يقرأ الأرصدة واقتصاديات الرمز (`@qorechain/sdk`). |
 | `rollup-app` | تطبيق rollup + سلسلة جانبية/paychain يستخدم `RollupClient` ومساعد multilayer (`@qorechain/sdk`). |
+| `foundry` | مشروع Foundry لمحرك EVM في QoreChain. يسجّل `pnpm window` مفتاح ML-DSA-87 للحساب ويفتح [نافذة تفويض EVM](/sdk/guides/evm#evm-window) قبل النشر (أُضيف في 0.11.0 الخاص بـ npm فقط). |
+| `hardhat` | الشيء نفسه لـ Hardhat 3، مع `pnpm window status` و`register` و`open`. |
+| `viem-wagmi` | تطبيق ويب لامركزي على viem وwagmi يستخدم سلسلتي `qorechain` و`qorechainTestnet` من `@qorechain/evm`. |
+| `cosmwasm` | مشروع عقد على QoreChain Native (Wasm). على الشبكتين الحيّتين رفع الشيفرة بالحوكمة فقط؛ راجع [دليل QoreChain Native](/sdk/guides/cosmwasm). |
 
-يُجري قالب `rollup-app` (أداة الهيكلة 0.10.0) تشغيلًا تجريبيًا افتراضيًا. ومع `QORE_BROADCAST=1`
+يُجري قالب `rollup-app` (منذ أداة الهيكلة 0.10.0) تشغيلًا تجريبيًا افتراضيًا. ومع `QORE_BROADCAST=1`
 يشتق مفتاح ML-DSA-87 للحساب من عبارة الاسترجاع، ويسجّله مرة واحدة ويوقّع
 توقيعًا هجينًا، وهو ما لم يكن القالب السابق قادرًا عليه. وقيم الـ rollup النموذجية فيه
 (`profile: "default"`، والحصة) توضيحية: خذ أسماء الملفات التعريفية الحقيقية والحصة
@@ -49,7 +53,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 
 | الراية | الوصف |
 | --- | --- |
-| `-t, --template <name>` | القالب المراد استخدامه (`evm-solidity` \| `fullstack-web` \| `rollup-app`). |
+| `-t, --template <name>` | القالب المراد استخدامه (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
 | `--network <name>` | إعداد الشبكة المسبق (`testnet` \| `mainnet`). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | تخطّ المطالبات واستخدم الإعدادات الافتراضية. |

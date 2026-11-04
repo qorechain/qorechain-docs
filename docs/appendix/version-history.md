@@ -63,6 +63,7 @@ See [Tokenomics](/architecture/tokenomics#stranded-and-reserve) for what the rel
 * **Expedited proposals keep their votes.** An expedited proposal that fails its short tally and converts to a regular proposal keeps the votes already cast.
 * **EVM precompile rules.** Precompile calls are scoped by the EVM authorisation window, and the circuit breaker applies to them.
 * **Post-quantum verification charged once per signer**, and **exact simulation gas**: the gas a transaction simulation reports now matches what the transaction uses.
+* **Client support.** SDK 0.12.0 (30 October 2026, all five languages) is the client release for this version: exact gas for hybrid transactions, ML-KEM key registry builders and read, abstract-account reads, and the public endpoints as the preset defaults. See [What 0.12.0 adds](/sdk/install#whats-new-0120).
 * **Hardening** from two security audits, covering the Solana-compatible (SVM) lane, cross-VM, rollups and fee pricing: fees paid in other tokens are priced from the right kind of pool, the burn on a failed transaction uses the converted fee, and SVM deployments, execution and compute are bounded.
 
 ## v3.2.4 — Light-Node Registration Window and Optional Time-Locked Staking

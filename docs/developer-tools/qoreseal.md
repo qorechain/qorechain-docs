@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal is an open-source library that encrypts data to QoreChain accounts with ML-KEM-1024 (FIPS 203). An account publishes its ML-KEM-1024 public key on chain; anyone can then encrypt a payload that this account, and any other recipient the sender adds, can read. It is for dApp developers who need confidential payloads (memos, invoices, documents, bids), for auditors who need view access, and for operators of private groups and sidechains. It composes standard primitives and implements none of its own. Version **0.1.0**, Apache-2.0, maintained by the QoreChain Association.
 
-Where it stands on 30 October 2026 (mainnet has run v3.2.6 since 4 November, and the read route still answered there that day): the encryption itself works offline anywhere, with no network and no account. Encrypting to an address read from the chain needs the KEM key registry, which is **live on testnet** (`qorechain-diana`) and, since mainnet (`qorechain-vladi`) applied v3.2.5 on 29 October 2026, **its read route answers on mainnet too** (no account has published a key there yet that this page could find). The package is published for Rust, Go, Python, Swift, Kotlin/JVM and Android. The TypeScript package `@qorechain/qoreseal` is **coming** and is not on npm yet. The construction is a draft pending an external review before 1.0.
+Where it stands on 4 November 2026: the encryption itself works offline anywhere, with no network and no account. Encrypting to an address read from the chain needs the KEM key registry, which is **live on testnet** (`qorechain-diana`) and **live on mainnet** (`qorechain-vladi`, which applied v3.2.5 on 29 October 2026 and v3.2.6 on 4 November): its read route answers on both. No account has published a key on mainnet yet that this page could find. The package is published for TypeScript, Rust, Go, Python, Swift, Kotlin/JVM and Android. The construction is a draft pending an external review before 1.0.
 
 QoreSeal protects the content of a payload, nothing else. Addresses, transaction timing, transfer amounts, envelope sizes and the number of recipients stay public on chain. It is not a way to make transactions private.
 
@@ -72,15 +72,35 @@ The specification is `spec/qoreseal-v1.md` in the repository (status: draft, rev
 
 | Language | Install | Minimum platform |
 |---|---|---|
+| TypeScript | `npm install @qorechain/qoreseal` | Node.js 20 or later; ES module and CommonJS; subpaths `/network` and `/testing` |
 | Rust | `cargo add qorechain-qoreseal` (library name `qoreseal`) | stable Rust |
 | Go | `go get github.com/qorechain/qoreseal/go@v0.1.0` | Go 1.25 |
 | Python | `pip install qorechain-qoreseal` (import `qoreseal`) | Python 3.9 or later; wheels for macOS 11+ (arm64, x86_64) and Linux manylinux2014 (x86_64, aarch64); no Windows wheel yet |
 | Swift | `.package(url: "https://github.com/qorechain/qoreseal", from: "0.1.0")`, product `QoreSeal` | iOS 16, macOS 13 |
 | Kotlin / JVM | `implementation("io.github.qorechain:qoreseal:0.1.0")` | Java 17; Kotlin 2.3 or later compiler (compilation fails with Kotlin 2.1) |
 | Android | `implementation("io.github.qorechain:qoreseal-android:0.1.0")` | API 24; R8 keep rules included; Kotlin 2.3 or later compiler |
-| TypeScript | **coming**: `@qorechain/qoreseal` is not on npm yet, so there is no install command | |
 
-The TypeScript source, its examples and the network helpers are in the repository and run from there after `pnpm install && pnpm build`. Until the npm package is published, treat the repository as the way to use TypeScript, and expect the package name above.
+The TypeScript package includes the network helpers (`@qorechain/qoreseal/network`: `fetchKemKey`, `fetchMlkemPublicKey`, `resolveRecipient`, `sealToAddresses`). Its dependencies are `@qorechain/pqc` 0.2.3, `@qorechain/qoresign` 0.1.0 and the noble and scure libraries.
+
+### Seal and open offline (TypeScript) {#quickstart-typescript}
+
+From the tested quickstarts in the developer hub (the manifest marks it tested, 29 October 2026). It was run again on 4 November 2026 after `npm install @qorechain/qoreseal@0.1.0` into an empty project, with Node.js 26. No network, no account.
+
+```ts
+import { generateSealKeys, open, recipientOf, seal, envelopeToText } from "@qorechain/qoreseal";
+
+const alice = generateSealKeys(), bob = generateSealKeys();
+const envelope = seal({
+  chainId: "qorechain-diana",
+  purpose: "invoice",
+  recipients: [recipientOf(alice), recipientOf(bob)],
+  plaintext: new TextEncoder().encode("amount due: 120 QOR"),
+});
+const pt = open({ chainId: "qorechain-diana", purpose: "invoice", envelope, keys: bob });
+console.log(envelopeToText(envelope).slice(0, 9), new TextDecoder().decode(pt));
+```
+
+It printed `qoreseal: amount due: 120 QOR`.
 
 ### Quickstart 1: seal and open offline (Python) {#quickstart-python}
 
@@ -248,7 +268,7 @@ Python errors raise `QoreSealError.Failure` with a stable `code`; Go errors comp
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host` (chain ID 9801) | `https://evm-testnet.qore.host` (chain ID 9800) |
 
-On 30 October 2026 the registry query answered `{"found":false,"key":null}` for an account with no key on both networks (on 27 October mainnet still answered "Not Implemented"). A search of mainnet transactions on 30 October found no `MsgRegisterKEMKey` yet, so publishing a key on mainnet has not been exercised end to end by this page.
+On 4 November 2026 the registry query answered `{"found":false,"key":null}` for an account with no key on both networks (on 27 October mainnet still answered "Not Implemented"). A search of mainnet transactions on 4 November found no `MsgRegisterKEMKey` yet, so publishing a key on mainnet has not been exercised end to end by this page.
 
 - Offline sealing and opening, including auditor keys passed directly, private groups and batches, need no network and no account.
 - Encrypting to an address needs the recipient to have published an ML-KEM-1024 key to the registry and, for hybrid mode, a recipient card.
@@ -257,17 +277,17 @@ On 30 October 2026 the registry query answered `{"found":false,"key":null}` for 
 
 ## Where it is published {#where-published}
 
-Checked on 27 October 2026 against each registry.
+Checked against each registry on 4 November 2026. All seven entries serve 0.1.0.
 
 | Registry | Package | Version | Link |
 |---|---|---|---|
+| npm | `@qorechain/qoreseal` | 0.1.0 | [npmjs.com/package/@qorechain/qoreseal](https://www.npmjs.com/package/@qorechain/qoreseal) |
 | crates.io | `qorechain-qoreseal` | 0.1.0 | [crates.io/crates/qorechain-qoreseal](https://crates.io/crates/qorechain-qoreseal) |
 | Go module proxy | `github.com/qorechain/qoreseal/go` | v0.1.0 (tag `go/v0.1.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoreseal/go) |
 | PyPI | `qorechain-qoreseal` | 0.1.0 (wheels for macOS arm64 and x86_64, Linux x86_64 and aarch64, plus source) | [pypi.org/project/qorechain-qoreseal](https://pypi.org/project/qorechain-qoreseal/) |
 | Swift Package Manager | `QoreSeal` from `github.com/qorechain/qoreseal` | 0.1.0 (binary `QoreSealFFI.xcframework.zip` on the GitHub release) | [release v0.1.0](https://github.com/qorechain/qoreseal/releases/tag/v0.1.0) |
 | Maven Central | `io.github.qorechain:qoreseal` | 0.1.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal) |
 | Maven Central | `io.github.qorechain:qoreseal-android` | 0.1.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal-android) |
-| npm | `@qorechain/qoreseal` | not published yet (coming) | |
 
 Projects that use either Maven artifact need the Kotlin 2.3 or later compiler. The Kotlin/JVM artifact bundles native libraries for macOS (arm64, x86_64), Linux (x86_64, arm64) and Windows (x86_64); the Android artifact covers arm64-v8a, armeabi-v7a and x86_64.
 
@@ -285,9 +305,9 @@ Source: [github.com/qorechain/qoreseal](https://github.com/qorechain/qoreseal) (
 - **Removing or rotating a key does not erase or re-encrypt anything.** Data sealed to an old key stays readable by whoever holds it; keep old seeds or indexes.
 - **Removed group members** keep the keys of the epochs they belonged to. New members read from their joining epoch on unless older keys are sealed to them.
 - **Chain id and purpose are not in the envelope;** the recipient must know them.
-- **Mainnet registry:** the read route is live since v3.2.5; no key had been published on mainnet when this was checked, and the EVM JSON-RPC `qor_` namespace is not exposed on `evm.qore.host` (use the REST route).
+- **Mainnet registry:** the read route is live since v3.2.5; no key had been published on mainnet when this was checked on 4 November 2026, and the EVM JSON-RPC `qor_` namespace is not exposed on `evm.qore.host` (use the REST route).
 - **Pre-1.0, construction pending external review.** Minor versions may change the API. Read the specification before relying on it.
-- **No npm package yet** and no Python wheel for Windows yet.
+- **No Python wheel for Windows yet** (macOS and Linux only; other platforms build from the source distribution, which needs Rust).
 
 ## Security notes {#security}
 

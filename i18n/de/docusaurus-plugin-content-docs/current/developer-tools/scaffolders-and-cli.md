@@ -9,16 +9,16 @@ sidebar_position: 21
 
 Drei Kommandozeilen-Werkzeuge bringen ein QoreChain-Projekt aus dem Nichts zu einem typisierten, baubaren Ausgangspunkt. Sie richten sich an Anwendungsentwickler (dApps) und Rollup-Betreiber, die in Node.js arbeiten:
 
-* **`create-qorechain-dapp`** (0.10.0) erzeugt per Scaffolding eine dApp aus einer von drei Vorlagen, aufbauend auf dem [QoreChain SDK](/sdk/overview).
+* **`create-qorechain-dapp`** (0.12.0) erzeugt per Scaffolding eine dApp aus einer von sieben Vorlagen, aufbauend auf dem [QoreChain SDK](/sdk/overview). Vier der sieben (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) gehören zum [Chain Developer Kit](/developer-tools/chain-dev-sdk).
 * **`create-qorechain-rollup`** (0.8.0) erzeugt per Scaffolding ein Rollup-Projekt aus einer von sechs Vorlagen, aufbauend auf dem TypeScript-[Rollup Development Kit](/rollups/overview).
 * **`qorollup`**, der Befehl des Pakets `@qorechain/rdk-cli` (0.8.0), ist die Betreiber-Kommandozeile: Preflight-Prüfungen, Erstellen und Überwachen eines Rollups, Lesen der Live-Parameter.
 
-Die Seite gibt die veröffentlichten Pakete so wieder, wie sie am 27. Oktober 2026 aus npm installiert wurden. Die konzeptionellen Anleitungen sind [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) und die [SDK-CLI-Referenz](/sdk/reference/cli).
+Die Seite gibt die veröffentlichten Pakete so wieder, wie sie am 27. Oktober 2026 aus npm installiert wurden, und `create-qorechain-dapp` 0.12.0, wie es am 4. November 2026 installiert wurde. Die konzeptionellen Anleitungen sind [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) und die [SDK-CLI-Referenz](/sdk/reference/cli).
 
 ## Innovationen {#innovations}
 
 * **Nicht-interaktives Scaffolding für CI.** Jede Abfrage hat ein Flag: `--template`, `--network`, `--package-manager`, `--yes` (Standardwerte akzeptieren) und `--no-install`. Eine Pipeline kann ein Projekt mit einem Befehl und ohne Terminal erzeugen und bauen.
-* **Die Vorlagen sind an die aktuellen Pakete gepinnt.** Die dApp-Vorlagen hängen von `@qorechain/sdk` `^0.10.0` ab (die EVM-Vorlage von `@qorechain/evm`) und die Rollup-Vorlagen von `@qorechain/rdk` `^0.8.0`. Ein früherer Scaffolder (0.8.0) schrieb Bereiche, die zu einem SDK aufgelöst wurden, das für die Live-Netzwerke nicht signieren konnte; mit dem aktuellen passiert das nicht.
+* **Die Vorlagen sind an die aktuellen Pakete gepinnt.** Die dApp-Vorlagen hängen von `@qorechain/sdk` `^0.12.0` ab (die EVM-Vorlagen zusätzlich von `@qorechain/evm` `^0.12.0`) und die Rollup-Vorlagen von `@qorechain/rdk` `^0.8.0`. Ein früherer Scaffolder (0.8.0) schrieb Bereiche, die zu einem SDK aufgelöst wurden, das für die Live-Netzwerke nicht signieren konnte; mit dem aktuellen passiert das nicht.
 * **Rollup-Vorlagen kodieren pro Anwendungsfall eine gültige Konfiguration.** Jede Rollup-Vorlage setzt eine Kombination aus Settlement, Sequencer, Data Availability, Gas und VM, die die Kompatibilitätsmatrix des RDK akzeptiert, und der Scaffolder gibt den aktuellen Stake und den Burn bei der Erstellung aus, bevor Sie etwas erstellen.
 * **Ein Preflight-Befehl, der benennt, was fehlt.** `qorollup doctor` (und `npm run doctor` innerhalb einer Rollup-Vorlage) prüft, ob der REST-Endpunkt antwortet, ob die Modulparameter gelesen werden können, ob der Endpunkt das Netzwerk ist, das Sie angefordert haben, und ob ein Signer konfiguriert ist, und gibt pro Prüfung eine Zeile aus. Innerhalb einer Vorlage validiert er außerdem die Rollup-Konfiguration gegen die Kompatibilitätsmatrix.
 * **Hybride Signierung in die Vorlagen eingebunden.** Die Rollup-Vorlagen verbinden sich über eine kleine `signer.ts`, die den ML-DSA-87-Schlüssel des Kontos aus Ihrer Mnemonic ableitet (oder einen Seed bei einem rohen privaten Schlüssel übernimmt) und hybrid signiert, was die Netzwerke auf der Native-Lane verlangen. Die dApp-Vorlage `rollup-app` tut dasselbe und läuft als Trockenlauf, sofern Sie nicht `QORE_BROADCAST=1` setzen.
@@ -41,14 +41,16 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 | `evm-solidity` | Ein Solidity-`Counter`-Contract mit vorkompiliertem Artefakt und ein viem-Skript, das ihn bereitstellt und mit `@qorechain/evm` aufruft. Dateien: `contracts/Counter.sol`, `contracts/Counter.artifact.ts`, `scripts/deploy.ts`, `.env`. | `deploy` |
 | `fullstack-web` | Eine Vite-, React- und TypeScript-Seite, die mit `@qorechain/sdk` die Guthaben einer Adresse (und eine Tokenomics-Übersicht) liest. Dateien: `index.html`, `src/App.tsx`, `src/main.tsx`, `vite.config.ts`, `.env`. | `dev`, `build`, `preview`, `typecheck` |
 | `rollup-app` | Ein Node-Skript, das `createRollupClient` und `createMultilayerClient` des SDK verwendet, um Nachrichten für Rollups und Sidechains oder Paychains zu bauen. Dateien: `src/index.ts` und die übliche Konfiguration. Standardmäßig ein Trockenlauf. | `start`, `typecheck` |
+| `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` | Die Vorlagen des Chain Developer Kit: ein Foundry-Projekt, ein Hardhat-3- und viem-Projekt (beide mit einem `pnpm window`-Helfer für das EVM-Autorisierungsfenster), eine wagmi- und RainbowKit-dApp mit der QoreX-Wallet und ein CW20-Token auf QoreChain Native. Details, Skripte und Grenzen: [Chain Developer Kit](/developer-tools/chain-dev-sdk#templates). | siehe diese Seite |
 
 | Flag | Bedeutung |
 | --- | --- |
-| `-t, --template <name>` | `evm-solidity`, `fullstack-web` oder `rollup-app` |
+| `-t, --template <name>` | `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi` oder `cosmwasm` |
 | `--network <name>` | `testnet` oder `mainnet` |
 | `--package-manager <pm>` | `pnpm`, `npm` oder `yarn` |
 | `-y, --yes` | Abfragen überspringen und Standardwerte verwenden |
 | `--no-install` | Abhängigkeiten nicht installieren |
+| `--local` | `@qorechain/*`-Abhängigkeiten im SDK-Monorepo auf lokale Links umschreiben (für SDK-Mitwirkende) |
 | `-h, --help`, `-v, --version` | Hilfe, Version |
 
 Getestetes Beispiel (aus dem Entwicklerhub; am 27. Oktober 2026 in einem leeren Verzeichnis ausgeführt, mit `npx` aus der öffentlichen npm-Registry): Es erzeugt die Web-Vorlage und baut sie. Beobachtet: `Done! Created my-dapp` und ein erfolgreiches `vite build`. Der Build gibt eine Warnung zur Bundle-Größe aus, die harmlos ist.
@@ -158,7 +160,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | Registry | Paket | Version | Link |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp` (Befehl `create-qorechain-dapp`) | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp` (Befehl `create-qorechain-dapp`) | 0.12.0 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup` (Befehl `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli` (Befehl `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk` (Bibliothek, die die Vorlagen verwenden) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
@@ -167,7 +169,7 @@ Quellcode: https://github.com/qorechain/qorechain-sdk/tree/main/cli (dApp-Scaffo
 
 ## Grenzen und bekannte Probleme {#limits}
 
-* **`--network mainnet` änderte die erzeugten Dateien in einem Testlauf nicht.** Am 27. Oktober 2026 wurden `fullstack-web` und `custom-rollup` mit `--network mainnet` erzeugt; die erzeugte `.env` enthielt weiterhin localhost-Endpunkte (dApp) oder `QORE_NETWORK=testnet` mit den Testnet-Endpunkten (Rollup), und die `App.tsx` der dApp erstellte einen `testnet`-Client. Setzen Sie das Netzwerk und die Endpunkte selbst in `.env` und, für die Web-Vorlage, in `src/App.tsx`.
+* **`--network mainnet` änderte die erzeugten Dateien in einem Testlauf nicht.** Am 27. Oktober 2026 wurden `fullstack-web` und `custom-rollup` mit `--network mainnet` erzeugt; die erzeugte `.env` enthielt weiterhin localhost-Endpunkte (dApp) oder `QORE_NETWORK=testnet` mit den Testnet-Endpunkten (Rollup), und die `App.tsx` der dApp erstellte einen `testnet`-Client. Am 4. November 2026 verhielt sich `create-qorechain-dapp` 0.12.0 bei `evm-solidity`, `fullstack-web` und `rollup-app` genauso. Setzen Sie das Netzwerk und die Endpunkte selbst in `.env` und, für die Web-Vorlage, in `src/App.tsx`.
 * **Auf keinem der beiden Netzwerke existiert bisher ein Rollup** (geprüft am 27. Oktober 2026). Kein Transaktionspfad der Rollup-Werkzeuge wurde an einem Live-Rollup erprobt. Validieren Sie alles zuerst im Testnet und lesen Sie [RDK 0.8.0: Änderungen und Grenzen](/rollups/deploying-a-rollup#rdk-050-limits).
 * **Die Vorlage `defi-rollup` kann keinen Batch abwickeln.** Das ZK-Settlement ist auf keinem der beiden Netzwerke bisher nutzbar (die Schlüsselregistrierung ist für Chain v3.2.7 geplant), und ihre Demo-Schaltung könnte die Beweisprüfung der Chain ohnehin nicht bestehen. Ab 0.7.0 hält die Vorlage vor dem Senden an, sodass sie keine Gebühr mehr für einen Batch ausgibt, den die Chain immer ablehnt. Verwenden Sie eine Vorlage mit `optimistic`-Settlement, bis sich das ändert (siehe [ZK, STARK und Auszahlungen](/rollups/zk-stark-withdrawals)).
 * **Die Vorlage `multivm-rollup` hängt von etwas ab, das nicht live ist.** Der Cross-VM-Precompile unter `0x0000000000000000000000000000000000000901` ist auf keinem der beiden Netzwerke aktiv, ein Aufruf aus einem Contract bewirkt also nichts; die Vorlage prüft das, und ihr Contract ist so geschrieben, dass er revertet, statt stillschweigend zu scheitern (siehe [Multi-VM](/rollups/multi-vm)).
@@ -176,7 +178,7 @@ Quellcode: https://github.com/qorechain/qorechain-sdk/tree/main/cli (dApp-Scaffo
 * **`rollup-app` sendet nur, wenn Sie es verlangen.** Es führt standardmäßig einen Trockenlauf aus; mit `QORE_BROADCAST=1` registriert es den ML-DSA-87-Schlüssel des Kontos einmal und signiert hybrid. Seine Beispielwerte für das Rollup sind illustrativ: Nehmen Sie echte Profilnamen und den Stake aus [Voreingestellte Profile](/rollups/preset-profiles).
 * **`fullstack-web` zeigt bei seiner Tokenomics-Schaltfläche einen Fehler.** Dieses Panel ruft eine JSON-RPC-Methode `qor_` auf, die die öffentlichen Endpunkte nicht bereitstellen; die Guthabenabfrage funktioniert. Ersetzen Sie sie durch einen REST-Lesezugriff wie `client.rest.getBurnStats()`.
 * **`evm-solidity` braucht mehr als ein finanziertes Konto.** Das Senden einer EVM-Transaktion auf QoreChain braucht außerdem einen registrierten ML-DSA-87-Schlüssel und ein offenes EVM-Autorisierungsfenster, die von der Native-Lane aus eingerichtet werden (siehe den [EVM-Leitfaden](/developer-guide/evm-development#evm-window)). Das `deploy`-Skript der Vorlage wurde für diese Seite nicht gegen ein Live-Netzwerk ausgeführt.
-* **`create-qorechain-dapp --version` gibt `0.5.1` aus**, obwohl das installierte Paket 0.10.0 ist (geprüft am 27. Oktober 2026). Lesen Sie die Version aus `package.json` oder der Registry.
-* **Die README-Dateien der Pakete sind veraltet.** Die README von `create-qorechain-dapp` führt zwei Vorlagen auf und die von `create-qorechain-rollup` fünf; `--help` zeigt drei und sechs. Vertrauen Sie `--help`.
+* **`create-qorechain-dapp --version` gibt `0.5.1` aus**, obwohl das installierte Paket 0.12.0 ist (geprüft am 27. Oktober 2026 mit 0.10.0 und erneut am 4. November 2026 mit 0.12.0). Lesen Sie die Version aus `package.json` oder der Registry.
+* **Die README-Dateien der Pakete sind veraltet.** Die README von `create-qorechain-dapp` führt zwei Vorlagen auf und die von `create-qorechain-rollup` fünf (geprüft am 27. Oktober 2026); `--help` zeigt sieben und sechs. Vertrauen Sie `--help`.
 * **Versionen vor 0.6.2 funktionieren nicht aus npm.** `qorollup` 0.6.1 und früher, auf beliebige Weise über npm installiert, gab nichts aus und endete mit Code 0, und `--version` gab `0.4.1` aus. Wenn Sie bei 0.6.1 bleiben müssen, führen Sie `node node_modules/@qorechain/rdk-cli/dist/index.js <command>` aus; andernfalls aktualisieren Sie.
-* **Abhängigkeitskopien (nur 0.6.x).** `@qorechain/rdk` 0.6.2 und früher hängen von `@qorechain/sdk` `^0.9.0` ab, sodass ein Projekt, das zusätzlich SDK 0.10.0 installierte, eine zweite, verschachtelte SDK-0.9.x-Kopie enthielt. Ab 0.7.0 hängt das Kit von `@qorechain/sdk` `^0.10.0` ab und teilt sich eine Kopie.
+* **Abhängigkeitskopien (RDK 0.6.x und RDK 0.8.0 neben SDK 0.12.0).** `@qorechain/rdk` 0.6.2 und früher hängen von `@qorechain/sdk` `^0.9.0` ab, sodass ein Projekt, das zusätzlich SDK 0.10.0 installierte, eine zweite, verschachtelte SDK-0.9.x-Kopie enthielt. Ab 0.7.0 hängt das Kit von `@qorechain/sdk` `^0.10.0` ab und teilt sich eine Kopie mit einer App auf SDK 0.10.x. **Eine App auf SDK 0.12.0, die zusätzlich `@qorechain/rdk` 0.8.0 installiert, erhält weiterhin eine verschachtelte Kopie von SDK 0.10.0** (und von `@qorechain/evm` 0.8.0), weil ein Caret-Bereich auf einer 0.x-Version keine neueren Minor-Versionen übernimmt (geprüft mit `npm ls` am 4. November 2026). Halten Sie SDK-Aufrufe und RDK-Aufrufe in getrennten Modulen oder reichen Sie Objekte als reine Daten weiter, bis sich der RDK-Bereich ändert.

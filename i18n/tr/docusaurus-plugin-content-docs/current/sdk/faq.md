@@ -11,16 +11,18 @@ sidebar_position: 8
 
 Evet. Mainnet **yayında** (zincir kimliği `qorechain-vladi`, 7 Haziran 2026'dan beri
 canlı) zincir sürümü v3.2.6'yı çalıştırıyor (4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı, yönetişim önerisi 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde ve v3.2.4 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı); testnet 27 Ekim 2026'dan beri v3.2.6'yı çalıştırıyor. Testnet hazır
-ayarı (`qorechain-diana`) da kullanılabilir durumda kalmaya devam eder. Her iki hazır
-ayar da localhost uç nokta varsayılanlarıyla gelir; ağı
-`createClient({ network: "mainnet" })` ile seçin ve `endpoints`'i kendi düğüm
-URL'lerinizle geçersiz kılın.
+ayarı (`qorechain-diana`) da kullanılabilir durumda kalmaya devam eder. SDK 0.12.0'dan itibaren her iki hazır
+ayar da herkese açık uç noktaları varsayılan alır; ağı
+`createClient({ network: "mainnet" })` ile seçin ve `endpoints`'i yalnızca kendi düğümünüz için
+geçersiz kılın.
 [Ağ ve uç noktalar](/sdk/reference/network) bölümüne bakın.
 
 ## Neden çağrılarım localhost'a gidiyor?
 
-`createClient()` varsayılan olarak **localhost** uç noktalarını kullanır. Gerçek
-bir düğümle konuşmak için bir `endpoints` nesnesi geçirin:
+**0.12.0 öncesi** bir SDK kullanıyorsunuz; hazır ayarları varsayılan olarak **localhost** uç noktalarını kullanır:
+yükseltin veya bir `endpoints` nesnesi geçirin. 0.12.0'dan itibaren `createClient()` ve
+`createClient({ network: "mainnet" })` herkese açık uç noktaları kullanır; localhost
+kullanan ise `localnet` hazır ayarıdır.
 
 ```ts
 const client = createClient({
@@ -31,6 +33,10 @@ const client = createClient({
   },
 });
 ```
+
+Bunun yerine "endpoint ... is not configured for the mainnet preset" hatasını alırsanız, çağrı
+herkese açık hazır ayarların tanımlamadığı bir uç noktaya (gRPC, bir SVM RPC, mainnet EVM
+WebSocket) ihtiyaç duyuyordur; onu `endpoints` içinde geçirin.
 
 İmzalama yolu (`connectTx`) konsensüs **`rpc`** uç noktasına ihtiyaç duyar;
 QoreChain Native okumaları da onu kullanır. REST okumaları `rest` kullanır; EVM çağrıları
@@ -87,14 +93,14 @@ EVM çalışma zamanının QOR'u **18** ondalık basamakla temsil ettiğini unut
 
 ## Hangi paketler yayımlandı ve nerede?
 
-Hepsi (27 Ekim 2026'da kontrol edildi). TypeScript çekirdeği (`@qorechain/sdk`, 0.10.0),
-React kiti (`@qorechain/react`, 0.10.0), `create-qorechain-dapp` iskele aracı
-(0.10.0) ve EVM/SVM adaptörleri (`@qorechain/evm`, `@qorechain/svm`, 0.8.0) npm'de;
-Python istemcisi PyPI'da (`pip install qorechain-sdk`, sürüm 0.10.0, import
+Hepsi (4 Kasım 2026'da kontrol edildi). TypeScript çekirdeği (`@qorechain/sdk`, 0.12.0),
+React kiti (`@qorechain/react`, 0.12.0), `create-qorechain-dapp` iskele aracı
+(0.12.0) ve EVM/SVM adaptörleri (`@qorechain/evm`, `@qorechain/svm`, 0.12.0) npm'de;
+Python istemcisi PyPI'da (`pip install qorechain-sdk`, sürüm 0.12.0, import
 `qorsdk`); Go istemcisi modül proxy'sinde
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.10.0`); Rust istemcisi
-crates.io'da (`cargo add qorechain-sdk`, 0.10.0); Java istemcisi ise Maven
-Central'da (`io.github.qorechain:qorechain-sdk:0.10.0`). Dil başına tüm komutlar için
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`); Rust istemcisi
+crates.io'da (`cargo add qorechain-sdk`, 0.12.0); Java istemcisi ise Maven
+Central'da (`io.github.qorechain:qorechain-sdk:0.12.0`, JDK 17 veya üzeri). Dil başına tüm komutlar için
 [Kurulum](/sdk/install) bölümüne bakın.
 
 ## Anımsatıcı ifadem (mnemonic) reddediliyor
@@ -122,7 +128,7 @@ Hibrit bir tx `pqc` kodu 21 (`hybrid_verify_failed`) ile başarısız olursa ned
 sign-bytes sürümü, chain-id, eski bir PQC kütüphanesi veya kayıtlı olmayan ya da
 farklı bir anahtardır; hedged imzalama asla neden değildir.
 Her iki ağ da v2 sign-bytes biçimini doğrular; bu yüzden SDK **0.8.1 veya daha
-yenisini** kullanın (güncel sürüm 0.10.0) ve `rest` (veya `signBytesVersion`) geçirin:
+yenisini** kullanın (güncel sürüm 0.12.0) ve `rest` (veya `signBytesVersion`) geçirin:
 bunlardan biri yoksa oluşturucular `qorechain-vladi` / `qorechain-diana` üzerinde
 hata fırlatır.
 [Kod 21 sorun giderme](/developer-guide/post-quantum-signing#code-21) ve
@@ -148,11 +154,15 @@ serileştiriyordu ve zincirin tx kod çözücüsü bunu CheckTx aşamasında red
 
 ## SDK hangi zincir sürümleriyle çalışır?
 
-SDK **0.10.0**, zincir **v3.2.4** için istemci sürümüdür (mainnet'te 23 Ekim 2026'dan beri,
-3.742.566 yüksekliğinde, yönetişim önerisi 13; testnet'te 19 Ekim'den beri). Mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırıyor (v3.2.5, 29 Ekim'den); imzalama biçimi değişmedi, bu yüzden 0.10.0 orada çalışmaya devam eder. Staking katmanı
-oluşturucularını ve okumalarını, `fetchAuthNonce` işlevini ve protokol özelliği okumalarını
-ekler ([0.10.0'ın ekledikleri](/sdk/install#whats-new-0100) bölümüne bakın); bunlar, 0.9.0'ın
-v3.2.2 ve v3.2.3 için eklediklerinin üzerine gelir: kayıt sırasında isteğe bağlı sahiplik
+SDK **0.12.0**, zincir **v3.2.5** için istemci sürümüdür (mainnet'te 29 Ekim
+2026'dan beri, 3.906.833 yüksekliğinde; testnet'te 26 Ekim'den beri). Her iki ağ da v3.2.6
+çalıştırır (mainnet 4 Kasım'dan, testnet 27 Ekim'den beri); imzalama biçimi
+değişmedi, bu yüzden 0.12.0 her ikisinde de çalışır. Hibrit işlemler için kesin gas kuralını,
+ML-KEM anahtar kayıt defteri oluşturucularını ve okumasını, soyut hesap okumalarını ve
+denetlenmiş yönetişim parametresi oluşturucularını ekler ([0.12.0'ın ekledikleri](/sdk/install#whats-new-0120) bölümüne bakın);
+bunlar, 0.10.0'ın v3.2.4 için eklediklerinin (staking katmanı oluşturucuları ve okumaları,
+`fetchAuthNonce` ve protokol özelliği okumaları, bkz.
+[0.10.0'ın eklediği](/sdk/install#whats-new-0100)) ve 0.9.0'ın v3.2.2 ile v3.2.3 için eklediklerinin üzerine gelir: kayıt sırasında isteğe bağlı sahiplik
 kanıtı (proof of possession; ağ v3.2.3'ü uyguladıktan sonra `ensurePqcRegistered`
 tarafından otomatik eklenir) için oluşturucular, kapsamlı EVM pencereleri ve EIP-7702 onay mesajları.
 SDK **0.8.1 veya daha yenisi** de her iki ağda işlem
@@ -160,8 +170,8 @@ yapar (v2 hibrit sign-bytes biçimi, kayıt, hibrit gönderimler ve EVM penceres
 değişmeden çalışır), ancak bu oluşturucuların hiçbirine sahip değildir: bunlar için
 CLI'yı kullanın (bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)). İmzalama biçimi
 v3.2.4, v3.2.5 veya v3.2.6'da değişmedi. Her iki ağ da v3.2.6 çalıştırır (testnet v3.2.5'i 26 Ekim 2026'da, v3.2.6'yı ise
-27 Ekim'de uyguladı; mainnet v3.2.5'i 29 Ekim'de ve v3.2.6'yı 4 Kasım'da uyguladı); SDK'nın v3.2.4'ten sonra getirilen hiçbir şey için oluşturucusu yoktur;
-bu yüzden v3.2.5 eklerinin (örneğin ML-KEM anahtar kayıt defteri ile yönetişimle yönetilen cross-VM ve sözleşme yolları) henüz bir SDK oluşturucusu yoktur ve bunlara CLI ile ulaşılır.
+27 Ekim'de uyguladı; mainnet v3.2.5'i 29 Ekim'de ve v3.2.6'yı 4 Kasım'da uyguladı); SDK 0.10.0 ve 0.9.0 bunlarda çalışmaya devam eder ancak
+v3.2.5 eklerinin (ML-KEM anahtar kayıt defteri, kesin gas kuralı) oluşturucularına sahip değildir; bu sürümlerle CLI'yı kullanın veya 0.12.0'a yükseltin. 0.12.0, v3.2.5'e karşı oluşturuldu ve denetlendi.
 
 ## PQC anahtar kaydım reddedildi ama ücret alındı
 
@@ -199,7 +209,7 @@ Aşağıdaki yönergeler modülün etkin olduğu her yerde geçerlidir.)
 Nonce yanlış. Hem `MsgExecuteEVM.nonce` hem de `MsgExecuteCosmos.nonce`, `(account, pubkey)`
 için bağlı anahtarın **authenticator sıra numarasıdır**: zincirin bağlı anahtar başına
 tuttuğu, 0'dan başlayan ve her başarılı yürütmede artan bir sayaç. Bu, hesabın EVM
-nonce'u **değildir**. Onu `fetchAuthNonce` ile okuyun (SDK 0.10.0, zincir v3.2.4 veya
+nonce'u **değildir**. Onu `fetchAuthNonce` ile okuyun (SDK 0.10.0 veya sonrası, zincir v3.2.4 veya
 sonrası) ya da eski sürümlerde bağlı anahtar başına kendiniz takip edin. v3.2.3'ten beri EVM şeridi ayrıca çağrının gas sınırını
 bağlayan `evmAuthSignBytesV2`'yi imzalar (`resolveEvmAuthDigestVersion` biçimi
 seçer). O anahtar için okuduğunuz (veya takip ettiğiniz) sayacı kullanın ve yeniden imzalayın.

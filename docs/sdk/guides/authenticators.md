@@ -317,7 +317,7 @@ execution.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` is the same kind of counter.
 
-Since chain v3.2.4 (both networks serve the route) and SDK 0.10.0 you can read the
+Since chain v3.2.4 (both networks serve the route) and SDK 0.10.0 or later you can read the
 counter instead of tracking it: `fetchAuthNonce({ rest, address, pubkey })` calls
 `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` and returns
 `{ nonce, linked }`. A key that never executed reads 0, and the counter is kept even
@@ -325,6 +325,24 @@ for a key that is no longer linked (`linked` says which). Sending a value that i
 the chain's current counter is a replay rejection (`abstractaccount` code 11, see
 below). With an older SDK or chain, track it per linked key: 0 for a newly linked key,
 +1 after each execution the chain accepts.
+
+## Reading the stored rules and linked keys {#reads}
+
+From chain v3.2.5 (SDK 0.12.0), both networks can be asked what an account stored,
+instead of reconstructing it from transactions:
+
+* `fetchSpendingRules({ rest, address })` reads the spending rules, account-wide and
+  per linked key (`GET /qorechain/abstractaccount/v1/accounts/{address}/spending_rules`).
+* `fetchAuthenticators({ rest, address })` reads the linked keys, revoked ones
+  included (`.../accounts/{address}/authenticators`).
+* `msg.abstractaccount.updateConfig` is the governance message that sets the module's
+  limits (the authority is the governance module account, so an ordinary account
+  cannot send it). The SDK checks the values before signing.
+
+Rules are checked as the chain checks them: an `erc20/`, `erc721/` or `erc1155/` denom
+must name a `0x` contract address, and the module's codes 8 (invalid spending rule)
+and 9 (module disabled) are named. The module is still switched off on mainnet
+and enabled on the testnet.
 
 ## The permission schema
 

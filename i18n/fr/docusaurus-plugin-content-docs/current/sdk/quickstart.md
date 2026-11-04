@@ -15,30 +15,33 @@ Go et Rust se trouvent à la fin.
 
 `createClient()` résout un réseau et compose les clients de lecture, un
 assistant de frais et un point d'entrée de signature paresseux (lazy). Il cible
-par défaut le testnet public (`qorechain-diana`). Les endpoints par défaut
-pointent vers **localhost** ; passez donc `endpoints` pour dialoguer avec un
-vrai nœud. Les endpoints publics sont listés dans la
+par défaut le testnet public (`qorechain-diana`), sur les endpoints publics (cela a changé dans le SDK
+0.12.0 : les versions antérieures utilisaient **localhost** par défaut et exigeaient `endpoints`). Passez
+`endpoints` pour utiliser votre propre nœud, ou sélectionnez `localnet` pour un nœud sur votre machine.
+Les endpoints publics sont listés dans la
 [référence réseau](/sdk/reference/network#public-endpoints).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
 
-// Testnet (chain id "qorechain-diana"), default localhost endpoints.
+// Testnet (chain id "qorechain-diana"), public testnet endpoints (SDK 0.12.0+).
 const client = createClient();
 
-// Point at the public testnet by overriding endpoints.
+// A node on this machine (chain id "qorechain-devnet", localhost ports).
+const local = createClient({ network: "localnet" });
+
+// Your own node: override any endpoint, the rest keep the preset's values.
 const remote = createClient({
   endpoints: {
-    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
-    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
-    evmRpc: "https://evm-testnet.qore.host", // EVM JSON-RPC (eth_*)
+    rest: "https://lcd.my-node.example",   // Native REST (LCD)
+    rpc: "https://rpc.my-node.example",    // consensus RPC (for signing)
   },
 });
 ```
 
-Le mainnet (chain id `qorechain-vladi`) est en production. Sélectionnez-le et
-remplacez les valeurs par défaut localhost par les endpoints publics (ou votre
-propre nœud) :
+Le mainnet (chain id `qorechain-vladi`) est en production. Sélectionnez-le ; le préréglage porte les
+endpoints publics du mainnet. L'appel ci-dessous les écrit explicitement, ce dont un SDK antérieur à la
+0.12.0 a besoin :
 
 ```ts
 const main = createClient({
@@ -109,7 +112,7 @@ L'enregistrement est explicite : il n'y a pas d'enregistrement automatique à la
 première transaction. Une transaction signée uniquement de façon classique
 est refusée par les réseaux en production ; donnez donc au client de transaction la
 paire de clés ML-DSA-87 du compte et il signera chaque transaction en mode hybride. Les deux étapes ci-dessous nécessitent
-le **SDK 0.9.0 ou ultérieur** (la 0.10.0 est la version actuelle) et un compte approvisionné :
+le **SDK 0.9.0 ou ultérieur** (la 0.12.0 est la version actuelle) et un compte approvisionné :
 
 ```bash
 npm i @qorechain/sdk
@@ -162,8 +165,11 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 ### 4b. Envoyer avec une signature hybride
 
 `tx.bankSend` signe désormais en mode hybride. Les frais valent par défaut `"auto"` : le client simule
-lui-même la transaction hybride et ajoute le gas de la vérification post-quantique,
-que la simulation ne facture pas. Le prix minimal du gas du réseau est de 0,1 uqor par
+lui-même la transaction hybride. Sur un réseau qui a appliqué la v3.2.5 (les deux l'ont fait), le SDK
+0.12.0 fixe la limite de gas à `ceil(simulated x 1.02) + 2000`, car la simulation
+facture déjà la vérification post-quantique : un envoi bancaire hybride demande environ
+171,600 de gas. Sur les réseaux plus anciens, et avec le SDK 0.10.0 ou antérieur, le client ajoute lui-même le
+gas de la vérification post-quantique (environ 289,000 pour le même envoi). Le prix minimal du gas du réseau est de 0,1 uqor par
 unité de gas (le client applique 0,15). Utilisez `toBase("1.5")` pour convertir des QOR en `uqor`
 de base.
 

@@ -166,7 +166,7 @@ Die obige Chain-ID ist die des Testnets; verwende im Mainnet `qorechain-vladi`. 
 
 Beide Netzwerke beantworten `GET /qorechain/stakingtier/v1/params` mit denselben Einstellungen: drei Laufzeiten, ein Minimum von 10 QOR (`min_lock_amount` `"10000000"` uqor), eine Strafe für vorzeitiges Entsperren von 500 Basispunkten (5 %) und `enabled: true`. Die Antwort enthält auch die Bonus-Einstellungen in Basispunkten; dieses Handbuch nennt sie nicht, weil ein Bonus keine zugesagte Rendite ist und die Einstellungen per Governance geändert werden können. `GET /qorechain/stakingtier/v1/pool` zeigt den Pool, der die Sperrbelohnungen auszahlt.
 
-**Clients.** Die Kommandozeile (oben) und `@qorechain/sdk` 0.10.0, das die Composer `lockDelegation`, `unlockEarly` und `claimBonus` sowie die Lesefunktionen `fetchStakingTierParams`, `fetchStakingLocks` und `fetchStakingTierPool` enthält (siehe [SDK-Installation](/sdk/install)). Keine veröffentlichte Version von QoreX oder des Dashboards hat heute einen Sperr-Bildschirm, daher erfolgt das Sperren im Mainnet mit der CLI oder dem SDK.
+**Clients.** Die Kommandozeile (oben) und `@qorechain/sdk` (0.10.0 oder neuer; 0.12.0 ist aktuell), das die Composer `lockDelegation`, `unlockEarly` und `claimBonus` sowie die Lesefunktionen `fetchStakingTierParams`, `fetchStakingLocks` und `fetchStakingTierPool` enthält (siehe [SDK-Installation](/sdk/install)). Keine veröffentlichte Version von QoreX oder des Dashboards hat heute einen Sperr-Bildschirm, daher erfolgt das Sperren im Mainnet mit der CLI oder dem SDK.
 
 **Nicht verwechseln** mit dem [xQORE-Staking](/user-guide/xqore-staking), einem entworfenen Mechanismus, der nicht live ist, oder mit der unten beschriebenen Triple-Pool-Klassifizierung, die nicht ändert, was du erhältst.
 

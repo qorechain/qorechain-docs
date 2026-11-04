@@ -166,7 +166,7 @@ L'ID di chain qui sopra è quello della testnet; usa `qorechain-vladi` sulla mai
 
 Entrambe le reti rispondono a `GET /qorechain/stakingtier/v1/params` con le stesse impostazioni: tre termini, un minimo di 10 QOR (`min_lock_amount` `"10000000"` uqor), una penale di sblocco anticipato di 500 punti base (5%) e `enabled: true`. La risposta riporta anche le impostazioni del bonus in punti base; questo manuale non le cita, perché un bonus non è un rendimento promesso e le impostazioni possono essere modificate dalla governance. `GET /qorechain/stakingtier/v1/pool` mostra il pool che paga le ricompense dei blocchi.
 
-**Client.** La riga di comando (sopra) e `@qorechain/sdk` 0.10.0, che ha i composer `lockDelegation`, `unlockEarly` e `claimBonus` e le letture `fetchStakingTierParams`, `fetchStakingLocks` e `fetchStakingTierPool` (vedi [Installazione dell'SDK](/sdk/install)). Nessuna versione pubblicata di QoreX o della dashboard ha oggi una schermata per i blocchi, quindi il blocco su mainnet si fa con la CLI o con l'SDK.
+**Client.** La riga di comando (sopra) e `@qorechain/sdk` (0.10.0 o successivo; la 0.12.0 è quella attuale), che ha i composer `lockDelegation`, `unlockEarly` e `claimBonus` e le letture `fetchStakingTierParams`, `fetchStakingLocks` e `fetchStakingTierPool` (vedi [Installazione dell'SDK](/sdk/install)). Nessuna versione pubblicata di QoreX o della dashboard ha oggi una schermata per i blocchi, quindi il blocco su mainnet si fa con la CLI o con l'SDK.
 
 **Non confonderlo** con lo [staking xQORE](/user-guide/xqore-staking), che è un meccanismo progettato non ancora attivo, né con la classificazione Triple-Pool qui sotto, che non cambia ciò che ricevi.
 

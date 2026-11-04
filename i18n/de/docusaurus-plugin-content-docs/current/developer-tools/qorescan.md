@@ -231,7 +231,7 @@ Exit-Codes: `0` Erfolg, `1` ein Scan- oder E/A-Fehler, `2` ein Nutzungsfehler.
 
 ## Wo es veröffentlicht ist {#where-published}
 
-Die Versionen wurden am 27. Oktober 2026 aus jeder Registry gelesen.
+Die Versionen wurden am 4. November 2026 aus jeder Registry gelesen (unverändert seit dem 27. Oktober).
 
 | Registry | Paket | Version | Link |
 |---|---|---|---|

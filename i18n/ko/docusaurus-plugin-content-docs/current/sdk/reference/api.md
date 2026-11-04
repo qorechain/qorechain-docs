@@ -111,7 +111,16 @@ pnpm --filter @qorechain/sdk docs:api
   `fetchStakingTierPool`); `fetchAuthNonce`; `fetchProtocolFeatures` /
   `isProtocolFeatureEnabled`; PQC 상태의 `possessionProven`;
   `ibcTimeoutTimestamp`; `CHAIN_UPGRADE_V3_2_4`. 자세한 내용은
-  [0.10.0의 추가 사항](/sdk/install#whats-new-0100)을 참고하세요.
+  [0.10.0에서 추가되었던 것](/sdk/install#whats-new-0100)을 참고하세요.
+- **체인 v3.2.5 (0.12.0):** ML-KEM-1024 키 레지스트리(`msg.pqc.registerKemKey` /
+  `removeKemKey`, `validateKemPublicKey`, `fetchKemKey`, `parseKemKey`,
+  `KEM_ALGORITHM_ML_KEM_1024`, `ML_KEM_1024_PUBLIC_KEY_SIZE`), 하이브리드
+  트랜잭션의 정확한 가스(`exactHybridGas`, `EXACT_GAS_MULTIPLIER`, `EXACT_GAS_HEADROOM`,
+  `TxClient.estimateGasDetails`), 어카운트 추상화 조회(`fetchSpendingRules`,
+  `fetchAuthenticators`)와 `msg.abstractaccount.updateConfig`, 검증된 거버넌스
+  파라미터 빌더(`validateCrossVmUpdateParams`, `validateRdkUpdateParams`),
+  `CHAIN_UPGRADE_V3_2_5`, `localnet` 프리셋. 자세한 내용은
+  [0.12.0에서 추가된 것](/sdk/install#whats-new-0120)을 참고하세요.
 - **정규(canonical) PQC 파생 (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; PQC 등록 메시지는
   `buildRegisterPqcKeyMsg`입니다(`ensurePqcRegistered`에서 사용).
@@ -139,10 +148,10 @@ pnpm --filter @qorechain/sdk docs:api
 
 | 언어 | 생성 문서 | 설치 |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 공개 API의 docstring | `pip install qorechain-sdk`, 버전 `0.10.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (태그 `packages/go/v0.10.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.10.0; import `qorechain`) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.10.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 공개 API의 docstring | `pip install qorechain-sdk`, 버전 `0.12.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.12.0` (태그 `packages/go/v0.12.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.12.0; import `qorechain`) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.12.0` |
 
 각 패키지는 동일한 표면(네트워크 프리셋, denom/주소 유틸리티, HD 파생 —
 통합 eth-native 계정 포함 — PQC 프리미티브와 하이브리드 서명, 타입 지정

@@ -16,7 +16,10 @@ a self-contained workspace package
 with its own `README.md`, `.env.example`, and a single `index.ts`. They read
 endpoints and mnemonics from environment variables with sane localhost defaults,
 and the network-dependent ones fail gracefully with a hint when no node is
-reachable.
+reachable. Since SDK 0.12.0 the presets already point at the public endpoints, so in
+your own code you can drop the `?? "http://localhost:..."` fallbacks that appear in
+the snippets below and select `network: "testnet"` or `"mainnet"`; keep them (or
+select `localnet`) when you develop against a node on your machine.
 
 From the repo root, install once, then run any example:
 

@@ -177,7 +177,7 @@ const signBytes = hybridSignBytes(version, chainId, bodyWithoutPqcExt, authInfoB
 | Maven Central | `io.github.qorechain:qorechain-pqc` | 0.2.3 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-pqc |
 | C | yalnızca kaynak, kayıt defteri paketi yok | etiket `v0.2.3` | https://github.com/qorechain/qorechain-pqc |
 
-Kaynak: https://github.com/qorechain/qorechain-pqc (klasörler `js`, `python`, `rust`, `go`, `java`, `c`, `vectors`). Tüm paketler Apache-2.0'dır. Sürümler 27 Ekim 2026'da her kayıt defterinden okunmuştur. Aynı kütüphanenin, anahtar türetme ve rotasyonu da içeren kavramsal kılavuzu [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) sayfasıdır; onu kullanan SDK [SDK Genel Bakış](/sdk/overview) sayfasında anlatılır.
+Kaynak: https://github.com/qorechain/qorechain-pqc (klasörler `js`, `python`, `rust`, `go`, `java`, `c`, `vectors`). Tüm paketler Apache-2.0'dır. Sürümler 4 Kasım 2026'da her kayıt defterinden okunmuştur (27 Ekim'den beri değişmedi). Aynı kütüphanenin, anahtar türetme ve rotasyonu da içeren kavramsal kılavuzu [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) sayfasıdır; onu kullanan SDK [SDK Genel Bakış](/sdk/overview) sayfasında anlatılır.
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 

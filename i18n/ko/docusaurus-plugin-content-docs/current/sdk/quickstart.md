@@ -15,29 +15,34 @@ sidebar_position: 3
 
 `createClient()`는 네트워크를 결정하고 읽기 클라이언트, 수수료 헬퍼,
 지연(lazy) 서명 진입점을 구성합니다. 기본적으로 퍼블릭 테스트넷
-(`qorechain-diana`)을 대상으로 합니다. 기본 엔드포인트는 **localhost**를
-가리키므로, 실제 노드와 통신하려면 `endpoints`를 전달하세요. 퍼블릭
+(`qorechain-diana`)을 퍼블릭 엔드포인트로 대상으로 합니다(SDK 0.12.0에서
+바뀐 점: 이전 릴리스는 기본값이 **localhost**여서 `endpoints`가 필요했습니다).
+자체 노드를 쓰려면 `endpoints`를 전달하고, 내 컴퓨터의 노드를 쓰려면 `localnet`을 선택하세요.
+퍼블릭
 엔드포인트는 [네트워크 레퍼런스](/sdk/reference/network#public-endpoints)에
 나와 있습니다.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
 
-// Testnet (chain id "qorechain-diana"), default localhost endpoints.
+// Testnet (chain id "qorechain-diana"), public testnet endpoints (SDK 0.12.0+).
 const client = createClient();
 
-// Point at the public testnet by overriding endpoints.
+// A node on this machine (chain id "qorechain-devnet", localhost ports).
+const local = createClient({ network: "localnet" });
+
+// Your own node: override any endpoint, the rest keep the preset's values.
 const remote = createClient({
   endpoints: {
-    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
-    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
-    evmRpc: "https://evm-testnet.qore.host", // EVM JSON-RPC (eth_*)
+    rest: "https://lcd.my-node.example",   // Native REST (LCD)
+    rpc: "https://rpc.my-node.example",    // consensus RPC (for signing)
   },
 });
 ```
 
-메인넷(chain id `qorechain-vladi`)은 가동 중입니다. 메인넷을 선택하고
-localhost 기본값을 퍼블릭 엔드포인트(또는 자체 노드)로 재정의하세요:
+메인넷(chain id `qorechain-vladi`)은 가동 중입니다. 메인넷을 선택하세요. 프리셋에는
+퍼블릭 메인넷 엔드포인트가 들어 있습니다. 아래 호출은 이를 명시적으로 적은 것이며,
+0.12.0 이전의 SDK에는 이것이 필요합니다:
 
 ```ts
 const main = createClient({
@@ -108,7 +113,7 @@ secp256k1 + ML-DSA-87) 서명을 포함해야 하며, 계정의 ML-DSA-87 키가
 트랜잭션에서의 자동 등록은 없습니다. 클래식 서명만 사용한 트랜잭션은 라이브
 네트워크에서 거부되므로, 트랜잭션 클라이언트에 계정의 ML-DSA-87 키페어를
 전달하면 모든 트랜잭션을 하이브리드로 서명합니다. 아래 두 단계에는
-**SDK 0.9.0 이상**(현재 0.10.0)과 자금이 있는 계정이 필요합니다:
+**SDK 0.9.0 이상**(현재 0.12.0)과 자금이 있는 계정이 필요합니다:
 
 ```bash
 npm i @qorechain/sdk
@@ -161,8 +166,11 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 ### 4b. 하이브리드 서명으로 전송하기
 
 `tx.bankSend`는 이제 하이브리드로 서명합니다. 수수료 기본값은 `"auto"`입니다.
-클라이언트가 하이브리드 트랜잭션 자체를 시뮬레이션하고, 시뮬레이션에서는
-부과되지 않는 포스트 양자 검증의 가스를 더합니다. 네트워크의 최소 가스 가격은
+클라이언트가 하이브리드 트랜잭션 자체를 시뮬레이션합니다. v3.2.5를 적용한 네트워크(둘 다 적용했습니다)에서 SDK
+0.12.0은 가스 한도를 `ceil(simulated x 1.02) + 2000`으로 설정하는데, 시뮬레이션이
+이미 포스트 양자 검증을 부과하기 때문입니다. 하이브리드 뱅크 전송은 약
+171,600 가스를 요청합니다. 이전 네트워크와 SDK 0.10.0 이하에서는 클라이언트가
+포스트 양자 검증의 가스를 직접 더합니다(같은 전송에 약 289,000). 네트워크의 최소 가스 가격은
 가스 단위당 0.1 uqor입니다(클라이언트는 0.15로 책정합니다). QOR를 기본 단위
 `uqor`로 변환하려면 `toBase("1.5")`를 사용하세요.
 

@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal مكتبة مفتوحة المصدر تشفّر البيانات إلى حسابات QoreChain باستخدام ML-KEM-1024 (FIPS 203). ينشر الحساب مفتاحه العام ML-KEM-1024 على السلسلة؛ وعندها يستطيع أي شخص تشفير حمولة يمكن لهذا الحساب، ولأي مستلم آخر يضيفه المرسل، قراءتها. وهي موجّهة لمطوري dApp الذين يحتاجون إلى حمولات سرّية (مذكرات وفواتير ومستندات ومزايدات)، وللمدقّقين الذين يحتاجون إلى صلاحية اطّلاع، ولمشغّلي المجموعات الخاصة والسلاسل الجانبية. تركّب هذه المكتبة بدائيات قياسية ولا تنفّذ أي بدائية بنفسها. الإصدار **0.1.0**، بترخيص Apache-2.0، وتصونها جمعية QoreChain.
 
-وضعها في 30 أكتوبر 2026 (تعمل الشبكة الرئيسية بالإصدار v3.2.6 منذ 4 نوفمبر، وكان مسار القراءة لا يزال يردّ فيها في ذلك اليوم): التشفير نفسه يعمل دون اتصال في أي مكان، بلا شبكة ولا حساب. أما التشفير إلى عنوان مقروء من السلسلة فيحتاج إلى سجل مفاتيح KEM، وهو **حيّ على الشبكة التجريبية** (`qorechain-diana`) ومنذ أن طبّقت الشبكة الرئيسية (`qorechain-vladi`) v3.2.5 في 29 أكتوبر 2026 **يردّ مسار القراءة فيه على الشبكة الرئيسية أيضًا** (لم ينشر أي حساب مفتاحًا هناك بعد، بقدر ما استطاعت هذه الصفحة أن تجد). الحزمة منشورة لـ Rust وGo وPython وSwift وKotlin/JVM وAndroid. أما حزمة TypeScript ‏`@qorechain/qoreseal` فهي **قادمة** وليست على npm بعد. البنية مسودة بانتظار مراجعة خارجية قبل 1.0.
+وضعها في 4 نوفمبر 2026: التشفير نفسه يعمل دون اتصال في أي مكان، بلا شبكة ولا حساب. أما التشفير إلى عنوان مقروء من السلسلة فيحتاج إلى سجل مفاتيح KEM، وهو **حيّ على الشبكة التجريبية** (`qorechain-diana`) و**حيّ على الشبكة الرئيسية** (`qorechain-vladi`، التي طبّقت v3.2.5 في 29 أكتوبر 2026 وv3.2.6 في 4 نوفمبر): يردّ مسار القراءة على الشبكتين. لم ينشر أي حساب مفتاحًا على الشبكة الرئيسية بعد، بقدر ما استطاعت هذه الصفحة أن تجد. الحزمة منشورة لـ TypeScript وRust وGo وPython وSwift وKotlin/JVM وAndroid. البنية مسودة بانتظار مراجعة خارجية قبل 1.0.
 
 تحمي QoreSeal محتوى الحمولة فقط، لا شيء غيره. تبقى العناوين وتوقيت المعاملات ومبالغ التحويلات وأحجام المغلفات وعدد المستلمين علنية على السلسلة. وهي ليست وسيلة لجعل المعاملات خاصة.
 
@@ -72,15 +72,35 @@ QoreSeal مكتبة مفتوحة المصدر تشفّر البيانات إلى
 
 | اللغة | التثبيت | الحد الأدنى للمنصة |
 |---|---|---|
+| TypeScript | `npm install @qorechain/qoreseal` | Node.js 20 أو أحدث؛ ES module وCommonJS؛ المسارات الفرعية `/network` و`/testing` |
 | Rust | `cargo add qorechain-qoreseal` (اسم المكتبة `qoreseal`) | Rust المستقر |
 | Go | `go get github.com/qorechain/qoreseal/go@v0.1.0` | Go 1.25 |
 | Python | `pip install qorechain-qoreseal` (الاستيراد `qoreseal`) | Python 3.9 أو أحدث؛ عجلات لـ macOS 11+ ‏(arm64 وx86_64) وLinux manylinux2014 ‏(x86_64 وaarch64)؛ لا عجلة لـ Windows بعد |
 | Swift | `.package(url: "https://github.com/qorechain/qoreseal", from: "0.1.0")`، المنتج `QoreSeal` | iOS 16 وmacOS 13 |
 | Kotlin / JVM | `implementation("io.github.qorechain:qoreseal:0.1.0")` | Java 17؛ مترجم Kotlin 2.3 أو أحدث (يفشل البناء مع Kotlin 2.1) |
 | Android | `implementation("io.github.qorechain:qoreseal-android:0.1.0")` | API 24؛ قواعد R8 keep مضمَّنة؛ مترجم Kotlin 2.3 أو أحدث |
-| TypeScript | **قادمة**: ‏`@qorechain/qoreseal` ليست على npm بعد، ولذلك لا يوجد أمر تثبيت | |
 
-مصدر TypeScript وأمثلته ومساعدات الشبكة موجودة في المستودع وتعمل منه بعد `pnpm install && pnpm build`. إلى أن تُنشر حزمة npm، اعتبر المستودع هو طريقة استخدام TypeScript، وتوقّع اسم الحزمة المذكور أعلاه.
+تتضمن حزمة TypeScript مساعدات الشبكة (`@qorechain/qoreseal/network`: ‏`fetchKemKey` و`fetchMlkemPublicKey` و`resolveRecipient` و`sealToAddresses`). اعتماداتها هي `@qorechain/pqc` 0.2.3 و`@qorechain/qoresign` 0.1.0 ومكتبتا noble وscure.
+
+### الختم والفتح دون اتصال (TypeScript) {#quickstart-typescript}
+
+من البدايات السريعة المختبَرة في مركز المطورين (تضع القائمة علامة «مختبَر» عليها في 29 أكتوبر 2026). شُغّلت مرة أخرى في 4 نوفمبر 2026 بعد `npm install @qorechain/qoreseal@0.1.0` في مشروع فارغ، مع Node.js 26. بلا شبكة وبلا حساب.
+
+```ts
+import { generateSealKeys, open, recipientOf, seal, envelopeToText } from "@qorechain/qoreseal";
+
+const alice = generateSealKeys(), bob = generateSealKeys();
+const envelope = seal({
+  chainId: "qorechain-diana",
+  purpose: "invoice",
+  recipients: [recipientOf(alice), recipientOf(bob)],
+  plaintext: new TextEncoder().encode("amount due: 120 QOR"),
+});
+const pt = open({ chainId: "qorechain-diana", purpose: "invoice", envelope, keys: bob });
+console.log(envelopeToText(envelope).slice(0, 9), new TextDecoder().decode(pt));
+```
+
+طبعت `qoreseal: amount due: 120 QOR`.
 
 ### البداية السريعة 1: الختم والفتح دون اتصال (Python) {#quickstart-python}
 
@@ -248,7 +268,7 @@ const msg = submitBatchMsg({ sequencer, rollupId: "my-rollup", batchIndex, state
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host` (معرّف السلسلة 9801) | `https://evm-testnet.qore.host` (معرّف السلسلة 9800) |
 
-في 30 أكتوبر 2026 أجاب استعلام السجل بـ `{"found":false,"key":null}` لحساب بلا مفتاح على الشبكتين (وفي 27 أكتوبر كانت الشبكة الرئيسية ما زالت تجيب بـ "Not Implemented"). ولم يعثر بحث في معاملات الشبكة الرئيسية في 30 أكتوبر على أي `MsgRegisterKEMKey` بعد، لذا لم تُجرَّب هذه الصفحة نشر مفتاح على الشبكة الرئيسية من البداية إلى النهاية.
+في 4 نوفمبر 2026 أجاب استعلام السجل بـ `{"found":false,"key":null}` لحساب بلا مفتاح على الشبكتين (وفي 27 أكتوبر كانت الشبكة الرئيسية ما زالت تجيب بـ "Not Implemented"). ولم يعثر بحث في معاملات الشبكة الرئيسية في 4 نوفمبر على أي `MsgRegisterKEMKey` بعد، لذا لم تُجرَّب هذه الصفحة نشر مفتاح على الشبكة الرئيسية من البداية إلى النهاية.
 
 - الختم والفتح دون اتصال، بما فيه مفاتيح المدقّق الممرَّرة مباشرة والمجموعات الخاصة والدفعات، لا يحتاج إلى شبكة ولا إلى حساب.
 - التشفير إلى عنوان يتطلب أن يكون المستلم قد نشر مفتاح ML-KEM-1024 في السجل، وفي الوضع الهجين بطاقة مستلم.
@@ -257,17 +277,17 @@ const msg = submitBatchMsg({ sequencer, rollupId: "my-rollup", batchIndex, state
 
 ## أين تُنشر {#where-published}
 
-فُحصت في 27 أكتوبر 2026 مقابل كل سجل.
+فُحصت مقابل كل سجل في 4 نوفمبر 2026. تقدّم كل المدخلات السبعة الإصدار 0.1.0.
 
 | السجل | الحزمة | الإصدار | الرابط |
 |---|---|---|---|
+| npm | `@qorechain/qoreseal` | 0.1.0 | [npmjs.com/package/@qorechain/qoreseal](https://www.npmjs.com/package/@qorechain/qoreseal) |
 | crates.io | `qorechain-qoreseal` | 0.1.0 | [crates.io/crates/qorechain-qoreseal](https://crates.io/crates/qorechain-qoreseal) |
 | وكيل وحدات Go | `github.com/qorechain/qoreseal/go` | v0.1.0 (الوسم `go/v0.1.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoreseal/go) |
 | PyPI | `qorechain-qoreseal` | 0.1.0 (عجلات لـ macOS arm64 وx86_64 وLinux x86_64 وaarch64، إضافة إلى المصدر) | [pypi.org/project/qorechain-qoreseal](https://pypi.org/project/qorechain-qoreseal/) |
 | Swift Package Manager | `QoreSeal` من `github.com/qorechain/qoreseal` | 0.1.0 (الملف الثنائي `QoreSealFFI.xcframework.zip` في إصدار GitHub) | [release v0.1.0](https://github.com/qorechain/qoreseal/releases/tag/v0.1.0) |
 | Maven Central | `io.github.qorechain:qoreseal` | 0.1.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal) |
 | Maven Central | `io.github.qorechain:qoreseal-android` | 0.1.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal-android) |
-| npm | `@qorechain/qoreseal` | لم تُنشر بعد (قادمة) | |
 
 تحتاج المشاريع التي تستخدم أيًّا من قطعتَي Maven إلى مترجم Kotlin 2.3 أو أحدث. تضمّ قطعة Kotlin/JVM مكتبات أصلية لـ macOS ‏(arm64 وx86_64) وLinux ‏(x86_64 وarm64) وWindows ‏(x86_64)؛ وتغطي قطعة Android المعماريات arm64-v8a وarmeabi-v7a وx86_64.
 
@@ -285,9 +305,9 @@ const msg = submitBatchMsg({ sequencer, rollupId: "my-rollup", batchIndex, state
 - **إزالة مفتاح أو تدويره لا يمحو شيئًا ولا يعيد تشفيره.** تبقى البيانات المختومة إلى مفتاح قديم مقروءة لمن يحمله؛ احتفظ بالبذور أو الفهارس القديمة.
 - **الأعضاء المُزالون من المجموعات** يحتفظون بمفاتيح العصور التي انتموا إليها. ويقرأ الأعضاء الجدد من عصر انضمامهم فصاعدًا ما لم تُختم لهم المفاتيح الأقدم.
 - **معرّف السلسلة والغرض ليسا في المغلف؛** يجب أن يعرفهما المستلم.
-- **سجل الشبكة الرئيسية:** مسار القراءة حيّ منذ v3.2.5؛ ولم يكن قد نُشر أي مفتاح على الشبكة الرئيسية وقت التحقق، كما أن فضاء الأسماء `qor_` في EVM JSON-RPC غير معروض على `evm.qore.host` (استخدم مسار REST).
+- **سجل الشبكة الرئيسية:** مسار القراءة حيّ منذ v3.2.5؛ ولم يكن قد نُشر أي مفتاح على الشبكة الرئيسية وقت التحقق في 4 نوفمبر 2026، كما أن فضاء الأسماء `qor_` في EVM JSON-RPC غير معروض على `evm.qore.host` (استخدم مسار REST).
 - **قبل 1.0، والبنية بانتظار مراجعة خارجية.** قد تغيّر الإصدارات الفرعية الواجهة. اقرأ المواصفة قبل الاعتماد عليها.
-- **لا حزمة npm بعد** ولا عجلة Python لـ Windows بعد.
+- **لا عجلة Python لـ Windows بعد** (macOS وLinux فقط؛ وتُبنى المنصات الأخرى من حزمة المصدر، التي تحتاج إلى Rust).
 
 ## ملاحظات أمنية {#security}
 

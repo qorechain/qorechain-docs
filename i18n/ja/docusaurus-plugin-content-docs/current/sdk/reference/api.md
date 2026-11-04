@@ -106,7 +106,16 @@ pnpm --filter @qorechain/sdk docs:api
   `fetchStakingTierPool`）、`fetchAuthNonce`、`fetchProtocolFeatures` /
   `isProtocolFeatureEnabled`、PQC ステータスの `possessionProven`、
   `ibcTimeoutTimestamp`、`CHAIN_UPGRADE_V3_2_4`。詳細は
-  [0.10.0 の追加内容](/sdk/install#whats-new-0100)を参照してください。
+  [0.10.0 で追加された内容](/sdk/install#whats-new-0100)を参照してください。
+- **チェーン v3.2.5（0.12.0）:** ML-KEM-1024 鍵レジストリ（`msg.pqc.registerKemKey` /
+  `removeKemKey`、`validateKemPublicKey`、`fetchKemKey`、`parseKemKey`、
+  `KEM_ALGORITHM_ML_KEM_1024`、`ML_KEM_1024_PUBLIC_KEY_SIZE`）、ハイブリッドトランザクションの
+  厳密なガス（`exactHybridGas`、`EXACT_GAS_MULTIPLIER`、`EXACT_GAS_HEADROOM`、
+  `TxClient.estimateGasDetails`）、アブストラクトアカウントの読み取り（`fetchSpendingRules`、
+  `fetchAuthenticators`）と `msg.abstractaccount.updateConfig`、検証付きのガバナンス
+  パラメータビルダー（`validateCrossVmUpdateParams`、`validateRdkUpdateParams`）、
+  `CHAIN_UPGRADE_V3_2_5`、`localnet` プリセット。詳細は
+  [0.12.0 の追加内容](/sdk/install#whats-new-0120)を参照してください。
 - **正規PQC導出（0.8.3+）:** `derivePqcCanonical(account, mnemonic)`、
   `canonicalAccount(account)`。PQC登録メッセージは
   `buildRegisterPqcKeyMsg`（`ensurePqcRegistered`が使用）です。`derivePqcLegacy`は
@@ -124,9 +133,9 @@ pnpm --filter @qorechain/sdk docs:api
 
 | 言語 | 生成ドキュメント | インストール |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 公開APIにdocstringを完備 | `pip install qorechain-sdk`（バージョン`0.10.0`、インポート名は`qorsdk`） |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go)（godoc） | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0`（タグ `packages/go/v0.10.0`） |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk)（rustdoc） | `cargo add qorechain-sdk`（0.10.0、インポート名は`qorechain`） |
-| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.10.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 公開APIにdocstringを完備 | `pip install qorechain-sdk`（バージョン`0.12.0`、インポート名は`qorsdk`） |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go)（godoc） | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.12.0`（タグ `packages/go/v0.12.0`） |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk)（rustdoc） | `cargo add qorechain-sdk`（0.12.0、インポート名は`qorechain`） |
+| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.12.0` |
 
 各パッケージは同一のサーフェス（ネットワークプリセット、denom／アドレスユーティリティ、HD導出 — 統合ethネイティブアカウントを含む — PQCプリミティブとハイブリッド署名、型付きメッセージとクエリ、オーセンティケータレーン、REST + `qor_` JSON-RPC読み取りクライアント）を提供し、各言語ネイティブのドキュメントツールでレンダリングされるようソース内にインラインで文書化されています。TypeScriptのウォレットビルダー（`buildPhantom*` / `buildMetaMask*`）とブラウザウォレットアダプタはTypeScript専用です。

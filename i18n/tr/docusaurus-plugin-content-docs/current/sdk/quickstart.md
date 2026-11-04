@@ -15,29 +15,33 @@ parçaları sonda yer alır.
 
 `createClient()`, bir ağı çözümler ve okuma istemcilerini, bir ücret
 yardımcısını ve tembel (lazy) bir imzalama giriş noktasını bir araya getirir.
-Varsayılan olarak genel testnet'i (`qorechain-diana`) hedefler. Varsayılan uç
-noktalar **localhost**'a işaret eder; bu nedenle gerçek bir düğümle konuşmak
-için `endpoints` parametresini geçirin. Genel uç noktalar [ağ
+Varsayılan olarak genel testnet'i (`qorechain-diana`) hedefler ve genel uç noktaları kullanır (bu, SDK
+0.12.0'da değişti: önceki sürümler varsayılan olarak **localhost** kullanıyordu ve `endpoints` gerektiriyordu). Kendi düğümünüzü kullanmak için
+`endpoints` geçirin veya makinenizdeki bir düğüm için `localnet` seçin.
+Genel uç noktalar [ağ
 referansında](/sdk/reference/network#public-endpoints) listelenmiştir.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
 
-// Testnet (chain id "qorechain-diana"), default localhost endpoints.
+// Testnet (chain id "qorechain-diana"), public testnet endpoints (SDK 0.12.0+).
 const client = createClient();
 
-// Point at the public testnet by overriding endpoints.
+// A node on this machine (chain id "qorechain-devnet", localhost ports).
+const local = createClient({ network: "localnet" });
+
+// Your own node: override any endpoint, the rest keep the preset's values.
 const remote = createClient({
   endpoints: {
-    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
-    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
-    evmRpc: "https://evm-testnet.qore.host", // EVM JSON-RPC (eth_*)
+    rest: "https://lcd.my-node.example",   // Native REST (LCD)
+    rpc: "https://rpc.my-node.example",    // consensus RPC (for signing)
   },
 });
 ```
 
-Mainnet (chain id `qorechain-vladi`) canlıdır. Onu seçin ve localhost
-varsayılanlarını genel uç noktalarla (veya kendi düğümünüzle) geçersiz kılın:
+Mainnet (chain id `qorechain-vladi`) canlıdır. Onu seçin; hazır ayar genel
+mainnet uç noktalarını taşır. Aşağıdaki çağrı onları açıkça yazar; 0.12.0 öncesi bir SDK
+buna ihtiyaç duyar:
 
 ```ts
 const main = createClient({
@@ -107,7 +111,7 @@ artı ML-DSA-87) imza taşımalıdır ve hesabın ML-DSA-87 anahtarı önce
 otomatik kayıt yoktur. Yalnızca klasik imzalanmış bir işlem canlı ağlar
 tarafından reddedilir; bu nedenle işlem istemcisine hesabın ML-DSA-87 anahtar
 çiftini verin, o da her işlemi hibrit imzalasın. Aşağıdaki iki adım **SDK 0.9.0
-veya üstünü** (güncel sürüm 0.10.0) ve bakiyesi olan bir hesabı gerektirir:
+veya üstünü** (güncel sürüm 0.12.0) ve bakiyesi olan bir hesabı gerektirir:
 
 ```bash
 npm i @qorechain/sdk
@@ -160,8 +164,11 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 ### 4b. Hibrit imzayla gönderin
 
 `tx.bankSend` artık hibrit imzalar. Ücret varsayılan olarak `"auto"`'dur: istemci
-hibrit işlemin kendisini simüle eder ve simülasyonun ücretlendirmediği kuantum
-sonrası doğrulamanın gas'ini ekler. Ağın asgari gas fiyatı gas birimi başına 0,1
+hibrit işlemin kendisini simüle eder. v3.2.5'i uygulamış bir ağda (ikisi de uyguladı), SDK
+0.12.0 gas limitini `ceil(simulated x 1.02) + 2000` olarak belirler, çünkü simülasyon
+zaten post-kuantum doğrulamasını ücretlendirir: bir hibrit bank gönderimi yaklaşık
+171.600 gas ister. Daha eski ağlarda ve SDK 0.10.0 veya öncesinde istemci,
+post-kuantum doğrulamasının gas'ini kendisi ekler (aynı gönderim için yaklaşık 289.000). Ağın asgari gas fiyatı gas birimi başına 0,1
 uqor'dur (istemci 0,15 üzerinden fiyatlar). QOR'u taban `uqor` birimine çevirmek
 için `toBase("1.5")` kullanın.
 

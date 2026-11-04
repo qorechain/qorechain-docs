@@ -129,11 +129,11 @@ await hybrid.signAndBroadcastHybrid({
 ```
 
 ```tsx
-import { QuantumSafeBadge } from "@qorechain/react";
+import { PqcStatusBadge } from "@qorechain/react";
 
 // Shows a status badge when the address has a registered PQC key
 // (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0 and later).
-<QuantumSafeBadge address={account.address} />
+<PqcStatusBadge address={account.address} />
 ```
 
 **لماذا هذا مهم:** تشفير ما بعد الكم أصلي وإلزامي على المسار الأصلي (Native) في

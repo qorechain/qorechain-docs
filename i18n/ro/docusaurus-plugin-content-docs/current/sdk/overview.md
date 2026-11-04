@@ -44,16 +44,17 @@ autentificator / cont abstract pe mainnet (modul oprit acolo, activat pe testnet
 și abstractizarea gazului. Fiecare ghid repetă avertismentul acolo unde se aplică.
 Verificat față de endpoint-urile live la 27 octombrie 2026; pe 4 noiembrie 2026 lista precompilărilor active a mainnet-ului era în continuare goală, în timp ce lista testnet-ului conținea și puntea cross-VM `0x…0901` (neretestată).
 
-SDK-ul publicat (0.10.0, 26 octombrie 2026) semnează în forma pe care o verifică
+SDK-ul publicat (0.12.0, 30 octombrie 2026) semnează în forma pe care o verifică
 ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul
 de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în
 v3.2.3, v3.2.4, v3.2.5 sau v3.2.6 (mainnet-ul rulează v3.2.6 din 4 noiembrie 2026,
 înălțimea 4.020.000, propunerea de guvernanță 15; testnet-ul din 27 octombrie). Poartă partea de client a regulilor post-cuantice ulterioare
 (dovada de posesie la înregistrarea cheii, ferestre EVM cu domeniu restrâns,
 mesaje de consimțământ EIP-7702) și a lui v3.2.4 (niveluri de staking, nonce-ul
-autentificatorului, comutatoarele de funcționalități de protocol); versiunile anterioare lui 0.9.0
+autentificatorului, comutatoarele de funcționalități de protocol) și a lui v3.2.5 (gaz exact pentru
+tranzacțiile hibride, registrul de chei ML-KEM); versiunile anterioare lui 0.9.0
 nu o au pe prima, vezi [Versiuni anterioare lui 0.9.0](/sdk/install#before-090)
-și [Ce adaugă 0.10.0](/sdk/install#whats-new-0100).
+și [Ce adaugă 0.12.0](/sdk/install#whats-new-0120).
 
 Semnare pentru portofele și backend-uri: vezi [QoreSign](/qoresign/overview).
 :::
@@ -110,7 +111,7 @@ poate fi folosită încă pe rețelele live, vezi mai jos):
   [Autentificatori și cheltuire delegată](/sdk/guides/authenticators).
 
 Un nou kit **`@qorechain/react`** (provider, hooks, `ConnectButton`,
-`QuantumSafeBadge`) face din construirea unui dApp cu semnare hibridă ML-DSA-87
+`PqcStatusBadge`) face din construirea unui dApp cu semnare hibridă ML-DSA-87
 calea implicită — vezi [ghidul kitului React](/sdk/guides/react). Pentru
 argumentația completă, citește [De ce QoreChain SDK](/sdk/why).
 
@@ -122,15 +123,15 @@ derivare, aritmetică a denominărilor și suprafețe de citire.
 
 | Pachet | Limbaj | Instalare | Stare |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Publicat (npm, v0.10.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Publicat (PyPI, v0.10.0) |
-| `qorechain-sdk` (modul Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicat (Go proxy, tag `packages/go/v0.10.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Publicat (crates.io, v0.10.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.10.0` | Publicat (Maven Central, v0.10.0) |
-| `@qorechain/evm` | TypeScript (adaptor EVM) | `npm i @qorechain/evm viem` | Publicat (npm, v0.8.0) |
-| `@qorechain/svm` | TypeScript (adaptor SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicat (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.10.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicat (npm, v0.10.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Publicat (npm, v0.12.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Publicat (PyPI, v0.12.0) |
+| `qorechain-sdk` (modul Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicat (Go proxy, tag `packages/go/v0.12.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Publicat (crates.io, v0.12.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.12.0` | Publicat (Maven Central, v0.12.0; JDK 17+) |
+| `@qorechain/evm` | TypeScript (adaptor EVM) | `npm i @qorechain/evm viem` | Publicat (npm, v0.12.0) |
+| `@qorechain/svm` | TypeScript (adaptor SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicat (npm, v0.12.0) |
+| `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.12.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicat (npm, v0.12.0) |
 
 > Distribuția Python se instalează ca `qorechain-sdk`, dar **se importă ca
 > `qorsdk`**. Toți clienții sunt publicați în registrele lor — vezi
@@ -145,16 +146,16 @@ plus modulele Cosmos standard, clienți de interogare tipizați, ciclul de viaț
 complet al tranzacției (auto-gas, decodarea erorilor, urmărirea tranzacțiilor,
 căutare de blocuri/tranzacții), tranzacții post-cuantice hibride și abonamente
 WebSocket. Toți acești clienți sunt **publicați**: TypeScript pe npm
-(`@qorechain/sdk` 0.10.0), Python pe PyPI (`qorechain-sdk` 0.10.0, import
-`qorsdk`), Go pe module proxy (tag `packages/go/v0.10.0`), Rust pe crates.io
-(`qorechain-sdk` 0.10.0) și Java pe Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.10.0). Adaptoarele de
-execuție EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambele 0.8.0), kitul
-`@qorechain/react` (0.10.0) și CLI-ul de schelet `create-qorechain-dapp`
-(0.10.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi
+(`@qorechain/sdk` 0.12.0), Python pe PyPI (`qorechain-sdk` 0.12.0, import
+`qorsdk`), Go pe module proxy (tag `packages/go/v0.12.0`), Rust pe crates.io
+(`qorechain-sdk` 0.12.0) și Java pe Maven Central
+(`io.github.qorechain:qorechain-sdk` 0.12.0). Adaptoarele de
+execuție EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambele 0.12.0), kitul
+`@qorechain/react` (0.12.0) și CLI-ul de schelet `create-qorechain-dapp`
+(0.12.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi
 [Instalare](/sdk/install#related-packages) pentru pachetele însoțitoare.
 
-## Noutăți în 0.6, 0.7, 0.8, 0.9 și 0.10
+## Noutăți de la 0.6 la 0.12 {#whats-new-in-06-07-08-09-and-010}
 
 **0.6.0 — conturi eth-native unificate (lanț v3.1.83).** O singură cheie
 `eth_secp256k1` este o singură identitate de 20 de octeți redată ca toate cele
@@ -232,7 +233,20 @@ pentru regulile de consens pe care o rețea le aplică după nume, `possessionPr
 în starea PQC și `ibcTimeoutTimestamp`. `ensurePqcRegistered` compară acum cheia
 înregistrată în loc să se bazeze pe o stare fără ea, iar o refuzare din partea
 lanțului care sosește ca text în timpul simulării taxei este numită în fiecare limbaj.
-Vezi [Ce adaugă 0.10.0](/sdk/install#whats-new-0100).
+Vezi [Ce a adăugat 0.10.0](/sdk/install#whats-new-0100).
+
+**0.12.0 — suport de client pentru chain v3.2.5.** Presetările `mainnet` și `testnet`
+folosesc acum implicit endpoint-urile publice (o presetare `localnet`, chain id
+`qorechain-devnet`, păstrează vechile porturi localhost). Comisionul `"auto"` al unei
+tranzacții hibride folosește regula exactă de gaz pe rețelele care au aplicat v3.2.5
+(`ceil(simulated x 1.02) + 2000`, aproximativ 171.600 de gaz pentru un transfer bancar hibrid în loc de
+aproximativ 289.000). Registrul de chei ML-KEM-1024 are compozitori (`msg.pqc.registerKemKey`,
+`msg.pqc.removeKemKey`) și o citire (`fetchKemKey`), care răspunde pe mainnet. Există
+citiri pentru regulile de cheltuire ale abstract account și pentru cheile conectate, precum și constructori verificați
+pentru propunerile de parametri cross-VM și de rollup. Kitul pentru dezvoltatori de lanț
+(șabloane EVM și QoreChain Native, lanțuri viem pentru ambele rețele) face parte din ea.
+Nu a existat 0.11.0 în afara npm; celelalte limbaje au trecut de la 0.10.0 la 0.12.0. Vezi
+[Ce adaugă 0.12.0](/sdk/install#whats-new-0120).
 
 ## Unde să mergi mai departe
 

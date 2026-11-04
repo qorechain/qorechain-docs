@@ -324,7 +324,7 @@ Dalla v3.2.2, una delega EIP-7702 del tuo account (una transazione di tipo 4) ha
 | code 27 | La finestra è scaduta o esaurita (il messaggio indica quale limite), oppure la transazione è fuori dall'ambito della finestra |
 | code 28 | Limiti della finestra non validi all'apertura, oppure nessuna chiave registrata in quel momento |
 
-Con l'SDK TypeScript (0.8.2 e successivi): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` e `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). L'SDK 0.9.0 aggiunge le opzioni di ambito (`nativeOnly`, `allowedTargets`) a `openEvmWindowMsg` e i builder del consenso EIP-7702 (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); le release precedenti alla 0.9.0 costruiscono solo la finestra senza ambito, quindi usa `qorechaind` per il resto (vedi la [guida EVM dell'SDK](/sdk/guides/evm#evm-window-scope)).
+Con l'SDK TypeScript (0.8.2 e successivi): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` e `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). L'SDK 0.9.0 e successivi (la 0.12.0 è la release attuale) aggiungono le opzioni di ambito (`nativeOnly`, `allowedTargets`) a `openEvmWindowMsg` e i builder del consenso EIP-7702 (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); le release precedenti alla 0.9.0 costruiscono solo la finestra senza ambito, quindi usa `qorechaind` per il resto (vedi la [guida EVM dell'SDK](/sdk/guides/evm#evm-window-scope)).
 
 ---
 

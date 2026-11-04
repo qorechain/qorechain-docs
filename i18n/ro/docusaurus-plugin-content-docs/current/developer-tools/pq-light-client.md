@@ -196,7 +196,7 @@ Codurile de eroare, comune celor trei limbaje, și ce ar trebui să facă un rel
 
 ## Unde este publicat {#where-published}
 
-Verificat pe 27 octombrie 2026 în fiecare registru.
+Verificat în fiecare registru pe 4 noiembrie 2026 (neschimbat din 27 octombrie).
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|

@@ -113,7 +113,16 @@ Gli export deliberati e supportati di `@qorechain/sdk`:
   `fetchStakingTierPool`); `fetchAuthNonce`; `fetchProtocolFeatures` /
   `isProtocolFeatureEnabled`; `possessionProven` sullo stato PQC;
   `ibcTimeoutTimestamp`; `CHAIN_UPGRADE_V3_2_4`. Vedi
-  [Novità della 0.10.0](/sdk/install#whats-new-0100).
+  [Cosa ha aggiunto la 0.10.0](/sdk/install#whats-new-0100).
+- **Chain v3.2.5 (0.12.0):** il registro delle chiavi ML-KEM-1024 (`msg.pqc.registerKemKey` /
+  `removeKemKey`, `validateKemPublicKey`, `fetchKemKey`, `parseKemKey`,
+  `KEM_ALGORITHM_ML_KEM_1024`, `ML_KEM_1024_PUBLIC_KEY_SIZE`); gas esatto per le transazioni
+  ibride (`exactHybridGas`, `EXACT_GAS_MULTIPLIER`, `EXACT_GAS_HEADROOM`,
+  `TxClient.estimateGasDetails`); letture degli account astratti (`fetchSpendingRules`,
+  `fetchAuthenticators`) e `msg.abstractaccount.updateConfig`; builder verificati dei
+  parametri di governance (`validateCrossVmUpdateParams`, `validateRdkUpdateParams`);
+  `CHAIN_UPGRADE_V3_2_5`; il preset `localnet`. Vedi
+  [Cosa aggiunge la 0.12.0](/sdk/install#whats-new-0120).
 - **Derivazione PQC canonica (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; il messaggio di registrazione PQC è
   `buildRegisterPqcKeyMsg` (usato da `ensurePqcRegistered`). `derivePqcLegacy` è
@@ -142,10 +151,10 @@ program-id.
 
 | Linguaggio | Documentazione generata | Installazione |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring sull'API pubblica | `pip install qorechain-sdk` alla `0.10.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (tag `packages/go/v0.10.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.10.0; import `qorechain`) |
-| Java | Javadoc su Maven Central | `io.github.qorechain:qorechain-sdk:0.10.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring sull'API pubblica | `pip install qorechain-sdk` alla `0.12.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.12.0` (tag `packages/go/v0.12.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.12.0; import `qorechain`) |
+| Java | Javadoc su Maven Central | `io.github.qorechain:qorechain-sdk:0.12.0` |
 
 Ogni pacchetto rispecchia la stessa superficie (preset di rete, utility per
 denom/indirizzi, derivazione HD — inclusi gli account unificati eth-native —

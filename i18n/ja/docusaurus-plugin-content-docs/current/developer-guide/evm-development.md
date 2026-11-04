@@ -324,7 +324,7 @@ EVMトランザクションは**従来のECDSA（secp256k1）**で署名され�
 | code 27 | ウィンドウが期限切れまたは使い切り（メッセージにどの上限かが示されます）、またはトランザクションがウィンドウのスコープ外 |
 | code 28 | ウィンドウを開く際の上限値が無効、またはその時点で登録済みの鍵がない |
 
-TypeScript SDK（0.8.2以降）では、`openEvmWindowMsg`、`closeEvmWindowMsg`、`fetchEvmWindow({ rest, address })`、`classifyEvmWindowRejection(err)`（`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`）が利用できます。SDK 0.9.0 では、`openEvmWindowMsg` にスコープオプション（`nativeOnly`、`allowedTargets`）が加わり、EIP-7702の同意ビルダー（`authorizeEvmDelegationMsg`、`clearEvmDelegationMsg`、`fetchEvmDelegationConsent`）が追加されます。0.9.0より前のリリースはスコープなしのウィンドウしか構築できないため、それ以外には `qorechaind` を使用してください（[SDK EVMガイド](/sdk/guides/evm#evm-window-scope)を参照）。
+TypeScript SDK（0.8.2以降）では、`openEvmWindowMsg`、`closeEvmWindowMsg`、`fetchEvmWindow({ rest, address })`、`classifyEvmWindowRejection(err)`（`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`）が利用できます。SDK 0.9.0 以降（現在のリリースは 0.12.0）では、`openEvmWindowMsg` にスコープオプション（`nativeOnly`、`allowedTargets`）が加わり、EIP-7702の同意ビルダー（`authorizeEvmDelegationMsg`、`clearEvmDelegationMsg`、`fetchEvmDelegationConsent`）が追加されます。0.9.0より前のリリースはスコープなしのウィンドウしか構築できないため、それ以外には `qorechaind` を使用してください（[SDK EVMガイド](/sdk/guides/evm#evm-window-scope)を参照）。
 
 ---
 

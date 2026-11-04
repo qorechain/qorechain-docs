@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Veröffentlicht auf npm als `create-qorechain-dapp` (`0.10.0`). Die erzeugten
-> `package.json`-Dateien hängen von `@qorechain/sdk` `^0.10.0` ab (die EVM-Vorlage von
-> `@qorechain/evm` `^0.8.0`). Version 0.8.0 des Scaffolders schrieb `^0.3.0`-Bereiche,
+> Veröffentlicht auf npm als `create-qorechain-dapp` (`0.12.0`). Die erzeugten
+> `package.json`-Dateien hängen von `@qorechain/sdk` `^0.12.0` ab (die EVM-Vorlagen von
+> `@qorechain/evm` `^0.12.0`). Version 0.8.0 des Scaffolders schrieb `^0.3.0`-Bereiche,
 > die npm zu einem 0.3-Release auflöst, das für die Live-Netzwerke nicht signieren kann; wenn Sie
 > mit 0.8.0 ein Gerüst erstellt haben, führen Sie `npm i @qorechain/sdk@latest` aus.
 
@@ -32,8 +32,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | Ein Solidity-`Counter`-Contract + ein viem-Deploy-/Interaktions-Skript (`@qorechain/evm`). |
 | `fullstack-web` | Eine Vite + React + TypeScript-dApp, die Guthaben und Tokenomics liest (`@qorechain/sdk`). |
 | `rollup-app` | Eine Rollup- + Sidechain-/Paychain-App mit dem `RollupClient` und dem Multilayer-Helfer (`@qorechain/sdk`). |
+| `foundry` | Ein Foundry-Projekt für die EVM Engine von QoreChain. `pnpm window` registriert den ML-DSA-87-Schlüssel des Kontos und öffnet vor einem Deploy das [EVM-Autorisierungsfenster](/sdk/guides/evm#evm-window) (hinzugefügt im nur auf npm veröffentlichten 0.11.0). |
+| `hardhat` | Dasselbe für Hardhat 3, mit `pnpm window status`, `register` und `open`. |
+| `viem-wagmi` | Eine Web-dApp auf viem und wagmi mit den Chains `qorechain` und `qorechainTestnet` aus `@qorechain/evm`. |
+| `cosmwasm` | Ein Contract-Projekt für QoreChain Native (Wasm). Auf den Live-Netzwerken ist der Code-Upload nur über Governance möglich; siehe den [QoreChain-Native-Leitfaden](/sdk/guides/cosmwasm). |
 
-Die Vorlage `rollup-app` (Scaffolder 0.10.0) führt standardmäßig einen Probelauf aus. Mit `QORE_BROADCAST=1`
+Die Vorlage `rollup-app` (seit Scaffolder 0.10.0) führt standardmäßig einen Probelauf aus. Mit `QORE_BROADCAST=1`
 leitet sie den ML-DSA-87-Schlüssel des Kontos aus der Mnemonic ab, registriert ihn einmalig und signiert
 hybrid, was die frühere Vorlage nicht konnte. Ihre Beispielwerte für den Rollup
 (`profile: "default"`, der Stake) sind illustrativ: Entnehmen Sie die echten Profilnamen und den
@@ -48,7 +52,7 @@ wie `client.rest.getBurnStats()` um.
 
 | Flag | Beschreibung |
 | --- | --- |
-| `-t, --template <name>` | Zu verwendende Vorlage (`evm-solidity` \| `fullstack-web` \| `rollup-app`). |
+| `-t, --template <name>` | Zu verwendende Vorlage (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
 | `--network <name>` | Netzwerk-Voreinstellung (`testnet` \| `mainnet`). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Abfragen überspringen und Standardwerte verwenden. |

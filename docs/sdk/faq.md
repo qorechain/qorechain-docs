@@ -11,15 +11,17 @@ sidebar_position: 8
 
 Yes. Mainnet is **live** (chain id `qorechain-vladi`, live since 7 June 2026) and
 runs chain version v3.2.6 (applied at height 4,020,000 on 4 November 2026, governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026 and v3.2.4 at height 3,742,566 on 23 October 2026); the testnet has run v3.2.6 since 27 October 2026. The testnet preset
-(`qorechain-diana`) also remains available. Both presets ship localhost endpoint
-defaults; select the network with `createClient({ network: "mainnet" })` and
-override `endpoints` with your node URLs. See
+(`qorechain-diana`) also remains available. From SDK 0.12.0 both presets default to
+the public endpoints; select the network with `createClient({ network: "mainnet" })`
+and override `endpoints` only for your own node. See
 [Network & endpoints](/sdk/reference/network).
 
 ## Why do my calls hit localhost?
 
-`createClient()` defaults to **localhost** endpoints. To talk to a real node,
-pass an `endpoints` object:
+You are on an SDK **before 0.12.0**, whose presets default to **localhost** endpoints:
+upgrade, or pass an `endpoints` object. From 0.12.0 `createClient()` and
+`createClient({ network: "mainnet" })` use the public endpoints, and the `localnet`
+preset is the one that uses localhost.
 
 ```ts
 const client = createClient({
@@ -30,6 +32,10 @@ const client = createClient({
   },
 });
 ```
+
+If instead you get "endpoint ... is not configured for the mainnet preset", the call
+needs an endpoint the public presets do not set (gRPC, an SVM RPC, the mainnet EVM
+WebSocket); pass it in `endpoints`.
 
 The signing path (`connectTx`) needs the consensus **`rpc`** endpoint; QoreChain Native
 reads also use it. REST reads use `rest`; EVM calls use `evmRpc` (and `qor_` calls
@@ -85,14 +91,14 @@ is distinct from the Native `uqor` base of 10^6.
 
 ## Which packages are published, and where?
 
-All of them (checked 27 October 2026). The TypeScript core (`@qorechain/sdk`, 0.10.0),
-the React kit (`@qorechain/react`, 0.10.0), the `create-qorechain-dapp` scaffolder
-(0.10.0) and the EVM/SVM adapters (`@qorechain/evm`, `@qorechain/svm`, 0.8.0) are on
-npm; the Python client is on PyPI (`pip install qorechain-sdk` at 0.10.0, import
+All of them (checked 4 November 2026). The TypeScript core (`@qorechain/sdk`, 0.12.0),
+the React kit (`@qorechain/react`, 0.12.0), the `create-qorechain-dapp` scaffolder
+(0.12.0) and the EVM/SVM adapters (`@qorechain/evm`, `@qorechain/svm`, 0.12.0) are on
+npm; the Python client is on PyPI (`pip install qorechain-sdk` at 0.12.0, import
 `qorsdk`); the Go client is on the module proxy
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.10.0`); the Rust client is
-on crates.io (`cargo add qorechain-sdk`, 0.10.0); and the Java client is on Maven
-Central (`io.github.qorechain:qorechain-sdk:0.10.0`). See [Install](/sdk/install) for the full
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`); the Rust client is
+on crates.io (`cargo add qorechain-sdk`, 0.12.0); and the Java client is on Maven
+Central (`io.github.qorechain:qorechain-sdk:0.12.0`, JDK 17 or later). See [Install](/sdk/install) for the full
 per-language commands.
 
 ## My mnemonic is rejected
@@ -118,7 +124,7 @@ transaction always has the same signature and tx hash. If a hybrid tx fails with
 `pqc` code 21 (`hybrid_verify_failed`), the cause is the sign-bytes version,
 the chain-id, a stale PQC library or an unregistered or different key, never hedged
 signing.
-Both networks verify the v2 sign-bytes form, so use SDK **0.8.1 or later** (0.10.0
+Both networks verify the v2 sign-bytes form, so use SDK **0.8.1 or later** (0.12.0
 is current) and pass `rest` (or `signBytesVersion`): the builders throw on
 `qorechain-vladi` / `qorechain-diana` without one of them. See
 [Troubleshooting code 21](/developer-guide/post-quantum-signing#code-21) and
@@ -143,11 +149,15 @@ eth-native).
 
 ## Which chain versions does the SDK work with?
 
-SDK **0.10.0** is the client release for chain **v3.2.4** (mainnet since 23 October
-2026 at height 3,742,566, governance proposal 13; the testnet since 19 October). Mainnet has run v3.2.6 since 4 November 2026 (v3.2.5 from 29 October); the signing format did not change, so 0.10.0 keeps working there. It
-adds the staking-tier builders and reads, `fetchAuthNonce` and the protocol-feature
-reads (see [What 0.10.0 adds](/sdk/install#whats-new-0100)), on top of what 0.9.0
-added for v3.2.2 and v3.2.3: builders for the optional proof of
+SDK **0.12.0** is the client release for chain **v3.2.5** (mainnet since 29 October
+2026 at height 3,906,833; the testnet since 26 October). Both networks run v3.2.6
+(mainnet since 4 November, the testnet since 27 October); the signing format did not
+change, so 0.12.0 works on both. It adds the exact gas rule for hybrid transactions,
+the ML-KEM key registry builders and read, the abstract-account reads and the checked
+governance parameter builders (see [What 0.12.0 adds](/sdk/install#whats-new-0120)),
+on top of what 0.10.0 added for v3.2.4 (the staking-tier builders and reads,
+`fetchAuthNonce` and the protocol-feature reads, see
+[What 0.10.0 added](/sdk/install#whats-new-0100)) and 0.9.0 for v3.2.2 and v3.2.3: builders for the optional proof of
 possession on registration (attached automatically by `ensurePqcRegistered` once the
 network has applied v3.2.3), scoped EVM windows and the EIP-7702 consent messages.
 SDK **0.8.1 or later** also transacts on both networks (the v2 hybrid sign-bytes
@@ -155,8 +165,8 @@ form, registration, hybrid sends and the EVM window work unchanged), but it has 
 of those builders: use the CLI for them (see
 [Versions before 0.9.0](/sdk/install#before-090)). The signing format did not change
 in v3.2.4, v3.2.5 or v3.2.6. Both networks run v3.2.6 (the testnet applied v3.2.5 on 26 October 2026 and
-v3.2.6 on 27 October; mainnet applied v3.2.5 on 29 October and v3.2.6 on 4 November); the SDK has no builder for anything introduced after v3.2.4,
-so the v3.2.5 additions (for example the ML-KEM key registry and the governed cross-VM and contract paths) have no SDK builder yet and are reached with the CLI.
+v3.2.6 on 27 October; mainnet applied v3.2.5 on 29 October and v3.2.6 on 4 November). SDK 0.10.0 and 0.9.0 keep working on them but have no builders for the
+v3.2.5 additions (the ML-KEM key registry, the exact gas rule); with those releases use the CLI, or upgrade to 0.12.0. 0.12.0 was built and checked against v3.2.5.
 
 ## My PQC key registration was refused but the fee was taken
 
@@ -193,7 +203,7 @@ guidance below applies wherever the module is enabled.)
 The nonce is wrong. Both `MsgExecuteEVM.nonce` and `MsgExecuteCosmos.nonce` are the
 linked key's **authenticator sequence** for `(account, pubkey)`: a counter the chain
 keeps per linked key, starting at 0 and incremented by each successful execution. It
-is **not** the account's EVM nonce. Read it with `fetchAuthNonce` (SDK 0.10.0, chain
+is **not** the account's EVM nonce. Read it with `fetchAuthNonce` (SDK 0.10.0 or later, chain
 v3.2.4 or later), or track it per linked key on older versions. Since v3.2.3 the EVM lane also signs `evmAuthSignBytesV2`, which binds the
 call's gas limit (`resolveEvmAuthDigestVersion` picks the form). Use the counter
 you read (or track) for that key and re-sign.

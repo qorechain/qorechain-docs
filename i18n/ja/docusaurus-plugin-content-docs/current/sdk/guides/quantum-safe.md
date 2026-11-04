@@ -184,7 +184,7 @@ TypeScript の `TxClient` だけです。
 
 クライアントに `pqcKeypair` を持たせると、`tx.bankSend(...)` と
 `tx.signAndBroadcast([messages], "auto")` はハイブリッドで署名します（`fee: "auto"` の経路は
-ハイブリッドトランザクションをシミュレートし、ポスト量子検証のガスを加算します）。
+ハイブリッドトランザクションをシミュレートします。SDK 0.12.0 以降、v3.2.5 のネットワークでは上限は厳密なルール `ceil(simulated x 1.02) + 2000` になり、それより前はクライアントがポスト量子検証のガスを自分で加算します）。
 ハイブリッド署名は、ネットワークが検証する sign-bytes 形式に対して計算されます（
 [どの sign-bytes 形式か?](/sdk/concepts/accounts-pqc#sign-bytes-versions)を参照）。クライアントは
 REST エンドポイントを通じてネットワークに問い合わせます。
@@ -267,10 +267,44 @@ await migratePqcKeyHybrid({
 });
 ```
 
+## ML-KEM-1024 鍵の公開 {#kem-key}
+
+署名はトランザクションの送信者を証明しますが、暗号化には別の鍵が必要です。チェーン v3.2.5 以降、
+アカウントは **ML-KEM-1024** カプセル化鍵（アルゴリズム ID 2、1,568 バイト）を 1 つ、オンチェーンの
+KEM レジストリに公開でき、誰でもそれに宛ててペイロードを暗号化できます。
+SDK 0.12.0 は 2 つのメッセージを組み立て、レジストリを読み戻します。暗号化や復号は**行いません**
+（封印されたペイロードについては [QoreSeal](/developer-tools/qoreseal) を参照）。
+このルートとメッセージは、メインネットとテストネットで提供されています。
+
+* `msg.pqc.registerKemKey({ sender, publicKey })` は鍵を公開します（2 回目の呼び出しは置き換えます）。
+  コンポーザーは、チェーンと同じ方法で最初に鍵を検証します。サイズが正確であること、
+  すべての係数が 3329 未満であること、すべてゼロではないこと（`validateKemPublicKey` は同じ検証を単独で実行します）。
+* `msg.pqc.removeKemKey({ sender })` は鍵を取り下げます。
+* `fetchKemKey({ rest, address })` は `/qorechain/pqc/v1/kem/{address}`（bech32 または `0x` アドレス）を読み取り、
+  アルゴリズム、鍵のバイト列、登録時の高さを含む `{ found, key? }` を返します。
+
+どちらのメッセージもアカウントの**ハイブリッド**署名が必要なので、他のネイティブトランザクションと同様に
+ハイブリッドの `TxClient`（`client.connectTx(signer, { pqcKeypair })`）で送信し、
+先にアカウントの ML-DSA-87 鍵を登録してください。チェーンの拒否 `pqc` 250
+から 254 は `decodeTxError` で名前が付けられます。他の 4 言語も同じメッセージと読み取りを備えています。
+
+```ts
+import { msg, fetchKemKey } from "@qorechain/sdk";
+
+// `kemPublicKey` is a 1,568-byte ML-KEM-1024 public key you generated (for example with
+// `@qorechain/pqc`); `tx` is a hybrid TxClient.
+await tx.signAndBroadcast(
+  [msg.pqc.registerKemKey({ sender: account.address, publicKey: kemPublicKey })],
+  "auto",
+);
+
+const { found, key } = await fetchKemKey({ rest: "https://api.qore.host", address: account.address });
+```
+
 ## UI 内で
 
 [`@qorechain/react`](/sdk/guides/react) キットはこれらすべてを React で公開しています。
-`usePqcStatus` フックと `<QuantumSafeBadge/>` コンポーネントは、接続中のアカウントに
+`usePqcStatus` フックと `<PqcStatusBadge/>` コンポーネント（`<QuantumSafeBadge/>` は非推奨のエイリアス）は、接続中のアカウントに
 登録済みの PQC 鍵がある場合にステータスインジケーターを表示します。どちらも
 合成したクライアントとともに `getPqcStatus` を通じてステータスを読み取るため、`@qorechain/react`
 0.9.0 以降は REST 経由で読み取り、公開エンドポイントに対して動作します。0.8.x では、そこで

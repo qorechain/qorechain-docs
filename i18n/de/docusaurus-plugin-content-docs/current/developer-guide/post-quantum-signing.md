@@ -186,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-Die Rotations-Helfer von SDK 0.9.0 und `@qorechain/wallet-adapter` 0.4.0 lehnen die Legacy-Ableitung als **neuen** Schlüssel ab (sie ist nicht an das Konto gebunden); ein Legacy-Schlüssel kann weiterhin der alte Schlüssel sein. Nach einer erfolgreichen Rotation signiert der neue Schlüssel (Code 0) und der alte Schlüssel wird abgelehnt (`pqc`-Code 21). Seit v3.2.3 lehnt eine Rotation (wie eine Migration) einen neuen Schlüssel ab, der keinen Post-Quanten-Schutz bietet (Code 230), sowie einen Schlüssel, den das Konto zuvor schon verwendet hat (Code 232), und sie kann nicht über `authz` gesendet werden.
+Die Rotations-Helfer von SDK 0.9.0 und später sowie von `@qorechain/wallet-adapter` 0.4.0 lehnen die Legacy-Ableitung als **neuen** Schlüssel ab (sie ist nicht an das Konto gebunden); ein Legacy-Schlüssel kann weiterhin der alte Schlüssel sein. Nach einer erfolgreichen Rotation signiert der neue Schlüssel (Code 0) und der alte Schlüssel wird abgelehnt (`pqc`-Code 21). Seit v3.2.3 lehnt eine Rotation (wie eine Migration) einen neuen Schlüssel ab, der keinen Post-Quanten-Schutz bietet (Code 230), sowie einen Schlüssel, den das Konto zuvor schon verwendet hat (Code 232), und sie kann nicht über `authz` gesendet werden.
 
 ## Konsistente API
 
@@ -262,7 +262,7 @@ Die klassische secp256k1-Signatur wird über die standardmäßigen Sign-Bytes be
 Es gibt drei Wege, diese hybride Signatur zu erzeugen:
 
 * **Die CLI** — `qorechaind tx pqc cosign` hängt die Dilithium-5-Kosignatur an eine Transaktion an und sendet sie (nach `qorechaind tx pqc gen-key` und der Registrierung des Schlüssels). Sie ist nur Teil des Release-Binaries. Siehe [Transaktionsbefehle](/cli-reference/transaction-commands).
-* **Das QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid` (übergeben Sie `rest`, damit die Form der Sign-Bytes aufgelöst wird) erledigen das Äquivalent in TypeScript, Python, Go, Rust und Java; in TypeScript signiert `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0) jede Transaktion hybrid. Registrieren Sie zuerst Ihren Schlüssel (siehe oben). Siehe [SDK-Konten & PQC-Signierung](/sdk/concepts/accounts-pqc).
+* **Das QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid` (übergeben Sie `rest`, damit die Form der Sign-Bytes aufgelöst wird) erledigen das Äquivalent in TypeScript, Python, Go, Rust und Java; in TypeScript signiert `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 und später; 0.12.0 ist das aktuelle Release) jede Transaktion hybrid. Registrieren Sie zuerst Ihren Schlüssel (siehe oben). Siehe [SDK-Konten & PQC-Signierung](/sdk/concepts/accounts-pqc).
 * **`qorechain-pqc` direkt** — verwenden Sie `hybridSignBytes`, um die Sign-Bytes zu rahmen, und `mldsa.sign`, um die Dilithium-5-Signatur zu erzeugen, wenn Sie Tooling außerhalb des SDK in einer der sechs unterstützten Sprachen bauen.
 
 ## Optimierung des On-Chain-Fußabdrucks

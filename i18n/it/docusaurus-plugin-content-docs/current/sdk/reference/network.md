@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Preset di rete | `mainnet` |
 | Chain id | `qorechain-vladi` (attiva dal 7 giugno 2026) |
-| Versione della chain (4 novembre 2026) | v3.2.6 (dall'altezza 4.020.000, 4 novembre 2026, proposta di governance 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre e la v3.2.4 all'altezza 3.742.566 il 23 ottobre). L'SDK 0.10.0 è il client per la v3.2.4 e continua a funzionare; non ha builder per le novità della v3.2.5 o della v3.2.6 |
+| Versione della chain (4 novembre 2026) | v3.2.6 (dall'altezza 4.020.000, 4 novembre 2026, proposta di governance 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre e la v3.2.4 all'altezza 3.742.566 il 23 ottobre). L'SDK 0.12.0 è il client per la v3.2.5 e funziona sulla v3.2.6 (il formato di firma non è cambiato); la 0.10.0 era il client per la v3.2.4 |
 | EVM chain ID | `9801` |
 | Token visualizzato | `QOR` |
 | Denominazione base | `uqor` |
@@ -48,6 +48,14 @@ sidebar_position: 1
 Gli endpoint EVM servono `eth_`, `net_`, `web3_` e `txpool_`; il namespace
 `qor_` non è abilitato. Vedi anche [Reti](/appendix/networks#public-endpoints).
 
+Dall'SDK 0.12.0 i preset `mainnet` e `testnet` usano per default questi URL REST, RPC di consenso e
+JSON-RPC EVM (e il WebSocket EVM della testnet). I preset **non** impostano alcun
+endpoint gRPC e **nessun** endpoint SVM, anche se gli URL SVM di sola lettura qui sopra esistono
+(le transazioni SVM non sono aperte): il codice che ne ha bisogno fallisce con un errore che
+nomina l'endpoint da passare. Gli endpoint della testnet hanno un limite di richieste per IP; esegui o
+usa un tuo nodo per il traffico di produzione. Prima della 0.12.0 ogni preset usava per default
+localhost.
+
 ### Differenze solo testnet che contano per un client {#testnet-only}
 
 La testnet è una rete di staging e gira in anticipo rispetto alla mainnet, quindi alcune
@@ -58,10 +66,12 @@ cose che si possono leggere lì non sono sulla mainnet (verificato il 27 ottobre
 * **Token di test.** Tre token senza valore esistono solo sulla testnet, come denominazioni bank chiamate `erc20:<EIP-55 contract address>` (sensibili alle maiuscole): fUSD (6 decimali), fETH (18) e fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` li elenca. L'unica denominazione bank della mainnet è `uqor`. Vedi [Token di test della testnet (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
 * **Moduli attivati.** Il modulo `abstractaccount` è abilitato sulla testnet e disattivato sulla mainnet, i precompilati EVM sono attivi sulla testnet (tre il 27 ottobre, quattro il 4 novembre) e nessuno sulla mainnet, e l'istanziazione di QoreChain Native è aperta sulla testnet.
 
-## Porte predefinite
+## Porte predefinite (il preset `localnet`) {#default-ports}
 
-`createClient()` usa per impostazione predefinita queste porte localhost. Sovrascrivi
-`endpoints` per puntare a un nodo reale.
+Il preset `localnet` (chain id `qorechain-devnet`, nessun EVM chain id impostato) usa queste
+porte localhost, per un nodo sulla tua macchina. Prima dell'SDK 0.12.0 ogni preset le usava
+per default; dalla 0.12.0 lo fa solo `localnet`. Sovrascrivi `endpoints` per puntare a
+un altro nodo.
 
 | Endpoint | Porta | Scopo |
 | --- | --- | --- |
@@ -71,6 +81,10 @@ cose che si possono leggere lì non sono sulla mainnet (verificato il 27 ottobre
 | EVM JSON-RPC | `8545` | `eth_*` (e `qor_*` / precompile sui nodi che li abilitano) |
 | EVM JSON-RPC (WS) | `8546` | sottoscrizioni WebSocket EVM |
 | SVM JSON-RPC | `8899` | RPC compatibile con Solana |
+
+```ts
+const local = createClient({ network: "localnet" }); // a node on this machine
+```
 
 Esempio con endpoint espliciti:
 
@@ -94,8 +108,9 @@ equivalenti sono `create_client` / `CreateClient` / `ClientBuilder` più il modu
 
 ## Puntare alla mainnet
 
-Entrambi i preset includono gli stessi valori predefiniti localhost; seleziona `mainnet`
-e sovrascrivi gli endpoint con gli URL pubblici (o con quelli del tuo nodo):
+Seleziona `mainnet` per puntare ad essa. Dall'SDK 0.12.0 il preset porta già gli URL
+pubblici, quindi gli endpoint qui sotto sono i valori predefiniti; passa `endpoints` solo per il tuo nodo
+(un SDK precedente alla 0.12.0 usa per default localhost e ne ha bisogno):
 
 ```ts
 const main = createClient({

@@ -166,7 +166,7 @@ qorechaind query stakingtier locks <holder_address>
 
 両ネットワークは`GET /qorechain/stakingtier/v1/params`に同じ設定で応答します。3 つの期間、10 QOR の最低額(`min_lock_amount` `"10000000"` uqor)、500 ベーシスポイント(5%)の早期解除ペナルティ、そして`enabled: true`です。レスポンスにはベーシスポイント単位のボーナス設定も含まれますが、ボーナスは約束されたリターンではなく、設定はガバナンスによって変更され得るため、このマニュアルでは記載しません。`GET /qorechain/stakingtier/v1/pool`は、ロック報酬を支払うプールを示します。
 
-**クライアント。** コマンドライン(上記)と`@qorechain/sdk` 0.10.0 です。後者には、コンポーザー`lockDelegation`、`unlockEarly`、`claimBonus`と、読み取り`fetchStakingTierParams`、`fetchStakingLocks`、`fetchStakingTierPool`があります([SDK のインストール](/sdk/install)を参照)。現時点で公開されている QoreX やダッシュボードのバージョンにはロック画面がないため、メインネットでのロックは CLI または SDK で行います。
+**クライアント。** コマンドライン(上記)と`@qorechain/sdk`（0.10.0 以降。現行は 0.12.0）です。後者には、コンポーザー`lockDelegation`、`unlockEarly`、`claimBonus`と、読み取り`fetchStakingTierParams`、`fetchStakingLocks`、`fetchStakingTierPool`があります([SDK のインストール](/sdk/install)を参照)。現時点で公開されている QoreX やダッシュボードのバージョンにはロック画面がないため、メインネットでのロックは CLI または SDK で行います。
 
 **混同しないでください。** [xQORE ステーキング](/user-guide/xqore-staking)は設計上のメカニズムであり稼働していません。また、以下の Triple-Pool 分類は、受け取るものを変えません。
 

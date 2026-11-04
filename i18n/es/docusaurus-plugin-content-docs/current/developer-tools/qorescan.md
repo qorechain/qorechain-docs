@@ -231,7 +231,7 @@ Códigos de salida: `0` éxito, `1` un error de escaneo o de E/S, `2` un error d
 
 ## Dónde está publicado {#where-published}
 
-Las versiones se leyeron de cada registro el 27 de octubre de 2026.
+Las versiones se leyeron de cada registro el 4 de noviembre de 2026 (sin cambios desde el 27 de octubre).
 
 | Registro | Paquete | Versión | Enlace |
 |---|---|---|---|

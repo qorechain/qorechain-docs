@@ -63,6 +63,7 @@ Consulte [Tokenomics](/architecture/tokenomics#stranded-and-reserve) para saber 
 * **Las propuestas aceleradas conservan sus votos.** Una propuesta acelerada que no supera su recuento breve y se convierte en propuesta regular conserva los votos ya emitidos.
 * **Reglas de los precompilados de EVM.** Las llamadas a precompilados se acotan mediante la ventana de autorización de EVM, y el circuit breaker se les aplica.
 * **La verificación post-cuántica se cobra una vez por firmante**, y **gas de simulación exacto**: el gas que informa la simulación de una transacción ahora coincide con el que la transacción usa.
+* **Soporte del cliente.** El SDK 0.12.0 (30 de octubre de 2026, los cinco lenguajes) es la versión de cliente para esta versión: gas exacto para las transacciones híbridas, constructores y lectura del registro de claves ML-KEM, lecturas de cuentas abstractas y los endpoints públicos como valores predeterminados de los presets. Consulta [Qué añade la 0.12.0](/sdk/install#whats-new-0120).
 * **Endurecimiento** a partir de dos auditorías de seguridad, que abarcan el carril compatible con Solana (SVM), cross-VM, los rollups y la fijación de comisiones: las comisiones pagadas en otros tokens se valoran a partir del tipo correcto de pool, la quema de una transacción fallida usa la comisión convertida, y los despliegues, la ejecución y el cómputo de SVM están acotados.
 
 ## v3.2.4 — Ventana de registro de nodos ligeros y staking con bloqueo temporal opcional

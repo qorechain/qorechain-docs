@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal, verileri QoreChain hesaplarına ML-KEM-1024 (FIPS 203) ile şifreleyen açık kaynaklı bir kütüphanedir. Bir hesap ML-KEM-1024 genel anahtarını zincirde yayımlar; ardından herkes, o hesabın ve gönderenin eklediği diğer alıcıların okuyabileceği bir yük (payload) şifreleyebilir. Gizli yükler (notlar, faturalar, belgeler, teklifler) gerektiren dApp geliştiricileri, görüntüleme erişimine ihtiyaç duyan denetçiler ve özel grupların ve yan zincirlerin operatörleri için tasarlanmıştır. Standart ilkelleri bir araya getirir ve kendisi hiçbirini uygulamaz. Sürüm **0.1.0**, Apache-2.0, bakımını QoreChain Association yapar.
 
-30 Ekim 2026 itibarıyla durumu (ana ağ 4 Kasım'dan beri v3.2.6 çalıştırıyor ve okuma rotası o gün orada hâlâ yanıt veriyordu): şifrelemenin kendisi ağ ve hesap olmadan, her yerde çevrimdışı çalışır. Zincirden okunan bir adrese şifrelemek için KEM anahtar kayıt defteri gerekir; bu kayıt defteri **test ağında canlıdır** (`qorechain-diana`) ve ana ağ (`qorechain-vladi`) 29 Ekim 2026'da v3.2.5'i uyguladığından beri **okuma rotası ana ağda da yanıt verir** (orada henüz bir anahtar yayımlayan hesap yok; bu sayfa bulamadı). Paket Rust, Go, Python, Swift, Kotlin/JVM ve Android için yayımlanmıştır. TypeScript paketi `@qorechain/qoreseal` **yakında** gelecektir ve henüz npm'de değildir. Yapı, 1.0 öncesinde harici bir incelemeyi bekleyen bir taslaktır.
+4 Kasım 2026 itibarıyla durumu: şifrelemenin kendisi ağ ve hesap olmadan, her yerde çevrimdışı çalışır. Zincirden okunan bir adrese şifrelemek için KEM anahtar kayıt defteri gerekir; bu kayıt defteri **test ağında canlıdır** (`qorechain-diana`) ve **ana ağda canlıdır** (`qorechain-vladi`, 29 Ekim 2026'da v3.2.5'i ve 4 Kasım'da v3.2.6'yı uyguladı): okuma rotası her ikisinde de yanıt verir. Ana ağda henüz bir anahtar yayımlayan hesap yok; bu sayfa bulamadı. Paket TypeScript, Rust, Go, Python, Swift, Kotlin/JVM ve Android için yayımlanmıştır. Yapı, 1.0 öncesinde harici bir incelemeyi bekleyen bir taslaktır.
 
 QoreSeal yalnızca bir yükün içeriğini korur, başka bir şeyi değil. Adresler, işlem zamanlaması, transfer tutarları, zarf (envelope) boyutları ve alıcı sayısı zincirde herkese açık kalır. İşlemleri gizli yapmanın bir yolu değildir.
 
@@ -72,15 +72,35 @@ Spesifikasyon, depodaki `spec/qoreseal-v1.md` dosyasıdır (durum: taslak, incel
 
 | Dil | Kurulum | Asgari platform |
 |---|---|---|
+| TypeScript | `npm install @qorechain/qoreseal` | Node.js 20 veya üstü; ES modülü ve CommonJS; `/network` ve `/testing` alt yolları |
 | Rust | `cargo add qorechain-qoreseal` (kütüphane adı `qoreseal`) | kararlı Rust |
 | Go | `go get github.com/qorechain/qoreseal/go@v0.1.0` | Go 1.25 |
 | Python | `pip install qorechain-qoreseal` (içe aktarma `qoreseal`) | Python 3.9 veya üstü; macOS 11+ (arm64, x86_64) ve Linux manylinux2014 (x86_64, aarch64) için wheel'ler; henüz Windows wheel'i yok |
 | Swift | `.package(url: "https://github.com/qorechain/qoreseal", from: "0.1.0")`, ürün `QoreSeal` | iOS 16, macOS 13 |
 | Kotlin / JVM | `implementation("io.github.qorechain:qoreseal:0.1.0")` | Java 17; Kotlin 2.3 veya üstü derleyici (Kotlin 2.1 ile derleme başarısız olur) |
 | Android | `implementation("io.github.qorechain:qoreseal-android:0.1.0")` | API 24; R8 koruma kuralları dahil; Kotlin 2.3 veya üstü derleyici |
-| TypeScript | **yakında**: `@qorechain/qoreseal` henüz npm'de değil, bu yüzden kurulum komutu yok | |
 
-TypeScript kaynağı, örnekleri ve ağ yardımcıları depodadır ve `pnpm install && pnpm build` sonrasında oradan çalışır. npm paketi yayımlanana kadar TypeScript için depoyu kullanma yolu olarak kabul edin ve yukarıdaki paket adını bekleyin.
+TypeScript paketi ağ yardımcılarını içerir (`@qorechain/qoreseal/network`: `fetchKemKey`, `fetchMlkemPublicKey`, `resolveRecipient`, `sealToAddresses`). Bağımlılıkları `@qorechain/pqc` 0.2.3, `@qorechain/qoresign` 0.1.0 ile noble ve scure kütüphaneleridir.
+
+### Çevrimdışı mühürleme ve açma (TypeScript) {#quickstart-typescript}
+
+Geliştirici merkezindeki test edilmiş hızlı başlangıçlardan (manifesto bunu 29 Ekim 2026'da test edilmiş olarak işaretler). 4 Kasım 2026'da, boş bir projeye `npm install @qorechain/qoreseal@0.1.0` kurulduktan sonra Node.js 26 ile yeniden çalıştırıldı. Ağ yok, hesap yok.
+
+```ts
+import { generateSealKeys, open, recipientOf, seal, envelopeToText } from "@qorechain/qoreseal";
+
+const alice = generateSealKeys(), bob = generateSealKeys();
+const envelope = seal({
+  chainId: "qorechain-diana",
+  purpose: "invoice",
+  recipients: [recipientOf(alice), recipientOf(bob)],
+  plaintext: new TextEncoder().encode("amount due: 120 QOR"),
+});
+const pt = open({ chainId: "qorechain-diana", purpose: "invoice", envelope, keys: bob });
+console.log(envelopeToText(envelope).slice(0, 9), new TextDecoder().decode(pt));
+```
+
+Şunu yazdırdı: `qoreseal: amount due: 120 QOR`.
 
 ### Hızlı başlangıç 1: çevrimdışı mühürleme ve açma (Python) {#quickstart-python}
 
@@ -248,7 +268,7 @@ Python hataları sabit bir `code` ile `QoreSealError.Failure` fırlatır; Go hat
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host` (zincir kimliği 9801) | `https://evm-testnet.qore.host` (zincir kimliği 9800) |
 
-30 Ekim 2026'da kayıt defteri sorgusu, anahtarı olmayan bir hesap için her iki ağda da `{"found":false,"key":null}` yanıtını verdi (27 Ekim'de ana ağ hâlâ "Not Implemented" yanıtını veriyordu). 30 Ekim'de ana ağ işlemlerinde yapılan bir aramada henüz `MsgRegisterKEMKey` bulunamadı; dolayısıyla ana ağda bir anahtar yayımlamak bu sayfa tarafından uçtan uca denenmemiştir.
+4 Kasım 2026'da kayıt defteri sorgusu, anahtarı olmayan bir hesap için her iki ağda da `{"found":false,"key":null}` yanıtını verdi (27 Ekim'de ana ağ hâlâ "Not Implemented" yanıtını veriyordu). 4 Kasım'da ana ağ işlemlerinde yapılan bir aramada henüz `MsgRegisterKEMKey` bulunamadı; dolayısıyla ana ağda bir anahtar yayımlamak bu sayfa tarafından uçtan uca denenmemiştir.
 
 - Doğrudan geçirilen denetçi anahtarları dahil çevrimdışı mühürleme ve açma, özel gruplar ve batch'ler ağ veya hesap gerektirmez.
 - Bir adrese şifrelemek için alıcının kayıt defterine bir ML-KEM-1024 anahtarı yayımlamış olması ve hibrit mod için bir alıcı kartı bulunması gerekir.
@@ -257,17 +277,17 @@ Python hataları sabit bir `code` ile `QoreSealError.Failure` fırlatır; Go hat
 
 ## Nerede yayımlanır {#where-published}
 
-27 Ekim 2026'da her kayıt defterine karşı denetlendi.
+Her kayıt defterine karşı 4 Kasım 2026'da denetlendi. Yedi kaydın tamamı 0.1.0 sunuyor.
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|
+| npm | `@qorechain/qoreseal` | 0.1.0 | [npmjs.com/package/@qorechain/qoreseal](https://www.npmjs.com/package/@qorechain/qoreseal) |
 | crates.io | `qorechain-qoreseal` | 0.1.0 | [crates.io/crates/qorechain-qoreseal](https://crates.io/crates/qorechain-qoreseal) |
 | Go modül proxy'si | `github.com/qorechain/qoreseal/go` | v0.1.0 (etiket `go/v0.1.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoreseal/go) |
 | PyPI | `qorechain-qoreseal` | 0.1.0 (macOS arm64 ve x86_64, Linux x86_64 ve aarch64 için wheel'ler, artı kaynak) | [pypi.org/project/qorechain-qoreseal](https://pypi.org/project/qorechain-qoreseal/) |
 | Swift Package Manager | `github.com/qorechain/qoreseal` içinden `QoreSeal` | 0.1.0 (GitHub sürümünde ikili `QoreSealFFI.xcframework.zip`) | [release v0.1.0](https://github.com/qorechain/qoreseal/releases/tag/v0.1.0) |
 | Maven Central | `io.github.qorechain:qoreseal` | 0.1.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal) |
 | Maven Central | `io.github.qorechain:qoreseal-android` | 0.1.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal-android) |
-| npm | `@qorechain/qoreseal` | henüz yayımlanmadı (yakında) | |
 
 Her iki Maven yapıtını kullanan projeler Kotlin 2.3 veya üstü derleyici gerektirir. Kotlin/JVM yapıtı macOS (arm64, x86_64), Linux (x86_64, arm64) ve Windows (x86_64) için yerel kütüphaneleri paketler; Android yapıtı arm64-v8a, armeabi-v7a ve x86_64'ü kapsar.
 
@@ -285,9 +305,9 @@ Kaynak: [github.com/qorechain/qoreseal](https://github.com/qorechain/qoreseal) (
 - **Bir anahtarı kaldırmak veya döndürmek hiçbir şeyi silmez veya yeniden şifrelemez.** Eski bir anahtara mühürlenen veri, onu elinde tutan herkes tarafından okunabilir kalır; eski tohumları veya indeksleri saklayın.
 - **Çıkarılan grup üyeleri** ait oldukları dönemlerin anahtarlarını saklar. Yeni üyeler, kendilerine daha eski anahtarlar mühürlenmedikçe katıldıkları dönemden itibaren okur.
 - **Zincir kimliği ve amaç zarfta değildir;** alıcı bunları bilmelidir.
-- **Ana ağ kayıt defteri:** okuma rotası v3.2.5'ten beri canlıdır; bu kontrol edildiğinde ana ağda henüz bir anahtar yayımlanmamıştı ve EVM JSON-RPC `qor_` ad alanı `evm.qore.host` üzerinde sunulmaz (REST rotasını kullanın).
+- **Ana ağ kayıt defteri:** okuma rotası v3.2.5'ten beri canlıdır; bu 4 Kasım 2026'da kontrol edildiğinde ana ağda henüz bir anahtar yayımlanmamıştı ve EVM JSON-RPC `qor_` ad alanı `evm.qore.host` üzerinde sunulmaz (REST rotasını kullanın).
 - **1.0 öncesi, yapı harici incelemeyi bekliyor.** Küçük sürümler API'yi değiştirebilir. Güvenmeden önce spesifikasyonu okuyun.
-- **Henüz npm paketi yok** ve henüz Windows için Python wheel'i yok.
+- **Henüz Windows için Python wheel'i yok** (yalnızca macOS ve Linux; diğer platformlar, Rust gerektiren kaynak dağıtımından derlenir).
 
 ## Güvenlik notları {#security}
 

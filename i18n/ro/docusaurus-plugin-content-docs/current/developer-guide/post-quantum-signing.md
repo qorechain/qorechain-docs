@@ -186,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-Helperele de rotație din SDK 0.9.0 și din `@qorechain/wallet-adapter` 0.4.0 refuză derivarea legacy ca cheie **nouă** (nu este legată de cont); o cheie legacy poate fi în continuare cheia veche. După o rotație reușită, cheia nouă semnează (cod 0), iar cheia veche este respinsă (`pqc` cod 21). Începând cu v3.2.3, o rotație (ca și o migrare) refuză o cheie nouă care nu oferă nicio protecție post-cuantică (cod 230) și o cheie pe care contul a folosit-o înainte (cod 232) și nu poate fi trimisă prin `authz`.
+Helperele de rotație din SDK 0.9.0 și ulterior și din `@qorechain/wallet-adapter` 0.4.0 refuză derivarea legacy ca cheie **nouă** (nu este legată de cont); o cheie legacy poate fi în continuare cheia veche. După o rotație reușită, cheia nouă semnează (cod 0), iar cheia veche este respinsă (`pqc` cod 21). Începând cu v3.2.3, o rotație (ca și o migrare) refuză o cheie nouă care nu oferă nicio protecție post-cuantică (cod 230) și o cheie pe care contul a folosit-o înainte (cod 232) și nu poate fi trimisă prin `authz`.
 
 ## API consecvent
 
@@ -262,7 +262,7 @@ Semnătura clasică secp256k1 este calculată peste sign bytes standard (care **
 Există trei moduri de a produce această semnătură hibridă:
 
 * **CLI-ul** — `qorechaind tx pqc cosign` atașează cosemnătura Dilithium-5 unei tranzacții și o difuzează (după `qorechaind tx pqc gen-key` și înregistrarea cheii). Face parte doar din binarul de release. Vezi [Comenzi de tranzacții](/cli-reference/transaction-commands).
-* **SDK-ul QoreChain** — `buildHybridTx` / `signAndBroadcastHybrid` (transmite `rest` pentru ca forma sign-bytes să fie determinată) fac echivalentul în TypeScript, Python, Go, Rust și Java; în TypeScript, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0) semnează hibrid fiecare tranzacție; înregistrează mai întâi cheia (vezi mai sus). Vezi [Conturi SDK și semnare PQC](/sdk/concepts/accounts-pqc).
+* **SDK-ul QoreChain** — `buildHybridTx` / `signAndBroadcastHybrid` (transmite `rest` pentru ca forma sign-bytes să fie determinată) fac echivalentul în TypeScript, Python, Go, Rust și Java; în TypeScript, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 și ulterior; 0.12.0 este versiunea curentă) semnează hibrid fiecare tranzacție; înregistrează mai întâi cheia (vezi mai sus). Vezi [Conturi SDK și semnare PQC](/sdk/concepts/accounts-pqc).
 * **`qorechain-pqc` direct** — folosește `hybridSignBytes` pentru a încadra sign bytes și `mldsa.sign` pentru a produce semnătura Dilithium-5, atunci când construiești instrumente în afara SDK-ului într-unul dintre cele șase limbaje suportate.
 
 ## Optimizarea amprentei on-chain

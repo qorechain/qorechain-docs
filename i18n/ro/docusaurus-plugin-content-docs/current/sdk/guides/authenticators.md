@@ -323,7 +323,7 @@ la 0 și incrementat la fiecare execuție reușită.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` este același tip de contor.
 
-Începând cu chain v3.2.4 (ambele rețele servesc ruta) și SDK 0.10.0 puteți citi
+Începând cu chain v3.2.4 (ambele rețele servesc ruta) și SDK 0.10.0 sau mai nou puteți citi
 contorul în loc să îl urmăriți: `fetchAuthNonce({ rest, address, pubkey })` apelează
 `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` și returnează
 `{ nonce, linked }`. O cheie care nu a executat niciodată nimic citește 0, iar
@@ -333,6 +333,24 @@ chain-ului este o respingere pentru reluare (replay) (`abstractaccount` cod 11, 
 mai jos). Cu un SDK sau un chain mai vechi, urmăriți-l pentru fiecare cheie
 conectată: 0 pentru o cheie nou conectată, +1 după fiecare execuție acceptată de
 chain.
+
+## Citirea regulilor stocate și a cheilor conectate {#reads}
+
+Începând cu chain v3.2.5 (SDK 0.12.0), ambele rețele pot fi întrebate ce a stocat un cont,
+în loc să reconstruiți informația din tranzacții:
+
+* `fetchSpendingRules({ rest, address })` citește regulile de cheltuire, la nivel de cont și
+  pentru fiecare cheie conectată (`GET /qorechain/abstractaccount/v1/accounts/{address}/spending_rules`).
+* `fetchAuthenticators({ rest, address })` citește cheile conectate, inclusiv pe cele
+  revocate (`.../accounts/{address}/authenticators`).
+* `msg.abstractaccount.updateConfig` este mesajul de guvernanță care stabilește limitele
+  modulului (autoritatea este contul de modul de guvernanță, deci un cont obișnuit
+  nu îl poate trimite). SDK-ul verifică valorile înainte de semnare.
+
+Regulile sunt verificate așa cum le verifică chain-ul: un denom `erc20/`, `erc721/` sau `erc1155/`
+trebuie să indice o adresă de contract `0x`, iar codurile modulului 8 (regulă de cheltuire
+invalidă) și 9 (modul dezactivat) sunt denumite. Modulul este în continuare dezactivat pe mainnet
+și activat pe testnet.
 
 ## Schema de permisiuni
 

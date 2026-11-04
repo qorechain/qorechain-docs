@@ -9,16 +9,16 @@ sidebar_position: 21
 
 3つのコマンドラインツールで、QoreChain プロジェクトを何もない状態から、型付きでビルド可能な出発点まで進められます。Node.js で作業するアプリケーション開発者（dApp）とロールアップオペレーター向けです。
 
-* **`create-qorechain-dapp`**（0.10.0）は、[QoreChain SDK](/sdk/overview) をベースにした3つのテンプレートから dApp をスキャフォールドします。
+* **`create-qorechain-dapp`**（0.12.0）は、[QoreChain SDK](/sdk/overview) をベースにした7つのテンプレートから dApp をスキャフォールドします。7つのうち4つ（`foundry`、`hardhat`、`viem-wagmi`、`cosmwasm`）は[チェーン開発者キット](/developer-tools/chain-dev-sdk)に属します。
 * **`create-qorechain-rollup`**（0.8.0）は、TypeScript の[ロールアップ開発キット](/rollups/overview)をベースにした6つのテンプレートからロールアップのプロジェクトをスキャフォールドします。
 * **`qorollup`** は `@qorechain/rdk-cli` パッケージ（0.8.0）のコマンドで、オペレーター向けのコマンドラインです。プリフライトチェック、ロールアップの作成と監視、ライブパラメータの読み取りを行います。
 
-このページは、2026年10月27日に npm からインストールした公開パッケージの内容を反映しています。概念的なガイドは[ロールアップのデプロイ](/rollups/deploying-a-rollup)と [SDK CLI リファレンス](/sdk/reference/cli)です。
+このページは、2026年10月27日に npm からインストールした公開パッケージの内容と、2026年11月4日にインストールした `create-qorechain-dapp` 0.12.0 を反映しています。概念的なガイドは[ロールアップのデプロイ](/rollups/deploying-a-rollup)と [SDK CLI リファレンス](/sdk/reference/cli)です。
 
 ## 革新的な点 {#innovations}
 
 * **CI 向けの非対話型スキャフォールド。** すべてのプロンプトにフラグがあります: `--template`、`--network`、`--package-manager`、`--yes`（デフォルトを受け入れる）、`--no-install`。パイプラインは、ターミナルなしで1つのコマンドからプロジェクトを生成してビルドできます。
-* **テンプレートは最新のパッケージに固定されています。** dApp テンプレートは `@qorechain/sdk` `^0.10.0`（EVM テンプレートは `@qorechain/evm`）に、ロールアップテンプレートは `@qorechain/rdk` `^0.8.0` に依存しています。以前のスキャフォルダー（0.8.0）は、稼働中のネットワークに署名できない SDK に解決される範囲指定を書き出していましたが、現行のものではそうなりません。
+* **テンプレートは最新のパッケージに固定されています。** dApp テンプレートは `@qorechain/sdk` `^0.12.0`（EVM テンプレートは `@qorechain/evm` `^0.12.0` にも）に、ロールアップテンプレートは `@qorechain/rdk` `^0.8.0` に依存しています。以前のスキャフォルダー（0.8.0）は、稼働中のネットワークに署名できない SDK に解決される範囲指定を書き出していましたが、現行のものではそうなりません。
 * **ロールアップテンプレートはユースケースごとに有効な設定を備えています。** 各ロールアップテンプレートは、RDK の互換性マトリクスが受け入れる、決済、シーケンサー、データアベイラビリティ、ガス、VM の組み合わせを設定しており、スキャフォルダーは何かを作成する前に、現時点のステークと作成時のバーン額を表示します。
 * **足りないものを名指しするプリフライトコマンド。** `qorollup doctor`（ロールアップテンプレート内では `npm run doctor`）は、REST エンドポイントが応答すること、モジュールパラメータを読み取れること、エンドポイントが指定したネットワークであること、署名者が設定されていることを確認し、チェックごとに1行を出力します。テンプレート内では、ロールアップの設定を互換性マトリクスに照らして検証することもします。
 * **ハイブリッド署名がテンプレートに組み込まれています。** ロールアップテンプレートは、小さな `signer.ts` を通じて接続します。これはニーモニックからアカウントの ML-DSA-87 鍵を導出し（または生の秘密鍵とともにシードを受け取り）、両ネットワークが Native レーンで必須とするハイブリッド署名を行います。`rollup-app` dApp テンプレートも同じことを行い、`QORE_BROADCAST=1` を設定しない限りドライランとして動作します。
@@ -41,14 +41,16 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 | `evm-solidity` | コンパイル済みアーティファクト付きの Solidity `Counter` コントラクトと、`@qorechain/evm` を使ってそれをデプロイして呼び出す viem スクリプト。ファイル: `contracts/Counter.sol`、`contracts/Counter.artifact.ts`、`scripts/deploy.ts`、`.env`。 | `deploy` |
 | `fullstack-web` | `@qorechain/sdk` でアドレスの残高（とトークノミクスの概要）を読み取る、Vite、React、TypeScript のページ。ファイル: `index.html`、`src/App.tsx`、`src/main.tsx`、`vite.config.ts`、`.env`。 | `dev`、`build`、`preview`、`typecheck` |
 | `rollup-app` | SDK の `createRollupClient` と `createMultilayerClient` を使って、ロールアップおよびサイドチェーンまたはペイチェーンのメッセージを組み立てる Node スクリプト。ファイル: `src/index.ts` と通常の設定。デフォルトはドライラン。 | `start`、`typecheck` |
+| `foundry`、`hardhat`、`viem-wagmi`、`cosmwasm` | チェーン開発者キットのテンプレート: Foundry プロジェクト、Hardhat 3 と viem のプロジェクト（どちらも EVM 認可ウィンドウ用の `pnpm window` ヘルパー付き）、QoreX ウォレット付きの wagmi と RainbowKit の dApp、QoreChain Native の CW20 トークン。詳細、スクリプト、制限事項: [チェーン開発者キット](/developer-tools/chain-dev-sdk#templates)。 | そのページを参照 |
 
 | フラグ | 意味 |
 | --- | --- |
-| `-t, --template <name>` | `evm-solidity`、`fullstack-web`、`rollup-app` のいずれか |
+| `-t, --template <name>` | `evm-solidity`、`fullstack-web`、`rollup-app`、`foundry`、`hardhat`、`viem-wagmi`、`cosmwasm` のいずれか |
 | `--network <name>` | `testnet` または `mainnet` |
 | `--package-manager <pm>` | `pnpm`、`npm`、`yarn` のいずれか |
 | `-y, --yes` | プロンプトをスキップしてデフォルトを使用 |
 | `--no-install` | 依存関係をインストールしない |
+| `--local` | `@qorechain/*` の依存関係を SDK モノレポ内のローカルリンクに書き換える（SDK コントリビューター向け） |
 | `-h, --help`, `-v, --version` | ヘルプ、バージョン |
 
 検証済みの例（開発者ハブより。2026年10月27日に空のディレクトリで、公開 npm レジストリからの `npx` で実行）: ウェブテンプレートをスキャフォールドしてビルドします。確認できた結果: `Done! Created my-dapp` と、成功した `vite build`。ビルドではバンドルサイズの警告が出ますが、問題ありません。
@@ -158,7 +160,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | レジストリ | パッケージ | バージョン | リンク |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp`（コマンド `create-qorechain-dapp`） | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp`（コマンド `create-qorechain-dapp`） | 0.12.0 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup`（コマンド `create-qorechain-rollup`） | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli`（コマンド `qorollup`） | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk`（テンプレートが使用するライブラリ） | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
@@ -167,7 +169,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 ## 制限事項と既知の問題 {#limits}
 
-* **テスト実行では、`--network mainnet` を指定しても生成されるファイルは変わりませんでした。** 2026年10月27日に `fullstack-web` と `custom-rollup` を `--network mainnet` でスキャフォールドしたところ、生成された `.env` には依然として localhost のエンドポイント（dApp）、またはテストネットのエンドポイントとともに `QORE_NETWORK=testnet`（ロールアップ）が入っており、dApp の `App.tsx` は `testnet` クライアントを作成していました。ネットワークとエンドポイントは、`.env` で、ウェブテンプレートでは `src/App.tsx` でも、ご自身で設定してください。
+* **テスト実行では、`--network mainnet` を指定しても生成されるファイルは変わりませんでした。** 2026年10月27日に `fullstack-web` と `custom-rollup` を `--network mainnet` でスキャフォールドしたところ、生成された `.env` には依然として localhost のエンドポイント（dApp）、またはテストネットのエンドポイントとともに `QORE_NETWORK=testnet`（ロールアップ）が入っており、dApp の `App.tsx` は `testnet` クライアントを作成していました。2026年11月4日には、`create-qorechain-dapp` 0.12.0 が `evm-solidity`、`fullstack-web`、`rollup-app` で同じ挙動でした。ネットワークとエンドポイントは、`.env` で、ウェブテンプレートでは `src/App.tsx` でも、ご自身で設定してください。
 * **どちらのネットワークにも、ロールアップはまだ存在しません**（2026年10月27日に確認）。ロールアップツールのトランザクション経路は、稼働中のロールアップでは一つも実行されていません。すべてをまずテストネットで検証し、[RDK 0.8.0: 変更点と制限事項](/rollups/deploying-a-rollup#rdk-050-limits)をお読みください。
 * **`defi-rollup` テンプレートはバッチを決済できません。** ZK 決済はどちらのネットワークでもまだ使用できず（鍵の登録はチェーン v3.2.7 で予定されています）、そのデモ用回路は、いずれにしてもチェーンの証明チェックを通過できません。0.7.0 以降、このテンプレートは送信の前で停止するため、チェーンが必ず拒否するバッチに手数料を使うことはなくなりました。状況が変わるまでは、`optimistic` 決済のテンプレートを使用してください（[ZK、STARK、引き出し](/rollups/zk-stark-withdrawals)を参照）。
 * **`multivm-rollup` テンプレートは、まだ稼働していないものに依存しています。** `0x0000000000000000000000000000000000000901` のクロス VM プリコンパイルはどちらのネットワークでも有効ではないため、コントラクトからの呼び出しは何も行いません。テンプレートはこれを確認し、そのコントラクトは黙って失敗するのではなく revert するように書かれています（[マルチ VM](/rollups/multi-vm)を参照）。
@@ -176,7 +178,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 * **`rollup-app` は、求めたときだけブロードキャストします。** デフォルトではドライランを実行します。`QORE_BROADCAST=1` を指定すると、アカウントの ML-DSA-87 鍵を一度登録し、ハイブリッド署名を行います。そのサンプルのロールアップ値は例示用です。実際のプロファイル名とステークは[プリセットプロファイル](/rollups/preset-profiles)から取得してください。
 * **`fullstack-web` のトークノミクスボタンはエラーを表示します。** そのパネルは、公開エンドポイントが提供していない `qor_` JSON-RPC メソッドを呼び出しています。残高の取得は動作します。`client.rest.getBurnStats()` のような REST の読み取りに置き換えてください。
 * **`evm-solidity` には、資金のあるアカウント以上のものが必要です。** QoreChain で EVM トランザクションを送信するには、登録済みの ML-DSA-87 鍵と、開いている EVM 認可ウィンドウも必要で、これらは Native レーンから設定します（[EVM ガイド](/developer-guide/evm-development#evm-window)を参照）。テンプレートの `deploy` スクリプトは、このページのために稼働中のネットワークで実行されていません。
-* **`create-qorechain-dapp --version` は `0.5.1` と表示します。** インストールされているパッケージは 0.10.0 です（2026年10月27日に確認）。バージョンは `package.json` またはレジストリで確認してください。
-* **パッケージの README は古くなっています。** `create-qorechain-dapp` の README は2つのテンプレート、`create-qorechain-rollup` の README は5つを挙げていますが、`--help` では3つと6つが表示されます。`--help` を信頼してください。
+* **`create-qorechain-dapp --version` は `0.5.1` と表示します。** インストールされているパッケージは 0.12.0 です（2026年10月27日は 0.10.0 で、2026年11月4日は 0.12.0 で再度確認）。バージョンは `package.json` またはレジストリで確認してください。
+* **パッケージの README は古くなっています。** `create-qorechain-dapp` の README は2つのテンプレート、`create-qorechain-rollup` の README は5つを挙げていますが（2026年10月27日に確認）、`--help` では7つと6つが表示されます。`--help` を信頼してください。
 * **0.6.2 より前のバージョンは npm からでは動作しません。** `qorollup` 0.6.1 以前は、npm でどのようにインストールしても何も出力せず終了コード 0 で終了し、`--version` は `0.4.1` と表示しました。どうしても 0.6.1 にとどまる必要がある場合は、`node node_modules/@qorechain/rdk-cli/dist/index.js <command>` を実行してください。そうでなければアップグレードしてください。
-* **依存関係のコピー（0.6.x のみ）。** `@qorechain/rdk` 0.6.2 以前は `@qorechain/sdk` `^0.9.0` に依存していたため、SDK 0.10.0 も併せてインストールしたプロジェクトには、ネストされた2つ目の SDK 0.9.x が入っていました。0.7.0 以降、このキットは `@qorechain/sdk` `^0.10.0` に依存し、コピーを1つだけ共有します。
+* **依存関係のコピー（RDK 0.6.x、および SDK 0.12.0 と併用する RDK 0.8.0）。** `@qorechain/rdk` 0.6.2 以前は `@qorechain/sdk` `^0.9.0` に依存していたため、SDK 0.10.0 も併せてインストールしたプロジェクトには、ネストされた2つ目の SDK 0.9.x が入っていました。0.7.0 以降、このキットは `@qorechain/sdk` `^0.10.0` に依存し、SDK 0.10.x のアプリとコピーを1つだけ共有します。**SDK 0.12.0 のアプリが `@qorechain/rdk` 0.8.0 も併せてインストールすると、依然として SDK 0.10.0（および `@qorechain/evm` 0.8.0）のネストされたコピーが入ります。** 0.x バージョンに対するキャレット範囲は新しいマイナーバージョンを取り込まないためです（2026年11月4日に `npm ls` で確認）。RDK の範囲が更新されるまで、SDK の呼び出しと RDK の呼び出しは別々のモジュールに置くか、両者の間ではオブジェクトをプレーンなデータとして受け渡してください。

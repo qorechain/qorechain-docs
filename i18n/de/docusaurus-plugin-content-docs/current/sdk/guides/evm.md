@@ -17,6 +17,27 @@ Bindings für QoreChains EVM-Precompiles.
 npm i @qorechain/evm viem
 ```
 
+## Chain-Definitionen und Fenster-Helfer (0.12.0)
+
+`@qorechain/evm` exportiert die viem-Chain-Definitionen `qorechain` (Chain-ID 9801) und
+`qorechainTestnet` (9800) sowie `QORECHAIN_CHAINS` und `QORECHAIN_REST_ENDPOINTS`, sodass
+eine viem- oder wagmi-App sie nicht von Hand schreiben muss:
+
+```ts
+import { createPublicClient, http } from "viem";
+import { qorechainTestnet } from "@qorechain/evm";
+
+const publicClient = createPublicClient({ chain: qorechainTestnet, transport: http() });
+```
+
+Er enthält außerdem die Helfer für das [Autorisierungsfenster](#evm-window): `evmWindowStatus` liest
+das Fenster eines Kontos über REST, `openEvmWindowMessage` prüft die Grenzen der Chain und
+setzt das `MsgOpenEVMWindow` der Native-Lane zusammen, das hybrid zu signieren ist, `evmWindowCost` und
+`weiToUqorCeil` bemessen ein Fenster, und `toQorAddress` / `toEvmAddress` wandeln ein
+eth-native-Konto zwischen seinen beiden Kodierungen um. Die Fenster-Helfer werden auch
+ohne viem als `@qorechain/evm/window` veröffentlicht. Sie kamen mit dem nur auf npm veröffentlichten 0.11.0 und sind in
+0.12.0 enthalten.
+
 ## Einen Client erstellen
 
 `createEvmClient` gibt ein Client-Bundle zurück, das von viem unterstützt wird. Es erkennt die

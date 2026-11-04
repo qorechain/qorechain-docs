@@ -183,7 +183,7 @@ Go(`pqcdx.Signer.RestURL`), Rust(`pqc_dx` `rest_url`), Java(`signer.restUrl`)
 
 클라이언트에 `pqcKeypair`가 있으면 `tx.bankSend(...)`와
 `tx.signAndBroadcast([messages], "auto")`는 하이브리드로 서명합니다(`fee: "auto"`
-경로는 하이브리드 트랜잭션을 시뮬레이션하고 포스트 양자 검증에 드는 가스를 더합니다).
+경로는 하이브리드 트랜잭션을 시뮬레이션합니다. SDK 0.12.0부터 v3.2.5 네트워크에서 한도는 정확한 규칙 `ceil(simulated x 1.02) + 2000`이며, 그 이전에는 클라이언트가 포스트 양자 검증에 드는 가스를 직접 더합니다).
 하이브리드 서명은 네트워크가 검증하는 sign-bytes 형태에 대해 계산됩니다
 ([어떤 sign-bytes 형태인가?](/sdk/concepts/accounts-pqc#sign-bytes-versions) 참조).
 클라이언트는 REST 엔드포인트를 통해 네트워크에 이를 질의합니다.
@@ -267,10 +267,46 @@ await migratePqcKeyHybrid({
 });
 ```
 
+## ML-KEM-1024 키 게시 {#kem-key}
+
+서명은 트랜잭션을 누가 보냈는지 증명하며, 암호화에는 다른 키가 필요합니다. 체인
+v3.2.5부터 계정은 온체인 KEM 레지스트리에 **ML-KEM-1024** 캡슐화 키 하나(알고리즘 ID 2,
+1,568바이트)를 게시할 수 있으며, 누구든 이 키로 페이로드를 암호화할 수 있습니다.
+SDK 0.12.0은 두 메시지를 구성하고 레지스트리를 다시 읽습니다. 암호화나 복호화는
+**하지 않습니다**(봉인된 페이로드는 [QoreSeal](/developer-tools/qoreseal) 참조).
+이 경로와 메시지는 메인넷과 테스트넷에서 제공됩니다.
+
+* `msg.pqc.registerKemKey({ sender, publicKey })`는 키를 게시합니다(두 번째 호출은
+  키를 교체합니다). 컴포저는 체인과 마찬가지로 먼저 키를 확인합니다. 정확한 크기,
+  모든 계수가 3329 미만, 전부 0이 아님(`validateKemPublicKey`는 같은 확인을 단독으로 실행합니다).
+* `msg.pqc.removeKemKey({ sender })`는 키를 철회합니다.
+* `fetchKemKey({ rest, address })`는 `/qorechain/pqc/v1/kem/{address}`(bech32 또는
+  `0x` 주소)를 읽고 알고리즘, 키 바이트, 등록 높이와 함께 `{ found, key? }`를
+  반환합니다.
+
+두 메시지 모두 계정의 **하이브리드** 서명이 필요하므로, 다른 네이티브 트랜잭션과
+마찬가지로 하이브리드 `TxClient`(`client.connectTx(signer, { pqcKeypair })`)로 보내고,
+먼저 계정의 ML-DSA-87 키를 등록하세요. 체인의 거부 `pqc` 250~254는
+`decodeTxError`가 이름을 붙여 줍니다. 나머지 네 언어도 같은
+메시지와 조회를 제공합니다.
+
+```ts
+import { msg, fetchKemKey } from "@qorechain/sdk";
+
+// `kemPublicKey` is a 1,568-byte ML-KEM-1024 public key you generated (for example with
+// `@qorechain/pqc`); `tx` is a hybrid TxClient.
+await tx.signAndBroadcast(
+  [msg.pqc.registerKemKey({ sender: account.address, publicKey: kemPublicKey })],
+  "auto",
+);
+
+const { found, key } = await fetchKemKey({ rest: "https://api.qore.host", address: account.address });
+```
+
 ## UI에서
 
 [`@qorechain/react`](/sdk/guides/react) 키트는 이 모든 것을 React에서 노출합니다.
-`usePqcStatus` 훅과 `<QuantumSafeBadge/>` 컴포넌트는 연결된 계정에 등록된 PQC
+`usePqcStatus` 훅과 `<PqcStatusBadge/>` 컴포넌트(`<QuantumSafeBadge/>`는 더 이상 사용되지 않는 별칭)는 연결된 계정에 등록된 PQC
 키가 있을 때마다 상태 표시를 보여줍니다. 둘 다 구성된 클라이언트와 함께
 `getPqcStatus`를 통해 상태를 읽으므로, `@qorechain/react` 0.9.0부터는 REST로
 읽어 공개 엔드포인트에서도 동작하며, 0.8.x는 그곳에서 키를 확인할 수 없었습니다.

@@ -177,7 +177,7 @@ const signBytes = hybridSignBytes(version, chainId, bodyWithoutPqcExt, authInfoB
 | Maven Central | `io.github.qorechain:qorechain-pqc` | 0.2.3 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-pqc |
 | C | doar sursă, fără registru de pachete | tag `v0.2.3` | https://github.com/qorechain/qorechain-pqc |
 
-Sursa: https://github.com/qorechain/qorechain-pqc (folderele `js`, `python`, `rust`, `go`, `java`, `c`, `vectors`). Toate pachetele sunt Apache-2.0. Versiunile au fost citite din fiecare registru pe 27 octombrie 2026. Ghidul conceptual pentru aceeași bibliotecă, inclusiv derivarea și rotirea cheilor, este [Semnare post-cuantică](/developer-guide/post-quantum-signing); SDK-ul care o folosește este descris în [Prezentarea generală a SDK-ului](/sdk/overview).
+Sursa: https://github.com/qorechain/qorechain-pqc (folderele `js`, `python`, `rust`, `go`, `java`, `c`, `vectors`). Toate pachetele sunt Apache-2.0. Versiunile au fost citite din fiecare registru pe 4 noiembrie 2026 (neschimbate din 27 octombrie). Ghidul conceptual pentru aceeași bibliotecă, inclusiv derivarea și rotirea cheilor, este [Semnare post-cuantică](/developer-guide/post-quantum-signing); SDK-ul care o folosește este descris în [Prezentarea generală a SDK-ului](/sdk/overview).
 
 ## Limite și probleme cunoscute {#limits}
 

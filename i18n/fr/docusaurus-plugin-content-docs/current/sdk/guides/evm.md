@@ -17,6 +17,27 @@ déploiement/appel de contrats, et des liaisons typées pour les précompilés E
 npm i @qorechain/evm viem
 ```
 
+## Définitions de chaîne et assistants de fenêtre (0.12.0)
+
+`@qorechain/evm` exporte les définitions de chaîne viem `qorechain` (chain id 9801) et
+`qorechainTestnet` (9800), ainsi que `QORECHAIN_CHAINS` et `QORECHAIN_REST_ENDPOINTS`, de sorte
+qu'une application viem ou wagmi n'ait pas à les écrire à la main :
+
+```ts
+import { createPublicClient, http } from "viem";
+import { qorechainTestnet } from "@qorechain/evm";
+
+const publicClient = createPublicClient({ chain: qorechainTestnet, transport: http() });
+```
+
+Il fournit aussi les assistants de la [fenêtre d'autorisation](#evm-window) : `evmWindowStatus` lit
+la fenêtre d'un compte via REST, `openEvmWindowMessage` vérifie les bornes de la chaîne et
+compose le `MsgOpenEVMWindow` de la voie Native à signer en hybride, `evmWindowCost` et
+`weiToUqorCeil` dimensionnent une fenêtre, et `toQorAddress` / `toEvmAddress` convertissent un
+compte eth-native entre ses deux encodages. Les assistants de fenêtre sont aussi publiés
+sans viem sous `@qorechain/evm/window`. Ils sont arrivés dans la 0.11.0 (npm uniquement) et sont dans la
+0.12.0.
+
 ## Créer un client
 
 `createEvmClient` renvoie un ensemble de clients reposant sur viem. Il détecte automatiquement

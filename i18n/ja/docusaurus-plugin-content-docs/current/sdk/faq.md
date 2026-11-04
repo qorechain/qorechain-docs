@@ -11,15 +11,16 @@ sidebar_position: 8
 
 はい。メインネットは**稼働中**です（チェーン ID `qorechain-vladi`、2026年6月7日から稼働）。
 チェーンバージョンは v3.2.6 です（2026年11月4日に高さ 4,020,000 で適用、ガバナンス提案 15。v3.2.5 は2026年10月29日に高さ 3,906,833 で、v3.2.4 は2026年10月23日に高さ 3,742,566 で適用）。テストネットは 2026年10月27日から v3.2.6 を実行しています。テストネットのプリセット
-（`qorechain-diana`）も引き続き利用できます。どちらのプリセットも既定では localhost の
-エンドポイントが設定されています。`createClient({ network: "mainnet" })` でネットワークを
-選択し、`endpoints` を自分のノードの URL で上書きしてください。詳細は
+（`qorechain-diana`）も引き続き利用できます。SDK 0.12.0 以降、どちらのプリセットも既定で
+公開エンドポイントが設定されています。`createClient({ network: "mainnet" })` でネットワークを
+選択し、自分のノードを使う場合にのみ `endpoints` を上書きしてください。詳細は
 [ネットワークとエンドポイント](/sdk/reference/network) を参照してください。
 
 ## 呼び出しが localhost に向かってしまうのはなぜですか？
 
-`createClient()` の既定エンドポイントは **localhost** です。実際のノードと通信するには、
-`endpoints` オブジェクトを渡してください。
+**0.12.0 より前**の SDK を使用しています。その SDK のプリセットは既定で **localhost** のエンドポイントを使います。
+アップグレードするか、`endpoints` オブジェクトを渡してください。0.12.0 以降では、`createClient()` と
+`createClient({ network: "mainnet" })` は公開エンドポイントを使い、localhost を使うのは `localnet` プリセットです。
 
 ```ts
 const client = createClient({
@@ -30,6 +31,9 @@ const client = createClient({
   },
 });
 ```
+
+もし代わりに「endpoint ... is not configured for the mainnet preset」と表示される場合、その呼び出しには、公開プリセットが設定していない
+エンドポイント（gRPC、SVM RPC、メインネットの EVM WebSocket）が必要です。`endpoints` で渡してください。
 
 署名経路（`connectTx`）にはコンセンサスの **`rpc`** エンドポイントが必要で、QoreChain Native の
 読み取りもこれを使用します。REST の読み取りは `rest` を、EVM の呼び出しは
@@ -85,14 +89,14 @@ fromBase("1500000"); // "1.5"
 
 ## どのパッケージがどこで公開されていますか？
 
-すべて公開されています（2026年10月27日確認）。TypeScript コア（`@qorechain/sdk`、0.10.0）、
-React キット（`@qorechain/react`、0.10.0）、`create-qorechain-dapp` スキャフォルダ
-（0.10.0）、および EVM/SVM アダプタ（`@qorechain/evm`、`@qorechain/svm`、0.8.0）は
+すべて公開されています（2026年11月4日確認）。TypeScript コア（`@qorechain/sdk`、0.12.0）、
+React キット（`@qorechain/react`、0.12.0）、`create-qorechain-dapp` スキャフォルダ
+（0.12.0）、および EVM/SVM アダプタ（`@qorechain/evm`、`@qorechain/svm`、0.12.0）は
 npm で公開されています。Python クライアントは PyPI にあります（`pip install qorechain-sdk`、
-バージョン 0.10.0、インポート名は `qorsdk`）。Go クライアントはモジュールプロキシにあります
-（`go get github.com/qorechain/qorechain-sdk/packages/go@v0.10.0`）。Rust クライアントは
-crates.io にあります（`cargo add qorechain-sdk`、0.10.0）。Java クライアントは Maven
-Central にあります（`io.github.qorechain:qorechain-sdk:0.10.0`）。
+バージョン 0.12.0、インポート名は `qorsdk`）。Go クライアントはモジュールプロキシにあります
+（`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`）。Rust クライアントは
+crates.io にあります（`cargo add qorechain-sdk`、0.12.0）。Java クライアントは Maven
+Central にあります（`io.github.qorechain:qorechain-sdk:0.12.0`、JDK 17 以降）。
 言語ごとの完全なコマンドは [インストール](/sdk/install) を参照してください。
 
 ## ニーモニックが拒否されます
@@ -117,7 +121,7 @@ TypeScript では、クライアントに鍵ペアを渡すと
 SDK は（0.5.1 以降）既定で決定的に署名するため、トランザクションの署名と tx ハッシュは常に同じになります。
 ハイブリッド tx が `pqc` コード 21（`hybrid_verify_failed`）で失敗する原因は、sign-bytes のバージョン、
 チェーン ID、古い PQC ライブラリ、または未登録もしくは別の鍵であり、hedged 署名が原因になることはありません。
-両ネットワークとも v2 形式の sign-bytes を検証するため、SDK **0.8.1 以降**（現行は 0.10.0）を使用し、
+両ネットワークとも v2 形式の sign-bytes を検証するため、SDK **0.8.1 以降**（現行は 0.12.0）を使用し、
 `rest`（または `signBytesVersion`）を渡してください。どちらも指定しない場合、ビルダーは
 `qorechain-vladi` / `qorechain-diana` で例外を送出します。詳細は
 [コード 21 のトラブルシューティング](/developer-guide/post-quantum-signing#code-21) と
@@ -142,10 +146,13 @@ SDK をアップグレードしてください。**0.6.0 以前**のバージョ
 
 ## SDK はどのチェーンバージョンで動作しますか？
 
-SDK **0.10.0** は、チェーン **v3.2.4**（メインネットは2026年10月23日に高さ 3,742,566 で適用、
-ガバナンス提案 13。テストネットは 10 月 19 日から）向けのクライアントリリースです。メインネットは 2026年11月4日から v3.2.6（v3.2.5 は 10月29日から）を実行しており、署名形式が変わっていないため 0.10.0 はそこでも引き続き動作します。
-Staking Tier のビルダーと読み取り、`fetchAuthNonce`、プロトコル機能の読み取り
-（[0.10.0 の追加内容](/sdk/install#whats-new-0100) を参照）が加わり、これは 0.9.0 が
+SDK **0.12.0** は、チェーン **v3.2.5**（メインネットは2026年10月29日に高さ 3,906,833 で適用、
+テストネットは 10月26日から）向けのクライアントリリースです。両ネットワークとも v3.2.6 を実行しており
+（メインネットは 11月4日から、テストネットは 10月27日から）、署名形式は変わっていないため、0.12.0 は両方で動作します。
+ハイブリッドトランザクションの厳密なガスルール、ML-KEM 鍵レジストリのビルダーと読み取り、アカウント抽象化の読み取り、
+検証付きのガバナンスパラメータビルダーが加わります（[0.12.0 の追加内容](/sdk/install#whats-new-0120) を参照）。
+これは、0.10.0 が v3.2.4 向けに追加したもの（Staking Tier のビルダーと読み取り、`fetchAuthNonce`、
+プロトコル機能の読み取り。[0.10.0 の追加内容](/sdk/install#whats-new-0100) を参照）、および 0.9.0 が
 v3.2.2 と v3.2.3 向けに追加したもの、すなわち登録時の任意の所有証明
 （ネットワークが v3.2.3 を適用すると `ensurePqcRegistered` が自動的に付加します）、
 スコープ付き EVM ウィンドウ、EIP-7702 同意メッセージ向けのビルダーに上乗せされています。
@@ -154,8 +161,8 @@ SDK **0.8.1 以降**も両ネットワークでトランザクションを送信
 ありません。それらには CLI を使用してください（
 [0.9.0 より前のバージョン](/sdk/install#before-090) を参照）。署名形式は
 v3.2.4、v3.2.5、v3.2.6 では変わっていません。両ネットワークとも v3.2.6 を実行しています（テストネットは v3.2.5 を 2026年10月26日、
-v3.2.6 を 10月27日に適用し、メインネットは v3.2.5 を 10月29日、v3.2.6 を 11月4日に適用）。SDK には v3.2.4 より後に導入されたものに対するビルダーはなく、
-そのため v3.2.5 の追加分（たとえば ML-KEM 鍵レジストリや、ガバナンスで管理されるクロス VM とコントラクトの経路）にはまだ SDK のビルダーがなく、CLI で利用します。
+v3.2.6 を 10月27日に適用し、メインネットは v3.2.5 を 10月29日、v3.2.6 を 11月4日に適用）。SDK 0.10.0 と 0.9.0 はそれらでも引き続き動作しますが、
+v3.2.5 の追加分（ML-KEM 鍵レジストリ、厳密なガスルール）のビルダーはありません。それらのリリースでは CLI を使うか、0.12.0 にアップグレードしてください。0.12.0 は v3.2.5 に対してビルドおよび検証されています。
 
 ## PQC 鍵の登録が拒否されたのに手数料が引かれました
 
@@ -191,7 +198,7 @@ nonce が確認される前に `abstract account module is disabled` で拒否�
 nonce が誤っています。`MsgExecuteEVM.nonce` と `MsgExecuteCosmos.nonce` はどちらも、
 `(account, pubkey)` に対するリンク済みキーの **authenticator シーケンス**です。これはチェーンが
 リンク済みキーごとに保持するカウンターで、0 から始まり、実行が成功するたびに加算されます。
-これはアカウントの EVM nonce では**ありません**。`fetchAuthNonce`（SDK 0.10.0、チェーン
+これはアカウントの EVM nonce では**ありません**。`fetchAuthNonce`（SDK 0.10.0 以降、チェーン
 v3.2.4 以降）で取得するか、古いバージョンではリンク済みキーごとに自分で追跡してください。v3.2.3 以降、EVM レーンは
 `evmAuthSignBytesV2` にも署名します。これは呼び出しのガスリミットを束縛します
 （`resolveEvmAuthDigestVersion` が形式を選びます）。そのキーについて取得した（または追跡している）カウンターを使って、

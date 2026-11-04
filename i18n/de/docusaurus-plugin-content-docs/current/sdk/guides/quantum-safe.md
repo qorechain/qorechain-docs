@@ -189,7 +189,7 @@ nicht selbst `status` übergaben.
 
 Mit einem `pqcKeypair` am Client signieren `tx.bankSend(...)` und
 `tx.signAndBroadcast([messages], "auto")` hybrid (der Pfad `fee: "auto"` simuliert die
-hybride Transaktion und addiert das Gas der Post-Quanten-Verifikation).
+hybride Transaktion; ab SDK 0.12.0 ist das Limit auf einem v3.2.5-Netzwerk die exakte Regel `ceil(simulated x 1.02) + 2000`, davor addiert der Client das Gas der Post-Quanten-Verifikation selbst).
 Die hybride Signatur wird über die Sign-Bytes-Form berechnet, die das Netzwerk verifiziert (siehe
 [Welche Sign-Bytes-Form?](/sdk/concepts/accounts-pqc#sign-bytes-versions)); der Client
 fragt das Netzwerk über seinen REST-Endpunkt ab.
@@ -276,10 +276,47 @@ await migratePqcKeyHybrid({
 });
 ```
 
+## Einen ML-KEM-1024-Schlüssel veröffentlichen {#kem-key}
+
+Signieren beweist, wer eine Transaktion gesendet hat; Verschlüsselung braucht einen anderen Schlüssel. Ab Chain
+v3.2.5 kann ein Konto einen **ML-KEM-1024**-Encapsulation-Schlüssel (Algorithmus-ID 2,
+1.568 Bytes) im KEM-Register der Chain veröffentlichen, sodass jeder eine Nutzlast an ihn verschlüsseln kann.
+SDK 0.12.0 setzt die beiden Nachrichten zusammen und liest das Register zurück; es
+verschlüsselt oder entschlüsselt **nicht** (für versiegelte Nutzlasten siehe [QoreSeal](/developer-tools/qoreseal)).
+Die Route und die Nachrichten werden auf dem Mainnet und dem Testnet bereitgestellt.
+
+* `msg.pqc.registerKemKey({ sender, publicKey })` veröffentlicht den Schlüssel (ein zweiter Aufruf
+  ersetzt ihn). Der Composer prüft den Schlüssel zuerst, wie es die Chain tut: exakte Größe,
+  jeder Koeffizient unter 3329, nicht komplett null (`validateKemPublicKey` führt dieselbe
+  Prüfung für sich allein aus).
+* `msg.pqc.removeKemKey({ sender })` zieht ihn zurück.
+* `fetchKemKey({ rest, address })` liest `/qorechain/pqc/v1/kem/{address}` (eine bech32-
+  oder `0x`-Adresse) und liefert `{ found, key? }`, mit dem Algorithmus, den Schlüssel-Bytes
+  und der Registrierungshöhe.
+
+Beide Nachrichten brauchen die **hybride** Signatur des Kontos, senden Sie sie also über den
+hybriden `TxClient` (`client.connectTx(signer, { pqcKeypair })`) wie jede andere native
+Transaktion, und registrieren Sie zuerst den ML-DSA-87-Schlüssel des Kontos. Die Chain-Ablehnungen `pqc` 250
+bis 254 werden von `decodeTxError` benannt. Die anderen vier Sprachen enthalten dieselben
+Nachrichten und denselben Lesezugriff.
+
+```ts
+import { msg, fetchKemKey } from "@qorechain/sdk";
+
+// `kemPublicKey` is a 1,568-byte ML-KEM-1024 public key you generated (for example with
+// `@qorechain/pqc`); `tx` is a hybrid TxClient.
+await tx.signAndBroadcast(
+  [msg.pqc.registerKemKey({ sender: account.address, publicKey: kemPublicKey })],
+  "auto",
+);
+
+const { found, key } = await fetchKemKey({ rest: "https://api.qore.host", address: account.address });
+```
+
 ## In der UI
 
 Das [`@qorechain/react`](/sdk/guides/react)-Kit stellt all dies in React bereit: der
-`usePqcStatus`-Hook und die `<QuantumSafeBadge/>`-Komponente zeigen einen Status-
+`usePqcStatus`-Hook und die `<PqcStatusBadge/>`-Komponente (`<QuantumSafeBadge/>` ist ein veralteter Alias) zeigen einen Status-
 Indikator an, sobald das verbundene Konto einen registrierten PQC-Schlüssel besitzt. Beide lesen den
 Status über `getPqcStatus` mit dem zusammengesetzten Client, sodass sie ihn ab `@qorechain/react`
 0.9.0 über REST lesen und gegen die öffentlichen Endpunkte funktionieren; 0.8.x konnte dort

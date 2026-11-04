@@ -196,7 +196,7 @@ Códigos de error, compartidos por los tres lenguajes, y qué debería hacer un 
 
 ## Dónde se publica {#where-published}
 
-Comprobado el 27 de octubre de 2026 contra cada registro.
+Comprobado contra cada registro el 4 de noviembre de 2026 (sin cambios desde el 27 de octubre).
 
 | Registro | Paquete | Versión | Enlace |
 |---|---|---|---|

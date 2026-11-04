@@ -12,16 +12,20 @@ sidebar_position: 2
 (`@qorechain/react`)، وعملاء Python وGo وRust وJava جميعها
 **منشورة** في سجلّاتها مع تكافؤ كامل مع السلسلة الأصلية (رسائل منمّطة الأنواع،
 والاستعلامات، ودورة حياة المعاملة، ومعاملات PQC الهجينة، واشتراكات
-WebSocket). خط الإصدارات الحالي هو **0.10**، ونُشر في 25 و26
-أكتوبر 2026 (جرى التحقق منه مقابل كل سجل في 27 أكتوبر 2026):
+WebSocket). الإصدار الحالي هو **0.12.0**، ونُشر في 30 أكتوبر 2026
+في اللغات الخمس جميعها (جرى التحقق منه مقابل كل سجل في 4 نوفمبر 2026):
 
 | السجل | الحزمة | الإصدار |
 | --- | --- | --- |
-| npm | `@qorechain/sdk` و`@qorechain/react` و`create-qorechain-dapp` | 0.10.0 |
-| PyPI | `qorechain-sdk` (الاستيراد `qorsdk`) | 0.10.0 |
-| crates.io | `qorechain-sdk` (الاستيراد `qorechain`) | 0.10.0 |
-| وكيل وحدات Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.10.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.10.0 (عميل Java عاد متوافقًا مع اللغات الأخرى؛ وكان 0.9.1 تحديثًا خاصًا بـ Java فقط) |
+| npm | `@qorechain/sdk` و`@qorechain/react` و`@qorechain/evm` و`@qorechain/svm` و`create-qorechain-dapp` | 0.12.0 |
+| PyPI | `qorechain-sdk` (الاستيراد `qorsdk`) | 0.12.0 |
+| crates.io | `qorechain-sdk` (الاستيراد `qorechain`) | 0.12.0 |
+| وكيل وحدات Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.12.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 (JDK 17 أو أحدث) |
+
+لا يوجد 0.11.0 لـ Python أو Rust أو Go أو Java: فقد كان لحزم npm إصدار 0.11.0 في
+29 أكتوبر 2026 (مجموعة أدوات مطوري السلسلة، انظر أدناه) وانتقلت كل لغة
+من 0.10.0 إلى 0.12.0 معًا.
 
 اختر لغتك أدناه.
 
@@ -33,7 +37,7 @@ WebSocket). خط الإصدارات الحالي هو **0.10**، ونُشر في
 كل إصدار من الـ SDK قبل **0.8.0** يوقّع الصيغة القديمة، أمّا **0.8.0** فتبحث عن
 التحوّل تحت اسم واحد فقط من اسمَي الترقية اللذين استخدمتهما الشبكتان (سجّلته
 الشبكة الرئيسية باسم `v3.2.0`، والشبكة التجريبية باسم `v3.1.98` ثم لاحقًا `v3.2.0`)،
-ولذلك توقّع الصيغة الخاطئة على الشبكة الرئيسية. استخدم **0.10.0** (أو **0.8.1** على
+ولذلك توقّع الصيغة الخاطئة على الشبكة الرئيسية. استخدم **0.12.0** (أو **0.8.1** على
 الأقل) في كل لغة؛ ويلزم **0.8.2 أو أحدث** لفتح
 [نافذة تفويض EVM](/sdk/guides/evm#evm-window). تقبل البُناة الهجينة خيار
 `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`)؛ و`"auto"` يسأل الشبكة
@@ -44,16 +48,57 @@ WebSocket). خط الإصدارات الحالي هو **0.10**، ونُشر في
 فـ `"auto"` يحلّ إلى v2 على الشبكتين، لأن كلتيهما طبّقت الترقية التي انتقلت إلى هذه الصيغة.
 :::
 
-## ما الذي يضيفه الإصدار 0.10.0 {#whats-new-0100}
+## ما الذي يضيفه الإصدار 0.12.0 {#whats-new-0120}
+
+الإصدار SDK 0.12.0 هو إصدار العميل للسلسلة **v3.2.5**، التي طبّقتها الشبكة الرئيسية عند
+الارتفاع 3,906,833 في 29 أكتوبر 2026 (وطبّقتها الشبكة التجريبية في 26 أكتوبر). وتعمل
+الشبكتان بالإصدار v3.2.6 منذ 4 نوفمبر (الشبكة الرئيسية) و27 أكتوبر (الشبكة التجريبية)؛ ولم
+تتغير صيغة التوقيع الهجين ولا العناوين ولا المنازل العشرية ولا الـ memo، فتبقى المعاملة
+المبنية بالإصدار 0.10.0 صالحة. وتنتقل TypeScript وPython وGo وRust وJava
+كلها إلى 0.12.0، مع `@qorechain/react` و`@qorechain/evm` و`@qorechain/svm`
+و`create-qorechain-dapp`. جرى التحقق من الإصدار في كل لغة بإرسال bank هجين
+على الشبكة التجريبية وبتسجيل مفتاح KEM وقراءته وإزالته هناك،
+إضافة إلى قراءات على الشبكة الرئيسية.
+
+| المجال | في 0.12.0 |
+| --- | --- |
+| نقاط النهاية العامة افتراضيًا | تشير الإعدادات المسبقة `mainnet` و`testnet` الآن إلى نقاط النهاية العامة (REST وRPC الإجماع وEVM JSON-RPC على الشبكتين، إضافة إلى EVM WebSocket على الشبكة التجريبية) بدلًا من localhost. لذا فإن `createClient()` المجرّد يتصل بالشبكة التجريبية العامة. انظر [الشبكة ونقاط النهاية](/sdk/reference/network#public-endpoints) |
+| الإعداد المسبق `localnet` | منافذ localhost التي كانت كل الإعدادات المسبقة تستخدمها قبل 0.12.0، ومعرّف السلسلة `qorechain-devnet`. اختره بـ `createClient({ network: "localnet" })` للإبقاء على السلوك القديم |
+| غاز دقيق للمعاملات الهجينة | على شبكة طبّقت v3.2.5 تكون الرسوم `"auto"` لمعاملة native هجينة هي `ceil(simulated x 1.02) + 2000`، لأن المحاكاة صارت تحتسب التحقق ما بعد الكمّي بنفسها. يطلب إرسال bank هجين نحو 171,600 غاز بدلًا من نحو 289,000، وتنخفض الرسوم معه. تحتفظ الشبكات الأقدم والمعاملات الكلاسيكية وحالة فشل جلب الخطة بالقاعدة السابقة؛ والمضاعف الذي تمرّره يحلّ محل أي من القاعدتين. `exactHybridGas` (ومكافئاتها في كل لغة) و`estimateGasDetails` في TypeScript (تبلّغ عن المحاكاة وحدّ الغاز والقاعدة التي حدّدته). وأضيف مسار الغاز التلقائي إلى Java |
+| سجل مفاتيح ML-KEM-1024 | ينشر الحساب مفتاح تغليف ML-KEM-1024 واحدًا (الخوارزمية 2، ‏1,568 بايت) ليشفّر إليه أي شخص: `msg.pqc.registerKemKey` و`msg.pqc.removeKemKey` (يُفحص المفتاح أولًا: الحجم، وكل معامل أصغر من 3329، وألا يكون كله أصفارًا)، و`validateKemPublicKey`، والقراءة `fetchKemKey` للمسار `/qorechain/pqc/v1/kem/{address}` (بصيغة bech32 أو `0x`). تحتاج الرسالتان إلى التوقيع الهجين. يستجيب المسار على الشبكة الرئيسية وعلى الشبكة التجريبية. لا تشفّر الـ SDK: للحمولات المختومة انظر [QoreSeal](/developer-tools/qoreseal) |
+| الحسابات المجرّدة | قراءات قواعد الإنفاق المخزَّنة لحساب ومفاتيحه المرتبطة (بما فيها الملغاة)، و`MsgUpdateConfig` (رسالة الحوكمة التي تبدّل الوحدة)، و`authenticators_count` في عرض الحساب |
+| فحوص قواعد الإنفاق | تُفحص القواعد كما تفحصها السلسلة: يجب أن يحدد denom من النوع `erc20/` أو `erc721/` أو `erc1155/` عنوان عقد بصيغة `0x`. وتُسمّى الرموز 8 (قاعدة إنفاق غير صالحة) و9 (الوحدة معطّلة) في `abstractaccount` |
+| معاملات الحوكمة | الرسالة `MsgUpdateParams` الخاصة بـ cross-VM (بما فيها عقود CosmWasm التي يجوز لـ precompile جسر EVM استدعاؤها) و`MsgUpdateParams` الخاصة بالـ rollup، وتُفحص كل منهما مقابل حدود السلسلة قبل التوقيع. وتحمل قراءة معاملات cross-VM الحقل `bridge_allowed_targets` |
+| ثابت الترقية والـ protos | `CHAIN_UPGRADE_V3_2_5`؛ وتعريفات protobuf متزامنة مع السلسلة v3.2.5 |
+| مجموعة أدوات مطوري السلسلة | من 0.11.0 (npm فقط) وهي مشمولة في 0.12.0: تصدّر `@qorechain/evm` سلسلتي viem ‏`qorechain` (‏9801) و`qorechainTestnet` (‏9800) ومساعدات نافذة تفويض EVM (`evmWindowStatus` و`openEvmWindowMessage`، وهي متاحة أيضًا باسم `@qorechain/evm/window` بدون viem). وفي `create-qorechain-dapp` قوالب `foundry` و`hardhat` و`viem-wagmi` و`cosmwasm`. وفي `@qorechain/react` المكوّن `PqcStatusBadge` (وتبقى أسماء `QuantumSafeBadge` القديمة أسماء بديلة مهجورة) |
+| إصلاحات | كانت `@qorechain/svm` المعطاة نقاط نهاية بلا `svmRpc` تستخدم localhost؛ وهي الآن تذكر أن نقطة النهاية غير مضبوطة. ويوجّه توليد شيفرة Python الاستيرادات بين protos الخاصة بـ QoreChain إلى داخل الحزمة |
+
+**تغيير في السلوك يجب فحصه عند الترقية.** إذا كانت شيفرتك تعتمد على القيمة
+الافتراضية localhost، فاختر `localnet` أو مرّر `endpoints`. نقاط نهاية الشبكة
+التجريبية العامة محدودة المعدل لكل IP، لذا ينبغي أن تشغّل حركة الإنتاج عقدتها
+الخاصة أو تستخدمها. لا يضبط أي إعداد مسبق نقطة gRPC ولا نقطة SVM على الشبكات العامة
+(معاملات SVM غير مفتوحة)، وليس للشبكة الرئيسية EVM WebSocket عام: والشيفرة التي تحتاج
+إلى إحداها تفشل بخطأ يسمّي نقطة النهاية المطلوب تمريرها، بدلًا من الرجوع
+إلى localhost. وفي Rust صارت نقاط النهاية الاختيارية `Option<String>`؛ وفي Python وGo
+وJava تكون نقطة النهاية غير المضبوطة `None` وسلسلة فارغة و`null` على التوالي.
+
+لا تُبلغ العقد عن إصدار ملفها التنفيذي. لاكتشاف ميزة، اسأل `isUpgradeApplied`
+عن كل اسم ترقية يجلبها، أو اقرأ `.version` من
+`https://download.qore.host/<net>/latest.json`.
+
+## ما الذي أضافه الإصدار 0.10.0 {#whats-new-0100}
 
 الإصدار SDK 0.10.0 هو إصدار العميل للسلسلة **v3.2.4**، التي طبّقتها الشبكة الرئيسية عند
 الارتفاع 3,742,566 في 23 أكتوبر 2026 (وطبّقتها الشبكة التجريبية عند الارتفاع 8,337,253
 في 19 أكتوبر). لم تتغير صيغة التوقيع ولا العناوين ولا المنازل العشرية ولا الـ memo
 ولا الرسوم، وتبقى المعاملة المبنية بالإصدار 0.9.0 صالحة. جرى التحقق من الإصدار في
-كل لغة بمعاملات حقيقية على الشبكة التجريبية. وليس فيه بُناة لأي شيء استُحدث بعد
-v3.2.4. وتعمل الشبكة الرئيسية بالإصدار v3.2.6 منذ 4 نوفمبر 2026 (الارتفاع 4,020,000، مقترح الحوكمة 15؛ وقبله v3.2.5 منذ 29 أكتوبر عند الارتفاع 3,906,833) ويستمر 0.10.0 في العمل عليها لأن صيغة التوقيع لم تتغير؛ أما إضافات v3.2.5 وv3.2.6 فلا توجد لها أدوات بناء في الـ SDK بعد. وقد طبّقت الشبكة التجريبية v3.2.5 وv3.2.6 في 26 و27
-أكتوبر 2026. الجديد
-في 0.10.0:
+كل لغة بمعاملات حقيقية على الشبكة التجريبية. ولم يكن فيه بُناة لأي شيء استُحدث بعد
+v3.2.4؛ وجاءت إضافات v3.2.5 مع [0.12.0](#whats-new-0120). وتعمل الشبكة الرئيسية
+بالإصدار v3.2.6 منذ 4 نوفمبر 2026 (الارتفاع 4,020,000، مقترح الحوكمة 15؛ وقبله v3.2.5
+منذ 29 أكتوبر عند الارتفاع 3,906,833) ويستمر 0.10.0 في العمل عليها لأن صيغة التوقيع
+لم تتغير. وقد طبّقت الشبكة التجريبية v3.2.5 وv3.2.6 في 26 و27
+أكتوبر 2026. ما جاء به 0.10.0
+(وكله ما زال في 0.12.0):
 
 | المجال | في 0.10.0 |
 | --- | --- |
@@ -66,8 +111,8 @@ v3.2.4. وتعمل الشبكة الرئيسية بالإصدار v3.2.6 منذ 
 | `ensurePqcRegistered` | كانت تعدّ حالةً بلا مفتاح عام مطابقةً؛ وهي الآن تقرأ المفتاح عبر `rest` وتقارنه. وإذا لم يتوفر مصدر لقراءته، تُبلغ النتيجة `keyVerified: false` بدلًا من الادعاء بأن المفتاح للمستدعي |
 | الرفض أثناء محاكاة الرسوم | الرفض الذي تعيده السلسلة نصًا فقط (مثل "no bonus to claim") يُسمّى الآن من أوصاف الأخطاء المسجَّلة في السلسلة في كل لغة: `decodeTxError` (TypeScript) و`SimulationRefusedError` (Python) و`tx.DecodeRefusalText` (Go) و`tx::decode_refusal_text` (Rust) و`TxError.decode` (Java) |
 
-انتقل `@qorechain/react` و`create-qorechain-dapp` إلى 0.10.0 معه (تعتمد العدّة على
-`@qorechain/sdk` ‏`^0.10.0`، وكذلك قوالب أداة التهيئة).
+انتقل `@qorechain/react` و`create-qorechain-dapp` إلى 0.10.0 معه؛ وكلاهما
+على 0.12.0 الآن.
 
 ## ما الذي أضافه الإصدار 0.9.0 {#whats-new-090}
 
@@ -143,7 +188,7 @@ npm i @qorechain/sdk
 npm i @qorechain/evm viem
 ```
 
-منشور على npm بالإصدار `0.8.0`.
+منشور على npm بالإصدار `0.12.0`. يصدّر سلسلتي viem ‏`qorechain` (معرّف السلسلة 9801) و`qorechainTestnet` (‏9800) ومساعدات [نافذة تفويض EVM](/sdk/guides/evm#evm-window).
 
 ### محوّل SVM
 
@@ -155,30 +200,30 @@ npm i @qorechain/evm viem
 npm i @qorechain/svm @solana/web3.js
 ```
 
-منشور على npm بالإصدار `0.8.0`.
+منشور على npm بالإصدار `0.12.0`.
 
 ### عدّة React
 
 `@qorechain/react` هي طبقة React الرسمية فوق `@qorechain/sdk` — مزوّد
-(provider)، وخطافات (hooks)، ومكوّنا `ConnectButton` / `QuantumSafeBadge`.
+(provider)، وخطافات (hooks)، ومكوّنا `ConnectButton` / `PqcStatusBadge`.
 تُعد `react` (‏>=18) اعتمادية نظيرة:
 
 ```bash
 npm i @qorechain/react
 ```
 
-منشورة على npm بالإصدار `0.10.0`؛ وتعتمد على `@qorechain/sdk` ‏`^0.10.0`. انظر [دليل عدّة React](/sdk/guides/react).
+منشورة على npm بالإصدار `0.12.0`؛ وتعتمد على `@qorechain/sdk` ‏`^0.12.0`. انظر [دليل عدّة React](/sdk/guides/react).
 
 ### أداة التهيئة (Scaffolder)
 
-تقوم `create-qorechain-dapp` (على npm، الإصدار `0.10.0`) بتهيئة تطبيق dApp جاهز للتشغيل:
+تقوم `create-qorechain-dapp` (على npm، الإصدار `0.12.0`) بتهيئة تطبيق dApp جاهز للتشغيل:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
 تعتمد ملفات `package.json` المُولَّدة على إصدار SDK الذي تُشحن معه أداة التهيئة
-(`@qorechain/sdk` ‏`^0.10.0`؛ ويستخدم قالب EVM الحزمة `@qorechain/evm` ‏`^0.8.0`).
+(`@qorechain/sdk` ‏`^0.12.0`؛ وتستخدم قوالب EVM الحزمة `@qorechain/evm` ‏`^0.12.0`). وفيها أيضًا قوالب `foundry` و`hardhat` و`viem-wagmi` و`cosmwasm` لأعمال العقود.
 كتب الإصدار 0.8.0 من أداة التهيئة نطاقات `^0.3.0`، وهي على إصدار 0.x تبقى
 داخل 0.3 ولا تستطيع التوقيع للشبكات الحيّة؛ فإذا هيّأت بالإصدار 0.8.0 فشغّل
 `npm i @qorechain/sdk@latest`. انظر [مرجع CLI](/sdk/reference/cli).
@@ -191,7 +236,7 @@ pip install qorechain-sdk
 
 تتطلب Python 3.10 فما فوق. تأتي الحزمة مزوّدة بتلميحات الأنواع وعلامة `py.typed`.
 
-> تُثبَّت التوزيعة باسم `qorechain-sdk` (منشورة على PyPI بالإصدار `0.10.0`)
+> تُثبَّت التوزيعة باسم `qorechain-sdk` (منشورة على PyPI بالإصدار `0.12.0`)
 > لكنها **تُستورد باسم `qorsdk`**:
 >
 > ```python
@@ -213,8 +258,8 @@ import (
 )
 ```
 
-منشورة كوحدة Go مستقلة بذاتها (الوسم `packages/go/v0.10.0`). ثبّت الإصدار
-صراحةً: `go get github.com/qorechain/qorechain-sdk/packages/go@v0.10.0`.
+منشورة كوحدة Go مستقلة بذاتها (الوسم `packages/go/v0.12.0`). ثبّت الإصدار
+صراحةً: `go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`.
 
 ## Rust
 
@@ -233,7 +278,7 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 تتطلب Rust 1.74 فما فوق. عملاء القراءة غير متزامنين (Tokio). تُستورد الحزمة (crate) باسم
 `qorechain`‏ (`use qorechain;`).
 
-> منشورة على crates.io باسم `qorechain-sdk` (0.10.0)؛ يقوم الأمر `cargo add qorechain-sdk`
+> منشورة على crates.io باسم `qorechain-sdk` (0.12.0)؛ يقوم الأمر `cargo add qorechain-sdk`
 > بتثبيت أحدث إصدار.
 
 ## Java
@@ -244,18 +289,18 @@ Maven‏ (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.10.0</version>
+  <version>0.12.0</version>
 </dependency>
 ```
 
 أو Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.10.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.12.0'
 ```
 
-> منشورة على Maven Central باسم `io.github.qorechain:qorechain-sdk` (0.10.0 هو
-> الأحدث وإصدار الإطلاق، جرى التحقق في 27 أكتوبر 2026). لا يحتوي Central على إصدار
+> منشورة على Maven Central باسم `io.github.qorechain:qorechain-sdk` (0.12.0 هو
+> الأحدث وإصدار الإطلاق، جرى التحقق في 4 نوفمبر 2026؛ ويحتاج JDK 17 أو أحدث). لا يحتوي Central على إصدار
 > 0.8.0 أو 0.8.1، لذا استخدم على الشبكات الحيّة 0.8.2 أو أحدث. وكان 0.9.1 إصدارًا
 > خاصًا بـ Java فقط نقل Bouncy Castle من 1.80 إلى 1.85 دون تغيير في واجهة API.
 
@@ -268,8 +313,11 @@ implementation 'io.github.qorechain:qorechain-sdk:0.10.0'
 | `@qorechain/pqc` | بدائيات ML-DSA / ML-KEM / SHAKE-256 المطابقة للمعايير فقط و`hybridSignBytes` (انظر [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing))؛ وهي متاحة أيضًا على PyPI وcrates.io وMaven Central ووكيل Go (Go `v0.2.3`) بالإصدار نفسه | 0.2.3 |
 | `@qorechain/handles` | حلّ `@handle` الموثَّق (`HandleClient`): أنت تقدّم المفتاح العام للسجل ومخزن التثبيت، وتثبّت العنوان بعد أن يراه المستخدم؛ ولا تثبّت الحزمة شيئًا من تلقاء نفسها. انظر [جسر السلسلة والـ handles](/developer-tools/chain-bridge#handles) | 0.1.0 |
 | `@qorechain/connect` | **مهجورة على npm ولم تعد تُصان؛ لا تستخدمها في أي عمل جديد. استخدم [`@qorechain/wallet-adapter`](/developer-tools/wallet-adapter) بدلًا منها (بدائل الاتصال بـ QoreX في [نظرة عامة على أدوات المطورين](/developer-tools/overview#group-connect)).** موصِّل واحد لمحافظ EVM وCosmos وSVM، مبني على محوّل المحفظة (نطاق اعتماديته النظيرة هو `@qorechain/wallet-adapter` ‏`^0.2.1`، الذي لا يشمل 0.4.0). وهو لا يفتح [نافذة تفويض EVM](/sdk/guides/evm#evm-window)، لذا يُرفض أي إرسال EVM عبره إلى أن يكون للحساب مفتاح مسجّل ونافذة مفتوحة | 0.2.1 |
-| `@qorechain/rdk` | عميل Rollup Development Kit (انظر [Rollups](/rollups/why)). ابتداءً من 0.7.0 يعتمد على `@qorechain/sdk` ‏`^0.10.0` و`@qorechain/evm` ‏`^0.8.0`، لذا يشارك التطبيق الذي يستخدم SDK 0.10.0 نسخة SDK واحدة مع العدّة (كان الإصدار 0.6.x يعتمد على `^0.9.0`، وعلامة caret على إصدار 0.x تبقى داخل 0.9، مما كان يمنح التطبيق الذي يستخدم SDK 0.10.0 نسخة SDK 0.9.x ثانية متداخلة). يوقّع هجينًا فقط عندما تمرّر `pqcKeypair`؛ وتعمل القراءات بدونه. وهو منشور أيضًا باسم `qorechain-rdk` على PyPI وcrates.io وMaven Central، وكوحدة Go (ثبّت `@v0.8.0`)؛ ومنذ 0.8.0 توقّع هذه العملاء الأربعة توقيعًا هجينًا أيضًا (كانت الإصدارات السابقة توقّع توقيعًا كلاسيكيًا فقط؛ ويحتاج Java إلى Java 21). انظر [RDK 0.8.0: التغييرات والحدود](/rollups/deploying-a-rollup#rdk-050-limits) | 0.8.0 |
+| `@qorechain/rdk` | عميل Rollup Development Kit (انظر [Rollups](/rollups/why)). ابتداءً من 0.7.0 يعتمد على `@qorechain/sdk` ‏`^0.10.0` و`@qorechain/evm` ‏`^0.8.0` (جرى التحقق على npm في 4 نوفمبر 2026). وعلامة caret على إصدار 0.x تبقى داخل ذلك الإصدار الفرعي، لذا يحصل التطبيق الذي يستخدم SDK 0.12.0 على نسخة SDK 0.10.x ثانية متداخلة من أجل العدّة؛ أبقِ الاثنتين منفصلتين (لا تمرّر عميلًا من نسخة إلى أخرى) إلى أن ينتقل إصدار من العدّة إلى 0.12. يوقّع هجينًا فقط عندما تمرّر `pqcKeypair`؛ وتعمل القراءات بدونه. وهو منشور أيضًا باسم `qorechain-rdk` على PyPI وcrates.io وMaven Central، وكوحدة Go (ثبّت `@v0.8.0`)؛ ومنذ 0.8.0 توقّع هذه العملاء الأربعة توقيعًا هجينًا أيضًا (كانت الإصدارات السابقة توقّع توقيعًا كلاسيكيًا فقط؛ ويحتاج Java إلى Java 21). انظر [RDK 0.8.0: التغييرات والحدود](/rollups/deploying-a-rollup#rdk-050-limits) | 0.8.0 |
 | `@qorechain/rdk-cli` | واجهة CLI للمشغّلين `qorollup` الخاصة بـ RDK. منذ 0.7.1 توقّع أوامر معاملاتها (`create` و`pause` و`resume` و`stop` و`withdraw`) توقيعًا هجينًا (كان 0.7.0 وما قبله يوقّع توقيعًا كلاسيكيًا فقط وترفضه الشبكتان)؛ وعند تثبيتها من npm تعمل ويطبع `--version` الإصدار المثبَّت (كان 0.6.1 وما قبله لا يطبع شيئًا) | 0.8.0 |
+| `@qorechain/qoreseal` | QoreSeal: تشفير حمولة إلى مفاتيح ML-KEM-1024 التي تنشرها الحسابات في سجل KEM (يسجّل SDK 0.12.0 المفاتيح ويقرؤها؛ ويتولى QoreSeal التشفير). متاحة أيضًا على PyPI (`qorechain-qoreseal`؛ عجلات macOS وLinux، وعجلة Windows في الإصدار التالي) وcrates.io وMaven Central (`io.github.qorechain:qoreseal` و`qoreseal-android`؛ ويحتاج مستهلكو Kotlin إلى Kotlin 2.3 أو أحدث) ووكيل وحدات Go (`github.com/qorechain/qoreseal/go`، ‏Go `v0.1.0`) وكحزمة Swift. انظر [QoreSeal](/developer-tools/qoreseal) | 0.1.0 |
+| `@qorechain/asset-kit` | Asset Kit: أدوات لرموز الأصول الواقعية ذات الأذونات على محرك EVM، مع عملاء بلغات TypeScript وPython وJava وGo وعقود Solidity (`forge install qorechain/qorechain-asset-kit@v0.1.0`). ترخيص Apache-2.0، عدا سكربتات واختبارات ERC-3643 (GPL-3.0-or-later). الوحدات الأصلية التي يصفها مقترح، وليست مبنية. وهي أيضًا `qorechain-asset-kit` على PyPI و`io.github.qorechain:asset-kit` على Maven Central. انظر [Asset Kit](/developer-tools/asset-kit) | 0.1.0 |
+| `@qorechain/qoresign` | QoreSign: توقيع المحافظ والواجهات الخلفية، و`inspectTransaction` لفحص طبقة ما بعد الكمّي في معاملة مثبَّتة. متاحة أيضًا على PyPI وcrates.io وMaven Central. انظر [QoreSign](/qoresign/overview) | 0.1.1 |
 | `create-qorechain-rollup` | أداة تهيئة بدايات الـ rollup؛ تعتمد قوالبها على `@qorechain/rdk` ‏`^0.8.0` وتوقّع هجينًا حين تستطيع استخلاص مفتاحك ما بعد الكمّي من `QORE_MNEMONIC` أو `QORE_PQC_SEED_HEX` | 0.8.0 |
 
 ## التالي

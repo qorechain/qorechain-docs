@@ -9,7 +9,7 @@ sidebar_position: 30
 
 QoreSeal este o bibliotecă open-source care criptează date către conturi QoreChain cu ML-KEM-1024 (FIPS 203). Un cont își publică pe lanț cheia publică ML-KEM-1024; oricine poate apoi cripta o sarcină utilă pe care acel cont, și orice alt destinatar adăugat de expeditor, o poate citi. Este pentru dezvoltatorii de dApp-uri care au nevoie de sarcini utile confidențiale (memo-uri, facturi, documente, oferte), pentru auditori care au nevoie de acces de vizualizare și pentru operatorii de grupuri private și sidechain-uri. Compune primitive standard și nu implementează niciuna proprie. Versiunea **0.1.0**, Apache-2.0, întreținută de QoreChain Association.
 
-Situația la 30 octombrie 2026 (mainnet-ul rulează v3.2.6 din 4 noiembrie, iar ruta de citire încă răspundea acolo în acea zi): criptarea în sine funcționează offline oriunde, fără rețea și fără cont. Criptarea către o adresă citită de pe lanț are nevoie de registrul de chei KEM, care este **live pe testnet** (`qorechain-diana`) și, de când mainnet-ul (`qorechain-vladi`) a aplicat v3.2.5 pe 29 octombrie 2026, **ruta sa de citire răspunde și pe mainnet** (niciun cont nu a publicat acolo o cheie pe care această pagină să o poată găsi). Pachetul este publicat pentru Rust, Go, Python, Swift, Kotlin/JVM și Android. Pachetul TypeScript `@qorechain/qoreseal` **urmează** și nu este încă pe npm. Construcția este o schiță, în așteptarea unei revizuiri externe înainte de 1.0.
+Situația la 4 noiembrie 2026: criptarea în sine funcționează offline oriunde, fără rețea și fără cont. Criptarea către o adresă citită de pe lanț are nevoie de registrul de chei KEM, care este **live pe testnet** (`qorechain-diana`) și **live pe mainnet** (`qorechain-vladi`, care a aplicat v3.2.5 pe 29 octombrie 2026 și v3.2.6 pe 4 noiembrie): ruta sa de citire răspunde pe ambele. Niciun cont nu a publicat încă pe mainnet o cheie pe care această pagină să o poată găsi. Pachetul este publicat pentru TypeScript, Rust, Go, Python, Swift, Kotlin/JVM și Android. Construcția este o schiță, în așteptarea unei revizuiri externe înainte de 1.0.
 
 QoreSeal protejează conținutul unei sarcini utile, nimic altceva. Adresele, momentul tranzacțiilor, sumele transferurilor, dimensiunile plicurilor și numărul de destinatari rămân publice pe lanț. Nu este o metodă de a face tranzacțiile private.
 
@@ -72,15 +72,35 @@ Specificația este `spec/qoreseal-v1.md` din repository (stare: schiță, revizu
 
 | Limbaj | Instalare | Platformă minimă |
 |---|---|---|
+| TypeScript | `npm install @qorechain/qoreseal` | Node.js 20 sau mai nou; ES module și CommonJS; subpath-urile `/network` și `/testing` |
 | Rust | `cargo add qorechain-qoreseal` (numele bibliotecii `qoreseal`) | Rust stable |
 | Go | `go get github.com/qorechain/qoreseal/go@v0.1.0` | Go 1.25 |
 | Python | `pip install qorechain-qoreseal` (import `qoreseal`) | Python 3.9 sau mai nou; wheel-uri pentru macOS 11+ (arm64, x86_64) și Linux manylinux2014 (x86_64, aarch64); încă fără wheel pentru Windows |
 | Swift | `.package(url: "https://github.com/qorechain/qoreseal", from: "0.1.0")`, produs `QoreSeal` | iOS 16, macOS 13 |
 | Kotlin / JVM | `implementation("io.github.qorechain:qoreseal:0.1.0")` | Java 17; compilator Kotlin 2.3 sau mai nou (compilarea eșuează cu Kotlin 2.1) |
 | Android | `implementation("io.github.qorechain:qoreseal-android:0.1.0")` | API 24; reguli R8 keep incluse; compilator Kotlin 2.3 sau mai nou |
-| TypeScript | **urmează**: `@qorechain/qoreseal` nu este încă pe npm, deci nu există comandă de instalare | |
 
-Sursa TypeScript, exemplele sale și ajutoarele de rețea sunt în repository și rulează de acolo după `pnpm install && pnpm build`. Până la publicarea pachetului npm, tratați repository-ul ca mod de a folosi TypeScript și așteptați-vă la numele de pachet de mai sus.
+Pachetul TypeScript include ajutoarele de rețea (`@qorechain/qoreseal/network`: `fetchKemKey`, `fetchMlkemPublicKey`, `resolveRecipient`, `sealToAddresses`). Dependențele sale sunt `@qorechain/pqc` 0.2.3, `@qorechain/qoresign` 0.1.0 și bibliotecile noble și scure.
+
+### Sigilare și deschidere offline (TypeScript) {#quickstart-typescript}
+
+Din quickstart-urile testate din hub-ul pentru dezvoltatori (manifestul îl marchează ca testat, 29 octombrie 2026). A fost rulat din nou pe 4 noiembrie 2026 după `npm install @qorechain/qoreseal@0.1.0` într-un proiect gol, cu Node.js 26. Fără rețea, fără cont.
+
+```ts
+import { generateSealKeys, open, recipientOf, seal, envelopeToText } from "@qorechain/qoreseal";
+
+const alice = generateSealKeys(), bob = generateSealKeys();
+const envelope = seal({
+  chainId: "qorechain-diana",
+  purpose: "invoice",
+  recipients: [recipientOf(alice), recipientOf(bob)],
+  plaintext: new TextEncoder().encode("amount due: 120 QOR"),
+});
+const pt = open({ chainId: "qorechain-diana", purpose: "invoice", envelope, keys: bob });
+console.log(envelopeToText(envelope).slice(0, 9), new TextDecoder().decode(pt));
+```
+
+A afișat `qoreseal: amount due: 120 QOR`.
 
 ### Quickstart 1: sigilare și deschidere offline (Python) {#quickstart-python}
 
@@ -248,7 +268,7 @@ Erorile Python ridică `QoreSealError.Failure` cu un `code` stabil; erorile Go s
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm.qore.host` (chain ID 9801) | `https://evm-testnet.qore.host` (chain ID 9800) |
 
-Pe 30 octombrie 2026, interogarea registrului a răspuns `{"found":false,"key":null}` pentru un cont fără cheie pe ambele rețele (pe 27 octombrie mainnet-ul încă răspundea „Not Implemented”). O căutare în tranzacțiile mainnet-ului din 30 octombrie nu a găsit încă niciun `MsgRegisterKEMKey`, deci publicarea unei chei pe mainnet nu a fost exersată cap-coadă de această pagină.
+Pe 4 noiembrie 2026, interogarea registrului a răspuns `{"found":false,"key":null}` pentru un cont fără cheie pe ambele rețele (pe 27 octombrie mainnet-ul încă răspundea „Not Implemented”). O căutare în tranzacțiile mainnet-ului din 4 noiembrie nu a găsit încă niciun `MsgRegisterKEMKey`, deci publicarea unei chei pe mainnet nu a fost exersată cap-coadă de această pagină.
 
 - Sigilarea și deschiderea offline, inclusiv cheile de auditor transmise direct, grupurile private și loturile, nu au nevoie de rețea și nici de cont.
 - Criptarea către o adresă cere ca destinatarul să fi publicat în registru o cheie ML-KEM-1024 și, pentru modul hibrid, o carte de destinatar.
@@ -257,17 +277,17 @@ Pe 30 octombrie 2026, interogarea registrului a răspuns `{"found":false,"key":n
 
 ## Unde este publicat {#where-published}
 
-Verificat pe 27 octombrie 2026 în fiecare registru.
+Verificat în fiecare registru pe 4 noiembrie 2026. Toate cele șapte intrări servesc 0.1.0.
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|
+| npm | `@qorechain/qoreseal` | 0.1.0 | [npmjs.com/package/@qorechain/qoreseal](https://www.npmjs.com/package/@qorechain/qoreseal) |
 | crates.io | `qorechain-qoreseal` | 0.1.0 | [crates.io/crates/qorechain-qoreseal](https://crates.io/crates/qorechain-qoreseal) |
 | Go module proxy | `github.com/qorechain/qoreseal/go` | v0.1.0 (tag `go/v0.1.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoreseal/go) |
 | PyPI | `qorechain-qoreseal` | 0.1.0 (wheel-uri pentru macOS arm64 și x86_64, Linux x86_64 și aarch64, plus sursa) | [pypi.org/project/qorechain-qoreseal](https://pypi.org/project/qorechain-qoreseal/) |
 | Swift Package Manager | `QoreSeal` din `github.com/qorechain/qoreseal` | 0.1.0 (binar `QoreSealFFI.xcframework.zip` în release-ul GitHub) | [release v0.1.0](https://github.com/qorechain/qoreseal/releases/tag/v0.1.0) |
 | Maven Central | `io.github.qorechain:qoreseal` | 0.1.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal) |
 | Maven Central | `io.github.qorechain:qoreseal-android` | 0.1.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoreseal-android) |
-| npm | `@qorechain/qoreseal` | încă nepublicat (urmează) | |
 
 Proiectele care folosesc oricare dintre artefactele Maven au nevoie de compilatorul Kotlin 2.3 sau mai nou. Artefactul Kotlin/JVM include biblioteci native pentru macOS (arm64, x86_64), Linux (x86_64, arm64) și Windows (x86_64); artefactul Android acoperă arm64-v8a, armeabi-v7a și x86_64.
 
@@ -285,9 +305,9 @@ Sursa: [github.com/qorechain/qoreseal](https://github.com/qorechain/qoreseal) (r
 - **Eliminarea sau rotirea unei chei nu șterge și nu recriptează nimic.** Datele sigilate către o cheie veche rămân lizibile de oricine o deține; păstrați seed-urile sau indexurile vechi.
 - **Membrii eliminați din grup** păstrează cheile epocilor din care au făcut parte. Membrii noi citesc începând cu epoca alăturării, cu excepția cazului în care li se sigilează chei mai vechi.
 - **Chain id-ul și scopul nu sunt în plic;** destinatarul trebuie să le cunoască.
-- **Registrul pe mainnet:** ruta de citire este live din v3.2.5; nicio cheie nu fusese publicată pe mainnet la verificare, iar spațiul de nume EVM JSON-RPC `qor_` nu este expus pe `evm.qore.host` (folosiți ruta REST).
+- **Registrul pe mainnet:** ruta de citire este live din v3.2.5; nicio cheie nu fusese publicată pe mainnet la verificarea din 4 noiembrie 2026, iar spațiul de nume EVM JSON-RPC `qor_` nu este expus pe `evm.qore.host` (folosiți ruta REST).
 - **Pre-1.0, construcția în așteptarea revizuirii externe.** Versiunile minore pot schimba API-ul. Citiți specificația înainte de a vă baza pe ea.
-- **Încă fără pachet npm** și încă fără wheel Python pentru Windows.
+- **Încă fără wheel Python pentru Windows** (doar macOS și Linux; celelalte platforme compilează din distribuția sursă, care necesită Rust).
 
 ## Note de securitate {#security}
 

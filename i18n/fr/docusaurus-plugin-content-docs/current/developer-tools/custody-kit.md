@@ -293,7 +293,7 @@ Raisonnez sur le codespace et le code ensemble, et conservez le log brut.
 
 ## Où c'est publié {#where-published}
 
-Vérifié auprès des registres le 27 octobre 2026.
+Vérifié auprès des registres le 4 novembre 2026 (versions et tags inchangés depuis le 27 octobre).
 
 | Registre | Package | Version | Lien |
 |---|---|---|---|

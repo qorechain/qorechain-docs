@@ -16,7 +16,7 @@ un pacchetto workspace autonomo
 con il proprio `README.md`, `.env.example` e un singolo `index.ts`. Gli esempi
 leggono endpoint e mnemoniche dalle variabili d'ambiente con valori predefiniti
 sensati su localhost, e quelli che dipendono dalla rete falliscono in modo
-controllato con un suggerimento quando nessun nodo è raggiungibile.
+controllato con un suggerimento quando nessun nodo è raggiungibile. Dall'SDK 0.12.0 i preset puntano già agli endpoint pubblici, quindi nel tuo codice puoi eliminare i fallback `?? "http://localhost:..."` che compaiono negli snippet qui sotto e selezionare `network: "testnet"` o `"mainnet"`; tienili (o seleziona `localnet`) quando sviluppi contro un nodo sulla tua macchina.
 
 Dalla radice del repository, installa una sola volta, poi esegui un esempio qualsiasi:
 

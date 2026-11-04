@@ -42,15 +42,16 @@ AI 쌍과 크로스 VM 브리지는 두 네트워크 모두에서 비활성), `q
 있음), xQORE, 가스 추상화. 각 가이드는 해당되는 곳마다 이 주의 사항을
 반복합니다. 2026년 10월 27일에 라이브 엔드포인트를 기준으로 확인했으며, 2026년 11월 4일에는 메인넷의 활성 프리컴파일 목록이 여전히 비어 있었고 테스트넷의 목록에는 크로스 VM 브리지 `0x…0901`도 들어 있었습니다(다시 테스트하지 않음).
 
-게시된 SDK(0.10.0, 2026년 10월 26일)는 두 네트워크가 검증하는 형태(체인 상태로부터
+게시된 SDK(0.12.0, 2026년 10월 30일)는 두 네트워크가 검증하는 형태(체인 상태로부터
 결정되는 v2 하이브리드 sign-bytes)로 서명하며, 서명 형식, 주소, 소수 자릿수,
 메모, 수수료는 v3.2.3, v3.2.4, v3.2.5, v3.2.6에서 바뀌지 않았습니다(메인넷은 2026년 11월 4일부터 v3.2.6을 실행하며,
 높이 4,020,000, 거버넌스 제안 15이고, 테스트넷은 10월 27일부터입니다). 이후의 포스트 양자
 규칙에 대한 클라이언트 측 지원(키 등록 시 소유 증명, 범위가 제한된 EVM 윈도우,
 EIP-7702 동의 메시지)과 v3.2.4에 대한 지원(스테이킹 티어, 인증자 논스, 프로토콜
-기능 스위치)을 포함하며, 0.9.0 이전 버전은 첫 번째 그룹을 포함하지 않습니다.
+기능 스위치)과 v3.2.5에 대한 지원(하이브리드 트랜잭션의 정확한 가스,
+ML-KEM 키 레지스트리)을 포함하며, 0.9.0 이전 버전은 첫 번째 그룹을 포함하지 않습니다.
 [0.9.0 이전 버전](/sdk/install#before-090)과
-[0.10.0에서 추가된 것](/sdk/install#whats-new-0100)을 참고하세요.
+[0.12.0에서 추가된 것](/sdk/install#whats-new-0120)을 참고하세요.
 
 지갑 및 백엔드 서명: [QoreSign](/qoresign/overview)을 참고하세요.
 :::
@@ -104,7 +105,7 @@ SDK는 현재 ML-DSA-87 키 생성, 서명, 검증과 함께 하이브리드 트
   [인증자 및 위임 지출](/sdk/guides/authenticators)을 참고하세요.
 
 새로운 **`@qorechain/react`** 키트(프로바이더, 훅, `ConnectButton`,
-`QuantumSafeBadge`)는 하이브리드 ML-DSA-87 서명을 사용하는 dApp 구축을 기본
+`PqcStatusBadge`)는 하이브리드 ML-DSA-87 서명을 사용하는 dApp 구축을 기본
 경로로 만들어 줍니다 — [React 키트 가이드](/sdk/guides/react)를 참고하세요. 전체적인 근거는
 [왜 QoreChain SDK인가](/sdk/why)에서 확인하세요.
 
@@ -116,15 +117,15 @@ SDK는 원하는 언어로 개발할 수 있도록 패키지 제품군으로 배
 
 | 패키지 | 언어 | 설치 | 상태 |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | 게시됨 (npm, v0.10.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | 게시됨 (PyPI, v0.10.0) |
-| `qorechain-sdk` (Go 모듈) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 게시됨 (Go 프록시, 태그 `packages/go/v0.10.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | 게시됨 (crates.io, v0.10.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.10.0` | 게시됨 (Maven Central, v0.10.0) |
-| `@qorechain/evm` | TypeScript (EVM 어댑터) | `npm i @qorechain/evm viem` | 게시됨 (npm, v0.8.0) |
-| `@qorechain/svm` | TypeScript (SVM 어댑터) | `npm i @qorechain/svm @solana/web3.js` | 게시됨 (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (React 키트) | `npm i @qorechain/react` | 게시됨 (npm, v0.10.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 게시됨 (npm, v0.10.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | 게시됨 (npm, v0.12.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | 게시됨 (PyPI, v0.12.0) |
+| `qorechain-sdk` (Go 모듈) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 게시됨 (Go 프록시, 태그 `packages/go/v0.12.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | 게시됨 (crates.io, v0.12.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.12.0` | 게시됨 (Maven Central, v0.12.0, JDK 17 이상) |
+| `@qorechain/evm` | TypeScript (EVM 어댑터) | `npm i @qorechain/evm viem` | 게시됨 (npm, v0.12.0) |
+| `@qorechain/svm` | TypeScript (SVM 어댑터) | `npm i @qorechain/svm @solana/web3.js` | 게시됨 (npm, v0.12.0) |
+| `@qorechain/react` | TypeScript (React 키트) | `npm i @qorechain/react` | 게시됨 (npm, v0.12.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 게시됨 (npm, v0.12.0) |
 
 > Python 배포판은 `qorechain-sdk`라는 이름으로 설치되지만 **`qorsdk`로
 > import**합니다. 모든 클라이언트는 각 레지스트리에 게시되어 있습니다 —
@@ -138,16 +139,16 @@ Python, Go, Rust, Java 클라이언트는 TypeScript와 **완전한 네이티브
 트랜잭션 라이프사이클(자동 가스, 오류 디코딩, 트랜잭션 추적, 블록/트랜잭션
 검색), 하이브리드 포스트 양자 트랜잭션, 그리고 WebSocket 구독까지
 지원합니다. 이 모든 클라이언트는 **게시**되어 있습니다: TypeScript는
-npm(`@qorechain/sdk` 0.10.0), Python은 PyPI(`qorechain-sdk` 0.10.0, import
-`qorsdk`), Go는 모듈 프록시(태그 `packages/go/v0.10.0`), Rust는
-crates.io(`qorechain-sdk` 0.10.0), Java는 Maven
-Central(`io.github.qorechain:qorechain-sdk` 0.10.0)에 게시되어 있습니다.
-EVM/SVM 실행 어댑터(`@qorechain/evm`, `@qorechain/svm`, 둘 다 0.8.0),
-`@qorechain/react` 키트(0.10.0), `create-qorechain-dapp` 스캐폴딩 CLI(0.10.0)는
+npm(`@qorechain/sdk` 0.12.0), Python은 PyPI(`qorechain-sdk` 0.12.0, import
+`qorsdk`), Go는 모듈 프록시(태그 `packages/go/v0.12.0`), Rust는
+crates.io(`qorechain-sdk` 0.12.0), Java는 Maven
+Central(`io.github.qorechain:qorechain-sdk` 0.12.0)에 게시되어 있습니다.
+EVM/SVM 실행 어댑터(`@qorechain/evm`, `@qorechain/svm`, 둘 다 0.12.0),
+`@qorechain/react` 키트(0.12.0), `create-qorechain-dapp` 스캐폴딩 CLI(0.12.0)는
 TypeScript 전용이며 마찬가지로 npm에 게시되어 있습니다. 부속 패키지는
 [설치](/sdk/install#related-packages)를 참고하세요.
 
-## 0.6, 0.7, 0.8, 0.9, 0.10의 새로운 기능
+## 0.6부터 0.12까지의 새로운 기능 {#whats-new-in-06-07-08-09-and-010}
 
 **0.6.0 — 통합 eth-네이티브 계정 (체인 v3.1.83).** 하나의 `eth_secp256k1`
 키가 세 가지 주소 인코딩 모두로 표현되는 하나의 20바이트 아이덴티티이며,
@@ -221,7 +222,20 @@ mnemonic)`은 모든 언어에서 니모닉으로 복구할 수 있는 키를 �
 `ibcTimeoutTimestamp`가 추가되었습니다. `ensurePqcRegistered`는 이제 키 없이
 상태만 신뢰하지 않고 등록된 키를 비교하며, 수수료 시뮬레이션 중 텍스트로
 도착하는 체인의 거부는 모든 언어에서 명시적으로 표시됩니다.
-[0.10.0에서 추가된 것](/sdk/install#whats-new-0100)을 참고하세요.
+[0.10.0에서 추가되었던 것](/sdk/install#whats-new-0100)을 참고하세요.
+
+**0.12.0 — 체인 v3.2.5에 대한 클라이언트 지원.** `mainnet`과 `testnet` 프리셋은
+이제 기본값이 퍼블릭 엔드포인트입니다(`localnet` 프리셋, 체인 ID
+`qorechain-devnet`은 이전 localhost 포트를 유지합니다). 하이브리드 트랜잭션의
+`"auto"` 수수료는 v3.2.5를 적용한 네트워크에서 정확한 가스 규칙을 사용합니다
+(`ceil(simulated x 1.02) + 2000`, 하이브리드 뱅크 전송에 약 289,000 대신 약 171,600 가스).
+ML-KEM-1024 키 레지스트리에는 컴포저(`msg.pqc.registerKemKey`,
+`msg.pqc.removeKemKey`)와 조회(`fetchKemKey`)가 있으며, 메인넷에서 응답합니다.
+어카운트 추상화의 지출 규칙과 연결된 키에 대한 조회와, 크로스 VM 및 롤업 파라미터 제안을 위한
+검증된 빌더도 있습니다. 체인 개발자 키트
+(EVM 및 QoreChain Native 템플릿, 두 네트워크를 위한 viem 체인)도 포함됩니다.
+npm 밖에는 0.11.0이 없었으며, 다른 언어는 0.10.0에서 0.12.0으로 올라갔습니다.
+[0.12.0에서 추가된 것](/sdk/install#whats-new-0120)을 참고하세요.
 
 ## 다음 단계
 

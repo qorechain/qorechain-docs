@@ -326,13 +326,31 @@ incrémenté à chaque exécution réussie.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` est un compteur du même type.
 
-Depuis la chaîne v3.2.4 (les deux réseaux servent la route) et le SDK 0.10.0, vous
+Depuis la chaîne v3.2.4 (les deux réseaux servent la route) et le SDK 0.10.0 ou ultérieur, vous
 pouvez lire le compteur au lieu de le suivre : `fetchAuthNonce({ rest, address, pubkey })`
 appelle `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` et renvoie
 `{ nonce, linked }`. Une clé qui n'a jamais exécuté renvoie 0, et le compteur est conservé
 même pour une clé qui n'est plus liée (`linked` indique laquelle). Envoyer une valeur qui n'est pas le compteur actuel de la chaîne provoque un
 rejet pour rejeu (code 11 de `abstractaccount`, voir ci-dessous). Avec un SDK ou une chaîne plus ancien, suivez-le pour chaque clé liée : 0 pour une clé nouvellement liée,
 +1 après chaque exécution acceptée par la chaîne.
+
+## Lire les règles stockées et les clés liées {#reads}
+
+Depuis la chaîne v3.2.5 (SDK 0.12.0), les deux réseaux peuvent être interrogés sur ce qu'un
+compte a stocké, au lieu de le reconstituer à partir des transactions :
+
+* `fetchSpendingRules({ rest, address })` lit les règles de dépense, à l'échelle du compte et
+  par clé liée (`GET /qorechain/abstractaccount/v1/accounts/{address}/spending_rules`).
+* `fetchAuthenticators({ rest, address })` lit les clés liées, y compris les clés
+  révoquées (`.../accounts/{address}/authenticators`).
+* `msg.abstractaccount.updateConfig` est le message de gouvernance qui fixe les limites du
+  module (l'autorité est le compte de module de gouvernance, un compte ordinaire ne peut donc
+  pas l'envoyer). Le SDK vérifie les valeurs avant de signer.
+
+Les règles sont vérifiées comme la chaîne les vérifie : un denom `erc20/`, `erc721/` ou `erc1155/`
+doit désigner une adresse de contrat `0x`, et les codes 8 (règle de dépense invalide)
+et 9 (module désactivé) du module sont nommés. Le module est toujours désactivé sur le mainnet
+et activé sur le testnet.
 
 ## Le schéma de permissions
 

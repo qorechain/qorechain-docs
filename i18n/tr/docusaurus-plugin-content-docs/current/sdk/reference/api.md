@@ -114,7 +114,16 @@ projesinden de yeniden üretebilirsiniz.
   `fetchStakingTierPool`); `fetchAuthNonce`; `fetchProtocolFeatures` /
   `isProtocolFeatureEnabled`; PQC durumunda `possessionProven`;
   `ibcTimeoutTimestamp`; `CHAIN_UPGRADE_V3_2_4`. Bkz.
-  [0.10.0'ın ekledikleri](/sdk/install#whats-new-0100).
+  [0.10.0'ın eklediği](/sdk/install#whats-new-0100).
+- **Zincir v3.2.5 (0.12.0):** ML-KEM-1024 anahtar kayıt defteri (`msg.pqc.registerKemKey` /
+  `removeKemKey`, `validateKemPublicKey`, `fetchKemKey`, `parseKemKey`,
+  `KEM_ALGORITHM_ML_KEM_1024`, `ML_KEM_1024_PUBLIC_KEY_SIZE`); hibrit işlemler için
+  kesin gas (`exactHybridGas`, `EXACT_GAS_MULTIPLIER`, `EXACT_GAS_HEADROOM`,
+  `TxClient.estimateGasDetails`); abstract-account okumaları (`fetchSpendingRules`,
+  `fetchAuthenticators`) ve `msg.abstractaccount.updateConfig`; denetlenmiş yönetişim
+  parametresi oluşturucuları (`validateCrossVmUpdateParams`, `validateRdkUpdateParams`);
+  `CHAIN_UPGRADE_V3_2_5`; `localnet` hazır ayarı. Bkz.
+  [0.12.0 neler ekliyor](/sdk/install#whats-new-0120).
 - **Kanonik PQC türetme (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; PQC kayıt mesajı
   `buildRegisterPqcKeyMsg`'dir (`ensurePqcRegistered` tarafından kullanılır).
@@ -142,10 +151,10 @@ sabitleri.
 
 | Dil | Oluşturulan dokümanlar | Kurulum |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — herkese açık API üzerinde docstring'ler | `0.10.0` sürümünde `pip install qorechain-sdk` (`qorsdk` olarak içe aktarılır) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.10.0` (etiket `packages/go/v0.10.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.10.0; `qorechain` olarak içe aktarılır) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.10.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — herkese açık API üzerinde docstring'ler | `0.12.0` sürümünde `pip install qorechain-sdk` (`qorsdk` olarak içe aktarılır) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.12.0` (etiket `packages/go/v0.12.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.12.0; `qorechain` olarak içe aktarılır) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.12.0` |
 
 Her paket aynı yüzeyi yansıtır (ağ hazır ayarları, denom/adres yardımcıları,
 HD türetme — birleşik eth-native hesaplar dahil — PQC temel bileşenleri ve

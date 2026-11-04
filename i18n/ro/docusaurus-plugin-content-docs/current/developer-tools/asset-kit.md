@@ -108,11 +108,11 @@ Pentru implementări, fereastra are nevoie de `allowed_targets` **gol** (o ferea
 | Contracte Solidity (din GitHub) | `git clone --recurse-submodules https://github.com/qorechain/qorechain-asset-kit` (tag `v0.1.0`), sau ca dependență Foundry: `forge install qorechain/qorechain-asset-kit@v0.1.0` | Foundry; solc 0.8.28 (fișierele T-REX și ONCHAINID folosesc 0.8.17); `evm_version = "cancun"` |
 | Java | `implementation("io.github.qorechain:asset-kit:0.1.0")` (Maven `io.github.qorechain:asset-kit:0.1.0`) | Java 17 |
 | Go | `go get github.com/qorechain/qorechain-asset-kit/clients/go@v0.1.0` (pachetul `assetkit`) | Go 1.23 |
-| Python | **În curând** pe PyPI ca `qorechain-asset-kit`; încă nepublicat. Astăzi, dintr-o clonă: `cd clients/python && python -m pip install .` (import `qorechain_asset_kit`) | Python 3.10 |
-| TypeScript | **În curând** pe npm ca `@qorechain/asset-kit`; încă nepublicat. Astăzi, dintr-o clonă: `pnpm install && pnpm -r build` | Node.js 22.12 |
+| Python | `pip install qorechain-asset-kit` (import `qorechain_asset_kit`) | Python 3.10 sau mai nou |
+| TypeScript | `npm install @qorechain/asset-kit` | Rulează pe Node.js 26; ES module și CommonJS |
 | Consola pentru emitenți | Dintr-o clonă: `pnpm install`, apoi `pnpm --filter @qorechain/issuer-console dev` (nepublicată ca pachet) | Un browser cu un portofel EIP-6963 |
 
-README-ul repository-ului și README-ul clientului TypeScript importă din `@qorechain/asset-kit` ca și cum ar fi instalat. Aceasta funcționează doar dintr-o clonă, până la release-ul npm.
+Pachetele Python, TypeScript, Go și Java sunt clienți doar pentru modulele native **propuse**. Ele nu conțin contracte; contractele Solidity și consola pentru emitenți vin din repository.
 
 Cu `forge install`, contractele se află sub `lib/qorechain-asset-kit/contracts/`, iar dependențele lor sub `lib/qorechain-asset-kit/contracts/lib/`. Remapările care compilează guard-ul, regula CMTAT și vault-urile:
 
@@ -163,7 +163,7 @@ Conectează un portofel EIP-6963, comută la QoreChain Testnet, apoi creează un
 
 ### Quickstart 4: construiește față de modulele propuse cu MockChain (Python, offline) {#quickstart-python}
 
-Din README-ul clientului Python. Până la release-ul PyPI, instalează dintr-o clonă (vezi [Instalare](#install)).
+Din README-ul clientului Python. Instalează cu `pip install qorechain-asset-kit`. Rulat pe 4 noiembrie 2026 într-un mediu virtual nou, cu pachetul PyPI 0.1.0.
 
 ```python
 from qorechain_asset_kit import MockChain, MockChainError, asset
@@ -179,6 +179,30 @@ except MockChainError as e:
 ```
 
 Rezultat observat: `ERROR_CODE_ADDRESS_FROZEN`. Același apel pe `ChainClient()` ridică `ChainUpgradeRequired` cu `module == "x/asset"` și `code == "CHAIN_UPGRADE_REQUIRED"`.
+
+### Quickstart 4b: același lucru în TypeScript (offline) {#quickstart-typescript}
+
+Din quickstart-urile testate din hub-ul pentru dezvoltatori (manifestul îl marchează ca testat, 29 octombrie 2026; rulat din nou pe 4 noiembrie 2026 după `npm install @qorechain/asset-kit@0.1.0`, Node.js 26).
+
+```ts
+import { ChainClient, ChainUpgradeRequired, MockChain, asset } from "@qorechain/asset-kit";
+
+const issuer = "qor1issuer", alice = "qor1alice", bob = "qor1bob";
+
+// Today: a controlled failure, no network request.
+await new ChainClient().asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "10" })
+  .catch((e) => e instanceof ChainUpgradeRequired); // e.module === "x/asset"
+
+// Development: the proposed rules, in memory.
+const chain = new MockChain();
+await chain.asset.createAsset({ issuer, assetId: "bond-2030", flags: { freezable: true, pausable: true } });
+await chain.asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "100" });
+await chain.asset.freeze({ agent: issuer, assetId: "bond-2030", holder: alice, frozen: true });
+const q = await chain.asset.canTransfer({ assetId: "bond-2030", from: alice, to: bob, amount: "1" });
+console.log("asset-kit: frozen transfer allowed =", q.allowed, "code =", q.code);
+```
+
+A afișat `asset-kit: frozen transfer allowed = false code = 6` (`6` este `asset.ErrorCode.ERROR_CODE_ADDRESS_FROZEN`).
 
 ### Quickstart 5: același lucru în Go (proxy de module v0.1.0) {#quickstart-go}
 
@@ -214,7 +238,7 @@ func main() {
 Rezultat observat: `mock mint error: <nil>`, apoi `true x/asset`. README-ul clientului Java are exemplul echivalent cu `MockChain`, `MsgCreateAsset.newBuilder()` și `MockChainError.code()`.
 
 :::note
-README-urile Go și TypeScript din repository conțin mici erori în fragmentele lor, care vor fi corectate în 0.1.1. Exemplul Go de mai sus este varianta corectată.
+README-ul Go din repository și README-ul livrat în pachetul npm 0.1.0 conțin mici erori în fragmentele lor. Exemplele Go și TypeScript de mai sus sunt variantele corectate.
 :::
 
 ## API principal {#main-api}
@@ -267,15 +291,15 @@ Comportamente ale rețelei de ținut minte: `PREVRANDAO` este o constantă (nici
 
 ## Unde este publicat {#where-published}
 
-Verificat live la 28 octombrie 2026 (release-ul GitHub, Maven Central și proxy-ul Go servesc 0.1.0; PyPI și npm returnează 404).
+Verificat față de fiecare registru pe 4 noiembrie 2026. Fiecare intrare servește 0.1.0.
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|
+| npm | `@qorechain/asset-kit` | 0.1.0 | https://www.npmjs.com/package/@qorechain/asset-kit |
+| PyPI | `qorechain-asset-kit` | 0.1.0 (wheel Python pur și sursă) | https://pypi.org/project/qorechain-asset-kit/ |
 | Maven Central | `io.github.qorechain:asset-kit` | 0.1.0 | https://central.sonatype.com/artifact/io.github.qorechain/asset-kit |
 | Proxy-ul de module Go | `github.com/qorechain/qorechain-asset-kit/clients/go` | v0.1.0 (tag `clients/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-asset-kit/clients/go |
-| PyPI | `qorechain-asset-kit` | **În curând** (încă nu este pe PyPI) | |
-| npm | `@qorechain/asset-kit` | **În curând** (nepublicat) | |
-| GitHub (contracte Solidity, consolă pentru emitenți, protos, documentație, șabloane juridice) | `qorechain/qorechain-asset-kit` | release v0.1.0 | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
+| GitHub (contracte Solidity, consolă pentru emitenți, protos, documentație, șabloane juridice) | `qorechain/qorechain-asset-kit` | release v0.1.0; `forge install qorechain/qorechain-asset-kit@v0.1.0` | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
 
 Repository: https://github.com/qorechain/qorechain-asset-kit. Întreținător: QoreChain Association.
 
@@ -294,8 +318,8 @@ Repository: https://github.com/qorechain/qorechain-asset-kit. Întreținător: Q
 - **ERC-7518 este o schiță de interfață**, nu o implementare. Partițiile pot fi modelate astăzi cu câte un token pe clasă sau tranșă, care partajează același registru de identitate sau aceeași regulă.
 - **CMTA RuleEngine v3** este încă publicat ca release candidates; regula funcționează direct ca `ruleEngine` al unui token și anunță ambele id-uri de interfață de regulă (`0x2497d6cb`, `0xb1a69752`).
 - **Consola pentru emitenți** nu înregistrează chei, nu deschide ferestre, nu implementează suite ERC-3643 sau vault-uri și nu gestionează roluri CMTAT, freeze-uri parțiale, documente sau snapshot-uri.
-- **Python și TypeScript nu sunt în registrele lor.** Folosește o clonă până la release-urile PyPI și npm; această pagină nu oferă nicio comandă de instalare din registru pentru ele.
-- **Erori în README.** Fragmentele Go și TypeScript din README-urile repository-ului au mici erori, care vor fi corectate în 0.1.1. Folosește quickstart-urile de pe această pagină.
+- **Pachetele din registre conțin doar clienții pentru propunere.** Contractele, scripturile de implementare și consola pentru emitenți nu sunt în niciun pachet; folosește repository-ul.
+- **Erori în README.** README-ul Go din repository și README-ul din pachetul npm au mici erori în fragmentele lor. Folosește quickstart-urile de pe această pagină.
 - **Șabloane juridice.** `legal/` conține trei ciorne pentru discuție: un titlu bazat pe registru în Elveția (art. 973d până la 973i din Codul obligațiilor), termeni de token din Liechtenstein conform TVTG (abordarea „token container") și un contur de angajare pentru un operator în cadrul EU DLT Pilot Regime (Regulamentul (UE) 2022/858). Ele nu au fost revizuite de un consilier juridic, nu reprezintă consultanță juridică și trebuie revizuite de un consilier calificat din jurisdicția relevantă înainte de orice utilizare. Folosirea lor sau a kitului nu spune nimic despre dacă o anumită emisiune îndeplinește vreo cerință legală. QoreChain Association nu acționează ca emitent, registrator, custode, loc de tranzacționare sau consilier juridic pentru niciun activ.
 - **Pre-1.0.** Fișierele proto propuse se pot schimba în orice versiune minoră.
 
@@ -318,7 +342,7 @@ Repository: https://github.com/qorechain/qorechain-asset-kit. Întreținător: Q
 - [Semnare post-cuantică](/developer-guide/post-quantum-signing) și [conturi și semnare PQC](/sdk/concepts/accounts-pqc): înregistrarea cheilor și semnătura hibridă.
 - [Dezvoltare EVM](/developer-guide/evm-development#evm-window): fereastra de autorizare EVM.
 - [Precompilările EVM](/developer-guide/evm-precompiles): `0x0A01` și `0x0A02`, active doar pe testnet.
-- [Chain developer kit](/developer-tools/chain-dev-sdk): șabloane Foundry, Hardhat și viem și helper-e pentru ferestre (SDK 0.11.0, în curând).
+- [Chain developer kit](/developer-tools/chain-dev-sdk): șabloane Foundry, Hardhat și viem și helper-e pentru ferestre (inclus în SDK 0.12.0).
 - [Custody kit](/developer-tools/custody-kit) și [QoreScan](/developer-tools/qorescan): kituri învecinate pentru custozi și pentru inventare de criptografie.
 - [Pachete pentru dezvoltatori](/developer-tools/overview): fiecare pachet și starea lui în registru.
 - Standarde din amonte: ERC-3643, CMTAT, ERC-4626, ERC-7540, ERC-7518.

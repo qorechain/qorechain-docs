@@ -16,7 +16,7 @@ un paquete de workspace autocontenido
 con su propio `README.md`, `.env.example` y un único `index.ts`. Leen los
 endpoints y las frases mnemotécnicas desde variables de entorno con valores
 predeterminados razonables para localhost, y los que dependen de la red fallan
-de forma controlada con una indicación cuando no hay ningún nodo accesible.
+de forma controlada con una indicación cuando no hay ningún nodo accesible. Desde el SDK 0.12.0 los preajustes ya apuntan a los endpoints públicos, así que en tu propio código puedes quitar los valores de respaldo `?? "http://localhost:..."` que aparecen en los fragmentos de abajo y seleccionar `network: "testnet"` o `"mainnet"`; consérvalos (o selecciona `localnet`) cuando desarrolles contra un nodo en tu máquina.
 
 Desde la raíz del repositorio, instala una sola vez y luego ejecuta cualquier ejemplo:
 

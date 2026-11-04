@@ -196,7 +196,7 @@ Error codes, shared by all three languages, and what a relayer should do (from t
 
 ## Where it is published {#where-published}
 
-Checked on 27 October 2026 against each registry.
+Checked against each registry on 4 November 2026 (unchanged since 27 October).
 
 | Registry | Package | Version | Link |
 |---|---|---|---|

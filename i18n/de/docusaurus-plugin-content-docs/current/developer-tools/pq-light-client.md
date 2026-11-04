@@ -196,7 +196,7 @@ Fehlercodes, in allen drei Sprachen gleich, und was ein Relayer tun sollte (aus 
 
 ## Wo es veröffentlicht ist {#where-published}
 
-Am 27. Oktober 2026 gegen jede Registry geprüft.
+Am 4. November 2026 gegen jede Registry geprüft (unverändert seit dem 27. Oktober).
 
 | Registry | Paket | Version | Link |
 |---|---|---|---|

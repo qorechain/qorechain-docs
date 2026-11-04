@@ -17,6 +17,27 @@ QoreChain'in EVM ön derlemeleri için tipli bağlamalar ekler.
 npm i @qorechain/evm viem
 ```
 
+## Zincir tanımları ve pencere yardımcıları (0.12.0)
+
+`@qorechain/evm`, `qorechain` (zincir kimliği 9801) ve `qorechainTestnet` (9800) viem zincir
+tanımlarını ve ayrıca `QORECHAIN_CHAINS` ile `QORECHAIN_REST_ENDPOINTS` değerlerini dışa aktarır; böylece
+bir viem veya wagmi uygulaması bunları elle yazmaz:
+
+```ts
+import { createPublicClient, http } from "viem";
+import { qorechainTestnet } from "@qorechain/evm";
+
+const publicClient = createPublicClient({ chain: qorechainTestnet, transport: http() });
+```
+
+Ayrıca [yetkilendirme penceresi](#evm-window) yardımcılarını da içerir: `evmWindowStatus` bir
+hesabın penceresini REST üzerinden okur, `openEvmWindowMessage` zincirin sınırlarını denetler
+ve hibrit imzalanacak Native şeridi `MsgOpenEVMWindow` mesajını oluşturur, `evmWindowCost` ve
+`weiToUqorCeil` bir pencerenin boyutunu hesaplar, `toQorAddress` / `toEvmAddress` ise bir
+eth-native hesabı iki kodlaması arasında dönüştürür. Pencere yardımcıları ayrıca viem olmadan
+`@qorechain/evm/window` olarak yayımlanır. Yalnızca npm'e çıkan 0.11.0 ile geldiler ve
+0.12.0'da bulunurlar.
+
 ## Bir istemci oluşturun
 
 `createEvmClient`, viem ile desteklenen bir istemci paketi döndürür. `chainId`

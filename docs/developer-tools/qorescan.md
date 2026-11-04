@@ -231,7 +231,7 @@ Exit codes: `0` success, `1` a scan or I/O error, `2` a usage error.
 
 ## Where it is published {#where-published}
 
-Versions were read from each registry on 27 October 2026.
+Versions were read from each registry on 4 November 2026 (unchanged since 27 October).
 
 | Registry | Package | Version | Link |
 |---|---|---|---|

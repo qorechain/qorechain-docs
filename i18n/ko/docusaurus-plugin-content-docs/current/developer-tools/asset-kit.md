@@ -108,11 +108,11 @@ QoreChain의 모든 EVM 트랜잭션은 송신자가 다음을 갖춘 경우에�
 | Solidity 컨트랙트(GitHub) | `git clone --recurse-submodules https://github.com/qorechain/qorechain-asset-kit` (태그 `v0.1.0`), 또는 Foundry 의존성으로: `forge install qorechain/qorechain-asset-kit@v0.1.0` | Foundry; solc 0.8.28 (T-REX와 ONCHAINID 파일은 0.8.17 사용); `evm_version = "cancun"` |
 | Java | `implementation("io.github.qorechain:asset-kit:0.1.0")` (Maven `io.github.qorechain:asset-kit:0.1.0`) | Java 17 |
 | Go | `go get github.com/qorechain/qorechain-asset-kit/clients/go@v0.1.0` (패키지 `assetkit`) | Go 1.23 |
-| Python | PyPI에 `qorechain-asset-kit`으로 **출시 예정**이며 아직 게시되지 않았습니다. 지금은 복제본에서: `cd clients/python && python -m pip install .` (import `qorechain_asset_kit`) | Python 3.10 |
-| TypeScript | npm에 `@qorechain/asset-kit`으로 **출시 예정**이며 아직 게시되지 않았습니다. 지금은 복제본에서: `pnpm install && pnpm -r build` | Node.js 22.12 |
+| Python | `pip install qorechain-asset-kit` (import `qorechain_asset_kit`) | Python 3.10 이상 |
+| TypeScript | `npm install @qorechain/asset-kit` | Node.js 26에서 실행; ES 모듈 및 CommonJS |
 | 발행자 콘솔 | 복제본에서: `pnpm install` 후 `pnpm --filter @qorechain/issuer-console dev` (패키지로 게시되지 않음) | EIP-6963 지갑이 있는 브라우저 |
 
-저장소 README와 TypeScript 클라이언트 README는 `@qorechain/asset-kit`이 설치된 것처럼 import합니다. 이는 npm 릴리스 전까지 복제본에서만 동작합니다.
+Python, TypeScript, Go, Java 패키지는 **제안된** 네이티브 모듈 전용 클라이언트입니다. 컨트랙트는 포함되어 있지 않으며, Solidity 컨트랙트와 발행자 콘솔은 저장소에서 가져옵니다.
 
 `forge install`을 사용하면 컨트랙트는 `lib/qorechain-asset-kit/contracts/` 아래에, 그 자체의 의존성은 `lib/qorechain-asset-kit/contracts/lib/` 아래에 놓입니다. 가드, CMTAT 규칙, 볼트를 컴파일하는 리매핑은 다음과 같습니다.
 
@@ -163,7 +163,7 @@ EIP-6963 지갑을 연결하고 QoreChain Testnet으로 전환한 다음, CMTAT 
 
 ### 퀵스타트 4: MockChain으로 제안된 모듈에 맞춰 개발(Python, 오프라인) {#quickstart-python}
 
-Python 클라이언트 README에서 가져왔습니다. PyPI 릴리스 전까지는 복제본에서 설치하세요([설치](#install) 참조).
+Python 클라이언트 README에서 가져왔습니다. `pip install qorechain-asset-kit`으로 설치하세요. 2026년 11월 4일에 새 가상 환경에서 PyPI 0.1.0 패키지로 실행했습니다.
 
 ```python
 from qorechain_asset_kit import MockChain, MockChainError, asset
@@ -179,6 +179,30 @@ except MockChainError as e:
 ```
 
 관찰된 출력: `ERROR_CODE_ADDRESS_FROZEN`. `ChainClient()`에 대한 같은 호출은 `module == "x/asset"`, `code == "CHAIN_UPGRADE_REQUIRED"`와 함께 `ChainUpgradeRequired`를 발생시킵니다.
+
+### 퀵스타트 4b: TypeScript에서 같은 작업(오프라인) {#quickstart-typescript}
+
+개발자 허브의 테스트된 퀵스타트에서 가져왔습니다(매니페스트에 2026년 10월 29일 테스트됨으로 표시되어 있으며, 2026년 11월 4일에 Node.js 26에서 `npm install @qorechain/asset-kit@0.1.0` 후 다시 실행했습니다).
+
+```ts
+import { ChainClient, ChainUpgradeRequired, MockChain, asset } from "@qorechain/asset-kit";
+
+const issuer = "qor1issuer", alice = "qor1alice", bob = "qor1bob";
+
+// Today: a controlled failure, no network request.
+await new ChainClient().asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "10" })
+  .catch((e) => e instanceof ChainUpgradeRequired); // e.module === "x/asset"
+
+// Development: the proposed rules, in memory.
+const chain = new MockChain();
+await chain.asset.createAsset({ issuer, assetId: "bond-2030", flags: { freezable: true, pausable: true } });
+await chain.asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "100" });
+await chain.asset.freeze({ agent: issuer, assetId: "bond-2030", holder: alice, frozen: true });
+const q = await chain.asset.canTransfer({ assetId: "bond-2030", from: alice, to: bob, amount: "1" });
+console.log("asset-kit: frozen transfer allowed =", q.allowed, "code =", q.code);
+```
+
+`asset-kit: frozen transfer allowed = false code = 6`이 출력되었습니다(`6`은 `asset.ErrorCode.ERROR_CODE_ADDRESS_FROZEN`입니다).
 
 ### 퀵스타트 5: Go에서의 동일한 예제(모듈 프록시 v0.1.0) {#quickstart-go}
 
@@ -214,7 +238,7 @@ func main() {
 관찰된 출력: `mock mint error: <nil>` 다음에 `true x/asset`. Java 클라이언트 README에는 `MockChain`, `MsgCreateAsset.newBuilder()`, `MockChainError.code()`를 사용하는 동등한 예제가 있습니다.
 
 :::note
-저장소의 Go 및 TypeScript README에는 스니펫에 작은 오류가 있으며 0.1.1에서 수정될 예정입니다. 위의 Go 예제는 수정된 버전입니다.
+저장소의 Go README와 0.1.0 npm 패키지에 포함된 README에는 스니펫에 작은 오류가 있습니다. 위의 Go 및 TypeScript 예제는 수정된 버전입니다.
 :::
 
 ## 주요 API {#main-api}
@@ -267,15 +291,15 @@ EVM 트랜잭션을 보내는 모든 작업의 요구 사항: 등록된 ML-DSA-8
 
 ## 게시 위치 {#where-published}
 
-2026년 10월 28일에 라이브로 확인했습니다(GitHub 릴리스, Maven Central, Go 프록시는 0.1.0을 제공하며 PyPI와 npm은 404를 반환합니다).
+2026년 11월 4일에 각 레지스트리에서 확인했습니다. 모든 항목이 0.1.0을 제공합니다.
 
 | 레지스트리 | 패키지 | 버전 | 링크 |
 |---|---|---|---|
+| npm | `@qorechain/asset-kit` | 0.1.0 | https://www.npmjs.com/package/@qorechain/asset-kit |
+| PyPI | `qorechain-asset-kit` | 0.1.0 (순수 Python 휠 및 소스) | https://pypi.org/project/qorechain-asset-kit/ |
 | Maven Central | `io.github.qorechain:asset-kit` | 0.1.0 | https://central.sonatype.com/artifact/io.github.qorechain/asset-kit |
 | Go 모듈 프록시 | `github.com/qorechain/qorechain-asset-kit/clients/go` | v0.1.0 (태그 `clients/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-asset-kit/clients/go |
-| PyPI | `qorechain-asset-kit` | **출시 예정** (아직 PyPI에 없음) | |
-| npm | `@qorechain/asset-kit` | **출시 예정** (게시되지 않음) | |
-| GitHub (Solidity 컨트랙트, 발행자 콘솔, protos, 문서, 법률 템플릿) | `qorechain/qorechain-asset-kit` | 릴리스 v0.1.0 | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
+| GitHub (Solidity 컨트랙트, 발행자 콘솔, protos, 문서, 법률 템플릿) | `qorechain/qorechain-asset-kit` | 릴리스 v0.1.0, `forge install qorechain/qorechain-asset-kit@v0.1.0` | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
 
 저장소: https://github.com/qorechain/qorechain-asset-kit. 유지보수: QoreChain Association.
 
@@ -294,8 +318,8 @@ EVM 트랜잭션을 보내는 모든 작업의 요구 사항: 등록된 ML-DSA-8
 - **ERC-7518은 인터페이스 스케치**이며 구현이 아닙니다. 파티션은 지금도 하나의 신원 레지스트리나 규칙을 공유하는 등급 또는 트랑슈별 토큰 하나로 모델링할 수 있습니다.
 - **CMTA RuleEngine v3**는 여전히 릴리스 후보로 게시되어 있습니다. 규칙은 토큰의 `ruleEngine`으로 직접 동작하며 두 규칙 인터페이스 id(`0x2497d6cb`, `0xb1a69752`)를 모두 알립니다.
 - **발행자 콘솔**은 키 등록, 윈도우 열기, ERC-3643 스위트나 볼트 배포, CMTAT 역할, 부분 동결, 문서, 스냅샷 관리를 하지 않습니다.
-- **Python과 TypeScript는 레지스트리에 없습니다.** PyPI와 npm 릴리스 전까지는 복제본을 사용하세요. 이 페이지는 이들에 대한 레지스트리 설치 명령을 제공하지 않습니다.
-- **README 오류.** 저장소 README의 Go 및 TypeScript 스니펫에는 0.1.1에서 수정될 작은 오류가 있습니다. 이 페이지의 퀵스타트를 사용하세요.
+- **레지스트리 패키지에는 제안 클라이언트만 들어 있습니다.** 컨트랙트, 배포 스크립트, 발행자 콘솔은 어떤 패키지에도 없으니 저장소를 사용하세요.
+- **README 오류.** 저장소의 Go README와 npm 패키지의 README에는 스니펫에 작은 오류가 있습니다. 이 페이지의 퀵스타트를 사용하세요.
 - **법률 템플릿.** `legal/`에는 논의를 위한 초안 세 개가 있습니다. 스위스 원장 기반 증권(채무법 제973d조부터 제973i조), TVTG에 따른 리히텐슈타인 토큰 약관("token container" 방식), EU DLT 파일럿 체제(규정 (EU) 2022/858)에 따른 운영자 계약 개요입니다. 이들은 법률 전문가의 검토를 받지 않았고 법률 자문이 아니며, 사용하기 전에 해당 관할의 자격 있는 법률 전문가가 반드시 검토해야 합니다. 이를 사용하는 것이나 키트를 사용하는 것은 특정 발행이 어떤 법적 요건을 충족하는지에 대해 아무것도 말해 주지 않습니다. QoreChain Association은 어떤 자산에 대해서도 발행자, 등록 기관, 수탁자, 거래 장소, 법률 자문가로서 행동하지 않습니다.
 - **1.0 이전.** 제안된 protos는 어떤 마이너 버전에서도 바뀔 수 있습니다.
 
@@ -318,7 +342,7 @@ EVM 트랜잭션을 보내는 모든 작업의 요구 사항: 등록된 ML-DSA-8
 - [포스트 퀀텀 서명](/developer-guide/post-quantum-signing)과 [계정과 PQC 서명](/sdk/concepts/accounts-pqc): 키 등록과 하이브리드 서명.
 - [EVM 개발](/developer-guide/evm-development#evm-window): EVM 인가 윈도우.
 - [EVM 프리컴파일](/developer-guide/evm-precompiles): `0x0A01`과 `0x0A02`, 테스트넷에서만 활성.
-- [체인 개발자 키트](/developer-tools/chain-dev-sdk): Foundry, Hardhat, viem 템플릿과 윈도우 헬퍼(SDK 0.11.0, 출시 예정).
+- [체인 개발자 키트](/developer-tools/chain-dev-sdk): Foundry, Hardhat, viem 템플릿과 윈도우 헬퍼(SDK 0.12.0에 포함).
 - [커스터디 키트](/developer-tools/custody-kit)와 [QoreScan](/developer-tools/qorescan): 수탁 기관 및 암호화 자산 목록화를 위한 인접 키트.
 - [개발자 패키지](/developer-tools/overview): 모든 패키지와 레지스트리 상태.
 - 업스트림 표준: ERC-3643, CMTAT, ERC-4626, ERC-7540, ERC-7518.

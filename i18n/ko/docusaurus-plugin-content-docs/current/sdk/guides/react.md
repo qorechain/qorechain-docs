@@ -17,19 +17,19 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
 `react`(>=18)는 피어 의존성이며, `@qorechain/sdk`는 직접 의존성입니다(키트
-0.10.0부터 `^0.10.0`. 0.x 버전에서 캐럿은 0.10 안에 머무르므로 SDK 패치가 두 번째
-사본을 설치하지 않습니다). `@qorechain/react` **0.10.0**을 사용하세요(0.9.0도 같은 방식으로 동작합니다). 0.8.0은
+0.12.0부터 `^0.12.0`. 0.x 버전에서 캐럿은 0.12 안에 머무르므로 SDK 패치가 두 번째
+사본을 설치하지 않습니다). `@qorechain/react` **0.12.0**을 사용하세요(0.9.0 이상도 같은 방식으로 동작합니다). 0.8.0은
 SDK 0.8.0에 고정되어 있는데, 이 버전은 메인넷에서 잘못된 하이브리드 형식으로
 서명하며, 그 이전의 0.8.x 릴리스는 주소 변경 후 오래된 잔액이나 상태를 표시할 수
 있습니다.
 
-:::caution React 키트(0.9.0 및 0.10.0)의 라이브 네트워크 제한 사항
+:::caution React 키트(0.9.0~0.12.0)의 라이브 네트워크 제한 사항
 `useTx`는 지갑의 서명자로 연결하며 포스트 양자 키쌍은 사용하지 않으므로 클래식
 서명만으로 전송하는데, 라이브 네트워크는 이를 거부합니다(Native 경로는 하이브리드
 ML-DSA-87 확장을 요구합니다). 따라서 `send` / `sendTokens`로는 메인넷이나
 테스트넷에 트랜잭션을 반영할 수 없습니다. 전송에는 SDK의 하이브리드 `TxClient`
 (`client.connectTx(signer, { pqcKeypair })`, [하이브리드 서명](/sdk/guides/quantum-safe#register-in-one-call)
-참고)를 사용하세요. `usePqcStatus`와 `<QuantumSafeBadge/>`는 프로바이더의 구성된
+참고)를 사용하세요. `usePqcStatus`와 `<PqcStatusBadge/>`는 프로바이더의 구성된
 클라이언트와 함께 `getPqcStatus`를 통해 상태를 읽는데, SDK 0.9.0부터 이는 REST
 (`/qorechain/pqc/v1/account/{address}`)로 읽으므로 `*.qore.host`에 대해서도
 작동합니다(키트 0.8.x는 퍼블릭 엔드포인트가 제공하지 않는 `qor_getPQCKeyStatus`를
@@ -135,23 +135,29 @@ function Send() {
 <ConnectButton wallets={["keplr", "leap", "evm"]} />
 ```
 
-### `<QuantumSafeBadge/>`
+### `<PqcStatusBadge/>` {#pqc-status-badge}
 
 주소에 등록된 포스트 양자 키가 있을 때(`usePqcStatus`를 통해) 상태 표시를
 보여주고, 그렇지 않으면 흐릿한 "등록되지 않음" 상태를 보여줍니다. 기본값은
-연결된 계정입니다.
+연결된 계정입니다. 기본 레이블은 "PQC key registered"와 "No PQC key"이며
+(`safeLabel` / `unsafeLabel`로 재정의), 루트 요소는
+같은 값을 갖는 `data-pqc-status`와 `data-quantum-safe`를 가집니다.
 
 ```tsx
-<QuantumSafeBadge />
-<QuantumSafeBadge address="qor1…" hideWhenUnsafe />
+<PqcStatusBadge />
+<PqcStatusBadge address="qor1…" hideWhenUnsafe />
 ```
+
+`PqcStatusBadge`는 키트 0.11.0에서 도입되었습니다. `QuantumSafeBadge`(`QuantumSafeBadgeProps`,
+`QuantumSafeRenderState` 포함)는 같은 컴포넌트의 더 이상 사용되지 않는 별칭으로 계속
+내보내지므로 기존 코드는 그대로 동작합니다.
 
 ## 한데 엮기
 
 ```tsx
 import {
   ConnectButton,
-  QuantumSafeBadge,
+  PqcStatusBadge,
   useAccount,
   useBalance,
 } from "@qorechain/react";
@@ -164,7 +170,7 @@ function Dashboard() {
       <ConnectButton wallets={["keplr", "leap", "evm"]} />
       {isConnected && (
         <p>
-          {balance?.amount ?? "…"} {balance?.denom} <QuantumSafeBadge />
+          {balance?.amount ?? "…"} {balance?.denom} <PqcStatusBadge />
         </p>
       )}
     </>

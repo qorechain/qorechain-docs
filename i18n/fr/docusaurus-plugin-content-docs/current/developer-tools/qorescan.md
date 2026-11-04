@@ -231,7 +231,7 @@ Codes de sortie : `0` succès, `1` erreur de scan ou d'E/S, `2` erreur d'utilisa
 
 ## Où il est publié {#where-published}
 
-Les versions ont été lues sur chaque registre le 27 octobre 2026.
+Les versions ont été lues sur chaque registre le 4 novembre 2026 (inchangées depuis le 27 octobre).
 
 | Registre | Paquet | Version | Lien |
 |---|---|---|---|

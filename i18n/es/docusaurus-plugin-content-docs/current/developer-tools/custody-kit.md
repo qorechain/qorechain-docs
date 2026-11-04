@@ -293,7 +293,7 @@ Ramifica según el codespace y el código juntos, y conserva el log en bruto.
 
 ## Dónde está publicado {#where-published}
 
-Comprobado contra los registros el 27 de octubre de 2026.
+Comprobado contra los registros el 4 de noviembre de 2026 (versiones y etiquetas sin cambios desde el 27 de octubre).
 
 | Registro | Paquete | Versión | Enlace |
 |---|---|---|---|

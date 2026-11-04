@@ -11,15 +11,17 @@ sidebar_position: 8
 
 Sì. La mainnet è **attiva** (chain id `qorechain-vladi`, attiva dal 7 giugno
 2026) esegue la versione della chain v3.2.6 (applicata all'altezza 4.020.000 il 4 novembre 2026, proposta di governance 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre 2026 e la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026); la testnet esegue la v3.2.6 dal 27 ottobre 2026. Anche il
-preset testnet (`qorechain-diana`) rimane disponibile. Entrambi i preset
-forniscono endpoint predefiniti su localhost; seleziona la rete con
-`createClient({ network: "mainnet" })` e sovrascrivi `endpoints` con gli URL
-dei tuoi nodi. Vedi [Rete ed endpoint](/sdk/reference/network).
+preset testnet (`qorechain-diana`) rimane disponibile. Dall'SDK 0.12.0 entrambi i preset
+usano per default gli endpoint pubblici; seleziona la rete con
+`createClient({ network: "mainnet" })` e sovrascrivi `endpoints` solo per il
+tuo nodo. Vedi [Rete ed endpoint](/sdk/reference/network).
 
 ## Perché le mie chiamate finiscono su localhost?
 
-`createClient()` usa per default gli endpoint **localhost**. Per parlare con
-un nodo reale, passa un oggetto `endpoints`:
+Stai usando un SDK **precedente alla 0.12.0**, i cui preset usano per default gli endpoint **localhost**:
+aggiorna, oppure passa un oggetto `endpoints`. Dalla 0.12.0 `createClient()` e
+`createClient({ network: "mainnet" })` usano gli endpoint pubblici, e il preset
+`localnet` è quello che usa localhost.
 
 ```ts
 const client = createClient({
@@ -30,6 +32,10 @@ const client = createClient({
   },
 });
 ```
+
+Se invece ricevi "endpoint ... is not configured for the mainnet preset", la chiamata
+ha bisogno di un endpoint che i preset pubblici non impostano (gRPC, un RPC SVM, il
+WebSocket EVM della mainnet); passalo in `endpoints`.
 
 Il percorso di firma (`connectTx`) richiede l'endpoint di consenso **`rpc`**;
 anche le letture QoreChain Native lo usano. Le letture REST usano `rest`; le chiamate
@@ -87,14 +93,14 @@ EVM), che è distinto dalla base Native `uqor` di 10^6.
 
 ## Quali pacchetti sono pubblicati, e dove?
 
-Tutti (verificato il 27 ottobre 2026). Il core TypeScript (`@qorechain/sdk`, 0.10.0),
-il kit React (`@qorechain/react`, 0.10.0), lo scaffolder `create-qorechain-dapp`
-(0.10.0) e gli adapter EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.8.0) sono su
-npm; il client Python è su PyPI (`pip install qorechain-sdk` alla 0.10.0, import
+Tutti (verificato il 4 novembre 2026). Il core TypeScript (`@qorechain/sdk`, 0.12.0),
+il kit React (`@qorechain/react`, 0.12.0), lo scaffolder `create-qorechain-dapp`
+(0.12.0) e gli adapter EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.12.0) sono su
+npm; il client Python è su PyPI (`pip install qorechain-sdk` alla 0.12.0, import
 `qorsdk`); il client Go è sul module proxy
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.10.0`); il client Rust è su
-crates.io (`cargo add qorechain-sdk`, 0.10.0); e il client Java è su Maven
-Central (`io.github.qorechain:qorechain-sdk:0.10.0`). Vedi [Installazione](/sdk/install)
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`); il client Rust è su
+crates.io (`cargo add qorechain-sdk`, 0.12.0); e il client Java è su Maven
+Central (`io.github.qorechain:qorechain-sdk:0.12.0`, JDK 17 o successivo). Vedi [Installazione](/sdk/install)
 per i comandi completi per ogni linguaggio.
 
 ## Il mio mnemonic viene rifiutato
@@ -124,7 +130,7 @@ tx. Se una tx ibrida fallisce con codice `pqc` 21 (`hybrid_verify_failed`), la
 causa è la versione dei sign-bytes, il chain-id, una libreria PQC obsoleta o una
 chiave non registrata o diversa, mai la firma hedged.
 Entrambe le reti verificano la forma v2 dei sign-bytes, quindi usa l'SDK
-**0.8.1 o successivo** (la 0.10.0 è quella attuale) e passa `rest` (oppure
+**0.8.1 o successivo** (la 0.12.0 è quella attuale) e passa `rest` (oppure
 `signBytesVersion`): i builder lanciano un errore su `qorechain-vladi` /
 `qorechain-diana` se manca uno dei due.
 Vedi
@@ -151,12 +157,16 @@ rifiutate on-chain, in ogni lane (incluso eth-native).
 
 ## Con quali versioni della chain funziona l'SDK?
 
-L'SDK **0.10.0** è la release client per la chain **v3.2.4** (mainnet dal 23
-ottobre 2026 all'altezza 3.742.566, proposta di governance 13; la testnet dal 19
-ottobre). La mainnet esegue la v3.2.6 dal 4 novembre 2026 (la v3.2.5 dal 29 ottobre); il formato di firma non è cambiato, quindi la 0.10.0 continua a funzionare lì. Aggiunge i builder e le letture dello staking-tier, `fetchAuthNonce` e
-le letture delle funzionalità di protocollo (vedi
-[Novità della 0.10.0](/sdk/install#whats-new-0100)), in aggiunta a ciò che la
-0.9.0 ha aggiunto per la v3.2.2 e la v3.2.3: builder per la prova di
+L'SDK **0.12.0** è la release client per la chain **v3.2.5** (mainnet dal 29 ottobre
+2026 all'altezza 3.906.833; la testnet dal 26 ottobre). Entrambe le reti eseguono la v3.2.6
+(la mainnet dal 4 novembre, la testnet dal 27 ottobre); il formato di firma non è
+cambiato, quindi la 0.12.0 funziona su entrambe. Aggiunge la regola esatta del gas per le
+transazioni ibride, i builder e la lettura del registro delle chiavi ML-KEM, le letture
+degli account astratti e i builder verificati dei parametri di governance (vedi
+[Novità della 0.12.0](/sdk/install#whats-new-0120)), in aggiunta a ciò che la 0.10.0 ha
+aggiunto per la v3.2.4 (i builder e le letture dello staking-tier, `fetchAuthNonce` e le
+letture delle funzionalità di protocollo, vedi
+[Cosa ha aggiunto la 0.10.0](/sdk/install#whats-new-0100)) e la 0.9.0 per la v3.2.2 e la v3.2.3: builder per la prova di
 possesso facoltativa alla registrazione (allegata automaticamente da
 `ensurePqcRegistered` una volta che la rete ha applicato la v3.2.3), per le
 finestre EVM con ambito limitato e per i messaggi di consenso EIP-7702.
@@ -165,8 +175,8 @@ dei sign-bytes ibridi, la registrazione, gli invii ibridi e la finestra EVM
 funzionano senza modifiche), ma non ha nessuno di quei builder: usa la CLI per
 quelli (vedi [Versioni precedenti alla 0.9.0](/sdk/install#before-090)). Il
 formato di firma non è cambiato nella v3.2.4, nella v3.2.5 né nella v3.2.6. Entrambe le reti eseguono la v3.2.6 (la testnet ha applicato la
-v3.2.5 il 26 ottobre 2026 e la v3.2.6 il 27 ottobre; la mainnet ha applicato la v3.2.5 il 29 ottobre e la v3.2.6 il 4 novembre); l'SDK
-non ha alcun builder per ciò che è stato introdotto dopo la v3.2.4, quindi le aggiunte della v3.2.5 (per esempio il registro delle chiavi ML-KEM e i percorsi governati cross-VM e dei contratti) non hanno ancora un builder nell'SDK e si raggiungono con la CLI.
+v3.2.5 il 26 ottobre 2026 e la v3.2.6 il 27 ottobre; la mainnet ha applicato la v3.2.5 il 29 ottobre e la v3.2.6 il 4 novembre). L'SDK 0.10.0 e la 0.9.0 continuano a funzionare su di esse ma non hanno builder per
+le aggiunte della v3.2.5 (il registro delle chiavi ML-KEM, la regola esatta del gas); con quelle release usa la CLI, oppure passa alla 0.12.0. La 0.12.0 è stata costruita e verificata contro la v3.2.5.
 
 ## La registrazione della mia chiave PQC è stata rifiutata ma la fee è stata prelevata
 
@@ -206,7 +216,7 @@ Il nonce è sbagliato. Sia `MsgExecuteEVM.nonce` sia `MsgExecuteCosmos.nonce` so
 la **sequenza dell'authenticator** della chiave collegata per `(account, pubkey)`:
 un contatore che la chain mantiene per ogni chiave collegata, parte da 0 e viene
 incrementato a ogni esecuzione riuscita. **Non** è il nonce EVM dell'account, e
-leggilo con `fetchAuthNonce` (SDK 0.10.0, chain v3.2.4 o successiva), oppure tienine traccia per ogni chiave
+leggilo con `fetchAuthNonce` (SDK 0.10.0 o successivo, chain v3.2.4 o successiva), oppure tienine traccia per ogni chiave
 collegata nelle versioni precedenti. Dalla v3.2.3 la lane EVM firma anche `evmAuthSignBytesV2`, che lega il
 gas limit della chiamata (`resolveEvmAuthDigestVersion` sceglie la forma). Usa il
 contatore che leggi (o di cui tieni traccia) per quella chiave e ri-firma.

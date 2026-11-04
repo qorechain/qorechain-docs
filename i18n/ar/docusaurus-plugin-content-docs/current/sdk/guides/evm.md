@@ -17,6 +17,26 @@ sidebar_position: 1
 npm i @qorechain/evm viem
 ```
 
+## تعريفات السلسلة ومساعدات النافذة (0.12.0)
+
+تصدّر `@qorechain/evm` تعريفات سلسلة viem ‏`qorechain` (معرّف السلسلة 9801) و
+`qorechainTestnet` (‏9800)، إضافة إلى `QORECHAIN_CHAINS` و`QORECHAIN_REST_ENDPOINTS`،
+فلا يحتاج تطبيق viem أو wagmi إلى كتابتها يدويًا:
+
+```ts
+import { createPublicClient, http } from "viem";
+import { qorechainTestnet } from "@qorechain/evm";
+
+const publicClient = createPublicClient({ chain: qorechainTestnet, transport: http() });
+```
+
+وفيها أيضًا مساعدات [نافذة التفويض](#evm-window): تقرأ `evmWindowStatus` نافذة حساب
+عبر REST، وتفحص `openEvmWindowMessage` حدود السلسلة وتؤلّف الرسالة `MsgOpenEVMWindow`
+الخاصة بمسار Native لتوقيعها هجينةً، وتحدّد `evmWindowCost` و`weiToUqorCeil` حجم
+نافذة، وتحوّل `toQorAddress` / `toEvmAddress` حساب eth-native بين ترميزيه. كما تُنشر
+مساعدات النافذة بدون viem باسم `@qorechain/evm/window`. وصلت في الإصدار 0.11.0 (npm
+فقط) وهي موجودة في 0.12.0.
+
 ## إنشاء عميل
 
 تُرجع `createEvmClient` حزمة عميل مدعومة بـ viem. تكشف تلقائيًا

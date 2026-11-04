@@ -231,7 +231,7 @@ Diğer komutlar: `qorescan tls` tek başına bir TLS taramasıdır, `qorescan so
 
 ## Nerede yayımlandı {#where-published}
 
-Sürümler her kayıt defterinden 27 Ekim 2026'da okundu.
+Sürümler her kayıt defterinden 4 Kasım 2026'da okundu (27 Ekim'den beri değişmedi).
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|

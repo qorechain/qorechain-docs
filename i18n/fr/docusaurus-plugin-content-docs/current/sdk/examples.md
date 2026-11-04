@@ -17,7 +17,11 @@ avec son propre `README.md`, son `.env.example` et un unique `index.ts`. Ils lis
 les points de terminaison et les phrases mnémoniques depuis des variables
 d'environnement avec des valeurs par défaut localhost raisonnables, et ceux qui
 dépendent du réseau échouent proprement avec un indice lorsqu'aucun nœud n'est
-accessible.
+accessible. Depuis le SDK 0.12.0, les préréglages pointent déjà vers les points de terminaison
+publics ; dans votre propre code, vous pouvez donc supprimer les valeurs de repli
+`?? "http://localhost:..."` qui figurent dans les extraits ci-dessous et choisir
+`network: "testnet"` ou `"mainnet"` ; conservez-les (ou choisissez `localnet`) lorsque vous développez
+contre un nœud sur votre machine.
 
 Depuis la racine du dépôt, installez une fois, puis exécutez n'importe quel exemple :
 

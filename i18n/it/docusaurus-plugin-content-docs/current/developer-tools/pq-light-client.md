@@ -196,7 +196,7 @@ Codici di errore, condivisi da tutti e tre i linguaggi, e cosa dovrebbe fare un 
 
 ## Dove è pubblicato {#where-published}
 
-Verificato il 27 ottobre 2026 su ciascun registry.
+Verificato su ciascun registry il 4 novembre 2026 (invariato dal 27 ottobre).
 
 | Registry | Pacchetto | Versione | Link |
 |---|---|---|---|

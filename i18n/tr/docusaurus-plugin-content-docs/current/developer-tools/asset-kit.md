@@ -108,11 +108,11 @@ Oluşturma anında sabitlenen veya yalnızca gevşetilebilen altı bayrak (`requ
 | Solidity sözleşmeleri (GitHub'dan) | `git clone --recurse-submodules https://github.com/qorechain/qorechain-asset-kit` (etiket `v0.1.0`), veya bir Foundry bağımlılığı olarak: `forge install qorechain/qorechain-asset-kit@v0.1.0` | Foundry; solc 0.8.28 (T-REX ve ONCHAINID dosyaları 0.8.17 kullanır); `evm_version = "cancun"` |
 | Java | `implementation("io.github.qorechain:asset-kit:0.1.0")` (Maven `io.github.qorechain:asset-kit:0.1.0`) | Java 17 |
 | Go | `go get github.com/qorechain/qorechain-asset-kit/clients/go@v0.1.0` (paket `assetkit`) | Go 1.23 |
-| Python | PyPI'da `qorechain-asset-kit` olarak **yakında**; henüz yayınlanmadı. Bugün, bir klondan: `cd clients/python && python -m pip install .` (içe aktarma `qorechain_asset_kit`) | Python 3.10 |
-| TypeScript | npm'de `@qorechain/asset-kit` olarak **yakında**; henüz yayınlanmadı. Bugün, bir klondan: `pnpm install && pnpm -r build` | Node.js 22.12 |
+| Python | `pip install qorechain-asset-kit` (içe aktarma `qorechain_asset_kit`) | Python 3.10 veya üstü |
+| TypeScript | `npm install @qorechain/asset-kit` | Node.js 26 üzerinde çalıştırın; ES modülü ve CommonJS |
 | İhraççı konsolu | Bir klondan: `pnpm install`, ardından `pnpm --filter @qorechain/issuer-console dev` (paket olarak yayınlanmadı) | EIP-6963 cüzdanı olan bir tarayıcı |
 
-Depo README'si ve TypeScript istemcisi README'si, `@qorechain/asset-kit` paketini kurulmuş gibi içe aktarır. Bu, npm sürümüne kadar yalnızca bir klondan çalışır.
+Python, TypeScript, Go ve Java paketleri yalnızca **önerilen** yerel modüllerin istemcileridir. Sözleşme içermezler; Solidity sözleşmeleri ve ihraççı konsolu depodan gelir.
 
 `forge install` ile sözleşmeler `lib/qorechain-asset-kit/contracts/` altında, kendi bağımlılıkları ise `lib/qorechain-asset-kit/contracts/lib/` altında durur. Guard'ı, CMTAT kuralını ve kasaları derleyen remapping'ler:
 
@@ -163,7 +163,7 @@ Bir EIP-6963 cüzdanına bağlanın, QoreChain Testnet'e geçin, ardından bir C
 
 ### Hızlı başlangıç 4: MockChain ile önerilen modüllere karşı geliştirin (Python, çevrimdışı) {#quickstart-python}
 
-Python istemcisi README'sinden. PyPI sürümüne kadar bir klondan kurun ([Kurulum](#install) bölümüne bakın).
+Python istemcisi README'sinden. `pip install qorechain-asset-kit` ile kurun. 4 Kasım 2026'da temiz bir sanal ortamda PyPI 0.1.0 paketiyle çalıştırıldı.
 
 ```python
 from qorechain_asset_kit import MockChain, MockChainError, asset
@@ -179,6 +179,30 @@ except MockChainError as e:
 ```
 
 Gözlemlenen çıktı: `ERROR_CODE_ADDRESS_FROZEN`. `ChainClient()` üzerindeki aynı çağrı, `module == "x/asset"` ve `code == "CHAIN_UPGRADE_REQUIRED"` ile `ChainUpgradeRequired` fırlatır.
+
+### Hızlı başlangıç 4b: aynısı TypeScript'te (çevrimdışı) {#quickstart-typescript}
+
+Geliştirici merkezindeki test edilmiş hızlı başlangıçlardan (manifesto bunu 29 Ekim 2026'da test edilmiş olarak işaretler; 4 Kasım 2026'da `npm install @qorechain/asset-kit@0.1.0` sonrasında, Node.js 26 ile yeniden çalıştırıldı).
+
+```ts
+import { ChainClient, ChainUpgradeRequired, MockChain, asset } from "@qorechain/asset-kit";
+
+const issuer = "qor1issuer", alice = "qor1alice", bob = "qor1bob";
+
+// Today: a controlled failure, no network request.
+await new ChainClient().asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "10" })
+  .catch((e) => e instanceof ChainUpgradeRequired); // e.module === "x/asset"
+
+// Development: the proposed rules, in memory.
+const chain = new MockChain();
+await chain.asset.createAsset({ issuer, assetId: "bond-2030", flags: { freezable: true, pausable: true } });
+await chain.asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "100" });
+await chain.asset.freeze({ agent: issuer, assetId: "bond-2030", holder: alice, frozen: true });
+const q = await chain.asset.canTransfer({ assetId: "bond-2030", from: alice, to: bob, amount: "1" });
+console.log("asset-kit: frozen transfer allowed =", q.allowed, "code =", q.code);
+```
+
+Şunu yazdırdı: `asset-kit: frozen transfer allowed = false code = 6` (`6`, `asset.ErrorCode.ERROR_CODE_ADDRESS_FROZEN` değeridir).
 
 ### Hızlı başlangıç 5: Go'da aynısı (modül proxy'si v0.1.0) {#quickstart-go}
 
@@ -214,7 +238,7 @@ func main() {
 Gözlemlenen çıktı: `mock mint error: <nil>` ardından `true x/asset`. Java istemcisi README'sinde `MockChain`, `MsgCreateAsset.newBuilder()` ve `MockChainError.code()` ile eşdeğer örnek vardır.
 
 :::note
-Depodaki Go ve TypeScript README'lerinin parçacıklarında küçük hatalar vardır; 0.1.1'de düzeltilecektir. Yukarıdaki Go örneği düzeltilmiş sürümdür.
+Depodaki Go README'sinin ve 0.1.0 npm paketiyle gelen README'nin parçacıklarında küçük hatalar vardır. Yukarıdaki Go ve TypeScript örnekleri düzeltilmiş sürümlerdir.
 :::
 
 ## Ana API {#main-api}
@@ -267,15 +291,15 @@ Akılda tutulması gereken ağ davranışı: `PREVRANDAO` sabittir (kitin hiçbi
 
 ## Nerede yayınlanıyor {#where-published}
 
-28 Ekim 2026'da canlı olarak kontrol edildi (GitHub sürümü, Maven Central ve Go proxy'si 0.1.0 sunuyor; PyPI ve npm 404 döndürüyor).
+Her kayıt defterine karşı 4 Kasım 2026'da kontrol edildi. Her kayıt 0.1.0 sunuyor.
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|
+| npm | `@qorechain/asset-kit` | 0.1.0 | https://www.npmjs.com/package/@qorechain/asset-kit |
+| PyPI | `qorechain-asset-kit` | 0.1.0 (saf Python wheel'i ve kaynak) | https://pypi.org/project/qorechain-asset-kit/ |
 | Maven Central | `io.github.qorechain:asset-kit` | 0.1.0 | https://central.sonatype.com/artifact/io.github.qorechain/asset-kit |
 | Go modül proxy'si | `github.com/qorechain/qorechain-asset-kit/clients/go` | v0.1.0 (etiket `clients/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-asset-kit/clients/go |
-| PyPI | `qorechain-asset-kit` | **Yakında** (henüz PyPI'da yok) | |
-| npm | `@qorechain/asset-kit` | **Yakında** (yayınlanmadı) | |
-| GitHub (Solidity sözleşmeleri, ihraççı konsolu, protolar, belgeler, hukuki şablonlar) | `qorechain/qorechain-asset-kit` | sürüm v0.1.0 | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
+| GitHub (Solidity sözleşmeleri, ihraççı konsolu, protolar, belgeler, hukuki şablonlar) | `qorechain/qorechain-asset-kit` | sürüm v0.1.0; `forge install qorechain/qorechain-asset-kit@v0.1.0` | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
 
 Depo: https://github.com/qorechain/qorechain-asset-kit. Bakımcı: QoreChain Association.
 
@@ -294,8 +318,8 @@ Depo: https://github.com/qorechain/qorechain-asset-kit. Bakımcı: QoreChain Ass
 - **ERC-7518 bir arayüz taslağıdır**, uygulama değildir. Bölümler bugün, aynı kimlik kayıt defterini veya kuralı paylaşan sınıf ya da dilim başına bir token ile modellenebilir.
 - **CMTA RuleEngine v3** hâlâ sürüm adayları olarak yayınlanıyor; kural doğrudan bir token'ın `ruleEngine`'i olarak çalışır ve her iki kural arayüzü kimliğini (`0x2497d6cb`, `0xb1a69752`) duyurur.
 - **İhraççı konsolu** anahtar kaydetmez, pencere açmaz, ERC-3643 paketlerini veya kasaları dağıtmaz, CMTAT rollerini, kısmi dondurmaları, belgeleri veya anlık görüntüleri yönetmez.
-- **Python ve TypeScript kayıt defterlerinde değildir.** PyPI ve npm sürümlerine kadar bir klon kullanın; bu sayfa onlar için bir kayıt defteri kurulum komutu vermez.
-- **README hataları.** Depo README'lerindeki Go ve TypeScript parçacıklarında küçük hatalar vardır; 0.1.1'de düzeltilecektir. Bu sayfadaki hızlı başlangıçları kullanın.
+- **Kayıt defteri paketleri yalnızca öneri istemcilerini içerir.** Sözleşmeler, dağıtım betikleri ve ihraççı konsolu hiçbir pakette yoktur; depoyu kullanın.
+- **README hataları.** Depodaki Go README'sinde ve npm paketindeki README'de parçacıklarda küçük hatalar vardır. Bu sayfadaki hızlı başlangıçları kullanın.
 - **Hukuki şablonlar.** `legal/` görüşme için üç taslak içerir: bir İsviçre defter tabanlı menkul kıymet (Borçlar Kanunu md. 973d ila 973i), TVTG kapsamında Liechtenstein token koşulları ("token container" yaklaşımı) ve AB DLT Pilot Rejimi (Tüzük (AB) 2022/858) kapsamında bir operatör için görevlendirme taslağı. Bir müşavir tarafından incelenmemiştir, hukuki tavsiye değildir ve herhangi bir kullanımdan önce ilgili yargı alanındaki nitelikli bir müşavir tarafından incelenmelidir. Bunları veya kiti kullanmak, belirli bir ihracın herhangi bir yasal gerekliliği karşılayıp karşılamadığı hakkında hiçbir şey söylemez. QoreChain Association hiçbir varlık için ihraççı, kayıt tutucu, saklayıcı, işlem yeri veya hukuk danışmanı olarak hareket etmez.
 - **1.0 öncesi.** Önerilen protolar herhangi bir minör sürümde değişebilir.
 
@@ -318,7 +342,7 @@ Depo: https://github.com/qorechain/qorechain-asset-kit. Bakımcı: QoreChain Ass
 - [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) ve [hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc): anahtar kaydı ve hibrit imza.
 - [EVM geliştirme](/developer-guide/evm-development#evm-window): EVM yetkilendirme penceresi.
 - [EVM precompile'ları](/developer-guide/evm-precompiles): `0x0A01` ve `0x0A02`, yalnızca testnet'te etkin.
-- [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk): Foundry, Hardhat ve viem şablonları ile pencere yardımcıları (SDK 0.11.0, yakında).
+- [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk): Foundry, Hardhat ve viem şablonları ile pencere yardımcıları (SDK 0.12.0'a dahildir).
 - [Saklama kiti](/developer-tools/custody-kit) ve [QoreScan](/developer-tools/qorescan): saklama kuruluşları ve kriptografi envanterleri için komşu kitler.
 - [Geliştirici paketleri](/developer-tools/overview): her paket ve kayıt defteri durumu.
 - Yukarı akış standartları: ERC-3643, CMTAT, ERC-4626, ERC-7540, ERC-7518.

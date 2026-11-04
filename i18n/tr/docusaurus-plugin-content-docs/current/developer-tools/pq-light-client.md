@@ -196,7 +196,7 @@ API üç dilde de aynıdır (TypeScript camelCase, Go PascalCase, Rust snake_cas
 
 ## Nerede yayımlandı {#where-published}
 
-27 Ekim 2026'da her kayıt defterine karşı denetlendi.
+4 Kasım 2026'da her kayıt defterine karşı denetlendi (27 Ekim'den beri değişmedi).
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|

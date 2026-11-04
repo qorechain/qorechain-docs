@@ -324,7 +324,7 @@ qorechaind tx pqc cosign convert-erc20.json --from mykey --pqc-key mypqc --chain
 | الرمز 27 | النافذة منتهية الصلاحية أو مستنفدة (تُظهر الرسالة أي حد استُنفد)، أو أن المعاملة خارج نطاق النافذة |
 | الرمز 28 | حدود نافذة غير صالحة عند فتحها، أو لا يوجد مفتاح مسجَّل عند تلك النقطة |
 
-مع SDK لغة TypeScript (الإصدار 0.8.2 وما بعده): `openEvmWindowMsg` و`closeEvmWindowMsg` و`fetchEvmWindow({ rest, address })` و`classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). يضيف SDK 0.9.0 خيارات النطاق (`nativeOnly` و`allowedTargets`) إلى `openEvmWindowMsg` وبُناة موافقة EIP-7702 (`authorizeEvmDelegationMsg` و`clearEvmDelegationMsg` و`fetchEvmDelegationConsent`)؛ أما الإصدارات السابقة لـ 0.9.0 فتبني النافذة غير المقيّدة بنطاق فقط، لذا استخدم `qorechaind` لبقية ذلك (انظر [دليل EVM في SDK](/sdk/guides/evm#evm-window-scope)).
+مع SDK لغة TypeScript (الإصدار 0.8.2 وما بعده): `openEvmWindowMsg` و`closeEvmWindowMsg` و`fetchEvmWindow({ rest, address })` و`classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). يضيف SDK 0.9.0 وما بعده (والإصدار 0.12.0 هو الحالي) خيارات النطاق (`nativeOnly` و`allowedTargets`) إلى `openEvmWindowMsg` وبُناة موافقة EIP-7702 (`authorizeEvmDelegationMsg` و`clearEvmDelegationMsg` و`fetchEvmDelegationConsent`)؛ أما الإصدارات السابقة لـ 0.9.0 فتبني النافذة غير المقيّدة بنطاق فقط، لذا استخدم `qorechaind` لبقية ذلك (انظر [دليل EVM في SDK](/sdk/guides/evm#evm-window-scope)).
 
 ---
 

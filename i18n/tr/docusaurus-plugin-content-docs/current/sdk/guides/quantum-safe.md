@@ -186,7 +186,7 @@ yedeği yoktu ve siz kendiniz `status` geçmedikçe kaydı kontrol etmeden yayı
 
 İstemcide bir `pqcKeypair` varken `tx.bankSend(...)` ve
 `tx.signAndBroadcast([messages], "auto")` hibrit imzalar (`fee: "auto"` yolu hibrit
-işlemi simüle eder ve post-kuantum doğrulamasının gas'ını ekler).
+işlemi simüle eder; SDK 0.12.0'dan itibaren bir v3.2.5 ağında sınır `ceil(simulated x 1.02) + 2000` kesin kuralıdır, öncesinde istemci post-kuantum doğrulamasının gas'ını kendisi ekler).
 Hibrit imza, ağın doğruladığı sign-bytes biçimi üzerinden hesaplanır (bkz.
 [Hangi sign-bytes biçimi?](/sdk/concepts/accounts-pqc#sign-bytes-versions)); istemci
 ağa kendi REST uç noktası üzerinden sorar.
@@ -273,10 +273,46 @@ await migratePqcKeyHybrid({
 });
 ```
 
+## Bir ML-KEM-1024 anahtarı yayımlayın {#kem-key}
+
+İmzalama bir işlemi kimin gönderdiğini kanıtlar; şifreleme ise farklı bir anahtar gerektirir. Zincir
+v3.2.5'ten itibaren bir hesap, zincir üstü KEM kayıt defterinde bir **ML-KEM-1024** kapsülleme anahtarı
+(algoritma kimliği 2, 1.568 bayt) yayımlayabilir; böylece herkes ona bir yük şifreleyebilir.
+SDK 0.12.0 iki mesajı oluşturur ve kayıt defterini geri okur; şifreleme veya şifre çözme **yapmaz**
+(mühürlü yükler için bkz. [QoreSeal](/developer-tools/qoreseal)).
+Rota ve mesajlar mainnet'te ve testnet'te sunulur.
+
+* `msg.pqc.registerKemKey({ sender, publicKey })` anahtarı yayımlar (ikinci bir çağrı onu
+  değiştirir). Oluşturucu, zincirin yaptığı gibi anahtarı önce denetler: tam boyut,
+  her katsayı 3329'un altında, tamamı sıfır değil (`validateKemPublicKey` aynı denetimi
+  tek başına çalıştırır).
+* `msg.pqc.removeKemKey({ sender })` anahtarı geri çeker.
+* `fetchKemKey({ rest, address })`, `/qorechain/pqc/v1/kem/{address}` adresini (bir bech32
+  veya `0x` adresi) okur ve algoritma, anahtar baytları ve kayıt yüksekliğiyle birlikte
+  `{ found, key? }` döndürür.
+
+Her iki mesaj da hesabın **hibrit** imzasını gerektirir; bu yüzden onları diğer her native
+işlem gibi hibrit `TxClient` (`client.connectTx(signer, { pqcKeypair })`) üzerinden gönderin ve
+önce hesabın ML-DSA-87 anahtarını kaydedin. `pqc` 250 ile 254 arasındaki zincir ret kodlarını
+`decodeTxError` adlandırır. Diğer dört dil aynı mesajları ve okumayı taşır.
+
+```ts
+import { msg, fetchKemKey } from "@qorechain/sdk";
+
+// `kemPublicKey` is a 1,568-byte ML-KEM-1024 public key you generated (for example with
+// `@qorechain/pqc`); `tx` is a hybrid TxClient.
+await tx.signAndBroadcast(
+  [msg.pqc.registerKemKey({ sender: account.address, publicKey: kemPublicKey })],
+  "auto",
+);
+
+const { found, key } = await fetchKemKey({ rest: "https://api.qore.host", address: account.address });
+```
+
 ## Kullanıcı arayüzünde
 
 [`@qorechain/react`](/sdk/guides/react) kiti bunların tümünü React'te sunar:
-`usePqcStatus` kancası ve `<QuantumSafeBadge/>` bileşeni, bağlı hesabın kayıtlı bir
+`usePqcStatus` kancası ve `<PqcStatusBadge/>` bileşeni (`<QuantumSafeBadge/>` kullanımdan kaldırılmış bir takma addır), bağlı hesabın kayıtlı bir
 PQC anahtarına sahip olduğu her durumda bir durum
 göstergesi gösterir. Her ikisi de durumu oluşturulmuş istemciyle `getPqcStatus`
 üzerinden okur; bu nedenle `@qorechain/react` 0.9.0'dan itibaren bunu REST üzerinden

@@ -11,16 +11,17 @@ sidebar_position: 8
 
 Ja. Das Mainnet ist **live** (Chain-ID `qorechain-vladi`, live seit dem 7. Juni 2026)
 und läuft mit der Chain-Version v3.2.6 (angewendet bei Höhe 4.020.000 am 4. November 2026, Governance-Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober 2026 angewendet und v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026); das Testnet läuft seit dem 27. Oktober 2026 mit v3.2.6. Das Testnet-Preset
-(`qorechain-diana`) bleibt ebenfalls verfügbar. Beide Presets werden mit
-Localhost-Endpoint-Standardwerten ausgeliefert; wählen Sie das Netzwerk mit
-`createClient({ network: "mainnet" })` und überschreiben Sie `endpoints` mit den
-URLs Ihres Nodes. Siehe
+(`qorechain-diana`) bleibt ebenfalls verfügbar. Ab SDK 0.12.0 verwenden beide Presets standardmäßig die öffentlichen Endpoints; wählen Sie das Netzwerk mit
+`createClient({ network: "mainnet" })` und überschreiben Sie `endpoints` nur für
+Ihren eigenen Node. Siehe
 [Netzwerk & Endpoints](/sdk/reference/network).
 
 ## Warum gehen meine Aufrufe an localhost?
 
-`createClient()` verwendet standardmäßig **localhost**-Endpoints. Um mit einem
-echten Node zu kommunizieren, übergeben Sie ein `endpoints`-Objekt:
+Sie verwenden ein SDK **vor 0.12.0**, dessen Presets standardmäßig **localhost**-Endpoints nutzen:
+aktualisieren Sie oder übergeben Sie ein `endpoints`-Objekt. Ab 0.12.0 verwenden `createClient()` und
+`createClient({ network: "mainnet" })` die öffentlichen Endpoints, und das Preset
+`localnet` ist dasjenige, das localhost verwendet.
 
 ```ts
 const client = createClient({
@@ -31,6 +32,10 @@ const client = createClient({
   },
 });
 ```
+
+Wenn Sie stattdessen „endpoint ... is not configured for the mainnet preset" erhalten, braucht der Aufruf
+einen Endpoint, den die öffentlichen Presets nicht setzen (gRPC, einen SVM-RPC, den
+Mainnet-EVM-WebSocket); übergeben Sie ihn in `endpoints`.
 
 Der Signierpfad (`connectTx`) benötigt den Konsens-Endpoint **`rpc`**;
 QoreChain Native-Lesezugriffe verwenden ihn ebenfalls. REST-Lesezugriffe verwenden
@@ -89,14 +94,14 @@ unterscheidet.
 
 ## Welche Pakete sind veröffentlicht, und wo?
 
-Alle (geprüft am 27. Oktober 2026). Der TypeScript-Core (`@qorechain/sdk`, 0.10.0),
-das React-Kit (`@qorechain/react`, 0.10.0), der `create-qorechain-dapp`-Scaffolder
-(0.10.0) und die EVM/SVM-Adapter (`@qorechain/evm`, `@qorechain/svm`, 0.8.0) sind auf
-npm; der Python-Client ist auf PyPI (`pip install qorechain-sdk` in Version 0.10.0,
+Alle (geprüft am 4. November 2026). Der TypeScript-Core (`@qorechain/sdk`, 0.12.0),
+das React-Kit (`@qorechain/react`, 0.12.0), der `create-qorechain-dapp`-Scaffolder
+(0.12.0) und die EVM/SVM-Adapter (`@qorechain/evm`, `@qorechain/svm`, 0.12.0) sind auf
+npm; der Python-Client ist auf PyPI (`pip install qorechain-sdk` in Version 0.12.0,
 Import `qorsdk`); der Go-Client ist über den Module-Proxy verfügbar
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.10.0`); der Rust-Client ist
-auf crates.io (`cargo add qorechain-sdk`, 0.10.0); und der Java-Client ist auf Maven
-Central (`io.github.qorechain:qorechain-sdk:0.10.0`). Siehe [Installation](/sdk/install)
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`); der Rust-Client ist
+auf crates.io (`cargo add qorechain-sdk`, 0.12.0); und der Java-Client ist auf Maven
+Central (`io.github.qorechain:qorechain-sdk:0.12.0`, JDK 17 oder neuer). Siehe [Installation](/sdk/install)
 für die vollständigen Befehle pro Sprache.
 
 ## Meine Mnemonic wird abgelehnt
@@ -125,7 +130,7 @@ eine hybride Tx mit `pqc`-Code 21 (`hybrid_verify_failed`) fehlschlägt, liegt e
 an der Sign-Bytes-Version, der Chain-ID, einer veralteten PQC-Bibliothek oder
 einem nicht registrierten Schlüssel, nie an hedged Signierung.
 Beide Netzwerke verifizieren die Sign-Bytes-Form v2; verwenden Sie daher SDK
-**0.8.1 oder neuer** (0.10.0 ist aktuell) und übergeben Sie `rest` (oder `signBytesVersion`): Die
+**0.8.1 oder neuer** (0.12.0 ist aktuell) und übergeben Sie `rest` (oder `signBytesVersion`): Die
 Builder werfen auf `qorechain-vladi` / `qorechain-diana` einen Fehler, wenn
 keines von beiden angegeben ist. Siehe
 [Fehlerbehebung für Code 21](/developer-guide/post-quantum-signing#code-21) und
@@ -151,12 +156,15 @@ werden on-chain abgelehnt, und zwar in jeder Lane (einschließlich eth-native).
 
 ## Mit welchen Chain-Versionen funktioniert das SDK?
 
-SDK **0.10.0** ist das Client-Release für die Chain **v3.2.4** (Mainnet seit dem
-23. Oktober 2026 auf Höhe 3.742.566, Governance-Vorschlag 13; das Testnet seit dem
-19. Oktober). Das Mainnet läuft seit dem 4. November 2026 mit v3.2.6 (v3.2.5 seit dem 29. Oktober); das Signaturformat hat sich nicht geändert, daher funktioniert 0.10.0 dort weiter. Es fügt die Staking-Tier-Builder und -Lesezugriffe, `fetchAuthNonce`
-und die Protocol-Feature-Lesezugriffe hinzu (siehe
-[Was 0.10.0 hinzufügt](/sdk/install#whats-new-0100)), zusätzlich zu dem, was 0.9.0 für
-v3.2.2 und v3.2.3 hinzugefügt hat: Builder für den optionalen Besitznachweis (Proof of Possession) bei der Registrierung (automatisch
+SDK **0.12.0** ist das Client-Release für die Chain **v3.2.5** (Mainnet seit dem 29. Oktober
+2026 auf Höhe 3.906.833; das Testnet seit dem 26. Oktober). Beide Netzwerke laufen mit v3.2.6
+(das Mainnet seit dem 4. November, das Testnet seit dem 27. Oktober); das Signaturformat hat sich nicht
+geändert, daher funktioniert 0.12.0 auf beiden. Es fügt die exakte Gas-Regel für Hybrid-Transaktionen,
+die Builder und den Lesezugriff des ML-KEM-Schlüsselregisters, die Lesezugriffe für Abstract Accounts und die geprüften
+Builder für Governance-Parameter hinzu (siehe [Was 0.12.0 hinzufügt](/sdk/install#whats-new-0120)),
+zusätzlich zu dem, was 0.10.0 für v3.2.4 hinzugefügt hat (die Staking-Tier-Builder und -Lesezugriffe,
+`fetchAuthNonce` und die Protocol-Feature-Lesezugriffe, siehe
+[Was 0.10.0 hinzugefügt hat](/sdk/install#whats-new-0100)) und 0.9.0 für v3.2.2 und v3.2.3: Builder für den optionalen Besitznachweis (Proof of Possession) bei der Registrierung (automatisch
 angefügt von `ensurePqcRegistered`, sobald das Netzwerk v3.2.3 angewendet hat),
 EVM-Fenster mit Gültigkeitsbereich und die EIP-7702-Einwilligungsnachrichten.
 SDK **0.8.1 oder neuer** transagiert ebenfalls auf beiden Netzwerken (die
@@ -165,7 +173,8 @@ EVM-Fenster funktionieren unverändert), hat aber keinen dieser Builder: Verwend
 dafür die CLI (siehe
 [Versionen vor 0.9.0](/sdk/install#before-090)). Das Signaturformat hat sich in v3.2.4,
 v3.2.5 oder v3.2.6 nicht geändert. Beide Netzwerke laufen mit v3.2.6 (das Testnet hat v3.2.5 am 26. Oktober 2026
-und v3.2.6 am 27. Oktober angewendet; das Mainnet v3.2.5 am 29. Oktober und v3.2.6 am 4. November); daher haben die Ergänzungen von v3.2.5 (zum Beispiel das ML-KEM-Schlüsselregister und die governancegesteuerten CrossVM- und Contract-Pfade) noch keinen SDK-Builder und werden über die CLI erreicht.
+und v3.2.6 am 27. Oktober angewendet; das Mainnet v3.2.5 am 29. Oktober und v3.2.6 am 4. November). SDK 0.10.0 und 0.9.0 funktionieren dort weiter, haben aber keine Builder für die
+Ergänzungen von v3.2.5 (das ML-KEM-Schlüsselregister, die exakte Gas-Regel); verwenden Sie mit diesen Releases die CLI oder aktualisieren Sie auf 0.12.0. 0.12.0 wurde gegen v3.2.5 gebaut und geprüft.
 
 ## Meine PQC-Schlüsselregistrierung wurde abgelehnt, aber die Gebühr wurde abgebucht
 
@@ -206,7 +215,7 @@ Die Nonce ist falsch. Sowohl `MsgExecuteEVM.nonce` als auch `MsgExecuteCosmos.no
 sind die **Authenticator-Sequenz** des verknüpften Schlüssels für
 `(account, pubkey)`: ein Zähler, den die Chain pro verknüpftem Schlüssel führt, bei 0
 beginnt und mit jeder erfolgreichen Ausführung erhöht wird. Sie ist **nicht** die
-EVM-Nonce des Kontos. Lesen Sie sie mit `fetchAuthNonce` (SDK 0.10.0, Chain
+EVM-Nonce des Kontos. Lesen Sie sie mit `fetchAuthNonce` (SDK 0.10.0 oder neuer, Chain
 v3.2.4 oder neuer) oder verfolgen Sie sie bei älteren Versionen pro verknüpftem Schlüssel. Seit v3.2.3 signiert die EVM-Lane außerdem
 `evmAuthSignBytesV2`, das das Gas-Limit des Aufrufs bindet
 (`resolveEvmAuthDigestVersion` wählt die Form). Verwenden Sie den Zähler, den Sie

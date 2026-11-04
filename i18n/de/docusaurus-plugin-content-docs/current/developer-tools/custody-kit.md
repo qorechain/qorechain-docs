@@ -293,7 +293,7 @@ Verzweigen Sie auf Codespace und Code zusammen und bewahren Sie das Roh-Log auf.
 
 ## Wo es veröffentlicht ist {#where-published}
 
-Am 27. Oktober 2026 gegen die Registries geprüft.
+Am 4. November 2026 gegen die Registries geprüft (Versionen und Tags unverändert seit dem 27. Oktober).
 
 | Registry | Paket | Version | Link |
 |---|---|---|---|

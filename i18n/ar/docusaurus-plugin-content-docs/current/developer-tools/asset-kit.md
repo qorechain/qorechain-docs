@@ -108,11 +108,11 @@ ERC-3643 token -> ModularCompliance - module -->  QoreChainHybridHolderModule --
 | عقود Solidity (من GitHub) | `git clone --recurse-submodules https://github.com/qorechain/qorechain-asset-kit` (الوسم `v0.1.0`)، أو كاعتماد في Foundry: `forge install qorechain/qorechain-asset-kit@v0.1.0` | Foundry؛ solc 0.8.28 (تستخدم ملفات T-REX وONCHAINID الإصدار 0.8.17)؛ `evm_version = "cancun"` |
 | Java | `implementation("io.github.qorechain:asset-kit:0.1.0")` (Maven `io.github.qorechain:asset-kit:0.1.0`) | Java 17 |
 | Go | `go get github.com/qorechain/qorechain-asset-kit/clients/go@v0.1.0` (الحزمة `assetkit`) | Go 1.23 |
-| Python | **قريباً** على PyPI باسم `qorechain-asset-kit`؛ غير منشورة بعد. اليوم، من نسخة مستنسخة: `cd clients/python && python -m pip install .` (الاستيراد `qorechain_asset_kit`) | Python 3.10 |
-| TypeScript | **قريباً** على npm باسم `@qorechain/asset-kit`؛ غير منشورة بعد. اليوم، من نسخة مستنسخة: `pnpm install && pnpm -r build` | Node.js 22.12 |
+| Python | `pip install qorechain-asset-kit` (الاستيراد `qorechain_asset_kit`) | Python 3.10 أو أحدث |
+| TypeScript | `npm install @qorechain/asset-kit` | شغّلها على Node.js 26؛ ES module وCommonJS |
 | وحدة تحكم المُصدِر | من نسخة مستنسخة: `pnpm install`، ثم `pnpm --filter @qorechain/issuer-console dev` (غير منشورة كحزمة) | متصفح مع محفظة EIP-6963 |
 
-يستورد README المستودع وREADME عميل TypeScript من `@qorechain/asset-kit` كأنها مثبَّتة. وهذا يعمل من نسخة مستنسخة فقط، إلى أن يصدر إصدار npm.
+حزم Python وTypeScript وGo وJava هي عملاء للوحدات الأصلية **المقترحة** فقط. وهي لا تحتوي على عقود؛ أما عقود Solidity ووحدة تحكم المُصدِر فتأتيان من المستودع.
 
 مع `forge install` تقع العقود تحت `lib/qorechain-asset-kit/contracts/` واعتماداتها تحت `lib/qorechain-asset-kit/contracts/lib/`. إعادات التعيين (remappings) التي تترجم الضابط وقاعدة CMTAT والخزائن:
 
@@ -163,7 +163,7 @@ pnpm --filter @qorechain/issuer-console dev
 
 ### البدء السريع 4: البناء على الوحدات المقترحة بـ MockChain (Python، دون اتصال) {#quickstart-python}
 
-من README عميل Python. وإلى أن يصدر إصدار PyPI ثبّت من نسخة مستنسخة (راجع [التثبيت](#install)).
+من README عميل Python. ثبّت بالأمر `pip install qorechain-asset-kit`. شُغّلت في 4 نوفمبر 2026 في بيئة افتراضية جديدة مع حزمة PyPI بالإصدار 0.1.0.
 
 ```python
 from qorechain_asset_kit import MockChain, MockChainError, asset
@@ -179,6 +179,30 @@ except MockChainError as e:
 ```
 
 الناتج الملاحَظ: `ERROR_CODE_ADDRESS_FROZEN`. أما الاستدعاء نفسه على `ChainClient()` فيرفع `ChainUpgradeRequired` مع `module == "x/asset"` و`code == "CHAIN_UPGRADE_REQUIRED"`.
+
+### البدء السريع 4ب: الشيء نفسه بلغة TypeScript (دون اتصال) {#quickstart-typescript}
+
+من البدايات السريعة المختبَرة في مركز المطورين (تضع القائمة علامة «مختبَر» عليها في 29 أكتوبر 2026؛ وشُغّلت مرة أخرى في 4 نوفمبر 2026 بعد `npm install @qorechain/asset-kit@0.1.0`، مع Node.js 26).
+
+```ts
+import { ChainClient, ChainUpgradeRequired, MockChain, asset } from "@qorechain/asset-kit";
+
+const issuer = "qor1issuer", alice = "qor1alice", bob = "qor1bob";
+
+// Today: a controlled failure, no network request.
+await new ChainClient().asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "10" })
+  .catch((e) => e instanceof ChainUpgradeRequired); // e.module === "x/asset"
+
+// Development: the proposed rules, in memory.
+const chain = new MockChain();
+await chain.asset.createAsset({ issuer, assetId: "bond-2030", flags: { freezable: true, pausable: true } });
+await chain.asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "100" });
+await chain.asset.freeze({ agent: issuer, assetId: "bond-2030", holder: alice, frozen: true });
+const q = await chain.asset.canTransfer({ assetId: "bond-2030", from: alice, to: bob, amount: "1" });
+console.log("asset-kit: frozen transfer allowed =", q.allowed, "code =", q.code);
+```
+
+طبعت `asset-kit: frozen transfer allowed = false code = 6` (و`6` هو `asset.ErrorCode.ERROR_CODE_ADDRESS_FROZEN`).
 
 ### البدء السريع 5: الشيء نفسه بلغة Go (وكيل الوحدات v0.1.0) {#quickstart-go}
 
@@ -214,7 +238,7 @@ func main() {
 الناتج الملاحَظ: `mock mint error: <nil>` ثم `true x/asset`. ويحتوي README عميل Java على المثال المكافئ بـ `MockChain` و`MsgCreateAsset.newBuilder()` و`MockChainError.code()`.
 
 :::note
-يحتوي README عميلَي Go وTypeScript في المستودع على أخطاء صغيرة في مقاطعهما، ستُصحَّح في 0.1.1. ومثال Go أعلاه هو النسخة المصحَّحة.
+يحتوي README عميل Go في المستودع وREADME المرفق بحزمة npm بالإصدار 0.1.0 على أخطاء صغيرة في مقاطعهما. ومثالا Go وTypeScript أعلاه هما النسختان المصحَّحتان.
 :::
 
 ## واجهة البرمجة الرئيسية {#main-api}
@@ -267,15 +291,15 @@ func main() {
 
 ## أين يُنشر {#where-published}
 
-جرى التحقق الحي في 28 أكتوبر 2026 (إصدار GitHub وMaven Central ووكيل Go تقدّم 0.1.0؛ وتعيد PyPI وnpm الخطأ 404).
+جرى التحقق مقابل كل سجل في 4 نوفمبر 2026. يقدّم كل مدخل الإصدار 0.1.0.
 
 | السجل | الحزمة | الإصدار | الرابط |
 |---|---|---|---|
+| npm | `@qorechain/asset-kit` | 0.1.0 | https://www.npmjs.com/package/@qorechain/asset-kit |
+| PyPI | `qorechain-asset-kit` | 0.1.0 (عجلة Python خالصة والمصدر) | https://pypi.org/project/qorechain-asset-kit/ |
 | Maven Central | `io.github.qorechain:asset-kit` | 0.1.0 | https://central.sonatype.com/artifact/io.github.qorechain/asset-kit |
 | وكيل وحدات Go | `github.com/qorechain/qorechain-asset-kit/clients/go` | v0.1.0 (الوسم `clients/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-asset-kit/clients/go |
-| PyPI | `qorechain-asset-kit` | **قريباً** (ليست على PyPI بعد) | |
-| npm | `@qorechain/asset-kit` | **قريباً** (غير منشورة) | |
-| GitHub (عقود Solidity ووحدة تحكم المُصدِر وملفات proto والمستندات والقوالب القانونية) | `qorechain/qorechain-asset-kit` | الإصدار v0.1.0 | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
+| GitHub (عقود Solidity ووحدة تحكم المُصدِر وملفات proto والمستندات والقوالب القانونية) | `qorechain/qorechain-asset-kit` | الإصدار v0.1.0؛ `forge install qorechain/qorechain-asset-kit@v0.1.0` | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
 
 المستودع: https://github.com/qorechain/qorechain-asset-kit. الجهة الصائنة: جمعية QoreChain.
 
@@ -294,8 +318,8 @@ func main() {
 - **ERC-7518 رسم أولي لواجهة**، وليس تنفيذاً. ويمكن اليوم نمذجة الأقسام برمز واحد لكل فئة أو شريحة يتشاركان سجل هوية أو قاعدة واحدة.
 - **CMTA RuleEngine v3** لا يزال منشوراً كمرشحات إصدار (release candidates)؛ وتعمل القاعدة بوصفها `ruleEngine` للرمز مباشرة وتعلن عن معرّفَي واجهة القاعدة كليهما (`0x2497d6cb` و`0xb1a69752`).
 - **وحدة تحكم المُصدِر** لا تسجّل مفاتيح، ولا تفتح نوافذ، ولا تنشر مجموعات ERC-3643 أو خزائن، ولا تدير أدوار CMTAT أو التجميد الجزئي أو المستندات أو اللقطات.
-- **Python وTypeScript ليستا على سجلّيهما.** استخدم نسخة مستنسخة إلى أن يصدر إصدارا PyPI وnpm؛ ولا تقدّم هذه الصفحة أمر تثبيت من سجل لهما.
-- **أخطاء في README.** لمقاطع Go وTypeScript في ملفات README بالمستودع أخطاء صغيرة، ستُصحَّح في 0.1.1. استخدم البدايات السريعة في هذه الصفحة.
+- **حزم السجلات تحتوي عملاء المقترحات فقط.** العقود وسكربتات النشر ووحدة تحكم المُصدِر ليست في أي حزمة؛ استخدم المستودع.
+- **أخطاء في README.** لـ README عميل Go في المستودع وREADME حزمة npm أخطاء صغيرة في مقاطعهما. استخدم البدايات السريعة في هذه الصفحة.
 - **القوالب القانونية.** يضم `legal/` ثلاث مسودات للنقاش: ورقة مالية قائمة على السجل في سويسرا (المواد 973d إلى 973i من قانون الالتزامات)، وشروط رموز في ليختنشتاين بموجب TVTG (نهج "token container")، ومخطط ارتباط لمشغّل بموجب نظام DLT التجريبي للاتحاد الأوروبي (اللائحة (EU) 2022/858). لم يراجعها محامٍ، وهي ليست استشارة قانونية، ويجب أن يراجعها محامٍ مؤهل في الولاية القضائية المعنية قبل أي استخدام. واستخدامها، أو استخدام المجموعة، لا يدل على شيء بشأن ما إذا كان إصدار معيّن يستوفي أي متطلب قانوني. ولا تعمل جمعية QoreChain مُصدِراً ولا أمين سجل ولا جهة حفظ ولا منصة ولا مستشاراً قانونياً لأي أصل.
 - **ما قبل 1.0.** قد تتغير ملفات proto المقترحة في أي إصدار فرعي.
 
@@ -318,7 +342,7 @@ func main() {
 - [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing) و[الحسابات والتوقيع PQC](/sdk/concepts/accounts-pqc): تسجيل المفاتيح والتوقيع الهجين.
 - [تطوير EVM](/developer-guide/evm-development#evm-window): نافذة تفويض EVM.
 - [مُسبَقات EVM](/developer-guide/evm-precompiles): `0x0A01` و`0x0A02`، فعّالان على شبكة الاختبار فقط.
-- [Chain developer kit](/developer-tools/chain-dev-sdk): قوالب Foundry وHardhat وviem ومساعدات النوافذ (SDK 0.11.0، قريباً).
+- [Chain developer kit](/developer-tools/chain-dev-sdk): قوالب Foundry وHardhat وviem ومساعدات النوافذ (مضمَّنة في SDK 0.12.0).
 - [Custody kit](/developer-tools/custody-kit) و[QoreScan](/developer-tools/qorescan): مجموعتان مجاورتان لجهات الحفظ ولجرد التشفير.
 - [حزم المطورين](/developer-tools/overview): كل حزمة وحالتها في السجل.
 - المعايير الأصلية: ERC-3643 وCMTAT وERC-4626 وERC-7540 وERC-7518.

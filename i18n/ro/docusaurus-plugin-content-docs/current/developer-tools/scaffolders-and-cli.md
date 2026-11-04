@@ -9,16 +9,16 @@ sidebar_position: 21
 
 Trei instrumente de linie de comandă duc un proiect QoreChain de la zero la un punct de pornire tipizat și compilabil. Sunt pentru dezvoltatorii de aplicații (dApp-uri) și pentru operatorii de rollup-uri care lucrează în Node.js:
 
-* **`create-qorechain-dapp`** (0.10.0) generează un dApp pornind de la unul din trei șabloane, construit pe [SDK-ul QoreChain](/sdk/overview).
+* **`create-qorechain-dapp`** (0.12.0) generează un dApp pornind de la unul din șapte șabloane, construit pe [SDK-ul QoreChain](/sdk/overview). Patru din cele șapte (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) aparțin [kitului pentru dezvoltatori de lanț](/developer-tools/chain-dev-sdk).
 * **`create-qorechain-rollup`** (0.8.0) generează un proiect de rollup pornind de la unul din șase șabloane, construit pe [Rollup Development Kit](/rollups/overview) în TypeScript.
 * **`qorollup`**, comanda pachetului `@qorechain/rdk-cli` (0.8.0), este linia de comandă a operatorului: verificări preliminare, crearea și monitorizarea unui rollup, citirea parametrilor live.
 
-Pagina reflectă pachetele publicate, așa cum sunt instalate din npm la 27 octombrie 2026. Ghidurile conceptuale sunt [Implementarea unui Rollup](/rollups/deploying-a-rollup) și [Referința CLI a SDK-ului](/sdk/reference/cli).
+Pagina reflectă pachetele publicate, așa cum sunt instalate din npm la 27 octombrie 2026, iar `create-qorechain-dapp` 0.12.0 așa cum a fost instalat la 4 noiembrie 2026. Ghidurile conceptuale sunt [Implementarea unui Rollup](/rollups/deploying-a-rollup) și [Referința CLI a SDK-ului](/sdk/reference/cli).
 
 ## Inovații {#innovations}
 
 * **Generare non-interactivă pentru CI.** Fiecare întrebare are un flag: `--template`, `--network`, `--package-manager`, `--yes` (acceptă valorile implicite) și `--no-install`. Un pipeline poate genera și compila un proiect cu o singură comandă și fără terminal.
-* **Șabloanele sunt fixate pe pachetele curente.** Șabloanele de dApp depind de `@qorechain/sdk` `^0.10.0` (șablonul EVM de `@qorechain/evm`), iar șabloanele de rollup de `@qorechain/rdk` `^0.8.0`. Un generator anterior (0.8.0) scria intervale care se rezolvau la un SDK ce nu putea semna pentru rețelele live; acest lucru nu se mai întâmplă cu cel curent.
+* **Șabloanele sunt fixate pe pachetele curente.** Șabloanele de dApp depind de `@qorechain/sdk` `^0.12.0` (șabloanele EVM și de `@qorechain/evm` `^0.12.0`), iar șabloanele de rollup de `@qorechain/rdk` `^0.8.0`. Un generator anterior (0.8.0) scria intervale care se rezolvau la un SDK ce nu putea semna pentru rețelele live; acest lucru nu se mai întâmplă cu cel curent.
 * **Șabloanele de rollup codifică o configurație validă pentru fiecare caz de utilizare.** Fiecare șablon de rollup stabilește o combinație de settlement, sequencer, disponibilitate a datelor, gaz și VM pe care matricea de compatibilitate a RDK o acceptă, iar generatorul afișează stake-ul live și arderea la creare înainte de a crea ceva.
 * **O comandă de verificare preliminară care numește ce lipsește.** `qorollup doctor` (și `npm run doctor` într-un șablon de rollup) verifică dacă punctul final REST răspunde, dacă parametrii modulului pot fi citiți, dacă punctul final este rețeaua pe care ai cerut-o și dacă un semnatar este configurat, și afișează o linie pentru fiecare verificare. Într-un șablon validează și configurația rollup-ului față de matricea de compatibilitate.
 * **Semnare hibridă integrată în șabloane.** Șabloanele de rollup se conectează printr-un mic `signer.ts` care derivă cheia ML-DSA-87 a contului din mnemonic (sau primește un seed împreună cu o cheie privată brută) și semnează hibrid, ceea ce rețelele cer pe lane-ul nativ. Șablonul de dApp `rollup-app` face același lucru și rulează ca rulare de probă, dacă nu setezi `QORE_BROADCAST=1`.
@@ -41,14 +41,16 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 | `evm-solidity` | Un contract Solidity `Counter` cu un artefact precompilat și un script viem care îl implementează și îl apelează folosind `@qorechain/evm`. Fișiere: `contracts/Counter.sol`, `contracts/Counter.artifact.ts`, `scripts/deploy.ts`, `.env`. | `deploy` |
 | `fullstack-web` | O pagină Vite, React și TypeScript care citește soldurile unei adrese (și o prezentare generală a tokenomicii) cu `@qorechain/sdk`. Fișiere: `index.html`, `src/App.tsx`, `src/main.tsx`, `vite.config.ts`, `.env`. | `dev`, `build`, `preview`, `typecheck` |
 | `rollup-app` | Un script Node care folosește `createRollupClient` și `createMultilayerClient` din SDK pentru a construi mesaje de rollup și de sidechain sau paychain. Fișiere: `src/index.ts` și configurația obișnuită. Rulare de probă implicit. | `start`, `typecheck` |
+| `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` | Șabloanele kitului pentru dezvoltatori de lanț: un proiect Foundry, un proiect Hardhat 3 și viem (ambele cu un ajutor `pnpm window` pentru fereastra de autorizare EVM), un dApp wagmi și RainbowKit cu portofelul QoreX și un token CW20 QoreChain Native. Detalii, scripturi și limite: [Kitul pentru dezvoltatori de lanț](/developer-tools/chain-dev-sdk#templates). | vezi acea pagină |
 
 | Flag | Semnificație |
 | --- | --- |
-| `-t, --template <name>` | `evm-solidity`, `fullstack-web` sau `rollup-app` |
+| `-t, --template <name>` | `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi` sau `cosmwasm` |
 | `--network <name>` | `testnet` sau `mainnet` |
 | `--package-manager <pm>` | `pnpm`, `npm` sau `yarn` |
 | `-y, --yes` | omite întrebările și folosește valorile implicite |
 | `--no-install` | nu instala dependențele |
+| `--local` | rescrie dependențele `@qorechain/*` către legături locale în monorepo-ul SDK (pentru contribuitorii la SDK) |
 | `-h, --help`, `-v, --version` | ajutor, versiune |
 
 Exemplu testat (din hub-ul pentru dezvoltatori; rulat la 27 octombrie 2026 într-un director gol, cu `npx` din registrul npm public): generează șablonul web și îl compilează. Observat: `Done! Created my-dapp` și un `vite build` reușit. Compilarea afișează un avertisment despre dimensiunea bundle-ului, care este inofensiv.
@@ -158,7 +160,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | Registru | Pachet | Versiune | Link |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp` (comanda `create-qorechain-dapp`) | 0.10.0 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp` (comanda `create-qorechain-dapp`) | 0.12.0 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup` (comanda `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli` (comanda `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk` (biblioteca folosită de șabloane) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
@@ -167,7 +169,7 @@ Sursa: https://github.com/qorechain/qorechain-sdk/tree/main/cli (generatorul de 
 
 ## Limite și probleme cunoscute {#limits}
 
-* **`--network mainnet` nu a schimbat fișierele generate într-o rulare de test.** La 27 octombrie 2026, `fullstack-web` și `custom-rollup` au fost generate cu `--network mainnet`; fișierul `.env` generat conținea în continuare puncte finale localhost (dApp) sau `QORE_NETWORK=testnet` cu punctele finale de testnet (rollup), iar `App.tsx` al dApp-ului crea un client `testnet`. Setează singur rețeaua și punctele finale în `.env` și, pentru șablonul web, în `src/App.tsx`.
+* **`--network mainnet` nu a schimbat fișierele generate într-o rulare de test.** La 27 octombrie 2026, `fullstack-web` și `custom-rollup` au fost generate cu `--network mainnet`; fișierul `.env` generat conținea în continuare puncte finale localhost (dApp) sau `QORE_NETWORK=testnet` cu punctele finale de testnet (rollup), iar `App.tsx` al dApp-ului crea un client `testnet`. La 4 noiembrie 2026, `create-qorechain-dapp` 0.12.0 s-a comportat la fel pentru `evm-solidity`, `fullstack-web` și `rollup-app`. Setează singur rețeaua și punctele finale în `.env` și, pentru șablonul web, în `src/App.tsx`.
 * **Niciun rollup nu există încă pe vreuna dintre rețele** (verificat la 27 octombrie 2026). Nicio cale de tranzacție a instrumentelor de rollup nu a fost exersată pe un rollup live. Validează totul mai întâi pe testnet și citește [RDK 0.8.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits).
 * **Șablonul `defi-rollup` nu poate deconta un batch.** Settlement-ul ZK nu este încă utilizabil pe vreuna dintre rețele (înregistrarea cheilor este planificată pentru lanțul v3.2.7), iar circuitul său demonstrativ nu ar putea oricum trece verificarea dovezii de către lanț. De la 0.7.0 șablonul se oprește înainte de trimitere, deci nu mai cheltuiește un comision pe un batch pe care lanțul îl refuză întotdeauna. Folosește un șablon cu settlement `optimistic` până când se schimbă acest lucru (vezi [ZK, STARK și retrageri](/rollups/zk-stark-withdrawals)).
 * **Șablonul `multivm-rollup` depinde de ceva care nu este live.** Precompile-ul cross-VM de la `0x0000000000000000000000000000000000000901` nu este activ pe vreuna dintre rețele, deci un apel dintr-un contract nu face nimic; șablonul verifică acest lucru, iar contractul său este scris să dea revert în loc să eșueze în tăcere (vezi [Multi-VM](/rollups/multi-vm)).
@@ -176,7 +178,7 @@ Sursa: https://github.com/qorechain/qorechain-sdk/tree/main/cli (generatorul de 
 * **`rollup-app` transmite doar când ceri.** Rulează implicit o rulare de probă; cu `QORE_BROADCAST=1` înregistrează o dată cheia ML-DSA-87 a contului și semnează hibrid. Valorile sale de rollup din exemplu sunt ilustrative: ia numele reale ale profilurilor și stake-ul din [Profiluri predefinite](/rollups/preset-profiles).
 * **`fullstack-web` afișează o eroare la butonul de tokenomică.** Acel panou apelează o metodă JSON-RPC `qor_` pe care punctele finale publice nu o servesc; căutarea soldului funcționează. Înlocuiește-l cu o citire REST precum `client.rest.getBurnStats()`.
 * **`evm-solidity` are nevoie de mai mult decât un cont alimentat.** Trimiterea unei tranzacții EVM pe QoreChain are nevoie și de o cheie ML-DSA-87 înregistrată și de o fereastră de autorizare EVM deschisă, configurate de pe lane-ul nativ (vezi [ghidul EVM](/developer-guide/evm-development#evm-window)). Scriptul `deploy` al șablonului nu a fost rulat pe o rețea live pentru această pagină.
-* **`create-qorechain-dapp --version` afișează `0.5.1`**, deși pachetul instalat este 0.10.0 (verificat la 27 octombrie 2026). Citește versiunea din `package.json` sau din registru.
-* **README-urile pachetelor sunt depășite.** README-ul `create-qorechain-dapp` enumeră două șabloane, iar cel al `create-qorechain-rollup` cinci; `--help` arată trei și șase. Ai încredere în `--help`.
+* **`create-qorechain-dapp --version` afișează `0.5.1`**, deși pachetul instalat este 0.12.0 (verificat la 27 octombrie 2026 cu 0.10.0 și din nou la 4 noiembrie 2026 cu 0.12.0). Citește versiunea din `package.json` sau din registru.
+* **README-urile pachetelor sunt depășite.** README-ul `create-qorechain-dapp` enumeră două șabloane, iar cel al `create-qorechain-rollup` cinci (verificat la 27 octombrie 2026); `--help` arată șapte și șase. Ai încredere în `--help`.
 * **Versiunile dinaintea 0.6.2 nu funcționează din npm.** `qorollup` 0.6.1 și anterioare, instalat prin npm în orice fel, nu a afișat nimic și a ieșit cu codul 0, iar `--version` a afișat `0.4.1`. Dacă trebuie să rămâi pe 0.6.1, rulează `node node_modules/@qorechain/rdk-cli/dist/index.js <command>`; altfel fă upgrade.
-* **Copii ale dependențelor (doar 0.6.x).** `@qorechain/rdk` 0.6.2 și anterioare depind de `@qorechain/sdk` `^0.9.0`, deci un proiect care instala și SDK 0.10.0 conținea un al doilea SDK 0.9.x, imbricat. De la 0.7.0 kitul depinde de `@qorechain/sdk` `^0.10.0` și împarte o singură copie.
+* **Copii ale dependențelor (RDK 0.6.x și RDK 0.8.0 alături de SDK 0.12.0).** `@qorechain/rdk` 0.6.2 și anterioare depind de `@qorechain/sdk` `^0.9.0`, deci un proiect care instala și SDK 0.10.0 conținea un al doilea SDK 0.9.x, imbricat. De la 0.7.0 kitul depinde de `@qorechain/sdk` `^0.10.0` și împarte o singură copie cu o aplicație pe SDK 0.10.x. **O aplicație pe SDK 0.12.0 care instalează și `@qorechain/rdk` 0.8.0 primește în continuare o copie imbricată a SDK 0.10.0** (și a `@qorechain/evm` 0.8.0), deoarece un interval caret pe o versiune 0.x nu preia minore mai noi (verificat cu `npm ls` la 4 noiembrie 2026). Ține apelurile SDK și apelurile RDK în module separate sau transmite obiectele între ele ca simple date, până când intervalul RDK se mută.

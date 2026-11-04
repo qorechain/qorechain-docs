@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> npm には `create-qorechain-dapp`（`0.10.0`）として公開されています。生成される
-> `package.json` ファイルは `@qorechain/sdk` `^0.10.0` に依存します（EVM テンプレートは
-> `@qorechain/evm` `^0.8.0`）。スキャフォルダのバージョン 0.8.0 は `^0.3.0` の範囲を書き込んでおり、
+> npm には `create-qorechain-dapp`（`0.12.0`）として公開されています。生成される
+> `package.json` ファイルは `@qorechain/sdk` `^0.12.0` に依存します（EVM テンプレートは
+> `@qorechain/evm` `^0.12.0`）。スキャフォルダのバージョン 0.8.0 は `^0.3.0` の範囲を書き込んでおり、
 > npm はこれを、稼働中のネットワークに対して署名できない 0.3 リリースに解決します。
 > 0.8.0 でスキャフォールドした場合は、`npm i @qorechain/sdk@latest` を実行してください。
 
@@ -32,8 +32,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | Solidity の `Counter` コントラクト + viem によるデプロイ/操作スクリプト（`@qorechain/evm`）。 |
 | `fullstack-web` | 残高とトークノミクスを読み取る Vite + React + TypeScript の dApp（`@qorechain/sdk`）。 |
 | `rollup-app` | `RollupClient` と multilayer ヘルパーを使うロールアップ + サイドチェーン/ペイチェーンのアプリ（`@qorechain/sdk`）。 |
+| `foundry` | QoreChain の EVM Engine 向けの Foundry プロジェクト。`pnpm window` は、デプロイ前にアカウントの ML-DSA-87 鍵を登録し、[EVM 認可ウィンドウ](/sdk/guides/evm#evm-window)を開きます（npm のみの 0.11.0 で追加）。 |
+| `hardhat` | Hardhat 3 向けの同様のもので、`pnpm window status`、`register`、`open` を備えます。 |
+| `viem-wagmi` | viem と wagmi による Web dApp で、`@qorechain/evm` の `qorechain` と `qorechainTestnet` チェーンを使います。 |
+| `cosmwasm` | QoreChain Native（Wasm）のコントラクトプロジェクト。稼働中のネットワークではコードのアップロードはガバナンスのみです。[QoreChain Native ガイド](/sdk/guides/cosmwasm)を参照してください。 |
 
-`rollup-app` テンプレート（スキャフォルダ 0.10.0）は、デフォルトでドライランを実行します。`QORE_BROADCAST=1` を指定すると、
+`rollup-app` テンプレート（スキャフォルダ 0.10.0 以降）は、デフォルトでドライランを実行します。`QORE_BROADCAST=1` を指定すると、
 ニーモニックからアカウントの ML-DSA-87 鍵を導出し、一度だけ登録して、
 ハイブリッドで署名します。以前のテンプレートにはこれができませんでした。サンプルのロールアップの値
 （`profile: "default"`、ステーク）は例示です。ブロードキャストする前に、実際のプロファイル名と
@@ -49,7 +53,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 
 | フラグ | 説明 |
 | --- | --- |
-| `-t, --template <name>` | 使用するテンプレート（`evm-solidity` \| `fullstack-web` \| `rollup-app`）。 |
+| `-t, --template <name>` | 使用するテンプレート（`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`）。 |
 | `--network <name>` | ネットワークプリセット（`testnet` \| `mainnet`）。 |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`。 |
 | `-y, --yes` | プロンプトをスキップしてデフォルトを使用します。 |

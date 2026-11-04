@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Presetare de rețea | `mainnet` |
 | Chain id | `qorechain-vladi` (live din 7 iunie 2026) |
-| Versiune lanț (4 noiembrie 2026) | v3.2.6 (de la înălțimea 4,020,000, 4 noiembrie 2026, propunerea de guvernanță 15; v3.2.5 a fost aplicată la înălțimea 3,906,833 pe 29 octombrie, iar v3.2.4 la înălțimea 3,742,566 pe 23 octombrie). SDK 0.10.0 este clientul pentru v3.2.4 și continuă să funcționeze; nu are constructori pentru adăugirile din v3.2.5 sau v3.2.6 |
+| Versiune lanț (4 noiembrie 2026) | v3.2.6 (de la înălțimea 4,020,000, 4 noiembrie 2026, propunerea de guvernanță 15; v3.2.5 a fost aplicată la înălțimea 3,906,833 pe 29 octombrie, iar v3.2.4 la înălțimea 3,742,566 pe 23 octombrie). SDK 0.12.0 este clientul pentru v3.2.5 și funcționează pe v3.2.6 (formatul de semnare nu s-a schimbat); 0.10.0 a fost clientul pentru v3.2.4 |
 | ID lanț EVM | `9801` |
 | Token afișat | `QOR` |
 | Denominare de bază | `uqor` |
@@ -48,6 +48,14 @@ sidebar_position: 1
 Endpoint-urile EVM servesc `eth_`, `net_`, `web3_` și `txpool_`; namespace-ul
 `qor_` nu este activat. Vezi și [Rețele](/appendix/networks#public-endpoints).
 
+Începând cu SDK 0.12.0, presetările `mainnet` și `testnet` folosesc implicit aceste URL-uri REST, RPC de consens și
+JSON-RPC EVM (și WebSocket-ul EVM de testnet). Presetările nu setează **niciun** endpoint
+gRPC și **niciun** endpoint SVM, deși URL-urile SVM doar-citire de mai sus există
+(tranzacțiile SVM nu sunt deschise): codul care are nevoie de unul dintre ele eșuează cu o eroare care
+numește endpoint-ul de transmis. Endpoint-urile de testnet sunt limitate ca rată per IP; rulați sau
+folosiți propriul nod pentru traficul de producție. Înainte de 0.12.0, fiecare presetare folosea implicit
+localhost.
+
 ### Diferențe doar de testnet care contează pentru un client {#testnet-only}
 
 Testnet-ul este o rețea de staging și rulează înaintea mainnet-ului, deci câteva lucruri
@@ -59,10 +67,12 @@ completă se află în
 * **Tokenuri de test.** Trei tokenuri fără valoare există doar pe testnet, ca denominații bank numite `erc20:<EIP-55 contract address>` (sensibile la majuscule): fUSD (6 zecimale), fETH (18) și fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` le listează. Singura denominație bank a mainnet-ului este `uqor`. Vezi [Tokenuri de test pe testnet (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
 * **Module pornite.** Modulul `abstractaccount` este activat pe testnet și oprit pe mainnet, precompilate EVM sunt active pe testnet (trei pe 27 octombrie, patru pe 4 noiembrie) și niciunul pe mainnet, iar instanțierea QoreChain Native este deschisă pe testnet.
 
-## Porturi implicite
+## Porturi implicite (presetarea `localnet`) {#default-ports}
 
-`createClient()` folosește implicit aceste porturi localhost. Suprascrie
-`endpoints` pentru a indica spre un nod real.
+Presetarea `localnet` (chain id `qorechain-devnet`, fără chain id EVM setat) folosește aceste
+porturi localhost, pentru un nod de pe propria ta mașină. Înainte de SDK 0.12.0, fiecare presetare le
+folosea implicit; începând cu 0.12.0 doar `localnet` o face. Suprascrie `endpoints` pentru a indica
+spre alt nod.
 
 | Endpoint | Port | Scop |
 | --- | --- | --- |
@@ -72,6 +82,10 @@ completă se află în
 | EVM JSON-RPC | `8545` | `eth_*` (și `qor_*` / precompilate pe nodurile care le activează) |
 | EVM JSON-RPC (WS) | `8546` | abonamente WebSocket EVM |
 | SVM JSON-RPC | `8899` | RPC compatibil cu Solana |
+
+```ts
+const local = createClient({ network: "localnet" }); // a node on this machine
+```
 
 Exemplu cu endpoint-uri explicite:
 
@@ -95,8 +109,9 @@ Python/Go/Rust echivalentele sunt `create_client` / `CreateClient` /
 
 ## Țintirea mainnet-ului
 
-Ambele presetări livrează aceleași valori implicite localhost; selectează
-`mainnet` și suprascrie endpoint-urile cu URL-urile publice (sau cu nodul tău):
+Selectează `mainnet` pentru a-l ținti. Începând cu SDK 0.12.0, presetarea poartă deja URL-urile
+publice, deci endpoint-urile de mai jos sunt valorile implicite; transmite `endpoints` doar pentru propriul nod
+(un SDK anterior lui 0.12.0 folosește implicit localhost și are nevoie de ele):
 
 ```ts
 const main = createClient({

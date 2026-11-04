@@ -322,13 +322,31 @@ incrementato a ogni esecuzione riuscita.
   (`eth_getTransactionCount`).
 - `MsgExecuteCosmos.nonce` è lo stesso tipo di contatore.
 
-Dalla chain v3.2.4 (entrambe le reti servono la route) e dall'SDK 0.10.0 puoi leggere
+Dalla chain v3.2.4 (entrambe le reti servono la route) e dall'SDK 0.10.0 o successivo puoi leggere
 il contatore invece di tenerne traccia: `fetchAuthNonce({ rest, address, pubkey })` chiama
 `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` e restituisce
 `{ nonce, linked }`. Una chiave che non ha mai eseguito legge 0, e il contatore viene
 conservato anche per una chiave non più collegata (`linked` indica quale caso). Inviare un valore diverso dal contatore corrente della chain
 produce un rifiuto per replay (codice 11 di `abstractaccount`, vedi sotto). Con un SDK o una chain più vecchi, tienine traccia per ogni chiave collegata: 0 per una chiave appena collegata,
 +1 dopo ogni esecuzione che la chain accetta.
+
+## Leggere le regole memorizzate e le chiavi collegate {#reads}
+
+Dalla chain v3.2.5 (SDK 0.12.0), su entrambe le reti si può chiedere che cosa ha
+memorizzato un account, invece di ricostruirlo dalle transazioni:
+
+* `fetchSpendingRules({ rest, address })` legge le regole di spesa, valide per l'intero
+  account e per ogni chiave collegata (`GET /qorechain/abstractaccount/v1/accounts/{address}/spending_rules`).
+* `fetchAuthenticators({ rest, address })` legge le chiavi collegate, comprese quelle
+  revocate (`.../accounts/{address}/authenticators`).
+* `msg.abstractaccount.updateConfig` è il messaggio di governance che imposta i
+  limiti del modulo (l'autorità è l'account del modulo di governance, quindi un account
+  ordinario non può inviarlo). L'SDK controlla i valori prima di firmare.
+
+Le regole vengono controllate come le controlla la chain: un denom `erc20/`, `erc721/` o `erc1155/`
+deve indicare un indirizzo di contratto `0x`, e i codici 8 (regola di spesa non valida)
+e 9 (modulo disabilitato) del modulo sono nominati. Il modulo è ancora disattivato sulla mainnet
+e attivo sulla testnet.
 
 ## Lo schema dei permessi
 

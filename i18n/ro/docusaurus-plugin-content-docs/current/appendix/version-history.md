@@ -63,6 +63,7 @@ Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve) pentru ce înse
 * **Propunerile accelerate își păstrează voturile.** O propunere accelerată care eșuează la numărătoarea scurtă și se convertește într-o propunere obișnuită păstrează voturile deja exprimate.
 * **Reguli pentru precompilările EVM.** Apelurile către precompilări sunt delimitate de fereastra de autorizare EVM, iar întrerupătorul de circuit li se aplică.
 * **Verificarea post-cuantică se taxează o dată per semnatar**, iar **gazul de simulare este exact**: gazul raportat de o simulare de tranzacție corespunde acum cu cel folosit de tranzacție.
+* **Suport pentru clienți.** SDK 0.12.0 (30 octombrie 2026, în toate cele cinci limbaje) este versiunea de client pentru această versiune: gaz exact pentru tranzacțiile hibride, constructori pentru registrul de chei ML-KEM și citirea lui, citiri ale conturilor abstracte, iar endpoint-urile publice ca valori implicite ale preset-urilor. Vezi [Ce aduce 0.12.0](/sdk/install#whats-new-0120).
 * **Consolidare** în urma a două audituri de securitate, acoperind lane-ul compatibil Solana (SVM), cross-VM, rollup-urile și prețul comisioanelor: comisioanele plătite în alte tokenuri sunt calculate din tipul potrivit de pool, arderea la o tranzacție eșuată folosește comisionul convertit, iar implementările SVM, execuția și calculul sunt mărginite.
 
 ## v3.2.4 — Fereastra de înregistrare a light node-urilor și staking opțional cu blocare în timp

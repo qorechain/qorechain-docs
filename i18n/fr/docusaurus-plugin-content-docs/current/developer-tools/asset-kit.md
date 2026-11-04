@@ -108,11 +108,11 @@ Six drapeaux fixés ou assouplissables seulement à la création (`require_auth`
 | Contrats Solidity (depuis GitHub) | `git clone --recurse-submodules https://github.com/qorechain/qorechain-asset-kit` (tag `v0.1.0`), ou comme dépendance Foundry : `forge install qorechain/qorechain-asset-kit@v0.1.0` | Foundry ; solc 0.8.28 (les fichiers T-REX et ONCHAINID utilisent 0.8.17) ; `evm_version = "cancun"` |
 | Java | `implementation("io.github.qorechain:asset-kit:0.1.0")` (Maven `io.github.qorechain:asset-kit:0.1.0`) | Java 17 |
 | Go | `go get github.com/qorechain/qorechain-asset-kit/clients/go@v0.1.0` (package `assetkit`) | Go 1.23 |
-| Python | **À venir** sur PyPI sous le nom `qorechain-asset-kit` ; pas encore publié. Aujourd'hui, depuis un clone : `cd clients/python && python -m pip install .` (import `qorechain_asset_kit`) | Python 3.10 |
-| TypeScript | **À venir** sur npm sous le nom `@qorechain/asset-kit` ; pas encore publié. Aujourd'hui, depuis un clone : `pnpm install && pnpm -r build` | Node.js 22.12 |
+| Python | `pip install qorechain-asset-kit` (import `qorechain_asset_kit`) | Python 3.10 ou ultérieur |
+| TypeScript | `npm install @qorechain/asset-kit` | À exécuter sur Node.js 26 ; module ES et CommonJS |
 | Console d'émetteur | Depuis un clone : `pnpm install`, puis `pnpm --filter @qorechain/issuer-console dev` (non publiée comme package) | Un navigateur avec un portefeuille EIP-6963 |
 
-Le README du dépôt et celui du client TypeScript importent depuis `@qorechain/asset-kit` comme si le package était installé. Cela ne fonctionne que depuis un clone, jusqu'à la release npm.
+Les packages Python, TypeScript, Go et Java sont des clients pour les modules natifs **proposés** uniquement. Ils ne contiennent aucun contrat ; les contrats Solidity et la console d'émetteur viennent du dépôt.
 
 Avec `forge install`, les contrats se trouvent sous `lib/qorechain-asset-kit/contracts/` et leurs propres dépendances sous `lib/qorechain-asset-kit/contracts/lib/`. Les remappings qui compilent le guard, la règle CMTAT et les vaults :
 
@@ -163,7 +163,7 @@ Connectez un portefeuille EIP-6963, passez sur QoreChain Testnet, puis créez un
 
 ### Quickstart 4 : construire contre les modules proposés avec MockChain (Python, hors ligne) {#quickstart-python}
 
-Tiré du README du client Python. Jusqu'à la release PyPI, installez depuis un clone (voir [Installation](#install)).
+Tiré du README du client Python. Installez avec `pip install qorechain-asset-kit`. Exécuté le 4 novembre 2026 dans un environnement virtuel neuf avec le package PyPI 0.1.0.
 
 ```python
 from qorechain_asset_kit import MockChain, MockChainError, asset
@@ -179,6 +179,30 @@ except MockChainError as e:
 ```
 
 Sortie observée : `ERROR_CODE_ADDRESS_FROZEN`. Le même appel sur `ChainClient()` lève `ChainUpgradeRequired` avec `module == "x/asset"` et `code == "CHAIN_UPGRADE_REQUIRED"`.
+
+### Quickstart 4b : la même chose en TypeScript (hors ligne) {#quickstart-typescript}
+
+Tiré des quickstarts testés du hub développeurs (le manifeste le marque comme testé, 29 octobre 2026 ; ré-exécuté le 4 novembre 2026 après `npm install @qorechain/asset-kit@0.1.0`, Node.js 26).
+
+```ts
+import { ChainClient, ChainUpgradeRequired, MockChain, asset } from "@qorechain/asset-kit";
+
+const issuer = "qor1issuer", alice = "qor1alice", bob = "qor1bob";
+
+// Today: a controlled failure, no network request.
+await new ChainClient().asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "10" })
+  .catch((e) => e instanceof ChainUpgradeRequired); // e.module === "x/asset"
+
+// Development: the proposed rules, in memory.
+const chain = new MockChain();
+await chain.asset.createAsset({ issuer, assetId: "bond-2030", flags: { freezable: true, pausable: true } });
+await chain.asset.mint({ agent: issuer, assetId: "bond-2030", to: alice, amount: "100" });
+await chain.asset.freeze({ agent: issuer, assetId: "bond-2030", holder: alice, frozen: true });
+const q = await chain.asset.canTransfer({ assetId: "bond-2030", from: alice, to: bob, amount: "1" });
+console.log("asset-kit: frozen transfer allowed =", q.allowed, "code =", q.code);
+```
+
+Il a affiché `asset-kit: frozen transfer allowed = false code = 6` (`6` est `asset.ErrorCode.ERROR_CODE_ADDRESS_FROZEN`).
 
 ### Quickstart 5 : la même chose en Go (proxy de modules v0.1.0) {#quickstart-go}
 
@@ -214,7 +238,7 @@ func main() {
 Sortie observée : `mock mint error: <nil>` puis `true x/asset`. Le README du client Java contient l'exemple équivalent avec `MockChain`, `MsgCreateAsset.newBuilder()` et `MockChainError.code()`.
 
 :::note
-Les README Go et TypeScript du dépôt contiennent de petites erreurs dans leurs extraits, à corriger dans la 0.1.1. L'exemple Go ci-dessus est la version corrigée.
+Le README Go du dépôt et le README livré dans le package npm 0.1.0 contiennent de petites erreurs dans leurs extraits. Les exemples Go et TypeScript ci-dessus sont les versions corrigées.
 :::
 
 ## API principale {#main-api}
@@ -267,15 +291,15 @@ Comportement du réseau à garder en tête : `PREVRANDAO` est une constante (auc
 
 ## Où c'est publié {#where-published}
 
-Vérifié en direct le 28 octobre 2026 (la release GitHub, Maven Central et le proxy Go servent la 0.1.0 ; PyPI et npm renvoient 404).
+Vérifié auprès de chaque registre le 4 novembre 2026. Chaque entrée sert la 0.1.0.
 
 | Registre | Package | Version | Lien |
 |---|---|---|---|
+| npm | `@qorechain/asset-kit` | 0.1.0 | https://www.npmjs.com/package/@qorechain/asset-kit |
+| PyPI | `qorechain-asset-kit` | 0.1.0 (wheel Python pur et sources) | https://pypi.org/project/qorechain-asset-kit/ |
 | Maven Central | `io.github.qorechain:asset-kit` | 0.1.0 | https://central.sonatype.com/artifact/io.github.qorechain/asset-kit |
 | Proxy de modules Go | `github.com/qorechain/qorechain-asset-kit/clients/go` | v0.1.0 (tag `clients/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-asset-kit/clients/go |
-| PyPI | `qorechain-asset-kit` | **À venir** (pas encore sur PyPI) | |
-| npm | `@qorechain/asset-kit` | **À venir** (non publié) | |
-| GitHub (contrats Solidity, console d'émetteur, protos, docs, modèles juridiques) | `qorechain/qorechain-asset-kit` | release v0.1.0 | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
+| GitHub (contrats Solidity, console d'émetteur, protos, docs, modèles juridiques) | `qorechain/qorechain-asset-kit` | release v0.1.0 ; `forge install qorechain/qorechain-asset-kit@v0.1.0` | https://github.com/qorechain/qorechain-asset-kit/releases/tag/v0.1.0 |
 
 Dépôt : https://github.com/qorechain/qorechain-asset-kit. Mainteneur : QoreChain Association.
 
@@ -294,8 +318,8 @@ Dépôt : https://github.com/qorechain/qorechain-asset-kit. Mainteneur : QoreCha
 - **ERC-7518 est une esquisse d'interface**, pas une implémentation. Les partitions peuvent être modélisées aujourd'hui avec un jeton par classe ou tranche partageant un même registre d'identités ou une même règle.
 - **CMTA RuleEngine v3** n'est encore publié que sous forme de release candidates ; la règle fonctionne directement comme `ruleEngine` d'un jeton et annonce les deux identifiants d'interface de règle (`0x2497d6cb`, `0xb1a69752`).
 - **La console d'émetteur** n'enregistre pas de clés, n'ouvre pas de fenêtres, ne déploie pas de suites ERC-3643 ni de vaults, et ne gère pas les rôles CMTAT, les gels partiels, les documents ni les snapshots.
-- **Python et TypeScript ne sont pas sur leurs registres.** Utilisez un clone jusqu'aux releases PyPI et npm ; cette page ne donne pas de commande d'installation par registre pour eux.
-- **Erreurs des README.** Les extraits Go et TypeScript des README du dépôt contiennent de petites erreurs, à corriger dans la 0.1.1. Utilisez les quickstarts de cette page.
+- **Les packages des registres ne contiennent que les clients de la proposition.** Les contrats, les scripts de déploiement et la console d'émetteur ne sont dans aucun package ; utilisez le dépôt.
+- **Erreurs des README.** Le README Go du dépôt et le README du package npm contiennent de petites erreurs dans leurs extraits. Utilisez les quickstarts de cette page.
 - **Modèles juridiques.** `legal/` contient trois brouillons pour discussion : un titre de registre suisse (art. 973d à 973i du Code des obligations), des conditions de jeton du Liechtenstein au titre du TVTG (approche du « token container »), et un plan d'engagement pour un opérateur au titre du régime pilote DLT de l'UE (règlement (UE) 2022/858). Ils n'ont pas été relus par un conseil, ne constituent pas un conseil juridique, et doivent être relus par un conseil qualifié de la juridiction concernée avant tout usage. Les utiliser, ou utiliser le kit, ne dit rien sur la conformité d'une émission donnée à une exigence légale. La QoreChain Association n'agit comme émetteur, teneur de registre, dépositaire, plateforme ou conseiller juridique pour aucun actif.
 - **Pré-1.0.** Les protos proposés peuvent changer dans toute version mineure.
 
@@ -318,7 +342,7 @@ Dépôt : https://github.com/qorechain/qorechain-asset-kit. Mainteneur : QoreCha
 - [Signature post-quantique](/developer-guide/post-quantum-signing) et [comptes et signature PQC](/sdk/concepts/accounts-pqc) : enregistrement de clé et signature hybride.
 - [Développement EVM](/developer-guide/evm-development#evm-window) : la fenêtre d'autorisation EVM.
 - [Précompilés EVM](/developer-guide/evm-precompiles) : `0x0A01` et `0x0A02`, actifs uniquement sur le testnet.
-- [Chain developer kit](/developer-tools/chain-dev-sdk) : templates Foundry, Hardhat et viem et assistants de fenêtre (SDK 0.11.0, à venir).
+- [Chain developer kit](/developer-tools/chain-dev-sdk) : templates Foundry, Hardhat et viem et assistants de fenêtre (inclus dans le SDK 0.12.0).
 - [Custody kit](/developer-tools/custody-kit) et [QoreScan](/developer-tools/qorescan) : kits voisins pour les dépositaires et pour les inventaires de cryptographie.
 - [Packages développeur](/developer-tools/overview) : chaque package et son statut de registre.
 - Standards amont : ERC-3643, CMTAT, ERC-4626, ERC-7540, ERC-7518.

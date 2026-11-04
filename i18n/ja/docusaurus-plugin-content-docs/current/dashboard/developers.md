@@ -14,7 +14,7 @@ sidebar_position: 13
 - **チェーンへの読み取り専用ゲートウェイ。** これらのツールは、`cosmos/`、`cosmwasm/`、`qorechain/` の各クエリパスと simulate 呼び出しに対する読み取り専用のゲートウェイを通じて、公開されているチェーンのデータを読み取り、トランザクションをシミュレートします。ページ上のどの操作も、トランザクションをブロードキャストすることはできません。このゲートウェイが存在するのは、チェーンの REST エンドポイントがブラウザの CORS ヘッダーを送信しないためです。
 - **鍵がブラウザの外に出ません。** Signing playground と test wallet の鍵はブラウザ内で生成され、メモリ上にのみ保持されます。保存も送信もされず、再読み込みすると消えます。この2つのタブはテストネット専用で、メインネットを拒否します。
 - **デモではなく、本番の署名ライブラリ。** Playground は、本番の統合と同じオープンソースライブラリである [QoreSign](/qoresign/overview) を使用します。同じメッセージに対する secp256k1 署名と ML-DSA-87 署名からなるハイブリッド署名を生成し、検証します。
-- **テスト済みのデータから生成されるパッケージハブ。** **SDKs** タブは、1つのマニフェストから48個のパッケージを一覧表示します。バージョンは各レジストリからライブで読み取られ(10分ごとに更新され、レジストリに到達できない場合は最後に確認したバージョンとその日付が表示されます)、各クイックスタートは SDK チームが公開レジストリに対して実行したもので、観測された出力が横に表示されます。
+- **テスト済みのデータから生成されるパッケージハブ。** **SDKs** タブは、1つのマニフェスト(2026年10月30日のマニフェスト)から60個のパッケージを一覧表示します。バージョンは各レジストリからライブで読み取られ(10分ごとに更新され、レジストリに到達できない場合は最後に確認したバージョンとその日付が表示されます)、各クイックスタートは SDK チームが公開レジストリに対して実行したもので、観測された出力が横に表示されます。
 - **再現できる判定。** **Transaction inspector** は、コミット済みのトランザクションを読み取り、その ML-DSA-87 レイヤーが署名者の登録済みの鍵に対して検証されるかどうかを報告します。検証されない場合は、sign-bytes のバージョンとその理由も示します。これには [QoreSign](/qoresign/overview) 0.1.1 の `inspectTransaction` 関数を使用しているため、同じ確認をご自身のコードでも実行できます。読み取り専用です。
 - **推測ではなく、チェーンの答え。** **PQ key status** は、登録済みの ML-DSA-87 鍵と EVM ウィンドウの状態を、ノード自身のクエリルートから読み取ります。そのため、EVM トランザクションが拒否される理由を、送信する前に確認できます。
 
@@ -24,7 +24,7 @@ sidebar_position: 13
 
 ### SDKs {#sdks}
 
-**できること。** すべての QoreChain ライブラリを、製品ごとにまとめて一覧表示します。マニフェストには、TypeScript、Python、Go、Rust、Java、Kotlin、Swift にまたがる48個のパッケージがあります。46個は安定版、1個は非推奨で、1個はまだレジストリになく **Not published yet** と表示されます(npm 向けの QoreSeal)。製品は、表示順に次のとおりです。QoreChain SDK(コア、React フック、EVM、SVM、dApp スターター、および Python、Rust、Go、Java への移植版)、QoreSign(Python 向けの QoreSign を含む)、QoreSeal(ML-KEM-1024 によるアカウント宛ての暗号化、テストネット。[QoreSeal](/developer-tools/qoreseal) を参照。Rust、Go、Python、Swift、Kotlin、Android 向け)、RDK(ロールアップ開発キット、そのコマンドラインツール、ロールアップスターター、および Python、Rust、Go、Java への移植版)、PQC ライブラリ、ウォレットアダプター、チェーンブリッジ、Handles、QoreX 統合、そして MCP と `qore` CLI。
+**できること。** すべての QoreChain ライブラリを、製品ごとにまとめて一覧表示します。2026年10月30日のマニフェストには、TypeScript、Python、Go、Rust、Java、Kotlin、Swift、Solidity にまたがる60個のパッケージがあります。59個は安定版、1個は非推奨で、**Not published yet** と表示されるものはありません(以前そうだった npm 向けの QoreSeal は 0.1.0 として公開されています)。製品は、表示順に次のとおりです。QoreChain SDK(コア、React フック、EVM、SVM、dApp スターター、および Python、Rust、Go、Java への移植版。いずれも 0.12.0)、QoreSign(Python 向けの QoreSign を含む)、QoreSeal(ML-KEM-1024 によるアカウント宛ての暗号化、テストネット。[QoreSeal](/developer-tools/qoreseal) を参照。TypeScript、Rust、Go、Python、Swift、Kotlin、Android 向け)、Asset Kit([Asset Kit](/developer-tools/asset-kit))、PQ ライトクライアント、カストディキット、QoreScan、RDK(ロールアップ開発キット、そのコマンドラインツール、ロールアップスターター、および Python、Rust、Go、Java への移植版)、PQC ライブラリ、ウォレットアダプター、チェーンブリッジ、Handles、QoreX 統合、そして MCP と `qore` CLI。
 
 **仕組み。** 各製品はカードになっています。製品が複数の言語で提供されている場合は、言語セレクター(ピル)で表示するパッケージを切り替えます。各パッケージには次の内容が表示されます。
 

@@ -44,16 +44,16 @@ QoreChain هي سلسلة كتل من الطبقة الأولى تضم ثلاث 
 هناك ومفعَّلة على شبكة الاختبار)، وxQORE وتجريد الغاز. يكرر كل دليل هذا
 التنبيه حيثما ينطبق. جرى الفحص مقابل نقاط النهاية الحية في 27 أكتوبر 2026؛ وفي 4 نوفمبر 2026 كانت قائمة الـ precompiles النشطة في الشبكة الرئيسية ما زالت فارغة، بينما احتوت قائمة شبكة الاختبار أيضًا جسر الآلات الافتراضية المتقاطعة `0x…0901` (لم يُعَد اختباره).
 
-تُوقِّع SDK المنشورة (0.10.0، 26 أكتوبر 2026) بالصيغة التي تتحقق منها الشبكتان
+تُوقِّع SDK المنشورة (0.12.0، 30 أكتوبر 2026) بالصيغة التي تتحقق منها الشبكتان
 (بايتات التوقيع الهجينة v2، تُحدَّد من حالة السلسلة)، ولم تتغير صيغة التوقيع
 والعناوين والمنازل العشرية والمذكرات والرسوم في v3.2.3 ولا في v3.2.4 ولا في v3.2.5 ولا في v3.2.6 (تعمل الشبكة الرئيسية بالإصدار v3.2.6 منذ 4 نوفمبر 2026،
 الارتفاع 4,020,000، مقترح الحوكمة 15؛ وشبكة الاختبار منذ 27 أكتوبر). وهي تحمل
 جانب العميل من القواعد اللاحقة للتشفير ما بعد الكمومي (إثبات الحيازة عند
 تسجيل المفتاح، ونوافذ EVM ذات النطاق المحدد، ورسائل الموافقة الخاصة بـ
 EIP-7702) ومن v3.2.4 (طبقات التحصيص، وnonce المصادِق، ومفاتيح تفعيل ميزات
-البروتوكول)؛ أما الإصدارات السابقة للإصدار 0.9.0 فلا تحمل المجموعة الأولى، راجع
+البروتوكول) ومن v3.2.5 (الغاز الدقيق للمعاملات الهجينة، وسجل مفاتيح ML-KEM)؛ أما الإصدارات السابقة للإصدار 0.9.0 فلا تحمل المجموعة الأولى، راجع
 [الإصدارات السابقة للإصدار 0.9.0](/sdk/install#before-090)
-و[ما الذي يضيفه الإصدار 0.10.0](/sdk/install#whats-new-0100).
+و[ما الذي يضيفه الإصدار 0.12.0](/sdk/install#whats-new-0120).
 
 التوقيع في المحافظ والخوادم الخلفية: راجع [QoreSign](/qoresign/overview).
 :::
@@ -109,7 +109,7 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
   [المصادِقات والإنفاق المفوَّض](/sdk/guides/authenticators).
 
 كما أن حزمة **`@qorechain/react`** الجديدة (مزوِّد، وخطافات hooks، و
-`ConnectButton`، و `QuantumSafeBadge`) تجعل بناء تطبيق لامركزي بتوقيع ML-DSA-87
+`ConnectButton`، و `PqcStatusBadge`) تجعل بناء تطبيق لامركزي بتوقيع ML-DSA-87
 هجين هو المسار الافتراضي — راجع
 [دليل حزمة React](/sdk/guides/react). وللاطلاع على الحجة الكاملة، اقرأ
 [لماذا QoreChain SDK](/sdk/why).
@@ -122,15 +122,15 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 
 | الحزمة | اللغة | التثبيت | الحالة |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | منشورة (npm، الإصدار v0.10.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (الاستيراد باسم `qorsdk`) | منشورة (PyPI، الإصدار v0.10.0) |
-| `qorechain-sdk` (وحدة Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | منشورة (وكيل Go، الوسم `packages/go/v0.10.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (الاستيراد باسم `qorechain`) | منشورة (crates.io، الإصدار v0.10.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.10.0` | منشورة (Maven Central، الإصدار v0.10.0) |
-| `@qorechain/evm` | TypeScript (محوِّل EVM) | `npm i @qorechain/evm viem` | منشورة (npm، الإصدار v0.8.0) |
-| `@qorechain/svm` | TypeScript (محوِّل SVM) | `npm i @qorechain/svm @solana/web3.js` | منشورة (npm، الإصدار v0.8.0) |
-| `@qorechain/react` | TypeScript (حزمة React) | `npm i @qorechain/react` | منشورة (npm، الإصدار v0.10.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | منشورة (npm، الإصدار v0.10.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | منشورة (npm، الإصدار v0.12.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (الاستيراد باسم `qorsdk`) | منشورة (PyPI، الإصدار v0.12.0) |
+| `qorechain-sdk` (وحدة Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | منشورة (وكيل Go، الوسم `packages/go/v0.12.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (الاستيراد باسم `qorechain`) | منشورة (crates.io، الإصدار v0.12.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.12.0` | منشورة (Maven Central، الإصدار v0.12.0؛ JDK 17 أو أحدث) |
+| `@qorechain/evm` | TypeScript (محوِّل EVM) | `npm i @qorechain/evm viem` | منشورة (npm، الإصدار v0.12.0) |
+| `@qorechain/svm` | TypeScript (محوِّل SVM) | `npm i @qorechain/svm @solana/web3.js` | منشورة (npm، الإصدار v0.12.0) |
+| `@qorechain/react` | TypeScript (حزمة React) | `npm i @qorechain/react` | منشورة (npm، الإصدار v0.12.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | منشورة (npm، الإصدار v0.12.0) |
 
 > توزيعة Python تُثبَّت باسم `qorechain-sdk` لكنها **تُستورَد باسم
 > `qorsdk`**. جميع العملاء منشورون في سجلاتهم — راجع
@@ -144,17 +144,17 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 القياسية، وعملاء استعلام منمَّطون، ودورة حياة المعاملة الكاملة (الغاز
 التلقائي، وفك ترميز الأخطاء، وتتبع المعاملات، والبحث في الكتل/المعاملات)،
 والمعاملات الهجينة ما بعد الكمومية، واشتراكات WebSocket. جميع هؤلاء العملاء
-**منشورون**: ‏TypeScript على npm ‏(`@qorechain/sdk` 0.10.0)، و Python على
-PyPI ‏(`qorechain-sdk` 0.10.0، الاستيراد باسم `qorsdk`)، و Go على وكيل
-الوحدات (الوسم `packages/go/v0.10.0`)، و Rust على crates.io
-‏(`qorechain-sdk` 0.10.0)، و Java على Maven Central
-‏(`io.github.qorechain:qorechain-sdk` 0.10.0). أما محوِّلات التنفيذ EVM/SVM
-‏(`@qorechain/evm` و `@qorechain/svm`، وكلاهما 0.8.0)، وحزمة
-`@qorechain/react` ‏(0.10.0)، وأداة السقالة `create-qorechain-dapp` ‏(0.10.0)
+**منشورون**: ‏TypeScript على npm ‏(`@qorechain/sdk` 0.12.0)، و Python على
+PyPI ‏(`qorechain-sdk` 0.12.0، الاستيراد باسم `qorsdk`)، و Go على وكيل
+الوحدات (الوسم `packages/go/v0.12.0`)، و Rust على crates.io
+‏(`qorechain-sdk` 0.12.0)، و Java على Maven Central
+‏(`io.github.qorechain:qorechain-sdk` 0.12.0). أما محوِّلات التنفيذ EVM/SVM
+‏(`@qorechain/evm` و `@qorechain/svm`، وكلاهما 0.12.0)، وحزمة
+`@qorechain/react` ‏(0.12.0)، وأداة السقالة `create-qorechain-dapp` ‏(0.12.0)
 فهي خاصة بـ TypeScript فقط ومنشورة كذلك على npm. راجع
 [التثبيت](/sdk/install#related-packages) للاطلاع على الحزم المصاحبة.
 
-## الجديد في 0.6 و 0.7 و 0.8 و 0.9 و 0.10
+## الجديد من 0.6 إلى 0.12 {#whats-new-in-06-07-08-09-and-010}
 
 **0.6.0 — الحسابات الموحّدة الأصلية بنمط eth (السلسلة v3.1.83).** مفتاح
 `eth_secp256k1` واحد هو هوية واحدة من 20 بايت تُعرض بجميع ترميزات العناوين
@@ -228,7 +228,20 @@ codespace الخاص بها، وتهيّئ `create-qorechain-dapp` المشار�
 تفرضها الشبكة بالاسم، و`possessionProven` في حالة PQC، و`ibcTimeoutTimestamp`.
 وتقارن `ensurePqcRegistered` الآن المفتاح المسجَّل بدلًا من الوثوق بحالة بلا مفتاح،
 ويُسمّى رفض السلسلة الذي يصل كنص أثناء محاكاة الرسوم في كل لغة. راجع
-[ما الذي يضيفه الإصدار 0.10.0](/sdk/install#whats-new-0100).
+[ما الذي أضافه الإصدار 0.10.0](/sdk/install#whats-new-0100).
+
+**0.12.0، دعم العميل للسلسلة v3.2.5.** تشير الإعدادات المسبقة `mainnet` و`testnet`
+الآن افتراضيًا إلى نقاط النهاية العامة (ويحتفظ إعداد `localnet`، ومعرّف السلسلة
+`qorechain-devnet`، بمنافذ localhost القديمة). وتستخدم الرسوم `"auto"` للمعاملة الهجينة
+قاعدة الغاز الدقيقة على الشبكات التي طبّقت v3.2.5
+(`ceil(simulated x 1.02) + 2000`، أي نحو 171,600 غاز لإرسال bank هجين بدلًا من
+نحو 289,000). ولسجل مفاتيح ML-KEM-1024 مؤلِّفات (`msg.pqc.registerKemKey` و
+`msg.pqc.removeKemKey`) وقراءة (`fetchKemKey`)، وهي تستجيب على الشبكة الرئيسية. وهناك
+قراءات لقواعد إنفاق الحسابات المجرّدة ومفاتيحها المرتبطة، وبُناة مفحوصون
+لمقترحات معاملات cross-VM وrollup. وتدخل في ذلك مجموعة أدوات مطوري السلسلة
+(قوالب EVM وQoreChain Native، وسلاسل viem للشبكتين).
+لم يكن هناك 0.11.0 خارج npm؛ وانتقلت اللغات الأخرى من 0.10.0 إلى 0.12.0. انظر
+[ما الذي يضيفه الإصدار 0.12.0](/sdk/install#whats-new-0120).
 
 ## إلى أين تتجه بعد ذلك
 

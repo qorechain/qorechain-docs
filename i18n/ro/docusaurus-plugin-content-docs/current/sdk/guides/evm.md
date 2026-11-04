@@ -17,6 +17,27 @@ pentru precompilele EVM ale QoreChain.
 npm i @qorechain/evm viem
 ```
 
+## Definiții de lanț și helpere pentru fereastră (0.12.0)
+
+`@qorechain/evm` exportă definițiile de lanț viem `qorechain` (chain id 9801) și
+`qorechainTestnet` (9800), plus `QORECHAIN_CHAINS` și `QORECHAIN_REST_ENDPOINTS`, astfel
+încât o aplicație viem sau wagmi să nu le scrie de mână:
+
+```ts
+import { createPublicClient, http } from "viem";
+import { qorechainTestnet } from "@qorechain/evm";
+
+const publicClient = createPublicClient({ chain: qorechainTestnet, transport: http() });
+```
+
+Are și helperele [ferestrei de autorizare](#evm-window): `evmWindowStatus` citește
+fereastra unui cont prin REST, `openEvmWindowMessage` verifică limitele chain-ului și
+compune `MsgOpenEVMWindow` din banda Native pentru semnare hibridă, `evmWindowCost` și
+`weiToUqorCeil` dimensionează o fereastră, iar `toQorAddress` / `toEvmAddress` convertesc un
+cont eth-native între cele două codificări ale sale. Helperele de fereastră sunt publicate
+și fără viem ca `@qorechain/evm/window`. Au apărut în versiunea 0.11.0, doar pe npm, și sunt în
+0.12.0.
+
 ## Crearea unui client
 
 `createEvmClient` returnează un pachet de client susținut de viem. Detectează automat

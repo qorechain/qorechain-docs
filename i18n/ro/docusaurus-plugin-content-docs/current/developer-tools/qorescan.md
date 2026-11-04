@@ -231,7 +231,7 @@ Coduri de ieșire: `0` succes, `1` o eroare de scanare sau de I/O, `2` o eroare 
 
 ## Unde este publicat {#where-published}
 
-Versiunile au fost citite din fiecare registru la 27 octombrie 2026.
+Versiunile au fost citite din fiecare registru la 4 noiembrie 2026 (neschimbate din 27 octombrie).
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|

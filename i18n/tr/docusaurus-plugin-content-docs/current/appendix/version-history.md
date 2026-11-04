@@ -63,6 +63,7 @@ Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics
 * **Hızlandırılmış öneriler oylarını korur.** Kısa sayımında başarısız olup normal bir öneriye dönüşen hızlandırılmış bir öneri, o ana kadar verilmiş oyları korur.
 * **EVM precompile kuralları.** Precompile çağrıları EVM yetkilendirme penceresiyle sınırlandırılır ve devre kesici bunlara da uygulanır.
 * **Kuantum-sonrası doğrulama imzalayan başına bir kez ücretlendirilir** ve **tam simülasyon gazı**: bir işlem simülasyonunun bildirdiği gaz artık işlemin kullandığıyla eşleşir.
+* **İstemci desteği.** SDK 0.12.0 (30 Ekim 2026, beş dilin tamamı) bu sürümün istemci sürümüdür: hibrit işlemler için kesin gaz, ML-KEM anahtar kayıt defteri oluşturucuları ve okuması, soyut hesap okumaları ve varsayılan ön ayarlar olarak herkese açık uç noktalar. Bkz. [0.12.0 ile gelenler](/sdk/install#whats-new-0120).
 * **Sertleştirme**, Solana uyumlu (SVM) hattı, çapraz-VM, rollup'ları ve ücret fiyatlamasını kapsayan iki güvenlik denetiminden: diğer tokenlerle ödenen ücretler doğru türde havuzlardan fiyatlanır, başarısız bir işlemdeki yakım dönüştürülmüş ücreti kullanır ve SVM dağıtımları, yürütme ve hesaplama sınırlandırılır.
 
 ## v3.2.4 — Işık Düğümü Kayıt Penceresi ve İsteğe Bağlı Zaman Kilitli Stake
