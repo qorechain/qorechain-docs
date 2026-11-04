@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | ネットワークプリセット | `mainnet` |
 | チェーン ID | `qorechain-vladi`（2026年6月7日から稼働） |
-| チェーンバージョン（2026年10月30日） | v3.2.5（2026年10月29日の高さ 3,906,833 以降、ガバナンス提案 14。v3.2.4 は10月23日に高さ 3,742,566 で適用）。SDK 0.10.0 は v3.2.4 向けのクライアントで引き続き動作しますが、v3.2.5 での追加分のビルダーはありません |
+| チェーンバージョン（2026年11月4日） | v3.2.6（2026年11月4日の高さ 4,020,000 以降、ガバナンス提案 15。v3.2.5 は10月29日に高さ 3,906,833 で、v3.2.4 は10月23日に高さ 3,742,566 で適用）。SDK 0.10.0 は v3.2.4 向けのクライアントで引き続き動作しますが、v3.2.5 と v3.2.6 での追加分のビルダーはありません |
 | EVM チェーン ID | `9801` |
 | 表示トークン | `QOR` |
 | 基本額面 | `uqor` |
@@ -52,9 +52,9 @@ EVM エンドポイントは `eth_`、`net_`、`web3_`、`txpool_` を提供し�
 
 テストネットはステージングネットワークでメインネットより先行して動作するため、そこで読み取れるいくつかの内容はメインネットにはありません（2026年10月27日に確認。完全な一覧は[テストネットとメインネットの差異](/appendix/chain-parameters#testnet-differences)にあります）。
 
-* **REST ルート。** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`、`GET /qorechain/pqc/v1/params`、`GET /qorechain/crossvm/v1/params` はテストネットで応答します。メインネットはこれらに HTTP 501 を返します。`/qorechain/amm/v1/` 配下の AMM ルート（`pools`、`params`）は両方のネットワークで応答します。
+* **REST ルート。** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`、`GET /qorechain/pqc/v1/params`、`GET /qorechain/crossvm/v1/params` はテストネットで応答します。メインネットは チェーン v3.2.6 までこれらに HTTP 501 を返していました。v3.2.6 の適用（2026年11月4日）以降、これらのルートはすべて、当日の確認でメインネットでも HTTP 200 を返しました。`/qorechain/amm/v1/` 配下の AMM ルート（`pools`、`params`）は両方のネットワークで応答します。
 * **テストトークン。** 価値のない 3 つのトークンがテストネットにのみ存在し、`erc20:<EIP-55 contract address>`（大文字と小文字を区別）という名前のバンクデノミネーションとして登録されています。fUSD（小数桁 6）、fETH（18）、fBTC（8）です。`GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` でそれらを一覧できます。メインネットのバンクデノミネーションは `uqor` のみです。[テストネットのテストトークン（Fest）](/api-reference/rest-grpc-endpoints#fest-tokens)を参照してください。
-* **有効化されているモジュール。** `abstractaccount` モジュールはテストネットでは有効、メインネットでは無効です。EVM プリコンパイルはテストネットで 3 つが有効、メインネットでは 1 つも有効ではありません。また、QoreChain Native のインスタンス化はテストネットで開放されています。
+* **有効化されているモジュール。** `abstractaccount` モジュールはテストネットでは有効、メインネットでは無効です。EVM プリコンパイルはテストネットで有効（10月27日には 3 つ、11月4日には 4 つ）、メインネットでは 1 つも有効ではありません。また、QoreChain Native のインスタンス化はテストネットで開放されています。
 
 ## デフォルトのポート
 

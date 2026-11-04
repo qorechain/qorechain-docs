@@ -41,7 +41,7 @@ Getestet wurden: Transfers in beide Richtungen (1 QOR hinaus, 0,1 ATOM herein, 0
 
 ### Was ein Relayer von Drittanbietern braucht {#third-party}
 
-Das Testnet akzeptiert nur den Light-Client-Typ `07-tendermint` (`/ibc/core/client/v1/params` listet `allowed_clients = ["07-tendermint"]`); heute kann kein `08-wasm`-Client erstellt werden. Um einen Kanal zu QoreChain zu öffnen, braucht ein Relayer:
+Das Testnet akzeptiert nur den Light-Client-Typ `07-tendermint` (`/ibc/core/client/v1/params` listet `allowed_clients = ["07-tendermint"]`); heute kann kein `08-wasm`-Client erstellt werden (die `allowed_clients`-Liste des Mainnets war am 4. November 2026 dieselbe, nachdem v3.2.6 den Code des 08-wasm-Light-Clients eingebunden hat). Um einen Kanal zu QoreChain zu öffnen, braucht ein Relayer:
 
 - einen `07-tendermint`-Client auf jeder Seite;
 - auf der QoreChain-Seite jede Transaktion hybrid signiert von einem Relayer-Konto, dessen ML-DSA-87-Schlüssel registriert ist. QORel tut das; das Standard-Hermes, der Go-Relayer (`rly`) und ts-relayer werden abgelehnt;
@@ -90,7 +90,7 @@ Die Seiten in diesem Abschnitt:
 
 ## Zugang {#how-to-access}
 
-- **Netzwerk.** Nur das Testnet `qorechain-diana` (das Testnet läuft auf v3.2.6). Das Mainnet `qorechain-vladi` hat keinen offenen IBC-Kanal; was jedes Netzwerk bietet, steht unter [Assets bridgen](/user-guide/bridging-assets#ibc-testnet-v326).
+- **Netzwerk.** Nur das Testnet `qorechain-diana` (beide Netzwerke laufen mit Chain v3.2.6). Das Mainnet `qorechain-vladi` hat keinen offenen IBC-Kanal; was jedes Netzwerk bietet, steht unter [Assets bridgen](/user-guide/bridging-assets#ibc-testnet-v326).
 - **Gegenstelle.** Das öffentliche Testnet des Cosmos Hub, Chain-ID `provider`, über `channel-600`. Jede andere Cosmos-SDK-Chain funktioniert auf dieselbe Weise wie der Eintrag `provider` in der Beispielkonfiguration.
 - **Endpunkte.** QORel braucht für jede Chain einen Konsens-RPC, einen WebSocket und einen gRPC-Endpunkt. Das QoreChain-Testnet hat öffentlichen RPC (`https://rpc-testnet.qore.host`) und REST (`https://api-testnet.qore.host`), aber heute keinen öffentlichen gRPC-Endpunkt und auch keinen zugesagten, sodass ein Drittanbieter-Relayer für `qorechain-diana` einen eigenen Testnet-Node braucht ([Einen Node betreiben](/developer-guide/running-a-node), [Verbindung zum Testnet](/getting-started/connecting-to-testnet)). Öffentliche Endpunkte, die Relayer ratenbegrenzen, lassen sich für einen kurzen Test verwenden, nicht aber für dauerhaftes Relaying.
 - **Konten.** Ein eigenes Relayer-Konto auf jeder Chain, mit einem kleinen Guthaben für Gebühren. Test-QOR gibt es beim [Dashboard-Faucet](/dashboard/faucet); es hat keinen Wert. Verwenden Sie nie den Operator-Schlüssel eines Validators.

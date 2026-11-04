@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain is built with **post-quantum cryptography (PQC) at genesis** — not retrofitted as an upgrade. The `x/pqc` module provides lattice-based digital signatures and key encapsulation as the primary cryptographic primitives, with a governance-controlled algorithm agility framework for long-term resilience.
 
-The full PQC baseline — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — is now complete and the network default. On the live networks (v3.2.x), hybrid signatures are **required by default** on the cosmos transaction path: `hybrid_signature_mode = required` and `allow_classical_fallback = false`. Every cosmos-path transaction must carry a Dilithium-5 signature alongside its classical secp256k1 signature; classical-only transactions from a PQC account are rejected, and the classical downgrade path is closed. Mainnet runs v3.2.4 and the testnet v3.2.6 (checked 27 October 2026); what the v3.2.2 and v3.2.3 releases added to the post-quantum rules (key integrity, optional proof of possession, scoped EVM windows, EIP-7702 consent) is described in [Key integrity rules](#key-integrity), [Proof of possession](#proof-of-possession) and [EIP-7702 delegations](#eip-7702).
+The full PQC baseline — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — is now complete and the network default. On the live networks (v3.2.x), hybrid signatures are **required by default** on the cosmos transaction path: `hybrid_signature_mode = required` and `allow_classical_fallback = false`. Every cosmos-path transaction must carry a Dilithium-5 signature alongside its classical secp256k1 signature; classical-only transactions from a PQC account are rejected, and the classical downgrade path is closed. Both networks run v3.2.6 (the testnet since 27 October 2026, mainnet since 4 November 2026; the values were read on the testnet on 27 October and on mainnet on 4 November 2026); what the v3.2.2 and v3.2.3 releases added to the post-quantum rules (key integrity, optional proof of possession, scoped EVM windows, EIP-7702 consent) is described in [Key integrity rules](#key-integrity), [Proof of possession](#proof-of-possession) and [EIP-7702 delegations](#eip-7702).
 
 ## Design Principles
 
@@ -284,7 +284,7 @@ Bridge attestations are designed to use **Dilithium-5** (ML-DSA-87) signatures, 
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Default signature algorithm for new key registrations |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Chain-wide hybrid signature enforcement level         |
 
-The testnet returns these same values (checked 27 October 2026). Since v3.2.6 the testnet also serves them over REST at `GET /qorechain/pqc/v1/params`; on mainnet that route answers 501 (not implemented) and the parameters are read with `qorechaind query pqc params`.
+The testnet returns these same values (checked 27 October 2026). Since v3.2.6 both networks also serve them over REST at `GET /qorechain/pqc/v1/params`: mainnet answered `200` on 4 November 2026 with `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, Dilithium-5 as the default algorithm and hybrid mode `required`. On a node older than v3.2.6 read them with `qorechaind query pqc params`.
 
 ## Related
 

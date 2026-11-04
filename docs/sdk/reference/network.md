@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Network preset | `mainnet` |
 | Chain id | `qorechain-vladi` (live since 7 June 2026) |
-| Chain version (30 October 2026) | v3.2.5 (since height 3,906,833, 29 October 2026, governance proposal 14; v3.2.4 was applied at height 3,742,566 on 23 October). SDK 0.10.0 is the client for v3.2.4 and keeps working; it has no builders for the v3.2.5 additions |
+| Chain version (4 November 2026) | v3.2.6 (since height 4,020,000, 4 November 2026, governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October and v3.2.4 at height 3,742,566 on 23 October). SDK 0.10.0 is the client for v3.2.4 and keeps working; it has no builders for the v3.2.5 or v3.2.6 additions |
 | EVM chain ID | `9801` |
 | Display token | `QOR` |
 | Base denomination | `uqor` |
@@ -54,9 +54,9 @@ The testnet is a staging network and runs ahead of mainnet, so a few things you 
 read there are not on mainnet (checked 27 October 2026; the full list is in
 [Differences between testnet and mainnet](/appendix/chain-parameters#testnet-differences)):
 
-* **REST routes.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` and `GET /qorechain/crossvm/v1/params` answer on the testnet; mainnet answers HTTP 501 for them. The AMM routes under `/qorechain/amm/v1/` (`pools`, `params`) answer on both networks.
+* **REST routes.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` and `GET /qorechain/crossvm/v1/params` answer on the testnet. Mainnet answered HTTP 501 for them until chain v3.2.6; since it applied v3.2.6 (4 November 2026) all of those routes answered HTTP 200 on mainnet when checked that day. The AMM routes under `/qorechain/amm/v1/` (`pools`, `params`) answer on both networks.
 * **Test tokens.** Three tokens with no value exist only on the testnet, as bank denominations named `erc20:<EIP-55 contract address>` (case-sensitive): fUSD (6 decimals), fETH (18) and fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` lists them. Mainnet's only bank denomination is `uqor`. See [Testnet test tokens (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
-* **Modules switched on.** The `abstractaccount` module is enabled on the testnet and off on mainnet, three EVM precompiles are active on the testnet and none on mainnet, and QoreChain Native instantiate is open on the testnet.
+* **Modules switched on.** The `abstractaccount` module is enabled on the testnet and off on mainnet, EVM precompiles are active on the testnet (three on 27 October, four on 4 November) and none on mainnet, and QoreChain Native instantiate is open on the testnet.
 
 ## Default ports
 

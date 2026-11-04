@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain은 **제네시스 단계부터 포스트 양자 암호화(PQC)**를 기반으로 구축되었으며 — 업그레이드로 사후 적용된 것이 아닙니다. `x/pqc` 모듈은 격자 기반 디지털 서명과 키 캡슐화를 기본 암호화 프리미티브로 제공하며, 장기적 회복력을 위한 거버넌스 제어 알고리즘 민첩성 프레임워크를 갖추고 있습니다.
 
-전체 PQC 베이스라인 — **Dilithium-5 (서명) + ML-KEM-1024 (KEM) + SHAKE-256 (해시)** — 은 이제 완성되었으며 네트워크 기본값입니다. 라이브 네트워크(v3.2.x)에서는 cosmos 트랜잭션 경로에서 하이브리드 서명이 **기본적으로 필수**입니다: `hybrid_signature_mode = required` 및 `allow_classical_fallback = false`. 모든 cosmos 경로 트랜잭션은 고전적인 secp256k1 서명과 함께 Dilithium-5 서명을 포함해야 합니다; PQC 계정에서 발생한 고전적 전용 트랜잭션은 거부되며, 고전적 다운그레이드 경로는 닫혀 있습니다. 메인넷은 v3.2.4, 테스트넷은 v3.2.6을 실행합니다(2026년 10월 27일 확인). v3.2.2와 v3.2.3 릴리스가 포스트 양자 규칙에 추가한 내용(키 무결성, 선택적 소유 증명, 범위가 지정된 EVM 윈도우, EIP-7702 동의)은 [키 무결성 규칙](#key-integrity), [소유 증명](#proof-of-possession), [EIP-7702 위임](#eip-7702)에 설명되어 있습니다.
+전체 PQC 베이스라인 — **Dilithium-5 (서명) + ML-KEM-1024 (KEM) + SHAKE-256 (해시)** — 은 이제 완성되었으며 네트워크 기본값입니다. 라이브 네트워크(v3.2.x)에서는 cosmos 트랜잭션 경로에서 하이브리드 서명이 **기본적으로 필수**입니다: `hybrid_signature_mode = required` 및 `allow_classical_fallback = false`. 모든 cosmos 경로 트랜잭션은 고전적인 secp256k1 서명과 함께 Dilithium-5 서명을 포함해야 합니다; PQC 계정에서 발생한 고전적 전용 트랜잭션은 거부되며, 고전적 다운그레이드 경로는 닫혀 있습니다. 두 네트워크 모두 v3.2.6을 실행합니다(테스트넷은 2026년 10월 27일부터, 메인넷은 2026년 11월 4일부터이며, 값은 테스트넷에서는 10월 27일에, 메인넷에서는 2026년 11월 4일에 읽었습니다). v3.2.2와 v3.2.3 릴리스가 포스트 양자 규칙에 추가한 내용(키 무결성, 선택적 소유 증명, 범위가 지정된 EVM 윈도우, EIP-7702 동의)은 [키 무결성 규칙](#key-integrity), [소유 증명](#proof-of-possession), [EIP-7702 위임](#eip-7702)에 설명되어 있습니다.
 
 ## 설계 원칙
 
@@ -284,7 +284,7 @@ v3.1.73 기준으로, **SHAKE-256**(SHA-3 확장 출력 함수)은 QoreChain 전
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | 새 키 등록을 위한 기본 서명 알고리즘                     |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | 체인 전체 하이브리드 서명 강제 수준                      |
 
-테스트넷도 동일한 값을 반환합니다(2026년 10월 27일 확인). v3.2.6부터 테스트넷은 이를 REST의 `GET /qorechain/pqc/v1/params`로도 제공합니다. 메인넷에서는 이 경로가 501(미구현)로 응답하며, 파라미터는 `qorechaind query pqc params`로 읽습니다.
+테스트넷도 동일한 값을 반환합니다(2026년 10월 27일 확인). v3.2.6부터 두 네트워크 모두 이를 REST의 `GET /qorechain/pqc/v1/params`로도 제공합니다. 메인넷은 2026년 11월 4일에 `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, 기본 알고리즘 Dilithium-5, 하이브리드 모드 `required`와 함께 `200`으로 응답했습니다. v3.2.6보다 오래된 노드에서는 `qorechaind query pqc params`로 읽습니다.
 
 ## 관련 문서
 

@@ -10,7 +10,7 @@ sidebar_position: 12
 Le module `x/rdk` fournit un kit complet de développement de rollups (Rollup Development Kit, RDK) qui permet aux développeurs de déployer des rollups spécifiques à une application sur QoreChain. Il prend en charge quatre paradigmes de règlement, plusieurs modes de séquenceur, des backends de disponibilité des données enfichables et une optimisation de la configuration assistée par IA.
 
 :::caution Capacité à un stade précoce
-Le module est déployé sur le mainnet (version de chaîne **v3.2.5** depuis le 29 octobre 2026) et sur le testnet (**v3.2.6** depuis le 27 octobre 2026), mais **aucun rollup n'a encore été créé sur l'un ou l'autre réseau** (vérifié le 30 octobre 2026 : `GET /qorechain/rdk/v1/rollups` renvoie une liste vide sur les deux). Plusieurs capacités décrites ci-dessous ne sont pas utilisables de bout en bout aujourd'hui ; le statut est indiqué là où chacune est décrite. Pour le guide pratique destiné aux développeurs, voir [Présentation des rollups](/rollups/overview).
+Le module est déployé sur le mainnet (version de chaîne **v3.2.6** depuis le 4 novembre 2026) et sur le testnet (**v3.2.6** depuis le 27 octobre 2026), mais **aucun rollup n'a encore été créé sur l'un ou l'autre réseau** (vérifié le 30 octobre 2026 sur les deux, puis de nouveau sur le mainnet le 4 novembre 2026 : `GET /qorechain/rdk/v1/rollups` renvoie une liste vide). Plusieurs capacités décrites ci-dessous ne sont pas utilisables de bout en bout aujourd'hui ; le statut est indiqué là où chacune est décrite. Pour le guide pratique destiné aux développeurs, voir [Présentation des rollups](/rollups/overview).
 :::
 
 ---

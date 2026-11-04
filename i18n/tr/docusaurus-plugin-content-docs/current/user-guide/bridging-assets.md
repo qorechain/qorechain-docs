@@ -14,7 +14,7 @@ Köprü modülü mainnet ve testnet'te dağıtılmıştır, ancak **hiçbir köp
 :::
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**, zincir sürümü **v3.2.6**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 29 Ekim 2026'dan beri **v3.2.5** zincir sürümünü çalıştırır. Bir rota etkinleştirildiğinde **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın. Durum 27 Ekim 2026'da kontrol edildi: her iki ağda da 37 zincir yapılandırmasının tamamı `pending` durumundadır.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**, zincir sürümü **v3.2.6**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 4 Kasım 2026'dan beri **v3.2.6** zincir sürümünü çalıştırır. Bir rota etkinleştirildiğinde **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın. Durum 27 Ekim 2026'da kontrol edildi: her iki ağda da 37 zincir yapılandırmasının tamamı `pending` durumundadır.
 :::
 
 ---
@@ -36,24 +36,24 @@ Her zincir yapılandırmasının eksiksiz bir listesi **Bridge Architecture** sa
 
 IBC tasarımın bir parçasıdır (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), ancak **bu karşı tarafların hiçbiri henüz bağlı değildir**: mainnet'te IBC kanalı veya istemcisi yoktur ve testnet'te yalnızca kimliği `provider` olan bir zincire giden tek bir ICS-20 test kanalı vardır (27 Ekim 2026'da kontrol edildi); dolayısıyla bu zincirler için üzerinden transfer yapılabilecek bir şey yoktur. Kanallar açıldığında bu sayfada listelenecektir.
 
-### Testnet'teki IBC eklemeleri (v3.2.6) {#ibc-testnet-v326}
+### v3.2.6'daki IBC eklemeleri {#ibc-testnet-v326}
 
-Üç IBC özelliği yalnızca testnet'te vardır; mainnet'te yoktur (`/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` rotası 501 yanıtı verir):
+Üç IBC özelliği v3.2.6 ile geldi: testnet'te 27 Ekim 2026'dan, mainnet'te 4 Kasım 2026'dan beri; mainnet'te yönetişim önerisi 15 bunları protokol özellikleri olarak etkinleştirdi (`/qorechain/pqc/v1/protocol_features` altındaki mainnet listesi `ibc-rate-limit`, `ibc-packet-forward` ve `ibc-wasm-light-client` değerlerini etkin gösterir ve `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` boş bir listeyle `200` yanıtı verir; 4 Kasım 2026'da kontrol edildi). Etkin olmak kullanımda olmak anlamına gelmez: mainnet'te hâlâ IBC istemcisi veya kanalı yoktur ve aşağıdaki ayarlar daha sonra ayrı yönetişim oylamalarıyla yapılır:
 
 * **IBC hız sınırı.** Yönetişim, IBC transferleri için kanal başına bir kota belirleyebilir (saat cinsinden bir pencere başına arzın tam sayı yüzdesi). Bu **otomatik değildir**: bugün hiçbir sınır ayarlı değildir ve boş küme sınırsız anlamına gelir. İletilen bir paket her iki kanalda da ücretlendirilir ve bir iade kotayı geri verir. Bu, [Güvenlik Modeli](#security-model) altında anlatılan köprü devre kesicilerinden ayrıdır.
 * **Paket iletme (forwarding).** IBC v1 üzerinden gelen bir transfer, başka bir zincire gönderilmek üzere `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` biçiminde bir memo taşıyabilir; bir atlama başarısız olursa göndericiye iade yapılır. Yeniden deneme yoktur ve bir atlama varsayılan olarak 10 dakika sonra zaman aşımına uğrar. Varışta ERC-20'ye dönüşen bir token iletilemez.
 * **08-wasm hafif istemcileri.** Bir wasm hafif istemci ikilisini saklamak, taşımak ve kaldırmak yalnızca yetkili makama aittir ve izin verilen istemci türleri, yönetişim `08-wasm` ekleyene kadar yalnızca standart istemciyi içerir.
 
-Sınırları testnet'te `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` ile okuyun (bugün `{"rate_limits":[]}`).
+Sınırları `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` ile okuyun (bugün her iki ağda da `{"rate_limits":[]}`).
 
-**Hangi ağda ne var (27 Ekim 2026'da kontrol edildi).**
+**Hangi ağda ne var (testnet 27 Ekim 2026'da, mainnet 4 Kasım 2026'da kontrol edildi).**
 
-| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | ICS-20 transferi (IBC v1) | Yerleşik, ancak açık kanal yok | Yerleşik, bir kanal açık |
-| IBC hız sınırı | Mevcut değil (501) | Mevcut, ayarlı sınır yok |
-| Paket iletme | Mevcut değil | Mevcut (yalnızca IBC v1) |
-| 08-wasm hafif istemcileri | Mevcut değil | Mesaj kümesi var; yönetişim `08-wasm`'a izin verene kadar hiçbir wasm istemcisi oluşturulamaz |
+| IBC hız sınırı | Etkin, ayarlı sınır yok (sorgu `200` ve boş liste döndürür) | Mevcut, ayarlı sınır yok |
+| Paket iletme | Protokol özelliği olarak etkin; üzerinden iletilecek kanal yok | Mevcut (yalnızca IBC v1) |
+| 08-wasm hafif istemcileri | Protokol özelliği olarak etkin; sağlama toplamı listesi boş, yönetişim `08-wasm`'a izin verene kadar wasm istemcisi yok | Mesaj kümesi var; yönetişim `08-wasm`'a izin verene kadar hiçbir wasm istemcisi oluşturulamaz |
 
 ### Testnet'teki test kanalı {#ibc-test-channel}
 

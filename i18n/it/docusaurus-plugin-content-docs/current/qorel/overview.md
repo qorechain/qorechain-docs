@@ -41,7 +41,7 @@ Che cosa è stato testato: trasferimenti in entrambe le direzioni (1 QOR in usci
 
 ### Che cosa serve a un relayer di terze parti {#third-party}
 
-La testnet accetta solo il tipo di client leggero `07-tendermint` (`/ibc/core/client/v1/params` elenca `allowed_clients = ["07-tendermint"]`); oggi non si può creare alcun client `08-wasm`. Per aprire un canale verso QoreChain, un relayer richiede:
+La testnet accetta solo il tipo di client leggero `07-tendermint` (`/ibc/core/client/v1/params` elenca `allowed_clients = ["07-tendermint"]`); oggi non si può creare alcun client `08-wasm` (l'elenco `allowed_clients` della mainnet era lo stesso il 4 novembre 2026, dopo che la v3.2.6 ha collegato il codice del light client 08-wasm). Per aprire un canale verso QoreChain, un relayer richiede:
 
 - un client `07-tendermint` su ciascun lato;
 - sul lato QoreChain, ogni transazione firmata in modo ibrido da un account relayer la cui chiave ML-DSA-87 sia registrata. QORel lo fa; Hermes standard, il relayer Go (`rly`) e ts-relayer vengono rifiutati;
@@ -90,7 +90,7 @@ Le pagine di questa sezione:
 
 ## Come accedere {#how-to-access}
 
-- **Rete.** Solo la testnet `qorechain-diana` (la testnet esegue la v3.2.6). La mainnet `qorechain-vladi` non ha alcun canale IBC aperto; vedi [Bridging Assets](/user-guide/bridging-assets#ibc-testnet-v326) per che cosa ha ciascuna rete.
+- **Rete.** Solo la testnet `qorechain-diana` (entrambe le reti eseguono la chain v3.2.6). La mainnet `qorechain-vladi` non ha alcun canale IBC aperto; vedi [Bridging Assets](/user-guide/bridging-assets#ibc-testnet-v326) per che cosa ha ciascuna rete.
 - **Controparte.** La testnet pubblica di Cosmos Hub, chain ID `provider`, tramite `channel-600`. Qualsiasi altra chain Cosmos SDK funziona allo stesso modo della voce `provider` nella configurazione di esempio.
 - **Endpoint.** QORel richiede per ogni chain un RPC di consenso, un WebSocket e un endpoint gRPC. La testnet di QoreChain ha un RPC pubblico (`https://rpc-testnet.qore.host`) e un REST pubblico (`https://api-testnet.qore.host`), ma oggi nessun endpoint gRPC pubblico, e non ne è promesso alcuno, quindi un relayer di terze parti per `qorechain-diana` richiede un proprio nodo testnet ([Eseguire un nodo](/developer-guide/running-a-node), [Connessione alla testnet](/getting-started/connecting-to-testnet)). Gli endpoint pubblici che limitano la frequenza dei relayer possono servire per una breve prova, ma non per un relay continuo.
 - **Account.** Un account relayer dedicato su ciascuna chain, con un piccolo saldo per le commissioni. I QOR di testnet provengono dal [Faucet della dashboard](/dashboard/faucet); non hanno alcun valore. Non usare mai la chiave operatore di un validatore.

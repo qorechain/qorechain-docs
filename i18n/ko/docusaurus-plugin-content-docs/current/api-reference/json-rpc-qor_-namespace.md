@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getReputationScore`      | 공개 쿼리 경로가 없습니다(reputation 모듈은 gRPC `Params`만 노출합니다). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` 및 `anchor/{layer_id}`. [Multilayer 모듈](/api-reference/rest-grpc-endpoints#multilayer-module)을 참조하세요. |
 | `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`. [Bridge 모듈](/api-reference/rest-grpc-endpoints#bridge-module)을 참조하세요. 브리지는 아직 라이브가 아닙니다. |
-| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | 테스트넷(v3.2.6)에서는 `GET /qorechain/rlconsensus/v1/agent`, `/observation`, `/reward`(그 외 `/params`, `/policy`, `/applied_params`, `/last_action`도 제공)를 사용합니다. [RL 컨센서스 모듈](/api-reference/rest-grpc-endpoints#rlconsensus-module)을 참고하십시오. 메인넷에서는 이 경로들이 `501`로 응답하므로, 직접 운영하는 노드의 gRPC `qorechain.rlconsensus.v1.Query`(`AgentStatus`, `Observation`, `Reward`)를 사용하십시오. |
+| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | v3.2.6부터(두 네트워크 모두) `GET /qorechain/rlconsensus/v1/agent`, `/observation`, `/reward`(그 외 `/params`, `/policy`, `/applied_params`, `/last_action`도 제공)를 사용합니다. [RL 컨센서스 모듈](/api-reference/rest-grpc-endpoints#rlconsensus-module)을 참고하십시오. 이 라우트들은 2026년 11월 4일 공개 메인넷 호스트에서 `200`으로 응답했습니다. v3.2.6보다 오래된 노드에서는 `501`로 응답하며, 이때는 gRPC 서비스 `qorechain.rlconsensus.v1.Query`(`AgentStatus`, `Observation`, `Reward`)로 읽을 수 있습니다. |
 | `qor_getPoolClassification`   | 공개 쿼리 경로가 없습니다. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. [Burn 모듈](/api-reference/rest-grpc-endpoints#burn-module)을 참조하세요. |
 | `qor_getXQOREPosition`        | 없음. xQORE는 라이브가 아닙니다([xQORE 스테이킹](/user-guide/xqore-staking) 참조). |

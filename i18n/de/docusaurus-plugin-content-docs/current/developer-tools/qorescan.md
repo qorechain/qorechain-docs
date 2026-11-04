@@ -214,7 +214,7 @@ Exit-Codes: `0` Erfolg, `1` ein Scan- oder E/A-Fehler, `2` ein Nutzungsfehler.
 | Von `--network` verwendetes REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 
 - Es werden weder Schlüssel noch Konto oder Guthaben gebraucht. QoreScan signiert oder sendet nie eine Transaktion und schreibt nichts außer der von Ihnen benannten Ausgabedatei.
-- Nicht jeder Node bedient alle Routen. Am 27. Oktober 2026 bediente der öffentliche Mainnet-REST-Endpunkt `/qorechain/pqc/v1/params` nicht; der Scan hält dann einen Hinweis fest und läuft weiter. Richten Sie `--rest` auf Ihren eigenen Node, um ein vollständigeres Bild zu erhalten.
+- Nicht jeder Node bedient alle Routen. Am 27. Oktober 2026 bediente der öffentliche Mainnet-REST-Endpunkt `/qorechain/pqc/v1/params` nicht (seit Chain v3.2.6 bedient er ihn, geprüft am 4. November 2026); fehlt eine Route, hält der Scan einen Hinweis fest und läuft weiter. Richten Sie `--rest` auf Ihren eigenen Node, um ein vollständigeres Bild zu erhalten.
 - Die On-Chain-Algorithmen-Registry wird nicht über REST bereitgestellt. QoreScan liest sie aus `genesis.json`, wenn ein Node-Home gescannt wird.
 - Der Scan spiegelt die Chain-Version des Nodes wider, den er liest. Protokollschalter und aktive Precompiles unterscheiden sich zwischen Mainnet und Testnet; das CBOM hält fest, was der abgefragte Node meldet.
 - Wenn Ihr Rechner die öffentlichen Endpunkte nicht erreicht, nutzen Sie `--rest` mit einem Node, den Sie betreiben, oder mit einem Relay, das GET-Anfragen weiterleitet.

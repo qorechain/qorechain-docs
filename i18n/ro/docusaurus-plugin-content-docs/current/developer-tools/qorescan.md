@@ -214,7 +214,7 @@ Coduri de ieșire: `0` succes, `1` o eroare de scanare sau de I/O, `2` o eroare 
 | REST folosit de `--network` | `https://api.qore.host` | `https://api-testnet.qore.host` |
 
 - Nu sunt necesare chei, conturi sau fonduri. QoreScan nu semnează și nu trimite niciodată o tranzacție și nu scrie nimic în afară de fișierul de ieșire pe care îl numești.
-- Unele rute nu sunt servite de fiecare nod. La 27 octombrie 2026, endpointul REST public de mainnet nu servea `/qorechain/pqc/v1/params`; scanarea înregistrează atunci o notă și continuă. Îndreaptă `--rest` spre propriul nod pentru o imagine mai completă.
+- Unele rute nu sunt servite de fiecare nod. La 27 octombrie 2026, endpointul REST public de mainnet nu servea `/qorechain/pqc/v1/params` (îl servește de la chain v3.2.6, verificat pe 4 noiembrie 2026); când o rută lipsește, scanarea înregistrează o notă și continuă. Îndreaptă `--rest` spre propriul nod pentru o imagine mai completă.
 - Registrul de algoritmi on-chain nu este expus prin REST. QoreScan îl citește din `genesis.json` când se scanează un home de nod.
 - Scanarea reflectă versiunea de lanț a nodului pe care îl citește. Comutatoarele de protocol și precompilările active diferă între mainnet și testnet; CBOM-ul înregistrează ce raportează nodul interogat.
 - Dacă mașina ta nu poate ajunge la endpointurile publice, folosește `--rest` cu un nod pe care îl rulezi tu sau cu un releu care redirecționează cereri GET.

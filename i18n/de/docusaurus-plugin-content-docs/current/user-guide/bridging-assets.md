@@ -14,7 +14,7 @@ Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge
 :::
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Chain-Version **v3.2.6**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft mit Chain-Version **v3.2.5** (seit dem 29. Oktober 2026). Ersetze die Mainnet-Chain-ID und die Endpunkte anhand der Seite **Verbindung zum Mainnet**, sobald eine Route aktiviert ist. Status geprüft am 27. Oktober 2026: Alle 37 Chain-Konfigurationen sind auf beiden Netzwerken `pending`.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Chain-Version **v3.2.6**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft mit Chain-Version **v3.2.6** (seit dem 4. November 2026). Ersetze die Mainnet-Chain-ID und die Endpunkte anhand der Seite **Verbindung zum Mainnet**, sobald eine Route aktiviert ist. Status geprüft am 27. Oktober 2026: Alle 37 Chain-Konfigurationen sind auf beiden Netzwerken `pending`.
 :::
 
 ---
@@ -36,24 +36,24 @@ Eine vollständige Auflistung aller Chain-Konfigurationen findet sich auf der Se
 
 IBC ist Teil des Designs (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), aber **keine dieser Gegenparteien ist bisher verbunden**: Das Mainnet hat keinen IBC-Kanal oder IBC-Client, und das Testnet hat nur einen einzelnen ICS-20-Testkanal zu einer Chain mit der ID `provider` (geprüft am 27. Oktober 2026), sodass es für diese Chains nichts zu transferieren gibt. Diese Seite wird die Kanäle auflisten, sobald sie geöffnet sind.
 
-### IBC-Ergänzungen im Testnet (v3.2.6) {#ibc-testnet-v326}
+### IBC-Ergänzungen in v3.2.6 {#ibc-testnet-v326}
 
-Drei IBC-Funktionen gibt es nur im Testnet; das Mainnet hat sie nicht (seine Route `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` antwortet mit 501):
+Drei IBC-Funktionen kamen mit v3.2.6: im Testnet seit dem 27. Oktober 2026, im Mainnet seit dem 4. November 2026, wo der Governance-Vorschlag 15 sie als Protokollfunktionen aktiviert hat (die Liste im Mainnet unter `/qorechain/pqc/v1/protocol_features` zeigt `ibc-rate-limit`, `ibc-packet-forward` und `ibc-wasm-light-client` als aktiviert, und `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` antwortet mit `200` und einer leeren Liste; geprüft am 4. November 2026). Aktiviert heißt nicht in Gebrauch: Das Mainnet hat weiterhin keinen IBC-Client und keinen Kanal, und die folgenden Einstellungen werden später durch eigene Governance-Abstimmungen gesetzt:
 
 * **IBC-Ratenlimit.** Die Governance kann ein Kontingent pro Kanal für IBC-Transfers festlegen (ein ganzer Prozentsatz des Angebots pro Fenster von Stunden). Es ist **nicht automatisch**: Heute sind keine Limits gesetzt, und eine leere Menge bedeutet unbegrenzt. Ein weitergeleitetes Paket wird auf beiden Kanälen angerechnet, und eine Rückerstattung gibt das Kontingent zurück. Dies ist getrennt von den Bridge-Circuit-Breakern, die unter [Sicherheitsmodell](#security-model) beschrieben sind.
 * **Packet Forwarding.** Ein Transfer, der über IBC v1 eintrifft, kann ein Memo der Form `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` tragen, um an eine andere Chain weitergesendet zu werden, mit Rückerstattung an den Absender, wenn ein Hop fehlschlägt. Es gibt keine Wiederholungen, und ein Hop läuft standardmäßig nach 10 Minuten ab. Ein Token, der bei der Ankunft in einen ERC-20 umgewandelt wird, kann nicht weitergeleitet werden.
 * **08-wasm-Light-Clients.** Das Speichern, Migrieren und Entfernen eines Wasm-Light-Client-Binaries ist nur der Autorität vorbehalten, und die erlaubten Client-Typen enthalten nur den Standard-Client, bis die Governance `08-wasm` hinzufügt.
 
-Lesen Sie die Limits mit `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` im Testnet (heute `{"rate_limits":[]}`).
+Lesen Sie die Limits mit `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` (heute `{"rate_limits":[]}` auf beiden Netzwerken).
 
-**Welches Netzwerk was hat (geprüft am 27. Oktober 2026).**
+**Welches Netzwerk was hat (Testnet geprüft am 27. Oktober 2026, Mainnet am 4. November 2026).**
 
-| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | ICS-20-Transfer (IBC v1) | Eingebaut, aber kein Kanal ist offen | Eingebaut, ein Kanal ist offen |
-| IBC-Ratenlimit | Nicht verfügbar (501) | Verfügbar, keine Limits gesetzt |
-| Packet Forwarding | Nicht verfügbar | Verfügbar (nur IBC v1) |
-| 08-wasm-Light-Clients | Nicht verfügbar | Nachrichtensatz vorhanden, es kann kein Wasm-Client erstellt werden, bis die Governance `08-wasm` erlaubt |
+| IBC-Ratenlimit | Aktiviert, keine Limits gesetzt (Abfrage antwortet mit `200`, leere Liste) | Verfügbar, keine Limits gesetzt |
+| Packet Forwarding | Als Protokollfunktion aktiviert; kein Kanal, über den weitergeleitet werden könnte | Verfügbar (nur IBC v1) |
+| 08-wasm-Light-Clients | Als Protokollfunktion aktiviert; Prüfsummenliste leer, kein Wasm-Client, bis die Governance `08-wasm` erlaubt | Nachrichtensatz vorhanden, es kann kein Wasm-Client erstellt werden, bis die Governance `08-wasm` erlaubt |
 
 ### Der Testkanal im Testnet {#ibc-test-channel}
 

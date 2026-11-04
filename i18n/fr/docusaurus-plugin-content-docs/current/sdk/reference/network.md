@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Préréglage réseau | `mainnet` |
 | Chain id | `qorechain-vladi` (en ligne depuis le 7 juin 2026) |
-| Version de la chaîne (30 octobre 2026) | v3.2.5 (depuis la hauteur 3,906,833, 29 octobre 2026, proposition de gouvernance 14 ; la v3.2.4 a été appliquée à la hauteur 3,742,566 le 23 octobre). Le SDK 0.10.0 est le client de la v3.2.4 et continue de fonctionner ; il n'a pas de builders pour les ajouts de la v3.2.5 |
+| Version de la chaîne (4 novembre 2026) | v3.2.6 (depuis la hauteur 4,020,000, 4 novembre 2026, proposition de gouvernance 15 ; la v3.2.5 a été appliquée à la hauteur 3,906,833 le 29 octobre et la v3.2.4 à la hauteur 3,742,566 le 23 octobre). Le SDK 0.10.0 est le client de la v3.2.4 et continue de fonctionner ; il n'a pas de builders pour les ajouts des v3.2.5 ou v3.2.6 |
 | EVM chain ID | `9801` |
 | Token d'affichage | `QOR` |
 | Dénomination de base | `uqor` |
@@ -54,9 +54,9 @@ Le testnet est un réseau de préproduction et tourne en avance sur le mainnet ;
 éléments que vous pouvez y lire ne se trouvent donc pas sur le mainnet (vérifié le 27 octobre 2026 ; la liste complète figure dans
 [Différences entre testnet et mainnet](/appendix/chain-parameters#testnet-differences)) :
 
-* **Routes REST.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` et `GET /qorechain/crossvm/v1/params` répondent sur le testnet ; le mainnet y répond par HTTP 501. Les routes AMM sous `/qorechain/amm/v1/` (`pools`, `params`) répondent sur les deux réseaux.
+* **Routes REST.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` et `GET /qorechain/crossvm/v1/params` répondent sur le testnet. Le mainnet y répondait par HTTP 501 jusqu'à la chaîne v3.2.6 ; depuis qu'il a appliqué la v3.2.6 (4 novembre 2026), toutes ces routes ont répondu HTTP 200 sur le mainnet lors de la vérification de ce jour-là. Les routes AMM sous `/qorechain/amm/v1/` (`pools`, `params`) répondent sur les deux réseaux.
 * **Jetons de test.** Trois jetons sans valeur n'existent que sur le testnet, comme dénominations bank nommées `erc20:<adresse du contrat EIP-55>` (sensibles à la casse) : fUSD (6 décimales), fETH (18) et fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` les liste. La seule dénomination bank du mainnet est `uqor`. Voir [Jetons de test du testnet (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
-* **Modules activés.** Le module `abstractaccount` est activé sur le testnet et désactivé sur le mainnet, trois précompilés EVM sont actifs sur le testnet et aucun sur le mainnet, et l'instanciation QoreChain Native est ouverte sur le testnet.
+* **Modules activés.** Le module `abstractaccount` est activé sur le testnet et désactivé sur le mainnet, des précompilés EVM sont actifs sur le testnet (trois le 27 octobre, quatre le 4 novembre) et aucun sur le mainnet, et l'instanciation QoreChain Native est ouverte sur le testnet.
 
 ## Ports par défaut
 

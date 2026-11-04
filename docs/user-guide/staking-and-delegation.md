@@ -10,7 +10,7 @@ sidebar_position: 2
 This guide covers how to delegate QOR tokens to validators, redelegate between validators, unbond your stake, claim rewards, and understand which parts of QoreChain's staking design are live today.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.5** (applied on 29 October 2026; v3.2.4 on 23 October); the testnet runs v3.2.6 (since 27 October 2026). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.6** (applied on 4 November 2026; v3.2.5 on 29 October and v3.2.4 on 23 October); the testnet has run v3.2.6 since 27 October 2026. Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`
@@ -126,7 +126,7 @@ Staking rewards are funded from two sources: the protocol's capped emission budg
 ## Time-locked staking (v3.2.4) {#time-locked-staking}
 
 :::note When this applies
-Release v3.2.4 adds an optional time-locked staking module, `x/stakingtier`. It has been live on the **`qorechain-diana` testnet** since 19 October 2026 and on **mainnet** since 23 October 2026 (applied at height 3,742,566 by governance proposal 13); mainnet has run v3.2.5 since 29 October 2026, which keeps it unchanged. Locking is available as an option and ordinary delegation stays lock-free (see [above](#lock-in-period)). The mechanism below was checked against the live mainnet and testnet parameters on 23 October 2026.
+Release v3.2.4 adds an optional time-locked staking module, `x/stakingtier`. It has been live on the **`qorechain-diana` testnet** since 19 October 2026 and on **mainnet** since 23 October 2026 (applied at height 3,742,566 by governance proposal 13); mainnet has run v3.2.5 since 29 October 2026 and v3.2.6 since 4 November 2026, which keep it unchanged apart from the undelegation check described below. Locking is available as an option and ordinary delegation stays lock-free (see [above](#lock-in-period)). The mechanism below was checked against the live mainnet and testnet parameters on 23 October 2026.
 :::
 
 A delegator can commit part of an existing delegation to a validator for a fixed term of 3, 6 or 12 months. Terms and amounts are chain parameters; read the current ones from `GET /qorechain/stakingtier/v1/params` rather than from this page.
@@ -156,13 +156,13 @@ The chain ID above is the testnet's; use `qorechain-vladi` on mainnet. As on the
 
 **Steps.** (1) Delegate to a validator as usual. (2) Run `tx stakingtier lock` for that validator with an amount (at least 10 QOR) and a term of 3, 6 or 12 months, then cosign and broadcast. (3) Read the result with `GET /qorechain/stakingtier/v1/locks/{holder}` or `qorechaind query stakingtier locks <holder_address>`; each lock has an id. (4) Claim with `tx stakingtier claim` whenever you want the lock reward. (5) At the end of the term the lock releases by itself; to leave sooner use `tx stakingtier unlock-early <lock_id>` and accept the penalty.
 
-**Where it works, checked on 27 October 2026.**
+**Where it works, checked on 27 October 2026 (the v3.2.6 row for mainnet comes from the release notes and the 4 November 2026 upgrade; the parameters below were re-read on mainnet on 4 November 2026).** Before v3.2.6, mainnet refused the undelegation only when the transaction ran, through the staking message gate.
 
-| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | Module live | Yes, since height 3,742,566 | Yes, since v3.2.4 (height 8,337,253) |
 | Open locks | None yet | 3 test locks |
-| Undelegating locked stake | Refused by the staking message gate when the transaction runs | Refused by the mempool before any fee is charged (testnet only until mainnet applies v3.2.6) |
+| Undelegating locked stake | Refused by the mempool before any fee is charged (v3.2.6, applied on mainnet on 4 November 2026) | Refused by the mempool before any fee is charged |
 
 Both networks answer `GET /qorechain/stakingtier/v1/params` with the same settings: three terms, a 10 QOR minimum (`min_lock_amount` `"10000000"` uqor), an early-unlock penalty of 500 basis points (5%) and `enabled: true`. The response also carries the bonus settings in basis points; this manual does not quote them, because a bonus is not a promised return and the settings can be changed by governance. `GET /qorechain/stakingtier/v1/pool` shows the pool that pays lock rewards.
 

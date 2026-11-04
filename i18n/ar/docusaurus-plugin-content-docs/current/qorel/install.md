@@ -96,6 +96,8 @@ cosign verify ghcr.io/qorechain/qorel:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
+تحمل نسخة Docker Hub التوقيع نفسه، فيتحقق الأمر نفسه منها إذا وضعت `liviuepure/qorel:0.1.0` بدل الاسم `ghcr.io`.
+
 ### من المصدر {#from-source}
 
 ```bash
@@ -128,12 +130,13 @@ qorel --help
 | مرآة التنزيل | `download.qore.host/qorel/v0.1.0/<file>`, `download.qore.host/qorel/latest/<file>`, `latest.json` | 0.1.0 | [download.qore.host/qorel/latest.json](https://download.qore.host/qorel/latest.json) |
 | Homebrew | `qorechain/tap/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` |
 | سجل الحاويات | `ghcr.io/qorechain/qorel` | 0.1.0 | `docker pull ghcr.io/qorechain/qorel:0.1.0` |
+| سجل الحاويات (Docker Hub) | `liviuepure/qorel` | 0.1.0 | `docker pull liviuepure/qorel:0.1.0` |
 | المصدر | `ibc-relayer-cli`، والملف التنفيذي `qorel` | الوسم `qorel-v0.1.0` | [github.com/qorechain/QORel](https://github.com/qorechain/QORel) |
 
 ## الحدود والمشكلات المعروفة {#limits}
 
 - **لا يوجد إصدار لـ Windows.** استخدم الحاوية تحت WSL2.
-- **إصدار تجريبي مسبق وملفات كبيرة.** الإصدار 0.1.0 منشور كإصدار تجريبي مسبق (pre-release) على GitHub. حجم كل ملف في الإصدار نحو 110 MB لأن الملفات التنفيذية لم تُجرَّد بعد. لا توجد صورة على Docker Hub؛ استخدم صورة `ghcr.io` المذكورة أعلاه.
+- **إصدار تجريبي مسبق وملفات كبيرة.** الإصدار 0.1.0 منشور كإصدار تجريبي مسبق (pre-release) على GitHub. حجم كل ملف في الإصدار نحو 110 MB لأن الملفات التنفيذية لم تُجرَّد بعد. الصورة نفسها موجودة أيضًا على Docker Hub باسم `liviuepure/qorel:0.1.0` (و`:latest`)، تحت مساحة الاسم الخاصة بالمشرف على المشروع لا تحت مساحة `qorechain`.
 - **ثبّت الإصدار.** تستخدم الأوامر أعلاه الإصدار `0.1.0`. استخدم الإصدار الذي تنوي تشغيله بدلًا من `latest`، واقرأ [صفحة الإصدارات](https://github.com/qorechain/QORel/releases) لمعرفة الأحدث.
 - **عملية واحدة لكل مفتاح.** لا تشغّل خدمة الحزمة وحاوية بمفتاح المُرحِّل نفسه؛ فعمليتان توقّعان بالمفتاح نفسه تتنازعان على تسلسلات الحساب.
 - **مكان مخزن المفاتيح.** تحفظ الحزم المفاتيح تحت `/var/lib/qorel`؛ وتقرؤها الحاوية من المجلد المركَّب؛ ويستخدم التثبيت بالأرشيف `~/.hermes/keys` ما لم يضبط ملف الإعدادات `key_store_folder`.

@@ -86,7 +86,7 @@ Das Kit implementiert kein Signaturverfahren. Die Verifikation von ML-DSA-87 und
 ### Auszahlungen und Gas {#withdrawals}
 
 - Gebühr = ceil(Gaslimit x Gaspreis) in `uqor`. Der Mindest-Gaspreis beträgt 0,1 uqor, berechnet auf das Gaslimit.
-- Nehmen Sie das Gaslimit aus einer Simulation der vollständig signierten Transaktion. Verwenden Sie auf Nodes, die das Upgrade v3.2.5 angewendet haben (beide Netzwerke seit dem 29. Oktober 2026), `ceil(gas_used x 1.02) + 2000`, weil die Simulation die ML-DSA-87-Verifikation einschließt. Davor verwenden Sie `ceil((gas_used + 40000) x 1.4)`. Welche Regel gilt, erkennen Sie mit `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`, nicht nach Datum.
+- Nehmen Sie das Gaslimit aus einer Simulation der vollständig signierten Transaktion. Verwenden Sie auf Nodes, die das Upgrade v3.2.5 angewendet haben (Mainnet seit dem 29. Oktober 2026, Testnet seit dem 26. Oktober), `ceil(gas_used x 1.02) + 2000`, weil die Simulation die ML-DSA-87-Verifikation einschließt. Davor verwenden Sie `ceil((gas_used + 40000) x 1.4)`. Welche Regel gilt, erkennen Sie mit `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.5`, nicht nach Datum.
 - Bauen Sie nach der Wahl des Gaslimits `AuthInfo` neu und signieren Sie erneut: Beide Signaturen decken die Gebühr ab.
 - Sequenzen: Betreiben Sie eine Signierer-Warteschlange pro Hot-Adresse oder mehrere Hot-Adressen für parallele Auszahlungen.
 
@@ -271,12 +271,12 @@ Verzweigen Sie auf Codespace und Code zusammen und bewahren Sie das Roh-Log auf.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Node-Release | v3.2.5 (angewendet am 29. Oktober 2026) | v3.2.6 (v3.2.5 angewendet) |
+| Node-Release | v3.2.6 (angewendet am 4. November 2026; v3.2.5 am 29. Oktober) | v3.2.6 (angewendet am 27. Oktober; v3.2.5 am 26. Oktober) |
 
-- Die Denomination ist `uqor` (1 QOR = 10^6 uqor; auf der EVM-Lane 1 uqor = 10^12 wei). Der Mindest-Gaspreis beträgt 0,1 uqor, die Unbonding-Frist 21 Tage und das Memo-Limit 256 Zeichen. Diese Werte wurden am 27. Oktober 2026 aus beiden Netzwerken gelesen und können sich per Governance ändern, lesen Sie sie in der Produktion daher von der Chain.
+- Die Denomination ist `uqor` (1 QOR = 10^6 uqor; auf der EVM-Lane 1 uqor = 10^12 wei). Der Mindest-Gaspreis beträgt 0,1 uqor, die Unbonding-Frist 21 Tage und das Memo-Limit 256 Zeichen. Diese Werte wurden am 27. Oktober 2026 aus beiden Netzwerken gelesen (das Mainnet am 4. November 2026 erneut gelesen: Unbonding 1.814.400 Sekunden, Mindest-Gaspreis 0,1 uqor, Memo-Limit 256 Zeichen) und können sich per Governance ändern, lesen Sie sie in der Produktion daher von der Chain.
 - Einzahlungen brauchen weder Schlüssel noch Registrierung. Zum Senden ist pro Hot-Adresse ein registrierter ML-DSA-87-Schlüssel nötig.
 - Betreiben Sie für die Produktion eigene Full Nodes. Die öffentlichen Endpunkte sind ratenbegrenzt und für die Entwicklung gedacht. Bekommt ein Skript `403 Forbidden`, setzen Sie einen expliziten `User-Agent`-Header. Siehe [Einen Node betreiben](/developer-guide/running-a-node) und [Mit dem Mainnet verbinden](/getting-started/connecting-to-mainnet).
-- Das Testnet erhält jedes Node-Release vor dem Mainnet. Schalten Sie die Gas-Regeln durch Prüfen des angewendeten Upgrades um, nicht nach Datum.
+- Das Testnet erhält jedes Node-Release vor dem Mainnet. Schalten Sie die Gas-Regeln durch Prüfen des angewendeten Upgrades um, nicht nach Datum (beide Netzwerke haben v3.2.5 und v3.2.6 angewendet).
 - Test-Token im Testnet (Bank-Denoms der Form `erc20:0x...`, ein IBC-Token) gibt es im Mainnet nicht. Schreiben Sie in beiden Netzwerken `uqor` gut.
 - Test-QOR im Testnet kommt vom Faucet des QoreChain-Dashboards und hat keinen Wert. Siehe [Mit dem Testnet verbinden](/getting-started/connecting-to-testnet).
 

@@ -10,7 +10,7 @@ sidebar_position: 12
 `x/rdk` modülü, geliştiricilerin QoreChain üzerinde uygulamaya özel rollup'lar dağıtmasına olanak tanıyan kapsamlı bir Rollup Geliştirme Kiti (RDK) sağlar. Dört uzlaşma (settlement) paradigmasını, birden fazla sıralayıcı (sequencer) modunu, takılabilir veri erişilebilirliği (data availability) arka uçlarını ve yapay zeka destekli yapılandırma optimizasyonunu destekler.
 
 :::caution Erken aşama yetenek
-Modül mainnet üzerinde (zincir sürümü 29 Ekim 2026'dan beri **v3.2.5**) ve testnet üzerinde (27 Ekim 2026'dan beri **v3.2.6**) dağıtılmıştır, ancak **her iki ağda da henüz hiçbir rollup oluşturulmamıştır** (30 Ekim 2026'da kontrol edildi: `GET /qorechain/rdk/v1/rollups` her ikisinde de boş bir liste döndürür). Aşağıda açıklanan çeşitli yetenekler bugün uçtan uca kullanılabilir değildir; durum, her biri anlatıldığı yerde belirtilmiştir. Geliştiricilere yönelik nasıl yapılır kılavuzu için [Rollup'lara Genel Bakış](/rollups/overview) bölümüne bakın.
+Modül mainnet üzerinde (zincir sürümü 4 Kasım 2026'dan beri **v3.2.6**) ve testnet üzerinde (27 Ekim 2026'dan beri **v3.2.6**) dağıtılmıştır, ancak **her iki ağda da henüz hiçbir rollup oluşturulmamıştır** (30 Ekim 2026'da her ikisinde ve tekrar 4 Kasım 2026'da mainnet'te kontrol edildi: `GET /qorechain/rdk/v1/rollups` boş bir liste döndürür). Aşağıda açıklanan çeşitli yetenekler bugün uçtan uca kullanılabilir değildir; durum, her biri anlatıldığı yerde belirtilmiştir. Geliştiricilere yönelik nasıl yapılır kılavuzu için [Rollup'lara Genel Bakış](/rollups/overview) bölümüne bakın.
 :::
 
 ---

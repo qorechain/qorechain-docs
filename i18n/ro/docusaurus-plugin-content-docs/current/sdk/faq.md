@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Este mainnet-ul activ?
 
 Da. Mainnet-ul este **activ** (chain id `qorechain-vladi`, activ din 7 iunie 2026)
-și rulează versiunea de chain v3.2.5 (aplicată la înălțimea 3.906.833 pe 29 octombrie 2026, propunerea de guvernanță 14; v3.2.4 a fost aplicată la înălțimea 3.742.566 pe 23 octombrie 2026); testnet-ul rulează v3.2.6 (aplicată pe 27 octombrie 2026). Presetul de testnet
+și rulează versiunea de chain v3.2.6 (aplicată la înălțimea 4.020.000 pe 4 noiembrie 2026, propunerea de guvernanță 15; v3.2.5 a fost aplicată la înălțimea 3.906.833 pe 29 octombrie 2026 și v3.2.4 la înălțimea 3.742.566 pe 23 octombrie 2026); testnet-ul rulează v3.2.6 din 27 octombrie 2026. Presetul de testnet
 (`qorechain-diana`) rămâne de asemenea disponibil. Ambele preseturi vin cu
 endpoint-uri implicite pe localhost; selectați rețeaua cu
 `createClient({ network: "mainnet" })` și suprascrieți `endpoints` cu URL-urile
@@ -55,8 +55,8 @@ pe mainnet**, iar pe testnet sunt active doar trei: răspund doar acolo unde
 adresele lor sunt listate în parametrul `active_static_precompiles` al modulului
 EVM. Lista aceea este goală pe mainnet; pe testnet conține precompile-urile PQC
 verify (`0x…0A01`), PQC key status (`0x…0A02`) și consensus-parameters (`0x…0C01`)
-(verificat la 27 octombrie 2026), așa că perechea AI și puntea cross-VM tot nu
-răspund nimic acolo. Acolo unde un precompile este inactiv, apelul returnează date
+(verificat la 27 octombrie 2026; pe 4 noiembrie lista testnet-ului conținea și puntea cross-VM `0x…0901`, pe care această pagină nu a retestat-o, iar lista mainnet-ului era în continuare goală), așa că perechea AI tot nu
+răspunde nimic acolo. Acolo unde un precompile este inactiv, apelul returnează date
 goale, așa că viem raportează `returned no data ("0x")`, iar funcția ajutătoare
 aruncă o eroare (vedeți
 [Precompile-uri EVM: starea în rețea](/developer-guide/evm-precompiles#network-status)).
@@ -151,7 +151,7 @@ vechi sunt respinse on-chain, pe fiecare cale (inclusiv eth-native).
 ## Cu ce versiuni de chain funcționează SDK-ul?
 
 SDK **0.10.0** este versiunea de client pentru chain **v3.2.4** (mainnet din 23 octombrie
-2026, la înălțimea 3.742.566, propunerea de guvernanță 13; testnet din 19 octombrie). Mainnet rulează v3.2.5 din 29 octombrie 2026; formatul de semnare nu s-a schimbat, așa că 0.10.0 continuă să funcționeze acolo. Adaugă
+2026, la înălțimea 3.742.566, propunerea de guvernanță 13; testnet din 19 octombrie). Mainnet rulează v3.2.6 din 4 noiembrie 2026 (v3.2.5 din 29 octombrie); formatul de semnare nu s-a schimbat, așa că 0.10.0 continuă să funcționeze acolo. Adaugă
 constructorii și citirile pentru staking-tier, `fetchAuthNonce` și citirile de protocol-feature
 (vedeți [Ce adaugă 0.10.0](/sdk/install#whats-new-0100)), peste ce a adăugat 0.9.0 pentru
 v3.2.2 și v3.2.3: constructori pentru dovada de
@@ -163,8 +163,8 @@ sign-bytes hibride, înregistrarea, trimiterile hibride și fereastra EVM funcț
 neschimbat), dar nu are niciunul dintre acei constructori: folosiți CLI-ul pentru ei
 (vedeți
 [Versiuni anterioare lui 0.9.0](/sdk/install#before-090)). Formatul de semnare nu s-a schimbat
-în v3.2.4 sau v3.2.5. Testnet-ul rulează v3.2.6 (v3.2.5 a fost aplicată acolo pe 26 octombrie 2026, iar
-v3.2.6 pe 27 octombrie); SDK-ul nu are constructori pentru nimic introdus după v3.2.4,
+în v3.2.4, v3.2.5 sau v3.2.6. Ambele rețele rulează v3.2.6 (testnet-ul a aplicat v3.2.5 pe 26 octombrie 2026 și
+v3.2.6 pe 27 octombrie; mainnet-ul a aplicat v3.2.5 pe 29 octombrie și v3.2.6 pe 4 noiembrie); SDK-ul nu are constructori pentru nimic introdus după v3.2.4,
 deci adăugirile v3.2.5 (de exemplu registrul de chei ML-KEM și căile guvernate cross-VM și de contracte) nu au încă un constructor în SDK și se accesează prin CLI.
 
 ## Înregistrarea cheii mele PQC a fost refuzată, dar taxa a fost luată

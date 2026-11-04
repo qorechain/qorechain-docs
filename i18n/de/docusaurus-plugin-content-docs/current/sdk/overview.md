@@ -31,7 +31,7 @@ Konten, Guthaben und Token werden über die Laufzeitumgebungen hinweg geteilt,
 und die Chain enthält das IBC-Modul für Cross-Chain-Interoperabilität (im
 Mainnet ist kein IBC-Channel geöffnet; das Testnet hat einen geöffneten `transfer`-Channel zu einer Test-Chain, geprüft am 27. Oktober 2026).
 
-:::note Was heute auf den Live-Netzwerken funktioniert (Mainnet v3.2.5, Testnet v3.2.6)
+:::note Was heute auf den Live-Netzwerken funktioniert (beide Netzwerke laufen mit v3.2.6)
 **Funktioniert:** Lesezugriffe auf jeder Lane, hybrid-signierte Native-Transaktionen,
 vereinheitlichte Konten, EVM-Transaktionen innerhalb eines
 [Autorisierungsfensters](/sdk/guides/evm#evm-window) und SVM-Lesezugriffe.
@@ -43,13 +43,13 @@ Circuit Breaker abgeschaltet), QoreChain Native-Upload und -Instanziierung für 
 Konten (im Testnet ist die Instanziierung offen und der Upload nicht), die
 Authenticator-/Abstract-Account-Abläufe im Mainnet (Modul dort abgeschaltet, im
 Testnet aktiviert), xQORE und Gas-Abstraktion. Jeder Leitfaden wiederholt den
-Vorbehalt dort, wo er zutrifft. Geprüft gegen die Live-Endpunkte am 27. Oktober 2026.
+Vorbehalt dort, wo er zutrifft. Geprüft gegen die Live-Endpunkte am 27. Oktober 2026; am 4. November 2026 war die Liste der aktiven Precompiles des Mainnets weiterhin leer, während die Liste des Testnets auch die Cross-VM-Bridge `0x…0901` enthielt (nicht erneut getestet).
 
 Das veröffentlichte SDK (0.10.0, 26. Oktober 2026) signiert in der Form, die beide
 Netzwerke verifizieren (v2-Hybrid-Sign-Bytes, aus dem Chain-Zustand aufgelöst),
 und das Signaturformat, die Adressen, Dezimalstellen, Memos und Gebühren haben
-sich in v3.2.3, v3.2.4 oder v3.2.5 nicht geändert (das Mainnet läuft seit dem 29. Oktober 2026 mit v3.2.5;
-das Testnet läuft mit v3.2.6, angewendet am 27. Oktober). Es enthält die Client-Seite der
+sich in v3.2.3, v3.2.4, v3.2.5 oder v3.2.6 nicht geändert (das Mainnet läuft seit dem 4. November 2026 mit v3.2.6,
+Höhe 4.020.000, Governance-Vorschlag 15; das Testnet seit dem 27. Oktober). Es enthält die Client-Seite der
 späteren Post-Quanten-Regeln (den Besitznachweis bei der Schlüsselregistrierung,
 EVM-Fenster mit Gültigkeitsbereich, EIP-7702-Einwilligungsnachrichten) und von v3.2.4 (Staking-
 Stufen, die Authenticator-Nonce, Schalter für Protokollfunktionen); Versionen

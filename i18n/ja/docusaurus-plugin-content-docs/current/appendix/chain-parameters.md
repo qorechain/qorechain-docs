@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # チェーンパラメータ
 
-QoreChain ネットワークのモジュールパラメータを、モジュールごとにまとめた統合リファレンスです。モジュールに params クエリがある場合、パラメータは `qorechaind query <module> params` で取得できます（`pqc`、`amm`、`crossvm`、`lightnode`、`multilayer`、`reputation`、`rlconsensus`。`ai`、`qca`、`rdk`、`bridge`、`abstractaccount`、`gasabstraction` は `config` を使用します）。REST では、[REST / gRPC リファレンス](/api-reference/rest-grpc-endpoints)に記載されたルートに限り取得できます。`x/inflation` のパラメータも、v3.2.3 以降、メインネットで REST から提供されています（`/qorechain/inflation/v1/params`）。メインネットでは、`ai`、`qca`、`reputation`、`rlconsensus`、`fairblock`、`xqore` に対して、また `pqc` パラメータに対しても REST を利用できません（テストネットでは、v3.2.6 以降、`pqc` と `rlconsensus` のパラメータを REST で提供しています。`crossvm` と `rdk` のパラメータは、v3.2.5 以降、両ネットワークで提供されています）。
+QoreChain ネットワークのモジュールパラメータを、モジュールごとにまとめた統合リファレンスです。モジュールに params クエリがある場合、パラメータは `qorechaind query <module> params` で取得できます（`pqc`、`amm`、`crossvm`、`lightnode`、`multilayer`、`reputation`、`rlconsensus`。`ai`、`qca`、`rdk`、`bridge`、`abstractaccount`、`gasabstraction` は `config` を使用します）。REST では、[REST / gRPC リファレンス](/api-reference/rest-grpc-endpoints)に記載されたルートに限り取得できます。`x/inflation` のパラメータも、v3.2.3 以降、メインネットで REST から提供されています（`/qorechain/inflation/v1/params`）。メインネットでは、`ai`、`qca`、`fairblock`、`xqore` に対して REST を利用できません（これらのルートは 2026 年 11 月 4 日に 501 で応答しました）。v3.2.6 以降（メインネットでは 2026 年 11 月 4 日から）、`pqc`、`rlconsensus`、`reputation` のパラメータは両ネットワークで REST から提供されており、`crossvm` と `rdk` のパラメータは v3.2.5 以降、両ネットワークで提供されています。
 
 :::note
-表示されている値は 2026 年 10 月 23 日にメインネット **`qorechain-vladi`**（EVM チェーン ID **9801**、リリース **v3.2.5**、ガバナンス提案 14 により 2026 年 10 月 29 日に高さ 3,906,833 で適用）からライブで読み取ったもので（ガバナンス提案によって変更された場合を除き、ジェネシス値です。変更されたものは明記しています）、コアモジュールの行は 2026 年 10 月 27 日に、v3.2.5 に依存する行は 2026 年 10 月 30 日に再度読み取っています。テストネット **`qorechain-diana`**（EVM チェーン ID **9800**）はリリース **v3.2.6**（2026 年 10 月 27 日に適用）を実行しています。その値は、特に記載のない限りメインネットと同一です。残りの差異は[テストネットとメインネットの差異](#testnet-differences)にまとめています。ブロック数で示した期間は、計測されたメインネットのブロック時間（約 3.1 秒）で換算しています（テストネットは約 1.3 秒ごとに 1 ブロックを生成します）。
+表示されている値は 2026 年 10 月 23 日にメインネット **`qorechain-vladi`**（EVM チェーン ID **9801**、リリース **v3.2.6**、ガバナンス提案 15 により 2026 年 11 月 4 日に高さ 4,020,000 で適用。v3.2.5 は 2026 年 10 月 29 日に高さ 3,906,833 で適用）からライブで読み取ったもので（ガバナンス提案によって変更された場合を除き、ジェネシス値です。変更されたものは明記しています）、コアモジュールの行は 2026 年 10 月 27 日に、v3.2.5 に依存する行は 2026 年 10 月 30 日に再度読み取り、`pqc`、`reputation`、`rlconsensus` のパラメータ表は 2026 年 11 月 4 日にメインネットの REST の応答と比較しました（値の差異はありませんでした）。テストネット **`qorechain-diana`**（EVM チェーン ID **9800**）はリリース **v3.2.6**（2026 年 10 月 27 日に適用）を実行しています。その値は、特に記載のない限りメインネットと同一です。残りの差異は[テストネットとメインネットの差異](#testnet-differences)にまとめています。ブロック数で示した期間は、計測されたメインネットのブロック時間（約 3.1 秒）で換算しています（テストネットは約 1.3 秒ごとに 1 ブロックを生成します）。
 :::
 
 ---
@@ -158,7 +158,7 @@ xQORE モジュールのアカウンティングは存在しますが、ロッ�
 
 ## RL コンセンサスモジュール (`x/rlconsensus`)
 
-`x/rlconsensus` モジュールは、強化学習による最適化レイヤーである **PRISM** を実装します。メインネットでは観測モードで、ポリシーの重みがロードされていないため何も調整せず、PRISM の 4 つの制御メッセージはサーキットブレーカーによって無効化されています（[サーキットブレーカーの状況](#circuit-breaker)を参照）。テストネットでは、エージェントは小規模なデモ用ポリシーをロードした**シャドウモード**で動作します。10 ブロックごとに観測を行い、いかなる値も変更せずに提案アクションを記録します。表にはメインネットの値を示しています。テストネットは `agent_mode`（`0`、シャドウ）のみが異なり、REST で提供されます（`GET /qorechain/rlconsensus/v1/params`、v3.2.6。メインネットは 501 で応答します）。
+`x/rlconsensus` モジュールは、強化学習による最適化レイヤーである **PRISM** を実装します。メインネットでは観測モードで、ポリシーの重みがロードされていないため何も調整せず、PRISM の 4 つの制御メッセージはサーキットブレーカーによって無効化されています（[サーキットブレーカーの状況](#circuit-breaker)を参照）。テストネットでは、エージェントは小規模なデモ用ポリシーをロードした**シャドウモード**で動作します。10 ブロックごとに観測を行い、いかなる値も変更せずに提案アクションを記録します。表にはメインネットの値を示しています。テストネットは `agent_mode`（`0`、シャドウ）のみが異なります。両ネットワークとも REST で提供されます（`GET /qorechain/rlconsensus/v1/params`、v3.2.6 以降。メインネットは 2026 年 11 月 4 日に下の値とともに 200 で応答しました）。メインネットのエージェントはステップを実行していません（`total_steps` は `0`）。
 
 | パラメータ                        | 値             | 説明                                                          |
 | -------------------------------- | -------------- | ------------------------------------------------------------- |
@@ -227,7 +227,7 @@ xQORE モジュールのアカウンティングは存在しますが、ロッ�
 | `enabled`             | `true`  | モジュール有効化フラグ                         |
 | `bridge_allowed_targets` | `[]`（空） | クロス VM ブリッジが呼び出せるコントラクトターゲットの、ガバナンスが管理する許可リスト（v3.2.5）。空のリストはどれも許可しません |
 
-`MsgCrossVMCall` は、メインネットでは依然としてサーキットブレーカーによって無効化されています（テストネットでは有効、2026 年 10 月 30 日に確認）。v3.2.5 以降、両ネットワークがこれらの値を REST で提供しています（`GET /qorechain/crossvm/v1/params`）。v3.2.5 より前は、メインネットは 501 で応答していました。
+`MsgCrossVMCall` は、メインネットでは依然としてサーキットブレーカーによって無効化されています（テストネットでは有効、2026 年 10 月 30 日に確認。メインネットのリストは 2026 年 11 月 4 日に再度読み取り、引き続き 16 件です）。v3.2.5 以降、両ネットワークがこれらの値を REST で提供しています（`GET /qorechain/crossvm/v1/params`）。v3.2.5 より前は、メインネットは 501 で応答していました。
 
 ---
 
@@ -387,7 +387,7 @@ v3.2.5 以降、両ネットワークで同じ値が REST の `GET /qorechain/rd
 
 チェーンは、ファウンデーション運用アカウントとガバナンスが制御する Cosmos SDK のサーキットブレーカーを使って、個別のメッセージタイプを無効化できます。無効化されたメッセージタイプは、すべてのレーンでアンテハンドラーにより拒否されます。最新のリストは `GET /cosmos/circuit/v1/disable_list` にあります。
 
-**メインネット（2026 年 10 月 30 日、16 件、10 月 14 日以降変更なし、v3.2.5 アップグレードでも変更なし）:** ベスティングアカウントの作成（`MsgCreateVestingAccount`、`MsgCreatePermanentLockedAccount`、`MsgCreatePeriodicVestingAccount`）、QoreChain Native の `MsgStoreCode`、`MsgInstantiateContract`、`MsgInstantiateContract2`、AMM の `MsgPausePool`、`MsgResumePool`、`crossvm.MsgCrossVMCall`、`multilayer.MsgUpdateLayerStatus`、`pqc.MsgDeprecateAlgorithm`、`pqc.MsgDisableAlgorithm`、そして PRISM の 4 つの制御メッセージ（`MsgSetAgentMode`、`MsgUpdatePolicy`、`MsgUpdateRewardWeights`、`MsgResumeAgent`）。EVM レーン（`MsgEthereumTx`）は**開放**されています。9 月 16 日から 25 日まで無効化されていましたが、v3.2.0 アップグレードで再開されました。
+**メインネット（2026 年 11 月 4 日、16 件、10 月 14 日以降変更なし、v3.2.5 および v3.2.6 のアップグレードでも変更なし。個々のエントリを 1 つずつ列挙したのは 2026 年 10 月 30 日が最後）:** ベスティングアカウントの作成（`MsgCreateVestingAccount`、`MsgCreatePermanentLockedAccount`、`MsgCreatePeriodicVestingAccount`）、QoreChain Native の `MsgStoreCode`、`MsgInstantiateContract`、`MsgInstantiateContract2`、AMM の `MsgPausePool`、`MsgResumePool`、`crossvm.MsgCrossVMCall`、`multilayer.MsgUpdateLayerStatus`、`pqc.MsgDeprecateAlgorithm`、`pqc.MsgDisableAlgorithm`、そして PRISM の 4 つの制御メッセージ（`MsgSetAgentMode`、`MsgUpdatePolicy`、`MsgUpdateRewardWeights`、`MsgResumeAgent`）。EVM レーン（`MsgEthereumTx`）は**開放**されています。9 月 16 日から 25 日まで無効化されていましたが、v3.2.0 アップグレードで再開されました。
 
 **テストネット（2026 年 10 月 27 日、1 件）:** QoreChain Native の `MsgStoreCode`（コントラクトのアップロード）のみ。インスタンス化はもう無効化されていません。
 
@@ -397,21 +397,21 @@ v3.2.5 以降、両ネットワークで同じ値が REST の `GET /qorechain/rd
 
 ## テストネットとメインネットの差異 {#testnet-differences}
 
-2026 年 10 月 27 日に読み取り、v3.2.5 アップグレード後の 2026 年 10 月 30 日に再確認した値です。メインネット `qorechain-vladi` は v3.2.5 を実行しています（高さ 3,906,833、2026 年 10 月 29 日から、ガバナンス提案 14。v3.2.4 は 2026 年 10 月 23 日に高さ 3,742,566 で適用）。テストネット `qorechain-diana` は **v3.2.6** を実行しています。v3.2.4 は高さ 8,337,253（2026 年 10 月 19 日）、v3.2.5 は高さ 8,890,800（10 月 26 日）、v3.2.6 は高さ 8,970,638（10 月 27 日）で適用されました。テストネットは各リリースを先に取り込むステージングネットワークで、テスト向けに調整されているため、以下の値はメインネットと異なります。このセクションはこのページのパラメータ表を対象としています。両ネットワークとも v3.2.5 を取り込んでいるため、残る差異はテストネット限定のリリース v3.2.6 とテストネットの調整によるものです。ここに記載のないパラメータはすべて両ネットワークで同一です（ステーキング、スラッシング、ディストリビューション、手数料マーケット、ERC-20、AMM、バーン、ライトノード、ブリッジ、ガス抽象化、時間ロック付きステーキングの値は 1 つずつ比較しました）。
+2026 年 10 月 27 日に読み取り、v3.2.5 アップグレード後の 2026 年 10 月 30 日に再確認した値です。ルート、上記のパラメータ表、サーキットブレーカーの件数、プリコンパイルの一覧、提案は、v3.2.6 後の 2026 年 11 月 4 日にメインネットで再度読み取りました。メインネット `qorechain-vladi` は **v3.2.6** を実行しています（高さ 4,020,000、2026 年 11 月 4 日から、ガバナンス提案 15。v3.2.5 は 2026 年 10 月 29 日に高さ 3,906,833 で、v3.2.4 は 2026 年 10 月 23 日に高さ 3,742,566 で適用）。テストネット `qorechain-diana` も **v3.2.6** を実行しています。v3.2.4 は高さ 8,337,253（2026 年 10 月 19 日）、v3.2.5 は高さ 8,890,800（10 月 26 日）、v3.2.6 は高さ 8,970,638（10 月 27 日）で適用されました。テストネットは各リリースを先に取り込むステージングネットワークで、テスト向けに調整されているため、以下の値はメインネットと異なります。このセクションはこのページのパラメータ表を対象としています。両ネットワークとも v3.2.6 を取り込んでいるため、残る差異はテストネットの調整と、各ネットワークでガバナンスが有効にした内容によるものです。ここに記載のないパラメータはすべて両ネットワークで同一です（ステーキング、スラッシング、ディストリビューション、手数料マーケット、ERC-20、AMM、バーン、ライトノード、ブリッジ、ガス抽象化、時間ロック付きステーキングの値は 1 つずつ比較しました）。
 
 | 領域 | メインネット | テストネット |
 | ---- | ------- | ------- |
 | ガバナンスの投票期間 | `voting_period` 172,800 s（2 日）、`expedited_voting_period` 86,400 s（1 日） | `voting_period` 14,400 s（4 時間）、`expedited_voting_period` 3,600 s（1 時間）。デポジット、定足数、しきい値は同じ |
 | `x/inflation` | `emission_mode` `fixed`、`fixed_epoch_emission` 86,000 QOR、`max_total_emission` 590,000,000 QOR、`target_apy_bps` `0` | `emission_mode` `target_apy`、`target_apy_bps` `1667`、`fixed_epoch_emission` 16,239 QOR、`max_total_emission` 3,950,390,341,362,112,750 uqor、すでに到達済み（`/qorechain/inflation/v1/epoch_info` で `remaining_emission` は `0` のため、テストネットはこれ以上ミントしません） |
 | EVM の有効な静的プリコンパイル | なし（`[]`） | 3 つ: `0x0000000000000000000000000000000000000C01` の PRISM パラメータプリコンパイルと、`0x...0a01` および `0x...0a02` のプリコンパイル |
-| PRISM エージェント（`x/rlconsensus`） | 観測モード、ポリシー未ロード。制御メッセージは無効化 | デモ用ポリシーを使用したシャドウモード（テストネットのガバナンスで設定）。`GET /qorechain/rlconsensus/v1/...` が応答します（メインネットは 501 で応答） |
+| PRISM エージェント（`x/rlconsensus`） | 観測モード、ポリシー未ロード。制御メッセージは無効化 | デモ用ポリシーを使用したシャドウモード（テストネットのガバナンスで設定）。`GET /qorechain/rlconsensus/v1/...` が応答します（v3.2.6 以降は両ネットワークで） |
 | スマートアカウント（`x/abstractaccount`） | `enabled` `false` | `enabled` `true` |
 | RDK（`x/rdk`） | `max_rollups` 100、`default_challenge_window` 604,800 s | `max_rollups` 200、`default_challenge_window` 3,600 s |
 | マルチレイヤー（`x/multilayer`） | `max_sidechains` 10 | `max_sidechains` 64 |
 | QoreChain Native のインスタンス化権限 | `Nobody` | `Everybody`（コードのアップロードは両ネットワークで `Nobody` のまま） |
 | サーキットブレーカー | 16 件（上記参照。`MsgCrossVMCall`、`MsgInstantiateContract`、`MsgInstantiateContract2` を含む） | 1 件: QoreChain Native の `MsgStoreCode` |
-| REST のパラメータルート | `x/pqc` と `x/rlconsensus` のパラメータは 501 で応答（`/qorechain/crossvm/v1/params` と `/qorechain/rdk/v1/params` は v3.2.5 以降応答） | `GET /qorechain/pqc/v1/params` と `/qorechain/rlconsensus/v1/params` も応答（v3.2.6） |
+| REST のパラメータルート | テストネットと同じ: `/qorechain/pqc/v1/params`、`/qorechain/rlconsensus/v1/params`、`/qorechain/reputation/v1/params`、`/qorechain/crossvm/v1/params`、`/qorechain/rdk/v1/params` は 2026 年 11 月 4 日にすべて 200 で応答 | 同じルートが応答 |
 | ブロック時間とバリデータ | 約 3.1 秒、ボンドされたバリデータ 8 | 約 1.3 秒、ボンドされたバリデータ 4 |
 | テストトークン | なし | fUSD、fETH、fBTC（[Faucet](/dashboard/faucet#fest-tokens)を参照） |
 
-両ネットワークに v3.2.4 の追加点があります。任意の時間ロック付きステーキングモジュール `x/stakingtier`（48 ではなく 49 モジュール、`GET /qorechain/stakingtier/v1/params`、最小ロック 10 QOR、早期アンロックのペナルティ 5 %）、13 番目の記録対象バーンソース（`staking_tier_penalty`）、追加のライトノード報酬プールのレポート項目とノード自身の登録時点から始まる報酬上限、PQC アカウントの `possession_proven` フラグ（所有証明はアカウント鍵では引き続き任意で、ブリッジバリデータ鍵では必須）、ブロック時間で数える RDK のチャレンジウィンドウ、そして `protocol_features` と `auth_nonce` のクエリです。[ステーキングと委任](/user-guide/staking-and-delegation#time-locked-staking)を参照してください。テストネットへの v3.2.6 の追加点は[バージョン履歴](/appendix/version-history#testnet-v326)にまとめています。
+両ネットワークに v3.2.4 の追加点があります。任意の時間ロック付きステーキングモジュール `x/stakingtier`（48 ではなく 49 モジュール、`GET /qorechain/stakingtier/v1/params`、最小ロック 10 QOR、早期アンロックのペナルティ 5 %）、13 番目の記録対象バーンソース（`staking_tier_penalty`）、追加のライトノード報酬プールのレポート項目とノード自身の登録時点から始まる報酬上限、PQC アカウントの `possession_proven` フラグ（所有証明はアカウント鍵では引き続き任意で、ブリッジバリデータ鍵では必須）、ブロック時間で数える RDK のチャレンジウィンドウ、そして `protocol_features` と `auth_nonce` のクエリです。[ステーキングと委任](/user-guide/staking-and-delegation#time-locked-staking)を参照してください。v3.2.6 の追加点は[バージョン履歴](/appendix/version-history#v326)にまとめています。

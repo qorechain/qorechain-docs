@@ -30,7 +30,7 @@ Hesaplar, bakiyeler ve token'lar çalışma ortamları arasında paylaşılır v
 zincir, zincirler arası birlikte çalışabilirlik için IBC modülünü içerir
 (mainnet üzerinde açık bir IBC kanalı yoktur; testnet'te test zincirine giden açık bir `transfer` kanalı vardır, 27 Ekim 2026'da kontrol edildi).
 
-:::note Canlı ağlarda bugün çalışanlar (mainnet v3.2.5, testnet v3.2.6)
+:::note Canlı ağlarda bugün çalışanlar (her iki ağ da v3.2.6 çalıştırır)
 **Çalışır:** her şeritte okumalar, hibrit imzalı Native işlemler, birleşik
 hesaplar, bir [yetkilendirme penceresi](/sdk/guides/evm#evm-window) içindeki EVM
 işlemleri ve SVM okumaları.
@@ -41,12 +41,12 @@ alanı, SVM işlemleri, mainnet'te VM'ler arası çağrılar (`MsgCrossVMCall`
 devre kesici tarafından kapatılmıştır), sıradan hesaplar için QoreChain Native yükleme ve
 örnekleme (testnet'te instantiate açıktır, yükleme değildir), mainnet'te authenticator /
 soyut hesap akışları (modül orada kapalı, testnet'te açık), xQORE ve gaz
-soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler. 27 Ekim 2026'da canlı uç noktalara karşı kontrol edildi.
+soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler. 27 Ekim 2026'da canlı uç noktalara karşı kontrol edildi; 4 Kasım 2026'da mainnet'in etkin ön derleme listesi hâlâ boştu, testnet'in listesi ise ayrıca VM'ler arası köprü `0x…0901` adresini de içeriyordu (yeniden test edilmedi).
 
 Yayımlanan SDK (0.10.0, 26 Ekim 2026), her iki ağın doğruladığı biçimde imzalar
 (v2 hibrit sign-bytes, zincir durumundan çözümlenir); imzalama biçimi, adresler,
-ondalık basamaklar, memo'lar ve ücretler v3.2.3, v3.2.4 veya v3.2.5'te değişmedi (mainnet 29 Ekim 2026'dan beri v3.2.5 çalıştırır;
-testnet, 27 Ekim'de uygulanan v3.2.6'yı çalıştırır). Sonraki
+ondalık basamaklar, memo'lar ve ücretler v3.2.3, v3.2.4, v3.2.5 veya v3.2.6'da değişmedi (mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırır,
+yükseklik 4.020.000, yönetişim önerisi 15; testnet 27 Ekim'den beri). Sonraki
 kuantum sonrası kuralların istemci tarafını (anahtar kaydında sahiplik
 kanıtı, kapsamlı EVM pencereleri, EIP-7702 onay mesajları) ve v3.2.4'ün istemci tarafını (staking
 katmanları, authenticator nonce'u, protokol özelliği anahtarları) taşır; 0.9.0 öncesi

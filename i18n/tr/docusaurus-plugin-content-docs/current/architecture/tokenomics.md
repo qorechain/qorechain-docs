@@ -23,7 +23,7 @@ QoreChain'in ekonomik modeli yerel **QOR** token'ını merkeze alır ve **sonlu,
 | **Bech32 öneki**          | `qor` (hesaplar: `qor1...`, validatörler: `qorvaloper...`) |
 
 :::note
-Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana canlı olan, 29 Ekim 2026'dan beri **v3.2.5** sürümünü çalıştıran (3.906.833 yüksekliği, yönetişim önerisi 14; v3.2.4, 3.742.566 yüksekliğinde 23 Ekim 2026'da uygulanmıştı) **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'inin (EVM zincir ID **9800**, 27 Ekim 2026'dan beri sürüm **v3.2.6**) kendi emisyon ve arz geçmişi vardır (testnet arzı mainnet'inkinin çok üzerindedir ve emisyonu zaten üst sınırı aşmıştır), bu nedenle mainnet rakamlarını kullanın. Her blokla değişen tutarlar, okundukları tarihle işaretlenmiştir (23 Ekim 2026).
+Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana canlı olan, 4 Kasım 2026'dan beri **v3.2.6** sürümünü çalıştıran (4.020.000 yüksekliği, yönetişim önerisi 15; v3.2.5, 3.906.833 yüksekliğinde 29 Ekim 2026'da, öneri 14, ve v3.2.4, 3.742.566 yüksekliğinde 23 Ekim 2026'da uygulanmıştı) **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. İmzalama, adresler, ondalıklar, memolar ve ücretler v3.2.6'da değişmedi. **`qorechain-diana`** testnet'inin (EVM zincir ID **9800**, 27 Ekim 2026'dan beri sürüm **v3.2.6**) kendi emisyon ve arz geçmişi vardır (testnet arzı mainnet'inkinin çok üzerindedir ve emisyonu zaten üst sınırı aşmıştır), bu nedenle mainnet rakamlarını kullanın. Her blokla değişen tutarlar, okundukları tarihle işaretlenmiştir (23 Ekim 2026).
 :::
 
 ---

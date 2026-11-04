@@ -214,7 +214,7 @@ Exit codes: `0` success, `1` a scan or I/O error, `2` a usage error.
 | REST used by `--network` | `https://api.qore.host` | `https://api-testnet.qore.host` |
 
 - No key, account or funds are needed. QoreScan never signs or sends a transaction, and writes nothing except the output file you name.
-- Some routes are not served by every node. On 27 October 2026 the public mainnet REST endpoint did not serve `/qorechain/pqc/v1/params`; the scan then records a note and continues. Point `--rest` at your own node for a fuller picture.
+- Some routes are not served by every node. On 27 October 2026 the public mainnet REST endpoint did not serve `/qorechain/pqc/v1/params` (it has served it since chain v3.2.6, checked 4 November 2026); when a route is missing the scan records a note and continues. Point `--rest` at your own node for a fuller picture.
 - The on-chain algorithm registry is not exposed over REST. QoreScan reads it from `genesis.json` when a node home is scanned.
 - The scan reflects the chain version of the node it reads. Protocol switches and active precompiles differ between mainnet and testnet; the CBOM records what the queried node reports.
 - If your machine cannot reach the public endpoints, use `--rest` with a node you run, or with a relay that forwards GET requests.

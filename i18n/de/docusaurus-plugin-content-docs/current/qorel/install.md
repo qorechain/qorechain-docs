@@ -96,6 +96,8 @@ cosign verify ghcr.io/qorechain/qorel:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
+Die Docker-Hub-Kopie trägt dieselbe Signatur, sodass derselbe Befehl sie mit `liviuepure/qorel:0.1.0` anstelle des Namens `ghcr.io` prüft.
+
 ### Aus dem Quellcode {#from-source}
 
 ```bash
@@ -128,12 +130,13 @@ qorel --help
 | Download-Spiegel | `download.qore.host/qorel/v0.1.0/<file>`, `download.qore.host/qorel/latest/<file>`, `latest.json` | 0.1.0 | [download.qore.host/qorel/latest.json](https://download.qore.host/qorel/latest.json) |
 | Homebrew | `qorechain/tap/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` |
 | Container-Registry | `ghcr.io/qorechain/qorel` | 0.1.0 | `docker pull ghcr.io/qorechain/qorel:0.1.0` |
+| Container-Registry (Docker Hub) | `liviuepure/qorel` | 0.1.0 | `docker pull liviuepure/qorel:0.1.0` |
 | Quellcode | `ibc-relayer-cli`, Binärdatei `qorel` | Tag `qorel-v0.1.0` | [github.com/qorechain/QORel](https://github.com/qorechain/QORel) |
 
 ## Grenzen und bekannte Probleme {#limits}
 
 - **Kein Windows-Build.** Verwenden Sie den Container unter WSL2.
-- **Pre-Release, große Dateien.** Version 0.1.0 wird als GitHub-Pre-Release veröffentlicht. Jede Release-Datei ist etwa 110 MB groß, weil die Binärdateien noch nicht gestrippt sind. Es gibt kein Docker-Hub-Image; verwenden Sie das `ghcr.io`-Image oben.
+- **Pre-Release, große Dateien.** Version 0.1.0 wird als GitHub-Pre-Release veröffentlicht. Jede Release-Datei ist etwa 110 MB groß, weil die Binärdateien noch nicht gestrippt sind. Dasselbe Image liegt auch auf Docker Hub als `liviuepure/qorel:0.1.0` (und `:latest`), unter dem eigenen Namespace des Maintainers statt unter einem `qorechain`-Namespace.
 - **Version festlegen.** Die Befehle oben verwenden `0.1.0`. Verwenden Sie die Version, die Sie betreiben wollen, statt `latest`, und lesen Sie die [Release-Seite](https://github.com/qorechain/QORel/releases) für neuere.
 - **Ein Prozess pro Schlüssel.** Betreiben Sie den Paketdienst und einen Container nicht mit demselben Relayer-Schlüssel; zwei Prozesse, die mit demselben Schlüssel signieren, kämpfen um die Account-Sequenzen.
 - **Ort des Schlüsselspeichers.** Die Pakete legen Schlüssel unter `/var/lib/qorel` ab; der Container liest sie aus dem eingebundenen Verzeichnis; eine Tarball-Installation verwendet `~/.hermes/keys`, sofern die Konfiguration nicht `key_store_folder` setzt.

@@ -96,6 +96,8 @@ cosign verify ghcr.io/qorechain/qorel:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
+Docker Hub のコピーにも同じ署名が付いているため、`ghcr.io` の名前の代わりに `liviuepure/qorel:0.1.0` を指定すれば、同じコマンドで検証できます。
+
 ### ソースから {#from-source}
 
 ```bash
@@ -128,12 +130,13 @@ qorel --help
 | ダウンロードミラー | `download.qore.host/qorel/v0.1.0/<file>`, `download.qore.host/qorel/latest/<file>`, `latest.json` | 0.1.0 | [download.qore.host/qorel/latest.json](https://download.qore.host/qorel/latest.json) |
 | Homebrew | `qorechain/tap/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` |
 | コンテナレジストリ | `ghcr.io/qorechain/qorel` | 0.1.0 | `docker pull ghcr.io/qorechain/qorel:0.1.0` |
+| コンテナレジストリ（Docker Hub） | `liviuepure/qorel` | 0.1.0 | `docker pull liviuepure/qorel:0.1.0` |
 | ソース | `ibc-relayer-cli`、バイナリ `qorel` | タグ `qorel-v0.1.0` | [github.com/qorechain/QORel](https://github.com/qorechain/QORel) |
 
 ## 制限と既知の問題 {#limits}
 
 - **Windows 向けビルドはありません。** WSL2 でコンテナを使用してください。
-- **プレリリース版で、ファイルが大きいです。** バージョン 0.1.0 は GitHub のプレリリースとして公開されています。バイナリがまだ strip されていないため、リリースの各ファイルは約 110 MB あります。Docker Hub のイメージはありません。上記の `ghcr.io` のイメージを使用してください。
+- **プレリリース版で、ファイルが大きいです。** バージョン 0.1.0 は GitHub のプレリリースとして公開されています。バイナリがまだ strip されていないため、リリースの各ファイルは約 110 MB あります。同じイメージは Docker Hub にも `liviuepure/qorel:0.1.0`（および `:latest`）として公開されています。`qorechain` ではなく、メンテナー自身のネームスペースの下にあります。
 - **バージョンを固定してください。** 上記のコマンドは `0.1.0` を使っています。`latest` ではなく、実行するつもりのバージョンを使用し、新しいバージョンについては[リリースページ](https://github.com/qorechain/QORel/releases)を確認してください。
 - **鍵ごとに 1 プロセス。** パッケージのサービスと、同じリレイヤー鍵を使うコンテナを同時に実行しないでください。同じ鍵で署名する 2 つのプロセスは、アカウントシーケンスを取り合います。
 - **鍵ストアの場所。** パッケージは鍵を `/var/lib/qorel` に保存します。コンテナはマウントしたディレクトリから読み込みます。tarball のインストールでは、設定で `key_store_folder` を指定しない限り `~/.hermes/keys` を使用します。

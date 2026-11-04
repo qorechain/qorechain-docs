@@ -18,7 +18,7 @@ QoreChain exposes three primary interfaces for programmatic access:
 All REST endpoints return JSON. gRPC endpoints use Protocol Buffers and can be consumed with any gRPC client. The RPC interface provides consensus-level queries and transaction broadcast.
 
 :::note
-These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026) and the **`qorechain-diana`** testnet. At the time of writing (checked 30 October 2026) mainnet runs node release **v3.2.5** (applied at height 3,906,833 on 29 October 2026, governance proposal 14; v3.2.4 had been applied at height 3,742,566 on 23 October 2026). The testnet runs **v3.2.6**: it applied v3.2.5 at height 8,890,800 on 26 October 2026 and v3.2.6 at height 8,970,638 on 27 October 2026. Routes and fields added by a release appear on a network only once that network has applied the release; this page marks what is testnet-only. The base URLs below assume a locally running node. The public hosted endpoints are `https://api.qore.host` / `https://api-testnet.qore.host` (REST) and `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), listed in [Networks](/appendix/networks#public-endpoints). **There is no public gRPC endpoint**: the hostnames `grpc.qore.host` and `grpc-testnet.qore.host` do not exist, so run your own node if you need gRPC.
+These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026) and the **`qorechain-diana`** testnet. Both networks run node release **v3.2.6**. Mainnet applied it at height 4,020,000 on 4 November 2026 (governance proposal 15, after v3.2.5 at height 3,906,833 on 29 October 2026, proposal 14, and v3.2.4 at height 3,742,566 on 23 October 2026); the testnet applied v3.2.5 at height 8,890,800 on 26 October 2026 and v3.2.6 at height 8,970,638 on 27 October 2026. Routes and fields added by a release appear on a network only once that network has applied the release. The route checks marked 4 November 2026 below were made against the public mainnet host after the v3.2.6 upgrade. The base URLs below assume a locally running node. The public hosted endpoints are `https://api.qore.host` / `https://api-testnet.qore.host` (REST) and `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), listed in [Networks](/appendix/networks#public-endpoints). **There is no public gRPC endpoint**: the hostnames `grpc.qore.host` and `grpc-testnet.qore.host` do not exist, so run your own node if you need gRPC.
 :::
 
 ## Base URLs
@@ -35,7 +35,7 @@ QoreChain-specific modules are exposed over REST under the `/qorechain/<module>/
 
 A route that does not exist answers HTTP `501` with `{"code":12,"message":"Not Implemented"}`. That means the route is not served, not that the query came back empty. Shortened paths without the `/qorechain/` prefix (for example `/bridge/v1/chains` or `/pqc/v1/params`) are **not** served. An unknown record on a route that does exist returns HTTP `404` with `{"code":5,"message":"... not found"}`.
 
-The examples below use the public mainnet host; replace it with `https://api-testnet.qore.host` for the testnet. Values in the samples were read from the live networks between 20 and 27 October 2026 and change over time; use them for the shape of a response. The v3.2.4 release added a few routes and fields. They are marked **v3.2.4** below: the testnet has served them since 19 October 2026 and mainnet since 23 October 2026. The v3.2.5 release (mainnet since 29 October 2026, testnet since 26 October) added the cross-VM parameter and message routes and the native key registry route, marked **v3.2.5**. The v3.2.6 release added more, marked **v3.2.6 (testnet)**: they answer on the testnet only, and mainnet answers them with `501` until it applies that release. A node still on an older release answers a new route with `501`.
+The examples below use the public mainnet host; replace it with `https://api-testnet.qore.host` for the testnet. Values in the samples were read from the live networks between 20 and 27 October 2026 and change over time; use them for the shape of a response. The v3.2.4 release added a few routes and fields. They are marked **v3.2.4** below: the testnet has served them since 19 October 2026 and mainnet since 23 October 2026. The v3.2.5 release (mainnet since 29 October 2026, testnet since 26 October) added the cross-VM parameter and message routes and the native key registry route, marked **v3.2.5**. The v3.2.6 release (testnet since 27 October 2026, mainnet since 4 November 2026) added more, marked **v3.2.6**: the mainnet host answered them with `200` on 4 November 2026 (an exception is noted where it applies). A node still on an older release answers a new route with `501`.
 
 ## PQC Module {#pqc-module}
 
@@ -46,9 +46,9 @@ The examples below use the public mainnet host; replace it with `https://api-tes
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | The account's EIP-7702 delegation consent, current delegation and EVM nonce (since v3.2.2) |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (testnet since 19 October 2026; mainnet since 23 October 2026; `501` on an older node). Every protocol feature the binary knows, with `enabled`, `known` and `staged` flags |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (both networks since 29 October 2026 on mainnet, 26 October on the testnet; `501` on an older node). The ML-KEM encryption key registered for an address in the native key registry: `{"found":false,"key":null}` when none is registered |
-| GET    | `/qorechain/pqc/v1/params`               | **v3.2.6 (testnet)**. The module parameters; `501` on mainnet at the time of writing |
+| GET    | `/qorechain/pqc/v1/params`               | **v3.2.6** (testnet since 27 October 2026, mainnet since 4 November 2026; `501` on an older node). The module parameters |
 
-Note that the path segment is the singular `account`. There is no `/qorechain/pqc/v1/stats` route (use `qorechaind query pqc stats`). `/qorechain/pqc/v1/params` is served from v3.2.6, so on the testnet only for now; on mainnet use `qorechaind query pqc params` against a node until it applies that release.
+Note that the path segment is the singular `account`. There is no `/qorechain/pqc/v1/stats` route (use `qorechaind query pqc stats`). `/qorechain/pqc/v1/params` is served from v3.2.6 and answered `200` on both networks on 4 November 2026 (on mainnet: `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, `default_signature_algo_name` `dilithium5`, `hybrid_signature_mode_name` `required`). On a node older than v3.2.6 use `qorechaind query pqc params` instead.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -293,7 +293,7 @@ curl -s https://api.qore.host/qorechain/amm/v1/params
 
 All seven AMM routes answer on both networks (checked 27 October 2026). At the time of writing there are no pools on either network (`{"pools": []}`). Answers for input that matches nothing: `pools/{pool_id}` with an unknown id returns HTTP `404` (`{"code":5,"message":"pool 1 not found"}`); `pool_by_denoms` with no pool for the pair returns `404` (`no pool for uqor/foo`); a quote for an unknown pool returns HTTP `400` with `{"code":3,"message":"pool not found"}`; `pools/{pool_id}/lp/{address}` returns `{"balance":"0"}` for an address with no LP position (the address must be a valid `qor1` bech32 address, otherwise `400`). The two quote routes and `pool_by_denoms` read their input from the query string, so they need parameters: without `amount_in` / `amount_out` they answer `400` (`invalid amount_in` / `invalid amount_out`).
 
-On the testnet the second denomination a pool needs is available since v3.2.6: three governance-registered test tokens, see [Testnet test tokens (Fest)](#fest-tokens). There is no equivalent on mainnet, whose only bank denomination is `uqor`.
+On the testnet the second denomination a pool needs is available: three governance-registered test tokens, see [Testnet test tokens (Fest)](#fest-tokens). There is no equivalent on mainnet, whose only bank denomination is `uqor`.
 
 ## Licence Module {#licence-module}
 
@@ -462,10 +462,10 @@ curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
 
 The accepted list holds native `uqor` only on both networks, so fees are paid in `uqor` and no conversion takes place. Governance adds a token (with a pool, a minimum liquidity and a maximum deviation between the time-weighted and spot price); a fee paid in such a token is converted through a QOR float and refilled through an AMM pool. `conversion_rate` without `?denom=` answers `500` (`denom is required`).
 
-## RL Consensus Module (v3.2.6, testnet) {#rlconsensus-module}
+## RL Consensus Module (v3.2.6) {#rlconsensus-module}
 
-:::note Testnet only for now
-The REST gateway of the `rlconsensus` module arrived with **v3.2.6**, which the `qorechain-diana` testnet applied at height 8,970,638 on 27 October 2026. On mainnet every route below answers HTTP `501` (`{"code":12,"message":"Not Implemented"}`) at the time of writing (checked 27 October 2026); there the module is reachable over gRPC only. All seven routes answer on the testnet and none needs a parameter.
+:::note Served on both networks from v3.2.6
+The REST gateway of the `rlconsensus` module arrived with **v3.2.6**, which the `qorechain-diana` testnet applied at height 8,970,638 on 27 October 2026 and mainnet at height 4,020,000 on 4 November 2026. On 4 November 2026 all seven routes below answered HTTP `200` on the public mainnet host as well as on the testnet; none needs a parameter. Before v3.2.6 they answered `501` (`{"code":12,"message":"Not Implemented"}`) and the module was reachable over gRPC only.
 :::
 
 | Method | Endpoint                                  | Description                                                              |
@@ -493,7 +493,7 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
   "0.000000000000000000", "0.000000000000000000", "0.000000000000000000"], "applied": false }
 ```
 
-The agent takes one step every `observation_interval` blocks (10). In `shadow` mode it computes an action and records it without applying anything, so `applied` is `false` and `applied_params` stays at its defaults (`block_time_ms` `5000`, `gas_price_floor` `100`, pool weights `0.40` and `0.35`). On the testnet the agent was started in shadow mode with a stored policy by governance proposal 29 (passed 27 October 2026); `circuit_breaker_active` is `false`. Amounts and values are strings. The applied values are informational in this release: the only reader on chain is the read-only [`rlConsensusParams` precompile](/developer-guide/evm-precompiles#network-status). The matching gRPC methods are `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams` and `LastAction` (service `qorechain.rlconsensus.v1.Query`), and the CLI commands are in [Query Commands](/cli-reference/query-commands#rlconsensus).
+The samples above are from the testnet. On mainnet (checked 4 November 2026) the agent is in `conservative` mode with `current_epoch` `0`, `total_steps` `0` and `circuit_breaker_active` `false`, `policy` reports `weight_count` `0` (no policy stored), `last_action` is empty (`height` `0`, `applied` `false`) and `applied_params` holds the defaults. The agent takes one step every `observation_interval` blocks (10). In `shadow` mode it computes an action and records it without applying anything, so `applied` is `false` and `applied_params` stays at its defaults (`block_time_ms` `5000`, `gas_price_floor` `100`, pool weights `0.40` and `0.35`). On the testnet the agent was started in shadow mode with a stored policy by governance proposal 29 (passed 27 October 2026); `circuit_breaker_active` is `false`. Mainnet has not started the agent. Amounts and values are strings. The applied values are informational in this release: the only reader on chain is the read-only [`rlConsensusParams` precompile](/developer-guide/evm-precompiles#network-status). The matching gRPC methods are `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams` and `LastAction` (service `qorechain.rlconsensus.v1.Query`), and the CLI commands are in [Query Commands](/cli-reference/query-commands#rlconsensus).
 
 ## Staking Tiers Module (v3.2.4) {#stakingtier-module}
 
@@ -511,7 +511,7 @@ The staking-tiers module is part of **v3.2.4**. These routes have been served by
 
 ## Reputation Module {#reputation-module}
 
-The reputation module's REST routes are served by the **testnet** (`qorechain-diana`, chain v3.2.6). On mainnet every `/qorechain/reputation/v1/...` route answers HTTP `501` (`{"code":12,"message":"Not Implemented"}`) at the time of writing (27 October 2026); there the module is reachable over gRPC only (`Params`, see below). Mainnet v3.2.5 did not add them (checked 30 October 2026); this page is updated once a mainnet release serves them.
+The reputation module's REST routes arrived with chain v3.2.6 and are served by both networks (testnet since 27 October 2026, mainnet since 4 November 2026). Checked on the public mainnet host on 4 November 2026: `/qorechain/reputation/v1/params`, `/validators` and `/validator/{address}` all answered `200`. Before v3.2.6 every route answered HTTP `501` (`{"code":12,"message":"Not Implemented"}`) and the module was reachable over gRPC only.
 
 | Method | Endpoint | Description |
 | ------ | -------- | ----------- |
@@ -519,22 +519,22 @@ The reputation module's REST routes are served by the **testnet** (`qorechain-di
 | GET    | `/qorechain/reputation/v1/validator/{address}` | One validator's record. `{address}` is a `qorvaloper1...` operator address or a `qorvalcons1...` consensus address. Fields include `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks` and `last_updated_height`. `404` means the validator has no score yet; a string that is neither an operator nor a consensus address answers `400` |
 | GET    | `/qorechain/reputation/v1/validators` | The records of all scored validators (`reputations`) |
 
-Scores are decimal strings between 0 and 1. The light node reads the per-validator route to warn when a delegated validator is below `min_reputation` (see [Rewards and Monitoring](/light-node/rewards-and-monitoring#delegation-alerts)). The same routes from the mainnet host return `501` until mainnet serves them.
+Scores are decimal strings between 0 and 1. The light node reads the per-validator route to warn when a delegated validator is below `min_reputation` (see [Rewards and Monitoring](/light-node/rewards-and-monitoring#delegation-alerts)). The same routes work on both public hosts.
 
 ## gRPC-only modules {#grpc-only-modules}
 
-On mainnet (node release v3.2.5, checked 30 October 2026) these modules have a gRPC `Query` service but **no REST route**. Service names follow `qorechain.<module>.v1.Query`.
+On mainnet (node release v3.2.6, checked 4 November 2026) these modules have a gRPC `Query` service but **no REST route**, apart from the exceptions in the table. Service names follow `qorechain.<module>.v1.Query`.
 
-| Module        | gRPC query methods (mainnet, chain version v3.2.5)     |
+| Module        | gRPC query methods (mainnet, chain version v3.2.6)     |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `PendingMessages` (over REST since v3.2.5: `Params` at `/qorechain/crossvm/v1/params` and `Message` at `/qorechain/crossvm/v1/message/{id}`) |
-| `reputation`  | `Params` (REST routes exist on the testnet only, see [Reputation Module](#reputation-module)) |
-| `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
+| `reputation`  | `Params` (also over REST since v3.2.6, see [Reputation Module](#reputation-module)) |
+| `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams`, `LastAction` (also over REST since v3.2.6) |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |
 
-The `rlconsensus` queries are served over REST on the testnet from v3.2.6 (with two more methods, `AppliedParams` and `LastAction`); see [RL Consensus Module](#rlconsensus-module). Mainnet answers them with `501` until it applies that release. Use `grpcurl` against your own node, or the [CLI query commands](/cli-reference/query-commands). The `rdk` queries are also available over REST (see [RDK Module](#rdk-module)); they were gRPC only before v3.2.2.
+The `rlconsensus` queries are served over REST on both networks from v3.2.6 (with two more methods, `AppliedParams` and `LastAction`); see [RL Consensus Module](#rlconsensus-module). Use `grpcurl` against your own node, or the [CLI query commands](/cli-reference/query-commands). The `rdk` queries are also available over REST (see [RDK Module](#rdk-module)); they were gRPC only before v3.2.2.
 
 The xQORE, BTC-restaking (Babylon) and FairBlock modules have no query service in the current release at all, over REST or gRPC. The inflation and gas-abstraction modules, which had none before v3.2.2, are served over REST (see [Inflation Module](#inflation-module) and [Gas Abstraction Module](#gas-abstraction-module)).
 
@@ -560,23 +560,23 @@ The standard Cosmos SDK, IBC, EVM and QoreChain Native REST routes are also serv
 | `/cosmos/evm/feemarket/v1/params`                     | EVM fee-market parameters                     |
 | `/cosmwasm/wasm/v1/codes/params`                      | QoreChain Native upload/instantiate permissions       |
 | `/ibc/apps/transfer/v1/params`                        | IBC transfer parameters                       |
-| `/ibc/core/client/v2/counterparty_info/{client_id}`   | **v3.2.6 (testnet)**. The IBC v2 counterparty registered for a client (`404` if none; `501` on mainnet) |
-| `/ibc/core/client/v2/config/{client_id}`              | **v3.2.6 (testnet)**. The IBC v2 client config (`allowed_relayers`; `501` on mainnet) |
+| `/ibc/core/client/v2/counterparty_info/{client_id}`   | **v3.2.6**. The IBC v2 counterparty registered for a client (`404` if none) |
+| `/ibc/core/client/v2/config/{client_id}`              | **v3.2.6**. The IBC v2 client config (`allowed_relayers`) |
 | `/cosmos/evm/erc20/v1/token_pairs`, `/token_pairs/{token}` | ERC20 token pairs (testnet: the three Fest test tokens and one IBC token; mainnet: none) |
 
 The QoreChain Native prefix is `/cosmwasm/wasm/v1/...`; `/cosmos/wasm/v1/...` is not served.
 
-### IBC v2 client routes (v3.2.6, testnet) {#ibc-v2-routes}
+### IBC v2 client routes (v3.2.6) {#ibc-v2-routes}
 
-The IBC v2 client query service was served over gRPC before, but its REST routes were missing; v3.2.6 mounts them. A relayer reads the counterparty of a client from here. Both routes take the client ID in the path (for example `07-<type>-0`); without it they answer `501` on both networks. Checked 27 October 2026:
+The IBC v2 client query service was served over gRPC before, but its REST routes were missing; v3.2.6 mounts them. A relayer reads the counterparty of a client from here. Both routes take the client ID in the path (for example `07-<type>-0`); a blank ID answers `400`. Checked on the testnet on 27 October 2026 and on mainnet on 4 November 2026:
 
-| Route | Testnet (v3.2.6) | Mainnet (v3.2.5) |
+| Route | Testnet (v3.2.6) | Mainnet (v3.2.6) |
 | --- | --- | --- |
-| `/ibc/core/client/v2/counterparty_info/{client_id}` | `200` with the counterparty, or `404` (`client 07-<type>-0 counterparty not found`) for a client that has none registered; a blank ID answers `400` | `501` |
-| `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}` (an empty list means any relayer) | `501` |
-| `/ibc/core/channel/v2/clients/{client_id}/next_sequence_send`, `/packet_commitments` and the other IBC v2 channel routes | answer (`404` when nothing is recorded for the client, `200` with an empty list for commitments) | answer, same shapes |
+| `/ibc/core/client/v2/counterparty_info/{client_id}` | `200` with the counterparty, or `404` (`client 07-<type>-0 counterparty not found`) for a client that has none registered; a blank ID answers `400` | same shapes: `404` (`client 07-tendermint-0 counterparty not found`) for a client without a counterparty (mainnet has no IBC client yet) |
+| `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}` (an empty list means any relayer) | `200`, `{"config":{"allowed_relayers":[]}}` |
+| `/ibc/core/channel/v2/clients/{client_id}/next_sequence_send`, `/packet_commitments` and the other IBC v2 channel routes | answer (`404` when nothing is recorded for the client, `200` with an empty list for commitments) | answer, same shapes (checked 4 November 2026) |
 
-The IBC v1 routes (`/ibc/core/client/v1/...`, `/ibc/core/channel/v1/...`) answer on both networks. At the time of writing the testnet holds one IBC client and one open transfer channel (`channel-0`, with one IBC-denominated token), and mainnet has no IBC client, channel or IBC-denominated token. On the testnet the rate-limit module answers at `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` (an empty list: no limit is set) and the 08-wasm checksum list at `/ibc/lightclients/wasm/v1/checksums` (empty); mainnet answers both with `501`.
+The IBC v1 routes (`/ibc/core/client/v1/...`, `/ibc/core/channel/v1/...`) answer on both networks. At the time of writing the testnet holds one IBC client and one open transfer channel (`channel-0`, with one IBC-denominated token), and mainnet has no IBC client, channel or IBC-denominated token. The rate-limit module answers at `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` and the 08-wasm checksum list at `/ibc/lightclients/wasm/v1/checksums`: on both networks the first returns an empty `rate_limits` list (no limit is set) and the second an empty `checksums` list. Mainnet answered both with `200` on 4 November 2026 (before v3.2.6 it answered `501`). The packet-forward query route `/ibc/apps/packetforward/v1/params` answered `501` on mainnet; no public route for it was found, so its settings are not readable over REST there.
 
 ### Testnet test tokens (Fest) {#fest-tokens}
 
@@ -618,7 +618,7 @@ To query a specific service:
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` has three methods on a v3.2.3 node, `Account`, `EVMWindow` and `EVMDelegationConsent`, and a fourth from v3.2.4 (the testnet since 19 October 2026, mainnet since 23 October 2026), `ProtocolFeatures`. A `Params` method is added in v3.2.6 (the testnet only for now); a mainnet node has no `Params` method.
+`qorechain.pqc.v1.Query` has three methods on a v3.2.3 node, `Account`, `EVMWindow` and `EVMDelegationConsent`, and a fourth from v3.2.4 (the testnet since 19 October 2026, mainnet since 23 October 2026), `ProtocolFeatures`. A `Params` method is added in v3.2.6 (testnet since 27 October 2026, mainnet since 4 November 2026); a node older than v3.2.6 has no `Params` method.
 
 ## Authentication
 

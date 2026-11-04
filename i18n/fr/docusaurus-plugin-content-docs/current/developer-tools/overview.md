@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain publie ses outils pour développeurs sous forme de petits packages sur les registres publics (npm, PyPI, crates.io, le proxy de modules Go, Maven Central et Swift Package Manager). Cette page en est l'index : à quoi sert chaque package, son nom exact dans le registre, son langage, sa version actuelle, sa commande d'installation et son statut, ainsi que l'endroit où lire comment l'utiliser. Elle s'adresse aux développeurs qui créent des dApps, des portefeuilles, des backends et des rollups sur QoreChain et veulent choisir le bon package avant de lire un guide.
 
-Les versions des tableaux ont été lues sur les registres le 27 octobre 2026. Le mainnet `qorechain-vladi` exécute la v3.2.5 (appliquée le 29 octobre 2026) et le testnet `qorechain-diana` exécute la v3.2.6. Chaque package indiqué comme publié est sous licence Apache-2.0.
+Les versions des tableaux ont été lues sur les registres le 27 octobre 2026. Les deux réseaux exécutent la v3.2.6 : le mainnet `qorechain-vladi` l'a appliquée le 4 novembre 2026 (la v3.2.5 le 29 octobre) et le testnet `qorechain-diana` le 27 octobre. Chaque package indiqué comme publié est sous licence Apache-2.0.
 
 ## Innovations {#innovations}
 
@@ -298,9 +298,9 @@ Pour un nom npm avec scope, conservez le `@`, par exemple `https://registry.npmj
 
 ## Limites et problèmes connus {#limits}
 
-- **Deux réseaux en ligne, des versions différentes.** Le mainnet exécute la v3.2.5 (depuis le 29 octobre 2026) et le testnet exécute la v3.2.6. Une fonctionnalité qui n'existe que sur le testnet (éléments de la v3.2.6, précompilés PQC de l'EVM) est signalée sur sa propre page.
+- **Deux réseaux en ligne, une seule version de chaîne.** Les deux exécutent la v3.2.6 (le mainnet depuis le 4 novembre 2026, le testnet depuis le 27 octobre). Une fonctionnalité qui n'existe que sur le testnet (les précompilés PQC de l'EVM, par exemple) est signalée sur sa propre page.
 - **Pas encore en ligne :** `@qorechain/qoreseal` sur npm, l'Asset Kit sur PyPI et npm (et ses modules natifs, une proposition non planifiée), le SDK 0.11.0 (le chain developer kit) sur npm, les transactions SVM, et les précompilés EVM sur le mainnet (ils ne sont actifs que sur le testnet ; voir la [Présentation du SDK](/sdk/overview) pour la liste voie par voie).
-- **Registre QoreSeal et client léger PQ.** Chiffrer vers une adresse lue depuis la chaîne nécessite le registre de clés KEM, en ligne sur le testnet, et sa route de lecture répond sur le mainnet depuis la v3.2.5. Le client léger PQ ne se connecte à aucun des deux réseaux ; aucun support côté chaîne n'est prévu pour ses checkpoints.
+- **Registre QoreSeal et client léger PQ.** Chiffrer vers une adresse lue depuis la chaîne nécessite le registre de clés KEM, en ligne sur le testnet, et sa route de lecture répond sur le mainnet depuis la v3.2.5 (revérifié le 4 novembre 2026). Le client léger PQ ne se connecte à aucun des deux réseaux ; aucun support côté chaîne n'est prévu pour ses checkpoints.
 - **Kotlin 2.3 ou plus récent.** Les artefacts Kotlin et Android de QoreSign et QoreSeal nécessitent le compilateur Kotlin 2.3 ou plus récent ; Kotlin 2.1 échoue à la compilation avec eux.
 - **Pas de wheels Windows.** Les packages Python de QoreSign et QoreSeal ont des wheels pour macOS et Linux uniquement ; les autres plateformes compilent depuis la distribution source, qui nécessite Rust.
 - **Exemples non exécutés :** sur les 34 entrées de quickstart, 31 se sont exécutées avec succès le 27 octobre 2026. L'exemple Python de QoreSign a été exécuté après la publication du package (macOS arm64 et Linux aarch64), et l'exemple Android de QoreSign n'a pas été exécuté sur un appareil. L'adaptateur de portefeuille, chain bridge et handles n'ont pas de quickstart ; leurs exemples dans ce manuel proviennent donc des typages et du source des packages et n'ont pas été exécutés de bout en bout.

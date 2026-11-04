@@ -18,7 +18,7 @@ QoreChain, programatik erişim için üç temel arayüz sunar:
 Tüm REST uç noktaları JSON döndürür. gRPC uç noktaları Protocol Buffers kullanır ve herhangi bir gRPC istemcisiyle tüketilebilir. RPC arayüzü, konsensüs düzeyinde sorgular ve işlem yayını sağlar.
 
 :::note
-Bu arayüzler hem **`qorechain-vladi`** ana ağında (7 Haziran 2026'dan beri canlı) hem de **`qorechain-diana`** test ağında kullanılabilir. Bu yazının hazırlandığı sırada (30 Ekim 2026'da kontrol edildi) ana ağ **v3.2.5** düğüm sürümünü çalıştırır (29 Ekim 2026'da 3.906.833 numaralı yükseklikte uygulandı, yönetişim önerisi 14; v3.2.4, 23 Ekim 2026'da 3.742.566 numaralı yükseklikte uygulanmıştı). Test ağı **v3.2.6** çalıştırır: v3.2.5'i 26 Ekim 2026'da 8.890.800 numaralı yükseklikte, v3.2.6'yı ise 27 Ekim 2026'da 8.970.638 numaralı yükseklikte uyguladı. Bir sürümün eklediği rotalar ve alanlar, bir ağda ancak o ağ sürümü uyguladıktan sonra görünür; bu sayfa yalnızca test ağında bulunanları işaretler. Aşağıdaki temel URL'ler yerel olarak çalışan bir düğüm varsayar. Herkese açık barındırılan uç noktalar `https://api.qore.host` / `https://api-testnet.qore.host` (REST) ve `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC) adresleridir ve [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir. **Herkese açık bir gRPC uç noktası yoktur**: `grpc.qore.host` ve `grpc-testnet.qore.host` ana bilgisayar adları mevcut değildir, bu nedenle gRPC'ye ihtiyacınız varsa kendi düğümünüzü çalıştırın.
+Bu arayüzler hem **`qorechain-vladi`** mainnet'inde (7 Haziran 2026'dan beri canlı) hem de **`qorechain-diana`** testnet'inde kullanılabilir. Her iki ağ da **v3.2.6** düğüm sürümünü çalıştırır. Mainnet bu sürümü 4 Kasım 2026'da 4.020.000 yüksekliğinde uyguladı (yönetişim önerisi 15; bundan önce v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, öneri 14, ve v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı); testnet v3.2.5'i 26 Ekim 2026'da 8.890.800 yüksekliğinde, v3.2.6'yı ise 27 Ekim 2026'da 8.970.638 yüksekliğinde uyguladı. Bir sürümün eklediği rotalar ve alanlar, bir ağda yalnızca o ağ sürümü uyguladıktan sonra görünür. Aşağıda 4 Kasım 2026 ile işaretlenen rota kontrolleri, v3.2.6 yükseltmesinden sonra genel mainnet ana makinesine karşı yapıldı. Aşağıdaki temel URL'ler yerel olarak çalışan bir düğüm varsayar. Genel barındırılan uç noktalar `https://api.qore.host` / `https://api-testnet.qore.host` (REST) ve `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC) olup [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir. **Genel bir gRPC uç noktası yoktur**: `grpc.qore.host` ve `grpc-testnet.qore.host` ana makine adları mevcut değildir; gRPC'ye ihtiyacınız varsa kendi düğümünüzü çalıştırın.
 :::
 
 ## Temel URL'ler
@@ -35,7 +35,7 @@ QoreChain'e özgü modüller REST üzerinden `/qorechain/<module>/v1/...` öneki
 
 Var olmayan bir rota HTTP `501` ve `{"code":12,"message":"Not Implemented"}` ile yanıt verir. Bu, rotanın sunulmadığı anlamına gelir; sorgunun boş döndüğü anlamına gelmez. `/qorechain/` öneki olmayan kısaltılmış yollar (örneğin `/bridge/v1/chains` veya `/pqc/v1/params`) **sunulmaz**. Var olan bir rotada bilinmeyen bir kayıt HTTP `404` ve `{"code":5,"message":"... not found"}` döndürür.
 
-Aşağıdaki örnekler herkese açık ana ağ adresini kullanır; test ağı için bunu `https://api-testnet.qore.host` ile değiştirin. Örneklerdeki değerler 20 ile 27 Ekim 2026 arasında canlı ağlardan okunmuştur ve zamanla değişir; bunları yanıtın biçimini görmek için kullanın. v3.2.4 sürümü birkaç rota ve alan ekledi. Bunlar aşağıda **v3.2.4** olarak işaretlenmiştir: test ağı bunları 19 Ekim 2026'dan beri, ana ağ ise 23 Ekim 2026'dan beri sunar. v3.2.5 sürümü (ana ağda 29 Ekim 2026'dan, test ağında 26 Ekim'den beri) cross-VM parametre ve mesaj rotalarını ile yerel anahtar kayıt defteri rotasını ekledi; bunlar **v3.2.5** olarak işaretlenmiştir. v3.2.6 sürümü daha fazlasını ekledi; bunlar **v3.2.6 (testnet)** olarak işaretlenmiştir: yalnızca test ağında yanıt verirler ve ana ağ bu sürümü uygulayana kadar onlara `501` ile yanıt verir. Daha eski bir sürümde kalmış bir düğüm yeni bir rotaya `501` ile yanıt verir.
+Aşağıdaki örnekler genel mainnet ana makinesini kullanır; testnet için bunu `https://api-testnet.qore.host` ile değiştirin. Örneklerdeki değerler 20 ile 27 Ekim 2026 arasında canlı ağlardan okunmuştur ve zamanla değişir; bunları yalnızca yanıtın biçimi için kullanın. v3.2.4 sürümü birkaç rota ve alan ekledi. Bunlar aşağıda **v3.2.4** ile işaretlenmiştir: testnet bunları 19 Ekim 2026'dan, mainnet ise 23 Ekim 2026'dan beri sunar. v3.2.5 sürümü (mainnet'te 29 Ekim 2026'dan, testnet'te 26 Ekim'den beri) cross-VM parametre ve mesaj rotalarını ile yerel anahtar kayıt defteri rotasını ekledi; bunlar **v3.2.5** ile işaretlenmiştir. v3.2.6 sürümü (testnet'te 27 Ekim 2026'dan, mainnet'te 4 Kasım 2026'dan beri) daha fazlasını ekledi ve bunlar **v3.2.6** ile işaretlenmiştir: mainnet ana makinesi bunlara 4 Kasım 2026'da `200` ile yanıt verdi (geçerli olduğu yerde bir istisna belirtilmiştir). Daha eski bir sürümde kalmış bir düğüm yeni bir rotaya `501` ile yanıt verir.
 
 ## PQC Modülü {#pqc-module}
 
@@ -46,9 +46,9 @@ Aşağıdaki örnekler herkese açık ana ağ adresini kullanır; test ağı iç
 | GET   | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | Hesabın EIP-7702 delegasyon onayı, geçerli delegasyonu ve EVM nonce değeri (v3.2.2'den beri) |
 | GET   | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (test ağında 19 Ekim 2026'dan beri; ana ağda 23 Ekim 2026'dan beri; eski bir düğümde `501`). İkili dosyanın bildiği her protokol özelliği; `enabled`, `known` ve `staged` bayraklarıyla |
 | GET   | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (her iki ağda: ana ağda 29 Ekim 2026'dan beri, test ağında 26 Ekim'den beri; eski bir düğümde `501`). Bir adres için yerel anahtar kayıt defterinde kayıtlı ML-KEM şifreleme anahtarı: hiçbiri kayıtlı değilse `{"found":false,"key":null}` |
-| GET   | `/qorechain/pqc/v1/params`               | **v3.2.6 (testnet)**. Modül parametreleri; bu yazının hazırlandığı sırada ana ağda `501` |
+| GET    | `/qorechain/pqc/v1/params`               | **v3.2.6** (testnet'te 27 Ekim 2026'dan, mainnet'te 4 Kasım 2026'dan beri; daha eski bir düğümde `501`). Modül parametreleri |
 
-Yol bölümünün tekil `account` olduğuna dikkat edin. `/qorechain/pqc/v1/stats` rotası yoktur (bunun için `qorechaind query pqc stats` kullanın). `/qorechain/pqc/v1/params` v3.2.6'dan itibaren sunulur, dolayısıyla şimdilik yalnızca test ağında; ana ağda, o sürümü uygulayana kadar bir düğüme karşı `qorechaind query pqc params` kullanın.
+Yol bölümünün tekil `account` olduğuna dikkat edin. `/qorechain/pqc/v1/stats` rotası yoktur (`qorechaind query pqc stats` kullanın). `/qorechain/pqc/v1/params` v3.2.6'dan itibaren sunulur ve 4 Kasım 2026'da her iki ağda da `200` yanıtı verdi (mainnet'te: `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, `default_signature_algo_name` `dilithium5`, `hybrid_signature_mode_name` `required`). v3.2.6'dan eski bir düğümde bunun yerine `qorechaind query pqc params` kullanın.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -293,7 +293,7 @@ curl -s https://api.qore.host/qorechain/amm/v1/params
 
 Yedi AMM rotasının tümü her iki ağda da yanıt verir (27 Ekim 2026'da kontrol edildi). Bu yazının hazırlandığı sırada her iki ağda da havuz yoktur (`{"pools": []}`). Hiçbir şeyle eşleşmeyen girdiler için yanıtlar: bilinmeyen bir kimlikle `pools/{pool_id}` HTTP `404` döndürür (`{"code":5,"message":"pool 1 not found"}`); çift için havuz olmayan `pool_by_denoms` `404` döndürür (`no pool for uqor/foo`); bilinmeyen bir havuz için fiyat teklifi HTTP `400` ve `{"code":3,"message":"pool not found"}` döndürür; LP pozisyonu olmayan bir adres için `pools/{pool_id}/lp/{address}` `{"balance":"0"}` döndürür (adres geçerli bir `qor1` bech32 adresi olmalıdır, aksi halde `400`). İki fiyat teklifi rotası ve `pool_by_denoms` girdilerini sorgu dizesinden okur, bu yüzden parametre gerektirirler: `amount_in` / `amount_out` olmadan `400` ile yanıt verirler (`invalid amount_in` / `invalid amount_out`).
 
-Test ağında, bir havuzun ihtiyaç duyduğu ikinci birim v3.2.6'dan beri mevcuttur: yönetişimin kaydettiği üç test token'ı, bkz. [Testnet test token'ları (Fest)](#fest-tokens). Tek bank birimi `uqor` olan ana ağda bunun karşılığı yoktur.
+Testnet'te bir havuzun ihtiyaç duyduğu ikinci birim kullanılabilir: yönetişimle kaydedilmiş üç test token'ı, bkz. [Testnet test token'ları (Fest)](#fest-tokens). Mainnet'te bunun bir karşılığı yoktur; tek bank birimi `uqor`'dur.
 
 ## Lisans Modülü {#licence-module}
 
@@ -462,10 +462,10 @@ curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
 
 Kabul edilenler listesi her iki ağda da yalnızca yerel `uqor` içerir; dolayısıyla ücretler `uqor` ile ödenir ve herhangi bir dönüşüm gerçekleşmez. Yönetişim bir token ekler (bir havuz, asgari bir likidite ve zaman ağırlıklı ile spot fiyat arasında azami bir sapma ile); böyle bir token ile ödenen ücret bir QOR float'ı üzerinden dönüştürülür ve bir AMM havuzu aracılığıyla yeniden doldurulur. `?denom=` olmadan `conversion_rate`, `500` (`denom is required`) ile yanıt verir.
 
-## RL Consensus Modülü (v3.2.6, testnet) {#rlconsensus-module}
+## RL Consensus Modülü (v3.2.6) {#rlconsensus-module}
 
-:::note Şimdilik yalnızca testnet
-`rlconsensus` modülünün REST ağ geçidi, `qorechain-diana` test ağının 27 Ekim 2026'da 8.970.638 numaralı yükseklikte uyguladığı **v3.2.6** ile geldi. Ana ağda aşağıdaki her rota, bu yazının hazırlandığı sırada HTTP `501` (`{"code":12,"message":"Not Implemented"}`) ile yanıt verir (27 Ekim 2026'da kontrol edildi); orada modüle yalnızca gRPC üzerinden ulaşılır. Yedi rotanın tümü test ağında yanıt verir ve hiçbiri parametre gerektirmez.
+:::note v3.2.6'dan itibaren her iki ağda sunulur
+`rlconsensus` modülünün REST ağ geçidi **v3.2.6** ile geldi; `qorechain-diana` testnet'i bunu 27 Ekim 2026'da 8.970.638 yüksekliğinde, mainnet ise 4 Kasım 2026'da 4.020.000 yüksekliğinde uyguladı. 4 Kasım 2026'da aşağıdaki yedi rotanın tamamı hem genel mainnet ana makinesinde hem de testnet'te HTTP `200` ile yanıt verdi; hiçbiri parametre gerektirmez. v3.2.6'dan önce `501` yanıtı veriyorlardı (`{"code":12,"message":"Not Implemented"}`) ve modüle yalnızca gRPC üzerinden erişilebiliyordu.
 :::
 
 | Metot | Uç Nokta                                  | Açıklama                                                                 |
@@ -493,7 +493,7 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
   "0.000000000000000000", "0.000000000000000000", "0.000000000000000000"], "applied": false }
 ```
 
-Ajan her `observation_interval` blokta (10) bir adım atar. `shadow` modunda bir eylem hesaplar ve hiçbir şeyi uygulamadan kaydeder; bu yüzden `applied` `false`'tur ve `applied_params` varsayılanlarında kalır (`block_time_ms` `5000`, `gas_price_floor` `100`, havuz ağırlıkları `0.40` ve `0.35`). Test ağında ajan, 29 numaralı yönetişim önerisiyle (27 Ekim 2026'da kabul edildi) saklanan bir politikayla gölge modunda başlatıldı; `circuit_breaker_active` `false`'tur. Tutarlar ve değerler dizelerdir. Uygulanan değerler bu sürümde bilgilendiricidir: zincir üzerindeki tek okuyucu, salt okunur [`rlConsensusParams` precompile'ıdır](/developer-guide/evm-precompiles#network-status). Karşılık gelen gRPC metotları `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams` ve `LastAction`'dır (servis `qorechain.rlconsensus.v1.Query`) ve CLI komutları [Sorgu Komutları](/cli-reference/query-commands#rlconsensus) sayfasındadır.
+Yukarıdaki örnekler testnet'ten alınmıştır. Mainnet'te (4 Kasım 2026'da kontrol edildi) ajan `conservative` modundadır; `current_epoch` `0`, `total_steps` `0` ve `circuit_breaker_active` `false` değerindedir, `policy` için `weight_count` `0` döner (kayıtlı politika yok), `last_action` boştur (`height` `0`, `applied` `false`) ve `applied_params` varsayılan değerleri taşır. Ajan her `observation_interval` blokta (10) bir adım atar. `shadow` modunda bir eylem hesaplar ve hiçbir şeyi uygulamadan kaydeder; bu nedenle `applied` `false` olur ve `applied_params` varsayılan değerlerinde kalır (`block_time_ms` `5000`, `gas_price_floor` `100`, havuz ağırlıkları `0.40` ve `0.35`). Testnet'te ajan, 29 numaralı yönetişim önerisiyle (27 Ekim 2026'da kabul edildi) kayıtlı bir politikayla gölge modunda başlatıldı; `circuit_breaker_active` değeri `false`'tur. Mainnet ajanı başlatmamıştır. Tutarlar ve değerler dizelerdir. Uygulanan değerler bu sürümde yalnızca bilgilendiricidir: zincir üzerindeki tek okuyucu salt okunur [`rlConsensusParams` precompile'ıdır](/developer-guide/evm-precompiles#network-status). Karşılık gelen gRPC yöntemleri `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams` ve `LastAction`'dır (hizmet `qorechain.rlconsensus.v1.Query`); CLI komutları [Sorgu Komutları](/cli-reference/query-commands#rlconsensus) sayfasındadır.
 
 ## Staking Tiers Modülü (v3.2.4) {#stakingtier-module}
 
@@ -511,7 +511,7 @@ Staking-tiers modülü **v3.2.4** sürümünün parçasıdır. Bu rotalar test a
 
 ## İtibar Modülü {#reputation-module}
 
-İtibar modülünün REST rotaları **test ağında** (`qorechain-diana`, zincir v3.2.6) sunulur. Ana ağda her `/qorechain/reputation/v1/...` rotası, yazım sırasında (27 Ekim 2026) HTTP `501` ile yanıt verir (`{"code":12,"message":"Not Implemented"}`); orada modüle yalnızca gRPC üzerinden ulaşılır (`Params`, aşağıya bakın). Ana ağ v3.2.5 bunları eklemedi (30 Ekim 2026'da kontrol edildi); bir ana ağ sürümü bunları sunduğunda bu sayfa güncellenecektir.
+İtibar modülünün REST rotaları zincir v3.2.6 ile geldi ve her iki ağ tarafından sunulur (testnet'te 27 Ekim 2026'dan, mainnet'te 4 Kasım 2026'dan beri). Genel mainnet ana makinesinde 4 Kasım 2026'da kontrol edildi: `/qorechain/reputation/v1/params`, `/validators` ve `/validator/{address}` rotalarının üçü de `200` yanıtı verdi. v3.2.6'dan önce her rota HTTP `501` ile yanıt veriyordu (`{"code":12,"message":"Not Implemented"}`) ve modüle yalnızca gRPC üzerinden erişilebiliyordu.
 
 | Metot | Uç Nokta | Açıklama |
 | ------ | -------- | ----------- |
@@ -519,22 +519,22 @@ Staking-tiers modülü **v3.2.4** sürümünün parçasıdır. Bu rotalar test a
 | GET    | `/qorechain/reputation/v1/validator/{address}` | Bir doğrulayıcının kaydı. `{address}` bir `qorvaloper1...` operatör adresi veya bir `qorvalcons1...` konsensüs adresidir. Alanlar arasında `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks` ve `last_updated_height` bulunur. `404`, doğrulayıcının henüz skoru olmadığı anlamına gelir; ne operatör ne de konsensüs adresi olan bir dize `400` ile yanıtlanır |
 | GET    | `/qorechain/reputation/v1/validators` | Skoru bulunan tüm doğrulayıcıların kayıtları (`reputations`) |
 
-Skorlar 0 ile 1 arasında ondalık dizelerdir. Light node, delege edilmiş bir doğrulayıcı `min_reputation` değerinin altına düştüğünde uyarmak için doğrulayıcı başına rotayı okur (bkz. [Ödüller ve İzleme](/light-node/rewards-and-monitoring#delegation-alerts)). Ana ağ ana makinesinden aynı rotalar, ana ağ bunları sunana kadar `501` döndürür.
+Puanlar 0 ile 1 arasında ondalık dizelerdir. Hafif düğüm, delege edilen bir doğrulayıcı `min_reputation` değerinin altına düştüğünde uyarı vermek için doğrulayıcı başına rotayı okur (bkz. [Ödüller ve İzleme](/light-node/rewards-and-monitoring#delegation-alerts)). Aynı rotalar her iki genel ana makinede de çalışır.
 
 ## Yalnızca gRPC modülleri {#grpc-only-modules}
 
-Ana ağda (düğüm sürümü v3.2.5, 30 Ekim 2026'da kontrol edildi) bu modüllerin bir gRPC `Query` servisi vardır ancak **REST rotası yoktur**. Servis adları `qorechain.<module>.v1.Query` biçimini izler.
+Mainnet'te (düğüm sürümü v3.2.6, 4 Kasım 2026'da kontrol edildi) bu modüllerin gRPC `Query` hizmeti vardır, ancak tablodaki istisnalar dışında **REST rotası yoktur**. Hizmet adları `qorechain.<module>.v1.Query` biçimindedir.
 
-| Modül         | gRPC sorgu metotları (ana ağ, zincir sürümü v3.2.5)    |
+| Modül         | gRPC sorgu yöntemleri (mainnet, zincir sürümü v3.2.6)  |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `PendingMessages` (v3.2.5'ten beri REST üzerinden: `Params`, `/qorechain/crossvm/v1/params` adresinde ve `Message`, `/qorechain/crossvm/v1/message/{id}` adresinde) |
-| `reputation`  | `Params` (REST rotaları yalnızca test ağında vardır, bkz. [İtibar Modülü](#reputation-module)) |
-| `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
+| `reputation`  | `Params` (v3.2.6'dan beri REST üzerinden de, bkz. [İtibar Modülü](#reputation-module)) |
+| `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams`, `LastAction` (v3.2.6'dan beri REST üzerinden de) |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |
 
-`rlconsensus` sorguları, v3.2.6'dan itibaren test ağında REST üzerinden sunulur (iki metotla daha: `AppliedParams` ve `LastAction`); bkz. [RL Consensus Modülü](#rlconsensus-module). Ana ağ, o sürümü uygulayana kadar onlara `501` ile yanıt verir. Kendi düğümünüze karşı `grpcurl` kullanın veya [CLI sorgu komutlarını](/cli-reference/query-commands) kullanın. `rdk` sorguları REST üzerinden de kullanılabilir ([RDK Modülü](#rdk-module) bölümüne bakın); v3.2.2'den önce yalnızca gRPC idi.
+`rlconsensus` sorguları v3.2.6'dan itibaren her iki ağda REST üzerinden sunulur (`AppliedParams` ve `LastAction` olmak üzere iki yöntemle daha); bkz. [RL Consensus Modülü](#rlconsensus-module). Kendi düğümünüze karşı `grpcurl` kullanın veya [CLI sorgu komutlarına](/cli-reference/query-commands) bakın. `rdk` sorguları REST üzerinden de kullanılabilir (bkz. [RDK Modülü](#rdk-module)); v3.2.2'den önce yalnızca gRPC idi.
 
 xQORE, BTC restaking (Babylon) ve FairBlock modüllerinin mevcut sürümde ne REST ne de gRPC üzerinden hiçbir sorgu servisi yoktur. v3.2.2'den önce hiçbir sorgu servisi olmayan inflation ve gas-abstraction modülleri REST üzerinden sunulur ([Inflation Modülü](#inflation-module) ve [Gas Abstraction Modülü](#gas-abstraction-module) bölümlerine bakın).
 
@@ -560,23 +560,23 @@ Standart Cosmos SDK, IBC, EVM ve QoreChain Native REST rotaları da sunulur. Her
 | `/cosmos/evm/feemarket/v1/params`                     | EVM ücret piyasası parametreleri              |
 | `/cosmwasm/wasm/v1/codes/params`                      | QoreChain Native yükleme/örnekleme izinleri           |
 | `/ibc/apps/transfer/v1/params`                        | IBC transfer parametreleri                    |
-| `/ibc/core/client/v2/counterparty_info/{client_id}`   | **v3.2.6 (testnet)**. Bir istemci için kayıtlı IBC v2 karşı tarafı (yoksa `404`; ana ağda `501`) |
-| `/ibc/core/client/v2/config/{client_id}`              | **v3.2.6 (testnet)**. IBC v2 istemci yapılandırması (`allowed_relayers`; ana ağda `501`) |
+| `/ibc/core/client/v2/counterparty_info/{client_id}`   | **v3.2.6**. Bir istemci için kayıtlı IBC v2 karşı tarafı (hiç yoksa `404`) |
+| `/ibc/core/client/v2/config/{client_id}`              | **v3.2.6**. IBC v2 istemci yapılandırması (`allowed_relayers`) |
 | `/cosmos/evm/erc20/v1/token_pairs`, `/token_pairs/{token}` | ERC20 token çiftleri (testnet: üç Fest test token'ı ve bir IBC token'ı; ana ağ: hiçbiri) |
 
 QoreChain Native öneki `/cosmwasm/wasm/v1/...` şeklindedir; `/cosmos/wasm/v1/...` sunulmaz.
 
-### IBC v2 istemci rotaları (v3.2.6, testnet) {#ibc-v2-routes}
+### IBC v2 istemci rotaları (v3.2.6) {#ibc-v2-routes}
 
-IBC v2 istemci sorgu servisi daha önce gRPC üzerinden sunuluyordu, ancak REST rotaları eksikti; v3.2.6 bunları bağlar. Bir röle, bir istemcinin karşı tarafını buradan okur. Her iki rota da istemci kimliğini yolda alır (örneğin `07-<type>-0`); bu olmadan her iki ağda da `501` ile yanıt verirler. 27 Ekim 2026'da kontrol edildi:
+IBC v2 istemci sorgu hizmeti daha önce gRPC üzerinden sunuluyordu, ancak REST rotaları eksikti; v3.2.6 bunları bağlar. Bir röle, bir istemcinin karşı tarafını buradan okur. Her iki rota da istemci kimliğini yolda alır (örneğin `07-<type>-0`); boş bir kimlik `400` yanıtı verir. Testnet'te 27 Ekim 2026'da ve mainnet'te 4 Kasım 2026'da kontrol edildi:
 
-| Rota | Test ağı (v3.2.6) | Ana ağ (v3.2.5) |
+| Rota | Testnet (v3.2.6) | Mainnet (v3.2.6) |
 | --- | --- | --- |
-| `/ibc/core/client/v2/counterparty_info/{client_id}` | karşı tarafla `200`, ya da kayıtlı karşı tarafı olmayan bir istemci için `404` (`client 07-<type>-0 counterparty not found`); boş bir kimlik `400` ile yanıt verir | `501` |
-| `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}` (boş liste, herhangi bir röle anlamına gelir) | `501` |
-| `/ibc/core/channel/v2/clients/{client_id}/next_sequence_send`, `/packet_commitments` ve diğer IBC v2 kanal rotaları | yanıt verir (istemci için hiçbir şey kayıtlı değilse `404`, taahhütler için boş listeyle `200`) | yanıt verir, aynı biçimler |
+| `/ibc/core/client/v2/counterparty_info/{client_id}` | `200` ile karşı taraf, ya da kayıtlı karşı tarafı olmayan bir istemci için `404` (`client 07-<type>-0 counterparty not found`); boş bir kimlik `400` yanıtı verir | aynı biçimler: karşı tarafı olmayan bir istemci için `404` (`client 07-tendermint-0 counterparty not found`) (mainnet'te henüz IBC istemcisi yok) |
+| `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}` (boş liste herhangi bir rölenin kullanabileceği anlamına gelir) | `200`, `{"config":{"allowed_relayers":[]}}` |
+| `/ibc/core/channel/v2/clients/{client_id}/next_sequence_send`, `/packet_commitments` ve diğer IBC v2 kanal rotaları | yanıt verir (istemci için hiçbir şey kaydedilmemişse `404`, taahhütler için boş bir liste ile `200`) | yanıt verir, aynı biçimler (4 Kasım 2026'da kontrol edildi) |
 
-IBC v1 rotaları (`/ibc/core/client/v1/...`, `/ibc/core/channel/v1/...`) her iki ağda da yanıt verir. Bu yazının hazırlandığı sırada test ağında bir IBC istemcisi ve bir açık transfer kanalı (`channel-0`, IBC cinsinden bir token ile) vardır; ana ağda ise IBC istemcisi, kanalı veya IBC cinsinden token yoktur. Test ağında hız sınırı modülü `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` adresinde (boş liste: hiçbir sınır belirlenmemiş) ve 08-wasm sağlama toplamı listesi `/ibc/lightclients/wasm/v1/checksums` adresinde (boş) yanıt verir; ana ağ ikisine de `501` ile yanıt verir.
+IBC v1 rotaları (`/ibc/core/client/v1/...`, `/ibc/core/channel/v1/...`) her iki ağda da yanıt verir. Bu yazı sırasında testnet bir IBC istemcisi ve bir açık transfer kanalı (`channel-0`, IBC birimli bir token ile) barındırır; mainnet'te ise hiçbir IBC istemcisi, kanalı veya IBC birimli token'ı yoktur. Hız sınırı modülü `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` adresinde, 08-wasm sağlama toplamı listesi ise `/ibc/lightclients/wasm/v1/checksums` adresinde yanıt verir: her iki ağda da birincisi boş bir `rate_limits` listesi (sınır belirlenmemiştir), ikincisi boş bir `checksums` listesi döndürür. Mainnet ikisine de 4 Kasım 2026'da `200` ile yanıt verdi (v3.2.6'dan önce `501` yanıtı veriyordu). Paket iletme sorgu rotası `/ibc/apps/packetforward/v1/params` mainnet'te `501` yanıtı verdi; bunun için herkese açık bir rota bulunamadı, bu nedenle ayarları orada REST üzerinden okunamaz.
 
 ### Testnet test token'ları (Fest) {#fest-tokens}
 
@@ -618,7 +618,7 @@ Belirli bir servisi sorgulamak için:
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` bir v3.2.3 düğümünde üç metoda sahiptir: `Account`, `EVMWindow` ve `EVMDelegationConsent`; v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri, ana ağda 23 Ekim 2026'dan beri) dördüncü bir metot olan `ProtocolFeatures` vardır. v3.2.6'da bir `Params` metodu eklenir (şimdilik yalnızca test ağında); bir ana ağ düğümünde `Params` metodu yoktur.
+`qorechain.pqc.v1.Query` bir v3.2.3 düğümünde üç yönteme sahiptir: `Account`, `EVMWindow` ve `EVMDelegationConsent`; v3.2.4'ten itibaren (testnet'te 19 Ekim 2026'dan, mainnet'te 23 Ekim 2026'dan beri) dördüncü bir yöntem olan `ProtocolFeatures` eklenir. v3.2.6'da bir `Params` yöntemi eklenir (testnet'te 27 Ekim 2026'dan, mainnet'te 4 Kasım 2026'dan beri); v3.2.6'dan eski bir düğümde `Params` yöntemi yoktur.
 
 ## Kimlik Doğrulama
 

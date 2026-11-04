@@ -12,7 +12,7 @@ sidebar_position: 1
 :::caution Capabilitate în stadiu incipient
 RDK este implementat pe ambele rețele, dar **niciun rollup nu a fost creat încă pe niciuna dintre ele** (verificat la 27 octombrie 2026), așa că fluxurile descrise în această secțiune nu au fost exersate de terți. **Decontarea ZK (profilul `defi`, șablonul `defi-rollup` și orice rollup `zk`) nu poate fi folosită încă pe niciuna dintre rețele:** lanțul nu are cum să înregistreze o cheie de verificare, așa că fiecare batch ZK este refuzat după ce comisionul a fost plătit. Înregistrarea cheilor este planificată pentru lanțul v3.2.7. Folosiți decontarea `optimistic` până atunci.
 
-Mainnetul (**`qorechain-vladi`**, EVM chain ID **9801**, activ din 7 iunie 2026) rulează versiunea lanțului **v3.2.5** (propunerea de guvernanță 14 a aplicat-o la înălțimea 3.906.833 pe 29 octombrie 2026; v3.2.4 fusese aplicată la înălțimea 3.742.566 pe 23 octombrie 2026, propunerea 13); testnetul (**`qorechain-diana`**, EVM chain ID **9800**) rulează **v3.2.6** (v3.2.4 a ajuns pe el la 19 octombrie 2026, v3.2.5 la 26 octombrie și v3.2.6 la 27 octombrie). Ce schimbă v3.2.5 pentru rollup-uri este listat la [comportamentul lanțului v3.2.5](#v325); se aplică pe ambele rețele. Acolo unde comportamentul s-a schimbat între v3.2.3 și v3.2.4, această secțiune spune care versiune se aplică. Validați fiecare implementare mai întâi pe testnet și citiți notele de stare de pe fiecare pagină: mai multe capabilități (verificarea ZK, disponibilitatea datelor Celestia, QCAI Copilot, apelurile cross-VM, chitanțele de decontare) nu pot fi folosite astăzi cap-coadă.
+Mainnetul (**`qorechain-vladi`**, EVM chain ID **9801**, activ din 7 iunie 2026) rulează versiunea lanțului **v3.2.6** (propunerea de guvernanță 15 a aplicat-o la înălțimea 4.020.000 pe 4 noiembrie 2026; v3.2.5 fusese aplicată la înălțimea 3.906.833 pe 29 octombrie 2026 prin propunerea 14, iar v3.2.4 la înălțimea 3.742.566 pe 23 octombrie 2026, propunerea 13); testnetul (**`qorechain-diana`**, EVM chain ID **9800**) rulează **v3.2.6** din 27 octombrie (v3.2.4 a ajuns pe el la 19 octombrie 2026, v3.2.5 la 26 octombrie și v3.2.6 la 27 octombrie). Ce schimbă v3.2.5 pentru rollup-uri este listat la [comportamentul lanțului v3.2.5](#v325); se aplică pe ambele rețele. Acolo unde comportamentul s-a schimbat între v3.2.3 și v3.2.4, această secțiune spune care versiune se aplică. Validați fiecare implementare mai întâi pe testnet și citiți notele de stare de pe fiecare pagină: mai multe capabilități (verificarea ZK, disponibilitatea datelor Celestia, QCAI Copilot, apelurile cross-VM, chitanțele de decontare) nu pot fi folosite astăzi cap-coadă.
 :::
 
 ## Inovații {#innovations}
@@ -191,7 +191,7 @@ cd my-rollup && npm run doctor
 
 | Rețea | Chain id | EVM chain ID | Endpoint REST | Versiunea lanțului |
 | ------- | -------- | ------------ | ------------- | ------------- |
-| Mainnet | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.5 |
+| Mainnet | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.6 |
 | Testnet | `qorechain-diana` | 9800 | `https://api-testnet.qore.host` | v3.2.6 |
 
 Ambele rețele servesc interogările RDK (`/qorechain/rdk/v1/...`) prin REST, gRPC și CLI, deci citiri precum `rdk.params()` funcționează pe oricare dintre ele. Testnetul este o rețea de staging cu proprii parametri: fereastra de contestare implicită este de 3.600 de secunde pe testnet și 604.800 pe mainnet, pe testnet pot exista cel mult 200 de rollup-uri, iar pe mainnet 100, iar modulul multilayer permite 64 de straturi sidechain pe testnet și 10 pe mainnet (verificat la 27 octombrie 2026). Citiți `GET /qorechain/rdk/v1/params` pe rețeaua țintă.
@@ -211,7 +211,7 @@ Citirea stării nu are nevoie de niciuna dintre acestea. Puteți și să solicit
 
 ### Comportamentul lanțului v3.2.5: activ pe ambele rețele {#v325}
 
-Lanțul v3.2.5 este activ pe mainnet (aplicat la înălțimea 3.906.833 pe 29 octombrie 2026, propunerea de guvernanță 14) și pe testnet (din 26 octombrie 2026). Testnetul rulează v3.2.6, care o include. RDK 0.7.0 și ulterior le acceptă pe ambele. Aceste reguli se aplică pe ambele rețele; niciun rollup nu a fost creat încă pe mainnet (`GET /qorechain/rdk/v1/rollups` returnează o listă goală, verificat la 30 octombrie 2026), deci regulile de mai jos sunt regulile versiunii și nu au fost încă exercitate de un rollup live de pe mainnet. Pentru un dezvoltator de rollup-uri:
+Lanțul v3.2.5 este activ pe mainnet (aplicat la înălțimea 3.906.833 pe 29 octombrie 2026, propunerea de guvernanță 14) și pe testnet (din 26 octombrie 2026). Ambele rețele rulează acum v3.2.6, care o include. RDK 0.7.0 și ulterior le acceptă pe ambele. Aceste reguli se aplică pe ambele rețele; niciun rollup nu a fost creat încă pe mainnet (`GET /qorechain/rdk/v1/rollups` a returnat o listă goală pe 4 noiembrie 2026), deci regulile de mai jos sunt regulile versiunii și nu au fost încă exercitate de un rollup live de pe mainnet. Pentru un dezvoltator de rollup-uri:
 
 | Comportament | Ambele rețele (v3.2.5 și ulterior) |
 | --------- | -------------------------------- |
@@ -221,10 +221,10 @@ Lanțul v3.2.5 este activ pe mainnet (aplicat la înălțimea 3.906.833 pe 29 oc
 | Batch-uri optimiste în așteptare | Cel mult 4.096 per rollup |
 | Oprirea unui rollup | Refuzată cât timp ultimul batch este `submitted` sau `challenged`; un rollup oprit își eliberează locul |
 | `withdrawals_root` | Gol sau de exact 32 de octeți; frunzele retragerilor de a doua formă numesc chain id-ul |
-| Puntea cross-VM | `GET /qorechain/crossvm/v1/params` servește lista de permisiuni (`bridge_allowed_targets`, goală pe ambele rețele, verificat la 30 octombrie 2026); precompilarea returnează `abi.encode(bytes)` și refuză cu `Error(string)` |
+| Puntea cross-VM | `GET /qorechain/crossvm/v1/params` servește lista de permisiuni (`bridge_allowed_targets`: goală pe mainnet, verificată din nou pe 4 noiembrie 2026; pe testnet era goală pe 30 octombrie și conținea trei ținte CosmWasm pe 4 noiembrie); precompilarea returnează `abi.encode(bytes)` și refuză cu `Error(string)` |
 | Precompilarea cross-VM `0x...0901` | Încă inactivă |
 
-Ceea ce rămâne doar pe testnet este v3.2.6 (de exemplu limita de rată IBC, retransmiterea pachetelor și mesajele 08-wasm); nimic din aceasta nu schimbă modul în care se decontează un rollup.
+Lanțul v3.2.6 este activ pe ambele rețele (pe mainnet din 4 noiembrie 2026, înălțimea 4.020.000, propunerea 15). Pentru rollup-uri, versiunea adaugă `withdrawals_bound` în vizualizarea batch-ului (dacă retragerile unui batch sunt legate de el); adaugă și modificări IBC și de observabilitate care nu schimbă modul în care se decontează un rollup. Nu există niciun rollup pe mainnet care să arate câmpul nou, deci este afirmat din notele de lansare, nu observat.
 
 ### Ce există astăzi {#what-exists-today}
 

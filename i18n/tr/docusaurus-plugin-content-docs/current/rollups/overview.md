@@ -12,7 +12,7 @@ QoreChain **Rollup Development Kit (RDK)**; QoreChain üzerinde zincir üstü `x
 :::caution Erken aşama bir yetenek
 RDK her iki ağda da dağıtılmıştır, ancak **henüz hiçbirinde bir rollup oluşturulmamıştır** (27 Ekim 2026 itibarıyla kontrol edildi); dolayısıyla bu bölümde anlatılan akışlar üçüncü taraflarca denenmemiştir. **ZK mutabakatı (`defi` profili, `defi-rollup` şablonu ve her `zk` rollup'ı) henüz her iki ağda da kullanılamaz:** zincirde bir doğrulama anahtarını kaydetmenin yolu yoktur, bu yüzden her ZK batch'i ücreti ödendikten sonra reddedilir. Anahtar kaydı zincir v3.2.7 için planlanmıştır. O zamana kadar `optimistic` mutabakatı kullanın.
 
-Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) zincir sürümü **v3.2.5**'i çalıştırır (yönetişim önerisi 14 onu 29 Ekim 2026'da 3.906.833 yüksekliğinde uyguladı; v3.2.4, öneri 13 ile 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı); test ağı (**`qorechain-diana`**, EVM zincir kimliği **9800**) **v3.2.6** çalıştırır (v3.2.4 ona 19 Ekim 2026'da, v3.2.5 26 Ekim'de ve v3.2.6 27 Ekim'de ulaştı). v3.2.5'in rollup'lar için neyi değiştirdiği [zincir v3.2.5 davranışı](#v325) altında listelenir; her iki ağda da geçerlidir. Davranışın v3.2.3 ile v3.2.4 arasında değiştiği yerlerde bu bölüm hangi sürümün geçerli olduğunu belirtir. Her dağıtımı önce test ağında doğrulayın ve her sayfadaki durum notlarını okuyun: birçok yetenek (ZK doğrulaması, Celestia veri erişilebilirliği, QCAI Copilot, çapraz-VM çağrıları, mutabakat makbuzları) bugün uçtan uca kullanılamaz.
+Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) zincir sürümü **v3.2.6**'yı çalıştırır (yönetişim önerisi 15 onu 4 Kasım 2026'da 4.020.000 yüksekliğinde uyguladı; v3.2.5, öneri 14 ile 29 Ekim 2026'da 3.906.833 yüksekliğinde ve v3.2.4 23 Ekim 2026'da 3.742.566 yüksekliğinde, öneri 13, uygulanmıştı); test ağı (**`qorechain-diana`**, EVM zincir kimliği **9800**) 27 Ekim'den beri **v3.2.6** çalıştırır (v3.2.4 ona 19 Ekim 2026'da, v3.2.5 26 Ekim'de ve v3.2.6 27 Ekim'de ulaştı). v3.2.5'in rollup'lar için neyi değiştirdiği [zincir v3.2.5 davranışı](#v325) altında listelenir; her iki ağda da geçerlidir. Davranışın v3.2.3 ile v3.2.4 arasında değiştiği yerlerde bu bölüm hangi sürümün geçerli olduğunu belirtir. Her dağıtımı önce test ağında doğrulayın ve her sayfadaki durum notlarını okuyun: birçok yetenek (ZK doğrulaması, Celestia veri erişilebilirliği, QCAI Copilot, çapraz-VM çağrıları, mutabakat makbuzları) bugün uçtan uca kullanılamaz.
 :::
 
 ## Yenilikler {#innovations}
@@ -191,7 +191,7 @@ cd my-rollup && npm run doctor
 
 | Ağ | Zincir kimliği | EVM zincir kimliği | REST uç noktası | Zincir sürümü |
 | ------- | -------- | ------------ | ------------- | ------------- |
-| Ana ağ | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.5 |
+| Ana ağ | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.6 |
 | Test ağı | `qorechain-diana` | 9800 | `https://api-testnet.qore.host` | v3.2.6 |
 
 Her iki ağ da RDK sorgularını (`/qorechain/rdk/v1/...`) REST, gRPC ve CLI üzerinden sunar; bu nedenle `rdk.params()` gibi okumalar her ikisine karşı da çalışır. Test ağı, kendi parametreleri olan bir hazırlık (staging) ağıdır: varsayılan itiraz penceresi test ağında 3.600 saniye, ana ağda 604.800'dür, test ağında en fazla 200, ana ağda 100 rollup bulunabilir ve çok katmanlı modül test ağında 64, ana ağda 10 yan zincir katmanına izin verir (27 Ekim 2026'da kontrol edildi). Hedeflediğiniz ağda `GET /qorechain/rdk/v1/params` çağrısını okuyun.
@@ -211,7 +211,7 @@ Durumu okumak bunların hiçbirini gerektirmez. Ayrıca Dashboard üzerinden bir
 
 ### Zincir v3.2.5 davranışı: her iki ağda canlı {#v325}
 
-Zincir v3.2.5 ana ağda (yönetişim önerisi 14 ile 29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı) ve test ağında (26 Ekim 2026'dan beri) canlıdır. Test ağı, onu içeren v3.2.6'yı çalıştırır. RDK 0.7.0 ve sonrası her ikisini de destekler. Bu kurallar her iki ağda da geçerlidir; ana ağda henüz hiç rollup oluşturulmamıştır (`GET /qorechain/rdk/v1/rollups` boş bir liste döndürür, 30 Ekim 2026'da kontrol edildi), bu nedenle aşağıdaki kurallar sürümün kurallarıdır ve canlı bir ana ağ rollup'ı tarafından henüz denenmemiştir. Bir rollup geliştiricisi için:
+Zincir v3.2.5 ana ağda (yönetişim önerisi 14 ile 29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı) ve test ağında (26 Ekim 2026'dan beri) canlıdır. Her iki ağ da şimdi onu içeren v3.2.6'yı çalıştırır. RDK 0.7.0 ve sonrası her ikisini de destekler. Bu kurallar her iki ağda da geçerlidir; ana ağda henüz hiç rollup oluşturulmamıştır (`GET /qorechain/rdk/v1/rollups` 4 Kasım 2026'da boş bir liste döndürdü), bu nedenle aşağıdaki kurallar sürümün kurallarıdır ve canlı bir ana ağ rollup'ı tarafından henüz denenmemiştir. Bir rollup geliştiricisi için:
 
 | Davranış | Her iki ağ (v3.2.5 ve sonrası) |
 | --------- | -------------------------------- |
@@ -221,10 +221,10 @@ Zincir v3.2.5 ana ağda (yönetişim önerisi 14 ile 29 Ekim 2026'da 3.906.833 y
 | Bekleyen optimistic batch'ler | Rollup başına en fazla 4.096 |
 | Bir rollup'ı durdurma | Son batch `submitted` veya `challenged` durumundayken reddedilir; durdurulan bir rollup yuvasını serbest bırakır |
 | `withdrawals_root` | Boş veya tam 32 bayt; ikinci biçim para çekme yaprakları zincir kimliğini belirtir |
-| Çapraz-VM köprüsü | `GET /qorechain/crossvm/v1/params` izin listesini sunar (`bridge_allowed_targets`, her iki ağda boş, 30 Ekim 2026'da kontrol edildi); ön derleme `abi.encode(bytes)` döndürür ve `Error(string)` ile reddeder |
+| Çapraz-VM köprüsü | `GET /qorechain/crossvm/v1/params` izin listesini sunar (`bridge_allowed_targets`: mainnet'te boş, 4 Kasım 2026'da yeniden kontrol edildi; testnet'te 30 Ekim'de boştu ve 4 Kasım'da üç CosmWasm hedefi içeriyordu); ön derleme `abi.encode(bytes)` döndürür ve `Error(string)` ile reddeder |
 | Çapraz-VM ön derlemesi `0x...0901` | Hâlâ etkin değil |
 
-Hâlâ yalnızca test ağında olan v3.2.6'dır (örneğin IBC hız sınırı, paket yönlendirme ve 08-wasm mesajları); bunların hiçbiri bir rollup'ın nasıl mutabakata vardığını değiştirmez.
+Zincir v3.2.6 her iki ağda da canlıdır (mainnet 4 Kasım 2026'dan, yükseklik 4.020.000, öneri 15). Rollup'lar için sürüm batch görünümüne `withdrawals_bound` ekler (bir batch'in çekimlerinin ona bağlı olup olmadığı); ayrıca bir rollup'ın nasıl mutabakata vardığını değiştirmeyen IBC ve gözlemlenebilirlik değişiklikleri de ekler. Yeni alanı gösterecek bir mainnet rollup'ı yoktur; bu nedenle gözlemlenmiş değil, sürüm notlarından aktarılmıştır.
 
 ### Bugün neler mevcut {#what-exists-today}
 

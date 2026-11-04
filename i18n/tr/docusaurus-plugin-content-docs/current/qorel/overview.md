@@ -41,7 +41,7 @@ Test edilenler: her iki yöndeki transferler (1 QOR çıkış, 0,1 ATOM giriş, 
 
 ### Üçüncü taraf bir relayer'ın ihtiyaçları {#third-party}
 
-Testnet yalnızca `07-tendermint` hafif istemci türünü kabul eder (`/ibc/core/client/v1/params`, `allowed_clients = ["07-tendermint"]` listeler); bugün hiçbir `08-wasm` istemcisi oluşturulamaz. QoreChain'e bir kanal açmak için bir relayer'ın şunlara ihtiyacı vardır:
+Testnet yalnızca `07-tendermint` hafif istemci türünü kabul eder (`/ibc/core/client/v1/params`, `allowed_clients = ["07-tendermint"]` listeler); bugün hiçbir `08-wasm` istemcisi oluşturulamaz (mainnet'in `allowed_clients` listesi, v3.2.6'nın 08-wasm hafif istemci kodunu bağlamasından sonra, 4 Kasım 2026'da aynıydı). QoreChain'e bir kanal açmak için bir relayer'ın şunlara ihtiyacı vardır:
 
 - her iki tarafta bir `07-tendermint` istemcisi;
 - QoreChain tarafında, ML-DSA-87 anahtarı kayıtlı olan bir relayer hesabının hibrit imzaladığı her işlem. QORel bunu yapar; standart Hermes, Go relayer'ı (`rly`) ve ts-relayer reddedilir;
@@ -90,7 +90,7 @@ Bu bölümdeki sayfalar:
 
 ## Nasıl erişilir {#how-to-access}
 
-- **Ağ.** Yalnızca testnet `qorechain-diana` (testnet v3.2.6 çalıştırır). Mainnet `qorechain-vladi`'nin açık bir IBC kanalı yoktur; her ağda neyin olduğu için [Varlıkları Köprüleme](/user-guide/bridging-assets#ibc-testnet-v326) sayfasına bakın.
+- **Ağ.** Yalnızca testnet `qorechain-diana` (her iki ağ da zincir v3.2.6 çalıştırır). Mainnet `qorechain-vladi`'nin açık bir IBC kanalı yoktur; her ağda neyin olduğu için [Varlıkları Köprüleme](/user-guide/bridging-assets#ibc-testnet-v326) sayfasına bakın.
 - **Karşı taraf.** Cosmos Hub genel testnet'i, zincir kimliği `provider`, `channel-600` üzerinden. Başka herhangi bir Cosmos SDK zinciri, örnek yapılandırmadaki `provider` girişiyle aynı biçimde çalışır.
 - **Uç noktalar.** QORel her zincir için bir konsensüs RPC'sine, bir WebSocket'e ve bir gRPC uç noktasına ihtiyaç duyar. QoreChain testnet'inin genel RPC'si (`https://rpc-testnet.qore.host`) ve REST'i (`https://api-testnet.qore.host`) vardır ancak bugün genel bir gRPC uç noktası yoktur ve bir söz de verilmemiştir; bu yüzden `qorechain-diana` için üçüncü taraf bir relayer'ın kendi testnet düğümüne ihtiyacı vardır ([Düğüm Çalıştırma](/developer-guide/running-a-node), [Test Ağına Bağlanma](/getting-started/connecting-to-testnet)). Relayer'lara hız sınırı uygulayan genel uç noktalar kısa bir test için kullanılabilir, ancak sürekli röle için kullanılamaz.
 - **Hesaplar.** Her zincirde, ücretler için küçük bir bakiyesi olan özel bir relayer hesabı. Testnet QOR'u [Dashboard Musluğu](/dashboard/faucet)'ndan gelir; hiçbir değeri yoktur. Asla bir doğrulayıcı operatör anahtarı kullanmayın.

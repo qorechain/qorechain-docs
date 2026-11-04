@@ -41,7 +41,7 @@ What was tested: transfers in both directions (1 QOR out, 0.1 ATOM in, 0.4 QOR r
 
 ### What a third-party relayer needs {#third-party}
 
-The testnet accepts only the `07-tendermint` light-client type (`/ibc/core/client/v1/params` lists `allowed_clients = ["07-tendermint"]`); no `08-wasm` client can be created today. To open a channel to QoreChain, a relayer needs:
+The testnet accepts only the `07-tendermint` light-client type (`/ibc/core/client/v1/params` lists `allowed_clients = ["07-tendermint"]`); no `08-wasm` client can be created today (mainnet's `allowed_clients` list was the same on 4 November 2026, after v3.2.6 wired in the 08-wasm light client code). To open a channel to QoreChain, a relayer needs:
 
 - a `07-tendermint` client on each side;
 - on the QoreChain side, every transaction signed hybrid by a relayer account whose ML-DSA-87 key is registered. QORel does this; stock Hermes, the Go relayer (`rly`) and ts-relayer are rejected;
@@ -90,7 +90,7 @@ The pages in this section:
 
 ## How to access {#how-to-access}
 
-- **Network.** Testnet `qorechain-diana` only (testnet runs v3.2.6). Mainnet `qorechain-vladi` has no open IBC channel; see [Bridging Assets](/user-guide/bridging-assets#ibc-testnet-v326) for what each network has.
+- **Network.** Testnet `qorechain-diana` only (both networks run chain v3.2.6). Mainnet `qorechain-vladi` has no open IBC channel; see [Bridging Assets](/user-guide/bridging-assets#ibc-testnet-v326) for what each network has.
 - **Counterparty.** The Cosmos Hub public testnet, chain ID `provider`, over `channel-600`. Any other Cosmos SDK chain works the same way as the `provider` entry in the example config.
 - **Endpoints.** QORel needs a consensus RPC, a WebSocket and a gRPC endpoint for each chain. The QoreChain testnet has public RPC (`https://rpc-testnet.qore.host`) and REST (`https://api-testnet.qore.host`) but no public gRPC endpoint today, and none is promised, so a third-party relayer for `qorechain-diana` needs its own testnet node ([Running a Node](/developer-guide/running-a-node), [Connecting to the Testnet](/getting-started/connecting-to-testnet)). Public endpoints that rate-limit relayers can be used for a short test but not for steady relaying.
 - **Accounts.** One dedicated relayer account on each chain, with a small balance for fees. Testnet QOR comes from the [Dashboard Faucet](/dashboard/faucet); it has no value. Never use a validator operator key.

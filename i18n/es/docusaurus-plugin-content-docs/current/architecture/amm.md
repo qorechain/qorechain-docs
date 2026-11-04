@@ -21,7 +21,7 @@ Los comandos a continuación utilizan `qorechaind`. Añade los indicadores de tr
 :::
 
 :::caution Todavía no existen pools en la mainnet
-El módulo AMM está activo en mainnet (v3.2.5) y en la testnet (v3.2.6). **Todavía no se ha creado ningún pool en la mainnet** (comprobado el 30 de octubre de 2026: `GET /qorechain/amm/v1/pools` devuelve allí una lista vacía). La testnet tiene un pool (id 1, `uqor` frente a un token de prueba de Fest; solo testnet, sin valor). Los denoms de los ejemplos siguientes (`uusdc`, `uusdt`) son ilustrativos: hoy no existen tales activos en las redes. Mientras no exista un pool, todo comando de swap o de aportar liquidez falla con un error de pool no encontrado.
+El módulo AMM está activo en mainnet y en la testnet (ambas en v3.2.6; la mainnet desde el 4 de noviembre de 2026). **Todavía no se ha creado ningún pool en la mainnet** (comprobado el 30 de octubre de 2026 y de nuevo el 4 de noviembre de 2026: `GET /qorechain/amm/v1/pools` devuelve allí una lista vacía). La testnet tiene un pool (id 1, `uqor` frente a un token de prueba de Fest; solo testnet, sin valor). Los denoms de los ejemplos siguientes (`uusdc`, `uusdt`) son ilustrativos: hoy no existen tales activos en las redes. Mientras no exista un pool, todo comando de swap o de aportar liquidez falla con un error de pool no encontrado.
 :::
 
 ## Parámetros del módulo {#parameters}

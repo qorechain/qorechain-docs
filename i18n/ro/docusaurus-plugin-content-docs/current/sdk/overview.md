@@ -30,7 +30,7 @@ Conturile, soldurile și token-urile sunt partajate între runtime-uri, iar lan�
 include modulul IBC pentru interoperabilitate cross-chain (niciun canal IBC nu este
 deschis pe mainnet; testnet-ul are un canal `transfer` deschis către un lanț de test, verificat la 27 octombrie 2026).
 
-:::note Ce funcționează astăzi pe rețelele live (mainnet v3.2.5, testnet v3.2.6)
+:::note Ce funcționează astăzi pe rețelele live (ambele rețele rulează v3.2.6)
 **Funcționează:** citiri pe fiecare bandă, tranzacții Native semnate hibrid,
 conturi unificate, tranzacții EVM în interiorul unei
 [ferestre de autorizare](/sdk/guides/evm#evm-window) și citiri SVM.
@@ -42,13 +42,13 @@ oprit de circuit breaker), încărcarea și instanțierea QoreChain Native pentr
 obișnuite (pe testnet, instanțierea este deschisă, iar încărcarea nu), fluxurile de
 autentificator / cont abstract pe mainnet (modul oprit acolo, activat pe testnet), xQORE
 și abstractizarea gazului. Fiecare ghid repetă avertismentul acolo unde se aplică.
-Verificat față de endpoint-urile live la 27 octombrie 2026.
+Verificat față de endpoint-urile live la 27 octombrie 2026; pe 4 noiembrie 2026 lista precompilărilor active a mainnet-ului era în continuare goală, în timp ce lista testnet-ului conținea și puntea cross-VM `0x…0901` (neretestată).
 
 SDK-ul publicat (0.10.0, 26 octombrie 2026) semnează în forma pe care o verifică
 ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul
 de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în
-v3.2.3, v3.2.4 sau v3.2.5 (mainnet-ul rulează v3.2.5 din 29 octombrie 2026;
-testnet-ul rulează v3.2.6, aplicată pe 27 octombrie). Poartă partea de client a regulilor post-cuantice ulterioare
+v3.2.3, v3.2.4, v3.2.5 sau v3.2.6 (mainnet-ul rulează v3.2.6 din 4 noiembrie 2026,
+înălțimea 4.020.000, propunerea de guvernanță 15; testnet-ul din 27 octombrie). Poartă partea de client a regulilor post-cuantice ulterioare
 (dovada de posesie la înregistrarea cheii, ferestre EVM cu domeniu restrâns,
 mesaje de consimțământ EIP-7702) și a lui v3.2.4 (niveluri de staking, nonce-ul
 autentificatorului, comutatoarele de funcționalități de protocol); versiunile anterioare lui 0.9.0

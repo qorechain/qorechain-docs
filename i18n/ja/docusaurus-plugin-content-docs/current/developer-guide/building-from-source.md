@@ -68,7 +68,7 @@ QoreChain は**オープンコア**モデルに従っています。
 
 どちらのビルドも同じ `qorechaind` バイナリ名を生成し、同一の CLI コマンドを公開します。違いは、それらのインターフェースの背後にある Keeper ロジックの実行時の動作にあります。
 
-[github.com/qorechain/qorechain-core](https://github.com/qorechain/qorechain-core) のタグ `v3.2.5` は、メインネットが稼働しているリリースのオープンコアのソースです。公開ビルドはスタブ Keeper を使用しており、コンセンサス状態を再現できないため、ノードはこのタグからビルドしたバイナリではなく、マニフェスト（[download.qore.host](https://download.qore.host/mainnet/latest.json) の `latest.json`）に記載されたリリースバンドルを使用する必要があります。
+[github.com/qorechain/qorechain-core](https://github.com/qorechain/qorechain-core) のタグ `v3.2.6` は、両ネットワークが稼働しているリリース（メインネットは2026年11月4日から、テストネットは2026年10月27日から）のオープンコアのソースです。公開ビルドはスタブ Keeper を使用しており、コンセンサス状態を再現できないため、ノードはこのタグからビルドしたバイナリではなく、マニフェスト（[download.qore.host](https://download.qore.host/mainnet/latest.json) の `latest.json`）に記載されたリリースバンドルを使用する必要があります。
 
 ## コミュニティ版ビルド
 

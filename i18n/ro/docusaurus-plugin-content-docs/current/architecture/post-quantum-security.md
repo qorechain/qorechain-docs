@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain este construit cu **criptografie post-cuantică (PQC) de la genesis** — nu adăugată ulterior ca actualizare. Modulul `x/pqc` oferă semnături digitale bazate pe rețele (lattice) și încapsulare de chei drept primitive criptografice principale, cu un cadru de agilitate a algoritmilor controlat prin guvernanță pentru reziliență pe termen lung.
 
-Baza completă PQC — **Dilithium-5 (semnături) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — este acum finalizată și reprezintă valoarea implicită a rețelei. Pe rețelele live (v3.2.x), semnăturile hibride sunt **obligatorii implicit** pe calea de tranzacții cosmos: `hybrid_signature_mode = required` și `allow_classical_fallback = false`. Fiecare tranzacție de pe calea cosmos trebuie să poarte o semnătură Dilithium-5 alături de semnătura sa clasică secp256k1; tranzacțiile exclusiv clasice de la un cont PQC sunt respinse, iar calea de retrogradare clasică este închisă. Mainnet rulează v3.2.4, iar testnet v3.2.6 (verificat la 27 octombrie 2026); ce au adăugat versiunile v3.2.2 și v3.2.3 la regulile post-cuantice (integritatea cheilor, dovada deținerii opțională, ferestre EVM cu domeniu limitat, consimțământul EIP-7702) este descris în [Reguli de integritate a cheilor](#key-integrity), [Dovada deținerii](#proof-of-possession) și [Delegările EIP-7702](#eip-7702).
+Baza completă PQC — **Dilithium-5 (semnături) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — este acum finalizată și reprezintă valoarea implicită a rețelei. Pe rețelele live (v3.2.x), semnăturile hibride sunt **obligatorii implicit** pe calea de tranzacții cosmos: `hybrid_signature_mode = required` și `allow_classical_fallback = false`. Fiecare tranzacție de pe calea cosmos trebuie să poarte o semnătură Dilithium-5 alături de semnătura sa clasică secp256k1; tranzacțiile exclusiv clasice de la un cont PQC sunt respinse, iar calea de retrogradare clasică este închisă. Ambele rețele rulează v3.2.6 (testnet-ul din 27 octombrie 2026, mainnet-ul din 4 noiembrie 2026; valorile au fost citite pe testnet la 27 octombrie și pe mainnet la 4 noiembrie 2026); ce au adăugat versiunile v3.2.2 și v3.2.3 la regulile post-cuantice (integritatea cheilor, dovada deținerii opțională, ferestre EVM cu domeniu limitat, consimțământul EIP-7702) este descris în [Reguli de integritate a cheilor](#key-integrity), [Dovada deținerii](#proof-of-possession) și [Delegările EIP-7702](#eip-7702).
 
 ## Principii de proiectare
 
@@ -284,7 +284,7 @@ Atestările de bridge sunt concepute să folosească semnături **Dilithium-5** 
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Algoritmul de semnătură implicit pentru noile înregistrări de chei |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Nivelul de impunere a semnăturii hibride la nivel de lanț         |
 
-Testnet-ul returnează aceleași valori (verificat la 27 octombrie 2026). Începând cu v3.2.6, testnet-ul le servește și prin REST la `GET /qorechain/pqc/v1/params`; pe mainnet această rută răspunde cu 501 (neimplementat), iar parametrii se citesc cu `qorechaind query pqc params`.
+Testnet-ul returnează aceleași valori (verificat la 27 octombrie 2026). Începând cu v3.2.6, ambele rețele le servesc și prin REST la `GET /qorechain/pqc/v1/params`: mainnet-ul a răspuns cu `200` la 4 noiembrie 2026, cu `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, Dilithium-5 ca algoritm implicit și modul hibrid `required`. Pe un nod mai vechi decât v3.2.6 citiți-i cu `qorechaind query pqc params`.
 
 ## Resurse conexe
 

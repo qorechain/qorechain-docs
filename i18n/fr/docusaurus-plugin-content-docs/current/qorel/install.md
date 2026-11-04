@@ -96,6 +96,8 @@ cosign verify ghcr.io/qorechain/qorel:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
+La copie Docker Hub porte la même signature ; la même commande la vérifie donc avec `liviuepure/qorel:0.1.0` à la place du nom `ghcr.io`.
+
 ### Depuis les sources {#from-source}
 
 ```bash
@@ -128,12 +130,13 @@ qorel --help
 | Miroir de téléchargement | `download.qore.host/qorel/v0.1.0/<file>`, `download.qore.host/qorel/latest/<file>`, `latest.json` | 0.1.0 | [download.qore.host/qorel/latest.json](https://download.qore.host/qorel/latest.json) |
 | Homebrew | `qorechain/tap/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` |
 | Registre de conteneurs | `ghcr.io/qorechain/qorel` | 0.1.0 | `docker pull ghcr.io/qorechain/qorel:0.1.0` |
+| Registre de conteneurs (Docker Hub) | `liviuepure/qorel` | 0.1.0 | `docker pull liviuepure/qorel:0.1.0` |
 | Sources | `ibc-relayer-cli`, binaire `qorel` | tag `qorel-v0.1.0` | [github.com/qorechain/QORel](https://github.com/qorechain/QORel) |
 
 ## Limites et problèmes connus {#limits}
 
 - **Pas de build Windows.** Utilisez le conteneur sous WSL2.
-- **Préversion, fichiers volumineux.** La version 0.1.0 est publiée comme préversion (pre-release) GitHub. Chaque fichier de la version pèse environ 110 MB, car les binaires ne sont pas encore allégés (strip). Il n'y a pas d'image Docker Hub ; utilisez l'image `ghcr.io` ci-dessus.
+- **Préversion, fichiers volumineux.** La version 0.1.0 est publiée comme préversion (pre-release) GitHub. Chaque fichier de la version pèse environ 110 MB, car les binaires ne sont pas encore allégés (strip). La même image est aussi sur Docker Hub sous le nom `liviuepure/qorel:0.1.0` (et `:latest`), dans l'espace de noms du mainteneur lui-même et non dans un espace `qorechain`.
 - **Épinglez la version.** Les commandes ci-dessus utilisent `0.1.0`. Utilisez la version que vous comptez exécuter plutôt que `latest`, et consultez la [page des versions](https://github.com/qorechain/QORel/releases) pour les plus récentes.
 - **Un processus par clé.** N'exécutez pas le service du paquet et un conteneur avec la même clé de relayeur ; deux processus qui signent avec la même clé se disputent les numéros de séquence du compte.
 - **Emplacement du magasin de clés.** Les paquets conservent les clés sous `/var/lib/qorel` ; le conteneur les lit dans le répertoire monté ; une installation par archive utilise `~/.hermes/keys` sauf si la configuration définit `key_store_folder`.

@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Interogările rulează pe nodul indicat de `--node`. Folosește un endpoint RPC mainnet **`qorechain-vladi`** pentru date live (de exemplu `--node https://rpc.qore.host:443`) sau un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) pentru testare. Valoarea implicită `tcp://localhost:26657` țintește un nod pe care îl rulezi tu însuți. Mainnet-ul rulează versiunea de nod v3.2.5 din 29 octombrie 2026 (aplicată la înălțimea 3.906.833 prin propunerea de guvernanță 14; v3.2.4 a fost aplicată la înălțimea 3.742.566 pe 23 octombrie 2026); testnet-ul rulează v3.2.6 (v3.2.4 din 19 octombrie 2026, v3.2.5 din 26 octombrie, v3.2.6 din 27 octombrie). Versiunea v3.2.4 adaugă câteva rute și comenzi (marcate **v3.2.4** mai jos): ele funcționează pe ambele rețele, iar un nod aflat încă pe o versiune mai veche le răspunde cu `Not Implemented`. Versiunea v3.2.6 adaugă două comenzi (marcate **v3.2.6**, doar pe testnet până când mainnet-ul o aplică). Comenzile de pe această pagină au fost verificate pe binarul de release v3.2.3, rulat pe `https://rpc.qore.host:443`; rutele v3.2.4 au fost verificate prin REST pe 23 octombrie 2026, iar comenzile v3.2.6 pe sursa v3.2.6.
+Interogările rulează pe nodul indicat de `--node`. Folosește un endpoint RPC mainnet **`qorechain-vladi`** pentru date live (de exemplu `--node https://rpc.qore.host:443`) sau un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) pentru testare. Valoarea implicită `tcp://localhost:26657` țintește un nod pe care îl rulezi tu însuți. Mainnet-ul rulează versiunea de nod v3.2.6 din 4 noiembrie 2026 (aplicată la înălțimea 4.020.000 prin propunerea de guvernanță 15; v3.2.5 a fost aplicată la înălțimea 3.906.833 pe 29 octombrie 2026, iar v3.2.4 la înălțimea 3.742.566 pe 23 octombrie 2026); testnet-ul rulează v3.2.6 din 27 octombrie 2026 (v3.2.4 din 19 octombrie 2026, v3.2.5 din 26 octombrie, v3.2.6 din 27 octombrie). Versiunea v3.2.4 adaugă câteva rute și comenzi (marcate **v3.2.4** mai jos): ele funcționează pe ambele rețele, iar un nod aflat încă pe o versiune mai veche le răspunde cu `Not Implemented`. Versiunea v3.2.6 adaugă două comenzi (marcate **v3.2.6**, pe ambele rețele). Comenzile de pe această pagină au fost verificate pe binarul de release v3.2.3, rulat pe `https://rpc.qore.host:443`; rutele v3.2.4 au fost verificate prin REST pe 23 octombrie 2026, iar comenzile v3.2.6 pe sursa v3.2.6; rutele REST corespunzătoare au fost verificate pe ambele rețele (mainnet pe 4 noiembrie 2026).
 :::
 
 Flag-urile comune se aplică fiecărei subcomenzi `query`:
@@ -171,7 +171,7 @@ qorechaind query qca config
 
 Nu există interogări de reputație per validator sau de clasificare a pool-urilor.
 
-`query reputation params` (REST `GET /qorechain/reputation/v1/params`) răspunde doar pe testnet. Pe mainnet ruta răspunde `Not Implemented` (verificat la 30 octombrie 2026, după v3.2.5), deci ajunge pe mainnet cu o versiune de lanț ulterioară.
+`query reputation params` (REST `GET /qorechain/reputation/v1/params`) răspunde pe ambele rețele începând cu v3.2.6 (verificat pe mainnet la 4 noiembrie 2026: `200`, cu `alpha` 0.3, `beta` 0.35, `gamma` 0.2, `delta` 0.15, `lambda` 1000 și `min_score` 0.1). Un nod mai vechi decât v3.2.6 răspunde `Not Implemented`.
 
 ---
 
@@ -274,11 +274,11 @@ qorechaind query rlconsensus observation
 qorechaind query rlconsensus reward
 qorechaind query rlconsensus params
 qorechaind query rlconsensus policy
-qorechaind query rlconsensus applied-params   # v3.2.6 (testnet)
-qorechaind query rlconsensus last-action      # v3.2.6 (testnet)
+qorechaind query rlconsensus applied-params   # v3.2.6
+qorechaind query rlconsensus last-action      # v3.2.6
 ```
 
-`agent-status` raportează modul, epoca și numărul de pași ai agentului; `policy` raportează epoca și numărul de ponderi ale politicii stocate (nu ponderile). **v3.2.6 (doar pe testnet până când mainnet-ul aplică acea versiune):** `applied-params` afișează valorile pe care agentul le consideră aplicate (timpul de bloc, pragul minim al prețului gazului, ponderile pool-urilor), iar `last-action` acțiunea propusă la ultimul său pas, care este înregistrată în orice mod, inclusiv în modul umbră, unde nu se aplică nimic. Toate acestea sunt servite și prin REST pe testnet (vezi [Modulul RL Consensus](/api-reference/rest-grpc-endpoints#rlconsensus-module)); față de un nod mainnet, cele două comenzi noi răspund `Not Implemented` până când mainnet-ul aplică acea versiune.
+`agent-status` raportează modul, epoca și numărul de pași ai agentului; `policy` raportează epoca și numărul de ponderi ale politicii stocate (nu ponderile). **v3.2.6 (ambele rețele):** `applied-params` afișează valorile pe care agentul le consideră aplicate (timpul de bloc, pragul minim al prețului gazului, ponderile pool-urilor), iar `last-action` acțiunea propusă la ultimul său pas, care este înregistrată în orice mod, inclusiv în modul umbră, unde nu se aplică nimic. Toate acestea sunt servite și prin REST pe ambele rețele (vezi [Modulul RL Consensus](/api-reference/rest-grpc-endpoints#rlconsensus-module)); față de un nod mai vechi decât v3.2.6, cele două comenzi noi răspund `Not Implemented`.
 
 ---
 
@@ -351,7 +351,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>` este modul de a citi când a intrat în vigoare un upgrade: pe mainnet `v3.2.2` a fost aplicat la înălțimea 3.556.788 și `v3.2.3` la înălțimea 3.662.051 și `v3.2.4` la înălțimea 3.742.566 și `v3.2.5` la înălțimea 3.906.833; pe testnet `v3.2.2` la 6.905.034, `v3.2.3` la 8.003.746, `v3.2.4` la 8.337.253, `v3.2.5` la 8.890.800 și `v3.2.6` la 8.970.638 (`0` înseamnă neaplicat; pe mainnet `v3.2.6` este `0` la momentul redactării). Lista circuit-breaker a mainnet-ului (`disabled-list`) conține în prezent mesajele de creare a conturilor de vesting, store și instantiate QoreChain Native, pauza și reluarea pool-urilor AMM, apelul cross-VM, actualizarea stării unui strat multilayer, depreciarea și dezactivarea algoritmilor PQC și mesajele de guvernanță a consensului PRISM; cea a testnet-ului conține doar mesajul QoreChain Native `MsgStoreCode` (verificat pe 27 octombrie 2026; instanțierea a fost permisă prin guvernanța testnet-ului).
+`query upgrade applied <name>` este modul de a citi când a intrat în vigoare un upgrade: pe mainnet `v3.2.2` a fost aplicat la înălțimea 3.556.788 și `v3.2.3` la înălțimea 3.662.051 și `v3.2.4` la înălțimea 3.742.566 `v3.2.5` la înălțimea 3.906.833 și `v3.2.6` la înălțimea 4.020.000; pe testnet `v3.2.2` la 6.905.034, `v3.2.3` la 8.003.746, `v3.2.4` la 8.337.253, `v3.2.5` la 8.890.800 și `v3.2.6` la 8.970.638 (`0` înseamnă neaplicat). Lista circuit-breaker a mainnet-ului (`disabled-list`) conține în prezent mesajele de creare a conturilor de vesting, store și instantiate QoreChain Native, pauza și reluarea pool-urilor AMM, apelul cross-VM, actualizarea stării unui strat multilayer, depreciarea și dezactivarea algoritmilor PQC și mesajele de guvernanță a consensului PRISM; cea a testnet-ului conține doar mesajul QoreChain Native `MsgStoreCode` (verificat pe 27 octombrie 2026; instanțierea a fost permisă prin guvernanța testnet-ului).
 
 ---
 

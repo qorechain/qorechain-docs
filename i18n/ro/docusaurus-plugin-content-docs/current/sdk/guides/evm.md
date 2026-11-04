@@ -262,8 +262,8 @@ exportate.
 > în nod, dar niciuna nu este activată pe mainnet (`qorechain-vladi`). Pe testnet
 > (`qorechain-diana`), lista `active_static_precompiles` conține `0x…0A01`
 > (verificare PQC), `0x…0A02` (starea cheii PQC) și `0x…0C01` (parametrii de
-> consens), verificat la 27 octombrie 2026; perechea AI (`0x…0B01`, `0x…0B02`) și
-> puntea cross-VM (`0x…0901`) nu sunt active pe niciuna dintre rețele. Un apel către
+> consens), verificat la 27 octombrie 2026; perechea AI (`0x…0B01`, `0x…0B02`) nu este activă pe niciuna dintre rețele, iar
+> puntea cross-VM (`0x…0901`) nu era activă pe niciuna pe 27 octombrie (pe 4 noiembrie lista testnet-ului o conținea și pe ea; nu a fost retestată). Un apel către
 > o adresă inactivă returnează date goale, deci acele helpere aruncă eroare. Vezi
 > [Precompile EVM: Starea rețelei](/developer-guide/evm-precompiles#network-status).
 

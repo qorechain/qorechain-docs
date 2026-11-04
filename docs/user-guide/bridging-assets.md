@@ -14,7 +14,7 @@ The bridge module is deployed on mainnet and testnet, but **no bridge route is a
 :::
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**, chain version **v3.2.6**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.5** (since 29 October 2026). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page once a route is activated. Status checked 27 October 2026: all 37 chain configurations are `pending` on both networks.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**, chain version **v3.2.6**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.6** (since 4 November 2026). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page once a route is activated. Status checked 27 October 2026: all 37 chain configurations are `pending` on both networks.
 :::
 
 ---
@@ -36,24 +36,24 @@ A complete enumeration of every chain configuration lives on the **Bridge Archit
 
 IBC is part of the design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), but **none of these counterparties is connected yet**: mainnet has no IBC channel or client, and the testnet has only a single ICS-20 test channel to a chain with ID `provider` (checked 27 October 2026), so there is nothing to transfer over for these chains. This page will list channels once they are opened.
 
-### IBC additions on the testnet (v3.2.6) {#ibc-testnet-v326}
+### IBC additions in v3.2.6 {#ibc-testnet-v326}
 
-Three IBC features exist on the testnet only; mainnet does not have them (its `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` route answers 501):
+Three IBC features arrived with v3.2.6: on the testnet since 27 October 2026, on mainnet since 4 November 2026, where governance proposal 15 enabled them as protocol features (the mainnet list at `/qorechain/pqc/v1/protocol_features` shows `ibc-rate-limit`, `ibc-packet-forward` and `ibc-wasm-light-client` as enabled, and `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` answers `200` with an empty list; checked 4 November 2026). Enabled does not mean in use: mainnet still has no IBC client or channel, and the settings below are set later by separate governance votes.
 
 * **IBC rate limit.** Governance can set a per-channel quota for IBC transfers (a whole percent of supply per window of hours). It is **not automatic**: no limits are set today, and an empty set means unlimited. A forwarded packet is charged on both channels and a refund returns the quota. This is separate from the bridge circuit breakers described under [Security Model](#security-model).
 * **Packet forwarding.** A transfer arriving over IBC v1 can carry a memo of the form `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` to be sent on to another chain, with refunds to the sender if a hop fails. There are no retries and a hop times out after 10 minutes by default. A token that converts to an ERC-20 on arrival cannot be forwarded.
 * **08-wasm light clients.** Storing, migrating and removing a wasm light-client binary are authority-only, and the allowed client types contain only the standard client until governance adds `08-wasm`.
 
-Read the limits with `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` on the testnet (`{"rate_limits":[]}` today).
+Read the limits with `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` (`{"rate_limits":[]}` today on both networks).
 
-**Which network has what (checked 27 October 2026).**
+**Which network has what (testnet checked 27 October 2026, mainnet 4 November 2026).**
 
-| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | ICS-20 transfer (IBC v1) | Built in, but no channel is open | Built in, one channel open |
-| IBC rate limit | Not available (501) | Available, no limits set |
-| Packet forwarding | Not available | Available (IBC v1 only) |
-| 08-wasm light clients | Not available | Message set present, no wasm client can be created until governance allows `08-wasm` |
+| IBC rate limit | Enabled, no limits set (query answers `200`, empty list) | Available, no limits set |
+| Packet forwarding | Enabled as a protocol feature; no channel to forward over | Available (IBC v1 only) |
+| 08-wasm light clients | Enabled as a protocol feature; checksum list empty, no wasm client until governance allows `08-wasm` | Message set present, no wasm client can be created until governance allows `08-wasm` |
 
 ### The test channel on the testnet {#ibc-test-channel}
 

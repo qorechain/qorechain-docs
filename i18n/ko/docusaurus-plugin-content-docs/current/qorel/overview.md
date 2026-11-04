@@ -41,7 +41,7 @@ QORel 0.1.0은 **테스트넷 전용**입니다. QoreChain 테스트넷 `qorecha
 
 ### 서드파티 릴레이어에 필요한 것 {#third-party}
 
-테스트넷은 `07-tendermint` 라이트 클라이언트 유형만 허용합니다(`/ibc/core/client/v1/params`가 `allowed_clients = ["07-tendermint"]`를 나열). 현재 `08-wasm` 클라이언트는 만들 수 없습니다. QoreChain으로 채널을 열려면 릴레이어에 다음이 필요합니다.
+테스트넷은 `07-tendermint` 라이트 클라이언트 유형만 허용합니다(`/ibc/core/client/v1/params`가 `allowed_clients = ["07-tendermint"]`를 나열). 현재 `08-wasm` 클라이언트는 만들 수 없습니다(v3.2.6이 08-wasm 라이트 클라이언트 코드를 연동한 뒤인 2026년 11월 4일에도 메인넷의 `allowed_clients` 목록은 같았습니다). QoreChain으로 채널을 열려면 릴레이어에 다음이 필요합니다.
 
 - 양쪽에 각각 `07-tendermint` 클라이언트
 - QoreChain 쪽에서는 ML-DSA-87 키가 등록된 릴레이어 계정이 모든 트랜잭션을 하이브리드로 서명할 것. QORel은 이를 수행하며, 기본 Hermes, Go 릴레이어(`rly`), ts-relayer는 거부됩니다.
@@ -90,7 +90,7 @@ qorel start
 
 ## 접근 방법 {#how-to-access}
 
-- **네트워크.** 테스트넷 `qorechain-diana`만 해당합니다(테스트넷은 v3.2.6 실행 중). 메인넷 `qorechain-vladi`에는 열려 있는 IBC 채널이 없습니다. 각 네트워크의 현황은 [자산 브리징](/user-guide/bridging-assets#ibc-testnet-v326)을 참고하세요.
+- **네트워크.** 테스트넷 `qorechain-diana`만 해당합니다(두 네트워크 모두 체인 v3.2.6 실행 중). 메인넷 `qorechain-vladi`에는 열려 있는 IBC 채널이 없습니다. 각 네트워크의 현황은 [자산 브리징](/user-guide/bridging-assets#ibc-testnet-v326)을 참고하세요.
 - **상대방.** `channel-600`을 통한 Cosmos Hub 공개 테스트넷(체인 ID `provider`). 다른 Cosmos SDK 체인도 예제 설정의 `provider` 항목과 같은 방식으로 동작합니다.
 - **엔드포인트.** QORel은 체인마다 컨센서스 RPC, WebSocket, gRPC 엔드포인트가 필요합니다. QoreChain 테스트넷에는 공개 RPC(`https://rpc-testnet.qore.host`)와 REST(`https://api-testnet.qore.host`)가 있지만 현재 공개 gRPC 엔드포인트는 없고 제공 예정도 없으므로, `qorechain-diana`용 서드파티 릴레이어는 자체 테스트넷 노드가 필요합니다([노드 운영](/developer-guide/running-a-node), [테스트넷 연결하기](/getting-started/connecting-to-testnet)). 릴레이어에 속도 제한을 거는 공개 엔드포인트는 짧은 테스트에는 쓸 수 있지만 꾸준한 릴레이에는 맞지 않습니다.
 - **계정.** 체인마다 수수료용 소액 잔액이 있는 전용 릴레이어 계정 하나. 테스트넷 QOR은 [대시보드 포셋](/dashboard/faucet)에서 받으며 가치가 없습니다. 밸리데이터 운영자 키는 절대 사용하지 마세요.

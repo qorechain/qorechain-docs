@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Mainnet yayında mı?
 
 Evet. Mainnet **yayında** (zincir kimliği `qorechain-vladi`, 7 Haziran 2026'dan beri
-canlı) zincir sürümü v3.2.5'i çalıştırıyor (29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı, yönetişim önerisi 14; v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı); testnet v3.2.6'yı çalıştırıyor (27 Ekim 2026'da uygulandı). Testnet hazır
+canlı) zincir sürümü v3.2.6'yı çalıştırıyor (4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı, yönetişim önerisi 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde ve v3.2.4 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı); testnet 27 Ekim 2026'dan beri v3.2.6'yı çalıştırıyor. Testnet hazır
 ayarı (`qorechain-diana`) da kullanılabilir durumda kalmaya devam eder. Her iki hazır
 ayar da localhost uç nokta varsayılanlarıyla gelir; ağı
 `createClient({ network: "mainnet" })` ile seçin ve `endpoints`'i kendi düğüm
@@ -54,7 +54,7 @@ değildir** ve testnet'te yalnızca üçü etkindir: yalnızca adresleri EVM mod
 `active_static_precompiles` parametresinde listelenmiş olduğu yerlerde yanıt
 verirler. Bu liste mainnet'te boştur; testnet'te PQC doğrulama (`0x…0A01`), PQC
 anahtar durumu (`0x…0A02`) ve konsensüs parametreleri (`0x…0C01`) precompile'larını
-içerir (27 Ekim 2026'da kontrol edildi); dolayısıyla AI çifti ve VM'ler arası köprü
+içerir (27 Ekim 2026'da kontrol edildi; 4 Kasım'da testnet listesi ayrıca VM'ler arası köprü `0x…0901` adresini de içeriyordu, bunu bu sayfa yeniden test etmedi ve mainnet'in listesi hâlâ boştu); dolayısıyla AI çifti
 orada hâlâ hiçbir şey yanıtlamaz. Bir precompile etkin olmadığında çağrı boş veri
 döndürür; bu yüzden viem `returned no data ("0x")` bildirir ve yardımcı fonksiyon
 hata fırlatır (bkz.
@@ -149,7 +149,7 @@ serileştiriyordu ve zincirin tx kod çözücüsü bunu CheckTx aşamasında red
 ## SDK hangi zincir sürümleriyle çalışır?
 
 SDK **0.10.0**, zincir **v3.2.4** için istemci sürümüdür (mainnet'te 23 Ekim 2026'dan beri,
-3.742.566 yüksekliğinde, yönetişim önerisi 13; testnet'te 19 Ekim'den beri). Mainnet 29 Ekim 2026'dan beri v3.2.5 çalıştırıyor; imzalama biçimi değişmedi, bu yüzden 0.10.0 orada çalışmaya devam eder. Staking katmanı
+3.742.566 yüksekliğinde, yönetişim önerisi 13; testnet'te 19 Ekim'den beri). Mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırıyor (v3.2.5, 29 Ekim'den); imzalama biçimi değişmedi, bu yüzden 0.10.0 orada çalışmaya devam eder. Staking katmanı
 oluşturucularını ve okumalarını, `fetchAuthNonce` işlevini ve protokol özelliği okumalarını
 ekler ([0.10.0'ın ekledikleri](/sdk/install#whats-new-0100) bölümüne bakın); bunlar, 0.9.0'ın
 v3.2.2 ve v3.2.3 için eklediklerinin üzerine gelir: kayıt sırasında isteğe bağlı sahiplik
@@ -159,8 +159,8 @@ SDK **0.8.1 veya daha yenisi** de her iki ağda işlem
 yapar (v2 hibrit sign-bytes biçimi, kayıt, hibrit gönderimler ve EVM penceresi
 değişmeden çalışır), ancak bu oluşturucuların hiçbirine sahip değildir: bunlar için
 CLI'yı kullanın (bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)). İmzalama biçimi
-v3.2.4 veya v3.2.5'te değişmedi. Testnet v3.2.6'yı çalıştırır (v3.2.5 orada 26 Ekim 2026'da, v3.2.6 ise
-27 Ekim'de uygulandı); SDK'nın v3.2.4'ten sonra getirilen hiçbir şey için oluşturucusu yoktur;
+v3.2.4, v3.2.5 veya v3.2.6'da değişmedi. Her iki ağ da v3.2.6 çalıştırır (testnet v3.2.5'i 26 Ekim 2026'da, v3.2.6'yı ise
+27 Ekim'de uyguladı; mainnet v3.2.5'i 29 Ekim'de ve v3.2.6'yı 4 Kasım'da uyguladı); SDK'nın v3.2.4'ten sonra getirilen hiçbir şey için oluşturucusu yoktur;
 bu yüzden v3.2.5 eklerinin (örneğin ML-KEM anahtar kayıt defteri ile yönetişimle yönetilen cross-VM ve sözleşme yolları) henüz bir SDK oluşturucusu yoktur ve bunlara CLI ile ulaşılır.
 
 ## PQC anahtar kaydım reddedildi ama ücret alındı

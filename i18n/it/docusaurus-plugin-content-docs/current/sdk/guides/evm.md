@@ -264,8 +264,8 @@ esportati.
 > compilati nel node ma nessuno è attivato sulla mainnet (`qorechain-vladi`).
 > Sulla testnet (`qorechain-diana`) l'elenco `active_static_precompiles` contiene
 > `0x…0A01` (verifica PQC), `0x…0A02` (stato chiave PQC) e `0x…0C01` (parametri di
-> consenso), verificato il 27 ottobre 2026; la coppia AI (`0x…0B01`, `0x…0B02`) e il
-> bridge cross-VM (`0x…0901`) non sono attivi su nessuna delle due reti. Una chiamata a un
+> consenso), verificato il 27 ottobre 2026; la coppia AI (`0x…0B01`, `0x…0B02`) non è attiva su nessuna delle due reti, e il
+> bridge cross-VM (`0x…0901`) non era attivo su nessuna delle due il 27 ottobre (il 4 novembre l'elenco della testnet lo conteneva anche; non ritestato). Una chiamata a un
 > indirizzo non attivo restituisce dati vuoti, quindi quegli helper generano un errore. Vedi
 > [Precompilati EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
 

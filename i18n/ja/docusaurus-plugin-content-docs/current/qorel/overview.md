@@ -41,7 +41,7 @@ QORel 0.1.0 は**テストネット専用**です。QoreChain テストネット
 
 ### サードパーティのリレイヤーに必要なもの {#third-party}
 
-テストネットが受け付けるライトクライアントのタイプは `07-tendermint` のみです（`/ibc/core/client/v1/params` は `allowed_clients = ["07-tendermint"]` を返します）。現時点では `08-wasm` クライアントは作成できません。QoreChain へのチャネルを開くには、リレイヤーに次のものが必要です。
+テストネットが受け付けるライトクライアントのタイプは `07-tendermint` のみです（`/ibc/core/client/v1/params` は `allowed_clients = ["07-tendermint"]` を返します）。現時点では `08-wasm` クライアントは作成できません（メインネットの `allowed_clients` のリストも、v3.2.6 が 08-wasm ライトクライアントのコードを組み込んだ後の2026年11月4日時点で同じでした）。QoreChain へのチャネルを開くには、リレイヤーに次のものが必要です。
 
 - 両側の `07-tendermint` クライアント
 - QoreChain 側では、ML-DSA-87 鍵が登録されているリレイヤーアカウントによる、ハイブリッド署名のトランザクション。QORel はこれを行います。標準の Hermes、Go リレイヤー（`rly`）、ts-relayer は拒否されます。
@@ -90,7 +90,7 @@ qorel start
 
 ## アクセス方法 {#how-to-access}
 
-- **ネットワーク。** テストネット `qorechain-diana` のみ（テストネットは v3.2.6 で動作しています）。メインネット `qorechain-vladi` には、開かれた IBC チャネルがありません。各ネットワークの状況は[アセットのブリッジ](/user-guide/bridging-assets#ibc-testnet-v326)を参照してください。
+- **ネットワーク。** テストネット `qorechain-diana` のみ（両ネットワークともチェーン v3.2.6 で動作しています）。メインネット `qorechain-vladi` には、開かれた IBC チャネルがありません。各ネットワークの状況は[アセットのブリッジ](/user-guide/bridging-assets#ibc-testnet-v326)を参照してください。
 - **カウンターパーティ。** Cosmos Hub 公開テストネット（チェーン ID `provider`）、`channel-600` 経由。他の Cosmos SDK チェーンも、サンプル設定の `provider` エントリと同じ方法で動作します。
 - **エンドポイント。** QORel には、各チェーンについて、コンセンサス RPC、WebSocket、gRPC エンドポイントが必要です。QoreChain テストネットには公開 RPC（`https://rpc-testnet.qore.host`）と REST（`https://api-testnet.qore.host`）がありますが、現時点で公開 gRPC エンドポイントはなく、提供の予定もありません。そのため、`qorechain-diana` 向けのサードパーティのリレイヤーには、ご自身のテストネットノードが必要です（[ノードの運用](/developer-guide/running-a-node)、[テストネットへの接続](/getting-started/connecting-to-testnet)）。リレイヤーにレート制限をかける公開エンドポイントは、短いテストには使えますが、継続的なリレーには使えません。
 - **アカウント。** 各チェーンに、手数料用の少額の残高を持つ専用のリレイヤーアカウントを 1 つ用意します。テストネット QOR は[ダッシュボードのファウセット](/dashboard/faucet)から入手できます。価値はありません。バリデーターのオペレーター鍵は絶対に使わないでください。

@@ -40,7 +40,7 @@ seçeneği alır (`"auto"` | `"v1"` | `"v2"`); `"auto"` ağa sorar ve bu nedenle
 `qorechain-vladi` / `qorechain-diana` üzerinde REST uç noktasına (`rest`) ihtiyaç
 duyar: tahmin etmek yerine hata fırlatır. Bkz.
 [Hangi sign-bytes biçimi?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-Biçim, zincir v3.2.3 veya v3.2.4 ile değişmedi (v3.2.4 test ağında 19 Ekim 2026'dan beri, mainnet'te 23 Ekim 2026'dan beri çalışır; v3.2.5 burada hiçbir şeyi değiştirmedi ve mainnet'te 29 Ekim 2026'dan beri çalışır): `"auto"` her
+Biçim, zincir v3.2.3 veya v3.2.4 ile değişmedi (v3.2.4 test ağında 19 Ekim 2026'dan beri, mainnet'te 23 Ekim 2026'dan beri çalışır; v3.2.5 ve v3.2.6 burada hiçbir şeyi değiştirmedi; mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırır): `"auto"` her
 iki ağda da v2'ye çözümlenir, çünkü ikisi de v2'ye geçiren yükseltmeyi uyguladı.
 :::
 
@@ -51,8 +51,8 @@ bunu 19 Ekim'de 8.337.253 yüksekliğinde uyguladı) zincir **v3.2.4** için ist
 sürümüdür. İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler
 değişmedi ve 0.9.0 ile oluşturulmuş bir işlem geçerli kalır. Sürüm, her dilde testnet
 üzerinde gerçek işlemlerle kontrol edildi. v3.2.4'ten sonra getirilen hiçbir şey için
-oluşturucuları yoktur. Mainnet 29 Ekim 2026'dan beri v3.2.5 çalıştırır (yükseklik 3.906.833, yönetişim önerisi 14) ve imzalama biçimi değişmediği için 0.10.0 orada çalışmaya devam eder; v3.2.5 eklerinin henüz bir SDK oluşturucusu yoktur. Testnet v3.2.6'ya geçti (v3.2.5 ve
-v3.2.6 orada 26 ve 27 Ekim 2026'da uygulandı). 0.10.0'daki yenilikler:
+oluşturucuları yoktur. Mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırır (yükseklik 4.020.000, yönetişim önerisi 15; öncesinde v3.2.5, 29 Ekim'den beri, yükseklik 3.906.833) ve imzalama biçimi değişmediği için 0.10.0 orada çalışmaya devam eder; v3.2.5 ve v3.2.6 eklerinin henüz bir SDK oluşturucusu yoktur. Testnet v3.2.5 ve
+v3.2.6'yı 26 ve 27 Ekim 2026'da uyguladı. 0.10.0'daki yenilikler:
 
 | Alan | 0.10.0'da |
 | --- | --- |
@@ -71,7 +71,7 @@ v3.2.6 orada 26 ve 27 Ekim 2026'da uygulandı). 0.10.0'daki yenilikler:
 ## 0.9.0 neler ekledi {#whats-new-090}
 
 SDK 0.9.0, zincir **v3.2.2** ve **v3.2.3** için istemci sürümüydü (mainnet
-bunları 3.556.788 ve 3.662.051 yüksekliklerinde uyguladı; mainnet v3.2.4'ü 23 Ekim 2026'dan itibaren (yükseklik 3.742.566) çalıştırdı ve 29 Ekim 2026'dan beri v3.2.5 çalıştırır, testnet ise 19 Ekim 2026'dan beri v3.2.4 veya üstünü çalıştırır). İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler
+bunları 3.556.788 ve 3.662.051 yüksekliklerinde uyguladı; mainnet v3.2.4'ü 23 Ekim 2026'dan itibaren (yükseklik 3.742.566) çalıştırdı, 29 Ekim'den itibaren v3.2.5'i çalıştırdı ve 4 Kasım 2026'dan beri v3.2.6 çalıştırır, testnet ise 19 Ekim 2026'dan beri v3.2.4 veya üstünü çalıştırır). İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler
 değişmedi; dolayısıyla 0.8.1 ve sonrasının imzaladığı v2 hibrit sign-bytes biçimi
 hâlâ doğru olandır. Yenilikler:
 

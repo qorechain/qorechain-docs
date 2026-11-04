@@ -259,8 +259,8 @@ exportiert.
 > Node einkompiliert, aber keines ist im Mainnet (`qorechain-vladi`) aktiviert.
 > Im Testnet (`qorechain-diana`) enthält die Liste `active_static_precompiles`
 > `0x…0A01` (PQC verify), `0x…0A02` (PQC key status) und `0x…0C01` (consensus
-> params), geprüft am 27. Oktober 2026; das KI-Paar (`0x…0B01`, `0x…0B02`) und die
-> Cross-VM-Bridge (`0x…0901`) sind in keinem der beiden Netzwerke aktiv. Ein Aufruf
+> params), geprüft am 27. Oktober 2026; das KI-Paar (`0x…0B01`, `0x…0B02`) ist in keinem der beiden Netzwerke aktiv, und die
+> Cross-VM-Bridge (`0x…0901`) war es am 27. Oktober in keinem von beiden (am 4. November enthielt die Testnet-Liste sie auch; nicht erneut getestet). Ein Aufruf
 > an eine inaktive Adresse liefert leere Daten zurück, sodass diese Helfer Fehler
 > werfen. Siehe
 > [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).

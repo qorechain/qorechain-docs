@@ -96,6 +96,8 @@ cosign verify ghcr.io/qorechain/qorel:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
+The Docker Hub copy carries the same signature, so the same command verifies it with `liviuepure/qorel:0.1.0` in place of the `ghcr.io` name.
+
 ### From source {#from-source}
 
 ```bash
@@ -128,12 +130,13 @@ qorel --help
 | Download mirror | `download.qore.host/qorel/v0.1.0/<file>`, `download.qore.host/qorel/latest/<file>`, `latest.json` | 0.1.0 | [download.qore.host/qorel/latest.json](https://download.qore.host/qorel/latest.json) |
 | Homebrew | `qorechain/tap/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` |
 | Container registry | `ghcr.io/qorechain/qorel` | 0.1.0 | `docker pull ghcr.io/qorechain/qorel:0.1.0` |
+| Container registry (Docker Hub) | `liviuepure/qorel` | 0.1.0 | `docker pull liviuepure/qorel:0.1.0` |
 | Source | `ibc-relayer-cli`, binary `qorel` | tag `qorel-v0.1.0` | [github.com/qorechain/QORel](https://github.com/qorechain/QORel) |
 
 ## Limits and known issues {#limits}
 
 - **No Windows build.** Use the container under WSL2.
-- **Pre-release, large files.** Version 0.1.0 is published as a GitHub pre-release. Each release file is about 110 MB, because the binaries are not stripped yet. There is no Docker Hub image; use the `ghcr.io` image above.
+- **Pre-release, large files.** Version 0.1.0 is published as a GitHub pre-release. Each release file is about 110 MB, because the binaries are not stripped yet. The same image is also on Docker Hub as `liviuepure/qorel:0.1.0` (and `:latest`), under the maintainer's own namespace rather than a `qorechain` one.
 - **Pin the version.** The commands above use `0.1.0`. Use the version you intend to run rather than `latest`, and read the [release page](https://github.com/qorechain/QORel/releases) for newer ones.
 - **One process per key.** Do not run the package service and a container with the same relayer key; two processes signing with the same key fight over account sequences.
 - **Key store location.** The packages keep keys under `/var/lib/qorel`; the container reads them from the mounted directory; a tarball install uses `~/.hermes/keys` unless the config sets `key_store_folder`.

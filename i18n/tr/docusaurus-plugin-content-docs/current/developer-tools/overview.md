@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain, geliştirici araçlarını genel kayıt defterlerinde (npm, PyPI, crates.io, Go modül proxy'si, Maven Central ve Swift Package Manager) küçük paketler olarak yayınlar. Bu sayfa dizindir: her paketin ne işe yaradığı, tam kayıt defteri adı, dili, güncel sürümü, kurulum komutu ve durumu ile nasıl kullanılacağını nerede okuyacağınız. QoreChain üzerinde dApp, cüzdan, arka uç ve rollup geliştiren ve bir kılavuzu okumadan önce doğru paketi seçmek isteyen geliştiriciler içindir.
 
-Tablolardaki sürümler 27 Ekim 2026 tarihinde kayıt defterlerinden okunmuştur. Mainnet `qorechain-vladi` v3.2.5 (29 Ekim 2026'da uygulandı), testnet `qorechain-diana` ise v3.2.6 çalıştırır. Yayınlanmış olarak listelenen her paket Apache-2.0 lisanslıdır.
+Tablolardaki sürümler 27 Ekim 2026 tarihinde kayıt defterlerinden okunmuştur. Her iki ağ da v3.2.6 çalıştırır: mainnet `qorechain-vladi` bunu 4 Kasım 2026'da uyguladı (v3.2.5, 29 Ekim'de), testnet `qorechain-diana` ise 27 Ekim'de. Yayınlanmış olarak listelenen her paket Apache-2.0 lisanslıdır.
 
 ## Yenilikler {#innovations}
 
@@ -298,9 +298,9 @@ Kapsamlı (scoped) bir npm adı için `@` işaretini koruyun, örneğin `https:/
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
-- **İki canlı ağ, farklı sürümler.** Mainnet v3.2.5 (29 Ekim 2026'dan beri), testnet v3.2.6 çalıştırır. Yalnızca testnet'te bulunan bir özellik (v3.2.6 öğeleri, EVM PQC precompile'ları) kendi sayfasında işaretlenir.
+- **İki canlı ağ, tek zincir sürümü.** İkisi de v3.2.6 çalıştırır (mainnet 4 Kasım 2026'dan, testnet 27 Ekim'den beri). Yalnızca testnet'te bulunan bir özellik (örneğin EVM PQC precompile'ları) kendi sayfasında işaretlenir.
 - **Henüz canlı değil:** npm üzerinde `@qorechain/qoreseal`, PyPI ve npm üzerinde Asset Kit (ve planlanmamış bir öneri olan yerel modülleri), npm üzerinde SDK 0.11.0 (zincir geliştirici kiti), SVM işlemleri ve mainnet üzerindeki EVM precompile'ları (yalnızca testnet'te etkindir; ray ray liste için [SDK genel bakış](/sdk/overview) sayfasına bakın).
-- **QoreSeal kayıt defteri ve PQ hafif istemci.** Zincirden okunan bir adrese şifrelemek, testnet'te canlı olan KEM anahtar kayıt defterini gerektirir; okuma rotası v3.2.5'ten beri mainnet'te yanıt verir. PQ hafif istemci iki ağdan hiçbirine bağlanmaz; kontrol noktaları için planlanmış bir zincir desteği yoktur.
+- **QoreSeal kayıt defteri ve PQ hafif istemci.** Zincirden okunan bir adrese şifrelemek, testnet'te canlı olan KEM anahtar kayıt defterini gerektirir; okuma rotası v3.2.5'ten beri mainnet'te yanıt verir (4 Kasım 2026'da yeniden kontrol edildi). PQ hafif istemci iki ağdan hiçbirine bağlanmaz; kontrol noktaları için planlanmış bir zincir desteği yoktur.
 - **Kotlin 2.3 veya daha yeni.** QoreSign ve QoreSeal Kotlin ile Android yapıtları Kotlin 2.3 veya daha yeni derleyiciyi gerektirir; Kotlin 2.1 bunlara karşı derlenemez.
 - **Windows wheel'i yok.** QoreSign ve QoreSeal Python paketlerinin yalnızca macOS ve Linux için wheel'leri vardır; diğer platformlar, Rust gerektiren kaynak dağıtımından derlenir.
 - **Çalıştırılmayan örnekler:** 34 hızlı başlangıç girdisinden 31'i 27 Ekim 2026'da çalıştı ve geçti. QoreSign Python örneği paket yayınlandıktan sonra çalıştırıldı (macOS arm64 ve Linux aarch64) ve QoreSign Android örneği bir cihazda çalıştırılmadı. Cüzdan adaptörü, chain bridge ve handle'ların hızlı başlangıcı yoktur; bu nedenle bu kılavuzdaki örnekleri paket tür tanımlarından ve kaynaktan gelir ve uçtan uca çalıştırılmamıştır.

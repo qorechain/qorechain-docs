@@ -11,7 +11,7 @@ Domande generali su QoreChain, con risposte tratte dalla documentazione. Ogni ri
 
 ### La mainnet è attiva?
 
-Sì. La mainnet di QoreChain (chain `qorechain-vladi`, EVM chain ID 9801) è attiva dal 7 giugno 2026 ed esegue la release v3.2.5 (applicata all'altezza 3.906.833 il 29 ottobre 2026 dalla proposta di governance 14; la v3.2.4 era stata applicata all'altezza 3.742.566 il 23 ottobre 2026 dalla proposta 13); la testnet, `qorechain-diana`, esegue la v3.2.6 (applicata all'altezza 8.970.638 il 27 ottobre 2026). Vedi [Reti](/appendix/networks) e [Connessione alla mainnet](/getting-started/connecting-to-mainnet).
+Sì. La mainnet di QoreChain (chain `qorechain-vladi`, EVM chain ID 9801) è attiva dal 7 giugno 2026 ed esegue la release v3.2.6 (applicata all'altezza 4.020.000 il 4 novembre 2026 dalla proposta di governance 15; la v3.2.5 era stata applicata all'altezza 3.906.833 il 29 ottobre 2026 dalla proposta 14); la testnet, `qorechain-diana`, esegue la v3.2.6 dal 27 ottobre 2026 (altezza 8.970.638). Vedi [Reti](/appendix/networks) e [Connessione alla mainnet](/getting-started/connecting-to-mainnet).
 
 ### Quali sono i chain ID e gli EVM chain ID?
 

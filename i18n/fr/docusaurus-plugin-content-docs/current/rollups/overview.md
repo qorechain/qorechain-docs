@@ -12,7 +12,7 @@ Le **Rollup Development Kit (RDK)** de QoreChain est un ensemble de bibliothèqu
 :::caution Capacité à un stade précoce
 Le RDK est déployé sur les deux réseaux, mais **aucun rollup n'a encore été créé sur l'un ou l'autre** (vérifié le 27 octobre 2026), de sorte que les flux décrits dans cette section n'ont pas été éprouvés par des tiers. **Le règlement ZK (le profil `defi`, le modèle `defi-rollup` et tout rollup `zk`) ne peut encore être utilisé sur aucun des deux réseaux :** la chaîne n'a aucun moyen d'enregistrer une clé de vérification, de sorte que chaque batch ZK est refusé après le paiement de ses frais. L'enregistrement des clés est prévu pour la version de chaîne v3.2.7. Utilisez le règlement `optimistic` d'ici là.
 
-Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, en service depuis le 7 juin 2026) exécute la version de chaîne **v3.2.5** (la proposition de gouvernance 14 l'a appliquée à la hauteur 3 906 833 le 29 octobre 2026 ; la v3.2.4 avait été appliquée à la hauteur 3 742 566 le 23 octobre 2026, proposition 13) ; le testnet (**`qorechain-diana`**, EVM chain ID **9800**) exécute la **v3.2.6** (la v3.2.4 l'a atteint le 19 octobre 2026, la v3.2.5 le 26 octobre et la v3.2.6 le 27 octobre). Ce que la v3.2.5 change pour les rollups est énuméré sous [comportement de la chaîne v3.2.5](#v325) ; cela s'applique aux deux réseaux. Lorsque le comportement a changé entre la v3.2.3 et la v3.2.4, cette section indique quelle version s'applique. Validez chaque déploiement d'abord sur le testnet, et lisez les notes d'état de chaque page : plusieurs capacités (vérification ZK, disponibilité des données Celestia, QCAI Copilot, appels cross-VM, reçus de règlement) ne sont pas utilisables de bout en bout aujourd'hui.
+Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, en service depuis le 7 juin 2026) exécute la version de chaîne **v3.2.6** (la proposition de gouvernance 15 l'a appliquée à la hauteur 4 020 000 le 4 novembre 2026 ; la v3.2.5 avait été appliquée à la hauteur 3 906 833 le 29 octobre 2026 par la proposition 14, et la v3.2.4 à la hauteur 3 742 566 le 23 octobre 2026, proposition 13) ; le testnet (**`qorechain-diana`**, EVM chain ID **9800**) exécute la **v3.2.6** depuis le 27 octobre (la v3.2.4 l'a atteint le 19 octobre 2026, la v3.2.5 le 26 octobre et la v3.2.6 le 27 octobre). Ce que la v3.2.5 change pour les rollups est énuméré sous [comportement de la chaîne v3.2.5](#v325) ; cela s'applique aux deux réseaux. Lorsque le comportement a changé entre la v3.2.3 et la v3.2.4, cette section indique quelle version s'applique. Validez chaque déploiement d'abord sur le testnet, et lisez les notes d'état de chaque page : plusieurs capacités (vérification ZK, disponibilité des données Celestia, QCAI Copilot, appels cross-VM, reçus de règlement) ne sont pas utilisables de bout en bout aujourd'hui.
 :::
 
 ## Innovations {#innovations}
@@ -191,7 +191,7 @@ Les modèles sont `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-roll
 
 | Réseau | Identifiant de chaîne | EVM chain ID | Point de terminaison REST | Version de la chaîne |
 | ------- | -------- | ------------ | ------------- | ------------- |
-| Mainnet | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.5 |
+| Mainnet | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.6 |
 | Testnet | `qorechain-diana` | 9800 | `https://api-testnet.qore.host` | v3.2.6 |
 
 Les deux réseaux servent les requêtes RDK (`/qorechain/rdk/v1/...`) via REST, gRPC et la CLI, de sorte que des lectures comme `rdk.params()` fonctionnent face à l'un comme à l'autre. Le testnet est un réseau de préproduction avec ses propres paramètres : la fenêtre de contestation par défaut est de 3 600 secondes sur le testnet et de 604 800 sur le mainnet, 200 rollups au plus peuvent exister sur le testnet et 100 sur le mainnet, et le module multilayer autorise 64 couches sidechain sur le testnet et 10 sur le mainnet (vérifié le 27 octobre 2026). Lisez `GET /qorechain/rdk/v1/params` sur le réseau que vous visez.
@@ -211,7 +211,7 @@ La lecture de l'état n'exige rien de tout cela. Vous pouvez aussi demander un r
 
 ### Comportement de la chaîne v3.2.5 : en service sur les deux réseaux {#v325}
 
-La v3.2.5 de la chaîne est en service sur le mainnet (appliquée à la hauteur 3 906 833 le 29 octobre 2026, proposition de gouvernance 14) et sur le testnet (depuis le 26 octobre 2026). Le testnet exécute la v3.2.6, qui l'inclut. Le RDK 0.7.0 et ultérieur prennent en charge les deux. Ces règles s'appliquent aux deux réseaux ; aucun rollup n'a encore été créé sur le mainnet (`GET /qorechain/rdk/v1/rollups` renvoie une liste vide, vérifié le 30 octobre 2026), de sorte que les règles ci-dessous sont celles de la version et n'ont pas encore été exercées par un rollup mainnet en service. Pour un développeur de rollup :
+La v3.2.5 de la chaîne est en service sur le mainnet (appliquée à la hauteur 3 906 833 le 29 octobre 2026, proposition de gouvernance 14) et sur le testnet (depuis le 26 octobre 2026). Les deux réseaux exécutent désormais la v3.2.6, qui l'inclut. Le RDK 0.7.0 et ultérieur prennent en charge les deux. Ces règles s'appliquent aux deux réseaux ; aucun rollup n'a encore été créé sur le mainnet (`GET /qorechain/rdk/v1/rollups` a renvoyé une liste vide le 4 novembre 2026), de sorte que les règles ci-dessous sont celles de la version et n'ont pas encore été exercées par un rollup mainnet en service. Pour un développeur de rollup :
 
 | Comportement | Les deux réseaux (v3.2.5 et ultérieure) |
 | --------- | -------------------------------- |
@@ -221,10 +221,10 @@ La v3.2.5 de la chaîne est en service sur le mainnet (appliquée à la hauteur 
 | Batches optimistes en attente | 4 096 au plus par rollup |
 | Arrêt d'un rollup | Refusé tant que le dernier batch est `submitted` ou `challenged` ; un rollup arrêté libère son emplacement |
 | `withdrawals_root` | Vide ou exactement 32 octets ; les feuilles de retrait de seconde forme désignent l'identifiant de chaîne |
-| Pont cross-VM | `GET /qorechain/crossvm/v1/params` sert la liste d'autorisation (`bridge_allowed_targets`, vide sur les deux réseaux, vérifié le 30 octobre 2026) ; le précompilé renvoie `abi.encode(bytes)` et refuse avec `Error(string)` |
+| Pont cross-VM | `GET /qorechain/crossvm/v1/params` sert la liste d'autorisation (`bridge_allowed_targets` : vide sur le mainnet, revérifié le 4 novembre 2026 ; sur le testnet, elle était vide le 30 octobre et contenait trois cibles CosmWasm le 4 novembre) ; le précompilé renvoie `abi.encode(bytes)` et refuse avec `Error(string)` |
 | Précompilé cross-VM `0x...0901` | Toujours inactif |
 
-Ce qui reste propre au testnet est la v3.2.6 (par exemple la limite de débit IBC, le transfert de paquets et les messages 08-wasm) ; rien de cela ne change la façon dont un rollup règle.
+La v3.2.6 de la chaîne est en service sur les deux réseaux (mainnet depuis le 4 novembre 2026, hauteur 4 020 000, proposition 15). Pour les rollups, la version ajoute `withdrawals_bound` à la vue d'un batch (indique si les retraits d'un batch lui sont liés) ; elle ajoute aussi des changements IBC et d'observabilité qui ne changent pas la façon dont un rollup règle. Aucun rollup mainnet n'existe pour montrer ce nouveau champ : il est donc énoncé d'après les notes de version, et non observé.
 
 ### Ce qui existe aujourd'hui {#what-exists-today}
 

@@ -21,7 +21,7 @@ QCAI (QoreChain AI) motoru üç katmanda çalışır:
 
 Konsensüs seviyesi ayrı olarak [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine) sayfasında belgelenmiştir. Bu sayfa ağ ve uygulama seviyelerini kapsar.
 
-:::note Canlı ağlarda neler uygulanıyor (23 Ekim 2026'da kontrol edildi, ana ağ ve test ağı o zaman ikisi de v3.2.4'teydi; test ağı o tarihten sonra v3.2.6'ya, ana ağ ise v3.2.5'e geçti)
+:::note Canlı ağlarda neler uygulanıyor (23 Ekim 2026'da kontrol edildi, ana ağ ve test ağı o zaman ikisi de v3.2.4'teydi; test ağı o tarihten sonra 27 Ekim 2026'da v3.2.6'ya, ana ağ ise 4 Kasım 2026'da v3.2.6'ya geçti)
 `x/ai` modülünün iki parçası bugün işlemler üzerinde etkilidir; hem Cosmos hattında hem de EVM hattında:
 
 * **Gönderen başına hız sınırı**. Canlı sınır **gönderen başına dakikada 600 işlemdir** (`max_tx_per_minute`; EVM hattının kendi isteğe bağlı sınırı vardır, ancak ayarlanmamıştır, bu yüzden aynı değer geçerlidir). "Dakika", duvar saati süresiyle değil, sabit bir blok penceresi üzerinden sayılır, çünkü blok yüksekliği her doğrulayıcının paylaştığı tek saattir. Sınıra ulaşan bir gönderenin daha eski işlemleri pencereden çıkana kadar sonraki işlemleri reddedilir. Sınır, Cosmos hattında v3.2.0'dan beri, her iki hatta ise v3.2.2'den beri uygulanmaktadır.
@@ -177,7 +177,7 @@ Yan bileşen, derin öğrenme iş yüklerinin konsensüs açısından kritik yü
 | `aiAnomalyCheck` | `0x0B02` | Bir işlem için boolean bir anomali bayrağı ve güven skoru döndürür |
 
 :::warning Henüz etkin değil
-Bu iki önderlemeli sözleşme ana ağda (`qorechain-vladi`) veya test ağında (`qorechain-diana`) **etkin değildir** (27 Ekim 2026'da kontrol edildi); bir çağrı boş veri döndürür. (Diğer üç QoreChain önderlemeli sözleşmesi, yani kuantum-sonrası çift ve PRISM parametreleri, yalnızca test ağında etkindir.) Yalnızca salt okunur, sabit noktalı bir puanlama yoluna kavuştuktan sonra etkinleştirilecekler. Bkz. [EVM Önderlemeli Sözleşmeleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+Bu iki önderlemeli sözleşme ana ağda (`qorechain-vladi`) veya test ağında (`qorechain-diana`) **etkin değildir** (27 Ekim 2026'da kontrol edildi); bir çağrı boş veri döndürür. (Diğer üç QoreChain önderlemeli sözleşmesi, yani kuantum-sonrası çift ve PRISM parametreleri, yalnızca test ağında etkindir: 4 Kasım 2026'da ana ağın `active_static_precompiles` listesi hâlâ boştu ve PRISM parametreleri adresine yapılan bir çağrı boş veri döndürdü.) Yalnızca salt okunur, sabit noktalı bir puanlama yoluna kavuştuktan sonra etkinleştirilecekler. Bkz. [EVM Önderlemeli Sözleşmeleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 :::
 
 **Önemli**: EVM önderlemeli sözleşmeler **yalnızca deterministik sezgisel motoru** kullanır. Asla yan bileşeni çağırmazlar, böylece tüm EVM yürütmesinin tamamen deterministik ve yeniden üretilebilir kalmasını sağlarlar. v3.2.3'ten itibaren anomali kontrolü önderlemeli sözleşmesi bir işlemi durum yazmadan analiz eder; o sürümdeki diğer önderlemeli sözleşme sağlamlaştırmaları (CrossVM köprüsünün `STATICCALL` çağrısını reddetmesi, iç içe çağrısını çağıran çerçevenin gas'ından ölçmesi ve yalnızca izin listesindeki QoreChain Native hedeflerine ulaşması) CrossVM önderlemeli sözleşmesi etkinleştirildiğinde geçerli olur. 27 Ekim 2026 itibarıyla `active_static_precompiles` listesi ana ağda boştur; test ağında üç girdi içerir (PQC Verify `0x…0A01`, PQC Key Status `0x…0A02` ve PRISM Consensus Params `0x…0C01`), hiçbiri bir yapay zeka önderlemeli sözleşmesi değildir.

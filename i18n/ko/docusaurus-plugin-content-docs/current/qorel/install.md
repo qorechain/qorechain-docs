@@ -96,6 +96,8 @@ cosign verify ghcr.io/qorechain/qorel:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
+Docker Hub 사본도 같은 서명을 가지므로, `ghcr.io` 이름 대신 `liviuepure/qorel:0.1.0`을 넣어 같은 명령으로 검증할 수 있습니다.
+
 ### 소스에서 빌드 {#from-source}
 
 ```bash
@@ -128,12 +130,13 @@ qorel --help
 | 다운로드 미러 | `download.qore.host/qorel/v0.1.0/<file>`, `download.qore.host/qorel/latest/<file>`, `latest.json` | 0.1.0 | [download.qore.host/qorel/latest.json](https://download.qore.host/qorel/latest.json) |
 | Homebrew | `qorechain/tap/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` |
 | 컨테이너 레지스트리 | `ghcr.io/qorechain/qorel` | 0.1.0 | `docker pull ghcr.io/qorechain/qorel:0.1.0` |
+| 컨테이너 레지스트리(Docker Hub) | `liviuepure/qorel` | 0.1.0 | `docker pull liviuepure/qorel:0.1.0` |
 | 소스 | `ibc-relayer-cli`, 바이너리 `qorel` | 태그 `qorel-v0.1.0` | [github.com/qorechain/QORel](https://github.com/qorechain/QORel) |
 
 ## 한계와 알려진 문제 {#limits}
 
 - **Windows 빌드 없음.** WSL2에서 컨테이너를 사용하세요.
-- **프리릴리스, 큰 파일.** 버전 0.1.0은 GitHub 프리릴리스로 게시됩니다. 바이너리가 아직 strip되지 않았기 때문에 릴리스 파일은 각각 약 110 MB입니다. Docker Hub 이미지는 없으니 위의 `ghcr.io` 이미지를 사용하세요.
+- **프리릴리스, 큰 파일.** 버전 0.1.0은 GitHub 프리릴리스로 게시됩니다. 바이너리가 아직 strip되지 않았기 때문에 릴리스 파일은 각각 약 110 MB입니다. 같은 이미지가 Docker Hub에도 `liviuepure/qorel:0.1.0`(및 `:latest`)로 있으며, `qorechain` 네임스페이스가 아닌 메인테이너 본인의 네임스페이스에 있습니다.
 - **버전 고정.** 위 명령은 `0.1.0`을 사용합니다. `latest` 대신 실행하려는 버전을 사용하고, 더 새로운 버전은 [릴리스 페이지](https://github.com/qorechain/QORel/releases)에서 확인하세요.
 - **키당 프로세스 하나.** 같은 릴레이어 키로 패키지 서비스와 컨테이너를 함께 실행하지 마세요. 같은 키로 서명하는 두 프로세스는 계정 시퀀스를 두고 충돌합니다.
 - **키 저장 위치.** 패키지는 키를 `/var/lib/qorel`에 보관하고, 컨테이너는 마운트한 디렉터리에서 읽으며, 타르볼 설치는 설정에서 `key_store_folder`를 지정하지 않는 한 `~/.hermes/keys`를 사용합니다.

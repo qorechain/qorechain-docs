@@ -214,7 +214,7 @@ Diğer komutlar: `qorescan tls` tek başına bir TLS taramasıdır, `qorescan so
 | `--network` tarafından kullanılan REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 
 - Anahtar, hesap ya da fon gerekmez. QoreScan asla bir işlem imzalamaz ya da göndermez ve adını verdiğiniz çıktı dosyası dışında hiçbir şey yazmaz.
-- Bazı rotalar her düğüm tarafından sunulmaz. 27 Ekim 2026'da herkese açık mainnet REST uç noktası `/qorechain/pqc/v1/params` rotasını sunmuyordu; tarama bu durumda bir not kaydeder ve devam eder. Daha eksiksiz bir görünüm için `--rest`'i kendi düğümünüze yönlendirin.
+- Bazı rotalar her düğüm tarafından sunulmaz. 27 Ekim 2026'da herkese açık mainnet REST uç noktası `/qorechain/pqc/v1/params` rotasını sunmuyordu (zincir v3.2.6'dan beri sunuyor, 4 Kasım 2026'da kontrol edildi); bir rota eksik olduğunda tarama bir not kaydeder ve devam eder. Daha eksiksiz bir görünüm için `--rest`'i kendi düğümünüze yönlendirin.
 - Zincir üstü algoritma kaydı REST üzerinden sunulmaz. QoreScan bir düğüm ana dizini tarandığında bunu `genesis.json` içinden okur.
 - Tarama, okuduğu düğümün zincir sürümünü yansıtır. Protokol anahtarları ve etkin precompile'lar mainnet ile testnet arasında farklıdır; CBOM, sorgulanan düğümün bildirdiğini kaydeder.
 - Makineniz herkese açık uç noktalara erişemiyorsa, `--rest`'i işlettiğiniz bir düğümle ya da GET isteklerini ileten bir aktarıcıyla kullanın.

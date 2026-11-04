@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Las consultas se ejecutan contra el nodo al que apunte `--node`. Utiliza un endpoint RPC de mainnet **`qorechain-vladi`** para datos en vivo (por ejemplo `--node https://rpc.qore.host:443`), o un endpoint de testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) para pruebas. El valor por defecto `tcp://localhost:26657` apunta a un nodo que ejecutas tú mismo. Mainnet ejecuta la versión de nodo v3.2.5 desde el 29 de octubre de 2026 (aplicada en la altura 3,906,833 por la propuesta de gobernanza 14; v3.2.4 se aplicó en la altura 3,742,566 el 23 de octubre de 2026); la testnet ejecuta v3.2.6 (v3.2.4 desde el 19 de octubre de 2026, v3.2.5 desde el 26 de octubre, v3.2.6 desde el 27 de octubre). La versión v3.2.4 añade algunas rutas y comandos (marcados como **v3.2.4** más abajo): funcionan en ambas redes, y un nodo que todavía esté en una versión anterior los responde con `Not Implemented`. La versión v3.2.6 añade dos comandos (marcados como **v3.2.6**, solo en testnet hasta que mainnet la aplique). Los comandos de esta página se comprobaron con el binario de la versión v3.2.3, ejecutado contra `https://rpc.qore.host:443`; las rutas de v3.2.4 se comprobaron por REST el 23 de octubre de 2026 y los comandos de v3.2.6 contra el código fuente de v3.2.6.
+Las consultas se ejecutan contra el nodo al que apunte `--node`. Utiliza un endpoint RPC de mainnet **`qorechain-vladi`** para datos en vivo (por ejemplo `--node https://rpc.qore.host:443`), o un endpoint de testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) para pruebas. El valor por defecto `tcp://localhost:26657` apunta a un nodo que ejecutas tú mismo. Mainnet ejecuta la versión de nodo v3.2.6 desde el 4 de noviembre de 2026 (aplicada en la altura 4,020,000 por la propuesta de gobernanza 15; v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026 y v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026); la testnet ejecuta v3.2.6 desde el 27 de octubre de 2026 (v3.2.4 desde el 19 de octubre de 2026, v3.2.5 desde el 26 de octubre, v3.2.6 desde el 27 de octubre). La versión v3.2.4 añade algunas rutas y comandos (marcados como **v3.2.4** más abajo): funcionan en ambas redes, y un nodo que todavía esté en una versión anterior los responde con `Not Implemented`. La versión v3.2.6 añade dos comandos (marcados como **v3.2.6**, en ambas redes). Los comandos de esta página se comprobaron con el binario de la versión v3.2.3, ejecutado contra `https://rpc.qore.host:443`; las rutas de v3.2.4 se comprobaron por REST el 23 de octubre de 2026 y los comandos de v3.2.6 contra el código fuente de v3.2.6; las rutas REST correspondientes se comprobaron en ambas redes (mainnet el 4 de noviembre de 2026).
 :::
 
 Los flags comunes se aplican a todos los subcomandos de `query`:
@@ -171,7 +171,7 @@ qorechaind query qca config
 
 No hay consultas de reputación por validador ni de clasificación de pools.
 
-`query reputation params` (REST `GET /qorechain/reputation/v1/params`) responde solo en la testnet. En mainnet la ruta responde `Not Implemented` (comprobado el 30 de octubre de 2026, después de v3.2.5), así que empieza en mainnet con una versión posterior de la cadena.
+`query reputation params` (REST `GET /qorechain/reputation/v1/params`) responde en ambas redes desde v3.2.6 (comprobado en mainnet el 4 de noviembre de 2026: `200`, con `alpha` 0.3, `beta` 0.35, `gamma` 0.2, `delta` 0.15, `lambda` 1000 y `min_score` 0.1). Un nodo anterior a v3.2.6 responde `Not Implemented`.
 
 ---
 
@@ -274,11 +274,11 @@ qorechaind query rlconsensus observation
 qorechaind query rlconsensus reward
 qorechaind query rlconsensus params
 qorechaind query rlconsensus policy
-qorechaind query rlconsensus applied-params   # v3.2.6 (testnet)
-qorechaind query rlconsensus last-action      # v3.2.6 (testnet)
+qorechaind query rlconsensus applied-params   # v3.2.6
+qorechaind query rlconsensus last-action      # v3.2.6
 ```
 
-`agent-status` informa el modo, la época y el número de pasos del agente; `policy` informa la época de la política almacenada y el número de pesos (no los pesos). **v3.2.6 (solo testnet hasta que mainnet aplique esa versión):** `applied-params` imprime los valores que el agente mantiene como aplicados (tiempo de bloque, suelo del precio del gas, pesos de los pools) y `last-action` la acción que propuso en su último paso, que se registra en todos los modos, incluido el modo sombra, donde no se aplica nada. Todos ellos se sirven también por REST en la testnet (consulta [Módulo RL Consensus](/api-reference/rest-grpc-endpoints#rlconsensus-module)); contra un nodo de mainnet los dos comandos nuevos responden `Not Implemented` hasta que mainnet aplique esa versión.
+`agent-status` informa el modo, la época y el número de pasos del agente; `policy` informa la época de la política almacenada y el número de pesos (no los pesos). **v3.2.6 (ambas redes):** `applied-params` imprime los valores que el agente mantiene como aplicados (tiempo de bloque, suelo del precio del gas, pesos de los pools) y `last-action` la acción que propuso en su último paso, que se registra en todos los modos, incluido el modo sombra, donde no se aplica nada. Todos ellos se sirven también por REST en ambas redes (consulta [Módulo RL Consensus](/api-reference/rest-grpc-endpoints#rlconsensus-module)); contra un nodo anterior a v3.2.6 los dos comandos nuevos responden `Not Implemented`.
 
 ---
 
@@ -351,7 +351,7 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>` es la forma de leer cuándo entró en vigor una actualización: en mainnet `v3.2.2` se aplicó en la altura 3,556,788, `v3.2.3` en la altura 3,662,051, `v3.2.4` en la altura 3,742,566 y `v3.2.5` en la altura 3,906,833; en la testnet `v3.2.2` en 6,905,034, `v3.2.3` en 8,003,746 y `v3.2.4` en 8,337,253, `v3.2.5` en 8,890,800 y `v3.2.6` en 8,970,638 (`0` significa no aplicada; en mainnet `v3.2.6` es `0` en el momento de escribir esto). La lista del circuit breaker de mainnet (`disabled-list`) contiene actualmente los mensajes de creación de cuentas de vesting, el almacenamiento e instanciación de QoreChain Native, la pausa y reanudación de pools AMM, la llamada cross-VM, la actualización del estado de capa multilayer, la deprecación y deshabilitación de algoritmos PQC, y los mensajes de gobernanza de consenso PRISM; la de la testnet contiene solo el mensaje `MsgStoreCode` de QoreChain Native (comprobado el 27 de octubre de 2026; la instanciación fue permitida por la gobernanza de testnet).
+`query upgrade applied <name>` es la forma de leer cuándo entró en vigor una actualización: en mainnet `v3.2.2` se aplicó en la altura 3,556,788, `v3.2.3` en la altura 3,662,051, `v3.2.4` en la altura 3,742,566, `v3.2.5` en la altura 3,906,833 y `v3.2.6` en la altura 4,020,000; en la testnet `v3.2.2` en 6,905,034, `v3.2.3` en 8,003,746 y `v3.2.4` en 8,337,253, `v3.2.5` en 8,890,800 y `v3.2.6` en 8,970,638 (`0` significa no aplicada). La lista del circuit breaker de mainnet (`disabled-list`) contiene actualmente los mensajes de creación de cuentas de vesting, el almacenamiento e instanciación de QoreChain Native, la pausa y reanudación de pools AMM, la llamada cross-VM, la actualización del estado de capa multilayer, la deprecación y deshabilitación de algoritmos PQC, y los mensajes de gobernanza de consenso PRISM; la de la testnet contiene solo el mensaje `MsgStoreCode` de QoreChain Native (comprobado el 27 de octubre de 2026; la instanciación fue permitida por la gobernanza de testnet).
 
 ---
 

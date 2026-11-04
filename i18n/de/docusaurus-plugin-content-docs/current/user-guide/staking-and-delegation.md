@@ -10,7 +10,7 @@ sidebar_position: 2
 Dieser Leitfaden behandelt, wie du QOR-Token an Validatoren delegierst, zwischen Validatoren neu delegierst, dein Stake entbindest, Belohnungen einforderst und verstehst, welche Teile des Staking-Designs von QoreChain heute live sind.
 
 :::note
-Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.5** (angewendet am 29. Oktober 2026; v3.2.4 am 23. Oktober); das Testnet läuft mit v3.2.6 (seit dem 27. Oktober 2026). Ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
+Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.6** (angewendet am 4. November 2026; v3.2.5 am 29. Oktober und v3.2.4 am 23. Oktober); das Testnet läuft seit dem 27. Oktober 2026 mit v3.2.6. Ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -126,7 +126,7 @@ Staking-Belohnungen werden aus zwei Quellen finanziert: dem gedeckelten Emission
 ## Zeitgesperrtes Staking (v3.2.4) {#time-locked-staking}
 
 :::note Wann das gilt
-Das Release v3.2.4 fügt ein optionales Modul für zeitgesperrtes Staking hinzu, `x/stakingtier`. Es ist im **`qorechain-diana`-Testnet** seit dem 19. Oktober 2026 und im **Mainnet** seit dem 23. Oktober 2026 live (bei Höhe 3.742.566 durch Governance-Vorschlag 13 angewendet); das Mainnet läuft seit dem 29. Oktober 2026 mit v3.2.5, das daran nichts ändert. Das Sperren steht als Option zur Verfügung, und die gewöhnliche Delegation bleibt sperrfrei (siehe [oben](#lock-in-period)). Der unten beschriebene Mechanismus wurde am 23. Oktober 2026 anhand der Live-Parameter von Mainnet und Testnet geprüft.
+Das Release v3.2.4 fügt ein optionales Modul für zeitgesperrtes Staking hinzu, `x/stakingtier`. Es ist im **`qorechain-diana`-Testnet** seit dem 19. Oktober 2026 und im **Mainnet** seit dem 23. Oktober 2026 live (bei Höhe 3.742.566 durch Governance-Vorschlag 13 angewendet); das Mainnet läuft seit dem 29. Oktober 2026 mit v3.2.5 und seit dem 4. November 2026 mit v3.2.6, die daran nichts ändern, abgesehen von der unten beschriebenen Prüfung beim Entbinden. Das Sperren steht als Option zur Verfügung, und die gewöhnliche Delegation bleibt sperrfrei (siehe [oben](#lock-in-period)). Der unten beschriebene Mechanismus wurde am 23. Oktober 2026 anhand der Live-Parameter von Mainnet und Testnet geprüft.
 :::
 
 Ein Delegator kann einen Teil einer bestehenden Delegation an einen Validator für eine feste Laufzeit von 3, 6 oder 12 Monaten festlegen. Laufzeiten und Beträge sind Chain-Parameter; lies die aktuellen aus `GET /qorechain/stakingtier/v1/params` aus, statt von dieser Seite.
@@ -156,13 +156,13 @@ Die obige Chain-ID ist die des Testnets; verwende im Mainnet `qorechain-vladi`. 
 
 **Schritte.** (1) Delegiere wie gewohnt an einen Validator. (2) Führe `tx stakingtier lock` für diesen Validator mit einem Betrag (mindestens 10 QOR) und einer Laufzeit von 3, 6 oder 12 Monaten aus, signiere dann mit cosign und sende die Transaktion. (3) Lies das Ergebnis mit `GET /qorechain/stakingtier/v1/locks/{holder}` oder `qorechaind query stakingtier locks <holder_address>` aus; jede Sperre hat eine ID. (4) Fordere mit `tx stakingtier claim` die Sperrbelohnung ein, wann immer du möchtest. (5) Am Ende der Laufzeit wird die Sperre von selbst aufgehoben; um früher auszusteigen, verwende `tx stakingtier unlock-early <lock_id>` und akzeptiere die Strafe.
 
-**Wo es funktioniert, geprüft am 27. Oktober 2026.**
+**Wo es funktioniert, geprüft am 27. Oktober 2026 (die v3.2.6-Angabe für das Mainnet stammt aus den Release Notes und dem Upgrade vom 4. November 2026; die Parameter unten wurden am 4. November 2026 im Mainnet erneut gelesen).** Vor v3.2.6 lehnte das Mainnet das Entbinden erst ab, wenn die Transaktion ausgeführt wurde, über das Staking-Nachrichten-Gate.
 
-| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | Modul live | Ja, seit Höhe 3,742,566 | Ja, seit v3.2.4 (Höhe 8,337,253) |
 | Offene Sperren | Noch keine | 3 Testsperren |
-| Entbinden von gesperrtem Stake | Vom Staking-Nachrichten-Gate abgelehnt, wenn die Transaktion ausgeführt wird | Vom Mempool abgelehnt, bevor eine Gebühr erhoben wird (nur Testnet, bis das Mainnet v3.2.6 anwendet) |
+| Entbinden von gesperrtem Stake | Vom Mempool abgelehnt, bevor eine Gebühr erhoben wird (v3.2.6, am 4. November 2026 im Mainnet angewendet) | Vom Mempool abgelehnt, bevor eine Gebühr erhoben wird |
 
 Beide Netzwerke beantworten `GET /qorechain/stakingtier/v1/params` mit denselben Einstellungen: drei Laufzeiten, ein Minimum von 10 QOR (`min_lock_amount` `"10000000"` uqor), eine Strafe für vorzeitiges Entsperren von 500 Basispunkten (5 %) und `enabled: true`. Die Antwort enthält auch die Bonus-Einstellungen in Basispunkten; dieses Handbuch nennt sie nicht, weil ein Bonus keine zugesagte Rendite ist und die Einstellungen per Governance geändert werden können. `GET /qorechain/stakingtier/v1/pool` zeigt den Pool, der die Sperrbelohnungen auszahlt.
 

@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Is mainnet live?
 
 Yes. Mainnet is **live** (chain id `qorechain-vladi`, live since 7 June 2026) and
-runs chain version v3.2.5 (applied at height 3,906,833 on 29 October 2026, governance proposal 14; v3.2.4 was applied at height 3,742,566 on 23 October 2026); the testnet runs v3.2.6 (applied on 27 October 2026). The testnet preset
+runs chain version v3.2.6 (applied at height 4,020,000 on 4 November 2026, governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026 and v3.2.4 at height 3,742,566 on 23 October 2026); the testnet has run v3.2.6 since 27 October 2026. The testnet preset
 (`qorechain-diana`) also remains available. Both presets ship localhost endpoint
 defaults; select the network with `createClient({ network: "mainnet" })` and
 override `endpoints` with your node URLs. See
@@ -53,8 +53,8 @@ on mainnet**, and only three are active on the testnet: they answer only where
 their addresses are listed in the EVM module's `active_static_precompiles`
 parameter. That list is empty on mainnet; on the testnet it holds the PQC verify
 (`0x…0A01`), PQC key status (`0x…0A02`) and consensus-parameters (`0x…0C01`)
-precompiles (checked 27 October 2026), so the AI pair and the cross-VM bridge still
-answer nothing there. Where a precompile is inactive the call returns empty data,
+precompiles (checked 27 October 2026; on 4 November the testnet list also held the cross-VM bridge `0x…0901`, which this page has not re-tested, and mainnet's list was still empty), so the AI pair still
+answers nothing there. Where a precompile is inactive the call returns empty data,
 so viem reports `returned no data ("0x")` and the helper throws (see
 [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status)).
 On a plain EVM node the calls fail the same way. Check
@@ -144,7 +144,7 @@ eth-native).
 ## Which chain versions does the SDK work with?
 
 SDK **0.10.0** is the client release for chain **v3.2.4** (mainnet since 23 October
-2026 at height 3,742,566, governance proposal 13; the testnet since 19 October). Mainnet has run v3.2.5 since 29 October 2026; the signing format did not change, so 0.10.0 keeps working there. It
+2026 at height 3,742,566, governance proposal 13; the testnet since 19 October). Mainnet has run v3.2.6 since 4 November 2026 (v3.2.5 from 29 October); the signing format did not change, so 0.10.0 keeps working there. It
 adds the staking-tier builders and reads, `fetchAuthNonce` and the protocol-feature
 reads (see [What 0.10.0 adds](/sdk/install#whats-new-0100)), on top of what 0.9.0
 added for v3.2.2 and v3.2.3: builders for the optional proof of
@@ -154,8 +154,8 @@ SDK **0.8.1 or later** also transacts on both networks (the v2 hybrid sign-bytes
 form, registration, hybrid sends and the EVM window work unchanged), but it has none
 of those builders: use the CLI for them (see
 [Versions before 0.9.0](/sdk/install#before-090)). The signing format did not change
-in v3.2.4 or v3.2.5. The testnet runs v3.2.6 (v3.2.5 was applied there on 26 October 2026 and
-v3.2.6 on 27 October); the SDK has no builder for anything introduced after v3.2.4,
+in v3.2.4, v3.2.5 or v3.2.6. Both networks run v3.2.6 (the testnet applied v3.2.5 on 26 October 2026 and
+v3.2.6 on 27 October; mainnet applied v3.2.5 on 29 October and v3.2.6 on 4 November); the SDK has no builder for anything introduced after v3.2.4,
 so the v3.2.5 additions (for example the ML-KEM key registry and the governed cross-VM and contract paths) have no SDK builder yet and are reached with the CLI.
 
 ## My PQC key registration was refused but the fee was taken

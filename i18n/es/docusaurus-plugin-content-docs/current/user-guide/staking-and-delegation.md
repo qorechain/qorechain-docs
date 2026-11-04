@@ -10,7 +10,7 @@ sidebar_position: 2
 Esta guía explica cómo delegar tokens QOR a validadores, redelegar entre validadores, retirar tu stake (unbonding), reclamar recompensas y entender qué partes del diseño de staking de QoreChain están activas hoy.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.5** (aplicada el 29 de octubre de 2026; la v3.2.4 el 23 de octubre); la testnet ejecuta v3.2.6 (desde el 27 de octubre de 2026). Sustituye el chain ID y los endpoints de mainnet desde la página **Conectando a Mainnet** al hacer staking en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.6** (aplicada el 4 de noviembre de 2026; la v3.2.5 el 29 de octubre y la v3.2.4 el 23 de octubre); la testnet ejecuta v3.2.6 desde el 27 de octubre de 2026. Sustituye el chain ID y los endpoints de mainnet desde la página **Conectando a Mainnet** al hacer staking en mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -126,7 +126,7 @@ Las recompensas de staking se financian desde dos fuentes: el presupuesto de emi
 ## Staking con bloqueo temporal (v3.2.4) {#time-locked-staking}
 
 :::note Cuándo se aplica
-La versión v3.2.4 añade un módulo opcional de staking con bloqueo temporal, `x/stakingtier`. Está activo en la **testnet `qorechain-diana`** desde el 19 de octubre de 2026 y en **mainnet** desde el 23 de octubre de 2026 (aplicado en la altura 3,742,566 por la propuesta de gobernanza 13); la mainnet ejecuta la v3.2.5 desde el 29 de octubre de 2026, que lo deja sin cambios. El bloqueo está disponible como opción y la delegación ordinaria sigue sin bloqueo (consulta [arriba](#lock-in-period)). El mecanismo descrito a continuación se comprobó con los parámetros en vivo de mainnet y testnet el 23 de octubre de 2026.
+La versión v3.2.4 añade un módulo opcional de staking con bloqueo temporal, `x/stakingtier`. Está activo en la **testnet `qorechain-diana`** desde el 19 de octubre de 2026 y en **mainnet** desde el 23 de octubre de 2026 (aplicado en la altura 3,742,566 por la propuesta de gobernanza 13); la mainnet ejecuta la v3.2.5 desde el 29 de octubre de 2026 y la v3.2.6 desde el 4 de noviembre de 2026, que lo dejan sin cambios salvo por la comprobación de retirada de delegación descrita a continuación. El bloqueo está disponible como opción y la delegación ordinaria sigue sin bloqueo (consulta [arriba](#lock-in-period)). El mecanismo descrito a continuación se comprobó con los parámetros en vivo de mainnet y testnet el 23 de octubre de 2026.
 :::
 
 Un delegador puede comprometer parte de una delegación existente a un validador durante un plazo fijo de 3, 6 o 12 meses. Los plazos y los montos son parámetros de la cadena; lee los actuales en `GET /qorechain/stakingtier/v1/params` en lugar de en esta página.
@@ -156,13 +156,13 @@ El chain ID anterior es el de la testnet; usa `qorechain-vladi` en mainnet. Como
 
 **Pasos.** (1) Delega a un validador como de costumbre. (2) Ejecuta `tx stakingtier lock` para ese validador con un monto (al menos 10 QOR) y un plazo de 3, 6 o 12 meses, y luego cofirma y difunde. (3) Lee el resultado con `GET /qorechain/stakingtier/v1/locks/{holder}` o `qorechaind query stakingtier locks <holder_address>`; cada bloqueo tiene un id. (4) Reclama con `tx stakingtier claim` cuando quieras la recompensa del bloqueo. (5) Al final del plazo el bloqueo se libera por sí solo; para salir antes usa `tx stakingtier unlock-early <lock_id>` y acepta la penalización.
 
-**Dónde funciona, comprobado el 27 de octubre de 2026.**
+**Dónde funciona, comprobado el 27 de octubre de 2026 (la fila de la v3.2.6 para la mainnet procede de las notas de la versión y de la actualización del 4 de noviembre de 2026; los parámetros siguientes se volvieron a leer en la mainnet el 4 de noviembre de 2026).** Antes de la v3.2.6, la mainnet rechazaba la retirada de delegación solo cuando se ejecutaba la transacción, a través de la puerta de mensajes de staking.
 
-| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | Módulo activo | Sí, desde la altura 3,742,566 | Sí, desde v3.2.4 (altura 8,337,253) |
 | Bloqueos abiertos | Ninguno todavía | 3 bloqueos de prueba |
-| Retirar la delegación de stake bloqueado | Rechazado por la puerta de mensajes de staking cuando se ejecuta la transacción | Rechazado por el mempool antes de que se cobre comisión alguna (solo en testnet hasta que mainnet aplique v3.2.6) |
+| Retirar la delegación de stake bloqueado | Rechazado por el mempool antes de que se cobre comisión alguna (v3.2.6, aplicada en mainnet el 4 de noviembre de 2026) | Rechazado por el mempool antes de que se cobre comisión alguna |
 
 Ambas redes responden a `GET /qorechain/stakingtier/v1/params` con los mismos ajustes: tres plazos, un mínimo de 10 QOR (`min_lock_amount` `"10000000"` uqor), una penalización por desbloqueo anticipado de 500 puntos básicos (5%) y `enabled: true`. La respuesta también incluye los ajustes de bonificación en puntos básicos; este manual no los cita, porque una bonificación no es un rendimiento prometido y la gobernanza puede cambiar los ajustes. `GET /qorechain/stakingtier/v1/pool` muestra el pool que paga las recompensas de los bloqueos.
 

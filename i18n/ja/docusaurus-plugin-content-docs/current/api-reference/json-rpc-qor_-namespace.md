@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getReputationScore`      | 公開されているクエリルートはありません（レピュテーションモジュールが公開しているのは gRPC の `Params` のみです）。 |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` および `anchor/{layer_id}`。[マルチレイヤーモジュール](/api-reference/rest-grpc-endpoints#multilayer-module)を参照してください。 |
 | `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`。[ブリッジモジュール](/api-reference/rest-grpc-endpoints#bridge-module)を参照してください。ブリッジはまだ稼働していません。 |
-| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | テストネット（v3.2.6）では `GET /qorechain/rlconsensus/v1/agent`、`/observation`、`/reward`（ほかに `/params`、`/policy`、`/applied_params`、`/last_action`）。[RL Consensus モジュール](/api-reference/rest-grpc-endpoints#rlconsensus-module)を参照してください。メインネットではこれらのルートは `501` を返します。自分で運用するノード上の gRPC `qorechain.rlconsensus.v1.Query`（`AgentStatus`、`Observation`、`Reward`）を使用してください。 |
+| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | v3.2.6 以降（両ネットワーク）では `GET /qorechain/rlconsensus/v1/agent`、`/observation`、`/reward`（ほかに `/params`、`/policy`、`/applied_params`、`/last_action`）。[RL Consensus モジュール](/api-reference/rest-grpc-endpoints#rlconsensus-module)を参照してください。これらのルートは、2026年11月4日に公開メインネットホストで `200` を返しました。v3.2.6 より古いノードでは `501` を返し、gRPC サービス `qorechain.rlconsensus.v1.Query`（`AgentStatus`、`Observation`、`Reward`）で読み取ります。 |
 | `qor_getPoolClassification`   | 公開されているクエリルートはありません。 |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`。[バーンモジュール](/api-reference/rest-grpc-endpoints#burn-module)を参照してください。 |
 | `qor_getXQOREPosition`        | なし。xQORE は稼働していません（[xQORE ステーキング](/user-guide/xqore-staking)を参照）。 |

@@ -41,7 +41,7 @@ Ce a fost testat: transferuri în ambele direcții (1 QOR trimis, 0.1 ATOM primi
 
 ### Ce are nevoie un relayer terț {#third-party}
 
-Testnet-ul acceptă doar tipul de client light `07-tendermint` (`/ibc/core/client/v1/params` listează `allowed_clients = ["07-tendermint"]`); astăzi nu se poate crea niciun client `08-wasm`. Pentru a deschide un canal către QoreChain, un relayer are nevoie de:
+Testnet-ul acceptă doar tipul de client light `07-tendermint` (`/ibc/core/client/v1/params` listează `allowed_clients = ["07-tendermint"]`); astăzi nu se poate crea niciun client `08-wasm` (lista `allowed_clients` a mainnet-ului era aceeași pe 4 noiembrie 2026, după ce v3.2.6 a conectat codul clientului light 08-wasm). Pentru a deschide un canal către QoreChain, un relayer are nevoie de:
 
 - un client `07-tendermint` pe fiecare parte;
 - pe partea QoreChain, fiecare tranzacție semnată hibrid de un cont de relayer a cărui cheie ML-DSA-87 este înregistrată. QORel face acest lucru; Hermes standard, relayer-ul Go (`rly`) și ts-relayer sunt respinse;
@@ -90,7 +90,7 @@ Paginile din această secțiune:
 
 ## Cum se accesează {#how-to-access}
 
-- **Rețea.** Doar testnet-ul `qorechain-diana` (testnet-ul rulează v3.2.6). Mainnet-ul `qorechain-vladi` nu are niciun canal IBC deschis; vezi [Punți pentru active](/user-guide/bridging-assets#ibc-testnet-v326) pentru ce are fiecare rețea.
+- **Rețea.** Doar testnet-ul `qorechain-diana` (ambele rețele rulează lanțul v3.2.6). Mainnet-ul `qorechain-vladi` nu are niciun canal IBC deschis; vezi [Punți pentru active](/user-guide/bridging-assets#ibc-testnet-v326) pentru ce are fiecare rețea.
 - **Contraparte.** Testnet-ul public Cosmos Hub, chain ID `provider`, prin `channel-600`. Orice alt lanț Cosmos SDK funcționează în același mod ca intrarea `provider` din configurația exemplu.
 - **Endpoint-uri.** QORel are nevoie de un RPC de consens, un WebSocket și un endpoint gRPC pentru fiecare lanț. Testnet-ul QoreChain are RPC public (`https://rpc-testnet.qore.host`) și REST public (`https://api-testnet.qore.host`), dar astăzi nu are un endpoint gRPC public și nu se promite unul, deci un relayer terț pentru `qorechain-diana` are nevoie de propriul nod de testnet ([Rularea unui nod](/developer-guide/running-a-node), [Conectarea la Testnet](/getting-started/connecting-to-testnet)). Endpoint-urile publice care limitează rata relayer-ilor pot fi folosite pentru un test scurt, dar nu pentru un relay constant.
 - **Conturi.** Un cont de relayer dedicat pe fiecare lanț, cu un sold mic pentru taxe. QOR de testnet vine de la [Faucet-ul din Dashboard](/dashboard/faucet); nu are valoare. Nu folosiți niciodată cheia operatorului unui validator.

@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Le mainnet est-il en ligne ?
 
 Oui. Le mainnet est **en ligne** (identifiant de chaîne `qorechain-vladi`, en
-production depuis le 7 juin 2026) et exécute la version de chaîne v3.2.5 (appliquée à la hauteur 3,906,833 le 29 octobre 2026, proposition de gouvernance 14 ; la v3.2.4 a été appliquée à la hauteur 3,742,566 le 23 octobre 2026) ; le testnet exécute la v3.2.6 (appliquée le 27 octobre 2026). Le préréglage testnet (`qorechain-diana`) reste également
+production depuis le 7 juin 2026) et exécute la version de chaîne v3.2.6 (appliquée à la hauteur 4,020,000 le 4 novembre 2026, proposition de gouvernance 15 ; la v3.2.5 a été appliquée à la hauteur 3,906,833 le 29 octobre 2026 et la v3.2.4 à la hauteur 3,742,566 le 23 octobre 2026) ; le testnet exécute la v3.2.6 depuis le 27 octobre 2026. Le préréglage testnet (`qorechain-diana`) reste également
 disponible. Les deux préréglages utilisent par défaut des points de terminaison
 localhost ; sélectionnez le réseau avec `createClient({ network: "mainnet" })` et
 remplacez `endpoints` par les URL de vos nœuds. Voir
@@ -56,8 +56,8 @@ répondent que là où leurs adresses figurent dans le paramètre
 `active_static_precompiles` du module EVM. Cette liste est vide sur le mainnet ;
 sur le testnet, elle contient les précompilés de vérification PQC
 (`0x…0A01`), d'état de clé PQC (`0x…0A02`) et de paramètres de consensus
-(`0x…0C01`) (vérifié le 27 octobre 2026) : la paire IA et le pont cross-VM n'y
-répondent donc toujours rien. Là où un précompilé est inactif, l'appel renvoie
+(`0x…0C01`) (vérifié le 27 octobre 2026 ; le 4 novembre, la liste du testnet contenait aussi le pont cross-VM `0x…0901`, que cette page n'a pas retesté, et la liste du mainnet était toujours vide) : la paire IA n'y
+répond donc toujours rien. Là où un précompilé est inactif, l'appel renvoie
 des données vides ; viem signale donc `returned no data ("0x")` et le helper
 lève une erreur (voir
 [Précompilés EVM : statut réseau](/developer-guide/evm-precompiles#network-status)).
@@ -158,7 +158,7 @@ rejetées on-chain, sur toutes les voies (y compris eth-native).
 
 Le SDK **0.10.0** est la version cliente pour la chaîne **v3.2.4** (mainnet depuis
 le 23 octobre 2026 à la hauteur 3,742,566, proposition de gouvernance 13 ; testnet
-depuis le 19 octobre). Le mainnet exécute la v3.2.5 depuis le 29 octobre 2026 ; le format de signature n'a pas changé, la 0.10.0 y continue donc de fonctionner. Il ajoute les constructeurs et lectures de staking tiers,
+depuis le 19 octobre). Le mainnet exécute la v3.2.6 depuis le 4 novembre 2026 (la v3.2.5 depuis le 29 octobre) ; le format de signature n'a pas changé, la 0.10.0 y continue donc de fonctionner. Il ajoute les constructeurs et lectures de staking tiers,
 `fetchAuthNonce` et les lectures des fonctionnalités de protocole (voir
 [Ce qu'ajoute la 0.10.0](/sdk/install#whats-new-0100)), en plus de ce qu'avait
 ajouté la 0.9.0 pour la v3.2.2 et la v3.2.3 : des constructeurs pour la preuve de
@@ -170,8 +170,8 @@ réseaux (la forme v2 des sign-bytes hybrides, l'enregistrement, les envois
 hybrides et la fenêtre EVM fonctionnent sans changement), mais n'a aucun de ces
 constructeurs : utilisez la CLI pour ceux-ci (voir
 [Versions antérieures à la 0.9.0](/sdk/install#before-090)). Le format de signature
-n'a pas changé dans la v3.2.4 ni la v3.2.5. Le testnet exécute la v3.2.6 (la v3.2.5 y a été
-appliquée le 26 octobre 2026 et la v3.2.6 le 27 octobre) ; le SDK n'a aucun
+n'a pas changé dans la v3.2.4, la v3.2.5 ni la v3.2.6. Les deux réseaux exécutent la v3.2.6 (le testnet a appliqué la v3.2.5 le 26 octobre 2026 et
+la v3.2.6 le 27 octobre ; le mainnet a appliqué la v3.2.5 le 29 octobre et la v3.2.6 le 4 novembre) ; le SDK n'a aucun
 constructeur pour ce qui a été introduit après la v3.2.4,
 donc les ajouts de la v3.2.5 (par exemple le registre de clés ML-KEM et les chemins gouvernés cross-VM et de contrats) n'ont pas encore de constructeur dans le SDK et s'utilisent avec la CLI.
 

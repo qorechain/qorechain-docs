@@ -96,6 +96,8 @@ cosign verify ghcr.io/qorechain/qorel:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
+Docker Hub kopyası aynı imzayı taşır; bu nedenle aynı komut, `ghcr.io` adı yerine `liviuepure/qorel:0.1.0` ile onu doğrular.
+
 ### Kaynaktan {#from-source}
 
 ```bash
@@ -128,12 +130,13 @@ qorel --help
 | İndirme yansısı | `download.qore.host/qorel/v0.1.0/<file>`, `download.qore.host/qorel/latest/<file>`, `latest.json` | 0.1.0 | [download.qore.host/qorel/latest.json](https://download.qore.host/qorel/latest.json) |
 | Homebrew | `qorechain/tap/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` |
 | Container kayıt defteri | `ghcr.io/qorechain/qorel` | 0.1.0 | `docker pull ghcr.io/qorechain/qorel:0.1.0` |
+| Container kayıt defteri (Docker Hub) | `liviuepure/qorel` | 0.1.0 | `docker pull liviuepure/qorel:0.1.0` |
 | Kaynak | `ibc-relayer-cli`, ikili dosya `qorel` | etiket `qorel-v0.1.0` | [github.com/qorechain/QORel](https://github.com/qorechain/QORel) |
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 - **Windows derlemesi yok.** WSL2 altında container kullanın.
-- **Ön sürüm, büyük dosyalar.** 0.1.0 sürümü GitHub'da ön sürüm (pre-release) olarak yayımlanır. İkili dosyalar henüz strip edilmediği için her sürüm dosyası yaklaşık 110 MB'tır. Docker Hub imajı yoktur; yukarıdaki `ghcr.io` imajını kullanın.
+- **Ön sürüm, büyük dosyalar.** 0.1.0 sürümü GitHub'da ön sürüm (pre-release) olarak yayımlanır. İkili dosyalar henüz strip edilmediği için her sürüm dosyası yaklaşık 110 MB'tır. Aynı imaj Docker Hub'da da `liviuepure/qorel:0.1.0` (ve `:latest`) olarak bulunur; bir `qorechain` ad alanı altında değil, bakımcının kendi ad alanı altındadır.
 - **Sürümü sabitleyin.** Yukarıdaki komutlar `0.1.0` kullanır. `latest` yerine çalıştırmayı düşündüğünüz sürümü kullanın ve daha yenileri için [sürüm sayfasını](https://github.com/qorechain/QORel/releases) okuyun.
 - **Anahtar başına tek süreç.** Aynı relayer anahtarıyla paket servisini ve bir container'ı birlikte çalıştırmayın; aynı anahtarla imzalayan iki süreç hesap sıra numaraları için çekişir.
 - **Anahtar deposu konumu.** Paketler anahtarları `/var/lib/qorel` altında tutar; container onları bağlanan dizinden okur; yapılandırma `key_store_folder` ayarlamadığı sürece tarball kurulumu `~/.hermes/keys` kullanır.

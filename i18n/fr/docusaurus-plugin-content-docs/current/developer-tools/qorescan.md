@@ -214,7 +214,7 @@ Codes de sortie : `0` succès, `1` erreur de scan ou d'E/S, `2` erreur d'utilisa
 | REST utilisé par `--network` | `https://api.qore.host` | `https://api-testnet.qore.host` |
 
 - Aucune clé, aucun compte ni aucun fonds ne sont nécessaires. QoreScan ne signe ni n'envoie jamais de transaction, et n'écrit rien d'autre que le fichier de sortie que vous nommez.
-- Certaines routes ne sont pas servies par tous les nœuds. Le 27 octobre 2026, l'endpoint REST public du mainnet ne servait pas `/qorechain/pqc/v1/params` ; le scan consigne alors une note et continue. Pointez `--rest` vers votre propre nœud pour un tableau plus complet.
+- Certaines routes ne sont pas servies par tous les nœuds. Le 27 octobre 2026, l'endpoint REST public du mainnet ne servait pas `/qorechain/pqc/v1/params` (il le sert depuis la chaîne v3.2.6, vérifié le 4 novembre 2026) ; lorsqu'une route est absente, le scan consigne une note et continue. Pointez `--rest` vers votre propre nœud pour un tableau plus complet.
 - Le registre d'algorithmes on-chain n'est pas exposé via REST. QoreScan le lit dans `genesis.json` lorsqu'un home de nœud est scanné.
 - Le scan reflète la version de la chaîne du nœud qu'il lit. Les interrupteurs de protocole et les précompilés actifs diffèrent entre le mainnet et le testnet ; le CBOM consigne ce que rapporte le nœud interrogé.
 - Si votre machine ne peut pas joindre les endpoints publics, utilisez `--rest` avec un nœud que vous exploitez, ou avec un relais qui transmet les requêtes GET.

@@ -214,7 +214,7 @@ Códigos de salida: `0` éxito, `1` un error de escaneo o de E/S, `2` un error d
 | REST usado por `--network` | `https://api.qore.host` | `https://api-testnet.qore.host` |
 
 - No se necesita ninguna clave, cuenta ni fondos. QoreScan nunca firma ni envía una transacción, y no escribe nada salvo el archivo de salida que nombres.
-- No todos los nodos sirven todas las rutas. El 27 de octubre de 2026 el endpoint REST público de mainnet no servía `/qorechain/pqc/v1/params`; el escaneo registra entonces una nota y continúa. Apunta `--rest` a tu propio nodo para obtener una imagen más completa.
+- No todos los nodos sirven todas las rutas. El 27 de octubre de 2026 el endpoint REST público de mainnet no servía `/qorechain/pqc/v1/params` (lo sirve desde la cadena v3.2.6, comprobado el 4 de noviembre de 2026); cuando falta una ruta, el escaneo registra una nota y continúa. Apunta `--rest` a tu propio nodo para obtener una imagen más completa.
 - El registro de algoritmos on-chain no se expone por REST. QoreScan lo lee de `genesis.json` cuando se escanea un home de nodo.
 - El escaneo refleja la versión de la cadena del nodo que lee. Los interruptores de protocolo y los precompiles activos difieren entre mainnet y testnet; el CBOM registra lo que informa el nodo consultado.
 - Si tu máquina no puede alcanzar los endpoints públicos, usa `--rest` con un nodo que ejecutes tú, o con un relay que reenvíe peticiones GET.

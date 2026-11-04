@@ -261,8 +261,8 @@ exported.
 > compiled into the node but none is activated on mainnet (`qorechain-vladi`).
 > On the testnet (`qorechain-diana`) the `active_static_precompiles` list holds
 > `0x…0A01` (PQC verify), `0x…0A02` (PQC key status) and `0x…0C01` (consensus
-> params), checked 27 October 2026; the AI pair (`0x…0B01`, `0x…0B02`) and the
-> cross-VM bridge (`0x…0901`) are not active on either network. A call to an
+> params), checked 27 October 2026; the AI pair (`0x…0B01`, `0x…0B02`) is not active on either network, and the
+> cross-VM bridge (`0x…0901`) was not active on either on 27 October (on 4 November the testnet list also held it; not re-tested). A call to an
 > inactive address returns empty data, so those helpers throw. See
 > [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 

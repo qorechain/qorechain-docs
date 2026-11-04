@@ -14,7 +14,7 @@ Modulul de punte este implementat pe mainnet și testnet, dar **nicio rută de p
 :::
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea de lanț **v3.2.6**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) rulează versiunea de lanț **v3.2.5** (din 29 octombrie 2026). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** după ce o rută este activată. Stare verificată la 27 octombrie 2026: toate cele 37 de configurații de lanț sunt `pending` pe ambele rețele.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea de lanț **v3.2.6**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) rulează versiunea de lanț **v3.2.6** (din 4 noiembrie 2026). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** după ce o rută este activată. Stare verificată la 27 octombrie 2026: toate cele 37 de configurații de lanț sunt `pending` pe ambele rețele.
 :::
 
 ---
@@ -36,24 +36,24 @@ O enumerare completă a fiecărei configurații de lanț se găsește pe pagina 
 
 IBC face parte din design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), dar **niciuna dintre aceste contrapărți nu este încă conectată**: mainnet-ul nu are niciun canal sau client IBC, iar testnet-ul are doar un singur canal de test ICS-20 către un lanț cu ID `provider` (verificat la 27 octombrie 2026), așa că pentru aceste lanțuri nu există nimic prin care să se poată transfera. Această pagină va lista canalele după ce vor fi deschise.
 
-### Completări IBC pe testnet (v3.2.6) {#ibc-testnet-v326}
+### Completări IBC în v3.2.6 {#ibc-testnet-v326}
 
-Trei funcționalități IBC există doar pe testnet; mainnet-ul nu le are (ruta sa `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` răspunde cu 501):
+Trei funcționalități IBC au sosit cu v3.2.6: pe testnet din 27 octombrie 2026, pe mainnet din 4 noiembrie 2026, unde propunerea de guvernanță 15 le-a activat ca funcționalități de protocol (lista mainnet-ului de la `/qorechain/pqc/v1/protocol_features` arată `ibc-rate-limit`, `ibc-packet-forward` și `ibc-wasm-light-client` ca activate, iar `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` răspunde cu `200` și o listă goală; verificat la 4 noiembrie 2026). Activat nu înseamnă folosit: mainnet-ul tot nu are niciun client sau canal IBC, iar setările de mai jos se stabilesc ulterior prin voturi separate de guvernanță.
 
 * **Limită de rată IBC.** Guvernanța poate seta o cotă pe canal pentru transferurile IBC (un procent întreg din ofertă pe fereastră de ore). **Nu este automată**: nu este setată nicio limită în prezent, iar un set gol înseamnă nelimitat. Un pachet redirecționat este taxat pe ambele canale, iar o rambursare returnează cota. Aceasta este separată de întrerupătoarele automate ale punții descrise la [Modelul de securitate](#security-model).
 * **Redirecționarea pachetelor (packet forwarding).** Un transfer care sosește prin IBC v1 poate purta un memo de forma `{"forward":{"receiver":"...","port":"transfer","channel":"channel-N"}}` pentru a fi trimis mai departe către alt lanț, cu rambursări către expeditor dacă un hop eșuează. Nu există reîncercări, iar un hop expiră implicit după 10 minute. Un token care se convertește într-un ERC-20 la sosire nu poate fi redirecționat.
 * **Clienți light 08-wasm.** Stocarea, migrarea și eliminarea unui binar de client light wasm sunt rezervate autorității, iar tipurile de client permise conțin doar clientul standard până când guvernanța adaugă `08-wasm`.
 
-Citește limitele cu `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` pe testnet (`{"rate_limits":[]}` astăzi).
+Citește limitele cu `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` (`{"rate_limits":[]}` astăzi pe ambele rețele).
 
-**Ce rețea ce are (verificat la 27 octombrie 2026).**
+**Ce rețea ce are (testnet verificat la 27 octombrie 2026, mainnet la 4 noiembrie 2026).**
 
-| | Mainnet `qorechain-vladi` (v3.2.5) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
 |---|---|---|
 | Transfer ICS-20 (IBC v1) | Integrat, dar niciun canal nu este deschis | Integrat, un canal deschis |
-| Limită de rată IBC | Indisponibilă (501) | Disponibilă, fără limite setate |
-| Redirecționarea pachetelor | Indisponibilă | Disponibilă (doar IBC v1) |
-| Clienți light 08-wasm | Indisponibili | Setul de mesaje există, dar nu se poate crea niciun client wasm până când guvernanța permite `08-wasm` |
+| Limită de rată IBC | Activată, fără limite setate (interogarea răspunde `200`, listă goală) | Disponibilă, fără limite setate |
+| Redirecționarea pachetelor | Activată ca funcționalitate de protocol; niciun canal pe care să redirecționeze | Disponibilă (doar IBC v1) |
+| Clienți light 08-wasm | Activați ca funcționalitate de protocol; lista de checksum-uri este goală, niciun client wasm până când guvernanța permite `08-wasm` | Setul de mesaje există, dar nu se poate crea niciun client wasm până când guvernanța permite `08-wasm` |
 
 ### Canalul de test de pe testnet {#ibc-test-channel}
 

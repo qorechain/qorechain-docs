@@ -18,7 +18,7 @@ QoreChain은 프로그래밍 방식 접근을 위해 세 가지 기본 인터페
 모든 REST 엔드포인트는 JSON을 반환합니다. gRPC 엔드포인트는 Protocol Buffers를 사용하며 어떤 gRPC 클라이언트로도 사용할 수 있습니다. RPC 인터페이스는 합의 수준의 조회와 트랜잭션 브로드캐스트를 제공합니다.
 
 :::note
-이 인터페이스들은 **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 가동 중)과 **`qorechain-diana`** 테스트넷 모두에서 사용할 수 있습니다. 작성 시점(2026년 10월 30일 확인) 기준으로 메인넷은 노드 릴리스 **v3.2.5**를 실행합니다(2026년 10월 29일 높이 3,906,833에서 적용, 거버넌스 제안 14. v3.2.4는 2026년 10월 23일 높이 3,742,566에서 적용되었습니다). 테스트넷은 **v3.2.6**을 실행합니다. 2026년 10월 26일 높이 8,890,800에서 v3.2.5를, 2026년 10월 27일 높이 8,970,638에서 v3.2.6을 적용했습니다. 릴리스가 추가한 라우트와 필드는 해당 네트워크가 그 릴리스를 적용한 뒤에야 나타납니다. 이 페이지는 테스트넷 전용인 항목을 표시합니다. 아래의 기본 URL은 로컬에서 실행 중인 노드를 기준으로 합니다. 공개 호스팅 엔드포인트는 `https://api.qore.host` / `https://api-testnet.qore.host`(REST)와 `https://rpc.qore.host` / `https://rpc-testnet.qore.host`(RPC)이며, [네트워크](/appendix/networks#public-endpoints)에 정리되어 있습니다. **공개 gRPC 엔드포인트는 없습니다**: 호스트 이름 `grpc.qore.host`와 `grpc-testnet.qore.host`는 존재하지 않으므로, gRPC가 필요하면 직접 노드를 실행하십시오.
+이 인터페이스들은 **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 가동 중)과 **`qorechain-diana`** 테스트넷 모두에서 사용할 수 있습니다. 두 네트워크 모두 노드 릴리스 **v3.2.6**을 실행합니다. 메인넷은 2026년 11월 4일 높이 4,020,000에서 이를 적용했으며(거버넌스 제안 15. 그에 앞서 v3.2.5는 2026년 10월 29일 높이 3,906,833에서 제안 14로, v3.2.4는 2026년 10월 23일 높이 3,742,566에서 적용되었습니다), 테스트넷은 2026년 10월 26일 높이 8,890,800에서 v3.2.5를, 2026년 10월 27일 높이 8,970,638에서 v3.2.6을 적용했습니다. 릴리스가 추가한 라우트와 필드는 해당 네트워크가 그 릴리스를 적용한 뒤에야 나타납니다. 아래에서 2026년 11월 4일로 표시된 라우트 확인은 v3.2.6 업그레이드 이후 공개 메인넷 호스트를 대상으로 수행했습니다. 아래의 기본 URL은 로컬에서 실행 중인 노드를 기준으로 합니다. 공개 호스팅 엔드포인트는 `https://api.qore.host` / `https://api-testnet.qore.host`(REST)와 `https://rpc.qore.host` / `https://rpc-testnet.qore.host`(RPC)이며, [네트워크](/appendix/networks#public-endpoints)에 정리되어 있습니다. **공개 gRPC 엔드포인트는 없습니다**: 호스트 이름 `grpc.qore.host`와 `grpc-testnet.qore.host`는 존재하지 않으므로, gRPC가 필요하면 직접 노드를 실행하십시오.
 :::
 
 ## 기본 URL
@@ -35,7 +35,7 @@ QoreChain 전용 모듈은 REST에서 `/qorechain/<module>/v1/...` 접두사 아
 
 존재하지 않는 라우트는 HTTP `501`과 `{"code":12,"message":"Not Implemented"}`로 응답합니다. 이는 쿼리 결과가 비어 있다는 뜻이 아니라 해당 라우트가 제공되지 않는다는 뜻입니다. `/qorechain/` 접두사가 없는 짧은 경로(예: `/bridge/v1/chains` 또는 `/pqc/v1/params`)는 제공되지 **않습니다**. 존재하는 라우트에서 알 수 없는 레코드를 조회하면 HTTP `404`와 `{"code":5,"message":"... not found"}`가 반환됩니다.
 
-아래 예시는 공개 메인넷 호스트를 사용합니다. 테스트넷에서는 `https://api-testnet.qore.host`로 바꾸십시오. 샘플의 값은 2026년 10월 20일부터 27일 사이에 실제 네트워크에서 읽은 것이며 시간이 지나면 변하므로, 응답의 형태를 파악하는 용도로만 사용하십시오. v3.2.4 릴리스는 일부 라우트와 필드를 추가했습니다. 이들은 아래에서 **v3.2.4**로 표시됩니다. 테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터 이를 제공하고 있습니다. v3.2.5 릴리스(메인넷은 2026년 10월 29일부터, 테스트넷은 10월 26일부터)는 크로스 VM 파라미터 및 메시지 라우트와 네이티브 키 레지스트리 라우트를 추가했으며 **v3.2.5**로 표시됩니다. v3.2.6 릴리스는 더 많은 항목을 추가했으며 **v3.2.6 (testnet)**로 표시됩니다. 이들은 테스트넷에서만 응답하고, 메인넷은 해당 릴리스를 적용할 때까지 `501`로 응답합니다. 아직 이전 릴리스인 노드는 새 라우트에 `501`로 응답합니다.
+아래 예시는 공개 메인넷 호스트를 사용합니다. 테스트넷에서는 `https://api-testnet.qore.host`로 바꾸십시오. 샘플의 값은 2026년 10월 20일부터 27일 사이에 실제 네트워크에서 읽은 것이며 시간이 지나면 변하므로, 응답의 형태를 파악하는 용도로만 사용하십시오. v3.2.4 릴리스는 일부 라우트와 필드를 추가했습니다. 이들은 아래에서 **v3.2.4**로 표시됩니다. 테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터 이를 제공하고 있습니다. v3.2.5 릴리스(메인넷은 2026년 10월 29일부터, 테스트넷은 10월 26일부터)는 크로스 VM 파라미터 및 메시지 라우트와 네이티브 키 레지스트리 라우트를 추가했으며 **v3.2.5**로 표시됩니다. v3.2.6 릴리스(테스트넷은 2026년 10월 27일부터, 메인넷은 2026년 11월 4일부터)는 더 많은 항목을 추가했으며 **v3.2.6**으로 표시됩니다. 메인넷 호스트는 2026년 11월 4일 이들에 `200`으로 응답했습니다(해당되는 곳에는 예외가 명시되어 있습니다). 아직 이전 릴리스인 노드는 새 라우트에 `501`로 응답합니다.
 
 ## PQC 모듈 {#pqc-module}
 
@@ -46,9 +46,9 @@ QoreChain 전용 모듈은 REST에서 `/qorechain/<module>/v1/...` 접두사 아
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | 계정의 EIP-7702 위임 동의, 현재 위임 및 EVM 논스(v3.2.2부터) |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4**(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터이며 이전 릴리스 노드에서는 `501`). 바이너리가 알고 있는 모든 프로토콜 기능과 `enabled`, `known`, `staged` 플래그 |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5**(메인넷은 2026년 10월 29일부터, 테스트넷은 10월 26일부터 두 네트워크 모두 제공하며 이전 노드에서는 `501`). 네이티브 키 레지스트리에서 주소에 등록된 ML-KEM 암호화 키: 등록된 것이 없으면 `{"found":false,"key":null}` |
-| GET    | `/qorechain/pqc/v1/params`               | **v3.2.6 (testnet)**. 모듈 파라미터. 작성 시점에 메인넷에서는 `501` |
+| GET    | `/qorechain/pqc/v1/params`               | **v3.2.6**(테스트넷은 2026년 10월 27일부터, 메인넷은 2026년 11월 4일부터이며 이전 노드에서는 `501`). 모듈 파라미터 |
 
-경로 세그먼트는 단수형 `account`입니다. `/qorechain/pqc/v1/stats` 라우트는 없습니다(`qorechaind query pqc stats`를 사용하십시오). `/qorechain/pqc/v1/params`는 v3.2.6부터 제공되므로 당분간은 테스트넷에서만 사용할 수 있습니다. 메인넷에서는 해당 릴리스를 적용할 때까지 노드에 `qorechaind query pqc params`를 사용하십시오.
+경로 세그먼트는 단수형 `account`입니다. `/qorechain/pqc/v1/stats` 라우트는 없습니다(`qorechaind query pqc stats`를 사용하십시오). `/qorechain/pqc/v1/params`는 v3.2.6부터 제공되며 2026년 11월 4일 두 네트워크 모두에서 `200`으로 응답했습니다(메인넷: `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, `default_signature_algo_name` `dilithium5`, `hybrid_signature_mode_name` `required`). v3.2.6보다 오래된 노드에서는 대신 `qorechaind query pqc params`를 사용하십시오.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -293,7 +293,7 @@ curl -s https://api.qore.host/qorechain/amm/v1/params
 
 일곱 개의 AMM 라우트 모두 두 네트워크에서 응답합니다(2026년 10월 27일 확인). 작성 시점 기준으로 두 네트워크 모두에 풀이 없습니다(`{"pools": []}`). 일치하는 항목이 없는 입력에 대한 응답은 다음과 같습니다. 알 수 없는 ID의 `pools/{pool_id}`는 HTTP `404`(`{"code":5,"message":"pool 1 not found"}`)를, 해당 쌍의 풀이 없는 `pool_by_denoms`는 `404`(`no pool for uqor/foo`)를, 알 수 없는 풀에 대한 견적은 HTTP `400`과 `{"code":3,"message":"pool not found"}`를 반환합니다. `pools/{pool_id}/lp/{address}`는 LP 포지션이 없는 주소에 대해 `{"balance":"0"}`을 반환합니다(주소는 유효한 `qor1` bech32 주소여야 하며, 그렇지 않으면 `400`). 두 견적 라우트와 `pool_by_denoms`는 쿼리 문자열에서 입력을 읽으므로 파라미터가 필요합니다. `amount_in` / `amount_out` 없이는 `400`(`invalid amount_in` / `invalid amount_out`)으로 응답합니다.
 
-테스트넷에서는 풀에 필요한 두 번째 디노미네이션을 v3.2.6부터 사용할 수 있습니다. 거버넌스로 등록된 세 가지 테스트 토큰이며, [테스트넷 테스트 토큰(Fest)](#fest-tokens)을 참조하십시오. 메인넷에는 이에 해당하는 것이 없으며, 메인넷의 뱅크 디노미네이션은 `uqor` 하나뿐입니다.
+테스트넷에서는 풀에 필요한 두 번째 디노미네이션을 사용할 수 있습니다. 거버넌스로 등록된 세 가지 테스트 토큰이며, [테스트넷 테스트 토큰(Fest)](#fest-tokens)을 참조하십시오. 메인넷에는 이에 해당하는 것이 없으며, 메인넷의 뱅크 디노미네이션은 `uqor` 하나뿐입니다.
 
 ## 라이선스 모듈 {#licence-module}
 
@@ -462,10 +462,10 @@ curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
 
 허용 목록에는 두 네트워크 모두 네이티브 `uqor`만 들어 있으므로, 수수료는 `uqor`로 지불되며 변환은 이루어지지 않습니다. 거버넌스가 토큰을 추가하며(풀, 최소 유동성, 시간 가중 가격과 현물 가격 간 최대 편차와 함께), 이러한 토큰으로 지불된 수수료는 QOR 플로트를 통해 변환되고 AMM 풀을 통해 다시 채워집니다. `?denom=` 없이 `conversion_rate`를 호출하면 `500`(`denom is required`)으로 응답합니다.
 
-## RL 합의 모듈 (v3.2.6, 테스트넷) {#rlconsensus-module}
+## RL 합의 모듈 (v3.2.6) {#rlconsensus-module}
 
-:::note 당분간 테스트넷 전용
-`rlconsensus` 모듈의 REST 게이트웨이는 **v3.2.6**과 함께 도입되었으며, `qorechain-diana` 테스트넷은 이를 2026년 10월 27일 높이 8,970,638에서 적용했습니다. 작성 시점(2026년 10월 27일 확인)에 메인넷에서는 아래의 모든 라우트가 HTTP `501`(`{"code":12,"message":"Not Implemented"}`)로 응답하며, 메인넷에서 이 모듈은 gRPC로만 접근할 수 있습니다. 테스트넷에서는 일곱 개 라우트 모두 응답하며 어느 것도 파라미터가 필요하지 않습니다.
+:::note 두 네트워크 모두 v3.2.6부터 제공
+`rlconsensus` 모듈의 REST 게이트웨이는 **v3.2.6**과 함께 도입되었으며, `qorechain-diana` 테스트넷은 이를 2026년 10월 27일 높이 8,970,638에서, 메인넷은 2026년 11월 4일 높이 4,020,000에서 적용했습니다. 2026년 11월 4일에 아래의 일곱 개 라우트 모두 테스트넷뿐 아니라 공개 메인넷 호스트에서도 HTTP `200`으로 응답했으며, 어느 것도 파라미터가 필요하지 않습니다. v3.2.6 이전에는 `501`(`{"code":12,"message":"Not Implemented"}`)로 응답했고 이 모듈은 gRPC로만 접근할 수 있었습니다.
 :::
 
 | 메서드 | 엔드포인트                                  | 설명                                                              |
@@ -493,7 +493,7 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
   "0.000000000000000000", "0.000000000000000000", "0.000000000000000000"], "applied": false }
 ```
 
-에이전트는 `observation_interval`개 블록(10)마다 한 스텝을 수행합니다. `shadow` 모드에서는 행동을 계산해 기록만 하고 아무것도 적용하지 않으므로, `applied`는 `false`이고 `applied_params`는 기본값(`block_time_ms` `5000`, `gas_price_floor` `100`, 풀 가중치 `0.40`과 `0.35`)을 유지합니다. 테스트넷에서는 거버넌스 제안 29(2026년 10월 27일 통과)로 저장된 정책과 함께 에이전트가 shadow 모드로 시작되었으며, `circuit_breaker_active`는 `false`입니다. 금액과 값은 문자열입니다. 적용된 값은 이번 릴리스에서는 참고용입니다. 온체인의 유일한 리더는 읽기 전용 [`rlConsensusParams` 프리컴파일](/developer-guide/evm-precompiles#network-status)입니다. 대응하는 gRPC 메서드는 `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams`, `LastAction`(서비스 `qorechain.rlconsensus.v1.Query`)이며, CLI 명령은 [쿼리 명령](/cli-reference/query-commands#rlconsensus)에 있습니다.
+위의 샘플은 테스트넷의 것입니다. 메인넷(2026년 11월 4일 확인)에서 에이전트는 `conservative` 모드이며 `current_epoch`는 `0`, `total_steps`는 `0`, `circuit_breaker_active`는 `false`입니다. `policy`는 `weight_count` `0`(저장된 정책 없음)을 보고하고, `last_action`은 비어 있으며(`height` `0`, `applied` `false`), `applied_params`는 기본값을 담고 있습니다. 에이전트는 `observation_interval`개 블록(10)마다 한 스텝을 수행합니다. `shadow` 모드에서는 행동을 계산해 기록만 하고 아무것도 적용하지 않으므로, `applied`는 `false`이고 `applied_params`는 기본값(`block_time_ms` `5000`, `gas_price_floor` `100`, 풀 가중치 `0.40`과 `0.35`)을 유지합니다. 테스트넷에서는 거버넌스 제안 29(2026년 10월 27일 통과)로 저장된 정책과 함께 에이전트가 shadow 모드로 시작되었으며, `circuit_breaker_active`는 `false`입니다. 메인넷은 에이전트를 시작하지 않았습니다. 금액과 값은 문자열입니다. 적용된 값은 이번 릴리스에서는 참고용입니다. 온체인의 유일한 리더는 읽기 전용 [`rlConsensusParams` 프리컴파일](/developer-guide/evm-precompiles#network-status)입니다. 대응하는 gRPC 메서드는 `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams`, `LastAction`(서비스 `qorechain.rlconsensus.v1.Query`)이며, CLI 명령은 [쿼리 명령](/cli-reference/query-commands#rlconsensus)에 있습니다.
 
 ## 스테이킹 티어 모듈 (v3.2.4) {#stakingtier-module}
 
@@ -511,7 +511,7 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
 
 ## 평판 모듈 {#reputation-module}
 
-평판 모듈의 REST 라우트는 **테스트넷**(`qorechain-diana`, 체인 v3.2.6)에서 제공됩니다. 메인넷에서는 이 글을 쓰는 시점(2026년 10월 27일)에 모든 `/qorechain/reputation/v1/...` 라우트가 HTTP `501`(`{"code":12,"message":"Not Implemented"}`)로 응답하며, 메인넷에서 이 모듈은 gRPC로만 접근할 수 있습니다(`Params`, 아래 참조). 메인넷 v3.2.5는 이를 추가하지 않았습니다(2026년 10월 30일 확인). 메인넷 릴리스가 이를 제공하면 이 페이지를 업데이트합니다.
+평판 모듈의 REST 라우트는 체인 v3.2.6과 함께 도입되었으며 두 네트워크 모두에서 제공됩니다(테스트넷은 2026년 10월 27일부터, 메인넷은 2026년 11월 4일부터). 2026년 11월 4일 공개 메인넷 호스트에서 확인한 결과 `/qorechain/reputation/v1/params`, `/validators`, `/validator/{address}`가 모두 `200`으로 응답했습니다. v3.2.6 이전에는 모든 라우트가 HTTP `501`(`{"code":12,"message":"Not Implemented"}`)로 응답했고 이 모듈은 gRPC로만 접근할 수 있었습니다.
 
 | 메서드 | 엔드포인트 | 설명 |
 | ------ | -------- | ----------- |
@@ -519,22 +519,22 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
 | GET    | `/qorechain/reputation/v1/validator/{address}` | 한 검증자의 레코드. `{address}`는 `qorvaloper1...` 운영자 주소 또는 `qorvalcons1...` 합의 주소입니다. 필드에는 `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks`, `last_updated_height`가 있습니다. `404`는 검증자에게 아직 점수가 없다는 뜻이며, 운영자 주소도 합의 주소도 아닌 문자열은 `400`으로 응답합니다 |
 | GET    | `/qorechain/reputation/v1/validators` | 점수가 매겨진 모든 검증자의 레코드(`reputations`) |
 
-점수는 0과 1 사이의 십진수 문자열입니다. 라이트 노드는 검증자별 라우트를 읽어, 위임한 검증자가 `min_reputation` 아래로 내려가면 경고합니다([보상 및 모니터링](/light-node/rewards-and-monitoring#delegation-alerts) 참조). 메인넷 호스트의 같은 라우트는 메인넷이 이를 제공할 때까지 `501`을 반환합니다.
+점수는 0과 1 사이의 십진수 문자열입니다. 라이트 노드는 검증자별 라우트를 읽어, 위임한 검증자가 `min_reputation` 아래로 내려가면 경고합니다([보상 및 모니터링](/light-node/rewards-and-monitoring#delegation-alerts) 참조). 같은 라우트가 두 공개 호스트 모두에서 동작합니다.
 
 ## gRPC 전용 모듈 {#grpc-only-modules}
 
-메인넷(노드 릴리스 v3.2.5, 2026년 10월 30일 확인)에서 이 모듈들은 gRPC `Query` 서비스는 있지만 **REST 라우트는 없습니다**. 서비스 이름은 `qorechain.<module>.v1.Query` 형식을 따릅니다.
+메인넷(노드 릴리스 v3.2.6, 2026년 11월 4일 확인)에서 이 모듈들은 gRPC `Query` 서비스는 있지만, 표에 있는 예외를 제외하면 **REST 라우트는 없습니다**. 서비스 이름은 `qorechain.<module>.v1.Query` 형식을 따릅니다.
 
-| 모듈        | gRPC 쿼리 메서드(메인넷, 체인 버전 v3.2.5)     |
+| 모듈        | gRPC 쿼리 메서드(메인넷, 체인 버전 v3.2.6)     |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `PendingMessages` (v3.2.5부터 REST로 제공: `Params`는 `/qorechain/crossvm/v1/params`, `Message`는 `/qorechain/crossvm/v1/message/{id}`) |
-| `reputation`  | `Params` (REST 라우트는 테스트넷에만 있음, [평판 모듈](#reputation-module) 참조) |
-| `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
+| `reputation`  | `Params` (v3.2.6부터 REST로도 제공, [평판 모듈](#reputation-module) 참조) |
+| `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams`, `LastAction` (v3.2.6부터 REST로도 제공) |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |
 
-`rlconsensus` 쿼리는 v3.2.6부터 테스트넷에서 REST로 제공됩니다(`AppliedParams`와 `LastAction` 두 메서드가 추가됨). [RL 합의 모듈](#rlconsensus-module)을 참조하십시오. 메인넷은 해당 릴리스를 적용할 때까지 `501`로 응답합니다. 직접 실행하는 노드에 `grpcurl`을 사용하거나 [CLI 쿼리 명령](/cli-reference/query-commands)을 사용하십시오. `rdk` 쿼리는 REST로도 사용할 수 있으며([RDK 모듈](#rdk-module) 참조), v3.2.2 이전에는 gRPC 전용이었습니다.
+`rlconsensus` 쿼리는 v3.2.6부터 두 네트워크 모두에서 REST로 제공됩니다(`AppliedParams`와 `LastAction` 두 메서드가 추가됨). [RL 합의 모듈](#rlconsensus-module)을 참조하십시오. 직접 실행하는 노드에 `grpcurl`을 사용하거나 [CLI 쿼리 명령](/cli-reference/query-commands)을 사용하십시오. `rdk` 쿼리는 REST로도 사용할 수 있으며([RDK 모듈](#rdk-module) 참조), v3.2.2 이전에는 gRPC 전용이었습니다.
 
 xQORE, BTC 리스테이킹(Babylon), FairBlock 모듈은 현재 릴리스에서 REST와 gRPC 모두 쿼리 서비스가 전혀 없습니다. v3.2.2 이전에는 쿼리 서비스가 없었던 인플레이션 및 가스 추상화 모듈은 REST로 제공됩니다([인플레이션 모듈](#inflation-module) 및 [가스 추상화 모듈](#gas-abstraction-module) 참조).
 
@@ -560,23 +560,23 @@ xQORE, BTC 리스테이킹(Babylon), FairBlock 모듈은 현재 릴리스에서 
 | `/cosmos/evm/feemarket/v1/params`                     | EVM 수수료 시장 파라미터                     |
 | `/cosmwasm/wasm/v1/codes/params`                      | QoreChain Native 업로드/인스턴스화 권한       |
 | `/ibc/apps/transfer/v1/params`                        | IBC 전송 파라미터                       |
-| `/ibc/core/client/v2/counterparty_info/{client_id}`   | **v3.2.6 (testnet)**. 클라이언트에 등록된 IBC v2 카운터파티(없으면 `404`, 메인넷에서는 `501`) |
-| `/ibc/core/client/v2/config/{client_id}`              | **v3.2.6 (testnet)**. IBC v2 클라이언트 구성(`allowed_relayers`, 메인넷에서는 `501`) |
+| `/ibc/core/client/v2/counterparty_info/{client_id}`   | **v3.2.6**. 클라이언트에 등록된 IBC v2 카운터파티(없으면 `404`) |
+| `/ibc/core/client/v2/config/{client_id}`              | **v3.2.6**. IBC v2 클라이언트 구성(`allowed_relayers`) |
 | `/cosmos/evm/erc20/v1/token_pairs`, `/token_pairs/{token}` | ERC20 토큰 쌍(테스트넷: 세 가지 Fest 테스트 토큰과 IBC 토큰 하나, 메인넷: 없음) |
 
 QoreChain Native 접두사는 `/cosmwasm/wasm/v1/...`이며, `/cosmos/wasm/v1/...`은 제공되지 않습니다.
 
-### IBC v2 클라이언트 라우트 (v3.2.6, 테스트넷) {#ibc-v2-routes}
+### IBC v2 클라이언트 라우트 (v3.2.6) {#ibc-v2-routes}
 
-IBC v2 클라이언트 쿼리 서비스는 이전에도 gRPC로 제공되었지만 REST 라우트가 빠져 있었습니다. v3.2.6이 이를 마운트합니다. 릴레이어는 여기서 클라이언트의 카운터파티를 읽습니다. 두 라우트 모두 경로에 클라이언트 ID(예: `07-<type>-0`)를 받으며, 이것이 없으면 두 네트워크 모두에서 `501`로 응답합니다. 2026년 10월 27일 확인:
+IBC v2 클라이언트 쿼리 서비스는 이전에도 gRPC로 제공되었지만 REST 라우트가 빠져 있었습니다. v3.2.6이 이를 마운트합니다. 릴레이어는 여기서 클라이언트의 카운터파티를 읽습니다. 두 라우트 모두 경로에 클라이언트 ID(예: `07-<type>-0`)를 받으며, 빈 ID는 `400`으로 응답합니다. 테스트넷은 2026년 10월 27일에, 메인넷은 2026년 11월 4일에 확인했습니다:
 
-| 라우트 | 테스트넷 (v3.2.6) | 메인넷 (v3.2.5) |
+| 라우트 | 테스트넷 (v3.2.6) | 메인넷 (v3.2.6) |
 | --- | --- | --- |
-| `/ibc/core/client/v2/counterparty_info/{client_id}` | 카운터파티와 함께 `200`, 또는 등록된 카운터파티가 없는 클라이언트에는 `404`(`client 07-<type>-0 counterparty not found`). 빈 ID는 `400` | `501` |
-| `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}`(빈 목록은 모든 릴레이어를 허용한다는 뜻) | `501` |
-| `/ibc/core/channel/v2/clients/{client_id}/next_sequence_send`, `/packet_commitments` 및 그 밖의 IBC v2 채널 라우트 | 응답함(클라이언트에 기록된 것이 없으면 `404`, 커밋먼트는 빈 목록과 함께 `200`) | 응답함, 같은 형태 |
+| `/ibc/core/client/v2/counterparty_info/{client_id}` | 카운터파티와 함께 `200`, 또는 등록된 카운터파티가 없는 클라이언트에는 `404`(`client 07-<type>-0 counterparty not found`). 빈 ID는 `400` | 같은 형태: 카운터파티가 없는 클라이언트에는 `404`(`client 07-tendermint-0 counterparty not found`)(메인넷에는 아직 IBC 클라이언트가 없음) |
+| `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}`(빈 목록은 모든 릴레이어를 허용한다는 뜻) | `200`, `{"config":{"allowed_relayers":[]}}` |
+| `/ibc/core/channel/v2/clients/{client_id}/next_sequence_send`, `/packet_commitments` 및 그 밖의 IBC v2 채널 라우트 | 응답함(클라이언트에 기록된 것이 없으면 `404`, 커밋먼트는 빈 목록과 함께 `200`) | 응답함, 같은 형태(2026년 11월 4일 확인) |
 
-IBC v1 라우트(`/ibc/core/client/v1/...`, `/ibc/core/channel/v1/...`)는 두 네트워크 모두에서 응답합니다. 작성 시점에 테스트넷에는 IBC 클라이언트 하나와 열린 전송 채널 하나(`channel-0`, IBC 디노미네이션 토큰 하나)가 있으며, 메인넷에는 IBC 클라이언트, 채널, IBC 디노미네이션 토큰이 없습니다. 테스트넷에서는 레이트 리밋 모듈이 `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits`(빈 목록: 설정된 한도 없음)에서, 08-wasm 체크섬 목록이 `/ibc/lightclients/wasm/v1/checksums`(비어 있음)에서 응답하며, 메인넷은 둘 다 `501`로 응답합니다.
+IBC v1 라우트(`/ibc/core/client/v1/...`, `/ibc/core/channel/v1/...`)는 두 네트워크 모두에서 응답합니다. 작성 시점에 테스트넷에는 IBC 클라이언트 하나와 열린 전송 채널 하나(`channel-0`, IBC 디노미네이션 토큰 하나)가 있으며, 메인넷에는 IBC 클라이언트, 채널, IBC 디노미네이션 토큰이 없습니다. 레이트 리밋 모듈은 `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits`에서, 08-wasm 체크섬 목록은 `/ibc/lightclients/wasm/v1/checksums`에서 응답합니다. 두 네트워크 모두에서 첫 번째는 빈 `rate_limits` 목록(설정된 한도 없음)을, 두 번째는 빈 `checksums` 목록을 반환합니다. 메인넷은 2026년 11월 4일 둘 다 `200`으로 응답했습니다(v3.2.6 이전에는 `501`로 응답). 패킷 포워딩 쿼리 라우트 `/ibc/apps/packetforward/v1/params`는 메인넷에서 `501`로 응답했습니다. 이에 대한 공개 라우트는 찾지 못했으므로, 그 설정은 그곳에서 REST로 읽을 수 없습니다.
 
 ### 테스트넷 테스트 토큰 (Fest) {#fest-tokens}
 
@@ -618,7 +618,7 @@ grpcurl -plaintext localhost:9090 list
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query`에는 v3.2.3 노드에서 `Account`, `EVMWindow`, `EVMDelegationConsent`의 세 가지 메서드가 있으며, v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터) `ProtocolFeatures`라는 네 번째 메서드가 있습니다. `Params` 메서드는 v3.2.6에서 추가되었으며(당분간 테스트넷만), 메인넷 노드에는 `Params` 메서드가 없습니다.
+`qorechain.pqc.v1.Query`에는 v3.2.3 노드에서 `Account`, `EVMWindow`, `EVMDelegationConsent`의 세 가지 메서드가 있으며, v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터) `ProtocolFeatures`라는 네 번째 메서드가 있습니다. `Params` 메서드는 v3.2.6에서 추가되었으며(테스트넷은 2026년 10월 27일부터, 메인넷은 2026년 11월 4일부터), v3.2.6보다 오래된 노드에는 `Params` 메서드가 없습니다.
 
 ## 인증
 

@@ -12,7 +12,7 @@ The QoreChain **Rollup Development Kit (RDK)** is a set of client libraries (Typ
 :::caution Early-stage capability
 The RDK is deployed on both networks, but **no rollup has been created on either one yet** (checked 27 October 2026), so the flows described in this section have not been exercised by third parties. **ZK settlement (the `defi` profile, the `defi-rollup` template and every `zk` rollup) cannot be used on either network yet:** the chain has no way to register a verification key, so every ZK batch is refused after its fee is paid. Key registration is planned for chain v3.2.7. Use `optimistic` settlement until then.
 
-Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, live since 7 June 2026) runs chain version **v3.2.5** (governance proposal 14 applied it at height 3,906,833 on 29 October 2026; v3.2.4 had been applied at height 3,742,566 on 23 October 2026, proposal 13); the testnet (**`qorechain-diana`**, EVM chain ID **9800**) runs **v3.2.6** (v3.2.4 reached it on 19 October 2026, v3.2.5 on 26 October and v3.2.6 on 27 October). What v3.2.5 changes for rollups is listed under [chain v3.2.5 behaviour](#v325); it applies on both networks. Where behaviour changed between v3.2.3 and v3.2.4, this section says which release applies. Validate every deployment on the testnet first, and read the status notes on each page: several capabilities (ZK verification, Celestia data availability, the QCAI Copilot, cross-VM calls, settlement receipts) are not usable end to end today.
+Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, live since 7 June 2026) runs chain version **v3.2.6** (governance proposal 15 applied it at height 4,020,000 on 4 November 2026; v3.2.5 had been applied at height 3,906,833 on 29 October 2026 by proposal 14, and v3.2.4 at height 3,742,566 on 23 October 2026, proposal 13); the testnet (**`qorechain-diana`**, EVM chain ID **9800**) has run **v3.2.6** since 27 October (v3.2.4 reached it on 19 October 2026, v3.2.5 on 26 October and v3.2.6 on 27 October). What v3.2.5 changes for rollups is listed under [chain v3.2.5 behaviour](#v325); it applies on both networks. Where behaviour changed between v3.2.3 and v3.2.4, this section says which release applies. Validate every deployment on the testnet first, and read the status notes on each page: several capabilities (ZK verification, Celestia data availability, the QCAI Copilot, cross-VM calls, settlement receipts) are not usable end to end today.
 :::
 
 ## Innovations {#innovations}
@@ -191,7 +191,7 @@ Templates are `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`,
 
 | Network | Chain id | EVM chain ID | REST endpoint | Chain version |
 | ------- | -------- | ------------ | ------------- | ------------- |
-| Mainnet | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.5 |
+| Mainnet | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.6 |
 | Testnet | `qorechain-diana` | 9800 | `https://api-testnet.qore.host` | v3.2.6 |
 
 Both networks serve the RDK queries (`/qorechain/rdk/v1/...`) over REST, gRPC and the CLI, so reads such as `rdk.params()` work against either. The testnet is a staging network with its own parameters: the default challenge window is 3,600 seconds on the testnet and 604,800 on mainnet, at most 200 rollups can exist on the testnet and 100 on mainnet, and the multilayer module allows 64 sidechain layers on the testnet and 10 on mainnet (checked 27 October 2026). Read `GET /qorechain/rdk/v1/params` on the network you target.
@@ -211,7 +211,7 @@ Reading state needs none of these. You can also request a rollup through the Das
 
 ### Chain v3.2.5 behaviour: live on both networks {#v325}
 
-Chain v3.2.5 is live on mainnet (applied at height 3,906,833 on 29 October 2026, governance proposal 14) and on the testnet (since 26 October 2026). The testnet runs v3.2.6, which includes it. RDK 0.7.0 and later support both. These rules apply on both networks; no rollup has been created on mainnet yet (`GET /qorechain/rdk/v1/rollups` returns an empty list, checked 30 October 2026), so the rules below are the release's rules and have not yet been exercised by a live mainnet rollup. For a rollup developer:
+Chain v3.2.5 is live on mainnet (applied at height 3,906,833 on 29 October 2026, governance proposal 14) and on the testnet (since 26 October 2026). Both networks now run v3.2.6, which includes it. RDK 0.7.0 and later support both. These rules apply on both networks; no rollup has been created on mainnet yet (`GET /qorechain/rdk/v1/rollups` returned an empty list on 4 November 2026), so the rules below are the release's rules and have not yet been exercised by a live mainnet rollup. For a rollup developer:
 
 | Behaviour | Both networks (v3.2.5 and later) |
 | --------- | -------------------------------- |
@@ -221,10 +221,10 @@ Chain v3.2.5 is live on mainnet (applied at height 3,906,833 on 29 October 2026,
 | Pending optimistic batches | At most 4,096 per rollup |
 | Stopping a rollup | Refused while the latest batch is `submitted` or `challenged`; a stopped rollup frees its slot |
 | `withdrawals_root` | Empty or exactly 32 bytes; second-form withdrawal leaves name the chain id |
-| Cross-VM bridge | `GET /qorechain/crossvm/v1/params` serves the allowlist (`bridge_allowed_targets`, empty on both networks, checked 30 October 2026); the precompile returns `abi.encode(bytes)` and refuses with `Error(string)` |
+| Cross-VM bridge | `GET /qorechain/crossvm/v1/params` serves the allowlist (`bridge_allowed_targets`: empty on mainnet, checked again on 4 November 2026; on the testnet it was empty on 30 October and held three CosmWasm targets on 4 November); the precompile returns `abi.encode(bytes)` and refuses with `Error(string)` |
 | Cross-VM precompile `0x...0901` | Still not active |
 
-What is still testnet only is v3.2.6 (for example the IBC rate limit, packet forwarding and the 08-wasm messages); none of it changes how a rollup settles.
+Chain v3.2.6 is live on both networks (mainnet since 4 November 2026, height 4,020,000, proposal 15). For rollups the release adds `withdrawals_bound` to the batch view (whether a batch's withdrawals are bound to it); it also adds IBC and observability changes that do not change how a rollup settles. No mainnet rollup exists to show the new field, so it is stated from the release notes, not observed.
 
 ### What exists today {#what-exists-today}
 

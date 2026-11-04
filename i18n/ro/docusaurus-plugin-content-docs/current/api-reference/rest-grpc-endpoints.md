@@ -18,7 +18,7 @@ QoreChain expune trei interfețe principale pentru acces programatic:
 Toate punctele finale REST returnează JSON. Punctele finale gRPC folosesc Protocol Buffers și pot fi consumate cu orice client gRPC. Interfața RPC oferă interogări la nivel de consens și difuzarea tranzacțiilor.
 
 :::note
-Aceste interfețe sunt disponibile atât pe mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026), cât și pe testnet-ul **`qorechain-diana`**, La momentul scrierii (verificat la 30 octombrie 2026), mainnet-ul rulează versiunea de nod **v3.2.5** (aplicată la înălțimea 3.906.833, pe 29 octombrie 2026, propunerea de guvernanță 14; v3.2.4 fusese aplicată la înălțimea 3.742.566, pe 23 octombrie 2026). Testnet-ul rulează **v3.2.6**: a aplicat v3.2.5 la înălțimea 8.890.800, pe 26 octombrie 2026, și v3.2.6 la înălțimea 8.970.638, pe 27 octombrie 2026. Rutele și câmpurile adăugate de o versiune apar pe o rețea abia după ce rețeaua respectivă a aplicat versiunea; această pagină marchează ce este disponibil doar pe testnet. URL-urile de bază de mai jos presupun un nod care rulează local. Punctele finale publice găzduite sunt `https://api.qore.host` / `https://api-testnet.qore.host` (REST) și `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), listate în [Rețele](/appendix/networks#public-endpoints). **Nu există un punct final gRPC public**: numele de gazdă `grpc.qore.host` și `grpc-testnet.qore.host` nu există, așa că rulați propriul nod dacă aveți nevoie de gRPC.
+Aceste interfețe sunt disponibile atât pe mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026), cât și pe testnet-ul **`qorechain-diana`**. Ambele rețele rulează versiunea de nod **v3.2.6**. Mainnet-ul a aplicat-o la înălțimea 4.020.000, pe 4 noiembrie 2026 (propunerea de guvernanță 15, după v3.2.5 la înălțimea 3.906.833, pe 29 octombrie 2026, propunerea 14, și v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026); testnet-ul a aplicat v3.2.5 la înălțimea 8.890.800, pe 26 octombrie 2026, și v3.2.6 la înălțimea 8.970.638, pe 27 octombrie 2026. Rutele și câmpurile adăugate de o versiune apar pe o rețea abia după ce rețeaua respectivă a aplicat versiunea. Verificările de rute marcate cu 4 noiembrie 2026 mai jos au fost făcute pe gazda publică de mainnet după upgrade-ul v3.2.6. URL-urile de bază de mai jos presupun un nod care rulează local. Punctele finale publice găzduite sunt `https://api.qore.host` / `https://api-testnet.qore.host` (REST) și `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), listate în [Rețele](/appendix/networks#public-endpoints). **Nu există un punct final gRPC public**: numele de gazdă `grpc.qore.host` și `grpc-testnet.qore.host` nu există, așa că rulați propriul nod dacă aveți nevoie de gRPC.
 :::
 
 ## URL-uri de bază
@@ -35,7 +35,7 @@ Modulele specifice QoreChain sunt expuse prin REST sub prefixul `/qorechain/<mod
 
 O rută care nu există răspunde cu HTTP `501` și `{"code":12,"message":"Not Implemented"}`. Asta înseamnă că ruta nu este servită, nu că interogarea a returnat un rezultat gol. Căile scurte fără prefixul `/qorechain/` (de exemplu `/bridge/v1/chains` sau `/pqc/v1/params`) **nu** sunt servite. O înregistrare necunoscută pe o rută care există returnează HTTP `404` cu `{"code":5,"message":"... not found"}`.
 
-Exemplele de mai jos folosesc gazda publică de mainnet; înlocuiți-o cu `https://api-testnet.qore.host` pentru testnet. Valorile din exemple au fost citite de pe rețelele live între 20 și 27 octombrie 2026 și se schimbă în timp; folosiți-le pentru forma unui răspuns. Versiunea v3.2.4 a adăugat câteva rute și câmpuri. Ele sunt marcate mai jos cu **v3.2.4**: testnet-ul le servește din 19 octombrie 2026, iar mainnet-ul din 23 octombrie 2026. Versiunea v3.2.5 (pe mainnet din 29 octombrie 2026, pe testnet din 26 octombrie) a adăugat rutele pentru parametrii și mesajele cross-VM și ruta registrului nativ de chei, marcate cu **v3.2.5**. Versiunea v3.2.6 a adăugat altele, marcate cu **v3.2.6 (testnet)**: ele răspund doar pe testnet, iar mainnet-ul le răspunde cu `501` până când aplică acea versiune. Un nod aflat încă pe o versiune mai veche răspunde la o rută nouă cu `501`.
+Exemplele de mai jos folosesc gazda publică de mainnet; înlocuiți-o cu `https://api-testnet.qore.host` pentru testnet. Valorile din exemple au fost citite de pe rețelele live între 20 și 27 octombrie 2026 și se schimbă în timp; folosiți-le pentru forma unui răspuns. Versiunea v3.2.4 a adăugat câteva rute și câmpuri. Ele sunt marcate mai jos cu **v3.2.4**: testnet-ul le servește din 19 octombrie 2026, iar mainnet-ul din 23 octombrie 2026. Versiunea v3.2.5 (pe mainnet din 29 octombrie 2026, pe testnet din 26 octombrie) a adăugat rutele pentru parametrii și mesajele cross-VM și ruta registrului nativ de chei, marcate cu **v3.2.5**. Versiunea v3.2.6 (pe testnet din 27 octombrie 2026, pe mainnet din 4 noiembrie 2026) a adăugat altele, marcate cu **v3.2.6**: gazda de mainnet le-a răspuns cu `200` pe 4 noiembrie 2026 (o excepție este notată acolo unde se aplică). Un nod aflat încă pe o versiune mai veche răspunde la o rută nouă cu `501`.
 
 ## Modulul PQC {#pqc-module}
 
@@ -46,9 +46,9 @@ Exemplele de mai jos folosesc gazda publică de mainnet; înlocuiți-o cu `https
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | Consimțământul contului pentru delegarea EIP-7702, delegarea curentă și nonce-ul EVM (începând cu v3.2.2) |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (testnet din 19 octombrie 2026; mainnet din 23 octombrie 2026; `501` pe un nod mai vechi). Fiecare funcționalitate de protocol pe care o cunoaște binarul, cu indicatorii `enabled`, `known` și `staged` |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (ambele rețele: pe mainnet din 29 octombrie 2026, pe testnet din 26 octombrie; `501` pe un nod mai vechi). Cheia de criptare ML-KEM înregistrată pentru o adresă în registrul nativ de chei: `{"found":false,"key":null}` când nu este înregistrată niciuna |
-| GET    | `/qorechain/pqc/v1/params`               | **v3.2.6 (testnet)**. Parametrii modulului; `501` pe mainnet la momentul scrierii |
+| GET    | `/qorechain/pqc/v1/params`               | **v3.2.6** (testnet din 27 octombrie 2026, mainnet din 4 noiembrie 2026; `501` pe un nod mai vechi). Parametrii modulului |
 
-Rețineți că segmentul de cale este `account`, la singular. Nu există ruta `/qorechain/pqc/v1/stats` (folosiți `qorechaind query pqc stats`). `/qorechain/pqc/v1/params` este servită începând cu v3.2.6, deci deocamdată doar pe testnet; pe mainnet folosiți `qorechaind query pqc params` pe un nod, până când aplică acea versiune.
+Rețineți că segmentul de cale este `account`, la singular. Nu există ruta `/qorechain/pqc/v1/stats` (folosiți `qorechaind query pqc stats`). `/qorechain/pqc/v1/params` este servită începând cu v3.2.6 și a răspuns cu `200` pe ambele rețele la 4 noiembrie 2026 (pe mainnet: `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, `default_signature_algo_name` `dilithium5`, `hybrid_signature_mode_name` `required`). Pe un nod mai vechi decât v3.2.6 folosiți în schimb `qorechaind query pqc params`.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -293,7 +293,7 @@ curl -s https://api.qore.host/qorechain/amm/v1/params
 
 Toate cele șapte rute AMM răspund pe ambele rețele (verificat la 27 octombrie 2026). La momentul scrierii nu există pool-uri pe nicio rețea (`{"pools": []}`). Răspunsurile pentru intrări care nu se potrivesc cu nimic: `pools/{pool_id}` cu un id necunoscut returnează HTTP `404` (`{"code":5,"message":"pool 1 not found"}`); `pool_by_denoms` fără pool pentru pereche returnează `404` (`no pool for uqor/foo`); o cotație pentru un pool necunoscut returnează HTTP `400` cu `{"code":3,"message":"pool not found"}`; `pools/{pool_id}/lp/{address}` returnează `{"balance":"0"}` pentru o adresă fără poziție LP (adresa trebuie să fie o adresă bech32 `qor1` validă, altfel `400`). Cele două rute de cotație și `pool_by_denoms` își citesc intrarea din query string, deci au nevoie de parametri: fără `amount_in` / `amount_out` răspund `400` (`invalid amount_in` / `invalid amount_out`).
 
-Pe testnet, a doua denominație de care are nevoie un pool este disponibilă începând cu v3.2.6: trei tokenuri de test înregistrate prin guvernanță, vezi [Tokenuri de test pe testnet (Fest)](#fest-tokens). Nu există un echivalent pe mainnet, a cărui singură denominație bancară este `uqor`.
+Pe testnet, a doua denominație de care are nevoie un pool este disponibilă: trei tokenuri de test înregistrate prin guvernanță, vezi [Tokenuri de test pe testnet (Fest)](#fest-tokens). Nu există un echivalent pe mainnet, a cărui singură denominație bancară este `uqor`.
 
 ## Modulul Licence {#licence-module}
 
@@ -462,10 +462,10 @@ curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
 
 Lista acceptată conține doar `uqor` nativ pe ambele rețele, deci taxele se plătesc în `uqor` și nu are loc nicio conversie. Guvernanța adaugă un token (cu un pool, o lichiditate minimă și o deviație maximă între prețul mediat în timp și cel spot); o taxă plătită într-un astfel de token este convertită printr-un float de QOR și reumplută printr-un pool AMM. `conversion_rate` fără `?denom=` răspunde cu `500` (`denom is required`).
 
-## Modulul RL Consensus (v3.2.6, testnet) {#rlconsensus-module}
+## Modulul RL Consensus (v3.2.6) {#rlconsensus-module}
 
-:::note Deocamdată doar pe testnet
-Gateway-ul REST al modulului `rlconsensus` a apărut cu **v3.2.6**, pe care testnet-ul `qorechain-diana` a aplicat-o la înălțimea 8.970.638, pe 27 octombrie 2026. Pe mainnet, fiecare rută de mai jos răspunde cu HTTP `501` (`{"code":12,"message":"Not Implemented"}`) la momentul scrierii (verificat la 27 octombrie 2026); acolo modulul poate fi accesat doar prin gRPC. Toate cele șapte rute răspund pe testnet și niciuna nu are nevoie de parametri.
+:::note Servit pe ambele rețele începând cu v3.2.6
+Gateway-ul REST al modulului `rlconsensus` a apărut cu **v3.2.6**, pe care testnet-ul `qorechain-diana` a aplicat-o la înălțimea 8.970.638, pe 27 octombrie 2026, iar mainnet-ul la înălțimea 4.020.000, pe 4 noiembrie 2026. Pe 4 noiembrie 2026, toate cele șapte rute de mai jos au răspuns cu HTTP `200` atât pe gazda publică de mainnet, cât și pe testnet; niciuna nu are nevoie de parametri. Înainte de v3.2.6 răspundeau cu `501` (`{"code":12,"message":"Not Implemented"}`), iar modulul putea fi accesat doar prin gRPC.
 :::
 
 | Metodă | Punct final                               | Descriere                                                                |
@@ -493,7 +493,7 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
   "0.000000000000000000", "0.000000000000000000", "0.000000000000000000"], "applied": false }
 ```
 
-Agentul face un pas la fiecare `observation_interval` blocuri (10). În modul `shadow` calculează o acțiune și o înregistrează fără să aplice nimic, deci `applied` este `false`, iar `applied_params` rămâne la valorile implicite (`block_time_ms` `5000`, `gas_price_floor` `100`, ponderile pool-urilor `0.40` și `0.35`). Pe testnet, agentul a fost pornit în modul shadow, cu o politică stocată, prin propunerea de guvernanță 29 (aprobată la 27 octombrie 2026); `circuit_breaker_active` este `false`. Sumele și valorile sunt șiruri de caractere. Valorile aplicate sunt doar informative în această versiune: singurul cititor on-chain este [precompilarea `rlConsensusParams`](/developer-guide/evm-precompiles#network-status), doar pentru citire. Metodele gRPC corespunzătoare sunt `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams` și `LastAction` (serviciul `qorechain.rlconsensus.v1.Query`), iar comenzile CLI sunt în [Comenzi de interogare](/cli-reference/query-commands#rlconsensus).
+Exemplele de mai sus sunt de pe testnet. Pe mainnet (verificat la 4 noiembrie 2026) agentul este în modul `conservative`, cu `current_epoch` `0`, `total_steps` `0` și `circuit_breaker_active` `false`, `policy` raportează `weight_count` `0` (nicio politică stocată), `last_action` este gol (`height` `0`, `applied` `false`), iar `applied_params` conține valorile implicite. Agentul face un pas la fiecare `observation_interval` blocuri (10). În modul `shadow` calculează o acțiune și o înregistrează fără să aplice nimic, deci `applied` este `false`, iar `applied_params` rămâne la valorile implicite (`block_time_ms` `5000`, `gas_price_floor` `100`, ponderile pool-urilor `0.40` și `0.35`). Pe testnet, agentul a fost pornit în modul shadow, cu o politică stocată, prin propunerea de guvernanță 29 (aprobată la 27 octombrie 2026); `circuit_breaker_active` este `false`. Mainnet-ul nu a pornit agentul. Sumele și valorile sunt șiruri de caractere. Valorile aplicate sunt doar informative în această versiune: singurul cititor on-chain este [precompilarea `rlConsensusParams`](/developer-guide/evm-precompiles#network-status), doar pentru citire. Metodele gRPC corespunzătoare sunt `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams` și `LastAction` (serviciul `qorechain.rlconsensus.v1.Query`), iar comenzile CLI sunt în [Comenzi de interogare](/cli-reference/query-commands#rlconsensus).
 
 ## Modulul Staking Tiers (v3.2.4) {#stakingtier-module}
 
@@ -511,7 +511,7 @@ Modulul staking-tiers face parte din **v3.2.4**. Aceste rute sunt servite de tes
 
 ## Modulul Reputation {#reputation-module}
 
-Rutele REST ale modulului reputation sunt servite de **testnet** (`qorechain-diana`, chain v3.2.6). Pe mainnet, fiecare rută `/qorechain/reputation/v1/...` răspunde cu HTTP `501` (`{"code":12,"message":"Not Implemented"}`) la momentul scrierii (27 octombrie 2026); acolo modulul poate fi accesat doar prin gRPC (`Params`, vezi mai jos). Mainnet v3.2.5 nu le-a adăugat (verificat la 30 octombrie 2026); această pagină va fi actualizată după ce o versiune de mainnet le servește.
+Rutele REST ale modulului reputation au apărut cu chain v3.2.6 și sunt servite de ambele rețele (testnet din 27 octombrie 2026, mainnet din 4 noiembrie 2026). Verificat pe gazda publică de mainnet la 4 noiembrie 2026: `/qorechain/reputation/v1/params`, `/validators` și `/validator/{address}` au răspuns toate cu `200`. Înainte de v3.2.6 fiecare rută răspundea cu HTTP `501` (`{"code":12,"message":"Not Implemented"}`), iar modulul putea fi accesat doar prin gRPC.
 
 | Metodă | Punct final | Descriere |
 | ------ | -------- | ----------- |
@@ -519,22 +519,22 @@ Rutele REST ale modulului reputation sunt servite de **testnet** (`qorechain-dia
 | GET    | `/qorechain/reputation/v1/validator/{address}` | Înregistrarea unui validator. `{address}` este o adresă de operator `qorvaloper1...` sau o adresă de consens `qorvalcons1...`. Câmpurile includ `composite_score`, `stake_score`, `performance_score`, `contribution_score`, `time_score`, `uptime_blocks`, `missed_blocks` și `last_updated_height`. `404` înseamnă că validatorul nu are încă un scor; un șir care nu este nici adresă de operator, nici adresă de consens răspunde cu `400` |
 | GET    | `/qorechain/reputation/v1/validators` | Înregistrările tuturor validatorilor cu scor (`reputations`) |
 
-Scorurile sunt șiruri zecimale între 0 și 1. Nodul light citește ruta per validator pentru a avertiza când un validator delegat se află sub `min_reputation` (vezi [Recompense și monitorizare](/light-node/rewards-and-monitoring#delegation-alerts)). Aceleași rute de pe gazda mainnet returnează `501` până când mainnet le servește.
+Scorurile sunt șiruri zecimale între 0 și 1. Nodul light citește ruta per validator pentru a avertiza când un validator delegat se află sub `min_reputation` (vezi [Recompense și monitorizare](/light-node/rewards-and-monitoring#delegation-alerts)). Aceleași rute funcționează pe ambele gazde publice.
 
 ## Module doar gRPC {#grpc-only-modules}
 
-Pe mainnet (versiunea de nod v3.2.5, verificat la 30 octombrie 2026) aceste module au un serviciu gRPC `Query`, dar **nicio rută REST**. Numele serviciilor urmează forma `qorechain.<module>.v1.Query`.
+Pe mainnet (versiunea de nod v3.2.6, verificat la 4 noiembrie 2026) aceste module au un serviciu gRPC `Query`, dar **nicio rută REST**, cu excepțiile din tabel. Numele serviciilor urmează forma `qorechain.<module>.v1.Query`.
 
-| Modul         | Metode de interogare gRPC (mainnet, versiunea de chain v3.2.5) |
+| Modul         | Metode de interogare gRPC (mainnet, versiunea de chain v3.2.6) |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `PendingMessages` (prin REST începând cu v3.2.5: `Params` la `/qorechain/crossvm/v1/params` și `Message` la `/qorechain/crossvm/v1/message/{id}`) |
-| `reputation`  | `Params` (rutele REST există doar pe testnet, vezi [Modulul Reputation](#reputation-module)) |
-| `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
+| `reputation`  | `Params` (și prin REST începând cu v3.2.6, vezi [Modulul Reputation](#reputation-module)) |
+| `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams`, `LastAction` (și prin REST începând cu v3.2.6) |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |
 
-Interogările `rlconsensus` sunt servite prin REST pe testnet începând cu v3.2.6 (cu încă două metode, `AppliedParams` și `LastAction`); vezi [Modulul RL Consensus](#rlconsensus-module). Mainnet-ul le răspunde cu `501` până când aplică acea versiune. Folosiți `grpcurl` împotriva propriului nod sau [comenzile CLI de interogare](/cli-reference/query-commands). Interogările `rdk` sunt disponibile și prin REST (vezi [Modulul RDK](#rdk-module)); înainte de v3.2.2 erau doar gRPC.
+Interogările `rlconsensus` sunt servite prin REST pe ambele rețele începând cu v3.2.6 (cu încă două metode, `AppliedParams` și `LastAction`); vezi [Modulul RL Consensus](#rlconsensus-module). Folosiți `grpcurl` împotriva propriului nod sau [comenzile CLI de interogare](/cli-reference/query-commands). Interogările `rdk` sunt disponibile și prin REST (vezi [Modulul RDK](#rdk-module)); înainte de v3.2.2 erau doar gRPC.
 
 Modulele xQORE, BTC-restaking (Babylon) și FairBlock nu au deloc serviciu de interogare în versiunea curentă, nici prin REST, nici prin gRPC. Modulele inflation și gas-abstraction, care nu aveau niciunul înainte de v3.2.2, sunt servite prin REST (vezi [Modulul Inflation](#inflation-module) și [Modulul Gas Abstraction](#gas-abstraction-module)).
 
@@ -560,23 +560,23 @@ Sunt servite și rutele REST standard Cosmos SDK, IBC, EVM și QoreChain Native.
 | `/cosmos/evm/feemarket/v1/params`                     | Parametrii pieței de taxe EVM                 |
 | `/cosmwasm/wasm/v1/codes/params`                      | Permisiunile de încărcare/instanțiere QoreChain Native |
 | `/ibc/apps/transfer/v1/params`                        | Parametrii transferului IBC                   |
-| `/ibc/core/client/v2/counterparty_info/{client_id}`   | **v3.2.6 (testnet)**. Contrapartea IBC v2 înregistrată pentru un client (`404` dacă nu există; `501` pe mainnet) |
-| `/ibc/core/client/v2/config/{client_id}`              | **v3.2.6 (testnet)**. Configurația clientului IBC v2 (`allowed_relayers`; `501` pe mainnet) |
+| `/ibc/core/client/v2/counterparty_info/{client_id}`   | **v3.2.6**. Contrapartea IBC v2 înregistrată pentru un client (`404` dacă nu există) |
+| `/ibc/core/client/v2/config/{client_id}`              | **v3.2.6**. Configurația clientului IBC v2 (`allowed_relayers`) |
 | `/cosmos/evm/erc20/v1/token_pairs`, `/token_pairs/{token}` | Perechi de tokenuri ERC20 (testnet: cele trei tokenuri de test Fest și un token IBC; mainnet: niciuna) |
 
 Prefixul QoreChain Native este `/cosmwasm/wasm/v1/...`; `/cosmos/wasm/v1/...` nu este servit.
 
-### Rutele clientului IBC v2 (v3.2.6, testnet) {#ibc-v2-routes}
+### Rutele clientului IBC v2 (v3.2.6) {#ibc-v2-routes}
 
-Serviciul de interogare al clientului IBC v2 era servit anterior prin gRPC, dar îi lipseau rutele REST; v3.2.6 le montează. Un relayer citește de aici contrapartea unui client. Ambele rute primesc ID-ul clientului în cale (de exemplu `07-<type>-0`); fără el răspund `501` pe ambele rețele. Verificat la 27 octombrie 2026:
+Serviciul de interogare al clientului IBC v2 era servit anterior prin gRPC, dar îi lipseau rutele REST; v3.2.6 le montează. Un relayer citește de aici contrapartea unui client. Ambele rute primesc ID-ul clientului în cale (de exemplu `07-<type>-0`); un ID gol răspunde `400`. Verificat pe testnet la 27 octombrie 2026 și pe mainnet la 4 noiembrie 2026:
 
-| Rută | Testnet (v3.2.6) | Mainnet (v3.2.5) |
+| Rută | Testnet (v3.2.6) | Mainnet (v3.2.6) |
 | --- | --- | --- |
-| `/ibc/core/client/v2/counterparty_info/{client_id}` | `200` cu contrapartea, sau `404` (`client 07-<type>-0 counterparty not found`) pentru un client fără contraparte înregistrată; un ID gol răspunde `400` | `501` |
-| `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}` (o listă goală înseamnă orice relayer) | `501` |
-| `/ibc/core/channel/v2/clients/{client_id}/next_sequence_send`, `/packet_commitments` și celelalte rute de canal IBC v2 | răspund (`404` când nu este înregistrat nimic pentru client, `200` cu o listă goală pentru commitments) | răspund, aceleași forme |
+| `/ibc/core/client/v2/counterparty_info/{client_id}` | `200` cu contrapartea, sau `404` (`client 07-<type>-0 counterparty not found`) pentru un client fără contraparte înregistrată; un ID gol răspunde `400` | aceleași forme: `404` (`client 07-tendermint-0 counterparty not found`) pentru un client fără contraparte (mainnet-ul nu are încă niciun client IBC) |
+| `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}` (o listă goală înseamnă orice relayer) | `200`, `{"config":{"allowed_relayers":[]}}` |
+| `/ibc/core/channel/v2/clients/{client_id}/next_sequence_send`, `/packet_commitments` și celelalte rute de canal IBC v2 | răspund (`404` când nu este înregistrat nimic pentru client, `200` cu o listă goală pentru commitments) | răspund, aceleași forme (verificat la 4 noiembrie 2026) |
 
-Rutele IBC v1 (`/ibc/core/client/v1/...`, `/ibc/core/channel/v1/...`) răspund pe ambele rețele. La momentul scrierii, testnet-ul are un client IBC și un canal de transfer deschis (`channel-0`, cu un token denominat IBC), iar mainnet-ul nu are niciun client IBC, canal sau token denominat IBC. Pe testnet, modulul de rate-limit răspunde la `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` (o listă goală: nu este setată nicio limită), iar lista de checksum-uri 08-wasm la `/ibc/lightclients/wasm/v1/checksums` (goală); mainnet-ul răspunde la ambele cu `501`.
+Rutele IBC v1 (`/ibc/core/client/v1/...`, `/ibc/core/channel/v1/...`) răspund pe ambele rețele. La momentul scrierii, testnet-ul are un client IBC și un canal de transfer deschis (`channel-0`, cu un token denominat IBC), iar mainnet-ul nu are niciun client IBC, canal sau token denominat IBC. Modulul de rate-limit răspunde la `/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits`, iar lista de checksum-uri 08-wasm la `/ibc/lightclients/wasm/v1/checksums`: pe ambele rețele prima returnează o listă `rate_limits` goală (nu este setată nicio limită), iar a doua o listă `checksums` goală. Mainnet-ul a răspuns la ambele cu `200` pe 4 noiembrie 2026 (înainte de v3.2.6 răspundea cu `501`). Ruta de interogare packet-forward `/ibc/apps/packetforward/v1/params` a răspuns `501` pe mainnet; nu s-a găsit nicio rută publică pentru ea, deci setările sale nu pot fi citite prin REST acolo.
 
 ### Tokenuri de test pe testnet (Fest) {#fest-tokens}
 
@@ -618,7 +618,7 @@ Pentru a interoga un anumit serviciu:
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` are trei metode pe un nod v3.2.3, `Account`, `EVMWindow` și `EVMDelegationConsent`, și o a patra începând cu v3.2.4 (testnet din 19 octombrie 2026, mainnet din 23 octombrie 2026), `ProtocolFeatures`. O metodă `Params` este adăugată în v3.2.6 (deocamdată doar pe testnet); un nod de mainnet nu are metoda `Params`.
+`qorechain.pqc.v1.Query` are trei metode pe un nod v3.2.3, `Account`, `EVMWindow` și `EVMDelegationConsent`, și o a patra începând cu v3.2.4 (testnet din 19 octombrie 2026, mainnet din 23 octombrie 2026), `ProtocolFeatures`. O metodă `Params` este adăugată în v3.2.6 (testnet din 27 octombrie 2026, mainnet din 4 noiembrie 2026); un nod mai vechi decât v3.2.6 nu are metoda `Params`.
 
 ## Autentificare
 

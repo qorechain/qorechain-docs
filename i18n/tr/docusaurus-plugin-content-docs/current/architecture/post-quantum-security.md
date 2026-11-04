@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain, **kuantum sonrası kriptografi (post-quantum cryptography, PQC) ile genesis'te** inşa edilmiştir — sonradan bir yükseltme olarak eklenmemiştir. `x/pqc` modülü, uzun vadeli dayanıklılık için yönetişim kontrollü bir algoritma çevikliği çerçevesiyle birlikte birincil kriptografik ilkeller olarak kafes tabanlı dijital imzalar ve anahtar kapsülleme sağlar.
 
-Tam PQC temeli — **Dilithium-5 (imzalar) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — artık tamamlandı ve ağ varsayılanıdır. Canlı ağlarda (v3.2.x), hibrit imzalar cosmos işlem yolunda **varsayılan olarak gereklidir**: `hybrid_signature_mode = required` ve `allow_classical_fallback = false`. Her cosmos yolu işlemi, klasik secp256k1 imzasının yanında bir Dilithium-5 imzası taşımalıdır; bir PQC hesabından gelen yalnızca klasik işlemler reddedilir ve klasik geri dönüş (downgrade) yolu kapalıdır. Mainnet v3.2.4, testnet v3.2.6 çalıştırır (27 Ekim 2026'da kontrol edildi); v3.2.2 ve v3.2.3 sürümlerinin kuantum sonrası kurallara eklediği şeyler (anahtar bütünlüğü, isteğe bağlı sahiplik kanıtı, kapsamlı EVM pencereleri, EIP-7702 onayı) [Anahtar bütünlüğü kuralları](#key-integrity), [Sahiplik kanıtı](#proof-of-possession) ve [EIP-7702 delegasyonları](#eip-7702) bölümlerinde açıklanmıştır.
+Tam PQC temeli — **Dilithium-5 (imzalar) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — artık tamamlandı ve ağ varsayılanıdır. Canlı ağlarda (v3.2.x), hibrit imzalar cosmos işlem yolunda **varsayılan olarak gereklidir**: `hybrid_signature_mode = required` ve `allow_classical_fallback = false`. Her cosmos yolu işlemi, klasik secp256k1 imzasının yanında bir Dilithium-5 imzası taşımalıdır; bir PQC hesabından gelen yalnızca klasik işlemler reddedilir ve klasik geri dönüş (downgrade) yolu kapalıdır. Her iki ağ da v3.2.6 çalıştırır (testnet 27 Ekim 2026'dan, mainnet 4 Kasım 2026'dan beri; değerler testnet'te 27 Ekim'de ve mainnet'te 4 Kasım 2026'da okundu); v3.2.2 ve v3.2.3 sürümlerinin kuantum sonrası kurallara eklediği şeyler (anahtar bütünlüğü, isteğe bağlı sahiplik kanıtı, kapsamlı EVM pencereleri, EIP-7702 onayı) [Anahtar bütünlüğü kuralları](#key-integrity), [Sahiplik kanıtı](#proof-of-possession) ve [EIP-7702 delegasyonları](#eip-7702) bölümlerinde açıklanmıştır.
 
 ## Tasarım İlkeleri
 
@@ -284,7 +284,7 @@ Köprü kanıtlamalarının (attestation), köprü altyapısında klasik kriptog
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Yeni anahtar kayıtları için varsayılan imza algoritması |
 | `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Zincir genelinde hibrit imza uygulama düzeyi          |
 
-Test ağı bu aynı değerleri döndürür (27 Ekim 2026'da kontrol edildi). v3.2.6'dan beri test ağı bunları REST üzerinden de `GET /qorechain/pqc/v1/params` ile sunar; ana ağda bu rota 501 (uygulanmadı) yanıtı verir ve parametreler `qorechaind query pqc params` ile okunur.
+Test ağı bu aynı değerleri döndürür (27 Ekim 2026'da kontrol edildi). v3.2.6'dan beri her iki ağ da bunları REST üzerinden de `GET /qorechain/pqc/v1/params` ile sunar: ana ağ 4 Kasım 2026'da `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, varsayılan algoritma olarak Dilithium-5 ve hibrit mod `required` değerleriyle `200` yanıtı verdi. v3.2.6'dan eski bir düğümde bunları `qorechaind query pqc params` ile okuyun.
 
 ## İlgili
 

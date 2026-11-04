@@ -141,10 +141,10 @@ Filtrate per tipo di evento per ricevere solo gli eventi provenienti da un modul
 
 ## Riferimento agli eventi dei moduli
 
-Gli eventi vengono emessi come eventi standard del consensus engine. Sottoscrivetevi con una query `tm.event='Tx'` filtrata sul tipo di evento e sull'attributo (ad esempio `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Gli eventi a livello di blocco (quelli emessi dalla logica di fine blocco, come gli eventi PRISM qui sotto) vengono consegnati con `tm.event='NewBlock'`, non con `Tx`. I nomi e gli attributi riportati di seguito sono quelli della versione della chain v3.2.5 (mainnet dal 29 ottobre 2026, testnet dal 26 ottobre 2026) (l'elenco degli eventi è invariato rispetto alla v3.2.4); gli eventi aggiunti nella v3.2.4 sono contrassegnati. La testnet (v3.2.6) emette un evento in più, `rl_action_proposed`, elencato insieme agli eventi PRISM.
+Gli eventi vengono emessi come eventi standard del consensus engine. Sottoscrivetevi con una query `tm.event='Tx'` filtrata sul tipo di evento e sull'attributo (ad esempio `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Gli eventi a livello di blocco (quelli emessi dalla logica di fine blocco, come gli eventi PRISM qui sotto) vengono consegnati con `tm.event='NewBlock'`, non con `Tx`. I nomi e gli attributi riportati di seguito sono quelli della versione della chain v3.2.6 (mainnet dal 4 novembre 2026, testnet dal 27 ottobre 2026); gli eventi aggiunti nella v3.2.4 sono contrassegnati. La v3.2.6 ha aggiunto un evento, `rl_action_proposed`, elencato insieme agli eventi PRISM.
 
 :::note Quali eventi vedrete davvero
-Molti di questi moduli sono inattivi sulle reti pubbliche: il bridge non è attivo, non è ancora registrato alcun layer multilayer né alcun rollup, e xQORE non è utilizzabile. I loro eventi sono definiti ma non vengono emessi finché non c'è attività. Gli eventi di osservazione e di ricompensa PRISM (`rl_observation_collected`, `rl_reward_computed`) vengono emessi circa ogni 10 blocchi su entrambe le reti; sulla testnet (v3.2.6) l'agente emette anche `rl_action_proposed` a ogni passo.
+Molti di questi moduli sono inattivi sulle reti pubbliche: il bridge non è attivo, non è ancora registrato alcun layer multilayer né alcun rollup, e xQORE non è utilizzabile. I loro eventi sono definiti ma non vengono emessi finché non c'è attività. Gli eventi di osservazione e di ricompensa PRISM (`rl_observation_collected`, `rl_reward_computed`) vengono emessi circa ogni 10 blocchi su entrambe le reti; dalla v3.2.6 l'agente emette anche `rl_action_proposed` a ogni passo che compie (sulla mainnet l'agente non aveva compiuto alcun passo al 4 novembre 2026).
 :::
 
 ### Modulo PQC
@@ -253,7 +253,7 @@ Questi sono eventi di fine blocco, consegnati sul flusso `NewBlock`.
 | ------------------------------ | ----------------------- | ------------------------------------------------------------- |
 | `rl_observation_collected`     | `height`                | Emesso quando viene effettuata un'osservazione PRISM (circa ogni 10 blocchi) |
 | `rl_reward_computed`           | `height`, `reward`      | Emesso quando viene calcolata la ricompensa PRISM |
-| `rl_action_proposed`           | `height`, `agent_mode`, `applied`, `block_time_delta`, `gas_price_delta`, `validator_set_size_delta`, `pool_weight_rpos_delta`, `pool_weight_dpos_delta` | **v3.2.6 (solo testnet).** Emesso a ogni passo dell'agente in ogni modalità, con l'azione proposta; `applied` è `false` in modalità shadow. La mainnet non lo emette finché non applica quella release |
+| `rl_action_proposed`           | `height`, `agent_mode`, `applied`, `block_time_delta`, `gas_price_delta`, `validator_set_size_delta`, `pool_weight_rpos_delta`, `pool_weight_dpos_delta` | **v3.2.6.** Emesso a ogni passo dell'agente in ogni modalità, con l'azione proposta; `applied` è `false` in modalità shadow. L'agente della mainnet non aveva compiuto alcun passo al 4 novembre 2026 (`total_steps` `0`), quindi l'evento lì non era stato emesso |
 | `rl_action_applied`            | `height`, `agent_mode`  | Emesso quando l'agente PRISM applica una regolazione di parametro |
 | `rl_agent_mode_changed`        | `height`, `agent_mode`  | Emesso quando cambia la modalità dell'agente |
 | `rl_circuit_breaker_triggered` | `height`                | Emesso quando il circuit breaker PRISM blocca un'azione |

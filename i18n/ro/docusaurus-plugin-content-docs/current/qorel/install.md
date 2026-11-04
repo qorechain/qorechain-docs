@@ -96,6 +96,8 @@ cosign verify ghcr.io/qorechain/qorel:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
+Copia de pe Docker Hub poartă aceeași semnătură, deci aceeași comandă o verifică, cu `liviuepure/qorel:0.1.0` în locul numelui `ghcr.io`.
+
 ### Din sursă {#from-source}
 
 ```bash
@@ -128,12 +130,13 @@ qorel --help
 | Oglindă de descărcare | `download.qore.host/qorel/v0.1.0/<file>`, `download.qore.host/qorel/latest/<file>`, `latest.json` | 0.1.0 | [download.qore.host/qorel/latest.json](https://download.qore.host/qorel/latest.json) |
 | Homebrew | `qorechain/tap/qorel` | 0.1.0 | `brew install qorechain/tap/qorel` |
 | Registrul de containere | `ghcr.io/qorechain/qorel` | 0.1.0 | `docker pull ghcr.io/qorechain/qorel:0.1.0` |
+| Registrul de containere (Docker Hub) | `liviuepure/qorel` | 0.1.0 | `docker pull liviuepure/qorel:0.1.0` |
 | Sursă | `ibc-relayer-cli`, binar `qorel` | tag `qorel-v0.1.0` | [github.com/qorechain/QORel](https://github.com/qorechain/QORel) |
 
 ## Limite și probleme cunoscute {#limits}
 
 - **Fără build pentru Windows.** Folosiți containerul sub WSL2.
-- **Pre-lansare, fișiere mari.** Versiunea 0.1.0 este publicată ca pre-lansare (pre-release) pe GitHub. Fiecare fișier al lansării are aproximativ 110 MB, deoarece binarele nu sunt încă reduse cu strip. Nu există imagine pe Docker Hub; folosiți imaginea `ghcr.io` de mai sus.
+- **Pre-lansare, fișiere mari.** Versiunea 0.1.0 este publicată ca pre-lansare (pre-release) pe GitHub. Fiecare fișier al lansării are aproximativ 110 MB, deoarece binarele nu sunt încă reduse cu strip. Aceeași imagine se află și pe Docker Hub, ca `liviuepure/qorel:0.1.0` (și `:latest`), sub namespace-ul propriu al maintainerului, nu sub unul `qorechain`.
 - **Fixați versiunea.** Comenzile de mai sus folosesc `0.1.0`. Folosiți versiunea pe care intenționați să o rulați, nu `latest`, și citiți [pagina de release](https://github.com/qorechain/QORel/releases) pentru versiuni mai noi.
 - **Un proces per cheie.** Nu rulați serviciul din pachet și un container cu aceeași cheie de relayer; două procese care semnează cu aceeași cheie se luptă pentru secvențele contului.
 - **Locația depozitului de chei.** Pachetele păstrează cheile în `/var/lib/qorel`; containerul le citește din directorul montat; o instalare din tarball folosește `~/.hermes/keys`, dacă configurația nu setează `key_store_folder`.

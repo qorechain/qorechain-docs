@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `mainnet` |
 | Chain id | `qorechain-vladi` (7 Haziran 2026'dan beri yayında) |
-| Zincir sürümü (30 Ekim 2026) | v3.2.5 (3.906.833 yüksekliğinden beri, 29 Ekim 2026, yönetişim önerisi 14; v3.2.4, 23 Ekim'de 3.742.566 yüksekliğinde uygulanmıştı). SDK 0.10.0 v3.2.4 için istemcidir ve çalışmaya devam eder; v3.2.5 eklemeleri için oluşturucuları (builder) yoktur |
+| Zincir sürümü (4 Kasım 2026) | v3.2.6 (4.020.000 yüksekliğinden beri, 4 Kasım 2026, yönetişim önerisi 15; v3.2.5, 29 Ekim'de 3.906.833 yüksekliğinde ve v3.2.4 23 Ekim'de 3.742.566 yüksekliğinde uygulanmıştı). SDK 0.10.0 v3.2.4 için istemcidir ve çalışmaya devam eder; v3.2.5 veya v3.2.6 eklemeleri için oluşturucuları (builder) yoktur |
 | EVM zincir kimliği | `9801` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |
@@ -52,9 +52,9 @@ etkin değildir. Ayrıca bkz. [Ağlar](/appendix/networks#public-endpoints).
 
 Testnet bir hazırlık (staging) ağıdır ve mainnet'in önünde çalışır; bu nedenle orada okuyabileceğiniz birkaç şey mainnet'te yoktur (27 Ekim 2026'da kontrol edildi; tam liste [Testnet ve mainnet arasındaki farklar](/appendix/chain-parameters#testnet-differences) sayfasındadır):
 
-* **REST rotaları.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` ve `GET /qorechain/crossvm/v1/params` testnet'te yanıt verir; mainnet bunlara HTTP 501 yanıtı verir. `/qorechain/amm/v1/` altındaki AMM rotaları (`pools`, `params`) her iki ağda da yanıt verir.
+* **REST rotaları.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` ve `GET /qorechain/crossvm/v1/params` testnet'te yanıt verir. Mainnet bunlara zincir v3.2.6'ya kadar HTTP 501 yanıtı verdi; v3.2.6'yı uyguladığından beri (4 Kasım 2026) o gün kontrol edildiğinde bu rotaların hepsi mainnet'te HTTP 200 yanıtı verdi. `/qorechain/amm/v1/` altındaki AMM rotaları (`pools`, `params`) her iki ağda da yanıt verir.
 * **Test tokenleri.** Değeri olmayan üç token yalnızca testnet'te vardır; `erc20:<EIP-55 contract address>` adlı (büyük/küçük harfe duyarlı) bank birimleri olarak: fUSD (6 ondalık), fETH (18) ve fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` bunları listeler. Mainnet'in tek bank birimi `uqor`'dur. Bkz. [Testnet test tokenleri (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
-* **Açık modüller.** `abstractaccount` modülü testnet'te etkin, mainnet'te kapalıdır; testnet'te üç EVM precompile'ı etkindir, mainnet'te hiçbiri değildir ve QoreChain Native instantiate testnet'te açıktır.
+* **Açık modüller.** `abstractaccount` modülü testnet'te etkin, mainnet'te kapalıdır; testnet'te EVM precompile'ları etkindir (27 Ekim'de üç, 4 Kasım'da dört), mainnet'te hiçbiri değildir ve QoreChain Native instantiate testnet'te açıktır.
 
 ## Varsayılan portlar
 
