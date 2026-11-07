@@ -91,15 +91,15 @@ Desde la CLI: `qorollup advise my-rollup`. Consulta [QCAI Copilot](/rollups/qcai
 
 ## 3. Llamadas entre VMs multi-VM
 
-> 🟡 **Todavía no utilizable en las redes en vivo** — el precompile no está
-> activado y la subida de QoreChain Native está cerrada. Consulta [Multi-VM](/rollups/multi-vm).
+> 🟡 **Todavía no utilizable en la mainnet** — el precompile no está
+> activado allí y la subida de QoreChain Native está cerrada. En la testnet el precompile figura como activo (7 de noviembre de 2026); no se probó una llamada. Consulta [Multi-VM](/rollups/multi-vm).
 
 El RDK incluye helpers que codifican una llamada desde un contrato EVM (Solidity)
 a un contrato **QoreChain Native** a través de un precompile fijo en `0x…0901`. Ese
-precompile **no está activo** en mainnet ni en testnet (consulta
+precompile **no está activo en la mainnet** y **figura como activo en la testnet** a 7 de noviembre de 2026 (consulta
 [Precompiles EVM: estado de la red](/developer-guide/evm-precompiles#network-status)):
-`eth_getCode` para `0x…0901` devuelve `0x` en ambas, y una llamada de contrato a
-él tiene éxito sin ningún efecto.
+`eth_getCode` para `0x…0901` devuelve `0x` (un precompile no tiene bytecode), una llamada de contrato a
+él tiene éxito sin ningún efecto en la mainnet, y no se probó una llamada a través de él en la testnet.
 
 El helper `encodeCrossVmCalldata` (desde la 0.6.0) construye el calldata para
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, el

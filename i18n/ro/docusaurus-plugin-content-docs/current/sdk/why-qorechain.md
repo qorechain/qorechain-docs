@@ -96,7 +96,7 @@ await crossVM.callAtomic([
 
 **De ce este diferit:** QoreChain rulează trei VM-uri co-rezidente cu un modul
 de bridge nativ (`crossvm`, plus precompilarea `CrossVMBridge` odată ce este
-activă; încă nu este activă pe vreuna dintre rețele), astfel încât o singură interfață SDK poate adresa toate cele trei.
+activă; nu este activă pe mainnet; testnet-ul o listează ca activă din 7 noiembrie 2026, un apel prin ea nefiind testat), astfel încât o singură interfață SDK poate adresa toate cele trei.
 Lanțurile cu un singur VM nu au nimic echivalent de încapsulat. Astăzi raza de
 acțiune a unui apel este limitată de banda pe care o vizează: `MsgCrossVMCall`
 este oprit pe mainnet, tranzacțiile SVM sunt dezactivate, iar încărcarea și
@@ -206,7 +206,7 @@ const msg = await buildPhantomExecuteCosmos({
 });
 ```
 
-**De ce contează:** odată ce modulul este activat, fiecare cheltuială este
+**De ce contează:** odată ce modulul este activat, fiecare cheltuială a unei chei conectate este
 delimitată de o taxonomie de permisiuni on-chain, de limitele `SpendingRule` și
 de o dată de expirare — privilegii minime și revocabile — în timp ce contul în
 sine rămâne protejat post-cuantic. Vezi

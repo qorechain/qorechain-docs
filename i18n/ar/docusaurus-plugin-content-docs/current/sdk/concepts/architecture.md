@@ -30,7 +30,7 @@ QoreChain هي سلسلة طبقة أولى (Layer 1) واحدة تُشغّل ث
   QoreChain Native.
 - **EVM JSON-RPC** — استدعاءات `eth_*` و`net_*` و`web3_*` و`txpool_*` المعيارية
   على نقاط النهاية العامة. مساحة الأسماء `qor_*` الخاصة بـ QoreChain غير مُقدَّمة
-  هناك (انظر أدناه). أما EVM precompiles المسمّاة `pqcVerify` (`0x0A01`)
+  على نقطة نهاية الشبكة الرئيسية العامة، وتخدم شبكة الاختبار `qor_getKEMKey` فقط (انظر أدناه). أما EVM precompiles المسمّاة `pqcVerify` (`0x0A01`)
   و`pqcKeyStatus` (`0x0A02`) فهي مفعّلة على شبكة الاختبار فقط؛ ولا يوجد أي
   precompile مفعّل على الشبكة الرئيسية (التفعيل يحتاج إلى قرار حوكمة، دون موعد محدد).
   راجع [EVM Precompiles](/developer-guide/evm-precompiles#network-status).

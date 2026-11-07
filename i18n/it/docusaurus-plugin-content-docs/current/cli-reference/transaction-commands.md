@@ -339,7 +339,7 @@ qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 L'apertura di una finestra sostituisce qualsiasi finestra esistente. Verificala con `qorechaind query pqc evm-window <address>`.
 
-**Finestre con ambito limitato (mainnet v3.2.3 e successive).** Il limite di valore conta solo QOR nativo: un trasferimento di token, un'approvazione o qualsiasi altra chiamata a contratto porta valore zero e non viene conteggiata. Due flag facoltativi restringono ciò che la finestra ammette:
+**Finestre con ambito limitato (mainnet v3.2.3 e successive).** Il limite di valore conta solo QOR nativo: un trasferimento di token, un'approvazione o qualsiasi altra chiamata a contratto porta valore zero e non viene conteggiata. Due flag facoltativi restringono quali destinatari la finestra ammette (non limitano gli importi dei token):
 
 | Flag                | Effetto                                                                                                                    |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -352,6 +352,8 @@ qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
 ```
 
 Una finestra aperta senza nessuno dei due flag ammette ciò che ha sempre ammesso. L'ambito è riportato dalla query della finestra come `native_only` e `allowed_targets`.
+
+`allowed_targets` limita **quali** contratti e token una finestra può toccare, non **quanto**. Un token elencato ammette qualsiasi importo di quel token, incluso `approve`, e un contratto elencato può muovere tutto ciò che il suo codice e le approvazioni esistenti consentono, quindi non elencare contratti forwarder o router generici. Una finestra vincola solo le transazioni sulla lane EVM (firmate in modo classico); i messaggi Cosmos firmati con la firma PQC ibrida, come le chiamate cross-VM e authz, ne restano fuori.
 
 ### close-evm-window
 

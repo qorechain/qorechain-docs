@@ -89,16 +89,18 @@ CLI에서: `qorollup advise my-rollup`. [QCAI Copilot](/rollups/qcai-copilot)을
 
 ## 3. 멀티 VM 크로스 VM 호출
 
-> 🟡 **아직 라이브 네트워크에서 사용할 수 없습니다** — 프리컴파일이 활성화되지
-> 않았고 QoreChain Native 업로드가 닫혀 있습니다. [Multi-VM](/rollups/multi-vm)을
+> 🟡 **아직 메인넷에서 사용할 수 없습니다** — 프리컴파일이 그곳에서 활성화되지
+> 않았고 QoreChain Native 업로드가 닫혀 있습니다. 테스트넷에서는 프리컴파일이 활성으로
+> 나열되어 있지만(2026년 11월 7일) 호출은 테스트하지 않았습니다. [Multi-VM](/rollups/multi-vm)을
 > 참조하세요.
 
 RDK에는 EVM(Solidity) 컨트랙트에서 `0x…0901`에 고정된 프리컴파일을 통해
 **QoreChain Native** 컨트랙트로 보내는 호출을 인코딩하는 헬퍼가 포함되어 있습니다.
-이 프리컴파일은 메인넷과 테스트넷 모두에서 **활성화되어 있지 않습니다**
+이 프리컴파일은 메인넷에서 **활성화되어 있지 않으며** 2026년 11월 7일 기준 테스트넷에서는
+**활성으로 나열되어 있습니다**
 ([EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status) 참조):
-두 네트워크 모두에서 `0x…0901`에 대한 `eth_getCode`는 `0x`를 반환하며, 이
-주소로의 컨트랙트 호출은 아무 효과 없이 성공합니다.
+`0x…0901`에 대한 `eth_getCode`는 `0x`를 반환하며(프리컴파일에는 바이트코드가 없습니다), 이
+주소로의 컨트랙트 호출은 메인넷에서 아무 효과 없이 성공하고, 테스트넷에서 이를 통한 호출은 테스트하지 않았습니다.
 
 헬퍼 `encodeCrossVmCalldata`(0.6.0부터)는
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`용

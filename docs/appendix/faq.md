@@ -47,7 +47,7 @@ For a full node, see [Running a Node](/developer-guide/running-a-node). For a va
 
 ### What signature scheme does QoreChain use?
 
-QoreChain uses a post-quantum hybrid scheme combining classical **secp256k1 (ECDSA)** with post-quantum **ML-DSA-87 (Dilithium-5)**. This hybrid scheme is required by default on the Cosmos transaction path, with enforcement mode governance-controlled. On the EVM lane the signature stays secp256k1, and an account must additionally hold a registered ML-DSA key and an open authorisation window (since v3.2.0). See [Post-Quantum Security](/architecture/post-quantum-security).
+QoreChain uses a post-quantum hybrid scheme combining classical **secp256k1 (ECDSA)** with post-quantum **ML-DSA-87 (Dilithium-5)**. This hybrid scheme is required by default on the Cosmos transaction path, with enforcement mode governance-controlled. On the EVM lane the signature stays secp256k1, and an account must additionally hold a registered ML-DSA key and an open authorisation window (since v3.2.0). An account is post-quantum protected only after it has registered its ML-DSA-87 key; that first registration is signed with the classical key alone (the documented bootstrap), so register it before the account holds meaningful funds. See [Post-Quantum Security](/architecture/post-quantum-security).
 
 ### Why is my EVM transaction refused with "no open EVM authorisation window"?
 

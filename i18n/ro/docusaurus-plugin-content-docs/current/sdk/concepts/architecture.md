@@ -29,7 +29,7 @@ SDK-ul comunică cu un nod prin mai multe endpoint-uri:
 - **RPC de consens** — folosit pentru semnarea/difuzarea tranzacțiilor native și
   pentru clientul de citire QoreChain Native.
 - **EVM JSON-RPC** — apeluri standard `eth_*`, `net_*`, `web3_*` și `txpool_*` pe
-  endpoint-urile publice. Spațiul de nume QoreChain `qor_*` nu este servit acolo (vezi
+  endpoint-urile publice. Spațiul de nume QoreChain `qor_*` nu este servit pe endpoint-ul public de mainnet, iar testnet-ul servește doar `qor_getKEMKey` (vezi
   mai jos). Precompile-urile EVM `pqcVerify` (`0x0A01`) și `pqcKeyStatus` (`0x0A02`)
   sunt active doar pe testnet; niciunul nu este activ pe mainnet (activarea necesită o
   decizie de guvernanță, fără dată). Vezi

@@ -189,7 +189,12 @@ de contratos se rechaza). Ambos son campos nuevos del mensaje: un nodo anterior 
 completa cuando se establece cualquiera de ellos, así que establécelos solo en una red que haya aplicado
 v3.2.3 (las dos redes públicas lo han hecho). `fetchEvmWindow` lee ambos de vuelta (`nativeOnly`,
 `allowedTargets`; antes de v3.2.3 valen `false` y vacío). Para una ventana abierta
-solo para enviar QOR, prefiere `nativeOnly`.
+solo para enviar QOR, prefiere `nativeOnly`. `allowedTargets` limita qué contratos y tokens
+puede tocar la ventana, no cuánto: un token de la lista admite cualquier cantidad de él, incluido
+`approve`, y un contrato de la lista puede mover lo que permitan su código y sus aprobaciones existentes,
+por lo que no incluyas contratos genéricos de reenvío o de enrutamiento. Una ventana acota solo las transacciones
+del carril EVM (firmadas de forma clásica); los mensajes Cosmos firmados con la firma híbrida PQC,
+como las llamadas cross-VM y authz, quedan fuera de ella.
 
 ```ts
 import {
@@ -281,7 +286,7 @@ exportados.
 > En la testnet (`qorechain-diana`), la lista `active_static_precompiles` contiene
 > `0x…0A01` (verificación PQC), `0x…0A02` (estado de clave PQC) y `0x…0C01` (parámetros
 > de consenso), comprobado el 27 de octubre de 2026; el par de IA (`0x…0B01`, `0x…0B02`)
-> no está activo en ninguna de las dos redes, y el puente entre VM (`0x…0901`) no estaba activo en ninguna de las dos el 27 de octubre (el 4 de noviembre la lista de la testnet también lo contenía; no se ha vuelto a probar). Una
+> no está activo en ninguna de las dos redes, y el puente entre VM (`0x…0901`) no estaba activo en ninguna de las dos el 27 de octubre (la lista de la testnet también lo contenía desde el 4 de noviembre y seguía haciéndolo el 7 de noviembre de 2026; no se probó una llamada a través de él; la lista de la mainnet está vacía). Una
 > llamada a una dirección inactiva devuelve datos vacíos, por lo que esas utilidades
 > lanzan error. Consulta
 > [Precompilados EVM: estado de la red](/developer-guide/evm-precompiles#network-status).

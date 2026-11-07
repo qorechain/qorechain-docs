@@ -275,7 +275,7 @@ Para seguridad poscuántica dentro de los contratos:
 
 ## Ventana de autorización EVM {#evm-window}
 
-Una firma poscuántica no puede viajar *con* una transacción de Ethereum (carteras como MetaMask no pueden adjuntar una segunda firma), así que viaja *antes* que ella. La cuenta abre una ventana acotada con el mensaje del carril Cosmos `MsgOpenEVMWindow`; el carril EVM admite entonces solo las transacciones cubiertas por una ventana vigente. Una clave clásica robada por sí sola no puede abrir una ventana, de modo que solo puede mover lo que permita una ventana ya abierta.
+Una firma poscuántica no puede viajar *con* una transacción de Ethereum (carteras como MetaMask no pueden adjuntar una segunda firma), así que viaja *antes* que ella. La cuenta abre una ventana acotada con el mensaje del carril Cosmos `MsgOpenEVMWindow`; el carril EVM admite entonces solo las transacciones cubiertas por una ventana vigente. Una clave clásica robada por sí sola no puede abrir una ventana, de modo que en el carril EVM solo puede actuar dentro de lo que permita una ventana ya abierta (la ventana no limita las cantidades de tokens ni las aprobaciones existentes).
 
 | Límite      | Rango              | Significado |
 | ----------- | ------------------ | ------- |
@@ -285,12 +285,14 @@ Una firma poscuántica no puede viajar *con* una transacción de Ethereum (carte
 
 El límite que se agote primero cierra la ventana. Los tres límites son obligatorios; abrir una ventana sustituye a la existente; una transacción que se admite y luego falla consume igualmente su hueco y su presupuesto de valor; los despliegues de contratos cuentan como cualquier otra transacción. `blocks` es un número de bloques, no una duración: 17,280 bloques son unas 15 horas en mainnet (unos 3.1 s por bloque) y unas 6 horas en testnet (unos 1.3 s por bloque el 27 de octubre de 2026; el tiempo de bloque de la testnet varía).
 
-**El límite de valor cuenta solo QOR nativo.** Una transferencia de tokens, una aprobación o cualquier otra llamada a un contrato lleva valor cero, así que no se cuenta contra `max-value` (solo su comisión máxima). Para acotar también esas operaciones, restringe el **alcance** de la ventana (mainnet v3.2.3 y posteriores):
+**El límite de valor cuenta solo QOR nativo.** Una transferencia de tokens, una aprobación o cualquier otra llamada a un contrato lleva valor cero, así que no se cuenta contra `max-value` (solo su comisión máxima). El **alcance** de la ventana (mainnet v3.2.3 y posteriores) restringe qué destinatarios admite, pero no limita las cantidades de tokens:
 
 | Opción de alcance (flag de la CLI) | Campo del mensaje | Qué admite la ventana |
 | ----------------------- | ------------- | ---------------------- |
 | `--native-only`         | `native_only` | Solo transferencias simples de QOR nativo: sin calldata, sin creación de contratos, sin destinatario que contenga código, sin autorización EIP-7702 |
 | `--allowed-targets 0xA,0xB` | `allowed_targets` | Solo transacciones cuyo destinatario sea una de las direcciones de 20 bytes listadas; se rechaza la creación de contratos |
+
+`allowed_targets` limita **qué** contratos y tokens puede tocar una ventana, no **cuánto**. Un token listado admite cualquier cantidad de ese token, incluido `approve`, y un contrato listado puede mover lo que permitan su código y sus aprobaciones existentes, así que no listes contratos genéricos de reenvío o de router. Una ventana acota solo las transacciones del carril EVM (firmadas de forma clásica); los mensajes de Cosmos firmados con la firma híbrida PQC, como las llamadas entre VM y authz, quedan fuera de ella.
 
 Una ventana abierta sin alcance se comporta exactamente como antes. Una transacción fuera del alcance se rechaza con el código 27 (el mensaje dice que la ventana "does not admit this transaction"). `GET /qorechain/pqc/v1/evm_window/{address}` y `qorechaind query pqc evm-window` reportan `native_only` y `allowed_targets`, y el evento `pqc_evm_window_opened` los incluye cuando están establecidos.
 
@@ -330,16 +332,16 @@ Con el SDK de TypeScript (0.8.2 y posteriores): `openEvmWindowMsg`, `closeEvmWin
 
 ## Espacio de nombres personalizado `qor_` {#custom-qor_-namespace}
 
-QoreChain amplía el JSON-RPC con un espacio de nombres `qor_` para consultas específicas de la cadena:
+QoreChain amplía el JSON-RPC con un espacio de nombres `qor_` para consultas específicas de la cadena. Los métodos siguientes están previstos:
 
 :::warning Todavía no se sirve
-Ninguna compilación publicada del nodo sirve aún el espacio de nombres `qor_`: `rpc_modules` en los endpoints públicos lista solo `eth`, `net`, `rpc`, `txpool` y `web3`, y todos los métodos siguientes devuelven `-32601` (método no encontrado) en mainnet, testnet y nodos propios con la configuración predeterminada (`eth`, `net`, `web3`). Consulta [el espacio de nombres `qor_`](/api-reference/json-rpc-qor_-namespace) para ver el estado y las alternativas REST (por ejemplo `GET /qorechain/pqc/v1/account/{address}` para el estado de la clave PQC).
+Los métodos de la tabla siguiente están previstos y no se sirven: cada uno devuelve `-32601` (método no encontrado). El único método servido del espacio de nombres es `qor_getKEMKey`, y solo donde el nodo lista `qor` entre sus espacios de nombres: según lo observado el 7 de noviembre de 2026, la testnet lista `qor` y lo responde, mientras que el endpoint público de la mainnet lista solo `eth`, `net`, `rpc`, `txpool` y `web3` y responde `-32601`. Consulta [el espacio de nombres `qor_`](/api-reference/json-rpc-qor_-namespace) para ver el estado y las alternativas REST (por ejemplo `GET /qorechain/pqc/v1/account/{address}` para el estado de la clave PQC).
 :::
 
 | Método                      | Descripción                                                       |
 | --------------------------- | ----------------------------------------------------------------- |
 | `qor_getPQCKeyStatus`       | Comprueba si una cuenta tiene registrada una clave pública PQC               |
-| `qor_getAIStats`            | Recupera estadísticas del motor de IA (recuentos de anomalías, distribución de riesgo) |
+| Estadísticas de IA (previsto) | Recupera estadísticas del motor de IA (recuentos de anomalías, distribución de riesgo); el nombre del método no es definitivo |
 | `qor_getCrossVMMessage`     | Consulta el estado de un mensaje entre VM por ID                  |
 | `qor_getPoolClassification` | Obtiene la clasificación de pool del validador (RPoS/DPoS/PoS)                 |
 | `qor_getReputationScore`    | Consulta la puntuación de reputación de un validador                       |

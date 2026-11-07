@@ -41,7 +41,7 @@ switched off by the circuit breaker), QoreChain Native upload and instantiate fo
 accounts (on the testnet, instantiate is open and upload is not), the authenticator /
 abstract-account flows on mainnet (module switched off there, enabled on the
 testnet), xQORE and gas abstraction. Each guide repeats the caveat where it
-applies. Checked against the live endpoints on 27 October 2026; on 4 November 2026 mainnet's active-precompile list was still empty, while the testnet's list also held the cross-VM bridge `0x…0901` (not re-tested).
+applies. Checked against the live endpoints on 27 October 2026; on 7 November 2026 mainnet's active-precompile list was still empty, while the testnet's list also held the cross-VM bridge `0x…0901` (listed active; a call through it was not tested).
 
 The published SDK (0.12.0, 30 October 2026) signs in the form both networks verify
 (v2 hybrid sign-bytes, resolved from chain state), and the signing format,

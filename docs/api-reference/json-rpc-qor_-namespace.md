@@ -9,13 +9,24 @@ sidebar_position: 2
 
 The `qor_` namespace was designed to provide QoreChain-specific JSON-RPC methods for querying post-quantum cryptography status, AI analytics, cross-VM messaging, multi-layer state, bridge operations, tokenomics, rollup infrastructure, and PRISM consensus state.
 
-:::warning Not served yet
-**No released node build serves the `qor_` namespace yet**, on mainnet (`qorechain-vladi`), testnet (`qorechain-diana`) or a node you run yourself. On the public EVM endpoints `rpc_modules` lists only `eth`, `net`, `rpc`, `txpool` and `web3`, and **every `qor_` method returns `-32601` (method not found)** on both networks. The methods are implemented in the node source but not registered with the JSON-RPC server, so adding `qor` to the `api` list in `app.toml` has no effect. Registering the namespace is planned for a node release, and this page will say which release when it ships.
-
-Do not build against `qor_` methods today. Use the REST routes in the table below where one exists. Client libraries that expose `client.qor.*` helpers wrap these same methods, so those helpers fail the same way.
+:::warning The planned methods are not served yet
+**None of the methods in the table below is served on any network yet.** They are implemented in the node source but not registered with the JSON-RPC server, and each returns `-32601` (method not found). Registering them is planned for a node release, and this page will say which release when it ships. Do not build against them today; use the REST routes in the table where one exists. Client libraries that expose `client.qor.*` helpers wrap these same methods, so those helpers fail the same way.
 :::
 
-You can confirm this yourself:
+## What is served: `qor_getKEMKey` {#qor-getkemkey}
+
+One method of the namespace is served: `qor_getKEMKey(address)` returns the ML-KEM public key an address has published (`address` may be `qor1...` or `0x`). It answers `{"address": ..., "found": false}` when no key is published and otherwise adds `algorithm_id`, `algorithm_name`, `public_key` (`0x` hex) and `registered_height`. The node serves the `qor` namespace only where its `[json-rpc]` `api` list in `app.toml` includes `qor`.
+
+Observed on 7 November 2026:
+
+| Network | `rpc_modules` | `qor_getKEMKey` |
+| --- | --- | --- |
+| Testnet (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | answers (`found: false` for an address with no published key) |
+| Mainnet (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (the public mainnet endpoint does not list `qor`) |
+
+On the testnet every other `qor_` method checked (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) still returned `-32601`.
+
+You can check the namespace list yourself:
 
 ```bash
 curl -s -X POST https://evm.qore.host \
@@ -35,7 +46,7 @@ curl -s -X POST https://evm.qore.host \
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). See [REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#pqc-module). |
 | `qor_getHybridSignatureMode`  | No public REST route; `qorechaind query pqc hybrid-mode` (or `query pqc params`) against a node or `--node https://rpc.qore.host:443`. |
-| `qor_getAIStats`              | gRPC `qorechain.ai.v1.Query/Stats` on a node you run, or `qorechaind query ai stats`; no REST route. |
+| AI statistics (planned; method name not final) | gRPC `qorechain.ai.v1.Query/Stats` on a node you run, or `qorechaind query ai stats`; no REST route. |
 | `qor_getCrossVMMessage`       | gRPC `qorechain.crossvm.v1.Query/Message` on a node you run; no REST route. |
 | `qor_getReputationScore`      | No public query route (the reputation module exposes gRPC `Params` only). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` and `anchor/{layer_id}`. See [Multilayer Module](/api-reference/rest-grpc-endpoints#multilayer-module). |
@@ -59,11 +70,11 @@ For the EVM-lane state of an account (registered PQC key, authorisation window a
 
 ## Error Codes
 
-On a node that does serve the namespace, errors follow standard JSON-RPC 2.0 codes. Today, calls to a `qor_` method fail with `-32601`.
+Errors follow standard JSON-RPC 2.0 codes. Today, calls to a planned `qor_` method fail with `-32601`, and on the mainnet endpoint so does `qor_getKEMKey`.
 
 | Code   | Message          | Description                           |
 | ------ | ---------------- | ------------------------------------- |
 | -32600 | Invalid Request  | Malformed JSON-RPC request            |
-| -32601 | Method not found | The method does not exist, or the node does not serve the `qor_` namespace (every released build today) |
+| -32601 | Method not found | The method does not exist, or the node does not serve the `qor_` namespace (every planned method today; `qor_getKEMKey` too where `qor` is not enabled) |
 | -32602 | Invalid params   | Missing or invalid parameters         |
 | -32603 | Internal error   | Server-side processing error          |

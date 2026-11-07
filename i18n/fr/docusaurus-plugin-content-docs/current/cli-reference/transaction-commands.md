@@ -339,7 +339,7 @@ qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 Ouvrir une fenêtre remplace toute fenêtre existante. Vérifiez-la avec `qorechaind query pqc evm-window <address>`.
 
-**Fenêtres à périmètre limité (mainnet v3.2.3 et ultérieures).** La borne de valeur ne compte que le QOR natif : un transfert de token, une approbation ou tout autre appel de contrat porte une valeur nulle et n'est pas décompté. Deux drapeaux facultatifs restreignent ce que la fenêtre admet :
+**Fenêtres à périmètre limité (mainnet v3.2.3 et ultérieures).** La borne de valeur ne compte que le QOR natif : un transfert de token, une approbation ou tout autre appel de contrat porte une valeur nulle et n'est pas décompté. Deux drapeaux facultatifs restreignent les destinataires que la fenêtre admet (ils ne plafonnent pas les montants de tokens) :
 
 | Drapeau             | Effet                                                                                                                      |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -352,6 +352,8 @@ qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
 ```
 
 Une fenêtre ouverte sans aucun de ces drapeaux admet ce qu'elle a toujours admis. Le périmètre est indiqué par la requête de fenêtre sous la forme `native_only` et `allowed_targets`.
+
+`allowed_targets` limite **quels** contrats et tokens une fenêtre peut toucher, pas **combien**. Un token listé admet n'importe quel montant de ce token, y compris `approve`, et un contrat listé peut déplacer tout ce que son code et ses approbations existantes permettent ; ne listez donc pas de contrats de transfert ou de routeur génériques. Une fenêtre ne borne que les transactions de la voie EVM (signées de façon classique) ; les messages Cosmos signés avec la signature hybride PQC, comme les appels cross-VM et authz, sont hors de son champ.
 
 ### close-evm-window
 

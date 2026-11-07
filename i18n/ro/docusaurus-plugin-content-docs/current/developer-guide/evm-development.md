@@ -275,7 +275,7 @@ Pentru securitate post-cuantică în cadrul contractelor:
 
 ## Fereastra de autorizare EVM {#evm-window}
 
-O semnătură post-cuantică nu poate călători *împreună* cu o tranzacție Ethereum (portofele precum MetaMask nu pot atașa o a doua semnătură), așa că ea călătorește *înaintea* ei. Contul deschide o fereastră delimitată cu mesajul din lane-ul Cosmos `MsgOpenEVMWindow`; lane-ul EVM admite apoi doar tranzacțiile acoperite de o fereastră activă. O cheie clasică furată nu poate deschide singură o fereastră, deci poate muta doar ceea ce permite o fereastră deja deschisă.
+O semnătură post-cuantică nu poate călători *împreună* cu o tranzacție Ethereum (portofele precum MetaMask nu pot atașa o a doua semnătură), așa că ea călătorește *înaintea* ei. Contul deschide o fereastră delimitată cu mesajul din lane-ul Cosmos `MsgOpenEVMWindow`; lane-ul EVM admite apoi doar tranzacțiile acoperite de o fereastră activă. O cheie clasică furată nu poate deschide singură o fereastră, deci pe banda EVM poate acționa doar în limitele unei ferestre deja deschise (fereastra nu plafonează sumele de tokenuri și nici aprobările existente).
 
 | Limită      | Interval           | Semnificație |
 | ----------- | ------------------ | ------- |
@@ -285,7 +285,7 @@ O semnătură post-cuantică nu poate călători *împreună* cu o tranzacție E
 
 Limita care se epuizează prima închide fereastra. Toate cele trei limite sunt obligatorii; deschiderea unei ferestre o înlocuiește pe cea existentă; o tranzacție care este admisă și apoi eșuează își consumă totuși slotul și bugetul de valoare; implementările de contracte contează ca orice altă tranzacție. `blocks` este un număr de blocuri, nu o durată: 17.280 de blocuri înseamnă aproximativ 15 ore pe mainnet (circa 3,1 s per bloc) și aproximativ 6 ore pe testnet (circa 1,3 s per bloc la 27 octombrie 2026; timpul de bloc al testnet-ului variază).
 
-**Limita de valoare numără doar QOR nativ.** Un transfer de token, o aprobare sau orice alt apel de contract poartă valoarea zero, deci nu se socotește la `max-value` (se socotește doar taxa sa maximă). Pentru a le limita și pe acestea, restrângeți **domeniul de aplicare** (scope) al ferestrei (mainnet v3.2.3 și ulterior):
+**Limita de valoare numără doar QOR nativ.** Un transfer de token, o aprobare sau orice alt apel de contract poartă valoarea zero, deci nu se socotește la `max-value` (se socotește doar taxa sa maximă). **Domeniul de aplicare** (scope) al ferestrei (mainnet v3.2.3 și ulterior) restrânge ce destinatari admite, dar nu plafonează sumele de tokenuri:
 
 | Opțiune de domeniu (flag CLI) | Câmp de mesaj | Ce admite fereastra |
 | ----------------------- | ------------- | ---------------------- |
@@ -293,6 +293,8 @@ Limita care se epuizează prima închide fereastra. Toate cele trei limite sunt 
 | `--allowed-targets 0xA,0xB` | `allowed_targets` | Doar tranzacțiile al căror destinatar este una dintre adresele de 20 de octeți listate; crearea de contract este respinsă |
 
 O fereastră deschisă fără domeniu de aplicare se comportă exact ca înainte. O tranzacție în afara domeniului este respinsă cu codul 27 (mesajul spune că fereastra „does not admit this transaction"). `GET /qorechain/pqc/v1/evm_window/{address}` și `qorechaind query pqc evm-window` raportează `native_only` și `allowed_targets`, iar evenimentul `pqc_evm_window_opened` le poartă atunci când sunt setate.
+
+`allowed_targets` limitează **ce** contracte și tokenuri poate atinge o fereastră, nu **cât**. Un token listat admite orice sumă din acel token, inclusiv `approve`, iar un contract listat poate muta tot ce permit codul său și aprobările existente, așa că nu listați contracte generice de tip forwarder sau router. O fereastră limitează doar tranzacțiile de pe banda EVM (semnate clasic); mesajele Cosmos semnate cu semnătura hibridă PQC, precum apelurile cross-VM și authz, sunt în afara ei.
 
 **Pași** (ghidul complet este în [Prima ta tranzacție](/getting-started/first-transaction#evm-window)):
 
@@ -330,16 +332,16 @@ Cu SDK-ul TypeScript (0.8.2 și ulterior): `openEvmWindowMsg`, `closeEvmWindowMs
 
 ## Spațiul de nume personalizat `qor_` {#custom-qor_-namespace}
 
-QoreChain extinde JSON-RPC cu un spațiu de nume `qor_` pentru interogări specifice chain-ului:
+QoreChain extinde JSON-RPC cu un spațiu de nume `qor_` pentru interogări specifice chain-ului. Metodele de mai jos sunt planificate:
 
 :::warning Încă nu este servit
-Niciun build de nod publicat nu servește încă spațiul de nume `qor_`: `rpc_modules` de pe endpointurile publice listează doar `eth`, `net`, `rpc`, `txpool` și `web3`, iar fiecare metodă de mai jos returnează `-32601` (metodă negăsită) pe mainnet, testnet și pe nodurile rulate de voi cu configurația implicită (`eth`, `net`, `web3`). Vedeți [spațiul de nume `qor_`](/api-reference/json-rpc-qor_-namespace) pentru stare și pentru alternativele REST (de exemplu `GET /qorechain/pqc/v1/account/{address}` pentru starea cheii PQC).
+Metodele din tabelul de mai jos sunt planificate și nu sunt servite: fiecare returnează `-32601` (metodă negăsită). Singura metodă servită a spațiului de nume este `qor_getKEMKey`, și doar unde nodul listează `qor` în spațiile sale de nume: observat la 7 noiembrie 2026, testnet-ul listează `qor` și răspunde, în timp ce endpointul public de mainnet listează doar `eth`, `net`, `rpc`, `txpool` și `web3` și răspunde `-32601`. Vedeți [spațiul de nume `qor_`](/api-reference/json-rpc-qor_-namespace) pentru stare și pentru alternativele REST (de exemplu `GET /qorechain/pqc/v1/account/{address}` pentru starea cheii PQC).
 :::
 
 | Metodă                        | Descriere                                                            |
 | ------------------------------ | ---------------------------------------------------------------------- |
 | `qor_getPQCKeyStatus`         | Verifică dacă un cont are o cheie publică PQC înregistrată            |
-| `qor_getAIStats`              | Recuperează statistici ale motorului AI (număr de anomalii, distribuția riscului) |
+| Statistici AI (planificat)    | Recuperează statistici ale motorului AI (număr de anomalii, distribuția riscului); numele metodei nu este final |
 | `qor_getCrossVMMessage`       | Interoghează starea unui mesaj cross-VM după ID                       |
 | `qor_getPoolClassification`   | Obține clasificarea pool-ului de validatori (RPoS/DPoS/PoS)          |
 | `qor_getReputationScore`      | Interoghează scorul de reputație al unui validator                    |

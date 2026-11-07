@@ -98,7 +98,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_window/qor1...
 }
 ```
 
-لا يفشل هذا المسار أبدًا لعنوان بلا نافذة؛ بل يُعيد `found: false`. منذ v3.2.0 لا يقبل مسار EVM معاملةً إلا من حساب لديه مفتاح PQC مسجَّل **و**نافذة مفتوحة. تكون قيمة `live` هي `true` ما دامت النافذة تقبل معاملة واحدة إضافية على الأقل عند الارتفاع الحالي. تُظهر `remaining_blocks` و`remaining_txs` و`remaining_value` أيّ حدٍّ هو الأقرب إلى النفاد؛ والقيم أعداد صحيحة بوحدة `uqor` تُعاد على هيئة سلاسل نصية. ومنذ v3.2.3 يمكن أن تحمل النافذة نطاقًا: `native_only` (تحويلات QOR العادية فقط) و`allowed_targets` (المستلمون المدرجون فقط). انظر [تطوير EVM](/developer-guide/evm-development#evm-window) لمعرفة كيف يعمل مسار EVM.
+لا يفشل هذا المسار أبدًا لعنوان بلا نافذة؛ بل يُعيد `found: false`. منذ v3.2.0 لا يقبل مسار EVM معاملةً إلا من حساب لديه مفتاح PQC مسجَّل **و**نافذة مفتوحة. تكون قيمة `live` هي `true` ما دامت النافذة تقبل معاملة واحدة إضافية على الأقل عند الارتفاع الحالي. تُظهر `remaining_blocks` و`remaining_txs` و`remaining_value` أيّ حدٍّ هو الأقرب إلى النفاد؛ والقيم أعداد صحيحة بوحدة `uqor` تُعاد على هيئة سلاسل نصية. ومنذ v3.2.3 يمكن أن تحمل النافذة نطاقًا: `native_only` (تحويلات QOR العادية فقط) و`allowed_targets` (المستلمون المدرجون فقط؛ يحدّ من العقود والرموز التي يجوز لمسها، لا من المقدار). انظر [تطوير EVM](/developer-guide/evm-development#evm-window) لمعرفة كيف يعمل مسار EVM.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...

@@ -62,7 +62,7 @@ répondent que là où leurs adresses figurent dans le paramètre
 `active_static_precompiles` du module EVM. Cette liste est vide sur le mainnet ;
 sur le testnet, elle contient les précompilés de vérification PQC
 (`0x…0A01`), d'état de clé PQC (`0x…0A02`) et de paramètres de consensus
-(`0x…0C01`) (vérifié le 27 octobre 2026 ; le 4 novembre, la liste du testnet contenait aussi le pont cross-VM `0x…0901`, que cette page n'a pas retesté, et la liste du mainnet était toujours vide) : la paire IA n'y
+(`0x…0C01`) (vérifié le 27 octobre 2026 ; la liste du testnet contenait aussi le pont cross-VM `0x…0901` à partir du 4 novembre et le 7 novembre 2026, listé comme actif mais un appel via celui-ci n'a pas été testé, et la liste du mainnet était toujours vide) : la paire IA n'y
 répond donc toujours rien. Là où un précompilé est inactif, l'appel renvoie
 des données vides ; viem signale donc `returned no data ("0x")` et le helper
 lève une erreur (voir

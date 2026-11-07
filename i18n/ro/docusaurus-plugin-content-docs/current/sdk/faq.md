@@ -61,7 +61,7 @@ pe mainnet**, iar pe testnet sunt active doar trei: răspund doar acolo unde
 adresele lor sunt listate în parametrul `active_static_precompiles` al modulului
 EVM. Lista aceea este goală pe mainnet; pe testnet conține precompile-urile PQC
 verify (`0x…0A01`), PQC key status (`0x…0A02`) și consensus-parameters (`0x…0C01`)
-(verificat la 27 octombrie 2026; pe 4 noiembrie lista testnet-ului conținea și puntea cross-VM `0x…0901`, pe care această pagină nu a retestat-o, iar lista mainnet-ului era în continuare goală), așa că perechea AI tot nu
+(verificat la 27 octombrie 2026; lista testnet-ului conținea și puntea cross-VM `0x…0901` din 4 noiembrie și pe 7 noiembrie 2026, listată ca activă, dar un apel prin ea nu a fost testat, iar lista mainnet-ului era în continuare goală), așa că perechea AI tot nu
 răspunde nimic acolo. Acolo unde un precompile este inactiv, apelul returnează date
 goale, așa că viem raportează `returned no data ("0x")`, iar funcția ajutătoare
 aruncă o eroare (vedeți

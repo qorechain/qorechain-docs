@@ -129,7 +129,7 @@ Desde la versión de cadena **v3.2.0** (altura de mainnet 2.981.742, 25 de septi
 
 Todo lo demás de la vía EVM permanece igual: sigues firmando con MetaMask, ethers.js, Hardhat o Foundry, y `eth_estimateGas` y otras simulaciones funcionan sin ventana. Los despliegues de contratos cuentan como cualquier otra transacción EVM, así que se necesita una ventana antes de desplegar.
 
-**¿Por qué una ventana?** Una wallet estándar firma una única firma secp256k1 sobre una transacción de Ethereum y no ofrece a las aplicaciones ninguna forma de adjuntar una segunda firma, post-cuántica. Por eso la autorización post-cuántica viaja *por delante* de la transacción: abres una ventana acotada con una transacción normal de la vía Cosmos, que sí lleva tu firma ML-DSA, y la vía EVM admite entonces las transacciones cubiertas por ella. Una clave clásica por sí sola nunca puede abrir una ventana, de modo que una clave clásica robada solo puede gastar lo que permita una ventana ya abierta. Funciona como una aprobación ERC-20: autorizas una cantidad acotada durante un tiempo acotado y luego operas con normalidad.
+**¿Por qué una ventana?** Una wallet estándar firma una única firma secp256k1 sobre una transacción de Ethereum y no ofrece a las aplicaciones ninguna forma de adjuntar una segunda firma, post-cuántica. Por eso la autorización post-cuántica viaja *por delante* de la transacción: abres una ventana acotada con una transacción normal de la vía Cosmos, que sí lleva tu firma ML-DSA, y la vía EVM admite entonces las transacciones cubiertas por ella. Una clave clásica por sí sola nunca puede abrir una ventana, de modo que una clave clásica robada solo puede actuar, en la vía EVM, dentro de lo que permita una ventana ya abierta. Funciona como una aprobación: autorizas un número acotado de transacciones y una cantidad acotada de QOR nativo durante un tiempo acotado y luego operas con normalidad. La ventana no limita las cantidades de tokens ni las aprobaciones que un contrato ya tiene.
 
 **Qué acota una ventana.** Se aplican tres límites a la vez; el primero que se agote cierra la ventana.
 
@@ -143,7 +143,7 @@ Todo lo demás de la vía EVM permanece igual: sigues firmando con MetaMask, eth
 * Una transacción que se admite y luego falla consume igualmente su hueco y su presupuesto de valor.
 * Abrir una nueva ventana **reemplaza** a la anterior; el consumo vuelve a empezar desde cero.
 * La CLI acepta `max-value` en `uqor` o `qor` (`1000qor` = 1.000.000.000 uqor).
-* El límite de valor cuenta solo QOR nativo: una transferencia de tokens, una aprobación o cualquier otra llamada a un contrato lleva valor cero. Para acotar también esas, restringe el alcance de la ventana (más abajo).
+* El límite de valor cuenta solo QOR nativo: una transferencia de tokens, una aprobación o cualquier otra llamada a un contrato lleva valor cero. El alcance (más abajo) restringe qué destinatarios admite la ventana; no limita las cantidades de tokens.
 
 **Paso 1 — registra tu clave post-cuántica** (una vez): consulta [Registra tu clave post-cuántica](#register-pqc-key) más arriba.
 
@@ -163,6 +163,8 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
+
+`--allowed-targets` limita **qué** contratos y tokens puede tocar la ventana, no **cuánto**. Un token listado admite cualquier cantidad de ese token, incluido `approve`, y un contrato listado puede mover lo que permitan su código y sus aprobaciones existentes, así que no listes contratos genéricos de reenvío o de router. Una ventana acota solo las transacciones de la vía EVM (firmadas de forma clásica); los mensajes de Cosmos firmados con la firma híbrida PQC, como las llamadas entre VM y authz, quedan fuera de ella.
 
 En mainnet, abrir una ventana ha usado unos 180.000 de gas. En [QoreX](/qorex/security-and-recovery#evm-window) el mismo paso es **Ajustes → Seguridad → Ventana de acceso EVM** (app) o el botón **Ventana de acceso EVM** (extensión). Abrir la ventana avanza el nonce de tu cuenta, así que ábrela **antes** de preparar la transacción EVM en tu wallet.
 

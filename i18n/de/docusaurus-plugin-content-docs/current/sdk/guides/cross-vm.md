@@ -182,9 +182,10 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 // 0x0000000000000000000000000000000000000901
 ```
 
-> **Nicht aktiv.** Das Cross-VM-Bridge-Precompile ist weder auf dem Mainnet noch auf dem
-> Testnet aktiv und wird in seiner jetzigen Form nicht aktiviert; es wird zunächst neu
-> aufgebaut. Ein Aufruf an `0x…0901` liefert heute leere Daten zurück und routet nichts. Siehe
+> **Im Mainnet nicht aktiv; im Testnet als aktiv aufgeführt.** Das Cross-VM-Bridge-Precompile
+> steht nicht in der Liste der aktiven Precompiles des Mainnets, ein Aufruf an `0x…0901` liefert dort
+> also leere Daten zurück und routet nichts. Die Liste des Testnets enthält es (gelesen am 7. November 2026);
+> ein Aufruf darüber wurde nicht getestet. Siehe
 > [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
 
 Sobald es aktiv ist, ruft ein Solidity-Vertrag (oder viem) das Precompile unter dieser Adresse auf, um

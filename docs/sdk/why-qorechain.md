@@ -91,7 +91,7 @@ await crossVM.callAtomic([
 ```
 
 **Why it's different:** QoreChain runs three co-resident VMs with a native bridge
-module (`crossvm`, plus the `CrossVMBridge` precompile once it is active; it is not active on either network yet), so one
+module (`crossvm`, plus the `CrossVMBridge` precompile once it is active; it is not active on mainnet; the testnet lists it active as of 7 November 2026, a call through it not tested), so one
 SDK interface can address all three. Single-VM chains have nothing equivalent to
 wrap. Today the reach of a call is limited by the lane it targets: `MsgCrossVMCall`
 is switched off on mainnet, SVM transactions are disabled, and QoreChain Native upload and
@@ -198,7 +198,7 @@ const msg = await buildPhantomExecuteCosmos({
 });
 ```
 
-**Why it matters:** once the module is enabled, every spend is bounded by an on-chain permission taxonomy,
+**Why it matters:** once the module is enabled, every spend by a linked key is bounded by an on-chain permission taxonomy,
 `SpendingRule` limits, and an expiry — least-privilege and revocable — while
 the account itself stays post-quantum protected. See
 [Authenticators & delegated spending](/sdk/guides/authenticators).

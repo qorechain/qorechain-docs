@@ -31,7 +31,7 @@ Das SDK spricht über mehrere Endpunkte mit einem Node:
   für den QoreChain Native-Lese-Client.
 - **EVM JSON-RPC** — standardmäßige `eth_*`-, `net_*`-, `web3_*`- und
   `txpool_*`-Aufrufe auf den öffentlichen Endpunkten. Der QoreChain-`qor_*`-
-  Namespace wird dort nicht bereitgestellt (siehe unten). Die EVM-Precompiles
+  Namespace wird auf dem öffentlichen Mainnet-Endpunkt nicht bereitgestellt, und das Testnet stellt nur `qor_getKEMKey` bereit (siehe unten). Die EVM-Precompiles
   `pqcVerify` (`0x0A01`) und `pqcKeyStatus` (`0x0A02`) sind nur auf dem Testnet
   aktiv; auf dem Mainnet ist keines aktiv (eine Aktivierung braucht eine
   Governance-Entscheidung, ohne Datum). Siehe

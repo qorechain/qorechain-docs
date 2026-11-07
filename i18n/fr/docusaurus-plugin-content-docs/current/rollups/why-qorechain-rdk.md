@@ -90,17 +90,17 @@ Depuis la CLI : `qorollup advise my-rollup`. Voir [Copilote QCAI](/rollups/qcai-
 
 ## 3. Appels inter-VM multi-VM
 
-> 🟡 **Pas encore utilisable sur les réseaux en production** — la précompilation
-> n'est pas activée et le téléversement QoreChain Native est fermé. Voir
+> 🟡 **Pas encore utilisable sur le mainnet** — la précompilation n'y est pas activée
+> et le téléversement QoreChain Native est fermé. Sur le testnet, la précompilation est listée comme active (7 novembre 2026) ; un appel n'a pas été testé. Voir
 > [Multi-VM](/rollups/multi-vm).
 
 Le RDK inclut des utilitaires qui encodent un appel d'un contrat EVM (Solidity)
 vers un contrat **QoreChain Native** via une précompilation fixe à l'adresse `0x…0901`.
-Cette précompilation n'est **pas active** sur le mainnet ni sur le testnet
+Cette précompilation n'est **pas active sur le mainnet** et est **listée comme active sur le testnet** au 7 novembre 2026
 (voir
 [Précompilations EVM : état du réseau](/developer-guide/evm-precompiles#network-status)) :
-`eth_getCode` pour `0x…0901` renvoie `0x` sur les deux, et un appel de contrat
-vers cette adresse réussit sans aucun effet.
+`eth_getCode` pour `0x…0901` renvoie `0x` (une précompilation n'a pas de bytecode), un appel de contrat
+vers cette adresse réussit sans aucun effet sur le mainnet, et un appel via celle-ci sur le testnet n'a pas été testé.
 
 L'utilitaire `encodeCrossVmCalldata` (depuis la 0.6.0) construit les données d'appel
 pour `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, la

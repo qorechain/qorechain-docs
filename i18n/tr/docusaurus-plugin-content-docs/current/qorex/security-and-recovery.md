@@ -106,7 +106,7 @@ QoreX'in ürettiği her imza sizin tarafınızdan onaylanır ve onay, tam olarak
 
 - istekteki **her mesaj** için bir başlık ve etiketli alanlar; bir authz **MsgExec** içine yerleştirilmiş mesajlar ve izin verme koşulları dahil - ve gösteremediği her şeyi **reddeder** ("QoreX cannot read this message … Approve only if you trust this site completely");
 - **ücret** (*Fee: \{amount\} · gas \{gas\}*), onu kimin ödediği ve varsa ücret desteği (fee grant) - ücret okunamıyorsa QoreX bunu söyler ve onaylamamanızı bildirir;
-- harcama izinlerinin ve authz yetkilerinin **sınırı, izin verilen eylemi ve son kullanma tarihi**; *UNLIMITED* ve *NEVER* açıkça yazılır; son kullanma tarihi saniyesine kadar gösterilir (`YYYY-MM-DD HH:MM:SS UTC`) ve bir yönetişim oyu çözülür, böylece neye oy verdiğinizi görürsünüz. Okunamayan, sınırsız veya sonsuz olan her şey Onayla üzerinde **ikinci bir dokunuş** gerektirir (*Tap again to approve*);
+- harcama izinlerinin ve authz yetkilerinin **sınırı, izin verilen eylemi ve son kullanma tarihi**; *UNLIMITED* ve *NEVER* açıkça yazılır; son kullanma tarihi saniyesine kadar gösterilir (`YYYY-MM-DD HH:MM:SS UTC`). İzin verilen eylemi dikkatle okuyun: izin verilen mesajları arasında `MsgExec` bulunan bir ücret izni (`AllowedMsgAllowance`), hak sahibinin onun üzerinden yürütebileceği her mesajı kapsar ve genel bir authz yetkisi adını verdiği mesaj türünün tamamını kapsar. Bir yönetişim oyu çözülür, böylece neye oy verdiğinizi görürsünüz. Okunamayan, sınırsız veya sonsuz olan her şey Onayla üzerinde **ikinci bir dokunuş** gerektirir (*Tap again to approve*);
 - birden fazla hesabınız olduğunda imzalayan hesap (*Signed by …*);
 - çok sayıda mesaj içeren bir istekte, ilk 50 mesaj ve geri kalanların sayısı.
 

@@ -41,7 +41,7 @@ alanı, SVM işlemleri, mainnet'te VM'ler arası çağrılar (`MsgCrossVMCall`
 devre kesici tarafından kapatılmıştır), sıradan hesaplar için QoreChain Native yükleme ve
 örnekleme (testnet'te instantiate açıktır, yükleme değildir), mainnet'te authenticator /
 soyut hesap akışları (modül orada kapalı, testnet'te açık), xQORE ve gaz
-soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler. 27 Ekim 2026'da canlı uç noktalara karşı kontrol edildi; 4 Kasım 2026'da mainnet'in etkin ön derleme listesi hâlâ boştu, testnet'in listesi ise ayrıca VM'ler arası köprü `0x…0901` adresini de içeriyordu (yeniden test edilmedi).
+soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler. 27 Ekim 2026'da canlı uç noktalara karşı kontrol edildi; 7 Kasım 2026'da mainnet'in etkin ön derleme listesi hâlâ boştu, testnet'in listesi ise ayrıca VM'ler arası köprü `0x…0901` adresini de içeriyordu (etkin olarak listelenir; ondan yapılan bir çağrı test edilmedi).
 
 Yayımlanan SDK (0.12.0, 30 Ekim 2026), her iki ağın doğruladığı biçimde imzalar
 (v2 hibrit sign-bytes, zincir durumundan çözümlenir); imzalama biçimi, adresler,

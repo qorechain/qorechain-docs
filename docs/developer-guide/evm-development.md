@@ -275,7 +275,7 @@ For post-quantum security inside contracts:
 
 ## EVM authorisation window {#evm-window}
 
-A post-quantum signature cannot travel *with* an Ethereum transaction (wallets such as MetaMask cannot attach a second signature), so it travels *ahead* of it. The account opens a bounded window with the Cosmos-lane message `MsgOpenEVMWindow`; the EVM lane then admits only transactions covered by a live window. A stolen classical key alone cannot open a window, so it can move only what an already-open window allows.
+A post-quantum signature cannot travel *with* an Ethereum transaction (wallets such as MetaMask cannot attach a second signature), so it travels *ahead* of it. The account opens a bounded window with the Cosmos-lane message `MsgOpenEVMWindow`; the EVM lane then admits only transactions covered by a live window. A stolen classical key alone cannot open a window, so on the EVM lane it can act only within what an already-open window allows (the window does not cap token amounts or existing approvals).
 
 | Bound       | Range              | Meaning |
 | ----------- | ------------------ | ------- |
@@ -285,12 +285,14 @@ A post-quantum signature cannot travel *with* an Ethereum transaction (wallets s
 
 Whichever bound runs out first closes the window. The three bounds are required; opening a window replaces an existing one; a transaction that is admitted and then fails still uses its slot and its value budget; contract deployments count like any other transaction. `blocks` is a block count, not a duration: 17,280 blocks is about 15 hours on mainnet (about 3.1 s per block) and about 6 hours on the testnet (about 1.3 s per block on 27 October 2026; the testnet block time varies).
 
-**The value bound counts native QOR only.** A token transfer, an approval or any other contract call carries value zero, so it is not counted against `max-value` (only its maximum fee is). To bound those as well, narrow the window's **scope** (mainnet v3.2.3 and later):
+**The value bound counts native QOR only.** A token transfer, an approval or any other contract call carries value zero, so it is not counted against `max-value` (only its maximum fee is). The window's **scope** (mainnet v3.2.3 and later) narrows which recipients it admits, but it does not cap token amounts:
 
 | Scope option (CLI flag) | Message field | What the window admits |
 | ----------------------- | ------------- | ---------------------- |
 | `--native-only`         | `native_only` | Plain transfers of native QOR only: no calldata, no contract creation, no recipient that carries code, no EIP-7702 authorisation |
 | `--allowed-targets 0xA,0xB` | `allowed_targets` | Only transactions whose recipient is one of the listed 20-byte addresses; contract creation is refused |
+
+`allowed_targets` limits **which** contracts and tokens a window may touch, not **how much**. A listed token admits any amount of that token, including `approve`, and a listed contract can move whatever its code and existing approvals allow, so do not list generic forwarder or router contracts. A window bounds only transactions on the EVM lane (classically signed); Cosmos messages signed with the hybrid PQC signature, such as cross-VM calls and authz, are outside it.
 
 A window opened without a scope behaves exactly as before. A transaction outside the scope is refused with code 27 (the message says the window "does not admit this transaction"). `GET /qorechain/pqc/v1/evm_window/{address}` and `qorechaind query pqc evm-window` report `native_only` and `allowed_targets`, and the `pqc_evm_window_opened` event carries them when set.
 
@@ -330,16 +332,16 @@ With the TypeScript SDK (0.8.2 and later): `openEvmWindowMsg`, `closeEvmWindowMs
 
 ## Custom `qor_` Namespace {#custom-qor_-namespace}
 
-QoreChain extends the JSON-RPC with a `qor_` namespace for chain-specific queries:
+QoreChain extends the JSON-RPC with a `qor_` namespace for chain-specific queries. The methods below are planned:
 
 :::warning Not served yet
-No released node build serves the `qor_` namespace yet: `rpc_modules` on the public endpoints lists only `eth`, `net`, `rpc`, `txpool` and `web3`, and every method below returns `-32601` (method not found) on mainnet, testnet and self-run nodes with the default configuration (`eth`, `net`, `web3`). See [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace) for the status and the REST alternatives (for example `GET /qorechain/pqc/v1/account/{address}` for PQC key status).
+The methods in the table below are planned and not served: each returns `-32601` (method not found). The only served method of the namespace is `qor_getKEMKey`, and only where the node lists `qor` in its namespaces: observed on 7 November 2026, the testnet lists `qor` and answers it, while the public mainnet endpoint lists only `eth`, `net`, `rpc`, `txpool` and `web3` and answers `-32601`. See [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace) for the status and the REST alternatives (for example `GET /qorechain/pqc/v1/account/{address}` for PQC key status).
 :::
 
 | Method                      | Description                                                       |
 | --------------------------- | ----------------------------------------------------------------- |
 | `qor_getPQCKeyStatus`       | Check if an account has a registered PQC public key               |
-| `qor_getAIStats`            | Retrieve AI engine statistics (anomaly counts, risk distribution) |
+| AI statistics (planned)     | Retrieve AI engine statistics (anomaly counts, risk distribution); method name not final |
 | `qor_getCrossVMMessage`     | Query the status of a cross-VM message by ID                      |
 | `qor_getPoolClassification` | Get validator pool classification (RPoS/DPoS/PoS)                 |
 | `qor_getReputationScore`    | Query a validator's reputation score                              |

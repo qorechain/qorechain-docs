@@ -60,7 +60,7 @@ sulla mainnet**, e sulla testnet ne sono attivi solo tre: rispondono solo dove i
 loro indirizzi sono elencati nel parametro `active_static_precompiles` del modulo
 EVM. Quell'elenco è vuoto sulla mainnet; sulla testnet contiene i precompile PQC
 verify (`0x…0A01`), PQC key status (`0x…0A02`) e dei parametri di consenso
-(`0x…0C01`) (verificato il 27 ottobre 2026; il 4 novembre l'elenco della testnet conteneva anche il bridge cross-VM `0x…0901`, che questa pagina non ha ritestato, e l'elenco della mainnet era ancora vuoto), quindi la coppia AI lì
+(`0x…0C01`) (verificato il 27 ottobre 2026; l'elenco della testnet conteneva anche il bridge cross-VM `0x…0901` dal 4 novembre e il 7 novembre 2026, elencato come attivo ma una chiamata tramite esso non è stata testata, e l'elenco della mainnet era ancora vuoto), quindi la coppia AI lì
 non risponde ancora nulla. Dove un precompile è inattivo la
 chiamata restituisce dati vuoti, quindi viem segnala `returned no data ("0x")` e
 l'helper lancia un errore (vedi

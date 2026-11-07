@@ -339,7 +339,7 @@ qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 Bir pencere açmak mevcut pencerenin yerini alır. `qorechaind query pqc evm-window <address>` ile kontrol edin.
 
-**Kapsamlı pencereler (mainnet v3.2.3 ve sonrası).** Değer sınırı yalnızca yerel QOR'u sayar: bir token transferi, bir onay (approval) veya başka herhangi bir kontrat çağrısı sıfır değer taşır ve bu sınıra sayılmaz. İki isteğe bağlı bayrak, pencerenin kabul ettiklerini daraltır:
+**Kapsamlı pencereler (mainnet v3.2.3 ve sonrası).** Değer sınırı yalnızca yerel QOR'u sayar: bir token transferi, bir onay (approval) veya başka herhangi bir kontrat çağrısı sıfır değer taşır ve bu sınıra sayılmaz. İki isteğe bağlı bayrak, pencerenin hangi alıcıları kabul ettiğini daraltır (token miktarlarını sınırlamazlar):
 
 | Bayrak              | Etki                                                                                                                       |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -350,6 +350,8 @@ Bir pencere açmak mevcut pencerenin yerini alır. `qorechaind query pqc evm-win
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > w.json
 ```
+
+`allowed_targets`, **hangi** kontratlara ve token'lara dokunulabileceğini sınırlar, **ne kadar** olduğunu değil. Listelenen bir token, `approve` dahil o token'ın her miktarını kabul eder ve listelenen bir kontrat, kodunun ve mevcut onaylarının izin verdiği her şeyi taşıyabilir; bu yüzden genel yönlendirici (forwarder veya router) kontratları listelemeyin. Bir pencere yalnızca EVM şeridindeki (klasik imzalı) işlemleri sınırlar; VM'ler arası çağrılar ve authz gibi hibrit PQC imzasıyla imzalanan Cosmos mesajları bunun dışındadır.
 
 İki bayraktan hiçbiri olmadan açılan bir pencere, her zaman kabul ettiğini kabul eder. Kapsam, pencere sorgusu tarafından `native_only` ve `allowed_targets` olarak bildirilir.
 

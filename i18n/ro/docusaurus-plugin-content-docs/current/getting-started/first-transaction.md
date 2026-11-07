@@ -129,7 +129,7 @@ Soldul este returnat ca o valoare codată hex în cea mai mică denominație.
 
 Tot restul lane-ului EVM rămâne neschimbat: continuați să semnați cu MetaMask, ethers.js, Hardhat sau Foundry, iar `eth_estimateGas` și celelalte simulări funcționează fără fereastră. Implementările de contracte contează ca orice altă tranzacție EVM, deci este nevoie de o fereastră înainte de a implementa.
 
-**De ce o fereastră?** Un portofel standard face o singură semnătură secp256k1 peste o tranzacție Ethereum și nu oferă aplicațiilor nicio cale de a atașa o a doua semnătură, post-cuantică. Așadar, autorizarea post-cuantică călătorește *înaintea* tranzacției: deschideți o fereastră limitată cu o tranzacție obișnuită pe lane-ul Cosmos, care poartă semnătura dumneavoastră ML-DSA, iar lane-ul EVM admite apoi tranzacțiile acoperite de ea. O cheie clasică singură nu poate deschide niciodată o fereastră, deci o cheie clasică furată poate cheltui doar ce permite o fereastră deja deschisă. Funcționează ca o aprobare ERC-20: autorizați o sumă limitată pentru o perioadă limitată, apoi tranzacționați normal.
+**De ce o fereastră?** Un portofel standard face o singură semnătură secp256k1 peste o tranzacție Ethereum și nu oferă aplicațiilor nicio cale de a atașa o a doua semnătură, post-cuantică. Așadar, autorizarea post-cuantică călătorește *înaintea* tranzacției: deschideți o fereastră limitată cu o tranzacție obișnuită pe lane-ul Cosmos, care poartă semnătura dumneavoastră ML-DSA, iar lane-ul EVM admite apoi tranzacțiile acoperite de ea. O cheie clasică singură nu poate deschide niciodată o fereastră, deci o cheie clasică furată poate acționa pe lane-ul EVM doar în limitele unei ferestre deja deschise. Funcționează ca o aprobare: autorizați un număr limitat de tranzacții și o sumă limitată de QOR nativ pentru o perioadă limitată, apoi tranzacționați normal. Fereastra nu plafonează sumele de tokenuri și nici aprobările pe care un contract le deține deja.
 
 **Ce limitează o fereastră.** Se aplică simultan trei limite; cea care se epuizează prima închide fereastra.
 
@@ -143,7 +143,7 @@ Tot restul lane-ului EVM rămâne neschimbat: continuați să semnați cu MetaMa
 * O tranzacție care este admisă și apoi eșuează își consumă totuși slotul și bugetul de valoare.
 * Deschiderea unei ferestre noi **înlocuiește** fereastra anterioară; consumul reîncepe de la zero.
 * CLI acceptă `max-value` în `uqor` sau `qor` (`1000qor` = 1,000,000,000 uqor).
-* Limita de valoare numără doar QOR nativ: un transfer de token, o aprobare sau orice alt apel de contract poartă valoarea zero. Pentru a limita și acestea, restrângeți domeniul ferestrei (mai jos).
+* Limita de valoare numără doar QOR nativ: un transfer de token, o aprobare sau orice alt apel de contract poartă valoarea zero. Domeniul (mai jos) restrânge ce destinatari admite fereastra; nu plafonează sumele de tokenuri.
 
 **Pasul 1 — înregistrați cheia post-cuantică** (o singură dată): vezi [Înregistrarea cheii post-cuantice](#register-pqc-key) mai sus.
 
@@ -163,6 +163,8 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
+
+`--allowed-targets` limitează **ce** contracte și tokenuri poate atinge fereastra, nu **cât**. Un token listat admite orice sumă din acel token, inclusiv `approve`, iar un contract listat poate muta tot ce permit codul său și aprobările existente, așa că nu listați contracte generice de tip forwarder sau router. O fereastră limitează doar tranzacțiile de pe banda EVM (semnate clasic); mesajele Cosmos semnate cu semnătura hibridă PQC, precum apelurile cross-VM și authz, sunt în afara ei.
 
 Pe mainnet, deschiderea unei ferestre a consumat aproximativ 180,000 de gaz. În [QoreX](/qorex/security-and-recovery#evm-window), același pas este **Settings → Security → EVM access window** (aplicația) sau butonul **EVM access window** (extensia). Deschiderea ferestrei avansează nonce-ul contului dumneavoastră, deci deschideți-o **înainte** de a pregăti tranzacția EVM în portofel.
 

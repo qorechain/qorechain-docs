@@ -39,7 +39,7 @@ Limitele unei [ferestre de autorizare EVM](/getting-started/first-transaction#ev
 | `max_value` | mai mare decât 0 (uqor; valoarea transferată plus comisionul maxim al fiecărei tranzacții) |
 | `allowed_targets` maxim | 16 adrese de destinatar (domeniu opțional, v3.2.3) |
 
-O fereastră poate fi restrânsă și cu `native_only` (doar transferuri simple de QOR nativ) începând cu v3.2.3.
+O fereastră poate fi restrânsă și cu `native_only` (doar transferuri simple de QOR nativ) începând cu v3.2.3. `allowed_targets` limitează ce contracte și tokenuri pot fi atinse, nu cât: un token listat admite orice sumă, inclusiv `approve`. Ferestrele limitează doar tranzacțiile pe banda EVM semnate clasic; mesajele Cosmos cu semnătură hibridă (apeluri cross-VM, authz) sunt în afara lor.
 
 ---
 

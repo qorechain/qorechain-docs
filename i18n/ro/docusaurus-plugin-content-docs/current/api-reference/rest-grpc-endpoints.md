@@ -98,7 +98,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_window/qor1...
 }
 ```
 
-Această rută nu eșuează niciodată pentru o adresă fără fereastră; returnează `found: false`. Începând cu v3.2.0, banda EVM admite o tranzacție doar de la un cont care are o cheie PQC înregistrată **și** o fereastră deschisă. `live` este `true` cât timp fereastra admite cel puțin încă o tranzacție la înălțimea curentă. `remaining_blocks`, `remaining_txs` și `remaining_value` arată care limită este cea mai aproape de epuizare; valorile sunt numere întregi `uqor` returnate ca șiruri de caractere. Începând cu v3.2.3, o fereastră poate purta un domeniu de aplicare: `native_only` (doar transferuri simple de QOR) și `allowed_targets` (doar destinatarii listați). Vezi [Dezvoltare EVM](/developer-guide/evm-development#evm-window) pentru modul în care funcționează banda EVM.
+Această rută nu eșuează niciodată pentru o adresă fără fereastră; returnează `found: false`. Începând cu v3.2.0, banda EVM admite o tranzacție doar de la un cont care are o cheie PQC înregistrată **și** o fereastră deschisă. `live` este `true` cât timp fereastra admite cel puțin încă o tranzacție la înălțimea curentă. `remaining_blocks`, `remaining_txs` și `remaining_value` arată care limită este cea mai aproape de epuizare; valorile sunt numere întregi `uqor` returnate ca șiruri de caractere. Începând cu v3.2.3, o fereastră poate purta un domeniu de aplicare: `native_only` (doar transferuri simple de QOR) și `allowed_targets` (doar destinatarii listați; limitează ce contracte și tokenuri pot fi atinse, nu cât). Vezi [Dezvoltare EVM](/developer-guide/evm-development#evm-window) pentru modul în care funcționează banda EVM.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...

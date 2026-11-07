@@ -339,7 +339,7 @@ qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 Deschiderea unei ferestre o înlocuiește pe cea existentă. Verificați-o cu `qorechaind query pqc evm-window <address>`.
 
-**Ferestre cu domeniu limitat (mainnet v3.2.3 și ulterioare).** Limita de valoare numără doar QOR nativ: un transfer de token, o aprobare sau orice alt apel de contract poartă valoarea zero și nu este numărat în ea. Două flag-uri opționale restrâng ce admite fereastra:
+**Ferestre cu domeniu limitat (mainnet v3.2.3 și ulterioare).** Limita de valoare numără doar QOR nativ: un transfer de token, o aprobare sau orice alt apel de contract poartă valoarea zero și nu este numărat în ea. Două flag-uri opționale restrâng ce destinatari admite fereastra (nu plafonează sumele de tokenuri):
 
 | Flag                | Efect                                                                                                                      |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -352,6 +352,8 @@ qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
 ```
 
 O fereastră deschisă fără niciunul dintre flag-uri admite ce a admis întotdeauna. Domeniul este raportat de interogarea ferestrei ca `native_only` și `allowed_targets`.
+
+`allowed_targets` limitează **ce** contracte și tokenuri poate atinge o fereastră, nu **cât**. Un token listat admite orice sumă din acel token, inclusiv `approve`, iar un contract listat poate muta tot ce permit codul său și aprobările existente, așa că nu listați contracte generice de tip forwarder sau router. O fereastră limitează doar tranzacțiile de pe banda EVM (semnate clasic); mesajele Cosmos semnate cu semnătura hibridă PQC, precum apelurile cross-VM și authz, sunt în afara ei.
 
 ### close-evm-window
 

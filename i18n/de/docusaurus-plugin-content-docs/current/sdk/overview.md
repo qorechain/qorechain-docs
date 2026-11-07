@@ -43,7 +43,7 @@ Circuit Breaker abgeschaltet), QoreChain Native-Upload und -Instanziierung für 
 Konten (im Testnet ist die Instanziierung offen und der Upload nicht), die
 Authenticator-/Abstract-Account-Abläufe im Mainnet (Modul dort abgeschaltet, im
 Testnet aktiviert), xQORE und Gas-Abstraktion. Jeder Leitfaden wiederholt den
-Vorbehalt dort, wo er zutrifft. Geprüft gegen die Live-Endpunkte am 27. Oktober 2026; am 4. November 2026 war die Liste der aktiven Precompiles des Mainnets weiterhin leer, während die Liste des Testnets auch die Cross-VM-Bridge `0x…0901` enthielt (nicht erneut getestet).
+Vorbehalt dort, wo er zutrifft. Geprüft gegen die Live-Endpunkte am 27. Oktober 2026; am 7. November 2026 war die Liste der aktiven Precompiles des Mainnets weiterhin leer, während die Liste des Testnets auch die Cross-VM-Bridge `0x…0901` enthielt (als aktiv aufgeführt; ein Aufruf darüber wurde nicht getestet).
 
 Das veröffentlichte SDK (0.12.0, 30. Oktober 2026) signiert in der Form, die beide
 Netzwerke verifizieren (v2-Hybrid-Sign-Bytes, aus dem Chain-Zustand aufgelöst),

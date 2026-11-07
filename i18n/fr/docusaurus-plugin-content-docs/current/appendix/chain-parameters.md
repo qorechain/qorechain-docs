@@ -39,7 +39,7 @@ Les bornes d'une [fenêtre d'autorisation EVM](/getting-started/first-transactio
 | `max_value` | supérieur à 0 (uqor ; valeur transférée plus les frais maximaux de chaque transaction) |
 | `allowed_targets` maximal | 16 adresses de destinataires (périmètre facultatif, v3.2.3) |
 
-Depuis v3.2.3, une fenêtre peut aussi être restreinte avec `native_only` (transferts de QOR natif simples uniquement).
+Depuis v3.2.3, une fenêtre peut aussi être restreinte avec `native_only` (transferts de QOR natif simples uniquement). `allowed_targets` limite quels contrats et tokens peuvent être touchés, pas combien : un token listé admet n'importe quel montant, y compris `approve`. Les fenêtres ne bornent que les transactions de la voie EVM signées de façon classique ; les messages Cosmos signés en hybride (appels cross-VM, authz) sont hors de leur champ.
 
 ---
 

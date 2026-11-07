@@ -43,7 +43,7 @@ instanciación de QoreChain Native para cuentas ordinarias (en la testnet, la
 instanciación está abierta y la subida no), los flujos de autenticador /
 cuenta abstracta en mainnet (módulo desactivado allí, habilitado en la
 testnet), xQORE y la abstracción de gas. Cada guía repite la advertencia donde
-corresponde. Comprobado contra los endpoints en vivo el 27 de octubre de 2026; el 4 de noviembre de 2026 la lista de precompilados activos de la mainnet seguía vacía, mientras que la de la testnet también contenía el puente cross-VM `0x…0901` (no se ha vuelto a probar).
+corresponde. Comprobado contra los endpoints en vivo el 27 de octubre de 2026; el 7 de noviembre de 2026 la lista de precompilados activos de la mainnet seguía vacía, mientras que la de la testnet también contenía el puente cross-VM `0x…0901` (figura como activo; no se probó una llamada a través de él).
 
 El SDK publicado (0.12.0, 30 de octubre de 2026) firma en la forma que verifican ambas
 redes (sign-bytes híbridos v2, resueltos a partir del estado de la cadena), y el

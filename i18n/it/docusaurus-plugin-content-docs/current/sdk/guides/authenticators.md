@@ -114,7 +114,7 @@ altrimenti **nessuna, e allora non c'è alcun limite**. Una regola memorizzata c
 collegata solo con quel messaggio è limitata unicamente da una regola a livello di
 account. Imposta una regola in modo deliberato con `MsgUpdateSpendingRules` e
 registra soltanto i permessi di cui la chiave ha bisogno. Un limite circoscrive il
-danno che una chiave collegata può fare; non sostituisce la revoca della chiave.
+danno che una chiave collegata può fare; non sostituisce la revoca della chiave. Le regole di spesa vincolano solo gli authenticator e le session key, non la chiave del proprietario (sulla corsia EVM la chiave del proprietario è limitata dalla finestra EVM).
 :::
 
 Per disattivare una chiave all'istante, il proprietario trasmette

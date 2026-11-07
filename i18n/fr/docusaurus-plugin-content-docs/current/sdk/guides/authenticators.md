@@ -116,7 +116,7 @@ sinon **aucune, et alors il n'y a aucun plafond**. Une règle stockée avec
 message n'est bornée que par une règle au niveau du compte. Définissez une règle
 délibérément avec `MsgUpdateSpendingRules`, et n'enregistrez que les permissions
 dont la clé a besoin. Un plafond limite les dégâts qu'une clé liée peut causer ;
-il ne remplace pas la révocation de la clé.
+il ne remplace pas la révocation de la clé. Les règles de dépenses ne lient que les authentificateurs et les clés de session, pas la clé propre du propriétaire (sur la voie EVM, la clé du propriétaire est limitée par la fenêtre EVM).
 :::
 
 Pour désactiver instantanément une clé, le propriétaire diffuse

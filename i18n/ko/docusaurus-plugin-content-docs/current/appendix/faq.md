@@ -47,7 +47,7 @@ PRISM은 QoreChain 컨센서스 엔진에 내장된 강화학습 최적화 계�
 
 ### QoreChain은 어떤 서명 체계를 사용하나요?
 
-QoreChain은 고전 **secp256k1 (ECDSA)**와 포스트 양자 **ML-DSA-87 (Dilithium-5)**를 결합한 포스트 양자 하이브리드 체계를 사용합니다. 이 하이브리드 체계는 Cosmos 트랜잭션 경로에서 기본적으로 필수이며, 강제 모드는 거버넌스로 제어됩니다. EVM 레인에서는 서명이 secp256k1로 유지되며, 계정은 추가로 등록된 ML-DSA 키와 열려 있는 인가 창(authorisation window)을 보유해야 합니다(v3.2.0부터). [포스트 양자 보안](/architecture/post-quantum-security)을 참조하세요.
+QoreChain은 고전 **secp256k1 (ECDSA)**와 포스트 양자 **ML-DSA-87 (Dilithium-5)**를 결합한 포스트 양자 하이브리드 체계를 사용합니다. 이 하이브리드 체계는 Cosmos 트랜잭션 경로에서 기본적으로 필수이며, 강제 모드는 거버넌스로 제어됩니다. EVM 레인에서는 서명이 secp256k1로 유지되며, 계정은 추가로 등록된 ML-DSA 키와 열려 있는 인가 창(authorisation window)을 보유해야 합니다(v3.2.0부터). 계정은 ML-DSA-87 키를 등록한 후에야 포스트 양자 보호를 받으며, 그 첫 등록은 고전 키만으로 서명됩니다(문서화된 부트스트랩). 따라서 계정에 의미 있는 자금이 들어오기 전에 등록하세요. [포스트 양자 보안](/architecture/post-quantum-security)을 참조하세요.
 
 ### EVM 트랜잭션이 "no open EVM authorisation window"로 거부되는 이유는 무엇인가요?
 

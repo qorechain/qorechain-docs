@@ -9,13 +9,24 @@ sidebar_position: 2
 
 `qor_` 名前空間は、耐量子暗号のステータス、AI 分析、クロス VM メッセージング、マルチレイヤー状態、ブリッジ操作、トークノミクス、ロールアップ基盤、および PRISM コンセンサス状態を照会するための QoreChain 固有の JSON-RPC メソッドを提供するよう設計されました。
 
-:::warning まだ提供されていません
-**リリース済みのノードビルドは、まだ `qor_` 名前空間を提供していません**（メインネット `qorechain-vladi`、テストネット `qorechain-diana`、自分で運用するノードのいずれも）。公開 EVM エンドポイントでは、`rpc_modules` に `eth`、`net`、`rpc`、`txpool`、`web3` のみが表示され、両ネットワークで**すべての `qor_` メソッドが `-32601`（method not found）を返します**。メソッドはノードのソースコードには実装されていますが JSON-RPC サーバーには登録されていないため、`app.toml` の `api` リストに `qor` を追加しても効果はありません。この名前空間の登録はノードのリリースで予定されており、リリース時にこのページでどのリリースかをお知らせします。
-
-現時点では `qor_` メソッドを前提に開発しないでください。該当するものがある場合は、下の表にある REST ルートを使用してください。`client.qor.*` ヘルパーを公開しているクライアントライブラリはこれらと同じメソッドをラップしているため、それらのヘルパーも同様に失敗します。
+:::warning 予定されているメソッドはまだ提供されていません
+**下の表のメソッドは、いずれのネットワークでもまだ提供されていません。** ノードのソースコードには実装されていますが JSON-RPC サーバーには登録されておらず、いずれも `-32601`（method not found）を返します。登録はノードのリリースで予定されており、リリース時にこのページでどのリリースかをお知らせします。現時点ではこれらを前提に開発しないでください。該当するものがある場合は、表にある REST ルートを使用してください。`client.qor.*` ヘルパーを公開しているクライアントライブラリはこれらと同じメソッドをラップしているため、それらのヘルパーも同様に失敗します。
 :::
 
-ご自身で確認することもできます。
+## 提供されているもの: `qor_getKEMKey` {#qor-getkemkey}
+
+この名前空間のうち1つのメソッドが提供されています。`qor_getKEMKey(address)` は、アドレスが公開した ML-KEM 公開鍵を返します（`address` は `qor1...` または `0x`）。鍵が公開されていない場合は `{"address": ..., "found": false}` を返し、公開されている場合は `algorithm_id`、`algorithm_name`、`public_key`（`0x` 16進数）、`registered_height` が加わります。ノードが `qor` 名前空間を提供するのは、`app.toml` の `[json-rpc]` の `api` リストに `qor` が含まれている場合のみです。
+
+2026年11月7日に確認した内容:
+
+| ネットワーク | `rpc_modules` | `qor_getKEMKey` |
+| --- | --- | --- |
+| テストネット（`https://evm-testnet.qore.host`） | `eth`、`net`、`qor`、`rpc`、`txpool`、`web3` | 応答します（鍵が公開されていないアドレスでは `found: false`） |
+| メインネット（`https://evm.qore.host`） | `eth`、`net`、`rpc`、`txpool`、`web3` | `-32601`（公開メインネットエンドポイントは `qor` を一覧に含めていません） |
+
+テストネットで確認したそのほかの `qor_` メソッド（`qor_getPQCKeyStatus`、`qor_getHybridSignatureMode`、`qor_getAIStats`、`qor_getBurnStats`）は、依然としてすべて `-32601` を返しました。
+
+名前空間の一覧はご自身で確認することもできます。
 
 ```bash
 curl -s -X POST https://evm.qore.host \
@@ -35,7 +46,7 @@ curl -s -X POST https://evm.qore.host \
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}`（`found`、`account.key_type`、`account.created_at_height`）。[REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#pqc-module)を参照してください。 |
 | `qor_getHybridSignatureMode`  | 公開されている REST ルートはありません。ノードに対して、または `--node https://rpc.qore.host:443` を指定して `qorechaind query pqc hybrid-mode`（または `query pqc params`）を実行してください。 |
-| `qor_getAIStats`              | 自分で運用するノード上の gRPC `qorechain.ai.v1.Query/Stats`、または `qorechaind query ai stats`。REST ルートはありません。 |
+| AI 統計（予定。メソッド名は未確定） | 自分で運用するノード上の gRPC `qorechain.ai.v1.Query/Stats`、または `qorechaind query ai stats`。REST ルートはありません。 |
 | `qor_getCrossVMMessage`       | 自分で運用するノード上の gRPC `qorechain.crossvm.v1.Query/Message`。REST ルートはありません。 |
 | `qor_getReputationScore`      | 公開されているクエリルートはありません（レピュテーションモジュールが公開しているのは gRPC の `Params` のみです）。 |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` および `anchor/{layer_id}`。[マルチレイヤーモジュール](/api-reference/rest-grpc-endpoints#multilayer-module)を参照してください。 |
@@ -59,11 +70,11 @@ curl -s -X POST https://evm.qore.host \
 
 ## エラーコード
 
-この名前空間を提供しているノードでは、エラーは標準の JSON-RPC 2.0 コードに従います。現時点では、`qor_` メソッドの呼び出しは `-32601` で失敗します。
+エラーは標準の JSON-RPC 2.0 コードに従います。現時点では、予定されている `qor_` メソッドの呼び出しは `-32601` で失敗し、メインネットエンドポイントでは `qor_getKEMKey` も同様です。
 
 | コード   | メッセージ          | 説明                           |
 | ------ | ---------------- | ------------------------------------- |
 | -32600 | Invalid Request  | 不正な形式の JSON-RPC リクエスト            |
-| -32601 | Method not found | メソッドが存在しない、またはノードが `qor_` 名前空間を提供していません（現在リリース済みのすべてのビルド） |
+| -32601 | Method not found | メソッドが存在しない、またはノードが `qor_` 名前空間を提供していません（現在の予定されているすべてのメソッド。`qor` が有効でない場合は `qor_getKEMKey` も） |
 | -32602 | Invalid params   | パラメータが欠落しているか無効です         |
 | -32603 | Internal error   | サーバー側の処理エラー          |

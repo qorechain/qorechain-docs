@@ -188,10 +188,10 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 // 0x0000000000000000000000000000000000000901
 ```
 
-> **Etkin değil.** Çapraz VM köprüsü precompile'ı mainnet veya testnet üzerinde etkin
-> değildir ve mevcut biçimiyle etkinleştirilmeyecektir; önce yeniden inşa
-> edilmektedir. Bugün `0x…0901` adresine yapılan bir çağrı boş veri döndürür ve hiçbir
-> şeyi yönlendirmez. Bkz.
+> **Mainnet'te etkin değil; testnet'te etkin olarak listelenir.** Çapraz VM köprüsü
+> precompile'ı mainnet'in etkin listesinde yoktur, bu yüzden orada `0x…0901` adresine
+> yapılan bir çağrı boş veri döndürür ve hiçbir şeyi yönlendirmez. Testnet'in listesi
+> onu içerir (7 Kasım 2026'da okundu); ondan yapılan bir çağrı test edilmedi. Bkz.
 > [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 
 Etkinleştikten sonra, bir Solidity sözleşmesi (veya viem) bir mesajı yerel katmana

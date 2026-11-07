@@ -98,7 +98,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_window/qor1...
 }
 ```
 
-Bu rota, penceresi olmayan bir adres için asla hata vermez; `found: false` döndürür. v3.2.0'dan itibaren EVM şeridi, bir işlemi yalnızca kayıtlı bir PQC anahtarına **ve** açık bir pencereye sahip bir hesaptan kabul eder. `live`, pencere geçerli yükseklikte en az bir işlem daha kabul ettiği sürece `true` olur. `remaining_blocks`, `remaining_txs` ve `remaining_value` hangi sınırın tükenmeye en yakın olduğunu gösterir; değerler dize olarak döndürülen `uqor` tam sayılarıdır. v3.2.3'ten itibaren bir pencere kapsam taşıyabilir: `native_only` (yalnızca düz QOR transferleri) ve `allowed_targets` (yalnızca listelenen alıcılar). EVM şeridinin nasıl çalıştığı için [EVM Geliştirme](/developer-guide/evm-development#evm-window) sayfasına bakın.
+Bu rota, penceresi olmayan bir adres için asla hata vermez; `found: false` döndürür. v3.2.0'dan itibaren EVM şeridi, bir işlemi yalnızca kayıtlı bir PQC anahtarına **ve** açık bir pencereye sahip bir hesaptan kabul eder. `live`, pencere geçerli yükseklikte en az bir işlem daha kabul ettiği sürece `true` olur. `remaining_blocks`, `remaining_txs` ve `remaining_value` hangi sınırın tükenmeye en yakın olduğunu gösterir; değerler dize olarak döndürülen `uqor` tam sayılarıdır. v3.2.3'ten itibaren bir pencere kapsam taşıyabilir: `native_only` (yalnızca düz QOR transferleri) ve `allowed_targets` (yalnızca listelenen alıcılar; hangi kontratlara ve token'lara dokunulabileceğini sınırlar, ne kadar olduğunu değil). EVM şeridinin nasıl çalıştığı için [EVM Geliştirme](/developer-guide/evm-development#evm-window) sayfasına bakın.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...

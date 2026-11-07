@@ -111,7 +111,8 @@ limit, not a zero limit. `MsgRegisterAuthenticator` carries no rule, so a key li
 by that message alone is bounded only by an account-level rule. Set a rule
 deliberately with `MsgUpdateSpendingRules`, and register only the permissions the
 key needs. A limit bounds the damage a linked key can do; it does not replace
-revoking the key.
+revoking the key. Spending rules bind only authenticators and session keys, not the
+owner's own key (on the EVM lane the owner's key is limited by the EVM window).
 :::
 
 To disable a key instantly, the owner broadcasts

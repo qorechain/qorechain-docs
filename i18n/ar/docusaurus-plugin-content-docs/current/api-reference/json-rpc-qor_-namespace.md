@@ -9,13 +9,24 @@ sidebar_position: 2
 
 صُمّمت مساحة الأسماء `qor_` لتوفير طرق JSON-RPC خاصة بـ QoreChain للاستعلام عن حالة التشفير ما بعد الكمومي، وتحليلات الذكاء الاصطناعي، والمراسلة عبر الأجهزة الافتراضية، والحالة متعددة الطبقات، وعمليات الجسر، واقتصاديات الرمز، وبنية الـ rollup التحتية، وحالة إجماع PRISM.
 
-:::warning غير متاحة بعد
-**لا يوجد إصدار منشور من العقدة يقدّم مساحة الأسماء `qor_` حتى الآن**، لا على الشبكة الرئيسية (`qorechain-vladi`) ولا على الشبكة التجريبية (`qorechain-diana`) ولا على عقدة تشغّلها بنفسك. على نقاط نهاية EVM العامة لا تسرد `rpc_modules` سوى `eth` و`net` و`rpc` و`txpool` و`web3`، و**تُرجع كل طريقة `qor_` الرمز `-32601` (method not found)** على الشبكتين. الطرق مُنفّذة في الشيفرة المصدرية للعقدة لكنها غير مسجّلة لدى خادم JSON-RPC، لذا فإن إضافة `qor` إلى قائمة `api` في `app.toml` لا تأثير لها. تسجيل مساحة الأسماء مخطَّط له في إصدار قادم للعقدة، وستذكر هذه الصفحة أي إصدار عند صدوره.
-
-لا تبنِ على طرق `qor_` اليوم. استخدم مسارات REST في الجدول أدناه حيثما وُجد مسار. وتغلّف مكتبات العملاء التي توفّر دوال `client.qor.*` هذه الطرق نفسها، لذا تفشل تلك الدوال بالطريقة نفسها.
+:::warning الطرق المخطَّط لها غير متاحة بعد
+**لا توجد أي طريقة من الطرق الواردة في الجدول أدناه متاحة على أي شبكة حتى الآن.** هي مُنفّذة في الشيفرة المصدرية للعقدة لكنها غير مسجّلة لدى خادم JSON-RPC، وتُرجع كل منها `-32601` (method not found). تسجيلها مخطَّط له في إصدار قادم للعقدة، وستذكر هذه الصفحة أي إصدار عند صدوره. لا تبنِ عليها اليوم؛ استخدم مسارات REST في الجدول حيثما وُجد مسار. وتغلّف مكتبات العملاء التي توفّر دوال `client.qor.*` هذه الطرق نفسها، لذا تفشل تلك الدوال بالطريقة نفسها.
 :::
 
-يمكنك التأكد من ذلك بنفسك:
+## ما هو متاح: `qor_getKEMKey` {#qor-getkemkey}
+
+طريقة واحدة من مساحة الأسماء متاحة: تُرجع `qor_getKEMKey(address)` مفتاح ML-KEM العام الذي نشره عنوان ما (يمكن أن يكون `address` بصيغة `qor1...` أو `0x`). تردّ بالقيمة `{"address": ..., "found": false}` حين لا يوجد مفتاح منشور، وفي غير ذلك تضيف `algorithm_id` و`algorithm_name` و`public_key` (سداسي عشري بالبادئة `0x`) و`registered_height`. لا تقدّم العقدة مساحة الأسماء `qor` إلا حيث تتضمن قائمة `api` ضمن `[json-rpc]` في `app.toml` القيمة `qor`.
+
+لوحظ في 7 نوفمبر 2026:
+
+| الشبكة | `rpc_modules` | `qor_getKEMKey` |
+| --- | --- | --- |
+| الشبكة التجريبية (`https://evm-testnet.qore.host`) | `eth`، `net`، `qor`، `rpc`، `txpool`، `web3` | تردّ (`found: false` لعنوان لا يملك مفتاحًا منشورًا) |
+| الشبكة الرئيسية (`https://evm.qore.host`) | `eth`، `net`، `rpc`، `txpool`، `web3` | `-32601` (نقطة النهاية العامة للشبكة الرئيسية لا تسرد `qor`) |
+
+وعلى الشبكة التجريبية، ما زالت كل طريقة `qor_` أخرى جرى فحصها (`qor_getPQCKeyStatus` و`qor_getHybridSignatureMode` و`qor_getAIStats` و`qor_getBurnStats`) تُرجع `-32601`.
+
+يمكنك التحقق من قائمة مساحات الأسماء بنفسك:
 
 ```bash
 curl -s -X POST https://evm.qore.host \
@@ -35,7 +46,7 @@ curl -s -X POST https://evm.qore.host \
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` ‏(`found` و`account.key_type` و`account.created_at_height`). راجع [نقاط نهاية REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module). |
 | `qor_getHybridSignatureMode`  | لا يوجد مسار REST عام؛ استخدم `qorechaind query pqc hybrid-mode` (أو `query pqc params`) على عقدة أو مع `--node https://rpc.qore.host:443`. |
-| `qor_getAIStats`              | gRPC ‏`qorechain.ai.v1.Query/Stats` على عقدة تشغّلها، أو `qorechaind query ai stats`؛ لا يوجد مسار REST. |
+| إحصاءات الذكاء الاصطناعي (مخطَّطة؛ اسم الطريقة غير نهائي) | gRPC ‏`qorechain.ai.v1.Query/Stats` على عقدة تشغّلها، أو `qorechaind query ai stats`؛ لا يوجد مسار REST. |
 | `qor_getCrossVMMessage`       | gRPC ‏`qorechain.crossvm.v1.Query/Message` على عقدة تشغّلها؛ لا يوجد مسار REST. |
 | `qor_getReputationScore`      | لا يوجد مسار استعلام عام (تتيح وحدة السمعة `Params` فقط عبر gRPC). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` و`anchor/{layer_id}`. راجع [وحدة Multilayer](/api-reference/rest-grpc-endpoints#multilayer-module). |
@@ -59,11 +70,11 @@ curl -s -X POST https://evm.qore.host \
 
 ## رموز الأخطاء
 
-على عقدة تقدّم مساحة الأسماء هذه، تتبع الأخطاء رموز JSON-RPC 2.0 القياسية. أما اليوم فتفشل استدعاءات أي طريقة `qor_` بالرمز `-32601`.
+تتبع الأخطاء رموز JSON-RPC 2.0 القياسية. أما اليوم فتفشل استدعاءات أي طريقة `qor_` مخطَّط لها بالرمز `-32601`، وعلى نقطة نهاية الشبكة الرئيسية كذلك `qor_getKEMKey`.
 
 | الرمز   | الرسالة          | الوصف                           |
 | ------ | ---------------- | ------------------------------------- |
 | -32600 | Invalid Request  | طلب JSON-RPC مشوَّه            |
-| -32601 | Method not found | الطريقة غير موجودة، أو أن العقدة لا تقدّم مساحة الأسماء `qor_` (كل إصدار منشور اليوم) |
+| -32601 | Method not found | الطريقة غير موجودة، أو أن العقدة لا تقدّم مساحة الأسماء `qor_` (كل طريقة مخطَّطة اليوم؛ وكذلك `qor_getKEMKey` حيث لا تكون `qor` مفعَّلة) |
 | -32602 | Invalid params   | معاملات مفقودة أو غير صالحة         |
 | -32603 | Internal error   | خطأ في المعالجة من جانب الخادم          |

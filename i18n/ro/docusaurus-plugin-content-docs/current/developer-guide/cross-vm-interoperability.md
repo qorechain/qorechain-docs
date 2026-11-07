@@ -15,7 +15,7 @@ Apelurile între VM-uri sunt disponibile doar în măsura în care este disponib
 * `MsgCrossVMCall` este **oprit pe mainnet** de circuit breaker (`qorechaind query circuit disabled-list`); pe testnet este activat.
 * **Lane-ul SVM este dezactivat** pentru tranzacții pe ambele rețele, deci un segment SVM nu poate rula.
 * **Încărcarea QoreChain Native este permisionată** pe ambele rețele, iar **instanțierea este permisionată pe mainnet**, care nu are cod de contract stocat, deci nu există încă niciun contract QoreChain Native de apelat pe mainnet. Pe testnet, guvernanța a stocat câteva contracte revizuite pe care orice cont le poate instanția (vezi [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development)), deci acolo poate exista o țintă QoreChain Native.
-* **Precompile-ul EVM sincron nu este activ** (vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3, dar precompile-ul CrossVM nu este activat pe vreuna dintre rețele. (Pe 27 octombrie 2026, guvernanța testnet-ului a activat alte trei precompile-uri, PQC Verify, PQC Key Status și PRISM Consensus Params; mainnet-ul nu are niciunul activ. v3.2.4 nu schimbă care precompile-uri sunt active.)
+* **Precompile-ul EVM sincron nu este activ pe mainnet** și este listat ca activ pe testnet (citit la 7 noiembrie 2026; un apel prin el nu a fost testat; vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3. (Pe 27 octombrie 2026, guvernanța testnet-ului a activat alte trei precompile-uri, PQC Verify, PQC Key Status și PRISM Consensus Params, iar puntea CrossVM s-a alăturat listei testnet-ului până la 4 noiembrie; mainnet-ul nu are niciunul activ.)
 
 Pe mainnet, rutele REST ale modulului (`/qorechain/crossvm/v1/...`) nu sunt servite de gateway-ul public (`501`); citește mesajele cu CLI-ul sau cu un client de interogare gRPC/ABCI.
 :::
@@ -40,7 +40,7 @@ Endpoint-urile de mai jos folosesc implicit un nod local. Pe mainnet, folosește
 
 | Cale             | Direcție        | Sincronizare     | Mecanism                        |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **Sincronă**     | EVM către QoreChain Native | Aceeași tranzacție | Precompile la `0x0000...0901` (încă inactiv, vezi mai jos) |
+| **Sincronă**     | EVM către QoreChain Native | Aceeași tranzacție | Precompile la `0x0000...0901` (activ pe testnet, nu pe mainnet; vezi mai jos) |
 | **Mesaj, implicit** | Orice VM către orice altă VM | Aceeași tranzacție | `MsgCrossVMCall`; apelul se execută imediat, iar un eșec anulează întreaga tranzacție |
 | **Mesaj, în coadă** | Orice VM către orice altă VM | Blocul următor (sau mai târziu) | `MsgCrossVMCall` cu `async` setat; mesajul așteaptă în coadă |
 
@@ -50,8 +50,8 @@ Endpoint-urile de mai jos folosesc implicit un nod local. Pe mainnet, folosește
 
 Calea sincronă folosește un **precompile** EVM la adresa `0x0000000000000000000000000000000000000901`. Este conceput pentru a permite contractelor Solidity să apeleze contracte QoreChain Native și să primească un răspuns în cadrul aceleiași tranzacții.
 
-:::warning Inactiv pe mainnet și testnet
-Precompile-ul punții CrossVM **nu este activ** pe `qorechain-vladi` și nici pe `qorechain-diana`: un apel către `0x…0901` reușește și returnează date goale. Binarul v3.2.3 conține o versiune întărită (refuză un `STATICCALL`, contorizează apelul său imbricat din gazul frame-ului apelant și îl jurnalizează astfel încât un revert EVM să anuleze și partea QoreChain Native, ajunge doar la ținte QoreChain Native din lista permisă și respectă circuit breaker-ul cross-VM), dar rulează abia după ce o actualizare aprobată prin guvernanță îl adaugă în lista activă. Exemplul de mai jos este structura pe care o decodifică nodul, dar nu poate rula până când precompile-ul nu este activ. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
+:::warning Inactiv pe mainnet; activ pe testnet, apel netestat
+Precompile-ul punții CrossVM **nu este activ** pe `qorechain-vladi`: un apel către `0x…0901` acolo reușește și returnează date goale. Pe `qorechain-diana`, lista `active_static_precompiles` conține `0x…0901` (citit la 7 noiembrie 2026); un apel prin el a fost listat ca activ, dar netestat. Binarul v3.2.3 conține o versiune întărită (refuză un `STATICCALL`, contorizează apelul său imbricat din gazul frame-ului apelant și îl jurnalizează astfel încât un revert EVM să anuleze și partea QoreChain Native, ajunge doar la ținte QoreChain Native din lista permisă și respectă circuit breaker-ul cross-VM), dar rulează abia acolo unde o propunere aprobată prin guvernanță l-a adăugat în lista activă (până acum testnet-ul, nu mainnet-ul). Exemplul de mai jos este structura pe care o decodifică nodul; nu poate rula pe mainnet până când precompile-ul nu este activ și nu a fost rulat pe testnet. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Exemplu Solidity
@@ -86,7 +86,7 @@ contract CrossVMCaller {
 }
 ```
 
-Aceasta este structura pe care o decodifică nodul; este aceeași structură pe care o construiește encoderul `@qorechain/rdk`, iar contractul de mai sus corespunde șablonului de pornire din [Multi-VM](/rollups/multi-vm). Fondurile nu pot fi atașate prin precompile (calea prin mesajul `MsgCrossVMCall` acceptă `--funds`). Exemplul nu poate face nimic pe nicio rețea astăzi, deoarece precompile-ul nu este activ (vezi avertismentul de mai sus); ABI-ul se mai poate schimba înainte de activare.
+Aceasta este structura pe care o decodifică nodul; este aceeași structură pe care o construiește encoderul `@qorechain/rdk`, iar contractul de mai sus corespunde șablonului de pornire din [Multi-VM](/rollups/multi-vm). Fondurile nu pot fi atașate prin precompile (calea prin mesajul `MsgCrossVMCall` acceptă `--funds`). Exemplul nu poate face nimic pe mainnet astăzi, deoarece precompile-ul nu este activ acolo; pe testnet precompile-ul este listat ca activ, dar exemplul nu a fost rulat (vezi avertismentul de mai sus), iar ABI-ul se mai poate schimba.
 
 Odată activ, precompile-ul execută imediat contractul QoreChain Native și returnează rezultatul. (Helperul `encodeCrossVmCalldata` din `@qorechain/rdk`, disponibil din 0.6.0 și în curentul 0.8.0, construiește calldata; vezi [Multi-VM](/rollups/multi-vm).) Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
 

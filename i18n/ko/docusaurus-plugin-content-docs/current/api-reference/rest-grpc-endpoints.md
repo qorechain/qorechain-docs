@@ -98,7 +98,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_window/qor1...
 }
 ```
 
-이 라우트는 윈도우가 없는 주소에 대해서도 실패하지 않고 `found: false`를 반환합니다. v3.2.0부터 EVM 레인은 등록된 PQC 키가 있고 **동시에** 열린 윈도우가 있는 계정의 트랜잭션만 허용합니다. `live`는 윈도우가 현재 높이에서 트랜잭션을 최소 하나 더 허용하는 동안 `true`입니다. `remaining_blocks`, `remaining_txs`, `remaining_value`는 어느 한도가 가장 먼저 소진될지 보여 주며, 값은 문자열로 반환되는 `uqor` 정수입니다. v3.2.3부터 윈도우에 범위를 지정할 수 있습니다: `native_only`(일반 QOR 전송만 허용)와 `allowed_targets`(나열된 수신자에게만 허용). EVM 레인의 동작 방식은 [EVM 개발](/developer-guide/evm-development#evm-window)을 참조하십시오.
+이 라우트는 윈도우가 없는 주소에 대해서도 실패하지 않고 `found: false`를 반환합니다. v3.2.0부터 EVM 레인은 등록된 PQC 키가 있고 **동시에** 열린 윈도우가 있는 계정의 트랜잭션만 허용합니다. `live`는 윈도우가 현재 높이에서 트랜잭션을 최소 하나 더 허용하는 동안 `true`입니다. `remaining_blocks`, `remaining_txs`, `remaining_value`는 어느 한도가 가장 먼저 소진될지 보여 주며, 값은 문자열로 반환되는 `uqor` 정수입니다. v3.2.3부터 윈도우에 범위를 지정할 수 있습니다: `native_only`(일반 QOR 전송만 허용)와 `allowed_targets`(나열된 수신자에게만 허용하며, 어떤 컨트랙트와 토큰을 건드릴 수 있는지만 제한하고 금액은 제한하지 않음). EVM 레인의 동작 방식은 [EVM 개발](/developer-guide/evm-development#evm-window)을 참조하십시오.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...

@@ -275,7 +275,7 @@ Sözleşmeler içinde kuantum-sonrası güvenlik için:
 
 ## EVM yetkilendirme penceresi {#evm-window}
 
-Kuantum-sonrası bir imza, bir Ethereum işlemiyle *birlikte* gidemez (MetaMask gibi cüzdanlar ikinci bir imza ekleyemez); bu yüzden işlemden *önce* gider. Hesap, Cosmos şeridi mesajı `MsgOpenEVMWindow` ile sınırlı bir pencere açar; ardından EVM şeridi yalnızca etkin bir pencerenin kapsadığı işlemleri kabul eder. Çalınmış klasik bir anahtar tek başına pencere açamaz, dolayısıyla yalnızca zaten açık olan bir pencerenin izin verdiği kadarını taşıyabilir.
+Kuantum-sonrası bir imza, bir Ethereum işlemiyle *birlikte* gidemez (MetaMask gibi cüzdanlar ikinci bir imza ekleyemez); bu yüzden işlemden *önce* gider. Hesap, Cosmos şeridi mesajı `MsgOpenEVMWindow` ile sınırlı bir pencere açar; ardından EVM şeridi yalnızca etkin bir pencerenin kapsadığı işlemleri kabul eder. Çalınmış klasik bir anahtar tek başına pencere açamaz, dolayısıyla EVM şeridinde yalnızca zaten açık olan bir pencerenin izin verdiği sınırlar içinde işlem yapabilir (pencere token miktarlarını veya mevcut onayları sınırlamaz).
 
 | Sınır       | Aralık             | Anlamı |
 | ----------- | ------------------ | ------- |
@@ -285,12 +285,14 @@ Kuantum-sonrası bir imza, bir Ethereum işlemiyle *birlikte* gidemez (MetaMask 
 
 Hangi sınır önce tükenirse pencereyi o kapatır. Üç sınır da zorunludur; bir pencere açmak mevcut pencerenin yerini alır; kabul edilip sonra başarısız olan bir işlem yine de yuvasını ve değer bütçesini kullanır; sözleşme dağıtımları diğer işlemler gibi sayılır. `blocks` bir süre değil, blok sayısıdır: 17.280 blok ana ağda yaklaşık 15 saat (blok başına yaklaşık 3,1 sn), test ağında ise yaklaşık 6 saattir (27 Ekim 2026'da blok başına yaklaşık 1,3 sn; test ağı blok süresi değişir).
 
-**Değer sınırı yalnızca yerel QOR'u sayar.** Bir token transferi, bir onay (approval) veya başka herhangi bir sözleşme çağrısı sıfır değer taşır; bu nedenle `max-value` karşısında sayılmaz (yalnızca azami ücreti sayılır). Bunları da sınırlamak için pencerenin **kapsamını (scope)** daraltın (ana ağ v3.2.3 ve sonrası):
+**Değer sınırı yalnızca yerel QOR'u sayar.** Bir token transferi, bir onay (approval) veya başka herhangi bir sözleşme çağrısı sıfır değer taşır; bu nedenle `max-value` karşısında sayılmaz (yalnızca azami ücreti sayılır). Pencerenin **kapsamı (scope)** (ana ağ v3.2.3 ve sonrası) hangi alıcıları kabul ettiğini daraltır, ancak token miktarlarını sınırlamaz:
 
 | Kapsam seçeneği (CLI bayrağı) | Mesaj alanı | Pencerenin kabul ettiği |
 | ----------------------- | ------------- | ---------------------- |
 | `--native-only`         | `native_only` | Yalnızca yerel QOR'un düz transferleri: calldata yok, sözleşme oluşturma yok, kod taşıyan alıcı yok, EIP-7702 yetkilendirmesi yok |
 | `--allowed-targets 0xA,0xB` | `allowed_targets` | Yalnızca alıcısı listelenen 20 baytlık adreslerden biri olan işlemler; sözleşme oluşturma reddedilir |
+
+`allowed_targets`, **hangi** kontratlara ve token'lara dokunulabileceğini sınırlar, **ne kadar** olduğunu değil. Listelenen bir token, `approve` dahil o token'ın her miktarını kabul eder ve listelenen bir kontrat, kodunun ve mevcut onaylarının izin verdiği her şeyi taşıyabilir; bu yüzden genel yönlendirici (forwarder veya router) kontratları listelemeyin. Bir pencere yalnızca EVM şeridindeki (klasik imzalı) işlemleri sınırlar; VM'ler arası çağrılar ve authz gibi hibrit PQC imzasıyla imzalanan Cosmos mesajları bunun dışındadır.
 
 Kapsamsız açılmış bir pencere tam olarak eskisi gibi davranır. Kapsam dışındaki bir işlem 27 koduyla reddedilir (mesaj, pencerenin "bu işlemi kabul etmediğini" söyler). `GET /qorechain/pqc/v1/evm_window/{address}` ve `qorechaind query pqc evm-window`, `native_only` ve `allowed_targets` değerlerini raporlar; `pqc_evm_window_opened` olayı da bunlar ayarlıysa taşır.
 
@@ -330,16 +332,16 @@ TypeScript SDK ile (0.8.2 ve sonrası): `openEvmWindowMsg`, `closeEvmWindowMsg`,
 
 ## Özel `qor_` Ad Alanı {#custom-qor_-namespace}
 
-QoreChain, zincire özgü sorgular için JSON-RPC'yi bir `qor_` ad alanıyla genişletir:
+QoreChain, zincire özgü sorgular için JSON-RPC'yi bir `qor_` ad alanıyla genişletir. Aşağıdaki yöntemler planlanmıştır:
 
 :::warning Henüz sunulmuyor
-Yayımlanmış hiçbir düğüm sürümü henüz `qor_` ad alanını sunmuyor: herkese açık uç noktalardaki `rpc_modules` yalnızca `eth`, `net`, `rpc`, `txpool` ve `web3`'ü listeler ve aşağıdaki her yöntem; ana ağda, test ağında ve varsayılan yapılandırmayla (`eth`, `net`, `web3`) kendi çalıştırdığınız düğümlerde `-32601` (yöntem bulunamadı) döndürür. Durum ve REST alternatifleri için (örneğin PQC anahtar durumu için `GET /qorechain/pqc/v1/account/{address}`) bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
+Aşağıdaki tablodaki yöntemler planlanmıştır ve sunulmaz: her biri `-32601` (yöntem bulunamadı) döndürür. Ad alanının sunulan tek yöntemi `qor_getKEMKey`'dir ve yalnızca düğümün ad alanları arasında `qor` listelediği yerde: 7 Kasım 2026'da gözlemlendiği üzere test ağı `qor` listeler ve yanıt verir, genel ana ağ uç noktası ise yalnızca `eth`, `net`, `rpc`, `txpool` ve `web3` listeler ve `-32601` döndürür. Durum ve REST alternatifleri için (örneğin PQC anahtar durumu için `GET /qorechain/pqc/v1/account/{address}`) bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
 :::
 
 | Yöntem                       | Açıklama                                                          |
 | ----------------------------- | ------------------------------------------------------------------ |
 | `qor_getPQCKeyStatus`         | Bir hesabın kayıtlı bir PQC genel anahtarı olup olmadığını kontrol eder |
-| `qor_getAIStats`              | Yapay zeka motoru istatistiklerini alır (anomali sayıları, risk dağılımı) |
+| Yapay zeka istatistikleri (planlanan) | Yapay zeka motoru istatistiklerini alır (anomali sayıları, risk dağılımı); yöntem adı kesin değil |
 | `qor_getCrossVMMessage`       | Bir VM'ler arası mesajın durumunu kimliğine göre sorgular          |
 | `qor_getPoolClassification`   | Doğrulayıcı havuzu sınıflandırmasını alır (RPoS/DPoS/PoS)          |
 | `qor_getReputationScore`      | Bir doğrulayıcının itibar puanını sorgular                          |

@@ -10,21 +10,21 @@ sidebar_position: 6
 QoreChain extends the QoreChain EVM Engine with **six custom precompiled contracts** that expose protocol-level features directly to Solidity. These precompiles provide on-chain access to post-quantum cryptography, AI risk scoring, cross-VM messaging, and PRISM consensus parameters.
 
 :::warning Not active on mainnet; three active on the testnet
-The six QoreChain precompiles below are **compiled into the node**, but the EVM only dispatches addresses listed in the `active_static_precompiles` parameter. On the **`qorechain-vladi`** mainnet (EVM chain ID **9801**) that list is empty at the time of writing, so **none is active there**. On the **`qorechain-diana`** testnet (EVM chain ID **9800**) three are active: PQC Verify, PQC Key Status and PRISM Consensus Params, activated by testnet governance proposal 21 (passed 27 October 2026). The other three are not active on either network. A call to an address that is not in the list **succeeds and returns empty data (`0x`)**; it does not revert and it does not return an error. See [Network status](#network-status) before relying on any of them.
+The six QoreChain precompiles below are **compiled into the node**, but the EVM only dispatches addresses listed in the `active_static_precompiles` parameter. On the **`qorechain-vladi`** mainnet (EVM chain ID **9801**) that list is empty at the time of writing, so **none is active there**. On the **`qorechain-diana`** testnet (EVM chain ID **9800**) PQC Verify, PQC Key Status and PRISM Consensus Params are active, activated by testnet governance proposal 21 (passed 27 October 2026), and the CrossVM Bridge address was in the list when it was read on 7 November 2026. The two AI precompiles are not active on either network. A call to an address that is not in the list **succeeds and returns empty data (`0x`)**; it does not revert and it does not return an error. See [Network status](#network-status) before relying on any of them.
 :::
 
 ## Network status {#network-status}
 
 | Precompile | Address | `qorechain-vladi` (mainnet) | `qorechain-diana` (testnet) |
 | --- | --- | --- | --- |
+| CrossVM Bridge | `0x…0901` | Not active | In the active list (read 7 November 2026; see [Multi-VM](/rollups/multi-vm)) |
 | PQC Verify | `0x…0A01` | Not active | **Active** (since 27 October 2026) |
 | PQC Key Status | `0x…0A02` | Not active | **Active** (since 27 October 2026) |
 | AI Risk Score | `0x…0B01` | Not active | Not active |
 | AI Anomaly Check | `0x…0B02` | Not active | Not active |
 | PRISM Consensus Params | `0x…0C01` | Not active | **Active** (since 27 October 2026) |
-| CrossVM Bridge | `0x…0901` | Not active | Not active |
 
-Status as read from the live `active_static_precompiles` parameter on 27 October 2026 (mainnet re-read on 4 November 2026, after v3.2.6: still empty). It is a chain parameter changed by governance, so each network's list changes only when a governance proposal passes; the testnet list was set by proposal 21, and no mainnet proposal changes it at the time of writing. The v3.2.3 release (mainnet, 20 October 2026) put the hardened versions of the CrossVM bridge and the AI anomaly precompile into the binary behind a protocol feature, but did not activate any precompile, and neither v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) nor v3.2.6 (mainnet since 4 November 2026) changes that. The read-only PQC and consensus precompiles come first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge last. This table lists only what is applied: a proposal that is still in its voting period is not a status.
+Status as read from the live `active_static_precompiles` parameter on 27 October 2026 (mainnet re-read on 4 November 2026, after v3.2.6: still empty; both networks re-read on 7 November 2026: mainnet empty, testnet listing `0x…0901`, `0x…0A01`, `0x…0A02` and `0x…0C01`). It is a chain parameter changed by governance, so each network's list changes only when a governance proposal passes; the testnet list was set by proposal 21, and no mainnet proposal changes it at the time of writing. The v3.2.3 release (mainnet, 20 October 2026) put the hardened versions of the CrossVM bridge and the AI anomaly precompile into the binary behind a protocol feature, but did not activate any precompile, and neither v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026) nor v3.2.6 (mainnet since 4 November 2026) changes that. The read-only PQC and consensus precompiles come first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge last. This table lists only what is applied: a proposal that is still in its voting period is not a status.
 
 Check the live list yourself (an empty list means none is active):
 
@@ -53,6 +53,25 @@ RPC=https://evm-testnet.qore.host
 cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
 cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
 ```
+
+---
+
+## Standard precompiles {#standard-precompiles}
+
+Besides the six QoreChain precompiles, the node carries the standard cosmos/evm precompiles. They follow the same rule: they run only where governance has listed their address in `active_static_precompiles`, and the community build of the node does not include them.
+
+| Address | Precompile |
+| --- | --- |
+| `0x…0100` | P-256 (stateless) |
+| `0x…0400` | Bech32 (stateless) |
+| `0x…0800` | Staking |
+| `0x…0801` | Distribution |
+| `0x…0802` | IBC transfer (ICS-20) |
+| `0x…0804` | Bank (read-only) |
+| `0x…0805` | Governance |
+| `0x…0806` | Slashing |
+
+`0x…0803` (vesting) is reserved upstream and **not implemented**: there is nothing at that address. Staking, delegation and validator operations on QoreChain are native-lane only (see [Staking and Validators](/dashboard/staking-and-validators)), so do not build staking flows on the staking precompile. Source: `docs/EVM_PRECOMPILES.md` in the public core repository at tag v3.2.6.
 
 ---
 
@@ -281,7 +300,7 @@ From v3.2.6 (both networks run it; the precompile itself is active on the testne
 ### CrossVM Bridge — Call QoreChain Native from EVM
 
 :::warning
-The CrossVM bridge precompile is **not active** on either network. The binary since v3.2.3 carries a hardened version of it that: refuses a `STATICCALL`; runs the nested call on a gas meter bounded by what the calling frame has left and journals it, so a revert in the calling contract also undoes the QoreChain Native side; reaches only allowlisted QoreChain Native targets (EVM targets are refused); and honours the cross-VM circuit breaker. Until a governance-approved upgrade activates it there is no synchronous EVM-to-QoreChain Native path; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the `MsgCrossVMCall` message path, which is itself switched off on mainnet today.
+The CrossVM bridge precompile is **not active on mainnet** and is listed active on the testnet (read 7 November 2026; a call through it was not tested). The binary since v3.2.3 carries a hardened version of it that: refuses a `STATICCALL`; runs the nested call on a gas meter bounded by what the calling frame has left and journals it, so a revert in the calling contract also undoes the QoreChain Native side; reaches only allowlisted QoreChain Native targets (EVM targets are refused); and honours the cross-VM circuit breaker. Until a governance proposal activates it on mainnet there is no synchronous EVM-to-QoreChain Native path there; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the `MsgCrossVMCall` message path, which is itself switched off on mainnet today.
 :::
 
 The node decodes calldata as `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (4-byte selector, then the ABI-encoded arguments). The only supported use is EVM to QoreChain Native (`targetVM` = 1); the ABI may still change before activation. The `@qorechain/rdk` helper `encodeCrossVmCalldata` encodes this layout from 0.6.0 (earlier releases encoded a different function), and its `isCrossVmPrecompileActive` reads the live `active_static_precompiles` list; see [Multi-VM](/rollups/multi-vm).

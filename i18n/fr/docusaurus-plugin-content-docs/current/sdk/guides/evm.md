@@ -191,7 +191,7 @@ message : un nœud antérieur à la v3.2.3 refuse la transaction entière lorsqu
 deux est défini ; ne les définissez donc que sur un réseau qui a appliqué la v3.2.3 (les
 deux réseaux publics l'ont fait). `fetchEvmWindow` relit les deux (`nativeOnly`,
 `allowedTargets` ; ils valent `false` et vide avant la v3.2.3). Pour une fenêtre ouverte
-uniquement pour envoyer du QOR, préférez `nativeOnly`.
+uniquement pour envoyer du QOR, préférez `nativeOnly`. `allowedTargets` limite les contrats et jetons que la fenêtre peut toucher, pas le montant : un jeton listé admet n'importe quel montant, y compris `approve`, et un contrat listé peut déplacer tout ce que son code et ses approbations existantes permettent ; n'y listez donc pas de contrats génériques de transfert ou de routage. Une fenêtre ne borne que les transactions de la voie EVM (signées classiquement) ; les messages Cosmos signés avec la signature hybride PQC, tels que les appels cross-VM et authz, en sont exclus.
 
 ```ts
 import {
@@ -284,7 +284,7 @@ exportés.
 > Sur le testnet (`qorechain-diana`), la liste `active_static_precompiles` contient
 > `0x…0A01` (vérification PQC), `0x…0A02` (statut de clé PQC) et `0x…0C01` (paramètres de
 > consensus), vérifié le 27 octobre 2026 ; la paire d'IA (`0x…0B01`, `0x…0B02`) n'est active sur aucun des deux réseaux, et le
-> pont inter-VM (`0x…0901`) n'était actif sur aucun des deux le 27 octobre (le 4 novembre, la liste du testnet le contenait aussi ; non retesté). Un appel à une
+> pont inter-VM (`0x…0901`) n'était actif sur aucun des deux le 27 octobre (la liste du testnet le contenait aussi à partir du 4 novembre et le contenait toujours le 7 novembre 2026 ; un appel via celui-ci n'a pas été testé ; la liste du mainnet est vide). Un appel à une
 > adresse inactive renvoie des données vides, de sorte que ces assistants lèvent une erreur. Voir
 > [Précompilés EVM : état du réseau](/developer-guide/evm-precompiles#network-status).
 

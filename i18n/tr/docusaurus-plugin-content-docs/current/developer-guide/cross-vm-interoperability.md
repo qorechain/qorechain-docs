@@ -15,7 +15,7 @@ VM'ler arası çağrılar yalnızca hedef şeritlerinin (lane) sunulabildiği ö
 * `MsgCrossVMCall`, devre kesici tarafından **ana ağda kapatılmıştır** (`qorechaind query circuit disabled-list`); test ağında etkindir.
 * **SVM şeridi, her iki ağda da işlemler için devre dışıdır**, bu nedenle bir SVM adımı çalışamaz.
 * **QoreChain Native yükleme her iki ağda da izne tabidir**, **örnekleme (instantiate) ise ana ağda izne tabidir** ve ana ağda kayıtlı sözleşme kodu yoktur, dolayısıyla ana ağda henüz çağrılacak bir QoreChain Native sözleşmesi bulunmamaktadır. Test ağında yönetişim, herhangi bir hesabın örnekleyebileceği birkaç gözden geçirilmiş sözleşme depolamıştır ([QoreChain Native Geliştirme](/developer-guide/cosmwasm-development) sayfasına bakın), dolayısıyla orada bir QoreChain Native hedefi bulunabilir.
-* Senkron **EVM önderlenmiş işlevi etkin değildir** (aşağıya bakın). Güçlendirilmiş bir sürüm v3.2.3'ten beri ikili dosyada bulunur, ancak CrossVM önderlenmiş işlevi hiçbir ağda etkinleştirilmemiştir. (27 Ekim 2026'da test ağı yönetişimi diğer üç önderlenmiş işlevi etkinleştirdi: PQC Verify, PQC Key Status ve PRISM Consensus Params; ana ağda hiçbiri etkin değildir. v3.2.4, hangi önderlenmiş işlevlerin etkin olduğunu değiştirmez.)
+* Senkron **EVM önderlenmiş işlevi ana ağda etkin değildir** ve test ağında etkin olarak listelenmiştir (7 Kasım 2026'da okundu; üzerinden bir çağrı test edilmedi; aşağıya bakın). Güçlendirilmiş bir sürüm v3.2.3'ten beri ikili dosyada bulunur. (27 Ekim 2026'da test ağı yönetişimi diğer üç önderlenmiş işlevi etkinleştirdi: PQC Verify, PQC Key Status ve PRISM Consensus Params; CrossVM köprüsü 4 Kasım'a kadar test ağı listesine katıldı; ana ağda hiçbiri etkin değildir.)
 
 Ana ağda modülün REST rotaları (`/qorechain/crossvm/v1/...`) genel ağ geçidi tarafından sunulmaz (`501`); mesajları CLI ile veya bir gRPC/ABCI sorgu istemcisiyle okuyun.
 :::
@@ -40,7 +40,7 @@ Aşağıdaki uç noktalar varsayılan olarak yerel bir düğüme yöneliktir. An
 
 | Yol              | Yön             | Zamanlama        | Mekanizma                       |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **Senkron**      | EVM'den QoreChain Native'a | Aynı işlem    | `0x0000...0901` adresindeki önderlenmiş işlev (henüz etkin değil, aşağıya bakın) |
+| **Senkron**      | EVM'den QoreChain Native'a | Aynı işlem    | `0x0000...0901` adresindeki önderlenmiş işlev (test ağında etkin, ana ağda değil; aşağıya bakın) |
 | **Mesaj, varsayılan** | Herhangi bir VM'den başka herhangi bir VM'e | Aynı işlem | `MsgCrossVMCall`; çağrı hemen yürütülür ve bir başarısızlık tüm işlemi geri alır |
 | **Mesaj, kuyruğa alınmış**  | Herhangi bir VM'den başka herhangi bir VM'e | Sonraki blok (veya daha sonra) | `async` ayarlı `MsgCrossVMCall`; mesaj kuyrukta bekler |
 
@@ -50,8 +50,8 @@ Aşağıdaki uç noktalar varsayılan olarak yerel bir düğüme yöneliktir. An
 
 Senkron yol, `0x0000000000000000000000000000000000000901` adresinde bir EVM **önderlenmiş işlevi** kullanır. Solidity sözleşmelerinin QoreChain Native sözleşmelerini çağırmasına ve aynı işlem içinde bir yanıt almasına olanak tanımak üzere tasarlanmıştır.
 
-:::warning Ana ağda veya test ağında etkin değil
-CrossVM köprüsü önderlenmiş işlevi `qorechain-vladi` veya `qorechain-diana` üzerinde **etkin değildir**: `0x…0901` adresine yapılan bir çağrı başarılı olur ve boş veri döndürür. v3.2.3 ikili dosyası güçlendirilmiş bir sürümü taşır (`STATICCALL` çağrısını reddeder, iç içe çağrısını çağıran çerçevenin gazına göre ölçer ve günlüğe kaydeder; böylece bir EVM geri alması (revert) QoreChain Native tarafını da geri alır, yalnızca izin listesindeki QoreChain Native hedeflerine ulaşır ve VM'ler arası devre kesiciye uyar), ancak yalnızca yönetişim onaylı bir yükseltme onu etkin listeye ekledikten sonra çalışır. Aşağıdaki örnek, düğümün çözdüğü düzendir; ancak önderlenmiş işlev etkinleşene kadar çalışamaz. Bkz. [EVM Önderlenmiş İşlevleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+:::warning Ana ağda etkin değil; test ağında etkin, çağrı test edilmedi
+CrossVM köprüsü önderlenmiş işlevi `qorechain-vladi` üzerinde **etkin değildir**: orada `0x…0901` adresine yapılan bir çağrı başarılı olur ve boş veri döndürür. `qorechain-diana` üzerinde `active_static_precompiles` listesi `0x…0901` içerir (7 Kasım 2026'da okundu); üzerinden bir çağrı etkin olarak listelendi ancak test edilmedi. v3.2.3 ikili dosyası güçlendirilmiş bir sürümü taşır (`STATICCALL` çağrısını reddeder, iç içe çağrısını çağıran çerçevenin gazına göre ölçer ve günlüğe kaydeder; böylece bir EVM geri alması (revert) QoreChain Native tarafını da geri alır, yalnızca izin listesindeki QoreChain Native hedeflerine ulaşır ve VM'ler arası devre kesiciye uyar), ancak yalnızca yönetişim onaylı bir öneri onu etkin listeye eklediği yerde çalışır (şimdiye kadar test ağı, ana ağ değil). Aşağıdaki örnek, düğümün çözdüğü düzendir; ana ağda önderlenmiş işlev etkinleşene kadar çalışamaz ve test ağına karşı çalıştırılmadı. Bkz. [EVM Önderlenmiş İşlevleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Solidity Örneği
@@ -86,7 +86,7 @@ contract CrossVMCaller {
 }
 ```
 
-Bu, düğümün çözdüğü düzendir; `@qorechain/rdk` kodlayıcısının oluşturduğu düzenle aynıdır ve yukarıdaki sözleşme [Multi-VM](/rollups/multi-vm) sayfasındaki başlangıç şablonuyla eşleşir. Önderlenmiş işlev üzerinden fon eklenemez (`MsgCrossVMCall` mesaj yolu `--funds` alır). Önderlenmiş işlev etkin olmadığı için örnek bugün hiçbir ağda bir şey yapamaz (yukarıdaki uyarıya bakın); ABI etkinleştirmeden önce yine de değişebilir.
+Bu, düğümün çözdüğü düzendir; `@qorechain/rdk` kodlayıcısının oluşturduğu düzenle aynıdır ve yukarıdaki sözleşme [Multi-VM](/rollups/multi-vm) sayfasındaki başlangıç şablonuyla eşleşir. Önderlenmiş işlev üzerinden fon eklenemez (`MsgCrossVMCall` mesaj yolu `--funds` alır). Önderlenmiş işlev ana ağda etkin olmadığı için örnek bugün orada bir şey yapamaz; test ağında önderlenmiş işlev etkin olarak listelenmiştir ancak örnek çalıştırılmadı (yukarıdaki uyarıya bakın) ve ABI yine de değişebilir.
 
 Etkinleştirildiğinde, önderlenmiş işlev QoreChain Native sözleşmesini hemen yürütür ve sonucu döndürür. (`@qorechain/rdk`'nin 0.6.0'dan itibaren bulunan ve güncel 0.8.0'da yer alan `encodeCrossVmCalldata` yardımcısı calldata'yı oluşturur; bkz. [Multi-VM](/rollups/multi-vm).) Gaz maliyeti: **50.000 taban + girdi baytı başına 4 + yürütme maliyeti**.
 

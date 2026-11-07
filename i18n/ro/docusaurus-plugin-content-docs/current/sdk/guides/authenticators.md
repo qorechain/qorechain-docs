@@ -115,7 +115,9 @@ dacă este setată și `enabled`; altfel prima regulă `enabled` de pe cont; alt
 prin acel mesaj este limitată numai de o regulă la nivel de cont. Setați o regulă
 în mod deliberat prin `MsgUpdateSpendingRules` și înregistrați doar permisiunile
 de care cheia are nevoie. O limită restrânge paguba pe care o poate face o cheie
-conectată; nu înlocuiește revocarea cheii.
+conectată; nu înlocuiește revocarea cheii. Regulile de cheltuire leagă doar
+autentificatorii și cheile de sesiune, nu cheia proprie a proprietarului (pe banda
+EVM, cheia proprietarului este limitată de fereastra EVM).
 :::
 
 Pentru a dezactiva instantaneu o cheie, proprietarul difuzează

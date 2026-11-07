@@ -339,7 +339,7 @@ qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 Abrir una ventana sustituye a cualquier ventana existente. Compruébala con `qorechaind query pqc evm-window <address>`.
 
-**Ventanas con alcance (mainnet v3.2.3 y posteriores).** El límite de valor cuenta solo QOR nativo: una transferencia de tokens, una aprobación o cualquier otra llamada a un contrato lleva valor cero y no se cuenta contra él. Dos flags opcionales restringen lo que admite la ventana:
+**Ventanas con alcance (mainnet v3.2.3 y posteriores).** El límite de valor cuenta solo QOR nativo: una transferencia de tokens, una aprobación o cualquier otra llamada a un contrato lleva valor cero y no se cuenta contra él. Dos flags opcionales restringen qué destinatarios admite la ventana (no limitan las cantidades de tokens):
 
 | Flag                | Efecto                                                                                                                     |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -350,6 +350,8 @@ Abrir una ventana sustituye a cualquier ventana existente. Compruébala con `qor
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > w.json
 ```
+
+`allowed_targets` limita **qué** contratos y tokens puede tocar una ventana, no **cuánto**. Un token listado admite cualquier cantidad de ese token, incluido `approve`, y un contrato listado puede mover lo que permitan su código y sus aprobaciones existentes, así que no listes contratos genéricos de reenvío o de router. Una ventana acota solo las transacciones del carril EVM (firmadas de forma clásica); los mensajes de Cosmos firmados con la firma híbrida PQC, como las llamadas entre VM y authz, quedan fuera de ella.
 
 Una ventana abierta sin ninguna de las dos flags admite lo que siempre admitió. La consulta de la ventana informa el alcance como `native_only` y `allowed_targets`.
 

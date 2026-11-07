@@ -39,7 +39,7 @@ The bounds of an [EVM authorisation window](/getting-started/first-transaction#e
 | `max_value` | greater than 0 (uqor; transferred value plus the maximum fee of each transaction) |
 | Maximum `allowed_targets` | 16 recipient addresses (optional scope, v3.2.3) |
 
-A window can also be narrowed with `native_only` (plain native QOR transfers only) from v3.2.3.
+A window can also be narrowed with `native_only` (plain native QOR transfers only) from v3.2.3. `allowed_targets` limits which contracts and tokens may be touched, not how much: a listed token admits any amount, including `approve`. Windows bound only classically signed EVM-lane transactions; hybrid-signed Cosmos messages (cross-VM calls, authz) are outside them.
 
 ---
 

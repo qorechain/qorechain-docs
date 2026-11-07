@@ -339,7 +339,7 @@ qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 Opening a window replaces any existing one. Check it with `qorechaind query pqc evm-window <address>`.
 
-**Scoped windows (mainnet v3.2.3 and later).** The value bound counts native QOR only: a token transfer, an approval or any other contract call carries value zero and is not counted against it. Two optional flags narrow what the window admits:
+**Scoped windows (mainnet v3.2.3 and later).** The value bound counts native QOR only: a token transfer, an approval or any other contract call carries value zero and is not counted against it. Two optional flags narrow which recipients the window admits (they do not cap token amounts):
 
 | Flag                | Effect                                                                                                                     |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -350,6 +350,8 @@ Opening a window replaces any existing one. Check it with `qorechaind query pqc 
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > w.json
 ```
+
+`allowed_targets` limits **which** contracts and tokens a window may touch, not **how much**. A listed token admits any amount of that token, including `approve`, and a listed contract can move whatever its code and existing approvals allow, so do not list generic forwarder or router contracts. A window bounds only transactions on the EVM lane (classically signed); Cosmos messages signed with the hybrid PQC signature, such as cross-VM calls and authz, are outside it.
 
 A window opened without either flag admits what it always did. The scope is reported by the window query as `native_only` and `allowed_targets`.
 

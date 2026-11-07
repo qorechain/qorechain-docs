@@ -60,7 +60,7 @@ activos en la mainnet**, y solo tres están activos en la testnet: solo responde
 sus direcciones figuran en el parámetro `active_static_precompiles` del módulo EVM.
 Esa lista está vacía en la mainnet; en la testnet contiene los precompilados de
 verificación PQC (`0x…0A01`), de estado de clave PQC (`0x…0A02`) y de parámetros de
-consenso (`0x…0C01`) (comprobado el 27 de octubre de 2026; el 4 de noviembre la lista de la testnet también contenía el puente cross-VM `0x…0901`, que esta página no ha vuelto a probar, y la de la mainnet seguía vacía), así que el par de IA sigue
+consenso (`0x…0C01`) (comprobado el 27 de octubre de 2026; la lista de la testnet también contenía el puente cross-VM `0x…0901` desde el 4 de noviembre y el 7 de noviembre de 2026, figurando como activo pero sin probar una llamada a través de él, y la de la mainnet seguía vacía), así que el par de IA sigue
 sin responder nada allí. Donde un precompilado está inactivo la
 llamada devuelve datos vacíos, así que viem informa `returned no data ("0x")` y el
 auxiliar lanza un error (consulta

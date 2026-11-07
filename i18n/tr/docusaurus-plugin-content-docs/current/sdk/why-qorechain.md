@@ -97,7 +97,7 @@ await crossVM.callAtomic([
 ```
 
 **Neden farklı:** QoreChain, üç eş-yerleşik VM'i yerleşik bir köprü modülüyle
-(`crossvm`, ayrıca etkinleştirildiğinde `CrossVMBridge` precompile'ı; henüz hiçbir ağda etkin değildir)
+(`crossvm`, ayrıca etkinleştirildiğinde `CrossVMBridge` precompile'ı; mainnet'te etkin değildir; testnet 7 Kasım 2026 itibarıyla onu etkin olarak listeler, ondan yapılan bir çağrı test edilmedi)
 çalıştırır; böylece tek bir SDK arayüzü üçünü de adresleyebilir. Tek VM'li
 zincirlerde sarmalanacak eşdeğer bir şey yoktur. Bugün bir çağrının erişimi,
 hedeflediği şerit tarafından sınırlanır: `MsgCrossVMCall` mainnet'te
@@ -207,7 +207,7 @@ const msg = await buildPhantomExecuteCosmos({
 });
 ```
 
-**Neden önemli:** modül etkinleştirildiğinde her harcama, zincir üstü bir izin
+**Neden önemli:** modül etkinleştirildiğinde bağlı bir anahtarın her harcaması, zincir üstü bir izin
 taksonomisi, `SpendingRule` limitleri ve bir son kullanma süresiyle
 sınırlandırılır — en az ayrıcalık ilkesine uygun ve iptal edilebilir — bu
 sırada hesabın kendisi post-kuantum korumalı kalır. Bkz.

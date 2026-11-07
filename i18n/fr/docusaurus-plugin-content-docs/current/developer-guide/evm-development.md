@@ -275,7 +275,7 @@ Pour la sécurité post-quantique au sein des contrats :
 
 ## Fenêtre d'autorisation EVM {#evm-window}
 
-Une signature post-quantique ne peut pas voyager *avec* une transaction Ethereum (des portefeuilles comme MetaMask ne peuvent pas joindre une seconde signature) ; elle voyage donc *en amont*. Le compte ouvre une fenêtre bornée avec le message de la voie Cosmos `MsgOpenEVMWindow` ; la voie EVM n'admet ensuite que les transactions couvertes par une fenêtre active. Une clé classique volée ne peut pas, à elle seule, ouvrir une fenêtre : elle ne peut donc déplacer que ce qu'une fenêtre déjà ouverte autorise.
+Une signature post-quantique ne peut pas voyager *avec* une transaction Ethereum (des portefeuilles comme MetaMask ne peuvent pas joindre une seconde signature) ; elle voyage donc *en amont*. Le compte ouvre une fenêtre bornée avec le message de la voie Cosmos `MsgOpenEVMWindow` ; la voie EVM n'admet ensuite que les transactions couvertes par une fenêtre active. Une clé classique volée ne peut pas, à elle seule, ouvrir une fenêtre : elle ne peut donc, sur la voie EVM, agir que dans les limites d'une fenêtre déjà ouverte (la fenêtre ne plafonne ni les montants de tokens ni les approbations existantes).
 
 | Borne       | Plage              | Signification |
 | ----------- | ------------------ | ------- |
@@ -285,7 +285,7 @@ Une signature post-quantique ne peut pas voyager *avec* une transaction Ethereum
 
 La première borne atteinte ferme la fenêtre. Les trois bornes sont obligatoires ; ouvrir une fenêtre remplace celle qui existe ; une transaction admise puis en échec consomme tout de même son emplacement et son budget de valeur ; les déploiements de contrat comptent comme n'importe quelle autre transaction. `blocks` est un nombre de blocs, pas une durée : 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,1 s par bloc) et environ 6 heures sur le testnet (environ 1,3 s par bloc le 27 octobre 2026 ; le temps de bloc du testnet varie).
 
-**La borne de valeur ne compte que le QOR natif.** Un transfert de jeton, une approbation ou tout autre appel de contrat porte une valeur nulle ; il n'est donc pas décompté de `max-value` (seuls ses frais maximaux le sont). Pour borner aussi ces opérations, restreignez la **portée** de la fenêtre (mainnet v3.2.3 et ultérieures) :
+**La borne de valeur ne compte que le QOR natif.** Un transfert de jeton, une approbation ou tout autre appel de contrat porte une valeur nulle ; il n'est donc pas décompté de `max-value` (seuls ses frais maximaux le sont). La **portée** de la fenêtre (mainnet v3.2.3 et ultérieures) restreint les destinataires qu'elle admet, mais ne plafonne pas les montants de tokens :
 
 | Option de portée (drapeau CLI) | Champ du message | Ce que la fenêtre admet |
 | ----------------------- | ------------- | ---------------------- |
@@ -293,6 +293,8 @@ La première borne atteinte ferme la fenêtre. Les trois bornes sont obligatoire
 | `--allowed-targets 0xA,0xB` | `allowed_targets` | Uniquement les transactions dont le destinataire figure parmi les adresses de 20 octets listées ; la création de contrat est refusée |
 
 Une fenêtre ouverte sans portée se comporte exactement comme auparavant. Une transaction hors de la portée est refusée avec le code 27 (le message indique que la fenêtre « n'admet pas cette transaction »). `GET /qorechain/pqc/v1/evm_window/{address}` et `qorechaind query pqc evm-window` renvoient `native_only` et `allowed_targets`, et l'événement `pqc_evm_window_opened` les porte lorsqu'ils sont définis.
+
+`allowed_targets` limite **quels** contrats et tokens une fenêtre peut toucher, pas **combien**. Un token listé admet n'importe quel montant de ce token, y compris `approve`, et un contrat listé peut déplacer tout ce que son code et ses approbations existantes permettent ; ne listez donc pas de contrats de transfert ou de routeur génériques. Une fenêtre ne borne que les transactions de la voie EVM (signées de façon classique) ; les messages Cosmos signés avec la signature hybride PQC, comme les appels cross-VM et authz, sont hors de son champ.
 
 **Étapes** (le pas-à-pas complet se trouve dans [Votre première transaction](/getting-started/first-transaction#evm-window)) :
 
@@ -330,16 +332,16 @@ Avec le SDK TypeScript (0.8.2 et versions ultérieures) : `openEvmWindowMsg`, `c
 
 ## Espace de noms personnalisé `qor_` {#custom-qor_-namespace}
 
-QoreChain étend le JSON-RPC avec un espace de noms `qor_` pour les requêtes spécifiques à la chaîne :
+QoreChain étend le JSON-RPC avec un espace de noms `qor_` pour les requêtes spécifiques à la chaîne. Les méthodes ci-dessous sont prévues :
 
 :::warning Pas encore servi
-Aucune version publiée du nœud ne sert encore l'espace de noms `qor_` : `rpc_modules` sur les points de terminaison publics ne liste que `eth`, `net`, `rpc`, `txpool` et `web3`, et chaque méthode ci-dessous renvoie `-32601` (méthode introuvable) sur le mainnet, le testnet et les nœuds auto-hébergés avec la configuration par défaut (`eth`, `net`, `web3`). Voir [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace) pour l'état d'avancement et les alternatives REST (par exemple `GET /qorechain/pqc/v1/account/{address}` pour l'état de la clé PQC).
+Les méthodes du tableau ci-dessous sont prévues et non servies : chacune renvoie `-32601` (méthode introuvable). La seule méthode servie de l'espace de noms est `qor_getKEMKey`, et uniquement là où le nœud liste `qor` dans ses espaces de noms : observé le 7 novembre 2026, le testnet liste `qor` et y répond, tandis que le point de terminaison mainnet public ne liste que `eth`, `net`, `rpc`, `txpool` et `web3` et répond `-32601`. Voir [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace) pour l'état d'avancement et les alternatives REST (par exemple `GET /qorechain/pqc/v1/account/{address}` pour l'état de la clé PQC).
 :::
 
 | Méthode                     | Description                                                       |
 | --------------------------- | ------------------------------------------------------------------- |
 | `qor_getPQCKeyStatus`       | Vérifie si un compte possède une clé publique PQC enregistrée     |
-| `qor_getAIStats`            | Récupère les statistiques du moteur d'IA (nombre d'anomalies, distribution des risques) |
+| Statistiques IA (prévu)     | Récupère les statistiques du moteur d'IA (nombre d'anomalies, distribution des risques) ; le nom de la méthode n'est pas définitif |
 | `qor_getCrossVMMessage`     | Interroge le statut d'un message cross-VM par ID                  |
 | `qor_getPoolClassification` | Obtient la classification du pool de validateurs (RPoS/DPoS/PoS)  |
 | `qor_getReputationScore`    | Interroge le score de réputation d'un validateur                  |

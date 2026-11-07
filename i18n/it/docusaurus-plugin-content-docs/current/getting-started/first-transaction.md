@@ -129,7 +129,7 @@ Dalla release della chain **v3.2.0** (altezza mainnet 2,981,742, 25 settembre 20
 
 Tutto il resto della lane EVM è invariato: continui a firmare con MetaMask, ethers.js, Hardhat o Foundry, e `eth_estimateGas` e le altre simulazioni funzionano senza finestra. Le distribuzioni di contratti contano come qualsiasi altra transazione EVM, quindi serve una finestra prima di distribuire.
 
-**Perché una finestra?** Un wallet standard produce una sola firma secp256k1 su una transazione Ethereum e non offre alle applicazioni alcun modo di allegare una seconda firma post-quantistica. L'autorizzazione post-quantistica viaggia quindi *prima* della transazione: apri una finestra limitata con una normale transazione della lane Cosmos, che porta la tua firma ML-DSA, e la lane EVM poi ammette le transazioni coperte da essa. Una chiave classica da sola non può mai aprire una finestra, quindi una chiave classica rubata può spendere solo ciò che una finestra già aperta consente. Funziona come un'approvazione ERC-20: autorizzi un importo limitato per un tempo limitato, poi esegui transazioni normalmente.
+**Perché una finestra?** Un wallet standard produce una sola firma secp256k1 su una transazione Ethereum e non offre alle applicazioni alcun modo di allegare una seconda firma post-quantistica. L'autorizzazione post-quantistica viaggia quindi *prima* della transazione: apri una finestra limitata con una normale transazione della lane Cosmos, che porta la tua firma ML-DSA, e la lane EVM poi ammette le transazioni coperte da essa. Una chiave classica da sola non può mai aprire una finestra, quindi una chiave classica rubata può agire solo entro ciò che una finestra già aperta consente sulla lane EVM. Funziona come un'approvazione: autorizzi un numero limitato di transazioni e un importo limitato di QOR nativo per un tempo limitato, poi esegui transazioni normalmente. La finestra non limita gli importi dei token né le approvazioni che un contratto detiene già.
 
 **Cosa limita una finestra.** Si applicano tre limiti contemporaneamente; il primo che si esaurisce chiude la finestra.
 
@@ -143,7 +143,7 @@ Tutto il resto della lane EVM è invariato: continui a firmare con MetaMask, eth
 * Una transazione ammessa che poi fallisce consuma comunque il suo slot e il suo budget di valore.
 * L'apertura di una nuova finestra **sostituisce** la precedente; il consumo riparte da zero.
 * La CLI accetta `max-value` in `uqor` o `qor` (`1000qor` = 1,000,000,000 uqor).
-* Il limite di valore conta solo il QOR nativo: un trasferimento di token, un'approvazione o qualsiasi altra chiamata a un contratto porta valore zero. Per limitare anche queste, restringi l'ambito della finestra (sotto).
+* Il limite di valore conta solo il QOR nativo: un trasferimento di token, un'approvazione o qualsiasi altra chiamata a un contratto porta valore zero. L'ambito (sotto) restringe quali destinatari la finestra ammette; non limita gli importi dei token.
 
 **Passo 1 — registra la tua chiave post-quantistica** (una volta): vedi [Registra la tua chiave post-quantistica](#register-pqc-key) sopra.
 
@@ -163,6 +163,8 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
+
+`--allowed-targets` limita **quali** contratti e token la finestra può toccare, non **quanto**. Un token elencato ammette qualsiasi importo di quel token, incluso `approve`, e un contratto elencato può muovere tutto ciò che il suo codice e le approvazioni esistenti consentono, quindi non elencare contratti forwarder o router generici. Una finestra vincola solo le transazioni sulla lane EVM (firmate in modo classico); i messaggi Cosmos firmati con la firma PQC ibrida, come le chiamate cross-VM e authz, ne restano fuori.
 
 Sulla mainnet, l'apertura di una finestra ha usato circa 180.000 di gas. In [QoreX](/qorex/security-and-recovery#evm-window) lo stesso passaggio è **Impostazioni → Sicurezza → Finestra di accesso EVM** (app) oppure il pulsante **Finestra di accesso EVM** (estensione). L'apertura della finestra fa avanzare il nonce del tuo account, quindi aprila **prima** di preparare la transazione EVM nel tuo wallet.
 

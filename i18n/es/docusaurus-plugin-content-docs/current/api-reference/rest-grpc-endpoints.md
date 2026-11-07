@@ -98,7 +98,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_window/qor1...
 }
 ```
 
-Esta ruta nunca falla para una dirección sin ventana; devuelve `found: false`. Desde v3.2.0, la lane EVM admite una transacción solo de una cuenta que tenga una clave PQC registrada **y** una ventana abierta. `live` es `true` mientras la ventana admita al menos una transacción más a la altura actual. `remaining_blocks`, `remaining_txs` y `remaining_value` muestran qué límite está más cerca de agotarse; los valores son enteros en `uqor` devueltos como cadenas. Desde v3.2.3, una ventana puede llevar un alcance: `native_only` (solo transferencias simples de QOR) y `allowed_targets` (solo los destinatarios listados). Consulte [Desarrollo EVM](/developer-guide/evm-development#evm-window) para ver cómo funciona la lane EVM.
+Esta ruta nunca falla para una dirección sin ventana; devuelve `found: false`. Desde v3.2.0, la lane EVM admite una transacción solo de una cuenta que tenga una clave PQC registrada **y** una ventana abierta. `live` es `true` mientras la ventana admita al menos una transacción más a la altura actual. `remaining_blocks`, `remaining_txs` y `remaining_value` muestran qué límite está más cerca de agotarse; los valores son enteros en `uqor` devueltos como cadenas. Desde v3.2.3, una ventana puede llevar un alcance: `native_only` (solo transferencias simples de QOR) y `allowed_targets` (solo los destinatarios listados; limita qué contratos y tokens se pueden tocar, no cuánto). Consulte [Desarrollo EVM](/developer-guide/evm-development#evm-window) para ver cómo funciona la lane EVM.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...

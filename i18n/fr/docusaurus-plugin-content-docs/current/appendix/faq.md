@@ -47,7 +47,7 @@ Pour un nœud complet, voir [Exécuter un nœud](/developer-guide/running-a-node
 
 ### Quel schéma de signature QoreChain utilise-t-il ?
 
-QoreChain utilise un schéma hybride post-quantique combinant le **secp256k1 (ECDSA)** classique avec le **ML-DSA-87 (Dilithium-5)** post-quantique. Ce schéma hybride est requis par défaut sur le chemin de transaction Cosmos, le mode d'application étant contrôlé par la gouvernance. Sur la lane EVM, la signature reste secp256k1, et un compte doit en outre détenir une clé ML-DSA enregistrée et une fenêtre d'autorisation ouverte (depuis v3.2.0). Voir [Sécurité post-quantique](/architecture/post-quantum-security).
+QoreChain utilise un schéma hybride post-quantique combinant le **secp256k1 (ECDSA)** classique avec le **ML-DSA-87 (Dilithium-5)** post-quantique. Ce schéma hybride est requis par défaut sur le chemin de transaction Cosmos, le mode d'application étant contrôlé par la gouvernance. Sur la lane EVM, la signature reste secp256k1, et un compte doit en outre détenir une clé ML-DSA enregistrée et une fenêtre d'autorisation ouverte (depuis v3.2.0). Un compte n'est protégé de façon post-quantique qu'après avoir enregistré sa clé ML-DSA-87 ; cette première inscription est signée avec la seule clé classique (l'amorçage documenté), enregistrez-la donc avant que le compte ne détienne des fonds significatifs. Voir [Sécurité post-quantique](/architecture/post-quantum-security).
 
 ### Pourquoi ma transaction EVM est-elle refusée avec « no open EVM authorisation window » ?
 

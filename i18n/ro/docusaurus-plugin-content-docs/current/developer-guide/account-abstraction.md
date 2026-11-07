@@ -26,7 +26,7 @@ Exemplele `qorechaind tx` de pe această pagină arată doar flag-urile de taxă
 Conturile blockchain tradiționale sunt controlate de o singură cheie privată. Abstractizarea contului decuplează conceptul de „cine poate autoriza o tranzacție” de o singură cheie criptografică. Modulul `x/abstractaccount` oferă:
 
 * **Conturi abstracte** cu un tip de cont și un proprietar înregistrate
-* **Reguli de cheltuieli** (limite per tranzacție și zilnice, denominări permise) care limitează cât pot cheltui cheile conectate
+* **Reguli de cheltuieli** (limite per tranzacție și zilnice, denominări permise) care limitează cât pot cheltui cheile conectate (autentificatori și chei de sesiune); nu limitează cheia proprie a titularului
 * **Autentificatori**: chei externe (o cheie Phantom ed25519 sau o adresă MetaMask secp256k1) pe care proprietarul le conectează cu permisiuni limitate și o expirare și pe care le poate revoca oricând
 
 *Un flux cu cheie conectată (autentificator): cheia conectată semnează o autorizare, un releu o trimite, modulul verifică permisiunile, expirarea și regulile de cheltuieli, apoi execută din contul proprietarului.*
@@ -80,7 +80,9 @@ qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <p
 
 ## Reguli de Cheltuieli
 
-Regulile de cheltuieli adaugă limite de siguranță financiară conturilor abstracte:
+Regulile de cheltuieli adaugă limite de siguranță financiară pentru autentificatorii și cheile de sesiune conectate la un cont abstract. Regulile de cheltuieli leagă doar autentificatorii și cheile de sesiune, nu cheia proprie a titularului; cheia titularului este limitată, pe banda EVM, de [fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
+
+Câmpurile regulii:
 
 | Regulă            | Descriere                                                         |
 | ------------------ | ------------------------------------------------------------------ |

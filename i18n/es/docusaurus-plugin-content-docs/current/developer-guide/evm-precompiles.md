@@ -10,21 +10,21 @@ sidebar_position: 6
 QoreChain extiende el QoreChain EVM Engine con **seis contratos precompilados personalizados** que exponen funciones a nivel de protocolo directamente a Solidity. Estos precompilados brindan acceso on-chain a criptografía post-cuántica, puntuación de riesgo por IA, mensajería cross-VM y parámetros de consenso PRISM.
 
 :::warning No activos en la mainnet; tres activos en la testnet
-Los seis precompilados de QoreChain que se describen a continuación están **compilados en el nodo**, pero la EVM solo despacha las direcciones listadas en el parámetro `active_static_precompiles`. En la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**) esa lista está vacía en el momento de escribir esto, así que **ninguno está activo allí**. En la testnet **`qorechain-diana`** (ID de cadena EVM **9800**) hay tres activos: PQC Verify, PQC Key Status y PRISM Consensus Params, activados por la propuesta de gobernanza 21 de la testnet (aprobada el 27 de octubre de 2026). Los otros tres no están activos en ninguna de las dos redes. **Una llamada a una dirección que no figura en la lista tiene éxito y devuelve datos vacíos (`0x`)**; no revierte ni devuelve un error. Consulte [Estado de la red](#network-status) antes de depender de cualquiera de ellos.
+Los seis precompilados de QoreChain que se describen a continuación están **compilados en el nodo**, pero la EVM solo despacha las direcciones listadas en el parámetro `active_static_precompiles`. En la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**) esa lista está vacía en el momento de escribir esto, así que **ninguno está activo allí**. En la testnet **`qorechain-diana`** (ID de cadena EVM **9800**) están activos PQC Verify, PQC Key Status y PRISM Consensus Params, activados por la propuesta de gobernanza 21 de la testnet (aprobada el 27 de octubre de 2026), y la dirección del CrossVM Bridge figuraba en la lista cuando se leyó el 7 de noviembre de 2026. Los dos precompilados de IA no están activos en ninguna de las dos redes. **Una llamada a una dirección que no figura en la lista tiene éxito y devuelve datos vacíos (`0x`)**; no revierte ni devuelve un error. Consulte [Estado de la red](#network-status) antes de depender de cualquiera de ellos.
 :::
 
 ## Estado de la red {#network-status}
 
 | Precompilado | Dirección | `qorechain-vladi` (mainnet) | `qorechain-diana` (testnet) |
 | --- | --- | --- | --- |
+| CrossVM Bridge | `0x…0901` | No activo | En la lista activa (leído el 7 de noviembre de 2026; véase [Multi-VM](/rollups/multi-vm)) |
 | PQC Verify | `0x…0A01` | No activo | **Activo** (desde el 27 de octubre de 2026) |
 | PQC Key Status | `0x…0A02` | No activo | **Activo** (desde el 27 de octubre de 2026) |
 | AI Risk Score | `0x…0B01` | No activo | No activo |
 | AI Anomaly Check | `0x…0B02` | No activo | No activo |
 | PRISM Consensus Params | `0x…0C01` | No activo | **Activo** (desde el 27 de octubre de 2026) |
-| CrossVM Bridge | `0x…0901` | No activo | No activo |
 
-Estado leído del parámetro `active_static_precompiles` en vivo el 27 de octubre de 2026 (mainnet releído el 4 de noviembre de 2026, tras la v3.2.6: sigue vacío). Es un parámetro de la cadena que cambia la gobernanza, así que la lista de cada red solo cambia cuando se aprueba una propuesta de gobernanza; la lista de la testnet la fijó la propuesta 21, y ninguna propuesta de la mainnet la cambia en el momento de escribir esto. La versión v3.2.3 (mainnet, 20 de octubre de 2026) incluyó en el binario las versiones reforzadas del CrossVM Bridge y del precompilado AI Anomaly Check, detrás de una función de protocolo, pero no activó ningún precompilado, y tampoco lo cambian la v3.2.4 (en la mainnet desde el 23 de octubre de 2026, en la testnet desde el 19 de octubre de 2026) ni la v3.2.6 (en la mainnet desde el 4 de noviembre de 2026). Primero van los precompilados de PQC y de consenso de solo lectura, el par de IA una vez que esté lista su ruta de solo lectura en punto fijo, y el CrossVM Bridge en último lugar. Esta tabla enumera solo lo que está aplicado: una propuesta que sigue en su periodo de votación no es un estado.
+Estado leído del parámetro `active_static_precompiles` en vivo el 27 de octubre de 2026 (mainnet releído el 4 de noviembre de 2026, tras la v3.2.6: sigue vacío; ambas redes releídas el 7 de noviembre de 2026: mainnet vacía, testnet con `0x…0901`, `0x…0A01`, `0x…0A02` y `0x…0C01`). Es un parámetro de la cadena que cambia la gobernanza, así que la lista de cada red solo cambia cuando se aprueba una propuesta de gobernanza; la lista de la testnet la fijó la propuesta 21, y ninguna propuesta de la mainnet la cambia en el momento de escribir esto. La versión v3.2.3 (mainnet, 20 de octubre de 2026) incluyó en el binario las versiones reforzadas del CrossVM Bridge y del precompilado AI Anomaly Check, detrás de una función de protocolo, pero no activó ningún precompilado, y tampoco lo cambian la v3.2.4 (en la mainnet desde el 23 de octubre de 2026, en la testnet desde el 19 de octubre de 2026) ni la v3.2.6 (en la mainnet desde el 4 de noviembre de 2026). Primero van los precompilados de PQC y de consenso de solo lectura, el par de IA una vez que esté lista su ruta de solo lectura en punto fijo, y el CrossVM Bridge en último lugar. Esta tabla enumera solo lo que está aplicado: una propuesta que sigue en su periodo de votación no es un estado.
 
 Compruebe usted mismo la lista actual (una lista vacía significa que ninguno está activo):
 
@@ -53,6 +53,25 @@ RPC=https://evm-testnet.qore.host
 cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
 cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
 ```
+
+---
+
+## Precompilados estándar {#standard-precompiles}
+
+Además de los seis precompilados de QoreChain, el nodo incluye los precompilados estándar de cosmos/evm. Siguen la misma regla: solo se ejecutan donde la gobernanza ha listado su dirección en `active_static_precompiles`, y la compilación comunitaria del nodo no los incluye.
+
+| Dirección | Precompilado |
+| --- | --- |
+| `0x…0100` | P-256 (sin estado) |
+| `0x…0400` | Bech32 (sin estado) |
+| `0x…0800` | Staking |
+| `0x…0801` | Distribution |
+| `0x…0802` | Transferencia IBC (ICS-20) |
+| `0x…0804` | Bank (solo lectura) |
+| `0x…0805` | Governance |
+| `0x…0806` | Slashing |
+
+`0x…0803` (vesting) está reservada en upstream y **no está implementada**: no hay nada en esa dirección. El staking, la delegación y las operaciones de validador en QoreChain son solo del carril nativo (véase [Staking y validadores](/dashboard/staking-and-validators)), así que no construyas flujos de staking sobre el precompilado de staking. Fuente: `docs/EVM_PRECOMPILES.md` en el repositorio público del core, en la etiqueta v3.2.6.
 
 ---
 
@@ -281,7 +300,7 @@ Desde la v3.2.6 (ambas redes la ejecutan; el precompilado en sí está activo so
 ### CrossVM Bridge — Llamar a QoreChain Native desde EVM
 
 :::warning
-El precompilado CrossVM Bridge **no está activo** en ninguna de las dos redes. El binario desde v3.2.3 incluye una versión reforzada que: rechaza un `STATICCALL`; ejecuta la llamada anidada con un medidor de gas limitado por lo que le queda al marco que llama y la registra en el diario, de modo que una reversión en el contrato que llama también deshace el lado de QoreChain Native; solo alcanza destinos QoreChain Native de la lista de permitidos (los destinos EVM se rechazan); y respeta el circuit breaker cross-VM. Hasta que una actualización aprobada por gobernanza lo active no existe una ruta síncrona de EVM a QoreChain Native; consulte [Interoperabilidad Cross-VM](/developer-guide/cross-vm-interoperability) para la ruta de mensajes `MsgCrossVMCall`, que a su vez está desactivada hoy en mainnet.
+El precompilado CrossVM Bridge **no está activo en la mainnet** y figura como activo en la testnet (leído el 7 de noviembre de 2026; no se probó una llamada a través de él). El binario desde v3.2.3 incluye una versión reforzada que: rechaza un `STATICCALL`; ejecuta la llamada anidada con un medidor de gas limitado por lo que le queda al marco que llama y la registra en el diario, de modo que una reversión en el contrato que llama también deshace el lado de QoreChain Native; solo alcanza destinos QoreChain Native de la lista de permitidos (los destinos EVM se rechazan); y respeta el circuit breaker cross-VM. Hasta que una propuesta de gobernanza lo active en la mainnet no existe allí una ruta síncrona de EVM a QoreChain Native; consulte [Interoperabilidad Cross-VM](/developer-guide/cross-vm-interoperability) para la ruta de mensajes `MsgCrossVMCall`, que a su vez está desactivada hoy en mainnet.
 :::
 
 El nodo decodifica el calldata como `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selector de 4 bytes y, a continuación, los argumentos codificados en ABI). El único uso admitido es de EVM a QoreChain Native (`targetVM` = 1); el ABI aún puede cambiar antes de la activación. El helper `encodeCrossVmCalldata` de `@qorechain/rdk` codifica este formato desde la 0.6.0 (las versiones anteriores codificaban otra función), y su `isCrossVmPrecompileActive` lee la lista en vivo `active_static_precompiles`; consulte [Multi-VM](/rollups/multi-vm).

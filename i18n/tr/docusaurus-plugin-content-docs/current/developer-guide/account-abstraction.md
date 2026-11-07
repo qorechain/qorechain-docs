@@ -26,7 +26,7 @@ Bu sayfadaki `qorechaind tx` örnekleri yalnızca ücret bayraklarını gösteri
 Geleneksel blok zinciri hesapları tek bir özel anahtar tarafından kontrol edilir. Hesap soyutlama, "bir işlemi kimin yetkilendirebileceği" kavramını tek bir kriptografik anahtardan ayırır. `x/abstractaccount` modülü şunları sağlar:
 
 * Kayıtlı bir hesap türüne ve sahibe sahip **soyut hesaplar**
-* Bağlı anahtarların harcayabileceği tutarı sınırlayan **harcama kuralları** (işlem başına ve günlük limitler, izin verilen birimler)
+* Bağlı anahtarların (kimlik doğrulayıcılar ve oturum anahtarları) harcayabileceği tutarı sınırlayan **harcama kuralları** (işlem başına ve günlük limitler, izin verilen birimler); sahibin kendi anahtarını sınırlamazlar
 * **Kimlik doğrulayıcılar**: sahibin kapsamlı izinler ve bir süre sonu ile bağladığı ve istediği zaman iptal edebildiği harici anahtarlar (bir Phantom ed25519 anahtarı veya bir MetaMask secp256k1 adresi)
 
 *Bağlı anahtar (kimlik doğrulayıcı) akışı: bağlı anahtar bir yetkilendirmeyi imzalar, bir röle bunu gönderir, modül izinleri, süre sonunu ve harcama kurallarını kontrol eder, ardından sahibin hesabından yürütür.*
@@ -80,7 +80,9 @@ qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <p
 
 ## Harcama Kuralları
 
-Harcama kuralları, soyut hesaplara finansal korumalar ekler:
+Harcama kuralları, bir soyut hesaba bağlı kimlik doğrulayıcılar ve oturum anahtarları için finansal korumalar ekler. Harcama kuralları yalnızca kimlik doğrulayıcıları ve oturum anahtarlarını bağlar, sahibin kendi anahtarını değil; sahibin anahtarı, EVM şeridinde [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window) ile sınırlanır.
+
+Kural alanları:
 
 | Kural             | Açıklama                                            |
 | ------------------ | ------------------------------------------------------ |

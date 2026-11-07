@@ -9,13 +9,24 @@ sidebar_position: 2
 
 Der `qor_`-Namespace wurde entworfen, um QoreChain-spezifische JSON-RPC-Methoden bereitzustellen, mit denen sich der Status der Post-Quanten-Kryptografie, KI-Analysen, VM-übergreifendes Messaging, mehrschichtiger State, Bridge-Operationen, Tokenomics, Rollup-Infrastruktur und PRISM-Konsensstatus abfragen lassen.
 
-:::warning Noch nicht bereitgestellt
-**Kein veröffentlichter Node-Build stellt den `qor_`-Namespace bisher bereit**, weder im Mainnet (`qorechain-vladi`) noch im Testnet (`qorechain-diana`) noch auf einem selbst betriebenen Node. Auf den öffentlichen EVM-Endpunkten listet `rpc_modules` nur `eth`, `net`, `rpc`, `txpool` und `web3`, und **jede `qor_`-Methode liefert `-32601` (method not found)** auf beiden Netzwerken. Die Methoden sind im Node-Quellcode implementiert, aber nicht beim JSON-RPC-Server registriert, sodass das Hinzufügen von `qor` zur `api`-Liste in `app.toml` keine Wirkung hat. Die Registrierung des Namespace ist für ein Node-Release geplant, und diese Seite nennt das Release, sobald es erscheint.
-
-Entwickeln Sie heute nicht gegen `qor_`-Methoden. Nutzen Sie die REST-Routen in der folgenden Tabelle, wo eine existiert. Client-Bibliotheken, die `client.qor.*`-Helfer anbieten, kapseln dieselben Methoden, sodass diese Helfer auf dieselbe Weise fehlschlagen.
+:::warning Die geplanten Methoden werden noch nicht bereitgestellt
+**Keine der Methoden in der folgenden Tabelle wird bisher auf einem Netzwerk bereitgestellt.** Sie sind im Node-Quellcode implementiert, aber nicht beim JSON-RPC-Server registriert, und jede liefert `-32601` (method not found). Ihre Registrierung ist für ein Node-Release geplant, und diese Seite nennt das Release, sobald es erscheint. Entwickeln Sie heute nicht gegen sie; nutzen Sie die REST-Routen in der Tabelle, wo eine existiert. Client-Bibliotheken, die `client.qor.*`-Helfer anbieten, kapseln dieselben Methoden, sodass diese Helfer auf dieselbe Weise fehlschlagen.
 :::
 
-Sie können das selbst bestätigen:
+## Was bereitgestellt wird: `qor_getKEMKey` {#qor-getkemkey}
+
+Eine Methode des Namespace wird bereitgestellt: `qor_getKEMKey(address)` liefert den ML-KEM-Public-Key, den eine Adresse veröffentlicht hat (`address` kann `qor1...` oder `0x` sein). Sie antwortet mit `{"address": ..., "found": false}`, wenn kein Schlüssel veröffentlicht ist, und fügt andernfalls `algorithm_id`, `algorithm_name`, `public_key` (`0x`-Hex) und `registered_height` hinzu. Der Node stellt den Namespace `qor` nur dort bereit, wo seine `[json-rpc]`-`api`-Liste in `app.toml` `qor` enthält.
+
+Beobachtet am 7. November 2026:
+
+| Netzwerk | `rpc_modules` | `qor_getKEMKey` |
+| --- | --- | --- |
+| Testnet (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | antwortet (`found: false` für eine Adresse ohne veröffentlichten Schlüssel) |
+| Mainnet (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (der öffentliche Mainnet-Endpunkt listet `qor` nicht) |
+
+Im Testnet lieferte jede andere geprüfte `qor_`-Methode (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) weiterhin `-32601`.
+
+Sie können die Namespace-Liste selbst prüfen:
 
 ```bash
 curl -s -X POST https://evm.qore.host \
@@ -35,7 +46,7 @@ curl -s -X POST https://evm.qore.host \
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). Siehe [REST- / gRPC-Endpunkte](/api-reference/rest-grpc-endpoints#pqc-module). |
 | `qor_getHybridSignatureMode`  | Keine öffentliche REST-Route; `qorechaind query pqc hybrid-mode` (oder `query pqc params`) gegen einen Node oder `--node https://rpc.qore.host:443`. |
-| `qor_getAIStats`              | gRPC `qorechain.ai.v1.Query/Stats` auf einem selbst betriebenen Node oder `qorechaind query ai stats`; keine REST-Route. |
+| KI-Statistiken (geplant; Methodenname nicht endgültig) | gRPC `qorechain.ai.v1.Query/Stats` auf einem selbst betriebenen Node oder `qorechaind query ai stats`; keine REST-Route. |
 | `qor_getCrossVMMessage`       | gRPC `qorechain.crossvm.v1.Query/Message` auf einem selbst betriebenen Node; keine REST-Route. |
 | `qor_getReputationScore`      | Keine öffentliche Abfrage-Route (das Reputationsmodul stellt nur gRPC `Params` bereit). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` und `anchor/{layer_id}`. Siehe [Multilayer-Modul](/api-reference/rest-grpc-endpoints#multilayer-module). |
@@ -59,11 +70,11 @@ Für den EVM-Lane-Zustand eines Kontos (registrierter PQC-Schlüssel, Autorisier
 
 ## Fehlercodes
 
-Auf einem Node, der den Namespace bereitstellt, folgen Fehler den Standard-Codes von JSON-RPC 2.0. Heute schlagen Aufrufe einer `qor_`-Methode mit `-32601` fehl.
+Fehler folgen den Standard-Codes von JSON-RPC 2.0. Heute schlagen Aufrufe einer geplanten `qor_`-Methode mit `-32601` fehl, und auf dem Mainnet-Endpunkt ebenso `qor_getKEMKey`.
 
 | Code   | Meldung          | Beschreibung                              |
 | ------ | ---------------- | ----------------------------------------- |
 | -32600 | Invalid Request  | Fehlerhaft formatierte JSON-RPC-Anfrage   |
-| -32601 | Method not found | Die Methode existiert nicht, oder der Node stellt den `qor_`-Namespace nicht bereit (jedes veröffentlichte Build heute) |
+| -32601 | Method not found | Die Methode existiert nicht, oder der Node stellt den `qor_`-Namespace nicht bereit (jede geplante Methode heute; ebenso `qor_getKEMKey`, wo `qor` nicht aktiviert ist) |
 | -32602 | Invalid params   | Fehlende oder ungültige Parameter         |
 | -32603 | Internal error   | Serverseitiger Verarbeitungsfehler        |

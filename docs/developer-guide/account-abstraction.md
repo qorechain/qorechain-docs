@@ -26,7 +26,7 @@ The `qorechaind tx` samples on this page show only the fee flags. On the live ne
 Traditional blockchain accounts are controlled by a single private key. Account abstraction decouples the concept of "who can authorize a transaction" from a single cryptographic key. The `x/abstractaccount` module provides:
 
 * **Abstract accounts** with a recorded account type and owner
-* **Spending rules** (per-transaction and daily limits, allowed denominations) that bound what linked keys can spend
+* **Spending rules** (per-transaction and daily limits, allowed denominations) that bound what linked keys (authenticators and session keys) can spend; they do not limit the owner's own key
 * **Authenticators**: foreign keys (a Phantom ed25519 key or a MetaMask secp256k1 address) that the owner links with scoped permissions and an expiry, and can revoke at any time
 
 *A linked-key (authenticator) flow: the linked key signs an authorization, a relayer submits it, the module checks permissions, expiry and spending rules, then executes from the owner's account.*
@@ -80,7 +80,9 @@ qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <p
 
 ## Spending Rules
 
-Spending rules add financial guardrails to abstract accounts:
+Spending rules add financial guardrails for the authenticators and session keys linked to an abstract account. Spending rules bind only authenticators and session keys, not the owner's own key; the owner's key is limited, on the EVM lane, by the [EVM authorisation window](/getting-started/first-transaction#evm-window).
+
+The rule fields:
 
 | Rule             | Description                                           |
 | ---------------- | ----------------------------------------------------- |

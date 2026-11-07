@@ -106,7 +106,7 @@ Every signature QoreX produces is approved by you, and the approval lists exactl
 
 - a title and labelled fields for **every message** in the request, including messages nested inside an authz **MsgExec** and the terms of permission grants - and it **refuses** anything it cannot display ("QoreX cannot read this message … Approve only if you trust this site completely");
 - the **fee** (*Fee: \{amount\} · gas \{gas\}*), who pays it and any fee grant - if the fee cannot be read, QoreX says so and tells you not to approve;
-- the **limit, allowed action and expiry** of spending allowances and authz grants, with *UNLIMITED* and *NEVER* written out; an expiry is shown to the second (`YYYY-MM-DD HH:MM:SS UTC`), and a governance vote is decoded so you see what you are voting on. Anything unreadable, unlimited or endless needs a **second tap** on Approve (*Tap again to approve*);
+- the **limit, allowed action and expiry** of spending allowances and authz grants, with *UNLIMITED* and *NEVER* written out; an expiry is shown to the second (`YYYY-MM-DD HH:MM:SS UTC`). Read the allowed action closely: a fee allowance whose allowed messages include `MsgExec` (an `AllowedMsgAllowance`) covers any message the grantee can execute through it, and a generic authz grant covers whatever message type it names. A governance vote is decoded so you see what you are voting on. Anything unreadable, unlimited or endless needs a **second tap** on Approve (*Tap again to approve*);
 - the signing account (*Signed by …*) when you have several;
 - for a request with a very large number of messages, the first 50 and a count of the rest.
 

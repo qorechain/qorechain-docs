@@ -26,7 +26,7 @@ Gli esempi `qorechaind tx` in questa pagina mostrano solo i flag delle commissio
 Gli account blockchain tradizionali sono controllati da una singola chiave privata. L'astrazione dell'account disaccoppia il concetto di "chi può autorizzare una transazione" da un'unica chiave crittografica. Il modulo `x/abstractaccount` fornisce:
 
 * **Account astratti** con un tipo di account e un proprietario registrati
-* **Regole di spesa** (limiti per transazione e giornalieri, denominazioni consentite) che delimitano ciò che le chiavi collegate possono spendere
+* **Regole di spesa** (limiti per transazione e giornalieri, denominazioni consentite) che delimitano ciò che le chiavi collegate (autenticatori e chiavi di sessione) possono spendere; non limitano la chiave del proprietario
 * **Autenticatori**: chiavi esterne (una chiave ed25519 Phantom o un indirizzo secp256k1 MetaMask) che il proprietario collega con permessi limitati e una scadenza, e che può revocare in qualsiasi momento
 
 *Un flusso con chiave collegata (autenticatore): la chiave collegata firma un'autorizzazione, un relayer la invia, il modulo verifica permessi, scadenza e regole di spesa, quindi esegue dall'account del proprietario.*
@@ -80,7 +80,9 @@ qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <p
 
 ## Regole di Spesa
 
-Le regole di spesa aggiungono limiti finanziari agli account astratti:
+Le regole di spesa aggiungono limiti finanziari per gli autenticatori e le chiavi di sessione collegati a un account astratto. Le regole di spesa vincolano solo gli autenticatori e le chiavi di sessione, non la chiave del proprietario; la chiave del proprietario è limitata, sulla corsia EVM, dalla [finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
+
+I campi della regola:
 
 | Regola           | Descrizione                                           |
 | ---------------- | ----------------------------------------------------- |

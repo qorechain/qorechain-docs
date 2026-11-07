@@ -93,7 +93,7 @@ await crossVM.callAtomic([
 ```
 
 **Warum das anders ist:** QoreChain betreibt drei koresidente VMs mit einem nativen
-Bridge-Modul (`crossvm`, plus der Precompile `CrossVMBridge`, sobald er aktiv ist; er ist in keinem der beiden Netzwerke bisher aktiv),
+Bridge-Modul (`crossvm`, plus der Precompile `CrossVMBridge`, sobald er aktiv ist; er ist im Mainnet nicht aktiv; das Testnet führt ihn seit dem 7. November 2026 als aktiv auf, ein Aufruf darüber wurde nicht getestet),
 sodass eine einzige SDK-Schnittstelle alle drei ansprechen kann. Single-VM-Chains
 haben nichts Vergleichbares, das sich kapseln ließe. Heute wird die Reichweite eines
 Aufrufs durch die Lane begrenzt, die er anspricht: `MsgCrossVMCall` ist auf Mainnet
@@ -204,7 +204,7 @@ const msg = await buildPhantomExecuteCosmos({
 });
 ```
 
-**Warum das wichtig ist:** Sobald das Modul aktiviert ist, wird jede Ausgabe durch
+**Warum das wichtig ist:** Sobald das Modul aktiviert ist, wird jede Ausgabe eines verknüpften Schlüssels durch
 eine On-Chain-Berechtigungstaxonomie, `SpendingRule`-Limits und ein Ablaufdatum
 begrenzt — Least Privilege und widerrufbar — während das Konto selbst
 post-quanten-geschützt bleibt. Siehe

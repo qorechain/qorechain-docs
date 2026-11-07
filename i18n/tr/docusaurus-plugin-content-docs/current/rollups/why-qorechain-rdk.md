@@ -89,15 +89,15 @@ CLI üzerinden: `qorollup advise my-rollup`. Bkz. [QCAI Copilot](/rollups/qcai-c
 
 ## 3. Çoklu-VM zincirler arası VM çağrıları
 
-> 🟡 **Canlı ağlarda henüz kullanılamaz** — precompile etkinleştirilmemiştir ve
-> QoreChain Native yüklemesi kapalıdır. Bkz. [Çoklu-VM](/rollups/multi-vm).
+> 🟡 **Mainnet'te henüz kullanılamaz** — precompile orada etkinleştirilmemiştir ve
+> QoreChain Native yüklemesi kapalıdır. Test ağında precompile etkin olarak listelenir (7 Kasım 2026); bir çağrı test edilmedi. Bkz. [Çoklu-VM](/rollups/multi-vm).
 
 RDK, bir EVM (Solidity) sözleşmesinden bir **QoreChain Native** sözleşmesine yapılan
 çağrıyı, `0x…0901` adresindeki sabit bir precompile aracılığıyla kodlayan
-yardımcılar içerir. Bu precompile ana ağda (mainnet) ya da testnet'te **etkin
-değildir** (bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status)):
-`0x…0901` için `eth_getCode` her ikisinde de `0x` döndürür ve ona yapılan bir
-sözleşme çağrısı hiçbir etki olmadan başarılı olur.
+yardımcılar içerir. Bu precompile ana ağda (mainnet) **etkin değildir** ve 7 Kasım 2026 itibarıyla
+testnet'te **etkin olarak listelenir** (bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status)):
+`0x…0901` için `eth_getCode` `0x` döndürür (bir precompile'ın bytecode'u yoktur), ona yapılan bir
+sözleşme çağrısı mainnet'te hiçbir etki olmadan başarılı olur ve testnet'te ondan yapılan bir çağrı test edilmedi.
 
 `encodeCrossVmCalldata` yardımcısı (0.6.0'dan beri), düğümün çözdüğü yerleşim olan
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`

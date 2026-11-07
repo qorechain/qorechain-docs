@@ -42,7 +42,7 @@ oprit de circuit breaker), încărcarea și instanțierea QoreChain Native pentr
 obișnuite (pe testnet, instanțierea este deschisă, iar încărcarea nu), fluxurile de
 autentificator / cont abstract pe mainnet (modul oprit acolo, activat pe testnet), xQORE
 și abstractizarea gazului. Fiecare ghid repetă avertismentul acolo unde se aplică.
-Verificat față de endpoint-urile live la 27 octombrie 2026; pe 4 noiembrie 2026 lista precompilărilor active a mainnet-ului era în continuare goală, în timp ce lista testnet-ului conținea și puntea cross-VM `0x…0901` (neretestată).
+Verificat față de endpoint-urile live la 27 octombrie 2026; pe 7 noiembrie 2026 lista precompilărilor active a mainnet-ului era în continuare goală, în timp ce lista testnet-ului conținea și puntea cross-VM `0x…0901` (listată ca activă; un apel prin ea nu a fost testat).
 
 SDK-ul publicat (0.12.0, 30 octombrie 2026) semnează în forma pe care o verifică
 ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul

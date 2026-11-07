@@ -9,13 +9,24 @@ sidebar_position: 2
 
 `qor_` ad alanı; kuantum sonrası kriptografi durumu, AI analitiği, VM'ler arası mesajlaşma, çok katmanlı durum, köprü işlemleri, tokenomik, rollup altyapısı ve PRISM konsensüs durumunu sorgulamak için QoreChain'e özgü JSON-RPC yöntemleri sağlamak üzere tasarlanmıştır.
 
-:::warning Henüz sunulmuyor
-**Yayınlanmış hiçbir düğüm derlemesi henüz `qor_` ad alanını sunmuyor**; ana ağ (`qorechain-vladi`), test ağı (`qorechain-diana`) ve kendi çalıştırdığınız düğüm için de durum aynıdır. Genel EVM uç noktalarında `rpc_modules` yalnızca `eth`, `net`, `rpc`, `txpool` ve `web3` değerlerini listeler ve her iki ağda da **her `qor_` yöntemi `-32601` (method not found) döndürür**. Yöntemler düğüm kaynak kodunda uygulanmıştır ancak JSON-RPC sunucusuna kaydedilmemiştir; bu yüzden `app.toml` içindeki `api` listesine `qor` eklemenin hiçbir etkisi yoktur. Ad alanının kaydedilmesi bir düğüm sürümü için planlanmıştır ve yayınlandığında bu sayfa hangi sürüm olduğunu belirtecektir.
-
-Bugün `qor_` yöntemleri üzerine geliştirme yapmayın. Aşağıdaki tabloda bir REST rotası bulunan yerlerde onu kullanın. `client.qor.*` yardımcılarını sunan istemci kitaplıkları aynı yöntemleri sarmalar, dolayısıyla bu yardımcılar da aynı şekilde başarısız olur.
+:::warning Planlanan yöntemler henüz sunulmuyor
+**Aşağıdaki tablodaki yöntemlerin hiçbiri henüz hiçbir ağda sunulmuyor.** Düğüm kaynak kodunda uygulanmışlardır ancak JSON-RPC sunucusuna kaydedilmemiştir ve her biri `-32601` (method not found) döndürür. Kaydedilmeleri bir düğüm sürümü için planlanmıştır ve yayınlandığında bu sayfa hangi sürüm olduğunu belirtecektir. Bugün bunlar üzerine geliştirme yapmayın; tabloda bir REST rotası bulunan yerlerde onu kullanın. `client.qor.*` yardımcılarını sunan istemci kitaplıkları aynı yöntemleri sarmalar, dolayısıyla bu yardımcılar da aynı şekilde başarısız olur.
 :::
 
-Bunu kendiniz doğrulayabilirsiniz:
+## Sunulan yöntem: `qor_getKEMKey` {#qor-getkemkey}
+
+Ad alanının tek bir yöntemi sunulur: `qor_getKEMKey(address)`, bir adresin yayımladığı ML-KEM açık anahtarını döndürür (`address` `qor1...` veya `0x` olabilir). Yayımlanmış anahtar yoksa `{"address": ..., "found": false}` yanıtını verir; aksi halde `algorithm_id`, `algorithm_name`, `public_key` (`0x` onaltılık) ve `registered_height` alanlarını ekler. Düğüm `qor` ad alanını yalnızca `app.toml` içindeki `[json-rpc]` `api` listesinde `qor` bulunan yerde sunar.
+
+7 Kasım 2026'da gözlemlenen durum:
+
+| Ağ | `rpc_modules` | `qor_getKEMKey` |
+| --- | --- | --- |
+| Test ağı (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | yanıt verir (yayımlanmış anahtarı olmayan bir adres için `found: false`) |
+| Ana ağ (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (genel ana ağ uç noktası `qor` listelemiyor) |
+
+Test ağında kontrol edilen diğer tüm `qor_` yöntemleri (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) hâlâ `-32601` döndürdü.
+
+Ad alanı listesini kendiniz kontrol edebilirsiniz:
 
 ```bash
 curl -s -X POST https://evm.qore.host \
@@ -35,7 +46,7 @@ curl -s -X POST https://evm.qore.host \
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). Bkz. [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#pqc-module). |
 | `qor_getHybridSignatureMode`  | Genel bir REST rotası yok; bir düğüme karşı `qorechaind query pqc hybrid-mode` (veya `query pqc params`) ya da `--node https://rpc.qore.host:443`. |
-| `qor_getAIStats`              | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.ai.v1.Query/Stats` veya `qorechaind query ai stats`; REST rotası yok. |
+| Yapay zekâ istatistikleri (planlanan; yöntem adı kesin değil) | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.ai.v1.Query/Stats` veya `qorechaind query ai stats`; REST rotası yok. |
 | `qor_getCrossVMMessage`       | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.crossvm.v1.Query/Message`; REST rotası yok. |
 | `qor_getReputationScore`      | Genel bir sorgu rotası yok (reputation modülü yalnızca gRPC `Params` sunar). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` ve `anchor/{layer_id}`. Bkz. [Multilayer Modülü](/api-reference/rest-grpc-endpoints#multilayer-module). |
@@ -59,11 +70,11 @@ Bir hesabın EVM şeridi durumu (kayıtlı PQC anahtarı, yetkilendirme penceres
 
 ## Hata Kodları
 
-Ad alanını sunan bir düğümde hatalar standart JSON-RPC 2.0 kodlarını izler. Bugün bir `qor_` yöntemine yapılan çağrılar `-32601` ile başarısız olur.
+Hatalar standart JSON-RPC 2.0 kodlarını izler. Bugün planlanan bir `qor_` yöntemine yapılan çağrılar `-32601` ile başarısız olur; ana ağ uç noktasında `qor_getKEMKey` de öyle.
 
 | Kod    | Mesaj             | Açıklama                                |
 | ------ | ----------------- | ----------------------------------------- |
 | -32600 | Invalid Request    | Hatalı biçimlendirilmiş JSON-RPC isteği   |
-| -32601 | Method not found   | Yöntem mevcut değil veya düğüm `qor_` ad alanını sunmuyor (bugün yayınlanmış her derleme) |
+| -32601 | Method not found   | Yöntem mevcut değil veya düğüm `qor_` ad alanını sunmuyor (bugün planlanan her yöntem; `qor` etkin olmayan yerde `qor_getKEMKey` de) |
 | -32602 | Invalid params     | Eksik veya geçersiz parametreler           |
 | -32603 | Internal error     | Sunucu tarafı işleme hatası                |

@@ -194,7 +194,13 @@ bir düğüm, ikisinden biri ayarlandığında işlemin tamamını reddeder; bu 
 yalnızca v3.2.3'ü uygulamış bir ağda ayarlayın (her iki genel ağ da uygulamıştır).
 `fetchEvmWindow` ikisini de geri okur (`nativeOnly`, `allowedTargets`; v3.2.3'ten
 önce `false` ve boş okunurlar). Yalnızca QOR göndermek için açılan bir pencerede
-`nativeOnly` tercih edin.
+`nativeOnly` tercih edin. `allowedTargets` pencerenin hangi sözleşmelere ve token'lara
+dokunabileceğini sınırlar, ne kadarına dokunabileceğini değil: listelenmiş bir token
+her miktarını kabul eder, `approve` dahil, ve listelenmiş bir sözleşme kodunun ve
+mevcut onaylarının izin verdiği her şeyi taşıyabilir; bu yüzden genel forwarder veya
+router sözleşmelerini listelemeyin. Bir pencere yalnızca EVM şeridindeki (klasik imzalı)
+işlemleri sınırlar; VM'ler arası çağrılar ve authz gibi hibrit PQC imzasıyla imzalanan
+Cosmos mesajları onun dışındadır.
 
 ```ts
 import {
@@ -285,7 +291,7 @@ ad alanı tipli bağlamalar sağlar ve adresler ile ABI'ler dışa aktarılır.
 > Testnet'te (`qorechain-diana`) `active_static_precompiles` listesi
 > `0x…0A01` (PQC verify), `0x…0A02` (PQC key status) ve `0x…0C01` (consensus
 > params) adreslerini içerir (27 Ekim 2026'da kontrol edildi); AI çifti (`0x…0B01`, `0x…0B02`)
-> her iki ağda da etkin değildir ve cross-VM köprüsü (`0x…0901`) 27 Ekim'de her ikisinde de etkin değildi (4 Kasım'da testnet listesi onu da içeriyordu; yeniden test edilmedi). Etkin olmayan bir
+> her iki ağda da etkin değildir ve cross-VM köprüsü (`0x…0901`) 27 Ekim'de her ikisinde de etkin değildi (testnet listesi onu 4 Kasım'dan itibaren de içeriyordu ve 7 Kasım 2026'da hâlâ içeriyordu; ondan yapılan bir çağrı test edilmedi; mainnet'in listesi boştur). Etkin olmayan bir
 > adrese yapılan çağrı boş veri döndürür, bu nedenle bu yardımcılar hata fırlatır. Bkz.
 > [EVM Ön Derlemeleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 

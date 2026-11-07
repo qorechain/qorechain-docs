@@ -40,7 +40,7 @@ disattivato dal circuit breaker), il caricamento e l'istanziazione QoreChain Nat
 account ordinari (sulla testnet l'istanziazione è aperta e il caricamento no), i flussi authenticator /
 account astratto sulla mainnet (modulo disattivato lì, abilitato sulla
 testnet), xQORE e l'astrazione del gas. Ogni guida ripete l'avvertenza dove si
-applica. Verificato rispetto agli endpoint attivi il 27 ottobre 2026; il 4 novembre 2026 l'elenco dei precompilati attivi della mainnet era ancora vuoto, mentre quello della testnet conteneva anche il bridge cross-VM `0x…0901` (non ritestato).
+applica. Verificato rispetto agli endpoint attivi il 27 ottobre 2026; il 7 novembre 2026 l'elenco dei precompilati attivi della mainnet era ancora vuoto, mentre quello della testnet conteneva anche il bridge cross-VM `0x…0901` (elencato come attivo; una chiamata tramite esso non è stata testata).
 
 L'SDK pubblicato (0.12.0, 30 ottobre 2026) firma nella forma che entrambe le reti verificano
 (sign-bytes ibridi v2, risolti dallo stato della chain), e il formato di firma,

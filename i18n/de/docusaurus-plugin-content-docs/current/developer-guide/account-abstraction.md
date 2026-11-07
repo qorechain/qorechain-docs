@@ -26,7 +26,7 @@ Die `qorechaind tx`-Beispiele auf dieser Seite zeigen nur die Gebühren-Flags. A
 Traditionelle Blockchain-Konten werden von einem einzigen privaten Schlüssel kontrolliert. Account Abstraction entkoppelt das Konzept „wer darf eine Transaktion autorisieren" von einem einzelnen kryptografischen Schlüssel. Das Modul `x/abstractaccount` bietet:
 
 * **Abstract Accounts** mit einem erfassten Kontotyp und Inhaber
-* **Ausgaberegeln** (Limits pro Transaktion und pro Tag, erlaubte Denominationen), die begrenzen, was verknüpfte Schlüssel ausgeben können
+* **Ausgaberegeln** (Limits pro Transaktion und pro Tag, erlaubte Denominationen), die begrenzen, was verknüpfte Schlüssel (Authenticators und Sitzungsschlüssel) ausgeben können; sie begrenzen nicht den eigenen Schlüssel des Inhabers
 * **Authenticators**: fremde Schlüssel (ein Phantom-ed25519-Schlüssel oder eine MetaMask-secp256k1-Adresse), die der Inhaber mit eingeschränkten Berechtigungen und einem Ablaufdatum verknüpft und jederzeit widerrufen kann
 
 *Ein Ablauf mit verknüpftem Schlüssel (Authenticator): Der verknüpfte Schlüssel signiert eine Autorisierung, ein Relayer reicht sie ein, das Modul prüft Berechtigungen, Ablauf und Ausgaberegeln und führt dann vom Konto des Inhabers aus aus.*
@@ -80,7 +80,9 @@ qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <p
 
 ## Ausgaberegeln
 
-Ausgaberegeln fügen Abstract Accounts finanzielle Leitplanken hinzu:
+Ausgaberegeln fügen finanzielle Leitplanken für die Authenticators und Sitzungsschlüssel hinzu, die mit einem Abstract Account verknüpft sind. Ausgaberegeln binden nur Authenticators und Sitzungsschlüssel, nicht den eigenen Schlüssel des Inhabers; der Schlüssel des Inhabers wird auf der EVM-Lane durch das [EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window) begrenzt.
+
+Die Regelfelder:
 
 | Regel            | Beschreibung                                                          |
 | ---------------- | --------------------------------------------------------------------- |

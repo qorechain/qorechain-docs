@@ -39,7 +39,7 @@ Die Grenzen eines [EVM-Autorisierungsfensters](/getting-started/first-transactio
 | `max_value` | größer als 0 (uqor; übertragener Wert plus die maximale Gebühr jeder Transaktion) |
 | Maximale `allowed_targets` | 16 Empfängeradressen (optionale Einschränkung, v3.2.3) |
 
-Ein Fenster kann ab v3.2.3 zusätzlich mit `native_only` eingeschränkt werden (nur einfache native QOR-Transfers).
+Ein Fenster kann ab v3.2.3 zusätzlich mit `native_only` eingeschränkt werden (nur einfache native QOR-Transfers). `allowed_targets` begrenzt, welche Contracts und Token berührt werden dürfen, nicht wie viel: Ein aufgelisteter Token lässt jeden Betrag zu, einschließlich `approve`. Fenster begrenzen nur klassisch signierte Transaktionen der EVM-Lane; hybrid signierte Cosmos-Nachrichten (VM-übergreifende Aufrufe, authz) liegen außerhalb davon.
 
 ---
 

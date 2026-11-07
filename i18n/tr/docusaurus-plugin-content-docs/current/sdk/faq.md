@@ -60,7 +60,7 @@ değildir** ve testnet'te yalnızca üçü etkindir: yalnızca adresleri EVM mod
 `active_static_precompiles` parametresinde listelenmiş olduğu yerlerde yanıt
 verirler. Bu liste mainnet'te boştur; testnet'te PQC doğrulama (`0x…0A01`), PQC
 anahtar durumu (`0x…0A02`) ve konsensüs parametreleri (`0x…0C01`) precompile'larını
-içerir (27 Ekim 2026'da kontrol edildi; 4 Kasım'da testnet listesi ayrıca VM'ler arası köprü `0x…0901` adresini de içeriyordu, bunu bu sayfa yeniden test etmedi ve mainnet'in listesi hâlâ boştu); dolayısıyla AI çifti
+içerir (27 Ekim 2026'da kontrol edildi; testnet listesi 4 Kasım'dan itibaren ve 7 Kasım 2026'da da VM'ler arası köprü `0x…0901` adresini içeriyordu, etkin olarak listelenir ancak ondan yapılan bir çağrı test edilmedi, ve mainnet'in listesi hâlâ boştu); dolayısıyla AI çifti
 orada hâlâ hiçbir şey yanıtlamaz. Bir precompile etkin olmadığında çağrı boş veri
 döndürür; bu yüzden viem `returned no data ("0x")` bildirir ve yardımcı fonksiyon
 hata fırlatır (bkz.

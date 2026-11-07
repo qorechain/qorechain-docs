@@ -29,7 +29,7 @@ El SDK se comunica con un nodo a través de varios endpoints:
 - **Consensus RPC** — usado para firmar/difundir transacciones nativas y para el
   cliente de lectura de QoreChain Native.
 - **EVM JSON-RPC** — llamadas `eth_*`, `net_*`, `web3_*` y `txpool_*` estándar en
-  los endpoints públicos. El namespace `qor_*` de QoreChain no se sirve allí (véase
+  los endpoints públicos. El namespace `qor_*` de QoreChain no se sirve en el endpoint público de mainnet, y la testnet sirve solo `qor_getKEMKey` (véase
   más abajo). Los precompilados de EVM `pqcVerify` (`0x0A01`) y `pqcKeyStatus`
   (`0x0A02`) están activos solo en la testnet; ninguno está activo en mainnet (la
   activación requiere una decisión de gobernanza, sin fecha). Consulta

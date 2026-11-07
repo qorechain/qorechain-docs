@@ -88,7 +88,7 @@ sidebar_position: 34
 
 - **인가 규칙.** 체인은 등록된 ML-DSA-87 키와 유효한 윈도우가 있는 계정의 EVM 트랜잭션을 허용하고, 그렇지 않으면 거부합니다. 이 규칙은 두 네트워크에서 활성화된 프로토콜 기능 `evm-pqc-authorisation-window`이며, `/qorechain/pqc/v1/protocol_features`에서 읽을 수 있습니다. [EVM 인가 윈도우](/sdk/guides/evm#evm-window)와 [첫 트랜잭션 가이드](/getting-started/first-transaction#evm-window)를 참조하세요.
 - **열기와 닫기.** `MsgOpenEVMWindow`(`/qorechain.pqc.v1.MsgOpenEVMWindow`)는 하이브리드 서명으로 윈도우를 열며, 윈도우를 열면 이전 윈도우가 대체됩니다. `MsgCloseEVMWindow`는 윈도우를 닫습니다.
-- **윈도우가 제한하는 것.** 블록(기간이 아니라 블록 수), EVM 트랜잭션, 그리고 허용된 모든 트랜잭션의 값과 최대 수수료(가스 한도 곱하기 수수료 상한)를 합한 uqor 총액. `nativeOnly`와 `allowedTargets`가 이를 더 좁힙니다([윈도우 범위 지정](/sdk/guides/evm#evm-window-scope) 참조).
+- **윈도우가 제한하는 것.** 블록(기간이 아니라 블록 수), EVM 트랜잭션, 그리고 허용된 모든 트랜잭션의 값과 최대 수수료(가스 한도 곱하기 수수료 상한)를 합한 uqor 총액. `nativeOnly`와 `allowedTargets`는 윈도우가 받아들이는 수신자를 더 좁히며, 토큰 금액은 제한하지 않습니다(나열된 토큰은 `approve`를 포함해 어떤 금액도 허용합니다. [윈도우 범위 지정](/sdk/guides/evm#evm-window-scope) 참조).
 - **논스.** 네이티브 시퀀스와 EVM 논스는 같은 카운터입니다. 윈도우를 열면 카운터가 증가하므로, 윈도우를 열고, 논스를 읽고, 그다음 EVM 트랜잭션에 서명하세요.
 - **템플릿 헬퍼.** `foundry`와 `hardhat`에서 `pnpm window`는 `PRIVATE_KEY`(또는 `QORE_MNEMONIC`)에서 계정을 파생하고, 같은 비밀에서 ML-DSA-87 키를 파생하며, 키를 한 번 등록(`register`)하고, 하이브리드 서명된 `MsgOpenEVMWindow`를 브로드캐스트(`open`)합니다. 기본적으로 250 gwei 수수료 상한에서 최대 3,000,000 가스의 트랜잭션 5개에 대해 600블록 윈도우를 산정합니다.
 - **QoreChain Native의 CosmWasm.** 코드 업로드는 두 네트워크 모두에서 거버넌스를 통해 이루어집니다(`code_upload_access`는 `Nobody`): 코드는 거버넌스 모듈을 발신자로 하는 `MsgStoreCode`를 담은 거버넌스 제안으로 저장됩니다. 인스턴스화는 테스트넷에서는 모두에게 열려 있고 메인넷에서는 닫혀 있습니다(`instantiate_default_permission`은 테스트넷에서 `Everybody`, 메인넷에서 `Nobody`이며, 2026년 10월 27일에 읽음). 둘 다 `/cosmwasm/wasm/v1/codes/params`에서 읽고, 저장된 코드는 `/cosmwasm/wasm/v1/code`에서 나열합니다. 2026년 10월 27일과 2026년 11월 4일 기준 메인넷에는 저장된 코드가 없었습니다.

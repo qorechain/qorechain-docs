@@ -9,13 +9,24 @@ sidebar_position: 2
 
 Spațiul de nume `qor_` a fost conceput pentru a oferi metode JSON-RPC specifice QoreChain pentru interogarea stării criptografiei post-cuantice, a analizelor AI, a mesageriei cross-VM, a stării multi-layer, a operațiunilor de bridge, a tokenomics, a infrastructurii de rollup și a stării consensului PRISM.
 
-:::warning Încă indisponibil
-**Niciun build publicat al nodului nu servește încă spațiul de nume `qor_`**, nici pe mainnet (`qorechain-vladi`), nici pe testnet (`qorechain-diana`), nici pe un nod propriu. Pe punctele de acces EVM publice, `rpc_modules` listează doar `eth`, `net`, `rpc`, `txpool` și `web3`, iar **orice metodă `qor_` întoarce `-32601` (method not found)** în ambele rețele. Metodele sunt implementate în codul sursă al nodului, dar nu sunt înregistrate în serverul JSON-RPC, așa că adăugarea lui `qor` în lista `api` din `app.toml` nu are niciun efect. Înregistrarea spațiului de nume este planificată pentru o versiune a nodului, iar această pagină va indica versiunea respectivă când va fi livrată.
-
-Nu construiți astăzi pe metode `qor_`. Folosiți rutele REST din tabelul de mai jos acolo unde există una. Bibliotecile client care expun helperi `client.qor.*` încapsulează aceleași metode, deci acei helperi eșuează la fel.
+:::warning Metodele planificate nu sunt încă servite
+**Niciuna dintre metodele din tabelul de mai jos nu este servită încă în vreo rețea.** Sunt implementate în codul sursă al nodului, dar nu sunt înregistrate în serverul JSON-RPC, iar fiecare întoarce `-32601` (method not found). Înregistrarea lor este planificată pentru o versiune a nodului, iar această pagină va indica versiunea respectivă când va fi livrată. Nu construiți astăzi pe ele; folosiți rutele REST din tabel acolo unde există una. Bibliotecile client care expun helperi `client.qor.*` încapsulează aceleași metode, deci acei helperi eșuează la fel.
 :::
 
-Puteți confirma acest lucru singuri:
+## Ce este servit: `qor_getKEMKey` {#qor-getkemkey}
+
+O singură metodă a spațiului de nume este servită: `qor_getKEMKey(address)` întoarce cheia publică ML-KEM publicată de o adresă (`address` poate fi `qor1...` sau `0x`). Răspunde cu `{"address": ..., "found": false}` când nu este publicată nicio cheie și, altfel, adaugă `algorithm_id`, `algorithm_name`, `public_key` (hex `0x`) și `registered_height`. Nodul servește spațiul de nume `qor` doar acolo unde lista sa `api` din secțiunea `[json-rpc]` a lui `app.toml` include `qor`.
+
+Observat la 7 noiembrie 2026:
+
+| Rețea | `rpc_modules` | `qor_getKEMKey` |
+| --- | --- | --- |
+| Testnet (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | răspunde (`found: false` pentru o adresă fără cheie publicată) |
+| Mainnet (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (punctul de acces public de mainnet nu listează `qor`) |
+
+Pe testnet, toate celelalte metode `qor_` verificate (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) au întors în continuare `-32601`.
+
+Puteți verifica singuri lista spațiilor de nume:
 
 ```bash
 curl -s -X POST https://evm.qore.host \
@@ -35,7 +46,7 @@ curl -s -X POST https://evm.qore.host \
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). Vezi [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module). |
 | `qor_getHybridSignatureMode`  | Nicio rută REST publică; `qorechaind query pqc hybrid-mode` (sau `query pqc params`) pe un nod sau cu `--node https://rpc.qore.host:443`. |
-| `qor_getAIStats`              | gRPC `qorechain.ai.v1.Query/Stats` pe un nod propriu, sau `qorechaind query ai stats`; fără rută REST. |
+| Statistici AI (planificat; numele metodei nu este final) | gRPC `qorechain.ai.v1.Query/Stats` pe un nod propriu, sau `qorechaind query ai stats`; fără rută REST. |
 | `qor_getCrossVMMessage`       | gRPC `qorechain.crossvm.v1.Query/Message` pe un nod propriu; fără rută REST. |
 | `qor_getReputationScore`      | Nicio rută de interogare publică (modulul reputation expune doar gRPC `Params`). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` și `anchor/{layer_id}`. Vezi [Modulul Multilayer](/api-reference/rest-grpc-endpoints#multilayer-module). |
@@ -59,11 +70,11 @@ Pentru starea unui cont pe banda EVM (cheia PQC înregistrată, fereastra de aut
 
 ## Coduri de eroare
 
-Pe un nod care servește spațiul de nume, erorile urmează codurile standard JSON-RPC 2.0. Astăzi, apelurile către o metodă `qor_` eșuează cu `-32601`.
+Erorile urmează codurile standard JSON-RPC 2.0. Astăzi, apelurile către o metodă `qor_` planificată eșuează cu `-32601`, iar pe punctul de acces de mainnet la fel și `qor_getKEMKey`.
 
 | Cod    | Mesaj             | Descriere                                  |
 | ------ | ------------------ | ------------------------------------------- |
 | -32600 | Invalid Request     | Cerere JSON-RPC malformată                  |
-| -32601 | Method not found    | Metoda nu există sau nodul nu servește spațiul de nume `qor_` (orice build publicat astăzi) |
+| -32601 | Method not found    | Metoda nu există sau nodul nu servește spațiul de nume `qor_` (orice metodă planificată astăzi; și `qor_getKEMKey`, acolo unde `qor` nu este activat) |
 | -32602 | Invalid params      | Parametri lipsă sau invalizi                |
 | -32603 | Internal error      | Eroare de procesare pe partea de server     |

@@ -189,7 +189,7 @@ wird abgelehnt). Beides sind neue Nachrichtenfelder: Ein Node unterhalb von v3.2
 Transaktion ab, wenn eines davon gesetzt ist; setzen Sie sie daher nur in einem Netzwerk, das
 v3.2.3 angewendet hat (beide öffentlichen Netzwerke haben das). `fetchEvmWindow` liest beide zurück (`nativeOnly`,
 `allowedTargets`; vor v3.2.3 lesen sie sich als `false` und leer). Für ein Fenster, das
-nur zum Senden von QOR geöffnet wird, bevorzugen Sie `nativeOnly`.
+nur zum Senden von QOR geöffnet wird, bevorzugen Sie `nativeOnly`. `allowedTargets` begrenzt, welche Contracts und Tokens das Fenster berühren darf, nicht wie viel: Ein aufgeführtes Token lässt jeden Betrag davon zu, einschließlich `approve`, und ein aufgeführter Contract kann alles bewegen, was sein Code und bestehende Genehmigungen erlauben; führen Sie daher keine generischen Forwarder- oder Router-Contracts auf. Ein Fenster begrenzt nur Transaktionen auf der EVM-Lane (klassisch signiert); Cosmos-Nachrichten, die mit der hybriden PQC-Signatur signiert sind, wie Cross-VM-Aufrufe und authz, liegen außerhalb davon.
 
 ```ts
 import {
@@ -281,7 +281,7 @@ exportiert.
 > Im Testnet (`qorechain-diana`) enthält die Liste `active_static_precompiles`
 > `0x…0A01` (PQC verify), `0x…0A02` (PQC key status) und `0x…0C01` (consensus
 > params), geprüft am 27. Oktober 2026; das KI-Paar (`0x…0B01`, `0x…0B02`) ist in keinem der beiden Netzwerke aktiv, und die
-> Cross-VM-Bridge (`0x…0901`) war es am 27. Oktober in keinem von beiden (am 4. November enthielt die Testnet-Liste sie auch; nicht erneut getestet). Ein Aufruf
+> Cross-VM-Bridge (`0x…0901`) war es am 27. Oktober in keinem von beiden (die Testnet-Liste enthielt sie auch seit dem 4. November und am 7. November 2026 weiterhin; ein Aufruf darüber wurde nicht getestet; die Liste des Mainnets ist leer). Ein Aufruf
 > an eine inaktive Adresse liefert leere Daten zurück, sodass diese Helfer Fehler
 > werfen. Siehe
 > [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).

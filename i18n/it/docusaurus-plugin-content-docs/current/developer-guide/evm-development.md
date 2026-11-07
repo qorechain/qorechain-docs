@@ -275,7 +275,7 @@ Per la sicurezza post-quantistica all'interno dei contratti:
 
 ## Finestra di autorizzazione EVM {#evm-window}
 
-Una firma post-quantistica non può viaggiare *insieme* a una transazione Ethereum (wallet come MetaMask non possono allegare una seconda firma), quindi viaggia *in anticipo*. L'account apre una finestra delimitata con il messaggio della corsia Cosmos `MsgOpenEVMWindow`; la corsia EVM ammette poi solo le transazioni coperte da una finestra attiva. Una chiave classica rubata da sola non può aprire una finestra, quindi può muovere soltanto ciò che una finestra già aperta consente.
+Una firma post-quantistica non può viaggiare *insieme* a una transazione Ethereum (wallet come MetaMask non possono allegare una seconda firma), quindi viaggia *in anticipo*. L'account apre una finestra delimitata con il messaggio della corsia Cosmos `MsgOpenEVMWindow`; la corsia EVM ammette poi solo le transazioni coperte da una finestra attiva. Una chiave classica rubata da sola non può aprire una finestra, quindi sulla corsia EVM può agire solo entro ciò che una finestra già aperta consente (la finestra non limita gli importi dei token né le approvazioni esistenti).
 
 | Limite      | Intervallo         | Significato |
 | ----------- | ------------------ | ------- |
@@ -285,12 +285,14 @@ Una firma post-quantistica non può viaggiare *insieme* a una transazione Ethere
 
 Il limite che si esaurisce per primo chiude la finestra. Tutti e tre i limiti sono obbligatori; aprire una finestra ne sostituisce una esistente; una transazione ammessa e poi fallita consuma comunque il suo slot e il suo budget di valore; i deploy di contratti contano come qualsiasi altra transazione. `blocks` è un conteggio di blocchi, non una durata: 17,280 blocchi equivalgono a circa 15 ore sulla mainnet (circa 3,1 s per blocco) e a circa 6 ore sulla testnet (circa 1,3 s per blocco il 27 ottobre 2026; il block time della testnet varia).
 
-**Il limite di valore conta solo QOR nativo.** Un trasferimento di token, un'approvazione o qualsiasi altra chiamata a un contratto porta valore zero, quindi non viene conteggiata nel `max-value` (solo la sua commissione massima lo è). Per limitare anche quelle, restringi l'**ambito** (scope) della finestra (mainnet v3.2.3 e successive):
+**Il limite di valore conta solo QOR nativo.** Un trasferimento di token, un'approvazione o qualsiasi altra chiamata a un contratto porta valore zero, quindi non viene conteggiata nel `max-value` (solo la sua commissione massima lo è). L'**ambito** (scope) della finestra (mainnet v3.2.3 e successive) restringe quali destinatari ammette, ma non limita gli importi dei token:
 
 | Opzione di ambito (flag CLI) | Campo del messaggio | Cosa ammette la finestra |
 | ----------------------- | ------------- | ---------------------- |
 | `--native-only`         | `native_only` | Solo trasferimenti semplici di QOR nativo: nessun calldata, nessuna creazione di contratti, nessun destinatario che contenga codice, nessuna autorizzazione EIP-7702 |
 | `--allowed-targets 0xA,0xB` | `allowed_targets` | Solo le transazioni il cui destinatario è uno degli indirizzi a 20 byte elencati; la creazione di contratti viene rifiutata |
+
+`allowed_targets` limita **quali** contratti e token una finestra può toccare, non **quanto**. Un token elencato ammette qualsiasi importo di quel token, incluso `approve`, e un contratto elencato può muovere tutto ciò che il suo codice e le approvazioni esistenti consentono, quindi non elencare contratti forwarder o router generici. Una finestra vincola solo le transazioni sulla lane EVM (firmate in modo classico); i messaggi Cosmos firmati con la firma PQC ibrida, come le chiamate cross-VM e authz, ne restano fuori.
 
 Una finestra aperta senza ambito si comporta esattamente come prima. Una transazione fuori dall'ambito viene rifiutata con il codice 27 (il messaggio dice che la finestra "does not admit this transaction"). `GET /qorechain/pqc/v1/evm_window/{address}` e `qorechaind query pqc evm-window` riportano `native_only` e `allowed_targets`, e l'evento `pqc_evm_window_opened` li include quando sono impostati.
 
@@ -330,16 +332,16 @@ Con l'SDK TypeScript (0.8.2 e successivi): `openEvmWindowMsg`, `closeEvmWindowMs
 
 ## Namespace personalizzato `qor_` {#custom-qor_-namespace}
 
-QoreChain estende il JSON-RPC con un namespace `qor_` per le query specifiche della chain:
+QoreChain estende il JSON-RPC con un namespace `qor_` per le query specifiche della chain. I metodi seguenti sono previsti:
 
 :::warning Non ancora servito
-Nessuna build di nodo rilasciata serve ancora il namespace `qor_`: `rpc_modules` sugli endpoint pubblici elenca solo `eth`, `net`, `rpc`, `txpool` e `web3`, e ogni metodo qui sotto restituisce `-32601` (metodo non trovato) su mainnet, testnet e nodi self-hosted con la configurazione predefinita (`eth`, `net`, `web3`). Vedi [il namespace `qor_`](/api-reference/json-rpc-qor_-namespace) per lo stato e le alternative REST (ad esempio `GET /qorechain/pqc/v1/account/{address}` per lo stato della chiave PQC).
+I metodi nella tabella qui sotto sono previsti e non serviti: ciascuno restituisce `-32601` (metodo non trovato). L'unico metodo servito del namespace è `qor_getKEMKey`, e solo dove il nodo elenca `qor` nei suoi namespace: osservato il 7 novembre 2026, la testnet elenca `qor` e lo serve, mentre l'endpoint mainnet pubblico elenca solo `eth`, `net`, `rpc`, `txpool` e `web3` e risponde `-32601`. Vedi [il namespace `qor_`](/api-reference/json-rpc-qor_-namespace) per lo stato e le alternative REST (ad esempio `GET /qorechain/pqc/v1/account/{address}` per lo stato della chiave PQC).
 :::
 
 | Metodo                       | Descrizione                                                        |
 | ----------------------------- | ------------------------------------------------------------------- |
 | `qor_getPQCKeyStatus`         | Verifica se un account ha una chiave pubblica PQC registrata        |
-| `qor_getAIStats`              | Recupera le statistiche del motore AI (conteggio anomalie, distribuzione del rischio) |
+| Statistiche AI (previsto)     | Recupera le statistiche del motore AI (conteggio anomalie, distribuzione del rischio); nome del metodo non definitivo |
 | `qor_getCrossVMMessage`       | Interroga lo stato di un messaggio cross-VM tramite ID              |
 | `qor_getPoolClassification`   | Ottiene la classificazione del pool del validatore (RPoS/DPoS/PoS)  |
 | `qor_getReputationScore`      | Interroga il punteggio di reputazione di un validatore              |

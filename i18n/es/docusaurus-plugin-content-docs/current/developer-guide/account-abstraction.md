@@ -26,7 +26,7 @@ Los ejemplos de `qorechaind tx` de esta página muestran solo los flags de comis
 Las cuentas blockchain tradicionales están controladas por una única clave privada. La abstracción de cuentas desacopla el concepto de "quién puede autorizar una transacción" de una única clave criptográfica. El módulo `x/abstractaccount` proporciona:
 
 * **Cuentas abstractas** con un tipo de cuenta y un propietario registrados
-* **Reglas de gasto** (límites por transacción y diarios, denominaciones permitidas) que acotan lo que pueden gastar las claves vinculadas
+* **Reglas de gasto** (límites por transacción y diarios, denominaciones permitidas) que acotan lo que pueden gastar las claves vinculadas (autenticadores y claves de sesión); no limitan la clave propia del propietario
 * **Autenticadores**: claves externas (una clave ed25519 de Phantom o una dirección secp256k1 de MetaMask) que el propietario vincula con permisos acotados y una caducidad, y que puede revocar en cualquier momento
 
 *Un flujo de clave vinculada (autenticador): la clave vinculada firma una autorización, un relayer la envía, el módulo comprueba permisos, caducidad y reglas de gasto, y luego ejecuta desde la cuenta del propietario.*
@@ -80,7 +80,9 @@ qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <p
 
 ## Reglas de gasto
 
-Las reglas de gasto añaden barreras financieras a las cuentas abstractas:
+Las reglas de gasto añaden barreras financieras para los autenticadores y las claves de sesión vinculados a una cuenta abstracta. Las reglas de gasto acotan solo a los autenticadores y a las claves de sesión, no la clave propia del propietario; la clave del propietario está limitada, en el carril EVM, por la [ventana de autorización EVM](/getting-started/first-transaction#evm-window).
+
+Los campos de la regla:
 
 | Regla            | Descripción                                                     |
 | ---------------- | --------------------------------------------------------------- |

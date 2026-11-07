@@ -275,7 +275,7 @@ Für Post-Quanten-Sicherheit innerhalb von Contracts:
 
 ## EVM-Autorisierungsfenster {#evm-window}
 
-Eine Post-Quanten-Signatur kann nicht *mit* einer Ethereum-Transaktion reisen (Wallets wie MetaMask können keine zweite Signatur anhängen), also reist sie *vor* ihr. Das Konto öffnet mit der Cosmos-Lane-Nachricht `MsgOpenEVMWindow` ein begrenztes Fenster; die EVM-Lane lässt dann nur Transaktionen zu, die von einem aktiven Fenster abgedeckt sind. Ein gestohlener klassischer Schlüssel allein kann kein Fenster öffnen und kann daher nur bewegen, was ein bereits geöffnetes Fenster erlaubt.
+Eine Post-Quanten-Signatur kann nicht *mit* einer Ethereum-Transaktion reisen (Wallets wie MetaMask können keine zweite Signatur anhängen), also reist sie *vor* ihr. Das Konto öffnet mit der Cosmos-Lane-Nachricht `MsgOpenEVMWindow` ein begrenztes Fenster; die EVM-Lane lässt dann nur Transaktionen zu, die von einem aktiven Fenster abgedeckt sind. Ein gestohlener klassischer Schlüssel allein kann kein Fenster öffnen und kann daher auf der EVM-Lane nur innerhalb dessen handeln, was ein bereits geöffnetes Fenster erlaubt (das Fenster begrenzt weder Token-Beträge noch bestehende Genehmigungen).
 
 | Grenze      | Bereich            | Bedeutung |
 | ----------- | ------------------ | ------- |
@@ -285,12 +285,14 @@ Eine Post-Quanten-Signatur kann nicht *mit* einer Ethereum-Transaktion reisen (W
 
 Welche Grenze zuerst aufgebraucht ist, schließt das Fenster. Die drei Grenzen sind erforderlich; das Öffnen eines Fensters ersetzt ein bestehendes; eine Transaktion, die zugelassen wird und dann fehlschlägt, verbraucht trotzdem ihren Platz und ihr Wertbudget; Contract-Bereitstellungen zählen wie jede andere Transaktion. `blocks` ist eine Blockanzahl, keine Dauer: 17,280 Blöcke entsprechen im Mainnet etwa 15 Stunden (etwa 3.1 s pro Block) und im Testnet etwa 6 Stunden (etwa 1.3 s pro Block am 27. Oktober 2026; die Testnet-Blockzeit schwankt).
 
-**Die Wertgrenze zählt nur natives QOR.** Ein Token-Transfer, eine Genehmigung (Approval) oder jeder andere Contract-Aufruf trägt den Wert null und wird daher nicht auf `max-value` angerechnet (nur seine maximale Gebühr). Um auch diese zu begrenzen, schränken Sie den **Scope** des Fensters ein (Mainnet v3.2.3 und später):
+**Die Wertgrenze zählt nur natives QOR.** Ein Token-Transfer, eine Genehmigung (Approval) oder jeder andere Contract-Aufruf trägt den Wert null und wird daher nicht auf `max-value` angerechnet (nur seine maximale Gebühr). Der **Scope** des Fensters (Mainnet v3.2.3 und später) schränkt ein, welche Empfänger es zulässt, begrenzt aber keine Token-Beträge:
 
 | Scope-Option (CLI-Flag) | Nachrichtenfeld | Was das Fenster zulässt |
 | ----------------------- | ------------- | ---------------------- |
 | `--native-only`         | `native_only` | Nur einfache Transfers von nativem QOR: keine Calldata, keine Contract-Erstellung, kein Empfänger, der Code trägt, keine EIP-7702-Autorisierung |
 | `--allowed-targets 0xA,0xB` | `allowed_targets` | Nur Transaktionen, deren Empfänger eine der aufgelisteten 20-Byte-Adressen ist; die Contract-Erstellung wird abgelehnt |
+
+`allowed_targets` begrenzt, **welche** Contracts und Token ein Fenster berühren darf, nicht **wie viel**. Ein aufgelisteter Token lässt jeden Betrag dieses Tokens zu, einschließlich `approve`, und ein aufgelisteter Contract kann alles bewegen, was sein Code und bestehende Genehmigungen (Approvals) erlauben; listen Sie daher keine generischen Forwarder- oder Router-Contracts auf. Ein Fenster begrenzt nur Transaktionen auf der EVM-Lane (klassisch signiert); Cosmos-Nachrichten, die mit der hybriden PQC-Signatur signiert sind, etwa VM-übergreifende Aufrufe und authz, liegen außerhalb davon.
 
 Ein ohne Scope geöffnetes Fenster verhält sich exakt wie zuvor. Eine Transaktion außerhalb des Scopes wird mit Code 27 abgelehnt (die Meldung besagt, dass das Fenster „diese Transaktion nicht zulässt“). `GET /qorechain/pqc/v1/evm_window/{address}` und `qorechaind query pqc evm-window` melden `native_only` und `allowed_targets`, und das Ereignis `pqc_evm_window_opened` trägt sie, wenn sie gesetzt sind.
 
@@ -330,16 +332,16 @@ Mit dem TypeScript-SDK (ab 0.8.2): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fet
 
 ## Benutzerdefinierter `qor_`-Namespace {#custom-qor_-namespace}
 
-QoreChain erweitert JSON-RPC um einen `qor_`-Namespace für kettenspezifische Abfragen:
+QoreChain erweitert JSON-RPC um einen `qor_`-Namespace für kettenspezifische Abfragen. Die folgenden Methoden sind geplant:
 
 :::warning Noch nicht bereitgestellt
-Kein veröffentlichter Node-Build stellt den Namespace `qor_` bisher bereit: `rpc_modules` auf den öffentlichen Endpunkten listet nur `eth`, `net`, `rpc`, `txpool` und `web3`, und jede Methode unten liefert `-32601` (Methode nicht gefunden) im Mainnet, im Testnet und auf selbst betriebenen Nodes mit der Standardkonfiguration (`eth`, `net`, `web3`). Siehe [den `qor_`-Namespace](/api-reference/json-rpc-qor_-namespace) für den Status und die REST-Alternativen (zum Beispiel `GET /qorechain/pqc/v1/account/{address}` für den Status des PQC-Schlüssels).
+Die Methoden in der folgenden Tabelle sind geplant und werden nicht bereitgestellt: Jede liefert `-32601` (Methode nicht gefunden). Die einzige bereitgestellte Methode des Namespace ist `qor_getKEMKey`, und nur dort, wo der Node `qor` in seinen Namespaces listet: Beobachtet am 7. November 2026, listet das Testnet `qor` und beantwortet sie, während der öffentliche Mainnet-Endpunkt nur `eth`, `net`, `rpc`, `txpool` und `web3` listet und mit `-32601` antwortet. Siehe [den `qor_`-Namespace](/api-reference/json-rpc-qor_-namespace) für den Status und die REST-Alternativen (zum Beispiel `GET /qorechain/pqc/v1/account/{address}` für den Status des PQC-Schlüssels).
 :::
 
 | Methode                      | Beschreibung                                                       |
 | --------------------------- | ----------------------------------------------------------------- |
 | `qor_getPQCKeyStatus`       | Prüft, ob ein Konto einen registrierten PQC-öffentlichen Schlüssel besitzt |
-| `qor_getAIStats`            | Ruft Statistiken der KI-Engine ab (Anomaliezahlen, Risikoverteilung) |
+| KI-Statistiken (geplant)    | Ruft Statistiken der KI-Engine ab (Anomaliezahlen, Risikoverteilung); Methodenname nicht endgültig |
 | `qor_getCrossVMMessage`     | Fragt den Status einer Cross-VM-Nachricht anhand ihrer ID ab       |
 | `qor_getPoolClassification` | Ruft die Validator-Pool-Klassifizierung ab (RPoS/DPoS/PoS)         |
 | `qor_getReputationScore`    | Fragt den Reputationswert eines Validators ab                     |

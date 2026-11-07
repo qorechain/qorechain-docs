@@ -191,7 +191,7 @@ refuză întreaga tranzacție când oricare dintre ele este setat, așa că sete
 o rețea care a aplicat v3.2.3 (ambele rețele publice au aplicat-o). `fetchEvmWindow` le
 citește înapoi pe ambele (`nativeOnly`, `allowedTargets`; înainte de v3.2.3 se citesc
 `false` și gol). Pentru o fereastră deschisă doar pentru a trimite QOR, preferă
-`nativeOnly`.
+`nativeOnly`. `allowedTargets` limitează ce contracte și tokenuri poate atinge fereastra, nu cât: un token listat admite orice sumă din el, inclusiv `approve`, iar un contract listat poate muta tot ce permit codul lui și aprobările existente, așa că nu lista contracte generice de tip forwarder sau router. O fereastră limitează doar tranzacțiile de pe banda EVM (semnate clasic); mesajele Cosmos semnate cu semnătura hibridă PQC, precum apelurile cross-VM și authz, sunt în afara ei.
 
 ```ts
 import {
@@ -284,7 +284,7 @@ exportate.
 > (`qorechain-diana`), lista `active_static_precompiles` conține `0x…0A01`
 > (verificare PQC), `0x…0A02` (starea cheii PQC) și `0x…0C01` (parametrii de
 > consens), verificat la 27 octombrie 2026; perechea AI (`0x…0B01`, `0x…0B02`) nu este activă pe niciuna dintre rețele, iar
-> puntea cross-VM (`0x…0901`) nu era activă pe niciuna pe 27 octombrie (pe 4 noiembrie lista testnet-ului o conținea și pe ea; nu a fost retestată). Un apel către
+> puntea cross-VM (`0x…0901`) nu era activă pe niciuna pe 27 octombrie (lista testnet-ului o conținea și pe ea din 4 noiembrie și tot o conținea pe 7 noiembrie 2026; un apel prin ea nu a fost testat; lista mainnet-ului este goală). Un apel către
 > o adresă inactivă returnează date goale, deci acele helpere aruncă eroare. Vezi
 > [Precompile EVM: Starea rețelei](/developer-guide/evm-precompiles#network-status).
 

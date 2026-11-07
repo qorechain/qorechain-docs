@@ -119,7 +119,7 @@ dieser Message verknüpfter Schlüssel ist also nur durch eine Regel auf
 Kontoebene begrenzt. Setzen Sie bewusst eine Regel mit
 `MsgUpdateSpendingRules` und registrieren Sie nur die Berechtigungen, die der
 Schlüssel braucht. Ein Limit begrenzt den Schaden, den ein verknüpfter
-Schlüssel anrichten kann; es ersetzt nicht den Widerruf des Schlüssels.
+Schlüssel anrichten kann; es ersetzt nicht den Widerruf des Schlüssels. Ausgaberegeln binden nur Authenticators und Session-Keys, nicht den eigenen Schlüssel des Eigentümers (auf der EVM-Lane wird der Schlüssel des Eigentümers durch das EVM-Fenster begrenzt).
 :::
 
 Um einen Schlüssel sofort zu deaktivieren, broadcastet der Eigentümer

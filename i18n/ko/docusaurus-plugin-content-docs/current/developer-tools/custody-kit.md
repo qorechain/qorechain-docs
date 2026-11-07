@@ -287,7 +287,7 @@ QORE_LIVE_TEST=1 go test -run Live ./...     # live reads against testnet
 - HSM은 빈 컨텍스트로 서명 바이트에 대한 순수 ML-DSA-87 서명(PKCS #11 v3.2의 `CKM_ML_DSA`)을 지원해야 합니다. `HashML-DSA`는 허용되지 않습니다.
 - 서명된 모든 트랜잭션에 대해 브로드캐스트 전에, 그것을 만들지 않은 프로세스에서 `decodeTx`와 `verifyTx`를 실행하세요.
 - 교체에는 `MsgRotatePQCKey`를 사용합니다. 두 키가 모두 서명하고, 트랜잭션 자체의 계층은 현재 키를 사용하며, 이전 키의 재사용은 거부됩니다. secp256k1 키가 노출되었다면 두 키를 모두 새로 만든 새 주소로 자금을 옮기고 열려 있는 EVM 윈도우를 닫으세요.
-- EVM 윈도우: `native_only` 또는 `allowed_targets`를 사용하고, 배치를 덮는 가장 작은 `max_value`와 `blocks`를 쓰며, 배치가 끝나면 윈도우를 닫으세요. `MsgSetWithdrawAddress`, `MsgRotatePQCKey`, `MsgOpenEVMWindow`, `MsgAuthorizeEVMDelegation`은 권한이 필요한 작업으로 취급하세요.
+- EVM 윈도우: QOR만 이동하는 경우 `native_only`를 사용하세요. `allowed_targets`는 어떤 컨트랙트와 토큰을 건드릴 수 있는지만 제한하고 금액은 제한하지 않습니다. 나열된 토큰은 `approve`를 포함해 어떤 금액도 허용하므로 포워더나 라우터 컨트랙트는 절대 나열하지 마세요. 윈도우는 고전 서명된 EVM 레인 트랜잭션만 제한하며, 하이브리드 서명된 Cosmos 메시지(크로스 VM 호출, authz)는 윈도우 밖에 있습니다. 배치를 덮는 가장 작은 `max_value`와 `blocks`를 쓰며, 배치가 끝나면 윈도우를 닫으세요. `MsgSetWithdrawAddress`, `MsgRotatePQCKey`, `MsgOpenEVMWindow`, `MsgAuthorizeEVMDelegation`은 권한이 필요한 작업으로 취급하세요.
 - `ethereum_tx` 이벤트가 실패를 보고하는 EVM 트랜잭션은, 네이티브 결과가 `code == 0`이더라도 절대 반영하지 마세요.
 - 이것은 버전 0.1.0의 참조 코드입니다. 프로덕션에서 사용하기 전에 검토하세요. 취약점은 security@qore.network로 비공개 보고해 주세요. 잘못된 반영이나 의도하지 않은 서명으로 이어질 수 있는 문서 오류도 포함됩니다.
 

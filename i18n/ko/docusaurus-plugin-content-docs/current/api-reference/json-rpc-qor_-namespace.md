@@ -9,13 +9,24 @@ sidebar_position: 2
 
 `qor_` 네임스페이스는 포스트 양자 암호화 상태, AI 분석, 크로스 VM 메시징, 다중 계층 상태, 브리지 작업, 토크노믹스, 롤업 인프라 및 PRISM 합의 상태를 조회하기 위한 QoreChain 전용 JSON-RPC 메서드를 제공하도록 설계되었습니다.
 
-:::warning 아직 제공되지 않음
-**릴리스된 노드 빌드 중 아직 `qor_` 네임스페이스를 제공하는 것은 없습니다**. 메인넷(`qorechain-vladi`), 테스트넷(`qorechain-diana`), 직접 운영하는 노드 모두 마찬가지입니다. 공개 EVM 엔드포인트에서 `rpc_modules`는 `eth`, `net`, `rpc`, `txpool`, `web3`만 나열하며, 두 네트워크 모두에서 **모든 `qor_` 메서드가 `-32601`(method not found)을 반환합니다**. 메서드는 노드 소스에 구현되어 있지만 JSON-RPC 서버에 등록되지 않았기 때문에, `app.toml`의 `api` 목록에 `qor`를 추가해도 아무 효과가 없습니다. 네임스페이스 등록은 향후 노드 릴리스에서 이루어질 예정이며, 출시되면 이 페이지에 해당 릴리스를 명시하겠습니다.
-
-현재는 `qor_` 메서드를 기반으로 개발하지 마세요. 아래 표에 REST 경로가 있는 경우 그것을 사용하세요. `client.qor.*` 헬퍼를 제공하는 클라이언트 라이브러리는 바로 이 메서드들을 감싸고 있으므로, 해당 헬퍼도 동일하게 실패합니다.
+:::warning 계획된 메서드는 아직 제공되지 않음
+**아래 표의 메서드는 어느 네트워크에서도 아직 제공되지 않습니다.** 메서드는 노드 소스에 구현되어 있지만 JSON-RPC 서버에 등록되지 않았으며, 각각 `-32601`(method not found)을 반환합니다. 등록은 향후 노드 릴리스에서 이루어질 예정이며, 출시되면 이 페이지에 해당 릴리스를 명시하겠습니다. 현재는 이 메서드들을 기반으로 개발하지 마세요. 표에 REST 경로가 있는 경우 그것을 사용하세요. `client.qor.*` 헬퍼를 제공하는 클라이언트 라이브러리는 바로 이 메서드들을 감싸고 있으므로, 해당 헬퍼도 동일하게 실패합니다.
 :::
 
-직접 확인할 수 있습니다.
+## 제공되는 메서드: `qor_getKEMKey` {#qor-getkemkey}
+
+네임스페이스의 메서드 하나가 제공됩니다. `qor_getKEMKey(address)`는 주소가 게시한 ML-KEM 공개 키를 반환합니다(`address`는 `qor1...` 또는 `0x` 형식 모두 가능). 게시된 키가 없으면 `{"address": ..., "found": false}`로 응답하고, 그렇지 않으면 `algorithm_id`, `algorithm_name`, `public_key`(`0x` 16진수), `registered_height`가 추가됩니다. 노드는 `app.toml`의 `[json-rpc]` `api` 목록에 `qor`가 포함된 경우에만 `qor` 네임스페이스를 제공합니다.
+
+2026년 11월 7일 확인 결과:
+
+| 네트워크 | `rpc_modules` | `qor_getKEMKey` |
+| --- | --- | --- |
+| 테스트넷(`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | 응답함(게시된 키가 없는 주소는 `found: false`) |
+| 메인넷(`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601`(공개 메인넷 엔드포인트는 `qor`를 나열하지 않음) |
+
+테스트넷에서 확인한 다른 모든 `qor_` 메서드(`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`)는 여전히 `-32601`을 반환했습니다.
+
+네임스페이스 목록은 직접 확인할 수 있습니다.
 
 ```bash
 curl -s -X POST https://evm.qore.host \
@@ -35,7 +46,7 @@ curl -s -X POST https://evm.qore.host \
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). [REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#pqc-module)를 참조하세요. |
 | `qor_getHybridSignatureMode`  | 공개 REST 경로는 없습니다. 노드를 대상으로 하거나 `--node https://rpc.qore.host:443`을 지정하여 `qorechaind query pqc hybrid-mode`(또는 `query pqc params`)를 사용하세요. |
-| `qor_getAIStats`              | 직접 운영하는 노드의 gRPC `qorechain.ai.v1.Query/Stats` 또는 `qorechaind query ai stats`; REST 경로는 없습니다. |
+| AI 통계(계획됨, 메서드 이름 미확정) | 직접 운영하는 노드의 gRPC `qorechain.ai.v1.Query/Stats` 또는 `qorechaind query ai stats`; REST 경로는 없습니다. |
 | `qor_getCrossVMMessage`       | 직접 운영하는 노드의 gRPC `qorechain.crossvm.v1.Query/Message`; REST 경로는 없습니다. |
 | `qor_getReputationScore`      | 공개 쿼리 경로가 없습니다(reputation 모듈은 gRPC `Params`만 노출합니다). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` 및 `anchor/{layer_id}`. [Multilayer 모듈](/api-reference/rest-grpc-endpoints#multilayer-module)을 참조하세요. |
@@ -59,11 +70,11 @@ curl -s -X POST https://evm.qore.host \
 
 ## 오류 코드
 
-네임스페이스를 제공하는 노드에서는 오류가 표준 JSON-RPC 2.0 코드를 따릅니다. 현재 `qor_` 메서드 호출은 `-32601`로 실패합니다.
+오류는 표준 JSON-RPC 2.0 코드를 따릅니다. 현재 계획된 `qor_` 메서드 호출은 `-32601`로 실패하며, 메인넷 엔드포인트에서는 `qor_getKEMKey`도 마찬가지입니다.
 
 | 코드   | 메시지           | 설명                                  |
 | ------ | ---------------- | ------------------------------------- |
 | -32600 | Invalid Request  | 형식이 잘못된 JSON-RPC 요청           |
-| -32601 | Method not found | 메서드가 존재하지 않거나, 노드가 `qor_` 네임스페이스를 제공하지 않음(현재 릴리스된 모든 빌드) |
+| -32601 | Method not found | 메서드가 존재하지 않거나, 노드가 `qor_` 네임스페이스를 제공하지 않음(현재 계획된 모든 메서드, 그리고 `qor`가 활성화되지 않은 곳의 `qor_getKEMKey`) |
 | -32602 | Invalid params   | 누락되었거나 잘못된 매개변수          |
 | -32603 | Internal error   | 서버 측 처리 오류                     |

@@ -98,7 +98,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_window/qor1...
 }
 ```
 
-Questa route non fallisce mai per un indirizzo senza finestra; restituisce `found: false`. Dalla v3.2.0 la corsia EVM ammette una transazione solo da un account che abbia una chiave PQC registrata **e** una finestra aperta. `live` è `true` finché la finestra ammette almeno un'altra transazione all'altezza corrente. `remaining_blocks`, `remaining_txs` e `remaining_value` mostrano quale limite è più vicino all'esaurimento; i valori sono interi in `uqor` restituiti come stringhe. Dalla v3.2.3 una finestra può avere un ambito: `native_only` (solo trasferimenti semplici di QOR) e `allowed_targets` (solo i destinatari elencati). Vedi [Sviluppo EVM](/developer-guide/evm-development#evm-window) per come funziona la corsia EVM.
+Questa route non fallisce mai per un indirizzo senza finestra; restituisce `found: false`. Dalla v3.2.0 la corsia EVM ammette una transazione solo da un account che abbia una chiave PQC registrata **e** una finestra aperta. `live` è `true` finché la finestra ammette almeno un'altra transazione all'altezza corrente. `remaining_blocks`, `remaining_txs` e `remaining_value` mostrano quale limite è più vicino all'esaurimento; i valori sono interi in `uqor` restituiti come stringhe. Dalla v3.2.3 una finestra può avere un ambito: `native_only` (solo trasferimenti semplici di QOR) e `allowed_targets` (solo i destinatari elencati; limita quali contratti e token possono essere toccati, non quanto). Vedi [Sviluppo EVM](/developer-guide/evm-development#evm-window) per come funziona la corsia EVM.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...

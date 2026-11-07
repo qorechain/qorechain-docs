@@ -339,7 +339,7 @@ qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 Das Öffnen eines Fensters ersetzt ein eventuell bestehendes. Prüfen Sie es mit `qorechaind query pqc evm-window <address>`.
 
-**Fenster mit eingeschränktem Umfang (Mainnet v3.2.3 und später).** Die Wertgrenze zählt nur natives QOR: Eine Token-Überweisung, eine Genehmigung (Approval) oder jeder andere Contract-Aufruf trägt den Wert null und wird nicht darauf angerechnet. Zwei optionale Flags schränken ein, was das Fenster zulässt:
+**Fenster mit eingeschränktem Umfang (Mainnet v3.2.3 und später).** Die Wertgrenze zählt nur natives QOR: Eine Token-Überweisung, eine Genehmigung (Approval) oder jeder andere Contract-Aufruf trägt den Wert null und wird nicht darauf angerechnet. Zwei optionale Flags schränken ein, welche Empfänger das Fenster zulässt (sie begrenzen keine Token-Beträge):
 
 | Flag                | Wirkung                                                                                                                    |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -350,6 +350,8 @@ Das Öffnen eines Fensters ersetzt ein eventuell bestehendes. Prüfen Sie es mit
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > w.json
 ```
+
+`allowed_targets` begrenzt, **welche** Contracts und Token ein Fenster berühren darf, nicht **wie viel**. Ein aufgelisteter Token lässt jeden Betrag dieses Tokens zu, einschließlich `approve`, und ein aufgelisteter Contract kann alles bewegen, was sein Code und bestehende Genehmigungen (Approvals) erlauben; listen Sie daher keine generischen Forwarder- oder Router-Contracts auf. Ein Fenster begrenzt nur Transaktionen auf der EVM-Lane (klassisch signiert); Cosmos-Nachrichten, die mit der hybriden PQC-Signatur signiert sind, etwa VM-übergreifende Aufrufe und authz, liegen außerhalb davon.
 
 Ein Fenster, das ohne eines der beiden Flags geöffnet wird, lässt zu, was es schon immer zugelassen hat. Der Umfang wird von der Fensterabfrage als `native_only` und `allowed_targets` gemeldet.
 

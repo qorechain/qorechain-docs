@@ -96,7 +96,7 @@ await crossVM.callAtomic([
 ```
 
 **Perché è diverso:** QoreChain esegue tre VM co-residenti con un modulo bridge
-nativo (`crossvm`, più il precompile `CrossVMBridge` una volta attivo; non è ancora attivo su nessuna delle due reti), così
+nativo (`crossvm`, più il precompile `CrossVMBridge` una volta attivo; non è attivo sulla mainnet; la testnet lo elenca come attivo al 7 novembre 2026, una chiamata tramite esso non è stata testata), così
 un'unica interfaccia dell'SDK può indirizzarle tutte e tre. Le chain a VM
 singola non hanno nulla di equivalente da incapsulare. Oggi la portata di una
 chiamata è limitata dalla corsia a cui è destinata: `MsgCrossVMCall` è
@@ -209,7 +209,7 @@ const msg = await buildPhantomExecuteCosmos({
 });
 ```
 
-**Perché è importante:** una volta abilitato il modulo, ogni spesa è vincolata
+**Perché è importante:** una volta abilitato il modulo, ogni spesa di una chiave collegata è vincolata
 da una tassonomia di permessi on-chain, da limiti `SpendingRule` e da una
 scadenza — privilegio minimo e revocabile — mentre l'account stesso resta
 protetto a livello post-quantistico. Vedi

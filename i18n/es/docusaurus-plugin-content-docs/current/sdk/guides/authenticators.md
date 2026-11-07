@@ -116,7 +116,7 @@ lleva ninguna regla, así que una clave vinculada solo con ese mensaje queda
 limitada únicamente por una regla a nivel de cuenta. Define una regla de forma
 deliberada con `MsgUpdateSpendingRules` y registra solo los permisos que la
 clave necesita. Un límite acota el daño que puede causar una clave vinculada; no
-sustituye revocar la clave.
+sustituye revocar la clave. Las reglas de gasto solo vinculan a los autenticadores y a las claves de sesión, no a la clave propia del titular (en el carril EVM la clave del titular está limitada por la ventana EVM).
 :::
 
 Para desactivar una clave al instante, el propietario difunde

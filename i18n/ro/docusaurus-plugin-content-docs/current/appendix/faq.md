@@ -47,7 +47,7 @@ Pentru un nod complet, vezi [Rularea unui nod](/developer-guide/running-a-node).
 
 ### Ce schemă de semnătură folosește QoreChain?
 
-QoreChain folosește o schemă hibridă post-cuantică care combină **secp256k1 (ECDSA)** clasic cu **ML-DSA-87 (Dilithium-5)** post-cuantic. Această schemă hibridă este obligatorie implicit pe calea de tranzacții Cosmos, cu modul de aplicare controlat prin guvernanță. Pe banda EVM semnătura rămâne secp256k1, iar un cont trebuie să dețină în plus o cheie ML-DSA înregistrată și o fereastră de autorizare deschisă (începând cu v3.2.0). Vezi [Securitate post-cuantică](/architecture/post-quantum-security).
+QoreChain folosește o schemă hibridă post-cuantică care combină **secp256k1 (ECDSA)** clasic cu **ML-DSA-87 (Dilithium-5)** post-cuantic. Această schemă hibridă este obligatorie implicit pe calea de tranzacții Cosmos, cu modul de aplicare controlat prin guvernanță. Pe banda EVM semnătura rămâne secp256k1, iar un cont trebuie să dețină în plus o cheie ML-DSA înregistrată și o fereastră de autorizare deschisă (începând cu v3.2.0). Un cont este protejat post-cuantic abia după ce și-a înregistrat cheia ML-DSA-87; prima înregistrare este semnată doar cu cheia clasică (bootstrap-ul documentat), așa că înregistrați-o înainte ca contul să dețină fonduri semnificative. Vezi [Securitate post-cuantică](/architecture/post-quantum-security).
 
 ### De ce este refuzată tranzacția mea EVM cu „no open EVM authorisation window"?
 

@@ -98,7 +98,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_window/qor1...
 }
 ```
 
-This route never fails for an address without a window; it returns `found: false`. Since v3.2.0 the EVM lane admits a transaction only from an account that has a registered PQC key **and** an open window. `live` is `true` while the window admits at least one more transaction at the current height. `remaining_blocks`, `remaining_txs` and `remaining_value` show which bound is closest to running out; values are `uqor` integers returned as strings. Since v3.2.3 a window can carry a scope: `native_only` (plain QOR transfers only) and `allowed_targets` (listed recipients only). See [EVM Development](/developer-guide/evm-development#evm-window) for how the EVM lane works.
+This route never fails for an address without a window; it returns `found: false`. Since v3.2.0 the EVM lane admits a transaction only from an account that has a registered PQC key **and** an open window. `live` is `true` while the window admits at least one more transaction at the current height. `remaining_blocks`, `remaining_txs` and `remaining_value` show which bound is closest to running out; values are `uqor` integers returned as strings. Since v3.2.3 a window can carry a scope: `native_only` (plain QOR transfers only) and `allowed_targets` (listed recipients only; it limits which contracts and tokens may be touched, not how much). See [EVM Development](/developer-guide/evm-development#evm-window) for how the EVM lane works.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...

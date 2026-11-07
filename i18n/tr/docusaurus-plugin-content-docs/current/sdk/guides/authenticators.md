@@ -116,7 +116,9 @@ herhangi bir kural taşımaz; bu nedenle yalnızca bu mesajla bağlanan bir anah
 sadece hesap düzeyindeki bir kuralla sınırlanır. Bir kuralı
 `MsgUpdateSpendingRules` ile bilinçli olarak ayarlayın ve yalnızca anahtarın
 ihtiyaç duyduğu yetkileri kaydedin. Bir limit, bağlı bir anahtarın verebileceği
-zararı sınırlar; anahtarın iptal edilmesinin yerini tutmaz.
+zararı sınırlar; anahtarın iptal edilmesinin yerini tutmaz. Harcama kuralları yalnızca
+authenticator'ları ve oturum anahtarlarını bağlar, sahibin kendi anahtarını değil
+(EVM şeridinde sahibin anahtarı EVM penceresiyle sınırlanır).
 :::
 
 Bir anahtarı anında devre dışı bırakmak için sahip,

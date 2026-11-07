@@ -129,7 +129,7 @@ Since chain release **v3.2.0** (mainnet height 2,981,742, 25 September 2026; tes
 
 Everything else about the EVM lane is unchanged: you keep signing with MetaMask, ethers.js, Hardhat or Foundry, and `eth_estimateGas` and other simulations work without a window. Contract deployments count like any other EVM transaction, so a window is needed before you deploy.
 
-**Why a window?** A standard wallet signs one secp256k1 signature over an Ethereum transaction and gives applications no way to attach a second, post-quantum signature. So the post-quantum authorisation travels *ahead* of the transaction: you open a bounded window with a normal Cosmos-lane transaction, which does carry your ML-DSA signature, and the EVM lane then admits transactions covered by it. A classical key alone can never open a window, so a stolen classical key can only spend what an already-open window allows. It works like an ERC-20 approval: authorise a bounded amount for a bounded time, then transact normally.
+**Why a window?** A standard wallet signs one secp256k1 signature over an Ethereum transaction and gives applications no way to attach a second, post-quantum signature. So the post-quantum authorisation travels *ahead* of the transaction: you open a bounded window with a normal Cosmos-lane transaction, which does carry your ML-DSA signature, and the EVM lane then admits transactions covered by it. A classical key alone can never open a window, so a stolen classical key can only act within what an already-open window allows on the EVM lane. It works like an approval: authorise a bounded number of transactions and a bounded amount of native QOR for a bounded time, then transact normally. The window does not cap token amounts or the approvals a contract already holds.
 
 **What a window bounds.** Three bounds apply at once; whichever runs out first closes the window.
 
@@ -143,7 +143,7 @@ Everything else about the EVM lane is unchanged: you keep signing with MetaMask,
 * A transaction that is admitted and then fails still uses its slot and value budget.
 * Opening a new window **replaces** the previous one; consumption starts again from zero.
 * The CLI accepts `max-value` in `uqor` or `qor` (`1000qor` = 1,000,000,000 uqor).
-* The value bound counts native QOR only: a token transfer, an approval or any other contract call carries value zero. To bound those as well, narrow the window's scope (below).
+* The value bound counts native QOR only: a token transfer, an approval or any other contract call carries value zero. The scope (below) narrows which recipients the window admits; it does not cap token amounts.
 
 **Step 1 — register your post-quantum key** (once): see [Register your post-quantum key](#register-pqc-key) above.
 
@@ -163,6 +163,8 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
+
+`--allowed-targets` limits **which** contracts and tokens the window may touch, not **how much**. A listed token admits any amount of that token, including `approve`, and a listed contract can move whatever its code and existing approvals allow, so do not list generic forwarder or router contracts. A window bounds only transactions on the EVM lane (classically signed); Cosmos messages signed with the hybrid PQC signature, such as cross-VM calls and authz, are outside it.
 
 On mainnet, opening a window has used about 180,000 gas. In [QoreX](/qorex/security-and-recovery#evm-window) the same step is **Settings → Security → EVM access window** (app) or the **EVM access window** button (extension). Opening the window advances your account nonce, so open it **before** you prepare the EVM transaction in your wallet.
 

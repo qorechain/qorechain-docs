@@ -129,7 +129,7 @@ Zincir sürümü **v3.2.0**'dan itibaren (ana ağ yüksekliği 2,981,742, 25 Eyl
 
 EVM hattıyla ilgili geri kalan her şey aynıdır: MetaMask, ethers.js, Hardhat veya Foundry ile imzalamaya devam edersiniz; `eth_estimateGas` ve diğer simülasyonlar pencere olmadan çalışır. Sözleşme dağıtımları diğer EVM işlemleri gibi sayılır; bu nedenle dağıtım yapmadan önce bir pencere gerekir.
 
-**Neden bir pencere?** Standart bir cüzdan bir Ethereum işlemi üzerinde tek bir secp256k1 imzası atar ve uygulamalara ikinci bir kuantum sonrası imza ekleme yolu vermez. Bu yüzden kuantum sonrası yetkilendirme işlemden *önce* yola çıkar: ML-DSA imzanızı taşıyan normal bir Cosmos hattı işlemiyle sınırlı bir pencere açarsınız ve EVM hattı da bunun kapsadığı işlemleri kabul eder. Tek başına klasik bir anahtar asla pencere açamaz; dolayısıyla çalınmış bir klasik anahtar yalnızca önceden açılmış bir pencerenin izin verdiği kadarını harcayabilir. Bir ERC-20 onayı (approval) gibi çalışır: sınırlı bir süre için sınırlı bir miktarı yetkilendirin, sonra normal şekilde işlem yapın.
+**Neden bir pencere?** Standart bir cüzdan bir Ethereum işlemi üzerinde tek bir secp256k1 imzası atar ve uygulamalara ikinci bir kuantum sonrası imza ekleme yolu vermez. Bu yüzden kuantum sonrası yetkilendirme işlemden *önce* yola çıkar: ML-DSA imzanızı taşıyan normal bir Cosmos hattı işlemiyle sınırlı bir pencere açarsınız ve EVM hattı da bunun kapsadığı işlemleri kabul eder. Tek başına klasik bir anahtar asla pencere açamaz; dolayısıyla çalınmış bir klasik anahtar EVM hattında yalnızca önceden açılmış bir pencerenin izin verdiği sınırlar içinde işlem yapabilir. Bir onay (approval) gibi çalışır: sınırlı sayıda işlemi ve sınırlı miktarda yerel QOR'u sınırlı bir süre için yetkilendirin, sonra normal şekilde işlem yapın. Pencere, token miktarlarını veya bir sözleşmenin zaten sahip olduğu onayları sınırlamaz.
 
 **Bir pencerenin sınırladığı şeyler.** Üç sınır aynı anda geçerlidir; hangisi önce tükenirse pencereyi kapatır.
 
@@ -143,7 +143,7 @@ EVM hattıyla ilgili geri kalan her şey aynıdır: MetaMask, ethers.js, Hardhat
 * Kabul edilip sonra başarısız olan bir işlem de yuvasını ve değer bütçesini tüketir.
 * Yeni bir pencere açmak öncekinin **yerini alır**; tüketim sıfırdan yeniden başlar.
 * CLI, `max-value` değerini `uqor` veya `qor` cinsinden kabul eder (`1000qor` = 1,000,000,000 uqor).
-* Değer sınırı yalnızca yerel QOR'u sayar: bir token transferi, bir onay veya başka herhangi bir sözleşme çağrısı sıfır değer taşır. Bunları da sınırlamak için pencerenin kapsamını daraltın (aşağıda).
+* Değer sınırı yalnızca yerel QOR'u sayar: bir token transferi, bir onay veya başka herhangi bir sözleşme çağrısı sıfır değer taşır. Kapsam (aşağıda) pencerenin hangi alıcıları kabul ettiğini daraltır; token miktarlarını sınırlamaz.
 
 **Adım 1 — kuantum sonrası anahtarınızı kaydedin** (bir kez): yukarıdaki [Kuantum sonrası anahtarınızı kaydedin](#register-pqc-key) bölümüne bakın.
 
@@ -163,6 +163,8 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
+
+`--allowed-targets`, pencerenin **hangi** kontratlara ve token'lara dokunabileceğini sınırlar, **ne kadar** olduğunu değil. Listelenen bir token, `approve` dahil o token'ın her miktarını kabul eder ve listelenen bir kontrat, kodunun ve mevcut onaylarının izin verdiği her şeyi taşıyabilir; bu yüzden genel yönlendirici (forwarder veya router) kontratları listelemeyin. Bir pencere yalnızca EVM şeridindeki (klasik imzalı) işlemleri sınırlar; VM'ler arası çağrılar ve authz gibi hibrit PQC imzasıyla imzalanan Cosmos mesajları bunun dışındadır.
 
 Ana ağda bir pencere açmak yaklaşık 180,000 gaz kullanmıştır. [QoreX](/qorex/security-and-recovery#evm-window) içinde aynı adım **Settings → Security → EVM access window** (uygulama) veya **EVM access window** düğmesidir (uzantı). Pencereyi açmak hesap nonce'unuzu ilerletir; bu yüzden cüzdanınızda EVM işlemini hazırlamadan **önce** açın.
 

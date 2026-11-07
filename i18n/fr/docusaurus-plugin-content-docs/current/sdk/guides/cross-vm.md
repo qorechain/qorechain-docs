@@ -183,9 +183,10 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 // 0x0000000000000000000000000000000000000901
 ```
 
-> **Non actif.** Le précompilé du pont cross-VM n'est actif ni sur le mainnet ni sur le
-> testnet et ne sera pas activé dans sa forme actuelle ; il est d'abord en cours de reconstruction.
-> Un appel à `0x…0901` renvoie aujourd'hui des données vides et ne route rien. Voir
+> **Non actif sur le mainnet ; listé comme actif sur le testnet.** Le précompilé du pont cross-VM
+> ne figure pas dans la liste active du mainnet, donc un appel à `0x…0901` y renvoie
+> des données vides et ne route rien. La liste du testnet le contient (lu le 7 novembre 2026) ;
+> un appel via celui-ci n'a pas été testé. Voir
 > [Précompilés EVM : état du réseau](/developer-guide/evm-precompiles#network-status).
 
 Une fois actif, un contrat Solidity (ou viem) appelle le précompilé à cette adresse

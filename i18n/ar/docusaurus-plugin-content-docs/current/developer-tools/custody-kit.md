@@ -287,7 +287,7 @@ QORE_LIVE_TEST=1 go test -run Live ./...     # live reads against testnet
 - يجب أن تدعم HSM التوقيع الصرف بـ ML-DSA-87 (`CKM_ML_DSA` في PKCS #11 v3.2) على sign-bytes بسياق فارغ. و`HashML-DSA` غير مقبول.
 - شغّل `decodeTx` و`verifyTx` على كل معاملة موقّعة قبل البث، في عملية لم تبنِها.
 - يستخدم التدوير `MsgRotatePQCKey`: يوقّع المفتاحان كلاهما، وتستخدم طبقة المعاملة نفسها المفتاح الحالي، ويُرفض إعادة استخدام مفتاح سابق. وإذا انكشف مفتاح secp256k1 فانقل الأموال إلى عنوان جديد بمفتاحين جديدين وأغلق أي نافذة EVM مفتوحة.
-- نوافذ EVM: استخدم `native_only` أو `allowed_targets`، وأصغر `max_value` و`blocks` تغطي الدفعة، وأغلق النافذة بعد الدفعة. عامِل `MsgSetWithdrawAddress` و`MsgRotatePQCKey` و`MsgOpenEVMWindow` و`MsgAuthorizeEVMDelegation` على أنها عمليات ذات امتياز.
+- نوافذ EVM: استخدم `native_only` حيث لا يتحرك سوى QOR. يحدّ `allowed_targets` من العقود والرموز التي يجوز لمسها، لا من المقدار: الرمز المدرج يقبل أي مقدار، بما في ذلك `approve`، لذا لا تدرج عقود المُمرِّر أو الموجِّه أبدًا. وتحدّ النوافذ معاملات مسار EVM الموقَّعة بتوقيع كلاسيكي فقط؛ أما رسائل Cosmos الموقَّعة هجينًا (استدعاءات cross-VM وauthz) فخارجها. استخدم أصغر `max_value` و`blocks` تغطي الدفعة، وأغلق النافذة بعد الدفعة. عامِل `MsgSetWithdrawAddress` و`MsgRotatePQCKey` و`MsgOpenEVMWindow` و`MsgAuthorizeEVMDelegation` على أنها عمليات ذات امتياز.
 - لا تحتسب أبداً معاملة EVM يبلّغ حدث `ethereum_tx` فيها عن فشل، حتى لو كانت نتيجتها الأصلية `code == 0`.
 - هذه شيفرة مرجعية بالإصدار 0.1.0. راجعها قبل استخدامها في الإنتاج. أبلغ عن الثغرات سراً على security@qore.network، بما في ذلك أخطاء التوثيق التي قد تؤدي إلى احتساب خاطئ أو إلى توقيع غير مقصود.
 

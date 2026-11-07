@@ -287,7 +287,7 @@ QORE_LIVE_TEST=1 go test -run Live ./...     # live reads against testnet
 - HSMは、署名対象バイト列に対する、空のコンテキストでの純粋なML-DSA-87署名(PKCS #11 v3.2の`CKM_ML_DSA`)をサポートしている必要があります。`HashML-DSA`は受け付けられません。
 - 署名済みのすべてのトランザクションに対して、ブロードキャストの前に、それを構築していないプロセスで`decodeTx`と`verifyTx`を実行してください。
 - ローテーションには`MsgRotatePQCKey`を使います。両方の鍵が署名し、トランザクション自身のレイヤーは現在の鍵を使い、以前の鍵の再利用は拒否されます。secp256k1鍵が露出した場合は、両方の鍵を新しくした新しいアドレスに資金を移し、開いているEVMウィンドウを閉じてください。
-- EVMウィンドウ: `native_only`または`allowed_targets`を使い、バッチをカバーできる最小の`max_value`と`blocks`を設定し、バッチの後にウィンドウを閉じてください。`MsgSetWithdrawAddress`、`MsgRotatePQCKey`、`MsgOpenEVMWindow`、`MsgAuthorizeEVMDelegation`は、特権的な操作として扱ってください。
+- EVMウィンドウ: QORだけが動く場合は`native_only`を使ってください。`allowed_targets`が制限するのは、触れてよいコントラクトとトークンの**種類**であり、**金額**ではありません。列挙されたトークンは、`approve`を含め任意の金額を受け付けるため、フォワーダーやルーターのコントラクトは決して列挙しないでください。ウィンドウが制限するのは、古典署名のみのEVMレーントランザクションだけで、ハイブリッド署名されたCosmosメッセージ(クロスVM呼び出し、authz)はその対象外です。バッチをカバーできる最小の`max_value`と`blocks`を設定し、バッチの後にウィンドウを閉じてください。`MsgSetWithdrawAddress`、`MsgRotatePQCKey`、`MsgOpenEVMWindow`、`MsgAuthorizeEVMDelegation`は、特権的な操作として扱ってください。
 - `ethereum_tx`イベントが失敗を報告しているEVMトランザクションは、ネイティブの結果が`code == 0`であっても、決して計上しないでください。
 - これはバージョン0.1.0のリファレンスコードです。本番で使う前にレビューしてください。脆弱性は、誤った計上や意図しない署名につながりうるドキュメントの誤りも含め、security@qore.networkに非公開で報告してください。
 

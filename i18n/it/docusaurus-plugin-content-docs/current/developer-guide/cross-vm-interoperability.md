@@ -15,7 +15,7 @@ Le chiamate cross-VM sono disponibili solo quanto lo è la loro lane di destinaz
 * `MsgCrossVMCall` è **disattivato sulla mainnet** dal circuit breaker (`qorechaind query circuit disabled-list`); è abilitato sulla testnet.
 * La **lane SVM è disabilitata** per le transazioni su entrambe le reti, quindi un tratto SVM non può essere eseguito.
 * **L'upload di QoreChain Native è soggetto ad autorizzazione** su entrambe le reti e **l'istanziazione è soggetta ad autorizzazione sulla mainnet**, che non ha alcun codice di contratto memorizzato, quindi sulla mainnet non esiste ancora alcun contratto QoreChain Native da chiamare. Sulla testnet la governance ha memorizzato alcuni contratti verificati che qualsiasi account può istanziare (vedi [Sviluppo QoreChain Native](/developer-guide/cosmwasm-development)), quindi lì può esistere una destinazione QoreChain Native.
-* La **precompile EVM sincrona non è attiva** (vedi sotto). Una versione rinforzata è presente nel binario dalla v3.2.3, ma la precompile CrossVM non è attivata su nessuna delle due reti. (Il 27 ottobre 2026 la governance della testnet ha attivato altre tre precompile, PQC Verify, PQC Key Status e PRISM Consensus Params; la mainnet non ne ha alcuna attiva. La v3.2.4 non cambia quali precompile sono attive.)
+* La **precompile EVM sincrona non è attiva sulla mainnet** ed è elencata come attiva sulla testnet (letto il 7 novembre 2026; una chiamata tramite essa non è stata testata; vedi sotto). Una versione rinforzata è presente nel binario dalla v3.2.3. (Il 27 ottobre 2026 la governance della testnet ha attivato altre tre precompile, PQC Verify, PQC Key Status e PRISM Consensus Params, e il bridge CrossVM si è aggiunto all'elenco della testnet entro il 4 novembre; la mainnet non ne ha alcuna attiva.)
 
 Sulla mainnet le route REST del modulo (`/qorechain/crossvm/v1/...`) non sono servite dal gateway pubblico (`501`); leggi i messaggi con la CLI o con un client di query gRPC/ABCI.
 :::
@@ -40,7 +40,7 @@ Gli endpoint seguenti utilizzano per impostazione predefinita un nodo locale. Su
 
 | Percorso         | Direzione       | Tempistica       | Meccanismo                      |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **Sincrono**     | EVM verso QoreChain Native | Stessa transazione | Precompile a `0x0000...0901` (non ancora attiva, vedi sotto) |
+| **Sincrono**     | EVM verso QoreChain Native | Stessa transazione | Precompile a `0x0000...0901` (attiva sulla testnet, non sulla mainnet; vedi sotto) |
 | **Messaggio, predefinito** | Qualsiasi VM verso qualsiasi altra VM | Stessa transazione | `MsgCrossVMCall`; la chiamata viene eseguita immediatamente e un fallimento annulla l'intera transazione |
 | **Messaggio, in coda**  | Qualsiasi VM verso qualsiasi altra VM | Blocco successivo (o oltre) | `MsgCrossVMCall` con `async` impostato; il messaggio attende nella coda |
 
@@ -50,8 +50,8 @@ Gli endpoint seguenti utilizzano per impostazione predefinita un nodo locale. Su
 
 Il percorso sincrono utilizza una **precompile** EVM all'indirizzo `0x0000000000000000000000000000000000000901`. È progettata per consentire ai contratti Solidity di chiamare i contratti QoreChain Native e di ricevere una risposta all'interno della stessa transazione.
 
-:::warning Non attiva su mainnet né su testnet
-La precompile del bridge CrossVM **non è attiva** su `qorechain-vladi` né su `qorechain-diana`: una chiamata a `0x…0901` riesce e restituisce dati vuoti. Il binario v3.2.3 include una versione rinforzata (rifiuta una `STATICCALL`, misura la sua chiamata annidata sul gas del frame chiamante e la registra nel journal in modo che un revert EVM annulli anche il lato QoreChain Native, raggiunge solo destinazioni QoreChain Native in allowlist e rispetta il circuit breaker cross-VM), ma viene eseguita solo quando un aggiornamento approvato dalla governance la aggiunge all'elenco attivo. L'esempio seguente è il layout che il nodo decodifica, ma non può essere eseguito finché la precompile non è attiva. Vedi [Precompile EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
+:::warning Non attiva sulla mainnet; attiva sulla testnet, chiamata non testata
+La precompile del bridge CrossVM **non è attiva** su `qorechain-vladi`: una chiamata a `0x…0901` lì riesce e restituisce dati vuoti. Su `qorechain-diana` l'elenco `active_static_precompiles` contiene `0x…0901` (letto il 7 novembre 2026); una chiamata tramite essa era elencata come attiva ma non è stata testata. Il binario v3.2.3 include una versione rinforzata (rifiuta una `STATICCALL`, misura la sua chiamata annidata sul gas del frame chiamante e la registra nel journal in modo che un revert EVM annulli anche il lato QoreChain Native, raggiunge solo destinazioni QoreChain Native in allowlist e rispetta il circuit breaker cross-VM), ma viene eseguita solo dove una proposta approvata dalla governance l'ha aggiunta all'elenco attivo (finora la testnet, non la mainnet). L'esempio seguente è il layout che il nodo decodifica; non può essere eseguito sulla mainnet finché la precompile non è attiva, e non è stato eseguito sulla testnet. Vedi [Precompile EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Esempio Solidity
@@ -86,7 +86,7 @@ contract CrossVMCaller {
 }
 ```
 
-Questo è il layout che il nodo decodifica; è lo stesso layout costruito dall'encoder di `@qorechain/rdk`, e il contratto qui sopra corrisponde allo starter in [Multi-VM](/rollups/multi-vm). I fondi non possono essere allegati tramite la precompile (il percorso del messaggio `MsgCrossVMCall` accetta `--funds`). L'esempio oggi non può fare nulla su nessuna delle due reti, perché la precompile non è attiva (vedi l'avviso sopra); l'ABI potrebbe ancora cambiare prima dell'attivazione.
+Questo è il layout che il nodo decodifica; è lo stesso layout costruito dall'encoder di `@qorechain/rdk`, e il contratto qui sopra corrisponde allo starter in [Multi-VM](/rollups/multi-vm). I fondi non possono essere allegati tramite la precompile (il percorso del messaggio `MsgCrossVMCall` accetta `--funds`). L'esempio oggi non può fare nulla sulla mainnet, perché lì la precompile non è attiva; sulla testnet la precompile è elencata come attiva ma l'esempio non è stato eseguito (vedi l'avviso sopra), e l'ABI potrebbe ancora cambiare.
 
 Una volta attiva, la precompile esegue il contratto QoreChain Native immediatamente e restituisce il risultato. (L'helper `encodeCrossVmCalldata` di `@qorechain/rdk`, disponibile dalla 0.6.0 e nella 0.8.0 attuale, costruisce i calldata; vedi [Multi-VM](/rollups/multi-vm).) Costo del gas: **50.000 base + 4 per byte di input + costo di esecuzione**.
 

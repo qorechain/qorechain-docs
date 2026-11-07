@@ -191,7 +191,12 @@ is refused). Both are new message fields: a node below v3.2.3 refuses the whole
 transaction when either is set, so set them only on a network that has applied
 v3.2.3 (both public networks have). `fetchEvmWindow` reads both back (`nativeOnly`,
 `allowedTargets`; they read `false` and empty before v3.2.3). For a window opened
-only to send QOR, prefer `nativeOnly`.
+only to send QOR, prefer `nativeOnly`. `allowedTargets` limits which contracts and tokens
+the window may touch, not how much: a listed token admits any amount of it, including
+`approve`, and a listed contract can move whatever its code and existing approvals allow,
+so do not list generic forwarder or router contracts. A window bounds only transactions
+on the EVM lane (classically signed); Cosmos messages signed with the hybrid PQC
+signature, such as cross-VM calls and authz, are outside it.
 
 ```ts
 import {
@@ -283,7 +288,7 @@ exported.
 > On the testnet (`qorechain-diana`) the `active_static_precompiles` list holds
 > `0x…0A01` (PQC verify), `0x…0A02` (PQC key status) and `0x…0C01` (consensus
 > params), checked 27 October 2026; the AI pair (`0x…0B01`, `0x…0B02`) is not active on either network, and the
-> cross-VM bridge (`0x…0901`) was not active on either on 27 October (on 4 November the testnet list also held it; not re-tested). A call to an
+> cross-VM bridge (`0x…0901`) was not active on either on 27 October (the testnet list also held it from 4 November and still did on 7 November 2026; a call through it was not tested; mainnet's list is empty). A call to an
 > inactive address returns empty data, so those helpers throw. See
 > [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 

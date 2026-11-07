@@ -10,21 +10,21 @@ sidebar_position: 6
 QoreChain, QoreChain EVM Engine'i protokol düzeyindeki özellikleri doğrudan Solidity'ye sunan **altı özel ön derlenmiş contract** ile genişletir. Bu ön derlemeler; kuantum sonrası kriptografiye, AI risk puanlamasına, VM'ler arası mesajlaşmaya ve PRISM konsensüs parametrelerine zincir üzerinde erişim sağlar.
 
 :::warning Ana ağda etkin değil; test ağında üçü etkin
-Aşağıdaki altı QoreChain ön derlemesi **düğüme derlenmiştir**, ancak EVM yalnızca `active_static_precompiles` parametresinde listelenen adresleri çalıştırır. **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**) bu liste yazım sırasında boştur, dolayısıyla orada **hiçbiri etkin değildir**. **`qorechain-diana`** test ağında (EVM zincir kimliği **9800**) üçü etkindir: PQC Verify, PQC Key Status ve PRISM Consensus Params; bunlar test ağı yönetişim önerisi 21 ile etkinleştirildi (27 Ekim 2026'da geçti). Diğer üçü her iki ağda da etkin değildir. Listede olmayan bir adrese yapılan çağrı **başarılı olur ve boş veri (`0x`) döndürür**; geri alınmaz (revert) ve hata döndürmez. Herhangi birine güvenmeden önce [Ağ durumu](#network-status) bölümüne bakın.
+Aşağıdaki altı QoreChain ön derlemesi **düğüme derlenmiştir**, ancak EVM yalnızca `active_static_precompiles` parametresinde listelenen adresleri çalıştırır. **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**) bu liste yazım sırasında boştur, dolayısıyla orada **hiçbiri etkin değildir**. **`qorechain-diana`** test ağında (EVM zincir kimliği **9800**) PQC Verify, PQC Key Status ve PRISM Consensus Params etkindir; bunlar test ağı yönetişim önerisi 21 ile etkinleştirildi (27 Ekim 2026'da geçti) ve CrossVM Bridge adresi 7 Kasım 2026'da okunduğunda listedeydi. İki AI ön derlemesi her iki ağda da etkin değildir. Listede olmayan bir adrese yapılan çağrı **başarılı olur ve boş veri (`0x`) döndürür**; geri alınmaz (revert) ve hata döndürmez. Herhangi birine güvenmeden önce [Ağ durumu](#network-status) bölümüne bakın.
 :::
 
 ## Ağ durumu {#network-status}
 
 | Ön derleme | Adres | `qorechain-vladi` (ana ağ) | `qorechain-diana` (test ağı) |
 | --- | --- | --- | --- |
+| CrossVM Bridge | `0x…0901` | Etkin değil | Etkin listesinde (7 Kasım 2026'da okundu; bkz. [Multi-VM](/rollups/multi-vm)) |
 | PQC Verify | `0x…0A01` | Etkin değil | **Etkin** (27 Ekim 2026'dan beri) |
 | PQC Key Status | `0x…0A02` | Etkin değil | **Etkin** (27 Ekim 2026'dan beri) |
 | AI Risk Score | `0x…0B01` | Etkin değil | Etkin değil |
 | AI Anomaly Check | `0x…0B02` | Etkin değil | Etkin değil |
 | PRISM Consensus Params | `0x…0C01` | Etkin değil | **Etkin** (27 Ekim 2026'dan beri) |
-| CrossVM Bridge | `0x…0901` | Etkin değil | Etkin değil |
 
-Durum, 27 Ekim 2026'da canlı `active_static_precompiles` parametresinden okunduğu gibidir (ana ağ, v3.2.6 sonrasında 4 Kasım 2026'da yeniden okundu: hâlâ boş). Bu, yönetişimle değiştirilen bir zincir parametresidir; dolayısıyla her ağın listesi yalnızca bir yönetişim önerisi geçtiğinde değişir: test ağı listesi öneri 21 ile belirlendi ve yazım sırasında hiçbir ana ağ önerisi onu değiştirmiyor. v3.2.3 sürümü (ana ağ, 20 Ekim 2026), CrossVM köprüsünün ve AI anomali ön derlemesinin güçlendirilmiş sürümlerini bir protokol özelliğinin arkasında ikili dosyaya koydu, ancak hiçbir ön derlemeyi etkinleştirmedi ve ne v3.2.4 (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri) ne de v3.2.6 (ana ağda 4 Kasım 2026'dan beri) bunu değiştirir. Önce salt okunur PQC ve konsensüs ön derlemeleri gelir, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve en son CrossVM köprüsü. Bu tablo yalnızca uygulanmış olanı listeler: hâlâ oylama döneminde olan bir öneri bir durum değildir.
+Durum, 27 Ekim 2026'da canlı `active_static_precompiles` parametresinden okunduğu gibidir (ana ağ, v3.2.6 sonrasında 4 Kasım 2026'da yeniden okundu: hâlâ boş; her iki ağ 7 Kasım 2026'da yeniden okundu: ana ağ boş, test ağı `0x…0901`, `0x…0A01`, `0x…0A02` ve `0x…0C01` adreslerini listeliyor). Bu, yönetişimle değiştirilen bir zincir parametresidir; dolayısıyla her ağın listesi yalnızca bir yönetişim önerisi geçtiğinde değişir: test ağı listesi öneri 21 ile belirlendi ve yazım sırasında hiçbir ana ağ önerisi onu değiştirmiyor. v3.2.3 sürümü (ana ağ, 20 Ekim 2026), CrossVM köprüsünün ve AI anomali ön derlemesinin güçlendirilmiş sürümlerini bir protokol özelliğinin arkasında ikili dosyaya koydu, ancak hiçbir ön derlemeyi etkinleştirmedi ve ne v3.2.4 (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri) ne de v3.2.6 (ana ağda 4 Kasım 2026'dan beri) bunu değiştirir. Önce salt okunur PQC ve konsensüs ön derlemeleri gelir, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve en son CrossVM köprüsü. Bu tablo yalnızca uygulanmış olanı listeler: hâlâ oylama döneminde olan bir öneri bir durum değildir.
 
 Güncel listeyi kendiniz kontrol edin (boşsa hiçbiri etkin değildir):
 
@@ -53,6 +53,25 @@ RPC=https://evm-testnet.qore.host
 cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
 cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
 ```
+
+---
+
+## Standart ön derlemeler {#standard-precompiles}
+
+Altı QoreChain ön derlemesinin yanı sıra düğüm, standart cosmos/evm ön derlemelerini de taşır. Bunlar aynı kurala tabidir: yalnızca yönetişimin adreslerini `active_static_precompiles` içinde listelediği yerde çalışırlar ve düğümün topluluk derlemesi bunları içermez.
+
+| Adres | Ön derleme |
+| --- | --- |
+| `0x…0100` | P-256 (durumsuz) |
+| `0x…0400` | Bech32 (durumsuz) |
+| `0x…0800` | Staking |
+| `0x…0801` | Distribution |
+| `0x…0802` | IBC transferi (ICS-20) |
+| `0x…0804` | Bank (salt okunur) |
+| `0x…0805` | Governance |
+| `0x…0806` | Slashing |
+
+`0x…0803` (vesting) yukarı akışta (upstream) ayrılmıştır ve **uygulanmamıştır**: bu adreste hiçbir şey yoktur. QoreChain'de staking, delegasyon ve doğrulayıcı işlemleri yalnızca yerel şeritte yapılır (bkz. [Stake ve Doğrulayıcılar](/dashboard/staking-and-validators)); bu yüzden staking ön derlemesi üzerine staking akışları kurmayın. Kaynak: genel çekirdek deposunda v3.2.6 etiketindeki `docs/EVM_PRECOMPILES.md`.
 
 ---
 
@@ -281,7 +300,7 @@ v3.2.6'dan itibaren (her iki ağ da onu çalıştırır; ön derlemenin kendisi 
 ### CrossVM Bridge — EVM'den QoreChain Native Çağırma
 
 :::warning
-CrossVM köprü ön derlemesi her iki ağda da **etkin değildir**. v3.2.3'ten beri ikili dosya, onun güçlendirilmiş bir sürümünü taşır: `STATICCALL` çağrısını reddeder; iç içe çağrıyı, çağıran çerçevede kalan gazla sınırlı bir gaz sayacında çalıştırır ve günlüğe kaydeder, böylece çağıran sözleşmedeki bir revert QoreChain Native tarafını da geri alır; yalnızca izin listesindeki QoreChain Native hedeflerine ulaşır (EVM hedefleri reddedilir); ve VM'ler arası devre kesiciye uyar. Yönetişim onaylı bir yükseltme onu etkinleştirene kadar senkron bir EVM'den QoreChain Native'a yol yoktur; bugün ana ağda kendisi de kapalı olan `MsgCrossVMCall` mesaj yolu için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
+CrossVM köprü ön derlemesi **ana ağda etkin değildir** ve test ağında etkin olarak listelenmiştir (7 Kasım 2026'da okundu; üzerinden bir çağrı test edilmedi). v3.2.3'ten beri ikili dosya, onun güçlendirilmiş bir sürümünü taşır: `STATICCALL` çağrısını reddeder; iç içe çağrıyı, çağıran çerçevede kalan gazla sınırlı bir gaz sayacında çalıştırır ve günlüğe kaydeder, böylece çağıran sözleşmedeki bir revert QoreChain Native tarafını da geri alır; yalnızca izin listesindeki QoreChain Native hedeflerine ulaşır (EVM hedefleri reddedilir); ve VM'ler arası devre kesiciye uyar. Bir yönetişim önerisi onu ana ağda etkinleştirene kadar orada senkron bir EVM'den QoreChain Native'a yol yoktur; bugün ana ağda kendisi de kapalı olan `MsgCrossVMCall` mesaj yolu için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
 :::
 
 Düğüm, calldata'yı `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` olarak çözümler (4 baytlık seçici, ardından ABI ile kodlanmış argümanlar). Desteklenen tek kullanım EVM'den QoreChain Native'adır (`targetVM` = 1); ABI etkinleştirmeden önce yine de değişebilir. `@qorechain/rdk` yardımcısı `encodeCrossVmCalldata` bu düzeni 0.6.0'dan itibaren kodlar (önceki sürümler farklı bir fonksiyonu kodluyordu) ve `isCrossVmPrecompileActive` canlı `active_static_precompiles` listesini okur; bkz. [Multi-VM](/rollups/multi-vm).

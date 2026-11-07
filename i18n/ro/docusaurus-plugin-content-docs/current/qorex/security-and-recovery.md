@@ -106,7 +106,7 @@ Fiecare semnătură produsă de QoreX este aprobată de tine, iar aprobarea list
 
 - un titlu și câmpuri etichetate pentru **fiecare mesaj** din cerere, inclusiv mesajele imbricate într-un authz **MsgExec** și termenii acordărilor de permisiuni - și **refuză** orice nu poate afișa („QoreX cannot read this message … Approve only if you trust this site completely");
 - **comisionul** (*Fee: \{amount\} · gas \{gas\}*), cine îl plătește și orice fee grant - dacă comisionul nu poate fi citit, QoreX spune asta și îți cere să nu aprobi;
-- **limita, acțiunea permisă și expirarea** alocațiilor de cheltuieli și ale acordărilor authz, cu *UNLIMITED* și *NEVER* scrise explicit; o expirare este afișată la secundă (`YYYY-MM-DD HH:MM:SS UTC`), iar un vot de guvernanță este decodat, ca să vezi pentru ce votezi. Orice este ilizibil, nelimitat sau fără sfârșit necesită o **a doua atingere** pe Approve (*Tap again to approve*);
+- **limita, acțiunea permisă și expirarea** alocațiilor de cheltuieli și ale acordărilor authz, cu *UNLIMITED* și *NEVER* scrise explicit; o expirare este afișată la secundă (`YYYY-MM-DD HH:MM:SS UTC`). Citește cu atenție acțiunea permisă: o alocație de taxe ale cărei mesaje permise includ `MsgExec` (un `AllowedMsgAllowance`) acoperă orice mesaj pe care beneficiarul îl poate executa prin ea, iar o acordare authz generică acoperă orice tip de mesaj pe care îl numește. Un vot de guvernanță este decodat, ca să vezi pentru ce votezi. Orice este ilizibil, nelimitat sau fără sfârșit necesită o **a doua atingere** pe Approve (*Tap again to approve*);
 - contul care semnează (*Signed by …*) când ai mai multe;
 - pentru o cerere cu un număr foarte mare de mesaje, primele 50 și numărul celorlalte.
 

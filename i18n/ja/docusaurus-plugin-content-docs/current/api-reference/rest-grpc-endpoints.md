@@ -98,7 +98,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_window/qor1...
 }
 ```
 
-このルートは、ウィンドウのないアドレスに対しても失敗せず、`found: false` を返します。v3.2.0 以降、EVM レーンは、登録済みの PQC 鍵を持ち**かつ**ウィンドウが開いているアカウントからのトランザクションのみを受け付けます。`live` は、現在の高さでウィンドウがあと1件以上のトランザクションを受け付ける間は `true` です。`remaining_blocks`、`remaining_txs`、`remaining_value` は、どの上限が最も使い果たされそうかを示します。値は文字列として返される `uqor` 単位の整数です。v3.2.3 以降、ウィンドウにはスコープを持たせることができます。`native_only`（通常の QOR 送金のみ）と `allowed_targets`（列挙された受取先のみ）です。EVM レーンの仕組みについては [EVM 開発](/developer-guide/evm-development#evm-window)を参照してください。
+このルートは、ウィンドウのないアドレスに対しても失敗せず、`found: false` を返します。v3.2.0 以降、EVM レーンは、登録済みの PQC 鍵を持ち**かつ**ウィンドウが開いているアカウントからのトランザクションのみを受け付けます。`live` は、現在の高さでウィンドウがあと1件以上のトランザクションを受け付ける間は `true` です。`remaining_blocks`、`remaining_txs`、`remaining_value` は、どの上限が最も使い果たされそうかを示します。値は文字列として返される `uqor` 単位の整数です。v3.2.3 以降、ウィンドウにはスコープを持たせることができます。`native_only`（通常の QOR 送金のみ）と `allowed_targets`（列挙された受取先のみ。触れてよいコントラクトとトークンを制限するもので、金額は制限しません）です。EVM レーンの仕組みについては [EVM 開発](/developer-guide/evm-development#evm-window)を参照してください。
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...

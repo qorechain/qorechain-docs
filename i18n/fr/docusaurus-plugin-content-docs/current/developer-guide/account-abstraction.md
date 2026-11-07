@@ -26,7 +26,7 @@ Les exemples `qorechaind tx` de cette page ne montrent que les indicateurs de fr
 Les comptes blockchain traditionnels sont contrôlés par une seule clé privée. L'abstraction de compte dissocie la notion de « qui peut autoriser une transaction » d'une clé cryptographique unique. Le module `x/abstractaccount` fournit :
 
 * Des **comptes abstraits** avec un type de compte et un propriétaire enregistrés
-* Des **règles de dépenses** (limites par transaction et quotidiennes, dénominations autorisées) qui bornent ce que les clés liées peuvent dépenser
+* Des **règles de dépenses** (limites par transaction et quotidiennes, dénominations autorisées) qui bornent ce que les clés liées (authentificateurs et clés de session) peuvent dépenser ; elles ne limitent pas la clé propre du propriétaire
 * Des **authentificateurs** : des clés externes (une clé ed25519 Phantom ou une adresse secp256k1 MetaMask) que le propriétaire lie avec des permissions limitées et une expiration, et qu'il peut révoquer à tout moment
 
 *Un flux avec clé liée (authentificateur) : la clé liée signe une autorisation, un relayeur la soumet, le module vérifie les permissions, l'expiration et les règles de dépenses, puis exécute depuis le compte du propriétaire.*
@@ -80,7 +80,9 @@ qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <p
 
 ## Règles de dépenses
 
-Les règles de dépenses ajoutent des garde-fous financiers aux comptes abstraits :
+Les règles de dépenses ajoutent des garde-fous financiers pour les authentificateurs et les clés de session liés à un compte abstrait. Les règles de dépenses ne lient que les authentificateurs et les clés de session, pas la clé propre du propriétaire ; celle-ci est limitée, sur la voie EVM, par la [fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window).
+
+Les champs de la règle :
 
 | Règle            | Description                                           |
 | ---------------- | ----------------------------------------------------- |

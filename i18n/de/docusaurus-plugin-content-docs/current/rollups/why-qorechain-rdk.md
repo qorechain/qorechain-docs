@@ -91,15 +91,15 @@ console.log(advice.warnings); // services that could not be reached
 
 ## 3. Multi-VM: VM-übergreifende Aufrufe
 
-> 🟡 **Auf den Live-Netzwerken noch nicht nutzbar** — das Precompile ist nicht
-> aktiviert und der QoreChain Native-Upload ist geschlossen. Siehe [Multi-VM](/rollups/multi-vm).
+> 🟡 **Im Mainnet noch nicht nutzbar** — das Precompile ist dort nicht
+> aktiviert und der QoreChain Native-Upload ist geschlossen. Im Testnet ist das Precompile als aktiv aufgeführt (7. November 2026); ein Aufruf wurde nicht getestet. Siehe [Multi-VM](/rollups/multi-vm).
 
 Das RDK enthält Helfer, die einen Aufruf von einem EVM-(Solidity-)Contract an einen
 **QoreChain Native**-Contract über ein festes Precompile unter `0x…0901` kodieren. Dieses
-Precompile ist im Mainnet und im Testnet **nicht aktiv** (siehe
+Precompile ist im Mainnet **nicht aktiv** und im Testnet seit dem 7. November 2026 **als aktiv aufgeführt** (siehe
 [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status)):
-`eth_getCode` für `0x…0901` liefert auf beiden `0x` zurück, und ein Contract-Aufruf
-darauf ist erfolgreich, bleibt aber ohne Wirkung.
+`eth_getCode` für `0x…0901` liefert `0x` zurück (ein Precompile hat keinen Bytecode), ein Contract-Aufruf
+darauf ist im Mainnet erfolgreich, bleibt aber ohne Wirkung, und ein Aufruf darüber im Testnet wurde nicht getestet.
 
 Der Helfer `encodeCrossVmCalldata` (seit 0.6.0) baut Calldata für
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, das Layout,

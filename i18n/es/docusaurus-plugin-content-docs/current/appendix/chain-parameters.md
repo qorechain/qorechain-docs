@@ -39,7 +39,7 @@ Los límites de una [ventana de autorización EVM](/getting-started/first-transa
 | `max_value` | mayor que 0 (uqor; valor transferido más la comisión máxima de cada transacción) |
 | `allowed_targets` máximo | 16 direcciones de destinatario (ámbito opcional, v3.2.3) |
 
-Desde v3.2.3, una ventana también puede restringirse con `native_only` (solo transferencias simples de QOR nativo).
+Desde v3.2.3, una ventana también puede restringirse con `native_only` (solo transferencias simples de QOR nativo). `allowed_targets` limita qué contratos y tokens se pueden tocar, no cuánto: un token listado admite cualquier cantidad, incluido `approve`. Las ventanas acotan solo las transacciones del carril EVM firmadas de forma clásica; los mensajes de Cosmos con firma híbrida (llamadas entre VM, authz) quedan fuera de ellas.
 
 ---
 

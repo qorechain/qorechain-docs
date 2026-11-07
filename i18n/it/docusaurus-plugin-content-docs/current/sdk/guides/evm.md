@@ -193,7 +193,13 @@ alla v3.2.3 rifiuta l'intera transazione se uno dei due è impostato, quindi
 impostali solo su una rete che ha applicato la v3.2.3 (lo hanno fatto entrambe le
 reti pubbliche). `fetchEvmWindow` li legge entrambi (`nativeOnly`,
 `allowedTargets`; prima della v3.2.3 risultano `false` e vuoto). Per una finestra
-aperta solo per inviare QOR, preferisci `nativeOnly`.
+aperta solo per inviare QOR, preferisci `nativeOnly`. `allowedTargets` limita quali
+contratti e token la finestra può toccare, non quanto: un token elencato ammette qualsiasi
+importo di esso, incluso `approve`, e un contratto elencato può spostare tutto ciò che il
+suo codice e le approvazioni esistenti consentono, quindi non elencare contratti generici
+di forwarder o router. Una finestra limita solo le transazioni sulla corsia EVM (firmate in
+modo classico); i messaggi Cosmos firmati con la firma ibrida PQC, come le chiamate
+cross-VM e authz, ne sono fuori.
 
 ```ts
 import {
@@ -286,7 +292,7 @@ esportati.
 > Sulla testnet (`qorechain-diana`) l'elenco `active_static_precompiles` contiene
 > `0x…0A01` (verifica PQC), `0x…0A02` (stato chiave PQC) e `0x…0C01` (parametri di
 > consenso), verificato il 27 ottobre 2026; la coppia AI (`0x…0B01`, `0x…0B02`) non è attiva su nessuna delle due reti, e il
-> bridge cross-VM (`0x…0901`) non era attivo su nessuna delle due il 27 ottobre (il 4 novembre l'elenco della testnet lo conteneva anche; non ritestato). Una chiamata a un
+> bridge cross-VM (`0x…0901`) non era attivo su nessuna delle due il 27 ottobre (l'elenco della testnet lo conteneva anche dal 4 novembre e lo conteneva ancora il 7 novembre 2026; una chiamata tramite esso non è stata testata; l'elenco della mainnet è vuoto). Una chiamata a un
 > indirizzo non attivo restituisce dati vuoti, quindi quegli helper generano un errore. Vedi
 > [Precompilati EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
 

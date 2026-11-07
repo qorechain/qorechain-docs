@@ -129,7 +129,7 @@ Depuis la version de chaîne **v3.2.0** (hauteur mainnet 2,981,742, 25 septembre
 
 Tout le reste de la voie EVM est inchangé : vous continuez à signer avec MetaMask, ethers.js, Hardhat ou Foundry, et `eth_estimateGas` ainsi que les autres simulations fonctionnent sans fenêtre. Les déploiements de contrats comptent comme n'importe quelle autre transaction EVM : une fenêtre est donc nécessaire avant de déployer.
 
-**Pourquoi une fenêtre ?** Un wallet standard produit une seule signature secp256k1 sur une transaction Ethereum et ne laisse aux applications aucun moyen d'y joindre une seconde signature post-quantique. L'autorisation post-quantique voyage donc *avant* la transaction : vous ouvrez une fenêtre bornée avec une transaction normale de la voie Cosmos, qui, elle, porte votre signature ML-DSA, et la voie EVM admet ensuite les transactions couvertes par cette fenêtre. Une clé classique seule ne peut jamais ouvrir de fenêtre : une clé classique volée ne peut donc dépenser que ce qu'une fenêtre déjà ouverte autorise. Cela fonctionne comme une approbation ERC-20 : on autorise un montant borné pour une durée bornée, puis on transige normalement.
+**Pourquoi une fenêtre ?** Un wallet standard produit une seule signature secp256k1 sur une transaction Ethereum et ne laisse aux applications aucun moyen d'y joindre une seconde signature post-quantique. L'autorisation post-quantique voyage donc *avant* la transaction : vous ouvrez une fenêtre bornée avec une transaction normale de la voie Cosmos, qui, elle, porte votre signature ML-DSA, et la voie EVM admet ensuite les transactions couvertes par cette fenêtre. Une clé classique seule ne peut jamais ouvrir de fenêtre : une clé classique volée ne peut donc agir, sur la voie EVM, que dans les limites d'une fenêtre déjà ouverte. Cela fonctionne comme une approbation : on autorise un nombre borné de transactions et un montant borné de QOR natif pour une durée bornée, puis on transige normalement. La fenêtre ne plafonne ni les montants de tokens ni les approbations qu'un contrat détient déjà.
 
 **Ce que borne une fenêtre.** Trois bornes s'appliquent en même temps ; la première atteinte ferme la fenêtre.
 
@@ -143,7 +143,7 @@ Tout le reste de la voie EVM est inchangé : vous continuez à signer avec MetaM
 * Une transaction admise qui échoue consomme tout de même son emplacement et son budget de valeur.
 * L'ouverture d'une nouvelle fenêtre **remplace** la précédente ; la consommation repart de zéro.
 * Le CLI accepte `max-value` en `uqor` ou en `qor` (`1000qor` = 1,000,000,000 uqor).
-* La borne de valeur ne compte que le QOR natif : un transfert de token, une approbation ou tout autre appel de contrat porte une valeur nulle. Pour borner aussi ceux-ci, restreignez la portée de la fenêtre (ci-dessous).
+* La borne de valeur ne compte que le QOR natif : un transfert de token, une approbation ou tout autre appel de contrat porte une valeur nulle. La portée (ci-dessous) restreint les destinataires que la fenêtre admet ; elle ne plafonne pas les montants de tokens.
 
 **Étape 1 — enregistrez votre clé post-quantique** (une seule fois) : voir [Enregistrer votre clé post-quantique](#register-pqc-key) ci-dessus.
 
@@ -163,6 +163,8 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
+
+`--allowed-targets` limite **quels** contrats et tokens la fenêtre peut toucher, pas **combien**. Un token listé admet n'importe quel montant de ce token, y compris `approve`, et un contrat listé peut déplacer tout ce que son code et ses approbations existantes permettent ; ne listez donc pas de contrats de transfert ou de routeur génériques. Une fenêtre ne borne que les transactions de la voie EVM (signées de façon classique) ; les messages Cosmos signés avec la signature hybride PQC, comme les appels cross-VM et authz, sont hors de son champ.
 
 Sur le mainnet, l'ouverture d'une fenêtre a consommé environ 180 000 de gas. Dans [QoreX](/qorex/security-and-recovery#evm-window), la même étape correspond à **Réglages → Sécurité → Fenêtre d'accès EVM** (application) ou au bouton **Fenêtre d'accès EVM** (extension). L'ouverture de la fenêtre fait avancer le nonce de votre compte : ouvrez-la donc **avant** de préparer la transaction EVM dans votre wallet.
 

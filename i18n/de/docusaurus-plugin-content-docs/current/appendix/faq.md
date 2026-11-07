@@ -47,7 +47,7 @@ Für einen Full Node siehe [Einen Node betreiben](/developer-guide/running-a-nod
 
 ### Welches Signaturverfahren verwendet QoreChain?
 
-QoreChain verwendet ein Post-Quantum-Hybridverfahren, das klassisches **secp256k1 (ECDSA)** mit Post-Quantum-**ML-DSA-87 (Dilithium-5)** kombiniert. Dieses Hybridverfahren ist auf dem Cosmos-Transaktionspfad standardmäßig erforderlich, wobei der Durchsetzungsmodus per Governance gesteuert wird. Auf der EVM-Lane bleibt die Signatur secp256k1, und ein Konto muss zusätzlich einen registrierten ML-DSA-Schlüssel und ein offenes Autorisierungsfenster besitzen (seit v3.2.0). Siehe [Post-Quantum-Sicherheit](/architecture/post-quantum-security).
+QoreChain verwendet ein Post-Quantum-Hybridverfahren, das klassisches **secp256k1 (ECDSA)** mit Post-Quantum-**ML-DSA-87 (Dilithium-5)** kombiniert. Dieses Hybridverfahren ist auf dem Cosmos-Transaktionspfad standardmäßig erforderlich, wobei der Durchsetzungsmodus per Governance gesteuert wird. Auf der EVM-Lane bleibt die Signatur secp256k1, und ein Konto muss zusätzlich einen registrierten ML-DSA-Schlüssel und ein offenes Autorisierungsfenster besitzen (seit v3.2.0). Ein Konto ist erst dann Post-Quantum-geschützt, wenn es seinen ML-DSA-87-Schlüssel registriert hat; diese erste Registrierung wird nur mit dem klassischen Schlüssel signiert (der dokumentierte Bootstrap), registrieren Sie ihn also, bevor das Konto nennenswerte Guthaben hält. Siehe [Post-Quantum-Sicherheit](/architecture/post-quantum-security).
 
 ### Warum wird meine EVM-Transaktion mit „no open EVM authorisation window“ abgelehnt?
 

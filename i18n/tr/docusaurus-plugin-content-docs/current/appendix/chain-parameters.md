@@ -39,7 +39,7 @@ Bir [EVM yetkilendirme penceresinin](/getting-started/first-transaction#evm-wind
 | `max_value` | 0'dan büyük (uqor; aktarılan değer artı her işlemin maksimum ücreti) |
 | Maksimum `allowed_targets` | 16 alıcı adresi (isteğe bağlı kapsam, v3.2.3) |
 
-Bir pencere, v3.2.3'ten itibaren `native_only` ile (yalnızca düz yerel QOR transferleri) de daraltılabilir.
+Bir pencere, v3.2.3'ten itibaren `native_only` ile (yalnızca düz yerel QOR transferleri) de daraltılabilir. `allowed_targets`, hangi kontratlara ve token'lara dokunulabileceğini sınırlar, ne kadar olduğunu değil: listelenen bir token, `approve` dahil her miktarı kabul eder. Pencereler yalnızca klasik imzalı EVM şeridi işlemlerini sınırlar; hibrit imzalı Cosmos mesajları (VM'ler arası çağrılar, authz) bunların dışındadır.
 
 ---
 

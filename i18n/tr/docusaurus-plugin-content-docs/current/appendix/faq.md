@@ -47,7 +47,7 @@ Tam düğüm için bkz. [Bir Düğüm Çalıştırma](/developer-guide/running-a
 
 ### QoreChain hangi imza şemasını kullanır?
 
-QoreChain, klasik **secp256k1 (ECDSA)** ile kuantum sonrası **ML-DSA-87 (Dilithium-5)**'i birleştiren bir kuantum sonrası hibrit şema kullanır. Bu hibrit şema, Cosmos işlem yolunda varsayılan olarak zorunludur ve uygulama modu yönetişim tarafından kontrol edilir. EVM hattında imza secp256k1 olarak kalır ve bir hesabın ayrıca kayıtlı bir ML-DSA anahtarına ve açık bir yetkilendirme penceresine sahip olması gerekir (v3.2.0'dan beri). Bkz. [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security).
+QoreChain, klasik **secp256k1 (ECDSA)** ile kuantum sonrası **ML-DSA-87 (Dilithium-5)**'i birleştiren bir kuantum sonrası hibrit şema kullanır. Bu hibrit şema, Cosmos işlem yolunda varsayılan olarak zorunludur ve uygulama modu yönetişim tarafından kontrol edilir. EVM hattında imza secp256k1 olarak kalır ve bir hesabın ayrıca kayıtlı bir ML-DSA anahtarına ve açık bir yetkilendirme penceresine sahip olması gerekir (v3.2.0'dan beri). Bir hesap, ancak ML-DSA-87 anahtarını kaydettikten sonra kuantum sonrası korunur; bu ilk kayıt yalnızca klasik anahtarla imzalanır (belgelenmiş önyükleme), bu yüzden hesap önemli miktarda fon tutmadan önce kaydedin. Bkz. [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security).
 
 ### EVM işlemim neden "no open EVM authorisation window" ile reddediliyor?
 

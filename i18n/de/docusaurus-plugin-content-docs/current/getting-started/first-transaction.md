@@ -129,7 +129,7 @@ Seit dem Chain-Release **v3.2.0** (Mainnet-Höhe 2.981.742, 25. September 2026; 
 
 Alles andere am EVM-Pfad bleibt unverändert: Sie signieren weiterhin mit MetaMask, ethers.js, Hardhat oder Foundry, und `eth_estimateGas` sowie andere Simulationen funktionieren ohne Fenster. Contract-Deployments zählen wie jede andere EVM-Transaktion, daher wird vor einem Deployment ein Fenster benötigt.
 
-**Warum ein Fenster?** Ein Standard-Wallet erzeugt eine einzelne secp256k1-Signatur über eine Ethereum-Transaktion und bietet Anwendungen keine Möglichkeit, eine zweite, Post-Quanten-Signatur anzuhängen. Deshalb reist die Post-Quanten-Autorisierung der Transaktion *voraus*: Sie öffnen mit einer normalen Cosmos-Pfad-Transaktion, die Ihre ML-DSA-Signatur trägt, ein begrenztes Fenster, und der EVM-Pfad lässt dann Transaktionen zu, die davon abgedeckt sind. Ein klassischer Schlüssel allein kann nie ein Fenster öffnen, sodass ein gestohlener klassischer Schlüssel nur ausgeben kann, was ein bereits geöffnetes Fenster erlaubt. Es funktioniert wie eine ERC-20-Freigabe: Sie autorisieren einen begrenzten Betrag für eine begrenzte Zeit und führen dann normal Transaktionen durch.
+**Warum ein Fenster?** Ein Standard-Wallet erzeugt eine einzelne secp256k1-Signatur über eine Ethereum-Transaktion und bietet Anwendungen keine Möglichkeit, eine zweite, Post-Quanten-Signatur anzuhängen. Deshalb reist die Post-Quanten-Autorisierung der Transaktion *voraus*: Sie öffnen mit einer normalen Cosmos-Pfad-Transaktion, die Ihre ML-DSA-Signatur trägt, ein begrenztes Fenster, und der EVM-Pfad lässt dann Transaktionen zu, die davon abgedeckt sind. Ein klassischer Schlüssel allein kann nie ein Fenster öffnen, sodass ein gestohlener klassischer Schlüssel auf der EVM-Lane nur innerhalb dessen handeln kann, was ein bereits geöffnetes Fenster erlaubt. Es funktioniert wie eine Freigabe: Sie autorisieren eine begrenzte Anzahl von Transaktionen und einen begrenzten Betrag an nativem QOR für eine begrenzte Zeit und führen dann normal Transaktionen durch. Das Fenster begrenzt weder Token-Beträge noch Freigaben, die ein Contract bereits hält.
 
 **Was ein Fenster begrenzt.** Drei Grenzen gelten gleichzeitig; welche zuerst erschöpft ist, schließt das Fenster.
 
@@ -143,7 +143,7 @@ Alles andere am EVM-Pfad bleibt unverändert: Sie signieren weiterhin mit MetaMa
 * Eine Transaktion, die zugelassen wird und dann fehlschlägt, verbraucht dennoch ihren Platz und ihr Wertbudget.
 * Das Öffnen eines neuen Fensters **ersetzt** das vorherige; der Verbrauch beginnt wieder bei null.
 * Die CLI akzeptiert `max-value` in `uqor` oder `qor` (`1000qor` = 1.000.000.000 uqor).
-* Die Wertgrenze zählt nur natives QOR: Eine Token-Überweisung, eine Freigabe oder ein anderer Contract-Aufruf trägt den Wert null. Um auch diese zu begrenzen, schränken Sie den Geltungsbereich des Fensters ein (siehe unten).
+* Die Wertgrenze zählt nur natives QOR: Eine Token-Überweisung, eine Freigabe oder ein anderer Contract-Aufruf trägt den Wert null. Der Geltungsbereich (siehe unten) schränkt ein, welche Empfänger das Fenster zulässt; er begrenzt keine Token-Beträge.
 
 **Schritt 1 — Registrieren Sie Ihren Post-Quanten-Schlüssel** (einmalig): siehe [Registrieren Sie Ihren Post-Quanten-Schlüssel](#register-pqc-key) oben.
 
@@ -163,6 +163,8 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
+
+`--allowed-targets` begrenzt, **welche** Contracts und Token das Fenster berühren darf, nicht **wie viel**. Ein aufgelisteter Token lässt jeden Betrag dieses Tokens zu, einschließlich `approve`, und ein aufgelisteter Contract kann alles bewegen, was sein Code und bestehende Freigaben erlauben; listen Sie daher keine generischen Forwarder- oder Router-Contracts auf. Ein Fenster begrenzt nur Transaktionen auf der EVM-Lane (klassisch signiert); Cosmos-Nachrichten, die mit der hybriden PQC-Signatur signiert sind, etwa VM-übergreifende Aufrufe und authz, liegen außerhalb davon.
 
 Im Mainnet hat das Öffnen eines Fensters etwa 180.000 Gas verbraucht. In [QoreX](/qorex/security-and-recovery#evm-window) ist derselbe Schritt **Einstellungen → Sicherheit → EVM-Zugriffsfenster** (App) bzw. die Schaltfläche **EVM-Zugriffsfenster** (Erweiterung). Das Öffnen des Fensters erhöht die Nonce Ihres Kontos, öffnen Sie es daher **bevor** Sie die EVM-Transaktion in Ihrem Wallet vorbereiten.
 

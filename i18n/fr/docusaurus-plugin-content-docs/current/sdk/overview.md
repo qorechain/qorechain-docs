@@ -41,7 +41,7 @@ désactivé par le disjoncteur), le téléversement et l'instanciation QoreChain
 ordinaires (sur le testnet, l'instanciation est ouverte et le téléversement ne l'est pas), les flux authenticator /
 compte abstrait sur le mainnet (module désactivé là-bas, activé sur le
 testnet), xQORE et l'abstraction de gas. Chaque guide rappelle la réserve là où elle
-s'applique. Vérifié sur les points de terminaison actifs le 27 octobre 2026 ; le 4 novembre 2026, la liste des précompilés actifs du mainnet était toujours vide, tandis que celle du testnet contenait aussi le pont cross-VM `0x…0901` (non retesté).
+s'applique. Vérifié sur les points de terminaison actifs le 27 octobre 2026 ; le 7 novembre 2026, la liste des précompilés actifs du mainnet était toujours vide, tandis que celle du testnet contenait aussi le pont cross-VM `0x…0901` (listé comme actif ; un appel via celui-ci n'a pas été testé).
 
 Le SDK publié (0.12.0, 30 octobre 2026) signe sous la forme que vérifient les deux réseaux
 (sign-bytes hybrides v2, déterminés à partir de l'état de la chaîne), et le format de signature,
