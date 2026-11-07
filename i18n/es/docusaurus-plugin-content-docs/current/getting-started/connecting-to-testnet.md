@@ -10,7 +10,7 @@ sidebar_position: 4
 Únete a la red de pruebas activa QoreChain Diana configurando tu nodo con el archivo génesis, los pares y la configuración de red correctos.
 
 :::note
-Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión **v3.2.6** desde el 4 de noviembre de 2026) y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes. La red de pruebas ejecuta la versión **v3.2.6** desde el 27 de octubre de 2026 (la red principal la siguió el 4 de noviembre de 2026); su manifiesto de versión está en [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión **v3.2.6** desde el 4 de noviembre de 2026; la red de pruebas va una versión por delante) y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes. La red de pruebas ejecuta la versión **v3.2.6** desde el 27 de octubre de 2026 (la red principal la siguió el 4 de noviembre de 2026); su manifiesto de versión está en [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Endpoints públicos
@@ -52,7 +52,9 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-La red de pruebas recibe actualizaciones coordinadas mediante propuestas de gobernanza, por lo que su manifiesto incluye un `upgradeHeight` y `minCompatible` es igual a la versión actual. Un nodo que se une ahora necesita la versión indicada en el manifiesto. En el momento de escribir esto (27 de octubre de 2026) el manifiesto de la red de pruebas indica `version` 3.2.6, `minCompatible` 3.2.6 y `upgradeHeight` 8970638, y su nota dice "IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens". Mantén el reloj del sistema sincronizado por NTP.
+La red de pruebas recibe actualizaciones coordinadas mediante propuestas de gobernanza, por lo que su manifiesto incluye un `upgradeHeight` y `minCompatible` es igual a la versión actual. Un nodo que se une ahora necesita la versión indicada en el manifiesto. En el momento de escribir esto (7 de noviembre de 2026) el manifiesto de la red de pruebas indica `version` 3.2.7, `minCompatible` 3.2.7 y `upgradeHeight` 9594600. Su binario es `qorechaind-v3.2.7-b3-linux-amd64.tar.gz` (99,472,930 bytes, sha256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`; vuelve a leer los valores del manifiesto y verifica el sha256 antes de ejecutar el binario). Su nota indica que la versión incluye multifirma poscuántica, gas de verificación poscuántica calibrado, mejoras entre VMs y lecturas de bloques JSON-RPC más fiables. Mantén el reloj del sistema sincronizado por NTP.
+
+**Nodo que sigue en v3.2.6.** Se detiene en la altura 9,594,600. Sustituye `qorechaind` y las bibliotecas `.so` compartidas por las del paquete v3.2.7 y vuelve a iniciarlo: el estado se conserva y no hace falta resincronizar.
 
 | Versión | Altura en la red de pruebas | Fecha de aplicación |
 | --- | --- | --- |
@@ -61,8 +63,9 @@ La red de pruebas recibe actualizaciones coordinadas mediante propuestas de gobe
 | v3.2.4 | 8,337,253 | 19 de octubre de 2026 |
 | v3.2.5 | 8,890,800 | 26 de octubre de 2026 |
 | v3.2.6 | 8,970,638 | 27 de octubre de 2026 (16:58 UTC) |
+| v3.2.7 | 9,594,600 | 6 de noviembre de 2026 (hacia las 15:00 UTC) |
 
-La red de pruebas recibe cada versión antes que la red principal. La red principal aplicó v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026 , v3.2.5 en la altura 3,906,833 el 29 de octubre de 2026 (propuesta de gobernanza 14) y v3.2.6 en la altura 4,020,000 el 4 de noviembre de 2026 (propuesta de gobernanza 15), así que hoy ambas redes ejecutan la misma versión. Los manifiestos son independientes, así que nunca copies un binario de una red a la otra, y espera que la red de pruebas vuelva a ir por delante de la red principal cuando se pruebe la próxima versión (las novedades de v3.2.6 se enumeran en el [Historial de versiones](/appendix/version-history#v326)).
+La red de pruebas recibe cada versión antes que la red principal. La red principal aplicó v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026 , v3.2.5 en la altura 3,906,833 el 29 de octubre de 2026 (propuesta de gobernanza 14) y v3.2.6 en la altura 4,020,000 el 4 de noviembre de 2026 (propuesta de gobernanza 15). Por tanto, la red principal va una versión por detrás: la red de pruebas ejecuta v3.2.7, que la red principal no tiene y para la que todavía no hay fecha ni altura. Los manifiestos son independientes, así que nunca copies un binario de una red a la otra (las novedades de v3.2.7 se enumeran en el [Historial de versiones](/appendix/version-history#v327)).
 
 ---
 

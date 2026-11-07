@@ -286,6 +286,8 @@ v3.1.73 時点で、**SHAKE-256**（SHA-3 の拡張可能出力関数）は、`q
 
 テストネットも同じ値を返します（2026 年 10 月 27 日に確認）。v3.2.6 以降、両ネットワークはこれらを REST の `GET /qorechain/pqc/v1/params` でも提供します。メインネットは 2026 年 11 月 4 日に `200` で応答し、`pqc_primary` は `true`、`allow_classical_fallback` は `false`、`min_security_level` は `5`、デフォルトのアルゴリズムは Dilithium-5、ハイブリッドモードは `required` でした。v3.2.6 より古いノードでは、`qorechaind query pqc params` で読み取ります。
 
+**リリース v3.2.7（テストネットのみ、2026 年 11 月 6 日から）。** ポスト量子レイヤーへの 3 つの変更がテストネットで稼働しており、メインネットにはまだありません（メインネットは v3.2.6 で、アップグレードの日付はありません）。従来型マルチシグアカウント向けのハイブリッド k-of-n マルチシグ（メッセージ `MsgRegisterPQCMultisig`、ルート `GET /qorechain/pqc/v1/multisig/{address}`）、測定に基づいて調整されたポスト量子署名 1 件あたり 2,000 ガスの固定検証コスト（ML-DSA-87 の検証はフリートサーバー上で secp256k1 より約 1.8 倍遅い）、そしてハードウェアウォレットとウェブウォレット向けの SIGN_MODE_TEXTUAL への対応です。これを有効にするプロトコル機能（`pqc-multisig`、`pqc-verify-gas-calibrated`）は、2026 年 11 月 7 日にテストネットで有効と読み取れました。詳細と REST の形式は[ポスト量子署名](/developer-guide/post-quantum-signing#v327)にあります。
+
 ## 関連項目
 
 * [ポスト量子署名](/developer-guide/post-quantum-signing) — これらのプリミティブとハイブリッド署名のためのオープンソース `qorechain-pqc` ライブラリ（6 言語）。

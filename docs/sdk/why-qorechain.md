@@ -91,7 +91,7 @@ await crossVM.callAtomic([
 ```
 
 **Why it's different:** QoreChain runs three co-resident VMs with a native bridge
-module (`crossvm`, plus the `CrossVMBridge` precompile once it is active; it is not active on mainnet; the testnet lists it active as of 7 November 2026, a call through it not tested), so one
+module (`crossvm`, plus the `CrossVMBridge` precompile once it is active; it is not active on mainnet; the testnet has it active with an allowlist, tested with `eth_call` on 7 November 2026), so one
 SDK interface can address all three. Single-VM chains have nothing equivalent to
 wrap. Today the reach of a call is limited by the lane it targets: `MsgCrossVMCall`
 is switched off on mainnet, SVM transactions are disabled, and QoreChain Native upload and

@@ -284,7 +284,7 @@ exportés.
 > Sur le testnet (`qorechain-diana`), la liste `active_static_precompiles` contient
 > `0x…0A01` (vérification PQC), `0x…0A02` (statut de clé PQC) et `0x…0C01` (paramètres de
 > consensus), vérifié le 27 octobre 2026 ; la paire d'IA (`0x…0B01`, `0x…0B02`) n'est active sur aucun des deux réseaux, et le
-> pont inter-VM (`0x…0901`) n'était actif sur aucun des deux le 27 octobre (la liste du testnet le contenait aussi à partir du 4 novembre et le contenait toujours le 7 novembre 2026 ; un appel via celui-ci n'a pas été testé ; la liste du mainnet est vide). Un appel à une
+> pont inter-VM (`0x…0901`) n'était actif sur aucun des deux le 27 octobre (la liste du testnet le contenait aussi à partir du 4 novembre et le contenait toujours le 7 novembre 2026 ; sur le testnet, il est actif avec une liste d'autorisation et un `eth_call` en lecture seule a été testé le 7 novembre 2026 ; la liste du mainnet est vide). Un appel à une
 > adresse inactive renvoie des données vides, de sorte que ces assistants lèvent une erreur. Voir
 > [Précompilés EVM : état du réseau](/developer-guide/evm-precompiles#network-status).
 

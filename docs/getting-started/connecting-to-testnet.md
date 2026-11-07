@@ -10,7 +10,7 @@ sidebar_position: 4
 Join the live QoreChain Diana testnet by configuring your node with the correct genesis file, peers, and network settings.
 
 :::note
-This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 (release **v3.2.6** since 4 November 2026) and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details. The testnet has run **v3.2.6** since 27 October 2026 (mainnet followed on 4 November 2026); its release manifest is at [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 (release **v3.2.6** since 4 November 2026; the testnet is one release ahead) and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details. The testnet has run **v3.2.6** since 27 October 2026 (mainnet followed on 4 November 2026); its release manifest is at [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Public Endpoints
@@ -52,7 +52,9 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-The testnet takes coordinated upgrades through governance proposals, so its manifest carries an `upgradeHeight` and `minCompatible` equals the current version. A node that joins now needs the release in the manifest. At the time of writing (27 October 2026) the testnet manifest reads `version` 3.2.6, `minCompatible` 3.2.6 and `upgradeHeight` 8970638, and its note says "IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens". Keep the system clock NTP-synchronised.
+The testnet takes coordinated upgrades through governance proposals, so its manifest carries an `upgradeHeight` and `minCompatible` equals the current version. A node that joins now needs the release in the manifest. At the time of writing (7 November 2026) the testnet manifest reads `version` 3.2.7, `minCompatible` 3.2.7 and `upgradeHeight` 9594600. Its binary is `qorechaind-v3.2.7-b3-linux-amd64.tar.gz` (99,472,930 bytes, sha256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`; read the values from the manifest again and verify the sha256 before you run the binary). Its note says the release includes post-quantum multisig, calibrated post-quantum verification gas, cross-VM improvements and more reliable JSON-RPC block reads. Keep the system clock NTP-synchronised.
+
+**Node still on v3.2.6.** It stops at height 9,594,600. Replace `qorechaind` and the shared `.so` libraries with the ones from the v3.2.7 bundle and start it again: the state is kept and no resync is needed.
 
 | Release | Testnet height | Date applied |
 | --- | --- | --- |
@@ -61,8 +63,9 @@ The testnet takes coordinated upgrades through governance proposals, so its mani
 | v3.2.4 | 8,337,253 | 19 October 2026 |
 | v3.2.5 | 8,890,800 | 26 October 2026 |
 | v3.2.6 | 8,970,638 | 27 October 2026 (16:58 UTC) |
+| v3.2.7 | 9,594,600 | 6 November 2026 (about 15:00 UTC) |
 
-The testnet takes each release before mainnet. Mainnet applied v3.2.4 at height 3,742,566 on 23 October 2026, v3.2.5 at height 3,906,833 on 29 October 2026 (governance proposal 14) and v3.2.6 at height 4,020,000 on 4 November 2026 (governance proposal 15), so both networks run the same release today. The manifests are separate, so never copy a binary between the two networks, and expect the testnet to run ahead of mainnet again when the next release is tested (the v3.2.6 additions are listed in [Version History](/appendix/version-history#v326)).
+The testnet takes each release before mainnet. Mainnet applied v3.2.4 at height 3,742,566 on 23 October 2026, v3.2.5 at height 3,906,833 on 29 October 2026 (governance proposal 14) and v3.2.6 at height 4,020,000 on 4 November 2026 (governance proposal 15). Mainnet is therefore one release behind: the testnet runs v3.2.7, which mainnet does not have and for which there is no date or height yet. The manifests are separate, so never copy a binary between the two networks (the v3.2.7 additions are listed in [Version History](/appendix/version-history#v327)).
 
 ---
 

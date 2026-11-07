@@ -10,7 +10,7 @@ sidebar_position: 12
 The `x/rdk` module provides a comprehensive Rollup Development Kit (RDK) that allows developers to deploy application-specific rollups on QoreChain. It supports four settlement paradigms, multiple sequencer modes, pluggable data availability backends, and AI-assisted configuration optimization.
 
 :::caution Early-stage capability
-The module is deployed on mainnet (chain version **v3.2.6** since 4 November 2026) and testnet (**v3.2.6** since 27 October 2026), but **no rollup has been created on either network yet** (checked 30 October 2026 on both and again on mainnet on 4 November 2026: `GET /qorechain/rdk/v1/rollups` returns an empty list). Several capabilities described below are not usable end to end today; the status is stated where each is described. For the developer-facing how-to, see [Rollups Overview](/rollups/overview).
+The module is deployed on mainnet (chain version **v3.2.6** since 4 November 2026) and testnet (**v3.2.7** since 6 November 2026), but **no rollup has been created on either network yet** (checked 30 October 2026 on both and again on mainnet on 4 November 2026: `GET /qorechain/rdk/v1/rollups` returns an empty list). Several capabilities described below are not usable end to end today; the status is stated where each is described. For the developer-facing how-to, see [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -44,7 +44,7 @@ ZK rollups provide cryptographic validity proofs that guarantee state transition
 * **Finality**: Instant on proof verification — no challenge window required
 * **Max proof size**: 1 MB (1,048,576 bytes)
 * **Recursion depth**: Configurable proof aggregation depth (default: 1)
-* **Maturity**: SNARK batches are verified on-chain (Groth16 over BLS12-381) against a verifying key stored with the rollup. **ZK settlement cannot be used on either network yet:** the chain has no way to register a verification key for a rollup, so every ZK batch is refused after its fee is paid. Key registration is planned for chain v3.2.7. STARK verification is experimental: it is opt-in and checks a demonstration circuit, not your rollup's own state transition. Treat ZK settlement as not production-ready.
+* **Maturity**: SNARK batches are verified on-chain (Groth16 over BLS12-381) against a verifying key stored with the rollup. **ZK settlement is a testnet-only feature, and not usable on mainnet:** until v3.2.6 the chain had no way to register a verification key for a rollup, so every ZK batch was refused after its fee was paid. Release v3.2.7 (testnet since 6 November 2026; mainnet is on v3.2.6, with no upgrade date yet) adds the registration messages `MsgSetVerificationKey` and, later, `MsgUpdateVerificationKey`, and a ZK batch for a rollup without a key is refused before the fee is paid. The protocol feature `rdk-zk-verification-key` is enabled on the testnet (checked 7 November 2026). No rollup exists on either network yet, so no key registration or ZK batch has been run end to end for this page, and `@qorechain/rdk` 0.8.0 has no builder for the key messages (it only reads `hasVerificationKey`). STARK verification is experimental: it is opt-in and checks a demonstration circuit, not your rollup's own state transition. Treat ZK settlement as not production-ready.
 
 **Batch lifecycle**:
 

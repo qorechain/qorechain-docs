@@ -286,6 +286,8 @@ Le attestazioni del bridge sono progettate per usare firme **Dilithium-5** (ML-D
 
 La testnet restituisce questi stessi valori (verificato il 27 ottobre 2026). Dalla v3.2.6 entrambe le reti li servono anche via REST su `GET /qorechain/pqc/v1/params`: la mainnet ha risposto `200` il 4 novembre 2026 con `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, Dilithium-5 come algoritmo predefinito e modalità ibrida `required`. Su un nodo precedente alla v3.2.6 si leggono con `qorechaind query pqc params`.
 
+**Release v3.2.7 (solo testnet, dal 6 novembre 2026).** Tre modifiche al livello post-quantistico girano sulla testnet e non sono ancora sulla mainnet (la mainnet è sulla v3.2.6, senza data di upgrade): multisig ibrido k-di-n per gli account multisig classici (messaggio `MsgRegisterPQCMultisig`, route `GET /qorechain/pqc/v1/multisig/{address}`), un costo di verifica fisso di 2.000 gas per firma post-quantistica, calibrato su misurazioni (ML-DSA-87 è circa 1,8 volte più lento da verificare di secp256k1 sui server della flotta) e il supporto a SIGN_MODE_TEXTUAL per i wallet hardware e web. Le funzionalità di protocollo abilitanti (`pqc-multisig`, `pqc-verify-gas-calibrated`) risultavano abilitate sulla testnet il 7 novembre 2026. I dettagli e le forme REST sono in [Firma Post-Quantistica](/developer-guide/post-quantum-signing#v327).
+
 ## Correlati
 
 * [Firma Post-Quantistica](/developer-guide/post-quantum-signing) — la libreria open-source `qorechain-pqc` (sei linguaggi) per queste primitive e la firma ibrida.

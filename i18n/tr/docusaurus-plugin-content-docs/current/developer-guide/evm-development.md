@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain, QoreChain EVM Motoru üzerinde tam EVM uyumlu bir yürütme ortamı çalıştırır ve bu sayede tanıdık araçları kullanarak Solidity akıllı sözleşmelerini dağıtmanıza ve onlarla etkileşime geçmenize olanak tanır. EVM modülü, standart Ethereum geliştirme iş akışlarını destekleyen bir JSON-RPC arayüzünü **8545 portunda** (WebSocket için **8546** portunda) sunar.
 
 :::note
-Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve yazım sırasında **v3.2.6** düğüm sürümünü çalıştıran (yönetişim önerisi 15 ile 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde ve v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde ve v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı) **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı 27 Ekim 2026'dan beri **v3.2.6** çalıştırır (v3.2.4: 19 Ekim 2026'da 8.337.253 yüksekliğinden beri, v3.2.5: 26 Ekim'de 8.890.800 yüksekliğinde, v3.2.6: 27 Ekim'de 8.970.638 yüksekliğinde); orada EVM zincir kimliği **9800**'ü kullanın. Bu sayfa ağlar arasında farklılık gösteren bir şeyi (testnet precompile'ları, Fest test token'ları) anlattığında bunu belirtir. Kod örnekleri, kendi çalıştırdığınız bir düğüm için `http://localhost:8545` adresini kullanır; herkese açık ana ağ uç noktası `https://evm.qore.host`, test ağı uç noktası ise `https://evm-testnet.qore.host` adresidir.
+Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve yazım sırasında **v3.2.6** düğüm sürümünü çalıştıran (yönetişim önerisi 15 ile 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde ve v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde ve v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı) **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı 6 Kasım 2026'dan beri **v3.2.7** çalıştırır (v3.2.4: 19 Ekim 2026'da 8.337.253 yüksekliğinden beri, v3.2.5: 26 Ekim'de 8.890.800 yüksekliğinde, v3.2.6: 27 Ekim'de 8.970.638 yüksekliğinde, v3.2.7: 6 Kasım'da 9.594.600 yüksekliğinde); orada EVM zincir kimliği **9800**'ü kullanın. Bu sayfa ağlar arasında farklılık gösteren bir şeyi (testnet precompile'ları, Fest test token'ları) anlattığında bunu belirtir. Kod örnekleri, kendi çalıştırdığınız bir düğüm için `http://localhost:8545` adresini kullanır; herkese açık ana ağ uç noktası `https://evm.qore.host`, test ağı uç noktası ise `https://evm-testnet.qore.host` adresidir.
 :::
 
 :::caution Bir EVM işlemi, kayıtlı bir PQC anahtarı ve açık bir yetkilendirme penceresi gerektirir
@@ -235,7 +235,7 @@ JSON
 qorechaind tx pqc cosign convert-coin.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
-**ERC-20'den bank coin'ine: `MsgConvertERC20`.** Bunun `sender` alanı da hesabın `qor1...` bech32 adresi olmalıdır. Bir `0x` göndericisi `decoding bech32 failed` ile reddedilir. v3.2.6 düğüm sürümünde `qorechaind tx erc20 convert-erc20` CLI komutu ([ERC-20 Token Çiftleri](#erc20-token-pairs) bölümündeki düz örnek) göndericiyi `0x` biçiminde yazar ve bu nedenle reddedilir: onu kullanmayın. Mesajı, yukarıdakiyle aynı şekilde, göndericisi `qor1` adresi olacak biçimde kendiniz oluşturun:
+**ERC-20'den bank coin'ine: `MsgConvertERC20`.** Bunun `sender` alanı da hesabın `qor1...` bech32 adresi olmalıdır. Bir `0x` göndericisi `decoding bech32 failed` ile reddedilir. v3.2.6 düğüm sürümünde (bugün ana ağ) `qorechaind tx erc20 convert-erc20` CLI komutu ([ERC-20 Token Çiftleri](#erc20-token-pairs) bölümündeki düz örnek) göndericiyi `0x` biçiminde yazar ve bu nedenle reddedilir: orada onu kullanmayın. v3.2.7'den itibaren (6 Kasım 2026'dan beri testnet'te, henüz ana ağda değil) komut göndericiyi `qor1` biçiminde yazar. Her iki sürümde de mesajı, yukarıdakiyle aynı şekilde, göndericisi `qor1` adresi olacak biçimde kendiniz oluşturabilirsiniz:
 
 ```bash
 # Workaround: write the message with a qor1 sender (not run for this page)
@@ -271,9 +271,13 @@ Sözleşmeler içinde kuantum-sonrası güvenlik için:
 * **PQC Verify precompile'ı** (`0x0000...0A01`), Solidity'den zincir üzerinde ML-DSA-87 imzalarını doğrular. **Test ağında etkindir** (27 Ekim 2026'da kabul edilen yönetişim önerisi 21 ile etkinleştirildi) ve yazım sırasında ana ağda **etkin değildir**. Bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 * EVM'den QoreChain Native veya SVM'ye giden **VM'ler arası mesajlar** Cosmos şeridi işlemleridir ve diğerleri gibi hibrit imza taşır; mevcut kullanılabilirlikleri için bkz. [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability).
 
+Düğüm sürümü v3.2.7'den itibaren (6 Kasım 2026'dan beri testnet'te, henüz ana ağda değil) `eth_getBlockByNumber`, `eth_getBlockReceipts` ve `eth_feeHistory`, başarısız bir EVM işlemi içeren bloklar için de daha güvenilirdir. 7 Kasım 2026'da üç yöntem de testnet'in genel uç noktasında normal yanıt verdi.
+
 ---
 
 ## EVM yetkilendirme penceresi {#evm-window}
+
+v3.2.7'den itibaren (6 Kasım 2026'dan beri testnet'te, henüz ana ağda değil) pencereyi tüketen bir EVM işlemi, hangi yolun kullandığını söyleyen bir `source` özniteliğiyle `pqc_evm_window_used` olayını yayar.
 
 Kuantum-sonrası bir imza, bir Ethereum işlemiyle *birlikte* gidemez (MetaMask gibi cüzdanlar ikinci bir imza ekleyemez); bu yüzden işlemden *önce* gider. Hesap, Cosmos şeridi mesajı `MsgOpenEVMWindow` ile sınırlı bir pencere açar; ardından EVM şeridi yalnızca etkin bir pencerenin kapsadığı işlemleri kabul eder. Çalınmış klasik bir anahtar tek başına pencere açamaz, dolayısıyla EVM şeridinde yalnızca zaten açık olan bir pencerenin izin verdiği sınırlar içinde işlem yapabilir (pencere token miktarlarını veya mevcut onayları sınırlamaz).
 

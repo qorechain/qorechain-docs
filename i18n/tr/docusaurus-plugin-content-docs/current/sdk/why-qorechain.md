@@ -97,7 +97,7 @@ await crossVM.callAtomic([
 ```
 
 **Neden farklı:** QoreChain, üç eş-yerleşik VM'i yerleşik bir köprü modülüyle
-(`crossvm`, ayrıca etkinleştirildiğinde `CrossVMBridge` precompile'ı; mainnet'te etkin değildir; testnet 7 Kasım 2026 itibarıyla onu etkin olarak listeler, ondan yapılan bir çağrı test edilmedi)
+(`crossvm`, ayrıca etkinleştirildiğinde `CrossVMBridge` precompile'ı; mainnet'te etkin değildir; testnet'te bir izin listesiyle etkindir, 7 Kasım 2026'da `eth_call` ile test edildi)
 çalıştırır; böylece tek bir SDK arayüzü üçünü de adresleyebilir. Tek VM'li
 zincirlerde sarmalanacak eşdeğer bir şey yoktur. Bugün bir çağrının erişimi,
 hedeflediği şerit tarafından sınırlanır: `MsgCrossVMCall` mainnet'te

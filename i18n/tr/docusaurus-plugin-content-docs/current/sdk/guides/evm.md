@@ -291,7 +291,7 @@ ad alanı tipli bağlamalar sağlar ve adresler ile ABI'ler dışa aktarılır.
 > Testnet'te (`qorechain-diana`) `active_static_precompiles` listesi
 > `0x…0A01` (PQC verify), `0x…0A02` (PQC key status) ve `0x…0C01` (consensus
 > params) adreslerini içerir (27 Ekim 2026'da kontrol edildi); AI çifti (`0x…0B01`, `0x…0B02`)
-> her iki ağda da etkin değildir ve cross-VM köprüsü (`0x…0901`) 27 Ekim'de her ikisinde de etkin değildi (testnet listesi onu 4 Kasım'dan itibaren de içeriyordu ve 7 Kasım 2026'da hâlâ içeriyordu; ondan yapılan bir çağrı test edilmedi; mainnet'in listesi boştur). Etkin olmayan bir
+> her iki ağda da etkin değildir ve cross-VM köprüsü (`0x…0901`) 27 Ekim'de her ikisinde de etkin değildi (testnet listesi onu 4 Kasım'dan itibaren de içeriyordu ve 7 Kasım 2026'da hâlâ içeriyordu; testnet'te bir izin listesiyle etkindir ve 7 Kasım 2026'da salt okunur bir `eth_call` test edildi; mainnet'in listesi boştur). Etkin olmayan bir
 > adrese yapılan çağrı boş veri döndürür, bu nedenle bu yardımcılar hata fırlatır. Bkz.
 > [EVM Ön Derlemeleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 

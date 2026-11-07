@@ -10,7 +10,7 @@ sidebar_position: 8
 ## ¿Está la mainnet en funcionamiento?
 
 Sí. La mainnet está **en funcionamiento** (id de cadena `qorechain-vladi`, en
-funcionamiento desde el 7 de junio de 2026) y ejecuta la versión de cadena v3.2.6 (aplicada en la altura 4,020,000 el 4 de noviembre de 2026, propuesta de gobernanza 15; la v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026 y la v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026); la testnet ejecuta v3.2.6 desde el 27 de octubre de 2026. El preajuste de testnet (`qorechain-diana`)
+funcionamiento desde el 7 de junio de 2026) y ejecuta la versión de cadena v3.2.6 (aplicada en la altura 4,020,000 el 4 de noviembre de 2026, propuesta de gobernanza 15; la v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026 y la v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026); la testnet ejecuta v3.2.6 desde el 27 de octubre de 2026 y v3.2.7 desde el 6 de noviembre de 2026 (altura 9,594,600; no está en la mainnet, sin fecha). El preajuste de testnet (`qorechain-diana`)
 también sigue disponible. Desde el SDK 0.12.0 ambos preajustes usan por defecto los
 endpoints públicos; selecciona la red con `createClient({ network: "mainnet" })` y
 sobrescribe `endpoints` solo para tu propio nodo. Consulta
@@ -60,7 +60,7 @@ activos en la mainnet**, y solo tres están activos en la testnet: solo responde
 sus direcciones figuran en el parámetro `active_static_precompiles` del módulo EVM.
 Esa lista está vacía en la mainnet; en la testnet contiene los precompilados de
 verificación PQC (`0x…0A01`), de estado de clave PQC (`0x…0A02`) y de parámetros de
-consenso (`0x…0C01`) (comprobado el 27 de octubre de 2026; la lista de la testnet también contenía el puente cross-VM `0x…0901` desde el 4 de noviembre y el 7 de noviembre de 2026, figurando como activo pero sin probar una llamada a través de él, y la de la mainnet seguía vacía), así que el par de IA sigue
+consenso (`0x…0C01`) (comprobado el 27 de octubre de 2026; la lista de la testnet también contenía el puente cross-VM `0x…0901` desde el 4 de noviembre y el 7 de noviembre de 2026, activo con una lista de permitidos (probado con `eth_call`), y la de la mainnet seguía vacía), así que el par de IA sigue
 sin responder nada allí. Donde un precompilado está inactivo la
 llamada devuelve datos vacíos, así que viem informa `returned no data ("0x")` y el
 auxiliar lanza un error (consulta
@@ -159,9 +159,9 @@ eth-native).
 
 El SDK **0.12.0** es la versión de cliente para la cadena **v3.2.5** (la mainnet
 desde el 29 de octubre de 2026 en la altura 3,906,833; la testnet desde el 26 de
-octubre). Ambas redes ejecutan la v3.2.6 (la mainnet desde el 4 de noviembre, la
-testnet desde el 27 de octubre); el formato de firma no cambió, así que la 0.12.0
-funciona en ambas. Añade la regla exacta de gas para las transacciones híbridas, los
+octubre). La mainnet ejecuta la v3.2.6
+(desde el 4 de noviembre) y la testnet la v3.2.7 (desde el 6 de noviembre; la v3.2.6 desde el 27 de octubre); el formato de firma no
+cambió hasta la v3.2.6, así que la 0.12.0 funciona en la mainnet. La 0.12.0 no tiene constructores para las novedades de la v3.2.7 (el registro de multifirma PQC, el modo de firma textual, el APR, la identidad de clúster y los mensajes de verification key), y su ruta de firma no se volvió a comprobar contra la testnet v3.2.7; usa la CLI para ellos. Añade la regla exacta de gas para las transacciones híbridas, los
 constructores y la lectura del registro de claves ML-KEM, las lecturas de cuentas
 abstractas y los constructores verificados de parámetros de gobernanza (consulta
 [Qué añade la 0.12.0](/sdk/install#whats-new-0120)), además de lo que la 0.10.0 añadió
@@ -175,8 +175,8 @@ también opera en ambas redes (la forma v2 de los sign-bytes híbridos, el regis
 los envíos híbridos y la ventana EVM funcionan sin cambios), pero no tiene ninguno
 de esos constructores: usa la CLI para ellos (consulta
 [Versiones anteriores a la 0.9.0](/sdk/install#before-090)). El formato de firma no
-cambió en v3.2.4, v3.2.5 ni v3.2.6. Ambas redes ejecutan v3.2.6 (la testnet aplicó la v3.2.5 el 26 de octubre
-de 2026 y la v3.2.6 el 27 de octubre; la mainnet aplicó la v3.2.5 el 29 de octubre y la v3.2.6 el 4 de noviembre). El SDK 0.10.0 y el 0.9.0 siguen funcionando en ellas, pero no tienen constructores para las
+cambió en v3.2.4, v3.2.5 ni v3.2.6. La mainnet ejecuta v3.2.6 y la testnet v3.2.7 (la testnet aplicó la v3.2.5 el 26 de octubre
+de 2026, la v3.2.6 el 27 de octubre y la v3.2.7 el 6 de noviembre; la mainnet aplicó la v3.2.5 el 29 de octubre y la v3.2.6 el 4 de noviembre). El SDK 0.10.0 y el 0.9.0 siguen funcionando en ellas, pero no tienen constructores para las
 novedades de la v3.2.5 (el registro de claves ML-KEM, la regla exacta de gas); con esas versiones usa la CLI, o actualiza a la 0.12.0. La 0.12.0 se construyó y se verificó contra la v3.2.5.
 
 ## Mi registro de clave PQC fue rechazado pero se cobró la comisión

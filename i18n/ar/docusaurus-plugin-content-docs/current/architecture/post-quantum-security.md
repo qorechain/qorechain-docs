@@ -286,6 +286,8 @@ active --> migrating --> deprecated --> disabled
 
 تعيد الشبكة الاختبارية القيم نفسها (جرى التحقق في 27 أكتوبر 2026). ومنذ v3.2.6 تقدّمها الشبكتان أيضًا عبر REST على `GET /qorechain/pqc/v1/params`: وقد ردّت الشبكة الرئيسية بالرمز `200` في 4 نوفمبر 2026 مع `pqc_primary` بقيمة `true` و`allow_classical_fallback` بقيمة `false` و`min_security_level` بقيمة `5` وDilithium-5 خوارزمية افتراضية ووضع هجين `required`. وعلى عقدة أقدم من v3.2.6 تُقرأ المعاملات بالأمر `qorechaind query pqc params`.
 
+**الإصدار v3.2.7 (شبكة الاختبار فقط، منذ 6 نوفمبر 2026).** تعمل ثلاثة تغييرات في طبقة ما بعد الكمّ على شبكة الاختبار وليست على الشبكة الرئيسية بعد (الشبكة الرئيسية على v3.2.6، بلا تاريخ للترقية): multisig هجين من نوع k-of-n لحسابات multisig الكلاسيكية (الرسالة `MsgRegisterPQCMultisig`، والمسار `GET /qorechain/pqc/v1/multisig/{address}`)، وتكلفة تحقق ثابتة قدرها 2,000 غاز لكل توقيع ما بعد كمّي، معايَرة على قياسات (التحقق من ML-DSA-87 أبطأ بنحو 1.8 مرة من secp256k1 على خوادم الأسطول)، ودعم SIGN_MODE_TEXTUAL للمحافظ العتادية ومحافظ الويب. وتظهر ميزتا البروتوكول الممكِّنتان (`pqc-multisig` و`pqc-verify-gas-calibrated`) مفعَّلتين على شبكة الاختبار في 7 نوفمبر 2026. التفاصيل وأشكال REST في [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing#v327).
+
 ## ذات صلة
 
 * [التوقيع ما بعد الكمومي](/developer-guide/post-quantum-signing) — مكتبة `qorechain-pqc` مفتوحة المصدر (ست لغات) لهذه البدائيات والتوقيع الهجين.

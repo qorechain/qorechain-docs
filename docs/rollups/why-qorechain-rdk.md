@@ -28,7 +28,7 @@ Rust, and Java.
 | --- | --- | --- |
 | **Settlement receipts** | 🟡 Early stage | Anchors are signed with ML-DSA-87, the Main Chain's post-quantum scheme; no anchors exist yet, so the current verifier (which checks against the chain) has never been run on a real anchor |
 | **QCAI Rollup Copilot** | 🟡 Not available on the public endpoints yet | On-chain AI/RL advisory services that the public endpoints do not expose today |
-| **Multi-VM cross-VM calls** | 🟡 Not usable on the live networks yet | A cross-VM precompile that is not activated (the encoder since 0.6.0 matches the chain's layout), and QoreChain Native upload is closed |
+| **Multi-VM cross-VM calls** | 🟡 Not usable on the live networks yet | A cross-VM precompile that is not activated on mainnet, active with an allowlist on the testnet (the encoder since 0.6.0 matches the chain's layout), and QoreChain Native upload is closed |
 
 ---
 
@@ -87,14 +87,14 @@ From the CLI: `qorollup advise my-rollup`. See [QCAI Copilot](/rollups/qcai-copi
 ## 3. Multi-VM cross-VM calls
 
 > 🟡 **Not usable on mainnet yet** — the precompile is not activated there and
-> QoreChain Native upload is closed. On the testnet the precompile is listed active (7 November 2026); a call was not tested. See [Multi-VM](/rollups/multi-vm).
+> QoreChain Native upload is closed. On the testnet the precompile is active with an allowlist (tested with `eth_call` on 7 November 2026). See [Multi-VM](/rollups/multi-vm).
 
 The RDK includes helpers that encode a call from an EVM (Solidity) contract to a
 **QoreChain Native** contract through a fixed precompile at `0x…0901`. That precompile is
-**not active on mainnet** and is **listed active on the testnet** as of 7 November 2026 (see
+**not active on mainnet** and is **active on the testnet** (with an allowlist of reviewed contracts; tested 7 November 2026) (see
 [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status)):
 `eth_getCode` for `0x…0901` returns `0x` (a precompile has no bytecode), a contract call to it
-succeeds with no effect on mainnet, and a call through it on the testnet was not tested.
+succeeds with no effect on mainnet; on the testnet a target on the allowlist reaches its contract and any other is refused with "is not allowlisted".
 
 The helper `encodeCrossVmCalldata` (since 0.6.0) builds calldata for
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, the layout

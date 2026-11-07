@@ -49,7 +49,7 @@ JSON-RPC サーバーは **`qorechaind start` によって起動され**、**デ
 | `getTokenAccountsByOwner`           | `owner`、フィルター          | 所有者のトークンアカウントを返します                            |
 | `getTokenAccountsByDelegate`        | `delegate`、フィルター       | デリゲートのトークンアカウントを返します                          |
 
-`getGenesisHash` や `getEpochInfo` など、この一覧にないメソッドは `-32601 method not found` を返します(`https://svm.qore.host` と `https://svm-testnet.qore.host` に対して確認、2026年10月23日)。v3.2.2 以降、RPC および gRPC クエリの base58 アドレスは正規の形式で、かつ長さが制限内でなければならず、不正な形式のものは拒否されます。`getTransaction` は受け付けられますが、現在は `result` フィールドのないエンベロープを返すため、これに依存しないでください。`getSlot` が報告するスロットは、チェーンのブロック高に連動します。
+`getEpochInfo` など、この一覧にないメソッドは `-32601 method not found` を返します(`https://svm.qore.host` と `https://svm-testnet.qore.host` に対して確認、2026年10月23日。`getEpochInfo` はテストネットで 2026年11月7日にも再確認)。**テストネット、v3.2.7:** `getGenesisHash` に応答し(2026年11月7日に `6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj` を返しました)、`getVersion` は `qorechain-chain-id`、`qorechain-cluster`(Wallet Standard のチェーン ID。`solana:` に続けてジェネシスハッシュの先頭32文字)、`qorechain-genesis-hash` も報告します。同じ識別情報は REST の `GET /qorechain/svm/v1/cluster_info` でも提供されます([REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#svm-cluster-info)を参照)。メインネット(v3.2.6)では `getGenesisHash` は依然として `-32601` を返し、`getVersion` には `solana-core` と `feature-set` しかありません(2026年11月7日に確認)。SVM は引き続きオフのままです。この識別情報はウォレットがクラスターを認識できるようにするもので、トランザクションを有効にするものではありません。v3.2.2 以降、RPC および gRPC クエリの base58 アドレスは正規の形式で、かつ長さが制限内でなければならず、不正な形式のものは拒否されます。`getTransaction` は受け付けられますが、現在は `result` フィールドのないエンベロープを返すため、これに依存しないでください。`getSlot` が報告するスロットは、チェーンのブロック高に連動します。
 
 ---
 

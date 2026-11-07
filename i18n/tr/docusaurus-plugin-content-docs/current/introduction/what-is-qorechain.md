@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain; genesis'te kuantum sonrası kriptografi, AI-yerel işlem işleme ve tek bir zincir üzerinde EVM, QoreChain Native (CosmWasm çalışma zamanı) ile SVM programlarını yürüten üçlü VM çalışma zamanıyla inşa edilmiş ilk Katman 1 (Layer 1) blok zinciridir. QoreChain, mevcut bir protokole kuantum direncini sonradan eklemek yerine, modern genel amaçlı bir blok zincirinden beklenen geliştirici deneyimi ve birlikte çalışabilirliği sunarken hem klasik hem de kuantum saldırganlarına karşı güvenli olacak şekilde sıfırdan tasarlanmıştır.
 
-Ana ağ (`qorechain-vladi`, EVM chain ID **9801**) 7 Haziran 2026'dan beri yayında ve zincir sürümü **v3.2.6**'yı çalıştırıyor (yönetişim önerisi 15 ile 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı; v3.2.5, 29 Ekim'de 3.906.833 yüksekliğinde uygulanmıştı). Hazırlama (staging) ve entegrasyon testi için paralel olarak bir genel test ağı (`qorechain-diana`, EVM chain ID **9800**, o da v3.2.6 üzerinde, 27 Ekim 2026'dan beri) çalışmaktadır. Yerel token, hesaplar için `qor` ve doğrulayıcılar için `qorvaloper` Bech32 önekleriyle **QOR** (görüntüleme) / **uqor** (taban, 10^6)'dur. Zincir, Cosmos SDK v0.53 üzerine kuruludur.
+Ana ağ (`qorechain-vladi`, EVM chain ID **9801**) 7 Haziran 2026'dan beri yayında ve zincir sürümü **v3.2.6**'yı çalıştırıyor (yönetişim önerisi 15 ile 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı; v3.2.5, 29 Ekim'de 3.906.833 yüksekliğinde uygulanmıştı). Hazırlama (staging) ve entegrasyon testi için paralel olarak bir genel test ağı (`qorechain-diana`, EVM chain ID **9800**, 6 Kasım 2026'dan beri v3.2.7 üzerinde, ana ağın bir sürüm önünde) çalışmaktadır. Yerel token, hesaplar için `qor` ve doğrulayıcılar için `qorvaloper` Bech32 önekleriyle **QOR** (görüntüleme) / **uqor** (taban, 10^6)'dur. Zincir, Cosmos SDK v0.53 üzerine kuruludur.
 
 ## Çekirdek Yenilikler
 
@@ -29,7 +29,7 @@ QoreChain, tek bir uzlaşı içinde üç sanal makineyi yerel olarak çalıştı
 * **QoreChain Native** — Tam yaşam döngüsü desteğiyle (örnekleme, yürütme, sorgulama, geçiş) Rust ile yazılmış WebAssembly akıllı sözleşmeleri.
 * **SVM** — 8899 portunda Solana uyumlu bir JSON-RPC sunucusuyla BPF programı dağıtımı ve yürütmesi. Mevcut Solana istemcileri ve araçları kutudan çıktığı gibi çalışır.
 
-VM'ler arası mesajlaşma, üç çalışma zamanının tamamının iletişim kurmasını sağlar: EVM sözleşmeleri precompile aracılığıyla QoreChain Native'ı çağırır (bu precompile etkinleştirildiğinde), QoreChain Native sözleşmeleri özel mesajlar aracılığıyla EVM'i çağırır ve SVM programları asenkron olay tabanlı köprüleme yoluyla katılır. Bugün canlı ağlarda yalnızca EVM çalışma zamanı işlem kabul eder: QoreChain Native kodu yükleme ve örnekleme devre dışıdır, SVM işlem şeridi devre dışıdır, ana ağda hiçbir EVM precompile'ı etkin değildir (testnet'te üç tanesi etkindir) ve VM'ler arası çağrı mesajı ana ağda kapalıdır.
+VM'ler arası mesajlaşma, üç çalışma zamanının tamamının iletişim kurmasını sağlar: EVM sözleşmeleri precompile aracılığıyla QoreChain Native'ı çağırır (precompile yalnızca testnet'te etkindir; mainnet'te değil), QoreChain Native sözleşmeleri özel mesajlar aracılığıyla EVM'i çağırır ve SVM programları asenkron olay tabanlı köprüleme yoluyla katılır. Bugün canlı ağlarda yalnızca EVM çalışma zamanı işlem kabul eder: QoreChain Native kodu yükleme ve örnekleme devre dışıdır, SVM işlem şeridi devre dışıdır, ana ağda hiçbir EVM precompile'ı etkin değildir (testnet'te dört tanesi etkindir) ve VM'ler arası çağrı mesajı ana ağda kapalıdır.
 
 ### 4. Sabit Üst Sınırlı Emisyonlu Tokenomik
 

@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain betreibt eine vollständig EVM-kompatible Ausführungsumgebung auf der QoreChain EVM Engine und ermöglicht es, Solidity-Smart-Contracts mit vertrauten Werkzeugen bereitzustellen und mit ihnen zu interagieren. Das EVM-Modul stellt eine JSON-RPC-Schnittstelle auf **Port 8545** bereit (WebSocket auf **8546**), die gängige Ethereum-Entwicklungsworkflows unterstützt.
 
 :::note
-Die folgenden Beispiele richten sich an das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und zum Zeitpunkt der Erstellung das Node-Release **v3.2.6** ausführt (angewendet durch Governance-Vorschlag 15 auf Höhe 4.020.000 am 4. November 2026; v3.2.5 war auf Höhe 3.906.833 am 29. Oktober 2026 und v3.2.4 war auf Höhe 3.742.566 am 23. Oktober 2026 und v3.2.3 auf Höhe 3.662.051 am 20. Oktober 2026 angewendet worden). Das **`qorechain-diana`**-Testnet läuft seit dem 27. Oktober 2026 mit **v3.2.6** (v3.2.4 seit Höhe 8.337.253 am 19. Oktober 2026, v3.2.5 auf Höhe 8.890.800 am 26. Oktober, v3.2.6 auf Höhe 8.970.638 am 27. Oktober); verwenden Sie dort die EVM-Chain-ID **9800**. Wo diese Seite etwas beschreibt, das sich zwischen den Netzwerken unterscheidet (die Testnet-Precompiles, die Fest-Test-Token), sagt sie es. Die Codebeispiele verwenden `http://localhost:8545` für einen selbst betriebenen Node; der öffentliche Mainnet-Endpunkt ist `https://evm.qore.host` und der Testnet-Endpunkt ist `https://evm-testnet.qore.host`.
+Die folgenden Beispiele richten sich an das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und zum Zeitpunkt der Erstellung das Node-Release **v3.2.6** ausführt (angewendet durch Governance-Vorschlag 15 auf Höhe 4.020.000 am 4. November 2026; v3.2.5 war auf Höhe 3.906.833 am 29. Oktober 2026 und v3.2.4 war auf Höhe 3.742.566 am 23. Oktober 2026 und v3.2.3 auf Höhe 3.662.051 am 20. Oktober 2026 angewendet worden). Das **`qorechain-diana`**-Testnet läuft seit dem 6. November 2026 mit **v3.2.7** (v3.2.4 seit Höhe 8.337.253 am 19. Oktober 2026, v3.2.5 auf Höhe 8.890.800 am 26. Oktober, v3.2.6 auf Höhe 8.970.638 am 27. Oktober, v3.2.7 auf Höhe 9.594.600 am 6. November); verwenden Sie dort die EVM-Chain-ID **9800**. Wo diese Seite etwas beschreibt, das sich zwischen den Netzwerken unterscheidet (die Testnet-Precompiles, die Fest-Test-Token), sagt sie es. Die Codebeispiele verwenden `http://localhost:8545` für einen selbst betriebenen Node; der öffentliche Mainnet-Endpunkt ist `https://evm.qore.host` und der Testnet-Endpunkt ist `https://evm-testnet.qore.host`.
 :::
 
 :::caution Eine EVM-Transaktion benötigt einen registrierten PQC-Schlüssel und ein offenes Autorisierungsfenster
@@ -235,7 +235,7 @@ JSON
 qorechaind tx pqc cosign convert-coin.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
-**ERC-20 zu Bank-Coin: `MsgConvertERC20`.** Auch ihr Feld `sender` muss die bech32-Adresse `qor1...` des Kontos sein. Ein `0x`-Absender wird mit `decoding bech32 failed` abgelehnt. Im Node-Release v3.2.6 schreibt der CLI-Befehl `qorechaind tx erc20 convert-erc20` (das einfache Beispiel unter [ERC-20-Token-Paare](#erc20-token-pairs)) den Absender in der Form `0x` und wird aus diesem Grund abgelehnt: Verwenden Sie ihn nicht. Erstellen Sie die Nachricht selbst mit der `qor1`-Adresse als Absender, auf dieselbe Weise wie oben:
+**ERC-20 zu Bank-Coin: `MsgConvertERC20`.** Auch ihr Feld `sender` muss die bech32-Adresse `qor1...` des Kontos sein. Ein `0x`-Absender wird mit `decoding bech32 failed` abgelehnt. Im Node-Release v3.2.6 (heute im Mainnet) schreibt der CLI-Befehl `qorechaind tx erc20 convert-erc20` (das einfache Beispiel unter [ERC-20-Token-Paare](#erc20-token-pairs)) den Absender in der Form `0x` und wird aus diesem Grund abgelehnt: Verwenden Sie ihn dort nicht. Ab v3.2.7 (Testnet seit dem 6. November 2026, noch nicht im Mainnet) schreibt der Befehl den Absender in der Form `qor1`. Mit jedem Release können Sie die Nachricht selbst mit der `qor1`-Adresse als Absender erstellen, auf dieselbe Weise wie oben:
 
 ```bash
 # Workaround: write the message with a qor1 sender (not run for this page)
@@ -271,9 +271,13 @@ Für Post-Quanten-Sicherheit innerhalb von Contracts:
 * Das **PQC-Verify-Precompile** (`0x0000...0A01`) verifiziert ML-DSA-87-Signaturen on-chain aus Solidity heraus. Es ist **im Testnet aktiv** (aktiviert durch Governance-Vorschlag 21, angenommen am 27. Oktober 2026) und zum Zeitpunkt der Erstellung **im Mainnet nicht aktiv**. Siehe [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
 * **Cross-VM-Nachrichten** von der EVM zu QoreChain Native oder SVM sind Transaktionen der Cosmos-Lane und tragen wie jede andere die hybride Signatur; ihre aktuelle Verfügbarkeit finden Sie unter [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability).
 
+Ab Node-Release v3.2.7 (Testnet seit dem 6. November 2026, noch nicht im Mainnet) sind `eth_getBlockByNumber`, `eth_getBlockReceipts` und `eth_feeHistory` zuverlässiger, auch für Blöcke, die eine fehlgeschlagene EVM-Transaktion enthalten. Am 7. November 2026 antworteten die drei Methoden auf dem öffentlichen Endpunkt des Testnets normal.
+
 ---
 
 ## EVM-Autorisierungsfenster {#evm-window}
+
+Ab v3.2.7 (Testnet seit dem 6. November 2026, noch nicht im Mainnet) emittiert eine EVM-Transaktion, die das Fenster verbraucht, das Event `pqc_evm_window_used`, mit einem Attribut `source`, das angibt, welcher Pfad es verbraucht hat.
 
 Eine Post-Quanten-Signatur kann nicht *mit* einer Ethereum-Transaktion reisen (Wallets wie MetaMask können keine zweite Signatur anhängen), also reist sie *vor* ihr. Das Konto öffnet mit der Cosmos-Lane-Nachricht `MsgOpenEVMWindow` ein begrenztes Fenster; die EVM-Lane lässt dann nur Transaktionen zu, die von einem aktiven Fenster abgedeckt sind. Ein gestohlener klassischer Schlüssel allein kann kein Fenster öffnen und kann daher auf der EVM-Lane nur innerhalb dessen handeln, was ein bereits geöffnetes Fenster erlaubt (das Fenster begrenzt weder Token-Beträge noch bestehende Genehmigungen).
 

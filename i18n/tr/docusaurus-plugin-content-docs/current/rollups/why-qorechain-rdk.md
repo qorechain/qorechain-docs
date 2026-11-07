@@ -29,7 +29,7 @@ herhangi bir kit işinizi görür; buradaki yetenekler RDK'nın bunun üzerine e
 | --- | --- | --- |
 | **Yerleşim makbuzları** | 🟡 Erken aşama | Sabitlemeler (anchor), Ana Zincirin kuantum sonrası şeması olan ML-DSA-87 ile imzalanır; henüz sabitleme yok, dolayısıyla zincire karşı kontrol yapan güncel doğrulayıcı gerçek bir sabitleme üzerinde hiç çalıştırılmadı |
 | **QCAI Rollup Copilot** | 🟡 Genel uç noktalarda henüz mevcut değil | Genel uç noktaların bugün sunmadığı zincir üstü AI/RL danışma servisleri |
-| **Çoklu-VM zincirler arası VM çağrıları** | 🟡 Canlı ağlarda henüz kullanılamaz | Etkinleştirilmemiş bir zincirler arası VM precompile'ı (0.6.0'dan beri kodlayıcı zincirin yerleşimiyle eşleşir) ve kapalı QoreChain Native yüklemesi |
+| **Çoklu-VM zincirler arası VM çağrıları** | 🟡 Canlı ağlarda henüz kullanılamaz | Mainnet'te etkinleştirilmemiş, test ağında bir izin listesiyle etkin bir zincirler arası VM precompile'ı (0.6.0'dan beri kodlayıcı zincirin yerleşimiyle eşleşir) ve kapalı QoreChain Native yüklemesi |
 
 ---
 
@@ -90,14 +90,14 @@ CLI üzerinden: `qorollup advise my-rollup`. Bkz. [QCAI Copilot](/rollups/qcai-c
 ## 3. Çoklu-VM zincirler arası VM çağrıları
 
 > 🟡 **Mainnet'te henüz kullanılamaz** — precompile orada etkinleştirilmemiştir ve
-> QoreChain Native yüklemesi kapalıdır. Test ağında precompile etkin olarak listelenir (7 Kasım 2026); bir çağrı test edilmedi. Bkz. [Çoklu-VM](/rollups/multi-vm).
+> QoreChain Native yüklemesi kapalıdır. Test ağında precompile bir izin listesiyle etkindir (7 Kasım 2026'da `eth_call` ile test edildi). Bkz. [Çoklu-VM](/rollups/multi-vm).
 
 RDK, bir EVM (Solidity) sözleşmesinden bir **QoreChain Native** sözleşmesine yapılan
 çağrıyı, `0x…0901` adresindeki sabit bir precompile aracılığıyla kodlayan
-yardımcılar içerir. Bu precompile ana ağda (mainnet) **etkin değildir** ve 7 Kasım 2026 itibarıyla
-testnet'te **etkin olarak listelenir** (bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status)):
+yardımcılar içerir. Bu precompile ana ağda (mainnet) **etkin değildir** ve
+testnet'te **etkindir** (incelenmiş sözleşmelerden oluşan bir izin listesiyle; 7 Kasım 2026'da test edildi) (bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status)):
 `0x…0901` için `eth_getCode` `0x` döndürür (bir precompile'ın bytecode'u yoktur), ona yapılan bir
-sözleşme çağrısı mainnet'te hiçbir etki olmadan başarılı olur ve testnet'te ondan yapılan bir çağrı test edilmedi.
+sözleşme çağrısı mainnet'te hiçbir etki olmadan başarılı olur; testnet'te izin listesindeki bir hedef sözleşmesine ulaşır ve başka her hedef "is not allowlisted" gerekçesiyle reddedilir.
 
 `encodeCrossVmCalldata` yardımcısı (0.6.0'dan beri), düğümün çözdüğü yerleşim olan
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`

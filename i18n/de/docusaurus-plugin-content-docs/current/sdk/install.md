@@ -51,8 +51,8 @@ wird auf beiden Netzwerken zu v2 aufgelöst, weil beide das Upgrade angewendet h
 ## Was 0.12.0 neu bringt {#whats-new-0120}
 
 SDK 0.12.0 ist das Client-Release für die Chain **v3.2.5**, die das Mainnet bei
-Höhe 3.906.833 am 29. Oktober 2026 angewendet hat (das Testnet hat sie am 26. Oktober angewendet). Beide
-Netzwerke laufen seit dem 4. November (Mainnet) und dem 27. Oktober (Testnet) mit v3.2.6; das
+Höhe 3.906.833 am 29. Oktober 2026 angewendet hat (das Testnet hat sie am 26. Oktober angewendet). Das Mainnet
+läuft seit dem 4. November mit v3.2.6; das Testnet lief ab dem 27. Oktober mit v3.2.6 und läuft seit dem 6. November mit v3.2.7; das
 hybride Signaturformat, Adressen, Dezimalstellen und Memos haben sich nicht geändert, sodass eine
 mit 0.10.0 erstellte Transaktion gültig bleibt. TypeScript, Python, Go, Rust und Java
 wechseln alle auf 0.12.0, ebenso `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`
@@ -97,7 +97,7 @@ was nach v3.2.4 eingeführt wurde; die Ergänzungen von v3.2.5 kamen mit
 [0.12.0](#whats-new-0120). Das Mainnet läuft seit dem 4. November 2026 mit v3.2.6 (Höhe
 4.020.000, Governance-Vorschlag 15; davor v3.2.5, ab dem 29. Oktober bei Höhe
 3.906.833), und 0.10.0 funktioniert dort weiter, weil sich das Signaturformat nicht
-geändert hat. Das Testnet hat v3.2.5 und v3.2.6 am 26. und 27. Oktober 2026 angewendet. Was 0.10.0
+geändert hat. Das Testnet hat v3.2.5 und v3.2.6 am 26. und 27. Oktober 2026 und v3.2.7 am 6. November angewendet (kein SDK-Release hat Builder für die Nachrichten von v3.2.7). Was 0.10.0
 brachte (alles davon ist weiterhin in 0.12.0 enthalten):
 
 | Bereich | In 0.10.0 |

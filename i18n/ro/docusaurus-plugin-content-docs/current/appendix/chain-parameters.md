@@ -225,9 +225,9 @@ Setările per lanț (`min_confirmations`, `max_single_transfer`, `daily_limit`) 
 | `max_queue_size`      | `1000`  | Numărul maxim de mesaje în așteptare în coada cross-VM |
 | `queue_timeout_blocks`| `100`   | Blocuri înainte ca un mesaj în așteptare să expire |
 | `enabled`             | `true`  | Indicator de activare a modulului              |
-| `bridge_allowed_targets` | `[]` (goală) | Listă de permisiuni, gestionată prin guvernanță, a țintelor de contract pe care puntea cross-VM le poate apela (v3.2.5); o listă goală nu permite niciuna |
+| `bridge_allowed_targets` | `[]` (goală) pe mainnet; trei intrări `cosmwasm:qor1...` pe testnet (citite la 7 noiembrie 2026) | Listă de permisiuni, gestionată prin guvernanță, a țintelor de contract pe care puntea cross-VM le poate apela (v3.2.5); o listă goală nu permite niciuna |
 
-`MsgCrossVMCall` este în continuare dezactivat pe mainnet de întrerupătorul de circuit (activat pe testnet, verificat la 30 octombrie 2026; lista de pe mainnet a fost recitită la 4 noiembrie 2026 și are în continuare 16 intrări). Din v3.2.5 ambele rețele servesc aceste valori prin REST (`GET /qorechain/crossvm/v1/params`); înainte de v3.2.5, mainnet-ul răspundea 501.
+Pe testnet, propunerea de guvernanță 32 (aprobată la 3 noiembrie 2026) a activat precompile-ul punții EVM către QoreChain Native de la `0x...0901` și a completat lista de permisiuni; este testat, vezi [Istoricul versiunilor](/appendix/version-history#v327). `MsgCrossVMCall` este în continuare dezactivat pe mainnet de întrerupătorul de circuit (activat pe testnet, verificat la 30 octombrie 2026; lista de pe mainnet a fost recitită la 4 noiembrie 2026 și are în continuare 16 intrări). Din v3.2.5 ambele rețele servesc aceste valori prin REST (`GET /qorechain/crossvm/v1/params`); înainte de v3.2.5, mainnet-ul răspundea 501.
 
 ---
 
@@ -376,7 +376,7 @@ Module standard Cosmos SDK și EVM, toate citite în direct pe mainnet la 27 oct
 | | `no_base_fee` | `false` |
 | EVM | `evm_denom` / `extended_denom` | `uqor` / `aqor` (18 zecimale) |
 | | acces la crearea / apelarea contractelor | fără permisiuni |
-| | `active_static_precompiles` | gol pe mainnet (niciun precompile EVM nu este activ; testnet-ul are trei active, vezi mai jos) |
+| | `active_static_precompiles` | gol pe mainnet (niciun precompile EVM nu este activ; testnet-ul are patru active, vezi mai jos) |
 | | `history_serve_window` | 8,192 |
 | ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
 | QoreChain Native | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
@@ -389,7 +389,7 @@ Lanțul poate dezactiva tipuri individuale de mesaje cu întrerupătorul de circ
 
 **Mainnet (4 noiembrie 2026, 16 intrări, neschimbate din 14 octombrie și nemodificate de upgrade-urile v3.2.5 sau v3.2.6; intrările în sine au fost enumerate ultima dată una câte una la 30 octombrie 2026):** crearea de conturi de vesting (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; și cele patru mesaje de control PRISM (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). Lane-ul EVM (`MsgEthereumTx`) este **deschis**: a fost dezactivat între 16 și 25 septembrie și redeschis de upgrade-ul v3.2.0.
 
-**Testnet (27 octombrie 2026, 1 intrare):** doar `MsgStoreCode` din QoreChain Native (încărcarea contractelor); instanțierea nu mai este dezactivată acolo.
+**Testnet (7 noiembrie 2026, 2 intrări):** `MsgStoreCode` din QoreChain Native (încărcarea contractelor) și `MsgExecuteProgram` din SVM (execuția directă a programelor SVM, oprită prin propunerea de guvernanță 31 a testnet-ului și încă oprită după v3.2.7); instanțierea nu mai este dezactivată acolo. La 27 octombrie 2026, lista conținea doar `MsgStoreCode`.
 
 Orice alt tip de mesaj, inclusiv toate mesajele standard bank, staking, governance, distribution, authz și de înregistrare `x/pqc`, este activat. Lista este controlată prin guvernanță și se poate schimba; interogați-o întotdeauna.
 
@@ -397,19 +397,19 @@ Orice alt tip de mesaj, inclusiv toate mesajele standard bank, staking, governan
 
 ## Diferențe între testnet și mainnet {#testnet-differences}
 
-Citite în direct la 27 octombrie 2026 și reverificate la 30 octombrie 2026, după upgrade-ul v3.2.5; rutele, tabelele de parametri menționate mai sus, numărul de intrări ale întrerupătorului de circuit, lista de precompilări și propunerea au fost recitite pe mainnet la 4 noiembrie 2026, după v3.2.6. Mainnet-ul `qorechain-vladi` rulează **v3.2.6** (de la înălțimea 4,020,000, 4 noiembrie 2026, propunerea de guvernanță 15; v3.2.5 a fost aplicată la înălțimea 3,906,833 pe 29 octombrie 2026, iar v3.2.4 la înălțimea 3,742,566 pe 23 octombrie 2026). Testnet-ul `qorechain-diana` rulează de asemenea **v3.2.6**: v3.2.4 a ajuns pe el la înălțimea 8,337,253 (19 octombrie 2026), v3.2.5 la înălțimea 8,890,800 (26 octombrie) și v3.2.6 la înălțimea 8,970,638 (27 octombrie). Testnet-ul este o rețea de staging care primește fiecare versiune prima și este reglată pentru testare, deci valorile de mai jos diferă de cele de pe mainnet. Această secțiune acoperă tabelele de parametri ale paginii; ambele rețele rulează acum v3.2.6, deci diferențele rămase provin din reglajul testnet-ului și din ce a activat guvernanța în fiecare rețea. Orice parametru care nu este enumerat aici este identic pe ambele rețele (valorile pentru staking, slashing, distribuție, fee-market, ERC-20, AMM, burn, nod light, bridge, gas-abstraction și staking cu blocare în timp au fost comparate una câte una).
+Citite în direct la 27 octombrie 2026 și reverificate la 30 octombrie 2026, după upgrade-ul v3.2.5; rutele, tabelele de parametri menționate mai sus, numărul de intrări ale întrerupătorului de circuit, lista de precompilări și propunerea au fost recitite pe mainnet la 4 noiembrie 2026, după v3.2.6. Mainnet-ul `qorechain-vladi` rulează **v3.2.6** (de la înălțimea 4,020,000, 4 noiembrie 2026, propunerea de guvernanță 15; v3.2.5 a fost aplicată la înălțimea 3,906,833 pe 29 octombrie 2026, iar v3.2.4 la înălțimea 3,742,566 pe 23 octombrie 2026). Testnet-ul `qorechain-diana` rulează **v3.2.7** (este cu o versiune înaintea mainnet-ului): v3.2.4 a ajuns pe el la înălțimea 8,337,253 (19 octombrie 2026), v3.2.5 la înălțimea 8,890,800 (26 octombrie), v3.2.6 la înălțimea 8,970,638 (27 octombrie) și v3.2.7 la înălțimea 9,594,600 (6 noiembrie). Valorile testnet-ului din tabel au fost recitite la 7 noiembrie 2026 (lista de precompile-uri, întrerupătorul de circuit, lista de permisiuni cross-VM); restul coloanei testnet provine din citirile anterioare. Testnet-ul este o rețea de staging care primește fiecare versiune prima și este reglată pentru testare, deci valorile de mai jos diferă de cele de pe mainnet. Această secțiune acoperă tabelele de parametri ale paginii; pe lângă reglajul testnet-ului și alegerile de guvernanță, testnet-ul poartă acum și adăugirile v3.2.7, pe care mainnet-ul nu le are încă și pentru care nu există o dată (enumerate în [Istoricul versiunilor](/appendix/version-history#v327)). Orice parametru care nu este enumerat aici este identic pe ambele rețele (valorile pentru staking, slashing, distribuție, fee-market, ERC-20, AMM, burn, nod light, bridge, gas-abstraction și staking cu blocare în timp au fost comparate una câte una).
 
 | Zonă | Mainnet | Testnet |
 | ---- | ------- | ------- |
 | Perioade de votare în guvernanță | `voting_period` 172.800 s (2 zile); `expedited_voting_period` 86.400 s (1 zi) | `voting_period` 14.400 s (4 ore); `expedited_voting_period` 3.600 s (1 oră). Depozitele, cvorumul și pragurile sunt aceleași |
 | `x/inflation` | `emission_mode` `fixed`; `fixed_epoch_emission` 86.000 QOR; `max_total_emission` 590.000.000 QOR; `target_apy_bps` `0` | `emission_mode` `target_apy`; `target_apy_bps` `1667`; `fixed_epoch_emission` 16.239 QOR; `max_total_emission` 3.950.390.341.362.112.750 uqor, deja atins (`remaining_emission` `0` la `/qorechain/inflation/v1/epoch_info`, deci testnet-ul nu mai emite nimic) |
-| Precompile-uri statice EVM active | niciunul (`[]`) | trei: precompile-ul de parametri PRISM la `0x0000000000000000000000000000000000000C01` și precompile-urile de la `0x...0a01` și `0x...0a02` |
+| Precompile-uri statice EVM active | niciunul (`[]`) | patru (citite la 7 noiembrie 2026): puntea cross-VM de la `0x...0901` (activă din propunerea de guvernanță 32 a testnet-ului, cu o listă de permisiuni de contracte revizuite), precompile-ul de parametri PRISM la `0x...0C01` și precompile-urile de la `0x...0a01` și `0x...0a02`. Niciun precompile `0x08xx` nu este activ pe nicio rețea |
 | Agentul PRISM (`x/rlconsensus`) | Mod de observație, nicio politică încărcată; mesajele de control dezactivate | Mod shadow cu o politică demonstrativă (setată de guvernanța testnet-ului); `GET /qorechain/rlconsensus/v1/...` răspunde pe ambele rețele din v3.2.6 |
 | Conturi inteligente (`x/abstractaccount`) | `enabled` `false` | `enabled` `true` |
 | RDK (`x/rdk`) | `max_rollups` 100; `default_challenge_window` 604.800 s | `max_rollups` 200; `default_challenge_window` 3.600 s |
 | Multilayer (`x/multilayer`) | `max_sidechains` 10 | `max_sidechains` 64 |
 | Permisiunea de instanțiere QoreChain Native | `Nobody` | `Everybody` (încărcarea codului rămâne `Nobody` pe ambele) |
-| Întrerupător de circuit | 16 intrări (vezi mai sus), inclusiv `MsgCrossVMCall`, `MsgInstantiateContract` și `MsgInstantiateContract2` | 1 intrare: QoreChain Native `MsgStoreCode` |
+| Întrerupător de circuit | 16 intrări (vezi mai sus), inclusiv `MsgCrossVMCall`, `MsgInstantiateContract` și `MsgInstantiateContract2` | 2 intrări (7 noiembrie 2026): QoreChain Native `MsgStoreCode` și SVM `MsgExecuteProgram` |
 | Rute de parametri prin REST | La fel ca pe testnet: `/qorechain/pqc/v1/params`, `/qorechain/rlconsensus/v1/params`, `/qorechain/reputation/v1/params`, `/qorechain/crossvm/v1/params` și `/qorechain/rdk/v1/params` au răspuns toate 200 la 4 noiembrie 2026 | Aceleași rute răspund |
 | Timp de bloc și validatori | aproximativ 3,1 s; 8 validatori bonded | aproximativ 1,3 s; 4 validatori bonded |
 | Token-uri de test | niciunul | fUSD, fETH și fBTC (vezi [Faucet Dashboard](/dashboard/faucet#fest-tokens)) |

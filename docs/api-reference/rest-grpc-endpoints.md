@@ -18,7 +18,7 @@ QoreChain exposes three primary interfaces for programmatic access:
 All REST endpoints return JSON. gRPC endpoints use Protocol Buffers and can be consumed with any gRPC client. The RPC interface provides consensus-level queries and transaction broadcast.
 
 :::note
-These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026) and the **`qorechain-diana`** testnet. Both networks run node release **v3.2.6**. Mainnet applied it at height 4,020,000 on 4 November 2026 (governance proposal 15, after v3.2.5 at height 3,906,833 on 29 October 2026, proposal 14, and v3.2.4 at height 3,742,566 on 23 October 2026); the testnet applied v3.2.5 at height 8,890,800 on 26 October 2026 and v3.2.6 at height 8,970,638 on 27 October 2026. Routes and fields added by a release appear on a network only once that network has applied the release. The route checks marked 4 November 2026 below were made against the public mainnet host after the v3.2.6 upgrade. The base URLs below assume a locally running node. The public hosted endpoints are `https://api.qore.host` / `https://api-testnet.qore.host` (REST) and `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), listed in [Networks](/appendix/networks#public-endpoints). **There is no public gRPC endpoint**: the hostnames `grpc.qore.host` and `grpc-testnet.qore.host` do not exist, so run your own node if you need gRPC.
+These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026) and the **`qorechain-diana`** testnet. The testnet runs node release **v3.2.7** (applied by testnet governance at height 9,594,600 on 6 November 2026) and mainnet runs **v3.2.6**. Mainnet applied v3.2.6 at height 4,020,000 on 4 November 2026 (governance proposal 15, after v3.2.5 at height 3,906,833 on 29 October 2026, proposal 14, and v3.2.4 at height 3,742,566 on 23 October 2026); the testnet applied v3.2.5 at height 8,890,800 on 26 October 2026, v3.2.6 at height 8,970,638 on 27 October 2026 and v3.2.7 at height 9,594,600. There is no mainnet date or height for v3.2.7 yet. Routes and fields added by a release appear on a network only once that network has applied the release. The route checks marked 4 November 2026 below were made against the public mainnet host after the v3.2.6 upgrade; the routes marked **v3.2.7** were checked on the public testnet host on 7 November 2026 and answer `501` on mainnet. The base URLs below assume a locally running node. The public hosted endpoints are `https://api.qore.host` / `https://api-testnet.qore.host` (REST) and `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), listed in [Networks](/appendix/networks#public-endpoints). **There is no public gRPC endpoint**: the hostnames `grpc.qore.host` and `grpc-testnet.qore.host` do not exist, so run your own node if you need gRPC.
 :::
 
 ## Base URLs
@@ -35,7 +35,7 @@ QoreChain-specific modules are exposed over REST under the `/qorechain/<module>/
 
 A route that does not exist answers HTTP `501` with `{"code":12,"message":"Not Implemented"}`. That means the route is not served, not that the query came back empty. Shortened paths without the `/qorechain/` prefix (for example `/bridge/v1/chains` or `/pqc/v1/params`) are **not** served. An unknown record on a route that does exist returns HTTP `404` with `{"code":5,"message":"... not found"}`.
 
-The examples below use the public mainnet host; replace it with `https://api-testnet.qore.host` for the testnet. Values in the samples were read from the live networks between 20 and 27 October 2026 and change over time; use them for the shape of a response. The v3.2.4 release added a few routes and fields. They are marked **v3.2.4** below: the testnet has served them since 19 October 2026 and mainnet since 23 October 2026. The v3.2.5 release (mainnet since 29 October 2026, testnet since 26 October) added the cross-VM parameter and message routes and the native key registry route, marked **v3.2.5**. The v3.2.6 release (testnet since 27 October 2026, mainnet since 4 November 2026) added more, marked **v3.2.6**: the mainnet host answered them with `200` on 4 November 2026 (an exception is noted where it applies). A node still on an older release answers a new route with `501`.
+The examples below use the public mainnet host; replace it with `https://api-testnet.qore.host` for the testnet. Values in the samples were read from the live networks between 20 and 27 October 2026 and change over time; use them for the shape of a response. The v3.2.4 release added a few routes and fields. They are marked **v3.2.4** below: the testnet has served them since 19 October 2026 and mainnet since 23 October 2026. The v3.2.5 release (mainnet since 29 October 2026, testnet since 26 October) added the cross-VM parameter and message routes and the native key registry route, marked **v3.2.5**. The v3.2.6 release (testnet since 27 October 2026, mainnet since 4 November 2026) added more, marked **v3.2.6**: the mainnet host answered them with `200` on 4 November 2026 (an exception is noted where it applies). A node still on an older release answers a new route with `501`. The v3.2.7 release (testnet only so far, not on mainnet) added the routes marked **v3.2.7**: PQC multisig and textual signing, staking APR, and the SVM cluster identity.
 
 ## PQC Module {#pqc-module}
 
@@ -47,8 +47,24 @@ The examples below use the public mainnet host; replace it with `https://api-tes
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (testnet since 19 October 2026; mainnet since 23 October 2026; `501` on an older node). Every protocol feature the binary knows, with `enabled`, `known` and `staged` flags |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (both networks since 29 October 2026 on mainnet, 26 October on the testnet; `501` on an older node). The ML-KEM encryption key registered for an address in the native key registry: `{"found":false,"key":null}` when none is registered |
 | GET    | `/qorechain/pqc/v1/params`               | **v3.2.6** (testnet since 27 October 2026, mainnet since 4 November 2026; `501` on an older node). The module parameters |
+| GET    | `/qorechain/pqc/v1/multisig/{address}`   | **v3.2.7, testnet only** (`501` on mainnet and on an older node). The hybrid post-quantum multisig record of an address: `{"found":false,"multisig":null}` when none is registered |
+| POST   | `/qorechain/pqc/v1/textual_sign_doc`     | **v3.2.7, testnet only** (`501` on mainnet; a `GET` also answers `501`). Builds the SIGN_MODE_TEXTUAL document of a transaction for a web wallet to show and sign (see below) |
 
 Note that the path segment is the singular `account`. There is no `/qorechain/pqc/v1/stats` route (use `qorechaind query pqc stats`). `/qorechain/pqc/v1/params` is served from v3.2.6 and answered `200` on both networks on 4 November 2026 (on mainnet: `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, `default_signature_algo_name` `dilithium5`, `hybrid_signature_mode_name` `required`). On a node older than v3.2.6 use `qorechaind query pqc params` instead.
+
+### PQC multisig and textual signing (v3.2.7, testnet) {#pqc-multisig-textual}
+
+Since v3.2.7 an account can have a hybrid post-quantum k-of-n multisig. The message is `/qorechain.pqc.v1.MsgRegisterPQCMultisig`; the post-quantum set follows the members and keys of the account's current classical multisig. `GET /qorechain/pqc/v1/multisig/{address}` returns the registration. On 7 November 2026 it answered `200` with `{"found":false,"multisig":null}` for an account without one (the route needs a valid `qor1...` address; a malformed one answers `400`). It answers `501` on mainnet. The record's fields for a registered multisig were not read here, because no multisig is registered on the testnet yet.
+
+`POST /qorechain/pqc/v1/textual_sign_doc` serves hardware and web wallets that sign with SIGN_MODE_TEXTUAL. The JSON body carries `tx_json` (the unsigned transaction as a JSON string) or `tx_bytes` (base64), plus `chain_id`, `account_number`, `sequence` and `public_key` (an Any with `@type` and `key`). The response holds `sign_bytes` (base64, the document to sign) and `screens`, the list of lines a device shows (`title`, `content`, `indent`, `expert`). A body without a transaction answers `400` (`tx_bytes or tx_json is required`), and a transaction with no message or more than 32 messages is refused. On the command line, `qorechaind tx pqc cosign` supports the textual sign mode from v3.2.7 (see [Transaction Commands](/cli-reference/transaction-commands#cosign)).
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/multisig/qor1...
+curl -s -X POST https://api-testnet.qore.host/qorechain/pqc/v1/textual_sign_doc \
+  -H 'content-type: application/json' -d @request.json
+```
+
+The gas charged for a post-quantum signature check is recalibrated on measurements in v3.2.7; see [Version History](/appendix/version-history#v327).
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -415,6 +431,8 @@ curl -s https://api.qore.host/qorechain/rdk/v1/params
 
 At the time of writing `rollups` is an empty list on both networks, so the per-rollup routes answer `404` (for example `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window` is expressed in seconds (`604800`). From v3.2.4 the optimistic challenge window of a newly submitted batch is measured in block time: on the testnet since height 8,337,253 (19 October 2026), on mainnet since height 3,742,566 (23 October 2026). Before the upgrade the chain converted the seconds value to blocks at a fixed 6 seconds per block. On the testnet governance proposal 17 (passed 27 October 2026) set `default_challenge_window` to `3600` (one hour) and `max_rollups` to `200` for the builder event, so the sample above (mainnet) differs from the testnet there; `rollups` is still empty on the testnet at the time of writing.
 
+**v3.2.7 (testnet only):** a ZK rollup can register its verification key with `MsgSetVerificationKey` (and later change it with `MsgUpdateVerificationKey`), and a ZK batch for a rollup that has no key is refused before the fee is paid. These are messages, not queries: no REST route reads a registered key (the obvious paths answered `501` on 7 November 2026), and no ZK rollup is registered on the testnet (`rollups` is empty), so registration was not exercised end to end here. ZK settlement stays testnet only and is not on mainnet. See [Version History](/appendix/version-history#v327).
+
 ## Inflation Module {#inflation-module}
 
 The emission settings and progress are exposed over REST under `/qorechain/inflation/v1/...` (since chain version **v3.2.2**). They are not available through a CLI command.
@@ -506,8 +524,12 @@ The staking-tiers module is part of **v3.2.4**. These routes have been served by
 | GET    | `/qorechain/stakingtier/v1/params`        | Lock tiers, the minimum lock amount, the early-unlock penalty      |
 | GET    | `/qorechain/stakingtier/v1/locks/{holder}` | A holder's locks, what each currently accrues and what can be claimed |
 | GET    | `/qorechain/stakingtier/v1/pool`          | The bonus pool: balance, outstanding, surplus and the last settlement |
+| GET    | `/qorechain/stakingtier/v1/apr`           | **v3.2.7, testnet only** (`501` on mainnet). The base staking rate and the tier bonuses |
+| GET    | `/qorechain/stakingtier/v1/apr/{delegator}` | **v3.2.7, testnet only.** The same for one delegator: light-node bonus status, delegations and the effective rate |
 
 `params` lists the three lock lengths (3, 6 and 12 months) with their parameters and `min_lock_amount` (`"10000000"` uqor, 10 QOR). Locks are made with `tx stakingtier lock` (see [Transaction Commands](/cli-reference/transaction-commands#stakingtier)).
+
+**APR routes (v3.2.7, testnet).** `GET /qorechain/stakingtier/v1/apr` returns `base` (`gross_base_apr_bps`, `source`, `computed_height`, `bonus_enabled`, `max_total_apy_bps`), `base_apr_bps`, a `tiers` list (for 3, 6 and 12 months: `bonus_bps` 150, 300 and 500, with the effective values) and the light-node and validator bonuses (`light_node_bonus_bps` 200, `validator_bonus_bps` 300). On 7 November 2026 the testnet base rate read `0` (`source` `fees_only`), so only the tier bonuses were non-zero; the pool route reports the bonus pool. For an address with no delegation the delegator route answers `200` with an empty `delegations` list and an effective rate of `0`. Every figure is a basis-point reading of what the chain computed at its last settlement. It is **not guaranteed**, it changes with fees and funding, and it is not a promise of any return.
 
 ## Reputation Module {#reputation-module}
 
@@ -521,6 +543,14 @@ The reputation module's REST routes arrived with chain v3.2.6 and are served by 
 
 Scores are decimal strings between 0 and 1. The light node reads the per-validator route to warn when a delegated validator is below `min_reputation` (see [Rewards and Monitoring](/light-node/rewards-and-monitoring#delegation-alerts)). The same routes work on both public hosts.
 
+## SVM cluster identity (v3.2.7, testnet) {#svm-cluster-info}
+
+| Method | Endpoint                         | Description |
+| ------ | -------------------------------- | ----------- |
+| GET    | `/qorechain/svm/v1/cluster_info` | **v3.2.7, testnet only** (`501` on mainnet). The identity of the SVM cluster: `chain_id`, `genesis_hash`, `caip2_chain_id` (the Wallet Standard chain id), `derivation` and `execution_enabled` |
+
+On 7 November 2026 the testnet answered `genesis_hash` `6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj`, `caip2_chain_id` `solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR` and `execution_enabled` `false`. The genesis hash is derived from the chain ID (SHA-256 of a fixed label and the chain ID, base58 encoded), so it is stable. The same values are in the SVM JSON-RPC `getGenesisHash` and `getVersion` (see [JSON-RPC Solana-compatible](/api-reference/json-rpc-solana-compatible)). SVM stays off: `execution_enabled` is `false`.
+
 ## gRPC-only modules {#grpc-only-modules}
 
 On mainnet (node release v3.2.6, checked 4 November 2026) these modules have a gRPC `Query` service but **no REST route**, apart from the exceptions in the table. Service names follow `qorechain.<module>.v1.Query`.
@@ -531,7 +561,7 @@ On mainnet (node release v3.2.6, checked 4 November 2026) these modules have a g
 | `crossvm`     | `PendingMessages` (over REST since v3.2.5: `Params` at `/qorechain/crossvm/v1/params` and `Message` at `/qorechain/crossvm/v1/message/{id}`) |
 | `reputation`  | `Params` (also over REST since v3.2.6, see [Reputation Module](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams`, `LastAction` (also over REST since v3.2.6) |
-| `svm`         | `Slot`, `Account`, `Program`                           |
+| `svm`         | `Slot`, `Account`, `Program` (testnet v3.2.7 adds `ClusterInfo`, also over REST, see [SVM cluster identity](#svm-cluster-info)) |
 | `qca`         | `Config`                                               |
 
 The `rlconsensus` queries are served over REST on both networks from v3.2.6 (with two more methods, `AppliedParams` and `LastAction`); see [RL Consensus Module](#rlconsensus-module). Use `grpcurl` against your own node, or the [CLI query commands](/cli-reference/query-commands). The `rdk` queries are also available over REST (see [RDK Module](#rdk-module)); they were gRPC only before v3.2.2.
@@ -570,7 +600,7 @@ The QoreChain Native prefix is `/cosmwasm/wasm/v1/...`; `/cosmos/wasm/v1/...` is
 
 The IBC v2 client query service was served over gRPC before, but its REST routes were missing; v3.2.6 mounts them. A relayer reads the counterparty of a client from here. Both routes take the client ID in the path (for example `07-<type>-0`); a blank ID answers `400`. Checked on the testnet on 27 October 2026 and on mainnet on 4 November 2026:
 
-| Route | Testnet (v3.2.6) | Mainnet (v3.2.6) |
+| Route | Testnet | Mainnet (v3.2.6) |
 | --- | --- | --- |
 | `/ibc/core/client/v2/counterparty_info/{client_id}` | `200` with the counterparty, or `404` (`client 07-<type>-0 counterparty not found`) for a client that has none registered; a blank ID answers `400` | same shapes: `404` (`client 07-tendermint-0 counterparty not found`) for a client without a counterparty (mainnet has no IBC client yet) |
 | `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}` (an empty list means any relayer) | `200`, `{"config":{"allowed_relayers":[]}}` |
@@ -618,7 +648,7 @@ To query a specific service:
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` has three methods on a v3.2.3 node, `Account`, `EVMWindow` and `EVMDelegationConsent`, and a fourth from v3.2.4 (the testnet since 19 October 2026, mainnet since 23 October 2026), `ProtocolFeatures`. A `Params` method is added in v3.2.6 (testnet since 27 October 2026, mainnet since 4 November 2026); a node older than v3.2.6 has no `Params` method.
+`qorechain.pqc.v1.Query` has three methods on a v3.2.3 node, `Account`, `EVMWindow` and `EVMDelegationConsent`, and a fourth from v3.2.4 (the testnet since 19 October 2026, mainnet since 23 October 2026), `ProtocolFeatures`. A `Params` method is added in v3.2.6 (testnet since 27 October 2026, mainnet since 4 November 2026); a node older than v3.2.6 has no `Params` method. The v3.2.7 testnet adds the multisig and textual-document routes described in [PQC multisig and textual signing](#pqc-multisig-textual).
 
 ## Authentication
 

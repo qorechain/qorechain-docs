@@ -26,8 +26,8 @@ The current binary, genesis, peers, seeds, and a state-sync trust point are publ
 The manifest's fields include `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (a trust point refreshed hourly), and `minCompatible`. The install and join steps below fetch this manifest and use its current values.
 :::
 
-:::caution Use the release the manifest names: v3.2.6 on mainnet and on the testnet
-A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (see [Upgrades](#upgrades) below), so always install the binary the manifest points to: it carries every upgrade handler. On **mainnet** the manifest's `minCompatible` and `version` are both `3.2.6` (applied at height 4,020,000 on 4 November 2026, governance proposal 15), so a node joining now needs v3.2.6: an older binary stops at an upgrade height it does not know. The release is the bundle `qorechaind-v3.2.6-b3-linux-amd64.tar.gz` (98,878,438 bytes, SHA-256 `acd9f95bfd8d6f3c6c5ea306fe9dacb6362336ddaa96c61197599298bb1e2fb2`, read from the manifest on 4 November 2026; the live manifest is the source of truth). The manifest advises that new nodes join through state sync. It contains `qorechaind` and `lib/` with `libqorepqc.so`, `libqoresvm.so` and `libwasmvm.x86_64.so`. A node still on v3.2.5 halts at height 4,020,000 with `UPGRADE "v3.2.6" NEEDED`: install the bundle and restart, and its state is kept. No further mainnet upgrade is scheduled (`current_plan` is `null`, checked 4 November 2026); when the manifest names a newer release, that is the binary to install. On the **testnet** the manifest's `minCompatible` and `version` are both `3.2.6` (it names the same bundle; v3.2.5 was applied at height 8,890,800 on 26 October 2026 and v3.2.6 at height 8,970,638 on 27 October 2026), so a node joining the testnet needs the v3.2.6 binary. Do not run a testnet binary against mainnet or the reverse: each directory carries its own release (see [Upgrades](#upgrades)). The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`.
+:::caution Use the release the manifest names: v3.2.6 on mainnet, v3.2.7 on the testnet
+A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (see [Upgrades](#upgrades) below), so always install the binary the manifest points to: it carries every upgrade handler. On **mainnet** the manifest's `minCompatible` and `version` are both `3.2.6` (applied at height 4,020,000 on 4 November 2026, governance proposal 15), so a node joining now needs v3.2.6: an older binary stops at an upgrade height it does not know. The release is the bundle `qorechaind-v3.2.6-b3-linux-amd64.tar.gz` (98,878,438 bytes, SHA-256 `acd9f95bfd8d6f3c6c5ea306fe9dacb6362336ddaa96c61197599298bb1e2fb2`, read from the manifest on 4 November 2026; the live manifest is the source of truth). The manifest advises that new nodes join through state sync. It contains `qorechaind` and `lib/` with `libqorepqc.so`, `libqoresvm.so` and `libwasmvm.x86_64.so`. A node still on v3.2.5 halts at height 4,020,000 with `UPGRADE "v3.2.6" NEEDED`: install the bundle and restart, and its state is kept. No further mainnet upgrade is scheduled (`current_plan` is `null`, checked 4 November 2026); when the manifest names a newer release, that is the binary to install. On the **testnet** the manifest's `minCompatible` and `version` are both `3.2.7` (v3.2.5 was applied at height 8,890,800 on 26 October 2026, v3.2.6 at height 8,970,638 on 27 October and v3.2.7 at height 9,594,600 on 6 November), so a node joining the testnet needs the v3.2.7 binary: the bundle `qorechaind-v3.2.7-b3-linux-amd64.tar.gz` (99,472,930 bytes, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`, read from the testnet manifest on 7 November 2026; the live manifest is the source of truth). A testnet node still on v3.2.6 stops at height 9,594,600 with `UPGRADE "v3.2.7" NEEDED`: replace `qorechaind` and the `.so` libraries with the ones in the bundle and start it again; its state is kept and it does not need to resync. Mainnet stays on v3.2.6; a mainnet upgrade to v3.2.7 has no proposal date yet, so nothing changes for mainnet nodes. Do not run a testnet binary against mainnet or the reverse: each directory carries its own release (see [Upgrades](#upgrades)). The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`.
 
 A binary built from the public source (the community build) refuses to start on either public network (v3.2.3 and later): it cannot verify post-quantum signatures and cannot replay the networks' blocks faithfully. Use the release archive only.
 
@@ -53,7 +53,7 @@ Two settings matter from v3.2.1 on: keep the system clock synchronised with NTP 
 | Network  | Chain ID            | EVM chain ID         | Notes                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
 | Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primary — live since 7 Jun 2026; node release v3.2.6 (since 4 Nov 2026) |
-| Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first; node release v3.2.6 (since 27 Oct 2026) |
+| Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first; node release v3.2.7 (since 6 Nov 2026) |
 
 Substitute the appropriate `--chain-id` for your target network throughout this guide. The examples default to mainnet.
 
@@ -288,6 +288,7 @@ Consensus changes arrive as **coordinated governance upgrades**: a passed propos
 | v3.2.4 | height 3,742,566 (23 Oct 2026, governance proposal 13) | height 8,337,253 (19 Oct 2026, governance proposal 13) |
 | v3.2.5 | height 3,906,833 (29 Oct 2026, governance proposal 14) | height 8,890,800 (26 Oct 2026) |
 | v3.2.6 | height 4,020,000 (4 Nov 2026, governance proposal 15) | height 8,970,638 (27 Oct 2026) |
+| v3.2.7 | not applied (no proposal date yet) | height 9,594,600 (6 Nov 2026, governance proposal 33) |
 
 **What a node operator did for v3.2.4 (mainnet height 3,742,566).** Governance proposal 13 named the plan `v3.2.4` at height 3,742,566 (applied on 23 October 2026): nodes stayed on v3.2.3 until that height, halted there, and restarted on v3.2.4. For the next coordinated upgrade the steps are the same:
 
@@ -445,7 +446,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operational Best Practices
 
-1. **Pin the chain version.** Run the release the manifest recommends (**v3.2.6** on mainnet and on the testnet at the time of writing), track official releases for coordinated upgrades, and keep the system clock NTP-synchronised.
+1. **Pin the chain version.** Run the release the manifest recommends (**v3.2.6** on mainnet and **v3.2.7** on the testnet at the time of writing), track official releases for coordinated upgrades, and keep the system clock NTP-synchronised.
 
 2. **Run redundant nodes.** Operate at least two nodes behind a load balancer so a single restart or resync does not interrupt integration traffic.
 

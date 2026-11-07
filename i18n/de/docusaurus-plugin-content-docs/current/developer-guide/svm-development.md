@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain enthält eine **Solana Virtual Machine (SVM)**-Ausführungsumgebung, die es Entwicklern ermöglicht, SBF/BPF-Programme mit vertrauten Solana-Tools bereitzustellen und auszuführen. Das SVM-Modul stellt eine Solana-kompatible JSON-RPC-Schnittstelle auf **Port 8899** bereit, die von `qorechaind start` automatisch gestartet wird (siehe [JSON-RPC-Server](#json-rpc-server) unten).
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das das Node-Release **v3.2.6** seit dem 4. November 2026 ausführt (Governance-Vorschlag 15, Höhe 4.020.000; v3.2.5 seit dem 29. Oktober 2026, v3.2.4 seit dem 23. Oktober 2026). Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, das v3.2.6 ausführt (v3.2.4 seit dem 19. Oktober 2026). **SVM-Transaktionen sind auf beiden Netzwerken deaktiviert** (siehe den nächsten Kasten), daher dienen die `tx svm`-Befehle auf dieser Seite nur als Referenz: Sie können heute nicht gelingen.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das das Node-Release **v3.2.6** seit dem 4. November 2026 ausführt (Governance-Vorschlag 15, Höhe 4.020.000; v3.2.5 seit dem 29. Oktober 2026, v3.2.4 seit dem 23. Oktober 2026). Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, das v3.2.7 ausführt (seit dem 6. November 2026; v3.2.4 seit dem 19. Oktober 2026). **SVM-Transaktionen sind auf beiden Netzwerken deaktiviert** (siehe den nächsten Kasten), daher dienen die `tx svm`-Befehle auf dieser Seite nur als Referenz: Sie können heute nicht gelingen.
 :::
 
 ---
@@ -82,6 +82,9 @@ Die Standardwerte sind `enable = true` und `address = "127.0.0.1:8899"`, sodass 
 | `getMinimumBalanceForRentExemption` | Mindestguthaben für eine gegebene Datengröße     |
 | `getVersion`                        | Versionsinformationen der SVM-Laufzeit        |
 | `getHealth`                         | Health-Check für den SVM-Endpunkt         |
+| `getGenesisHash`                    | Genesis-Hash des Clusters (Testnet, seit v3.2.7; base58) |
+
+**Cluster-Identität (v3.2.7, vorerst nur Testnet).** Wallets, die dem Wallet Standard folgen, brauchen eine stabile Cluster-Identität. Ab Release v3.2.7 (Testnet seit dem 6. November 2026; das Mainnet ist noch auf v3.2.6 und hat dafür kein Datum) stellt der Node den Genesis-Hash des Clusters und seine Wallet-Standard-Chain-ID bereit. Im Testnet antwortete am 7. November 2026 `GET /qorechain/svm/v1/cluster_info` mit `chain_id` `qorechain-diana`, einem `genesis_hash`, einer `caip2_chain_id` (`solana:` gefolgt von den ersten 32 Zeichen des Genesis-Hashs) und `execution_enabled` `false`, und `getGenesisHash` auf `https://svm-testnet.qore.host` lieferte denselben Genesis-Hash. Der Hash wird aus der Chain-ID abgeleitet, nicht aus einem echten Solana-Cluster. **Die SVM-Ausführung bleibt auf beiden Netzwerken aus**; dies identifiziert nur den Cluster.
 
 ---
 

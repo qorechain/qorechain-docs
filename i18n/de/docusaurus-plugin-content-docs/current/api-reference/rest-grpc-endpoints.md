@@ -18,7 +18,7 @@ QoreChain stellt drei primäre Schnittstellen für den programmatischen Zugriff 
 Alle REST-Endpunkte liefern JSON zurück. gRPC-Endpunkte verwenden Protocol Buffers und können mit jedem gRPC-Client genutzt werden. Die RPC-Schnittstelle stellt Abfragen auf Konsensebene sowie das Broadcasten von Transaktionen bereit.
 
 :::note
-Diese Schnittstellen sind sowohl im **`qorechain-vladi`**-Mainnet (live seit 7. Juni 2026) als auch im **`qorechain-diana`**-Testnet verfügbar. Beide Netzwerke laufen mit dem Node-Release **v3.2.6**. Das Mainnet hat es auf Höhe 4.020.000 am 4. November 2026 angewendet (Governance-Vorschlag 15, nach v3.2.5 auf Höhe 3.906.833 am 29. Oktober 2026, Vorschlag 14, und v3.2.4 auf Höhe 3.742.566 am 23. Oktober 2026); das Testnet hat v3.2.5 auf Höhe 8.890.800 am 26. Oktober 2026 und v3.2.6 auf Höhe 8.970.638 am 27. Oktober 2026 angewendet. Routen und Felder, die ein Release hinzufügt, erscheinen in einem Netzwerk erst, wenn dieses Netzwerk das Release angewendet hat. Die unten mit dem 4. November 2026 markierten Routenprüfungen wurden nach dem v3.2.6-Upgrade gegen den öffentlichen Mainnet-Host durchgeführt. Die folgenden Basis-URLs setzen einen lokal laufenden Node voraus. Die öffentlichen gehosteten Endpunkte sind `https://api.qore.host` / `https://api-testnet.qore.host` (REST) und `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), aufgeführt unter [Netzwerke](/appendix/networks#public-endpoints). **Es gibt keinen öffentlichen gRPC-Endpunkt**: Die Hostnamen `grpc.qore.host` und `grpc-testnet.qore.host` existieren nicht; betreiben Sie daher einen eigenen Node, wenn Sie gRPC benötigen.
+Diese Schnittstellen sind sowohl im **`qorechain-vladi`**-Mainnet (live seit 7. Juni 2026) als auch im **`qorechain-diana`**-Testnet verfügbar. Das Testnet läuft mit dem Node-Release **v3.2.7** (von der Testnet-Governance auf Höhe 9.594.600 am 6. November 2026 angewendet), das Mainnet mit **v3.2.6**. Das Mainnet hat v3.2.6 auf Höhe 4.020.000 am 4. November 2026 angewendet (Governance-Vorschlag 15, nach v3.2.5 auf Höhe 3.906.833 am 29. Oktober 2026, Vorschlag 14, und v3.2.4 auf Höhe 3.742.566 am 23. Oktober 2026); das Testnet hat v3.2.5 auf Höhe 8.890.800 am 26. Oktober 2026, v3.2.6 auf Höhe 8.970.638 am 27. Oktober 2026 und v3.2.7 auf Höhe 9.594.600 angewendet. Es gibt noch kein Mainnet-Datum und keine Mainnet-Höhe für v3.2.7. Routen und Felder, die ein Release hinzufügt, erscheinen in einem Netzwerk erst, wenn dieses Netzwerk das Release angewendet hat. Die unten mit dem 4. November 2026 markierten Routenprüfungen wurden nach dem v3.2.6-Upgrade gegen den öffentlichen Mainnet-Host durchgeführt; die mit **v3.2.7** markierten Routen wurden am 7. November 2026 gegen den öffentlichen Testnet-Host geprüft und antworten im Mainnet mit `501`. Die folgenden Basis-URLs setzen einen lokal laufenden Node voraus. Die öffentlichen gehosteten Endpunkte sind `https://api.qore.host` / `https://api-testnet.qore.host` (REST) und `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), aufgeführt unter [Netzwerke](/appendix/networks#public-endpoints). **Es gibt keinen öffentlichen gRPC-Endpunkt**: Die Hostnamen `grpc.qore.host` und `grpc-testnet.qore.host` existieren nicht; betreiben Sie daher einen eigenen Node, wenn Sie gRPC benötigen.
 :::
 
 ## Basis-URLs
@@ -35,7 +35,7 @@ QoreChain-spezifische Module werden über REST unter dem Präfix `/qorechain/<mo
 
 Eine Route, die nicht existiert, antwortet mit HTTP `501` und `{"code":12,"message":"Not Implemented"}`. Das bedeutet, dass die Route nicht bereitgestellt wird, nicht, dass die Abfrage ein leeres Ergebnis geliefert hat. Verkürzte Pfade ohne das Präfix `/qorechain/` (zum Beispiel `/bridge/v1/chains` oder `/pqc/v1/params`) werden **nicht** bereitgestellt. Ein unbekannter Datensatz auf einer Route, die existiert, liefert HTTP `404` mit `{"code":5,"message":"... not found"}`.
 
-Die folgenden Beispiele verwenden den öffentlichen Mainnet-Host; ersetzen Sie ihn für das Testnet durch `https://api-testnet.qore.host`. Die Werte in den Beispielen wurden zwischen dem 20. und 27. Oktober 2026 aus den Live-Netzwerken gelesen und ändern sich im Lauf der Zeit; nutzen Sie sie für die Form einer Antwort. Das Release v3.2.4 hat einige Routen und Felder hinzugefügt. Sie sind unten mit **v3.2.4** markiert: Das Testnet stellt sie seit dem 19. Oktober 2026 bereit, das Mainnet seit dem 23. Oktober 2026. Das Release v3.2.5 (Mainnet seit dem 29. Oktober 2026, Testnet seit dem 26. Oktober) hat die Cross-VM-Parameter- und Nachrichtenrouten sowie die Route des nativen Schlüsselregisters hinzugefügt, markiert mit **v3.2.5**. Das Release v3.2.6 (Testnet seit dem 27. Oktober 2026, Mainnet seit dem 4. November 2026) hat weitere hinzugefügt, markiert mit **v3.2.6**: Der Mainnet-Host antwortete am 4. November 2026 darauf mit `200` (wo eine Ausnahme gilt, ist sie vermerkt). Ein Node, der noch ein älteres Release verwendet, antwortet auf eine neue Route mit `501`.
+Die folgenden Beispiele verwenden den öffentlichen Mainnet-Host; ersetzen Sie ihn für das Testnet durch `https://api-testnet.qore.host`. Die Werte in den Beispielen wurden zwischen dem 20. und 27. Oktober 2026 aus den Live-Netzwerken gelesen und ändern sich im Lauf der Zeit; nutzen Sie sie für die Form einer Antwort. Das Release v3.2.4 hat einige Routen und Felder hinzugefügt. Sie sind unten mit **v3.2.4** markiert: Das Testnet stellt sie seit dem 19. Oktober 2026 bereit, das Mainnet seit dem 23. Oktober 2026. Das Release v3.2.5 (Mainnet seit dem 29. Oktober 2026, Testnet seit dem 26. Oktober) hat die Cross-VM-Parameter- und Nachrichtenrouten sowie die Route des nativen Schlüsselregisters hinzugefügt, markiert mit **v3.2.5**. Das Release v3.2.6 (Testnet seit dem 27. Oktober 2026, Mainnet seit dem 4. November 2026) hat weitere hinzugefügt, markiert mit **v3.2.6**: Der Mainnet-Host antwortete am 4. November 2026 darauf mit `200` (wo eine Ausnahme gilt, ist sie vermerkt). Ein Node, der noch ein älteres Release verwendet, antwortet auf eine neue Route mit `501`. Das Release v3.2.7 (bisher nur Testnet, nicht im Mainnet) hat die mit **v3.2.7** markierten Routen hinzugefügt: PQC-Multisig und textuelles Signieren, Staking-APR und die SVM-Cluster-Identität.
 
 ## PQC-Modul {#pqc-module}
 
@@ -47,8 +47,24 @@ Die folgenden Beispiele verwenden den öffentlichen Mainnet-Host; ersetzen Sie i
 | GET     | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (Testnet seit dem 19. Oktober 2026; Mainnet seit dem 23. Oktober 2026; `501` auf einem älteren Node). Jedes Protokoll-Feature, das das Binary kennt, mit den Flags `enabled`, `known` und `staged` |
 | GET     | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (beide Netzwerke, im Mainnet seit dem 29. Oktober 2026, im Testnet seit dem 26. Oktober; `501` auf einem älteren Node). Der ML-KEM-Verschlüsselungsschlüssel, der für eine Adresse in der nativen Schlüsselregistry registriert ist: `{"found":false,"key":null}`, wenn keiner registriert ist |
 | GET     | `/qorechain/pqc/v1/params`               | **v3.2.6** (Testnet seit dem 27. Oktober 2026, Mainnet seit dem 4. November 2026; `501` auf einem älteren Node). Die Modulparameter |
+| GET    | `/qorechain/pqc/v1/multisig/{address}`   | **v3.2.7, nur Testnet** (`501` im Mainnet und auf einem älteren Node). Der hybride Post-Quanten-Multisig-Eintrag einer Adresse: `{"found":false,"multisig":null}`, wenn keiner registriert ist |
+| POST   | `/qorechain/pqc/v1/textual_sign_doc`     | **v3.2.7, nur Testnet** (`501` im Mainnet; auch ein `GET` antwortet mit `501`). Erstellt das SIGN_MODE_TEXTUAL-Dokument einer Transaktion, das eine Web-Wallet anzeigen und signieren kann (siehe unten) |
 
 Beachten Sie, dass das Pfadsegment die Singularform `account` ist. Eine Route `/qorechain/pqc/v1/stats` gibt es nicht (nutzen Sie `qorechaind query pqc stats`). `/qorechain/pqc/v1/params` wird ab v3.2.6 bereitgestellt und antwortete am 4. November 2026 in beiden Netzwerken mit `200` (im Mainnet: `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, `default_signature_algo_name` `dilithium5`, `hybrid_signature_mode_name` `required`). Verwenden Sie auf einem Node älter als v3.2.6 stattdessen `qorechaind query pqc params`.
+
+### PQC-Multisig und textuelles Signieren (v3.2.7, Testnet) {#pqc-multisig-textual}
+
+Seit v3.2.7 kann ein Konto einen hybriden Post-Quanten-k-aus-n-Multisig haben. Die Nachricht ist `/qorechain.pqc.v1.MsgRegisterPQCMultisig`; die Post-Quanten-Menge folgt den Mitgliedern und Schlüsseln des aktuellen klassischen Multisigs des Kontos. `GET /qorechain/pqc/v1/multisig/{address}` liefert die Registrierung. Am 7. November 2026 antwortete es für ein Konto ohne Multisig mit `200` und `{"found":false,"multisig":null}` (die Route braucht eine gültige Adresse `qor1...`; eine fehlerhafte antwortet mit `400`). Im Mainnet antwortet sie mit `501`. Die Felder des Eintrags für einen registrierten Multisig wurden hier nicht gelesen, weil im Testnet noch kein Multisig registriert ist.
+
+`POST /qorechain/pqc/v1/textual_sign_doc` bedient Hardware- und Web-Wallets, die mit SIGN_MODE_TEXTUAL signieren. Der JSON-Body enthält `tx_json` (die unsignierte Transaktion als JSON-String) oder `tx_bytes` (base64) sowie `chain_id`, `account_number`, `sequence` und `public_key` (ein Any mit `@type` und `key`). Die Antwort enthält `sign_bytes` (base64, das zu signierende Dokument) und `screens`, die Liste der Zeilen, die ein Gerät anzeigt (`title`, `content`, `indent`, `expert`). Ein Body ohne Transaktion antwortet mit `400` (`tx_bytes or tx_json is required`), und eine Transaktion ohne Nachricht oder mit mehr als 32 Nachrichten wird abgelehnt. Auf der Kommandozeile unterstützt `qorechaind tx pqc cosign` den textuellen Signiermodus ab v3.2.7 (siehe [Transaktionsbefehle](/cli-reference/transaction-commands#cosign)).
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/multisig/qor1...
+curl -s -X POST https://api-testnet.qore.host/qorechain/pqc/v1/textual_sign_doc \
+  -H 'content-type: application/json' -d @request.json
+```
+
+Das für eine Post-Quanten-Signaturprüfung berechnete Gas wird in v3.2.7 anhand von Messungen neu kalibriert; siehe [Versionshistorie](/appendix/version-history#v327).
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -415,6 +431,8 @@ curl -s https://api.qore.host/qorechain/rdk/v1/params
 
 Zum Zeitpunkt der Erstellung ist `rollups` in beiden Netzwerken eine leere Liste, sodass die Routen pro Rollup mit `404` antworten (zum Beispiel `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window` wird in Sekunden angegeben (`604800`). Ab v3.2.4 wird das optimistische Challenge-Fenster eines neu eingereichten Batches in Blockzeit gemessen: im Testnet seit Höhe 8.337.253 (19. Oktober 2026), im Mainnet seit Höhe 3.742.566 (23. Oktober 2026). Vor dem Upgrade rechnete die Chain den Sekundenwert mit festen 6 Sekunden pro Block in Blöcke um. Im Testnet setzte der Governance-Vorschlag 17 (angenommen am 27. Oktober 2026) `default_challenge_window` für das Builder-Event auf `3600` (eine Stunde) und `max_rollups` auf `200`, sodass das obige Beispiel (Mainnet) dort vom Testnet abweicht; `rollups` ist im Testnet zum Zeitpunkt der Erstellung weiterhin leer.
 
+**v3.2.7 (nur Testnet):** Ein ZK-Rollup kann seinen Verification Key mit `MsgSetVerificationKey` registrieren (und später mit `MsgUpdateVerificationKey` ändern), und ein ZK-Batch für ein Rollup ohne Key wird abgelehnt, bevor die Gebühr bezahlt wird. Das sind Nachrichten, keine Abfragen: Keine REST-Route liest einen registrierten Key (die naheliegenden Pfade antworteten am 7. November 2026 mit `501`), und im Testnet ist kein ZK-Rollup registriert (`rollups` ist leer); die Registrierung wurde hier daher nicht Ende-zu-Ende ausgeführt. ZK Settlement bleibt auf das Testnet beschränkt und ist nicht im Mainnet. Siehe [Versionshistorie](/appendix/version-history#v327).
+
 ## Inflationsmodul {#inflation-module}
 
 Die Emissionseinstellungen und der Fortschritt werden über REST unter `/qorechain/inflation/v1/...` bereitgestellt (seit Chain-Version **v3.2.2**). Sie sind über keinen CLI-Befehl verfügbar.
@@ -506,8 +524,12 @@ Das Staking-Tiers-Modul ist Teil von **v3.2.4**. Diese Routen werden vom Testnet
 | GET     | `/qorechain/stakingtier/v1/params`        | Lock-Stufen, der Mindestbetrag für einen Lock, die Strafe bei vorzeitiger Freigabe |
 | GET     | `/qorechain/stakingtier/v1/locks/{holder}` | Die Locks eines Inhabers, was jeder aktuell ansammelt und was beansprucht werden kann |
 | GET     | `/qorechain/stakingtier/v1/pool`          | Der Bonuspool: Guthaben, ausstehender Betrag, Überschuss und die letzte Abrechnung |
+| GET    | `/qorechain/stakingtier/v1/apr`           | **v3.2.7, nur Testnet** (`501` im Mainnet). Der Basis-Staking-Satz und die Tier-Boni |
+| GET    | `/qorechain/stakingtier/v1/apr/{delegator}` | **v3.2.7, nur Testnet.** Dasselbe für einen Delegator: Light-Node-Bonusstatus, Delegationen und der effektive Satz |
 
 `params` listet die drei Lock-Laufzeiten (3, 6 und 12 Monate) mit ihren Parametern und `min_lock_amount` (`"10000000"` uqor, 10 QOR). Locks werden mit `tx stakingtier lock` erstellt (siehe [Transaktionsbefehle](/cli-reference/transaction-commands#stakingtier)).
+
+**APR-Routen (v3.2.7, Testnet).** `GET /qorechain/stakingtier/v1/apr` liefert `base` (`gross_base_apr_bps`, `source`, `computed_height`, `bonus_enabled`, `max_total_apy_bps`), `base_apr_bps`, eine Liste `tiers` (für 3, 6 und 12 Monate: `bonus_bps` 150, 300 und 500, mit den effektiven Werten) sowie die Light-Node- und Validator-Boni (`light_node_bonus_bps` 200, `validator_bonus_bps` 300). Am 7. November 2026 lag der Basissatz im Testnet bei `0` (`source` `fees_only`), sodass nur die Tier-Boni ungleich null waren; die Pool-Route meldet den Bonuspool. Für eine Adresse ohne Delegation antwortet die Delegator-Route mit `200`, einer leeren Liste `delegations` und einem effektiven Satz von `0`. Jede Zahl ist ein Basispunkt-Wert dessen, was die Chain bei ihrer letzten Abrechnung berechnet hat. Sie ist **nicht garantiert**, sie ändert sich mit Gebühren und Finanzierung, und sie ist kein Versprechen irgendeiner Rendite.
 
 ## Reputationsmodul {#reputation-module}
 
@@ -521,6 +543,14 @@ Die REST-Routen des Reputationsmoduls kamen mit Chain v3.2.6 und werden von beid
 
 Scores sind Dezimalzeichenfolgen zwischen 0 und 1. Der Light Node liest die Route pro Validator, um zu warnen, wenn ein delegierter Validator unter `min_reputation` liegt (siehe [Belohnungen und Überwachung](/light-node/rewards-and-monitoring#delegation-alerts)). Dieselben Routen funktionieren auf beiden öffentlichen Hosts.
 
+## SVM-Cluster-Identität (v3.2.7, Testnet) {#svm-cluster-info}
+
+| Methode | Endpunkt                         | Beschreibung |
+| ------ | -------------------------------- | ----------- |
+| GET    | `/qorechain/svm/v1/cluster_info` | **v3.2.7, nur Testnet** (`501` im Mainnet). Die Identität des SVM-Clusters: `chain_id`, `genesis_hash`, `caip2_chain_id` (die Wallet-Standard-Chain-ID), `derivation` und `execution_enabled` |
+
+Am 7. November 2026 antwortete das Testnet mit `genesis_hash` `6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj`, `caip2_chain_id` `solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR` und `execution_enabled` `false`. Der Genesis-Hash wird aus der Chain-ID abgeleitet (SHA-256 aus einem festen Label und der Chain-ID, base58-kodiert) und ist daher stabil. Dieselben Werte stehen in `getGenesisHash` und `getVersion` des SVM-JSON-RPC (siehe [JSON-RPC — Solana-kompatibel](/api-reference/json-rpc-solana-compatible)). SVM bleibt aus: `execution_enabled` ist `false`.
+
 ## Nur-gRPC-Module {#grpc-only-modules}
 
 Im Mainnet (Node-Release v3.2.6, geprüft am 4. November 2026) haben diese Module einen gRPC-`Query`-Dienst, aber **keine REST-Route**, abgesehen von den Ausnahmen in der Tabelle. Die Dienstnamen folgen dem Muster `qorechain.<module>.v1.Query`.
@@ -531,7 +561,7 @@ Im Mainnet (Node-Release v3.2.6, geprüft am 4. November 2026) haben diese Modul
 | `crossvm`     | `PendingMessages` (über REST seit v3.2.5: `Params` unter `/qorechain/crossvm/v1/params` und `Message` unter `/qorechain/crossvm/v1/message/{id}`) |
 | `reputation`  | `Params` (seit v3.2.6 auch über REST, siehe [Reputationsmodul](#reputation-module)) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams`, `LastAction` (seit v3.2.6 auch über REST) |
-| `svm`         | `Slot`, `Account`, `Program`                               |
+| `svm`         | `Slot`, `Account`, `Program` (Testnet v3.2.7 ergänzt `ClusterInfo`, auch über REST, siehe [SVM-Cluster-Identität](#svm-cluster-info)) |
 | `qca`         | `Config`                                                   |
 
 Die `rlconsensus`-Abfragen werden ab v3.2.6 in beiden Netzwerken über REST bereitgestellt (mit zwei weiteren Methoden, `AppliedParams` und `LastAction`); siehe [RL-Consensus-Modul](#rlconsensus-module). Verwenden Sie `grpcurl` gegen Ihren eigenen Node oder die [CLI-Abfragebefehle](/cli-reference/query-commands). Die `rdk`-Abfragen sind ebenfalls über REST verfügbar (siehe [RDK-Modul](#rdk-module)); vor v3.2.2 waren sie ausschließlich über gRPC erreichbar.
@@ -570,7 +600,7 @@ Das QoreChain Native-Präfix lautet `/cosmwasm/wasm/v1/...`; `/cosmos/wasm/v1/..
 
 Der IBC-v2-Client-Abfragedienst wurde zuvor über gRPC bereitgestellt, aber seine REST-Routen fehlten; v3.2.6 bindet sie ein. Ein Relayer liest von hier die Gegenseite eines Clients. Beide Routen nehmen die Client-ID im Pfad (zum Beispiel `07-<type>-0`); eine leere ID antwortet mit `400`. Geprüft im Testnet am 27. Oktober 2026 und im Mainnet am 4. November 2026:
 
-| Route | Testnet (v3.2.6) | Mainnet (v3.2.6) |
+| Route | Testnet | Mainnet (v3.2.6) |
 | --- | --- | --- |
 | `/ibc/core/client/v2/counterparty_info/{client_id}` | `200` mit der Gegenseite oder `404` (`client 07-<type>-0 counterparty not found`) für einen Client, bei dem keine registriert ist; eine leere ID antwortet mit `400` | gleiche Formen: `404` (`client 07-tendermint-0 counterparty not found`) für einen Client ohne Gegenseite (das Mainnet hat noch keinen IBC-Client) |
 | `/ibc/core/client/v2/config/{client_id}` | `200`, `{"config":{"allowed_relayers":[]}}` (eine leere Liste bedeutet: jeder Relayer) | `200`, `{"config":{"allowed_relayers":[]}}` |
@@ -618,7 +648,7 @@ Um einen bestimmten Dienst abzufragen:
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` hat auf einem v3.2.3-Node drei Methoden, `Account`, `EVMWindow` und `EVMDelegationConsent`, und ab v3.2.4 (Testnet seit dem 19. Oktober 2026, Mainnet seit dem 23. Oktober 2026) eine vierte, `ProtocolFeatures`. Eine Methode `Params` kommt in v3.2.6 hinzu (Testnet seit dem 27. Oktober 2026, Mainnet seit dem 4. November 2026); ein Node älter als v3.2.6 hat keine Methode `Params`.
+`qorechain.pqc.v1.Query` hat auf einem v3.2.3-Node drei Methoden, `Account`, `EVMWindow` und `EVMDelegationConsent`, und ab v3.2.4 (Testnet seit dem 19. Oktober 2026, Mainnet seit dem 23. Oktober 2026) eine vierte, `ProtocolFeatures`. Eine Methode `Params` kommt in v3.2.6 hinzu (Testnet seit dem 27. Oktober 2026, Mainnet seit dem 4. November 2026); ein Node älter als v3.2.6 hat keine Methode `Params`. Das v3.2.7-Testnet ergänzt die Multisig- und Textual-Dokument-Routen, die unter [PQC-Multisig und textuelles Signieren](#pqc-multisig-textual) beschrieben sind.
 
 ## Authentifizierung
 

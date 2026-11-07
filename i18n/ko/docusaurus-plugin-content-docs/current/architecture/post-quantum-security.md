@@ -286,6 +286,8 @@ v3.1.73 기준으로, **SHAKE-256**(SHA-3 확장 출력 함수)은 QoreChain 전
 
 테스트넷도 동일한 값을 반환합니다(2026년 10월 27일 확인). v3.2.6부터 두 네트워크 모두 이를 REST의 `GET /qorechain/pqc/v1/params`로도 제공합니다. 메인넷은 2026년 11월 4일에 `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, 기본 알고리즘 Dilithium-5, 하이브리드 모드 `required`와 함께 `200`으로 응답했습니다. v3.2.6보다 오래된 노드에서는 `qorechaind query pqc params`로 읽습니다.
 
+**릴리스 v3.2.7(테스트넷 전용, 2026년 11월 6일부터).** 포스트 양자 계층에 대한 세 가지 변경이 테스트넷에서 실행되고 있으며 아직 메인넷에는 없습니다(메인넷은 v3.2.6이며 업그레이드 날짜 없음). 클래식 멀티시그 계정을 위한 하이브리드 k-of-n 멀티시그(메시지 `MsgRegisterPQCMultisig`, 라우트 `GET /qorechain/pqc/v1/multisig/{address}`), 측정값으로 보정된 포스트 양자 서명당 2,000 가스의 고정 검증 비용(ML-DSA-87은 플릿 서버에서 secp256k1보다 검증이 약 1.8배 느림), 그리고 하드웨어 및 웹 지갑을 위한 SIGN_MODE_TEXTUAL 지원입니다. 이를 가능하게 하는 프로토콜 기능(`pqc-multisig`, `pqc-verify-gas-calibrated`)은 2026년 11월 7일 테스트넷에서 활성화된 것으로 읽혔습니다. 자세한 내용과 REST 형식은 [Post-Quantum Signing](/developer-guide/post-quantum-signing#v327)에 있습니다.
+
 ## 관련 문서
 
 * [Post-Quantum Signing](/developer-guide/post-quantum-signing) — 이러한 프리미티브와 하이브리드 서명을 위한 오픈소스 `qorechain-pqc` 라이브러리(6개 언어).

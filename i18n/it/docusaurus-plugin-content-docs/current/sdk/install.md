@@ -50,8 +50,8 @@ si risolve in v2 su entrambe le reti, perché entrambe hanno applicato l'aggiorn
 ## Cosa aggiunge la 0.12.0 {#whats-new-0120}
 
 L'SDK 0.12.0 è la release client per la chain **v3.2.5**, che la mainnet ha applicato
-all'altezza 3.906.833 il 29 ottobre 2026 (la testnet l'ha applicata il 26 ottobre). Entrambe le
-reti eseguono la v3.2.6 dal 4 novembre (mainnet) e dal 27 ottobre (testnet); il
+all'altezza 3.906.833 il 29 ottobre 2026 (la testnet l'ha applicata il 26 ottobre). La mainnet
+esegue la v3.2.6 dal 4 novembre; la testnet ha eseguito la v3.2.6 dal 27 ottobre e la v3.2.7 dal 6 novembre; il
 formato di firma ibrida, gli indirizzi, i decimali e i memo non sono cambiati, quindi una
 transazione costruita con la 0.10.0 resta valida. TypeScript, Python, Go, Rust e Java
 passano tutti alla 0.12.0, insieme a `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`
@@ -96,7 +96,7 @@ nulla di introdotto dopo la v3.2.4; le aggiunte della v3.2.5 sono arrivate con l
 [0.12.0](#whats-new-0120). La mainnet esegue la v3.2.6 dal 4 novembre 2026 (altezza
 4.020.000, proposta di governance 15; prima di essa la v3.2.5, dal 29 ottobre all'altezza
 3.906.833) e la 0.10.0 continua a funzionare lì perché il formato di firma non è
-cambiato. La testnet ha applicato la v3.2.5 e la v3.2.6 il 26 e 27 ottobre 2026. Che cosa
+cambiato. La testnet ha applicato la v3.2.5 e la v3.2.6 il 26 e 27 ottobre 2026 e la v3.2.7 il 6 novembre (nessuna release dell'SDK ha builder per i messaggi della v3.2.7). Che cosa
 ha portato la 0.10.0 (è tutto ancora nella 0.12.0):
 
 | Area | Nella 0.10.0 |

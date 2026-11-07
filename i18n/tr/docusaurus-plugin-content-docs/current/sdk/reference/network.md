@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `testnet` |
 | Chain id | `qorechain-diana` (yayında) |
-| Zincir sürümü (27 Ekim 2026) | v3.2.6 (8.970.638 yüksekliğinden beri, 27 Ekim 2026; v3.2.5 26 Ekim'de 8.890.800 yüksekliğinde, v3.2.4 ise 19 Ekim'de 8.337.253 yüksekliğinde uygulandı) |
+| Zincir sürümü (7 Kasım 2026) | v3.2.7 (9.594.600 yüksekliğinden beri, 6 Kasım 2026, yönetişimle uygulandı; mainnet'te yoktur ve onun için bir tarih yoktur. v3.2.6 27 Ekim'de 8.970.638 yüksekliğinde, v3.2.5 26 Ekim'de 8.890.800 yüksekliğinde ve v3.2.4 19 Ekim'de 8.337.253 yüksekliğinde uygulandı) |
 | EVM zincir kimliği | `9800` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |
@@ -62,6 +62,7 @@ Testnet bir hazırlık (staging) ağıdır ve mainnet'in önünde çalışır; b
 
 * **REST rotaları.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` ve `GET /qorechain/crossvm/v1/params` testnet'te yanıt verir. Mainnet bunlara zincir v3.2.6'ya kadar HTTP 501 yanıtı verdi; v3.2.6'yı uyguladığından beri (4 Kasım 2026) o gün kontrol edildiğinde bu rotaların hepsi mainnet'te HTTP 200 yanıtı verdi. `/qorechain/amm/v1/` altındaki AMM rotaları (`pools`, `params`) her iki ağda da yanıt verir.
 * **Test tokenleri.** Değeri olmayan üç token yalnızca testnet'te vardır; `erc20:<EIP-55 contract address>` adlı (büyük/küçük harfe duyarlı) bank birimleri olarak: fUSD (6 ondalık), fETH (18) ve fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` bunları listeler. Mainnet'in tek bank birimi `uqor`'dur. Bkz. [Testnet test tokenleri (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
+* **Zincir v3.2.7 rotaları.** 7 Kasım 2026'da testnet, `GET /qorechain/pqc/v1/multisig/{address}` (çoklu imzası olmayan bir adres için `{"found":false,"multisig":null}`), `GET /qorechain/stakingtier/v1/apr`, `GET /qorechain/stakingtier/v1/apr/{delegator}`, `GET /qorechain/stakingtier/v1/pool` ve `GET /qorechain/svm/v1/cluster_info` için HTTP 200 yanıtı verdi; mainnet, `/qorechain/stakingtier/v1/pool` (200) dışındaki hepsi için HTTP 501 yanıtı verdi. `GET /qorechain/pqc/v1/textual_sign_doc` her iki herkese açık uç noktada da 501 yanıtı verdi, bu yüzden kullanılabilir olarak belgelenmemiştir. SDK 0.12.0'da bunların hiçbiri için bir oluşturucu veya tipli istemci yoktur.
 * **Açık modüller.** `abstractaccount` modülü testnet'te etkin, mainnet'te kapalıdır; testnet'te EVM precompile'ları etkindir (27 Ekim'de üç, 4 Kasım'da dört), mainnet'te hiçbiri değildir ve QoreChain Native instantiate testnet'te açıktır.
 
 ## Varsayılan portlar (`localnet` hazır ayarı) {#default-ports}

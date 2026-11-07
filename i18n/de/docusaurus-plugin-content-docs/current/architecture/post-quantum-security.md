@@ -286,6 +286,8 @@ Bridge-Attestierungen sind darauf ausgelegt, **Dilithium-5**-Signaturen (ML-DSA-
 
 Das Testnet gibt dieselben Werte zurück (geprüft am 27. Oktober 2026). Seit v3.2.6 stellen beide Netzwerke sie zusätzlich über REST unter `GET /qorechain/pqc/v1/params` bereit: Das Mainnet antwortete am 4. November 2026 mit `200` und `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, Dilithium-5 als Standardalgorithmus und Hybridmodus `required`. Auf einem Node älter als v3.2.6 lesen Sie sie mit `qorechaind query pqc params`.
 
+**Release v3.2.7 (nur Testnet, seit dem 6. November 2026).** Drei Änderungen an der Post-Quanten-Schicht laufen im Testnet und sind noch nicht im Mainnet (das Mainnet ist auf v3.2.6, ohne Upgrade-Datum): ein hybrider k-aus-n-Multisig für klassische Multisig-Konten (Nachricht `MsgRegisterPQCMultisig`, Route `GET /qorechain/pqc/v1/multisig/{address}`), feste Verifikationskosten von 2.000 Gas pro Post-Quanten-Signatur, kalibriert anhand von Messungen (ML-DSA-87 verifiziert auf den Flotten-Servern etwa 1,8-mal langsamer als secp256k1), und Unterstützung von SIGN_MODE_TEXTUAL für Hardware- und Web-Wallets. Die zugehörigen Protokoll-Features (`pqc-multisig`, `pqc-verify-gas-calibrated`) waren am 7. November 2026 im Testnet aktiviert. Details und die REST-Formen stehen unter [Post-Quanten-Signierung](/developer-guide/post-quantum-signing#v327).
+
 ## Verwandt
 
 * [Post-Quantum Signing](/developer-guide/post-quantum-signing) — die quelloffene Bibliothek `qorechain-pqc` (sechs Sprachen) für diese Primitive und das Hybrid-Signing.

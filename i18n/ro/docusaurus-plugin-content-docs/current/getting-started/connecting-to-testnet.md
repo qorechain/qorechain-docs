@@ -10,7 +10,7 @@ sidebar_position: 4
 Alăturați-vă rețelei de test active QoreChain Diana configurând nodul cu fișierul genesis, partenerii și setările de rețea corecte.
 
 :::note
-Această pagină acoperă rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 (versiunea **v3.2.6** din 4 noiembrie 2026) și are propria pagină dedicată **Conectarea la rețeaua principală**, cu genesis, parteneri și detalii de conectare separate. Rețeaua de test rulează **v3.2.6** din 27 octombrie 2026 (mainnet-ul a urmat pe 4 noiembrie 2026); manifestul său de lansare se află la [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Această pagină acoperă rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 (versiunea **v3.2.6** din 4 noiembrie 2026; testnet-ul este cu o versiune înainte) și are propria pagină dedicată **Conectarea la rețeaua principală**, cu genesis, parteneri și detalii de conectare separate. Rețeaua de test rulează **v3.2.6** din 27 octombrie 2026 (mainnet-ul a urmat pe 4 noiembrie 2026); manifestul său de lansare se află la [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Puncte finale publice
@@ -52,7 +52,9 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-Rețeaua de test primește upgrade-uri coordonate prin propuneri de guvernanță, așa că manifestul său conține un `upgradeHeight`, iar `minCompatible` este egal cu versiunea curentă. Un nod care se alătură acum are nevoie de versiunea din manifest. La momentul redactării (27 octombrie 2026), manifestul testnet-ului arată `version` 3.2.6, `minCompatible` 3.2.6 și `upgradeHeight` 8970638, iar nota lui spune „IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens”. Păstrați ceasul sistemului sincronizat prin NTP.
+Rețeaua de test primește upgrade-uri coordonate prin propuneri de guvernanță, așa că manifestul său conține un `upgradeHeight`, iar `minCompatible` este egal cu versiunea curentă. Un nod care se alătură acum are nevoie de versiunea din manifest. La momentul redactării (7 noiembrie 2026), manifestul testnet-ului arată `version` 3.2.7, `minCompatible` 3.2.7 și `upgradeHeight` 9594600. Binarul său este `qorechaind-v3.2.7-b3-linux-amd64.tar.gz` (99,472,930 octeți, sha256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`; citiți din nou valorile din manifest și verificați sha256 înainte de a rula binarul). Nota lui spune că versiunea include multisig post-cuantic, gaz calibrat pentru verificarea post-cuantică, îmbunătățiri cross-VM și citiri mai fiabile ale blocurilor prin JSON-RPC. Păstrați ceasul sistemului sincronizat prin NTP.
+
+**Nod aflat încă pe v3.2.6.** Se oprește la înălțimea 9,594,600. Înlocuiți `qorechaind` și bibliotecile `.so` partajate cu cele din pachetul v3.2.7 și porniți-l din nou: starea se păstrează și nu este nevoie de resincronizare.
 
 | Versiune | Înălțime pe testnet | Data aplicării |
 | --- | --- | --- |
@@ -61,8 +63,9 @@ Rețeaua de test primește upgrade-uri coordonate prin propuneri de guvernanță
 | v3.2.4 | 8.337.253 | 19 octombrie 2026 |
 | v3.2.5 | 8.890.800 | 26 octombrie 2026 |
 | v3.2.6 | 8.970.638 | 27 octombrie 2026 (16:58 UTC) |
+| v3.2.7 | 9,594,600 | 6 noiembrie 2026 (în jur de 15:00 UTC) |
 
-Rețeaua de test primește fiecare versiune înaintea mainnet-ului. Rețeaua principală a aplicat v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026, v3.2.5 la înălțimea 3.906.833, pe 29 octombrie 2026 (propunerea de guvernanță 14) și v3.2.6 la înălțimea 4.020.000, pe 4 noiembrie 2026 (propunerea de guvernanță 15), așa că astăzi ambele rețele rulează aceeași versiune. Manifestele sunt separate, așa că nu copiați niciodată un binar de pe o rețea pe cealaltă și așteptați-vă ca testnet-ul să ruleze din nou înaintea mainnet-ului când este testată următoarea versiune (adăugirile v3.2.6 sunt listate în [Istoric versiuni](/appendix/version-history#v326)).
+Rețeaua de test primește fiecare versiune înaintea mainnet-ului. Rețeaua principală a aplicat v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026, v3.2.5 la înălțimea 3.906.833, pe 29 octombrie 2026 (propunerea de guvernanță 14) și v3.2.6 la înălțimea 4.020.000, pe 4 noiembrie 2026 (propunerea de guvernanță 15). Mainnet-ul este deci cu o versiune în urmă: testnet-ul rulează v3.2.7, pe care mainnet-ul nu o are și pentru care nu există încă o dată sau o înălțime. Manifestele sunt separate, așa că nu copiați niciodată un binar de pe o rețea pe cealaltă (adăugirile v3.2.7 sunt listate în [Istoric versiuni](/appendix/version-history#v327)).
 
 ---
 

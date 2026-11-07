@@ -10,7 +10,7 @@ sidebar_position: 4
 Düğümünüzü doğru genesis dosyası, eşler ve ağ ayarlarıyla yapılandırarak canlı QoreChain Diana test ağına katılın.
 
 :::note
-Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır (sürüm **v3.2.6**, 4 Kasım 2026'dan beri) ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı 27 Ekim 2026'dan beri **v3.2.6** sürümünü çalıştırmaktadır (ana ağ 4 Kasım 2026'da onu izledi); sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
+Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır (sürüm **v3.2.6**, 4 Kasım 2026'dan beri; test ağı bir sürüm öndedir) ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı 27 Ekim 2026'dan beri **v3.2.6** sürümünü çalıştırmaktadır (ana ağ 4 Kasım 2026'da onu izledi); sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
 :::
 
 ## Genel Uç Noktalar
@@ -52,7 +52,9 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-Test ağı, governance önerileri aracılığıyla koordineli yükseltmeler alır; bu nedenle manifestosunda bir `upgradeHeight` bulunur ve `minCompatible` güncel sürüme eşittir. Şimdi katılan bir düğümün manifestodaki sürüme ihtiyacı vardır. Yazım sırasında (27 Ekim 2026) test ağı manifestosunda `version` 3.2.6, `minCompatible` 3.2.6 ve `upgradeHeight` 8970638 yazar; notu ise "IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens" ifadesidir. Sistem saatini NTP ile senkronize tutun.
+Test ağı, governance önerileri aracılığıyla koordineli yükseltmeler alır; bu nedenle manifestosunda bir `upgradeHeight` bulunur ve `minCompatible` güncel sürüme eşittir. Şimdi katılan bir düğümün manifestodaki sürüme ihtiyacı vardır. Yazım sırasında (7 Kasım 2026) test ağı manifestosunda `version` 3.2.7, `minCompatible` 3.2.7 ve `upgradeHeight` 9594600 yazar. İkili dosyası `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`'dir (99.472.930 bayt, sha256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`; değerleri manifestodan yeniden okuyun ve ikili dosyayı çalıştırmadan önce sha256'yı doğrulayın). Notu, sürümün kuantum sonrası (post-quantum) çoklu imza, kalibre edilmiş kuantum sonrası doğrulama gas'ı, VM'ler arası iyileştirmeler ve daha güvenilir JSON-RPC blok okumaları içerdiğini söyler. Sistem saatini NTP ile senkronize tutun.
+
+**Hâlâ v3.2.6 üzerindeki düğüm.** 9.594.600 yüksekliğinde durur. `qorechaind` ve paylaşılan `.so` kütüphanelerini v3.2.7 paketindekilerle değiştirin ve yeniden başlatın: durum korunur ve yeniden senkronizasyon gerekmez.
 
 | Sürüm | Test ağı yüksekliği | Uygulanma tarihi |
 | --- | --- | --- |
@@ -61,8 +63,9 @@ Test ağı, governance önerileri aracılığıyla koordineli yükseltmeler alı
 | v3.2.4 | 8.337.253 | 19 Ekim 2026 |
 | v3.2.5 | 8.890.800 | 26 Ekim 2026 |
 | v3.2.6 | 8.970.638 | 27 Ekim 2026 (16:58 UTC) |
+| v3.2.7 | 9.594.600 | 6 Kasım 2026 (yaklaşık 15:00 UTC) |
 
-Test ağı her sürümü ana ağdan önce alır. Ana ağ v3.2.4'ü 23 Ekim 2026'da 3.742.566 yüksekliğinde, v3.2.5'i 29 Ekim 2026'da 3.906.833 yüksekliğinde (yönetişim önerisi 14) ve v3.2.6'yı 4 Kasım 2026'da 4.020.000 yüksekliğinde (yönetişim önerisi 15) uyguladı; dolayısıyla bugün iki ağ da aynı sürümü çalıştırır. Manifestolar ayrıdır; bu yüzden ikili dosyayı asla iki ağ arasında kopyalamayın ve bir sonraki sürüm test edilirken test ağının yeniden ana ağın önüne geçmesini bekleyin (v3.2.6 eklemeleri [Sürüm Geçmişi](/appendix/version-history#v326) sayfasında listelenmiştir).
+Test ağı her sürümü ana ağdan önce alır. Ana ağ v3.2.4'ü 23 Ekim 2026'da 3.742.566 yüksekliğinde, v3.2.5'i 29 Ekim 2026'da 3.906.833 yüksekliğinde (yönetişim önerisi 14) ve v3.2.6'yı 4 Kasım 2026'da 4.020.000 yüksekliğinde (yönetişim önerisi 15) uyguladı. Dolayısıyla ana ağ bir sürüm geridedir: test ağı, ana ağda bulunmayan ve henüz tarihi ya da yüksekliği olmayan v3.2.7'yi çalıştırır. Manifestolar ayrıdır; bu yüzden ikili dosyayı asla iki ağ arasında kopyalamayın (v3.2.7 eklemeleri [Sürüm Geçmişi](/appendix/version-history#v327) sayfasında listelenmiştir).
 
 ---
 

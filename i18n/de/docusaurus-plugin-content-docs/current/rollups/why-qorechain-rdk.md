@@ -30,7 +30,7 @@ TypeScript, Python, Go, Rust und Java.
 | --- | --- | --- |
 | **Abwicklungsquittungen** | 🟡 Frühe Phase | Anker werden mit ML-DSA-87 signiert, dem Post-Quanten-Schema der Main Chain; es existieren noch keine Anker, daher wurde der aktuelle Verifizierer (der gegen die Chain prüft) noch nie an einem echten Anker ausgeführt |
 | **QCAI Rollup Copilot** | 🟡 Auf den öffentlichen Endpunkten noch nicht verfügbar | On-Chain-KI/RL-Beratungsdienste, die die öffentlichen Endpunkte heute nicht bereitstellen |
-| **Multi-VM: VM-übergreifende Aufrufe** | 🟡 Auf den Live-Netzwerken noch nicht nutzbar | Ein VM-übergreifendes Precompile, das nicht aktiviert ist (der Encoder seit 0.6.0 passt zum Layout der Chain), und der QoreChain Native-Upload ist geschlossen |
+| **Multi-VM: VM-übergreifende Aufrufe** | 🟡 Auf den Live-Netzwerken noch nicht nutzbar | Ein VM-übergreifendes Precompile, das im Mainnet nicht aktiviert ist und im Testnet mit einer Allowlist aktiv (der Encoder seit 0.6.0 passt zum Layout der Chain), und der QoreChain Native-Upload ist geschlossen |
 
 ---
 
@@ -92,14 +92,14 @@ console.log(advice.warnings); // services that could not be reached
 ## 3. Multi-VM: VM-übergreifende Aufrufe
 
 > 🟡 **Im Mainnet noch nicht nutzbar** — das Precompile ist dort nicht
-> aktiviert und der QoreChain Native-Upload ist geschlossen. Im Testnet ist das Precompile als aktiv aufgeführt (7. November 2026); ein Aufruf wurde nicht getestet. Siehe [Multi-VM](/rollups/multi-vm).
+> aktiviert und der QoreChain Native-Upload ist geschlossen. Im Testnet ist das Precompile mit einer Allowlist aktiv (am 7. November 2026 mit `eth_call` getestet). Siehe [Multi-VM](/rollups/multi-vm).
 
 Das RDK enthält Helfer, die einen Aufruf von einem EVM-(Solidity-)Contract an einen
 **QoreChain Native**-Contract über ein festes Precompile unter `0x…0901` kodieren. Dieses
-Precompile ist im Mainnet **nicht aktiv** und im Testnet seit dem 7. November 2026 **als aktiv aufgeführt** (siehe
+Precompile ist im Mainnet **nicht aktiv** und im Testnet **aktiv** (mit einer Allowlist geprüfter Contracts; am 7. November 2026 getestet) (siehe
 [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status)):
 `eth_getCode` für `0x…0901` liefert `0x` zurück (ein Precompile hat keinen Bytecode), ein Contract-Aufruf
-darauf ist im Mainnet erfolgreich, bleibt aber ohne Wirkung, und ein Aufruf darüber im Testnet wurde nicht getestet.
+darauf ist im Mainnet erfolgreich, bleibt aber ohne Wirkung; im Testnet erreicht ein Ziel auf der Allowlist seinen Contract, und jedes andere wird mit „is not allowlisted“ abgelehnt.
 
 Der Helfer `encodeCrossVmCalldata` (seit 0.6.0) baut Calldata für
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, das Layout,

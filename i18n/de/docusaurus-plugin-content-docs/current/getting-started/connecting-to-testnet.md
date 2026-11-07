@@ -10,7 +10,7 @@ sidebar_position: 4
 Treten Sie dem laufenden QoreChain-Diana-Testnet bei, indem Sie Ihren Node mit der korrekten Genesis-Datei, den richtigen Peers und Netzwerkeinstellungen konfigurieren.
 
 :::note
-Diese Seite behandelt das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live (Release **v3.2.6** seit dem 4. November 2026) und hat eine eigene Seite **Verbindung zum Mainnet** mit separater Genesis, eigenen Peers und Verbindungsdetails. Das Testnet läuft seit dem 27. Oktober 2026 mit **v3.2.6** (das Mainnet folgte am 4. November 2026); sein Release-Manifest finden Sie unter [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Diese Seite behandelt das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live (Release **v3.2.6** seit dem 4. November 2026; das Testnet ist ein Release voraus) und hat eine eigene Seite **Verbindung zum Mainnet** mit separater Genesis, eigenen Peers und Verbindungsdetails. Das Testnet läuft seit dem 27. Oktober 2026 mit **v3.2.6** (das Mainnet folgte am 4. November 2026); sein Release-Manifest finden Sie unter [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Öffentliche Endpunkte
@@ -52,7 +52,9 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-Das Testnet erhält koordinierte Upgrades über Governance-Vorschläge, daher enthält sein Manifest eine `upgradeHeight`, und `minCompatible` entspricht der aktuellen Version. Ein Node, der jetzt beitritt, benötigt das im Manifest genannte Release. Zum Zeitpunkt der Erstellung (27. Oktober 2026) lautet das Testnet-Manifest `version` 3.2.6, `minCompatible` 3.2.6 und `upgradeHeight` 8970638, und sein Hinweis lautet „IBC v2 light client routes, AMM pools and RL consensus agent fixes, fest test tokens". Halten Sie die Systemuhr per NTP synchronisiert.
+Das Testnet erhält koordinierte Upgrades über Governance-Vorschläge, daher enthält sein Manifest eine `upgradeHeight`, und `minCompatible` entspricht der aktuellen Version. Ein Node, der jetzt beitritt, benötigt das im Manifest genannte Release. Zum Zeitpunkt der Erstellung (7. November 2026) lautet das Testnet-Manifest `version` 3.2.7, `minCompatible` 3.2.7 und `upgradeHeight` 9594600. Sein Binary ist `qorechaind-v3.2.7-b3-linux-amd64.tar.gz` (99.472.930 Bytes, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`; lesen Sie die Werte erneut aus dem Manifest und prüfen Sie die SHA-256, bevor Sie das Binary ausführen). Sein Hinweis nennt als Inhalt des Releases Post-Quanten-Multisig, kalibriertes Gas für die Post-Quanten-Verifikation, Cross-VM-Verbesserungen und zuverlässigere JSON-RPC-Blocklesezugriffe. Halten Sie die Systemuhr per NTP synchronisiert.
+
+**Node noch auf v3.2.6.** Er hält bei Höhe 9.594.600 an. Ersetzen Sie `qorechaind` und die gemeinsamen `.so`-Bibliotheken durch die aus dem v3.2.7-Bundle und starten Sie ihn neu: Der Zustand bleibt erhalten, ein erneuter Sync ist nicht nötig.
 
 | Release | Testnet-Höhe | Angewendet am |
 | --- | --- | --- |
@@ -61,8 +63,9 @@ Das Testnet erhält koordinierte Upgrades über Governance-Vorschläge, daher en
 | v3.2.4 | 8.337.253 | 19. Oktober 2026 |
 | v3.2.5 | 8.890.800 | 26. Oktober 2026 |
 | v3.2.6 | 8.970.638 | 27. Oktober 2026 (16:58 UTC) |
+| v3.2.7 | 9.594.600 | 6. November 2026 (gegen 15:00 UTC) |
 
-Das Testnet übernimmt jedes Release vor dem Mainnet. Das Mainnet hat v3.2.4 am 23. Oktober 2026 bei Höhe 3.742.566 v3.2.5 am 29. Oktober 2026 bei Höhe 3.906.833 (Governance-Vorschlag 14) und v3.2.6 am 4. November 2026 bei Höhe 4.020.000 (Governance-Vorschlag 15) angewendet, daher laufen heute beide Netzwerke mit demselben Release. Die Manifeste sind getrennt; kopieren Sie daher niemals ein Binary von einem Netzwerk ins andere, und erwarten Sie, dass das Testnet dem Mainnet wieder voraus ist, sobald das nächste Release getestet wird (die Ergänzungen von v3.2.6 sind in der [Versionshistorie](/appendix/version-history#v326) aufgeführt).
+Das Testnet übernimmt jedes Release vor dem Mainnet. Das Mainnet hat v3.2.4 am 23. Oktober 2026 bei Höhe 3.742.566 v3.2.5 am 29. Oktober 2026 bei Höhe 3.906.833 (Governance-Vorschlag 14) und v3.2.6 am 4. November 2026 bei Höhe 4.020.000 (Governance-Vorschlag 15) angewendet. Das Mainnet ist daher ein Release zurück: Das Testnet läuft mit v3.2.7, das das Mainnet nicht hat und für das es noch kein Datum und keine Höhe gibt. Die Manifeste sind getrennt; kopieren Sie daher niemals ein Binary von einem Netzwerk ins andere (die Ergänzungen von v3.2.7 sind in der [Versionshistorie](/appendix/version-history#v327) aufgeführt).
 
 ---
 

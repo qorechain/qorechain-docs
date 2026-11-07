@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain is the first Layer 1 blockchain built with post-quantum cryptography at genesis, AI-native transaction processing, and a triple-VM runtime that executes EVM, QoreChain Native (the CosmWasm runtime), and SVM programs on a single chain. Rather than retrofitting quantum resistance onto an existing protocol, QoreChain was designed from the ground up to be secure against both classical and quantum adversaries while delivering the developer experience and interoperability expected of a modern general-purpose blockchain.
 
-Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 and runs chain release **v3.2.6** (applied by governance proposal 15 at height 4,020,000 on 4 November 2026; v3.2.5 had been applied at height 3,906,833 on 29 October). A public testnet (`qorechain-diana`, EVM chain ID **9800**, also on v3.2.6, since 27 October 2026) runs in parallel for staging and integration testing. The native token is **QOR** (display) / **uqor** (base, 10^6), with Bech32 prefixes `qor` for accounts and `qorvaloper` for validators. The chain is built on the Cosmos SDK v0.53.
+Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 and runs chain release **v3.2.6** (applied by governance proposal 15 at height 4,020,000 on 4 November 2026; v3.2.5 had been applied at height 3,906,833 on 29 October). A public testnet (`qorechain-diana`, EVM chain ID **9800**, on v3.2.7 since 6 November 2026, one release ahead of mainnet) runs in parallel for staging and integration testing. The native token is **QOR** (display) / **uqor** (base, 10^6), with Bech32 prefixes `qor` for accounts and `qorvaloper` for validators. The chain is built on the Cosmos SDK v0.53.
 
 ## Core Innovations
 
@@ -29,7 +29,7 @@ QoreChain is the only Layer 1 that natively runs three virtual machines within o
 * **QoreChain Native** — WebAssembly smart contracts written in Rust with full lifecycle support (instantiate, execute, query, migrate).
 * **SVM** — BPF program deployment and execution with a Solana-compatible JSON-RPC server on port 8899. Existing Solana clients and tooling work out of the box.
 
-Cross-VM messaging enables all three runtimes to communicate: EVM contracts call QoreChain Native via precompile (once that precompile is activated), QoreChain Native contracts call EVM via custom messages, and SVM programs participate through async event-based bridging. Today only the EVM runtime accepts transactions on the live networks: QoreChain Native code upload and instantiation are disabled, the SVM transaction lane is disabled, no EVM precompile is active on mainnet (the testnet has three active), and the cross-VM call message is switched off on mainnet.
+Cross-VM messaging enables all three runtimes to communicate: EVM contracts call QoreChain Native via precompile (the precompile is active on the testnet only; not on mainnet), QoreChain Native contracts call EVM via custom messages, and SVM programs participate through async event-based bridging. Today only the EVM runtime accepts transactions on the live networks: QoreChain Native code upload and instantiation are disabled, the SVM transaction lane is disabled, no EVM precompile is active on mainnet (the testnet has four active), and the cross-VM call message is switched off on mainnet.
 
 ### 4. Capped-Emission Tokenomics
 

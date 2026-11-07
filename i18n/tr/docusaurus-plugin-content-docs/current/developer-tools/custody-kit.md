@@ -271,12 +271,12 @@ Codespace ve kod üzerinden birlikte dallanın ve ham günlüğü saklayın.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Düğüm sürümü | v3.2.6 (4 Kasım 2026'da uygulandı; v3.2.5, 29 Ekim'de) | v3.2.6 (27 Ekim'de uygulandı; v3.2.5, 26 Ekim'de) |
+| Düğüm sürümü | v3.2.6 (4 Kasım 2026'da uygulandı; v3.2.5, 29 Ekim'de) | v3.2.7 (6 Kasım'da uygulandı; v3.2.6, 27 Ekim'de, v3.2.5, 26 Ekim'de) |
 
 - Birim `uqor`'dur (1 QOR = 10^6 uqor; EVM rayında 1 uqor = 10^12 wei). Asgari gaz fiyatı 0,1 uqor, unbonding süresi 21 gün ve memo sınırı 256 karakterdir. Bu değerler 27 Ekim 2026'da her iki ağdan okundu (mainnet 4 Kasım 2026'da yeniden okundu: unbonding 1.814.400 saniye, asgari gaz fiyatı 0,1 uqor, memo sınırı 256 karakter) ve yönetişimle değişebilir; bu yüzden üretimde bunları zincirden okuyun.
 - Para yatırmalar anahtar veya kayıt gerektirmez. Göndermek, sıcak adres başına kayıtlı bir ML-DSA-87 anahtarı gerektirir.
 - Üretim için kendi tam düğümlerinizi çalıştırın. Genel uç noktalar hız sınırlıdır ve geliştirme içindir. Bir betik `403 Forbidden` alırsa açık bir `User-Agent` başlığı ayarlayın. Bkz. [düğüm çalıştırma](/developer-guide/running-a-node) ve [mainnet'e bağlanma](/getting-started/connecting-to-mainnet).
-- Testnet her düğüm sürümünü mainnet'ten önce alır. Gaz kurallarını tarihe göre değil, uygulanmış yükseltmeyi kontrol ederek değiştirin (her iki ağ da v3.2.5 ve v3.2.6'yı uyguladı).
+- Testnet her düğüm sürümünü mainnet'ten önce alır. Gaz kurallarını tarihe göre değil, uygulanmış yükseltmeyi kontrol ederek değiştirin (her iki ağ da v3.2.5 ve v3.2.6'yı uyguladı; testnet ayrıca v3.2.7'yi).
 - Testnet üzerindeki test token'ları (`erc20:0x...` biçimindeki bank denom'ları, bir IBC token'ı) mainnet'te yoktur. Her iki ağda da `uqor` kaydedin.
 - Testnet QOR'u QoreChain dashboard faucet'inden gelir ve değeri yoktur. Bkz. [testnet'e bağlanma](/getting-started/connecting-to-testnet).
 

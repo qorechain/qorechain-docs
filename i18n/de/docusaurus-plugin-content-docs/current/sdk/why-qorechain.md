@@ -93,7 +93,7 @@ await crossVM.callAtomic([
 ```
 
 **Warum das anders ist:** QoreChain betreibt drei koresidente VMs mit einem nativen
-Bridge-Modul (`crossvm`, plus der Precompile `CrossVMBridge`, sobald er aktiv ist; er ist im Mainnet nicht aktiv; das Testnet führt ihn seit dem 7. November 2026 als aktiv auf, ein Aufruf darüber wurde nicht getestet),
+Bridge-Modul (`crossvm`, plus der Precompile `CrossVMBridge`, sobald er aktiv ist; er ist im Mainnet nicht aktiv; das Testnet hat ihn aktiv mit einer Allowlist, am 7. November 2026 mit `eth_call` getestet),
 sodass eine einzige SDK-Schnittstelle alle drei ansprechen kann. Single-VM-Chains
 haben nichts Vergleichbares, das sich kapseln ließe. Heute wird die Reichweite eines
 Aufrufs durch die Lane begrenzt, die er anspricht: `MsgCrossVMCall` ist auf Mainnet

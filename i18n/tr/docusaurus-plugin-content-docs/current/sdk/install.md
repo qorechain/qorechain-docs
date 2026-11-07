@@ -51,8 +51,8 @@ iki ağda da v2'ye çözümlenir, çünkü ikisi de v2'ye geçiren yükseltmeyi 
 ## 0.12.0 neler ekliyor {#whats-new-0120}
 
 SDK 0.12.0, mainnet'in 29 Ekim 2026'da 3.906.833 yüksekliğinde uyguladığı (testnet
-bunu 26 Ekim'de uyguladı) zincir **v3.2.5** için istemci sürümüdür. Her iki
-ağ da 4 Kasım'dan (mainnet) ve 27 Ekim'den (testnet) beri v3.2.6 çalıştırır;
+bunu 26 Ekim'de uyguladı) zincir **v3.2.5** için istemci sürümüdür. Mainnet
+4 Kasım'dan beri v3.2.6 çalıştırır; testnet 27 Ekim'den v3.2.6, 6 Kasım'dan beri v3.2.7 çalıştırır;
 hibrit imzalama biçimi, adresler, ondalık basamaklar ve memo'lar değişmedi, dolayısıyla
 0.10.0 ile oluşturulmuş bir işlem geçerli kalır. TypeScript, Python, Go, Rust ve Java
 tümü `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`
@@ -94,7 +94,7 @@ sürümüdür. İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve üc
 değişmedi ve 0.9.0 ile oluşturulmuş bir işlem geçerli kalır. Sürüm, her dilde testnet
 üzerinde gerçek işlemlerle kontrol edildi. v3.2.4'ten sonra getirilen hiçbir şey için
 oluşturucuları yoktu; v3.2.5 ekleri [0.12.0](#whats-new-0120) ile geldi. Mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırır (yükseklik 4.020.000, yönetişim önerisi 15; öncesinde v3.2.5, 29 Ekim'den beri, yükseklik 3.906.833) ve imzalama biçimi değişmediği için 0.10.0 orada çalışmaya devam eder. Testnet v3.2.5 ve
-v3.2.6'yı 26 ve 27 Ekim 2026'da uyguladı. 0.10.0'ın getirdikleri (hepsi hâlâ 0.12.0'da):
+v3.2.6'yı 26 ve 27 Ekim 2026'da, v3.2.7'yi 6 Kasım'da uyguladı (hiçbir SDK sürümünde v3.2.7 mesajları için oluşturucu yoktur). 0.10.0'ın getirdikleri (hepsi hâlâ 0.12.0'da):
 
 | Alan | 0.10.0'da |
 | --- | --- |

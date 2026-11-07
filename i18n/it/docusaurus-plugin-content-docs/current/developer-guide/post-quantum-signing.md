@@ -188,6 +188,22 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 
 Gli helper di rotazione dell'SDK 0.9.0 e successivi e di `@qorechain/wallet-adapter` 0.4.0 rifiutano la derivazione legacy come **nuova** chiave (non è vincolata all'account); una chiave legacy può comunque essere la vecchia chiave. Dopo una rotazione andata a buon fine, la nuova chiave firma (code 0) e la vecchia chiave viene rifiutata (`pqc` code 21). Dalla v3.2.3 una rotazione (come una migrazione) rifiuta una nuova chiave che non offre alcuna protezione post-quantistica (codice 230) e una chiave che l'account ha già usato in passato (codice 232), e non può essere inviata tramite `authz`.
 
+## Chain v3.2.7 sulla testnet: multisig, firma textual, gas di verifica {#v327}
+
+:::note Per ora solo testnet
+Le voci seguenti girano su `qorechain-diana` dal 6 novembre 2026 (release del nodo v3.2.7, altezza 9,594,600). **La mainnet è ancora sulla v3.2.6** e non ne ha nessuna; una proposta di upgrade alla v3.2.7 per la mainnet non ha ancora una data. I pacchetti `@qorechain/sdk` 0.12.0 e `@qorechain/rdk` 0.8.0 non hanno builder per le voci di multisig o firma textual (verificato il 7 novembre 2026), quindi usa per esse la CLI e la REST del nodo.
+:::
+
+**Multisig ibrido k-di-n.** Un account multisig classico ora può avere un insieme di firmatari post-quantistici che lo segue. Il nuovo messaggio `/qorechain.pqc.v1.MsgRegisterPQCMultisig` registra l'insieme: i membri e le chiavi post-quantistici seguono i membri e le chiavi correnti del multisig classico. Leggi la registrazione di qualsiasi indirizzo con `GET /qorechain/pqc/v1/multisig/{address}`; un indirizzo senza insieme registrato risponde `200` con `{"found":false,"multisig":null}` (letto sulla testnet il 7 novembre 2026). La funzionalità di protocollo `pqc-multisig` è abilitata sulla testnet (`GET /qorechain/pqc/v1/protocol_features`).
+
+**Gas di verifica.** Verificare una firma post-quantistica in una transazione costa 2.000 gas fissi, calibrati su misurazioni (la verifica ML-DSA-87 è circa 1,8 volte più lenta di secp256k1 sui server della flotta). La funzionalità `pqc-verify-gas-calibrated` è abilitata sulla testnet.
+
+**Wallet hardware e web (SIGN_MODE_TEXTUAL).** `qorechaind tx pqc cosign` può firmare in `SIGN_MODE_TEXTUAL` con l'estensione post-quantistica, che è la modalità di cui hanno bisogno i wallet hardware. Per i wallet web il nodo serve il documento da firmare: invia una `POST` a `/qorechain/pqc/v1/textual_sign_doc` con la transazione come `tx_bytes` o `tx_json`. Il 7 novembre 2026 il gateway della testnet ha risposto `400` (`tx_bytes or tx_json is required`) a un corpo vuoto e `501` a una `GET`, quindi usa `POST`. Per questa pagina non è stata eseguita alcuna firma end to end con un wallet hardware; non dare per scontato che un dato dispositivo la supporti.
+
+**Evento per le finestre EVM.** Una transazione EVM che consuma la finestra di autorizzazione post-quantistica ora emette l'evento `pqc_evm_window_used` (attributo `source`); la funzionalità `evm-window-used-event` è abilitata sulla testnet.
+
+---
+
 ## API coerente
 
 Ogni linguaggio fornisce la stessa superficie:

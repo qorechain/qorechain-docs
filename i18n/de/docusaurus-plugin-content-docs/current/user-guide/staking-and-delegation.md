@@ -10,7 +10,7 @@ sidebar_position: 2
 Dieser Leitfaden behandelt, wie du QOR-Token an Validatoren delegierst, zwischen Validatoren neu delegierst, dein Stake entbindest, Belohnungen einforderst und verstehst, welche Teile des Staking-Designs von QoreChain heute live sind.
 
 :::note
-Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.6** (angewendet am 4. November 2026; v3.2.5 am 29. Oktober und v3.2.4 am 23. Oktober); das Testnet läuft seit dem 27. Oktober 2026 mit v3.2.6. Ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
+Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.6** (angewendet am 4. November 2026; v3.2.5 am 29. Oktober und v3.2.4 am 23. Oktober); das Testnet läuft seit dem 6. November 2026 mit v3.2.7 (v3.2.6 ab dem 27. Oktober). Ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -138,7 +138,7 @@ Ein Delegator kann einen Teil einer bestehenden Delegation an einen Validator f�
 * **Einfordern.** Eine Sperre verdient eine zusätzliche Belohnungskomponente pro Epoche, die von den Modulparametern festgelegt wird; sie wird ausgezahlt, wenn du sie einforderst, nicht automatisch. Diese Seite nennt keine Sätze: Lies `params` für die Live-Einstellungen.
 * **Bei Ablauf** wird die Sperre aufgehoben, und die Delegation läuft als gewöhnliche weiter.
 
-Die Befehle stehen über die Kommandozeile und die REST-Routen `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` und `/pool` zur Verfügung; der Betrag ist eine ganze Zahl in `uqor` (1 QOR = 1.000.000 uqor).
+Die Befehle stehen über die Kommandozeile und die REST-Routen `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` und `/pool` zur Verfügung; ab dem Release v3.2.7 (Testnet seit dem 6. November 2026, noch nicht im Mainnet) gibt es außerdem `GET /qorechain/stakingtier/v1/apr` (ein Basissatz plus die Tier-Boni) und `GET /qorechain/stakingtier/v1/apr/{delegator}`, die zeigen, was das Modul aktuell berechnet. Das sind Ablesungen der aktuellen Einstellungen, **keine garantierte oder zugesagte Rendite**: Der Basissatz hängt von Gebühren und Finanzierung ab und kann null sein, und die Boni können per Governance geändert werden. Beträge in den Befehlen sind eine ganze Zahl in `uqor` (1 QOR = 1.000.000 uqor).
 
 ```bash
 qorechaind tx stakingtier lock <validator_address> <amount_in_uqor> <months> --from mykey \
@@ -158,7 +158,7 @@ Die obige Chain-ID ist die des Testnets; verwende im Mainnet `qorechain-vladi`. 
 
 **Wo es funktioniert, geprüft am 27. Oktober 2026 (die v3.2.6-Angabe für das Mainnet stammt aus den Release Notes und dem Upgrade vom 4. November 2026; die Parameter unten wurden am 4. November 2026 im Mainnet erneut gelesen).** Vor v3.2.6 lehnte das Mainnet das Entbinden erst ab, wenn die Transaktion ausgeführt wurde, über das Staking-Nachrichten-Gate.
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.7) |
 |---|---|---|
 | Modul live | Ja, seit Höhe 3,742,566 | Ja, seit v3.2.4 (Höhe 8,337,253) |
 | Offene Sperren | Noch keine | 3 Testsperren |

@@ -30,7 +30,7 @@ cadena incluye el módulo IBC para la interoperabilidad entre cadenas (no hay ni
 canal IBC abierto en mainnet; la testnet tiene un canal `transfer` abierto hacia una
 cadena de prueba, comprobado el 27 de octubre de 2026).
 
-:::note Qué funciona hoy en las redes en vivo (ambas redes ejecutan la v3.2.6)
+:::note Qué funciona hoy en las redes en vivo (la mainnet ejecuta la v3.2.6, la testnet la v3.2.7)
 **Funciona:** lecturas en todos los carriles, transacciones Native con firma
 híbrida, cuentas unificadas, transacciones EVM dentro de una
 [ventana de autorización](/sdk/guides/evm#evm-window) y lecturas de SVM.
@@ -43,13 +43,13 @@ instanciación de QoreChain Native para cuentas ordinarias (en la testnet, la
 instanciación está abierta y la subida no), los flujos de autenticador /
 cuenta abstracta en mainnet (módulo desactivado allí, habilitado en la
 testnet), xQORE y la abstracción de gas. Cada guía repite la advertencia donde
-corresponde. Comprobado contra los endpoints en vivo el 27 de octubre de 2026; el 7 de noviembre de 2026 la lista de precompilados activos de la mainnet seguía vacía, mientras que la de la testnet también contenía el puente cross-VM `0x…0901` (figura como activo; no se probó una llamada a través de él).
+corresponde. Comprobado contra los endpoints en vivo el 27 de octubre de 2026; el 7 de noviembre de 2026 la lista de precompilados activos de la mainnet seguía vacía, mientras que la de la testnet también contenía el puente cross-VM `0x…0901` (activo con una lista de permitidos; el 7 de noviembre de 2026 se probó un `eth_call` de solo lectura).
 
 El SDK publicado (0.12.0, 30 de octubre de 2026) firma en la forma que verifican ambas
 redes (sign-bytes híbridos v2, resueltos a partir del estado de la cadena), y el
 formato de firma, las direcciones, los decimales, los memos y las comisiones no
 cambiaron en la v3.2.3, la v3.2.4, la v3.2.5 ni la v3.2.6 (la mainnet ejecuta la v3.2.6 desde el 4 de noviembre de 2026,
-altura 4,020,000, propuesta de gobernanza 15; la testnet desde el 27 de octubre). Incluye el lado cliente de las reglas
+altura 4,020,000, propuesta de gobernanza 15; la testnet desde el 27 de octubre, y desde el 6 de noviembre la testnet ejecuta la v3.2.7, que añade mensajes para los que el SDK 0.12.0 no tiene constructores). Incluye el lado cliente de las reglas
 poscuánticas posteriores (la prueba de posesión en el registro de claves, las ventanas
 EVM con alcance, los mensajes de consentimiento EIP-7702) y de la v3.2.4 (niveles
 de staking, el nonce del autenticador, interruptores de funciones del protocolo) y de la v3.2.5 (gas exacto para

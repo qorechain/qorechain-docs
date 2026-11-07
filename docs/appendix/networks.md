@@ -17,7 +17,7 @@ A consolidated reference for the QoreChain networks — chain identifiers, EVM c
 | **Cosmos chain ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM chain ID (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **Live since** | 7 June 2026 | 1 July 2026 (continuous since; no reset) |
-| **Chain version** | v3.2.6 (applied at height 4,020,000, 4 November 2026, governance proposal 15). v3.2.5 was applied at height 3,906,833 on 29 October 2026, v3.2.4 at height 3,742,566 on 23 October 2026 and v3.2.3 at height 3,662,051 on 20 October 2026 | v3.2.6 (applied at height 8,970,638, 27 October 2026; v3.2.5 was applied at height 8,890,800 on 26 October and v3.2.4 at 8,337,253 on 19 October) |
+| **Chain version** | v3.2.6 (applied at height 4,020,000, 4 November 2026, governance proposal 15). v3.2.5 was applied at height 3,906,833 on 29 October 2026, v3.2.4 at height 3,742,566 on 23 October 2026 and v3.2.3 at height 3,662,051 on 20 October 2026 | v3.2.7 (applied at height 9,594,600, 6 November 2026, by governance; v3.2.6 at height 8,970,638 on 27 October, v3.2.5 at 8,890,800 on 26 October and v3.2.4 at 8,337,253 on 19 October). Not on mainnet yet, no date or height |
 | **Block time (measured average)** | about 3.1 s | about 1.3 s |
 | **Release manifest** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
@@ -25,7 +25,7 @@ A consolidated reference for the QoreChain networks — chain identifiers, EVM c
 | **Test tokens** | None | Fest tokens fUSD, fETH and fBTC (no value; see [Faucet](/dashboard/faucet#fest-tokens)) |
 | **Connection guide** | [Connecting to Mainnet](/getting-started/connecting-to-mainnet) | [Connecting to Testnet](/getting-started/connecting-to-testnet) |
 
-Both manifests are the source of truth for the release a fresh node should run. Both networks take coordinated upgrades through governance, so each manifest carries the `upgradeHeight` of its current release and a `minCompatible` equal to that release (3.2.6 on both networks: mainnet checked 4 November 2026, testnet checked 27 October 2026). The testnet takes each release first: mainnet has run v3.2.6 since 4 November 2026 (height 4,020,000, governance proposal 15), so a node joining mainnet must keep following its own manifest. Never copy a binary between the networks.
+Both manifests are the source of truth for the release a fresh node should run. Both networks take coordinated upgrades through governance, so each manifest carries the `upgradeHeight` of its current release and a `minCompatible` equal to that release (3.2.6 on mainnet, checked 4 November 2026; 3.2.7 on the testnet, checked 7 November 2026). The testnet takes each release first: it has run v3.2.7 since 6 November 2026 while mainnet has run v3.2.6 since 4 November 2026 (height 4,020,000, governance proposal 15), so a node joining mainnet must keep following its own manifest. The testnet manifest (7 November 2026) names the bundle `qorechaind-v3.2.7-b3-linux-amd64.tar.gz` (99,472,930 bytes, sha256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`); see [Connecting to Testnet](/getting-started/connecting-to-testnet). Never copy a binary between the networks.
 
 ## Public endpoints {#public-endpoints}
 

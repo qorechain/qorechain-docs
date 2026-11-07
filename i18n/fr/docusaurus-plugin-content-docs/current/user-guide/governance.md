@@ -10,7 +10,7 @@ sidebar_position: 3
 Ce guide explique le fonctionnement de la gouvernance on-chain sur QoreChain : comment les votes sont décomptés, comment soumettre des propositions et comment voter.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.6** depuis le 4 novembre 2026 (v3.2.5 depuis le 29 octobre, v3.2.4 à partir du 23 octobre) ; le testnet exécute la **v3.2.6** depuis le 27 octobre 2026 — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous participez à la gouvernance sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.6** depuis le 4 novembre 2026 (v3.2.5 depuis le 29 octobre, v3.2.4 à partir du 23 octobre) ; le testnet exécute la **v3.2.7** depuis le 6 novembre 2026 (v3.2.6 depuis le 27 octobre). Remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous participez à la gouvernance sur le mainnet.
 :::
 
 :::caution Signez avec `tx pqc cosign`

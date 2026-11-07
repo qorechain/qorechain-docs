@@ -225,9 +225,9 @@ Zincir başına ayarlar (`min_confirmations`, `max_single_transfer`, `daily_limi
 | `max_queue_size`      | `1000`  | Çapraz-VM kuyruğundaki maksimum bekleyen mesaj |
 | `queue_timeout_blocks`| `100`   | Bekleyen bir mesajın zaman aşımına uğramasından önceki blok sayısı |
 | `enabled`             | `true`  | Modül etkinleştirme bayrağı                    |
-| `bridge_allowed_targets` | `[]` (boş) | Çapraz-VM köprüsünün çağırabileceği sözleşme hedeflerinin yönetişimle yönetilen izin listesi (v3.2.5); boş liste hiçbirine izin vermez |
+| `bridge_allowed_targets` | ana ağda `[]` (boş); test ağında üç `cosmwasm:qor1...` kaydı (7 Kasım 2026'da okundu) | Çapraz-VM köprüsünün çağırabileceği sözleşme hedeflerinin yönetişimle yönetilen izin listesi (v3.2.5); boş liste hiçbirine izin vermez |
 
-`MsgCrossVMCall` ana ağda devre kesici tarafından hâlâ kapatılmıştır (test ağında etkindir, 30 Ekim 2026'da kontrol edildi; ana ağ listesi 4 Kasım 2026'da yeniden okundu ve hâlâ 16 kayıt içeriyor). v3.2.5'ten beri her iki ağ da bu değerleri REST üzerinden sunar (`GET /qorechain/crossvm/v1/params`); v3.2.5'ten önce ana ağ 501 döndürüyordu.
+Test ağında 32 numaralı yönetişim önerisi (3 Kasım 2026'da kabul edildi), `0x...0901` adresindeki EVM'den QoreChain Native'e köprü precompile'ını etkinleştirdi ve izin listesini doldurdu; test edilmiştir, bkz. [Sürüm Geçmişi](/appendix/version-history#v327). `MsgCrossVMCall` ana ağda devre kesici tarafından hâlâ kapatılmıştır (test ağında etkindir, 30 Ekim 2026'da kontrol edildi; ana ağ listesi 4 Kasım 2026'da yeniden okundu ve hâlâ 16 kayıt içeriyor). v3.2.5'ten beri her iki ağ da bu değerleri REST üzerinden sunar (`GET /qorechain/crossvm/v1/params`); v3.2.5'ten önce ana ağ 501 döndürüyordu.
 
 ---
 
@@ -376,7 +376,7 @@ Standart Cosmos SDK ve EVM modülleri; tümü 27 Ekim 2026'da ana ağdan canlı 
 | | `no_base_fee` | `false` |
 | EVM | `evm_denom` / `extended_denom` | `uqor` / `aqor` (18 ondalık) |
 | | kontrat oluşturma / çağırma erişimi | izinsiz (permissionless) |
-| | `active_static_precompiles` | ana ağda boş (hiçbir EVM precompile'ı etkin değil; test ağında üç tanesi etkin, aşağıya bakın) |
+| | `active_static_precompiles` | ana ağda boş (hiçbir EVM precompile'ı etkin değil; test ağında dört tanesi etkin, aşağıya bakın) |
 | | `history_serve_window` | 8,192 |
 | ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
 | QoreChain Native | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
@@ -389,7 +389,7 @@ Zincir, vakıf operasyon hesabı ve yönetişim tarafından kontrol edilen Cosmo
 
 **Ana ağ (4 Kasım 2026, 16 kayıt, 14 Ekim'den beri değişmedi ve v3.2.5 ile v3.2.6 yükseltmeleriyle değişmedi; kayıtların kendisi en son 30 Ekim 2026'da tek tek listelenmişti):** vesting hesabı oluşturma (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; ve dört PRISM kontrol mesajı (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). EVM hattı (`MsgEthereumTx`) **açıktır**: 16 ile 25 Eylül arasında kapatılmış ve v3.2.0 yükseltmesiyle yeniden açılmıştır.
 
-**Test ağı (27 Ekim 2026, 1 kayıt):** yalnızca QoreChain Native `MsgStoreCode` (kontrat yükleme); instantiate artık orada kapatılmış değildir.
+**Test ağı (7 Kasım 2026, 2 kayıt):** QoreChain Native `MsgStoreCode` (kontrat yükleme) ve SVM `MsgExecuteProgram` (doğrudan SVM program yürütme; test ağı yönetişiminin 31 numaralı önerisiyle duraklatıldı ve v3.2.7'den sonra da duraklatılmış durumda); instantiate artık orada kapatılmış değildir. 27 Ekim 2026'da listede yalnızca `MsgStoreCode` vardı.
 
 Standart bank, staking, governance, distribution, authz ve `x/pqc` kayıt mesajlarının tümü dahil diğer her mesaj türü etkindir. Liste yönetişim tarafından kontrol edilir ve değişebilir; her zaman sorgulayın.
 
@@ -397,19 +397,19 @@ Standart bank, staking, governance, distribution, authz ve `x/pqc` kayıt mesajl
 
 ## Test Ağı ile Ana Ağ Arasındaki Farklar {#testnet-differences}
 
-27 Ekim 2026'da canlı olarak okunmuş ve v3.2.5 yükseltmesinden sonra 30 Ekim 2026'da yeniden kontrol edilmiştir; rotalar, yukarıda adı geçen parametre tabloları, devre kesici sayısı, precompile listesi ve öneri, v3.2.6 sonrasında 4 Kasım 2026'da ana ağda yeniden okunmuştur. Ana ağ `qorechain-vladi` **v3.2.6** çalıştırır (4.020.000 yüksekliğinden, 4 Kasım 2026'dan beri, yönetişim önerisi 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, v3.2.4 ise 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı). Test ağı `qorechain-diana` da **v3.2.6** çalıştırır: v3.2.4 ona 8.337.253 yüksekliğinde (19 Ekim 2026), v3.2.5 8.890.800 yüksekliğinde (26 Ekim) ve v3.2.6 8.970.638 yüksekliğinde (27 Ekim) ulaştı. Test ağı, her sürümü önce alan ve test için ayarlanmış bir hazırlık ağıdır; bu nedenle aşağıdaki değerler ana ağdan farklıdır. Bu bölüm bu sayfanın parametre tablolarını kapsar; her iki ağ da artık v3.2.6'yı taşır, bu yüzden kalan farklar test ağı ayarlarından ve yönetişimin her ağda açtığı şeylerden gelir. Burada listelenmeyen her parametre her iki ağda aynıdır (stake, slashing, dağıtım, fee-market, ERC-20, AMM, yakım, hafif düğüm, köprü, gaz soyutlama ve zaman kilitli stake değerleri tek tek karşılaştırılmıştır).
+27 Ekim 2026'da canlı olarak okunmuş ve v3.2.5 yükseltmesinden sonra 30 Ekim 2026'da yeniden kontrol edilmiştir; rotalar, yukarıda adı geçen parametre tabloları, devre kesici sayısı, precompile listesi ve öneri, v3.2.6 sonrasında 4 Kasım 2026'da ana ağda yeniden okunmuştur. Ana ağ `qorechain-vladi` **v3.2.6** çalıştırır (4.020.000 yüksekliğinden, 4 Kasım 2026'dan beri, yönetişim önerisi 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, v3.2.4 ise 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı). Test ağı `qorechain-diana` **v3.2.7** çalıştırır (ana ağdan bir sürüm öndedir): v3.2.4 ona 8.337.253 yüksekliğinde (19 Ekim 2026), v3.2.5 8.890.800 yüksekliğinde (26 Ekim), v3.2.6 8.970.638 yüksekliğinde (27 Ekim) ve v3.2.7 9.594.600 yüksekliğinde (6 Kasım) ulaştı. Tablodaki test ağı değerleri 7 Kasım 2026'da yeniden okundu (precompile listesi, devre kesici, çapraz-VM izin listesi); test ağı sütununun geri kalanı daha önceki okumalardan gelir. Test ağı, her sürümü önce alan ve test için ayarlanmış bir hazırlık ağıdır; bu nedenle aşağıdaki değerler ana ağdan farklıdır. Test ağı ayarlarına ve yönetişim tercihlerine ek olarak, test ağı artık ana ağın henüz taşımadığı ve tarihi olmayan v3.2.7 eklerini de taşır ([Sürüm Geçmişi](/appendix/version-history#v327) altında listelenmiştir). Burada listelenmeyen her parametre her iki ağda aynıdır (stake, slashing, dağıtım, fee-market, ERC-20, AMM, yakım, hafif düğüm, köprü, gaz soyutlama ve zaman kilitli stake değerleri tek tek karşılaştırılmıştır).
 
 | Alan | Ana ağ | Test ağı |
 | ---- | ------- | ------- |
 | Yönetişim oylama süreleri | `voting_period` 172,800 s (2 gün); `expedited_voting_period` 86,400 s (1 gün) | `voting_period` 14,400 s (4 saat); `expedited_voting_period` 3,600 s (1 saat). Depozitolar, yeter sayı ve eşikler aynıdır |
 | `x/inflation` | `emission_mode` `fixed`; `fixed_epoch_emission` 86.000 QOR; `max_total_emission` 590.000.000 QOR; `target_apy_bps` `0` | `emission_mode` `target_apy`; `target_apy_bps` `1667`; `fixed_epoch_emission` 16.239 QOR; `max_total_emission` 3,950,390,341,362,112,750 uqor, çoktan ulaşılmış (`/qorechain/inflation/v1/epoch_info` adresinde `remaining_emission` `0`, yani test ağı artık hiçbir şey basmaz) |
-| EVM etkin statik precompile'lar | yok (`[]`) | üç tane: `0x0000000000000000000000000000000000000C01` adresindeki PRISM parametreleri precompile'ı ile `0x...0a01` ve `0x...0a02` adreslerindeki precompile'lar |
+| EVM etkin statik precompile'lar | yok (`[]`) | dört tane (7 Kasım 2026'da okundu): `0x...0901` adresindeki çapraz-VM köprüsü (test ağı yönetişiminin 32 numaralı önerisinden beri etkin, gözden geçirilmiş sözleşmelerin izin listesiyle), `0x...0C01` adresindeki PRISM parametreleri precompile'ı ile `0x...0a01` ve `0x...0a02` adreslerindeki precompile'lar. Hiçbir `0x08xx` precompile'ı iki ağda da etkin değildir |
 | PRISM ajanı (`x/rlconsensus`) | Gözlem modu, politika yüklenmemiş; kontrol mesajları kapalı | Bir gösterim politikasıyla gölge modu (test ağı yönetişimi tarafından ayarlanmış); `GET /qorechain/rlconsensus/v1/...` v3.2.6'dan beri her iki ağda yanıt verir |
 | Akıllı hesaplar (`x/abstractaccount`) | `enabled` `false` | `enabled` `true` |
 | RDK (`x/rdk`) | `max_rollups` 100; `default_challenge_window` 604,800 s | `max_rollups` 200; `default_challenge_window` 3,600 s |
 | Multilayer (`x/multilayer`) | `max_sidechains` 10 | `max_sidechains` 64 |
 | QoreChain Native instantiate izni | `Nobody` | `Everybody` (kod yükleme her iki ağda `Nobody` kalır) |
-| Devre kesici | 16 kayıt (yukarıya bakın), `MsgCrossVMCall`, `MsgInstantiateContract` ve `MsgInstantiateContract2` dahil | 1 kayıt: QoreChain Native `MsgStoreCode` |
+| Devre kesici | 16 kayıt (yukarıya bakın), `MsgCrossVMCall`, `MsgInstantiateContract` ve `MsgInstantiateContract2` dahil | 2 kayıt (7 Kasım 2026): QoreChain Native `MsgStoreCode` ve SVM `MsgExecuteProgram` |
 | REST üzerinden parametre rotaları | Test ağıyla aynı: `/qorechain/pqc/v1/params`, `/qorechain/rlconsensus/v1/params`, `/qorechain/reputation/v1/params`, `/qorechain/crossvm/v1/params` ve `/qorechain/rdk/v1/params` rotalarının hepsi 4 Kasım 2026'da 200 döndürdü | Aynı rotalar yanıt verir |
 | Blok süresi ve doğrulayıcılar | yaklaşık 3,1 sn; 8 bağlı doğrulayıcı | yaklaşık 1,3 sn; 4 bağlı doğrulayıcı |
 | Test tokenları | yok | fUSD, fETH ve fBTC (bkz. [Faucet](/dashboard/faucet#fest-tokens)) |

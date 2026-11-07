@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain, **QoreChain Native** akıllı sözleşmelerini destekler. QoreChain Native, QoreChain'in **CosmWasm** çalışma zamanına verdiği addır: geliştiriciler standart CosmWasm kütüphanelerine (`cosmwasm-std`) karşı güvenli, sandbox'lanmış Rust programları yazar ve bunları WebAssembly'ye derler. QoreChain Native sözleşmeleri, QoreChain'in üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve 4 Kasım 2026'dan beri **v3.2.6** düğüm sürümünü çalıştıran (yönetişim önerisi 15, yükseklik 4.020.000; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını kullanır. v3.2.6 çalıştıran (v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve 4 Kasım 2026'dan beri **v3.2.6** düğüm sürümünü çalıştıran (yönetişim önerisi 15, yükseklik 4.020.000; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını kullanır. v3.2.7 çalıştıran (6 Kasım 2026'dan beri; v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` kullanın.
 :::
 
 :::caution Kod yükleme ve örnekleme ana ağda açık izin gerektirir; test ağı farklıdır
@@ -29,7 +29,7 @@ Bu kısıtlama, zaten örneklenmiş sözleşmeleri etkilemez — mevcut bir söz
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
-Ana ağ ve test ağı, her Cosmos şeridi (lane) işleminde hibrit bir kuantum-sonrası imza gerektirir; bu nedenle bu sayfadaki `tx` komutları yazıldığı gibi yayınlanmaz. Bunlar işlemi `--generate-only > tx.json` ile oluşturur; ardından `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` ile imzalayıp yayınlayın (imzalayıcı, [indirme manifestosundaki](/developer-guide/running-a-node#fetch-the-manifest) sürüm ikili dosyasında bulunur; herkese açık kaynaktan derlenen sürümde yoktur). Ağ ücret tabanı **gas birimi başına 0,1 uqor**'dur ve `--gas-prices 0.1uqor` bunu ifade eder; hibrit imza, simülasyonun içermediği yaklaşık 47.000 gas ekler, bu yüzden `1.5` ayarı kullanılır. Bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing).
+Ana ağ ve test ağı, her Cosmos şeridi (lane) işleminde hibrit bir kuantum-sonrası imza gerektirir; bu nedenle bu sayfadaki `tx` komutları yazıldığı gibi yayınlanmaz. Bunlar işlemi `--generate-only > tx.json` ile oluşturur; ardından `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` ile imzalayıp yayınlayın (imzalayıcı, [indirme manifestosundaki](/developer-guide/running-a-node#fetch-the-manifest) sürüm ikili dosyasında bulunur; herkese açık kaynaktan derlenen sürümde yoktur). Ağ ücret tabanı **gas birimi başına 0,1 uqor**'dur ve `--gas-prices 0.1uqor` bunu ifade eder; hibrit imza, simülasyonun içermediği yaklaşık 47.000 gas ekler, bu yüzden `1.5` ayarı kullanılır. (v3.2.7'den itibaren, 6 Kasım 2026'dan beri testnet'te, kuantum sonrası doğrulama ücreti sabit 2.000 gas'tir; mainnet hâlâ v3.2.6'dadır.) Bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing).
 :::
 
 ---

@@ -15,7 +15,7 @@ Las llamadas entre VM solo están disponibles en la medida en que lo esté su la
 * `MsgCrossVMCall` está **desactivado en mainnet** por el disyuntor (circuit breaker) (`qorechaind query circuit disabled-list`); en la testnet está habilitado.
 * El **lane de SVM está deshabilitado** para transacciones en ambas redes, por lo que un tramo SVM no puede ejecutarse.
 * **La carga de QoreChain Native requiere permisos** en ambas redes y **la instanciación requiere permisos en la mainnet**, que no tiene código de contrato almacenado, por lo que todavía no hay ningún contrato QoreChain Native al que llamar en la mainnet. En la testnet, la gobernanza almacenó algunos contratos revisados que cualquier cuenta puede instanciar (véase [Desarrollo con QoreChain Native](/developer-guide/cosmwasm-development)), por lo que allí puede existir un destino QoreChain Native.
-* El **precompilado de EVM síncrono no está activo en la mainnet** y figura como activo en la testnet (leído el 7 de noviembre de 2026; no se probó una llamada a través de él; véase más abajo). Una versión reforzada está en el binario desde v3.2.3. (El 27 de octubre de 2026 la gobernanza de la testnet activó otros tres precompilados, PQC Verify, PQC Key Status y PRISM Consensus Params, y el puente CrossVM se sumó a la lista de la testnet antes del 4 de noviembre; la mainnet no tiene ninguno activo.)
+* El **precompilado de EVM síncrono no está activo en la mainnet** y está **activo en la testnet** con una lista de permitidos de contratos QoreChain Native revisados (leído el 7 de noviembre de 2026; se ejecutó una llamada de solo lectura a través de él tras la actualización v3.2.7, véase más abajo). Una versión reforzada está en el binario desde v3.2.3. (El 27 de octubre de 2026 la gobernanza de la testnet activó otros tres precompilados, PQC Verify, PQC Key Status y PRISM Consensus Params, y el puente CrossVM se sumó a la lista de la testnet antes del 4 de noviembre; la mainnet no tiene ninguno activo.)
 
 En la mainnet, las rutas REST del módulo (`/qorechain/crossvm/v1/...`) no las sirve la pasarela pública (`501`); lee los mensajes con la CLI o con un cliente de consultas gRPC/ABCI.
 :::
@@ -46,12 +46,12 @@ Los endpoints siguientes apuntan por defecto a un nodo local. En mainnet, usa lo
 
 ---
 
-## Ruta síncrona (EVM a QoreChain Native)
+## Ruta síncrona (EVM a QoreChain Native) {#synchronous-path-evm-to-qorechain-native}
 
 La ruta síncrona usa un **precompilado** de EVM en la dirección `0x0000000000000000000000000000000000000901`. Está diseñada para que los contratos de Solidity llamen a contratos QoreChain Native y reciban una respuesta dentro de la misma transacción.
 
-:::warning No activo en la mainnet; activo en la testnet, llamada no probada
-El precompilado del puente CrossVM **no está activo** en `qorechain-vladi`: una llamada a `0x…0901` allí tiene éxito y devuelve datos vacíos. En `qorechain-diana` la lista `active_static_precompiles` incluye `0x…0901` (leída el 7 de noviembre de 2026); una llamada a través de él figuraba como activa pero no se probó. El binario v3.2.3 incluye una versión reforzada (rechaza un `STATICCALL`, mide su llamada anidada con el gas del marco que llama y la registra en el diario para que un revert de EVM también deshaga el lado de QoreChain Native, solo alcanza destinos QoreChain Native de la lista de permitidos y respeta el disyuntor entre VM), pero solo se ejecuta donde una propuesta aprobada por gobernanza la ha añadido a la lista activa (hasta ahora la testnet, no la mainnet). El ejemplo siguiente es el formato que decodifica el nodo; no puede ejecutarse en la mainnet hasta que el precompilado esté activo, y no se ejecutó contra la testnet. Consulta [Precompilados de EVM: estado de la red](/developer-guide/evm-precompiles#network-status).
+:::warning No activo en la mainnet; activo en la testnet con una lista de permitidos
+El precompilado del puente CrossVM **no está activo** en `qorechain-vladi`: una llamada a `0x…0901` allí tiene éxito y devuelve datos vacíos. En `qorechain-diana` la lista `active_static_precompiles` incluye `0x…0901` (leída el 7 de noviembre de 2026); el 7 de noviembre de 2026, tras la actualización v3.2.7, se ejecutó un `eth_call` de solo lectura a través de él (resultados más abajo). El binario v3.2.3 incluye una versión reforzada (rechaza un `STATICCALL`, mide su llamada anidada con el gas del marco que llama y la registra en el diario para que un revert de EVM también deshaga el lado de QoreChain Native, solo alcanza destinos QoreChain Native de la lista de permitidos y respeta el disyuntor entre VM), pero solo se ejecuta donde una propuesta aprobada por gobernanza la ha añadido a la lista activa (hasta ahora la testnet, no la mainnet). En la mainnet el precompilado y las llamadas cross-VM siguen desactivados, incluso después de una actualización a v3.2.7 (que todavía no tiene fecha), hasta una decisión de gobernanza independiente. El ejemplo siguiente es el formato que decodifica el nodo; no puede ejecutarse en la mainnet hasta que el precompilado esté activo. En la testnet se puede llamar, dentro de la lista de permitidos (sección siguiente). Consulta [Precompilados de EVM: estado de la red](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Ejemplo en Solidity
@@ -86,9 +86,26 @@ contract CrossVMCaller {
 }
 ```
 
-Este es el formato que decodifica el nodo; es el mismo que construye el codificador de `@qorechain/rdk`, y el contrato anterior coincide con el starter de [Multi-VM](/rollups/multi-vm). No se pueden adjuntar fondos a través del precompilado (la ruta de mensajes `MsgCrossVMCall` admite `--funds`). El ejemplo no puede hacer nada hoy en la mainnet, porque el precompilado no está activo allí; en la testnet el precompilado figura como activo pero el ejemplo no se ejecutó (véase la advertencia anterior), y la ABI aún puede cambiar.
+Este es el formato que decodifica el nodo; es el mismo que construye el codificador de `@qorechain/rdk`, y el contrato anterior coincide con el starter de [Multi-VM](/rollups/multi-vm). No se pueden adjuntar fondos a través del precompilado (la ruta de mensajes `MsgCrossVMCall` admite `--funds`). El ejemplo no puede hacer nada hoy en la mainnet, porque el precompilado no está activo allí. En la testnet funciona dentro de la lista de permitidos que se describe a continuación; el contrato de ejemplo en sí no se desplegó para esta página, la llamada siguiente se hizo directamente con `eth_call`.
 
-Una vez activo, el precompilado ejecuta el contrato QoreChain Native de inmediato y devuelve el resultado. (El helper `encodeCrossVmCalldata` de `@qorechain/rdk`, disponible desde la 0.6.0 y en la actual 0.8.0, construye el calldata; véase [Multi-VM](/rollups/multi-vm).) Coste de gas: **50.000 base + 4 por byte de entrada + coste de ejecución**.
+Donde el precompilado está activo, ejecuta el contrato QoreChain Native de inmediato y devuelve el resultado. (El helper `encodeCrossVmCalldata` de `@qorechain/rdk`, disponible desde la 0.6.0 y en la actual 0.8.0, construye el calldata; véase [Multi-VM](/rollups/multi-vm).) Coste de gas: **50.000 base + 4 por byte de entrada + coste de ejecución**.
+
+### Comportamiento en la testnet (lista de permitidos, comprobado el 7 de noviembre de 2026) {#testnet-allowlist}
+
+En `qorechain-diana` (versión de nodo v3.2.7 desde el 6 de noviembre de 2026) el precompilado solo alcanza contratos QoreChain Native de la lista de permitidos del puente. `GET /qorechain/crossvm/v1/params` los lista en `bridge_allowed_targets` (tres entradas el 7 de noviembre de 2026, escritas `cosmwasm:qor1...`), junto a `enabled` `true`, `max_message_size` 65536, `max_queue_size` 1000 y `queue_timeout_blocks` 100. El 7 de noviembre de 2026 se ejecutaron dos solicitudes `eth_call` de solo lectura a `0x…0901` con `executeCrossVMCall(1, target, 0x7b7d)`:
+
+* **Destino fuera de la lista de permitidos:** revierte con `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted`.
+* **Destino de la lista de permitidos:** la llamada alcanza el contrato (el nodo informa del error propio del contrato por el mensaje `{}` vacío: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). Eso demuestra que la ruta funciona; para esta página no se envió ninguna transacción cross-VM que cambie el estado a través del precompilado.
+
+En la mainnet el precompilado (`0x…0901`) y las llamadas cross-VM siguen **desactivados** (disyuntor) incluso después de la actualización v3.2.7, hasta una decisión de gobernanza independiente.
+
+### Qué cambia v3.2.7 para las llamadas cross-VM (por ahora solo testnet) {#v327}
+
+Esto se aplica en la testnet desde el 6 de noviembre de 2026 y **todavía no está en la mainnet** (la actualización no tiene fecha):
+
+* Una llamada que falla en la VM de destino ahora falla de forma limpia: es el fallo de esa llamada y la cola continúa con el mensaje siguiente.
+* Los destinos mal formados se rechazan al enviar con el código 5 en el codespace `crossvm`.
+* Una llamada cross-VM ya no puede tener como destino la dirección de un precompilado de EVM.
 
 ---
 
@@ -218,7 +235,7 @@ curl -X POST http://localhost:8545 \
 
 ## Consideraciones de diseño
 
-**Atomicidad:** Las llamadas síncronas (EVM a QoreChain Native vía precompilado) están diseñadas para ser atómicas, de modo que si cualquiera de los lados revierte, toda la transacción revierte. El precompilado actual aún no lo garantiza, y esa es una de las razones por las que no está activo (véase más arriba). Las llamadas asíncronas **no son atómicas** entre bloques; diseña tus contratos para manejar con elegancia los estados `Failed` y `Timed Out`.
+**Atomicidad:** Las llamadas síncronas (EVM a QoreChain Native vía precompilado) están diseñadas para ser atómicas, de modo que si cualquiera de los lados revierte, toda la transacción revierte. El precompilado reforzado registra la llamada anidada en el diario, de modo que una reversión en el contrato que llama también deshace el lado de QoreChain Native; está activo solo en la testnet. Las llamadas asíncronas **no son atómicas** entre bloques; diseña tus contratos para manejar con elegancia los estados `Failed` y `Timed Out`.
 
 **Ordenación:** Los mensajes en la cola se procesan en orden FIFO dentro de cada pasada del EndBlocker. No hay ordenación garantizada entre distintas VM de origen.
 

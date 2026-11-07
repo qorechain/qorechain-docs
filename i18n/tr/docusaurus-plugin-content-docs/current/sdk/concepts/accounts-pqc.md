@@ -300,7 +300,7 @@ sonrası koruma kazanır. Kuantum sonrası kısım, işlem üzerinde bir
 `PQCHybridSignature` uzantısı olarak taşınır.
 
 :::caution Native yolda hibrit imzalama zorunludur
-Zincir sürümü **v3.2.0** itibarıyla (her iki ağ da v3.2.6 çalıştırır) ağ
+Zincir sürümü **v3.2.0** itibarıyla (mainnet v3.2.6, testnet v3.2.7 çalıştırır) ağ
 varsayılanı `hybrid_signature_mode = required` ve
 `allow_classical_fallback = false` şeklindedir. `buildHybridTx` /
 `signAndBroadcastHybrid` üzerinden (`rest` geçirerek) hibrit imzalama — veya

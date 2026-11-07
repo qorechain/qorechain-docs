@@ -10,7 +10,7 @@ sidebar_position: 2
 This guide covers how to delegate QOR tokens to validators, redelegate between validators, unbond your stake, claim rewards, and understand which parts of QoreChain's staking design are live today.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.6** (applied on 4 November 2026; v3.2.5 on 29 October and v3.2.4 on 23 October); the testnet has run v3.2.6 since 27 October 2026. Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.6** (applied on 4 November 2026; v3.2.5 on 29 October and v3.2.4 on 23 October); the testnet has run v3.2.7 since 6 November 2026 (v3.2.6 from 27 October). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`
@@ -138,7 +138,7 @@ A delegator can commit part of an existing delegation to a validator for a fixed
 * **Claiming.** A lock earns an additional per-epoch reward component set by the module parameters; it is paid when you claim it, not automatically. This page does not quote rates: read `params` for the live settings.
 * **At expiry** the lock is released and the delegation continues as an ordinary one.
 
-The commands are available through the command line and the REST routes `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` and `/pool`; the amount is an integer number of `uqor` (1 QOR = 1,000,000 uqor).
+The commands are available through the command line and the REST routes `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` and `/pool`; from release v3.2.7 (testnet since 6 November 2026, not on mainnet yet) there are also `GET /qorechain/stakingtier/v1/apr` (a base rate plus the tier bonuses) and `GET /qorechain/stakingtier/v1/apr/{delegator}`, which show what the module currently computes. These are readings of the current settings, **not a guaranteed or promised return**: the base rate depends on fees and funding and can be zero, and the bonuses can be changed by governance. Amounts in the commands are an integer number of `uqor` (1 QOR = 1,000,000 uqor).
 
 ```bash
 qorechaind tx stakingtier lock <validator_address> <amount_in_uqor> <months> --from mykey \
@@ -158,7 +158,7 @@ The chain ID above is the testnet's; use `qorechain-vladi` on mainnet. As on the
 
 **Where it works, checked on 27 October 2026 (the v3.2.6 row for mainnet comes from the release notes and the 4 November 2026 upgrade; the parameters below were re-read on mainnet on 4 November 2026).** Before v3.2.6, mainnet refused the undelegation only when the transaction ran, through the staking message gate.
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.7) |
 |---|---|---|
 | Module live | Yes, since height 3,742,566 | Yes, since v3.2.4 (height 8,337,253) |
 | Open locks | None yet | 3 test locks |

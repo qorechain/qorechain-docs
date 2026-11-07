@@ -11,7 +11,7 @@ Le **nœud léger QoreChain** est un petit client qui suit un réseau QoreChain 
 
 Exécuter et synchroniser un nœud ne nécessite aucune licence. Participer à la part de récompense est une étape distincte : elle nécessite une licence `lightnode_operator`, du stake délégué à des validateurs bondés, et un enregistrement on-chain (voir [Comment y accéder](#how-to-access)).
 
-Le nœud léger a sa **propre ligne de version**, distincte de la version de publication de la chaîne. Au 4 novembre 2026, les canaux de publication des deux réseaux fournissent le nœud léger **3.1.12** (chaîne `v3.2.6` sur les deux réseaux ; le mainnet l'a appliquée le 4 novembre). Considérez ces deux numéros comme sans rapport.
+Le nœud léger a sa **propre ligne de version**, distincte de la version de publication de la chaîne. Au 4 novembre 2026, les canaux de publication des deux réseaux fournissent le nœud léger **3.1.12** (chaîne `v3.2.6` alors sur les deux réseaux ; le testnet exécute la `v3.2.7` depuis le 6 novembre 2026, le mainnet reste en `v3.2.6`). Considérez ces deux numéros comme sans rapport.
 
 ## Innovations {#innovations}
 
@@ -74,7 +74,7 @@ Le RPC de la chaîne pour `onboard` est `https://rpc.qore.host` (mainnet) ou `ht
 
 | | Mainnet | Testnet |
 | --- | --- | --- |
-| Chaîne | `qorechain-vladi` (chaîne `v3.2.6`) | `qorechain-diana` (chaîne `v3.2.6`) |
+| Chaîne | `qorechain-vladi` (chaîne `v3.2.6`) | `qorechain-diana` (chaîne `v3.2.7`) |
 | RPC pour le nœud | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | REST pour les requêtes | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | Version du nœud léger | 3.1.12 | 3.1.12 |
@@ -98,7 +98,7 @@ Vous pouvez aussi vérifier une licence directement : `GET /qorechain/license/v1
 ### Statut du programme de récompenses {#reward-program-status}
 
 :::note L'enregistrement est ouvert
-L'enregistrement est ouvert sur le mainnet (`qorechain-vladi`, chaîne v3.2.6) et sur le testnet (`qorechain-diana`, chaîne v3.2.6). Le 4 novembre 2026, sept licences `lightnode_operator` avaient été accordées sur le mainnet, un nœud léger était enregistré sur le mainnet et deux sur le testnet (`total_registered` dans `GET /qorechain/lightnode/v1/stats` : `1` et `2`). La comptabilité des récompenses est en service sur les deux réseaux depuis la mise à niveau v3.2.0. La disponibilité est comptée **à partir du bloc où votre nœud est enregistré** ; faire tourner un nœud auparavant ne rapporte donc aucun crédit. Depuis la chaîne v3.2.4, le plafond par nœud démarre aussi à l'enregistrement propre du nœud : le premier règlement après l'enregistrement ne crédite que ce qui s'est accumulé depuis.
+L'enregistrement est ouvert sur le mainnet (`qorechain-vladi`, chaîne v3.2.6) et sur le testnet (`qorechain-diana`, chaîne v3.2.7). Le 4 novembre 2026, sept licences `lightnode_operator` avaient été accordées sur le mainnet, un nœud léger était enregistré sur le mainnet et deux sur le testnet (`total_registered` dans `GET /qorechain/lightnode/v1/stats` : `1` et `2`). La comptabilité des récompenses est en service sur les deux réseaux depuis la mise à niveau v3.2.0. La disponibilité est comptée **à partir du bloc où votre nœud est enregistré** ; faire tourner un nœud auparavant ne rapporte donc aucun crédit. Depuis la chaîne v3.2.4, le plafond par nœud démarre aussi à l'enregistrement propre du nœud : le premier règlement après l'enregistrement ne crédite que ce qui s'est accumulé depuis.
 
 Le manifeste de publication (`https://download.qore.host/<net>/lightnode/latest.json`) porte le signal officiel dans son champ `registration.open`. Pour l'état en direct, interrogez `GET /qorechain/license/v1/holders/lightnode_operator` et `GET /qorechain/lightnode/v1/stats` sur `https://api.qore.host` (mainnet) ou `https://api-testnet.qore.host` (testnet).
 :::

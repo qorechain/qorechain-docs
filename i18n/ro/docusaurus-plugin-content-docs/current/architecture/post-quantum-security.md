@@ -286,6 +286,8 @@ Atestările de bridge sunt concepute să folosească semnături **Dilithium-5** 
 
 Testnet-ul returnează aceleași valori (verificat la 27 octombrie 2026). Începând cu v3.2.6, ambele rețele le servesc și prin REST la `GET /qorechain/pqc/v1/params`: mainnet-ul a răspuns cu `200` la 4 noiembrie 2026, cu `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, Dilithium-5 ca algoritm implicit și modul hibrid `required`. Pe un nod mai vechi decât v3.2.6 citiți-i cu `qorechaind query pqc params`.
 
+**Versiunea v3.2.7 (doar testnet, din 6 noiembrie 2026).** Trei modificări ale stratului post-cuantic rulează pe testnet și nu sunt încă pe mainnet (mainnet-ul este pe v3.2.6, fără dată de upgrade): multisig hibrid k-din-n pentru conturile multisig clasice (mesajul `MsgRegisterPQCMultisig`, ruta `GET /qorechain/pqc/v1/multisig/{address}`), un cost fix de verificare de 2.000 de gaz pe semnătură post-cuantică, calibrat pe măsurători (ML-DSA-87 se verifică de aproximativ 1,8 ori mai lent decât secp256k1 pe serverele flotei) și suport SIGN_MODE_TEXTUAL pentru wallet-urile hardware și web. Funcționalitățile de protocol care le activează (`pqc-multisig`, `pqc-verify-gas-calibrated`) apăreau ca activate pe testnet la 7 noiembrie 2026. Detaliile și formele REST se găsesc în [Semnarea post-cuantică](/developer-guide/post-quantum-signing#v327).
+
 ## Resurse conexe
 
 * [Post-Quantum Signing](/developer-guide/post-quantum-signing) — biblioteca open-source `qorechain-pqc` (șase limbaje) pentru aceste primitive și semnare hibridă.

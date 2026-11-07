@@ -30,7 +30,7 @@ Les comptes, soldes et tokens sont partagés entre les environnements
 d'exécution, et la chaîne inclut le module IBC pour l'interopérabilité
 inter-chaînes (aucun canal IBC n'est ouvert sur le mainnet ; le testnet a un canal `transfer` ouvert vers une chaîne de test, vérifié le 27 octobre 2026).
 
-:::note Ce qui fonctionne aujourd'hui sur les réseaux actifs (les deux réseaux exécutent la v3.2.6)
+:::note Ce qui fonctionne aujourd'hui sur les réseaux actifs (le mainnet exécute la v3.2.6, le testnet la v3.2.7)
 **Fonctionne :** les lectures sur toutes les voies, les transactions Native à signature hybride, les comptes
 unifiés, les transactions EVM à l'intérieur d'une
 [fenêtre d'autorisation](/sdk/guides/evm#evm-window), et les lectures SVM.
@@ -41,12 +41,12 @@ désactivé par le disjoncteur), le téléversement et l'instanciation QoreChain
 ordinaires (sur le testnet, l'instanciation est ouverte et le téléversement ne l'est pas), les flux authenticator /
 compte abstrait sur le mainnet (module désactivé là-bas, activé sur le
 testnet), xQORE et l'abstraction de gas. Chaque guide rappelle la réserve là où elle
-s'applique. Vérifié sur les points de terminaison actifs le 27 octobre 2026 ; le 7 novembre 2026, la liste des précompilés actifs du mainnet était toujours vide, tandis que celle du testnet contenait aussi le pont cross-VM `0x…0901` (listé comme actif ; un appel via celui-ci n'a pas été testé).
+s'applique. Vérifié sur les points de terminaison actifs le 27 octobre 2026 ; le 7 novembre 2026, la liste des précompilés actifs du mainnet était toujours vide, tandis que celle du testnet contenait aussi le pont cross-VM `0x…0901` (actif avec une liste d'autorisation ; un `eth_call` en lecture seule a été testé le 7 novembre 2026).
 
 Le SDK publié (0.12.0, 30 octobre 2026) signe sous la forme que vérifient les deux réseaux
 (sign-bytes hybrides v2, déterminés à partir de l'état de la chaîne), et le format de signature,
 les adresses, les décimales, les memos et les frais n'ont pas changé dans la v3.2.3, la v3.2.4 ni la v3.2.5 ni la v3.2.6 (le mainnet exécute la v3.2.6 depuis le 4 novembre 2026,
-hauteur 4,020,000, proposition de gouvernance 15 ; le testnet depuis le 27 octobre). Il porte
+hauteur 4,020,000, proposition de gouvernance 15 ; le testnet depuis le 27 octobre, et depuis le 6 novembre le testnet exécute la v3.2.7, qui ajoute des messages pour lesquels le SDK 0.12.0 n'a pas de constructeurs). Il porte
 le côté client des règles post-quantiques ultérieures (la preuve de possession lors de l'enregistrement
 de clé, les fenêtres EVM à portée restreinte, les messages de consentement EIP-7702) et de la v3.2.4 (niveaux
 de staking, le nonce d'authenticator, les interrupteurs de fonctionnalités de protocole) et de la v3.2.5 (gas exact pour

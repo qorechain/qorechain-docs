@@ -10,7 +10,7 @@ sidebar_position: 2
 Acest ghid acoperă modul de delegare a token-urilor QOR către validatori, redelegarea între validatori, debondarea stake-ului, revendicarea recompenselor și înțelegerea părților din designul de staking al QoreChain care sunt active astăzi.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.6** (aplicată pe 4 noiembrie 2026; v3.2.5 pe 29 octombrie și v3.2.4 pe 23 octombrie); testnet-ul rulează v3.2.6 din 27 octombrie 2026. Înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.6** (aplicată pe 4 noiembrie 2026; v3.2.5 pe 29 octombrie și v3.2.4 pe 23 octombrie); testnet-ul rulează v3.2.7 din 6 noiembrie 2026 (v3.2.6 din 27 octombrie). Înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
 :::
 
 :::caution Semnați cu `tx pqc cosign`
@@ -138,7 +138,7 @@ Un delegator poate angaja o parte dintr-o delegare existentă către un validato
 * **Revendicarea.** O blocare câștigă o componentă suplimentară de recompensă pe epocă, stabilită de parametrii modulului; aceasta este plătită atunci când o revendicați, nu automat. Această pagină nu citează rate: citiți `params` pentru setările live.
 * **La expirare**, blocarea este eliberată, iar delegarea continuă ca una obișnuită.
 
-Comenzile sunt disponibile prin linia de comandă și prin rutele REST `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` și `/pool`; suma este un număr întreg de `uqor` (1 QOR = 1.000.000 uqor).
+Comenzile sunt disponibile prin linia de comandă și prin rutele REST `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` și `/pool`; din versiunea v3.2.7 (testnet din 6 noiembrie 2026, încă nu și pe mainnet) există și `GET /qorechain/stakingtier/v1/apr` (o rată de bază plus bonusurile de nivel) și `GET /qorechain/stakingtier/v1/apr/{delegator}`, care arată ce calculează modulul în prezent. Acestea sunt citiri ale setărilor curente, **nu un randament garantat sau promis**: rata de bază depinde de comisioane și de finanțare și poate fi zero, iar bonusurile pot fi schimbate prin guvernanță. Sumele din comenzi sunt un număr întreg de `uqor` (1 QOR = 1.000.000 uqor).
 
 ```bash
 qorechaind tx stakingtier lock <validator_address> <amount_in_uqor> <months> --from mykey \
@@ -158,7 +158,7 @@ ID-ul de chain de mai sus este cel al testnet-ului; folosiți `qorechain-vladi` 
 
 **Unde funcționează, verificat la 27 octombrie 2026 (rândul v3.2.6 pentru mainnet provine din notele de lansare și din upgrade-ul din 4 noiembrie 2026; parametrii de mai jos au fost recitiți pe mainnet la 4 noiembrie 2026).** Înainte de v3.2.6, mainnet-ul refuza dedelegarea doar când rula tranzacția, prin poarta de mesaje de staking.
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.7) |
 |---|---|---|
 | Modul activ | Da, din înălțimea 3.742.566 | Da, din v3.2.4 (înălțimea 8.337.253) |
 | Blocări deschise | Încă niciuna | 3 blocări de test |

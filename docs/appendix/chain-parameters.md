@@ -225,9 +225,9 @@ Per-chain settings (`min_confirmations`, `max_single_transfer`, `daily_limit`) l
 | `max_queue_size`      | `1000`  | Maximum pending messages in the cross-VM queue |
 | `queue_timeout_blocks`| `100`   | Blocks before a pending message is timed out   |
 | `enabled`             | `true`  | Module activation flag                         |
-| `bridge_allowed_targets` | `[]` (empty) | Governance-managed allowlist of contract targets the cross-VM bridge may call (v3.2.5); an empty list allows none |
+| `bridge_allowed_targets` | `[]` (empty) on mainnet; three `cosmwasm:qor1...` entries on the testnet (read 7 November 2026) | Governance-managed allowlist of contract targets the cross-VM bridge may call (v3.2.5); an empty list allows none |
 
-`MsgCrossVMCall` is still switched off on mainnet by the circuit breaker (enabled on the testnet, checked 30 October 2026; the mainnet list was re-read on 4 November 2026 and still has 16 entries). Since v3.2.5 both networks serve these values over REST (`GET /qorechain/crossvm/v1/params`); before v3.2.5 mainnet answered 501.
+On the testnet, governance proposal 32 (passed 3 November 2026) activated the EVM to QoreChain Native bridge precompile at `0x...0901` and filled the allowlist; it is tested, see [Version History](/appendix/version-history#v327). `MsgCrossVMCall` is still switched off on mainnet by the circuit breaker (enabled on the testnet, checked 30 October 2026; the mainnet list was re-read on 4 November 2026 and still has 16 entries). Since v3.2.5 both networks serve these values over REST (`GET /qorechain/crossvm/v1/params`); before v3.2.5 mainnet answered 501.
 
 ---
 
@@ -376,7 +376,7 @@ Standard Cosmos SDK and EVM modules, all read live on mainnet on 27 October 2026
 | | `no_base_fee` | `false` |
 | EVM | `evm_denom` / `extended_denom` | `uqor` / `aqor` (18 decimals) |
 | | contract create / call access | permissionless |
-| | `active_static_precompiles` | empty on mainnet (no EVM precompile is active; the testnet has three active, see below) |
+| | `active_static_precompiles` | empty on mainnet (no EVM precompile is active; the testnet has four active, see below) |
 | | `history_serve_window` | 8,192 |
 | ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
 | QoreChain Native | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
@@ -389,7 +389,7 @@ The chain can switch individual message types off with the Cosmos SDK circuit br
 
 **Mainnet (4 November 2026, 16 entries, unchanged since 14 October and not changed by the v3.2.5 or v3.2.6 upgrades; the entries themselves were last listed one by one on 30 October 2026):** vesting-account creation (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; and the four PRISM control messages (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). The EVM lane (`MsgEthereumTx`) is **open**: it was switched off from 16 to 25 September and reopened by the v3.2.0 upgrade.
 
-**Testnet (27 October 2026, 1 entry):** only the QoreChain Native `MsgStoreCode` (contract upload); instantiation is no longer switched off there.
+**Testnet (7 November 2026, 2 entries):** the QoreChain Native `MsgStoreCode` (contract upload) and the SVM `MsgExecuteProgram` (direct SVM program execution, paused by testnet governance proposal 31 and still paused after v3.2.7); instantiation is no longer switched off there. On 27 October 2026 the list held only `MsgStoreCode`.
 
 Every other message type, including all standard bank, staking, governance, distribution, authz and `x/pqc` registration messages, is enabled. The list is governance-controlled and can change; always query it.
 
@@ -397,19 +397,19 @@ Every other message type, including all standard bank, staking, governance, dist
 
 ## Differences between testnet and mainnet {#testnet-differences}
 
-Read live on 27 October 2026 and re-checked on 30 October 2026 after the v3.2.5 upgrade; the routes, the parameter tables named above, the circuit breaker count, the precompile list and the proposal were re-read on mainnet on 4 November 2026 after v3.2.6. Mainnet `qorechain-vladi` runs **v3.2.6** (since height 4,020,000, 4 November 2026, governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026 and v3.2.4 at height 3,742,566 on 23 October 2026). The testnet `qorechain-diana` also runs **v3.2.6**: v3.2.4 reached it at height 8,337,253 (19 October 2026), v3.2.5 at height 8,890,800 (26 October) and v3.2.6 at height 8,970,638 (27 October). The testnet is a staging network that takes each release first and is tuned for testing, so the values below differ from mainnet. This section covers the parameter tables of this page; both networks now carry v3.2.6, so the remaining differences come from testnet tuning and from what governance has switched on in each network. Every parameter not listed here is identical on both networks (the staking, slashing, distribution, fee-market, ERC-20, AMM, burn, light-node, bridge, gas-abstraction and time-locked staking values were compared one by one).
+Read live on 27 October 2026 and re-checked on 30 October 2026 after the v3.2.5 upgrade; the routes, the parameter tables named above, the circuit breaker count, the precompile list and the proposal were re-read on mainnet on 4 November 2026 after v3.2.6. Mainnet `qorechain-vladi` runs **v3.2.6** (since height 4,020,000, 4 November 2026, governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026 and v3.2.4 at height 3,742,566 on 23 October 2026). The testnet `qorechain-diana` runs **v3.2.7** (it is a release ahead of mainnet): v3.2.4 reached it at height 8,337,253 (19 October 2026), v3.2.5 at height 8,890,800 (26 October), v3.2.6 at height 8,970,638 (27 October) and v3.2.7 at height 9,594,600 (6 November). The testnet values in the table were read again on 7 November 2026 (precompile list, circuit breaker, cross-VM allowlist); the rest of the testnet column dates from the earlier readings. The testnet is a staging network that takes each release first and is tuned for testing, so the values below differ from mainnet. Besides testnet tuning and governance choices, the testnet now also carries the v3.2.7 additions, which mainnet does not have yet and for which there is no date (listed under [Version History](/appendix/version-history#v327)). Every parameter not listed here is identical on both networks (the staking, slashing, distribution, fee-market, ERC-20, AMM, burn, light-node, bridge, gas-abstraction and time-locked staking values were compared one by one).
 
 | Area | Mainnet | Testnet |
 | ---- | ------- | ------- |
 | Governance voting periods | `voting_period` 172,800 s (2 days); `expedited_voting_period` 86,400 s (1 day) | `voting_period` 14,400 s (4 hours); `expedited_voting_period` 3,600 s (1 hour). Deposits, quorum and thresholds are the same |
 | `x/inflation` | `emission_mode` `fixed`; `fixed_epoch_emission` 86,000 QOR; `max_total_emission` 590,000,000 QOR; `target_apy_bps` `0` | `emission_mode` `target_apy`; `target_apy_bps` `1667`; `fixed_epoch_emission` 16,239 QOR; `max_total_emission` 3,950,390,341,362,112,750 uqor, already reached (`remaining_emission` `0` at `/qorechain/inflation/v1/epoch_info`, so the testnet mints nothing more) |
-| EVM active static precompiles | none (`[]`) | three: the PRISM parameters precompile at `0x0000000000000000000000000000000000000C01` and the precompiles at `0x...0a01` and `0x...0a02` |
+| EVM active static precompiles | none (`[]`) | four (read 7 November 2026): the cross-VM bridge at `0x...0901` (active since testnet governance proposal 32, with an allowlist of reviewed contracts), the PRISM parameters precompile at `0x...0C01` and the precompiles at `0x...0a01` and `0x...0a02`. No `0x08xx` precompile is active on either network |
 | PRISM agent (`x/rlconsensus`) | Observation mode, no policy loaded; control messages switched off | Shadow mode with a demonstration policy (set by testnet governance); `GET /qorechain/rlconsensus/v1/...` answers on both networks since v3.2.6 |
 | Smart accounts (`x/abstractaccount`) | `enabled` `false` | `enabled` `true` |
 | RDK (`x/rdk`) | `max_rollups` 100; `default_challenge_window` 604,800 s | `max_rollups` 200; `default_challenge_window` 3,600 s |
 | Multilayer (`x/multilayer`) | `max_sidechains` 10 | `max_sidechains` 64 |
 | QoreChain Native instantiate permission | `Nobody` | `Everybody` (code upload stays `Nobody` on both) |
-| Circuit breaker | 16 entries (see above), including `MsgCrossVMCall`, `MsgInstantiateContract` and `MsgInstantiateContract2` | 1 entry: QoreChain Native `MsgStoreCode` |
+| Circuit breaker | 16 entries (see above), including `MsgCrossVMCall`, `MsgInstantiateContract` and `MsgInstantiateContract2` | 2 entries (7 November 2026): QoreChain Native `MsgStoreCode` and SVM `MsgExecuteProgram` |
 | Parameter routes over REST | Same as testnet: `/qorechain/pqc/v1/params`, `/qorechain/rlconsensus/v1/params`, `/qorechain/reputation/v1/params`, `/qorechain/crossvm/v1/params` and `/qorechain/rdk/v1/params` all answered 200 on 4 November 2026 | Same routes answer |
 | Block time and validators | about 3.1 s; 8 bonded validators | about 1.3 s; 4 bonded validators |
 | Test tokens | none | fUSD, fETH and fBTC (see [Faucet](/dashboard/faucet#fest-tokens)) |

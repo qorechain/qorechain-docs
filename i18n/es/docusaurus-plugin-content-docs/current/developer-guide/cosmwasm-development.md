@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain admite contratos inteligentes **QoreChain Native**. QoreChain Native es el nombre que QoreChain da a su runtime **CosmWasm**: los desarrolladores escriben programas seguros y aislados (sandboxed) en Rust con las bibliotecas estándar de CosmWasm (`cosmwasm-std`) y los compilan a WebAssembly. Los contratos QoreChain Native se ejecutan junto con los programas EVM y SVM dentro de la arquitectura triple-VM de QoreChain.
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.6** desde el 4 de noviembre de 2026 (propuesta de gobernanza 15, altura 4,020,000; v3.2.5 desde el 29 de octubre de 2026, v3.2.4 desde el 23 de octubre de 2026). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta la v3.2.6 (v3.2.4 desde el 19 de octubre de 2026).
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.6** desde el 4 de noviembre de 2026 (propuesta de gobernanza 15, altura 4,020,000; v3.2.5 desde el 29 de octubre de 2026, v3.2.4 desde el 23 de octubre de 2026). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta la v3.2.7 (desde el 6 de noviembre de 2026; v3.2.4 desde el 19 de octubre de 2026).
 :::
 
 :::caution La subida y la instanciación de código requieren permiso explícito en la mainnet; la testnet difiere
@@ -29,7 +29,7 @@ Esta restricción no afecta a los contratos ya instanciados: `execute` y `query`
 :::
 
 :::caution Firme con `tx pqc cosign`
-La mainnet y la testnet exigen una firma híbrida poscuántica en cada transacción del carril Cosmos, por lo que los comandos `tx` de esta página no se difunden tal como están escritos. Construyen la transacción con `--generate-only > tx.json`; después fírmela y difúndala con `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` (el binario de la versión publicada del [manifiesto de descargas](/developer-guide/running-a-node#fetch-the-manifest) incluye el firmante; una compilación desde el código fuente público no). El umbral mínimo de comisión de la red es de **0.1 uqor por unidad de gas**, que es lo que expresa `--gas-prices 0.1uqor`; la firma híbrida añade aproximadamente 47,000 de gas que una simulación no incluye, de ahí el ajuste de `1.5`. Consulte [Firma poscuántica](/developer-guide/post-quantum-signing).
+La mainnet y la testnet exigen una firma híbrida poscuántica en cada transacción del carril Cosmos, por lo que los comandos `tx` de esta página no se difunden tal como están escritos. Construyen la transacción con `--generate-only > tx.json`; después fírmela y difúndala con `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` (el binario de la versión publicada del [manifiesto de descargas](/developer-guide/running-a-node#fetch-the-manifest) incluye el firmante; una compilación desde el código fuente público no). El umbral mínimo de comisión de la red es de **0.1 uqor por unidad de gas**, que es lo que expresa `--gas-prices 0.1uqor`; la firma híbrida añade aproximadamente 47,000 de gas que una simulación no incluye, de ahí el ajuste de `1.5`. (Desde v3.2.7, en la testnet desde el 6 de noviembre de 2026, el cargo por verificación post-cuántica es fijo, de 2,000 de gas; la mainnet sigue en v3.2.6.) Consulte [Firma poscuántica](/developer-guide/post-quantum-signing).
 :::
 
 ---

@@ -14,7 +14,7 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Canlı mainnet'e karşı yayınlamak için `--chain-id qorechain-vladi`, testnet için ise `--chain-id qorechain-diana` ayarlayın. Her iki ağ da v3.2 hattını çalıştırır: mainnet düğüm sürümü **v3.2.6** (4 Kasım 2026'da 4.020.000 yüksekliğinde yönetişim önerisi 15 ile uygulandı; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde ve v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı), testnet **v3.2.6** (27 Ekim 2026'da 8.970.638 yüksekliğinde uygulandı; öncesinde v3.2.5, 26 Ekim'de 8.890.800 yüksekliğinde ve v3.2.4, 19 Ekim'de 8.337.253 yüksekliğinde uygulanmıştı). Güncel sürüm için [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasına bakın. `--chain-id` belirtilmezse istemci, yerel istemci yapılandırmanızdaki `chain-id` değerini kullanır.
+Canlı mainnet'e karşı yayınlamak için `--chain-id qorechain-vladi`, testnet için ise `--chain-id qorechain-diana` ayarlayın. Her iki ağ da v3.2 hattını çalıştırır: mainnet düğüm sürümü **v3.2.6** (4 Kasım 2026'da 4.020.000 yüksekliğinde yönetişim önerisi 15 ile uygulandı; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde ve v3.2.3, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı), testnet **v3.2.7** (6 Kasım 2026'da 9.594.600 yüksekliğinde uygulandı; öncesinde v3.2.6, 27 Ekim'de 8.970.638 yüksekliğinde, v3.2.5, 26 Ekim'de 8.890.800 yüksekliğinde ve v3.2.4, 19 Ekim'de 8.337.253 yüksekliğinde uygulanmıştı). Güncel sürüm için [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasına bakın. `--chain-id` belirtilmezse istemci, yerel istemci yapılandırmanızdaki `chain-id` değerini kullanır.
 
 Bu sayfadaki komutlar ve bayraklar v3.2.3 sürüm ikilisine karşı, ayrıca v3.2.4 eklemeleriyle denetlenmiştir. Yalnızca v3.2.4'ten itibaren bulunan her şey (mainnet'te 23 Ekim 2026'dan beri, testnet'te 19 Ekim 2026'dan beri) bu şekilde işaretlenmiştir. v3.2.6 kaynağı yeni bir `tx` komutu eklemez; testnet'in durumunu değiştirir (test tokenları, etkinleştirilmiş bir soyut hesap modülü, açık QoreChain Native örnekleme), bunları aşağıdaki bölümler önemli oldukları yerde belirtir.
 :::
@@ -278,6 +278,8 @@ qorechaind tx pqc cosign <unsigned_tx_file> --from <key> --pqc-key <name> --chai
 | `--sign-bytes` | `auto` (varsayılan: hangi sign-bytes biçiminin geçerli olduğunu zincire sorar), `v1` veya `v2`    |
 | `--generate-only` / `--offline` | İmzalı işlemi yayınlamak yerine JSON olarak yazdırır; daha sonra `tx broadcast` ile gönderilir; `--offline` ayrıca `--account-number`, `--sequence` ve `--sign-bytes v1\|v2` gerektirir |
 | `--dry-run`    | Simüle eder ve gaz tahminini yazdırır                                                             |
+
+**v3.2.7 (yalnızca testnet, henüz mainnet'te değil):** `cosign` ayrıca donanım cüzdanları için kuantum sonrası uzantıyla SIGN_MODE_TEXTUAL modunu da destekler; web cüzdanları belgeyi `POST /qorechain/pqc/v1/textual_sign_doc` adresinden alır (bkz. [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#pqc-multisig-textual)). Textual mod için bayraklar burada listelenmemiştir, çünkü v3.2.7 ikilisine karşı denetlenmemiştir: bir v3.2.7 ikilisinde `qorechaind tx pqc cosign --help` çalıştırın.
 
 Her iki ağ da hibrit doğrulamayı v2 sign-bytes biçimine taşıyan yükseltmeyi uyguladı; v1 biçimi reddedilir. Bir işlem yalnızca bir hibrit imza uzantısı taşıyabilir (birden fazlası v3.2.3'ten beri reddedilir).
 

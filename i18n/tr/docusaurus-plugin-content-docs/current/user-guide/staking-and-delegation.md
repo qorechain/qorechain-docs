@@ -10,7 +10,7 @@ sidebar_position: 2
 Bu kılavuz, QOR token'larını doğrulayıcılara (validator) delege etme, doğrulayıcılar arasında yeniden delege etme (redelegate), stake'inizi çözme (unbond), ödülleri talep etme ve QoreChain'in stake tasarımının hangi bölümlerinin bugün canlı olduğunu anlama konularını kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve **v3.2.6** sürümünü çalıştırır (4 Kasım 2026'da uygulandı; v3.2.5, 29 Ekim'de ve v3.2.4, 23 Ekim'de); testnet 27 Ekim 2026'dan beri v3.2.6 çalıştırır. Mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve **v3.2.6** sürümünü çalıştırır (4 Kasım 2026'da uygulandı; v3.2.5, 29 Ekim'de ve v3.2.4, 23 Ekim'de); testnet 6 Kasım 2026'dan beri v3.2.7 çalıştırır (27 Ekim'den itibaren v3.2.6 idi). Mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -138,7 +138,7 @@ Bir delegatör, bir doğrulayıcıya yaptığı mevcut bir delegasyonun bir kıs
 * **Talep etme.** Bir kilit, modül parametreleriyle belirlenen, dönem başına ek bir ödül bileşeni kazanır; otomatik olarak değil, siz talep ettiğinizde ödenir. Bu sayfa oranları belirtmez: canlı ayarlar için `params` değerini okuyun.
 * **Süre sonunda** kilit serbest bırakılır ve delegasyon olağan bir delegasyon olarak devam eder.
 
-Komutlara komut satırı ve `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` ve `/pool` REST rotaları üzerinden erişilebilir; tutar, tam sayı cinsinden `uqor` miktarıdır (1 QOR = 1.000.000 uqor).
+Komutlara komut satırı ve `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` ve `/pool` REST rotaları üzerinden erişilebilir; v3.2.7 sürümünden itibaren (testnet'te 6 Kasım 2026'dan beri, henüz mainnet'te değil) ayrıca `GET /qorechain/stakingtier/v1/apr` (bir taban oran artı katman bonusları) ve modülün şu anda hesapladığını gösteren `GET /qorechain/stakingtier/v1/apr/{delegator}` rotaları vardır. Bunlar geçerli ayarların okumalarıdır, **garanti edilmiş veya vaat edilmiş bir getiri değildir**: taban oran ücretlere ve fonlamaya bağlıdır ve sıfır olabilir, bonuslar ise yönetişim tarafından değiştirilebilir. Komutlardaki tutarlar, tam sayı cinsinden `uqor` miktarıdır (1 QOR = 1.000.000 uqor).
 
 ```bash
 qorechaind tx stakingtier lock <validator_address> <amount_in_uqor> <months> --from mykey \
@@ -158,7 +158,7 @@ Yukarıdaki zincir kimliği testnet'e aittir; mainnet'te `qorechain-vladi` kulla
 
 **Nerede çalışır, 27 Ekim 2026'da kontrol edildi (mainnet için v3.2.6 satırı sürüm notlarından ve 4 Kasım 2026 yükseltmesinden gelir; aşağıdaki parametreler mainnet'te 4 Kasım 2026'da yeniden okundu).** v3.2.6'dan önce mainnet, undelegate işlemini yalnızca işlem çalıştığında, staking mesaj geçidi aracılığıyla reddediyordu.
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.6) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.7) |
 |---|---|---|
 | Modül canlı | Evet, 3,742,566 yüksekliğinden beri | Evet, v3.2.4'ten beri (yükseklik 8,337,253) |
 | Açık kilitler | Henüz yok | 3 test kilidi |

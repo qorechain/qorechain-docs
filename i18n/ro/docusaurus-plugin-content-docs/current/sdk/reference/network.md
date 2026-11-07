@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Presetare de rețea | `testnet` |
 | Chain id | `qorechain-diana` (live) |
-| Versiune lanț (27 octombrie 2026) | v3.2.6 (de la înălțimea 8,970,638, 27 octombrie 2026; v3.2.5 a fost aplicată la înălțimea 8,890,800 pe 26 octombrie, iar v3.2.4 la înălțimea 8,337,253 pe 19 octombrie) |
+| Versiune lanț (7 noiembrie 2026) | v3.2.7 (de la înălțimea 9,594,600, 6 noiembrie 2026, aplicată prin guvernanță; mainnet-ul nu o are și nu are o dată pentru ea. v3.2.6 a fost aplicată la înălțimea 8,970,638 pe 27 octombrie; v3.2.5 a fost aplicată la înălțimea 8,890,800 pe 26 octombrie, iar v3.2.4 la înălțimea 8,337,253 pe 19 octombrie) |
 | ID lanț EVM | `9800` |
 | Token afișat | `QOR` |
 | Denominare de bază | `uqor` |
@@ -64,6 +64,7 @@ completă se află în
 [Diferențe între testnet și mainnet](/appendix/chain-parameters#testnet-differences)):
 
 * **Rute REST.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` și `GET /qorechain/crossvm/v1/params` răspund pe testnet. Mainnet-ul răspundea cu HTTP 501 pentru ele până la lanțul v3.2.6; de când a aplicat v3.2.6 (4 noiembrie 2026), toate acele rute au răspuns HTTP 200 pe mainnet când au fost verificate în acea zi. Rutele AMM de sub `/qorechain/amm/v1/` (`pools`, `params`) răspund pe ambele rețele.
+* **Rute ale lanțului v3.2.7.** Pe 7 noiembrie 2026 testnet-ul a răspuns HTTP 200 pentru `GET /qorechain/pqc/v1/multisig/{address}` (`{"found":false,"multisig":null}` pentru o adresă fără multisig), `GET /qorechain/stakingtier/v1/apr`, `GET /qorechain/stakingtier/v1/apr/{delegator}`, `GET /qorechain/stakingtier/v1/pool` și `GET /qorechain/svm/v1/cluster_info`; mainnet-ul a răspuns HTTP 501 pentru toate, cu excepția `/qorechain/stakingtier/v1/pool` (200). `GET /qorechain/pqc/v1/textual_sign_doc` a răspuns 501 pe ambele endpoint-uri publice, deci nu este documentat ca disponibil. SDK 0.12.0 nu are builder sau client tipizat pentru niciuna dintre ele.
 * **Tokenuri de test.** Trei tokenuri fără valoare există doar pe testnet, ca denominații bank numite `erc20:<EIP-55 contract address>` (sensibile la majuscule): fUSD (6 zecimale), fETH (18) și fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` le listează. Singura denominație bank a mainnet-ului este `uqor`. Vezi [Tokenuri de test pe testnet (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
 * **Module pornite.** Modulul `abstractaccount` este activat pe testnet și oprit pe mainnet, precompilate EVM sunt active pe testnet (trei pe 27 octombrie, patru pe 4 noiembrie) și niciunul pe mainnet, iar instanțierea QoreChain Native este deschisă pe testnet.
 

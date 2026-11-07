@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | إعداد الشبكة المسبق | `testnet` |
 | معرّف السلسلة | `qorechain-diana` (قيد التشغيل) |
-| إصدار السلسلة (27 أكتوبر 2026) | v3.2.6 (منذ الارتفاع 8,970,638، في 27 أكتوبر 2026؛ وطُبّق v3.2.5 عند الارتفاع 8,890,800 في 26 أكتوبر وv3.2.4 عند الارتفاع 8,337,253 في 19 أكتوبر) |
+| إصدار السلسلة (7 نوفمبر 2026) | v3.2.7 (منذ الارتفاع 9,594,600، في 6 نوفمبر 2026، طُبّق بالحوكمة؛ والشبكة الرئيسية لا تملكه ولا تاريخ له. وطُبّق v3.2.6 عند الارتفاع 8,970,638 في 27 أكتوبر؛ وطُبّق v3.2.5 عند الارتفاع 8,890,800 في 26 أكتوبر وv3.2.4 عند الارتفاع 8,337,253 في 19 أكتوبر) |
 | معرّف سلسلة EVM | `9800` |
 | رمز العرض | `QOR` |
 | الفئة النقدية الأساسية | `uqor` |
@@ -63,6 +63,7 @@ localhost افتراضيًا.
 [الفروق بين شبكة الاختبار والشبكة الرئيسية](/appendix/chain-parameters#testnet-differences)):
 
 * **مسارات REST.** تستجيب `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}` و`GET /qorechain/pqc/v1/params` و`GET /qorechain/crossvm/v1/params` على شبكة الاختبار. وكانت الشبكة الرئيسية تردّ عليها بـ HTTP 501 حتى السلسلة v3.2.6؛ ومنذ أن طبّقتها (4 نوفمبر 2026) ردّت كل تلك المسارات بـ HTTP 200 على الشبكة الرئيسية عند الفحص في ذلك اليوم. ومسارات AMM ضمن `/qorechain/amm/v1/` (`pools` و`params`) تستجيب على الشبكتين.
+* **مسارات السلسلة v3.2.7.** في 7 نوفمبر 2026 ردّت شبكة الاختبار بـ HTTP 200 على `GET /qorechain/pqc/v1/multisig/{address}` (`{"found":false,"multisig":null}` لعنوان لا يملك واحدًا) و`GET /qorechain/stakingtier/v1/apr` و`GET /qorechain/stakingtier/v1/apr/{delegator}` و`GET /qorechain/stakingtier/v1/pool` و`GET /qorechain/svm/v1/cluster_info`؛ وردّت الشبكة الرئيسية بـ HTTP 501 على كلها عدا `/qorechain/stakingtier/v1/pool` (200). وردّ `GET /qorechain/pqc/v1/textual_sign_doc` بـ 501 على نقطتي النهاية العامتين كلتيهما، ولذلك لا يُوثَّق على أنه متاح. وليست لدى SDK 0.12.0 أداة بناء أو عميل مُنمَّط لأي منها.
 * **رموز الاختبار.** توجد ثلاثة رموز بلا قيمة على شبكة الاختبار فقط، بوصفها فئات bank بأسماء `erc20:<EIP-55 contract address>` (حساسة لحالة الأحرف): fUSD (6 منازل عشرية) وfETH (18) وfBTC (8). يسردها `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata`. والفئة الوحيدة في bank على الشبكة الرئيسية هي `uqor`. راجع [رموز الاختبار على شبكة الاختبار (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
 * **وحدات مفعَّلة.** وحدة `abstractaccount` مفعَّلة على شبكة الاختبار ومتوقفة على الشبكة الرئيسية، ومكوّنات EVM ما قبل التجميع مفعَّلة على شبكة الاختبار (ثلاثة في 27 أكتوبر وأربعة في 4 نوفمبر) ولا شيء منها على الشبكة الرئيسية، وإنشاء النسخ (instantiate) في QoreChain Native مفتوح على شبكة الاختبار.
 

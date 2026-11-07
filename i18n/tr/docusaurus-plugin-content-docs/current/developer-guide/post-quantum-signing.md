@@ -188,6 +188,22 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 
 SDK 0.9.0 ve sonrasının ve `@qorechain/wallet-adapter` 0.4.0'ın rotasyon yardımcıları, eski türetmeyi **yeni** anahtar olarak reddeder (hesaba bağlı değildir); eski bir anahtar yine de eski anahtar olabilir. Başarılı bir rotasyondan sonra yeni anahtar imzalar (kod 0) ve eski anahtar reddedilir (`pqc` kodu 21). v3.2.3'ten beri bir rotasyon (tıpkı bir geçiş gibi), kuantum sonrası koruma sağlamayan yeni bir anahtarı (kod 230) ve hesabın daha önce kullandığı bir anahtarı (kod 232) reddeder ve `authz` aracılığıyla gönderilemez.
 
+## Testnet'te zincir v3.2.7: multisig, textual imzalama, doğrulama gas'i {#v327}
+
+:::note Şimdilik yalnızca testnet
+Aşağıdaki maddeler `qorechain-diana` üzerinde 6 Kasım 2026'dan beri çalışır (düğüm sürümü v3.2.7, yükseklik 9.594.600). **Mainnet hâlâ v3.2.6'dadır** ve bunların hiçbirine sahip değildir; mainnet için bir v3.2.7 yükseltme önerisinin henüz tarihi yoktur. `@qorechain/sdk` 0.12.0 ve `@qorechain/rdk` 0.8.0 paketlerinde multisig veya textual imzalama maddeleri için oluşturucu yoktur (7 Kasım 2026'da kontrol edildi); bunlar için düğümün CLI'sını ve REST arayüzünü kullanın.
+:::
+
+**Hibrit k-of-n multisig.** Klasik bir multisig hesabı artık onu izleyen bir kuantum sonrası imzalayıcı kümesi taşıyabilir. Yeni `/qorechain.pqc.v1.MsgRegisterPQCMultisig` mesajı kümeyi kaydeder: kuantum sonrası üyeler ve anahtarlar, klasik multisig'in üyelerini ve mevcut anahtarlarını izler. Herhangi bir adresin kaydını `GET /qorechain/pqc/v1/multisig/{address}` ile okuyun; kayıtlı kümesi olmayan bir adres `{"found":false,"multisig":null}` ile `200` yanıtı verir (7 Kasım 2026'da testnet'te okundu). `pqc-multisig` protokol özelliği testnet'te etkindir (`GET /qorechain/pqc/v1/protocol_features`).
+
+**Doğrulama gas'i.** Bir işlemde kuantum sonrası imzayı doğrulamak, ölçümlere göre kalibre edilmiş sabit 2.000 gas'e mal olur (ML-DSA-87 doğrulaması, filo sunucularında secp256k1'den yaklaşık 1,8 kat daha yavaştır). `pqc-verify-gas-calibrated` özelliği testnet'te etkindir.
+
+**Donanım ve web cüzdanları (SIGN_MODE_TEXTUAL).** `qorechaind tx pqc cosign`, donanım cüzdanlarının ihtiyaç duyduğu mod olan `SIGN_MODE_TEXTUAL` ile kuantum sonrası uzantıyla imzalayabilir. Web cüzdanları için düğüm, imzalanacak belgeyi sunar: işlemi `tx_bytes` veya `tx_json` olarak içeren bir `POST` isteğini `/qorechain/pqc/v1/textual_sign_doc` adresine gönderin. 7 Kasım 2026'da testnet ağ geçidi boş bir gövdeye `400` (`tx_bytes or tx_json is required`) ve bir `GET` isteğine `501` yanıtı verdi; bu yüzden `POST` kullanın. Bu sayfa için bir donanım cüzdanıyla uçtan uca imzalama çalıştırılmadı; belirli bir cihazın bunu desteklediğini varsaymayın.
+
+**EVM pencereleri için olay.** Kuantum sonrası yetkilendirme penceresini tüketen bir EVM işlemi artık `pqc_evm_window_used` olayını yayar (`source` özniteliği); `evm-window-used-event` özelliği testnet'te etkindir.
+
+---
+
 ## Tutarlı API
 
 Her dil aynı yüzeyi sağlar:

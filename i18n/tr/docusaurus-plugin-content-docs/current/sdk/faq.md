@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Mainnet yayında mı?
 
 Evet. Mainnet **yayında** (zincir kimliği `qorechain-vladi`, 7 Haziran 2026'dan beri
-canlı) zincir sürümü v3.2.6'yı çalıştırıyor (4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı, yönetişim önerisi 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde ve v3.2.4 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı); testnet 27 Ekim 2026'dan beri v3.2.6'yı çalıştırıyor. Testnet hazır
+canlı) zincir sürümü v3.2.6'yı çalıştırıyor (4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı, yönetişim önerisi 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde ve v3.2.4 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı); testnet 27 Ekim 2026'dan beri v3.2.6'yı ve 6 Kasım 2026'dan beri v3.2.7'yi çalıştırıyor (9.594.600 yüksekliği; mainnet'te yok, tarih yok). Testnet hazır
 ayarı (`qorechain-diana`) da kullanılabilir durumda kalmaya devam eder. SDK 0.12.0'dan itibaren her iki hazır
 ayar da herkese açık uç noktaları varsayılan alır; ağı
 `createClient({ network: "mainnet" })` ile seçin ve `endpoints`'i yalnızca kendi düğümünüz için
@@ -60,7 +60,7 @@ değildir** ve testnet'te yalnızca üçü etkindir: yalnızca adresleri EVM mod
 `active_static_precompiles` parametresinde listelenmiş olduğu yerlerde yanıt
 verirler. Bu liste mainnet'te boştur; testnet'te PQC doğrulama (`0x…0A01`), PQC
 anahtar durumu (`0x…0A02`) ve konsensüs parametreleri (`0x…0C01`) precompile'larını
-içerir (27 Ekim 2026'da kontrol edildi; testnet listesi 4 Kasım'dan itibaren ve 7 Kasım 2026'da da VM'ler arası köprü `0x…0901` adresini içeriyordu, etkin olarak listelenir ancak ondan yapılan bir çağrı test edilmedi, ve mainnet'in listesi hâlâ boştu); dolayısıyla AI çifti
+içerir (27 Ekim 2026'da kontrol edildi; testnet listesi 4 Kasım'dan itibaren ve 7 Kasım 2026'da da VM'ler arası köprü `0x…0901` adresini içeriyordu, bir izin listesiyle etkin (`eth_call` ile test edildi) ve mainnet'in listesi hâlâ boştu); dolayısıyla AI çifti
 orada hâlâ hiçbir şey yanıtlamaz. Bir precompile etkin olmadığında çağrı boş veri
 döndürür; bu yüzden viem `returned no data ("0x")` bildirir ve yardımcı fonksiyon
 hata fırlatır (bkz.
@@ -155,9 +155,9 @@ serileştiriyordu ve zincirin tx kod çözücüsü bunu CheckTx aşamasında red
 ## SDK hangi zincir sürümleriyle çalışır?
 
 SDK **0.12.0**, zincir **v3.2.5** için istemci sürümüdür (mainnet'te 29 Ekim
-2026'dan beri, 3.906.833 yüksekliğinde; testnet'te 26 Ekim'den beri). Her iki ağ da v3.2.6
-çalıştırır (mainnet 4 Kasım'dan, testnet 27 Ekim'den beri); imzalama biçimi
-değişmedi, bu yüzden 0.12.0 her ikisinde de çalışır. Hibrit işlemler için kesin gas kuralını,
+2026'dan beri, 3.906.833 yüksekliğinde; testnet'te 26 Ekim'den beri). Mainnet v3.2.6
+çalıştırır (4 Kasım'dan beri), testnet ise v3.2.7 (6 Kasım'dan beri; 27 Ekim'den beri v3.2.6); imzalama biçimi
+v3.2.6'ya kadar değişmedi, bu yüzden 0.12.0 mainnet'te çalışır. 0.12.0'ın v3.2.7 eklemeleri (PQC çoklu imza kaydı, textual imza modu, APR, küme kimliği ve doğrulama anahtarı mesajları) için oluşturucuları yoktur ve imzalama yolu v3.2.7 testnet'ine karşı yeniden kontrol edilmedi; bunlar için CLI'yı kullanın. Hibrit işlemler için kesin gas kuralını,
 ML-KEM anahtar kayıt defteri oluşturucularını ve okumasını, soyut hesap okumalarını ve
 denetlenmiş yönetişim parametresi oluşturucularını ekler ([0.12.0'ın ekledikleri](/sdk/install#whats-new-0120) bölümüne bakın);
 bunlar, 0.10.0'ın v3.2.4 için eklediklerinin (staking katmanı oluşturucuları ve okumaları,
@@ -169,8 +169,8 @@ SDK **0.8.1 veya daha yenisi** de her iki ağda işlem
 yapar (v2 hibrit sign-bytes biçimi, kayıt, hibrit gönderimler ve EVM penceresi
 değişmeden çalışır), ancak bu oluşturucuların hiçbirine sahip değildir: bunlar için
 CLI'yı kullanın (bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)). İmzalama biçimi
-v3.2.4, v3.2.5 veya v3.2.6'da değişmedi. Her iki ağ da v3.2.6 çalıştırır (testnet v3.2.5'i 26 Ekim 2026'da, v3.2.6'yı ise
-27 Ekim'de uyguladı; mainnet v3.2.5'i 29 Ekim'de ve v3.2.6'yı 4 Kasım'da uyguladı); SDK 0.10.0 ve 0.9.0 bunlarda çalışmaya devam eder ancak
+v3.2.4, v3.2.5 veya v3.2.6'da değişmedi. Mainnet v3.2.6, testnet v3.2.7 çalıştırır (testnet v3.2.5'i 26 Ekim 2026'da, v3.2.6'yı
+27 Ekim'de ve v3.2.7'yi 6 Kasım'da uyguladı; mainnet v3.2.5'i 29 Ekim'de ve v3.2.6'yı 4 Kasım'da uyguladı); SDK 0.10.0 ve 0.9.0 bunlarda çalışmaya devam eder ancak
 v3.2.5 eklerinin (ML-KEM anahtar kayıt defteri, kesin gas kuralı) oluşturucularına sahip değildir; bu sürümlerle CLI'yı kullanın veya 0.12.0'a yükseltin. 0.12.0, v3.2.5'e karşı oluşturuldu ve denetlendi.
 
 ## PQC anahtar kaydım reddedildi ama ücret alındı

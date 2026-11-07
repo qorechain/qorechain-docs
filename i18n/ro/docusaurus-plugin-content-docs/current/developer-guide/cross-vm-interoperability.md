@@ -15,7 +15,7 @@ Apelurile între VM-uri sunt disponibile doar în măsura în care este disponib
 * `MsgCrossVMCall` este **oprit pe mainnet** de circuit breaker (`qorechaind query circuit disabled-list`); pe testnet este activat.
 * **Lane-ul SVM este dezactivat** pentru tranzacții pe ambele rețele, deci un segment SVM nu poate rula.
 * **Încărcarea QoreChain Native este permisionată** pe ambele rețele, iar **instanțierea este permisionată pe mainnet**, care nu are cod de contract stocat, deci nu există încă niciun contract QoreChain Native de apelat pe mainnet. Pe testnet, guvernanța a stocat câteva contracte revizuite pe care orice cont le poate instanția (vezi [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development)), deci acolo poate exista o țintă QoreChain Native.
-* **Precompile-ul EVM sincron nu este activ pe mainnet** și este listat ca activ pe testnet (citit la 7 noiembrie 2026; un apel prin el nu a fost testat; vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3. (Pe 27 octombrie 2026, guvernanța testnet-ului a activat alte trei precompile-uri, PQC Verify, PQC Key Status și PRISM Consensus Params, iar puntea CrossVM s-a alăturat listei testnet-ului până la 4 noiembrie; mainnet-ul nu are niciunul activ.)
+* **Precompile-ul EVM sincron nu este activ pe mainnet** și este **activ pe testnet**, cu o listă de permisiuni de contracte QoreChain Native revizuite (citit la 7 noiembrie 2026; un apel doar pentru citire prin el a fost rulat după upgrade-ul v3.2.7, vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3. (Pe 27 octombrie 2026, guvernanța testnet-ului a activat alte trei precompile-uri, PQC Verify, PQC Key Status și PRISM Consensus Params, iar puntea CrossVM s-a alăturat listei testnet-ului până la 4 noiembrie; mainnet-ul nu are niciunul activ.)
 
 Pe mainnet, rutele REST ale modulului (`/qorechain/crossvm/v1/...`) nu sunt servite de gateway-ul public (`501`); citește mesajele cu CLI-ul sau cu un client de interogare gRPC/ABCI.
 :::
@@ -46,12 +46,12 @@ Endpoint-urile de mai jos folosesc implicit un nod local. Pe mainnet, folosește
 
 ---
 
-## Calea sincronă (EVM către QoreChain Native)
+## Calea sincronă (EVM către QoreChain Native) {#synchronous-path-evm-to-qorechain-native}
 
 Calea sincronă folosește un **precompile** EVM la adresa `0x0000000000000000000000000000000000000901`. Este conceput pentru a permite contractelor Solidity să apeleze contracte QoreChain Native și să primească un răspuns în cadrul aceleiași tranzacții.
 
-:::warning Inactiv pe mainnet; activ pe testnet, apel netestat
-Precompile-ul punții CrossVM **nu este activ** pe `qorechain-vladi`: un apel către `0x…0901` acolo reușește și returnează date goale. Pe `qorechain-diana`, lista `active_static_precompiles` conține `0x…0901` (citit la 7 noiembrie 2026); un apel prin el a fost listat ca activ, dar netestat. Binarul v3.2.3 conține o versiune întărită (refuză un `STATICCALL`, contorizează apelul său imbricat din gazul frame-ului apelant și îl jurnalizează astfel încât un revert EVM să anuleze și partea QoreChain Native, ajunge doar la ținte QoreChain Native din lista permisă și respectă circuit breaker-ul cross-VM), dar rulează abia acolo unde o propunere aprobată prin guvernanță l-a adăugat în lista activă (până acum testnet-ul, nu mainnet-ul). Exemplul de mai jos este structura pe care o decodifică nodul; nu poate rula pe mainnet până când precompile-ul nu este activ și nu a fost rulat pe testnet. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
+:::warning Inactiv pe mainnet; activ pe testnet, cu listă de permisiuni
+Precompile-ul punții CrossVM **nu este activ** pe `qorechain-vladi`: un apel către `0x…0901` acolo reușește și returnează date goale. Pe `qorechain-diana`, lista `active_static_precompiles` conține `0x…0901` (citit la 7 noiembrie 2026); un `eth_call` doar pentru citire prin el a fost rulat pe 7 noiembrie 2026, după upgrade-ul v3.2.7 (rezultatele mai jos). Binarul v3.2.3 conține o versiune întărită (refuză un `STATICCALL`, contorizează apelul său imbricat din gazul frame-ului apelant și îl jurnalizează astfel încât un revert EVM să anuleze și partea QoreChain Native, ajunge doar la ținte QoreChain Native din lista permisă și respectă circuit breaker-ul cross-VM), dar rulează abia acolo unde o propunere aprobată prin guvernanță l-a adăugat în lista activă (până acum testnet-ul, nu mainnet-ul). Pe mainnet, precompile-ul și apelurile cross-VM rămân dezactivate, chiar și după un upgrade la v3.2.7 (care nu are încă o dată), până la o decizie separată de guvernanță. Exemplul de mai jos este structura pe care o decodifică nodul; nu poate rula pe mainnet până când precompile-ul nu este activ. Pe testnet poate fi apelat, în limitele listei de permisiuni (secțiunea următoare). Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Exemplu Solidity
@@ -86,9 +86,26 @@ contract CrossVMCaller {
 }
 ```
 
-Aceasta este structura pe care o decodifică nodul; este aceeași structură pe care o construiește encoderul `@qorechain/rdk`, iar contractul de mai sus corespunde șablonului de pornire din [Multi-VM](/rollups/multi-vm). Fondurile nu pot fi atașate prin precompile (calea prin mesajul `MsgCrossVMCall` acceptă `--funds`). Exemplul nu poate face nimic pe mainnet astăzi, deoarece precompile-ul nu este activ acolo; pe testnet precompile-ul este listat ca activ, dar exemplul nu a fost rulat (vezi avertismentul de mai sus), iar ABI-ul se mai poate schimba.
+Aceasta este structura pe care o decodifică nodul; este aceeași structură pe care o construiește encoderul `@qorechain/rdk`, iar contractul de mai sus corespunde șablonului de pornire din [Multi-VM](/rollups/multi-vm). Fondurile nu pot fi atașate prin precompile (calea prin mesajul `MsgCrossVMCall` acceptă `--funds`). Exemplul nu poate face nimic pe mainnet astăzi, deoarece precompile-ul nu este activ acolo. Pe testnet funcționează în limitele listei de permisiuni descrise în continuare; contractul de exemplu în sine nu a fost implementat pentru această pagină, apelul de mai jos a fost făcut direct cu `eth_call`.
 
-Odată activ, precompile-ul execută imediat contractul QoreChain Native și returnează rezultatul. (Helperul `encodeCrossVmCalldata` din `@qorechain/rdk`, disponibil din 0.6.0 și în curentul 0.8.0, construiește calldata; vezi [Multi-VM](/rollups/multi-vm).) Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
+Acolo unde este activ, precompile-ul execută imediat contractul QoreChain Native și returnează rezultatul. (Helperul `encodeCrossVmCalldata` din `@qorechain/rdk`, disponibil din 0.6.0 și în curentul 0.8.0, construiește calldata; vezi [Multi-VM](/rollups/multi-vm).) Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
+
+### Comportamentul pe testnet (lista de permisiuni, verificat la 7 noiembrie 2026) {#testnet-allowlist}
+
+Pe `qorechain-diana` (versiunea de nod v3.2.7 din 6 noiembrie 2026), precompile-ul ajunge doar la contractele QoreChain Native din lista de permisiuni a punții. `GET /qorechain/crossvm/v1/params` le listează în `bridge_allowed_targets` (trei intrări la 7 noiembrie 2026, scrise `cosmwasm:qor1...`), alături de `enabled` `true`, `max_message_size` 65536, `max_queue_size` 1000 și `queue_timeout_blocks` 100. Două cereri `eth_call` doar pentru citire către `0x…0901`, cu `executeCrossVMCall(1, target, 0x7b7d)`, au fost rulate pe 7 noiembrie 2026:
+
+* **Țintă în afara listei de permisiuni:** se anulează cu `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted`.
+* **Țintă din lista de permisiuni:** apelul ajunge la contract (nodul raportează eroarea proprie a contractului pentru mesajul gol `{}`: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). Asta arată că ruta funcționează; pentru această pagină nu a fost trimisă nicio tranzacție cross-VM care schimbă starea prin precompile.
+
+Pe mainnet, precompile-ul (`0x…0901`) și apelurile cross-VM rămân **dezactivate** (circuit breaker) chiar și după upgrade-ul v3.2.7, până la o decizie separată de guvernanță.
+
+### Ce schimbă v3.2.7 pentru apelurile cross-VM (deocamdată doar pe testnet) {#v327}
+
+Acestea se aplică pe testnet din 6 noiembrie 2026 și **nu sunt încă pe mainnet** (upgrade-ul nu are dată):
+
+* Un apel care eșuează în VM-ul țintă eșuează acum curat: este eșecul acelui apel, iar coada continuă cu mesajul următor.
+* Țintele malformate sunt refuzate la momentul trimiterii, cu codul 5 în codespace-ul `crossvm`.
+* Un apel cross-VM nu mai poate viza o adresă de precompile EVM.
 
 ---
 
@@ -218,7 +235,7 @@ curl -X POST http://localhost:8545 \
 
 ## Considerații de proiectare
 
-**Atomicitate:** Apelurile sincrone (EVM către QoreChain Native prin precompile) sunt concepute să fie atomice, astfel încât, dacă oricare parte este anulată (revert), întreaga tranzacție este anulată. Precompile-ul actual nu garantează încă acest lucru, ceea ce este unul dintre motivele pentru care nu este activ (vezi mai sus). Apelurile asincrone **nu sunt atomice** între blocuri; proiectează-ți contractele astfel încât să gestioneze cu eleganță stările `Failed` și `Timed Out`.
+**Atomicitate:** Apelurile sincrone (EVM către QoreChain Native prin precompile) sunt concepute să fie atomice, astfel încât, dacă oricare parte este anulată (revert), întreaga tranzacție este anulată. Precompile-ul întărit jurnalizează apelul imbricat, astfel încât un revert în contractul apelant anulează și partea QoreChain Native; este activ doar pe testnet. Apelurile asincrone **nu sunt atomice** între blocuri; proiectează-ți contractele astfel încât să gestioneze cu eleganță stările `Failed` și `Timed Out`.
 
 **Ordonare:** Mesajele din coadă sunt procesate FIFO în cadrul fiecărei treceri EndBlocker. Nu există o ordonare garantată între diferitele VM-uri sursă.
 

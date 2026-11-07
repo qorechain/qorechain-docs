@@ -288,7 +288,7 @@ exported.
 > On the testnet (`qorechain-diana`) the `active_static_precompiles` list holds
 > `0x…0A01` (PQC verify), `0x…0A02` (PQC key status) and `0x…0C01` (consensus
 > params), checked 27 October 2026; the AI pair (`0x…0B01`, `0x…0B02`) is not active on either network, and the
-> cross-VM bridge (`0x…0901`) was not active on either on 27 October (the testnet list also held it from 4 November and still did on 7 November 2026; a call through it was not tested; mainnet's list is empty). A call to an
+> cross-VM bridge (`0x…0901`) was not active on either on 27 October (the testnet list also held it from 4 November and still did on 7 November 2026; on the testnet it is active with an allowlist and a read-only `eth_call` was tested on 7 November 2026; mainnet's list is empty). A call to an
 > inactive address returns empty data, so those helpers throw. See
 > [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 

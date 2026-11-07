@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Netzwerk-Voreinstellung | `testnet` |
 | Chain-ID | `qorechain-diana` (live) |
-| Chain-Version (27. Oktober 2026) | v3.2.6 (seit Höhe 8,970,638, 27. Oktober 2026; v3.2.5 wurde bei Höhe 8,890,800 am 26. Oktober und v3.2.4 bei Höhe 8,337,253 am 19. Oktober angewendet) |
+| Chain-Version (7. November 2026) | v3.2.7 (seit Höhe 9,594,600, 6. November 2026, per Governance angewendet; das Mainnet hat es nicht und hat kein Datum dafür. v3.2.6 wurde bei Höhe 8,970,638 am 27. Oktober angewendet; v3.2.5 wurde bei Höhe 8,890,800 am 26. Oktober und v3.2.4 bei Höhe 8,337,253 am 19. Oktober angewendet) |
 | EVM-Chain-ID | `9800` |
 | Anzeige-Token | `QOR` |
 | Basis-Denomination | `uqor` |
@@ -63,6 +63,7 @@ dort lesen können, im Mainnet nicht vorhanden ist (geprüft am 27. Oktober 2026
 [Unterschiede zwischen Testnet und Mainnet](/appendix/chain-parameters#testnet-differences)):
 
 * **REST-Routen.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` und `GET /qorechain/crossvm/v1/params` antworten im Testnet. Das Mainnet antwortete darauf bis Chain v3.2.6 mit HTTP 501; seit es v3.2.6 angewendet hat (4. November 2026), antworteten alle diese Routen im Mainnet an diesem Tag mit HTTP 200. Die AMM-Routen unter `/qorechain/amm/v1/` (`pools`, `params`) antworten auf beiden Netzwerken.
+* **Routen von Chain v3.2.7.** Am 7. November 2026 antwortete das Testnet mit HTTP 200 auf `GET /qorechain/pqc/v1/multisig/{address}` (`{"found":false,"multisig":null}` für eine Adresse ohne Multisig), `GET /qorechain/stakingtier/v1/apr`, `GET /qorechain/stakingtier/v1/apr/{delegator}`, `GET /qorechain/stakingtier/v1/pool` und `GET /qorechain/svm/v1/cluster_info`; das Mainnet antwortete auf alle mit HTTP 501, außer auf `/qorechain/stakingtier/v1/pool` (200). `GET /qorechain/pqc/v1/textual_sign_doc` antwortete auf beiden öffentlichen Endpunkten mit 501 und ist daher nicht als verfügbar dokumentiert. SDK 0.12.0 hat für keine davon einen Builder oder typisierten Client.
 * **Testtoken.** Drei Token ohne Wert existieren nur im Testnet, als Bank-Denominationen mit dem Namen `erc20:<EIP-55 contract address>` (Groß-/Kleinschreibung beachten): fUSD (6 Dezimalstellen), fETH (18) und fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` listet sie auf. Die einzige Bank-Denomination des Mainnets ist `uqor`. Siehe [Testnet-Testtoken (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
 * **Eingeschaltete Module.** Das Modul `abstractaccount` ist im Testnet aktiviert und im Mainnet aus, EVM-Precompiles sind im Testnet aktiv (drei am 27. Oktober, vier am 4. November) und keines im Mainnet, und die Instanziierung von QoreChain Native ist im Testnet offen.
 

@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain publica sus herramientas para desarrolladores como paquetes pequeños en los registros públicos (npm, PyPI, crates.io, el proxy de módulos de Go, Maven Central y Swift Package Manager). Esta página es el índice: para qué sirve cada paquete, su nombre exacto en el registro, lenguaje, versión actual, comando de instalación y estado, y dónde leer cómo usarlo. Está pensada para desarrolladores que crean dApps, monederos, backends y rollups en QoreChain y quieren elegir el paquete adecuado antes de leer una guía.
 
-Las versiones de las tablas se leyeron de los registros el 4 de noviembre de 2026. Ambas redes ejecutan v3.2.6: mainnet `qorechain-vladi` la aplicó el 4 de noviembre de 2026 (v3.2.5 el 29 de octubre) y testnet `qorechain-diana` el 27 de octubre. Todos los paquetes listados como publicados tienen licencia Apache-2.0.
+Las versiones de las tablas se leyeron de los registros el 4 de noviembre de 2026. Mainnet `qorechain-vladi` ejecuta v3.2.6 (aplicada el 4 de noviembre de 2026; v3.2.5 el 29 de octubre). La testnet `qorechain-diana` aplicó v3.2.6 el 27 de octubre y v3.2.7 el 6 de noviembre de 2026; v3.2.7 no está en la mainnet y no tiene fecha allí. Ningún paquete de estas tablas tiene constructores para los mensajes de v3.2.7, salvo que su página lo indique. Todos los paquetes listados como publicados tienen licencia Apache-2.0.
 
 ## Innovaciones {#innovations}
 
@@ -300,7 +300,7 @@ En un nombre de npm con ámbito conserva la `@`, por ejemplo `https://registry.n
 
 ## Límites y problemas conocidos {#limits}
 
-- **Dos redes en vivo, una sola versión de cadena.** Ambas ejecutan v3.2.6 (mainnet desde el 4 de noviembre de 2026, testnet desde el 27 de octubre). Una función que existe solo en testnet (los precompiles PQC de EVM, por ejemplo) se marca en su propia página.
+- **Dos redes en vivo, dos versiones de cadena.** La mainnet ejecuta v3.2.6 (desde el 4 de noviembre de 2026); la testnet ejecuta v3.2.7 (desde el 6 de noviembre de 2026). Una función que existe solo en testnet (los precompiles PQC de EVM, por ejemplo) se marca en su propia página.
 - **Todavía no están en vivo:** los módulos nativos del Asset Kit (una propuesta que no está prevista), los wheels de Windows de los paquetes de Python de QoreSign y QoreSeal, las transacciones SVM y los precompilados EVM en mainnet (solo están activos en testnet; consulta la [visión general del SDK](/sdk/overview) para la lista carril por carril).
 - **Registro de QoreSeal y cliente ligero PQ.** Cifrar hacia una dirección leída desde la cadena necesita el registro de claves KEM, en vivo en testnet, y su ruta de lectura responde en mainnet desde v3.2.5 (comprobado de nuevo el 4 de noviembre de 2026: no se había publicado ninguna clave en mainnet). El cliente ligero PQ no se conecta a ninguna de las dos redes; no hay soporte de cadena planificado para sus checkpoints.
 - **Kotlin 2.3 o posterior.** Los artefactos de Kotlin y Android de QoreSign y QoreSeal necesitan el compilador de Kotlin 2.3 o posterior; con Kotlin 2.1 falla la compilación contra ellos.

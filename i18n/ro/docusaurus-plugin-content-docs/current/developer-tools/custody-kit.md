@@ -271,12 +271,12 @@ Ramifică logica după codespace și cod împreună și păstrează log-ul brut.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Versiunea nodului | v3.2.6 (aplicată pe 4 noiembrie 2026; v3.2.5 pe 29 octombrie) | v3.2.6 (aplicată pe 27 octombrie; v3.2.5 pe 26 octombrie) |
+| Versiunea nodului | v3.2.6 (aplicată pe 4 noiembrie 2026; v3.2.5 pe 29 octombrie) | v3.2.7 (aplicată pe 6 noiembrie; v3.2.6 pe 27 octombrie, v3.2.5 pe 26 octombrie) |
 
 - Denominația este `uqor` (1 QOR = 10^6 uqor; pe traseul EVM 1 uqor = 10^12 wei). Prețul minim al gas-ului este 0.1 uqor, perioada de unbonding este de 21 de zile, iar limita memo este de 256 de caractere. Aceste valori au fost citite de pe ambele rețele la 27 octombrie 2026 (mainnet citit din nou la 4 noiembrie 2026: unbonding 1,814,400 secunde, preț minim al gas-ului 0.1 uqor, limită memo 256 de caractere) și pot fi schimbate prin guvernanță, așa că în producție citește-le din lanț.
 - Depunerile nu necesită chei și nici înregistrare. Trimiterea necesită o cheie ML-DSA-87 înregistrată pentru fiecare adresă hot.
 - Rulează propriile noduri complete pentru producție. Endpoint-urile publice au limită de rată și sunt destinate dezvoltării. Dacă un script primește `403 Forbidden`, setează un header `User-Agent` explicit. Vezi [rularea unui nod](/developer-guide/running-a-node) și [conectarea la mainnet](/getting-started/connecting-to-mainnet).
-- Testnet-ul primește fiecare versiune de nod înaintea mainnet-ului. Schimbă regulile de gas verificând upgrade-ul aplicat, nu după dată (ambele rețele au aplicat v3.2.5 și v3.2.6).
+- Testnet-ul primește fiecare versiune de nod înaintea mainnet-ului. Schimbă regulile de gas verificând upgrade-ul aplicat, nu după dată (ambele rețele au aplicat v3.2.5 și v3.2.6; testnet-ul și v3.2.7).
 - Tokenurile de test de pe testnet (denom-uri bank de forma `erc20:0x...`, un token IBC) nu există pe mainnet. Creditează `uqor` pe ambele rețele.
 - QOR de testnet vine din faucet-ul din dashboard-ul QoreChain și nu are valoare. Vezi [conectarea la testnet](/getting-started/connecting-to-testnet).
 

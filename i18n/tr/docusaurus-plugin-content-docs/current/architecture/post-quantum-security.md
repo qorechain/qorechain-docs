@@ -286,6 +286,8 @@ Köprü kanıtlamalarının (attestation), köprü altyapısında klasik kriptog
 
 Test ağı bu aynı değerleri döndürür (27 Ekim 2026'da kontrol edildi). v3.2.6'dan beri her iki ağ da bunları REST üzerinden de `GET /qorechain/pqc/v1/params` ile sunar: ana ağ 4 Kasım 2026'da `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, varsayılan algoritma olarak Dilithium-5 ve hibrit mod `required` değerleriyle `200` yanıtı verdi. v3.2.6'dan eski bir düğümde bunları `qorechaind query pqc params` ile okuyun.
 
+**Sürüm v3.2.7 (yalnızca test ağı, 6 Kasım 2026'dan beri).** Kuantum sonrası katmanda üç değişiklik test ağında çalışır ve henüz ana ağda değildir (ana ağ v3.2.6'dadır, yükseltme tarihi yoktur): klasik multisig hesapları için hibrit k-of-n multisig (`MsgRegisterPQCMultisig` mesajı, `GET /qorechain/pqc/v1/multisig/{address}` rotası), ölçümlerle kalibre edilmiş, kuantum sonrası imza başına sabit 2.000 gas doğrulama maliyeti (ML-DSA-87, filo sunucularında secp256k1'den yaklaşık 1,8 kat daha yavaş doğrulanır) ve donanım ile web cüzdanları için SIGN_MODE_TEXTUAL desteği. Bunları etkinleştiren protokol özellikleri (`pqc-multisig`, `pqc-verify-gas-calibrated`) 7 Kasım 2026'da test ağında etkin okundu. Ayrıntılar ve REST biçimleri [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#v327) sayfasındadır.
+
 ## İlgili
 
 * [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) — bu ilkeller ve hibrit imzalama için açık kaynaklı `qorechain-pqc` kütüphanesi (altı dil).

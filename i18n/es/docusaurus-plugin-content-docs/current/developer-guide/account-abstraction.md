@@ -14,7 +14,7 @@ El módulo de cuentas abstractas está **desactivado en la mainnet `qorechain-vl
 :::
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (en funcionamiento desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.6** (aplicada en la altura 4,020,000 el 4 de noviembre de 2026, propuesta de gobernanza 15; la v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026, propuesta 14, y la v3.2.4 se aplicó en la altura 3,742,566 el 23 de octubre de 2026). Sustituye por `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.6 (v3.2.4 desde el 19 de octubre de 2026).
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (en funcionamiento desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.6** (aplicada en la altura 4,020,000 el 4 de noviembre de 2026, propuesta de gobernanza 15; la v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026, propuesta 14, y la v3.2.4 se aplicó en la altura 3,742,566 el 23 de octubre de 2026). Sustituye por `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.7 (desde el 6 de noviembre de 2026; v3.2.4 desde el 19 de octubre de 2026).
 :::
 
 :::caution Toda transacción de la vía Cosmos necesita la cofirma post-cuántica híbrida

@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain incluye un entorno de ejecución **Solana Virtual Machine (SVM)** que permite a los desarrolladores desplegar y ejecutar programas SBF/BPF usando las herramientas habituales de Solana. El módulo SVM expone una interfaz JSON-RPC compatible con Solana en el **puerto 8899**, que `qorechaind start` inicia automáticamente (véase [Servidor JSON-RPC](#json-rpc-server) más abajo).
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.6** desde el 4 de noviembre de 2026 (propuesta de gobernanza 15, altura 4,020,000; v3.2.5 desde el 29 de octubre de 2026, v3.2.4 desde el 23 de octubre de 2026). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.6 (v3.2.4 desde el 19 de octubre de 2026). **Las transacciones SVM están deshabilitadas en ambas redes** (véase el recuadro siguiente), por lo que los comandos `tx svm` de esta página son solo de referencia: hoy no pueden tener éxito.
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.6** desde el 4 de noviembre de 2026 (propuesta de gobernanza 15, altura 4,020,000; v3.2.5 desde el 29 de octubre de 2026, v3.2.4 desde el 23 de octubre de 2026). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.7 (desde el 6 de noviembre de 2026; v3.2.4 desde el 19 de octubre de 2026). **Las transacciones SVM están deshabilitadas en ambas redes** (véase el recuadro siguiente), por lo que los comandos `tx svm` de esta página son solo de referencia: hoy no pueden tener éxito.
 :::
 
 ---
@@ -82,6 +82,9 @@ Los valores por defecto son `enable = true` y `address = "127.0.0.1:8899"`, de m
 | `getMinimumBalanceForRentExemption`  | Balance mínimo para un tamaño de datos dado |
 | `getVersion`                         | Información de versión del runtime SVM     |
 | `getHealth`                          | Comprobación de salud del endpoint SVM     |
+| `getGenesisHash`                    | Hash génesis del clúster (testnet, desde v3.2.7; base58) |
+
+**Identidad del clúster (v3.2.7, por ahora solo testnet).** Las wallets que siguen el Wallet Standard necesitan una identidad de clúster estable. Desde la versión v3.2.7 (testnet desde el 6 de noviembre de 2026; la mainnet sigue en v3.2.6 y no tiene fecha para ella) el nodo sirve el hash génesis del clúster y su ID de cadena de Wallet Standard. En la testnet, el 7 de noviembre de 2026, `GET /qorechain/svm/v1/cluster_info` respondió con `chain_id` `qorechain-diana`, un `genesis_hash`, un `caip2_chain_id` (`solana:` seguido de los primeros 32 caracteres del hash génesis) y `execution_enabled` `false`, y `getGenesisHash` en `https://svm-testnet.qore.host` devolvió el mismo hash génesis. El hash se deriva del ID de cadena, no de un clúster real de Solana. **La ejecución SVM sigue desactivada en ambas redes**; esto solo identifica el clúster.
 
 ---
 

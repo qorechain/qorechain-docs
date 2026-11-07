@@ -188,6 +188,22 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 
 Helperele de rotație din SDK 0.9.0 și ulterior și din `@qorechain/wallet-adapter` 0.4.0 refuză derivarea legacy ca cheie **nouă** (nu este legată de cont); o cheie legacy poate fi în continuare cheia veche. După o rotație reușită, cheia nouă semnează (cod 0), iar cheia veche este respinsă (`pqc` cod 21). Începând cu v3.2.3, o rotație (ca și o migrare) refuză o cheie nouă care nu oferă nicio protecție post-cuantică (cod 230) și o cheie pe care contul a folosit-o înainte (cod 232) și nu poate fi trimisă prin `authz`.
 
+## Chain v3.2.7 pe testnet: multisig, semnare textuală, gaz de verificare {#v327}
+
+:::note Deocamdată doar pe testnet
+Elementele de mai jos rulează pe `qorechain-diana` din 6 noiembrie 2026 (versiunea de nod v3.2.7, înălțimea 9.594.600). **Mainnet-ul este încă pe v3.2.6** și nu are niciunul dintre ele; o propunere de upgrade la v3.2.7 pentru mainnet nu are încă o dată. Pachetele `@qorechain/sdk` 0.12.0 și `@qorechain/rdk` 0.8.0 nu au constructori pentru multisig sau pentru semnarea textuală (verificat la 7 noiembrie 2026), așa că folosiți CLI-ul și REST-ul nodului pentru ele.
+:::
+
+**Multisig hibrid k-din-n.** Un cont multisig clasic poate purta acum un set de semnatari post-cuantici care îl urmează. Mesajul nou `/qorechain.pqc.v1.MsgRegisterPQCMultisig` înregistrează setul: membrii și cheile post-cuantice urmează membrii și cheile curente ale multisig-ului clasic. Citiți înregistrarea pentru orice adresă cu `GET /qorechain/pqc/v1/multisig/{address}`; o adresă fără un set înregistrat răspunde cu `200` și `{"found":false,"multisig":null}` (citit pe testnet la 7 noiembrie 2026). Funcționalitatea de protocol `pqc-multisig` este activată pe testnet (`GET /qorechain/pqc/v1/protocol_features`).
+
+**Gaz de verificare.** Verificarea unei semnături post-cuantice într-o tranzacție costă un gaz fix de 2.000, calibrat pe măsurători (verificarea ML-DSA-87 este de aproximativ 1,8 ori mai lentă decât secp256k1 pe serverele flotei). Funcționalitatea `pqc-verify-gas-calibrated` este activată pe testnet.
+
+**Wallet-uri hardware și web (SIGN_MODE_TEXTUAL).** `qorechaind tx pqc cosign` poate semna în `SIGN_MODE_TEXTUAL` cu extensia post-cuantică, modul de care au nevoie wallet-urile hardware. Pentru wallet-urile web, nodul servește documentul de semnat: trimiteți un `POST` la `/qorechain/pqc/v1/textual_sign_doc` cu tranzacția ca `tx_bytes` sau `tx_json`. Pe 7 noiembrie 2026, gateway-ul testnet-ului a răspuns cu `400` (`tx_bytes or tx_json is required`) la un corp gol și cu `501` la un `GET`, așa că folosiți `POST`. Pentru această pagină nu a fost rulată nicio semnare cap-coadă cu un wallet hardware; nu presupuneți că un anumit dispozitiv o suportă.
+
+**Eveniment pentru ferestrele EVM.** O tranzacție EVM care consumă fereastra de autorizare post-cuantică emite acum evenimentul `pqc_evm_window_used` (atributul `source`); funcționalitatea `evm-window-used-event` este activată pe testnet.
+
+---
+
 ## API consecvent
 
 Fiecare limbaj oferă aceeași suprafață:

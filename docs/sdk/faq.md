@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Is mainnet live?
 
 Yes. Mainnet is **live** (chain id `qorechain-vladi`, live since 7 June 2026) and
-runs chain version v3.2.6 (applied at height 4,020,000 on 4 November 2026, governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026 and v3.2.4 at height 3,742,566 on 23 October 2026); the testnet has run v3.2.6 since 27 October 2026. The testnet preset
+runs chain version v3.2.6 (applied at height 4,020,000 on 4 November 2026, governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026 and v3.2.4 at height 3,742,566 on 23 October 2026); the testnet has run v3.2.6 since 27 October 2026 and v3.2.7 since 6 November 2026 (height 9,594,600; not on mainnet, no date). The testnet preset
 (`qorechain-diana`) also remains available. From SDK 0.12.0 both presets default to
 the public endpoints; select the network with `createClient({ network: "mainnet" })`
 and override `endpoints` only for your own node. See
@@ -59,7 +59,7 @@ on mainnet**, and only three are active on the testnet: they answer only where
 their addresses are listed in the EVM module's `active_static_precompiles`
 parameter. That list is empty on mainnet; on the testnet it holds the PQC verify
 (`0x…0A01`), PQC key status (`0x…0A02`) and consensus-parameters (`0x…0C01`)
-precompiles (checked 27 October 2026; the testnet list also held the cross-VM bridge `0x…0901` from 4 November and on 7 November 2026, listed active but a call through it was not tested, and mainnet's list was still empty), so the AI pair still
+precompiles (checked 27 October 2026; the testnet list also held the cross-VM bridge `0x…0901` from 4 November and on 7 November 2026, active with an allowlist (tested with `eth_call`), and mainnet's list was still empty), so the AI pair still
 answers nothing there. Where a precompile is inactive the call returns empty data,
 so viem reports `returned no data ("0x")` and the helper throws (see
 [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status)).
@@ -150,9 +150,9 @@ eth-native).
 ## Which chain versions does the SDK work with?
 
 SDK **0.12.0** is the client release for chain **v3.2.5** (mainnet since 29 October
-2026 at height 3,906,833; the testnet since 26 October). Both networks run v3.2.6
-(mainnet since 4 November, the testnet since 27 October); the signing format did not
-change, so 0.12.0 works on both. It adds the exact gas rule for hybrid transactions,
+2026 at height 3,906,833; the testnet since 26 October). Mainnet runs v3.2.6
+(since 4 November) and the testnet v3.2.7 (since 6 November; v3.2.6 from 27 October); the signing format did not
+change up to v3.2.6, so 0.12.0 works on mainnet. 0.12.0 has no builders for the v3.2.7 additions (PQC multisig registration, the textual sign mode, the APR, cluster identity and verification key messages), and its signing path was not re-checked against the v3.2.7 testnet; use the CLI for those. It adds the exact gas rule for hybrid transactions,
 the ML-KEM key registry builders and read, the abstract-account reads and the checked
 governance parameter builders (see [What 0.12.0 adds](/sdk/install#whats-new-0120)),
 on top of what 0.10.0 added for v3.2.4 (the staking-tier builders and reads,
@@ -164,8 +164,8 @@ SDK **0.8.1 or later** also transacts on both networks (the v2 hybrid sign-bytes
 form, registration, hybrid sends and the EVM window work unchanged), but it has none
 of those builders: use the CLI for them (see
 [Versions before 0.9.0](/sdk/install#before-090)). The signing format did not change
-in v3.2.4, v3.2.5 or v3.2.6. Both networks run v3.2.6 (the testnet applied v3.2.5 on 26 October 2026 and
-v3.2.6 on 27 October; mainnet applied v3.2.5 on 29 October and v3.2.6 on 4 November). SDK 0.10.0 and 0.9.0 keep working on them but have no builders for the
+in v3.2.4, v3.2.5 or v3.2.6. Mainnet runs v3.2.6 and the testnet v3.2.7 (the testnet applied v3.2.5 on 26 October 2026,
+v3.2.6 on 27 October and v3.2.7 on 6 November; mainnet applied v3.2.5 on 29 October and v3.2.6 on 4 November). SDK 0.10.0 and 0.9.0 keep working on them but have no builders for the
 v3.2.5 additions (the ML-KEM key registry, the exact gas rule); with those releases use the CLI, or upgrade to 0.12.0. 0.12.0 was built and checked against v3.2.5.
 
 ## My PQC key registration was refused but the fee was taken

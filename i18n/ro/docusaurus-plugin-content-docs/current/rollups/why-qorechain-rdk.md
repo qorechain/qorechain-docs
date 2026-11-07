@@ -29,7 +29,7 @@ ce adaugă RDK-ul în plus, în TypeScript, Python, Go, Rust și Java.
 | --- | --- | --- |
 | **Chitanțe de decontare** | 🟡 Etapă timpurie | Ancorele sunt semnate cu ML-DSA-87, schema post-cuantică a Main Chain; încă nu există ancore, deci verificatorul curent (care verifică față de lanț) nu a rulat niciodată pe o ancoră reală |
 | **QCAI Rollup Copilot** | 🟡 Încă indisponibil pe endpoint-urile publice | Servicii de consultanță AI/RL on-chain pe care endpoint-urile publice nu le expun astăzi |
-| **Apeluri cross-VM multi-VM** | 🟡 Încă inutilizabil pe rețelele live | Un precompile cross-VM care nu este activat (encoderul din 0.6.0 se potrivește cu structura lanțului), iar încărcarea QoreChain Native este închisă |
+| **Apeluri cross-VM multi-VM** | 🟡 Încă inutilizabil pe rețelele live | Un precompile cross-VM care nu este activat pe mainnet, activ cu o listă de permisiuni pe testnet (encoderul din 0.6.0 se potrivește cu structura lanțului), iar încărcarea QoreChain Native este închisă |
 
 ---
 
@@ -89,14 +89,14 @@ Din CLI: `qorollup advise my-rollup`. Vezi [QCAI Copilot](/rollups/qcai-copilot)
 ## 3. Apeluri cross-VM multi-VM
 
 > 🟡 **Încă inutilizabil pe mainnet** — precompile-ul nu este activat acolo, iar
-> încărcarea QoreChain Native este închisă. Pe testnet precompile-ul este listat ca activ (7 noiembrie 2026); un apel nu a fost testat. Vezi [Multi-VM](/rollups/multi-vm).
+> încărcarea QoreChain Native este închisă. Pe testnet precompile-ul este activ cu o listă de permisiuni (testat cu `eth_call` pe 7 noiembrie 2026). Vezi [Multi-VM](/rollups/multi-vm).
 
 RDK-ul include helpere care codifică un apel de la un contract EVM (Solidity)
 către un contract **QoreChain Native** printr-un precompile fix la `0x…0901`. Acel
-precompile **nu este activ pe mainnet** și este **listat ca activ pe testnet** din 7 noiembrie 2026 (vezi
+precompile **nu este activ pe mainnet** și este **activ pe testnet** (cu o listă de permisiuni de contracte verificate; testat pe 7 noiembrie 2026) (vezi
 [Precompile-uri EVM: starea rețelei](/developer-guide/evm-precompiles#network-status)):
 `eth_getCode` pentru `0x…0901` returnează `0x` (un precompile nu are bytecode), un apel de contract
-către el reușește fără niciun efect pe mainnet, iar un apel prin el pe testnet nu a fost testat.
+către el reușește fără niciun efect pe mainnet; pe testnet o țintă din lista permisă ajunge la contractul ei, iar oricare alta este refuzată cu „is not allowlisted".
 
 Helperul `encodeCrossVmCalldata` (din 0.6.0) construiește calldata pentru
 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, structura

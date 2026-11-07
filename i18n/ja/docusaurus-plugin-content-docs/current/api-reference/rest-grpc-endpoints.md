@@ -18,7 +18,7 @@ QoreChain はプログラムからのアクセス向けに、3つの主要なイ
 すべての REST エンドポイントは JSON を返します。gRPC エンドポイントは Protocol Buffers を使用し、任意の gRPC クライアントで利用できます。RPC インターフェースはコンセンサスレベルのクエリとトランザクションのブロードキャストを提供します。
 
 :::note
-これらのインターフェースは、**`qorechain-vladi`** メインネット（2026年6月7日より稼働中）と **`qorechain-diana`** テストネットの両方で利用できます。両ネットワークともノードリリース **v3.2.6** を実行しています。メインネットは 2026年11月4日にブロック高 4,020,000 でこれを適用しました（ガバナンス提案 15。その前に、v3.2.5 は 2026年10月29日にブロック高 3,906,833 で提案 14 により、v3.2.4 は 2026年10月23日にブロック高 3,742,566 で適用）。テストネットは v3.2.5 を 2026年10月26日にブロック高 8,890,800 で、v3.2.6 を 2026年10月27日にブロック高 8,970,638 で適用しました。リリースで追加されたルートやフィールドは、そのネットワークがリリースを適用して初めて現れます。以下で 2026年11月4日と記したルートの確認は、v3.2.6 へのアップグレード後に公開メインネットホストに対して行いました。以下のベース URL はローカルで実行中のノードを前提としています。公開ホスト型エンドポイントは `https://api.qore.host` / `https://api-testnet.qore.host`（REST）と `https://rpc.qore.host` / `https://rpc-testnet.qore.host`（RPC）で、[ネットワーク](/appendix/networks#public-endpoints)に掲載されています。**公開の gRPC エンドポイントはありません**。ホスト名 `grpc.qore.host` と `grpc-testnet.qore.host` は存在しないため、gRPC が必要な場合は自分のノードを実行してください。
+これらのインターフェースは、**`qorechain-vladi`** メインネット（2026年6月7日より稼働中）と **`qorechain-diana`** テストネットの両方で利用できます。テストネットはノードリリース **v3.2.7**（テストネットのガバナンスにより 2026年11月6日にブロック高 9,594,600 で適用）を、メインネットは **v3.2.6** を実行しています。メインネットは v3.2.6 を 2026年11月4日にブロック高 4,020,000 で適用しました（ガバナンス提案 15。その前に、v3.2.5 は 2026年10月29日にブロック高 3,906,833 で提案 14 により、v3.2.4 は 2026年10月23日にブロック高 3,742,566 で適用）。テストネットは v3.2.5 を 2026年10月26日にブロック高 8,890,800 で、v3.2.6 を 2026年10月27日にブロック高 8,970,638 で、v3.2.7 をブロック高 9,594,600 で適用しました。v3.2.7 のメインネットの日付や高さはまだありません。リリースで追加されたルートやフィールドは、そのネットワークがリリースを適用して初めて現れます。以下で 2026年11月4日と記したルートの確認は、v3.2.6 へのアップグレード後に公開メインネットホストに対して行いました。**v3.2.7** と記したルートは 2026年11月7日に公開テストネットホストで確認したもので、メインネットでは `501` で応答します。以下のベース URL はローカルで実行中のノードを前提としています。公開ホスト型エンドポイントは `https://api.qore.host` / `https://api-testnet.qore.host`（REST）と `https://rpc.qore.host` / `https://rpc-testnet.qore.host`（RPC）で、[ネットワーク](/appendix/networks#public-endpoints)に掲載されています。**公開の gRPC エンドポイントはありません**。ホスト名 `grpc.qore.host` と `grpc-testnet.qore.host` は存在しないため、gRPC が必要な場合は自分のノードを実行してください。
 :::
 
 ## ベース URL
@@ -35,7 +35,7 @@ QoreChain 固有のモジュールは `/qorechain/<module>/v1/...` プレフィ�
 
 存在しないルートは、HTTP `501` と `{"code":12,"message":"Not Implemented"}` で応答します。これはルートが提供されていないことを意味し、クエリの結果が空だったという意味ではありません。`/qorechain/` プレフィックスのない短縮パス（例: `/bridge/v1/chains` や `/pqc/v1/params`）は提供**されません**。存在するルートで未知のレコードを指定すると、HTTP `404` と `{"code":5,"message":"... not found"}` が返ります。
 
-以下の例は公開メインネットのホストを使用しています。テストネットでは `https://api-testnet.qore.host` に置き換えてください。サンプルの値は 2026年10月20日から27日の間に実際のネットワークから読み取ったもので、時間とともに変化します。レスポンスの形を示すものとしてご利用ください。v3.2.4 リリースでは、いくつかのルートとフィールドが追加されました。これらは以下で **v3.2.4** と表記しており、テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から提供されています。v3.2.5 リリース（メインネットでは 2026年10月29日から、テストネットでは 2026年10月26日から）では、クロス VM のパラメータ・メッセージのルートとネイティブ鍵レジストリのルートが追加され、**v3.2.5** と表記しています。v3.2.6 リリース（テストネットでは 2026年10月27日から、メインネットでは 2026年11月4日から）ではさらに追加されており、**v3.2.6** と表記しています。メインネットのホストは 2026年11月4日にこれらに `200` で応答しました（例外は該当箇所に記載）。古いリリースのままのノードは、新しいルートに `501` で応答します。
+以下の例は公開メインネットのホストを使用しています。テストネットでは `https://api-testnet.qore.host` に置き換えてください。サンプルの値は 2026年10月20日から27日の間に実際のネットワークから読み取ったもので、時間とともに変化します。レスポンスの形を示すものとしてご利用ください。v3.2.4 リリースでは、いくつかのルートとフィールドが追加されました。これらは以下で **v3.2.4** と表記しており、テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から提供されています。v3.2.5 リリース（メインネットでは 2026年10月29日から、テストネットでは 2026年10月26日から）では、クロス VM のパラメータ・メッセージのルートとネイティブ鍵レジストリのルートが追加され、**v3.2.5** と表記しています。v3.2.6 リリース（テストネットでは 2026年10月27日から、メインネットでは 2026年11月4日から）ではさらに追加されており、**v3.2.6** と表記しています。メインネットのホストは 2026年11月4日にこれらに `200` で応答しました（例外は該当箇所に記載）。古いリリースのままのノードは、新しいルートに `501` で応答します。v3.2.7 リリース（現時点ではテストネットのみで、メインネットにはありません）では、**v3.2.7** と表記したルートが追加されました。PQC マルチシグとテキスト署名、ステーキング APR、SVM クラスター識別情報です。
 
 ## PQC モジュール {#pqc-module}
 
@@ -47,8 +47,24 @@ QoreChain 固有のモジュールは `/qorechain/<module>/v1/...` プレフィ�
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4**（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から。古いノードでは `501`）。バイナリが認識しているすべてのプロトコル機能と、`enabled`、`known`、`staged` フラグ |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5**（メインネットでは 2026年10月29日から、テストネットでは 2026年10月26日から、両ネットワークで提供。古いノードでは `501`）。ネイティブ鍵レジストリにアドレスに対して登録された ML-KEM 暗号化鍵。未登録の場合は `{"found":false,"key":null}` |
 | GET    | `/qorechain/pqc/v1/params`               | **v3.2.6**（テストネットでは 2026年10月27日から、メインネットでは 2026年11月4日から。古いノードでは `501`）。モジュールパラメータ |
+| GET    | `/qorechain/pqc/v1/multisig/{address}`   | **v3.2.7、テストネットのみ**（メインネットおよび古いノードでは `501`）。アドレスのハイブリッドのポスト量子マルチシグ記録。未登録の場合は `{"found":false,"multisig":null}` |
+| POST   | `/qorechain/pqc/v1/textual_sign_doc`     | **v3.2.7、テストネットのみ**（メインネットでは `501`。`GET` も `501` で応答）。ウェブウォレットが表示して署名するための、トランザクションの SIGN_MODE_TEXTUAL ドキュメントを生成します（下記参照） |
 
 パスのセグメントは単数形の `account` である点に注意してください。`/qorechain/pqc/v1/stats` のルートはありません（`qorechaind query pqc stats` を使用してください）。`/qorechain/pqc/v1/params` は v3.2.6 から提供され、2026年11月4日に両ネットワークで `200` を返しました（メインネットでは `pqc_primary` が `true`、`allow_classical_fallback` が `false`、`min_security_level` が `5`、`default_signature_algo_name` が `dilithium5`、`hybrid_signature_mode_name` が `required`）。v3.2.6 より古いノードでは、代わりに `qorechaind query pqc params` を使用してください。
+
+### PQC マルチシグとテキスト署名（v3.2.7、テストネット） {#pqc-multisig-textual}
+
+v3.2.7 以降、アカウントはハイブリッドのポスト量子 k-of-n マルチシグを持てます。メッセージは `/qorechain.pqc.v1.MsgRegisterPQCMultisig` で、ポスト量子の集合はアカウントの現在の従来型マルチシグのメンバーと鍵に従います。`GET /qorechain/pqc/v1/multisig/{address}` は登録内容を返します。2026年11月7日に、マルチシグのないアカウントに対して `200` と `{"found":false,"multisig":null}` を返しました（このルートには有効な `qor1...` アドレスが必要で、不正な形式のものは `400` で応答します）。メインネットでは `501` で応答します。テストネットにはまだマルチシグが登録されていないため、登録済みマルチシグのレコードのフィールドはここでは確認していません。
+
+`POST /qorechain/pqc/v1/textual_sign_doc` は、SIGN_MODE_TEXTUAL で署名するハードウェアウォレットとウェブウォレット向けです。JSON ボディには `tx_json`（未署名トランザクションを JSON 文字列にしたもの）または `tx_bytes`（base64）に加えて、`chain_id`、`account_number`、`sequence`、`public_key`（`@type` と `key` を持つ Any）を含めます。レスポンスには `sign_bytes`（base64、署名対象のドキュメント）と、デバイスが表示する行のリストである `screens`（`title`、`content`、`indent`、`expert`）が含まれます。トランザクションのないボディは `400`（`tx_bytes or tx_json is required`）で応答し、メッセージがない、または 32 を超えるメッセージを含むトランザクションは拒否されます。コマンドラインでは、v3.2.7 から `qorechaind tx pqc cosign` がテキスト署名モードに対応しています（[トランザクションコマンド](/cli-reference/transaction-commands#cosign)を参照）。
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/multisig/qor1...
+curl -s -X POST https://api-testnet.qore.host/qorechain/pqc/v1/textual_sign_doc \
+  -H 'content-type: application/json' -d @request.json
+```
+
+ポスト量子署名の検証に課されるガスは、v3.2.7 で測定に基づいて再調整されました。[バージョン履歴](/appendix/version-history#v327)を参照してください。
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -415,6 +431,8 @@ curl -s https://api.qore.host/qorechain/rdk/v1/params
 
 本稿執筆時点では、両ネットワークとも `rollups` は空のリストであるため、ロールアップごとのルートは `404` で応答します（例: `{"code":5,"message":"rollup foo not found"}`）。`default_challenge_window` は秒単位で表されます（`604800`）。v3.2.4 以降、新たに送信されたバッチのオプティミスティックのチャレンジウィンドウはブロック時間で計測されます。テストネットではブロック高 8,337,253（2026年10月19日）から、メインネットではブロック高 3,742,566（2026年10月23日）からです。アップグレード前は、チェーンは秒単位の値を 1 ブロックあたり 6 秒の固定でブロック数に換算していました。テストネットでは、ビルダーイベントのためにガバナンス提案 17（2026年10月27日可決）が `default_challenge_window` を `3600`（1時間）に、`max_rollups` を `200` に設定したため、上記のサンプル（メインネット）とは異なります。本稿執筆時点では、テストネットでも `rollups` は空のままです。
 
+**v3.2.7（テストネットのみ）:** ZK ロールアップは `MsgSetVerificationKey` で検証鍵を登録でき（後から `MsgUpdateVerificationKey` で変更可能）、鍵のないロールアップへの ZK バッチは手数料が支払われる前に拒否されます。これらはメッセージでありクエリではありません。登録済みの鍵を読み取る REST ルートはなく（それらしいパスは 2026年11月7日に `501` で応答しました）、テストネットには ZK ロールアップが登録されていない（`rollups` が空）ため、登録はここではエンドツーエンドでは確認していません。ZK 決済は引き続きテストネットのみで、メインネットにはありません。[バージョン履歴](/appendix/version-history#v327)を参照してください。
+
 ## Inflation モジュール {#inflation-module}
 
 発行の設定と進捗は `/qorechain/inflation/v1/...` 配下の REST として公開されています（チェーンバージョン **v3.2.2** 以降）。CLI コマンドでは利用できません。
@@ -506,8 +524,12 @@ Staking Tiers モジュールは **v3.2.4** の一部です。これらのルー
 | GET    | `/qorechain/stakingtier/v1/params`        | ロックティア、最小ロック額、早期アンロックのペナルティ      |
 | GET    | `/qorechain/stakingtier/v1/locks/{holder}` | 保有者のロック、各ロックが現在どれだけ発生しているか、請求可能な額 |
 | GET    | `/qorechain/stakingtier/v1/pool`          | ボーナスプール: 残高、未払い額、余剰、直近の決済 |
+| GET    | `/qorechain/stakingtier/v1/apr`           | **v3.2.7、テストネットのみ**（メインネットでは `501`）。基本のステーキングレートとティアボーナス |
+| GET    | `/qorechain/stakingtier/v1/apr/{delegator}` | **v3.2.7、テストネットのみ。** 1 人の委任者についての同じ情報: ライトノードボーナスの状況、委任、実効レート |
 
 `params` は3つのロック期間（3、6、12 か月）とそのパラメータ、および `min_lock_amount`（`"10000000"` uqor、10 QOR）を列挙します。ロックは `tx stakingtier lock` で行います（[トランザクションコマンド](/cli-reference/transaction-commands#stakingtier)を参照）。
+
+**APR ルート（v3.2.7、テストネット）。** `GET /qorechain/stakingtier/v1/apr` は、`base`（`gross_base_apr_bps`、`source`、`computed_height`、`bonus_enabled`、`max_total_apy_bps`）、`base_apr_bps`、`tiers` のリスト（3、6、12 か月について、`bonus_bps` が 150、300、500 で、実効値を併記）、そしてライトノードとバリデーターのボーナス（`light_node_bonus_bps` 200、`validator_bonus_bps` 300）を返します。2026年11月7日の時点で、テストネットの基本レートは `0`（`source` は `fees_only`）だったため、ティアボーナスだけが 0 以外でした。プールのルートはボーナスプールを報告します。委任のないアドレスに対しては、委任者のルートは空の `delegations` リストと実効レート `0` で `200` を返します。すべての数値は、チェーンが直近の決済で計算した内容をベーシスポイントで読み取ったものです。**保証されるものではなく**、手数料や資金状況によって変わり、いかなるリターンの約束でもありません。
 
 ## Reputation モジュール {#reputation-module}
 
@@ -521,6 +543,14 @@ Reputation モジュールの REST ルートはチェーン v3.2.6 で追加さ�
 
 スコアは 0 から 1 の間の 10 進文字列です。ライトノードは、バリデーターごとのルートを読み取り、委任先のバリデーターが `min_reputation` を下回ったときに警告します（[報酬とモニタリング](/light-node/rewards-and-monitoring#delegation-alerts)を参照）。同じルートは両方の公開ホストで動作します。
 
+## SVM クラスター識別情報（v3.2.7、テストネット） {#svm-cluster-info}
+
+| メソッド | エンドポイント                         | 説明 |
+| ------ | -------------------------------- | ----------- |
+| GET    | `/qorechain/svm/v1/cluster_info` | **v3.2.7、テストネットのみ**（メインネットでは `501`）。SVM クラスターの識別情報: `chain_id`、`genesis_hash`、`caip2_chain_id`（Wallet Standard のチェーン ID）、`derivation`、`execution_enabled` |
+
+2026年11月7日に、テストネットは `genesis_hash` として `6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj`、`caip2_chain_id` として `solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR`、`execution_enabled` として `false` を返しました。ジェネシスハッシュはチェーン ID から導出されます（固定ラベルとチェーン ID の SHA-256 を base58 でエンコードしたもの）ので、安定しています。同じ値は SVM JSON-RPC の `getGenesisHash` と `getVersion` にもあります（[JSON-RPC Solana 互換](/api-reference/json-rpc-solana-compatible)を参照）。SVM はオフのままで、`execution_enabled` は `false` です。
+
 ## gRPC 専用モジュール {#grpc-only-modules}
 
 メインネット（ノードリリース v3.2.6、2026年11月4日に確認）では、これらのモジュールには gRPC の `Query` サービスはありますが、表の例外を除き **REST ルートはありません**。サービス名は `qorechain.<module>.v1.Query` の形式です。
@@ -531,7 +561,7 @@ Reputation モジュールの REST ルートはチェーン v3.2.6 で追加さ�
 | `crossvm`     | `PendingMessages`（v3.2.5 以降は REST でも提供: `Params` は `/qorechain/crossvm/v1/params`、`Message` は `/qorechain/crossvm/v1/message/{id}`） |
 | `reputation`  | `Params`（v3.2.6 以降は REST でも提供。[Reputation モジュール](#reputation-module)を参照） |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams`, `LastAction`（v3.2.6 以降は REST でも提供） |
-| `svm`         | `Slot`, `Account`, `Program`                           |
+| `svm`         | `Slot`, `Account`, `Program`（テストネットの v3.2.7 では `ClusterInfo` が追加され、REST でも提供。[SVM クラスター識別情報](#svm-cluster-info)を参照） |
 | `qca`         | `Config`                                               |
 
 `rlconsensus` のクエリは、v3.2.6 以降両ネットワークで REST で提供されています（`AppliedParams` と `LastAction` の2つのメソッドが追加）。[RL Consensus モジュール](#rlconsensus-module)を参照してください。自分のノードに対して `grpcurl` を使用するか、[CLI クエリコマンド](/cli-reference/query-commands)を使用してください。`rdk` のクエリは REST でも利用できます（[RDK モジュール](#rdk-module)を参照）。v3.2.2 より前は gRPC のみでした。
@@ -570,7 +600,7 @@ QoreChain Native のプレフィックスは `/cosmwasm/wasm/v1/...` です。`/
 
 IBC v2 クライアントのクエリサービスはこれまでも gRPC で提供されていましたが、REST ルートはありませんでした。v3.2.6 でこれらがマウントされます。リレイヤーは、ここからクライアントのカウンターパーティを読み取ります。どちらのルートもパスにクライアント ID を取ります（例: `07-<type>-0`）。空の ID は `400` で応答します。テストネットでは 2026年10月27日に、メインネットでは 2026年11月4日に確認:
 
-| ルート | テストネット（v3.2.6） | メインネット（v3.2.6） |
+| ルート | テストネット | メインネット（v3.2.6） |
 | --- | --- | --- |
 | `/ibc/core/client/v2/counterparty_info/{client_id}` | カウンターパーティとともに `200`。登録されていないクライアントには `404`（`client 07-<type>-0 counterparty not found`）。空の ID は `400` で応答 | 同じ形: カウンターパーティのないクライアントには `404`（`client 07-tendermint-0 counterparty not found`）（メインネットにはまだ IBC クライアントがありません） |
 | `/ibc/core/client/v2/config/{client_id}` | `200`、`{"config":{"allowed_relayers":[]}}`（空のリストは任意のリレイヤーを意味します） | `200`、`{"config":{"allowed_relayers":[]}}` |
@@ -618,7 +648,7 @@ grpcurl -plaintext localhost:9090 list
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` にはv3.2.3 のノードで `Account`、`EVMWindow`、`EVMDelegationConsent` の3つのメソッドがあり、v3.2.4 から（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）4つ目の `ProtocolFeatures` があります。`Params` メソッドは v3.2.6 で追加されます（テストネットでは 2026年10月27日から、メインネットでは 2026年11月4日から）。v3.2.6 より古いノードには `Params` メソッドはありません。
+`qorechain.pqc.v1.Query` にはv3.2.3 のノードで `Account`、`EVMWindow`、`EVMDelegationConsent` の3つのメソッドがあり、v3.2.4 から（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から）4つ目の `ProtocolFeatures` があります。`Params` メソッドは v3.2.6 で追加されます（テストネットでは 2026年10月27日から、メインネットでは 2026年11月4日から）。v3.2.6 より古いノードには `Params` メソッドはありません。v3.2.7 のテストネットでは、[PQC マルチシグとテキスト署名](#pqc-multisig-textual)で説明したマルチシグとテキストドキュメントのルートが追加されます。
 
 ## 認証
 

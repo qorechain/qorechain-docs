@@ -189,10 +189,10 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 // 0x0000000000000000000000000000000000000901
 ```
 
-> **Nu este activ pe mainnet; listat ca activ pe testnet.** Precompile-ul bridge
+> **Nu este activ pe mainnet; activ pe testnet.** Precompile-ul bridge
 > cross-VM nu se află în lista activă a mainnet-ului, deci un apel către `0x…0901`
 > acolo returnează date goale și nu rutează nimic. Lista testnet-ului îl conține
-> (citit la 7 noiembrie 2026); un apel prin el nu a fost testat. Vezi
+> (citit la 7 noiembrie 2026); pe 7 noiembrie 2026 un `eth_call` doar-citire către el a ajuns la un contract din lista permisă și a fost refuzat („is not allowlisted") pentru orice altă țintă. Vezi
 > [Precompile-uri EVM: Starea rețelei](/developer-guide/evm-precompiles#network-status).
 
 Odată activ, un contract Solidity (sau viem) apelează precompile-ul la acea adresă

@@ -53,8 +53,7 @@ se resuelve en v2 en ambas redes, porque ambas aplicaron la actualización que c
 
 El SDK 0.12.0 es la versión de cliente para la cadena **v3.2.5**, que la mainnet aplicó
 en la altura 3,906,833 el 29 de octubre de 2026 (la testnet la aplicó el 26 de octubre).
-Ambas redes ejecutan la v3.2.6 desde el 4 de noviembre (mainnet) y el 27 de octubre
-(testnet); el formato de firma híbrida, las direcciones, los decimales y los memos no
+La mainnet ejecuta la v3.2.6 desde el 4 de noviembre; la testnet ejecutó la v3.2.6 desde el 27 de octubre y la v3.2.7 desde el 6 de noviembre; el formato de firma híbrida, las direcciones, los decimales y los memos no
 cambiaron, así que una transacción construida con la 0.10.0 sigue siendo válida.
 TypeScript, Python, Go, Rust y Java pasan todos a la 0.12.0, junto con `@qorechain/react`,
 `@qorechain/evm`, `@qorechain/svm` y `create-qorechain-dapp`. La versión se comprobó
@@ -100,7 +99,7 @@ después de la v3.2.4; las novedades de la v3.2.5 llegaron con la
 [0.12.0](#whats-new-0120). La mainnet ejecuta la v3.2.6 desde el 4 de noviembre de 2026 (altura
 4,020,000, propuesta de gobernanza 15; antes la v3.2.5, desde el 29 de octubre en la altura
 3,906,833) y la 0.10.0 sigue funcionando allí porque el formato de firma no
-cambió. La testnet aplicó la v3.2.5 y la v3.2.6 el 26 y el 27 de octubre de 2026. Lo que trajo la 0.10.0
+cambió. La testnet aplicó la v3.2.5 y la v3.2.6 el 26 y el 27 de octubre de 2026 y la v3.2.7 el 6 de noviembre (ninguna versión del SDK tiene constructores para los mensajes de la v3.2.7). Lo que trajo la 0.10.0
 (todo sigue en la 0.12.0):
 
 | Área | En la 0.10.0 |
