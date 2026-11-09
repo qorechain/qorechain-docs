@@ -36,6 +36,7 @@ const sidebars: SidebarsConfig = {
         "getting-started/connecting-to-mainnet",
         "getting-started/connecting-to-testnet",
         "getting-started/first-transaction",
+        "getting-started/deploy-in-5-minutes",
       ],
     },
     {
