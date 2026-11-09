@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # 5분 만에 QoreChain에 배포하기
 
-이 페이지는 QoreChain을 한 번도 사용해 본 적 없는 Solidity 개발자를 위한 것입니다. Foundry 또는 Hardhat과 MetaMask 키를 그대로 사용합니다. 새로 생기는 것은 짧은 **승인 윈도우** 하나뿐입니다. QoreChain은 모든 계정을 포스트 퀀텀 키로 보호하는데, 이더리움 트랜잭션에는 이 키를 실을 수 없으므로 먼저 한도가 있는 윈도우를 열고, 윈도우가 열려 있는 동안 일반 EVM 트랜잭션이 받아들여집니다. 아래 단계는 실제 비용이 들지 않는 **테스트넷**(`qorechain-diana`, EVM 체인 ID 9800)을 기준으로 합니다.
+이 페이지는 QoreChain을 한 번도 사용해 본 적 없는 Solidity 개발자를 위한 것입니다. Foundry 또는 Hardhat과 MetaMask에서 사용하는 것과 같은 복구 문구를 그대로 사용합니다. 새로 생기는 것은 짧은 **승인 윈도우** 하나뿐입니다. QoreChain은 모든 계정을 포스트 퀀텀 키로 보호하는데, 이더리움 트랜잭션에는 이 키를 실을 수 없으므로 먼저 한도가 있는 윈도우를 열고, 윈도우가 열려 있는 동안 일반 EVM 트랜잭션이 받아들여집니다. 아래 단계는 실제 비용이 들지 않는 **테스트넷**(`qorechain-diana`, EVM 체인 ID 9800)을 기준으로 합니다.
 
 :::note
 이 경로는 테스트넷에서 실행해 확인했습니다. QoreX에서 윈도우를 연 다음, 같은 복구 문구로 Foundry `cast`를 사용해 컨트랙트를 생성하고 호출했습니다. `forge create`와 Hardhat도 같은 종류의 EVM 트랜잭션을 보내지만, 해당 실행에는 포함되지 않았습니다. `qorechaind` 명령줄에서 연 윈도우도 확인되었습니다. [대안: 명령줄](#cli)을 참고하세요.
@@ -15,13 +15,19 @@ sidebar_position: 6
 
 ## 필요한 것 {#what-you-need}
 
-- 배포에 사용할 MetaMask 계정과 그 복구 문구 또는 개인 키.
+- 배포에 사용할 계정의 복구 문구. QoreX는 원시 개인 키를 가져올 수 없습니다. 개인 키만 있다면 대신 [명령줄](#cli)을 사용하세요.
 - QoreChain 지갑인 [QoreX](/qorex/overview)(앱 또는 브라우저 확장 프로그램).
 - 이미 설치된 Foundry 또는 Hardhat.
 
-## 1. MetaMask 키를 coin 60 계정으로 QoreX에 가져오기 {#step-import}
+## 1. QoreX에 coin 60 계정 추가하기 {#step-import}
 
-QoreX 계정은 기본적으로 코인 타입 118을 사용합니다. coin 118 계정은 MetaMask와 키가 다르므로 어떤 MetaMask 트랜잭션도 그 계정에서 나올 수 없고, 그 계정에서 연 윈도우는 쓸모가 없습니다. QoreX에서 **내 계정**을 열고 **Ethereum 계정 추가(coin 60)**를 누르세요. 이 계정의 `0x…` 주소는 MetaMask에 표시되는 주소와 같으며, QoreChain의 `qor1…` 주소와 같은 키입니다. 한 문구의 첫 번째 Ethereum 계정이라면, 이 주소는 Foundry가 같은 문구에서 인덱스 0으로 도출하는 주소이기도 합니다. 이 계정은 별도의 주소를 가지므로, 다음 단계 전에 자금을 넣고 QoreX에서 선택해 두세요. [MetaMask 또는 대시보드에서 문구 복원하기](/qorex/getting-started#restore-dashboard)를 참고하세요.
+QoreX 계정은 기본적으로 코인 타입 118을 사용하며, coin 118 계정에서 연 윈도우는 EVM 도구에는 쓸모가 없습니다. **Ethereum 계정(coin 60)**이 필요합니다. QoreX에서 **내 계정**을 열고 **Ethereum 계정 추가(coin 60)**를 누르세요. QoreX는 지갑의 **자체 복구 문구**에서 Ethereum 경로 `m/44'/60'`으로 이 계정을 도출합니다. 이 계정의 `0x…` 주소는 MetaMask나 Foundry가 바로 그 같은 문구를 사용할 때에만 그곳의 주소와 같습니다(Foundry의 경우 도출 경로 `m/44'/60'/0'/0/0`, 인덱스 0). MetaMask 계정이 다른 문구에서 만들어졌다면 QoreX는 다른 주소를 표시하며, 그 주소에서 연 윈도우는 배포에 사용하는 키를 포괄하지 않습니다. `0x…` 주소는 QoreChain의 `qor1…` 주소와 같은 키입니다.
+
+이 계정은 별도의 주소를 가지므로, 다음 단계 전에 자금을 넣고 QoreX에서 선택해 두세요. [MetaMask 또는 대시보드에서 문구 복원하기](/qorex/getting-started#restore-dashboard)를 참고하세요.
+
+:::caution 운영용 문구를 개발 도구에 붙여넣지 마세요
+테스트용으로 만든 복구 문구와 테스트 QOR만 사용하세요. 실제 자금이 들어 있는 계정의 문구를 Foundry, Hardhat 또는 스크립트에 입력하지 마세요.
+:::
 
 ## 2. QoreX를 테스트넷으로 전환하기 {#step-testnet}
 
@@ -57,7 +63,7 @@ QoreX 계정은 기본적으로 코인 타입 118을 사용합니다. coin 118 �
 
 ## 5. Foundry 또는 Hardhat으로 배포하기 {#step-deploy}
 
-coin 60 계정과 **같은 자금이 있는 키**를 사용하세요. QoreX는 Foundry 서명자로 동작할 수 없으므로, Foundry 또는 Hardhat에 개인 키(또는 `--mnemonic`과 함께 문구)를 제공합니다. 네트워크 설정은 다음과 같습니다.
+**자금이 있는 같은 coin 60 계정**의 키를 사용하세요. QoreX는 Foundry 서명자로 동작할 수 없으므로, Foundry 또는 Hardhat에 같은 복구 문구에서 나온 키를 제공합니다(예: Foundry에서 인덱스 0과 함께 `--mnemonic` 사용). 네트워크 설정은 다음과 같습니다.
 
 | 설정 | 값 |
 |---|---|
@@ -111,11 +117,21 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 ## 대안: 명령줄 {#cli}
 
-`qorechaind` 릴리스 바이너리가 있으면 QoreX 없이도 1단계, 4단계, 그리고 포스트 퀀텀 키 등록을 할 수 있습니다. 전체 명령어(키 가져오기, `tx pqc register-key-v2`, `tx pqc open-evm-window`, `tx pqc cosign`)는 [EVM 개발](/developer-guide/evm-development)과 [EVM 승인 윈도우](/developer-guide/evm-development#evm-window) 섹션에 있습니다. 이렇게 연 윈도우에 이어 `cast`로 보낸 트랜잭션은 테스트넷에서 확인되었습니다.
+`qorechaind` 릴리스 바이너리가 있으면 QoreX 없이도 원시 개인 키를 가져오고, 그 포스트 퀀텀 키를 등록하고, 윈도우를 열 수 있습니다. 개인 키만 가진 개발자를 위한 경로입니다. `gen-key`와 `cosign`은 커뮤니티 빌드에 없으므로 릴리스 바이너리가 필요합니다. 윈도우 규칙은 [EVM 개발](/developer-guide/evm-development)의 [EVM 승인 윈도우](/developer-guide/evm-development#evm-window) 섹션에 있습니다. 이렇게 연 윈도우에 이어 `cast`로 보낸 트랜잭션은 테스트넷에서 확인되었습니다.
 
 ```bash
 export QNODE=https://rpc-testnet.qore.host:443
 export QCHAIN=qorechain-diana
+
+# import the private key as an eth_secp256k1 key: the qor1... and 0x... addresses are one account
+qorechaind keys import-hex deployer <private-key-hex-without-0x> --key-type eth_secp256k1
+
+# register a post-quantum key once per account (back up the .dilithium file)
+qorechaind tx pqc gen-key deployer-mldsa
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key deployer-mldsa \
+  --from deployer --chain-id $QCHAIN --node $QNODE --gas auto --gas-adjustment 1.3 --gas-prices 0.2uqor
+
+# open the window
 
 qorechaind tx pqc open-evm-window 3000 20 10qor --from deployer \
   --chain-id $QCHAIN --node $QNODE --gas 400000 --fees 80000uqor --generate-only > window.json

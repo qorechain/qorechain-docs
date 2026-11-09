@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # QoreChain'de 5 Dakikada Dağıtım
 
-Bu sayfa, QoreChain'i daha önce hiç kullanmamış bir Solidity geliştiricisi içindir. Foundry veya Hardhat'i ve MetaMask anahtarınızı olduğu gibi kullanmaya devam edersiniz. Tek yeni şey kısa bir **yetkilendirme penceresidir**: QoreChain her hesabı bir kuantum sonrası anahtarla korur, bir Ethereum işlemi böyle bir anahtarı taşıyamaz; bu yüzden önce sınırlı bir pencere açarsınız ve pencere açıkken normal EVM işlemleriniz kabul edilir. Aşağıdaki adımlar, hiçbir şeyin gerçek paraya mal olmadığı **test ağını** (`qorechain-diana`, EVM zincir kimliği 9800) kullanır.
+Bu sayfa, QoreChain'i daha önce hiç kullanmamış bir Solidity geliştiricisi içindir. Foundry veya Hardhat'i ve MetaMask için kullandığınız aynı kurtarma ifadesini olduğu gibi kullanmaya devam edersiniz. Tek yeni şey kısa bir **yetkilendirme penceresidir**: QoreChain her hesabı bir kuantum sonrası anahtarla korur, bir Ethereum işlemi böyle bir anahtarı taşıyamaz; bu yüzden önce sınırlı bir pencere açarsınız ve pencere açıkken normal EVM işlemleriniz kabul edilir. Aşağıdaki adımlar, hiçbir şeyin gerçek paraya mal olmadığı **test ağını** (`qorechain-diana`, EVM zincir kimliği 9800) kullanır.
 
 :::note
 Bu yol test ağında denendi: QoreX'te bir pencere açıldı, ardından aynı kurtarma ifadesinden Foundry `cast` ile bir sözleşme oluşturuldu ve çağrıldı. `forge create` ve Hardhat aynı türden bir EVM işlemi gönderir, ancak o denemenin parçası değildi. `qorechaind` komut satırından açılan bir pencere de doğrulanmıştır; bkz. [Alternatif: komut satırı](#cli).
@@ -15,13 +15,19 @@ Bu yol test ağında denendi: QoreX'te bir pencere açıldı, ardından aynı ku
 
 ## Neye ihtiyacınız var {#what-you-need}
 
-- Dağıtım yapmak istediğiniz bir MetaMask hesabı ve onun kurtarma ifadesi veya özel anahtarı.
+- Dağıtım yapmak istediğiniz hesabın kurtarma ifadesi. QoreX ham bir özel anahtarı içe aktaramaz. Yalnızca bir özel anahtarınız varsa bunun yerine [komut satırını](#cli) kullanın.
 - QoreChain cüzdanı [QoreX](/qorex/overview) (uygulama veya tarayıcı eklentisi).
 - Önceden kurulu Foundry veya Hardhat.
 
-## 1. MetaMask anahtarınızı QoreX'e coin-60 hesabı olarak aktarın {#step-import}
+## 1. QoreX'e bir coin-60 hesabı ekleyin {#step-import}
 
-QoreX hesapları varsayılan olarak coin türü 118'i kullanır. Coin-118 hesabının anahtarı MetaMask'inkinden farklıdır; bu yüzden hiçbir MetaMask işlemi ondan gelemez ve üzerinde açılan bir pencere işe yaramaz. QoreX'te **Hesaplarınız** bölümünü açın ve **Ethereum hesabı ekle (coin 60)** düğmesine dokunun. Onun `0x…` adresi MetaMask'in gösterdiği adrestir ve QoreChain'deki bir `qor1…` adresiyle aynı anahtardır. Bir ifadenin ilk Ethereum hesabı için bu, Foundry'nin aynı ifadeden 0 dizininde türettiği adrestir de. Hesabın kendi adresi vardır; bu yüzden sonraki adımlardan önce onu fonlayın ve QoreX'te seçin. Bkz. [MetaMask'ten veya Dashboard'dan bir ifadeyi geri yükleyin](/qorex/getting-started#restore-dashboard).
+QoreX hesapları varsayılan olarak coin türü 118'i kullanır ve coin-118 hesabında açılan bir pencere EVM araçları için işe yaramaz. Bir **Ethereum hesabına (coin 60)** ihtiyacınız var. QoreX'te **Hesaplarınız** bölümünü açın ve **Ethereum hesabı ekle (coin 60)** düğmesine dokunun. QoreX bu hesabı, cüzdanın **kendi kurtarma ifadesinden** `m/44'/60'` Ethereum yoluyla türetir. Onun `0x…` adresi, MetaMask veya Foundry'deki adresle yalnızca onlar da aynı ifadeyi kullandığında aynıdır (Foundry için türetme yolu `m/44'/60'/0'/0/0`, dizin 0). MetaMask hesabınız farklı bir ifadeden geliyorsa QoreX farklı bir adres gösterir ve orada açılan bir pencere dağıtımda kullandığınız anahtarı kapsamaz. `0x…` adresi, QoreChain'deki bir `qor1…` adresiyle aynı anahtardır.
+
+Hesabın kendi adresi vardır; bu yüzden sonraki adımlardan önce onu fonlayın ve QoreX'te seçin. Bkz. [MetaMask'ten veya Dashboard'dan bir ifadeyi geri yükleyin](/qorex/getting-started#restore-dashboard).
+
+:::caution Üretim ifadesini asla geliştirme araçlarına yapıştırmayın
+Test için oluşturulmuş, yalnızca test QOR'u olan bir kurtarma ifadesi kullanın. Gerçek fon tutan bir hesabın ifadesini Foundry'ye, Hardhat'e veya bir betiğe yazmayın.
+:::
 
 ## 2. QoreX'i test ağına geçirin {#step-testnet}
 
@@ -57,7 +63,7 @@ Pencere açmak hesap nonce'unu ilerletir. Dağıtımdan **önce** açın: daha �
 
 ## 5. Foundry veya Hardhat ile dağıtın {#step-deploy}
 
-Coin-60 hesabıyla **aynı fonlu anahtarı** kullanın; QoreX bir Foundry imzalayıcısı olarak çalışamaz, bu yüzden Foundry'ye veya Hardhat'e özel anahtarı (ya da `--mnemonic` ile ifadeyi) verin. Ağ ayarları:
+**Aynı fonlu coin-60 hesabının** anahtarını kullanın. QoreX bir Foundry imzalayıcısı olarak çalışamaz, bu yüzden Foundry'ye veya Hardhat'e aynı kurtarma ifadesinden gelen anahtarı verin; örneğin Foundry'de 0 dizini ile `--mnemonic`. Ağ ayarları:
 
 | Ayar | Değer |
 |---|---|
@@ -111,11 +117,21 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 ## Alternatif: komut satırı {#cli}
 
-`qorechaind` sürüm ikili dosyasıyla 1. ve 4. adımları ve kuantum sonrası anahtar kaydını QoreX olmadan yapabilirsiniz. Tam komutlar (anahtar aktarımı, `tx pqc register-key-v2`, `tx pqc open-evm-window`, `tx pqc cosign`) [EVM Geliştirme](/developer-guide/evm-development) sayfasında ve [EVM yetkilendirme penceresi](/developer-guide/evm-development#evm-window) bölümündedir. Bu şekilde açılan bir pencere ve ardından `cast` ile gönderilen bir işlem test ağında doğrulanmıştır.
+`qorechaind` sürüm ikili dosyasıyla QoreX olmadan ham bir özel anahtarı içe aktarabilir, onun kuantum sonrası anahtarını kaydedebilir ve pencereyi açabilirsiniz. Bu, yalnızca bir özel anahtarı olan geliştirici için izlenecek yoldur. `gen-key` ve `cosign` topluluk derlemesinde yoktur; bu yüzden sürüm ikili dosyası gerekir. Pencere kuralları, [EVM Geliştirme](/developer-guide/evm-development) sayfasının [EVM yetkilendirme penceresi](/developer-guide/evm-development#evm-window) bölümündedir. Bu şekilde açılan bir pencere ve ardından `cast` ile gönderilen bir işlem test ağında doğrulanmıştır.
 
 ```bash
 export QNODE=https://rpc-testnet.qore.host:443
 export QCHAIN=qorechain-diana
+
+# import the private key as an eth_secp256k1 key: the qor1... and 0x... addresses are one account
+qorechaind keys import-hex deployer <private-key-hex-without-0x> --key-type eth_secp256k1
+
+# register a post-quantum key once per account (back up the .dilithium file)
+qorechaind tx pqc gen-key deployer-mldsa
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key deployer-mldsa \
+  --from deployer --chain-id $QCHAIN --node $QNODE --gas auto --gas-adjustment 1.3 --gas-prices 0.2uqor
+
+# open the window
 
 qorechaind tx pqc open-evm-window 3000 20 10qor --from deployer \
   --chain-id $QCHAIN --node $QNODE --gas 400000 --fees 80000uqor --generate-only > window.json

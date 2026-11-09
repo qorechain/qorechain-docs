@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # QoreChainに5分でデプロイ
 
-このページは、QoreChainを一度も使ったことのないSolidity開発者向けです。FoundryまたはHardhat、そしてMetaMaskの鍵はそのまま使えます。新しく必要になるのは、短い**承認ウィンドウ**だけです。QoreChainはすべてのアカウントをポスト量子鍵で保護しますが、Ethereumトランザクションにはそれを載せられません。そのため、まず上限付きのウィンドウを開き、それが開いている間は通常のEVMトランザクションが受け付けられます。以下の手順は**テストネット**(`qorechain-diana`、EVMチェーンID 9800)を使用しており、実際のお金はかかりません。
+このページは、QoreChainを一度も使ったことのないSolidity開発者向けです。FoundryまたはHardhat、そしてMetaMaskで使っているのと同じリカバリーフレーズはそのまま使えます。新しく必要になるのは、短い**承認ウィンドウ**だけです。QoreChainはすべてのアカウントをポスト量子鍵で保護しますが、Ethereumトランザクションにはそれを載せられません。そのため、まず上限付きのウィンドウを開き、それが開いている間は通常のEVMトランザクションが受け付けられます。以下の手順は**テストネット**(`qorechain-diana`、EVMチェーンID 9800)を使用しており、実際のお金はかかりません。
 
 :::note
 この手順はテストネットで実行されています。QoreXでウィンドウを開き、同じリカバリーフレーズからFoundryの`cast`でコントラクトを作成して呼び出しました。`forge create`とHardhatも同じ種類のEVMトランザクションを送信しますが、この実行には含まれていません。`qorechaind`のコマンドラインからウィンドウを開く方法も確認済みです。[代替手段: コマンドライン](#cli)を参照してください。
@@ -15,13 +15,19 @@ sidebar_position: 6
 
 ## 必要なもの {#what-you-need}
 
-- デプロイに使いたいMetaMaskアカウントと、そのリカバリーフレーズまたは秘密鍵。
+- デプロイに使いたいアカウントのリカバリーフレーズ。QoreXは生の秘密鍵をインポートできません。秘密鍵しかない場合は、代わりに[コマンドライン](#cli)を使用してください。
 - QoreChainのウォレットである[QoreX](/qorex/overview)(アプリまたはブラウザ拡張機能)。
 - インストール済みのFoundryまたはHardhat。
 
-## 1. MetaMaskの鍵をcoin-60アカウントとしてQoreXにインポートする {#step-import}
+## 1. QoreXにcoin-60アカウントを追加する {#step-import}
 
-QoreXのアカウントは、デフォルトでcoin type 118です。coin-118アカウントはMetaMaskとは異なる鍵を持つため、MetaMaskのトランザクションはそこから送信できず、そのアカウントで開いたウィンドウは役に立ちません。QoreXで**アカウント**を開き、**Ethereumアカウントを追加(coin 60)**をタップします。その`0x…`アドレスはMetaMaskに表示されるものと同じで、QoreChain上の`qor1…`アドレスと同じ鍵です。フレーズの最初のEthereumアカウントの場合、これはFoundryが同じフレーズからインデックス0で導出するアドレスでもあります。このアカウントには独自のアドレスがあるため、次の手順の前に資金を入れ、QoreXで選択してください。[MetaMaskまたはDashboardからフレーズを復元する](/qorex/getting-started#restore-dashboard)を参照してください。
+QoreXのアカウントは、デフォルトでcoin type 118であり、coin-118アカウントで開いたウィンドウはEVMツールには役に立ちません。必要なのは**Ethereumアカウント(coin 60)**です。QoreXで**アカウント**を開き、**Ethereumアカウントを追加(coin 60)**をタップします。QoreXは、ウォレット**自身のリカバリーフレーズ**からEthereumパス`m/44'/60'`で導出します。その`0x…`アドレスがMetaMaskやFoundryと同じになるのは、それらが同じフレーズを使っている場合に限られます(Foundryの場合は、導出パス`m/44'/60'/0'/0/0`、インデックス0)。MetaMaskのアカウントが別のフレーズに由来する場合、QoreXには別のアドレスが表示され、そこで開いたウィンドウはデプロイに使う鍵をカバーしません。`0x…`アドレスは、QoreChain上の`qor1…`アドレスと同じ鍵です。
+
+このアカウントには独自のアドレスがあるため、次の手順の前に資金を入れ、QoreXで選択してください。[MetaMaskまたはDashboardからフレーズを復元する](/qorex/getting-started#restore-dashboard)を参照してください。
+
+:::caution 本番のフレーズを開発ツールに貼り付けない
+テスト用に作成したリカバリーフレーズを使い、テスト用のQORのみを入れてください。実際の資金があるアカウントのフレーズを、Foundry、Hardhat、スクリプトに入力しないでください。
+:::
 
 ## 2. QoreXをテストネットに切り替える {#step-testnet}
 
@@ -57,7 +63,7 @@ QoreXのアカウントは、デフォルトでcoin type 118です。coin-118ア
 
 ## 5. FoundryまたはHardhatでデプロイする {#step-deploy}
 
-coin-60アカウントと**同じ資金入りの鍵**を使用してください。QoreXはFoundryの署名者としては動作しないため、FoundryまたはHardhatには秘密鍵(または`--mnemonic`付きのフレーズ)を渡します。ネットワークの設定は次のとおりです。
+**同じ資金入りのcoin-60アカウント**の鍵を使用してください。QoreXはFoundryの署名者としては動作しないため、FoundryまたはHardhatには同じリカバリーフレーズから得た鍵を渡します。たとえばFoundryでは、インデックス0で`--mnemonic`を使います。ネットワークの設定は次のとおりです。
 
 | 設定 | 値 |
 |---|---|
@@ -111,11 +117,21 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 ## 代替手段: コマンドライン {#cli}
 
-`qorechaind`のリリースバイナリがあれば、QoreXなしで手順1、4、およびポスト量子鍵の登録を行えます。完全なコマンド(鍵のインポート、`tx pqc register-key-v2`、`tx pqc open-evm-window`、`tx pqc cosign`)は、[EVM開発](/developer-guide/evm-development)と[EVM承認ウィンドウ](/developer-guide/evm-development#evm-window)のセクションにあります。この方法で開いたウィンドウの後に`cast`でトランザクションを送信する流れは、テストネットで確認済みです。
+`qorechaind`のリリースバイナリがあれば、QoreXなしで、生の秘密鍵のインポート、そのポスト量子鍵の登録、ウィンドウを開くことまで行えます。これは秘密鍵しか持っていない開発者向けの方法です。`gen-key`と`cosign`はコミュニティビルドには含まれないため、リリースバイナリが必要です。ウィンドウのルールは、[EVM開発](/developer-guide/evm-development)の[EVM承認ウィンドウ](/developer-guide/evm-development#evm-window)のセクションにあります。この方法で開いたウィンドウの後に`cast`でトランザクションを送信する流れは、テストネットで確認済みです。
 
 ```bash
 export QNODE=https://rpc-testnet.qore.host:443
 export QCHAIN=qorechain-diana
+
+# import the private key as an eth_secp256k1 key: the qor1... and 0x... addresses are one account
+qorechaind keys import-hex deployer <private-key-hex-without-0x> --key-type eth_secp256k1
+
+# register a post-quantum key once per account (back up the .dilithium file)
+qorechaind tx pqc gen-key deployer-mldsa
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key deployer-mldsa \
+  --from deployer --chain-id $QCHAIN --node $QNODE --gas auto --gas-adjustment 1.3 --gas-prices 0.2uqor
+
+# open the window
 
 qorechaind tx pqc open-evm-window 3000 20 10qor --from deployer \
   --chain-id $QCHAIN --node $QNODE --gas 400000 --fees 80000uqor --generate-only > window.json

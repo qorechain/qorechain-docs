@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Déployer sur QoreChain en 5 minutes
 
-Cette page s'adresse à un développeur Solidity qui n'a jamais utilisé QoreChain. Vous gardez Foundry ou Hardhat et votre clé MetaMask. Une seule chose est nouvelle : une courte **fenêtre d'autorisation**. QoreChain protège chaque compte avec une clé post-quantique, une transaction Ethereum ne peut pas en porter une ; vous ouvrez donc d'abord une fenêtre bornée, et vos transactions EVM habituelles sont admises tant qu'elle est ouverte. Les étapes ci-dessous utilisent le **testnet** (`qorechain-diana`, chain ID EVM 9800), où rien ne coûte de l'argent réel.
+Cette page s'adresse à un développeur Solidity qui n'a jamais utilisé QoreChain. Vous gardez Foundry ou Hardhat et la même phrase de récupération que vous utilisez pour MetaMask. Une seule chose est nouvelle : une courte **fenêtre d'autorisation**. QoreChain protège chaque compte avec une clé post-quantique, une transaction Ethereum ne peut pas en porter une ; vous ouvrez donc d'abord une fenêtre bornée, et vos transactions EVM habituelles sont admises tant qu'elle est ouverte. Les étapes ci-dessous utilisent le **testnet** (`qorechain-diana`, chain ID EVM 9800), où rien ne coûte de l'argent réel.
 
 :::note
 Ce parcours a été exécuté sur le testnet : une fenêtre ouverte dans QoreX, puis un contrat créé et appelé avec Foundry `cast` à partir de la même phrase de récupération. `forge create` et Hardhat envoient le même type de transaction EVM, mais ils n'ont pas fait partie de cette exécution. Une fenêtre ouverte depuis la ligne de commande `qorechaind` est également confirmée ; voir [Alternative : la ligne de commande](#cli).
@@ -15,13 +15,19 @@ Ce parcours a été exécuté sur le testnet : une fenêtre ouverte dans QoreX, 
 
 ## Ce dont vous avez besoin {#what-you-need}
 
-- Un compte MetaMask depuis lequel vous voulez déployer, avec sa phrase de récupération ou sa clé privée.
+- La phrase de récupération du compte depuis lequel vous voulez déployer. QoreX ne peut pas importer une clé privée brute. Si vous n'avez qu'une clé privée, utilisez plutôt la [ligne de commande](#cli).
 - [QoreX](/qorex/overview), le wallet QoreChain (application ou extension de navigateur).
 - Foundry ou Hardhat déjà installé.
 
-## 1. Importez votre clé MetaMask dans QoreX comme compte coin 60 {#step-import}
+## 1. Ajoutez un compte coin 60 à QoreX {#step-import}
 
-Les comptes QoreX utilisent par défaut le coin type 118. Un compte coin 118 a une clé différente de celle de MetaMask : aucune transaction MetaMask ne peut donc en provenir, et une fenêtre ouverte sur ce compte est inutile. Dans QoreX, ouvrez **Vos comptes** et appuyez sur **Ajouter un compte Ethereum (coin 60)**. Son adresse `0x…` est celle que MetaMask affiche, et c'est la même clé qu'une adresse `qor1…` sur QoreChain. Pour le premier compte Ethereum d'une phrase, c'est aussi l'adresse que Foundry dérive de la même phrase à l'index 0. Le compte a sa propre adresse : alimentez-le et sélectionnez-le dans QoreX avant les étapes suivantes. Voir [Restaurer une phrase depuis MetaMask ou le Dashboard](/qorex/getting-started#restore-dashboard).
+Les comptes QoreX utilisent par défaut le coin type 118, et une fenêtre ouverte sur un compte coin 118 est inutile pour les outils EVM. Il vous faut un **compte Ethereum (coin 60)**. Dans QoreX, ouvrez **Vos comptes** et appuyez sur **Ajouter un compte Ethereum (coin 60)**. QoreX le dérive de la **propre phrase de récupération** du wallet avec le chemin Ethereum `m/44'/60'`. Son adresse `0x…` est la même que dans MetaMask ou Foundry uniquement s'ils utilisent cette même phrase (pour Foundry, chemin de dérivation `m/44'/60'/0'/0/0`, index 0). Si votre compte MetaMask provient d'une autre phrase, QoreX affiche une adresse différente, et une fenêtre ouverte là ne couvre pas la clé avec laquelle vous déployez. L'adresse `0x…` est la même clé qu'une adresse `qor1…` sur QoreChain.
+
+Le compte a sa propre adresse : alimentez-le et sélectionnez-le dans QoreX avant les étapes suivantes. Voir [Restaurer une phrase depuis MetaMask ou le Dashboard](/qorex/getting-started#restore-dashboard).
+
+:::caution Ne collez jamais une phrase de production dans des outils de développement
+Utilisez une phrase de récupération créée pour les tests, avec uniquement des QOR de test. Ne saisissez pas la phrase d'un compte qui détient des fonds réels dans Foundry, Hardhat ou un script.
+:::
 
 ## 2. Passez QoreX sur le testnet {#step-testnet}
 
@@ -57,7 +63,7 @@ L'ouverture d'une fenêtre fait avancer le nonce du compte. Ouvrez-la **avant** 
 
 ## 5. Déployez avec Foundry ou Hardhat {#step-deploy}
 
-Utilisez la **même clé alimentée** que le compte coin 60 ; QoreX ne peut pas servir de signataire à Foundry, donnez donc à Foundry ou à Hardhat la clé privée (ou la phrase avec `--mnemonic`). Les paramètres réseau :
+Utilisez la clé du **même compte coin 60 alimenté**. QoreX ne peut pas servir de signataire à Foundry : donnez donc à Foundry ou à Hardhat la clé issue de la même phrase de récupération, par exemple `--mnemonic` avec l'index 0 dans Foundry. Les paramètres réseau :
 
 | Paramètre | Valeur |
 |---|---|
@@ -111,11 +117,21 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 ## Alternative : la ligne de commande {#cli}
 
-Avec le binaire de version `qorechaind`, vous pouvez effectuer les étapes 1 et 4 ainsi que l'enregistrement de la clé post-quantique sans QoreX. Les commandes complètes (import de clé, `tx pqc register-key-v2`, `tx pqc open-evm-window`, `tx pqc cosign`) se trouvent dans [Développement EVM](/developer-guide/evm-development) et dans la section [Fenêtre d'autorisation EVM](/developer-guide/evm-development#evm-window). Une fenêtre ouverte de cette façon, suivie d'une transaction envoyée avec `cast`, est confirmée sur le testnet.
+Avec le binaire de version `qorechaind`, vous pouvez importer une clé privée brute, enregistrer sa clé post-quantique et ouvrir la fenêtre sans QoreX. C'est la voie pour un développeur qui n'a qu'une clé privée. `gen-key` et `cosign` ne sont pas dans un build communautaire : il faut donc le binaire de version. Les règles de la fenêtre se trouvent dans la section [Fenêtre d'autorisation EVM](/developer-guide/evm-development#evm-window) de [Développement EVM](/developer-guide/evm-development). Une fenêtre ouverte de cette façon, suivie d'une transaction envoyée avec `cast`, est confirmée sur le testnet.
 
 ```bash
 export QNODE=https://rpc-testnet.qore.host:443
 export QCHAIN=qorechain-diana
+
+# import the private key as an eth_secp256k1 key: the qor1... and 0x... addresses are one account
+qorechaind keys import-hex deployer <private-key-hex-without-0x> --key-type eth_secp256k1
+
+# register a post-quantum key once per account (back up the .dilithium file)
+qorechaind tx pqc gen-key deployer-mldsa
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key deployer-mldsa \
+  --from deployer --chain-id $QCHAIN --node $QNODE --gas auto --gas-adjustment 1.3 --gas-prices 0.2uqor
+
+# open the window
 
 qorechaind tx pqc open-evm-window 3000 20 10qor --from deployer \
   --chain-id $QCHAIN --node $QNODE --gas 400000 --fees 80000uqor --generate-only > window.json

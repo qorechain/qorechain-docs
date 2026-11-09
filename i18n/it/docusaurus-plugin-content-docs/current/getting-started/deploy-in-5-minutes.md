@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Distribuisci su QoreChain in 5 minuti
 
-Questa pagina è per uno sviluppatore Solidity che non ha mai usato QoreChain. Continui a usare Foundry o Hardhat e la tua chiave MetaMask. L'unica novità è una breve **finestra di autorizzazione**: QoreChain protegge ogni account con una chiave post-quantistica, una transazione Ethereum non può portarne una, quindi prima apri una finestra limitata e le tue normali transazioni EVM vengono ammesse finché è aperta. I passaggi seguenti usano la **testnet** (`qorechain-diana`, EVM chain ID 9800), dove nulla costa denaro reale.
+Questa pagina è per uno sviluppatore Solidity che non ha mai usato QoreChain. Continui a usare Foundry o Hardhat e la stessa frase di recupero che usi per MetaMask. L'unica novità è una breve **finestra di autorizzazione**: QoreChain protegge ogni account con una chiave post-quantistica, una transazione Ethereum non può portarne una, quindi prima apri una finestra limitata e le tue normali transazioni EVM vengono ammesse finché è aperta. I passaggi seguenti usano la **testnet** (`qorechain-diana`, EVM chain ID 9800), dove nulla costa denaro reale.
 
 :::note
 Questo percorso è stato eseguito sulla testnet: una finestra aperta in QoreX, poi un contratto creato e chiamato con Foundry `cast` dalla stessa frase di recupero. `forge create` e Hardhat inviano lo stesso tipo di transazione EVM, ma non facevano parte di quell'esecuzione. Anche una finestra aperta dalla riga di comando `qorechaind` è confermata; vedi [Alternativa: la riga di comando](#cli).
@@ -15,13 +15,19 @@ Questo percorso è stato eseguito sulla testnet: una finestra aperta in QoreX, p
 
 ## Cosa ti serve {#what-you-need}
 
-- Un account MetaMask da cui vuoi distribuire, con la sua frase di recupero o chiave privata.
+- La frase di recupero dell'account da cui vuoi distribuire. QoreX non può importare una chiave privata grezza. Se hai solo una chiave privata, usa invece la [riga di comando](#cli).
 - [QoreX](/qorex/overview), il wallet di QoreChain (app o estensione per browser).
 - Foundry o Hardhat già installato.
 
-## 1. Importa la tua chiave MetaMask in QoreX come account coin 60 {#step-import}
+## 1. Aggiungi un account coin 60 a QoreX {#step-import}
 
-Gli account QoreX usano per impostazione predefinita il coin type 118. Un account coin 118 ha una chiave diversa da quella di MetaMask, quindi nessuna transazione di MetaMask può provenire da esso e una finestra aperta su di esso è inutile. In QoreX apri **Your accounts** e tocca **Add an Ethereum account (coin 60)**. Il suo indirizzo `0x…` è quello che mostra MetaMask, ed è la stessa chiave di un indirizzo `qor1…` su QoreChain. Per il primo account Ethereum di una frase, è anche l'indirizzo che Foundry deriva dalla stessa frase all'indice 0. L'account ha un proprio indirizzo, quindi finanzialo e selezionalo in QoreX prima dei passaggi successivi. Vedi [Ripristinare una frase da MetaMask o dalla Dashboard](/qorex/getting-started#restore-dashboard).
+Gli account QoreX usano per impostazione predefinita il coin type 118, e una finestra aperta su un account coin 118 è inutile per gli strumenti EVM. Ti serve un **account Ethereum (coin 60)**. In QoreX apri **Your accounts** e tocca **Add an Ethereum account (coin 60)**. QoreX lo deriva dalla **frase di recupero propria** del wallet con il percorso Ethereum `m/44'/60'`. Il suo indirizzo `0x…` è uguale a quello di MetaMask o Foundry solo se usano quella stessa frase (per Foundry, percorso di derivazione `m/44'/60'/0'/0/0`, indice 0). Se il tuo account MetaMask proviene da un'altra frase, QoreX mostra un indirizzo diverso, e una finestra aperta lì non copre la chiave con cui distribuisci. L'indirizzo `0x…` è la stessa chiave di un indirizzo `qor1…` su QoreChain.
+
+L'account ha un proprio indirizzo, quindi finanzialo e selezionalo in QoreX prima dei passaggi successivi. Vedi [Ripristinare una frase da MetaMask o dalla Dashboard](/qorex/getting-started#restore-dashboard).
+
+:::caution Non incollare mai una frase di produzione negli strumenti di sviluppo
+Usa una frase di recupero creata per i test, con solo QOR di test. Non digitare in Foundry, Hardhat o in uno script la frase di un account che contiene fondi reali.
+:::
 
 ## 2. Passa QoreX alla testnet {#step-testnet}
 
@@ -57,7 +63,7 @@ L'apertura di una finestra fa avanzare il nonce dell'account. Aprila **prima** d
 
 ## 5. Distribuisci con Foundry o Hardhat {#step-deploy}
 
-Usa la **stessa chiave finanziata** dell'account coin 60; QoreX non può fare da firmatario per Foundry, quindi dai a Foundry o Hardhat la chiave privata (o la frase con `--mnemonic`). Le impostazioni di rete:
+Usa la chiave dello **stesso account coin 60 finanziato**. QoreX non può fare da firmatario per Foundry, quindi dai a Foundry o Hardhat la chiave della stessa frase di recupero, ad esempio `--mnemonic` con indice 0 in Foundry. Le impostazioni di rete:
 
 | Impostazione | Valore |
 |---|---|
@@ -111,11 +117,21 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 ## Alternativa: la riga di comando {#cli}
 
-Con il binario di release `qorechaind` puoi eseguire i passaggi 1, 4 e la registrazione della chiave post-quantistica senza QoreX. I comandi completi (importazione della chiave, `tx pqc register-key-v2`, `tx pqc open-evm-window`, `tx pqc cosign`) si trovano in [Sviluppo EVM](/developer-guide/evm-development) e nella sezione [Finestra di autorizzazione EVM](/developer-guide/evm-development#evm-window). Una finestra aperta in questo modo, seguita da una transazione inviata con `cast`, è confermata sulla testnet.
+Con il binario di release `qorechaind` puoi importare una chiave privata grezza, registrarne la chiave post-quantistica e aprire la finestra senza QoreX. Questa è la strada per uno sviluppatore che ha solo una chiave privata. `gen-key` e `cosign` non sono in una build della community, quindi serve il binario di release. Le regole della finestra sono nella sezione [Finestra di autorizzazione EVM](/developer-guide/evm-development#evm-window) di [Sviluppo EVM](/developer-guide/evm-development). Una finestra aperta in questo modo, seguita da una transazione inviata con `cast`, è confermata sulla testnet.
 
 ```bash
 export QNODE=https://rpc-testnet.qore.host:443
 export QCHAIN=qorechain-diana
+
+# import the private key as an eth_secp256k1 key: the qor1... and 0x... addresses are one account
+qorechaind keys import-hex deployer <private-key-hex-without-0x> --key-type eth_secp256k1
+
+# register a post-quantum key once per account (back up the .dilithium file)
+qorechaind tx pqc gen-key deployer-mldsa
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key deployer-mldsa \
+  --from deployer --chain-id $QCHAIN --node $QNODE --gas auto --gas-adjustment 1.3 --gas-prices 0.2uqor
+
+# open the window
 
 qorechaind tx pqc open-evm-window 3000 20 10qor --from deployer \
   --chain-id $QCHAIN --node $QNODE --gas 400000 --fees 80000uqor --generate-only > window.json

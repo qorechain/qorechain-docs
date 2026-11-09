@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Deploy on QoreChain in 5 Minutes
 
-This page is for a Solidity developer who has never used QoreChain. You keep Foundry or Hardhat and your MetaMask key. The one new thing is a short **authorisation window**: QoreChain protects every account with a post-quantum key, an Ethereum transaction cannot carry one, so you open a bounded window first and your normal EVM transactions are admitted while it is open. The steps below use the **testnet** (`qorechain-diana`, EVM chain ID 9800), where nothing costs real money.
+This page is for a Solidity developer who has never used QoreChain. You keep Foundry or Hardhat and the same recovery phrase you use for MetaMask. The one new thing is a short **authorisation window**: QoreChain protects every account with a post-quantum key, an Ethereum transaction cannot carry one, so you open a bounded window first and your normal EVM transactions are admitted while it is open. The steps below use the **testnet** (`qorechain-diana`, EVM chain ID 9800), where nothing costs real money.
 
 :::note
 This path was run on the testnet: a window opened in QoreX, then a contract created and called with Foundry `cast` from the same recovery phrase. `forge create` and Hardhat send the same kind of EVM transaction, but they were not part of that run. A window opened from the `qorechaind` command line is also confirmed; see [Alternative: the command line](#cli).
@@ -15,13 +15,19 @@ This path was run on the testnet: a window opened in QoreX, then a contract crea
 
 ## What you need {#what-you-need}
 
-- A MetaMask account you want to deploy from, with its recovery phrase or private key.
+- The recovery phrase of the account you want to deploy from. QoreX cannot import a raw private key. If you only have a private key, use the [command line](#cli) instead.
 - [QoreX](/qorex/overview), the QoreChain wallet (app or browser extension).
 - Foundry or Hardhat already installed.
 
-## 1. Import your MetaMask key into QoreX as a coin-60 account {#step-import}
+## 1. Add a coin-60 account to QoreX {#step-import}
 
-QoreX accounts default to coin type 118. A coin-118 account has a different key from MetaMask, so no MetaMask transaction can come from it and a window opened on it is useless. In QoreX open **Your accounts** and tap **Add an Ethereum account (coin 60)**. Its `0x…` address is the one MetaMask shows, and it is the same key as a `qor1…` address on QoreChain. For the first Ethereum account of a phrase this is also the address Foundry derives from the same phrase at index 0. The account has its own address, so fund it and select it in QoreX before the next steps. See [Restore a phrase from MetaMask or the Dashboard](/qorex/getting-started#restore-dashboard).
+QoreX accounts default to coin type 118, and a window opened on a coin-118 account is useless for EVM tools. You need an **Ethereum account (coin 60)**. In QoreX open **Your accounts** and tap **Add an Ethereum account (coin 60)**. QoreX derives it from the wallet's **own recovery phrase** with the Ethereum path `m/44'/60'`. Its `0x…` address is the same as in MetaMask or Foundry only when they use that same phrase (for Foundry, derivation path `m/44'/60'/0'/0/0`, index 0). If your MetaMask account comes from a different phrase, QoreX shows a different address, and a window opened there does not cover the key you deploy with. The `0x…` address is the same key as a `qor1…` address on QoreChain.
+
+The account has its own address, so fund it and select it in QoreX before the next steps. See [Restore a phrase from MetaMask or the Dashboard](/qorex/getting-started#restore-dashboard).
+
+:::caution Never paste a production phrase into development tools
+Use a recovery phrase made for testing, with test QOR only. Do not type the phrase of an account that holds real funds into Foundry, Hardhat or a script.
+:::
 
 ## 2. Switch QoreX to the testnet {#step-testnet}
 
@@ -57,7 +63,7 @@ Opening a window advances the account nonce. Open it **before** you deploy: a tr
 
 ## 5. Deploy with Foundry or Hardhat {#step-deploy}
 
-Use the **same funded key** as the coin-60 account; QoreX cannot act as a Foundry signer, so give Foundry or Hardhat the private key (or the phrase with `--mnemonic`). The network settings:
+Use the key of the **same funded coin-60 account**. QoreX cannot act as a Foundry signer, so give Foundry or Hardhat the key from the same recovery phrase, for example `--mnemonic` with index 0 in Foundry. The network settings:
 
 | Setting | Value |
 |---|---|
@@ -111,11 +117,21 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 ## Alternative: the command line {#cli}
 
-With the `qorechaind` release binary you can do steps 1, 4 and the post-quantum key registration without QoreX. The full commands (key import, `tx pqc register-key-v2`, `tx pqc open-evm-window`, `tx pqc cosign`) are in [EVM Development](/developer-guide/evm-development) and the [EVM authorisation window](/developer-guide/evm-development#evm-window) section. A window opened this way, followed by a transaction sent with `cast`, is confirmed on the testnet.
+With the `qorechaind` release binary you can import a raw private key, register its post-quantum key and open the window without QoreX. This is the route for a developer who has only a private key. `gen-key` and `cosign` are not in a community build, so this needs the release binary. The window rules are in the [EVM authorisation window](/developer-guide/evm-development#evm-window) section of [EVM Development](/developer-guide/evm-development). A window opened this way, followed by a transaction sent with `cast`, is confirmed on the testnet.
 
 ```bash
 export QNODE=https://rpc-testnet.qore.host:443
 export QCHAIN=qorechain-diana
+
+# import the private key as an eth_secp256k1 key: the qor1... and 0x... addresses are one account
+qorechaind keys import-hex deployer <private-key-hex-without-0x> --key-type eth_secp256k1
+
+# register a post-quantum key once per account (back up the .dilithium file)
+qorechaind tx pqc gen-key deployer-mldsa
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key deployer-mldsa \
+  --from deployer --chain-id $QCHAIN --node $QNODE --gas auto --gas-adjustment 1.3 --gas-prices 0.2uqor
+
+# open the window
 
 qorechaind tx pqc open-evm-window 3000 20 10qor --from deployer \
   --chain-id $QCHAIN --node $QNODE --gas 400000 --fees 80000uqor --generate-only > window.json
