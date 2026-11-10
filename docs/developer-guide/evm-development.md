@@ -277,6 +277,8 @@ From node release v3.2.7 (testnet since 6 November 2026, not on mainnet yet), `e
 
 ## EVM authorisation window {#evm-window}
 
+**Key type.** The EVM lane and the window work only with an `eth_secp256k1` key, the Ethereum key type (coin type 60). A standard secp256k1 Cosmos key (coin type 118, the default `qor1…` account in QoreX) cannot sign for its EVM address, so a window opened on such an account achieves nothing. In QoreX use **Add an Ethereum account (coin 60)** under Your accounts; see [Restore a phrase from MetaMask or the Dashboard](/qorex/getting-started#restore-dashboard).
+
 From v3.2.7 (testnet since 6 November 2026, not on mainnet yet) an EVM transaction that consumes the window emits the event `pqc_evm_window_used`, with an attribute `source` that says which path used it.
 
 A post-quantum signature cannot travel *with* an Ethereum transaction (wallets such as MetaMask cannot attach a second signature), so it travels *ahead* of it. The account opens a bounded window with the Cosmos-lane message `MsgOpenEVMWindow`; the EVM lane then admits only transactions covered by a live window. A stolen classical key alone cannot open a window, so on the EVM lane it can act only within what an already-open window allows (the window does not cap token amounts or existing approvals).

@@ -115,14 +115,15 @@ interface IQorePQC {
     /// @return registered True if a PQC key is registered
     /// @return algorithmId The PQC algorithm identifier (1 = ML-DSA-87)
     /// @return pubkey The registered public key bytes (empty if not registered)
+    /// @return possessionProven True only if the key was registered with a verified proof of possession
     function pqcKeyStatus(address account)
         external
         view
-        returns (bool registered, uint8 algorithmId, bytes memory pubkey);
+        returns (bool registered, uint8 algorithmId, bytes memory pubkey, bool possessionProven);
 }
 ```
 
-من v3.2.4 (الشبكة الرئيسية منذ 23 أكتوبر 2026، والشبكة الاختبارية منذ 19 أكتوبر 2026)، تحمل مخرجات `pqcKeyStatus` قيمة رابعة هي `bool possessionProven` بعد `pubkey`: وهي تبيّن هل جرى إثبات المفتاح الحالي للحساب بإثبات امتلاك جرى التحقق منه (راجع [التوقيع ما بعد الكمومي](/developer-guide/post-quantum-signing#proof-of-possession)). تُعاد أينما كان المعالِج المسبق مفعّلًا: فهي حية على الشبكة الاختبارية (يعيد الاستدعاء لحساب بلا مفتاح `false, 0, 0x, false`)، وعلى الشبكة الرئيسية بعد أن تفعّل ترقية هذا المعالِج المسبق. تسرد الواجهة أعلاه المخرجات الثلاث الأولى؛ وعلى العقد الذي يجب أن يثق بالمفتاح أن يقرأ المخرج الرابع أيضًا.
+من v3.2.4 (الشبكة الرئيسية منذ 23 أكتوبر 2026، والشبكة الاختبارية منذ 19 أكتوبر 2026)، تحمل مخرجات `pqcKeyStatus` قيمة رابعة هي `bool possessionProven` بعد `pubkey`: وهي تبيّن هل جرى إثبات المفتاح الحالي للحساب بإثبات امتلاك جرى التحقق منه (راجع [التوقيع ما بعد الكمومي](/developer-guide/post-quantum-signing#proof-of-possession)). تُعاد أينما كان المعالِج المسبق مفعّلًا: فهي حية على الشبكة الاختبارية (يعيد الاستدعاء لحساب بلا مفتاح `false, 0, 0x, false`)، وعلى الشبكة الرئيسية بعد أن تفعّل ترقية هذا المعالِج المسبق. تسرد الواجهة أعلاه المخرجات الأربعة كلها. وعلى العقد الذي يجب أن يثق بالمفتاح أن يتحقق من المخرج الرابع: فإثبات الامتلاك اختياري عند التسجيل، ولذلك لا يكفي `registered` وحده.
 
 ### IQoreAI.sol
 
@@ -212,11 +213,16 @@ contract PQCChecker {
     IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
 
     function requirePQCKey(address account) external view {
-        (bool registered, , ) = PQC_STATUS.pqcKeyStatus(account);
+        (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
         require(registered, "Account must have a registered PQC key");
+        require(possessionProven, "The key was registered without a proof of possession");
     }
 }
 ```
+
+:::caution تحقق من possessionProven
+إثبات الامتلاك اختياري عند التسجيل، ولذلك لا يدل `registered` وحده على أن الحساب يتحكم في المفتاح. وعلى العقد الذي يعتمد على مفتاح مسجَّل لما بعد الكم أن يشترط أيضًا أن تكون قيمة `possessionProven` صحيحة (true).
+:::
 
 **تكلفة الغاز:** 2,500 ثابتة.
 

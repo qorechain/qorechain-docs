@@ -115,14 +115,15 @@ interface IQorePQC {
     /// @return registered True if a PQC key is registered
     /// @return algorithmId The PQC algorithm identifier (1 = ML-DSA-87)
     /// @return pubkey The registered public key bytes (empty if not registered)
+    /// @return possessionProven True only if the key was registered with a verified proof of possession
     function pqcKeyStatus(address account)
         external
         view
-        returns (bool registered, uint8 algorithmId, bytes memory pubkey);
+        returns (bool registered, uint8 algorithmId, bytes memory pubkey, bool possessionProven);
 }
 ```
 
-Desde v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026), la salida de `pqcKeyStatus` incluye un cuarto valor, `bool possessionProven`, después de `pubkey`: si la clave actual de la cuenta fue demostrada mediante una prueba de posesión verificada (consulte [Firma post-cuántica](/developer-guide/post-quantum-signing#proof-of-possession)). Se devuelve allí donde el precompilado esté activo: en la testnet ya está en vivo (una llamada para una cuenta sin clave devuelve `false, 0, 0x, false`), y en la mainnet lo estará cuando una actualización active el precompilado. La interfaz anterior enumera las tres primeras salidas; un contrato que deba confiar en la clave debería leer también la cuarta.
+Desde v3.2.4 (mainnet desde el 23 de octubre de 2026, testnet desde el 19 de octubre de 2026), la salida de `pqcKeyStatus` incluye un cuarto valor, `bool possessionProven`, después de `pubkey`: si la clave actual de la cuenta fue demostrada mediante una prueba de posesión verificada (consulte [Firma post-cuántica](/developer-guide/post-quantum-signing#proof-of-possession)). Se devuelve allí donde el precompilado esté activo: en la testnet ya está en vivo (una llamada para una cuenta sin clave devuelve `false, 0, 0x, false`), y en la mainnet lo estará cuando una actualización active el precompilado. La interfaz anterior enumera las cuatro salidas. Un contrato que deba confiar en la clave tiene que comprobar la cuarta: la prueba de posesión es opcional en el registro, así que `registered` por sí solo no basta.
 
 ### IQoreAI.sol
 
@@ -212,11 +213,16 @@ contract PQCChecker {
     IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
 
     function requirePQCKey(address account) external view {
-        (bool registered, , ) = PQC_STATUS.pqcKeyStatus(account);
+        (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
         require(registered, "Account must have a registered PQC key");
+        require(possessionProven, "The key was registered without a proof of possession");
     }
 }
 ```
+
+:::caution Comprueba possessionProven
+La prueba de posesión es opcional en el registro, así que `registered` por sí solo no demuestra que la cuenta controle la clave. Un contrato que se apoye en una clave poscuántica registrada debe exigir además que `possessionProven` sea true.
+:::
 
 **Costo de gas:** 2,500 fijo.
 

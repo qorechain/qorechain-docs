@@ -115,14 +115,15 @@ interface IQorePQC {
     /// @return registered True if a PQC key is registered
     /// @return algorithmId The PQC algorithm identifier (1 = ML-DSA-87)
     /// @return pubkey The registered public key bytes (empty if not registered)
+    /// @return possessionProven True only if the key was registered with a verified proof of possession
     function pqcKeyStatus(address account)
         external
         view
-        returns (bool registered, uint8 algorithmId, bytes memory pubkey);
+        returns (bool registered, uint8 algorithmId, bytes memory pubkey, bool possessionProven);
 }
 ```
 
-v3.2.4부터(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) `pqcKeyStatus`의 출력에는 `pubkey` 뒤에 네 번째 값 `bool possessionProven`이 추가됩니다. 계정의 현재 키가 검증된 소유 증명으로 증명되었는지 여부입니다([양자내성 서명](/developer-guide/post-quantum-signing#proof-of-possession) 참조). 이 프리컴파일이 활성화된 곳에서는 항상 반환됩니다. 테스트넷에서는 이미 적용되어 있으며(키가 없는 계정에 대한 호출은 `false, 0, 0x, false`를 반환합니다), 메인넷에서는 업그레이드로 프리컴파일이 활성화된 뒤에 적용됩니다. 위 인터페이스에는 처음 세 출력만 나열되어 있으며, 키를 신뢰해야 하는 컨트랙트는 네 번째 값도 읽어야 합니다.
+v3.2.4부터(메인넷은 2026년 10월 23일부터, 테스트넷은 2026년 10월 19일부터) `pqcKeyStatus`의 출력에는 `pubkey` 뒤에 네 번째 값 `bool possessionProven`이 추가됩니다. 계정의 현재 키가 검증된 소유 증명으로 증명되었는지 여부입니다([양자내성 서명](/developer-guide/post-quantum-signing#proof-of-possession) 참조). 이 프리컴파일이 활성화된 곳에서는 항상 반환됩니다. 테스트넷에서는 이미 적용되어 있으며(키가 없는 계정에 대한 호출은 `false, 0, 0x, false`를 반환합니다), 메인넷에서는 업그레이드로 프리컴파일이 활성화된 뒤에 적용됩니다. 위 인터페이스에는 네 가지 출력이 모두 나열되어 있습니다. 키를 신뢰해야 하는 컨트랙트는 네 번째 값을 반드시 확인해야 합니다. 소유 증명은 등록 시 선택 사항이므로 `registered`만으로는 충분하지 않습니다.
 
 ### IQoreAI.sol
 
@@ -212,11 +213,16 @@ contract PQCChecker {
     IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
 
     function requirePQCKey(address account) external view {
-        (bool registered, , ) = PQC_STATUS.pqcKeyStatus(account);
+        (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
         require(registered, "Account must have a registered PQC key");
+        require(possessionProven, "The key was registered without a proof of possession");
     }
 }
 ```
+
+:::caution possessionProven 확인하기
+소유 증명은 등록 시 선택 사항이므로 `registered`만으로는 계정이 해당 키를 제어한다는 사실이 증명되지 않습니다. 등록된 포스트 양자 키에 의존하는 컨트랙트는 `possessionProven`이 true인지도 반드시 요구해야 합니다.
+:::
 
 **가스 비용:** 정액 2,500.
 

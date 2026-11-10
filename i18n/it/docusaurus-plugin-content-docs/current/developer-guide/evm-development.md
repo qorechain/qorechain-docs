@@ -277,6 +277,8 @@ Dalla release di nodo v3.2.7 (testnet dal 6 novembre 2026, non ancora sulla main
 
 ## Finestra di autorizzazione EVM {#evm-window}
 
+**Tipo di chiave.** La lane EVM e la finestra funzionano solo con una chiave `eth_secp256k1`, il tipo di chiave di Ethereum (coin type 60). Una chiave Cosmos secp256k1 standard (coin type 118, l'account `qor1…` predefinito in QoreX) non può firmare per il proprio indirizzo EVM, quindi una finestra aperta su un account di questo tipo non ottiene nulla. In QoreX usa **Add an Ethereum account (coin 60)** sotto Your accounts; vedi [Ripristinare una frase da MetaMask o dalla Dashboard](/qorex/getting-started#restore-dashboard).
+
 Dalla v3.2.7 (testnet dal 6 novembre 2026, non ancora sulla mainnet) una transazione EVM che consuma la finestra emette l'evento `pqc_evm_window_used`, con un attributo `source` che indica quale percorso l'ha usata.
 
 Una firma post-quantistica non può viaggiare *insieme* a una transazione Ethereum (wallet come MetaMask non possono allegare una seconda firma), quindi viaggia *in anticipo*. L'account apre una finestra delimitata con il messaggio della corsia Cosmos `MsgOpenEVMWindow`; la corsia EVM ammette poi solo le transazioni coperte da una finestra attiva. Una chiave classica rubata da sola non può aprire una finestra, quindi sulla corsia EVM può agire solo entro ciò che una finestra già aperta consente (la finestra non limita gli importi dei token né le approvazioni esistenti).

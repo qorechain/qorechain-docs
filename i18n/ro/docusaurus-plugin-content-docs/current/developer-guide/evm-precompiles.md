@@ -115,14 +115,15 @@ interface IQorePQC {
     /// @return registered True if a PQC key is registered
     /// @return algorithmId The PQC algorithm identifier (1 = ML-DSA-87)
     /// @return pubkey The registered public key bytes (empty if not registered)
+    /// @return possessionProven True only if the key was registered with a verified proof of possession
     function pqcKeyStatus(address account)
         external
         view
-        returns (bool registered, uint8 algorithmId, bytes memory pubkey);
+        returns (bool registered, uint8 algorithmId, bytes memory pubkey, bool possessionProven);
 }
 ```
 
-Începând cu v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026), ieșirea lui `pqcKeyStatus` conține o a patra valoare, `bool possessionProven`, după `pubkey`: dacă cheia curentă a contului a fost dovedită printr-o dovadă de posesie verificată (vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing#proof-of-possession)). Este returnată oriunde precompilatul este activ: pe testnet este live (un apel pentru un cont fără cheie returnează `false, 0, 0x, false`), iar pe mainnet după ce un upgrade activează precompilatul. Interfața de mai sus listează primele trei ieșiri; un contract care trebuie să aibă încredere în cheie ar trebui să citească și a patra valoare.
+Începând cu v3.2.4 (mainnet din 23 octombrie 2026, testnet din 19 octombrie 2026), ieșirea lui `pqcKeyStatus` conține o a patra valoare, `bool possessionProven`, după `pubkey`: dacă cheia curentă a contului a fost dovedită printr-o dovadă de posesie verificată (vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing#proof-of-possession)). Este returnată oriunde precompilatul este activ: pe testnet este live (un apel pentru un cont fără cheie returnează `false, 0, 0x, false`), iar pe mainnet după ce un upgrade activează precompilatul. Interfața de mai sus listează toate cele patru ieșiri. Un contract care trebuie să aibă încredere în cheie trebuie să verifice și a patra valoare: dovada de posesie este opțională la înregistrare, deci `registered` singur nu este suficient.
 
 ### IQoreAI.sol
 
@@ -212,11 +213,16 @@ contract PQCChecker {
     IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
 
     function requirePQCKey(address account) external view {
-        (bool registered, , ) = PQC_STATUS.pqcKeyStatus(account);
+        (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
         require(registered, "Account must have a registered PQC key");
+        require(possessionProven, "The key was registered without a proof of possession");
     }
 }
 ```
+
+:::caution Verificați possessionProven
+Dovada de posesie este opțională la înregistrare, deci `registered` singur nu arată că contul controlează cheia. Un contract care se bazează pe o cheie post-cuantică înregistrată trebuie să ceară și ca `possessionProven` să fie adevărat.
+:::
 
 **Cost de gaz:** 2.500, fix.
 

@@ -115,14 +115,15 @@ interface IQorePQC {
     /// @return registered True if a PQC key is registered
     /// @return algorithmId The PQC algorithm identifier (1 = ML-DSA-87)
     /// @return pubkey The registered public key bytes (empty if not registered)
+    /// @return possessionProven True only if the key was registered with a verified proof of possession
     function pqcKeyStatus(address account)
         external
         view
-        returns (bool registered, uint8 algorithmId, bytes memory pubkey);
+        returns (bool registered, uint8 algorithmId, bytes memory pubkey, bool possessionProven);
 }
 ```
 
-Ab v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026) trägt die Ausgabe von `pqcKeyStatus` einen vierten Ausgabewert, `bool possessionProven`, nach `pubkey`: ob der aktuelle Schlüssel des Kontos durch einen verifizierten Besitznachweis belegt wurde (siehe [Post-Quantum-Signierung](/developer-guide/post-quantum-signing#proof-of-possession)). Er wird überall zurückgegeben, wo das Precompile aktiv ist: Im Testnet ist er live (ein Aufruf für ein Konto ohne Schlüssel liefert `false, 0, 0x, false`), im Mainnet, sobald ein Upgrade das Precompile aktiviert. Die obige Schnittstelle listet die ersten drei Ausgaben; ein Contract, der dem Schlüssel vertrauen muss, sollte auch die vierte lesen.
+Ab v3.2.4 (Mainnet seit dem 23. Oktober 2026, Testnet seit dem 19. Oktober 2026) trägt die Ausgabe von `pqcKeyStatus` einen vierten Ausgabewert, `bool possessionProven`, nach `pubkey`: ob der aktuelle Schlüssel des Kontos durch einen verifizierten Besitznachweis belegt wurde (siehe [Post-Quantum-Signierung](/developer-guide/post-quantum-signing#proof-of-possession)). Er wird überall zurückgegeben, wo das Precompile aktiv ist: Im Testnet ist er live (ein Aufruf für ein Konto ohne Schlüssel liefert `false, 0, 0x, false`), im Mainnet, sobald ein Upgrade das Precompile aktiviert. Die obige Schnittstelle listet alle vier Ausgaben. Ein Contract, der dem Schlüssel vertrauen muss, muss die vierte prüfen: Der Besitznachweis ist bei der Registrierung optional, daher genügt `registered` allein nicht.
 
 ### IQoreAI.sol
 
@@ -212,11 +213,16 @@ contract PQCChecker {
     IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
 
     function requirePQCKey(address account) external view {
-        (bool registered, , ) = PQC_STATUS.pqcKeyStatus(account);
+        (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
         require(registered, "Account must have a registered PQC key");
+        require(possessionProven, "The key was registered without a proof of possession");
     }
 }
 ```
+
+:::caution possessionProven prüfen
+Der Besitznachweis ist bei der Registrierung optional, daher zeigt `registered` allein nicht, dass das Konto den Schlüssel kontrolliert. Ein Contract, der sich auf einen registrierten Post-Quanten-Schlüssel stützt, muss zusätzlich verlangen, dass `possessionProven` wahr ist.
+:::
 
 **Gaskosten:** 2.500 pauschal.
 

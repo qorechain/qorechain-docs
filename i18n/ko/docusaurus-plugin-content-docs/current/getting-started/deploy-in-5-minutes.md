@@ -21,7 +21,7 @@ sidebar_position: 6
 
 ## 1. QoreX에 coin 60 계정 추가하기 {#step-import}
 
-QoreX 계정은 기본적으로 코인 타입 118을 사용하며, coin 118 계정에서 연 윈도우는 EVM 도구에는 쓸모가 없습니다. **Ethereum 계정(coin 60)**이 필요합니다. QoreX에서 **내 계정**을 열고 **Ethereum 계정 추가(coin 60)**를 누르세요. QoreX는 지갑의 **자체 복구 문구**에서 Ethereum 경로 `m/44'/60'`으로 이 계정을 도출합니다. 이 계정의 `0x…` 주소는 MetaMask나 Foundry가 바로 그 같은 문구를 사용할 때에만 그곳의 주소와 같습니다(Foundry의 경우 도출 경로 `m/44'/60'/0'/0/0`, 인덱스 0). MetaMask 계정이 다른 문구에서 만들어졌다면 QoreX는 다른 주소를 표시하며, 그 주소에서 연 윈도우는 배포에 사용하는 키를 포괄하지 않습니다. `0x…` 주소는 QoreChain의 `qor1…` 주소와 같은 키입니다.
+EVM 레인은 `eth_secp256k1` 키(코인 타입 60)로만 동작합니다. 표준 secp256k1 Cosmos 키(코인 타입 118, QoreX 기본값)는 해당 EVM 주소에 대해 서명할 수 없으므로, coin 118 계정에서 연 윈도우는 EVM 도구에는 쓸모가 없습니다. **Ethereum 계정(coin 60)**이 필요합니다. QoreX에서 **내 계정**을 열고 **Ethereum 계정 추가(coin 60)**를 누르세요. QoreX는 지갑의 **자체 복구 문구**에서 Ethereum 경로 `m/44'/60'`으로 이 계정을 도출합니다. 이 계정의 `0x…` 주소는 MetaMask나 Foundry가 바로 그 같은 문구를 사용할 때에만 그곳의 주소와 같습니다(Foundry의 경우 도출 경로 `m/44'/60'/0'/0/0`, 인덱스 0). MetaMask 계정이 다른 문구에서 만들어졌다면 QoreX는 다른 주소를 표시하며, 그 주소에서 연 윈도우는 배포에 사용하는 키를 포괄하지 않습니다. `0x…` 주소는 QoreChain의 `qor1…` 주소와 같은 키입니다.
 
 이 계정은 별도의 주소를 가지므로, 다음 단계 전에 자금을 넣고 QoreX에서 선택해 두세요. [MetaMask 또는 대시보드에서 문구 복원하기](/qorex/getting-started#restore-dashboard)를 참고하세요.
 

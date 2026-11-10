@@ -115,14 +115,15 @@ interface IQorePQC {
     /// @return registered True if a PQC key is registered
     /// @return algorithmId The PQC algorithm identifier (1 = ML-DSA-87)
     /// @return pubkey The registered public key bytes (empty if not registered)
+    /// @return possessionProven True only if the key was registered with a verified proof of possession
     function pqcKeyStatus(address account)
         external
         view
-        returns (bool registered, uint8 algorithmId, bytes memory pubkey);
+        returns (bool registered, uint8 algorithmId, bytes memory pubkey, bool possessionProven);
 }
 ```
 
-v3.2.4以降(メインネットでは2026年10月23日から、テストネットでは2026年10月19日から)、`pqcKeyStatus` の出力には `pubkey` の後に4番目の値 `bool possessionProven` が加わります。これは、アカウントの現在の鍵が検証済みの所有証明によって証明されたかどうかを示します([ポスト量子署名](/developer-guide/post-quantum-signing#proof-of-possession)を参照)。プリコンパイルが有効な場所ではどこでも返されます。テストネットでは有効で(鍵のないアカウントへの呼び出しは `false, 0, 0x, false` を返します)、メインネットではアップグレードでプリコンパイルが有効化された時点からです。上記のインターフェースには最初の3つの出力のみを記載しています。鍵を信頼する必要があるコントラクトは、4番目の値も読み取る必要があります。
+v3.2.4以降(メインネットでは2026年10月23日から、テストネットでは2026年10月19日から)、`pqcKeyStatus` の出力には `pubkey` の後に4番目の値 `bool possessionProven` が加わります。これは、アカウントの現在の鍵が検証済みの所有証明によって証明されたかどうかを示します([ポスト量子署名](/developer-guide/post-quantum-signing#proof-of-possession)を参照)。プリコンパイルが有効な場所ではどこでも返されます。テストネットでは有効で(鍵のないアカウントへの呼び出しは `false, 0, 0x, false` を返します)、メインネットではアップグレードでプリコンパイルが有効化された時点からです。上記のインターフェースには4つすべての出力を記載しています。鍵を信頼する必要があるコントラクトは、4番目の値を確認しなければなりません。所有証明は登録時には任意であるため、`registered` だけでは不十分です。
 
 ### IQoreAI.sol
 
@@ -212,11 +213,16 @@ contract PQCChecker {
     IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
 
     function requirePQCKey(address account) external view {
-        (bool registered, , ) = PQC_STATUS.pqcKeyStatus(account);
+        (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
         require(registered, "Account must have a registered PQC key");
+        require(possessionProven, "The key was registered without a proof of possession");
     }
 }
 ```
+
+:::caution possessionProvenを確認する
+所有証明は登録時には任意であるため、`registered` だけでは、アカウントがその鍵を管理していることは分かりません。登録済みのポスト量子鍵に依拠するコントラクトは、`possessionProven` が true であることも必須にしてください。
+:::
 
 **ガスコスト:** 一律2,500。
 

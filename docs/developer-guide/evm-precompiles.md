@@ -115,14 +115,15 @@ interface IQorePQC {
     /// @return registered True if a PQC key is registered
     /// @return algorithmId The PQC algorithm identifier (1 = ML-DSA-87)
     /// @return pubkey The registered public key bytes (empty if not registered)
+    /// @return possessionProven True only if the key was registered with a verified proof of possession
     function pqcKeyStatus(address account)
         external
         view
-        returns (bool registered, uint8 algorithmId, bytes memory pubkey);
+        returns (bool registered, uint8 algorithmId, bytes memory pubkey, bool possessionProven);
 }
 ```
 
-From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026), the output of `pqcKeyStatus` carries a fourth value, `bool possessionProven`, after `pubkey`: whether the account's current key was proven by a verified proof of possession (see [Post-Quantum Signing](/developer-guide/post-quantum-signing#proof-of-possession)). It is returned wherever the precompile is active: on the testnet it is live (a call for an account without a key returns `false, 0, 0x, false`), on mainnet once an upgrade activates the precompile. The interface above lists the first three outputs; a contract that must trust the key should read the fourth as well.
+From v3.2.4 (mainnet since 23 October 2026, testnet since 19 October 2026), the output of `pqcKeyStatus` carries a fourth value, `bool possessionProven`, after `pubkey`: whether the account's current key was proven by a verified proof of possession (see [Post-Quantum Signing](/developer-guide/post-quantum-signing#proof-of-possession)). It is returned wherever the precompile is active: on the testnet it is live (a call for an account without a key returns `false, 0, 0x, false`), on mainnet once an upgrade activates the precompile. The interface above lists all four outputs. A contract that must trust the key has to check the fourth: proof of possession is optional at registration, so `registered` alone is not enough.
 
 ### IQoreAI.sol
 
@@ -212,11 +213,16 @@ contract PQCChecker {
     IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
 
     function requirePQCKey(address account) external view {
-        (bool registered, , ) = PQC_STATUS.pqcKeyStatus(account);
+        (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
         require(registered, "Account must have a registered PQC key");
+        require(possessionProven, "The key was registered without a proof of possession");
     }
 }
 ```
+
+:::caution Check possessionProven
+Proof of possession is optional at registration, so `registered` alone does not show that the account controls the key. A contract that relies on a registered post-quantum key must also require `possessionProven` to be true.
+:::
 
 **Gas cost:** 2,500 flat.
 

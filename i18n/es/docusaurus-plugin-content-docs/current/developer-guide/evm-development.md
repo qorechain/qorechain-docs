@@ -277,6 +277,8 @@ Desde la versión de nodo v3.2.7 (testnet desde el 6 de noviembre de 2026, todav
 
 ## Ventana de autorización EVM {#evm-window}
 
+**Tipo de clave.** El carril EVM y la ventana solo funcionan con una clave `eth_secp256k1`, el tipo de clave de Ethereum (coin type 60). Una clave estándar secp256k1 de Cosmos (coin type 118, la cuenta `qor1…` por defecto en QoreX) no puede firmar para su dirección EVM, así que una ventana abierta en una cuenta así no logra nada. En QoreX usa **Add an Ethereum account (coin 60)** en Your accounts; consulta [Restaurar una frase de MetaMask o del Dashboard](/qorex/getting-started#restore-dashboard).
+
 Desde v3.2.7 (testnet desde el 6 de noviembre de 2026, todavía no en la mainnet) una transacción EVM que consume la ventana emite el evento `pqc_evm_window_used`, con un atributo `source` que indica qué ruta la usó.
 
 Una firma poscuántica no puede viajar *con* una transacción de Ethereum (carteras como MetaMask no pueden adjuntar una segunda firma), así que viaja *antes* que ella. La cuenta abre una ventana acotada con el mensaje del carril Cosmos `MsgOpenEVMWindow`; el carril EVM admite entonces solo las transacciones cubiertas por una ventana vigente. Una clave clásica robada por sí sola no puede abrir una ventana, de modo que en el carril EVM solo puede actuar dentro de lo que permita una ventana ya abierta (la ventana no limita las cantidades de tokens ni las aprobaciones existentes).

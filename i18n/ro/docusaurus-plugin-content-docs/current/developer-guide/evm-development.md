@@ -277,6 +277,8 @@ Pentru securitate post-cuantică în cadrul contractelor:
 
 ## Fereastra de autorizare EVM {#evm-window}
 
+**Tipul de cheie.** Lane-ul EVM și fereastra funcționează doar cu o cheie `eth_secp256k1`, tipul de cheie Ethereum (coin type 60). O cheie Cosmos secp256k1 standard (coin type 118, contul implicit `qor1…` din QoreX) nu poate semna pentru adresa sa EVM, deci o fereastră deschisă pe un astfel de cont nu are niciun efect. În QoreX folosiți **Add an Ethereum account (coin 60)** din Your accounts; vedeți [Restaurează o frază din MetaMask sau din Dashboard](/qorex/getting-started#restore-dashboard).
+
 Începând cu v3.2.7 (testnet din 6 noiembrie 2026, încă nu și pe mainnet), o tranzacție EVM care consumă fereastra emite evenimentul `pqc_evm_window_used`, cu un atribut `source` care spune ce cale a folosit-o.
 
 O semnătură post-cuantică nu poate călători *împreună* cu o tranzacție Ethereum (portofele precum MetaMask nu pot atașa o a doua semnătură), așa că ea călătorește *înaintea* ei. Contul deschide o fereastră delimitată cu mesajul din lane-ul Cosmos `MsgOpenEVMWindow`; lane-ul EVM admite apoi doar tranzacțiile acoperite de o fereastră activă. O cheie clasică furată nu poate deschide singură o fereastră, deci pe banda EVM poate acționa doar în limitele unei ferestre deja deschise (fereastra nu plafonează sumele de tokenuri și nici aprobările existente).

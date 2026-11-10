@@ -277,6 +277,8 @@ Ab Node-Release v3.2.7 (Testnet seit dem 6. November 2026, noch nicht im Mainnet
 
 ## EVM-Autorisierungsfenster {#evm-window}
 
+**Schlüsseltyp.** Die EVM-Lane und das Fenster funktionieren nur mit einem `eth_secp256k1`-Schlüssel, dem Ethereum-Schlüsseltyp (Coin-Typ 60). Ein standardmäßiger secp256k1-Cosmos-Schlüssel (Coin-Typ 118, das Standardkonto `qor1…` in QoreX) kann für seine EVM-Adresse nicht signieren, daher bewirkt ein auf einem solchen Konto geöffnetes Fenster nichts. Verwenden Sie in QoreX unter Ihre Konten **Ethereum-Konto hinzufügen (coin 60)**; siehe [Phrase aus MetaMask oder dem Dashboard wiederherstellen](/qorex/getting-started#restore-dashboard).
+
 Ab v3.2.7 (Testnet seit dem 6. November 2026, noch nicht im Mainnet) emittiert eine EVM-Transaktion, die das Fenster verbraucht, das Event `pqc_evm_window_used`, mit einem Attribut `source`, das angibt, welcher Pfad es verbraucht hat.
 
 Eine Post-Quanten-Signatur kann nicht *mit* einer Ethereum-Transaktion reisen (Wallets wie MetaMask können keine zweite Signatur anhängen), also reist sie *vor* ihr. Das Konto öffnet mit der Cosmos-Lane-Nachricht `MsgOpenEVMWindow` ein begrenztes Fenster; die EVM-Lane lässt dann nur Transaktionen zu, die von einem aktiven Fenster abgedeckt sind. Ein gestohlener klassischer Schlüssel allein kann kein Fenster öffnen und kann daher auf der EVM-Lane nur innerhalb dessen handeln, was ein bereits geöffnetes Fenster erlaubt (das Fenster begrenzt weder Token-Beträge noch bestehende Genehmigungen).

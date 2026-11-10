@@ -115,14 +115,15 @@ interface IQorePQC {
     /// @return registered True if a PQC key is registered
     /// @return algorithmId The PQC algorithm identifier (1 = ML-DSA-87)
     /// @return pubkey The registered public key bytes (empty if not registered)
+    /// @return possessionProven True only if the key was registered with a verified proof of possession
     function pqcKeyStatus(address account)
         external
         view
-        returns (bool registered, uint8 algorithmId, bytes memory pubkey);
+        returns (bool registered, uint8 algorithmId, bytes memory pubkey, bool possessionProven);
 }
 ```
 
-v3.2.4'ten itibaren (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri), `pqcKeyStatus` çıktısı `pubkey` değerinden sonra dördüncü bir değer taşır, `bool possessionProven`: hesabın geçerli anahtarının doğrulanmış bir sahiplik kanıtıyla kanıtlanıp kanıtlanmadığı (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#proof-of-possession)). Ön derlemenin etkin olduğu her yerde döndürülür: test ağında canlıdır (anahtarı olmayan bir hesap için yapılan çağrı `false, 0, 0x, false` döndürür), ana ağda ise bir yükseltme ön derlemeyi etkinleştirdiğinde. Yukarıdaki arayüz ilk üç çıktıyı listeler; anahtara güvenmesi gereken bir sözleşme dördüncüyü de okumalıdır.
+v3.2.4'ten itibaren (ana ağda 23 Ekim 2026'dan beri, test ağında 19 Ekim 2026'dan beri), `pqcKeyStatus` çıktısı `pubkey` değerinden sonra dördüncü bir değer taşır, `bool possessionProven`: hesabın geçerli anahtarının doğrulanmış bir sahiplik kanıtıyla kanıtlanıp kanıtlanmadığı (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#proof-of-possession)). Ön derlemenin etkin olduğu her yerde döndürülür: test ağında canlıdır (anahtarı olmayan bir hesap için yapılan çağrı `false, 0, 0x, false` döndürür), ana ağda ise bir yükseltme ön derlemeyi etkinleştirdiğinde. Yukarıdaki arayüz dört çıktıyı da listeler. Anahtara güvenmesi gereken bir sözleşme dördüncüyü kontrol etmelidir: sahiplik kanıtı kayıtta isteğe bağlıdır, bu yüzden tek başına `registered` yeterli değildir.
 
 ### IQoreAI.sol
 
@@ -212,11 +213,16 @@ contract PQCChecker {
     IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
 
     function requirePQCKey(address account) external view {
-        (bool registered, , ) = PQC_STATUS.pqcKeyStatus(account);
+        (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
         require(registered, "Account must have a registered PQC key");
+        require(possessionProven, "The key was registered without a proof of possession");
     }
 }
 ```
+
+:::caution possessionProven değerini kontrol edin
+Sahiplik kanıtı kayıtta isteğe bağlıdır, bu yüzden tek başına `registered`, hesabın anahtarı kontrol ettiğini göstermez. Kayıtlı bir kuantum-sonrası anahtara dayanan bir sözleşme ayrıca `possessionProven` değerinin true olmasını da şart koşmalıdır.
+:::
 
 **Gaz maliyeti:** 2,500 sabit.
 

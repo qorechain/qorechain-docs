@@ -277,6 +277,8 @@ Düğüm sürümü v3.2.7'den itibaren (6 Kasım 2026'dan beri testnet'te, henü
 
 ## EVM yetkilendirme penceresi {#evm-window}
 
+**Anahtar türü.** EVM şeridi ve pencere yalnızca `eth_secp256k1` anahtarıyla, yani Ethereum anahtar türüyle (coin türü 60) çalışır. Standart bir secp256k1 Cosmos anahtarı (coin türü 118, QoreX'teki varsayılan `qor1…` hesabı) kendi EVM adresi adına imza atamaz; bu yüzden böyle bir hesapta açılan pencere hiçbir işe yaramaz. QoreX'te Hesaplarınız altında **Ethereum hesabı ekle (coin 60)** seçeneğini kullanın; bkz. [MetaMask'ten veya Dashboard'dan bir ifadeyi geri yükleyin](/qorex/getting-started#restore-dashboard).
+
 v3.2.7'den itibaren (6 Kasım 2026'dan beri testnet'te, henüz ana ağda değil) pencereyi tüketen bir EVM işlemi, hangi yolun kullandığını söyleyen bir `source` özniteliğiyle `pqc_evm_window_used` olayını yayar.
 
 Kuantum-sonrası bir imza, bir Ethereum işlemiyle *birlikte* gidemez (MetaMask gibi cüzdanlar ikinci bir imza ekleyemez); bu yüzden işlemden *önce* gider. Hesap, Cosmos şeridi mesajı `MsgOpenEVMWindow` ile sınırlı bir pencere açar; ardından EVM şeridi yalnızca etkin bir pencerenin kapsadığı işlemleri kabul eder. Çalınmış klasik bir anahtar tek başına pencere açamaz, dolayısıyla EVM şeridinde yalnızca zaten açık olan bir pencerenin izin verdiği sınırlar içinde işlem yapabilir (pencere token miktarlarını veya mevcut onayları sınırlamaz).

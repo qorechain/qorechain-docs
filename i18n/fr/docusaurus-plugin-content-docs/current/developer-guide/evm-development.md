@@ -277,6 +277,8 @@ Pour la sécurité post-quantique au sein des contrats :
 
 ## Fenêtre d'autorisation EVM {#evm-window}
 
+**Type de clé.** La voie EVM et la fenêtre ne fonctionnent qu'avec une clé `eth_secp256k1`, le type de clé Ethereum (coin type 60). Une clé Cosmos secp256k1 standard (coin type 118, le compte `qor1…` par défaut dans QoreX) ne peut pas signer pour son adresse EVM : une fenêtre ouverte sur un tel compte ne sert donc à rien. Dans QoreX, utilisez **Ajouter un compte Ethereum (coin 60)** sous Vos comptes ; voir [Restaurer une phrase depuis MetaMask ou le Dashboard](/qorex/getting-started#restore-dashboard).
+
 À partir de la v3.2.7 (testnet depuis le 6 novembre 2026, pas encore sur le mainnet), une transaction EVM qui consomme la fenêtre émet l'événement `pqc_evm_window_used`, avec un attribut `source` qui indique quel chemin l'a utilisée.
 
 Une signature post-quantique ne peut pas voyager *avec* une transaction Ethereum (des portefeuilles comme MetaMask ne peuvent pas joindre une seconde signature) ; elle voyage donc *en amont*. Le compte ouvre une fenêtre bornée avec le message de la voie Cosmos `MsgOpenEVMWindow` ; la voie EVM n'admet ensuite que les transactions couvertes par une fenêtre active. Une clé classique volée ne peut pas, à elle seule, ouvrir une fenêtre : elle ne peut donc, sur la voie EVM, agir que dans les limites d'une fenêtre déjà ouverte (la fenêtre ne plafonne ni les montants de tokens ni les approbations existantes).
