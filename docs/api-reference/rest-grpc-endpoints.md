@@ -43,6 +43,7 @@ The examples below use the public mainnet host; replace it with `https://api-tes
 | ------ | ---------------------------------------- | --------------------------------------------------------------------------- |
 | GET    | `/qorechain/pqc/v1/account/{address}`    | Post-quantum key registration for an account (`found`, key type, algorithm) |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | The account's EVM-lane authorisation window and what remains of it          |
+| GET    | `/qorechain/pqc/v1/evm_limits`           | The EVM gas limits in force (per transaction 30,000,000); testnet from v3.2.8 only |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | The account's EIP-7702 delegation consent, current delegation and EVM nonce (since v3.2.2) |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (testnet since 19 October 2026; mainnet since 23 October 2026; `501` on an older node). Every protocol feature the binary knows, with `enabled`, `known` and `staged` flags |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (both networks since 29 October 2026 on mainnet, 26 October on the testnet; `501` on an older node). The ML-KEM encryption key registered for an address in the native key registry: `{"found":false,"key":null}` when none is registered |

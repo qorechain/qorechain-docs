@@ -121,6 +121,7 @@ through the hybrid builder. The account's ML-DSA-87 key must be registered first
 import { Registry } from "@cosmjs/proto-signing";
 import { wasmTypes } from "@cosmjs/cosmwasm-stargate";
 import { StargateClient } from "@cosmjs/stargate";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import {
   qorechainRegistryTypes,
@@ -132,22 +133,37 @@ const registry = new Registry([...qorechainRegistryTypes, ...wasmTypes]);
 const transport = await StargateClient.connect("https://rpc.qore.host");
 const info = await transport.getSequence(sender);
 
+// Never hardcode gas for a contract call: simulate it, then add at least 30%.
+// The simulation already includes the cost of loading the contract code and a
+// congestion margin (see "Gas for contract calls" below).
+const cwClient = await SigningCosmWasmClient.connectWithSigner(
+  "https://rpc.qore.host",
+  signer,
+);
+const msgs = [
+  {
+    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+    value: MsgExecuteContract.fromPartial({
+      sender,
+      contract: contractAddress,
+      msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
+      funds: [],
+    }),
+  },
+];
+const simulatedGas = await cwClient.simulate(sender, msgs, undefined);
+const gas = Math.ceil(simulatedGas * 1.3);
+const gasPrice = 0.15; // uqor per unit of gas; the network floor is 0.1
+
 const result = await signAndBroadcastHybrid({
   registry,
   signer,                                            // from directSignerFromPrivateKey
   pqcKeypair: derivePqcCanonical(sender, mnemonic),  // the key registered on-chain
-  messages: [
-    {
-      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-      value: MsgExecuteContract.fromPartial({
-        sender,
-        contract: contractAddress,
-        msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
-        funds: [],
-      }),
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  messages: msgs,
+  fee: {
+    amount: [{ denom: "uqor", amount: String(Math.ceil(gas * gasPrice)) }],
+    gas: String(gas),
+  },
   chainId: "qorechain-vladi",
   accountNumber: info.accountNumber,
   sequence: info.sequence,
@@ -155,5 +171,30 @@ const result = await signAndBroadcastHybrid({
   transport,
 });
 ```
+
+### Gas for contract calls {#gas}
+
+**Do not hardcode gas for a contract call.** A fixed 400,000 is enough for a
+simple transfer on one call and runs out on the next. From release v3.2.8
+(testnet only until a later mainnet upgrade) CosmWasm gas is repriced:
+
+- **The first call of a contract code in a block pays a load cost.** A cw20
+  transfer costs about 533,000 gas as the first call of its code in a block and
+  about 84,000 for each repeat. Governance can pin popular codes, and pinned
+  codes skip the load charge.
+- **Fees rise with congestion.** A congestion factor scales contract gas from
+  1x up to 20x by default when blocks are busy with contract calls, and a block
+  has a limited contract-execution budget that one transaction can use at most
+  half of.
+- **Simulation includes both.** A simulation always charges the cold load and
+  adds a margin for congestion, so `simulated gas x 1.3` is a safe limit. Use
+  `fee: "auto"` where your client offers it (CosmJS `"auto"`, the SDK
+  `TxClient`, the React `useTx` hook), and simulate yourself when you build the
+  fee by hand as above.
+- **Stay below the transaction cap.** A Cosmos transaction may not set a gas limit
+  above 50,000,000 and is refused before its fee is charged.
+
+The same applies to instantiate, migrate and every other message that runs
+contract code.
 
 See the `cosmwasm-query` [example](/sdk/examples) for a runnable read example.

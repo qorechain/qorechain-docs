@@ -45,6 +45,8 @@ As of chain version **v3.1.82**, the SVM interface is a **first-class native-QOR
 * **System Program transfers move native QOR** — a Solana-style transfer instruction moves the same funds a Cosmos `MsgSend` or an EVM transfer would.
 * **SVM address form** — an account's SVM address is its 20 account bytes right-padded to 32 bytes and base58-encoded. All three address forms (`qor1...`, `0x...`, base58) refer to the same account.
 
+**Release v3.2.8 (testnet, not yet applied).** The upgrade closes the SVM lane on `qorechain-diana`: SVM writes fail, `MsgRegisterSVMPQCKey` is refused, and the SVM JSON-RPC refuses write methods on the public chain ids, until a governance vote reopens it. On mainnet the lane stays off. Clients should read the lane state from the SVM module parameters (`enabled`) before offering SVM actions.
+
 The public endpoints (`https://svm.qore.host`, `https://svm-testnet.qore.host`) are **read-only** — transaction submission is disabled at the edge. Ordinarily you would run your own node (port 8899) to submit SVM transactions, but see the caution above: the `x/svm` transaction lane itself is currently disabled network-wide, including on your own node.
 
 ---

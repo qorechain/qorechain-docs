@@ -152,6 +152,21 @@ Submitted --> Pending --> Executed
 
 Since v3.2.3 a queued call that fails is rolled back as a whole: only its `Failed` record remains, and the funds attached to a failed QoreChain Native call are no longer moved into the contract. While the module is disabled, or `MsgCrossVMCall` is switched off by the circuit breaker, the queue is **not executed**: queued messages stay pending and expire at their timeout unless the switch is lifted first.
 
+### Async calls into CosmWasm (v3.2.8) {#async-calls}
+
+From release v3.2.8 (testnet only until a later mainnet upgrade) an asynchronous call into CosmWasm is prepaid and queued with limits:
+
+| `MsgCrossVMCall` field | Meaning |
+| ---------------------- | ------- |
+| `async_gas_limit` (8)  | Contract gas units you reserve for the queued call (default 500,000) |
+| `async_max_factor` (9) | The highest congestion factor you accept for it (default 4x); the call is refused if the factor in force is above it |
+
+- **Escrow.** The sender prepays gas units x factor x gas price into an escrow account. At the defaults that is 500,000 x 4 x 0.1 uqor, about 0.2 QOR. What the call does not use is refunded when it runs.
+- **Queue-slot fee.** Queueing a call also pays a small slot fee.
+- **At most 100 pending calls per sender.** A further call is refused until one finishes or times out.
+- **Failed calls are charged.** A call that fails still pays for the work done.
+- **Heavy calls:** raise `async_gas_limit` and `async_max_factor` for contracts that load large code; a cw721-size contract does not fit the defaults on its first call in a block.
+
 ---
 
 ## Parameters
@@ -192,7 +207,7 @@ wscat -c ws://localhost:26657/websocket
 # Query a specific message by ID
 qorechaind query crossvm message <message-id>
 
-# List all pending messages
+# List pending messages (from v3.2.8 one page of at most 100; follow the next key for more)
 qorechaind query crossvm pending
 
 # Module parameters
