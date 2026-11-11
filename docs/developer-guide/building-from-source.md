@@ -37,7 +37,7 @@ Every `go build`, `go test`, and `go run` invocation **must** have `CGO_ENABLED=
 
 ### libqorepqc and libqoresvm
 
-The post-quantum (`libqorepqc`) and SVM (`libqoresvm`) libraries are built from Rust sources that are **not part of the public repository** (there is no `rust/` directory in `qorechain-core`). The community build does not need them. The release archives for the networks bundle the compiled libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) in a `lib/` directory next to `qorechaind`; place them in `lib/{os}_{arch}/` or point the loader at them as shown below.
+The post-quantum (`libqorepqc`) and SVM (`libqoresvm`) libraries are built from Rust sources that are **not part of the public repository** (there is no `rust/` directory in `qorechain-core`). The community build does not need them. The release archives for the networks bundle the compiled libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` and, from v3.2.8, `libwasmvmqore.x86_64.so`). Copy the whole `lib/` directory, not individual files in a `lib/` directory next to `qorechaind`; place them in `lib/{os}_{arch}/` or point the loader at them as shown below.
 
 ### Setting the Library Path
 

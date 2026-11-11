@@ -118,6 +118,8 @@ The account record includes its rules and the number of linked keys:
 qorechaind query abstractaccount account <account-address>
 ```
 
+From v3.2.8 (testnet only until a later mainnet upgrade) a key with value permissions is refused at registration and at execution unless a rule bounds it, so "no limit" no longer applies to such keys.
+
 :::caution A rule bounds a key only when one exists
 The chain resolves the limit in this order: the authenticator's own rule if set and `enabled`; otherwise the first `enabled` rule on the account; otherwise **there is no limit**. A rule stored with `enabled: false` is no limit, not a zero limit. `MsgRegisterAuthenticator` carries no rule, so a key linked by that message alone is bounded only by an account-level rule. Set a rule deliberately with `update-rules`, and register only the permissions the key needs. A limit bounds the damage a linked key can do; it does not replace revoking the key.
 :::
@@ -145,7 +147,24 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
+**From release v3.2.8 (testnet only until a later mainnet upgrade) registration needs two more things.**
+
+1. **A possession proof.** `MsgRegisterAuthenticator` has a required field `possession_proof` (field 8): a signature by the key being linked, proving it agrees to the link. The key signs this plain text under its own scheme, so a browser wallet shows the user what they sign (Phantom `signMessage`, MetaMask `personal_sign`); a 33-byte secp256k1 key signs the SHA-256 of the text:
+
+   ```text
+   QoreChain authenticator link v1
+   chain: <chain-id>
+   account: <bech32 account>
+   scheme: <scheme>
+   key: <lowercase hex of the public key, or of the 20-byte address>
+   ```
+
+   The text names the chain, the account, the scheme and the key, so a proof cannot be reused for another chain, account or key. A registration without a valid proof is refused.
+2. **A spending rule for value keys.** A key whose permissions can move value (`send`, `evm`, `svm`, `deploy`, `all`) needs a spending rule that bounds every denomination it can spend, set with `MsgUpdateSpendingRules` before or together with the link. The same rule is enforced at execution for keys linked before the upgrade, so add rules for them too.
+
 A Phantom key is registered the same way with scheme `ed25519` and the Phantom public key (`register-authenticator` on the CLI). Revocation is instant via `MsgRevokeAuthenticator`.
+
+**An execution can fail inside a successful transaction.** From v3.2.8 (testnet only until a later mainnet upgrade) a failed `MsgExecuteEVM` or `MsgExecuteCosmos` returns `success=false` in its response with transaction code 0, emits the event `abstractaccount_execution_failed` with the reason, and still consumes the authenticator nonce. A client that checks only the transaction code will report such a call as a success: read the response or the event.
 
 ### Permission taxonomy {#permission-taxonomy}
 

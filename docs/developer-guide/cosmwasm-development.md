@@ -142,6 +142,13 @@ QoreChain Native contracts follow a five-step lifecycle: **Build**, **Store**, *
 
 ---
 
+## Gas and upload limits (v3.2.8) {#gas-and-limits}
+
+From release v3.2.8 (testnet only until a later mainnet upgrade):
+
+- **Execution gas is repriced.** The first call of a contract code in a block pays a load cost (a cw20 transfer is about 533,000 gas the first time in a block and about 84,000 for repeats), call setup and memory growth are charged, and a congestion factor scales the price from 1x up to 20x by default. Always simulate and add at least 30%; never hardcode gas for a contract call. See [Gas for contract calls](/sdk/guides/cosmwasm#gas).
+- **Uploads are bounded and stay governance-controlled.** Access is checked first, and the mempool admits an upload only from an allowed sender. The upload pays gas for its declared size up front (about 9.9 million gas for cw20, about 22.8 million for cw721). A module may have at most 4,096 functions and compile to at most 32 MiB, and floating-point instructions are refused, both at upload and at call time for code already stored.
+
 ## Useful Queries
 
 ```bash
