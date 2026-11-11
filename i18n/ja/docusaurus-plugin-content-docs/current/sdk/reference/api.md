@@ -136,6 +136,6 @@ pnpm --filter @qorechain/sdk docs:api
 | Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 公開APIにdocstringを完備 | `pip install qorechain-sdk`（バージョン`0.13.0`、インポート名は`qorsdk`） |
 | Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go)（godoc） | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0`（タグ `packages/go/v0.13.0`） |
 | Rust | [docs.rs](https://docs.rs/qorechain-sdk)（rustdoc） | `cargo add qorechain-sdk`（0.13.0、インポート名は`qorechain`） |
-| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.13.0`（Maven Central には 2026年11月11日時点でまだ 0.12.0 が表示されています。0.13.0 が表示され次第そちらを使ってください） |
+| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.13.0`（Maven Central で公開済み、2026年11月11日に確認） |
 
 各パッケージは同一のサーフェス（ネットワークプリセット、denom／アドレスユーティリティ、HD導出 — 統合ethネイティブアカウントを含む — PQCプリミティブとハイブリッド署名、型付きメッセージとクエリ、オーセンティケータレーン、REST + `qor_` JSON-RPC読み取りクライアント）を提供し、各言語ネイティブのドキュメントツールでレンダリングされるようソース内にインラインで文書化されています。TypeScriptのウォレットビルダー（`buildPhantom*` / `buildMetaMask*`）とブラウザウォレットアダプタはTypeScript専用です。

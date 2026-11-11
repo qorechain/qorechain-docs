@@ -11,7 +11,7 @@ QoreSign은 지갑, 거래소, 수탁 기관, 백엔드를 위해 QoreChain에�
 
 QoreSign을 사용하면 QoreChain 자체 지갑이 아닌 지갑도 계정의 ML-DSA-87 키를 파생하고, 두 키로 Native 레인 트랜잭션에 서명하고, 하이브리드 서명을 로컬에서 검증하고, 임의의 메시지에 서명하고, 서명 전에 트랜잭션을 시뮬레이션하고, 커밋된 트랜잭션이 어떻게 보호되었는지 다시 읽어 오고, Sign In With QoreChain을 구현할 수 있습니다. QoreSign은 [`qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) 바인딩 위에 놓인 얇은 계층이며, 자체 암호 프리미티브를 추가하지 않습니다. QoreChain Association이 Apache-2.0 라이선스로 유지 관리합니다.
 
-현재 릴리스는 **0.2.0**(2026년 11월 10일과 11일에 게시)입니다. TypeScript, Rust, Go, Kotlin(JVM 및 Android), Swift로 게시되어 있으며, 0.1.1부터 Python도 게시됩니다. Maven Central에서는 0.2.0이 아직 동기화 중입니다. Central에는 2026년 11월 11일 현재 여전히 0.1.1이 표시됩니다([게시 위치](#where-published) 참고). 소스, 예제, 테스트 벡터는 [qorechain/qoresign](https://github.com/qorechain/qoresign) 저장소에 있습니다. 메인넷(`qorechain-vladi`)과 테스트넷(`qorechain-diana`)에서 동작합니다.
+현재 릴리스는 **0.2.0**(2026년 11월 10일과 11일에 게시)입니다. TypeScript, Rust, Go, Kotlin(JVM 및 Android), Swift로 게시되어 있으며, 0.1.1부터 Python도 게시됩니다. Maven Central에도 0.2.0이 게시되어 있습니다(2026년 11월 11일 확인, [게시 위치](#where-published) 참고). 소스, 예제, 테스트 벡터는 [qorechain/qoresign](https://github.com/qorechain/qoresign) 저장소에 있습니다. 메인넷(`qorechain-vladi`)과 테스트넷(`qorechain-diana`)에서 동작합니다.
 
 ## 레인별 QoreSign의 기능 {#lanes}
 
@@ -130,8 +130,8 @@ console.log("EVM window:", win.found, win.live);
 | Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.2.0` | Go 1.25 |
 | Python | [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) (import `qoresign`) | `pip install qorechain-qoresign` | Python 3.9+, macOS 11+(arm64, x86_64) 및 Linux(x86_64, aarch64)용 wheel, 아직 Windows wheel 없음, 다른 플랫폼은 소스 배포판에서 빌드(Rust 1.95 필요) |
 | Swift | [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign)의 `QoreSign` (GitHub 릴리스의 바이너리 프레임워크) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, 제품 `QoreSign` | iOS 16, macOS 13 |
-| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | 0.2.0이 Central에 나타나면 `implementation("io.github.qorechain:qoresign:0.2.0")`(Central에는 2026년 11월 11일 현재 0.1.1이 표시됨) | Java 17, Kotlin 2.3 이상, macOS(arm64, x86-64), Linux(x86-64, arm64), Windows(x86-64)용 네이티브 라이브러리 |
-| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | 0.2.0이 Central에 나타나면 `implementation("io.github.qorechain:qoresign-android:0.2.0")`(Central에는 2026년 11월 11일 현재 0.1.1이 표시됨) | API 24, Kotlin 2.3 이상, `arm64-v8a`, `armeabi-v7a`, `x86_64`, R8 keep 규칙 포함 |
+| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")`(Maven Central에 게시됨, 2026년 11월 11일 확인) | Java 17, Kotlin 2.3 이상, macOS(arm64, x86-64), Linux(x86-64, arm64), Windows(x86-64)용 네이티브 라이브러리 |
+| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")`(Maven Central에 게시됨, 2026년 11월 11일 확인) | API 24, Kotlin 2.3 이상, `arm64-v8a`, `armeabi-v7a`, `x86_64`, R8 keep 규칙 포함 |
 
 :::note Kotlin 컴파일러 버전
 Kotlin 및 Android 아티팩트를 사용하려면 프로젝트에 **Kotlin 2.3 이상** 컴파일러가 필요합니다. Kotlin 2.1을 쓰는 프로젝트는 컴파일에 실패합니다. 의존성을 추가하기 전에 빌드의 Kotlin 버전을 올리세요.
@@ -257,8 +257,8 @@ API 레퍼런스: 저장소를 클론한 뒤 `pnpm -C packages/ts docs`(TypeScri
 | npm | `@qorechain/qoresign` | 0.2.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
 | crates.io | `qorechain-qoresign` | 0.2.0 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
 | Go module proxy | `github.com/qorechain/qoresign/go` | v0.2.0 (태그 `go/v0.2.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
-| Maven Central | `io.github.qorechain:qoresign` | Central에는 2026년 11월 11일 현재 여전히 0.1.1이 표시됨, 0.2.0은 동기화 중. 나타나면 0.2.0을 사용하세요 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
-| Maven Central | `io.github.qorechain:qoresign-android` | Central에는 2026년 11월 11일 현재 여전히 0.1.1이 표시됨, 0.2.0은 동기화 중. 나타나면 0.2.0을 사용하세요 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
+| Maven Central | `io.github.qorechain:qoresign` | 0.2.0 (2026년 11월 11일 확인) | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
+| Maven Central | `io.github.qorechain:qoresign-android` | 0.2.0 (2026년 11월 11일 확인) | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
 | PyPI | `qorechain-qoresign` | 0.2.0 (macOS arm64 및 x86_64, Linux x86_64 및 aarch64 wheel, 소스 배포판) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
 | Swift Package Manager | `github.com/qorechain/qoresign`의 `QoreSign` | 0.2.0 (릴리스의 바이너리 `QoreSignFFI.xcframework.zip`) | [GitHub 릴리스](https://github.com/qorechain/qoresign/releases/tag/v0.2.0) |
 

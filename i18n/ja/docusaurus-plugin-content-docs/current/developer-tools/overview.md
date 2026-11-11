@@ -92,7 +92,7 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 | [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | 公開済み |
 | [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | 公開済み |
 | [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | 公開済み |
-| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.13.0 | `implementation("io.github.qorechain:qorechain-sdk:0.13.0")` | 公開作業中: Maven Central には2026年11月11日時点でまだ 0.12.0 が表示されています。0.13.0 が表示され次第そちらを使ってください |
+| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.13.0 | `implementation("io.github.qorechain:qorechain-sdk:0.13.0")` | 公開済み（Maven Central、v0.13.0、JDK 17+） |
 
 SDK 0.13.0は2026年11月11日から最新版です(シードパスのアカウントヘルパーが変わり、`QRC1`のリカバリーコードまたは独立した32バイトのPQCシークレットが必要になりました。ニーモニックのアカウント、署名、チェーンの動作は変わりません。[0.13.0の変更点](/sdk/install#whats-new-0130)を参照)。SDK 0.12.0は2026年10月30日から最新版でした。0.10.0と比べると、プリセットは既定で公開エンドポイントを使います(メインネットは`api.qore.host`、`rpc.qore.host`、`evm.qore.host`、テストネットは`-testnet`のホスト。以前の既定はlocalhostでした)。ローカルのプリセットのチェーンIDは`qorechain-devnet`で、ガスはv3.2.5以降のノードで正確になり(シミュレーション結果に1.02を掛けて2,000を加えます。古いノード向けには従来の方法が残ります)、ML-KEM-1024鍵レジストリに対応し(登録、削除、`/qorechain/pqc/v1/kem/\{address\}`の照会)、[チェーン開発者キット](#group-chain-dev-sdk)が含まれます。ハイブリッド署名は変わりません。Python、Rust、Go、Javaのパッケージは0.10.0から直接0.12.0になりました。5つのnpmパッケージにはキットの内容を含む0.11.0(2026年10月29日)もありますが、0.12.0がこれに取って代わります。
 
@@ -107,8 +107,8 @@ SDK 0.13.0は2026年11月11日から最新版です(シードパスのアカウ�
 | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.2.0 | `go get github.com/qorechain/qoresign/go@v0.2.0` | 公開済み |
 | [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+(`qoresign`としてインポート) | 0.2.0 | `pip install qorechain-qoresign` | 公開済み(Pythonは0.1.1から)。macOS(arm64、x86_64)とLinux(x86_64、aarch64)向けのホイール。Windows向けのホイールはまだありません。オフライン関数のみ |
 | `QoreSign` (Swift package) | Swift (iOS 16+, macOS 13+) | 0.2.0 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, product `QoreSign` | GitHubリリースとして公開。バイナリフレームワークはそこからダウンロードされます |
-| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 2026年11月11日時点でCentralには0.1.1が表示されています。0.2.0は同期中です | 0.2.0が表示されたら`implementation("io.github.qorechain:qoresign:0.2.0")` | 公開済み(現在Centralにあるのは0.1.1) |
-| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 2026年11月11日時点でCentralには0.1.1が表示されています。0.2.0は同期中です | 0.2.0が表示されたら`implementation("io.github.qorechain:qoresign-android:0.2.0")` | 公開済み(現在Centralにあるのは0.1.1)。JVMアーティファクトと同じAPI。例はJVMアーティファクトでのみ実行し、Androidデバイスでは実行していません |
+| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.2.0 | `implementation("io.github.qorechain:qoresign:0.2.0")` | 公開済み(Maven Central、v0.2.0、2026年11月11日に確認) |
+| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.2.0 | `implementation("io.github.qorechain:qoresign-android:0.2.0")` | 公開済み(Maven Central、v0.2.0、2026年11月11日に確認)。JVMアーティファクトと同じAPI。例はJVMアーティファクトでのみ実行し、Androidデバイスでは実行していません |
 
 KotlinおよびAndroidのアーティファクトには、プロジェクトでKotlin 2.3以降のコンパイラが必要です。Kotlin 2.1のプロジェクトでは、これらに対するコンパイルが失敗します。
 

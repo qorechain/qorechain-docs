@@ -11,7 +11,7 @@ QoreSign este o bibliotecă open-source pentru semnarea hibridă secp256k1 + ML-
 
 QoreSign permite unui portofel diferit de cel propriu al QoreChain să deriveze cheia ML-DSA-87 a unui cont, să semneze cu ambele chei tranzacțiile de pe lane-ul nativ, să verifice local semnăturile hibride, să semneze mesaje arbitrare, să simuleze o tranzacție înainte de semnare, să citească înapoi cum a fost protejată o tranzacție confirmată și să implementeze Sign In With QoreChain. Este un strat subțire peste bindingurile [`qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) și nu adaugă primitive criptografice proprii. Este întreținut de QoreChain Association sub licența Apache-2.0.
 
-Versiunea curentă este **0.2.0** (publicată la 10 și 11 noiembrie 2026). Este publicată în TypeScript, Rust, Go, Kotlin (JVM și Android), Swift și, de la 0.1.1, Python. Pe Maven Central, 0.2.0 încă se sincronizează: Central încă afișa 0.1.1 la 11 noiembrie 2026 (vezi [Unde este publicat](#where-published)). Sursa, exemplele și vectorii de test se găsesc în depozitul [qorechain/qoresign](https://github.com/qorechain/qoresign). Funcționează pe mainnet (`qorechain-vladi`) și pe testnet (`qorechain-diana`).
+Versiunea curentă este **0.2.0** (publicată la 10 și 11 noiembrie 2026). Este publicată în TypeScript, Rust, Go, Kotlin (JVM și Android), Swift și, de la 0.1.1, Python. Pe Maven Central, 0.2.0 este publicat (verificat la 11 noiembrie 2026; vezi [Unde este publicat](#where-published)). Sursa, exemplele și vectorii de test se găsesc în depozitul [qorechain/qoresign](https://github.com/qorechain/qoresign). Funcționează pe mainnet (`qorechain-vladi`) și pe testnet (`qorechain-diana`).
 
 ## Ce face QoreSign pe fiecare lane {#lanes}
 
@@ -129,8 +129,8 @@ Dimensiuni (FIPS 204 și [ghidul de dimensiuni](/qoresign/guides/sizes-and-trans
 | Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.2.0` | Go 1.25 |
 | Python | [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) (import `qoresign`) | `pip install qorechain-qoresign` | Python 3.9+; wheel-uri pentru macOS 11+ (arm64, x86_64) și Linux (x86_64, aarch64); încă fără wheel pentru Windows, celelalte platforme se construiesc din distribuția sursă (necesită Rust 1.95) |
 | Swift | `QoreSign` din [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign) (binary framework în release-ul GitHub) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, produs `QoreSign` | iOS 16, macOS 13 |
-| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` după ce 0.2.0 apare pe Central (Central afișează 0.1.1 la 11 noiembrie 2026) | Java 17, Kotlin 2.3 sau mai nou; biblioteci native pentru macOS (arm64, x86-64), Linux (x86-64, arm64) și Windows (x86-64) |
-| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` după ce 0.2.0 apare pe Central (Central afișează 0.1.1 la 11 noiembrie 2026) | API 24, Kotlin 2.3 sau mai nou; `arm64-v8a`, `armeabi-v7a`, `x86_64`; reguli R8 keep incluse |
+| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` publicat pe Maven Central, 0.2.0 (verificat la 11 noiembrie 2026) | Java 17, Kotlin 2.3 sau mai nou; biblioteci native pentru macOS (arm64, x86-64), Linux (x86-64, arm64) și Windows (x86-64) |
+| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` publicat pe Maven Central, 0.2.0 (verificat la 11 noiembrie 2026) | API 24, Kotlin 2.3 sau mai nou; `arm64-v8a`, `armeabi-v7a`, `x86_64`; reguli R8 keep incluse |
 
 :::note Versiunea compilatorului Kotlin
 Artefactele Kotlin și Android au nevoie în proiectul dumneavoastră de compilatorul **Kotlin 2.3 sau mai nou**. Un proiect pe Kotlin 2.1 nu se compilează împotriva lor. Ridicați versiunea Kotlin a build-ului înainte de a adăuga dependența.
@@ -255,8 +255,8 @@ Versiuni verificate în registre la 11 noiembrie 2026.
 | npm | `@qorechain/qoresign` | 0.2.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
 | crates.io | `qorechain-qoresign` | 0.2.0 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
 | Go module proxy | `github.com/qorechain/qoresign/go` | v0.2.0 (tag `go/v0.2.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
-| Maven Central | `io.github.qorechain:qoresign` | Central încă afișa 0.1.1 la 11 noiembrie 2026; 0.2.0 se sincronizează. Folosiți 0.2.0 după ce apare | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
-| Maven Central | `io.github.qorechain:qoresign-android` | Central încă afișa 0.1.1 la 11 noiembrie 2026; 0.2.0 se sincronizează. Folosiți 0.2.0 după ce apare | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
+| Maven Central | `io.github.qorechain:qoresign` | Publicat (Maven Central, v0.2.0), verificat la 11 noiembrie 2026 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
+| Maven Central | `io.github.qorechain:qoresign-android` | Publicat (Maven Central, v0.2.0), verificat la 11 noiembrie 2026 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
 | PyPI | `qorechain-qoresign` | 0.2.0 (wheel-uri macOS arm64 și x86_64, Linux x86_64 și aarch64, distribuție sursă) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
 | Swift Package Manager | `QoreSign` din `github.com/qorechain/qoresign` | 0.2.0 (binarul `QoreSignFFI.xcframework.zip` în release) | [Release GitHub](https://github.com/qorechain/qoresign/releases/tag/v0.2.0) |
 

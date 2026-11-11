@@ -10,7 +10,7 @@ sidebar_position: 34
 チェーン開発者キットは QoreChain SDK の一部で、Solidity とスマートコントラクトのチームが、すでに使っているツールで QoreChain 上に構築できるようにします。`@qorechain/evm` に viem のチェーン定義と EVM 認可ウィンドウのヘルパーを追加し、`create-qorechain-dapp` に 4 つのプロジェクトテンプレート（Foundry、Hardhat 3、wagmi を使う viem、QoreChain Native の CosmWasm トークン）を追加し、5 言語の EVM クイックスタートと、QoreChain の EVM が Ethereum とどう違うかのリファレンスを提供します。Ethereum からコントラクトを移植する Solidity チーム、wagmi や RainbowKit を使う dApp フロントエンド開発者、CosmWasm 開発者、そして QoreChain を追加したい EVM ツールのメンテナーを対象としています。
 
 :::note 稼働中: SDK 0.13.0 に含まれます
-このキットは QoreChain SDK **0.13.0**（npm、2026年11月11日）で**稼働中であり、インストールできます**: `@qorechain/evm` 0.13.0、`@qorechain/sdk` 0.13.0、`@qorechain/react` 0.13.0、`@qorechain/svm` 0.13.0、`create-qorechain-dapp` 0.13.0。Python、Rust、Go の SDK も 0.13.0 です（Java SDK は公開作業中で、Maven Central には2026年11月11日時点でまだ 0.12.0 が表示されていました）。その内容は最初に npm だけで 0.11.0 として公開され（2026年10月29日）、0.12.0（2026年10月30日）に含まれていました。ほかのレジストリに 0.11.0 はありません。このページのテスト実行は、2026年11月4日に 0.12.0 に対して行いました。0.13.0 ではシードパスのアカウントヘルパーとテンプレートの `PRIVATE_KEY` の扱いが変わりました（[0.13.0 の変更点](/sdk/install#whats-new-0130)を参照）。
+このキットは QoreChain SDK **0.13.0**（npm、2026年11月11日）で**稼働中であり、インストールできます**: `@qorechain/evm` 0.13.0、`@qorechain/sdk` 0.13.0、`@qorechain/react` 0.13.0、`@qorechain/svm` 0.13.0、`create-qorechain-dapp` 0.13.0。Python、Rust、Go の SDK も 0.13.0 です（Java SDK も Maven Central で 0.13.0 が公開済みです。2026年11月11日に確認）。その内容は最初に npm だけで 0.11.0 として公開され（2026年10月29日）、0.12.0（2026年10月30日）に含まれていました。ほかのレジストリに 0.11.0 はありません。このページのテスト実行は、2026年11月4日に 0.12.0 に対して行いました。0.13.0 ではシードパスのアカウントヘルパーとテンプレートの `PRIVATE_KEY` の扱いが変わりました（[0.13.0 の変更点](/sdk/install#whats-new-0130)を参照）。
 :::
 
 このキットは、メインネット（`qorechain-vladi`、EVM チェーン ID 9801）とテストネット（`qorechain-diana`、EVM チェーン ID 9800）を対象としています。
@@ -126,7 +126,7 @@ sidebar_position: 34
 | Python（EVM の読み取り） | `pip install "web3>=7,<8"`。ウィンドウメッセージは `pip install qorechain-sdk`（0.13.0）から | Python 3.10 以降 |
 | Go（EVM の読み取り） | `go get github.com/ethereum/go-ethereum@latest`。ウィンドウメッセージは `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` から | Go ツールチェーン |
 | Rust（EVM の読み取り） | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`。ウィンドウメッセージはクレート `qorechain-sdk` 0.13.0 から | stable の Rust |
-| Java（EVM の読み取り） | `org.web3j:core:5.0.0`。ウィンドウメッセージは `io.github.qorechain:qorechain-sdk:0.13.0` から（Maven Central には2026年11月11日時点でまだ 0.12.0 が表示されています。0.13.0 が表示され次第そちらを使ってください） | JDK 21（QoreChain Java SDK は JDK 21 ツールチェーンでビルドされます） |
+| Java（EVM の読み取り） | `org.web3j:core:5.0.0`。ウィンドウメッセージは `io.github.qorechain:qorechain-sdk:0.13.0` から（Maven Central で公開済み、2026年11月11日に確認） | JDK 21（QoreChain Java SDK は JDK 21 ツールチェーンでビルドされます） |
 
 ### クイックスタート 1: ethers v6 で読み取る {#quickstart-ethers}
 
@@ -335,7 +335,7 @@ EIP-7702 の同意（TypeScript、`@qorechain/sdk` 0.13.0）: `authorizeEvmDeleg
 
 ## 公開場所 {#where-published}
 
-バージョンは2026年11月11日に各レジストリからライブで読み取りました（Maven Central は例外で、その行を参照）。GitHub のタグ `v0.12.0` は存在します。5 つの npm パッケージには、同じキットの内容を含む 0.11.0（2026年10月29日）もあります。Python、Rust、Go、Java の SDK は 0.10.0 から直接 0.12.0 になり、Java 以外のすべての言語は 0.13.0 です。
+バージョンは2026年11月11日に各レジストリからライブで読み取りました（Maven Central を含む）。GitHub のタグ `v0.12.0` は存在します。5 つの npm パッケージには、同じキットの内容を含む 0.11.0（2026年10月29日）もあります。Python、Rust、Go、Java の SDK は 0.10.0 から直接 0.12.0 になり、すべての言語が 0.13.0 です。
 
 | レジストリ | パッケージ | バージョン | リンク |
 |---|---|---|---|
@@ -348,7 +348,7 @@ EIP-7702 の同意（TypeScript、`@qorechain/sdk` 0.13.0）: `authorizeEvmDeleg
 | PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
 | Go プロキシ | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0（0.13.0 は公開作業中。表示され次第そちらを使ってください） | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 ソース: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk)、タグ `v0.13.0`。パスは `packages/evm`、`cli/`、`templates/`、`docs/docs/guides/`、`contrib/`。Apache-2.0、QoreChain Association が保守しています。
 

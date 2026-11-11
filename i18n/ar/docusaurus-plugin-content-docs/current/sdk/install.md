@@ -22,7 +22,7 @@ WebSocket). الإصدار الحالي هو **0.13.0**، ونُشر في 11 ن�
 | PyPI | `qorechain-sdk` (الاستيراد `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (الاستيراد `qorechain`) | 0.13.0 |
 | وكيل وحدات Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | قيد النشر: ما زال Maven Central يعرض 0.12.0 في 11 نوفمبر 2026؛ استخدم 0.13.0 عند ظهوره (JDK 17 أو أحدث) |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | منشورة (Maven Central، الإصدار 0.13.0؛ JDK 17 أو أحدث؛ جرى التحقق في 11 نوفمبر 2026) |
 
 لا يوجد 0.11.0 لـ Python أو Rust أو Go أو Java: فقد كان لحزم npm إصدار 0.11.0 في
 29 أكتوبر 2026 (مجموعة أدوات مطوري السلسلة، انظر أدناه) وانتقلت كل لغة
@@ -56,7 +56,7 @@ WebSocket). الإصدار الحالي هو **0.13.0**، ونُشر في 11 ن�
 `create-qorechain-dapp`. وفيه تغيير كاسر واحد في مساعد الحساب على مسار البذرة.
 الحسابات المشتقة من عبارة ذاكرية دون تغيير، وكذلك صيغة التوقيع الهجين وسلوك
 السلسلة: تبقى المعاملة المبنية بـ 0.12.0 صالحة.
-(Java قيد النشر: ما زال Maven Central يعرض 0.12.0 في 11 نوفمبر 2026.)
+(Java منشورة على Maven Central بالإصدار 0.13.0؛ جرى التحقق في 11 نوفمبر 2026.)
 
 **تغيير كاسر.** مساعدات مسار البذرة `unifiedAccountFromSeed` (TypeScript)، و
 `unified_account_from_seed` (Python وRust)، و`unified.UnifiedAccountFromSeed` (Go)، و
@@ -362,10 +362,8 @@ Maven‏ (`pom.xml`):
 implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 ```
 
-> منشورة على Maven Central باسم `io.github.qorechain:qorechain-sdk`. يجري نشر
-> 0.13.0: ما زال Maven Central يعرض 0.12.0 بوصفه الأحدث في 11 نوفمبر 2026،
-> والإحداثيات أعلاه هي الإصدار الذي تستخدمه عند ظهور 0.13.0 (وحتى ذلك الحين
-> استخدم 0.12.0). ويحتاج JDK 17 أو أحدث. لا يحتوي Central على إصدار
+> منشورة على Maven Central باسم `io.github.qorechain:qorechain-sdk`، الإصدار
+> 0.13.0 (جرى التحقق في 11 نوفمبر 2026). ويحتاج JDK 17 أو أحدث. لا يحتوي Central على إصدار
 > 0.8.0 أو 0.8.1، لذا استخدم على الشبكات الحيّة 0.8.2 أو أحدث. وكان 0.9.1 إصدارًا
 > خاصًا بـ Java فقط نقل Bouncy Castle من 1.80 إلى 1.85 دون تغيير في واجهة API.
 
@@ -382,7 +380,7 @@ implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 | `@qorechain/rdk-cli` | واجهة CLI للمشغّلين `qorollup` الخاصة بـ RDK. منذ 0.7.1 توقّع أوامر معاملاتها (`create` و`pause` و`resume` و`stop` و`withdraw`) توقيعًا هجينًا (كان 0.7.0 وما قبله يوقّع توقيعًا كلاسيكيًا فقط وترفضه الشبكتان)؛ وعند تثبيتها من npm تعمل ويطبع `--version` الإصدار المثبَّت (كان 0.6.1 وما قبله لا يطبع شيئًا) | 0.8.0 |
 | `@qorechain/qoreseal` | QoreSeal: تشفير حمولة إلى مفاتيح ML-KEM-1024 التي تنشرها الحسابات في سجل KEM (يسجّل SDK 0.12.0 وما بعده المفاتيح ويقرؤها؛ ويتولى QoreSeal التشفير). متاحة أيضًا على PyPI (`qorechain-qoreseal`؛ عجلات macOS وLinux، وعجلة Windows في الإصدار التالي) وcrates.io وMaven Central (`io.github.qorechain:qoreseal` و`qoreseal-android`؛ ويحتاج مستهلكو Kotlin إلى Kotlin 2.3 أو أحدث) ووكيل وحدات Go (`github.com/qorechain/qoreseal/go`، ‏Go `v0.1.0`) وكحزمة Swift. انظر [QoreSeal](/developer-tools/qoreseal) | 0.1.0 |
 | `@qorechain/asset-kit` | Asset Kit: أدوات لرموز الأصول الواقعية ذات الأذونات على محرك EVM، مع عملاء بلغات TypeScript وPython وJava وGo وعقود Solidity (`forge install qorechain/qorechain-asset-kit@v0.1.0`). ترخيص Apache-2.0، عدا سكربتات واختبارات ERC-3643 (GPL-3.0-or-later). الوحدات الأصلية التي يصفها مقترح، وليست مبنية. وهي أيضًا `qorechain-asset-kit` على PyPI و`io.github.qorechain:asset-kit` على Maven Central. انظر [Asset Kit](/developer-tools/asset-kit) | 0.1.0 |
-| `@qorechain/qoresign` | QoreSign: توقيع المحافظ والواجهات الخلفية، و`inspectTransaction` لفحص طبقة ما بعد الكمّي في معاملة مثبَّتة. متاحة أيضًا على PyPI وcrates.io وMaven Central. انظر [QoreSign](/qoresign/overview) | 0.1.1 |
+| `@qorechain/qoresign` | QoreSign: توقيع المحافظ والواجهات الخلفية، و`inspectTransaction` لفحص طبقة ما بعد الكمّي في معاملة مثبَّتة. متاحة أيضًا على PyPI وcrates.io وMaven Central. انظر [QoreSign](/qoresign/overview) | 0.2.0 |
 | `create-qorechain-rollup` | أداة تهيئة بدايات الـ rollup؛ تعتمد قوالبها على `@qorechain/rdk` ‏`^0.8.0` وتوقّع هجينًا حين تستطيع استخلاص مفتاحك ما بعد الكمّي من `QORE_MNEMONIC` أو `QORE_PQC_SEED_HEX` | 0.8.0 |
 
 ## التالي

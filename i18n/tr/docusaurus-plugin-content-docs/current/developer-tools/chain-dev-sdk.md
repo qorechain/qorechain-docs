@@ -10,7 +10,7 @@ sidebar_position: 34
 Zincir geliştirici kiti, Solidity ve akıllı sözleşme ekiplerinin zaten kullandıkları araçlarla QoreChain üzerinde geliştirme yapmasına yardımcı olan QoreChain SDK'nın parçasıdır. `@qorechain/evm` paketine viem zincir tanımlarını ve EVM yetkilendirme penceresi yardımcılarını, `create-qorechain-dapp` aracına dört proje şablonunu (Foundry, Hardhat 3, wagmi ile viem ve bir QoreChain Native CosmWasm token'ı), beş dil için EVM hızlı başlangıçlarını ve QoreChain EVM'inin Ethereum'dan nasıl ayrıştığını anlatan bir başvuru belgesini ekler. Sözleşmeleri Ethereum'dan taşıyan Solidity ekipleri, wagmi ve RainbowKit kullanan dApp ön yüz geliştiricileri, CosmWasm geliştiricileri ve araçlarına QoreChain'i eklemek isteyen EVM araç bakımcıları için hazırlanmıştır.
 
 :::note Canlı: SDK 0.13.0'a dahildir
-Kit, QoreChain SDK **0.13.0** içinde (npm, 11 Kasım 2026) **canlıdır ve kurulabilir**: `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0 ve `create-qorechain-dapp` 0.13.0; Python, Rust ve Go SDK'ları da 0.13.0'dadır (Java SDK yayımlanma aşamasındadır: Maven Central 11 Kasım 2026'da hâlâ 0.12.0 gösteriyordu). İçeriği ilk olarak yalnızca npm'de 0.11.0 olarak yayımlandı (29 Ekim 2026) ve 0.12.0'da (30 Ekim 2026) yer aldı; başka hiçbir kayıt defterinde 0.11.0 yoktur. Bu sayfadaki test çalıştırmaları 4 Kasım 2026'da 0.12.0'a karşı yapıldı; 0.13.0, seed yolu hesap yardımcısını ve şablonların `PRIVATE_KEY` işleyişini değiştirdi (bkz. [0.13.0 neyi değiştiriyor](/sdk/install#whats-new-0130)).
+Kit, QoreChain SDK **0.13.0** içinde (npm, 11 Kasım 2026) **canlıdır ve kurulabilir**: `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0 ve `create-qorechain-dapp` 0.13.0; Python, Rust ve Go SDK'ları da 0.13.0'dadır (Java SDK da Maven Central'da 0.13.0'dır, 11 Kasım 2026'da kontrol edildi). İçeriği ilk olarak yalnızca npm'de 0.11.0 olarak yayımlandı (29 Ekim 2026) ve 0.12.0'da (30 Ekim 2026) yer aldı; başka hiçbir kayıt defterinde 0.11.0 yoktur. Bu sayfadaki test çalıştırmaları 4 Kasım 2026'da 0.12.0'a karşı yapıldı; 0.13.0, seed yolu hesap yardımcısını ve şablonların `PRIVATE_KEY` işleyişini değiştirdi (bkz. [0.13.0 neyi değiştiriyor](/sdk/install#whats-new-0130)).
 :::
 
 Kit, ana ağı (`qorechain-vladi`, EVM zincir kimliği 9801) ve test ağını (`qorechain-diana`, EVM zincir kimliği 9800) hedefler.
@@ -126,7 +126,7 @@ Okuyan tüm kod parçaları herkese açık test ağını (`qorechain-diana`, EVM
 | Python (EVM okumaları) | `pip install "web3>=7,<8"`; pencere mesajı `pip install qorechain-sdk` (0.13.0) ile | Python 3.10 veya üstü |
 | Go (EVM okumaları) | `go get github.com/ethereum/go-ethereum@latest`; pencere mesajı `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` ile | Go araç zinciri |
 | Rust (EVM okumaları) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; pencere mesajı `qorechain-sdk` 0.13.0 crate'inden | Rust stable |
-| Java (EVM okumaları) | `org.web3j:core:5.0.0`; pencere mesajı `io.github.qorechain:qorechain-sdk:0.13.0` paketinden (Maven Central 11 Kasım 2026'da hâlâ 0.12.0 gösteriyordu; göründüğünde 0.13.0'ı kullanın) | JDK 21 (QoreChain Java SDK, JDK 21 araç zinciriyle derlenir) |
+| Java (EVM okumaları) | `org.web3j:core:5.0.0`; pencere mesajı `io.github.qorechain:qorechain-sdk:0.13.0` paketinden (Maven Central'da yayımlandı, 11 Kasım 2026'da kontrol edildi) | JDK 21 (QoreChain Java SDK, JDK 21 araç zinciriyle derlenir) |
 
 ### Hızlı başlangıç 1: ethers v6 ile okuma {#quickstart-ethers}
 
@@ -335,7 +335,7 @@ EIP-7702 onayı (TypeScript, `@qorechain/sdk` 0.13.0): `authorizeEvmDelegationMs
 
 ## Nerede yayımlandı {#where-published}
 
-Sürümler 11 Kasım 2026'da kayıt defterlerinden canlı okundu (Maven Central bir istisnadır, bkz. satırı). GitHub etiketi `v0.12.0` mevcut. Beş npm paketinin ayrıca aynı kit içeriğini taşıyan bir 0.11.0 sürümü de vardır (29 Ekim 2026); Python, Rust, Go ve Java SDK'ları doğrudan 0.10.0'dan 0.12.0'a geçti ve Java dışındaki her dil 0.13.0'dadır.
+Sürümler 11 Kasım 2026'da kayıt defterlerinden canlı okundu. GitHub etiketi `v0.12.0` mevcut. Beş npm paketinin ayrıca aynı kit içeriğini taşıyan bir 0.11.0 sürümü de vardır (29 Ekim 2026); Python, Rust, Go ve Java SDK'ları doğrudan 0.10.0'dan 0.12.0'a geçti ve her dil 0.13.0'dadır.
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|
@@ -348,7 +348,7 @@ Sürümler 11 Kasım 2026'da kayıt defterlerinden canlı okundu (Maven Central 
 | PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
 | Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 (0.13.0 yayımlanıyor; göründüğünde onu kullanın) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 Kaynak: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), etiket `v0.13.0`; yollar `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, QoreChain Association tarafından sürdürülür.
 

@@ -11,7 +11,7 @@ QoreSign è una libreria open source per la firma ibrida secp256k1 + ML-DSA-87 (
 
 QoreSign permette a un wallet diverso da quello di QoreChain di derivare la chiave ML-DSA-87 di un account, firmare le transazioni sulla corsia Native con entrambe le chiavi, verificare localmente le firme ibride, firmare messaggi arbitrari, simulare una transazione prima di firmarla, rileggere come è stata protetta una transazione confermata e implementare Sign In With QoreChain. È un sottile strato sopra i binding [`qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) e non aggiunge alcuna primitiva crittografica propria. È mantenuta dalla QoreChain Association con licenza Apache-2.0.
 
-La versione attuale è la **0.2.0** (pubblicata il 10 e 11 novembre 2026). È pubblicata in TypeScript, Rust, Go, Kotlin (JVM e Android), Swift e, dalla 0.1.1, Python. Su Maven Central la 0.2.0 si sta ancora sincronizzando: Central mostra ancora la 0.1.1 all'11 novembre 2026 (vedi [Dove è pubblicata](#where-published)). Il codice sorgente, gli esempi e i vettori di test si trovano nel repository [qorechain/qoresign](https://github.com/qorechain/qoresign). Funziona sulla mainnet (`qorechain-vladi`) e sulla testnet (`qorechain-diana`).
+La versione attuale è la **0.2.0** (pubblicata il 10 e 11 novembre 2026). È pubblicata in TypeScript, Rust, Go, Kotlin (JVM e Android), Swift e, dalla 0.1.1, Python. Anche su Maven Central la 0.2.0 è pubblicata (QoreSign e QoreSign Android, verificato l'11 novembre 2026; vedi [Dove è pubblicata](#where-published)). Il codice sorgente, gli esempi e i vettori di test si trovano nel repository [qorechain/qoresign](https://github.com/qorechain/qoresign). Funziona sulla mainnet (`qorechain-vladi`) e sulla testnet (`qorechain-diana`).
 
 ## Che cosa fa QoreSign su ciascuna corsia {#lanes}
 
@@ -129,8 +129,8 @@ Dimensioni (FIPS 204 e la [guida alle dimensioni](/qoresign/guides/sizes-and-tra
 | Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.2.0` | Go 1.25 |
 | Python | [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) (import `qoresign`) | `pip install qorechain-qoresign` | Python 3.9+; wheel per macOS 11+ (arm64, x86_64) e Linux (x86_64, aarch64); nessuna wheel per Windows per ora, le altre piattaforme compilano dalla distribuzione sorgente (richiede Rust 1.95) |
 | Swift | `QoreSign` da [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign) (framework binario nella release GitHub) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, prodotto `QoreSign` | iOS 16, macOS 13 |
-| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` quando la 0.2.0 compare su Central (Central mostra la 0.1.1 all'11 novembre 2026) | Java 17, Kotlin 2.3 o successivo; librerie native per macOS (arm64, x86-64), Linux (x86-64, arm64) e Windows (x86-64) |
-| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` quando la 0.2.0 compare su Central (Central mostra la 0.1.1 all'11 novembre 2026) | API 24, Kotlin 2.3 o successivo; `arm64-v8a`, `armeabi-v7a`, `x86_64`; regole keep di R8 incluse |
+| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` (pubblicata su Maven Central, verificato l'11 novembre 2026) | Java 17, Kotlin 2.3 o successivo; librerie native per macOS (arm64, x86-64), Linux (x86-64, arm64) e Windows (x86-64) |
+| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` (pubblicata su Maven Central, verificato l'11 novembre 2026) | API 24, Kotlin 2.3 o successivo; `arm64-v8a`, `armeabi-v7a`, `x86_64`; regole keep di R8 incluse |
 
 :::note Versione del compilatore Kotlin
 Gli artefatti Kotlin e Android richiedono nel tuo progetto il compilatore **Kotlin 2.3 o successivo**. Un progetto con Kotlin 2.1 non compila rispetto a essi. Aggiorna la versione di Kotlin della build prima di aggiungere la dipendenza.
@@ -255,8 +255,8 @@ Versioni verificate sui registry l'11 novembre 2026.
 | npm | `@qorechain/qoresign` | 0.2.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
 | crates.io | `qorechain-qoresign` | 0.2.0 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
 | Go module proxy | `github.com/qorechain/qoresign/go` | v0.2.0 (tag `go/v0.2.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
-| Maven Central | `io.github.qorechain:qoresign` | Central mostra ancora la 0.1.1 all'11 novembre 2026; la 0.2.0 si sta sincronizzando. Usa la 0.2.0 quando compare | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
-| Maven Central | `io.github.qorechain:qoresign-android` | Central mostra ancora la 0.1.1 all'11 novembre 2026; la 0.2.0 si sta sincronizzando. Usa la 0.2.0 quando compare | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
+| Maven Central | `io.github.qorechain:qoresign` | 0.2.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
+| Maven Central | `io.github.qorechain:qoresign-android` | 0.2.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
 | PyPI | `qorechain-qoresign` | 0.2.0 (wheel per macOS arm64 e x86_64, Linux x86_64 e aarch64, distribuzione sorgente) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
 | Swift Package Manager | `QoreSign` da `github.com/qorechain/qoresign` | 0.2.0 (binario `QoreSignFFI.xcframework.zip` nella release) | [Release GitHub](https://github.com/qorechain/qoresign/releases/tag/v0.2.0) |
 

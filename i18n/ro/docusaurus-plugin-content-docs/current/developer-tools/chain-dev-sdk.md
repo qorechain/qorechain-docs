@@ -10,7 +10,7 @@ sidebar_position: 34
 Kitul pentru dezvoltatori de lanț este partea din QoreChain SDK care îi ajută pe dezvoltatorii de Solidity și de contracte inteligente să construiască pe QoreChain cu uneltele pe care le folosesc deja. Adaugă definiții de lanț viem și ajutoare pentru fereastra de autorizare EVM în `@qorechain/evm`, patru șabloane de proiect în `create-qorechain-dapp` (Foundry, Hardhat 3, viem cu wagmi și un token CosmWasm QoreChain Native), quickstart-uri EVM pentru cinci limbaje și o referință despre cum diferă EVM-ul QoreChain de Ethereum. Este destinat echipelor Solidity care portează contracte de pe Ethereum, dezvoltatorilor de front-end pentru dApp-uri pe wagmi și RainbowKit, dezvoltatorilor CosmWasm și mentenanților de unelte EVM care vor să adauge QoreChain.
 
 :::note Live: inclus în SDK 0.13.0
-Kitul este **live și instalabil** în QoreChain SDK **0.13.0** (npm, 11 noiembrie 2026): `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0 și `create-qorechain-dapp` 0.13.0, iar SDK-urile Python, Rust și Go sunt și ele la 0.13.0 (SDK-ul Java se publică: Maven Central arăta încă 0.12.0 la 11 noiembrie 2026). Conținutul său a apărut prima dată ca 0.11.0 doar pe npm (29 octombrie 2026) și a fost în 0.12.0 (30 octombrie 2026); niciun alt registru nu are un 0.11.0. Rulările de test de pe această pagină au fost făcute față de 0.12.0 pe 4 noiembrie 2026; 0.13.0 a schimbat helperul de cont pe calea cu seed și tratarea `PRIVATE_KEY` în șabloane (vezi [Ce schimbă 0.13.0](/sdk/install#whats-new-0130)).
+Kitul este **live și instalabil** în QoreChain SDK **0.13.0** (npm, 11 noiembrie 2026): `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0 și `create-qorechain-dapp` 0.13.0, iar SDK-urile Python, Rust și Go sunt și ele la 0.13.0 (SDK-ul Java este publicat pe Maven Central la 0.13.0, verificat la 11 noiembrie 2026). Conținutul său a apărut prima dată ca 0.11.0 doar pe npm (29 octombrie 2026) și a fost în 0.12.0 (30 octombrie 2026); niciun alt registru nu are un 0.11.0. Rulările de test de pe această pagină au fost făcute față de 0.12.0 pe 4 noiembrie 2026; 0.13.0 a schimbat helperul de cont pe calea cu seed și tratarea `PRIVATE_KEY` în șabloane (vezi [Ce schimbă 0.13.0](/sdk/install#whats-new-0130)).
 :::
 
 Kitul vizează mainnet (`qorechain-vladi`, ID de lanț EVM 9801) și testnet (`qorechain-diana`, ID de lanț EVM 9800).
@@ -126,7 +126,7 @@ Toate fragmentele care citesc folosesc testnet-ul public (`qorechain-diana`, ID 
 | Python (citiri EVM) | `pip install "web3>=7,<8"`; mesajul ferestrei din `pip install qorechain-sdk` (0.13.0) | Python 3.10 sau mai nou |
 | Go (citiri EVM) | `go get github.com/ethereum/go-ethereum@latest`; mesajul ferestrei din `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Toolchain Go |
 | Rust (citiri EVM) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; mesajul ferestrei din crate-ul `qorechain-sdk` 0.13.0 | Rust stable |
-| Java (citiri EVM) | `org.web3j:core:5.0.0`; mesajul ferestrei din `io.github.qorechain:qorechain-sdk:0.13.0` (Maven Central arăta încă 0.12.0 la 11 noiembrie 2026; folosiți 0.13.0 de îndată ce apare) | JDK 21 (SDK-ul QoreChain Java este construit cu un toolchain JDK 21) |
+| Java (citiri EVM) | `org.web3j:core:5.0.0`; mesajul ferestrei din `io.github.qorechain:qorechain-sdk:0.13.0` (publicat pe Maven Central, verificat la 11 noiembrie 2026) | JDK 21 (SDK-ul QoreChain Java este construit cu un toolchain JDK 21) |
 
 ### Quickstart 1: citire cu ethers v6 {#quickstart-ethers}
 
@@ -348,7 +348,7 @@ Versiunile au fost citite live din registre pe 11 noiembrie 2026 (Maven Central 
 | PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
 | Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 (0.13.0 se publică; folosiți-l de îndată ce apare) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 (publicat, verificat la 11 noiembrie 2026) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 Sursă: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), eticheta `v0.13.0`; căile `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, întreținut de Asociația QoreChain.
 

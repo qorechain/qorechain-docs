@@ -10,7 +10,7 @@ sidebar_position: 34
 El kit de desarrollo de cadena es la parte del SDK de QoreChain que ayuda a los equipos de Solidity y de contratos inteligentes a construir sobre QoreChain con las herramientas que ya usan. Añade definiciones de cadena de viem y ayudantes de la ventana de autorización EVM a `@qorechain/evm`, cuatro plantillas de proyecto a `create-qorechain-dapp` (Foundry, Hardhat 3, viem con wagmi y un token CosmWasm de QoreChain Native), guías de inicio rápido de EVM para cinco lenguajes y una referencia sobre en qué se diferencia la EVM de QoreChain de Ethereum. Está pensado para equipos de Solidity que portan contratos desde Ethereum, desarrolladores de front end de dApps con wagmi y RainbowKit, desarrolladores de CosmWasm y mantenedores de herramientas EVM que quieren añadir QoreChain.
 
 :::note En vivo: incluido en el SDK 0.13.0
-El kit está **en vivo e instalable** en el SDK de QoreChain **0.13.0** (npm, 11 de noviembre de 2026): `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0 y `create-qorechain-dapp` 0.13.0, y también con los SDK de Python, Rust y Go en 0.13.0 (el SDK de Java se está publicando: Maven Central seguía mostrando la 0.12.0 el 11 de noviembre de 2026). Su contenido salió por primera vez como 0.11.0 solo en npm (29 de octubre de 2026) y estaba en la 0.12.0 (30 de octubre de 2026); ningún otro registro tiene una 0.11.0. Las pruebas de esta página se hicieron contra la 0.12.0 el 4 de noviembre de 2026; la 0.13.0 cambió el ayudante de cuenta de la ruta de semilla y el manejo de `PRIVATE_KEY` en las plantillas (consulta [Qué cambia la 0.13.0](/sdk/install#whats-new-0130)).
+El kit está **en vivo e instalable** en el SDK de QoreChain **0.13.0** (npm, 11 de noviembre de 2026): `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0 y `create-qorechain-dapp` 0.13.0, y también con los SDK de Python, Rust y Go en 0.13.0 (el SDK de Java en Maven Central también está en la 0.13.0, comprobado el 11 de noviembre de 2026). Su contenido salió por primera vez como 0.11.0 solo en npm (29 de octubre de 2026) y estaba en la 0.12.0 (30 de octubre de 2026); ningún otro registro tiene una 0.11.0. Las pruebas de esta página se hicieron contra la 0.12.0 el 4 de noviembre de 2026; la 0.13.0 cambió el ayudante de cuenta de la ruta de semilla y el manejo de `PRIVATE_KEY` en las plantillas (consulta [Qué cambia la 0.13.0](/sdk/install#whats-new-0130)).
 :::
 
 El kit apunta a la mainnet (`qorechain-vladi`, ID de cadena EVM 9801) y a la testnet (`qorechain-diana`, ID de cadena EVM 9800).
@@ -126,7 +126,7 @@ Todos los fragmentos que leen usan la testnet pública (`qorechain-diana`, ID de
 | Python (lecturas EVM) | `pip install "web3>=7,<8"`; mensaje de ventana desde `pip install qorechain-sdk` (0.13.0) | Python 3.10 o posterior |
 | Go (lecturas EVM) | `go get github.com/ethereum/go-ethereum@latest`; mensaje de ventana desde `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Toolchain de Go |
 | Rust (lecturas EVM) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; mensaje de ventana desde el crate `qorechain-sdk` 0.13.0 | Rust estable |
-| Java (lecturas EVM) | `org.web3j:core:5.0.0`; mensaje de ventana desde `io.github.qorechain:qorechain-sdk:0.13.0` (Maven Central seguía mostrando la 0.12.0 el 11 de noviembre de 2026; usa la 0.13.0 cuando aparezca) | JDK 21 (el SDK de Java de QoreChain se compila con un toolchain de JDK 21) |
+| Java (lecturas EVM) | `org.web3j:core:5.0.0`; mensaje de ventana desde `io.github.qorechain:qorechain-sdk:0.13.0` (publicado en Maven Central, comprobado el 11 de noviembre de 2026) | JDK 21 (el SDK de Java de QoreChain se compila con un toolchain de JDK 21) |
 
 ### Inicio rápido 1: leer con ethers v6 {#quickstart-ethers}
 
@@ -335,7 +335,7 @@ Variables de entorno de las plantillas (en `.env`, nunca confirmado en el reposi
 
 ## Dónde se publica {#where-published}
 
-Versiones leídas en vivo de los registros el 11 de noviembre de 2026 (Maven Central es la excepción, consulta su fila). La etiqueta de GitHub `v0.12.0` existe. Los cinco paquetes de npm tienen también una 0.11.0 (29 de octubre de 2026) que llevaba el mismo contenido del kit; los SDK de Python, Rust, Go y Java pasaron directamente de la 0.10.0 a la 0.12.0, y todos los lenguajes salvo Java están en la 0.13.0.
+Versiones leídas en vivo de los registros el 11 de noviembre de 2026. La etiqueta de GitHub `v0.12.0` existe. Los cinco paquetes de npm tienen también una 0.11.0 (29 de octubre de 2026) que llevaba el mismo contenido del kit; los SDK de Python, Rust, Go y Java pasaron directamente de la 0.10.0 a la 0.12.0, y todos los lenguajes están en la 0.13.0.
 
 | Registro | Paquete | Versión | Enlace |
 |---|---|---|---|
@@ -348,7 +348,7 @@ Versiones leídas en vivo de los registros el 11 de noviembre de 2026 (Maven Cen
 | PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
 | Proxy de Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 (la 0.13.0 se está publicando; úsala cuando aparezca) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 Código fuente: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), etiqueta `v0.13.0`; rutas `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, mantenido por la Asociación QoreChain.
 

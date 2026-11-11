@@ -22,7 +22,7 @@ bkz. tablo):
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
 | Go modül proxy'si | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | Yayımlanıyor: Maven Central 11 Kasım 2026'da hâlâ 0.12.0 gösteriyor; göründüğünde 0.13.0'ı kullanın (JDK 17 veya üzeri) |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | Yayımlandı (Maven Central, v0.13.0; JDK 17 veya üzeri) |
 
 Python, Rust, Go veya Java için 0.11.0 yoktur: npm paketlerinin 29 Ekim 2026'da bir
 0.11.0 sürümü vardı (zincir geliştirici kiti, aşağıya bakın) ve her dil 0.10.0'dan
@@ -56,7 +56,7 @@ Go, Rust ve Java; `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm` ve
 `create-qorechain-dapp` ile birlikte. Seed yolu hesap yardımcısında tek bir uyumsuz
 değişiklik vardır. Mnemonic'ten türetilen hesaplar değişmemiştir; hibrit imzalama
 biçimi ve zincir davranışı da öyle: 0.12.0 ile oluşturulmuş bir işlem geçerli kalır.
-(Java yayımlanıyor: Maven Central 11 Kasım 2026'da hâlâ 0.12.0 gösteriyordu.)
+(Java da Maven Central'da yayımlandı: 0.13.0, 11 Kasım 2026'da kontrol edildi.)
 
 **Uyumsuz değişiklik.** Seed yolu yardımcıları `unifiedAccountFromSeed` (TypeScript),
 `unified_account_from_seed` (Python, Rust), `unified.UnifiedAccountFromSeed` (Go) ve
@@ -364,10 +364,8 @@ Ya da Gradle:
 implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 ```
 
-> Maven Central'da `io.github.qorechain:qorechain-sdk` adıyla yayımlanıyor. 0.13.0
-> yayımlanma aşamasındadır: Maven Central 11 Kasım 2026'da en son sürüm olarak hâlâ 0.12.0
-> gösteriyordu ve yukarıdaki koordinatlar, 0.13.0 göründüğünde kullanılacak sürümdür (o zamana kadar
-> 0.12.0'ı kullanın). JDK 17 veya üzeri gerekir.
+> Maven Central'da `io.github.qorechain:qorechain-sdk` adıyla yayımlanmıştır
+> (0.13.0, 11 Kasım 2026'da kontrol edildi). JDK 17 veya üzeri gerekir.
 > Central'da 0.8.0 veya 0.8.1 derlemesi yoktur; bu nedenle canlı ağlarda 0.8.2
 > veya sonrasını kullanın. 0.9.1, Bouncy Castle'ı 1.80'den 1.85'e API değişikliği
 > olmadan taşıyan yalnızca Java'ya özel bir sürümdü.
@@ -385,7 +383,7 @@ implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 | `@qorechain/rdk-cli` | RDK için `qorollup` operatör CLI'ı. 0.7.1'den beri işlem komutları (`create`, `pause`, `resume`, `stop`, `withdraw`) hibrit imzalar (0.7.0 ve öncesi yalnızca klasik imzalıyordu ve ağlar tarafından reddediliyordu); npm'den kurulduğunda çalışır ve `--version` kurulu sürümü yazdırır (0.6.1 ve öncesi hiçbir şey yazdırmıyordu) | 0.8.0 |
 | `@qorechain/qoreseal` | QoreSeal: bir yükü, hesapların KEM kayıt defterinde yayımladığı ML-KEM-1024 anahtarlarına şifreler (SDK 0.12.0 ve sonrası anahtarları kaydeder ve okur; şifrelemeyi QoreSeal yapar). Ayrıca PyPI (`qorechain-qoreseal`; macOS ve Linux wheel'leri, Windows wheel'i sonraki sürümde), crates.io, Maven Central (`io.github.qorechain:qoreseal` ve `qoreseal-android`; Kotlin kullanıcıları Kotlin 2.3 veya üstüne ihtiyaç duyar), Go modül proxy'si (`github.com/qorechain/qoreseal/go`, Go `v0.1.0`) ve bir Swift paketi olarak da bulunur. Bkz. [QoreSeal](/developer-tools/qoreseal) | 0.1.0 |
 | `@qorechain/asset-kit` | Asset Kit: EVM Engine üzerinde izinli gerçek dünya varlığı token'ları için araçlar; TypeScript, Python, Java ve Go istemcileri ve Solidity sözleşmeleriyle (`forge install qorechain/qorechain-asset-kit@v0.1.0`). Apache-2.0; ERC-3643 betikleri ve testleri hariç (GPL-3.0-or-later). Tanımladığı native modüller bir önerisidir, yapılmamıştır. Ayrıca PyPI'da `qorechain-asset-kit` ve Maven Central'da `io.github.qorechain:asset-kit`. Bkz. [Asset Kit](/developer-tools/asset-kit) | 0.1.0 |
-| `@qorechain/qoresign` | QoreSign: cüzdan ve arka uç imzalama ve işlenmiş (committed) bir işlemin post-kuantum katmanını denetlemek için `inspectTransaction`. Ayrıca PyPI, crates.io ve Maven Central'da. Bkz. [QoreSign](/qoresign/overview) | 0.1.1 |
+| `@qorechain/qoresign` | QoreSign: cüzdan ve arka uç imzalama ve işlenmiş (committed) bir işlemin post-kuantum katmanını denetlemek için `inspectTransaction`. Ayrıca PyPI, crates.io ve Maven Central'da. Bkz. [QoreSign](/qoresign/overview) | 0.2.0 |
 | `create-qorechain-rollup` | Rollup başlangıç iskelet oluşturucusu; şablonları `@qorechain/rdk` `^0.8.0` sürümüne bağımlıdır ve post-kuantum anahtarınızı `QORE_MNEMONIC` veya `QORE_PQC_SEED_HEX` içinden çözümleyebildiklerinde hibrit imzalar | 0.8.0 |
 
 ## Sıradaki adım

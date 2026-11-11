@@ -151,7 +151,7 @@ pnpm --filter @qorechain/sdk docs:api
 | Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 공개 API의 docstring | `pip install qorechain-sdk`, 버전 `0.13.0` (import `qorsdk`) |
 | Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0` (태그 `packages/go/v0.13.0`) |
 | Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.13.0; import `qorechain`) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.13.0` (2026년 11월 11일에 Maven Central에는 아직 0.12.0이 표시됨. 0.13.0이 나타나면 사용하세요) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.13.0` (Maven Central에 게시됨, 2026년 11월 11일 확인) |
 
 각 패키지는 동일한 표면(네트워크 프리셋, denom/주소 유틸리티, HD 파생 —
 통합 eth-native 계정 포함 — PQC 프리미티브와 하이브리드 서명, 타입 지정

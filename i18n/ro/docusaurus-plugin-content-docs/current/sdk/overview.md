@@ -127,7 +127,7 @@ derivare, aritmetică a denominărilor și suprafețe de citire.
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Publicat (PyPI, v0.13.0) |
 | `qorechain-sdk` (modul Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicat (Go proxy, tag `packages/go/v0.13.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Publicat (crates.io, v0.13.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.13.0` | În publicare (Maven Central arată încă 0.12.0 la 11 noiembrie 2026; folosiți 0.13.0 de îndată ce apare; JDK 17+) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.13.0` | Publicat (Maven Central, v0.13.0; JDK 17+), verificat la 11 noiembrie 2026 |
 | `@qorechain/evm` | TypeScript (adaptor EVM) | `npm i @qorechain/evm viem` | Publicat (npm, v0.13.0) |
 | `@qorechain/svm` | TypeScript (adaptor SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicat (npm, v0.13.0) |
 | `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.13.0) |
@@ -149,7 +149,7 @@ WebSocket. Toți acești clienți sunt **publicați**: TypeScript pe npm
 (`@qorechain/sdk` 0.13.0), Python pe PyPI (`qorechain-sdk` 0.13.0, import
 `qorsdk`), Go pe module proxy (tag `packages/go/v0.13.0`), Rust pe crates.io
 (`qorechain-sdk` 0.13.0) și Java pe Maven Central
-(`io.github.qorechain:qorechain-sdk`, unde Maven Central arăta încă 0.12.0 la 11 noiembrie 2026, în timp ce 0.13.0 se publică). Adaptoarele de
+(`io.github.qorechain:qorechain-sdk`, unde 0.13.0 este publicat, verificat la 11 noiembrie 2026). Adaptoarele de
 execuție EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambele 0.13.0), kitul
 `@qorechain/react` (0.13.0) și CLI-ul de schelet `create-qorechain-dapp`
 (0.13.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi

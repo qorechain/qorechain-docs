@@ -22,7 +22,7 @@ tabelul):
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
 | Proxy de module Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | În publicare: Maven Central arată încă 0.12.0 pe 11 noiembrie 2026; folosiți 0.13.0 de îndată ce apare (JDK 17 sau mai nou) |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | Publicat (Maven Central, v0.13.0; JDK 17 sau mai nou), verificat la 11 noiembrie 2026 |
 
 Nu există 0.11.0 pentru Python, Rust, Go sau Java: pachetele npm au avut un 0.11.0 pe
 29 octombrie 2026 (kitul pentru dezvoltatori de lanț, vezi mai jos), iar fiecare limbaj a trecut
@@ -56,7 +56,7 @@ Python, Go, Rust și Java, împreună cu `@qorechain/react`, `@qorechain/evm`, `
 și `create-qorechain-dapp`. Are o singură schimbare care rupe compatibilitatea, la helperul
 de cont pe calea cu seed. Conturile derivate dintr-o mnemonică rămân neschimbate, la fel
 formatul de semnare hibridă și comportamentul lanțului: o tranzacție construită cu 0.12.0
-rămâne validă. (Java se publică: Maven Central arăta încă 0.12.0 pe 11 noiembrie 2026.)
+rămâne validă. (Java este publicat pe Maven Central, 0.13.0, verificat la 11 noiembrie 2026.)
 
 **Schimbare care rupe compatibilitatea.** Helperele pentru calea cu seed
 `unifiedAccountFromSeed` (TypeScript), `unified_account_from_seed` (Python, Rust),
@@ -367,10 +367,8 @@ Sau Gradle:
 implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 ```
 
-> Publicat pe Maven Central ca `io.github.qorechain:qorechain-sdk`. 0.13.0 se publică:
-> Maven Central arăta încă 0.12.0 ca ultima versiune pe 11 noiembrie 2026, iar
-> coordonatele de mai sus sunt versiunea de folosit de îndată ce apare 0.13.0 (până atunci
-> folosiți 0.12.0). Necesită JDK 17 sau mai nou. Central nu are o
+> Publicat pe Maven Central ca `io.github.qorechain:qorechain-sdk`. 0.13.0 este publicat
+> (verificat la 11 noiembrie 2026). Necesită JDK 17 sau mai nou. Central nu are o
 > versiune 0.8.0 sau 0.8.1, așa că pe rețelele live folosește 0.8.2 sau mai nou. 0.9.1 a
 > fost o versiune doar pentru Java care a mutat Bouncy Castle de la 1.80 la 1.85, fără modificări de API.
 
@@ -387,7 +385,7 @@ implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 | `@qorechain/rdk-cli` | CLI-ul de operator `qorollup` pentru RDK. De la 0.7.1 comenzile sale de tranzacție (`create`, `pause`, `resume`, `stop`, `withdraw`) semnează hibrid (0.7.0 și versiunile anterioare semnau doar clasic și erau refuzate de rețele); instalat de pe npm, rulează, iar `--version` afișează versiunea instalată (0.6.1 și versiunile anterioare nu afișau nimic) | 0.8.0 |
 | `@qorechain/qoreseal` | QoreSeal: criptează un payload către cheile ML-KEM-1024 pe care conturile le publică în registrul KEM (SDK 0.12.0 și ulterior înregistrează și citesc cheile; QoreSeal face criptarea). Disponibil și pe PyPI (`qorechain-qoreseal`; wheel-uri pentru macOS și Linux, wheel pentru Windows în versiunea următoare), crates.io, Maven Central (`io.github.qorechain:qoreseal` și `qoreseal-android`; consumatorii Kotlin au nevoie de Kotlin 2.3 sau mai nou), proxy-ul de module Go (`github.com/qorechain/qoreseal/go`, Go `v0.1.0`) și ca pachet Swift. Vezi [QoreSeal](/developer-tools/qoreseal) | 0.1.0 |
 | `@qorechain/asset-kit` | Asset Kit: unelte pentru tokenuri de active din lumea reală cu permisiuni pe EVM Engine, cu clienți în TypeScript, Python, Java și Go și contracte Solidity (`forge install qorechain/qorechain-asset-kit@v0.1.0`). Apache-2.0, cu excepția scripturilor și testelor ERC-3643 (GPL-3.0-or-later). Modulele native pe care le descrie sunt o propunere, nu sunt construite. Disponibil și ca `qorechain-asset-kit` pe PyPI și `io.github.qorechain:asset-kit` pe Maven Central. Vezi [Asset Kit](/developer-tools/asset-kit) | 0.1.0 |
-| `@qorechain/qoresign` | QoreSign: semnare pentru portofel și backend, și `inspectTransaction` pentru a verifica stratul post-cuantic al unei tranzacții comise. Disponibil și pe PyPI, crates.io și Maven Central. Vezi [QoreSign](/qoresign/overview) | 0.1.1 |
+| `@qorechain/qoresign` | QoreSign: semnare pentru portofel și backend, și `inspectTransaction` pentru a verifica stratul post-cuantic al unei tranzacții comise. Disponibil și pe PyPI, crates.io și Maven Central. Vezi [QoreSign](/qoresign/overview) | 0.2.0 |
 | `create-qorechain-rollup` | Generator de proiecte starter pentru rollup; șabloanele sale depind de `@qorechain/rdk` `^0.8.0` și semnează hibrid când își pot rezolva cheia post-cuantică din `QORE_MNEMONIC` sau `QORE_PQC_SEED_HEX` | 0.8.0 |
 
 ## Următorul pas

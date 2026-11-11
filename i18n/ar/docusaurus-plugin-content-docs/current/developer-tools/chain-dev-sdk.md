@@ -10,7 +10,7 @@ sidebar_position: 34
 حزمة مطوّري السلسلة هي الجزء من QoreChain SDK الذي يساعد فرق Solidity والعقود الذكية على البناء على QoreChain بالأدوات التي تستخدمها بالفعل. تضيف تعريفات سلاسل viem ومساعِدات نافذة تفويض EVM إلى `@qorechain/evm`، وأربعة قوالب مشاريع إلى `create-qorechain-dapp` (Foundry وHardhat 3 وviem مع wagmi، ورمز QoreChain Native بصيغة CosmWasm)، وبدايات سريعة لـ EVM بخمس لغات، ومرجعًا يوضح كيف تختلف QoreChain EVM عن Ethereum. وهي موجّهة لفرق Solidity التي تنقل عقودها من Ethereum، ولمطوري الواجهات الأمامية لتطبيقات dApp على wagmi وRainbowKit، ولمطوري CosmWasm، ولمشرفي أدوات EVM الراغبين في إضافة QoreChain.
 
 :::note متاح: مضمَّن في SDK 0.13.0
-الحزمة **متاحة وقابلة للتثبيت** في QoreChain SDK **0.13.0** (npm، 11 نوفمبر 2026): `@qorechain/evm` 0.13.0 و`@qorechain/sdk` 0.13.0 و`@qorechain/react` 0.13.0 و`@qorechain/svm` 0.13.0 و`create-qorechain-dapp` 0.13.0، مع SDK لغات Python وRust وGo بالإصدار 0.13.0 أيضًا (حزمة Java قيد النشر: ما زال Maven Central يعرض 0.12.0 في 11 نوفمبر 2026). صدر محتواها أول مرة بالإصدار 0.11.0 على npm وحدها (29 أكتوبر 2026) وكانت ضمن 0.12.0 (30 أكتوبر 2026)؛ ولا يوجد 0.11.0 في أي سجل آخر. أُجريت التشغيلات الاختبارية في هذه الصفحة مقابل 0.12.0 في 4 نوفمبر 2026؛ وغيّر 0.13.0 مساعد الحساب على مسار البذرة ومعالجة `PRIVATE_KEY` في القوالب (راجع [ما الذي يغيّره 0.13.0](/sdk/install#whats-new-0130)).
+الحزمة **متاحة وقابلة للتثبيت** في QoreChain SDK **0.13.0** (npm، 11 نوفمبر 2026): `@qorechain/evm` 0.13.0 و`@qorechain/sdk` 0.13.0 و`@qorechain/react` 0.13.0 و`@qorechain/svm` 0.13.0 و`create-qorechain-dapp` 0.13.0، مع SDK لغات Python وRust وGo بالإصدار 0.13.0 أيضًا (وحزمة Java منشورة على Maven Central بالإصدار 0.13.0؛ جرى التحقق في 11 نوفمبر 2026). صدر محتواها أول مرة بالإصدار 0.11.0 على npm وحدها (29 أكتوبر 2026) وكانت ضمن 0.12.0 (30 أكتوبر 2026)؛ ولا يوجد 0.11.0 في أي سجل آخر. أُجريت التشغيلات الاختبارية في هذه الصفحة مقابل 0.12.0 في 4 نوفمبر 2026؛ وغيّر 0.13.0 مساعد الحساب على مسار البذرة ومعالجة `PRIVATE_KEY` في القوالب (راجع [ما الذي يغيّره 0.13.0](/sdk/install#whats-new-0130)).
 :::
 
 تستهدف الحزمة الشبكة الرئيسية (`qorechain-vladi`، معرّف سلسلة EVM هو 9801) وشبكة الاختبار (`qorechain-diana`، معرّف سلسلة EVM هو 9800).
@@ -126,7 +126,7 @@ sidebar_position: 34
 | Python (قراءات EVM) | `pip install "web3>=7,<8"`؛ ورسالة النافذة من `pip install qorechain-sdk` (0.13.0) | Python 3.10 أو أحدث |
 | Go (قراءات EVM) | `go get github.com/ethereum/go-ethereum@latest`؛ ورسالة النافذة من `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | سلسلة أدوات Go |
 | Rust (قراءات EVM) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`؛ ورسالة النافذة من الحزمة `qorechain-sdk` 0.13.0 | Rust المستقر |
-| Java (قراءات EVM) | `org.web3j:core:5.0.0`؛ ورسالة النافذة من `io.github.qorechain:qorechain-sdk:0.13.0` (ما زال Maven Central يعرض 0.12.0 في 11 نوفمبر 2026؛ استخدم 0.13.0 عند ظهوره) | JDK 21 (يُبنى QoreChain Java SDK بسلسلة أدوات JDK 21) |
+| Java (قراءات EVM) | `org.web3j:core:5.0.0`؛ ورسالة النافذة من `io.github.qorechain:qorechain-sdk:0.13.0` (منشورة على Maven Central؛ جرى التحقق في 11 نوفمبر 2026) | JDK 21 (يُبنى QoreChain Java SDK بسلسلة أدوات JDK 21) |
 
 ### البداية السريعة 1: القراءة بـ ethers v6 {#quickstart-ethers}
 
@@ -335,7 +335,7 @@ cd my-dapp && npm run build
 
 ## أين يُنشر {#where-published}
 
-الإصدارات مقروءة مباشرة من السجلات في 11 نوفمبر 2026 (باستثناء Maven Central، راجع صفه). الوسم `v0.12.0` على GitHub موجود. وللحزم الخمس على npm إصدار 0.11.0 أيضًا (29 أكتوبر 2026) حمل محتوى الحزمة نفسه؛ أما حِزم SDK لـ Python وRust وGo وJava فانتقلت من 0.10.0 مباشرة إلى 0.12.0، وكل لغة ما عدا Java على 0.13.0.
+الإصدارات مقروءة مباشرة من السجلات في 11 نوفمبر 2026 (بما فيها Maven Central). الوسم `v0.12.0` على GitHub موجود. وللحزم الخمس على npm إصدار 0.11.0 أيضًا (29 أكتوبر 2026) حمل محتوى الحزمة نفسه؛ أما حِزم SDK لـ Python وRust وGo وJava فانتقلت من 0.10.0 مباشرة إلى 0.12.0، وكل اللغات الآن على 0.13.0.
 
 | السجل | الحزمة | الإصدار | الرابط |
 |---|---|---|---|
@@ -348,7 +348,7 @@ cd my-dapp && npm run build
 | PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
 | Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 (يجري نشر 0.13.0؛ استخدمه عند ظهوره) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 المصدر: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk)، الوسم `v0.13.0`؛ والمسارات `packages/evm` و`cli/` و`templates/` و`docs/docs/guides/` و`contrib/`. ترخيص Apache-2.0، تشرف عليه جمعية QoreChain.
 

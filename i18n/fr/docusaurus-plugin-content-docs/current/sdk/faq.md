@@ -103,8 +103,8 @@ sont sur npm ; le client Python est sur PyPI (`pip install qorechain-sdk` en
 version 0.13.0, import `qorsdk`) ; le client Go est sur le proxy de modules
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`) ; le client Rust
 est sur crates.io (`cargo add qorechain-sdk`, 0.13.0) ; et le client Java est sur
-Maven Central (`io.github.qorechain:qorechain-sdk`, JDK 17 ou ultérieur), où la 0.13.0 est en cours de
-publication et où Maven Central affichait encore la 0.12.0 le 11 novembre 2026 (utilisez la 0.13.0 dès qu'elle apparaît). Voir
+Maven Central (`io.github.qorechain:qorechain-sdk`, JDK 17 ou ultérieur), où la 0.13.0 est publiée
+(vérifié le 11 novembre 2026). Voir
 [Installation](/sdk/install) pour la liste complète des commandes par
 langage.
 

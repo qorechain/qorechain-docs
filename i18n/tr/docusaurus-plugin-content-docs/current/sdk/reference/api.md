@@ -154,7 +154,7 @@ sabitleri.
 | Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — herkese açık API üzerinde docstring'ler | `0.13.0` sürümünde `pip install qorechain-sdk` (`qorsdk` olarak içe aktarılır) |
 | Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0` (etiket `packages/go/v0.13.0`) |
 | Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.13.0; `qorechain` olarak içe aktarılır) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.13.0` (Maven Central 11 Kasım 2026'da hâlâ 0.12.0 gösteriyor; göründüğünde 0.13.0'ı kullanın) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.13.0` (Maven Central'da yayımlandı, 11 Kasım 2026'da kontrol edildi) |
 
 Her paket aynı yüzeyi yansıtır (ağ hazır ayarları, denom/adres yardımcıları,
 HD türetme — birleşik eth-native hesaplar dahil — PQC temel bileşenleri ve

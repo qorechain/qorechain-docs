@@ -126,7 +126,7 @@ birim (denominasyon) matematiğini ve okuma yüzeylerini paylaşır.
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Yayında (PyPI, v0.13.0) |
 | `qorechain-sdk` (Go modülü) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Yayında (Go proxy, etiket `packages/go/v0.13.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Yayında (crates.io, v0.13.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.13.0` | Yayımlanıyor (Maven Central 11 Kasım 2026'da hâlâ 0.12.0 gösteriyor; göründüğünde 0.13.0'ı kullanın; JDK 17+) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.13.0` | Yayımlandı (Maven Central, v0.13.0; JDK 17+) |
 | `@qorechain/evm` | TypeScript (EVM adaptörü) | `npm i @qorechain/evm viem` | Yayında (npm, v0.13.0) |
 | `@qorechain/svm` | TypeScript (SVM adaptörü) | `npm i @qorechain/svm @solana/web3.js` | Yayında (npm, v0.13.0) |
 | `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.13.0) |
@@ -147,7 +147,7 @@ abonelikleri. Bu istemcilerin tümü **yayınlanmıştır**: TypeScript npm'de
 (`@qorechain/sdk` 0.13.0), Python PyPI'da (`qorechain-sdk` 0.13.0, import
 `qorsdk`), Go modül proxy'sinde (etiket `packages/go/v0.13.0`), Rust
 crates.io'da (`qorechain-sdk` 0.13.0) ve Java Maven
-Central'da (`io.github.qorechain:qorechain-sdk`; Maven Central 11 Kasım 2026'da hâlâ 0.12.0 gösteriyordu, 0.13.0 yayımlanıyor). EVM/SVM yürütme
+Central'da (`io.github.qorechain:qorechain-sdk`; 0.13.0, 11 Kasım 2026'da kontrol edildi). EVM/SVM yürütme
 adaptörleri (`@qorechain/evm`, `@qorechain/svm`, ikisi de 0.13.0),
 `@qorechain/react` kiti (0.13.0) ve `create-qorechain-dapp` iskele oluşturma
 CLI'si (0.13.0) yalnızca TypeScript içindir ve aynı şekilde npm'de

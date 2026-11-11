@@ -10,7 +10,7 @@ sidebar_position: 34
 체인 개발자 키트는 QoreChain SDK의 일부로, Solidity 및 스마트 컨트랙트 팀이 이미 사용하는 도구로 QoreChain에서 빌드할 수 있도록 돕습니다. `@qorechain/evm`에 viem 체인 정의와 EVM 인가 윈도우 헬퍼를 추가하고, `create-qorechain-dapp`에 네 가지 프로젝트 템플릿(Foundry, Hardhat 3, wagmi를 사용하는 viem, QoreChain Native CosmWasm 토큰)을 추가하며, 다섯 가지 언어용 EVM 퀵스타트와 QoreChain EVM이 Ethereum과 어떻게 다른지에 대한 참조를 제공합니다. Ethereum에서 컨트랙트를 이식하는 Solidity 팀, wagmi와 RainbowKit을 쓰는 dApp 프런트엔드 개발자, CosmWasm 개발자, 그리고 QoreChain을 추가하려는 EVM 도구 유지 관리자를 위한 키트입니다.
 
 :::note 라이브: SDK 0.13.0에 포함
-이 키트는 QoreChain SDK **0.13.0**(npm, 2026년 11월 11일)에서 **라이브이며 설치할 수 있습니다**: `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0, `create-qorechain-dapp` 0.13.0이며, Python, Rust, Go SDK도 0.13.0입니다(Java SDK는 게시 중입니다. 2026년 11월 11일에 Maven Central에는 아직 0.12.0이 표시되었습니다). 키트의 내용은 npm에서만 0.11.0(2026년 10월 29일)으로 처음 배포되었고 0.12.0(2026년 10월 30일)에도 들어 있었으며, 다른 레지스트리에는 0.11.0이 없습니다. 이 페이지의 테스트 실행은 2026년 11월 4일에 0.12.0으로 수행했으며, 0.13.0은 시드 경로 계정 헬퍼와 템플릿의 `PRIVATE_KEY` 처리를 바꾸었습니다([0.13.0의 변경 사항](/sdk/install#whats-new-0130) 참조).
+이 키트는 QoreChain SDK **0.13.0**(npm, 2026년 11월 11일)에서 **라이브이며 설치할 수 있습니다**: `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0, `create-qorechain-dapp` 0.13.0이며, Python, Rust, Go SDK도 0.13.0입니다(Java SDK도 Maven Central에 0.13.0으로 게시되어 있습니다. 2026년 11월 11일 확인). 키트의 내용은 npm에서만 0.11.0(2026년 10월 29일)으로 처음 배포되었고 0.12.0(2026년 10월 30일)에도 들어 있었으며, 다른 레지스트리에는 0.11.0이 없습니다. 이 페이지의 테스트 실행은 2026년 11월 4일에 0.12.0으로 수행했으며, 0.13.0은 시드 경로 계정 헬퍼와 템플릿의 `PRIVATE_KEY` 처리를 바꾸었습니다([0.13.0의 변경 사항](/sdk/install#whats-new-0130) 참조).
 :::
 
 이 키트는 메인넷(`qorechain-vladi`, EVM 체인 ID 9801)과 테스트넷(`qorechain-diana`, EVM 체인 ID 9800)을 대상으로 합니다.
@@ -126,7 +126,7 @@ sidebar_position: 34
 | Python (EVM 읽기) | `pip install "web3>=7,<8"`; 윈도우 메시지는 `pip install qorechain-sdk` (0.13.0) | Python 3.10 이상 |
 | Go (EVM 읽기) | `go get github.com/ethereum/go-ethereum@latest`; 윈도우 메시지는 `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Go 툴체인 |
 | Rust (EVM 읽기) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; 윈도우 메시지는 크레이트 `qorechain-sdk` 0.13.0 | Rust stable |
-| Java (EVM 읽기) | `org.web3j:core:5.0.0`; 윈도우 메시지는 `io.github.qorechain:qorechain-sdk:0.13.0`(2026년 11월 11일에 Maven Central에는 아직 0.12.0이 표시되었으니, 0.13.0이 나타나면 사용하세요) | JDK 21 (QoreChain Java SDK는 JDK 21 툴체인으로 빌드됨) |
+| Java (EVM 읽기) | `org.web3j:core:5.0.0`; 윈도우 메시지는 `io.github.qorechain:qorechain-sdk:0.13.0`(Maven Central에 게시됨, 2026년 11월 11일 확인) | JDK 21 (QoreChain Java SDK는 JDK 21 툴체인으로 빌드됨) |
 
 ### 퀵스타트 1: ethers v6로 읽기 {#quickstart-ethers}
 
@@ -335,7 +335,7 @@ EIP-7702 동의(TypeScript, `@qorechain/sdk` 0.13.0): `authorizeEvmDelegationMsg
 
 ## 게시 위치 {#where-published}
 
-2026년 11월 11일에 레지스트리에서 실시간으로 버전을 읽었습니다(Maven Central은 예외이며 해당 행 참조). GitHub 태그 `v0.12.0`이 존재합니다. npm 패키지 다섯 개에는 같은 키트 내용을 담은 0.11.0(2026년 10월 29일)도 있으며, Python, Rust, Go, Java SDK는 0.10.0에서 곧바로 0.12.0이 되었고, Java를 제외한 모든 언어가 0.13.0입니다.
+2026년 11월 11일에 레지스트리에서 실시간으로 버전을 읽었습니다(Maven Central 포함). GitHub 태그 `v0.12.0`이 존재합니다. npm 패키지 다섯 개에는 같은 키트 내용을 담은 0.11.0(2026년 10월 29일)도 있으며, Python, Rust, Go, Java SDK는 0.10.0에서 곧바로 0.12.0이 되었고, 모든 언어가 0.13.0입니다.
 
 | 레지스트리 | 패키지 | 버전 | 링크 |
 |---|---|---|---|
@@ -348,7 +348,7 @@ EIP-7702 동의(TypeScript, `@qorechain/sdk` 0.13.0): `authorizeEvmDelegationMsg
 | PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
 | Go 프록시 | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 (0.13.0 게시 중이며, 나타나면 사용하세요) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 소스: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), 태그 `v0.13.0`; 경로 `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, QoreChain Association이 유지 관리합니다.
 

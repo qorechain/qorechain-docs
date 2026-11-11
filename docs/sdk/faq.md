@@ -98,8 +98,8 @@ npm; the Python client is on PyPI (`pip install qorechain-sdk` at 0.13.0, import
 `qorsdk`); the Go client is on the module proxy
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`); the Rust client is
 on crates.io (`cargo add qorechain-sdk`, 0.13.0); and the Java client is on Maven
-Central (`io.github.qorechain:qorechain-sdk`, JDK 17 or later), where 0.13.0 is being
-published and Maven Central still showed 0.12.0 on 11 November 2026 (use 0.13.0 once it appears). See [Install](/sdk/install) for the full
+Central (`io.github.qorechain:qorechain-sdk`, JDK 17 or later), where 0.13.0 is
+published (checked 11 November 2026). See [Install](/sdk/install) for the full
 per-language commands.
 
 ## My mnemonic is rejected

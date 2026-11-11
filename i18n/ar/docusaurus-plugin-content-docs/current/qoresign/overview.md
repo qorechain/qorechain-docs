@@ -11,7 +11,7 @@ QoreSign مكتبة مفتوحة المصدر للتوقيع الهجين الذ
 
 يتيح QoreSign لمحفظة غير محفظة QoreChain الأصلية أن تشتق مفتاح ML-DSA-87 لحساب ما، وأن توقّع معاملات المسار الأصلي بالمفتاحين معًا، وأن تتحقق محليًا من التواقيع الهجينة، وأن توقّع رسائل اعتباطية، وأن تحاكي المعاملة قبل توقيعها، وأن تقرأ كيف جرت حماية معاملة مُثبَّتة، وأن تنفّذ Sign In With QoreChain. وهو طبقة رقيقة فوق ارتباطات [`qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) ولا يضيف أي بدائيات تشفيرية خاصة به. تصونه QoreChain Association بموجب رخصة Apache-2.0.
 
-الإصدار الحالي هو **0.2.0** (نُشر في 10 و11 نوفمبر 2026). وهو منشور بلغات TypeScript وRust وGo وKotlin (JVM وAndroid) وSwift، ومنذ 0.1.1 بلغة Python. وعلى Maven Central ما زالت مزامنة 0.2.0 جارية: ما زال Central يعرض 0.1.1 في 11 نوفمبر 2026 (راجع [أين نُشر](#where-published)). توجد الشيفرة المصدرية والأمثلة ونواقل الاختبار في مستودع [qorechain/qoresign](https://github.com/qorechain/qoresign). ويعمل على الشبكة الرئيسية (`qorechain-vladi`) وعلى الشبكة التجريبية (`qorechain-diana`).
+الإصدار الحالي هو **0.2.0** (نُشر في 10 و11 نوفمبر 2026). وهو منشور بلغات TypeScript وRust وGo وKotlin (JVM وAndroid) وSwift، ومنذ 0.1.1 بلغة Python. وهو منشور أيضًا على Maven Central بالإصدار 0.2.0 (جرى التحقق في 11 نوفمبر 2026؛ راجع [أين نُشر](#where-published)). توجد الشيفرة المصدرية والأمثلة ونواقل الاختبار في مستودع [qorechain/qoresign](https://github.com/qorechain/qoresign). ويعمل على الشبكة الرئيسية (`qorechain-vladi`) وعلى الشبكة التجريبية (`qorechain-diana`).
 
 ## ما الذي يفعله QoreSign على كل مسار {#lanes}
 
@@ -129,8 +129,8 @@ console.log("EVM window:", win.found, win.live);
 | Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.2.0` | Go 1.25 |
 | Python | [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) (الاستيراد `qoresign`) | `pip install qorechain-qoresign` | Python 3.9+؛ عجلات لـ macOS 11+ (arm64 وx86_64) وLinux (x86_64 وaarch64)؛ لا توجد عجلة لـ Windows بعد، وتُبنى المنصات الأخرى من توزيعة المصدر (تحتاج Rust 1.95) |
 | Swift | `QoreSign` من [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign) (إطار ثنائي في إصدار GitHub) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`، المنتج `QoreSign` | iOS 16، macOS 13 |
-| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` عند ظهور 0.2.0 على Central (يعرض Central الإصدار 0.1.1 في 11 نوفمبر 2026) | Java 17، Kotlin 2.3 أو أحدث؛ مكتبات أصلية لـ macOS (arm64 وx86-64) وLinux (x86-64 وarm64) وWindows (x86-64) |
-| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` عند ظهور 0.2.0 على Central (يعرض Central الإصدار 0.1.1 في 11 نوفمبر 2026) | API 24، Kotlin 2.3 أو أحدث؛ `arm64-v8a` و`armeabi-v7a` و`x86_64`؛ قواعد keep لـ R8 مضمّنة |
+| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` (منشورة على Maven Central؛ جرى التحقق في 11 نوفمبر 2026) | Java 17، Kotlin 2.3 أو أحدث؛ مكتبات أصلية لـ macOS (arm64 وx86-64) وLinux (x86-64 وarm64) وWindows (x86-64) |
+| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` (منشورة على Maven Central؛ جرى التحقق في 11 نوفمبر 2026) | API 24، Kotlin 2.3 أو أحدث؛ `arm64-v8a` و`armeabi-v7a` و`x86_64`؛ قواعد keep لـ R8 مضمّنة |
 
 :::note إصدار مترجم Kotlin
 تحتاج حزمتا Kotlin وAndroid إلى مترجم **Kotlin 2.3 أو أحدث** في مشروعك. يفشل مشروع على Kotlin 2.1 في الترجمة مقابلهما. ارفع إصدار Kotlin في البناء قبل أن تضيف الاعتمادية.
@@ -255,8 +255,8 @@ verifyHybridTx({
 | npm | `@qorechain/qoresign` | 0.2.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
 | crates.io | `qorechain-qoresign` | 0.2.0 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
 | Go module proxy | `github.com/qorechain/qoresign/go` | v0.2.0 (الوسم `go/v0.2.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
-| Maven Central | `io.github.qorechain:qoresign` | ما زال Central يعرض 0.1.1 في 11 نوفمبر 2026؛ وجارٍ مزامنة 0.2.0. استخدم 0.2.0 عند ظهوره | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
-| Maven Central | `io.github.qorechain:qoresign-android` | ما زال Central يعرض 0.1.1 في 11 نوفمبر 2026؛ وجارٍ مزامنة 0.2.0. استخدم 0.2.0 عند ظهوره | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
+| Maven Central | `io.github.qorechain:qoresign` | 0.2.0 (جرى التحقق في 11 نوفمبر 2026) | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
+| Maven Central | `io.github.qorechain:qoresign-android` | 0.2.0 (جرى التحقق في 11 نوفمبر 2026) | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
 | PyPI | `qorechain-qoresign` | 0.2.0 (عجلات macOS arm64 وx86_64 وLinux x86_64 وaarch64، وتوزيعة المصدر) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
 | Swift Package Manager | `QoreSign` من `github.com/qorechain/qoresign` | 0.2.0 (الملف الثنائي `QoreSignFFI.xcframework.zip` في الإصدار) | [إصدار GitHub](https://github.com/qorechain/qoresign/releases/tag/v0.2.0) |
 

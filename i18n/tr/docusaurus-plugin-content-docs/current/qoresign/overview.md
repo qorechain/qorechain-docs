@@ -11,7 +11,7 @@ QoreSign, QoreChain üzerinde cüzdanlar, borsalar, saklama kuruluşları ve ark
 
 QoreSign, QoreChain'in kendi cüzdanı dışındaki bir cüzdanın bir hesabın ML-DSA-87 anahtarını türetmesine, yerel hattaki işlemleri iki anahtarla imzalamasına, hibrit imzaları yerel olarak doğrulamasına, rastgele mesajları imzalamasına, imzalamadan önce bir işlemi simüle etmesine, işlenmiş bir işlemin nasıl korunduğunu geri okumasına ve Sign In With QoreChain'i uygulamasına olanak tanır. [`qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) bağlayıcıları üzerinde ince bir katmandır ve kendi başına hiçbir kriptografik ilkel eklemez. QoreChain Association tarafından Apache-2.0 lisansı altında sürdürülür.
 
-Güncel sürüm **0.2.0**'dır (10 ve 11 Kasım 2026'da yayımlandı). TypeScript, Rust, Go, Kotlin (JVM ve Android), Swift ve 0.1.1'den beri Python için yayımlanmıştır. Maven Central'da 0.2.0 hâlâ eşitleniyor: Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor (bkz. [Nerede yayımlandı](#where-published)). Kaynak kod, örnekler ve test vektörleri [qorechain/qoresign](https://github.com/qorechain/qoresign) deposundadır. Ana ağda (`qorechain-vladi`) ve test ağında (`qorechain-diana`) çalışır.
+Güncel sürüm **0.2.0**'dır (10 ve 11 Kasım 2026'da yayımlandı). TypeScript, Rust, Go, Kotlin (JVM ve Android), Swift ve 0.1.1'den beri Python için yayımlanmıştır. Maven Central'da 0.2.0 yayımlandı (QoreSign ve QoreSign Android; 11 Kasım 2026'da kontrol edildi, bkz. [Nerede yayımlandı](#where-published)). Kaynak kod, örnekler ve test vektörleri [qorechain/qoresign](https://github.com/qorechain/qoresign) deposundadır. Ana ağda (`qorechain-vladi`) ve test ağında (`qorechain-diana`) çalışır.
 
 ## QoreSign her hatta ne yapar {#lanes}
 
@@ -129,8 +129,8 @@ Boyutlar (FIPS 204 ve [boyutlar kılavuzu](/qoresign/guides/sizes-and-transport)
 | Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.2.0` | Go 1.25 |
 | Python | [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) (içe aktarma `qoresign`) | `pip install qorechain-qoresign` | Python 3.9+; macOS 11+ (arm64, x86_64) ve Linux (x86_64, aarch64) için wheel dosyaları; henüz Windows wheel'i yok, diğer platformlar kaynak dağıtımından derlenir (Rust 1.95 gerekir) |
 | Swift | [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign) içinden `QoreSign` (GitHub sürümünde ikili çerçeve) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, ürün `QoreSign` | iOS 16, macOS 13 |
-| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` 0.2.0 Central'da göründüğünde (Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor; 0.2.0 eşitleniyor) | Java 17, Kotlin 2.3 veya üzeri; macOS (arm64, x86-64), Linux (x86-64, arm64) ve Windows (x86-64) için yerel kütüphaneler |
-| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` 0.2.0 Central'da göründüğünde (Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor; 0.2.0 eşitleniyor) | API 24, Kotlin 2.3 veya üzeri; `arm64-v8a`, `armeabi-v7a`, `x86_64`; R8 koruma kuralları dahildir |
+| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` (Maven Central'da yayımlandı, 11 Kasım 2026'da kontrol edildi) | Java 17, Kotlin 2.3 veya üzeri; macOS (arm64, x86-64), Linux (x86-64, arm64) ve Windows (x86-64) için yerel kütüphaneler |
+| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` (Maven Central'da yayımlandı, 11 Kasım 2026'da kontrol edildi) | API 24, Kotlin 2.3 veya üzeri; `arm64-v8a`, `armeabi-v7a`, `x86_64`; R8 koruma kuralları dahildir |
 
 :::note Kotlin derleyici sürümü
 Kotlin ve Android yapıtları, projenizde **Kotlin 2.3 veya üzeri** derleyiciyi gerektirir. Kotlin 2.1 kullanan bir proje bunlara karşı derlenemez. Bağımlılığı eklemeden önce derlemenin Kotlin sürümünü yükseltin.
@@ -255,8 +255,8 @@ Sürümler kayıt defterlerinde 11 Kasım 2026 tarihinde denetlendi.
 | npm | `@qorechain/qoresign` | 0.2.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
 | crates.io | `qorechain-qoresign` | 0.2.0 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
 | Go modül proxy'si | `github.com/qorechain/qoresign/go` | v0.2.0 (etiket `go/v0.2.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
-| Maven Central | `io.github.qorechain:qoresign` | Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor; 0.2.0 eşitleniyor. 0.2.0 göründüğünde onu kullanın | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
-| Maven Central | `io.github.qorechain:qoresign-android` | Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor; 0.2.0 eşitleniyor. 0.2.0 göründüğünde onu kullanın | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
+| Maven Central | `io.github.qorechain:qoresign` | 0.2.0 (11 Kasım 2026'da kontrol edildi) | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
+| Maven Central | `io.github.qorechain:qoresign-android` | 0.2.0 (11 Kasım 2026'da kontrol edildi) | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
 | PyPI | `qorechain-qoresign` | 0.2.0 (macOS arm64 ve x86_64, Linux x86_64 ve aarch64 wheel dosyaları, kaynak dağıtımı) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
 | Swift Package Manager | `github.com/qorechain/qoresign` içinden `QoreSign` | 0.2.0 (sürümde ikili `QoreSignFFI.xcframework.zip`) | [GitHub sürümü](https://github.com/qorechain/qoresign/releases/tag/v0.2.0) |
 

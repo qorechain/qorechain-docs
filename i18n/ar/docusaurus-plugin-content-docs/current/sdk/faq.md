@@ -99,8 +99,8 @@ npm؛ وعميل Python متوفر على PyPI (`pip install qorechain-sdk` با
 والاستيراد `qorsdk`)؛ وعميل Go متوفر على وسيط الوحدات (module proxy)
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`)؛ وعميل Rust متوفر
 على crates.io (`cargo add qorechain-sdk`، 0.13.0)؛ وعميل Java متوفر على Maven
-Central (`io.github.qorechain:qorechain-sdk`، JDK 17 أو أحدث)، حيث يجري نشر 0.13.0 وما زال
-Maven Central يعرض 0.12.0 في 11 نوفمبر 2026 (استخدم 0.13.0 عند ظهوره). راجع [التثبيت](/sdk/install)
+Central (`io.github.qorechain:qorechain-sdk`، JDK 17 أو أحدث)، الإصدار 0.13.0 (جرى التحقق
+في 11 نوفمبر 2026). راجع [التثبيت](/sdk/install)
 للاطلاع على أوامر كل لغة كاملةً.
 
 ## عبارتي التذكيرية (mnemonic) مرفوضة

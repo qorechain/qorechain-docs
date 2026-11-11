@@ -154,7 +154,7 @@ program-id.
 | Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring sull'API pubblica | `pip install qorechain-sdk` alla `0.13.0` (import `qorsdk`) |
 | Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0` (tag `packages/go/v0.13.0`) |
 | Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.13.0; import `qorechain`) |
-| Java | Javadoc su Maven Central | `io.github.qorechain:qorechain-sdk:0.13.0` (l'11 novembre 2026 Maven Central mostra ancora la 0.12.0; usa la 0.13.0 appena compare) |
+| Java | Javadoc su Maven Central | `io.github.qorechain:qorechain-sdk:0.13.0` (pubblicata su Maven Central, verificato l'11 novembre 2026) |
 
 Ogni pacchetto rispecchia la stessa superficie (preset di rete, utility per
 denom/indirizzi, derivazione HD — inclusi gli account unificati eth-native —

@@ -21,7 +21,7 @@ EVM および SVM アダプター（`@qorechain/evm`、`@qorechain/svm`）、Rea
 | PyPI | `qorechain-sdk`（インポートは `qorsdk`） | 0.13.0 |
 | crates.io | `qorechain-sdk`（インポートは `qorechain`） | 0.13.0 |
 | Go モジュールプロキシ | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 公開作業中: Maven Central には 2026年11月11日時点でまだ 0.12.0 が表示されています。0.13.0 が表示され次第そちらを使ってください（JDK 17 以降） |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 公開済み（Maven Central、v0.13.0、2026年11月11日に確認。JDK 17 以降） |
 
 Python、Rust、Go、Java に 0.11.0 はありません。npm パッケージには 2026年10月29日に 0.11.0 があり
 （チェーン開発者キット。下記参照）、すべての言語が 0.10.0 から 0.12.0 へ一緒に移行しました。0.13.0 は 2026年11月11日にすべての言語で続きました。
@@ -53,7 +53,7 @@ Go、Rust、Java に加えて、`@qorechain/react`、`@qorechain/evm`、`@qorech
 `create-qorechain-dapp` が対象です。破壊的変更は 1 つで、シードパスのアカウントヘルパーです。
 ニーモニックから導出したアカウント、ハイブリッド署名の形式、チェーンの動作は変わらず、
 0.12.0 で作ったトランザクションも引き続き有効です。
-（Java は公開作業中です。Maven Central には 2026年11月11日時点でまだ 0.12.0 が表示されていました。）
+（Java も Maven Central で 0.13.0 が公開済みです。2026年11月11日に確認。）
 
 **破壊的変更。** シードパスのヘルパー `unifiedAccountFromSeed`（TypeScript）、
 `unified_account_from_seed`（Python、Rust）、`unified.UnifiedAccountFromSeed`（Go）、
@@ -356,9 +356,8 @@ Maven（`pom.xml`）:
 implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 ```
 
-> Maven Central に `io.github.qorechain:qorechain-sdk` として公開されています。0.13.0 は公開作業中です。
-> Maven Central には 2026年11月11日時点でも最新バージョンとして 0.12.0 が表示されており、上記の座標は
-> 0.13.0 が表示された後に使うバージョンです（それまでは 0.12.0 を使ってください）。JDK 17 以降が必要です。
+> Maven Central に `io.github.qorechain:qorechain-sdk` として公開されています。0.13.0 は
+> 2026年11月11日に確認済みで、上記の座標でそのまま使えます。JDK 17 以降が必要です。
 > Central には 0.8.0 および 0.8.1 のビルドがないため、稼働中のネットワークでは
 > 0.8.2 以降を使用してください。0.9.1 は Java 専用のリリースで、API の変更なしに
 > Bouncy Castle を 1.80 から 1.85 に更新したものでした。
@@ -376,7 +375,7 @@ implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 | `@qorechain/rdk-cli` | RDK 用の `qorollup` オペレーター CLI。0.7.1 以降、そのトランザクションコマンド（`create`、`pause`、`resume`、`stop`、`withdraw`）はハイブリッド署名を行います（0.7.0 以前は古典署名のみで署名し、ネットワークに拒否されていました）。npm からインストールすると動作し、`--version` はインストールされているバージョンを表示します（0.6.1 以前は何も表示しませんでした） | 0.8.0 |
 | `@qorechain/qoreseal` | QoreSeal: アカウントが KEM レジストリに公開した ML-KEM-1024 鍵に宛てて、ペイロードを暗号化します（SDK 0.12.0 以降は鍵の登録と読み取りを行い、暗号化は QoreSeal が行います）。PyPI（`qorechain-qoreseal`。macOS と Linux のホイール、Windows のホイールは次のバージョン）、crates.io、Maven Central（`io.github.qorechain:qoreseal` と `qoreseal-android`。Kotlin から使う場合は Kotlin 2.3 以降が必要）、Go モジュールプロキシ（`github.com/qorechain/qoreseal/go`、Go `v0.1.0`）、および Swift パッケージとしても公開されています。[QoreSeal](/developer-tools/qoreseal)を参照 | 0.1.0 |
 | `@qorechain/asset-kit` | Asset Kit: EVM Engine 上の許可型の実世界資産トークン向けのツール群で、TypeScript、Python、Java、Go のクライアントと Solidity コントラクトを備えます（`forge install qorechain/qorechain-asset-kit@v0.1.0`）。Apache-2.0。ただし ERC-3643 のスクリプトとテストは GPL-3.0-or-later です。記載されているネイティブモジュールは提案であり、実装されていません。PyPI では `qorechain-asset-kit`、Maven Central では `io.github.qorechain:asset-kit` としても公開されています。[Asset Kit](/developer-tools/asset-kit)を参照 | 0.1.0 |
-| `@qorechain/qoresign` | QoreSign: ウォレットとバックエンドの署名、およびコミット済みトランザクションのポスト量子レイヤーを確認する `inspectTransaction`。PyPI、crates.io、Maven Central でも公開されています。[QoreSign](/qoresign/overview)を参照 | 0.1.1 |
+| `@qorechain/qoresign` | QoreSign: ウォレットとバックエンドの署名、およびコミット済みトランザクションのポスト量子レイヤーを確認する `inspectTransaction`。PyPI、crates.io、Maven Central でも公開されています。[QoreSign](/qoresign/overview)を参照 | 0.2.0 |
 | `create-qorechain-rollup` | ロールアップのスターター・スキャフォルダー。そのテンプレートは `@qorechain/rdk` `^0.8.0` に依存し、`QORE_MNEMONIC` または `QORE_PQC_SEED_HEX` からポスト量子鍵を解決できる場合はハイブリッド署名を行います | 0.8.0 |
 
 ## 次のステップ

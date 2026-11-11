@@ -122,7 +122,7 @@ SDK は、好みの言語で開発できるようにパッケージファミリ�
 | `qorechain-sdk` | Python | `pip install qorechain-sdk`（インポートは `qorsdk`） | 公開済み（PyPI、v0.13.0） |
 | `qorechain-sdk`（Go モジュール） | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 公開済み（Go proxy、タグ `packages/go/v0.13.0`） |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk`（インポートは `qorechain`） | 公開済み（crates.io、v0.13.0） |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.13.0` | 公開作業中（Maven Central には 2026年11月11日時点でまだ 0.12.0 が表示されています。0.13.0 が表示され次第そちらを使ってください。JDK 17 以降） |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.13.0` | 公開済み（Maven Central、v0.13.0、2026年11月11日に確認。JDK 17 以降） |
 | `@qorechain/evm` | TypeScript（EVM アダプター） | `npm i @qorechain/evm viem` | 公開済み（npm、v0.13.0） |
 | `@qorechain/svm` | TypeScript（SVM アダプター） | `npm i @qorechain/svm @solana/web3.js` | 公開済み（npm、v0.13.0） |
 | `@qorechain/react` | TypeScript（React キット） | `npm i @qorechain/react` | 公開済み（npm、v0.13.0） |
@@ -145,7 +145,7 @@ Python、Go、Rust、Java の各クライアントは、TypeScript との**完�
 （`@qorechain/sdk` 0.13.0）、Python は PyPI（`qorechain-sdk` 0.13.0、インポート
 は `qorsdk`）、Go はモジュールプロキシ（タグ `packages/go/v0.13.0`）、Rust は
 crates.io（`qorechain-sdk` 0.13.0）、Java は Maven
-Central（`io.github.qorechain:qorechain-sdk`。Maven Central には 2026年11月11日時点でまだ 0.12.0 が表示されており、0.13.0 は公開作業中です）に公開されています。
+Central（`io.github.qorechain:qorechain-sdk` 0.13.0、2026年11月11日に確認）に公開されています。
 EVM/SVM 実行アダプター（`@qorechain/evm`、`@qorechain/svm`、いずれも 0.13.0）、
 `@qorechain/react` キット（0.13.0）、および `create-qorechain-dapp`
 スキャフォールディング CLI（0.13.0）は TypeScript 専用で、同様に npm に公開

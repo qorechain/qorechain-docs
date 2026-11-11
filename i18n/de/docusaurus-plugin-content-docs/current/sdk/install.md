@@ -22,7 +22,7 @@ Tabelle):
 | PyPI | `qorechain-sdk` (Import `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (Import `qorechain`) | 0.13.0 |
 | Go-Modul-Proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | In Veröffentlichung: Maven Central zeigt am 11. November 2026 noch 0.12.0; verwenden Sie 0.13.0, sobald es erscheint (JDK 17 oder neuer) |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0, veröffentlicht (geprüft am 11. November 2026; JDK 17 oder neuer) |
 
 Für Python, Rust, Go und Java gibt es kein 0.11.0: Die npm-Pakete hatten am
 29. Oktober 2026 ein 0.11.0 (das Chain Developer Kit, siehe unten), und jede Sprache wechselte
@@ -56,7 +56,7 @@ Go, Rust und Java, mit `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm` un
 `create-qorechain-dapp`. Es hat eine inkompatible Änderung, am Konto-Helfer des
 Seed-Pfads. Konten, die aus einer Mnemonic abgeleitet werden, sind unverändert, ebenso das
 hybride Signaturformat und das Chain-Verhalten: Eine mit 0.12.0 erstellte Transaktion bleibt gültig.
-(Java wird gerade veröffentlicht: Maven Central zeigte am 11. November 2026 noch 0.12.0.)
+(Java ist auf Maven Central veröffentlicht, 0.13.0, geprüft am 11. November 2026.)
 
 **Inkompatible Änderung.** Die Seed-Pfad-Helfer `unifiedAccountFromSeed` (TypeScript),
 `unified_account_from_seed` (Python, Rust), `unified.UnifiedAccountFromSeed` (Go) und
@@ -365,10 +365,9 @@ Oder Gradle:
 implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 ```
 
-> Veröffentlicht auf Maven Central als `io.github.qorechain:qorechain-sdk`. 0.13.0 wird gerade
-> veröffentlicht: Maven Central zeigte am 11. November 2026 noch 0.12.0 als neueste Version, und die
-> obigen Koordinaten sind die zu verwendende Version, sobald 0.13.0 erscheint (bis dahin
-> verwenden Sie 0.12.0). Es braucht JDK 17 oder neuer. Central hat keinen Build
+> Veröffentlicht auf Maven Central als `io.github.qorechain:qorechain-sdk`. Version 0.13.0 ist
+> veröffentlicht (geprüft am 11. November 2026), die obigen Koordinaten sind aktuell.
+> Es braucht JDK 17 oder neuer. Central hat keinen Build
 > 0.8.0 oder 0.8.1, verwenden Sie daher auf den Live-Netzwerken 0.8.2 oder neuer. 0.9.1 war ein
 > reines Java-Release, das Bouncy Castle von 1.80 auf 1.85 hob, ohne API-Änderung.
 
@@ -385,7 +384,7 @@ implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 | `@qorechain/rdk-cli` | Die `qorollup`-Operator-CLI für das RDK. Seit 0.7.1 signieren ihre Transaktionsbefehle (`create`, `pause`, `resume`, `stop`, `withdraw`) hybrid (0.7.0 und früher signierten nur klassisch und wurden von den Netzwerken abgelehnt); von npm installiert läuft sie, und `--version` gibt die installierte Version aus (0.6.1 und früher gaben nichts aus) | 0.8.0 |
 | `@qorechain/qoreseal` | QoreSeal: verschlüsselt eine Nutzlast an die ML-KEM-1024-Schlüssel, die Konten im KEM-Register veröffentlichen (SDK 0.12.0 und später registrieren und lesen die Schlüssel; QoreSeal übernimmt die Verschlüsselung). Auch auf PyPI (`qorechain-qoreseal`; Wheels für macOS und Linux, das Windows-Wheel in der nächsten Version), crates.io, Maven Central (`io.github.qorechain:qoreseal` und `qoreseal-android`; Kotlin-Nutzer brauchen Kotlin 2.3 oder neuer), dem Go-Modul-Proxy (`github.com/qorechain/qoreseal/go`, Go `v0.1.0`) und als Swift-Paket. Siehe [QoreSeal](/developer-tools/qoreseal) | 0.1.0 |
 | `@qorechain/asset-kit` | Asset Kit: Werkzeuge für zugangsbeschränkte Real-World-Asset-Token auf der EVM Engine, mit Clients in TypeScript, Python, Java und Go sowie Solidity-Contracts (`forge install qorechain/qorechain-asset-kit@v0.1.0`). Apache-2.0, mit Ausnahme der ERC-3643-Skripte und -Tests (GPL-3.0-or-later). Die nativen Module, die es beschreibt, sind ein Vorschlag und nicht gebaut. Auch `qorechain-asset-kit` auf PyPI und `io.github.qorechain:asset-kit` auf Maven Central. Siehe [Asset Kit](/developer-tools/asset-kit) | 0.1.0 |
-| `@qorechain/qoresign` | QoreSign: Wallet- und Backend-Signierung sowie `inspectTransaction`, um die Post-Quanten-Ebene einer bestätigten Transaktion zu prüfen. Auch auf PyPI, crates.io und Maven Central. Siehe [QoreSign](/qoresign/overview) | 0.1.1 |
+| `@qorechain/qoresign` | QoreSign: Wallet- und Backend-Signierung sowie `inspectTransaction`, um die Post-Quanten-Ebene einer bestätigten Transaktion zu prüfen. Auch auf PyPI, crates.io und Maven Central. Siehe [QoreSign](/qoresign/overview) | 0.2.0 |
 | `create-qorechain-rollup` | Scaffolder für Rollup-Starter; seine Vorlagen hängen von `@qorechain/rdk` `^0.8.0` ab und signieren hybrid, wenn sie Ihren Post-Quanten-Schlüssel aus `QORE_MNEMONIC` oder `QORE_PQC_SEED_HEX` auflösen können | 0.8.0 |
 
 ## Weiter

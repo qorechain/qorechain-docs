@@ -22,7 +22,7 @@ table):
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
 | Go module proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | Publishing: Maven Central still shows 0.12.0 on 11 November 2026; use 0.13.0 once it appears (JDK 17 or later) |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | Published (Maven Central, v0.13.0; JDK 17 or later), checked 11 November 2026 |
 
 There is no 0.11.0 for Python, Rust, Go or Java: the npm packages had a 0.11.0 on
 29 October 2026 (the chain developer kit, see below) and every language moved
@@ -55,7 +55,7 @@ Go, Rust and Java, with `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm` a
 `create-qorechain-dapp`. It has one breaking change, to the seed-path account
 helper. Accounts derived from a mnemonic are unchanged, and so are the hybrid
 signing format and chain behaviour: a transaction built with 0.12.0 stays valid.
-(Java is publishing: Maven Central still showed 0.12.0 on 11 November 2026.)
+(Java 0.13.0 is on Maven Central, checked 11 November 2026.)
 
 **Breaking change.** The seed-path helpers `unifiedAccountFromSeed` (TypeScript),
 `unified_account_from_seed` (Python, Rust), `unified.UnifiedAccountFromSeed` (Go) and
@@ -364,10 +364,9 @@ Or Gradle:
 implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 ```
 
-> Published to Maven Central as `io.github.qorechain:qorechain-sdk`. 0.13.0 is being
-> published: Maven Central still showed 0.12.0 as the latest version on 11 November
-> 2026, and the coordinates above are the version to use once 0.13.0 appears (until
-> then use 0.12.0). It needs JDK 17 or later. Central has no 0.8.0 or
+> Published to Maven Central as `io.github.qorechain:qorechain-sdk`. 0.13.0 is
+> published there (checked 11 November 2026), and the coordinates above are the
+> version to use. It needs JDK 17 or later. Central has no 0.8.0 or
 > 0.8.1 build, so on the live networks use 0.8.2 or later. 0.9.1 was a
 > Java-only release that moved Bouncy Castle from 1.80 to 1.85 with no API change.
 
@@ -384,7 +383,7 @@ implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
 | `@qorechain/rdk-cli` | The `qorollup` operator CLI for the RDK. Since 0.7.1 its transaction commands (`create`, `pause`, `resume`, `stop`, `withdraw`) sign hybrid (0.7.0 and earlier signed classical-only and were refused by the networks); installed from npm it runs and `--version` prints the installed version (0.6.1 and earlier printed nothing) | 0.8.0 |
 | `@qorechain/qoreseal` | QoreSeal: encrypt a payload to the ML-KEM-1024 keys that accounts publish in the KEM registry (SDK 0.12.0 and later register and read the keys; QoreSeal does the encryption). Also on PyPI (`qorechain-qoreseal`; macOS and Linux wheels, Windows wheel in the next version), crates.io, Maven Central (`io.github.qorechain:qoreseal` and `qoreseal-android`; Kotlin consumers need Kotlin 2.3 or later), the Go module proxy (`github.com/qorechain/qoreseal/go`, Go `v0.1.0`) and as a Swift package. See [QoreSeal](/developer-tools/qoreseal) | 0.1.0 |
 | `@qorechain/asset-kit` | Asset Kit: tooling for permissioned real-world-asset tokens on the EVM Engine, with clients in TypeScript, Python, Java and Go and Solidity contracts (`forge install qorechain/qorechain-asset-kit@v0.1.0`). Apache-2.0, except the ERC-3643 scripts and tests (GPL-3.0-or-later). The native modules it describes are a proposal, not built. Also `qorechain-asset-kit` on PyPI and `io.github.qorechain:asset-kit` on Maven Central. See [Asset Kit](/developer-tools/asset-kit) | 0.1.0 |
-| `@qorechain/qoresign` | QoreSign: wallet and backend signing, and `inspectTransaction` to check a committed transaction's post-quantum layer. Also on PyPI, crates.io and Maven Central. See [QoreSign](/qoresign/overview) | 0.1.1 |
+| `@qorechain/qoresign` | QoreSign: wallet and backend signing, and `inspectTransaction` to check a committed transaction's post-quantum layer. Also on PyPI, crates.io and Maven Central. See [QoreSign](/qoresign/overview) | 0.2.0 |
 | `create-qorechain-rollup` | Rollup starter scaffolder; its templates depend on `@qorechain/rdk` `^0.8.0` and sign hybrid when they can resolve your post-quantum key from `QORE_MNEMONIC` or `QORE_PQC_SEED_HEX` | 0.8.0 |
 
 ## Next
