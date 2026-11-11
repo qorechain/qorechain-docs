@@ -80,6 +80,18 @@ WebSocket). الإصدار الحالي هو **0.13.0**، ونُشر في 11 ن�
 | `getPqcStatus` / `get_pqc_status` | تُطلق خطأ عندما تخلو إجابة العقدة من علم التسجيل، بدل الإبلاغ بـ "غير مسجّل" |
 | Python | يحلّل رموز نتيجة المعاملة وحقلي `found` و`live` في نافذة EVM بصرامة؛ وتعدّ `wait_for_tx` الإجابة الخالية من `tx_response` أو `txhash` معلّقة بعد |
 
+**خيارات مسار البذرة في كل لغة**. مرّر واحدًا بالضبط من الثلاثة:
+
+| اللغة | الاستدعاء | رمز الاسترداد | سر مستقل من 32 بايتًا | المفتاح الأقدم، للاسترداد فقط |
+| --- | --- | --- | --- | --- |
+| TypeScript | `unifiedAccountFromSeed(seed32, opts)` | `{ recoveryCode }` (سلسلة `"QRC1-..."`) | `{ pqcSecret }` (مصفوفة `Uint8Array` من 32 بايتًا، مستقلة عن `seed32`) | `{ legacySeedDerivation: true }` |
+| Python | `unified_account_from_seed(seed32, ...)` | `recovery_code=...` | `pqc_secret=...` | `legacy_seed_derivation=True` |
+| Go | `unified.UnifiedAccountFromSeed(seed32, opts)` | `unified.SeedPQCOptions{RecoveryCode: ...}` | `unified.SeedPQCOptions{PQCSecret: ...}` | `unified.SeedPQCOptions{LegacySeedDerivation: true}` |
+| Rust | `unified_account_from_seed(seed32, opts)` | `SeedPqcOptions::recovery_code(code)` | `SeedPqcOptions::pqc_secret(secret32)` | `SeedPqcOptions::legacy_seed_derivation()` |
+| Java | `UnifiedAccounts.unifiedAccountFromSeed(seed32, opts)` | `SeedPqcOptions.withRecoveryCode(code)` | `SeedPqcOptions.withPqcSecret(secret32)` | `SeedPqcOptions.legacy()` |
+
+خيارات Python تُمرَّر بالاسم فقط. يعطي `pqcSecret` المفتاح نفسه الذي يعطيه رمز الاسترداد المصنوع منه بـ `pqcRecoveryCodeFromSecret(secret32)`. ويتوفر في TypeScript أيضًا `pqcKeyFromRecoveryCode(code, qor1)`.
+
 **الترحيل (TypeScript).** أنشئ رمز استرداد مرة واحدة واحفظه بعيدًا عن البذرة:
 
 ```ts

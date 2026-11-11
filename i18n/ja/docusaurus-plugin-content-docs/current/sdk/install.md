@@ -78,6 +78,18 @@ Go、Rust、Java に加えて、`@qorechain/react`、`@qorechain/evm`、`@qorech
 | `getPqcStatus` / `get_pqc_status` | ノードの応答に登録フラグがない場合、「未登録」と報告する代わりにエラーを発生させます |
 | Python | トランザクション結果コードと EVM ウィンドウの `found` および `live` フィールドを厳密に解析します。`wait_for_tx` は `tx_response` または `txhash` のない応答を、まだ保留中として扱います |
 
+**言語ごとのシードパスのオプション**。次の 3 つのうち、ちょうど 1 つを渡してください:
+
+| 言語 | 呼び出し | リカバリーコード | 独立した 32 バイトのシークレット | 古い鍵（復元専用） |
+| --- | --- | --- | --- | --- |
+| TypeScript | `unifiedAccountFromSeed(seed32, opts)` | `{ recoveryCode }`（`"QRC1-..."` 形式の文字列） | `{ pqcSecret }`（32 バイトの `Uint8Array`。`seed32` とは独立） | `{ legacySeedDerivation: true }` |
+| Python | `unified_account_from_seed(seed32, ...)` | `recovery_code=...` | `pqc_secret=...` | `legacy_seed_derivation=True` |
+| Go | `unified.UnifiedAccountFromSeed(seed32, opts)` | `unified.SeedPQCOptions{RecoveryCode: ...}` | `unified.SeedPQCOptions{PQCSecret: ...}` | `unified.SeedPQCOptions{LegacySeedDerivation: true}` |
+| Rust | `unified_account_from_seed(seed32, opts)` | `SeedPqcOptions::recovery_code(code)` | `SeedPqcOptions::pqc_secret(secret32)` | `SeedPqcOptions::legacy_seed_derivation()` |
+| Java | `UnifiedAccounts.unifiedAccountFromSeed(seed32, opts)` | `SeedPqcOptions.withRecoveryCode(code)` | `SeedPqcOptions.withPqcSecret(secret32)` | `SeedPqcOptions.legacy()` |
+
+Python のオプションはキーワード専用です。`pqcSecret` は、そこから `pqcRecoveryCodeFromSecret(secret32)` で作ったリカバリーコードと同じ鍵になります。TypeScript には `pqcKeyFromRecoveryCode(code, qor1)` もあります。
+
 **移行（TypeScript）。** リカバリーコードを一度だけ作成し、シードとは別に保管してください:
 
 ```ts

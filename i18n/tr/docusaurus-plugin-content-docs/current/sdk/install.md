@@ -82,6 +82,18 @@ ile rotasyona sokabilirsiniz; yeni hesaplar için değildir.
 | `getPqcStatus` / `get_pqc_status` | Düğümün yanıtında kayıt bayrağı yoksa "kayıtlı değil" bildirmek yerine hata verir |
 | Python | İşlem sonucu kodlarını ve EVM penceresi `found` ile `live` alanlarını katı biçimde ayrıştırır; `wait_for_tx`, `tx_response` veya `txhash` içermeyen bir yanıtı hâlâ bekleyen sayar |
 
+**Her dilde seed yolu seçenekleri**. Üçünden tam olarak birini verin:
+
+| Dil | Çağrı | Kurtarma kodu | Bağımsız 32 baytlık sır | Eski anahtar, yalnızca kurtarma için |
+| --- | --- | --- | --- | --- |
+| TypeScript | `unifiedAccountFromSeed(seed32, opts)` | `{ recoveryCode }` (bir `"QRC1-..."` dizesi) | `{ pqcSecret }` (`seed32`'den bağımsız, 32 baytlık bir `Uint8Array`) | `{ legacySeedDerivation: true }` |
+| Python | `unified_account_from_seed(seed32, ...)` | `recovery_code=...` | `pqc_secret=...` | `legacy_seed_derivation=True` |
+| Go | `unified.UnifiedAccountFromSeed(seed32, opts)` | `unified.SeedPQCOptions{RecoveryCode: ...}` | `unified.SeedPQCOptions{PQCSecret: ...}` | `unified.SeedPQCOptions{LegacySeedDerivation: true}` |
+| Rust | `unified_account_from_seed(seed32, opts)` | `SeedPqcOptions::recovery_code(code)` | `SeedPqcOptions::pqc_secret(secret32)` | `SeedPqcOptions::legacy_seed_derivation()` |
+| Java | `UnifiedAccounts.unifiedAccountFromSeed(seed32, opts)` | `SeedPqcOptions.withRecoveryCode(code)` | `SeedPqcOptions.withPqcSecret(secret32)` | `SeedPqcOptions.legacy()` |
+
+Python seçenekleri yalnızca anahtar sözcükle verilir. Bir `pqcSecret`, ondan `pqcRecoveryCodeFromSecret(secret32)` ile üretilen kurtarma koduyla aynı anahtarı verir. TypeScript'te ayrıca `pqcKeyFromRecoveryCode(code, qor1)` vardır.
+
 **Geçiş (TypeScript).** Bir kurtarma kodunu bir kez oluşturun ve tohumdan ayrı saklayın:
 
 ```ts

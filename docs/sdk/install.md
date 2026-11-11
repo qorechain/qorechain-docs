@@ -81,6 +81,18 @@ new accounts.
 | `getPqcStatus` / `get_pqc_status` | Raise an error when the node's answer has no registration flag, instead of reporting "not registered" |
 | Python | Parses transaction result codes and the EVM window `found` and `live` fields strictly; `wait_for_tx` treats an answer without `tx_response` or `txhash` as still pending |
 
+**Seed-path options in each language**. Pass exactly one of the three:
+
+| Language | Call | Recovery code | Independent 32-byte secret | Older key, recovery only |
+| --- | --- | --- | --- | --- |
+| TypeScript | `unifiedAccountFromSeed(seed32, opts)` | `{ recoveryCode }` (a `"QRC1-..."` string) | `{ pqcSecret }` (a `Uint8Array` of 32 bytes, independent of `seed32`) | `{ legacySeedDerivation: true }` |
+| Python | `unified_account_from_seed(seed32, ...)` | `recovery_code=...` | `pqc_secret=...` | `legacy_seed_derivation=True` |
+| Go | `unified.UnifiedAccountFromSeed(seed32, opts)` | `unified.SeedPQCOptions{RecoveryCode: ...}` | `unified.SeedPQCOptions{PQCSecret: ...}` | `unified.SeedPQCOptions{LegacySeedDerivation: true}` |
+| Rust | `unified_account_from_seed(seed32, opts)` | `SeedPqcOptions::recovery_code(code)` | `SeedPqcOptions::pqc_secret(secret32)` | `SeedPqcOptions::legacy_seed_derivation()` |
+| Java | `UnifiedAccounts.unifiedAccountFromSeed(seed32, opts)` | `SeedPqcOptions.withRecoveryCode(code)` | `SeedPqcOptions.withPqcSecret(secret32)` | `SeedPqcOptions.legacy()` |
+
+The Python options are keyword-only. A `pqcSecret` gives the same key as the recovery code made from it with `pqcRecoveryCodeFromSecret(secret32)`. TypeScript also has `pqcKeyFromRecoveryCode(code, qor1)`.
+
 **Migrating (TypeScript).** Create a recovery code once and store it apart from the
 seed:
 

@@ -82,6 +82,20 @@ conturi noi.
 | `getPqcStatus` / `get_pqc_status` | Ridică o eroare când răspunsul nodului nu are indicatorul de înregistrare, în loc să raporteze „neînregistrat" |
 | Python | Interpretează strict codurile de rezultat ale tranzacțiilor și câmpurile `found` și `live` ale ferestrei EVM; `wait_for_tx` tratează un răspuns fără `tx_response` sau `txhash` ca fiind încă în așteptare |
 
+**Opțiunile pentru calea cu seed în fiecare limbaj**. Transmiteți exact una dintre cele trei:
+
+| Limbaj | Apel | Cod de recuperare | Secret independent de 32 de bytes | Cheie mai veche, doar recuperare |
+| --- | --- | --- | --- | --- |
+| TypeScript | `unifiedAccountFromSeed(seed32, opts)` | `{ recoveryCode }` (un șir `"QRC1-..."`) | `{ pqcSecret }` (un `Uint8Array` de 32 de bytes, independent de `seed32`) | `{ legacySeedDerivation: true }` |
+| Python | `unified_account_from_seed(seed32, ...)` | `recovery_code=...` | `pqc_secret=...` | `legacy_seed_derivation=True` |
+| Go | `unified.UnifiedAccountFromSeed(seed32, opts)` | `unified.SeedPQCOptions{RecoveryCode: ...}` | `unified.SeedPQCOptions{PQCSecret: ...}` | `unified.SeedPQCOptions{LegacySeedDerivation: true}` |
+| Rust | `unified_account_from_seed(seed32, opts)` | `SeedPqcOptions::recovery_code(code)` | `SeedPqcOptions::pqc_secret(secret32)` | `SeedPqcOptions::legacy_seed_derivation()` |
+| Java | `UnifiedAccounts.unifiedAccountFromSeed(seed32, opts)` | `SeedPqcOptions.withRecoveryCode(code)` | `SeedPqcOptions.withPqcSecret(secret32)` | `SeedPqcOptions.legacy()` |
+
+Opțiunile din Python sunt doar prin cuvinte cheie. Un `pqcSecret` dă aceeași cheie ca
+șirul de recuperare creat din el cu `pqcRecoveryCodeFromSecret(secret32)`. TypeScript are și
+`pqcKeyFromRecoveryCode(code, qor1)`.
+
 **Migrare (TypeScript).** Creați o dată un cod de recuperare și păstrați-l separat de
 seed:
 

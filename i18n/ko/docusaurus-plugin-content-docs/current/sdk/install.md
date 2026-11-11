@@ -79,6 +79,18 @@ Go, Rust, Java와 함께 `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`,
 | `getPqcStatus` / `get_pqc_status` | 노드의 응답에 등록 플래그가 없으면 "등록되지 않음"으로 보고하는 대신 오류를 발생시킵니다 |
 | Python | 트랜잭션 결과 코드와 EVM 윈도우의 `found`, `live` 필드를 엄격하게 파싱하며, `wait_for_tx`는 `tx_response` 또는 `txhash`가 없는 응답을 아직 대기 중인 것으로 취급합니다 |
 
+**언어별 시드 경로 옵션**. 세 가지 중 정확히 하나를 전달하세요.
+
+| 언어 | 호출 | 복구 코드 | 독립적인 32바이트 비밀 | 이전 키(복구 전용) |
+| --- | --- | --- | --- | --- |
+| TypeScript | `unifiedAccountFromSeed(seed32, opts)` | `{ recoveryCode }` (`"QRC1-..."` 문자열) | `{ pqcSecret }` (`seed32`와 독립적인 32바이트 `Uint8Array`) | `{ legacySeedDerivation: true }` |
+| Python | `unified_account_from_seed(seed32, ...)` | `recovery_code=...` | `pqc_secret=...` | `legacy_seed_derivation=True` |
+| Go | `unified.UnifiedAccountFromSeed(seed32, opts)` | `unified.SeedPQCOptions{RecoveryCode: ...}` | `unified.SeedPQCOptions{PQCSecret: ...}` | `unified.SeedPQCOptions{LegacySeedDerivation: true}` |
+| Rust | `unified_account_from_seed(seed32, opts)` | `SeedPqcOptions::recovery_code(code)` | `SeedPqcOptions::pqc_secret(secret32)` | `SeedPqcOptions::legacy_seed_derivation()` |
+| Java | `UnifiedAccounts.unifiedAccountFromSeed(seed32, opts)` | `SeedPqcOptions.withRecoveryCode(code)` | `SeedPqcOptions.withPqcSecret(secret32)` | `SeedPqcOptions.legacy()` |
+
+Python 옵션은 키워드 전용입니다. `pqcSecret`은 `pqcRecoveryCodeFromSecret(secret32)`로 그 비밀에서 만든 복구 코드와 같은 키를 줍니다. TypeScript에는 `pqcKeyFromRecoveryCode(code, qor1)`도 있습니다.
+
 **마이그레이션(TypeScript).** 복구 코드를 한 번 만들어 시드와 따로 보관하세요.
 
 ```ts
