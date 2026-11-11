@@ -16,7 +16,7 @@ The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026
 ---
 
 :::caution SVM transaction submission is currently disabled
-As of chain version v3.1.89 (22 August), following an incident, the SVM execution lane is **disabled network-wide for transaction submission** on both `qorechain-vladi` and `qorechain-diana` — any transaction sent to `x/svm` (program deployment, instruction execution, account creation, transfers) returns `code 11, "SVM module is disabled"`. This applies to your own node as well as the public endpoints. Read-style RPC methods may still respond, but do not build or rehearse a live SVM integration until the lane reopens — on mainnet the SVM lane is off in the current release, and enabling it on mainnet requires a future release; it is expected to stay off until an external audit clears it.
+As of chain version v3.1.89 (22 August), following an incident, the SVM execution lane is **disabled network-wide for transaction submission** on both `qorechain-vladi` and `qorechain-diana` — any transaction sent to `x/svm` (program deployment, instruction execution, account creation, transfers) returns `code 11, "SVM module is disabled"`. This applies to your own node as well as the public endpoints. Read-style RPC methods may still respond, but do not build or rehearse a live SVM integration until the lane reopens. On mainnet the SVM lane is off in the current release, and enabling it on mainnet requires a future release; it is expected to stay off until an external audit clears it.
 :::
 
 ## Overview
