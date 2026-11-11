@@ -332,7 +332,7 @@ v3.2.7부터(테스트넷은 2026년 11월 6일부터, 아직 메인넷에는 �
 | code 27 | 윈도우가 만료되었거나 소진됨(메시지에 어떤 한도인지 표시), 또는 트랜잭션이 윈도우의 범위를 벗어남 |
 | code 28 | 윈도우를 열 때 한도가 유효하지 않거나, 그 시점에 등록된 키가 없음 |
 
-TypeScript SDK(0.8.2 이상)에서는: `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })`, `classifyEvmWindowRejection(err)`(`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`)를 사용할 수 있습니다. SDK 0.9.0 이상(현재 릴리스는 0.12.0)은 `openEvmWindowMsg`에 범위 옵션(`nativeOnly`, `allowedTargets`)을 추가하고 EIP-7702 동의 빌더(`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`)를 추가합니다. 0.9.0 이전 릴리스는 범위가 없는 윈도우만 만들 수 있으므로, 나머지에는 `qorechaind`를 사용하세요([SDK EVM 가이드](/sdk/guides/evm#evm-window-scope) 참조).
+TypeScript SDK(0.8.2 이상)에서는: `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })`, `classifyEvmWindowRejection(err)`(`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`)를 사용할 수 있습니다. SDK 0.9.0 이상(현재 릴리스는 0.13.0)은 `openEvmWindowMsg`에 범위 옵션(`nativeOnly`, `allowedTargets`)을 추가하고 EIP-7702 동의 빌더(`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`)를 추가합니다. 0.9.0 이전 릴리스는 범위가 없는 윈도우만 만들 수 있으므로, 나머지에는 `qorechaind`를 사용하세요([SDK EVM 가이드](/sdk/guides/evm#evm-window-scope) 참조).
 
 ---
 

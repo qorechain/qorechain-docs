@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> `create-qorechain-dapp`(`0.12.0`)으로 npm에 게시되어 있습니다. 생성되는
-> `package.json` 파일은 `@qorechain/sdk` `^0.12.0`에 의존합니다(EVM 템플릿은
-> `@qorechain/evm` `^0.12.0`). 스캐폴더의 0.8.0 버전은 `^0.3.0` 범위를 기록했는데,
+> `create-qorechain-dapp`(`0.13.0`)으로 npm에 게시되어 있습니다. 생성되는
+> `package.json` 파일은 `@qorechain/sdk` `^0.13.0`에 의존합니다(EVM 템플릿은
+> `@qorechain/evm` `^0.13.0`). 스캐폴더의 0.8.0 버전은 `^0.3.0` 범위를 기록했는데,
 > npm은 이를 실제 네트워크에 서명할 수 없는 0.3 릴리스로 해석합니다. 0.8.0으로
 > 스캐폴딩했다면 `npm i @qorechain/sdk@latest`를 실행하세요.
 

@@ -118,8 +118,17 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-`unifiedAccountFromSeed(seed32)`는 32바이트 원시 secp256k1 개인키로부터
-동일한 작업을 수행합니다.
+`unifiedAccountFromSeed(seed32, { recoveryCode })`는 32바이트 원시 secp256k1
+개인키로부터 동일한 작업을 수행합니다. SDK 0.13.0부터 시드 경로에는 `QRC1` 복구 코드
+(`generatePqcRecoveryCode()`로 한 번 만들어 시드와 따로 보관) 또는 독립적인 32바이트
+PQC 비밀 중 정확히 하나가 필요합니다. ML-DSA-87 키는 이 두 번째 입력에서 파생되며,
+코드가 다르면 키도 다릅니다. 옵션이 없거나 둘 이상이면 호출은 오류를 발생시킵니다.
+PQC 키를 0.12 이하로 등록한 계정은 `{ legacySeedDerivation: true }`로 그 키를 불러와
+(Python `legacy_seed_derivation=True`, Go `LegacySeedDerivation`, Rust
+`SeedPqcOptions::legacy_seed_derivation()`, Java `SeedPqcOptions.legacy()`)
+`MsgRotatePQCKey`로 로테이션할 수 있습니다. 새 계정에는 이 옵션을 사용하지 마세요.
+니모닉에서 파생한 계정은 달라지지 않습니다.
+[0.13.0의 변경 사항](/sdk/install#whats-new-0130)을 참고하세요.
 
 ### PQC 시드 파생
 
@@ -130,8 +139,8 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 ```
 
 따라서 `{ address, mnemonic }`으로부터 복구할 수 있으며 QoreChain의 모든
-언어 SDK에서 동일합니다. (`unifiedAccountFromSeed`의 경우, 니모닉 자리는
-`"seed:" + hex(seed32)`입니다.) SDK 0.8.3부터
+언어 SDK에서 동일합니다. (0.13.0 이전의 `unifiedAccountFromSeed`의 경우, 니모닉 자리는
+`"seed:" + hex(seed32)`였습니다. 0.13.0부터 시드 경로는 대신 복구 코드나 PQC 비밀에서 키를 파생합니다. 위를 참고하세요.) SDK 0.8.3부터
 `derivePqcCanonical(account, mnemonic)`은 먼저 `account`를 소문자 `qor1…`
 형태(`canonicalAccount`)로 정규화하므로, 대문자 bech32나 같은 계정의 `0x`
 형태도 동일한 키를 생성합니다.

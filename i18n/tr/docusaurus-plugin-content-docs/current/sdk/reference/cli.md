@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> npm'e `create-qorechain-dapp` (`0.12.0`) olarak yayınlandı. Oluşturulan
-> `package.json` dosyaları `@qorechain/sdk` `^0.12.0` sürümüne bağımlıdır (EVM şablonları
-> ise `@qorechain/evm` `^0.12.0` sürümüne). İskeleleyicinin 0.8.0 sürümü `^0.3.0`
+> npm'e `create-qorechain-dapp` (`0.13.0`) olarak yayınlandı. Oluşturulan
+> `package.json` dosyaları `@qorechain/sdk` `^0.13.0` sürümüne bağımlıdır (EVM şablonları
+> ise `@qorechain/evm` `^0.13.0` sürümüne). İskeleleyicinin 0.8.0 sürümü `^0.3.0`
 > aralıkları yazıyordu; npm bunu canlı ağlar için imzalayamayan bir 0.3 sürümüne çözer.
 > 0.8.0 ile iskelelediyseniz `npm i @qorechain/sdk@latest` komutunu çalıştırın.
 

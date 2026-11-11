@@ -332,7 +332,7 @@ Eine EIP-7702-Delegation Ihres Kontos (eine Typ-4-Transaktion) wird seit v3.2.2 
 | Code 27 | Das Fenster ist abgelaufen oder erschöpft (die Meldung zeigt, welche Grenze), oder die Transaktion liegt außerhalb des Scopes des Fensters |
 | Code 28 | Ungültige Fenstergrenzen beim Öffnen, oder zu diesem Zeitpunkt kein registrierter Schlüssel |
 
-Mit dem TypeScript-SDK (ab 0.8.2): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` und `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). Das SDK ab 0.9.0 (0.12.0 ist das aktuelle Release) ergänzt `openEvmWindowMsg` um die Scope-Optionen (`nativeOnly`, `allowedTargets`) und fügt die Builder für die EIP-7702-Einwilligung hinzu (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); Releases vor 0.9.0 bauen nur das Fenster ohne Scope, nutzen Sie für den Rest daher `qorechaind` (siehe den [SDK-EVM-Leitfaden](/sdk/guides/evm#evm-window-scope)).
+Mit dem TypeScript-SDK (ab 0.8.2): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` und `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). Das SDK ab 0.9.0 (0.13.0 ist das aktuelle Release) ergänzt `openEvmWindowMsg` um die Scope-Optionen (`nativeOnly`, `allowedTargets`) und fügt die Builder für die EIP-7702-Einwilligung hinzu (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); Releases vor 0.9.0 bauen nur das Fenster ohne Scope, nutzen Sie für den Rest daher `qorechaind` (siehe den [SDK-EVM-Leitfaden](/sdk/guides/evm#evm-window-scope)).
 
 ---
 

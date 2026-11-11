@@ -40,7 +40,7 @@ sidebar_position: 1
 | تدمج QoreChain بصفتك جهة حفظ أو منصة تداول (فحص العناوين، والتحقق من السحوبات، واحتساب الإيداعات) | Custody kit | [Custody kit](/developer-tools/custody-kit) |
 | تجرد التشفير في عقدة أو شبكة أو مصادر Solidity على شكل CycloneDX CBOM | QoreScan | [QoreScan](/developer-tools/qorescan) |
 | تنشئ نموذجاً أولياً لرمز أصل حقيقي مقيَّد الصلاحيات على شبكة الاختبار (ERC-3643 وCMTAT وخزائن بحصص مقيَّدة وفحص حامل ما بعد كمّي) | Asset Kit | [Asset Kit](/developer-tools/asset-kit) |
-| تبني وتختبر مشاريع Solidity أو CosmWasm على QoreChain باستخدام Foundry أو Hardhat أو viem | Chain developer kit (مضمَّن في SDK 0.12.0) | [Chain developer kit](/developer-tools/chain-dev-sdk) |
+| تبني وتختبر مشاريع Solidity أو CosmWasm على QoreChain باستخدام Foundry أو Hardhat أو viem | Chain developer kit (مضمَّن في SDK 0.13.0) | [Chain developer kit](/developer-tools/chain-dev-sdk) |
 
 ثبّت حزمة واحدة وشغّل بدايتها السريعة على شبكة الاختبار العامة أولاً. القراءات لا تحتاج حساباً ولا مفتاحاً ولا رسوماً.
 
@@ -84,17 +84,17 @@ sidebar_position: 1
 
 | الحزمة | اللغة | الإصدار | التثبيت | الحالة |
 |---|---|---|---|---|
-| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.12.0 | `npm install @qorechain/sdk` | منشورة |
-| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.10.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | منشورة. المزوّد والخطافات و`ConnectButton` وشارة حالة PQC (`PqcStatusBadge`، مع بقاء `QuantumSafeBadge` من 0.10.0) |
-| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.8.0 | `npm install @qorechain/evm viem` | منشورة. تتضمن تعريفات سلاسل viem ومساعدات نافذة EVM (راجع [Chain developer kit](#group-chain-dev-sdk)) |
-| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.12.0 | `npm install @qorechain/svm @solana/web3.js` | منشورة. قراءات فقط على الشبكات الحية |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.10.0 | `npx create-qorechain-dapp my-dapp` | منشورة. سبعة قوالب |
-| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.12.0 | `pip install qorechain-sdk` | منشورة |
-| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.12.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | منشورة |
-| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.10.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0` | منشورة |
-| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.10.0 | `implementation("io.github.qorechain:qorechain-sdk:0.10.0")` | منشورة |
+| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.13.0 | `npm install @qorechain/sdk` | منشورة |
+| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | منشورة. المزوّد والخطافات و`ConnectButton` وشارة حالة PQC (`PqcStatusBadge`، مع بقاء `QuantumSafeBadge` من 0.10.0) |
+| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | منشورة. تتضمن تعريفات سلاسل viem ومساعدات نافذة EVM (راجع [Chain developer kit](#group-chain-dev-sdk)) |
+| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | منشورة. قراءات فقط على الشبكات الحية |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.0 | `npx create-qorechain-dapp my-dapp` | منشورة. سبعة قوالب |
+| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | منشورة |
+| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | منشورة |
+| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | منشورة |
+| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.13.0 | `implementation("io.github.qorechain:qorechain-sdk:0.13.0")` | قيد النشر: ما زال Maven Central يعرض 0.12.0 في 11 نوفمبر 2026؛ استخدم 0.13.0 عند ظهوره |
 
-SDK 0.12.0 هو الإصدار الحالي منذ 30 أكتوبر 2026. مقارنةً بـ 0.10.0 تستخدم الإعدادات المسبقة نقاط النهاية العامة افتراضيًا (الشبكة الرئيسية `api.qore.host` و`rpc.qore.host` و`evm.qore.host`؛ وشبكة الاختبار مضيفات `-testnet`؛ وكان الافتراضي سابقًا localhost)، وللإعداد المحلي معرّف السلسلة `qorechain-devnet`، والغاز دقيق على العقد بالإصدار v3.2.5 أو أحدث (المحاكاة مضروبة في 1.02 زائد 2,000؛ ويبقى المسار القديم للعقد الأقدم)، ويُدعم سجل مفاتيح ML-KEM-1024 (التسجيل والحذف والاستعلام عن `/qorechain/pqc/v1/kem/\{address\}`)، وتتضمن الحزمة [chain developer kit](#group-chain-dev-sdk). التوقيع الهجين دون تغيير. انتقلت حزم Python وRust وGo وJava من 0.10.0 مباشرة إلى 0.12.0؛ وللحزم الخمس على npm أيضًا إصدار 0.11.0 (29 أكتوبر 2026) بمحتوى الحزمة نفسه، يحل 0.12.0 محله.
+SDK 0.13.0 هو الإصدار الحالي منذ 11 نوفمبر 2026 (يغيّر مساعد الحساب على مسار البذرة، الذي صار يحتاج رمز استرداد `QRC1` أو سرّ PQC مستقلًا من 32 بايتًا؛ أما الحسابات المشتقة من عبارة ذاكرية والتوقيع وسلوك السلسلة فدون تغيير؛ راجع [ما الذي يغيّره 0.13.0](/sdk/install#whats-new-0130)). وكان SDK 0.12.0 هو الحالي منذ 30 أكتوبر 2026. مقارنةً بـ 0.10.0 تستخدم الإعدادات المسبقة نقاط النهاية العامة افتراضيًا (الشبكة الرئيسية `api.qore.host` و`rpc.qore.host` و`evm.qore.host`؛ وشبكة الاختبار مضيفات `-testnet`؛ وكان الافتراضي سابقًا localhost)، وللإعداد المحلي معرّف السلسلة `qorechain-devnet`، والغاز دقيق على العقد بالإصدار v3.2.5 أو أحدث (المحاكاة مضروبة في 1.02 زائد 2,000؛ ويبقى المسار القديم للعقد الأقدم)، ويُدعم سجل مفاتيح ML-KEM-1024 (التسجيل والحذف والاستعلام عن `/qorechain/pqc/v1/kem/\{address\}`)، وتتضمن الحزمة [chain developer kit](#group-chain-dev-sdk). التوقيع الهجين دون تغيير. انتقلت حزم Python وRust وGo وJava من 0.10.0 مباشرة إلى 0.12.0؛ وللحزم الخمس على npm أيضًا إصدار 0.11.0 (29 أكتوبر 2026) بمحتوى الحزمة نفسه، يحل 0.12.0 محله.
 
 ### QoreSign {#group-qoresign}
 
@@ -170,11 +170,11 @@ SDK 0.12.0 هو الإصدار الحالي منذ 30 أكتوبر 2026. مقا�
 | [`@qorechain/asset-kit`](https://www.npmjs.com/package/@qorechain/asset-kit) | TypeScript (عميل للمقترح) | 0.1.0 | `npm install @qorechain/asset-kit` | منشورة |
 | [`qorechain-asset-kit`](https://pypi.org/project/qorechain-asset-kit/) | Python 3.10+ (عميل للمقترح؛ يُستورد باسم `qorechain_asset_kit`) | 0.1.0 | `pip install qorechain-asset-kit` | منشورة |
 
-### Chain developer kit (SDK 0.12.0) {#group-chain-dev-sdk}
+### Chain developer kit (SDK 0.13.0) {#group-chain-dev-sdk}
 
 الصفحة: [Chain developer kit](/developer-tools/chain-dev-sdk). المصدر: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). الجزء من QoreChain SDK 0.11.0 الموجّه لفرق Solidity والعقود الذكية: تعريفات سلسلة viem ومساعدات نافذة تفويض EVM في `@qorechain/evm`، وأربعة قوالب في `create-qorechain-dapp` (Foundry وHardhat 3 وviem مع wagmi، ورمز QoreChain Native)، وبدايات سريعة لـ EVM، وصفحة عن اختلاف EVM في QoreChain عن Ethereum.
 
-إنها **متاحة ومضمَّنة في SDK 0.12.0**: لا توجد حزمة منفصلة. ثبّت الحزم في [جدول SDK](#group-sdk) (`@qorechain/evm` 0.12.0 لتعريفات السلاسل ومساعدات النافذة، و`create-qorechain-dapp` 0.12.0 للقوالب). ظهر محتوى الحزمة أول مرة بالإصدار 0.11.0 على npm (29 أكتوبر 2026)؛ ويحل 0.12.0 محله.
+إنها **متاحة ومضمَّنة في SDK 0.13.0** (منذ 0.12.0): لا توجد حزمة منفصلة. ثبّت الحزم في [جدول SDK](#group-sdk) (`@qorechain/evm` 0.13.0 لتعريفات السلاسل ومساعدات النافذة، و`create-qorechain-dapp` 0.13.0 للقوالب). ظهر محتوى الحزمة أول مرة بالإصدار 0.11.0 على npm (29 أكتوبر 2026)؛ ويحل 0.12.0 محله.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 
@@ -209,7 +209,7 @@ SDK 0.12.0 هو الإصدار الحالي منذ 30 أكتوبر 2026. مقا�
 
 | الحزمة | اللغة | الإصدار | التثبيت | الحالة |
 |---|---|---|---|---|
-| [`@qorechain/wallet-adapter`](https://www.npmjs.com/package/@qorechain/wallet-adapter) | TypeScript (وحدة ES، JavaScript عادي مع تعريفات الأنواع) | 0.4.0 | `npm install @qorechain/wallet-adapter @cosmjs/stargate @cosmjs/proto-signing` | منشورة. بلا بداية سريعة مُختبَرة |
+| [`@qorechain/wallet-adapter`](https://www.npmjs.com/package/@qorechain/wallet-adapter) | TypeScript (وحدة ES، JavaScript عادي مع تعريفات الأنواع) | 0.5.0 | `npm install @qorechain/wallet-adapter @cosmjs/stargate @cosmjs/proto-signing` | منشورة. بلا بداية سريعة مُختبَرة |
 
 ### Chain bridge {#group-chain-bridge}
 
@@ -247,7 +247,7 @@ SDK 0.12.0 هو الإصدار الحالي منذ 30 أكتوبر 2026. مقا�
 | [`@qorechain/connect`](https://www.npmjs.com/package/@qorechain/connect) | TypeScript | 0.2.1 | لا يوجد | **مهملة ولم تعد تُصان.** لا تستخدمها في عمل جديد. استبدلها كما في الجدول أدناه |
 
 :::caution @qorechain/connect مهملة
-`@qorechain/connect` موسومة بأنها مهملة على npm. نطاق التبعية النظيرة فيها هو `@qorechain/wallet-adapter` `^0.2.1`، ولا يشمل 0.4.0، ولا تفتح [نافذة تفويض EVM](/sdk/guides/evm#evm-window)، لذا يُرفض إرسال EVM عبرها إلى أن يكون للحساب مفتاح مسجَّل ونافذة مفتوحة. والمستودع المذكور في بيانات السجل الوصفية غير متاح للعموم.
+`@qorechain/connect` موسومة بأنها مهملة على npm. نطاق التبعية النظيرة فيها هو `@qorechain/wallet-adapter` `^0.2.1`، ولا يشمل 0.5.0، ولا تفتح [نافذة تفويض EVM](/sdk/guides/evm#evm-window)، لذا يُرفض إرسال EVM عبرها إلى أن يكون للحساب مفتاح مسجَّل ونافذة مفتوحة. والمستودع المذكور في بيانات السجل الوصفية غير متاح للعموم.
 :::
 
 | الحاجة | استخدم بدلاً منها |

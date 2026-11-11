@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # ウォレットアダプター (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter` は、`signDirect` を公開している Cosmos ウォレット（Keplr、Leap、Cosmostation）に QoreChain を追加し、チェーンが要求するトランザクションを構築します。ネイティブレーンのトランザクションには、アカウントの従来型 secp256k1 署名に加えて ML-DSA-87（FIPS 204）署名が必要ですが、標準のウォレットは ML-DSA-87 署名を作成できません。アダプターがそれを作成してトランザクションボディに配置し、その後、変更されていないウォレットに通常の署名を依頼します。dApp 開発者とウォレット開発者に加え、JavaScript で統合 QoreChain ウォレット、EVM 認可ウィンドウのメッセージ、またはリンクキー（オーセンティケーター）のメッセージを扱う必要があるツール開発者向けです。現在のバージョンは 0.4.0 です。
+`@qorechain/wallet-adapter` は、`signDirect` を公開している Cosmos ウォレット（Keplr、Leap、Cosmostation）に QoreChain を追加し、チェーンが要求するトランザクションを構築します。ネイティブレーンのトランザクションには、アカウントの従来型 secp256k1 署名に加えて ML-DSA-87（FIPS 204）署名が必要ですが、標準のウォレットは ML-DSA-87 署名を作成できません。アダプターがそれを作成してトランザクションボディに配置し、その後、変更されていないウォレットに通常の署名を依頼します。dApp 開発者とウォレット開発者に加え、JavaScript で統合 QoreChain ウォレット、EVM 認可ウィンドウのメッセージ、またはリンクキー（オーセンティケーター）のメッセージを扱う必要があるツール開発者向けです。現在のバージョンは 0.5.0（2026年11月11日）です。
 
 dApp からユーザーの QoreX ウォレットでトランザクションを送信するだけであれば、最短の方法はこのパッケージの [`qorexSignAndBroadcast`](#qorex)、または[開発者パッケージ](/developer-tools/overview#group-qorex)のインデックスに掲載されている QoreX パッケージです。ウォレットを開発していて、5 つの言語に対応した完全な署名ライブラリが必要な場合は、まず [QoreSign](/qoresign/overview) を読んでください。
 
@@ -18,7 +18,7 @@ dApp からユーザーの QoreX ウォレットでトランザクションを�
 - **ニーモニック 1 つにつき ML-DSA-87 鍵 1 つ、ツール間で共有。** `walletFromMnemonic` は、`SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)` を ML-DSA-87 の鍵生成に入力して鍵を導出します。この鍵はアカウントアドレスに紐づいており、SDK、`@qorechain/chain-bridge`、QoreX、`qorechaind tx pqc recover-key` コマンドと同じ導出方法のため、どのツールで署名しても 1 つのニーモニックから得られる鍵は 1 つです。[決定論的な鍵導出と復元](/developer-guide/post-quantum-signing#key-derivation)を参照してください。
 - **1 つのアカウント、3 つのアドレス形式、1 つの署名鍵。** `generateQoreWallet` と `walletFromMnemonic` は、同じ 20 バイトの ID を表す `qor1`、`0x`（EIP-55）、SVM の base58 の各形式を、ML-DSA-87 キーペアとともに返します。`signClassicalEth` と `signHybridEth` は、このイーサリアムネイティブ鍵（`eth_secp256k1`）で Cosmos レーンのトランザクションに署名するため、同じ鍵が他の場所で EVM トランザクションにも署名します。
 - **PQC リカバリーコード。** `generatePqcRecoveryCode` は、`QRC1-` に Crockford base32 と 24 ビットのチェックサムを続けた形式のランダムな 256 ビットのシークレットを返します。`pqcKeyFromRecoveryCode(code, address)` は、そこからアドレスに紐づけて ML-DSA-87 鍵を導出します。誤入力された文字は、何にも一致しない鍵を黙って導出するのではなく、メッセージ付きで拒否されます。このコードは意図的にシードフレーズではありません。
-- **署名者としての QoreX。** `qorexSignAndBroadcast` は、プロトコルバッファでエンコードされたメッセージ（1 回の呼び出しにつき 1 から 32 個、メモは最大 256 バイト、ガスリミットは 100,000 から 5,000,000）をユーザーの QoreX ウォレットに送ります。ウォレットはそれらをデコードして表示し、ウォレットだけが作成できる ML-DSA-87 レイヤーを追加し、署名してブロードキャストします。アダプターは上限をローカルで確認し、PQC 鍵管理メッセージ（`MsgRegisterPQCKey`、`MsgRegisterPQCKeyV2`、`MsgMigratePQCKey`、`MsgRotatePQCKey`）を、authz の `MsgExec` の内側であればどの深さでも拒否します。デコードできない `MsgExec` は拒否されます。
+- **署名者としての QoreX。** `qorexSignAndBroadcast` は、プロトコルバッファでエンコードされたメッセージ（1 回の呼び出しにつき 1 から 32 個、メモは最大 256 バイト、ガスリミットは 100,000 から 5,000,000）をユーザーの QoreX ウォレットに送ります。ウォレットはそれらをデコードして表示し、ウォレットだけが作成できる ML-DSA-87 レイヤーを追加し、署名してブロードキャストします。アダプターは上限をローカルで確認し、PQC 鍵管理メッセージ（`MsgRegisterPQCKey`、`MsgRegisterPQCKeyV2`、`MsgMigratePQCKey`、`MsgRotatePQCKey`）を、authz の `MsgExec` の内側であればどの深さでも拒否します。デコードできない `MsgExec` は拒否されます。0.5.0 以降はリクエストの確認がより厳格になり、`validateQorexRequest` と `qorexSignAndBroadcast` は、直接のものも authz の `MsgExec` の内側のものも、KEM 鍵、マルチシグ、アカウント権限に関するメッセージ（`MsgRegisterKEMKey`、`MsgRemoveKEMKey`、`MsgRegisterPQCMultisig`、`MsgRegisterAuthenticator`、`MsgRevokeAuthenticator`、`MsgUpdateSpendingRules`、`MsgCreateAbstractAccount`、`MsgOpenEVMWindow`、`MsgCloseEVMWindow`、`MsgAuthorizeEVMDelegation`、`MsgClearEVMDelegation`）も拒否します。これらは QoreX 自身の画面でのみ扱われます。
 - **EVM 認可ウィンドウのためのビルディングブロック。自動では決して開きません。** `openEvmWindowMsg`、`closeEvmWindowMsg`、`fetchEvmWindow`、`parseEvmWindow`、`isEvmWindowRejection` は、EVM の送信前に開いておく必要があるウィンドウを扱います。すべての上限（`blocks` は 1 から 17,280、`maxTxs` は 1 から 1,000、`maxValue` は 0 より大きい値）は必須で、デフォルトなしにクライアント側で確認され、ウィンドウの状態フィールドは BigInt です。このパッケージが自らウィンドウを開くことはなく、ユーザーが明示的な認可ステップを目にすることを前提としています。
 - **チェーンと完全に一致するダイジェストを持つリンクキー（オーセンティケーター）のメッセージ。** `registerAuthenticatorMsg`、`registerEthAuthenticatorMsg`、`buildPhantomExecuteEvm`、`buildPhantomExecuteCosmos`、`buildMetaMaskExecuteEvm`、`buildMetaMaskExecuteCosmos` は、Phantom または MetaMask の鍵が、権限セットと支出ルールの下で QoreChain アカウントから支出できるようにするメッセージを構築します。`evmAuthSignBytesV2` はチェーン v3.2.3 のダイジェストで、呼び出しのガスリミット（0 以外である必要があります）も紐づけます。ノンスはアカウントの EVM ノンスではなく、リンクキーのオーセンティケーターシーケンスです。[オーセンティケーターと委任支出](/sdk/guides/authenticators)を参照してください。
 - **安全な鍵ローテーション。** `rotateFromLegacyWalletKey` は、廃止されたウォレット署名導出で作られた鍵から離れる `MsgRotatePQCKey` を構築し、再導出した鍵が登録済みの鍵と等しくない限り拒否します。`rotatePqcKeyMsgFromMnemonic` は、レガシーな `SHAKE-256(mnemonic)` 鍵を正規のアドレス紐づけ鍵に移行し、レガシー導出を新しい鍵として使うことを拒否します。
@@ -46,7 +46,17 @@ console.log(w.svm);    // base58 form of the same 20 bytes
 // w.privateKey, w.pubkey, w.pqc = { publicKey (2592 bytes), secretKey }
 ```
 
-`walletFromSeed(seed32)` は、32 バイトのシークレットから同じウォレットを構築します。シードが secp256k1 の秘密鍵になるため、安全な乱数源、またはユーザーだけが持つ素材に対する鍵導出関数から得る必要があります。ウェブサイトがウォレットに生成を要求できる署名から導出してはいけません。
+`walletFromSeed(seed, opts)` は、32 バイトのシークレットから同じウォレットを構築します。シードが secp256k1 の秘密鍵になるため、安全な乱数源、またはユーザーだけが持つ素材に対する鍵導出関数から得る必要があります。ウェブサイトがウォレットに生成を要求できる署名から導出してはいけません。0.5.0 以降、ML-DSA-87 鍵はシードからは取られません。`{ recoveryCode }`（`QRC1` コード）または `{ pqcSecret }`（ランダムな 32 バイト）も併せて渡します。
+
+```js
+import { walletFromSeed, generatePqcRecoveryCode } from "@qorechain/wallet-adapter";
+
+const recoveryCode = generatePqcRecoveryCode(); // once; store it apart from the seed
+const w = await walletFromSeed(seed32, { recoveryCode });
+// or: await walletFromSeed(seed32, { pqcSecret })  // 32 random bytes, independent of the seed
+```
+
+リカバリーコード（または PQC シークレット）は必ず保管してください。別のものを使うと別の鍵になります。シードと同じ値の PQC シークレットは拒否されます。ニーモニックから作ったウォレットは変わりません。`{ legacySeedDerivation: true }` は、以前のシードパスのウォレットの鍵をローテーションできるように復元する目的でのみ存在します。新しいウォレットには使わないでください。
 
 ### ユーザーのウォレットにチェーンを登録する {#register-chain}
 
@@ -150,10 +160,14 @@ if (!status.live) {
 
 | タスク | 関数 |
 |---|---|
-| PQC 鍵の復元またはローテーション | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
+| PQC 鍵の復元またはローテーション | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | イーサリアムネイティブ鍵で署名 | `signClassicalEth`（従来型の鍵登録）, `signHybridEth` |
 | 署名対象バイト列のヘルパー | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
 | 外部鍵のリンクと支出 | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, `buildPhantom*` および `buildMetaMask*` 関数 |
+
+## 0.5.0 の変更点 {#whats-new-050}
+
+0.5.0（2026年11月11日）には破壊的変更が 1 つあります。`walletFromSeed(seed, opts)` には `{ recoveryCode }`（`QRC1` コード）または `{ pqcSecret }`（ランダムな 32 バイト）が必要になりました。`{ legacySeedDerivation: true }` は、以前の鍵をローテーションできるように復元する場合にのみ使い、シードと同じ値の PQC シークレットは拒否されます。ニーモニックから作ったウォレットは変わりません。新しい関数は `pqcKeyFromSecret`、`pqcRecoveryCodeFromSecret`、`generatePqcRecoveryCode` です。QoreX のリクエスト確認がより厳格になりました（[QoreX 経由で送信する](#qorex)を参照）。
 
 ## アクセス方法 {#how-to-access}
 
@@ -167,9 +181,9 @@ if (!status.live) {
 
 | レジストリ | パッケージ | バージョン | リンク |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.4.0（2026年10月20日公開） | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.5.0（2026年11月11日公開） | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-ソース: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter)（公開、タグ `v0.4.0`、Apache-2.0）。PyPI、crates.io、Maven Central、Go プロキシでは公開されていません。関連: [開発者パッケージ](/developer-tools/overview)、[QoreSign](/qoresign/overview)、[ポスト量子署名](/developer-guide/post-quantum-signing)、[取引所統合](/developer-guide/exchange-integration)。
+ソース: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter)（公開、タグ `v0.5.0`、Apache-2.0）。PyPI、crates.io、Maven Central、Go プロキシでは公開されていません。関連: [開発者パッケージ](/developer-tools/overview)、[QoreSign](/qoresign/overview)、[ポスト量子署名](/developer-guide/post-quantum-signing)、[取引所統合](/developer-guide/exchange-integration)。
 
 ## 制限と既知の問題 {#limits}
 

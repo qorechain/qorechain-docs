@@ -342,7 +342,7 @@ Repository: https://github.com/qorechain/qorechain-asset-kit. Întreținător: Q
 - [Semnare post-cuantică](/developer-guide/post-quantum-signing) și [conturi și semnare PQC](/sdk/concepts/accounts-pqc): înregistrarea cheilor și semnătura hibridă.
 - [Dezvoltare EVM](/developer-guide/evm-development#evm-window): fereastra de autorizare EVM.
 - [Precompilările EVM](/developer-guide/evm-precompiles): `0x0A01` și `0x0A02`, active doar pe testnet.
-- [Chain developer kit](/developer-tools/chain-dev-sdk): șabloane Foundry, Hardhat și viem și helper-e pentru ferestre (inclus în SDK 0.12.0).
+- [Chain developer kit](/developer-tools/chain-dev-sdk): șabloane Foundry, Hardhat și viem și helper-e pentru ferestre (inclus în SDK 0.12.0 și ulterior).
 - [Custody kit](/developer-tools/custody-kit) și [QoreScan](/developer-tools/qorescan): kituri învecinate pentru custozi și pentru inventare de criptografie.
 - [Pachete pentru dezvoltatori](/developer-tools/overview): fiecare pachet și starea lui în registru.
 - Standarde din amonte: ERC-3643, CMTAT, ERC-4626, ERC-7540, ERC-7518.

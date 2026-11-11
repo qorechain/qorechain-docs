@@ -40,7 +40,7 @@ Alege în funcție de ce construiești.
 | Integrezi QoreChain ca custode sau bursă (verificări de adrese, verificarea retragerilor, creditarea depunerilor) | Custody kit | [Custody kit](/developer-tools/custody-kit) |
 | Inventariezi criptografia unui nod, a unei rețele sau a surselor Solidity ca un CBOM CycloneDX | QoreScan | [QoreScan](/developer-tools/qorescan) |
 | Prototipezi pe testnet un token permisionat pentru active din lumea reală (ERC-3643, CMTAT, vault-uri cu cote restricționate, verificare post-cuantică a deținătorilor) | Asset Kit | [Asset Kit](/developer-tools/asset-kit) |
-| Construiești și testezi proiecte Solidity sau CosmWasm pe QoreChain cu Foundry, Hardhat sau viem | Chain developer kit (inclus în SDK 0.12.0) | [Chain developer kit](/developer-tools/chain-dev-sdk) |
+| Construiești și testezi proiecte Solidity sau CosmWasm pe QoreChain cu Foundry, Hardhat sau viem | Chain developer kit (inclus în SDK 0.13.0) | [Chain developer kit](/developer-tools/chain-dev-sdk) |
 
 Instalează un singur pachet și rulează-i quickstart-ul mai întâi pe testnet-ul public. Citirile nu necesită cont, cheie sau comision.
 
@@ -84,17 +84,17 @@ Ghiduri: [Prezentarea SDK](/sdk/overview), [Instalare](/sdk/install), [Ghid Reac
 
 | Pachet | Limbaj | Versiune | Instalare | Stare |
 |---|---|---|---|---|
-| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.12.0 | `npm install @qorechain/sdk` | Publicat |
-| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.12.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Publicat. Provider, hook-uri, `ConnectButton` și insigna de stare PQC (`PqcStatusBadge`, iar `QuantumSafeBadge` păstrat din 0.10.0) |
-| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.12.0 | `npm install @qorechain/evm viem` | Publicat. Include definițiile de lanț viem și helper-ele pentru fereastra EVM (vezi [Chain developer kit](#group-chain-dev-sdk)) |
-| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.12.0 | `npm install @qorechain/svm @solana/web3.js` | Publicat. Doar citiri pe rețelele live |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.12.0 | `npx create-qorechain-dapp my-dapp` | Publicat. Șapte șabloane |
-| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.12.0 | `pip install qorechain-sdk` | Publicat |
-| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.12.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Publicat |
-| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.12.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0` | Publicat |
-| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.12.0 | `implementation("io.github.qorechain:qorechain-sdk:0.12.0")` | Publicat |
+| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.13.0 | `npm install @qorechain/sdk` | Publicat |
+| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Publicat. Provider, hook-uri, `ConnectButton` și insigna de stare PQC (`PqcStatusBadge`, iar `QuantumSafeBadge` păstrat din 0.10.0) |
+| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | Publicat. Include definițiile de lanț viem și helper-ele pentru fereastra EVM (vezi [Chain developer kit](#group-chain-dev-sdk)) |
+| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | Publicat. Doar citiri pe rețelele live |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.0 | `npx create-qorechain-dapp my-dapp` | Publicat. Șapte șabloane |
+| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | Publicat |
+| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Publicat |
+| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Publicat |
+| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.13.0 | `implementation("io.github.qorechain:qorechain-sdk:0.13.0")` | În publicare: Maven Central arată încă 0.12.0 la 11 noiembrie 2026; folosiți 0.13.0 de îndată ce apare |
 
-SDK 0.12.0 este versiunea curentă din 30 octombrie 2026. Față de 0.10.0, preset-urile folosesc implicit endpoint-urile publice (mainnet `api.qore.host`, `rpc.qore.host`, `evm.qore.host`; testnet gazdele `-testnet`; înainte, valoarea implicită era localhost), preset-ul local are chain id `qorechain-devnet`, gazul este exact pe nodurile la v3.2.5 sau mai nou (simularea înmulțită cu 1,02 plus 2.000; calea veche rămâne pentru nodurile mai vechi), registrul de chei ML-KEM-1024 este acceptat (înregistrare, ștergere și interogare la `/qorechain/pqc/v1/kem/\{address\}`), iar [chain developer kit](#group-chain-dev-sdk) este inclus. Semnarea hibridă este neschimbată. Pachetele Python, Rust, Go și Java au trecut direct de la 0.10.0 la 0.12.0; cele cinci pachete npm au și un 0.11.0 (29 octombrie 2026) cu conținutul kitului, pe care 0.12.0 îl înlocuiește.
+SDK 0.13.0 este versiunea curentă din 11 noiembrie 2026 (schimbă helperul de cont pe calea cu seed, care cere acum un cod de recuperare `QRC1` sau un secret PQC independent de 32 de bytes; conturile din mnemonică, semnarea și comportamentul lanțului rămân neschimbate; vezi [Ce schimbă 0.13.0](/sdk/install#whats-new-0130)). SDK 0.12.0 a fost versiunea curentă din 30 octombrie 2026. Față de 0.10.0, preset-urile folosesc implicit endpoint-urile publice (mainnet `api.qore.host`, `rpc.qore.host`, `evm.qore.host`; testnet gazdele `-testnet`; înainte, valoarea implicită era localhost), preset-ul local are chain id `qorechain-devnet`, gazul este exact pe nodurile la v3.2.5 sau mai nou (simularea înmulțită cu 1,02 plus 2.000; calea veche rămâne pentru nodurile mai vechi), registrul de chei ML-KEM-1024 este acceptat (înregistrare, ștergere și interogare la `/qorechain/pqc/v1/kem/\{address\}`), iar [chain developer kit](#group-chain-dev-sdk) este inclus. Semnarea hibridă este neschimbată. Pachetele Python, Rust, Go și Java au trecut direct de la 0.10.0 la 0.12.0; cele cinci pachete npm au și un 0.11.0 (29 octombrie 2026) cu conținutul kitului, pe care 0.12.0 îl înlocuiește.
 
 ### QoreSign {#group-qoresign}
 
@@ -170,11 +170,11 @@ Pagină: [Asset Kit](/developer-tools/asset-kit). Sursă: [qorechain/qorechain-a
 | [`@qorechain/asset-kit`](https://www.npmjs.com/package/@qorechain/asset-kit) | TypeScript (client pentru propunere) | 0.1.0 | `npm install @qorechain/asset-kit` | Publicat |
 | [`qorechain-asset-kit`](https://pypi.org/project/qorechain-asset-kit/) | Python 3.10+ (client pentru propunere; se importă ca `qorechain_asset_kit`) | 0.1.0 | `pip install qorechain-asset-kit` | Publicat |
 
-### Chain developer kit (SDK 0.12.0) {#group-chain-dev-sdk}
+### Chain developer kit (SDK 0.13.0) {#group-chain-dev-sdk}
 
 Pagină: [Chain developer kit](/developer-tools/chain-dev-sdk). Sursă: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). Partea din QoreChain SDK pentru echipele de Solidity și contracte inteligente: definiții de lanț viem și helper-e pentru fereastra de autorizare EVM în `@qorechain/evm`, patru șabloane `create-qorechain-dapp` (Foundry, Hardhat 3, viem cu wagmi și un token QoreChain Native), quickstart-uri EVM și o pagină despre cum diferă EVM-ul QoreChain de Ethereum.
 
-Este **live și inclus în SDK 0.12.0**: nu există un pachet separat. Instalează pachetele din [tabelul SDK](#group-sdk) (`@qorechain/evm` 0.12.0 pentru definițiile de lanț și helper-ele pentru fereastră, `create-qorechain-dapp` 0.12.0 pentru șabloane). Conținutul kitului a apărut prima dată ca 0.11.0 pe npm (29 octombrie 2026); 0.12.0 îl înlocuiește.
+Este **live și inclus în SDK 0.13.0** (din 0.12.0): nu există un pachet separat. Instalează pachetele din [tabelul SDK](#group-sdk) (`@qorechain/evm` 0.13.0 pentru definițiile de lanț și helper-ele pentru fereastră, `create-qorechain-dapp` 0.13.0 pentru șabloane). Conținutul kitului a apărut prima dată ca 0.11.0 pe npm (29 octombrie 2026); 0.12.0 îl înlocuiește.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 
@@ -209,7 +209,7 @@ Pagină: [Wallet adapter](/developer-tools/wallet-adapter). Sursă: [qorechain/q
 
 | Pachet | Limbaj | Versiune | Instalare | Stare |
 |---|---|---|---|---|
-| [`@qorechain/wallet-adapter`](https://www.npmjs.com/package/@qorechain/wallet-adapter) | TypeScript (modul ES, JavaScript simplu cu tipuri) | 0.4.0 | `npm install @qorechain/wallet-adapter @cosmjs/stargate @cosmjs/proto-signing` | Publicat. Fără quickstart testat |
+| [`@qorechain/wallet-adapter`](https://www.npmjs.com/package/@qorechain/wallet-adapter) | TypeScript (modul ES, JavaScript simplu cu tipuri) | 0.5.0 | `npm install @qorechain/wallet-adapter @cosmjs/stargate @cosmjs/proto-signing` | Publicat. Fără quickstart testat |
 
 ### Chain bridge {#group-chain-bridge}
 
@@ -247,7 +247,7 @@ Ghid: [QoreX, pentru dezvoltatori](/qorex/overview#developers). Sursă: [qorecha
 | [`@qorechain/connect`](https://www.npmjs.com/package/@qorechain/connect) | TypeScript | 0.2.1 | niciuna | **Depreciat și nemaiîntreținut.** Nu-l folosi pentru lucrări noi. Înlocuiește-l ca în tabelul de mai jos |
 
 :::caution @qorechain/connect este depreciat
-`@qorechain/connect` este marcat ca depreciat pe npm. Intervalul său de peer este `@qorechain/wallet-adapter` `^0.2.1`, care nu include 0.4.0, și nu deschide o [fereastră de autorizare EVM](/sdk/guides/evm#evm-window), așa că o trimitere EVM prin el este refuzată până când contul are o cheie înregistrată și o fereastră deschisă. Repository-ul listat în metadatele sale din registru nu este accesibil public.
+`@qorechain/connect` este marcat ca depreciat pe npm. Intervalul său de peer este `@qorechain/wallet-adapter` `^0.2.1`, care nu include 0.5.0, și nu deschide o [fereastră de autorizare EVM](/sdk/guides/evm#evm-window), așa că o trimitere EVM prin el este refuzată până când contul are o cheie înregistrată și o fereastră deschisă. Repository-ul listat în metadatele sale din registru nu este accesibil public.
 :::
 
 | Nevoie | Folosește în schimb |

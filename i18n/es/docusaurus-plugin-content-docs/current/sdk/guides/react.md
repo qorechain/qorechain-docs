@@ -16,12 +16,12 @@ npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
 `react` (>=18) es una dependencia entre pares; `@qorechain/sdk` es una dependencia directa
-(`^0.12.0` desde el kit 0.12.0; en una versión 0.x el caret se queda dentro de 0.12, así que un
-parche del SDK no instala una segunda copia). Usa `@qorechain/react` **0.12.0** (la 0.9.0 y posteriores funcionan igual): la 0.8.0 fija
+(`^0.13.0` desde el kit 0.13.0; en una versión 0.x el caret se queda dentro de 0.13, así que un
+parche del SDK no instala una segunda copia). Usa `@qorechain/react` **0.13.0** (la 0.9.0 y posteriores funcionan igual): la 0.8.0 fija
 el SDK 0.8.0, que firma la forma híbrida incorrecta en la mainnet, y las versiones 0.8.x anteriores
 pueden mostrar un saldo o un estado obsoletos tras un cambio de dirección.
 
-:::caution Límites del kit de React en la red en vivo (0.9.0 a 0.12.0)
+:::caution Límites del kit de React en la red en vivo (0.9.0 a 0.13.0)
 `useTx` se conecta con el firmante de la cartera y sin ningún par de claves poscuánticas, así que envía
 únicamente con la firma clásica, que las redes en vivo rechazan (la ruta Native
 exige la extensión híbrida ML-DSA-87): `send` / `sendTokens` no pueden incluir una

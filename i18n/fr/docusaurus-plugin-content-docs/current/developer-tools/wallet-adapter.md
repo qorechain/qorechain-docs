@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Wallet adapter (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter` ajoute QoreChain aux portefeuilles Cosmos qui exposent `signDirect` (Keplr, Leap, Cosmostation) et construit les transactions exigées par la chaîne : une transaction de la voie native doit porter une signature ML-DSA-87 (FIPS 204) à côté de la signature secp256k1 classique du compte, et un portefeuille standard ne peut pas produire la signature ML-DSA-87. L'adaptateur la produit, la place dans le corps de la transaction, puis demande au portefeuille inchangé une signature ordinaire. Il s'adresse aux développeurs de dApps et de portefeuilles, ainsi qu'aux concepteurs d'outils qui ont besoin, en JavaScript, de portefeuilles QoreChain unifiés, de messages de fenêtre d'autorisation EVM ou de messages de clés liées (authenticators). La version actuelle est la 0.4.0.
+`@qorechain/wallet-adapter` ajoute QoreChain aux portefeuilles Cosmos qui exposent `signDirect` (Keplr, Leap, Cosmostation) et construit les transactions exigées par la chaîne : une transaction de la voie native doit porter une signature ML-DSA-87 (FIPS 204) à côté de la signature secp256k1 classique du compte, et un portefeuille standard ne peut pas produire la signature ML-DSA-87. L'adaptateur la produit, la place dans le corps de la transaction, puis demande au portefeuille inchangé une signature ordinaire. Il s'adresse aux développeurs de dApps et de portefeuilles, ainsi qu'aux concepteurs d'outils qui ont besoin, en JavaScript, de portefeuilles QoreChain unifiés, de messages de fenêtre d'autorisation EVM ou de messages de clés liées (authenticators). La version actuelle est la 0.5.0 (11 novembre 2026).
 
 Si vous avez seulement besoin qu'une dApp envoie une transaction depuis le portefeuille QoreX d'un utilisateur, le chemin le plus court est [`qorexSignAndBroadcast`](#qorex) dans ce paquet, ou les paquets QoreX listés dans l'index [Paquets pour développeurs](/developer-tools/overview#group-qorex). Si vous écrivez un portefeuille et voulez une bibliothèque de signature complète en cinq langages, lisez d'abord [QoreSign](/qoresign/overview).
 
@@ -18,7 +18,7 @@ Si vous avez seulement besoin qu'une dApp envoie une transaction depuis le porte
 - **Une clé ML-DSA-87 par mnémonique, partagée entre les outils.** `walletFromMnemonic` dérive la clé comme `SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)` fourni à la génération de clé ML-DSA-87. Elle est liée à l'adresse du compte et c'est la même dérivation que celle du SDK, de `@qorechain/chain-bridge`, de QoreX et de la commande `qorechaind tx pqc recover-key` : un mnémonique donne donc une seule clé, quel que soit l'outil qui signe. Voir [Dérivation et récupération déterministes de la clé](/developer-guide/post-quantum-signing#key-derivation).
 - **Un compte, trois formes d'adresse, une clé de signature.** `generateQoreWallet` et `walletFromMnemonic` renvoient ensemble les formes `qor1`, `0x` (EIP-55) et SVM base58 de la même identité de 20 octets, avec la paire de clés ML-DSA-87. `signClassicalEth` et `signHybridEth` signent les transactions de la voie Cosmos avec cette clé eth-native (`eth_secp256k1`), de sorte que la même clé signe aussi des transactions EVM ailleurs.
 - **Codes de récupération PQC.** `generatePqcRecoveryCode` renvoie un secret aléatoire de 256 bits au format `QRC1-` suivi de base32 Crockford avec une somme de contrôle de 24 bits. `pqcKeyFromRecoveryCode(code, address)` en dérive la clé ML-DSA-87, liée à l'adresse. Un caractère mal saisi est refusé avec un message, au lieu de dériver silencieusement une clé qui ne correspond à rien, et le code n'est volontairement pas une phrase de récupération.
-- **QoreX comme signataire.** `qorexSignAndBroadcast` envoie des messages encodés en protobuf (1 à 32 par appel, mémo jusqu'à 256 octets, limite de gas de 100 000 à 5 000 000) au portefeuille QoreX de l'utilisateur, qui les affiche décodés, ajoute la couche ML-DSA-87 que seul le portefeuille peut produire, signe et diffuse. L'adaptateur vérifie les bornes localement et refuse les messages de gestion de clés PQC (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`, `MsgRotatePQCKey`), y compris à l'intérieur d'un `MsgExec` authz à n'importe quelle profondeur. Un `MsgExec` qu'il ne peut pas décoder est refusé.
+- **QoreX comme signataire.** `qorexSignAndBroadcast` envoie des messages encodés en protobuf (1 à 32 par appel, mémo jusqu'à 256 octets, limite de gas de 100 000 à 5 000 000) au portefeuille QoreX de l'utilisateur, qui les affiche décodés, ajoute la couche ML-DSA-87 que seul le portefeuille peut produire, signe et diffuse. L'adaptateur vérifie les bornes localement et refuse les messages de gestion de clés PQC (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`, `MsgRotatePQCKey`), y compris à l'intérieur d'un `MsgExec` authz à n'importe quelle profondeur. Un `MsgExec` qu'il ne peut pas décoder est refusé. Depuis la 0.5.0, le contrôle des requêtes est plus strict : `validateQorexRequest` et `qorexSignAndBroadcast` refusent aussi, directement et à l'intérieur d'un `MsgExec` authz, les messages de clé KEM, de multisig et d'autorité de compte (`MsgRegisterKEMKey`, `MsgRemoveKEMKey`, `MsgRegisterPQCMultisig`, `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, `MsgUpdateSpendingRules`, `MsgCreateAbstractAccount`, `MsgOpenEVMWindow`, `MsgCloseEVMWindow`, `MsgAuthorizeEVMDelegation`, `MsgClearEVMDelegation`). Ceux-ci restent sur les écrans propres de QoreX.
 - **Briques pour la fenêtre d'autorisation EVM, jamais une ouverture automatique.** `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`, `parseEvmWindow` et `isEvmWindowRejection` couvrent la fenêtre qui doit être ouverte avant un envoi EVM. Chaque borne (`blocks` de 1 à 17 280, `maxTxs` de 1 à 1 000, `maxValue` supérieur à zéro) est obligatoire et vérifiée côté client sans valeur par défaut, les champs d'état de la fenêtre sont des BigInt, et le paquet n'ouvre jamais une fenêtre de lui-même : l'utilisateur doit voir une étape d'autorisation explicite.
 - **Messages de clés liées (authenticators) avec condensés exacts pour la chaîne.** `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `buildPhantomExecuteEvm`, `buildPhantomExecuteCosmos`, `buildMetaMaskExecuteEvm` et `buildMetaMaskExecuteCosmos` construisent les messages qui permettent à une clé Phantom ou MetaMask de dépenser depuis un compte QoreChain sous un ensemble de permissions et une règle de dépense. `evmAuthSignBytesV2` est le condensé de la chaîne v3.2.3, qui lie aussi la limite de gas de l'appel (elle doit être non nulle). Le nonce est la séquence d'authenticator de la clé liée, pas le nonce EVM du compte. Voir [Authenticators et dépenses déléguées](/sdk/guides/authenticators).
 - **Rotation de clé sûre.** `rotateFromLegacyWalletKey` construit un `MsgRotatePQCKey` à partir d'une clé produite par la dérivation par signature de portefeuille, aujourd'hui retirée, et refuse sauf si la clé qu'il re-dérive est égale à celle enregistrée. `rotatePqcKeyMsgFromMnemonic` fait passer une clé héritée `SHAKE-256(mnemonic)` à la clé canonique liée à l'adresse, et refuse la dérivation héritée comme nouvelle clé.
@@ -46,7 +46,17 @@ console.log(w.svm);    // base58 form of the same 20 bytes
 // w.privateKey, w.pubkey, w.pqc = { publicKey (2592 bytes), secretKey }
 ```
 
-`walletFromSeed(seed32)` construit le même portefeuille à partir de 32 octets secrets : la graine devient la clé privée secp256k1, elle doit donc provenir d'une source aléatoire sûre ou d'une fonction de dérivation de clé appliquée à un matériau que seul l'utilisateur détient. Ne la dérivez jamais d'une signature qu'un site web peut demander à un portefeuille de produire.
+`walletFromSeed(seed, opts)` construit le même portefeuille à partir de 32 octets secrets : la graine devient la clé privée secp256k1, elle doit donc provenir d'une source aléatoire sûre ou d'une fonction de dérivation de clé appliquée à un matériau que seul l'utilisateur détient. Ne la dérivez jamais d'une signature qu'un site web peut demander à un portefeuille de produire. Depuis la 0.5.0, la clé ML-DSA-87 n'est pas tirée de la graine : vous passez aussi `{ recoveryCode }` (un code `QRC1`) ou `{ pqcSecret }` (32 octets aléatoires).
+
+```js
+import { walletFromSeed, generatePqcRecoveryCode } from "@qorechain/wallet-adapter";
+
+const recoveryCode = generatePqcRecoveryCode(); // once; store it apart from the seed
+const w = await walletFromSeed(seed32, { recoveryCode });
+// or: await walletFromSeed(seed32, { pqcSecret })  // 32 random bytes, independent of the seed
+```
+
+Conservez le code de récupération (ou le secret PQC) : un autre donne une autre clé. Un secret PQC égal à la graine est refusé, et les portefeuilles issus d'une phrase mnémonique sont inchangés. `{ legacySeedDerivation: true }` n'existe que pour retrouver la clé d'un ancien portefeuille par graine afin de la faire pivoter ; ne l'utilisez pas pour de nouveaux portefeuilles.
 
 ### Enregistrer la chaîne dans les portefeuilles de l'utilisateur {#register-chain}
 
@@ -150,10 +160,14 @@ L'ordre compte : ouvrez la fenêtre, puis lisez le nonce EVM, puis signez la tra
 
 | Tâche | Fonctions |
 |---|---|
-| Récupérer ou faire pivoter une clé PQC | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
+| Récupérer ou faire pivoter une clé PQC | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | Signer avec la clé eth-native | `signClassicalEth` (l'enregistrement de clé classique), `signHybridEth` |
 | Utilitaires de sign-bytes | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
 | Lier une clé externe et dépenser avec elle | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, les fonctions `buildPhantom*` et `buildMetaMask*` |
+
+## Ce que change la 0.5.0 {#whats-new-050}
+
+La 0.5.0 (11 novembre 2026) apporte un changement incompatible. `walletFromSeed(seed, opts)` exige `{ recoveryCode }` (un code `QRC1`) ou `{ pqcSecret }` (32 octets aléatoires) ; `{ legacySeedDerivation: true }` sert uniquement à retrouver une ancienne clé pour la faire pivoter, et un secret PQC égal à la graine est refusé. Les portefeuilles issus d'une phrase mnémonique sont inchangés. Nouvelles fonctions : `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret` et `generatePqcRecoveryCode`. Le contrôle des requêtes QoreX est plus strict (voir [Envoyer via QoreX](#qorex)).
 
 ## Comment y accéder {#how-to-access}
 
@@ -167,9 +181,9 @@ L'ordre compte : ouvrez la fenêtre, puis lisez le nonce EVM, puis signez la tra
 
 | Registre | Paquet | Version | Lien |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.4.0 (publiée le 20 octobre 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.5.0 (publiée le 11 novembre 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-Source : [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (publique, tag `v0.4.0`, Apache-2.0). Il n'est pas publié sur PyPI, crates.io, Maven Central ni sur le proxy Go. Voir aussi : [Paquets pour développeurs](/developer-tools/overview), [QoreSign](/qoresign/overview), [Signature post-quantique](/developer-guide/post-quantum-signing), [Intégration pour les échanges](/developer-guide/exchange-integration).
+Source : [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (publique, tag `v0.5.0`, Apache-2.0). Il n'est pas publié sur PyPI, crates.io, Maven Central ni sur le proxy Go. Voir aussi : [Paquets pour développeurs](/developer-tools/overview), [QoreSign](/qoresign/overview), [Signature post-quantique](/developer-guide/post-quantum-signing), [Intégration pour les échanges](/developer-guide/exchange-integration).
 
 ## Limites et problèmes connus {#limits}
 

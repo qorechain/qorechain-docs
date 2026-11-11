@@ -93,14 +93,14 @@ EVM çalışma zamanının QOR'u **18** ondalık basamakla temsil ettiğini unut
 
 ## Hangi paketler yayımlandı ve nerede?
 
-Hepsi (4 Kasım 2026'da kontrol edildi). TypeScript çekirdeği (`@qorechain/sdk`, 0.12.0),
-React kiti (`@qorechain/react`, 0.12.0), `create-qorechain-dapp` iskele aracı
-(0.12.0) ve EVM/SVM adaptörleri (`@qorechain/evm`, `@qorechain/svm`, 0.12.0) npm'de;
-Python istemcisi PyPI'da (`pip install qorechain-sdk`, sürüm 0.12.0, import
+Hepsi (11 Kasım 2026'da kontrol edildi). TypeScript çekirdeği (`@qorechain/sdk`, 0.13.0),
+React kiti (`@qorechain/react`, 0.13.0), `create-qorechain-dapp` iskele aracı
+(0.13.0) ve EVM/SVM adaptörleri (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) npm'de;
+Python istemcisi PyPI'da (`pip install qorechain-sdk`, sürüm 0.13.0, import
 `qorsdk`); Go istemcisi modül proxy'sinde
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`); Rust istemcisi
-crates.io'da (`cargo add qorechain-sdk`, 0.12.0); Java istemcisi ise Maven
-Central'da (`io.github.qorechain:qorechain-sdk:0.12.0`, JDK 17 veya üzeri). Dil başına tüm komutlar için
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`); Rust istemcisi
+crates.io'da (`cargo add qorechain-sdk`, 0.13.0); Java istemcisi ise Maven
+Central'da (`io.github.qorechain:qorechain-sdk`, JDK 17 veya üzeri); 0.13.0 yayımlanıyor ve Maven Central 11 Kasım 2026'da hâlâ 0.12.0 gösteriyordu (göründüğünde 0.13.0'ı kullanın). Dil başına tüm komutlar için
 [Kurulum](/sdk/install) bölümüne bakın.
 
 ## Anımsatıcı ifadem (mnemonic) reddediliyor
@@ -128,7 +128,7 @@ Hibrit bir tx `pqc` kodu 21 (`hybrid_verify_failed`) ile başarısız olursa ned
 sign-bytes sürümü, chain-id, eski bir PQC kütüphanesi veya kayıtlı olmayan ya da
 farklı bir anahtardır; hedged imzalama asla neden değildir.
 Her iki ağ da v2 sign-bytes biçimini doğrular; bu yüzden SDK **0.8.1 veya daha
-yenisini** kullanın (güncel sürüm 0.12.0) ve `rest` (veya `signBytesVersion`) geçirin:
+yenisini** kullanın (güncel sürüm 0.13.0) ve `rest` (veya `signBytesVersion`) geçirin:
 bunlardan biri yoksa oluşturucular `qorechain-vladi` / `qorechain-diana` üzerinde
 hata fırlatır.
 [Kod 21 sorun giderme](/developer-guide/post-quantum-signing#code-21) ve
@@ -171,7 +171,7 @@ değişmeden çalışır), ancak bu oluşturucuların hiçbirine sahip değildir
 CLI'yı kullanın (bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)). İmzalama biçimi
 v3.2.4, v3.2.5 veya v3.2.6'da değişmedi. Mainnet v3.2.6, testnet v3.2.7 çalıştırır (testnet v3.2.5'i 26 Ekim 2026'da, v3.2.6'yı
 27 Ekim'de ve v3.2.7'yi 6 Kasım'da uyguladı; mainnet v3.2.5'i 29 Ekim'de ve v3.2.6'yı 4 Kasım'da uyguladı); SDK 0.10.0 ve 0.9.0 bunlarda çalışmaya devam eder ancak
-v3.2.5 eklerinin (ML-KEM anahtar kayıt defteri, kesin gas kuralı) oluşturucularına sahip değildir; bu sürümlerle CLI'yı kullanın veya 0.12.0'a yükseltin. 0.12.0, v3.2.5'e karşı oluşturuldu ve denetlendi.
+v3.2.5 eklerinin (ML-KEM anahtar kayıt defteri, kesin gas kuralı) oluşturucularına sahip değildir; bu sürümlerle CLI'yı kullanın veya 0.13.0'a yükseltin. 0.12.0, v3.2.5'e karşı oluşturuldu ve denetlendi.
 
 ## PQC anahtar kaydım reddedildi ama ücret alındı
 

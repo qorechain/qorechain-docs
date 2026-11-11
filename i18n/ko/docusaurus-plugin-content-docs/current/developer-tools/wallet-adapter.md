@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # 지갑 어댑터 (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter`는 `signDirect`를 제공하는 Cosmos 지갑(Keplr, Leap, Cosmostation)에 QoreChain을 추가하고, 체인이 요구하는 트랜잭션을 구성합니다. 네이티브 레인 트랜잭션은 계정의 기존 secp256k1 서명과 함께 ML-DSA-87(FIPS 204) 서명을 담아야 하는데, 일반 지갑은 ML-DSA-87 서명을 만들 수 없습니다. 어댑터가 이 서명을 만들어 트랜잭션 본문에 넣은 다음, 수정되지 않은 지갑에 일반 서명을 요청합니다. dApp 및 지갑 개발자, 그리고 JavaScript에서 통합 QoreChain 지갑, EVM 인가 윈도우 메시지, 연결된 키(authenticator) 메시지가 필요한 도구 제작자를 위한 패키지입니다. 현재 버전은 0.4.0입니다.
+`@qorechain/wallet-adapter`는 `signDirect`를 제공하는 Cosmos 지갑(Keplr, Leap, Cosmostation)에 QoreChain을 추가하고, 체인이 요구하는 트랜잭션을 구성합니다. 네이티브 레인 트랜잭션은 계정의 기존 secp256k1 서명과 함께 ML-DSA-87(FIPS 204) 서명을 담아야 하는데, 일반 지갑은 ML-DSA-87 서명을 만들 수 없습니다. 어댑터가 이 서명을 만들어 트랜잭션 본문에 넣은 다음, 수정되지 않은 지갑에 일반 서명을 요청합니다. dApp 및 지갑 개발자, 그리고 JavaScript에서 통합 QoreChain 지갑, EVM 인가 윈도우 메시지, 연결된 키(authenticator) 메시지가 필요한 도구 제작자를 위한 패키지입니다. 현재 버전은 0.5.0입니다(2026년 11월 11일).
 
 dApp에서 사용자의 QoreX 지갑으로 트랜잭션을 보내기만 하면 된다면, 가장 빠른 방법은 이 패키지의 [`qorexSignAndBroadcast`](#qorex)나 [개발자 패키지](/developer-tools/overview#group-qorex) 색인에 나열된 QoreX 패키지입니다. 지갑을 직접 만들면서 다섯 개 언어의 전체 서명 라이브러리가 필요하다면 먼저 [QoreSign](/qoresign/overview)을 읽으세요.
 
@@ -18,7 +18,7 @@ dApp에서 사용자의 QoreX 지갑으로 트랜잭션을 보내기만 하면 �
 - **니모닉 하나당 ML-DSA-87 키 하나, 도구 간 공유.** `walletFromMnemonic`은 `SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`을 ML-DSA-87 키 생성에 입력해 키를 파생합니다. 이 키는 계정 주소에 바인딩되며, SDK, `@qorechain/chain-bridge`, QoreX, `qorechaind tx pqc recover-key` 명령이 사용하는 파생 방식과 동일하므로, 어떤 도구가 서명하든 니모닉 하나에 키 하나가 대응됩니다. [결정론적 키 파생 및 복구](/developer-guide/post-quantum-signing#key-derivation)를 참조하세요.
 - **계정 하나, 주소 형식 세 가지, 서명 키 하나.** `generateQoreWallet`과 `walletFromMnemonic`은 동일한 20바이트 신원의 `qor1`, `0x`(EIP-55), SVM base58 형식을 ML-DSA-87 키 쌍과 함께 반환합니다. `signClassicalEth`와 `signHybridEth`는 이 eth-native 키(`eth_secp256k1`)로 Cosmos 레인 트랜잭션에 서명하므로, 같은 키가 다른 곳에서 EVM 트랜잭션에도 서명합니다.
 - **PQC 복구 코드.** `generatePqcRecoveryCode`는 `QRC1-` 접두사에 24비트 체크섬이 붙은 Crockford base32 형식의 무작위 256비트 비밀 값을 반환합니다. `pqcKeyFromRecoveryCode(code, address)`는 이 값으로부터 주소에 바인딩된 ML-DSA-87 키를 파생합니다. 잘못 입력한 문자는 어떤 것과도 일치하지 않는 키를 조용히 파생하는 대신 메시지와 함께 거부되며, 이 코드는 의도적으로 시드 구문이 아닙니다.
-- **서명자로서의 QoreX.** `qorexSignAndBroadcast`는 protobuf로 인코딩된 메시지(호출당 1개에서 32개, 메모 최대 256바이트, 가스 한도 100,000에서 5,000,000)를 사용자의 QoreX 지갑으로 보냅니다. 지갑은 이를 디코딩해서 보여주고, 지갑만 만들 수 있는 ML-DSA-87 계층을 추가하고, 서명하고, 브로드캐스트합니다. 어댑터는 한도를 로컬에서 확인하고 PQC 키 관리 메시지(`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`, `MsgRotatePQCKey`)를 거부하며, 어떤 깊이의 authz `MsgExec` 안에 들어 있어도 마찬가지입니다. 디코딩할 수 없는 `MsgExec`도 거부됩니다.
+- **서명자로서의 QoreX.** `qorexSignAndBroadcast`는 protobuf로 인코딩된 메시지(호출당 1개에서 32개, 메모 최대 256바이트, 가스 한도 100,000에서 5,000,000)를 사용자의 QoreX 지갑으로 보냅니다. 지갑은 이를 디코딩해서 보여주고, 지갑만 만들 수 있는 ML-DSA-87 계층을 추가하고, 서명하고, 브로드캐스트합니다. 어댑터는 한도를 로컬에서 확인하고 PQC 키 관리 메시지(`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`, `MsgRotatePQCKey`)를 거부하며, 어떤 깊이의 authz `MsgExec` 안에 들어 있어도 마찬가지입니다. 디코딩할 수 없는 `MsgExec`도 거부됩니다. 0.5.0부터 요청 검사가 더 엄격해졌습니다. `validateQorexRequest`와 `qorexSignAndBroadcast`는 직접 보낸 경우와 authz `MsgExec` 안에 든 경우 모두에서 KEM 키, 멀티시그, 계정 권한 메시지(`MsgRegisterKEMKey`, `MsgRemoveKEMKey`, `MsgRegisterPQCMultisig`, `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, `MsgUpdateSpendingRules`, `MsgCreateAbstractAccount`, `MsgOpenEVMWindow`, `MsgCloseEVMWindow`, `MsgAuthorizeEVMDelegation`, `MsgClearEVMDelegation`)도 거부합니다. 이런 메시지는 QoreX 자체 화면에서만 처리됩니다.
 - **EVM 인가 윈도우를 위한 구성 요소, 자동으로 열지는 않음.** `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`, `parseEvmWindow`, `isEvmWindowRejection`은 EVM 전송 전에 열려 있어야 하는 윈도우를 다룹니다. 모든 한도(`blocks` 1에서 17,280, `maxTxs` 1에서 1,000, `maxValue` 0 초과)는 필수이며 기본값 없이 클라이언트 측에서 검사되고, 윈도우 상태 필드는 BigInt이며, 패키지는 스스로 윈도우를 열지 않습니다. 사용자가 명시적인 인가 단계를 보도록 하기 위해서입니다.
 - **체인과 정확히 일치하는 다이제스트를 쓰는 연결 키(authenticator) 메시지.** `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `buildPhantomExecuteEvm`, `buildPhantomExecuteCosmos`, `buildMetaMaskExecuteEvm`, `buildMetaMaskExecuteCosmos`는 Phantom 또는 MetaMask 키가 권한 집합과 지출 규칙 아래에서 QoreChain 계정의 자금을 쓸 수 있게 하는 메시지를 만듭니다. `evmAuthSignBytesV2`는 체인 v3.2.3의 다이제스트로, 호출의 가스 한도도 함께 바인딩합니다(0이 아니어야 함). 논스는 계정의 EVM 논스가 아니라 연결된 키의 authenticator 시퀀스입니다. [인증자와 위임 지출](/sdk/guides/authenticators)을 참조하세요.
 - **안전한 키 로테이션.** `rotateFromLegacyWalletKey`는 폐기된 지갑 서명 파생 방식으로 만든 키에서 벗어나는 `MsgRotatePQCKey`를 만들며, 다시 파생한 키가 등록된 키와 같지 않으면 거부합니다. `rotatePqcKeyMsgFromMnemonic`은 기존의 `SHAKE-256(mnemonic)` 키를 주소에 바인딩된 표준 키로 옮기며, 새 키로 기존 파생 방식을 쓰는 것은 거부합니다.
@@ -46,7 +46,17 @@ console.log(w.svm);    // base58 form of the same 20 bytes
 // w.privateKey, w.pubkey, w.pqc = { publicKey (2592 bytes), secretKey }
 ```
 
-`walletFromSeed(seed32)`는 32개의 비밀 바이트로 같은 지갑을 만듭니다. 시드가 secp256k1 개인 키가 되므로, 안전한 난수원이나 사용자만 가진 자료에 대한 키 파생 함수에서 가져와야 합니다. 웹사이트가 지갑에 만들도록 요청할 수 있는 서명으로부터 파생해서는 안 됩니다.
+`walletFromSeed(seed, opts)`는 32개의 비밀 바이트로 같은 지갑을 만듭니다. 시드가 secp256k1 개인 키가 되므로, 안전한 난수원이나 사용자만 가진 자료에 대한 키 파생 함수에서 가져와야 합니다. 웹사이트가 지갑에 만들도록 요청할 수 있는 서명으로부터 파생해서는 안 됩니다. 0.5.0부터 ML-DSA-87 키는 시드에서 가져오지 않습니다. `{ recoveryCode }`(`QRC1` 코드) 또는 `{ pqcSecret }`(무작위 32바이트)을 함께 전달합니다.
+
+```js
+import { walletFromSeed, generatePqcRecoveryCode } from "@qorechain/wallet-adapter";
+
+const recoveryCode = generatePqcRecoveryCode(); // once; store it apart from the seed
+const w = await walletFromSeed(seed32, { recoveryCode });
+// or: await walletFromSeed(seed32, { pqcSecret })  // 32 random bytes, independent of the seed
+```
+
+복구 코드(또는 PQC 비밀)를 보관하세요. 다른 값은 다른 키를 만듭니다. 시드와 같은 PQC 비밀은 거부되며, 니모닉으로 만든 지갑은 달라지지 않습니다. `{ legacySeedDerivation: true }`는 이전 시드 경로 지갑의 키를 복구해 로테이션할 수 있도록 하기 위한 것일 뿐이므로, 새 지갑에는 사용하지 마세요.
 
 ### 사용자의 지갑에 체인 등록 {#register-chain}
 
@@ -150,10 +160,14 @@ if (!status.live) {
 
 | 작업 | 함수 |
 |---|---|
-| PQC 키 복구 또는 로테이션 | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
+| PQC 키 복구 또는 로테이션 | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | eth-native 키로 서명 | `signClassicalEth` (기존 방식의 키 등록), `signHybridEth` |
 | 서명 바이트 헬퍼 | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
 | 외부 키로 연결 및 지출 | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, `buildPhantom*` 및 `buildMetaMask*` 함수 |
+
+## 0.5.0의 변경 사항 {#whats-new-050}
+
+0.5.0(2026년 11월 11일)에는 호환성을 깨는 변경이 하나 있습니다. `walletFromSeed(seed, opts)`에는 `{ recoveryCode }`(`QRC1` 코드) 또는 `{ pqcSecret }`(무작위 32바이트)이 필요합니다. `{ legacySeedDerivation: true }`는 이전 키를 복구해 로테이션하기 위한 용도로만 쓰며, 시드와 같은 PQC 비밀은 거부됩니다. 니모닉으로 만든 지갑은 달라지지 않습니다. 새 함수는 `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `generatePqcRecoveryCode`입니다. QoreX 요청 검사가 더 엄격해졌습니다([QoreX를 통한 전송](#qorex) 참조).
 
 ## 접근 방법 {#how-to-access}
 
@@ -167,9 +181,9 @@ if (!status.live) {
 
 | 레지스트리 | 패키지 | 버전 | 링크 |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.4.0 (2026년 10월 20일 게시) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.5.0 (2026년 11월 11일 게시) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-소스: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (공개, 태그 `v0.4.0`, Apache-2.0). PyPI, crates.io, Maven Central, Go 프록시에는 게시되지 않았습니다. 관련 문서: [개발자 패키지](/developer-tools/overview), [QoreSign](/qoresign/overview), [포스트 퀀텀 서명](/developer-guide/post-quantum-signing), [거래소 통합](/developer-guide/exchange-integration).
+소스: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (공개, 태그 `v0.5.0`, Apache-2.0). PyPI, crates.io, Maven Central, Go 프록시에는 게시되지 않았습니다. 관련 문서: [개발자 패키지](/developer-tools/overview), [QoreSign](/qoresign/overview), [포스트 퀀텀 서명](/developer-guide/post-quantum-signing), [거래소 통합](/developer-guide/exchange-integration).
 
 ## 제한 사항 및 알려진 문제 {#limits}
 

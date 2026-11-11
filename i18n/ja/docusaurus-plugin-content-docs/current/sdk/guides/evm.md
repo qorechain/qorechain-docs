@@ -35,7 +35,7 @@ const publicClient = createPublicClient({ chain: qorechainTestnet, transport: ht
 `evmWindowCost` と `weiToUqorCeil` はウィンドウの規模を見積もり、`toQorAddress` / `toEvmAddress` は
 eth-native アカウントを 2 つのエンコード間で変換します。ウィンドウヘルパーは、viem なしの
 `@qorechain/evm/window` としても公開されています。これらは npm のみで公開された 0.11.0 で登場し、
-0.12.0 に含まれています。
+0.12.0 以降に含まれています。
 
 ## クライアントの作成
 

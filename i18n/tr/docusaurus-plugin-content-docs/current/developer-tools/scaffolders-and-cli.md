@@ -9,16 +9,16 @@ sidebar_position: 21
 
 Üç komut satırı aracı, bir QoreChain projesini sıfırdan tipli, derlenebilir bir başlangıç noktasına getirir. Node.js ile çalışan uygulama geliştiricileri (dApp'ler) ve rollup operatörleri içindir:
 
-* **`create-qorechain-dapp`** (0.12.0), [QoreChain SDK](/sdk/overview) üzerine kurulu yedi şablondan biriyle bir dApp iskeleti oluşturur. Yedi şablondan dördü (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) [zincir geliştirici kitine](/developer-tools/chain-dev-sdk) aittir.
+* **`create-qorechain-dapp`** (0.13.0), [QoreChain SDK](/sdk/overview) üzerine kurulu yedi şablondan biriyle bir dApp iskeleti oluşturur. Yedi şablondan dördü (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) [zincir geliştirici kitine](/developer-tools/chain-dev-sdk) aittir.
 * **`create-qorechain-rollup`** (0.8.0), TypeScript [Rollup Geliştirme Kiti](/rollups/overview) üzerine kurulu altı şablondan biriyle bir rollup projesi iskeleti oluşturur.
 * **`qorollup`**, `@qorechain/rdk-cli` paketinin (0.8.0) komutudur; operatör komut satırıdır: ön kontroller, bir rollup oluşturma ve izleme, canlı parametreleri okuma.
 
-Bu sayfa, 27 Ekim 2026'da npm'den kurulan yayımlanmış paketleri ve 4 Kasım 2026'da kurulan `create-qorechain-dapp` 0.12.0 sürümünü yansıtır. Kavramsal kılavuzlar [Rollup Dağıtımı](/rollups/deploying-a-rollup) ve [SDK CLI başvurusu](/sdk/reference/cli) sayfalarıdır.
+Bu sayfa, 27 Ekim 2026'da npm'den kurulan yayımlanmış paketleri ve 4 Kasım 2026'da kurulan `create-qorechain-dapp` 0.12.0 sürümünü yansıtır; güncel sürüm 0.13.0'dır (11 Kasım 2026). Kavramsal kılavuzlar [Rollup Dağıtımı](/rollups/deploying-a-rollup) ve [SDK CLI başvurusu](/sdk/reference/cli) sayfalarıdır.
 
 ## Yenilikler {#innovations}
 
 * **CI için etkileşimsiz iskele oluşturma.** Her soru için bir bayrak vardır: `--template`, `--network`, `--package-manager`, `--yes` (varsayılanları kabul et) ve `--no-install`. Bir işlem hattı (pipeline) tek komutla ve terminal olmadan bir proje üretip derleyebilir.
-* **Şablonlar güncel paketlere sabitlenmiştir.** dApp şablonları `@qorechain/sdk` `^0.12.0` sürümüne (EVM şablonları ayrıca `@qorechain/evm` `^0.12.0` sürümüne), rollup şablonları ise `@qorechain/rdk` `^0.8.0` sürümüne bağlıdır. Önceki bir iskele aracı (0.8.0), canlı ağlar için imzalayamayan bir SDK'ya çözülen aralıklar yazıyordu; güncel sürümde bu olmaz.
+* **Şablonlar güncel paketlere sabitlenmiştir.** dApp şablonları `@qorechain/sdk` `^0.13.0` sürümüne (EVM şablonları ayrıca `@qorechain/evm` `^0.13.0` sürümüne), rollup şablonları ise `@qorechain/rdk` `^0.8.0` sürümüne bağlıdır. Önceki bir iskele aracı (0.8.0), canlı ağlar için imzalayamayan bir SDK'ya çözülen aralıklar yazıyordu; güncel sürümde bu olmaz.
 * **Rollup şablonları her kullanım senaryosu için geçerli bir yapılandırma kodlar.** Her rollup şablonu, RDK'nın uyumluluk matrisinin kabul ettiği bir settlement, sequencer, veri erişilebilirliği, gaz ve VM birleşimi ayarlar ve iskele aracı, siz herhangi bir şey oluşturmadan önce canlı stake'i ve oluşturma yakımını yazdırır.
 * **Neyin eksik olduğunu söyleyen bir ön kontrol komutu.** `qorollup doctor` (ve bir rollup şablonunun içinde `npm run doctor`), REST uç noktasının yanıt verdiğini, modül parametrelerinin okunabildiğini, uç noktanın istediğiniz ağ olduğunu ve bir imzacının yapılandırıldığını kontrol eder ve her kontrol için bir satır yazdırır. Bir şablonun içinde ayrıca rollup yapılandırmasını uyumluluk matrisine karşı doğrular.
 * **Şablonlara bağlanmış hibrit imzalama.** Rollup şablonları, hesabın ML-DSA-87 anahtarını mnemonic'inizden türeten (veya ham özel anahtarla bir seed alan) ve ağların native lane üzerinde zorunlu kıldığı hibrit imzayı atan küçük bir `signer.ts` üzerinden bağlanır. `rollup-app` dApp şablonu da aynısını yapar ve `QORE_BROADCAST=1` ayarlamadığınız sürece bir deneme çalıştırması (dry run) olarak çalışır.
@@ -41,7 +41,7 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 | `evm-solidity` | Önceden derlenmiş bir yapıtla (artifact) bir Solidity `Counter` kontratı ve onu dağıtıp `@qorechain/evm` kullanarak çağıran bir viem betiği. Dosyalar: `contracts/Counter.sol`, `contracts/Counter.artifact.ts`, `scripts/deploy.ts`, `.env`. | `deploy` |
 | `fullstack-web` | `@qorechain/sdk` ile bir adresin bakiyelerini (ve bir tokenomik özetini) okuyan bir Vite, React ve TypeScript sayfası. Dosyalar: `index.html`, `src/App.tsx`, `src/main.tsx`, `vite.config.ts`, `.env`. | `dev`, `build`, `preview`, `typecheck` |
 | `rollup-app` | Rollup ve sidechain veya paychain mesajları oluşturmak için SDK'nın `createRollupClient` ve `createMultilayerClient` işlevlerini kullanan bir Node betiği. Dosyalar: `src/index.ts` ve olağan yapılandırma. Varsayılan olarak deneme çalıştırması. | `start`, `typecheck` |
-| `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` | Zincir geliştirici kiti şablonları: bir Foundry projesi, bir Hardhat 3 ve viem projesi (ikisi de EVM yetkilendirme penceresi için bir `pnpm window` yardımcısı içerir), QoreX cüzdanlı bir wagmi ve RainbowKit dApp'i ve bir QoreChain Native CW20 token. Ayrıntılar, betikler ve sınırlar: [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk#templates). | bkz. o sayfa |
+| `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` | Zincir geliştirici kiti şablonları: bir Foundry projesi, bir Hardhat 3 ve viem projesi (ikisi de EVM yetkilendirme penceresi için bir `pnpm window` yardımcısı içerir; 0.13.0'dan beri `pnpm window recovery-code` yeni bir kurtarma kodu yazdırır ve `PRIVATE_KEY` ayarlıyken `pnpm window` `QORE_PQC_RECOVERY_CODE` değerini okur, eksikse bir mesajla durur; `QORE_MNEMONIC` ile hiçbir şey değişmez), QoreX cüzdanlı bir wagmi ve RainbowKit dApp'i ve bir QoreChain Native CW20 token. Ayrıntılar, betikler ve sınırlar: [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk#templates). | bkz. o sayfa |
 
 | Bayrak | Anlamı |
 | --- | --- |
@@ -160,7 +160,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp` (komut `create-qorechain-dapp`) | 0.12.0 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp` (komut `create-qorechain-dapp`) | 0.13.0 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup` (komut `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli` (komut `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk` (şablonların kullandığı kütüphane) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |

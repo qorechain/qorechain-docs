@@ -35,7 +35,7 @@ const publicClient = createPublicClient({ chain: qorechainTestnet, transport: ht
 `MsgOpenEVMWindow`를 구성하며, `evmWindowCost`와 `weiToUqorCeil`은 윈도우의 크기를 산정하고,
 `toQorAddress` / `toEvmAddress`는 eth-native 계정을 두 가지 인코딩 사이에서
 변환합니다. 윈도우 헬퍼는 viem 없이도 `@qorechain/evm/window`로 게시됩니다. npm 전용 0.11.0에서
-도입되었고 0.12.0에 포함되어 있습니다.
+도입되었고 0.12.0 이후 버전에 포함되어 있습니다.
 
 ## 클라이언트 생성
 

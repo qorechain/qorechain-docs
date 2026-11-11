@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Cüzdan adaptörü (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter`, `signDirect` sunan Cosmos cüzdanlarına (Keplr, Leap, Cosmostation) QoreChain'i ekler ve zincirin gerektirdiği işlemleri oluşturur: bir native ray işlemi, hesabın klasik secp256k1 imzasının yanında bir ML-DSA-87 (FIPS 204) imzası taşımalıdır ve standart bir cüzdan ML-DSA-87 imzasını üretemez. Adaptör onu üretir, işlem gövdesine yerleştirir ve ardından değiştirilmemiş cüzdandan sıradan bir imza ister. dApp ve cüzdan geliştiricilerine, ayrıca JavaScript'te birleşik QoreChain cüzdanlarına, EVM yetkilendirme penceresi mesajlarına veya bağlı anahtar (authenticator) mesajlarına ihtiyaç duyan araç geliştiricilerine yöneliktir. Güncel sürüm 0.4.0'dır.
+`@qorechain/wallet-adapter`, `signDirect` sunan Cosmos cüzdanlarına (Keplr, Leap, Cosmostation) QoreChain'i ekler ve zincirin gerektirdiği işlemleri oluşturur: bir native ray işlemi, hesabın klasik secp256k1 imzasının yanında bir ML-DSA-87 (FIPS 204) imzası taşımalıdır ve standart bir cüzdan ML-DSA-87 imzasını üretemez. Adaptör onu üretir, işlem gövdesine yerleştirir ve ardından değiştirilmemiş cüzdandan sıradan bir imza ister. dApp ve cüzdan geliştiricilerine, ayrıca JavaScript'te birleşik QoreChain cüzdanlarına, EVM yetkilendirme penceresi mesajlarına veya bağlı anahtar (authenticator) mesajlarına ihtiyaç duyan araç geliştiricilerine yöneliktir. Güncel sürüm 0.5.0'dır (11 Kasım 2026).
 
 Tek ihtiyacınız bir dApp'in kullanıcının QoreX cüzdanından bir işlem göndermesiyse en kısa yol, bu paketteki [`qorexSignAndBroadcast`](#qorex) işlevi veya [Geliştirici paketleri](/developer-tools/overview#group-qorex) dizininde listelenen QoreX paketleridir. Bir cüzdan yazıyorsanız ve beş dilde eksiksiz bir imzalama kütüphanesi istiyorsanız önce [QoreSign](/qoresign/overview) sayfasını okuyun.
 
@@ -18,7 +18,7 @@ Tek ihtiyacınız bir dApp'in kullanıcının QoreX cüzdanından bir işlem gö
 - **Mnemonic başına bir ML-DSA-87 anahtarı, araçlar arasında paylaşılır.** `walletFromMnemonic`, anahtarı `SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)` olarak türetir ve ML-DSA-87 anahtar üretimine verir. Anahtar hesap adresine bağlıdır ve SDK'nın, `@qorechain/chain-bridge`'in, QoreX'in ve `qorechaind tx pqc recover-key` komutunun kullandığı türetimin aynısıdır; böylece hangi araç imzalarsa imzalasın bir mnemonic tek bir anahtar verir. Bkz. [Deterministik anahtar türetme ve kurtarma](/developer-guide/post-quantum-signing#key-derivation).
 - **Bir hesap, üç adres biçimi, bir imza anahtarı.** `generateQoreWallet` ve `walletFromMnemonic`, aynı 20 baytlık kimliğin `qor1`, `0x` (EIP-55) ve SVM base58 biçimlerini ML-DSA-87 anahtar çiftiyle birlikte döndürür. `signClassicalEth` ve `signHybridEth`, Cosmos ray işlemlerini bu eth-native anahtarla (`eth_secp256k1`) imzalar; böylece aynı anahtar başka yerlerde EVM işlemlerini de imzalar.
 - **PQC kurtarma kodları.** `generatePqcRecoveryCode`, `QRC1-` artı 24 bitlik sağlama toplamlı Crockford base32 biçiminde rastgele 256 bitlik bir sır döndürür. `pqcKeyFromRecoveryCode(code, address)`, ML-DSA-87 anahtarını ondan, adrese bağlı olarak türetir. Yanlış yazılmış bir karakter, hiçbir şeyle eşleşmeyen bir anahtarı sessizce türetmek yerine bir mesajla reddedilir ve kod bilerek bir tohum ifadesi (seed phrase) değildir.
-- **İmzalayıcı olarak QoreX.** `qorexSignAndBroadcast`, protobuf ile kodlanmış mesajları (çağrı başına 1 ila 32, not en fazla 256 bayt, gas limiti 100.000 ila 5.000.000) kullanıcının QoreX cüzdanına gönderir; cüzdan bunları çözülmüş halde gösterir, yalnızca cüzdanın üretebileceği ML-DSA-87 katmanını ekler, imzalar ve yayınlar. Adaptör sınırları yerel olarak denetler ve PQC anahtar yönetimi mesajlarını (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`, `MsgRotatePQCKey`) bir authz `MsgExec` içinde herhangi bir derinlikte olsalar bile reddeder. Çözemediği bir `MsgExec` reddedilir.
+- **İmzalayıcı olarak QoreX.** `qorexSignAndBroadcast`, protobuf ile kodlanmış mesajları (çağrı başına 1 ila 32, not en fazla 256 bayt, gas limiti 100.000 ila 5.000.000) kullanıcının QoreX cüzdanına gönderir; cüzdan bunları çözülmüş halde gösterir, yalnızca cüzdanın üretebileceği ML-DSA-87 katmanını ekler, imzalar ve yayınlar. Adaptör sınırları yerel olarak denetler ve PQC anahtar yönetimi mesajlarını (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`, `MsgRotatePQCKey`) bir authz `MsgExec` içinde herhangi bir derinlikte olsalar bile reddeder. Çözemediği bir `MsgExec` reddedilir. 0.5.0'dan beri istek denetimi daha katıdır: `validateQorexRequest` ve `qorexSignAndBroadcast` ayrıca, doğrudan ve authz `MsgExec` içinde, KEM anahtarı, çoklu imza ve hesap yetkisi mesajlarını (`MsgRegisterKEMKey`, `MsgRemoveKEMKey`, `MsgRegisterPQCMultisig`, `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, `MsgUpdateSpendingRules`, `MsgCreateAbstractAccount`, `MsgOpenEVMWindow`, `MsgCloseEVMWindow`, `MsgAuthorizeEVMDelegation`, `MsgClearEVMDelegation`) reddeder. Bunlar QoreX'in kendi ekranlarında kalır.
 - **EVM yetkilendirme penceresi için yapı taşları, asla otomatik değil.** `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`, `parseEvmWindow` ve `isEvmWindowRejection`, bir EVM gönderiminden önce açık olması gereken pencereyi kapsar. Her sınır (`blocks` 1 ila 17.280, `maxTxs` 1 ila 1.000, `maxValue` sıfırın üzerinde) zorunludur ve varsayılan olmadan istemci tarafında denetlenir, pencere durum alanları BigInt'tir ve paket hiçbir zaman kendi başına bir pencere açmaz: kullanıcının açık bir yetkilendirme adımı görmesi amaçlanır.
 - **Zincirle birebir özetler içeren bağlı anahtar (authenticator) mesajları.** `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `buildPhantomExecuteEvm`, `buildPhantomExecuteCosmos`, `buildMetaMaskExecuteEvm` ve `buildMetaMaskExecuteCosmos`, bir Phantom veya MetaMask anahtarının bir izin kümesi ve harcama kuralı altında bir QoreChain hesabından harcama yapmasını sağlayan mesajları oluşturur. `evmAuthSignBytesV2`, zincir v3.2.3'ten gelen özettir ve çağrının gas limitini de bağlar (sıfırdan farklı olmalıdır). Nonce, bağlı anahtarın authenticator sırasıdır, hesabın EVM nonce'u değildir. Bkz. [Authenticator'lar ve devredilmiş harcama](/sdk/guides/authenticators).
 - **Güvenli anahtar rotasyonu.** `rotateFromLegacyWalletKey`, kaldırılmış cüzdan imzası türetimiyle üretilmiş bir anahtardan uzaklaşan bir `MsgRotatePQCKey` oluşturur ve yeniden türettiği anahtar kayıtlı olana eşit değilse reddeder. `rotatePqcKeyMsgFromMnemonic`, eski bir `SHAKE-256(mnemonic)` anahtarını kanonik, adrese bağlı anahtara taşır ve eski türetimi yeni anahtar olarak reddeder.
@@ -46,7 +46,17 @@ console.log(w.svm);    // base58 form of the same 20 bytes
 // w.privateKey, w.pubkey, w.pqc = { publicKey (2592 bytes), secretKey }
 ```
 
-`walletFromSeed(seed32)` aynı cüzdanı 32 gizli bayttan oluşturur: tohum secp256k1 özel anahtarı olur; bu yüzden güvenli bir rastgele kaynaktan ya da yalnızca kullanıcının elinde bulunan malzeme üzerinde bir anahtar türetme işlevinden gelmelidir. Onu asla bir web sitesinin cüzdandan üretmesini isteyebileceği bir imzadan türetmeyin.
+`walletFromSeed(seed, opts)` aynı cüzdanı 32 gizli bayttan oluşturur: tohum secp256k1 özel anahtarı olur; bu yüzden güvenli bir rastgele kaynaktan ya da yalnızca kullanıcının elinde bulunan malzeme üzerinde bir anahtar türetme işlevinden gelmelidir. Onu asla bir web sitesinin cüzdandan üretmesini isteyebileceği bir imzadan türetmeyin. 0.5.0'dan beri ML-DSA-87 anahtarı tohumdan alınmaz: ayrıca `{ recoveryCode }` (bir `QRC1` kodu) veya `{ pqcSecret }` (32 rastgele bayt) geçirirsiniz.
+
+```js
+import { walletFromSeed, generatePqcRecoveryCode } from "@qorechain/wallet-adapter";
+
+const recoveryCode = generatePqcRecoveryCode(); // bir kez; tohumdan ayrı saklayın
+const w = await walletFromSeed(seed32, { recoveryCode });
+// veya: await walletFromSeed(seed32, { pqcSecret })  // 32 rastgele bayt, tohumdan bağımsız
+```
+
+Kurtarma kodunu (veya PQC sırrını) saklayın: farklı bir kod farklı bir anahtar verir. Tohuma eşit bir PQC sırrı reddedilir ve mnemonic'ten yapılan cüzdanlar değişmemiştir. `{ legacySeedDerivation: true }` yalnızca eski bir seed yolu cüzdanının anahtarını kurtarmak için vardır, böylece o anahtar rotasyona sokulabilir; yeni cüzdanlar için kullanmayın.
 
 ### Zinciri kullanıcının cüzdanlarına kaydedin {#register-chain}
 
@@ -150,10 +160,14 @@ Sıra önemlidir: önce pencereyi açın, sonra EVM nonce'unu okuyun, sonra EVM 
 
 | Görev | İşlevler |
 |---|---|
-| Bir PQC anahtarını kurtarma veya rotasyona sokma | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
+| Bir PQC anahtarını kurtarma veya rotasyona sokma | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | eth-native anahtarla imzalama | `signClassicalEth` (klasik anahtar kaydı), `signHybridEth` |
 | Sign-bytes yardımcıları | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
 | Harici bir anahtarla bağlama ve harcama | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, `buildPhantom*` ve `buildMetaMask*` işlevleri |
+
+## 0.5.0 neyi değiştiriyor {#whats-new-050}
+
+0.5.0 (11 Kasım 2026) tek bir uyumsuz değişiklik içerir. `walletFromSeed(seed, opts)` için `{ recoveryCode }` (bir `QRC1` kodu) veya `{ pqcSecret }` (32 rastgele bayt) gerekir; `{ legacySeedDerivation: true }` yalnızca eski bir anahtarı rotasyona sokmak üzere kurtarmak içindir ve tohuma eşit bir PQC sırrı reddedilir. Mnemonic'ten yapılan cüzdanlar değişmemiştir. Yeni işlevler: `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret` ve `generatePqcRecoveryCode`. QoreX istek denetimi daha katıdır (bkz. [QoreX üzerinden gönderme](#qorex)).
 
 ## Nasıl erişilir {#how-to-access}
 
@@ -167,9 +181,9 @@ Sıra önemlidir: önce pencereyi açın, sonra EVM nonce'unu okuyun, sonra EVM 
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.4.0 (20 Ekim 2026'da yayımlandı) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.5.0 (11 Kasım 2026'da yayımlandı) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-Kaynak: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (herkese açık, etiket `v0.4.0`, Apache-2.0). PyPI, crates.io, Maven Central veya Go proxy'sinde yayımlanmamıştır. İlgili: [Geliştirici paketleri](/developer-tools/overview), [QoreSign](/qoresign/overview), [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing), [Borsa entegrasyonu](/developer-guide/exchange-integration).
+Kaynak: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (herkese açık, etiket `v0.5.0`, Apache-2.0). PyPI, crates.io, Maven Central veya Go proxy'sinde yayımlanmamıştır. İlgili: [Geliştirici paketleri](/developer-tools/overview), [QoreSign](/qoresign/overview), [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing), [Borsa entegrasyonu](/developer-guide/exchange-integration).
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 

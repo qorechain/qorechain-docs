@@ -24,7 +24,7 @@ sidebar_position: 13
 
 ### SDKs {#sdks}
 
-**기능.** 모든 QoreChain 라이브러리를 제품별로 묶어 나열합니다. 2026년 10월 30일자 매니페스트에는 TypeScript, Python, Go, Rust, Java, Kotlin, Swift, Solidity에 걸쳐 60개의 패키지가 있습니다. 59개는 안정 버전이고 1개는 지원 중단되었으며, **Not published yet**로 표시된 패키지는 없습니다(여기에 해당했던 npm용 QoreSeal은 0.1.0으로 공개되었습니다). 표시되는 순서대로 제품은 다음과 같습니다: QoreChain SDK(코어, React 훅, EVM, SVM, dApp 스타터, Python·Rust·Go·Java 포트, 모두 0.12.0), QoreSign(Python용 QoreSign 포함), QoreSeal(ML-KEM-1024로 계정에 암호화, 테스트넷; [QoreSeal](/developer-tools/qoreseal) 참고, TypeScript, Rust, Go, Python, Swift, Kotlin, Android), Asset Kit([Asset Kit](/developer-tools/asset-kit)), PQ 라이트 클라이언트, 커스터디 키트, QoreScan, RDK(롤업 개발 키트, 그 명령줄 도구, 롤업 스타터, Python·Rust·Go·Java 포트), PQC 라이브러리, 지갑 어댑터, 체인 브리지, Handles, QoreX 통합, 그리고 MCP와 `qore` CLI.
+**기능.** 모든 QoreChain 라이브러리를 제품별로 묶어 나열합니다. 2026년 10월 30일자 매니페스트에는 TypeScript, Python, Go, Rust, Java, Kotlin, Swift, Solidity에 걸쳐 60개의 패키지가 있습니다. 59개는 안정 버전이고 1개는 지원 중단되었으며, **Not published yet**로 표시된 패키지는 없습니다(여기에 해당했던 npm용 QoreSeal은 0.1.0으로 공개되었습니다). 표시되는 순서대로 제품은 다음과 같습니다: QoreChain SDK(코어, React 훅, EVM, SVM, dApp 스타터, Python·Rust·Go·Java 포트, 해당 매니페스트에서는 모두 0.12.0이며 SDK는 2026년 11월 11일부터 0.13.0입니다), QoreSign(Python용 QoreSign 포함), QoreSeal(ML-KEM-1024로 계정에 암호화, 테스트넷; [QoreSeal](/developer-tools/qoreseal) 참고, TypeScript, Rust, Go, Python, Swift, Kotlin, Android), Asset Kit([Asset Kit](/developer-tools/asset-kit)), PQ 라이트 클라이언트, 커스터디 키트, QoreScan, RDK(롤업 개발 키트, 그 명령줄 도구, 롤업 스타터, Python·Rust·Go·Java 포트), PQC 라이브러리, 지갑 어댑터, 체인 브리지, Handles, QoreX 통합, 그리고 MCP와 `qore` CLI.
 
 **작동 방식.** 각 제품은 카드입니다. 제품이 여러 언어로 제공되면 언어 선택기(알약 모양)로 표시되는 패키지를 전환합니다. 각 패키지는 다음을 보여줍니다:
 

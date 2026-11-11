@@ -9,16 +9,16 @@ sidebar_position: 21
 
 Three command-line tools get a QoreChain project from nothing to a typed, buildable starting point. They are for application developers (dApps) and rollup operators who work in Node.js:
 
-* **`create-qorechain-dapp`** (0.12.0) scaffolds a dApp from one of seven templates, built on the [QoreChain SDK](/sdk/overview). Four of the seven (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) belong to the [chain developer kit](/developer-tools/chain-dev-sdk).
+* **`create-qorechain-dapp`** (0.13.0) scaffolds a dApp from one of seven templates, built on the [QoreChain SDK](/sdk/overview). Four of the seven (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) belong to the [chain developer kit](/developer-tools/chain-dev-sdk).
 * **`create-qorechain-rollup`** (0.8.0) scaffolds a rollup project from one of six templates, built on the TypeScript [Rollup Development Kit](/rollups/overview).
 * **`qorollup`**, the command of the `@qorechain/rdk-cli` package (0.8.0), is the operator command line: preflight checks, creating and monitoring a rollup, reading live parameters.
 
-The page reflects the published packages as installed from npm on 27 October 2026, and `create-qorechain-dapp` 0.12.0 as installed on 4 November 2026. The conceptual guides are [Deploying a Rollup](/rollups/deploying-a-rollup) and the [SDK CLI reference](/sdk/reference/cli).
+The page reflects the published packages as installed from npm on 27 October 2026, and `create-qorechain-dapp` 0.12.0 as installed on 4 November 2026; the current version is 0.13.0 (11 November 2026). The conceptual guides are [Deploying a Rollup](/rollups/deploying-a-rollup) and the [SDK CLI reference](/sdk/reference/cli).
 
 ## Innovations {#innovations}
 
 * **Non-interactive scaffolding for CI.** Every prompt has a flag: `--template`, `--network`, `--package-manager`, `--yes` (accept defaults) and `--no-install`. A pipeline can generate and build a project with one command and no terminal.
-* **Templates are pinned to the current packages.** The dApp templates depend on `@qorechain/sdk` `^0.12.0` (the EVM templates also on `@qorechain/evm` `^0.12.0`) and the rollup templates on `@qorechain/rdk` `^0.8.0`. An earlier scaffolder (0.8.0) wrote ranges that resolved to an SDK that could not sign for the live networks; that does not happen with the current one.
+* **Templates are pinned to the current packages.** The dApp templates depend on `@qorechain/sdk` `^0.13.0` (the EVM templates also on `@qorechain/evm` `^0.13.0`) and the rollup templates on `@qorechain/rdk` `^0.8.0`. An earlier scaffolder (0.8.0) wrote ranges that resolved to an SDK that could not sign for the live networks; that does not happen with the current one.
 * **Rollup templates encode a valid configuration per use case.** Each rollup template sets a settlement, sequencer, data-availability, gas and VM combination that the RDK's compatibility matrix accepts, and the scaffolder prints the live stake and creation burn before you create anything.
 * **A preflight command that names what is missing.** `qorollup doctor` (and `npm run doctor` inside a rollup template) checks that the REST endpoint answers, that the module parameters can be read, that the endpoint is the network you asked for, and that a signer is configured, and it prints one line per check. Inside a template it also validates the rollup configuration against the compatibility matrix.
 * **Hybrid signing wired into the templates.** The rollup templates connect through a small `signer.ts` that derives the account's ML-DSA-87 key from your mnemonic (or takes a seed with a raw private key) and signs hybrid, which the networks require on the native lane. The `rollup-app` dApp template does the same and runs as a dry run unless you set `QORE_BROADCAST=1`.
@@ -41,7 +41,7 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 | `evm-solidity` | A Solidity `Counter` contract with a pre-compiled artifact, and a viem script that deploys it and calls it using `@qorechain/evm`. Files: `contracts/Counter.sol`, `contracts/Counter.artifact.ts`, `scripts/deploy.ts`, `.env`. | `deploy` |
 | `fullstack-web` | A Vite, React and TypeScript page that reads an address's balances (and a tokenomics overview) with `@qorechain/sdk`. Files: `index.html`, `src/App.tsx`, `src/main.tsx`, `vite.config.ts`, `.env`. | `dev`, `build`, `preview`, `typecheck` |
 | `rollup-app` | A Node script using the SDK's `createRollupClient` and `createMultilayerClient` to build rollup and sidechain or paychain messages. Files: `src/index.ts` and the usual config. Dry run by default. | `start`, `typecheck` |
-| `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` | The chain developer kit templates: a Foundry project, a Hardhat 3 and viem project (both with a `pnpm window` helper for the EVM authorization window), a wagmi and RainbowKit dApp with the QoreX wallet, and a QoreChain Native CW20 token. Details, scripts and limits: [Chain developer kit](/developer-tools/chain-dev-sdk#templates). | see that page |
+| `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` | The chain developer kit templates: a Foundry project, a Hardhat 3 and viem project (both with a `pnpm window` helper for the EVM authorization window; since 0.13.0, `pnpm window recovery-code` prints a new recovery code, and with `PRIVATE_KEY` set `pnpm window` reads `QORE_PQC_RECOVERY_CODE` and stops with a message when it is missing; with `QORE_MNEMONIC` nothing changes), a wagmi and RainbowKit dApp with the QoreX wallet, and a QoreChain Native CW20 token. Details, scripts and limits: [Chain developer kit](/developer-tools/chain-dev-sdk#templates). | see that page |
 
 | Flag | Meaning |
 | --- | --- |
@@ -160,7 +160,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | Registry | Package | Version | Link |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp` (command `create-qorechain-dapp`) | 0.12.0 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp` (command `create-qorechain-dapp`) | 0.13.0 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup` (command `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli` (command `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk` (library the templates use) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |

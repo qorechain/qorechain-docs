@@ -39,7 +39,7 @@ Exporturile deliberate, suportate, ale `@qorechain/sdk`:
 - **Conturi:** `generateMnemonic`, `validateMnemonic`, `deriveNativeAccount`,
   `deriveEvmAccount`, `deriveSvmAccount`; tipuri de conturi.
 - **Conturi unificate (0.6.0):** `deriveUnifiedAccount`,
-  `unifiedAccountFromSeed`, `addressesFrom20`, `qoreAddresses`. (`unifiedAccountFromPhantomSignature` și `connectPhantomUnified` au fost eliminate în 0.8.0 și aruncă o eroare.)
+  `unifiedAccountFromSeed` (0.13.0: cere un cod de recuperare `QRC1` sau un secret PQC independent de 32 de bytes), `addressesFrom20`, `qoreAddresses` și helperele de cod de recuperare `QRC1` `generatePqcRecoveryCode`, `isValidRecoveryCode`, `normalizeRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcRecoveryCodeFromSecret`. (`unifiedAccountFromPhantomSignature` și `connectPhantomUnified` au fost eliminate în 0.8.0 și aruncă o eroare.)
 - **PQC:** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, constante de lungime,
   ID-uri de algoritmi/funcții ajutătoare, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
@@ -152,10 +152,10 @@ program-id.
 
 | Limbaj | Documentație generată | Instalare |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.12.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.12.0` (tag `packages/go/v0.12.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.12.0; import `qorechain`) |
-| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.12.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.13.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0` (tag `packages/go/v0.13.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.13.0; import `qorechain`) |
+| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.13.0` (Maven Central arată încă 0.12.0 la 11 noiembrie 2026; folosiți 0.13.0 de îndată ce apare) |
 
 Fiecare pachet oglindește aceeași suprafață (preseturi de rețea, utilitare
 denom/adrese, derivare HD — inclusiv conturi unificate eth-native — primitive

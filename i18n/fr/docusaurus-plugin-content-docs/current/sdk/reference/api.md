@@ -42,7 +42,7 @@ Les exports délibérés et pris en charge de `@qorechain/sdk` :
 - **Comptes :** `generateMnemonic`, `validateMnemonic`, `deriveNativeAccount`,
   `deriveEvmAccount`, `deriveSvmAccount` ; types de comptes.
 - **Comptes unifiés (0.6.0) :** `deriveUnifiedAccount`,
-  `unifiedAccountFromSeed`, `addressesFrom20`, `qoreAddresses`. (`unifiedAccountFromPhantomSignature` et `connectPhantomUnified` ont été supprimées en 0.8.0 et lèvent une erreur.)
+  `unifiedAccountFromSeed` (0.13.0 : exige un code de récupération `QRC1` ou un secret PQC indépendant de 32 octets), `addressesFrom20`, `qoreAddresses`, et les assistants de code de récupération `QRC1` `generatePqcRecoveryCode`, `isValidRecoveryCode`, `normalizeRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcRecoveryCodeFromSecret`. (`unifiedAccountFromPhantomSignature` et `connectPhantomUnified` ont été supprimées en 0.8.0 et lèvent une erreur.)
 - **PQC :** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, constantes de
   longueur, identifiants/assistants d'algorithmes, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
@@ -154,10 +154,10 @@ constantes d'identifiants de programmes.
 
 | Langage | Documentation générée | Installation |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstrings sur l'API publique | `pip install qorechain-sdk` en `0.12.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.12.0` (tag `packages/go/v0.12.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.12.0 ; import `qorechain`) |
-| Java | Javadoc sur Maven Central | `io.github.qorechain:qorechain-sdk:0.12.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstrings sur l'API publique | `pip install qorechain-sdk` en `0.13.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0` (tag `packages/go/v0.13.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.13.0 ; import `qorechain`) |
+| Java | Javadoc sur Maven Central | `io.github.qorechain:qorechain-sdk:0.13.0` (Maven Central affiche encore la 0.12.0 le 11 novembre 2026 ; utilisez la 0.13.0 dès qu'elle apparaît) |
 
 Chaque package reflète la même surface (préréglages réseau, utilitaires
 denom/adresses, dérivation HD — y compris les comptes unifiés eth-native —

@@ -342,7 +342,7 @@ EVM 트랜잭션을 보내는 모든 작업의 요구 사항: 등록된 ML-DSA-8
 - [포스트 퀀텀 서명](/developer-guide/post-quantum-signing)과 [계정과 PQC 서명](/sdk/concepts/accounts-pqc): 키 등록과 하이브리드 서명.
 - [EVM 개발](/developer-guide/evm-development#evm-window): EVM 인가 윈도우.
 - [EVM 프리컴파일](/developer-guide/evm-precompiles): `0x0A01`과 `0x0A02`, 테스트넷에서만 활성.
-- [체인 개발자 키트](/developer-tools/chain-dev-sdk): Foundry, Hardhat, viem 템플릿과 윈도우 헬퍼(SDK 0.12.0에 포함).
+- [체인 개발자 키트](/developer-tools/chain-dev-sdk): Foundry, Hardhat, viem 템플릿과 윈도우 헬퍼(SDK 0.12.0 이상에 포함).
 - [커스터디 키트](/developer-tools/custody-kit)와 [QoreScan](/developer-tools/qorescan): 수탁 기관 및 암호화 자산 목록화를 위한 인접 키트.
 - [개발자 패키지](/developer-tools/overview): 모든 패키지와 레지스트리 상태.
 - 업스트림 표준: ERC-3643, CMTAT, ERC-4626, ERC-7540, ERC-7518.

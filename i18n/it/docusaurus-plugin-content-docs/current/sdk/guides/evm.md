@@ -36,7 +36,7 @@ compone il `MsgOpenEVMWindow` della lane Native da firmare in modalità ibrida, 
 `weiToUqorCeil` dimensionano una finestra, e `toQorAddress` / `toEvmAddress` convertono un
 account eth-native tra le sue due codifiche. Gli helper della finestra sono pubblicati anche
 senza viem come `@qorechain/evm/window`. Sono arrivati nella 0.11.0 solo su npm e sono nella
-0.12.0.
+0.12.0 e successive.
 
 ## Creare un client
 

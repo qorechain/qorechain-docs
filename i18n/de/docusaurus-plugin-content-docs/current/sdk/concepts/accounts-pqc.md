@@ -122,8 +122,18 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-`unifiedAccountFromSeed(seed32)` macht dasselbe ausgehend von einem rohen
-32-Byte-secp256k1-Private-Key.
+`unifiedAccountFromSeed(seed32, { recoveryCode })` macht dasselbe ausgehend von einem rohen
+32-Byte-secp256k1-Private-Key. Seit SDK 0.13.0 braucht der Seed-Pfad genau eines von beidem:
+einen `QRC1`-Wiederherstellungscode (`generatePqcRecoveryCode()`, einmal erzeugt und getrennt
+vom Seed aufbewahrt) oder ein unabhängiges 32-Byte-PQC-Geheimnis; der ML-DSA-87-Schlüssel wird
+aus dieser zweiten Eingabe abgeleitet, und ein anderer Code ergibt einen anderen Schlüssel. Ohne
+Option oder mit mehr als einer löst der Aufruf einen Fehler aus. Ein Konto, dessen PQC-Schlüssel
+mit 0.12 oder früher registriert wurde, lädt diesen Schlüssel mit `{ legacySeedDerivation: true }`
+(Python `legacy_seed_derivation=True`, Go `LegacySeedDerivation`, Rust
+`SeedPqcOptions::legacy_seed_derivation()`, Java `SeedPqcOptions.legacy()`), damit er mit
+`MsgRotatePQCKey` rotiert werden kann; verwenden Sie diese Option nicht für neue Konten. Konten,
+die aus einer Mnemonic abgeleitet werden, bleiben unverändert. Siehe
+[Was 0.13.0 ändert](/sdk/install#whats-new-0130).
 
 ### Die PQC-Seed-Ableitung
 
@@ -135,8 +145,8 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 ```
 
 sodass es aus `{ address, mnemonic }` wiederherstellbar und über alle
-Sprach-SDKs von QoreChain identisch ist. (Bei `unifiedAccountFromSeed` lautet
-der Mnemonic-Slot `"seed:" + hex(seed32)`.) Seit SDK 0.8.3 löst
+Sprach-SDKs von QoreChain identisch ist. (Bei `unifiedAccountFromSeed` lautete
+vor 0.13.0 der Mnemonic-Slot `"seed:" + hex(seed32)`; seit 0.13.0 leitet der Seed-Pfad den Schlüssel stattdessen aus dem Wiederherstellungscode oder dem PQC-Geheimnis ab, siehe oben.) Seit SDK 0.8.3 löst
 `derivePqcCanonical(account, mnemonic)` `account` zuerst in seine kleingeschriebene
 `qor1…`-Form auf (`canonicalAccount`), sodass eine großgeschriebene bech32-Adresse
 oder die `0x`-Form desselben Kontos denselben Schlüssel ergibt.

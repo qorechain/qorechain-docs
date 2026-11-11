@@ -24,7 +24,7 @@ sidebar_position: 13
 
 ### SDKs {#sdks}
 
-**できること。** すべての QoreChain ライブラリを、製品ごとにまとめて一覧表示します。2026年10月30日のマニフェストには、TypeScript、Python、Go、Rust、Java、Kotlin、Swift、Solidity にまたがる60個のパッケージがあります。59個は安定版、1個は非推奨で、**Not published yet** と表示されるものはありません(以前そうだった npm 向けの QoreSeal は 0.1.0 として公開されています)。製品は、表示順に次のとおりです。QoreChain SDK(コア、React フック、EVM、SVM、dApp スターター、および Python、Rust、Go、Java への移植版。いずれも 0.12.0)、QoreSign(Python 向けの QoreSign を含む)、QoreSeal(ML-KEM-1024 によるアカウント宛ての暗号化、テストネット。[QoreSeal](/developer-tools/qoreseal) を参照。TypeScript、Rust、Go、Python、Swift、Kotlin、Android 向け)、Asset Kit([Asset Kit](/developer-tools/asset-kit))、PQ ライトクライアント、カストディキット、QoreScan、RDK(ロールアップ開発キット、そのコマンドラインツール、ロールアップスターター、および Python、Rust、Go、Java への移植版)、PQC ライブラリ、ウォレットアダプター、チェーンブリッジ、Handles、QoreX 統合、そして MCP と `qore` CLI。
+**できること。** すべての QoreChain ライブラリを、製品ごとにまとめて一覧表示します。2026年10月30日のマニフェストには、TypeScript、Python、Go、Rust、Java、Kotlin、Swift、Solidity にまたがる60個のパッケージがあります。59個は安定版、1個は非推奨で、**Not published yet** と表示されるものはありません(以前そうだった npm 向けの QoreSeal は 0.1.0 として公開されています)。製品は、表示順に次のとおりです。QoreChain SDK(コア、React フック、EVM、SVM、dApp スターター、および Python、Rust、Go、Java への移植版。いずれもこのマニフェストでは 0.12.0。SDK は 2026年11月11日から 0.13.0)、QoreSign(Python 向けの QoreSign を含む)、QoreSeal(ML-KEM-1024 によるアカウント宛ての暗号化、テストネット。[QoreSeal](/developer-tools/qoreseal) を参照。TypeScript、Rust、Go、Python、Swift、Kotlin、Android 向け)、Asset Kit([Asset Kit](/developer-tools/asset-kit))、PQ ライトクライアント、カストディキット、QoreScan、RDK(ロールアップ開発キット、そのコマンドラインツール、ロールアップスターター、および Python、Rust、Go、Java への移植版)、PQC ライブラリ、ウォレットアダプター、チェーンブリッジ、Handles、QoreX 統合、そして MCP と `qore` CLI。
 
 **仕組み。** 各製品はカードになっています。製品が複数の言語で提供されている場合は、言語セレクター(ピル)で表示するパッケージを切り替えます。各パッケージには次の内容が表示されます。
 

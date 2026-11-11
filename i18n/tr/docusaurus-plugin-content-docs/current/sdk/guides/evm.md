@@ -36,7 +36,7 @@ ve hibrit imzalanacak Native şeridi `MsgOpenEVMWindow` mesajını oluşturur, `
 `weiToUqorCeil` bir pencerenin boyutunu hesaplar, `toQorAddress` / `toEvmAddress` ise bir
 eth-native hesabı iki kodlaması arasında dönüştürür. Pencere yardımcıları ayrıca viem olmadan
 `@qorechain/evm/window` olarak yayımlanır. Yalnızca npm'e çıkan 0.11.0 ile geldiler ve
-0.12.0'da bulunurlar.
+0.12.0 ve sonrasında bulunurlar.
 
 ## Bir istemci oluşturun
 

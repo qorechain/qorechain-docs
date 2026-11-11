@@ -124,8 +124,18 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-`unifiedAccountFromSeed(seed32)` face același lucru pornind de la o cheie
-privată secp256k1 brută de 32 de bytes.
+`unifiedAccountFromSeed(seed32, { recoveryCode })` face același lucru pornind de la o
+cheie privată secp256k1 brută de 32 de bytes. Începând cu SDK 0.13.0, calea cu seed cere
+exact unul dintre un cod de recuperare `QRC1` (`generatePqcRecoveryCode()`, creat o
+singură dată și păstrat separat de seed) sau un secret PQC independent de 32 de bytes;
+cheia ML-DSA-87 este derivată din această a doua intrare, iar un alt cod dă o altă cheie.
+Fără nicio opțiune, sau cu mai multe, apelul ridică o eroare. Un cont a cărui cheie PQC a
+fost înregistrată cu 0.12 sau mai vechi încarcă acea cheie cu `{ legacySeedDerivation: true }`
+(Python `legacy_seed_derivation=True`, Go `LegacySeedDerivation`, Rust
+`SeedPqcOptions::legacy_seed_derivation()`, Java `SeedPqcOptions.legacy()`), ca să poată
+fi rotită cu `MsgRotatePQCKey`; nu folosiți această opțiune pentru conturi noi. Conturile
+derivate dintr-o mnemonică rămân neschimbate. Vezi
+[Ce schimbă 0.13.0](/sdk/install#whats-new-0130).
 
 ### Derivarea seed-ului PQC
 
@@ -138,7 +148,7 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 
 astfel încât poate fi recuperată din `{ address, mnemonic }` și este
 identică în toate SDK-urile QoreChain, indiferent de limbaj. (Pentru
-`unifiedAccountFromSeed`, slotul mnemonicului este `"seed:" + hex(seed32)`.)
+`unifiedAccountFromSeed` înainte de 0.13.0, slotul mnemonicului era `"seed:" + hex(seed32)`; începând cu 0.13.0, calea cu seed derivă cheia din codul de recuperare sau din secretul PQC, vezi mai sus.)
 Începând cu SDK 0.8.3, `derivePqcCanonical(account, mnemonic)` rezolvă mai
 întâi `account` la forma sa `qor1…` cu litere mici (`canonicalAccount`), astfel
 încât un bech32 cu litere mari sau forma `0x` a aceluiași cont produce aceeași

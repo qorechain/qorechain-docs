@@ -166,7 +166,7 @@ qorechaind query stakingtier locks <holder_address>
 
 두 네트워크 모두 `GET /qorechain/stakingtier/v1/params`에 동일한 설정으로 응답합니다: 세 가지 기간, 최소 10 QOR(`min_lock_amount` `"10000000"` uqor), 500 베이시스 포인트(5%)의 조기 해제 페널티, 그리고 `enabled: true`. 응답에는 베이시스 포인트 단위의 보너스 설정도 들어 있습니다. 보너스는 약속된 수익이 아니고 설정은 거버넌스가 변경할 수 있으므로, 이 매뉴얼은 해당 값을 인용하지 않습니다. `GET /qorechain/stakingtier/v1/pool`은 잠금 보상을 지급하는 풀을 보여 줍니다.
 
-**클라이언트.** 커맨드 라인(위)과 `@qorechain/sdk`(0.10.0 이상, 현재 0.12.0)를 사용할 수 있으며, SDK에는 컴포저 `lockDelegation`, `unlockEarly`, `claimBonus`와 조회 함수 `fetchStakingTierParams`, `fetchStakingLocks`, `fetchStakingTierPool`이 있습니다([SDK 설치](/sdk/install) 참조). 현재 게시된 QoreX나 대시보드 버전에는 잠금 화면이 없으므로, 메인넷에서의 잠금은 CLI 또는 SDK로 수행합니다.
+**클라이언트.** 커맨드 라인(위)과 `@qorechain/sdk`(0.10.0 이상, 현재 0.13.0)를 사용할 수 있으며, SDK에는 컴포저 `lockDelegation`, `unlockEarly`, `claimBonus`와 조회 함수 `fetchStakingTierParams`, `fetchStakingLocks`, `fetchStakingTierPool`이 있습니다([SDK 설치](/sdk/install) 참조). 현재 게시된 QoreX나 대시보드 버전에는 잠금 화면이 없으므로, 메인넷에서의 잠금은 CLI 또는 SDK로 수행합니다.
 
 **혼동하지 마세요.** 설계된 메커니즘이며 라이브가 아닌 [xQORE 스테이킹](/user-guide/xqore-staking)이나, 받는 금액을 바꾸지 않는 아래의 트리플 풀 분류와 헷갈리지 마세요.
 

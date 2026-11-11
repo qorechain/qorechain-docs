@@ -20,9 +20,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publié sur npm sous le nom `create-qorechain-dapp` (`0.12.0`). Les fichiers
-> `package.json` générés dépendent de `@qorechain/sdk` `^0.12.0` (les templates EVM de
-> `@qorechain/evm` `^0.12.0`). La version 0.8.0 du générateur écrivait des plages
+> Publié sur npm sous le nom `create-qorechain-dapp` (`0.13.0`). Les fichiers
+> `package.json` générés dépendent de `@qorechain/sdk` `^0.13.0` (les templates EVM de
+> `@qorechain/evm` `^0.13.0`). La version 0.8.0 du générateur écrivait des plages
 > `^0.3.0`, que npm résout vers une version 0.3 incapable de signer pour les réseaux
 > en service ; si vous avez échafaudé avec la 0.8.0, exécutez
 > `npm i @qorechain/sdk@latest`.

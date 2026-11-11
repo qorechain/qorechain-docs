@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Wallet adapter (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter` adaugă QoreChain în portofelele Cosmos care expun `signDirect` (Keplr, Leap, Cosmostation) și construiește tranzacțiile pe care le cere lanțul: o tranzacție pe lane-ul nativ trebuie să poarte o semnătură ML-DSA-87 (FIPS 204) alături de semnătura secp256k1 clasică a contului, iar un portofel obișnuit nu o poate produce pe cea ML-DSA-87. Adaptorul o produce, o plasează în corpul tranzacției și apoi cere portofelului nemodificat o semnătură obișnuită. Este destinat dezvoltatorilor de dApp-uri și de portofele, precum și constructorilor de unelte care au nevoie în JavaScript de portofele QoreChain unificate, de mesaje pentru fereastra de autorizare EVM sau de mesaje pentru chei legate (autentificatori). Versiunea curentă este 0.4.0.
+`@qorechain/wallet-adapter` adaugă QoreChain în portofelele Cosmos care expun `signDirect` (Keplr, Leap, Cosmostation) și construiește tranzacțiile pe care le cere lanțul: o tranzacție pe lane-ul nativ trebuie să poarte o semnătură ML-DSA-87 (FIPS 204) alături de semnătura secp256k1 clasică a contului, iar un portofel obișnuit nu o poate produce pe cea ML-DSA-87. Adaptorul o produce, o plasează în corpul tranzacției și apoi cere portofelului nemodificat o semnătură obișnuită. Este destinat dezvoltatorilor de dApp-uri și de portofele, precum și constructorilor de unelte care au nevoie în JavaScript de portofele QoreChain unificate, de mesaje pentru fereastra de autorizare EVM sau de mesaje pentru chei legate (autentificatori). Versiunea curentă este 0.5.0 (11 noiembrie 2026).
 
 Dacă aveți nevoie doar ca un dApp să trimită o tranzacție din portofelul QoreX al unui utilizator, cea mai scurtă cale este [`qorexSignAndBroadcast`](#qorex) din acest pachet sau pachetele QoreX listate în indexul [Pachete pentru dezvoltatori](/developer-tools/overview#group-qorex). Dacă scrieți un portofel și vreți o bibliotecă completă de semnare în cinci limbaje, citiți mai întâi [QoreSign](/qoresign/overview).
 
@@ -18,7 +18,7 @@ Dacă aveți nevoie doar ca un dApp să trimită o tranzacție din portofelul Qo
 - **O cheie ML-DSA-87 per frază mnemonică, partajată între unelte.** `walletFromMnemonic` derivă cheia ca `SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, dată generării de chei ML-DSA-87. Este legată de adresa contului și este aceeași derivare folosită de SDK, `@qorechain/chain-bridge`, QoreX și comanda `qorechaind tx pqc recover-key`, deci o singură frază mnemonică dă o singură cheie, indiferent de unealta care semnează. Vedeți [Derivare deterministă a cheilor și recuperare](/developer-guide/post-quantum-signing#key-derivation).
 - **Un cont, trei forme de adresă, o singură cheie de semnare.** `generateQoreWallet` și `walletFromMnemonic` returnează împreună formele `qor1`, `0x` (EIP-55) și SVM base58 ale aceleiași identități de 20 de octeți, plus perechea de chei ML-DSA-87. `signClassicalEth` și `signHybridEth` semnează tranzacții pe lane-ul Cosmos cu acea cheie eth-native (`eth_secp256k1`), deci aceeași cheie semnează și tranzacții EVM în alte părți.
 - **Coduri de recuperare PQC.** `generatePqcRecoveryCode` returnează un secret aleator de 256 de biți formatat `QRC1-` plus Crockford base32 cu o sumă de control de 24 de biți. `pqcKeyFromRecoveryCode(code, address)` derivă din el cheia ML-DSA-87, legată de adresă. Un caracter greșit tastat este refuzat cu un mesaj, în loc să derive în tăcere o cheie care nu corespunde la nimic, iar codul nu este, în mod deliberat, o frază seed.
-- **QoreX ca semnatar.** `qorexSignAndBroadcast` trimite mesaje codificate protobuf (1 până la 32 per apel, memo până la 256 de octeți, limită de gaz între 100.000 și 5.000.000) către portofelul QoreX al utilizatorului, care le afișează decodate, adaugă stratul ML-DSA-87 pe care îl poate produce doar portofelul, semnează și transmite. Adaptorul verifică local limitele și refuză mesajele de gestionare a cheilor PQC (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`, `MsgRotatePQCKey`), inclusiv în interiorul unui `MsgExec` authz la orice adâncime. Un `MsgExec` pe care nu îl poate decoda este refuzat.
+- **QoreX ca semnatar.** `qorexSignAndBroadcast` trimite mesaje codificate protobuf (1 până la 32 per apel, memo până la 256 de octeți, limită de gaz între 100.000 și 5.000.000) către portofelul QoreX al utilizatorului, care le afișează decodate, adaugă stratul ML-DSA-87 pe care îl poate produce doar portofelul, semnează și transmite. Adaptorul verifică local limitele și refuză mesajele de gestionare a cheilor PQC (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`, `MsgRotatePQCKey`), inclusiv în interiorul unui `MsgExec` authz la orice adâncime. Un `MsgExec` pe care nu îl poate decoda este refuzat. Începând cu 0.5.0, verificarea cererii este mai strictă: `validateQorexRequest` și `qorexSignAndBroadcast` refuză, de asemenea, direct și în interiorul unui `MsgExec` authz, mesajele pentru chei KEM, multisig și autoritatea contului (`MsgRegisterKEMKey`, `MsgRemoveKEMKey`, `MsgRegisterPQCMultisig`, `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, `MsgUpdateSpendingRules`, `MsgCreateAbstractAccount`, `MsgOpenEVMWindow`, `MsgCloseEVMWindow`, `MsgAuthorizeEVMDelegation`, `MsgClearEVMDelegation`). Acestea rămân pe ecranele proprii ale QoreX.
 - **Blocuri de construcție pentru fereastra de autorizare EVM, niciodată una automată.** `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`, `parseEvmWindow` și `isEvmWindowRejection` acoperă fereastra care trebuie să fie deschisă înainte de o trimitere EVM. Fiecare limită (`blocks` de la 1 la 17.280, `maxTxs` de la 1 la 1.000, `maxValue` peste zero) este obligatorie și verificată pe partea clientului, fără valoare implicită, câmpurile de stare ale ferestrei sunt BigInt, iar pachetul nu deschide niciodată singur o fereastră: utilizatorul trebuie să vadă un pas explicit de autorizare.
 - **Mesaje pentru chei legate (autentificatori) cu rezumate exacte ca pe lanț.** `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `buildPhantomExecuteEvm`, `buildPhantomExecuteCosmos`, `buildMetaMaskExecuteEvm` și `buildMetaMaskExecuteCosmos` construiesc mesajele care permit unei chei Phantom sau MetaMask să cheltuiască dintr-un cont QoreChain sub un set de permisiuni și o regulă de cheltuieli. `evmAuthSignBytesV2` este rezumatul din lanțul v3.2.3, care leagă și limita de gaz a apelului (aceasta trebuie să fie nenulă). Nonce-ul este secvența de autentificator a cheii legate, nu nonce-ul EVM al contului. Vedeți [Autentificatori și cheltuieli delegate](/sdk/guides/authenticators).
 - **Rotație sigură a cheii.** `rotateFromLegacyWalletKey` construiește un `MsgRotatePQCKey` de la o cheie creată prin derivarea retrasă din semnătura portofelului și refuză dacă cheia pe care o rederivă nu este egală cu cea înregistrată. `rotatePqcKeyMsgFromMnemonic` mută o cheie veche `SHAKE-256(mnemonic)` la cheia canonică legată de adresă și refuză derivarea veche drept cheie nouă.
@@ -46,7 +46,17 @@ console.log(w.svm);    // base58 form of the same 20 bytes
 // w.privateKey, w.pubkey, w.pqc = { publicKey (2592 bytes), secretKey }
 ```
 
-`walletFromSeed(seed32)` construiește același portofel din 32 de octeți secreți: seed-ul devine cheia privată secp256k1, deci trebuie să provină dintr-o sursă aleatorie sigură sau dintr-o funcție de derivare a cheilor aplicată unui material pe care îl deține doar utilizatorul. Nu îl derivați niciodată dintr-o semnătură pe care un site web poate cere unui portofel să o producă.
+`walletFromSeed(seed, opts)` construiește același portofel din 32 de octeți secreți: seed-ul devine cheia privată secp256k1, deci trebuie să provină dintr-o sursă aleatorie sigură sau dintr-o funcție de derivare a cheilor aplicată unui material pe care îl deține doar utilizatorul. Nu îl derivați niciodată dintr-o semnătură pe care un site web poate cere unui portofel să o producă. Începând cu 0.5.0, cheia ML-DSA-87 nu se mai ia din seed: transmiteți suplimentar `{ recoveryCode }` (un cod `QRC1`) sau `{ pqcSecret }` (32 de bytes aleatorii).
+
+```js
+import { walletFromSeed, generatePqcRecoveryCode } from "@qorechain/wallet-adapter";
+
+const recoveryCode = generatePqcRecoveryCode(); // once; store it apart from the seed
+const w = await walletFromSeed(seed32, { recoveryCode });
+// or: await walletFromSeed(seed32, { pqcSecret })  // 32 random bytes, independent of the seed
+```
+
+Păstrați codul de recuperare (sau secretul PQC): un altul dă o altă cheie. Un secret PQC egal cu seed-ul este refuzat, iar portofelele făcute dintr-o mnemonică rămân neschimbate. `{ legacySeedDerivation: true }` există doar pentru a recupera cheia unui portofel mai vechi cu cale prin seed, ca să poată fi rotită; nu îl folosiți pentru portofele noi.
 
 ### Înregistrați lanțul în portofelele utilizatorului {#register-chain}
 
@@ -150,10 +160,14 @@ Ordinea contează: deschideți fereastra, apoi citiți nonce-ul EVM, apoi semna�
 
 | Sarcină | Funcții |
 |---|---|
-| Recuperarea sau rotirea unei chei PQC | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
+| Recuperarea sau rotirea unei chei PQC | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | Semnarea cu cheia eth-native | `signClassicalEth` (înregistrarea clasică a cheii), `signHybridEth` |
 | Ajutoare pentru sign-bytes | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
 | Legarea și cheltuirea cu o cheie externă | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, funcțiile `buildPhantom*` și `buildMetaMask*` |
+
+## Ce schimbă 0.5.0 {#whats-new-050}
+
+0.5.0 (11 noiembrie 2026) are o singură schimbare care rupe compatibilitatea. `walletFromSeed(seed, opts)` cere `{ recoveryCode }` (un cod `QRC1`) sau `{ pqcSecret }` (32 de bytes aleatorii); `{ legacySeedDerivation: true }` este doar pentru recuperarea unei chei mai vechi, ca să poată fi rotită, iar un secret PQC egal cu seed-ul este refuzat. Portofelele făcute dintr-o mnemonică rămân neschimbate. Funcții noi: `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret` și `generatePqcRecoveryCode`. Verificarea cererilor QoreX este mai strictă (vezi [Trimiteți prin QoreX](#qorex)).
 
 ## Cum se accesează {#how-to-access}
 
@@ -167,9 +181,9 @@ Ordinea contează: deschideți fereastra, apoi citiți nonce-ul EVM, apoi semna�
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.4.0 (publicat pe 20 octombrie 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.5.0 (publicat pe 11 noiembrie 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-Sursa: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (publică, tag `v0.4.0`, Apache-2.0). Nu este publicat pe PyPI, crates.io, Maven Central sau proxy-ul Go. Pagini conexe: [Pachete pentru dezvoltatori](/developer-tools/overview), [QoreSign](/qoresign/overview), [Semnare post-cuantică](/developer-guide/post-quantum-signing), [Integrare Exchange](/developer-guide/exchange-integration).
+Sursa: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (publică, tag `v0.5.0`, Apache-2.0). Nu este publicat pe PyPI, crates.io, Maven Central sau proxy-ul Go. Pagini conexe: [Pachete pentru dezvoltatori](/developer-tools/overview), [QoreSign](/qoresign/overview), [Semnare post-cuantică](/developer-guide/post-quantum-signing), [Integrare Exchange](/developer-guide/exchange-integration).
 
 ## Limite și probleme cunoscute {#limits}
 

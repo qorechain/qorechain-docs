@@ -246,6 +246,7 @@ buna adres bağlantılı ML-DSA-87 anahtar çifti de eşlik eder. Tamamen
 import {
   deriveUnifiedAccount,
   qoreAddresses,
+  generatePqcRecoveryCode,
   unifiedAccountFromSeed,
 } from "@qorechain/sdk";
 
@@ -257,8 +258,12 @@ console.log(account.svm);    // base58   — SVM lane (same 20 bytes)
 // Decode any one encoding into all three.
 const all = qoreAddresses({ evm: account.evm });
 
-// Or derive from a raw 32-byte seed instead of a mnemonic.
-const fromSeed = unifiedAccountFromSeed(seed32);
+// Or derive from a raw 32-byte seed instead of a mnemonic. Since SDK 0.13.0 the
+// seed path also needs a QRC1 recovery code (or an independent 32-byte PQC secret).
+// Create the code once and keep it apart from the seed: a different code gives a
+// different ML-DSA-87 key.
+const recoveryCode = generatePqcRecoveryCode();
+const fromSeed = unifiedAccountFromSeed(seed32, { recoveryCode });
 ```
 
 [Kaynak](https://github.com/qorechain/qorechain-sdk/tree/main/examples/unified-wallet)

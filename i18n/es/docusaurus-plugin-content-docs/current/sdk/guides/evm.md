@@ -36,7 +36,7 @@ compone el `MsgOpenEVMWindow` del carril Native para firmarlo de forma híbrida,
 `weiToUqorCeil` dimensionan una ventana, y `toQorAddress` / `toEvmAddress` convierten una
 cuenta eth-native entre sus dos codificaciones. Los auxiliares de ventana también se publican
 sin viem como `@qorechain/evm/window`. Llegaron en la 0.11.0, solo en npm, y están en la
-0.12.0.
+0.12.0 y posteriores.
 
 ## Crear un cliente
 

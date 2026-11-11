@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Veröffentlicht auf npm als `create-qorechain-dapp` (`0.12.0`). Die erzeugten
-> `package.json`-Dateien hängen von `@qorechain/sdk` `^0.12.0` ab (die EVM-Vorlagen von
-> `@qorechain/evm` `^0.12.0`). Version 0.8.0 des Scaffolders schrieb `^0.3.0`-Bereiche,
+> Veröffentlicht auf npm als `create-qorechain-dapp` (`0.13.0`). Die erzeugten
+> `package.json`-Dateien hängen von `@qorechain/sdk` `^0.13.0` ab (die EVM-Vorlagen von
+> `@qorechain/evm` `^0.13.0`). Version 0.8.0 des Scaffolders schrieb `^0.3.0`-Bereiche,
 > die npm zu einem 0.3-Release auflöst, das für die Live-Netzwerke nicht signieren kann; wenn Sie
 > mit 0.8.0 ein Gerüst erstellt haben, führen Sie `npm i @qorechain/sdk@latest` aus.
 

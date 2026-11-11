@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> منشورة على npm باسم `create-qorechain-dapp` (`0.12.0`). تعتمد ملفات
-> `package.json` المُنشأة على `@qorechain/sdk` ‏`^0.12.0` (وقوالب EVM على
-> `@qorechain/evm` ‏`^0.12.0`). كان الإصدار 0.8.0 من أداة الهيكلة يكتب نطاقات `^0.3.0`،
+> منشورة على npm باسم `create-qorechain-dapp` (`0.13.0`). تعتمد ملفات
+> `package.json` المُنشأة على `@qorechain/sdk` ‏`^0.13.0` (وقوالب EVM على
+> `@qorechain/evm` ‏`^0.13.0`). كان الإصدار 0.8.0 من أداة الهيكلة يكتب نطاقات `^0.3.0`،
 > وهو ما يحلّه npm إلى إصدار 0.3 لا يستطيع التوقيع للشبكات الحيّة؛ وإن كنت قد
 > أنشأت الهيكل بـ 0.8.0، فنفّذ `npm i @qorechain/sdk@latest`.
 

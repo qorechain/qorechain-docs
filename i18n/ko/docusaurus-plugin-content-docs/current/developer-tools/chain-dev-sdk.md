@@ -9,8 +9,8 @@ sidebar_position: 34
 
 체인 개발자 키트는 QoreChain SDK의 일부로, Solidity 및 스마트 컨트랙트 팀이 이미 사용하는 도구로 QoreChain에서 빌드할 수 있도록 돕습니다. `@qorechain/evm`에 viem 체인 정의와 EVM 인가 윈도우 헬퍼를 추가하고, `create-qorechain-dapp`에 네 가지 프로젝트 템플릿(Foundry, Hardhat 3, wagmi를 사용하는 viem, QoreChain Native CosmWasm 토큰)을 추가하며, 다섯 가지 언어용 EVM 퀵스타트와 QoreChain EVM이 Ethereum과 어떻게 다른지에 대한 참조를 제공합니다. Ethereum에서 컨트랙트를 이식하는 Solidity 팀, wagmi와 RainbowKit을 쓰는 dApp 프런트엔드 개발자, CosmWasm 개발자, 그리고 QoreChain을 추가하려는 EVM 도구 유지 관리자를 위한 키트입니다.
 
-:::note 라이브: SDK 0.12.0에 포함
-이 키트는 QoreChain SDK **0.12.0**(npm, 2026년 10월 30일)에서 **라이브이며 설치할 수 있습니다**: `@qorechain/evm` 0.12.0, `@qorechain/sdk` 0.12.0, `@qorechain/react` 0.12.0, `@qorechain/svm` 0.12.0, `create-qorechain-dapp` 0.12.0이며, Python, Rust, Go, Java SDK도 0.12.0입니다. 키트의 내용은 npm에서만 0.11.0(2026년 10월 29일)으로 처음 배포되었고, 다른 레지스트리에는 0.11.0이 없으므로 어디서든 0.12.0을 사용하세요. 이 페이지의 모든 내용은 2026년 11월 4일에 0.12.0으로 확인했습니다.
+:::note 라이브: SDK 0.13.0에 포함
+이 키트는 QoreChain SDK **0.13.0**(npm, 2026년 11월 11일)에서 **라이브이며 설치할 수 있습니다**: `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0, `create-qorechain-dapp` 0.13.0이며, Python, Rust, Go SDK도 0.13.0입니다(Java SDK는 게시 중입니다. 2026년 11월 11일에 Maven Central에는 아직 0.12.0이 표시되었습니다). 키트의 내용은 npm에서만 0.11.0(2026년 10월 29일)으로 처음 배포되었고 0.12.0(2026년 10월 30일)에도 들어 있었으며, 다른 레지스트리에는 0.11.0이 없습니다. 이 페이지의 테스트 실행은 2026년 11월 4일에 0.12.0으로 수행했으며, 0.13.0은 시드 경로 계정 헬퍼와 템플릿의 `PRIVATE_KEY` 처리를 바꾸었습니다([0.13.0의 변경 사항](/sdk/install#whats-new-0130) 참조).
 :::
 
 이 키트는 메인넷(`qorechain-vladi`, EVM 체인 ID 9801)과 테스트넷(`qorechain-diana`, EVM 체인 ID 9800)을 대상으로 합니다.
@@ -20,14 +20,14 @@ sidebar_position: 34
 | 항목 | 패키지와 버전 | 위치 |
 |---|---|---|
 | 공개 엔드포인트에 대해 ethers v6, web3.py, go-ethereum, alloy, web3j로 읽기 | QoreChain 패키지 불필요 | [퀵스타트 1](#quickstart-ethers) |
-| `createEvmClient`, ERC-20, ERC-721, ERC-1155 헬퍼, `precompiles` 바인딩, `PRECOMPILE_ADDRESSES` | `@qorechain/evm` 0.12.0 | [퀵스타트 2](#quickstart-evm-080) |
-| viem 체인 정의 `qorechain` 및 `qorechainTestnet`, `QORECHAIN_CHAINS`, `QORECHAIN_REST_ENDPOINTS` | `@qorechain/evm` 0.12.0 | [퀵스타트 3](#quickstart-viem) |
-| `evmWindowStatus`, `openEvmWindowMessage`, `evmWindowCost`, `classifyEvmWindowRejection`, 주소 변환기, 윈도우 상수, 서브패스 `@qorechain/evm/window` | `@qorechain/evm` 0.12.0 | [퀵스타트 4](#quickstart-window-helpers) |
-| `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount`로 서명을 포함해 EVM 인가 윈도우 열기 및 읽기 | `@qorechain/sdk` 0.12.0 | [퀵스타트 5](#quickstart-open-window) |
-| Python, Go, Rust, Java의 동일한 윈도우 빌더 | 0.12.0 SDK | [주요 API](#main-api) |
-| EIP-7702 동의 헬퍼 `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection` | `@qorechain/sdk` 0.12.0 | [주요 API](#main-api) |
-| 일곱 가지 스캐폴더 템플릿: `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`, 그리고 `pnpm window` 헬퍼 | `create-qorechain-dapp` 0.12.0 | [템플릿](#templates) |
-| `PqcStatusBadge` | `@qorechain/react` 0.12.0 | [주요 API](#main-api) |
+| `createEvmClient`, ERC-20, ERC-721, ERC-1155 헬퍼, `precompiles` 바인딩, `PRECOMPILE_ADDRESSES` | `@qorechain/evm` 0.13.0 | [퀵스타트 2](#quickstart-evm-080) |
+| viem 체인 정의 `qorechain` 및 `qorechainTestnet`, `QORECHAIN_CHAINS`, `QORECHAIN_REST_ENDPOINTS` | `@qorechain/evm` 0.13.0 | [퀵스타트 3](#quickstart-viem) |
+| `evmWindowStatus`, `openEvmWindowMessage`, `evmWindowCost`, `classifyEvmWindowRejection`, 주소 변환기, 윈도우 상수, 서브패스 `@qorechain/evm/window` | `@qorechain/evm` 0.13.0 | [퀵스타트 4](#quickstart-window-helpers) |
+| `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount`로 서명을 포함해 EVM 인가 윈도우 열기 및 읽기 | `@qorechain/sdk` 0.13.0 | [퀵스타트 5](#quickstart-open-window) |
+| Python, Go, Rust, Java의 동일한 윈도우 빌더 | 0.13.0 SDK | [주요 API](#main-api) |
+| EIP-7702 동의 헬퍼 `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection` | `@qorechain/sdk` 0.13.0 | [주요 API](#main-api) |
+| 일곱 가지 스캐폴더 템플릿: `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`, 그리고 `pnpm window` 헬퍼 | `create-qorechain-dapp` 0.13.0 | [템플릿](#templates) |
+| `PqcStatusBadge` | `@qorechain/react` 0.13.0 | [주요 API](#main-api) |
 
 ## 혁신 {#innovations}
 
@@ -38,7 +38,7 @@ sidebar_position: 34
 - **uqor 단위의 윈도우 크기 산정.** `evmWindowCost`와 `weiToUqorCeil`은 값, 가스, 수수료 상한으로 윈도우 크기를 산정하고 wei를 uqor로 올림하므로, 총액이 최악의 경우를 포함합니다.
 - **자동 열기 없음.** 이 키트에는 전송 전에 윈도우를 여는 헬퍼가 의도적으로 없습니다. 윈도우는 지출이 의도적으로 인가되도록 존재합니다.
 - **무료 시뮬레이션.** `eth_call`과 `eth_estimateGas`는 윈도우나 등록된 키 없이 어떤 계정에서도 동작합니다.
-- **윈도우를 연결해 주는 템플릿.** Foundry 및 Hardhat 템플릿에는 `pnpm window status|register|open`이 포함되어 있으며, EVM 키와 같은 비밀에서 ML-DSA-87 키를 파생하고, 한 번 등록하며, 하이브리드 서명된 열기 메시지를 브로드캐스트합니다.
+- **윈도우를 연결해 주는 템플릿.** Foundry 및 Hardhat 템플릿에는 `pnpm window status|register|open`이 포함되어 있으며, ML-DSA-87 키를 파생하고(`QORE_MNEMONIC`을 쓰면 니모닉에서, `PRIVATE_KEY`를 쓰면 0.13.0부터 `QORE_PQC_RECOVERY_CODE`의 복구 코드에서), 한 번 등록하며, 하이브리드 서명된 열기 메시지를 브로드캐스트합니다.
 - **문서화된 호환성 표면.** 참조 페이지(2026년 10월 27일에 공개 엔드포인트에서 읽었고 11월 4일에 일부를 다시 확인함)는 Ethereum과 다른 점(트랜잭션 유형, 포크, 파이널리티, 수수료 필드, JSON-RPC 네임스페이스, 프리컴파일)을 나열합니다. [아래](#evm-differences)에 요약되어 있습니다.
 
 ## 키트에 포함된 것 {#contents}
@@ -57,7 +57,7 @@ sidebar_position: 34
 
 ### 템플릿 {#templates}
 
-`create-qorechain-dapp` 0.12.0에는 일곱 가지 템플릿이 있습니다. `evm-solidity`, `fullstack-web`, `rollup-app`([스캐폴더와 CLI](/developer-tools/scaffolders-and-cli) 참조)과 키트에 속하는 네 가지입니다:
+`create-qorechain-dapp` 0.13.0에는 일곱 가지 템플릿이 있습니다. `evm-solidity`, `fullstack-web`, `rollup-app`([스캐폴더와 CLI](/developer-tools/scaffolders-and-cli) 참조)과 키트에 속하는 네 가지입니다:
 
 | 템플릿 | 제공되는 것 |
 |---|---|
@@ -66,11 +66,11 @@ sidebar_position: 34
 | `viem-wagmi` | QoreX 지갑(`@qorechain/qorex-rainbowkit`)과 `@qorechain/evm`의 체인 정의를 사용하는 Vite, React, wagmi, RainbowKit dApp. 최신 블록, QOR 잔액, 계정의 EVM 윈도우를 보여줍니다. |
 | `cosmwasm` | cw-plus의 `cw20-base` 기반 QoreChain Native(CosmWasm) CW20 토큰, Docker의 최적화 빌드, 거버넌스 업로드 제안 스크립트, 테스트넷 인스턴스화 및 쿼리 스크립트. |
 
-템플릿은 `@qorechain/evm`과 `@qorechain/sdk`를 `^0.12.0`으로 고정합니다(2026년 11월 4일에 `foundry` 스캐폴드에서 확인).
+템플릿은 `@qorechain/evm`과 `@qorechain/sdk`를 `^0.13.0`으로 고정합니다(0.12.0 템플릿은 `^0.12.0`으로 고정했으며, 2026년 11월 4일에 `foundry` 스캐폴드에서 확인).
 
 ### SDK 저장소의 가이드 {#guides}
 
-저장소(`docs/docs/guides/`, 태그 `v0.12.0`)에는 `evm-quickstarts.md`(viem, ethers v6, web3.py, go-ethereum, alloy, web3j용 읽기와 "Before you send" 섹션), `evm-differences.md`("QoreChain EVM compared with Ethereum"), `evm.md`, `cosmwasm.md`가 있습니다. 이 사이트의 같은 내용: [EVM 가이드](/sdk/guides/evm), [EVM 개발](/developer-guide/evm-development), [QoreChain Native 개발](/developer-guide/cosmwasm-development).
+저장소(`docs/docs/guides/`, 태그 `v0.13.0`)에는 `evm-quickstarts.md`(viem, ethers v6, web3.py, go-ethereum, alloy, web3j용 읽기와 "Before you send" 섹션), `evm-differences.md`("QoreChain EVM compared with Ethereum"), `evm.md`, `cosmwasm.md`가 있습니다. 이 사이트의 같은 내용: [EVM 가이드](/sdk/guides/evm), [EVM 개발](/developer-guide/evm-development), [QoreChain Native 개발](/developer-guide/cosmwasm-development).
 
 저장소에는 다른 도구를 위한 기여 파일(viem 체인 정의, Sourcify 체인 항목, Scaffold-ETH 2 확장)도 `contrib/`와 `templates/scaffold-eth-extension/` 아래에 있습니다. 이들은 저장소에 준비된 파일이며, 업스트림에 병합되지 않았습니다.
 
@@ -90,7 +90,7 @@ sidebar_position: 34
 - **열기와 닫기.** `MsgOpenEVMWindow`(`/qorechain.pqc.v1.MsgOpenEVMWindow`)는 하이브리드 서명으로 윈도우를 열며, 윈도우를 열면 이전 윈도우가 대체됩니다. `MsgCloseEVMWindow`는 윈도우를 닫습니다.
 - **윈도우가 제한하는 것.** 블록(기간이 아니라 블록 수), EVM 트랜잭션, 그리고 허용된 모든 트랜잭션의 값과 최대 수수료(가스 한도 곱하기 수수료 상한)를 합한 uqor 총액. `nativeOnly`와 `allowedTargets`는 윈도우가 받아들이는 수신자를 더 좁히며, 토큰 금액은 제한하지 않습니다(나열된 토큰은 `approve`를 포함해 어떤 금액도 허용합니다. [윈도우 범위 지정](/sdk/guides/evm#evm-window-scope) 참조).
 - **논스.** 네이티브 시퀀스와 EVM 논스는 같은 카운터입니다. 윈도우를 열면 카운터가 증가하므로, 윈도우를 열고, 논스를 읽고, 그다음 EVM 트랜잭션에 서명하세요.
-- **템플릿 헬퍼.** `foundry`와 `hardhat`에서 `pnpm window`는 `PRIVATE_KEY`(또는 `QORE_MNEMONIC`)에서 계정을 파생하고, 같은 비밀에서 ML-DSA-87 키를 파생하며, 키를 한 번 등록(`register`)하고, 하이브리드 서명된 `MsgOpenEVMWindow`를 브로드캐스트(`open`)합니다. 기본적으로 250 gwei 수수료 상한에서 최대 3,000,000 가스의 트랜잭션 5개에 대해 600블록 윈도우를 산정합니다.
+- **템플릿 헬퍼.** `foundry`와 `hardhat`에서 `pnpm window`는 `PRIVATE_KEY`(또는 `QORE_MNEMONIC`)에서 계정을 파생하고, ML-DSA-87 키를 파생하며(`PRIVATE_KEY`를 쓰면 0.13.0부터 `QORE_PQC_RECOVERY_CODE`에서, `QORE_MNEMONIC`을 쓰면 니모닉에서이며 이는 그대로입니다), 키를 한 번 등록(`register`)하고, 하이브리드 서명된 `MsgOpenEVMWindow`를 브로드캐스트(`open`)합니다. 기본적으로 250 gwei 수수료 상한에서 최대 3,000,000 가스의 트랜잭션 5개에 대해 600블록 윈도우를 산정합니다.
 - **QoreChain Native의 CosmWasm.** 코드 업로드는 두 네트워크 모두에서 거버넌스를 통해 이루어집니다(`code_upload_access`는 `Nobody`): 코드는 거버넌스 모듈을 발신자로 하는 `MsgStoreCode`를 담은 거버넌스 제안으로 저장됩니다. 인스턴스화는 테스트넷에서는 모두에게 열려 있고 메인넷에서는 닫혀 있습니다(`instantiate_default_permission`은 테스트넷에서 `Everybody`, 메인넷에서 `Nobody`이며, 2026년 10월 27일에 읽음). 둘 다 `/cosmwasm/wasm/v1/codes/params`에서 읽고, 저장된 코드는 `/cosmwasm/wasm/v1/code`에서 나열합니다. 2026년 10월 27일과 2026년 11월 4일 기준 메인넷에는 저장된 코드가 없었습니다.
 
 ## Ethereum과 비교한 QoreChain EVM {#evm-differences}
@@ -119,14 +119,14 @@ sidebar_position: 34
 
 | 언어 또는 도구 | 설치 | 최소 플랫폼 |
 |---|---|---|
-| TypeScript, EVM 읽기, ERC 헬퍼, viem 체인 정의, 윈도우 헬퍼 | `npm install @qorechain/evm viem` (0.12.0) | Node.js 20 이상; 피어 `viem ^2` |
-| TypeScript, 윈도우 메시지 서명 | `npm install @qorechain/sdk` (0.12.0에는 `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount`가 있음) | Node.js 20 이상 |
-| React, PQC 상태 배지 | `npm install @qorechain/react @qorechain/sdk react react-dom` (0.12.0) | Node.js 20 이상 |
-| 스캐폴더, 일곱 가지 템플릿 모두 | `npx create-qorechain-dapp my-app --template <name>` (0.12.0) | Node.js 20 이상; `foundry`는 Foundry; `hardhat`(Hardhat 3)은 Node.js 22; `cosmwasm`은 Rust와 Docker |
-| Python (EVM 읽기) | `pip install "web3>=7,<8"`; 윈도우 메시지는 `pip install qorechain-sdk` (0.12.0) | Python 3.10 이상 |
-| Go (EVM 읽기) | `go get github.com/ethereum/go-ethereum@latest`; 윈도우 메시지는 `go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0` | Go 툴체인 |
-| Rust (EVM 읽기) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; 윈도우 메시지는 크레이트 `qorechain-sdk` 0.12.0 | Rust stable |
-| Java (EVM 읽기) | `org.web3j:core:5.0.0`; 윈도우 메시지는 `io.github.qorechain:qorechain-sdk:0.12.0` | JDK 21 (QoreChain Java SDK는 JDK 21 툴체인으로 빌드됨) |
+| TypeScript, EVM 읽기, ERC 헬퍼, viem 체인 정의, 윈도우 헬퍼 | `npm install @qorechain/evm viem` (0.13.0) | Node.js 20 이상; 피어 `viem ^2` |
+| TypeScript, 윈도우 메시지 서명 | `npm install @qorechain/sdk` (0.13.0에는 `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount`가 있음) | Node.js 20 이상 |
+| React, PQC 상태 배지 | `npm install @qorechain/react @qorechain/sdk react react-dom` (0.13.0) | Node.js 20 이상 |
+| 스캐폴더, 일곱 가지 템플릿 모두 | `npx create-qorechain-dapp my-app --template <name>` (0.13.0) | Node.js 20 이상; `foundry`는 Foundry; `hardhat`(Hardhat 3)은 Node.js 22; `cosmwasm`은 Rust와 Docker |
+| Python (EVM 읽기) | `pip install "web3>=7,<8"`; 윈도우 메시지는 `pip install qorechain-sdk` (0.13.0) | Python 3.10 이상 |
+| Go (EVM 읽기) | `go get github.com/ethereum/go-ethereum@latest`; 윈도우 메시지는 `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Go 툴체인 |
+| Rust (EVM 읽기) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; 윈도우 메시지는 크레이트 `qorechain-sdk` 0.13.0 | Rust stable |
+| Java (EVM 읽기) | `org.web3j:core:5.0.0`; 윈도우 메시지는 `io.github.qorechain:qorechain-sdk:0.13.0`(2026년 11월 11일에 Maven Central에는 아직 0.12.0이 표시되었으니, 0.13.0이 나타나면 사용하세요) | JDK 21 (QoreChain Java SDK는 JDK 21 툴체인으로 빌드됨) |
 
 ### 퀵스타트 1: ethers v6로 읽기 {#quickstart-ethers}
 
@@ -274,7 +274,7 @@ cd my-dapp && npm run build
 
 `@qorechain/evm`은 네이티브 레인 트랜잭션에 서명하거나 브로드캐스트하지 않습니다. 그 용도로는 `@qorechain/sdk` 또는 언어별 SDK를 사용하세요.
 
-### 각 SDK에서 윈도우 구성 및 읽기 (0.12.0) {#api-window}
+### 각 SDK에서 윈도우 구성 및 읽기 (0.13.0) {#api-window}
 
 | 언어 | 윈도우 열기 | 윈도우 읽기 |
 |---|---|---|
@@ -284,9 +284,9 @@ cd my-dapp && npm run build
 | Rust | `qorechain::msg::pqc::open_evm_window` | REST `/qorechain/pqc/v1/evm_window/{address}` |
 | Java | `io.github.qorechain.evm.EvmWindow.open` | `EvmWindow.restPath` |
 
-EIP-7702 동의(TypeScript, `@qorechain/sdk` 0.12.0): `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection`.
+EIP-7702 동의(TypeScript, `@qorechain/sdk` 0.13.0): `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection`.
 
-`@qorechain/react` 0.12.0은 `PqcStatusBadge`를 내보내며(기본 레이블 "PQC key registered"와 "No PQC key"), 기존 `QuantumSafeBadge`와 함께 제공됩니다.
+`@qorechain/react` 0.13.0은 `PqcStatusBadge`를 내보내며(기본 레이블 "PQC key registered"와 "No PQC key"), 기존 `QuantumSafeBadge`와 함께 제공됩니다.
 
 ### `create-qorechain-dapp` 플래그 {#api-scaffolder}
 
@@ -307,12 +307,13 @@ EIP-7702 동의(TypeScript, `@qorechain/sdk` 0.12.0): `authorizeEvmDelegationMsg
 | `foundry`, `hardhat` | `pnpm window status` | 계정, 계정의 ML-DSA-87 키가 등록되어 있는지(그리고 이 키인지), 계정의 윈도우를 보여줍니다. |
 | `foundry`, `hardhat` | `pnpm window register` | 계정의 ML-DSA-87 키를 계정당 한 번 등록합니다. |
 | `foundry`, `hardhat` | `pnpm window open` | 윈도우를 엽니다(기본 600블록, 트랜잭션 5개). |
+| `foundry`, `hardhat` | `pnpm window recovery-code` | 새 복구 코드를 출력합니다(0.13.0). `PRIVATE_KEY`와 따로 보관하고 `QORE_PQC_RECOVERY_CODE`에 넣으세요. |
 | `foundry` | `pnpm deploy:testnet` | `forge script script/Counter.s.sol --rpc-url qorechain_testnet --broadcast`. |
 | `hardhat` | `pnpm build`, `pnpm test`, `pnpm deploy:testnet` | Hardhat 빌드, 테스트, `qorechainTestnet`으로의 Ignition 배포. |
 | `viem-wagmi` | `pnpm dev`, `pnpm build` | `http://localhost:5173`의 개발 서버; 프로덕션 빌드. |
 | `cosmwasm` | `pnpm build:wasm`, `pnpm propose-store`, `pnpm instantiate`, `pnpm query` | 최적화 빌드, 거버넌스 업로드 제안, 인스턴스화(테스트넷), REST 쿼리. |
 
-템플릿 환경 변수(`.env`에 두며 커밋하지 않음): `PRIVATE_KEY`, `QORE_MNEMONIC`, `QORE_NETWORK`(`testnet` 또는 `mainnet`), `QORE_WINDOW_BLOCKS`, `QORE_WINDOW_TXS`, `QORE_WINDOW_MAX_UQOR`, `COUNTER_INITIAL`; CosmWasm 스크립트용 `QORE_CODE_ID`와 `QORE_I_KNOW_THIS_IS_MAINNET=yes`(제안 스크립트는 이것 없이는 메인넷을 거부함); `viem-wagmi`에서 WalletConnect 지갑을 쓰기 위한 `VITE_WALLETCONNECT_PROJECT_ID`.
+템플릿 환경 변수(`.env`에 두며 커밋하지 않음): `PRIVATE_KEY`, `QORE_MNEMONIC`, `QORE_PQC_RECOVERY_CODE`(`PRIVATE_KEY`와 함께 사용; `pnpm window recovery-code`가 새 코드를 출력하며 키와 따로 보관), `QORE_NETWORK`(`testnet` 또는 `mainnet`), `QORE_WINDOW_BLOCKS`, `QORE_WINDOW_TXS`, `QORE_WINDOW_MAX_UQOR`, `COUNTER_INITIAL`; CosmWasm 스크립트용 `QORE_CODE_ID`와 `QORE_I_KNOW_THIS_IS_MAINNET=yes`(제안 스크립트는 이것 없이는 메인넷을 거부함); `viem-wagmi`에서 WalletConnect 지갑을 쓰기 위한 `VITE_WALLETCONNECT_PROJECT_ID`.
 
 ## 접근 방법 {#how-to-access}
 
@@ -334,30 +335,30 @@ EIP-7702 동의(TypeScript, `@qorechain/sdk` 0.12.0): `authorizeEvmDelegationMsg
 
 ## 게시 위치 {#where-published}
 
-2026년 11월 4일에 각 레지스트리에서 실시간으로 버전을 읽었습니다. GitHub 태그 `v0.12.0`이 존재합니다. npm 패키지 다섯 개에는 같은 키트 내용을 담은 0.11.0(2026년 10월 29일)도 있으며, Python, Rust, Go, Java SDK는 0.10.0에서 곧바로 0.12.0이 되었습니다.
+2026년 11월 11일에 레지스트리에서 실시간으로 버전을 읽었습니다(Maven Central은 예외이며 해당 행 참조). GitHub 태그 `v0.12.0`이 존재합니다. npm 패키지 다섯 개에는 같은 키트 내용을 담은 0.11.0(2026년 10월 29일)도 있으며, Python, Rust, Go, Java SDK는 0.10.0에서 곧바로 0.12.0이 되었고, Java를 제외한 모든 언어가 0.13.0입니다.
 
 | 레지스트리 | 패키지 | 버전 | 링크 |
 |---|---|---|---|
-| npm | `@qorechain/evm` | 0.12.0 | https://www.npmjs.com/package/@qorechain/evm |
-| npm | `@qorechain/sdk` | 0.12.0 | https://www.npmjs.com/package/@qorechain/sdk |
-| npm | `@qorechain/react` | 0.12.0 | https://www.npmjs.com/package/@qorechain/react |
-| npm | `@qorechain/svm` | 0.12.0 | https://www.npmjs.com/package/@qorechain/svm |
-| npm | `create-qorechain-dapp` | 0.12.0 (템플릿 일곱 가지) | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `@qorechain/evm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/evm |
+| npm | `@qorechain/sdk` | 0.13.0 | https://www.npmjs.com/package/@qorechain/sdk |
+| npm | `@qorechain/react` | 0.13.0 | https://www.npmjs.com/package/@qorechain/react |
+| npm | `@qorechain/svm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/svm |
+| npm | `create-qorechain-dapp` | 0.13.0 (템플릿 일곱 가지) | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `@qorechain/qorex-rainbowkit` (`viem-wagmi`에서 사용) | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-rainbowkit |
-| PyPI | `qorechain-sdk` | 0.12.0 | https://pypi.org/project/qorechain-sdk/ |
-| crates.io | `qorechain-sdk` | 0.12.0 | https://crates.io/crates/qorechain-sdk |
-| Go 프록시 | `github.com/qorechain/qorechain-sdk/packages/go` | v0.12.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
+| crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
+| Go 프록시 | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 (0.13.0 게시 중이며, 나타나면 사용하세요) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
-소스: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), 태그 `v0.12.0`; 경로 `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, QoreChain Association이 유지 관리합니다.
+소스: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), 태그 `v0.13.0`; 경로 `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, QoreChain Association이 유지 관리합니다.
 
 ## 제한 사항 및 알려진 문제 {#limits}
 
-- **npm의 0.11.0은 대체되었습니다.** 0.12.0을 사용하세요. 0.11.0은 npm에만 있으며, 0.12.0의 템플릿은 `^0.12.0`에 의존합니다.
+- **npm의 0.11.0은 대체되었습니다.** 0.13.0을 사용하세요. 0.11.0은 npm에만 있으며, 0.13.0의 템플릿은 `^0.13.0`에 의존합니다.
 - **`@qorechain/evm`은 윈도우를 읽고 메시지를 구성할 뿐이며, 네이티브 레인 트랜잭션에 서명하거나 브로드캐스트하지 않습니다.**
 - **전송 전에 윈도우를 자동으로 여는 헬퍼는 없습니다.** 의도된 설계입니다.
 - **`viem-wagmi` 템플릿의 QoreX 지갑**은 `eth_chainId`, `eth_accounts`, `eth_requestAccounts`, `wallet_switchEthereumChain`에 응답하며, EVM 서명 메서드는 아직 제공되지 않습니다. 연결과 읽기에 사용하고, 서명은 주입된 EIP-1193 지갑으로 하세요.
-- **템플릿의 `pnpm window` 헬퍼는 EVM 키와 같은 비밀에서 ML-DSA-87 키를 파생합니다.** 계정의 키가 다른 지갑에서 등록된 경우에는 그 지갑에서 윈도우를 여세요.
+- **템플릿의 `pnpm window` 헬퍼는 `QORE_MNEMONIC`에서, 또는 `PRIVATE_KEY`를 쓸 때는 `QORE_PQC_RECOVERY_CODE`에서 ML-DSA-87 키를 파생합니다**(`PRIVATE_KEY`만 있고 코드가 없으면 메시지를 출력하고 중단합니다). 계정의 키가 다른 지갑에서 등록된 경우에는 그 지갑에서 윈도우를 여세요.
 - **공개 엔드포인트에서 제공되지 않는 것:** blob 트랜잭션, 트레이싱, `debug`, `personal`, `admin`, `miner` 네임스페이스.
 - **CosmWasm 업로드는 두 네트워크 모두에서 거버넌스를 거칩니다**; `cosmwasm` 템플릿은 스스로 코드를 저장할 수 없습니다.
 - **다른 도구(viem, Sourcify, Scaffold-ETH 2)에 대한 기여**는 저장소에 준비된 파일이며, 업스트림에 병합되지 않았습니다.
@@ -375,7 +376,7 @@ EIP-7702 동의(TypeScript, `@qorechain/sdk` 0.12.0): `authorizeEvmDelegationMsg
 
 ## 관련 페이지 {#related}
 
-- [개발자 패키지 개요](/developer-tools/overview) 및 [스캐폴더와 CLI](/developer-tools/scaffolders-and-cli) (`create-qorechain-dapp` 0.12.0)
+- [개발자 패키지 개요](/developer-tools/overview) 및 [스캐폴더와 CLI](/developer-tools/scaffolders-and-cli) (`create-qorechain-dapp` 0.13.0)
 - [SDK 개요](/sdk/overview), [SDK 설치](/sdk/install), [EVM 가이드](/sdk/guides/evm) (윈도우, 범위 지정 윈도우, EIP-7702 동의, 프리컴파일)
 - [EVM 개발](/developer-guide/evm-development) 및 [EVM 프리컴파일](/developer-guide/evm-precompiles#network-status)
 - [QoreChain Native 개발](/developer-guide/cosmwasm-development) (CosmWasm과 거버넌스 제안)

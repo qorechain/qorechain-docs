@@ -119,8 +119,18 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-`unifiedAccountFromSeed(seed32)` does the same from a raw 32-byte secp256k1
-private key.
+`unifiedAccountFromSeed(seed32, { recoveryCode })` does the same from a raw 32-byte
+secp256k1 private key. Since SDK 0.13.0 the seed path needs exactly one of a `QRC1`
+recovery code (`generatePqcRecoveryCode()`, created once and stored apart from the
+seed) or an independent 32-byte PQC secret; the ML-DSA-87 key is
+derived from that second input, and a different code gives a different key. With no
+option, or more than one, the call raises an error. An account whose PQC key was
+registered with 0.12 or earlier loads that key with `{ legacySeedDerivation: true }`
+(Python `legacy_seed_derivation=True`, Go `LegacySeedDerivation`, Rust
+`SeedPqcOptions::legacy_seed_derivation()`, Java `SeedPqcOptions.legacy()`) so it can
+be rotated with `MsgRotatePQCKey`; do not use that option for new accounts. Accounts
+derived from a mnemonic are unchanged. See
+[What 0.13.0 changes](/sdk/install#whats-new-0130).
 
 ### The PQC seed derivation
 
@@ -132,8 +142,8 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 ```
 
 so it is recoverable from `{ address, mnemonic }` and identical across all of
-QoreChain's language SDKs. (For `unifiedAccountFromSeed`, the mnemonic slot is
-`"seed:" + hex(seed32)`.) Since SDK 0.8.3 `derivePqcCanonical(account, mnemonic)`
+QoreChain's language SDKs. (For `unifiedAccountFromSeed` before 0.13.0, the mnemonic slot was
+`"seed:" + hex(seed32)`; since 0.13.0 the seed path derives the key from the recovery code or PQC secret instead, see above.) Since SDK 0.8.3 `derivePqcCanonical(account, mnemonic)`
 first resolves `account` to its lower-case `qor1…` form (`canonicalAccount`), so
 an upper-case bech32 or the `0x` form of the same account yields the same key.
 Every language has the same function (Python `derive_pqc_canonical`, Go

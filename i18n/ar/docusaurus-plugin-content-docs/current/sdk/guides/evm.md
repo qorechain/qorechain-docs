@@ -35,7 +35,7 @@ const publicClient = createPublicClient({ chain: qorechainTestnet, transport: ht
 الخاصة بمسار Native لتوقيعها هجينةً، وتحدّد `evmWindowCost` و`weiToUqorCeil` حجم
 نافذة، وتحوّل `toQorAddress` / `toEvmAddress` حساب eth-native بين ترميزيه. كما تُنشر
 مساعدات النافذة بدون viem باسم `@qorechain/evm/window`. وصلت في الإصدار 0.11.0 (npm
-فقط) وهي موجودة في 0.12.0.
+فقط) وهي موجودة في 0.12.0 وما بعده.
 
 ## إنشاء عميل
 

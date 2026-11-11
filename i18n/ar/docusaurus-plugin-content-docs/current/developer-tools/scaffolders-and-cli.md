@@ -9,16 +9,16 @@ sidebar_position: 21
 
 تنقل ثلاث أدوات سطر أوامر مشروع QoreChain من الصفر إلى نقطة بداية مكتوبة الأنواع وقابلة للبناء. وهي موجّهة لمطوري التطبيقات (dApps) ومشغّلي rollup الذين يعملون بـ Node.js:
 
-* **`create-qorechain-dapp`** (0.12.0) يولّد تطبيقًا لامركزيًا من أحد سبعة قوالب، مبنيًا على [QoreChain SDK](/sdk/overview). أربعة من السبعة (`foundry` و`hardhat` و`viem-wagmi` و`cosmwasm`) تنتمي إلى [مجموعة أدوات مطوري السلسلة](/developer-tools/chain-dev-sdk).
+* **`create-qorechain-dapp`** (0.13.0) يولّد تطبيقًا لامركزيًا من أحد سبعة قوالب، مبنيًا على [QoreChain SDK](/sdk/overview). أربعة من السبعة (`foundry` و`hardhat` و`viem-wagmi` و`cosmwasm`) تنتمي إلى [مجموعة أدوات مطوري السلسلة](/developer-tools/chain-dev-sdk).
 * **`create-qorechain-rollup`** (0.8.0) يولّد مشروع rollup من أحد ستة قوالب، مبنيًا على [حزمة تطوير Rollup](/rollups/overview) بلغة TypeScript.
 * **`qorollup`**، أمر الحزمة `@qorechain/rdk-cli` (0.8.0)، هو سطر أوامر المشغّل: فحوص ما قبل التشغيل، وإنشاء rollup ومراقبته، وقراءة المعاملات الحية.
 
-تعكس الصفحة الحزم المنشورة كما ثُبّتت من npm في 27 أكتوبر 2026، وحزمة `create-qorechain-dapp` ‏0.12.0 كما ثُبّتت في 4 نوفمبر 2026. الأدلة المفاهيمية هي [نشر Rollup](/rollups/deploying-a-rollup) و[مرجع SDK CLI](/sdk/reference/cli).
+تعكس الصفحة الحزم المنشورة كما ثُبّتت من npm في 27 أكتوبر 2026، وحزمة `create-qorechain-dapp` ‏0.12.0 كما ثُبّتت في 4 نوفمبر 2026؛ والإصدار الحالي هو 0.13.0 (11 نوفمبر 2026). الأدلة المفاهيمية هي [نشر Rollup](/rollups/deploying-a-rollup) و[مرجع SDK CLI](/sdk/reference/cli).
 
 ## الابتكارات {#innovations}
 
 * **توليد غير تفاعلي لأنظمة CI.** لكل سؤال علَم مقابل: `--template` و`--network` و`--package-manager` و`--yes` (قبول القيم الافتراضية) و`--no-install`. يستطيع خط إنتاج توليد مشروع وبناءه بأمر واحد ودون طرفية.
-* **القوالب مثبَّتة على الحزم الحالية.** تعتمد قوالب dApp على `@qorechain/sdk` ‏`^0.12.0` (وقوالب EVM أيضًا على `@qorechain/evm` ‏`^0.12.0`) وقوالب rollup على `@qorechain/rdk` ‏`^0.8.0`. كان مولّد سابق (0.8.0) يكتب نطاقات تُحَلّ إلى SDK لا يستطيع التوقيع للشبكات الحية؛ ولا يحدث ذلك مع المولّد الحالي.
+* **القوالب مثبَّتة على الحزم الحالية.** تعتمد قوالب dApp على `@qorechain/sdk` ‏`^0.13.0` (وقوالب EVM أيضًا على `@qorechain/evm` ‏`^0.13.0`) وقوالب rollup على `@qorechain/rdk` ‏`^0.8.0`. كان مولّد سابق (0.8.0) يكتب نطاقات تُحَلّ إلى SDK لا يستطيع التوقيع للشبكات الحية؛ ولا يحدث ذلك مع المولّد الحالي.
 * **قوالب rollup تُرمّز إعدادًا صالحًا لكل حالة استخدام.** يضبط كل قالب rollup توليفة من التسوية والمُسلسِل (sequencer) وإتاحة البيانات والغاز والآلة الافتراضية تقبلها مصفوفة التوافق في RDK، ويطبع المولّد الرهان الحي وحرق الإنشاء قبل أن تنشئ أي شيء.
 * **أمر ما قبل التشغيل يسمّي ما هو مفقود.** يفحص `qorollup doctor` (و`npm run doctor` داخل قالب rollup) أن نقطة REST تردّ، وأن معاملات الوحدة قابلة للقراءة، وأن نقطة النهاية هي الشبكة التي طلبتها، وأن موقّعًا مُعدّ، ويطبع سطرًا واحدًا لكل فحص. وداخل القالب يتحقق أيضًا من إعداد rollup مقابل مصفوفة التوافق.
 * **توقيع هجين موصول في القوالب.** تتصل قوالب rollup عبر `signer.ts` صغير يشتق مفتاح ML-DSA-87 للحساب من عبارتك الاسترجاعية (أو يأخذ بذرة مع مفتاح خاص خام) ويوقّع توقيعًا هجينًا، وهو ما تشترطه الشبكات على مسار Native. ويفعل قالب dApp ‏`rollup-app` الشيء نفسه ويعمل كتجربة جافة ما لم تضبط `QORE_BROADCAST=1`.
@@ -41,7 +41,7 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 | `evm-solidity` | عقد Solidity ‏`Counter` مع أثر مُجمَّع مسبقًا، وسكربت viem ينشره ويستدعيه باستخدام `@qorechain/evm`. الملفات: `contracts/Counter.sol` و`contracts/Counter.artifact.ts` و`scripts/deploy.ts` و`.env`. | `deploy` |
 | `fullstack-web` | صفحة Vite وReact وTypeScript تقرأ أرصدة عنوان (ونظرة عامة على الاقتصاد الرمزي) باستخدام `@qorechain/sdk`. الملفات: `index.html` و`src/App.tsx` و`src/main.tsx` و`vite.config.ts` و`.env`. | `dev` و`build` و`preview` و`typecheck` |
 | `rollup-app` | سكربت Node يستخدم `createRollupClient` و`createMultilayerClient` من SDK لبناء رسائل rollup والسلسلة الجانبية أو سلسلة الدفع. الملفات: `src/index.ts` والإعدادات المعتادة. تجربة جافة افتراضيًا. | `start` و`typecheck` |
-| `foundry` و`hardhat` و`viem-wagmi` و`cosmwasm` | قوالب مجموعة أدوات مطوري السلسلة: مشروع Foundry، ومشروع Hardhat 3 وviem (كلاهما مع مساعد `pnpm window` لنافذة تفويض EVM)، وتطبيق dApp بـ wagmi وRainbowKit مع محفظة QoreX، ورمز CW20 على QoreChain Native. التفاصيل والسكربتات والحدود: [مجموعة أدوات مطوري السلسلة](/developer-tools/chain-dev-sdk#templates). | راجع تلك الصفحة |
+| `foundry` و`hardhat` و`viem-wagmi` و`cosmwasm` | قوالب مجموعة أدوات مطوري السلسلة: مشروع Foundry، ومشروع Hardhat 3 وviem (كلاهما مع مساعد `pnpm window` لنافذة تفويض EVM؛ ومنذ 0.13.0 يطبع `pnpm window recovery-code` رمز استرداد جديدًا، ومع ضبط `PRIVATE_KEY` يقرأ `pnpm window` المتغير `QORE_PQC_RECOVERY_CODE` ويتوقف برسالة إن كان مفقودًا؛ ومع `QORE_MNEMONIC` لا يتغير شيء)، وتطبيق dApp بـ wagmi وRainbowKit مع محفظة QoreX، ورمز CW20 على QoreChain Native. التفاصيل والسكربتات والحدود: [مجموعة أدوات مطوري السلسلة](/developer-tools/chain-dev-sdk#templates). | راجع تلك الصفحة |
 
 | العلَم | المعنى |
 | --- | --- |
@@ -160,7 +160,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | السجل | الحزمة | الإصدار | الرابط |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp` (الأمر `create-qorechain-dapp`) | 0.12.0 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp` (الأمر `create-qorechain-dapp`) | 0.13.0 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup` (الأمر `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli` (الأمر `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk` (المكتبة التي تستخدمها القوالب) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |

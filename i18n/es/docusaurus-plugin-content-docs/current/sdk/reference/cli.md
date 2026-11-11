@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publicado en npm como `create-qorechain-dapp` (`0.12.0`). Los archivos
-> `package.json` generados dependen de `@qorechain/sdk` `^0.12.0` (las plantillas EVM, de
-> `@qorechain/evm` `^0.12.0`). La versión 0.8.0 del generador escribía rangos `^0.3.0`,
+> Publicado en npm como `create-qorechain-dapp` (`0.13.0`). Los archivos
+> `package.json` generados dependen de `@qorechain/sdk` `^0.13.0` (las plantillas EVM, de
+> `@qorechain/evm` `^0.13.0`). La versión 0.8.0 del generador escribía rangos `^0.3.0`,
 > que npm resuelve a una versión 0.3 que no puede firmar para las redes en vivo; si
 > generaste el andamiaje con la 0.8.0, ejecuta `npm i @qorechain/sdk@latest`.
 

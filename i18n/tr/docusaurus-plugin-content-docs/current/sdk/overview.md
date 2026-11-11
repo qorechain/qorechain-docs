@@ -43,16 +43,16 @@ devre kesici tarafından kapatılmıştır), sıradan hesaplar için QoreChain N
 soyut hesap akışları (modül orada kapalı, testnet'te açık), xQORE ve gaz
 soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler. 27 Ekim 2026'da canlı uç noktalara karşı kontrol edildi; 7 Kasım 2026'da mainnet'in etkin ön derleme listesi hâlâ boştu, testnet'in listesi ise ayrıca VM'ler arası köprü `0x…0901` adresini de içeriyordu (bir izin listesiyle etkin; 7 Kasım 2026'da salt okunur bir `eth_call` test edildi).
 
-Yayımlanan SDK (0.12.0, 30 Ekim 2026), her iki ağın doğruladığı biçimde imzalar
+Yayımlanan SDK (0.13.0, 11 Kasım 2026), her iki ağın doğruladığı biçimde imzalar
 (v2 hibrit sign-bytes, zincir durumundan çözümlenir); imzalama biçimi, adresler,
 ondalık basamaklar, memo'lar ve ücretler v3.2.3, v3.2.4, v3.2.5 veya v3.2.6'da değişmedi (mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırır,
-yükseklik 4.020.000, yönetişim önerisi 15; testnet 27 Ekim'den beri; testnet 6 Kasım'dan beri v3.2.7 çalıştırır ve bu sürüm SDK 0.12.0'ın oluşturucularının bulunmadığı mesajlar ekler). Sonraki
+yükseklik 4.020.000, yönetişim önerisi 15; testnet 27 Ekim'den beri; testnet 6 Kasım'dan beri v3.2.7 çalıştırır ve bu sürüm SDK 0.13.0'ın oluşturucularının bulunmadığı mesajlar ekler). Sonraki
 kuantum sonrası kuralların istemci tarafını (anahtar kaydında sahiplik
 kanıtı, kapsamlı EVM pencereleri, EIP-7702 onay mesajları) ve v3.2.4'ün istemci tarafını (staking
 katmanları, authenticator nonce'u, protokol özelliği anahtarları) ve v3.2.5'in (hibrit işlemler için kesin gas,
 ML-KEM anahtar kayıt defteri) istemci tarafını taşır; 0.9.0 öncesi
-sürümler ilk grubu taşımaz, bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)
-ve [0.12.0 neler ekliyor](/sdk/install#whats-new-0120).
+sürümler ilk grubu taşımaz, bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090),
+[0.12.0 neler ekliyor](/sdk/install#whats-new-0120) ve [0.13.0 neyi değiştiriyor](/sdk/install#whats-new-0130).
 
 Cüzdan ve arka uç imzalama: bkz. [QoreSign](/qoresign/overview).
 :::
@@ -122,15 +122,15 @@ birim (denominasyon) matematiğini ve okuma yüzeylerini paylaşır.
 
 | Paket | Dil | Kurulum | Durum |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Yayında (npm, v0.12.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Yayında (PyPI, v0.12.0) |
-| `qorechain-sdk` (Go modülü) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Yayında (Go proxy, etiket `packages/go/v0.12.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Yayında (crates.io, v0.12.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.12.0` | Yayında (Maven Central, v0.12.0; JDK 17+) |
-| `@qorechain/evm` | TypeScript (EVM adaptörü) | `npm i @qorechain/evm viem` | Yayında (npm, v0.12.0) |
-| `@qorechain/svm` | TypeScript (SVM adaptörü) | `npm i @qorechain/svm @solana/web3.js` | Yayında (npm, v0.12.0) |
-| `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.12.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Yayında (npm, v0.12.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Yayında (npm, v0.13.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Yayında (PyPI, v0.13.0) |
+| `qorechain-sdk` (Go modülü) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Yayında (Go proxy, etiket `packages/go/v0.13.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Yayında (crates.io, v0.13.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.13.0` | Yayımlanıyor (Maven Central 11 Kasım 2026'da hâlâ 0.12.0 gösteriyor; göründüğünde 0.13.0'ı kullanın; JDK 17+) |
+| `@qorechain/evm` | TypeScript (EVM adaptörü) | `npm i @qorechain/evm viem` | Yayında (npm, v0.13.0) |
+| `@qorechain/svm` | TypeScript (SVM adaptörü) | `npm i @qorechain/svm @solana/web3.js` | Yayında (npm, v0.13.0) |
+| `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.13.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Yayında (npm, v0.13.0) |
 
 > Python dağıtımı `qorechain-sdk` olarak kurulur ancak **`qorsdk` olarak
 > import edilir**. Tüm istemciler kendi kayıt defterlerinde yayınlanmıştır —
@@ -144,17 +144,17 @@ ve standart Cosmos modülleri için tipli mesaj oluşturucular, tipli sorgu
 istemcileri, eksiksiz işlem yaşam döngüsü (otomatik gaz, hata çözümleme,
 işlem takibi, blok/işlem arama), hibrit post-kuantum işlemler ve WebSocket
 abonelikleri. Bu istemcilerin tümü **yayınlanmıştır**: TypeScript npm'de
-(`@qorechain/sdk` 0.12.0), Python PyPI'da (`qorechain-sdk` 0.12.0, import
-`qorsdk`), Go modül proxy'sinde (etiket `packages/go/v0.12.0`), Rust
-crates.io'da (`qorechain-sdk` 0.12.0) ve Java Maven
-Central'da (`io.github.qorechain:qorechain-sdk` 0.12.0). EVM/SVM yürütme
-adaptörleri (`@qorechain/evm`, `@qorechain/svm`, ikisi de 0.12.0),
-`@qorechain/react` kiti (0.12.0) ve `create-qorechain-dapp` iskele oluşturma
-CLI'si (0.12.0) yalnızca TypeScript içindir ve aynı şekilde npm'de
+(`@qorechain/sdk` 0.13.0), Python PyPI'da (`qorechain-sdk` 0.13.0, import
+`qorsdk`), Go modül proxy'sinde (etiket `packages/go/v0.13.0`), Rust
+crates.io'da (`qorechain-sdk` 0.13.0) ve Java Maven
+Central'da (`io.github.qorechain:qorechain-sdk`; Maven Central 11 Kasım 2026'da hâlâ 0.12.0 gösteriyordu, 0.13.0 yayımlanıyor). EVM/SVM yürütme
+adaptörleri (`@qorechain/evm`, `@qorechain/svm`, ikisi de 0.13.0),
+`@qorechain/react` kiti (0.13.0) ve `create-qorechain-dapp` iskele oluşturma
+CLI'si (0.13.0) yalnızca TypeScript içindir ve aynı şekilde npm'de
 yayınlanmıştır. Yardımcı paketler için
 [Kurulum](/sdk/install#related-packages) sayfasına bakın.
 
-## 0.6'dan 0.12'ye yenilikler {#whats-new-in-06-07-08-09-and-010}
+## 0.6'dan 0.13'e yenilikler {#whats-new-in-06-07-08-09-and-010}
 
 **0.6.0 — birleşik eth-native hesaplar (zincir v3.1.83).** Tek bir
 `eth_secp256k1` anahtarı, üç adres kodlamasının tümü olarak gösterilen ve
@@ -247,6 +247,9 @@ denetlenmiş oluşturucular bulunur. Zincir geliştirici kiti
 (EVM ve QoreChain Native şablonları, her iki ağ için viem zincirleri) bunun bir parçasıdır.
 npm dışında 0.11.0 yoktu; diğer diller 0.10.0'dan 0.12.0'a geçti. Bkz.
 [0.12.0 neler ekliyor](/sdk/install#whats-new-0120).
+
+**0.13.0, seed yolu hesap yardımcısında tek bir değişiklik.** `unifiedAccountFromSeed` ve diğer dillerdeki karşılıkları artık bir `QRC1` kurtarma kodu veya bağımsız 32 baytlık bir PQC sırrı gerektirir; mnemonic'ten türetilen hesaplar, imzalama biçimi ve zincir davranışı değişmemiştir. Kurtarma kodu yardımcıları her dile eklendi ve `migrateToHybrid` `keyVerified` bildirir. Bkz.
+[0.13.0 neyi değiştiriyor](/sdk/install#whats-new-0130).
 
 ## Sonraki adımlar
 

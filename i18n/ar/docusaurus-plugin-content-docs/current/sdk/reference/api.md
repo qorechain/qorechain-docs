@@ -39,7 +39,7 @@ pnpm --filter @qorechain/sdk docs:api
 - **الحسابات (Accounts):** ‏`generateMnemonic`، `validateMnemonic`، `deriveNativeAccount`،
   `deriveEvmAccount`، `deriveSvmAccount`؛ وأنواع الحسابات.
 - **الحسابات الموحّدة (0.6.0):** ‏`deriveUnifiedAccount`،
-  `unifiedAccountFromSeed`، `addressesFrom20`، `qoreAddresses`. (أُزيلت `unifiedAccountFromPhantomSignature` و`connectPhantomUnified` في الإصدار 0.8.0 وأصبحتا ترميان خطأ.)
+  `unifiedAccountFromSeed` (0.13.0: تحتاج رمز استرداد `QRC1` أو سر PQC مستقلًا من 32 بايتًا)، `addressesFrom20`، `qoreAddresses`، ودوال رمز الاسترداد `QRC1`: `generatePqcRecoveryCode` و`isValidRecoveryCode` و`normalizeRecoveryCode` و`pqcKeyFromRecoveryCode` و`pqcRecoveryCodeFromSecret`. (أُزيلت `unifiedAccountFromPhantomSignature` و`connectPhantomUnified` في الإصدار 0.8.0 وأصبحتا ترميان خطأ.)
 - **PQC:** ‏`generatePqcKeypair`، `pqcSign`، `pqcVerify`، وثوابت الأطوال،
   ومعرّفات الخوارزميات ودوالها المساعدة، `PqcSigner`، `HybridSigner`،
   `buildHybridSignatureExtension`، `HYBRID_SIG_TYPE_URL`.
@@ -149,10 +149,10 @@ pnpm --filter @qorechain/sdk docs:api
 
 | اللغة | التوثيق المولَّد | التثبيت |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.12.0` (الاستيراد `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.12.0` (الوسم `packages/go/v0.12.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.12.0؛ الاستيراد `qorechain`) |
-| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.12.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.13.0` (الاستيراد `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0` (الوسم `packages/go/v0.13.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.13.0؛ الاستيراد `qorechain`) |
+| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.13.0` (ما زال Maven Central يعرض 0.12.0 في 11 نوفمبر 2026؛ استخدم 0.13.0 عند ظهوره) |
 
 كل حزمة تعكس الواجهة نفسها (الإعدادات المسبقة للشبكات، وأدوات الفئات
 النقدية/العناوين، والاشتقاق الهرمي الحتمي HD — بما في ذلك الحسابات الموحّدة الأصيلة بنمط eth — وأساسيات

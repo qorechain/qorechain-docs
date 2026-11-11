@@ -94,14 +94,16 @@ ceea ce este diferit de baza `uqor` Native de 10^6.
 
 ## Ce pachete sunt publicate și unde?
 
-Toate (verificat la 4 noiembrie 2026). Nucleul TypeScript (`@qorechain/sdk`, 0.12.0),
-kitul React (`@qorechain/react`, 0.12.0), scaffolder-ul `create-qorechain-dapp`
-(0.12.0) și adaptoarele EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.12.0) sunt pe
-npm; clientul Python este pe PyPI (`pip install qorechain-sdk` la 0.12.0, import
+Toate (verificat la 11 noiembrie 2026). Nucleul TypeScript (`@qorechain/sdk`, 0.13.0),
+kitul React (`@qorechain/react`, 0.13.0), scaffolder-ul `create-qorechain-dapp`
+(0.13.0) și adaptoarele EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) sunt pe
+npm; clientul Python este pe PyPI (`pip install qorechain-sdk` la 0.13.0, import
 `qorsdk`); clientul Go este pe module proxy
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`); clientul Rust este
-pe crates.io (`cargo add qorechain-sdk`, 0.12.0); iar clientul Java este pe Maven
-Central (`io.github.qorechain:qorechain-sdk:0.12.0`, JDK 17 sau mai nou). Vedeți [Instalare](/sdk/install) pentru comenzile complete
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`); clientul Rust este
+pe crates.io (`cargo add qorechain-sdk`, 0.13.0); iar clientul Java este pe Maven
+Central (`io.github.qorechain:qorechain-sdk`, JDK 17 sau mai nou), unde 0.13.0 se
+publică, iar Maven Central arăta încă 0.12.0 la 11 noiembrie 2026 (folosiți 0.13.0 de
+îndată ce apare). Vedeți [Instalare](/sdk/install) pentru comenzile complete
 pentru fiecare limbaj.
 
 ## Mnemonicul meu este respins
@@ -130,7 +132,7 @@ Dacă o tx hibridă eșuează cu `pqc` cod 21 (`hybrid_verify_failed`), cauza es
 versiunea sign-bytes, chain-id-ul, o bibliotecă PQC învechită sau o cheie
 neînregistrată ori diferită, niciodată semnarea hedged.
 Ambele rețele verifică forma v2 a sign-bytes, așa că folosiți SDK **0.8.1 sau
-mai nou** (0.12.0 este cel curent) și transmiteți `rest` (sau `signBytesVersion`):
+mai nou** (0.13.0 este cel curent) și transmiteți `rest` (sau `signBytesVersion`):
 builder-ele aruncă o eroare pe `qorechain-vladi` / `qorechain-diana` dacă lipsesc
 amândouă. Vedeți
 [Depanarea codului 21](/developer-guide/post-quantum-signing#code-21) și
@@ -176,7 +178,7 @@ neschimbat), dar nu are niciunul dintre acei constructori: folosiți CLI-ul pent
 [Versiuni anterioare lui 0.9.0](/sdk/install#before-090)). Formatul de semnare nu s-a schimbat
 în v3.2.4, v3.2.5 sau v3.2.6. Mainnet-ul rulează v3.2.6, iar testnet-ul v3.2.7 (testnet-ul a aplicat v3.2.5 pe 26 octombrie 2026,
 v3.2.6 pe 27 octombrie și v3.2.7 pe 6 noiembrie; mainnet-ul a aplicat v3.2.5 pe 29 octombrie și v3.2.6 pe 4 noiembrie). SDK 0.10.0 și 0.9.0 continuă să funcționeze pe ele, dar nu au constructori pentru
-adăugirile v3.2.5 (registrul de chei ML-KEM, regula exactă de gaz); cu acele versiuni folosiți CLI-ul sau actualizați la 0.12.0. 0.12.0 a fost construit și verificat împotriva v3.2.5.
+adăugirile v3.2.5 (registrul de chei ML-KEM, regula exactă de gaz); cu acele versiuni folosiți CLI-ul sau actualizați la 0.13.0. 0.12.0 a fost construit și verificat împotriva v3.2.5.
 
 ## Înregistrarea cheii mele PQC a fost refuzată, dar taxa a fost luată
 

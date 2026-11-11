@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publicat pe npm ca `create-qorechain-dapp` (`0.12.0`). Fișierele `package.json`
-> generate depind de `@qorechain/sdk` `^0.12.0` (șabloanele EVM de `@qorechain/evm`
-> `^0.12.0`). Versiunea 0.8.0 a schelei scria intervale `^0.3.0`, pe care npm le
+> Publicat pe npm ca `create-qorechain-dapp` (`0.13.0`). Fișierele `package.json`
+> generate depind de `@qorechain/sdk` `^0.13.0` (șabloanele EVM de `@qorechain/evm`
+> `^0.13.0`). Versiunea 0.8.0 a schelei scria intervale `^0.3.0`, pe care npm le
 > rezolvă la o versiune 0.3 care nu poate semna pentru rețelele live; dacă ai generat
 > proiectul cu 0.8.0, rulează `npm i @qorechain/sdk@latest`.
 

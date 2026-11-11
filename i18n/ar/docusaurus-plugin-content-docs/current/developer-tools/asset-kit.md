@@ -342,7 +342,7 @@ func main() {
 - [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing) و[الحسابات والتوقيع PQC](/sdk/concepts/accounts-pqc): تسجيل المفاتيح والتوقيع الهجين.
 - [تطوير EVM](/developer-guide/evm-development#evm-window): نافذة تفويض EVM.
 - [مُسبَقات EVM](/developer-guide/evm-precompiles): `0x0A01` و`0x0A02`، فعّالان على شبكة الاختبار فقط.
-- [Chain developer kit](/developer-tools/chain-dev-sdk): قوالب Foundry وHardhat وviem ومساعدات النوافذ (مضمَّنة في SDK 0.12.0).
+- [Chain developer kit](/developer-tools/chain-dev-sdk): قوالب Foundry وHardhat وviem ومساعدات النوافذ (مضمَّنة في SDK 0.12.0 وما بعده).
 - [Custody kit](/developer-tools/custody-kit) و[QoreScan](/developer-tools/qorescan): مجموعتان مجاورتان لجهات الحفظ ولجرد التشفير.
 - [حزم المطورين](/developer-tools/overview): كل حزمة وحالتها في السجل.
 - المعايير الأصلية: ERC-3643 وCMTAT وERC-4626 وERC-7540 وERC-7518.

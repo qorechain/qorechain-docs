@@ -36,7 +36,7 @@ compune `MsgOpenEVMWindow` din banda Native pentru semnare hibridă, `evmWindowC
 `weiToUqorCeil` dimensionează o fereastră, iar `toQorAddress` / `toEvmAddress` convertesc un
 cont eth-native între cele două codificări ale sale. Helperele de fereastră sunt publicate
 și fără viem ca `@qorechain/evm/window`. Au apărut în versiunea 0.11.0, doar pe npm, și sunt în
-0.12.0.
+0.12.0 și ulterior.
 
 ## Crearea unui client
 

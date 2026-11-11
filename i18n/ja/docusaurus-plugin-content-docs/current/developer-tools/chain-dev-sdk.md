@@ -9,8 +9,8 @@ sidebar_position: 34
 
 チェーン開発者キットは QoreChain SDK の一部で、Solidity とスマートコントラクトのチームが、すでに使っているツールで QoreChain 上に構築できるようにします。`@qorechain/evm` に viem のチェーン定義と EVM 認可ウィンドウのヘルパーを追加し、`create-qorechain-dapp` に 4 つのプロジェクトテンプレート（Foundry、Hardhat 3、wagmi を使う viem、QoreChain Native の CosmWasm トークン）を追加し、5 言語の EVM クイックスタートと、QoreChain の EVM が Ethereum とどう違うかのリファレンスを提供します。Ethereum からコントラクトを移植する Solidity チーム、wagmi や RainbowKit を使う dApp フロントエンド開発者、CosmWasm 開発者、そして QoreChain を追加したい EVM ツールのメンテナーを対象としています。
 
-:::note 稼働中: SDK 0.12.0 に含まれます
-このキットは QoreChain SDK **0.12.0**（npm、2026年10月30日）で**稼働中であり、インストールできます**: `@qorechain/evm` 0.12.0、`@qorechain/sdk` 0.12.0、`@qorechain/react` 0.12.0、`@qorechain/svm` 0.12.0、`create-qorechain-dapp` 0.12.0。Python、Rust、Go、Java の SDK も 0.12.0 です。その内容は最初に npm だけで 0.11.0 として公開されました（2026年10月29日）。ほかのレジストリに 0.11.0 はないため、どこでも 0.12.0 を使ってください。このページのすべての内容は、2026年11月4日に 0.12.0 に対して確認しました。
+:::note 稼働中: SDK 0.13.0 に含まれます
+このキットは QoreChain SDK **0.13.0**（npm、2026年11月11日）で**稼働中であり、インストールできます**: `@qorechain/evm` 0.13.0、`@qorechain/sdk` 0.13.0、`@qorechain/react` 0.13.0、`@qorechain/svm` 0.13.0、`create-qorechain-dapp` 0.13.0。Python、Rust、Go の SDK も 0.13.0 です（Java SDK は公開作業中で、Maven Central には2026年11月11日時点でまだ 0.12.0 が表示されていました）。その内容は最初に npm だけで 0.11.0 として公開され（2026年10月29日）、0.12.0（2026年10月30日）に含まれていました。ほかのレジストリに 0.11.0 はありません。このページのテスト実行は、2026年11月4日に 0.12.0 に対して行いました。0.13.0 ではシードパスのアカウントヘルパーとテンプレートの `PRIVATE_KEY` の扱いが変わりました（[0.13.0 の変更点](/sdk/install#whats-new-0130)を参照）。
 :::
 
 このキットは、メインネット（`qorechain-vladi`、EVM チェーン ID 9801）とテストネット（`qorechain-diana`、EVM チェーン ID 9800）を対象としています。
@@ -20,14 +20,14 @@ sidebar_position: 34
 | 項目 | パッケージとバージョン | 参照先 |
 |---|---|---|
 | 公開エンドポイントに対する ethers v6、web3.py、go-ethereum、alloy、web3j での読み取り | QoreChain のパッケージは不要 | [クイックスタート 1](#quickstart-ethers) |
-| `createEvmClient`、ERC-20、ERC-721、ERC-1155 のヘルパー、`precompiles` バインディング、`PRECOMPILE_ADDRESSES` | `@qorechain/evm` 0.12.0 | [クイックスタート 2](#quickstart-evm-080) |
-| viem のチェーン定義 `qorechain` と `qorechainTestnet`、`QORECHAIN_CHAINS`、`QORECHAIN_REST_ENDPOINTS` | `@qorechain/evm` 0.12.0 | [クイックスタート 3](#quickstart-viem) |
-| `evmWindowStatus`、`openEvmWindowMessage`、`evmWindowCost`、`classifyEvmWindowRejection`、アドレス変換、ウィンドウの定数、サブパス `@qorechain/evm/window` | `@qorechain/evm` 0.12.0 | [クイックスタート 4](#quickstart-window-helpers) |
-| `openEvmWindowMsg`、`fetchEvmWindow`、`EthNativeSigner`、`deriveUnifiedAccount` による、署名を伴う EVM 認可ウィンドウの開設と読み取り | `@qorechain/sdk` 0.12.0 | [クイックスタート 5](#quickstart-open-window) |
-| Python、Go、Rust、Java の同じウィンドウビルダー | 0.12.0 の各 SDK | [主な API](#main-api) |
-| EIP-7702 の同意ヘルパー `authorizeEvmDelegationMsg`、`clearEvmDelegationMsg`、`classifyEvmDelegationRejection` | `@qorechain/sdk` 0.12.0 | [主な API](#main-api) |
-| 7 つのスキャフォルダーテンプレート: `evm-solidity`、`fullstack-web`、`rollup-app`、`foundry`、`hardhat`、`viem-wagmi`、`cosmwasm`、および `pnpm window` ヘルパー | `create-qorechain-dapp` 0.12.0 | [テンプレート](#templates) |
-| `PqcStatusBadge` | `@qorechain/react` 0.12.0 | [主な API](#main-api) |
+| `createEvmClient`、ERC-20、ERC-721、ERC-1155 のヘルパー、`precompiles` バインディング、`PRECOMPILE_ADDRESSES` | `@qorechain/evm` 0.13.0 | [クイックスタート 2](#quickstart-evm-080) |
+| viem のチェーン定義 `qorechain` と `qorechainTestnet`、`QORECHAIN_CHAINS`、`QORECHAIN_REST_ENDPOINTS` | `@qorechain/evm` 0.13.0 | [クイックスタート 3](#quickstart-viem) |
+| `evmWindowStatus`、`openEvmWindowMessage`、`evmWindowCost`、`classifyEvmWindowRejection`、アドレス変換、ウィンドウの定数、サブパス `@qorechain/evm/window` | `@qorechain/evm` 0.13.0 | [クイックスタート 4](#quickstart-window-helpers) |
+| `openEvmWindowMsg`、`fetchEvmWindow`、`EthNativeSigner`、`deriveUnifiedAccount` による、署名を伴う EVM 認可ウィンドウの開設と読み取り | `@qorechain/sdk` 0.13.0 | [クイックスタート 5](#quickstart-open-window) |
+| Python、Go、Rust、Java の同じウィンドウビルダー | 0.13.0 の各 SDK | [主な API](#main-api) |
+| EIP-7702 の同意ヘルパー `authorizeEvmDelegationMsg`、`clearEvmDelegationMsg`、`classifyEvmDelegationRejection` | `@qorechain/sdk` 0.13.0 | [主な API](#main-api) |
+| 7 つのスキャフォルダーテンプレート: `evm-solidity`、`fullstack-web`、`rollup-app`、`foundry`、`hardhat`、`viem-wagmi`、`cosmwasm`、および `pnpm window` ヘルパー | `create-qorechain-dapp` 0.13.0 | [テンプレート](#templates) |
+| `PqcStatusBadge` | `@qorechain/react` 0.13.0 | [主な API](#main-api) |
 
 ## 革新点 {#innovations}
 
@@ -38,7 +38,7 @@ sidebar_position: 34
 - **uqor でのウィンドウのサイズ決定。** `evmWindowCost` と `weiToUqorCeil` は、値、ガス、手数料の上限からウィンドウの大きさを決め、wei を uqor に切り上げるため、合計は最悪のケースをカバーします。
 - **自動での開設はありません。** このキットには、送信の前にウィンドウを開くヘルパーが意図的に用意されていません。ウィンドウは、支出が意図的に認可されるために存在します。
 - **無料のシミュレーション。** `eth_call` と `eth_estimateGas` は、ウィンドウも登録済みの鍵もなしに、どのアカウントでも動作します。
-- **ウィンドウを組み込んだテンプレート。** Foundry と Hardhat のテンプレートには `pnpm window status|register|open` が含まれ、EVM 鍵と同じシークレットから ML-DSA-87 鍵を導出し、一度だけ登録し、ハイブリッド署名された開設メッセージをブロードキャストします。
+- **ウィンドウを組み込んだテンプレート。** Foundry と Hardhat のテンプレートには `pnpm window status|register|open` が含まれ、ML-DSA-87 鍵を導出し（`QORE_MNEMONIC` ではニーモニックから、`PRIVATE_KEY` では 0.13.0 以降、`QORE_PQC_RECOVERY_CODE` のリカバリーコードから）、一度だけ登録し、ハイブリッド署名された開設メッセージをブロードキャストします。
 - **文書化された互換性の範囲。** リファレンスページ（2026年10月27日に公開エンドポイントから読み取り、11月4日に一部を再確認）に、Ethereum との違いが一覧になっています。トランザクションタイプ、フォーク、ファイナリティ、手数料フィールド、JSON-RPC 名前空間、プリコンパイルです。要約は[下記](#evm-differences)にあります。
 
 ## キットの内容 {#contents}
@@ -57,7 +57,7 @@ sidebar_position: 34
 
 ### テンプレート {#templates}
 
-`create-qorechain-dapp` 0.12.0 には 7 つのテンプレートがあります。`evm-solidity`、`fullstack-web`、`rollup-app`（[スキャフォルダーと CLI](/developer-tools/scaffolders-and-cli)を参照）と、キットに属する次の 4 つです。
+`create-qorechain-dapp` 0.13.0 には 7 つのテンプレートがあります。`evm-solidity`、`fullstack-web`、`rollup-app`（[スキャフォルダーと CLI](/developer-tools/scaffolders-and-cli)を参照）と、キットに属する次の 4 つです。
 
 | テンプレート | 内容 |
 |---|---|
@@ -66,11 +66,11 @@ sidebar_position: 34
 | `viem-wagmi` | QoreX ウォレット（`@qorechain/qorex-rainbowkit`）と `@qorechain/evm` のチェーン定義を備えた、Vite、React、wagmi、RainbowKit の dApp。最新のブロック、QOR 残高、アカウントの EVM ウィンドウを表示します。 |
 | `cosmwasm` | cw-plus の `cw20-base` をベースにした QoreChain Native（CosmWasm）の CW20 トークン、Docker での最適化ビルド、ガバナンスのアップロード提案スクリプト、テストネットでのインスタンス化とクエリのスクリプト。 |
 
-テンプレートは `@qorechain/evm` と `@qorechain/sdk` を `^0.12.0` に固定しています（2026年11月4日に `foundry` のスキャフォールドから確認）。
+テンプレートは `@qorechain/evm` と `@qorechain/sdk` を `^0.13.0` に固定しています（0.12.0 のテンプレートは `^0.12.0` に固定していました。2026年11月4日に `foundry` のスキャフォールドから確認）。
 
 ### SDK リポジトリのガイド {#guides}
 
-リポジトリ（`docs/docs/guides/`、タグ `v0.12.0`）には、`evm-quickstarts.md`（viem、ethers v6、web3.py、go-ethereum、alloy、web3j の読み取りと、「Before you send」の節）、`evm-differences.md`（「QoreChain EVM compared with Ethereum」）、`evm.md`、`cosmwasm.md` があります。このサイトにある同じ内容は次のとおりです: [EVM ガイド](/sdk/guides/evm)、[EVM 開発](/developer-guide/evm-development)、[QoreChain Native 開発](/developer-guide/cosmwasm-development)。
+リポジトリ（`docs/docs/guides/`、タグ `v0.13.0`）には、`evm-quickstarts.md`（viem、ethers v6、web3.py、go-ethereum、alloy、web3j の読み取りと、「Before you send」の節）、`evm-differences.md`（「QoreChain EVM compared with Ethereum」）、`evm.md`、`cosmwasm.md` があります。このサイトにある同じ内容は次のとおりです: [EVM ガイド](/sdk/guides/evm)、[EVM 開発](/developer-guide/evm-development)、[QoreChain Native 開発](/developer-guide/cosmwasm-development)。
 
 リポジトリにはほかに、他のツール向けの貢献ファイル（viem のチェーン定義、Sourcify のチェーンエントリー、Scaffold-ETH 2 の拡張）が `contrib/` と `templates/scaffold-eth-extension/` にあります。これらはリポジトリ内に用意されたファイルであり、アップストリームにはマージされていません。
 
@@ -90,7 +90,7 @@ sidebar_position: 34
 - **開設と閉鎖。** `MsgOpenEVMWindow`（`/qorechain.pqc.v1.MsgOpenEVMWindow`）がウィンドウを開きます。ハイブリッドで署名され、ウィンドウを開くと以前のものは置き換えられます。`MsgCloseEVMWindow` がそれを閉じます。
 - **ウィンドウが制限するもの。** ブロック（期間ではなくブロック数）、EVM トランザクション、そして受け付けられるすべてのトランザクションの値と最大手数料（ガスリミット × 手数料の上限）を合わせた uqor の合計です。`nativeOnly` と `allowedTargets` は、受け付ける受取先を絞り込みますが、トークンの金額は制限しません（列挙されたトークンは、`approve` を含め任意の金額を受け付けます。[ウィンドウのスコープを絞る](/sdk/guides/evm#evm-window-scope)を参照）。
 - **ナンス。** ネイティブのシーケンスと EVM のナンスは同じカウンターです。ウィンドウを開くとこれが進むため、ウィンドウを開き、次にナンスを読み取り、それから EVM トランザクションに署名してください。
-- **テンプレートのヘルパー。** `foundry` と `hardhat` では、`pnpm window` が `PRIVATE_KEY`（または `QORE_MNEMONIC`）からアカウントを導出し、同じシークレットから ML-DSA-87 鍵を導出し、鍵を一度だけ登録し（`register`）、ハイブリッド署名した `MsgOpenEVMWindow` をブロードキャストします（`open`）。デフォルトでは、手数料の上限 250 gwei で最大 3,000,000 ガスのトランザクション 5 件分として、600 ブロック・5 トランザクションのウィンドウを設定します。
+- **テンプレートのヘルパー。** `foundry` と `hardhat` では、`pnpm window` が `PRIVATE_KEY`（または `QORE_MNEMONIC`）からアカウントを導出し、ML-DSA-87 鍵を導出し（`PRIVATE_KEY` の場合は 0.13.0 以降 `QORE_PQC_RECOVERY_CODE` から、`QORE_MNEMONIC` の場合はニーモニックから。こちらは変更なし）、鍵を一度だけ登録し（`register`）、ハイブリッド署名した `MsgOpenEVMWindow` をブロードキャストします（`open`）。デフォルトでは、手数料の上限 250 gwei で最大 3,000,000 ガスのトランザクション 5 件分として、600 ブロック・5 トランザクションのウィンドウを設定します。
 - **QoreChain Native 上の CosmWasm。** コードのアップロードは、両方のネットワークでガバナンス経由です（`code_upload_access` は `Nobody`）。コードは、ガバナンスモジュールを送信者とする `MsgStoreCode` を含むガバナンス提案によって保存されます。インスタンス化はテストネットでは誰にでも開かれ、メインネットでは閉じられています（`instantiate_default_permission` はテストネットでは `Everybody`、メインネットでは `Nobody`。2026年10月27日に読み取り）。どちらも `/cosmwasm/wasm/v1/codes/params` で確認でき、保存済みのコードは `/cosmwasm/wasm/v1/code` で一覧できます。2026年10月27日と2026年11月4日の時点で、メインネットには保存済みのコードがありませんでした。
 
 ## QoreChain EVM と Ethereum の比較 {#evm-differences}
@@ -119,14 +119,14 @@ sidebar_position: 34
 
 | 言語またはツール | インストール | 最小プラットフォーム |
 |---|---|---|
-| TypeScript、EVM の読み取り、ERC ヘルパー、viem のチェーン定義、ウィンドウのヘルパー | `npm install @qorechain/evm viem`（0.12.0） | Node.js 20 以降。ピア依存 `viem ^2` |
-| TypeScript、ウィンドウメッセージの署名 | `npm install @qorechain/sdk`（0.12.0 には `openEvmWindowMsg`、`fetchEvmWindow`、`EthNativeSigner`、`deriveUnifiedAccount` があります） | Node.js 20 以降 |
-| React、PQC ステータスバッジ | `npm install @qorechain/react @qorechain/sdk react react-dom`（0.12.0） | Node.js 20 以降 |
-| スキャフォルダー、7 つのテンプレートすべて | `npx create-qorechain-dapp my-app --template <name>`（0.12.0） | Node.js 20 以降。`foundry` には Foundry。`hardhat`（Hardhat 3）には Node.js 22。`cosmwasm` には Rust と Docker |
-| Python（EVM の読み取り） | `pip install "web3>=7,<8"`。ウィンドウメッセージは `pip install qorechain-sdk`（0.12.0）から | Python 3.10 以降 |
-| Go（EVM の読み取り） | `go get github.com/ethereum/go-ethereum@latest`。ウィンドウメッセージは `go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0` から | Go ツールチェーン |
-| Rust（EVM の読み取り） | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`。ウィンドウメッセージはクレート `qorechain-sdk` 0.12.0 から | stable の Rust |
-| Java（EVM の読み取り） | `org.web3j:core:5.0.0`。ウィンドウメッセージは `io.github.qorechain:qorechain-sdk:0.12.0` から | JDK 21（QoreChain Java SDK は JDK 21 ツールチェーンでビルドされます） |
+| TypeScript、EVM の読み取り、ERC ヘルパー、viem のチェーン定義、ウィンドウのヘルパー | `npm install @qorechain/evm viem`（0.13.0） | Node.js 20 以降。ピア依存 `viem ^2` |
+| TypeScript、ウィンドウメッセージの署名 | `npm install @qorechain/sdk`（0.13.0 には `openEvmWindowMsg`、`fetchEvmWindow`、`EthNativeSigner`、`deriveUnifiedAccount` があります） | Node.js 20 以降 |
+| React、PQC ステータスバッジ | `npm install @qorechain/react @qorechain/sdk react react-dom`（0.13.0） | Node.js 20 以降 |
+| スキャフォルダー、7 つのテンプレートすべて | `npx create-qorechain-dapp my-app --template <name>`（0.13.0） | Node.js 20 以降。`foundry` には Foundry。`hardhat`（Hardhat 3）には Node.js 22。`cosmwasm` には Rust と Docker |
+| Python（EVM の読み取り） | `pip install "web3>=7,<8"`。ウィンドウメッセージは `pip install qorechain-sdk`（0.13.0）から | Python 3.10 以降 |
+| Go（EVM の読み取り） | `go get github.com/ethereum/go-ethereum@latest`。ウィンドウメッセージは `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` から | Go ツールチェーン |
+| Rust（EVM の読み取り） | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`。ウィンドウメッセージはクレート `qorechain-sdk` 0.13.0 から | stable の Rust |
+| Java（EVM の読み取り） | `org.web3j:core:5.0.0`。ウィンドウメッセージは `io.github.qorechain:qorechain-sdk:0.13.0` から（Maven Central には2026年11月11日時点でまだ 0.12.0 が表示されています。0.13.0 が表示され次第そちらを使ってください） | JDK 21（QoreChain Java SDK は JDK 21 ツールチェーンでビルドされます） |
 
 ### クイックスタート 1: ethers v6 で読み取る {#quickstart-ethers}
 
@@ -274,7 +274,7 @@ cd my-dapp && npm run build
 
 `@qorechain/evm` はネイティブレーンのトランザクションの署名もブロードキャストも行いません。それには `@qorechain/sdk` または各言語の SDK を使用してください。
 
-### 各 SDK でのウィンドウの組み立てと読み取り（0.12.0） {#api-window}
+### 各 SDK でのウィンドウの組み立てと読み取り（0.13.0） {#api-window}
 
 | 言語 | ウィンドウを開く | ウィンドウを読む |
 |---|---|---|
@@ -284,9 +284,9 @@ cd my-dapp && npm run build
 | Rust | `qorechain::msg::pqc::open_evm_window` | REST `/qorechain/pqc/v1/evm_window/{address}` |
 | Java | `io.github.qorechain.evm.EvmWindow.open` | `EvmWindow.restPath` |
 
-EIP-7702 の同意（TypeScript、`@qorechain/sdk` 0.12.0）: `authorizeEvmDelegationMsg`、`clearEvmDelegationMsg`、`classifyEvmDelegationRejection`。
+EIP-7702 の同意（TypeScript、`@qorechain/sdk` 0.13.0）: `authorizeEvmDelegationMsg`、`clearEvmDelegationMsg`、`classifyEvmDelegationRejection`。
 
-`@qorechain/react` 0.12.0 は `PqcStatusBadge` をエクスポートします（デフォルトのラベルは「PQC key registered」と「No PQC key」）。従来の `QuantumSafeBadge` も残されています。
+`@qorechain/react` 0.13.0 は `PqcStatusBadge` をエクスポートします（デフォルトのラベルは「PQC key registered」と「No PQC key」）。従来の `QuantumSafeBadge` も残されています。
 
 ### `create-qorechain-dapp` のフラグ {#api-scaffolder}
 
@@ -307,12 +307,13 @@ EIP-7702 の同意（TypeScript、`@qorechain/sdk` 0.12.0）: `authorizeEvmDeleg
 | `foundry`、`hardhat` | `pnpm window status` | アカウント、その ML-DSA-87 鍵が登録されているか（そしてそれがこの鍵か）、そのウィンドウを表示する。 |
 | `foundry`、`hardhat` | `pnpm window register` | アカウントの ML-DSA-87 鍵を、アカウントごとに一度だけ登録する。 |
 | `foundry`、`hardhat` | `pnpm window open` | ウィンドウを開く（デフォルトは 600 ブロック、5 トランザクション）。 |
+| `foundry`、`hardhat` | `pnpm window recovery-code` | 新しいリカバリーコードを表示する（0.13.0）。`PRIVATE_KEY` とは別に保管し、`QORE_PQC_RECOVERY_CODE` に設定する。 |
 | `foundry` | `pnpm deploy:testnet` | `forge script script/Counter.s.sol --rpc-url qorechain_testnet --broadcast`。 |
 | `hardhat` | `pnpm build`、`pnpm test`、`pnpm deploy:testnet` | Hardhat のビルド、テスト、`qorechainTestnet` への Ignition デプロイ。 |
 | `viem-wagmi` | `pnpm dev`、`pnpm build` | `http://localhost:5173` の開発サーバー。本番ビルド。 |
 | `cosmwasm` | `pnpm build:wasm`、`pnpm propose-store`、`pnpm instantiate`、`pnpm query` | 最適化ビルド、ガバナンスのアップロード提案、インスタンス化（テストネット）、REST クエリ。 |
 
-テンプレートの環境変数（`.env` 内。コミットしないこと）: `PRIVATE_KEY`、`QORE_MNEMONIC`、`QORE_NETWORK`（`testnet` または `mainnet`）、`QORE_WINDOW_BLOCKS`、`QORE_WINDOW_TXS`、`QORE_WINDOW_MAX_UQOR`、`COUNTER_INITIAL`。CosmWasm のスクリプトには `QORE_CODE_ID` と `QORE_I_KNOW_THIS_IS_MAINNET=yes`（提案スクリプトはこれがないとメインネットを拒否します）。`viem-wagmi` で WalletConnect ウォレットを使うには `VITE_WALLETCONNECT_PROJECT_ID`。
+テンプレートの環境変数（`.env` 内。コミットしないこと）: `PRIVATE_KEY`、`QORE_MNEMONIC`、`QORE_PQC_RECOVERY_CODE`（`PRIVATE_KEY` と併用。`pnpm window recovery-code` で新しいものを表示でき、鍵とは別に保管します）、`QORE_NETWORK`（`testnet` または `mainnet`）、`QORE_WINDOW_BLOCKS`、`QORE_WINDOW_TXS`、`QORE_WINDOW_MAX_UQOR`、`COUNTER_INITIAL`。CosmWasm のスクリプトには `QORE_CODE_ID` と `QORE_I_KNOW_THIS_IS_MAINNET=yes`（提案スクリプトはこれがないとメインネットを拒否します）。`viem-wagmi` で WalletConnect ウォレットを使うには `VITE_WALLETCONNECT_PROJECT_ID`。
 
 ## アクセス方法 {#how-to-access}
 
@@ -334,30 +335,30 @@ EIP-7702 の同意（TypeScript、`@qorechain/sdk` 0.12.0）: `authorizeEvmDeleg
 
 ## 公開場所 {#where-published}
 
-バージョンは2026年11月4日に各レジストリからライブで読み取りました。GitHub のタグ `v0.12.0` は存在します。5 つの npm パッケージには、同じキットの内容を含む 0.11.0（2026年10月29日）もあります。Python、Rust、Go、Java の SDK は 0.10.0 から直接 0.12.0 になりました。
+バージョンは2026年11月11日に各レジストリからライブで読み取りました（Maven Central は例外で、その行を参照）。GitHub のタグ `v0.12.0` は存在します。5 つの npm パッケージには、同じキットの内容を含む 0.11.0（2026年10月29日）もあります。Python、Rust、Go、Java の SDK は 0.10.0 から直接 0.12.0 になり、Java 以外のすべての言語は 0.13.0 です。
 
 | レジストリ | パッケージ | バージョン | リンク |
 |---|---|---|---|
-| npm | `@qorechain/evm` | 0.12.0 | https://www.npmjs.com/package/@qorechain/evm |
-| npm | `@qorechain/sdk` | 0.12.0 | https://www.npmjs.com/package/@qorechain/sdk |
-| npm | `@qorechain/react` | 0.12.0 | https://www.npmjs.com/package/@qorechain/react |
-| npm | `@qorechain/svm` | 0.12.0 | https://www.npmjs.com/package/@qorechain/svm |
-| npm | `create-qorechain-dapp` | 0.12.0（7 つのテンプレート） | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `@qorechain/evm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/evm |
+| npm | `@qorechain/sdk` | 0.13.0 | https://www.npmjs.com/package/@qorechain/sdk |
+| npm | `@qorechain/react` | 0.13.0 | https://www.npmjs.com/package/@qorechain/react |
+| npm | `@qorechain/svm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/svm |
+| npm | `create-qorechain-dapp` | 0.13.0（7 つのテンプレート） | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `@qorechain/qorex-rainbowkit`（`viem-wagmi` が使用） | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-rainbowkit |
-| PyPI | `qorechain-sdk` | 0.12.0 | https://pypi.org/project/qorechain-sdk/ |
-| crates.io | `qorechain-sdk` | 0.12.0 | https://crates.io/crates/qorechain-sdk |
-| Go プロキシ | `github.com/qorechain/qorechain-sdk/packages/go` | v0.12.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
+| crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
+| Go プロキシ | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0（0.13.0 は公開作業中。表示され次第そちらを使ってください） | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
-ソース: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk)、タグ `v0.12.0`。パスは `packages/evm`、`cli/`、`templates/`、`docs/docs/guides/`、`contrib/`。Apache-2.0、QoreChain Association が保守しています。
+ソース: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk)、タグ `v0.13.0`。パスは `packages/evm`、`cli/`、`templates/`、`docs/docs/guides/`、`contrib/`。Apache-2.0、QoreChain Association が保守しています。
 
 ## 制限事項と既知の問題 {#limits}
 
-- **npm の 0.11.0 は置き換えられています。** 0.12.0 を使ってください。0.11.0 は npm にしかなく、0.12.0 のテンプレートは `^0.12.0` に依存しています。
+- **npm の 0.11.0 は置き換えられています。** 0.13.0 を使ってください。0.11.0 は npm にしかなく、0.13.0 のテンプレートは `^0.13.0` に依存しています。
 - **`@qorechain/evm` はウィンドウを読み取り、メッセージを組み立てますが、ネイティブレーンのトランザクションの署名もブロードキャストも行いません。**
 - **送信の前にウィンドウを自動的に開くヘルパーはありません。** 設計上の判断です。
 - **`viem-wagmi` テンプレートの QoreX ウォレット**は、`eth_chainId`、`eth_accounts`、`eth_requestAccounts`、`wallet_switchEthereumChain` に応答します。EVM の署名メソッドはまだ利用できません。接続と読み取りに使い、署名には注入された EIP-1193 ウォレットを使ってください。
-- **テンプレートの `pnpm window` ヘルパーは、EVM 鍵と同じシークレットから ML-DSA-87 鍵を導出します。** アカウントの鍵が別のウォレットで登録された場合は、代わりにそのウォレットからウィンドウを開いてください。
+- **テンプレートの `pnpm window` ヘルパーは、ML-DSA-87 鍵を `QORE_MNEMONIC` から、または `PRIVATE_KEY` を使う場合は `QORE_PQC_RECOVERY_CODE` から導出します**（`PRIVATE_KEY` のみでコードがない場合は、メッセージを表示して停止します）。アカウントの鍵が別のウォレットで登録された場合は、代わりにそのウォレットからウィンドウを開いてください。
 - **公開エンドポイントでは利用できません:** blob トランザクション、トレース、そして `debug`、`personal`、`admin`、`miner` の名前空間。
 - **CosmWasm のアップロードは両方のネットワークでガバナンス経由です。** `cosmwasm` テンプレートだけではコードを保存できません。
 - **他のツールへの貢献**（viem、Sourcify、Scaffold-ETH 2）は、リポジトリ内に用意されたファイルであり、アップストリームにはマージされていません。
@@ -375,7 +376,7 @@ EIP-7702 の同意（TypeScript、`@qorechain/sdk` 0.12.0）: `authorizeEvmDeleg
 
 ## 関連ページ {#related}
 
-- [開発者パッケージ概要](/developer-tools/overview)と[スキャフォルダーと CLI](/developer-tools/scaffolders-and-cli)（`create-qorechain-dapp` 0.12.0）
+- [開発者パッケージ概要](/developer-tools/overview)と[スキャフォルダーと CLI](/developer-tools/scaffolders-and-cli)（`create-qorechain-dapp` 0.13.0）
 - [SDK 概要](/sdk/overview)、[SDK のインストール](/sdk/install)、[EVM ガイド](/sdk/guides/evm)（ウィンドウ、スコープを絞ったウィンドウ、EIP-7702 の同意、プリコンパイル）
 - [EVM 開発](/developer-guide/evm-development)と [EVM プリコンパイル](/developer-guide/evm-precompiles#network-status)
 - [QoreChain Native 開発](/developer-guide/cosmwasm-development)（CosmWasm とガバナンス提案）

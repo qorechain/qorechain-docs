@@ -186,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-SDK 0.9.0 ve sonrasının ve `@qorechain/wallet-adapter` 0.4.0'ın rotasyon yardımcıları, eski türetmeyi **yeni** anahtar olarak reddeder (hesaba bağlı değildir); eski bir anahtar yine de eski anahtar olabilir. Başarılı bir rotasyondan sonra yeni anahtar imzalar (kod 0) ve eski anahtar reddedilir (`pqc` kodu 21). v3.2.3'ten beri bir rotasyon (tıpkı bir geçiş gibi), kuantum sonrası koruma sağlamayan yeni bir anahtarı (kod 230) ve hesabın daha önce kullandığı bir anahtarı (kod 232) reddeder ve `authz` aracılığıyla gönderilemez.
+SDK 0.9.0 ve sonrasının ve `@qorechain/wallet-adapter` 0.4.0 ve sonrasının rotasyon yardımcıları, eski türetmeyi **yeni** anahtar olarak reddeder (hesaba bağlı değildir); eski bir anahtar yine de eski anahtar olabilir. Başarılı bir rotasyondan sonra yeni anahtar imzalar (kod 0) ve eski anahtar reddedilir (`pqc` kodu 21). v3.2.3'ten beri bir rotasyon (tıpkı bir geçiş gibi), kuantum sonrası koruma sağlamayan yeni bir anahtarı (kod 230) ve hesabın daha önce kullandığı bir anahtarı (kod 232) reddeder ve `authz` aracılığıyla gönderilemez.
 
 ## Testnet'te zincir v3.2.7: multisig, textual imzalama, doğrulama gas'i {#v327}
 
@@ -278,7 +278,7 @@ Klasik secp256k1 imzası, standart imza baytları üzerinde hesaplanır (bunlar 
 Bu hibrit imzayı üretmenin üç yolu vardır:
 
 * **CLI** — `qorechaind tx pqc cosign`, bir işleme Dilithium-5 eş imzasını ekler ve yayınlar (`qorechaind tx pqc gen-key` sonrasında ve anahtarı kaydettikten sonra). Yalnızca sürüm ikili dosyasının parçasıdır. Bkz. [İşlem Komutları](/cli-reference/transaction-commands).
-* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid` (sign-bytes biçiminin çözümlenmesi için `rest` geçirin) aynısını TypeScript, Python, Go, Rust ve Java'da yapar; TypeScript'te `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 ve sonrası; güncel sürüm 0.12.0) her işlemi hibrit imzalar. Önce anahtarınızı kaydedin (yukarıya bakın). Bkz. [SDK Hesapları ve PQC imzalama](/sdk/concepts/accounts-pqc).
+* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid` (sign-bytes biçiminin çözümlenmesi için `rest` geçirin) aynısını TypeScript, Python, Go, Rust ve Java'da yapar; TypeScript'te `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 ve sonrası; güncel sürüm 0.13.0) her işlemi hibrit imzalar. Önce anahtarınızı kaydedin (yukarıya bakın). Bkz. [SDK Hesapları ve PQC imzalama](/sdk/concepts/accounts-pqc).
 * **Doğrudan `qorechain-pqc`** — desteklenen altı dilden birinde SDK dışında araç geliştiriyorsanız, imza baytlarını çerçevelemek için `hybridSignBytes` ve Dilithium-5 imzasını üretmek için `mldsa.sign` kullanın.
 
 ## Zincir üzerindeki ayak izini optimize etme

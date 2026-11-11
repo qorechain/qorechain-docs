@@ -36,7 +36,7 @@ composes the Native-lane `MsgOpenEVMWindow` to sign hybrid, `evmWindowCost` and
 `weiToUqorCeil` size a window, and `toQorAddress` / `toEvmAddress` convert an
 eth-native account between its two encodings. The window helpers are also published
 without viem as `@qorechain/evm/window`. They arrived in the npm-only 0.11.0 and are in
-0.12.0.
+0.12.0 and later.
 
 ## Create a client
 

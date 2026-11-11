@@ -108,7 +108,16 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-`unifiedAccountFromSeed(seed32)`は、生の32バイトsecp256k1秘密鍵から同じ処理を行います。
+`unifiedAccountFromSeed(seed32, { recoveryCode })`は、生の32バイトsecp256k1秘密鍵から同じ処理を行います。
+SDK 0.13.0以降、シードパスには、`QRC1`のリカバリーコード(`generatePqcRecoveryCode()`で一度だけ作成し、
+シードとは別に保管します)または独立した32バイトのPQCシークレットの、ちょうど1つが必要です。
+ML-DSA-87鍵はこの2つ目の入力から導出され、別のコードを使うと別の鍵になります。
+オプションなし、または2つ以上を渡すと、呼び出しはエラーになります。0.12以前でPQC鍵を登録した
+アカウントは、`MsgRotatePQCKey`でローテーションできるように、`{ legacySeedDerivation: true }`で
+その鍵を読み込みます(Pythonは`legacy_seed_derivation=True`、Goは`LegacySeedDerivation`、Rustは
+`SeedPqcOptions::legacy_seed_derivation()`、Javaは`SeedPqcOptions.legacy()`)。新しいアカウントには
+このオプションを使わないでください。ニーモニックから導出したアカウントは変わりません。
+[0.13.0の変更点](/sdk/install#whats-new-0130)を参照してください。
 
 ### PQCシード導出
 
@@ -119,7 +128,7 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 ```
 
 これにより`{ address, mnemonic }`から復元可能であり、QoreChainの全言語SDKで同一です。
-(`unifiedAccountFromSeed`の場合、ニーモニックの位置には`"seed:" + hex(seed32)`が入ります。)
+(0.13.0より前の`unifiedAccountFromSeed`では、ニーモニックの位置には`"seed:" + hex(seed32)`が入っていました。0.13.0以降のシードパスは、代わりにリカバリーコードまたはPQCシークレットから鍵を導出します。上記を参照してください。)
 SDK 0.8.3以降、`derivePqcCanonical(account, mnemonic)`は、まず`account`を小文字の
 `qor1…`形式(`canonicalAccount`)に解決するため、大文字のbech32や同じアカウントの
 `0x`形式でも同じ鍵が得られます。

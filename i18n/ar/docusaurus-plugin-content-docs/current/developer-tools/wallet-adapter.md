@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # محوّل المحفظة (`@qorechain/wallet-adapter`)
 
-يضيف `@qorechain/wallet-adapter` شبكة QoreChain إلى محافظ Cosmos التي تتيح `signDirect` (Keplr وLeap وCosmostation)، ويبني المعاملات التي تشترطها السلسلة: يجب أن تحمل معاملة مسار Native توقيع ML-DSA-87 (FIPS 204) بجانب توقيع secp256k1 الكلاسيكي للحساب، ولا تستطيع المحفظة العادية إنتاج توقيع ML-DSA-87. يُنتجه المحوّل، ويضعه في جسم المعاملة، ثم يطلب من المحفظة غير المعدَّلة توقيعاً عادياً. وهو موجّه لمطوري تطبيقات dApp والمحافظ، ولبُناة الأدوات الذين يحتاجون إلى محافظ QoreChain موحّدة أو رسائل نافذة تفويض EVM أو رسائل المفاتيح المرتبطة (المصادِقات) في JavaScript. الإصدار الحالي هو 0.4.0.
+يضيف `@qorechain/wallet-adapter` شبكة QoreChain إلى محافظ Cosmos التي تتيح `signDirect` (Keplr وLeap وCosmostation)، ويبني المعاملات التي تشترطها السلسلة: يجب أن تحمل معاملة مسار Native توقيع ML-DSA-87 (FIPS 204) بجانب توقيع secp256k1 الكلاسيكي للحساب، ولا تستطيع المحفظة العادية إنتاج توقيع ML-DSA-87. يُنتجه المحوّل، ويضعه في جسم المعاملة، ثم يطلب من المحفظة غير المعدَّلة توقيعاً عادياً. وهو موجّه لمطوري تطبيقات dApp والمحافظ، ولبُناة الأدوات الذين يحتاجون إلى محافظ QoreChain موحّدة أو رسائل نافذة تفويض EVM أو رسائل المفاتيح المرتبطة (المصادِقات) في JavaScript. الإصدار الحالي هو 0.5.0 (11 نوفمبر 2026).
 
 إذا كنت تحتاج فقط إلى أن يرسل تطبيق dApp معاملة من محفظة QoreX الخاصة بالمستخدم، فأقصر طريق هو [`qorexSignAndBroadcast`](#qorex) في هذه الحزمة، أو حزم QoreX المدرجة في فهرس [حزم المطورين](/developer-tools/overview#group-qorex). وإذا كنت تكتب محفظة وتريد مكتبة توقيع كاملة بخمس لغات، فاقرأ [QoreSign](/qoresign/overview) أولاً.
 
@@ -18,7 +18,7 @@ sidebar_position: 2
 - **مفتاح ML-DSA-87 واحد لكل عبارة استرجاع (mnemonic)، مشترك بين الأدوات.** تشتق `walletFromMnemonic` المفتاح بوصفه `SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)` يُغذّى إلى توليد مفاتيح ML-DSA-87. وهو مرتبط بعنوان الحساب، وهو الاشتقاق نفسه الذي يستخدمه SDK و`@qorechain/chain-bridge` وQoreX والأمر `qorechaind tx pqc recover-key`، فتعطي عبارة استرجاع واحدة مفتاحاً واحداً أياً كانت الأداة الموقِّعة. راجع [الاشتقاق الحتمي للمفاتيح والاسترداد](/developer-guide/post-quantum-signing#key-derivation).
 - **حساب واحد، ثلاث صيغ عناوين، مفتاح توقيع واحد.** تعيد `generateQoreWallet` و`walletFromMnemonic` الصيغ `qor1` و`0x` (EIP-55) وbase58 الخاصة بـ SVM للهوية نفسها ذات 20 بايتاً، مع زوج مفاتيح ML-DSA-87. وتوقّع `signClassicalEth` و`signHybridEth` معاملات مسار Cosmos بهذا المفتاح الأصلي لـ eth (`eth_secp256k1`)، فيوقّع المفتاح نفسه معاملات EVM في أماكن أخرى.
 - **رموز استرداد PQC.** تعيد `generatePqcRecoveryCode` سراً عشوائياً بطول 256 بتاً بصيغة `QRC1-` يليها base32 من نوع Crockford مع مجموع تحقق بطول 24 بتاً. وتشتق `pqcKeyFromRecoveryCode(code, address)` منه مفتاح ML-DSA-87 مرتبطاً بالعنوان. يُرفض الحرف الخاطئ برسالة بدلاً من اشتقاق مفتاح لا يطابق شيئاً بصمت، والرمز ليس عبارة استرجاع عن قصد.
-- **QoreX بوصفه الموقِّع.** ترسل `qorexSignAndBroadcast` رسائل مرمَّزة بـ protobuf (من 1 إلى 32 في الاستدعاء الواحد، والمذكرة حتى 256 بايتاً، وحد الغاز من 100,000 إلى 5,000,000) إلى محفظة QoreX الخاصة بالمستخدم، فتعرضها مفكوكة الترميز، وتضيف طبقة ML-DSA-87 التي لا تستطيع إنتاجها إلا المحفظة، وتوقّع وتبث. يتحقق المحوّل من الحدود محلياً ويرفض رسائل إدارة مفاتيح PQC (`MsgRegisterPQCKey` و`MsgRegisterPQCKeyV2` و`MsgMigratePQCKey` و`MsgRotatePQCKey`)، بما في ذلك داخل `MsgExec` الخاصة بـ authz على أي عمق. وتُرفض `MsgExec` التي يتعذّر فك ترميزها.
+- **QoreX بوصفه الموقِّع.** ترسل `qorexSignAndBroadcast` رسائل مرمَّزة بـ protobuf (من 1 إلى 32 في الاستدعاء الواحد، والمذكرة حتى 256 بايتاً، وحد الغاز من 100,000 إلى 5,000,000) إلى محفظة QoreX الخاصة بالمستخدم، فتعرضها مفكوكة الترميز، وتضيف طبقة ML-DSA-87 التي لا تستطيع إنتاجها إلا المحفظة، وتوقّع وتبث. يتحقق المحوّل من الحدود محلياً ويرفض رسائل إدارة مفاتيح PQC (`MsgRegisterPQCKey` و`MsgRegisterPQCKeyV2` و`MsgMigratePQCKey` و`MsgRotatePQCKey`)، بما في ذلك داخل `MsgExec` الخاصة بـ authz على أي عمق. وتُرفض `MsgExec` التي يتعذّر فك ترميزها. ومنذ 0.5.0 صار فحص الطلب أشد: ترفض `validateQorexRequest` و`qorexSignAndBroadcast` أيضاً، مباشرةً وداخل `MsgExec` الخاصة بـ authz، رسائل مفاتيح KEM والتوقيع المتعدد وصلاحيات الحساب (`MsgRegisterKEMKey` و`MsgRemoveKEMKey` و`MsgRegisterPQCMultisig` و`MsgRegisterAuthenticator` و`MsgRevokeAuthenticator` و`MsgUpdateSpendingRules` و`MsgCreateAbstractAccount` و`MsgOpenEVMWindow` و`MsgCloseEVMWindow` و`MsgAuthorizeEVMDelegation` و`MsgClearEVMDelegation`). تبقى هذه على شاشات QoreX نفسها.
 - **لبنات بناء لنافذة تفويض EVM، وليست نافذة تلقائية أبداً.** تغطي `openEvmWindowMsg` و`closeEvmWindowMsg` و`fetchEvmWindow` و`parseEvmWindow` و`isEvmWindowRejection` النافذة التي يجب أن تكون مفتوحة قبل أي إرسال عبر EVM. كل حد (`blocks` من 1 إلى 17,280، و`maxTxs` من 1 إلى 1,000، و`maxValue` أكبر من صفر) مطلوب ويُفحص من جهة العميل دون قيمة افتراضية، وحقول حالة النافذة من نوع BigInt، ولا تفتح الحزمة نافذة من تلقاء نفسها: المقصود أن يرى المستخدم خطوة تفويض صريحة.
 - **رسائل المفاتيح المرتبطة (المصادِقات) بمُلخّصات مطابقة للسلسلة تماماً.** تبني `registerAuthenticatorMsg` و`registerEthAuthenticatorMsg` و`buildPhantomExecuteEvm` و`buildPhantomExecuteCosmos` و`buildMetaMaskExecuteEvm` و`buildMetaMaskExecuteCosmos` الرسائل التي تتيح لمفتاح Phantom أو MetaMask أن ينفق من حساب QoreChain ضمن مجموعة صلاحيات وقاعدة إنفاق. و`evmAuthSignBytesV2` هو المُلخّص المعتمد من السلسلة v3.2.3، وهو يربط أيضاً حد الغاز للاستدعاء (ويجب ألا يكون صفراً). والـ nonce هو تسلسل المصادِق للمفتاح المرتبط، لا nonce EVM للحساب. راجع [المصادِقات والإنفاق المفوَّض](/sdk/guides/authenticators).
 - **تدوير آمن للمفاتيح.** تبني `rotateFromLegacyWalletKey` رسالة `MsgRotatePQCKey` بعيداً عن مفتاح أُنتج باشتقاق توقيع المحفظة المسحوب، وترفض ما لم يساوِ المفتاح الذي تعيد اشتقاقه المفتاحَ المسجَّل. وتنقل `rotatePqcKeyMsgFromMnemonic` مفتاحاً قديماً من نوع `SHAKE-256(mnemonic)` إلى المفتاح القانوني المرتبط بالعنوان، وترفض الاشتقاق القديم بوصفه المفتاح الجديد.
@@ -46,7 +46,17 @@ console.log(w.svm);    // base58 form of the same 20 bytes
 // w.privateKey, w.pubkey, w.pqc = { publicKey (2592 bytes), secretKey }
 ```
 
-تبني `walletFromSeed(seed32)` المحفظة نفسها من 32 بايتاً سرياً: تصبح البذرة المفتاح الخاص لـ secp256k1، لذا يجب أن تأتي من مصدر عشوائي آمن أو من دالة اشتقاق مفاتيح تُطبَّق على مادة لا يملكها إلا المستخدم. لا تشتقّها أبداً من توقيع يستطيع موقع ويب أن يطلب من المحفظة إنتاجه.
+تبني `walletFromSeed(seed, opts)` المحفظة نفسها من 32 بايتاً سرياً: تصبح البذرة المفتاح الخاص لـ secp256k1، لذا يجب أن تأتي من مصدر عشوائي آمن أو من دالة اشتقاق مفاتيح تُطبَّق على مادة لا يملكها إلا المستخدم. لا تشتقّها أبداً من توقيع يستطيع موقع ويب أن يطلب من المحفظة إنتاجه. ومنذ 0.5.0 لا يؤخذ مفتاح ML-DSA-87 من البذرة: تمرّر أيضاً `{ recoveryCode }` (رمز `QRC1`) أو `{ pqcSecret }` (32 بايتاً عشوائياً).
+
+```js
+import { walletFromSeed, generatePqcRecoveryCode } from "@qorechain/wallet-adapter";
+
+const recoveryCode = generatePqcRecoveryCode(); // once; store it apart from the seed
+const w = await walletFromSeed(seed32, { recoveryCode });
+// or: await walletFromSeed(seed32, { pqcSecret })  // 32 random bytes, independent of the seed
+```
+
+احتفظ برمز الاسترداد (أو بسر PQC): فرمز مختلف يعطي مفتاحاً مختلفاً. ويُرفض سر PQC المساوي للبذرة، وتبقى المحافظ المنشأة من عبارة ذاكرية دون تغيير. أما `{ legacySeedDerivation: true }` فموجود فقط لاسترداد مفتاح محفظة أقدم على مسار البذرة كي يمكن تدويره؛ لا تستخدمه للمحافظ الجديدة.
 
 ### تسجيل السلسلة في محافظ المستخدم {#register-chain}
 
@@ -150,10 +160,14 @@ if (!status.live) {
 
 | المهمة | الدوال |
 |---|---|
-| استرداد مفتاح PQC أو تدويره | `generatePqcRecoveryCode`، `pqcKeyFromRecoveryCode`، `isValidRecoveryCode`، `rotatePqcKeyMsgFromMnemonic`، `rotateFromLegacyWalletKey`، `rotatePqcKeyMsg` |
+| استرداد مفتاح PQC أو تدويره | `generatePqcRecoveryCode`، `pqcKeyFromRecoveryCode`، `pqcKeyFromSecret`، `pqcRecoveryCodeFromSecret`، `isValidRecoveryCode`، `rotatePqcKeyMsgFromMnemonic`، `rotateFromLegacyWalletKey`، `rotatePqcKeyMsg` |
 | التوقيع بالمفتاح الأصلي لـ eth | `signClassicalEth` (تسجيل المفتاح الكلاسيكي)، `signHybridEth` |
 | مساعدات sign-bytes | `hybridSignBytes(version, chainId, body, authInfo)`، `resolveSignBytesVersion`، `signBytesVersionFor`، `SIGN_BYTES_V2_UPGRADES` |
 | الربط والإنفاق بمفتاح خارجي | `registerAuthenticatorMsg`، `registerEthAuthenticatorMsg`، `revokeAuthenticatorMsg`، ودوال `buildPhantom*` و`buildMetaMask*` |
+
+## ما الذي يغيّره 0.5.0 {#whats-new-050}
+
+يحمل 0.5.0 (11 نوفمبر 2026) تغييراً واحداً كاسراً. تحتاج `walletFromSeed(seed, opts)` إلى `{ recoveryCode }` (رمز `QRC1`) أو `{ pqcSecret }` (32 بايتاً عشوائياً)؛ و`{ legacySeedDerivation: true }` مخصص فقط لاسترداد مفتاح أقدم كي يمكن تدويره، ويُرفض سر PQC المساوي للبذرة. وتبقى المحافظ المنشأة من عبارة ذاكرية دون تغيير. دوال جديدة: `pqcKeyFromSecret` و`pqcRecoveryCodeFromSecret` و`generatePqcRecoveryCode`. وصار فحص طلب QoreX أشد (راجع [الإرسال عبر QoreX](#qorex)).
 
 ## طريقة الوصول {#how-to-access}
 
@@ -167,9 +181,9 @@ if (!status.live) {
 
 | السجل | الحزمة | الإصدار | الرابط |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.4.0 (نُشر في 20 أكتوبر 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.5.0 (نُشر في 11 نوفمبر 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-المصدر: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (عام، الوسم `v0.4.0`، ترخيص Apache-2.0). لا تُنشر على PyPI ولا crates.io ولا Maven Central ولا وكيل Go. ذات صلة: [حزم المطورين](/developer-tools/overview)، [QoreSign](/qoresign/overview)، [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing)، [تكامل البورصات](/developer-guide/exchange-integration).
+المصدر: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (عام، الوسم `v0.5.0`، ترخيص Apache-2.0). لا تُنشر على PyPI ولا crates.io ولا Maven Central ولا وكيل Go. ذات صلة: [حزم المطورين](/developer-tools/overview)، [QoreSign](/qoresign/overview)، [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing)، [تكامل البورصات](/developer-guide/exchange-integration).
 
 ## الحدود والمشكلات المعروفة {#limits}
 

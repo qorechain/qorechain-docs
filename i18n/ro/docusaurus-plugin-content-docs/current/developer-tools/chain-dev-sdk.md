@@ -9,8 +9,8 @@ sidebar_position: 34
 
 Kitul pentru dezvoltatori de lanț este partea din QoreChain SDK care îi ajută pe dezvoltatorii de Solidity și de contracte inteligente să construiască pe QoreChain cu uneltele pe care le folosesc deja. Adaugă definiții de lanț viem și ajutoare pentru fereastra de autorizare EVM în `@qorechain/evm`, patru șabloane de proiect în `create-qorechain-dapp` (Foundry, Hardhat 3, viem cu wagmi și un token CosmWasm QoreChain Native), quickstart-uri EVM pentru cinci limbaje și o referință despre cum diferă EVM-ul QoreChain de Ethereum. Este destinat echipelor Solidity care portează contracte de pe Ethereum, dezvoltatorilor de front-end pentru dApp-uri pe wagmi și RainbowKit, dezvoltatorilor CosmWasm și mentenanților de unelte EVM care vor să adauge QoreChain.
 
-:::note Live: inclus în SDK 0.12.0
-Kitul este **live și instalabil** în QoreChain SDK **0.12.0** (npm, 30 octombrie 2026): `@qorechain/evm` 0.12.0, `@qorechain/sdk` 0.12.0, `@qorechain/react` 0.12.0, `@qorechain/svm` 0.12.0 și `create-qorechain-dapp` 0.12.0, iar SDK-urile Python, Rust, Go și Java sunt și ele la 0.12.0. Conținutul său a apărut prima dată ca 0.11.0 doar pe npm (29 octombrie 2026); niciun alt registru nu are un 0.11.0, deci luați 0.12.0 peste tot. Tot ce se află pe această pagină a fost verificat față de 0.12.0 pe 4 noiembrie 2026.
+:::note Live: inclus în SDK 0.13.0
+Kitul este **live și instalabil** în QoreChain SDK **0.13.0** (npm, 11 noiembrie 2026): `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0 și `create-qorechain-dapp` 0.13.0, iar SDK-urile Python, Rust și Go sunt și ele la 0.13.0 (SDK-ul Java se publică: Maven Central arăta încă 0.12.0 la 11 noiembrie 2026). Conținutul său a apărut prima dată ca 0.11.0 doar pe npm (29 octombrie 2026) și a fost în 0.12.0 (30 octombrie 2026); niciun alt registru nu are un 0.11.0. Rulările de test de pe această pagină au fost făcute față de 0.12.0 pe 4 noiembrie 2026; 0.13.0 a schimbat helperul de cont pe calea cu seed și tratarea `PRIVATE_KEY` în șabloane (vezi [Ce schimbă 0.13.0](/sdk/install#whats-new-0130)).
 :::
 
 Kitul vizează mainnet (`qorechain-vladi`, ID de lanț EVM 9801) și testnet (`qorechain-diana`, ID de lanț EVM 9800).
@@ -20,14 +20,14 @@ Kitul vizează mainnet (`qorechain-vladi`, ID de lanț EVM 9801) și testnet (`q
 | Element | Pachet și versiune | Unde |
 |---|---|---|
 | Citire cu ethers v6, web3.py, go-ethereum, alloy sau web3j pe endpoint-urile publice | Nu este nevoie de niciun pachet QoreChain | [Quickstart 1](#quickstart-ethers) |
-| `createEvmClient`, ajutoare ERC-20, ERC-721 și ERC-1155, binding-urile `precompiles`, `PRECOMPILE_ADDRESSES` | `@qorechain/evm` 0.12.0 | [Quickstart 2](#quickstart-evm-080) |
-| Definițiile de lanț viem `qorechain` și `qorechainTestnet`, `QORECHAIN_CHAINS`, `QORECHAIN_REST_ENDPOINTS` | `@qorechain/evm` 0.12.0 | [Quickstart 3](#quickstart-viem) |
-| `evmWindowStatus`, `openEvmWindowMessage`, `evmWindowCost`, `classifyEvmWindowRejection`, convertoare de adrese, constantele ferestrei, subcalea `@qorechain/evm/window` | `@qorechain/evm` 0.12.0 | [Quickstart 4](#quickstart-window-helpers) |
-| Deschiderea și citirea unei ferestre de autorizare EVM cu semnare, cu `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount` | `@qorechain/sdk` 0.12.0 | [Quickstart 5](#quickstart-open-window) |
-| Aceleași constructoare de fereastră în Python, Go, Rust și Java | SDK-urile 0.12.0 | [API principal](#main-api) |
-| Ajutoarele de consimțământ EIP-7702 `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection` | `@qorechain/sdk` 0.12.0 | [API principal](#main-api) |
-| Șapte șabloane de generator: `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`, și ajutorul `pnpm window` | `create-qorechain-dapp` 0.12.0 | [Șabloane](#templates) |
-| `PqcStatusBadge` | `@qorechain/react` 0.12.0 | [API principal](#main-api) |
+| `createEvmClient`, ajutoare ERC-20, ERC-721 și ERC-1155, binding-urile `precompiles`, `PRECOMPILE_ADDRESSES` | `@qorechain/evm` 0.13.0 | [Quickstart 2](#quickstart-evm-080) |
+| Definițiile de lanț viem `qorechain` și `qorechainTestnet`, `QORECHAIN_CHAINS`, `QORECHAIN_REST_ENDPOINTS` | `@qorechain/evm` 0.13.0 | [Quickstart 3](#quickstart-viem) |
+| `evmWindowStatus`, `openEvmWindowMessage`, `evmWindowCost`, `classifyEvmWindowRejection`, convertoare de adrese, constantele ferestrei, subcalea `@qorechain/evm/window` | `@qorechain/evm` 0.13.0 | [Quickstart 4](#quickstart-window-helpers) |
+| Deschiderea și citirea unei ferestre de autorizare EVM cu semnare, cu `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount` | `@qorechain/sdk` 0.13.0 | [Quickstart 5](#quickstart-open-window) |
+| Aceleași constructoare de fereastră în Python, Go, Rust și Java | SDK-urile 0.13.0 | [API principal](#main-api) |
+| Ajutoarele de consimțământ EIP-7702 `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection` | `@qorechain/sdk` 0.13.0 | [API principal](#main-api) |
+| Șapte șabloane de generator: `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`, și ajutorul `pnpm window` | `create-qorechain-dapp` 0.13.0 | [Șabloane](#templates) |
+| `PqcStatusBadge` | `@qorechain/react` 0.13.0 | [API principal](#main-api) |
 
 ## Inovații {#innovations}
 
@@ -38,7 +38,7 @@ Kitul vizează mainnet (`qorechain-vladi`, ID de lanț EVM 9801) și testnet (`q
 - **Dimensionarea ferestrei în uqor.** `evmWindowCost` și `weiToUqorCeil` dimensionează o fereastră pornind de la valoare, gaz și plafonul comisionului, rotunjind wei în sus la uqor, astfel încât totalul să acopere cazul cel mai defavorabil.
 - **Fără deschidere automată.** Kitul nu are în mod deliberat niciun ajutor care deschide o fereastră înaintea unei trimiteri. Fereastra există pentru ca cheltuirea să fie autorizată intenționat.
 - **Simulare gratuită.** `eth_call` și `eth_estimateGas` funcționează pentru orice cont, fără fereastră sau cheie înregistrată.
-- **Șabloane care conectează fereastra.** Șabloanele Foundry și Hardhat includ `pnpm window status|register|open`, care derivă cheia ML-DSA-87 din același secret ca și cheia EVM, o înregistrează o singură dată și difuzează mesajul de deschidere semnat hibrid.
+- **Șabloane care conectează fereastra.** Șabloanele Foundry și Hardhat includ `pnpm window status|register|open`, care derivă cheia ML-DSA-87 (din mnemonică cu `QORE_MNEMONIC`; cu `PRIVATE_KEY`, începând cu 0.13.0, dintr-un cod de recuperare din `QORE_PQC_RECOVERY_CODE`), o înregistrează o singură dată și difuzează mesajul de deschidere semnat hibrid.
 - **O suprafață de compatibilitate documentată.** O pagină de referință (citită de pe endpoint-urile publice pe 27 octombrie 2026, reverificată parțial pe 4 noiembrie) listează ce diferă față de Ethereum: tipuri de tranzacții, fork-uri, finalitate, câmpuri de comision, spații de nume JSON-RPC și precompile-uri. Este rezumată [mai jos](#evm-differences).
 
 ## Ce conține kitul {#contents}
@@ -57,7 +57,7 @@ Existente înainte de kit (0.8.0 și mai nou): `createEvmClient`, `evmAccountFro
 
 ### Șabloane {#templates}
 
-`create-qorechain-dapp` 0.12.0 are șapte șabloane: `evm-solidity`, `fullstack-web` și `rollup-app` (vezi [Generatoare de proiecte și CLI](/developer-tools/scaffolders-and-cli)) și patru care aparțin kitului:
+`create-qorechain-dapp` 0.13.0 are șapte șabloane: `evm-solidity`, `fullstack-web` și `rollup-app` (vezi [Generatoare de proiecte și CLI](/developer-tools/scaffolders-and-cli)) și patru care aparțin kitului:
 
 | Șablon | Ce primești |
 |---|---|
@@ -66,11 +66,11 @@ Existente înainte de kit (0.8.0 și mai nou): `createEvmClient`, `evmAccountFro
 | `viem-wagmi` | Un dApp Vite, React, wagmi și RainbowKit cu portofelul QoreX (`@qorechain/qorex-rainbowkit`) și definițiile de lanț din `@qorechain/evm`. Afișează ultimul bloc, soldul de QOR și fereastra EVM a contului. |
 | `cosmwasm` | Un token CW20 QoreChain Native (CosmWasm) pe `cw20-base` din cw-plus, un build optimizat în Docker, un script pentru propunerea de încărcare prin guvernanță și scripturi de instanțiere și interogare pe testnet. |
 
-Șabloanele fixează `@qorechain/evm` și `@qorechain/sdk` la `^0.12.0` (citit dintr-un proiect generat cu `foundry` pe 4 noiembrie 2026).
+Șabloanele fixează `@qorechain/evm` și `@qorechain/sdk` la `^0.13.0` (șabloanele 0.12.0 fixau `^0.12.0`, citit dintr-un proiect generat cu `foundry` pe 4 noiembrie 2026).
 
 ### Ghiduri în repository-ul SDK {#guides}
 
-Repository-ul (`docs/docs/guides/`, eticheta `v0.12.0`) conține `evm-quickstarts.md` (citiri pentru viem, ethers v6, web3.py, go-ethereum, alloy și web3j, plus o secțiune „Before you send"), `evm-differences.md` („QoreChain EVM compared with Ethereum"), `evm.md` și `cosmwasm.md`. Același material pe acest site: [ghidul EVM](/sdk/guides/evm), [Dezvoltare EVM](/developer-guide/evm-development) și [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development).
+Repository-ul (`docs/docs/guides/`, eticheta `v0.13.0`) conține `evm-quickstarts.md` (citiri pentru viem, ethers v6, web3.py, go-ethereum, alloy și web3j, plus o secțiune „Before you send"), `evm-differences.md` („QoreChain EVM compared with Ethereum"), `evm.md` și `cosmwasm.md`. Același material pe acest site: [ghidul EVM](/sdk/guides/evm), [Dezvoltare EVM](/developer-guide/evm-development) și [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development).
 
 Tot în repository: fișiere de contribuție pentru alte unelte (definiții de lanț viem, intrări de lanț Sourcify și o extensie Scaffold-ETH 2) în `contrib/` și `templates/scaffold-eth-extension/`. Sunt fișiere pregătite în repository, nu integrate în proiectele respective.
 
@@ -90,7 +90,7 @@ Tot în repository: fișiere de contribuție pentru alte unelte (definiții de l
 - **Deschidere și închidere.** `MsgOpenEVMWindow` (`/qorechain.pqc.v1.MsgOpenEVMWindow`) deschide o fereastră, semnat hibrid; deschiderea unei ferestre o înlocuiește pe cea anterioară. `MsgCloseEVMWindow` o închide.
 - **Ce limitează o fereastră.** Blocuri (un număr de blocuri, nu o durată), tranzacții EVM și un total în uqor care acoperă valoarea plus comisionul maxim (limita de gaz înmulțită cu plafonul comisionului) al fiecărei tranzacții admise. `nativeOnly` și `allowedTargets` restrâng ce destinatari admite, nu cât dintr-un token (un token listat admite orice sumă, inclusiv `approve`; vezi [Limitați o fereastră](/sdk/guides/evm#evm-window-scope)).
 - **Nonce.** Secvența nativă și nonce-ul EVM sunt același contor. Deschiderea unei ferestre îl avansează, deci deschideți fereastra, apoi citiți nonce-ul, apoi semnați tranzacția EVM.
-- **Ajutorul din șabloane.** În `foundry` și `hardhat`, `pnpm window` derivă contul din `PRIVATE_KEY` (sau `QORE_MNEMONIC`), derivă cheia lui ML-DSA-87 din același secret, înregistrează cheia o singură dată (`register`) și difuzează `MsgOpenEVMWindow` semnat hibrid (`open`). Implicit dimensionează o fereastră de 600 de blocuri și 5 tranzacții, pentru tranzacții de până la 3.000.000 de gaz la un plafon de comision de 250 gwei.
+- **Ajutorul din șabloane.** În `foundry` și `hardhat`, `pnpm window` derivă contul din `PRIVATE_KEY` (sau `QORE_MNEMONIC`), derivă cheia lui ML-DSA-87 (din `QORE_PQC_RECOVERY_CODE` cu `PRIVATE_KEY`, începând cu 0.13.0; din mnemonică cu `QORE_MNEMONIC`, neschimbat), înregistrează cheia o singură dată (`register`) și difuzează `MsgOpenEVMWindow` semnat hibrid (`open`). Implicit dimensionează o fereastră de 600 de blocuri și 5 tranzacții, pentru tranzacții de până la 3.000.000 de gaz la un plafon de comision de 250 gwei.
 - **CosmWasm pe QoreChain Native.** Încărcarea codului se face prin guvernanță pe ambele rețele (`code_upload_access` este `Nobody`): codul este stocat printr-o propunere de guvernanță care poartă `MsgStoreCode` cu modulul de guvernanță ca expeditor. Instanțierea este deschisă tuturor pe testnet și închisă pe mainnet (`instantiate_default_permission` este `Everybody` pe testnet și `Nobody` pe mainnet, citit pe 27 octombrie 2026). Citiți ambele la `/cosmwasm/wasm/v1/codes/params`; listați codurile stocate la `/cosmwasm/wasm/v1/code`. Mainnet nu avea coduri stocate pe 27 octombrie 2026 și pe 4 noiembrie 2026.
 
 ## EVM-ul QoreChain comparat cu Ethereum {#evm-differences}
@@ -119,14 +119,14 @@ Toate fragmentele care citesc folosesc testnet-ul public (`qorechain-diana`, ID 
 
 | Limbaj sau unealtă | Instalare | Platformă minimă |
 |---|---|---|
-| TypeScript, citiri EVM, ajutoare ERC, definiții de lanț viem, ajutoare pentru fereastră | `npm install @qorechain/evm viem` (0.12.0) | Node.js 20 sau mai nou; peer `viem ^2` |
-| TypeScript, semnarea mesajului ferestrei | `npm install @qorechain/sdk` (0.12.0 are `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount`) | Node.js 20 sau mai nou |
-| React, insigna de stare PQC | `npm install @qorechain/react @qorechain/sdk react react-dom` (0.12.0) | Node.js 20 sau mai nou |
-| Generator de proiecte, toate cele șapte șabloane | `npx create-qorechain-dapp my-app --template <name>` (0.12.0) | Node.js 20 sau mai nou; Foundry pentru `foundry`; Node.js 22 pentru `hardhat` (Hardhat 3); Rust și Docker pentru `cosmwasm` |
-| Python (citiri EVM) | `pip install "web3>=7,<8"`; mesajul ferestrei din `pip install qorechain-sdk` (0.12.0) | Python 3.10 sau mai nou |
-| Go (citiri EVM) | `go get github.com/ethereum/go-ethereum@latest`; mesajul ferestrei din `go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0` | Toolchain Go |
-| Rust (citiri EVM) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; mesajul ferestrei din crate-ul `qorechain-sdk` 0.12.0 | Rust stable |
-| Java (citiri EVM) | `org.web3j:core:5.0.0`; mesajul ferestrei din `io.github.qorechain:qorechain-sdk:0.12.0` | JDK 21 (SDK-ul QoreChain Java este construit cu un toolchain JDK 21) |
+| TypeScript, citiri EVM, ajutoare ERC, definiții de lanț viem, ajutoare pentru fereastră | `npm install @qorechain/evm viem` (0.13.0) | Node.js 20 sau mai nou; peer `viem ^2` |
+| TypeScript, semnarea mesajului ferestrei | `npm install @qorechain/sdk` (0.13.0 are `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount`) | Node.js 20 sau mai nou |
+| React, insigna de stare PQC | `npm install @qorechain/react @qorechain/sdk react react-dom` (0.13.0) | Node.js 20 sau mai nou |
+| Generator de proiecte, toate cele șapte șabloane | `npx create-qorechain-dapp my-app --template <name>` (0.13.0) | Node.js 20 sau mai nou; Foundry pentru `foundry`; Node.js 22 pentru `hardhat` (Hardhat 3); Rust și Docker pentru `cosmwasm` |
+| Python (citiri EVM) | `pip install "web3>=7,<8"`; mesajul ferestrei din `pip install qorechain-sdk` (0.13.0) | Python 3.10 sau mai nou |
+| Go (citiri EVM) | `go get github.com/ethereum/go-ethereum@latest`; mesajul ferestrei din `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Toolchain Go |
+| Rust (citiri EVM) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; mesajul ferestrei din crate-ul `qorechain-sdk` 0.13.0 | Rust stable |
+| Java (citiri EVM) | `org.web3j:core:5.0.0`; mesajul ferestrei din `io.github.qorechain:qorechain-sdk:0.13.0` (Maven Central arăta încă 0.12.0 la 11 noiembrie 2026; folosiți 0.13.0 de îndată ce apare) | JDK 21 (SDK-ul QoreChain Java este construit cu un toolchain JDK 21) |
 
 ### Quickstart 1: citire cu ethers v6 {#quickstart-ethers}
 
@@ -274,7 +274,7 @@ Generatorul acceptă cele patru nume de șabloane ale kitului (vezi tabelul de f
 
 `@qorechain/evm` nu semnează și nu difuzează tranzacții ale lane-ului nativ; folosiți `@qorechain/sdk` sau SDK-urile de limbaj pentru asta.
 
-### Construirea și citirea unei ferestre în fiecare SDK (0.12.0) {#api-window}
+### Construirea și citirea unei ferestre în fiecare SDK (0.13.0) {#api-window}
 
 | Limbaj | Deschide o fereastră | Citește o fereastră |
 |---|---|---|
@@ -284,9 +284,9 @@ Generatorul acceptă cele patru nume de șabloane ale kitului (vezi tabelul de f
 | Rust | `qorechain::msg::pqc::open_evm_window` | REST `/qorechain/pqc/v1/evm_window/{address}` |
 | Java | `io.github.qorechain.evm.EvmWindow.open` | `EvmWindow.restPath` |
 
-Consimțământ EIP-7702 (TypeScript, `@qorechain/sdk` 0.12.0): `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection`.
+Consimțământ EIP-7702 (TypeScript, `@qorechain/sdk` 0.13.0): `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection`.
 
-`@qorechain/react` 0.12.0 exportă `PqcStatusBadge` (etichete implicite „PQC key registered" și „No PQC key") alături de `QuantumSafeBadge`, mai vechi.
+`@qorechain/react` 0.13.0 exportă `PqcStatusBadge` (etichete implicite „PQC key registered" și „No PQC key") alături de `QuantumSafeBadge`, mai vechi.
 
 ### Flag-urile `create-qorechain-dapp` {#api-scaffolder}
 
@@ -307,12 +307,13 @@ Consimțământ EIP-7702 (TypeScript, `@qorechain/sdk` 0.12.0): `authorizeEvmDel
 | `foundry`, `hardhat` | `pnpm window status` | Arată contul, dacă cheia lui ML-DSA-87 este înregistrată (și dacă este această cheie) și fereastra lui. |
 | `foundry`, `hardhat` | `pnpm window register` | Înregistrează cheia ML-DSA-87 a contului, o dată per cont. |
 | `foundry`, `hardhat` | `pnpm window open` | Deschide o fereastră (implicit 600 de blocuri, 5 tranzacții). |
+| `foundry`, `hardhat` | `pnpm window recovery-code` | Afișează un cod de recuperare nou (0.13.0). Păstrați-l separat de `PRIVATE_KEY` și puneți-l în `QORE_PQC_RECOVERY_CODE`. |
 | `foundry` | `pnpm deploy:testnet` | `forge script script/Counter.s.sol --rpc-url qorechain_testnet --broadcast`. |
 | `hardhat` | `pnpm build`, `pnpm test`, `pnpm deploy:testnet` | Build Hardhat, teste, deploy Ignition pe `qorechainTestnet`. |
 | `viem-wagmi` | `pnpm dev`, `pnpm build` | Server de dezvoltare pe `http://localhost:5173`; build de producție. |
 | `cosmwasm` | `pnpm build:wasm`, `pnpm propose-store`, `pnpm instantiate`, `pnpm query` | Build optimizat, propunere de încărcare prin guvernanță, instanțiere (testnet), interogări REST. |
 
-Variabilele de mediu ale șabloanelor (în `.env`, niciodată comise): `PRIVATE_KEY`, `QORE_MNEMONIC`, `QORE_NETWORK` (`testnet` sau `mainnet`), `QORE_WINDOW_BLOCKS`, `QORE_WINDOW_TXS`, `QORE_WINDOW_MAX_UQOR`, `COUNTER_INITIAL`; `QORE_CODE_ID` și `QORE_I_KNOW_THIS_IS_MAINNET=yes` pentru scripturile CosmWasm (scriptul de propunere refuză mainnet fără ea); `VITE_WALLETCONNECT_PROJECT_ID` pentru un portofel WalletConnect în `viem-wagmi`.
+Variabilele de mediu ale șabloanelor (în `.env`, niciodată comise): `PRIVATE_KEY`, `QORE_MNEMONIC`, `QORE_PQC_RECOVERY_CODE` (cu `PRIVATE_KEY`; `pnpm window recovery-code` afișează unul nou, păstrați-l separat de cheie), `QORE_NETWORK` (`testnet` sau `mainnet`), `QORE_WINDOW_BLOCKS`, `QORE_WINDOW_TXS`, `QORE_WINDOW_MAX_UQOR`, `COUNTER_INITIAL`; `QORE_CODE_ID` și `QORE_I_KNOW_THIS_IS_MAINNET=yes` pentru scripturile CosmWasm (scriptul de propunere refuză mainnet fără ea); `VITE_WALLETCONNECT_PROJECT_ID` pentru un portofel WalletConnect în `viem-wagmi`.
 
 ## Cum se accesează {#how-to-access}
 
@@ -334,30 +335,30 @@ Variabilele de mediu ale șabloanelor (în `.env`, niciodată comise): `PRIVATE_
 
 ## Unde este publicat {#where-published}
 
-Versiunile au fost citite live din fiecare registru pe 4 noiembrie 2026. Eticheta GitHub `v0.12.0` există. Cele cinci pachete npm au și un 0.11.0 (29 octombrie 2026) care purta același conținut de kit; SDK-urile Python, Rust, Go și Java au trecut direct de la 0.10.0 la 0.12.0.
+Versiunile au fost citite live din registre pe 11 noiembrie 2026 (Maven Central este excepția, vezi rândul său). Eticheta GitHub `v0.12.0` există. Cele cinci pachete npm au și un 0.11.0 (29 octombrie 2026) care purta același conținut de kit; SDK-urile Python, Rust, Go și Java au trecut direct de la 0.10.0 la 0.12.0, iar fiecare limbaj în afară de Java este la 0.13.0.
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|
-| npm | `@qorechain/evm` | 0.12.0 | https://www.npmjs.com/package/@qorechain/evm |
-| npm | `@qorechain/sdk` | 0.12.0 | https://www.npmjs.com/package/@qorechain/sdk |
-| npm | `@qorechain/react` | 0.12.0 | https://www.npmjs.com/package/@qorechain/react |
-| npm | `@qorechain/svm` | 0.12.0 | https://www.npmjs.com/package/@qorechain/svm |
-| npm | `create-qorechain-dapp` | 0.12.0 (șapte șabloane) | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `@qorechain/evm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/evm |
+| npm | `@qorechain/sdk` | 0.13.0 | https://www.npmjs.com/package/@qorechain/sdk |
+| npm | `@qorechain/react` | 0.13.0 | https://www.npmjs.com/package/@qorechain/react |
+| npm | `@qorechain/svm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/svm |
+| npm | `create-qorechain-dapp` | 0.13.0 (șapte șabloane) | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `@qorechain/qorex-rainbowkit` (folosit de `viem-wagmi`) | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-rainbowkit |
-| PyPI | `qorechain-sdk` | 0.12.0 | https://pypi.org/project/qorechain-sdk/ |
-| crates.io | `qorechain-sdk` | 0.12.0 | https://crates.io/crates/qorechain-sdk |
-| Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.12.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
+| crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
+| Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.12.0 (0.13.0 se publică; folosiți-l de îndată ce apare) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
-Sursă: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), eticheta `v0.12.0`; căile `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, întreținut de Asociația QoreChain.
+Sursă: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), eticheta `v0.13.0`; căile `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, întreținut de Asociația QoreChain.
 
 ## Limite și probleme cunoscute {#limits}
 
-- **0.11.0 pe npm este înlocuit.** Folosiți 0.12.0; 0.11.0 există doar pe npm, iar șabloanele din 0.12.0 depind de `^0.12.0`.
+- **0.11.0 pe npm este înlocuit.** Folosiți 0.13.0; 0.11.0 există doar pe npm, iar șabloanele din 0.13.0 depind de `^0.13.0`.
 - **`@qorechain/evm` citește fereastra și compune mesajul; nu semnează și nu difuzează** tranzacții ale lane-ului nativ.
 - **Niciun ajutor nu deschide automat o fereastră înaintea unei trimiteri**, intenționat.
 - **Portofelul QoreX din șablonul `viem-wagmi`** răspunde la `eth_chainId`, `eth_accounts`, `eth_requestAccounts` și `wallet_switchEthereumChain`; metodele lui de semnare EVM nu sunt încă disponibile. Folosiți-l pentru a vă conecta și a citi, iar semnați cu un portofel EIP-1193 injectat.
-- **Ajutorul `pnpm window` din șabloane derivă cheia ML-DSA-87 din același secret ca și cheia EVM.** Dacă cheia contului a fost înregistrată de alt portofel, deschideți fereastra din acel portofel.
+- **Ajutorul `pnpm window` din șabloane derivă cheia ML-DSA-87 din `QORE_MNEMONIC` sau, când folosiți `PRIVATE_KEY`, din `QORE_PQC_RECOVERY_CODE`** (cu `PRIVATE_KEY` și fără cod se oprește cu un mesaj). Dacă cheia contului a fost înregistrată de alt portofel, deschideți fereastra din acel portofel.
 - **Indisponibile pe endpoint-urile publice:** tranzacțiile blob, trasarea și spațiile de nume `debug`, `personal`, `admin` și `miner`.
 - **Încărcarea CosmWasm trece prin guvernanță pe ambele rețele**; șablonul `cosmwasm` nu poate stoca singur cod.
 - **Contribuțiile către alte unelte** (viem, Sourcify, Scaffold-ETH 2) sunt fișiere pregătite în repository, nu integrate în proiectele respective.
@@ -375,7 +376,7 @@ Sursă: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorech
 
 ## Pagini conexe {#related}
 
-- [Prezentare generală a pachetelor pentru dezvoltatori](/developer-tools/overview) și [Generatoare de proiecte și CLI](/developer-tools/scaffolders-and-cli) (`create-qorechain-dapp` 0.12.0)
+- [Prezentare generală a pachetelor pentru dezvoltatori](/developer-tools/overview) și [Generatoare de proiecte și CLI](/developer-tools/scaffolders-and-cli) (`create-qorechain-dapp` 0.13.0)
 - [Prezentare generală SDK](/sdk/overview), [Instalare SDK](/sdk/install) și [ghidul EVM](/sdk/guides/evm) (fereastră, ferestre limitate, consimțământ EIP-7702, precompile-uri)
 - [Dezvoltare EVM](/developer-guide/evm-development) și [Precompile-uri EVM](/developer-guide/evm-precompiles#network-status)
 - [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development) (CosmWasm și propuneri de guvernanță)

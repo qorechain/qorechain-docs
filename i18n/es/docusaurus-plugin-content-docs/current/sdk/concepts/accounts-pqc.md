@@ -123,8 +123,19 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-`unifiedAccountFromSeed(seed32)` hace lo mismo a partir de una clave privada
-secp256k1 sin procesar de 32 bytes.
+`unifiedAccountFromSeed(seed32, { recoveryCode })` hace lo mismo a partir de una clave
+privada secp256k1 sin procesar de 32 bytes. Desde el SDK 0.13.0 la ruta de semilla
+necesita exactamente una de dos entradas: un código de recuperación `QRC1`
+(`generatePqcRecoveryCode()`, creado una sola vez y guardado aparte de la semilla) o un
+secreto PQC independiente de 32 bytes; la clave ML-DSA-87 se deriva de esa segunda
+entrada, y un código distinto da una clave distinta. Sin ninguna opción, o con más de
+una, la llamada lanza un error. Una cuenta cuya clave PQC se registró con la 0.12 o
+anterior carga esa clave con `{ legacySeedDerivation: true }` (Python
+`legacy_seed_derivation=True`, Go `LegacySeedDerivation`, Rust
+`SeedPqcOptions::legacy_seed_derivation()`, Java `SeedPqcOptions.legacy()`) para poder
+rotarla con `MsgRotatePQCKey`; no uses esa opción en cuentas nuevas. Las cuentas
+derivadas de una mnemónica no cambian. Consulta
+[Qué cambia la 0.13.0](/sdk/install#whats-new-0130).
 
 ### La derivación de la semilla PQC
 
@@ -136,8 +147,8 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 ```
 
 por lo que es recuperable a partir de `{ address, mnemonic }` e idéntica en
-todos los SDKs de lenguaje de QoreChain. (Para `unifiedAccountFromSeed`, el
-campo del mnemónico es `"seed:" + hex(seed32)`.) Desde el SDK 0.8.3,
+todos los SDKs de lenguaje de QoreChain. (Para `unifiedAccountFromSeed` antes de la 0.13.0, el
+campo del mnemónico era `"seed:" + hex(seed32)`; desde la 0.13.0 la ruta de semilla deriva la clave del código de recuperación o del secreto PQC, consulta arriba.) Desde el SDK 0.8.3,
 `derivePqcCanonical(account, mnemonic)` resuelve primero `account` a su forma
 `qor1…` en minúsculas (`canonicalAccount`), de modo que un bech32 en
 mayúsculas o la forma `0x` de la misma cuenta produce la misma clave.

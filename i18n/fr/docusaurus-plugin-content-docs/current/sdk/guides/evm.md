@@ -36,7 +36,7 @@ compose le `MsgOpenEVMWindow` de la voie Native à signer en hybride, `evmWindow
 `weiToUqorCeil` dimensionnent une fenêtre, et `toQorAddress` / `toEvmAddress` convertissent un
 compte eth-native entre ses deux encodages. Les assistants de fenêtre sont aussi publiés
 sans viem sous `@qorechain/evm/window`. Ils sont arrivés dans la 0.11.0 (npm uniquement) et sont dans la
-0.12.0.
+0.12.0 et les versions ultérieures.
 
 ## Créer un client
 

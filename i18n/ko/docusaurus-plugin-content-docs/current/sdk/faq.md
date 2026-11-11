@@ -91,14 +91,15 @@ EVM 런타임은 QOR를 **18** 자리 소수(EVM 관례)로 표현하며, 이는
 
 ## 어떤 패키지가 배포되어 있으며, 어디에 있나요?
 
-모두 배포되어 있습니다(2026년 11월 4일 확인). TypeScript 코어(`@qorechain/sdk`, 0.12.0),
-React 키트(`@qorechain/react`, 0.12.0), `create-qorechain-dapp` 스캐폴더(0.12.0),
-그리고 EVM/SVM 어댑터(`@qorechain/evm`, `@qorechain/svm`, 0.12.0)는 npm에 있습니다.
-Python 클라이언트는 PyPI에 있으며(`pip install qorechain-sdk`로 0.12.0 설치, `qorsdk`로
+모두 배포되어 있습니다(2026년 11월 11일 확인). TypeScript 코어(`@qorechain/sdk`, 0.13.0),
+React 키트(`@qorechain/react`, 0.13.0), `create-qorechain-dapp` 스캐폴더(0.13.0),
+그리고 EVM/SVM 어댑터(`@qorechain/evm`, `@qorechain/svm`, 0.13.0)는 npm에 있습니다.
+Python 클라이언트는 PyPI에 있으며(`pip install qorechain-sdk`로 0.13.0 설치, `qorsdk`로
 import), Go 클라이언트는 모듈 프록시에 있습니다
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`). Rust 클라이언트는
-crates.io에 있으며(`cargo add qorechain-sdk`, 0.12.0), Java 클라이언트는 Maven Central에
-있습니다(`io.github.qorechain:qorechain-sdk:0.12.0`, JDK 17 이상). 언어별 전체 설치 명령은
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`). Rust 클라이언트는
+crates.io에 있으며(`cargo add qorechain-sdk`, 0.13.0), Java 클라이언트는 Maven Central에
+있습니다(`io.github.qorechain:qorechain-sdk`, JDK 17 이상). 여기서는 0.13.0을 게시하는 중이며
+2026년 11월 11일에 Maven Central에는 아직 0.12.0이 표시되었습니다(0.13.0이 나타나면 사용하세요). 언어별 전체 설치 명령은
 [설치](/sdk/install) 문서를 참고하세요.
 
 ## 니모닉이 거부됩니다
@@ -123,7 +124,7 @@ v3.2.0). 하이브리드 트랜잭션이 PQC 검증을 통과하려면 서명자
 같은 서명과 tx 해시를 가집니다. 하이브리드 tx가 `pqc` 코드 21
 (`hybrid_verify_failed`)로 실패한다면 원인은 sign-bytes 버전, 체인 ID, 오래된 PQC
 라이브러리 또는 등록되지 않았거나 다른 키이며, 헤지 서명은 원인이 아닙니다.
-두 네트워크 모두 v2 sign-bytes 형식을 검증하므로 SDK **0.8.1 이상**(현재는 0.12.0)을
+두 네트워크 모두 v2 sign-bytes 형식을 검증하므로 SDK **0.8.1 이상**(현재는 0.13.0)을
 사용하고 `rest`(또는 `signBytesVersion`)를 전달하세요. 둘 중 하나가 없으면 빌더는
 `qorechain-vladi` / `qorechain-diana`에서 오류를 발생시킵니다. 자세한 내용은
 [코드 21 문제 해결](/developer-guide/post-quantum-signing#code-21) 및
@@ -165,7 +166,7 @@ sign-bytes 형식, 등록, 하이브리드 전송, EVM 윈도우는 그대로 �
 버전](/sdk/install#before-090) 참고). 서명 형식은 v3.2.4, v3.2.5 또는 v3.2.6에서 바뀌지 않았습니다.
 메인넷은 v3.2.6을, 테스트넷은 v3.2.7을 실행합니다(테스트넷은 v3.2.5를 2026년 10월 26일에, v3.2.6을 10월 27일에,
 v3.2.7을 11월 6일에 적용했고, 메인넷은 v3.2.5를 10월 29일에, v3.2.6을 11월 4일에 적용했습니다). SDK 0.10.0과 0.9.0은 이들에서 계속 동작하지만 v3.2.5에서 추가된 것(ML-KEM 키 레지스트리, 정확한 가스 규칙)에 대한 빌더가 없으므로,
-해당 릴리스에서는 CLI를 사용하거나 0.12.0으로 업그레이드하세요. 0.12.0은 v3.2.5를 기준으로 빌드되고 검증되었습니다.
+해당 릴리스에서는 CLI를 사용하거나 0.13.0으로 업그레이드하세요. 0.12.0은 v3.2.5를 기준으로 빌드되고 검증되었습니다.
 
 ## PQC 키 등록이 거부되었는데 수수료는 차감되었습니다
 

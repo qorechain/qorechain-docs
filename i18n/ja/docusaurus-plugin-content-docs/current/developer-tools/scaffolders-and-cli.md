@@ -9,16 +9,16 @@ sidebar_position: 21
 
 3つのコマンドラインツールで、QoreChain プロジェクトを何もない状態から、型付きでビルド可能な出発点まで進められます。Node.js で作業するアプリケーション開発者（dApp）とロールアップオペレーター向けです。
 
-* **`create-qorechain-dapp`**（0.12.0）は、[QoreChain SDK](/sdk/overview) をベースにした7つのテンプレートから dApp をスキャフォールドします。7つのうち4つ（`foundry`、`hardhat`、`viem-wagmi`、`cosmwasm`）は[チェーン開発者キット](/developer-tools/chain-dev-sdk)に属します。
+* **`create-qorechain-dapp`**（0.13.0）は、[QoreChain SDK](/sdk/overview) をベースにした7つのテンプレートから dApp をスキャフォールドします。7つのうち4つ（`foundry`、`hardhat`、`viem-wagmi`、`cosmwasm`）は[チェーン開発者キット](/developer-tools/chain-dev-sdk)に属します。
 * **`create-qorechain-rollup`**（0.8.0）は、TypeScript の[ロールアップ開発キット](/rollups/overview)をベースにした6つのテンプレートからロールアップのプロジェクトをスキャフォールドします。
 * **`qorollup`** は `@qorechain/rdk-cli` パッケージ（0.8.0）のコマンドで、オペレーター向けのコマンドラインです。プリフライトチェック、ロールアップの作成と監視、ライブパラメータの読み取りを行います。
 
-このページは、2026年10月27日に npm からインストールした公開パッケージの内容と、2026年11月4日にインストールした `create-qorechain-dapp` 0.12.0 を反映しています。概念的なガイドは[ロールアップのデプロイ](/rollups/deploying-a-rollup)と [SDK CLI リファレンス](/sdk/reference/cli)です。
+このページは、2026年10月27日に npm からインストールした公開パッケージの内容と、2026年11月4日にインストールした `create-qorechain-dapp` 0.12.0 を反映しています。現在のバージョンは 0.13.0（2026年11月11日）です。概念的なガイドは[ロールアップのデプロイ](/rollups/deploying-a-rollup)と [SDK CLI リファレンス](/sdk/reference/cli)です。
 
 ## 革新的な点 {#innovations}
 
 * **CI 向けの非対話型スキャフォールド。** すべてのプロンプトにフラグがあります: `--template`、`--network`、`--package-manager`、`--yes`（デフォルトを受け入れる）、`--no-install`。パイプラインは、ターミナルなしで1つのコマンドからプロジェクトを生成してビルドできます。
-* **テンプレートは最新のパッケージに固定されています。** dApp テンプレートは `@qorechain/sdk` `^0.12.0`（EVM テンプレートは `@qorechain/evm` `^0.12.0` にも）に、ロールアップテンプレートは `@qorechain/rdk` `^0.8.0` に依存しています。以前のスキャフォルダー（0.8.0）は、稼働中のネットワークに署名できない SDK に解決される範囲指定を書き出していましたが、現行のものではそうなりません。
+* **テンプレートは最新のパッケージに固定されています。** dApp テンプレートは `@qorechain/sdk` `^0.13.0`（EVM テンプレートは `@qorechain/evm` `^0.13.0` にも）に、ロールアップテンプレートは `@qorechain/rdk` `^0.8.0` に依存しています。以前のスキャフォルダー（0.8.0）は、稼働中のネットワークに署名できない SDK に解決される範囲指定を書き出していましたが、現行のものではそうなりません。
 * **ロールアップテンプレートはユースケースごとに有効な設定を備えています。** 各ロールアップテンプレートは、RDK の互換性マトリクスが受け入れる、決済、シーケンサー、データアベイラビリティ、ガス、VM の組み合わせを設定しており、スキャフォルダーは何かを作成する前に、現時点のステークと作成時のバーン額を表示します。
 * **足りないものを名指しするプリフライトコマンド。** `qorollup doctor`（ロールアップテンプレート内では `npm run doctor`）は、REST エンドポイントが応答すること、モジュールパラメータを読み取れること、エンドポイントが指定したネットワークであること、署名者が設定されていることを確認し、チェックごとに1行を出力します。テンプレート内では、ロールアップの設定を互換性マトリクスに照らして検証することもします。
 * **ハイブリッド署名がテンプレートに組み込まれています。** ロールアップテンプレートは、小さな `signer.ts` を通じて接続します。これはニーモニックからアカウントの ML-DSA-87 鍵を導出し（または生の秘密鍵とともにシードを受け取り）、両ネットワークが Native レーンで必須とするハイブリッド署名を行います。`rollup-app` dApp テンプレートも同じことを行い、`QORE_BROADCAST=1` を設定しない限りドライランとして動作します。
@@ -41,7 +41,7 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 | `evm-solidity` | コンパイル済みアーティファクト付きの Solidity `Counter` コントラクトと、`@qorechain/evm` を使ってそれをデプロイして呼び出す viem スクリプト。ファイル: `contracts/Counter.sol`、`contracts/Counter.artifact.ts`、`scripts/deploy.ts`、`.env`。 | `deploy` |
 | `fullstack-web` | `@qorechain/sdk` でアドレスの残高（とトークノミクスの概要）を読み取る、Vite、React、TypeScript のページ。ファイル: `index.html`、`src/App.tsx`、`src/main.tsx`、`vite.config.ts`、`.env`。 | `dev`、`build`、`preview`、`typecheck` |
 | `rollup-app` | SDK の `createRollupClient` と `createMultilayerClient` を使って、ロールアップおよびサイドチェーンまたはペイチェーンのメッセージを組み立てる Node スクリプト。ファイル: `src/index.ts` と通常の設定。デフォルトはドライラン。 | `start`、`typecheck` |
-| `foundry`、`hardhat`、`viem-wagmi`、`cosmwasm` | チェーン開発者キットのテンプレート: Foundry プロジェクト、Hardhat 3 と viem のプロジェクト（どちらも EVM 認可ウィンドウ用の `pnpm window` ヘルパー付き）、QoreX ウォレット付きの wagmi と RainbowKit の dApp、QoreChain Native の CW20 トークン。詳細、スクリプト、制限事項: [チェーン開発者キット](/developer-tools/chain-dev-sdk#templates)。 | そのページを参照 |
+| `foundry`、`hardhat`、`viem-wagmi`、`cosmwasm` | チェーン開発者キットのテンプレート: Foundry プロジェクト、Hardhat 3 と viem のプロジェクト（どちらも EVM 認可ウィンドウ用の `pnpm window` ヘルパー付き。0.13.0 以降、`pnpm window recovery-code` は新しいリカバリーコードを表示し、`PRIVATE_KEY` を設定した場合の `pnpm window` は `QORE_PQC_RECOVERY_CODE` を読み、ない場合はメッセージを表示して停止します。`QORE_MNEMONIC` の場合は変わりません）、QoreX ウォレット付きの wagmi と RainbowKit の dApp、QoreChain Native の CW20 トークン。詳細、スクリプト、制限事項: [チェーン開発者キット](/developer-tools/chain-dev-sdk#templates)。 | そのページを参照 |
 
 | フラグ | 意味 |
 | --- | --- |
@@ -160,7 +160,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | レジストリ | パッケージ | バージョン | リンク |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp`（コマンド `create-qorechain-dapp`） | 0.12.0 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp`（コマンド `create-qorechain-dapp`） | 0.13.0 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup`（コマンド `create-qorechain-rollup`） | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli`（コマンド `qorollup`） | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk`（テンプレートが使用するライブラリ） | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |

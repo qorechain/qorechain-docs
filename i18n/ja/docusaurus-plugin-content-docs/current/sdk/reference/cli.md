@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> npm には `create-qorechain-dapp`（`0.12.0`）として公開されています。生成される
-> `package.json` ファイルは `@qorechain/sdk` `^0.12.0` に依存します（EVM テンプレートは
-> `@qorechain/evm` `^0.12.0`）。スキャフォルダのバージョン 0.8.0 は `^0.3.0` の範囲を書き込んでおり、
+> npm には `create-qorechain-dapp`（`0.13.0`）として公開されています。生成される
+> `package.json` ファイルは `@qorechain/sdk` `^0.13.0` に依存します（EVM テンプレートは
+> `@qorechain/evm` `^0.13.0`）。スキャフォルダのバージョン 0.8.0 は `^0.3.0` の範囲を書き込んでおり、
 > npm はこれを、稼働中のネットワークに対して署名できない 0.3 リリースに解決します。
 > 0.8.0 でスキャフォールドした場合は、`npm i @qorechain/sdk@latest` を実行してください。
 

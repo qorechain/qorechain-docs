@@ -122,8 +122,18 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-`unifiedAccountFromSeed(seed32)` fa lo stesso a partire da una chiave privata
-secp256k1 grezza a 32 byte.
+`unifiedAccountFromSeed(seed32, { recoveryCode })` fa lo stesso a partire da una chiave
+privata secp256k1 grezza a 32 byte. Dalla SDK 0.13.0 il percorso da seed richiede esattamente uno
+tra un codice di recupero `QRC1` (`generatePqcRecoveryCode()`, creato una sola volta e
+conservato separato dal seed) e un segreto PQC indipendente di 32 byte; la chiave ML-DSA-87
+viene derivata da questo secondo input, e un codice diverso dà una chiave diversa. Senza
+alcuna opzione, o con più di una, la chiamata solleva un errore. Un account la cui chiave PQC
+è stata registrata con la 0.12 o precedenti carica quella chiave con `{ legacySeedDerivation: true }`
+(Python `legacy_seed_derivation=True`, Go `LegacySeedDerivation`, Rust
+`SeedPqcOptions::legacy_seed_derivation()`, Java `SeedPqcOptions.legacy()`) così da poterla
+ruotare con `MsgRotatePQCKey`; non usare questa opzione per i nuovi account. Gli account
+derivati da un mnemonico non cambiano. Vedi
+[Cosa cambia la 0.13.0](/sdk/install#whats-new-0130).
 
 ### La derivazione del seed PQC
 
@@ -135,8 +145,8 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 ```
 
 quindi è recuperabile da `{ address, mnemonic }` ed è identica in tutti gli
-SDK di linguaggio di QoreChain. (Per `unifiedAccountFromSeed`, lo slot del
-mnemonico è `"seed:" + hex(seed32)`.) Dalla SDK 0.8.3
+SDK di linguaggio di QoreChain. (Per `unifiedAccountFromSeed` prima della 0.13.0, lo slot del
+mnemonico era `"seed:" + hex(seed32)`; dalla 0.13.0 il percorso da seed deriva invece la chiave dal codice di recupero o dal segreto PQC, vedi sopra.) Dalla SDK 0.8.3
 `derivePqcCanonical(account, mnemonic)` riconduce prima `account` alla sua
 forma `qor1…` in minuscolo (`canonicalAccount`), quindi un bech32 in maiuscolo
 o la forma `0x` dello stesso account producono la stessa chiave.

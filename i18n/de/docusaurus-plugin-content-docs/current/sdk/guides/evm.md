@@ -36,7 +36,7 @@ setzt das `MsgOpenEVMWindow` der Native-Lane zusammen, das hybrid zu signieren i
 `weiToUqorCeil` bemessen ein Fenster, und `toQorAddress` / `toEvmAddress` wandeln ein
 eth-native-Konto zwischen seinen beiden Kodierungen um. Die Fenster-Helfer werden auch
 ohne viem als `@qorechain/evm/window` veröffentlicht. Sie kamen mit dem nur auf npm veröffentlichten 0.11.0 und sind in
-0.12.0 enthalten.
+0.12.0 und später enthalten.
 
 ## Einen Client erstellen
 

@@ -40,7 +40,7 @@ Wählen Sie danach, was Sie bauen.
 | QoreChain als Verwahrer oder Börse integrieren (Adressprüfungen, Verifikation von Auszahlungen, Gutschrift von Einzahlungen) | Custody Kit | [Custody Kit](/developer-tools/custody-kit) |
 | Die Kryptografie eines Nodes, eines Netzwerks oder von Solidity-Quellen als CycloneDX-CBOM inventarisieren | QoreScan | [QoreScan](/developer-tools/qorescan) |
 | Einen zugangsbeschränkten Token für reale Vermögenswerte im Testnet prototypisch bauen (ERC-3643, CMTAT, Vaults mit beschränkten Anteilen, Post-Quantum-Halterprüfung) | Asset Kit | [Asset Kit](/developer-tools/asset-kit) |
-| Solidity- oder CosmWasm-Projekte auf QoreChain mit Foundry, Hardhat oder viem bauen und testen | Chain Developer Kit (enthalten in SDK 0.12.0) | [Chain Developer Kit](/developer-tools/chain-dev-sdk) |
+| Solidity- oder CosmWasm-Projekte auf QoreChain mit Foundry, Hardhat oder viem bauen und testen | Chain Developer Kit (enthalten in SDK 0.13.0) | [Chain Developer Kit](/developer-tools/chain-dev-sdk) |
 
 Installieren Sie ein Paket und führen Sie seinen Quickstart zuerst gegen das öffentliche Testnet aus. Lesezugriffe brauchen kein Konto, keinen Schlüssel und keine Gebühr.
 
@@ -84,17 +84,17 @@ Anleitungen: [SDK-Überblick](/sdk/overview), [Installation](/sdk/install), [Rea
 
 | Paket | Sprache | Version | Installation | Status |
 |---|---|---|---|---|
-| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.12.0 | `npm install @qorechain/sdk` | Veröffentlicht |
-| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.12.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Veröffentlicht. Provider, Hooks, `ConnectButton` und das PQC-Statusabzeichen (`PqcStatusBadge`, und `QuantumSafeBadge` bleibt seit 0.10.0 erhalten) |
-| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.12.0 | `npm install @qorechain/evm viem` | Veröffentlicht. Enthält die viem-Chain-Definitionen und die EVM-Fensterhelfer (siehe [Chain Developer Kit](#group-chain-dev-sdk)) |
-| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.12.0 | `npm install @qorechain/svm @solana/web3.js` | Veröffentlicht. Auf den Live-Netzwerken nur Lesezugriffe |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.12.0 | `npx create-qorechain-dapp my-dapp` | Veröffentlicht. Sieben Vorlagen |
-| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.12.0 | `pip install qorechain-sdk` | Veröffentlicht |
-| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.12.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Veröffentlicht |
-| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.12.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0` | Veröffentlicht |
-| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.12.0 | `implementation("io.github.qorechain:qorechain-sdk:0.12.0")` | Veröffentlicht |
+| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.13.0 | `npm install @qorechain/sdk` | Veröffentlicht |
+| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Veröffentlicht. Provider, Hooks, `ConnectButton` und das PQC-Statusabzeichen (`PqcStatusBadge`, und `QuantumSafeBadge` bleibt seit 0.10.0 erhalten) |
+| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | Veröffentlicht. Enthält die viem-Chain-Definitionen und die EVM-Fensterhelfer (siehe [Chain Developer Kit](#group-chain-dev-sdk)) |
+| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | Veröffentlicht. Auf den Live-Netzwerken nur Lesezugriffe |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.0 | `npx create-qorechain-dapp my-dapp` | Veröffentlicht. Sieben Vorlagen |
+| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | Veröffentlicht |
+| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Veröffentlicht |
+| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Veröffentlicht |
+| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.13.0 | `implementation("io.github.qorechain:qorechain-sdk:0.13.0")` | In Veröffentlichung: Maven Central zeigt am 11. November 2026 noch 0.12.0; verwenden Sie 0.13.0, sobald es erscheint |
 
-SDK 0.12.0 ist seit dem 30. Oktober 2026 aktuell. Gegenüber 0.10.0 verwenden die Presets standardmäßig die öffentlichen Endpunkte (Mainnet `api.qore.host`, `rpc.qore.host`, `evm.qore.host`; Testnet die `-testnet`-Hosts; zuvor war der Standard localhost), das lokale Preset hat die Chain-ID `qorechain-devnet`, das Gas ist auf Nodes ab v3.2.5 exakt (Simulation mal 1,02 plus 2.000; der alte Pfad bleibt für ältere Nodes), das ML-KEM-1024-Schlüsselregister wird unterstützt (registrieren, löschen und `/qorechain/pqc/v1/kem/\{address\}` abfragen), und das [Chain Developer Kit](#group-chain-dev-sdk) ist enthalten. Das hybride Signieren ist unverändert. Die Pakete für Python, Rust, Go und Java sind direkt von 0.10.0 auf 0.12.0 gegangen; die fünf npm-Pakete haben außerdem eine 0.11.0 (29. Oktober 2026) mit dem Kit-Inhalt, die 0.12.0 ablöst.
+SDK 0.13.0 ist seit dem 11. November 2026 aktuell (es ändert den Konto-Helfer des Seed-Pfads, der nun einen `QRC1`-Wiederherstellungscode oder ein unabhängiges 32-Byte-PQC-Geheimnis braucht; Mnemonic-Konten, Signieren und Chain-Verhalten sind unverändert; siehe [Was 0.13.0 ändert](/sdk/install#whats-new-0130)). SDK 0.12.0 war vom 30. Oktober 2026 an aktuell. Gegenüber 0.10.0 verwenden die Presets standardmäßig die öffentlichen Endpunkte (Mainnet `api.qore.host`, `rpc.qore.host`, `evm.qore.host`; Testnet die `-testnet`-Hosts; zuvor war der Standard localhost), das lokale Preset hat die Chain-ID `qorechain-devnet`, das Gas ist auf Nodes ab v3.2.5 exakt (Simulation mal 1,02 plus 2.000; der alte Pfad bleibt für ältere Nodes), das ML-KEM-1024-Schlüsselregister wird unterstützt (registrieren, löschen und `/qorechain/pqc/v1/kem/\{address\}` abfragen), und das [Chain Developer Kit](#group-chain-dev-sdk) ist enthalten. Das hybride Signieren ist unverändert. Die Pakete für Python, Rust, Go und Java sind direkt von 0.10.0 auf 0.12.0 gegangen; die fünf npm-Pakete haben außerdem eine 0.11.0 (29. Oktober 2026) mit dem Kit-Inhalt, die 0.12.0 ablöst.
 
 ### QoreSign {#group-qoresign}
 
@@ -170,11 +170,11 @@ Seite: [Asset Kit](/developer-tools/asset-kit). Quellcode: [qorechain/qorechain-
 | [`@qorechain/asset-kit`](https://www.npmjs.com/package/@qorechain/asset-kit) | TypeScript (Client für den Vorschlag) | 0.1.0 | `npm install @qorechain/asset-kit` | Veröffentlicht |
 | [`qorechain-asset-kit`](https://pypi.org/project/qorechain-asset-kit/) | Python 3.10+ (Client für den Vorschlag; Import als `qorechain_asset_kit`) | 0.1.0 | `pip install qorechain-asset-kit` | Veröffentlicht |
 
-### Chain Developer Kit (SDK 0.12.0) {#group-chain-dev-sdk}
+### Chain Developer Kit (SDK 0.13.0) {#group-chain-dev-sdk}
 
 Seite: [Chain Developer Kit](/developer-tools/chain-dev-sdk). Quellcode: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). Der Teil von QoreChain SDK für Solidity- und Smart-Contract-Teams: viem-Chain-Definitionen und Helfer für EVM-Autorisierungsfenster in `@qorechain/evm`, vier `create-qorechain-dapp`-Templates (Foundry, Hardhat 3, viem mit wagmi und ein QoreChain-Native-Token), EVM-Quickstarts und eine Seite dazu, wie sich die QoreChain-EVM von Ethereum unterscheidet.
 
-Es ist **live und in SDK 0.12.0 enthalten**: Es gibt kein separates Paket. Installieren Sie die Pakete aus der [SDK-Tabelle](#group-sdk) (`@qorechain/evm` 0.12.0 für die Chain-Definitionen und Fensterhelfer, `create-qorechain-dapp` 0.12.0 für die Templates). Der Kit-Inhalt erschien zuerst als 0.11.0 auf npm (29. Oktober 2026); 0.12.0 löst sie ab.
+Es ist **live und in SDK 0.13.0 enthalten** (seit 0.12.0): Es gibt kein separates Paket. Installieren Sie die Pakete aus der [SDK-Tabelle](#group-sdk) (`@qorechain/evm` 0.13.0 für die Chain-Definitionen und Fensterhelfer, `create-qorechain-dapp` 0.13.0 für die Templates). Der Kit-Inhalt erschien zuerst als 0.11.0 auf npm (29. Oktober 2026); 0.12.0 löst sie ab.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 
@@ -209,7 +209,7 @@ Seite: [Wallet-Adapter](/developer-tools/wallet-adapter). Quellcode: [qorechain/
 
 | Paket | Sprache | Version | Installation | Status |
 |---|---|---|---|---|
-| [`@qorechain/wallet-adapter`](https://www.npmjs.com/package/@qorechain/wallet-adapter) | TypeScript (ES-Modul, reines JavaScript mit Typings) | 0.4.0 | `npm install @qorechain/wallet-adapter @cosmjs/stargate @cosmjs/proto-signing` | Veröffentlicht. Kein getesteter Quickstart |
+| [`@qorechain/wallet-adapter`](https://www.npmjs.com/package/@qorechain/wallet-adapter) | TypeScript (ES-Modul, reines JavaScript mit Typings) | 0.5.0 | `npm install @qorechain/wallet-adapter @cosmjs/stargate @cosmjs/proto-signing` | Veröffentlicht. Kein getesteter Quickstart |
 
 ### Chain-Bridge {#group-chain-bridge}
 
@@ -247,7 +247,7 @@ Anleitung: [QoreX, für Entwickler](/qorex/overview#developers). Quellcode: [qor
 | [`@qorechain/connect`](https://www.npmjs.com/package/@qorechain/connect) | TypeScript | 0.2.1 | keine | **Veraltet und nicht mehr gepflegt.** Verwenden Sie es nicht für neue Arbeit. Ersetzen Sie es wie in der Tabelle unten |
 
 :::caution @qorechain/connect ist veraltet
-`@qorechain/connect` ist auf npm als veraltet (deprecated) markiert. Sein Peer-Bereich ist `@qorechain/wallet-adapter` `^0.2.1`, der 0.4.0 nicht einschließt, und es öffnet kein [EVM-Autorisierungsfenster](/sdk/guides/evm#evm-window), sodass eine EVM-Sendung darüber abgelehnt wird, bis das Konto einen registrierten Schlüssel und ein offenes Fenster hat. Das in seinen Registry-Metadaten angegebene Repository ist öffentlich nicht erreichbar.
+`@qorechain/connect` ist auf npm als veraltet (deprecated) markiert. Sein Peer-Bereich ist `@qorechain/wallet-adapter` `^0.2.1`, der 0.5.0 nicht einschließt, und es öffnet kein [EVM-Autorisierungsfenster](/sdk/guides/evm#evm-window), sodass eine EVM-Sendung darüber abgelehnt wird, bis das Konto einen registrierten Schlüssel und ein offenes Fenster hat. Das in seinen Registry-Metadaten angegebene Repository ist öffentlich nicht erreichbar.
 :::
 
 | Bedarf | Stattdessen verwenden |

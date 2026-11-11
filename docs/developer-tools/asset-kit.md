@@ -342,7 +342,7 @@ Repository: https://github.com/qorechain/qorechain-asset-kit. Maintainer: QoreCh
 - [Post-quantum signing](/developer-guide/post-quantum-signing) and [accounts and PQC signing](/sdk/concepts/accounts-pqc): key registration and the hybrid signature.
 - [EVM development](/developer-guide/evm-development#evm-window): the EVM authorization window.
 - [EVM precompiles](/developer-guide/evm-precompiles): `0x0A01` and `0x0A02`, active on testnet only.
-- [Chain developer kit](/developer-tools/chain-dev-sdk): Foundry, Hardhat and viem templates and window helpers (included in SDK 0.12.0).
+- [Chain developer kit](/developer-tools/chain-dev-sdk): Foundry, Hardhat and viem templates and window helpers (included in SDK 0.12.0 and later).
 - [Custody kit](/developer-tools/custody-kit) and [QoreScan](/developer-tools/qorescan): neighbouring kits for custodians and for cryptography inventories.
 - [Developer packages](/developer-tools/overview): every package and its registry status.
 - Upstream standards: ERC-3643, CMTAT, ERC-4626, ERC-7540, ERC-7518.

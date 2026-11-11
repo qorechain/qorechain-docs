@@ -123,8 +123,19 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-`unifiedAccountFromSeed(seed32)` fait la même chose à partir d'une clé privée
-secp256k1 brute de 32 octets.
+`unifiedAccountFromSeed(seed32, { recoveryCode })` fait la même chose à partir d'une clé
+privée secp256k1 brute de 32 octets. Depuis le SDK 0.13.0, le chemin par graine exige
+exactement l'un des deux éléments suivants : un code de récupération `QRC1`
+(`generatePqcRecoveryCode()`, créé une seule fois et conservé séparément de la
+graine) ou un secret PQC indépendant de 32 octets ; la clé ML-DSA-87 est
+dérivée de cette seconde entrée, et un autre code donne une autre clé. Sans
+option, ou avec plus d'une, l'appel lève une erreur. Un compte dont la clé PQC
+a été enregistrée avec la 0.12 ou une version antérieure charge cette clé avec `{ legacySeedDerivation: true }`
+(Python `legacy_seed_derivation=True`, Go `LegacySeedDerivation`, Rust
+`SeedPqcOptions::legacy_seed_derivation()`, Java `SeedPqcOptions.legacy()`) afin de
+pouvoir la faire pivoter avec `MsgRotatePQCKey` ; n'utilisez pas cette option pour de nouveaux comptes. Les comptes
+dérivés d'un mnémonique sont inchangés. Voir
+[Ce que change la 0.13.0](/sdk/install#whats-new-0130).
 
 ### La dérivation de la graine PQC
 
@@ -136,8 +147,8 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 ```
 
 Elle est donc récupérable à partir de `{ address, mnemonic }` et identique dans
-tous les SDK de langage de QoreChain. (Pour `unifiedAccountFromSeed`,
-l'emplacement du mnémonique est `"seed:" + hex(seed32)`.) Depuis le SDK 0.8.3,
+tous les SDK de langage de QoreChain. (Pour `unifiedAccountFromSeed` avant la 0.13.0,
+l'emplacement du mnémonique était `"seed:" + hex(seed32)` ; depuis la 0.13.0, le chemin par graine dérive la clé du code de récupération ou du secret PQC, voir ci-dessus.) Depuis le SDK 0.8.3,
 `derivePqcCanonical(account, mnemonic)` commence par ramener `account` à sa
 forme `qor1…` en minuscules (`canonicalAccount`) : un bech32 en majuscules ou la
 forme `0x` du même compte produit donc la même clé. Chaque langage dispose de la

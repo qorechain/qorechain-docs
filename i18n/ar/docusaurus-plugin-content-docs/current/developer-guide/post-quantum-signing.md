@@ -186,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-ترفض أدوات التدوير المساعدة في SDK 0.9.0 وما بعده وفي `@qorechain/wallet-adapter` 0.4.0 الاشتقاق القديم بوصفه المفتاح **الجديد** (فهو غير مرتبط بالحساب)؛ ويمكن أن يبقى المفتاح القديم هو المفتاح السابق. بعد نجاح التدوير، يوقّع المفتاح الجديد (الرمز 0) ويُرفض المفتاح القديم (الرمز 21 في `pqc`). منذ v3.2.3 يرفض التدوير (مثل الترحيل) مفتاحاً جديداً لا يوفّر أي حماية ما بعد كمومية (الرمز 230) ومفتاحاً سبق للحساب استخدامه (الرمز 232)، ولا يمكن إرساله عبر `authz`.
+ترفض أدوات التدوير المساعدة في SDK 0.9.0 وما بعده وفي `@qorechain/wallet-adapter` 0.4.0 وما بعده الاشتقاق القديم بوصفه المفتاح **الجديد** (فهو غير مرتبط بالحساب)؛ ويمكن أن يبقى المفتاح القديم هو المفتاح السابق. بعد نجاح التدوير، يوقّع المفتاح الجديد (الرمز 0) ويُرفض المفتاح القديم (الرمز 21 في `pqc`). منذ v3.2.3 يرفض التدوير (مثل الترحيل) مفتاحاً جديداً لا يوفّر أي حماية ما بعد كمومية (الرمز 230) ومفتاحاً سبق للحساب استخدامه (الرمز 232)، ولا يمكن إرساله عبر `authz`.
 
 ## السلسلة v3.2.7 على شبكة الاختبار: تعدد التوقيع، والتوقيع النصي، وغاز التحقق {#v327}
 
@@ -278,7 +278,7 @@ pqc.MLDSA.Verify(pk, msg, sig) // true
 هناك ثلاث طرق لإنتاج هذا التوقيع الهجين:
 
 * **سطر الأوامر** — يُرفق `qorechaind tx pqc cosign` توقيع Dilithium-5 المصاحب بالمعاملة ويبثّها (بعد `qorechaind tx pqc gen-key` وتسجيل المفتاح). وهو جزء من الملف التنفيذي الرسمي فقط. راجع [أوامر المعاملات](/cli-reference/transaction-commands).
-* **حزمة QoreChain SDK** — تقوم `buildHybridTx` / `signAndBroadcastHybrid` (مرّر `rest` كي تُحدَّد صيغة بايتات التوقيع) بالعمل المكافئ في TypeScript وPython وGo وRust وJava؛ وفي TypeScript توقّع `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 وما بعده؛ والإصدار 0.12.0 هو الحالي) كل معاملة توقيعاً هجيناً. سجّل مفتاحك أولًا (انظر أعلاه). راجع [حسابات SDK وتوقيع PQC](/sdk/concepts/accounts-pqc).
+* **حزمة QoreChain SDK** — تقوم `buildHybridTx` / `signAndBroadcastHybrid` (مرّر `rest` كي تُحدَّد صيغة بايتات التوقيع) بالعمل المكافئ في TypeScript وPython وGo وRust وJava؛ وفي TypeScript توقّع `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0 وما بعده؛ والإصدار 0.13.0 هو الحالي) كل معاملة توقيعاً هجيناً. سجّل مفتاحك أولًا (انظر أعلاه). راجع [حسابات SDK وتوقيع PQC](/sdk/concepts/accounts-pqc).
 * **`qorechain-pqc` مباشرة** — استخدم `hybridSignBytes` لتأطير بايتات التوقيع و`mldsa.sign` لإنتاج توقيع Dilithium-5، عندما تبني أدوات خارج SDK بإحدى اللغات الست المدعومة.
 
 ## تحسين البصمة على السلسلة

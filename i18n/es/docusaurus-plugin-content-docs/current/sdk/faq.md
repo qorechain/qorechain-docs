@@ -93,15 +93,16 @@ de EVM), lo cual es distinto de la base `uqor` Native de 10^6.
 
 ## ¿Qué paquetes están publicados y dónde?
 
-Todos (comprobado el 4 de noviembre de 2026). El núcleo de TypeScript
-(`@qorechain/sdk`, 0.12.0), el kit de React (`@qorechain/react`, 0.12.0), el
-generador de proyectos `create-qorechain-dapp` (0.12.0) y los adaptadores EVM/SVM
-(`@qorechain/evm`, `@qorechain/svm`, 0.12.0) están en npm; el cliente de Python
-está en PyPI (`pip install qorechain-sdk` en 0.12.0, importa `qorsdk`); el cliente
+Todos (comprobado el 11 de noviembre de 2026). El núcleo de TypeScript
+(`@qorechain/sdk`, 0.13.0), el kit de React (`@qorechain/react`, 0.13.0), el
+generador de proyectos `create-qorechain-dapp` (0.13.0) y los adaptadores EVM/SVM
+(`@qorechain/evm`, `@qorechain/svm`, 0.13.0) están en npm; el cliente de Python
+está en PyPI (`pip install qorechain-sdk` en 0.13.0, importa `qorsdk`); el cliente
 de Go está en el proxy de módulos
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.12.0`); el cliente de
-Rust está en crates.io (`cargo add qorechain-sdk`, 0.12.0); y el cliente de Java
-está en Maven Central (`io.github.qorechain:qorechain-sdk:0.12.0`, JDK 17 o posterior). Consulta
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`); el cliente de
+Rust está en crates.io (`cargo add qorechain-sdk`, 0.13.0); y el cliente de Java
+está en Maven Central (`io.github.qorechain:qorechain-sdk`, JDK 17 o posterior), donde la 0.13.0 se está
+publicando y Maven Central seguía mostrando la 0.12.0 el 11 de noviembre de 2026 (usa la 0.13.0 cuando aparezca). Consulta
 [Instalación](/sdk/install) para ver los comandos completos por lenguaje.
 
 ## Mi frase mnemotécnica es rechazada
@@ -130,7 +131,7 @@ híbrida falla con el código 21 de `pqc` (`hybrid_verify_failed`), la causa es 
 versión de los sign-bytes, el chain-id, una biblioteca PQC obsoleta o una clave no
 registrada o distinta, nunca la firma hedged.
 Ambas redes verifican la forma v2 de los sign-bytes, así que usa el SDK **0.8.1 o
-posterior** (la 0.12.0 es la actual) y pasa `rest` (o `signBytesVersion`): los
+posterior** (la 0.13.0 es la actual) y pasa `rest` (o `signBytesVersion`): los
 constructores lanzan un error en `qorechain-vladi` / `qorechain-diana` si no se
 indica uno de ellos. Consulta
 [Solución de problemas del código 21](/developer-guide/post-quantum-signing#code-21) y
@@ -177,7 +178,7 @@ de esos constructores: usa la CLI para ellos (consulta
 [Versiones anteriores a la 0.9.0](/sdk/install#before-090)). El formato de firma no
 cambió en v3.2.4, v3.2.5 ni v3.2.6. La mainnet ejecuta v3.2.6 y la testnet v3.2.7 (la testnet aplicó la v3.2.5 el 26 de octubre
 de 2026, la v3.2.6 el 27 de octubre y la v3.2.7 el 6 de noviembre; la mainnet aplicó la v3.2.5 el 29 de octubre y la v3.2.6 el 4 de noviembre). El SDK 0.10.0 y el 0.9.0 siguen funcionando en ellas, pero no tienen constructores para las
-novedades de la v3.2.5 (el registro de claves ML-KEM, la regla exacta de gas); con esas versiones usa la CLI, o actualiza a la 0.12.0. La 0.12.0 se construyó y se verificó contra la v3.2.5.
+novedades de la v3.2.5 (el registro de claves ML-KEM, la regla exacta de gas); con esas versiones usa la CLI, o actualiza a la 0.13.0. La 0.12.0 se construyó y se verificó contra la v3.2.5.
 
 ## Mi registro de clave PQC fue rechazado pero se cobró la comisión
 

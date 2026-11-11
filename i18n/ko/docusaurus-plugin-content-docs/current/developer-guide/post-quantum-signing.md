@@ -186,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-SDK 0.9.0 이상과 `@qorechain/wallet-adapter` 0.4.0의 로테이션 헬퍼는 레거시 파생 방식을 **새** 키로 사용하는 것을 거부합니다(계정에 바인딩되지 않기 때문입니다). 레거시 키도 이전 키로는 여전히 사용할 수 있습니다. 로테이션이 성공하면 새 키의 서명이 통과되고(code 0), 이전 키는 거부됩니다(`pqc` code 21). v3.2.3부터 로테이션은(마이그레이션과 마찬가지로) 양자내성 보호를 제공하지 않는 새 키(코드 230)와 계정이 이전에 사용한 키(코드 232)를 거부하며, `authz`를 통해 보낼 수 없습니다.
+SDK 0.9.0 이상과 `@qorechain/wallet-adapter` 0.4.0 이상의 로테이션 헬퍼는 레거시 파생 방식을 **새** 키로 사용하는 것을 거부합니다(계정에 바인딩되지 않기 때문입니다). 레거시 키도 이전 키로는 여전히 사용할 수 있습니다. 로테이션이 성공하면 새 키의 서명이 통과되고(code 0), 이전 키는 거부됩니다(`pqc` code 21). v3.2.3부터 로테이션은(마이그레이션과 마찬가지로) 양자내성 보호를 제공하지 않는 새 키(코드 230)와 계정이 이전에 사용한 키(코드 232)를 거부하며, `authz`를 통해 보낼 수 없습니다.
 
 ## 테스트넷의 체인 v3.2.7: 멀티시그, 텍스추얼 서명, 검증 가스 {#v327}
 
@@ -278,7 +278,7 @@ QoreChain의 지갑 호환 **하이브리드 확장 서명 바이트(sign-bytes)
 이 하이브리드 서명을 생성하는 방법은 세 가지입니다:
 
 * **CLI** — `qorechaind tx pqc cosign`이 트랜잭션에 Dilithium-5 공동 서명을 첨부하고 브로드캐스트합니다(`qorechaind tx pqc gen-key` 실행 및 키 등록 이후). 릴리스 바이너리에만 포함되어 있습니다. [트랜잭션 명령어](/cli-reference/transaction-commands)를 참조하세요.
-* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid`(sign-bytes 형식이 결정되도록 `rest`를 전달하세요)가 TypeScript, Python, Go, Rust, Java에서 동일한 작업을 수행하며, TypeScript에서는 `client.connectTx(signer, { pqcKeypair })`(SDK 0.9.0 이상, 현재 릴리스는 0.12.0)가 모든 트랜잭션을 하이브리드로 서명합니다. 먼저 키를 등록하세요(위 참조). [SDK 계정 및 PQC 서명](/sdk/concepts/accounts-pqc)을 참조하세요.
+* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid`(sign-bytes 형식이 결정되도록 `rest`를 전달하세요)가 TypeScript, Python, Go, Rust, Java에서 동일한 작업을 수행하며, TypeScript에서는 `client.connectTx(signer, { pqcKeypair })`(SDK 0.9.0 이상, 현재 릴리스는 0.13.0)가 모든 트랜잭션을 하이브리드로 서명합니다. 먼저 키를 등록하세요(위 참조). [SDK 계정 및 PQC 서명](/sdk/concepts/accounts-pqc)을 참조하세요.
 * **`qorechain-pqc` 직접 사용** — 지원되는 6개 언어 중 하나로 SDK 외부에서 툴링을 구축하는 경우, `hybridSignBytes`로 서명 바이트를 프레이밍하고 `mldsa.sign`으로 Dilithium-5 서명을 생성하세요.
 
 ## 온체인 풋프린트 최적화

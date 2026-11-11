@@ -342,7 +342,7 @@ Depo: https://github.com/qorechain/qorechain-asset-kit. Bakımcı: QoreChain Ass
 - [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) ve [hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc): anahtar kaydı ve hibrit imza.
 - [EVM geliştirme](/developer-guide/evm-development#evm-window): EVM yetkilendirme penceresi.
 - [EVM precompile'ları](/developer-guide/evm-precompiles): `0x0A01` ve `0x0A02`, yalnızca testnet'te etkin.
-- [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk): Foundry, Hardhat ve viem şablonları ile pencere yardımcıları (SDK 0.12.0'a dahildir).
+- [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk): Foundry, Hardhat ve viem şablonları ile pencere yardımcıları (SDK 0.12.0 ve sonrasına dahildir).
 - [Saklama kiti](/developer-tools/custody-kit) ve [QoreScan](/developer-tools/qorescan): saklama kuruluşları ve kriptografi envanterleri için komşu kitler.
 - [Geliştirici paketleri](/developer-tools/overview): her paket ve kayıt defteri durumu.
 - Yukarı akış standartları: ERC-3643, CMTAT, ERC-4626, ERC-7540, ERC-7518.

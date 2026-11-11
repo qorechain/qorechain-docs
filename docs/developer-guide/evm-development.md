@@ -332,7 +332,7 @@ An EIP-7702 delegation of your account (a type-4 transaction) takes effect only 
 | code 27 | The window is expired or exhausted (the message shows which bound), or the transaction is outside the window's scope |
 | code 28 | Invalid window bounds when opening one, or no registered key at that point |
 
-With the TypeScript SDK (0.8.2 and later): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` and `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). SDK 0.9.0 and later (0.12.0 is the current release) add the scope options (`nativeOnly`, `allowedTargets`) to `openEvmWindowMsg` and the EIP-7702 consent builders (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); releases before 0.9.0 build only the unscoped window, so use `qorechaind` for the rest (see the [SDK EVM guide](/sdk/guides/evm#evm-window-scope)).
+With the TypeScript SDK (0.8.2 and later): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` and `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). SDK 0.9.0 and later (0.13.0 is the current release) add the scope options (`nativeOnly`, `allowedTargets`) to `openEvmWindowMsg` and the EIP-7702 consent builders (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); releases before 0.9.0 build only the unscoped window, so use `qorechaind` for the rest (see the [SDK EVM guide](/sdk/guides/evm#evm-window-scope)).
 
 ---
 

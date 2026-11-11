@@ -332,7 +332,7 @@ Desde v3.2.2, una delegación EIP-7702 de tu cuenta (una transacción de tipo 4)
 | código 27 | La ventana ha caducado o se ha agotado (el mensaje indica qué límite), o la transacción está fuera del alcance de la ventana |
 | código 28 | Límites de ventana no válidos al abrirla, o no hay clave registrada en ese momento |
 
-Con el SDK de TypeScript (0.8.2 y posteriores): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` y `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). El SDK 0.9.0 y posteriores (la 0.12.0 es la versión actual) añaden las opciones de alcance (`nativeOnly`, `allowedTargets`) a `openEvmWindowMsg` y los constructores del consentimiento EIP-7702 (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); las versiones anteriores a la 0.9.0 construyen solo la ventana sin alcance, así que usa `qorechaind` para el resto (consulta la [guía EVM del SDK](/sdk/guides/evm#evm-window-scope)).
+Con el SDK de TypeScript (0.8.2 y posteriores): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` y `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). El SDK 0.9.0 y posteriores (la 0.13.0 es la versión actual) añaden las opciones de alcance (`nativeOnly`, `allowedTargets`) a `openEvmWindowMsg` y los constructores del consentimiento EIP-7702 (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); las versiones anteriores a la 0.9.0 construyen solo la ventana sin alcance, así que usa `qorechaind` para el resto (consulta la [guía EVM del SDK](/sdk/guides/evm#evm-window-scope)).
 
 ---
 

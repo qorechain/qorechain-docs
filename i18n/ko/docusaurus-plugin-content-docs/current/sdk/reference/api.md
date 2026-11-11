@@ -37,7 +37,7 @@ pnpm --filter @qorechain/sdk docs:api
 - **계정:** `generateMnemonic`, `validateMnemonic`, `deriveNativeAccount`,
   `deriveEvmAccount`, `deriveSvmAccount`; 계정 타입.
 - **통합 계정 (0.6.0):** `deriveUnifiedAccount`,
-  `unifiedAccountFromSeed`, `addressesFrom20`, `qoreAddresses`. (`unifiedAccountFromPhantomSignature`와 `connectPhantomUnified`는 0.8.0에서 제거되었으며 오류를 발생시킵니다.)
+  `unifiedAccountFromSeed`(0.13.0: `QRC1` 복구 코드 또는 독립적인 32바이트 PQC 비밀이 필요), `addressesFrom20`, `qoreAddresses`, 그리고 `QRC1` 복구 코드 헬퍼 `generatePqcRecoveryCode`, `isValidRecoveryCode`, `normalizeRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcRecoveryCodeFromSecret`. (`unifiedAccountFromPhantomSignature`와 `connectPhantomUnified`는 0.8.0에서 제거되었으며 오류를 발생시킵니다.)
 - **PQC:** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, 길이 상수,
   알고리즘 ID/헬퍼, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
@@ -148,10 +148,10 @@ pnpm --filter @qorechain/sdk docs:api
 
 | 언어 | 생성 문서 | 설치 |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 공개 API의 docstring | `pip install qorechain-sdk`, 버전 `0.12.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.12.0` (태그 `packages/go/v0.12.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.12.0; import `qorechain`) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.12.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 공개 API의 docstring | `pip install qorechain-sdk`, 버전 `0.13.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0` (태그 `packages/go/v0.13.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.13.0; import `qorechain`) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.13.0` (2026년 11월 11일에 Maven Central에는 아직 0.12.0이 표시됨. 0.13.0이 나타나면 사용하세요) |
 
 각 패키지는 동일한 표면(네트워크 프리셋, denom/주소 유틸리티, HD 파생 —
 통합 eth-native 계정 포함 — PQC 프리미티브와 하이브리드 서명, 타입 지정

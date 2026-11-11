@@ -166,7 +166,7 @@ Yukarıdaki zincir kimliği testnet'e aittir; mainnet'te `qorechain-vladi` kulla
 
 Her iki ağ da `GET /qorechain/stakingtier/v1/params` isteğine aynı ayarlarla yanıt verir: üç vade, 10 QOR minimum (`min_lock_amount` `"10000000"` uqor), 500 baz puanlık (%5) erken açma cezası ve `enabled: true`. Yanıt ayrıca baz puan cinsinden bonus ayarlarını da taşır; bu kılavuz bunları belirtmez, çünkü bir bonus vaat edilmiş bir getiri değildir ve ayarlar yönetişim tarafından değiştirilebilir. `GET /qorechain/stakingtier/v1/pool`, kilit ödüllerini ödeyen havuzu gösterir.
 
-**İstemciler.** Komut satırı (yukarıda) ve `lockDelegation`, `unlockEarly` ve `claimBonus` oluşturucularına ile `fetchStakingTierParams`, `fetchStakingLocks` ve `fetchStakingTierPool` okumalarına sahip `@qorechain/sdk` (0.10.0 veya sonrası; güncel sürüm 0.12.0) ([SDK kurulumu](/sdk/install) sayfasına bakın). QoreX'in veya dashboard'un yayımlanmış hiçbir sürümünde bugün bir kilit ekranı yoktur; bu nedenle mainnet'te kilitleme CLI veya SDK ile yapılır.
+**İstemciler.** Komut satırı (yukarıda) ve `lockDelegation`, `unlockEarly` ve `claimBonus` oluşturucularına ile `fetchStakingTierParams`, `fetchStakingLocks` ve `fetchStakingTierPool` okumalarına sahip `@qorechain/sdk` (0.10.0 veya sonrası; güncel sürüm 0.13.0) ([SDK kurulumu](/sdk/install) sayfasına bakın). QoreX'in veya dashboard'un yayımlanmış hiçbir sürümünde bugün bir kilit ekranı yoktur; bu nedenle mainnet'te kilitleme CLI veya SDK ile yapılır.
 
 **Karıştırmayın:** canlı olmayan, tasarlanmış bir mekanizma olan [xQORE staking](/user-guide/xqore-staking) ile veya alacağınızı değiştirmeyen aşağıdaki Triple-Pool sınıflandırmasıyla.
 

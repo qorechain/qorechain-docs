@@ -342,7 +342,7 @@ EVMトランザクションを送信するすべての操作の要件: 登録済
 - [ポスト量子署名](/developer-guide/post-quantum-signing)と[アカウントとPQC署名](/sdk/concepts/accounts-pqc): 鍵の登録とハイブリッド署名。
 - [EVM開発](/developer-guide/evm-development#evm-window): EVM認可ウィンドウ。
 - [EVMプリコンパイル](/developer-guide/evm-precompiles): `0x0A01`と`0x0A02`。テストネットでのみ有効です。
-- [チェーン開発者キット](/developer-tools/chain-dev-sdk): Foundry、Hardhat、viemのテンプレートとウィンドウのヘルパー(SDK 0.12.0に含まれます)。
+- [チェーン開発者キット](/developer-tools/chain-dev-sdk): Foundry、Hardhat、viemのテンプレートとウィンドウのヘルパー(SDK 0.12.0以降に含まれます)。
 - [カストディキット](/developer-tools/custody-kit)と[QoreScan](/developer-tools/qorescan): カストディアン向け、および暗号の棚卸し向けの、隣接するキット。
 - [開発者パッケージ](/developer-tools/overview): すべてのパッケージとそのレジストリのステータス。
 - 上流の標準: ERC-3643、CMTAT、ERC-4626、ERC-7540、ERC-7518。

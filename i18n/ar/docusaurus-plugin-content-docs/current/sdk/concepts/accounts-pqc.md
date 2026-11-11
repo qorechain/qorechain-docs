@@ -120,8 +120,18 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-تقوم `unifiedAccountFromSeed(seed32)` بالأمر نفسه انطلاقًا من مفتاح خاص
-secp256k1 خام من 32 بايت.
+تقوم `unifiedAccountFromSeed(seed32, { recoveryCode })` بالأمر نفسه انطلاقًا من مفتاح
+خاص secp256k1 خام من 32 بايت. منذ SDK 0.13.0 يحتاج مسار البذرة إلى واحد بالضبط من
+اثنين: رمز استرداد `QRC1` (`generatePqcRecoveryCode()`، يُنشأ مرة واحدة ويُحفظ
+بعيدًا عن البذرة) أو سر PQC مستقل من 32 بايتًا؛ ويُشتق مفتاح ML-DSA-87 من هذا
+المدخل الثاني، ورمز مختلف يعطي مفتاحًا مختلفًا. ومع عدم تمرير أي خيار، أو أكثر من
+واحد، يُطلق الاستدعاء خطأ. أما الحساب الذي سُجّل مفتاح PQC الخاص به مع 0.12 أو
+أقدم فيحمّل ذلك المفتاح بـ `{ legacySeedDerivation: true }` (في Python
+`legacy_seed_derivation=True`، وفي Go `LegacySeedDerivation`، وفي Rust
+`SeedPqcOptions::legacy_seed_derivation()`، وفي Java `SeedPqcOptions.legacy()`) كي
+يمكن تدويره بـ `MsgRotatePQCKey`؛ ولا تستخدم هذا الخيار للحسابات الجديدة. أما
+الحسابات المشتقة من عبارة ذاكرية فدون تغيير. راجع
+[ما الذي يغيّره 0.13.0](/sdk/install#whats-new-0130).
 
 ### اشتقاق بذرة PQC
 
@@ -132,8 +142,8 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 ```
 
 وبذلك يمكن استرجاعه من `{ address, mnemonic }` وهو متطابق عبر جميع حزم SDK
-اللغوية الخاصة بـ QoreChain. (بالنسبة إلى `unifiedAccountFromSeed`، تكون خانة
-عبارة الاسترجاع هي `"seed:" + hex(seed32)`.) منذ SDK 0.8.3 تقوم
+اللغوية الخاصة بـ QoreChain. (بالنسبة إلى `unifiedAccountFromSeed` قبل 0.13.0، كانت خانة
+عبارة الاسترجاع هي `"seed:" + hex(seed32)`؛ ومنذ 0.13.0 يشتق مسار البذرة المفتاح من رمز الاسترداد أو سر PQC بدلًا من ذلك، انظر أعلاه.) منذ SDK 0.8.3 تقوم
 `derivePqcCanonical(account, mnemonic)` أولًا بتحويل `account` إلى صيغته
 `qor1…` بأحرف صغيرة (`canonicalAccount`)، لذا فإن عنوان bech32 بأحرف كبيرة أو
 صيغة `0x` للحساب نفسه تُنتج المفتاح نفسه.

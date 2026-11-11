@@ -121,8 +121,18 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-`unifiedAccountFromSeed(seed32)` aynı işlemi ham 32 baytlık bir secp256k1 özel
-anahtarından yapar.
+`unifiedAccountFromSeed(seed32, { recoveryCode })` aynı işlemi ham 32 baytlık bir
+secp256k1 özel anahtarından yapar. SDK 0.13.0'dan beri seed yolu, bir `QRC1` kurtarma
+kodundan (`generatePqcRecoveryCode()`, bir kez oluşturulur ve tohumdan ayrı saklanır)
+veya bağımsız 32 baytlık bir PQC sırrından tam olarak birini gerektirir; ML-DSA-87
+anahtarı bu ikinci girdiden türetilir ve farklı bir kod farklı bir anahtar verir.
+Seçenek verilmezse ya da birden fazlası verilirse çağrı hata verir. PQC anahtarı 0.12
+veya öncesiyle kaydedilmiş bir hesap, o anahtarı `{ legacySeedDerivation: true }` ile
+yükler (Python `legacy_seed_derivation=True`, Go `LegacySeedDerivation`, Rust
+`SeedPqcOptions::legacy_seed_derivation()`, Java `SeedPqcOptions.legacy()`); böylece
+`MsgRotatePQCKey` ile rotasyona sokulabilir; bu seçeneği yeni hesaplar için
+kullanmayın. Mnemonic'ten türetilen hesaplar değişmemiştir. Bkz.
+[0.13.0 neyi değiştiriyor](/sdk/install#whats-new-0130).
 
 ### PQC tohum türetmesi
 
@@ -134,8 +144,8 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 ```
 
 dolayısıyla `{ address, mnemonic }` çiftinden kurtarılabilir ve QoreChain'in
-tüm dil SDK'larında birebir aynıdır. (`unifiedAccountFromSeed` için anımsatıcı
-ifade yuvası `"seed:" + hex(seed32)` değeridir.) SDK 0.8.3 sürümünden itibaren
+tüm dil SDK'larında birebir aynıdır. (`unifiedAccountFromSeed` için 0.13.0 öncesinde anımsatıcı
+ifade yuvası `"seed:" + hex(seed32)` değeriydi; 0.13.0'dan beri seed yolu anahtarı kurtarma kodundan veya PQC sırrından türetir, yukarıya bakın.) SDK 0.8.3 sürümünden itibaren
 `derivePqcCanonical(account, mnemonic)` önce `account` değerini küçük harfli
 `qor1…` biçimine (`canonicalAccount`) çözer; böylece büyük harfli bir bech32
 veya aynı hesabın `0x` biçimi de aynı anahtarı üretir. Her dilde aynı işlev
