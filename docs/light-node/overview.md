@@ -85,7 +85,7 @@ The chain RPC for `onboard` is `https://rpc.qore.host` (mainnet) or `https://rpc
 - An account whose recovery words you hold (your own words, Keplr, or a `qorechaind` key), preferably dedicated to the node. A custodial Dashboard wallet cannot run a node unless you export its seed.
 - An active `lightnode_operator` licence on that address (see below).
 - At least **1,000 QOR** delegated from that address to **bonded** validators, counted as a total.
-- QOR in the account for the **1 QOR** registration fee and transaction fees. A heartbeat costs 0.25 uqor per gas at the default limit of 300,000 gas, that is 0.075 QOR as a ceiling (measured gas used: about 165,000).
+- QOR in the account for the **1 QOR** registration fee and transaction fees. A heartbeat costs 0.25 uqor per gas at the default limit of 300,000 gas, that is 0.075 QOR as a ceiling (measured gas used: about 165,000). A heartbeat is due every 1,000 blocks, about 25 to 27 a day on mainnet, so the fees are about 1.9 to 2 QOR a day. Keep spendable QOR on the operator account for them on top of the 1,000 QOR stake: a node that runs out stops heartbeating, goes inactive and loses uptime.
 - A computer that stays on: the node must send a heartbeat every 1,000 blocks and keep at least 80% uptime to be paid.
 
 **Getting a licence.** On the Dashboard, open **Nodes & Validators** (the sidebar entry that used to be called **Tools**; the page still lives at `/tools`), choose the **Light Node** tab, and select the network in the header. The Dashboard needs sign-in.

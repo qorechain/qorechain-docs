@@ -23,7 +23,7 @@ The chain checks all of these when your registration transaction executes:
 
 1. An active `lightnode_operator` licence on the operator address.
 2. At least **1,000 QOR delegated** from that same address to **bonded** validators (your total across any validators; delegations to jailed or unbonded validators do not count).
-3. A balance on the operator account to pay the **1 QOR** registration fee and transaction fees. The node also pays a fee for each heartbeat from this account: with native signing the fee is 0.25 uqor per unit of gas, so 75,000 uqor (0.075 QOR) at the default `[heartbeat] gas` of 300,000, or about 1.9 QOR a month at roughly 25 heartbeats a day.
+3. A balance on the operator account to pay the **1 QOR** registration fee and transaction fees. The node also pays a fee for each heartbeat from this account: with native signing the fee is 0.25 uqor per unit of gas, so 75,000 uqor (0.075 QOR) at the default `[heartbeat] gas` of 300,000. A heartbeat is due every 1,000 blocks, which is about 25 to 27 a day on mainnet, so the fees come to about 1.9 to 2 QOR **a day**, roughly 55 to 60 QOR a month. **The operator account must hold spendable QOR for these fees on top of the 1,000 QOR stake.** A node whose account runs out of QOR stops sending heartbeats, goes inactive and loses uptime, and below the minimum uptime it is not paid.
 4. Fewer than 10,000 light nodes registered network-wide.
 
 After registration the node must send a heartbeat every **1,000 blocks** (with a grace of 100 blocks) and keep at least **80% uptime** to be paid. Read the live values with `GET https://api.qore.host/qorechain/lightnode/v1/params` (testnet: `https://api-testnet.qore.host`).

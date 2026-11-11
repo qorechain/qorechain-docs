@@ -85,7 +85,7 @@ L'RPC della chain per `onboard` è `https://rpc.qore.host` (mainnet) oppure `htt
 - Un account di cui possiedi le parole di recupero (le tue parole, Keplr, o una chiave `qorechaind`), preferibilmente dedicato al nodo. Un wallet custodial della Dashboard non può eseguire un nodo a meno che tu non ne esporti il seed.
 - Una licenza `lightnode_operator` attiva su quell'indirizzo (vedi sotto).
 - Almeno **1,000 QOR** delegati da quell'indirizzo a validatori **bonded**, conteggiati come totale.
-- QOR nell'account per la commissione di registrazione di **1 QOR** e per le commissioni di transazione. Un heartbeat costa 0,25 uqor per gas al limite predefinito di 300,000 gas, cioè 0,075 QOR come tetto (gas usato misurato: circa 165,000).
+- QOR nell'account per la commissione di registrazione di **1 QOR** e per le commissioni di transazione. Un heartbeat costa 0,25 uqor per gas al limite predefinito di 300,000 gas, cioè 0,075 QOR come tetto (gas usato misurato: circa 165,000). Un heartbeat è dovuto ogni 1,000 blocchi, circa 25-27 al giorno su mainnet, quindi le commissioni sono circa 1,9-2 QOR al giorno. Tieni QOR spendibili sull'account operatore per queste commissioni, in aggiunta allo stake di 1,000 QOR: un nodo che esaurisce i QOR smette di inviare heartbeat, diventa inattivo e perde uptime.
 - Un computer che resti acceso: il nodo deve inviare un heartbeat ogni 1,000 blocchi e mantenere almeno l'80% di uptime per essere pagato.
 
 **Ottenere una licenza.** Sulla Dashboard, apri **Nodes & Validators** (la voce della barra laterale che prima si chiamava **Tools**; la pagina risiede ancora su `/tools`), scegli la scheda **Light Node** e seleziona la rete nell'intestazione. La Dashboard richiede l'accesso.

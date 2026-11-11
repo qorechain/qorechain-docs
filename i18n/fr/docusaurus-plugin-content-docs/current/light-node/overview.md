@@ -85,7 +85,7 @@ Le RPC de la chaîne pour `onboard` est `https://rpc.qore.host` (mainnet) ou `ht
 - Un compte dont vous détenez les mots de récupération (vos propres mots, Keplr, ou une clé `qorechaind`), de préférence dédié au nœud. Un portefeuille custodial du Dashboard ne peut pas faire tourner un nœud, sauf si vous exportez sa graine.
 - Une licence `lightnode_operator` active sur cette adresse (voir ci-dessous).
 - Au moins **1 000 QOR** délégués depuis cette adresse à des validateurs **bondés**, comptés au total.
-- Des QOR sur le compte pour les frais d'enregistrement de **1 QOR** et les frais de transaction. Un heartbeat coûte 0,25 uqor par gas à la limite par défaut de 300 000 gas, soit 0,075 QOR au maximum (gas mesuré utilisé : environ 165 000).
+- Des QOR sur le compte pour les frais d'enregistrement de **1 QOR** et les frais de transaction. Un heartbeat coûte 0,25 uqor par gas à la limite par défaut de 300 000 gas, soit 0,075 QOR au maximum (gas mesuré utilisé : environ 165 000). Un heartbeat est dû tous les 1 000 blocs, soit environ 25 à 27 par jour sur le mainnet, donc les frais s'élèvent à environ 1,9 à 2 QOR par jour. Gardez des QOR disponibles sur le compte opérateur pour ces frais, en plus du stake de 1 000 QOR : un nœud à court de QOR cesse d'envoyer des heartbeats, devient inactif et perd de l'uptime.
 - Un ordinateur qui reste allumé : le nœud doit envoyer un heartbeat tous les 1 000 blocs et maintenir au moins 80 % de disponibilité pour être payé.
 
 **Obtenir une licence.** Sur le Dashboard, ouvrez **Nodes & Validators** (l'entrée de la barre latérale qui s'appelait **Tools** ; la page se trouve toujours à `/tools`), choisissez l'onglet **Light Node**, et sélectionnez le réseau dans l'en-tête. Le Dashboard exige une connexion.

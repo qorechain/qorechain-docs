@@ -85,7 +85,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 - Kurtarma kelimelerini elinizde tuttuğunuz bir hesap (kendi kelimeleriniz, Keplr veya bir `qorechaind` anahtarı), tercihen düğüme ayrılmış. Saklamalı (custodial) bir Dashboard cüzdanı, seed'ini dışa aktarmadığınız sürece bir düğüm çalıştıramaz.
 - O adreste etkin bir `lightnode_operator` lisansı (aşağıya bakın).
 - O adresten **bağlı** doğrulayıcılara toplam olarak delege edilmiş en az **1.000 QOR**.
-- **1 QOR** kayıt ücreti ve işlem ücretleri için hesapta QOR. Bir kalp atışı, varsayılan 300.000 gaz sınırında gaz başına 0,25 uqor'a mal olur, yani tavan olarak 0,075 QOR (ölçülen kullanılan gaz: yaklaşık 165.000).
+- **1 QOR** kayıt ücreti ve işlem ücretleri için hesapta QOR. Bir kalp atışı, varsayılan 300.000 gaz sınırında gaz başına 0,25 uqor'a mal olur, yani tavan olarak 0,075 QOR (ölçülen kullanılan gaz: yaklaşık 165.000). Bir kalp atışı her 1.000 blokta bir gerekir; bu, ana ağda günde yaklaşık 25 ila 27 kalp atışı demektir, dolayısıyla ücretler günde yaklaşık 1,9 ila 2 QOR tutar. Bunlar için operatör hesabında, 1.000 QOR'luk stake'in üzerinde harcanabilir QOR tutun: QOR'u biten bir düğüm kalp atışı göndermeyi bırakır, inaktif hale gelir ve çalışma süresi kaybeder.
 - Açık kalan bir bilgisayar: ödeme almak için düğümün her 1.000 blokta bir kalp atışı göndermesi ve en az %80 çalışma süresini koruması gerekir.
 
 **Lisans edinme.** Dashboard'da **Nodes & Validators** sayfasını açın (kenar çubuğunda eskiden **Tools** olarak adlandırılan giriş; sayfa hâlâ `/tools` adresindedir), **Light Node** sekmesini seçin ve üst bilgiden ağı seçin. Dashboard oturum açmayı gerektirir.
