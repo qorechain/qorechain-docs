@@ -17,7 +17,7 @@ Prima versiune. Doar testnet. [Pagina de release](https://github.com/qorechain/Q
 
 - **Semnare hibridă post-cuantică pentru QoreChain.** Setați `signing = 'qorechain-hybrid'` pe un lanț și QORel adaugă semnătura ML-DSA-87 (`/qorechain.pqc.v1.PQCHybridSignature`) ca unică opțiune de extensie critică a fiecărei tranzacții, apoi semnează corpul final cu secp256k1. Mesajul pe care îl semnează cheia post-cuantică este octeții de semnat versiunea 2, pe care îi verifică ambele rețele QoreChain. `extension_options` statice nu pot fi combinate cu acest mod, iar configurația este refuzată dacă sunt.
 - **Semnarea standard este neschimbată.** Cu `signing = 'standard'` (implicit) formatul tranzacției este identic octet cu octet cu cel al Hermes, pentru Cosmos Hub, Osmosis și orice alt lanț Cosmos SDK.
-- **Crate-ul `qorel-signer`.** Primitiva post-cuantică (`PqSigner`, cu `MlDsa87Signer`), regulile lanțului (`SignBytesFramer`) și semnatarul de extensie pe care îl apelează relayer-ul (`TxExtensionSigner`) sunt interfețe separate. Simularea de gas și dimensionarea loturilor trec prin aceeași cale, astfel încât cei aproximativ 4.7 KB în plus și gas-ul de verificare sunt întotdeauna numărați.
+- **Crate-ul `qorel-signer`, pe crates.io din 11 noiembrie 2026** (`cargo add qorel-signer`, versiunea 0.1.0). Primitiva post-cuantică (`PqSigner`, cu `MlDsa87Signer`), regulile lanțului (`SignBytesFramer`) și semnatarul de extensie pe care îl apelează relayer-ul (`TxExtensionSigner`) sunt interfețe separate. Simularea de gas și dimensionarea loturilor trec prin aceeași cale, astfel încât cei aproximativ 4.7 KB în plus și gas-ul de verificare sunt întotdeauna numărați.
 - **`qorel keys add` derivă cheia post-cuantică.** Pe un lanț hibrid derivă cheia ML-DSA-87 din același mnemonic și cont, cu derivarea de portofel QoreChain, și stochează doar seed-ul ei de 32 de octeți, lângă cheie, ca `<key name>.pqc`. Nu se afișează nimic secret.
 - **`qorel keys register-pqc`.** Trimite `MsgRegisterPQCKeyV2` o singură dată, cu o dovadă de posesie pe rețelele de la v3.2.3 încolo. Este idempotentă (nu se trimite nimic dacă aceeași cheie este deja înregistrată) și refuză să trimită când contul are deja o cheie diferită. `--no-proof` există doar pentru rețele mai vechi decât v3.2.3.
 - **`qorel keys pqc-status`.** Afișează dacă cheia este înregistrată, dacă se potrivește cu cheia locală, dacă posesia a fost dovedită, ce octeți de semnat verifică lanțul și `ready_to_relay`.
@@ -42,7 +42,6 @@ Prima versiune. Doar testnet. [Pagina de release](https://github.com/qorechain/Q
 - Relay pentru Ethereum (Eureka). Nu a fost început.
 - Relay pe mainnet. Niciun canal IBC de mainnet nu este încă deschis.
 - Un build pentru Windows.
-- Crate-ul `qorel-signer` pe crates.io. Publicarea este blocată; crate-ul este în depozit la `crates/qorel-signer`, deci folosiți o dependență git.
 
 ## Actualizare {#upgrading}
 

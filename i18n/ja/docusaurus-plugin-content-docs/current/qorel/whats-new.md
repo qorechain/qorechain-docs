@@ -17,7 +17,7 @@ sidebar_position: 2
 
 - **QoreChain 向けのハイブリッドのポスト量子署名。** チェーンに `signing = 'qorechain-hybrid'` を設定すると、QORel は各トランザクションの唯一のクリティカルな拡張オプションとして ML-DSA-87 署名（`/qorechain.pqc.v1.PQCHybridSignature`）を追加し、その後、最終的なボディに secp256k1 で署名します。ポスト量子鍵が署名するメッセージは、バージョン 2 の sign bytes で、QoreChain の両方のネットワークがこれを検証します。静的な `extension_options` はこのモードと併用できず、併用すると設定は拒否されます。
 - **標準の署名は変更されません。** `signing = 'standard'`（デフォルト）では、Cosmos Hub、Osmosis、その他すべての Cosmos SDK チェーンに対して、トランザクション形式は Hermes とバイト単位で同一です。
-- **`qorel-signer` クレート。** ポスト量子プリミティブ（`MlDsa87Signer` を含む `PqSigner`）、チェーンのルール（`SignBytesFramer`）、リレイヤーが呼び出す拡張シグナー（`TxExtensionSigner`）は、別々のインターフェースです。ガスのシミュレーションとバッチサイズの決定は同じ経路を通るため、追加の約 4.7 KB と検証のガスは常に計上されます。
+- **`qorel-signer` クレート（2026 年 11 月 11 日から crates.io で公開）。**（`cargo add qorel-signer`、バージョン 0.1.0）ポスト量子プリミティブ（`MlDsa87Signer` を含む `PqSigner`）、チェーンのルール（`SignBytesFramer`）、リレイヤーが呼び出す拡張シグナー（`TxExtensionSigner`）は、別々のインターフェースです。ガスのシミュレーションとバッチサイズの決定は同じ経路を通るため、追加の約 4.7 KB と検証のガスは常に計上されます。
 - **`qorel keys add` がポスト量子鍵を導出します。** ハイブリッドチェーンでは、同じニーモニックとアカウントから QoreChain ウォレットの導出方式で ML-DSA-87 鍵を導出し、その 32 バイトのシードだけを、鍵の隣に `<key name>.pqc` として保存します。秘密情報は一切出力されません。
 - **`qorel keys register-pqc`。** `MsgRegisterPQCKeyV2` を 1 回送信します。v3.2.3 以降のネットワークでは所有証明（proof of possession）を伴います。冪等であり（同じ鍵がすでに登録されている場合は何も送信しません）、アカウントにすでに別の鍵がある場合は送信を拒否します。`--no-proof` は v3.2.3 より古いネットワーク専用です。
 - **`qorel keys pqc-status`。** 鍵が登録されているか、ローカルの鍵と一致するか、所有が証明されたか、チェーンがどの sign bytes を検証するか、そして `ready_to_relay` を表示します。
@@ -42,7 +42,6 @@ sidebar_position: 2
 - Ethereum（Eureka）のリレー。未着手です。
 - メインネットでのリレー。メインネットの IBC チャネルはまだ開かれていません。
 - Windows 向けビルド。
-- crates.io 上の `qorel-signer` クレート。公開は保留中です。クレートはリポジトリの `crates/qorel-signer` にあるため、git 依存として利用してください。
 
 ## アップグレード {#upgrading}
 

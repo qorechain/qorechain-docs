@@ -74,8 +74,10 @@ The relayer builds a transaction in this order: encode the body without any co-s
 
 ```toml
 [dependencies]
-qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }
+qorel-signer = "0.1.0"
 ```
+
+Or run `cargo add qorel-signer`. To build from the source instead, use a git dependency: `qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }`.
 
 A complete call, building the hybrid signer for a chain and asking it for the extension options, is in `crates/qorel-signer/README.md` in the repository. The crate works on raw protobuf bytes, refuses bodies the chain would reject (an existing critical extension option, `unordered`, unknown fields), never falls back to v1 sign bytes on QoreChain networks before the version is known, verifies each signature it makes, and zeroizes secrets and redacts them in `Debug` output. Its tests rebuild, byte for byte, transactions the chain's ante handler accepted. See also [qorel-signer on the overview](/qorel/overview#qorel-signer).
 
@@ -85,7 +87,7 @@ A chain that needs a different extra signature implements a framer, and a new pr
 
 | Language | Package | Hybrid signing |
 |---|---|---|
-| Rust | `qorechain-sdk` (crates.io), or `qorel-signer` from the [QORel repository](https://github.com/qorechain/QORel) (`crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` with `PqExtensionSigner`; `qorechain::tx::build_hybrid_tx` |
+| Rust | `qorechain-sdk` (crates.io), or `qorel-signer` from crates.io (`cargo add qorel-signer`; the source is in the [QORel repository](https://github.com/qorechain/QORel) at `crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` with `PqExtensionSigner`; `qorechain::tx::build_hybrid_tx` |
 | TypeScript and JavaScript | `npm install @qorechain/sdk` | `TxClient` signs hybrid with a `pqcKeypair`; `ensurePqcRegistered` |
 | Go | `go get github.com/qorechain/qorechain-sdk/packages/go@latest` | `qorechain/tx` (hybrid build and sign), `qorechain/signbytes`, `qorechain/pqcdx` |
 | Python | `pip install qorechain-sdk` | `build_hybrid_tx`, `build_hybrid_signature_extension` |
@@ -121,7 +123,7 @@ The hook point is "after the auth info is final and before the classical sign do
 
 | Package | Registry | Source |
 |---|---|---|
-| `qorel-signer` | In the repository (`crates/qorel-signer`); not on crates.io, use the git dependency above | [qorechain/QORel](https://github.com/qorechain/QORel) |
+| `qorel-signer` | crates.io (`cargo add qorel-signer`, 0.1.0); source in the repository (`crates/qorel-signer`) | [qorechain/QORel](https://github.com/qorechain/QORel) |
 | `qorechain-sdk`, `@qorechain/sdk`, Go module, Maven artifact | crates.io, npm, Go proxy, Maven Central, PyPI | [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk) |
 | `qorechain-pqc` | npm, PyPI, crates.io, Go, Maven | [qorechain/qorechain-pqc](https://github.com/qorechain/qorechain-pqc) |
 

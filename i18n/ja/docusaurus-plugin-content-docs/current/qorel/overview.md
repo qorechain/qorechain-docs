@@ -51,7 +51,7 @@ IBC v2 のクライアント設定にも、リレイヤーの許可リストは�
 
 ## qorel-signer {#qorel-signer}
 
-シグナーは別のクレート `qorel-signer` で、QORel リポジトリの `crates/qorel-signer` にあります。crates.io には公開されていないため、git 依存として利用してください。保証される内容は次のとおりです。
+シグナーは別のクレート `qorel-signer` で、QORel リポジトリの `crates/qorel-signer` にあります。crates.io で公開されています（バージョン 0.1.0）。`cargo add qorel-signer` で追加するか、リポジトリを git 依存として指定してください。保証される内容は次のとおりです。
 
 - **差し替え可能なコシグナー。** チェーンの追加署名はコシグナーが付加します。標準の署名を使うチェーンはコシグナーを使わないため、そのトランザクションは変更されません。
 - **生の protobuf バイト列。** エンコード済みバイト列を扱い、IBC やリレイヤーの型には依存しません。
@@ -104,7 +104,7 @@ qorel start
 | [GitHub: qorechain/QORel](https://github.com/qorechain/QORel) | ソース、イシュー、および tarball、`.deb`、`.rpm`、`SHA256SUMS`、ビルド attestation を含むリリースページ | 0.1.0 |
 | Homebrew | `brew install qorechain/tap/qorel` | 0.1.0 |
 | `ghcr.io/qorechain/qorel` | コンテナイメージ（amd64 と arm64、distroless、非 root、cosign 署名付き） | 0.1.0 |
-| `qorel-signer` クレート | シグナーレイヤー。リポジトリの `crates/qorel-signer` にあります。git 依存として利用してください | crates.io には未公開 |
+| `qorel-signer` クレート | シグナーレイヤー。`cargo add qorel-signer`、またはリポジトリの `crates/qorel-signer` を git 依存として指定 | crates.io（0.1.0、2026 年 11 月 11 日公開） |
 
 ライセンス: Apache-2.0。QORel は Hermes（著作権: Informal Systems Inc. および Hermes の作者）から派生しており、こちらも Apache-2.0 です。帰属表示はリポジトリの `NOTICE` ファイルに記載されています。コマンドとダウンロードの検証方法は[インストール](/qorel/install)を参照してください。
 

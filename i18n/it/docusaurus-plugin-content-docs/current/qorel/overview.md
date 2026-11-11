@@ -51,7 +51,7 @@ Non esiste alcuna allowlist di relayer nemmeno per la configurazione del client 
 
 ## qorel-signer {#qorel-signer}
 
-Il firmatario è un crate separato, `qorel-signer`, nel repository di QORel in `crates/qorel-signer`. Non è su crates.io; usalo come dipendenza git. Che cosa garantisce:
+Il firmatario è un crate separato, `qorel-signer`, nel repository di QORel in `crates/qorel-signer`. È pubblicato su crates.io (versione 0.1.0): aggiungilo con `cargo add qorel-signer`, oppure dipendi dal repository come dipendenza git. Che cosa garantisce:
 
 - **Co-firmatario modulare.** La firma aggiuntiva di una chain viene aggiunta da un co-firmatario, e le chain con firma standard non ne usano alcuno, quindi le loro transazioni restano invariate.
 - **Byte protobuf grezzi.** Lavora su byte codificati e non dipende da alcun tipo IBC o del relayer.
@@ -104,7 +104,7 @@ Le pagine di questa sezione:
 | [GitHub: qorechain/QORel](https://github.com/qorechain/QORel) | Codice sorgente, issue e la pagina delle release con tarball, `.deb`, `.rpm`, `SHA256SUMS` e attestazioni di build | 0.1.0 |
 | Homebrew | `brew install qorechain/tap/qorel` | 0.1.0 |
 | `ghcr.io/qorechain/qorel` | Immagine container (amd64 e arm64, distroless, non-root, firmata con cosign) | 0.1.0 |
-| Crate `qorel-signer` | Il livello di firma, nel repository in `crates/qorel-signer`; usa una dipendenza git | Non su crates.io |
+| Crate `qorel-signer` | Il livello di firma; `cargo add qorel-signer`, oppure il repository in `crates/qorel-signer` come dipendenza git | crates.io (0.1.0, pubblicato l'11 novembre 2026) |
 
 Licenza: Apache-2.0. QORel deriva da Hermes, copyright Informal Systems Inc. e gli autori di Hermes, anch'esso Apache-2.0; il file `NOTICE` del repository riporta l'attribuzione. Vedi [Installazione](/qorel/install) per i comandi e per come verificare un download.
 

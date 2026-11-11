@@ -70,12 +70,14 @@ ardından `ML-DSA-87.KeyGen_internal(seed)`. Gizli veriler sıfırlanır ve asla
 - `SignBytesFramer`: bir zincirin kuralları (`check_body`, `frame`, `pack`).
 - `TxExtensionSigner`: relayer'ın çağırdığı şey. `PqExtensionSigner` bir ilkeli ve bir framer'ı birleştirir.
 
-Relayer bir işlemi şu sırayla oluşturur: gövdeyi hiçbir ortak imzalayıcı uzantısı olmadan kodlar (`B0`); son auth info'yu kodlar (`A`); ortak imzalayıcıdan eklenecek uzantı seçeneklerini ister; gövdeyi bunlarla yeniden kodlar; son gövdenin imza belgesi üzerinden klasik imzayı oluşturur. Crate'i Rust'tan kullanmak için ona depodan bağlanın (crates.io'da değildir):
+Relayer bir işlemi şu sırayla oluşturur: gövdeyi hiçbir ortak imzalayıcı uzantısı olmadan kodlar (`B0`); son auth info'yu kodlar (`A`); ortak imzalayıcıdan eklenecek uzantı seçeneklerini ister; gövdeyi bunlarla yeniden kodlar; son gövdenin imza belgesi üzerinden klasik imzayı oluşturur. Crate'i Rust'tan kullanmak için:
 
 ```toml
 [dependencies]
-qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }
+qorel-signer = "0.1.0"
 ```
+
+Ya da `cargo add qorel-signer` çalıştırın. Kaynaktan derlemek için bir git bağımlılığı kullanın: `qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }`.
 
 Bir zincir için hibrit imzalayıcıyı oluşturan ve ondan uzantı seçeneklerini isteyen eksiksiz bir çağrı, depodaki `crates/qorel-signer/README.md` dosyasındadır. Crate ham protobuf baytları üzerinde çalışır, zincirin reddedeceği gövdeleri reddeder (mevcut bir kritik uzantı seçeneği, `unordered`, bilinmeyen alanlar), sürüm bilinmeden önce QoreChain ağlarında asla v1 sign bytes'a geri dönmez, ürettiği her imzayı doğrular ve gizli verileri sıfırlar, `Debug` çıktısında da gizler. Testleri, zincirin ante handler'ının kabul ettiği işlemleri bayt bayt yeniden oluşturur. Ayrıca bkz. [genel bakışta qorel-signer](/qorel/overview#qorel-signer).
 
@@ -85,7 +87,7 @@ Farklı bir ek imzaya ihtiyaç duyan bir zincir bir framer uygular, algoritma fa
 
 | Dil | Paket | Hibrit imzalama |
 |---|---|---|
-| Rust | `qorechain-sdk` (crates.io) veya [QORel deposundan](https://github.com/qorechain/QORel) `qorel-signer` (`crates/qorel-signer`) | `PqExtensionSigner` ile `qorel_signer::qorechain::qorechain_hybrid_signer`; `qorechain::tx::build_hybrid_tx` |
+| Rust | `qorechain-sdk` (crates.io) veya crates.io'dan `qorel-signer` (`cargo add qorel-signer`; kaynak [QORel deposunda](https://github.com/qorechain/QORel) `crates/qorel-signer` altında) | `PqExtensionSigner` ile `qorel_signer::qorechain::qorechain_hybrid_signer`; `qorechain::tx::build_hybrid_tx` |
 | TypeScript ve JavaScript | `npm install @qorechain/sdk` | `TxClient` bir `pqcKeypair` ile hibrit imzalar; `ensurePqcRegistered` |
 | Go | `go get github.com/qorechain/qorechain-sdk/packages/go@latest` | `qorechain/tx` (hibrit oluşturma ve imzalama), `qorechain/signbytes`, `qorechain/pqcdx` |
 | Python | `pip install qorechain-sdk` | `build_hybrid_tx`, `build_hybrid_signature_extension` |
@@ -121,7 +123,7 @@ Bağlantı noktası, "auth info kesinleştikten sonra ve klasik imza belgesi olu
 
 | Paket | Kayıt defteri | Kaynak |
 |---|---|---|
-| `qorel-signer` | Depoda (`crates/qorel-signer`); crates.io'da yok, yukarıdaki git bağımlılığını kullanın | [qorechain/QORel](https://github.com/qorechain/QORel) |
+| `qorel-signer` | crates.io (`cargo add qorel-signer`, 0.1.0); kaynak depoda (`crates/qorel-signer`) | [qorechain/QORel](https://github.com/qorechain/QORel) |
 | `qorechain-sdk`, `@qorechain/sdk`, Go modülü, Maven artifact'ı | crates.io, npm, Go proxy, Maven Central, PyPI | [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk) |
 | `qorechain-pqc` | npm, PyPI, crates.io, Go, Maven | [qorechain/qorechain-pqc](https://github.com/qorechain/qorechain-pqc) |
 

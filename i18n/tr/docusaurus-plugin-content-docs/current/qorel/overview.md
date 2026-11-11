@@ -51,7 +51,7 @@ IBC v2 istemci yapılandırması için de bir relayer izin listesi yoktur (`/ibc
 
 ## qorel-signer {#qorel-signer}
 
-İmzalayıcı, QORel deposunda `crates/qorel-signer` altında yer alan ayrı bir crate'tir: `qorel-signer`. crates.io'da değildir; ona bir git bağımlılığı olarak bağlanın. Neyi garanti eder:
+İmzalayıcı, QORel deposunda `crates/qorel-signer` altında yer alan ayrı bir crate'tir: `qorel-signer`. crates.io'da yayımlanmıştır (sürüm 0.1.0): `cargo add qorel-signer` ile ekleyin veya depoya bir git bağımlılığı olarak bağlanın. Neyi garanti eder:
 
 - **Takılabilir ortak imzalayıcı.** Bir zincirin ek imzası bir ortak imzalayıcı tarafından eklenir ve standart imzalamalı zincirler hiçbirini kullanmaz, böylece onların işlemleri değişmez.
 - **Ham protobuf baytları.** Kodlanmış baytlar üzerinde çalışır ve hiçbir IBC veya relayer türüne bağlı değildir.
@@ -104,7 +104,7 @@ Bu bölümdeki sayfalar:
 | [GitHub: qorechain/QORel](https://github.com/qorechain/QORel) | Kaynak, sorunlar ve tarball'ların, `.deb`, `.rpm`, `SHA256SUMS` ve derleme doğrulamalarının bulunduğu sürüm sayfası | 0.1.0 |
 | Homebrew | `brew install qorechain/tap/qorel` | 0.1.0 |
 | `ghcr.io/qorechain/qorel` | Container imajı (amd64 ve arm64, distroless, root olmayan, cosign imzalı) | 0.1.0 |
-| `qorel-signer` crate'i | İmzalayıcı katmanı, depoda `crates/qorel-signer` altında; bir git bağımlılığı kullanın | crates.io'da yok |
+| `qorel-signer` crate'i | İmzalayıcı katmanı; `cargo add qorel-signer` veya depoda `crates/qorel-signer` altında git bağımlılığı olarak | crates.io (0.1.0, 11 Kasım 2026'da yayımlandı) |
 
 Lisans: Apache-2.0. QORel, telif hakkı Informal Systems Inc. ve Hermes yazarlarına ait olan, o da Apache-2.0 olan Hermes'ten türetilmiştir; deponun `NOTICE` dosyası atıfı içerir. Komutlar ve bir indirmenin nasıl doğrulanacağı için [Kurulum](/qorel/install) sayfasına bakın.
 

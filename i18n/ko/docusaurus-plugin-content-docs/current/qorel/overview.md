@@ -51,7 +51,7 @@ IBC v2 클라이언트 설정에도 릴레이어 허용 목록은 없습니다(`
 
 ## qorel-signer {#qorel-signer}
 
-서명기는 QORel 저장소의 `crates/qorel-signer`에 있는 별도 크레이트 `qorel-signer`입니다. crates.io에는 없으므로 git 의존성으로 사용하세요. 이 크레이트가 보장하는 것:
+서명기는 QORel 저장소의 `crates/qorel-signer`에 있는 별도 크레이트 `qorel-signer`입니다. crates.io에 게시되어 있습니다(버전 0.1.0). `cargo add qorel-signer`로 추가하거나 저장소를 git 의존성으로 지정하세요. 이 크레이트가 보장하는 것:
 
 - **플러그인 방식의 공동 서명기.** 체인의 추가 서명은 공동 서명기가 더하며, 표준 서명 체인은 아무것도 쓰지 않으므로 해당 체인의 트랜잭션은 바뀌지 않습니다.
 - **원시 protobuf 바이트.** 인코딩된 바이트로 동작하며 IBC나 릴레이어 타입에 의존하지 않습니다.
@@ -104,7 +104,7 @@ qorel start
 | [GitHub: qorechain/QORel](https://github.com/qorechain/QORel) | 소스, 이슈, 그리고 타르볼, `.deb`, `.rpm`, `SHA256SUMS`, 빌드 증명이 있는 릴리스 페이지 | 0.1.0 |
 | Homebrew | `brew install qorechain/tap/qorel` | 0.1.0 |
 | `ghcr.io/qorechain/qorel` | 컨테이너 이미지(amd64 및 arm64, distroless, non-root, cosign 서명) | 0.1.0 |
-| `qorel-signer` 크레이트 | 서명 계층, 저장소의 `crates/qorel-signer`에 있음. git 의존성을 사용하세요 | crates.io에는 없음 |
+| `qorel-signer` 크레이트 | 서명 계층. `cargo add qorel-signer`, 또는 저장소의 `crates/qorel-signer`를 git 의존성으로 | crates.io(0.1.0, 2026년 11월 11일 게시) |
 
 라이선스: Apache-2.0. QORel은 Informal Systems Inc.와 Hermes 저작자들이 저작권을 가진 Hermes에서 파생되었으며 마찬가지로 Apache-2.0입니다. 저장소의 `NOTICE` 파일에 출처 표기가 있습니다. 명령과 다운로드 검증 방법은 [설치](/qorel/install)를 참고하세요.
 

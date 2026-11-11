@@ -70,12 +70,14 @@ seed = SHAKE256("qorechain:pqc:v1|" + address + "|" + mnemonic)[:32]
 - `SignBytesFramer`: قواعد السلسلة (`check_body` و`frame` و`pack`).
 - `TxExtensionSigner`: ما يستدعيه المُرحِّل. يجمع `PqExtensionSigner` بين بدائية وframer.
 
-يبني المُرحِّل المعاملة بهذا الترتيب: يرمّز الجسم دون أي امتداد للموقِّع المشارك (`B0`)؛ يرمّز auth info النهائية (`A`)؛ يسأل الموقِّع المشارك عن خيارات الامتداد المطلوب إلحاقها؛ يعيد ترميز الجسم بها؛ ينشئ التوقيع الكلاسيكي على مستند التوقيع للجسم النهائي. ولاستخدام الحزمة من Rust، اعتمد عليها من المستودع (فهي ليست على crates.io):
+يبني المُرحِّل المعاملة بهذا الترتيب: يرمّز الجسم دون أي امتداد للموقِّع المشارك (`B0`)؛ يرمّز auth info النهائية (`A`)؛ يسأل الموقِّع المشارك عن خيارات الامتداد المطلوب إلحاقها؛ يعيد ترميز الجسم بها؛ ينشئ التوقيع الكلاسيكي على مستند التوقيع للجسم النهائي. ولاستخدام الحزمة من Rust، أضفها من crates.io:
 
 ```toml
 [dependencies]
-qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }
+qorel-signer = "0.1.0"
 ```
+
+أو شغّل `cargo add qorel-signer`. وللبناء من المصدر استخدم اعتمادية git: `qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }`.
 
 يوجد استدعاء كامل، يبني الموقِّع الهجين لسلسلة ويسأله عن خيارات الامتداد، في `crates/qorel-signer/README.md` في المستودع. تعمل الحزمة على بايتات protobuf الخام، وترفض الأجسام التي سترفضها السلسلة (خيار امتداد حرج موجود أصلًا، أو `unordered`، أو حقول مجهولة)، ولا ترجع أبدًا إلى sign bytes الإصدار v1 على شبكات QoreChain قبل معرفة الإصدار، وتتحقق من كل توقيع تنشئه، وتصفّر الأسرار وتحجبها في مخرجات `Debug`. وتعيد اختباراتها بناء معاملات قبلها معالج ante في السلسلة، بايتًا ببايت. راجع أيضًا [qorel-signer في النظرة العامة](/qorel/overview#qorel-signer).
 
@@ -85,7 +87,7 @@ qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0
 
 | اللغة | الحزمة | التوقيع الهجين |
 |---|---|---|
-| Rust | `qorechain-sdk` (crates.io)، أو `qorel-signer` من [مستودع QORel](https://github.com/qorechain/QORel) (`crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` مع `PqExtensionSigner`؛ و`qorechain::tx::build_hybrid_tx` |
+| Rust | `qorechain-sdk` (crates.io)، أو `qorel-signer` من crates.io (`cargo add qorel-signer`؛ والمصدر في [مستودع QORel](https://github.com/qorechain/QORel) عند `crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` مع `PqExtensionSigner`؛ و`qorechain::tx::build_hybrid_tx` |
 | TypeScript وJavaScript | `npm install @qorechain/sdk` | يوقّع `TxClient` هجينًا بواسطة `pqcKeypair`؛ و`ensurePqcRegistered` |
 | Go | `go get github.com/qorechain/qorechain-sdk/packages/go@latest` | `qorechain/tx` (بناء هجين وتوقيع)، و`qorechain/signbytes`، و`qorechain/pqcdx` |
 | Python | `pip install qorechain-sdk` | `build_hybrid_tx` و`build_hybrid_signature_extension` |
@@ -121,7 +123,7 @@ qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0
 
 | الحزمة | السجل | المصدر |
 |---|---|---|
-| `qorel-signer` | في المستودع (`crates/qorel-signer`)؛ وليست على crates.io، فاستخدم اعتمادية git أعلاه | [qorechain/QORel](https://github.com/qorechain/QORel) |
+| `qorel-signer` | crates.io (`cargo add qorel-signer`، 0.1.0)؛ والمصدر في المستودع (`crates/qorel-signer`) | [qorechain/QORel](https://github.com/qorechain/QORel) |
 | `qorechain-sdk` و`@qorechain/sdk` ووحدة Go ومُنتَج Maven | crates.io وnpm وGo proxy وMaven Central وPyPI | [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk) |
 | `qorechain-pqc` | npm وPyPI وcrates.io وGo وMaven | [qorechain/qorechain-pqc](https://github.com/qorechain/qorechain-pqc) |
 

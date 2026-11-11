@@ -70,12 +70,14 @@ Das Crate `qorel-signer` teilt die Arbeit in drei Schnittstellen auf:
 - `SignBytesFramer`: die Regeln einer Chain (`check_body`, `frame`, `pack`).
 - `TxExtensionSigner`: das, was der Relayer aufruft. `PqExtensionSigner` verbindet ein Primitiv und einen Framer.
 
-Der Relayer baut eine Transaktion in dieser Reihenfolge: den Body ohne Erweiterung eines Co-Signers kodieren (`B0`); die finale Auth-Info kodieren (`A`); den Co-Signer nach den anzuhängenden Erweiterungsoptionen fragen; den Body mit ihnen neu kodieren; die klassische Signatur über das Sign-Dokument des finalen Bodys erstellen. Um das Crate aus Rust zu verwenden, binden Sie es aus dem Repository ein (es ist nicht auf crates.io):
+Der Relayer baut eine Transaktion in dieser Reihenfolge: den Body ohne Erweiterung eines Co-Signers kodieren (`B0`); die finale Auth-Info kodieren (`A`); den Co-Signer nach den anzuhängenden Erweiterungsoptionen fragen; den Body mit ihnen neu kodieren; die klassische Signatur über das Sign-Dokument des finalen Bodys erstellen. Um das Crate aus Rust zu verwenden, fügen Sie es von crates.io hinzu:
 
 ```toml
 [dependencies]
-qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }
+qorel-signer = "0.1.0"
 ```
+
+Oder führen Sie `cargo add qorel-signer` aus. Um aus dem Quellcode zu bauen, verwenden Sie stattdessen eine Git-Abhängigkeit: `qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }`.
 
 Ein vollständiger Aufruf, der den Hybrid-Signer für eine Chain baut und ihn nach den Erweiterungsoptionen fragt, steht in `crates/qorel-signer/README.md` im Repository. Das Crate arbeitet auf rohen Protobuf-Bytes, verweigert Bodys, die die Chain ablehnen würde (eine bereits vorhandene kritische Erweiterungsoption, `unordered`, unbekannte Felder), fällt in QoreChain-Netzwerken nie auf v1-Sign-Bytes zurück, solange die Version nicht bekannt ist, prüft jede Signatur, die es erzeugt, und nullt Geheimnisse und schwärzt sie in der `Debug`-Ausgabe. Seine Tests bauen Transaktionen, die der Ante-Handler der Chain akzeptiert hat, Byte für Byte nach. Siehe auch [qorel-signer in der Übersicht](/qorel/overview#qorel-signer).
 
@@ -85,7 +87,7 @@ Eine Chain, die eine andere zusätzliche Signatur braucht, implementiert einen F
 
 | Sprache | Paket | Hybrides Signieren |
 |---|---|---|
-| Rust | `qorechain-sdk` (crates.io) oder `qorel-signer` aus dem [QORel-Repository](https://github.com/qorechain/QORel) (`crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` mit `PqExtensionSigner`; `qorechain::tx::build_hybrid_tx` |
+| Rust | `qorechain-sdk` (crates.io) oder `qorel-signer` von crates.io (`cargo add qorel-signer`; der Quellcode liegt im [QORel-Repository](https://github.com/qorechain/QORel) unter `crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` mit `PqExtensionSigner`; `qorechain::tx::build_hybrid_tx` |
 | TypeScript und JavaScript | `npm install @qorechain/sdk` | `TxClient` signiert hybrid mit einem `pqcKeypair`; `ensurePqcRegistered` |
 | Go | `go get github.com/qorechain/qorechain-sdk/packages/go@latest` | `qorechain/tx` (hybrides Bauen und Signieren), `qorechain/signbytes`, `qorechain/pqcdx` |
 | Python | `pip install qorechain-sdk` | `build_hybrid_tx`, `build_hybrid_signature_extension` |
@@ -121,7 +123,7 @@ Der Einhängepunkt ist „nachdem die Auth-Info feststeht und bevor das klassisc
 
 | Paket | Registry | Quellcode |
 |---|---|---|
-| `qorel-signer` | Im Repository (`crates/qorel-signer`); nicht auf crates.io, verwenden Sie die Git-Abhängigkeit oben | [qorechain/QORel](https://github.com/qorechain/QORel) |
+| `qorel-signer` | crates.io (`cargo add qorel-signer`, 0.1.0); Quellcode im Repository (`crates/qorel-signer`) | [qorechain/QORel](https://github.com/qorechain/QORel) |
 | `qorechain-sdk`, `@qorechain/sdk`, Go-Modul, Maven-Artefakt | crates.io, npm, Go-Proxy, Maven Central, PyPI | [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk) |
 | `qorechain-pqc` | npm, PyPI, crates.io, Go, Maven | [qorechain/qorechain-pqc](https://github.com/qorechain/qorechain-pqc) |
 

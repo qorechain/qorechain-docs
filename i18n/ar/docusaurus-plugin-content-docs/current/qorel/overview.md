@@ -51,7 +51,7 @@ QORel هو مُرحِّل IBC الخاص بـ QoreChain. المُرحِّل هو
 
 ## qorel-signer {#qorel-signer}
 
-الموقِّع حزمة منفصلة هي `qorel-signer`، في مستودع QORel عند `crates/qorel-signer`. وهي ليست على crates.io؛ فاعتمد عليها كاعتمادية git. وما تضمنه:
+الموقِّع حزمة منفصلة هي `qorel-signer`، في مستودع QORel عند `crates/qorel-signer`. وهي منشورة على crates.io (الإصدار 0.1.0): أضفها بالأمر `cargo add qorel-signer`، أو اعتمد على المستودع كاعتمادية git. وما تضمنه:
 
 - **موقِّع مشارك قابل للتوصيل.** يضيف موقِّع مشارك التوقيع الإضافي للسلسلة، ولا تستخدم السلاسل ذات التوقيع القياسي أيًّا منها، فتبقى معاملاتها دون تغيير.
 - **بايتات protobuf الخام.** تعمل على البايتات المشفَّرة ولا تعتمد على أي أنواع من IBC أو من المُرحِّل.
@@ -104,7 +104,7 @@ qorel start
 | [GitHub: qorechain/QORel](https://github.com/qorechain/QORel) | المصدر والمشكلات وصفحة الإصدارات التي فيها الأرشيفات و`.deb` و`.rpm` و`SHA256SUMS` وشهادات البناء | 0.1.0 |
 | Homebrew | `brew install qorechain/tap/qorel` | 0.1.0 |
 | `ghcr.io/qorechain/qorel` | صورة الحاوية (amd64 وarm64، بلا توزيعة، بلا صلاحيات الجذر، موقّعة بـ cosign) | 0.1.0 |
-| الحزمة `qorel-signer` | طبقة الموقِّع، في المستودع عند `crates/qorel-signer`؛ استخدم اعتمادية git | ليست على crates.io |
+| الحزمة `qorel-signer` | طبقة الموقِّع؛ `cargo add qorel-signer`، أو المستودع عند `crates/qorel-signer` كاعتمادية git | crates.io (0.1.0، نُشرت في 11 نوفمبر 2026) |
 
 الترخيص: Apache-2.0. QORel مشتق من Hermes، حقوق النشر لـ Informal Systems Inc. ومؤلفي Hermes، وهو أيضًا Apache-2.0؛ ويحمل الملف `NOTICE` في المستودع الإسناد. راجع [التثبيت](/qorel/install) للأوامر ولكيفية التحقق من تنزيل.
 

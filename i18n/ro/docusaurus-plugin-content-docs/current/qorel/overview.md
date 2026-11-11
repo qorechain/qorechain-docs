@@ -51,7 +51,7 @@ Nu există nici o listă de relayeri permiși pentru configurația clientului IB
 
 ## qorel-signer {#qorel-signer}
 
-Semnatarul este un crate separat, `qorel-signer`, în depozitul QORel la `crates/qorel-signer`. Nu este pe crates.io; folosiți-l ca dependență git. Ce garantează:
+Semnatarul este un crate separat, `qorel-signer`, în depozitul QORel la `crates/qorel-signer`. Este publicat pe crates.io (versiunea 0.1.0): adăugați-l cu `cargo add qorel-signer` sau depindeți de depozit ca dependență git. Ce garantează:
 
 - **Co-semnatar conectabil.** Semnătura suplimentară a unui lanț este adăugată de un co-semnatar, iar lanțurile cu semnare standard nu folosesc niciunul, deci tranzacțiile lor rămân neschimbate.
 - **Octeți protobuf bruți.** Lucrează pe octeți codificați și nu depinde de niciun tip IBC sau de relayer.
@@ -104,7 +104,7 @@ Paginile din această secțiune:
 | [GitHub: qorechain/QORel](https://github.com/qorechain/QORel) | Sursă, issue-uri și pagina de release cu tarball-uri, `.deb`, `.rpm`, `SHA256SUMS` și atestări de build | 0.1.0 |
 | Homebrew | `brew install qorechain/tap/qorel` | 0.1.0 |
 | `ghcr.io/qorechain/qorel` | Imagine de container (amd64 și arm64, distroless, non-root, semnată cu cosign) | 0.1.0 |
-| Crate-ul `qorel-signer` | Stratul de semnare, în depozit la `crates/qorel-signer`; folosiți o dependență git | Nu este pe crates.io |
+| Crate-ul `qorel-signer` | Stratul de semnare; `cargo add qorel-signer`, sau depozitul la `crates/qorel-signer` ca dependență git | crates.io (0.1.0, publicat pe 11 noiembrie 2026) |
 
 Licență: Apache-2.0. QORel este derivat din Hermes, copyright Informal Systems Inc. și autorii Hermes, tot sub Apache-2.0; fișierul `NOTICE` al depozitului conține atribuirea. Vezi [Instalare](/qorel/install) pentru comenzi și pentru cum se verifică o descărcare.
 

@@ -70,12 +70,14 @@ seed = SHAKE256("qorechain:pqc:v1|" + address + "|" + mnemonic)[:32]
 - `SignBytesFramer`: 체인의 규칙(`check_body`, `frame`, `pack`).
 - `TxExtensionSigner`: 릴레이어가 호출하는 것. `PqExtensionSigner`가 프리미티브와 프레이머를 결합합니다.
 
-릴레이어는 다음 순서로 트랜잭션을 만듭니다. 공동 서명자 확장이 없는 본문을 인코딩하고(`B0`), 최종 auth info를 인코딩하고(`A`), 공동 서명자에게 덧붙일 확장 옵션을 요청하고, 그것들을 포함해 본문을 다시 인코딩하고, 최종 본문의 서명 문서에 대해 클래식 서명을 만듭니다. Rust에서 이 크레이트를 사용하려면 저장소에서 직접 의존성을 지정하세요(crates.io에는 없습니다).
+릴레이어는 다음 순서로 트랜잭션을 만듭니다. 공동 서명자 확장이 없는 본문을 인코딩하고(`B0`), 최종 auth info를 인코딩하고(`A`), 공동 서명자에게 덧붙일 확장 옵션을 요청하고, 그것들을 포함해 본문을 다시 인코딩하고, 최종 본문의 서명 문서에 대해 클래식 서명을 만듭니다. Rust에서 이 크레이트를 사용하려면:
 
 ```toml
 [dependencies]
-qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }
+qorel-signer = "0.1.0"
 ```
+
+또는 `cargo add qorel-signer`를 실행하세요. 소스에서 빌드하려면 git 의존성을 사용하세요: `qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }`.
 
 체인에 맞는 하이브리드 서명기를 만들고 확장 옵션을 요청하는 전체 호출 예는 저장소의 `crates/qorel-signer/README.md`에 있습니다. 이 크레이트는 원시 protobuf 바이트로 동작하고, 체인이 거부할 본문(이미 있는 critical 확장 옵션, `unordered`, 알 수 없는 필드)을 거절하며, 버전을 알기 전에는 QoreChain 네트워크에서 v1 sign bytes로 되돌아가지 않고, 자신이 만든 각 서명을 검증하며, 비밀 값을 제로화하고 `Debug` 출력에서 가립니다. 테스트는 체인의 ante 핸들러가 받아들인 트랜잭션을 바이트 단위로 다시 구성합니다. [개요의 qorel-signer](/qorel/overview#qorel-signer)도 참고하세요.
 
@@ -85,7 +87,7 @@ qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0
 
 | 언어 | 패키지 | 하이브리드 서명 |
 |---|---|---|
-| Rust | `qorechain-sdk`(crates.io), 또는 [QORel 저장소](https://github.com/qorechain/QORel)의 `qorel-signer`(`crates/qorel-signer`) | `PqExtensionSigner`를 사용하는 `qorel_signer::qorechain::qorechain_hybrid_signer`. `qorechain::tx::build_hybrid_tx` |
+| Rust | `qorechain-sdk`(crates.io), 또는 crates.io의 `qorel-signer`(`cargo add qorel-signer`. 소스는 [QORel 저장소](https://github.com/qorechain/QORel)의 `crates/qorel-signer`) | `PqExtensionSigner`를 사용하는 `qorel_signer::qorechain::qorechain_hybrid_signer`. `qorechain::tx::build_hybrid_tx` |
 | TypeScript 및 JavaScript | `npm install @qorechain/sdk` | `TxClient`가 `pqcKeypair`로 하이브리드 서명. `ensurePqcRegistered` |
 | Go | `go get github.com/qorechain/qorechain-sdk/packages/go@latest` | `qorechain/tx`(하이브리드 빌드 및 서명), `qorechain/signbytes`, `qorechain/pqcdx` |
 | Python | `pip install qorechain-sdk` | `build_hybrid_tx`, `build_hybrid_signature_extension` |
@@ -121,7 +123,7 @@ QORel 저장소의 `crates/qorel-signer/tests/vectors/`에는 다음이 있습�
 
 | 패키지 | 레지스트리 | 소스 |
 |---|---|---|
-| `qorel-signer` | 저장소 안에 있음(`crates/qorel-signer`). crates.io에는 없으므로 위의 git 의존성을 사용하세요 | [qorechain/QORel](https://github.com/qorechain/QORel) |
+| `qorel-signer` | crates.io(`cargo add qorel-signer`, 0.1.0). 소스는 저장소(`crates/qorel-signer`) | [qorechain/QORel](https://github.com/qorechain/QORel) |
 | `qorechain-sdk`, `@qorechain/sdk`, Go 모듈, Maven 아티팩트 | crates.io, npm, Go 프록시, Maven Central, PyPI | [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk) |
 | `qorechain-pqc` | npm, PyPI, crates.io, Go, Maven | [qorechain/qorechain-pqc](https://github.com/qorechain/qorechain-pqc) |
 

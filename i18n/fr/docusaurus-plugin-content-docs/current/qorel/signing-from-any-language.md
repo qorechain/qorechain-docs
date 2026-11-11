@@ -70,12 +70,14 @@ Le crate `qorel-signer` répartit le travail en trois interfaces :
 - `SignBytesFramer` : les règles d'une chaîne (`check_body`, `frame`, `pack`).
 - `TxExtensionSigner` : ce que le relayeur appelle. `PqExtensionSigner` combine une primitive et un framer.
 
-Le relayeur construit une transaction dans cet ordre : encoder le corps sans aucune extension de cosignataire (`B0`) ; encoder les auth info finales (`A`) ; demander au cosignataire les options d'extension à ajouter ; réencoder le corps avec elles ; produire la signature classique sur le document de signature du corps final. Pour utiliser le crate depuis Rust, dépendez-en à partir du dépôt (il n'est pas sur crates.io) :
+Le relayeur construit une transaction dans cet ordre : encoder le corps sans aucune extension de cosignataire (`B0`) ; encoder les auth info finales (`A`) ; demander au cosignataire les options d'extension à ajouter ; réencoder le corps avec elles ; produire la signature classique sur le document de signature du corps final. Pour utiliser le crate depuis Rust, ajoutez-le depuis crates.io :
 
 ```toml
 [dependencies]
-qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }
+qorel-signer = "0.1.0"
 ```
+
+Ou exécutez `cargo add qorel-signer`. Pour compiler à partir des sources, utilisez plutôt une dépendance git : `qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }`.
 
 Un appel complet, qui construit le signataire hybride pour une chaîne et lui demande les options d'extension, figure dans `crates/qorel-signer/README.md` dans le dépôt. Le crate travaille sur des octets protobuf bruts, refuse les corps que la chaîne rejetterait (une option d'extension critique existante, `unordered`, des champs inconnus), ne retombe jamais sur les sign bytes v1 sur les réseaux QoreChain tant que la version n'est pas connue, vérifie chaque signature qu'il produit, met les secrets à zéro et les masque dans la sortie `Debug`. Ses tests reconstruisent, octet pour octet, des transactions que l'ante handler de la chaîne a acceptées. Voir aussi [qorel-signer dans la présentation](/qorel/overview#qorel-signer).
 
@@ -85,7 +87,7 @@ Une chaîne qui a besoin d'une autre signature supplémentaire implémente un fr
 
 | Langage | Paquet | Signature hybride |
 |---|---|---|
-| Rust | `qorechain-sdk` (crates.io), ou `qorel-signer` depuis le [dépôt QORel](https://github.com/qorechain/QORel) (`crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` avec `PqExtensionSigner` ; `qorechain::tx::build_hybrid_tx` |
+| Rust | `qorechain-sdk` (crates.io), ou `qorel-signer` depuis crates.io (`cargo add qorel-signer` ; les sources sont dans le [dépôt QORel](https://github.com/qorechain/QORel) à `crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` avec `PqExtensionSigner` ; `qorechain::tx::build_hybrid_tx` |
 | TypeScript et JavaScript | `npm install @qorechain/sdk` | `TxClient` signe en hybride avec un `pqcKeypair` ; `ensurePqcRegistered` |
 | Go | `go get github.com/qorechain/qorechain-sdk/packages/go@latest` | `qorechain/tx` (construction et signature hybrides), `qorechain/signbytes`, `qorechain/pqcdx` |
 | Python | `pip install qorechain-sdk` | `build_hybrid_tx`, `build_hybrid_signature_extension` |
@@ -121,7 +123,7 @@ Le point d'accroche est « après que les auth info sont finalisées et avant qu
 
 | Paquet | Registre | Sources |
 |---|---|---|
-| `qorel-signer` | Dans le dépôt (`crates/qorel-signer`) ; pas sur crates.io, utilisez la dépendance git ci-dessus | [qorechain/QORel](https://github.com/qorechain/QORel) |
+| `qorel-signer` | crates.io (`cargo add qorel-signer`, 0.1.0) ; sources dans le dépôt (`crates/qorel-signer`) | [qorechain/QORel](https://github.com/qorechain/QORel) |
 | `qorechain-sdk`, `@qorechain/sdk`, module Go, artefact Maven | crates.io, npm, proxy Go, Maven Central, PyPI | [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk) |
 | `qorechain-pqc` | npm, PyPI, crates.io, Go, Maven | [qorechain/qorechain-pqc](https://github.com/qorechain/qorechain-pqc) |
 

@@ -17,7 +17,7 @@ Bu sayfa, her QORel sürümünün neler eklediğini listeler. Hermes'ten veya ö
 
 - **QoreChain için hibrit kuantum sonrası imzalama.** Bir zincirde `signing = 'qorechain-hybrid'` ayarlayın; QORel her işlemin tek kritik uzantı seçeneği olarak ML-DSA-87 imzasını (`/qorechain.pqc.v1.PQCHybridSignature`) ekler, ardından son gövdeyi secp256k1 ile imzalar. Kuantum sonrası anahtarın imzaladığı mesaj, her iki QoreChain ağının da doğruladığı sürüm 2 sign bytes'tır. Statik `extension_options` bu modla birleştirilemez ve varsa yapılandırma reddedilir.
 - **Standart imzalama değişmedi.** `signing = 'standard'` (varsayılan) ile işlem biçimi, Cosmos Hub, Osmosis ve diğer tüm Cosmos SDK zincirleri için bayt bayt Hermes'inkidir.
-- **`qorel-signer` crate'i.** Kuantum sonrası ilkel (`PqSigner`, `MlDsa87Signer` ile), zincirin kuralları (`SignBytesFramer`) ve relayer'ın çağırdığı uzantı imzalayıcısı (`TxExtensionSigner`) ayrı arayüzlerdir. Gas simülasyonu ve toplu boyutlandırma aynı yoldan geçer; böylece ek yaklaşık 4,7 KB ve doğrulama gas'ı her zaman hesaba katılır.
+- **`qorel-signer` crate'i, 11 Kasım 2026'dan beri crates.io'da** (`cargo add qorel-signer`, sürüm 0.1.0). Kuantum sonrası ilkel (`PqSigner`, `MlDsa87Signer` ile), zincirin kuralları (`SignBytesFramer`) ve relayer'ın çağırdığı uzantı imzalayıcısı (`TxExtensionSigner`) ayrı arayüzlerdir. Gas simülasyonu ve toplu boyutlandırma aynı yoldan geçer; böylece ek yaklaşık 4,7 KB ve doğrulama gas'ı her zaman hesaba katılır.
 - **`qorel keys add` kuantum sonrası anahtarı türetir.** Hibrit bir zincirde ML-DSA-87 anahtarını aynı mnemonic'ten ve hesaptan QoreChain cüzdan türetmesiyle türetir ve yalnızca 32 baytlık seed'ini, anahtarın yanında `<key name>.pqc` olarak saklar. Hiçbir gizli veri yazdırılmaz.
 - **`qorel keys register-pqc`.** `MsgRegisterPQCKeyV2` işlemini bir kez gönderir; v3.2.3 veya üzerindeki ağlarda bir sahiplik kanıtıyla. İdempotenttir (aynı anahtar zaten kayıtlıysa hiçbir şey gönderilmez) ve hesabın zaten farklı bir anahtarı varsa göndermeyi reddeder. `--no-proof` yalnızca v3.2.3'ten eski ağlar için vardır.
 - **`qorel keys pqc-status`.** Anahtarın kayıtlı olup olmadığını, yerel anahtarla eşleşip eşleşmediğini, sahipliğin kanıtlanıp kanıtlanmadığını, zincirin hangi sign bytes'ı doğruladığını ve `ready_to_relay` değerini yazdırır.
@@ -42,7 +42,6 @@ Bu sayfa, her QORel sürümünün neler eklediğini listeler. Hermes'ten veya ö
 - Ethereum (Eureka) röleleme. Başlatılmadı.
 - Mainnet röleleme. Henüz açık bir mainnet IBC kanalı yok.
 - Bir Windows derlemesi.
-- crates.io üzerinde `qorel-signer` crate'i. Yayımlama engellenmiş durumda; crate depoda `crates/qorel-signer` altında bulunuyor, bu yüzden bir git bağımlılığı kullanın.
 
 ## Yükseltme {#upgrading}
 

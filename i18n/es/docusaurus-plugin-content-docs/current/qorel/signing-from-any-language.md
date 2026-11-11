@@ -70,12 +70,14 @@ El crate `qorel-signer` divide el trabajo en tres interfaces:
 - `SignBytesFramer`: las reglas de una cadena (`check_body`, `frame`, `pack`).
 - `TxExtensionSigner`: lo que invoca el relayer. `PqExtensionSigner` combina una primitiva y un framer.
 
-El relayer construye una transacción en este orden: codifica el cuerpo sin ninguna extensión de cofirmante (`B0`); codifica la información de autenticación final (`A`); pide al cofirmante las opciones de extensión que añadir; recodifica el cuerpo con ellas; produce la firma clásica sobre el documento de firma del cuerpo final. Para usar el crate desde Rust, depende de él desde el repositorio (no está en crates.io):
+El relayer construye una transacción en este orden: codifica el cuerpo sin ninguna extensión de cofirmante (`B0`); codifica la información de autenticación final (`A`); pide al cofirmante las opciones de extensión que añadir; recodifica el cuerpo con ellas; produce la firma clásica sobre el documento de firma del cuerpo final. Para usar el crate desde Rust, añádelo desde crates.io:
 
 ```toml
 [dependencies]
-qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }
+qorel-signer = "0.1.0"
 ```
+
+O ejecuta `cargo add qorel-signer`. Para compilar desde el código fuente, usa en su lugar una dependencia de git: `qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }`.
 
 Una llamada completa, que construye el firmante híbrido para una cadena y le pide las opciones de extensión, está en `crates/qorel-signer/README.md` del repositorio. El crate trabaja con bytes protobuf en bruto, rechaza los cuerpos que la cadena rechazaría (una opción de extensión crítica ya existente, `unordered`, campos desconocidos), nunca recurre a los bytes de firma v1 en las redes de QoreChain antes de conocer la versión, verifica cada firma que produce, y pone a cero los secretos en memoria y los oculta en la salida de `Debug`. Sus pruebas reconstruyen, byte a byte, transacciones que el ante handler de la cadena aceptó. Consulta también [qorel-signer en la descripción general](/qorel/overview#qorel-signer).
 
@@ -85,7 +87,7 @@ Una cadena que necesita una firma adicional distinta implementa un framer, y una
 
 | Lenguaje | Paquete | Firma híbrida |
 |---|---|---|
-| Rust | `qorechain-sdk` (crates.io), o `qorel-signer` del [repositorio de QORel](https://github.com/qorechain/QORel) (`crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` con `PqExtensionSigner`; `qorechain::tx::build_hybrid_tx` |
+| Rust | `qorechain-sdk` (crates.io), o `qorel-signer` de crates.io (`cargo add qorel-signer`; el código fuente está en el [repositorio de QORel](https://github.com/qorechain/QORel) en `crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` con `PqExtensionSigner`; `qorechain::tx::build_hybrid_tx` |
 | TypeScript y JavaScript | `npm install @qorechain/sdk` | `TxClient` firma de forma híbrida con un `pqcKeypair`; `ensurePqcRegistered` |
 | Go | `go get github.com/qorechain/qorechain-sdk/packages/go@latest` | `qorechain/tx` (construcción y firma híbridas), `qorechain/signbytes`, `qorechain/pqcdx` |
 | Python | `pip install qorechain-sdk` | `build_hybrid_tx`, `build_hybrid_signature_extension` |
@@ -121,7 +123,7 @@ El punto de enganche es «cuando la información de autenticación es definitiva
 
 | Paquete | Registro | Código fuente |
 |---|---|---|
-| `qorel-signer` | En el repositorio (`crates/qorel-signer`); no está en crates.io, usa la dependencia de git de arriba | [qorechain/QORel](https://github.com/qorechain/QORel) |
+| `qorel-signer` | crates.io (`cargo add qorel-signer`, 0.1.0); código fuente en el repositorio (`crates/qorel-signer`) | [qorechain/QORel](https://github.com/qorechain/QORel) |
 | `qorechain-sdk`, `@qorechain/sdk`, módulo de Go, artefacto de Maven | crates.io, npm, Go proxy, Maven Central, PyPI | [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk) |
 | `qorechain-pqc` | npm, PyPI, crates.io, Go, Maven | [qorechain/qorechain-pqc](https://github.com/qorechain/qorechain-pqc) |
 

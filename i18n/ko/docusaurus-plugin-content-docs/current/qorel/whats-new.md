@@ -17,7 +17,7 @@ sidebar_position: 2
 
 - **QoreChain용 하이브리드 포스트 양자 서명.** 체인에 `signing = 'qorechain-hybrid'`를 설정하면 QORel은 ML-DSA-87 서명(`/qorechain.pqc.v1.PQCHybridSignature`)을 각 트랜잭션의 유일한 critical 확장 옵션으로 덧붙인 다음, 최종 본문에 secp256k1로 서명합니다. 포스트 양자 키가 서명하는 메시지는 버전 2 sign bytes이며, 두 QoreChain 네트워크 모두 이를 검증합니다. 정적 `extension_options`는 이 모드와 함께 쓸 수 없으며, 함께 있으면 설정이 거부됩니다.
 - **표준 서명은 그대로입니다.** `signing = 'standard'`(기본값)에서는 Cosmos Hub, Osmosis 및 그 밖의 모든 Cosmos SDK 체인에 대해 트랜잭션 형식이 Hermes와 바이트 단위로 동일합니다.
-- **`qorel-signer` 크레이트.** 포스트 양자 프리미티브(`PqSigner`, `MlDsa87Signer` 포함), 체인의 규칙(`SignBytesFramer`), 릴레이어가 호출하는 확장 서명기(`TxExtensionSigner`)는 각각 별도의 인터페이스입니다. 가스 시뮬레이션과 배치 크기 계산도 같은 경로를 거치므로, 추가되는 약 4.7 KB와 검증 가스가 항상 반영됩니다.
+- **`qorel-signer` 크레이트, 2026년 11월 11일부터 crates.io에 있음**(`cargo add qorel-signer`, 버전 0.1.0). 포스트 양자 프리미티브(`PqSigner`, `MlDsa87Signer` 포함), 체인의 규칙(`SignBytesFramer`), 릴레이어가 호출하는 확장 서명기(`TxExtensionSigner`)는 각각 별도의 인터페이스입니다. 가스 시뮬레이션과 배치 크기 계산도 같은 경로를 거치므로, 추가되는 약 4.7 KB와 검증 가스가 항상 반영됩니다.
 - **`qorel keys add`가 포스트 양자 키를 파생합니다.** 하이브리드 체인에서는 같은 니모닉과 계정으로부터 QoreChain 지갑 파생 방식으로 ML-DSA-87 키를 파생하고, 32바이트 시드만 키 옆에 `<key name>.pqc`로 저장합니다. 비밀 값은 출력되지 않습니다.
 - **`qorel keys register-pqc`.** `MsgRegisterPQCKeyV2`를 한 번 전송하며, v3.2.3 이상의 네트워크에서는 소유 증명이 함께 들어갑니다. 멱등적이며(같은 키가 이미 등록되어 있으면 아무것도 보내지 않음), 계정에 이미 다른 키가 있으면 전송을 거부합니다. `--no-proof`는 v3.2.3보다 오래된 네트워크 전용으로만 존재합니다.
 - **`qorel keys pqc-status`.** 키가 등록되어 있는지, 로컬 키와 일치하는지, 소유가 증명되었는지, 체인이 어떤 sign bytes를 검증하는지, 그리고 `ready_to_relay`를 출력합니다.
@@ -42,7 +42,6 @@ sidebar_position: 2
 - Ethereum(Eureka) 릴레이. 시작하지 않았습니다.
 - 메인넷 릴레이. 아직 열려 있는 메인넷 IBC 채널이 없습니다.
 - Windows 빌드.
-- crates.io의 `qorel-signer` 크레이트. 게시가 막혀 있습니다. 크레이트는 저장소의 `crates/qorel-signer`에 있으므로 git 의존성을 사용하세요.
 
 ## 업그레이드 {#upgrading}
 

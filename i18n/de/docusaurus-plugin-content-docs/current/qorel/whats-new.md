@@ -17,7 +17,7 @@ Erste Version. Nur Testnet. Auf der [Release-Seite](https://github.com/qorechain
 
 - **Hybrides Post-Quanten-Signieren für QoreChain.** Setzen Sie `signing = 'qorechain-hybrid'` auf einer Chain, und QORel hängt die ML-DSA-87-Signatur (`/qorechain.pqc.v1.PQCHybridSignature`) als einzige kritische Erweiterungsoption jeder Transaktion an und signiert dann den finalen Body mit secp256k1. Die Nachricht, die der Post-Quanten-Schlüssel signiert, sind die Sign-Bytes der Version 2, die beide QoreChain-Netzwerke prüfen. Statische `extension_options` lassen sich mit diesem Modus nicht kombinieren, und die Konfiguration wird abgelehnt, wenn sie vorhanden sind.
 - **Das Standard-Signieren bleibt unverändert.** Mit `signing = 'standard'` (Standardwert) ist das Transaktionsformat Byte für Byte das von Hermes, für den Cosmos Hub, Osmosis und jede andere Cosmos-SDK-Chain.
-- **Das Crate `qorel-signer`.** Das Post-Quanten-Primitiv (`PqSigner`, mit `MlDsa87Signer`), die Regeln der Chain (`SignBytesFramer`) und der Erweiterungs-Signer, den der Relayer aufruft (`TxExtensionSigner`), sind getrennte Schnittstellen. Gas-Simulation und Batch-Dimensionierung laufen über denselben Pfad, sodass die zusätzlichen rund 4,7 KB und das Prüf-Gas immer mitgezählt werden.
+- **Das Crate `qorel-signer`, seit dem 11. November 2026 auf crates.io** (`cargo add qorel-signer`, Version 0.1.0). Das Post-Quanten-Primitiv (`PqSigner`, mit `MlDsa87Signer`), die Regeln der Chain (`SignBytesFramer`) und der Erweiterungs-Signer, den der Relayer aufruft (`TxExtensionSigner`), sind getrennte Schnittstellen. Gas-Simulation und Batch-Dimensionierung laufen über denselben Pfad, sodass die zusätzlichen rund 4,7 KB und das Prüf-Gas immer mitgezählt werden.
 - **`qorel keys add` leitet den Post-Quanten-Schlüssel ab.** Auf einer Hybrid-Chain leitet es den ML-DSA-87-Schlüssel mit der QoreChain-Wallet-Ableitung aus derselben Mnemonic und demselben Konto ab und speichert nur dessen 32-Byte-Seed neben dem Schlüssel als `<key name>.pqc`. Es wird nichts Geheimes ausgegeben.
 - **`qorel keys register-pqc`.** Sendet einmalig `MsgRegisterPQCKeyV2`, auf Netzwerken ab v3.2.3 mit einem Besitznachweis (Proof of Possession). Es ist idempotent (es wird nichts gesendet, wenn derselbe Schlüssel bereits registriert ist) und sendet nicht, wenn das Konto bereits einen anderen Schlüssel hat. `--no-proof` gibt es nur für Netzwerke älter als v3.2.3.
 - **`qorel keys pqc-status`.** Gibt aus, ob der Schlüssel registriert ist, ob er mit dem lokalen Schlüssel übereinstimmt, ob der Besitz nachgewiesen wurde, welche Sign-Bytes die Chain prüft, und `ready_to_relay`.
@@ -42,7 +42,6 @@ Erste Version. Nur Testnet. Auf der [Release-Seite](https://github.com/qorechain
 - Relaying für Ethereum (Eureka). Nicht begonnen.
 - Relaying im Mainnet. Es ist noch kein Mainnet-IBC-Kanal geöffnet.
 - Ein Windows-Build.
-- Das Crate `qorel-signer` auf crates.io. Die Veröffentlichung ist blockiert; das Crate liegt im Repository unter `crates/qorel-signer`, verwenden Sie also eine Git-Abhängigkeit.
 
 ## Upgrade {#upgrading}
 

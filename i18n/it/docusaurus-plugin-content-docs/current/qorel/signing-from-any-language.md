@@ -70,12 +70,14 @@ Il crate `qorel-signer` suddivide il lavoro in tre interfacce:
 - `SignBytesFramer`: le regole di una chain (`check_body`, `frame`, `pack`).
 - `TxExtensionSigner`: ciò che il relayer richiama. `PqExtensionSigner` combina una primitiva e un framer.
 
-Il relayer costruisce una transazione in quest'ordine: codifica il corpo senza alcuna estensione del co-firmatario (`B0`); codifica l'auth info finale (`A`); chiede al co-firmatario le opzioni di estensione da aggiungere; ricodifica il corpo con esse; produce la firma classica sul documento di firma del corpo finale. Per usare il crate da Rust, dipendi da esso dal repository (non è su crates.io):
+Il relayer costruisce una transazione in quest'ordine: codifica il corpo senza alcuna estensione del co-firmatario (`B0`); codifica l'auth info finale (`A`); chiede al co-firmatario le opzioni di estensione da aggiungere; ricodifica il corpo con esse; produce la firma classica sul documento di firma del corpo finale. Per usare il crate da Rust, aggiungilo da crates.io:
 
 ```toml
 [dependencies]
-qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }
+qorel-signer = "0.1.0"
 ```
+
+Oppure esegui `cargo add qorel-signer`. Per compilare dai sorgenti, usa invece una dipendenza git: `qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }`.
 
 Una chiamata completa, che costruisce il firmatario ibrido per una chain e gli chiede le opzioni di estensione, si trova in `crates/qorel-signer/README.md` nel repository. Il crate lavora su byte protobuf grezzi, rifiuta i corpi che la chain respingerebbe (un'opzione di estensione critica già presente, `unordered`, campi sconosciuti), non ripiega mai sui sign bytes v1 sulle reti QoreChain prima che la versione sia nota, verifica ogni firma che produce, e azzera i segreti oscurandoli nell'output di `Debug`. I suoi test ricostruiscono, byte per byte, transazioni che l'ante handler della chain ha accettato. Vedi anche [qorel-signer nella panoramica](/qorel/overview#qorel-signer).
 
@@ -85,7 +87,7 @@ Una chain che richiede una diversa firma aggiuntiva implementa un framer, e una 
 
 | Linguaggio | Pacchetto | Firma ibrida |
 |---|---|---|
-| Rust | `qorechain-sdk` (crates.io), oppure `qorel-signer` dal [repository di QORel](https://github.com/qorechain/QORel) (`crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` con `PqExtensionSigner`; `qorechain::tx::build_hybrid_tx` |
+| Rust | `qorechain-sdk` (crates.io), oppure `qorel-signer` da crates.io (`cargo add qorel-signer`; il sorgente è nel [repository di QORel](https://github.com/qorechain/QORel) in `crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` con `PqExtensionSigner`; `qorechain::tx::build_hybrid_tx` |
 | TypeScript e JavaScript | `npm install @qorechain/sdk` | `TxClient` firma in modo ibrido con un `pqcKeypair`; `ensurePqcRegistered` |
 | Go | `go get github.com/qorechain/qorechain-sdk/packages/go@latest` | `qorechain/tx` (costruzione e firma ibrida), `qorechain/signbytes`, `qorechain/pqcdx` |
 | Python | `pip install qorechain-sdk` | `build_hybrid_tx`, `build_hybrid_signature_extension` |
@@ -121,7 +123,7 @@ Il punto di aggancio è "dopo che l'auth info è definitiva e prima che venga co
 
 | Pacchetto | Registro | Sorgente |
 |---|---|---|
-| `qorel-signer` | Nel repository (`crates/qorel-signer`); non su crates.io, usa la dipendenza git indicata sopra | [qorechain/QORel](https://github.com/qorechain/QORel) |
+| `qorel-signer` | crates.io (`cargo add qorel-signer`, 0.1.0); sorgente nel repository (`crates/qorel-signer`) | [qorechain/QORel](https://github.com/qorechain/QORel) |
 | `qorechain-sdk`, `@qorechain/sdk`, modulo Go, artefatto Maven | crates.io, npm, Go proxy, Maven Central, PyPI | [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk) |
 | `qorechain-pqc` | npm, PyPI, crates.io, Go, Maven | [qorechain/qorechain-pqc](https://github.com/qorechain/qorechain-pqc) |
 

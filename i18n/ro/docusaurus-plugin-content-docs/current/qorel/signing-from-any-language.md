@@ -70,12 +70,14 @@ Crate-ul `qorel-signer` împarte munca în trei interfețe:
 - `SignBytesFramer`: regulile unui lanț (`check_body`, `frame`, `pack`).
 - `TxExtensionSigner`: ce apelează relayer-ul. `PqExtensionSigner` combină o primitivă și un framer.
 
-Relayer-ul construiește o tranzacție în această ordine: codifică corpul fără nicio extensie de co-semnatar (`B0`); codifică auth info finală (`A`); cere co-semnatarului opțiunile de extensie de adăugat; recodifică corpul cu ele; face semnătura clasică peste documentul de semnare al corpului final. Pentru a folosi crate-ul din Rust, depindeți de el din depozit (nu este pe crates.io):
+Relayer-ul construiește o tranzacție în această ordine: codifică corpul fără nicio extensie de co-semnatar (`B0`); codifică auth info finală (`A`); cere co-semnatarului opțiunile de extensie de adăugat; recodifică corpul cu ele; face semnătura clasică peste documentul de semnare al corpului final. Pentru a folosi crate-ul din Rust:
 
 ```toml
 [dependencies]
-qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }
+qorel-signer = "0.1.0"
 ```
+
+Sau rulați `cargo add qorel-signer`. Pentru a compila din sursă, folosiți o dependență git: `qorel-signer = { git = "https://github.com/qorechain/QORel", tag = "qorel-v0.1.0" }`.
 
 Un apel complet, care construiește semnatarul hibrid pentru un lanț și îi cere opțiunile de extensie, se află în `crates/qorel-signer/README.md` din depozit. Crate-ul lucrează pe octeți protobuf bruți, refuză corpurile pe care lanțul le-ar respinge (o opțiune de extensie critică existentă, `unordered`, câmpuri necunoscute), nu revine niciodată la octeți de semnat v1 pe rețelele QoreChain înainte ca versiunea să fie cunoscută, verifică fiecare semnătură pe care o face și zeroizează secretele și le maschează în ieșirea `Debug`. Testele sale reconstruiesc, octet cu octet, tranzacții pe care ante handler-ul lanțului le-a acceptat. Vezi și [qorel-signer în prezentarea generală](/qorel/overview#qorel-signer).
 
@@ -85,7 +87,7 @@ Un lanț care are nevoie de o altă semnătură suplimentară implementează un 
 
 | Limbaj | Pachet | Semnare hibridă |
 |---|---|---|
-| Rust | `qorechain-sdk` (crates.io), sau `qorel-signer` din [depozitul QORel](https://github.com/qorechain/QORel) (`crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` cu `PqExtensionSigner`; `qorechain::tx::build_hybrid_tx` |
+| Rust | `qorechain-sdk` (crates.io), sau `qorel-signer` de pe crates.io (`cargo add qorel-signer`; sursa este în [depozitul QORel](https://github.com/qorechain/QORel) la `crates/qorel-signer`) | `qorel_signer::qorechain::qorechain_hybrid_signer` cu `PqExtensionSigner`; `qorechain::tx::build_hybrid_tx` |
 | TypeScript și JavaScript | `npm install @qorechain/sdk` | `TxClient` semnează hibrid cu un `pqcKeypair`; `ensurePqcRegistered` |
 | Go | `go get github.com/qorechain/qorechain-sdk/packages/go@latest` | `qorechain/tx` (construire și semnare hibridă), `qorechain/signbytes`, `qorechain/pqcdx` |
 | Python | `pip install qorechain-sdk` | `build_hybrid_tx`, `build_hybrid_signature_extension` |
@@ -121,7 +123,7 @@ Punctul de cuplare este „după ce auth info este finală și înainte ca docum
 
 | Pachet | Registru | Sursă |
 |---|---|---|
-| `qorel-signer` | În depozit (`crates/qorel-signer`); nu este pe crates.io, folosiți dependența git de mai sus | [qorechain/QORel](https://github.com/qorechain/QORel) |
+| `qorel-signer` | crates.io (`cargo add qorel-signer`, 0.1.0); sursa în depozit (`crates/qorel-signer`) | [qorechain/QORel](https://github.com/qorechain/QORel) |
 | `qorechain-sdk`, `@qorechain/sdk`, modulul Go, artefactul Maven | crates.io, npm, Go proxy, Maven Central, PyPI | [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk) |
 | `qorechain-pqc` | npm, PyPI, crates.io, Go, Maven | [qorechain/qorechain-pqc](https://github.com/qorechain/qorechain-pqc) |
 

@@ -51,7 +51,7 @@ There is no relayer allowlist for the IBC v2 client config either (`/ibc/core/cl
 
 ## qorel-signer {#qorel-signer}
 
-The signer is a separate crate, `qorel-signer`, in the QORel repository at `crates/qorel-signer`. It is not on crates.io; depend on it as a git dependency. What it guarantees:
+The signer is a separate crate, `qorel-signer`, in the QORel repository at `crates/qorel-signer`. It is published on crates.io (version 0.1.0): add it with `cargo add qorel-signer`, or depend on the repository as a git dependency. What it guarantees:
 
 - **Pluggable co-signer.** A chain's extra signature is added by a co-signer, and chains with standard signing use none, so their transactions are unchanged.
 - **Raw protobuf bytes.** It works on encoded bytes and depends on no IBC or relayer types.
@@ -104,7 +104,7 @@ The pages in this section:
 | [GitHub: qorechain/QORel](https://github.com/qorechain/QORel) | Source, issues, and the release page with tarballs, `.deb`, `.rpm`, `SHA256SUMS` and build attestations | 0.1.0 |
 | Homebrew | `brew install qorechain/tap/qorel` | 0.1.0 |
 | `ghcr.io/qorechain/qorel` | Container image (amd64 and arm64, distroless, non-root, cosign-signed) | 0.1.0 |
-| `qorel-signer` crate | The signer layer, in the repository at `crates/qorel-signer`; use a git dependency | Not on crates.io |
+| `qorel-signer` crate | The signer layer; `cargo add qorel-signer`, or the repository at `crates/qorel-signer` as a git dependency | crates.io (0.1.0, published 11 November 2026) |
 
 Licence: Apache-2.0. QORel is derived from Hermes, copyright Informal Systems Inc. and the Hermes authors, also Apache-2.0; the repository's `NOTICE` file carries the attribution. See [Install](/qorel/install) for the commands and for how to verify a download.
 
