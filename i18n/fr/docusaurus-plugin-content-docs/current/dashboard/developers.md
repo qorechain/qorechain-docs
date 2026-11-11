@@ -184,7 +184,7 @@ Limites : une seule clé active par compte, 10 requêtes par seconde (rafale de 
 | Surface | Adresse | Réseaux |
 | --- | --- | --- |
 | Page Développeurs | `dashboard.qorechain.io/developers` | Outils de lecture sur mainnet et testnet ; outils de signature sur testnet uniquement |
-| Bibliothèque de signature | npm `@qorechain/qoresign` (la 0.1.1 ajoute `inspectTransaction`), PyPI QoreSign pour Python, source `github.com/qorechain/qoresign`, voir [QoreSign](/qoresign/overview) | n/a |
+| Bibliothèque de signature | npm `@qorechain/qoresign` (`inspectTransaction` depuis la 0.1.1), PyPI QoreSign pour Python, source `github.com/qorechain/qoresign`, voir [QoreSign](/qoresign/overview) | n/a |
 | Package du faux portefeuille | npm `@qorechain/qorex-wallet-mock`, source `github.com/qorechain/qorex-integrations` | Testnet |
 | Index des packages | [Packages pour développeurs](/developer-tools/overview) | n/a |
 | Serveur MCP | npm `@qorechain/mcp` 0.1.0 et `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0 ; guide : [Serveur MCP QoreChain](/developer-tools/mcp) | Testnet par défaut |

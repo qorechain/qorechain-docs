@@ -15,7 +15,7 @@ sidebar_position: 13
 - **鍵がブラウザの外に出ません。** Signing playground と test wallet の鍵はブラウザ内で生成され、メモリ上にのみ保持されます。保存も送信もされず、再読み込みすると消えます。この2つのタブはテストネット専用で、メインネットを拒否します。
 - **デモではなく、本番の署名ライブラリ。** Playground は、本番の統合と同じオープンソースライブラリである [QoreSign](/qoresign/overview) を使用します。同じメッセージに対する secp256k1 署名と ML-DSA-87 署名からなるハイブリッド署名を生成し、検証します。
 - **テスト済みのデータから生成されるパッケージハブ。** **SDKs** タブは、1つのマニフェスト(2026年10月30日のマニフェスト)から60個のパッケージを一覧表示します。バージョンは各レジストリからライブで読み取られ(10分ごとに更新され、レジストリに到達できない場合は最後に確認したバージョンとその日付が表示されます)、各クイックスタートは SDK チームが公開レジストリに対して実行したもので、観測された出力が横に表示されます。
-- **再現できる判定。** **Transaction inspector** は、コミット済みのトランザクションを読み取り、その ML-DSA-87 レイヤーが署名者の登録済みの鍵に対して検証されるかどうかを報告します。検証されない場合は、sign-bytes のバージョンとその理由も示します。これには [QoreSign](/qoresign/overview) 0.1.1 の `inspectTransaction` 関数を使用しているため、同じ確認をご自身のコードでも実行できます。読み取り専用です。
+- **再現できる判定。** **Transaction inspector** は、コミット済みのトランザクションを読み取り、その ML-DSA-87 レイヤーが署名者の登録済みの鍵に対して検証されるかどうかを報告します。検証されない場合は、sign-bytes のバージョンとその理由も示します。これには [QoreSign](/qoresign/overview) の `inspectTransaction` 関数(0.1.1 から)を使用しているため、同じ確認をご自身のコードでも実行できます。読み取り専用です。
 - **推測ではなく、チェーンの答え。** **PQ key status** は、登録済みの ML-DSA-87 鍵と EVM ウィンドウの状態を、ノード自身のクエリルートから読み取ります。そのため、EVM トランザクションが拒否される理由を、送信する前に確認できます。
 
 ## 使い方 {#how-to-use}
@@ -53,7 +53,7 @@ sidebar_position: 13
 
 **できること。** コミット済みのトランザクションをハッシュで読み取り、誰が署名したか、いくらかかったか、そのポスト量子レイヤーが検証されるか、どのセキュリティ階層に当たるかを説明します。読み取り専用で、署名も送信も行いません。
 
-**仕組み。** ページは、選択したネットワーク上のトランザクションを Dashboard の読み取り専用ゲートウェイに問い合わせ、その結果に対して [QoreSign](/qoresign/overview) 0.1.1 の `inspectTransaction` 関数を実行します(同じ確認をコードで実行するには、[QoreSign クイックスタート](/qoresign/quickstart)を参照)。ポスト量子レイヤーは、署名者が**現在**登録している ML-DSA-87 鍵に対して確認されるため、後から鍵をローテーションすると、古いトランザクションが未検証として表示されることがあります。
+**仕組み。** ページは、選択したネットワーク上のトランザクションを Dashboard の読み取り専用ゲートウェイに問い合わせ、その結果に対して [QoreSign](/qoresign/overview) の `inspectTransaction` 関数(0.1.1 から)を実行します(同じ確認をコードで実行するには、[QoreSign クイックスタート](/qoresign/quickstart)を参照)。ポスト量子レイヤーは、署名者が**現在**登録している ML-DSA-87 鍵に対して確認されるため、後から鍵をローテーションすると、古いトランザクションが未検証として表示されることがあります。
 
 **手順。**
 
@@ -184,7 +184,7 @@ sidebar_position: 13
 | サーフェス | アドレス | ネットワーク |
 | --- | --- | --- |
 | Developers ページ | `dashboard.qorechain.io/developers` | 読み取りツールはメインネットとテストネット、署名ツールはテストネット専用 |
-| 署名ライブラリ | npm `@qorechain/qoresign`(0.1.1 で `inspectTransaction` を追加)、PyPI の QoreSign for Python、ソース `github.com/qorechain/qoresign`、[QoreSign](/qoresign/overview) を参照 | 該当なし |
+| 署名ライブラリ | npm `@qorechain/qoresign`(`inspectTransaction` は 0.1.1 から)、PyPI の QoreSign for Python、ソース `github.com/qorechain/qoresign`、[QoreSign](/qoresign/overview) を参照 | 該当なし |
 | テストウォレットパッケージ | npm `@qorechain/qorex-wallet-mock`、ソース `github.com/qorechain/qorex-integrations` | テストネット |
 | パッケージ索引 | [開発者向けパッケージ](/developer-tools/overview) | 該当なし |
 | MCP サーバー | npm `@qorechain/mcp` 0.1.0 と `@qorechain/qore-cli` 0.1.0、PyPI `qorechain-mcp` 0.1.0。ガイド: [QoreChain MCP サーバー](/developer-tools/mcp) | デフォルトはテストネット |

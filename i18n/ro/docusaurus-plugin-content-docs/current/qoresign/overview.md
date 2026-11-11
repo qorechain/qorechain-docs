@@ -11,7 +11,7 @@ QoreSign este o bibliotecă open-source pentru semnarea hibridă secp256k1 + ML-
 
 QoreSign permite unui portofel diferit de cel propriu al QoreChain să deriveze cheia ML-DSA-87 a unui cont, să semneze cu ambele chei tranzacțiile de pe lane-ul nativ, să verifice local semnăturile hibride, să semneze mesaje arbitrare, să simuleze o tranzacție înainte de semnare, să citească înapoi cum a fost protejată o tranzacție confirmată și să implementeze Sign In With QoreChain. Este un strat subțire peste bindingurile [`qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) și nu adaugă primitive criptografice proprii. Este întreținut de QoreChain Association sub licența Apache-2.0.
 
-Versiunea curentă este **0.1.1** (27 octombrie 2026). Este publicată în TypeScript, Rust, Go, Kotlin (JVM și Android), Swift și, nou în 0.1.1, Python. Sursa, exemplele și vectorii de test se găsesc în depozitul [qorechain/qoresign](https://github.com/qorechain/qoresign). Funcționează pe mainnet (`qorechain-vladi`) și pe testnet (`qorechain-diana`).
+Versiunea curentă este **0.2.0** (publicată la 10 și 11 noiembrie 2026). Este publicată în TypeScript, Rust, Go, Kotlin (JVM și Android), Swift și, de la 0.1.1, Python. Pe Maven Central, 0.2.0 încă se sincronizează: Central încă afișa 0.1.1 la 11 noiembrie 2026 (vezi [Unde este publicat](#where-published)). Sursa, exemplele și vectorii de test se găsesc în depozitul [qorechain/qoresign](https://github.com/qorechain/qoresign). Funcționează pe mainnet (`qorechain-vladi`) și pe testnet (`qorechain-diana`).
 
 ## Ce face QoreSign pe fiecare lane {#lanes}
 
@@ -38,12 +38,23 @@ Nucleul offline, identic în fiecare limbaj:
 Helperi de rețea (TypeScript `@qorechain/qoresign/network`; Go `github.com/qorechain/qoresign/go/network` le are pe toate, cu excepția celor două noi):
 
 - `fetchPqKeyStatus`: dacă o cheie ML-DSA-87 este înregistrată pentru o adresă și care anume.
-- `resolveSignBytesVersion`: ce formă de sign-bytes verifică rețeaua.
+- `resolveSignBytesVersion`: ce formă de sign-bytes verifică rețeaua. De la 0.2.0 citește mai întâi intrarea `pqc-sign-bytes-v2` din lista de funcționalități de protocol a rețelei și folosește verificarea upgrade-ului aplicat doar când lista nu poate fi citită.
 - `simulateTx` (gas consumat, limită de gas sugerată, variații de sold pe adresă), `suggestGasLimit`, `broadcastTx` și `submitWithSignBytesFallback` (o reîncercare cu cealaltă formă de sign-bytes când rețeaua o refuză pe prima).
-- `assertPqLayerMatchesRegisteredKey`: verifică un strat furnizat de un dApp față de cheia de pe lanț, înainte ca portofelul să adauge semnătura clasică.
+- `assertPqLayerMatchesRegisteredKey`: verifică un strat furnizat de un dApp față de cheia de pe lanț, înainte ca portofelul să adauge semnătura clasică. De la 0.2.0 verifică față de versiunea sign-bytes a rețelei.
 - `verifySiwqWithChain` și `verifyMessageWithChain`: verificare față de cheia înregistrată pe lanț.
 - `fetchCommittedExtensionTypeUrls`: citește înapoi ce extensii a purtat o tranzacție confirmată.
-- Nou în 0.1.1, doar TypeScript: `inspectTransaction` și `fetchEvmWindow`, descrise mai jos.
+- De la 0.1.1, doar TypeScript: `inspectTransaction` și `fetchEvmWindow`, descrise mai jos.
+- Nou în 0.2.0, TypeScript și Go: `fetchProtocolFeature`; TypeScript exportă și `PROTOCOL_FEATURES_PATH` și `SIGN_BYTES_V2_FEATURE`.
+
+## Noutăți în 0.2.0 {#new-in-0-2-0}
+
+Publicat la 10 și 11 noiembrie 2026 (release v0.2.0 pe GitHub la 11 noiembrie). Schimbări de comportament și ce trebuie făcut la actualizarea de la 0.1.x:
+
+- **Sign In With QoreChain: vârsta maximă.** Un mesaj fără `Expiration Time` este refuzat după ce are mai mult de 600 de secunde (10 minute), socotite de la `Issued At`, cu `SIWQ_EXPIRED`. Vârsta este configurabilă în fiecare binding: `maxAgeSeconds` (TypeScript, Swift, Kotlin), `max_age_seconds` (Python și `VerifySiwqArgs` din Rust) și `MaxAge` (`VerifySiwqOptions` din Go). O valoare zero sau negativă eșuează cu `INVALID_ARGUMENT`. Setați `expirationTime` pe fiecare mesaj emis de serverul dumneavoastră sau transmiteți o vârstă maximă mai mare. Vezi [Sign In With QoreChain: verificare pe server](/qoresign/guides/sign-in).
+- **Marcaje de timp stricte.** `Issued At`, `Expiration Time` și `Not Before` urmează o singură gramatică RFC 3339, aplicată la fel la crearea, parsarea, semnarea și verificarea unui mesaj. Un marcaj în afara ei eșuează cu `SIWQ_MALFORMED`. Vezi [Sign In With QoreChain v1](/qoresign/spec/siwq-v1#timestamps). `parseSiwqTimestamp` (TypeScript) și `ParseSiwqTimestamp` (Go) returnează milisecundele Unix ale unui marcaj în acea gramatică. Vectorii comuni se află în `vectors/siwq-timestamps-v1.json`.
+- **Rezolvarea versiunii sign-bytes.** `resolveSignBytesVersion` citește mai întâi funcționalitatea de protocol `pqc-sign-bytes-v2` din lista rețelei. Când lista poate fi citită, ea decide versiunea (o funcționalitate care nu apare în listă înseamnă v1). Verificarea upgrade-ului aplicat se folosește doar când lista nu poate fi citită. Sunt exportate `fetchProtocolFeature` (TypeScript și Go), `PROTOCOL_FEATURES_PATH` și `SIGN_BYTES_V2_FEATURE` (TypeScript).
+- **Verificarea stratului.** `assertPqLayerMatchesRegisteredKey` și `inspectTransaction` verifică stratul ML-DSA-87 față de versiunea sign-bytes pe care o folosește rețeaua sau față de cea transmisă în noua opțiune `signBytesVersion` (`SignBytesVersion` în Go). Transmiteți `signBytesVersion: "v1"` pentru o tranzacție confirmată înainte ca rețeaua să treacă la v2. Acceptarea unui strat peste oricare versiune cere acum opțiunea explicită de diagnostic `allowLegacyEither` (`AllowLegacyEither` în Go), doar pentru diagnostic.
+- **Swift, Kotlin și Python: actualizați pachetul împreună cu biblioteca sa nativă.** Funcția nativă de verificare primește vârsta maximă ca parametru nou, deci o bibliotecă nativă 0.1.x nu se potrivește cu bindingurile 0.2.0. Xcframework-ul, bibliotecile JVM și Android și wheel-urile Python sunt reconstruite pentru această versiune.
 
 ## Noutăți în 0.1.1 {#new-in-0-1-1}
 
@@ -115,11 +126,11 @@ Dimensiuni (FIPS 204 și [ghidul de dimensiuni](/qoresign/guides/sizes-and-trans
 |---|---|---|---|
 | TypeScript | [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | `npm install @qorechain/qoresign` | Node.js 20 sau mai nou; browsere |
 | Rust | [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) (numele bibliotecii `qoresign`) | `cargo add qorechain-qoresign` | Rust stable |
-| Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.1.1` | Go 1.25 |
+| Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.2.0` | Go 1.25 |
 | Python | [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) (import `qoresign`) | `pip install qorechain-qoresign` | Python 3.9+; wheel-uri pentru macOS 11+ (arm64, x86_64) și Linux (x86_64, aarch64); încă fără wheel pentru Windows, celelalte platforme se construiesc din distribuția sursă (necesită Rust 1.95) |
-| Swift | `QoreSign` din [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign) (binary framework în release-ul GitHub) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, produs `QoreSign` | iOS 16, macOS 13 |
-| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.1.1")` | Java 17, Kotlin 2.3 sau mai nou; biblioteci native pentru macOS (arm64, x86-64), Linux (x86-64, arm64) și Windows (x86-64) |
-| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | API 24, Kotlin 2.3 sau mai nou; `arm64-v8a`, `armeabi-v7a`, `x86_64`; reguli R8 keep incluse |
+| Swift | `QoreSign` din [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign) (binary framework în release-ul GitHub) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, produs `QoreSign` | iOS 16, macOS 13 |
+| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` după ce 0.2.0 apare pe Central (Central afișează 0.1.1 la 11 noiembrie 2026) | Java 17, Kotlin 2.3 sau mai nou; biblioteci native pentru macOS (arm64, x86-64), Linux (x86-64, arm64) și Windows (x86-64) |
+| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` după ce 0.2.0 apare pe Central (Central afișează 0.1.1 la 11 noiembrie 2026) | API 24, Kotlin 2.3 sau mai nou; `arm64-v8a`, `armeabi-v7a`, `x86_64`; reguli R8 keep incluse |
 
 :::note Versiunea compilatorului Kotlin
 Artefactele Kotlin și Android au nevoie în proiectul dumneavoastră de compilatorul **Kotlin 2.3 sau mai nou**. Un proiect pe Kotlin 2.1 nu se compilează împotriva lor. Ridicați versiunea Kotlin a build-ului înainte de a adăuga dependența.
@@ -169,10 +180,12 @@ Numele sunt date în forma TypeScript. Go folosește aceleași nume în stilul G
 | `verifyHybridTx`, `verifyPqLayer` | verificare locală | toate |
 | `buildRegisterPqKeyMessage`, `signProofOfPossession`, `verifyProofOfPossession` | înregistrarea cheii cu dovadă de posesie | toate |
 | `signMessage`, `verifyMessage` | semnarea de mesaje arbitrare (ADR-36 plus ML-DSA-87) | toate |
-| `createSiwqMessage`, `parseSiwqMessage`, `signSiwq`, `verifySiwq` | Sign In With QoreChain v1 | toate |
+| `createSiwqMessage`, `parseSiwqMessage`, `signSiwq`, `verifySiwq` | Sign In With QoreChain v1 (vârstă maximă și marcaje de timp stricte de la 0.2.0) | toate |
+| `parseSiwqTimestamp` | milisecundele Unix ale unui marcaj în gramatica strictă (0.2.0) | TypeScript, Go (`ParseSiwqTimestamp`) |
 | `decideLane`, `assertHybridLane`, `evaluateLayerState` | regulile pe lane-uri; detectarea unui strat omis | toate |
 | `fetchPqKeyStatus`, `resolveSignBytesVersion`, `simulateTx`, `suggestGasLimit`, `broadcastTx`, `submitWithSignBytesFallback`, `assertPqLayerMatchesRegisteredKey`, `verifySiwqWithChain`, `verifyMessageWithChain`, `fetchCommittedExtensionTypeUrls` | helperi de rețea | TypeScript, Go |
-| `inspectTransaction`, `fetchEvmWindow` | citește o tranzacție confirmată; citește o fereastră EVM (0.1.1) | TypeScript |
+| `fetchProtocolFeature`, `PROTOCOL_FEATURES_PATH`, `SIGN_BYTES_V2_FEATURE` | citește o intrare din lista de funcționalități de protocol a rețelei; calea ei și numele funcționalității sign-bytes v2 (0.2.0) | TypeScript (`fetchProtocolFeature` și în Go) |
+| `inspectTransaction`, `fetchEvmWindow` | citește o tranzacție confirmată; citește o fereastră EVM (de la 0.1.1) | TypeScript |
 
 În Go, helperii de rețea sunt metode ale unui client: `client := network.NewClient("https://api-testnet.qore.host")`, apoi `client.VerifySiwqWithChain(ctx, address, qoresign.VerifySiwqOptions{...})` sau `client.SimulateTx(...)`. Erorile Python sunt `QoreSignError` cu `code` și `detail`; câmpurile de octeți sunt `bytes`.
 
@@ -235,19 +248,19 @@ Referința API: într-o clonă a depozitului, rulați `pnpm -C packages/ts docs`
 
 ## Unde este publicat {#where-published}
 
-Versiuni verificate în registre la 27 octombrie 2026.
+Versiuni verificate în registre la 11 noiembrie 2026.
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|
-| npm | `@qorechain/qoresign` | 0.1.1 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
-| crates.io | `qorechain-qoresign` | 0.1.1 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
-| Go module proxy | `github.com/qorechain/qoresign/go` | v0.1.1 (tag `go/v0.1.1`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
-| Maven Central | `io.github.qorechain:qoresign` | 0.1.1 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
-| Maven Central | `io.github.qorechain:qoresign-android` | 0.1.1 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
-| PyPI | `qorechain-qoresign` | 0.1.1 (wheel-uri macOS arm64 și x86_64, Linux x86_64 și aarch64, distribuție sursă) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
-| Swift Package Manager | `QoreSign` din `github.com/qorechain/qoresign` | 0.1.1 (binarul `QoreSignFFI.xcframework.zip` în release) | [Release GitHub](https://github.com/qorechain/qoresign/releases/tag/v0.1.1) |
+| npm | `@qorechain/qoresign` | 0.2.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
+| crates.io | `qorechain-qoresign` | 0.2.0 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
+| Go module proxy | `github.com/qorechain/qoresign/go` | v0.2.0 (tag `go/v0.2.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
+| Maven Central | `io.github.qorechain:qoresign` | Central încă afișa 0.1.1 la 11 noiembrie 2026; 0.2.0 se sincronizează. Folosiți 0.2.0 după ce apare | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
+| Maven Central | `io.github.qorechain:qoresign-android` | Central încă afișa 0.1.1 la 11 noiembrie 2026; 0.2.0 se sincronizează. Folosiți 0.2.0 după ce apare | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
+| PyPI | `qorechain-qoresign` | 0.2.0 (wheel-uri macOS arm64 și x86_64, Linux x86_64 și aarch64, distribuție sursă) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
+| Swift Package Manager | `QoreSign` din `github.com/qorechain/qoresign` | 0.2.0 (binarul `QoreSignFFI.xcframework.zip` în release) | [Release GitHub](https://github.com/qorechain/qoresign/releases/tag/v0.2.0) |
 
-Depozit: [github.com/qorechain/qoresign](https://github.com/qorechain/qoresign) (release-urile v0.1.0 și v0.1.1).
+Depozit: [github.com/qorechain/qoresign](https://github.com/qorechain/qoresign) (release-urile v0.1.0, v0.1.1, v0.2.0).
 
 ## Pagini conexe {#related}
 

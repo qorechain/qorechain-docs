@@ -43,7 +43,9 @@ Reglas que mantienen seguro al usuario:
   ML-DSA-87 cubre la comisión.
 - Cuando una dApp envíe un cuerpo que ya lleve una capa PQC, compruébalo con
   `assertPqLayerMatchesRegisteredKey` (de `@qorechain/qoresign/network`) antes
-  de añadir tu firma clásica; una capa que no se verifica no protege nada.
+  de añadir tu firma clásica; una capa que no se verifica no protege nada. Desde QoreSign 0.2.0 la
+  comprobación usa la versión de sign-bytes que usa la red (cámbiala con
+  `signBytesVersion`; `allowLegacyEither` es solo para diagnóstico).
 - Registra la clave una sola vez por cuenta con `buildRegisterPqKeyMessage`,
   firmado en modo `classicalOnly` (consulta
   [`examples/register-and-send`](https://github.com/qorechain/qoresign/tree/main/examples/register-and-send)

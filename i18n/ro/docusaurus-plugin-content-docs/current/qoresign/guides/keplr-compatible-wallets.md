@@ -44,7 +44,9 @@ Reguli care protejează utilizatorul:
 - Când un dApp trimite un corp care poartă deja un strat PQC, verificați-l cu
   `assertPqLayerMatchesRegisteredKey` (din `@qorechain/qoresign/network`)
   înainte de a adăuga semnătura clasică; un strat care nu se verifică nu
-  protejează nimic.
+  protejează nimic. De la QoreSign 0.2.0 verificarea folosește versiunea
+  sign-bytes pe care o folosește rețeaua (o puteți suprascrie cu
+  `signBytesVersion`; `allowLegacyEither` este doar pentru diagnostic).
 - Înregistrați cheia o singură dată per cont cu `buildRegisterPqKeyMessage`,
   semnat în modul `classicalOnly` (vezi
   [`examples/register-and-send`](https://github.com/qorechain/qoresign/tree/main/examples/register-and-send)

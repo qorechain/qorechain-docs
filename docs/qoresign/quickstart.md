@@ -9,7 +9,7 @@ sidebar_position: 2
 
 This walks through deriving an account's keys, signing a native-lane
 transaction with both keys and verifying it, offline, then optionally sending it
-to the `qorechain-diana` testnet. Node.js 20 or later. It covers QoreSign 0.1.1. The sections after step 4 show the same library in Python and Go, and how to read back a committed transaction.
+to the `qorechain-diana` testnet. Node.js 20 or later. It covers QoreSign 0.2.0. The sections after step 4 show the same library in Python and Go, and how to read back a committed transaction.
 
 ## 1. Install {#install}
 
@@ -134,7 +134,7 @@ These examples are offline. Each derives the keys from the public BIP-39 test ph
 
 ### Python {#python}
 
-New in 0.1.1. Python 3.9 or later; wheels for macOS and Linux (no Windows wheel yet).
+Python 3.9 or later; wheels for macOS and Linux (no Windows wheel yet). Upgrade the Python package from 0.1.x as a whole: the 0.2.0 wheels carry their own native library.
 
 ```bash
 pip install qorechain-qoresign
@@ -156,12 +156,12 @@ qs.verify_message("qorechain-diana", account.bech32, data, sig, pq_public_key=pq
 print(account.bech32, "verified")
 ```
 
-This was run against the published 0.1.1 wheels on macOS arm64 and Linux aarch64.
+This was last run against the published 0.1.1 wheels on macOS arm64 and Linux aarch64; the commands are unchanged in 0.2.0.
 
 ### Go {#go}
 
 ```bash
-go get github.com/qorechain/qoresign/go@v0.1.1
+go get github.com/qorechain/qoresign/go@v0.2.0
 ```
 
 ```go
@@ -194,7 +194,7 @@ The Go example ignores errors to stay short; check them in real code. Rust, Swif
 
 ## 6. Read a committed transaction (transaction inspector) {#inspect}
 
-New in 0.1.1, TypeScript. This reads, and sends nothing. It reports how a committed transaction was protected: its messages, signer, fee, whether the classical signature verifies, the state of the ML-DSA-87 layer and the security tier (`pqc`, `enrollment`, `shake` or `classical`). See [Transaction inspector](/qoresign/overview#inspector) for the fields.
+Available since 0.1.1, TypeScript. This reads, and sends nothing. It reports how a committed transaction was protected: its messages, signer, fee, whether the classical signature verifies, the state of the ML-DSA-87 layer and the security tier (`pqc`, `enrollment`, `shake` or `classical`). See [Transaction inspector](/qoresign/overview#inspector) for the fields.
 
 ```js
 // inspect.mjs

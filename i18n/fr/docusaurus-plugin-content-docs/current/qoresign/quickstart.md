@@ -9,7 +9,7 @@ sidebar_position: 2
 
 Ce guide montre comment dériver les clés d'un compte, signer une transaction de la
 voie native avec les deux clés et la vérifier hors ligne, puis, en option, l'envoyer
-sur le testnet `qorechain-diana`. Node.js 20 ou version ultérieure. Il couvre QoreSign 0.1.1. Les sections après l'étape 4 présentent la même bibliothèque en Python et en Go, ainsi que la relecture d'une transaction validée.
+sur le testnet `qorechain-diana`. Node.js 20 ou version ultérieure. Il couvre QoreSign 0.2.0. Les sections après l'étape 4 présentent la même bibliothèque en Python et en Go, ainsi que la relecture d'une transaction validée.
 
 ## 1. Installer {#install}
 
@@ -138,7 +138,7 @@ Ces exemples fonctionnent hors ligne. Chacun dérive les clés à partir de la p
 
 ### Python {#python}
 
-Nouveauté de la 0.1.1. Python 3.9 ou ultérieur ; wheels pour macOS et Linux (pas encore de wheel Windows).
+Python 3.9 ou ultérieur ; wheels pour macOS et Linux (pas encore de wheel Windows). Mettez à jour le package Python depuis la 0.1.x dans son ensemble : les wheels 0.2.0 embarquent leur propre bibliothèque native.
 
 ```bash
 pip install qorechain-qoresign
@@ -160,12 +160,12 @@ qs.verify_message("qorechain-diana", account.bech32, data, sig, pq_public_key=pq
 print(account.bech32, "verified")
 ```
 
-Ceci a été exécuté avec les wheels 0.1.1 publiées, sur macOS arm64 et Linux aarch64.
+Ceci a été exécuté pour la dernière fois avec les wheels 0.1.1 publiées, sur macOS arm64 et Linux aarch64 ; les commandes sont inchangées dans la 0.2.0.
 
 ### Go {#go}
 
 ```bash
-go get github.com/qorechain/qoresign/go@v0.1.1
+go get github.com/qorechain/qoresign/go@v0.2.0
 ```
 
 ```go
@@ -198,7 +198,7 @@ L'exemple Go ignore les erreurs pour rester court ; vérifiez-les dans du code r
 
 ## 6. Lire une transaction validée (inspecteur de transactions) {#inspect}
 
-Nouveauté de la 0.1.1, TypeScript. Ceci lit et n'envoie rien. Il indique comment une transaction validée a été protégée : ses messages, son signataire, ses frais, si la signature classique est valide, l'état de la couche ML-DSA-87 et le niveau de sécurité (`pqc`, `enrollment`, `shake` ou `classical`). Voir [Inspecteur de transactions](/qoresign/overview#inspector) pour les champs.
+Disponible depuis la 0.1.1, TypeScript. Ceci lit et n'envoie rien. Il indique comment une transaction validée a été protégée : ses messages, son signataire, ses frais, si la signature classique est valide, l'état de la couche ML-DSA-87 et le niveau de sécurité (`pqc`, `enrollment`, `shake` ou `classical`). Voir [Inspecteur de transactions](/qoresign/overview#inspector) pour les champs.
 
 ```js
 // inspect.mjs

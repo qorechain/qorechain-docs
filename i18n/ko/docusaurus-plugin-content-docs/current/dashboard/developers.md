@@ -15,7 +15,7 @@ sidebar_position: 13
 - **브라우저를 떠나지 않는 키.** 서명 플레이그라운드와 테스트 지갑의 키는 브라우저에서 생성되며 메모리에만 보관됩니다. 저장되거나 전송되지 않으며, 새로고침하면 사라집니다. 이 두 탭은 테스트넷 전용이며 메인넷을 거부합니다.
 - **데모가 아닌 프로덕션 서명 라이브러리.** 플레이그라운드는 프로덕션 통합과 동일한 오픈 소스 라이브러리인 [QoreSign](/qoresign/overview)을 사용합니다. 같은 메시지에 대한 secp256k1 서명과 ML-DSA-87 서명으로 이루어진 하이브리드 서명을 생성하고 검증합니다.
 - **테스트된 데이터에서 생성되는 패키지 허브.** **SDKs** 탭은 하나의 매니페스트(2026년 10월 30일자 매니페스트)에서 60개의 패키지를 나열합니다. 버전은 각 레지스트리에서 실시간으로 읽어오며(10분마다 갱신되고, 레지스트리에 연결할 수 없으면 마지막으로 확인한 버전과 그 날짜가 표시됩니다), 각 퀵스타트는 SDK 팀이 공개 레지스트리를 대상으로 실행했고 그들이 관찰한 출력이 옆에 함께 표시됩니다.
-- **재현할 수 있는 판정.** **Transaction inspector**는 커밋된 트랜잭션을 읽고, 그 ML-DSA-87 계층이 서명자가 등록한 키에 대해 검증되는지를 보고하며, 검증되지 않을 때는 sign-bytes 버전과 그 이유를 함께 알려줍니다. [QoreSign](/qoresign/overview) 0.1.1의 `inspectTransaction` 함수를 사용하므로 같은 검사를 자체 코드에서도 실행할 수 있습니다. 읽기 전용입니다.
+- **재현할 수 있는 판정.** **Transaction inspector**는 커밋된 트랜잭션을 읽고, 그 ML-DSA-87 계층이 서명자가 등록한 키에 대해 검증되는지를 보고하며, 검증되지 않을 때는 sign-bytes 버전과 그 이유를 함께 알려줍니다. [QoreSign](/qoresign/overview)의 `inspectTransaction` 함수(0.1.1부터)를 사용하므로 같은 검사를 자체 코드에서도 실행할 수 있습니다. 읽기 전용입니다.
 - **추측이 아닌 체인의 답.** **PQ key status**는 등록된 ML-DSA-87 키와 EVM 창 상태를 노드 자체의 쿼리 경로에서 읽어오므로, EVM 트랜잭션을 보내기 전에 왜 거부될지 확인할 수 있습니다.
 
 ## 사용 방법 {#how-to-use}
@@ -53,7 +53,7 @@ sidebar_position: 13
 
 **기능.** 해시로 커밋된 트랜잭션을 읽고 누가 서명했는지, 비용이 얼마였는지, 포스트 양자 계층이 검증되는지, 어느 보안 등급에 속하는지를 설명합니다. 읽기 전용이며, 아무것도 서명되거나 전송되지 않습니다.
 
-**작동 방식.** 페이지는 선택한 네트워크의 트랜잭션을 Dashboard의 읽기 전용 게이트웨이에 요청하고 그 위에서 [QoreSign](/qoresign/overview) 0.1.1의 `inspectTransaction` 함수를 실행합니다(같은 검사를 코드에서 실행하려면 [QoreSign 퀵스타트](/qoresign/quickstart) 참고). 포스트 양자 계층은 서명자가 **현재** 등록한 ML-DSA-87 키에 대해 검사되므로, 이후의 키 교체로 인해 이전 트랜잭션이 검증되지 않은 것으로 표시될 수 있습니다.
+**작동 방식.** 페이지는 선택한 네트워크의 트랜잭션을 Dashboard의 읽기 전용 게이트웨이에 요청하고 그 위에서 [QoreSign](/qoresign/overview)의 `inspectTransaction` 함수(0.1.1부터)를 실행합니다(같은 검사를 코드에서 실행하려면 [QoreSign 퀵스타트](/qoresign/quickstart) 참고). 포스트 양자 계층은 서명자가 **현재** 등록한 ML-DSA-87 키에 대해 검사되므로, 이후의 키 교체로 인해 이전 트랜잭션이 검증되지 않은 것으로 표시될 수 있습니다.
 
 **단계.**
 
@@ -184,7 +184,7 @@ sidebar_position: 13
 | 화면 | 주소 | 네트워크 |
 | --- | --- | --- |
 | Developers 페이지 | `dashboard.qorechain.io/developers` | 메인넷과 테스트넷 읽기 도구, 테스트넷 전용 서명 도구 |
-| 서명 라이브러리 | npm `@qorechain/qoresign`(0.1.1에서 `inspectTransaction` 추가), PyPI Python용 QoreSign, 소스 `github.com/qorechain/qoresign`, [QoreSign](/qoresign/overview) 참고 | 해당 없음 |
+| 서명 라이브러리 | npm `@qorechain/qoresign`(`inspectTransaction`은 0.1.1부터), PyPI Python용 QoreSign, 소스 `github.com/qorechain/qoresign`, [QoreSign](/qoresign/overview) 참고 | 해당 없음 |
 | 테스트 지갑 패키지 | npm `@qorechain/qorex-wallet-mock`, 소스 `github.com/qorechain/qorex-integrations` | 테스트넷 |
 | 패키지 색인 | [개발자 패키지](/developer-tools/overview) | 해당 없음 |
 | MCP 서버 | npm `@qorechain/mcp` 0.1.0과 `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0, 가이드: [QoreChain MCP 서버](/developer-tools/mcp) | 기본값 테스트넷 |

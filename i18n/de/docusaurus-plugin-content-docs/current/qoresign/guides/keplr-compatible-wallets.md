@@ -46,6 +46,9 @@ Regeln, die den Nutzer schützen:
   Sie ihn mit `assertPqLayerMatchesRegisteredKey` (aus
   `@qorechain/qoresign/network`), bevor Sie Ihre klassische Signatur
   hinzufügen; eine Schicht, die sich nicht verifizieren lässt, schützt nichts.
+  Seit QoreSign 0.2.0 nutzt die Prüfung die Sign-Bytes-Version des Netzwerks
+  (überschreibbar mit `signBytesVersion`; `allowLegacyEither` ist nur für
+  Diagnosezwecke gedacht).
 - Registrieren Sie den Schlüssel einmal pro Konto mit
   `buildRegisterPqKeyMessage`, signiert im Modus `classicalOnly` (siehe
   [`examples/register-and-send`](https://github.com/qorechain/qoresign/tree/main/examples/register-and-send)

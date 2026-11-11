@@ -184,7 +184,7 @@ Sınırlar: hesap başına bir etkin anahtar, saniyede 10 istek (ani yük 20) ve
 | Yüzey | Adres | Ağlar |
 | --- | --- | --- |
 | Developers sayfası | `dashboard.qorechain.io/developers` | Mainnet ve testnet üzerinde okuma araçları; yalnızca testnet imzalama araçları |
-| İmzalama kütüphanesi | npm `@qorechain/qoresign` (0.1.1 `inspectTransaction` ekler), PyPI Python için QoreSign, kaynak `github.com/qorechain/qoresign`, bkz. [QoreSign](/qoresign/overview) | yok |
+| İmzalama kütüphanesi | npm `@qorechain/qoresign` (`inspectTransaction` 0.1.1'den beri), PyPI Python için QoreSign, kaynak `github.com/qorechain/qoresign`, bkz. [QoreSign](/qoresign/overview) | yok |
 | Test cüzdanı paketi | npm `@qorechain/qorex-wallet-mock`, kaynak `github.com/qorechain/qorex-integrations` | Testnet |
 | Paket dizini | [Geliştirici Paketleri](/developer-tools/overview) | yok |
 | MCP sunucusu | npm `@qorechain/mcp` 0.1.0 ve `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0; kılavuz: [QoreChain MCP sunucusu](/developer-tools/mcp) | Varsayılan olarak testnet |

@@ -51,7 +51,7 @@ Resources:
   `qorechain-vladi`.
 - `Nonce` comporte au moins 8 caractères alphanumériques choisis par le serveur, à
   usage unique.
-- Les horodatages sont au format RFC 3339 / ISO 8601.
+- Les horodatages suivent la grammaire RFC 3339 stricte décrite dans [Horodatages](#timestamps).
 - `Expiration Time`, `Not Before`, `Request ID` et `Resources` sont facultatifs et
   apparaissent dans cet ordre.
 
@@ -97,6 +97,43 @@ signature de transaction, et inversement (voir
 vérificateurs doivent refuser de telles connexions, sauf s'ils acceptent
 explicitement les comptes uniquement classiques.
 
+## Horodatages {#timestamps}
+
+`Issued At`, `Expiration Time` et `Not Before` utilisent une seule grammaire
+RFC 3339 stricte. Les mêmes règles s'appliquent lorsqu'un message est créé,
+analysé, signé et vérifié :
+
+- heure de 00 à 23, minute et seconde de 00 à 59 ; `24:00:00` et les secondes
+  intercalaires (seconde 60) sont donc refusés ;
+- une date réelle du calendrier ;
+- un `Z` majuscule, ou un décalage compris entre 00:00 et 23:59 écrit avec
+  deux-points (un décalage sans deux-points est refusé) ;
+- `T` comme séparateur : ni espace, ni `t` ou `z` minuscule.
+
+Un horodatage hors de la grammaire échoue avec `SIWQ_MALFORMED`. Les vecteurs
+partagés se trouvent dans `vectors/siwq-timestamps-v1.json`. Depuis QoreSign 0.2.0,
+`parseSiwqTimestamp` (TypeScript) et `ParseSiwqTimestamp` (Go) renvoient les
+millisecondes Unix d'un horodatage de cette grammaire.
+
+## Âge maximal {#max-age}
+
+Les serveurs doivent exiger `Expiration Time` et toujours le renseigner sur les
+messages qu'ils émettent. Un message sans `Expiration Time` est refusé avec
+`SIWQ_EXPIRED` dès qu'il a plus de 600 secondes (10 minutes), à compter de
+`Issued At`. QoreSign 0.2.0 et les versions suivantes rendent cet âge
+configurable dans chaque binding :
+
+| Binding | Option |
+|---|---|
+| TypeScript | `maxAgeSeconds` |
+| Python | `max_age_seconds` |
+| Rust | `VerifySiwqArgs::max_age_seconds` |
+| Go | `VerifySiwqOptions.MaxAge` |
+| Swift | `maxAgeSeconds` |
+| Kotlin | `maxAgeSeconds` |
+
+Une valeur nulle ou négative échoue avec `INVALID_ARGUMENT`.
+
 ## Vérification {#verification}
 
 Un vérificateur doit contrôler, dans cet ordre :
@@ -107,7 +144,10 @@ Un vérificateur doit contrôler, dans cet ordre :
    n'a pas déjà été utilisé ;
 4. `Chain ID` est le réseau attendu ;
 5. `Expiration Time` est dans le futur, et `Not Before` et `Issued At` ne sont pas
-   dans le futur (en admettant un léger décalage d'horloge) ;
+   dans le futur (en admettant un léger décalage d'horloge). Un message sans
+   `Expiration Time` est refusé dès qu'il a plus de 600 secondes (10 minutes), à
+   compter de `Issued At` ; le vérificateur rend cet âge maximal configurable
+   (voir [Âge maximal](#max-age)) ;
 6. la clé publique classique dérive vers `address` et la signature ADR-36 se
    vérifie ;
 7. la signature ML-DSA-87 se vérifie avec la clé publique **enregistrée sur la

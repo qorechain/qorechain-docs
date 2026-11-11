@@ -34,7 +34,7 @@ const finalDoc = { ...signDoc, bodyBytes }; // sign this with the secp256k1 key,
 قواعد تحمي المستخدم:
 
 - اعرض على المستخدم الرسائل والرسوم الواردة في `bodyBytes` / `authInfoBytes` قبل التوقيع، كما في أي طلب `signDirect`. يغطي توقيع ML-DSA-87 الرسوم.
-- عندما يرسل dApp جسمًا يحمل طبقة PQC بالفعل، تحقق منه باستخدام `assertPqLayerMatchesRegisteredKey` (من `@qorechain/qoresign/network`) قبل إضافة توقيعك الكلاسيكي؛ فالطبقة التي لا تجتاز التحقق لا تحمي شيئًا.
+- عندما يرسل dApp جسمًا يحمل طبقة PQC بالفعل، تحقق منه باستخدام `assertPqLayerMatchesRegisteredKey` (من `@qorechain/qoresign/network`) قبل إضافة توقيعك الكلاسيكي؛ فالطبقة التي لا تجتاز التحقق لا تحمي شيئًا. منذ QoreSign 0.2.0 يستخدم الفحص إصدار sign-bytes الذي تستخدمه الشبكة (ويمكن تجاوزه بالخيار `signBytesVersion`؛ أما `allowLegacyEither` فللتشخيص فقط).
 - سجّل المفتاح مرة واحدة لكل حساب باستخدام `buildRegisterPqKeyMessage`، موقَّعًا في وضع `classicalOnly` (راجع [`examples/register-and-send`](https://github.com/qorechain/qoresign/tree/main/examples/register-and-send) و[التسجيل](/qoresign/spec/hybrid-signing-v1#registration)).
 - بعد البث، اقرأ المعاملة المثبَّتة واستدعِ `evaluateLayerState`؛ وتعني `downgraded` أن الطبقة لم تصل إلى السلسلة.
 

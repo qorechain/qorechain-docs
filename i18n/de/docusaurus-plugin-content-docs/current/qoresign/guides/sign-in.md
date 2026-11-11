@@ -18,7 +18,7 @@ Format: [Sign In With QoreChain v1](/qoresign/spec/siwq-v1).
    signiert sie mit `signSiwq` (oder erzeugt den klassischen Teil mit
    `signArbitrary` und den ML-DSA-87-Teil mit `pqSign` über
    `siwqPqSignBytes(message)`).
-3. Der Server prüft mit `verifySiwqWithChain`. Das prüft die Nachricht, die
+3. Der Server setzt `Expiration Time` auf jeder Nachricht, die er ausstellt (siehe [Ablauf und maximales Alter](#expiry)), und prüft dann mit `verifySiwqWithChain`. Das prüft die Nachricht, die
    Nonce, die Domain, die Zeitangaben, dass der klassische Schlüssel die Adresse
    kontrolliert, und die ML-DSA-87-Signatur gegen den **on-chain registrierten**
    Schlüssel der Adresse (siehe
@@ -68,6 +68,33 @@ if qoresign.IsCode(err, qoresign.CodeSiwqExpired) {
 }
 // result.Address signed in; result.PossessionProven reports how the key was registered.
 ```
+
+## Ablauf und maximales Alter {#expiry}
+
+Setzen Sie `Expiration Time` immer auf der Nachricht, die Ihr Server ausstellt.
+Eine Nachricht ohne dieses Feld wird mit `SIWQ_EXPIRED` abgelehnt, sobald sie
+älter als 600 Sekunden (10 Minuten) ist, gerechnet ab `Issued At`. Für ein
+anderes Limit übergeben Sie das maximale Alter an den Prüfer. Der Optionsname je
+Binding:
+
+- TypeScript, Swift und Kotlin: `maxAgeSeconds`
+- Python: `max_age_seconds`
+- Rust: `VerifySiwqArgs::max_age_seconds`
+- Go: `VerifySiwqOptions.MaxAge`
+
+Ein Wert von null oder ein negativer Wert schlägt mit `INVALID_ARGUMENT` fehl.
+
+Zeitstempel (`Issued At`, `Expiration Time`, `Not Before`) müssen der strengen
+RFC-3339-Grammatik der [Spezifikation](/qoresign/spec/siwq-v1#timestamps)
+folgen: Stunde 00 bis 23, Minute und Sekunde 00 bis 59, ein reales
+Kalenderdatum, ein großes `Z` oder ein Offset mit Doppelpunkt, `T` als Trenner,
+kein `24:00:00` und keine Schaltsekunden. Dieselben Regeln gelten beim Erzeugen,
+Parsen, Signieren und Prüfen, und ein Zeitstempel außerhalb davon schlägt mit
+`SIWQ_MALFORMED` fehl. Von QoreSign erzeugte Nachrichten nutzen die Grammatik
+bereits.
+
+Beim Wechsel von 0.1.x müssen Swift, Kotlin und Python das Paket und seine
+native Bibliothek gemeinsam aktualisieren.
 
 ## Nur-klassische Konten {#classical-only}
 

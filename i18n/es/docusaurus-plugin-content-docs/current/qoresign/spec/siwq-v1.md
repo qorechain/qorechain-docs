@@ -50,7 +50,7 @@ Resources:
   `qorechain-vladi`.
 - `Nonce` tiene al menos 8 caracteres alfanuméricos elegidos por el servidor, de
   un solo uso.
-- Las marcas de tiempo son RFC 3339 / ISO 8601.
+- Las marcas de tiempo siguen la gramática estricta de RFC 3339 descrita en [Marcas de tiempo](#timestamps).
 - `Expiration Time`, `Not Before`, `Request ID` y `Resources` son opcionales y
   aparecen en este orden.
 
@@ -95,6 +95,42 @@ firma de transacción y viceversa (consulta
 deben rechazar esos inicios de sesión salvo que acepten explícitamente cuentas
 solo clásicas.
 
+## Marcas de tiempo {#timestamps}
+
+`Issued At`, `Expiration Time` y `Not Before` usan una sola gramática estricta
+de RFC 3339. Las mismas reglas se aplican al crear, analizar, firmar y verificar
+un mensaje:
+
+- hora de 00 a 23, minuto y segundo de 00 a 59, así que `24:00:00` y los
+  segundos intercalares (segundo 60) se rechazan;
+- una fecha real del calendario;
+- una `Z` mayúscula, o un desfase de 00:00 a 23:59 escrito con dos puntos (un
+  desfase sin dos puntos se rechaza);
+- `T` como separador: sin espacio y sin `t` ni `z` minúsculas.
+
+Una marca fuera de la gramática falla con `SIWQ_MALFORMED`. Los vectores
+compartidos están en `vectors/siwq-timestamps-v1.json`. Desde QoreSign 0.2.0,
+`parseSiwqTimestamp` (TypeScript) y `ParseSiwqTimestamp` (Go) devuelven los
+milisegundos Unix de una marca en esta gramática.
+
+## Edad máxima {#max-age}
+
+Los servidores deben exigir `Expiration Time` y fijarlo siempre en los mensajes
+que emiten. Un mensaje sin `Expiration Time` se rechaza con `SIWQ_EXPIRED`
+cuando tiene más de 600 segundos (10 minutos), contados desde `Issued At`.
+QoreSign 0.2.0 y posteriores hacen la edad configurable en todos los bindings:
+
+| Binding | Opción |
+|---|---|
+| TypeScript | `maxAgeSeconds` |
+| Python | `max_age_seconds` |
+| Rust | `VerifySiwqArgs::max_age_seconds` |
+| Go | `VerifySiwqOptions.MaxAge` |
+| Swift | `maxAgeSeconds` |
+| Kotlin | `maxAgeSeconds` |
+
+Un valor cero o negativo falla con `INVALID_ARGUMENT`.
+
 ## Verificación {#verification}
 
 Un verificador debe comprobar, en este orden:
@@ -105,7 +141,10 @@ Un verificador debe comprobar, en este orden:
    el nonce no se ha usado antes;
 4. que `Chain ID` es la red esperada;
 5. que `Expiration Time` está en el futuro, y que `Not Before` e `Issued At` no
-   están en el futuro (permitiendo un pequeño desfase de reloj);
+   están en el futuro (permitiendo un pequeño desfase de reloj). Un mensaje sin
+   `Expiration Time` se rechaza cuando tiene más de 600 segundos (10 minutos),
+   contados desde `Issued At`; el verificador hace configurable esta edad máxima
+   (consulta [Edad máxima](#max-age));
 6. que la clave pública clásica deriva a `address` y que la firma ADR-36 se
    verifica;
 7. que la firma ML-DSA-87 se verifica con la clave pública **registrada en la

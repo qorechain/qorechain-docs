@@ -17,7 +17,7 @@ contului (ADR-36) și de cheia sa ML-DSA-87. Formatul:
 2. Clientul construiește mesajul cu `createSiwqMessage`, iar portofelul îl
    semnează cu `signSiwq` (sau produce partea clasică cu `signArbitrary` și
    partea ML-DSA-87 cu `pqSign` peste `siwqPqSignBytes(message)`).
-3. Serverul verifică cu `verifySiwqWithChain`, care controlează mesajul, nonce-ul,
+3. Serverul setează `Expiration Time` pe fiecare mesaj pe care îl emite (vezi [Expirare și vârstă maximă](#expiry)), apoi verifică cu `verifySiwqWithChain`, care controlează mesajul, nonce-ul,
    domeniul, momentele de timp, faptul că cheia clasică controlează adresa și
    semnătura ML-DSA-87 față de cheia **înregistrată pe lanț** pentru adresă
    (vezi [Verificare](/qoresign/spec/siwq-v1#verification)).
@@ -66,6 +66,31 @@ if qoresign.IsCode(err, qoresign.CodeSiwqExpired) {
 }
 // result.Address signed in; result.PossessionProven reports how the key was registered.
 ```
+
+## Expirare și vârstă maximă {#expiry}
+
+Setați întotdeauna `Expiration Time` pe mesajul emis de server. Un mesaj fără
+acest câmp este refuzat cu `SIWQ_EXPIRED` după ce are mai mult de 600 de secunde
+(10 minute), socotite de la `Issued At`. Pentru altă limită, transmiteți
+verificatorului vârsta maximă. Numele opțiunii pentru fiecare binding:
+
+- TypeScript, Swift și Kotlin: `maxAgeSeconds`
+- Python: `max_age_seconds`
+- Rust: `VerifySiwqArgs::max_age_seconds`
+- Go: `VerifySiwqOptions.MaxAge`
+
+O valoare zero sau negativă eșuează cu `INVALID_ARGUMENT`.
+
+Marcajele de timp (`Issued At`, `Expiration Time`, `Not Before`) trebuie să
+respecte gramatica strictă RFC 3339 din [specificație](/qoresign/spec/siwq-v1#timestamps):
+ora de la 00 la 23, minutul și secunda de la 00 la 59, o dată calendaristică
+reală, un `Z` majuscul sau un offset cu două puncte, `T` ca separator, fără
+`24:00:00` și fără secunde intercalare. Aceleași reguli se aplică la creare,
+parsare, semnare și verificare, iar un marcaj în afara lor eșuează cu
+`SIWQ_MALFORMED`. Mesajele create de QoreSign folosesc deja gramatica.
+
+La actualizarea de la 0.1.x, Swift, Kotlin și Python trebuie să actualizeze
+pachetul împreună cu biblioteca sa nativă.
 
 ## Conturi doar cu cheie clasică {#classical-only}
 

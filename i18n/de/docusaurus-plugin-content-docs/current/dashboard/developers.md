@@ -53,7 +53,7 @@ Ein nicht veröffentlichtes Paket zeigt „This package is not on its registry y
 
 **Was es tut.** Liest eine festgeschriebene Transaktion anhand ihres Hashs und erklärt, wer sie signiert hat, was sie gekostet hat, ob ihre Post-Quantum-Schicht verifiziert und in welche Sicherheitsstufe sie fällt. Er ist schreibgeschützt: Es wird nichts signiert oder gesendet.
 
-**Wie es funktioniert.** Die Seite fragt das schreibgeschützte Gateway des Dashboards nach der Transaktion im gewählten Netzwerk und lässt die Funktion `inspectTransaction` von [QoreSign](/qoresign/overview) 0.1.1 darüber laufen (siehe den [QoreSign-Quickstart](/qoresign/quickstart), um dieselbe Prüfung im Code auszuführen). Die Post-Quantum-Schicht wird gegen den ML-DSA-87-Schlüssel geprüft, den der Signer **jetzt** registriert hat, sodass eine spätere Schlüsselrotation eine ältere Transaktion als nicht verifiziert erscheinen lassen kann.
+**Wie es funktioniert.** Die Seite fragt das schreibgeschützte Gateway des Dashboards nach der Transaktion im gewählten Netzwerk und lässt die Funktion `inspectTransaction` von [QoreSign](/qoresign/overview) (seit 0.1.1) darüber laufen (siehe den [QoreSign-Quickstart](/qoresign/quickstart), um dieselbe Prüfung im Code auszuführen). Die Post-Quantum-Schicht wird gegen den ML-DSA-87-Schlüssel geprüft, den der Signer **jetzt** registriert hat, sodass eine spätere Schlüsselrotation eine ältere Transaktion als nicht verifiziert erscheinen lassen kann.
 
 **Schritte.**
 
@@ -184,7 +184,7 @@ Grenzen: ein aktiver Schlüssel pro Konto, 10 Anfragen pro Sekunde (Burst 20) un
 | Oberfläche | Adresse | Netzwerke |
 | --- | --- | --- |
 | Developers-Seite | `dashboard.qorechain.io/developers` | Lese-Tools für Mainnet und Testnet; Signier-Tools nur Testnet |
-| Signier-Bibliothek | npm `@qorechain/qoresign` (0.1.1 fügt `inspectTransaction` hinzu), PyPI QoreSign für Python, Quelle `github.com/qorechain/qoresign`, siehe [QoreSign](/qoresign/overview) | n/a |
+| Signier-Bibliothek | npm `@qorechain/qoresign` (`inspectTransaction` seit 0.1.1), PyPI QoreSign für Python, Quelle `github.com/qorechain/qoresign`, siehe [QoreSign](/qoresign/overview) | n/a |
 | Test-Wallet-Paket | npm `@qorechain/qorex-wallet-mock`, Quelle `github.com/qorechain/qorex-integrations` | Testnet |
 | Paketindex | [Developer Packages](/developer-tools/overview) | n/a |
 | MCP-Server | npm `@qorechain/mcp` 0.1.0 und `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0; Anleitung: [QoreChain-MCP-Server](/developer-tools/mcp) | Standardmäßig Testnet |

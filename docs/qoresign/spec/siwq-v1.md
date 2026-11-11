@@ -50,7 +50,7 @@ Resources:
   `qorechain-vladi`.
 - `Nonce` is at least 8 alphanumeric characters chosen by the server, single
   use.
-- Timestamps are RFC 3339 / ISO 8601.
+- Timestamps follow the strict RFC 3339 grammar described under [Timestamps](#timestamps).
 - `Expiration Time`, `Not Before`, `Request ID` and `Resources` are optional and
   appear in this order.
 
@@ -95,6 +95,41 @@ signature and the other way round (see
 `signatureType` is `secp256k1` when the `pq` part is absent. Verifiers should
 refuse such sign-ins unless they explicitly accept classical-only accounts.
 
+## Timestamps {#timestamps}
+
+`Issued At`, `Expiration Time` and `Not Before` use one strict RFC 3339 grammar.
+The same rules apply when a message is created, parsed, signed and verified:
+
+- hour 00 to 23, minute and second 00 to 59, so `24:00:00` and leap seconds
+  (second 60) are refused;
+- a real calendar date;
+- an uppercase `Z`, or an offset within 00:00 to 23:59 written with a colon
+  (an offset without a colon is refused);
+- `T` as the separator: no space, and no lowercase `t` or `z`.
+
+A timestamp outside the grammar fails with `SIWQ_MALFORMED`. The shared vectors
+are in `vectors/siwq-timestamps-v1.json`. Since QoreSign 0.2.0, `parseSiwqTimestamp`
+(TypeScript) and `ParseSiwqTimestamp` (Go) return the Unix milliseconds of a
+timestamp in this grammar.
+
+## Maximum age {#max-age}
+
+Servers should require `Expiration Time` and always set it on the messages they
+issue. A message without `Expiration Time` is refused with `SIWQ_EXPIRED` once it
+is older than 600 seconds (10 minutes), counted from `Issued At`. QoreSign
+0.2.0 and later make the age configurable in every binding:
+
+| Binding | Option |
+|---|---|
+| TypeScript | `maxAgeSeconds` |
+| Python | `max_age_seconds` |
+| Rust | `VerifySiwqArgs::max_age_seconds` |
+| Go | `VerifySiwqOptions.MaxAge` |
+| Swift | `maxAgeSeconds` |
+| Kotlin | `maxAgeSeconds` |
+
+A zero or negative value fails with `INVALID_ARGUMENT`.
+
 ## Verification {#verification}
 
 A verifier must check, in this order:
@@ -105,7 +140,10 @@ A verifier must check, in this order:
    has not been used before;
 4. `Chain ID` is the expected network;
 5. `Expiration Time` is in the future, and `Not Before` and `Issued At` are not
-   in the future (allowing a small clock skew);
+   in the future (allowing a small clock skew). A message without
+   `Expiration Time` is refused once it is older than 600 seconds (10 minutes),
+   counted from `Issued At`; the verifier makes this maximum age configurable
+   (see [Maximum age](#max-age));
 6. the classical public key derives to `address` and the ADR-36 signature
    verifies;
 7. the ML-DSA-87 signature verifies under the public key **registered on chain**

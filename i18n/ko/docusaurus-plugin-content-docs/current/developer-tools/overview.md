@@ -65,14 +65,14 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 대시보드에는 [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers)에 공개 페이지가 있습니다. 2026년 10월 27일에 확인한 시점에 일곱 개의 탭이 있습니다(전체 안내: [개발자](/dashboard/developers)).
 
 - **SDKs:** SDK 허브입니다. 매니페스트의 모든 패키지를 제품별로 묶어 보여주며, 언어 선택기, 각 레지스트리에서 실시간으로 읽은 최신 버전, 복사 버튼이 있는 설치 및 import 줄, SDK 팀이 관찰한 출력과 함께 제공되는 퀵스타트, 알려진 문제, 체인 ID와 공개 엔드포인트를 제공합니다. 게시되지 않은 패키지에는 설치 명령이 표시되지 않습니다.
-- **트랜잭션 인스펙터:** 테스트넷 또는 메인넷의 64자리 16진수 트랜잭션 해시를 붙여 넣으면 상태, 서명자, 수수료, 포스트 양자 계층의 검증 여부, 보안 등급(PQC, Enrollment, SHAKE 또는 Classical)을 보여줍니다. QoreSign 0.1.1의 `inspectTransaction` 함수를 사용합니다. [트랜잭션 인스펙터](/qoresign/overview#inspector)를 참고하세요.
+- **트랜잭션 인스펙터:** 테스트넷 또는 메인넷의 64자리 16진수 트랜잭션 해시를 붙여 넣으면 상태, 서명자, 수수료, 포스트 양자 계층의 검증 여부, 보안 등급(PQC, Enrollment, SHAKE 또는 Classical)을 보여줍니다. QoreSign의 `inspectTransaction` 함수(0.1.1부터)를 사용합니다. [트랜잭션 인스펙터](/qoresign/overview#inspector)를 참고하세요.
 - **PQ 키 상태:** 주소가 체인에 등록한 ML-DSA-87 키와 그 EVM 인가 윈도우를 테스트넷 또는 메인넷에서 읽습니다.
 - **시뮬레이터:** 서명된 트랜잭션(base64 또는 hex `TxRaw`)을 시험 실행하여 가스 사용량과 잔액 변화를 보여줍니다. 아무것도 브로드캐스트되지 않습니다.
 - **서명 플레이그라운드:** 테스트넷 전용. 브라우저에서 메모리에만 보관되는 일회용 하이브리드 키를 생성하여 메시지와 Sign In With QoreChain 요청에 서명하고 검증합니다.
 - **QoreX 테스트 지갑:** 테스트넷 전용. 탭에 테스트 지갑(`window.qorex`, EIP-6963으로 "QoreX (mock)"로 알림)을 주입하여 dApp 흐름을 시험해 볼 수 있습니다.
 - **AI 에이전트(MCP):** QoreChain MCP 서버의 상태(게시됨)와 MCP 클라이언트 설정입니다. 로컬 `npx`가 우선이며, API 키가 필요한 호스팅 테스트넷 엔드포인트도 있습니다. [QoreChain MCP 서버](/developer-tools/mcp)를 참고하세요.
 
-같은 인스펙터 검사는 코드에서 QoreSign 0.1.1(TypeScript)의 라이브러리 함수 `inspectTransaction`으로 사용할 수 있습니다. 아래의 표와 SDK 허브는 같은 패키지 데이터를 보여주며, 표는 2026년 11월 4일에 레지스트리와 대조해 확인했습니다.
+같은 인스펙터 검사는 코드에서 QoreSign 0.1.1부터(TypeScript) 라이브러리 함수 `inspectTransaction`으로 사용할 수 있습니다. 아래의 표와 SDK 허브는 같은 패키지 데이터를 보여주며, 표는 2026년 11월 4일에 레지스트리와 대조해 확인했습니다.
 
 ## 게시 위치 {#where-published}
 
@@ -98,17 +98,17 @@ SDK 0.13.0은 2026년 11월 11일부터 현재 릴리스입니다(시드 경로 
 
 ### QoreSign {#group-qoresign}
 
-가이드: [QoreSign 개요](/qoresign/overview), [퀵스타트](/qoresign/quickstart), [테스트 벡터](/qoresign/vectors). 소스: [qorechain/qoresign](https://github.com/qorechain/qoresign). 버전 0.1.1은 2026년 10월 27일에 게시되었습니다. QoreSign은 로컬에서 서명하며, 사용자를 대신해 키를 보관하지 않고 임계값, MPC, 하드웨어 지갑 서명도 하지 않습니다.
+가이드: [QoreSign 개요](/qoresign/overview), [퀵스타트](/qoresign/quickstart), [테스트 벡터](/qoresign/vectors). 소스: [qorechain/qoresign](https://github.com/qorechain/qoresign). 버전 0.2.0은 2026년 11월 10일과 11일에 게시되었습니다(0.1.1은 2026년 10월 27일). Swift, Kotlin, Python 사용자는 패키지와 네이티브 라이브러리를 함께 업그레이드하세요. [0.2.0의 새로운 기능](/qoresign/overview#new-in-0-2-0)을 참고하세요. QoreSign은 로컬에서 서명하며, 사용자를 대신해 키를 보관하지 않고 임계값, MPC, 하드웨어 지갑 서명도 하지 않습니다.
 
 | 패키지 | 언어 | 버전 | 설치 | 상태 |
 |---|---|---|---|---|
-| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.1 | `npm install @qorechain/qoresign` | Published. `inspectTransaction`과 `fetchEvmWindow` 포함(0.1.1에서 신규) |
-| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (`qoresign`으로 import) | 0.1.1 | `cargo add qorechain-qoresign` | Published |
-| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.1 | `go get github.com/qorechain/qoresign/go@v0.1.1` | Published |
-| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+ (`qoresign`으로 import) | 0.1.1 | `pip install qorechain-qoresign` | Published, 0.1.1에서 신규. macOS(arm64, x86_64)와 Linux(x86_64, aarch64)용 wheel 제공, Windows wheel은 아직 없음. 오프라인 함수만 제공 |
-| `QoreSign` (Swift package) | Swift (iOS 16+, macOS 13+) | 0.1.1 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, product `QoreSign` | GitHub 릴리스로 게시됨. 바이너리 프레임워크가 여기서 다운로드됨 |
-| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign:0.1.1")` | Published |
-| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | Published. JVM 아티팩트와 동일한 API이며, 예제는 JVM 아티팩트에서만 실행했고 Android 기기에서는 실행하지 않음 |
+| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.2.0 | `npm install @qorechain/qoresign` | Published. `inspectTransaction`과 `fetchEvmWindow` 포함(0.1.1부터)하며, 0.2.0에서 새로 `parseSiwqTimestamp`와 `fetchProtocolFeature` 추가 |
+| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (`qoresign`으로 import) | 0.2.0 | `cargo add qorechain-qoresign` | Published |
+| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.2.0 | `go get github.com/qorechain/qoresign/go@v0.2.0` | Published |
+| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+ (`qoresign`으로 import) | 0.2.0 | `pip install qorechain-qoresign` | Published(Python은 0.1.1부터). macOS(arm64, x86_64)와 Linux(x86_64, aarch64)용 wheel 제공, Windows wheel은 아직 없음. 오프라인 함수만 제공 |
+| `QoreSign` (Swift package) | Swift (iOS 16+, macOS 13+) | 0.2.0 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, product `QoreSign` | GitHub 릴리스로 게시됨. 바이너리 프레임워크가 여기서 다운로드됨 |
+| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | Central에는 2026년 11월 11일 현재 여전히 0.1.1이 표시됨, 0.2.0은 동기화 중 | 0.2.0이 나타나면 `implementation("io.github.qorechain:qoresign:0.2.0")` | Published(현재 Central에는 0.1.1) |
+| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | Central에는 2026년 11월 11일 현재 여전히 0.1.1이 표시됨, 0.2.0은 동기화 중 | 0.2.0이 나타나면 `implementation("io.github.qorechain:qoresign-android:0.2.0")` | Published(현재 Central에는 0.1.1). JVM 아티팩트와 동일한 API이며, 예제는 JVM 아티팩트에서만 실행했고 Android 기기에서는 실행하지 않음 |
 
 Kotlin 및 Android 아티팩트를 사용하려면 프로젝트에 Kotlin 2.3 이상 컴파일러가 필요합니다. Kotlin 2.1 프로젝트는 이를 대상으로 컴파일에 실패합니다.
 

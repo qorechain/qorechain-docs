@@ -65,14 +65,14 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 ダッシュボードには、[dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers)に公開ページがあります。2026年10月27日に確認した時点で、7つのタブがあります(詳しい説明: [開発者](/dashboard/developers))。
 
 - **SDKs:** SDKハブです。マニフェストにあるすべてのパッケージを製品ごとにまとめ、言語セレクター、各レジストリからライブで読み取った最新バージョン、コピーボタン付きのインストール行とインポート行、SDKチームが観測した出力つきのクイックスタート、既知の問題、チェーンIDと公開エンドポイントを表示します。公開されていないパッケージにはインストールコマンドが表示されません。
-- **Transaction inspector:** テストネットまたはメインネットで64桁の16進数のトランザクションハッシュを貼り付けると、ステータス、署名者、手数料、ポスト量子レイヤーが検証されるかどうか、セキュリティ階層(PQC、Enrollment、SHAKE、Classical)を表示します。QoreSign 0.1.1の関数`inspectTransaction`を使用しています。[トランザクションインスペクター](/qoresign/overview#inspector)を参照してください。
+- **Transaction inspector:** テストネットまたはメインネットで64桁の16進数のトランザクションハッシュを貼り付けると、ステータス、署名者、手数料、ポスト量子レイヤーが検証されるかどうか、セキュリティ階層(PQC、Enrollment、SHAKE、Classical)を表示します。QoreSignの関数`inspectTransaction`(0.1.1から)を使用しています。[トランザクションインスペクター](/qoresign/overview#inspector)を参照してください。
 - **PQ key status:** アドレスがチェーンに登録したML-DSA-87鍵とそのEVM認可ウィンドウを、テストネットまたはメインネットで読み取ります。
 - **Simulator:** 署名済みトランザクション(base64またはhexの`TxRaw`)をドライランし、ガス使用量と残高の変化を表示します。ブロードキャストは行われません。
 - **Signing playground:** テストネット専用です。ブラウザ内で使い捨てのハイブリッド鍵(メモリ内にのみ保持)を生成し、メッセージとSign In With QoreChainリクエストの署名と検証を行います。
 - **QoreX test wallet:** テストネット専用です。テストウォレット(`window.qorex`、EIP-6963で「QoreX (mock)」として通知)をタブに注入し、dAppのフローを試せます。
 - **AI agents (MCP):** QoreChain MCPサーバーのステータス(公開済み)と、MCPクライアント向けのセットアップです。まずローカルの`npx`、加えてAPIキーが必要なホスト型テストネットエンドポイントがあります。[QoreChain MCPサーバー](/developer-tools/mcp)を参照してください。
 
-同じインスペクターの確認は、QoreSign 0.1.1(TypeScript)のライブラリ関数`inspectTransaction`としてコードからも利用できます。以下の表とSDKハブは同じパッケージデータを示しており、表は2026年11月4日にレジストリと照合済みです。
+同じインスペクターの確認は、QoreSign 0.1.1以降(TypeScript)のライブラリ関数`inspectTransaction`としてコードからも利用できます。以下の表とSDKハブは同じパッケージデータを示しており、表は2026年11月4日にレジストリと照合済みです。
 
 ## 公開場所 {#where-published}
 
@@ -98,17 +98,17 @@ SDK 0.13.0は2026年11月11日から最新版です(シードパスのアカウ�
 
 ### QoreSign {#group-qoresign}
 
-ガイド: [QoreSign概要](/qoresign/overview)、[クイックスタート](/qoresign/quickstart)、[テストベクター](/qoresign/vectors)。ソース: [qorechain/qoresign](https://github.com/qorechain/qoresign)。バージョン0.1.1は2026年10月27日に公開されました。QoreSignはローカルで署名します。鍵を代わりに保管することはなく、しきい値署名、MPC署名、ハードウェアウォレット署名は行いません。
+ガイド: [QoreSign概要](/qoresign/overview)、[クイックスタート](/qoresign/quickstart)、[テストベクター](/qoresign/vectors)。ソース: [qorechain/qoresign](https://github.com/qorechain/qoresign)。バージョン0.2.0は2026年11月10日と11日に公開されました(0.1.1は2026年10月27日)。Swift、Kotlin、Pythonをお使いの場合は、パッケージとそのネイティブライブラリを一緒にアップグレードしてください。[0.2.0の新機能](/qoresign/overview#new-in-0-2-0)を参照してください。QoreSignはローカルで署名します。鍵を代わりに保管することはなく、しきい値署名、MPC署名、ハードウェアウォレット署名は行いません。
 
 | パッケージ | 言語 | バージョン | インストール | ステータス |
 |---|---|---|---|---|
-| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.1 | `npm install @qorechain/qoresign` | 公開済み。`inspectTransaction`と`fetchEvmWindow`を含みます(0.1.1で追加) |
-| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust(`qoresign`としてインポート) | 0.1.1 | `cargo add qorechain-qoresign` | 公開済み |
-| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.1 | `go get github.com/qorechain/qoresign/go@v0.1.1` | 公開済み |
-| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+(`qoresign`としてインポート) | 0.1.1 | `pip install qorechain-qoresign` | 公開済み、0.1.1で追加。macOS(arm64、x86_64)とLinux(x86_64、aarch64)向けのホイール。Windows向けのホイールはまだありません。オフライン関数のみ |
-| `QoreSign` (Swift package) | Swift (iOS 16+, macOS 13+) | 0.1.1 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, product `QoreSign` | GitHubリリースとして公開。バイナリフレームワークはそこからダウンロードされます |
-| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign:0.1.1")` | 公開済み |
-| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | 公開済み。JVMアーティファクトと同じAPI。例はJVMアーティファクトでのみ実行し、Androidデバイスでは実行していません |
+| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.2.0 | `npm install @qorechain/qoresign` | 公開済み。`inspectTransaction`と`fetchEvmWindow`を含みます(0.1.1から)。0.2.0で`parseSiwqTimestamp`と`fetchProtocolFeature`を追加 |
+| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust(`qoresign`としてインポート) | 0.2.0 | `cargo add qorechain-qoresign` | 公開済み |
+| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.2.0 | `go get github.com/qorechain/qoresign/go@v0.2.0` | 公開済み |
+| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+(`qoresign`としてインポート) | 0.2.0 | `pip install qorechain-qoresign` | 公開済み(Pythonは0.1.1から)。macOS(arm64、x86_64)とLinux(x86_64、aarch64)向けのホイール。Windows向けのホイールはまだありません。オフライン関数のみ |
+| `QoreSign` (Swift package) | Swift (iOS 16+, macOS 13+) | 0.2.0 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, product `QoreSign` | GitHubリリースとして公開。バイナリフレームワークはそこからダウンロードされます |
+| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 2026年11月11日時点でCentralには0.1.1が表示されています。0.2.0は同期中です | 0.2.0が表示されたら`implementation("io.github.qorechain:qoresign:0.2.0")` | 公開済み(現在Centralにあるのは0.1.1) |
+| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 2026年11月11日時点でCentralには0.1.1が表示されています。0.2.0は同期中です | 0.2.0が表示されたら`implementation("io.github.qorechain:qoresign-android:0.2.0")` | 公開済み(現在Centralにあるのは0.1.1)。JVMアーティファクトと同じAPI。例はJVMアーティファクトでのみ実行し、Androidデバイスでは実行していません |
 
 KotlinおよびAndroidのアーティファクトには、プロジェクトでKotlin 2.3以降のコンパイラが必要です。Kotlin 2.1のプロジェクトでは、これらに対するコンパイルが失敗します。
 

@@ -11,7 +11,7 @@ QoreSign은 지갑, 거래소, 수탁 기관, 백엔드를 위해 QoreChain에�
 
 QoreSign을 사용하면 QoreChain 자체 지갑이 아닌 지갑도 계정의 ML-DSA-87 키를 파생하고, 두 키로 Native 레인 트랜잭션에 서명하고, 하이브리드 서명을 로컬에서 검증하고, 임의의 메시지에 서명하고, 서명 전에 트랜잭션을 시뮬레이션하고, 커밋된 트랜잭션이 어떻게 보호되었는지 다시 읽어 오고, Sign In With QoreChain을 구현할 수 있습니다. QoreSign은 [`qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) 바인딩 위에 놓인 얇은 계층이며, 자체 암호 프리미티브를 추가하지 않습니다. QoreChain Association이 Apache-2.0 라이선스로 유지 관리합니다.
 
-현재 릴리스는 **0.1.1**(2026년 10월 27일)입니다. TypeScript, Rust, Go, Kotlin(JVM 및 Android), Swift로 게시되어 있으며, 0.1.1에서 새로 Python이 추가되었습니다. 소스, 예제, 테스트 벡터는 [qorechain/qoresign](https://github.com/qorechain/qoresign) 저장소에 있습니다. 메인넷(`qorechain-vladi`)과 테스트넷(`qorechain-diana`)에서 동작합니다.
+현재 릴리스는 **0.2.0**(2026년 11월 10일과 11일에 게시)입니다. TypeScript, Rust, Go, Kotlin(JVM 및 Android), Swift로 게시되어 있으며, 0.1.1부터 Python도 게시됩니다. Maven Central에서는 0.2.0이 아직 동기화 중입니다. Central에는 2026년 11월 11일 현재 여전히 0.1.1이 표시됩니다([게시 위치](#where-published) 참고). 소스, 예제, 테스트 벡터는 [qorechain/qoresign](https://github.com/qorechain/qoresign) 저장소에 있습니다. 메인넷(`qorechain-vladi`)과 테스트넷(`qorechain-diana`)에서 동작합니다.
 
 ## 레인별 QoreSign의 기능 {#lanes}
 
@@ -39,12 +39,23 @@ QoreSign을 사용하면 QoreChain 자체 지갑이 아닌 지갑도 계정의 M
 네트워크 헬퍼(TypeScript `@qorechain/qoresign/network`, Go `github.com/qorechain/qoresign/go/network`에는 새로 추가된 두 가지를 제외한 모두가 있음):
 
 - `fetchPqKeyStatus`: 주소에 ML-DSA-87 키가 등록되어 있는지, 있다면 어떤 키인지.
-- `resolveSignBytesVersion`: 네트워크가 검증하는 sign-bytes 형식.
+- `resolveSignBytesVersion`: 네트워크가 검증하는 sign-bytes 형식. 0.2.0부터 네트워크 프로토콜 기능 목록의 `pqc-sign-bytes-v2` 항목을 먼저 읽고, 목록을 읽을 수 없을 때만 적용된 업그레이드 확인을 사용합니다.
 - `simulateTx`(사용된 가스, 권장 가스 한도, 주소별 잔액 변화), `suggestGasLimit`, `broadcastTx`, `submitWithSignBytesFallback`(네트워크가 첫 번째 형식을 거부하면 다른 sign-bytes 형식으로 한 번 재시도).
-- `assertPqLayerMatchesRegisteredKey`: 지갑이 클래식 서명을 추가하기 전에, dApp이 제공한 계층을 체인에 있는 키와 대조합니다.
+- `assertPqLayerMatchesRegisteredKey`: 지갑이 클래식 서명을 추가하기 전에, dApp이 제공한 계층을 체인에 있는 키와 대조합니다. 0.2.0부터 네트워크의 sign-bytes 버전을 기준으로 확인합니다.
 - `verifySiwqWithChain` 및 `verifyMessageWithChain`: 체인에 등록된 키를 기준으로 한 검증.
 - `fetchCommittedExtensionTypeUrls`: 커밋된 트랜잭션이 어떤 확장을 담았는지 읽어 옵니다.
-- 0.1.1에서 새로 추가됨, TypeScript 전용: 아래에서 설명하는 `inspectTransaction`과 `fetchEvmWindow`.
+- 0.1.1부터, TypeScript 전용: 아래에서 설명하는 `inspectTransaction`과 `fetchEvmWindow`.
+- 0.2.0에서 새로 추가됨, TypeScript와 Go: `fetchProtocolFeature`. TypeScript는 `PROTOCOL_FEATURES_PATH`와 `SIGN_BYTES_V2_FEATURE`도 내보냅니다.
+
+## 0.2.0의 새로운 기능 {#new-in-0-2-0}
+
+2026년 11월 10일과 11일에 게시되었습니다(GitHub 릴리스 v0.2.0은 11월 11일). 동작 변경 사항과 0.1.x에서 업그레이드할 때 해야 할 일입니다.
+
+- **Sign In With QoreChain: 최대 유효 기간.** `Expiration Time`이 없는 메시지는 `Issued At`부터 600초(10분)가 지나면 `SIWQ_EXPIRED`로 거부됩니다. 이 기간은 모든 바인딩에서 설정할 수 있습니다. `maxAgeSeconds`(TypeScript, Swift, Kotlin), `max_age_seconds`(Python 및 Rust `VerifySiwqArgs`), `MaxAge`(Go `VerifySiwqOptions`)입니다. 0 또는 음수 값은 `INVALID_ARGUMENT`로 실패합니다. 서버가 발급하는 모든 메시지에 `expirationTime`을 설정하거나 더 큰 최대 유효 기간을 전달하세요. [Sign In With QoreChain: 서버 검증](/qoresign/guides/sign-in)을 참고하세요.
+- **엄격한 타임스탬프.** `Issued At`, `Expiration Time`, `Not Before`는 하나의 RFC 3339 문법을 따르며, 메시지를 만들 때, 파싱할 때, 서명할 때, 검증할 때 똑같이 적용됩니다. 문법을 벗어난 타임스탬프는 `SIWQ_MALFORMED`로 실패합니다. [Sign In With QoreChain v1](/qoresign/spec/siwq-v1#timestamps)을 참고하세요. `parseSiwqTimestamp`(TypeScript)와 `ParseSiwqTimestamp`(Go)는 이 문법의 타임스탬프를 Unix 밀리초로 반환합니다. 공유 벡터는 `vectors/siwq-timestamps-v1.json`에 있습니다.
+- **sign-bytes 버전 결정.** `resolveSignBytesVersion`은 네트워크의 기능 목록에서 `pqc-sign-bytes-v2` 프로토콜 기능을 먼저 읽습니다. 목록을 읽을 수 있으면 그것이 버전을 결정합니다(목록에 없는 기능은 v1을 뜻합니다). 적용된 업그레이드 확인은 목록을 읽을 수 없을 때만 사용합니다. `fetchProtocolFeature`(TypeScript와 Go), `PROTOCOL_FEATURES_PATH`와 `SIGN_BYTES_V2_FEATURE`(TypeScript)를 내보냅니다.
+- **계층 확인.** `assertPqLayerMatchesRegisteredKey`와 `inspectTransaction`은 ML-DSA-87 계층을 네트워크가 사용하는 sign-bytes 버전, 또는 새 `signBytesVersion` 옵션(Go는 `SignBytesVersion`)으로 전달한 버전을 기준으로 확인합니다. 네트워크가 v2로 옮기기 전에 커밋된 트랜잭션에는 `signBytesVersion: "v1"`을 전달하세요. 두 버전 중 어느 쪽이든 계층을 받아들이려면 이제 명시적인 진단용 옵션 `allowLegacyEither`(Go는 `AllowLegacyEither`)가 필요하며, 진단 전용입니다.
+- **Swift, Kotlin, Python: 패키지와 네이티브 라이브러리를 함께 업그레이드하세요.** 네이티브 검증 함수가 최대 유효 기간을 새 매개변수로 받으므로 0.1.x 네이티브 라이브러리는 0.2.0 바인딩과 맞지 않습니다. xcframework, JVM 및 Android 라이브러리, Python wheel은 이 버전에 맞게 다시 빌드되었습니다.
 
 ## 0.1.1의 새로운 기능 {#new-in-0-1-1}
 
@@ -116,11 +127,11 @@ console.log("EVM window:", win.found, win.live);
 |---|---|---|---|
 | TypeScript | [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | `npm install @qorechain/qoresign` | Node.js 20 이상, 브라우저 |
 | Rust | [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) (라이브러리 이름 `qoresign`) | `cargo add qorechain-qoresign` | 안정(stable) Rust |
-| Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.1.1` | Go 1.25 |
+| Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.2.0` | Go 1.25 |
 | Python | [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) (import `qoresign`) | `pip install qorechain-qoresign` | Python 3.9+, macOS 11+(arm64, x86_64) 및 Linux(x86_64, aarch64)용 wheel, 아직 Windows wheel 없음, 다른 플랫폼은 소스 배포판에서 빌드(Rust 1.95 필요) |
-| Swift | [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign)의 `QoreSign` (GitHub 릴리스의 바이너리 프레임워크) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, 제품 `QoreSign` | iOS 16, macOS 13 |
-| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.1.1")` | Java 17, Kotlin 2.3 이상, macOS(arm64, x86-64), Linux(x86-64, arm64), Windows(x86-64)용 네이티브 라이브러리 |
-| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | API 24, Kotlin 2.3 이상, `arm64-v8a`, `armeabi-v7a`, `x86_64`, R8 keep 규칙 포함 |
+| Swift | [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign)의 `QoreSign` (GitHub 릴리스의 바이너리 프레임워크) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, 제품 `QoreSign` | iOS 16, macOS 13 |
+| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | 0.2.0이 Central에 나타나면 `implementation("io.github.qorechain:qoresign:0.2.0")`(Central에는 2026년 11월 11일 현재 0.1.1이 표시됨) | Java 17, Kotlin 2.3 이상, macOS(arm64, x86-64), Linux(x86-64, arm64), Windows(x86-64)용 네이티브 라이브러리 |
+| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | 0.2.0이 Central에 나타나면 `implementation("io.github.qorechain:qoresign-android:0.2.0")`(Central에는 2026년 11월 11일 현재 0.1.1이 표시됨) | API 24, Kotlin 2.3 이상, `arm64-v8a`, `armeabi-v7a`, `x86_64`, R8 keep 규칙 포함 |
 
 :::note Kotlin 컴파일러 버전
 Kotlin 및 Android 아티팩트를 사용하려면 프로젝트에 **Kotlin 2.3 이상** 컴파일러가 필요합니다. Kotlin 2.1을 쓰는 프로젝트는 컴파일에 실패합니다. 의존성을 추가하기 전에 빌드의 Kotlin 버전을 올리세요.
@@ -170,10 +181,12 @@ verifyHybridTx({
 | `verifyHybridTx`, `verifyPqLayer` | 로컬 검증 | 전체 |
 | `buildRegisterPqKeyMessage`, `signProofOfPossession`, `verifyProofOfPossession` | 소유 증명을 포함한 키 등록 | 전체 |
 | `signMessage`, `verifyMessage` | 임의 메시지 서명(ADR-36 및 ML-DSA-87) | 전체 |
-| `createSiwqMessage`, `parseSiwqMessage`, `signSiwq`, `verifySiwq` | Sign In With QoreChain v1 | 전체 |
+| `createSiwqMessage`, `parseSiwqMessage`, `signSiwq`, `verifySiwq` | Sign In With QoreChain v1(0.2.0부터 최대 유효 기간과 엄격한 타임스탬프) | 전체 |
+| `parseSiwqTimestamp` | 엄격한 문법의 타임스탬프를 Unix 밀리초로 변환(0.2.0) | TypeScript, Go(`ParseSiwqTimestamp`) |
 | `decideLane`, `assertHybridLane`, `evaluateLayerState` | 레인 규칙, 누락된 계층 감지 | 전체 |
 | `fetchPqKeyStatus`, `resolveSignBytesVersion`, `simulateTx`, `suggestGasLimit`, `broadcastTx`, `submitWithSignBytesFallback`, `assertPqLayerMatchesRegisteredKey`, `verifySiwqWithChain`, `verifyMessageWithChain`, `fetchCommittedExtensionTypeUrls` | 네트워크 헬퍼 | TypeScript, Go |
-| `inspectTransaction`, `fetchEvmWindow` | 커밋된 트랜잭션 읽기, EVM 윈도우 읽기(0.1.1) | TypeScript |
+| `fetchProtocolFeature`, `PROTOCOL_FEATURES_PATH`, `SIGN_BYTES_V2_FEATURE` | 네트워크 프로토콜 기능 목록의 항목 읽기, 그 경로와 sign-bytes v2 기능 이름(0.2.0) | TypeScript(`fetchProtocolFeature`는 Go에도 있음) |
+| `inspectTransaction`, `fetchEvmWindow` | 커밋된 트랜잭션 읽기, EVM 윈도우 읽기(0.1.1부터) | TypeScript |
 
 Go에서 네트워크 헬퍼는 클라이언트의 메서드입니다. `client := network.NewClient("https://api-testnet.qore.host")`로 만든 뒤 `client.VerifySiwqWithChain(ctx, address, qoresign.VerifySiwqOptions{...})` 또는 `client.SimulateTx(...)`를 호출합니다. Python 오류는 `code`와 `detail`을 가진 `QoreSignError`이며, 바이트 필드는 `bytes`입니다.
 
@@ -237,19 +250,19 @@ API 레퍼런스: 저장소를 클론한 뒤 `pnpm -C packages/ts docs`(TypeScri
 
 ## 게시 위치 {#where-published}
 
-2026년 10월 27일에 각 레지스트리에서 확인한 버전입니다.
+2026년 11월 11일에 각 레지스트리에서 확인한 버전입니다.
 
 | 레지스트리 | 패키지 | 버전 | 링크 |
 |---|---|---|---|
-| npm | `@qorechain/qoresign` | 0.1.1 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
-| crates.io | `qorechain-qoresign` | 0.1.1 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
-| Go module proxy | `github.com/qorechain/qoresign/go` | v0.1.1 (태그 `go/v0.1.1`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
-| Maven Central | `io.github.qorechain:qoresign` | 0.1.1 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
-| Maven Central | `io.github.qorechain:qoresign-android` | 0.1.1 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
-| PyPI | `qorechain-qoresign` | 0.1.1 (macOS arm64 및 x86_64, Linux x86_64 및 aarch64 wheel, 소스 배포판) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
-| Swift Package Manager | `github.com/qorechain/qoresign`의 `QoreSign` | 0.1.1 (릴리스의 바이너리 `QoreSignFFI.xcframework.zip`) | [GitHub 릴리스](https://github.com/qorechain/qoresign/releases/tag/v0.1.1) |
+| npm | `@qorechain/qoresign` | 0.2.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
+| crates.io | `qorechain-qoresign` | 0.2.0 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
+| Go module proxy | `github.com/qorechain/qoresign/go` | v0.2.0 (태그 `go/v0.2.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
+| Maven Central | `io.github.qorechain:qoresign` | Central에는 2026년 11월 11일 현재 여전히 0.1.1이 표시됨, 0.2.0은 동기화 중. 나타나면 0.2.0을 사용하세요 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
+| Maven Central | `io.github.qorechain:qoresign-android` | Central에는 2026년 11월 11일 현재 여전히 0.1.1이 표시됨, 0.2.0은 동기화 중. 나타나면 0.2.0을 사용하세요 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
+| PyPI | `qorechain-qoresign` | 0.2.0 (macOS arm64 및 x86_64, Linux x86_64 및 aarch64 wheel, 소스 배포판) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
+| Swift Package Manager | `github.com/qorechain/qoresign`의 `QoreSign` | 0.2.0 (릴리스의 바이너리 `QoreSignFFI.xcframework.zip`) | [GitHub 릴리스](https://github.com/qorechain/qoresign/releases/tag/v0.2.0) |
 
-저장소: [github.com/qorechain/qoresign](https://github.com/qorechain/qoresign) (릴리스 v0.1.0 및 v0.1.1).
+저장소: [github.com/qorechain/qoresign](https://github.com/qorechain/qoresign) (릴리스 v0.1.0, v0.1.1, v0.2.0).
 
 ## 관련 페이지 {#related}
 

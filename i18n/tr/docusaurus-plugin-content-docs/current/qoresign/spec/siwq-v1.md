@@ -49,7 +49,7 @@ Resources:
 - `Version` değeri `1`'dir. `Chain ID`, `qorechain-vladi` gibi bir QoreChain
   zincir kimliğidir.
 - `Nonce`, sunucunun seçtiği en az 8 alfasayısal karakterdir ve tek kullanımlıktır.
-- Zaman damgaları RFC 3339 / ISO 8601 biçimindedir.
+- Zaman damgaları, [Zaman damgaları](#timestamps) altında anlatılan katı RFC 3339 dilbilgisine uyar.
 - `Expiration Time`, `Not Before`, `Request ID` ve `Resources` isteğe bağlıdır
   ve bu sırayla görünür.
 
@@ -94,6 +94,42 @@ tersini önler (bkz.
 yalnızca klasik hesapları açıkça kabul etmedikçe bu tür oturum açmaları
 reddetmelidir.
 
+## Zaman damgaları {#timestamps}
+
+`Issued At`, `Expiration Time` ve `Not Before` tek bir katı RFC 3339 dilbilgisi
+kullanır. Aynı kurallar bir mesaj oluşturulurken, ayrıştırılırken, imzalanırken
+ve doğrulanırken geçerlidir:
+
+- saat 00 ile 23, dakika ve saniye 00 ile 59 arasındadır; bu yüzden `24:00:00`
+  ve artık saniyeler (saniye 60) reddedilir;
+- gerçek bir takvim tarihi;
+- büyük harfli `Z` veya iki nokta üst üste ile yazılmış, 00:00 ile 23:59
+  arasında bir sapma (iki nokta üst üstesiz sapma reddedilir);
+- ayırıcı olarak `T`: boşluk, küçük harfli `t` veya `z` olmaz.
+
+Dilbilgisi dışındaki bir zaman damgası `SIWQ_MALFORMED` ile başarısız olur.
+Ortak vektörler `vectors/siwq-timestamps-v1.json` dosyasındadır. QoreSign
+0.2.0'dan beri `parseSiwqTimestamp` (TypeScript) ve `ParseSiwqTimestamp` (Go),
+bu dilbilgisindeki bir zaman damgasının Unix milisaniye değerini döndürür.
+
+## En yüksek yaş {#max-age}
+
+Sunucular `Expiration Time` istemeli ve ürettikleri mesajlara her zaman
+eklemelidir. `Expiration Time` taşımayan bir mesaj, `Issued At` değerinden
+itibaren 600 saniyeden (10 dakika) eski olduğunda `SIWQ_EXPIRED` ile reddedilir.
+QoreSign 0.2.0 ve sonrası, yaşı her bağlamada yapılandırılabilir kılar:
+
+| Bağlama | Seçenek |
+|---|---|
+| TypeScript | `maxAgeSeconds` |
+| Python | `max_age_seconds` |
+| Rust | `VerifySiwqArgs::max_age_seconds` |
+| Go | `VerifySiwqOptions.MaxAge` |
+| Swift | `maxAgeSeconds` |
+| Kotlin | `maxAgeSeconds` |
+
+Sıfır veya negatif bir değer `INVALID_ARGUMENT` ile başarısız olur.
+
 ## Doğrulama {#verification}
 
 Bir doğrulayıcı şunları bu sırayla denetlemelidir:
@@ -104,7 +140,10 @@ Bir doğrulayıcı şunları bu sırayla denetlemelidir:
    kullanılmamıştır;
 4. `Chain ID` beklenen ağdır;
 5. `Expiration Time` gelecektedir; `Not Before` ve `Issued At` gelecekte değildir
-   (küçük bir saat sapmasına izin verilir);
+   (küçük bir saat sapmasına izin verilir). `Expiration Time` taşımayan bir mesaj,
+   `Issued At` değerinden itibaren 600 saniyeden (10 dakika) eski olduğunda
+   reddedilir; doğrulayıcı bu en yüksek yaşı yapılandırılabilir kılar
+   (bkz. [En yüksek yaş](#max-age));
 6. klasik açık anahtar `address`'e türer ve ADR-36 imzası doğrulanır;
 7. ML-DSA-87 imzası, istemcinin sağladığı bir anahtara karşı değil, `address` için
    **zincirde kayıtlı** açık anahtara (`/qorechain/pqc/v1/account/{address}`)

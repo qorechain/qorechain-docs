@@ -50,7 +50,7 @@ Resources:
   `qorechain-vladi`.
 - `Nonce` are cel puțin 8 caractere alfanumerice alese de server, de unică
   folosință.
-- Marcajele de timp sunt RFC 3339 / ISO 8601.
+- Marcajele de timp urmează gramatica strictă RFC 3339 descrisă la [Marcaje de timp](#timestamps).
 - `Expiration Time`, `Not Before`, `Request ID` și `Resources` sunt opționale și
   apar în această ordine.
 
@@ -96,6 +96,43 @@ de tranzacție și invers (vezi
 trebui să refuze astfel de sign-in-uri, cu excepția cazului în care acceptă
 explicit conturi doar cu cheie clasică.
 
+## Marcaje de timp {#timestamps}
+
+`Issued At`, `Expiration Time` și `Not Before` folosesc o singură gramatică
+strictă RFC 3339. Aceleași reguli se aplică la crearea, parsarea, semnarea și
+verificarea unui mesaj:
+
+- ora de la 00 la 23, minutul și secunda de la 00 la 59, deci `24:00:00` și
+  secundele intercalare (secunda 60) sunt refuzate;
+- o dată calendaristică reală;
+- un `Z` majuscul sau un offset între 00:00 și 23:59 scris cu două puncte (un
+  offset fără două puncte este refuzat);
+- `T` ca separator: fără spațiu și fără `t` sau `z` minuscul.
+
+Un marcaj în afara gramaticii eșuează cu `SIWQ_MALFORMED`. Vectorii comuni se
+află în `vectors/siwq-timestamps-v1.json`. De la QoreSign 0.2.0,
+`parseSiwqTimestamp` (TypeScript) și `ParseSiwqTimestamp` (Go) returnează
+milisecundele Unix ale unui marcaj în această gramatică.
+
+## Vârsta maximă {#max-age}
+
+Serverele ar trebui să ceară `Expiration Time` și să îl seteze mereu pe mesajele
+pe care le emit. Un mesaj fără `Expiration Time` este refuzat cu `SIWQ_EXPIRED`
+după ce are mai mult de 600 de secunde (10 minute), socotite de la `Issued At`.
+QoreSign 0.2.0 și versiunile următoare fac vârsta configurabilă în fiecare
+binding:
+
+| Binding | Opțiune |
+|---|---|
+| TypeScript | `maxAgeSeconds` |
+| Python | `max_age_seconds` |
+| Rust | `VerifySiwqArgs::max_age_seconds` |
+| Go | `VerifySiwqOptions.MaxAge` |
+| Swift | `maxAgeSeconds` |
+| Kotlin | `maxAgeSeconds` |
+
+O valoare zero sau negativă eșuează cu `INVALID_ARGUMENT`.
+
 ## Verificare {#verification}
 
 Un verificator trebuie să controleze, în această ordine:
@@ -106,7 +143,10 @@ Un verificator trebuie să controleze, în această ordine:
    nonce-ul nu a mai fost folosit;
 4. `Chain ID` este rețeaua așteptată;
 5. `Expiration Time` este în viitor, iar `Not Before` și `Issued At` nu sunt în
-   viitor (permițând o mică abatere de ceas);
+   viitor (permițând o mică abatere de ceas). Un mesaj fără
+   `Expiration Time` este refuzat după ce are mai mult de 600 de secunde
+   (10 minute), socotite de la `Issued At`; verificatorul face această vârstă
+   maximă configurabilă (vezi [Vârsta maximă](#max-age));
 6. cheia publică clasică se derivă în `address`, iar semnătura ADR-36 se
    verifică;
 7. semnătura ML-DSA-87 se verifică față de cheia publică **înregistrată pe

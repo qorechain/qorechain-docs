@@ -10,7 +10,7 @@ sidebar_position: 2
 Questa guida mostra come derivare le chiavi di un account, firmare una
 transazione sulla corsia Native con entrambe le chiavi e verificarla, offline,
 quindi, facoltativamente, inviarla alla testnet `qorechain-diana`. Richiede
-Node.js 20 o successivo. Riguarda QoreSign 0.1.1. Le sezioni dopo il passo 4 mostrano la stessa libreria in Python e Go, e come rileggere una transazione confermata.
+Node.js 20 o successivo. Riguarda QoreSign 0.2.0. Le sezioni dopo il passo 4 mostrano la stessa libreria in Python e Go, e come rileggere una transazione confermata.
 
 ## 1. Installazione {#install}
 
@@ -137,7 +137,7 @@ Questi esempi sono offline. Ognuno deriva le chiavi dalla frase di test pubblica
 
 ### Python {#python}
 
-Novità della 0.1.1. Python 3.9 o successivo; wheel per macOS e Linux (nessuna wheel per Windows per ora).
+Python 3.9 o successivo; wheel per macOS e Linux (nessuna wheel per Windows per ora). Aggiorna il pacchetto Python dalla 0.1.x nel suo insieme: le wheel 0.2.0 includono la propria libreria nativa.
 
 ```bash
 pip install qorechain-qoresign
@@ -159,12 +159,12 @@ qs.verify_message("qorechain-diana", account.bech32, data, sig, pq_public_key=pq
 print(account.bech32, "verified")
 ```
 
-L'esempio è stato eseguito con le wheel 0.1.1 pubblicate su macOS arm64 e Linux aarch64.
+L'esempio è stato eseguito l'ultima volta con le wheel 0.1.1 pubblicate su macOS arm64 e Linux aarch64; i comandi non cambiano nella 0.2.0.
 
 ### Go {#go}
 
 ```bash
-go get github.com/qorechain/qoresign/go@v0.1.1
+go get github.com/qorechain/qoresign/go@v0.2.0
 ```
 
 ```go
@@ -197,7 +197,7 @@ L'esempio Go ignora gli errori per restare breve; controllali nel codice reale. 
 
 ## 6. Leggere una transazione confermata (ispettore delle transazioni) {#inspect}
 
-Novità della 0.1.1, TypeScript. Legge soltanto e non invia nulla. Riporta come è stata protetta una transazione confermata: i suoi messaggi, il firmatario, la commissione, se la firma classica è valida, lo stato del livello ML-DSA-87 e il livello di sicurezza (`pqc`, `enrollment`, `shake` o `classical`). Per i campi vedi [Ispettore delle transazioni](/qoresign/overview#inspector).
+Disponibile dalla 0.1.1, TypeScript. Legge soltanto e non invia nulla. Riporta come è stata protetta una transazione confermata: i suoi messaggi, il firmatario, la commissione, se la firma classica è valida, lo stato del livello ML-DSA-87 e il livello di sicurezza (`pqc`, `enrollment`, `shake` o `classical`). Per i campi vedi [Ispettore delle transazioni](/qoresign/overview#inspector).
 
 ```js
 // inspect.mjs

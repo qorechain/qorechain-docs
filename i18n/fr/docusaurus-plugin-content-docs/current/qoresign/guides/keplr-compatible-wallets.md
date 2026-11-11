@@ -44,7 +44,9 @@ Règles qui protègent l'utilisateur :
 - Lorsqu'une dApp envoie un corps qui porte déjà une couche PQC, vérifiez-la avec
   `assertPqLayerMatchesRegisteredKey` (de `@qorechain/qoresign/network`) avant
   d'ajouter votre signature classique ; une couche qui ne se vérifie pas ne
-  protège rien.
+  protège rien. Depuis QoreSign 0.2.0, la vérification utilise la version des
+  sign-bytes que le réseau utilise (remplacez-la avec `signBytesVersion` ;
+  `allowLegacyEither` sert uniquement au diagnostic).
 - Enregistrez la clé une seule fois par compte avec
   `buildRegisterPqKeyMessage`, signé en mode `classicalOnly` (voir
   [`examples/register-and-send`](https://github.com/qorechain/qoresign/tree/main/examples/register-and-send)

@@ -65,14 +65,14 @@ Instalează un singur pachet și rulează-i quickstart-ul mai întâi pe testnet
 Dashboard-ul are o pagină publică la [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Verificată la 27 octombrie 2026, are șapte file (prezentare completă: [Developers](/dashboard/developers)):
 
 - **SDKs:** hub-ul SDK. Fiecare pachet din manifest, grupat pe produs, cu selector de limbaj, cea mai recentă versiune citită live din fiecare registru, linii de instalare și de import cu butoane de copiere, quickstart-ul cu rezultatul observat de echipa SDK, probleme cunoscute, precum și id-urile de lanț și endpoint-urile publice. Pachetele nepublicate nu afișează nicio comandă de instalare.
-- **Transaction inspector:** lipești un hash de tranzacție de 64 de caractere hex, pe testnet sau mainnet, și vezi starea, semnatarul, taxa, dacă stratul post-cuantic se verifică și nivelul de securitate (PQC, Enrollment, SHAKE sau Classical). Folosește funcția `inspectTransaction` din QoreSign 0.1.1: vezi [Inspectorul de tranzacții](/qoresign/overview#inspector).
+- **Transaction inspector:** lipești un hash de tranzacție de 64 de caractere hex, pe testnet sau mainnet, și vezi starea, semnatarul, taxa, dacă stratul post-cuantic se verifică și nivelul de securitate (PQC, Enrollment, SHAKE sau Classical). Folosește funcția `inspectTransaction` din QoreSign (de la 0.1.1): vezi [Inspectorul de tranzacții](/qoresign/overview#inspector).
 - **PQ key status:** citește din blockchain cheia ML-DSA-87 pe care o adresă a înregistrat-o și fereastra sa de autorizare EVM, pe testnet sau mainnet.
 - **Simulator:** simulează o tranzacție semnată (`TxRaw` în base64 sau hex) și afișează consumul de gas și modificările de sold. Nimic nu este transmis în rețea.
 - **Signing playground:** doar testnet. Generează în browser o cheie hibridă de unică folosință, ținută în memorie, pentru a semna și verifica mesaje și cereri Sign In With QoreChain.
 - **QoreX test wallet:** doar testnet. Injectează în filă un portofel de test (`window.qorex`, anunțat prin EIP-6963 ca „QoreX (mock)") pentru a putea încerca fluxuri de dApp.
 - **AI agents (MCP):** starea serverului MCP QoreChain (publicat) și configurarea pentru un client MCP: mai întâi `npx` local, plus un endpoint găzduit de testnet care are nevoie de o cheie API. Vezi [Serverul MCP QoreChain](/developer-tools/mcp).
 
-Aceeași verificare a inspectorului este disponibilă în cod ca funcția de bibliotecă `inspectTransaction` din QoreSign 0.1.1 (TypeScript). Tabelele de mai jos și hub-ul SDK afișează aceleași date despre pachete; tabelele au fost verificate față de registre la 4 noiembrie 2026.
+Aceeași verificare a inspectorului este disponibilă în cod ca funcția de bibliotecă `inspectTransaction` de la QoreSign 0.1.1 (TypeScript). Tabelele de mai jos și hub-ul SDK afișează aceleași date despre pachete; tabelele au fost verificate față de registre la 4 noiembrie 2026.
 
 ## Unde este publicat {#where-published}
 
@@ -98,17 +98,17 @@ SDK 0.13.0 este versiunea curentă din 11 noiembrie 2026 (schimbă helperul de c
 
 ### QoreSign {#group-qoresign}
 
-Ghiduri: [Prezentarea QoreSign](/qoresign/overview), [Pornire rapidă](/qoresign/quickstart), [Vectori de test](/qoresign/vectors). Sursă: [qorechain/qoresign](https://github.com/qorechain/qoresign). Versiunea 0.1.1 a fost publicată la 27 octombrie 2026. QoreSign semnează local; nu păstrează chei în locul tău și nu face semnare threshold, MPC sau cu portofel hardware.
+Ghiduri: [Prezentarea QoreSign](/qoresign/overview), [Pornire rapidă](/qoresign/quickstart), [Vectori de test](/qoresign/vectors). Sursă: [qorechain/qoresign](https://github.com/qorechain/qoresign). Versiunea 0.2.0 a fost publicată la 10 și 11 noiembrie 2026 (0.1.1 la 27 octombrie 2026). Utilizatorii Swift, Kotlin și Python actualizează pachetul împreună cu biblioteca sa nativă; vezi [noutățile din 0.2.0](/qoresign/overview#new-in-0-2-0). QoreSign semnează local; nu păstrează chei în locul tău și nu face semnare threshold, MPC sau cu portofel hardware.
 
 | Pachet | Limbaj | Versiune | Instalare | Stare |
 |---|---|---|---|---|
-| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.1 | `npm install @qorechain/qoresign` | Publicat. Include `inspectTransaction` și `fetchEvmWindow` (noi în 0.1.1) |
-| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (se importă ca `qoresign`) | 0.1.1 | `cargo add qorechain-qoresign` | Publicat |
-| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.1 | `go get github.com/qorechain/qoresign/go@v0.1.1` | Publicat |
-| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+ (se importă ca `qoresign`) | 0.1.1 | `pip install qorechain-qoresign` | Publicat, nou în 0.1.1. Wheel-uri pentru macOS (arm64, x86_64) și Linux (x86_64, aarch64); încă nu există wheel pentru Windows. Doar funcții offline |
-| `QoreSign` (pachet Swift) | Swift (iOS 16+, macOS 13+) | 0.1.1 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, produs `QoreSign` | Publicat ca release GitHub; framework-ul binar se descarcă de acolo |
-| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign:0.1.1")` | Publicat |
-| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | Publicat. Același API ca artefactul JVM; exemplul său a fost rulat doar pe artefactul JVM, nu pe un dispozitiv Android |
+| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.2.0 | `npm install @qorechain/qoresign` | Publicat. Include `inspectTransaction` și `fetchEvmWindow` (de la 0.1.1) și, nou în 0.2.0, `parseSiwqTimestamp` și `fetchProtocolFeature` |
+| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (se importă ca `qoresign`) | 0.2.0 | `cargo add qorechain-qoresign` | Publicat |
+| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.2.0 | `go get github.com/qorechain/qoresign/go@v0.2.0` | Publicat |
+| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+ (se importă ca `qoresign`) | 0.2.0 | `pip install qorechain-qoresign` | Publicat (Python de la 0.1.1). Wheel-uri pentru macOS (arm64, x86_64) și Linux (x86_64, aarch64); încă nu există wheel pentru Windows. Doar funcții offline |
+| `QoreSign` (pachet Swift) | Swift (iOS 16+, macOS 13+) | 0.2.0 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, produs `QoreSign` | Publicat ca release GitHub; framework-ul binar se descarcă de acolo |
+| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | Central încă afișa 0.1.1 la 11 noiembrie 2026; 0.2.0 se sincronizează | `implementation("io.github.qorechain:qoresign:0.2.0")` după ce apare 0.2.0 | Publicat (0.1.1 pe Central acum) |
+| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | Central încă afișa 0.1.1 la 11 noiembrie 2026; 0.2.0 se sincronizează | `implementation("io.github.qorechain:qoresign-android:0.2.0")` după ce apare 0.2.0 | Publicat (0.1.1 pe Central acum). Același API ca artefactul JVM; exemplul său a fost rulat doar pe artefactul JVM, nu pe un dispozitiv Android |
 
 Artefactele Kotlin și Android au nevoie în proiectul tău de compilatorul Kotlin 2.3 sau mai nou; un proiect pe Kotlin 2.1 nu se compilează împotriva lor.
 

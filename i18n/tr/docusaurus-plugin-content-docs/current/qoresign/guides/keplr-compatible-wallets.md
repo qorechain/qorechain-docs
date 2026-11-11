@@ -44,7 +44,9 @@ Kullanıcıyı güvende tutan kurallar:
 - Bir dApp zaten bir PQC katmanı taşıyan bir gövde gönderdiğinde, klasik imzanızı
   eklemeden önce `assertPqLayerMatchesRegisteredKey` ile
   (`@qorechain/qoresign/network` içinden) kontrol edin; doğrulanmayan bir katman
-  hiçbir şeyi korumaz.
+  hiçbir şeyi korumaz. QoreSign 0.2.0'dan beri kontrol, ağın kullandığı imzalama
+  baytı sürümünü kullanır (`signBytesVersion` ile değiştirilebilir;
+  `allowLegacyEither` yalnızca tanılama içindir).
 - Anahtarı hesap başına bir kez, `classicalOnly` modunda imzalanan
   `buildRegisterPqKeyMessage` ile kaydedin (bkz.
   [`examples/register-and-send`](https://github.com/qorechain/qoresign/tree/main/examples/register-and-send)

@@ -13,7 +13,7 @@ SIWQ هي رسالة تسجيل دخول على نمط EIP-4361 يوقّعها �
 
 1. يصدر الخادم nonce لمرة واحدة للجلسة.
 2. يبني العميل الرسالة بالدالة `createSiwqMessage` وتوقّعها المحفظة بالدالة `signSiwq` (أو تنتج الجزء الكلاسيكي بـ `signArbitrary` وجزء ML-DSA-87 بـ `pqSign` على `siwqPqSignBytes(message)`).
-3. يتحقق الخادم بالدالة `verifySiwqWithChain`، التي تفحص الرسالة والـ nonce والنطاق والأوقات، وأن المفتاح الكلاسيكي يتحكم بالعنوان، وتتحقق من توقيع ML-DSA-87 مقابل المفتاح **المسجَّل على السلسلة** لذلك العنوان (راجع [التحقق](/qoresign/spec/siwq-v1#verification)).
+3. يضبط الخادم `Expiration Time` في كل رسالة يصدرها (راجع [الانتهاء والعمر الأقصى](#expiry))، ثم يتحقق بالدالة `verifySiwqWithChain`، التي تفحص الرسالة والـ nonce والنطاق والأوقات، وأن المفتاح الكلاسيكي يتحكم بالعنوان، وتتحقق من توقيع ML-DSA-87 مقابل المفتاح **المسجَّل على السلسلة** لذلك العنوان (راجع [التحقق](/qoresign/spec/siwq-v1#verification)).
 
 ## TypeScript {#typescript}
 
@@ -59,6 +59,21 @@ if qoresign.IsCode(err, qoresign.CodeSiwqExpired) {
 }
 // result.Address signed in; result.PossessionProven reports how the key was registered.
 ```
+
+## الانتهاء والعمر الأقصى {#expiry}
+
+اضبط دائمًا `Expiration Time` في الرسالة التي يصدرها خادمك. الرسالة التي لا تحمله تُرفض بالرمز `SIWQ_EXPIRED` متى تجاوز عمرها 600 ثانية (10 دقائق)، محسوبةً من `Issued At`. ولاستخدام حد آخر، مرّر العمر الأقصى إلى أداة التحقق. اسم الخيار في كل ربط:
+
+- TypeScript وSwift وKotlin: `maxAgeSeconds`
+- Python: `max_age_seconds`
+- Rust: `VerifySiwqArgs::max_age_seconds`
+- Go: `VerifySiwqOptions.MaxAge`
+
+القيمة صفر أو السالبة تفشل بالرمز `INVALID_ARGUMENT`.
+
+يجب أن تتبع الطوابع الزمنية (`Issued At` و`Expiration Time` و`Not Before`) قواعد RFC 3339 الصارمة الواردة في [المواصفة](/qoresign/spec/siwq-v1#timestamps): الساعة من 00 إلى 23، والدقيقة والثانية من 00 إلى 59، وتاريخ تقويمي حقيقي، و`Z` بحرف كبير أو إزاحة بنقطتين رأسيتين، و`T` فاصلًا، ولا `24:00:00` ولا ثواني كبيسة. تسري القواعد نفسها عند الإنشاء والتحليل والتوقيع والتحقق، والطابع الزمني الخارج عنها يفشل بالرمز `SIWQ_MALFORMED`. الرسائل التي ينشئها QoreSign تستخدم هذه القواعد أصلًا.
+
+عند الترقية من 0.1.x، يجب ترقية الحزمة ومكتبتها الأصلية معًا في Swift وKotlin وPython.
 
 ## الحسابات الكلاسيكية فقط {#classical-only}
 

@@ -65,14 +65,14 @@ Bir paket kurun ve önce hızlı başlangıcını genel testnet üzerinde çalı
 Dashboard'un [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers) adresinde herkese açık bir sayfası vardır. 27 Ekim 2026'da kontrol edildiğinde yedi sekmesi vardır (tam anlatım: [Geliştiriciler](/dashboard/developers)):
 
 - **SDKs:** SDK merkezi. Bildirim dosyasındaki her paket, ürüne göre gruplanmış olarak; dil seçici, her kayıt defterinden canlı okunan en son sürüm, kopyalama düğmeli kurulum ve içe aktarma satırları, SDK ekibinin gözlemlediği çıktıyla hızlı başlangıç, bilinen sorunlar ile zincir kimlikleri ve genel uç noktalar. Yayınlanmamış paketler için kurulum komutu gösterilmez.
-- **Transaction inspector:** testnet veya mainnet üzerinde 64 onaltılık karakterlik bir işlem karması yapıştırın; durumu, imzalayanı, ücreti, kuantum sonrası katmanın doğrulanıp doğrulanmadığını ve güvenlik katmanını (PQC, Enrollment, SHAKE veya Classical) görün. QoreSign 0.1.1 işlevi `inspectTransaction` kullanılır: bkz. [İşlem denetçisi](/qoresign/overview#inspector).
+- **Transaction inspector:** testnet veya mainnet üzerinde 64 onaltılık karakterlik bir işlem karması yapıştırın; durumu, imzalayanı, ücreti, kuantum sonrası katmanın doğrulanıp doğrulanmadığını ve güvenlik katmanını (PQC, Enrollment, SHAKE veya Classical) görün. QoreSign işlevi `inspectTransaction` (0.1.1'den beri) kullanılır: bkz. [İşlem denetçisi](/qoresign/overview#inspector).
 - **PQ key status:** bir adresin zincirde kayıtlı ML-DSA-87 anahtarını ve EVM yetkilendirme penceresini testnet veya mainnet üzerinde okur.
 - **Simulator:** imzalı bir işlemi (base64 veya hex `TxRaw`) deneme olarak çalıştırır ve gaz kullanımını ile bakiye değişikliklerini gösterir. Hiçbir şey yayınlanmaz.
 - **Signing playground:** yalnızca testnet. Tarayıcıda, bellekte tutulan geçici bir hibrit anahtar üretir; mesajları ve Sign In With QoreChain isteklerini imzalamak ve doğrulamak için kullanılır.
 - **QoreX test wallet:** yalnızca testnet. dApp akışlarını deneyebilmeniz için sekmeye bir test cüzdanı (`window.qorex`, EIP-6963 üzerinden "QoreX (mock)" olarak duyurulur) ekler.
 - **AI agents (MCP):** QoreChain MCP sunucusunun durumu (yayımlandı) ve bir MCP istemcisi için kurulum: önce yerel `npx`, ayrıca bir API anahtarı gerektiren barındırılan bir testnet uç noktası. Bkz. [QoreChain MCP sunucusu](/developer-tools/mcp).
 
-Aynı denetçi kontrolü kodda, QoreSign 0.1.1'de (TypeScript) `inspectTransaction` kütüphane işlevi olarak da mevcuttur. Aşağıdaki tablolar ve SDK merkezi aynı paket verisini gösterir; tablolar 4 Kasım 2026'da kayıt defterlerine karşı kontrol edilmiştir.
+Aynı denetçi kontrolü kodda, QoreSign 0.1.1'den beri (TypeScript) `inspectTransaction` kütüphane işlevi olarak da mevcuttur. Aşağıdaki tablolar ve SDK merkezi aynı paket verisini gösterir; tablolar 4 Kasım 2026'da kayıt defterlerine karşı kontrol edilmiştir.
 
 ## Nerede yayınlanıyor {#where-published}
 
@@ -98,17 +98,17 @@ SDK 0.13.0, 11 Kasım 2026'dan beri güncel sürümdür (seed yolu hesap yardım
 
 ### QoreSign {#group-qoresign}
 
-Kılavuzlar: [QoreSign genel bakış](/qoresign/overview), [Hızlı başlangıç](/qoresign/quickstart), [Test vektörleri](/qoresign/vectors). Kaynak: [qorechain/qoresign](https://github.com/qorechain/qoresign). 0.1.1 sürümü 27 Ekim 2026'da yayınlandı. QoreSign yerel olarak imzalar; sizin için anahtar tutmaz ve eşik (threshold), MPC veya donanım cüzdanı imzalaması yapmaz.
+Kılavuzlar: [QoreSign genel bakış](/qoresign/overview), [Hızlı başlangıç](/qoresign/quickstart), [Test vektörleri](/qoresign/vectors). Kaynak: [qorechain/qoresign](https://github.com/qorechain/qoresign). 0.2.0 sürümü 10 ve 11 Kasım 2026'da yayınlandı (0.1.1 27 Ekim 2026'da). Swift, Kotlin ve Python kullanıcıları paketi ve yerel kütüphanesini birlikte yükseltir; bkz. [0.2.0'daki yenilikler](/qoresign/overview#new-in-0-2-0). QoreSign yerel olarak imzalar; sizin için anahtar tutmaz ve eşik (threshold), MPC veya donanım cüzdanı imzalaması yapmaz.
 
 | Paket | Dil | Sürüm | Kurulum | Durum |
 |---|---|---|---|---|
-| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.1 | `npm install @qorechain/qoresign` | Yayınlandı. `inspectTransaction` ve `fetchEvmWindow` içerir (0.1.1'de yeni) |
-| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (`qoresign` olarak içe aktarılır) | 0.1.1 | `cargo add qorechain-qoresign` | Yayınlandı |
-| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.1 | `go get github.com/qorechain/qoresign/go@v0.1.1` | Yayınlandı |
-| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+ (`qoresign` olarak içe aktarılır) | 0.1.1 | `pip install qorechain-qoresign` | Yayınlandı, 0.1.1'de yeni. macOS (arm64, x86_64) ve Linux (x86_64, aarch64) için wheel'ler; henüz Windows wheel'i yok. Yalnızca çevrimdışı işlevler |
-| `QoreSign` (Swift paketi) | Swift (iOS 16+, macOS 13+) | 0.1.1 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, ürün `QoreSign` | Bir GitHub sürümü olarak yayınlandı; ikili framework buradan indirilir |
-| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign:0.1.1")` | Yayınlandı |
-| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | Yayınlandı. JVM yapıtıyla aynı API; örneği yalnızca JVM yapıtı üzerinde çalıştırıldı, bir Android cihazda çalıştırılmadı |
+| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.2.0 | `npm install @qorechain/qoresign` | Yayınlandı. `inspectTransaction` ve `fetchEvmWindow` (0.1.1'den beri) ile 0.2.0'da yeni olan `parseSiwqTimestamp` ve `fetchProtocolFeature` içerir |
+| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (`qoresign` olarak içe aktarılır) | 0.2.0 | `cargo add qorechain-qoresign` | Yayınlandı |
+| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.2.0 | `go get github.com/qorechain/qoresign/go@v0.2.0` | Yayınlandı |
+| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+ (`qoresign` olarak içe aktarılır) | 0.2.0 | `pip install qorechain-qoresign` | Yayınlandı (Python 0.1.1'den beri). macOS (arm64, x86_64) ve Linux (x86_64, aarch64) için wheel'ler; henüz Windows wheel'i yok. Yalnızca çevrimdışı işlevler |
+| `QoreSign` (Swift paketi) | Swift (iOS 16+, macOS 13+) | 0.2.0 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, ürün `QoreSign` | Bir GitHub sürümü olarak yayınlandı; ikili framework buradan indirilir |
+| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor; 0.2.0 eşitleniyor | 0.2.0 göründüğünde `implementation("io.github.qorechain:qoresign:0.2.0")` | Yayınlandı (Central'da şu an 0.1.1) |
+| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor; 0.2.0 eşitleniyor | 0.2.0 göründüğünde `implementation("io.github.qorechain:qoresign-android:0.2.0")` | Yayınlandı (Central'da şu an 0.1.1). JVM yapıtıyla aynı API; örneği yalnızca JVM yapıtı üzerinde çalıştırıldı, bir Android cihazda çalıştırılmadı |
 
 Kotlin ve Android yapıtları projenizde Kotlin 2.3 veya daha yeni derleyiciyi gerektirir; Kotlin 2.1 kullanan bir proje bunlara karşı derlenemez.
 

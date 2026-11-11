@@ -39,7 +39,9 @@ const finalDoc = { ...signDoc, bodyBytes }; // sign this with the secp256k1 key,
   이는 다른 `signDirect` 요청과 같습니다. ML-DSA-87 서명은 수수료를 포함해 서명합니다.
 - dApp이 이미 PQC 계층이 포함된 본문을 보낸 경우, 고전 서명을 추가하기 전에
   `assertPqLayerMatchesRegisteredKey`(`@qorechain/qoresign/network`에서 제공)로 확인하세요.
-  검증되지 않는 계층은 아무것도 보호하지 못합니다.
+  검증되지 않는 계층은 아무것도 보호하지 못합니다. QoreSign 0.2.0부터 이 확인은 네트워크가
+  사용하는 sign-bytes 버전을 따릅니다(`signBytesVersion`으로 재정의할 수 있으며,
+  `allowLegacyEither`는 진단 전용입니다).
 - 계정당 한 번, `classicalOnly` 모드로 서명한 `buildRegisterPqKeyMessage`로 키를 등록하세요
   ([`examples/register-and-send`](https://github.com/qorechain/qoresign/tree/main/examples/register-and-send)
   및 [등록](/qoresign/spec/hybrid-signing-v1#registration) 참고).

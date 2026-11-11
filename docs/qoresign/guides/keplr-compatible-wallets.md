@@ -44,7 +44,9 @@ Rules that keep the user safe:
 - When a dApp sends a body that already carries a PQC layer, check it with
   `assertPqLayerMatchesRegisteredKey` (from `@qorechain/qoresign/network`)
   before adding your classical signature; a layer that does not verify protects
-  nothing.
+  nothing. Since QoreSign 0.2.0 the check uses the sign-bytes version the
+  network uses (override it with `signBytesVersion`; `allowLegacyEither` is for
+  diagnostics only).
 - Register the key once per account with `buildRegisterPqKeyMessage`, signed in
   `classicalOnly` mode (see
   [`examples/register-and-send`](https://github.com/qorechain/qoresign/tree/main/examples/register-and-send)

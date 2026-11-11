@@ -49,7 +49,7 @@ Resources:
 - `Version` は `1` です。`Chain ID` は、`qorechain-vladi` のような QoreChain の
   チェーン ID です。
 - `Nonce` は、サーバーが選ぶ 8 文字以上の英数字で、使い捨てです。
-- タイムスタンプは RFC 3339 / ISO 8601 です。
+- タイムスタンプは、[タイムスタンプ](#timestamps)に記載された厳密な RFC 3339 文法に従います。
 - `Expiration Time`、`Not Before`、`Request ID`、`Resources` は省略可能で、この順序で
   現れます。
 
@@ -93,6 +93,32 @@ pq.signature = ML-DSA-87.Sign(sk, UTF-8("qorechain-siwq-v1|" + message))
 `pq` の部分がない場合、`signatureType` は `secp256k1` になります。検証者は、従来型
 のみのアカウントを明示的に受け入れる場合を除き、そのようなサインインを拒否すべきです。
 
+## タイムスタンプ {#timestamps}
+
+`Issued At`、`Expiration Time`、`Not Before` は、1 つの厳密な RFC 3339 文法を使います。メッセージの作成、パース、署名、検証のすべてで同じ規則が適用されます。
+
+- 時は 00 から 23、分と秒は 00 から 59 です。`24:00:00` とうるう秒（秒が 60）は拒否されます。
+- 実在する暦の日付であること。
+- 大文字の `Z`、または 00:00 から 23:59 の範囲内でコロンを付けたオフセット（コロンのないオフセットは拒否されます）。
+- 区切りは `T` です。空白や小文字の `t`、`z` は使えません。
+
+文法に合わないタイムスタンプは `SIWQ_MALFORMED` で失敗します。共有ベクターは `vectors/siwq-timestamps-v1.json` にあります。QoreSign 0.2.0 以降、`parseSiwqTimestamp`（TypeScript）と `ParseSiwqTimestamp`（Go）は、この文法に従うタイムスタンプの Unix ミリ秒を返します。
+
+## 最大経過時間 {#max-age}
+
+サーバーは `Expiration Time` を必須とし、発行するメッセージには必ず設定してください。`Expiration Time` のないメッセージは、`Issued At` から数えて 600 秒（10 分）を超えると `SIWQ_EXPIRED` で拒否されます。QoreSign 0.2.0 以降は、すべてのバインディングでこの経過時間を設定できます。
+
+| バインディング | オプション |
+|---|---|
+| TypeScript | `maxAgeSeconds` |
+| Python | `max_age_seconds` |
+| Rust | `VerifySiwqArgs::max_age_seconds` |
+| Go | `VerifySiwqOptions.MaxAge` |
+| Swift | `maxAgeSeconds` |
+| Kotlin | `maxAgeSeconds` |
+
+0 または負の値は `INVALID_ARGUMENT` で失敗します。
+
 ## 検証 {#verification}
 
 検証者は、次の順序で確認しなければなりません。
@@ -103,7 +129,7 @@ pq.signature = ML-DSA-87.Sign(sk, UTF-8("qorechain-siwq-v1|" + message))
    に使用されていないこと。
 4. `Chain ID` が期待されるネットワークであること。
 5. `Expiration Time` が未来であり、`Not Before` と `Issued At` が未来でないこと
-   （わずかな時計のずれは許容）。
+   （わずかな時計のずれは許容）。`Expiration Time` のないメッセージは、`Issued At` から数えて 600 秒（10 分）を超えると拒否されます。検証者はこの最大経過時間を設定できます（[最大経過時間](#max-age)を参照）。
 6. 従来型の公開鍵が `address` に導出され、ADR-36 署名が検証されること。
 7. ML-DSA-87 署名が、クライアントから提供された鍵ではなく、`address` に対して
    **チェーン上に登録されている**公開鍵（`/qorechain/pqc/v1/account/{address}`）

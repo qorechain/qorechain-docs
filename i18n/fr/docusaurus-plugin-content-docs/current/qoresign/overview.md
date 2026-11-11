@@ -11,7 +11,7 @@ QoreSign est une bibliothèque open source de signature hybride secp256k1 + ML-D
 
 QoreSign permet à un portefeuille autre que celui de QoreChain de dériver la clé ML-DSA-87 d'un compte, de signer des transactions de la voie native avec les deux clés, de vérifier localement des signatures hybrides, de signer des messages arbitraires, de simuler une transaction avant de la signer, de relire comment une transaction validée a été protégée et d'implémenter Sign In With QoreChain. C'est une couche mince au-dessus des bindings [`qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) et elle n'ajoute aucune primitive cryptographique qui lui soit propre. Elle est maintenue par la QoreChain Association sous licence Apache-2.0.
 
-La version actuelle est la **0.1.1** (27 octobre 2026). Elle est publiée en TypeScript, Rust, Go, Kotlin (JVM et Android), Swift et, nouveauté de la 0.1.1, Python. Le code source, les exemples et les vecteurs de test se trouvent dans le dépôt [qorechain/qoresign](https://github.com/qorechain/qoresign). Elle fonctionne sur le mainnet (`qorechain-vladi`) et sur le testnet (`qorechain-diana`).
+La version actuelle est la **0.2.0** (publiée les 10 et 11 novembre 2026). Elle est publiée en TypeScript, Rust, Go, Kotlin (JVM et Android), Swift et, depuis la 0.1.1, Python. Sur Maven Central, la 0.2.0 est encore en cours de synchronisation : Central affiche toujours la 0.1.1 le 11 novembre 2026 (voir [Où elle est publiée](#where-published)). Le code source, les exemples et les vecteurs de test se trouvent dans le dépôt [qorechain/qoresign](https://github.com/qorechain/qoresign). Elle fonctionne sur le mainnet (`qorechain-vladi`) et sur le testnet (`qorechain-diana`).
 
 ## Ce que QoreSign fait sur chaque voie {#lanes}
 
@@ -38,12 +38,23 @@ Un cœur hors ligne, identique dans tous les langages :
 Utilitaires réseau (TypeScript `@qorechain/qoresign/network` ; Go `github.com/qorechain/qoresign/go/network` les propose tous sauf les deux nouveaux) :
 
 - `fetchPqKeyStatus` : une clé ML-DSA-87 est-elle enregistrée pour une adresse, et laquelle.
-- `resolveSignBytesVersion` : quelle forme de sign-bytes le réseau vérifie.
+- `resolveSignBytesVersion` : quelle forme de sign-bytes le réseau vérifie. Depuis la 0.2.0, elle lit d'abord l'entrée `pqc-sign-bytes-v2` de la liste des fonctionnalités de protocole du réseau, et n'utilise le contrôle de mise à niveau appliquée que si la liste est illisible.
 - `simulateTx` (gas utilisé, limite de gas suggérée, variations de solde par adresse), `suggestGasLimit`, `broadcastTx` et `submitWithSignBytesFallback` (une nouvelle tentative avec l'autre forme de sign-bytes lorsque le réseau refuse la première).
-- `assertPqLayerMatchesRegisteredKey` : vérifie une couche fournie par une dApp par rapport à la clé enregistrée sur la chaîne avant que le portefeuille n'ajoute sa signature classique.
+- `assertPqLayerMatchesRegisteredKey` : vérifie une couche fournie par une dApp par rapport à la clé enregistrée sur la chaîne avant que le portefeuille n'ajoute sa signature classique. Depuis la 0.2.0, elle vérifie par rapport à la version des sign-bytes du réseau.
 - `verifySiwqWithChain` et `verifyMessageWithChain` : vérification par rapport à la clé enregistrée sur la chaîne.
 - `fetchCommittedExtensionTypeUrls` : relit les extensions qu'une transaction validée portait.
-- Nouveauté de la 0.1.1, TypeScript uniquement : `inspectTransaction` et `fetchEvmWindow`, décrites ci-dessous.
+- Depuis la 0.1.1, TypeScript uniquement : `inspectTransaction` et `fetchEvmWindow`, décrites ci-dessous.
+- Nouveauté de la 0.2.0, TypeScript et Go : `fetchProtocolFeature` ; TypeScript exporte aussi `PROTOCOL_FEATURES_PATH` et `SIGN_BYTES_V2_FEATURE`.
+
+## Nouveautés de la 0.2.0 {#new-in-0-2-0}
+
+Publiée les 10 et 11 novembre 2026 (release v0.2.0 sur GitHub le 11 novembre). Changements de comportement, et ce qu'il faut faire en mettant à jour depuis la 0.1.x :
+
+- **Sign In With QoreChain : âge maximal.** Un message sans `Expiration Time` est refusé avec `SIWQ_EXPIRED` dès qu'il a plus de 600 secondes (10 minutes), à compter de `Issued At`. L'âge est configurable dans chaque binding : `maxAgeSeconds` (TypeScript, Swift, Kotlin), `max_age_seconds` (Python et le `VerifySiwqArgs` de Rust) et `MaxAge` (le `VerifySiwqOptions` de Go). Une valeur nulle ou négative échoue avec `INVALID_ARGUMENT`. Renseignez `expirationTime` sur chaque message que votre serveur émet, ou passez un âge maximal plus grand. Voir [Sign In With QoreChain : vérification côté serveur](/qoresign/guides/sign-in).
+- **Horodatages stricts.** `Issued At`, `Expiration Time` et `Not Before` suivent une seule grammaire RFC 3339, appliquée de la même façon lorsqu'un message est créé, analysé, signé et vérifié. Un horodatage hors de cette grammaire échoue avec `SIWQ_MALFORMED`. Voir [Sign In With QoreChain v1](/qoresign/spec/siwq-v1#timestamps). `parseSiwqTimestamp` (TypeScript) et `ParseSiwqTimestamp` (Go) renvoient les millisecondes Unix d'un horodatage de cette grammaire. Les vecteurs partagés se trouvent dans `vectors/siwq-timestamps-v1.json`.
+- **Résolution de la version des sign-bytes.** `resolveSignBytesVersion` lit d'abord la fonctionnalité de protocole `pqc-sign-bytes-v2` dans la liste des fonctionnalités du réseau. Lorsque la liste est lisible, elle décide de la version (une fonctionnalité absente de la liste signifie v1). Le contrôle de mise à niveau appliquée n'est utilisé que si la liste est illisible. `fetchProtocolFeature` (TypeScript et Go), `PROTOCOL_FEATURES_PATH` et `SIGN_BYTES_V2_FEATURE` (TypeScript) sont exportées.
+- **Contrôle de la couche.** `assertPqLayerMatchesRegisteredKey` et `inspectTransaction` vérifient la couche ML-DSA-87 par rapport à la version des sign-bytes que le réseau utilise, ou à celle passée dans la nouvelle option `signBytesVersion` (`SignBytesVersion` en Go). Passez `signBytesVersion: "v1"` pour une transaction validée avant que le réseau ne passe à v2. Accepter une couche sur l'une ou l'autre version exige désormais l'option de diagnostic explicite `allowLegacyEither` (`AllowLegacyEither` en Go), réservée au diagnostic.
+- **Swift, Kotlin et Python : mettez à jour ensemble le package et sa bibliothèque native.** La fonction native de vérification prend l'âge maximal comme nouveau paramètre ; une bibliothèque native 0.1.x ne correspond donc pas aux bindings 0.2.0. Le xcframework, les bibliothèques JVM et Android et les wheels Python sont reconstruits pour cette version.
 
 ## Nouveautés de la 0.1.1 {#new-in-0-1-1}
 
@@ -115,11 +126,11 @@ Tailles (FIPS 204 et le [guide des tailles](/qoresign/guides/sizes-and-transport
 |---|---|---|---|
 | TypeScript | [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | `npm install @qorechain/qoresign` | Node.js 20 ou ultérieur ; navigateurs |
 | Rust | [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) (nom de bibliothèque `qoresign`) | `cargo add qorechain-qoresign` | Rust stable |
-| Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.1.1` | Go 1.25 |
+| Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.2.0` | Go 1.25 |
 | Python | [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) (import `qoresign`) | `pip install qorechain-qoresign` | Python 3.9+ ; wheels pour macOS 11+ (arm64, x86_64) et Linux (x86_64, aarch64) ; pas encore de wheel Windows, les autres plateformes compilent à partir de la distribution source (nécessite Rust 1.95) |
-| Swift | `QoreSign` depuis [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign) (framework binaire sur la release GitHub) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, produit `QoreSign` | iOS 16, macOS 13 |
-| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.1.1")` | Java 17, Kotlin 2.3 ou ultérieur ; bibliothèques natives pour macOS (arm64, x86-64), Linux (x86-64, arm64) et Windows (x86-64) |
-| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | API 24, Kotlin 2.3 ou ultérieur ; `arm64-v8a`, `armeabi-v7a`, `x86_64` ; règles de conservation R8 incluses |
+| Swift | `QoreSign` depuis [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign) (framework binaire sur la release GitHub) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, produit `QoreSign` | iOS 16, macOS 13 |
+| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` dès que la 0.2.0 apparaît sur Central (Central affiche la 0.1.1 le 11 novembre 2026) | Java 17, Kotlin 2.3 ou ultérieur ; bibliothèques natives pour macOS (arm64, x86-64), Linux (x86-64, arm64) et Windows (x86-64) |
+| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` dès que la 0.2.0 apparaît sur Central (Central affiche la 0.1.1 le 11 novembre 2026) | API 24, Kotlin 2.3 ou ultérieur ; `arm64-v8a`, `armeabi-v7a`, `x86_64` ; règles de conservation R8 incluses |
 
 :::note Version du compilateur Kotlin
 Les artefacts Kotlin et Android nécessitent le compilateur **Kotlin 2.3 ou ultérieur** dans votre projet. Un projet sous Kotlin 2.1 échoue à la compilation avec eux. Montez la version de Kotlin du build avant d'ajouter la dépendance.
@@ -169,10 +180,12 @@ Les noms sont donnés sous leur forme TypeScript. Go utilise les mêmes noms ave
 | `verifyHybridTx`, `verifyPqLayer` | vérification locale | tous |
 | `buildRegisterPqKeyMessage`, `signProofOfPossession`, `verifyProofOfPossession` | enregistrement de clé avec preuve de possession | tous |
 | `signMessage`, `verifyMessage` | signature de message arbitraire (ADR-36 plus ML-DSA-87) | tous |
-| `createSiwqMessage`, `parseSiwqMessage`, `signSiwq`, `verifySiwq` | Sign In With QoreChain v1 | tous |
+| `createSiwqMessage`, `parseSiwqMessage`, `signSiwq`, `verifySiwq` | Sign In With QoreChain v1 (âge maximal et horodatages stricts depuis la 0.2.0) | tous |
+| `parseSiwqTimestamp` | millisecondes Unix d'un horodatage de la grammaire stricte (0.2.0) | TypeScript, Go (`ParseSiwqTimestamp`) |
 | `decideLane`, `assertHybridLane`, `evaluateLayerState` | règles des voies ; détection d'une couche supprimée | tous |
 | `fetchPqKeyStatus`, `resolveSignBytesVersion`, `simulateTx`, `suggestGasLimit`, `broadcastTx`, `submitWithSignBytesFallback`, `assertPqLayerMatchesRegisteredKey`, `verifySiwqWithChain`, `verifyMessageWithChain`, `fetchCommittedExtensionTypeUrls` | utilitaires réseau | TypeScript, Go |
-| `inspectTransaction`, `fetchEvmWindow` | lire une transaction validée ; lire une fenêtre EVM (0.1.1) | TypeScript |
+| `fetchProtocolFeature`, `PROTOCOL_FEATURES_PATH`, `SIGN_BYTES_V2_FEATURE` | lire une entrée de la liste des fonctionnalités de protocole du réseau ; son chemin et le nom de la fonctionnalité sign-bytes v2 (0.2.0) | TypeScript (`fetchProtocolFeature` aussi en Go) |
+| `inspectTransaction`, `fetchEvmWindow` | lire une transaction validée ; lire une fenêtre EVM (depuis la 0.1.1) | TypeScript |
 
 En Go, les utilitaires réseau sont des méthodes d'un client : `client := network.NewClient("https://api-testnet.qore.host")`, puis `client.VerifySiwqWithChain(ctx, address, qoresign.VerifySiwqOptions{...})` ou `client.SimulateTx(...)`. En Python, les erreurs sont des `QoreSignError` avec `code` et `detail` ; les champs d'octets sont des `bytes`.
 
@@ -235,19 +248,19 @@ Référence de l'API : dans un clone du dépôt, exécutez `pnpm -C packages/ts 
 
 ## Où elle est publiée {#where-published}
 
-Versions vérifiées sur les registres le 27 octobre 2026.
+Versions vérifiées sur les registres le 11 novembre 2026.
 
 | Registre | Paquet | Version | Lien |
 |---|---|---|---|
-| npm | `@qorechain/qoresign` | 0.1.1 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
-| crates.io | `qorechain-qoresign` | 0.1.1 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
-| Proxy de modules Go | `github.com/qorechain/qoresign/go` | v0.1.1 (tag `go/v0.1.1`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
-| Maven Central | `io.github.qorechain:qoresign` | 0.1.1 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
-| Maven Central | `io.github.qorechain:qoresign-android` | 0.1.1 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
-| PyPI | `qorechain-qoresign` | 0.1.1 (wheels macOS arm64 et x86_64, Linux x86_64 et aarch64, distribution source) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
-| Swift Package Manager | `QoreSign` depuis `github.com/qorechain/qoresign` | 0.1.1 (binaire `QoreSignFFI.xcframework.zip` sur la release) | [Release GitHub](https://github.com/qorechain/qoresign/releases/tag/v0.1.1) |
+| npm | `@qorechain/qoresign` | 0.2.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
+| crates.io | `qorechain-qoresign` | 0.2.0 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
+| Proxy de modules Go | `github.com/qorechain/qoresign/go` | v0.2.0 (tag `go/v0.2.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
+| Maven Central | `io.github.qorechain:qoresign` | Central affiche encore la 0.1.1 le 11 novembre 2026 ; la 0.2.0 est en cours de synchronisation. Utilisez la 0.2.0 dès qu'elle apparaît | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
+| Maven Central | `io.github.qorechain:qoresign-android` | Central affiche encore la 0.1.1 le 11 novembre 2026 ; la 0.2.0 est en cours de synchronisation. Utilisez la 0.2.0 dès qu'elle apparaît | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
+| PyPI | `qorechain-qoresign` | 0.2.0 (wheels macOS arm64 et x86_64, Linux x86_64 et aarch64, distribution source) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
+| Swift Package Manager | `QoreSign` depuis `github.com/qorechain/qoresign` | 0.2.0 (binaire `QoreSignFFI.xcframework.zip` sur la release) | [Release GitHub](https://github.com/qorechain/qoresign/releases/tag/v0.2.0) |
 
-Dépôt : [github.com/qorechain/qoresign](https://github.com/qorechain/qoresign) (releases v0.1.0 et v0.1.1).
+Dépôt : [github.com/qorechain/qoresign](https://github.com/qorechain/qoresign) (releases v0.1.0, v0.1.1, v0.2.0).
 
 ## Pages associées {#related}
 

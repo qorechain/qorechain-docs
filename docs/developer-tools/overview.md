@@ -65,14 +65,14 @@ Install one package and run its quickstart against the public testnet first. Rea
 The dashboard has a public page at [dashboard.qorechain.io/developers](https://dashboard.qorechain.io/developers). Checked on 27 October 2026 it has seven tabs (full walkthrough: [Developers](/dashboard/developers)):
 
 - **SDKs:** the SDK hub. Every package in the manifest, grouped by product, with a language selector, the latest version read live from each registry, install and import lines with copy buttons, the quickstart with the output the SDK team observed, known issues, and the chain ids and public endpoints. Packages that are not published show no install command.
-- **Transaction inspector:** paste a 64-hex transaction hash on testnet or mainnet and see the status, signer, fee, whether the post-quantum layer verifies, and the security tier (PQC, Enrollment, SHAKE or Classical). It uses the QoreSign 0.1.1 function `inspectTransaction`: see [Transaction inspector](/qoresign/overview#inspector).
+- **Transaction inspector:** paste a 64-hex transaction hash on testnet or mainnet and see the status, signer, fee, whether the post-quantum layer verifies, and the security tier (PQC, Enrollment, SHAKE or Classical). It uses the QoreSign function `inspectTransaction` (since 0.1.1): see [Transaction inspector](/qoresign/overview#inspector).
 - **PQ key status:** reads the ML-DSA-87 key an address has registered on chain and its EVM authorization window, on testnet or mainnet.
 - **Simulator:** dry-runs a signed transaction (base64 or hex `TxRaw`) and shows gas use and balance changes. Nothing is broadcast.
 - **Signing playground:** testnet only. Generates a throwaway hybrid key in the browser, kept in memory, to sign and verify messages and Sign In With QoreChain requests.
 - **QoreX test wallet:** testnet only. Injects a test wallet (`window.qorex`, announced over EIP-6963 as "QoreX (mock)") into the tab so you can try dApp flows.
 - **AI agents (MCP):** the status of the QoreChain MCP server (published) and the setup for an MCP client: local `npx` first, plus a hosted testnet endpoint that needs an API key. See [QoreChain MCP server](/developer-tools/mcp).
 
-The same inspector check is available in code as the library function `inspectTransaction` in QoreSign 0.1.1 (TypeScript). The tables below and the SDK hub show the same package data; the tables were checked against the registries on 4 November 2026.
+The same inspector check is available in code as the library function `inspectTransaction` since QoreSign 0.1.1 (TypeScript). The tables below and the SDK hub show the same package data; the tables were checked against the registries on 4 November 2026.
 
 ## Where it is published {#where-published}
 
@@ -98,17 +98,17 @@ SDK 0.13.0 has been current since 11 November 2026 (it changes the seed-path acc
 
 ### QoreSign {#group-qoresign}
 
-Guides: [QoreSign overview](/qoresign/overview), [Quickstart](/qoresign/quickstart), [Test vectors](/qoresign/vectors). Source: [qorechain/qoresign](https://github.com/qorechain/qoresign). Version 0.1.1 was published on 27 October 2026. QoreSign signs locally; it holds no keys for you and does no threshold, MPC or hardware-wallet signing.
+Guides: [QoreSign overview](/qoresign/overview), [Quickstart](/qoresign/quickstart), [Test vectors](/qoresign/vectors). Source: [qorechain/qoresign](https://github.com/qorechain/qoresign). Version 0.2.0 was published on 10 and 11 November 2026 (0.1.1 on 27 October 2026). Swift, Kotlin and Python users upgrade the package and its native library together; see [what is new in 0.2.0](/qoresign/overview#new-in-0-2-0). QoreSign signs locally; it holds no keys for you and does no threshold, MPC or hardware-wallet signing.
 
 | Package | Language | Version | Install | Status |
 |---|---|---|---|---|
-| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.1.1 | `npm install @qorechain/qoresign` | Published. Includes `inspectTransaction` and `fetchEvmWindow` (new in 0.1.1) |
-| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (imports as `qoresign`) | 0.1.1 | `cargo add qorechain-qoresign` | Published |
-| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.1.1 | `go get github.com/qorechain/qoresign/go@v0.1.1` | Published |
-| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+ (imports as `qoresign`) | 0.1.1 | `pip install qorechain-qoresign` | Published, new in 0.1.1. Wheels for macOS (arm64, x86_64) and Linux (x86_64, aarch64); no Windows wheel yet. Offline functions only |
-| `QoreSign` (Swift package) | Swift (iOS 16+, macOS 13+) | 0.1.1 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, product `QoreSign` | Published as a GitHub release; the binary framework downloads from it |
-| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign:0.1.1")` | Published |
-| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | 0.1.1 | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | Published. Same API as the JVM artifact; its example was run on the JVM artifact only, not on an Android device |
+| [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | TypeScript | 0.2.0 | `npm install @qorechain/qoresign` | Published. Includes `inspectTransaction` and `fetchEvmWindow` (since 0.1.1) and, new in 0.2.0, `parseSiwqTimestamp` and `fetchProtocolFeature` |
+| [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) | Rust (imports as `qoresign`) | 0.2.0 | `cargo add qorechain-qoresign` | Published |
+| [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | Go | v0.2.0 | `go get github.com/qorechain/qoresign/go@v0.2.0` | Published |
+| [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) | Python 3.9+ (imports as `qoresign`) | 0.2.0 | `pip install qorechain-qoresign` | Published (Python since 0.1.1). Wheels for macOS (arm64, x86_64) and Linux (x86_64, aarch64); no Windows wheel yet. Offline functions only |
+| `QoreSign` (Swift package) | Swift (iOS 16+, macOS 13+) | 0.2.0 | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, product `QoreSign` | Published as a GitHub release; the binary framework downloads from it |
+| [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | Kotlin / JVM (JVM 17+, Kotlin 2.3+) | Central still shows 0.1.1 on 11 November 2026; 0.2.0 is syncing | `implementation("io.github.qorechain:qoresign:0.2.0")` once 0.2.0 appears | Published (0.1.1 on Central today) |
+| [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | Kotlin (Android API 24+, Kotlin 2.3+) | Central still shows 0.1.1 on 11 November 2026; 0.2.0 is syncing | `implementation("io.github.qorechain:qoresign-android:0.2.0")` once 0.2.0 appears | Published (0.1.1 on Central today). Same API as the JVM artifact; its example was run on the JVM artifact only, not on an Android device |
 
 The Kotlin and Android artifacts need the Kotlin 2.3 or later compiler in your project; a project on Kotlin 2.1 fails to compile against them.
 

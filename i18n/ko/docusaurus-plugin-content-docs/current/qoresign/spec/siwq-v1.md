@@ -44,7 +44,7 @@ Resources:
 - statement 줄은 선택 사항입니다. 없으면 주소 뒤에 EIP-4361과 같이 빈 줄이 두 개 옵니다.
 - `Version`은 `1`입니다. `Chain ID`는 `qorechain-vladi`와 같은 QoreChain 체인 ID입니다.
 - `Nonce`는 서버가 선택한 8자 이상의 영숫자이며 일회용입니다.
-- 타임스탬프는 RFC 3339 / ISO 8601입니다.
+- 타임스탬프는 [타임스탬프](#timestamps)에 설명된 엄격한 RFC 3339 문법을 따릅니다.
 - `Expiration Time`, `Not Before`, `Request ID`, `Resources`는 선택 사항이며 이 순서로 나타납니다.
 
 검증자는 파싱한 필드를 다시 렌더링하여 바이트 단위로 일치하지 않는 메시지를 거부해야 합니다.
@@ -83,6 +83,37 @@ pq.signature = ML-DSA-87.Sign(sk, UTF-8("qorechain-siwq-v1|" + message))
 `pq` 부분이 없으면 `signatureType`은 `secp256k1`입니다. 검증자는 고전 전용 계정을 명시적으로 허용하지
 않는 한 이러한 로그인을 거부해야 합니다.
 
+## 타임스탬프 {#timestamps}
+
+`Issued At`, `Expiration Time`, `Not Before`는 하나의 엄격한 RFC 3339 문법을 사용합니다.
+메시지를 만들 때, 파싱할 때, 서명할 때, 검증할 때 같은 규칙이 적용됩니다.
+
+- 시는 00~23, 분과 초는 00~59이므로 `24:00:00`과 윤초(초 60)는 거부됩니다.
+- 실제로 존재하는 달력 날짜여야 합니다.
+- 대문자 `Z`, 또는 00:00~23:59 범위의 오프셋을 콜론과 함께 씁니다(콜론이 없는 오프셋은 거부됩니다).
+- 구분자는 `T`입니다. 공백, 소문자 `t`, `z`는 허용되지 않습니다.
+
+문법을 벗어난 타임스탬프는 `SIWQ_MALFORMED`로 실패합니다. 공유 벡터는
+`vectors/siwq-timestamps-v1.json`에 있습니다. QoreSign 0.2.0부터 `parseSiwqTimestamp`(TypeScript)와
+`ParseSiwqTimestamp`(Go)가 이 문법의 타임스탬프를 Unix 밀리초로 반환합니다.
+
+## 최대 유효 기간 {#max-age}
+
+서버는 `Expiration Time`을 요구하고 발급하는 메시지에 항상 설정해야 합니다.
+`Expiration Time`이 없는 메시지는 `Issued At`부터 600초(10분)가 지나면 `SIWQ_EXPIRED`로
+거부됩니다. QoreSign 0.2.0 이후는 모든 바인딩에서 이 기간을 설정할 수 있습니다.
+
+| 바인딩 | 옵션 |
+|---|---|
+| TypeScript | `maxAgeSeconds` |
+| Python | `max_age_seconds` |
+| Rust | `VerifySiwqArgs::max_age_seconds` |
+| Go | `VerifySiwqOptions.MaxAge` |
+| Swift | `maxAgeSeconds` |
+| Kotlin | `maxAgeSeconds` |
+
+0 또는 음수 값은 `INVALID_ARGUMENT`로 실패합니다.
+
 ## 검증 {#verification}
 
 검증자는 다음을 이 순서대로 확인해야 합니다.
@@ -91,7 +122,7 @@ pq.signature = ML-DSA-87.Sign(sk, UTF-8("qorechain-siwq-v1|" + message))
 2. `domain`이 요청이 온 도메인과 같은지;
 3. `nonce`가 서버가 이 세션에 발급한 nonce와 같고, 이전에 사용된 적이 없는지;
 4. `Chain ID`가 기대하는 네트워크인지;
-5. `Expiration Time`이 미래이고, `Not Before`와 `Issued At`이 미래가 아닌지(약간의 시계 오차 허용);
+5. `Expiration Time`이 미래이고, `Not Before`와 `Issued At`이 미래가 아닌지(약간의 시계 오차 허용). `Expiration Time`이 없는 메시지는 `Issued At`부터 600초(10분)가 지나면 거부되며, 검증기는 이 최대 유효 기간을 설정할 수 있게 합니다([최대 유효 기간](#max-age) 참고);
 6. 고전 공개 키가 `address`로 파생되고 ADR-36 서명이 검증되는지;
 7. ML-DSA-87 서명이 클라이언트가 제공한 키가 아니라 `address`에 대해 **체인에 등록된** 공개 키
    (`/qorechain/pqc/v1/account/{address}`)로 검증되는지.

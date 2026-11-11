@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Hızlı Başlangıç
 
-Bu bölüm, bir hesabın anahtarlarını türetmeyi, yerel hattaki bir işlemi iki anahtarla imzalayıp çevrimdışı doğrulamayı ve isteğe bağlı olarak `qorechain-diana` testnet'ine göndermeyi adım adım anlatır. Node.js 20 veya üzeri. QoreSign 0.1.1'i kapsar. 4. adımdan sonraki bölümler aynı kütüphaneyi Python ve Go'da gösterir ve işlenmiş bir işlemin nasıl geri okunacağını anlatır.
+Bu bölüm, bir hesabın anahtarlarını türetmeyi, yerel hattaki bir işlemi iki anahtarla imzalayıp çevrimdışı doğrulamayı ve isteğe bağlı olarak `qorechain-diana` testnet'ine göndermeyi adım adım anlatır. Node.js 20 veya üzeri. QoreSign 0.2.0'ı kapsar. 4. adımdan sonraki bölümler aynı kütüphaneyi Python ve Go'da gösterir ve işlenmiş bir işlemin nasıl geri okunacağını anlatır.
 
 ## 1. Kurulum {#install}
 
@@ -123,7 +123,7 @@ Bu örnekler çevrimdışıdır. Her biri anahtarları herkese açık BIP-39 tes
 
 ### Python {#python}
 
-0.1.1 ile yeni. Python 3.9 veya üzeri; macOS ve Linux için wheel dosyaları (henüz Windows wheel'i yok).
+Python 3.9 veya üzeri; macOS ve Linux için wheel dosyaları (henüz Windows wheel'i yok). Python paketini 0.1.x sürümünden bütün olarak yükseltin: 0.2.0 wheel dosyaları kendi yerel kütüphanelerini taşır.
 
 ```bash
 pip install qorechain-qoresign
@@ -145,12 +145,12 @@ qs.verify_message("qorechain-diana", account.bech32, data, sig, pq_public_key=pq
 print(account.bech32, "verified")
 ```
 
-Bu, macOS arm64 ve Linux aarch64 üzerinde yayımlanmış 0.1.1 wheel dosyalarıyla çalıştırıldı.
+Bu en son macOS arm64 ve Linux aarch64 üzerinde yayımlanmış 0.1.1 wheel dosyalarıyla çalıştırıldı; komutlar 0.2.0'da değişmedi.
 
 ### Go {#go}
 
 ```bash
-go get github.com/qorechain/qoresign/go@v0.1.1
+go get github.com/qorechain/qoresign/go@v0.2.0
 ```
 
 ```go
@@ -183,7 +183,7 @@ Go örneği kısa kalması için hataları yok sayar; gerçek kodda bunları den
 
 ## 6. İşlenmiş bir işlemi okuyun (işlem denetleyicisi) {#inspect}
 
-0.1.1 ile yeni, TypeScript. Bu okur ve hiçbir şey göndermez. İşlenmiş bir işlemin nasıl korunduğunu bildirir: mesajları, imzalayanı, ücreti, klasik imzanın doğrulanıp doğrulanmadığı, ML-DSA-87 katmanının durumu ve güvenlik katmanı (`pqc`, `enrollment`, `shake` veya `classical`). Alanlar için bkz. [İşlem denetleyicisi](/qoresign/overview#inspector).
+0.1.1'den beri mevcut, TypeScript. Bu okur ve hiçbir şey göndermez. İşlenmiş bir işlemin nasıl korunduğunu bildirir: mesajları, imzalayanı, ücreti, klasik imzanın doğrulanıp doğrulanmadığı, ML-DSA-87 katmanının durumu ve güvenlik katmanı (`pqc`, `enrollment`, `shake` veya `classical`). Alanlar için bkz. [İşlem denetleyicisi](/qoresign/overview#inspector).
 
 ```js
 // inspect.mjs

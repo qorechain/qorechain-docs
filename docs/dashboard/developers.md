@@ -184,7 +184,7 @@ Limits: one active key per account, 10 requests per second (burst 20) and 100,00
 | Surface | Address | Networks |
 | --- | --- | --- |
 | Developers page | `dashboard.qorechain.io/developers` | Read tools on mainnet and testnet; signing tools testnet only |
-| Signing library | npm `@qorechain/qoresign` (0.1.1 adds `inspectTransaction`), PyPI QoreSign for Python, source `github.com/qorechain/qoresign`, see [QoreSign](/qoresign/overview) | n/a |
+| Signing library | npm `@qorechain/qoresign` (`inspectTransaction` since 0.1.1), PyPI QoreSign for Python, source `github.com/qorechain/qoresign`, see [QoreSign](/qoresign/overview) | n/a |
 | Test wallet package | npm `@qorechain/qorex-wallet-mock`, source `github.com/qorechain/qorex-integrations` | Testnet |
 | Package index | [Developer Packages](/developer-tools/overview) | n/a |
 | MCP server | npm `@qorechain/mcp` 0.1.0 and `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0; guide: [QoreChain MCP server](/developer-tools/mcp) | Testnet by default |

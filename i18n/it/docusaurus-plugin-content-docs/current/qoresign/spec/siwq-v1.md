@@ -50,7 +50,7 @@ Resources:
   `qorechain-vladi`.
 - `Nonce` è composto da almeno 8 caratteri alfanumerici scelti dal server, a uso
   singolo.
-- I timestamp sono in formato RFC 3339 / ISO 8601.
+- I timestamp seguono la grammatica RFC 3339 rigorosa descritta in [Timestamp](#timestamps).
 - `Expiration Time`, `Not Before`, `Request ID` e `Resources` sono facoltativi e
   compaiono in questo ordine.
 
@@ -95,6 +95,42 @@ firma di transazione e viceversa (vedi
 dovrebbero rifiutare tali sign-in a meno che accettino esplicitamente account
 solo classici.
 
+## Timestamp {#timestamps}
+
+`Issued At`, `Expiration Time` e `Not Before` usano un'unica grammatica RFC 3339
+rigorosa. Le stesse regole valgono quando un messaggio viene creato, analizzato,
+firmato e verificato:
+
+- ora da 00 a 23, minuti e secondi da 00 a 59, quindi `24:00:00` e i secondi
+  intercalari (secondo 60) sono rifiutati;
+- una data reale del calendario;
+- una `Z` maiuscola, oppure uno scarto da 00:00 a 23:59 scritto con i due punti
+  (uno scarto senza i due punti è rifiutato);
+- `T` come separatore: né spazio, né `t` o `z` minuscole.
+
+Un timestamp fuori dalla grammatica fallisce con `SIWQ_MALFORMED`. I vettori
+condivisi sono in `vectors/siwq-timestamps-v1.json`. Dalla QoreSign 0.2.0,
+`parseSiwqTimestamp` (TypeScript) e `ParseSiwqTimestamp` (Go) restituiscono i
+millisecondi Unix di un timestamp in questa grammatica.
+
+## Età massima {#max-age}
+
+I server dovrebbero richiedere `Expiration Time` e impostarlo sempre sui messaggi
+che emettono. Un messaggio senza `Expiration Time` viene rifiutato con
+`SIWQ_EXPIRED` quando ha più di 600 secondi (10 minuti), contati da `Issued At`.
+QoreSign 0.2.0 e successive rendono l'età configurabile in ogni binding:
+
+| Binding | Opzione |
+|---|---|
+| TypeScript | `maxAgeSeconds` |
+| Python | `max_age_seconds` |
+| Rust | `VerifySiwqArgs::max_age_seconds` |
+| Go | `VerifySiwqOptions.MaxAge` |
+| Swift | `maxAgeSeconds` |
+| Kotlin | `maxAgeSeconds` |
+
+Un valore zero o negativo fallisce con `INVALID_ARGUMENT`.
+
 ## Verifica {#verification}
 
 Un verificatore deve controllare, in quest'ordine:
@@ -105,7 +141,10 @@ Un verificatore deve controllare, in quest'ordine:
    non è stato usato prima;
 4. `Chain ID` è la rete attesa;
 5. `Expiration Time` è nel futuro, mentre `Not Before` e `Issued At` non sono nel
-   futuro (ammettendo un piccolo scarto di orologio);
+   futuro (ammettendo un piccolo scarto di orologio). Un messaggio senza
+   `Expiration Time` viene rifiutato quando ha più di 600 secondi (10 minuti),
+   contati da `Issued At`; il verificatore rende configurabile questa età
+   massima (vedi [Età massima](#max-age));
 6. la chiave pubblica classica deriva in `address` e la firma ADR-36 si verifica;
 7. la firma ML-DSA-87 si verifica con la chiave pubblica **registrata on-chain**
    per `address` (`/qorechain/pqc/v1/account/{address}`), non con una chiave

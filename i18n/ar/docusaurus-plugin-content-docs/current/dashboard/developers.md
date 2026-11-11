@@ -184,7 +184,7 @@ sidebar_position: 13
 | السطح | العنوان | الشبكات |
 | --- | --- | --- |
 | صفحة Developers | `dashboard.qorechain.io/developers` | أدوات القراءة على الشبكتين الرئيسية والتجريبية؛ وأدوات التوقيع على الشبكة التجريبية فقط |
-| مكتبة التوقيع | npm `@qorechain/qoresign` (الإصدار 0.1.1 يضيف `inspectTransaction`)، وPyPI QoreSign لـ Python، المصدر `github.com/qorechain/qoresign`، انظر [QoreSign](/qoresign/overview) | غير منطبق |
+| مكتبة التوقيع | npm `@qorechain/qoresign` (`inspectTransaction` منذ الإصدار 0.1.1)، وPyPI QoreSign لـ Python، المصدر `github.com/qorechain/qoresign`، انظر [QoreSign](/qoresign/overview) | غير منطبق |
 | حزمة المحفظة التجريبية | npm `@qorechain/qorex-wallet-mock`، المصدر `github.com/qorechain/qorex-integrations` | الشبكة التجريبية |
 | فهرس الحزم | [حزم المطورين](/developer-tools/overview) | غير منطبق |
 | خادم MCP | npm `@qorechain/mcp` 0.1.0 و`@qorechain/qore-cli` 0.1.0، وPyPI `qorechain-mcp` 0.1.0؛ الدليل: [خادم MCP الخاص بـ QoreChain](/developer-tools/mcp) | الشبكة التجريبية افتراضيًا |

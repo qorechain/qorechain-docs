@@ -11,7 +11,7 @@ QoreSign, QoreChain üzerinde cüzdanlar, borsalar, saklama kuruluşları ve ark
 
 QoreSign, QoreChain'in kendi cüzdanı dışındaki bir cüzdanın bir hesabın ML-DSA-87 anahtarını türetmesine, yerel hattaki işlemleri iki anahtarla imzalamasına, hibrit imzaları yerel olarak doğrulamasına, rastgele mesajları imzalamasına, imzalamadan önce bir işlemi simüle etmesine, işlenmiş bir işlemin nasıl korunduğunu geri okumasına ve Sign In With QoreChain'i uygulamasına olanak tanır. [`qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) bağlayıcıları üzerinde ince bir katmandır ve kendi başına hiçbir kriptografik ilkel eklemez. QoreChain Association tarafından Apache-2.0 lisansı altında sürdürülür.
 
-Güncel sürüm **0.1.1**'dir (27 Ekim 2026). TypeScript, Rust, Go, Kotlin (JVM ve Android), Swift ve 0.1.1 ile gelen yeni dil olan Python için yayımlanmıştır. Kaynak kod, örnekler ve test vektörleri [qorechain/qoresign](https://github.com/qorechain/qoresign) deposundadır. Ana ağda (`qorechain-vladi`) ve test ağında (`qorechain-diana`) çalışır.
+Güncel sürüm **0.2.0**'dır (10 ve 11 Kasım 2026'da yayımlandı). TypeScript, Rust, Go, Kotlin (JVM ve Android), Swift ve 0.1.1'den beri Python için yayımlanmıştır. Maven Central'da 0.2.0 hâlâ eşitleniyor: Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor (bkz. [Nerede yayımlandı](#where-published)). Kaynak kod, örnekler ve test vektörleri [qorechain/qoresign](https://github.com/qorechain/qoresign) deposundadır. Ana ağda (`qorechain-vladi`) ve test ağında (`qorechain-diana`) çalışır.
 
 ## QoreSign her hatta ne yapar {#lanes}
 
@@ -38,12 +38,23 @@ Her dilde aynı olan çevrimdışı çekirdek:
 Ağ yardımcıları (TypeScript `@qorechain/qoresign/network`; Go `github.com/qorechain/qoresign/go/network` iki yeni olan dışındaki hepsini içerir):
 
 - `fetchPqKeyStatus`: bir adres için ML-DSA-87 anahtarının kayıtlı olup olmadığı ve hangisi olduğu.
-- `resolveSignBytesVersion`: ağın hangi imzalama baytı biçimini doğruladığı.
+- `resolveSignBytesVersion`: ağın hangi imzalama baytı biçimini doğruladığı. 0.2.0'dan beri önce ağın protokol özellik listesindeki `pqc-sign-bytes-v2` girdisini okur ve uygulanmış yükseltme denetimini yalnızca liste okunamadığında kullanır.
 - `simulateTx` (kullanılan gaz, önerilen gaz sınırı, adres başına bakiye değişiklikleri), `suggestGasLimit`, `broadcastTx` ve `submitWithSignBytesFallback` (ağ ilkini reddettiğinde diğer imzalama baytı biçimiyle bir yeniden deneme).
-- `assertPqLayerMatchesRegisteredKey`: bir dApp'in sağladığı katmanı, cüzdan klasik imzasını eklemeden önce zincirdeki anahtarla karşılaştırır.
+- `assertPqLayerMatchesRegisteredKey`: bir dApp'in sağladığı katmanı, cüzdan klasik imzasını eklemeden önce zincirdeki anahtarla karşılaştırır. 0.2.0'dan beri ağın imzalama baytı sürümüne göre denetler.
 - `verifySiwqWithChain` ve `verifyMessageWithChain`: zincirde kayıtlı anahtara karşı doğrulama.
 - `fetchCommittedExtensionTypeUrls`: işlenmiş bir işlemin hangi uzantıları taşıdığını geri okur.
-- 0.1.1 ile yeni, yalnızca TypeScript: `inspectTransaction` ve `fetchEvmWindow`, aşağıda açıklanmıştır.
+- 0.1.1'den beri, yalnızca TypeScript: `inspectTransaction` ve `fetchEvmWindow`, aşağıda açıklanmıştır.
+- 0.2.0 ile yeni, TypeScript ve Go: `fetchProtocolFeature`; TypeScript ayrıca `PROTOCOL_FEATURES_PATH` ve `SIGN_BYTES_V2_FEATURE` dışa aktarır.
+
+## 0.2.0 ile gelenler {#new-in-0-2-0}
+
+10 ve 11 Kasım 2026'da yayımlandı (GitHub'da v0.2.0 sürümü 11 Kasım'da). Davranış değişiklikleri ve 0.1.x sürümünden yükseltirken yapılacaklar:
+
+- **Sign In With QoreChain: en yüksek yaş.** `Expiration Time` taşımayan bir mesaj, `Issued At` değerinden itibaren 600 saniyeden (10 dakika) eski olduğunda `SIWQ_EXPIRED` ile reddedilir. Yaş her bağlamada yapılandırılabilir: `maxAgeSeconds` (TypeScript, Swift, Kotlin), `max_age_seconds` (Python ve Rust `VerifySiwqArgs`) ve `MaxAge` (Go `VerifySiwqOptions`). Sıfır veya negatif bir değer `INVALID_ARGUMENT` ile başarısız olur. Sunucunuzun ürettiği her mesaja `expirationTime` ekleyin veya daha büyük bir en yüksek yaş verin. Bkz. [Sign In With QoreChain: sunucu doğrulaması](/qoresign/guides/sign-in).
+- **Katı zaman damgaları.** `Issued At`, `Expiration Time` ve `Not Before` tek bir RFC 3339 dilbilgisini izler; mesaj oluşturulurken, ayrıştırılırken, imzalanırken ve doğrulanırken aynı şekilde uygulanır. Dilbilgisi dışındaki bir zaman damgası `SIWQ_MALFORMED` ile başarısız olur. Bkz. [Sign In With QoreChain v1](/qoresign/spec/siwq-v1#timestamps). `parseSiwqTimestamp` (TypeScript) ve `ParseSiwqTimestamp` (Go), bu dilbilgisindeki bir zaman damgasının Unix milisaniye değerini döndürür. Ortak vektörler `vectors/siwq-timestamps-v1.json` dosyasındadır.
+- **İmzalama baytı sürümü çözümlemesi.** `resolveSignBytesVersion`, önce ağın özellik listesindeki `pqc-sign-bytes-v2` protokol özelliğini okur. Liste okunabildiğinde sürümü o belirler (listelenmeyen bir özellik v1 demektir). Uygulanmış yükseltme denetimi yalnızca liste okunamadığında kullanılır. `fetchProtocolFeature` (TypeScript ve Go), `PROTOCOL_FEATURES_PATH` ve `SIGN_BYTES_V2_FEATURE` (TypeScript) dışa aktarılır.
+- **Katman denetimi.** `assertPqLayerMatchesRegisteredKey` ve `inspectTransaction`, ML-DSA-87 katmanını ağın kullandığı imzalama baytı sürümüne veya yeni `signBytesVersion` seçeneğiyle verilen sürüme (Go'da `SignBytesVersion`) göre denetler. Ağ v2'ye geçmeden önce işlenmiş bir işlem için `signBytesVersion: "v1"` verin. Bir katmanı her iki sürümde kabul etmek artık açık tanılama seçeneği `allowLegacyEither` (Go'da `AllowLegacyEither`) gerektirir ve yalnızca tanılama içindir.
+- **Swift, Kotlin ve Python: paketi ve yerel kütüphanesini birlikte yükseltin.** Yerel doğrulama işlevi en yüksek yaşı yeni bir parametre olarak alır; bu yüzden 0.1.x yerel kütüphanesi 0.2.0 bağlamalarıyla uyuşmaz. xcframework, JVM ve Android kütüphaneleri ile Python wheel dosyaları bu sürüm için yeniden derlendi.
 
 ## 0.1.1 ile gelenler {#new-in-0-1-1}
 
@@ -115,11 +126,11 @@ Boyutlar (FIPS 204 ve [boyutlar kılavuzu](/qoresign/guides/sizes-and-transport)
 |---|---|---|---|
 | TypeScript | [`@qorechain/qoresign`](https://www.npmjs.com/package/@qorechain/qoresign) | `npm install @qorechain/qoresign` | Node.js 20 veya üzeri; tarayıcılar |
 | Rust | [`qorechain-qoresign`](https://crates.io/crates/qorechain-qoresign) (kütüphane adı `qoresign`) | `cargo add qorechain-qoresign` | kararlı Rust |
-| Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.1.1` | Go 1.25 |
+| Go | [`github.com/qorechain/qoresign/go`](https://pkg.go.dev/github.com/qorechain/qoresign/go) | `go get github.com/qorechain/qoresign/go@v0.2.0` | Go 1.25 |
 | Python | [`qorechain-qoresign`](https://pypi.org/project/qorechain-qoresign/) (içe aktarma `qoresign`) | `pip install qorechain-qoresign` | Python 3.9+; macOS 11+ (arm64, x86_64) ve Linux (x86_64, aarch64) için wheel dosyaları; henüz Windows wheel'i yok, diğer platformlar kaynak dağıtımından derlenir (Rust 1.95 gerekir) |
-| Swift | [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign) içinden `QoreSign` (GitHub sürümünde ikili çerçeve) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.1.1")`, ürün `QoreSign` | iOS 16, macOS 13 |
-| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.1.1")` | Java 17, Kotlin 2.3 veya üzeri; macOS (arm64, x86-64), Linux (x86-64, arm64) ve Windows (x86-64) için yerel kütüphaneler |
-| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.1.1")` | API 24, Kotlin 2.3 veya üzeri; `arm64-v8a`, `armeabi-v7a`, `x86_64`; R8 koruma kuralları dahildir |
+| Swift | [`github.com/qorechain/qoresign`](https://github.com/qorechain/qoresign) içinden `QoreSign` (GitHub sürümünde ikili çerçeve) | `.package(url: "https://github.com/qorechain/qoresign", from: "0.2.0")`, ürün `QoreSign` | iOS 16, macOS 13 |
+| Kotlin / JVM | [`io.github.qorechain:qoresign`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) | `implementation("io.github.qorechain:qoresign:0.2.0")` 0.2.0 Central'da göründüğünde (Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor; 0.2.0 eşitleniyor) | Java 17, Kotlin 2.3 veya üzeri; macOS (arm64, x86-64), Linux (x86-64, arm64) ve Windows (x86-64) için yerel kütüphaneler |
+| Android | [`io.github.qorechain:qoresign-android`](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) | `implementation("io.github.qorechain:qoresign-android:0.2.0")` 0.2.0 Central'da göründüğünde (Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor; 0.2.0 eşitleniyor) | API 24, Kotlin 2.3 veya üzeri; `arm64-v8a`, `armeabi-v7a`, `x86_64`; R8 koruma kuralları dahildir |
 
 :::note Kotlin derleyici sürümü
 Kotlin ve Android yapıtları, projenizde **Kotlin 2.3 veya üzeri** derleyiciyi gerektirir. Kotlin 2.1 kullanan bir proje bunlara karşı derlenemez. Bağımlılığı eklemeden önce derlemenin Kotlin sürümünü yükseltin.
@@ -169,10 +180,12 @@ Adlar TypeScript biçiminde verilmiştir. Go aynı adları Go büyük/küçük h
 | `verifyHybridTx`, `verifyPqLayer` | yerel doğrulama | tümü |
 | `buildRegisterPqKeyMessage`, `signProofOfPossession`, `verifyProofOfPossession` | sahiplik kanıtlı anahtar kaydı | tümü |
 | `signMessage`, `verifyMessage` | rastgele mesaj imzalama (ADR-36 artı ML-DSA-87) | tümü |
-| `createSiwqMessage`, `parseSiwqMessage`, `signSiwq`, `verifySiwq` | Sign In With QoreChain v1 | tümü |
+| `createSiwqMessage`, `parseSiwqMessage`, `signSiwq`, `verifySiwq` | Sign In With QoreChain v1 (en yüksek yaş ve katı zaman damgaları 0.2.0'dan beri) | tümü |
+| `parseSiwqTimestamp` | katı dilbilgisindeki bir zaman damgasının Unix milisaniye değeri (0.2.0) | TypeScript, Go (`ParseSiwqTimestamp`) |
 | `decideLane`, `assertHybridLane`, `evaluateLayerState` | hat kuralları; düşürülmüş katmanın tespiti | tümü |
 | `fetchPqKeyStatus`, `resolveSignBytesVersion`, `simulateTx`, `suggestGasLimit`, `broadcastTx`, `submitWithSignBytesFallback`, `assertPqLayerMatchesRegisteredKey`, `verifySiwqWithChain`, `verifyMessageWithChain`, `fetchCommittedExtensionTypeUrls` | ağ yardımcıları | TypeScript, Go |
-| `inspectTransaction`, `fetchEvmWindow` | işlenmiş bir işlemi oku; bir EVM penceresini oku (0.1.1) | TypeScript |
+| `fetchProtocolFeature`, `PROTOCOL_FEATURES_PATH`, `SIGN_BYTES_V2_FEATURE` | ağın protokol özellik listesinden bir girdiyi oku; yolu ve imzalama baytı v2 özelliğinin adı (0.2.0) | TypeScript (`fetchProtocolFeature` Go'da da) |
+| `inspectTransaction`, `fetchEvmWindow` | işlenmiş bir işlemi oku; bir EVM penceresini oku (0.1.1'den beri) | TypeScript |
 
 Go'da ağ yardımcıları bir istemci üzerindeki yöntemlerdir: `client := network.NewClient("https://api-testnet.qore.host")`, ardından `client.VerifySiwqWithChain(ctx, address, qoresign.VerifySiwqOptions{...})` veya `client.SimulateTx(...)`. Python hataları `code` ve `detail` içeren `QoreSignError`'dır; bayt alanları `bytes`'tır.
 
@@ -235,19 +248,19 @@ API referansı: deponun bir kopyasında `pnpm -C packages/ts docs` (TypeScript),
 
 ## Nerede yayımlandı {#where-published}
 
-Sürümler kayıt defterlerinde 27 Ekim 2026 tarihinde denetlendi.
+Sürümler kayıt defterlerinde 11 Kasım 2026 tarihinde denetlendi.
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|
-| npm | `@qorechain/qoresign` | 0.1.1 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
-| crates.io | `qorechain-qoresign` | 0.1.1 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
-| Go modül proxy'si | `github.com/qorechain/qoresign/go` | v0.1.1 (etiket `go/v0.1.1`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
-| Maven Central | `io.github.qorechain:qoresign` | 0.1.1 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
-| Maven Central | `io.github.qorechain:qoresign-android` | 0.1.1 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
-| PyPI | `qorechain-qoresign` | 0.1.1 (macOS arm64 ve x86_64, Linux x86_64 ve aarch64 wheel dosyaları, kaynak dağıtımı) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
-| Swift Package Manager | `github.com/qorechain/qoresign` içinden `QoreSign` | 0.1.1 (sürümde ikili `QoreSignFFI.xcframework.zip`) | [GitHub sürümü](https://github.com/qorechain/qoresign/releases/tag/v0.1.1) |
+| npm | `@qorechain/qoresign` | 0.2.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/qoresign) |
+| crates.io | `qorechain-qoresign` | 0.2.0 | [crates.io](https://crates.io/crates/qorechain-qoresign) |
+| Go modül proxy'si | `github.com/qorechain/qoresign/go` | v0.2.0 (etiket `go/v0.2.0`) | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qoresign/go) |
+| Maven Central | `io.github.qorechain:qoresign` | Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor; 0.2.0 eşitleniyor. 0.2.0 göründüğünde onu kullanın | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign) |
+| Maven Central | `io.github.qorechain:qoresign-android` | Central 11 Kasım 2026'da hâlâ 0.1.1 gösteriyor; 0.2.0 eşitleniyor. 0.2.0 göründüğünde onu kullanın | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qoresign-android) |
+| PyPI | `qorechain-qoresign` | 0.2.0 (macOS arm64 ve x86_64, Linux x86_64 ve aarch64 wheel dosyaları, kaynak dağıtımı) | [pypi.org](https://pypi.org/project/qorechain-qoresign/) |
+| Swift Package Manager | `github.com/qorechain/qoresign` içinden `QoreSign` | 0.2.0 (sürümde ikili `QoreSignFFI.xcframework.zip`) | [GitHub sürümü](https://github.com/qorechain/qoresign/releases/tag/v0.2.0) |
 
-Depo: [github.com/qorechain/qoresign](https://github.com/qorechain/qoresign) (v0.1.0 ve v0.1.1 sürümleri).
+Depo: [github.com/qorechain/qoresign](https://github.com/qorechain/qoresign) (v0.1.0, v0.1.1 ve v0.2.0 sürümleri).
 
 ## İlgili sayfalar {#related}
 

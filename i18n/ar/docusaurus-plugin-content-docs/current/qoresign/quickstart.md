@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # البدء السريع
 
-يشرح هذا الدليل كيفية اشتقاق مفاتيح حساب، وتوقيع معاملة على المسار الأصلي بالمفتاحين والتحقق منها دون اتصال بالشبكة، ثم إرسالها اختياريًا إلى الشبكة التجريبية `qorechain-diana`. يتطلب Node.js 20 أو أحدث. ويغطي QoreSign 0.1.1. تعرض الأقسام التي تلي الخطوة 4 المكتبة نفسها في Python وGo، وكيفية قراءة معاملة مُثبَّتة.
+يشرح هذا الدليل كيفية اشتقاق مفاتيح حساب، وتوقيع معاملة على المسار الأصلي بالمفتاحين والتحقق منها دون اتصال بالشبكة، ثم إرسالها اختياريًا إلى الشبكة التجريبية `qorechain-diana`. يتطلب Node.js 20 أو أحدث. ويغطي QoreSign 0.2.0. تعرض الأقسام التي تلي الخطوة 4 المكتبة نفسها في Python وGo، وكيفية قراءة معاملة مُثبَّتة.
 
 ## 1. التثبيت {#install}
 
@@ -123,7 +123,7 @@ console.log(sim.gasUsed, sim.suggestedGasLimit, sim.balanceDeltas);
 
 ### Python {#python}
 
-جديد في 0.1.1. يتطلب Python 3.9 أو أحدث؛ عجلات (wheels) لـ macOS وLinux (لا توجد عجلة لـ Windows بعد).
+يتطلب Python 3.9 أو أحدث؛ عجلات (wheels) لـ macOS وLinux (لا توجد عجلة لـ Windows بعد). رقّوا حزمة Python من 0.1.x كاملةً: فعجلات 0.2.0 تحمل مكتبتها الأصلية الخاصة.
 
 ```bash
 pip install qorechain-qoresign
@@ -145,12 +145,12 @@ qs.verify_message("qorechain-diana", account.bech32, data, sig, pq_public_key=pq
 print(account.bech32, "verified")
 ```
 
-جرى تشغيل هذا على عجلات 0.1.1 المنشورة على macOS arm64 وLinux aarch64.
+جرى تشغيل هذا آخر مرة على عجلات 0.1.1 المنشورة على macOS arm64 وLinux aarch64؛ والأوامر دون تغيير في 0.2.0.
 
 ### Go {#go}
 
 ```bash
-go get github.com/qorechain/qoresign/go@v0.1.1
+go get github.com/qorechain/qoresign/go@v0.2.0
 ```
 
 ```go
@@ -183,7 +183,7 @@ func main() {
 
 ## 6. قراءة معاملة مُثبَّتة (مفتش المعاملات) {#inspect}
 
-جديد في 0.1.1، في TypeScript. هذا يقرأ ولا يرسل شيئًا. يبلّغ كيف جرت حماية معاملة مُثبَّتة: رسائلها، وموقّعها، ورسومها، وهل يتحقق التوقيع الكلاسيكي، وحالة طبقة ML-DSA-87، ومستوى الأمان (`pqc` أو `enrollment` أو `shake` أو `classical`). راجع [مفتش المعاملات](/qoresign/overview#inspector) لمعرفة الحقول.
+متاح منذ 0.1.1، في TypeScript. هذا يقرأ ولا يرسل شيئًا. يبلّغ كيف جرت حماية معاملة مُثبَّتة: رسائلها، وموقّعها، ورسومها، وهل يتحقق التوقيع الكلاسيكي، وحالة طبقة ML-DSA-87، ومستوى الأمان (`pqc` أو `enrollment` أو `shake` أو `classical`). راجع [مفتش المعاملات](/qoresign/overview#inspector) لمعرفة الحقول.
 
 ```js
 // inspect.mjs

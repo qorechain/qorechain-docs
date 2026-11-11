@@ -8,7 +8,7 @@ sidebar_position: 2
 # 빠른 시작
 
 이 문서는 계정 키를 파생하고, 두 키로 Native 레인 트랜잭션에 서명한 뒤 오프라인으로 검증하고, 선택적으로
-`qorechain-diana` 테스트넷으로 전송하는 과정을 안내합니다. Node.js 20 이상이 필요합니다. QoreSign 0.1.1을 다룹니다. 4단계 이후의 섹션에서는 같은 라이브러리를 Python과 Go에서 사용하는 방법과 커밋된 트랜잭션을 다시 읽어 오는 방법을 보여줍니다.
+`qorechain-diana` 테스트넷으로 전송하는 과정을 안내합니다. Node.js 20 이상이 필요합니다. QoreSign 0.2.0을 다룹니다. 4단계 이후의 섹션에서는 같은 라이브러리를 Python과 Go에서 사용하는 방법과 커밋된 트랜잭션을 다시 읽어 오는 방법을 보여줍니다.
 
 ## 1. 설치 {#install}
 
@@ -131,7 +131,7 @@ console.log(sim.gasUsed, sim.suggestedGasLimit, sim.balanceDeltas);
 
 ### Python {#python}
 
-0.1.1에서 새로 추가되었습니다. Python 3.9 이상, macOS와 Linux용 wheel 제공(아직 Windows wheel 없음).
+Python 3.9 이상, macOS와 Linux용 wheel 제공(아직 Windows wheel 없음). 0.1.x에서 올릴 때는 Python 패키지를 통째로 업그레이드하세요. 0.2.0 wheel에는 자체 네이티브 라이브러리가 들어 있습니다.
 
 ```bash
 pip install qorechain-qoresign
@@ -153,12 +153,12 @@ qs.verify_message("qorechain-diana", account.bech32, data, sig, pq_public_key=pq
 print(account.bech32, "verified")
 ```
 
-게시된 0.1.1 wheel로 macOS arm64와 Linux aarch64에서 실행했습니다.
+게시된 0.1.1 wheel로 macOS arm64와 Linux aarch64에서 마지막으로 실행했으며, 명령은 0.2.0에서도 그대로입니다.
 
 ### Go {#go}
 
 ```bash
-go get github.com/qorechain/qoresign/go@v0.1.1
+go get github.com/qorechain/qoresign/go@v0.2.0
 ```
 
 ```go
@@ -191,7 +191,7 @@ Go 예제는 짧게 하려고 오류를 무시합니다. 실제 코드에서는 
 
 ## 6. 커밋된 트랜잭션 읽기(트랜잭션 인스펙터) {#inspect}
 
-0.1.1에서 새로 추가되었으며 TypeScript용입니다. 읽기만 하고 아무것도 전송하지 않습니다. 커밋된 트랜잭션이 어떻게 보호되었는지 보고합니다. 메시지, 서명자, 수수료, 클래식 서명이 검증되는지 여부, ML-DSA-87 계층의 상태, 보안 등급(`pqc`, `enrollment`, `shake` 또는 `classical`)이 그 내용입니다. 필드는 [트랜잭션 인스펙터](/qoresign/overview#inspector)를 참고하세요.
+0.1.1부터 사용할 수 있으며 TypeScript용입니다. 읽기만 하고 아무것도 전송하지 않습니다. 커밋된 트랜잭션이 어떻게 보호되었는지 보고합니다. 메시지, 서명자, 수수료, 클래식 서명이 검증되는지 여부, ML-DSA-87 계층의 상태, 보안 등급(`pqc`, `enrollment`, `shake` 또는 `classical`)이 그 내용입니다. 필드는 [트랜잭션 인스펙터](/qoresign/overview#inspector)를 참고하세요.
 
 ```js
 // inspect.mjs

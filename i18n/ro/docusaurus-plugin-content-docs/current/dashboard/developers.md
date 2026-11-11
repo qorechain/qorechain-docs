@@ -184,7 +184,7 @@ Limite: o cheie activă pe cont, 10 cereri pe secundă (rafală de 20) și 100.0
 | Suprafață | Adresă | Rețele |
 | --- | --- | --- |
 | Pagina Developers | `dashboard.qorechain.io/developers` | Unelte de citire pe mainnet și testnet; unelte de semnare doar pe testnet |
-| Biblioteca de semnare | npm `@qorechain/qoresign` (0.1.1 adaugă `inspectTransaction`), PyPI QoreSign pentru Python, sursa `github.com/qorechain/qoresign`, vezi [QoreSign](/qoresign/overview) | n/a |
+| Biblioteca de semnare | npm `@qorechain/qoresign` (`inspectTransaction` de la 0.1.1), PyPI QoreSign pentru Python, sursa `github.com/qorechain/qoresign`, vezi [QoreSign](/qoresign/overview) | n/a |
 | Pachetul de portofel de test | npm `@qorechain/qorex-wallet-mock`, sursa `github.com/qorechain/qorex-integrations` | Testnet |
 | Indexul de pachete | [Pachete pentru dezvoltatori](/developer-tools/overview) | n/a |
 | Server MCP | npm `@qorechain/mcp` 0.1.0 și `@qorechain/qore-cli` 0.1.0, PyPI `qorechain-mcp` 0.1.0; ghid: [Serverul MCP QoreChain](/developer-tools/mcp) | Implicit testnet |

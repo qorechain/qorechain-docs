@@ -9,7 +9,7 @@ sidebar_position: 2
 
 Acest ghid parcurge derivarea cheilor unui cont, semnarea unei tranzacții de pe
 lane-ul nativ cu ambele chei și verificarea ei, offline, apoi, opțional,
-trimiterea ei pe testnetul `qorechain-diana`. Necesită Node.js 20 sau mai nou. Acoperă QoreSign 0.1.1. Secțiunile de după pasul 4 arată aceeași bibliotecă în Python și Go, precum și cum se citește înapoi o tranzacție confirmată.
+trimiterea ei pe testnetul `qorechain-diana`. Necesită Node.js 20 sau mai nou. Acoperă QoreSign 0.2.0. Secțiunile de după pasul 4 arată aceeași bibliotecă în Python și Go, precum și cum se citește înapoi o tranzacție confirmată.
 
 ## 1. Instalare {#install}
 
@@ -134,7 +134,7 @@ Aceste exemple sunt offline. Fiecare derivă cheile din fraza publică de test B
 
 ### Python {#python}
 
-Nou în 0.1.1. Python 3.9 sau mai nou; wheel-uri pentru macOS și Linux (încă fără wheel pentru Windows).
+Python 3.9 sau mai nou; wheel-uri pentru macOS și Linux (încă fără wheel pentru Windows). Actualizați pachetul Python de la 0.1.x în întregime: wheel-urile 0.2.0 conțin propria bibliotecă nativă.
 
 ```bash
 pip install qorechain-qoresign
@@ -156,12 +156,12 @@ qs.verify_message("qorechain-diana", account.bech32, data, sig, pq_public_key=pq
 print(account.bech32, "verified")
 ```
 
-Acest exemplu a fost rulat cu wheel-urile publicate 0.1.1 pe macOS arm64 și Linux aarch64.
+Acest exemplu a fost rulat ultima oară cu wheel-urile publicate 0.1.1 pe macOS arm64 și Linux aarch64; comenzile sunt neschimbate în 0.2.0.
 
 ### Go {#go}
 
 ```bash
-go get github.com/qorechain/qoresign/go@v0.1.1
+go get github.com/qorechain/qoresign/go@v0.2.0
 ```
 
 ```go
@@ -194,7 +194,7 @@ Exemplul Go ignoră erorile ca să rămână scurt; verificați-le în codul rea
 
 ## 6. Citirea unei tranzacții confirmate (inspectorul de tranzacții) {#inspect}
 
-Nou în 0.1.1, TypeScript. Doar citește și nu trimite nimic. Raportează cum a fost protejată o tranzacție confirmată: mesajele, semnatarul, taxa, dacă semnătura clasică se verifică, starea stratului ML-DSA-87 și nivelul de securitate (`pqc`, `enrollment`, `shake` sau `classical`). Vezi [Inspectorul de tranzacții](/qoresign/overview#inspector) pentru câmpuri.
+Disponibil de la 0.1.1, TypeScript. Doar citește și nu trimite nimic. Raportează cum a fost protejată o tranzacție confirmată: mesajele, semnatarul, taxa, dacă semnătura clasică se verifică, starea stratului ML-DSA-87 și nivelul de securitate (`pqc`, `enrollment`, `shake` sau `classical`). Vezi [Inspectorul de tranzacții](/qoresign/overview#inspector) pentru câmpuri.
 
 ```js
 // inspect.mjs

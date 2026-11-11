@@ -17,7 +17,7 @@ secp256k1 de la cuenta (ADR-36) y por su clave ML-DSA-87. Formato:
 2. El cliente construye el mensaje con `createSiwqMessage` y la cartera lo firma
    con `signSiwq` (o produce la parte clásica con `signArbitrary` y la parte
    ML-DSA-87 con `pqSign` sobre `siwqPqSignBytes(message)`).
-3. El servidor verifica con `verifySiwqWithChain`, que comprueba el mensaje, el
+3. El servidor fija `Expiration Time` en cada mensaje que emite (consulta [Expiración y edad máxima](#expiry)) y después verifica con `verifySiwqWithChain`, que comprueba el mensaje, el
    nonce, el dominio, los tiempos, que la clave clásica controla la dirección y
    la firma ML-DSA-87 contra la clave **registrada en la cadena** para la
    dirección (consulta [Verificación](/qoresign/spec/siwq-v1#verification)).
@@ -66,6 +66,31 @@ if qoresign.IsCode(err, qoresign.CodeSiwqExpired) {
 }
 // result.Address signed in; result.PossessionProven reports how the key was registered.
 ```
+
+## Expiración y edad máxima {#expiry}
+
+Fija siempre `Expiration Time` en el mensaje que emite tu servidor. Un mensaje
+sin él se rechaza con `SIWQ_EXPIRED` cuando tiene más de 600 segundos
+(10 minutos), contados desde `Issued At`. Para usar otro límite, pasa la edad
+máxima al verificador. El nombre de la opción en cada binding:
+
+- TypeScript, Swift y Kotlin: `maxAgeSeconds`
+- Python: `max_age_seconds`
+- Rust: `VerifySiwqArgs::max_age_seconds`
+- Go: `VerifySiwqOptions.MaxAge`
+
+Un valor cero o negativo falla con `INVALID_ARGUMENT`.
+
+Las marcas de tiempo (`Issued At`, `Expiration Time`, `Not Before`) deben seguir
+la gramática estricta de RFC 3339 de la [especificación](/qoresign/spec/siwq-v1#timestamps):
+hora de 00 a 23, minuto y segundo de 00 a 59, una fecha real del calendario, una
+`Z` mayúscula o un desfase con dos puntos, `T` como separador, sin `24:00:00` y
+sin segundos intercalares. Las mismas reglas se aplican al crear, analizar,
+firmar y verificar, y una marca fuera de ellas falla con `SIWQ_MALFORMED`. Los
+mensajes creados por QoreSign ya usan la gramática.
+
+Al actualizar desde la 0.1.x, Swift, Kotlin y Python deben actualizar el paquete
+y su biblioteca nativa a la vez.
 
 ## Cuentas solo clásicas {#classical-only}
 

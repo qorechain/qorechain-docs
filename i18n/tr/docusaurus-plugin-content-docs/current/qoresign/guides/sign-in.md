@@ -17,7 +17,7 @@ imzalanan, EIP-4361 tarzı bir oturum açma mesajıdır. Biçim:
 2. İstemci mesajı `createSiwqMessage` ile oluşturur ve cüzdan `signSiwq` ile
    imzalar (veya klasik kısmı `signArbitrary` ile, ML-DSA-87 kısmını ise
    `siwqPqSignBytes(message)` üzerinde `pqSign` ile üretir).
-3. Sunucu `verifySiwqWithChain` ile doğrular; bu işlev mesajı, nonce'u, alan adını,
+3. Sunucu ürettiği her mesaja `Expiration Time` ekler (bkz. [Geçerlilik süresi ve en yüksek yaş](#expiry)), ardından `verifySiwqWithChain` ile doğrular; bu işlev mesajı, nonce'u, alan adını,
    zamanları, klasik anahtarın adresi kontrol ettiğini ve ML-DSA-87 imzasını
    adres için **zincirde kayıtlı** anahtara karşı denetler (bkz.
    [Doğrulama](/qoresign/spec/siwq-v1#verification)).
@@ -66,6 +66,31 @@ if qoresign.IsCode(err, qoresign.CodeSiwqExpired) {
 }
 // result.Address signed in; result.PossessionProven reports how the key was registered.
 ```
+
+## Geçerlilik süresi ve en yüksek yaş {#expiry}
+
+Sunucunuzun ürettiği mesaja her zaman `Expiration Time` ekleyin. Bu alanı
+taşımayan bir mesaj, `Issued At` değerinden itibaren 600 saniyeden (10 dakika)
+eski olduğunda `SIWQ_EXPIRED` ile reddedilir. Başka bir sınır kullanmak için en
+yüksek yaşı doğrulayıcıya verin. Bağlama göre seçenek adı:
+
+- TypeScript, Swift ve Kotlin: `maxAgeSeconds`
+- Python: `max_age_seconds`
+- Rust: `VerifySiwqArgs::max_age_seconds`
+- Go: `VerifySiwqOptions.MaxAge`
+
+Sıfır veya negatif bir değer `INVALID_ARGUMENT` ile başarısız olur.
+
+Zaman damgaları (`Issued At`, `Expiration Time`, `Not Before`), [belirtimin](/qoresign/spec/siwq-v1#timestamps)
+katı RFC 3339 dilbilgisine uymalıdır: saat 00 ile 23, dakika ve saniye 00 ile 59
+arası, gerçek bir takvim tarihi, büyük harfli `Z` veya iki nokta üst üste ile
+yazılmış bir sapma, ayırıcı olarak `T`, `24:00:00` ve artık saniye yok. Aynı
+kurallar oluşturma, ayrıştırma, imzalama ve doğrulamada geçerlidir; bunların
+dışındaki bir zaman damgası `SIWQ_MALFORMED` ile başarısız olur. QoreSign'ın
+oluşturduğu mesajlar bu dilbilgisini zaten kullanır.
+
+0.1.x sürümünden yükseltirken Swift, Kotlin ve Python paketi ile yerel
+kütüphanesini birlikte yükseltmelidir.
 
 ## Yalnızca klasik hesaplar {#classical-only}
 

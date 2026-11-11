@@ -43,7 +43,7 @@ const finalDoc = { ...signDoc, bodyBytes }; // sign this with the secp256k1 key,
   は手数料もカバーします。
 - dApp がすでに PQC レイヤーを含むボディを送ってきた場合は、従来型の署名を追加する
   前に `assertPqLayerMatchesRegisteredKey`（`@qorechain/qoresign/network` 由来）で
-  検証してください。検証に通らないレイヤーは何も保護しません。
+  検証してください。検証に通らないレイヤーは何も保護しません。QoreSign 0.2.0 以降、この確認はネットワークが使う sign-bytes のバージョンで行われます（`signBytesVersion` で上書きできます。`allowLegacyEither` は診断専用です）。
 - 鍵はアカウントごとに一度だけ、`classicalOnly` モードで署名した
   `buildRegisterPqKeyMessage` によって登録します
   （[`examples/register-and-send`](https://github.com/qorechain/qoresign/tree/main/examples/register-and-send)

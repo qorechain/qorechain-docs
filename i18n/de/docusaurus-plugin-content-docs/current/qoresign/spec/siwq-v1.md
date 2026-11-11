@@ -51,7 +51,7 @@ Resources:
   `qorechain-vladi`.
 - `Nonce` besteht aus mindestens 8 alphanumerischen Zeichen, vom Server gewählt,
   einmalig verwendbar.
-- Zeitstempel folgen RFC 3339 / ISO 8601.
+- Zeitstempel folgen der strengen RFC-3339-Grammatik, beschrieben unter [Zeitstempel](#timestamps).
 - `Expiration Time`, `Not Before`, `Request ID` und `Resources` sind optional und
   erscheinen in dieser Reihenfolge.
 
@@ -98,6 +98,42 @@ verwendet werden kann und umgekehrt (siehe
 Anmeldungen ablehnen, sofern sie nicht ausdrücklich rein klassische Konten
 akzeptieren.
 
+## Zeitstempel {#timestamps}
+
+`Issued At`, `Expiration Time` und `Not Before` nutzen eine strenge RFC-3339-Grammatik.
+Dieselben Regeln gelten, wenn eine Nachricht erzeugt, geparst, signiert und geprüft wird:
+
+- Stunde 00 bis 23, Minute und Sekunde 00 bis 59, daher werden `24:00:00` und
+  Schaltsekunden (Sekunde 60) abgelehnt;
+- ein reales Kalenderdatum;
+- ein großes `Z` oder ein Offset von 00:00 bis 23:59 mit Doppelpunkt (ein Offset
+  ohne Doppelpunkt wird abgelehnt);
+- `T` als Trenner: kein Leerzeichen und kein kleines `t` oder `z`.
+
+Ein Zeitstempel außerhalb der Grammatik schlägt mit `SIWQ_MALFORMED` fehl. Die
+gemeinsamen Vektoren liegen in `vectors/siwq-timestamps-v1.json`. Seit QoreSign
+0.2.0 liefern `parseSiwqTimestamp` (TypeScript) und `ParseSiwqTimestamp` (Go) die
+Unix-Millisekunden eines Zeitstempels in dieser Grammatik.
+
+## Maximales Alter {#max-age}
+
+Server sollten `Expiration Time` verlangen und immer auf den Nachrichten setzen,
+die sie ausstellen. Eine Nachricht ohne `Expiration Time` wird mit `SIWQ_EXPIRED`
+abgelehnt, sobald sie älter als 600 Sekunden (10 Minuten) ist, gerechnet ab
+`Issued At`. QoreSign 0.2.0 und später machen das Alter in jedem Binding
+einstellbar:
+
+| Binding | Option |
+|---|---|
+| TypeScript | `maxAgeSeconds` |
+| Python | `max_age_seconds` |
+| Rust | `VerifySiwqArgs::max_age_seconds` |
+| Go | `VerifySiwqOptions.MaxAge` |
+| Swift | `maxAgeSeconds` |
+| Kotlin | `maxAgeSeconds` |
+
+Ein Wert von null oder ein negativer Wert schlägt mit `INVALID_ARGUMENT` fehl.
+
 ## Prüfung {#verification}
 
 Ein Prüfer muss in dieser Reihenfolge Folgendes kontrollieren:
@@ -108,7 +144,10 @@ Ein Prüfer muss in dieser Reihenfolge Folgendes kontrollieren:
    und die Nonce wurde noch nicht verwendet;
 4. `Chain ID` ist das erwartete Netzwerk;
 5. `Expiration Time` liegt in der Zukunft, und `Not Before` und `Issued At` liegen
-   nicht in der Zukunft (mit einer kleinen Toleranz für Uhrenabweichung);
+   nicht in der Zukunft (mit einer kleinen Toleranz für Uhrenabweichung). Eine
+   Nachricht ohne `Expiration Time` wird abgelehnt, sobald sie älter als 600
+   Sekunden (10 Minuten) ist, gerechnet ab `Issued At`; der Prüfer macht dieses
+   maximale Alter einstellbar (siehe [Maximales Alter](#max-age));
 6. der klassische Public Key leitet zu `address` ab, und die ADR-36-Signatur
    verifiziert sich;
 7. die ML-DSA-87-Signatur verifiziert sich unter dem **on-chain registrierten**

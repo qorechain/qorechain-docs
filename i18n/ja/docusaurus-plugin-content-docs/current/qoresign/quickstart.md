@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # クイックスタート
 
-ここでは、アカウントの鍵を導出し、両方の鍵でネイティブレーンのトランザクションに署名してオフラインで検証し、さらに必要に応じて `qorechain-diana` テストネットへ送信するまでを説明します。Node.js 20 以降が必要です。対象は QoreSign 0.1.1 です。ステップ 4 以降のセクションでは、同じライブラリを Python と Go で使う方法と、コミット済みトランザクションの読み戻し方を示します。
+ここでは、アカウントの鍵を導出し、両方の鍵でネイティブレーンのトランザクションに署名してオフラインで検証し、さらに必要に応じて `qorechain-diana` テストネットへ送信するまでを説明します。Node.js 20 以降が必要です。対象は QoreSign 0.2.0 です。ステップ 4 以降のセクションでは、同じライブラリを Python と Go で使う方法と、コミット済みトランザクションの読み戻し方を示します。
 
 ## 1. インストール {#install}
 
@@ -123,7 +123,7 @@ console.log(sim.gasUsed, sim.suggestedGasLimit, sim.balanceDeltas);
 
 ### Python {#python}
 
-0.1.1 の新機能です。Python 3.9 以降。macOS と Linux 用のホイールがあります（Windows 用ホイールはまだありません）。
+Python 3.9 以降。macOS と Linux 用のホイールがあります（Windows 用ホイールはまだありません）。0.1.x から Python パッケージをアップグレードするときは、パッケージ全体を入れ替えてください。0.2.0 のホイールには専用のネイティブライブラリが含まれています。
 
 ```bash
 pip install qorechain-qoresign
@@ -145,12 +145,12 @@ qs.verify_message("qorechain-diana", account.bech32, data, sig, pq_public_key=pq
 print(account.bech32, "verified")
 ```
 
-これは、公開済みの 0.1.1 ホイールを使って macOS arm64 と Linux aarch64 で実行したものです。
+これは最後に、公開済みの 0.1.1 ホイールを使って macOS arm64 と Linux aarch64 で実行したものです。コマンドは 0.2.0 でも変わりません。
 
 ### Go {#go}
 
 ```bash
-go get github.com/qorechain/qoresign/go@v0.1.1
+go get github.com/qorechain/qoresign/go@v0.2.0
 ```
 
 ```go
@@ -183,7 +183,7 @@ Go の例は短くするためにエラーを無視しています。実際の�
 
 ## 6. コミット済みトランザクションを読む（トランザクションインスペクター） {#inspect}
 
-0.1.1 の新機能、TypeScript 用です。読み取りのみで、何も送信しません。コミット済みトランザクションがどのように保護されていたかを報告します。メッセージ、署名者、手数料、従来型署名が検証できるか、ML-DSA-87 レイヤーの状態、セキュリティティア（`pqc`、`enrollment`、`shake`、`classical`）です。フィールドについては[トランザクションインスペクター](/qoresign/overview#inspector)を参照してください。
+0.1.1 から利用可能、TypeScript 用です。読み取りのみで、何も送信しません。コミット済みトランザクションがどのように保護されていたかを報告します。メッセージ、署名者、手数料、従来型署名が検証できるか、ML-DSA-87 レイヤーの状態、セキュリティティア（`pqc`、`enrollment`、`shake`、`classical`）です。フィールドについては[トランザクションインスペクター](/qoresign/overview#inspector)を参照してください。
 
 ```js
 // inspect.mjs
