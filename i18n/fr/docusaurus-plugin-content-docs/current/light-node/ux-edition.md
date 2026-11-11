@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Édition UX — dashboard web
 
-L'édition **UX (User eXperience)** exécute le même démon de nœud léger que l'édition SX, mais ajoute un **dashboard web intégré** pour que vous puissiez surveiller le nœud et le réseau dans un navigateur. Le binaire est `lightnode-ux`. Comme pour l'édition SX, il suit la propre ligne de version du nœud léger, distincte de la version de la chaîne (les canaux des deux réseaux portent la 3.1.12 au 27 octobre 2026).
+L'édition **UX (User eXperience)** exécute le même démon de nœud léger que l'édition SX, mais ajoute un **dashboard web intégré** pour que vous puissiez surveiller le nœud et le réseau dans un navigateur. Le binaire est `lightnode-ux`. Comme pour l'édition SX, il suit la propre ligne de version du nœud léger, distincte de la version de la chaîne (les canaux des deux réseaux portent la 3.1.13 au 12 novembre 2026).
 
 L'édition UX est le bon choix pour une utilisation sur ordinateur de bureau et pour les opérateurs qui préfèrent une interface visuelle à la ligne de commande.
 
@@ -23,11 +23,11 @@ L'édition UX nécessite **Go 1.26.1**. Sa cryptographie post-quantique est une 
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Compilez à partir du tag de version que nomme le manifeste (`git checkout v3.1.12` aujourd'hui). Cela produit `build/lightnode-ux`.
+Compilez à partir du tag de version que nomme le manifeste (`git checkout v3.1.13` aujourd'hui). Cela produit `build/lightnode-ux`.
 
 ### Docker
 
-Le service UX exécute l'image publique `ghcr.io/qorechain/qorechain-lightnode-ux` (tags `latest` et `v<version>`, par exemple `v3.1.12`), récupérée par le `docker-compose.yml` de la branche `main` de `github.com/qorechain/qorechain-lightnode` ; si le registre n'est pas joignable, compose compile `Dockerfile.ux` depuis les sources. Le conteneur a besoin d'un `config.toml` dans son volume de données avant de pouvoir démarrer. Le binaire UX dispose des commandes de configuration, vous pouvez donc la créer directement dans le volume :
+Le service UX exécute l'image publique `ghcr.io/qorechain/qorechain-lightnode-ux` (tags `latest` et `v<version>`, par exemple `v3.1.13`), récupérée par le `docker-compose.yml` de la branche `main` de `github.com/qorechain/qorechain-lightnode` ; si le registre n'est pas joignable, compose compile `Dockerfile.ux` depuis les sources. Le conteneur a besoin d'un `config.toml` dans son volume de données avant de pouvoir démarrer. Le binaire UX dispose des commandes de configuration, vous pouvez donc la créer directement dans le volume :
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

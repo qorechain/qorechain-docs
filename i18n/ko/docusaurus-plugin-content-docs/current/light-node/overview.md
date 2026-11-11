@@ -11,7 +11,7 @@ sidebar_position: 1
 
 노드를 실행하고 동기화하는 데는 라이선스가 필요 없습니다. 보상 분배에 참여하는 것은 별도의 단계이며, `lightnode_operator` 라이선스, 본딩된 검증자에게 위임된 스테이크, 온체인 등록이 필요합니다([이용 방법](#how-to-access) 참조).
 
-라이트 노드는 체인 릴리스와는 별개인 **자체 버전 라인**을 가집니다. 2026년 11월 4일 기준 두 네트워크의 릴리스 채널은 모두 라이트 노드 **3.1.12**를 제공합니다(당시 두 네트워크 모두 체인 `v3.2.6`이었고, 테스트넷은 2026년 11월 6일부터 `v3.2.7`을 실행하며 메인넷은 `v3.2.6`에 머뭅니다). 두 숫자는 서로 무관한 것으로 취급하세요.
+라이트 노드는 체인 릴리스와는 별개인 **자체 버전 라인**을 가집니다. 2026년 11월 12일 기준 두 네트워크의 릴리스 채널은 모두 라이트 노드 **3.1.13**을 제공합니다(테스트넷은 체인 `v3.2.7`, 메인넷은 체인 `v3.2.6`을 실행하며, 3.1.13은 `v3.2.7`에서 변경 없이 동작하고 하트비트와 클레임이 코드 0을 반환합니다). 두 숫자는 서로 무관한 것으로 취급하세요.
 
 ## 혁신 요소 {#innovations}
 
@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 `onboard`용 체인 RPC는 `https://rpc.qore.host`(메인넷) 또는 `https://rpc-testnet.qore.host`(테스트넷)입니다. UX 에디션은 같은 명령으로 `lightnode-ux`를 사용하고 `http://127.0.0.1:8420`을 여세요. 각 단계의 자세한 내용은 [SX 에디션](/light-node/sx-edition)과 [등록 및 라이선싱](/light-node/registration-and-licensing)을 참조하세요.
 
-**3. 최신 상태 유지.** 라이트 노드 3.1.11 이상은 컨테이너 밖에서 스스로 업데이트합니다(위의 자체 업데이트 항목 참조). 3.1.10 이하 노드는 3.1.12를 한 번 수동으로 설치해야 합니다. 위와 같이 버전이 지정된 바이너리를 다운로드해 파일을 교체하세요. Docker에서는 `docker compose pull && docker compose up -d`를 실행하세요. [SX 에디션: 업데이트](/light-node/sx-edition#updating)를 참조하세요.
+**3. 최신 상태 유지.** 라이트 노드 3.1.11 이상은 컨테이너 밖에서 스스로 업데이트합니다(위의 자체 업데이트 항목 참조). 3.1.10 이하 노드는 3.1.13를 한 번 수동으로 설치해야 합니다. 위와 같이 버전이 지정된 바이너리를 다운로드해 파일을 교체하세요. Docker에서는 `docker compose pull && docker compose up -d`를 실행하세요. [SX 에디션: 업데이트](/light-node/sx-edition#updating)를 참조하세요.
 
 ## 이용 방법 {#how-to-access}
 
@@ -77,7 +77,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 | 체인 | `qorechain-vladi` (체인 `v3.2.6`) | `qorechain-diana` (체인 `v3.2.7`) |
 | 노드용 RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | 조회용 REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
-| 라이트 노드 릴리스 | 3.1.12 | 3.1.12 |
+| 라이트 노드 릴리스 | 3.1.13 | 3.1.13 |
 | 라이선스 | $50, Dashboard에서 구매. 부여는 일괄로 수동 서명됨 | 무료, 셀프서비스: **Nodes & Validators > Light Node**, **Request licence**. 자동으로 서명되며 보통 몇 분 내에 처리됨 |
 
 **등록에 필요한 것**
@@ -85,7 +85,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 - 복구 단어를 직접 보유한 계정(본인의 단어, Keplr 또는 `qorechaind` 키). 가능하면 노드 전용 계정을 권장합니다. 수탁형 Dashboard 지갑은 시드를 내보내지 않는 한 노드를 실행할 수 없습니다.
 - 해당 주소의 활성 `lightnode_operator` 라이선스(아래 참조).
 - 해당 주소에서 **본딩된** 검증자에게 위임된 합계 **1,000 QOR** 이상.
-- **1 QOR**의 등록 수수료와 트랜잭션 수수료를 위한 계정 내 QOR. 하트비트는 기본 한도 300,000 가스에서 가스당 0.25 uqor가 들며, 상한은 0.075 QOR입니다(측정된 사용 가스: 약 165,000). 하트비트는 1,000블록마다 한 번 필요하며 메인넷에서는 하루 약 25~27회이므로, 수수료는 하루 약 1.9~2 QOR입니다. 1,000 QOR 스테이크와는 별도로 이 수수료를 위한 사용 가능한 QOR를 운영자 계정에 보유하세요. QOR가 바닥난 노드는 하트비트를 멈추고, 비활성 상태가 되며, 가동률을 잃습니다.
+- **1 QOR**의 등록 수수료와 트랜잭션 수수료를 위한 계정 내 QOR. 하트비트는 가스당 0.25 uqor가 듭니다. 3.1.13부터 노드는 각 하트비트의 가스 한도를 직전 하트비트가 사용한 양에 25%를 더한 값으로 설정하므로, 하트비트 한 번에 약 0.054 QOR가 듭니다(테스트넷 측정: 한도 216,000, 사용 165,774, 수수료 54,000 uqor). 하트비트는 1,000블록마다 한 번 필요하며 메인넷에서는 하루 약 25~27회이므로, 수수료는 하루 약 1.4 QOR, 한 달이면 대략 40 QOR입니다. 3.1.12 이하 버전은 300,000 가스 상한 전체를 사용해 하트비트당 0.075 QOR를 지불하며, 하루 약 1.9~2 QOR입니다. 노드는 계정의 사용 가능한 잔액이 3일 미만의 하트비트만 감당할 수 있을 때 로그에 경고를 남깁니다. 1,000 QOR 스테이크와는 별도로 이 수수료를 위한 사용 가능한 QOR를 운영자 계정에 보유하세요. QOR가 바닥난 노드는 하트비트를 멈추고, 비활성 상태가 되며, 가동률을 잃습니다.
 - 계속 켜져 있는 컴퓨터: 노드는 1,000블록마다 하트비트를 보내야 하고 보상을 받으려면 가동률 80% 이상을 유지해야 합니다.
 
 **라이선스 받기.** Dashboard에서 **Nodes & Validators**(이전에 **Tools**라고 불리던 사이드바 항목이며, 페이지는 여전히 `/tools`에 있음)를 열고 **Light Node** 탭을 선택한 다음, 헤더에서 네트워크를 선택하세요. Dashboard에는 로그인이 필요합니다.
@@ -115,12 +115,12 @@ QoreChain의 수수료 분배는 라이트 노드에 고정된 **3% 분배**(`re
 
 | 항목 | 위치 | 현재 버전 |
 | --- | --- | --- |
-| 릴리스 매니페스트, 메인넷 | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.12 (`minCompatible` 3.1.9, 등록 열림) |
-| 릴리스 매니페스트, 테스트넷 | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.12 (`minCompatible` 3.1.9, 등록 열림) |
+| 릴리스 매니페스트, 메인넷 | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, 등록 열림) |
+| 릴리스 매니페스트, 테스트넷 | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, 등록 열림) |
 | 바이너리 | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 릴리스당 12개 파일(SX와 UX, Linux, macOS, Windows, amd64와 arm64)과 `SHA256SUMS` |
-| 소스 및 릴리스 | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | 릴리스 `v3.1.12`(현재) 및 이전 태그. 각각 12개 바이너리, `SHA256SUMS`, `lightnode-build.json`, Android 프리뷰 APK를 포함 |
+| 소스 및 릴리스 | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | 릴리스 `v3.1.13`(현재) 및 이전 태그. 각각 12개 바이너리, `SHA256SUMS`, `lightnode-build.json`, Android 프리뷰 APK를 포함 |
 | Android | GitHub 릴리스에만 첨부 | 프리뷰: 체인을 따르며, 등록하지 않고 보상도 받지 않음 |
-| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` 및 `ghcr.io/qorechain/qorechain-lightnode-ux`, 공개, 태그 `latest`와 `v<version>`([SX 에디션: Docker](/light-node/sx-edition#docker) 참조) | `v3.1.12` |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` 및 `ghcr.io/qorechain/qorechain-lightnode-ux`, 공개, 태그 `latest`와 `v<version>`([SX 에디션: Docker](/light-node/sx-edition#docker) 참조) | `v3.1.13` |
 
 이 표에 의존하지 말고 다운로드하기 전에 네트워크 매니페스트의 `version`을 확인하세요. 릴리스 서명 키는 바이너리에 내장되어 있으며 따로 설치할 것은 없습니다.
 
@@ -130,7 +130,7 @@ QoreChain의 수수료 분배는 라이트 노드에 고정된 **3% 분배**(`re
 - **보상은 상한입니다.** 노드별 한도(30일에 2,000 QOR)는 최대치이며, 노드는 풀에 누적되는 금액만, 그리고 자격이 있는 동안에만 보상을 받습니다.
 - **하트비트는 활성 서명입니다.** 운영자 키가 제때 서명했다는 것을 증명할 뿐, 전체 소프트웨어가 계속 실행되었다는 것을 증명하지는 않습니다.
 - **평판 경고.** 체인 v3.2.6(메인넷, 2026년 11월 4일)부터 메인넷이 검증자별 평판 점수를 제공하므로 이 검사는 두 네트워크 모두에서 실행될 수 있습니다. 11월 4일에 본딩된 검증자에 대해 `GET /qorechain/reputation/v1/validator/<valoper>`가 메인넷에서 200으로 응답했습니다. v3.2.6보다 오래된 체인(또는 체인이 아직 점수를 매기지 않은 검증자)에 대해서는 노드가 그 검사 하나를 건너뛰고 로그에 그렇게 알립니다. jail, 활성 집합 미포함, 낮은 스테이크 경고는 이에 의존하지 않습니다. 3.1.11 이전 노드 버전은 실패한 평판 검사를 5분마다 기록했으며 어떤 것에 대해서도 경고하지 않았습니다.
-- **자체 업데이트는 3.1.11부터 시작됩니다.** 3.1.10 이하 노드는 스스로 업데이트하지 않으며 3.1.12를 한 번 수동으로 설치해야 합니다. 컨테이너나 쓸 수 없는 폴더에서는 노드가 새 릴리스를 알리기만 합니다.
+- **자체 업데이트는 3.1.11부터 시작됩니다.** 3.1.10 이하 노드는 스스로 업데이트하지 않으며 3.1.13를 한 번 수동으로 설치해야 합니다. 컨테이너나 쓸 수 없는 폴더에서는 노드가 새 릴리스를 알리기만 합니다.
 - **Docker 노드는 스스로 업데이트하지 않습니다.** 새 릴리스에 대해 알림만 받으며, 업데이트는 `docker compose pull && docker compose up -d`입니다.
 - **Android는 프리뷰**이며 등록하지도 보상을 받지도 않습니다.
 - **라이선스.** 메인넷 부여는 일괄로 수동 서명되므로 결제와 등록 사이에 대기 시간이 있습니다. 테스트넷 라이선스는 계정당 1개, 주소당 1개로 제한됩니다.

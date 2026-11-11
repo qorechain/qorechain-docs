@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Sürümü — Web Dashboard
 
-**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, hafif düğümün kendi sürüm hattındadır, zincir sürümünden ayrıdır (27 Ekim 2026'da her iki ağın kanalları da 3.1.12 taşır).
+**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, hafif düğümün kendi sürüm hattındadır, zincir sürümünden ayrıdır (12 Kasım 2026'da her iki ağın kanalları da 3.1.13 taşır).
 
 UX sürümü, masaüstü kullanımı ve komut satırı yerine görsel bir arabirimi tercih eden operatörler için doğru seçimdir.
 
@@ -23,11 +23,11 @@ UX sürümü **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go ile
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Manifestin adlandırdığı sürüm etiketinden derleyin (bugün `git checkout v3.1.12`). Bu, `build/lightnode-ux` üretir.
+Manifestin adlandırdığı sürüm etiketinden derleyin (bugün `git checkout v3.1.13`). Bu, `build/lightnode-ux` üretir.
 
 ### Docker
 
-UX hizmeti, `github.com/qorechain/qorechain-lightnode` deposunun `main` dalındaki `docker-compose.yml` tarafından çekilen herkese açık `ghcr.io/qorechain/qorechain-lightnode-ux` imajını çalıştırır (etiketler `latest` ve `v<version>`, örneğin `v3.1.12`); kayıt defterine ulaşılamazsa compose `Dockerfile.ux` dosyasını kaynaktan derler. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir. UX ikili dosyası kurulum komutlarına sahip olduğundan bunu birim içinde oluşturabilirsiniz:
+UX hizmeti, `github.com/qorechain/qorechain-lightnode` deposunun `main` dalındaki `docker-compose.yml` tarafından çekilen herkese açık `ghcr.io/qorechain/qorechain-lightnode-ux` imajını çalıştırır (etiketler `latest` ve `v<version>`, örneğin `v3.1.13`); kayıt defterine ulaşılamazsa compose `Dockerfile.ux` dosyasını kaynaktan derler. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir. UX ikili dosyası kurulum komutlarına sahip olduğundan bunu birim içinde oluşturabilirsiniz:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

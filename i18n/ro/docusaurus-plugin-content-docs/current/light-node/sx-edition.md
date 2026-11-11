@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Ediția SX — Daemon Server
 
-Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Versiunile light node-ului au o linie proprie, separată de versiunea lanțului: canalele ambelor rețele poartă versiunea **3.1.12** (27 octombrie 2026). Această pagină indică unde o funcție necesită 3.1.11 sau o versiune ulterioară.
+Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Versiunile light node-ului au o linie proprie, separată de versiunea lanțului: canalele ambelor rețele poartă versiunea **3.1.13** (12 noiembrie 2026). Această pagină indică unde o funcție necesită 3.1.11 sau o versiune ulterioară.
 
 ## Instalare {#install}
 
@@ -17,7 +17,7 @@ Binarele precompilate sunt calea cea mai simplă. Clientul light node este un si
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.12 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ Light node-ul necesită **Go 1.26.1**. Criptografia sa post-cuantică este o imp
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Construiește din tag-ul de release pe care îl indică manifestul (`git checkout v3.1.12` astăzi). Aceasta produce `build/lightnode-sx`. Rulează-l direct sau copiază-l în `PATH`. Înainte de înregistrare, verifică rapid stiva de semnare post-cuantică cu [`selftest`](#verify-the-pqc-stack-selftest).
+Construiește din tag-ul de release pe care îl indică manifestul (`git checkout v3.1.13` astăzi). Aceasta produce `build/lightnode-sx`. Rulează-l direct sau copiază-l în `PATH`. Înainte de înregistrare, verifică rapid stiva de semnare post-cuantică cu [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-Imaginile publicate sunt publice și pot fi descărcate anonim: `ghcr.io/qorechain/qorechain-lightnode-sx` și `ghcr.io/qorechain/qorechain-lightnode-ux`, fiecare cu tag-urile `latest` și `v<version>` (de exemplu `v3.1.12`). Fișierul `docker-compose.yml` din ramura `main` a depozitului sursă le folosește și revine la construirea din sursă (`Dockerfile.sx`, `Dockerfile.ux`) când registrul nu este accesibil. Pentru a fixa un release, schimbă tag-ul `image:` din fișierul compose; pentru a construi în schimb dintr-un tag de release, rulează `git checkout v<version>` și apoi `docker compose build`. Cheile, configurația și volumul de date se păstrează când actualizezi.
+Imaginile publicate sunt publice și pot fi descărcate anonim: `ghcr.io/qorechain/qorechain-lightnode-sx` și `ghcr.io/qorechain/qorechain-lightnode-ux`, fiecare cu tag-urile `latest` și `v<version>` (de exemplu `v3.1.13`). Fișierul `docker-compose.yml` din ramura `main` a depozitului sursă le folosește și revine la construirea din sursă (`Dockerfile.sx`, `Dockerfile.ux`) când registrul nu este accesibil. Pentru a fixa un release, schimbă tag-ul `image:` din fișierul compose; pentru a construi în schimb dintr-un tag de release, rulează `git checkout v<version>` și apoi `docker compose build`. Cheile, configurația și volumul de date se păstrează când actualizezi.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,7 +78,8 @@ Nodul semnează nativ în interiorul containerului, deci nu este nevoie de nimic
 - **Setări.** `[update] mode = "auto"` (implicit, și pentru o configurație fără secțiune) anunță și instalează; `"notify"` doar anunță; `"off"` nu verifică. Manual: `lightnode-sx update --check`, apoi `lightnode-sx update`, apoi repornește nodul.
 - **Cum vezi un anunț.** Nodul jurnalizează un release mai nou și îl servește în API-ul tabloului de bord local la `GET /api/update` (câmpuri `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); tabloul de bord UX afișează un banner.
 - **Container sau folder fără drept de scriere.** Nodul doar anunță: actualizează tu imaginea sau fișierul.
-- **Light node 3.1.10 și anterioare** nu se actualizează singure. Instalează 3.1.12 manual o dată: descarcă binarul versionat din calea manifestului (vezi [Instalare](#install)), verifică-l, înlocuiește fișierul și repornește. După aceea nodul urmează canalul său.
+- **Light node 3.1.11 și ulterior** instalează singure 3.1.13 în 6 ore de la publicare (verificat pe nodul de test de pe testnet).
+- **Light node 3.1.10 și anterioare** nu se actualizează singure. Instalează 3.1.13 manual o dată: descarcă binarul versionat din calea manifestului (vezi [Instalare](#install)), verifică-l, înlocuiește fișierul și repornește. După aceea nodul urmează canalul său.
 - **Docker.** Un nod Docker este notificat despre un release nou (în jurnal și la `GET /api/update`), dar nu se înlocuiește niciodată singur; descărcarea este actualizarea: `docker compose pull && docker compose up -d` (păstrează `QORECHAIN_RPC_ADDR` exportat). Alternativa este construirea din noul tag sursă.
 
 ## Configurare {#configure}
@@ -101,8 +102,8 @@ Cele mai relevante opțiuni de configurare, la nivel de utilizare:
 | `data_dir` | Unde stochează nodul baza de date și headerele. |
 | `keyring_backend` / `key_name` | Backend-ul keyring-ului (`file`, `os` sau `test`, doar pentru devneturi locale) și numele cheii post-cuantice cu care semnează nodul. `onboard` setează `key_name` la cheia pe care o creează (`validator`); `keys add-operator` îl schimbă în `operator-pqc` când derivă sau recuperează cheia din cuvintele contului. Backend-ul `file` necesită `QORE_LIGHTNODE_KEYRING_PASSPHRASE` în mediu. |
 | `operator_address` | Contul căruia îi aparține acest nod (`qor1...`); validat la încărcare. `keys add-operator` îl completează. Necesar pentru `register`, `status` și heartbeat-uri. Vezi [Portofelul operatorului](#operator-wallet). |
-| `api_addr` | Endpoint-ul REST. Dedus din `rpc_addr` când este gol (portul 26657 devine 1317; gazdele `rpc.` devin `api.`), deci este necesar doar pentru endpoint-uri care nu urmează niciuna dintre convenții. |
-| `[heartbeat]` | Activ implicit (`enabled`). `interval_blocks` (potrivește-l cu `heartbeat_interval` al lanțului, 1000), `check_interval` (implicit `60s`) și `gas` (implicit `300000`; cu semnarea nativă, taxa este de 0,25 uqor per unitate de gas, adică 75.000 uqor). Folosite doar de alternativa `qorechaind`: `fees` (implicit `50000uqor`), `qorechaind_path` (gol înseamnă `qorechaind` din `PATH`), `qorechaind_home` (gol înseamnă `~/.qorechaind`), `keyring_backend` și `key_name` (cheia `qorechaind` care conține contul de operator; implicit `key_name` de la nivelul superior). |
+| `api_addr` | Endpoint-ul REST. `onboard` îl scrie în `config.toml` (mainnet `https://api.qore.host`, testnet `https://api-testnet.qore.host`). Când este gol, este dedus din `rpc_addr` (portul 26657 devine 1317; gazdele `rpc.` și `rpc-testnet.` devin `api.` și `api-testnet.`; de exemplu `https://rpc-testnet.qore.host` dă `https://api-testnet.qore.host`), deci este necesar doar pentru endpoint-uri care nu urmează niciuna dintre aceste convenții. Până la 3.1.12 exista doar maparea `rpc.` la `api.`, așa că un nod de testnet cu `api_addr` gol putea răspunde „404 page not found” la licență, register și status; setează `api_addr` manual pe acele versiuni sau actualizează. |
+| `[heartbeat]` | Activ implicit (`enabled`). `interval_blocks` (potrivește-l cu `heartbeat_interval` al lanțului, 1000), `check_interval` (implicit `60s`) și `gas` (implicit `300000`, plafonul pentru limita de gaz a unui heartbeat; cu semnarea nativă, taxa este de 0,25 uqor per unitate de gas). Din 3.1.13 nodul setează limita de gaz a fiecărui heartbeat la cât a folosit heartbeat-ul anterior plus 25%, rotunjit în sus la 1.000 de gaz și niciodată peste `gas`; primul heartbeat după pornire și primul după un refuz din lipsă de gaz folosesc plafonul. Măsurat pe testnet: limită 216.000, folosit 165.774, taxă 54.000 uqor (0,054 QOR) per heartbeat în loc de 75.000 uqor. Contul operatorului trebuie să dețină QOR cheltuibili peste stake-ul de 1.000 QOR pentru a plăti aceste taxe. Folosite doar de alternativa `qorechaind`: `fees` (implicit `50000uqor`), `qorechaind_path` (gol înseamnă `qorechaind` din `PATH`), `qorechaind_home` (gol înseamnă `~/.qorechaind`), `keyring_backend` și `key_name` (cheia `qorechaind` care conține contul de operator; implicit `key_name` de la nivelul superior). |
 | `[delegation]` | `auto_claim` (dezactivat implicit: revendică recompensele acumulate ale light node-ului în contul operatorului prin semnatar; nodul nu re-deleagă niciodată de pe server), intervalul de verificare, recompensa minimă de revendicat, `rebalance_enabled` (activ implicit) și `min_reputation` (doar avertismente; nodul nu mută niciodată stake). Din 3.1.11, `rebalance_enabled` activează avertismente pentru un validator delegat care este jailed sau nu se află în setul activ și pentru stake-ul bonded sub `min_delegated_stake` (1,000 QOR); `min_reputation` (implicit `0.5`) se aplică acolo unde rețeaua servește scoruri de reputație per validator, adică astăzi pe testnet. `validators` și `split_weights` sunt acceptate, dar nu sunt folosite în prezent. |
 | `[update]` | `mode`: `auto` (implicit, și când secțiunea lipsește), `notify` (doar anunță) sau `off`. Light node 3.1.11 și ulterior. Vezi [Actualizare](#updating). |
 | `[telemetry]` | Dacă telemetria este activată și intervalele de reîmprospătare pentru validatori, rețea, punte (bridge) și tokenomică. |
@@ -146,7 +147,7 @@ Dacă lași endpoint-ul gol, daemon-ul pornește în modul local-only: stiva PQC
 `onboard` suprascrie întotdeauna configurația activă. Folosește `--config` pentru a scrie într-o cale nestandard, sau `--non-interactive` pentru a eșua rapid în loc să întrebe (util în CI).
 
 :::caution Următorul pas: contul de operator
-`onboard` nu știe care cont este al tău. Înainte să rulezi `register`, adaugă contul de operator cu [`keys add-operator`](#operator-wallet). Acesta completează `operator_address` pentru tine. Dacă endpoint-ul nu a putut fi accesat în timpul `onboard`, verifică și că `chain_id` din `config.toml` este `qorechain-vladi` (mainnet) sau `qorechain-diana` (testnet).
+`onboard` nu știe care cont este al tău. Înainte să rulezi `register`, adaugă contul de operator cu [`keys add-operator`](#operator-wallet). Acesta completează `operator_address` pentru tine. Dacă endpoint-ul nu a putut fi accesat în timpul `onboard`, verifică și că `chain_id` din `config.toml` este `qorechain-vladi` (mainnet) sau `qorechain-diana` (testnet), și că `api_addr` este setat (`onboard` îl scrie; un nod de testnet pe 3.1.12 sau anterior cu `api_addr` gol poate răspunde „404 page not found”).
 :::
 
 ## Rulare: `start`
@@ -195,6 +196,7 @@ lightnode-sx keys add-operator
 
 - derivă cheia contului din cuvinte exact cum o fac `qorechaind` și Keplr (`m/44'/118'/0'/0/0`), o stochează în keyring ca `operator` și scrie contul în `operator_address` din `config.toml`. Dacă `operator_address` este deja setat la un alt cont, refuză;
 - alege cheia post-cuantică cu care semnează nodul, o stochează ca `operator-pqc` și setează `key_name` la aceasta. Dacă contul are deja o cheie post-cuantică — de obicei înregistrată de un portofel din aceleași cuvinte — acea cheie este reconstruită din cuvinte (derivările wallet-adapter și Dashboard, aceleași ca `qorechaind tx pqc recover-key`). Dacă contul nu are niciuna, o cheie este derivată din cuvinte, astfel încât cuvintele restaurează și cheia nodului. Dacă cheia înregistrată a contului este deja cheia curentă a nodului, acea cheie este păstrată. Dacă cheia contului nu poate fi reprodusă din cuvinte, comanda refuză și recomandă un cont dedicat;
+- indică de unde vine licența pentru rețeaua folosită: o achiziție din Dashboard pe mainnet, cererea gratuită self-service pe testnet;
 - fără `--recover`, creează un cont nou și îi afișează cele 24 de cuvinte o singură dată. Notează-le; sunt singura copie de rezervă. Alimentează contul și cumpără licența pentru adresa lui înainte de înregistrare.
 
 Parola keyring-ului (`QORE_LIGHTNODE_KEYRING_PASSPHRASE`) protejează această cheie, la fel ca pe cheia nodului. Apoi înregistrează:

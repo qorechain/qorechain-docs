@@ -11,7 +11,7 @@ Le **nœud léger QoreChain** est un petit client qui suit un réseau QoreChain 
 
 Exécuter et synchroniser un nœud ne nécessite aucune licence. Participer à la part de récompense est une étape distincte : elle nécessite une licence `lightnode_operator`, du stake délégué à des validateurs bondés, et un enregistrement on-chain (voir [Comment y accéder](#how-to-access)).
 
-Le nœud léger a sa **propre ligne de version**, distincte de la version de publication de la chaîne. Au 4 novembre 2026, les canaux de publication des deux réseaux fournissent le nœud léger **3.1.12** (chaîne `v3.2.6` alors sur les deux réseaux ; le testnet exécute la `v3.2.7` depuis le 6 novembre 2026, le mainnet reste en `v3.2.6`). Considérez ces deux numéros comme sans rapport.
+Le nœud léger a sa **propre ligne de version**, distincte de la version de publication de la chaîne. Au 12 novembre 2026, les canaux de publication des deux réseaux fournissent le nœud léger **3.1.13** (le testnet exécute la chaîne `v3.2.7`, le mainnet la `v3.2.6` ; la 3.1.13 fonctionne sans changement sur la `v3.2.7`, où le heartbeat et le claim renvoient le code 0). Considérez ces deux numéros comme sans rapport.
 
 ## Innovations {#innovations}
 
@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 Le RPC de la chaîne pour `onboard` est `https://rpc.qore.host` (mainnet) ou `https://rpc-testnet.qore.host` (testnet). Pour l'édition UX, utilisez `lightnode-ux` avec les mêmes commandes et ouvrez `http://127.0.0.1:8420`. Détails de chaque étape : [Édition SX](/light-node/sx-edition) et [Enregistrement et licence](/light-node/registration-and-licensing).
 
-**3. Gardez-le à jour.** Les nœuds légers 3.1.11 et ultérieurs se mettent à jour eux-mêmes hors des conteneurs (voir l'élément de mise à jour automatique ci-dessus). Un nœud en 3.1.10 ou antérieur doit installer la 3.1.12 à la main une fois : téléchargez le binaire versionné comme ci-dessus et remplacez le fichier. Avec Docker, exécutez `docker compose pull && docker compose up -d`. Voir [Édition SX : mise à jour](/light-node/sx-edition#updating).
+**3. Gardez-le à jour.** Les nœuds légers 3.1.11 et ultérieurs se mettent à jour eux-mêmes hors des conteneurs (voir l'élément de mise à jour automatique ci-dessus). Un nœud en 3.1.10 ou antérieur doit installer la 3.1.13 à la main une fois : téléchargez le binaire versionné comme ci-dessus et remplacez le fichier. Avec Docker, exécutez `docker compose pull && docker compose up -d`. Voir [Édition SX : mise à jour](/light-node/sx-edition#updating).
 
 ## Comment y accéder {#how-to-access}
 
@@ -77,7 +77,7 @@ Le RPC de la chaîne pour `onboard` est `https://rpc.qore.host` (mainnet) ou `ht
 | Chaîne | `qorechain-vladi` (chaîne `v3.2.6`) | `qorechain-diana` (chaîne `v3.2.7`) |
 | RPC pour le nœud | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | REST pour les requêtes | `https://api.qore.host` | `https://api-testnet.qore.host` |
-| Version du nœud léger | 3.1.12 | 3.1.12 |
+| Version du nœud léger | 3.1.13 | 3.1.13 |
 | Licence | 50 $, achetée sur le Dashboard ; l'attribution est signée à la main par lots | Gratuite, en libre-service : **Nodes & Validators > Light Node**, **Request licence** ; signée automatiquement, généralement en quelques minutes |
 
 **Ce qu'il vous faut pour vous enregistrer**
@@ -85,7 +85,7 @@ Le RPC de la chaîne pour `onboard` est `https://rpc.qore.host` (mainnet) ou `ht
 - Un compte dont vous détenez les mots de récupération (vos propres mots, Keplr, ou une clé `qorechaind`), de préférence dédié au nœud. Un portefeuille custodial du Dashboard ne peut pas faire tourner un nœud, sauf si vous exportez sa graine.
 - Une licence `lightnode_operator` active sur cette adresse (voir ci-dessous).
 - Au moins **1 000 QOR** délégués depuis cette adresse à des validateurs **bondés**, comptés au total.
-- Des QOR sur le compte pour les frais d'enregistrement de **1 QOR** et les frais de transaction. Un heartbeat coûte 0,25 uqor par gas à la limite par défaut de 300 000 gas, soit 0,075 QOR au maximum (gas mesuré utilisé : environ 165 000). Un heartbeat est dû tous les 1 000 blocs, soit environ 25 à 27 par jour sur le mainnet, donc les frais s'élèvent à environ 1,9 à 2 QOR par jour. Gardez des QOR disponibles sur le compte opérateur pour ces frais, en plus du stake de 1 000 QOR : un nœud à court de QOR cesse d'envoyer des heartbeats, devient inactif et perd de l'uptime.
+- Des QOR sur le compte pour les frais d'enregistrement de **1 QOR** et les frais de transaction. Un heartbeat coûte 0,25 uqor par gas. À partir de la 3.1.13, le nœud fixe la limite de gas de chaque heartbeat à ce qu'a utilisé le heartbeat précédent plus 25 %, donc un heartbeat coûte environ 0,054 QOR (mesuré sur le testnet : limite 216 000, utilisé 165 774, frais 54 000 uqor). Un heartbeat est dû tous les 1 000 blocs, soit environ 25 à 27 par jour sur le mainnet, donc les frais s'élèvent à environ 1,4 QOR par jour, soit environ 40 QOR par mois. Les versions 3.1.12 et antérieures utilisent le plafond complet de 300 000 gas et paient 0,075 QOR par heartbeat, soit environ 1,9 à 2 QOR par jour. Le nœud écrit un avertissement dans son journal lorsque le solde disponible du compte couvre moins de 3 jours de heartbeats. Gardez des QOR disponibles sur le compte opérateur pour ces frais, en plus du stake de 1 000 QOR : un nœud à court de QOR cesse d'envoyer des heartbeats, devient inactif et perd de l'uptime.
 - Un ordinateur qui reste allumé : le nœud doit envoyer un heartbeat tous les 1 000 blocs et maintenir au moins 80 % de disponibilité pour être payé.
 
 **Obtenir une licence.** Sur le Dashboard, ouvrez **Nodes & Validators** (l'entrée de la barre latérale qui s'appelait **Tools** ; la page se trouve toujours à `/tools`), choisissez l'onglet **Light Node**, et sélectionnez le réseau dans l'en-tête. Le Dashboard exige une connexion.
@@ -115,12 +115,12 @@ Pour être éligible aux récompenses, un nœud léger doit être **enregistré 
 
 | Quoi | Où | Version actuelle |
 | --- | --- | --- |
-| Manifeste de publication, mainnet | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.12 (`minCompatible` 3.1.9, enregistrement ouvert) |
-| Manifeste de publication, testnet | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.12 (`minCompatible` 3.1.9, enregistrement ouvert) |
+| Manifeste de publication, mainnet | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, enregistrement ouvert) |
+| Manifeste de publication, testnet | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, enregistrement ouvert) |
 | Binaires | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 12 fichiers par publication (SX et UX, Linux, macOS et Windows, amd64 et arm64) plus `SHA256SUMS` |
-| Code source et publications | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Publication `v3.1.12` (actuelle) et tags antérieurs ; chacune comprend les 12 binaires, `SHA256SUMS`, `lightnode-build.json` et un APK Android en aperçu |
+| Code source et publications | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Publication `v3.1.13` (actuelle) et tags antérieurs ; chacune comprend les 12 binaires, `SHA256SUMS`, `lightnode-build.json` et un APK Android en aperçu |
 | Android | Joint à la publication GitHub uniquement | Aperçu : suit la chaîne, ne s'enregistre pas, ne gagne rien |
-| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` et `ghcr.io/qorechain/qorechain-lightnode-ux`, publiques, tags `latest` et `v<version>` (voir [Édition SX : Docker](/light-node/sx-edition#docker)) | `v3.1.12` |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` et `ghcr.io/qorechain/qorechain-lightnode-ux`, publiques, tags `latest` et `v<version>` (voir [Édition SX : Docker](/light-node/sx-edition#docker)) | `v3.1.13` |
 
 Vérifiez la `version` dans le manifeste de votre réseau avant de télécharger, plutôt que de vous fier à ce tableau. La clé de signature des publications est intégrée au binaire ; il n'y a rien à installer de votre côté.
 
@@ -130,7 +130,7 @@ Vérifiez la `version` dans le manifeste de votre réseau avant de télécharger
 - **Les récompenses sont un plafond.** Le plafond par nœud (2 000 QOR par 30 jours) est un maximum, et le nœud n'est payé que de ce qui s'accumule dans le pool et uniquement tant qu'il est éligible.
 - **Un heartbeat est une signature de vivacité.** Il prouve que la clé de l'opérateur a signé à temps, et non que le logiciel complet a tourné en continu.
 - **Les avertissements de réputation.** Depuis la chaîne v3.2.6 (mainnet, 4 novembre 2026), le mainnet sert les scores de réputation par validateur, de sorte que la vérification peut s'exécuter sur les deux réseaux ; le 4 novembre, `GET /qorechain/reputation/v1/validator/<valoper>` a répondu 200 sur le mainnet pour un validateur bondé. Face à une chaîne antérieure à la v3.2.6 (ou à un validateur que la chaîne n'a pas noté), le nœud ignore cette seule vérification et l'indique dans son journal. Les avertissements « jailed », « hors de l'ensemble actif » et « stake faible » n'en dépendent pas. Les versions du nœud antérieures à la 3.1.11 consignaient un échec de la vérification de réputation toutes les cinq minutes et n'avertissaient jamais de rien.
-- **La mise à jour automatique commence à la 3.1.11.** Un nœud en 3.1.10 ou antérieur ne se met pas à jour tout seul et nécessite une installation manuelle de la 3.1.12. Dans un conteneur ou un dossier non accessible en écriture, le nœud ne fait qu'annoncer les nouvelles versions.
+- **La mise à jour automatique commence à la 3.1.11.** Un nœud en 3.1.10 ou antérieur ne se met pas à jour tout seul et nécessite une installation manuelle de la 3.1.13. Dans un conteneur ou un dossier non accessible en écriture, le nœud ne fait qu'annoncer les nouvelles versions.
 - **Les nœuds Docker ne se mettent pas à jour eux-mêmes.** Ils sont informés d'une nouvelle version, et la mise à jour se fait avec `docker compose pull && docker compose up -d`.
 - **Android est un aperçu** et ne s'enregistre pas et ne gagne rien.
 - **Licences.** Les attributions du mainnet sont signées à la main par lots ; il y a donc une attente entre le paiement et l'enregistrement. La licence testnet est limitée à une par compte et une par adresse.

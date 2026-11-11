@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX Edition — Server Daemon
 
-The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. Light node versions are on their own line, separate from the chain version: both networks' channels carry **3.1.12** (27 October 2026). This page notes where a feature needs 3.1.11 or later.
+The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. Light node versions are on their own line, separate from the chain version: both networks' channels carry **3.1.13** (12 November 2026). This page notes where a feature needs 3.1.11 or later.
 
 ## Install {#install}
 
@@ -17,7 +17,7 @@ Prebuilt binaries are the easiest path. The light node client is a single static
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.12 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ The light node requires **Go 1.26.1**. Its post-quantum cryptography is a pure-G
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Build from the release tag the manifest names (`git checkout v3.1.12` today). This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`. Before registering, sanity-check the post-quantum signing stack with [`selftest`](#verify-the-pqc-stack-selftest).
+Build from the release tag the manifest names (`git checkout v3.1.13` today). This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`. Before registering, sanity-check the post-quantum signing stack with [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-The released images are public and can be pulled anonymously: `ghcr.io/qorechain/qorechain-lightnode-sx` and `ghcr.io/qorechain/qorechain-lightnode-ux`, each tagged `latest` and `v<version>` (for example `v3.1.12`). The `docker-compose.yml` on the `main` branch of the source repository uses them and falls back to building from source (`Dockerfile.sx`, `Dockerfile.ux`) when the registry is not reachable. To pin a release, change the `image:` tag in the compose file; to build from a release tag instead, `git checkout v<version>` and run `docker compose build`. Keys, config and the data volume carry over when you update.
+The released images are public and can be pulled anonymously: `ghcr.io/qorechain/qorechain-lightnode-sx` and `ghcr.io/qorechain/qorechain-lightnode-ux`, each tagged `latest` and `v<version>` (for example `v3.1.13`). The `docker-compose.yml` on the `main` branch of the source repository uses them and falls back to building from source (`Dockerfile.sx`, `Dockerfile.ux`) when the registry is not reachable. To pin a release, change the `image:` tag in the compose file; to build from a release tag instead, `git checkout v<version>` and run `docker compose build`. Keys, config and the data volume carry over when you update.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,7 +78,8 @@ The node signs natively inside the container, so nothing else is required. The S
 - **Settings.** `[update] mode = "auto"` (default, also for a config without the section) announces and installs; `"notify"` announces only; `"off"` does not check. By hand: `lightnode-sx update --check`, then `lightnode-sx update`, then restart the node.
 - **Seeing an announcement.** The node logs a newer release and serves it on the local dashboard API at `GET /api/update` (fields `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); the UX dashboard shows a banner.
 - **Container or unwritable folder.** The node only announces: update the image or the file yourself.
-- **Light node 3.1.10 and earlier** do not update themselves. Install 3.1.12 by hand once: download the versioned binary from the manifest path (see [Install](#install)), verify it, replace the file and restart. After that the node follows its channel.
+- **Light node 3.1.11 and later** install 3.1.13 by themselves within 6 hours of its publication (checked on the testnet test node).
+- **Light node 3.1.10 and earlier** do not update themselves. Install 3.1.13 by hand once: download the versioned binary from the manifest path (see [Install](#install)), verify it, replace the file and restart. After that the node follows its channel.
 - **Docker.** A Docker node is notified of a new release (log and `GET /api/update`) but never replaces itself; the pull is the update: `docker compose pull && docker compose up -d` (keep `QORECHAIN_RPC_ADDR` exported). Building from the new source tag is the alternative.
 
 ## Configure {#configure}
@@ -101,8 +102,8 @@ The most relevant configuration options, at a usage level:
 | `data_dir` | Where the node stores its database and headers. |
 | `keyring_backend` / `key_name` | Keyring backend (`file`, `os`, or `test` for local devnets only) and the name of the post-quantum key the node signs with. `onboard` sets `key_name` to the key it creates (`validator`); `keys add-operator` changes it to `operator-pqc` when it derives or recovers the key from the account's words. The `file` backend requires `QORE_LIGHTNODE_KEYRING_PASSPHRASE` in the environment. |
 | `operator_address` | The account this node belongs to (`qor1...`); validated at load. `keys add-operator` fills it in. Required for `register`, `status` and heartbeats. See [The operator wallet](#operator-wallet). |
-| `api_addr` | The REST endpoint. Derived from `rpc_addr` when empty (port 26657 becomes 1317; `rpc.` hosts become `api.`), so it is only needed for endpoints that follow neither convention. |
-| `[heartbeat]` | On by default (`enabled`). `interval_blocks` (match the chain's `heartbeat_interval`, 1000), `check_interval` (default `60s`) and `gas` (default `300000`; with native signing the fee is 0.25 uqor per unit of gas, so 75,000 uqor). Used only by the `qorechaind` fallback: `fees` (default `50000uqor`), `qorechaind_path` (empty means `qorechaind` on `PATH`), `qorechaind_home` (empty means `~/.qorechaind`), `keyring_backend`, and `key_name` (the `qorechaind` key holding the operator account; defaults to the top-level `key_name`). |
+| `api_addr` | The REST endpoint. `onboard` writes it into `config.toml` (mainnet `https://api.qore.host`, testnet `https://api-testnet.qore.host`). When empty, it is derived from `rpc_addr` (port 26657 becomes 1317; `rpc.` and `rpc-testnet.` hosts become `api.` and `api-testnet.`; for example `https://rpc-testnet.qore.host` gives `https://api-testnet.qore.host`), so it is only needed for endpoints that follow none of these conventions. Until 3.1.12 only the `rpc.` to `api.` mapping existed, so a testnet node with an empty `api_addr` could answer "404 page not found" on licence, register and status; set `api_addr` by hand on those versions, or update. |
+| `[heartbeat]` | On by default (`enabled`). `interval_blocks` (match the chain's `heartbeat_interval`, 1000), `check_interval` (default `60s`) and `gas` (default `300000`, the ceiling for a heartbeat's gas limit; with native signing the fee is 0.25 uqor per unit of gas). From 3.1.13 the node sets each heartbeat's gas limit to what the previous heartbeat used plus 25%, rounded up to 1,000 gas, and never above `gas`; the first heartbeat after a start, and the first after an out-of-gas refusal, use the ceiling. Measured on the testnet: limit 216,000, used 165,774, fee 54,000 uqor (0.054 QOR) per heartbeat instead of 75,000 uqor. The operator account must hold spendable QOR beyond the 1,000 QOR stake to pay these fees. Used only by the `qorechaind` fallback: `fees` (default `50000uqor`), `qorechaind_path` (empty means `qorechaind` on `PATH`), `qorechaind_home` (empty means `~/.qorechaind`), `keyring_backend`, and `key_name` (the `qorechaind` key holding the operator account; defaults to the top-level `key_name`). |
 | `[delegation]` | `auto_claim` (off by default: claims accrued light-node rewards to the operator account through the signer; the node never re-delegates from the server), the check interval, minimum reward to claim, `rebalance_enabled` (on by default) and `min_reputation` (warnings only; the node never moves stake). From 3.1.11 `rebalance_enabled` switches on warnings for a delegated validator that is jailed or not in the active set and for bonded stake below `min_delegated_stake` (1,000 QOR); `min_reputation` (default `0.5`) applies where the network serves per-validator reputation scores, which is the testnet today. `validators` and `split_weights` are accepted but not currently acted on. |
 | `[update]` | `mode`: `auto` (default, also when the section is absent), `notify` (announce only) or `off`. Light node 3.1.11 and later. See [Updating](#updating). |
 | `[telemetry]` | Whether telemetry is enabled and the refresh intervals for validators, network, bridge, and tokenomics. |
@@ -146,7 +147,7 @@ If you leave the endpoint blank, the daemon starts in local-only mode: the PQC s
 `onboard` always overwrites the active config. Use `--config` to write to a non-default path, or `--non-interactive` to fail fast instead of prompting (useful in CI).
 
 :::caution Next: the operator account
-`onboard` does not know which account is yours. Before you run `register`, add the operator account with [`keys add-operator`](#operator-wallet). It fills in `operator_address` for you. If the endpoint could not be reached during `onboard`, also check that `chain_id` in `config.toml` is `qorechain-vladi` (mainnet) or `qorechain-diana` (testnet).
+`onboard` does not know which account is yours. Before you run `register`, add the operator account with [`keys add-operator`](#operator-wallet). It fills in `operator_address` for you. If the endpoint could not be reached during `onboard`, also check that `chain_id` in `config.toml` is `qorechain-vladi` (mainnet) or `qorechain-diana` (testnet), and that `api_addr` is set (`onboard` writes it; a testnet node on 3.1.12 or earlier with an empty `api_addr` may answer "404 page not found").
 :::
 
 ## Run: `start`
@@ -195,6 +196,7 @@ lightnode-sx keys add-operator
 
 - derives the account key from the words exactly as `qorechaind` and Keplr do (`m/44'/118'/0'/0/0`), stores it in the keyring as `operator`, and writes the account to `operator_address` in `config.toml`. If `operator_address` is already set to a different account, it refuses;
 - chooses the post-quantum key the node signs with, stores it as `operator-pqc` and sets `key_name` to it. If the account already has a post-quantum key — usually registered by a wallet from the same words — that key is rebuilt from the words (the wallet-adapter and Dashboard derivations, the same as `qorechaind tx pqc recover-key`). If the account has none, a key is derived from the words, so the words also restore the node's key. If the account's registered key is already the node's current key, that key is kept. If the account's key cannot be reproduced from the words, the command refuses and advises a dedicated account;
+- names where the licence comes from for the network in use: a Dashboard purchase on mainnet, the free self-service request on testnet;
 - without `--recover`, creates a new account and shows its 24 words once. Write them down; they are the only backup. Fund the account and buy the licence for its address before you register.
 
 The keyring passphrase (`QORE_LIGHTNODE_KEYRING_PASSPHRASE`) protects this key as well as the node key. Then register:

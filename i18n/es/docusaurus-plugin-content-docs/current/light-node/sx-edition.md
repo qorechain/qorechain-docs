@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Edición SX — Daemon de servidor
 
-La edición **SX (Server eXperience)** es el nodo ligero sin interfaz: un daemon más una CLI de gestión completa, diseñada para servidores y automatización. El binario es `lightnode-sx`. Las versiones del nodo ligero tienen su propia línea, separada de la versión de la cadena: los canales de ambas redes llevan **3.1.12** (27 de octubre de 2026). Esta página indica dónde una función requiere 3.1.11 o posterior.
+La edición **SX (Server eXperience)** es el nodo ligero sin interfaz: un daemon más una CLI de gestión completa, diseñada para servidores y automatización. El binario es `lightnode-sx`. Las versiones del nodo ligero tienen su propia línea, separada de la versión de la cadena: los canales de ambas redes llevan **3.1.13** (12 de noviembre de 2026). Esta página indica dónde una función requiere 3.1.11 o posterior.
 
 ## Instalación {#install}
 
@@ -17,7 +17,7 @@ Los binarios precompilados son la vía más sencilla. El cliente de nodo ligero 
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.12 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ El nodo ligero requiere **Go 1.26.1**. Su criptografía poscuántica es una impl
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Compila desde la etiqueta de la versión que nombra el manifiesto (hoy, `git checkout v3.1.12`). Esto produce `build/lightnode-sx`. Ejecútalo directamente o cópialo en tu `PATH`. Antes de registrarte, verifica el stack de firma poscuántica con [`selftest`](#verify-the-pqc-stack-selftest).
+Compila desde la etiqueta de la versión que nombra el manifiesto (hoy, `git checkout v3.1.13`). Esto produce `build/lightnode-sx`. Ejecútalo directamente o cópialo en tu `PATH`. Antes de registrarte, verifica el stack de firma poscuántica con [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-Las imágenes publicadas son públicas y se pueden descargar de forma anónima: `ghcr.io/qorechain/qorechain-lightnode-sx` y `ghcr.io/qorechain/qorechain-lightnode-ux`, cada una con las etiquetas `latest` y `v<version>` (por ejemplo `v3.1.12`). El `docker-compose.yml` de la rama `main` del repositorio de código fuente las usa y recurre a compilar desde el código fuente (`Dockerfile.sx`, `Dockerfile.ux`) cuando no se puede acceder al registro. Para fijar una versión, cambia la etiqueta de `image:` en el archivo compose; para compilar en cambio desde una etiqueta de versión, ejecuta `git checkout v<version>` y luego `docker compose build`. Las claves, la configuración y el volumen de datos se conservan cuando actualizas.
+Las imágenes publicadas son públicas y se pueden descargar de forma anónima: `ghcr.io/qorechain/qorechain-lightnode-sx` y `ghcr.io/qorechain/qorechain-lightnode-ux`, cada una con las etiquetas `latest` y `v<version>` (por ejemplo `v3.1.13`). El `docker-compose.yml` de la rama `main` del repositorio de código fuente las usa y recurre a compilar desde el código fuente (`Dockerfile.sx`, `Dockerfile.ux`) cuando no se puede acceder al registro. Para fijar una versión, cambia la etiqueta de `image:` en el archivo compose; para compilar en cambio desde una etiqueta de versión, ejecuta `git checkout v<version>` y luego `docker compose build`. Las claves, la configuración y el volumen de datos se conservan cuando actualizas.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,7 +78,8 @@ El nodo firma de forma nativa dentro del contenedor, así que no se necesita nad
 - **Ajustes.** `[update] mode = "auto"` (por defecto, también para una configuración sin la sección) anuncia e instala; `"notify"` solo anuncia; `"off"` no comprueba. A mano: `lightnode-sx update --check`, luego `lightnode-sx update` y después reinicia el nodo.
 - **Ver un anuncio.** El nodo registra una versión más reciente y la sirve en la API local del panel en `GET /api/update` (campos `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); el panel de la edición UX muestra un banner.
 - **Contenedor o carpeta sin permiso de escritura.** El nodo solo anuncia: actualiza tú mismo la imagen o el archivo.
-- **Nodo ligero 3.1.10 y anteriores** no se actualizan solos. Instala 3.1.12 a mano una vez: descarga el binario versionado desde la ruta del manifiesto (consulta [Instalación](#install)), verifícalo, sustituye el archivo y reinicia. Después, el nodo sigue su canal.
+- **Nodo ligero 3.1.11 y posteriores** instalan la 3.1.13 por sí solos en las 6 horas siguientes a su publicación (comprobado en el nodo de prueba de la testnet).
+- **Nodo ligero 3.1.10 y anteriores** no se actualizan solos. Instala 3.1.13 a mano una vez: descarga el binario versionado desde la ruta del manifiesto (consulta [Instalación](#install)), verifícalo, sustituye el archivo y reinicia. Después, el nodo sigue su canal.
 - **Docker.** Un nodo Docker recibe el aviso de una nueva versión (en el registro y en `GET /api/update`) pero nunca se reemplaza a sí mismo; la descarga es la actualización: `docker compose pull && docker compose up -d` (mantén `QORECHAIN_RPC_ADDR` exportada). La alternativa es compilar desde la nueva etiqueta del código fuente.
 
 ## Configuración {#configure}
@@ -101,8 +102,8 @@ Las opciones de configuración más relevantes, a nivel de uso:
 | `data_dir` | Dónde almacena el nodo su base de datos y cabeceras. |
 | `keyring_backend` / `key_name` | Backend del keyring (`file`, `os` o `test` solo para devnets locales) y el nombre de la clave poscuántica con la que firma el nodo. `onboard` establece `key_name` en la clave que crea (`validator`); `keys add-operator` lo cambia a `operator-pqc` cuando deriva o recupera la clave a partir de las palabras de la cuenta. El backend `file` requiere `QORE_LIGHTNODE_KEYRING_PASSPHRASE` en el entorno. |
 | `operator_address` | La cuenta a la que pertenece este nodo (`qor1...`); se valida al cargar. `keys add-operator` la rellena. Necesaria para `register`, `status` y los heartbeats. Consulta [La cartera del operador](#operator-wallet). |
-| `api_addr` | El endpoint REST. Se deriva de `rpc_addr` cuando está vacío (el puerto 26657 pasa a 1317; los hosts `rpc.` pasan a `api.`), por lo que solo hace falta para endpoints que no siguen ninguna de las dos convenciones. |
-| `[heartbeat]` | Activado por defecto (`enabled`). `interval_blocks` (haz que coincida con el `heartbeat_interval` de la cadena, 1000), `check_interval` (por defecto `60s`) y `gas` (por defecto `300000`; con la firma nativa la comisión es de 0.25 uqor por unidad de gas, es decir, 75,000 uqor). Solo los usa la alternativa `qorechaind`: `fees` (por defecto `50000uqor`), `qorechaind_path` (vacío significa `qorechaind` en el `PATH`), `qorechaind_home` (vacío significa `~/.qorechaind`), `keyring_backend` y `key_name` (la clave de `qorechaind` que contiene la cuenta del operador; por defecto el `key_name` de nivel superior). |
+| `api_addr` | El endpoint REST. `onboard` lo escribe en `config.toml` (mainnet `https://api.qore.host`, testnet `https://api-testnet.qore.host`). Cuando está vacío, se deriva de `rpc_addr` (el puerto 26657 pasa a 1317; los hosts `rpc.` y `rpc-testnet.` pasan a `api.` y `api-testnet.`; por ejemplo `https://rpc-testnet.qore.host` da `https://api-testnet.qore.host`), por lo que solo hace falta para endpoints que no siguen ninguna de estas convenciones. Hasta la 3.1.12 solo existía la correspondencia `rpc.` a `api.`, así que un nodo de testnet con `api_addr` vacío podía responder "404 page not found" en licence, register y status; en esas versiones define `api_addr` a mano, o actualiza. |
+| `[heartbeat]` | Activado por defecto (`enabled`). `interval_blocks` (haz que coincida con el `heartbeat_interval` de la cadena, 1000), `check_interval` (por defecto `60s`) y `gas` (por defecto `300000`, el techo del límite de gas de un heartbeat; con la firma nativa la comisión es de 0.25 uqor por unidad de gas). Desde la 3.1.13 el nodo fija el límite de gas de cada heartbeat en lo que usó el heartbeat anterior más un 25 %, redondeado a los 1.000 de gas superiores, y nunca por encima de `gas`; el primer heartbeat tras un arranque y el primero tras un rechazo por falta de gas usan el techo. Medido en la testnet: límite 216.000, usado 165.774, comisión 54.000 uqor (0,054 QOR) por heartbeat en lugar de 75.000 uqor. La cuenta del operador debe tener QOR disponible, además de los 1.000 QOR en stake, para pagar estas comisiones. Solo los usa la alternativa `qorechaind`: `fees` (por defecto `50000uqor`), `qorechaind_path` (vacío significa `qorechaind` en el `PATH`), `qorechaind_home` (vacío significa `~/.qorechaind`), `keyring_backend` y `key_name` (la clave de `qorechaind` que contiene la cuenta del operador; por defecto el `key_name` de nivel superior). |
 | `[delegation]` | `auto_claim` (desactivado por defecto: reclama las recompensas acumuladas del nodo ligero hacia la cuenta del operador a través del firmante; el nodo nunca vuelve a delegar desde el servidor), el intervalo de comprobación, la recompensa mínima a reclamar, `rebalance_enabled` (activado por defecto) y `min_reputation` (solo advertencias; el nodo nunca mueve stake). Desde 3.1.11 `rebalance_enabled` activa advertencias para un validador delegado que está encarcelado (jailed) o fuera del conjunto activo y para stake vinculado por debajo de `min_delegated_stake` (1,000 QOR); `min_reputation` (por defecto `0.5`) se aplica donde la red sirve puntuaciones de reputación por validador, que hoy es testnet. `validators` y `split_weights` se aceptan, pero actualmente no se aplican. |
 | `[update]` | `mode`: `auto` (por defecto, también cuando la sección no existe), `notify` (solo anuncia) u `off`. Nodo ligero 3.1.11 y posteriores. Consulta [Actualización](#updating). |
 | `[telemetry]` | Si la telemetría está habilitada y los intervalos de actualización para validadores, red, puente y tokenómica. |
@@ -146,7 +147,7 @@ Si dejas el endpoint en blanco, el daemon arranca en modo solo local: el stack P
 `onboard` siempre sobrescribe la configuración activa. Usa `--config` para escribir en una ruta no predeterminada, o `--non-interactive` para fallar rápido en lugar de preguntar (útil en CI).
 
 :::caution Siguiente paso: la cuenta del operador
-`onboard` no sabe qué cuenta es la tuya. Antes de ejecutar `register`, añade la cuenta del operador con [`keys add-operator`](#operator-wallet). Rellena `operator_address` por ti. Si no se pudo alcanzar el endpoint durante `onboard`, comprueba también que `chain_id` en `config.toml` sea `qorechain-vladi` (mainnet) o `qorechain-diana` (testnet).
+`onboard` no sabe qué cuenta es la tuya. Antes de ejecutar `register`, añade la cuenta del operador con [`keys add-operator`](#operator-wallet). Rellena `operator_address` por ti. Si no se pudo alcanzar el endpoint durante `onboard`, comprueba también que `chain_id` en `config.toml` sea `qorechain-vladi` (mainnet) o `qorechain-diana` (testnet), y que `api_addr` esté definido (`onboard` lo escribe; un nodo de testnet en la 3.1.12 o anterior con `api_addr` vacío puede responder "404 page not found").
 :::
 
 ## Ejecución: `start`
@@ -195,6 +196,7 @@ lightnode-sx keys add-operator
 
 - deriva la clave de la cuenta a partir de las palabras exactamente como lo hacen `qorechaind` y Keplr (`m/44'/118'/0'/0/0`), la almacena en el keyring como `operator` y escribe la cuenta en `operator_address` de `config.toml`. Si `operator_address` ya apunta a otra cuenta, se niega;
 - elige la clave poscuántica con la que firma el nodo, la almacena como `operator-pqc` y establece `key_name` en ella. Si la cuenta ya tiene una clave poscuántica — normalmente registrada por una cartera a partir de las mismas palabras —, esa clave se reconstruye a partir de las palabras (las derivaciones del wallet-adapter y del Dashboard, las mismas que `qorechaind tx pqc recover-key`). Si la cuenta no tiene ninguna, se deriva una clave de las palabras, de modo que las palabras también restauran la clave del nodo. Si la clave registrada de la cuenta ya es la clave actual del nodo, se conserva esa clave. Si la clave de la cuenta no se puede reproducir a partir de las palabras, el comando se niega y recomienda una cuenta dedicada;
+- indica de dónde procede la licencia en la red en uso: una compra en el Dashboard en mainnet, la solicitud self-service gratuita en testnet;
 - sin `--recover`, crea una cuenta nueva y muestra sus 24 palabras una sola vez. Anótalas; son la única copia de seguridad. Aporta fondos a la cuenta y compra la licencia para su dirección antes de registrarte.
 
 La frase de contraseña del keyring (`QORE_LIGHTNODE_KEYRING_PASSPHRASE`) protege esta clave además de la clave del nodo. Después, regístrate:

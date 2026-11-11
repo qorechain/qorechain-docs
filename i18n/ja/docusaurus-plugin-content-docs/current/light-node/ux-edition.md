@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX エディション — Web ダッシュボード
 
-**UX**(User eXperience)エディションは SX エディションと同じライトノードデーモンを実行しますが、ブラウザでノードとネットワークを確認できる**組み込みの Web ダッシュボード**が追加されています。バイナリは `lightnode-ux` です。SX エディションと同様、ライトノード独自のバージョンラインにあり、チェーンバージョンとは別です(2026年10月27日時点で、両ネットワークのチャネルは 3.1.12 を提供しています)。
+**UX**(User eXperience)エディションは SX エディションと同じライトノードデーモンを実行しますが、ブラウザでノードとネットワークを確認できる**組み込みの Web ダッシュボード**が追加されています。バイナリは `lightnode-ux` です。SX エディションと同様、ライトノード独自のバージョンラインにあり、チェーンバージョンとは別です(2026年11月12日時点で、両ネットワークのチャネルは 3.1.13 を提供しています)。
 
 UX エディションは、デスクトップでの利用や、コマンドラインよりビジュアルなインターフェースを好むオペレーターにとって最適な選択肢です。
 
@@ -23,11 +23,11 @@ UX エディションは**Go 1.26.1**を必要とします。そのポスト量�
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-マニフェストが示すリリースタグ(現時点では `git checkout v3.1.12`)からビルドしてください。これにより `build/lightnode-ux` が生成されます。
+マニフェストが示すリリースタグ(現時点では `git checkout v3.1.13`)からビルドしてください。これにより `build/lightnode-ux` が生成されます。
 
 ### Docker
 
-UX サービスは公開イメージ `ghcr.io/qorechain/qorechain-lightnode-ux`(タグは `latest` と `v<version>`、例: `v3.1.12`)を実行します。これは `github.com/qorechain/qorechain-lightnode` の `main` ブランチにある `docker-compose.yml` によってプルされ、レジストリに到達できない場合、compose は `Dockerfile.ux` をソースからビルドします。コンテナは起動前にデータボリューム内に `config.toml` を必要とします。UX バイナリにはセットアップコマンドが含まれているため、ボリューム内で直接作成できます。
+UX サービスは公開イメージ `ghcr.io/qorechain/qorechain-lightnode-ux`(タグは `latest` と `v<version>`、例: `v3.1.13`)を実行します。これは `github.com/qorechain/qorechain-lightnode` の `main` ブランチにある `docker-compose.yml` によってプルされ、レジストリに到達できない場合、compose は `Dockerfile.ux` をソースからビルドします。コンテナは起動前にデータボリューム内に `config.toml` を必要とします。UX バイナリにはセットアップコマンドが含まれているため、ボリューム内で直接作成できます。
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

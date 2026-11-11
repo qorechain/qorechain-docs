@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Ediția UX — Dashboard web
 
-Ediția **UX (User eXperience)** rulează același daemon de nod light ca ediția SX, dar adaugă un **dashboard web încorporat** pentru ca tu să poți urmări nodul și rețeaua într-un browser. Binarul este `lightnode-ux`. La fel ca ediția SX, se află pe linia de versiune proprie a nodului light, separată de versiunea chain-ului (canalele ambelor rețele purtau 3.1.12 pe 27 octombrie 2026).
+Ediția **UX (User eXperience)** rulează același daemon de nod light ca ediția SX, dar adaugă un **dashboard web încorporat** pentru ca tu să poți urmări nodul și rețeaua într-un browser. Binarul este `lightnode-ux`. La fel ca ediția SX, se află pe linia de versiune proprie a nodului light, separată de versiunea chain-ului (canalele ambelor rețele purtau 3.1.13 pe 12 noiembrie 2026).
 
 Ediția UX este alegerea potrivită pentru utilizarea pe desktop și pentru operatorii care preferă o interfață vizuală în locul liniei de comandă.
 
@@ -23,11 +23,11 @@ Ediția UX necesită **Go 1.26.1**. Criptografia sa post-cuantică este o implem
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Construiește din tag-ul de release pe care îl numește manifestul (astăzi `git checkout v3.1.12`). Aceasta produce `build/lightnode-ux`.
+Construiește din tag-ul de release pe care îl numește manifestul (astăzi `git checkout v3.1.13`). Aceasta produce `build/lightnode-ux`.
 
 ### Docker
 
-Serviciul UX rulează imaginea publică `ghcr.io/qorechain/qorechain-lightnode-ux` (tag-urile `latest` și `v<version>`, de exemplu `v3.1.12`), descărcată de `docker-compose.yml` din ramura `main` a `github.com/qorechain/qorechain-lightnode`; dacă registrul nu este accesibil, compose construiește `Dockerfile.ux` din sursă. Containerul are nevoie de un `config.toml` în volumul său de date înainte de a porni. Binarul UX are comenzile de configurare, așa că îl poți crea direct în volum:
+Serviciul UX rulează imaginea publică `ghcr.io/qorechain/qorechain-lightnode-ux` (tag-urile `latest` și `v<version>`, de exemplu `v3.1.13`), descărcată de `docker-compose.yml` din ramura `main` a `github.com/qorechain/qorechain-lightnode`; dacă registrul nu este accesibil, compose construiește `Dockerfile.ux` din sursă. Containerul are nevoie de un `config.toml` în volumul său de date înainte de a porni. Binarul UX are comenzile de configurare, așa că îl poți crea direct în volum:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

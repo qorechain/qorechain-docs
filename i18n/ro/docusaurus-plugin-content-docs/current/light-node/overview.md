@@ -11,7 +11,7 @@ sidebar_position: 1
 
 Rularea și sincronizarea unui nod nu necesită licență. Participarea la partea din recompense este un pas separat: necesită o licență `lightnode_operator`, miză delegată către validatori bonded și o înregistrare pe lanț (vezi [Cum accesați](#how-to-access)).
 
-Nodul light are **propria sa linie de versiune**, separată de versiunea de lansare a lanțului. La 4 noiembrie 2026, canalele de lansare ale ambelor rețele conțin nodul light **3.1.12** (lanțul `v3.2.6` pe ambele rețele atunci; testnet-ul rulează `v3.2.7` din 6 noiembrie 2026, mainnet-ul rămâne pe `v3.2.6`). Tratați cele două numere ca fiind fără legătură între ele.
+Nodul light are **propria sa linie de versiune**, separată de versiunea de lansare a lanțului. La 12 noiembrie 2026, canalele de lansare ale ambelor rețele conțin nodul light **3.1.13** (testnet-ul rulează lanțul `v3.2.7`, mainnet-ul rulează `v3.2.6`; 3.1.13 funcționează neschimbat pe `v3.2.7`, unde heartbeat-ul și claim-ul returnează codul 0). Tratați cele două numere ca fiind fără legătură între ele.
 
 ## Inovații {#innovations}
 
@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 RPC-ul lanțului pentru `onboard` este `https://rpc.qore.host` (mainnet) sau `https://rpc-testnet.qore.host` (testnet). Pentru ediția UX folosiți `lightnode-ux` cu aceleași comenzi și deschideți `http://127.0.0.1:8420`. Detalii despre fiecare pas: [Ediția SX](/light-node/sx-edition) și [Înregistrare și licențiere](/light-node/registration-and-licensing).
 
-**3. Păstrați-l actualizat.** Nodul light 3.1.11 și versiunile ulterioare se actualizează singure în afara containerelor (vezi elementul despre auto-actualizare de mai sus). Un nod pe 3.1.10 sau mai vechi trebuie să instaleze 3.1.12 manual o singură dată: descărcați binarul cu versiune ca mai sus și înlocuiți fișierul. Cu Docker, rulați `docker compose pull && docker compose up -d`. Vezi [Ediția SX: actualizare](/light-node/sx-edition#updating).
+**3. Păstrați-l actualizat.** Nodul light 3.1.11 și versiunile ulterioare se actualizează singure în afara containerelor (vezi elementul despre auto-actualizare de mai sus). Un nod pe 3.1.10 sau mai vechi trebuie să instaleze 3.1.13 manual o singură dată: descărcați binarul cu versiune ca mai sus și înlocuiți fișierul. Cu Docker, rulați `docker compose pull && docker compose up -d`. Vezi [Ediția SX: actualizare](/light-node/sx-edition#updating).
 
 ## Cum accesați {#how-to-access}
 
@@ -77,7 +77,7 @@ RPC-ul lanțului pentru `onboard` este `https://rpc.qore.host` (mainnet) sau `ht
 | Lanț | `qorechain-vladi` (lanț `v3.2.6`) | `qorechain-diana` (lanț `v3.2.7`) |
 | RPC pentru nod | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | REST pentru interogări | `https://api.qore.host` | `https://api-testnet.qore.host` |
-| Versiunea nodului light | 3.1.12 | 3.1.12 |
+| Versiunea nodului light | 3.1.13 | 3.1.13 |
 | Licență | $50, cumpărată pe Dashboard; acordarea este semnată manual, în loturi | Gratuită, în regim self-service: **Nodes & Validators > Light Node**, **Request licence**; semnată automat, de obicei în câteva minute |
 
 **Ce vă trebuie pentru înregistrare**
@@ -85,7 +85,7 @@ RPC-ul lanțului pentru `onboard` este `https://rpc.qore.host` (mainnet) sau `ht
 - Un cont ale cărui cuvinte de recuperare le dețineți (cuvintele dvs., Keplr sau o cheie `qorechaind`), de preferat dedicat nodului. Un portofel custodial din Dashboard nu poate rula un nod decât dacă îi exportați seed-ul.
 - O licență `lightnode_operator` activă pe acea adresă (vezi mai jos).
 - Cel puțin **1.000 QOR** delegați de la acea adresă către validatori **bonded**, numărați ca total.
-- QOR în cont pentru comisionul de înregistrare de **1 QOR** și pentru comisioanele de tranzacție. Un heartbeat costă 0.25 uqor per gaz la limita implicită de 300.000 de gaz, adică 0.075 QOR ca plafon (gaz măsurat folosit: aproximativ 165.000). Un heartbeat este scadent la fiecare 1.000 de blocuri, adică aproximativ 25 până la 27 pe zi pe mainnet, deci taxele ajung la aproximativ 1,9 până la 2 QOR pe zi. Păstrează QOR cheltuibili în contul operatorului pentru ele, în plus față de stake-ul de 1.000 QOR: un nod care rămâne fără QOR nu mai trimite heartbeat-uri, devine inactiv și pierde uptime.
+- QOR în cont pentru comisionul de înregistrare de **1 QOR** și pentru comisioanele de tranzacție. Un heartbeat costă 0.25 uqor per gaz. Din 3.1.13, nodul setează limita de gaz a fiecărui heartbeat la cât a folosit heartbeat-ul anterior plus 25%, deci un heartbeat costă aproximativ 0.054 QOR (măsurat pe testnet: limită 216.000, folosit 165.774, taxă 54.000 uqor). Un heartbeat este scadent la fiecare 1.000 de blocuri, adică aproximativ 25 până la 27 pe zi pe mainnet, deci taxele ajung la aproximativ 1,4 QOR pe zi, circa 40 QOR pe lună. Versiunile 3.1.12 și anterioare folosesc plafonul complet de 300.000 de gaz și plătesc 0.075 QOR per heartbeat, adică aproximativ 1,9 până la 2 QOR pe zi. Nodul avertizează în jurnal când soldul cheltuibil al contului acoperă mai puțin de 3 zile de heartbeat-uri. Păstrează QOR cheltuibili în contul operatorului pentru ele, în plus față de stake-ul de 1.000 QOR: un nod care rămâne fără QOR nu mai trimite heartbeat-uri, devine inactiv și pierde uptime.
 - Un computer care rămâne pornit: nodul trebuie să trimită un heartbeat la fiecare 1.000 de blocuri și să mențină cel puțin 80% timp de funcționare pentru a fi plătit.
 
 **Obținerea unei licențe.** Pe Dashboard, deschideți **Nodes & Validators** (intrarea din bara laterală care se numea înainte **Tools**; pagina se află în continuare la `/tools`), alegeți fila **Light Node** și selectați rețeaua în antet. Dashboard necesită autentificare.
@@ -115,12 +115,12 @@ Pentru a fi eligibil pentru recompense, un nod light trebuie să fie **înregist
 
 | Ce | Unde | Versiunea curentă |
 | --- | --- | --- |
-| Manifest de lansare, mainnet | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.12 (`minCompatible` 3.1.9, înregistrare deschisă) |
-| Manifest de lansare, testnet | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.12 (`minCompatible` 3.1.9, înregistrare deschisă) |
+| Manifest de lansare, mainnet | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, înregistrare deschisă) |
+| Manifest de lansare, testnet | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, înregistrare deschisă) |
 | Binare | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 12 fișiere per lansare (SX și UX, Linux, macOS și Windows, amd64 și arm64) plus `SHA256SUMS` |
-| Sursă și lansări | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Lansarea `v3.1.12` (curentă) și etichetele anterioare; fiecare conține cele 12 binare, `SHA256SUMS`, `lightnode-build.json` și un APK de previzualizare pentru Android |
+| Sursă și lansări | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Lansarea `v3.1.13` (curentă) și etichetele anterioare; fiecare conține cele 12 binare, `SHA256SUMS`, `lightnode-build.json` și un APK de previzualizare pentru Android |
 | Android | Atașat doar lansării GitHub | Previzualizare: urmărește lanțul, nu se înregistrează, nu câștigă recompense |
-| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` și `ghcr.io/qorechain/qorechain-lightnode-ux`, publice, tag-uri `latest` și `v<version>` (vezi [Ediția SX: Docker](/light-node/sx-edition#docker)) | `v3.1.12` |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` și `ghcr.io/qorechain/qorechain-lightnode-ux`, publice, tag-uri `latest` și `v<version>` (vezi [Ediția SX: Docker](/light-node/sx-edition#docker)) | `v3.1.13` |
 
 Verificați `version` din manifestul rețelei dvs. înainte de a descărca, în loc să vă bazați pe acest tabel. Cheia de semnare a lansărilor este încorporată în binar; nu aveți nimic de instalat.
 
@@ -130,7 +130,7 @@ Verificați `version` din manifestul rețelei dvs. înainte de a descărca, în 
 - **Recompensele sunt un plafon.** Limita per nod (2.000 QOR la 30 de zile) este un maxim, iar nodul este plătit doar cu ce se acumulează în fond și doar cât timp este eligibil.
 - **Un heartbeat este o semnătură de funcționare.** Dovedește că cheia operatorului a semnat la timp, nu că software-ul complet a rulat continuu.
 - **Avertismentele de reputație.** De la lanțul v3.2.6 (mainnet, 4 noiembrie 2026), mainnet-ul servește scoruri de reputație per validator, deci verificarea poate rula pe ambele rețele; pe 4 noiembrie `GET /qorechain/reputation/v1/validator/<valoper>` a răspuns 200 pe mainnet pentru un validator bonded. Față de un lanț mai vechi decât v3.2.6 (sau de un validator pe care lanțul nu l-a evaluat), nodul omite acea verificare și spune acest lucru în jurnal. Avertismentele despre jail, despre lipsa din setul activ și despre miza scăzută nu depind de ea. Versiunile de nod dinaintea lui 3.1.11 înregistrau în jurnal o verificare eșuată de reputație la fiecare cinci minute și nu avertizau niciodată despre nimic.
-- **Auto-actualizarea începe de la 3.1.11.** Un nod pe 3.1.10 sau mai vechi nu se actualizează singur și are nevoie de o instalare manuală a lui 3.1.12. Într-un container sau într-un folder care nu poate fi scris, nodul doar anunță versiunile noi.
+- **Auto-actualizarea începe de la 3.1.11.** Un nod pe 3.1.10 sau mai vechi nu se actualizează singur și are nevoie de o instalare manuală a lui 3.1.13. Într-un container sau într-un folder care nu poate fi scris, nodul doar anunță versiunile noi.
 - **Nodurile Docker nu se actualizează singure.** Ele sunt informate despre un release nou, iar actualizarea este `docker compose pull && docker compose up -d`.
 - **Android este o previzualizare** și nu se înregistrează și nu câștigă recompense.
 - **Licențe.** Acordările pe mainnet sunt semnate manual, în loturi, deci există o așteptare între plată și înregistrare. Licența de testnet este limitată la una per cont și una per adresă.

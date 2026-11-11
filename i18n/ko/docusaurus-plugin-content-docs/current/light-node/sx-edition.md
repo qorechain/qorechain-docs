@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX 에디션 — 서버 데몬
 
-**SX(Server eXperience)** 에디션은 헤드리스 라이트 노드입니다. 데몬과 완전한 관리 CLI로 구성되며, 서버 환경과 자동화를 위해 만들어졌습니다. 바이너리 이름은 `lightnode-sx`입니다. 라이트 노드 버전은 체인 버전과는 별개인 자체 버전 라인에 있으며, 두 네트워크의 채널 모두 **3.1.12**(2026년 10월 27일)를 제공합니다. 이 페이지는 어떤 기능에 3.1.11 이상이 필요한지 함께 표시합니다.
+**SX(Server eXperience)** 에디션은 헤드리스 라이트 노드입니다. 데몬과 완전한 관리 CLI로 구성되며, 서버 환경과 자동화를 위해 만들어졌습니다. 바이너리 이름은 `lightnode-sx`입니다. 라이트 노드 버전은 체인 버전과는 별개인 자체 버전 라인에 있으며, 두 네트워크의 채널 모두 **3.1.13**(2026년 11월 12일)을 제공합니다. 이 페이지는 어떤 기능에 3.1.11 이상이 필요한지 함께 표시합니다.
 
 ## 설치 {#install}
 
@@ -17,7 +17,7 @@ sidebar_position: 2
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.12 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ Windows에서는 `certutil -hashfile lightnode-sx-<platform>.exe SHA256`의 결�
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-매니페스트가 지정하는 릴리스 태그에서 빌드하세요(현재는 `git checkout v3.1.12`). 이 명령은 `build/lightnode-sx`를 생성합니다. 바로 실행하거나 `PATH`에 복사해서 사용하세요. 등록하기 전에 [`selftest`](#verify-the-pqc-stack-selftest)로 포스트 퀀텀 서명 스택이 정상인지 먼저 점검하시기 바랍니다.
+매니페스트가 지정하는 릴리스 태그에서 빌드하세요(현재는 `git checkout v3.1.13`). 이 명령은 `build/lightnode-sx`를 생성합니다. 바로 실행하거나 `PATH`에 복사해서 사용하세요. 등록하기 전에 [`selftest`](#verify-the-pqc-stack-selftest)로 포스트 퀀텀 서명 스택이 정상인지 먼저 점검하시기 바랍니다.
 
 ### Docker {#docker}
 
-릴리스된 이미지는 공개되어 있으며 익명으로 가져올 수 있습니다: `ghcr.io/qorechain/qorechain-lightnode-sx`와 `ghcr.io/qorechain/qorechain-lightnode-ux`이며, 각각 `latest`와 `v<version>` 태그(예: `v3.1.12`)가 있습니다. 소스 저장소 `main` 브랜치의 `docker-compose.yml`이 이 이미지를 사용하며, 레지스트리에 접근할 수 없으면 소스에서 빌드하는 방식(`Dockerfile.sx`, `Dockerfile.ux`)으로 대체됩니다. 특정 릴리스에 고정하려면 compose 파일의 `image:` 태그를 변경하세요. 대신 릴리스 태그에서 빌드하려면 `git checkout v<version>`을 실행한 뒤 `docker compose build`를 실행하세요. 업데이트할 때 키, 설정, 데이터 볼륨은 그대로 유지됩니다.
+릴리스된 이미지는 공개되어 있으며 익명으로 가져올 수 있습니다: `ghcr.io/qorechain/qorechain-lightnode-sx`와 `ghcr.io/qorechain/qorechain-lightnode-ux`이며, 각각 `latest`와 `v<version>` 태그(예: `v3.1.13`)가 있습니다. 소스 저장소 `main` 브랜치의 `docker-compose.yml`이 이 이미지를 사용하며, 레지스트리에 접근할 수 없으면 소스에서 빌드하는 방식(`Dockerfile.sx`, `Dockerfile.ux`)으로 대체됩니다. 특정 릴리스에 고정하려면 compose 파일의 `image:` 태그를 변경하세요. 대신 릴리스 태그에서 빌드하려면 `git checkout v<version>`을 실행한 뒤 `docker compose build`를 실행하세요. 업데이트할 때 키, 설정, 데이터 볼륨은 그대로 유지됩니다.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,7 +78,8 @@ docker compose run --rm lightnode-sx status
 - **설정.** `[update] mode = "auto"`(기본값이며, 이 섹션이 없는 설정도 동일)는 알리고 설치합니다. `"notify"`는 알리기만 합니다. `"off"`는 확인하지 않습니다. 수동으로는 `lightnode-sx update --check`, 이어서 `lightnode-sx update`를 실행한 다음 노드를 다시 시작하세요.
 - **공지 확인.** 노드는 더 새로운 릴리스를 로그에 기록하고 로컬 대시보드 API의 `GET /api/update`에서 제공합니다(필드 `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`). UX 대시보드는 배너를 표시합니다.
 - **컨테이너 또는 쓰기 불가능한 폴더.** 노드는 알리기만 합니다. 이미지나 파일은 직접 업데이트하세요.
-- **라이트 노드 3.1.10 이하**는 스스로 업데이트하지 않습니다. 3.1.12를 한 번 직접 설치하세요. 매니페스트 경로에서 버전이 포함된 바이너리를 다운로드하고([설치](#install) 참조), 검증한 다음, 파일을 교체하고 다시 시작합니다. 그 이후에는 노드가 자신의 채널을 따라갑니다.
+- **라이트 노드 3.1.11 이상**은 3.1.13이 게시된 후 6시간 이내에 스스로 3.1.13을 설치합니다(테스트넷 테스트 노드에서 확인).
+- **라이트 노드 3.1.10 이하**는 스스로 업데이트하지 않습니다. 3.1.13을 한 번 직접 설치하세요. 매니페스트 경로에서 버전이 포함된 바이너리를 다운로드하고([설치](#install) 참조), 검증한 다음, 파일을 교체하고 다시 시작합니다. 그 이후에는 노드가 자신의 채널을 따라갑니다.
 - **Docker.** Docker 노드는 새 릴리스를 알림(로그와 `GET /api/update`)으로 받지만 스스로를 교체하지는 않습니다. 업데이트는 pull입니다: `docker compose pull && docker compose up -d`(`QORECHAIN_RPC_ADDR`를 export된 상태로 유지하세요). 대안은 새 소스 태그에서 빌드하는 것입니다.
 
 ## 설정 {#configure}
@@ -101,8 +102,8 @@ docker compose run --rm lightnode-sx status
 | `data_dir` | 노드가 데이터베이스와 헤더를 저장하는 위치. |
 | `keyring_backend` / `key_name` | 키링 백엔드(`file`, `os`, 또는 로컬 데브넷 전용 `test`)와 노드가 서명에 사용하는 포스트 퀀텀 키의 이름. `onboard`는 `key_name`을 자신이 생성한 키(`validator`)로 설정하고, `keys add-operator`는 계정의 단어에서 키를 파생하거나 복구할 때 이를 `operator-pqc`로 변경합니다. `file` 백엔드는 환경에 `QORE_LIGHTNODE_KEYRING_PASSPHRASE`가 있어야 합니다. |
 | `operator_address` | 이 노드가 속한 계정(`qor1...`)이며, 로드 시 검증됩니다. `keys add-operator`가 채워 줍니다. `register`, `status`, 하트비트에 필요합니다. [운영자 지갑](#operator-wallet)을 참고하세요. |
-| `api_addr` | REST 엔드포인트. 비어 있으면 `rpc_addr`에서 파생됩니다(포트 26657은 1317로, `rpc.` 호스트는 `api.`로 바뀜). 따라서 두 규칙 모두 따르지 않는 엔드포인트에만 필요합니다. |
-| `[heartbeat]` | 기본적으로 켜져 있습니다(`enabled`). `interval_blocks`(체인의 `heartbeat_interval`인 1000과 일치시킬 것), `check_interval`(기본값 `60s`), `gas`(기본값 `300000`. 네이티브 서명의 경우 수수료는 가스 단위당 0.25 uqor이므로 75,000 uqor). `qorechaind` 대체 경로에서만 사용: `fees`(기본값 `50000uqor`), `qorechaind_path`(비어 있으면 `PATH`의 `qorechaind`), `qorechaind_home`(비어 있으면 `~/.qorechaind`), `keyring_backend`, `key_name`(운영자 계정을 보유한 `qorechaind` 키. 기본값은 최상위 `key_name`). |
+| `api_addr` | REST 엔드포인트. `onboard`가 이를 `config.toml`에 기록합니다(메인넷 `https://api.qore.host`, 테스트넷 `https://api-testnet.qore.host`). 비어 있으면 `rpc_addr`에서 파생됩니다(포트 26657은 1317로, `rpc.` 및 `rpc-testnet.` 호스트는 각각 `api.` 및 `api-testnet.`로 바뀜. 예를 들어 `https://rpc-testnet.qore.host`는 `https://api-testnet.qore.host`가 됨). 따라서 이 규칙들을 모두 따르지 않는 엔드포인트에만 필요합니다. 3.1.12까지는 `rpc.`에서 `api.`로의 매핑만 있어서, `api_addr`이 비어 있는 테스트넷 노드가 라이선스, register, status에서 "404 page not found"로 응답할 수 있었습니다. 해당 버전에서는 `api_addr`을 직접 설정하거나 업데이트하세요. |
+| `[heartbeat]` | 기본적으로 켜져 있습니다(`enabled`). `interval_blocks`(체인의 `heartbeat_interval`인 1000과 일치시킬 것), `check_interval`(기본값 `60s`), `gas`(기본값 `300000`, 하트비트 가스 한도의 상한이며, 네이티브 서명의 경우 수수료는 가스 단위당 0.25 uqor). 3.1.13부터 노드는 각 하트비트의 가스 한도를 직전 하트비트가 사용한 양에 25%를 더해 1,000 가스 단위로 올림한 값으로 설정하며 `gas`를 넘지 않습니다. 시작 후 첫 하트비트와 가스 부족 거부 후 첫 하트비트는 상한을 사용합니다. 테스트넷 측정: 한도 216,000, 사용 165,774, 하트비트당 수수료 54,000 uqor(0.054 QOR)로, 기존 75,000 uqor보다 적습니다. 운영자 계정에는 1,000 QOR 스테이크 외에 이 수수료를 낼 사용 가능한 QOR가 있어야 합니다. `qorechaind` 대체 경로에서만 사용: `fees`(기본값 `50000uqor`), `qorechaind_path`(비어 있으면 `PATH`의 `qorechaind`), `qorechaind_home`(비어 있으면 `~/.qorechaind`), `keyring_backend`, `key_name`(운영자 계정을 보유한 `qorechaind` 키. 기본값은 최상위 `key_name`). |
 | `[delegation]` | `auto_claim`(기본값은 꺼짐: 서명기를 통해 누적된 라이트 노드 보상을 운영자 계정으로 청구하며, 노드는 서버에서 재위임을 하지 않습니다), 확인 주기, 청구 최소 보상, `rebalance_enabled`(기본값은 켜짐), `min_reputation`(경고 전용 — 노드는 스테이크를 절대 옮기지 않습니다). 3.1.11부터 `rebalance_enabled`는 감금(jail)되었거나 활성 세트에 없는 위임 검증인에 대한 경고와, 본딩된 스테이크가 `min_delegated_stake`(1,000 QOR) 미만일 때의 경고를 켭니다. `min_reputation`(기본값 `0.5`)은 네트워크가 검증인별 평판 점수를 제공하는 곳에 적용되며, 현재는 테스트넷이 해당합니다. `validators`와 `split_weights`는 허용되지만 현재는 동작에 반영되지 않습니다. |
 | `[update]` | `mode`: `auto`(기본값이며, 섹션이 없을 때도 동일), `notify`(알리기만 함), 또는 `off`. 라이트 노드 3.1.11 이상. [업데이트](#updating)를 참고하세요. |
 | `[telemetry]` | 텔레메트리 사용 여부와 검증인·네트워크·브리지·토크노믹스에 대한 갱신 주기. |
@@ -146,7 +147,7 @@ lightnode-sx onboard
 `onboard`는 항상 현재 활성 설정을 덮어씁니다. 기본 경로가 아닌 곳에 쓰려면 `--config`를 사용하고, 프롬프트 없이 바로 실패하게 하려면(CI에서 유용) `--non-interactive`를 사용하세요.
 
 :::caution 다음 단계: 운영자 계정
-`onboard`는 어떤 계정이 본인 것인지 알지 못합니다. `register`를 실행하기 전에 [`keys add-operator`](#operator-wallet)로 운영자 계정을 추가하세요. 이 명령이 `operator_address`를 채워 줍니다. `onboard` 중에 엔드포인트에 접속할 수 없었다면, `config.toml`의 `chain_id`가 `qorechain-vladi`(메인넷) 또는 `qorechain-diana`(테스트넷)인지도 확인하세요.
+`onboard`는 어떤 계정이 본인 것인지 알지 못합니다. `register`를 실행하기 전에 [`keys add-operator`](#operator-wallet)로 운영자 계정을 추가하세요. 이 명령이 `operator_address`를 채워 줍니다. `onboard` 중에 엔드포인트에 접속할 수 없었다면, `config.toml`의 `chain_id`가 `qorechain-vladi`(메인넷) 또는 `qorechain-diana`(테스트넷)인지, 그리고 `api_addr`이 설정되어 있는지도 확인하세요(`onboard`가 기록하며, 3.1.12 이하의 테스트넷 노드에서 `api_addr`이 비어 있으면 "404 page not found"로 응답할 수 있습니다).
 :::
 
 ## 실행: `start`
@@ -195,6 +196,7 @@ lightnode-sx keys add-operator
 
 - `qorechaind`와 Keplr와 똑같은 방식(`m/44'/118'/0'/0/0`)으로 단어에서 계정 키를 파생하여 키링에 `operator`로 저장하고, 계정을 `config.toml`의 `operator_address`에 기록합니다. `operator_address`가 이미 다른 계정으로 설정되어 있으면 거부합니다.
 - 노드가 서명에 사용할 포스트 퀀텀 키를 선택해 `operator-pqc`로 저장하고 `key_name`을 그 이름으로 설정합니다. 계정에 이미 포스트 퀀텀 키가 있으면 — 보통 같은 단어로 지갑이 등록한 키 — 그 키를 단어에서 다시 만듭니다(wallet-adapter 및 Dashboard 파생 방식, `qorechaind tx pqc recover-key`와 동일). 계정에 키가 없으면 단어에서 키를 파생하므로, 단어로 노드의 키도 복원할 수 있습니다. 계정에 등록된 키가 이미 노드의 현재 키라면 그 키를 유지합니다. 계정의 키를 단어에서 재현할 수 없으면 명령은 거부하고 전용 계정을 사용하라고 안내합니다.
+- 사용 중인 네트워크에서 라이선스를 얻는 경로를 안내합니다. 메인넷은 Dashboard 구매, 테스트넷은 무료 셀프서비스 요청입니다.
 - `--recover` 없이 실행하면 새 계정을 만들고 그 24개 단어를 한 번만 보여줍니다. 반드시 적어 두세요. 유일한 백업입니다. 등록하기 전에 계정에 자금을 넣고 그 주소로 라이선스를 구매하세요.
 
 키링 패스프레이즈(`QORE_LIGHTNODE_KEYRING_PASSPHRASE`)는 노드 키와 함께 이 키도 보호합니다. 그런 다음 등록하세요.

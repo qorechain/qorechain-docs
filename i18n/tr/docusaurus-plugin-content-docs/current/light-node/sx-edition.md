@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX Sürümü — Sunucu Daemon'u
 
-**SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Hafif düğüm sürümleri, zincir sürümünden ayrı, kendi hatlarındadır: her iki ağın kanalı da **3.1.12** sürümünü taşır (27 Ekim 2026). Bu sayfa, bir özelliğin 3.1.11 veya daha yenisini gerektirdiği yerleri belirtir.
+**SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Hafif düğüm sürümleri, zincir sürümünden ayrı, kendi hatlarındadır: her iki ağın kanalı da **3.1.13** sürümünü taşır (12 Kasım 2026). Bu sayfa, bir özelliğin 3.1.11 veya daha yenisini gerektirdiği yerleri belirtir.
 
 ## Kurulum {#install}
 
@@ -17,7 +17,7 @@ sidebar_position: 2
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.12 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ Hafif düğüm **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go i
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Manifestonun adını verdiği sürüm etiketinden derleyin (bugün `git checkout v3.1.12`). Bu, `build/lightnode-sx` üretir. Doğrudan çalıştırın veya `PATH`'inize kopyalayın. Kaydolmadan önce kuantum sonrası imzalama yığınını [`selftest`](#verify-the-pqc-stack-selftest) ile sağlık kontrolünden geçirin.
+Manifestonun adını verdiği sürüm etiketinden derleyin (bugün `git checkout v3.1.13`). Bu, `build/lightnode-sx` üretir. Doğrudan çalıştırın veya `PATH`'inize kopyalayın. Kaydolmadan önce kuantum sonrası imzalama yığınını [`selftest`](#verify-the-pqc-stack-selftest) ile sağlık kontrolünden geçirin.
 
 ### Docker {#docker}
 
-Yayımlanan imajlar herkese açıktır ve anonim olarak çekilebilir: `ghcr.io/qorechain/qorechain-lightnode-sx` ve `ghcr.io/qorechain/qorechain-lightnode-ux`; her biri `latest` ve `v<version>` (örneğin `v3.1.12`) olarak etiketlenir. Kaynak deposunun `main` dalındaki `docker-compose.yml` bunları kullanır ve kayıt defterine ulaşılamadığında kaynaktan derlemeye (`Dockerfile.sx`, `Dockerfile.ux`) geri döner. Bir sürümü sabitlemek için compose dosyasındaki `image:` etiketini değiştirin; bunun yerine bir sürüm etiketinden derlemek için `git checkout v<version>` yapıp `docker compose build` çalıştırın. Güncellediğinizde anahtarlar, yapılandırma ve veri birimi korunur.
+Yayımlanan imajlar herkese açıktır ve anonim olarak çekilebilir: `ghcr.io/qorechain/qorechain-lightnode-sx` ve `ghcr.io/qorechain/qorechain-lightnode-ux`; her biri `latest` ve `v<version>` (örneğin `v3.1.13`) olarak etiketlenir. Kaynak deposunun `main` dalındaki `docker-compose.yml` bunları kullanır ve kayıt defterine ulaşılamadığında kaynaktan derlemeye (`Dockerfile.sx`, `Dockerfile.ux`) geri döner. Bir sürümü sabitlemek için compose dosyasındaki `image:` etiketini değiştirin; bunun yerine bir sürüm etiketinden derlemek için `git checkout v<version>` yapıp `docker compose build` çalıştırın. Güncellediğinizde anahtarlar, yapılandırma ve veri birimi korunur.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,7 +78,8 @@ Düğüm konteyner içinde yerel olarak imzalar, bu nedenle başka hiçbir şey 
 - **Ayarlar.** `[update] mode = "auto"` (varsayılan, bölümü olmayan bir yapılandırma için de) duyurur ve kurar; `"notify"` yalnızca duyurur; `"off"` kontrol etmez. Elle: `lightnode-sx update --check`, ardından `lightnode-sx update`, sonra düğümü yeniden başlatın.
 - **Bir duyuruyu görme.** Düğüm daha yeni bir sürümü günlüğe yazar ve yerel pano API'sinde `GET /api/update` üzerinden sunar (alanlar `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); UX panosu bir afiş gösterir.
 - **Konteyner veya yazılamayan klasör.** Düğüm yalnızca duyurur: imajı veya dosyayı kendiniz güncelleyin.
-- **Hafif düğüm 3.1.10 ve öncesi** kendini güncellemez. 3.1.12'yi bir kez elle kurun: sürüm numaralı ikili dosyayı manifesto yolundan indirin ([Kurulum](#install) bölümüne bakın), doğrulayın, dosyayı değiştirin ve yeniden başlatın. Bundan sonra düğüm kendi kanalını izler.
+- **Hafif düğüm 3.1.11 ve sonrası** 3.1.13'ü yayımlanmasından sonraki 6 saat içinde kendileri kurar (test ağındaki test düğümünde doğrulandı).
+- **Hafif düğüm 3.1.10 ve öncesi** kendini güncellemez. 3.1.13'ü bir kez elle kurun: sürüm numaralı ikili dosyayı manifesto yolundan indirin ([Kurulum](#install) bölümüne bakın), doğrulayın, dosyayı değiştirin ve yeniden başlatın. Bundan sonra düğüm kendi kanalını izler.
 - **Docker.** Bir Docker düğümü yeni bir sürümden haberdar edilir (günlük ve `GET /api/update`) ancak kendini asla değiştirmez; güncelleme çekmektir: `docker compose pull && docker compose up -d` (`QORECHAIN_RPC_ADDR` değerini dışa aktarılmış tutun). Alternatif, yeni kaynak etiketinden derlemektir.
 
 ## Yapılandırma {#configure}
@@ -101,8 +102,8 @@ Kullanım düzeyinde en ilgili yapılandırma seçenekleri:
 | `data_dir` | Düğümün veritabanını ve başlıklarını sakladığı yer. |
 | `keyring_backend` / `key_name` | Anahtarlık arka ucu (`file`, `os` veya yalnızca yerel devnet'ler için `test`) ve düğümün imzaladığı kuantum sonrası anahtarın adı. `onboard`, `key_name` değerini oluşturduğu anahtara (`validator`) ayarlar; `keys add-operator` anahtarı hesabın kelimelerinden türettiğinde veya kurtardığında bunu `operator-pqc` olarak değiştirir. `file` arka ucu, ortamda `QORE_LIGHTNODE_KEYRING_PASSPHRASE` tanımlı olmasını gerektirir. |
 | `operator_address` | Bu düğümün ait olduğu hesap (`qor1...`); yükleme sırasında doğrulanır. `keys add-operator` bunu doldurur. `register`, `status` ve heartbeat'ler için gereklidir. Bkz. [Operatör cüzdanı](#operator-wallet). |
-| `api_addr` | REST uç noktası. Boş olduğunda `rpc_addr`'dan türetilir (26657 portu 1317 olur; `rpc.` ana bilgisayarları `api.` olur), dolayısıyla yalnızca bu iki kuralı da izlemeyen uç noktalar için gereklidir. |
-| `[heartbeat]` | Varsayılan olarak açıktır (`enabled`). `interval_blocks` (zincirin `heartbeat_interval` değeriyle, yani 1000 ile eşleştirin), `check_interval` (varsayılan `60s`) ve `gas` (varsayılan `300000`; yerel imzalamada ücret gaz birimi başına 0,25 uqor'dur, yani 75.000 uqor). Yalnızca `qorechaind` alternatifi tarafından kullanılanlar: `fees` (varsayılan `50000uqor`), `qorechaind_path` (boş, `PATH`'teki `qorechaind` anlamına gelir), `qorechaind_home` (boş, `~/.qorechaind` anlamına gelir), `keyring_backend` ve `key_name` (operatör hesabını tutan `qorechaind` anahtarı; varsayılan olarak üst düzey `key_name`). |
+| `api_addr` | REST uç noktası. `onboard` bunu `config.toml` içine yazar (ana ağ `https://api.qore.host`, test ağı `https://api-testnet.qore.host`). Boş olduğunda `rpc_addr`'dan türetilir (26657 portu 1317 olur; `rpc.` ve `rpc-testnet.` ana bilgisayarları `api.` ve `api-testnet.` olur; örneğin `https://rpc-testnet.qore.host`, `https://api-testnet.qore.host` verir), dolayısıyla yalnızca bu kuralların hiçbirini izlemeyen uç noktalar için gereklidir. 3.1.12'ye kadar yalnızca `rpc.` ile `api.` eşlemesi vardı; bu yüzden boş `api_addr` ile bir test ağı düğümü lisans, register ve status için "404 page not found" yanıtı verebilir; bu sürümlerde `api_addr` değerini elle ayarlayın veya güncelleyin. |
+| `[heartbeat]` | Varsayılan olarak açıktır (`enabled`). `interval_blocks` (zincirin `heartbeat_interval` değeriyle, yani 1000 ile eşleştirin), `check_interval` (varsayılan `60s`) ve `gas` (varsayılan `300000`, bir kalp atışının gaz sınırı için tavan; yerel imzalamada ücret gaz birimi başına 0,25 uqor'dur). 3.1.13'ten itibaren düğüm her kalp atışının gaz sınırını bir önceki kalp atışının kullandığı gaz artı %25 olarak, 1.000 gaza yukarı yuvarlayarak ve asla `gas` değerinin üzerine çıkmadan belirler; bir başlatmadan sonraki ilk kalp atışı ve gaz yetersizliği reddinden sonraki ilk kalp atışı tavanı kullanır. Test ağında ölçüldü: sınır 216.000, kullanılan 165.774, kalp atışı başına ücret 75.000 uqor yerine 54.000 uqor (0,054 QOR). Operatör hesabı bu ücretler için 1.000 QOR'luk stake'in ötesinde harcanabilir QOR tutmalıdır. Yalnızca `qorechaind` alternatifi tarafından kullanılanlar: `fees` (varsayılan `50000uqor`), `qorechaind_path` (boş, `PATH`'teki `qorechaind` anlamına gelir), `qorechaind_home` (boş, `~/.qorechaind` anlamına gelir), `keyring_backend` ve `key_name` (operatör hesabını tutan `qorechaind` anahtarı; varsayılan olarak üst düzey `key_name`). |
 | `[delegation]` | `auto_claim` (varsayılan olarak kapalı: birikmiş hafif düğüm ödüllerini imzalayıcı aracılığıyla operatör hesabına talep eder; düğüm sunucudan asla yeniden delege etmez), kontrol aralığı, talep için minimum ödül, `rebalance_enabled` (varsayılan olarak açık) ve `min_reputation` (yalnızca uyarılar; düğüm stake'i asla taşımaz). 3.1.11'den itibaren `rebalance_enabled`, hapsedilmiş (jailed) veya aktif kümede olmayan bir delege edilmiş doğrulayıcı için ve `min_delegated_stake` değerinin (1.000 QOR) altındaki bağlı stake için uyarıları açar; `min_reputation` (varsayılan `0.5`) ağın doğrulayıcı başına itibar puanları sunduğu yerde, bugün testnet'te, uygulanır. `validators` ve `split_weights` kabul edilir ancak şu anda işleme alınmaz. |
 | `[update]` | `mode`: `auto` (varsayılan, bölüm yokken de), `notify` (yalnızca duyur) veya `off`. Hafif düğüm 3.1.11 ve sonrası. Bkz. [Güncelleme](#updating). |
 | `[telemetry]` | Telemetrinin etkin olup olmadığı ve doğrulayıcılar, ağ, köprü ve tokenomik için yenileme aralıkları. |
@@ -146,7 +147,7 @@ Uç noktayı boş bırakırsanız, daemon yalnızca yerel modda başlar: PQC yı
 `onboard` her zaman etkin yapılandırmanın üzerine yazar. Varsayılan olmayan bir yola yazmak için `--config`, sormak yerine hızlı başarısız olmak için (CI'de yararlıdır) `--non-interactive` kullanın.
 
 :::caution Sonraki adım: operatör hesabı
-`onboard` hangi hesabın sizin olduğunu bilmez. `register` komutunu çalıştırmadan önce operatör hesabını [`keys add-operator`](#operator-wallet) ile ekleyin. Bu komut `operator_address` değerini sizin için doldurur. `onboard` sırasında uç noktaya ulaşılamadıysa, `config.toml` içindeki `chain_id` değerinin `qorechain-vladi` (mainnet) veya `qorechain-diana` (testnet) olduğunu da kontrol edin.
+`onboard` hangi hesabın sizin olduğunu bilmez. `register` komutunu çalıştırmadan önce operatör hesabını [`keys add-operator`](#operator-wallet) ile ekleyin. Bu komut `operator_address` değerini sizin için doldurur. `onboard` sırasında uç noktaya ulaşılamadıysa, `config.toml` içindeki `chain_id` değerinin `qorechain-vladi` (mainnet) veya `qorechain-diana` (testnet) olduğunu ve `api_addr` değerinin ayarlandığını da kontrol edin (`onboard` bunu yazar; 3.1.12 veya daha eski bir test ağı düğümünde boş `api_addr`, "404 page not found" yanıtı verebilir).
 :::
 
 ## Çalıştırma: `start`
@@ -195,6 +196,7 @@ lightnode-sx keys add-operator
 
 - hesap anahtarını kelimelerden tam olarak `qorechaind` ve Keplr'in yaptığı gibi türetir (`m/44'/118'/0'/0/0`), anahtarlıkta `operator` olarak saklar ve hesabı `config.toml` içindeki `operator_address` alanına yazar. `operator_address` zaten farklı bir hesaba ayarlıysa reddeder;
 - düğümün imzalayacağı kuantum sonrası anahtarı seçer, `operator-pqc` olarak saklar ve `key_name` değerini ona ayarlar. Hesabın zaten bir kuantum sonrası anahtarı varsa — genellikle aynı kelimelerden bir cüzdan tarafından kaydedilmiştir — bu anahtar kelimelerden yeniden oluşturulur (wallet-adapter ve Dashboard türetmeleri, `qorechaind tx pqc recover-key` ile aynı). Hesabın anahtarı yoksa kelimelerden bir anahtar türetilir; böylece kelimeler düğümün anahtarını da geri yükler. Hesabın kayıtlı anahtarı zaten düğümün mevcut anahtarıysa, o anahtar korunur. Hesabın anahtarı kelimelerden yeniden üretilemiyorsa, komut reddeder ve özel bir hesap önerir;
+- kullanılan ağ için lisansın nereden geldiğini belirtir: mainnet'te Dashboard satın alımı, testnet'te ücretsiz self-servis talep;
 - `--recover` olmadan yeni bir hesap oluşturur ve 24 kelimesini bir kez gösterir. Bunları not edin; tek yedek bunlardır. Kaydolmadan önce hesaba bakiye yükleyin ve adresi için lisansı satın alın.
 
 Anahtarlık parolası (`QORE_LIGHTNODE_KEYRING_PASSPHRASE`) bu anahtarı da düğüm anahtarı gibi korur. Ardından kaydolun:

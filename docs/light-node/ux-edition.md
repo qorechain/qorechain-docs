@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Edition — Web Dashboard
 
-The **UX (User eXperience)** edition runs the same light node daemon as the SX edition, but adds an **embedded web dashboard** so you can watch the node and the network in a browser. The binary is `lightnode-ux`. Like the SX edition, it is on the light node's own version line, separate from the chain version (both networks' channels carry 3.1.12 on 27 October 2026).
+The **UX (User eXperience)** edition runs the same light node daemon as the SX edition, but adds an **embedded web dashboard** so you can watch the node and the network in a browser. The binary is `lightnode-ux`. Like the SX edition, it is on the light node's own version line, separate from the chain version (both networks' channels carry 3.1.13 on 12 November 2026).
 
 The UX edition is the right choice for desktop use and for operators who prefer a visual interface over the command line.
 
@@ -23,11 +23,11 @@ The UX edition requires **Go 1.26.1**. Its post-quantum cryptography is a pure-G
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Build from the release tag the manifest names (`git checkout v3.1.12` today). This produces `build/lightnode-ux`.
+Build from the release tag the manifest names (`git checkout v3.1.13` today). This produces `build/lightnode-ux`.
 
 ### Docker
 
-The UX service runs the public image `ghcr.io/qorechain/qorechain-lightnode-ux` (tags `latest` and `v<version>`, for example `v3.1.12`), pulled by the `docker-compose.yml` on the `main` branch of `github.com/qorechain/qorechain-lightnode`; if the registry is not reachable, compose builds `Dockerfile.ux` from source. The container needs a `config.toml` in its data volume before it will start. The UX binary has the setup commands, so you can create it in the volume:
+The UX service runs the public image `ghcr.io/qorechain/qorechain-lightnode-ux` (tags `latest` and `v<version>`, for example `v3.1.13`), pulled by the `docker-compose.yml` on the `main` branch of `github.com/qorechain/qorechain-lightnode`; if the registry is not reachable, compose builds `Dockerfile.ux` from source. The container needs a `config.toml` in its data volume before it will start. The UX binary has the setup commands, so you can create it in the volume:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

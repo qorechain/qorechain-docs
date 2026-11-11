@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX エディション — サーバーデーモン
 
-**SX**(Server eXperience)エディションはヘッドレスのライトノードです。デーモンと完全な管理 CLI から成り、サーバーと自動化のために作られています。バイナリは `lightnode-sx` です。ライトノードのバージョンはチェーンバージョンとは別の独自のラインで、両ネットワークのチャンネルが **3.1.12**(2026年10月27日)を配信しています。このページでは、機能に 3.1.11 以降が必要な箇所を明記しています。
+**SX**(Server eXperience)エディションはヘッドレスのライトノードです。デーモンと完全な管理 CLI から成り、サーバーと自動化のために作られています。バイナリは `lightnode-sx` です。ライトノードのバージョンはチェーンバージョンとは別の独自のラインで、両ネットワークのチャンネルが **3.1.13**(2026年11月12日)を配信しています。このページでは、機能に 3.1.11 以降が必要な箇所を明記しています。
 
 ## インストール {#install}
 
@@ -17,7 +17,7 @@ sidebar_position: 2
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.12 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ Windows では、`certutil -hashfile lightnode-sx-<platform>.exe SHA256` の出�
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-マニフェストが示すリリースタグからビルドしてください(現在は `git checkout v3.1.12`)。これにより `build/lightnode-sx` が生成されます。直接実行するか、`PATH` にコピーしてください。登録する前に、[`selftest`](#verify-the-pqc-stack-selftest) でポスト量子署名スタックの健全性を確認してください。
+マニフェストが示すリリースタグからビルドしてください(現在は `git checkout v3.1.13`)。これにより `build/lightnode-sx` が生成されます。直接実行するか、`PATH` にコピーしてください。登録する前に、[`selftest`](#verify-the-pqc-stack-selftest) でポスト量子署名スタックの健全性を確認してください。
 
 ### Docker {#docker}
 
-リリース済みのイメージは公開されており、匿名でプルできます。`ghcr.io/qorechain/qorechain-lightnode-sx` と `ghcr.io/qorechain/qorechain-lightnode-ux` で、それぞれに `latest` と `v<version>`(例: `v3.1.12`)のタグが付いています。ソースリポジトリの `main` ブランチにある `docker-compose.yml` はこれらを使用し、レジストリに到達できない場合はソースからのビルド(`Dockerfile.sx`、`Dockerfile.ux`)にフォールバックします。リリースを固定するには compose ファイルの `image:` タグを変更してください。代わりにリリースタグからビルドするには、`git checkout v<version>` を実行してから `docker compose build` を実行します。アップデートしても、キー、設定、データボリュームはそのまま引き継がれます。
+リリース済みのイメージは公開されており、匿名でプルできます。`ghcr.io/qorechain/qorechain-lightnode-sx` と `ghcr.io/qorechain/qorechain-lightnode-ux` で、それぞれに `latest` と `v<version>`(例: `v3.1.13`)のタグが付いています。ソースリポジトリの `main` ブランチにある `docker-compose.yml` はこれらを使用し、レジストリに到達できない場合はソースからのビルド(`Dockerfile.sx`、`Dockerfile.ux`)にフォールバックします。リリースを固定するには compose ファイルの `image:` タグを変更してください。代わりにリリースタグからビルドするには、`git checkout v<version>` を実行してから `docker compose build` を実行します。アップデートしても、キー、設定、データボリュームはそのまま引き継がれます。
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,7 +78,7 @@ docker compose run --rm lightnode-sx status
 - **設定。** `[update] mode = "auto"`(デフォルト。セクションがない設定でも同様)は通知とインストールを行い、`"notify"` は通知のみ、`"off"` はチェックを行いません。手動の場合: `lightnode-sx update --check`、続いて `lightnode-sx update`、その後ノードを再起動します。
 - **通知の確認。** ノードはより新しいリリースをログに出力し、ローカルのダッシュボード API の `GET /api/update` で提供します(フィールド `network`、`mode`、`current`、`latest`、`min_compatible`、`notes`、`update_available`、`mandatory`、`can_install`、`blocked`、`last_check`、`last_error`)。UX ダッシュボードにはバナーが表示されます。
 - **コンテナまたは書き込み不可のフォルダー。** ノードは通知のみを行います。イメージまたはファイルは自分で更新してください。
-- **ライトノード 3.1.10 以前**は自己更新しません。一度だけ手動で 3.1.12 をインストールしてください。マニフェストのパスからバージョン付きバイナリをダウンロードし([インストール](#install)を参照)、検証し、ファイルを置き換えて再起動します。その後、ノードはチャンネルに追従します。
+- **ライトノード 3.1.10 以前**は自己更新しません。一度だけ手動で 3.1.13 をインストールしてください。マニフェストのパスからバージョン付きバイナリをダウンロードし([インストール](#install)を参照)、検証し、ファイルを置き換えて再起動します。その後、ノードはチャンネルに追従します。
 - **Docker。** Docker ノードは新しいリリースの通知(ログと `GET /api/update`)を受け取りますが、自分自身を置き換えることはありません。プルがそのままアップデートになります: `docker compose pull && docker compose up -d`(`QORECHAIN_RPC_ADDR` はエクスポートしたままにしてください)。新しいソースタグからビルドする方法も代替手段として使えます。
 
 ## 設定 {#configure}
@@ -101,8 +101,8 @@ docker compose run --rm lightnode-sx status
 | `data_dir` | ノードがデータベースとヘッダーを保存する場所。 |
 | `keyring_backend` / `key_name` | キーリングバックエンド(`file`、`os`、またはローカル devnet 専用の `test`)と、ノードが署名に使うポスト量子キーの名前。`onboard` は `key_name` を自身が作成したキー(`validator`)に設定し、`keys add-operator` はアカウントのワードからキーを導出または復元した場合にそれを `operator-pqc` に変更します。`file` バックエンドでは、環境変数に `QORE_LIGHTNODE_KEYRING_PASSPHRASE` が必要です。 |
 | `operator_address` | このノードが属するアカウント(`qor1...`)。読み込み時に検証されます。`keys add-operator` が設定します。`register`、`status`、ハートビートに必要です。[オペレーターウォレット](#operator-wallet)を参照してください。 |
-| `api_addr` | REST エンドポイント。空の場合は `rpc_addr` から導出されます(ポート 26657 は 1317 になり、`rpc.` ホストは `api.` になります)。そのため、どちらの規則にも従わないエンドポイントでのみ必要です。 |
-| `[heartbeat]` | デフォルトで有効(`enabled`)。`interval_blocks`(チェーンの `heartbeat_interval` である 1000 に合わせます)、`check_interval`(デフォルト `60s`)、`gas`(デフォルト `300000`。ネイティブ署名では手数料はガス1単位あたり 0.25 uqor なので 75,000 uqor)。`qorechaind` フォールバックでのみ使用: `fees`(デフォルト `50000uqor`)、`qorechaind_path`(空の場合は `PATH` 上の `qorechaind`)、`qorechaind_home`(空の場合は `~/.qorechaind`)、`keyring_backend`、`key_name`(オペレーターアカウントを保持する `qorechaind` のキー。デフォルトはトップレベルの `key_name`)。 |
+| `api_addr` | REST エンドポイント。`onboard` が `config.toml` に書き込みます(メインネットは `https://api.qore.host`、テストネットは `https://api-testnet.qore.host`)。空の場合は `rpc_addr` から導出されます(ポート 26657 は 1317 になり、`rpc.` と `rpc-testnet.` のホストはそれぞれ `api.` と `api-testnet.` になります。たとえば `https://rpc-testnet.qore.host` は `https://api-testnet.qore.host` になります)。そのため、これらのどの規則にも従わないエンドポイントでのみ必要です。3.1.12 までは `rpc.` から `api.` への対応しかなかったため、`api_addr` が空のテストネットノードは、ライセンス、登録、ステータスで「404 page not found」を返すことがありました。それらのバージョンでは `api_addr` を手動で設定するか、アップデートしてください。 |
+| `[heartbeat]` | デフォルトで有効(`enabled`)。`interval_blocks`(チェーンの `heartbeat_interval` である 1000 に合わせます)、`check_interval`(デフォルト `60s`)、`gas`(デフォルト `300000`。ハートビートのガス上限の最大値で、ネイティブ署名では手数料はガス1単位あたり 0.25 uqor)。3.1.13 からは、ノードが各ハートビートのガス上限を前回のハートビートの使用量に25%を加え、1,000ガス単位に切り上げた値に設定し、`gas` を超えることはありません。起動後の最初のハートビートと、ガス不足で拒否された後の最初のハートビートは上限を使います。テストネットでの実測: 上限 216,000、使用量 165,774、手数料は 75,000 uqor ではなく1回あたり 54,000 uqor(0.054 QOR)。これらの手数料を支払うため、オペレーターアカウントには 1,000 QOR のステークとは別に使用可能な QOR が必要です。`qorechaind` フォールバックでのみ使用: `fees`(デフォルト `50000uqor`)、`qorechaind_path`(空の場合は `PATH` 上の `qorechaind`)、`qorechaind_home`(空の場合は `~/.qorechaind`)、`keyring_backend`、`key_name`(オペレーターアカウントを保持する `qorechaind` のキー。デフォルトはトップレベルの `key_name`)。 |
 | `[delegation]` | `auto_claim`(デフォルトでは無効。署名者を通じて、蓄積されたライトノード報酬をオペレーターアカウントに請求します。ノードがサーバーから再委任することはありません)、チェックの間隔、請求のための最小報酬、`rebalance_enabled`(デフォルトで有効)、`min_reputation`(警告のみ。ノードがステークを移動することはありません)。3.1.11 以降、`rebalance_enabled` は、委任先のバリデーターがジェイルされているかアクティブセットに含まれていない場合、およびボンドされたステークが `min_delegated_stake`(1,000 QOR)を下回る場合の警告を有効にします。`min_reputation`(デフォルト `0.5`)は、ネットワークがバリデーターごとのレピュテーションスコアを提供する場合に適用され、現時点ではテストネットがそれに該当します。`validators` と `split_weights` は受け付けられますが、現在は動作に反映されません。 |
 | `[update]` | `mode`: `auto`(デフォルト。セクションがない場合も同様)、`notify`(通知のみ)、または `off`。ライトノード 3.1.11 以降。[更新](#updating)を参照してください。 |
 | `[telemetry]` | テレメトリを有効にするかどうか、およびバリデーター、ネットワーク、ブリッジ、トークノミクスの更新間隔。 |
@@ -146,7 +146,7 @@ lightnode-sx onboard
 `onboard` は常にアクティブな設定を上書きします。デフォルト以外のパスに書き込むには `--config` を、プロンプトを表示する代わりに即座に失敗させる(CI で便利)には `--non-interactive` を使用してください。
 
 :::caution 次へ: オペレーターアカウント
-`onboard` は、どのアカウントがあなたのものなのかを知りません。`register` を実行する前に、[`keys add-operator`](#operator-wallet) でオペレーターアカウントを追加してください。これにより `operator_address` が設定されます。`onboard` の実行中にエンドポイントに到達できなかった場合は、`config.toml` の `chain_id` が `qorechain-vladi`(メインネット)または `qorechain-diana`(テストネット)であることも確認してください。
+`onboard` は、どのアカウントがあなたのものなのかを知りません。`register` を実行する前に、[`keys add-operator`](#operator-wallet) でオペレーターアカウントを追加してください。これにより `operator_address` が設定されます。`onboard` の実行中にエンドポイントに到達できなかった場合は、`config.toml` の `chain_id` が `qorechain-vladi`(メインネット)または `qorechain-diana`(テストネット)であること、そして `api_addr` が設定されていること(`onboard` が書き込みます。3.1.12 以前のテストネットノードで `api_addr` が空の場合、「404 page not found」を返すことがあります)も確認してください。
 :::
 
 ## 実行: `start`
@@ -195,6 +195,7 @@ lightnode-sx keys add-operator
 
 - `qorechaind` や Keplr とまったく同じ方法(`m/44'/118'/0'/0/0`)でワードからアカウントキーを導出し、キーリングに `operator` として保存し、そのアカウントを `config.toml` の `operator_address` に書き込みます。`operator_address` がすでに別のアカウントに設定されている場合は拒否します。
 - ノードが署名に使うポスト量子キーを選択し、`operator-pqc` として保存して `key_name` をその名前に設定します。アカウントにすでにポスト量子キーがある場合 — 通常は同じワードからウォレットが登録したもの — そのキーをワードから再構築します(wallet-adapter と Dashboard の導出方法で、`qorechaind tx pqc recover-key` と同じ)。アカウントにキーがない場合はワードからキーを導出するため、ワードでノードのキーも復元できます。アカウントに登録されたキーがすでにノードの現在のキーである場合は、そのキーが維持されます。アカウントのキーをワードから再現できない場合、コマンドは拒否し、専用のアカウントを使うよう勧めます。
+- 使用中のネットワークでライセンスをどこで入手するかを示します。メインネットでは Dashboard での購入、テストネットでは無料のセルフサービス申請です。
 - `--recover` なしの場合は新しいアカウントを作成し、その24個のワードを一度だけ表示します。必ず書き留めてください。それが唯一のバックアップです。登録する前に、アカウントに資金を入れ、そのアドレス向けにライセンスを購入してください。
 
 キーリングのパスフレーズ(`QORE_LIGHTNODE_KEYRING_PASSPHRASE`)は、ノードキーと同様にこのキーも保護します。その後、登録します。

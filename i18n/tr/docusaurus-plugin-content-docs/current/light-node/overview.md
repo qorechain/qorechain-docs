@@ -11,7 +11,7 @@ sidebar_position: 1
 
 Bir düğümü çalıştırmak ve senkronize etmek lisans gerektirmez. Ödül payına katılmak ayrı bir adımdır: bir `lightnode_operator` lisansı, bağlı doğrulayıcılara delege edilmiş stake ve bir zincir üzeri kayıt gerekir ([Nasıl erişilir](#how-to-access) bölümüne bakın).
 
-Hafif düğümün zincir sürümünden ayrı, **kendine ait bir sürüm hattı** vardır. 4 Kasım 2026 itibarıyla her iki ağın sürüm kanalı da hafif düğüm **3.1.12** sürümünü taşır (o zaman her iki ağda zincir `v3.2.6`; test ağı 6 Kasım 2026'dan beri `v3.2.7` çalıştırır, ana ağ `v3.2.6`'da kalır). İki numarayı birbiriyle ilgisiz kabul edin.
+Hafif düğümün zincir sürümünden ayrı, **kendine ait bir sürüm hattı** vardır. 12 Kasım 2026 itibarıyla her iki ağın sürüm kanalı da hafif düğüm **3.1.13** sürümünü taşır (test ağı zincir `v3.2.7` çalıştırır, ana ağ `v3.2.6`; 3.1.13 `v3.2.7` üzerinde değişiklik olmadan çalışır, orada heartbeat ve claim 0 kodu döner). İki numarayı birbiriyle ilgisiz kabul edin.
 
 ## Yenilikler {#innovations}
 
@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 `onboard` için zincir RPC'si `https://rpc.qore.host` (ana ağ) veya `https://rpc-testnet.qore.host` (test ağı) adresidir. UX sürümü için aynı komutlarla `lightnode-ux` kullanın ve `http://127.0.0.1:8420` adresini açın. Her adımın ayrıntıları: [SX Sürümü](/light-node/sx-edition) ve [Kayıt ve Lisanslama](/light-node/registration-and-licensing).
 
-**3. Güncel tutun.** Hafif düğüm 3.1.11 ve sonrası kapsayıcıların dışında kendini günceller (yukarıdaki kendini güncelleme maddesine bakın). 3.1.10 veya daha eski bir düğüm 3.1.12'yi bir kez elle kurmalıdır: sürüme özgü ikili dosyayı yukarıdaki gibi indirin ve dosyayı değiştirin. Docker ile `docker compose pull && docker compose up -d` çalıştırın. Bkz. [SX Sürümü: güncelleme](/light-node/sx-edition#updating).
+**3. Güncel tutun.** Hafif düğüm 3.1.11 ve sonrası kapsayıcıların dışında kendini günceller (yukarıdaki kendini güncelleme maddesine bakın). 3.1.10 veya daha eski bir düğüm 3.1.13'ü bir kez elle kurmalıdır: sürüme özgü ikili dosyayı yukarıdaki gibi indirin ve dosyayı değiştirin. Docker ile `docker compose pull && docker compose up -d` çalıştırın. Bkz. [SX Sürümü: güncelleme](/light-node/sx-edition#updating).
 
 ## Nasıl erişilir {#how-to-access}
 
@@ -77,7 +77,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 | Zincir | `qorechain-vladi` (zincir `v3.2.6`) | `qorechain-diana` (zincir `v3.2.7`) |
 | Düğüm için RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | Sorgular için REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
-| Hafif düğüm sürümü | 3.1.12 | 3.1.12 |
+| Hafif düğüm sürümü | 3.1.13 | 3.1.13 |
 | Lisans | 50 $, Dashboard'dan satın alınır; hibe elle, gruplar halinde imzalanır | Ücretsiz, self-servis: **Nodes & Validators > Light Node**, **Request licence**; otomatik imzalanır, genellikle birkaç dakika içinde |
 
 **Kaydolmak için gerekenler**
@@ -85,7 +85,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 - Kurtarma kelimelerini elinizde tuttuğunuz bir hesap (kendi kelimeleriniz, Keplr veya bir `qorechaind` anahtarı), tercihen düğüme ayrılmış. Saklamalı (custodial) bir Dashboard cüzdanı, seed'ini dışa aktarmadığınız sürece bir düğüm çalıştıramaz.
 - O adreste etkin bir `lightnode_operator` lisansı (aşağıya bakın).
 - O adresten **bağlı** doğrulayıcılara toplam olarak delege edilmiş en az **1.000 QOR**.
-- **1 QOR** kayıt ücreti ve işlem ücretleri için hesapta QOR. Bir kalp atışı, varsayılan 300.000 gaz sınırında gaz başına 0,25 uqor'a mal olur, yani tavan olarak 0,075 QOR (ölçülen kullanılan gaz: yaklaşık 165.000). Bir kalp atışı her 1.000 blokta bir gerekir; bu, ana ağda günde yaklaşık 25 ila 27 kalp atışı demektir, dolayısıyla ücretler günde yaklaşık 1,9 ila 2 QOR tutar. Bunlar için operatör hesabında, 1.000 QOR'luk stake'in üzerinde harcanabilir QOR tutun: QOR'u biten bir düğüm kalp atışı göndermeyi bırakır, inaktif hale gelir ve çalışma süresi kaybeder.
+- **1 QOR** kayıt ücreti ve işlem ücretleri için hesapta QOR. Bir kalp atışı gaz başına 0,25 uqor'a mal olur. 3.1.13'ten itibaren düğüm her kalp atışının gaz sınırını bir önceki kalp atışının kullandığı gaz artı %25 olarak belirler; böylece bir kalp atışı yaklaşık 0,054 QOR tutar (test ağında ölçüldü: sınır 216.000, kullanılan 165.774, ücret 54.000 uqor). Bir kalp atışı her 1.000 blokta bir gerekir; bu, ana ağda günde yaklaşık 25 ila 27 kalp atışı demektir, dolayısıyla ücretler günde yaklaşık 1,4 QOR, ayda kabaca 40 QOR tutar. 3.1.12 ve öncesi tam 300.000 gaz tavanını kullanır ve kalp atışı başına 0,075 QOR öder, yani günde yaklaşık 1,9 ila 2 QOR. Düğüm, hesabın harcanabilir bakiyesi 3 günden az kalp atışını karşılıyorsa günlüğüne bir uyarı yazar. Bunlar için operatör hesabında, 1.000 QOR'luk stake'in üzerinde harcanabilir QOR tutun: QOR'u biten bir düğüm kalp atışı göndermeyi bırakır, inaktif hale gelir ve çalışma süresi kaybeder.
 - Açık kalan bir bilgisayar: ödeme almak için düğümün her 1.000 blokta bir kalp atışı göndermesi ve en az %80 çalışma süresini koruması gerekir.
 
 **Lisans edinme.** Dashboard'da **Nodes & Validators** sayfasını açın (kenar çubuğunda eskiden **Tools** olarak adlandırılan giriş; sayfa hâlâ `/tools` adresindedir), **Light Node** sekmesini seçin ve üst bilgiden ağı seçin. Dashboard oturum açmayı gerektirir.
@@ -115,12 +115,12 @@ Bu %3, hafif düğüm modül hesabına ödenen tutardır; düğüm başına bir 
 
 | Ne | Nerede | Güncel sürüm |
 | --- | --- | --- |
-| Sürüm manifesti, ana ağ | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.12 (`minCompatible` 3.1.9, kayıt açık) |
-| Sürüm manifesti, test ağı | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.12 (`minCompatible` 3.1.9, kayıt açık) |
+| Sürüm manifesti, ana ağ | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, kayıt açık) |
+| Sürüm manifesti, test ağı | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, kayıt açık) |
 | İkili dosyalar | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | Sürüm başına 12 dosya (SX ve UX, Linux, macOS ve Windows, amd64 ve arm64) artı `SHA256SUMS` |
-| Kaynak ve sürümler | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Sürüm `v3.1.12` (güncel) ve önceki etiketler; her biri 12 ikili dosyayı, `SHA256SUMS`, `lightnode-build.json` ve bir Android önizleme APK'sını taşır |
+| Kaynak ve sürümler | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Sürüm `v3.1.13` (güncel) ve önceki etiketler; her biri 12 ikili dosyayı, `SHA256SUMS`, `lightnode-build.json` ve bir Android önizleme APK'sını taşır |
 | Android | Yalnızca GitHub sürümüne eklenmiştir | Önizleme: zinciri takip eder, kayıt olmaz, kazanmaz |
-| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` ve `ghcr.io/qorechain/qorechain-lightnode-ux`, herkese açık, etiketler `latest` ve `v<version>` (bkz. [SX Sürümü: Docker](/light-node/sx-edition#docker)) | `v3.1.12` |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` ve `ghcr.io/qorechain/qorechain-lightnode-ux`, herkese açık, etiketler `latest` ve `v<version>` (bkz. [SX Sürümü: Docker](/light-node/sx-edition#docker)) | `v3.1.13` |
 
 İndirmeden önce bu tabloya güvenmek yerine ağınızın manifestindeki `version` değerini kontrol edin. Sürüm imzalama anahtarı ikili dosyaya gömülüdür; sizin kurmanız gereken bir şey yoktur.
 
@@ -130,7 +130,7 @@ Bu %3, hafif düğüm modül hesabına ödenen tutardır; düğüm başına bir 
 - **Ödüller bir tavandır.** Düğüm başına sınır (30 günde 2.000 QOR) bir azami değerdir ve düğüm yalnızca havuza biriken tutarı ve yalnızca uygun olduğu sürece alır.
 - **Kalp atışı bir canlılık imzasıdır.** Operatör anahtarının zamanında imzaladığını kanıtlar, tam yazılımın kesintisiz çalıştığını değil.
 - **İtibar uyarıları.** Zincir v3.2.6'dan beri (ana ağ, 4 Kasım 2026) ana ağ doğrulayıcı başına itibar puanlarını sunar; böylece kontrol her iki ağda çalışabilir; 4 Kasım'da `GET /qorechain/reputation/v1/validator/<valoper>` ana ağda bağlı bir doğrulayıcı için 200 yanıtı verdi. v3.2.6'dan eski bir zincire karşı (veya zincirin puanlamadığı bir doğrulayıcı için) düğüm o tek kontrolü atlar ve bunu günlüğünde söyler. Jail edilmiş, aktif kümede olmayan ve düşük stake uyarıları buna bağlı değildir. 3.1.11'den önceki düğüm sürümleri başarısız bir itibar kontrolünü her beş dakikada bir kaydediyordu ve hiçbir şey için uyarı vermiyordu.
-- **Kendini güncelleme 3.1.11 ile başlar.** 3.1.10 veya daha eski bir düğüm kendini güncellemez ve 3.1.12'nin bir kez elle kurulmasını gerektirir. Bir kapsayıcıda veya yazılamaz bir klasörde düğüm yalnızca yeni sürümleri duyurur.
+- **Kendini güncelleme 3.1.11 ile başlar.** 3.1.10 veya daha eski bir düğüm kendini güncellemez ve 3.1.13'ün bir kez elle kurulmasını gerektirir. Bir kapsayıcıda veya yazılamaz bir klasörde düğüm yalnızca yeni sürümleri duyurur.
 - **Docker düğümleri kendilerini güncellemez.** Yeni bir sürümden haberdar edilirler ve güncelleme `docker compose pull && docker compose up -d` komutudur.
 - **Android bir önizlemedir** ve kayıt olmaz veya kazanmaz.
 - **Lisanslar.** Ana ağ hibeleri gruplar halinde elle imzalanır, bu yüzden ödeme ile kayıt arasında bir bekleme vardır. Test ağı lisansı hesap başına bir ve adres başına bir ile sınırlıdır.

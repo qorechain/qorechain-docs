@@ -11,7 +11,7 @@ El **nodo ligero de QoreChain** es un cliente pequeño que sigue una red QoreCha
 
 Ejecutar y sincronizar un nodo no requiere licencia. Participar en la parte de recompensas es un paso aparte: requiere una licencia `lightnode_operator`, stake delegado a validadores bonded y un registro on-chain (consulta [Cómo acceder](#how-to-access)).
 
-El nodo ligero tiene su **propia línea de versiones**, separada de la versión de lanzamiento de la cadena. A fecha de 4 de noviembre de 2026, los canales de versiones de ambas redes llevan el nodo ligero **3.1.12** (cadena `v3.2.6` en ambas redes entonces; la testnet ejecuta `v3.2.7` desde el 6 de noviembre de 2026, la mainnet sigue en `v3.2.6`). Trata los dos números como no relacionados.
+El nodo ligero tiene su **propia línea de versiones**, separada de la versión de lanzamiento de la cadena. A fecha de 12 de noviembre de 2026, los canales de versiones de ambas redes llevan el nodo ligero **3.1.13** (la testnet ejecuta la cadena `v3.2.7`, la mainnet ejecuta `v3.2.6`; la 3.1.13 funciona sin cambios en `v3.2.7`, donde el heartbeat y el claim devuelven código 0). Trata los dos números como no relacionados.
 
 ## Innovaciones {#innovations}
 
@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 El RPC de la cadena para `onboard` es `https://rpc.qore.host` (mainnet) o `https://rpc-testnet.qore.host` (testnet). Para la edición UX usa `lightnode-ux` con los mismos comandos y abre `http://127.0.0.1:8420`. Detalles de cada paso: [Edición SX](/light-node/sx-edition) y [Registro y licenciamiento](/light-node/registration-and-licensing).
 
-**3. Mantenlo actualizado.** El nodo ligero 3.1.11 y posteriores se actualizan solos fuera de contenedores (consulta el elemento de autoactualización más arriba). Un nodo en 3.1.10 o anterior debe instalar 3.1.12 a mano una vez: descarga el binario versionado como arriba y sustituye el archivo. Con Docker, ejecuta `docker compose pull && docker compose up -d`. Consulta [Edición SX: actualización](/light-node/sx-edition#updating).
+**3. Mantenlo actualizado.** El nodo ligero 3.1.11 y posteriores se actualizan solos fuera de contenedores (consulta el elemento de autoactualización más arriba). Un nodo en 3.1.10 o anterior debe instalar 3.1.13 a mano una vez: descarga el binario versionado como arriba y sustituye el archivo. Con Docker, ejecuta `docker compose pull && docker compose up -d`. Consulta [Edición SX: actualización](/light-node/sx-edition#updating).
 
 ## Cómo acceder {#how-to-access}
 
@@ -77,7 +77,7 @@ El RPC de la cadena para `onboard` es `https://rpc.qore.host` (mainnet) o `https
 | Cadena | `qorechain-vladi` (cadena `v3.2.6`) | `qorechain-diana` (cadena `v3.2.7`) |
 | RPC para el nodo | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | REST para consultas | `https://api.qore.host` | `https://api-testnet.qore.host` |
-| Versión del nodo ligero | 3.1.12 | 3.1.12 |
+| Versión del nodo ligero | 3.1.13 | 3.1.13 |
 | Licencia | $50, comprada en el Dashboard; la concesión se firma a mano por lotes | Gratuita, de autoservicio: **Nodes & Validators > Light Node**, **Request licence**; se firma automáticamente, normalmente en unos minutos |
 
 **Qué necesitas para registrarte**
@@ -85,7 +85,7 @@ El RPC de la cadena para `onboard` es `https://rpc.qore.host` (mainnet) o `https
 - Una cuenta cuyas palabras de recuperación tengas tú (tus propias palabras, Keplr o una clave de `qorechaind`), preferiblemente dedicada al nodo. Un monedero custodial del Dashboard no puede ejecutar un nodo a menos que exportes su semilla.
 - Una licencia `lightnode_operator` activa en esa dirección (consulta más abajo).
 - Al menos **1.000 QOR** delegados desde esa dirección a validadores **bonded**, contados como total.
-- QOR en la cuenta para la comisión de registro de **1 QOR** y las comisiones de transacción. Un heartbeat cuesta 0.25 uqor por gas con el límite predeterminado de 300.000 de gas, es decir, 0,075 QOR como techo (gas usado medido: unos 165.000). Un heartbeat corresponde cada 1.000 bloques, es decir, unos 25 a 27 al día en mainnet, así que las comisiones son de unos 1,9 a 2 QOR al día. Mantén QOR disponible en la cuenta del operador para ellas, además de los 1.000 QOR en stake: un nodo que se queda sin QOR deja de enviar heartbeats, pasa a inactivo y pierde uptime.
+- QOR en la cuenta para la comisión de registro de **1 QOR** y las comisiones de transacción. Un heartbeat cuesta 0.25 uqor por gas. Desde la 3.1.13 el nodo fija el límite de gas de cada heartbeat en lo que usó el heartbeat anterior más un 25 %, de modo que un heartbeat cuesta unos 0,054 QOR (medido en la testnet: límite 216.000, usado 165.774, comisión 54.000 uqor). Un heartbeat corresponde cada 1.000 bloques, es decir, unos 25 a 27 al día en mainnet, así que las comisiones son de unos 1,4 QOR al día, aproximadamente 40 QOR al mes. Las versiones 3.1.12 y anteriores usan el techo completo de 300.000 de gas y pagan 0,075 QOR por heartbeat, unos 1,9 a 2 QOR al día. El nodo avisa en su log cuando el saldo disponible de la cuenta cubre menos de 3 días de heartbeats. Mantén QOR disponible en la cuenta del operador para ellas, además de los 1.000 QOR en stake: un nodo que se queda sin QOR deja de enviar heartbeats, pasa a inactivo y pierde uptime.
 - Un ordenador que permanezca encendido: el nodo debe enviar un heartbeat cada 1.000 bloques y mantener al menos un 80% de tiempo de actividad para cobrar.
 
 **Conseguir una licencia.** En el Dashboard, abre **Nodes & Validators** (la entrada de la barra lateral que antes se llamaba **Tools**; la página sigue estando en `/tools`), elige la pestaña **Light Node** y selecciona la red en la cabecera. El Dashboard requiere iniciar sesión.
@@ -115,12 +115,12 @@ Para ser elegible para recompensas, un nodo ligero debe estar **registrado on-ch
 
 | Qué | Dónde | Versión actual |
 | --- | --- | --- |
-| Manifiesto de versión, mainnet | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.12 (`minCompatible` 3.1.9, registro abierto) |
-| Manifiesto de versión, testnet | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.12 (`minCompatible` 3.1.9, registro abierto) |
+| Manifiesto de versión, mainnet | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, registro abierto) |
+| Manifiesto de versión, testnet | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, registro abierto) |
 | Binarios | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 12 archivos por versión (SX y UX, Linux, macOS y Windows, amd64 y arm64) más `SHA256SUMS` |
-| Código fuente y versiones | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Versión `v3.1.12` (actual) y etiquetas anteriores; cada una incluye los 12 binarios, `SHA256SUMS`, `lightnode-build.json` y un APK de vista previa para Android |
+| Código fuente y versiones | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Versión `v3.1.13` (actual) y etiquetas anteriores; cada una incluye los 12 binarios, `SHA256SUMS`, `lightnode-build.json` y un APK de vista previa para Android |
 | Android | Adjunto solo a la versión de GitHub | Vista previa: sigue la cadena, no se registra, no gana |
-| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` y `ghcr.io/qorechain/qorechain-lightnode-ux`, públicas, etiquetas `latest` y `v<version>` (consulta [Edición SX: Docker](/light-node/sx-edition#docker)) | `v3.1.12` |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` y `ghcr.io/qorechain/qorechain-lightnode-ux`, públicas, etiquetas `latest` y `v<version>` (consulta [Edición SX: Docker](/light-node/sx-edition#docker)) | `v3.1.13` |
 
 Comprueba la `version` del manifiesto de tu red antes de descargar, en lugar de fiarte de esta tabla. La clave de firma de versiones está incorporada en el binario; no hay nada que instalar por tu parte.
 
@@ -130,7 +130,7 @@ Comprueba la `version` del manifiesto de tu red antes de descargar, en lugar de 
 - **Las recompensas son un techo.** El límite por nodo (2.000 QOR cada 30 días) es un máximo, y el nodo cobra solo lo que se acumula en el pool y solo mientras es elegible.
 - **Un heartbeat es una firma de liveness.** Demuestra que la clave del operador firmó a tiempo, no que el software completo se ejecutara de forma continua.
 - **Avisos de reputación.** Desde la cadena v3.2.6 (mainnet, 4 de noviembre de 2026) la mainnet sirve puntuaciones de reputación por validador, así que la comprobación puede ejecutarse en ambas redes; el 4 de noviembre `GET /qorechain/reputation/v1/validator/<valoper>` respondió 200 en mainnet para un validador bonded. Frente a una cadena anterior a v3.2.6 (o a un validador que la cadena no ha puntuado) el nodo omite esa comprobación y lo dice en su registro. Los avisos de jail, de fuera del conjunto activo y de stake bajo no dependen de ella. Las versiones del nodo anteriores a 3.1.11 registraban una comprobación de reputación fallida cada cinco minutos y nunca avisaban de nada.
-- **La autoactualización empieza en 3.1.11.** Un nodo en 3.1.10 o anterior no se actualiza solo y necesita una instalación manual de 3.1.12. En un contenedor o en una carpeta no escribible, el nodo solo anuncia nuevas versiones.
+- **La autoactualización empieza en 3.1.11.** Un nodo en 3.1.10 o anterior no se actualiza solo y necesita una instalación manual de 3.1.13. En un contenedor o en una carpeta no escribible, el nodo solo anuncia nuevas versiones.
 - **Los nodos Docker no se actualizan solos.** Se les avisa de una nueva versión, y la actualización es `docker compose pull && docker compose up -d`.
 - **Android es una vista previa** y no se registra ni gana.
 - **Licencias.** Las concesiones de mainnet se firman a mano por lotes, así que hay una espera entre el pago y el registro. La licencia de testnet se limita a una por cuenta y una por dirección.
