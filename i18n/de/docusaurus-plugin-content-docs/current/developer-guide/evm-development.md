@@ -147,6 +147,10 @@ QoreChain verwendet für EVM-Transaktionen ein **dynamisches EIP-1559-Basisgebü
 * Nutzer können `maxFeePerGas` und `maxPriorityFeePerGas` festlegen
 * Prioritätsgebühren gehen an den Block-Proposer
 
+### Gaslimits {#gas-limits}
+
+Ab Release v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) darf eine einzelne EVM-Transaktion ein Gaslimit von höchstens **30,000,000** setzen, und die EVM-Ausführungen, die eine Cosmos-Nachricht startet (ein VM-übergreifender Aufruf, eine ERC-20-Umwandlung, die Weiterleitung eines eingehenden IBC-Pakets), teilen sich dasselbe Budget. Eine Transaktion über dem Limit wird abgelehnt, bevor sie läuft. Lesen Sie die geltenden Werte über `GET /qorechain/pqc/v1/evm_limits` (gRPC `EVMLimitsQuery/EVMLimits`) und begrenzen Sie das Gas, das Ihre Tools senden, insbesondere Gas, das eine dApp ungeprüft an Ihre Wallet übergibt. Eine Cosmos-Transaktion hat ein eigenes Limit von 50,000,000 Gas. Einfache Transfers (21,000 Gas) und gewöhnliche Token-Aufrufe liegen weit unter beiden.
+
 ### Denominierungs-Brücke
 
 Das native QOR-Token hat **6 Dezimalstellen** (`uqor`), während die EVM **18 Dezimalstellen** erwartet. Das Modul `x/precisebank` übernimmt die nahtlose Umrechnung:
@@ -298,7 +302,7 @@ Welche Grenze zuerst aufgebraucht ist, schließt das Fenster. Die drei Grenzen s
 | `--native-only`         | `native_only` | Nur einfache Transfers von nativem QOR: keine Calldata, keine Contract-Erstellung, kein Empfänger, der Code trägt, keine EIP-7702-Autorisierung |
 | `--allowed-targets 0xA,0xB` | `allowed_targets` | Nur Transaktionen, deren Empfänger eine der aufgelisteten 20-Byte-Adressen ist; die Contract-Erstellung wird abgelehnt |
 
-`allowed_targets` begrenzt, **welche** Contracts und Token ein Fenster berühren darf, nicht **wie viel**. Ein aufgelisteter Token lässt jeden Betrag dieses Tokens zu, einschließlich `approve`, und ein aufgelisteter Contract kann alles bewegen, was sein Code und bestehende Genehmigungen (Approvals) erlauben; listen Sie daher keine generischen Forwarder- oder Router-Contracts auf. Ein Fenster begrenzt nur Transaktionen auf der EVM-Lane (klassisch signiert); Cosmos-Nachrichten, die mit der hybriden PQC-Signatur signiert sind, etwa VM-übergreifende Aufrufe und authz, liegen außerhalb davon.
+`allowed_targets` begrenzt, **welche** Contracts und Token ein Fenster berühren darf, nicht **wie viel**. Ein aufgelisteter Token lässt jeden Betrag dieses Tokens zu, einschließlich `approve`, und ein aufgelisteter Contract kann alles bewegen, was sein Code und bestehende Genehmigungen (Approvals) erlauben; listen Sie daher keine generischen Forwarder- oder Router-Contracts auf. Ein Fenster begrenzt nur Transaktionen auf der EVM-Lane (klassisch signiert). Cosmos-Nachrichten, die mit der hybriden PQC-Signatur signiert sind, liegen außerhalb davon. Vor v3.2.8 betraf das auch VM-übergreifende Aufrufe und authz; ab v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) verwenden ein VM-übergreifender Aufruf in die EVM und eine ERC-20-Umwandlung, die unter einem authz-Grant gesendet werden, das Fenster des **Granters**, und der Bridge-Precompile `0x0901` benötigt ein Fenster, das ihn auflistet.
 
 Ein ohne Scope geöffnetes Fenster verhält sich exakt wie zuvor. Eine Transaktion außerhalb des Scopes wird mit Code 27 abgelehnt (die Meldung besagt, dass das Fenster „diese Transaktion nicht zulässt“). `GET /qorechain/pqc/v1/evm_window/{address}` und `qorechaind query pqc evm-window` melden `native_only` und `allowed_targets`, und das Ereignis `pqc_evm_window_opened` trägt sie, wenn sie gesetzt sind.
 
@@ -319,6 +323,33 @@ Ein ohne Scope geöffnetes Fenster verhält sich exakt wie zuvor. Eine Transakti
 
 3. Prüfen Sie, was übrig ist: `qorechaind query pqc evm-window <address>` oder `GET /qorechain/pqc/v1/evm_window/{address}` (antwortet mit `found: false`, wenn keines vorhanden ist).
 4. Senden Sie Ihre EVM-Transaktionen wie gewohnt. Das Öffnen eines Fensters ist eine Transaktion der Cosmos-Lane und erhöht die Sequenz des Kontos, die zugleich seine EVM-Nonce ist; lesen Sie die Nonce daher **nach** dem Öffnen des Fensters und signieren Sie dann.
+
+### Fensteroptionen ab v3.2.8 {#evm-window-v328}
+
+Ab Release v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) trägt `MsgOpenEVMWindow` drei optionale Listen mit je bis zu 16 Einträgen. Ein Fenster ohne sie verhält sich wie bisher, abgesehen von der Deny-by-default-Regel unten.
+
+| Nachrichtenfeld | CLI-Flag | Was es benennt |
+| --------------- | -------- | -------------- |
+| `validators` (7) | `--validators` | Contracts, deren Prüfung der Signatur des Kontos für seine Aktionen zählt: ein Validator-Modul, das ein Wallet-Contract aufruft, oder der ERC-4337-Entry-Point |
+| `staking_validators` (8) | `--staking-validators` | Operator-Adressen von Validatoren (`qorvaloper…`), an die das Konto über das Fenster delegieren oder umdelegieren darf |
+| `ibc_receivers` (9) | `--ibc-receivers` | Genaue Paare `<channel>/<receiver>`, an die ein nativer IBC-Transfer von QOR gehen darf; Channel und Empfänger werden Byte für Byte verglichen (`channel-0`, bech32-Empfänger in Kleinbuchstaben) |
+
+**Standard-Precompiles sind Deny-by-default.** Für ein Konto, das ein Fenster autorisiert, wird eine Methode eines Standard-Precompiles (Staking, Distribution, ICS-20, Gov, Slashing, ERC-20-Token-Precompiles) abgelehnt, sofern sie nicht in der folgenden Tabelle steht und das Fenster den Precompile in `allowed_targets` auflistet.
+
+| Precompile | Methode | Zugelassen, wenn |
+| ---------- | ------- | ---------------- |
+| distribution | `claimRewards`, `withdrawDelegatorRewards` | die Rewards an das Konto selbst gezahlt werden |
+| distribution | `withdrawValidatorCommission` | der Validator der eigene des Kontos ist und an das Konto selbst zahlt |
+| distribution | `depositValidatorRewardsPool` | der Validator in `staking_validators` steht und jede Coin natives QOR ist |
+| staking | `delegate`, `redelegate` | der Ziel-Validator in `staking_validators` steht |
+| ICS-20 | `transfer` | natives QOR, über den Port `transfer`, ohne Memo, an ein Paar in `ibc_receivers` |
+| ERC-20-Token-Precompiles | `transfer`, `transferFrom`, `approve` | natives QOR; ein anderer Token nur, wenn das Fenster die Adresse dieses Tokens auflistet |
+
+Alles andere wird über ein Fenster abgelehnt: Undelegieren, Abstimmen und andere Governance-Aktionen, Ändern der Withdraw-Adresse, Erstellen oder Bearbeiten eines Validators, Einzahlen in den Community Pool. Senden Sie diese als Post-Quanten-signierte Cosmos-Transaktionen.
+
+**Auf der Chain geprüfte Signaturen brauchen den prüfenden Contract im Fenster.** Ein EIP-2612-Permit, ein Permit2-Transfer, eine EIP-712-Order oder eine Meta-Transaktion wird von einem Contract mit `ecrecover` geprüft. Ab v3.2.8 (beide Netzwerke, sobald ein Netzwerk es anwendet) gelingt diese Prüfung für ein Konto mit einem nutzbaren Post-Quanten-Schlüssel nur, solange das eigene aktive Fenster des Kontos den prüfenden Contract zulässt, also den Token oder Permit2 selbst, nicht den Router, der den Aufruf weiterleitet. Listen Sie ihn in `allowed_targets` auf und öffnen Sie das Fenster, **bevor** der Nutzer signiert. Ohne dieses Fenster gilt die Signatur als ungültig, und der Contract lehnt sie ab. Ein in einem Fenster erteiltes Permit oder eine dort erteilte Genehmigung bleibt nach dem Schließen des Fensters bestehen; prüfen und widerrufen Sie Genehmigungen daher, wenn die Sitzung endet.
+
+**Schlüsseländerungen schließen das Fenster.** Das Rotieren, Migrieren oder erneute Registrieren des Post-Quanten-Schlüssels des Kontos löscht sein offenes Fenster und seine EIP-7702-Zustimmung; öffnen Sie das Fenster danach erneut. Fenster- und Zustimmungsnachrichten müssen die eigene, Post-Quanten-signierte Top-Level-Nachricht des Kontos sein: Sie können nicht über authz gesendet oder einem anderen Konto gewährt werden.
 
 Schließen Sie ein Fenster vorzeitig mit `qorechaind tx pqc close-evm-window` (gleiches Muster mit `--generate-only` und `cosign`), zum Beispiel wenn Sie vermuten, dass der klassische Schlüssel offengelegt wurde: Was das Fenster noch zugelassen hätte, wird ab dem nächsten Block abgelehnt.
 

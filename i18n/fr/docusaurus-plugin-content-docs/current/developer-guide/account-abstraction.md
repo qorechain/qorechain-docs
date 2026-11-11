@@ -118,6 +118,8 @@ L'enregistrement du compte inclut ses règles et le nombre de clés liées :
 qorechaind query abstractaccount account <account-address>
 ```
 
+À partir de la v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du mainnet), une clé dotée de permissions de valeur est refusée à l'enregistrement comme à l'exécution si aucune règle ne la borne : « aucune limite » ne s'applique donc plus à ces clés.
+
 :::caution Une règle ne borne une clé que si elle existe
 La chaîne résout la limite dans cet ordre : la règle propre à l'authentificateur si elle est définie et `enabled` ; sinon la première règle `enabled` du compte ; sinon **il n'y a aucune limite**. Une règle stockée avec `enabled: false` signifie aucune limite, et non une limite nulle. `MsgRegisterAuthenticator` ne porte aucune règle, donc une clé liée par ce seul message n'est bornée que par une règle au niveau du compte. Définissez une règle délibérément avec `update-rules`, et n'enregistrez que les permissions dont la clé a besoin. Une limite borne les dégâts qu'une clé liée peut causer ; elle ne remplace pas la révocation de la clé.
 :::
@@ -145,7 +147,24 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
+**À partir de la version v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du mainnet), l'enregistrement demande deux éléments de plus.**
+
+1. **Une preuve de possession.** `MsgRegisterAuthenticator` a un champ obligatoire `possession_proof` (champ 8) : une signature par la clé liée, prouvant qu'elle consent au lien. La clé signe ce texte brut selon son propre schéma, de sorte qu'un portefeuille de navigateur montre à l'utilisateur ce qu'il signe (Phantom `signMessage`, MetaMask `personal_sign`) ; une clé secp256k1 de 33 octets signe le SHA-256 du texte :
+
+   ```text
+   QoreChain authenticator link v1
+   chain: <chain-id>
+   account: <bech32 account>
+   scheme: <scheme>
+   key: <lowercase hex of the public key, or of the 20-byte address>
+   ```
+
+   Le texte nomme la chaîne, le compte, le schéma et la clé, si bien qu'une preuve ne peut pas être réutilisée pour une autre chaîne, un autre compte ou une autre clé. Un enregistrement sans preuve valide est refusé.
+2. **Une règle de dépense pour les clés de valeur.** Une clé dont les permissions peuvent déplacer de la valeur (`send`, `evm`, `svm`, `deploy`, `all`) a besoin d'une règle de dépense qui borne chaque dénomination qu'elle peut dépenser, définie avec `MsgUpdateSpendingRules` avant le lien ou en même temps. La même règle est appliquée à l'exécution pour les clés liées avant la mise à niveau : ajoutez donc aussi des règles pour elles.
+
 Une clé Phantom s'enregistre de la même manière avec le schéma `ed25519` et la clé publique Phantom (`register-authenticator` en CLI). La révocation est instantanée via `MsgRevokeAuthenticator`.
+
+**Une exécution peut échouer à l'intérieur d'une transaction réussie.** À partir de la v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du mainnet), un `MsgExecuteEVM` ou `MsgExecuteCosmos` en échec renvoie `success=false` dans sa réponse avec le code de transaction 0, émet l'événement `abstractaccount_execution_failed` avec la raison, et consomme quand même le nonce de l'authentificateur. Un client qui ne vérifie que le code de transaction signalera un tel appel comme un succès : lisez la réponse ou l'événement.
 
 ### Taxonomie des permissions {#permission-taxonomy}
 

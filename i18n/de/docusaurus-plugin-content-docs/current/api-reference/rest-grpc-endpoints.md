@@ -43,6 +43,7 @@ Die folgenden Beispiele verwenden den öffentlichen Mainnet-Host; ersetzen Sie i
 | ------- | ---------------------------------------- | ------------------------------------------------------------------------------------- |
 | GET     | `/qorechain/pqc/v1/account/{address}`    | Registrierung des Post-Quanten-Schlüssels für ein Konto (`found`, Schlüsseltyp, Algorithmus) |
 | GET     | `/qorechain/pqc/v1/evm_window/{address}` | Das Autorisierungsfenster der EVM-Lane des Kontos und was davon übrig ist             |
+| GET     | `/qorechain/pqc/v1/evm_limits`           | Die geltenden EVM-Gaslimits (pro Transaktion 30,000,000); nur im Testnet ab v3.2.8 |
 | GET     | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | Die EIP-7702-Delegationseinwilligung des Kontos, die aktuelle Delegation und die EVM-Nonce (seit v3.2.2) |
 | GET     | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (Testnet seit dem 19. Oktober 2026; Mainnet seit dem 23. Oktober 2026; `501` auf einem älteren Node). Jedes Protokoll-Feature, das das Binary kennt, mit den Flags `enabled`, `known` und `staged` |
 | GET     | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (beide Netzwerke, im Mainnet seit dem 29. Oktober 2026, im Testnet seit dem 26. Oktober; `501` auf einem älteren Node). Der ML-KEM-Verschlüsselungsschlüssel, der für eine Adresse in der nativen Schlüsselregistry registriert ist: `{"found":false,"key":null}`, wenn keiner registriert ist |

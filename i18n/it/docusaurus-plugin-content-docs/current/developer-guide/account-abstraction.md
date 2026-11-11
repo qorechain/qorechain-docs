@@ -118,6 +118,8 @@ Il record dell'account include le sue regole e il numero di chiavi collegate:
 qorechaind query abstractaccount account <account-address>
 ```
 
+Dalla v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) una chiave con permessi di valore viene rifiutata alla registrazione e all'esecuzione a meno che una regola non la delimiti, quindi "nessun limite" non vale più per tali chiavi.
+
 :::caution Una regola delimita una chiave solo se esiste
 La chain risolve il limite in questo ordine: la regola propria dell'autenticatore se impostata e `enabled`; altrimenti la prima regola `enabled` sull'account; altrimenti **non c'è alcun limite**. Una regola memorizzata con `enabled: false` significa nessun limite, non un limite pari a zero. `MsgRegisterAuthenticator` non porta alcuna regola, quindi una chiave collegata con questo solo messaggio è delimitata unicamente da una regola a livello di account. Imposta una regola deliberatamente con `update-rules` e registra solo i permessi di cui la chiave ha bisogno. Un limite circoscrive il danno che una chiave collegata può fare; non sostituisce la revoca della chiave.
 :::
@@ -145,7 +147,24 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
+**Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) la registrazione richiede due cose in più.**
+
+1. **Una prova di possesso.** `MsgRegisterAuthenticator` ha un campo obbligatorio `possession_proof` (campo 8): una firma della chiave che viene collegata, che prova che accetta il collegamento. La chiave firma questo testo semplice con il proprio schema, così un wallet del browser mostra all'utente ciò che firma (Phantom `signMessage`, MetaMask `personal_sign`); una chiave secp256k1 da 33 byte firma lo SHA-256 del testo:
+
+   ```text
+   QoreChain authenticator link v1
+   chain: <chain-id>
+   account: <bech32 account>
+   scheme: <scheme>
+   key: <lowercase hex of the public key, or of the 20-byte address>
+   ```
+
+   Il testo nomina la chain, l'account, lo schema e la chiave, quindi una prova non può essere riutilizzata per un'altra chain, un altro account o un'altra chiave. Una registrazione senza una prova valida viene rifiutata.
+2. **Una regola di spesa per le chiavi di valore.** Una chiave i cui permessi possono muovere valore (`send`, `evm`, `svm`, `deploy`, `all`) richiede una regola di spesa che delimiti ogni denominazione che può spendere, impostata con `MsgUpdateSpendingRules` prima del collegamento o insieme ad esso. La stessa regola viene applicata all'esecuzione per le chiavi collegate prima dell'upgrade, quindi aggiungi regole anche per quelle.
+
 Una chiave Phantom viene registrata allo stesso modo con lo schema `ed25519` e la chiave pubblica Phantom (`register-authenticator` da CLI). La revoca è istantanea tramite `MsgRevokeAuthenticator`.
+
+**Un'esecuzione può fallire all'interno di una transazione riuscita.** Dalla v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) un `MsgExecuteEVM` o `MsgExecuteCosmos` fallito restituisce `success=false` nella sua risposta con codice di transazione 0, emette l'evento `abstractaccount_execution_failed` con il motivo e consuma comunque il nonce dell'autenticatore. Un client che controlla solo il codice della transazione segnalerà una tale chiamata come riuscita: leggi la risposta o l'evento.
 
 ### Tassonomia dei permessi {#permission-taxonomy}
 

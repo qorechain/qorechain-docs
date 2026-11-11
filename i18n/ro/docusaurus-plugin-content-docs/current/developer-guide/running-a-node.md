@@ -95,7 +95,7 @@ EOF
 docker build -t qorechain-node:v3.2.6 release/
 ```
 
-Arhiva conține `qorechaind` și un director `lib/` cu bibliotecile sale partajate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); imaginea de mai sus este doar `linux/amd64`, ca și arhiva de release.
+Arhiva conține `qorechaind` și un director `lib/` cu bibliotecile sale partajate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` și, începând cu v3.2.8, `libwasmvmqore.x86_64.so`). Copiați întregul director `lib/`, nu fișiere individuale; imaginea de mai sus este doar `linux/amd64`, ca și arhiva de release.
 
 ```yaml
 # docker-compose.yml
@@ -328,6 +328,10 @@ pruning = "default"
 | `default`   | Păstrează starea recentă, elimină restul     | Nod RPC, interogări de sold/stare  |
 | `nothing`   | Păstrează toată starea istorică              | Nod de arhivă, istoric complet     |
 | `custom`    | Valori de reținere/interval definite de operator | Retenție personalizată         |
+
+### Runtime-ul de contracte în v3.2.8 {#v328-node}
+
+Un nod pe release-ul v3.2.8 (doar pe testnet până la un upgrade ulterior de mainnet) are nevoie de: întregul director `lib/` al pachetului (poartă `libwasmvmqore` alături de `libwasmvm`, `libqorepqc` și `libqoresvm`); un `[wasm] memory_cache_size` de cel puțin 256 MiB (o valoare mai mică este ridicată la 256 cu un avertisment, deci planificați memoria); și directorul codului de contract la `<home>/wasm` (un director de cod existent în altă parte continuă să funcționeze cu un avertisment). Un `app.toml` nou setează de asemenea `simulation_gas_limit = 50000000` și servește namespace-urile JSON-RPC `eth,net,web3`.
 
 ### Limitele nodului (`app.toml`) {#node-limits}
 

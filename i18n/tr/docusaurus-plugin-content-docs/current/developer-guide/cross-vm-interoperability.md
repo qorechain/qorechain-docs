@@ -152,6 +152,21 @@ Submitted --> Pending --> Executed
 
 v3.2.3'ten beri başarısız olan kuyruğa alınmış bir çağrı bütünüyle geri alınır: yalnızca `Failed` kaydı kalır ve başarısız bir QoreChain Native çağrısına eklenen fonlar artık sözleşmeye aktarılmaz. Modül devre dışıyken veya `MsgCrossVMCall` devre kesici tarafından kapatılmışken kuyruk **yürütülmez**: kuyruğa alınmış mesajlar, anahtar önceden açılmadıkça bekleyen durumda kalır ve zaman aşımında sona erer.
 
+### CosmWasm'e asenkron çağrılar (v3.2.8) {#async-calls}
+
+v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) CosmWasm'e yapılan asenkron bir çağrı önceden ödenir ve sınırlarla kuyruğa alınır:
+
+| `MsgCrossVMCall` alanı | Anlamı |
+| ---------------------- | ------- |
+| `async_gas_limit` (8)  | Kuyruğa alınan çağrı için ayırdığınız sözleşme gas birimleri (varsayılan 500.000) |
+| `async_max_factor` (9) | Kabul ettiğiniz en yüksek tıkanıklık çarpanı (varsayılan 4x); yürürlükteki çarpan bunun üzerindeyse çağrı reddedilir |
+
+- **Emanet (escrow).** Gönderen, gas birimleri x çarpan x gas fiyatı tutarını bir emanet hesabına önceden öder. Varsayılanlarda bu 500.000 x 4 x 0,1 uqor, yaklaşık 0,2 QOR eder. Çağrının kullanmadığı kısım, çağrı çalıştığında iade edilir.
+- **Kuyruk yuvası ücreti.** Bir çağrıyı kuyruğa almak ayrıca küçük bir yuva ücreti öder.
+- **Gönderen başına en fazla 100 bekleyen çağrı.** Biri bitene veya zaman aşımına uğrayana kadar yeni bir çağrı reddedilir.
+- **Başarısız çağrılar ücretlendirilir.** Başarısız olan bir çağrı da yapılan iş için öder.
+- **Ağır çağrılar:** büyük kod yükleyen sözleşmeler için `async_gas_limit` ve `async_max_factor` değerlerini artırın; cw721 boyutundaki bir sözleşme, bir blokta ilk çağrısında varsayılanlara sığmaz.
+
 ---
 
 ## Parametreler
@@ -192,7 +207,7 @@ wscat -c ws://localhost:26657/websocket
 # Query a specific message by ID
 qorechaind query crossvm message <message-id>
 
-# List all pending messages
+# List pending messages (from v3.2.8 one page of at most 100; follow the next key for more)
 qorechaind query crossvm pending
 
 # Module parameters

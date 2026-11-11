@@ -152,6 +152,21 @@ Submitted --> Pending --> Executed
 
 Depuis la v3.2.3, un appel en file d'attente qui échoue est annulé dans son intégralité : seul son enregistrement `Failed` subsiste, et les fonds joints à un appel QoreChain Native en échec ne sont plus transférés au contrat. Tant que le module est désactivé, ou que `MsgCrossVMCall` est désactivé par le coupe-circuit, la file n'est **pas exécutée** : les messages en file restent en attente et expirent à leur délai, sauf si l'interrupteur est levé avant.
 
+### Appels asynchrones vers CosmWasm (v3.2.8) {#async-calls}
+
+À partir de la version v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du mainnet), un appel asynchrone vers CosmWasm est prépayé et mis en file avec des limites :
+
+| Champ de `MsgCrossVMCall` | Signification |
+| ------------------------- | ------------- |
+| `async_gas_limit` (8)     | Unités de gas de contrat que vous réservez pour l'appel en file (500,000 par défaut) |
+| `async_max_factor` (9)    | Le facteur de congestion le plus élevé que vous acceptez pour lui (4x par défaut) ; l'appel est refusé si le facteur en vigueur est supérieur |
+
+- **Séquestre.** L'expéditeur prépaie unités de gas x facteur x prix du gas sur un compte de séquestre. Avec les valeurs par défaut, cela fait 500,000 x 4 x 0.1 uqor, soit environ 0.2 QOR. Ce que l'appel n'utilise pas est remboursé à son exécution.
+- **Frais d'emplacement de file.** La mise en file d'un appel paie aussi de petits frais d'emplacement.
+- **Au plus 100 appels en attente par expéditeur.** Tout appel supplémentaire est refusé jusqu'à ce qu'un appel se termine ou expire.
+- **Les appels en échec sont facturés.** Un appel qui échoue paie quand même le travail effectué.
+- **Appels lourds :** augmentez `async_gas_limit` et `async_max_factor` pour les contrats qui chargent un gros code ; un contrat de la taille d'un cw721 ne tient pas dans les valeurs par défaut lors de son premier appel dans un bloc.
+
 ---
 
 ## Paramètres
@@ -192,7 +207,7 @@ wscat -c ws://localhost:26657/websocket
 # Query a specific message by ID
 qorechaind query crossvm message <message-id>
 
-# List all pending messages
+# List pending messages (from v3.2.8 one page of at most 100; follow the next key for more)
 qorechaind query crossvm pending
 
 # Module parameters

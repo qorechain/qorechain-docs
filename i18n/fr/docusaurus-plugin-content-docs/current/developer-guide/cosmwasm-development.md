@@ -142,6 +142,13 @@ Les contrats QoreChain Native suivent un cycle de vie en cinq étapes : **Build*
 
 ---
 
+## Gas et limites d'envoi (v3.2.8) {#gas-and-limits}
+
+À partir de la version v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du mainnet) :
+
+- **Le gas d'exécution est retarifé.** Le premier appel d'un code de contrat dans un bloc paie un coût de chargement (un transfert cw20 coûte environ 533,000 gas la première fois dans un bloc et environ 84,000 pour les suivants), la préparation de l'appel et la croissance de la mémoire sont facturées, et un facteur de congestion multiplie le prix de 1x jusqu'à 20x par défaut. Simulez toujours et ajoutez au moins 30 % ; ne codez jamais le gas en dur pour un appel de contrat. Voir [Gas des appels de contrat](/sdk/guides/cosmwasm#gas).
+- **Les envois sont bornés et restent sous contrôle de la gouvernance.** L'accès est vérifié en premier, et le mempool n'admet un envoi que d'un expéditeur autorisé. L'envoi paie d'avance le gas correspondant à sa taille déclarée (environ 9.9 millions de gas pour cw20, environ 22.8 millions pour cw721). Un module peut avoir au plus 4,096 fonctions et se compiler en au plus 32 MiB, et les instructions à virgule flottante sont refusées, à l'envoi comme à l'appel pour du code déjà stocké.
+
 ## Requêtes utiles
 
 ```bash

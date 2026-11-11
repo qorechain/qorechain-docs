@@ -122,6 +122,7 @@ QoreChain Native 메시지 타입을 레지스트리에 추가하고 `MsgExecute
 import { Registry } from "@cosmjs/proto-signing";
 import { wasmTypes } from "@cosmjs/cosmwasm-stargate";
 import { StargateClient } from "@cosmjs/stargate";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import {
   qorechainRegistryTypes,
@@ -133,22 +134,37 @@ const registry = new Registry([...qorechainRegistryTypes, ...wasmTypes]);
 const transport = await StargateClient.connect("https://rpc.qore.host");
 const info = await transport.getSequence(sender);
 
+// Never hardcode gas for a contract call: simulate it, then add at least 30%.
+// The simulation already includes the cost of loading the contract code and a
+// congestion margin (see "Gas for contract calls" below).
+const cwClient = await SigningCosmWasmClient.connectWithSigner(
+  "https://rpc.qore.host",
+  signer,
+);
+const msgs = [
+  {
+    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+    value: MsgExecuteContract.fromPartial({
+      sender,
+      contract: contractAddress,
+      msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
+      funds: [],
+    }),
+  },
+];
+const simulatedGas = await cwClient.simulate(sender, msgs, undefined);
+const gas = Math.ceil(simulatedGas * 1.3);
+const gasPrice = 0.15; // uqor per unit of gas; the network floor is 0.1
+
 const result = await signAndBroadcastHybrid({
   registry,
   signer,                                            // from directSignerFromPrivateKey
   pqcKeypair: derivePqcCanonical(sender, mnemonic),  // the key registered on-chain
-  messages: [
-    {
-      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-      value: MsgExecuteContract.fromPartial({
-        sender,
-        contract: contractAddress,
-        msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
-        funds: [],
-      }),
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  messages: msgs,
+  fee: {
+    amount: [{ denom: "uqor", amount: String(Math.ceil(gas * gasPrice)) }],
+    gas: String(gas),
+  },
   chainId: "qorechain-vladi",
   accountNumber: info.accountNumber,
   sequence: info.sequence,
@@ -156,5 +172,16 @@ const result = await signAndBroadcastHybrid({
   transport,
 });
 ```
+
+### 컨트랙트 호출 가스 {#gas}
+
+**컨트랙트 호출의 가스를 하드코딩하지 마세요.** 고정값 400,000은 한 번의 단순 전송에는 충분하지만 다음 호출에서는 부족해집니다. 릴리스 v3.2.8부터(이후 메인넷 업그레이드 전까지는 테스트넷 전용) CosmWasm 가스가 재산정됩니다.
+
+- **블록에서 컨트랙트 코드를 처음 호출할 때는 로드 비용이 부과됩니다.** cw20 전송은 블록 내 해당 코드의 첫 호출로서 약 533,000 가스, 반복 호출마다 약 84,000 가스가 듭니다. 거버넌스는 자주 쓰는 코드를 고정(pin)할 수 있으며, 고정된 코드는 로드 비용이 면제됩니다.
+- **수수료는 혼잡에 따라 오릅니다.** 블록이 컨트랙트 호출로 바쁠 때 혼잡 계수가 컨트랙트 가스를 기본적으로 1배에서 최대 20배까지 조정하며, 블록에는 제한된 컨트랙트 실행 예산이 있고 한 트랜잭션은 그 절반까지만 사용할 수 있습니다.
+- **시뮬레이션에는 둘 다 포함됩니다.** 시뮬레이션은 항상 콜드 로드 비용을 부과하고 혼잡에 대한 여유분을 더하므로, `시뮬레이션 가스 x 1.3`이 안전한 한도입니다. 클라이언트가 제공하면 `fee: "auto"`를 사용하고(CosmJS `"auto"`, SDK `TxClient`, React `useTx` 훅), 위와 같이 수수료를 직접 구성할 때는 직접 시뮬레이션하세요.
+- **트랜잭션 상한 아래로 유지하세요.** Cosmos 트랜잭션은 가스 한도를 50,000,000을 넘게 설정할 수 없으며, 수수료가 청구되기 전에 거부됩니다.
+
+instantiate, migrate 및 컨트랙트 코드를 실행하는 모든 다른 메시지에도 동일하게 적용됩니다.
 
 실행 가능한 읽기 예제는 `cosmwasm-query` [예제](/sdk/examples)를 참고하세요.

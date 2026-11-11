@@ -37,7 +37,7 @@ Fiecare invocare `go build`, `go test` și `go run` **trebuie** să aibă `CGO_E
 
 ### libqorepqc și libqoresvm
 
-Bibliotecile post-cuantică (`libqorepqc`) și SVM (`libqoresvm`) sunt construite din surse Rust care **nu fac parte din repository-ul public** (nu există un director `rust/` în `qorechain-core`). Build-ul comunitar nu are nevoie de ele. Arhivele de release pentru rețele includ bibliotecile compilate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) într-un director `lib/` alături de `qorechaind`; plasați-le în `lib/{os}_{arch}/` sau indicați-le loader-ului așa cum se arată mai jos.
+Bibliotecile post-cuantică (`libqorepqc`) și SVM (`libqoresvm`) sunt construite din surse Rust care **nu fac parte din repository-ul public** (nu există un director `rust/` în `qorechain-core`). Build-ul comunitar nu are nevoie de ele. Arhivele de release pentru rețele includ bibliotecile compilate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` și, începând cu v3.2.8, `libwasmvmqore.x86_64.so`). Copiați întregul director `lib/`, nu fișiere individuale, într-un director `lib/` alături de `qorechaind`; plasați-le în `lib/{os}_{arch}/` sau indicați-le loader-ului așa cum se arată mai jos.
 
 ### Setarea căii bibliotecii
 

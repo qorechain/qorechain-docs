@@ -16,7 +16,7 @@ Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`** (live din 7
 ---
 
 :::caution Trimiterea de tranzacții SVM este momentan dezactivată
-Începând cu versiunea de chain v3.1.89 (22 august), în urma unui incident, lane-ul de execuție SVM este **dezactivat la nivelul întregii rețele pentru trimiterea de tranzacții** atât pe `qorechain-vladi`, cât și pe `qorechain-diana` — orice tranzacție trimisă către `x/svm` (implementare de programe, execuție de instrucțiuni, creare de conturi, transferuri) returnează `code 11, "SVM module is disabled"`. Acest lucru se aplică atât nodului propriu, cât și endpoint-urilor publice. Metodele RPC de tip citire pot răspunde în continuare, dar nu construiți și nu repetați o integrare SVM live până când lane-ul nu se redeschide — este o dezactivare la momentul compilării, nu un parametru de runtime, deci nu poate fi repornit printr-un vot de guvernanță; se așteaptă să rămână dezactivat până când un audit extern îl aprobă.
+Începând cu versiunea de chain v3.1.89 (22 august), în urma unui incident, lane-ul de execuție SVM este **dezactivat la nivelul întregii rețele pentru trimiterea de tranzacții** atât pe `qorechain-vladi`, cât și pe `qorechain-diana` — orice tranzacție trimisă către `x/svm` (implementare de programe, execuție de instrucțiuni, creare de conturi, transferuri) returnează `code 11, "SVM module is disabled"`. Acest lucru se aplică atât nodului propriu, cât și endpoint-urilor publice. Metodele RPC de tip citire pot răspunde în continuare, dar nu construiți și nu repetați o integrare SVM live până când lane-ul nu se redeschide. Pe mainnet, lane-ul SVM este dezactivat în release-ul curent, iar activarea lui pe mainnet necesită un release viitor; se așteaptă să rămână dezactivat până când un audit extern îl aprobă.
 :::
 
 ## Prezentare generală
@@ -44,6 +44,8 @@ Modulul `x/svm` oferă:
 * **`getSignaturesForAddress`** returnează istoricul de tranzacții care implică o adresă — utilizabil pentru detectarea depunerilor cu uneltele standard Solana.
 * **Transferurile din System Program mută QOR nativ** — o instrucțiune de transfer în stil Solana mută aceiași bani pe care i-ar muta un `MsgSend` Cosmos sau un transfer EVM.
 * **Forma adresei SVM** — adresa SVM a unui cont este cei 20 de bytes ai contului, completați la dreapta până la 32 de bytes și codificați base58. Toate cele trei forme de adresă (`qor1...`, `0x...`, base58) se referă la același cont.
+
+**Release v3.2.8 (testnet, încă neaplicat).** Upgrade-ul închide lane-ul SVM pe `qorechain-diana`: scrierile SVM eșuează, `MsgRegisterSVMPQCKey` este refuzat, iar JSON-RPC SVM refuză metodele de scriere pe id-urile de chain publice, până când un vot de guvernanță îl redeschide (testnet-ul are un comutator guvernat). Pe mainnet, lane-ul este dezactivat în release-ul curent, iar activarea lui necesită un release viitor. Clienții ar trebui să citească starea lane-ului din parametrii modulului SVM (`enabled`) înainte de a oferi acțiuni SVM.
 
 Endpoint-urile publice (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sunt **doar pentru citire** — trimiterea de tranzacții este dezactivată la nivelul marginii rețelei. În mod normal ați rula propriul nod (portul 8899) pentru a trimite tranzacții SVM, dar vedeți avertismentul de mai sus: lane-ul de tranzacții `x/svm` însuși este momentan dezactivat la nivelul întregii rețele, inclusiv pe propriul nod.
 

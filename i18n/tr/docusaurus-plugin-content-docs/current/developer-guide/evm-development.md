@@ -147,6 +147,10 @@ QoreChain, EVM işlemleri için **EIP-1559 dinamik taban ücreti** modelini kull
 * Kullanıcılar `maxFeePerGas` ve `maxPriorityFeePerGas` değerlerini belirleyebilir
 * Öncelik ücretleri blok önerene gider
 
+### Gas limitleri {#gas-limits}
+
+v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) tek bir EVM işlemi en fazla **30.000.000** gas limiti belirleyebilir ve tek bir Cosmos mesajının başlattığı EVM çalıştırmaları (bir VM'ler arası çağrı, bir ERC-20 dönüşümü, gelen bir IBC paketinin transferi) aynı bütçeyi paylaşır. Limitin üzerindeki bir işlem çalışmadan önce reddedilir. Yürürlükteki değerleri `GET /qorechain/pqc/v1/evm_limits` (gRPC `EVMLimitsQuery/EVMLimits`) üzerinden okuyun ve araçlarınızın gönderdiği gas'i sınırlayın; özellikle bir dApp'in cüzdanınıza denetlenmeden ilettiği gas'i. Bir Cosmos işleminin kendi limiti 50.000.000 gas'tir. Düz transferler (21.000 gas) ve sıradan token çağrıları her ikisinin de çok altındadır.
+
 ### Birim Köprüsü
 
 Yerel QOR token'ının **6 ondalık basamağı** vardır (`uqor`), EVM ise **18 ondalık basamak** bekler. `x/precisebank` modülü bu dönüşümü sorunsuz şekilde yönetir:
@@ -298,7 +302,7 @@ Hangi sınır önce tükenirse pencereyi o kapatır. Üç sınır da zorunludur;
 | `--native-only`         | `native_only` | Yalnızca yerel QOR'un düz transferleri: calldata yok, sözleşme oluşturma yok, kod taşıyan alıcı yok, EIP-7702 yetkilendirmesi yok |
 | `--allowed-targets 0xA,0xB` | `allowed_targets` | Yalnızca alıcısı listelenen 20 baytlık adreslerden biri olan işlemler; sözleşme oluşturma reddedilir |
 
-`allowed_targets`, **hangi** kontratlara ve token'lara dokunulabileceğini sınırlar, **ne kadar** olduğunu değil. Listelenen bir token, `approve` dahil o token'ın her miktarını kabul eder ve listelenen bir kontrat, kodunun ve mevcut onaylarının izin verdiği her şeyi taşıyabilir; bu yüzden genel yönlendirici (forwarder veya router) kontratları listelemeyin. Bir pencere yalnızca EVM şeridindeki (klasik imzalı) işlemleri sınırlar; VM'ler arası çağrılar ve authz gibi hibrit PQC imzasıyla imzalanan Cosmos mesajları bunun dışındadır.
+`allowed_targets`, **hangi** kontratlara ve token'lara dokunulabileceğini sınırlar, **ne kadar** olduğunu değil. Listelenen bir token, `approve` dahil o token'ın her miktarını kabul eder ve listelenen bir kontrat, kodunun ve mevcut onaylarının izin verdiği her şeyi taşıyabilir; bu yüzden genel yönlendirici (forwarder veya router) kontratları listelemeyin. Bir pencere yalnızca EVM şeridindeki (klasik imzalı) işlemleri sınırlar. Hibrit PQC imzasıyla imzalanan Cosmos mesajları bunun dışındadır. v3.2.8 öncesinde buna VM'ler arası çağrılar ve authz da dahildi; v3.2.8'den itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) bir authz yetkisi altında gönderilen EVM'ye VM'ler arası çağrı ve ERC-20 dönüşümü **yetki verenin** penceresini kullanır ve `0x0901` köprü precompile'ı, onu listeleyen bir pencere gerektirir.
 
 Kapsamsız açılmış bir pencere tam olarak eskisi gibi davranır. Kapsam dışındaki bir işlem 27 koduyla reddedilir (mesaj, pencerenin "bu işlemi kabul etmediğini" söyler). `GET /qorechain/pqc/v1/evm_window/{address}` ve `qorechaind query pqc evm-window`, `native_only` ve `allowed_targets` değerlerini raporlar; `pqc_evm_window_opened` olayı da bunlar ayarlıysa taşır.
 
@@ -319,6 +323,33 @@ Kapsamsız açılmış bir pencere tam olarak eskisi gibi davranır. Kapsam dı�
 
 3. Geriye ne kaldığını kontrol edin: `qorechaind query pqc evm-window <address>` veya `GET /qorechain/pqc/v1/evm_window/{address}` (pencere yoksa `found: false` yanıtı verir).
 4. EVM işlemlerinizi normal şekilde gönderin. Bir pencere açmak bir Cosmos şeridi işlemidir ve hesabın sıra numarasını (sequence) ilerletir; bu aynı zamanda hesabın EVM nonce'udur, bu yüzden nonce'u pencere açıldıktan **sonra** okuyun ve imzayı o zaman atın.
+
+### v3.2.8'de eklenen pencere seçenekleri {#evm-window-v328}
+
+v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) `MsgOpenEVMWindow`, her biri en fazla 16 girişli üç isteğe bağlı liste taşır. Bunlar olmayan bir pencere, aşağıdaki varsayılan olarak reddetme kuralı dışında eskisi gibi davranır.
+
+| Mesaj alanı | CLI bayrağı | Neyi adlandırır |
+| ----------- | ----------- | --------------- |
+| `validators` (7) | `--validators` | Hesabın imzasını doğrulamaları hesabın eylemleri için sayılan kontratlar: bir cüzdan kontratının çağırdığı bir doğrulayıcı modül veya ERC-4337 giriş noktası |
+| `staking_validators` (8) | `--staking-validators` | Hesabın pencere üzerinden delege edebileceği veya yeniden delege edebileceği doğrulayıcı operatör adresleri (`qorvaloper…`) |
+| `ibc_receivers` (9) | `--ibc-receivers` | Yerel bir QOR IBC transferinin gidebileceği tam `<channel>/<receiver>` çiftleri; kanal ve alıcı bayt bayt karşılaştırılır (`channel-0`, küçük harfli bech32 alıcı) |
+
+**Standart precompile'lar varsayılan olarak reddedilir.** Bir pencerenin yetkilendirdiği hesap için, standart bir precompile'ın (staking, distribution, ICS-20, gov, slashing, ERC-20 token precompile'ları) bir metodu, aşağıdaki tabloda yer almıyorsa ve pencere precompile'ı `allowed_targets` içinde listelemiyorsa reddedilir.
+
+| Precompile | Metot | Şu durumda kabul edilir |
+| ---------- | ----- | ----------------------- |
+| distribution | `claimRewards`, `withdrawDelegatorRewards` | ödüller hesabın kendisine ödenirse |
+| distribution | `withdrawValidatorCommission` | doğrulayıcı hesabın kendisine aitse ve hesabın kendisine ödüyorsa |
+| distribution | `depositValidatorRewardsPool` | doğrulayıcı `staking_validators` içindeyse ve her coin yerel QOR ise |
+| staking | `delegate`, `redelegate` | hedef doğrulayıcı `staking_validators` içindeyse |
+| ICS-20 | `transfer` | yerel QOR, `transfer` portu üzerinden, memo olmadan, `ibc_receivers` içindeki bir çifte |
+| ERC-20 token precompile'ları | `transfer`, `transferFrom`, `approve` | yerel QOR; başka bir token yalnızca pencere o token'ın adresini listeliyorsa |
+
+Geri kalan her şey bir pencere üzerinden reddedilir: delegasyonu bozma, oylama ve diğer yönetişim eylemleri, çekim adresini değiştirme, doğrulayıcı oluşturma veya düzenleme, topluluk havuzunu fonlama. Bunları kuantum sonrası imzalı Cosmos işlemleri olarak gönderin.
+
+**Zincir üstünde kontrol edilen imzalar, doğrulayan kontratın pencerede olmasını gerektirir.** Bir EIP-2612 permit, bir Permit2 transferi, bir EIP-712 emri veya bir meta-işlem, bir kontrat tarafından `ecrecover` ile kontrol edilir. v3.2.8'den itibaren (her iki ağda, bir ağ onu uyguladığında) bu kontrol, kullanılabilir bir kuantum sonrası anahtarı olan bir hesap için yalnızca hesabın kendi canlı penceresi doğrulayan kontratı kabul ettiği sürece başarılı olur; bu, çağrıyı ileten yönlendirici değil, token'ın veya Permit2'nin kendisidir. Onu `allowed_targets` içinde listeleyin ve pencereyi kullanıcı imzalamadan **önce** açın. Bu pencere olmadan imza geçersiz sayılır ve kontrat onu reddeder. Bir pencere içinde verilen bir permit veya onay, pencere kapandıktan sonra da kalır; bu yüzden oturum bittiğinde onayları gözden geçirin ve iptal edin.
+
+**Anahtar değişiklikleri pencereyi kapatır.** Hesabın kuantum sonrası anahtarını döndürmek, taşımak veya yeniden kaydetmek, açık penceresini ve EIP-7702 onayını siler; sonrasında pencereyi yeniden açın. Bir pencere ve onay mesajları, hesabın kendi üst düzey kuantum sonrası imzalı mesajı olmalıdır: authz üzerinden gönderilemez veya başka bir hesaba verilemez.
 
 Bir pencereyi erkenden `qorechaind tx pqc close-evm-window` ile kapatın (aynı `--generate-only` ve `cosign` düzeni), örneğin klasik anahtarın açığa çıktığından şüphelenirseniz: pencerenin hâlâ kabul edeceği her şey bir sonraki bloktan itibaren reddedilir.
 

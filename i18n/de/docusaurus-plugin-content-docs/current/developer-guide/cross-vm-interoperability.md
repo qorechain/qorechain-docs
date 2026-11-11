@@ -152,6 +152,21 @@ Submitted --> Pending --> Executed
 
 Seit v3.2.3 wird ein fehlgeschlagener Aufruf in der Warteschlange als Ganzes zurückgerollt: Nur sein `Failed`-Eintrag bleibt bestehen, und die an einen fehlgeschlagenen QoreChain Native-Aufruf angehängten Mittel werden nicht mehr in den Contract bewegt. Solange das Modul deaktiviert ist oder `MsgCrossVMCall` durch den Circuit Breaker abgeschaltet ist, wird die Warteschlange **nicht ausgeführt**: Nachrichten in der Warteschlange bleiben ausstehend und laufen zu ihrem Timeout ab, sofern der Schalter nicht vorher wieder umgelegt wird.
 
+### Asynchrone Aufrufe in CosmWasm (v3.2.8) {#async-calls}
+
+Ab Release v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) wird ein asynchroner Aufruf in CosmWasm im Voraus bezahlt und mit Limits in die Warteschlange gestellt:
+
+| Feld von `MsgCrossVMCall` | Bedeutung |
+| ------------------------- | --------- |
+| `async_gas_limit` (8)     | Contract-Gaseinheiten, die Sie für den Aufruf in der Warteschlange reservieren (Standard 500,000) |
+| `async_max_factor` (9)    | Der höchste Auslastungsfaktor, den Sie akzeptieren (Standard 4x); der Aufruf wird abgelehnt, wenn der geltende Faktor darüber liegt |
+
+- **Escrow.** Der Absender zahlt Gaseinheiten x Faktor x Gaspreis im Voraus in ein Escrow-Konto. Bei den Standardwerten sind das 500,000 x 4 x 0.1 uqor, etwa 0.2 QOR. Was der Aufruf nicht verbraucht, wird bei seiner Ausführung zurückerstattet.
+- **Gebühr für den Warteschlangenplatz.** Das Einreihen eines Aufrufs kostet zusätzlich eine kleine Platzgebühr.
+- **Höchstens 100 ausstehende Aufrufe pro Absender.** Ein weiterer Aufruf wird abgelehnt, bis einer abgeschlossen ist oder abläuft.
+- **Fehlgeschlagene Aufrufe werden berechnet.** Ein Aufruf, der fehlschlägt, zahlt trotzdem für die geleistete Arbeit.
+- **Aufwendige Aufrufe:** Erhöhen Sie `async_gas_limit` und `async_max_factor` für Contracts, die großen Code laden; ein Contract in der Größe von cw721 passt beim ersten Aufruf in einem Block nicht in die Standardwerte.
+
 ---
 
 ## Parameter
@@ -192,7 +207,7 @@ wscat -c ws://localhost:26657/websocket
 # Query a specific message by ID
 qorechaind query crossvm message <message-id>
 
-# List all pending messages
+# List pending messages (from v3.2.8 one page of at most 100; follow the next key for more)
 qorechaind query crossvm pending
 
 # Module parameters

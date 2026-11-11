@@ -118,6 +118,8 @@ Der Kontodatensatz enthält seine Regeln und die Anzahl der verknüpften Schlüs
 qorechaind query abstractaccount account <account-address>
 ```
 
+Ab v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) wird ein Schlüssel mit Wertberechtigungen bei der Registrierung und bei der Ausführung abgelehnt, sofern keine Regel ihn begrenzt; „kein Limit“ gilt für solche Schlüssel also nicht mehr.
+
 :::caution Eine Regel begrenzt einen Schlüssel nur, wenn eine existiert
 Die Chain ermittelt das Limit in dieser Reihenfolge: die eigene Regel des Authenticators, falls gesetzt und `enabled`; andernfalls die erste `enabled`-Regel des Kontos; andernfalls **gibt es kein Limit**. Eine mit `enabled: false` gespeicherte Regel bedeutet kein Limit, nicht ein Limit von null. `MsgRegisterAuthenticator` enthält keine Regel, ein allein mit dieser Nachricht verknüpfter Schlüssel wird also nur durch eine Regel auf Kontoebene begrenzt. Legen Sie mit `update-rules` bewusst eine Regel fest und registrieren Sie nur die Berechtigungen, die der Schlüssel benötigt. Ein Limit begrenzt den Schaden, den ein verknüpfter Schlüssel anrichten kann; es ersetzt nicht den Widerruf des Schlüssels.
 :::
@@ -145,7 +147,24 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
+**Ab Release v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) braucht die Registrierung zwei weitere Dinge.**
+
+1. **Einen Besitznachweis.** `MsgRegisterAuthenticator` hat ein Pflichtfeld `possession_proof` (Feld 8): eine Signatur des zu verknüpfenden Schlüssels, die belegt, dass er der Verknüpfung zustimmt. Der Schlüssel signiert diesen Klartext nach seinem eigenen Schema, sodass eine Browser-Wallet dem Nutzer zeigt, was er signiert (Phantom `signMessage`, MetaMask `personal_sign`); ein 33-Byte-secp256k1-Schlüssel signiert den SHA-256 des Textes:
+
+   ```text
+   QoreChain authenticator link v1
+   chain: <chain-id>
+   account: <bech32 account>
+   scheme: <scheme>
+   key: <lowercase hex of the public key, or of the 20-byte address>
+   ```
+
+   Der Text nennt die Chain, das Konto, das Schema und den Schlüssel, sodass ein Nachweis nicht für eine andere Chain, ein anderes Konto oder einen anderen Schlüssel wiederverwendet werden kann. Eine Registrierung ohne gültigen Nachweis wird abgelehnt.
+2. **Eine Ausgabenregel für Wertschlüssel.** Ein Schlüssel, dessen Berechtigungen Wert bewegen können (`send`, `evm`, `svm`, `deploy`, `all`), braucht eine Ausgabenregel, die jede Denomination begrenzt, die er ausgeben kann; sie wird mit `MsgUpdateSpendingRules` vor oder zusammen mit der Verknüpfung gesetzt. Dieselbe Regel wird bei der Ausführung auch für Schlüssel durchgesetzt, die vor dem Upgrade verknüpft wurden, ergänzen Sie dort also ebenfalls Regeln.
+
 Ein Phantom-Schlüssel wird auf dieselbe Weise registriert, mit dem Schema `ed25519` und dem öffentlichen Phantom-Schlüssel (`register-authenticator` in der CLI). Der Widerruf erfolgt sofort über `MsgRevokeAuthenticator`.
+
+**Eine Ausführung kann innerhalb einer erfolgreichen Transaktion fehlschlagen.** Ab v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) liefert ein fehlgeschlagenes `MsgExecuteEVM` oder `MsgExecuteCosmos` in seiner Antwort `success=false` bei Transaktionscode 0, sendet das Event `abstractaccount_execution_failed` mit dem Grund und verbraucht trotzdem die Authenticator-Nonce. Ein Client, der nur den Transaktionscode prüft, meldet einen solchen Aufruf als Erfolg: Lesen Sie die Antwort oder das Event.
 
 ### Berechtigungstaxonomie {#permission-taxonomy}
 

@@ -152,6 +152,21 @@ Submitted --> Pending --> Executed
 
 Începând cu v3.2.3, un apel din coadă care eșuează este anulat în întregime: rămâne doar înregistrarea sa `Failed`, iar fondurile atașate unui apel QoreChain Native eșuat nu mai sunt mutate în contract. Cât timp modulul este dezactivat sau `MsgCrossVMCall` este oprit de circuit breaker, coada **nu este executată**: mesajele din coadă rămân în așteptare și expiră la termenul lor, cu excepția cazului în care comutatorul este ridicat mai întâi.
 
+### Apeluri asincrone către CosmWasm (v3.2.8) {#async-calls}
+
+Începând cu release-ul v3.2.8 (doar pe testnet până la un upgrade ulterior de mainnet), un apel asincron către CosmWasm este plătit în avans și pus în coadă cu limite:
+
+| Câmp `MsgCrossVMCall` | Semnificație |
+| --------------------- | ------------ |
+| `async_gas_limit` (8)  | Unitățile de gas de contract pe care le rezervați pentru apelul din coadă (implicit 500.000) |
+| `async_max_factor` (9) | Cel mai mare factor de congestie pe care îl acceptați pentru el (implicit 4x); apelul este refuzat dacă factorul în vigoare este mai mare |
+
+- **Escrow.** Expeditorul plătește în avans unități de gas x factor x preț de gas într-un cont escrow. La valorile implicite, aceasta înseamnă 500.000 x 4 x 0,1 uqor, aproximativ 0,2 QOR. Ce nu folosește apelul este returnat când rulează.
+- **Taxa pentru locul în coadă.** Punerea unui apel în coadă plătește și o mică taxă de loc.
+- **Cel mult 100 de apeluri în așteptare per expeditor.** Un apel suplimentar este refuzat până când unul se termină sau expiră.
+- **Apelurile eșuate sunt taxate.** Un apel care eșuează plătește totuși munca efectuată.
+- **Apeluri grele:** măriți `async_gas_limit` și `async_max_factor` pentru contractele care încarcă cod mare; un contract de dimensiunea unui cw721 nu încape în valorile implicite la primul său apel dintr-un bloc.
+
 ---
 
 ## Parametri
@@ -192,7 +207,7 @@ wscat -c ws://localhost:26657/websocket
 # Query a specific message by ID
 qorechaind query crossvm message <message-id>
 
-# List all pending messages
+# List pending messages (from v3.2.8 one page of at most 100; follow the next key for more)
 qorechaind query crossvm pending
 
 # Module parameters

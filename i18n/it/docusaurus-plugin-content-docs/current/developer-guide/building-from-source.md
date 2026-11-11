@@ -37,7 +37,7 @@ Ogni invocazione di `go build`, `go test` e `go run` **deve** avere `CGO_ENABLED
 
 ### libqorepqc e libqoresvm
 
-Le librerie post-quantistica (`libqorepqc`) e SVM (`libqoresvm`) sono compilate da sorgenti Rust che **non fanno parte del repository pubblico** (in `qorechain-core` non esiste alcuna directory `rust/`). La build della community non ne ha bisogno. Gli archivi di release per le reti includono le librerie compilate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) in una directory `lib/` accanto a `qorechaind`; collocale in `lib/{os}_{arch}/` oppure indica il loro percorso al loader come mostrato di seguito.
+Le librerie post-quantistica (`libqorepqc`) e SVM (`libqoresvm`) sono compilate da sorgenti Rust che **non fanno parte del repository pubblico** (in `qorechain-core` non esiste alcuna directory `rust/`). La build della community non ne ha bisogno. Gli archivi di release per le reti includono le librerie compilate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` e, dalla v3.2.8, `libwasmvmqore.x86_64.so`). Copia l'intera directory `lib/`, non i singoli file, in una directory `lib/` accanto a `qorechaind`; collocale in `lib/{os}_{arch}/` oppure indica il loro percorso al loader come mostrato di seguito.
 
 ### Impostazione del percorso delle librerie
 

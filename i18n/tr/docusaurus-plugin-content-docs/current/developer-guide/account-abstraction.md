@@ -118,6 +118,8 @@ Hesap kaydı, kurallarını ve bağlı anahtar sayısını içerir:
 qorechaind query abstractaccount account <account-address>
 ```
 
+v3.2.8'den itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) değer izinleri taşıyan bir anahtar, bir kural onu sınırlamadıkça kayıtta da yürütmede de reddedilir; dolayısıyla "limit yok" durumu bu tür anahtarlar için artık geçerli değildir.
+
 :::caution Bir kural, bir anahtarı yalnızca anahtar varsa sınırlar
 Zincir limiti şu sırayla belirler: kimlik doğrulayıcının kendi kuralı ayarlıysa ve `enabled` ise o; değilse hesaptaki ilk `enabled` kural; değilse **limit yoktur**. `enabled: false` ile saklanan bir kural, sıfır limit değil, limitsizlik anlamına gelir. `MsgRegisterAuthenticator` herhangi bir kural taşımaz; bu nedenle yalnızca bu mesajla bağlanan bir anahtar, ancak hesap düzeyindeki bir kuralla sınırlanır. `update-rules` ile bir kuralı bilinçli olarak ayarlayın ve yalnızca anahtarın ihtiyaç duyduğu izinleri kaydedin. Bir limit, bağlı bir anahtarın verebileceği zararı sınırlar; anahtarı iptal etmenin yerini tutmaz.
 :::
@@ -145,7 +147,24 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
+**v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) kayıt için iki şey daha gerekir.**
+
+1. **Bir sahiplik kanıtı.** `MsgRegisterAuthenticator` zorunlu bir `possession_proof` alanına (alan 8) sahiptir: bağlanan anahtarın attığı, bağlantıyı kabul ettiğini gösteren bir imza. Anahtar, bu düz metni kendi şemasıyla imzalar; böylece bir tarayıcı cüzdanı kullanıcıya neyi imzaladığını gösterir (Phantom `signMessage`, MetaMask `personal_sign`); 33 baytlık bir secp256k1 anahtarı metnin SHA-256 değerini imzalar:
+
+   ```text
+   QoreChain authenticator link v1
+   chain: <chain-id>
+   account: <bech32 account>
+   scheme: <scheme>
+   key: <lowercase hex of the public key, or of the 20-byte address>
+   ```
+
+   Metin zinciri, hesabı, şemayı ve anahtarı adlandırır; bu yüzden bir kanıt başka bir zincir, hesap veya anahtar için yeniden kullanılamaz. Geçerli kanıtı olmayan bir kayıt reddedilir.
+2. **Değer anahtarları için bir harcama kuralı.** İzinleri değer taşıyabilen (`send`, `evm`, `svm`, `deploy`, `all`) bir anahtar, harcayabileceği her birimi (denom) sınırlayan bir harcama kuralına ihtiyaç duyar; kural `MsgUpdateSpendingRules` ile bağlantıdan önce veya onunla birlikte ayarlanır. Aynı kural, yükseltmeden önce bağlanan anahtarlar için de yürütmede uygulanır; onlar için de kural ekleyin.
+
 Bir Phantom anahtarı, `ed25519` şeması ve Phantom ortak anahtarı ile aynı şekilde kaydedilir (CLI'da `register-authenticator`). İptal işlemi `MsgRevokeAuthenticator` ile anında gerçekleşir.
+
+**Bir yürütme, başarılı bir işlemin içinde başarısız olabilir.** v3.2.8'den itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) başarısız bir `MsgExecuteEVM` veya `MsgExecuteCosmos`, yanıtında işlem kodu 0 ile `success=false` döndürür, nedeniyle birlikte `abstractaccount_execution_failed` olayını yayar ve yine de kimlik doğrulayıcı nonce değerini tüketir. Yalnızca işlem koduna bakan bir istemci böyle bir çağrıyı başarılı sayar: yanıtı veya olayı okuyun.
 
 ### İzin taksonomisi {#permission-taxonomy}
 

@@ -142,6 +142,13 @@ QoreChain Native sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **De
 
 ---
 
+## Gas ve yükleme limitleri (v3.2.8) {#gas-and-limits}
+
+v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında):
+
+- **Yürütme gas'i yeniden fiyatlandırıldı.** Bir sözleşme kodunun bir blokta ilk çağrısı bir yükleme maliyeti öder (bir cw20 transferi blokta ilk seferinde yaklaşık 533.000 gas, tekrarlarda yaklaşık 84.000 gas tutar), çağrı kurulumu ve bellek büyümesi ücretlendirilir ve bir tıkanıklık çarpanı fiyatı varsayılan olarak 1x'ten 20x'e kadar ölçekler. Her zaman simülasyon yapın ve en az %30 ekleyin; bir sözleşme çağrısı için gas'i asla sabit yazmayın. Bkz. [Sözleşme çağrıları için gas](/sdk/guides/cosmwasm#gas).
+- **Yüklemeler sınırlıdır ve yönetişim denetiminde kalır.** Önce erişim kontrol edilir ve mempool bir yüklemeyi yalnızca izin verilen bir göndericiden kabul eder. Yükleme, bildirilen boyutu için gas'i baştan öder (cw20 için yaklaşık 9,9 milyon gas, cw721 için yaklaşık 22,8 milyon gas). Bir modülde en fazla 4.096 işlev olabilir ve en fazla 32 MiB'a derlenmelidir; kayan nokta komutları hem yüklemede hem de zaten saklanmış kod için çağrı anında reddedilir.
+
 ## Yararlı Sorgular
 
 ```bash

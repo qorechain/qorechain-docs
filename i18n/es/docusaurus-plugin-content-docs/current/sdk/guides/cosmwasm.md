@@ -126,6 +126,7 @@ Requiere
 import { Registry } from "@cosmjs/proto-signing";
 import { wasmTypes } from "@cosmjs/cosmwasm-stargate";
 import { StargateClient } from "@cosmjs/stargate";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import {
   qorechainRegistryTypes,
@@ -137,22 +138,37 @@ const registry = new Registry([...qorechainRegistryTypes, ...wasmTypes]);
 const transport = await StargateClient.connect("https://rpc.qore.host");
 const info = await transport.getSequence(sender);
 
+// Never hardcode gas for a contract call: simulate it, then add at least 30%.
+// The simulation already includes the cost of loading the contract code and a
+// congestion margin (see "Gas for contract calls" below).
+const cwClient = await SigningCosmWasmClient.connectWithSigner(
+  "https://rpc.qore.host",
+  signer,
+);
+const msgs = [
+  {
+    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+    value: MsgExecuteContract.fromPartial({
+      sender,
+      contract: contractAddress,
+      msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
+      funds: [],
+    }),
+  },
+];
+const simulatedGas = await cwClient.simulate(sender, msgs, undefined);
+const gas = Math.ceil(simulatedGas * 1.3);
+const gasPrice = 0.15; // uqor per unit of gas; the network floor is 0.1
+
 const result = await signAndBroadcastHybrid({
   registry,
   signer,                                            // from directSignerFromPrivateKey
   pqcKeypair: derivePqcCanonical(sender, mnemonic),  // the key registered on-chain
-  messages: [
-    {
-      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-      value: MsgExecuteContract.fromPartial({
-        sender,
-        contract: contractAddress,
-        msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
-        funds: [],
-      }),
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  messages: msgs,
+  fee: {
+    amount: [{ denom: "uqor", amount: String(Math.ceil(gas * gasPrice)) }],
+    gas: String(gas),
+  },
   chainId: "qorechain-vladi",
   accountNumber: info.accountNumber,
   sequence: info.sequence,
@@ -160,6 +176,35 @@ const result = await signAndBroadcastHybrid({
   transport,
 });
 ```
+
+### Gas para llamadas a contratos {#gas}
+
+**No fijes el gas de una llamada a un contrato.** Un valor fijo de 400,000 basta
+para una transferencia simple en una llamada y se agota en la siguiente. Desde
+la versión v3.2.8 (solo testnet hasta una actualización posterior de mainnet)
+el gas de CosmWasm se reajusta:
+
+- **La primera llamada de un código de contrato en un bloque paga un coste de
+  carga.** Una transferencia cw20 cuesta unos 533,000 de gas como primera
+  llamada de su código en un bloque y unos 84,000 en cada repetición. La
+  gobernanza puede fijar (pin) los códigos populares, y los códigos fijados
+  se saltan el cargo de carga.
+- **Las comisiones suben con la congestión.** Un factor de congestión escala
+  el gas de contratos de 1x hasta 20x por defecto cuando los bloques están
+  ocupados con llamadas a contratos, y un bloque tiene un presupuesto limitado
+  de ejecución de contratos del que una transacción puede usar como máximo la
+  mitad.
+- **La simulación incluye ambos.** Una simulación siempre cobra la carga en
+  frío y añade un margen para la congestión, así que `gas simulado x 1.3` es un
+  límite seguro. Usa `fee: "auto"` donde tu cliente lo ofrezca (`"auto"` de
+  CosmJS, el `TxClient` del SDK, el hook `useTx` de React), y simula tú mismo
+  cuando construyas la comisión a mano como arriba.
+- **Mantente por debajo del tope de transacción.** Una transacción de Cosmos no
+  puede fijar un límite de gas superior a 50,000,000 y se rechaza antes de
+  cobrar su comisión.
+
+Lo mismo se aplica a instantiate, migrate y a cualquier otro mensaje que
+ejecute código de contrato.
 
 Consulta el [ejemplo](/sdk/examples) `cosmwasm-query` para ver un ejemplo de
 lectura ejecutable.

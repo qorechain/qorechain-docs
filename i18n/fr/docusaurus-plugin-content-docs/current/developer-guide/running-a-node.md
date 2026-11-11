@@ -95,7 +95,7 @@ EOF
 docker build -t qorechain-node:v3.2.6 release/
 ```
 
-L'archive contient `qorechaind` et un répertoire `lib/` avec ses bibliothèques partagées (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) ; l'image ci-dessus est uniquement `linux/amd64`, comme l'archive de release.
+L'archive contient `qorechaind` et un répertoire `lib/` avec ses bibliothèques partagées (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` et, à partir de la v3.2.8, `libwasmvmqore.x86_64.so`). Copiez le répertoire `lib/` entier, et non des fichiers isolés ; l'image ci-dessus est uniquement `linux/amd64`, comme l'archive de release.
 
 ```yaml
 # docker-compose.yml
@@ -328,6 +328,10 @@ pruning = "default"
 | `default`   | Conserve l'état récent, élague le reste      | Nœud RPC, consultations de solde/état  |
 | `nothing`   | Conserve tout l'état historique              | Nœud archive, historique complet       |
 | `custom`    | Valeurs de conservation/intervalle définies par l'opérateur | Rétention ajustée      |
+
+### Runtime des contrats en v3.2.8 {#v328-node}
+
+Un nœud en version v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du mainnet) a besoin : du répertoire `lib/` entier du bundle (il contient `libwasmvmqore` à côté de `libwasmvm`, `libqorepqc` et `libqoresvm`) ; d'un `[wasm] memory_cache_size` d'au moins 256 MiB (une valeur plus petite est portée à 256 avec un avertissement : prévoyez donc la mémoire) ; et du répertoire de code des contrats à `<home>/wasm` (un répertoire de code existant ailleurs continue de fonctionner avec un avertissement). Un nouvel `app.toml` définit aussi `simulation_gas_limit = 50000000` et sert les espaces de noms JSON-RPC `eth,net,web3`.
 
 ### Limites du nœud (`app.toml`) {#node-limits}
 

@@ -152,6 +152,21 @@ Submitted --> Pending --> Executed
 
 Dalla v3.2.3 una chiamata in coda che fallisce viene annullata per intero: resta solo il suo record `Failed`, e i fondi allegati a una chiamata QoreChain Native fallita non vengono più spostati nel contratto. Mentre il modulo è disabilitato, o `MsgCrossVMCall` è disattivato dal circuit breaker, la coda **non viene eseguita**: i messaggi in coda restano in attesa e scadono al loro timeout, a meno che l'interruttore non venga prima riattivato.
 
+### Chiamate asincrone verso CosmWasm (v3.2.8) {#async-calls}
+
+Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) una chiamata asincrona verso CosmWasm è prepagata e messa in coda con dei limiti:
+
+| Campo di `MsgCrossVMCall` | Significato |
+| ---------------------- | ------- |
+| `async_gas_limit` (8)  | Unità di gas del contratto che riservi per la chiamata in coda (predefinito 500.000) |
+| `async_max_factor` (9) | Il fattore di congestione massimo che accetti (predefinito 4x); la chiamata viene rifiutata se il fattore in vigore è superiore |
+
+- **Escrow.** Il mittente prepaga unità di gas x fattore x prezzo del gas in un account di escrow. Con i valori predefiniti sono 500.000 x 4 x 0,1 uqor, circa 0,2 QOR. Ciò che la chiamata non usa viene rimborsato quando viene eseguita.
+- **Commissione per lo slot in coda.** Mettere in coda una chiamata paga anche una piccola commissione di slot.
+- **Al massimo 100 chiamate in attesa per mittente.** Un'ulteriore chiamata viene rifiutata finché una non termina o scade.
+- **Le chiamate fallite vengono addebitate.** Una chiamata che fallisce paga comunque il lavoro svolto.
+- **Chiamate pesanti:** aumenta `async_gas_limit` e `async_max_factor` per i contratti che caricano codice di grandi dimensioni; un contratto delle dimensioni di un cw721 non rientra nei valori predefiniti alla sua prima chiamata in un blocco.
+
 ---
 
 ## Parametri
@@ -192,7 +207,7 @@ wscat -c ws://localhost:26657/websocket
 # Query a specific message by ID
 qorechaind query crossvm message <message-id>
 
-# List all pending messages
+# Elenca i messaggi in attesa (dalla v3.2.8 una pagina di al massimo 100; segui la next key per gli altri)
 qorechaind query crossvm pending
 
 # Module parameters

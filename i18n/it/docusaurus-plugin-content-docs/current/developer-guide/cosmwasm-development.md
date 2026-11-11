@@ -142,6 +142,13 @@ I contratti QoreChain Native seguono un ciclo di vita in cinque fasi: **Build** 
 
 ---
 
+## Gas e limiti di upload (v3.2.8) {#gas-and-limits}
+
+Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet):
+
+- **Il gas di esecuzione è ridefinito.** La prima chiamata di un codice di contratto in un blocco paga un costo di caricamento (un trasferimento cw20 costa circa 533.000 gas la prima volta in un blocco e circa 84.000 per le ripetizioni), vengono addebitati l'avvio della chiamata e la crescita della memoria, e un fattore di congestione scala il prezzo da 1x fino a 20x per impostazione predefinita. Simula sempre e aggiungi almeno il 30%; non scrivere mai il gas di una chiamata a un contratto in modo fisso. Vedi [Gas per le chiamate ai contratti](/sdk/guides/cosmwasm#gas).
+- **Gli upload sono limitati e restano sotto il controllo della governance.** L'accesso viene verificato per primo e il mempool ammette un upload solo da un mittente autorizzato. L'upload paga in anticipo il gas per la dimensione dichiarata (circa 9,9 milioni di gas per cw20, circa 22,8 milioni per cw721). Un modulo può avere al massimo 4.096 funzioni e compilarsi in al massimo 32 MiB, e le istruzioni in virgola mobile sono rifiutate, sia all'upload sia alla chiamata per il codice già memorizzato.
+
 ## Query utili
 
 ```bash

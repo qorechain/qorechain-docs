@@ -152,7 +152,9 @@ const client = createClient({
 // A single message by id.
 const msg = await getCrossVmMessage(client.rest, messageId);
 
-// All pending messages.
+// Pending messages. On a network running v3.2.8 or later the route is paginated
+// (at most 100 per page) and `payload_hex` is cut to 1,024 bytes in the list:
+// read the full payload with getCrossVmMessage.
 const pending = await getPendingCrossVmMessages(client.rest);
 
 // Module parameters.

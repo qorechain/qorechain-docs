@@ -37,7 +37,7 @@ Chaque invocation de `go build`, `go test` et `go run` **doit** avoir `CGO_ENABL
 
 ### libqorepqc et libqoresvm
 
-Les bibliothèques post-quantique (`libqorepqc`) et SVM (`libqoresvm`) sont compilées à partir de sources Rust qui **ne font pas partie du dépôt public** (il n'existe aucun répertoire `rust/` dans `qorechain-core`). La compilation communautaire n'en a pas besoin. Les archives de release des réseaux embarquent les bibliothèques compilées (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) dans un répertoire `lib/` à côté de `qorechaind` ; placez-les dans `lib/{os}_{arch}/` ou indiquez leur emplacement au chargeur comme ci-dessous.
+Les bibliothèques post-quantique (`libqorepqc`) et SVM (`libqoresvm`) sont compilées à partir de sources Rust qui **ne font pas partie du dépôt public** (il n'existe aucun répertoire `rust/` dans `qorechain-core`). La compilation communautaire n'en a pas besoin. Les archives de release des réseaux embarquent les bibliothèques compilées (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` et, à partir de la v3.2.8, `libwasmvmqore.x86_64.so`). Copiez le répertoire `lib/` entier, et non des fichiers isolés, dans un répertoire `lib/` à côté de `qorechaind` ; placez-les dans `lib/{os}_{arch}/` ou indiquez leur emplacement au chargeur comme ci-dessous.
 
 ### Définition du chemin de la bibliothèque
 

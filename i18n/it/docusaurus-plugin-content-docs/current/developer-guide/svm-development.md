@@ -16,7 +16,7 @@ I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 7 giu
 ---
 
 :::caution L'invio di transazioni SVM è attualmente disabilitato
-A partire dalla versione della chain v3.1.89 (22 agosto), in seguito a un incidente, la lane di esecuzione SVM è **disabilitata a livello di rete per l'invio di transazioni** sia su `qorechain-vladi` sia su `qorechain-diana` — qualsiasi transazione inviata a `x/svm` (distribuzione di programmi, esecuzione di istruzioni, creazione di account, trasferimenti) restituisce `code 11, "SVM module is disabled"`. Questo vale sia per il tuo nodo personale sia per gli endpoint pubblici. I metodi RPC di sola lettura possono ancora rispondere, ma non costruire né provare un'integrazione SVM live finché la lane non viene riaperta — si tratta di una disabilitazione a livello di compilazione, non di un parametro a runtime, quindi non può essere riattivata con un voto di governance; si prevede che rimarrà disattivata finché un audit esterno non la autorizzi.
+A partire dalla versione della chain v3.1.89 (22 agosto), in seguito a un incidente, la lane di esecuzione SVM è **disabilitata a livello di rete per l'invio di transazioni** sia su `qorechain-vladi` sia su `qorechain-diana` — qualsiasi transazione inviata a `x/svm` (distribuzione di programmi, esecuzione di istruzioni, creazione di account, trasferimenti) restituisce `code 11, "SVM module is disabled"`. Questo vale sia per il tuo nodo personale sia per gli endpoint pubblici. I metodi RPC di sola lettura possono ancora rispondere, ma non costruire né provare un'integrazione SVM live finché la lane non viene riaperta. Sulla mainnet la lane SVM è disattivata nella release attuale e per attivarla sulla mainnet serve una release futura; si prevede che rimarrà disattivata finché un audit esterno non la autorizzi.
 :::
 
 ## Panoramica
@@ -44,6 +44,8 @@ A partire dalla versione della chain **v3.1.82**, l'interfaccia SVM è un'**inte
 * **`getSignaturesForAddress`** restituisce la cronologia delle transazioni che riguardano un indirizzo — utilizzabile per il rilevamento dei depositi con gli strumenti Solana standard.
 * **I trasferimenti del System Program spostano QOR nativo** — un'istruzione di trasferimento in stile Solana sposta gli stessi fondi che sposterebbe un `MsgSend` Cosmos o un trasferimento EVM.
 * **Forma dell'indirizzo SVM** — l'indirizzo SVM di un account sono i suoi 20 byte dell'account allineati a destra fino a 32 byte e codificati in base58. Tutte e tre le forme di indirizzo (`qor1...`, `0x...`, base58) fanno riferimento allo stesso account.
+
+**Release v3.2.8 (testnet, non ancora applicata).** L'upgrade chiude la lane SVM su `qorechain-diana`: le scritture SVM falliscono, `MsgRegisterSVMPQCKey` viene rifiutato e il JSON-RPC SVM rifiuta i metodi di scrittura sugli id di chain pubblici, finché un voto di governance non la riapre (la testnet ha un interruttore governato). Sulla mainnet la lane è disattivata nella release attuale e attivarla richiede una release futura. I client dovrebbero leggere lo stato della lane dai parametri del modulo SVM (`enabled`) prima di proporre azioni SVM.
 
 Gli endpoint pubblici (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sono **di sola lettura** — l'invio di transazioni è disabilitato a livello di edge. Normalmente dovresti eseguire il tuo nodo (porta 8899) per inviare transazioni SVM, ma vedi l'avviso sopra: la lane di transazione `x/svm` stessa è attualmente disabilitata a livello di rete, incluso sul tuo stesso nodo.
 

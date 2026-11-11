@@ -37,7 +37,7 @@ echo $CGO_ENABLED # must be 1
 
 ### libqorepqc と libqoresvm
 
-耐量子（`libqorepqc`）と SVM（`libqoresvm`）のライブラリは、**公開リポジトリには含まれていない** Rust ソースからビルドされます（`qorechain-core` に `rust/` ディレクトリはありません）。コミュニティ版ビルドにはこれらは不要です。各ネットワーク向けのリリースアーカイブには、コンパイル済みライブラリ（`libqorepqc.so`、`libqoresvm.so`、`libwasmvm.x86_64.so`）が `qorechaind` の隣の `lib/` ディレクトリに同梱されています。これらを `lib/{os}_{arch}/` に配置するか、以下のようにローダーにパスを指定してください。
+耐量子（`libqorepqc`）と SVM（`libqoresvm`）のライブラリは、**公開リポジトリには含まれていない** Rust ソースからビルドされます（`qorechain-core` に `rust/` ディレクトリはありません）。コミュニティ版ビルドにはこれらは不要です。各ネットワーク向けのリリースアーカイブには、コンパイル済みライブラリ（`libqorepqc.so`、`libqoresvm.so`、`libwasmvm.x86_64.so`、v3.2.8 以降は `libwasmvmqore.x86_64.so`）が `qorechaind` の隣の `lib/` ディレクトリに同梱されています。個別のファイルではなく `lib/` ディレクトリ全体をコピーしてください。これらを `lib/{os}_{arch}/` に配置するか、以下のようにローダーにパスを指定してください。
 
 ### ライブラリパスの設定
 

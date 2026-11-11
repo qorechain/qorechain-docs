@@ -122,6 +122,7 @@ via le constructeur hybride. La clé ML-DSA-87 du compte doit d'abord avoir ét�
 import { Registry } from "@cosmjs/proto-signing";
 import { wasmTypes } from "@cosmjs/cosmwasm-stargate";
 import { StargateClient } from "@cosmjs/stargate";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import {
   qorechainRegistryTypes,
@@ -133,22 +134,37 @@ const registry = new Registry([...qorechainRegistryTypes, ...wasmTypes]);
 const transport = await StargateClient.connect("https://rpc.qore.host");
 const info = await transport.getSequence(sender);
 
+// Never hardcode gas for a contract call: simulate it, then add at least 30%.
+// The simulation already includes the cost of loading the contract code and a
+// congestion margin (see "Gas for contract calls" below).
+const cwClient = await SigningCosmWasmClient.connectWithSigner(
+  "https://rpc.qore.host",
+  signer,
+);
+const msgs = [
+  {
+    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+    value: MsgExecuteContract.fromPartial({
+      sender,
+      contract: contractAddress,
+      msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
+      funds: [],
+    }),
+  },
+];
+const simulatedGas = await cwClient.simulate(sender, msgs, undefined);
+const gas = Math.ceil(simulatedGas * 1.3);
+const gasPrice = 0.15; // uqor per unit of gas; the network floor is 0.1
+
 const result = await signAndBroadcastHybrid({
   registry,
   signer,                                            // from directSignerFromPrivateKey
   pqcKeypair: derivePqcCanonical(sender, mnemonic),  // the key registered on-chain
-  messages: [
-    {
-      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-      value: MsgExecuteContract.fromPartial({
-        sender,
-        contract: contractAddress,
-        msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
-        funds: [],
-      }),
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  messages: msgs,
+  fee: {
+    amount: [{ denom: "uqor", amount: String(Math.ceil(gas * gasPrice)) }],
+    gas: String(gas),
+  },
   chainId: "qorechain-vladi",
   accountNumber: info.accountNumber,
   sequence: info.sequence,
@@ -156,5 +172,34 @@ const result = await signAndBroadcastHybrid({
   transport,
 });
 ```
+
+### Gas des appels de contrat {#gas}
+
+**Ne codez pas le gas en dur pour un appel de contrat.** Un gas fixe de 400,000
+suffit pour un simple transfert sur un appel et s'épuise au suivant. À partir de
+la version v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du
+mainnet), le gas CosmWasm est retarifé :
+
+- **Le premier appel d'un code de contrat dans un bloc paie un coût de
+  chargement.** Un transfert cw20 coûte environ 533,000 gas comme premier appel
+  de son code dans un bloc, et environ 84,000 pour chaque appel suivant. La
+  gouvernance peut épingler les codes populaires, et les codes épinglés
+  échappent au coût de chargement.
+- **Les frais augmentent avec la congestion.** Un facteur de congestion
+  multiplie le gas des contrats de 1x jusqu'à 20x par défaut lorsque les blocs
+  sont chargés d'appels de contrat, et un bloc dispose d'un budget limité
+  d'exécution de contrats, dont une seule transaction peut utiliser au plus la
+  moitié.
+- **La simulation inclut les deux.** Une simulation facture toujours le
+  chargement à froid et ajoute une marge pour la congestion ; `gas simulé x 1.3`
+  est donc une limite sûre. Utilisez `fee: "auto"` lorsque votre client le
+  propose (CosmJS `"auto"`, le `TxClient` du SDK, le hook React `useTx`), et
+  simulez vous-même lorsque vous construisez les frais à la main comme ci-dessus.
+- **Restez sous le plafond de transaction.** Une transaction Cosmos ne peut pas
+  fixer une limite de gas supérieure à 50,000,000 et elle est refusée avant que
+  ses frais ne soient prélevés.
+
+Cela vaut aussi pour l'instanciation, la migration et tout autre message qui
+exécute du code de contrat.
 
 Voir l'[exemple](/sdk/examples) `cosmwasm-query` pour un exemple de lecture exécutable.

@@ -95,7 +95,7 @@ EOF
 docker build -t qorechain-node:v3.2.6 release/
 ```
 
-아카이브에는 `qorechaind`와 공유 라이브러리(`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`)가 들어 있는 `lib/` 디렉터리가 포함되어 있습니다. 위 이미지는 릴리스 아카이브와 마찬가지로 `linux/amd64` 전용입니다.
+아카이브에는 `qorechaind`와 공유 라이브러리(`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`, 그리고 v3.2.8부터 `libwasmvmqore.x86_64.so`)가 들어 있는 `lib/` 디렉터리가 포함되어 있습니다. 개별 파일이 아니라 `lib/` 디렉터리 전체를 복사하세요. 위 이미지는 릴리스 아카이브와 마찬가지로 `linux/amd64` 전용입니다.
 
 ```yaml
 # docker-compose.yml
@@ -328,6 +328,10 @@ pruning = "default"
 | `default`   | 최근 상태만 유지하고 나머지는 프루닝     | RPC 노드, 잔액/상태 조회          |
 | `nothing`   | 모든 과거 상태 유지                      | 아카이브 노드, 전체 이력          |
 | `custom`    | 운영자가 정의한 keep/interval 값         | 맞춤형 보존 정책                  |
+
+### v3.2.8의 컨트랙트 런타임 {#v328-node}
+
+릴리스 v3.2.8을 실행하는 노드(이후 메인넷 업그레이드 전까지는 테스트넷 전용)에는 다음이 필요합니다. 번들의 `lib/` 디렉터리 전체(`libwasmvm`, `libqorepqc`, `libqoresvm` 옆에 `libwasmvmqore`가 들어 있습니다), 256 MiB 이상의 `[wasm] memory_cache_size`(더 작은 값은 경고와 함께 256으로 올려지므로 메모리를 계획하세요), 그리고 `<home>/wasm`에 있는 컨트랙트 코드 디렉터리(다른 위치의 기존 코드 디렉터리는 경고와 함께 계속 작동합니다). 새 `app.toml`에는 `simulation_gas_limit = 50000000`도 설정되며 JSON-RPC 네임스페이스 `eth,net,web3`을 제공합니다.
 
 ### 노드 제한 (`app.toml`) {#node-limits}
 

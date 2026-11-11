@@ -147,6 +147,10 @@ QoreChain utilizza un modello a **base fee dinamica EIP-1559** per le transazion
 * Gli utenti possono impostare `maxFeePerGas` e `maxPriorityFeePerGas`
 * Le priority fee vanno al proponente del blocco
 
+### Limiti di gas {#gas-limits}
+
+Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) una singola transazione EVM può impostare un gas limit di al massimo **30.000.000**, e le esecuzioni EVM avviate da un messaggio Cosmos (una chiamata cross-VM, una conversione ERC-20, il trasferimento di un pacchetto IBC in arrivo) condividono lo stesso budget. Una transazione oltre il limite viene rifiutata prima di essere eseguita. Leggi i valori in vigore da `GET /qorechain/pqc/v1/evm_limits` (gRPC `EVMLimitsQuery/EVMLimits`) e limita il gas che i tuoi strumenti inviano, in particolare il gas che una dApp passa al tuo wallet senza controllo. Una transazione Cosmos ha un proprio limite di 50.000.000 di gas. I trasferimenti semplici (21.000 gas) e le normali chiamate a token sono ben al di sotto di entrambi.
+
 ### Ponte di denominazione
 
 Il token nativo QOR ha **6 cifre decimali** (`uqor`), mentre l'EVM prevede **18 cifre decimali**. Il modulo `x/precisebank` gestisce la conversione in modo trasparente:
@@ -298,7 +302,7 @@ Il limite che si esaurisce per primo chiude la finestra. Tutti e tre i limiti so
 | `--native-only`         | `native_only` | Solo trasferimenti semplici di QOR nativo: nessun calldata, nessuna creazione di contratti, nessun destinatario che contenga codice, nessuna autorizzazione EIP-7702 |
 | `--allowed-targets 0xA,0xB` | `allowed_targets` | Solo le transazioni il cui destinatario è uno degli indirizzi a 20 byte elencati; la creazione di contratti viene rifiutata |
 
-`allowed_targets` limita **quali** contratti e token una finestra può toccare, non **quanto**. Un token elencato ammette qualsiasi importo di quel token, incluso `approve`, e un contratto elencato può muovere tutto ciò che il suo codice e le approvazioni esistenti consentono, quindi non elencare contratti forwarder o router generici. Una finestra vincola solo le transazioni sulla lane EVM (firmate in modo classico); i messaggi Cosmos firmati con la firma PQC ibrida, come le chiamate cross-VM e authz, ne restano fuori.
+`allowed_targets` limita **quali** contratti e token una finestra può toccare, non **quanto**. Un token elencato ammette qualsiasi importo di quel token, incluso `approve`, e un contratto elencato può muovere tutto ciò che il suo codice e le approvazioni esistenti consentono, quindi non elencare contratti forwarder o router generici. Una finestra vincola solo le transazioni sulla lane EVM (firmate in modo classico). I messaggi Cosmos firmati con la firma PQC ibrida ne restano fuori. Prima della v3.2.8 questo includeva le chiamate cross-VM e authz; dalla v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) una chiamata cross-VM verso l'EVM e una conversione ERC-20 inviate con una concessione authz usano la finestra del **granter**, e il precompile bridge `0x0901` richiede una finestra che lo elenchi.
 
 Una finestra aperta senza ambito si comporta esattamente come prima. Una transazione fuori dall'ambito viene rifiutata con il codice 27 (il messaggio dice che la finestra "does not admit this transaction"). `GET /qorechain/pqc/v1/evm_window/{address}` e `qorechaind query pqc evm-window` riportano `native_only` e `allowed_targets`, e l'evento `pqc_evm_window_opened` li include quando sono impostati.
 
@@ -319,6 +323,33 @@ Una finestra aperta senza ambito si comporta esattamente come prima. Una transaz
 
 3. Controlla cosa resta: `qorechaind query pqc evm-window <address>` oppure `GET /qorechain/pqc/v1/evm_window/{address}` (risponde `found: false` quando non ce n'è nessuna).
 4. Invia le tue transazioni EVM normalmente. L'apertura di una finestra è una transazione della corsia Cosmos e fa avanzare la sequence dell'account, che è anche il suo nonce EVM, quindi leggi il nonce **dopo** che la finestra è aperta e firma solo allora.
+
+### Opzioni della finestra aggiunte nella v3.2.8 {#evm-window-v328}
+
+Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) `MsgOpenEVMWindow` porta tre liste opzionali di al massimo 16 voci ciascuna. Una finestra senza di esse si comporta come prima, tranne che per la regola deny-by-default qui sotto.
+
+| Campo del messaggio | Flag CLI | Cosa nomina |
+| ------------- | -------- | ------------- |
+| `validators` (7) | `--validators` | Contratti la cui verifica della firma dell'account conta per le sue azioni: un modulo validator chiamato da un contratto wallet, o l'entry point ERC-4337 |
+| `staking_validators` (8) | `--staking-validators` | Indirizzi operatore dei validatori (`qorvaloper…`) a cui l'account può delegare o ridelegare tramite la finestra |
+| `ibc_receivers` (9) | `--ibc-receivers` | Coppie esatte `<channel>/<receiver>` verso cui può andare un trasferimento IBC di QOR nativo; il canale e il ricevente vengono confrontati byte per byte (`channel-0`, ricevente bech32 in minuscolo) |
+
+**I precompile standard sono deny-by-default.** Per un account che una finestra autorizza, un metodo di un precompile standard (staking, distribution, ICS-20, gov, slashing, precompile dei token ERC-20) viene rifiutato a meno che non sia nella tabella qui sotto e la finestra elenchi il precompile in `allowed_targets`.
+
+| Precompile | Metodo | Ammesso quando |
+| ---------- | ------ | ------------- |
+| distribution | `claimRewards`, `withdrawDelegatorRewards` | le ricompense sono pagate all'account stesso |
+| distribution | `withdrawValidatorCommission` | il validatore è quello dell'account e paga l'account stesso |
+| distribution | `depositValidatorRewardsPool` | il validatore è in `staking_validators` e ogni moneta è QOR nativo |
+| staking | `delegate`, `redelegate` | il validatore di destinazione è in `staking_validators` |
+| ICS-20 | `transfer` | QOR nativo, sulla porta `transfer`, senza memo, verso una coppia in `ibc_receivers` |
+| Precompile dei token ERC-20 | `transfer`, `transferFrom`, `approve` | QOR nativo; un altro token solo quando la finestra elenca l'indirizzo di quel token |
+
+Tutto il resto viene rifiutato tramite una finestra: undelegate, voto e altre azioni di governance, cambio dell'indirizzo di prelievo, creazione o modifica di un validatore, finanziamento del community pool. Invia queste come transazioni Cosmos firmate in modo post-quantistico.
+
+**Le firme verificate on chain richiedono il contratto verificatore nella finestra.** Un permit EIP-2612, un trasferimento Permit2, un ordine EIP-712 o una meta-transazione sono verificati da un contratto con `ecrecover`. Dalla v3.2.8 (entrambe le reti, una volta che una rete la applica) quella verifica riesce per un account che possiede una chiave post-quantistica utilizzabile solo finché la finestra live dell'account stesso ammette il contratto verificatore, cioè il token o Permit2 stesso, non il router che inoltra la chiamata. Elencalo in `allowed_targets` e apri la finestra **prima** che l'utente firmi. Senza quella finestra la firma viene trattata come non valida e il contratto la rifiuta. Un permit o un'approvazione concessi all'interno di una finestra restano dopo la chiusura della finestra, quindi rivedi e revoca le approvazioni al termine della sessione.
+
+**I cambi di chiave chiudono la finestra.** Ruotare, migrare o registrare di nuovo la chiave post-quantistica dell'account elimina la sua finestra aperta e il suo consenso EIP-7702; apri di nuovo la finestra dopo. I messaggi di finestra e di consenso devono essere il messaggio di primo livello dell'account stesso firmato in modo post-quantistico: non possono essere inviati tramite authz né concessi a un altro account.
 
 Chiudi una finestra in anticipo con `qorechaind tx pqc close-evm-window` (stesso schema `--generate-only` e `cosign`), ad esempio se sospetti che la chiave classica sia esposta: tutto ciò che la finestra ammetteva ancora viene rifiutato dal blocco successivo.
 

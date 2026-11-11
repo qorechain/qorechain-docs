@@ -122,6 +122,7 @@ prima (vedi [Firma ibrida](/sdk/guides/quantum-safe)). Richiede
 import { Registry } from "@cosmjs/proto-signing";
 import { wasmTypes } from "@cosmjs/cosmwasm-stargate";
 import { StargateClient } from "@cosmjs/stargate";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import {
   qorechainRegistryTypes,
@@ -133,22 +134,37 @@ const registry = new Registry([...qorechainRegistryTypes, ...wasmTypes]);
 const transport = await StargateClient.connect("https://rpc.qore.host");
 const info = await transport.getSequence(sender);
 
+// Never hardcode gas for a contract call: simulate it, then add at least 30%.
+// The simulation already includes the cost of loading the contract code and a
+// congestion margin (see "Gas for contract calls" below).
+const cwClient = await SigningCosmWasmClient.connectWithSigner(
+  "https://rpc.qore.host",
+  signer,
+);
+const msgs = [
+  {
+    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+    value: MsgExecuteContract.fromPartial({
+      sender,
+      contract: contractAddress,
+      msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
+      funds: [],
+    }),
+  },
+];
+const simulatedGas = await cwClient.simulate(sender, msgs, undefined);
+const gas = Math.ceil(simulatedGas * 1.3);
+const gasPrice = 0.15; // uqor per unit of gas; the network floor is 0.1
+
 const result = await signAndBroadcastHybrid({
   registry,
   signer,                                            // from directSignerFromPrivateKey
   pqcKeypair: derivePqcCanonical(sender, mnemonic),  // the key registered on-chain
-  messages: [
-    {
-      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-      value: MsgExecuteContract.fromPartial({
-        sender,
-        contract: contractAddress,
-        msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
-        funds: [],
-      }),
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  messages: msgs,
+  fee: {
+    amount: [{ denom: "uqor", amount: String(Math.ceil(gas * gasPrice)) }],
+    gas: String(gas),
+  },
   chainId: "qorechain-vladi",
   accountNumber: info.accountNumber,
   sequence: info.sequence,
@@ -156,5 +172,16 @@ const result = await signAndBroadcastHybrid({
   transport,
 });
 ```
+
+### Gas per le chiamate ai contratti {#gas}
+
+**Non scrivere il gas di una chiamata a un contratto in modo fisso.** Un valore fisso di 400.000 basta per un semplice trasferimento in una chiamata e si esaurisce alla successiva. Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) il gas di CosmWasm è ridefinito:
+
+- **La prima chiamata di un codice di contratto in un blocco paga un costo di caricamento.** Un trasferimento cw20 costa circa 533.000 gas come prima chiamata del suo codice in un blocco e circa 84.000 per ogni ripetizione. La governance può fissare (pin) i codici più popolari, e i codici fissati saltano l'addebito del caricamento.
+- **Le commissioni salgono con la congestione.** Un fattore di congestione scala il gas dei contratti da 1x fino a 20x per impostazione predefinita quando i blocchi sono occupati da chiamate a contratti, e un blocco ha un budget limitato di esecuzione dei contratti, di cui una transazione può usare al massimo la metà.
+- **La simulazione include entrambi.** Una simulazione addebita sempre il caricamento a freddo e aggiunge un margine per la congestione, quindi `simulated gas x 1.3` è un limite sicuro. Usa `fee: "auto"` dove il tuo client lo offre (CosmJS `"auto"`, il `TxClient` dell'SDK, l'hook React `useTx`), e simula tu stesso quando costruisci la commissione a mano come sopra.
+- **Resta sotto il tetto della transazione.** Una transazione Cosmos non può impostare un gas limit superiore a 50.000.000 e viene rifiutata prima che la sua commissione venga addebitata.
+
+Lo stesso vale per instantiate, migrate e ogni altro messaggio che esegue codice di contratto.
 
 Consulta l'[esempio](/sdk/examples) `cosmwasm-query` per un esempio di lettura eseguibile.

@@ -43,6 +43,7 @@ QoreChain 固有のモジュールは `/qorechain/<module>/v1/...` プレフィ�
 | ------ | ---------------------------------------- | --------------------------------------------------------------------------- |
 | GET    | `/qorechain/pqc/v1/account/{address}`    | アカウントのポスト量子鍵の登録状況（`found`、鍵タイプ、アルゴリズム） |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | アカウントの EVM レーン認可ウィンドウと、その残り          |
+| GET    | `/qorechain/pqc/v1/evm_limits`           | 適用中の EVM ガス上限(1 トランザクションあたり 30,000,000)。テストネットの v3.2.8 以降のみ |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | アカウントの EIP-7702 委任の同意、現在の委任、EVM ノンス（v3.2.2 以降） |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4**（テストネットでは 2026年10月19日から、メインネットでは 2026年10月23日から。古いノードでは `501`）。バイナリが認識しているすべてのプロトコル機能と、`enabled`、`known`、`staged` フラグ |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5**（メインネットでは 2026年10月29日から、テストネットでは 2026年10月26日から、両ネットワークで提供。古いノードでは `501`）。ネイティブ鍵レジストリにアドレスに対して登録された ML-KEM 暗号化鍵。未登録の場合は `{"found":false,"key":null}` |

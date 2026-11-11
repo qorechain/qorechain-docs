@@ -95,7 +95,7 @@ EOF
 docker build -t qorechain-node:v3.2.6 release/
 ```
 
-L'archivio contiene `qorechaind` e una directory `lib/` con le sue librerie condivise (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); l'immagine qui sopra è solo `linux/amd64`, come l'archivio di release.
+L'archivio contiene `qorechaind` e una directory `lib/` con le sue librerie condivise (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` e, dalla v3.2.8, `libwasmvmqore.x86_64.so`). Copia l'intera directory `lib/`, non i singoli file; l'immagine qui sopra è solo `linux/amd64`, come l'archivio di release.
 
 ```yaml
 # docker-compose.yml
@@ -328,6 +328,10 @@ pruning = "default"
 | `default`   | Mantiene lo stato recente, elimina il resto      | Nodo RPC, lookup di saldo/stato   |
 | `nothing`   | Mantiene tutto lo stato storico               | Nodo archive, storico completo      |
 | `custom`    | Valori di keep/interval definiti dall'operatore    | Retention personalizzata                   |
+
+### Runtime dei contratti nella v3.2.8 {#v328-node}
+
+Un nodo sulla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) richiede: l'intera directory `lib/` del bundle (contiene `libwasmvmqore` accanto a `libwasmvm`, `libqorepqc` e `libqoresvm`); un `[wasm] memory_cache_size` di almeno 256 MiB (un valore inferiore viene portato a 256 con un avviso, quindi pianifica la memoria); e la directory del codice dei contratti in `<home>/wasm` (una directory del codice esistente altrove continua a funzionare con un avviso). Un nuovo `app.toml` imposta inoltre `simulation_gas_limit = 50000000` ed espone i namespace JSON-RPC `eth,net,web3`.
 
 ### Limiti del nodo (`app.toml`) {#node-limits}
 

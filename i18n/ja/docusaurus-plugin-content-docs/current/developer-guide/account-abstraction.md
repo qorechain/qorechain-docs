@@ -118,6 +118,8 @@ qorechaind tx abstractaccount update-rules <account-address> \
 qorechaind query abstractaccount account <account-address>
 ```
 
+v3.2.8 以降(後のメインネットアップグレードまではテストネットのみ)では、価値に関わる権限を持つ鍵は、ルールで制限されていない限り、登録時と実行時の両方で拒否されます。そのため、そのような鍵には「上限なし」は当てはまらなくなります。
+
 :::caution ルールが鍵を制限するのは、ルールが存在する場合のみです
 チェーンは次の順序で上限を解決します。オーセンティケーター自身のルールが設定されていて`enabled`であればそれ、そうでなければアカウント上の最初の`enabled`なルール、それもなければ**上限はありません**。`enabled: false`で保存されたルールは上限なしを意味し、ゼロの上限ではありません。`MsgRegisterAuthenticator`はルールを持たないため、このメッセージだけで連携された鍵は、アカウントレベルのルールによってのみ制限されます。`update-rules`で意図的にルールを設定し、鍵に必要な権限だけを登録してください。上限は連携された鍵が与えうる被害を抑えるものであり、鍵の失効の代わりにはなりません。
 :::
@@ -145,7 +147,24 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
+**リリース v3.2.8 以降(後のメインネットアップグレードまではテストネットのみ)では、登録にさらに 2 つの要件があります。**
+
+1. **所有の証明。** `MsgRegisterAuthenticator` には必須フィールド `possession_proof`(フィールド 8)があります。これは連携される鍵自身による署名で、その鍵が連携に同意していることを示します。鍵は自身のスキームで次のプレーンテキストに署名するため、ブラウザウォレットは署名内容をユーザーに表示します(Phantom の `signMessage`、MetaMask の `personal_sign`)。33 バイトの secp256k1 鍵は、テキストの SHA-256 に署名します。
+
+   ```text
+   QoreChain authenticator link v1
+   chain: <chain-id>
+   account: <bech32 account>
+   scheme: <scheme>
+   key: <lowercase hex of the public key, or of the 20-byte address>
+   ```
+
+   このテキストにはチェーン、アカウント、スキーム、鍵が含まれるため、証明を別のチェーン、アカウント、鍵に使い回すことはできません。有効な証明のない登録は拒否されます。
+2. **価値を扱う鍵の支出ルール。** 価値を動かせる権限(`send`、`evm`、`svm`、`deploy`、`all`)を持つ鍵には、その鍵が支出できるすべてのデノミネーションを制限する支出ルールが必要です。連携の前、または連携と同時に `MsgUpdateSpendingRules` で設定します。アップグレード前に連携された鍵にも実行時に同じルールが適用されるため、それらの鍵にもルールを追加してください。
+
 Phantomの鍵も同じ方法で、スキーム`ed25519`とPhantomの公開鍵を使って登録します（CLIでは`register-authenticator`）。失効は`MsgRevokeAuthenticator`により即座に行われます。
+
+**実行は、成功したトランザクションの中で失敗することがあります。** v3.2.8 以降(後のメインネットアップグレードまではテストネットのみ)では、失敗した `MsgExecuteEVM` または `MsgExecuteCosmos` は、トランザクションコード 0 のままレスポンスに `success=false` を返し、理由を添えたイベント `abstractaccount_execution_failed` を発行し、それでもオーセンティケーターのナンスを消費します。トランザクションコードだけを確認するクライアントは、そのような呼び出しを成功と報告してしまいます。レスポンスまたはイベントを読んでください。
 
 ### 権限タクソノミー {#permission-taxonomy}
 

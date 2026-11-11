@@ -16,7 +16,7 @@ Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem
 ---
 
 :::caution Übermittlung von SVM-Transaktionen derzeit deaktiviert
-Seit Chain-Version v3.1.89 (22. August) ist die SVM-Ausführungsspur infolge eines Vorfalls **netzwerkweit für die Übermittlung von Transaktionen deaktiviert**, sowohl auf `qorechain-vladi` als auch auf `qorechain-diana` — jede an `x/svm` gesendete Transaktion (Programm-Deployment, Instruktionsausführung, Kontoerstellung, Überweisungen) liefert `code 11, "SVM module is disabled"` zurück. Dies gilt sowohl für Ihren eigenen Node als auch für die öffentlichen Endpunkte. Lesende RPC-Methoden können weiterhin antworten, aber bauen oder proben Sie keine produktive SVM-Integration, bevor die Spur wieder geöffnet ist — dies ist eine Deaktivierung zur Kompilierzeit, kein Laufzeitparameter, sodass sie nicht durch eine Governance-Abstimmung wieder aktiviert werden kann; sie wird voraussichtlich deaktiviert bleiben, bis ein externes Audit sie freigibt.
+Seit Chain-Version v3.1.89 (22. August) ist die SVM-Ausführungsspur infolge eines Vorfalls **netzwerkweit für die Übermittlung von Transaktionen deaktiviert**, sowohl auf `qorechain-vladi` als auch auf `qorechain-diana` — jede an `x/svm` gesendete Transaktion (Programm-Deployment, Instruktionsausführung, Kontoerstellung, Überweisungen) liefert `code 11, "SVM module is disabled"` zurück. Dies gilt sowohl für Ihren eigenen Node als auch für die öffentlichen Endpunkte. Lesende RPC-Methoden können weiterhin antworten, aber bauen oder proben Sie keine produktive SVM-Integration, bevor die Spur wieder geöffnet ist. Im Mainnet ist die SVM-Spur im aktuellen Release deaktiviert, und sie dort zu aktivieren erfordert ein künftiges Release; sie wird voraussichtlich deaktiviert bleiben, bis ein externes Audit sie freigibt.
 :::
 
 ## Übersicht
@@ -44,6 +44,8 @@ Seit Chain-Version **v3.1.82** ist die SVM-Schnittstelle eine **erstklassige nat
 * **`getSignaturesForAddress`** liefert den Transaktionsverlauf einer Adresse — nutzbar zur Erkennung von Einzahlungen mit Standard-Solana-Tools.
 * **System-Program-Transfers bewegen natives QOR** — eine Solana-artige Transfer-Instruktion bewegt dieselben Mittel, die ein Cosmos-`MsgSend` oder ein EVM-Transfer bewegen würden.
 * **SVM-Adressform** — die SVM-Adresse eines Kontos sind seine 20 Konto-Bytes, rechts auf 32 Bytes aufgefüllt und Base58-kodiert. Alle drei Adressformen (`qor1...`, `0x...`, Base58) beziehen sich auf dasselbe Konto.
+
+**Release v3.2.8 (Testnet, noch nicht angewendet).** Das Upgrade schließt die SVM-Spur auf `qorechain-diana`: SVM-Schreibvorgänge schlagen fehl, `MsgRegisterSVMPQCKey` wird abgelehnt, und das SVM-JSON-RPC lehnt Schreibmethoden auf den öffentlichen Chain-IDs ab, bis eine Governance-Abstimmung sie wieder öffnet (das Testnet hat einen per Governance gesteuerten Schalter). Im Mainnet ist die Spur im aktuellen Release deaktiviert, und sie zu aktivieren erfordert ein künftiges Release. Clients sollten den Zustand der Spur aus den SVM-Modulparametern (`enabled`) lesen, bevor sie SVM-Aktionen anbieten.
 
 Die öffentlichen Endpunkte (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sind **nur lesend** — die Übermittlung von Transaktionen ist am Edge deaktiviert. Normalerweise würden Sie einen eigenen Node (Port 8899) betreiben, um SVM-Transaktionen zu übermitteln, aber beachten Sie den Hinweis oben: Die `x/svm`-Transaktionsspur selbst ist derzeit netzwerkweit deaktiviert, auch auf Ihrem eigenen Node.
 

@@ -43,6 +43,7 @@ QoreChain 전용 모듈은 REST에서 `/qorechain/<module>/v1/...` 접두사 아
 | ------ | ---------------------------------------- | --------------------------------------------------------------------------- |
 | GET    | `/qorechain/pqc/v1/account/{address}`    | 계정의 포스트 양자 키 등록 정보(`found`, 키 유형, 알고리즘) |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | 계정의 EVM 레인 승인 윈도우와 그 잔여 한도          |
+| GET    | `/qorechain/pqc/v1/evm_limits`           | 적용 중인 EVM 가스 한도(트랜잭션당 30,000,000), v3.2.8부터 테스트넷 전용 |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | 계정의 EIP-7702 위임 동의, 현재 위임 및 EVM 논스(v3.2.2부터) |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4**(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터이며 이전 릴리스 노드에서는 `501`). 바이너리가 알고 있는 모든 프로토콜 기능과 `enabled`, `known`, `staged` 플래그 |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5**(메인넷은 2026년 10월 29일부터, 테스트넷은 10월 26일부터 두 네트워크 모두 제공하며 이전 노드에서는 `501`). 네이티브 키 레지스트리에서 주소에 등록된 ML-KEM 암호화 키: 등록된 것이 없으면 `{"found":false,"key":null}` |

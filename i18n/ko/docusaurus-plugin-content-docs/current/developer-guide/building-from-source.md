@@ -37,7 +37,7 @@ echo $CGO_ENABLED # must be 1
 
 ### libqorepqc 및 libqoresvm
 
-포스트 퀀텀(`libqorepqc`) 및 SVM(`libqoresvm`) 라이브러리는 **공개 리포지토리에 포함되지 않은** Rust 소스로 빌드됩니다(`qorechain-core`에는 `rust/` 디렉터리가 없습니다). 커뮤니티 빌드에는 이들이 필요하지 않습니다. 네트워크용 릴리스 아카이브에는 컴파일된 라이브러리(`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`)가 `qorechaind` 옆의 `lib/` 디렉터리에 함께 들어 있습니다. 이를 `lib/{os}_{arch}/`에 배치하거나, 아래와 같이 로더가 해당 위치를 가리키도록 설정하세요.
+포스트 퀀텀(`libqorepqc`) 및 SVM(`libqoresvm`) 라이브러리는 **공개 리포지토리에 포함되지 않은** Rust 소스로 빌드됩니다(`qorechain-core`에는 `rust/` 디렉터리가 없습니다). 커뮤니티 빌드에는 이들이 필요하지 않습니다. 네트워크용 릴리스 아카이브에는 컴파일된 라이브러리(`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`, 그리고 v3.2.8부터 `libwasmvmqore.x86_64.so`)가 `qorechaind` 옆의 `lib/` 디렉터리에 함께 들어 있습니다. 개별 파일이 아니라 `lib/` 디렉터리 전체를 복사하세요. 이를 `lib/{os}_{arch}/`에 배치하거나, 아래와 같이 로더가 해당 위치를 가리키도록 설정하세요.
 
 ### 라이브러리 경로 설정
 

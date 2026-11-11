@@ -43,6 +43,7 @@ Exemplele de mai jos folosesc gazda publică de mainnet; înlocuiți-o cu `https
 | ------ | ---------------------------------------- | --------------------------------------------------------------------------- |
 | GET    | `/qorechain/pqc/v1/account/{address}`    | Înregistrarea cheii post-cuantice pentru un cont (`found`, tip de cheie, algoritm) |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | Fereastra de autorizare a benzii EVM a contului și ce a rămas din ea        |
+| GET    | `/qorechain/pqc/v1/evm_limits`           | Limitele de gas EVM în vigoare (per tranzacție 30.000.000); doar pe testnet, începând cu v3.2.8 |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | Consimțământul contului pentru delegarea EIP-7702, delegarea curentă și nonce-ul EVM (începând cu v3.2.2) |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (testnet din 19 octombrie 2026; mainnet din 23 octombrie 2026; `501` pe un nod mai vechi). Fiecare funcționalitate de protocol pe care o cunoaște binarul, cu indicatorii `enabled`, `known` și `staged` |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (ambele rețele: pe mainnet din 29 octombrie 2026, pe testnet din 26 octombrie; `501` pe un nod mai vechi). Cheia de criptare ML-KEM înregistrată pentru o adresă în registrul nativ de chei: `{"found":false,"key":null}` când nu este înregistrată niciuna |

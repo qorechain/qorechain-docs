@@ -118,6 +118,8 @@ qorechaind tx abstractaccount update-rules <account-address> \
 qorechaind query abstractaccount account <account-address>
 ```
 
+v3.2.8부터(이후 메인넷 업그레이드 전까지는 테스트넷 전용) 가치 권한을 가진 키는 규칙이 이를 제한하지 않으면 등록 시와 실행 시 모두 거부되므로, 이러한 키에는 더 이상 "한도 없음"이 적용되지 않습니다.
+
 :::caution 규칙은 키가 존재할 때만 해당 키를 제한합니다
 체인은 다음 순서로 한도를 결정합니다. 인증자 자체의 규칙이 설정되어 있고 `enabled`이면 그것을, 아니면 계정의 첫 번째 `enabled` 규칙을, 그것도 없으면 **한도가 없습니다**. `enabled: false`로 저장된 규칙은 한도 0이 아니라 한도 없음입니다. `MsgRegisterAuthenticator`에는 규칙이 포함되어 있지 않으므로, 해당 메시지만으로 연결된 키는 계정 수준 규칙에 의해서만 제한됩니다. `update-rules`로 규칙을 의도적으로 설정하고, 키에 필요한 권한만 등록하십시오. 한도는 연결된 키가 입힐 수 있는 피해를 제한할 뿐, 키를 철회하는 것을 대신하지 않습니다.
 :::
@@ -145,7 +147,24 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
+**릴리스 v3.2.8부터(이후 메인넷 업그레이드 전까지는 테스트넷 전용) 등록에는 두 가지가 더 필요합니다.**
+
+1. **소유 증명.** `MsgRegisterAuthenticator`에는 필수 필드 `possession_proof`(필드 8)가 있습니다. 연결되는 키가 직접 서명하여 연결에 동의함을 증명하는 서명입니다. 키는 자신의 방식으로 다음 일반 텍스트에 서명하므로 브라우저 지갑이 사용자에게 서명 내용을 보여줍니다(Phantom `signMessage`, MetaMask `personal_sign`). 33바이트 secp256k1 키는 텍스트의 SHA-256에 서명합니다.
+
+   ```text
+   QoreChain authenticator link v1
+   chain: <chain-id>
+   account: <bech32 account>
+   scheme: <scheme>
+   key: <lowercase hex of the public key, or of the 20-byte address>
+   ```
+
+   텍스트에 체인, 계정, 방식, 키가 명시되므로 증명을 다른 체인, 계정, 키에 재사용할 수 없습니다. 유효한 증명이 없는 등록은 거부됩니다.
+2. **가치 키를 위한 지출 규칙.** 가치를 이동할 수 있는 권한(`send`, `evm`, `svm`, `deploy`, `all`)을 가진 키에는 해당 키가 지출할 수 있는 모든 단위를 제한하는 지출 규칙이 필요하며, 연결 전이나 연결과 함께 `MsgUpdateSpendingRules`로 설정합니다. 업그레이드 이전에 연결된 키에도 같은 규칙이 실행 시 적용되므로 이들 키에도 규칙을 추가하십시오.
+
 Phantom 키도 동일한 방식으로 `ed25519` 방식과 Phantom 공개 키를 사용해 등록합니다(CLI에서는 `register-authenticator`). 철회는 `MsgRevokeAuthenticator`를 통해 즉시 이루어집니다.
+
+**성공한 트랜잭션 안에서 실행이 실패할 수 있습니다.** v3.2.8부터(이후 메인넷 업그레이드 전까지는 테스트넷 전용) 실패한 `MsgExecuteEVM` 또는 `MsgExecuteCosmos`는 트랜잭션 코드 0과 함께 응답에 `success=false`를 반환하고, 사유를 담은 이벤트 `abstractaccount_execution_failed`를 발생시키며, 인증자 논스는 그대로 소비합니다. 트랜잭션 코드만 확인하는 클라이언트는 이러한 호출을 성공으로 보고하므로 응답이나 이벤트를 읽으십시오.
 
 ### 권한 분류 체계 {#permission-taxonomy}
 

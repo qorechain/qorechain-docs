@@ -16,7 +16,7 @@ Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve 4 Kasım 2026'd
 ---
 
 :::caution SVM işlem gönderimi şu anda devre dışı
-v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM yürütme hattı hem `qorechain-vladi` hem de `qorechain-diana` üzerinde **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — `x/svm`'e gönderilen herhangi bir işlem (program dağıtımı, talimat yürütmesi, hesap oluşturma, transferler) `code 11, "SVM module is disabled"` hatası döndürür. Bu durum hem kendi düğümünüz hem de genel uç noktalar için geçerlidir. Okuma türü RPC metodları yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar canlı bir SVM entegrasyonu kurmayın veya provasını yapmayın — bu bir çalışma zamanı parametresi değil, derleme zamanında yapılan bir devre dışı bırakmadır, bu nedenle bir yönetişim (governance) oylamasıyla tekrar açılamaz; harici bir denetim onaylayana kadar kapalı kalması beklenmektedir.
+v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM yürütme hattı hem `qorechain-vladi` hem de `qorechain-diana` üzerinde **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — `x/svm`'e gönderilen herhangi bir işlem (program dağıtımı, talimat yürütmesi, hesap oluşturma, transferler) `code 11, "SVM module is disabled"` hatası döndürür. Bu durum hem kendi düğümünüz hem de genel uç noktalar için geçerlidir. Okuma türü RPC metodları yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar canlı bir SVM entegrasyonu kurmayın veya provasını yapmayın. Ana ağda SVM hattı mevcut sürümde kapalıdır ve ana ağda açılması gelecekteki bir sürüm gerektirir; harici bir denetim onaylayana kadar kapalı kalması beklenmektedir.
 :::
 
 ## Genel Bakış
@@ -44,6 +44,8 @@ v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM y
 * **`getSignaturesForAddress`** bir adrese dokunan işlem geçmişini döndürür — standart Solana araçlarıyla para yatırma (deposit) tespiti için kullanılabilir.
 * **System Program transferleri yerel QOR taşır** — Solana tarzı bir transfer talimatı, bir Cosmos `MsgSend` veya bir EVM transferinin taşıyacağı aynı fonları taşır.
 * **SVM adres biçimi** — bir hesabın SVM adresi, hesabın 20 baytının sağdan 32 bayta doldurulup base58 ile kodlanmış halidir. Üç adres biçiminin tümü (`qor1...`, `0x...`, base58) aynı hesaba işaret eder.
+
+**v3.2.8 sürümü (test ağı, henüz uygulanmadı).** Yükseltme, `qorechain-diana` üzerinde SVM hattını kapatır: SVM yazmaları başarısız olur, `MsgRegisterSVMPQCKey` reddedilir ve SVM JSON-RPC, genel zincir kimliklerinde yazma metotlarını reddeder; bir yönetişim oylaması hattı yeniden açana kadar böyle kalır (test ağında yönetişimle yönetilen bir anahtar vardır). Ana ağda hat mevcut sürümde kapalıdır ve açılması gelecekteki bir sürüm gerektirir. İstemciler, SVM eylemleri sunmadan önce hattın durumunu SVM modül parametrelerinden (`enabled`) okumalıdır.
 
 Genel uç noktalar (`https://svm.qore.host`, `https://svm-testnet.qore.host`) **salt okunurdur** — işlem gönderimi uç noktada (edge) devre dışıdır. Normal koşullarda SVM işlemleri göndermek için kendi düğümünüzü (port 8899) çalıştırırdınız, ancak yukarıdaki uyarıyı unutmayın: `x/svm` işlem hattının kendisi, kendi düğümünüz dahil, şu anda ağ genelinde devre dışıdır.
 

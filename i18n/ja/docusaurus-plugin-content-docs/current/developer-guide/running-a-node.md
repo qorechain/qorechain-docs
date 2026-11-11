@@ -95,7 +95,7 @@ EOF
 docker build -t qorechain-node:v3.2.6 release/
 ```
 
-アーカイブには`qorechaind`と、その共有ライブラリ(`libqorepqc.so`、`libqoresvm.so`、`libwasmvm.x86_64.so`)を収めた`lib/`ディレクトリが含まれます。上記のイメージはリリースアーカイブと同様に`linux/amd64`専用です。
+アーカイブには`qorechaind`と、その共有ライブラリ(`libqorepqc.so`、`libqoresvm.so`、`libwasmvm.x86_64.so`、v3.2.8以降は`libwasmvmqore.x86_64.so`)を収めた`lib/`ディレクトリが含まれます。個別のファイルではなく`lib/`ディレクトリ全体をコピーしてください。上記のイメージはリリースアーカイブと同様に`linux/amd64`専用です。
 
 ```yaml
 # docker-compose.yml
@@ -328,6 +328,10 @@ pruning = "default"
 | `default`   | 最近の状態を保持し、それ以外はプルーニングする      | RPCノード、残高/状態の照会   |
 | `nothing`   | すべての履歴状態を保持する               | アーカイブノード、完全な履歴                    |
 | `custom`    | オペレーターが定義する保持/間隔の値    | 保持期間のチューニング                    |
+
+### v3.2.8 のコントラクトランタイム {#v328-node}
+
+リリース v3.2.8 のノード(後のメインネットアップグレードまではテストネットのみ)には、次が必要です。バンドルの `lib/` ディレクトリ全体(`libwasmvm`、`libqorepqc`、`libqoresvm` と並んで `libwasmvmqore` を含みます)。256 MiB 以上の `[wasm] memory_cache_size`(これより小さい値は警告とともに 256 に引き上げられるため、メモリを見込んでください)。コントラクトコードのディレクトリは `<home>/wasm`(別の場所にある既存のコードディレクトリは、警告付きで引き続き動作します)。新しい `app.toml` では `simulation_gas_limit = 50000000` も設定され、JSON-RPC の名前空間 `eth,net,web3` が提供されます。
 
 ### ノードの制限(`app.toml`) {#node-limits}
 

@@ -142,6 +142,13 @@ Contractele QoreChain Native urmează un ciclu de viață în cinci pași: **Bui
 
 ---
 
+## Limite de gas și de încărcare (v3.2.8) {#gas-and-limits}
+
+Începând cu release-ul v3.2.8 (doar pe testnet până la un upgrade ulterior de mainnet):
+
+- **Gazul de execuție este reprețuit.** Primul apel al unui cod de contract într-un bloc plătește un cost de încărcare (un transfer cw20 costă aproximativ 533.000 de gas prima dată într-un bloc și aproximativ 84.000 pentru repetări), inițializarea apelului și creșterea memoriei sunt taxate, iar un factor de congestie scalează prețul de la 1x până la 20x implicit. Simulați întotdeauna și adăugați cel puțin 30%; nu codificați niciodată gazul fix pentru un apel de contract. Vedeți [Gaz pentru apelurile de contract](/sdk/guides/cosmwasm#gas).
+- **Încărcările sunt limitate și rămân controlate de guvernanță.** Accesul este verificat primul, iar mempool-ul admite o încărcare doar de la un expeditor permis. Încărcarea plătește în avans gazul pentru dimensiunea declarată (aproximativ 9,9 milioane de gas pentru cw20, aproximativ 22,8 milioane pentru cw721). Un modul poate avea cel mult 4.096 de funcții și se poate compila la cel mult 32 MiB, iar instrucțiunile în virgulă mobilă sunt refuzate, atât la încărcare, cât și la apel pentru codul deja stocat.
+
 ## Interogări utile
 
 ```bash

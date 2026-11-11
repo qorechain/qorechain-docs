@@ -43,6 +43,7 @@ Los ejemplos siguientes usan el host público de la mainnet; sustitúyalo por `h
 | ------ | ---------------------------------------- | -------------------------------------------------------------------------------------------- |
 | GET    | `/qorechain/pqc/v1/account/{address}`    | Registro de la clave poscuántica de una cuenta (`found`, tipo de clave, algoritmo)           |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | La ventana de autorización de la lane EVM de la cuenta y lo que queda de ella                |
+| GET    | `/qorechain/pqc/v1/evm_limits`           | Los límites de gas EVM en vigor (por transacción 30,000,000); solo testnet desde v3.2.8 |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | El consentimiento de delegación EIP-7702 de la cuenta, la delegación actual y el nonce EVM (desde v3.2.2) |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (ambas redes: mainnet desde el 29 de octubre de 2026, testnet desde el 26 de octubre; `501` en un nodo anterior). La clave de cifrado ML-KEM registrada para una dirección en el registro nativo de claves: `{"found":false,"key":null}` cuando no hay ninguna registrada |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (testnet desde el 19 de octubre de 2026; mainnet desde el 23 de octubre de 2026; `501` en un nodo anterior). Todas las funcionalidades del protocolo que conoce el binario, con los indicadores `enabled`, `known` y `staged` |

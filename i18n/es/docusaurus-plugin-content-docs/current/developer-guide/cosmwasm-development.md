@@ -142,6 +142,13 @@ Los contratos QoreChain Native siguen un ciclo de vida de cinco pasos: **Build**
 
 ---
 
+## Gas y límites de subida (v3.2.8) {#gas-and-limits}
+
+Desde la versión v3.2.8 (solo testnet hasta una actualización posterior de mainnet):
+
+- **El gas de ejecución se reajusta.** La primera llamada de un código de contrato en un bloque paga un coste de carga (una transferencia cw20 cuesta unos 533,000 de gas la primera vez en un bloque y unos 84,000 las repeticiones), se cobran la preparación de la llamada y el crecimiento de memoria, y un factor de congestión escala el precio de 1x hasta 20x por defecto. Simula siempre y añade al menos un 30%; nunca fijes el gas de una llamada a un contrato. Consulta [Gas para llamadas a contratos](/sdk/guides/cosmwasm#gas).
+- **Las subidas están acotadas y siguen bajo control de la gobernanza.** Primero se comprueba el acceso, y el mempool admite una subida solo de un remitente permitido. La subida paga por adelantado el gas de su tamaño declarado (unos 9.9 millones de gas para cw20, unos 22.8 millones para cw721). Un módulo puede tener como máximo 4,096 funciones y compilar a un máximo de 32 MiB, y las instrucciones de coma flotante se rechazan, tanto en la subida como en la llamada para el código ya almacenado.
+
 ## Consultas útiles
 
 ```bash

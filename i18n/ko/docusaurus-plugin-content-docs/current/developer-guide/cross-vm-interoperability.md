@@ -152,6 +152,21 @@ Submitted --> Pending --> Executed
 
 v3.2.3부터 실패한 큐 호출은 전체가 롤백됩니다. 해당 `Failed` 기록만 남으며, 실패한 QoreChain Native 호출에 첨부된 자금은 더 이상 컨트랙트로 이동하지 않습니다. 모듈이 비활성화되어 있거나 `MsgCrossVMCall`이 서킷 브레이커에 의해 꺼져 있는 동안에는 큐가 **실행되지 않습니다**. 큐에 있는 메시지는 보류 상태로 남아 있다가, 그 전에 스위치가 풀리지 않으면 타임아웃 시점에 만료됩니다.
 
+### CosmWasm으로의 비동기 호출(v3.2.8) {#async-calls}
+
+릴리스 v3.2.8부터(이후 메인넷 업그레이드 전까지는 테스트넷 전용) CosmWasm으로의 비동기 호출은 선불로 지불되고 한도와 함께 큐에 들어갑니다.
+
+| `MsgCrossVMCall` 필드 | 의미 |
+| ---------------------- | ------- |
+| `async_gas_limit` (8)  | 큐 호출을 위해 예약하는 컨트랙트 가스 단위(기본값 500,000) |
+| `async_max_factor` (9) | 허용하는 최대 혼잡 계수(기본값 4배). 현재 적용 중인 계수가 이보다 높으면 호출이 거부됩니다 |
+
+- **에스크로.** 발신자는 가스 단위 x 계수 x 가스 가격을 에스크로 계정에 선불로 지불합니다. 기본값에서는 500,000 x 4 x 0.1 uqor, 약 0.2 QOR입니다. 호출이 사용하지 않은 만큼은 실행될 때 환불됩니다.
+- **큐 슬롯 수수료.** 호출을 큐에 넣을 때 소액의 슬롯 수수료도 지불합니다.
+- **발신자당 보류 호출은 최대 100개.** 하나가 끝나거나 타임아웃될 때까지 추가 호출은 거부됩니다.
+- **실패한 호출도 비용이 청구됩니다.** 실패한 호출도 수행한 작업에 대한 비용을 지불합니다.
+- **무거운 호출:** 큰 코드를 로드하는 컨트랙트에는 `async_gas_limit`와 `async_max_factor`를 높이세요. cw721 크기의 컨트랙트는 블록 내 첫 호출에서 기본값에 맞지 않습니다.
+
 ---
 
 ## 파라미터
@@ -192,7 +207,7 @@ wscat -c ws://localhost:26657/websocket
 # Query a specific message by ID
 qorechaind query crossvm message <message-id>
 
-# List all pending messages
+# List pending messages (from v3.2.8 one page of at most 100; follow the next key for more)
 qorechaind query crossvm pending
 
 # Module parameters

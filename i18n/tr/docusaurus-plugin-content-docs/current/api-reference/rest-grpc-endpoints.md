@@ -43,6 +43,7 @@ Aşağıdaki örnekler genel mainnet ana makinesini kullanır; testnet için bun
 | ----- | ---------------------------------------- | --------------------------------------------------------------------------- |
 | GET   | `/qorechain/pqc/v1/account/{address}`    | Bir hesabın kuantum sonrası anahtar kaydı (`found`, anahtar türü, algoritma) |
 | GET   | `/qorechain/pqc/v1/evm_window/{address}` | Hesabın EVM şeridi yetkilendirme penceresi ve bunun kalan kısmı             |
+| GET   | `/qorechain/pqc/v1/evm_limits`           | Yürürlükteki EVM gas limitleri (işlem başına 30.000.000); yalnızca test ağında v3.2.8'den itibaren |
 | GET   | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | Hesabın EIP-7702 delegasyon onayı, geçerli delegasyonu ve EVM nonce değeri (v3.2.2'den beri) |
 | GET   | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (test ağında 19 Ekim 2026'dan beri; ana ağda 23 Ekim 2026'dan beri; eski bir düğümde `501`). İkili dosyanın bildiği her protokol özelliği; `enabled`, `known` ve `staged` bayraklarıyla |
 | GET   | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5** (her iki ağda: ana ağda 29 Ekim 2026'dan beri, test ağında 26 Ekim'den beri; eski bir düğümde `501`). Bir adres için yerel anahtar kayıt defterinde kayıtlı ML-KEM şifreleme anahtarı: hiçbiri kayıtlı değilse `{"found":false,"key":null}` |

@@ -147,6 +147,10 @@ QoreChain folosește un model de **taxă de bază dinamică EIP-1559** pentru tr
 * Utilizatorii pot seta `maxFeePerGas` și `maxPriorityFeePerGas`
 * Taxele de prioritate merg către propunătorul blocului
 
+### Limite de gas {#gas-limits}
+
+Începând cu release-ul v3.2.8 (doar pe testnet până la un upgrade ulterior de mainnet), o singură tranzacție EVM poate seta o limită de gas de cel mult **30.000.000**, iar rulările EVM pornite de un singur mesaj Cosmos (un apel cross-VM, o conversie ERC-20, transferul unui pachet IBC primit) împart același buget. O tranzacție peste limită este refuzată înainte de a rula. Citiți valorile în vigoare din `GET /qorechain/pqc/v1/evm_limits` (gRPC `EVMLimitsQuery/EVMLimits`) și limitați gazul pe care îl trimit uneltele dumneavoastră, în special gazul pe care o dApp îl transmite necontrolat portofelului. O tranzacție Cosmos are propria limită de 50.000.000 de gas. Transferurile simple (21.000 de gas) și apelurile obișnuite de token sunt mult sub ambele.
+
 ### Puntea de denominare
 
 Tokenul nativ QOR are **6 zecimale** (`uqor`), în timp ce EVM-ul așteaptă **18 zecimale**. Modulul `x/precisebank` gestionează conversia fără probleme:
@@ -300,7 +304,7 @@ Limita care se epuizează prima închide fereastra. Toate cele trei limite sunt 
 
 O fereastră deschisă fără domeniu de aplicare se comportă exact ca înainte. O tranzacție în afara domeniului este respinsă cu codul 27 (mesajul spune că fereastra „does not admit this transaction"). `GET /qorechain/pqc/v1/evm_window/{address}` și `qorechaind query pqc evm-window` raportează `native_only` și `allowed_targets`, iar evenimentul `pqc_evm_window_opened` le poartă atunci când sunt setate.
 
-`allowed_targets` limitează **ce** contracte și tokenuri poate atinge o fereastră, nu **cât**. Un token listat admite orice sumă din acel token, inclusiv `approve`, iar un contract listat poate muta tot ce permit codul său și aprobările existente, așa că nu listați contracte generice de tip forwarder sau router. O fereastră limitează doar tranzacțiile de pe banda EVM (semnate clasic); mesajele Cosmos semnate cu semnătura hibridă PQC, precum apelurile cross-VM și authz, sunt în afara ei.
+`allowed_targets` limitează **ce** contracte și tokenuri poate atinge o fereastră, nu **cât**. Un token listat admite orice sumă din acel token, inclusiv `approve`, iar un contract listat poate muta tot ce permit codul său și aprobările existente, așa că nu listați contracte generice de tip forwarder sau router. O fereastră limitează doar tranzacțiile de pe banda EVM (semnate clasic); mesajele Cosmos semnate cu semnătura hibridă PQC sunt în afara ei. Înainte de v3.2.8 aceasta includea apelurile cross-VM și authz; începând cu v3.2.8 (doar pe testnet până la un upgrade ulterior de mainnet), un apel cross-VM către EVM și o conversie ERC-20 trimise sub un grant authz folosesc fereastra **acordantului**, iar precompile-ul de punte `0x0901` are nevoie de o fereastră care îl listează.
 
 **Pași** (ghidul complet este în [Prima ta tranzacție](/getting-started/first-transaction#evm-window)):
 
@@ -319,6 +323,33 @@ O fereastră deschisă fără domeniu de aplicare se comportă exact ca înainte
 
 3. Verificați ce a rămas: `qorechaind query pqc evm-window <address>` sau `GET /qorechain/pqc/v1/evm_window/{address}` (răspunde `found: false` când nu există nicio fereastră).
 4. Trimiteți tranzacțiile EVM ca de obicei. Deschiderea unei ferestre este o tranzacție din lane-ul Cosmos și avansează secvența contului, care este totodată nonce-ul său EVM, așa că citiți nonce-ul **după** ce fereastra este deschisă și semnați abia atunci.
+
+### Opțiuni de fereastră adăugate în v3.2.8 {#evm-window-v328}
+
+Începând cu release-ul v3.2.8 (doar pe testnet până la un upgrade ulterior de mainnet), `MsgOpenEVMWindow` poartă trei liste opționale de cel mult 16 intrări fiecare. O fereastră fără ele se comportă ca înainte, cu excepția regulii deny-by-default de mai jos.
+
+| Câmp mesaj | Flag CLI | Ce desemnează |
+| ---------- | -------- | ------------- |
+| `validators` (7) | `--validators` | Contractele a căror verificare a semnăturii contului contează pentru acțiunile sale: un modul validator pe care îl apelează un contract de portofel sau entry point-ul ERC-4337 |
+| `staking_validators` (8) | `--staking-validators` | Adresele de operator ale validatorilor (`qorvaloper…`) către care contul poate delega sau redelega prin fereastră |
+| `ibc_receivers` (9) | `--ibc-receivers` | Perechi exacte `<channel>/<receiver>` către care poate merge un transfer IBC de QOR nativ; canalul și receptorul sunt comparate octet cu octet (`channel-0`, receptor bech32 cu litere mici) |
+
+**Precompile-urile standard sunt deny-by-default.** Pentru un cont pe care îl autorizează o fereastră, o metodă a unui precompile standard (staking, distribution, ICS-20, gov, slashing, precompile-urile de token ERC-20) este refuzată dacă nu se află în tabelul de mai jos și fereastra nu listează precompile-ul în `allowed_targets`.
+
+| Precompile | Metodă | Admisă când |
+| ---------- | ------ | ----------- |
+| distribution | `claimRewards`, `withdrawDelegatorRewards` | recompensele sunt plătite chiar contului |
+| distribution | `withdrawValidatorCommission` | validatorul este al contului însuși și plătește chiar contul |
+| distribution | `depositValidatorRewardsPool` | validatorul este în `staking_validators` și fiecare monedă este QOR nativ |
+| staking | `delegate`, `redelegate` | validatorul destinație este în `staking_validators` |
+| ICS-20 | `transfer` | QOR nativ, prin portul `transfer`, fără memo, către o pereche din `ibc_receivers` |
+| precompile-uri de token ERC-20 | `transfer`, `transferFrom`, `approve` | QOR nativ; un alt token doar când fereastra listează adresa acelui token |
+
+Orice altceva este refuzat printr-o fereastră: dezlegarea delegării (undelegate), votul și alte acțiuni de guvernanță, schimbarea adresei de retragere, crearea sau editarea unui validator, finanțarea community pool-ului. Trimiteți-le ca tranzacții Cosmos semnate post-cuantic.
+
+**Semnăturile verificate on-chain au nevoie de contractul verificator în fereastră.** Un permit EIP-2612, un transfer Permit2, un ordin EIP-712 sau o meta-tranzacție este verificat de un contract cu `ecrecover`. Începând cu v3.2.8 (ambele rețele, odată ce o rețea îl aplică), această verificare reușește pentru un cont care deține o cheie post-cuantică utilizabilă doar cât timp fereastra live a contului admite contractul verificator, adică tokenul sau Permit2 însuși, nu routerul care transmite apelul. Listați-l în `allowed_targets` și deschideți fereastra **înainte** ca utilizatorul să semneze. Fără acea fereastră, semnătura este tratată ca invalidă, iar contractul o refuză. Un permit sau o aprobare acordată în interiorul unei ferestre rămâne după închiderea ferestrei, deci revizuiți și revocați aprobările când sesiunea se încheie.
+
+**Schimbările de cheie închid fereastra.** Rotirea, migrarea sau reînregistrarea cheii post-cuantice a contului șterge fereastra sa deschisă și consimțământul său EIP-7702; deschideți din nou fereastra după aceea. Mesajele de fereastră și de consimțământ trebuie să fie mesajul de nivel superior al contului însuși, semnat post-cuantic: nu pot fi trimise prin authz și nu pot fi acordate altui cont.
 
 Închideți o fereastră mai devreme cu `qorechaind tx pqc close-evm-window` (același tipar `--generate-only` și `cosign`), de exemplu dacă bănuiți că cheia clasică este expusă: tot ce mai admitea fereastra este respins începând cu blocul următor.
 
