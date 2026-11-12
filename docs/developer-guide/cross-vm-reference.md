@@ -16,7 +16,7 @@ The **`qorechain-diana`** testnet has run **v3.2.8** since 12 November 2026. The
 :::
 
 :::caution Is the call message available right now?
-On the testnet `MsgCrossVMCall` was paused, and governance proposal 37 lifts the pause. Whether the call is available at a given moment is shown by two things: the module parameters (`enabled`) and the circuit breaker list. Check both before you build anything on it:
+On the testnet `MsgCrossVMCall` was paused by the upgrade. Governance proposal 37 passed and lifted the pause, so the call is open on the testnet (checked on 12 November 2026: the circuit breaker list holds only `/cosmwasm.wasm.v1.MsgStoreCode`). On mainnet it stays switched off. Whether the call is available at a given moment is shown by two things: the module parameters (`enabled`) and the circuit breaker list. Check both before you build anything on it:
 
 ```bash
 # Module parameters: look for "enabled": true
@@ -26,7 +26,7 @@ curl -s https://api-testnet.qore.host/qorechain/crossvm/v1/params
 curl -s https://api-testnet.qore.host/cosmos/circuit/v1/disable_list
 ```
 
-The list route is spelled `disable_list` over REST (the `disabled_list` spelling answers `501`). The command line equivalent on a node is `qorechaind query circuit disabled-list`. When the call is paused, a transaction that carries it is refused, and queued calls stay pending until they time out unless the pause is lifted first. When the list was read for this page (12 November 2026) it still held `/qorechain.crossvm.v1.MsgCrossVMCall`, so the examples below could not be sent and were not.
+The list route is spelled `disable_list` over REST (the `disabled_list` spelling answers `501`). The command line equivalent on a node is `qorechaind query circuit disabled-list`. When the call is paused, a transaction that carries it is refused, and queued calls stay pending until they time out unless the pause is lifted first. Before proposal 37 passed, the list held `/qorechain.crossvm.v1.MsgCrossVMCall`; it no longer does on the testnet. See [Tested on the testnet](#tested) for what was sent.
 :::
 
 ## Why it matters {#why}
@@ -73,24 +73,24 @@ Type URL `/qorechain.crossvm.v1.MsgCrossVMCall`.
 | ----- | ------ | ------- |
 | `sender` | 1 | Your `qor1...` address. It signs the message. |
 | `source_vm` | 2 | Ignored by the chain. The chain works out where the call comes from. Still sent so older nodes accept the message. |
-| `target_vm` | 3 | `evm`, `cosmwasm` or `svm`. A call into your own lane is refused. The SVM lane is disabled for transactions on both networks. |
+| `target_vm` | 3 | `evm`, `cosmwasm` or `svm`. A call into your own lane is refused. The SVM lane is open on the testnet since proposal 37 and off on mainnet; see [SVM Lane](/developer-guide/svm-lane-v328). No call into the SVM was run for this page. |
 | `target_contract` | 4 | An EVM address (`0x` and 40 hex digits, not a precompile address) or a `qor1...` contract address. |
 | `payload` | 5 | The call data: ABI-encoded for the EVM, the JSON execute message as UTF-8 for QoreChain Native. At most `max_message_size` bytes (65,536). |
 | `funds` | 6 | Coins to attach (QoreChain Native targets only). |
 | `async` | 7 | `true` queues the call; `false` (default) runs it now. |
 | `async_gas_limit` | 8 | v3.2.8, async into QoreChain Native only: the contract gas units the queued call runs on. `0` or unset means 500,000. Allowed from 250,000 up to what the queue can run in one block (1,875,000 at the default budget). |
-| `async_max_factor` | 9 | v3.2.8, async into QoreChain Native only: the highest congestion factor you will pay, in millionths (`4000000` is 4x). `0` or unset means four times the factor at submission, capped at the chain maximum. A value below the factor in force is refused at submission. |
+| `async_max_factor` | 9 | v3.2.8, async into QoreChain Native only: the highest congestion factor you will pay, in **millionths**: `1000000` is 1x and `4000000` is 4x. The valid range is 1,000,000 to 100,000,000 (1x to 100x); a plain multiple such as `4` is refused with codespace `crossvm` code 2 before anything runs. `0` or unset means four times the factor at submission (4,000,000 millionths when the factor is 1x), capped at the chain maximum. A value below the factor in force is refused at submission. |
 
-On the command line the two new fields are `--async-gas-limit` (a whole number) and `--async-max-factor` (a decimal such as `2.5`).
+On the command line the two new fields are `--async-gas-limit` (a whole number) and `--async-max-factor` (a decimal such as `2.5`, which the command turns into millionths for you). In a raw message, in the SDK and in the REST or JSON forms, the value is always in millionths: 2.5x is `2500000`. The SDK exports `CROSSVM_ASYNC_FACTOR_ONE` (1,000,000) to convert a multiple into millionths, and `validateCrossVmAsyncGas` to check the two values before you send.
 
 ## Cost, escrow and refunds {#cost}
 
 For an **async call into QoreChain Native** (v3.2.8):
 
-1. **Escrow.** The prepay is units times factor times the gas price, and it is held, not spent. With the defaults that is 500,000 units x 4 x 0.1 uqor = 200,000 uqor, which is **0.2 QOR**. It moves from your balance to the `crossvm_async_escrow` account. You need that much spendable uqor: locked vesting coins, fee grants and fees paid in other tokens cannot fund it, and such a call is refused.
+1. **Escrow.** The prepay is units times factor times the gas price, and it is held, not spent. With the defaults that is 500,000 units x 4 (4,000,000 in millionths) x 0.1 uqor = 200,000 uqor, which is **0.2 QOR**. It moves from your balance to the `crossvm_async_escrow` account. You need that much spendable uqor: locked vesting coins, fee grants and fees paid in other tokens cannot fund it, and such a call is refused.
 2. **Queue-slot fee.** Every async call also pays a slot fee as gas at submission: 500,000 gas into an empty queue, rising with how full the queue is to 2,000,000 gas into a full one. At the 0.1 uqor per gas price that is 0.05 QOR up to 0.2 QOR.
 3. **Settlement.** When the call finishes, the gas it used at the factor then in force is paid out of the escrow as a fee, and the rest returns to you. A call that fails pays what it used. A call that times out, or is never run, gets its whole escrow back, and its slot fee is the processing fee. The `crossvm_escrow_settled` event carries the fee and the refund.
-4. **Waiting for the factor.** The call runs while the congestion factor is at or below your `async_max_factor`. If the factor is higher it waits, and times out if it stays high. With the default (four times the factor at submission) the factor must more than quadruple before the call waits.
+4. **Waiting for the factor.** The call runs while the congestion factor is at or below your `async_max_factor`. If the factor is higher it waits, and times out if it stays high. With the default (four times the factor at submission, 4,000,000 in millionths when the factor is 1x) the factor must more than quadruple before the call waits.
 5. **Limits on size.** The prepay may not exceed 50,000,000 gas. Above that the call is refused at submission: retry later or lower `async_gas_limit`.
 
 For an **async call into the EVM** the prepaid budget is 1,000,000 gas, charged at submission. For a **synchronous** call the cost is the transaction's own gas. Heavy QoreChain Native contracts that load large code need a higher `async_gas_limit` and `async_max_factor` than the defaults on their first call in a block.
@@ -158,9 +158,11 @@ Use `wasm_congestion_factor_micro` to see what a queued call will prepay right n
 
 ## Examples by direction {#examples}
 
-All examples sign with the account's post-quantum key as every Native transaction does; see [Post-Quantum Signing](/developer-guide/post-quantum-signing). None of the examples below was sent for this page, because the call message was paused when it was written (see the box at the top).
+All examples sign with the account's post-quantum key as every Native transaction does; see [Post-Quantum Signing](/developer-guide/post-quantum-signing). Only the native-account to QoreChain Native examples were sent for this page (see [Tested on the testnet](#tested)); the EVM examples were not run and are marked UNTESTED where they appear.
 
 ### Native account to EVM contract {#native-to-evm}
+
+**UNTESTED:** this direction was not run for this page.
 
 The target is an EVM contract; the payload is ABI-encoded call data. The call runs as your own `0x` address, so the EVM side sees you as `msg.sender`. Command line (Linux node CLI), build then add the post-quantum signature:
 
@@ -237,7 +239,7 @@ qorechaind tx crossvm call cosmwasm qor1...contract \
   --gas 600000 --fees 60000uqor --generate-only > call.json
 ```
 
-Queued, with an explicit gas allowance and factor ceiling (v3.2.8). The escrow is 800,000 x 2.5 x 0.1 uqor = 200,000 uqor (0.2 QOR) if the factor is 1:
+Queued, with an explicit gas allowance and factor ceiling (v3.2.8). The escrow is 800,000 x 2.5 x 0.1 uqor = 200,000 uqor (0.2 QOR) if the factor is 1 (the command takes `2.5` and sends 2,500,000 millionths):
 
 ```bash
 qorechaind tx crossvm call cosmwasm qor1...contract \
@@ -260,7 +262,17 @@ const queued = await xvm.call({
   targetVm: "cosmwasm",
   targetContract: "qor1...contract",
   cosmwasm: { transfer: { recipient: "qor1...", amount: "1" } },
-  async: true, // default allowance: 500,000 units, 4x factor
+  async: true, // default allowance: 500,000 units, 4x factor (4,000,000 millionths)
+});
+
+// SDK 0.14.0: explicit allowance. The factor is in millionths: 6x is 6_000_000.
+const tuned = await xvm.call({
+  targetVm: "cosmwasm",
+  targetContract: "qor1...contract",
+  cosmwasm: { transfer: { recipient: "qor1...", amount: "1" } },
+  async: true,
+  asyncGasLimit: 800_000,
+  asyncMaxFactor: 6_000_000,
 });
 ```
 
@@ -272,10 +284,12 @@ client.call(target_vm="cosmwasm", target_contract="qor1...contract",
 ```
 
 :::note SDK support for the two new fields
-The published SDK (0.13.0) has no option for `async_gas_limit` or `async_max_factor`, so its queued calls use the defaults. A later SDK release adds them; use the command line or the raw message until then.
+SDK 0.13.0 has no option for `async_gas_limit` or `async_max_factor`, so its queued calls use the defaults. SDK 0.14.0 adds `asyncGasLimit` and `asyncMaxFactor` to the cross-VM call, exports `CROSSVM_ASYNC_FACTOR_ONE` (1,000,000) and `validateCrossVmAsyncGas`, and its `buildCall` helper defaults `sourceVm` to `evm` for a native account. The chain ignores `source_vm` and recorded the message as `source_vm` native.
 :::
 
 ### EVM contract to QoreChain Native contract through 0x0901 {#evm-to-wasm}
+
+**UNTESTED:** this direction was not run for this page.
 
 A Solidity contract calls the bridge precompile at `0x0000000000000000000000000000000000000901`. The call runs inside the EVM transaction, with the calling account or contract (as its `qor1` address) as the QoreChain Native sender, and a revert anywhere undoes both sides.
 
@@ -319,6 +333,8 @@ qorechaind tx pqc open-evm-window 600 5 10qor \
 The `@qorechain/rdk` helper `encodeCrossVmCalldata({ contract, msg })` builds the same call data in TypeScript (see [Multi-VM](/rollups/multi-vm)). With the published SDK the precompile address is `PRECOMPILE_ADDRESSES.crossVmBridge` from `@qorechain/evm`.
 
 ### QoreChain Native contract to EVM contract {#wasm-to-evm}
+
+**UNTESTED** by the docs author. The chain team reports that both modes ran on the testnet before v3.2.8.
 
 A QoreChain Native contract makes the call by dispatching a `MsgCrossVMCall` as a chain message, with itself as the sender. The message has the same fields as above; the chain treats the contract as a CosmWasm caller whatever `source_vm` says. With `async` false (the default) the call is synchronous: it runs on the transaction's gas, the answer is in `MsgCrossVMCallResponse.data`, and a failure reverts the whole transaction. With `async` true it is queued. See [Who calls whom](#who-calls-whom). The example below queues the call:
 
@@ -366,6 +382,7 @@ A conversion of an ERC-20 token under an authz grant (`MsgConvertERC20`) is admi
 | Unknown or unsupported VM | Code 7 (`unsupported VM type`) |
 | More than 100 queued calls from one sender | `ErrQueueFull`, code 4, until one finishes or times out |
 | Queue holds `max_queue_size` calls | `ErrQueueFull`, code 4 |
+| `async_max_factor` outside 1,000,000 to 100,000,000 (millionths), for example `6` instead of `6000000` | Refused before anything runs, codespace `crossvm` code 2 (`async_max_factor 6 is outside 1000000..100000000 (millionths)`) |
 | `async_max_factor` below the factor in force | Refused at submission |
 | `async_gas_limit` below 250,000 or above the queue's per-block room | Refused at submission |
 | Prepay above 50,000,000 gas | Refused at submission; retry later or lower the limit |
@@ -377,7 +394,7 @@ A conversion of an ERC-20 token under an authz grant (`MsgConvertERC20`) is admi
 | `0x0901` call without a window that lists it | Refused |
 | `0x0901` target not in `bridge_allowed_targets`, or code changed since it was pinned | Reverts: `cross-VM bridge call refused: target ... is not allowlisted` for an unlisted target |
 | `MsgCrossVMCall` on the circuit breaker list | Transaction refused; queued calls stay pending |
-| A call into the SVM | Not possible today: the SVM lane is disabled for transactions on both networks |
+| A call into the SVM | The lane is open on the testnet since proposal 37 and off on mainnet; no call into the SVM was run for this page (UNTESTED) |
 
 An error recorded on a failed queued call carries plain text without a source-file annotation.
 
@@ -389,6 +406,23 @@ An error recorded on a failed queued call carries plain text without a source-fi
 | `crossvm_response` | `message_id`, `status`, and `error` for a failed call | A queued call finished |
 | `crossvm_timeout` | `message_id` | A queued call timed out |
 | `crossvm_escrow_settled` | fee and refund | The escrow of an async call into QoreChain Native was paid out |
+
+## Tested on the testnet {#tested}
+
+Run on `qorechain-diana` on 12 November 2026 (release v3.2.8) after proposal 37 passed, with SDK 0.14.0 (`createCrossVMClient(...).buildCall`, signed hybrid, eth-native account), against the governance-stored cw20 contract instantiated from code 859. The payload was `{"transfer":{"recipient":<self>,"amount":"1"}}`.
+
+| Step | Result |
+| ---- | ------ |
+| Read the circuit breaker list | Only `/cosmwasm.wasm.v1.MsgStoreCode`; the call message is not paused |
+| Synchronous native to QoreChain Native call | Simulated 601,178 gas, sent with simulated x 1.3, code 0, 595,049 gas used |
+| Asynchronous native to QoreChain Native call, `asyncGasLimit` 800000, `asyncMaxFactor` 6000000 | Simulated 751,287 gas; code 0; 751,277 gas used |
+| Debits of the async call (transaction events) | The fee (146,502 uqor, the limit times 0.15) and 680,417 uqor sent to a module account (the escrow and queue-slot payment as observed; not broken down here) |
+| Event of the async call | `crossvm_request` with `source_vm` native, `target_vm` cosmwasm |
+| `GET /qorechain/crossvm/v1/message/{id}` | Status `executed`, `created_height` equal to `executed_height` (the queued call ran in the same block), empty error |
+| `GET /qorechain/crossvm/v1/pending` afterwards | Empty list |
+| `async_max_factor` of `6` | Refused before anything ran: codespace `crossvm` code 2, `async_max_factor 6 is outside 1000000..100000000 (millionths): invalid cross-VM message` |
+
+Not run for this page (UNTESTED): EVM to QoreChain Native through `0x0901`, and QoreChain Native to EVM. The chain team reports that the QoreChain Native to EVM synchronous and asynchronous paths ran on the testnet at heights 9,795,779 and 9,795,783, before v3.2.8.
 
 ## Related pages {#related}
 

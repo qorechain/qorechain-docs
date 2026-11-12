@@ -7,12 +7,12 @@ sidebar_position: 10
 
 # SVM Lane: Programs, Accounts and Custody Limits (v3.2.8)
 
-The SVM lane is the Solana-compatible part of QoreChain: you deploy compiled programs, create data accounts and call programs with Solana-style tooling, and the same native QOR balance is visible in lamports. From release **v3.2.8** the lane is **closed by the upgrade until a governance vote reopens it**, and once it is open its custody is bounded by three governed limits.
+The SVM lane is the Solana-compatible part of QoreChain: you deploy compiled programs, create data accounts and call programs with Solana-style tooling, and the same native QOR balance is visible in lamports. Release **v3.2.8** closed the lane at the upgrade until a governance vote reopened it. On the testnet that vote (proposal 37) has passed and the lane is **open**; its custody is bounded by three governed limits.
 
 This page explains how to read the lane state, how programs, accounts and rent work, how an SVM wallet registers a post-quantum key, what the custody limits mean, and which examples can run today.
 
-:::note Testnet first, and the lane is closed until a vote says otherwise
-v3.2.8 has run on the **`qorechain-diana`** testnet since 12 November 2026. Mainnet (`qorechain-vladi`) is still on v3.2.6, has no v3.2.8 date, and **the lane stays off on mainnet**. On the testnet the upgrade closes the lane: SVM writes fail, `MsgRegisterSVMPQCKey` is refused and the public SVM JSON-RPC refuses write methods. **Governance proposal 37 opens it on `qorechain-diana`** (it sets `enabled: true`, keeps the other parameters as they are and lifts the circuit-breaker pause on `MsgExecuteProgram` and on cross-VM calls). When this page was checked on 12 November 2026 the proposal was still in its voting period and `enabled` was still `false`. Always read the live state first (next section) and do not assume it.
+:::note Testnet first, and the lane is open there since proposal 37
+v3.2.8 has run on the **`qorechain-diana`** testnet since 12 November 2026. Mainnet (`qorechain-vladi`) is still on v3.2.6, has no v3.2.8 date, and **the lane stays off on mainnet**. The upgrade closed the lane on the testnet (SVM writes failed, `MsgRegisterSVMPQCKey` was refused). **Governance proposal 37 passed and opened it on `qorechain-diana`**: it set `enabled: true`, kept the other parameters as they were and lifted the circuit-breaker pause on `MsgExecuteProgram` and on cross-VM calls. When checked on 12 November 2026 after the vote, `GET /qorechain/svm/v1/params` showed `enabled: true` and the circuit breaker list held only `/cosmwasm.wasm.v1.MsgStoreCode`. The public SVM JSON-RPC stays read-only. Always read the live state first (next section) and do not assume it.
 :::
 
 ## Why it matters {#why}
@@ -29,10 +29,10 @@ The lane state is the `enabled` field of the SVM parameters. Read it from the RE
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params
 ```
 
-Response on `qorechain-diana`, 12 November 2026 (HTTP 200):
+Response on `qorechain-diana`, 12 November 2026, after proposal 37 passed (HTTP 200):
 
 ```json
-{"params":{"max_program_size":"10485760","max_account_data_size":"10485760","compute_budget_max":"1400000","lamports_per_byte":"3480","rent_exemption_multi":"2.000000000000000000","enabled":false,"svm_slot_offset":"0","default_sig_scheme":0,"max_cpi":4,"max_custody_uqor":"10000000000","max_custody_hard_uqor":"1000000000000","max_account_excess_uqor":"10000000000"}}
+{"params":{"max_program_size":"10485760","max_account_data_size":"10485760","compute_budget_max":"1400000","lamports_per_byte":"3480","rent_exemption_multi":"2.000000000000000000","enabled":true,"svm_slot_offset":"0","default_sig_scheme":0,"max_cpi":4,"max_custody_uqor":"10000000000","max_custody_hard_uqor":"1000000000000","max_account_excess_uqor":"10000000000"}}
 ```
 
 On a Linux node (there is no packaged macOS binary), the same read is:
@@ -63,10 +63,10 @@ A typed helper for these parameters (and a safe builder for a parameters proposa
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/cluster_info
 ```
 
-Response on 12 November 2026 (HTTP 200):
+Response on 12 November 2026, read after proposal 37 passed, with `execution_enabled` `true` (HTTP 200):
 
 ```json
-{"chain_id":"qorechain-diana","genesis_hash":"6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj","caip2_chain_id":"solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR","derivation":"base58(SHA-256(\"qorechain/svm/genesis-hash/v1\" || 0x00 || chain_id))","execution_enabled":false}
+{"chain_id":"qorechain-diana","genesis_hash":"6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj","caip2_chain_id":"solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR","derivation":"base58(SHA-256(\"qorechain/svm/genesis-hash/v1\" || 0x00 || chain_id))","execution_enabled":true}
 ```
 
 The node CLI has the same query: `qorechaind query svm cluster-info`. The JSON-RPC method `getGenesisHash` on `https://svm-testnet.qore.host` returns the same hash. The hash is derived from the chain id; it is not the genesis hash of a real Solana cluster.
@@ -93,7 +93,7 @@ curl -s -X POST https://svm-testnet.qore.host -H 'Content-Type: application/json
 
 Once the lane is open, the flow is: build an SBF program with the current Solana toolchain, deploy it, create the accounts it needs, then call it. Every `tx svm` command is a Cosmos-lane transaction, so it needs an explicit gas limit, a fee of at least gas times 0.1 uqor, and the hybrid post-quantum cosignature (see [Post-Quantum Signing](/developer-guide/post-quantum-signing)).
 
-These are the Linux node CLI commands from the node reference. **UNTESTED: the lane is closed on the testnet today, so none of the write commands below could be run.**
+These are the Linux node CLI commands from the node reference. **UNTESTED: the lane opened on the testnet only after proposal 37, and no program deploy, execute or account creation was run for this page.**
 
 ```bash
 # 1. Build (platform-tools v1.53, --arch v0 or --arch v3)
@@ -154,7 +154,7 @@ const sim = await client.simulateTransaction(tx);          // dry run first
 const signature = await client.sendTransaction(tx, [payer]);
 ```
 
-**UNTESTED:** this example needs a node you run and an open lane. Against the public endpoint the send is refused. The read-only calls (`client.getBalance`, `client.getAccountInfo`, `client.getSignaturesForAddress`) work against `https://svm-testnet.qore.host` because `createSvmClient({ rpcUrl })` accepts any URL.
+**UNTESTED:** this example needs a node you run (the lane is open on the testnet). Against the public endpoint the send is refused. The read-only calls (`client.getBalance`, `client.getAccountInfo`, `client.getSignaturesForAddress`) work against `https://svm-testnet.qore.host` because `createSvmClient({ rpcUrl })` accepts any URL.
 
 Python, Go, Rust and Java: the SVM adapters for those languages build the same messages; a later SDK release adds the v3.2.8 helpers. Until then use the node CLI above or the raw message. Any Solana client library can also talk to your own node's port 8899 because the method set is Solana-compatible.
 
@@ -176,9 +176,9 @@ Addresses: an account's SVM address is its 20 account bytes padded to 32 bytes a
 
 ## Post-quantum key for SVM wallets {#pqc-key}
 
-An SVM wallet that wants a post-quantum key on chain registers it with **`MsgRegisterSVMPQCKey`**. It carries the sender, the 32-byte SVM address and the ML-DSA-87 public key. It is a Cosmos-lane message, so the sender signs it hybrid like any other native transaction, and **while the lane is closed the chain refuses it**.
+An SVM wallet that wants a post-quantum key on chain registers it with **`MsgRegisterSVMPQCKey`**. It carries the sender, the 32-byte SVM address and the ML-DSA-87 public key. It is a Cosmos-lane message, so the sender signs it hybrid like any other native transaction. It is refused while the lane is closed, and **the SVM account must already exist before its key is registered** (see the refusal under [Tested on the testnet](#tested)).
 
-There is no `tx svm` command for it; use the SDK composer. In TypeScript the composer is `msg.svm.registerSvmPqcKey` in `@qorechain/sdk`. **UNTESTED: refused while the lane is closed, so it was not sent.**
+There is no `tx svm` command for it; use the SDK composer. In TypeScript the composer is `msg.svm.registerSvmPqcKey` in `@qorechain/sdk`. **UNTESTED for an existing account: the only send was for an address with no account, and it was refused.**
 
 ```ts
 import {
@@ -236,18 +236,39 @@ What this means for an application: keep the value you park in SVM accounts mode
 
 Each frame has a 32 KiB stack and a 256 KiB heap. The values above can change by governance, so read them live. In `@qorechain/svm` 0.13.0, `withComputeBudget(tx, { units })` requests a compute-unit limit; keep it at or below `compute_budget_max`.
 
+## Current limits of the testnet SVM endpoint {#endpoint-limits}
+
+The lane is open, but the public SVM JSON-RPC does not yet behave like a full Solana node. Plan around these limits:
+
+- **`getLatestBlockhash` returns the blockhash as 64 hexadecimal characters,** not as base58 the way Solana nodes do (read on 12 November 2026: `blockhash` `e8d4...d449`, `lastValidBlockHeight` 9944659). A client that expects base58 has to convert it. The chain team has scheduled a change.
+- **Solana wire-format `sendTransaction` from standard Solana tooling is not supported yet** on the public endpoint. Programs are deployed and called with the Cosmos messages `MsgDeployProgram` and `MsgExecuteProgram`, signed with the hybrid signature like any Cosmos-lane transaction (see the TypeScript helpers above). Full parity with Solana tooling is planned for a later release.
+- **A foreign key can authorise an SVM action through a relayer.** The authorisation signs a chain-bound digest (domain `qorechain-svm-auth-v3`) once the network enables the protocol feature `svm-relayed-chain-bound`; `@qorechain/wallet-adapter` 0.6.0 builds it with `authSignBytesV3`, and `resolveSvmAuthVersion` reads which form the network wants.
+
 ## Errors and refusals {#errors}
 
 | What you see | Meaning | What to do |
 | ------------ | ------- | ---------- |
-| `SVM module is disabled` (code 11) | The lane is closed | Read `enabled` and wait for the vote; do not retry |
-| `MsgRegisterSVMPQCKey` refused | Lane closed | Register after the lane opens |
+| `SVM module is disabled` (code 11) | The lane is closed (mainnet, or the testnet before proposal 37) | Read `enabled`; do not retry |
+| `MsgRegisterSVMPQCKey` refused with `SVM account ... not found` (codespace `svm`, code 3) | The SVM account does not exist yet | Create the account first, then register its key |
+| `MsgRegisterSVMPQCKey` refused while the lane is closed | Lane closed | Register after the lane opens |
 | Write method refused on `svm.qore.host` or `svm-testnet.qore.host` | Public endpoints are read-only | Use your own node |
 | `svm custody cap exceeded` (code 23) | The pool is at its cap | Retry later or with a smaller amount |
 | `airdrop rate limit exceeded` (code 19) | `requestAirdrop` called too often (testnet only) | Wait |
 | `blockhash expired` (code 20) | The recent blockhash is too old | Fetch a fresh one and sign again |
 | `svm simulation slots busy, retry later` (code 24) | Simulations are bounded; it never occurs in a block | Retry the simulation |
 | HTTP 501 on `/qorechain/svm/v1/account/...` | Route not implemented on the public endpoint | Use `getAccountInfo` |
+
+## Tested on the testnet {#tested}
+
+Run on `qorechain-diana` on 12 November 2026 (release v3.2.8) after proposal 37 passed.
+
+| Step | Result |
+| ---- | ------ |
+| `GET /cosmos/circuit/v1/disable_list` | Only `/cosmwasm.wasm.v1.MsgStoreCode` |
+| `GET /qorechain/svm/v1/params` | `enabled` true; `max_program_size` 10485760, `max_account_data_size` 10485760, `compute_budget_max` 1400000, `lamports_per_byte` 3480, `rent_exemption_multi` 2, `max_cpi` 4, `max_custody_uqor` 10000000000, `max_custody_hard_uqor` 1000000000000, `max_account_excess_uqor` 10000000000 |
+| `MsgRegisterSVMPQCKey` for an SVM address that does not exist yet | Refused: codespace `svm` code 3, `SVM account ... not found: SVM account not found`. The account must exist before its post-quantum key is registered |
+
+Not run (UNTESTED): program deploy, program execute and SVM account creation.
 
 ## Mainnet {#mainnet}
 
