@@ -283,6 +283,184 @@ GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
 ```
 
+## Linking a key in v3.2.8: worked example {#link-example-v328}
+
+This section walks through one complete link on the **`qorechain-diana` testnet**, which runs v3.2.8 since 12 November 2026. The mainnet does not run v3.2.8 yet, and its abstract-account module is switched off, so none of this applies there today. In short: the key you link has to sign a short text to show it agrees to be linked, a key that can move value needs a spending rule on the account, and when a linked key later spends, a failed spend is reported inside a successful transaction.
+
+Why it matters: from v3.2.8 the holder of the key takes part in the link, so a key can only be linked by someone who actually holds it, and a key that can move value is always bounded by a limit on the account.
+
+:::note What you can run today
+The link text and the three signing schemes below work with plain `node:crypto` and `@noble` as shown. The published packages (SDK 0.13.0 and wallet-adapter 0.5.0) cannot yet put the proof into `MsgRegisterAuthenticator`: their `registerAuthenticator` and `registerEthAuthenticatorMsg` build the message without the proof field, which the v3.2.8 testnet refuses. A later SDK and wallet-adapter release adds helpers that build the link text, ask the wallet to sign it and attach the proof; until then use the command line (step 3) or the raw message. `qorechaind` here means the Linux node CLI; there is no packaged macOS binary.
+:::
+
+### 1. The link text and how each scheme signs it {#link-text}
+
+The text has five lines, joined by a single newline, with no trailing newline:
+
+```text
+QoreChain authenticator link v1
+chain: qorechain-diana
+account: qor1youraccount...
+scheme: secp256k1
+key: b31c9bca95fa18bc6bf5cbf748f73925e0e05913
+```
+
+`chain` is the chain id, `account` is the bech32 account the key is linked to, `scheme` is the scheme you pass to `register-authenticator`, and `key` is the lowercase hex of the public key (32 bytes for ed25519, 33 bytes for a compressed secp256k1 key) or, for a MetaMask account, of the 20-byte Ethereum address. The bytes the chain checks are exactly these characters, so a different chain id, account or key gives a proof that does not verify.
+
+| Linked key | `scheme` | What `key` holds | What is signed | Proof size |
+| --- | --- | --- | --- | --- |
+| Phantom (ed25519) | `ed25519` | 32-byte public key | the UTF-8 bytes of the text (wallet `signMessage`) | 64 bytes |
+| Compressed secp256k1 key | `secp256k1` | 33-byte public key | SHA-256 of the text, compact `r` then `s` | 64 bytes |
+| Ethereum address (MetaMask) | `secp256k1` | 20-byte address | EIP-191 `personal_sign` of the text | 65 bytes (`r`, `s`, `v` = 27 or 28) |
+
+This TypeScript builds the text and signs it with three throwaway keys, using `node:crypto` and `@noble/curves` 2.x and `@noble/hashes` 1.8 (run on Node 20 or later; never use these keys for anything else):
+
+```ts
+import { generateKeyPairSync, sign } from "node:crypto";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
+import { sha256 } from "@noble/hashes/sha2.js";
+import { keccak_256 } from "@noble/hashes/sha3.js";
+import { bytesToHex, utf8ToBytes, concatBytes } from "@noble/hashes/utils.js";
+
+const chainId = "qorechain-diana";
+const account = "qor1youraccount..."; // the account the key is linked to
+
+function linkText(scheme: string, key: Uint8Array): string {
+  return [
+    "QoreChain authenticator link v1",
+    `chain: ${chainId}`,
+    `account: ${account}`,
+    `scheme: ${scheme}`,
+    `key: ${bytesToHex(key)}`, // lowercase hex
+  ].join("\n");
+}
+
+// ed25519 (what Phantom signMessage does): sign the text bytes.
+const ed = generateKeyPairSync("ed25519");
+const edPub = ed.publicKey.export({ format: "der", type: "spki" }).subarray(-32);
+const edProof = sign(null, utf8ToBytes(linkText("ed25519", edPub)), ed.privateKey);
+
+// 33-byte secp256k1 key: sign sha256(text), 64-byte r||s.
+const sk = secp256k1.utils.randomSecretKey();
+const pub33 = secp256k1.getPublicKey(sk, true);
+const cosmosProof = secp256k1.sign(sha256(utf8ToBytes(linkText("secp256k1", pub33))), sk, { prehash: false });
+
+// Ethereum address: EIP-191 personal_sign, key = the 20-byte address.
+const ethSk = secp256k1.utils.randomSecretKey();
+const addr = keccak_256(secp256k1.getPublicKey(ethSk, false).subarray(1)).subarray(-20);
+const text = utf8ToBytes(linkText("secp256k1", addr));
+const digest = keccak_256(concatBytes(utf8ToBytes(`\x19Ethereum Signed Message:\n${text.length}`), text));
+const rec = secp256k1.sign(digest, ethSk, { prehash: false, format: "recovered" }); // recovery byte first
+const ethProof = concatBytes(rec.subarray(1), Uint8Array.of(rec[0] + 27));          // r || s || v
+
+// The CLI takes the proof as base64:
+console.log(Buffer.from(edProof).toString("base64"));
+```
+
+In a browser dApp you do not hold the key: pass the same text to the wallet (Phantom `signMessage` with the UTF-8 bytes, MetaMask `personal_sign` with the text) and base64 what comes back. The wallet shows the user the five lines, which is the point of using plain text.
+
+### 2. The spending rule {#link-spending-rule}
+
+A key whose permissions can move value (`send`, `evm`, `svm`, `deploy`, `all`) is refused at registration unless the account already has an enabled rule that bounds every denomination the key can spend. Set the rule first, or in the same transaction as the link. The chain applies the account's **first enabled rule** to a key that has none of its own. `update-rules` replaces all rules, so include every rule the account should keep. From the command line:
+
+```bash
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"linked","enabled":true,"daily_limit":5000000,"per_tx_limit":1000000,"allowed_denoms":["uqor"]}]' \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > rules.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast (see the caution at the top of this page)
+```
+
+In TypeScript with the published SDK 0.13.0 the composer is `msg.abstractaccount.updateSpendingRules`, which also checks the rule locally and refuses an enabled rule that bounds nothing:
+
+```ts
+import { msg } from "@qorechain/sdk";
+
+const rules = msg.abstractaccount.updateSpendingRules({
+  owner: "qor1owner...",
+  accountAddress: "qor1youraccount...",
+  rules: [
+    { id: "linked", enabled: true, dailyLimit: "5000000", perTxLimit: "1000000", allowedDenoms: ["uqor"] },
+  ],
+});
+// Sign with the owner's hybrid signer and broadcast (see the SDK guide on authenticators).
+```
+
+A key with only non-value permissions (`vote`, `delegate`, `withdraw`, `amm`, `ibc`, `wasm`) does not need a rule to be linked. Keys linked before the upgrade with value permissions are held to the same rule when they execute, so add a rule for them too.
+
+### 3. Link, then revoke {#link-revoke}
+
+Print the text for the key you are linking (it reads nothing from the chain; the chain id comes from `--chain-id`), sign it as in step 1, then register with the proof:
+
+```bash
+# Print the exact text the key must sign. The key argument is base64 (for an Ethereum address: the 20 address bytes).
+qorechaind tx abstractaccount link-message <account-address> ed25519 <pubkey-base64> --chain-id qorechain-diana
+
+# Register the key with its proof (base64 of the signature):
+qorechaind tx abstractaccount register-authenticator <account-address> ed25519 <pubkey-base64> send <expiry-unix> phantom \
+  --possession-proof <proof-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > link.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast
+
+# Check the result:
+curl -s https://api-testnet.qore.host/qorechain/abstractaccount/v1/accounts/<account-address>/authenticators
+
+# Revoke the key (no proof is needed; only the owner can revoke):
+qorechaind tx abstractaccount revoke-authenticator <account-address> ed25519 <pubkey-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > revoke.json
+```
+
+The proof is the `--possession-proof` flag of `register-authenticator`, so the positional arguments are the same as before. Registration and revocation must be the owner's own top-level, signed messages; they cannot be wrapped in an authz grant or sent by the linked key. The authenticators route lists the key with `revoked: true` once the revocation is included.
+
+### 4. Reading the result of an execution {#link-execution-result}
+
+When a linked key spends through `MsgExecuteEVM` or `MsgExecuteCosmos`, a failure after the signature was accepted (for example a limit exceeded or a call that reverts) no longer fails the whole transaction. The transaction is included with code `0`, the response carries `success=false`, the key's nonce is used up, and the transaction emits an event:
+
+| Event | Attribute | Meaning |
+| --- | --- | --- |
+| `abstractaccount_execution_failed` | `account` | the account the key was spending from |
+| | `lane` | the lane that was attempted (the exact values are not listed in the node documentation) |
+| | `nonce` | the nonce that was consumed |
+| | `reason` | why the execution failed |
+
+Read it from REST by transaction hash and look at the events of `tx_response`:
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/tx/v1beta1/txs/<txhash> \
+  | jq '.tx_response | {code, events: [.events[] | select(.type=="abstractaccount_execution_failed")]}'
+```
+
+To find failed executions without a hash, search by event (the route answers `200`; an empty result is `"total":"0"`):
+
+```bash
+curl -s -g "https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=abstractaccount_execution_failed.account%3D%27<account-address>%27&limit=10"
+```
+
+A client that checks only `code === 0` reports such a call as a success. Check for the event (or decode `success` in the message response) before you tell a user that a spend went through. Because the nonce is consumed, read the next value from `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` before signing again.
+
+### 5. Errors {#link-errors}
+
+| Where | What you see | Meaning and what to do |
+| --- | --- | --- |
+| Registration | refused without a valid possession proof | The proof is missing, has the wrong size, or does not verify for this chain, account, scheme and key. Rebuild the text from the exact five lines and sign again. Tested on the testnet on 12 November 2026 (SDK 0.13.0, key linked without a proof, after the rule was set): codespace `abstractaccount`, code 10, `possession_proof is required: a signature by the linked key over the link message` |
+| Registration | refused for a value permission without a rule | Set a rule that bounds every denomination first (step 2). Tested on the testnet on 12 November 2026: codespace `abstractaccount`, code 8, `a linked key with the send, evm, deploy, svm or all permission needs a spending rule on the account that bounds every denom it admits (a per_tx_limit or daily_limit, or an allowed_denoms list whose every denom has a denom_limits amount)` |
+| Registration | refused for an unknown permission string, or a 65-byte secp256k1 key | Use only the eleven permissions in the [taxonomy](#permission-taxonomy) and a 33-byte key or a 20-byte address |
+| Registration or update | codespace `abstractaccount` code `8`, invalid spending rule | An enabled rule that bounds nothing, an unparsable denom or too many entries. Correct the rule JSON and resend |
+| Registration, revoke, execute | code `9`, module disabled | The module is off on this network (it is off on the mainnet today) |
+| Execute | code `10`, permission denied | The key lacks the permission for this message, or the message is a key-management message that a linked key can never send |
+| Execute | code `6`, authenticator expired | Link the key again with a later expiry |
+| Execute | code `11`, replay rejected | Stale nonce: query `auth_nonce` (or the account's EVM nonce on the EVM lane) and sign again |
+| Execute | code `5`, spending limit exceeded | Over the per-transaction or daily limit; wait for the next UTC day or raise the rule |
+| Execute | code `0` with `success=false` and the `abstractaccount_execution_failed` event | Failed after the signature was accepted; the nonce is used. Read `reason` (section 4) |
+| Relayer envelope | codespace `pqc` code `21` | The relayer's own hybrid signature failed; unrelated to the linked key |
+
+### What was checked {#link-example-checks}
+
+On the testnet on 12 November 2026 (release v3.2.8, SDK 0.13.0, hybrid signing): `MsgUpdateSpendingRules` with one rule (daily limit 1,000,000 uqor, per-transaction limit 100,000 uqor, `uqor` only) succeeded with code 0 and 186,319 gas used. A `MsgRegisterAuthenticator` for the `evm` permission sent before the rule existed was refused with code 8, and sent after the rule but without a possession proof it was refused with code 10, with the messages in the errors table. A registration carrying a valid proof was not sent: SDK 0.13.0 has no possession-proof field in its register composers, so the successful link and revoke steps remain untested here.
+
+The signing code in step 1 was run with throwaway keys: the ed25519 and compressed secp256k1 proofs verify against their public keys and the EIP-191 proof recovers the 20-byte address it was made for. The read routes `config`, `params`, `accounts`, `accounts/{address}`, `accounts/{address}/spending_rules`, `accounts/{address}/authenticators`, `permission_schema`, `auth_nonce/{address}/{pubkey_hex}` and a transaction-by-hash lookup all answered on the testnet (the lookup of an unknown hash answers `404`). The `link-message` and `--possession-proof` command shapes are taken from the v3.2.8 node source and have not been run here, and no transaction was signed or sent, so a real link and a real `abstractaccount_execution_failed` event are not shown.
+
+See also: [Post-Quantum Signing](/developer-guide/post-quantum-signing), [REST and gRPC endpoints](/api-reference/rest-grpc-endpoints), [Authenticators in the SDK](/sdk/guides/authenticators), [EVM authorisation window](/developer-guide/evm-window-reference).
+
 ## Querying Abstract Accounts
 
 ### CLI

@@ -75,7 +75,9 @@ const sidebars: SidebarsConfig = {
         "developer-guide/cosmwasm-development",
         "developer-guide/cosmwasm-gas-and-limits",
         "developer-guide/svm-development",
+        "developer-guide/svm-lane-v328",
         "developer-guide/cross-vm-interoperability",
+        "developer-guide/cross-vm-reference",
         "developer-guide/evm-precompiles",
         "developer-guide/account-abstraction",
         "developer-guide/post-quantum-signing",
@@ -129,6 +131,7 @@ const sidebars: SidebarsConfig = {
         "rollups/watchtower",
         "rollups/data-availability",
         "rollups/zk-stark-withdrawals",
+        "rollups/rdk-v328",
       ],
     },
     {
