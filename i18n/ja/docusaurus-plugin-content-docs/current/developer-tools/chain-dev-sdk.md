@@ -335,7 +335,7 @@ EIP-7702 の同意（TypeScript、`@qorechain/sdk` 0.14.0）: `authorizeEvmDeleg
 
 ## 公開場所 {#where-published}
 
-バージョンは2026年11月12日に各レジストリからライブで読み取りました（Maven Central を含む）。GitHub のタグ `v0.12.0` は存在します。5 つの npm パッケージには、同じキットの内容を含む 0.11.0（2026年10月29日）もあります。Python、Rust、Go、Java の SDK は 0.10.0 から直接 0.12.0 になり、Java を除くすべての言語が 0.14.0 です（Java は Maven Central で 0.13.0 です）。
+バージョンは2026年11月12日に各レジストリからライブで読み取りました（Maven Central を含む）。GitHub のタグ `v0.12.0` は存在します。5 つの npm パッケージには、同じキットの内容を含む 0.11.0（2026年10月29日）もあります。Python、Rust、Go、Java の SDK は 0.10.0 から直接 0.12.0 になり、すべての言語が 0.14.0 です。
 
 | レジストリ | パッケージ | バージョン | リンク |
 |---|---|---|---|
@@ -348,7 +348,7 @@ EIP-7702 の同意（TypeScript、`@qorechain/sdk` 0.14.0）: `authorizeEvmDeleg
 | PyPI | `qorechain-sdk` | 0.14.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.14.0 | https://crates.io/crates/qorechain-sdk |
 | Go プロキシ | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 2026年11月12日時点で 0.13.0。0.14.0 はまだありません | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0（2026年11月12日確認） | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 ソース: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk)、タグ `v0.14.0`。パスは `packages/evm`、`cli/`、`templates/`、`docs/docs/guides/`、`contrib/`。Apache-2.0、QoreChain Association が保守しています。
 

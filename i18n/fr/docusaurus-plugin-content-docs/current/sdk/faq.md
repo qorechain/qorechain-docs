@@ -96,7 +96,7 @@ décimales (convention EVM), ce qui est distinct de la base native `uqor` de
 
 ## Quels paquets sont publiés, et où ?
 
-Tous, sauf la version Java de la dernière release (vérifié le 12 novembre 2026). Le cœur TypeScript (`@qorechain/sdk`, 0.14.0),
+Tous (vérifié le 12 novembre 2026). Le cœur TypeScript (`@qorechain/sdk`, 0.14.0),
 le kit React (`@qorechain/react`, 0.14.0), le générateur `create-qorechain-dapp`
 (0.14.0, qui reprend aussi les correctifs de modèles de la 0.13.1) et les adaptateurs EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.14.0)
 sont sur npm ; le client Python est sur PyPI (`pip install qorechain-sdk` en

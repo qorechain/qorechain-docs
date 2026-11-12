@@ -335,7 +335,7 @@ Variables de entorno de las plantillas (en `.env`, nunca confirmado en el reposi
 
 ## Dónde se publica {#where-published}
 
-Versiones leídas en vivo de los registros el 12 de noviembre de 2026. La etiqueta de GitHub `v0.12.0` existe. Los cinco paquetes de npm tienen también una 0.11.0 (29 de octubre de 2026) que llevaba el mismo contenido del kit; los SDK de Python, Rust, Go y Java pasaron directamente de la 0.10.0 a la 0.12.0, y todos los lenguajes excepto Java están en la 0.14.0 (Java está en la 0.13.0 en Maven Central).
+Versiones leídas en vivo de los registros el 12 de noviembre de 2026 (incluido Maven Central). La etiqueta de GitHub `v0.12.0` existe. Los cinco paquetes de npm tienen también una 0.11.0 (29 de octubre de 2026) que llevaba el mismo contenido del kit; los SDK de Python, Rust, Go y Java pasaron directamente de la 0.10.0 a la 0.12.0, y todos los lenguajes están en la 0.14.0.
 
 | Registro | Paquete | Versión | Enlace |
 |---|---|---|---|
@@ -348,7 +348,7 @@ Versiones leídas en vivo de los registros el 12 de noviembre de 2026. La etique
 | PyPI | `qorechain-sdk` | 0.14.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.14.0 | https://crates.io/crates/qorechain-sdk |
 | Proxy de Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 el 12 de noviembre de 2026; la 0.14.0 todavía no está ahí | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0 (comprobado el 12 de noviembre de 2026) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 Código fuente: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), etiqueta `v0.14.0`; rutas `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, mantenido por la Asociación QoreChain.
 

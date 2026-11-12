@@ -93,7 +93,7 @@ de EVM), lo cual es distinto de la base `uqor` Native de 10^6.
 
 ## ¿Qué paquetes están publicados y dónde?
 
-Todos salvo la versión de Java de la última release (comprobado el 12 de noviembre de 2026). El núcleo de TypeScript
+Todos (comprobado el 12 de noviembre de 2026). El núcleo de TypeScript
 (`@qorechain/sdk`, 0.14.0), el kit de React (`@qorechain/react`, 0.14.0), el
 generador de proyectos `create-qorechain-dapp` (0.14.0, que también incluye las correcciones de plantillas de la 0.13.1) y los adaptadores EVM/SVM
 (`@qorechain/evm`, `@qorechain/svm`, 0.14.0) están en npm; el cliente de Python

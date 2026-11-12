@@ -94,7 +94,7 @@ unterscheidet.
 
 ## Welche Pakete sind veröffentlicht, und wo?
 
-Alle außer dem Java-Build des neuesten Releases (geprüft am 12. November 2026). Der TypeScript-Core (`@qorechain/sdk`, 0.14.0),
+Alle (geprüft am 12. November 2026). Der TypeScript-Core (`@qorechain/sdk`, 0.14.0),
 das React-Kit (`@qorechain/react`, 0.14.0), der `create-qorechain-dapp`-Scaffolder
 (0.14.0, der auch die Vorlagen-Korrekturen von 0.13.1 enthält) und die EVM/SVM-Adapter (`@qorechain/evm`, `@qorechain/svm`, 0.14.0) sind auf
 npm; der Python-Client ist auf PyPI (`pip install qorechain-sdk` in Version 0.14.0,

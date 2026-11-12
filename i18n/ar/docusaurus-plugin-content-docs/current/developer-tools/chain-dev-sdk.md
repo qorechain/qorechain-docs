@@ -335,7 +335,7 @@ cd my-dapp && npm run build
 
 ## أين يُنشر {#where-published}
 
-الإصدارات مقروءة مباشرة من السجلات في 12 نوفمبر 2026 (باستثناء Maven Central، راجع صفّه). الوسم `v0.12.0` على GitHub موجود. وللحزم الخمس على npm إصدار 0.11.0 أيضًا (29 أكتوبر 2026) حمل محتوى الحزمة نفسه؛ أما حِزم SDK لـ Python وRust وGo وJava فانتقلت من 0.10.0 مباشرة إلى 0.12.0، وكل اللغات ما عدا Java على 0.14.0 الآن (وJava على 0.13.0 في Maven Central).
+الإصدارات مقروءة مباشرة من السجلات في 12 نوفمبر 2026 (بما فيها Maven Central). الوسم `v0.12.0` على GitHub موجود. وللحزم الخمس على npm إصدار 0.11.0 أيضًا (29 أكتوبر 2026) حمل محتوى الحزمة نفسه؛ أما حِزم SDK لـ Python وRust وGo وJava فانتقلت من 0.10.0 مباشرة إلى 0.12.0، وكل اللغات على 0.14.0 الآن.
 
 | السجل | الحزمة | الإصدار | الرابط |
 |---|---|---|---|
@@ -348,7 +348,7 @@ cd my-dapp && npm run build
 | PyPI | `qorechain-sdk` | 0.14.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.14.0 | https://crates.io/crates/qorechain-sdk |
 | Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 في 12 نوفمبر 2026؛ 0.14.0 ليس هناك بعد | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0 (جرى التحقق في 12 نوفمبر 2026) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 المصدر: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk)، الوسم `v0.14.0`؛ والمسارات `packages/evm` و`cli/` و`templates/` و`docs/docs/guides/` و`contrib/`. ترخيص Apache-2.0، تشرف عليه جمعية QoreChain.
 

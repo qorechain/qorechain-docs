@@ -92,7 +92,7 @@ fromBase("1500000"); // "1.5"
 
 ## ما هي الحزم المنشورة، وأين؟
 
-جميعها ما عدا بناء Java للإصدار الأحدث (جرى التحقق في 12 نوفمبر 2026). نواة TypeScript (`@qorechain/sdk`، 0.14.0)،
+جميعها (جرى التحقق في 12 نوفمبر 2026). نواة TypeScript (`@qorechain/sdk`، 0.14.0)،
 وحزمة React (`@qorechain/react`، 0.14.0)، وأداة البناء `create-qorechain-dapp`
 (0.14.0، الذي يحمل أيضًا إصلاحات القوالب في 0.13.1)، ومحوّلات EVM/SVM (`@qorechain/evm`، `@qorechain/svm`، 0.14.0) متوفرة على
 npm؛ وعميل Python متوفر على PyPI (`pip install qorechain-sdk` بالإصدار 0.14.0،

@@ -91,7 +91,7 @@ EVM 런타임은 QOR를 **18** 자리 소수(EVM 관례)로 표현하며, 이는
 
 ## 어떤 패키지가 배포되어 있으며, 어디에 있나요?
 
-Java의 최신 릴리스 빌드를 제외하고 모두 배포되어 있습니다(2026년 11월 12일 확인). TypeScript 코어(`@qorechain/sdk`, 0.14.0),
+모두 배포되어 있습니다(2026년 11월 12일 확인). TypeScript 코어(`@qorechain/sdk`, 0.14.0),
 React 키트(`@qorechain/react`, 0.14.0), `create-qorechain-dapp` 스캐폴더(0.14.0, 0.13.1의 템플릿 수정도 포함),
 그리고 EVM/SVM 어댑터(`@qorechain/evm`, `@qorechain/svm`, 0.14.0)는 npm에 있습니다.
 Python 클라이언트는 PyPI에 있으며(`pip install qorechain-sdk`로 0.14.0 설치, `qorsdk`로

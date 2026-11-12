@@ -13,8 +13,7 @@ SVM adaptörleri (`@qorechain/evm`, `@qorechain/svm`), React kiti
 zincirle tam eşdeğerlik sağlayacak şekilde (tipli mesajlar, sorgular, işlem
 yaşam döngüsü, hibrit PQC işlemleri ve WebSocket abonelikleri) kendi kayıt
 depolarında **yayımlanmıştır**. Güncel sürüm **0.14.0**'dır ve 12 Kasım 2026'da
-yayımlanmıştır (12 Kasım 2026'da kayıt depolarına karşı kontrol edildi; Java bir istisnadır,
-bkz. tablo):
+yayımlanmıştır (12 Kasım 2026'da kayıt depolarına karşı kontrol edildi):
 
 | Kayıt deposu | Paket | Sürüm |
 | --- | --- | --- |

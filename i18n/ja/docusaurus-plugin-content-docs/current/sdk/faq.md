@@ -89,7 +89,7 @@ fromBase("1500000"); // "1.5"
 
 ## どのパッケージがどこで公開されていますか？
 
-最新リリースの Java 版を除くすべて公開されています（2026年11月12日確認）。TypeScript コア（`@qorechain/sdk`、0.14.0）、
+すべて公開されています（2026年11月12日確認）。TypeScript コア（`@qorechain/sdk`、0.14.0）、
 React キット（`@qorechain/react`、0.14.0）、`create-qorechain-dapp` スキャフォルダ
 （0.14.0。0.13.1 のテンプレート修正も含みます）、および EVM/SVM アダプタ（`@qorechain/evm`、`@qorechain/svm`、0.14.0）は
 npm で公開されています。Python クライアントは PyPI にあります（`pip install qorechain-sdk`、

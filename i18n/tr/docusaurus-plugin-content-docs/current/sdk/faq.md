@@ -93,7 +93,7 @@ EVM çalışma zamanının QOR'u **18** ondalık basamakla temsil ettiğini unut
 
 ## Hangi paketler yayımlandı ve nerede?
 
-En yeni sürümün Java derlemesi dışında hepsi (12 Kasım 2026'da kontrol edildi). TypeScript çekirdeği (`@qorechain/sdk`, 0.14.0),
+Hepsi (12 Kasım 2026'da kontrol edildi). TypeScript çekirdeği (`@qorechain/sdk`, 0.14.0),
 React kiti (`@qorechain/react`, 0.14.0), `create-qorechain-dapp` iskele aracı
 (0.14.0, 0.13.1 şablon düzeltmelerini de taşır) ve EVM/SVM adaptörleri (`@qorechain/evm`, `@qorechain/svm`, 0.14.0) npm'de;
 Python istemcisi PyPI'da (`pip install qorechain-sdk`, sürüm 0.14.0, import

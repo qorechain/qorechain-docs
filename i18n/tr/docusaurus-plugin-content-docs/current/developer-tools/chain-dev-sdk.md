@@ -335,7 +335,7 @@ EIP-7702 onayı (TypeScript, `@qorechain/sdk` 0.14.0): `authorizeEvmDelegationMs
 
 ## Nerede yayımlandı {#where-published}
 
-Sürümler 12 Kasım 2026'da kayıt defterlerinden canlı okundu. GitHub etiketi `v0.12.0` mevcut. Beş npm paketinin ayrıca aynı kit içeriğini taşıyan bir 0.11.0 sürümü de vardır (29 Ekim 2026); Python, Rust, Go ve Java SDK'ları doğrudan 0.10.0'dan 0.12.0'a geçti ve Java dışındaki her dil 0.14.0'dadır (Java, Maven Central'da 0.13.0'dadır).
+Sürümler 12 Kasım 2026'da kayıt defterlerinden canlı okundu (Maven Central dahil). GitHub etiketi `v0.12.0` mevcut. Beş npm paketinin ayrıca aynı kit içeriğini taşıyan bir 0.11.0 sürümü de vardır (29 Ekim 2026); Python, Rust, Go ve Java SDK'ları doğrudan 0.10.0'dan 0.12.0'a geçti ve her dil 0.14.0'dadır.
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|
@@ -348,7 +348,7 @@ Sürümler 12 Kasım 2026'da kayıt defterlerinden canlı okundu. GitHub etiketi
 | PyPI | `qorechain-sdk` | 0.14.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.14.0 | https://crates.io/crates/qorechain-sdk |
 | Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 12 Kasım 2026'da 0.13.0; 0.14.0 henüz orada değil | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0 (12 Kasım 2026'da kontrol edildi) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 Kaynak: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), etiket `v0.14.0`; yollar `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, QoreChain Association tarafından sürdürülür.
 

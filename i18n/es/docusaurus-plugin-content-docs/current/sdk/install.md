@@ -14,8 +14,7 @@ adaptadores EVM y SVM (`@qorechain/evm`, `@qorechain/svm`), el kit de React
 (mensajes tipados, consultas, el ciclo de vida de las transacciones,
 transacciones PQC híbridas y suscripciones WebSocket). La versión
 actual es la **0.14.0**, publicada el 12 de noviembre de 2026
-(comprobada contra los registros el 12 de noviembre de 2026; Java es la excepción, consulta la
-tabla):
+(comprobada contra los registros el 12 de noviembre de 2026):
 
 | Registro | Paquete | Versión |
 | --- | --- | --- |

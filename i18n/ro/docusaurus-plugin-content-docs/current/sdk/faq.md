@@ -94,7 +94,7 @@ ceea ce este diferit de baza `uqor` Native de 10^6.
 
 ## Ce pachete sunt publicate și unde?
 
-Toate, cu excepția build-ului Java al celei mai noi versiuni (verificat la 12 noiembrie 2026). Nucleul TypeScript (`@qorechain/sdk`, 0.14.0),
+Toate (verificat la 12 noiembrie 2026). Nucleul TypeScript (`@qorechain/sdk`, 0.14.0),
 kitul React (`@qorechain/react`, 0.14.0), scaffolder-ul `create-qorechain-dapp`
 (0.14.0, care poartă și corecțiile de șabloane din 0.13.1) și adaptoarele EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.14.0) sunt pe
 npm; clientul Python este pe PyPI (`pip install qorechain-sdk` la 0.14.0, import

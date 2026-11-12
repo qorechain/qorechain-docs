@@ -93,7 +93,7 @@ EVM), che è distinto dalla base Native `uqor` di 10^6.
 
 ## Quali pacchetti sono pubblicati, e dove?
 
-Tutti, tranne la build Java della release più recente (verificato il 12 novembre 2026). Il core TypeScript (`@qorechain/sdk`, 0.14.0),
+Tutti (verificato il 12 novembre 2026). Il core TypeScript (`@qorechain/sdk`, 0.14.0),
 il kit React (`@qorechain/react`, 0.14.0), lo scaffolder `create-qorechain-dapp`
 (0.14.0, che porta anche le correzioni ai template della 0.13.1) e gli adapter EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.14.0) sono su
 npm; il client Python è su PyPI (`pip install qorechain-sdk` alla 0.14.0, import

@@ -335,7 +335,7 @@ EIP-7702 동의(TypeScript, `@qorechain/sdk` 0.14.0): `authorizeEvmDelegationMsg
 
 ## 게시 위치 {#where-published}
 
-2026년 11월 12일에 레지스트리에서 실시간으로 버전을 읽었습니다(Maven Central은 예외이며 해당 행을 참조). GitHub 태그 `v0.12.0`이 존재합니다. npm 패키지 다섯 개에는 같은 키트 내용을 담은 0.11.0(2026년 10월 29일)도 있으며, Python, Rust, Go, Java SDK는 0.10.0에서 곧바로 0.12.0이 되었고, Java를 제외한 모든 언어가 0.14.0입니다(Java는 Maven Central에서 0.13.0).
+2026년 11월 12일에 레지스트리에서 실시간으로 버전을 읽었습니다(Maven Central 포함). GitHub 태그 `v0.12.0`이 존재합니다. npm 패키지 다섯 개에는 같은 키트 내용을 담은 0.11.0(2026년 10월 29일)도 있으며, Python, Rust, Go, Java SDK는 0.10.0에서 곧바로 0.12.0이 되었고, 모든 언어가 0.14.0입니다.
 
 | 레지스트리 | 패키지 | 버전 | 링크 |
 |---|---|---|---|
@@ -348,7 +348,7 @@ EIP-7702 동의(TypeScript, `@qorechain/sdk` 0.14.0): `authorizeEvmDelegationMsg
 | PyPI | `qorechain-sdk` | 0.14.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.14.0 | https://crates.io/crates/qorechain-sdk |
 | Go 프록시 | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 2026년 11월 12일 기준 0.13.0, 0.14.0은 아직 없음 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0(2026년 11월 12일 확인) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 소스: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), 태그 `v0.14.0`; 경로 `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, QoreChain Association이 유지 관리합니다.
 

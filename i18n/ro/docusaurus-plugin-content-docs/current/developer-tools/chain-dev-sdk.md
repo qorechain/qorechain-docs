@@ -335,7 +335,7 @@ Variabilele de mediu ale șabloanelor (în `.env`, niciodată comise): `PRIVATE_
 
 ## Unde este publicat {#where-published}
 
-Versiunile au fost citite live din registre pe 12 noiembrie 2026 (Maven Central este excepția, vezi rândul său). Eticheta GitHub `v0.12.0` există. Cele cinci pachete npm au și un 0.11.0 (29 octombrie 2026) care purta același conținut de kit; SDK-urile Python, Rust, Go și Java au trecut direct de la 0.10.0 la 0.12.0, iar fiecare limbaj în afară de Java este la 0.14.0 (Java este la 0.13.0 pe Maven Central).
+Versiunile au fost citite live din registre pe 12 noiembrie 2026 (inclusiv Maven Central). Eticheta GitHub `v0.12.0` există. Cele cinci pachete npm au și un 0.11.0 (29 octombrie 2026) care purta același conținut de kit; SDK-urile Python, Rust, Go și Java au trecut direct de la 0.10.0 la 0.12.0, iar fiecare limbaj este la 0.14.0.
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|
@@ -348,7 +348,7 @@ Versiunile au fost citite live din registre pe 12 noiembrie 2026 (Maven Central 
 | PyPI | `qorechain-sdk` | 0.14.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.14.0 | https://crates.io/crates/qorechain-sdk |
 | Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 la 12 noiembrie 2026; 0.14.0 încă nu este acolo | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0 (verificat la 12 noiembrie 2026) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 Sursă: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), eticheta `v0.14.0`; căile `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, întreținut de Asociația QoreChain.
 
