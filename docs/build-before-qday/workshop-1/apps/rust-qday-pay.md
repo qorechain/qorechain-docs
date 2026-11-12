@@ -9,10 +9,6 @@ sidebar_position: 4
 
 **qday-pay** is a small Rust command line tool that pays in QOR on the QoreChain testnet (`qorechain-diana`, EVM chain ID 9800) with a **hybrid signature**: a classical secp256k1 signature and a post-quantum ML-DSA-87 (FIPS 204) signature on the same transaction. After sending, it reads the transaction back from the chain and shows whether the chain verified both halves.
 
-:::note Status of this app
-Built and compiled; the on-chain run has not been verified yet. The Python and Java apps of this workshop have their own pages. Treat the output described below as what the code is written to print, not as a recorded run.
-:::
-
 ## What it shows {#what-it-shows}
 
 - **Hybrid ML-DSA-87 + secp256k1 signing** from Rust, with the published crate and no extra tooling.
@@ -21,45 +17,90 @@ Built and compiled; the on-chain run has not been verified yet. The Python and J
 
 Why it matters: a future quantum computer is expected to break secp256k1 signatures. A transaction that also carries an ML-DSA-87 signature stays protected. See [Quantum-Safe Transactions](/sdk/guides/quantum-safe).
 
-## Packages and versions {#packages}
+## Step by step {#run}
 
-| Item | Value |
-| --- | --- |
-| Crate | `qorechain-sdk` 0.13 on crates.io (imported as `qorechain`), SDK release 0.13.0 |
-| Other crates | `tokio` 1, `serde_json` 1, `base64` 0.22, `cosmrs` 0.22 |
-| App crate | `qday-pay` 0.1.0 (not published) |
-| Network | testnet `qorechain-diana`, release v3.2.8 since 12 November 2026 |
+### 1. Install the tools
 
-The `Cargo.toml` dependency is `qorechain-sdk = "0.13"`. See [SDK install](/sdk/install) for the release table of all languages.
+You need Git and a recent stable Rust toolchain with `cargo`.
 
-## Before you start {#before}
+- Git: https://git-scm.com/downloads
+- Rust: install with rustup from https://rustup.rs
 
-- A recent stable Rust toolchain with `cargo`.
-- Testnet QOR. The account must exist on chain to pay the key registration fee.
-
-Get testnet QOR from the [Faucet](/dashboard/faucet) (sign-in required). A claim pays 100 QOR, once every 24 hours per account and per address, plus the builder-fest test tokens in a separate transaction.
-
-## Build and run {#run}
+Check the versions:
 
 ```bash
-cargo run --release -- new                     # new account, mnemonic saved to a 0600 key file
-cargo run --release -- status                  # address, balance, PQC key, latest block
-cargo run --release -- register                # register the ML-DSA-87 key (once, idempotent)
-cargo run --release -- send qor1... 1 --memo "Build Before Q-Day Workshop 1 (Rust)"
-cargo run --release -- verify <TX_HASH>        # the verification report for any transaction
+git --version
+rustc --version
+cargo --version
 ```
 
-1. **`new`** creates a recovery phrase and saves it to a key file with mode 0600. The phrase is never printed. The key file defaults to `~/.config/qday/rust.env`; set `QDAY_KEY_FILE` to change it. It refuses to overwrite an existing file. Keep the file private and never share or commit it.
-2. **Fund the address** it prints from the Faucet.
-3. **`register`** registers your ML-DSA-87 key once. The registration transaction is signed classically, because a key cannot co-sign its own registration. Running it again does nothing.
-4. **`send`** pays the amount in QOR to a `qor1...` address and then runs the verification.
-5. **`verify`** prints the report for any transaction hash.
+### 2. Get the code
+
+```bash
+git clone https://github.com/qorechain/build-before-qday
+cd build-before-qday/workshop-1/04-rust-qday-pay
+```
+
+### 3. Build
+
+```bash
+cargo build --release
+```
+
+The first build downloads and compiles the dependencies and takes a few minutes. It ends with `Finished` `release` profile. Running the tool without arguments prints the list of commands:
+
+```bash
+cargo run --release
+```
+
+### 4. Create a throwaway testnet account
+
+```bash
+cargo run --release -- new
+```
+
+`new` creates a recovery phrase and saves it to a key file with mode 0600. The phrase is never printed. The key file defaults to `~/.config/qday/rust.env`; set `QDAY_KEY_FILE` to use another path. It refuses to overwrite an existing file. This is a testnet-only account: never use a real wallet here, never share or commit the key file, and never reuse it on mainnet. The command prints your `qor1...` address.
+
+### 5. Get testnet QOR from the faucet
+
+1. Open https://dashboard.qorechain.io/faucet and sign in.
+2. Paste your `qor1...` address and claim. A claim pays 100 QOR, once every 24 hours per account and per address.
+
+The account must exist on chain before the next step, because registration pays a fee.
+
+### 6. Check the account
+
+```bash
+cargo run --release -- status                  # address, balance, PQC key, latest block
+```
+
+### 7. Register the ML-DSA-87 key
+
+```bash
+cargo run --release -- register                # register the ML-DSA-87 key (once, idempotent)
+```
+
+The registration transaction is signed classically, because a key cannot co-sign its own registration. Running it again does nothing.
+
+### 8. Send a hybrid-signed payment
+
+```bash
+cargo run --release -- send qor1... 1 --memo "Build Before Q-Day Workshop 1 (Rust)"
+```
+
+Replace `qor1...` with any testnet address (for example a second throwaway account). The amount is in QOR. `send` pays the amount and then runs the verification.
+
+### 9. Verify any transaction
+
+```bash
+cargo run --release -- verify <TX_HASH>        # the verification report for any transaction
+```
 
 The tool is testnet only: it uses the SDK `testnet` preset and refuses to run against any other chain id.
 
 ## The account {#account}
 
-The account is a QoreChain Native secp256k1 account, coin type 118 (`m/44'/118'/0'/0/0`), with a `qor1...` address. The ML-DSA-87 key comes from the same mnemonic with the SDK's canonical address-bound rule. This app signs from a mnemonic, so it does not use the seed-path helpers. If you build on those, SDK 0.13.0 needs a `QRC1` recovery code or an independent 32-byte PQC secret; see [SDK install](/sdk/install#whats-new-0130). In Rust that is `SeedPqcOptions::recovery_code(code)`. Never print a recovery code or store it next to the seed.
+The account is a QoreChain Native secp256k1 account, coin type 118 (`m/44'/118'/0'/0/0`), with a `qor1...` address. The ML-DSA-87 key comes from the same mnemonic with the SDK's canonical address-bound rule. One mnemonic restores both keys.
 
 ```rust
 let classical = derive_native_account(mnemonic, 0)?;
@@ -107,11 +148,11 @@ Gas is never fixed: the draft is simulated and the limit is the simulated gas ti
 - the chain emitted `pqc_hybrid_verify` with `status=verified` for the signer;
 - the body carries a `/qorechain.pqc.v1.PQCHybridSignature` extension with a 4627-byte ML-DSA-87 signature.
 
-## What you see when it works {#output}
+## What you should see {#output}
 
-Once the on-chain run is verified, a successful `send` is expected to print the amount and fee, the block it was included in, and then a report that shows the transaction succeeded, `pqc_hybrid_verify` is `verified`, and the ML-DSA-87 signature is 4627 bytes. If any check fails, the tool exits with status 2. The same transaction opens at `https://explore.qore.network/tx/<HASH>` (switch the explorer to Testnet).
+A successful `send` prints the amount and fee, the block it was included in, and then a report that shows the transaction succeeded, `pqc_hybrid_verify` is `verified`, and the ML-DSA-87 signature is 4627 bytes. If any check fails, the tool exits with status 2. To look the transaction up, open https://explore.qore.network, switch it to **Testnet**, and search for the hash, or open `https://explore.qore.network/tx/<HASH>`.
 
-## Where to access it {#access}
+## Network endpoints {#access}
 
 | What | Where |
 | --- | --- |
@@ -119,8 +160,21 @@ Once the on-chain run is verified, a successful `send` is expected to print the 
 | RPC | `https://rpc-testnet.qore.host` |
 | EVM | `https://evm-testnet.qore.host` |
 | Explorer | `https://explore.qore.network` (switch to Testnet) |
-| Faucet | [Faucet](/dashboard/faucet) |
+| Faucet | https://dashboard.qorechain.io/faucet |
 
-## Get the code {#get-the-code}
+## Packages used {#packages}
 
-The code is in the public repository: https://github.com/qorechain/build-before-qday/tree/main/workshop-1/04-rust-qday-pay (the link works once the repository is published; the code is also shown inline on this page).
+| Item | Version |
+| --- | --- |
+| `qorechain-sdk` (imported as `qorechain`) | 0.13 (resolved to 0.13.0) |
+| `tokio` | 1 |
+| `serde_json` | 1 |
+| `base64` | 0.22 |
+| `cosmrs` | 0.22 |
+| `qday-pay` (this app, not published) | 0.1.0 |
+
+See [SDK install](/sdk/install) for the SDK release table of all languages.
+
+## Source code {#get-the-code}
+
+https://github.com/qorechain/build-before-qday/tree/main/workshop-1/04-rust-qday-pay

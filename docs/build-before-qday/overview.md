@@ -7,7 +7,7 @@ sidebar_position: 1
 
 # Build Before Q-Day
 
-**Build Before Q-Day** is the QoreChain developer fest, run online at [build.qorechain.io](https://build.qorechain.io) with the hashtag #BuildBeforeQDay. Builders pick a level, build on the QoreChain testnet with the open source kits, ship in public and present their project to a jury and the community. Alongside the fest there is one live technical workshop per week. After each workshop, the full step-by-step guide is published in this section, so you can redo everything at your own pace, whether you were there live or not. The example apps of each workshop are collected in the public repository [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday).
+**Build Before Q-Day** is the QoreChain developer fest, run online at [build.qorechain.io](https://build.qorechain.io) with the hashtag #BuildBeforeQDay. Builders pick a level, build on the QoreChain testnet with the open source kits, ship in public and present their project to a jury and the community. Alongside the fest there is one technical workshop per week. Each workshop has a complete step-by-step guide in this section, from the first command to the last, so you can do everything at your own pace on your own computer. The example apps of each workshop are collected in the public repository [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday).
 
 ## Innovations {#innovations}
 
@@ -45,7 +45,7 @@ All times are UTC.
 | When | What |
 | --- | --- |
 | 4 November 2026 | Registration and building open |
-| Every week | One live workshop (4 in total); the guide is published here afterwards |
+| Every week | One workshop (4 in total) with its step-by-step guide here |
 | 18 November 2026 | Mid-hack challenges start |
 | 2 December 2026, 23:59 | Submission deadline |
 | 3 to 5 December | Submission checks |
@@ -54,24 +54,18 @@ All times are UTC.
 | 17 to 22 December | Prize payouts |
 | January 2027 | Follow-on grants |
 
-Workshop dates are announced on the fest site.
+The schedule is on the fest site.
 
 ## Workshops {#workshops}
 
 | Workshop | Topic | Guide |
 | --- | --- | --- |
-| Workshop 1 (12 November 2026) | Your first hybrid-signed transaction | [Workshop 1](/build-before-qday/workshop-1) |
-| Workshop 2 | Dashboard and wallets | Published after the workshop ends |
-| Later workshops | See the upcoming topics in the [template](/build-before-qday/workshop-template#upcoming) | Published after each workshop ends |
+| Workshop 1 | Your first hybrid-signed transaction | [Workshop 1](/build-before-qday/workshop-1) |
 
-Each guide has the same structure: what we built, prerequisites, steps, how to verify, troubleshooting, the example apps and the recording. The structure is described in [Template for next workshops](/build-before-qday/workshop-template).
-
-## Recordings {#recordings}
-
-Workshop recordings are linked here when published. Until a recording is linked on a guide, the written steps are the reference.
+Each guide starts from nothing installed. It lists what to install, then walks through the commands one by one: get the code, install, create a testnet-only key, get test QOR from the faucet, run, and check the result on the explorer. It ends with the packages used and the example apps. All example apps are in the public repository [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday).
 
 ## Where to start {#where-to-start}
 
-- Read [Workshop 1](/build-before-qday/workshop-1) and redo it on the testnet.
-- Browse the [example apps](/build-before-qday/workshop-1/kits) and kits used in the workshop.
+- Follow [Workshop 1](/build-before-qday/workshop-1) on the testnet.
+- Browse the [example apps](/build-before-qday/workshop-1/kits) and kits behind them.
 - If you have never deployed on QoreChain, read [Deploy in 5 Minutes](/getting-started/deploy-in-5-minutes) first.

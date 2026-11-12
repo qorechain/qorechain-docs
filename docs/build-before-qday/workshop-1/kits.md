@@ -7,7 +7,7 @@ sidebar_position: 10
 
 # The QoreChain Kits
 
-The first Build Before Q-Day workshop showed fourteen kits that cover the QoreChain developer stack. This page lists each one in a line, with its version and where it is published, and ends with six ideas you could build from them. Two of the kits, the Asset kit and the PQ light client, are a proposal or a specification and are not shipped.
+The QoreChain developer stack is fourteen kits. This page lists each one in a line, with its version and where it is published, and ends with six ideas you could build from them. Twelve kits are available. Two are not shipped: the Asset kit is a proposal and the PQ light client is a specification.
 
 ## Innovations {#innovations}
 
@@ -63,8 +63,8 @@ npx -y @qorechain/mcp
 | [QORel](/qorel/overview) | An IBC relayer, a fork of Hermes, with a pluggable signer layer so chains that need a post-quantum signature on every transaction can be relayed. Standard chains keep the exact Hermes format. | 0.1.0: GitHub, container image, Homebrew |
 | [Custody kit](/developer-tools/custody-kit) | For custodians: what each lane requires, address validation, deposit detection, signing and verifying withdrawals, staking, and managing the ML-DSA-87 key, with test vectors and reference code. | 0.1.0: TypeScript, Python, Go, Rust, Java |
 | [QoreScan](/developer-tools/qorescan) | Inventories the cryptography of a deployment (node configuration, keys by type, TLS endpoints, Solidity sources, chain state) and exports a CycloneDX 1.6 CBOM, with outputs mapped to FINMA Guidance 05/2026, the EU PQC roadmap and DORA. An inventory aid, not a certification. | `@qorechain/qorescan` 0.1.0 |
-| [Asset kit](/developer-tools/asset-kit) | **Proposal and partly specification, not shipped as a whole.** Tooling for regulated tokenized assets: ERC-3643 and CMTAT adapters with a post-quantum holder check, ERC-4626 and ERC-7540 vaults, an issuer console and clients. The EVM contracts work today; the native asset modules are a proposal and are not scheduled. | 0.1.0 |
-| [PQ light client](/developer-tools/pq-light-client) | **Specification, not shipped.** A light client that follows ML-DSA-87 signed checkpoints. QoreChain does not produce these checkpoints today and the chain work is not scheduled. The repository holds the specification and reference verifiers (Go, Rust, TypeScript) so the design can be reviewed. | 0.1.0, specification |
+| [Asset kit](/developer-tools/asset-kit) | **Proposal, not shipped as a whole.** Tooling for regulated tokenized assets: ERC-3643 and CMTAT adapters with a post-quantum holder check, ERC-4626 and ERC-7540 vaults, an issuer console and clients. The EVM contracts are available; the native asset modules are a proposal. | 0.1.0 |
+| [PQ light client](/developer-tools/pq-light-client) | **Specification, not shipped.** A light client that follows ML-DSA-87 signed checkpoints. QoreChain does not produce these checkpoints today. The repository holds the specification and reference verifiers (Go, Rust, TypeScript) so the design can be reviewed. | 0.1.0 (specification) |
 
 ```sh
 brew install qorechain/tap/qorel
@@ -84,4 +84,8 @@ npx @qorechain/qorescan --help
 
 ## Get the code {#get-the-code}
 
-Each kit has its own manual page, linked above. The example code for the three apps is shown inline on their pages; a public repository link will be added when available.
+Each kit has its own manual page, linked above. The example apps from this workshop are in the public repository [qorechain/build-before-qday](https://github.com/qorechain/build-before-qday), and each app page walks through them from the first command to the last:
+
+```sh
+git clone https://github.com/qorechain/build-before-qday
+```
