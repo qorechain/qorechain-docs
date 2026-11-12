@@ -15,6 +15,7 @@ Every workshop in this section is built around the features that make QoreChain 
 
 - **Hybrid signing.** A transaction is signed twice: once with a classical secp256k1 key and once with a post-quantum ML-DSA-87 key. Someone who steals only the classical key cannot produce the second signature.
 - **Verified on chain.** The validators check both signatures. The transaction carries a `PQCHybridSignature` extension and the chain emits a `pqc_hybrid_verify` event with the status `verified`. You can read both from the public REST endpoint and see the result in the explorer.
+- **One key, bound once.** Your post-quantum key is derived, not generated, and registered once with a proof. See [How your post-quantum key is bound to your account](/build-before-qday/key-binding).
 - **Ordinary tools.** You keep Hardhat, Foundry or your language of choice. The kits handle the post-quantum key and the authorisation window for you.
 
 ## How it works {#how-it-works}

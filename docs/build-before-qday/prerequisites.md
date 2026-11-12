@@ -288,6 +288,8 @@ The faucet pays **100 QOR once every 24 hours per account** and per address. If 
 
 Every QoreChain account has two keys: a classical key and a post-quantum ML-DSA-87 key. The very first transaction of a new account **registers the ML-DSA-87 key on chain**. It is one time only, per account, and costs about **0.09 QOR**. After that, every transaction is signed with both keys.
 
+To see how the key is made and bound to your account, read [How your post-quantum key is bound to your account](/build-before-qday/key-binding).
+
 The tutorials run this step for you with a command named `register`. You do not need to do anything now. The faucet's 100 QOR covers it many times over.
 
 ## QOR and uqor {#units}

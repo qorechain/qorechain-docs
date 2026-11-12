@@ -360,6 +360,8 @@ pnpm window status
 pnpm window register
 ```
 
+To understand what registering does, read [How your post-quantum key is bound to your account](/build-before-qday/key-binding).
+
 What it does: sends one transaction that tells the chain which post-quantum key belongs to your account. It costs a one-time fee of about 0.09 QOR. The chain accepts this one message signed with the classical key only, because there is no post-quantum key on record yet.
 
 Parameters:

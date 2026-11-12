@@ -51,6 +51,7 @@ const sidebars: SidebarsConfig = {
       items: [
         "build-before-qday/overview",
         "build-before-qday/prerequisites",
+        "build-before-qday/key-binding",
         {
           type: "category",
           label: "Workshop 1",
