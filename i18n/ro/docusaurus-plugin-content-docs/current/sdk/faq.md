@@ -96,7 +96,7 @@ ceea ce este diferit de baza `uqor` Native de 10^6.
 
 Toate (verificat la 11 noiembrie 2026). Nucleul TypeScript (`@qorechain/sdk`, 0.13.0),
 kitul React (`@qorechain/react`, 0.13.0), scaffolder-ul `create-qorechain-dapp`
-(0.13.0) și adaptoarele EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) sunt pe
+(0.13.1, un patch doar pentru șabloane, peste SDK 0.13.0) și adaptoarele EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) sunt pe
 npm; clientul Python este pe PyPI (`pip install qorechain-sdk` la 0.13.0, import
 `qorsdk`); clientul Go este pe module proxy
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`); clientul Rust este

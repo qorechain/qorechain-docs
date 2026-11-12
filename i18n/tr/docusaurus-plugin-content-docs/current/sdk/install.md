@@ -18,7 +18,7 @@ bkz. tablo):
 
 | Kayıt deposu | Paket | Sürüm |
 | --- | --- | --- |
-| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 (`create-qorechain-dapp`: 0.13.1, SDK 0.13.0'ın üzerine yalnızca şablonları içeren bir yama) |
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
 | Go modül proxy'si | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
@@ -277,7 +277,7 @@ bağımlıdır. Bkz. [React kiti kılavuzu](/sdk/guides/react).
 
 ### İskelet oluşturucu
 
-`create-qorechain-dapp` (npm, `0.13.0`), çalışmaya hazır bir dApp iskeleti
+`create-qorechain-dapp` (npm, `0.13.1`), çalışmaya hazır bir dApp iskeleti
 oluşturur:
 
 ```bash
@@ -286,7 +286,7 @@ npm create qorechain-dapp@latest my-dapp
 
 Oluşturulan `package.json` dosyaları, iskelet oluşturucunun birlikte geldiği SDK
 sürümüne bağımlıdır (`@qorechain/sdk` `^0.13.0`; EVM şablonları `@qorechain/evm`
-`^0.13.0` kullanır). Sözleşme çalışmaları için ayrıca `foundry`, `hardhat`, `viem-wagmi` ve `cosmwasm` şablonları vardır. İskelet oluşturucunun 0.8.0 sürümü `^0.3.0` aralıkları
+`^0.13.0` kullanır). Sürüm 0.13.1 yalnızca şablonları değiştirir; bkz. [İskele araçları ve CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131). Sözleşme çalışmaları için ayrıca `foundry`, `hardhat`, `viem-wagmi` ve `cosmwasm` şablonları vardır. İskelet oluşturucunun 0.8.0 sürümü `^0.3.0` aralıkları
 yazıyordu; bir 0.x sürümünde bunlar 0.3 içinde kalır ve canlı ağlar için
 imzalayamaz; 0.8.0 ile iskelet oluşturduysanız `npm i @qorechain/sdk@latest`
 çalıştırın. Bkz. [CLI başvurusu](/sdk/reference/cli).

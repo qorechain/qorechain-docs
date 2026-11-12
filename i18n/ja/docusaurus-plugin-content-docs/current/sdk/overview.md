@@ -126,7 +126,7 @@ SDK は、好みの言語で開発できるようにパッケージファミリ�
 | `@qorechain/evm` | TypeScript（EVM アダプター） | `npm i @qorechain/evm viem` | 公開済み（npm、v0.13.0） |
 | `@qorechain/svm` | TypeScript（SVM アダプター） | `npm i @qorechain/svm @solana/web3.js` | 公開済み（npm、v0.13.0） |
 | `@qorechain/react` | TypeScript（React キット） | `npm i @qorechain/react` | 公開済み（npm、v0.13.0） |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 公開済み（npm、v0.13.0） |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 公開済み（npm、v0.13.1） |
 
 > Python ディストリビューションは `qorechain-sdk` としてインストールされますが、
 > **インポート名は `qorsdk`** です。すべてのクライアントは各レジストリに公開
@@ -148,7 +148,7 @@ crates.io（`qorechain-sdk` 0.13.0）、Java は Maven
 Central（`io.github.qorechain:qorechain-sdk` 0.13.0、2026年11月11日に確認）に公開されています。
 EVM/SVM 実行アダプター（`@qorechain/evm`、`@qorechain/svm`、いずれも 0.13.0）、
 `@qorechain/react` キット（0.13.0）、および `create-qorechain-dapp`
-スキャフォールディング CLI（0.13.0）は TypeScript 専用で、同様に npm に公開
+スキャフォールディング CLI（0.13.1。SDK 0.13.0 に対するテンプレートのみのパッチ）は TypeScript 専用で、同様に npm に公開
 されています。関連パッケージについては
 [インストール](/sdk/install#related-packages) を参照してください。
 

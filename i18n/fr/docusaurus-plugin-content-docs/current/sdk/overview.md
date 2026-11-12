@@ -130,7 +130,7 @@ de lecture.
 | `@qorechain/evm` | TypeScript (adaptateur EVM) | `npm i @qorechain/evm viem` | Publié (npm, v0.13.0) |
 | `@qorechain/svm` | TypeScript (adaptateur SVM) | `npm i @qorechain/svm @solana/web3.js` | Publié (npm, v0.13.0) |
 | `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publié (npm, v0.13.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publié (npm, v0.13.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publié (npm, v0.13.1) |
 
 > La distribution Python s'installe sous le nom `qorechain-sdk` mais
 > **s'importe sous `qorsdk`**. Tous les clients sont publiés sur leurs
@@ -152,7 +152,7 @@ crates.io (`qorechain-sdk` 0.13.0), et Java sur Maven Central
 (`io.github.qorechain:qorechain-sdk`, 0.13.0, vérifié le 11 novembre 2026). Les adaptateurs d'exécution
 EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, tous deux en 0.13.0), le kit
 `@qorechain/react` (0.13.0) et la CLI d'échafaudage `create-qorechain-dapp`
-(0.13.0) sont uniquement en TypeScript et également publiés sur npm. Voir
+(0.13.1, une version de correctifs limitée aux modèles, au-dessus du SDK 0.13.0) sont uniquement en TypeScript et également publiés sur npm. Voir
 [Installation](/sdk/install#related-packages) pour les packages complémentaires.
 
 ## Nouveautés des versions 0.6 à 0.13 {#whats-new-in-06-07-08-09-and-010}

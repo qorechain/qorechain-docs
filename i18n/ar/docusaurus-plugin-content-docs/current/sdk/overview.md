@@ -131,7 +131,7 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 | `@qorechain/evm` | TypeScript (محوِّل EVM) | `npm i @qorechain/evm viem` | منشورة (npm، الإصدار v0.13.0) |
 | `@qorechain/svm` | TypeScript (محوِّل SVM) | `npm i @qorechain/svm @solana/web3.js` | منشورة (npm، الإصدار v0.13.0) |
 | `@qorechain/react` | TypeScript (حزمة React) | `npm i @qorechain/react` | منشورة (npm، الإصدار v0.13.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | منشورة (npm، الإصدار v0.13.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | منشورة (npm، الإصدار v0.13.1) |
 
 > توزيعة Python تُثبَّت باسم `qorechain-sdk` لكنها **تُستورَد باسم
 > `qorsdk`**. جميع العملاء منشورون في سجلاتهم — راجع
@@ -151,7 +151,7 @@ PyPI ‏(`qorechain-sdk` 0.13.0، الاستيراد باسم `qorsdk`)، و Go 
 ‏(`qorechain-sdk` 0.13.0)، و Java على Maven Central
 ‏(`io.github.qorechain:qorechain-sdk`، الإصدار 0.13.0؛ جرى التحقق في 11 نوفمبر 2026). أما محوِّلات التنفيذ EVM/SVM
 ‏(`@qorechain/evm` و `@qorechain/svm`، وكلاهما 0.13.0)، وحزمة
-`@qorechain/react` ‏(0.13.0)، وأداة السقالة `create-qorechain-dapp` ‏(0.13.0)
+`@qorechain/react` ‏(0.13.0)، وأداة السقالة `create-qorechain-dapp` ‏(0.13.1، تحديث للقوالب فقط فوق SDK 0.13.0)
 فهي خاصة بـ TypeScript فقط ومنشورة كذلك على npm. راجع
 [التثبيت](/sdk/install#related-packages) للاطلاع على الحزم المصاحبة.
 

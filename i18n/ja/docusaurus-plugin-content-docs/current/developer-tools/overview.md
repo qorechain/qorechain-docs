@@ -88,7 +88,7 @@ QoreChainは、開発者向けツールを小さなパッケージとして公�
 | [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | 公開済み。プロバイダー、フック、`ConnectButton`、PQCステータスバッジ(`PqcStatusBadge`。0.10.0から引き続き`QuantumSafeBadge`も残されています) |
 | [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | 公開済み。viemチェーン定義とEVMウィンドウのヘルパーを含みます([チェーン開発者キット](#group-chain-dev-sdk)を参照) |
 | [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | 公開済み。稼働中のネットワークでは読み取りのみ |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.0 | `npx create-qorechain-dapp my-dapp` | 公開済み。7つのテンプレート |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.1 | `npx create-qorechain-dapp my-dapp` | 公開済み。7つのテンプレート |
 | [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | 公開済み |
 | [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | 公開済み |
 | [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | 公開済み |
@@ -174,7 +174,7 @@ TypeScriptパッケージには`@qorechain/qoresign/network`サブパスがあ�
 
 ページ: [チェーン開発者キット](/developer-tools/chain-dev-sdk)。ソース: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk)。QoreChain SDKのうち、Solidityやスマートコントラクトのチーム向けの部分です。`@qorechain/evm`のviemチェーン定義とEVM認可ウィンドウのヘルパー、`create-qorechain-dapp`の4つのテンプレート(Foundry、Hardhat 3、wagmi付きviem、QoreChain Nativeトークン)、EVMのクイックスタート、QoreChainのEVMがEthereumとどう違うかを説明するページが含まれます。
 
-**稼働中で、SDK 0.13.0に含まれます(0.12.0から)。** 別個のパッケージはありません。[SDKの表](#group-sdk)にあるパッケージをインストールしてください(チェーン定義とウィンドウのヘルパーは`@qorechain/evm` 0.13.0、テンプレートは`create-qorechain-dapp` 0.13.0)。キットの内容は最初にnpmで0.11.0として登場しました(2026年10月29日)。0.12.0がこれに取って代わります。
+**稼働中で、SDK 0.13.0に含まれます(0.12.0から)。** 別個のパッケージはありません。[SDKの表](#group-sdk)にあるパッケージをインストールしてください(チェーン定義とウィンドウのヘルパーは`@qorechain/evm` 0.13.0、テンプレートは`create-qorechain-dapp` 0.13.1)。キットの内容は最初にnpmで0.11.0として登場しました(2026年10月29日)。0.12.0がこれに取って代わります。
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 

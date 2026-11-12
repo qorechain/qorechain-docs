@@ -91,7 +91,7 @@ fromBase("1500000"); // "1.5"
 
 すべて公開されています（2026年11月11日確認）。TypeScript コア（`@qorechain/sdk`、0.13.0）、
 React キット（`@qorechain/react`、0.13.0）、`create-qorechain-dapp` スキャフォルダ
-（0.13.0）、および EVM/SVM アダプタ（`@qorechain/evm`、`@qorechain/svm`、0.13.0）は
+（0.13.1。SDK 0.13.0 に対するテンプレートのみのパッチ）、および EVM/SVM アダプタ（`@qorechain/evm`、`@qorechain/svm`、0.13.0）は
 npm で公開されています。Python クライアントは PyPI にあります（`pip install qorechain-sdk`、
 バージョン 0.13.0、インポート名は `qorsdk`）。Go クライアントはモジュールプロキシにあります
 （`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`）。Rust クライアントは

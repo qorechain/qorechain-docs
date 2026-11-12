@@ -93,7 +93,7 @@ is distinct from the Native `uqor` base of 10^6.
 
 All of them (checked 11 November 2026). The TypeScript core (`@qorechain/sdk`, 0.13.0),
 the React kit (`@qorechain/react`, 0.13.0), the `create-qorechain-dapp` scaffolder
-(0.13.0) and the EVM/SVM adapters (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) are on
+(0.13.1, a templates-only patch on top of SDK 0.13.0) and the EVM/SVM adapters (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) are on
 npm; the Python client is on PyPI (`pip install qorechain-sdk` at 0.13.0, import
 `qorsdk`); the Go client is on the module proxy
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`); the Rust client is

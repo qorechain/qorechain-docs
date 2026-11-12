@@ -96,7 +96,7 @@ unterscheidet.
 
 Alle (geprüft am 11. November 2026). Der TypeScript-Core (`@qorechain/sdk`, 0.13.0),
 das React-Kit (`@qorechain/react`, 0.13.0), der `create-qorechain-dapp`-Scaffolder
-(0.13.0) und die EVM/SVM-Adapter (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) sind auf
+(0.13.1, eine reine Vorlagen-Korrektur auf Basis von SDK 0.13.0) und die EVM/SVM-Adapter (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) sind auf
 npm; der Python-Client ist auf PyPI (`pip install qorechain-sdk` in Version 0.13.0,
 Import `qorsdk`); der Go-Client ist über den Module-Proxy verfügbar
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`); der Rust-Client ist

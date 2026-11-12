@@ -125,7 +125,7 @@ SDK는 원하는 언어로 개발할 수 있도록 패키지 제품군으로 배
 | `@qorechain/evm` | TypeScript (EVM 어댑터) | `npm i @qorechain/evm viem` | 게시됨 (npm, v0.13.0) |
 | `@qorechain/svm` | TypeScript (SVM 어댑터) | `npm i @qorechain/svm @solana/web3.js` | 게시됨 (npm, v0.13.0) |
 | `@qorechain/react` | TypeScript (React 키트) | `npm i @qorechain/react` | 게시됨 (npm, v0.13.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 게시됨 (npm, v0.13.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 게시됨 (npm, v0.13.1) |
 
 > Python 배포판은 `qorechain-sdk`라는 이름으로 설치되지만 **`qorsdk`로
 > import**합니다. 모든 클라이언트는 각 레지스트리에 게시되어 있습니다 —
@@ -144,7 +144,7 @@ npm(`@qorechain/sdk` 0.13.0), Python은 PyPI(`qorechain-sdk` 0.13.0, import
 crates.io(`qorechain-sdk` 0.13.0), Java는 Maven
 Central(`io.github.qorechain:qorechain-sdk`)에 게시되어 있으며, 0.13.0이 Maven Central에 올라와 있습니다(2026년 11월 11일 확인).
 EVM/SVM 실행 어댑터(`@qorechain/evm`, `@qorechain/svm`, 둘 다 0.13.0),
-`@qorechain/react` 키트(0.13.0), `create-qorechain-dapp` 스캐폴딩 CLI(0.13.0)는
+`@qorechain/react` 키트(0.13.0), `create-qorechain-dapp` 스캐폴딩 CLI(0.13.1, SDK 0.13.0 위에 얹은 템플릿 전용 패치)는
 TypeScript 전용이며 마찬가지로 npm에 게시되어 있습니다. 부속 패키지는
 [설치](/sdk/install#related-packages)를 참고하세요.
 

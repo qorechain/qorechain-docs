@@ -17,7 +17,7 @@ PQC 트랜잭션, WebSocket 구독)를 갖춘 채 각 레지스트리에 **게�
 
 | 레지스트리 | 패키지 | 버전 |
 | --- | --- | --- |
-| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 (`create-qorechain-dapp`: 0.13.1, SDK 0.13.0 위에 얹은 템플릿 전용 패치) |
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
 | Go 모듈 프록시 | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
@@ -279,14 +279,14 @@ npm에 `0.13.0`으로 게시되어 있으며 `@qorechain/sdk` `^0.13.0`에 의�
 
 ### 스캐폴더
 
-`create-qorechain-dapp`(npm, `0.13.0`)은 바로 실행할 수 있는 dApp을 스캐폴딩합니다:
+`create-qorechain-dapp`(npm, `0.13.1`)은 바로 실행할 수 있는 dApp을 스캐폴딩합니다:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
 생성된 `package.json` 파일은 스캐폴더와 함께 제공되는 SDK 릴리스에 의존합니다
-(`@qorechain/sdk` `^0.13.0`. EVM 템플릿은 `@qorechain/evm` `^0.13.0`을 사용합니다). 컨트랙트 작업을 위한 `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` 템플릿도 있습니다.
+(`@qorechain/sdk` `^0.13.0`. EVM 템플릿은 `@qorechain/evm` `^0.13.0`을 사용합니다). 0.13.1은 템플릿만 바꿉니다. [스캐폴더와 CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131)를 참고하세요. 컨트랙트 작업을 위한 `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` 템플릿도 있습니다.
 스캐폴더 0.8.0 버전은 `^0.3.0` 범위를 기록했는데, 0.x 버전에서 이 범위는
 0.3 안에 머물러 라이브 네트워크에 서명할 수 없습니다. 0.8.0으로 스캐폴딩했다면
 `npm i @qorechain/sdk@latest`를 실행하세요. [CLI 레퍼런스](/sdk/reference/cli)를

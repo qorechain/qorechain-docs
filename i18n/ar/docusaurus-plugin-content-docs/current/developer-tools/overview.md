@@ -88,7 +88,7 @@ sidebar_position: 1
 | [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | منشورة. المزوّد والخطافات و`ConnectButton` وشارة حالة PQC (`PqcStatusBadge`، مع بقاء `QuantumSafeBadge` من 0.10.0) |
 | [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | منشورة. تتضمن تعريفات سلاسل viem ومساعدات نافذة EVM (راجع [Chain developer kit](#group-chain-dev-sdk)) |
 | [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | منشورة. قراءات فقط على الشبكات الحية |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.0 | `npx create-qorechain-dapp my-dapp` | منشورة. سبعة قوالب |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.1 | `npx create-qorechain-dapp my-dapp` | منشورة. سبعة قوالب |
 | [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | منشورة |
 | [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | منشورة |
 | [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | منشورة |
@@ -174,7 +174,7 @@ SDK 0.13.0 هو الإصدار الحالي منذ 11 نوفمبر 2026 (يغي�
 
 الصفحة: [Chain developer kit](/developer-tools/chain-dev-sdk). المصدر: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). الجزء من QoreChain SDK 0.11.0 الموجّه لفرق Solidity والعقود الذكية: تعريفات سلسلة viem ومساعدات نافذة تفويض EVM في `@qorechain/evm`، وأربعة قوالب في `create-qorechain-dapp` (Foundry وHardhat 3 وviem مع wagmi، ورمز QoreChain Native)، وبدايات سريعة لـ EVM، وصفحة عن اختلاف EVM في QoreChain عن Ethereum.
 
-إنها **متاحة ومضمَّنة في SDK 0.13.0** (منذ 0.12.0): لا توجد حزمة منفصلة. ثبّت الحزم في [جدول SDK](#group-sdk) (`@qorechain/evm` 0.13.0 لتعريفات السلاسل ومساعدات النافذة، و`create-qorechain-dapp` 0.13.0 للقوالب). ظهر محتوى الحزمة أول مرة بالإصدار 0.11.0 على npm (29 أكتوبر 2026)؛ ويحل 0.12.0 محله.
+إنها **متاحة ومضمَّنة في SDK 0.13.0** (منذ 0.12.0): لا توجد حزمة منفصلة. ثبّت الحزم في [جدول SDK](#group-sdk) (`@qorechain/evm` 0.13.0 لتعريفات السلاسل ومساعدات النافذة، و`create-qorechain-dapp` 0.13.1 للقوالب). ظهر محتوى الحزمة أول مرة بالإصدار 0.11.0 على npm (29 أكتوبر 2026)؛ ويحل 0.12.0 محله.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 

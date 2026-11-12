@@ -18,7 +18,7 @@ tableau) :
 
 | Registre | Paquet | Version |
 | --- | --- | --- |
-| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 (`create-qorechain-dapp` : 0.13.1, une version de correctifs limitée aux modèles, au-dessus du SDK 0.13.0) |
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
 | Proxy de modules Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
@@ -282,14 +282,14 @@ Publié sur npm en `0.13.0` ; il dépend de `@qorechain/sdk` `^0.13.0`. Voir le 
 
 ### Générateur de projet
 
-`create-qorechain-dapp` (npm, `0.13.0`) génère une dApp prête à l'emploi :
+`create-qorechain-dapp` (npm, `0.13.1`) génère une dApp prête à l'emploi :
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
 Les fichiers `package.json` générés dépendent de la version du SDK avec laquelle le générateur
-est livré (`@qorechain/sdk` `^0.13.0` ; les modèles EVM utilisent `@qorechain/evm` `^0.13.0`). Il a aussi des modèles `foundry`, `hardhat`, `viem-wagmi` et `cosmwasm` pour le travail sur les contrats.
+est livré (`@qorechain/sdk` `^0.13.0` ; les modèles EVM utilisent `@qorechain/evm` `^0.13.0`). La version 0.13.1 ne change que les modèles ; voir [Générateurs de projet et CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131). Il a aussi des modèles `foundry`, `hardhat`, `viem-wagmi` et `cosmwasm` pour le travail sur les contrats.
 La version 0.8.0 du générateur écrivait des plages `^0.3.0`, qui, sur une version 0.x, restent
 dans la 0.3 et ne peuvent pas signer pour les réseaux en production ; si vous avez généré avec la 0.8.0, exécutez
 `npm i @qorechain/sdk@latest`. Voir la [référence de la CLI](/sdk/reference/cli).

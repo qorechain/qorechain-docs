@@ -94,7 +94,7 @@ fromBase("1500000"); // "1.5"
 
 جميعها (جرى التحقق في 11 نوفمبر 2026). نواة TypeScript (`@qorechain/sdk`، 0.13.0)،
 وحزمة React (`@qorechain/react`، 0.13.0)، وأداة البناء `create-qorechain-dapp`
-(0.13.0)، ومحوّلات EVM/SVM (`@qorechain/evm`، `@qorechain/svm`، 0.13.0) متوفرة على
+(0.13.1، تحديث للقوالب فقط فوق SDK 0.13.0)، ومحوّلات EVM/SVM (`@qorechain/evm`، `@qorechain/svm`، 0.13.0) متوفرة على
 npm؛ وعميل Python متوفر على PyPI (`pip install qorechain-sdk` بالإصدار 0.13.0،
 والاستيراد `qorsdk`)؛ وعميل Go متوفر على وسيط الوحدات (module proxy)
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`)؛ وعميل Rust متوفر

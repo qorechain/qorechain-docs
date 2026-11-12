@@ -88,7 +88,7 @@ Ghiduri: [Prezentarea SDK](/sdk/overview), [Instalare](/sdk/install), [Ghid Reac
 | [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Publicat. Provider, hook-uri, `ConnectButton` și insigna de stare PQC (`PqcStatusBadge`, iar `QuantumSafeBadge` păstrat din 0.10.0) |
 | [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | Publicat. Include definițiile de lanț viem și helper-ele pentru fereastra EVM (vezi [Chain developer kit](#group-chain-dev-sdk)) |
 | [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | Publicat. Doar citiri pe rețelele live |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.0 | `npx create-qorechain-dapp my-dapp` | Publicat. Șapte șabloane |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.1 | `npx create-qorechain-dapp my-dapp` | Publicat. Șapte șabloane |
 | [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | Publicat |
 | [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Publicat |
 | [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Publicat |
@@ -174,7 +174,7 @@ Pagină: [Asset Kit](/developer-tools/asset-kit). Sursă: [qorechain/qorechain-a
 
 Pagină: [Chain developer kit](/developer-tools/chain-dev-sdk). Sursă: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). Partea din QoreChain SDK pentru echipele de Solidity și contracte inteligente: definiții de lanț viem și helper-e pentru fereastra de autorizare EVM în `@qorechain/evm`, patru șabloane `create-qorechain-dapp` (Foundry, Hardhat 3, viem cu wagmi și un token QoreChain Native), quickstart-uri EVM și o pagină despre cum diferă EVM-ul QoreChain de Ethereum.
 
-Este **live și inclus în SDK 0.13.0** (din 0.12.0): nu există un pachet separat. Instalează pachetele din [tabelul SDK](#group-sdk) (`@qorechain/evm` 0.13.0 pentru definițiile de lanț și helper-ele pentru fereastră, `create-qorechain-dapp` 0.13.0 pentru șabloane). Conținutul kitului a apărut prima dată ca 0.11.0 pe npm (29 octombrie 2026); 0.12.0 îl înlocuiește.
+Este **live și inclus în SDK 0.13.0** (din 0.12.0): nu există un pachet separat. Instalează pachetele din [tabelul SDK](#group-sdk) (`@qorechain/evm` 0.13.0 pentru definițiile de lanț și helper-ele pentru fereastră, `create-qorechain-dapp` 0.13.1 pentru șabloane). Conținutul kitului a apărut prima dată ca 0.11.0 pe npm (29 octombrie 2026); 0.12.0 îl înlocuiește.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 

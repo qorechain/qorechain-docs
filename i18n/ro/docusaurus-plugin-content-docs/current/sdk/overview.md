@@ -131,7 +131,7 @@ derivare, aritmetică a denominărilor și suprafețe de citire.
 | `@qorechain/evm` | TypeScript (adaptor EVM) | `npm i @qorechain/evm viem` | Publicat (npm, v0.13.0) |
 | `@qorechain/svm` | TypeScript (adaptor SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicat (npm, v0.13.0) |
 | `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.13.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicat (npm, v0.13.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicat (npm, v0.13.1) |
 
 > Distribuția Python se instalează ca `qorechain-sdk`, dar **se importă ca
 > `qorsdk`**. Toți clienții sunt publicați în registrele lor — vezi
@@ -152,7 +152,7 @@ WebSocket. Toți acești clienți sunt **publicați**: TypeScript pe npm
 (`io.github.qorechain:qorechain-sdk`, unde 0.13.0 este publicat, verificat la 11 noiembrie 2026). Adaptoarele de
 execuție EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambele 0.13.0), kitul
 `@qorechain/react` (0.13.0) și CLI-ul de schelet `create-qorechain-dapp`
-(0.13.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi
+(0.13.1, un patch doar pentru șabloane, peste SDK 0.13.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi
 [Instalare](/sdk/install#related-packages) pentru pachetele însoțitoare.
 
 ## Noutăți de la 0.6 la 0.13 {#whats-new-in-06-07-08-09-and-010}

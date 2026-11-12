@@ -19,7 +19,7 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> منشورة على npm باسم `create-qorechain-dapp` (`0.13.0`). تعتمد ملفات
+> منشورة على npm باسم `create-qorechain-dapp` (`0.13.1`، تحديث للقوالب فقط فوق SDK 0.13.0). تعتمد ملفات
 > `package.json` المُنشأة على `@qorechain/sdk` ‏`^0.13.0` (وقوالب EVM على
 > `@qorechain/evm` ‏`^0.13.0`). كان الإصدار 0.8.0 من أداة الهيكلة يكتب نطاقات `^0.3.0`،
 > وهو ما يحلّه npm إلى إصدار 0.3 لا يستطيع التوقيع للشبكات الحيّة؛ وإن كنت قد
@@ -29,12 +29,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 
 | القالب | الوصف |
 | --- | --- |
-| `evm-solidity` | عقد `Counter` بلغة Solidity + سكربت نشر/تفاعل بـ viem (`@qorechain/evm`). |
-| `fullstack-web` | تطبيق لامركزي بـ Vite + React + TypeScript يقرأ الأرصدة واقتصاديات الرمز (`@qorechain/sdk`). |
+| `evm-solidity` | عقد `Counter` بلغة Solidity + سكربت نشر/تفاعل بـ viem (`@qorechain/evm`). شغّل السكربت بـ `pnpm run deploy` (وليس `pnpm deploy`، فهو أمر pnpm مختلف)؛ يقرأ `.env`، ويشرح README فتح نافذة EVM قبل النشر. |
+| `fullstack-web` | تطبيق لامركزي بـ Vite + React + TypeScript يقرأ الأرصدة واقتصاديات الرمز (`@qorechain/sdk`). يمر REST عبر وكيل Vite باسم `/lcd` لأن REST العام لا يرسل ترويسات CORS، فيستدعي كود المتصفح `/lcd/...` أثناء التطوير. |
 | `rollup-app` | تطبيق rollup + سلسلة جانبية/paychain يستخدم `RollupClient` ومساعد multilayer (`@qorechain/sdk`). |
 | `foundry` | مشروع Foundry لمحرك EVM في QoreChain. يسجّل `pnpm window` مفتاح ML-DSA-87 للحساب ويفتح [نافذة تفويض EVM](/sdk/guides/evm#evm-window) قبل النشر (أُضيف في 0.11.0 الخاص بـ npm فقط). |
 | `hardhat` | الشيء نفسه لـ Hardhat 3، مع `pnpm window status` و`register` و`open`. |
-| `viem-wagmi` | تطبيق ويب لامركزي على viem وwagmi يستخدم سلسلتي `qorechain` و`qorechainTestnet` من `@qorechain/evm`. |
+| `viem-wagmi` | تطبيق ويب لامركزي على viem وwagmi يستخدم سلسلتي `qorechain` و`qorechainTestnet` من `@qorechain/evm`. يثبّت viem على `~2.53.1` ويستخدم وكيل `/lcd` نفسه لـ REST. |
 | `cosmwasm` | مشروع عقد على QoreChain Native (Wasm). على الشبكتين الحيّتين رفع الشيفرة بالحوكمة فقط؛ راجع [دليل QoreChain Native](/sdk/guides/cosmwasm). |
 
 يُجري قالب `rollup-app` (منذ أداة الهيكلة 0.10.0) تشغيلًا تجريبيًا افتراضيًا. ومع `QORE_BROADCAST=1`
@@ -54,7 +54,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | الراية | الوصف |
 | --- | --- |
 | `-t, --template <name>` | القالب المراد استخدامه (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | إعداد الشبكة المسبق (`testnet` \| `mainnet`). |
+| `--network <name>` | إعداد الشبكة المسبق (`testnet` \| `mainnet`). يكتب نقاط النهاية العامة للشبكة المختارة في ملف `.env` المولَّد (0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | تخطّ المطالبات واستخدم الإعدادات الافتراضية. |
 | `--no-install` | لا تثبّت التبعيات بعد إنشاء الهيكل. |

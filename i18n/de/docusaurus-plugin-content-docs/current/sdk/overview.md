@@ -134,7 +134,7 @@ Ableitungsschemata, Denominations-Arithmetik und Lese-Schnittstellen.
 | `@qorechain/evm` | TypeScript (EVM-Adapter) | `npm i @qorechain/evm viem` | Veröffentlicht (npm, v0.13.0) |
 | `@qorechain/svm` | TypeScript (SVM-Adapter) | `npm i @qorechain/svm @solana/web3.js` | Veröffentlicht (npm, v0.13.0) |
 | `@qorechain/react` | TypeScript (React-Kit) | `npm i @qorechain/react` | Veröffentlicht (npm, v0.13.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Veröffentlicht (npm, v0.13.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Veröffentlicht (npm, v0.13.1) |
 
 > Die Python-Distribution wird als `qorechain-sdk` installiert, aber **als
 > `qorsdk` importiert**. Alle Clients sind in ihren Registries veröffentlicht —
@@ -155,7 +155,7 @@ crates.io (`qorechain-sdk` 0.13.0) und Java auf Maven Central
 (`io.github.qorechain:qorechain-sdk` 0.13.0; geprüft am 11. November 2026). Die
 EVM-/SVM-Ausführungsadapter (`@qorechain/evm`, `@qorechain/svm`, beide 0.13.0),
 das `@qorechain/react`-Kit (0.13.0) und die
-`create-qorechain-dapp`-Scaffolding-CLI (0.13.0) sind reine TypeScript-Pakete
+`create-qorechain-dapp`-Scaffolding-CLI (0.13.1, eine reine Vorlagen-Korrektur auf Basis von SDK 0.13.0) sind reine TypeScript-Pakete
 und ebenfalls auf npm veröffentlicht. Die Begleitpakete finden Sie unter
 [Installation](/sdk/install#related-packages).
 

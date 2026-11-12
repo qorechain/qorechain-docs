@@ -19,7 +19,7 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Veröffentlicht auf npm als `create-qorechain-dapp` (`0.13.0`). Die erzeugten
+> Veröffentlicht auf npm als `create-qorechain-dapp` (`0.13.1`, eine reine Vorlagen-Korrektur auf Basis von SDK 0.13.0). Die erzeugten
 > `package.json`-Dateien hängen von `@qorechain/sdk` `^0.13.0` ab (die EVM-Vorlagen von
 > `@qorechain/evm` `^0.13.0`). Version 0.8.0 des Scaffolders schrieb `^0.3.0`-Bereiche,
 > die npm zu einem 0.3-Release auflöst, das für die Live-Netzwerke nicht signieren kann; wenn Sie
@@ -29,12 +29,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 
 | Vorlage | Beschreibung |
 | --- | --- |
-| `evm-solidity` | Ein Solidity-`Counter`-Contract + ein viem-Deploy-/Interaktions-Skript (`@qorechain/evm`). |
-| `fullstack-web` | Eine Vite + React + TypeScript-dApp, die Guthaben und Tokenomics liest (`@qorechain/sdk`). |
+| `evm-solidity` | Ein Solidity-`Counter`-Contract + ein viem-Deploy-/Interaktions-Skript (`@qorechain/evm`). Führen Sie das Skript mit `pnpm run deploy` aus (nicht `pnpm deploy`, das ein anderer pnpm-Befehl ist); es liest `.env`, und seine README beschreibt, wie Sie vor dem Deploy das EVM-Fenster öffnen. |
+| `fullstack-web` | Eine Vite + React + TypeScript-dApp, die Guthaben und Tokenomics liest (`@qorechain/sdk`). REST läuft über einen Vite-`/lcd`-Proxy, weil die öffentliche REST keine CORS-Header sendet; Browser-Code ruft daher in der Entwicklung `/lcd/...` auf. |
 | `rollup-app` | Eine Rollup- + Sidechain-/Paychain-App mit dem `RollupClient` und dem Multilayer-Helfer (`@qorechain/sdk`). |
 | `foundry` | Ein Foundry-Projekt für die EVM Engine von QoreChain. `pnpm window` registriert den ML-DSA-87-Schlüssel des Kontos und öffnet vor einem Deploy das [EVM-Autorisierungsfenster](/sdk/guides/evm#evm-window) (hinzugefügt im nur auf npm veröffentlichten 0.11.0). |
 | `hardhat` | Dasselbe für Hardhat 3, mit `pnpm window status`, `register` und `open`. |
-| `viem-wagmi` | Eine Web-dApp auf viem und wagmi mit den Chains `qorechain` und `qorechainTestnet` aus `@qorechain/evm`. |
+| `viem-wagmi` | Eine Web-dApp auf viem und wagmi mit den Chains `qorechain` und `qorechainTestnet` aus `@qorechain/evm`. Pinnt viem `~2.53.1` und nutzt für REST denselben `/lcd`-Proxy. |
 | `cosmwasm` | Ein Contract-Projekt für QoreChain Native (Wasm). Auf den Live-Netzwerken ist der Code-Upload nur über Governance möglich; siehe den [QoreChain-Native-Leitfaden](/sdk/guides/cosmwasm). |
 
 Die Vorlage `rollup-app` (seit Scaffolder 0.10.0) führt standardmäßig einen Probelauf aus. Mit `QORE_BROADCAST=1`
@@ -53,7 +53,7 @@ wie `client.rest.getBurnStats()` um.
 | Flag | Beschreibung |
 | --- | --- |
 | `-t, --template <name>` | Zu verwendende Vorlage (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | Netzwerk-Voreinstellung (`testnet` \| `mainnet`). |
+| `--network <name>` | Netzwerk-Voreinstellung (`testnet` \| `mainnet`). Schreibt die öffentlichen Endpunkte des gewählten Netzwerks in die erzeugte `.env` (0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Abfragen überspringen und Standardwerte verwenden. |
 | `--no-install` | Nach dem Scaffolding keine Abhängigkeiten installieren. |

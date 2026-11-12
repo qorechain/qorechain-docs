@@ -88,7 +88,7 @@ Kılavuzlar: [SDK genel bakış](/sdk/overview), [Kurulum](/sdk/install), [React
 | [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Yayınlandı. Provider, hook'lar, `ConnectButton` ve PQC durum rozeti (`PqcStatusBadge` ve 0.10.0'dan korunan `QuantumSafeBadge`) |
 | [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | Yayınlandı. viem zincir tanımlarını ve EVM pencere yardımcılarını içerir (bkz. [Zincir geliştirici kiti](#group-chain-dev-sdk)) |
 | [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | Yayınlandı. Canlı ağlarda yalnızca okuma |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.0 | `npx create-qorechain-dapp my-dapp` | Yayınlandı. Yedi şablon |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.1 | `npx create-qorechain-dapp my-dapp` | Yayınlandı. Yedi şablon |
 | [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | Yayınlandı |
 | [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Yayınlandı |
 | [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Yayınlandı |
@@ -174,7 +174,7 @@ Sayfa: [Asset Kit](/developer-tools/asset-kit). Kaynak: [qorechain/qorechain-ass
 
 Sayfa: [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk). Kaynak: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). QoreChain SDK'nın Solidity ve akıllı sözleşme ekiplerine yönelik bölümü: `@qorechain/evm` içinde viem zincir tanımları ve EVM yetkilendirme penceresi yardımcıları, dört `create-qorechain-dapp` şablonu (Foundry, Hardhat 3, wagmi'li viem ve bir QoreChain Native token'ı), EVM hızlı başlangıçları ve QoreChain EVM'in Ethereum'dan nasıl farklılaştığını anlatan bir sayfa.
 
-**Canlıdır ve SDK 0.13.0'a dahildir** (0.12.0'dan beri): ayrı bir paket yoktur. [SDK tablosundaki](#group-sdk) paketleri kurun (zincir tanımları ve pencere yardımcıları için `@qorechain/evm` 0.13.0, şablonlar için `create-qorechain-dapp` 0.13.0). Kit içeriği ilk olarak npm'de 0.11.0 olarak göründü (29 Ekim 2026); 0.12.0 onun yerini alır.
+**Canlıdır ve SDK 0.13.0'a dahildir** (0.12.0'dan beri): ayrı bir paket yoktur. [SDK tablosundaki](#group-sdk) paketleri kurun (zincir tanımları ve pencere yardımcıları için `@qorechain/evm` 0.13.0, şablonlar için `create-qorechain-dapp` 0.13.1). Kit içeriği ilk olarak npm'de 0.11.0 olarak göründü (29 Ekim 2026); 0.12.0 onun yerini alır.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 

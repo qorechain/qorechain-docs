@@ -19,7 +19,7 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> `create-qorechain-dapp`(`0.13.0`)으로 npm에 게시되어 있습니다. 생성되는
+> `create-qorechain-dapp`(`0.13.1`, SDK 0.13.0 위에 얹은 템플릿 전용 패치)으로 npm에 게시되어 있습니다. 생성되는
 > `package.json` 파일은 `@qorechain/sdk` `^0.13.0`에 의존합니다(EVM 템플릿은
 > `@qorechain/evm` `^0.13.0`). 스캐폴더의 0.8.0 버전은 `^0.3.0` 범위를 기록했는데,
 > npm은 이를 실제 네트워크에 서명할 수 없는 0.3 릴리스로 해석합니다. 0.8.0으로
@@ -29,12 +29,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 
 | 템플릿 | 설명 |
 | --- | --- |
-| `evm-solidity` | Solidity `Counter` 컨트랙트 + viem 배포/상호작용 스크립트(`@qorechain/evm`). |
-| `fullstack-web` | 잔액과 토크노믹스를 읽는 Vite + React + TypeScript dApp(`@qorechain/sdk`). |
+| `evm-solidity` | Solidity `Counter` 컨트랙트 + viem 배포/상호작용 스크립트(`@qorechain/evm`). 스크립트는 `pnpm run deploy`로 실행하세요(`pnpm deploy`는 다른 pnpm 명령입니다). 이 스크립트는 `.env`를 읽으며, README에 배포 전 EVM 윈도우를 여는 방법이 있습니다. |
+| `fullstack-web` | 잔액과 토크노믹스를 읽는 Vite + React + TypeScript dApp(`@qorechain/sdk`). 공개 REST는 CORS 헤더를 보내지 않으므로 REST는 Vite `/lcd` 프록시를 거치며, 개발 중 브라우저 코드는 `/lcd/...`를 호출합니다. |
 | `rollup-app` | `RollupClient`와 멀티레이어 헬퍼를 사용하는 롤업 + 사이드체인/페이체인 앱(`@qorechain/sdk`). |
 | `foundry` | QoreChain EVM 엔진용 Foundry 프로젝트. `pnpm window`는 배포 전에 계정의 ML-DSA-87 키를 등록하고 [EVM 인가 윈도우](/sdk/guides/evm#evm-window)를 엽니다(npm 전용 0.11.0에서 추가). |
 | `hardhat` | Hardhat 3용으로 같은 구성이며, `pnpm window status`, `register`, `open`이 있습니다. |
-| `viem-wagmi` | `@qorechain/evm`의 `qorechain` 및 `qorechainTestnet` 체인을 쓰는 viem과 wagmi 기반 웹 dApp. |
+| `viem-wagmi` | `@qorechain/evm`의 `qorechain` 및 `qorechainTestnet` 체인을 쓰는 viem과 wagmi 기반 웹 dApp. viem `~2.53.1`을 고정하고 REST에는 같은 `/lcd` 프록시를 씁니다. |
 | `cosmwasm` | QoreChain Native(Wasm) 컨트랙트 프로젝트. 라이브 네트워크에서 코드 업로드는 거버넌스 전용입니다. [QoreChain Native 가이드](/sdk/guides/cosmwasm)를 참고하세요. |
 
 `rollup-app` 템플릿(스캐폴더 0.10.0부터)은 기본적으로 드라이 런을 실행합니다. `QORE_BROADCAST=1`을
@@ -53,7 +53,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | 플래그 | 설명 |
 | --- | --- |
 | `-t, --template <name>` | 사용할 템플릿(`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | 네트워크 프리셋(`testnet` \| `mainnet`). |
+| `--network <name>` | 네트워크 프리셋(`testnet` \| `mainnet`). 선택한 네트워크의 공개 엔드포인트를 생성되는 `.env`에 기록합니다(0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | 프롬프트를 건너뛰고 기본값을 사용합니다. |
 | `--no-install` | 스캐폴딩 후 의존성을 설치하지 않습니다. |

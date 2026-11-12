@@ -9,11 +9,11 @@ sidebar_position: 21
 
 Üç komut satırı aracı, bir QoreChain projesini sıfırdan tipli, derlenebilir bir başlangıç noktasına getirir. Node.js ile çalışan uygulama geliştiricileri (dApp'ler) ve rollup operatörleri içindir:
 
-* **`create-qorechain-dapp`** (0.13.0), [QoreChain SDK](/sdk/overview) üzerine kurulu yedi şablondan biriyle bir dApp iskeleti oluşturur. Yedi şablondan dördü (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) [zincir geliştirici kitine](/developer-tools/chain-dev-sdk) aittir.
+* **`create-qorechain-dapp`** (0.13.1, SDK 0.13.0'ın üzerine yalnızca şablonları içeren bir yama), [QoreChain SDK](/sdk/overview) üzerine kurulu yedi şablondan biriyle bir dApp iskeleti oluşturur. Yedi şablondan dördü (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) [zincir geliştirici kitine](/developer-tools/chain-dev-sdk) aittir.
 * **`create-qorechain-rollup`** (0.8.0), TypeScript [Rollup Geliştirme Kiti](/rollups/overview) üzerine kurulu altı şablondan biriyle bir rollup projesi iskeleti oluşturur.
 * **`qorollup`**, `@qorechain/rdk-cli` paketinin (0.8.0) komutudur; operatör komut satırıdır: ön kontroller, bir rollup oluşturma ve izleme, canlı parametreleri okuma.
 
-Bu sayfa, 27 Ekim 2026'da npm'den kurulan yayımlanmış paketleri ve 4 Kasım 2026'da kurulan `create-qorechain-dapp` 0.12.0 sürümünü yansıtır; güncel sürüm 0.13.0'dır (11 Kasım 2026). Kavramsal kılavuzlar [Rollup Dağıtımı](/rollups/deploying-a-rollup) ve [SDK CLI başvurusu](/sdk/reference/cli) sayfalarıdır.
+Bu sayfa, 27 Ekim 2026'da npm'den kurulan yayımlanmış paketleri ve 4 Kasım 2026'da kurulan `create-qorechain-dapp` 0.12.0 sürümünü yansıtır; güncel sürüm 0.13.1'dir (12 Kasım 2026). Aşağıda anlatılan 0.13.1 şablon değişiklikleri yeni bir kurulum çalıştırmasından değil, paketin sürüm notlarından alınmıştır. Kavramsal kılavuzlar [Rollup Dağıtımı](/rollups/deploying-a-rollup) ve [SDK CLI başvurusu](/sdk/reference/cli) sayfalarıdır.
 
 ## Yenilikler {#innovations}
 
@@ -38,20 +38,30 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 
 | Şablon | Ne üretir | Betikler |
 | --- | --- | --- |
-| `evm-solidity` | Önceden derlenmiş bir yapıtla (artifact) bir Solidity `Counter` kontratı ve onu dağıtıp `@qorechain/evm` kullanarak çağıran bir viem betiği. Dosyalar: `contracts/Counter.sol`, `contracts/Counter.artifact.ts`, `scripts/deploy.ts`, `.env`. | `deploy` |
-| `fullstack-web` | `@qorechain/sdk` ile bir adresin bakiyelerini (ve bir tokenomik özetini) okuyan bir Vite, React ve TypeScript sayfası. Dosyalar: `index.html`, `src/App.tsx`, `src/main.tsx`, `vite.config.ts`, `.env`. | `dev`, `build`, `preview`, `typecheck` |
+| `evm-solidity` | Önceden derlenmiş bir yapıtla (artifact) bir Solidity `Counter` kontratı ve onu dağıtıp `@qorechain/evm` kullanarak çağıran bir viem betiği. Dosyalar: `contracts/Counter.sol`, `contracts/Counter.artifact.ts`, `scripts/deploy.ts`, `.env`. `pnpm run deploy` ile çalıştırın (`pnpm deploy` değil, o farklı bir pnpm komutudur); `.env` dosyasını okur ve şablonun README'si dağıtımdan önce EVM penceresinin nasıl açılacağını anlatır. | `deploy` |
+| `fullstack-web` | `@qorechain/sdk` ile bir adresin bakiyelerini (ve bir tokenomik özetini) okuyan bir Vite, React ve TypeScript sayfası. Dosyalar: `index.html`, `src/App.tsx`, `src/main.tsx`, `vite.config.ts`, `.env`. 0.13.1'den beri REST bir Vite `/lcd` vekili üzerinden gider. | `dev`, `build`, `preview`, `typecheck` |
 | `rollup-app` | Rollup ve sidechain veya paychain mesajları oluşturmak için SDK'nın `createRollupClient` ve `createMultilayerClient` işlevlerini kullanan bir Node betiği. Dosyalar: `src/index.ts` ve olağan yapılandırma. Varsayılan olarak deneme çalıştırması. | `start`, `typecheck` |
 | `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` | Zincir geliştirici kiti şablonları: bir Foundry projesi, bir Hardhat 3 ve viem projesi (ikisi de EVM yetkilendirme penceresi için bir `pnpm window` yardımcısı içerir; 0.13.0'dan beri `pnpm window recovery-code` yeni bir kurtarma kodu yazdırır ve `PRIVATE_KEY` ayarlıyken `pnpm window` `QORE_PQC_RECOVERY_CODE` değerini okur, eksikse bir mesajla durur; `QORE_MNEMONIC` ile hiçbir şey değişmez), QoreX cüzdanlı bir wagmi ve RainbowKit dApp'i ve bir QoreChain Native CW20 token. Ayrıntılar, betikler ve sınırlar: [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk#templates). | bkz. o sayfa |
 
 | Bayrak | Anlamı |
 | --- | --- |
 | `-t, --template <name>` | `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi` veya `cosmwasm` |
-| `--network <name>` | `testnet` veya `mainnet` |
+| `--network <name>` | `testnet` veya `mainnet`; o ağın herkese açık uç noktalarını üretilen `.env` dosyasına yazar (0.13.1) |
 | `--package-manager <pm>` | `pnpm`, `npm` veya `yarn` |
 | `-y, --yes` | soruları atla ve varsayılanları kullan |
 | `--no-install` | bağımlılıkları kurma |
 | `--local` | SDK monorepo'sunda `@qorechain/*` bağımlılıklarını yerel bağlantılara çevirir (SDK katkıcıları için) |
 | `-h, --help`, `-v, --version` | yardım, sürüm |
+
+### 0.13.1'deki şablon değişiklikleri {#template-fixes-0131}
+
+Sürüm 0.13.1 (12 Kasım 2026) yalnızca şablonları içeren bir yamadır; SDK paketleri 0.13.0'da kalır. Paketin sürüm notlarından:
+
+* `--network`, seçilen ağın herkese açık uç noktalarını üretilen `.env` dosyasına yazar.
+* `fullstack-web` ve `viem-wagmi`, REST'e bir Vite `/lcd` vekili üzerinden ulaşır; çünkü herkese açık REST CORS başlıkları göndermez. Geliştirme sırasında tarayıcı kodu `/lcd/...` çağırır.
+* `evm-solidity`: dağıtım betiğini `pnpm run deploy` ile çalıştırın (düz `pnpm deploy` farklı bir pnpm komutudur). Betik `.env` dosyasını okur ve README, dağıtımdan önce EVM penceresinin nasıl açılacağını açıklar.
+* `viem-wagmi`, viem `~2.53.1` sürümüne sabitlenir.
+* `hardhat` README'si, bir pencere açıldıktan sonra ilk işlemden önce yaklaşık 10 saniye beklenmesini not eder.
 
 Test edilmiş örnek (geliştirici merkezinden; 27 Ekim 2026'da boş bir dizinde, herkese açık npm kayıt defterinden `npx` ile çalıştırıldı): web şablonunun iskeletini oluşturur ve derler. Gözlenen: `Done! Created my-dapp` ve başarılı bir `vite build`. Derleme bir paket boyutu uyarısı yazdırır; zararsızdır.
 
@@ -160,7 +170,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp` (komut `create-qorechain-dapp`) | 0.13.0 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp` (komut `create-qorechain-dapp`) | 0.13.1 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup` (komut `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli` (komut `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk` (şablonların kullandığı kütüphane) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
@@ -169,7 +179,7 @@ Kaynak: https://github.com/qorechain/qorechain-sdk/tree/main/cli (dApp iskele ar
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
-* **`--network mainnet`, bir test çalıştırmasında üretilen dosyaları değiştirmedi.** 27 Ekim 2026'da `fullstack-web` ve `custom-rollup` şablonlarının iskeleti `--network mainnet` ile oluşturuldu; üretilen `.env` hâlâ localhost uç noktalarını (dApp) veya test ağı uç noktalarıyla `QORE_NETWORK=testnet` değerini (rollup) taşıyordu ve dApp'in `App.tsx` dosyası bir `testnet` istemcisi oluşturdu. 4 Kasım 2026'da `create-qorechain-dapp` 0.12.0, `evm-solidity`, `fullstack-web` ve `rollup-app` için aynı şekilde davrandı. Ağı ve uç noktaları `.env` içinde ve web şablonu için `src/App.tsx` içinde kendiniz ayarlayın.
+* **`--network mainnet`, bir test çalıştırmasında üretilen dosyaları değiştirmedi (0.10.0 ve 0.12.0).** 0.13.1 sürüm notları, `--network` değerinin artık seçilen ağın herkese açık uç noktalarını `.env` dosyasına yazdığını söylüyor; bu burada yeniden test edilmedi, bu yüzden iskeleyi oluşturduktan sonra dosyayı kontrol edin. 27 Ekim 2026'da `fullstack-web` ve `custom-rollup` şablonlarının iskeleti `--network mainnet` ile oluşturuldu; üretilen `.env` hâlâ localhost uç noktalarını (dApp) veya test ağı uç noktalarıyla `QORE_NETWORK=testnet` değerini (rollup) taşıyordu ve dApp'in `App.tsx` dosyası bir `testnet` istemcisi oluşturdu. 4 Kasım 2026'da `create-qorechain-dapp` 0.12.0, `evm-solidity`, `fullstack-web` ve `rollup-app` için aynı şekilde davrandı. Ağı ve uç noktaları `.env` içinde ve web şablonu için `src/App.tsx` içinde kendiniz ayarlayın.
 * **Henüz hiçbir ağda bir rollup yok** (27 Ekim 2026'da kontrol edildi). Rollup araçlarının hiçbir işlem yolu canlı bir rollup üzerinde denenmemiştir. Her şeyi önce test ağında doğrulayın ve [RDK 0.8.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits) bölümünü okuyun.
 * **`defi-rollup` şablonu bir batch'i çözümleyemez (settle).** ZK settlement ana ağda kullanılamaz (anahtar kaydı yalnızca testnet'te vardır, zincir v3.2.7'den beri, ve orada hiçbir ZK rollup denenmemiştir) ve demo devresi her halükarda zincirin kanıt kontrolünü geçemezdi. 0.7.0'dan itibaren şablon göndermeden önce durur; böylece zincirin her zaman reddedeceği bir batch için artık ücret harcamaz. Bu değişene kadar `optimistic` settlement'lı bir şablon kullanın (bkz. [ZK, STARK ve Çekimler](/rollups/zk-stark-withdrawals)).
 * **`multivm-rollup` şablonu canlı olmayan bir şeye bağlıdır.** `0x0000000000000000000000000000000000000901` adresindeki cross-VM precompile ana ağda etkin değildir; bu yüzden bir kontrattan yapılan çağrı orada hiçbir şey yapmaz; test ağında izin listesiyle etkindir (7 Kasım 2026'da salt okunur bir `eth_call` test edildi). Şablon bunu kontrol eder ve kontratı sessizce başarısız olmak yerine geri alacak (revert) şekilde yazılmıştır (bkz. [Multi-VM](/rollups/multi-vm)).
@@ -178,7 +188,7 @@ Kaynak: https://github.com/qorechain/qorechain-sdk/tree/main/cli (dApp iskele ar
 * **`rollup-app` yalnızca istediğinizde yayınlar.** Varsayılan olarak deneme çalıştırması yapar; `QORE_BROADCAST=1` ile hesabın ML-DSA-87 anahtarını bir kez kaydeder ve hibrit imzalar. Örnek rollup değerleri açıklayıcıdır: gerçek profil adlarını ve stake'i [Hazır Profiller](/rollups/preset-profiles) sayfasından alın.
 * **`fullstack-web`, tokenomik düğmesinde bir hata gösterir.** O panel, herkese açık uç noktaların sunmadığı bir `qor_` JSON-RPC yöntemini çağırır; bakiye sorgusu çalışır. Bunu `client.rest.getBurnStats()` gibi bir REST okumasıyla değiştirin.
 * **`evm-solidity` fonlanmış bir hesaptan fazlasını gerektirir.** QoreChain'de bir EVM işlemi göndermek ayrıca kayıtlı bir ML-DSA-87 anahtarı ve native lane'den kurulan açık bir EVM yetkilendirme penceresi gerektirir (bkz. [EVM kılavuzu](/developer-guide/evm-development#evm-window)). Şablonun `deploy` betiği bu sayfa için canlı bir ağa karşı çalıştırılmadı.
-* **`create-qorechain-dapp --version`, kurulu paket 0.12.0 olduğu halde `0.5.1` yazdırır** (27 Ekim 2026'da 0.10.0 ile ve 4 Kasım 2026'da 0.12.0 ile tekrar kontrol edildi). Sürümü `package.json` dosyasından veya kayıt defterinden okuyun.
+* **`create-qorechain-dapp --version`, kurulu paket 0.12.0 idi, buna rağmen `0.5.1` yazdırır** (27 Ekim 2026'da 0.10.0 ile ve 4 Kasım 2026'da 0.12.0 ile tekrar kontrol edildi). Sürümü `package.json` dosyasından veya kayıt defterinden okuyun.
 * **Paket README'leri güncel değil.** `create-qorechain-dapp` README'si iki, `create-qorechain-rollup` README'si beş şablon listeler (27 Ekim 2026'da kontrol edildi); `--help` yedi ve altı gösterir. `--help` çıktısına güvenin.
 * **0.6.2'den önceki sürümler npm'den çalışmaz.** `qorollup` 0.6.1 ve öncesi, npm üzerinden herhangi bir şekilde kurulduğunda hiçbir şey yazdırmadı ve 0 koduyla çıktı; `--version` `0.4.1` yazdırdı. 0.6.1'de kalmanız gerekiyorsa `node node_modules/@qorechain/rdk-cli/dist/index.js <command>` çalıştırın; aksi halde yükseltin.
 * **Bağımlılık kopyaları (RDK 0.6.x ve SDK 0.12.0'ın yanındaki RDK 0.8.0).** `@qorechain/rdk` 0.6.2 ve öncesi `@qorechain/sdk` `^0.9.0` sürümüne bağlıdır; bu nedenle SDK 0.10.0'ı da kuran bir proje, ikinci bir iç içe SDK 0.9.x barındırıyordu. 0.7.0'dan itibaren kit `@qorechain/sdk` `^0.10.0` sürümüne bağlıdır ve bir SDK 0.10.x uygulamasıyla tek bir kopyayı paylaşır. **`@qorechain/rdk` 0.8.0'ı da kuran SDK 0.12.0 üzerindeki bir uygulama yine de SDK 0.10.0'ın (ve `@qorechain/evm` 0.8.0'ın) iç içe bir kopyasını alır**, çünkü 0.x sürümündeki bir caret aralığı daha yeni minor sürümleri almaz (4 Kasım 2026'da `npm ls` ile kontrol edildi). RDK aralığı değişene kadar SDK çağrılarını ve RDK çağrılarını ayrı modüllerde tutun veya aralarında nesneleri düz veri olarak geçirin.

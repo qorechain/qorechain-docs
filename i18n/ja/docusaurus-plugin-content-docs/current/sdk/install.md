@@ -17,7 +17,7 @@ EVM および SVM アダプター（`@qorechain/evm`、`@qorechain/svm`）、Rea
 
 | レジストリ | パッケージ | バージョン |
 | --- | --- | --- |
-| npm | `@qorechain/sdk`、`@qorechain/react`、`@qorechain/evm`、`@qorechain/svm`、`create-qorechain-dapp` | 0.13.0 |
+| npm | `@qorechain/sdk`、`@qorechain/react`、`@qorechain/evm`、`@qorechain/svm`、`create-qorechain-dapp` | 0.13.0（`create-qorechain-dapp` は 0.13.1。SDK 0.13.0 に対するテンプレートのみのパッチ） |
 | PyPI | `qorechain-sdk`（インポートは `qorsdk`） | 0.13.0 |
 | crates.io | `qorechain-sdk`（インポートは `qorechain`） | 0.13.0 |
 | Go モジュールプロキシ | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
@@ -273,14 +273,14 @@ npm には `0.13.0` で公開されており、`@qorechain/sdk` `^0.13.0` に依
 
 ### スキャフォルダー
 
-`create-qorechain-dapp`（npm、`0.13.0`）はすぐに実行できる dApp を生成します:
+`create-qorechain-dapp`（npm、`0.13.1`）はすぐに実行できる dApp を生成します:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
 生成される `package.json` ファイルは、スキャフォルダーが同梱している SDK リリースに依存します
-（`@qorechain/sdk` `^0.13.0`。EVM テンプレートは `@qorechain/evm` `^0.13.0` を使用します）。コントラクト作業向けの `foundry`、`hardhat`、`viem-wagmi`、`cosmwasm` テンプレートもあります。
+（`@qorechain/sdk` `^0.13.0`。EVM テンプレートは `@qorechain/evm` `^0.13.0` を使用します）。バージョン 0.13.1 で変わったのはテンプレートだけです。[スキャフォルダーと CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131) を参照してください。コントラクト作業向けの `foundry`、`hardhat`、`viem-wagmi`、`cosmwasm` テンプレートもあります。
 スキャフォルダーのバージョン 0.8.0 は `^0.3.0` の範囲を書き込んでいましたが、0.x バージョンではこれは
 0.3 の範囲内にとどまり、稼働中のネットワーク向けに署名できません。0.8.0 でスキャフォールドした場合は、
 `npm i @qorechain/sdk@latest` を実行してください。[CLI リファレンス](/sdk/reference/cli)を参照してください。

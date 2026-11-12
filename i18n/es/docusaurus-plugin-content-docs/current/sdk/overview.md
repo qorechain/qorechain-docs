@@ -133,7 +133,7 @@ derivación, aritmética de denominaciones y superficies de lectura.
 | `@qorechain/evm` | TypeScript (adaptador EVM) | `npm i @qorechain/evm viem` | Publicado (npm, v0.13.0) |
 | `@qorechain/svm` | TypeScript (adaptador SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicado (npm, v0.13.0) |
 | `@qorechain/react` | TypeScript (kit de React) | `npm i @qorechain/react` | Publicado (npm, v0.13.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicado (npm, v0.13.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicado (npm, v0.13.1) |
 
 > La distribución de Python se instala como `qorechain-sdk` pero **se importa
 > como `qorsdk`**. Todos los clientes están publicados en sus registros —
@@ -155,7 +155,7 @@ proxy de módulos (tag `packages/go/v0.13.0`), Rust en crates.io
 (`io.github.qorechain:qorechain-sdk`, 0.13.0, comprobado el 11 de noviembre de 2026). Los adaptadores
 de ejecución EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambos 0.13.0), el kit
 `@qorechain/react` (0.13.0) y la CLI de scaffolding `create-qorechain-dapp`
-(0.13.0) son solo para TypeScript y también están publicados en npm. Consulta
+(0.13.1, un parche solo de plantillas sobre el SDK 0.13.0) son solo para TypeScript y también están publicados en npm. Consulta
 [Instalación](/sdk/install#related-packages) para los paquetes complementarios.
 
 ## Novedades de la 0.6 a la 0.13 {#whats-new-in-06-07-08-09-and-010}

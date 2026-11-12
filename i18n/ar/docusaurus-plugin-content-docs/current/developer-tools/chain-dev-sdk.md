@@ -10,7 +10,7 @@ sidebar_position: 34
 حزمة مطوّري السلسلة هي الجزء من QoreChain SDK الذي يساعد فرق Solidity والعقود الذكية على البناء على QoreChain بالأدوات التي تستخدمها بالفعل. تضيف تعريفات سلاسل viem ومساعِدات نافذة تفويض EVM إلى `@qorechain/evm`، وأربعة قوالب مشاريع إلى `create-qorechain-dapp` (Foundry وHardhat 3 وviem مع wagmi، ورمز QoreChain Native بصيغة CosmWasm)، وبدايات سريعة لـ EVM بخمس لغات، ومرجعًا يوضح كيف تختلف QoreChain EVM عن Ethereum. وهي موجّهة لفرق Solidity التي تنقل عقودها من Ethereum، ولمطوري الواجهات الأمامية لتطبيقات dApp على wagmi وRainbowKit، ولمطوري CosmWasm، ولمشرفي أدوات EVM الراغبين في إضافة QoreChain.
 
 :::note متاح: مضمَّن في SDK 0.13.0
-الحزمة **متاحة وقابلة للتثبيت** في QoreChain SDK **0.13.0** (npm، 11 نوفمبر 2026): `@qorechain/evm` 0.13.0 و`@qorechain/sdk` 0.13.0 و`@qorechain/react` 0.13.0 و`@qorechain/svm` 0.13.0 و`create-qorechain-dapp` 0.13.0، مع SDK لغات Python وRust وGo بالإصدار 0.13.0 أيضًا (وحزمة Java منشورة على Maven Central بالإصدار 0.13.0؛ جرى التحقق في 11 نوفمبر 2026). صدر محتواها أول مرة بالإصدار 0.11.0 على npm وحدها (29 أكتوبر 2026) وكانت ضمن 0.12.0 (30 أكتوبر 2026)؛ ولا يوجد 0.11.0 في أي سجل آخر. أُجريت التشغيلات الاختبارية في هذه الصفحة مقابل 0.12.0 في 4 نوفمبر 2026؛ وغيّر 0.13.0 مساعد الحساب على مسار البذرة ومعالجة `PRIVATE_KEY` في القوالب (راجع [ما الذي يغيّره 0.13.0](/sdk/install#whats-new-0130)).
+الحزمة **متاحة وقابلة للتثبيت** في QoreChain SDK **0.13.0** (npm، 11 نوفمبر 2026): `@qorechain/evm` 0.13.0 و`@qorechain/sdk` 0.13.0 و`@qorechain/react` 0.13.0 و`@qorechain/svm` 0.13.0 و`create-qorechain-dapp` 0.13.1 (تحديث للقوالب فقط فوق SDK 0.13.0، 12 نوفمبر 2026)، مع SDK لغات Python وRust وGo بالإصدار 0.13.0 أيضًا (وحزمة Java منشورة على Maven Central بالإصدار 0.13.0؛ جرى التحقق في 11 نوفمبر 2026). صدر محتواها أول مرة بالإصدار 0.11.0 على npm وحدها (29 أكتوبر 2026) وكانت ضمن 0.12.0 (30 أكتوبر 2026)؛ ولا يوجد 0.11.0 في أي سجل آخر. أُجريت التشغيلات الاختبارية في هذه الصفحة مقابل 0.12.0 في 4 نوفمبر 2026؛ وغيّر 0.13.0 مساعد الحساب على مسار البذرة ومعالجة `PRIVATE_KEY` في القوالب (راجع [ما الذي يغيّره 0.13.0](/sdk/install#whats-new-0130)).
 :::
 
 تستهدف الحزمة الشبكة الرئيسية (`qorechain-vladi`، معرّف سلسلة EVM هو 9801) وشبكة الاختبار (`qorechain-diana`، معرّف سلسلة EVM هو 9800).
@@ -26,7 +26,7 @@ sidebar_position: 34
 | فتح نافذة تفويض EVM وقراءتها مع التوقيع، باستخدام `openEvmWindowMsg` و`fetchEvmWindow` و`EthNativeSigner` و`deriveUnifiedAccount` | `@qorechain/sdk` 0.13.0 | [البداية السريعة 5](#quickstart-open-window) |
 | منشئات النافذة نفسها في Python وGo وRust وJava | حِزم SDK بالإصدار 0.13.0 | [الواجهة البرمجية الرئيسية](#main-api) |
 | مساعِدات موافقة EIP-7702 `authorizeEvmDelegationMsg` و`clearEvmDelegationMsg` و`classifyEvmDelegationRejection` | `@qorechain/sdk` 0.13.0 | [الواجهة البرمجية الرئيسية](#main-api) |
-| سبعة قوالب لأداة التوليد: `evm-solidity` و`fullstack-web` و`rollup-app` و`foundry` و`hardhat` و`viem-wagmi` و`cosmwasm`، والمساعِد `pnpm window` | `create-qorechain-dapp` 0.13.0 | [القوالب](#templates) |
+| سبعة قوالب لأداة التوليد: `evm-solidity` و`fullstack-web` و`rollup-app` و`foundry` و`hardhat` و`viem-wagmi` و`cosmwasm`، والمساعِد `pnpm window` | `create-qorechain-dapp` 0.13.1 | [القوالب](#templates) |
 | `PqcStatusBadge` | `@qorechain/react` 0.13.0 | [الواجهة البرمجية الرئيسية](#main-api) |
 
 ## الابتكارات {#innovations}
@@ -57,13 +57,13 @@ sidebar_position: 34
 
 ### القوالب {#templates}
 
-لدى `create-qorechain-dapp` 0.13.0 سبعة قوالب: `evm-solidity` و`fullstack-web` و`rollup-app` (راجع [أدوات التوليد وCLI](/developer-tools/scaffolders-and-cli)) وأربعة تتبع الحزمة:
+لدى `create-qorechain-dapp` 0.13.1 سبعة قوالب: `evm-solidity` و`fullstack-web` و`rollup-app` (راجع [أدوات التوليد وCLI](/developer-tools/scaffolders-and-cli)) وأربعة تتبع الحزمة:
 
 | القالب | ما تحصل عليه |
 |---|---|
 | `foundry` | مشروع Foundry: عقد `Counter` واختبارات ونص نشر ونقاط RPC مسمّاة `qorechain` و`qorechain_testnet`، والأمر `pnpm window status\|register\|open`. |
 | `hardhat` | مشروع Hardhat 3 وviem: عقد `Counter` واختبارات على الشبكة المحاكاة ووحدة نشر Ignition وشبكتان `qorechain` و`qorechainTestnet`، والأمر `pnpm window status\|register\|open`. |
-| `viem-wagmi` | تطبيق dApp بـ Vite وReact وwagmi وRainbowKit مع محفظة QoreX (`@qorechain/qorex-rainbowkit`) وتعريفات السلاسل من `@qorechain/evm`. يعرض آخر كتلة ورصيد QOR ونافذة EVM للحساب. |
+| `viem-wagmi` | تطبيق dApp بـ Vite وReact وwagmi وRainbowKit مع محفظة QoreX (`@qorechain/qorex-rainbowkit`) وتعريفات السلاسل من `@qorechain/evm`. يعرض آخر كتلة ورصيد QOR ونافذة EVM للحساب. يثبّت viem على `~2.53.1` ويصل إلى REST عبر وكيل Vite باسم `/lcd` (لأن REST العام لا يرسل ترويسات CORS)، فيستدعي كود المتصفح `/lcd/...` أثناء التطوير (0.13.1). |
 | `cosmwasm` | رمز CW20 على QoreChain Native (CosmWasm) مبني على `cw20-base` من cw-plus، وبناء محسَّن في Docker، ونص مقترح رفع عبر الحوكمة، ونصوص إنشاء نسخة واستعلام على شبكة الاختبار. |
 
 تثبّت القوالب `@qorechain/evm` و`@qorechain/sdk` على `^0.13.0` (كانت قوالب 0.12.0 تثبّتها على `^0.12.0`؛ قُرئ ذلك من قالب `foundry` مُولَّد في 4 نوفمبر 2026).
@@ -77,7 +77,7 @@ sidebar_position: 34
 ## حالات الاستخدام {#use-cases}
 
 1. **فريق Solidity ينقل مشروعه من Ethereum.** ولّد القالب `foundry` وانسخ العقود إليه، ونفّذ `forge test` محليًا، ونفّذ `pnpm window register` مرة واحدة و`pnpm window open` قبل كل دفعة نشر. تسرد [الاختلافات](#evm-differences) ما يجب تغييره: لا معاملات blob، وPREVRANDAO ثابت، ولا تتبّع `debug_*` على نقاط النهاية العامة.
-2. **مشروع Hardhat 3 متجه إلى شبكة الاختبار.** ولّد القالب `hardhat` وأبقِ وحدات Ignition لديك وانشر بـ `pnpm deploy:testnet` بعد فتح نافذة.
+2. **مشروع Hardhat 3 متجه إلى شبكة الاختبار.** ولّد القالب `hardhat` وأبقِ وحدات Ignition لديك وانشر بـ `pnpm deploy:testnet` بعد فتح نافذة. انتظر نحو 10 ثوانٍ بعد فتح النافذة قبل أول معاملة (يذكر ذلك ملف README الخاص بـ Hardhat).
 3. **واجهة dApp أمامية على wagmi.** استورد `QORECHAIN_CHAINS` في إعداد wagmi وRainbowKit، واعرض نافذة المستخدم بـ `evmWindowStatus`، وفسّر الإرسال المرفوض بـ `classifyEvmWindowRejection`.
 4. **خدمة خلفية بلغة أخرى.** تقرأ خدمة Python أو Go أو Rust أو Java الأرصدة وتستدعي العقود باستخدام web3.py أو go-ethereum أو alloy أو web3j كما على Ethereum. وللإرسال تبني `MsgOpenEVMWindow` بـ QoreChain SDK 0.12.0 الخاص بتلك اللغة.
 5. **مطوّر CosmWasm.** ولّد القالب `cosmwasm` واختبر CW20 بـ `cargo test`، وابنِ Wasm المحسَّن، وقدّم مقترح حوكمة لتخزين الشيفرة، ثم أنشئ نسخة منها على شبكة الاختبار بعد أن يمرّ المقترح.
@@ -122,7 +122,7 @@ sidebar_position: 34
 | TypeScript، قراءات EVM ومساعِدات ERC وتعريفات سلاسل viem ومساعِدات النافذة | `npm install @qorechain/evm viem` (0.13.0) | Node.js 20 أو أحدث؛ والاعتماد النظير `viem ^2` |
 | TypeScript، توقيع رسالة النافذة | `npm install @qorechain/sdk` (يتضمن 0.13.0 الدوال `openEvmWindowMsg` و`fetchEvmWindow` و`EthNativeSigner` و`deriveUnifiedAccount`) | Node.js 20 أو أحدث |
 | React، شارة حالة PQC | `npm install @qorechain/react @qorechain/sdk react react-dom` (0.13.0) | Node.js 20 أو أحدث |
-| أداة التوليد، القوالب السبعة كلها | `npx create-qorechain-dapp my-app --template <name>` (0.13.0) | Node.js 20 أو أحدث؛ وFoundry لقالب `foundry`؛ وNode.js 22 لقالب `hardhat` (Hardhat 3)؛ وRust وDocker لقالب `cosmwasm` |
+| أداة التوليد، القوالب السبعة كلها | `npx create-qorechain-dapp my-app --template <name>` (0.13.1) | Node.js 20 أو أحدث؛ وFoundry لقالب `foundry`؛ وNode.js 22 لقالب `hardhat` (Hardhat 3)؛ وRust وDocker لقالب `cosmwasm` |
 | Python (قراءات EVM) | `pip install "web3>=7,<8"`؛ ورسالة النافذة من `pip install qorechain-sdk` (0.13.0) | Python 3.10 أو أحدث |
 | Go (قراءات EVM) | `go get github.com/ethereum/go-ethereum@latest`؛ ورسالة النافذة من `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | سلسلة أدوات Go |
 | Rust (قراءات EVM) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`؛ ورسالة النافذة من الحزمة `qorechain-sdk` 0.13.0 | Rust المستقر |
@@ -309,8 +309,8 @@ cd my-dapp && npm run build
 | `foundry`، `hardhat` | `pnpm window open` | يفتح نافذة (افتراضيًا 600 كتلة و5 معاملات). |
 | `foundry`، `hardhat` | `pnpm window recovery-code` | يطبع رمز استرداد جديدًا (0.13.0). احفظه بعيدًا عن `PRIVATE_KEY` وضعه في `QORE_PQC_RECOVERY_CODE`. |
 | `foundry` | `pnpm deploy:testnet` | `forge script script/Counter.s.sol --rpc-url qorechain_testnet --broadcast`. |
-| `hardhat` | `pnpm build`، `pnpm test`، `pnpm deploy:testnet` | بناء Hardhat والاختبارات ونشر Ignition إلى `qorechainTestnet`. |
-| `viem-wagmi` | `pnpm dev`، `pnpm build` | خادم تطوير على `http://localhost:5173`؛ وبناء للإنتاج. |
+| `hardhat` | `pnpm build`، `pnpm test`، `pnpm deploy:testnet` | بناء Hardhat والاختبارات ونشر Ignition إلى `qorechainTestnet`. انتظر نحو 10 ثوانٍ بعد `pnpm window open` قبل أول معاملة. |
+| `viem-wagmi` | `pnpm dev`، `pnpm build` | خادم تطوير على `http://localhost:5173` (وREST عبر وكيل `/lcd`)؛ وبناء للإنتاج. |
 | `cosmwasm` | `pnpm build:wasm`، `pnpm propose-store`، `pnpm instantiate`، `pnpm query` | بناء محسَّن، ومقترح رفع عبر الحوكمة، وإنشاء نسخة (شبكة الاختبار)، واستعلامات REST. |
 
 متغيرات البيئة للقوالب (في `.env`، لا تُرفع أبدًا): `PRIVATE_KEY` و`QORE_MNEMONIC` و`QORE_PQC_RECOVERY_CODE` (مع `PRIVATE_KEY`؛ ويطبع `pnpm window recovery-code` رمزًا جديدًا، فاحفظه بعيدًا عن المفتاح) و`QORE_NETWORK` (`testnet` أو `mainnet`) و`QORE_WINDOW_BLOCKS` و`QORE_WINDOW_TXS` و`QORE_WINDOW_MAX_UQOR` و`COUNTER_INITIAL`؛ و`QORE_CODE_ID` و`QORE_I_KNOW_THIS_IS_MAINNET=yes` لنصوص CosmWasm (نص المقترح يرفض الشبكة الرئيسية بدونه)؛ و`VITE_WALLETCONNECT_PROJECT_ID` لمحفظة WalletConnect في `viem-wagmi`.
@@ -343,7 +343,7 @@ cd my-dapp && npm run build
 | npm | `@qorechain/sdk` | 0.13.0 | https://www.npmjs.com/package/@qorechain/sdk |
 | npm | `@qorechain/react` | 0.13.0 | https://www.npmjs.com/package/@qorechain/react |
 | npm | `@qorechain/svm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/svm |
-| npm | `create-qorechain-dapp` | 0.13.0 (سبعة قوالب) | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp` | 0.13.1 (سبعة قوالب) | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `@qorechain/qorex-rainbowkit` (تستخدمه `viem-wagmi`) | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-rainbowkit |
 | PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
@@ -376,7 +376,7 @@ cd my-dapp && npm run build
 
 ## صفحات ذات صلة {#related}
 
-- [نظرة عامة على حزم المطورين](/developer-tools/overview) و[أدوات التوليد وCLI](/developer-tools/scaffolders-and-cli) (الأداة `create-qorechain-dapp` 0.13.0)
+- [نظرة عامة على حزم المطورين](/developer-tools/overview) و[أدوات التوليد وCLI](/developer-tools/scaffolders-and-cli) (الأداة `create-qorechain-dapp` 0.13.1)
 - [نظرة عامة على SDK](/sdk/overview) و[تثبيت SDK](/sdk/install) و[دليل EVM](/sdk/guides/evm) (النافذة والنوافذ المحدّدة النطاق وموافقة EIP-7702 والـ precompiles)
 - [تطوير EVM](/developer-guide/evm-development) و[EVM Precompiles](/developer-guide/evm-precompiles#network-status)
 - [تطوير QoreChain Native](/developer-guide/cosmwasm-development) (CosmWasm ومقترحات الحوكمة)

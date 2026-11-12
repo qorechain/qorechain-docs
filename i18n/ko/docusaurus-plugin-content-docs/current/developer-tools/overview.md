@@ -88,7 +88,7 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 | [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Published. Provider, hooks, `ConnectButton`, PQC 상태 배지(`PqcStatusBadge`, 그리고 0.10.0부터 유지되는 `QuantumSafeBadge`) |
 | [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | Published. viem 체인 정의와 EVM 윈도우 헬퍼 포함([체인 개발자 키트](#group-chain-dev-sdk) 참조) |
 | [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | Published. 라이브 네트워크에서는 읽기만 가능 |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.0 | `npx create-qorechain-dapp my-dapp` | Published. 템플릿 일곱 가지 |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.1 | `npx create-qorechain-dapp my-dapp` | Published. 템플릿 일곱 가지 |
 | [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | Published |
 | [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Published |
 | [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Published |
@@ -174,7 +174,7 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 
 페이지: [체인 개발자 키트](/developer-tools/chain-dev-sdk). 소스: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). Solidity 및 스마트 컨트랙트 팀을 위한 QoreChain SDK의 일부입니다. `@qorechain/evm`의 viem 체인 정의와 EVM 인가 윈도우 헬퍼, `create-qorechain-dapp` 템플릿 네 가지(Foundry, Hardhat 3, wagmi를 쓰는 viem, QoreChain Native 토큰), EVM 퀵스타트, 그리고 QoreChain EVM이 Ethereum과 어떻게 다른지 설명하는 페이지로 구성됩니다.
 
-**라이브이며 SDK 0.13.0에 포함되어 있습니다**(0.12.0부터): 별도의 패키지는 없습니다. [SDK 표](#group-sdk)의 패키지를 설치하세요(체인 정의와 윈도우 헬퍼는 `@qorechain/evm` 0.13.0, 템플릿은 `create-qorechain-dapp` 0.13.0). 키트 내용은 npm에 0.11.0(2026년 10월 29일)으로 처음 나타났으며, 0.12.0이 이를 대체합니다.
+**라이브이며 SDK 0.13.0에 포함되어 있습니다**(0.12.0부터): 별도의 패키지는 없습니다. [SDK 표](#group-sdk)의 패키지를 설치하세요(체인 정의와 윈도우 헬퍼는 `@qorechain/evm` 0.13.0, 템플릿은 `create-qorechain-dapp` 0.13.1). 키트 내용은 npm에 0.11.0(2026년 10월 29일)으로 처음 나타났으며, 0.12.0이 이를 대체합니다.
 
 ### 롤업 개발 키트 (RDK) {#group-rdk}
 

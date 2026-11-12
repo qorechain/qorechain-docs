@@ -95,7 +95,7 @@ EVM), che è distinto dalla base Native `uqor` di 10^6.
 
 Tutti (verificato l'11 novembre 2026). Il core TypeScript (`@qorechain/sdk`, 0.13.0),
 il kit React (`@qorechain/react`, 0.13.0), lo scaffolder `create-qorechain-dapp`
-(0.13.0) e gli adapter EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) sono su
+(0.13.1, una patch solo per i template sopra l'SDK 0.13.0) e gli adapter EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) sono su
 npm; il client Python è su PyPI (`pip install qorechain-sdk` alla 0.13.0, import
 `qorsdk`); il client Go è sul module proxy
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`); il client Rust è su

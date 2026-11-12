@@ -19,7 +19,7 @@ tabla):
 
 | Registro | Paquete | Versión |
 | --- | --- | --- |
-| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 (`create-qorechain-dapp`: 0.13.1, un parche solo de plantillas sobre el SDK 0.13.0) |
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
 | Proxy de módulos de Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
@@ -286,14 +286,14 @@ Publicado en npm en la versión `0.13.0`; depende de `@qorechain/sdk` `^0.13.0`.
 
 ### Generador de proyectos
 
-`create-qorechain-dapp` (npm, `0.13.0`) genera una dApp lista para ejecutar:
+`create-qorechain-dapp` (npm, `0.13.1`) genera una dApp lista para ejecutar:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
 Los archivos `package.json` generados dependen de la versión del SDK con la que se
-distribuye el generador (`@qorechain/sdk` `^0.13.0`; las plantillas EVM usan `@qorechain/evm` `^0.13.0`). También tiene las plantillas `foundry`, `hardhat`, `viem-wagmi` y `cosmwasm` para trabajar con contratos.
+distribuye el generador (`@qorechain/sdk` `^0.13.0`; las plantillas EVM usan `@qorechain/evm` `^0.13.0`). La versión 0.13.1 cambia solo las plantillas; consulta [Generadores y CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131). También tiene las plantillas `foundry`, `hardhat`, `viem-wagmi` y `cosmwasm` para trabajar con contratos.
 La versión 0.8.0 del generador escribía rangos `^0.3.0`, que sobre una versión 0.x se
 quedan dentro de la 0.3 y no pueden firmar para las redes en producción; si generaste
 el proyecto con la 0.8.0, ejecuta `npm i @qorechain/sdk@latest`. Consulta la

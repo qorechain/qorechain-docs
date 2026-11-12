@@ -19,7 +19,7 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Published to npm as `create-qorechain-dapp` (`0.13.0`). The generated
+> Published to npm as `create-qorechain-dapp` (`0.13.1`, a templates-only patch on top of SDK 0.13.0). The generated
 > `package.json` files depend on `@qorechain/sdk` `^0.13.0` (the EVM templates on
 > `@qorechain/evm` `^0.13.0`). Version 0.8.0 of the scaffolder wrote `^0.3.0` ranges,
 > which npm resolves to a 0.3 release that cannot sign for the live networks; if you
@@ -29,12 +29,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 
 | Template | Description |
 | --- | --- |
-| `evm-solidity` | A Solidity `Counter` contract + a viem deploy/interact script (`@qorechain/evm`). |
-| `fullstack-web` | A Vite + React + TypeScript dApp reading balances and tokenomics (`@qorechain/sdk`). |
+| `evm-solidity` | A Solidity `Counter` contract + a viem deploy/interact script (`@qorechain/evm`). Run the script with `pnpm run deploy` (not `pnpm deploy`, which is a different pnpm command); it reads `.env`, and its README covers opening the EVM window before deploying. |
+| `fullstack-web` | A Vite + React + TypeScript dApp reading balances and tokenomics (`@qorechain/sdk`). REST goes through a Vite `/lcd` proxy because the public REST sends no CORS headers, so browser code calls `/lcd/...` in dev. |
 | `rollup-app` | A rollup + sidechain/paychain app using the `RollupClient` and the multilayer helper (`@qorechain/sdk`). |
 | `foundry` | A Foundry project for QoreChain's EVM Engine. `pnpm window` registers the account's ML-DSA-87 key and opens the [EVM authorization window](/sdk/guides/evm#evm-window) before a deploy (added in the npm-only 0.11.0). |
 | `hardhat` | The same for Hardhat 3, with `pnpm window status`, `register` and `open`. |
-| `viem-wagmi` | A web dApp on viem and wagmi using `@qorechain/evm`'s `qorechain` and `qorechainTestnet` chains. |
+| `viem-wagmi` | A web dApp on viem and wagmi using `@qorechain/evm`'s `qorechain` and `qorechainTestnet` chains. Pins viem `~2.53.1` and uses the same `/lcd` proxy for REST. |
 | `cosmwasm` | A QoreChain Native (Wasm) contract project. On the live networks code upload is governance-only; see the [QoreChain Native guide](/sdk/guides/cosmwasm). |
 
 The `rollup-app` template (since scaffolder 0.10.0) runs a dry run by default. With `QORE_BROADCAST=1` it
@@ -54,7 +54,7 @@ such as `client.rest.getBurnStats()` for the public networks.
 | Flag | Description |
 | --- | --- |
 | `-t, --template <name>` | Template to use (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | Network preset (`testnet` \| `mainnet`). |
+| `--network <name>` | Network preset (`testnet` \| `mainnet`). Writes the chosen network's public endpoints into the generated `.env` (0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Skip prompts and use defaults. |
 | `--no-install` | Do not install dependencies after scaffolding. |

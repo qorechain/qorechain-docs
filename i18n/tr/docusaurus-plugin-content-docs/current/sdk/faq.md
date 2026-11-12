@@ -95,7 +95,7 @@ EVM çalışma zamanının QOR'u **18** ondalık basamakla temsil ettiğini unut
 
 Hepsi (11 Kasım 2026'da kontrol edildi). TypeScript çekirdeği (`@qorechain/sdk`, 0.13.0),
 React kiti (`@qorechain/react`, 0.13.0), `create-qorechain-dapp` iskele aracı
-(0.13.0) ve EVM/SVM adaptörleri (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) npm'de;
+(0.13.1, SDK 0.13.0'ın üzerine yalnızca şablonları içeren bir yama) ve EVM/SVM adaptörleri (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) npm'de;
 Python istemcisi PyPI'da (`pip install qorechain-sdk`, sürüm 0.13.0, import
 `qorsdk`); Go istemcisi modül proxy'sinde
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`); Rust istemcisi

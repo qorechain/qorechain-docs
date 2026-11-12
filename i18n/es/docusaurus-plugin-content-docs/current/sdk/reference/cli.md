@@ -19,7 +19,7 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publicado en npm como `create-qorechain-dapp` (`0.13.0`). Los archivos
+> Publicado en npm como `create-qorechain-dapp` (`0.13.1`, un parche solo de plantillas sobre el SDK 0.13.0). Los archivos
 > `package.json` generados dependen de `@qorechain/sdk` `^0.13.0` (las plantillas EVM, de
 > `@qorechain/evm` `^0.13.0`). La versión 0.8.0 del generador escribía rangos `^0.3.0`,
 > que npm resuelve a una versión 0.3 que no puede firmar para las redes en vivo; si
@@ -29,12 +29,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 
 | Plantilla | Descripción |
 | --- | --- |
-| `evm-solidity` | Un contrato `Counter` de Solidity + un script de despliegue/interacción con viem (`@qorechain/evm`). |
-| `fullstack-web` | Una dApp Vite + React + TypeScript que lee saldos y tokenomics (`@qorechain/sdk`). |
+| `evm-solidity` | Un contrato `Counter` de Solidity + un script de despliegue/interacción con viem (`@qorechain/evm`). Ejecuta el script con `pnpm run deploy` (no con `pnpm deploy`, que es otro comando de pnpm); lee `.env`, y su README explica cómo abrir la ventana EVM antes de desplegar. |
+| `fullstack-web` | Una dApp Vite + React + TypeScript que lee saldos y tokenomics (`@qorechain/sdk`). REST pasa por un proxy `/lcd` de Vite porque el REST público no envía cabeceras CORS, así que el código del navegador llama a `/lcd/...` en desarrollo. |
 | `rollup-app` | Una app de rollup + sidechain/paychain que usa el `RollupClient` y el asistente multilayer (`@qorechain/sdk`). |
 | `foundry` | Un proyecto de Foundry para el EVM Engine de QoreChain. `pnpm window` registra la clave ML-DSA-87 de la cuenta y abre la [ventana de autorización EVM](/sdk/guides/evm#evm-window) antes de un despliegue (añadido en la 0.11.0, solo en npm). |
 | `hardhat` | Lo mismo para Hardhat 3, con `pnpm window status`, `register` y `open`. |
-| `viem-wagmi` | Una dApp web sobre viem y wagmi que usa las cadenas `qorechain` y `qorechainTestnet` de `@qorechain/evm`. |
+| `viem-wagmi` | Una dApp web sobre viem y wagmi que usa las cadenas `qorechain` y `qorechainTestnet` de `@qorechain/evm`. Fija viem `~2.53.1` y usa el mismo proxy `/lcd` para REST. |
 | `cosmwasm` | Un proyecto de contrato de QoreChain Native (Wasm). En las redes en vivo la subida de código es solo por gobernanza; consulta la [guía de QoreChain Native](/sdk/guides/cosmwasm). |
 
 La plantilla `rollup-app` (desde el generador 0.10.0) ejecuta una simulación por defecto. Con `QORE_BROADCAST=1`
@@ -54,7 +54,7 @@ como `client.rest.getBurnStats()` para las redes públicas.
 | Flag | Descripción |
 | --- | --- |
 | `-t, --template <name>` | Plantilla a usar (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | Preajuste de red (`testnet` \| `mainnet`). |
+| `--network <name>` | Preajuste de red (`testnet` \| `mainnet`). Escribe los endpoints públicos de la red elegida en el `.env` generado (0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Omitir los prompts y usar los valores por defecto. |
 | `--no-install` | No instalar dependencias tras el andamiaje. |

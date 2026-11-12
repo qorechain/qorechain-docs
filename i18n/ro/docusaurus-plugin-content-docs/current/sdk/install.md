@@ -18,7 +18,7 @@ tabelul):
 
 | Registru | Pachet | Versiune |
 | --- | --- | --- |
-| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 (`create-qorechain-dapp`: 0.13.1, un patch doar pentru șabloane, peste SDK 0.13.0) |
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
 | Proxy de module Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
@@ -284,14 +284,14 @@ Publicat pe npm la `0.13.0`; depinde de `@qorechain/sdk` `^0.13.0`. Vezi [ghidul
 
 ### Generatorul de proiecte
 
-`create-qorechain-dapp` (npm, `0.13.0`) generează un dApp gata de rulat:
+`create-qorechain-dapp` (npm, `0.13.1`) generează un dApp gata de rulat:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
 Fișierele `package.json` generate depind de versiunea de SDK cu care este livrat
-generatorul (`@qorechain/sdk` `^0.13.0`; șabloanele EVM folosesc `@qorechain/evm` `^0.13.0`). Are și șabloanele `foundry`, `hardhat`, `viem-wagmi` și `cosmwasm` pentru lucrul cu contracte.
+generatorul (`@qorechain/sdk` `^0.13.0`; șabloanele EVM folosesc `@qorechain/evm` `^0.13.0`). Versiunea 0.13.1 schimbă doar șabloanele; vezi [Generatoare de proiecte și CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131). Are și șabloanele `foundry`, `hardhat`, `viem-wagmi` și `cosmwasm` pentru lucrul cu contracte.
 Versiunea 0.8.0 a generatorului scria intervale `^0.3.0`, care pe o versiune 0.x
 rămân în interiorul lui 0.3 și nu pot semna pentru rețelele live; dacă ai generat
 cu 0.8.0, rulează `npm i @qorechain/sdk@latest`. Vezi [referința CLI](/sdk/reference/cli).

@@ -9,11 +9,11 @@ sidebar_position: 21
 
 Tres herramientas de línea de comandos llevan un proyecto de QoreChain de la nada a un punto de partida tipado y compilable. Son para desarrolladores de aplicaciones (dApps) y operadores de rollups que trabajan en Node.js:
 
-* **`create-qorechain-dapp`** (0.13.0) genera una dApp a partir de una de siete plantillas, construidas sobre el [SDK de QoreChain](/sdk/overview). Cuatro de las siete (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) pertenecen al [kit de desarrollo de la cadena](/developer-tools/chain-dev-sdk).
+* **`create-qorechain-dapp`** (0.13.1, un parche solo de plantillas sobre el SDK 0.13.0) genera una dApp a partir de una de siete plantillas, construidas sobre el [SDK de QoreChain](/sdk/overview). Cuatro de las siete (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) pertenecen al [kit de desarrollo de la cadena](/developer-tools/chain-dev-sdk).
 * **`create-qorechain-rollup`** (0.8.0) genera un proyecto de rollup a partir de una de seis plantillas, construidas sobre el [Rollup Development Kit](/rollups/overview) de TypeScript.
 * **`qorollup`**, el comando del paquete `@qorechain/rdk-cli` (0.8.0), es la línea de comandos del operador: comprobaciones previas, creación y monitorización de un rollup, lectura de parámetros en vivo.
 
-La página refleja los paquetes publicados tal como se instalan desde npm el 27 de octubre de 2026, y `create-qorechain-dapp` 0.12.0 tal como se instaló el 4 de noviembre de 2026; la versión actual es la 0.13.0 (11 de noviembre de 2026). Las guías conceptuales son [Desplegar un rollup](/rollups/deploying-a-rollup) y la [referencia de la CLI del SDK](/sdk/reference/cli).
+La página refleja los paquetes publicados tal como se instalan desde npm el 27 de octubre de 2026, y `create-qorechain-dapp` 0.12.0 tal como se instaló el 4 de noviembre de 2026; la versión actual es la 0.13.1 (12 de noviembre de 2026). Los cambios de plantillas de la 0.13.1 descritos abajo provienen de las notas de versión del paquete, no de una instalación nueva. Las guías conceptuales son [Desplegar un rollup](/rollups/deploying-a-rollup) y la [referencia de la CLI del SDK](/sdk/reference/cli).
 
 ## Innovaciones {#innovations}
 
@@ -38,20 +38,30 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 
 | Plantilla | Qué genera | Scripts |
 | --- | --- | --- |
-| `evm-solidity` | Un contrato Solidity `Counter` con un artefacto precompilado, y un script viem que lo despliega y lo llama usando `@qorechain/evm`. Archivos: `contracts/Counter.sol`, `contracts/Counter.artifact.ts`, `scripts/deploy.ts`, `.env`. | `deploy` |
-| `fullstack-web` | Una página con Vite, React y TypeScript que lee los saldos de una dirección (y un resumen de tokenomics) con `@qorechain/sdk`. Archivos: `index.html`, `src/App.tsx`, `src/main.tsx`, `vite.config.ts`, `.env`. | `dev`, `build`, `preview`, `typecheck` |
+| `evm-solidity` | Un contrato Solidity `Counter` con un artefacto precompilado, y un script viem que lo despliega y lo llama usando `@qorechain/evm`. Archivos: `contracts/Counter.sol`, `contracts/Counter.artifact.ts`, `scripts/deploy.ts`, `.env`. Ejecútalo con `pnpm run deploy` (no con `pnpm deploy`, que es otro comando de pnpm); lee `.env`, y el README de la plantilla explica cómo abrir la ventana EVM antes de desplegar. | `deploy` |
+| `fullstack-web` | Una página con Vite, React y TypeScript que lee los saldos de una dirección (y un resumen de tokenomics) con `@qorechain/sdk`. Archivos: `index.html`, `src/App.tsx`, `src/main.tsx`, `vite.config.ts`, `.env`. Desde la 0.13.1 REST pasa por un proxy `/lcd` de Vite. | `dev`, `build`, `preview`, `typecheck` |
 | `rollup-app` | Un script de Node que usa `createRollupClient` y `createMultilayerClient` del SDK para construir mensajes de rollup y de sidechain o paychain. Archivos: `src/index.ts` y la configuración habitual. Simulacro por defecto. | `start`, `typecheck` |
 | `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` | Las plantillas del kit de desarrollo de la cadena: un proyecto de Foundry, un proyecto de Hardhat 3 y viem (ambos con un auxiliar `pnpm window` para la ventana de autorización EVM; desde la 0.13.0, `pnpm window recovery-code` imprime un código de recuperación nuevo, y con `PRIVATE_KEY` definida `pnpm window` lee `QORE_PQC_RECOVERY_CODE` y se detiene con un mensaje si falta; con `QORE_MNEMONIC` no cambia nada), una dApp de wagmi y RainbowKit con la wallet QoreX, y un token CW20 de QoreChain Native. Detalles, scripts y límites: [Kit de desarrollo de la cadena](/developer-tools/chain-dev-sdk#templates). | consulta esa página |
 
 | Indicador | Significado |
 | --- | --- |
 | `-t, --template <name>` | `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi` o `cosmwasm` |
-| `--network <name>` | `testnet` o `mainnet` |
+| `--network <name>` | `testnet` o `mainnet`; escribe los endpoints públicos de esa red en el `.env` generado (0.13.1) |
 | `--package-manager <pm>` | `pnpm`, `npm` o `yarn` |
 | `-y, --yes` | omite las preguntas y usa los valores predeterminados |
 | `--no-install` | no instala las dependencias |
 | `--local` | reescribe las dependencias `@qorechain/*` como enlaces locales en el monorepo del SDK (para quienes contribuyen al SDK) |
 | `-h, --help`, `-v, --version` | ayuda, versión |
+
+### Cambios de plantillas en la 0.13.1 {#template-fixes-0131}
+
+La versión 0.13.1 (12 de noviembre de 2026) es un parche solo de plantillas; los paquetes del SDK siguen en la 0.13.0. Según las notas de versión del paquete:
+
+* `--network` escribe los endpoints públicos de la red elegida en el `.env` generado.
+* `fullstack-web` y `viem-wagmi` llegan a REST mediante un proxy `/lcd` de Vite, porque el REST público no envía cabeceras CORS. En desarrollo, el código del navegador llama a `/lcd/...`.
+* `evm-solidity`: ejecuta el script de despliegue con `pnpm run deploy` (el simple `pnpm deploy` es otro comando de pnpm). Lee `.env`, y el README explica cómo abrir la ventana EVM antes de desplegar.
+* `viem-wagmi` fija viem `~2.53.1`.
+* El README de `hardhat` indica esperar unos 10 segundos tras abrir una ventana antes de la primera transacción.
 
 Ejemplo probado (del centro para desarrolladores; ejecutado el 27 de octubre de 2026 en un directorio vacío, con `npx` desde el registro público de npm): genera la plantilla web y la compila. Observado: `Done! Created my-dapp` y un `vite build` correcto. La compilación imprime una advertencia de tamaño del bundle, que es inofensiva.
 
@@ -160,7 +170,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | Registro | Paquete | Versión | Enlace |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp` (comando `create-qorechain-dapp`) | 0.13.0 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp` (comando `create-qorechain-dapp`) | 0.13.1 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup` (comando `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli` (comando `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk` (biblioteca que usan las plantillas) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
@@ -169,7 +179,7 @@ Código fuente: https://github.com/qorechain/qorechain-sdk/tree/main/cli (genera
 
 ## Límites y problemas conocidos {#limits}
 
-* **`--network mainnet` no cambió los archivos generados en una prueba.** El 27 de octubre de 2026 se generaron `fullstack-web` y `custom-rollup` con `--network mainnet`; el `.env` generado seguía con endpoints de localhost (dApp) o `QORE_NETWORK=testnet` con los endpoints de la testnet (rollup), y el `App.tsx` de la dApp creaba un cliente `testnet`. El 4 de noviembre de 2026 `create-qorechain-dapp` 0.12.0 se comportó igual con `evm-solidity`, `fullstack-web` y `rollup-app`. Establece tú mismo la red y los endpoints en `.env` y, para la plantilla web, en `src/App.tsx`.
+* **`--network mainnet` no cambió los archivos generados en una prueba (0.10.0 y 0.12.0).** Las notas de versión de la 0.13.1 dicen que `--network` ahora escribe los endpoints públicos de la red elegida en `.env`; no se volvió a probar aquí, así que revisa el archivo tras generar el proyecto. El 27 de octubre de 2026 se generaron `fullstack-web` y `custom-rollup` con `--network mainnet`; el `.env` generado seguía con endpoints de localhost (dApp) o `QORE_NETWORK=testnet` con los endpoints de la testnet (rollup), y el `App.tsx` de la dApp creaba un cliente `testnet`. El 4 de noviembre de 2026 `create-qorechain-dapp` 0.12.0 se comportó igual con `evm-solidity`, `fullstack-web` y `rollup-app`. Establece tú mismo la red y los endpoints en `.env` y, para la plantilla web, en `src/App.tsx`.
 * **Todavía no existe ningún rollup en ninguna de las dos redes** (comprobado el 27 de octubre de 2026). Ninguna ruta de transacción de las herramientas de rollup se ha ejercitado en un rollup en vivo. Valida todo primero en la testnet y lee [RDK 0.8.0: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits).
 * **La plantilla `defi-rollup` no puede liquidar un lote.** La liquidación ZK no se puede usar en la mainnet (el registro de claves existe solo en la testnet, desde la v3.2.7 de la cadena, y allí no se ha probado ningún rollup ZK), y su circuito de demostración no podría superar la comprobación de pruebas de la cadena en cualquier caso. Desde la 0.7.0 la plantilla se detiene antes de enviar, así que ya no gasta una comisión en un lote que la cadena rechaza siempre. Usa una plantilla con liquidación `optimistic` hasta que eso cambie (consulta [ZK, STARK y Retiros](/rollups/zk-stark-withdrawals)).
 * **La plantilla `multivm-rollup` depende de algo que no está en producción.** El precompile entre VMs en `0x0000000000000000000000000000000000000901` no está activo en la mainnet, así que allí una llamada desde un contrato no hace nada; en la testnet está activo con una lista de permitidos (se probó un `eth_call` de solo lectura el 7 de noviembre de 2026); la plantilla lo comprueba y su contrato está escrito para revertir en lugar de fallar en silencio (consulta [Multi-VM](/rollups/multi-vm)).
@@ -178,7 +188,7 @@ Código fuente: https://github.com/qorechain/qorechain-sdk/tree/main/cli (genera
 * **`rollup-app` difunde solo cuando lo pides.** Ejecuta un simulacro por defecto; con `QORE_BROADCAST=1` registra una vez la clave ML-DSA-87 de la cuenta y firma de forma híbrida. Sus valores de rollup de ejemplo son ilustrativos: toma los nombres de perfil reales y el stake de [Perfiles predefinidos](/rollups/preset-profiles).
 * **`fullstack-web` muestra un error en su botón de tokenomics.** Ese panel llama a un método JSON-RPC `qor_` que los endpoints públicos no sirven; la consulta de saldo funciona. Sustitúyelo por una lectura REST como `client.rest.getBurnStats()`.
 * **`evm-solidity` necesita algo más que una cuenta con fondos.** Enviar una transacción EVM en QoreChain también necesita una clave ML-DSA-87 registrada y una ventana de autorización EVM abierta, configuradas desde el carril nativo (consulta la [guía EVM](/developer-guide/evm-development#evm-window)). El script `deploy` de la plantilla no se ejecutó contra una red en vivo para esta página.
-* **`create-qorechain-dapp --version` imprime `0.5.1`** aunque el paquete instalado es 0.12.0 (comprobado el 27 de octubre de 2026 con la 0.10.0 y de nuevo el 4 de noviembre de 2026 con la 0.12.0). Lee la versión de `package.json` o del registro.
+* **`create-qorechain-dapp --version` imprime `0.5.1`** aunque el paquete instalado era 0.12.0 (comprobado el 27 de octubre de 2026 con la 0.10.0 y de nuevo el 4 de noviembre de 2026 con la 0.12.0). Lee la versión de `package.json` o del registro.
 * **Los README de los paquetes están desactualizados.** El README de `create-qorechain-dapp` lista dos plantillas y el de `create-qorechain-rollup` cinco (comprobado el 27 de octubre de 2026); `--help` muestra siete y seis. Fíate de `--help`.
 * **Las versiones anteriores a 0.6.2 no funcionan desde npm.** `qorollup` 0.6.1 y anteriores, instalados por npm de cualquier modo, no imprimían nada y terminaban con código 0, y `--version` imprimía `0.4.1`. Si debes quedarte en 0.6.1, ejecuta `node node_modules/@qorechain/rdk-cli/dist/index.js <command>`; de lo contrario, actualiza.
 * **Copias de dependencias (RDK 0.6.x, y RDK 0.8.0 junto a SDK 0.12.0).** `@qorechain/rdk` 0.6.2 y anteriores dependen de `@qorechain/sdk` `^0.9.0`, así que un proyecto que también instalaba el SDK 0.10.0 contenía un segundo SDK 0.9.x anidado. Desde la 0.7.0 el kit depende de `@qorechain/sdk` `^0.10.0` y comparte una sola copia con una app con SDK 0.10.x. **Una app con SDK 0.12.0 que también instala `@qorechain/rdk` 0.8.0 sigue obteniendo una copia anidada del SDK 0.10.0** (y de `@qorechain/evm` 0.8.0), porque un rango con caret sobre una versión 0.x no toma versiones menores más nuevas (comprobado con `npm ls` el 4 de noviembre de 2026). Mantén las llamadas al SDK y las llamadas a RDK en módulos separados, o pasa objetos entre ellos como datos simples, hasta que el rango de RDK se actualice.

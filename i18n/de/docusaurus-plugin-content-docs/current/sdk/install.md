@@ -18,7 +18,7 @@ Tabelle):
 
 | Registry | Paket | Version |
 | --- | --- | --- |
-| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 (`create-qorechain-dapp`: 0.13.1, eine reine Vorlagen-Korrektur auf Basis von SDK 0.13.0) |
 | PyPI | `qorechain-sdk` (Import `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (Import `qorechain`) | 0.13.0 |
 | Go-Modul-Proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
@@ -282,14 +282,14 @@ Veröffentlicht auf npm unter `0.13.0`; es hängt von `@qorechain/sdk` `^0.13.0`
 
 ### Scaffolder
 
-`create-qorechain-dapp` (npm, `0.13.0`) erzeugt eine sofort lauffähige dApp:
+`create-qorechain-dapp` (npm, `0.13.1`) erzeugt eine sofort lauffähige dApp:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
 Die generierten `package.json`-Dateien hängen von dem SDK-Release ab, mit dem der Scaffolder
-ausgeliefert wird (`@qorechain/sdk` `^0.13.0`; die EVM-Vorlagen verwenden `@qorechain/evm` `^0.13.0`). Es hat außerdem die Vorlagen `foundry`, `hardhat`, `viem-wagmi` und `cosmwasm` für die Contract-Arbeit.
+ausgeliefert wird (`@qorechain/sdk` `^0.13.0`; die EVM-Vorlagen verwenden `@qorechain/evm` `^0.13.0`). Version 0.13.1 ändert nur die Vorlagen; siehe [Scaffolder und CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131). Es hat außerdem die Vorlagen `foundry`, `hardhat`, `viem-wagmi` und `cosmwasm` für die Contract-Arbeit.
 Version 0.8.0 des Scaffolders schrieb Bereiche `^0.3.0`, die bei einer 0.x-Version
 innerhalb von 0.3 bleiben und für die Live-Netzwerke nicht signieren können; wenn Sie mit 0.8.0 ein Scaffolding durchgeführt haben, führen Sie
 `npm i @qorechain/sdk@latest` aus. Siehe die [CLI-Referenz](/sdk/reference/cli).

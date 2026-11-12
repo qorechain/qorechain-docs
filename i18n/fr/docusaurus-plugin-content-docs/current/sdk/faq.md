@@ -98,7 +98,7 @@ décimales (convention EVM), ce qui est distinct de la base native `uqor` de
 
 Tous (vérifié le 11 novembre 2026). Le cœur TypeScript (`@qorechain/sdk`, 0.13.0),
 le kit React (`@qorechain/react`, 0.13.0), le générateur `create-qorechain-dapp`
-(0.13.0) et les adaptateurs EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.13.0)
+(0.13.1, une version de correctifs limitée aux modèles, au-dessus du SDK 0.13.0) et les adaptateurs EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.13.0)
 sont sur npm ; le client Python est sur PyPI (`pip install qorechain-sdk` en
 version 0.13.0, import `qorsdk`) ; le client Go est sur le proxy de modules
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`) ; le client Rust

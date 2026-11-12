@@ -88,7 +88,7 @@ Guides : [Présentation du SDK](/sdk/overview), [Installation](/sdk/install), [G
 | [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Publié. Provider, hooks, `ConnectButton` et le badge d'état PQC (`PqcStatusBadge`, et `QuantumSafeBadge` conservé depuis la 0.10.0) |
 | [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | Publié. Inclut les définitions de chaîne viem et les assistants de fenêtre EVM (voir [Chain developer kit](#group-chain-dev-sdk)) |
 | [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | Publié. Lectures uniquement sur les réseaux en ligne |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.0 | `npx create-qorechain-dapp my-dapp` | Publié. Sept templates |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.1 | `npx create-qorechain-dapp my-dapp` | Publié. Sept templates |
 | [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | Publié |
 | [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Publié |
 | [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Publié |
@@ -174,7 +174,7 @@ Page : [Asset Kit](/developer-tools/asset-kit). Source : [qorechain/qorechain-as
 
 Page : [Chain developer kit](/developer-tools/chain-dev-sdk). Source : [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). La partie du SDK QoreChain destinée aux équipes Solidity et smart contracts : définitions de chaîne viem et assistants de fenêtre d'autorisation EVM dans `@qorechain/evm`, quatre templates `create-qorechain-dapp` (Foundry, Hardhat 3, viem avec wagmi, et un jeton QoreChain Native), des quickstarts EVM et une page sur les différences entre l'EVM de QoreChain et Ethereum.
 
-Il est **en service et inclus dans le SDK 0.13.0** (depuis la 0.12.0) : il n'y a pas de package séparé. Installez les packages du [tableau du SDK](#group-sdk) (`@qorechain/evm` 0.13.0 pour les définitions de chaîne et les assistants de fenêtre, `create-qorechain-dapp` 0.13.0 pour les templates). Le contenu du kit est d'abord apparu en 0.11.0 sur npm (29 octobre 2026) ; la 0.12.0 la remplace.
+Il est **en service et inclus dans le SDK 0.13.0** (depuis la 0.12.0) : il n'y a pas de package séparé. Installez les packages du [tableau du SDK](#group-sdk) (`@qorechain/evm` 0.13.0 pour les définitions de chaîne et les assistants de fenêtre, `create-qorechain-dapp` 0.13.1 pour les templates). Le contenu du kit est d'abord apparu en 0.11.0 sur npm (29 octobre 2026) ; la 0.12.0 la remplace.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 

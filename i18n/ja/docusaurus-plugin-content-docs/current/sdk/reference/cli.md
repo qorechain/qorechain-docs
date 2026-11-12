@@ -19,7 +19,7 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> npm には `create-qorechain-dapp`（`0.13.0`）として公開されています。生成される
+> npm には `create-qorechain-dapp`（`0.13.1`。SDK 0.13.0 に対するテンプレートのみのパッチ）として公開されています。生成される
 > `package.json` ファイルは `@qorechain/sdk` `^0.13.0` に依存します（EVM テンプレートは
 > `@qorechain/evm` `^0.13.0`）。スキャフォルダのバージョン 0.8.0 は `^0.3.0` の範囲を書き込んでおり、
 > npm はこれを、稼働中のネットワークに対して署名できない 0.3 リリースに解決します。
@@ -29,12 +29,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 
 | テンプレート | 説明 |
 | --- | --- |
-| `evm-solidity` | Solidity の `Counter` コントラクト + viem によるデプロイ/操作スクリプト（`@qorechain/evm`）。 |
-| `fullstack-web` | 残高とトークノミクスを読み取る Vite + React + TypeScript の dApp（`@qorechain/sdk`）。 |
+| `evm-solidity` | Solidity の `Counter` コントラクト + viem によるデプロイ/操作スクリプト（`@qorechain/evm`）。スクリプトは `pnpm run deploy` で実行してください（`pnpm deploy` は別の pnpm コマンドです）。`.env` を読み込み、README にデプロイ前に EVM ウィンドウを開く手順があります。 |
+| `fullstack-web` | 残高とトークノミクスを読み取る Vite + React + TypeScript の dApp（`@qorechain/sdk`）。公開 REST は CORS ヘッダーを返さないため、REST は Vite の `/lcd` プロキシ経由で、開発中のブラウザコードは `/lcd/...` を呼び出します。 |
 | `rollup-app` | `RollupClient` と multilayer ヘルパーを使うロールアップ + サイドチェーン/ペイチェーンのアプリ（`@qorechain/sdk`）。 |
 | `foundry` | QoreChain の EVM Engine 向けの Foundry プロジェクト。`pnpm window` は、デプロイ前にアカウントの ML-DSA-87 鍵を登録し、[EVM 認可ウィンドウ](/sdk/guides/evm#evm-window)を開きます（npm のみの 0.11.0 で追加）。 |
 | `hardhat` | Hardhat 3 向けの同様のもので、`pnpm window status`、`register`、`open` を備えます。 |
-| `viem-wagmi` | viem と wagmi による Web dApp で、`@qorechain/evm` の `qorechain` と `qorechainTestnet` チェーンを使います。 |
+| `viem-wagmi` | viem と wagmi による Web dApp で、`@qorechain/evm` の `qorechain` と `qorechainTestnet` チェーンを使います。viem を `~2.53.1` に固定し、REST には同じ `/lcd` プロキシを使います。 |
 | `cosmwasm` | QoreChain Native（Wasm）のコントラクトプロジェクト。稼働中のネットワークではコードのアップロードはガバナンスのみです。[QoreChain Native ガイド](/sdk/guides/cosmwasm)を参照してください。 |
 
 `rollup-app` テンプレート（スキャフォルダ 0.10.0 以降）は、デフォルトでドライランを実行します。`QORE_BROADCAST=1` を指定すると、
@@ -54,7 +54,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | フラグ | 説明 |
 | --- | --- |
 | `-t, --template <name>` | 使用するテンプレート（`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`）。 |
-| `--network <name>` | ネットワークプリセット（`testnet` \| `mainnet`）。 |
+| `--network <name>` | ネットワークプリセット（`testnet` \| `mainnet`）。選んだネットワークの公開エンドポイントを生成される `.env` に書き込みます（0.13.1）。 |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`。 |
 | `-y, --yes` | プロンプトをスキップしてデフォルトを使用します。 |
 | `--no-install` | スキャフォールド後に依存関係をインストールしません。 |

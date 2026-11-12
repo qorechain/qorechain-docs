@@ -130,7 +130,7 @@ birim (denominasyon) matematiğini ve okuma yüzeylerini paylaşır.
 | `@qorechain/evm` | TypeScript (EVM adaptörü) | `npm i @qorechain/evm viem` | Yayında (npm, v0.13.0) |
 | `@qorechain/svm` | TypeScript (SVM adaptörü) | `npm i @qorechain/svm @solana/web3.js` | Yayında (npm, v0.13.0) |
 | `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.13.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Yayında (npm, v0.13.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Yayında (npm, v0.13.1) |
 
 > Python dağıtımı `qorechain-sdk` olarak kurulur ancak **`qorsdk` olarak
 > import edilir**. Tüm istemciler kendi kayıt defterlerinde yayınlanmıştır —
@@ -150,7 +150,7 @@ crates.io'da (`qorechain-sdk` 0.13.0) ve Java Maven
 Central'da (`io.github.qorechain:qorechain-sdk`; 0.13.0, 11 Kasım 2026'da kontrol edildi). EVM/SVM yürütme
 adaptörleri (`@qorechain/evm`, `@qorechain/svm`, ikisi de 0.13.0),
 `@qorechain/react` kiti (0.13.0) ve `create-qorechain-dapp` iskele oluşturma
-CLI'si (0.13.0) yalnızca TypeScript içindir ve aynı şekilde npm'de
+CLI'si (0.13.1, SDK 0.13.0'ın üzerine yalnızca şablonları içeren bir yama) yalnızca TypeScript içindir ve aynı şekilde npm'de
 yayınlanmıştır. Yardımcı paketler için
 [Kurulum](/sdk/install#related-packages) sayfasına bakın.
 

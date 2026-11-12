@@ -18,7 +18,7 @@ WebSocket). الإصدار الحالي هو **0.13.0**، ونُشر في 11 ن�
 
 | السجل | الحزمة | الإصدار |
 | --- | --- | --- |
-| npm | `@qorechain/sdk` و`@qorechain/react` و`@qorechain/evm` و`@qorechain/svm` و`create-qorechain-dapp` | 0.13.0 |
+| npm | `@qorechain/sdk` و`@qorechain/react` و`@qorechain/evm` و`@qorechain/svm` و`create-qorechain-dapp` | 0.13.0 (`create-qorechain-dapp`: 0.13.1، تحديث للقوالب فقط فوق SDK 0.13.0) |
 | PyPI | `qorechain-sdk` (الاستيراد `qorsdk`) | 0.13.0 |
 | crates.io | `qorechain-sdk` (الاستيراد `qorechain`) | 0.13.0 |
 | وكيل وحدات Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
@@ -279,14 +279,14 @@ npm i @qorechain/react
 
 ### أداة التهيئة (Scaffolder)
 
-تقوم `create-qorechain-dapp` (على npm، الإصدار `0.13.0`) بتهيئة تطبيق dApp جاهز للتشغيل:
+تقوم `create-qorechain-dapp` (على npm، الإصدار `0.13.1`) بتهيئة تطبيق dApp جاهز للتشغيل:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
 تعتمد ملفات `package.json` المُولَّدة على إصدار SDK الذي تُشحن معه أداة التهيئة
-(`@qorechain/sdk` ‏`^0.13.0`؛ وتستخدم قوالب EVM الحزمة `@qorechain/evm` ‏`^0.13.0`). وفيها أيضًا قوالب `foundry` و`hardhat` و`viem-wagmi` و`cosmwasm` لأعمال العقود.
+(`@qorechain/sdk` ‏`^0.13.0`؛ وتستخدم قوالب EVM الحزمة `@qorechain/evm` ‏`^0.13.0`). يغيّر الإصدار 0.13.1 القوالب فقط؛ راجع [أدوات التوليد وCLI](/developer-tools/scaffolders-and-cli#template-fixes-0131). وفيها أيضًا قوالب `foundry` و`hardhat` و`viem-wagmi` و`cosmwasm` لأعمال العقود.
 كتب الإصدار 0.8.0 من أداة التهيئة نطاقات `^0.3.0`، وهي على إصدار 0.x تبقى
 داخل 0.3 ولا تستطيع التوقيع للشبكات الحيّة؛ فإذا هيّأت بالإصدار 0.8.0 فشغّل
 `npm i @qorechain/sdk@latest`. انظر [مرجع CLI](/sdk/reference/cli).
