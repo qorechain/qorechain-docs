@@ -48,12 +48,11 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mykey-mldsa \
   --chain-id $QCHAIN --node $QNODE
 ```
 
-引数を指定しない場合、CLIはデプロイセッション向けに設定されたデフォルト値を使用します。3,600ブロック、10トランザクション、25 QORです。1つのコントラクトに限定したウィンドウで、さらに1つのバリデーターへの委任と、1つのIBC受取先への送信もできるものは次のとおりです。
+引数を指定しない場合、CLIはデプロイセッション向けに設定されたデフォルト値を使用します。3,600ブロック、10トランザクション、25 QORです。1つのトークンコントラクトに限定したウィンドウ(アドレスはご自身のものに置き換えてください)は次のとおりです。
 
 ```bash
 qorechaind tx pqc open-evm-window 600 5 100qor \
-  --allowed-targets 0x0000000000000000000000000000000000000800 \
-  --staking-validators qorvaloper1... \
+  --allowed-targets 0x1111111111111111111111111111111111111111 \
   --from mykey --chain-id $QCHAIN --node $QNODE \
   --gas 400000 --fees 80000uqor --generate-only > window.json
 ```
@@ -110,7 +109,7 @@ const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic); // already registered on chain
 const tx = await client.connectTx(signer, { pqcKeypair });         // signs hybrid
 
-// Open a window that may call one token contract and delegate to one validator.
+// Open a window that may call one token contract (replace the address with your own).
 await tx.signAndBroadcast(
   [
     openEvmWindowMsg({
@@ -118,8 +117,7 @@ await tx.signAndBroadcast(
       blocks: 7200,
       maxTxs: 20,
       maxValue: "100000000",                 // uqor: value PLUS the maximum fee of each transaction
-      allowedTargets: ["0x0000000000000000000000000000000000000800"],
-      stakingValidators: ["qorvaloper1..."],
+      allowedTargets: ["0x1111111111111111111111111111111111111111"], // your token contract
     }),
   ],
   "auto",
@@ -146,7 +144,7 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | `nativeOnly: true`で再度開く | コード0、使用ガス187,803。新しいウィンドウが古いものを置き換えた: `native_only: true`、新しい`opened_height` |
 | 閉じる | コード0、使用ガス170,468。読み戻し: `found: false` |
 
-同日、SDK 0.14.0を使って、`allowedTargets`(ステーキングプリコンパイルのアドレス)、`stakingValidators`(バリデーターのオペレーターアドレス1件)、`ibcReceivers`(`channel-0/...`のペア1件)を指定してウィンドウを開いたところ、コード0で成功し、使用ガスは195,233でした。RESTの読み戻しには`allowed_targets`が含まれ、`found: true`、`live: true`が返されました。`validators`、`staking_validators`、`ibc_receivers`のリストは返されないため、ウィンドウを開いたときの値を保管してください。
+同日、SDK 0.14.0を使って、`allowedTargets`(許可対象のアドレス1件)、`stakingValidators`(バリデーターのオペレーターアドレス1件)、`ibcReceivers`(`channel-0/...`のペア1件)を指定してウィンドウを開いたところ、コード0で成功し、使用ガスは195,233でした。RESTの読み戻しには`allowed_targets`が含まれ、`found: true`、`live: true`が返されました。`validators`、`staking_validators`、`ibc_receivers`のリストは返されないため、ウィンドウを開いたときの値を保管してください。
 
 `fetchEvmWindow`は、同じフィールドをキャメルケース(`openedHeight`、`remainingBlocks`、`nativeOnly`、`allowedTargets`)で返しました。ウィンドウの開始と終了は、ハイブリッド署名のCosmosトランザクションであるため、アカウントが最初に送信するトランザクションには、先に鍵が登録されている必要があります。
 
@@ -172,8 +170,7 @@ open_msg = msg.pqc.open_evm_window(
     blocks=7200,
     max_txs=20,
     max_value="100000000",  # uqor, integer string
-    allowed_targets=["0x0000000000000000000000000000000000000800"],
-    staking_validators=["qorvaloper1..."],
+    allowed_targets=["0x1111111111111111111111111111111111111111"],  # your token contract
 )
 # broadcast it through the usual hybrid path, then:
 rest = RestClient(get_network("testnet").endpoints.rest)
@@ -187,8 +184,7 @@ Go:
 ```go
 open, err := messages.NewOpenEVMWindowWithScope(sender, 7200, 20, "100000000",
     messages.EVMWindowScope{
-        AllowedTargets:    []string{"0x0000000000000000000000000000000000000800"},
-        StakingValidators: []string{"qorvaloper1..."},
+        AllowedTargets: []string{"0x1111111111111111111111111111111111111111"}, // your token contract
     })
 status, err := rest.GetEVMWindowStatus(sender)
 closeMsg, err := messages.NewCloseEVMWindow(sender)
@@ -201,8 +197,7 @@ use qorechain::evm_window::{get_evm_window, EvmWindowScope};
 use qorechain::msg;
 
 let scope = EvmWindowScope {
-    allowed_targets: vec!["0x0000000000000000000000000000000000000800".into()],
-    staking_validators: vec!["qorvaloper1...".into()],
+    allowed_targets: vec!["0x1111111111111111111111111111111111111111".into()], // your token contract
     ..Default::default()
 };
 let open = msg::pqc::open_evm_window_with_scope_any("qor1...", 7200, 20, "100000000", &scope)?;
@@ -215,9 +210,9 @@ Java:
 ```java
 TypedMessage open = EvmWindow.openWithPolicy(sender, 7200, 20, "100000000",
     false,
-    List.of("0x0000000000000000000000000000000000000800"), // allowedTargets
+    List.of("0x1111111111111111111111111111111111111111"), // allowedTargets: your token contract
     null,                                                   // validators
-    List.of("qorvaloper1..."),                              // stakingValidators
+    null,                                                   // stakingValidators
     null);                                                  // ibcReceivers
 EvmWindowStatus status = rest.evmWindow(sender);
 TypedMessage close = EvmWindow.close(sender);
@@ -259,14 +254,15 @@ SDKがユーザーに代わってウィンドウを開くことは決してあ�
 | ICS-20 | `transfer` | ネイティブQOR、`transfer`ポート経由、メモなしで、`ibc_receivers`内の組み合わせ宛て |
 | ERC-20トークンプリコンパイル | `transfer`、`transferFrom`、`approve` | ネイティブQOR。それ以外のトークンは、ウィンドウがそのトークンのアドレスを挙げている場合のみ |
 
+ステーキングと報酬の請求には、ネイティブのCosmosメッセージ(QoreX、またはqorechaindのstakingおよびdistributionコマンド)を使用してください。上記のウィンドウのフィールドは、チェーンが受け付ける内容を示すもので、MetaMaskからのステーキングはサポートされていません。
+
 それ以外はすべて、ウィンドウが何を挙げていても拒否されます。アンデリゲート、アンボンディングのキャンセル、投票やその他のガバナンス操作、引き出しアドレスの変更、バリデーターの作成や編集、アンジェイル、コミュニティプールへの資金提供などです。これらは、ポスト量子署名されたNativeトランザクションとして送信してください。`ibc_receivers`なしでICS-20を挙げても、送金は受け付けられず、`staking_validators`なしでステーキングのプリコンパイルを挙げても、委任は受け付けられません。
 
 何を挙げるかの例:
 
 | 目的 | ウィンドウ |
 | ---- | ------ |
-| MetaMaskからステーキング報酬を請求する | ディストリビューションのプリコンパイルを含む`allowed_targets`。引き出しアドレスはアカウント自身のままにする |
-| MetaMaskからステークする | ステーキングのプリコンパイルを含む`allowed_targets`と、`staking_validators` |
+| ステーク、報酬の請求、アンデリゲート、投票 | ネイティブのCosmosメッセージを使用する(QoreXのStakeとClaim、またはqorechaind tx staking / distributionコマンド)。これらにEVMウィンドウは使用しない |
 | QORをブリッジで送り出す | ICS-20のプリコンパイルを含む`allowed_targets`と、`channel-0/<receiver>`のような`ibc_receivers` |
 | ERC-20プリコンパイルとして保有するIBCトークンを移動する | そのトークンのアドレスを含む`allowed_targets` |
 

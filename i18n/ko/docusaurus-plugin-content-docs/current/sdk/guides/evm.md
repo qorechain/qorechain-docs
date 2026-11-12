@@ -239,8 +239,8 @@ await tx.signAndBroadcast(
 `"<channel>/<receiver>"` 형식)입니다. 빌더는 서명 전에 형식을 검사하고 중복을
 거부합니다. v3.2.8을 실행하는 네트워크에서만 설정하세요. 그보다 낮은 노드는
 메시지를 거부합니다. `fetchEvmWindow`는 이 세 목록을 반환하지 않으므로 REST로
-읽으세요. `allowedTargets`, `stakingValidators`, `ibcReceivers`를 지정한 이 형태의
-호출을 2026년 11월 12일 테스트넷에서 SDK 0.14.0으로 실행했으며 코드 0(사용 가스
+읽으세요. 세 목록을 모두 지정한 호출을
+2026년 11월 12일 테스트넷에서 SDK 0.14.0으로 실행했으며 코드 0(사용 가스
 195,233)으로 성공했습니다. REST 읽기에는 `allowed_targets`가 나열되었고 나머지
 두 목록은 반환되지 않았습니다.
 
@@ -250,10 +250,11 @@ openEvmWindowMsg({
   blocks: 7200,
   maxTxs: 20,
   maxValue: "1000000000",
-  stakingValidators: ["qorvaloper1..."],
-  ibcReceivers: ["channel-0/cosmos1..."],
+  allowedTargets: ["0x1111111111111111111111111111111111111111"], // your token contract
 });
 ```
+
+스테이킹과 보상 청구에는 네이티브 Cosmos 메시지(QoreX 또는 qorechaind의 staking 및 distribution 명령)를 사용하세요. 위 윈도우 필드는 체인이 무엇을 허용하는지 설명할 뿐이며, MetaMask에서의 스테이킹은 지원되는 경로가 아닙니다.
 
 규칙은 [EVM 윈도우 레퍼런스](/developer-guide/evm-window-reference)를 참조하세요.
 

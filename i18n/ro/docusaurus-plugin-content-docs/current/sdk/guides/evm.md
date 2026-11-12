@@ -238,7 +238,7 @@ fereastra poate delega sau redelega prin precompile-ul de staking) și `ibcRecei
 formatul și refuză duplicatele înainte de orice semnare. Setați-le doar pe o rețea care
 rulează v3.2.8: un nod sub această versiune refuză mesajul.
 `fetchEvmWindow` nu returnează aceste trei liste; citiți-le prin REST. Un apel de această
-formă (cu `allowedTargets`, `stakingValidators` și `ibcReceivers` setate) a fost rulat pe
+formă (cu toate cele trei liste setate) a fost rulat pe
 testnet pe 12 noiembrie 2026 cu SDK 0.14.0 și a reușit cu cod 0 (195.233 gaz folosit); citirea
 înapoi prin REST a listat `allowed_targets` și nu a returnat celelalte două liste:
 
@@ -248,10 +248,11 @@ openEvmWindowMsg({
   blocks: 7200,
   maxTxs: 20,
   maxValue: "1000000000",
-  stakingValidators: ["qorvaloper1..."],
-  ibcReceivers: ["channel-0/cosmos1..."],
+  allowedTargets: ["0x1111111111111111111111111111111111111111"], // your token contract
 });
 ```
+
+Pentru staking și pentru revendicarea recompenselor, folosiți mesajele Cosmos native (QoreX sau comenzile qorechaind de staking și distribution); câmpurile ferestrei de mai sus descriu ce acceptă lanțul, dar staking-ul din MetaMask nu este o cale susținută.
 
 Vedeți [referința ferestrei EVM](/developer-guide/evm-window-reference) pentru reguli.
 

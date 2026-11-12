@@ -48,12 +48,11 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mykey-mldsa \
   --chain-id $QCHAIN --node $QNODE
 ```
 
-من دون وسائط تستخدم الواجهة قيمًا افتراضية مناسبة لجلسة نشر: 3,600 كتلة و10 معاملات و25 QOR. وفيما يلي نافذة محصورة في عقد واحد، ويجوز لها أيضًا التفويض إلى مدقّق واحد والإرسال إلى مستقبِل IBC واحد:
+من دون وسائط تستخدم الواجهة قيمًا افتراضية مناسبة لجلسة نشر: 3,600 كتلة و10 معاملات و25 QOR. وفيما يلي نافذة محصورة في عقد رمز واحد (استبدل العنوان بعنوانك):
 
 ```bash
 qorechaind tx pqc open-evm-window 600 5 100qor \
-  --allowed-targets 0x0000000000000000000000000000000000000800 \
-  --staking-validators qorvaloper1... \
+  --allowed-targets 0x1111111111111111111111111111111111111111 \
   --from mykey --chain-id $QCHAIN --node $QNODE \
   --gas 400000 --fees 80000uqor --generate-only > window.json
 ```
@@ -110,7 +109,7 @@ const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic); // already registered on chain
 const tx = await client.connectTx(signer, { pqcKeypair });         // signs hybrid
 
-// Open a window that may call one token contract and delegate to one validator.
+// Open a window that may call one token contract (replace the address with your own).
 await tx.signAndBroadcast(
   [
     openEvmWindowMsg({
@@ -118,8 +117,7 @@ await tx.signAndBroadcast(
       blocks: 7200,
       maxTxs: 20,
       maxValue: "100000000",                 // uqor: value PLUS the maximum fee of each transaction
-      allowedTargets: ["0x0000000000000000000000000000000000000800"],
-      stakingValidators: ["qorvaloper1..."],
+      allowedTargets: ["0x1111111111111111111111111111111111111111"], // your token contract
     }),
   ],
   "auto",
@@ -146,7 +144,7 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | فتح مجددًا مع `nativeOnly: true` | الرمز 0، الغاز المستخدم 187,803. حلّت النافذة الجديدة محل القديمة: `native_only: true` و`opened_height` جديد |
 | إغلاق | الرمز 0، الغاز المستخدم 170,468. القراءة بعدها: `found: false` |
 
-مع SDK 0.14.0 في اليوم نفسه، نجح فتح نافذة بالحقول `allowedTargets` (عنوان precompile التخزين) و`stakingValidators` (عنوان مشغّل مدقّق واحد) و`ibcReceivers` (زوج `channel-0/...` واحد) بالرمز 0 والغاز المستخدم 195,233. وسردت قراءة REST الحقل `allowed_targets` وأعادت `found: true` و`live: true`؛ ولا تعيد قوائم `validators` و`staking_validators` و`ibc_receivers`، فاحتفظ بالقيم التي فتحت بها النافذة.
+مع SDK 0.14.0 في اليوم نفسه، نجح فتح نافذة بالحقول `allowedTargets` (عنوان هدف مسموح واحد) و`stakingValidators` (عنوان مشغّل مدقّق واحد) و`ibcReceivers` (زوج `channel-0/...` واحد) بالرمز 0 والغاز المستخدم 195,233. وسردت قراءة REST الحقل `allowed_targets` وأعادت `found: true` و`live: true`؛ ولا تعيد قوائم `validators` و`staking_validators` و`ibc_receivers`، فاحتفظ بالقيم التي فتحت بها النافذة.
 
 أعادت `fetchEvmWindow` الحقول نفسها بصيغة camel case (`openedHeight` و`remainingBlocks` و`nativeOnly` و`allowedTargets`). الفتح والإغلاق معاملتا Cosmos بتوقيع هجين، فأول معاملة يرسلها الحساب تحتاج إلى تسجيل مفتاحه أولًا.
 
@@ -172,8 +170,7 @@ open_msg = msg.pqc.open_evm_window(
     blocks=7200,
     max_txs=20,
     max_value="100000000",  # uqor, integer string
-    allowed_targets=["0x0000000000000000000000000000000000000800"],
-    staking_validators=["qorvaloper1..."],
+    allowed_targets=["0x1111111111111111111111111111111111111111"],  # your token contract
 )
 # broadcast it through the usual hybrid path, then:
 rest = RestClient(get_network("testnet").endpoints.rest)
@@ -187,8 +184,7 @@ Go:
 ```go
 open, err := messages.NewOpenEVMWindowWithScope(sender, 7200, 20, "100000000",
     messages.EVMWindowScope{
-        AllowedTargets:    []string{"0x0000000000000000000000000000000000000800"},
-        StakingValidators: []string{"qorvaloper1..."},
+        AllowedTargets: []string{"0x1111111111111111111111111111111111111111"}, // your token contract
     })
 status, err := rest.GetEVMWindowStatus(sender)
 closeMsg, err := messages.NewCloseEVMWindow(sender)
@@ -201,8 +197,7 @@ use qorechain::evm_window::{get_evm_window, EvmWindowScope};
 use qorechain::msg;
 
 let scope = EvmWindowScope {
-    allowed_targets: vec!["0x0000000000000000000000000000000000000800".into()],
-    staking_validators: vec!["qorvaloper1...".into()],
+    allowed_targets: vec!["0x1111111111111111111111111111111111111111".into()], // your token contract
     ..Default::default()
 };
 let open = msg::pqc::open_evm_window_with_scope_any("qor1...", 7200, 20, "100000000", &scope)?;
@@ -215,9 +210,9 @@ Java:
 ```java
 TypedMessage open = EvmWindow.openWithPolicy(sender, 7200, 20, "100000000",
     false,
-    List.of("0x0000000000000000000000000000000000000800"), // allowedTargets
+    List.of("0x1111111111111111111111111111111111111111"), // allowedTargets: your token contract
     null,                                                   // validators
-    List.of("qorvaloper1..."),                              // stakingValidators
+    null,                                                   // stakingValidators
     null);                                                  // ibcReceivers
 EvmWindowStatus status = rest.evmWindow(sender);
 TypedMessage close = EvmWindow.close(sender);
@@ -259,14 +254,15 @@ TypedMessage close = EvmWindow.close(sender);
 | ICS-20 | `transfer` | QOR الأصلي، عبر المنفذ `transfer`، بلا مذكرة (memo)، إلى زوج في `ibc_receivers` |
 | precompile رموز ERC-20 | `transfer`، `transferFrom`، `approve` | QOR الأصلي؛ ولا يُقبل رمز آخر إلا إذا أدرجت النافذة عنوانه |
 
+للتخزين (staking) والمطالبة بالمكافآت، استخدم رسائل Cosmos الأصلية (QoreX، أو أوامر qorechaind الخاصة بالتخزين والتوزيع)؛ فحقول النافذة أعلاه تصف ما تقبله السلسلة، لكن التخزين من MetaMask ليس مسارًا مدعومًا.
+
 كل ما عدا ذلك يُرفض عبر النافذة مهما أدرجت: إلغاء التفويض، وإلغاء فك الارتباط (unbonding)، والتصويت وسائر إجراءات الحوكمة، وتغيير عنوان السحب، وإنشاء مدقّق أو تعديله، وإلغاء السجن (unjail)، وتمويل مجمع المجتمع. أرسلها كمعاملات Native موقَّعة توقيعًا ما بعد كمومي. إدراج ICS-20 من دون `ibc_receivers` لا يقبل أي تحويل، وإدراج precompile التخزين من دون `staking_validators` لا يقبل أي تفويض.
 
 أمثلة على ما تُدرجه:
 
 | الهدف | النافذة |
 | ---- | ------ |
-| المطالبة بمكافآت التخزين من MetaMask | `allowed_targets` مع precompile التوزيع؛ وأبقِ عنوان السحب هو الحساب نفسه |
-| التخزين (staking) من MetaMask | `allowed_targets` مع precompile التخزين، إضافةً إلى `staking_validators` |
+| التخزين والمطالبة بالمكافآت وإلغاء التفويض والتصويت | استخدم رسائل Cosmos الأصلية (QoreX Stake وClaim، أو أوامر qorechaind tx staking / distribution)؛ ولا تستخدم نافذة EVM لهذه الإجراءات |
 | تحويل QOR إلى الخارج عبر الجسر | `allowed_targets` مع precompile ICS-20، إضافةً إلى `ibc_receivers` مثل `channel-0/<receiver>` |
 | نقل رمز IBC محتفَظ به كـ precompile ERC-20 | `allowed_targets` مع عنوان ذلك الرمز |
 

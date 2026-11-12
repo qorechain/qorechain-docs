@@ -48,12 +48,11 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mykey-mldsa \
   --chain-id $QCHAIN --node $QNODE
 ```
 
-Argüman verilmezse CLI, bir dağıtım oturumu için boyutlandırılmış varsayılanları kullanır: 3,600 blok, 10 işlem ve 25 QOR. Tek bir sözleşmeye kapsamı daraltılmış, ayrıca tek bir doğrulayıcıya delege edebilen ve tek bir IBC alıcısına gönderebilen bir pencere:
+Argüman verilmezse CLI, bir dağıtım oturumu için boyutlandırılmış varsayılanları kullanır: 3,600 blok, 10 işlem ve 25 QOR. Tek bir token sözleşmesine kapsamı daraltılmış bir pencere (adresi kendinizinkiyle değiştirin):
 
 ```bash
 qorechaind tx pqc open-evm-window 600 5 100qor \
-  --allowed-targets 0x0000000000000000000000000000000000000800 \
-  --staking-validators qorvaloper1... \
+  --allowed-targets 0x1111111111111111111111111111111111111111 \
   --from mykey --chain-id $QCHAIN --node $QNODE \
   --gas 400000 --fees 80000uqor --generate-only > window.json
 ```
@@ -110,7 +109,7 @@ const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic); // already registered on chain
 const tx = await client.connectTx(signer, { pqcKeypair });         // signs hybrid
 
-// Open a window that may call one token contract and delegate to one validator.
+// Open a window that may call one token contract (replace the address with your own).
 await tx.signAndBroadcast(
   [
     openEvmWindowMsg({
@@ -118,8 +117,7 @@ await tx.signAndBroadcast(
       blocks: 7200,
       maxTxs: 20,
       maxValue: "100000000",                 // uqor: value PLUS the maximum fee of each transaction
-      allowedTargets: ["0x0000000000000000000000000000000000000800"],
-      stakingValidators: ["qorvaloper1..."],
+      allowedTargets: ["0x1111111111111111111111111111111111111111"], // your token contract
     }),
   ],
   "auto",
@@ -146,7 +144,7 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | `nativeOnly: true` ile yeniden açma | kod 0, 187,803 gaz kullanıldı. Yeni pencere eskisinin yerini aldı: `native_only: true`, yeni bir `opened_height` |
 | Kapatma | kod 0, 170,468 gaz kullanıldı. Geri okuma: `found: false` |
 
-Aynı gün SDK 0.14.0 ile, `allowedTargets` (staking precompile adresi), `stakingValidators` (bir doğrulayıcı operatör adresi) ve `ibcReceivers` (bir `channel-0/...` çifti) ile açılan bir pencere kod 0 ve 195,233 gaz kullanımıyla başarılı oldu. REST geri okuması `allowed_targets` değerini listeledi ve `found: true`, `live: true` döndürdü; `validators`, `staking_validators` veya `ibc_receivers` listelerini döndürmez, bu yüzden pencereyi açtığınız değerleri saklayın.
+Aynı gün SDK 0.14.0 ile, `allowedTargets` (izin verilen bir hedef adresi), `stakingValidators` (bir doğrulayıcı operatör adresi) ve `ibcReceivers` (bir `channel-0/...` çifti) ile açılan bir pencere kod 0 ve 195,233 gaz kullanımıyla başarılı oldu. REST geri okuması `allowed_targets` değerini listeledi ve `found: true`, `live: true` döndürdü; `validators`, `staking_validators` veya `ibc_receivers` listelerini döndürmez, bu yüzden pencereyi açtığınız değerleri saklayın.
 
 `fetchEvmWindow` aynı alanları camel case biçiminde döndürdü (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). Açma ve kapatma hibrit imzalı Cosmos işlemleridir; bu yüzden bir hesabın gönderdiği ilk işlem için önce anahtarının kaydedilmesi gerekir.
 
@@ -172,8 +170,7 @@ open_msg = msg.pqc.open_evm_window(
     blocks=7200,
     max_txs=20,
     max_value="100000000",  # uqor, integer string
-    allowed_targets=["0x0000000000000000000000000000000000000800"],
-    staking_validators=["qorvaloper1..."],
+    allowed_targets=["0x1111111111111111111111111111111111111111"],  # your token contract
 )
 # broadcast it through the usual hybrid path, then:
 rest = RestClient(get_network("testnet").endpoints.rest)
@@ -187,8 +184,7 @@ Go:
 ```go
 open, err := messages.NewOpenEVMWindowWithScope(sender, 7200, 20, "100000000",
     messages.EVMWindowScope{
-        AllowedTargets:    []string{"0x0000000000000000000000000000000000000800"},
-        StakingValidators: []string{"qorvaloper1..."},
+        AllowedTargets: []string{"0x1111111111111111111111111111111111111111"}, // your token contract
     })
 status, err := rest.GetEVMWindowStatus(sender)
 closeMsg, err := messages.NewCloseEVMWindow(sender)
@@ -201,8 +197,7 @@ use qorechain::evm_window::{get_evm_window, EvmWindowScope};
 use qorechain::msg;
 
 let scope = EvmWindowScope {
-    allowed_targets: vec!["0x0000000000000000000000000000000000000800".into()],
-    staking_validators: vec!["qorvaloper1...".into()],
+    allowed_targets: vec!["0x1111111111111111111111111111111111111111".into()], // your token contract
     ..Default::default()
 };
 let open = msg::pqc::open_evm_window_with_scope_any("qor1...", 7200, 20, "100000000", &scope)?;
@@ -215,9 +210,9 @@ Java:
 ```java
 TypedMessage open = EvmWindow.openWithPolicy(sender, 7200, 20, "100000000",
     false,
-    List.of("0x0000000000000000000000000000000000000800"), // allowedTargets
+    List.of("0x1111111111111111111111111111111111111111"), // allowedTargets: your token contract
     null,                                                   // validators
-    List.of("qorvaloper1..."),                              // stakingValidators
+    null,                                                   // stakingValidators
     null);                                                  // ibcReceivers
 EvmWindowStatus status = rest.evmWindow(sender);
 TypedMessage close = EvmWindow.close(sender);
@@ -259,14 +254,15 @@ Bir pencerenin yetkilendirdiği bir hesap için, standart bir precompile'ın (st
 | ICS-20 | `transfer` | yerel QOR, `transfer` portu üzerinden, memo olmadan, `ibc_receivers` içindeki bir çifte |
 | ERC-20 token precompile'ları | `transfer`, `transferFrom`, `approve` | yerel QOR; başka bir token yalnızca pencere o token'ın adresini listeliyorsa |
 
+Staking ve ödül talep etme için yerel Cosmos mesajlarını kullanın (QoreX veya qorechaind staking ve distribution komutları); yukarıdaki pencere alanları zincirin neyi kabul ettiğini anlatır, ancak MetaMask'ten staking desteklenen bir yol değildir.
+
 Diğer her şey, pencere ne listelerse listelesin, bir pencere üzerinden reddedilir: delegasyonu geri çekme (undelegate), bir unbonding'i iptal etme, oy verme ve diğer yönetişim eylemleri, çekim adresini değiştirme, bir doğrulayıcı oluşturma veya düzenleme, hapisten çıkarma (unjail), topluluk havuzunu fonlama. Bunları kuantum sonrası imzalı Native işlemler olarak gönderin. `ibc_receivers` olmadan ICS-20'yi listelemek hiçbir transferi kabul etmez ve `staking_validators` olmadan staking precompile'ını listelemek hiçbir delegasyonu kabul etmez.
 
 Ne listeleyeceğinize dair örnekler:
 
 | Hedef | Pencere |
 | ---- | ------ |
-| MetaMask'ten staking ödüllerini talep etme | distribution precompile'ını içeren `allowed_targets`; çekim adresini hesabın kendisi olarak bırakın |
-| MetaMask'ten stake etme | staking precompile'ını içeren `allowed_targets` artı `staking_validators` |
+| Stake etme, ödül talep etme, delegasyonu geri çekme, oy verme | Yerel Cosmos mesajlarını kullanın (QoreX Stake ve Claim veya qorechaind tx staking / distribution komutları); bunlar için EVM penceresini kullanmayın |
 | QOR'u köprüyle dışarı gönderme | ICS-20 precompile'ını içeren `allowed_targets` artı `channel-0/<receiver>` gibi `ibc_receivers` |
 | Bir ERC-20 precompile'ı olarak tutulan bir IBC token'ını taşıma | o token'ın adresini içeren `allowed_targets` |
 

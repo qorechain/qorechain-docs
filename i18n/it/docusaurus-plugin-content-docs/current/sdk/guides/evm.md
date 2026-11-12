@@ -244,8 +244,8 @@ le azioni dell'account stesso, come un modulo validatore o un entry point ERC-43
 tramite il precompile di staking) e `ibcReceivers` (destinatari ICS-20, ciascuno scritto
 `"<channel>/<receiver>"`). Il builder controlla il formato e rifiuta i duplicati prima che
 venga firmato qualsiasi cosa. Impostale solo su una rete che esegue la v3.2.8: un nodo precedente rifiuta
-il messaggio. `fetchEvmWindow` non restituisce queste tre liste; leggile via REST. Una chiamata di questa
-forma (con `allowedTargets`, `stakingValidators` e `ibcReceivers` impostati) è stata eseguita sulla
+il messaggio. `fetchEvmWindow` non restituisce queste tre liste; leggile via REST. Una chiamata che imposta
+tutte e tre le liste è stata eseguita sulla
 testnet il 12 novembre 2026 con l'SDK 0.14.0 ed è riuscita con code 0 (195,233 di gas usato); la
 lettura REST ha elencato `allowed_targets` e non ha restituito le altre due liste:
 
@@ -255,10 +255,11 @@ openEvmWindowMsg({
   blocks: 7200,
   maxTxs: 20,
   maxValue: "1000000000",
-  stakingValidators: ["qorvaloper1..."],
-  ibcReceivers: ["channel-0/cosmos1..."],
+  allowedTargets: ["0x1111111111111111111111111111111111111111"], // your token contract
 });
 ```
+
+Per lo staking e per riscuotere le ricompense usa i messaggi Cosmos nativi (QoreX, oppure i comandi staking e distribution di qorechaind); i campi di finestra qui sopra descrivono ciò che la chain accetta, ma fare staking da MetaMask non è un percorso supportato.
 
 Vedi il [riferimento della finestra EVM](/developer-guide/evm-window-reference) per le regole.
 

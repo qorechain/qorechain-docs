@@ -345,6 +345,8 @@ O fereastră deschisă fără domeniu de aplicare se comportă exact ca înainte
 | ICS-20 | `transfer` | QOR nativ, prin portul `transfer`, fără memo, către o pereche din `ibc_receivers` |
 | precompile-uri de token ERC-20 | `transfer`, `transferFrom`, `approve` | QOR nativ; un alt token doar când fereastra listează adresa acelui token |
 
+Pentru staking și pentru revendicarea recompenselor, folosiți mesajele Cosmos native (QoreX sau comenzile qorechaind de staking și distribution); câmpurile ferestrei de mai sus descriu ce acceptă lanțul, dar staking-ul din MetaMask nu este o cale susținută.
+
 Orice altceva este refuzat printr-o fereastră: dezlegarea delegării (undelegate), votul și alte acțiuni de guvernanță, schimbarea adresei de retragere, crearea sau editarea unui validator, finanțarea community pool-ului. Trimiteți-le ca tranzacții Cosmos semnate post-cuantic.
 
 **Semnăturile verificate on-chain au nevoie de contractul verificator în fereastră.** Un permit EIP-2612, un transfer Permit2, un ordin EIP-712 sau o meta-tranzacție este verificat de un contract cu `ecrecover`. Începând cu v3.2.8 (ambele rețele, odată ce o rețea îl aplică), această verificare reușește pentru un cont care deține o cheie post-cuantică utilizabilă doar cât timp fereastra live a contului admite contractul verificator, adică tokenul sau Permit2 însuși, nu routerul care transmite apelul. Listați-l în `allowed_targets` și deschideți fereastra **înainte** ca utilizatorul să semneze. Fără acea fereastră, semnătura este tratată ca invalidă, iar contractul o refuză. Un permit sau o aprobare acordată în interiorul unei ferestre rămâne după închiderea ferestrei, deci revizuiți și revocați aprobările când sesiunea se încheie.

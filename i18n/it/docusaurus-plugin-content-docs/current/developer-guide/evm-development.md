@@ -345,6 +345,8 @@ Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) `
 | ICS-20 | `transfer` | QOR nativo, sulla porta `transfer`, senza memo, verso una coppia in `ibc_receivers` |
 | Precompile dei token ERC-20 | `transfer`, `transferFrom`, `approve` | QOR nativo; un altro token solo quando la finestra elenca l'indirizzo di quel token |
 
+Per lo staking e per riscuotere le ricompense usa i messaggi Cosmos nativi (QoreX, oppure i comandi staking e distribution di qorechaind); i campi di finestra qui sopra descrivono ciò che la chain accetta, ma fare staking da MetaMask non è un percorso supportato.
+
 Tutto il resto viene rifiutato tramite una finestra: undelegate, voto e altre azioni di governance, cambio dell'indirizzo di prelievo, creazione o modifica di un validatore, finanziamento del community pool. Invia queste come transazioni Cosmos firmate in modo post-quantistico.
 
 **Le firme verificate on chain richiedono il contratto verificatore nella finestra.** Un permit EIP-2612, un trasferimento Permit2, un ordine EIP-712 o una meta-transazione sono verificati da un contratto con `ecrecover`. Dalla v3.2.8 (entrambe le reti, una volta che una rete la applica) quella verifica riesce per un account che possiede una chiave post-quantistica utilizzabile solo finché la finestra live dell'account stesso ammette il contratto verificatore, cioè il token o Permit2 stesso, non il router che inoltra la chiamata. Elencalo in `allowed_targets` e apri la finestra **prima** che l'utente firmi. Senza quella finestra la firma viene trattata come non valida e il contratto la rifiuta. Un permit o un'approvazione concessi all'interno di una finestra restano dopo la chiusura della finestra, quindi rivedi e revoca le approvazioni al termine della sessione.

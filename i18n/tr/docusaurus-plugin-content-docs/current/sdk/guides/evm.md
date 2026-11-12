@@ -247,9 +247,8 @@ doğrulayıcıları) ve `ibcReceivers` (her biri `"<channel>/<receiver>"` biçim
 ICS-20 alıcıları). Oluşturucu biçimi denetler ve herhangi bir şey imzalanmadan önce
 yinelenenleri reddeder. Bunları yalnızca v3.2.8 çalıştıran bir ağda ayarlayın: bunun
 altındaki bir düğüm mesajı reddeder. `fetchEvmWindow` bu üç listeyi döndürmez; onları
-REST üzerinden okuyun. Bu biçimde bir çağrı (`allowedTargets`, `stakingValidators` ve
-`ibcReceivers` ayarlı), 12 Kasım 2026'da SDK 0.14.0 ile test ağında çalıştırıldı ve
-kod 0 ile başarılı oldu (195,233 gaz kullanıldı); REST geri okuması `allowed_targets`
+REST üzerinden okuyun. Üç listenin de ayarlandığı bir çağrı, 12 Kasım 2026'da SDK 0.14.0 ile
+test ağında çalıştırıldı ve kod 0 ile başarılı oldu (195,233 gaz kullanıldı); REST geri okuması `allowed_targets`
 değerini listeledi ve diğer iki listeyi döndürmedi:
 
 ```ts
@@ -258,10 +257,11 @@ openEvmWindowMsg({
   blocks: 7200,
   maxTxs: 20,
   maxValue: "1000000000",
-  stakingValidators: ["qorvaloper1..."],
-  ibcReceivers: ["channel-0/cosmos1..."],
+  allowedTargets: ["0x1111111111111111111111111111111111111111"], // your token contract
 });
 ```
+
+Staking ve ödül talep etme için yerel Cosmos mesajlarını kullanın (QoreX veya qorechaind staking ve distribution komutları); yukarıdaki pencere alanları zincirin neyi kabul ettiğini anlatır, ancak MetaMask'ten staking desteklenen bir yol değildir.
 
 Kurallar için [EVM pencere başvurusuna](/developer-guide/evm-window-reference) bakın.
 

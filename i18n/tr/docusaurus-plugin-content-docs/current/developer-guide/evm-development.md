@@ -345,6 +345,8 @@ v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yal
 | ICS-20 | `transfer` | yerel QOR, `transfer` portu üzerinden, memo olmadan, `ibc_receivers` içindeki bir çifte |
 | ERC-20 token precompile'ları | `transfer`, `transferFrom`, `approve` | yerel QOR; başka bir token yalnızca pencere o token'ın adresini listeliyorsa |
 
+Staking ve ödül talep etme için yerel Cosmos mesajlarını kullanın (QoreX veya qorechaind staking ve distribution komutları); yukarıdaki pencere alanları zincirin neyi kabul ettiğini anlatır, ancak MetaMask'ten staking desteklenen bir yol değildir.
+
 Geri kalan her şey bir pencere üzerinden reddedilir: delegasyonu bozma, oylama ve diğer yönetişim eylemleri, çekim adresini değiştirme, doğrulayıcı oluşturma veya düzenleme, topluluk havuzunu fonlama. Bunları kuantum sonrası imzalı Cosmos işlemleri olarak gönderin.
 
 **Zincir üstünde kontrol edilen imzalar, doğrulayan kontratın pencerede olmasını gerektirir.** Bir EIP-2612 permit, bir Permit2 transferi, bir EIP-712 emri veya bir meta-işlem, bir kontrat tarafından `ecrecover` ile kontrol edilir. v3.2.8'den itibaren (her iki ağda, bir ağ onu uyguladığında) bu kontrol, kullanılabilir bir kuantum sonrası anahtarı olan bir hesap için yalnızca hesabın kendi canlı penceresi doğrulayan kontratı kabul ettiği sürece başarılı olur; bu, çağrıyı ileten yönlendirici değil, token'ın veya Permit2'nin kendisidir. Onu `allowed_targets` içinde listeleyin ve pencereyi kullanıcı imzalamadan **önce** açın. Bu pencere olmadan imza geçersiz sayılır ve kontrat onu reddeder. Bir pencere içinde verilen bir permit veya onay, pencere kapandıktan sonra da kalır; bu yüzden oturum bittiğinde onayları gözden geçirin ve iptal edin.

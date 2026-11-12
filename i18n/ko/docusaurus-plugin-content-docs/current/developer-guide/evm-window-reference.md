@@ -48,12 +48,11 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mykey-mldsa \
   --chain-id $QCHAIN --node $QNODE
 ```
 
-인자를 생략하면 CLI는 배포 세션에 맞춘 기본값을 사용합니다. 3,600 블록, 10 트랜잭션, 25 QOR입니다. 하나의 컨트랙트로 범위가 제한된 윈도우는 한 검증인에게 위임하고 하나의 IBC 수신자에게 전송할 수도 있습니다.
+인자를 생략하면 CLI는 배포 세션에 맞춘 기본값을 사용합니다. 3,600 블록, 10 트랜잭션, 25 QOR입니다. 하나의 토큰 컨트랙트로 범위가 제한된 윈도우입니다(주소는 본인 것으로 바꾸세요).
 
 ```bash
 qorechaind tx pqc open-evm-window 600 5 100qor \
-  --allowed-targets 0x0000000000000000000000000000000000000800 \
-  --staking-validators qorvaloper1... \
+  --allowed-targets 0x1111111111111111111111111111111111111111 \
   --from mykey --chain-id $QCHAIN --node $QNODE \
   --gas 400000 --fees 80000uqor --generate-only > window.json
 ```
@@ -110,7 +109,7 @@ const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic); // already registered on chain
 const tx = await client.connectTx(signer, { pqcKeypair });         // signs hybrid
 
-// Open a window that may call one token contract and delegate to one validator.
+// Open a window that may call one token contract (replace the address with your own).
 await tx.signAndBroadcast(
   [
     openEvmWindowMsg({
@@ -118,8 +117,7 @@ await tx.signAndBroadcast(
       blocks: 7200,
       maxTxs: 20,
       maxValue: "100000000",                 // uqor: value PLUS the maximum fee of each transaction
-      allowedTargets: ["0x0000000000000000000000000000000000000800"],
-      stakingValidators: ["qorvaloper1..."],
+      allowedTargets: ["0x1111111111111111111111111111111111111111"], // your token contract
     }),
   ],
   "auto",
@@ -146,7 +144,7 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | `nativeOnly: true`로 다시 열기 | 코드 0, 사용 가스 187,803. 새 윈도우가 이전 윈도우를 대체함: `native_only: true`, 새로운 `opened_height` |
 | 닫기 | 코드 0, 사용 가스 170,468. 다시 읽기: `found: false` |
 
-같은 날 SDK 0.14.0으로, `allowedTargets`(스테이킹 프리컴파일 주소), `stakingValidators`(검증인 운영자 주소 하나), `ibcReceivers`(`channel-0/...` 쌍 하나)를 지정해 연 윈도우가 코드 0, 사용 가스 195,233으로 성공했습니다. REST 읽기에는 `allowed_targets`가 나열되었고 `found: true`, `live: true`가 반환되었습니다. `validators`, `staking_validators`, `ibc_receivers` 목록은 반환하지 않으므로, 윈도우를 열 때 사용한 값을 직접 보관하세요.
+같은 날 SDK 0.14.0으로, `allowedTargets`(허용 대상 주소 하나), `stakingValidators`(검증인 운영자 주소 하나), `ibcReceivers`(`channel-0/...` 쌍 하나)를 지정해 연 윈도우가 코드 0, 사용 가스 195,233으로 성공했습니다. REST 읽기에는 `allowed_targets`가 나열되었고 `found: true`, `live: true`가 반환되었습니다. `validators`, `staking_validators`, `ibc_receivers` 목록은 반환하지 않으므로, 윈도우를 열 때 사용한 값을 직접 보관하세요.
 
 `fetchEvmWindow`는 같은 필드를 카멜 케이스(`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`)로 반환했습니다. 열기와 닫기는 하이브리드 서명된 Cosmos 트랜잭션이므로, 계정이 처음 보내는 트랜잭션은 먼저 키를 등록해야 합니다.
 
@@ -172,8 +170,7 @@ open_msg = msg.pqc.open_evm_window(
     blocks=7200,
     max_txs=20,
     max_value="100000000",  # uqor, integer string
-    allowed_targets=["0x0000000000000000000000000000000000000800"],
-    staking_validators=["qorvaloper1..."],
+    allowed_targets=["0x1111111111111111111111111111111111111111"],  # your token contract
 )
 # broadcast it through the usual hybrid path, then:
 rest = RestClient(get_network("testnet").endpoints.rest)
@@ -187,8 +184,7 @@ Go:
 ```go
 open, err := messages.NewOpenEVMWindowWithScope(sender, 7200, 20, "100000000",
     messages.EVMWindowScope{
-        AllowedTargets:    []string{"0x0000000000000000000000000000000000000800"},
-        StakingValidators: []string{"qorvaloper1..."},
+        AllowedTargets: []string{"0x1111111111111111111111111111111111111111"}, // your token contract
     })
 status, err := rest.GetEVMWindowStatus(sender)
 closeMsg, err := messages.NewCloseEVMWindow(sender)
@@ -201,8 +197,7 @@ use qorechain::evm_window::{get_evm_window, EvmWindowScope};
 use qorechain::msg;
 
 let scope = EvmWindowScope {
-    allowed_targets: vec!["0x0000000000000000000000000000000000000800".into()],
-    staking_validators: vec!["qorvaloper1...".into()],
+    allowed_targets: vec!["0x1111111111111111111111111111111111111111".into()], // your token contract
     ..Default::default()
 };
 let open = msg::pqc::open_evm_window_with_scope_any("qor1...", 7200, 20, "100000000", &scope)?;
@@ -215,9 +210,9 @@ Java:
 ```java
 TypedMessage open = EvmWindow.openWithPolicy(sender, 7200, 20, "100000000",
     false,
-    List.of("0x0000000000000000000000000000000000000800"), // allowedTargets
+    List.of("0x1111111111111111111111111111111111111111"), // allowedTargets: your token contract
     null,                                                   // validators
-    List.of("qorvaloper1..."),                              // stakingValidators
+    null,                                                   // stakingValidators
     null);                                                  // ibcReceivers
 EvmWindowStatus status = rest.evmWindow(sender);
 TypedMessage close = EvmWindow.close(sender);
@@ -259,14 +254,15 @@ SDK는 윈도우를 대신 열어 주지 않습니다. 윈도우는 지출을 �
 | ICS-20 | `transfer` | 네이티브 QOR, `transfer` 포트, 메모 없음, `ibc_receivers`에 있는 쌍으로 |
 | ERC-20 토큰 프리컴파일 | `transfer`, `transferFrom`, `approve` | 네이티브 QOR. 다른 토큰은 윈도우가 그 토큰의 주소를 나열한 경우에만 |
 
+스테이킹과 보상 청구에는 네이티브 Cosmos 메시지(QoreX 또는 qorechaind의 staking 및 distribution 명령)를 사용하세요. 위 윈도우 필드는 체인이 무엇을 허용하는지 설명할 뿐이며, MetaMask에서의 스테이킹은 지원되는 경로가 아닙니다.
+
 그 밖의 모든 것은 윈도우가 무엇을 나열하든 윈도우를 통해서는 거부됩니다. 언본딩, 언본딩 취소, 투표와 기타 거버넌스 동작, 출금 주소 변경, 검증인 생성 또는 편집, 언제일(unjail), 커뮤니티 풀 충전이 그렇습니다. 이런 동작은 포스트 퀀텀 서명된 Native 트랜잭션으로 보내세요. `ibc_receivers` 없이 ICS-20을 나열하면 전송이 하나도 허용되지 않으며, `staking_validators` 없이 스테이킹 프리컴파일을 나열하면 위임이 하나도 허용되지 않습니다.
 
 무엇을 나열할지에 대한 예시:
 
 | 목표 | 윈도우 |
 | ---- | ------ |
-| MetaMask에서 스테이킹 보상 청구 | 분배 프리컴파일이 포함된 `allowed_targets`. 출금 주소는 계정 자신으로 유지 |
-| MetaMask에서 스테이킹 | 스테이킹 프리컴파일이 포함된 `allowed_targets`와 `staking_validators` |
+| 스테이킹, 보상 청구, 언델리게이션, 투표 | 네이티브 Cosmos 메시지(QoreX의 Stake 및 Claim, 또는 qorechaind tx staking / distribution 명령)를 사용하세요. 이런 작업에 EVM 윈도우를 사용하지 마세요 |
 | QOR를 밖으로 브리지 | ICS-20 프리컴파일이 포함된 `allowed_targets`와 `channel-0/<receiver>` 같은 `ibc_receivers` |
 | ERC-20 프리컴파일로 보유한 IBC 토큰 이동 | 해당 토큰의 주소가 포함된 `allowed_targets` |
 
