@@ -95,7 +95,7 @@ EOF
 docker build -t qorechain-node:v3.2.6 release/
 ```
 
-アーカイブには`qorechaind`と、その共有ライブラリ(`libqorepqc.so`、`libqoresvm.so`、`libwasmvm.x86_64.so`、v3.2.8以降は`libwasmvmqore.x86_64.so`)を収めた`lib/`ディレクトリが含まれます。個別のファイルではなく`lib/`ディレクトリ全体をコピーしてください。上記のイメージはリリースアーカイブと同様に`linux/amd64`専用です。
+アーカイブには`qorechaind`と、その共有ライブラリ(`libqorepqc.so`、`libqoresvm.so`、`libwasmvm.x86_64.so`、v3.2.8以降は`libwasmvmqore_v1.x86_64.so`)を収めた`lib/`ディレクトリが含まれます。個別のファイルではなく`lib/`ディレクトリ全体をコピーしてください。上記のイメージはリリースアーカイブと同様に`linux/amd64`専用です。
 
 ```yaml
 # docker-compose.yml

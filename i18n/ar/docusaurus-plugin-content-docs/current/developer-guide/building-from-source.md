@@ -37,7 +37,7 @@ echo $CGO_ENABLED # must be 1
 
 ### libqorepqc وlibqoresvm
 
-تُبنى مكتبتا ما بعد الكمي (`libqorepqc`) وSVM (`libqoresvm`) من مصادر Rust **ليست جزءًا من المستودع العام** (لا يوجد مجلد `rust/` في `qorechain-core`). ولا يحتاج بناء المجتمع إليهما. تضم أرشيفات الإصدار للشبكات المكتبات المصرَّفة (`libqorepqc.so` و`libqoresvm.so` و`libwasmvm.x86_64.so` ومنذ v3.2.8 أيضاً `libwasmvmqore.x86_64.so`). انسخ مجلد `lib/` بأكمله لا ملفات منفردة في مجلد `lib/` بجوار `qorechaind`؛ ضعها في `lib/{os}_{arch}/` أو وجّه المحمِّل إليها كما هو موضح أدناه.
+تُبنى مكتبتا ما بعد الكمي (`libqorepqc`) وSVM (`libqoresvm`) من مصادر Rust **ليست جزءًا من المستودع العام** (لا يوجد مجلد `rust/` في `qorechain-core`). ولا يحتاج بناء المجتمع إليهما. تضم أرشيفات الإصدار للشبكات المكتبات المصرَّفة (`libqorepqc.so` و`libqoresvm.so` و`libwasmvm.x86_64.so` ومنذ v3.2.8 أيضاً `libwasmvmqore_v1.x86_64.so`). انسخ مجلد `lib/` بأكمله لا ملفات منفردة في مجلد `lib/` بجوار `qorechaind`؛ ضعها في `lib/{os}_{arch}/` أو وجّه المحمِّل إليها كما هو موضح أدناه.
 
 ### تحديد مسار المكتبة
 

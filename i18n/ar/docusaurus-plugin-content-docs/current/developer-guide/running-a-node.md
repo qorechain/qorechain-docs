@@ -95,7 +95,7 @@ EOF
 docker build -t qorechain-node:v3.2.6 release/
 ```
 
-يحتوي الأرشيف على `qorechaind` ودليل `lib/` يضم مكتباته المشتركة (`libqorepqc.so` و`libqoresvm.so` و`libwasmvm.x86_64.so` ومنذ v3.2.8 أيضاً `libwasmvmqore.x86_64.so`). انسخ مجلد `lib/` بأكمله لا ملفات منفردة؛ والصورة أعلاه لمنصة `linux/amd64` فقط، مثل أرشيف الإصدار.
+يحتوي الأرشيف على `qorechaind` ودليل `lib/` يضم مكتباته المشتركة (`libqorepqc.so` و`libqoresvm.so` و`libwasmvm.x86_64.so` ومنذ v3.2.8 أيضاً `libwasmvmqore_v1.x86_64.so`). انسخ مجلد `lib/` بأكمله لا ملفات منفردة؛ والصورة أعلاه لمنصة `linux/amd64` فقط، مثل أرشيف الإصدار.
 
 ```yaml
 # docker-compose.yml

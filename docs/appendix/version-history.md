@@ -41,7 +41,7 @@ v3.2.8 runs on the `qorechain-diana` testnet only. Mainnet stays on v3.2.6; ther
 
 **Release focus:** Smart contract fees that follow the real work, gas caps per transaction, optional EVM authorisation window lists, an escrowed and bounded asynchronous cross-VM call, a fuller Rollup Development Kit, stricter abstract accounts, and the Solana-compatible lane closed on the testnet.
 
-Testnet: applied at height 9,929,500 on 12 November 2026; mainnet has not applied it.
+Testnet: applied by governance proposal 36 at height 9,929,500 on 12 November 2026 (the nodes halted at about 03:35 UTC and were all running v3.2.8 by 03:37 UTC); mainnet has not applied it.
 
 * **Smart contract fees match the real work.** CosmWasm execution, uploads, code loading and memory are priced. There is a per-block contract budget and congestion pricing that only rises when blocks are full. Always estimate gas by simulation. See [CosmWasm in the SDK](/sdk/guides/cosmwasm#gas).
 * **Gas caps.** 50,000,000 per Cosmos transaction and 30,000,000 per EVM transaction (`GET /qorechain/pqc/v1/evm_limits`).

@@ -95,7 +95,7 @@ EOF
 docker build -t qorechain-node:v3.2.6 release/
 ```
 
-Arhiva conține `qorechaind` și un director `lib/` cu bibliotecile sale partajate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` și, începând cu v3.2.8, `libwasmvmqore.x86_64.so`). Copiați întregul director `lib/`, nu fișiere individuale; imaginea de mai sus este doar `linux/amd64`, ca și arhiva de release.
+Arhiva conține `qorechaind` și un director `lib/` cu bibliotecile sale partajate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` și, începând cu v3.2.8, `libwasmvmqore_v1.x86_64.so`). Copiați întregul director `lib/`, nu fișiere individuale; imaginea de mai sus este doar `linux/amd64`, ca și arhiva de release.
 
 ```yaml
 # docker-compose.yml

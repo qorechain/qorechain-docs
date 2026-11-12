@@ -37,7 +37,7 @@ Her `go build`, `go test` ve `go run` çağrısında `CGO_ENABLED=1` ayarlı **o
 
 ### libqorepqc ve libqoresvm
 
-Kuantum sonrası (`libqorepqc`) ve SVM (`libqoresvm`) kütüphaneleri, **herkese açık depoda yer almayan** Rust kaynaklarından derlenir (`qorechain-core` içinde `rust/` dizini yoktur). Topluluk derlemesi bunlara ihtiyaç duymaz. Ağlar için sürüm arşivleri, derlenmiş kütüphaneleri (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` ve v3.2.8'den itibaren `libwasmvmqore.x86_64.so`) `qorechaind` yanındaki bir `lib/` dizininde paketler. Tek tek dosyaları değil, `lib/` dizininin tamamını kopyalayın; bunları `lib/{os}_{arch}/` içine yerleştirin veya yükleyiciyi aşağıda gösterildiği gibi onlara yönlendirin.
+Kuantum sonrası (`libqorepqc`) ve SVM (`libqoresvm`) kütüphaneleri, **herkese açık depoda yer almayan** Rust kaynaklarından derlenir (`qorechain-core` içinde `rust/` dizini yoktur). Topluluk derlemesi bunlara ihtiyaç duymaz. Ağlar için sürüm arşivleri, derlenmiş kütüphaneleri (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` ve v3.2.8'den itibaren `libwasmvmqore_v1.x86_64.so`) `qorechaind` yanındaki bir `lib/` dizininde paketler. Tek tek dosyaları değil, `lib/` dizininin tamamını kopyalayın; bunları `lib/{os}_{arch}/` içine yerleştirin veya yükleyiciyi aşağıda gösterildiği gibi onlara yönlendirin.
 
 ### Kütüphane Yolunu Ayarlama
 

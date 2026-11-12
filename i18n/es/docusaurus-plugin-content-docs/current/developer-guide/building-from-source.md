@@ -37,7 +37,7 @@ Toda invocación de `go build`, `go test` y `go run` **debe** tener `CGO_ENABLED
 
 ### libqorepqc y libqoresvm
 
-Las bibliotecas poscuántica (`libqorepqc`) y SVM (`libqoresvm`) se compilan a partir de fuentes en Rust que **no forman parte del repositorio público** (no existe un directorio `rust/` en `qorechain-core`). La compilación comunitaria no las necesita. Los archivos de las versiones publicadas para las redes incluyen las bibliotecas compiladas (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` y, desde v3.2.8, `libwasmvmqore.x86_64.so`). Copia el directorio `lib/` completo, no archivos sueltos, en un directorio `lib/` junto a `qorechaind`; colócalas en `lib/{os}_{arch}/` o indica al cargador dónde están, como se muestra a continuación.
+Las bibliotecas poscuántica (`libqorepqc`) y SVM (`libqoresvm`) se compilan a partir de fuentes en Rust que **no forman parte del repositorio público** (no existe un directorio `rust/` en `qorechain-core`). La compilación comunitaria no las necesita. Los archivos de las versiones publicadas para las redes incluyen las bibliotecas compiladas (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` y, desde v3.2.8, `libwasmvmqore_v1.x86_64.so`). Copia el directorio `lib/` completo, no archivos sueltos, en un directorio `lib/` junto a `qorechaind`; colócalas en `lib/{os}_{arch}/` o indica al cargador dónde están, como se muestra a continuación.
 
 ### Configuración de la ruta de bibliotecas
 
