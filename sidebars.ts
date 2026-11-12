@@ -41,6 +41,33 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Build Before Q-Day",
+      link: {
+        type: "generated-index",
+        slug: "/build-before-qday",
+        description:
+          "Step-by-step guides for the Build Before Q-Day workshops: start from nothing installed and finish with working post-quantum QoreChain apps.",
+      },
+      items: [
+        "build-before-qday/overview",
+        {
+          type: "category",
+          label: "Workshop 1",
+          link: { type: "doc", id: "build-before-qday/workshop-1/index" },
+          items: [
+            "build-before-qday/workshop-1/apps/qday-counter",
+            "build-before-qday/workshop-1/apps/qday-guestbook",
+            "build-before-qday/workshop-1/apps/hybrid-inspector",
+            "build-before-qday/workshop-1/apps/rust-qday-pay",
+            "build-before-qday/workshop-1/apps/java-tipjar",
+            "build-before-qday/workshop-1/apps/python-airdrop",
+            "build-before-qday/workshop-1/kits",
+          ],
+        },
+      ],
+    },
+    {
+      type: "category",
       label: "User Guide",
       link: {
         type: "generated-index",
