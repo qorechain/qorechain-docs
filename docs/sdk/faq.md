@@ -91,15 +91,15 @@ is distinct from the Native `uqor` base of 10^6.
 
 ## Which packages are published, and where?
 
-All of them (checked 11 November 2026). The TypeScript core (`@qorechain/sdk`, 0.13.0),
-the React kit (`@qorechain/react`, 0.13.0), the `create-qorechain-dapp` scaffolder
-(0.13.1, a templates-only patch on top of SDK 0.13.0) and the EVM/SVM adapters (`@qorechain/evm`, `@qorechain/svm`, 0.13.0) are on
-npm; the Python client is on PyPI (`pip install qorechain-sdk` at 0.13.0, import
+All of them except the Java build of the newest release (checked 12 November 2026). The TypeScript core (`@qorechain/sdk`, 0.14.0),
+the React kit (`@qorechain/react`, 0.14.0), the `create-qorechain-dapp` scaffolder
+(0.14.0, which also carries the 0.13.1 template fixes) and the EVM/SVM adapters (`@qorechain/evm`, `@qorechain/svm`, 0.14.0) are on
+npm; the Python client is on PyPI (`pip install qorechain-sdk` at 0.14.0, import
 `qorsdk`); the Go client is on the module proxy
-(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`); the Rust client is
-on crates.io (`cargo add qorechain-sdk`, 0.13.0); and the Java client is on Maven
-Central (`io.github.qorechain:qorechain-sdk`, JDK 17 or later), where 0.13.0 is
-published (checked 11 November 2026). See [Install](/sdk/install) for the full
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`); the Rust client is
+on crates.io (`cargo add qorechain-sdk`, 0.14.0); and the Java client is on Maven
+Central (`io.github.qorechain:qorechain-sdk`, JDK 17 or later), which still shows 0.13.0 on
+12 November 2026; use 0.14.0 once it appears. See [Install](/sdk/install) for the full
 per-language commands.
 
 ## My mnemonic is rejected
@@ -125,7 +125,7 @@ transaction always has the same signature and tx hash. If a hybrid tx fails with
 `pqc` code 21 (`hybrid_verify_failed`), the cause is the sign-bytes version,
 the chain-id, a stale PQC library or an unregistered or different key, never hedged
 signing.
-Both networks verify the v2 sign-bytes form, so use SDK **0.8.1 or later** (0.13.0
+Both networks verify the v2 sign-bytes form, so use SDK **0.8.1 or later** (0.14.0
 is current) and pass `rest` (or `signBytesVersion`): the builders throw on
 `qorechain-vladi` / `qorechain-diana` without one of them. See
 [Troubleshooting code 21](/developer-guide/post-quantum-signing#code-21) and
@@ -167,7 +167,7 @@ of those builders: use the CLI for them (see
 [Versions before 0.9.0](/sdk/install#before-090)). The signing format did not change
 in v3.2.4, v3.2.5 or v3.2.6. Mainnet runs v3.2.6 and the testnet v3.2.8 (the testnet applied v3.2.5 on 26 October 2026,
 v3.2.6 on 27 October, v3.2.7 on 6 November and v3.2.8 on 12 November; mainnet applied v3.2.5 on 29 October and v3.2.6 on 4 November). SDK 0.10.0 and 0.9.0 keep working on them but have no builders for the
-v3.2.5 additions (the ML-KEM key registry, the exact gas rule); with those releases use the CLI, or upgrade to 0.13.0. 0.12.0 was built and checked against v3.2.5.
+v3.2.5 additions (the ML-KEM key registry, the exact gas rule); with those releases use the CLI, or upgrade to 0.14.0. 0.12.0 was built and checked against v3.2.5.
 
 ## My PQC key registration was refused but the fee was taken
 

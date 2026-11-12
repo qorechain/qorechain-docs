@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Published to npm as `create-qorechain-dapp` (`0.13.1`, a templates-only patch on top of SDK 0.13.0). The generated
-> `package.json` files depend on `@qorechain/sdk` `^0.13.0` (the EVM templates on
-> `@qorechain/evm` `^0.13.0`). Version 0.8.0 of the scaffolder wrote `^0.3.0` ranges,
+> Published to npm as `create-qorechain-dapp` (`0.14.0`, which also carries the 0.13.1 template fixes). The generated
+> `package.json` files depend on `@qorechain/sdk` `^0.14.0` (the EVM templates on
+> `@qorechain/evm` `^0.14.0`). Version 0.8.0 of the scaffolder wrote `^0.3.0` ranges,
 > which npm resolves to a 0.3 release that cannot sign for the live networks; if you
 > scaffolded with 0.8.0, run `npm i @qorechain/sdk@latest`.
 
@@ -54,7 +54,7 @@ such as `client.rest.getBurnStats()` for the public networks.
 | Flag | Description |
 | --- | --- |
 | `-t, --template <name>` | Template to use (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | Network preset (`testnet` \| `mainnet`). Writes the chosen network's public endpoints into the generated `.env` (0.13.1). |
+| `--network <name>` | Network preset (`testnet` \| `mainnet`). Writes the chosen network's public endpoints into the generated `.env` (since 0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Skip prompts and use defaults. |
 | `--no-install` | Do not install dependencies after scaffolding. |

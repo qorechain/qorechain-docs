@@ -43,16 +43,16 @@ abstract-account flows on mainnet (module switched off there, enabled on the
 testnet), xQORE and gas abstraction. Each guide repeats the caveat where it
 applies. Checked against the live endpoints on 27 October 2026; on 7 November 2026 mainnet's active-precompile list was still empty, while the testnet's list also held the cross-VM bridge `0x…0901` (active with an allowlist; a read-only `eth_call` was tested on 7 November 2026).
 
-The published SDK (0.13.0, 11 November 2026) signs in the form both networks verify
+The published SDK (0.14.0, 12 November 2026) signs in the form both networks verify
 (v2 hybrid sign-bytes, resolved from chain state), and the signing format,
 addresses, decimals, memos and fees did not change in v3.2.3, v3.2.4, v3.2.5 or v3.2.6 (mainnet has run v3.2.6 since 4 November 2026,
-height 4,020,000, governance proposal 15; the testnet since 27 October, and since 6 November the testnet ran v3.2.7 and since 12 November it runs v3.2.8, which add messages SDK 0.13.0 has no builders for). It carries
+height 4,020,000, governance proposal 15; the testnet since 27 October, and since 6 November the testnet ran v3.2.7 and since 12 November it runs v3.2.8, which add messages that SDK 0.14.0 has builders for; the testnet's new rules apply from v3.2.8 and mainnet has not applied it). It carries
 the client side of the later post-quantum rules (the proof of possession on key
 registration, scoped EVM windows, EIP-7702 consent messages) and of v3.2.4 (staking
 tiers, the authenticator nonce, protocol feature switches) and v3.2.5 (exact gas for
 hybrid transactions, the ML-KEM key registry); versions before 0.9.0
 do not carry the first group, see [Versions before 0.9.0](/sdk/install#before-090),
-[What 0.12.0 adds](/sdk/install#whats-new-0120) and [What 0.13.0 changes](/sdk/install#whats-new-0130).
+[What 0.12.0 adds](/sdk/install#whats-new-0120) [What 0.13.0 changes](/sdk/install#whats-new-0130) and [What 0.14.0 changes](/sdk/install#whats-new-0140).
 
 Wallet and backend signing: see [QoreSign](/qoresign/overview).
 :::
@@ -116,15 +116,15 @@ math, and read surfaces.
 
 | Package | Language | Install | Status |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Published (npm, v0.13.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.13.0) |
-| `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, tag `packages/go/v0.13.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Published (crates.io, v0.13.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.13.0` | Published (Maven Central, v0.13.0; JDK 17+) |
-| `@qorechain/evm` | TypeScript (EVM adapter) | `npm i @qorechain/evm viem` | Published (npm, v0.13.0) |
-| `@qorechain/svm` | TypeScript (SVM adapter) | `npm i @qorechain/svm @solana/web3.js` | Published (npm, v0.13.0) |
-| `@qorechain/react` | TypeScript (React kit) | `npm i @qorechain/react` | Published (npm, v0.13.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Published (npm, v0.13.1) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Published (npm, v0.14.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.14.0) |
+| `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, tag `packages/go/v0.14.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Published (crates.io, v0.14.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.14.0` | Maven Central still shows 0.13.0 on 12 November 2026; use 0.14.0 once it appears (JDK 17+) |
+| `@qorechain/evm` | TypeScript (EVM adapter) | `npm i @qorechain/evm viem` | Published (npm, v0.14.0) |
+| `@qorechain/svm` | TypeScript (SVM adapter) | `npm i @qorechain/svm @solana/web3.js` | Published (npm, v0.14.0) |
+| `@qorechain/react` | TypeScript (React kit) | `npm i @qorechain/react` | Published (npm, v0.14.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Published (npm, v0.14.0) |
 
 > The Python distribution installs as `qorechain-sdk` but **imports as
 > `qorsdk`**. All clients are published to their registries — see
@@ -138,16 +138,16 @@ for every custom module plus the standard Cosmos modules, typed query clients,
 the complete transaction lifecycle (auto-gas, error decoding, tx tracking,
 block/tx search), hybrid post-quantum transactions, and WebSocket
 subscriptions. All of these clients are **published**: TypeScript to npm
-(`@qorechain/sdk` 0.13.0), Python to PyPI (`qorechain-sdk` 0.13.0, import
-`qorsdk`), Go to the module proxy (tag `packages/go/v0.13.0`), Rust to crates.io
-(`qorechain-sdk` 0.13.0), and Java to Maven Central
-(`io.github.qorechain:qorechain-sdk`, where 0.13.0 is published, checked 11 November 2026). The EVM/SVM execution adapters
-(`@qorechain/evm`, `@qorechain/svm`, both 0.13.0), the `@qorechain/react` kit
-(0.13.0), and the `create-qorechain-dapp` scaffolding CLI (0.13.1, a templates-only patch on top of SDK 0.13.0) are
+(`@qorechain/sdk` 0.14.0), Python to PyPI (`qorechain-sdk` 0.14.0, import
+`qorsdk`), Go to the module proxy (tag `packages/go/v0.14.0`), Rust to crates.io
+(`qorechain-sdk` 0.14.0), and Java to Maven Central
+(`io.github.qorechain:qorechain-sdk`, which still shows 0.13.0 on 12 November 2026; use 0.14.0 once it appears). The EVM/SVM execution adapters
+(`@qorechain/evm`, `@qorechain/svm`, both 0.14.0), the `@qorechain/react` kit
+(0.14.0), and the `create-qorechain-dapp` scaffolding CLI (0.14.0, which also carries the 0.13.1 template fixes) are
 TypeScript-only and likewise published to npm. See
 [Install](/sdk/install#related-packages) for the companion packages.
 
-## What's new in 0.6 to 0.13 {#whats-new-in-06-07-08-09-and-010}
+## What's new in 0.6 to 0.14 {#whats-new-in-06-07-08-09-and-010}
 
 **0.6.0 — unified eth-native accounts (chain v3.1.83).** One `eth_secp256k1`
 key is one 20-byte identity rendered as all three address encodings, sharing
@@ -241,6 +241,9 @@ equivalents in the other languages now need a `QRC1` recovery code or an indepen
 behaviour are unchanged. Recovery-code helpers were added in every language, and
 `migrateToHybrid` reports `keyVerified`. See
 [What 0.13.0 changes](/sdk/install#whats-new-0130).
+
+**0.14.0, client support for chain v3.2.8.** Linking a key needs a possession proof, keys that move value need a spending rule (a helper builds the pair), governance parameter updates need every field, failed authorised executions can be read, and the EVM window takes three more lists. The new rules apply once a network runs v3.2.8: the testnet since 12 November 2026; mainnet has not applied it. See
+[What 0.14.0 changes](/sdk/install#whats-new-0140).
 
 ## Where to go next
 

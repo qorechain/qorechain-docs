@@ -231,6 +231,34 @@ await tx.signAndBroadcast(
 );
 ```
 
+### More scope lists (since chain v3.2.8, SDK 0.14.0) {#evm-window-scope-v328}
+
+From chain v3.2.8 (the testnet since 12 November 2026; mainnet has not applied it) a
+window can carry three more lists, which `openEvmWindowMsg` accepts from SDK 0.14.0:
+`validators` (up to 16 contract addresses whose check of the account's signature counts for
+the account's own actions, such as a validator module or an ERC-4337 entry point),
+`stakingValidators` (`qorvaloper1...` validators the window may delegate or redelegate to
+through the staking precompile) and `ibcReceivers` (ICS-20 receivers, each written
+`"<channel>/<receiver>"`). The builder checks the format and refuses duplicates before
+anything is signed. Set them only on a network that runs v3.2.8: a node below it refuses
+the message. `fetchEvmWindow` does not return these three lists; read them over REST. A call of this
+shape (with `allowedTargets`, `stakingValidators` and `ibcReceivers` set) was run on the
+testnet on 12 November 2026 with SDK 0.14.0 and succeeded with code 0 (195,233 gas used); the
+REST read-back listed `allowed_targets` and did not return the other two lists:
+
+```ts
+openEvmWindowMsg({
+  sender: account.address,
+  blocks: 7200,
+  maxTxs: 20,
+  maxValue: "1000000000",
+  stakingValidators: ["qorvaloper1..."],
+  ibcReceivers: ["channel-0/cosmos1..."],
+});
+```
+
+See the [EVM window reference](/developer-guide/evm-window-reference) for the rules.
+
 ### EIP-7702 consent (since chain v3.2.2, SDK 0.9.0) {#evm-delegation-consent}
 
 A type-4 (EIP-7702) transaction is admitted only after every account whose

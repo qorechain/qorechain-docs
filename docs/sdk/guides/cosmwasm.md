@@ -192,7 +192,11 @@ simple transfer on one call and runs out on the next. From release v3.2.8
   `TxClient`, the React `useTx` hook), and simulate yourself when you build the
   fee by hand as above.
 - **Stay below the transaction cap.** A Cosmos transaction may not set a gas limit
-  above 50,000,000 and is refused before its fee is charged.
+  above 50,000,000 and is refused before its fee is charged. SDK 0.14.0 refuses such
+  a limit before signing (and an EVM transaction above 30,000,000), gives CosmWasm and
+  cross-VM transactions at least 1.3 times the simulated gas, and never falls back to a
+  fixed gas limit for them. It also has opt-in helpers that read the network's minimum
+  gas price; the default gas price is unchanged.
 
 The same applies to instantiate, migrate and every other message that runs
 contract code.

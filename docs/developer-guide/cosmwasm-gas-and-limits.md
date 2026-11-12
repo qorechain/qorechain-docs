@@ -189,7 +189,7 @@ const fee = {
 // Pass `fee` and `msgs` to signAndBroadcastHybrid exactly as in the SDK guide.
 ```
 
-`carriesWasmExecution(messages)` tells you whether a list of messages needs simulated gas, and `WASM_GAS_MULTIPLIER_MIN` is the 1.3 minimum. Where a CosmJS client accepts `"auto"` as the fee, it simulates for you.
+SDK 0.14.0 enforces the same rules itself: it refuses a Cosmos gas limit above 50,000,000 before signing, gives CosmWasm and cross-VM transactions at least 1.3 times the simulated gas, and never uses a fixed fallback for them. `carriesWasmExecution(messages)` tells you whether a list of messages needs simulated gas, and `WASM_GAS_MULTIPLIER_MIN` is the 1.3 minimum. Where a CosmJS client accepts `"auto"` as the fee, it simulates for you.
 
 ### Tested on the testnet {#example-tested}
 

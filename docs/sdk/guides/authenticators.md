@@ -119,6 +119,53 @@ To disable a key instantly, the owner broadcasts
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`.
 
+### Linking from chain v3.2.8 (SDK 0.14.0) {#link-v328}
+
+From chain v3.2.8 (the testnet since 12 November 2026; mainnet has not applied it)
+the registration above is refused unless it carries a **possession proof**: the key
+being linked signs a plain-text message that names the chain, the account, the scheme
+and the key. A key with `send`, `evm`, `deploy`, `svm` or `all` also needs the
+account's first enabled spending rule to bound every denom. SDK 0.14.0 has helpers
+for both; `linkAuthenticatorMsgs` builds the spending rule and the link in the order
+to send them in one owner-signed transaction. This snippet follows the 0.14.0 source
+and has not been run:
+
+```ts
+import { linkAuthenticatorMsgs, signAuthenticatorLinkPhantom } from "@qorechain/sdk";
+
+// The key being linked signs the link message (Phantom signMessage here).
+const proof = await signAuthenticatorLinkPhantom({
+  chainId: "qorechain-diana",
+  account: canonicalAccount,
+  wallet: window.solana,
+});
+
+const msgs = linkAuthenticatorMsgs({
+  owner: canonicalAccount,
+  chainId: "qorechain-diana",   // optional: checks the proof before anything is built
+  scheme: proof.scheme,
+  pubkey: proof.pubkey,
+  possessionProof: proof.possessionProof,
+  permissions: ["send"],
+  expiryUnix: Math.floor(Date.now() / 1000) + 7 * 24 * 3600,
+  label: "phantom",
+  // Replaces the account's rules wholesale: pass every rule to keep.
+  spendingRules: [{ id: "phantom-hot", enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+// Sign msgs in one owner-signed hybrid transaction.
+```
+
+The same file has `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`,
+`signAuthenticatorLinkEip191` and `signAuthenticatorLinkMetaMask` for the other key
+types, and the register composers refuse an empty proof. On a network below v3.2.8 the
+proof stays optional.
+
+From v3.2.8 an authorised `MsgExecuteEVM` or `MsgExecuteCosmos` that fails returns
+`success=false` inside a transaction with code 0 and still consumes the nonce. After a
+relayer broadcast, call `assertAuthenticatorExecutionsSucceeded(result, messages)`, or
+`decodeAuthenticatorExecutions` to read each outcome, so a failed execution is not
+taken for a success.
+
 ## Spend from Phantom (Native lane, via a relayer)
 
 Once the key is linked, the browser builds a relayer-ready `MsgExecuteCosmos`:

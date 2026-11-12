@@ -133,11 +133,11 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg` checks the bounds and the list formats before anything is signed, so a mistake fails locally instead of costing a refused transaction. `MAX_EVM_WINDOW_BLOCKS` and `MAX_EVM_WINDOW_TXS` export the bounds. The read-back (`fetchEvmWindow`) returns the bounds, the counters and the v3.2.3 scope (`nativeOnly`, `allowedTargets`); `validators`, `stakingValidators` and `ibcReceivers` are accepted by the builder. With a hybrid-signing `connectTx` the post-quantum key must already be registered.
+`openEvmWindowMsg` checks the bounds and the list formats before anything is signed, so a mistake fails locally instead of costing a refused transaction. `MAX_EVM_WINDOW_BLOCKS` and `MAX_EVM_WINDOW_TXS` export the bounds. The read-back (`fetchEvmWindow`) returns the bounds, the counters and the v3.2.3 scope (`nativeOnly`, `allowedTargets`); `validators` (contract addresses), `stakingValidators` (`qorvaloper1...`) and `ibcReceivers` (`"<channel>/<receiver>"`) are accepted by the builder from SDK 0.14.0, which carries the v3.2.8 lists; the read-back does not return them, so read them over REST. The example above uses `stakingValidators`; it has not been run against SDK 0.14.0. Set the three lists only for a network that runs v3.2.8: a node below it refuses a window message that sets them. With a hybrid-signing `connectTx` the post-quantum key must already be registered.
 
 ### Tested on the testnet {#tested}
 
-Run on `qorechain-diana` on 12 November 2026 (release v3.2.8) with an eth-native account that had registered its post-quantum key, using SDK 0.13.0 (`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`) and hybrid signing. The window fields `validators`, `staking_validators` and `ibc_receivers` are not in the published SDK 0.13.0 builders yet; use the command line for them until an SDK release adds them.
+Run on `qorechain-diana` on 12 November 2026 (release v3.2.8) with an eth-native account that had registered its post-quantum key, using SDK 0.13.0 (`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`) and hybrid signing. The window fields `validators`, `staking_validators` and `ibc_receivers` were not in the SDK 0.13.0 builders; SDK 0.14.0 adds them to `openEvmWindowMsg`, and this run did not use them (use the command line for them with SDK 0.13.0).
 
 | Step | Result |
 | ---- | ------ |
@@ -146,11 +146,13 @@ Run on `qorechain-diana` on 12 November 2026 (release v3.2.8) with an eth-native
 | Open again with `nativeOnly: true` | code 0, 187,803 gas used. The new window replaced the old one: `native_only: true`, a new `opened_height` |
 | Close | code 0, 170,468 gas used. Read back: `found: false` |
 
+With SDK 0.14.0 the same day, a window opened with `allowedTargets` (the staking precompile address), `stakingValidators` (one validator operator address) and `ibcReceivers` (one `channel-0/...` pair) succeeded with code 0 and 195,233 gas used. The REST read-back listed `allowed_targets` and returned `found: true`, `live: true`; it does not return the `validators`, `staking_validators` or `ibc_receivers` lists, so keep the values you opened the window with.
+
 `fetchEvmWindow` returned the same fields in camel case (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). Opening and closing are hybrid-signed Cosmos transactions, so the first one an account sends needs its key registered first.
 
 ### Python, Go, Rust and Java {#other-languages}
 
-Each SDK has a builder for the message and a REST read. All of them check the chain's bounds locally. A language builder that sets the v3.2.8 lists needs the SDK release that supports v3.2.8; earlier releases build only the older fields.
+Each SDK has a builder for the message and a REST read. All of them check the chain's bounds locally. A language builder that sets the v3.2.8 lists needs SDK 0.14.0 or later (Java: 0.14.0 once it appears on Maven Central, which still shows 0.13.0 on 12 November 2026); earlier releases build only the older fields.
 
 | Language | Open (with every list) | Close | Read | EVM limits |
 | -------- | ---------------------- | ----- | ---- | ---------- |

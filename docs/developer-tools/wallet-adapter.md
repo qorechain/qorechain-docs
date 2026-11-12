@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Wallet adapter (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter` adds QoreChain to Cosmos wallets that expose `signDirect` (Keplr, Leap, Cosmostation) and builds the transactions the chain requires: a native-lane transaction must carry an ML-DSA-87 (FIPS 204) signature next to the account's classical secp256k1 signature, and a stock wallet cannot make the ML-DSA-87 one. The adapter makes it, places it in the transaction body, and then asks the unchanged wallet for an ordinary signature. It is for dApp and wallet developers, and for tool builders who need unified QoreChain wallets, EVM authorization window messages or linked-key (authenticator) messages in JavaScript. The current version is 0.5.0 (11 November 2026).
+`@qorechain/wallet-adapter` adds QoreChain to Cosmos wallets that expose `signDirect` (Keplr, Leap, Cosmostation) and builds the transactions the chain requires: a native-lane transaction must carry an ML-DSA-87 (FIPS 204) signature next to the account's classical secp256k1 signature, and a stock wallet cannot make the ML-DSA-87 one. The adapter makes it, places it in the transaction body, and then asks the unchanged wallet for an ordinary signature. It is for dApp and wallet developers, and for tool builders who need unified QoreChain wallets, EVM authorization window messages or linked-key (authenticator) messages in JavaScript. The current version is 0.6.0 (12 November 2026).
 
 If you only need a dApp to send a transaction from a user's QoreX wallet, the shortest path is [`qorexSignAndBroadcast`](#qorex) in this package, or the QoreX packages listed in the [Developer packages](/developer-tools/overview#group-qorex) index. If you are writing a wallet and want a full signing library in five languages, read [QoreSign](/qoresign/overview) first.
 
@@ -154,7 +154,7 @@ if (!status.live) {
 }
 ```
 
-Order matters: open the window, then read the EVM nonce, then sign the EVM transaction, because opening a window advances the account's sequence, which is also its EVM nonce. `openEvmWindowMsg` builds the unscoped form of the window only; a scoped window (`native_only`, `allowed_targets`) needs the SDK. Background: [EVM authorization window](/sdk/guides/evm#evm-window) and [Your First Transaction](/getting-started/first-transaction#evm-window).
+Order matters: open the window, then read the EVM nonce, then sign the EVM transaction, because opening a window advances the account's sequence, which is also its EVM nonce. From 0.6.0, `openEvmWindowMsg` also takes the window scope: `nativeOnly`, `allowedTargets` and, on a network that runs chain v3.2.8, `validators`, `stakingValidators` and `ibcReceivers`. Background: [EVM authorization window](/sdk/guides/evm#evm-window) and [Your First Transaction](/getting-started/first-transaction#evm-window).
 
 ### Other entry points
 
@@ -163,7 +163,60 @@ Order matters: open the window, then read the EVM nonce, then sign the EVM trans
 | Recover or rotate a PQC key | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | Sign with the eth-native key | `signClassicalEth` (the classical key registration), `signHybridEth` |
 | Sign-bytes helpers | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
-| Link and spend with an external key | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, the `buildPhantom*` and `buildMetaMask*` functions |
+| Link and spend with an external key | `linkAuthenticatorMsgs`, `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, the `buildPhantom*` and `buildMetaMask*` functions |
+
+## What 0.6.0 changes {#whats-new-060}
+
+0.6.0 (12 November 2026) adds support for chain v3.2.8 (the testnet runs it since 12 November 2026; mainnet has not applied it). The new rules apply on a network once it runs v3.2.8.
+
+**Breaking changes.**
+
+- `registerAuthenticatorMsg` and `registerEthAuthenticatorMsg` require `possessionProof`: the key being linked signs a plain-text link message that names the chain, the account, the scheme and the key. A call without one throws.
+- `decodeEvmWindowMsg` returns the new scope fields (empty lists and `nativeOnly: false` when absent).
+- `buildPhantomSvmEnvelope` and `buildPhantomTransfer` choose the form to sign: pass `rest` and `chainId`, or `svmAuthVersion: "v2" | "v3"`. Without either they throw instead of signing a form the network may refuse.
+
+**New functions.**
+
+| Task | Functions |
+|---|---|
+| Key linking | `authenticatorLinkMessage`, `phantomPossessionProof`, `metaMaskPossessionProof` |
+| Spending rule for a key that moves value | `spendingRuleBoundsEveryDenom`, `updateSpendingRulesMsg`, `linkAuthenticatorMsgs` (the spending rule and the link in one owner-signed transaction) |
+| Execution results | `authenticatorExecutionResults`, `assertAuthenticatorExecutionsSucceeded`: read `success=false` from `MsgExecuteEVM` or `MsgExecuteCosmos` inside a code 0 transaction |
+| EVM window scope | `openEvmWindowMsg` takes `nativeOnly`, `allowedTargets`, `validators`, `stakingValidators` and `ibcReceivers`; `validateEvmWindowScope` checks them |
+| SVM authorisation | `authSignBytesV3` (the chain-bound digest a network verifies once it enables `svm-relayed-chain-bound`) and `resolveSvmAuthVersion({ rest })`, which returns `"v3"` or `"v2"` |
+
+The QoreX request check also refuses an authz `MsgGrant` whose `GenericAuthorization` names a message it refuses, and a `MsgGrant` it cannot decode.
+
+A key with the `send`, `evm`, `deploy`, `svm` or `all` permission needs the account's first enabled spending rule to bound every denom; `linkAuthenticatorMsgs` refuses the pair otherwise. `rules` replaces the account's rules wholesale, so pass every rule to keep. Link a MetaMask key (this snippet comes from the 0.6.0 typings and source; it has not been run):
+
+```js
+import {
+  registerEthAuthenticatorMsg,
+  metaMaskPossessionProof,
+  linkAuthenticatorMsgs,
+} from "@qorechain/wallet-adapter";
+
+const possessionProof = await metaMaskPossessionProof({
+  provider: window.ethereum,
+  address: ethAddress,        // the 0x address being linked
+  chainId: "qorechain-diana",
+  account: qor1,
+});
+
+const registerMsg = registerEthAuthenticatorMsg({
+  owner: qor1,
+  ethAddress,
+  permissions: ["evm"],
+  expiryUnix,
+  possessionProof,
+});
+
+// The spending rule and the link, in order, for one owner-signed transaction.
+const msgs = linkAuthenticatorMsgs({
+  registerMsg,
+  rules: [{ enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+```
 
 ## What 0.5.0 changes {#whats-new-050}
 
@@ -181,16 +234,16 @@ Order matters: open the window, then read the EVM nonce, then sign the EVM trans
 
 | Registry | Package | Version | Link |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.5.0 (published 11 November 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.6.0 (published 12 November 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-Source: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (public, tag `v0.5.0`, Apache-2.0). It is not published on PyPI, crates.io, Maven Central or the Go proxy. Related: [Developer packages](/developer-tools/overview), [QoreSign](/qoresign/overview), [Post-Quantum Signing](/developer-guide/post-quantum-signing), [Exchange integration](/developer-guide/exchange-integration).
+Source: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (public, tag `v0.6.0`, Apache-2.0). It is not published on PyPI, crates.io, Maven Central or the Go proxy. Related: [Developer packages](/developer-tools/overview), [QoreSign](/qoresign/overview), [Post-Quantum Signing](/developer-guide/post-quantum-signing), [Exchange integration](/developer-guide/exchange-integration).
 
 ## Limits and known issues {#limits}
 
 - **It signs; it does not broadcast, register keys or open windows.** There is no function that registers the ML-DSA-87 key, and nothing opens an EVM window for you.
-- **No proof of possession.** A key registration made with tooling that only uses this package carries none. The chain still accepts it, and verifies the proof when one is present ([Proof of possession](/developer-guide/post-quantum-signing#proof-of-possession)).
+- **Proof of possession.** Before 0.6.0 a key registration made with this package carried none. From 0.6.0 the linking functions require one (see [What 0.6.0 changes](#whats-new-060)); the chain refuses a link without it once it runs v3.2.8, and verifies the proof when one is present on earlier networks ([Proof of possession](/developer-guide/post-quantum-signing#proof-of-possession)).
 - **`derivePqcKeyFromWallet` is withdrawn** (0.3.0) and always throws. Accounts that registered a key with it should rotate it with `rotateFromLegacyWalletKey`.
-- **Unscoped windows only.** `openEvmWindowMsg` has no scope fields.
+- **Window scope.** Before 0.6.0 `openEvmWindowMsg` had no scope fields; the `validators`, `stakingValidators` and `ibcReceivers` fields only take effect on a network that runs chain v3.2.8.
 - **`qoreChainInfo` defaults to the testnet.** Always pass `chainId` for mainnet.
 - **Authenticator nonces.** No query exposes the linked key's authenticator sequence yet, so you must track it; the chain answers `abstractaccount` code 11 when the value is wrong. The authenticator module is enabled on testnet and switched off on mainnet (see the [SDK overview](/sdk/overview)).
 - **cosmjs 0.32 peers.** The SDK uses cosmjs 0.39; installing both in one project gives an `ERESOLVE` error, so keep them apart or pass `--legacy-peer-deps`.

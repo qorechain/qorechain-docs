@@ -166,6 +166,7 @@ From release v3.2.8 (testnet only until a later mainnet upgrade) an asynchronous
 - **At most 100 pending calls per sender.** A further call is refused until one finishes or times out.
 - **Failed calls are charged.** A call that fails still pays for the work done.
 - **Heavy calls:** raise `async_gas_limit` and `async_max_factor` for contracts that load large code; a cw721-size contract does not fit the defaults on its first call in a block.
+- **From code.** SDK 0.14.0 takes both fields in each language (TypeScript: `asyncGasLimit` and `asyncMaxFactor`, with `validateCrossVmAsyncGas` checking them; `asyncMaxFactor` is in millionths, so 1,000,000 is 1x). It also returns every page of the paged pending query. This has not been run on the testnet.
 
 ---
 
