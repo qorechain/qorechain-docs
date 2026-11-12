@@ -241,7 +241,7 @@ the account's own actions, such as a validator module or an ERC-4337 entry point
 through the staking precompile) and `ibcReceivers` (ICS-20 receivers, each written
 `"<channel>/<receiver>"`). The builder checks the format and refuses duplicates before
 anything is signed. Set them only on a network that runs v3.2.8: a node below it refuses
-the message. `fetchEvmWindow` does not return these three lists; read them over REST. A call setting all three
+the message. `fetchEvmWindow` does not return these three lists, and the REST window route does not return them either in v3.2.8: keep the values you opened the window with. A call setting all three
 lists was run on the testnet on 12 November 2026 with SDK 0.14.0 and succeeded with code 0 (195,233 gas used); the
 REST read-back listed `allowed_targets` and did not return the other two lists:
 
