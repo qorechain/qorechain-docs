@@ -166,6 +166,7 @@ v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yal
 - **Gönderen başına en fazla 100 bekleyen çağrı.** Biri bitene veya zaman aşımına uğrayana kadar yeni bir çağrı reddedilir.
 - **Başarısız çağrılar ücretlendirilir.** Başarısız olan bir çağrı da yapılan iş için öder.
 - **Ağır çağrılar:** büyük kod yükleyen sözleşmeler için `async_gas_limit` ve `async_max_factor` değerlerini artırın; cw721 boyutundaki bir sözleşme, bir blokta ilk çağrısında varsayılanlara sığmaz.
+- **Koddan.** SDK 0.14.0 her dilde iki alanı da alır (TypeScript: `asyncGasLimit` ve `asyncMaxFactor`; bunları `validateCrossVmAsyncGas` denetler; `asyncMaxFactor` milyonda bir birimindedir, yani 1.000.000 1x demektir). Sayfalı bekleyen çağrılar sorgusunun her sayfasını da döndürür. Bu, test ağında çalıştırılmadı.
 
 ---
 

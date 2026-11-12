@@ -189,7 +189,7 @@ const fee = {
 // Pass `fee` and `msgs` to signAndBroadcastHybrid exactly as in the SDK guide.
 ```
 
-`carriesWasmExecution(messages)` indique si une liste de messages nécessite du gas simulé, et `WASM_GAS_MULTIPLIER_MIN` est le minimum de 1.3. Là où un client CosmJS accepte `"auto"` comme frais, il simule pour vous.
+Le SDK 0.14.0 applique lui-même les mêmes règles : il refuse une limite de gas Cosmos supérieure à 50,000,000 avant la signature, donne aux transactions CosmWasm et cross-VM au moins 1.3 fois le gas simulé, et n'utilise jamais de valeur de repli fixe pour elles. `carriesWasmExecution(messages)` indique si une liste de messages nécessite du gas simulé, et `WASM_GAS_MULTIPLIER_MIN` est le minimum de 1.3. Là où un client CosmJS accepte `"auto"` comme frais, il simule pour vous.
 
 ### Testé sur le testnet {#example-tested}
 

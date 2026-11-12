@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> `create-qorechain-dapp`(`0.13.1`, SDK 0.13.0 위에 얹은 템플릿 전용 패치)으로 npm에 게시되어 있습니다. 생성되는
-> `package.json` 파일은 `@qorechain/sdk` `^0.13.0`에 의존합니다(EVM 템플릿은
-> `@qorechain/evm` `^0.13.0`). 스캐폴더의 0.8.0 버전은 `^0.3.0` 범위를 기록했는데,
+> `create-qorechain-dapp`(`0.14.0`, 0.13.1의 템플릿 수정도 포함)으로 npm에 게시되어 있습니다. 생성되는
+> `package.json` 파일은 `@qorechain/sdk` `^0.14.0`에 의존합니다(EVM 템플릿은
+> `@qorechain/evm` `^0.14.0`). 스캐폴더의 0.8.0 버전은 `^0.3.0` 범위를 기록했는데,
 > npm은 이를 실제 네트워크에 서명할 수 없는 0.3 릴리스로 해석합니다. 0.8.0으로
 > 스캐폴딩했다면 `npm i @qorechain/sdk@latest`를 실행하세요.
 
@@ -53,7 +53,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | 플래그 | 설명 |
 | --- | --- |
 | `-t, --template <name>` | 사용할 템플릿(`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | 네트워크 프리셋(`testnet` \| `mainnet`). 선택한 네트워크의 공개 엔드포인트를 생성되는 `.env`에 기록합니다(0.13.1). |
+| `--network <name>` | 네트워크 프리셋(`testnet` \| `mainnet`). 선택한 네트워크의 공개 엔드포인트를 생성되는 `.env`에 기록합니다(0.13.1부터). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | 프롬프트를 건너뛰고 기본값을 사용합니다. |
 | `--no-install` | 스캐폴딩 후 의존성을 설치하지 않습니다. |

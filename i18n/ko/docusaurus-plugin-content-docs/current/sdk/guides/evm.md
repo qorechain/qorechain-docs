@@ -228,6 +228,35 @@ await tx.signAndBroadcast(
 );
 ```
 
+### 추가 범위 목록 (체인 v3.2.8부터, SDK 0.14.0) {#evm-window-scope-v328}
+
+체인 v3.2.8부터(테스트넷은 2026년 11월 12일부터, 메인넷은 아직 적용하지 않음)
+윈도우는 세 가지 목록을 더 담을 수 있으며, `openEvmWindowMsg`는 SDK 0.14.0부터 이를
+받습니다. `validators`(계정 서명에 대한 검사가 계정 자신의 동작에 인정되는 컨트랙트
+주소 최대 16개로, 예를 들면 검증인 모듈이나 ERC-4337 엔트리 포인트),
+`stakingValidators`(윈도우가 스테이킹 프리컴파일을 통해 위임 또는 재위임할 수 있는
+`qorvaloper1...` 검증인), `ibcReceivers`(ICS-20 수신자로, 각각
+`"<channel>/<receiver>"` 형식)입니다. 빌더는 서명 전에 형식을 검사하고 중복을
+거부합니다. v3.2.8을 실행하는 네트워크에서만 설정하세요. 그보다 낮은 노드는
+메시지를 거부합니다. `fetchEvmWindow`는 이 세 목록을 반환하지 않으므로 REST로
+읽으세요. `allowedTargets`, `stakingValidators`, `ibcReceivers`를 지정한 이 형태의
+호출을 2026년 11월 12일 테스트넷에서 SDK 0.14.0으로 실행했으며 코드 0(사용 가스
+195,233)으로 성공했습니다. REST 읽기에는 `allowed_targets`가 나열되었고 나머지
+두 목록은 반환되지 않았습니다.
+
+```ts
+openEvmWindowMsg({
+  sender: account.address,
+  blocks: 7200,
+  maxTxs: 20,
+  maxValue: "1000000000",
+  stakingValidators: ["qorvaloper1..."],
+  ibcReceivers: ["channel-0/cosmos1..."],
+});
+```
+
+규칙은 [EVM 윈도우 레퍼런스](/developer-guide/evm-window-reference)를 참조하세요.
+
 ### EIP-7702 동의 (체인 v3.2.2, SDK 0.9.0) {#evm-delegation-consent}
 
 타입 4(EIP-7702) 트랜잭션은 인가가 효력을 발휘하는 모든 계정이 정확히 그 위임

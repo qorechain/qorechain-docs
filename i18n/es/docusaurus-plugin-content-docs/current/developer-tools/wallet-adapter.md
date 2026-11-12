@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Wallet adapter (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter` añade QoreChain a los monederos de Cosmos que exponen `signDirect` (Keplr, Leap, Cosmostation) y construye las transacciones que exige la cadena: una transacción del carril nativo debe llevar una firma ML-DSA-87 (FIPS 204) junto a la firma secp256k1 clásica de la cuenta, y un monedero estándar no puede producir la firma ML-DSA-87. El adapter la produce, la coloca en el cuerpo de la transacción y luego pide al monedero, sin modificar, una firma ordinaria. Está pensado para desarrolladores de dApps y monederos, y para quienes crean herramientas que necesitan en JavaScript monederos unificados de QoreChain, mensajes de la ventana de autorización EVM o mensajes de claves vinculadas (authenticators). La versión actual es la 0.5.0 (11 de noviembre de 2026).
+`@qorechain/wallet-adapter` añade QoreChain a los monederos de Cosmos que exponen `signDirect` (Keplr, Leap, Cosmostation) y construye las transacciones que exige la cadena: una transacción del carril nativo debe llevar una firma ML-DSA-87 (FIPS 204) junto a la firma secp256k1 clásica de la cuenta, y un monedero estándar no puede producir la firma ML-DSA-87. El adapter la produce, la coloca en el cuerpo de la transacción y luego pide al monedero, sin modificar, una firma ordinaria. Está pensado para desarrolladores de dApps y monederos, y para quienes crean herramientas que necesitan en JavaScript monederos unificados de QoreChain, mensajes de la ventana de autorización EVM o mensajes de claves vinculadas (authenticators). La versión actual es la 0.6.0 (12 de noviembre de 2026).
 
 Si solo necesitas que una dApp envíe una transacción desde el monedero QoreX de un usuario, el camino más corto es [`qorexSignAndBroadcast`](#qorex) de este paquete, o los paquetes de QoreX listados en el índice de [Paquetes para desarrolladores](/developer-tools/overview#group-qorex). Si estás escribiendo un monedero y quieres una biblioteca de firma completa en cinco lenguajes, lee primero [QoreSign](/qoresign/overview).
 
@@ -154,7 +154,7 @@ if (!status.live) {
 }
 ```
 
-El orden importa: abre la ventana, luego lee el nonce EVM y después firma la transacción EVM, porque abrir una ventana avanza la secuencia de la cuenta, que es también su nonce EVM. `openEvmWindowMsg` construye solo la forma sin alcance de la ventana; una ventana con alcance (`native_only`, `allowed_targets`) necesita el SDK. Contexto: [Ventana de autorización EVM](/sdk/guides/evm#evm-window) y [Tu primera transacción](/getting-started/first-transaction#evm-window).
+El orden importa: abre la ventana, luego lee el nonce EVM y después firma la transacción EVM, porque abrir una ventana avanza la secuencia de la cuenta, que es también su nonce EVM. Desde la 0.6.0, `openEvmWindowMsg` también admite el alcance de la ventana: `nativeOnly`, `allowedTargets` y, en una red que ejecute la cadena v3.2.8, `validators`, `stakingValidators` e `ibcReceivers`. Contexto: [Ventana de autorización EVM](/sdk/guides/evm#evm-window) y [Tu primera transacción](/getting-started/first-transaction#evm-window).
 
 ### Otros puntos de entrada
 
@@ -163,7 +163,60 @@ El orden importa: abre la ventana, luego lee el nonce EVM y después firma la tr
 | Recuperar o rotar una clave PQC | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | Firmar con la clave eth-native | `signClassicalEth` (el registro de clave clásico), `signHybridEth` |
 | Ayudantes de sign-bytes | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
-| Vincular y gastar con una clave externa | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, las funciones `buildPhantom*` y `buildMetaMask*` |
+| Vincular y gastar con una clave externa | `linkAuthenticatorMsgs`, `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, las funciones `buildPhantom*` y `buildMetaMask*` |
+
+## Qué cambia la 0.6.0 {#whats-new-060}
+
+La 0.6.0 (12 de noviembre de 2026) añade soporte para la cadena v3.2.8 (la testnet la ejecuta desde el 12 de noviembre de 2026; la mainnet no la ha aplicado). Las reglas nuevas se aplican en una red cuando ejecuta la v3.2.8.
+
+**Cambios incompatibles.**
+
+- `registerAuthenticatorMsg` y `registerEthAuthenticatorMsg` exigen `possessionProof`: la clave que se vincula firma un mensaje de vínculo de texto plano que nombra la cadena, la cuenta, el esquema y la clave. Una llamada sin ella lanza un error.
+- `decodeEvmWindowMsg` devuelve los nuevos campos de alcance (listas vacías y `nativeOnly: false` cuando no están).
+- `buildPhantomSvmEnvelope` y `buildPhantomTransfer` eligen la forma que se firma: pasa `rest` y `chainId`, o `svmAuthVersion: "v2" | "v3"`. Sin ninguno de ellos lanzan un error en vez de firmar una forma que la red podría rechazar.
+
+**Funciones nuevas.**
+
+| Tarea | Funciones |
+|---|---|
+| Vincular claves | `authenticatorLinkMessage`, `phantomPossessionProof`, `metaMaskPossessionProof` |
+| Regla de gasto para una clave que mueve valor | `spendingRuleBoundsEveryDenom`, `updateSpendingRulesMsg`, `linkAuthenticatorMsgs` (la regla de gasto y el vínculo en una sola transacción firmada por el propietario) |
+| Resultados de ejecución | `authenticatorExecutionResults`, `assertAuthenticatorExecutionsSucceeded`: leen `success=false` de `MsgExecuteEVM` o `MsgExecuteCosmos` dentro de una transacción con code 0 |
+| Alcance de la ventana EVM | `openEvmWindowMsg` admite `nativeOnly`, `allowedTargets`, `validators`, `stakingValidators` e `ibcReceivers`; `validateEvmWindowScope` los comprueba |
+| Autorización SVM | `authSignBytesV3` (el digest vinculado a la cadena que una red verifica cuando activa `svm-relayed-chain-bound`) y `resolveSvmAuthVersion({ rest })`, que devuelve `"v3"` o `"v2"` |
+
+La comprobación de solicitudes de QoreX también rechaza un `MsgGrant` de authz cuyo `GenericAuthorization` nombra un mensaje que ella rechaza, y un `MsgGrant` que no puede decodificar.
+
+Una clave con el permiso `send`, `evm`, `deploy`, `svm` o `all` necesita que la primera regla de gasto habilitada de la cuenta acote cada denominación; `linkAuthenticatorMsgs` rechaza el par en caso contrario. `rules` reemplaza las reglas de la cuenta por completo, así que pasa todas las que quieras conservar. Vincula una clave de MetaMask (este fragmento procede de los tipados y el código fuente de la 0.6.0; no se ha ejecutado):
+
+```js
+import {
+  registerEthAuthenticatorMsg,
+  metaMaskPossessionProof,
+  linkAuthenticatorMsgs,
+} from "@qorechain/wallet-adapter";
+
+const possessionProof = await metaMaskPossessionProof({
+  provider: window.ethereum,
+  address: ethAddress,        // the 0x address being linked
+  chainId: "qorechain-diana",
+  account: qor1,
+});
+
+const registerMsg = registerEthAuthenticatorMsg({
+  owner: qor1,
+  ethAddress,
+  permissions: ["evm"],
+  expiryUnix,
+  possessionProof,
+});
+
+// The spending rule and the link, in order, for one owner-signed transaction.
+const msgs = linkAuthenticatorMsgs({
+  registerMsg,
+  rules: [{ enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+```
 
 ## Qué cambia la 0.5.0 {#whats-new-050}
 
@@ -181,16 +234,16 @@ La 0.5.0 (11 de noviembre de 2026) tiene un cambio incompatible. `walletFromSeed
 
 | Registro | Paquete | Versión | Enlace |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.5.0 (publicada el 11 de noviembre de 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.6.0 (publicada el 12 de noviembre de 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-Código fuente: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (público, etiqueta `v0.5.0`, Apache-2.0). No está publicado en PyPI, crates.io, Maven Central ni en el proxy de Go. Relacionado: [Paquetes para desarrolladores](/developer-tools/overview), [QoreSign](/qoresign/overview), [Firma poscuántica](/developer-guide/post-quantum-signing), [Guía para Exchanges e Integradores](/developer-guide/exchange-integration).
+Código fuente: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (público, etiqueta `v0.6.0`, Apache-2.0). No está publicado en PyPI, crates.io, Maven Central ni en el proxy de Go. Relacionado: [Paquetes para desarrolladores](/developer-tools/overview), [QoreSign](/qoresign/overview), [Firma poscuántica](/developer-guide/post-quantum-signing), [Guía para Exchanges e Integradores](/developer-guide/exchange-integration).
 
 ## Límites y problemas conocidos {#limits}
 
 - **Firma; no difunde, no registra claves ni abre ventanas.** No hay ninguna función que registre la clave ML-DSA-87, y nada abre una ventana EVM por ti.
-- **Sin prueba de posesión.** Un registro de clave hecho con herramientas que solo usan este paquete no lleva ninguna. La cadena lo acepta igualmente, y verifica la prueba cuando está presente ([Prueba de posesión](/developer-guide/post-quantum-signing#proof-of-possession)).
+- **Prueba de posesión.** Antes de la 0.6.0, un registro de clave hecho con este paquete no llevaba ninguna. Desde la 0.6.0 las funciones de vínculo la exigen (consulta [Qué cambia la 0.6.0](#whats-new-060)); la cadena rechaza un vínculo sin ella cuando ejecuta la v3.2.8, y verifica la prueba cuando está presente en las redes anteriores ([Prueba de posesión](/developer-guide/post-quantum-signing#proof-of-possession)).
 - **`derivePqcKeyFromWallet` está retirada** (0.3.0) y siempre lanza un error. Las cuentas que registraron una clave con ella deben rotarla con `rotateFromLegacyWalletKey`.
-- **Solo ventanas sin alcance.** `openEvmWindowMsg` no tiene campos de alcance.
+- **Alcance de la ventana.** Antes de la 0.6.0, `openEvmWindowMsg` no tenía campos de alcance; los campos `validators`, `stakingValidators` e `ibcReceivers` solo surten efecto en una red que ejecute la cadena v3.2.8.
 - **`qoreChainInfo` usa por defecto la testnet.** Pasa siempre `chainId` para mainnet.
 - **Nonces de authenticator.** Todavía ninguna consulta expone la secuencia de authenticator de la clave vinculada, así que debes llevar tú el control; la cadena responde `abstractaccount` código 11 cuando el valor es incorrecto. El módulo de authenticators está activado en testnet y desactivado en mainnet (consulta la [descripción general del SDK](/sdk/overview)).
 - **Peers de cosmjs 0.32.** El SDK usa cosmjs 0.39; instalar ambos en un mismo proyecto da un error `ERESOLVE`, así que mantenlos separados o pasa `--legacy-peer-deps`.

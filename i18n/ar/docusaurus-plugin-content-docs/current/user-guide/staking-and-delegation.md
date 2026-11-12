@@ -166,7 +166,7 @@ qorechaind query stakingtier locks <holder_address>
 
 تردّ الشبكتان كلتاهما على `GET /qorechain/stakingtier/v1/params` بالإعدادات نفسها: ثلاث مدد، وحد أدنى قدره 10 QOR (`min_lock_amount` يساوي `"10000000"` uqor)، وعقوبة فك قفل مبكر قدرها 500 نقطة أساس (5%)، و`enabled: true`. وتتضمن الاستجابة أيضًا إعدادات المكافأة الإضافية بالنقاط الأساسية؛ ولا تذكرها هذه الوثائق، لأن المكافأة الإضافية ليست عائدًا موعودًا ويمكن للحوكمة تغيير إعداداتها. ويعرض `GET /qorechain/stakingtier/v1/pool` المجمَّع الذي يدفع مكافآت الأقفال.
 
-**العملاء.** سطر الأوامر (أعلاه) و`@qorechain/sdk` (الإصدار 0.10.0 أو أحدث؛ والحالي 0.13.0)، الذي يتضمن المُركِّبات `lockDelegation` و`unlockEarly` و`claimBonus` وعمليات القراءة `fetchStakingTierParams` و`fetchStakingLocks` و`fetchStakingTierPool` (راجع [تثبيت SDK](/sdk/install)). لا يحتوي أي إصدار منشور من QoreX أو لوحة التحكم على شاشة للأقفال اليوم، ولذلك يتم القفل على الشبكة الرئيسية بواسطة سطر الأوامر أو SDK.
+**العملاء.** سطر الأوامر (أعلاه) و`@qorechain/sdk` (الإصدار 0.10.0 أو أحدث؛ والحالي 0.14.0)، الذي يتضمن المُركِّبات `lockDelegation` و`unlockEarly` و`claimBonus` وعمليات القراءة `fetchStakingTierParams` و`fetchStakingLocks` و`fetchStakingTierPool` (راجع [تثبيت SDK](/sdk/install)). لا يحتوي أي إصدار منشور من QoreX أو لوحة التحكم على شاشة للأقفال اليوم، ولذلك يتم القفل على الشبكة الرئيسية بواسطة سطر الأوامر أو SDK.
 
 **لا تخلط بينه** وبين [الرهن بـ xQORE](/user-guide/xqore-staking)، وهو آلية مصمَّمة غير مفعّلة، ولا بين تصنيف Triple-Pool أدناه، الذي لا يغيّر ما تتلقاه.
 

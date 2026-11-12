@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # محوّل المحفظة (`@qorechain/wallet-adapter`)
 
-يضيف `@qorechain/wallet-adapter` شبكة QoreChain إلى محافظ Cosmos التي تتيح `signDirect` (Keplr وLeap وCosmostation)، ويبني المعاملات التي تشترطها السلسلة: يجب أن تحمل معاملة مسار Native توقيع ML-DSA-87 (FIPS 204) بجانب توقيع secp256k1 الكلاسيكي للحساب، ولا تستطيع المحفظة العادية إنتاج توقيع ML-DSA-87. يُنتجه المحوّل، ويضعه في جسم المعاملة، ثم يطلب من المحفظة غير المعدَّلة توقيعاً عادياً. وهو موجّه لمطوري تطبيقات dApp والمحافظ، ولبُناة الأدوات الذين يحتاجون إلى محافظ QoreChain موحّدة أو رسائل نافذة تفويض EVM أو رسائل المفاتيح المرتبطة (المصادِقات) في JavaScript. الإصدار الحالي هو 0.5.0 (11 نوفمبر 2026).
+يضيف `@qorechain/wallet-adapter` شبكة QoreChain إلى محافظ Cosmos التي تتيح `signDirect` (Keplr وLeap وCosmostation)، ويبني المعاملات التي تشترطها السلسلة: يجب أن تحمل معاملة مسار Native توقيع ML-DSA-87 (FIPS 204) بجانب توقيع secp256k1 الكلاسيكي للحساب، ولا تستطيع المحفظة العادية إنتاج توقيع ML-DSA-87. يُنتجه المحوّل، ويضعه في جسم المعاملة، ثم يطلب من المحفظة غير المعدَّلة توقيعاً عادياً. وهو موجّه لمطوري تطبيقات dApp والمحافظ، ولبُناة الأدوات الذين يحتاجون إلى محافظ QoreChain موحّدة أو رسائل نافذة تفويض EVM أو رسائل المفاتيح المرتبطة (المصادِقات) في JavaScript. الإصدار الحالي هو 0.6.0 (12 نوفمبر 2026).
 
 إذا كنت تحتاج فقط إلى أن يرسل تطبيق dApp معاملة من محفظة QoreX الخاصة بالمستخدم، فأقصر طريق هو [`qorexSignAndBroadcast`](#qorex) في هذه الحزمة، أو حزم QoreX المدرجة في فهرس [حزم المطورين](/developer-tools/overview#group-qorex). وإذا كنت تكتب محفظة وتريد مكتبة توقيع كاملة بخمس لغات، فاقرأ [QoreSign](/qoresign/overview) أولاً.
 
@@ -154,7 +154,7 @@ if (!status.live) {
 }
 ```
 
-الترتيب مهم: افتح النافذة، ثم اقرأ nonce الخاص بـ EVM، ثم وقّع معاملة EVM، لأن فتح النافذة يزيد تسلسل الحساب، وهو أيضاً nonce الخاص بـ EVM. تبني `openEvmWindowMsg` الصيغة غير المقيَّدة للنافذة فقط؛ أما النافذة المقيَّدة (`native_only` و`allowed_targets`) فتحتاج إلى SDK. الخلفية: [نافذة تفويض EVM](/sdk/guides/evm#evm-window) و[معاملتك الأولى](/getting-started/first-transaction#evm-window).
+الترتيب مهم: افتح النافذة، ثم اقرأ nonce الخاص بـ EVM، ثم وقّع معاملة EVM، لأن فتح النافذة يزيد تسلسل الحساب، وهو أيضاً nonce الخاص بـ EVM. ومنذ 0.6.0 تقبل `openEvmWindowMsg` أيضًا نطاق النافذة: `nativeOnly` و`allowedTargets` وعلى شبكة تشغّل سلسلة v3.2.8 الحقول `validators` و`stakingValidators` و`ibcReceivers`. الخلفية: [نافذة تفويض EVM](/sdk/guides/evm#evm-window) و[معاملتك الأولى](/getting-started/first-transaction#evm-window).
 
 ### نقاط دخول أخرى
 
@@ -163,7 +163,60 @@ if (!status.live) {
 | استرداد مفتاح PQC أو تدويره | `generatePqcRecoveryCode`، `pqcKeyFromRecoveryCode`، `pqcKeyFromSecret`، `pqcRecoveryCodeFromSecret`، `isValidRecoveryCode`، `rotatePqcKeyMsgFromMnemonic`، `rotateFromLegacyWalletKey`، `rotatePqcKeyMsg` |
 | التوقيع بالمفتاح الأصلي لـ eth | `signClassicalEth` (تسجيل المفتاح الكلاسيكي)، `signHybridEth` |
 | مساعدات sign-bytes | `hybridSignBytes(version, chainId, body, authInfo)`، `resolveSignBytesVersion`، `signBytesVersionFor`، `SIGN_BYTES_V2_UPGRADES` |
-| الربط والإنفاق بمفتاح خارجي | `registerAuthenticatorMsg`، `registerEthAuthenticatorMsg`، `revokeAuthenticatorMsg`، ودوال `buildPhantom*` و`buildMetaMask*` |
+| الربط والإنفاق بمفتاح خارجي | `linkAuthenticatorMsgs`، `registerAuthenticatorMsg`، `registerEthAuthenticatorMsg`، `revokeAuthenticatorMsg`، ودوال `buildPhantom*` و`buildMetaMask*` |
+
+## ما الذي يغيّره 0.6.0 {#whats-new-060}
+
+يضيف 0.6.0 (12 نوفمبر 2026) دعم سلسلة v3.2.8 (تعمل شبكة الاختبار بها منذ 12 نوفمبر 2026؛ ولم تطبّقها الشبكة الرئيسية). تسري القواعد الجديدة على الشبكة متى شغّلت v3.2.8.
+
+**تغييرات كاسرة.**
+
+- تشترط `registerAuthenticatorMsg` و`registerEthAuthenticatorMsg` الحقل `possessionProof`: يوقّع المفتاح الذي يُربط رسالة ربط نصية صريحة تسمّي السلسلة والحساب والمخطط والمفتاح. والاستدعاء بلا إثبات يُطلق خطأً.
+- تعيد `decodeEvmWindowMsg` حقول النطاق الجديدة (قوائم فارغة و`nativeOnly: false` عند غيابها).
+- تختار `buildPhantomSvmEnvelope` و`buildPhantomTransfer` الصيغة التي تُوقَّع: مرّر `rest` و`chainId`، أو `svmAuthVersion: "v2" | "v3"`. وبدون أحدهما تُطلقان خطأً بدل أن توقّعا صيغة قد ترفضها الشبكة.
+
+**دوال جديدة.**
+
+| المهمة | الدوال |
+|---|---|
+| ربط المفاتيح | `authenticatorLinkMessage` و`phantomPossessionProof` و`metaMaskPossessionProof` |
+| قاعدة إنفاق لمفتاح ينقل قيمة | `spendingRuleBoundsEveryDenom` و`updateSpendingRulesMsg` و`linkAuthenticatorMsgs` (قاعدة الإنفاق والربط في معاملة واحدة يوقّعها المالك) |
+| نتائج التنفيذ | `authenticatorExecutionResults` و`assertAuthenticatorExecutionsSucceeded`: تقرأ `success=false` من `MsgExecuteEVM` أو `MsgExecuteCosmos` داخل معاملة بالرمز 0 |
+| نطاق نافذة EVM | تقبل `openEvmWindowMsg` الحقول `nativeOnly` و`allowedTargets` و`validators` و`stakingValidators` و`ibcReceivers`؛ وتفحصها `validateEvmWindowScope` |
+| تفويض SVM | `authSignBytesV3` (الملخص المربوط بالسلسلة الذي تتحقق منه الشبكة متى فعّلت `svm-relayed-chain-bound`) و`resolveSvmAuthVersion({ rest })` التي تعيد `"v3"` أو `"v2"` |
+
+ويرفض فحص طلب QoreX أيضًا `MsgGrant` من authz إذا كانت `GenericAuthorization` فيها تسمّي رسالة يرفضها، وكذلك `MsgGrant` يتعذّر فك ترميزها.
+
+المفتاح الذي له صلاحية `send` أو `evm` أو `deploy` أو `svm` أو `all` يحتاج إلى أن تقيّد أول قاعدة إنفاق مفعّلة في الحساب كل فئة عملة؛ وترفض `linkAuthenticatorMsgs` الزوج خلاف ذلك. والمعامل `rules` يستبدل قواعد الحساب كلها دفعة واحدة، فمرّر كل قاعدة تريد إبقاءها. اربط مفتاح MetaMask (هذا المقتطف مأخوذ من تعريفات 0.6.0 وشيفرتها المصدرية؛ ولم يُشغَّل):
+
+```js
+import {
+  registerEthAuthenticatorMsg,
+  metaMaskPossessionProof,
+  linkAuthenticatorMsgs,
+} from "@qorechain/wallet-adapter";
+
+const possessionProof = await metaMaskPossessionProof({
+  provider: window.ethereum,
+  address: ethAddress,        // the 0x address being linked
+  chainId: "qorechain-diana",
+  account: qor1,
+});
+
+const registerMsg = registerEthAuthenticatorMsg({
+  owner: qor1,
+  ethAddress,
+  permissions: ["evm"],
+  expiryUnix,
+  possessionProof,
+});
+
+// The spending rule and the link, in order, for one owner-signed transaction.
+const msgs = linkAuthenticatorMsgs({
+  registerMsg,
+  rules: [{ enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+```
 
 ## ما الذي يغيّره 0.5.0 {#whats-new-050}
 
@@ -181,16 +234,16 @@ if (!status.live) {
 
 | السجل | الحزمة | الإصدار | الرابط |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.5.0 (نُشر في 11 نوفمبر 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.6.0 (نُشر في 12 نوفمبر 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-المصدر: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (عام، الوسم `v0.5.0`، ترخيص Apache-2.0). لا تُنشر على PyPI ولا crates.io ولا Maven Central ولا وكيل Go. ذات صلة: [حزم المطورين](/developer-tools/overview)، [QoreSign](/qoresign/overview)، [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing)، [تكامل البورصات](/developer-guide/exchange-integration).
+المصدر: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (عام، الوسم `v0.6.0`، ترخيص Apache-2.0). لا تُنشر على PyPI ولا crates.io ولا Maven Central ولا وكيل Go. ذات صلة: [حزم المطورين](/developer-tools/overview)، [QoreSign](/qoresign/overview)، [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing)، [تكامل البورصات](/developer-guide/exchange-integration).
 
 ## الحدود والمشكلات المعروفة {#limits}
 
 - **يوقّع ولا يبث ولا يسجّل المفاتيح ولا يفتح النوافذ.** لا توجد دالة تسجّل مفتاح ML-DSA-87، ولا شيء يفتح نافذة EVM نيابةً عنك.
-- **لا إثبات حيازة.** تسجيل المفتاح الذي يتم بأدوات لا تستخدم إلا هذه الحزمة لا يحمل إثباتاً. وتقبله السلسلة مع ذلك، وتتحقق من الإثبات عند وجوده ([إثبات الحيازة](/developer-guide/post-quantum-signing#proof-of-possession)).
+- **إثبات الحيازة.** قبل 0.6.0 كان تسجيل المفتاح المنجز بهذه الحزمة لا يحمل إثباتاً. ومنذ 0.6.0 تشترط دوال الربط إثباتاً (راجع [ما الذي يغيّره 0.6.0](#whats-new-060))؛ وترفض السلسلة الربط بلا إثبات متى شغّلت v3.2.8، وتتحقق من الإثبات عند وجوده على الشبكات الأقدم ([إثبات الحيازة](/developer-guide/post-quantum-signing#proof-of-possession)).
 - **`derivePqcKeyFromWallet` مسحوبة** (0.3.0) وتُطلق خطأً دائماً. على الحسابات التي سجّلت مفتاحاً بواسطتها أن تدوّره عبر `rotateFromLegacyWalletKey`.
-- **نوافذ غير مقيَّدة فقط.** لا تحتوي `openEvmWindowMsg` على حقول للنطاق.
+- **نطاق النافذة.** قبل 0.6.0 لم تكن في `openEvmWindowMsg` حقول للنطاق؛ والحقول `validators` و`stakingValidators` و`ibcReceivers` لا تسري إلا على شبكة تشغّل سلسلة v3.2.8.
 - **تستخدم `qoreChainInfo` شبكة الاختبار افتراضياً.** مرّر `chainId` دائماً للشبكة الرئيسية.
 - **nonce المصادِقات.** لا يوجد استعلام يكشف تسلسل المصادِق للمفتاح المرتبط بعد، لذا عليك تتبّعه؛ وتجيب السلسلة بالرمز 11 من `abstractaccount` عندما تكون القيمة خاطئة. وحدة المصادِقات مفعّلة على شبكة الاختبار ومعطّلة على الشبكة الرئيسية (راجع [نظرة عامة على SDK](/sdk/overview)).
 - **نظيرا cosmjs 0.32.** يستخدم SDK الإصدار cosmjs 0.39؛ وتثبيت الاثنين في مشروع واحد يعطي خطأ `ERESOLVE`، لذا أبقِهما منفصلين أو مرّر `--legacy-peer-deps`.

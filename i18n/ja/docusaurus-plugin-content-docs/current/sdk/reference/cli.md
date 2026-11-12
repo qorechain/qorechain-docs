@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> npm には `create-qorechain-dapp`（`0.13.1`。SDK 0.13.0 に対するテンプレートのみのパッチ）として公開されています。生成される
-> `package.json` ファイルは `@qorechain/sdk` `^0.13.0` に依存します（EVM テンプレートは
-> `@qorechain/evm` `^0.13.0`）。スキャフォルダのバージョン 0.8.0 は `^0.3.0` の範囲を書き込んでおり、
+> npm には `create-qorechain-dapp`（`0.14.0`。0.13.1 のテンプレート修正も含みます）として公開されています。生成される
+> `package.json` ファイルは `@qorechain/sdk` `^0.14.0` に依存します（EVM テンプレートは
+> `@qorechain/evm` `^0.14.0`）。スキャフォルダのバージョン 0.8.0 は `^0.3.0` の範囲を書き込んでおり、
 > npm はこれを、稼働中のネットワークに対して署名できない 0.3 リリースに解決します。
 > 0.8.0 でスキャフォールドした場合は、`npm i @qorechain/sdk@latest` を実行してください。
 
@@ -54,7 +54,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | フラグ | 説明 |
 | --- | --- |
 | `-t, --template <name>` | 使用するテンプレート（`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`）。 |
-| `--network <name>` | ネットワークプリセット（`testnet` \| `mainnet`）。選んだネットワークの公開エンドポイントを生成される `.env` に書き込みます（0.13.1）。 |
+| `--network <name>` | ネットワークプリセット（`testnet` \| `mainnet`）。選んだネットワークの公開エンドポイントを生成される `.env` に書き込みます（0.13.1 以降）。 |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`。 |
 | `-y, --yes` | プロンプトをスキップしてデフォルトを使用します。 |
 | `--no-install` | スキャフォールド後に依存関係をインストールしません。 |

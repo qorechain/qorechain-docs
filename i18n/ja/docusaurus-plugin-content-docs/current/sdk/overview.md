@@ -39,15 +39,15 @@ SVM の読み取り。
 ガスアブストラクション。各ガイドでは、該当する箇所で改めて注意点を示しています。
 2026年10月27日にライブエンドポイントに対して確認しました。2026年11月7日の時点で、メインネットの有効なプリコンパイルのリストは依然として空で、テストネットのリストにはクロス VM ブリッジ `0x…0901` も含まれていました（許可リスト付きで有効。読み取り専用の `eth_call` を 2026年11月7日にテストしました）。
 
-公開されている SDK（0.13.0、2026年11月11日）は、両ネットワークが検証する形式
+公開されている SDK（0.14.0、2026年11月12日）は、両ネットワークが検証する形式
 （チェーンの状態から解決される v2 ハイブリッド sign-bytes）で署名します。署名形式、
 アドレス、小数桁数、メモ、手数料は v3.2.3、v3.2.4、v3.2.5、v3.2.6 のいずれでも変わっていません（メインネットは 2026年11月4日から v3.2.6 を実行しており（高さ 4,020,000、ガバナンス提案 15）、
-テストネットは 10月27日から、そして 11月6日からは v3.2.7 を、11月12日からは v3.2.8 を実行しており、これらは SDK 0.13.0 にビルダーのないメッセージを追加します）。
+テストネットは 10月27日から、そして 11月6日からは v3.2.7 を、11月12日からは v3.2.8 を実行しており、これらは SDK 0.14.0 にビルダーのあるメッセージを追加します。テストネットの新しいルールは v3.2.8 から適用され、メインネットはまだ適用していません）。
 後続のポスト量子ルールに対するクライアント側（鍵登録時の所有証明、スコープ付き EVM ウィンドウ、
 EIP-7702 の同意メッセージ）と、v3.2.4 に対するクライアント側（ステーキングティア、
 オーセンティケーターのノンス、プロトコル機能スイッチ）と v3.2.5（ハイブリッドトランザクションの厳密なガス、ML-KEM 鍵レジストリ）に対応していますが、0.9.0 より前のバージョンは
 前者のグループに対応していません。[0.9.0 より前のバージョン](/sdk/install#before-090)、
-[0.12.0 の新機能](/sdk/install#whats-new-0120)、および[0.13.0 の変更点](/sdk/install#whats-new-0130)を参照してください。
+[0.12.0 の新機能](/sdk/install#whats-new-0120)、[0.13.0 の変更点](/sdk/install#whats-new-0130)、および[0.14.0 の変更点](/sdk/install#whats-new-0140)を参照してください。
 
 ウォレットとバックエンドの署名については、[QoreSign](/qoresign/overview)を参照してください。
 :::
@@ -118,15 +118,15 @@ SDK は、好みの言語で開発できるようにパッケージファミリ�
 
 | パッケージ | 言語 | インストール | ステータス |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | 公開済み（npm、v0.13.0） |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk`（インポートは `qorsdk`） | 公開済み（PyPI、v0.13.0） |
-| `qorechain-sdk`（Go モジュール） | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 公開済み（Go proxy、タグ `packages/go/v0.13.0`） |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk`（インポートは `qorechain`） | 公開済み（crates.io、v0.13.0） |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.13.0` | 公開済み（Maven Central、v0.13.0、2026年11月11日に確認。JDK 17 以降） |
-| `@qorechain/evm` | TypeScript（EVM アダプター） | `npm i @qorechain/evm viem` | 公開済み（npm、v0.13.0） |
-| `@qorechain/svm` | TypeScript（SVM アダプター） | `npm i @qorechain/svm @solana/web3.js` | 公開済み（npm、v0.13.0） |
-| `@qorechain/react` | TypeScript（React キット） | `npm i @qorechain/react` | 公開済み（npm、v0.13.0） |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 公開済み（npm、v0.13.1） |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | 公開済み（npm、v0.14.0） |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk`（インポートは `qorsdk`） | 公開済み（PyPI、v0.14.0） |
+| `qorechain-sdk`（Go モジュール） | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 公開済み（Go proxy、タグ `packages/go/v0.14.0`） |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk`（インポートは `qorechain`） | 公開済み（crates.io、v0.14.0） |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.14.0` | Maven Central では 2026年11月12日時点でまだ 0.13.0 が表示されます。0.14.0 が表示されたらそちらを使ってください（JDK 17 以降） |
+| `@qorechain/evm` | TypeScript（EVM アダプター） | `npm i @qorechain/evm viem` | 公開済み（npm、v0.14.0） |
+| `@qorechain/svm` | TypeScript（SVM アダプター） | `npm i @qorechain/svm @solana/web3.js` | 公開済み（npm、v0.14.0） |
+| `@qorechain/react` | TypeScript（React キット） | `npm i @qorechain/react` | 公開済み（npm、v0.14.0） |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 公開済み（npm、v0.14.0） |
 
 > Python ディストリビューションは `qorechain-sdk` としてインストールされますが、
 > **インポート名は `qorsdk`** です。すべてのクライアントは各レジストリに公開
@@ -142,17 +142,17 @@ Python、Go、Rust、Java の各クライアントは、TypeScript との**完�
 ライフサイクル（自動ガス、エラーデコード、tx 追跡、ブロック／tx 検索）、
 ハイブリッドポスト量子トランザクション、そして WebSocket サブスクリプション
 です。これらのクライアントはすべて**公開済み**です。TypeScript は npm
-（`@qorechain/sdk` 0.13.0）、Python は PyPI（`qorechain-sdk` 0.13.0、インポート
-は `qorsdk`）、Go はモジュールプロキシ（タグ `packages/go/v0.13.0`）、Rust は
-crates.io（`qorechain-sdk` 0.13.0）、Java は Maven
-Central（`io.github.qorechain:qorechain-sdk` 0.13.0、2026年11月11日に確認）に公開されています。
-EVM/SVM 実行アダプター（`@qorechain/evm`、`@qorechain/svm`、いずれも 0.13.0）、
-`@qorechain/react` キット（0.13.0）、および `create-qorechain-dapp`
-スキャフォールディング CLI（0.13.1。SDK 0.13.0 に対するテンプレートのみのパッチ）は TypeScript 専用で、同様に npm に公開
+（`@qorechain/sdk` 0.14.0）、Python は PyPI（`qorechain-sdk` 0.14.0、インポート
+は `qorsdk`）、Go はモジュールプロキシ（タグ `packages/go/v0.14.0`）、Rust は
+crates.io（`qorechain-sdk` 0.14.0）、Java は Maven
+Central（`io.github.qorechain:qorechain-sdk`。2026年11月12日時点でまだ 0.13.0 が表示されます。0.14.0 が表示されたらそちらを使ってください）に公開されています。
+EVM/SVM 実行アダプター（`@qorechain/evm`、`@qorechain/svm`、いずれも 0.14.0）、
+`@qorechain/react` キット（0.14.0）、および `create-qorechain-dapp`
+スキャフォールディング CLI（0.14.0。0.13.1 のテンプレート修正も含みます）は TypeScript 専用で、同様に npm に公開
 されています。関連パッケージについては
 [インストール](/sdk/install#related-packages) を参照してください。
 
-## 0.6 から 0.13 の新機能 {#whats-new-in-06-07-08-09-and-010}
+## 0.6 から 0.14 の新機能 {#whats-new-in-06-07-08-09-and-010}
 
 **0.6.0 — 統合 eth ネイティブアカウント（チェーン v3.1.83）。** 1 つの
 `eth_secp256k1` 鍵が 1 つの 20 バイトのアイデンティティとなり、3 つすべての
@@ -248,6 +248,9 @@ npm 以外には 0.11.0 はなく、他の言語は 0.10.0 から 0.12.0 に移�
 なりました。ニーモニックから導出したアカウント、署名形式、チェーンの動作は変わりません。
 リカバリーコードのヘルパーがすべての言語に追加され、`migrateToHybrid` は `keyVerified` を報告します。
 [0.13.0 の変更点](/sdk/install#whats-new-0130)を参照してください。
+
+**0.14.0 — チェーン v3.2.8 のクライアントサポート。** 鍵のリンクには所有証明が必要になり、価値を動かす鍵には支出ルールが必要になり（ヘルパーがその組を構築します）、ガバナンスのパラメーター更新にはすべてのフィールドが必要になり、失敗した認可済みの実行を読み取れるようになり、EVM ウィンドウにはリストが 3 つ追加されました。新しいルールは、ネットワークが v3.2.8 を実行した時点から適用されます。テストネットは 2026年11月12日から実行しており、メインネットはまだ適用していません。
+[0.14.0 の変更点](/sdk/install#whats-new-0140)を参照してください。
 
 ## 次に読むもの
 

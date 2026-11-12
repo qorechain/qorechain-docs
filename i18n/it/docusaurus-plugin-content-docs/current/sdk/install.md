@@ -12,21 +12,21 @@ adattatori EVM e SVM (`@qorechain/evm`, `@qorechain/svm`), il kit React
 (`@qorechain/react`) e i client Python, Go, Rust e Java sono tutti
 **pubblicati** sui rispettivi registry con piena parità con la catena nativa
 (messaggi tipizzati, query, il ciclo di vita delle tx, transazioni PQC ibride e
-sottoscrizioni WebSocket). La release corrente è la **0.13.0**, pubblicata l'11 novembre 2026
-(verificata sui registry l'11 novembre 2026; Java è l'eccezione, vedi la
+sottoscrizioni WebSocket). La release corrente è la **0.14.0**, pubblicata il 12 novembre 2026
+(verificata sui registry il 12 novembre 2026; Java è l'eccezione, vedi la
 tabella):
 
 | Registry | Pacchetto | Versione |
 | --- | --- | --- |
-| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 (`create-qorechain-dapp`: 0.13.1, una patch solo per i template sopra l'SDK 0.13.0) |
-| PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
-| crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
-| Proxy dei moduli Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0, pubblicata su Maven Central (verificato l'11 novembre 2026; JDK 17 o successivo) |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.14.0 (anche `create-qorechain-dapp`; porta anche le correzioni ai template della 0.13.1) |
+| PyPI | `qorechain-sdk` (import `qorsdk`) | 0.14.0 |
+| crates.io | `qorechain-sdk` (import `qorechain`) | 0.14.0 |
+| Proxy dei moduli Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | Maven Central mostra ancora la 0.13.0 il 12 novembre 2026; usa la 0.14.0 quando comparirà (JDK 17 o successivo) |
 
 Non esiste una 0.11.0 per Python, Rust, Go o Java: i pacchetti npm hanno avuto una 0.11.0 il
 29 ottobre 2026 (il kit di sviluppo della catena, vedi sotto) e ogni linguaggio è passato
-dalla 0.10.0 alla 0.12.0 insieme. La 0.13.0 è seguita l'11 novembre 2026 in ogni linguaggio.
+dalla 0.10.0 alla 0.12.0 insieme. La 0.13.0 è seguita l'11 novembre 2026 e la 0.14.0 il 12 novembre 2026 in ogni linguaggio (Java: vedi la tabella).
 
 Scegli il tuo linguaggio qui sotto.
 
@@ -38,7 +38,7 @@ vincolata al chain id) e rifiutano la vecchia forma con il codice `pqc` 21. Ogni
 precedente alla **0.8.0** firma la vecchia forma, e la **0.8.0** cerca il passaggio
 sotto uno solo dei due nomi di aggiornamento usati dalle reti (la mainnet lo ha registrato come
 `v3.2.0`, la testnet come `v3.1.98` e poi `v3.2.0`), quindi firma la forma sbagliata
-su mainnet. Usa la **0.13.0** (o almeno la **0.8.1**) in ogni linguaggio; serve la **0.8.2 o
+su mainnet. Usa la **0.14.0** (o almeno la **0.8.1**) in ogni linguaggio; serve la **0.8.2 o
 successiva** per aprire una [finestra di autorizzazione EVM](/sdk/guides/evm#evm-window).
 I builder ibridi accettano un'opzione `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`); `"auto"`
 interroga la rete e quindi richiede l'endpoint REST (`rest`) su
@@ -47,6 +47,32 @@ interroga la rete e quindi richiede l'endpoint REST (`rest`) su
 La forma non è cambiata nella chain v3.2.3 né nella v3.2.4 (la v3.2.4 gira sulla testnet dal 19 ottobre 2026 e sulla mainnet dal 23 ottobre 2026; la v3.2.5 e la v3.2.6 non hanno cambiato nulla qui; la mainnet esegue la v3.2.6 dal 4 novembre 2026): `"auto"`
 si risolve in v2 su entrambe le reti, perché entrambe hanno applicato l'aggiornamento che è passato a essa.
 :::
+
+## Cosa cambia la 0.14.0 {#whats-new-0140}
+
+L'SDK 0.14.0 (12 novembre 2026) è una sola release per tutti i linguaggi: TypeScript, Python,
+Go, Rust e Java, con `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm` e
+`create-qorechain-dapp` (che porta anche le correzioni ai template della 0.13.1). Aggiunge il
+supporto client per la chain **v3.2.8**. Le nuove regole valgono su una rete una volta che esegue la v3.2.8:
+la testnet `qorechain-diana` la esegue dal 12 novembre 2026; la mainnet non l'ha
+applicata. Sulle reti precedenti i nuovi campi restano facoltativi. (Maven Central mostra ancora la
+0.13.0 il 12 novembre 2026; per Java usa la 0.14.0 quando comparirà.)
+
+| Area | Nella 0.14.0 |
+| --- | --- |
+| Collegamento di una chiave | Richiede una prova di possesso. I builder e i firmatari per ed25519, secp256k1 ed EIP-191 (`personal_sign`) firmano un messaggio di collegamento in chiaro che nomina la chain, l'account, lo schema e la chiave. I composer di registrazione rifiutano una prova vuota |
+| Chiavi che muovono valore | Una chiave con `send`, `evm`, `deploy`, `svm` o `all` richiede che la prima regola di spesa abilitata dell'account limiti ogni denom. Un helper costruisce l'aggiornamento della regola di spesa e il collegamento come coppia in un'unica transazione firmata dal proprietario, e controlla la regola |
+| Parametri di governance | I composer `MsgUpdateParams` di crossvm, svm e rdk richiedono ogni campo (la chain sostituisce i parametri per intero). Nuovi helper costruiscono l'aggiornamento a partire dai parametri attuali letti dalla rete. Il composer svm rifiuta `enabled` finché il tetto rigido di custodia è 0 |
+| Query cross-VM in sospeso | La query paginata ora restituisce ogni pagina |
+| Risultati di esecuzione | `MsgExecuteEVM` e `MsgExecuteCosmos` possono fallire con `success=false` dentro una transazione con codice 0 (il nonce viene consumato). Nuovi helper decodificano le risposte e il motivo del fallimento, e lanciano un errore su un'esecuzione fallita |
+| Chiamate asincrone cross-VM | Accettano `async_gas_limit` e `async_max_factor` |
+| Ambito della finestra EVM | Nuovi campi `validators`, `staking_validators` e `ibc_receivers` |
+| Gas | Le transazioni EVM sopra 30.000.000 (letto da `evm_limits`) e le transazioni Cosmos sopra 50.000.000 vengono rifiutate prima della firma. Le transazioni CosmWasm e cross-VM ricevono almeno 1,3 volte il gas simulato e mai un valore di ripiego fisso |
+| Prezzo minimo del gas | Helper facoltativi leggono il prezzo minimo del gas della rete; il prezzo del gas predefinito non cambia |
+| Protos | Il codice generato in tutti e cinque i linguaggi segue la v3.2.8 |
+
+Il lato wallet della stessa modifica è in
+[`@qorechain/wallet-adapter` 0.6.0](/developer-tools/wallet-adapter#whats-new-060).
 
 ## Cosa cambia la 0.13.0 {#whats-new-0130}
 
@@ -163,7 +189,7 @@ nulla di introdotto dopo la v3.2.4; le aggiunte della v3.2.5 sono arrivate con l
 4.020.000, proposta di governance 15; prima di essa la v3.2.5, dal 29 ottobre all'altezza
 3.906.833) e la 0.10.0 continua a funzionare lì perché il formato di firma non è
 cambiato. La testnet ha applicato la v3.2.5 e la v3.2.6 il 26 e 27 ottobre 2026, la v3.2.7 il 6 novembre e la v3.2.8 il 12 novembre (nessuna release dell'SDK ha builder per i messaggi della v3.2.7). Che cosa
-ha portato la 0.10.0 (è tutto ancora nella 0.13.0):
+ha portato la 0.10.0 (è tutto ancora nella 0.14.0):
 
 | Area | Nella 0.10.0 |
 | --- | --- |
@@ -177,7 +203,7 @@ ha portato la 0.10.0 (è tutto ancora nella 0.13.0):
 | Rifiuti durante la simulazione della commissione | Un rifiuto della chain che arriva solo come testo (ad esempio "no bonus to claim") ora viene nominato a partire dalle descrizioni di errore registrate dalla chain in ogni linguaggio: `decodeTxError` (TypeScript), `SimulationRefusedError` (Python), `tx.DecodeRefusalText` (Go), `tx::decode_refusal_text` (Rust), `TxError.decode` (Java) |
 
 `@qorechain/react` e `create-qorechain-dapp` sono passati alla 0.10.0 insieme a essa; ora sono
-alla 0.13.0.
+alla 0.14.0.
 
 ## Cosa ha aggiunto la 0.9.0 {#whats-new-090}
 
@@ -253,7 +279,7 @@ viem è una **peer dependency** — installalo insieme:
 npm i @qorechain/evm viem
 ```
 
-Pubblicato su npm alla `0.13.0`. Esporta le chain viem `qorechain` (chain id 9801) e `qorechainTestnet` (9800) e gli helper della [finestra di autorizzazione EVM](/sdk/guides/evm#evm-window).
+Pubblicato su npm alla `0.14.0`. Esporta le chain viem `qorechain` (chain id 9801) e `qorechainTestnet` (9800) e gli helper della [finestra di autorizzazione EVM](/sdk/guides/evm#evm-window).
 
 ### Adattatore SVM
 
@@ -265,7 +291,7 @@ Pubblicato su npm alla `0.13.0`. Esporta le chain viem `qorechain` (chain id 980
 npm i @qorechain/svm @solana/web3.js
 ```
 
-Pubblicato su npm alla `0.13.0`.
+Pubblicato su npm alla `0.14.0`.
 
 ### Kit React
 
@@ -277,18 +303,18 @@ provider, hook e i componenti `ConnectButton` / `PqcStatusBadge`.
 npm i @qorechain/react
 ```
 
-Pubblicato su npm alla `0.13.0`; dipende da `@qorechain/sdk` `^0.13.0`. Vedi la [guida al kit React](/sdk/guides/react).
+Pubblicato su npm alla `0.14.0`; dipende da `@qorechain/sdk` `^0.14.0`. Vedi la [guida al kit React](/sdk/guides/react).
 
 ### Scaffolder
 
-`create-qorechain-dapp` (npm, `0.13.1`) genera una dApp pronta all'uso:
+`create-qorechain-dapp` (npm, `0.14.0`) genera una dApp pronta all'uso:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
 I file `package.json` generati dipendono dalla release dell'SDK con cui viene distribuito lo scaffolder
-(`@qorechain/sdk` `^0.13.0`; i template EVM usano `@qorechain/evm` `^0.13.0`). La versione 0.13.1 cambia solo i template; vedi [Scaffolder e CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131). Ha anche i template `foundry`, `hardhat`, `viem-wagmi` e `cosmwasm` per il lavoro sui contratti.
+(`@qorechain/sdk` `^0.14.0`; i template EVM usano `@qorechain/evm` `^0.14.0`). La versione 0.13.1 ha cambiato solo i template e la 0.14.0 ne porta le correzioni; vedi [Scaffolder e CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131). Ha anche i template `foundry`, `hardhat`, `viem-wagmi` e `cosmwasm` per il lavoro sui contratti.
 La versione 0.8.0 dello scaffolder scriveva intervalli `^0.3.0`, che su una versione 0.x
 restano dentro la 0.3 e non possono firmare per le reti live; se hai generato il progetto con la 0.8.0, esegui
 `npm i @qorechain/sdk@latest`. Vedi il [riferimento della CLI](/sdk/reference/cli).
@@ -301,7 +327,7 @@ pip install qorechain-sdk
 
 Richiede Python 3.10+. Il pacchetto include type hint e un marcatore `py.typed`.
 
-> La distribuzione si installa come `qorechain-sdk` (pubblicato su PyPI alla `0.13.0`)
+> La distribuzione si installa come `qorechain-sdk` (pubblicato su PyPI alla `0.14.0`)
 > ma **si importa come `qorsdk`**:
 >
 > ```python
@@ -323,8 +349,8 @@ import (
 )
 ```
 
-Pubblicato come modulo Go autonomo (tag `packages/go/v0.13.0`). Fissa la versione
-in modo esplicito: `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`.
+Pubblicato come modulo Go autonomo (tag `packages/go/v0.14.0`). Fissa la versione
+in modo esplicito: `go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`.
 
 ## Rust
 
@@ -343,7 +369,7 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 Richiede Rust 1.74+. I client di lettura sono asincroni (Tokio). Il crate si importa come
 `qorechain` (`use qorechain;`).
 
-> Pubblicato su crates.io come `qorechain-sdk` (0.13.0); `cargo add qorechain-sdk`
+> Pubblicato su crates.io come `qorechain-sdk` (0.14.0); `cargo add qorechain-sdk`
 > installa l'ultima release.
 
 ## Java
@@ -354,19 +380,19 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.13.0</version>
+  <version>0.14.0</version>
 </dependency>
 ```
 
 Oppure Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 ```
 
-> Pubblicato su Maven Central come `io.github.qorechain:qorechain-sdk`. La 0.13.0 è
-> pubblicata su Maven Central (verificato l'11 novembre 2026), quindi le coordinate qui sopra
-> si risolvono. Richiede JDK 17 o successivo. Central non ha alcuna
+> Pubblicato su Maven Central come `io.github.qorechain:qorechain-sdk`. Maven Central
+> mostra ancora la 0.13.0 il 12 novembre 2026 (il POM della 0.14.0 non c'era ancora); usa
+> la 0.14.0 quando comparirà, e la 0.13.0 fino ad allora. Richiede JDK 17 o successivo. Central non ha alcuna
 > build 0.8.0 o 0.8.1, quindi sulle reti live usa la 0.8.2 o successiva. La 0.9.1 era una
 > release solo Java che ha portato Bouncy Castle dalla 1.80 alla 1.85 senza modifiche all'API.
 

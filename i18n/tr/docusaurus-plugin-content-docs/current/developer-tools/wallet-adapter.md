@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Cüzdan adaptörü (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter`, `signDirect` sunan Cosmos cüzdanlarına (Keplr, Leap, Cosmostation) QoreChain'i ekler ve zincirin gerektirdiği işlemleri oluşturur: bir native ray işlemi, hesabın klasik secp256k1 imzasının yanında bir ML-DSA-87 (FIPS 204) imzası taşımalıdır ve standart bir cüzdan ML-DSA-87 imzasını üretemez. Adaptör onu üretir, işlem gövdesine yerleştirir ve ardından değiştirilmemiş cüzdandan sıradan bir imza ister. dApp ve cüzdan geliştiricilerine, ayrıca JavaScript'te birleşik QoreChain cüzdanlarına, EVM yetkilendirme penceresi mesajlarına veya bağlı anahtar (authenticator) mesajlarına ihtiyaç duyan araç geliştiricilerine yöneliktir. Güncel sürüm 0.5.0'dır (11 Kasım 2026).
+`@qorechain/wallet-adapter`, `signDirect` sunan Cosmos cüzdanlarına (Keplr, Leap, Cosmostation) QoreChain'i ekler ve zincirin gerektirdiği işlemleri oluşturur: bir native ray işlemi, hesabın klasik secp256k1 imzasının yanında bir ML-DSA-87 (FIPS 204) imzası taşımalıdır ve standart bir cüzdan ML-DSA-87 imzasını üretemez. Adaptör onu üretir, işlem gövdesine yerleştirir ve ardından değiştirilmemiş cüzdandan sıradan bir imza ister. dApp ve cüzdan geliştiricilerine, ayrıca JavaScript'te birleşik QoreChain cüzdanlarına, EVM yetkilendirme penceresi mesajlarına veya bağlı anahtar (authenticator) mesajlarına ihtiyaç duyan araç geliştiricilerine yöneliktir. Güncel sürüm 0.6.0'dır (12 Kasım 2026).
 
 Tek ihtiyacınız bir dApp'in kullanıcının QoreX cüzdanından bir işlem göndermesiyse en kısa yol, bu paketteki [`qorexSignAndBroadcast`](#qorex) işlevi veya [Geliştirici paketleri](/developer-tools/overview#group-qorex) dizininde listelenen QoreX paketleridir. Bir cüzdan yazıyorsanız ve beş dilde eksiksiz bir imzalama kütüphanesi istiyorsanız önce [QoreSign](/qoresign/overview) sayfasını okuyun.
 
@@ -154,7 +154,7 @@ if (!status.live) {
 }
 ```
 
-Sıra önemlidir: önce pencereyi açın, sonra EVM nonce'unu okuyun, sonra EVM işlemini imzalayın; çünkü bir pencere açmak hesabın sırasını, yani aynı zamanda EVM nonce'unu ilerletir. `openEvmWindowMsg` yalnızca pencerenin kapsamsız biçimini oluşturur; kapsamlı bir pencere (`native_only`, `allowed_targets`) SDK'yı gerektirir. Arka plan: [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window) ve [İlk İşleminiz](/getting-started/first-transaction#evm-window).
+Sıra önemlidir: önce pencereyi açın, sonra EVM nonce'unu okuyun, sonra EVM işlemini imzalayın; çünkü bir pencere açmak hesabın sırasını, yani aynı zamanda EVM nonce'unu ilerletir. 0.6.0'dan itibaren `openEvmWindowMsg` pencere kapsamını da alır: `nativeOnly`, `allowedTargets` ve zincir v3.2.8 çalıştıran bir ağda `validators`, `stakingValidators` ve `ibcReceivers`. Arka plan: [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window) ve [İlk İşleminiz](/getting-started/first-transaction#evm-window).
 
 ### Diğer giriş noktaları
 
@@ -163,7 +163,60 @@ Sıra önemlidir: önce pencereyi açın, sonra EVM nonce'unu okuyun, sonra EVM 
 | Bir PQC anahtarını kurtarma veya rotasyona sokma | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | eth-native anahtarla imzalama | `signClassicalEth` (klasik anahtar kaydı), `signHybridEth` |
 | Sign-bytes yardımcıları | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
-| Harici bir anahtarla bağlama ve harcama | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, `buildPhantom*` ve `buildMetaMask*` işlevleri |
+| Harici bir anahtarla bağlama ve harcama | `linkAuthenticatorMsgs`, `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, `buildPhantom*` ve `buildMetaMask*` işlevleri |
+
+## 0.6.0 neyi değiştiriyor {#whats-new-060}
+
+0.6.0 (12 Kasım 2026), zincir v3.2.8 için destek ekler (test ağı 12 Kasım 2026'dan beri onu çalıştırır; ana ağ henüz uygulamadı). Yeni kurallar, bir ağ v3.2.8 çalıştırdığında o ağda geçerli olur.
+
+**Uyumsuz değişiklikler.**
+
+- `registerAuthenticatorMsg` ve `registerEthAuthenticatorMsg` için `possessionProof` gerekir: bağlanan anahtar, zinciri, hesabı, şemayı ve anahtarı adlandıran düz metin bir bağlantı mesajını imzalar. Kanıtsız bir çağrı hata fırlatır.
+- `decodeEvmWindowMsg` yeni kapsam alanlarını döndürür (yokken boş listeler ve `nativeOnly: false`).
+- `buildPhantomSvmEnvelope` ve `buildPhantomTransfer`, imzalanacak biçimi seçer: `rest` ve `chainId` verin ya da `svmAuthVersion: "v2" | "v3"` verin. İkisi de yoksa, ağın reddedebileceği bir biçimi imzalamak yerine hata fırlatırlar.
+
+**Yeni işlevler.**
+
+| Görev | İşlevler |
+|---|---|
+| Anahtar bağlama | `authenticatorLinkMessage`, `phantomPossessionProof`, `metaMaskPossessionProof` |
+| Değer taşıyan anahtar için harcama kuralı | `spendingRuleBoundsEveryDenom`, `updateSpendingRulesMsg`, `linkAuthenticatorMsgs` (harcama kuralı ve bağlantı, sahibin imzaladığı tek bir işlemde) |
+| Yürütme sonuçları | `authenticatorExecutionResults`, `assertAuthenticatorExecutionsSucceeded`: kod 0 bir işlemin içindeki `MsgExecuteEVM` veya `MsgExecuteCosmos` için `success=false` değerini okur |
+| EVM pencere kapsamı | `openEvmWindowMsg`, `nativeOnly`, `allowedTargets`, `validators`, `stakingValidators` ve `ibcReceivers` alanlarını alır; `validateEvmWindowScope` onları denetler |
+| SVM yetkilendirmesi | `authSignBytesV3` (bir ağ `svm-relayed-chain-bound` özelliğini etkinleştirdiğinde doğruladığı, zincire bağlı özet) ve `"v3"` veya `"v2"` döndüren `resolveSvmAuthVersion({ rest })` |
+
+QoreX istek denetimi ayrıca, `GenericAuthorization` içinde reddettiği bir mesajı adlandıran bir authz `MsgGrant` mesajını ve çözemediği bir `MsgGrant` mesajını da reddeder.
+
+`send`, `evm`, `deploy`, `svm` veya `all` iznine sahip bir anahtar için hesabın ilk etkin harcama kuralının her denom'u sınırlaması gerekir; aksi halde `linkAuthenticatorMsgs` çifti reddeder. `rules`, hesabın kurallarını bütünüyle değiştirir; bu yüzden korumak istediğiniz her kuralı geçirin. Bir MetaMask anahtarını bağlayın (bu kod parçası 0.6.0 tür tanımlarından ve kaynağından alınmıştır; çalıştırılmadı):
+
+```js
+import {
+  registerEthAuthenticatorMsg,
+  metaMaskPossessionProof,
+  linkAuthenticatorMsgs,
+} from "@qorechain/wallet-adapter";
+
+const possessionProof = await metaMaskPossessionProof({
+  provider: window.ethereum,
+  address: ethAddress,        // the 0x address being linked
+  chainId: "qorechain-diana",
+  account: qor1,
+});
+
+const registerMsg = registerEthAuthenticatorMsg({
+  owner: qor1,
+  ethAddress,
+  permissions: ["evm"],
+  expiryUnix,
+  possessionProof,
+});
+
+// The spending rule and the link, in order, for one owner-signed transaction.
+const msgs = linkAuthenticatorMsgs({
+  registerMsg,
+  rules: [{ enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+```
 
 ## 0.5.0 neyi değiştiriyor {#whats-new-050}
 
@@ -181,16 +234,16 @@ Sıra önemlidir: önce pencereyi açın, sonra EVM nonce'unu okuyun, sonra EVM 
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.5.0 (11 Kasım 2026'da yayımlandı) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.6.0 (12 Kasım 2026'da yayımlandı) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-Kaynak: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (herkese açık, etiket `v0.5.0`, Apache-2.0). PyPI, crates.io, Maven Central veya Go proxy'sinde yayımlanmamıştır. İlgili: [Geliştirici paketleri](/developer-tools/overview), [QoreSign](/qoresign/overview), [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing), [Borsa entegrasyonu](/developer-guide/exchange-integration).
+Kaynak: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (herkese açık, etiket `v0.6.0`, Apache-2.0). PyPI, crates.io, Maven Central veya Go proxy'sinde yayımlanmamıştır. İlgili: [Geliştirici paketleri](/developer-tools/overview), [QoreSign](/qoresign/overview), [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing), [Borsa entegrasyonu](/developer-guide/exchange-integration).
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 - **İmzalar; yayınlamaz, anahtar kaydetmez ve pencere açmaz.** ML-DSA-87 anahtarını kaydeden bir işlev yoktur ve sizin için bir EVM penceresi açan hiçbir şey yoktur.
-- **Sahiplik kanıtı yok.** Yalnızca bu paketi kullanan araçlarla yapılan bir anahtar kaydı kanıt taşımaz. Zincir yine de kabul eder ve bir kanıt mevcut olduğunda onu doğrular ([Sahiplik kanıtı](/developer-guide/post-quantum-signing#proof-of-possession)).
+- **Sahiplik kanıtı.** 0.6.0 öncesinde bu paketle yapılan bir anahtar kaydı kanıt taşımıyordu. 0.6.0'dan itibaren bağlama işlevleri bir kanıt gerektirir (bkz. [0.6.0 neyi değiştiriyor](#whats-new-060)); zincir v3.2.8 çalıştırdığında kanıtsız bir bağlantıyı reddeder, önceki ağlarda ise bir kanıt mevcut olduğunda onu doğrular ([Sahiplik kanıtı](/developer-guide/post-quantum-signing#proof-of-possession)).
 - **`derivePqcKeyFromWallet` kaldırılmıştır** (0.3.0) ve her zaman hata fırlatır. Onunla anahtar kaydeden hesaplar, anahtarlarını `rotateFromLegacyWalletKey` ile rotasyona sokmalıdır.
-- **Yalnızca kapsamsız pencereler.** `openEvmWindowMsg` kapsam alanlarına sahip değildir.
+- **Pencere kapsamı.** 0.6.0 öncesinde `openEvmWindowMsg` kapsam alanlarına sahip değildi; `validators`, `stakingValidators` ve `ibcReceivers` alanları yalnızca zincir v3.2.8 çalıştıran bir ağda etki eder.
 - **`qoreChainInfo` varsayılan olarak test ağını kullanır.** Ana ağ için her zaman `chainId` verin.
 - **Authenticator nonce'ları.** Henüz hiçbir sorgu bağlı anahtarın authenticator sırasını sunmaz; bu yüzden onu sizin izlemeniz gerekir. Değer yanlış olduğunda zincir `abstractaccount` kod 11 ile yanıt verir. Authenticator modülü test ağında etkindir ve ana ağda kapalıdır ([SDK genel bakış](/sdk/overview) sayfasına bakın).
 - **cosmjs 0.32 eş bağımlılıkları.** SDK cosmjs 0.39 kullanır; ikisini tek projede kurmak `ERESOLVE` hatası verir, bu yüzden onları ayrı tutun veya `--legacy-peer-deps` verin.

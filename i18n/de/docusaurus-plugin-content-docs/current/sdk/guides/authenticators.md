@@ -126,6 +126,53 @@ Um einen Schlüssel sofort zu deaktivieren, broadcastet der Eigentümer
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`.
 
+### Verknüpfen ab Chain v3.2.8 (SDK 0.14.0) {#link-v328}
+
+Ab Chain v3.2.8 (das Testnet seit dem 12. November 2026; das Mainnet hat sie nicht angewendet)
+wird die obige Registrierung abgelehnt, wenn sie keinen **Besitznachweis** trägt: Der zu
+verknüpfende Schlüssel signiert eine Klartextnachricht, die die Chain, das Konto, das Schema
+und den Schlüssel nennt. Ein Schlüssel mit `send`, `evm`, `deploy`, `svm` oder `all` braucht
+außerdem eine erste aktivierte Ausgabenregel des Kontos, die jede Denom begrenzt. SDK 0.14.0 hat Helfer
+für beides; `linkAuthenticatorMsgs` baut die Ausgabenregel und die Verknüpfung in der Reihenfolge,
+in der sie in einer vom Eigentümer signierten Transaktion gesendet werden. Dieses Snippet folgt dem Quellcode von 0.14.0
+und wurde nicht ausgeführt:
+
+```ts
+import { linkAuthenticatorMsgs, signAuthenticatorLinkPhantom } from "@qorechain/sdk";
+
+// The key being linked signs the link message (Phantom signMessage here).
+const proof = await signAuthenticatorLinkPhantom({
+  chainId: "qorechain-diana",
+  account: canonicalAccount,
+  wallet: window.solana,
+});
+
+const msgs = linkAuthenticatorMsgs({
+  owner: canonicalAccount,
+  chainId: "qorechain-diana",   // optional: checks the proof before anything is built
+  scheme: proof.scheme,
+  pubkey: proof.pubkey,
+  possessionProof: proof.possessionProof,
+  permissions: ["send"],
+  expiryUnix: Math.floor(Date.now() / 1000) + 7 * 24 * 3600,
+  label: "phantom",
+  // Replaces the account's rules wholesale: pass every rule to keep.
+  spendingRules: [{ id: "phantom-hot", enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+// Sign msgs in one owner-signed hybrid transaction.
+```
+
+Dieselbe Datei hat `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`,
+`signAuthenticatorLinkEip191` und `signAuthenticatorLinkMetaMask` für die anderen Schlüsseltypen,
+und die Register-Composer lehnen einen leeren Nachweis ab. In einem Netzwerk unter v3.2.8 bleibt der
+Nachweis optional.
+
+Ab v3.2.8 liefert ein autorisiertes `MsgExecuteEVM` oder `MsgExecuteCosmos`, das fehlschlägt,
+`success=false` innerhalb einer Transaktion mit Code 0 und verbraucht trotzdem die Nonce. Rufen Sie nach einem
+Relayer-Broadcast `assertAuthenticatorExecutionsSucceeded(result, messages)` auf, oder
+`decodeAuthenticatorExecutions`, um jedes Ergebnis zu lesen, damit eine fehlgeschlagene Ausführung nicht
+für einen Erfolg gehalten wird.
+
 ## Von Phantom ausgeben (Native-Lane, über einen Relayer)
 
 Sobald der Schlüssel verknüpft ist, baut der Browser eine relayer-fertige

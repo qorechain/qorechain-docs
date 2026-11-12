@@ -149,10 +149,10 @@ pnpm --filter @qorechain/sdk docs:api
 
 | اللغة | التوثيق المولَّد | التثبيت |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.13.0` (الاستيراد `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0` (الوسم `packages/go/v0.13.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.13.0؛ الاستيراد `qorechain`) |
-| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.13.0` (منشورة على Maven Central؛ جرى التحقق في 11 نوفمبر 2026) |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.14.0` (الاستيراد `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.14.0` (الوسم `packages/go/v0.14.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.14.0؛ الاستيراد `qorechain`) |
+| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.14.0` (ما زال Maven Central يعرض 0.13.0 في 12 نوفمبر 2026؛ استخدم 0.14.0 متى ظهر) |
 
 كل حزمة تعكس الواجهة نفسها (الإعدادات المسبقة للشبكات، وأدوات الفئات
 النقدية/العناوين، والاشتقاق الهرمي الحتمي HD — بما في ذلك الحسابات الموحّدة الأصيلة بنمط eth — وأساسيات

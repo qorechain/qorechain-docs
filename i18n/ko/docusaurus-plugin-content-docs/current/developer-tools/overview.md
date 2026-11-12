@@ -40,7 +40,7 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 | QoreChain을 수탁 기관이나 거래소로서 통합(주소 검사, 출금 검증, 입금 반영) | 커스터디 키트 | [커스터디 키트](/developer-tools/custody-kit) |
 | 노드, 네트워크, Solidity 소스의 암호화 자산을 CycloneDX CBOM으로 목록화 | QoreScan | [QoreScan](/developer-tools/qorescan) |
 | 테스트넷에서 허가형 실물 자산 토큰 프로토타입 제작(ERC-3643, CMTAT, 지분 제한 볼트, 포스트 퀀텀 보유자 검사) | Asset Kit | [Asset Kit](/developer-tools/asset-kit) |
-| Foundry, Hardhat, viem으로 QoreChain에서 Solidity 또는 CosmWasm 프로젝트를 빌드하고 테스트 | 체인 개발자 키트(SDK 0.13.0에 포함) | [체인 개발자 키트](/developer-tools/chain-dev-sdk) |
+| Foundry, Hardhat, viem으로 QoreChain에서 Solidity 또는 CosmWasm 프로젝트를 빌드하고 테스트 | 체인 개발자 키트(SDK 0.14.0에 포함) | [체인 개발자 키트](/developer-tools/chain-dev-sdk) |
 
 패키지 하나를 설치하고 먼저 공개 테스트넷에서 퀵스타트를 실행해 보세요. 읽기에는 계정도, 키도, 수수료도 필요하지 않습니다.
 
@@ -84,17 +84,17 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 
 | 패키지 | 언어 | 버전 | 설치 | 상태 |
 |---|---|---|---|---|
-| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.13.0 | `npm install @qorechain/sdk` | Published |
-| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Published. Provider, hooks, `ConnectButton`, PQC 상태 배지(`PqcStatusBadge`, 그리고 0.10.0부터 유지되는 `QuantumSafeBadge`) |
-| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | Published. viem 체인 정의와 EVM 윈도우 헬퍼 포함([체인 개발자 키트](#group-chain-dev-sdk) 참조) |
-| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | Published. 라이브 네트워크에서는 읽기만 가능 |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.1 | `npx create-qorechain-dapp my-dapp` | Published. 템플릿 일곱 가지 |
-| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | Published |
-| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Published |
-| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Published |
-| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.13.0 | `implementation("io.github.qorechain:qorechain-sdk:0.13.0")` | Published (Maven Central, v0.13.0; JDK 17+, 2026년 11월 11일 확인) |
+| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.14.0 | `npm install @qorechain/sdk` | Published |
+| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.14.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Published. Provider, hooks, `ConnectButton`, PQC 상태 배지(`PqcStatusBadge`, 그리고 0.10.0부터 유지되는 `QuantumSafeBadge`) |
+| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.14.0 | `npm install @qorechain/evm viem` | Published. viem 체인 정의와 EVM 윈도우 헬퍼 포함([체인 개발자 키트](#group-chain-dev-sdk) 참조) |
+| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.14.0 | `npm install @qorechain/svm @solana/web3.js` | Published. 라이브 네트워크에서는 읽기만 가능 |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.14.0 | `npx create-qorechain-dapp my-dapp` | Published. 템플릿 일곱 가지 |
+| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.14.0 | `pip install qorechain-sdk` | Published |
+| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.14.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Published |
+| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.14.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Published |
+| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.14.0 | `implementation("io.github.qorechain:qorechain-sdk:0.14.0")` | Maven Central에는 2026년 11월 12일 기준 0.13.0이 그대로 표시됩니다. 0.14.0이 나타나면 그것을 사용하세요(JDK 17+) |
 
-SDK 0.13.0은 2026년 11월 11일부터 현재 릴리스입니다(시드 경로 계정 헬퍼가 바뀌었으며, 이제 `QRC1` 복구 코드 또는 독립적인 32바이트 PQC 비밀이 필요합니다. 니모닉 계정, 서명, 체인 동작은 그대로입니다. [0.13.0의 변경 사항](/sdk/install#whats-new-0130) 참조). SDK 0.12.0은 2026년 10월 30일부터 현재 릴리스였습니다. 0.10.0과 비교하면 프리셋이 기본값으로 공개 엔드포인트를 사용하고(메인넷 `api.qore.host`, `rpc.qore.host`, `evm.qore.host`, 테스트넷은 `-testnet` 호스트이며, 이전의 기본값은 localhost였습니다), 로컬 프리셋의 체인 ID는 `qorechain-devnet`이고, 가스는 v3.2.5 이상 노드에서 정확하며(시뮬레이션 값에 1.02를 곱하고 2,000을 더함. 이전 노드에는 기존 경로가 유지됨), ML-KEM-1024 키 레지스트리를 지원하고(등록, 삭제, 그리고 `/qorechain/pqc/v1/kem/\{address\}` 조회), [체인 개발자 키트](#group-chain-dev-sdk)가 포함됩니다. 하이브리드 서명은 변경되지 않았습니다. Python, Rust, Go, Java 패키지는 0.10.0에서 곧바로 0.12.0이 되었고, npm 패키지 다섯 개에는 키트 내용을 담은 0.11.0(2026년 10월 29일)도 있었으나 0.12.0이 이를 대체합니다.
+SDK 0.14.0은 2026년 11월 12일부터 현재 릴리스입니다(체인 v3.2.8 클라이언트 지원: 키 연결의 소유 증명, 가치를 이동하는 키의 지출 규칙, 전체 필드 거버넌스 파라미터 업데이트, 실행 결과, 새 EVM 윈도우 범위 필드, 가스 한도. [0.14.0의 변경 사항](/sdk/install#whats-new-0140) 참조). SDK 0.13.0(2026년 11월 11일)은 시드 경로 계정 헬퍼를 바꾸었으며, 이제 `QRC1` 복구 코드 또는 독립적인 32바이트 PQC 비밀이 필요합니다. 니모닉 계정, 서명, 체인 동작은 그대로입니다. [0.13.0의 변경 사항](/sdk/install#whats-new-0130) 참조). SDK 0.12.0은 2026년 10월 30일부터 현재 릴리스였습니다. 0.10.0과 비교하면 프리셋이 기본값으로 공개 엔드포인트를 사용하고(메인넷 `api.qore.host`, `rpc.qore.host`, `evm.qore.host`, 테스트넷은 `-testnet` 호스트이며, 이전의 기본값은 localhost였습니다), 로컬 프리셋의 체인 ID는 `qorechain-devnet`이고, 가스는 v3.2.5 이상 노드에서 정확하며(시뮬레이션 값에 1.02를 곱하고 2,000을 더함. 이전 노드에는 기존 경로가 유지됨), ML-KEM-1024 키 레지스트리를 지원하고(등록, 삭제, 그리고 `/qorechain/pqc/v1/kem/\{address\}` 조회), [체인 개발자 키트](#group-chain-dev-sdk)가 포함됩니다. 하이브리드 서명은 변경되지 않았습니다. Python, Rust, Go, Java 패키지는 0.10.0에서 곧바로 0.12.0이 되었고, npm 패키지 다섯 개에는 키트 내용을 담은 0.11.0(2026년 10월 29일)도 있었으나 0.12.0이 이를 대체합니다.
 
 ### QoreSign {#group-qoresign}
 
@@ -170,11 +170,11 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 | [`@qorechain/asset-kit`](https://www.npmjs.com/package/@qorechain/asset-kit) | TypeScript (제안용 클라이언트) | 0.1.0 | `npm install @qorechain/asset-kit` | Published |
 | [`qorechain-asset-kit`](https://pypi.org/project/qorechain-asset-kit/) | Python 3.10+ (제안용 클라이언트, `qorechain_asset_kit`로 import) | 0.1.0 | `pip install qorechain-asset-kit` | Published |
 
-### 체인 개발자 키트 (SDK 0.13.0) {#group-chain-dev-sdk}
+### 체인 개발자 키트 (SDK 0.14.0) {#group-chain-dev-sdk}
 
 페이지: [체인 개발자 키트](/developer-tools/chain-dev-sdk). 소스: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). Solidity 및 스마트 컨트랙트 팀을 위한 QoreChain SDK의 일부입니다. `@qorechain/evm`의 viem 체인 정의와 EVM 인가 윈도우 헬퍼, `create-qorechain-dapp` 템플릿 네 가지(Foundry, Hardhat 3, wagmi를 쓰는 viem, QoreChain Native 토큰), EVM 퀵스타트, 그리고 QoreChain EVM이 Ethereum과 어떻게 다른지 설명하는 페이지로 구성됩니다.
 
-**라이브이며 SDK 0.13.0에 포함되어 있습니다**(0.12.0부터): 별도의 패키지는 없습니다. [SDK 표](#group-sdk)의 패키지를 설치하세요(체인 정의와 윈도우 헬퍼는 `@qorechain/evm` 0.13.0, 템플릿은 `create-qorechain-dapp` 0.13.1). 키트 내용은 npm에 0.11.0(2026년 10월 29일)으로 처음 나타났으며, 0.12.0이 이를 대체합니다.
+**라이브이며 SDK 0.14.0에 포함되어 있습니다**(0.12.0부터): 별도의 패키지는 없습니다. [SDK 표](#group-sdk)의 패키지를 설치하세요(체인 정의와 윈도우 헬퍼는 `@qorechain/evm` 0.14.0, 템플릿은 `create-qorechain-dapp` 0.14.0). 키트 내용은 npm에 0.11.0(2026년 10월 29일)으로 처음 나타났으며, 0.12.0이 이를 대체합니다.
 
 ### 롤업 개발 키트 (RDK) {#group-rdk}
 
@@ -209,7 +209,7 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 
 | 패키지 | 언어 | 버전 | 설치 | 상태 |
 |---|---|---|---|---|
-| [`@qorechain/wallet-adapter`](https://www.npmjs.com/package/@qorechain/wallet-adapter) | TypeScript (ES module, 타입 정의가 포함된 순수 JavaScript) | 0.5.0 | `npm install @qorechain/wallet-adapter @cosmjs/stargate @cosmjs/proto-signing` | Published. 테스트된 퀵스타트 없음 |
+| [`@qorechain/wallet-adapter`](https://www.npmjs.com/package/@qorechain/wallet-adapter) | TypeScript (ES module, 타입 정의가 포함된 순수 JavaScript) | 0.6.0 | `npm install @qorechain/wallet-adapter @cosmjs/stargate @cosmjs/proto-signing` | Published. 테스트된 퀵스타트 없음 |
 
 ### 체인 브리지 {#group-chain-bridge}
 
@@ -247,7 +247,7 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 | [`@qorechain/connect`](https://www.npmjs.com/package/@qorechain/connect) | TypeScript | 0.2.1 | 없음 | **지원 중단되었으며 더 이상 유지보수되지 않습니다.** 새 작업에는 사용하지 마세요. 아래 표와 같이 교체하세요 |
 
 :::caution @qorechain/connect는 지원 중단되었습니다
-`@qorechain/connect`는 npm에서 deprecated로 표시되어 있습니다. peer 범위가 `@qorechain/wallet-adapter` `^0.2.1`이어서 0.5.0을 포함하지 않으며, [EVM 인가 윈도우](/sdk/guides/evm#evm-window)를 열지 않으므로, 계정에 등록된 키와 열려 있는 윈도우가 생길 때까지 이를 통한 EVM 전송은 거부됩니다. 레지스트리 메타데이터에 나열된 저장소는 공개적으로 접근할 수 없습니다.
+`@qorechain/connect`는 npm에서 deprecated로 표시되어 있습니다. peer 범위가 `@qorechain/wallet-adapter` `^0.2.1`이어서 0.6.0을 포함하지 않으며, [EVM 인가 윈도우](/sdk/guides/evm#evm-window)를 열지 않으므로, 계정에 등록된 키와 열려 있는 윈도우가 생길 때까지 이를 통한 EVM 전송은 거부됩니다. 레지스트리 메타데이터에 나열된 저장소는 공개적으로 접근할 수 없습니다.
 :::
 
 | 필요한 것 | 대신 사용할 것 |

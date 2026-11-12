@@ -166,6 +166,7 @@ Depuis la v3.2.3, un appel en file d'attente qui échoue est annulé dans son in
 - **Au plus 100 appels en attente par expéditeur.** Tout appel supplémentaire est refusé jusqu'à ce qu'un appel se termine ou expire.
 - **Les appels en échec sont facturés.** Un appel qui échoue paie quand même le travail effectué.
 - **Appels lourds :** augmentez `async_gas_limit` et `async_max_factor` pour les contrats qui chargent un gros code ; un contrat de la taille d'un cw721 ne tient pas dans les valeurs par défaut lors de son premier appel dans un bloc.
+- **Depuis le code.** Le SDK 0.14.0 prend les deux champs dans chaque langage (TypeScript : `asyncGasLimit` et `asyncMaxFactor`, avec `validateCrossVmAsyncGas` pour les vérifier ; `asyncMaxFactor` est en millionièmes, donc 1,000,000 vaut 1x). Il renvoie aussi toutes les pages de la requête paginée des appels en attente. Cela n'a pas été exécuté sur le testnet.
 
 ---
 

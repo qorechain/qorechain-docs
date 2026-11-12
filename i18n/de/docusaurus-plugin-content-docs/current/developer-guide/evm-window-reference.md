@@ -133,11 +133,11 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg` prüft die Grenzen und die Listenformate, bevor etwas signiert wird, sodass ein Fehler lokal auffällt, statt eine abgelehnte Transaktion zu kosten. `MAX_EVM_WINDOW_BLOCKS` und `MAX_EVM_WINDOW_TXS` exportieren die Grenzen. Das Zurücklesen (`fetchEvmWindow`) liefert die Grenzen, die Zähler und den Geltungsbereich von v3.2.3 (`nativeOnly`, `allowedTargets`); `validators`, `stakingValidators` und `ibcReceivers` nimmt der Builder entgegen. Bei einem hybrid signierenden `connectTx` muss der Post-Quanten-Schlüssel bereits registriert sein.
+`openEvmWindowMsg` prüft die Grenzen und die Listenformate, bevor etwas signiert wird, sodass ein Fehler lokal auffällt, statt eine abgelehnte Transaktion zu kosten. `MAX_EVM_WINDOW_BLOCKS` und `MAX_EVM_WINDOW_TXS` exportieren die Grenzen. Das Zurücklesen (`fetchEvmWindow`) liefert die Grenzen, die Zähler und den Geltungsbereich von v3.2.3 (`nativeOnly`, `allowedTargets`); `validators` (Contract-Adressen), `stakingValidators` (`qorvaloper1...`) und `ibcReceivers` (`"<channel>/<receiver>"`) nimmt der Builder ab SDK 0.14.0 entgegen, das die Listen von v3.2.8 trägt; das Zurücklesen liefert sie nicht, lesen Sie sie also über REST. Das obige Beispiel verwendet `stakingValidators`; es wurde nicht mit SDK 0.14.0 ausgeführt. Setzen Sie die drei Listen nur für ein Netzwerk, das v3.2.8 betreibt: Ein Node darunter lehnt eine Fensternachricht ab, die sie setzt. Bei einem hybrid signierenden `connectTx` muss der Post-Quanten-Schlüssel bereits registriert sein.
 
 ### Im Testnet getestet {#tested}
 
-Lauf auf `qorechain-diana` am 12. November 2026 (Release v3.2.8) mit einem eth-nativen Konto, das seinen Post-Quanten-Schlüssel registriert hatte, mit SDK 0.13.0 (`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`) und hybrider Signierung. Die Fensterfelder `validators`, `staking_validators` und `ibc_receivers` sind in den veröffentlichten Buildern des SDK 0.13.0 noch nicht enthalten; verwenden Sie dafür die Kommandozeile, bis ein SDK-Release sie ergänzt.
+Lauf auf `qorechain-diana` am 12. November 2026 (Release v3.2.8) mit einem eth-nativen Konto, das seinen Post-Quanten-Schlüssel registriert hatte, mit SDK 0.13.0 (`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`) und hybrider Signierung. Die Fensterfelder `validators`, `staking_validators` und `ibc_receivers` waren in den Buildern des SDK 0.13.0 nicht enthalten; SDK 0.14.0 ergänzt sie in `openEvmWindowMsg`, und dieser Lauf hat sie nicht verwendet (verwenden Sie dafür mit SDK 0.13.0 die Kommandozeile).
 
 | Schritt | Ergebnis |
 | ---- | ------ |
@@ -146,11 +146,13 @@ Lauf auf `qorechain-diana` am 12. November 2026 (Release v3.2.8) mit einem eth-n
 | Erneut öffnen mit `nativeOnly: true` | Code 0, 187,803 Gas verbraucht. Das neue Fenster ersetzte das alte: `native_only: true`, ein neues `opened_height` |
 | Schließen | Code 0, 170,468 Gas verbraucht. Zurückgelesen: `found: false` |
 
+Mit SDK 0.14.0 war am selben Tag ein Fenster, das mit `allowedTargets` (der Adresse des Staking-Precompiles), `stakingValidators` (eine Operator-Adresse eines Validators) und `ibcReceivers` (ein Paar `channel-0/...`) geöffnet wurde, mit Code 0 und 195,233 verbrauchtem Gas erfolgreich. Das REST-Zurücklesen listete `allowed_targets` und lieferte `found: true`, `live: true`; es liefert die Listen `validators`, `staking_validators` und `ibc_receivers` nicht, bewahren Sie also die Werte auf, mit denen Sie das Fenster geöffnet haben.
+
 `fetchEvmWindow` lieferte dieselben Felder in camelCase (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). Öffnen und Schließen sind hybrid signierte Cosmos-Transaktionen, sodass bei der ersten Transaktion eines Kontos zuvor dessen Schlüssel registriert sein muss.
 
 ### Python, Go, Rust und Java {#other-languages}
 
-Jedes SDK hat einen Builder für die Nachricht und einen REST-Lesezugriff. Alle prüfen die Grenzen der Chain lokal. Ein Sprach-Builder, der die Listen von v3.2.8 setzt, braucht das SDK-Release, das v3.2.8 unterstützt; frühere Releases bauen nur die älteren Felder.
+Jedes SDK hat einen Builder für die Nachricht und einen REST-Lesezugriff. Alle prüfen die Grenzen der Chain lokal. Ein Sprach-Builder, der die Listen von v3.2.8 setzt, braucht SDK 0.14.0 oder neuer (Java: 0.14.0, sobald es auf Maven Central erscheint, das am 12. November 2026 weiterhin 0.13.0 zeigt); frühere Releases bauen nur die älteren Felder.
 
 | Sprache | Öffnen (mit allen Listen) | Schließen | Lesen | EVM-Grenzen |
 | -------- | ---------------------- | ----- | ---- | ---------- |

@@ -89,15 +89,15 @@ fromBase("1500000"); // "1.5"
 
 ## どのパッケージがどこで公開されていますか？
 
-すべて公開されています（2026年11月11日確認）。TypeScript コア（`@qorechain/sdk`、0.13.0）、
-React キット（`@qorechain/react`、0.13.0）、`create-qorechain-dapp` スキャフォルダ
-（0.13.1。SDK 0.13.0 に対するテンプレートのみのパッチ）、および EVM/SVM アダプタ（`@qorechain/evm`、`@qorechain/svm`、0.13.0）は
+最新リリースの Java 版を除くすべて公開されています（2026年11月12日確認）。TypeScript コア（`@qorechain/sdk`、0.14.0）、
+React キット（`@qorechain/react`、0.14.0）、`create-qorechain-dapp` スキャフォルダ
+（0.14.0。0.13.1 のテンプレート修正も含みます）、および EVM/SVM アダプタ（`@qorechain/evm`、`@qorechain/svm`、0.14.0）は
 npm で公開されています。Python クライアントは PyPI にあります（`pip install qorechain-sdk`、
-バージョン 0.13.0、インポート名は `qorsdk`）。Go クライアントはモジュールプロキシにあります
-（`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`）。Rust クライアントは
-crates.io にあります（`cargo add qorechain-sdk`、0.13.0）。Java クライアントは Maven
-Central にあります（`io.github.qorechain:qorechain-sdk`、JDK 17 以降）。0.13.0 は Maven Central で
-公開済みです（2026年11月11日に確認）。
+バージョン 0.14.0、インポート名は `qorsdk`）。Go クライアントはモジュールプロキシにあります
+（`go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`）。Rust クライアントは
+crates.io にあります（`cargo add qorechain-sdk`、0.14.0）。Java クライアントは Maven
+Central にあります（`io.github.qorechain:qorechain-sdk`、JDK 17 以降）。Maven Central では 2026年11月12日時点でまだ 0.13.0 が表示されます。
+0.14.0 が表示されたらそちらを使ってください。
 言語ごとの完全なコマンドは [インストール](/sdk/install) を参照してください。
 
 ## ニーモニックが拒否されます
@@ -122,7 +122,7 @@ TypeScript では、クライアントに鍵ペアを渡すと
 SDK は（0.5.1 以降）既定で決定的に署名するため、トランザクションの署名と tx ハッシュは常に同じになります。
 ハイブリッド tx が `pqc` コード 21（`hybrid_verify_failed`）で失敗する原因は、sign-bytes のバージョン、
 チェーン ID、古い PQC ライブラリ、または未登録もしくは別の鍵であり、hedged 署名が原因になることはありません。
-両ネットワークとも v2 形式の sign-bytes を検証するため、SDK **0.8.1 以降**（現行は 0.13.0）を使用し、
+両ネットワークとも v2 形式の sign-bytes を検証するため、SDK **0.8.1 以降**（現行は 0.14.0）を使用し、
 `rest`（または `signBytesVersion`）を渡してください。どちらも指定しない場合、ビルダーは
 `qorechain-vladi` / `qorechain-diana` で例外を送出します。詳細は
 [コード 21 のトラブルシューティング](/developer-guide/post-quantum-signing#code-21) と
@@ -163,7 +163,7 @@ SDK **0.8.1 以降**も両ネットワークでトランザクションを送信
 [0.9.0 より前のバージョン](/sdk/install#before-090) を参照）。署名形式は
 v3.2.4、v3.2.5、v3.2.6 では変わっていません。メインネットは v3.2.6、テストネットは v3.2.8 を実行しています（テストネットは v3.2.5 を 2026年10月26日、
 v3.2.6 を 10月27日、v3.2.7 を 11月6日、v3.2.8 を 11月12日に適用し、メインネットは v3.2.5 を 10月29日、v3.2.6 を 11月4日に適用）。SDK 0.10.0 と 0.9.0 はそれらでも引き続き動作しますが、
-v3.2.5 の追加分（ML-KEM 鍵レジストリ、厳密なガスルール）のビルダーはありません。それらのリリースでは CLI を使うか、0.13.0 にアップグレードしてください。0.12.0 は v3.2.5 に対してビルドおよび検証されています。
+v3.2.5 の追加分（ML-KEM 鍵レジストリ、厳密なガスルール）のビルダーはありません。それらのリリースでは CLI を使うか、0.14.0 にアップグレードしてください。0.12.0 は v3.2.5 に対してビルドおよび検証されています。
 
 ## PQC 鍵の登録が拒否されたのに手数料が引かれました
 

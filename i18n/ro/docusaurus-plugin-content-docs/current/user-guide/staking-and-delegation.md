@@ -166,7 +166,7 @@ ID-ul de chain de mai sus este cel al testnet-ului; folosiți `qorechain-vladi` 
 
 Ambele rețele răspund la `GET /qorechain/stakingtier/v1/params` cu aceleași setări: trei termene, un minim de 10 QOR (`min_lock_amount` `"10000000"` uqor), o penalizare de deblocare anticipată de 500 de puncte de bază (5%) și `enabled: true`. Răspunsul conține și setările de bonus în puncte de bază; acest manual nu le citează, deoarece un bonus nu este un randament promis, iar setările pot fi schimbate prin guvernanță. `GET /qorechain/stakingtier/v1/pool` arată pool-ul din care se plătesc recompensele de blocare.
 
-**Clienți.** Linia de comandă (de mai sus) și `@qorechain/sdk` (0.10.0 sau mai nou; 0.13.0 este cea curentă), care are compozitoarele `lockDelegation`, `unlockEarly` și `claimBonus` și citirile `fetchStakingTierParams`, `fetchStakingLocks` și `fetchStakingTierPool` (vezi [Instalarea SDK](/sdk/install)). Nicio versiune publicată de QoreX sau de dashboard nu are astăzi un ecran de blocare, așa că blocarea pe mainnet se face cu CLI sau cu SDK.
+**Clienți.** Linia de comandă (de mai sus) și `@qorechain/sdk` (0.10.0 sau mai nou; 0.14.0 este cea curentă), care are compozitoarele `lockDelegation`, `unlockEarly` și `claimBonus` și citirile `fetchStakingTierParams`, `fetchStakingLocks` și `fetchStakingTierPool` (vezi [Instalarea SDK](/sdk/install)). Nicio versiune publicată de QoreX sau de dashboard nu are astăzi un ecran de blocare, așa că blocarea pe mainnet se face cu CLI sau cu SDK.
 
 **Nu o confundați** cu [staking-ul xQORE](/user-guide/xqore-staking), care este un mecanism proiectat ce nu este activ, și nici cu clasificarea Triple-Pool de mai jos, care nu modifică ceea ce primiți.
 

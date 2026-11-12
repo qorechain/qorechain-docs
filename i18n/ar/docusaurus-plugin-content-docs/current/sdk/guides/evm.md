@@ -224,6 +224,34 @@ await tx.signAndBroadcast(
 );
 ```
 
+### قوائم نطاق إضافية (منذ سلسلة v3.2.8، SDK 0.14.0) {#evm-window-scope-v328}
+
+منذ سلسلة v3.2.8 (شبكة الاختبار منذ 12 نوفمبر 2026؛ ولم تطبّقها الشبكة الرئيسية) يمكن أن تحمل
+النافذة ثلاث قوائم إضافية، تقبلها `openEvmWindowMsg` منذ SDK 0.14.0:
+`validators` (حتى 16 عنوان عقد يُعتدّ بتحقّقها من توقيع الحساب لإجراءات الحساب نفسه،
+مثل وحدة تحقق أو نقطة دخول ERC-4337)،
+و`stakingValidators` (مدققو `qorvaloper1...` الذين يجوز للنافذة التفويض أو إعادة التفويض إليهم
+عبر precompile التخزين) و`ibcReceivers` (مستلمو ICS-20، يُكتب كل منهم
+`"<channel>/<receiver>"`). يفحص الباني الصيغة ويرفض التكرار قبل
+التوقيع بأي شيء. اضبطها فقط على شبكة تشغّل v3.2.8: فالعقدة الأقدم ترفض
+الرسالة. ولا تعيد `fetchEvmWindow` هذه القوائم الثلاث؛ فاقرأها عبر REST. شُغّل استدعاء بهذا
+الشكل (مع ضبط `allowedTargets` و`stakingValidators` و`ibcReceivers`) على
+شبكة الاختبار في 12 نوفمبر 2026 مع SDK 0.14.0 ونجح بالرمز 0 (الغاز المستخدم 195,233)؛ وسردت
+قراءة REST الحقل `allowed_targets` ولم تعد القائمتين الأخريين:
+
+```ts
+openEvmWindowMsg({
+  sender: account.address,
+  blocks: 7200,
+  maxTxs: 20,
+  maxValue: "1000000000",
+  stakingValidators: ["qorvaloper1..."],
+  ibcReceivers: ["channel-0/cosmos1..."],
+});
+```
+
+راجع [مرجع نافذة تفويض EVM](/developer-guide/evm-window-reference) للقواعد.
+
 ### موافقة EIP-7702 (منذ السلسلة v3.2.2، SDK 0.9.0) {#evm-delegation-consent}
 
 لا تُقبل معاملة من النوع 4 (EIP-7702) إلا بعد أن يمنح كل حساب يسري تفويضه موافقة

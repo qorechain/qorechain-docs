@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Pubblicato su npm come `create-qorechain-dapp` (`0.13.1`, una patch solo per i template sopra l'SDK 0.13.0). I file
-> `package.json` generati dipendono da `@qorechain/sdk` `^0.13.0` (i template EVM da
-> `@qorechain/evm` `^0.13.0`). La versione 0.8.0 dello scaffolder scriveva intervalli `^0.3.0`,
+> Pubblicato su npm come `create-qorechain-dapp` (`0.14.0`, che porta anche le correzioni ai template della 0.13.1). I file
+> `package.json` generati dipendono da `@qorechain/sdk` `^0.14.0` (i template EVM da
+> `@qorechain/evm` `^0.14.0`). La versione 0.8.0 dello scaffolder scriveva intervalli `^0.3.0`,
 > che npm risolve in una release 0.3 incapace di firmare per le reti attive; se
 > hai generato lo scaffolding con la 0.8.0, esegui `npm i @qorechain/sdk@latest`.
 
@@ -54,7 +54,7 @@ una lettura REST come `client.rest.getBurnStats()` per le reti pubbliche.
 | Flag | Descrizione |
 | --- | --- |
 | `-t, --template <name>` | Template da usare (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | Preset di rete (`testnet` \| `mainnet`). Scrive nel `.env` generato gli endpoint pubblici della rete scelta (0.13.1). |
+| `--network <name>` | Preset di rete (`testnet` \| `mainnet`). Scrive nel `.env` generato gli endpoint pubblici della rete scelta (dalla 0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Salta i prompt e usa i valori predefiniti. |
 | `--no-install` | Non installa le dipendenze dopo lo scaffolding. |

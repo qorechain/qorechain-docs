@@ -223,6 +223,34 @@ await tx.signAndBroadcast(
 );
 ```
 
+### さらなるスコープのリスト（チェーン v3.2.8 以降、SDK 0.14.0） {#evm-window-scope-v328}
+
+チェーン v3.2.8 以降（テストネットは 2026年11月12日から。メインネットはまだ適用していません）では、
+ウィンドウにさらに 3 つのリストを持たせることができ、`openEvmWindowMsg` は SDK 0.14.0 からそれらを受け付けます。
+`validators`（アカウントの署名の検査が、アカウント自身の操作として有効と見なされるコントラクトアドレス。
+バリデーターモジュールや ERC-4337 のエントリーポイントなど。最大 16 個）、
+`stakingValidators`（ウィンドウがステーキングプリコンパイル経由で委任または再委任できる
+`qorvaloper1...` のバリデーター）、`ibcReceivers`（ICS-20 の受取人。それぞれ
+`"<channel>/<receiver>"` の形式で記述）です。ビルダーは、署名の前に形式を検査し、重複を拒否します。
+設定するのは v3.2.8 を実行しているネットワークだけにしてください。それより下のノードはメッセージを拒否します。
+`fetchEvmWindow` はこの 3 つのリストを返さないため、REST で読み取ってください。この形（`allowedTargets`、
+`stakingValidators`、`ibcReceivers` を設定したもの）の呼び出しを、2026年11月12日にテストネットで SDK 0.14.0 を使って実行し、
+コード 0 で成功しました（使用ガス 195,233）。REST の読み戻しには `allowed_targets` が含まれ、
+ほかの 2 つのリストは返されませんでした:
+
+```ts
+openEvmWindowMsg({
+  sender: account.address,
+  blocks: 7200,
+  maxTxs: 20,
+  maxValue: "1000000000",
+  stakingValidators: ["qorvaloper1..."],
+  ibcReceivers: ["channel-0/cosmos1..."],
+});
+```
+
+ルールについては [EVM ウィンドウリファレンス](/developer-guide/evm-window-reference) を参照してください。
+
 ### EIP-7702 の同意（チェーン v3.2.2、SDK 0.9.0） {#evm-delegation-consent}
 
 type-4（EIP-7702）トランザクションは、認可が有効になるすべてのアカウントが、まさにその委任先に対して

@@ -166,6 +166,7 @@ Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) u
 - **Al massimo 100 chiamate in attesa per mittente.** Un'ulteriore chiamata viene rifiutata finché una non termina o scade.
 - **Le chiamate fallite vengono addebitate.** Una chiamata che fallisce paga comunque il lavoro svolto.
 - **Chiamate pesanti:** aumenta `async_gas_limit` e `async_max_factor` per i contratti che caricano codice di grandi dimensioni; un contratto delle dimensioni di un cw721 non rientra nei valori predefiniti alla sua prima chiamata in un blocco.
+- **Da codice.** L'SDK 0.14.0 accetta entrambi i campi in ogni linguaggio (TypeScript: `asyncGasLimit` e `asyncMaxFactor`, con `validateCrossVmAsyncGas` che li controlla; `asyncMaxFactor` è in milionesimi, quindi 1.000.000 vale 1x). Restituisce inoltre ogni pagina della query paginata delle chiamate in sospeso. Questo non è stato eseguito sulla testnet.
 
 ---
 

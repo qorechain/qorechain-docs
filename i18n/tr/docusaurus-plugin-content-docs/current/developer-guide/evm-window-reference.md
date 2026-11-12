@@ -133,11 +133,11 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg`, herhangi bir şey imzalanmadan önce sınırları ve liste biçimlerini denetler; bu yüzden bir hata, reddedilmiş bir işleme mal olmak yerine yerelde başarısız olur. `MAX_EVM_WINDOW_BLOCKS` ve `MAX_EVM_WINDOW_TXS` sınırları dışa aktarır. Geri okuma (`fetchEvmWindow`) sınırları, sayaçları ve v3.2.3 kapsamını (`nativeOnly`, `allowedTargets`) döndürür; `validators`, `stakingValidators` ve `ibcReceivers` oluşturucu tarafından kabul edilir. Hibrit imzalı bir `connectTx` ile kuantum sonrası anahtar önceden kayıtlı olmalıdır.
+`openEvmWindowMsg`, herhangi bir şey imzalanmadan önce sınırları ve liste biçimlerini denetler; bu yüzden bir hata, reddedilmiş bir işleme mal olmak yerine yerelde başarısız olur. `MAX_EVM_WINDOW_BLOCKS` ve `MAX_EVM_WINDOW_TXS` sınırları dışa aktarır. Geri okuma (`fetchEvmWindow`) sınırları, sayaçları ve v3.2.3 kapsamını (`nativeOnly`, `allowedTargets`) döndürür; `validators` (sözleşme adresleri), `stakingValidators` (`qorvaloper1...`) ve `ibcReceivers` (`"<channel>/<receiver>"`) v3.2.8 listelerini taşıyan SDK 0.14.0'dan itibaren oluşturucu tarafından kabul edilir; geri okuma bunları döndürmez, bu yüzden onları REST üzerinden okuyun. Yukarıdaki örnek `stakingValidators` kullanır; SDK 0.14.0'a karşı çalıştırılmadı. Üç listeyi yalnızca v3.2.8 çalıştıran bir ağ için ayarlayın: bunun altındaki bir düğüm, onları ayarlayan bir pencere mesajını reddeder. Hibrit imzalı bir `connectTx` ile kuantum sonrası anahtar önceden kayıtlı olmalıdır.
 
 ### Test ağında denendi {#tested}
 
-12 Kasım 2026'da `qorechain-diana` üzerinde (v3.2.8 sürümü), kuantum sonrası anahtarını kaydetmiş bir eth-native hesapla, SDK 0.13.0 (`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`) ve hibrit imzalama kullanılarak çalıştırıldı. `validators`, `staking_validators` ve `ibc_receivers` pencere alanları yayımlanmış SDK 0.13.0 oluşturucularında henüz yoktur; bir SDK sürümü bunları ekleyene kadar bunlar için komut satırını kullanın.
+12 Kasım 2026'da `qorechain-diana` üzerinde (v3.2.8 sürümü), kuantum sonrası anahtarını kaydetmiş bir eth-native hesapla, SDK 0.13.0 (`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`) ve hibrit imzalama kullanılarak çalıştırıldı. `validators`, `staking_validators` ve `ibc_receivers` pencere alanları SDK 0.13.0 oluşturucularında yoktu; SDK 0.14.0 bunları `openEvmWindowMsg` içine ekler ve bu çalıştırma onları kullanmadı (SDK 0.13.0 ile bunlar için komut satırını kullanın).
 
 | Adım | Sonuç |
 | ---- | ------ |
@@ -146,11 +146,13 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | `nativeOnly: true` ile yeniden açma | kod 0, 187,803 gaz kullanıldı. Yeni pencere eskisinin yerini aldı: `native_only: true`, yeni bir `opened_height` |
 | Kapatma | kod 0, 170,468 gaz kullanıldı. Geri okuma: `found: false` |
 
+Aynı gün SDK 0.14.0 ile, `allowedTargets` (staking precompile adresi), `stakingValidators` (bir doğrulayıcı operatör adresi) ve `ibcReceivers` (bir `channel-0/...` çifti) ile açılan bir pencere kod 0 ve 195,233 gaz kullanımıyla başarılı oldu. REST geri okuması `allowed_targets` değerini listeledi ve `found: true`, `live: true` döndürdü; `validators`, `staking_validators` veya `ibc_receivers` listelerini döndürmez, bu yüzden pencereyi açtığınız değerleri saklayın.
+
 `fetchEvmWindow` aynı alanları camel case biçiminde döndürdü (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). Açma ve kapatma hibrit imzalı Cosmos işlemleridir; bu yüzden bir hesabın gönderdiği ilk işlem için önce anahtarının kaydedilmesi gerekir.
 
 ### Python, Go, Rust ve Java {#other-languages}
 
-Her SDK'nın mesaj için bir oluşturucusu ve bir REST okuması vardır. Hepsi zincirin sınırlarını yerelde denetler. v3.2.8 listelerini ayarlayan bir dil oluşturucusu, v3.2.8'i destekleyen SDK sürümünü gerektirir; önceki sürümler yalnızca eski alanları oluşturur.
+Her SDK'nın mesaj için bir oluşturucusu ve bir REST okuması vardır. Hepsi zincirin sınırlarını yerelde denetler. v3.2.8 listelerini ayarlayan bir dil oluşturucusu, SDK 0.14.0 veya sonrasını gerektirir (Java: Maven Central'da göründüğünde 0.14.0; Maven Central 12 Kasım 2026'da hâlâ 0.13.0 gösteriyor); önceki sürümler yalnızca eski alanları oluşturur.
 
 | Dil | Açma (her liste ile) | Kapatma | Okuma | EVM limitleri |
 | -------- | ---------------------- | ----- | ---- | ---------- |

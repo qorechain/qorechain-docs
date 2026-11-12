@@ -234,6 +234,34 @@ await tx.signAndBroadcast(
 );
 ```
 
+### Altre liste di ambito (dalla chain v3.2.8, SDK 0.14.0) {#evm-window-scope-v328}
+
+Dalla chain v3.2.8 (la testnet dal 12 novembre 2026; la mainnet non l'ha applicata) una
+finestra può portare tre liste in più, che `openEvmWindowMsg` accetta dall'SDK 0.14.0:
+`validators` (fino a 16 indirizzi di contratto la cui verifica della firma dell'account vale per
+le azioni dell'account stesso, come un modulo validatore o un entry point ERC-4337),
+`stakingValidators` (validatori `qorvaloper1...` ai quali la finestra può delegare o ridelegare
+tramite il precompile di staking) e `ibcReceivers` (destinatari ICS-20, ciascuno scritto
+`"<channel>/<receiver>"`). Il builder controlla il formato e rifiuta i duplicati prima che
+venga firmato qualsiasi cosa. Impostale solo su una rete che esegue la v3.2.8: un nodo precedente rifiuta
+il messaggio. `fetchEvmWindow` non restituisce queste tre liste; leggile via REST. Una chiamata di questa
+forma (con `allowedTargets`, `stakingValidators` e `ibcReceivers` impostati) è stata eseguita sulla
+testnet il 12 novembre 2026 con l'SDK 0.14.0 ed è riuscita con code 0 (195,233 di gas usato); la
+lettura REST ha elencato `allowed_targets` e non ha restituito le altre due liste:
+
+```ts
+openEvmWindowMsg({
+  sender: account.address,
+  blocks: 7200,
+  maxTxs: 20,
+  maxValue: "1000000000",
+  stakingValidators: ["qorvaloper1..."],
+  ibcReceivers: ["channel-0/cosmos1..."],
+});
+```
+
+Vedi il [riferimento della finestra EVM](/developer-guide/evm-window-reference) per le regole.
+
 ### Consenso EIP-7702 (dalla chain v3.2.2, SDK 0.9.0) {#evm-delegation-consent}
 
 Una transazione di tipo 4 (EIP-7702) viene ammessa solo dopo che ogni account la

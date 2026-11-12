@@ -182,7 +182,7 @@ const result = await signAndBroadcastHybrid({
 - **Bir sözleşme kodunun bir blokta ilk çağrısı bir yükleme maliyeti öder.** Bir cw20 transferi, kodunun blokta ilk çağrısı olarak yaklaşık 533.000 gas, her tekrar için yaklaşık 84.000 gas tutar. Yönetişim popüler kodları sabitleyebilir (pin) ve sabitlenmiş kodlar yükleme ücretinden muaftır.
 - **Ücretler tıkanıklıkla artar.** Bloklar sözleşme çağrılarıyla meşgulken bir tıkanıklık çarpanı sözleşme gas'ini varsayılan olarak 1x'ten 20x'e kadar ölçekler ve bir bloğun, tek bir işlemin en fazla yarısını kullanabileceği sınırlı bir sözleşme yürütme bütçesi vardır.
 - **Simülasyon ikisini de içerir.** Bir simülasyon her zaman soğuk yüklemeyi ücretlendirir ve tıkanıklık için bir pay ekler; bu yüzden `simüle edilen gas x 1,3` güvenli bir limittir. İstemciniz sunuyorsa `fee: "auto"` kullanın (CosmJS `"auto"`, SDK `TxClient`, React `useTx` hook'u) ve ücreti yukarıdaki gibi elle kurarken kendiniz simülasyon yapın.
-- **İşlem üst sınırının altında kalın.** Bir Cosmos işlemi 50.000.000'un üzerinde bir gas limiti belirleyemez ve ücreti alınmadan önce reddedilir.
+- **İşlem üst sınırının altında kalın.** Bir Cosmos işlemi 50.000.000'un üzerinde bir gas limiti belirleyemez ve ücreti alınmadan önce reddedilir. SDK 0.14.0 böyle bir limiti imzalamadan önce reddeder (ve 30.000.000'un üzerindeki bir EVM işlemini de), CosmWasm ve VM'ler arası işlemlere simüle edilen gazın en az 1,3 katını verir ve onlar için asla sabit bir gas limitine geri dönmez. Ayrıca ağın asgari gas fiyatını okuyan isteğe bağlı yardımcıları vardır; varsayılan gas fiyatı değişmemiştir.
 
 Aynısı instantiate, migrate ve sözleşme kodu çalıştıran her diğer mesaj için de geçerlidir.
 

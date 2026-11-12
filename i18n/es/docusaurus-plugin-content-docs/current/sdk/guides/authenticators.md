@@ -123,6 +123,53 @@ Para desactivar una clave al instante, el propietario difunde
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`.
 
+### Vincular desde la cadena v3.2.8 (SDK 0.14.0) {#link-v328}
+
+Desde la cadena v3.2.8 (la testnet desde el 12 de noviembre de 2026; la mainnet no la ha
+aplicado) el registro anterior se rechaza si no lleva una **prueba de posesión**: la clave
+que se vincula firma un mensaje de texto plano que nombra la cadena, la cuenta, el esquema
+y la clave. Una clave con `send`, `evm`, `deploy`, `svm` o `all` necesita además que la
+primera regla de gasto habilitada de la cuenta acote cada denominación. El SDK 0.14.0 tiene
+ayudantes para ambas cosas; `linkAuthenticatorMsgs` construye la regla de gasto y el vínculo
+en el orden en que se envían en una sola transacción firmada por el propietario. Este
+fragmento sigue el código fuente de la 0.14.0 y no se ha ejecutado:
+
+```ts
+import { linkAuthenticatorMsgs, signAuthenticatorLinkPhantom } from "@qorechain/sdk";
+
+// The key being linked signs the link message (Phantom signMessage here).
+const proof = await signAuthenticatorLinkPhantom({
+  chainId: "qorechain-diana",
+  account: canonicalAccount,
+  wallet: window.solana,
+});
+
+const msgs = linkAuthenticatorMsgs({
+  owner: canonicalAccount,
+  chainId: "qorechain-diana",   // optional: checks the proof before anything is built
+  scheme: proof.scheme,
+  pubkey: proof.pubkey,
+  possessionProof: proof.possessionProof,
+  permissions: ["send"],
+  expiryUnix: Math.floor(Date.now() / 1000) + 7 * 24 * 3600,
+  label: "phantom",
+  // Replaces the account's rules wholesale: pass every rule to keep.
+  spendingRules: [{ id: "phantom-hot", enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+// Sign msgs in one owner-signed hybrid transaction.
+```
+
+El mismo archivo tiene `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`,
+`signAuthenticatorLinkEip191` y `signAuthenticatorLinkMetaMask` para los demás tipos de
+clave, y los compositores de registro rechazan una prueba vacía. En una red anterior a
+v3.2.8 la prueba sigue siendo opcional.
+
+Desde v3.2.8, un `MsgExecuteEVM` o `MsgExecuteCosmos` autorizado que falla devuelve
+`success=false` dentro de una transacción con code 0 y aun así consume el nonce. Tras una
+difusión del relayer, llama a `assertAuthenticatorExecutionsSucceeded(result, messages)`, o
+a `decodeAuthenticatorExecutions` para leer cada resultado, de modo que una ejecución
+fallida no se tome por un éxito.
+
 ## Gastar desde Phantom (carril Nativo, mediante un relayer)
 
 Una vez vinculada la clave, el navegador construye un `MsgExecuteCosmos` listo

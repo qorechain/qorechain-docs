@@ -12,20 +12,20 @@ EVM 및 SVM 어댑터(`@qorechain/evm`, `@qorechain/svm`), React 키트
 (`@qorechain/react`), 그리고 Python, Go, Rust, Java 클라이언트는 모두
 완전한 네이티브 체인 패리티(타입드 메시지, 쿼리, tx 라이프사이클, 하이브리드
 PQC 트랜잭션, WebSocket 구독)를 갖춘 채 각 레지스트리에 **게시**되어 있습니다.
-현재 릴리스는 **0.13.0**이며 2026년 11월 11일에 게시되었습니다
-(2026년 11월 11일에 각 레지스트리에서 확인했습니다. Java는 예외이며 표를 참고하세요).
+현재 릴리스는 **0.14.0**이며 2026년 11월 12일에 게시되었습니다
+(2026년 11월 12일에 각 레지스트리에서 확인했습니다. Java는 예외이며 표를 참고하세요).
 
 | 레지스트리 | 패키지 | 버전 |
 | --- | --- | --- |
-| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 (`create-qorechain-dapp`: 0.13.1, SDK 0.13.0 위에 얹은 템플릿 전용 패치) |
-| PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
-| crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
-| Go 모듈 프록시 | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | Published (Maven Central, v0.13.0; JDK 17 이상, 2026년 11월 11일 확인) |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.14.0 (`create-qorechain-dapp`도 동일하며, 0.13.1의 템플릿 수정도 포함) |
+| PyPI | `qorechain-sdk` (import `qorsdk`) | 0.14.0 |
+| crates.io | `qorechain-sdk` (import `qorechain`) | 0.14.0 |
+| Go 모듈 프록시 | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | Maven Central에는 2026년 11월 12일 기준 0.13.0이 그대로 표시됩니다. 0.14.0이 나타나면 그것을 사용하세요(JDK 17 이상) |
 
 Python, Rust, Go, Java에는 0.11.0이 없습니다. npm 패키지에는 2026년 10월 29일에
 0.11.0이 있었고(체인 개발자 키트, 아래 참조) 모든 언어가 0.10.0에서 0.12.0으로
-함께 올라갔습니다. 0.13.0이 2026년 11월 11일에 모든 언어에서 뒤를 이었습니다.
+함께 올라갔습니다. 0.13.0이 2026년 11월 11일에, 0.14.0이 2026년 11월 12일에 모든 언어에서 뒤를 이었습니다(Java는 표를 참고하세요).
 
 아래에서 언어를 선택하세요.
 
@@ -37,7 +37,7 @@ Python, Rust, Go, Java에는 0.11.0이 없습니다. npm 패키지에는 2026년
 모든 SDK 릴리스는 이전 형태로 서명하며, **0.8.0**은 네트워크가 사용한 두 가지
 업그레이드 이름 중 하나로만 전환 시점을 찾기 때문에(메인넷은 이를 `v3.2.0`으로,
 테스트넷은 `v3.1.98`과 이후 `v3.2.0`으로 기록했습니다) 메인넷에서 잘못된 형태로
-서명합니다. 모든 언어에서 **0.13.0**(최소한 **0.8.1**)을 사용하세요. [EVM 인증 윈도우](/sdk/guides/evm#evm-window)를
+서명합니다. 모든 언어에서 **0.14.0**(최소한 **0.8.1**)을 사용하세요. [EVM 인증 윈도우](/sdk/guides/evm#evm-window)를
 열려면 **0.8.2 이상**이 필요합니다. 하이브리드 빌더는 `signBytesVersion` 옵션
 (`"auto"` | `"v1"` | `"v2"`)을 받습니다. `"auto"`는 네트워크에 문의하므로
 `qorechain-vladi` / `qorechain-diana`에서 REST 엔드포인트(`rest`)가 필요하며,
@@ -47,6 +47,33 @@ Python, Rust, Go, Java에는 0.11.0이 없습니다. npm 패키지에는 2026년
 이 형태는 체인 v3.2.3과 v3.2.4(v3.2.4는 테스트넷에서 2026년 10월 19일부터, 메인넷에서 2026년 10월 23일부터 실행 중이며, v3.2.5와 v3.2.6은 여기에 변경을 주지 않았고, 메인넷은 2026년 11월 4일부터 v3.2.6을 실행 중)에서 바뀌지 않았습니다. `"auto"`는
 두 네트워크 모두에서 v2로 결정되는데, 두 네트워크 모두 v2로 전환한 업그레이드를 적용했기 때문입니다.
 :::
+
+## 0.14.0의 변경 사항 {#whats-new-0140}
+
+SDK 0.14.0(2026년 11월 12일)은 모든 언어를 위한 하나의 릴리스입니다. TypeScript, Python,
+Go, Rust, Java이며, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`,
+`create-qorechain-dapp`(0.13.1의 템플릿 수정도 포함)이 함께 갑니다. 체인 **v3.2.8**
+클라이언트 지원을 추가합니다. 새 규칙은 네트워크가 v3.2.8을 실행하는 시점부터
+적용됩니다. 테스트넷 `qorechain-diana`는 2026년 11월 12일부터 실행 중이며, 메인넷은
+아직 적용하지 않았습니다. 이전 네트워크에서는 새 필드가 선택 사항으로 남습니다.
+(Maven Central에는 2026년 11월 12일 기준 0.13.0이 그대로 표시됩니다.
+Java는 0.14.0이 나타나면 그것을 사용하세요.)
+
+| 영역 | 0.14.0에서 |
+| --- | --- |
+| 키 연결 | 소유 증명이 필요합니다. ed25519, secp256k1, EIP-191(`personal_sign`)용 빌더와 서명기가 체인, 계정, 방식, 키를 명시한 일반 텍스트 연결 메시지에 서명합니다. 등록 컴포저는 빈 증명을 거부합니다 |
+| 가치를 이동하는 키 | `send`, `evm`, `deploy`, `svm`, `all` 권한이 있는 키는 계정의 첫 번째 활성 지출 규칙이 모든 denom을 제한해야 합니다. 헬퍼가 지출 규칙 업데이트와 연결을 소유자가 서명하는 한 트랜잭션의 쌍으로 구성하고 규칙을 검사합니다 |
+| 거버넌스 파라미터 | crossvm, svm, rdk `MsgUpdateParams` 컴포저는 모든 필드가 필요합니다(체인이 파라미터를 통째로 교체합니다). 새 헬퍼는 네트워크에서 읽은 현재 파라미터로 업데이트를 구성합니다. svm 컴포저는 하드 커스터디 상한이 0인 동안 `enabled`를 거부합니다 |
+| 크로스 VM 보류 조회 | 페이지로 나뉜 조회가 이제 모든 페이지를 반환합니다 |
+| 실행 결과 | `MsgExecuteEVM`과 `MsgExecuteCosmos`는 코드 0 트랜잭션 안에서 `success=false`로 실패할 수 있습니다(논스는 소비됨). 새 헬퍼가 응답과 실패 사유를 디코딩하고, 실패한 실행에서 오류를 발생시킵니다 |
+| 크로스 VM 비동기 호출 | `async_gas_limit`와 `async_max_factor`를 받습니다 |
+| EVM 윈도우 범위 | 새 필드 `validators`, `staking_validators`, `ibc_receivers` |
+| 가스 | 30,000,000을 넘는 EVM 트랜잭션(`evm_limits`에서 읽음)과 50,000,000을 넘는 Cosmos 트랜잭션은 서명 전에 거부됩니다. CosmWasm 및 크로스 VM 트랜잭션은 시뮬레이션된 가스의 1.3배 이상을 받으며 고정 폴백 값은 쓰지 않습니다 |
+| 최소 가스 가격 | 선택 사용 헬퍼가 네트워크의 최소 가스 가격을 읽으며, 기본 가스 가격은 바뀌지 않았습니다 |
+| Protos | 다섯 언어의 생성 코드가 v3.2.8을 따릅니다 |
+
+같은 변경의 지갑 쪽은
+[`@qorechain/wallet-adapter` 0.6.0](/developer-tools/wallet-adapter#whats-new-060)에 있습니다.
 
 ## 0.13.0의 변경 사항 {#whats-new-0130}
 
@@ -159,7 +186,7 @@ SDK 0.10.0은 메인넷이 2026년 10월 23일 높이 3,742,566에서 적용한 
 4,020,000, 거버넌스 제안 15. 그 앞의 v3.2.5는 10월 29일 높이
 3,906,833부터) 서명 형식이 바뀌지 않았으므로 0.10.0은 그곳에서 계속 동작합니다. 테스트넷은 v3.2.5와
 v3.2.6을 2026년 10월 26일과 27일에, v3.2.7을 11월 6일에, v3.2.8을 11월 12일에 적용했습니다(어느 SDK 릴리스에도 v3.2.7 메시지용 빌더는 없습니다). 0.10.0이
-가져온 것은 다음과 같습니다(모두 0.13.0에도 그대로 있습니다).
+가져온 것은 다음과 같습니다(모두 0.14.0에도 그대로 있습니다).
 
 | 영역 | 0.10.0에서 |
 | --- | --- |
@@ -173,7 +200,7 @@ v3.2.6을 2026년 10월 26일과 27일에, v3.2.7을 11월 6일에, v3.2.8을 11
 | 수수료 시뮬레이션 중의 거부 | 텍스트로만 도착하는 체인 거부(예: "no bonus to claim")를 이제 모든 언어에서 체인에 등록된 오류 설명으로 명명합니다. `decodeTxError`(TypeScript), `SimulationRefusedError`(Python), `tx.DecodeRefusalText`(Go), `tx::decode_refusal_text`(Rust), `TxError.decode`(Java) |
 
 `@qorechain/react`와 `create-qorechain-dapp`도 함께 0.10.0으로 올라갔으며, 둘 다
-지금은 0.13.0입니다.
+지금은 0.14.0입니다.
 
 ## 0.9.0에서 추가되었던 것 {#whats-new-090}
 
@@ -250,7 +277,7 @@ viem은 **피어 의존성**이므로 함께 설치하세요:
 npm i @qorechain/evm viem
 ```
 
-npm에 `0.13.0`으로 게시되어 있습니다. viem 체인 `qorechain`(체인 ID 9801)과 `qorechainTestnet`(9800), 그리고 [EVM 인가 윈도우](/sdk/guides/evm#evm-window) 헬퍼를 내보냅니다.
+npm에 `0.14.0`으로 게시되어 있습니다. viem 체인 `qorechain`(체인 ID 9801)과 `qorechainTestnet`(9800), 그리고 [EVM 인가 윈도우](/sdk/guides/evm#evm-window) 헬퍼를 내보냅니다.
 
 ### SVM 어댑터
 
@@ -274,19 +301,19 @@ npm에 `0.8.0`으로 게시되어 있습니다.
 npm i @qorechain/react
 ```
 
-npm에 `0.13.0`으로 게시되어 있으며 `@qorechain/sdk` `^0.13.0`에 의존합니다. [React 키트 가이드](/sdk/guides/react)를
+npm에 `0.14.0`으로 게시되어 있으며 `@qorechain/sdk` `^0.14.0`에 의존합니다. [React 키트 가이드](/sdk/guides/react)를
 참고하세요.
 
 ### 스캐폴더
 
-`create-qorechain-dapp`(npm, `0.13.1`)은 바로 실행할 수 있는 dApp을 스캐폴딩합니다:
+`create-qorechain-dapp`(npm, `0.14.0`)은 바로 실행할 수 있는 dApp을 스캐폴딩합니다:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
 생성된 `package.json` 파일은 스캐폴더와 함께 제공되는 SDK 릴리스에 의존합니다
-(`@qorechain/sdk` `^0.13.0`. EVM 템플릿은 `@qorechain/evm` `^0.13.0`을 사용합니다). 0.13.1은 템플릿만 바꿉니다. [스캐폴더와 CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131)를 참고하세요. 컨트랙트 작업을 위한 `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` 템플릿도 있습니다.
+(`@qorechain/sdk` `^0.14.0`. EVM 템플릿은 `@qorechain/evm` `^0.14.0`을 사용합니다). 0.13.1은 템플릿만 바꾸었고 0.14.0이 그 수정을 포함합니다. [스캐폴더와 CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131)를 참고하세요. 컨트랙트 작업을 위한 `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` 템플릿도 있습니다.
 스캐폴더 0.8.0 버전은 `^0.3.0` 범위를 기록했는데, 0.x 버전에서 이 범위는
 0.3 안에 머물러 라이브 네트워크에 서명할 수 없습니다. 0.8.0으로 스캐폴딩했다면
 `npm i @qorechain/sdk@latest`를 실행하세요. [CLI 레퍼런스](/sdk/reference/cli)를
@@ -300,7 +327,7 @@ pip install qorechain-sdk
 
 Python 3.10+가 필요합니다. 이 패키지는 타입 힌트와 `py.typed` 마커를 제공합니다.
 
-> 배포판은 `qorechain-sdk`로 설치되지만(PyPI에 `0.13.0`으로 게시됨)
+> 배포판은 `qorechain-sdk`로 설치되지만(PyPI에 `0.14.0`으로 게시됨)
 > **`qorsdk`로 임포트**합니다:
 >
 > ```python
@@ -322,8 +349,8 @@ import (
 )
 ```
 
-독립형 Go 모듈로 게시되어 있습니다(태그: `packages/go/v0.13.0`). 버전을 명시적으로
-고정하세요: `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`.
+독립형 Go 모듈로 게시되어 있습니다(태그: `packages/go/v0.14.0`). 버전을 명시적으로
+고정하세요: `go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`.
 
 ## Rust
 
@@ -342,7 +369,7 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 Rust 1.74+가 필요합니다. 읽기 클라이언트는 비동기(Tokio)입니다. 이 크레이트는
 `qorechain`으로 임포트합니다(`use qorechain;`).
 
-> crates.io에 `qorechain-sdk`(0.13.0)로 게시되어 있습니다. `cargo add qorechain-sdk`는
+> crates.io에 `qorechain-sdk`(0.14.0)로 게시되어 있습니다. `cargo add qorechain-sdk`는
 > 최신 릴리스를 설치합니다.
 
 ## Java
@@ -353,18 +380,18 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.13.0</version>
+  <version>0.14.0</version>
 </dependency>
 ```
 
 또는 Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 ```
 
 > Maven Central에 `io.github.qorechain:qorechain-sdk`로 게시되어 있습니다.
-> 0.13.0은 Maven Central에 게시되어 있습니다(2026년 11월 11일 확인).
+> Maven Central에는 2026년 11월 12일 기준 여전히 0.13.0이 표시됩니다(0.14.0 POM은 아직 없었습니다). 0.14.0이 나타나면 그것을 사용하고, 그때까지는 0.13.0을 사용하세요.
 > JDK 17 이상이 필요합니다. Central에는 0.8.0
 > 또는 0.8.1 빌드가 없으므로, 라이브 네트워크에서는 0.8.2 이상을 사용하세요.
 > 0.9.1은 Bouncy Castle을 1.80에서 1.85로 올린 Java 전용

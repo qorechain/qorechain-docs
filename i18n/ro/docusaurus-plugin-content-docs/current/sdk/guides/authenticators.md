@@ -124,6 +124,53 @@ Pentru a dezactiva instantaneu o cheie, proprietarul difuzează
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`.
 
+### Legarea de la lanțul v3.2.8 (SDK 0.14.0) {#link-v328}
+
+De la lanțul v3.2.8 (testnet-ul din 12 noiembrie 2026; mainnet nu l-a aplicat)
+înregistrarea de mai sus este refuzată dacă nu poartă o **dovadă de posesie**: cheia
+care este legată semnează un mesaj în text simplu, care numește lanțul, contul, schema
+și cheia. O cheie cu `send`, `evm`, `deploy`, `svm` sau `all` cere, de asemenea, ca
+prima regulă de cheltuire activată a contului să limiteze fiecare denom. SDK 0.14.0 are
+helpere pentru ambele; `linkAuthenticatorMsgs` construiește regula de cheltuire și
+legarea în ordinea în care se trimit într-o singură tranzacție semnată de proprietar.
+Fragmentul urmează sursa 0.14.0 și nu a fost rulat:
+
+```ts
+import { linkAuthenticatorMsgs, signAuthenticatorLinkPhantom } from "@qorechain/sdk";
+
+// The key being linked signs the link message (Phantom signMessage here).
+const proof = await signAuthenticatorLinkPhantom({
+  chainId: "qorechain-diana",
+  account: canonicalAccount,
+  wallet: window.solana,
+});
+
+const msgs = linkAuthenticatorMsgs({
+  owner: canonicalAccount,
+  chainId: "qorechain-diana",   // optional: checks the proof before anything is built
+  scheme: proof.scheme,
+  pubkey: proof.pubkey,
+  possessionProof: proof.possessionProof,
+  permissions: ["send"],
+  expiryUnix: Math.floor(Date.now() / 1000) + 7 * 24 * 3600,
+  label: "phantom",
+  // Replaces the account's rules wholesale: pass every rule to keep.
+  spendingRules: [{ id: "phantom-hot", enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+// Sign msgs in one owner-signed hybrid transaction.
+```
+
+Același fișier are `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`,
+`signAuthenticatorLinkEip191` și `signAuthenticatorLinkMetaMask` pentru celelalte
+tipuri de chei, iar compozitoarele de înregistrare refuză o dovadă goală. Pe o rețea
+sub v3.2.8, dovada rămâne opțională.
+
+De la v3.2.8, un `MsgExecuteEVM` sau `MsgExecuteCosmos` autorizat care eșuează
+returnează `success=false` în interiorul unei tranzacții cu cod 0 și consumă totuși
+nonce-ul. După o difuzare prin relayer, apelați `assertAuthenticatorExecutionsSucceeded(result, messages)`,
+sau `decodeAuthenticatorExecutions` pentru a citi fiecare rezultat, ca o execuție
+eșuată să nu fie luată drept reușită.
+
 ## Cheltuieli din Phantom (banda Nativă, printr-un relayer)
 
 Odată ce cheia este conectată, browserul construiește un `MsgExecuteCosmos`

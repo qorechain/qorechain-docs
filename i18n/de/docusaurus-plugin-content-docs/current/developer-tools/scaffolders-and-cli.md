@@ -9,16 +9,16 @@ sidebar_position: 21
 
 Drei Kommandozeilen-Werkzeuge bringen ein QoreChain-Projekt aus dem Nichts zu einem typisierten, baubaren Ausgangspunkt. Sie richten sich an Anwendungsentwickler (dApps) und Rollup-Betreiber, die in Node.js arbeiten:
 
-* **`create-qorechain-dapp`** (0.13.1, eine reine Vorlagen-Korrektur auf Basis von SDK 0.13.0) erzeugt per Scaffolding eine dApp aus einer von sieben Vorlagen, aufbauend auf dem [QoreChain SDK](/sdk/overview). Vier der sieben (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) gehören zum [Chain Developer Kit](/developer-tools/chain-dev-sdk).
+* **`create-qorechain-dapp`** (0.14.0, das auch die Vorlagen-Korrekturen von 0.13.1 enthält) erzeugt per Scaffolding eine dApp aus einer von sieben Vorlagen, aufbauend auf dem [QoreChain SDK](/sdk/overview). Vier der sieben (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) gehören zum [Chain Developer Kit](/developer-tools/chain-dev-sdk).
 * **`create-qorechain-rollup`** (0.8.0) erzeugt per Scaffolding ein Rollup-Projekt aus einer von sechs Vorlagen, aufbauend auf dem TypeScript-[Rollup Development Kit](/rollups/overview).
 * **`qorollup`**, der Befehl des Pakets `@qorechain/rdk-cli` (0.8.0), ist die Betreiber-Kommandozeile: Preflight-Prüfungen, Erstellen und Überwachen eines Rollups, Lesen der Live-Parameter.
 
-Die Seite gibt die veröffentlichten Pakete so wieder, wie sie am 27. Oktober 2026 aus npm installiert wurden, und `create-qorechain-dapp` 0.12.0, wie es am 4. November 2026 installiert wurde; die aktuelle Version ist 0.13.1 (12. November 2026). Die unten beschriebenen Vorlagenänderungen in 0.13.1 stammen aus den Release Notes des Pakets, nicht aus einem neuen Installationslauf. Die konzeptionellen Anleitungen sind [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) und die [SDK-CLI-Referenz](/sdk/reference/cli).
+Die Seite gibt die veröffentlichten Pakete so wieder, wie sie am 27. Oktober 2026 aus npm installiert wurden, und `create-qorechain-dapp` 0.12.0, wie es am 4. November 2026 installiert wurde; die aktuelle Version ist 0.14.0 (12. November 2026). Die unten beschriebenen Vorlagenänderungen in 0.13.1 stammen aus den Release Notes des Pakets, nicht aus einem neuen Installationslauf, und 0.14.0 enthält sie. Die konzeptionellen Anleitungen sind [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) und die [SDK-CLI-Referenz](/sdk/reference/cli).
 
 ## Innovationen {#innovations}
 
 * **Nicht-interaktives Scaffolding für CI.** Jede Abfrage hat ein Flag: `--template`, `--network`, `--package-manager`, `--yes` (Standardwerte akzeptieren) und `--no-install`. Eine Pipeline kann ein Projekt mit einem Befehl und ohne Terminal erzeugen und bauen.
-* **Die Vorlagen sind an die aktuellen Pakete gepinnt.** Die dApp-Vorlagen hängen von `@qorechain/sdk` `^0.13.0` ab (die EVM-Vorlagen zusätzlich von `@qorechain/evm` `^0.13.0`) und die Rollup-Vorlagen von `@qorechain/rdk` `^0.8.0`. Ein früherer Scaffolder (0.8.0) schrieb Bereiche, die zu einem SDK aufgelöst wurden, das für die Live-Netzwerke nicht signieren konnte; mit dem aktuellen passiert das nicht.
+* **Die Vorlagen sind an die aktuellen Pakete gepinnt.** Die dApp-Vorlagen hängen von `@qorechain/sdk` `^0.14.0` ab (die EVM-Vorlagen zusätzlich von `@qorechain/evm` `^0.14.0`) und die Rollup-Vorlagen von `@qorechain/rdk` `^0.8.0`. Ein früherer Scaffolder (0.8.0) schrieb Bereiche, die zu einem SDK aufgelöst wurden, das für die Live-Netzwerke nicht signieren konnte; mit dem aktuellen passiert das nicht.
 * **Rollup-Vorlagen kodieren pro Anwendungsfall eine gültige Konfiguration.** Jede Rollup-Vorlage setzt eine Kombination aus Settlement, Sequencer, Data Availability, Gas und VM, die die Kompatibilitätsmatrix des RDK akzeptiert, und der Scaffolder gibt den aktuellen Stake und den Burn bei der Erstellung aus, bevor Sie etwas erstellen.
 * **Ein Preflight-Befehl, der benennt, was fehlt.** `qorollup doctor` (und `npm run doctor` innerhalb einer Rollup-Vorlage) prüft, ob der REST-Endpunkt antwortet, ob die Modulparameter gelesen werden können, ob der Endpunkt das Netzwerk ist, das Sie angefordert haben, und ob ein Signer konfiguriert ist, und gibt pro Prüfung eine Zeile aus. Innerhalb einer Vorlage validiert er außerdem die Rollup-Konfiguration gegen die Kompatibilitätsmatrix.
 * **Hybride Signierung in die Vorlagen eingebunden.** Die Rollup-Vorlagen verbinden sich über eine kleine `signer.ts`, die den ML-DSA-87-Schlüssel des Kontos aus Ihrer Mnemonic ableitet (oder einen Seed bei einem rohen privaten Schlüssel übernimmt) und hybrid signiert, was die Netzwerke auf der Native-Lane verlangen. Die dApp-Vorlage `rollup-app` tut dasselbe und läuft als Trockenlauf, sofern Sie nicht `QORE_BROADCAST=1` setzen.
@@ -46,7 +46,7 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 | Flag | Bedeutung |
 | --- | --- |
 | `-t, --template <name>` | `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi` oder `cosmwasm` |
-| `--network <name>` | `testnet` oder `mainnet`; schreibt die öffentlichen Endpunkte des gewählten Netzwerks in die erzeugte `.env` (0.13.1) |
+| `--network <name>` | `testnet` oder `mainnet`; schreibt die öffentlichen Endpunkte des gewählten Netzwerks in die erzeugte `.env` (seit 0.13.1) |
 | `--package-manager <pm>` | `pnpm`, `npm` oder `yarn` |
 | `-y, --yes` | Abfragen überspringen und Standardwerte verwenden |
 | `--no-install` | Abhängigkeiten nicht installieren |
@@ -55,7 +55,7 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 
 ### Vorlagenänderungen in 0.13.1 {#template-fixes-0131}
 
-Version 0.13.1 (12. November 2026) ist ein reiner Vorlagen-Patch; die SDK-Pakete bleiben bei 0.13.0. Aus den Release Notes des Pakets:
+Version 0.13.1 (12. November 2026) war ein reiner Vorlagen-Patch; die SDK-Pakete blieben bei 0.13.0. SDK 0.14.0 enthält diese Vorlagen-Korrekturen. Aus den Release Notes des Pakets:
 
 * `--network` schreibt die öffentlichen Endpunkte des gewählten Netzwerks in die erzeugte `.env`.
 * `fullstack-web` und `viem-wagmi` erreichen REST über einen Vite-`/lcd`-Proxy, weil die öffentliche REST keine CORS-Header sendet. In der Entwicklung ruft der Browser-Code `/lcd/...` auf.
@@ -170,7 +170,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | Registry | Paket | Version | Link |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp` (Befehl `create-qorechain-dapp`) | 0.13.1 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp` (Befehl `create-qorechain-dapp`) | 0.14.0 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup` (Befehl `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli` (Befehl `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk` (Bibliothek, die die Vorlagen verwenden) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |

@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publicado en npm como `create-qorechain-dapp` (`0.13.1`, un parche solo de plantillas sobre el SDK 0.13.0). Los archivos
-> `package.json` generados dependen de `@qorechain/sdk` `^0.13.0` (las plantillas EVM, de
-> `@qorechain/evm` `^0.13.0`). La versión 0.8.0 del generador escribía rangos `^0.3.0`,
+> Publicado en npm como `create-qorechain-dapp` (`0.14.0`, que también incluye las correcciones de plantillas de la 0.13.1). Los archivos
+> `package.json` generados dependen de `@qorechain/sdk` `^0.14.0` (las plantillas EVM, de
+> `@qorechain/evm` `^0.14.0`). La versión 0.8.0 del generador escribía rangos `^0.3.0`,
 > que npm resuelve a una versión 0.3 que no puede firmar para las redes en vivo; si
 > generaste el andamiaje con la 0.8.0, ejecuta `npm i @qorechain/sdk@latest`.
 
@@ -54,7 +54,7 @@ como `client.rest.getBurnStats()` para las redes públicas.
 | Flag | Descripción |
 | --- | --- |
 | `-t, --template <name>` | Plantilla a usar (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | Preajuste de red (`testnet` \| `mainnet`). Escribe los endpoints públicos de la red elegida en el `.env` generado (0.13.1). |
+| `--network <name>` | Preajuste de red (`testnet` \| `mainnet`). Escribe los endpoints públicos de la red elegida en el `.env` generado (desde la 0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Omitir los prompts y usar los valores por defecto. |
 | `--no-install` | No instalar dependencias tras el andamiaje. |

@@ -166,6 +166,7 @@ Submitted --> Pending --> Executed
 - **Cel mult 100 de apeluri în așteptare per expeditor.** Un apel suplimentar este refuzat până când unul se termină sau expiră.
 - **Apelurile eșuate sunt taxate.** Un apel care eșuează plătește totuși munca efectuată.
 - **Apeluri grele:** măriți `async_gas_limit` și `async_max_factor` pentru contractele care încarcă cod mare; un contract de dimensiunea unui cw721 nu încape în valorile implicite la primul său apel dintr-un bloc.
+- **Din cod.** SDK 0.14.0 primește ambele câmpuri în fiecare limbaj (TypeScript: `asyncGasLimit` și `asyncMaxFactor`, cu `validateCrossVmAsyncGas` care le verifică; `asyncMaxFactor` este în milionimi, deci 1.000.000 înseamnă 1x). Returnează, de asemenea, fiecare pagină a interogării paginate pentru apelurile în așteptare. Nu a fost rulat pe testnet.
 
 ---
 

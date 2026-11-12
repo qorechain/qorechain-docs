@@ -166,6 +166,7 @@ Desde la versión v3.2.8 (solo testnet hasta una actualización posterior de mai
 - **Como máximo 100 llamadas pendientes por remitente.** Una llamada adicional se rechaza hasta que una termine o caduque.
 - **Las llamadas fallidas se cobran.** Una llamada que falla paga igualmente el trabajo realizado.
 - **Llamadas pesadas:** aumenta `async_gas_limit` y `async_max_factor` para contratos que cargan código grande; un contrato del tamaño de cw721 no cabe en los valores por defecto en su primera llamada en un bloque.
+- **Desde código.** El SDK 0.14.0 admite ambos campos en cada lenguaje (TypeScript: `asyncGasLimit` y `asyncMaxFactor`, con `validateCrossVmAsyncGas` para comprobarlos; `asyncMaxFactor` está en millonésimas, así que 1,000,000 es 1x). También devuelve todas las páginas de la consulta paginada de pendientes. Esto no se ha ejecutado en la testnet.
 
 ---
 

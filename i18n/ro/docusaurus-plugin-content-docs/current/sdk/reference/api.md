@@ -152,10 +152,10 @@ program-id.
 
 | Limbaj | Documentație generată | Instalare |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.13.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0` (tag `packages/go/v0.13.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.13.0; import `qorechain`) |
-| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.13.0` (publicat pe Maven Central, verificat la 11 noiembrie 2026) |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.14.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.14.0` (tag `packages/go/v0.14.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.14.0; import `qorechain`) |
+| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.14.0` (Maven Central arată încă 0.13.0 la 12 noiembrie 2026; folosiți 0.14.0 când apare) |
 
 Fiecare pachet oglindește aceeași suprafață (preseturi de rețea, utilitare
 denom/adrese, derivare HD — inclusiv conturi unificate eth-native — primitive

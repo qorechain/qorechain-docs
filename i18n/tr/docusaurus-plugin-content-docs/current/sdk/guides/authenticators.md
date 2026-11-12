@@ -125,6 +125,53 @@ Bir anahtarı anında devre dışı bırakmak için sahip,
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })` mesajını yayınlar.
 
+### Zincir v3.2.8'den itibaren bağlama (SDK 0.14.0) {#link-v328}
+
+Zincir v3.2.8'den itibaren (test ağı 12 Kasım 2026'dan beri; ana ağ henüz uygulamadı)
+yukarıdaki kayıt, bir **sahiplik kanıtı** taşımadıkça reddedilir: bağlanan anahtar,
+zinciri, hesabı, şemayı ve anahtarı adlandıran düz metin bir mesajı imzalar.
+`send`, `evm`, `deploy`, `svm` veya `all` iznine sahip bir anahtar için ayrıca
+hesabın ilk etkin harcama kuralının her denom'u sınırlaması gerekir. SDK 0.14.0'da
+ikisi için de yardımcılar vardır; `linkAuthenticatorMsgs`, harcama kuralını ve
+bağlantıyı, sahibin imzaladığı tek bir işlemde gönderilecek sırayla oluşturur. Bu kod
+parçası 0.14.0 kaynağını izler ve çalıştırılmadı:
+
+```ts
+import { linkAuthenticatorMsgs, signAuthenticatorLinkPhantom } from "@qorechain/sdk";
+
+// The key being linked signs the link message (Phantom signMessage here).
+const proof = await signAuthenticatorLinkPhantom({
+  chainId: "qorechain-diana",
+  account: canonicalAccount,
+  wallet: window.solana,
+});
+
+const msgs = linkAuthenticatorMsgs({
+  owner: canonicalAccount,
+  chainId: "qorechain-diana",   // optional: checks the proof before anything is built
+  scheme: proof.scheme,
+  pubkey: proof.pubkey,
+  possessionProof: proof.possessionProof,
+  permissions: ["send"],
+  expiryUnix: Math.floor(Date.now() / 1000) + 7 * 24 * 3600,
+  label: "phantom",
+  // Replaces the account's rules wholesale: pass every rule to keep.
+  spendingRules: [{ id: "phantom-hot", enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+// Sign msgs in one owner-signed hybrid transaction.
+```
+
+Aynı dosyada diğer anahtar türleri için `signAuthenticatorLinkEd25519`,
+`signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191` ve
+`signAuthenticatorLinkMetaMask` vardır; kayıt oluşturucuları boş bir kanıtı reddeder.
+v3.2.8'in altındaki bir ağda kanıt isteğe bağlı kalır.
+
+v3.2.8'den itibaren yetkilendirilmiş ve başarısız olan bir `MsgExecuteEVM` veya
+`MsgExecuteCosmos`, kod 0 bir işlemin içinde `success=false` döndürür ve yine de
+nonce değerini tüketir. Bir aktarıcı yayınından sonra `assertAuthenticatorExecutionsSucceeded(result, messages)`
+çağırın ya da her sonucu okumak için `decodeAuthenticatorExecutions` kullanın; böylece
+başarısız bir yürütme başarılı sanılmaz.
+
 ## Phantom'dan harcama (Native şeridi, bir aktarıcı üzerinden)
 
 Anahtar bağlandıktan sonra tarayıcı, aktarıcıya hazır bir `MsgExecuteCosmos`

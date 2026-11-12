@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Wallet adapter (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter` adaugă QoreChain în portofelele Cosmos care expun `signDirect` (Keplr, Leap, Cosmostation) și construiește tranzacțiile pe care le cere lanțul: o tranzacție pe lane-ul nativ trebuie să poarte o semnătură ML-DSA-87 (FIPS 204) alături de semnătura secp256k1 clasică a contului, iar un portofel obișnuit nu o poate produce pe cea ML-DSA-87. Adaptorul o produce, o plasează în corpul tranzacției și apoi cere portofelului nemodificat o semnătură obișnuită. Este destinat dezvoltatorilor de dApp-uri și de portofele, precum și constructorilor de unelte care au nevoie în JavaScript de portofele QoreChain unificate, de mesaje pentru fereastra de autorizare EVM sau de mesaje pentru chei legate (autentificatori). Versiunea curentă este 0.5.0 (11 noiembrie 2026).
+`@qorechain/wallet-adapter` adaugă QoreChain în portofelele Cosmos care expun `signDirect` (Keplr, Leap, Cosmostation) și construiește tranzacțiile pe care le cere lanțul: o tranzacție pe lane-ul nativ trebuie să poarte o semnătură ML-DSA-87 (FIPS 204) alături de semnătura secp256k1 clasică a contului, iar un portofel obișnuit nu o poate produce pe cea ML-DSA-87. Adaptorul o produce, o plasează în corpul tranzacției și apoi cere portofelului nemodificat o semnătură obișnuită. Este destinat dezvoltatorilor de dApp-uri și de portofele, precum și constructorilor de unelte care au nevoie în JavaScript de portofele QoreChain unificate, de mesaje pentru fereastra de autorizare EVM sau de mesaje pentru chei legate (autentificatori). Versiunea curentă este 0.6.0 (12 noiembrie 2026).
 
 Dacă aveți nevoie doar ca un dApp să trimită o tranzacție din portofelul QoreX al unui utilizator, cea mai scurtă cale este [`qorexSignAndBroadcast`](#qorex) din acest pachet sau pachetele QoreX listate în indexul [Pachete pentru dezvoltatori](/developer-tools/overview#group-qorex). Dacă scrieți un portofel și vreți o bibliotecă completă de semnare în cinci limbaje, citiți mai întâi [QoreSign](/qoresign/overview).
 
@@ -154,7 +154,7 @@ if (!status.live) {
 }
 ```
 
-Ordinea contează: deschideți fereastra, apoi citiți nonce-ul EVM, apoi semnați tranzacția EVM, deoarece deschiderea unei ferestre avansează secvența contului, care este și nonce-ul său EVM. `openEvmWindowMsg` construiește doar forma fără domeniu a ferestrei; o fereastră cu domeniu (`native_only`, `allowed_targets`) are nevoie de SDK. Context: [Fereastra de autorizare EVM](/sdk/guides/evm#evm-window) și [Prima tranzacție](/getting-started/first-transaction#evm-window).
+Ordinea contează: deschideți fereastra, apoi citiți nonce-ul EVM, apoi semnați tranzacția EVM, deoarece deschiderea unei ferestre avansează secvența contului, care este și nonce-ul său EVM. Începând cu 0.6.0, `openEvmWindowMsg` primește și domeniul ferestrei: `nativeOnly`, `allowedTargets` și, pe o rețea care rulează lanțul v3.2.8, `validators`, `stakingValidators` și `ibcReceivers`. Context: [Fereastra de autorizare EVM](/sdk/guides/evm#evm-window) și [Prima tranzacție](/getting-started/first-transaction#evm-window).
 
 ### Alte puncte de intrare
 
@@ -163,7 +163,60 @@ Ordinea contează: deschideți fereastra, apoi citiți nonce-ul EVM, apoi semna�
 | Recuperarea sau rotirea unei chei PQC | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | Semnarea cu cheia eth-native | `signClassicalEth` (înregistrarea clasică a cheii), `signHybridEth` |
 | Ajutoare pentru sign-bytes | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
-| Legarea și cheltuirea cu o cheie externă | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, funcțiile `buildPhantom*` și `buildMetaMask*` |
+| Legarea și cheltuirea cu o cheie externă | `linkAuthenticatorMsgs`, `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, funcțiile `buildPhantom*` și `buildMetaMask*` |
+
+## Ce schimbă 0.6.0 {#whats-new-060}
+
+0.6.0 (12 noiembrie 2026) adaugă suport pentru lanțul v3.2.8 (testnet-ul îl rulează din 12 noiembrie 2026; mainnet nu l-a aplicat). Regulile noi se aplică pe o rețea de îndată ce rulează v3.2.8.
+
+**Schimbări care rup compatibilitatea.**
+
+- `registerAuthenticatorMsg` și `registerEthAuthenticatorMsg` cer `possessionProof`: cheia care este legată semnează un mesaj de legare în text simplu, care numește lanțul, contul, schema și cheia. Un apel fără ea aruncă o eroare.
+- `decodeEvmWindowMsg` returnează noile câmpuri de domeniu (liste goale și `nativeOnly: false` când lipsesc).
+- `buildPhantomSvmEnvelope` și `buildPhantomTransfer` aleg forma de semnat: transmiteți `rest` și `chainId`, sau `svmAuthVersion: "v2" | "v3"`. Fără niciuna dintre ele aruncă o eroare, în loc să semneze o formă pe care rețeaua ar putea s-o refuze.
+
+**Funcții noi.**
+
+| Sarcină | Funcții |
+|---|---|
+| Legarea cheilor | `authenticatorLinkMessage`, `phantomPossessionProof`, `metaMaskPossessionProof` |
+| Regulă de cheltuire pentru o cheie care mută valoare | `spendingRuleBoundsEveryDenom`, `updateSpendingRulesMsg`, `linkAuthenticatorMsgs` (regula de cheltuire și legarea într-o singură tranzacție semnată de proprietar) |
+| Rezultatele execuției | `authenticatorExecutionResults`, `assertAuthenticatorExecutionsSucceeded`: citesc `success=false` din `MsgExecuteEVM` sau `MsgExecuteCosmos` în interiorul unei tranzacții cu cod 0 |
+| Domeniul ferestrei EVM | `openEvmWindowMsg` primește `nativeOnly`, `allowedTargets`, `validators`, `stakingValidators` și `ibcReceivers`; `validateEvmWindowScope` le verifică |
+| Autorizare SVM | `authSignBytesV3` (rezumatul legat de lanț pe care o rețea îl verifică de îndată ce activează `svm-relayed-chain-bound`) și `resolveSvmAuthVersion({ rest })`, care returnează `"v3"` sau `"v2"` |
+
+Verificarea cererii QoreX refuză, de asemenea, un `MsgGrant` authz al cărui `GenericAuthorization` numește un mesaj pe care îl refuză, precum și un `MsgGrant` pe care nu îl poate decoda.
+
+O cheie cu permisiunea `send`, `evm`, `deploy`, `svm` sau `all` cere ca prima regulă de cheltuire activată a contului să limiteze fiecare denom; `linkAuthenticatorMsgs` refuză altfel perechea. `rules` înlocuiește integral regulile contului, așa că transmiteți fiecare regulă pe care vreți s-o păstrați. Legați o cheie MetaMask (fragmentul provine din tipurile și sursa 0.6.0; nu a fost rulat):
+
+```js
+import {
+  registerEthAuthenticatorMsg,
+  metaMaskPossessionProof,
+  linkAuthenticatorMsgs,
+} from "@qorechain/wallet-adapter";
+
+const possessionProof = await metaMaskPossessionProof({
+  provider: window.ethereum,
+  address: ethAddress,        // the 0x address being linked
+  chainId: "qorechain-diana",
+  account: qor1,
+});
+
+const registerMsg = registerEthAuthenticatorMsg({
+  owner: qor1,
+  ethAddress,
+  permissions: ["evm"],
+  expiryUnix,
+  possessionProof,
+});
+
+// The spending rule and the link, in order, for one owner-signed transaction.
+const msgs = linkAuthenticatorMsgs({
+  registerMsg,
+  rules: [{ enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+```
 
 ## Ce schimbă 0.5.0 {#whats-new-050}
 
@@ -181,16 +234,16 @@ Ordinea contează: deschideți fereastra, apoi citiți nonce-ul EVM, apoi semna�
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.5.0 (publicat pe 11 noiembrie 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.6.0 (publicat pe 12 noiembrie 2026) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-Sursa: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (publică, tag `v0.5.0`, Apache-2.0). Nu este publicat pe PyPI, crates.io, Maven Central sau proxy-ul Go. Pagini conexe: [Pachete pentru dezvoltatori](/developer-tools/overview), [QoreSign](/qoresign/overview), [Semnare post-cuantică](/developer-guide/post-quantum-signing), [Integrare Exchange](/developer-guide/exchange-integration).
+Sursa: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (publică, tag `v0.6.0`, Apache-2.0). Nu este publicat pe PyPI, crates.io, Maven Central sau proxy-ul Go. Pagini conexe: [Pachete pentru dezvoltatori](/developer-tools/overview), [QoreSign](/qoresign/overview), [Semnare post-cuantică](/developer-guide/post-quantum-signing), [Integrare Exchange](/developer-guide/exchange-integration).
 
 ## Limite și probleme cunoscute {#limits}
 
 - **Semnează; nu transmite, nu înregistrează chei și nu deschide ferestre.** Nu există nicio funcție care să înregistreze cheia ML-DSA-87 și nimic nu deschide o fereastră EVM în locul dumneavoastră.
-- **Fără dovadă de posesie.** O înregistrare de cheie făcută cu unelte care folosesc doar acest pachet nu poartă una. Lanțul o acceptă oricum și verifică dovada atunci când este prezentă ([Dovadă de posesie](/developer-guide/post-quantum-signing#proof-of-possession)).
+- **Dovada de posesie.** Înainte de 0.6.0, o înregistrare de cheie făcută cu acest pachet nu purta una. Începând cu 0.6.0, funcțiile de legare o cer (vezi [Ce schimbă 0.6.0](#whats-new-060)); lanțul refuză o legare fără ea de îndată ce rulează v3.2.8 și verifică dovada când este prezentă pe rețelele anterioare ([Dovadă de posesie](/developer-guide/post-quantum-signing#proof-of-possession)).
 - **`derivePqcKeyFromWallet` este retrasă** (0.3.0) și aruncă mereu o eroare. Conturile care au înregistrat o cheie cu ea ar trebui să o rotească cu `rotateFromLegacyWalletKey`.
-- **Doar ferestre fără domeniu.** `openEvmWindowMsg` nu are câmpuri de domeniu.
+- **Domeniul ferestrei.** Înainte de 0.6.0, `openEvmWindowMsg` nu avea câmpuri de domeniu; câmpurile `validators`, `stakingValidators` și `ibcReceivers` au efect doar pe o rețea care rulează lanțul v3.2.8.
 - **`qoreChainInfo` folosește implicit testnet-ul.** Transmiteți mereu `chainId` pentru mainnet.
 - **Nonce-urile autentificatorilor.** Nicio interogare nu expune încă secvența de autentificator a cheii legate, deci trebuie să o urmăriți dumneavoastră; lanțul răspunde cu `abstractaccount` cod 11 când valoarea este greșită. Modulul de autentificatori este activat pe testnet și dezactivat pe mainnet (vedeți [Prezentarea generală a SDK-ului](/sdk/overview)).
 - **Dependențe peer cosmjs 0.32.** SDK-ul folosește cosmjs 0.39; instalarea ambelor într-un singur proiect dă o eroare `ERESOLVE`, așa că țineți-le separate sau folosiți `--legacy-peer-deps`.

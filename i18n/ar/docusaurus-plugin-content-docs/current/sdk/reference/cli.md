@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> منشورة على npm باسم `create-qorechain-dapp` (`0.13.1`، تحديث للقوالب فقط فوق SDK 0.13.0). تعتمد ملفات
-> `package.json` المُنشأة على `@qorechain/sdk` ‏`^0.13.0` (وقوالب EVM على
-> `@qorechain/evm` ‏`^0.13.0`). كان الإصدار 0.8.0 من أداة الهيكلة يكتب نطاقات `^0.3.0`،
+> منشورة على npm باسم `create-qorechain-dapp` (`0.14.0`، الذي يحمل أيضًا إصلاحات القوالب في 0.13.1). تعتمد ملفات
+> `package.json` المُنشأة على `@qorechain/sdk` ‏`^0.14.0` (وقوالب EVM على
+> `@qorechain/evm` ‏`^0.14.0`). كان الإصدار 0.8.0 من أداة الهيكلة يكتب نطاقات `^0.3.0`،
 > وهو ما يحلّه npm إلى إصدار 0.3 لا يستطيع التوقيع للشبكات الحيّة؛ وإن كنت قد
 > أنشأت الهيكل بـ 0.8.0، فنفّذ `npm i @qorechain/sdk@latest`.
 
@@ -54,7 +54,7 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | الراية | الوصف |
 | --- | --- |
 | `-t, --template <name>` | القالب المراد استخدامه (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | إعداد الشبكة المسبق (`testnet` \| `mainnet`). يكتب نقاط النهاية العامة للشبكة المختارة في ملف `.env` المولَّد (0.13.1). |
+| `--network <name>` | إعداد الشبكة المسبق (`testnet` \| `mainnet`). يكتب نقاط النهاية العامة للشبكة المختارة في ملف `.env` المولَّد (منذ 0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | تخطّ المطالبات واستخدم الإعدادات الافتراضية. |
 | `--no-install` | لا تثبّت التبعيات بعد إنشاء الهيكل. |

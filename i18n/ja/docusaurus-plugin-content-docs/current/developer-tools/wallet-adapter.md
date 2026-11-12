@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # ウォレットアダプター (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter` は、`signDirect` を公開している Cosmos ウォレット（Keplr、Leap、Cosmostation）に QoreChain を追加し、チェーンが要求するトランザクションを構築します。ネイティブレーンのトランザクションには、アカウントの従来型 secp256k1 署名に加えて ML-DSA-87（FIPS 204）署名が必要ですが、標準のウォレットは ML-DSA-87 署名を作成できません。アダプターがそれを作成してトランザクションボディに配置し、その後、変更されていないウォレットに通常の署名を依頼します。dApp 開発者とウォレット開発者に加え、JavaScript で統合 QoreChain ウォレット、EVM 認可ウィンドウのメッセージ、またはリンクキー（オーセンティケーター）のメッセージを扱う必要があるツール開発者向けです。現在のバージョンは 0.5.0（2026年11月11日）です。
+`@qorechain/wallet-adapter` は、`signDirect` を公開している Cosmos ウォレット（Keplr、Leap、Cosmostation）に QoreChain を追加し、チェーンが要求するトランザクションを構築します。ネイティブレーンのトランザクションには、アカウントの従来型 secp256k1 署名に加えて ML-DSA-87（FIPS 204）署名が必要ですが、標準のウォレットは ML-DSA-87 署名を作成できません。アダプターがそれを作成してトランザクションボディに配置し、その後、変更されていないウォレットに通常の署名を依頼します。dApp 開発者とウォレット開発者に加え、JavaScript で統合 QoreChain ウォレット、EVM 認可ウィンドウのメッセージ、またはリンクキー（オーセンティケーター）のメッセージを扱う必要があるツール開発者向けです。現在のバージョンは 0.6.0（2026年11月12日）です。
 
 dApp からユーザーの QoreX ウォレットでトランザクションを送信するだけであれば、最短の方法はこのパッケージの [`qorexSignAndBroadcast`](#qorex)、または[開発者パッケージ](/developer-tools/overview#group-qorex)のインデックスに掲載されている QoreX パッケージです。ウォレットを開発していて、5 つの言語に対応した完全な署名ライブラリが必要な場合は、まず [QoreSign](/qoresign/overview) を読んでください。
 
@@ -154,7 +154,7 @@ if (!status.live) {
 }
 ```
 
-順序が重要です。ウィンドウを開き、次に EVM ノンスを読み取り、その後で EVM トランザクションに署名してください。ウィンドウを開くとアカウントのシーケンスが進み、それが EVM ノンスでもあるためです。`openEvmWindowMsg` が構築するのはスコープなしの形式のウィンドウのみで、スコープ付きウィンドウ（`native_only`、`allowed_targets`）には SDK が必要です。背景: [EVM 認可ウィンドウ](/sdk/guides/evm#evm-window)と[初めてのトランザクション](/getting-started/first-transaction#evm-window)。
+順序が重要です。ウィンドウを開き、次に EVM ノンスを読み取り、その後で EVM トランザクションに署名してください。ウィンドウを開くとアカウントのシーケンスが進み、それが EVM ノンスでもあるためです。0.6.0 以降、`openEvmWindowMsg` はウィンドウのスコープも受け取ります。`nativeOnly`、`allowedTargets`、そしてチェーン v3.2.8 を実行しているネットワークでは `validators`、`stakingValidators`、`ibcReceivers` です。背景: [EVM 認可ウィンドウ](/sdk/guides/evm#evm-window)と[初めてのトランザクション](/getting-started/first-transaction#evm-window)。
 
 ### その他のエントリーポイント
 
@@ -163,7 +163,60 @@ if (!status.live) {
 | PQC 鍵の復元またはローテーション | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | イーサリアムネイティブ鍵で署名 | `signClassicalEth`（従来型の鍵登録）, `signHybridEth` |
 | 署名対象バイト列のヘルパー | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
-| 外部鍵のリンクと支出 | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, `buildPhantom*` および `buildMetaMask*` 関数 |
+| 外部鍵のリンクと支出 | `linkAuthenticatorMsgs`, `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, `buildPhantom*` および `buildMetaMask*` 関数 |
+
+## 0.6.0 の変更点 {#whats-new-060}
+
+0.6.0（2026年11月12日）は、チェーン v3.2.8 のサポートを追加します（テストネットは 2026年11月12日から v3.2.8 を実行しています。メインネットはまだ適用していません）。新しいルールは、ネットワークが v3.2.8 を実行した時点から適用されます。
+
+**破壊的変更。**
+
+- `registerAuthenticatorMsg` と `registerEthAuthenticatorMsg` には `possessionProof` が必要です。リンクする鍵が、チェーン、アカウント、スキーム、鍵を明記した平文のリンクメッセージに署名します。これがない呼び出しは例外をスローします。
+- `decodeEvmWindowMsg` は新しいスコープのフィールドを返します（存在しない場合は空のリストと `nativeOnly: false`）。
+- `buildPhantomSvmEnvelope` と `buildPhantomTransfer` は、署名する形式を選びます。`rest` と `chainId` を渡すか、`svmAuthVersion: "v2" | "v3"` を渡してください。どちらもない場合、ネットワークが拒否するかもしれない形式に署名する代わりに、例外をスローします。
+
+**新しい関数。**
+
+| タスク | 関数 |
+|---|---|
+| 鍵のリンク | `authenticatorLinkMessage`, `phantomPossessionProof`, `metaMaskPossessionProof` |
+| 価値を動かす鍵への支出ルール | `spendingRuleBoundsEveryDenom`, `updateSpendingRulesMsg`, `linkAuthenticatorMsgs`（支出ルールとリンクを、オーナーが署名する 1 つのトランザクションにまとめます） |
+| 実行結果 | `authenticatorExecutionResults`, `assertAuthenticatorExecutionsSucceeded`: コード 0 のトランザクション内の `MsgExecuteEVM` または `MsgExecuteCosmos` の `success=false` を読み取ります |
+| EVM ウィンドウのスコープ | `openEvmWindowMsg` は `nativeOnly`, `allowedTargets`, `validators`, `stakingValidators`, `ibcReceivers` を受け取ります。`validateEvmWindowScope` がそれらを検査します |
+| SVM の認可 | `authSignBytesV3`（ネットワークが `svm-relayed-chain-bound` を有効にした後に検証するチェーン固有のダイジェスト）と、`"v3"` または `"v2"` を返す `resolveSvmAuthVersion({ rest })` |
+
+QoreX のリクエスト確認は、`GenericAuthorization` が拒否対象のメッセージを指定している authz の `MsgGrant` と、デコードできない `MsgGrant` も拒否するようになりました。
+
+`send`、`evm`、`deploy`、`svm`、`all` のいずれかの権限を持つ鍵では、アカウントで最初に有効な支出ルールがすべてのデノミネーションを制限している必要があります。そうでない組み合わせは `linkAuthenticatorMsgs` が拒否します。`rules` はアカウントのルールを丸ごと置き換えるため、残したいルールはすべて渡してください。MetaMask の鍵をリンクする例です（このスニペットは 0.6.0 の型定義とソースに基づいており、実行はしていません）:
+
+```js
+import {
+  registerEthAuthenticatorMsg,
+  metaMaskPossessionProof,
+  linkAuthenticatorMsgs,
+} from "@qorechain/wallet-adapter";
+
+const possessionProof = await metaMaskPossessionProof({
+  provider: window.ethereum,
+  address: ethAddress,        // the 0x address being linked
+  chainId: "qorechain-diana",
+  account: qor1,
+});
+
+const registerMsg = registerEthAuthenticatorMsg({
+  owner: qor1,
+  ethAddress,
+  permissions: ["evm"],
+  expiryUnix,
+  possessionProof,
+});
+
+// The spending rule and the link, in order, for one owner-signed transaction.
+const msgs = linkAuthenticatorMsgs({
+  registerMsg,
+  rules: [{ enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+```
 
 ## 0.5.0 の変更点 {#whats-new-050}
 
@@ -181,16 +234,16 @@ if (!status.live) {
 
 | レジストリ | パッケージ | バージョン | リンク |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.5.0（2026年11月11日公開） | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.6.0（2026年11月12日公開） | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-ソース: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter)（公開、タグ `v0.5.0`、Apache-2.0）。PyPI、crates.io、Maven Central、Go プロキシでは公開されていません。関連: [開発者パッケージ](/developer-tools/overview)、[QoreSign](/qoresign/overview)、[ポスト量子署名](/developer-guide/post-quantum-signing)、[取引所統合](/developer-guide/exchange-integration)。
+ソース: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter)（公開、タグ `v0.6.0`、Apache-2.0）。PyPI、crates.io、Maven Central、Go プロキシでは公開されていません。関連: [開発者パッケージ](/developer-tools/overview)、[QoreSign](/qoresign/overview)、[ポスト量子署名](/developer-guide/post-quantum-signing)、[取引所統合](/developer-guide/exchange-integration)。
 
 ## 制限と既知の問題 {#limits}
 
 - **署名のみを行い、ブロードキャスト、鍵の登録、ウィンドウを開くことはしません。** ML-DSA-87 鍵を登録する関数はなく、EVM ウィンドウを代わりに開くものもありません。
-- **所有証明はありません。** このパッケージだけを使うツールで行った鍵登録には、所有証明が付きません。チェーンはそれでも受け付け、証明がある場合はそれを検証します（[所有証明](/developer-guide/post-quantum-signing#proof-of-possession)）。
+- **所有証明。** 0.6.0 より前は、このパッケージで行った鍵登録には所有証明が付きませんでした。0.6.0 以降、リンク用の関数は所有証明を必須とします（[0.6.0 の変更点](#whats-new-060)を参照）。チェーンは v3.2.8 を実行すると、証明のないリンクを拒否します。それより前のネットワークでは、証明がある場合にそれを検証します（[所有証明](/developer-guide/post-quantum-signing#proof-of-possession)）。
 - **`derivePqcKeyFromWallet` は廃止されており**（0.3.0）、常に例外をスローします。それで鍵を登録したアカウントは、`rotateFromLegacyWalletKey` でローテーションしてください。
-- **スコープなしのウィンドウのみ。** `openEvmWindowMsg` にはスコープのフィールドがありません。
+- **ウィンドウのスコープ。** 0.6.0 より前、`openEvmWindowMsg` にはスコープのフィールドがありませんでした。`validators`、`stakingValidators`、`ibcReceivers` のフィールドは、チェーン v3.2.8 を実行しているネットワークでのみ有効になります。
 - **`qoreChainInfo` のデフォルトはテストネットです。** メインネットでは必ず `chainId` を渡してください。
 - **オーセンティケーターのノンス。** リンクキーのオーセンティケーターシーケンスを公開するクエリはまだないため、自分で追跡する必要があります。値が誤っている場合、チェーンは `abstractaccount` コード 11 を返します。オーセンティケーターモジュールはテストネットでは有効で、メインネットではオフになっています（[SDK の概要](/sdk/overview)を参照）。
 - **cosmjs 0.32 のピア依存。** SDK は cosmjs 0.39 を使用します。1 つのプロジェクトに両方をインストールすると `ERESOLVE` エラーになるため、分けておくか `--legacy-peer-deps` を渡してください。

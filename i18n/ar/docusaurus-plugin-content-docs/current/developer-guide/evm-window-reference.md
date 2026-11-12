@@ -133,11 +133,11 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-تفحص `openEvmWindowMsg` الحدود وصيغ القوائم قبل التوقيع بأي شيء، فيفشل الخطأ محليًا بدل أن يكلّف معاملة مرفوضة. وتصدّر `MAX_EVM_WINDOW_BLOCKS` و`MAX_EVM_WINDOW_TXS` الحدود. تعيد القراءة (`fetchEvmWindow`) الحدود والعدّادات ونطاق v3.2.3 (`nativeOnly` و`allowedTargets`)؛ أما `validators` و`stakingValidators` و`ibcReceivers` فيقبلها الباني. ومع `connectTx` الموقِّع هجينًا يجب أن يكون المفتاح ما بعد الكمومي مسجَّلًا أصلًا.
+تفحص `openEvmWindowMsg` الحدود وصيغ القوائم قبل التوقيع بأي شيء، فيفشل الخطأ محليًا بدل أن يكلّف معاملة مرفوضة. وتصدّر `MAX_EVM_WINDOW_BLOCKS` و`MAX_EVM_WINDOW_TXS` الحدود. تعيد القراءة (`fetchEvmWindow`) الحدود والعدّادات ونطاق v3.2.3 (`nativeOnly` و`allowedTargets`)؛ أما `validators` (عناوين العقود) و`stakingValidators` (`qorvaloper1...`) و`ibcReceivers` (`"<channel>/<receiver>"`) فيقبلها الباني منذ SDK 0.14.0 الذي يحمل قوائم v3.2.8؛ ولا تعيدها القراءة، فاقرأها عبر REST. يستخدم المثال أعلاه `stakingValidators`؛ ولم يُشغَّل على SDK 0.14.0. اضبط القوائم الثلاث فقط لشبكة تشغّل v3.2.8: فالعقدة الأقدم ترفض رسالة نافذة تضبطها. ومع `connectTx` الموقِّع هجينًا يجب أن يكون المفتاح ما بعد الكمومي مسجَّلًا أصلًا.
 
 ### جُرِّب على شبكة الاختبار {#tested}
 
-أُجري على `qorechain-diana` في 12 نوفمبر 2026 (الإصدار v3.2.8) بحساب eth-native كان قد سجّل مفتاحه ما بعد الكمومي، باستخدام SDK 0.13.0 (`openEvmWindowMsg` و`closeEvmWindowMsg` و`fetchEvmWindow`) وتوقيع هجين. حقول النافذة `validators` و`staking_validators` و`ibc_receivers` ليست بعد في بُناة SDK 0.13.0 المنشورة؛ استخدم سطر الأوامر لها إلى أن يضيفها إصدار SDK.
+أُجري على `qorechain-diana` في 12 نوفمبر 2026 (الإصدار v3.2.8) بحساب eth-native كان قد سجّل مفتاحه ما بعد الكمومي، باستخدام SDK 0.13.0 (`openEvmWindowMsg` و`closeEvmWindowMsg` و`fetchEvmWindow`) وتوقيع هجين. حقول النافذة `validators` و`staking_validators` و`ibc_receivers` لم تكن في بُناة SDK 0.13.0؛ ويضيفها SDK 0.14.0 إلى `openEvmWindowMsg`، ولم يستخدمها هذا التشغيل (استخدم سطر الأوامر لها مع SDK 0.13.0).
 
 | الخطوة | النتيجة |
 | ---- | ------ |
@@ -146,11 +146,13 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | فتح مجددًا مع `nativeOnly: true` | الرمز 0، الغاز المستخدم 187,803. حلّت النافذة الجديدة محل القديمة: `native_only: true` و`opened_height` جديد |
 | إغلاق | الرمز 0، الغاز المستخدم 170,468. القراءة بعدها: `found: false` |
 
+مع SDK 0.14.0 في اليوم نفسه، نجح فتح نافذة بالحقول `allowedTargets` (عنوان precompile التخزين) و`stakingValidators` (عنوان مشغّل مدقّق واحد) و`ibcReceivers` (زوج `channel-0/...` واحد) بالرمز 0 والغاز المستخدم 195,233. وسردت قراءة REST الحقل `allowed_targets` وأعادت `found: true` و`live: true`؛ ولا تعيد قوائم `validators` و`staking_validators` و`ibc_receivers`، فاحتفظ بالقيم التي فتحت بها النافذة.
+
 أعادت `fetchEvmWindow` الحقول نفسها بصيغة camel case (`openedHeight` و`remainingBlocks` و`nativeOnly` و`allowedTargets`). الفتح والإغلاق معاملتا Cosmos بتوقيع هجين، فأول معاملة يرسلها الحساب تحتاج إلى تسجيل مفتاحه أولًا.
 
 ### Python وGo وRust وJava {#other-languages}
 
-لكل SDK باني للرسالة وقراءة عبر REST. وكلها تفحص حدود السلسلة محليًا. وباني اللغة الذي يضبط قوائم v3.2.8 يحتاج إصدار SDK الذي يدعم v3.2.8؛ أما الإصدارات الأقدم فتبني الحقول الأقدم فقط.
+لكل SDK باني للرسالة وقراءة عبر REST. وكلها تفحص حدود السلسلة محليًا. وباني اللغة الذي يضبط قوائم v3.2.8 يحتاج SDK 0.14.0 أو أحدث (Java: الإصدار 0.14.0 متى ظهر على Maven Central، الذي ما زال يعرض 0.13.0 في 12 نوفمبر 2026)؛ أما الإصدارات الأقدم فتبني الحقول الأقدم فقط.
 
 | اللغة | الفتح (مع كل القوائم) | الإغلاق | القراءة | حدود EVM |
 | -------- | ---------------------- | ----- | ---- | ---------- |

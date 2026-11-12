@@ -201,7 +201,11 @@ el gas de CosmWasm se reajusta:
   cuando construyas la comisión a mano como arriba.
 - **Mantente por debajo del tope de transacción.** Una transacción de Cosmos no
   puede fijar un límite de gas superior a 50,000,000 y se rechaza antes de
-  cobrar su comisión.
+  cobrar su comisión. El SDK 0.14.0 rechaza ese límite antes de firmar (y una
+  transacción EVM por encima de 30,000,000), da a las transacciones de CosmWasm y
+  cross-VM al menos 1.3 veces el gas simulado y nunca recurre a un límite de gas
+  fijo para ellas. También tiene ayudantes opcionales que leen el precio mínimo
+  del gas de la red; el precio de gas por defecto no cambia.
 
 Lo mismo se aplica a instantiate, migrate y a cualquier otro mensaje que
 ejecute código de contrato.

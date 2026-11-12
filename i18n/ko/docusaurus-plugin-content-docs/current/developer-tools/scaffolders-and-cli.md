@@ -9,16 +9,16 @@ sidebar_position: 21
 
 명령줄 도구 세 가지로 아무것도 없는 상태에서 타입이 지정되고 빌드 가능한 QoreChain 프로젝트의 시작점까지 갈 수 있습니다. Node.js로 작업하는 애플리케이션 개발자(dApp)와 롤업 운영자를 위한 도구입니다.
 
-* **`create-qorechain-dapp`**(0.13.1, SDK 0.13.0 위에 얹은 템플릿 전용 패치)은 [QoreChain SDK](/sdk/overview)를 기반으로 하는 일곱 가지 템플릿 중 하나로 dApp을 스캐폴딩합니다. 일곱 가지 중 네 가지(`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`)는 [체인 개발자 키트](/developer-tools/chain-dev-sdk)에 속합니다.
+* **`create-qorechain-dapp`**(0.14.0, 0.13.1의 템플릿 수정도 포함)은 [QoreChain SDK](/sdk/overview)를 기반으로 하는 일곱 가지 템플릿 중 하나로 dApp을 스캐폴딩합니다. 일곱 가지 중 네 가지(`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`)는 [체인 개발자 키트](/developer-tools/chain-dev-sdk)에 속합니다.
 * **`create-qorechain-rollup`**(0.8.0)은 TypeScript [롤업 개발 키트](/rollups/overview)를 기반으로 하는 여섯 가지 템플릿 중 하나로 롤업 프로젝트를 스캐폴딩합니다.
 * **`qorollup`**은 `@qorechain/rdk-cli` 패키지(0.8.0)의 명령으로, 사전 점검, 롤업 생성 및 모니터링, 실시간 파라미터 조회를 제공하는 운영자용 명령줄입니다.
 
-이 페이지는 2026년 10월 27일에 npm에서 설치한 게시된 패키지와, 2026년 11월 4일에 설치한 `create-qorechain-dapp` 0.12.0을 기준으로 하며, 현재 버전은 0.13.1입니다(2026년 11월 12일). 아래에 설명하는 0.13.1 템플릿 변경 사항은 새로 설치해 실행한 결과가 아니라 패키지의 릴리스 노트에서 가져온 것입니다. 개념 가이드는 [롤업 배포하기](/rollups/deploying-a-rollup)와 [SDK CLI 레퍼런스](/sdk/reference/cli)입니다.
+이 페이지는 2026년 10월 27일에 npm에서 설치한 게시된 패키지와, 2026년 11월 4일에 설치한 `create-qorechain-dapp` 0.12.0을 기준으로 하며, 현재 버전은 0.14.0입니다(2026년 11월 12일). 아래에 설명하는 0.13.1 템플릿 변경 사항은 새로 설치해 실행한 결과가 아니라 패키지의 릴리스 노트에서 가져온 것이며, 0.14.0에 포함되어 있습니다. 개념 가이드는 [롤업 배포하기](/rollups/deploying-a-rollup)와 [SDK CLI 레퍼런스](/sdk/reference/cli)입니다.
 
 ## 혁신 요소 {#innovations}
 
 * **CI를 위한 비대화형 스캐폴딩.** 모든 프롬프트에는 플래그가 있습니다. `--template`, `--network`, `--package-manager`, `--yes`(기본값 수락), `--no-install`입니다. 파이프라인은 터미널 없이 명령 하나로 프로젝트를 생성하고 빌드할 수 있습니다.
-* **템플릿은 현재 패키지에 고정되어 있습니다.** dApp 템플릿은 `@qorechain/sdk` `^0.13.0`(EVM 템플릿은 `@qorechain/evm` `^0.13.0`에도)에, 롤업 템플릿은 `@qorechain/rdk` `^0.8.0`에 의존합니다. 이전 스캐폴더(0.8.0)는 라이브 네트워크에 서명할 수 없는 SDK로 해석되는 범위를 기록했지만, 현재 버전에서는 그런 일이 없습니다.
+* **템플릿은 현재 패키지에 고정되어 있습니다.** dApp 템플릿은 `@qorechain/sdk` `^0.14.0`(EVM 템플릿은 `@qorechain/evm` `^0.14.0`에도)에, 롤업 템플릿은 `@qorechain/rdk` `^0.8.0`에 의존합니다. 이전 스캐폴더(0.8.0)는 라이브 네트워크에 서명할 수 없는 SDK로 해석되는 범위를 기록했지만, 현재 버전에서는 그런 일이 없습니다.
 * **롤업 템플릿은 사용 사례별로 유효한 구성을 담고 있습니다.** 각 롤업 템플릿은 RDK의 호환성 매트릭스가 허용하는 정산, 시퀀서, 데이터 가용성, 가스, VM 조합을 설정하며, 스캐폴더는 무언가를 생성하기 전에 실시간 스테이크와 생성 소각량을 출력합니다.
 * **무엇이 빠졌는지 알려 주는 사전 점검 명령.** `qorollup doctor`(그리고 롤업 템플릿 안의 `npm run doctor`)는 REST 엔드포인트가 응답하는지, 모듈 파라미터를 읽을 수 있는지, 엔드포인트가 요청한 네트워크인지, 서명자가 구성되어 있는지 확인하고 점검마다 한 줄씩 출력합니다. 템플릿 안에서는 롤업 구성도 호환성 매트릭스에 대해 검증합니다.
 * **템플릿에 연결된 하이브리드 서명.** 롤업 템플릿은 작은 `signer.ts`를 통해 연결되며, 이 파일은 니모닉에서 계정의 ML-DSA-87 키를 파생하고(또는 원시 개인 키와 함께 시드를 받아) 네이티브 레인에서 네트워크가 요구하는 하이브리드 서명을 합니다. `rollup-app` dApp 템플릿도 같은 방식이며 `QORE_BROADCAST=1`을 설정하지 않으면 드라이런으로 실행됩니다.
@@ -46,7 +46,7 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 | 플래그 | 의미 |
 | --- | --- |
 | `-t, --template <name>` | `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi` 또는 `cosmwasm` |
-| `--network <name>` | `testnet` 또는 `mainnet`. 해당 네트워크의 공개 엔드포인트를 생성되는 `.env`에 기록합니다(0.13.1) |
+| `--network <name>` | `testnet` 또는 `mainnet`. 해당 네트워크의 공개 엔드포인트를 생성되는 `.env`에 기록합니다(0.13.1부터) |
 | `--package-manager <pm>` | `pnpm`, `npm` 또는 `yarn` |
 | `-y, --yes` | 프롬프트를 건너뛰고 기본값 사용 |
 | `--no-install` | 의존성을 설치하지 않음 |
@@ -55,7 +55,7 @@ npx create-qorechain-dapp my-dapp --template fullstack-web --network testnet --p
 
 ### 0.13.1의 템플릿 변경 사항 {#template-fixes-0131}
 
-0.13.1(2026년 11월 12일)은 템플릿 전용 패치이며, SDK 패키지는 0.13.0 그대로입니다. 패키지의 릴리스 노트에서 가져온 내용입니다.
+0.13.1(2026년 11월 12일)은 템플릿 전용 패치였으며, SDK 패키지는 0.13.0 그대로였습니다. SDK 0.14.0에는 이 템플릿 수정이 포함되어 있습니다. 패키지의 릴리스 노트에서 가져온 내용입니다.
 
 * `--network`는 선택한 네트워크의 공개 엔드포인트를 생성되는 `.env`에 기록합니다.
 * `fullstack-web`과 `viem-wagmi`는 공개 REST가 CORS 헤더를 보내지 않기 때문에 Vite `/lcd` 프록시로 REST에 접근합니다. 개발 중 브라우저 코드는 `/lcd/...`를 호출합니다.
@@ -170,7 +170,7 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 
 | 레지스트리 | 패키지 | 버전 | 링크 |
 | --- | --- | --- | --- |
-| npm | `create-qorechain-dapp` (명령 `create-qorechain-dapp`) | 0.13.1 | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `create-qorechain-dapp` (명령 `create-qorechain-dapp`) | 0.14.0 | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `create-qorechain-rollup` (명령 `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
 | npm | `@qorechain/rdk-cli` (명령 `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
 | npm | `@qorechain/rdk` (템플릿이 사용하는 라이브러리) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |

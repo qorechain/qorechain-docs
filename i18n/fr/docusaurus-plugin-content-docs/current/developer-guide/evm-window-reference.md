@@ -133,11 +133,11 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg` vérifie les bornes et les formats de listes avant toute signature : une erreur échoue donc localement au lieu de coûter une transaction refusée. `MAX_EVM_WINDOW_BLOCKS` et `MAX_EVM_WINDOW_TXS` exportent les bornes. La relecture (`fetchEvmWindow`) renvoie les bornes, les compteurs et le périmètre v3.2.3 (`nativeOnly`, `allowedTargets`) ; `validators`, `stakingValidators` et `ibcReceivers` sont acceptés par le constructeur. Avec un `connectTx` à signature hybride, la clé post-quantique doit déjà être enregistrée.
+`openEvmWindowMsg` vérifie les bornes et les formats de listes avant toute signature : une erreur échoue donc localement au lieu de coûter une transaction refusée. `MAX_EVM_WINDOW_BLOCKS` et `MAX_EVM_WINDOW_TXS` exportent les bornes. La relecture (`fetchEvmWindow`) renvoie les bornes, les compteurs et le périmètre v3.2.3 (`nativeOnly`, `allowedTargets`) ; `validators` (adresses de contrats), `stakingValidators` (`qorvaloper1...`) et `ibcReceivers` (`"<channel>/<receiver>"`) sont acceptés par le constructeur à partir du SDK 0.14.0, qui porte les listes v3.2.8 ; la relecture ne les renvoie pas, lisez-les donc via REST. L'exemple ci-dessus utilise `stakingValidators` ; il n'a pas été exécuté avec le SDK 0.14.0. Ne renseignez les trois listes que pour un réseau qui exécute la v3.2.8 : un nœud antérieur refuse un message de fenêtre qui les renseigne. Avec un `connectTx` à signature hybride, la clé post-quantique doit déjà être enregistrée.
 
 ### Testé sur le testnet {#tested}
 
-Exécuté sur `qorechain-diana` le 12 novembre 2026 (version v3.2.8) avec un compte eth-native qui avait enregistré sa clé post-quantique, avec le SDK 0.13.0 (`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`) et la signature hybride. Les champs de fenêtre `validators`, `staking_validators` et `ibc_receivers` ne sont pas encore dans les constructeurs du SDK 0.13.0 publié ; utilisez la ligne de commande pour eux jusqu'à ce qu'une version du SDK les ajoute.
+Exécuté sur `qorechain-diana` le 12 novembre 2026 (version v3.2.8) avec un compte eth-native qui avait enregistré sa clé post-quantique, avec le SDK 0.13.0 (`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`) et la signature hybride. Les champs de fenêtre `validators`, `staking_validators` et `ibc_receivers` n'étaient pas dans les constructeurs du SDK 0.13.0 ; le SDK 0.14.0 les ajoute à `openEvmWindowMsg`, et cette exécution ne les a pas utilisés (utilisez la ligne de commande pour eux avec le SDK 0.13.0).
 
 | Étape | Résultat |
 | ---- | ------ |
@@ -146,11 +146,13 @@ Exécuté sur `qorechain-diana` le 12 novembre 2026 (version v3.2.8) avec un com
 | Nouvelle ouverture avec `nativeOnly: true` | code 0, 187,803 de gas utilisé. La nouvelle fenêtre a remplacé l'ancienne : `native_only: true`, un nouveau `opened_height` |
 | Fermeture | code 0, 170,468 de gas utilisé. Relecture : `found: false` |
 
+Avec le SDK 0.14.0, le même jour, une fenêtre ouverte avec `allowedTargets` (l'adresse du precompile de staking), `stakingValidators` (une adresse d'opérateur de validateur) et `ibcReceivers` (une paire `channel-0/...`) a réussi avec le code 0 et 195,233 de gas utilisé. La relecture REST a listé `allowed_targets` et renvoyé `found: true`, `live: true` ; elle ne renvoie pas les listes `validators`, `staking_validators` ni `ibc_receivers` : conservez donc les valeurs avec lesquelles vous avez ouvert la fenêtre.
+
 `fetchEvmWindow` a renvoyé les mêmes champs en camel case (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). L'ouverture et la fermeture sont des transactions Cosmos signées en hybride : la première qu'un compte envoie exige donc que sa clé soit d'abord enregistrée.
 
 ### Python, Go, Rust et Java {#other-languages}
 
-Chaque SDK a un constructeur pour le message et une lecture REST. Tous vérifient localement les bornes de la chaîne. Un constructeur de langage qui renseigne les listes v3.2.8 a besoin de la version du SDK qui prend en charge la v3.2.8 ; les versions antérieures ne construisent que les anciens champs.
+Chaque SDK a un constructeur pour le message et une lecture REST. Tous vérifient localement les bornes de la chaîne. Un constructeur de langage qui renseigne les listes v3.2.8 a besoin du SDK 0.14.0 ou ultérieur (Java : la 0.14.0 dès qu'elle apparaîtra sur Maven Central, qui affiche encore la 0.13.0 le 12 novembre 2026) ; les versions antérieures ne construisent que les anciens champs.
 
 | Langage | Ouvrir (avec toutes les listes) | Fermer | Lire | Limites EVM |
 | -------- | ---------------------- | ----- | ---- | ---------- |

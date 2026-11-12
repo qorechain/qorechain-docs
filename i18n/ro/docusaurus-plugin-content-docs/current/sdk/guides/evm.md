@@ -226,6 +226,35 @@ await tx.signAndBroadcast(
 );
 ```
 
+### Mai multe liste de domeniu (de la lanțul v3.2.8, SDK 0.14.0) {#evm-window-scope-v328}
+
+De la lanțul v3.2.8 (testnet-ul din 12 noiembrie 2026; mainnet nu l-a aplicat) o
+fereastră poate purta încă trei liste, pe care `openEvmWindowMsg` le acceptă de la SDK 0.14.0:
+`validators` (până la 16 adrese de contract a căror verificare a semnăturii contului
+contează pentru acțiunile proprii ale contului, cum ar fi un modul de validare sau un
+punct de intrare ERC-4337), `stakingValidators` (validatori `qorvaloper1...` către care
+fereastra poate delega sau redelega prin precompile-ul de staking) și `ibcReceivers`
+(destinatari ICS-20, fiecare scris `"<channel>/<receiver>"`). Constructorul verifică
+formatul și refuză duplicatele înainte de orice semnare. Setați-le doar pe o rețea care
+rulează v3.2.8: un nod sub această versiune refuză mesajul.
+`fetchEvmWindow` nu returnează aceste trei liste; citiți-le prin REST. Un apel de această
+formă (cu `allowedTargets`, `stakingValidators` și `ibcReceivers` setate) a fost rulat pe
+testnet pe 12 noiembrie 2026 cu SDK 0.14.0 și a reușit cu cod 0 (195.233 gaz folosit); citirea
+înapoi prin REST a listat `allowed_targets` și nu a returnat celelalte două liste:
+
+```ts
+openEvmWindowMsg({
+  sender: account.address,
+  blocks: 7200,
+  maxTxs: 20,
+  maxValue: "1000000000",
+  stakingValidators: ["qorvaloper1..."],
+  ibcReceivers: ["channel-0/cosmos1..."],
+});
+```
+
+Vedeți [referința ferestrei EVM](/developer-guide/evm-window-reference) pentru reguli.
+
 ### Consimțământul EIP-7702 (lanț v3.2.2, SDK 0.9.0) {#evm-delegation-consent}
 
 O tranzacție de tip 4 (EIP-7702) este admisă doar după ce fiecare cont a cărui

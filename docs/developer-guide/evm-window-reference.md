@@ -152,7 +152,7 @@ With SDK 0.14.0 the same day, a window opened with `allowedTargets` (the staking
 
 ### Python, Go, Rust and Java {#other-languages}
 
-Each SDK has a builder for the message and a REST read. All of them check the chain's bounds locally. A language builder that sets the v3.2.8 lists needs SDK 0.14.0 or later (Java: 0.14.0 once it appears on Maven Central, which still shows 0.13.0 on 12 November 2026); earlier releases build only the older fields.
+Each SDK has a builder for the message and a REST read. All of them check the chain's bounds locally. A language builder that sets the v3.2.8 lists needs SDK 0.14.0 or later (Java: 0.14.0 on Maven Central); earlier releases build only the older fields.
 
 | Language | Open (with every list) | Close | Read | EVM limits |
 | -------- | ---------------------- | ----- | ---- | ---------- |

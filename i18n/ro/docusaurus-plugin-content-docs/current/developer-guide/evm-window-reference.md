@@ -133,11 +133,11 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg` verifică limitele și formatele listelor înainte să se semneze ceva, deci o greșeală eșuează local în loc să coste o tranzacție refuzată. `MAX_EVM_WINDOW_BLOCKS` și `MAX_EVM_WINDOW_TXS` exportă limitele. Citirea înapoi (`fetchEvmWindow`) returnează limitele, contoarele și domeniul din v3.2.3 (`nativeOnly`, `allowedTargets`); `validators`, `stakingValidators` și `ibcReceivers` sunt acceptate de constructor. Cu un `connectTx` care semnează hibrid, cheia post-cuantică trebuie să fie deja înregistrată.
+`openEvmWindowMsg` verifică limitele și formatele listelor înainte să se semneze ceva, deci o greșeală eșuează local în loc să coste o tranzacție refuzată. `MAX_EVM_WINDOW_BLOCKS` și `MAX_EVM_WINDOW_TXS` exportă limitele. Citirea înapoi (`fetchEvmWindow`) returnează limitele, contoarele și domeniul din v3.2.3 (`nativeOnly`, `allowedTargets`); `validators` (adrese de contract), `stakingValidators` (`qorvaloper1...`) și `ibcReceivers` (`"<channel>/<receiver>"`) sunt acceptate de constructor începând cu SDK 0.14.0, care poartă listele din v3.2.8; citirea înapoi nu le returnează, așa că citiți-le prin REST. Exemplul de mai sus folosește `stakingValidators`; nu a fost rulat cu SDK 0.14.0. Setați cele trei liste doar pentru o rețea care rulează v3.2.8: un nod sub această versiune refuză un mesaj de fereastră care le setează. Cu un `connectTx` care semnează hibrid, cheia post-cuantică trebuie să fie deja înregistrată.
 
 ### Testat pe testnet {#tested}
 
-Rulat pe `qorechain-diana` pe 12 noiembrie 2026 (release v3.2.8) cu un cont eth-native care își înregistrase cheia post-cuantică, folosind SDK 0.13.0 (`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`) și semnare hibridă. Câmpurile de fereastră `validators`, `staking_validators` și `ibc_receivers` nu sunt încă în constructorii din SDK 0.13.0 publicat; folosiți linia de comandă pentru ele până când o versiune de SDK le adaugă.
+Rulat pe `qorechain-diana` pe 12 noiembrie 2026 (release v3.2.8) cu un cont eth-native care își înregistrase cheia post-cuantică, folosind SDK 0.13.0 (`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`) și semnare hibridă. Câmpurile de fereastră `validators`, `staking_validators` și `ibc_receivers` nu erau în constructorii din SDK 0.13.0; SDK 0.14.0 le adaugă la `openEvmWindowMsg`, iar această rulare nu le-a folosit (folosiți linia de comandă pentru ele cu SDK 0.13.0).
 
 | Pas | Rezultat |
 | --- | -------- |
@@ -146,11 +146,13 @@ Rulat pe `qorechain-diana` pe 12 noiembrie 2026 (release v3.2.8) cu un cont eth-
 | Deschidere din nou cu `nativeOnly: true` | cod 0, 187,803 gaz utilizat. Fereastra nouă a înlocuit-o pe cea veche: `native_only: true`, un `opened_height` nou |
 | Închidere | cod 0, 170,468 gaz utilizat. Citit înapoi: `found: false` |
 
+Cu SDK 0.14.0, în aceeași zi, o fereastră deschisă cu `allowedTargets` (adresa precompile-ului de staking), `stakingValidators` (o adresă de operator de validator) și `ibcReceivers` (o pereche `channel-0/...`) a reușit cu cod 0 și 195,233 gaz utilizat. Citirea înapoi prin REST a listat `allowed_targets` și a returnat `found: true`, `live: true`; nu returnează listele `validators`, `staking_validators` sau `ibc_receivers`, așa că păstrați valorile cu care ați deschis fereastra.
+
 `fetchEvmWindow` a returnat aceleași câmpuri în camel case (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). Deschiderea și închiderea sunt tranzacții Cosmos semnate hibrid, deci prima tranzacție pe care o trimite un cont are nevoie ca cheia lui să fie înregistrată mai întâi.
 
 ### Python, Go, Rust și Java {#other-languages}
 
-Fiecare SDK are un constructor pentru mesaj și o citire REST. Toate verifică local limitele lanțului. Un constructor de limbaj care setează listele din v3.2.8 are nevoie de versiunea de SDK care suportă v3.2.8; versiunile anterioare construiesc doar câmpurile mai vechi.
+Fiecare SDK are un constructor pentru mesaj și o citire REST. Toate verifică local limitele lanțului. Un constructor de limbaj care setează listele din v3.2.8 are nevoie de SDK 0.14.0 sau mai nou (Java: 0.14.0 când apare pe Maven Central, care arată încă 0.13.0 la 12 noiembrie 2026); versiunile anterioare construiesc doar câmpurile mai vechi.
 
 | Limbaj | Deschidere (cu toate listele) | Închidere | Citire | Limite EVM |
 | ------ | ----------------------------- | --------- | ------ | ---------- |

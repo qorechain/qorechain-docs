@@ -44,17 +44,17 @@ autentificator / cont abstract pe mainnet (modul oprit acolo, activat pe testnet
 și abstractizarea gazului. Fiecare ghid repetă avertismentul acolo unde se aplică.
 Verificat față de endpoint-urile live la 27 octombrie 2026; pe 7 noiembrie 2026 lista precompilărilor active a mainnet-ului era în continuare goală, în timp ce lista testnet-ului conținea și puntea cross-VM `0x…0901` (activă cu o listă de permisiuni; un `eth_call` doar-citire a fost testat pe 7 noiembrie 2026).
 
-SDK-ul publicat (0.13.0, 11 noiembrie 2026) semnează în forma pe care o verifică
+SDK-ul publicat (0.14.0, 12 noiembrie 2026) semnează în forma pe care o verifică
 ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul
 de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în
 v3.2.3, v3.2.4, v3.2.5 sau v3.2.6 (mainnet-ul rulează v3.2.6 din 4 noiembrie 2026,
-înălțimea 4.020.000, propunerea de guvernanță 15; testnet-ul din 27 octombrie, iar din 6 noiembrie testnet-ul a rulat v3.2.7 și din 12 noiembrie rulează v3.2.8, care adaugă mesaje pentru care SDK 0.13.0 nu are constructori). Poartă partea de client a regulilor post-cuantice ulterioare
+înălțimea 4.020.000, propunerea de guvernanță 15; testnet-ul din 27 octombrie, iar din 6 noiembrie testnet-ul a rulat v3.2.7 și din 12 noiembrie rulează v3.2.8, care adaugă mesaje pentru care SDK 0.14.0 are constructori; regulile noi ale testnet-ului se aplică de la v3.2.8, iar mainnet nu l-a aplicat). Poartă partea de client a regulilor post-cuantice ulterioare
 (dovada de posesie la înregistrarea cheii, ferestre EVM cu domeniu restrâns,
 mesaje de consimțământ EIP-7702) și a lui v3.2.4 (niveluri de staking, nonce-ul
 autentificatorului, comutatoarele de funcționalități de protocol) și a lui v3.2.5 (gaz exact pentru
 tranzacțiile hibride, registrul de chei ML-KEM); versiunile anterioare lui 0.9.0
 nu o au pe prima, vezi [Versiuni anterioare lui 0.9.0](/sdk/install#before-090),
-[Ce adaugă 0.12.0](/sdk/install#whats-new-0120) și [Ce schimbă 0.13.0](/sdk/install#whats-new-0130).
+[Ce adaugă 0.12.0](/sdk/install#whats-new-0120) [Ce schimbă 0.13.0](/sdk/install#whats-new-0130) și [Ce schimbă 0.14.0](/sdk/install#whats-new-0140).
 
 Semnare pentru portofele și backend-uri: vezi [QoreSign](/qoresign/overview).
 :::
@@ -123,15 +123,15 @@ derivare, aritmetică a denominărilor și suprafețe de citire.
 
 | Pachet | Limbaj | Instalare | Stare |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Publicat (npm, v0.13.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Publicat (PyPI, v0.13.0) |
-| `qorechain-sdk` (modul Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicat (Go proxy, tag `packages/go/v0.13.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Publicat (crates.io, v0.13.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.13.0` | Publicat (Maven Central, v0.13.0; JDK 17+), verificat la 11 noiembrie 2026 |
-| `@qorechain/evm` | TypeScript (adaptor EVM) | `npm i @qorechain/evm viem` | Publicat (npm, v0.13.0) |
-| `@qorechain/svm` | TypeScript (adaptor SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicat (npm, v0.13.0) |
-| `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.13.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicat (npm, v0.13.1) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Publicat (npm, v0.14.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Publicat (PyPI, v0.14.0) |
+| `qorechain-sdk` (modul Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicat (Go proxy, tag `packages/go/v0.14.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Publicat (crates.io, v0.14.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.14.0` | Maven Central arată încă 0.13.0 la 12 noiembrie 2026; folosiți 0.14.0 când apare (JDK 17+) |
+| `@qorechain/evm` | TypeScript (adaptor EVM) | `npm i @qorechain/evm viem` | Publicat (npm, v0.14.0) |
+| `@qorechain/svm` | TypeScript (adaptor SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicat (npm, v0.14.0) |
+| `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.14.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicat (npm, v0.14.0) |
 
 > Distribuția Python se instalează ca `qorechain-sdk`, dar **se importă ca
 > `qorsdk`**. Toți clienții sunt publicați în registrele lor — vezi
@@ -146,16 +146,16 @@ plus modulele Cosmos standard, clienți de interogare tipizați, ciclul de viaț
 complet al tranzacției (auto-gas, decodarea erorilor, urmărirea tranzacțiilor,
 căutare de blocuri/tranzacții), tranzacții post-cuantice hibride și abonamente
 WebSocket. Toți acești clienți sunt **publicați**: TypeScript pe npm
-(`@qorechain/sdk` 0.13.0), Python pe PyPI (`qorechain-sdk` 0.13.0, import
-`qorsdk`), Go pe module proxy (tag `packages/go/v0.13.0`), Rust pe crates.io
-(`qorechain-sdk` 0.13.0) și Java pe Maven Central
-(`io.github.qorechain:qorechain-sdk`, unde 0.13.0 este publicat, verificat la 11 noiembrie 2026). Adaptoarele de
-execuție EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambele 0.13.0), kitul
-`@qorechain/react` (0.13.0) și CLI-ul de schelet `create-qorechain-dapp`
-(0.13.1, un patch doar pentru șabloane, peste SDK 0.13.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi
+(`@qorechain/sdk` 0.14.0), Python pe PyPI (`qorechain-sdk` 0.14.0, import
+`qorsdk`), Go pe module proxy (tag `packages/go/v0.14.0`), Rust pe crates.io
+(`qorechain-sdk` 0.14.0) și Java pe Maven Central
+(`io.github.qorechain:qorechain-sdk`, care arată încă 0.13.0 la 12 noiembrie 2026; folosiți 0.14.0 când apare). Adaptoarele de
+execuție EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambele 0.14.0), kitul
+`@qorechain/react` (0.14.0) și CLI-ul de schelet `create-qorechain-dapp`
+(0.14.0, care poartă și corecțiile de șabloane din 0.13.1) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi
 [Instalare](/sdk/install#related-packages) pentru pachetele însoțitoare.
 
-## Noutăți de la 0.6 la 0.13 {#whats-new-in-06-07-08-09-and-010}
+## Noutăți de la 0.6 la 0.14 {#whats-new-in-06-07-08-09-and-010}
 
 **0.6.0 — conturi eth-native unificate (lanț v3.1.83).** O singură cheie
 `eth_secp256k1` este o singură identitate de 20 de octeți redată ca toate cele
@@ -254,6 +254,9 @@ secret PQC independent de 32 de bytes; conturile derivate dintr-o mnemonică, fo
 semnare și comportamentul lanțului rămân neschimbate. Helperele pentru codul de recuperare au fost adăugate în fiecare limbaj, iar
 `migrateToHybrid` raportează `keyVerified`. Vezi
 [Ce schimbă 0.13.0](/sdk/install#whats-new-0130).
+
+**0.14.0, suport client pentru lanțul v3.2.8.** Legarea unei chei cere o dovadă de posesie, cheile care mută valoare cer o regulă de cheltuire (un helper construiește perechea), actualizările de parametri de guvernanță cer toate câmpurile, execuțiile autorizate eșuate pot fi citite, iar fereastra EVM primește încă trei liste. Regulile noi se aplică de îndată ce o rețea rulează v3.2.8: testnet-ul din 12 noiembrie 2026; mainnet nu l-a aplicat. Vezi
+[Ce schimbă 0.14.0](/sdk/install#whats-new-0140).
 
 ## Unde să mergi mai departe
 

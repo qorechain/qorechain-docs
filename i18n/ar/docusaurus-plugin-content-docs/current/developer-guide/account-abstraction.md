@@ -162,6 +162,8 @@ const msg = registerEthAuthenticatorMsg({
    يسمّي النص السلسلة والحساب والمخطط والمفتاح، فلا يمكن إعادة استخدام الإثبات لسلسلة أخرى أو حساب آخر أو مفتاح آخر. ويُرفض التسجيل الذي لا يحمل إثباتاً صالحاً.
 2. **قاعدة إنفاق لمفاتيح القيمة.** المفتاح الذي يمكن لصلاحياته نقل قيمة (`send` و`evm` و`svm` و`deploy` و`all`) يحتاج إلى قاعدة إنفاق تقيّد كل فئة عملة يستطيع إنفاقها، تُضبط بالرسالة `MsgUpdateSpendingRules` قبل الربط أو معه. وتُفرض القاعدة نفسها عند التنفيذ على المفاتيح المرتبطة قبل الترقية، فأضف قواعد لها أيضاً.
 
+من الشيفرة، يوفّر SDK 0.14.0 المساعدات للأمرين (في TypeScript: `signAuthenticatorLinkPhantom` و`signAuthenticatorLinkMetaMask` و`signAuthenticatorLinkEd25519` و`signAuthenticatorLinkSecp256k1` و`signAuthenticatorLinkEip191` للإثبات؛ و`linkAuthenticatorMsgs` لقاعدة الإنفاق والربط في معاملة واحدة يوقّعها المالك)، ويوفّر `@qorechain/wallet-adapter` 0.6.0 الدوال `phantomPossessionProof` و`metaMaskPossessionProof` و`linkAuthenticatorMsgs`. راجع [الربط منذ سلسلة v3.2.8](/sdk/guides/authenticators#link-v328). أما في حالة التنفيذ الفاشل فتُطلق `assertAuthenticatorExecutionsSucceeded` خطأً عند `success=false`. لم تُشغَّل هذه المساعدات على شبكة الاختبار.
+
 يُسجَّل مفتاح Phantom بالطريقة نفسها بالمخطط `ed25519` والمفتاح العام لـ Phantom (`register-authenticator` في سطر الأوامر). يتم الإلغاء فوراً عبر `MsgRevokeAuthenticator`.
 
 **قد يفشل التنفيذ داخل معاملة ناجحة.** منذ v3.2.8 (على شبكة الاختبار فقط إلى حين ترقية لاحقة للشبكة الرئيسية) تُعيد `MsgExecuteEVM` أو `MsgExecuteCosmos` الفاشلة `success=false` في استجابتها مع رمز المعاملة 0، وتُصدر الحدث `abstractaccount_execution_failed` مع السبب، وتستهلك مع ذلك nonce المصادقة. والعميل الذي يفحص رمز المعاملة فقط سيُبلغ عن هذا الاستدعاء كأنه نجح: اقرأ الاستجابة أو الحدث.

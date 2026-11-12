@@ -133,11 +133,11 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg`는 서명하기 전에 한도와 목록 형식을 검사하므로, 실수가 있으면 거부된 트랜잭션으로 비용을 치르는 대신 로컬에서 실패합니다. `MAX_EVM_WINDOW_BLOCKS`와 `MAX_EVM_WINDOW_TXS`가 한도를 내보냅니다. 읽기(`fetchEvmWindow`)는 한도, 카운터, v3.2.3 범위(`nativeOnly`, `allowedTargets`)를 반환하며, `validators`, `stakingValidators`, `ibcReceivers`는 빌더가 받습니다. 하이브리드 서명을 하는 `connectTx`에서는 포스트 퀀텀 키가 이미 등록되어 있어야 합니다.
+`openEvmWindowMsg`는 서명하기 전에 한도와 목록 형식을 검사하므로, 실수가 있으면 거부된 트랜잭션으로 비용을 치르는 대신 로컬에서 실패합니다. `MAX_EVM_WINDOW_BLOCKS`와 `MAX_EVM_WINDOW_TXS`가 한도를 내보냅니다. 읽기(`fetchEvmWindow`)는 한도, 카운터, v3.2.3 범위(`nativeOnly`, `allowedTargets`)를 반환하며, `validators`(컨트랙트 주소), `stakingValidators`(`qorvaloper1...`), `ibcReceivers`(`"<channel>/<receiver>"`)는 v3.2.8 목록을 담은 SDK 0.14.0부터 빌더가 받으며, 읽기는 이를 반환하지 않으므로 REST로 읽으세요. 위 예제는 `stakingValidators`를 사용하며, SDK 0.14.0으로 실행해 보지는 않았습니다. 세 목록은 v3.2.8을 실행하는 네트워크에서만 설정하세요. 그보다 낮은 노드는 이를 설정한 윈도우 메시지를 거부합니다. 하이브리드 서명을 하는 `connectTx`에서는 포스트 퀀텀 키가 이미 등록되어 있어야 합니다.
 
 ### 테스트넷에서 검증됨 {#tested}
 
-2026년 11월 12일 `qorechain-diana`(릴리스 v3.2.8)에서 포스트 퀀텀 키를 등록한 eth-native 계정으로, SDK 0.13.0(`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`)과 하이브리드 서명을 사용해 실행했습니다. 윈도우 필드 `validators`, `staking_validators`, `ibc_receivers`는 아직 공개된 SDK 0.13.0 빌더에 없으므로, SDK 릴리스에서 추가될 때까지는 명령줄을 사용하세요.
+2026년 11월 12일 `qorechain-diana`(릴리스 v3.2.8)에서 포스트 퀀텀 키를 등록한 eth-native 계정으로, SDK 0.13.0(`openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow`)과 하이브리드 서명을 사용해 실행했습니다. 윈도우 필드 `validators`, `staking_validators`, `ibc_receivers`는 SDK 0.13.0 빌더에 없었으며, SDK 0.14.0이 이를 `openEvmWindowMsg`에 추가합니다. 이 실행에서는 사용하지 않았습니다(SDK 0.13.0에서는 이 필드에 명령줄을 사용하세요).
 
 | 단계 | 결과 |
 | ---- | ------ |
@@ -146,11 +146,13 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | `nativeOnly: true`로 다시 열기 | 코드 0, 사용 가스 187,803. 새 윈도우가 이전 윈도우를 대체함: `native_only: true`, 새로운 `opened_height` |
 | 닫기 | 코드 0, 사용 가스 170,468. 다시 읽기: `found: false` |
 
+같은 날 SDK 0.14.0으로, `allowedTargets`(스테이킹 프리컴파일 주소), `stakingValidators`(검증인 운영자 주소 하나), `ibcReceivers`(`channel-0/...` 쌍 하나)를 지정해 연 윈도우가 코드 0, 사용 가스 195,233으로 성공했습니다. REST 읽기에는 `allowed_targets`가 나열되었고 `found: true`, `live: true`가 반환되었습니다. `validators`, `staking_validators`, `ibc_receivers` 목록은 반환하지 않으므로, 윈도우를 열 때 사용한 값을 직접 보관하세요.
+
 `fetchEvmWindow`는 같은 필드를 카멜 케이스(`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`)로 반환했습니다. 열기와 닫기는 하이브리드 서명된 Cosmos 트랜잭션이므로, 계정이 처음 보내는 트랜잭션은 먼저 키를 등록해야 합니다.
 
 ### Python, Go, Rust, Java {#other-languages}
 
-각 SDK에는 메시지 빌더와 REST 읽기가 있습니다. 모두 체인의 한도를 로컬에서 검사합니다. v3.2.8 목록을 설정하는 언어별 빌더는 v3.2.8을 지원하는 SDK 릴리스가 필요하며, 이전 릴리스는 이전 필드만 빌드합니다.
+각 SDK에는 메시지 빌더와 REST 읽기가 있습니다. 모두 체인의 한도를 로컬에서 검사합니다. v3.2.8 목록을 설정하는 언어별 빌더는 SDK 0.14.0 이상이 필요하며(Java는 Maven Central에 나타난 뒤의 0.14.0이며, Maven Central에는 2026년 11월 12일 기준 0.13.0이 그대로 표시됩니다), 이전 릴리스는 이전 필드만 빌드합니다.
 
 | 언어 | 열기(모든 목록 포함) | 닫기 | 읽기 | EVM 한도 |
 | -------- | ---------------------- | ----- | ---- | ---------- |

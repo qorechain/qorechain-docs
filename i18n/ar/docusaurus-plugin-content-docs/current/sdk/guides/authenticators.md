@@ -118,6 +118,52 @@ const limits = msg.abstractaccount.updateSpendingRules({
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`.
 
+### الربط منذ سلسلة v3.2.8 (SDK 0.14.0) {#link-v328}
+
+منذ سلسلة v3.2.8 (شبكة الاختبار منذ 12 نوفمبر 2026؛ ولم تطبّقها الشبكة الرئيسية)
+يُرفض التسجيل أعلاه ما لم يحمل **إثبات حيازة**: يوقّع المفتاح الذي يُربط رسالة
+نصية صريحة تسمّي السلسلة والحساب والمخطط والمفتاح. والمفتاح ذو الصلاحية `send` أو `evm`
+أو `deploy` أو `svm` أو `all` يحتاج أيضًا إلى أن تقيّد أول قاعدة إنفاق مفعّلة في
+الحساب كل فئة عملة. يوفّر SDK 0.14.0 مساعدات للأمرين؛ و`linkAuthenticatorMsgs` تبني قاعدة
+الإنفاق والربط بالترتيب الذي يُرسلان به في معاملة واحدة يوقّعها المالك. يتبع هذا المقتطف
+شيفرة 0.14.0 المصدرية ولم يُشغَّل:
+
+```ts
+import { linkAuthenticatorMsgs, signAuthenticatorLinkPhantom } from "@qorechain/sdk";
+
+// The key being linked signs the link message (Phantom signMessage here).
+const proof = await signAuthenticatorLinkPhantom({
+  chainId: "qorechain-diana",
+  account: canonicalAccount,
+  wallet: window.solana,
+});
+
+const msgs = linkAuthenticatorMsgs({
+  owner: canonicalAccount,
+  chainId: "qorechain-diana",   // optional: checks the proof before anything is built
+  scheme: proof.scheme,
+  pubkey: proof.pubkey,
+  possessionProof: proof.possessionProof,
+  permissions: ["send"],
+  expiryUnix: Math.floor(Date.now() / 1000) + 7 * 24 * 3600,
+  label: "phantom",
+  // Replaces the account's rules wholesale: pass every rule to keep.
+  spendingRules: [{ id: "phantom-hot", enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+// Sign msgs in one owner-signed hybrid transaction.
+```
+
+وفي الملف نفسه `signAuthenticatorLinkEd25519` و`signAuthenticatorLinkSecp256k1` و
+`signAuthenticatorLinkEip191` و`signAuthenticatorLinkMetaMask` لأنواع المفاتيح الأخرى،
+وترفض مُركِّبات التسجيل الإثبات الفارغ. وعلى شبكة أقدم من v3.2.8 يبقى
+الإثبات اختياريًا.
+
+منذ v3.2.8 تعيد `MsgExecuteEVM` أو `MsgExecuteCosmos` المفوَّضة الفاشلة
+`success=false` داخل معاملة بالرمز 0 وتستهلك الـ nonce مع ذلك. بعد بث المُرحِّل،
+استدعِ `assertAuthenticatorExecutionsSucceeded(result, messages)`، أو
+`decodeAuthenticatorExecutions` لقراءة نتيجة كل تنفيذ، حتى لا يُؤخذ التنفيذ الفاشل
+على أنه نجاح.
+
 ## الإنفاق من Phantom (المسار الأصلي، عبر مُرحِّل)
 
 بعد ربط المفتاح، يبني المتصفح رسالة `MsgExecuteCosmos` جاهزة للمُرحِّل:

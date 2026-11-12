@@ -9,8 +9,8 @@ sidebar_position: 34
 
 Das Chain Developer Kit ist der Teil des QoreChain SDK, der Solidity- und Smart-Contract-Teams hilft, mit den Werkzeugen, die sie bereits nutzen, auf QoreChain zu bauen. Es ergänzt `@qorechain/evm` um viem-Chain-Definitionen und Helfer für das EVM-Autorisierungsfenster, `create-qorechain-dapp` um vier Projektvorlagen (Foundry, Hardhat 3, viem mit wagmi und ein QoreChain-Native-CosmWasm-Token), EVM-Quickstarts für fünf Sprachen sowie eine Referenz dazu, wie sich die QoreChain-EVM von Ethereum unterscheidet. Es richtet sich an Solidity-Teams, die Verträge von Ethereum portieren, an dApp-Frontend-Entwickler mit wagmi und RainbowKit, an CosmWasm-Entwickler und an Maintainer von EVM-Werkzeugen, die QoreChain hinzufügen möchten.
 
-:::note Live: enthalten in SDK 0.13.0
-Das Kit ist in QoreChain SDK **0.13.0** **live und installierbar** (npm, 11. November 2026): `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0 und `create-qorechain-dapp` 0.13.1 (eine reine Vorlagen-Korrektur auf Basis von SDK 0.13.0, 12. November 2026), dazu die SDKs für Python, Rust und Go ebenfalls in 0.13.0 (das Java-SDK ist ebenfalls auf Maven Central veröffentlicht, geprüft am 11. November 2026). Sein Inhalt erschien zuerst als 0.11.0 allein auf npm (29. Oktober 2026) und war in 0.12.0 (30. Oktober 2026) enthalten; keine andere Registry hat eine 0.11.0. Die Testläufe auf dieser Seite wurden am 4. November 2026 gegen 0.12.0 gemacht; 0.13.0 hat den Konto-Helfer des Seed-Pfads und den Umgang der Vorlagen mit `PRIVATE_KEY` geändert (siehe [Was 0.13.0 ändert](/sdk/install#whats-new-0130)).
+:::note Live: enthalten in SDK 0.14.0
+Das Kit ist in QoreChain SDK **0.14.0** **live und installierbar** (npm, 12. November 2026): `@qorechain/evm`, `@qorechain/sdk`, `@qorechain/react`, `@qorechain/svm` und `create-qorechain-dapp` (das auch die Vorlagen-Korrekturen von 0.13.1 enthält) jeweils in 0.14.0, dazu die SDKs für Python, Rust und Go ebenfalls in 0.14.0 (Maven Central zeigt am 12. November 2026 weiterhin Java 0.13.0; verwenden Sie 0.14.0, sobald es erscheint). Sein Inhalt erschien zuerst als 0.11.0 allein auf npm (29. Oktober 2026) und war in 0.12.0 (30. Oktober 2026) enthalten; keine andere Registry hat eine 0.11.0. Die Testläufe auf dieser Seite wurden am 4. November 2026 gegen 0.12.0 gemacht; 0.13.0 hat den Konto-Helfer des Seed-Pfads und den Umgang der Vorlagen mit `PRIVATE_KEY` geändert (siehe [Was 0.13.0 ändert](/sdk/install#whats-new-0130)), und 0.14.0 bringt Client-Unterstützung für Chain v3.2.8, einschließlich der neuen Felder des Fensterumfangs (siehe [Was 0.14.0 ändert](/sdk/install#whats-new-0140)).
 :::
 
 Das Kit zielt auf das Mainnet (`qorechain-vladi`, EVM-Chain-ID 9801) und das Testnet (`qorechain-diana`, EVM-Chain-ID 9800).
@@ -20,14 +20,14 @@ Das Kit zielt auf das Mainnet (`qorechain-vladi`, EVM-Chain-ID 9801) und das Tes
 | Punkt | Paket und Version | Wo |
 |---|---|---|
 | Lesen mit ethers v6, web3.py, go-ethereum, alloy oder web3j gegen die öffentlichen Endpunkte | Kein QoreChain-Paket nötig | [Quickstart 1](#quickstart-ethers) |
-| `createEvmClient`, ERC-20-, ERC-721- und ERC-1155-Helfer, `precompiles`-Bindings, `PRECOMPILE_ADDRESSES` | `@qorechain/evm` 0.13.0 | [Quickstart 2](#quickstart-evm-080) |
-| viem-Chain-Definitionen `qorechain` und `qorechainTestnet`, `QORECHAIN_CHAINS`, `QORECHAIN_REST_ENDPOINTS` | `@qorechain/evm` 0.13.0 | [Quickstart 3](#quickstart-viem) |
-| `evmWindowStatus`, `openEvmWindowMessage`, `evmWindowCost`, `classifyEvmWindowRejection`, Adresskonverter, Fensterkonstanten, Subpfad `@qorechain/evm/window` | `@qorechain/evm` 0.13.0 | [Quickstart 4](#quickstart-window-helpers) |
-| Ein EVM-Autorisierungsfenster mit Signierung öffnen und lesen, mit `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount` | `@qorechain/sdk` 0.13.0 | [Quickstart 5](#quickstart-open-window) |
-| Dieselben Fenster-Builder in Python, Go, Rust und Java | Die 0.13.0-SDKs | [Haupt-API](#main-api) |
-| EIP-7702-Zustimmungshelfer `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection` | `@qorechain/sdk` 0.13.0 | [Haupt-API](#main-api) |
-| Sieben Scaffolder-Vorlagen: `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`, und der Helfer `pnpm window` | `create-qorechain-dapp` 0.13.1 | [Vorlagen](#templates) |
-| `PqcStatusBadge` | `@qorechain/react` 0.13.0 | [Haupt-API](#main-api) |
+| `createEvmClient`, ERC-20-, ERC-721- und ERC-1155-Helfer, `precompiles`-Bindings, `PRECOMPILE_ADDRESSES` | `@qorechain/evm` 0.14.0 | [Quickstart 2](#quickstart-evm-080) |
+| viem-Chain-Definitionen `qorechain` und `qorechainTestnet`, `QORECHAIN_CHAINS`, `QORECHAIN_REST_ENDPOINTS` | `@qorechain/evm` 0.14.0 | [Quickstart 3](#quickstart-viem) |
+| `evmWindowStatus`, `openEvmWindowMessage`, `evmWindowCost`, `classifyEvmWindowRejection`, Adresskonverter, Fensterkonstanten, Subpfad `@qorechain/evm/window` | `@qorechain/evm` 0.14.0 | [Quickstart 4](#quickstart-window-helpers) |
+| Ein EVM-Autorisierungsfenster mit Signierung öffnen und lesen, mit `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount` | `@qorechain/sdk` 0.14.0 | [Quickstart 5](#quickstart-open-window) |
+| Dieselben Fenster-Builder in Python, Go, Rust und Java | Die 0.14.0-SDKs | [Haupt-API](#main-api) |
+| EIP-7702-Zustimmungshelfer `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection` | `@qorechain/sdk` 0.14.0 | [Haupt-API](#main-api) |
+| Sieben Scaffolder-Vorlagen: `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`, und der Helfer `pnpm window` | `create-qorechain-dapp` 0.14.0 | [Vorlagen](#templates) |
+| `PqcStatusBadge` | `@qorechain/react` 0.14.0 | [Haupt-API](#main-api) |
 
 ## Innovationen {#innovations}
 
@@ -57,7 +57,7 @@ Schon vor dem Kit vorhanden (0.8.0 und später): `createEvmClient`, `evmAccountF
 
 ### Vorlagen {#templates}
 
-`create-qorechain-dapp` 0.13.1 hat sieben Vorlagen: `evm-solidity`, `fullstack-web` und `rollup-app` (siehe [Scaffolder und CLI](/developer-tools/scaffolders-and-cli)) sowie vier, die zum Kit gehören:
+`create-qorechain-dapp` 0.14.0 hat sieben Vorlagen: `evm-solidity`, `fullstack-web` und `rollup-app` (siehe [Scaffolder und CLI](/developer-tools/scaffolders-and-cli)) sowie vier, die zum Kit gehören:
 
 | Vorlage | Was Sie bekommen |
 |---|---|
@@ -66,11 +66,11 @@ Schon vor dem Kit vorhanden (0.8.0 und später): `createEvmClient`, `evmAccountF
 | `viem-wagmi` | Eine dApp mit Vite, React, wagmi und RainbowKit, mit der QoreX-Wallet (`@qorechain/qorex-rainbowkit`) und den Chain-Definitionen aus `@qorechain/evm`. Sie zeigt den neuesten Block, das QOR-Guthaben und das EVM-Fenster des Kontos. Sie pinnt viem `~2.53.1` und erreicht REST über einen Vite-`/lcd`-Proxy (die öffentliche REST sendet keine CORS-Header), sodass Browser-Code in der Entwicklung `/lcd/...` aufruft (0.13.1). |
 | `cosmwasm` | Ein QoreChain-Native-CW20-Token (CosmWasm) auf Basis von `cw20-base` aus cw-plus, ein optimierter Build in Docker, ein Skript für den Governance-Upload-Vorschlag sowie Skripte zum Instanziieren und Abfragen auf dem Testnet. |
 
-Die Vorlagen pinnen `@qorechain/evm` und `@qorechain/sdk` auf `^0.13.0` (die Vorlagen von 0.12.0 pinnten `^0.12.0`, am 4. November 2026 aus einem `foundry`-Scaffold gelesen).
+Die Vorlagen pinnen `@qorechain/evm` und `@qorechain/sdk` auf `^0.14.0` (die Vorlagen von 0.12.0 pinnten `^0.12.0`, am 4. November 2026 aus einem `foundry`-Scaffold gelesen).
 
 ### Leitfäden im SDK-Repository {#guides}
 
-Das Repository (`docs/docs/guides/`, Tag `v0.13.0`) enthält `evm-quickstarts.md` (Lesezugriffe für viem, ethers v6, web3.py, go-ethereum, alloy und web3j sowie einen Abschnitt "Before you send"), `evm-differences.md` ("QoreChain EVM compared with Ethereum"), `evm.md` und `cosmwasm.md`. Dasselbe Material auf dieser Website: [EVM-Leitfaden](/sdk/guides/evm), [EVM-Entwicklung](/developer-guide/evm-development) und [QoreChain-Native-Entwicklung](/developer-guide/cosmwasm-development).
+Das Repository (`docs/docs/guides/`, Tag `v0.14.0`) enthält `evm-quickstarts.md` (Lesezugriffe für viem, ethers v6, web3.py, go-ethereum, alloy und web3j sowie einen Abschnitt "Before you send"), `evm-differences.md` ("QoreChain EVM compared with Ethereum"), `evm.md` und `cosmwasm.md`. Dasselbe Material auf dieser Website: [EVM-Leitfaden](/sdk/guides/evm), [EVM-Entwicklung](/developer-guide/evm-development) und [QoreChain-Native-Entwicklung](/developer-guide/cosmwasm-development).
 
 Ebenfalls im Repository: Beitragsdateien für andere Werkzeuge (viem-Chain-Definitionen, Sourcify-Chain-Einträge und eine Scaffold-ETH-2-Erweiterung) unter `contrib/` und `templates/scaffold-eth-extension/`. Es sind vorbereitete Dateien im Repository, nicht upstream eingepflegt.
 
@@ -119,14 +119,14 @@ Alle lesenden Snippets verwenden das öffentliche Testnet (`qorechain-diana`, EV
 
 | Sprache oder Werkzeug | Installation | Mindestplattform |
 |---|---|---|
-| TypeScript, EVM-Lesezugriffe, ERC-Helfer, viem-Chain-Definitionen, Fensterhelfer | `npm install @qorechain/evm viem` (0.13.0) | Node.js 20 oder neuer; Peer `viem ^2` |
-| TypeScript, die Fensternachricht signieren | `npm install @qorechain/sdk` (0.13.0 hat `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount`) | Node.js 20 oder neuer |
-| React, PQC-Statusabzeichen | `npm install @qorechain/react @qorechain/sdk react react-dom` (0.13.0) | Node.js 20 oder neuer |
-| Scaffolder, alle sieben Vorlagen | `npx create-qorechain-dapp my-app --template <name>` (0.13.1) | Node.js 20 oder neuer; Foundry für `foundry`; Node.js 22 für `hardhat` (Hardhat 3); Rust und Docker für `cosmwasm` |
-| Python (EVM-Lesezugriffe) | `pip install "web3>=7,<8"`; Fensternachricht aus `pip install qorechain-sdk` (0.13.0) | Python 3.10 oder neuer |
-| Go (EVM-Lesezugriffe) | `go get github.com/ethereum/go-ethereum@latest`; Fensternachricht aus `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Go-Toolchain |
-| Rust (EVM-Lesezugriffe) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; Fensternachricht aus dem Crate `qorechain-sdk` 0.13.0 | Rust stable |
-| Java (EVM-Lesezugriffe) | `org.web3j:core:5.0.0`; Fensternachricht aus `io.github.qorechain:qorechain-sdk:0.13.0` (auf Maven Central veröffentlicht, geprüft am 11. November 2026) | JDK 21 (das QoreChain Java SDK wird mit einer JDK-21-Toolchain gebaut) |
+| TypeScript, EVM-Lesezugriffe, ERC-Helfer, viem-Chain-Definitionen, Fensterhelfer | `npm install @qorechain/evm viem` (0.14.0) | Node.js 20 oder neuer; Peer `viem ^2` |
+| TypeScript, die Fensternachricht signieren | `npm install @qorechain/sdk` (0.14.0 hat `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount`) | Node.js 20 oder neuer |
+| React, PQC-Statusabzeichen | `npm install @qorechain/react @qorechain/sdk react react-dom` (0.14.0) | Node.js 20 oder neuer |
+| Scaffolder, alle sieben Vorlagen | `npx create-qorechain-dapp my-app --template <name>` (0.14.0) | Node.js 20 oder neuer; Foundry für `foundry`; Node.js 22 für `hardhat` (Hardhat 3); Rust und Docker für `cosmwasm` |
+| Python (EVM-Lesezugriffe) | `pip install "web3>=7,<8"`; Fensternachricht aus `pip install qorechain-sdk` (0.14.0) | Python 3.10 oder neuer |
+| Go (EVM-Lesezugriffe) | `go get github.com/ethereum/go-ethereum@latest`; Fensternachricht aus `go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0` | Go-Toolchain |
+| Rust (EVM-Lesezugriffe) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; Fensternachricht aus dem Crate `qorechain-sdk` 0.14.0 | Rust stable |
+| Java (EVM-Lesezugriffe) | `org.web3j:core:5.0.0`; Fensternachricht aus `io.github.qorechain:qorechain-sdk:0.14.0` (Maven Central zeigt am 12. November 2026 weiterhin 0.13.0; verwenden Sie 0.14.0, sobald es erscheint) | JDK 21 (das QoreChain Java SDK wird mit einer JDK-21-Toolchain gebaut) |
 
 ### Quickstart 1: Lesen mit ethers v6 {#quickstart-ethers}
 
@@ -274,7 +274,7 @@ Der Scaffolder akzeptiert die vier Kit-Vorlagennamen (siehe die Flag-Tabelle unt
 
 `@qorechain/evm` signiert und sendet keine Transaktionen der nativen Lane; verwenden Sie dafür `@qorechain/sdk` oder die Sprach-SDKs.
 
-### Ein Fenster in jedem SDK bauen und lesen (0.13.0) {#api-window}
+### Ein Fenster in jedem SDK bauen und lesen (0.14.0) {#api-window}
 
 | Sprache | Ein Fenster öffnen | Ein Fenster lesen |
 |---|---|---|
@@ -284,9 +284,9 @@ Der Scaffolder akzeptiert die vier Kit-Vorlagennamen (siehe die Flag-Tabelle unt
 | Rust | `qorechain::msg::pqc::open_evm_window` | REST `/qorechain/pqc/v1/evm_window/{address}` |
 | Java | `io.github.qorechain.evm.EvmWindow.open` | `EvmWindow.restPath` |
 
-EIP-7702-Zustimmung (TypeScript, `@qorechain/sdk` 0.13.0): `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection`.
+EIP-7702-Zustimmung (TypeScript, `@qorechain/sdk` 0.14.0): `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection`.
 
-`@qorechain/react` 0.13.0 exportiert `PqcStatusBadge` (Standardbeschriftungen "PQC key registered" und "No PQC key") neben dem älteren `QuantumSafeBadge`.
+`@qorechain/react` 0.14.0 exportiert `PqcStatusBadge` (Standardbeschriftungen "PQC key registered" und "No PQC key") neben dem älteren `QuantumSafeBadge`.
 
 ### Flags von `create-qorechain-dapp` {#api-scaffolder}
 
@@ -335,26 +335,26 @@ Umgebungsvariablen der Vorlagen (in `.env`, nie committet): `PRIVATE_KEY`, `QORE
 
 ## Wo es veröffentlicht ist {#where-published}
 
-Versionen am 11. November 2026 live aus den Registries gelesen (auch Maven Central). Das GitHub-Tag `v0.12.0` existiert. Die fünf npm-Pakete haben außerdem eine 0.11.0 (29. Oktober 2026), die denselben Kit-Inhalt trug; die SDKs für Python, Rust, Go und Java sind direkt von 0.10.0 auf 0.12.0 gegangen, und jede Sprache ist bei 0.13.0.
+Versionen am 12. November 2026 live aus den Registries gelesen (Maven Central ist die Ausnahme, siehe seine Zeile). Das GitHub-Tag `v0.12.0` existiert. Die fünf npm-Pakete haben außerdem eine 0.11.0 (29. Oktober 2026), die denselben Kit-Inhalt trug; die SDKs für Python, Rust, Go und Java sind direkt von 0.10.0 auf 0.12.0 gegangen, und jede Sprache außer Java ist bei 0.14.0 (Java ist auf Maven Central bei 0.13.0).
 
 | Registry | Paket | Version | Link |
 |---|---|---|---|
-| npm | `@qorechain/evm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/evm |
-| npm | `@qorechain/sdk` | 0.13.0 | https://www.npmjs.com/package/@qorechain/sdk |
-| npm | `@qorechain/react` | 0.13.0 | https://www.npmjs.com/package/@qorechain/react |
-| npm | `@qorechain/svm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/svm |
-| npm | `create-qorechain-dapp` | 0.13.1 (sieben Vorlagen) | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `@qorechain/evm` | 0.14.0 | https://www.npmjs.com/package/@qorechain/evm |
+| npm | `@qorechain/sdk` | 0.14.0 | https://www.npmjs.com/package/@qorechain/sdk |
+| npm | `@qorechain/react` | 0.14.0 | https://www.npmjs.com/package/@qorechain/react |
+| npm | `@qorechain/svm` | 0.14.0 | https://www.npmjs.com/package/@qorechain/svm |
+| npm | `create-qorechain-dapp` | 0.14.0 (sieben Vorlagen) | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `@qorechain/qorex-rainbowkit` (verwendet von `viem-wagmi`) | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-rainbowkit |
-| PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
-| crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
-| Go-Proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| PyPI | `qorechain-sdk` | 0.14.0 | https://pypi.org/project/qorechain-sdk/ |
+| crates.io | `qorechain-sdk` | 0.14.0 | https://crates.io/crates/qorechain-sdk |
+| Go-Proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 am 12. November 2026; 0.14.0 noch nicht dort | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
-Quelle: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), Tag `v0.13.0`; Pfade `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, gepflegt von der QoreChain Association.
+Quelle: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), Tag `v0.14.0`; Pfade `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, gepflegt von der QoreChain Association.
 
 ## Einschränkungen und bekannte Probleme {#limits}
 
-- **0.11.0 auf npm ist abgelöst.** Verwenden Sie 0.13.0; 0.11.0 gibt es nur auf npm, und die Vorlagen in 0.13.0 hängen von `^0.13.0` ab.
+- **0.11.0 auf npm ist abgelöst.** Verwenden Sie 0.14.0; 0.11.0 gibt es nur auf npm, und die Vorlagen in 0.14.0 hängen von `^0.14.0` ab.
 - **`@qorechain/evm` liest das Fenster und setzt die Nachricht zusammen; es signiert und sendet** Transaktionen der nativen Lane **nicht**.
 - **Kein Helfer öffnet vor einem Senden automatisch ein Fenster**, aus Absicht.
 - **Die QoreX-Wallet in der Vorlage `viem-wagmi`** beantwortet `eth_chainId`, `eth_accounts`, `eth_requestAccounts` und `wallet_switchEthereumChain`; ihre EVM-Signiermethoden sind noch nicht verfügbar. Nutzen Sie sie zum Verbinden und Lesen und signieren Sie mit einer injizierten EIP-1193-Wallet.
@@ -376,7 +376,7 @@ Quelle: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorech
 
 ## Verwandte Seiten {#related}
 
-- [Übersicht der Entwicklerpakete](/developer-tools/overview) und [Scaffolder und CLI](/developer-tools/scaffolders-and-cli) (`create-qorechain-dapp` 0.13.1)
+- [Übersicht der Entwicklerpakete](/developer-tools/overview) und [Scaffolder und CLI](/developer-tools/scaffolders-and-cli) (`create-qorechain-dapp` 0.14.0)
 - [SDK-Übersicht](/sdk/overview), [SDK-Installation](/sdk/install) und der [EVM-Leitfaden](/sdk/guides/evm) (Fenster, eingegrenzte Fenster, EIP-7702-Zustimmung, Precompiles)
 - [EVM-Entwicklung](/developer-guide/evm-development) und [EVM-Precompiles](/developer-guide/evm-precompiles#network-status)
 - [QoreChain-Native-Entwicklung](/developer-guide/cosmwasm-development) (CosmWasm und Governance-Vorschläge)

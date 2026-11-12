@@ -12,21 +12,21 @@ SVM adaptörleri (`@qorechain/evm`, `@qorechain/svm`), React kiti
 (`@qorechain/react`) ile Python, Go, Rust ve Java istemcilerinin tümü, yerel
 zincirle tam eşdeğerlik sağlayacak şekilde (tipli mesajlar, sorgular, işlem
 yaşam döngüsü, hibrit PQC işlemleri ve WebSocket abonelikleri) kendi kayıt
-depolarında **yayımlanmıştır**. Güncel sürüm **0.13.0**'dır ve 11 Kasım 2026'da
-yayımlanmıştır (11 Kasım 2026'da kayıt depolarına karşı kontrol edildi; Java bir istisnadır,
+depolarında **yayımlanmıştır**. Güncel sürüm **0.14.0**'dır ve 12 Kasım 2026'da
+yayımlanmıştır (12 Kasım 2026'da kayıt depolarına karşı kontrol edildi; Java bir istisnadır,
 bkz. tablo):
 
 | Kayıt deposu | Paket | Sürüm |
 | --- | --- | --- |
-| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.13.0 (`create-qorechain-dapp`: 0.13.1, SDK 0.13.0'ın üzerine yalnızca şablonları içeren bir yama) |
-| PyPI | `qorechain-sdk` (import `qorsdk`) | 0.13.0 |
-| crates.io | `qorechain-sdk` (import `qorechain`) | 0.13.0 |
-| Go modül proxy'si | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | Yayımlandı (Maven Central, v0.13.0; JDK 17 veya üzeri) |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`, `create-qorechain-dapp` | 0.14.0 (`create-qorechain-dapp` da; 0.13.1 şablon düzeltmelerini de taşır) |
+| PyPI | `qorechain-sdk` (import `qorsdk`) | 0.14.0 |
+| crates.io | `qorechain-sdk` (import `qorechain`) | 0.14.0 |
+| Go modül proxy'si | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | Maven Central 12 Kasım 2026'da hâlâ 0.13.0 gösteriyor; görününce 0.14.0'ı kullanın (JDK 17 veya üzeri) |
 
 Python, Rust, Go veya Java için 0.11.0 yoktur: npm paketlerinin 29 Ekim 2026'da bir
 0.11.0 sürümü vardı (zincir geliştirici kiti, aşağıya bakın) ve her dil 0.10.0'dan
-0.12.0'a birlikte geçti. 0.13.0, 11 Kasım 2026'da her dilde onu izledi.
+0.12.0'a birlikte geçti. 0.13.0, 11 Kasım 2026'da ve 0.14.0, 12 Kasım 2026'da her dilde onu izledi (Java: bkz. tablo).
 
 Aşağıdan dilinizi seçin.
 
@@ -38,7 +38,7 @@ kimliğine bağlı) doğrular ve eski biçimi `pqc` kod 21 ile reddeder. **0.8.0
 önceki her SDK sürümü eski biçimi imzalar; **0.8.0** ise geçişi, ağların kullandığı
 iki yükseltme adından yalnızca birinin altında arar (mainnet bunu `v3.2.0` olarak,
 testnet ise `v3.1.98` ve ardından `v3.2.0` olarak kaydetti), dolayısıyla mainnet
-üzerinde yanlış biçimi imzalar. Her dilde **0.13.0** (veya en azından **0.8.1**)
+üzerinde yanlış biçimi imzalar. Her dilde **0.14.0** (veya en azından **0.8.1**)
 kullanın; bir [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window) açmak için
 **0.8.2 veya sonrası** gerekir. Hibrit oluşturucular bir `signBytesVersion`
 seçeneği alır (`"auto"` | `"v1"` | `"v2"`); `"auto"` ağa sorar ve bu nedenle
@@ -48,6 +48,32 @@ duyar: tahmin etmek yerine hata fırlatır. Bkz.
 Biçim, zincir v3.2.3 veya v3.2.4 ile değişmedi (v3.2.4 test ağında 19 Ekim 2026'dan beri, mainnet'te 23 Ekim 2026'dan beri çalışır; v3.2.5 ve v3.2.6 burada hiçbir şeyi değiştirmedi; mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırır): `"auto"` her
 iki ağda da v2'ye çözümlenir, çünkü ikisi de v2'ye geçiren yükseltmeyi uyguladı.
 :::
+
+## 0.14.0 neyi değiştiriyor {#whats-new-0140}
+
+SDK 0.14.0 (12 Kasım 2026), tüm diller için tek bir sürümdür: TypeScript, Python,
+Go, Rust ve Java; `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm` ve
+`create-qorechain-dapp` ile birlikte (0.13.1 şablon düzeltmelerini de taşır). Zincir
+**v3.2.8** için istemci desteği ekler. Yeni kurallar, bir ağ v3.2.8 çalıştırdığında
+geçerli olur: test ağı `qorechain-diana` 12 Kasım 2026'dan beri onu çalıştırır; ana ağ
+henüz uygulamadı. Önceki ağlarda yeni alanlar isteğe bağlı kalır. (Maven Central
+12 Kasım 2026'da hâlâ 0.13.0 gösteriyor; Java için görününce 0.14.0'ı kullanın.)
+
+| Alan | 0.14.0'da |
+| --- | --- |
+| Bir anahtarı bağlama | Sahiplik kanıtı gerekir. ed25519, secp256k1 ve EIP-191 (`personal_sign`) için oluşturucular ve imzalayıcılar, zinciri, hesabı, şemayı ve anahtarı adlandıran düz metin bir bağlantı mesajını imzalar. Kayıt oluşturucuları boş bir kanıtı reddeder |
+| Değer taşıyan anahtarlar | `send`, `evm`, `deploy`, `svm` veya `all` iznine sahip bir anahtar için hesabın ilk etkin harcama kuralının her denom'u sınırlaması gerekir. Bir yardımcı, harcama kuralı güncellemesini ve bağlantıyı sahibin imzaladığı tek bir işlemde bir çift olarak oluşturur ve kuralı denetler |
+| Yönetişim parametreleri | crossvm, svm ve rdk `MsgUpdateParams` oluşturucuları her alanı gerektirir (zincir parametreleri bütünüyle değiştirir). Yeni yardımcılar, güncellemeyi ağdan okunan geçerli parametrelerden oluşturur. svm oluşturucusu, sert saklama tavanı 0 iken `enabled` değerini reddeder |
+| VM'ler arası bekleyen çağrı sorgusu | Sayfalı sorgu artık her sayfayı döndürür |
+| Yürütme sonuçları | `MsgExecuteEVM` ve `MsgExecuteCosmos`, kod 0 bir işlemin içinde `success=false` ile başarısız olabilir (nonce tüketilir). Yeni yardımcılar yanıtları ve başarısızlık nedenini çözer ve başarısız bir yürütmede hata fırlatır |
+| VM'ler arası eşzamansız çağrılar | `async_gas_limit` ve `async_max_factor` alanlarını alır |
+| EVM pencere kapsamı | Yeni alanlar: `validators`, `staking_validators` ve `ibc_receivers` |
+| Gas | 30.000.000'un üzerindeki EVM işlemleri (`evm_limits` içinden okunur) ve 50.000.000'un üzerindeki Cosmos işlemleri imzalamadan önce reddedilir. CosmWasm ve VM'ler arası işlemler simüle edilen gazın en az 1,3 katını alır ve asla sabit bir yedek değer almaz |
+| Asgari gas fiyatı | İsteğe bağlı yardımcılar ağın asgari gas fiyatını okur; varsayılan gas fiyatı değişmemiştir |
+| Protolar | Beş dilin hepsinde üretilen kod v3.2.8'i izler |
+
+Aynı değişikliğin cüzdan tarafı
+[`@qorechain/wallet-adapter` 0.6.0](/developer-tools/wallet-adapter#whats-new-060) sayfasındadır.
 
 ## 0.13.0 neyi değiştiriyor {#whats-new-0130}
 
@@ -159,7 +185,7 @@ sürümüdür. İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve üc
 değişmedi ve 0.9.0 ile oluşturulmuş bir işlem geçerli kalır. Sürüm, her dilde testnet
 üzerinde gerçek işlemlerle kontrol edildi. v3.2.4'ten sonra getirilen hiçbir şey için
 oluşturucuları yoktu; v3.2.5 ekleri [0.12.0](#whats-new-0120) ile geldi. Mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırır (yükseklik 4.020.000, yönetişim önerisi 15; öncesinde v3.2.5, 29 Ekim'den beri, yükseklik 3.906.833) ve imzalama biçimi değişmediği için 0.10.0 orada çalışmaya devam eder. Testnet v3.2.5 ve
-v3.2.6'yı 26 ve 27 Ekim 2026'da, v3.2.7'yi 6 Kasım'da ve v3.2.8'i 12 Kasım'da uyguladı (hiçbir SDK sürümünde v3.2.7 mesajları için oluşturucu yoktur). 0.10.0'ın getirdikleri (hepsi hâlâ 0.13.0'da):
+v3.2.6'yı 26 ve 27 Ekim 2026'da, v3.2.7'yi 6 Kasım'da ve v3.2.8'i 12 Kasım'da uyguladı (hiçbir SDK sürümünde v3.2.7 mesajları için oluşturucu yoktur). 0.10.0'ın getirdikleri (hepsi hâlâ 0.14.0'da):
 
 | Alan | 0.10.0'da |
 | --- | --- |
@@ -173,7 +199,7 @@ v3.2.6'yı 26 ve 27 Ekim 2026'da, v3.2.7'yi 6 Kasım'da ve v3.2.8'i 12 Kasım'da
 | Ücret simülasyonu sırasında ret | Yalnızca metin olarak gelen bir zincir reddi (örneğin "no bonus to claim"), artık her dilde zincirin kayıtlı hata açıklamalarından adlandırılır: `decodeTxError` (TypeScript), `SimulationRefusedError` (Python), `tx.DecodeRefusalText` (Go), `tx::decode_refusal_text` (Rust), `TxError.decode` (Java) |
 
 `@qorechain/react` ve `create-qorechain-dapp` onunla birlikte 0.10.0'a geçti; ikisi de
-artık 0.13.0'dadır.
+artık 0.14.0'dadır.
 
 ## 0.9.0 neler ekledi {#whats-new-090}
 
@@ -248,7 +274,7 @@ bir adaptördür. viem bir **peer dependency**'dir — birlikte kurun:
 npm i @qorechain/evm viem
 ```
 
-npm'de `0.13.0` sürümüyle yayımlanmıştır. `qorechain` (zincir kimliği 9801) ve `qorechainTestnet` (9800) viem zincirlerini ve [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window) yardımcılarını dışa aktarır.
+npm'de `0.14.0` sürümüyle yayımlanmıştır. `qorechain` (zincir kimliği 9801) ve `qorechainTestnet` (9800) viem zincirlerini ve [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window) yardımcılarını dışa aktarır.
 
 ### SVM adaptörü
 
@@ -260,7 +286,7 @@ ince bir adaptördür; `@solana/web3.js` bir **peer dependency**'dir:
 npm i @qorechain/svm @solana/web3.js
 ```
 
-npm'de `0.8.0` sürümüyle yayımlanmıştır.
+npm'de `0.14.0` sürümüyle yayımlanmıştır.
 
 ### React kiti
 
@@ -272,12 +298,12 @@ içerir. `react` (>=18) bir peer dependency'dir:
 npm i @qorechain/react
 ```
 
-npm'de `0.13.0` sürümüyle yayımlanmıştır; `@qorechain/sdk` `^0.13.0` sürümüne
+npm'de `0.14.0` sürümüyle yayımlanmıştır; `@qorechain/sdk` `^0.14.0` sürümüne
 bağımlıdır. Bkz. [React kiti kılavuzu](/sdk/guides/react).
 
 ### İskelet oluşturucu
 
-`create-qorechain-dapp` (npm, `0.13.1`), çalışmaya hazır bir dApp iskeleti
+`create-qorechain-dapp` (npm, `0.14.0`), çalışmaya hazır bir dApp iskeleti
 oluşturur:
 
 ```bash
@@ -285,8 +311,8 @@ npm create qorechain-dapp@latest my-dapp
 ```
 
 Oluşturulan `package.json` dosyaları, iskelet oluşturucunun birlikte geldiği SDK
-sürümüne bağımlıdır (`@qorechain/sdk` `^0.13.0`; EVM şablonları `@qorechain/evm`
-`^0.13.0` kullanır). Sürüm 0.13.1 yalnızca şablonları değiştirir; bkz. [İskele araçları ve CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131). Sözleşme çalışmaları için ayrıca `foundry`, `hardhat`, `viem-wagmi` ve `cosmwasm` şablonları vardır. İskelet oluşturucunun 0.8.0 sürümü `^0.3.0` aralıkları
+sürümüne bağımlıdır (`@qorechain/sdk` `^0.14.0`; EVM şablonları `@qorechain/evm`
+`^0.14.0` kullanır). Sürüm 0.13.1 yalnızca şablonları değiştirdi ve 0.14.0 bu düzeltmeleri taşır; bkz. [İskele araçları ve CLI](/developer-tools/scaffolders-and-cli#template-fixes-0131). Sözleşme çalışmaları için ayrıca `foundry`, `hardhat`, `viem-wagmi` ve `cosmwasm` şablonları vardır. İskelet oluşturucunun 0.8.0 sürümü `^0.3.0` aralıkları
 yazıyordu; bir 0.x sürümünde bunlar 0.3 içinde kalır ve canlı ağlar için
 imzalayamaz; 0.8.0 ile iskelet oluşturduysanız `npm i @qorechain/sdk@latest`
 çalıştırın. Bkz. [CLI başvurusu](/sdk/reference/cli).
@@ -300,7 +326,7 @@ pip install qorechain-sdk
 Python 3.10+ gerektirir. Paket, tip ipuçları ve bir `py.typed` işaretçisiyle
 birlikte gelir.
 
-> Dağıtım `qorechain-sdk` adıyla kurulur (PyPI'da `0.13.0` sürümüyle
+> Dağıtım `qorechain-sdk` adıyla kurulur (PyPI'da `0.14.0` sürümüyle
 > yayımlanmıştır) ancak **`qorsdk` adıyla içe aktarılır**:
 >
 > ```python
@@ -323,8 +349,8 @@ import (
 ```
 
 Kendi kendine yeten bir Go modülü olarak yayımlanmıştır
-(`packages/go/v0.13.0` etiketiyle). Sürümü açıkça sabitleyin:
-`go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0`.
+(`packages/go/v0.14.0` etiketiyle). Sürümü açıkça sabitleyin:
+`go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`.
 
 ## Rust
 
@@ -343,7 +369,7 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 Rust 1.74+ gerektirir. Okuma istemcileri asenkrondur (Tokio). Crate,
 `qorechain` adıyla içe aktarılır (`use qorechain;`).
 
-> crates.io'da `qorechain-sdk` (0.13.0) adıyla yayımlanmıştır; `cargo add qorechain-sdk`
+> crates.io'da `qorechain-sdk` (0.14.0) adıyla yayımlanmıştır; `cargo add qorechain-sdk`
 > en son sürümü kurar.
 
 ## Java
@@ -354,18 +380,19 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.13.0</version>
+  <version>0.14.0</version>
 </dependency>
 ```
 
 Ya da Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.13.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 ```
 
 > Maven Central'da `io.github.qorechain:qorechain-sdk` adıyla yayımlanmıştır
-> (0.13.0, 11 Kasım 2026'da kontrol edildi). JDK 17 veya üzeri gerekir.
+> Maven Central 12 Kasım 2026'da hâlâ 0.13.0 gösteriyor (0.14.0 POM'u henüz orada değildi);
+> görününce 0.14.0'ı kullanın, o zamana kadar 0.13.0'ı. JDK 17 veya üzeri gerekir.
 > Central'da 0.8.0 veya 0.8.1 derlemesi yoktur; bu nedenle canlı ağlarda 0.8.2
 > veya sonrasını kullanın. 0.9.1, Bouncy Castle'ı 1.80'den 1.85'e API değişikliği
 > olmadan taşıyan yalnızca Java'ya özel bir sürümdü.

@@ -9,8 +9,8 @@ sidebar_position: 34
 
 Zincir geliştirici kiti, Solidity ve akıllı sözleşme ekiplerinin zaten kullandıkları araçlarla QoreChain üzerinde geliştirme yapmasına yardımcı olan QoreChain SDK'nın parçasıdır. `@qorechain/evm` paketine viem zincir tanımlarını ve EVM yetkilendirme penceresi yardımcılarını, `create-qorechain-dapp` aracına dört proje şablonunu (Foundry, Hardhat 3, wagmi ile viem ve bir QoreChain Native CosmWasm token'ı), beş dil için EVM hızlı başlangıçlarını ve QoreChain EVM'inin Ethereum'dan nasıl ayrıştığını anlatan bir başvuru belgesini ekler. Sözleşmeleri Ethereum'dan taşıyan Solidity ekipleri, wagmi ve RainbowKit kullanan dApp ön yüz geliştiricileri, CosmWasm geliştiricileri ve araçlarına QoreChain'i eklemek isteyen EVM araç bakımcıları için hazırlanmıştır.
 
-:::note Canlı: SDK 0.13.0'a dahildir
-Kit, QoreChain SDK **0.13.0** içinde (npm, 11 Kasım 2026) **canlıdır ve kurulabilir**: `@qorechain/evm` 0.13.0, `@qorechain/sdk` 0.13.0, `@qorechain/react` 0.13.0, `@qorechain/svm` 0.13.0 ve `create-qorechain-dapp` 0.13.1 (SDK 0.13.0'ın üzerine yalnızca şablonları içeren bir yama, 12 Kasım 2026); Python, Rust ve Go SDK'ları da 0.13.0'dadır (Java SDK da Maven Central'da 0.13.0'dır, 11 Kasım 2026'da kontrol edildi). İçeriği ilk olarak yalnızca npm'de 0.11.0 olarak yayımlandı (29 Ekim 2026) ve 0.12.0'da (30 Ekim 2026) yer aldı; başka hiçbir kayıt defterinde 0.11.0 yoktur. Bu sayfadaki test çalıştırmaları 4 Kasım 2026'da 0.12.0'a karşı yapıldı; 0.13.0, seed yolu hesap yardımcısını ve şablonların `PRIVATE_KEY` işleyişini değiştirdi (bkz. [0.13.0 neyi değiştiriyor](/sdk/install#whats-new-0130)).
+:::note Canlı: SDK 0.14.0'a dahildir
+Kit, QoreChain SDK **0.14.0** içinde (npm, 12 Kasım 2026) **canlıdır ve kurulabilir**: `@qorechain/evm`, `@qorechain/sdk`, `@qorechain/react`, `@qorechain/svm` ve `create-qorechain-dapp` (0.13.1 şablon düzeltmelerini de taşır) hep 0.14.0'dadır; Python, Rust ve Go SDK'ları da 0.14.0'dadır (Maven Central 12 Kasım 2026'da hâlâ Java 0.13.0 gösteriyor; görününce 0.14.0'ı kullanın). İçeriği ilk olarak yalnızca npm'de 0.11.0 olarak yayımlandı (29 Ekim 2026) ve 0.12.0'da (30 Ekim 2026) yer aldı; başka hiçbir kayıt defterinde 0.11.0 yoktur. Bu sayfadaki test çalıştırmaları 4 Kasım 2026'da 0.12.0'a karşı yapıldı; 0.13.0, seed yolu hesap yardımcısını ve şablonların `PRIVATE_KEY` işleyişini değiştirdi (bkz. [0.13.0 neyi değiştiriyor](/sdk/install#whats-new-0130)) ve 0.14.0, yeni pencere kapsamı alanları dahil zincir v3.2.8 için istemci desteği ekler (bkz. [0.14.0 neyi değiştiriyor](/sdk/install#whats-new-0140)).
 :::
 
 Kit, ana ağı (`qorechain-vladi`, EVM zincir kimliği 9801) ve test ağını (`qorechain-diana`, EVM zincir kimliği 9800) hedefler.
@@ -20,14 +20,14 @@ Kit, ana ağı (`qorechain-vladi`, EVM zincir kimliği 9801) ve test ağını (`
 | Öğe | Paket ve sürüm | Nerede |
 |---|---|---|
 | Herkese açık uç noktalara karşı ethers v6, web3.py, go-ethereum, alloy veya web3j ile okuma | QoreChain paketi gerekmez | [Hızlı başlangıç 1](#quickstart-ethers) |
-| `createEvmClient`, ERC-20, ERC-721 ve ERC-1155 yardımcıları, `precompiles` bağlamaları, `PRECOMPILE_ADDRESSES` | `@qorechain/evm` 0.13.0 | [Hızlı başlangıç 2](#quickstart-evm-080) |
-| viem zincir tanımları `qorechain` ve `qorechainTestnet`, `QORECHAIN_CHAINS`, `QORECHAIN_REST_ENDPOINTS` | `@qorechain/evm` 0.13.0 | [Hızlı başlangıç 3](#quickstart-viem) |
-| `evmWindowStatus`, `openEvmWindowMessage`, `evmWindowCost`, `classifyEvmWindowRejection`, adres dönüştürücüler, pencere sabitleri, alt yol `@qorechain/evm/window` | `@qorechain/evm` 0.13.0 | [Hızlı başlangıç 4](#quickstart-window-helpers) |
-| Bir EVM yetkilendirme penceresini imzalayarak açma ve okuma, `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount` ile | `@qorechain/sdk` 0.13.0 | [Hızlı başlangıç 5](#quickstart-open-window) |
-| Python, Go, Rust ve Java'da aynı pencere oluşturucuları | 0.13.0 SDK'ları | [Ana API](#main-api) |
-| EIP-7702 onay yardımcıları `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection` | `@qorechain/sdk` 0.13.0 | [Ana API](#main-api) |
-| Yedi iskele aracı şablonu: `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` ve `pnpm window` yardımcısı | `create-qorechain-dapp` 0.13.1 | [Şablonlar](#templates) |
-| `PqcStatusBadge` | `@qorechain/react` 0.13.0 | [Ana API](#main-api) |
+| `createEvmClient`, ERC-20, ERC-721 ve ERC-1155 yardımcıları, `precompiles` bağlamaları, `PRECOMPILE_ADDRESSES` | `@qorechain/evm` 0.14.0 | [Hızlı başlangıç 2](#quickstart-evm-080) |
+| viem zincir tanımları `qorechain` ve `qorechainTestnet`, `QORECHAIN_CHAINS`, `QORECHAIN_REST_ENDPOINTS` | `@qorechain/evm` 0.14.0 | [Hızlı başlangıç 3](#quickstart-viem) |
+| `evmWindowStatus`, `openEvmWindowMessage`, `evmWindowCost`, `classifyEvmWindowRejection`, adres dönüştürücüler, pencere sabitleri, alt yol `@qorechain/evm/window` | `@qorechain/evm` 0.14.0 | [Hızlı başlangıç 4](#quickstart-window-helpers) |
+| Bir EVM yetkilendirme penceresini imzalayarak açma ve okuma, `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount` ile | `@qorechain/sdk` 0.14.0 | [Hızlı başlangıç 5](#quickstart-open-window) |
+| Python, Go, Rust ve Java'da aynı pencere oluşturucuları | 0.14.0 SDK'ları | [Ana API](#main-api) |
+| EIP-7702 onay yardımcıları `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection` | `@qorechain/sdk` 0.14.0 | [Ana API](#main-api) |
+| Yedi iskele aracı şablonu: `evm-solidity`, `fullstack-web`, `rollup-app`, `foundry`, `hardhat`, `viem-wagmi`, `cosmwasm` ve `pnpm window` yardımcısı | `create-qorechain-dapp` 0.14.0 | [Şablonlar](#templates) |
+| `PqcStatusBadge` | `@qorechain/react` 0.14.0 | [Ana API](#main-api) |
 
 ## Yenilikler {#innovations}
 
@@ -57,7 +57,7 @@ Kitten önce de vardı (0.8.0 ve sonrası): `createEvmClient`, `evmAccountFromPr
 
 ### Şablonlar {#templates}
 
-`create-qorechain-dapp` 0.13.1 aracının yedi şablonu vardır: `evm-solidity`, `fullstack-web` ve `rollup-app` (bkz. [İskele araçları ve CLI](/developer-tools/scaffolders-and-cli)) ile kite ait dört şablon:
+`create-qorechain-dapp` 0.14.0 aracının yedi şablonu vardır: `evm-solidity`, `fullstack-web` ve `rollup-app` (bkz. [İskele araçları ve CLI](/developer-tools/scaffolders-and-cli)) ile kite ait dört şablon:
 
 | Şablon | Ne elde edersiniz |
 |---|---|
@@ -66,11 +66,11 @@ Kitten önce de vardı (0.8.0 ve sonrası): `createEvmClient`, `evmAccountFromPr
 | `viem-wagmi` | QoreX cüzdanı (`@qorechain/qorex-rainbowkit`) ve `@qorechain/evm` zincir tanımlarıyla bir Vite, React, wagmi ve RainbowKit dApp'i. Son bloğu, QOR bakiyesini ve hesabın EVM penceresini gösterir. viem `~2.53.1` sürümüne sabitlenir ve REST'e bir Vite `/lcd` vekili üzerinden ulaşır (herkese açık REST CORS başlıkları göndermez); bu yüzden tarayıcı kodu geliştirme sırasında `/lcd/...` çağırır (0.13.1). |
 | `cosmwasm` | cw-plus içindeki `cw20-base` üzerine kurulu bir QoreChain Native (CosmWasm) CW20 token'ı, Docker'da optimize edilmiş bir derleme, bir yönetişim yükleme önerisi betiği ve test ağı örnekleme (instantiate) ve sorgu betikleri. |
 
-Şablonlar `@qorechain/evm` ve `@qorechain/sdk` paketlerini `^0.13.0` sürümüne sabitler (0.12.0 şablonları `^0.12.0` sürümüne sabitliyordu; 4 Kasım 2026'da bir `foundry` iskeletinden okundu).
+Şablonlar `@qorechain/evm` ve `@qorechain/sdk` paketlerini `^0.14.0` sürümüne sabitler (0.12.0 şablonları `^0.12.0` sürümüne sabitliyordu; 4 Kasım 2026'da bir `foundry` iskeletinden okundu).
 
 ### SDK deposundaki kılavuzlar {#guides}
 
-Depoda (`docs/docs/guides/`, etiket `v0.13.0`) `evm-quickstarts.md` (viem, ethers v6, web3.py, go-ethereum, alloy ve web3j için okumalar ve bir "Before you send" bölümü), `evm-differences.md` ("QoreChain EVM compared with Ethereum"), `evm.md` ve `cosmwasm.md` bulunur. Aynı içerik bu sitede: [EVM kılavuzu](/sdk/guides/evm), [EVM geliştirme](/developer-guide/evm-development) ve [QoreChain Native geliştirme](/developer-guide/cosmwasm-development).
+Depoda (`docs/docs/guides/`, etiket `v0.14.0`) `evm-quickstarts.md` (viem, ethers v6, web3.py, go-ethereum, alloy ve web3j için okumalar ve bir "Before you send" bölümü), `evm-differences.md` ("QoreChain EVM compared with Ethereum"), `evm.md` ve `cosmwasm.md` bulunur. Aynı içerik bu sitede: [EVM kılavuzu](/sdk/guides/evm), [EVM geliştirme](/developer-guide/evm-development) ve [QoreChain Native geliştirme](/developer-guide/cosmwasm-development).
 
 Depoda ayrıca, `contrib/` ve `templates/scaffold-eth-extension/` altında diğer araçlar için katkı dosyaları (viem zincir tanımları, Sourcify zincir kayıtları ve bir Scaffold-ETH 2 uzantısı) bulunur. Bunlar depoda hazırlanmış dosyalardır, yukarı akışa birleştirilmemiştir.
 
@@ -119,14 +119,14 @@ Okuyan tüm kod parçaları herkese açık test ağını (`qorechain-diana`, EVM
 
 | Dil veya araç | Kurulum | Asgari platform |
 |---|---|---|
-| TypeScript, EVM okumaları, ERC yardımcıları, viem zincir tanımları, pencere yardımcıları | `npm install @qorechain/evm viem` (0.13.0) | Node.js 20 veya üstü; peer `viem ^2` |
-| TypeScript, pencere mesajını imzalama | `npm install @qorechain/sdk` (0.13.0'da `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount` vardır) | Node.js 20 veya üstü |
-| React, PQC durum rozeti | `npm install @qorechain/react @qorechain/sdk react react-dom` (0.13.0) | Node.js 20 veya üstü |
-| İskele aracı, yedi şablonun tümü | `npx create-qorechain-dapp my-app --template <name>` (0.13.1) | Node.js 20 veya üstü; `foundry` için Foundry; `hardhat` için Node.js 22 (Hardhat 3); `cosmwasm` için Rust ve Docker |
-| Python (EVM okumaları) | `pip install "web3>=7,<8"`; pencere mesajı `pip install qorechain-sdk` (0.13.0) ile | Python 3.10 veya üstü |
-| Go (EVM okumaları) | `go get github.com/ethereum/go-ethereum@latest`; pencere mesajı `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` ile | Go araç zinciri |
-| Rust (EVM okumaları) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; pencere mesajı `qorechain-sdk` 0.13.0 crate'inden | Rust stable |
-| Java (EVM okumaları) | `org.web3j:core:5.0.0`; pencere mesajı `io.github.qorechain:qorechain-sdk:0.13.0` paketinden (Maven Central'da yayımlandı, 11 Kasım 2026'da kontrol edildi) | JDK 21 (QoreChain Java SDK, JDK 21 araç zinciriyle derlenir) |
+| TypeScript, EVM okumaları, ERC yardımcıları, viem zincir tanımları, pencere yardımcıları | `npm install @qorechain/evm viem` (0.14.0) | Node.js 20 veya üstü; peer `viem ^2` |
+| TypeScript, pencere mesajını imzalama | `npm install @qorechain/sdk` (0.14.0'da `openEvmWindowMsg`, `fetchEvmWindow`, `EthNativeSigner`, `deriveUnifiedAccount` vardır) | Node.js 20 veya üstü |
+| React, PQC durum rozeti | `npm install @qorechain/react @qorechain/sdk react react-dom` (0.14.0) | Node.js 20 veya üstü |
+| İskele aracı, yedi şablonun tümü | `npx create-qorechain-dapp my-app --template <name>` (0.14.0) | Node.js 20 veya üstü; `foundry` için Foundry; `hardhat` için Node.js 22 (Hardhat 3); `cosmwasm` için Rust ve Docker |
+| Python (EVM okumaları) | `pip install "web3>=7,<8"`; pencere mesajı `pip install qorechain-sdk` (0.14.0) ile | Python 3.10 veya üstü |
+| Go (EVM okumaları) | `go get github.com/ethereum/go-ethereum@latest`; pencere mesajı `go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0` ile | Go araç zinciri |
+| Rust (EVM okumaları) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`; pencere mesajı `qorechain-sdk` 0.14.0 crate'inden | Rust stable |
+| Java (EVM okumaları) | `org.web3j:core:5.0.0`; pencere mesajı `io.github.qorechain:qorechain-sdk:0.14.0` paketinden (Maven Central 12 Kasım 2026'da hâlâ 0.13.0 gösteriyor; görününce 0.14.0'ı kullanın) | JDK 21 (QoreChain Java SDK, JDK 21 araç zinciriyle derlenir) |
 
 ### Hızlı başlangıç 1: ethers v6 ile okuma {#quickstart-ethers}
 
@@ -274,7 +274,7 @@ cd my-dapp && npm run build
 
 `@qorechain/evm`, yerel katman işlemlerini imzalamaz veya yayınlamaz; bunun için `@qorechain/sdk` veya dil SDK'larını kullanın.
 
-### Her SDK'da bir pencere oluşturma ve okuma (0.13.0) {#api-window}
+### Her SDK'da bir pencere oluşturma ve okuma (0.14.0) {#api-window}
 
 | Dil | Pencere açma | Pencere okuma |
 |---|---|---|
@@ -284,9 +284,9 @@ cd my-dapp && npm run build
 | Rust | `qorechain::msg::pqc::open_evm_window` | REST `/qorechain/pqc/v1/evm_window/{address}` |
 | Java | `io.github.qorechain.evm.EvmWindow.open` | `EvmWindow.restPath` |
 
-EIP-7702 onayı (TypeScript, `@qorechain/sdk` 0.13.0): `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection`.
+EIP-7702 onayı (TypeScript, `@qorechain/sdk` 0.14.0): `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `classifyEvmDelegationRejection`.
 
-`@qorechain/react` 0.13.0, `PqcStatusBadge` bileşenini (varsayılan etiketler "PQC key registered" ve "No PQC key") eski `QuantumSafeBadge` bileşeninin yanında dışa aktarır.
+`@qorechain/react` 0.14.0, `PqcStatusBadge` bileşenini (varsayılan etiketler "PQC key registered" ve "No PQC key") eski `QuantumSafeBadge` bileşeninin yanında dışa aktarır.
 
 ### `create-qorechain-dapp` bayrakları {#api-scaffolder}
 
@@ -335,26 +335,26 @@ EIP-7702 onayı (TypeScript, `@qorechain/sdk` 0.13.0): `authorizeEvmDelegationMs
 
 ## Nerede yayımlandı {#where-published}
 
-Sürümler 11 Kasım 2026'da kayıt defterlerinden canlı okundu. GitHub etiketi `v0.12.0` mevcut. Beş npm paketinin ayrıca aynı kit içeriğini taşıyan bir 0.11.0 sürümü de vardır (29 Ekim 2026); Python, Rust, Go ve Java SDK'ları doğrudan 0.10.0'dan 0.12.0'a geçti ve her dil 0.13.0'dadır.
+Sürümler 12 Kasım 2026'da kayıt defterlerinden canlı okundu. GitHub etiketi `v0.12.0` mevcut. Beş npm paketinin ayrıca aynı kit içeriğini taşıyan bir 0.11.0 sürümü de vardır (29 Ekim 2026); Python, Rust, Go ve Java SDK'ları doğrudan 0.10.0'dan 0.12.0'a geçti ve Java dışındaki her dil 0.14.0'dadır (Java, Maven Central'da 0.13.0'dadır).
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|
-| npm | `@qorechain/evm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/evm |
-| npm | `@qorechain/sdk` | 0.13.0 | https://www.npmjs.com/package/@qorechain/sdk |
-| npm | `@qorechain/react` | 0.13.0 | https://www.npmjs.com/package/@qorechain/react |
-| npm | `@qorechain/svm` | 0.13.0 | https://www.npmjs.com/package/@qorechain/svm |
-| npm | `create-qorechain-dapp` | 0.13.1 (yedi şablon) | https://www.npmjs.com/package/create-qorechain-dapp |
+| npm | `@qorechain/evm` | 0.14.0 | https://www.npmjs.com/package/@qorechain/evm |
+| npm | `@qorechain/sdk` | 0.14.0 | https://www.npmjs.com/package/@qorechain/sdk |
+| npm | `@qorechain/react` | 0.14.0 | https://www.npmjs.com/package/@qorechain/react |
+| npm | `@qorechain/svm` | 0.14.0 | https://www.npmjs.com/package/@qorechain/svm |
+| npm | `create-qorechain-dapp` | 0.14.0 (yedi şablon) | https://www.npmjs.com/package/create-qorechain-dapp |
 | npm | `@qorechain/qorex-rainbowkit` (`viem-wagmi` tarafından kullanılır) | 0.1.0 | https://www.npmjs.com/package/@qorechain/qorex-rainbowkit |
-| PyPI | `qorechain-sdk` | 0.13.0 | https://pypi.org/project/qorechain-sdk/ |
-| crates.io | `qorechain-sdk` | 0.13.0 | https://crates.io/crates/qorechain-sdk |
-| Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.13.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| PyPI | `qorechain-sdk` | 0.14.0 | https://pypi.org/project/qorechain-sdk/ |
+| crates.io | `qorechain-sdk` | 0.14.0 | https://crates.io/crates/qorechain-sdk |
+| Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 12 Kasım 2026'da 0.13.0; 0.14.0 henüz orada değil | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
-Kaynak: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), etiket `v0.13.0`; yollar `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, QoreChain Association tarafından sürdürülür.
+Kaynak: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), etiket `v0.14.0`; yollar `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, QoreChain Association tarafından sürdürülür.
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
-- **npm'deki 0.11.0 geçersiz kılındı.** 0.13.0'ı kullanın; 0.11.0 yalnızca npm'de vardır ve 0.13.0'daki şablonlar `^0.13.0` sürümüne bağlıdır.
+- **npm'deki 0.11.0 geçersiz kılındı.** 0.14.0'ı kullanın; 0.11.0 yalnızca npm'de vardır ve 0.14.0'daki şablonlar `^0.14.0` sürümüne bağlıdır.
 - **`@qorechain/evm` pencereyi okur ve mesajı oluşturur; yerel katman işlemlerini imzalamaz veya yayınlamaz.**
 - **Hiçbir yardımcı, bir gönderimden önce otomatik olarak pencere açmaz**, bu bilinçli bir tasarımdır.
 - **`viem-wagmi` şablonundaki QoreX cüzdanı** `eth_chainId`, `eth_accounts`, `eth_requestAccounts` ve `wallet_switchEthereumChain` çağrılarını yanıtlar; EVM imzalama metotları henüz mevcut değildir. Bağlanmak ve okumak için kullanın, imzalamayı enjekte edilmiş bir EIP-1193 cüzdanıyla yapın.
@@ -376,7 +376,7 @@ Kaynak: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorech
 
 ## İlgili sayfalar {#related}
 
-- [Geliştirici paketlerine genel bakış](/developer-tools/overview) ve [İskele araçları ve CLI](/developer-tools/scaffolders-and-cli) (`create-qorechain-dapp` 0.13.1)
+- [Geliştirici paketlerine genel bakış](/developer-tools/overview) ve [İskele araçları ve CLI](/developer-tools/scaffolders-and-cli) (`create-qorechain-dapp` 0.14.0)
 - [SDK'ya genel bakış](/sdk/overview), [SDK kurulumu](/sdk/install) ve [EVM kılavuzu](/sdk/guides/evm) (pencere, kapsamlı pencereler, EIP-7702 onayı, precompile'lar)
 - [EVM geliştirme](/developer-guide/evm-development) ve [EVM Precompile'ları](/developer-guide/evm-precompiles#network-status)
 - [QoreChain Native geliştirme](/developer-guide/cosmwasm-development) (CosmWasm ve yönetişim önerileri)

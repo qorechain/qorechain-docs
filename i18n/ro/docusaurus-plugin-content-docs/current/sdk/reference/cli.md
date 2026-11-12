@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publicat pe npm ca `create-qorechain-dapp` (`0.13.1`, un patch doar pentru șabloane, peste SDK 0.13.0). Fișierele `package.json`
-> generate depind de `@qorechain/sdk` `^0.13.0` (șabloanele EVM de `@qorechain/evm`
-> `^0.13.0`). Versiunea 0.8.0 a schelei scria intervale `^0.3.0`, pe care npm le
+> Publicat pe npm ca `create-qorechain-dapp` (`0.14.0`, care poartă și corecțiile de șabloane din 0.13.1). Fișierele `package.json`
+> generate depind de `@qorechain/sdk` `^0.14.0` (șabloanele EVM de `@qorechain/evm`
+> `^0.14.0`). Versiunea 0.8.0 a schelei scria intervale `^0.3.0`, pe care npm le
 > rezolvă la o versiune 0.3 care nu poate semna pentru rețelele live; dacă ai generat
 > proiectul cu 0.8.0, rulează `npm i @qorechain/sdk@latest`.
 
@@ -54,7 +54,7 @@ citire REST, precum `client.rest.getBurnStats()`, pentru rețelele publice.
 | Flag | Descriere |
 | --- | --- |
 | `-t, --template <name>` | Șablonul de utilizat (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | Presetare de rețea (`testnet` \| `mainnet`). Scrie punctele finale publice ale rețelei alese în `.env` generat (0.13.1). |
+| `--network <name>` | Presetare de rețea (`testnet` \| `mainnet`). Scrie punctele finale publice ale rețelei alese în `.env` generat (începând cu 0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Sari peste prompturi și folosește valorile implicite. |
 | `--no-install` | Nu instala dependențele după schelărie. |

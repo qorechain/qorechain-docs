@@ -153,10 +153,10 @@ Program-ID-Konstanten.
 
 | Sprache | Generierte Dokumentation | Installation |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — Docstrings auf der öffentlichen API | `pip install qorechain-sdk` in Version `0.13.0` (Import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0` (Tag `packages/go/v0.13.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.13.0; Import `qorechain`) |
-| Java | Maven-Central-Javadoc | `io.github.qorechain:qorechain-sdk:0.13.0` (auf Maven Central veröffentlicht, geprüft am 11. November 2026) |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — Docstrings auf der öffentlichen API | `pip install qorechain-sdk` in Version `0.14.0` (Import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.14.0` (Tag `packages/go/v0.14.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.14.0; Import `qorechain`) |
+| Java | Maven-Central-Javadoc | `io.github.qorechain:qorechain-sdk:0.14.0` (Maven Central zeigt am 12. November 2026 weiterhin 0.13.0; verwenden Sie 0.14.0, sobald es erscheint) |
 
 Jedes Paket spiegelt dieselbe Oberfläche wider (Netzwerk-Presets,
 Denom-/Adress-Hilfsfunktionen, HD-Ableitung — einschließlich unified

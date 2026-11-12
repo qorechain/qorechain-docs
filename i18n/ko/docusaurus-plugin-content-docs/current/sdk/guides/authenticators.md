@@ -121,6 +121,52 @@ const limits = msg.abstractaccount.updateSpendingRules({
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`를 브로드캐스트합니다.
 
+### 체인 v3.2.8부터의 연결 (SDK 0.14.0) {#link-v328}
+
+체인 v3.2.8부터(테스트넷은 2026년 11월 12일부터, 메인넷은 아직 적용하지 않음)
+위의 등록은 **소유 증명**이 없으면 거부됩니다. 연결할 키가 체인, 계정, 방식, 키를
+명시한 일반 텍스트 메시지에 서명하는 것입니다. `send`, `evm`, `deploy`, `svm`,
+`all` 권한이 있는 키는 계정의 첫 번째 활성 지출 규칙이 모든 denom을 제한해야 합니다.
+SDK 0.14.0에는 둘 모두를 위한 헬퍼가 있으며, `linkAuthenticatorMsgs`는 지출 규칙과
+연결을 소유자가 서명하는 한 트랜잭션에서 보낼 순서대로 구성합니다. 이 스니펫은
+0.14.0 소스를 따랐으며 실행하지 않았습니다.
+
+```ts
+import { linkAuthenticatorMsgs, signAuthenticatorLinkPhantom } from "@qorechain/sdk";
+
+// The key being linked signs the link message (Phantom signMessage here).
+const proof = await signAuthenticatorLinkPhantom({
+  chainId: "qorechain-diana",
+  account: canonicalAccount,
+  wallet: window.solana,
+});
+
+const msgs = linkAuthenticatorMsgs({
+  owner: canonicalAccount,
+  chainId: "qorechain-diana",   // optional: checks the proof before anything is built
+  scheme: proof.scheme,
+  pubkey: proof.pubkey,
+  possessionProof: proof.possessionProof,
+  permissions: ["send"],
+  expiryUnix: Math.floor(Date.now() / 1000) + 7 * 24 * 3600,
+  label: "phantom",
+  // Replaces the account's rules wholesale: pass every rule to keep.
+  spendingRules: [{ id: "phantom-hot", enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+// Sign msgs in one owner-signed hybrid transaction.
+```
+
+같은 파일에 다른 키 유형을 위한 `signAuthenticatorLinkEd25519`,
+`signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191`,
+`signAuthenticatorLinkMetaMask`가 있으며, 등록 컴포저는 빈 증명을 거부합니다.
+v3.2.8 미만 네트워크에서는 증명이 선택 사항으로 남습니다.
+
+v3.2.8부터 인가된 `MsgExecuteEVM` 또는 `MsgExecuteCosmos`가 실패하면 코드 0
+트랜잭션 안에서 `success=false`를 반환하고 논스는 그대로 소비됩니다. 릴레이어
+브로드캐스트 후에는 `assertAuthenticatorExecutionsSucceeded(result, messages)`를
+호출하거나, `decodeAuthenticatorExecutions`로 각 결과를 읽어 실패한 실행을 성공으로
+착각하지 않도록 하세요.
+
 ## Phantom으로 지출하기 (Native 레인, 릴레이어 경유)
 
 키가 연결되면 브라우저에서 릴레이어에 전달할 수 있는 `MsgExecuteCosmos`를

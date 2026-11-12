@@ -90,6 +90,50 @@ const limits = msg.abstractaccount.updateSpendingRules({
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })` をブロードキャストします。
 
+### チェーン v3.2.8 からのリンク（SDK 0.14.0） {#link-v328}
+
+チェーン v3.2.8 以降（テストネットは 2026年11月12日から。メインネットはまだ適用していません）では、
+上記の登録は、**所有証明**がない限り拒否されます。リンクする鍵が、チェーン、アカウント、スキーム、
+鍵を明記した平文のメッセージに署名します。`send`、`evm`、`deploy`、`svm`、`all` のいずれかを持つ鍵では、
+アカウントで最初に有効な支出ルールがすべてのデノミネーションを制限している必要もあります。
+SDK 0.14.0 には両方のヘルパーがあり、`linkAuthenticatorMsgs` は、支出ルールとリンクを、
+オーナーが署名する 1 つのトランザクションで送る順序で構築します。このスニペットは 0.14.0 のソースに基づいており、
+実行はしていません:
+
+```ts
+import { linkAuthenticatorMsgs, signAuthenticatorLinkPhantom } from "@qorechain/sdk";
+
+// The key being linked signs the link message (Phantom signMessage here).
+const proof = await signAuthenticatorLinkPhantom({
+  chainId: "qorechain-diana",
+  account: canonicalAccount,
+  wallet: window.solana,
+});
+
+const msgs = linkAuthenticatorMsgs({
+  owner: canonicalAccount,
+  chainId: "qorechain-diana",   // optional: checks the proof before anything is built
+  scheme: proof.scheme,
+  pubkey: proof.pubkey,
+  possessionProof: proof.possessionProof,
+  permissions: ["send"],
+  expiryUnix: Math.floor(Date.now() / 1000) + 7 * 24 * 3600,
+  label: "phantom",
+  // Replaces the account's rules wholesale: pass every rule to keep.
+  spendingRules: [{ id: "phantom-hot", enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+// Sign msgs in one owner-signed hybrid transaction.
+```
+
+同じファイルには、ほかの鍵の種類向けの `signAuthenticatorLinkEd25519`、`signAuthenticatorLinkSecp256k1`、
+`signAuthenticatorLinkEip191`、`signAuthenticatorLinkMetaMask` があり、register コンポーザーは空の証明を
+拒否します。v3.2.8 より前のネットワークでは、証明は任意のままです。
+
+v3.2.8 以降、認可された `MsgExecuteEVM` または `MsgExecuteCosmos` が失敗すると、コード 0 のトランザクション内で
+`success=false` を返し、ナンスは消費されたままになります。リレイヤーがブロードキャストした後は、
+`assertAuthenticatorExecutionsSucceeded(result, messages)` を呼び出すか、`decodeAuthenticatorExecutions` で
+各結果を読み取って、失敗した実行を成功と取り違えないようにしてください。
+
 ## Phantom からの支出（Native レーン、リレイヤー経由）
 
 キーがリンクされると、ブラウザ側でリレイヤーに渡せる `MsgExecuteCosmos` を構築できます。`buildPhantomExecuteCosmos` はドメイン分離されたダイジェストを再構築し、Phantom に署名させ（`signMessage`）、`{ typeUrl, value }` 形式のメッセージを返します。

@@ -235,6 +235,36 @@ await tx.signAndBroadcast(
 );
 ```
 
+### Daha fazla kapsam listesi (zincir v3.2.8'den beri, SDK 0.14.0) {#evm-window-scope-v328}
+
+Zincir v3.2.8'den itibaren (test ağı 12 Kasım 2026'dan beri; ana ağ henüz uygulamadı)
+bir pencere üç liste daha taşıyabilir ve `openEvmWindowMsg` bunları SDK 0.14.0'dan
+itibaren kabul eder: `validators` (hesabın imzasını denetlemesi, hesabın kendi
+eylemleri için sayılan en fazla 16 sözleşme adresi; örneğin bir doğrulayıcı modülü veya
+bir ERC-4337 giriş noktası), `stakingValidators` (pencerenin staking precompile'ı
+üzerinden delege edebileceği veya yeniden delege edebileceği `qorvaloper1...`
+doğrulayıcıları) ve `ibcReceivers` (her biri `"<channel>/<receiver>"` biçiminde yazılan
+ICS-20 alıcıları). Oluşturucu biçimi denetler ve herhangi bir şey imzalanmadan önce
+yinelenenleri reddeder. Bunları yalnızca v3.2.8 çalıştıran bir ağda ayarlayın: bunun
+altındaki bir düğüm mesajı reddeder. `fetchEvmWindow` bu üç listeyi döndürmez; onları
+REST üzerinden okuyun. Bu biçimde bir çağrı (`allowedTargets`, `stakingValidators` ve
+`ibcReceivers` ayarlı), 12 Kasım 2026'da SDK 0.14.0 ile test ağında çalıştırıldı ve
+kod 0 ile başarılı oldu (195,233 gaz kullanıldı); REST geri okuması `allowed_targets`
+değerini listeledi ve diğer iki listeyi döndürmedi:
+
+```ts
+openEvmWindowMsg({
+  sender: account.address,
+  blocks: 7200,
+  maxTxs: 20,
+  maxValue: "1000000000",
+  stakingValidators: ["qorvaloper1..."],
+  ibcReceivers: ["channel-0/cosmos1..."],
+});
+```
+
+Kurallar için [EVM pencere başvurusuna](/developer-guide/evm-window-reference) bakın.
+
 ### EIP-7702 onayı (zincir v3.2.2'den beri, SDK 0.9.0) {#evm-delegation-consent}
 
 Bir tip-4 (EIP-7702) işlemi, ancak yetkilendirmesi yürürlüğe giren her hesap, hibrit

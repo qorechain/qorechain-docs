@@ -19,9 +19,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> npm'e `create-qorechain-dapp` (`0.13.1`, SDK 0.13.0'ın üzerine yalnızca şablonları içeren bir yama) olarak yayınlandı. Oluşturulan
-> `package.json` dosyaları `@qorechain/sdk` `^0.13.0` sürümüne bağımlıdır (EVM şablonları
-> ise `@qorechain/evm` `^0.13.0` sürümüne). İskeleleyicinin 0.8.0 sürümü `^0.3.0`
+> npm'e `create-qorechain-dapp` (`0.14.0`, 0.13.1 şablon düzeltmelerini de taşır) olarak yayınlandı. Oluşturulan
+> `package.json` dosyaları `@qorechain/sdk` `^0.14.0` sürümüne bağımlıdır (EVM şablonları
+> ise `@qorechain/evm` `^0.14.0` sürümüne). İskeleleyicinin 0.8.0 sürümü `^0.3.0`
 > aralıkları yazıyordu; npm bunu canlı ağlar için imzalayamayan bir 0.3 sürümüne çözer.
 > 0.8.0 ile iskelelediyseniz `npm i @qorechain/sdk@latest` komutunu çalıştırın.
 
@@ -53,7 +53,7 @@ panel bir hata gösterir; bakiye okuması çalışır. Genel ağlar için bunu
 | Bayrak | Açıklama |
 | --- | --- |
 | `-t, --template <name>` | Kullanılacak şablon (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | Ağ ön ayarı (`testnet` \| `mainnet`). Seçilen ağın herkese açık uç noktalarını üretilen `.env` dosyasına yazar (0.13.1). |
+| `--network <name>` | Ağ ön ayarı (`testnet` \| `mainnet`). Seçilen ağın herkese açık uç noktalarını üretilen `.env` dosyasına yazar (0.13.1'den beri). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | İstemleri atlayın ve varsayılanları kullanın. |
 | `--no-install` | İskeleleme sonrasında bağımlılıkları kurmayın. |

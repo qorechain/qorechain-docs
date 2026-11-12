@@ -162,6 +162,8 @@ const msg = registerEthAuthenticatorMsg({
    텍스트에 체인, 계정, 방식, 키가 명시되므로 증명을 다른 체인, 계정, 키에 재사용할 수 없습니다. 유효한 증명이 없는 등록은 거부됩니다.
 2. **가치 키를 위한 지출 규칙.** 가치를 이동할 수 있는 권한(`send`, `evm`, `svm`, `deploy`, `all`)을 가진 키에는 해당 키가 지출할 수 있는 모든 단위를 제한하는 지출 규칙이 필요하며, 연결 전이나 연결과 함께 `MsgUpdateSpendingRules`로 설정합니다. 업그레이드 이전에 연결된 키에도 같은 규칙이 실행 시 적용되므로 이들 키에도 규칙을 추가하십시오.
 
+코드에서는 SDK 0.14.0에 두 가지를 위한 헬퍼가 있습니다(TypeScript: 증명용 `signAuthenticatorLinkPhantom`, `signAuthenticatorLinkMetaMask`, `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191`, 지출 규칙과 연결을 소유자가 서명하는 한 트랜잭션으로 묶는 `linkAuthenticatorMsgs`). `@qorechain/wallet-adapter` 0.6.0에는 `phantomPossessionProof`, `metaMaskPossessionProof`, `linkAuthenticatorMsgs`가 있습니다. [체인 v3.2.8부터의 연결](/sdk/guides/authenticators#link-v328)을 참조하세요. 실행 실패 사례에는 `assertAuthenticatorExecutionsSucceeded`가 `success=false`에서 오류를 발생시킵니다. 이 헬퍼들은 테스트넷에서 실행해 보지 않았습니다.
+
 Phantom 키도 동일한 방식으로 `ed25519` 방식과 Phantom 공개 키를 사용해 등록합니다(CLI에서는 `register-authenticator`). 철회는 `MsgRevokeAuthenticator`를 통해 즉시 이루어집니다.
 
 **성공한 트랜잭션 안에서 실행이 실패할 수 있습니다.** v3.2.8부터(이후 메인넷 업그레이드 전까지는 테스트넷 전용) 실패한 `MsgExecuteEVM` 또는 `MsgExecuteCosmos`는 트랜잭션 코드 0과 함께 응답에 `success=false`를 반환하고, 사유를 담은 이벤트 `abstractaccount_execution_failed`를 발생시키며, 인증자 논스는 그대로 소비합니다. 트랜잭션 코드만 확인하는 클라이언트는 이러한 호출을 성공으로 보고하므로 응답이나 이벤트를 읽으십시오.

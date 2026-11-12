@@ -166,6 +166,7 @@ Ab Release v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) wird ei
 - **Höchstens 100 ausstehende Aufrufe pro Absender.** Ein weiterer Aufruf wird abgelehnt, bis einer abgeschlossen ist oder abläuft.
 - **Fehlgeschlagene Aufrufe werden berechnet.** Ein Aufruf, der fehlschlägt, zahlt trotzdem für die geleistete Arbeit.
 - **Aufwendige Aufrufe:** Erhöhen Sie `async_gas_limit` und `async_max_factor` für Contracts, die großen Code laden; ein Contract in der Größe von cw721 passt beim ersten Aufruf in einem Block nicht in die Standardwerte.
+- **Im Code.** SDK 0.14.0 nimmt beide Felder in jeder Sprache entgegen (TypeScript: `asyncGasLimit` und `asyncMaxFactor`, geprüft von `validateCrossVmAsyncGas`; `asyncMaxFactor` steht in Millionsteln, 1,000,000 ist also 1x). Es gibt außerdem jede Seite der seitenweisen Abfrage ausstehender Aufrufe zurück. Das wurde nicht im Testnet ausgeführt.
 
 ---
 

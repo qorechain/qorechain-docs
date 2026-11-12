@@ -20,9 +20,9 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publié sur npm sous le nom `create-qorechain-dapp` (`0.13.1`, une version de correctifs limitée aux modèles, au-dessus du SDK 0.13.0). Les fichiers
-> `package.json` générés dépendent de `@qorechain/sdk` `^0.13.0` (les templates EVM de
-> `@qorechain/evm` `^0.13.0`). La version 0.8.0 du générateur écrivait des plages
+> Publié sur npm sous le nom `create-qorechain-dapp` (`0.14.0`, qui reprend aussi les correctifs de modèles de la 0.13.1). Les fichiers
+> `package.json` générés dépendent de `@qorechain/sdk` `^0.14.0` (les templates EVM de
+> `@qorechain/evm` `^0.14.0`). La version 0.8.0 du générateur écrivait des plages
 > `^0.3.0`, que npm résout vers une version 0.3 incapable de signer pour les réseaux
 > en service ; si vous avez échafaudé avec la 0.8.0, exécutez
 > `npm i @qorechain/sdk@latest`.
@@ -58,7 +58,7 @@ solde fonctionne. Remplacez-le par une lecture REST telle que
 | Flag | Description |
 | --- | --- |
 | `-t, --template <name>` | Template à utiliser (`evm-solidity` \| `fullstack-web` \| `rollup-app` \| `foundry` \| `hardhat` \| `viem-wagmi` \| `cosmwasm`). |
-| `--network <name>` | Préréglage réseau (`testnet` \| `mainnet`). Écrit les points de terminaison publics du réseau choisi dans le `.env` généré (0.13.1). |
+| `--network <name>` | Préréglage réseau (`testnet` \| `mainnet`). Écrit les points de terminaison publics du réseau choisi dans le `.env` généré (depuis la 0.13.1). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Ignorer les invites et utiliser les valeurs par défaut. |
 | `--no-install` | Ne pas installer les dépendances après l'échafaudage. |

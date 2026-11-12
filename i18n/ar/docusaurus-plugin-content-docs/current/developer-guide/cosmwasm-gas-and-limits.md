@@ -189,7 +189,7 @@ const fee = {
 // Pass `fee` and `msgs` to signAndBroadcastHybrid exactly as in the SDK guide.
 ```
 
-تخبرك `carriesWasmExecution(messages)` ما إذا كانت قائمة رسائل تحتاج إلى غاز محاكى، و`WASM_GAS_MULTIPLIER_MIN` هو الحد الأدنى 1.3. وحيثما يقبل عميل CosmJS القيمة `"auto"` رسمًا فإنه يحاكي عنك.
+يطبّق SDK 0.14.0 القواعد نفسها بنفسه: فهو يرفض حد غاز Cosmos الأعلى من 50,000,000 قبل التوقيع، ويمنح معاملات CosmWasm والمعاملات عبر الأجهزة الافتراضية ما لا يقل عن 1.3 ضعف الغاز المحاكى، ولا يستخدم لها أبدًا قيمة احتياطية ثابتة. تخبرك `carriesWasmExecution(messages)` ما إذا كانت قائمة رسائل تحتاج إلى غاز محاكى، و`WASM_GAS_MULTIPLIER_MIN` هو الحد الأدنى 1.3. وحيثما يقبل عميل CosmJS القيمة `"auto"` رسمًا فإنه يحاكي عنك.
 
 ### جُرِّب على شبكة الاختبار {#example-tested}
 

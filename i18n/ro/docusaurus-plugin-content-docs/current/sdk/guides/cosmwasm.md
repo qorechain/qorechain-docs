@@ -182,7 +182,7 @@ const result = await signAndBroadcastHybrid({
 - **Primul apel al unui cod de contract într-un bloc plătește un cost de încărcare.** Un transfer cw20 costă aproximativ 533.000 de gas ca prim apel al codului său într-un bloc și aproximativ 84.000 pentru fiecare repetare. Guvernanța poate fixa (pin) codurile populare, iar codurile fixate sar peste taxa de încărcare.
 - **Taxele cresc odată cu congestia.** Un factor de congestie scalează gazul de contract de la 1x până la 20x implicit când blocurile sunt aglomerate cu apeluri de contract, iar un bloc are un buget limitat de execuție de contracte, din care o tranzacție poate folosi cel mult jumătate.
 - **Simularea include ambele.** O simulare taxează întotdeauna încărcarea la rece și adaugă o marjă pentru congestie, deci `simulated gas x 1.3` este o limită sigură. Folosiți `fee: "auto"` unde clientul dumneavoastră îl oferă (CosmJS `"auto"`, `TxClient` din SDK, hook-ul React `useTx`) și simulați singur când construiți taxa manual, ca mai sus.
-- **Rămâneți sub plafonul tranzacției.** O tranzacție Cosmos nu poate seta o limită de gas peste 50.000.000 și este refuzată înainte ca taxa să fie percepută.
+- **Rămâneți sub plafonul tranzacției.** O tranzacție Cosmos nu poate seta o limită de gas peste 50.000.000 și este refuzată înainte ca taxa să fie percepută. SDK 0.14.0 refuză o astfel de limită înainte de semnare (precum și o tranzacție EVM peste 30.000.000), dă tranzacțiilor CosmWasm și cross-VM cel puțin 1,3 ori gazul simulat și nu revine niciodată la o limită fixă de gaz pentru ele. Are și helpere opt-in care citesc prețul minim al gazului din rețea; prețul implicit al gazului este neschimbat.
 
 Același lucru se aplică la instantiate, migrate și orice alt mesaj care rulează cod de contract.
 

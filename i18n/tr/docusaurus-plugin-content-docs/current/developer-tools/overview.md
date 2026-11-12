@@ -40,7 +40,7 @@ Ne geliştirdiğinize göre seçin.
 | QoreChain'i saklama kuruluşu veya borsa olarak entegre etmek (adres kontrolleri, çekim doğrulaması, para yatırma kaydı) | Saklama kiti | [Saklama kiti](/developer-tools/custody-kit) |
 | Bir düğümün, bir ağın veya Solidity kaynaklarının kriptografisini CycloneDX CBOM olarak envantere almak | QoreScan | [QoreScan](/developer-tools/qorescan) |
 | Testnet üzerinde izinli bir gerçek dünya varlığı token'ının prototipini yapmak (ERC-3643, CMTAT, kısıtlı paylı kasalar, kuantum sonrası hamil kontrolü) | Asset Kit | [Asset Kit](/developer-tools/asset-kit) |
-| QoreChain üzerinde Foundry, Hardhat veya viem ile Solidity ya da CosmWasm projeleri geliştirmek ve test etmek | Zincir geliştirici kiti (SDK 0.13.0'a dahil) | [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk) |
+| QoreChain üzerinde Foundry, Hardhat veya viem ile Solidity ya da CosmWasm projeleri geliştirmek ve test etmek | Zincir geliştirici kiti (SDK 0.14.0'a dahil) | [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk) |
 
 Bir paket kurun ve önce hızlı başlangıcını genel testnet üzerinde çalıştırın. Okumalar için hesap, anahtar veya ücret gerekmez.
 
@@ -84,17 +84,17 @@ Kılavuzlar: [SDK genel bakış](/sdk/overview), [Kurulum](/sdk/install), [React
 
 | Paket | Dil | Sürüm | Kurulum | Durum |
 |---|---|---|---|---|
-| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.13.0 | `npm install @qorechain/sdk` | Yayınlandı |
-| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.13.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Yayınlandı. Provider, hook'lar, `ConnectButton` ve PQC durum rozeti (`PqcStatusBadge` ve 0.10.0'dan korunan `QuantumSafeBadge`) |
-| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.13.0 | `npm install @qorechain/evm viem` | Yayınlandı. viem zincir tanımlarını ve EVM pencere yardımcılarını içerir (bkz. [Zincir geliştirici kiti](#group-chain-dev-sdk)) |
-| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.13.0 | `npm install @qorechain/svm @solana/web3.js` | Yayınlandı. Canlı ağlarda yalnızca okuma |
-| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.13.1 | `npx create-qorechain-dapp my-dapp` | Yayınlandı. Yedi şablon |
-| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.13.0 | `pip install qorechain-sdk` | Yayınlandı |
-| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.13.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Yayınlandı |
-| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.13.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Yayınlandı |
-| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.13.0 | `implementation("io.github.qorechain:qorechain-sdk:0.13.0")` | Yayımlandı (Maven Central, v0.13.0; JDK 17+) |
+| [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk) | TypeScript | 0.14.0 | `npm install @qorechain/sdk` | Yayınlandı |
+| [`@qorechain/react`](https://www.npmjs.com/package/@qorechain/react) | TypeScript (React) | 0.14.0 | `npm install @qorechain/react @qorechain/sdk react react-dom` | Yayınlandı. Provider, hook'lar, `ConnectButton` ve PQC durum rozeti (`PqcStatusBadge` ve 0.10.0'dan korunan `QuantumSafeBadge`) |
+| [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) | TypeScript | 0.14.0 | `npm install @qorechain/evm viem` | Yayınlandı. viem zincir tanımlarını ve EVM pencere yardımcılarını içerir (bkz. [Zincir geliştirici kiti](#group-chain-dev-sdk)) |
+| [`@qorechain/svm`](https://www.npmjs.com/package/@qorechain/svm) | TypeScript | 0.14.0 | `npm install @qorechain/svm @solana/web3.js` | Yayınlandı. Canlı ağlarda yalnızca okuma |
+| [`create-qorechain-dapp`](https://www.npmjs.com/package/create-qorechain-dapp) | TypeScript (CLI) | 0.14.0 | `npx create-qorechain-dapp my-dapp` | Yayınlandı. Yedi şablon |
+| [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.14.0 | `pip install qorechain-sdk` | Yayınlandı |
+| [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.14.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Yayınlandı |
+| [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.14.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.13.0` | Yayınlandı |
+| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.14.0 | `implementation("io.github.qorechain:qorechain-sdk:0.14.0")` | Maven Central 12 Kasım 2026'da hâlâ 0.13.0 gösteriyor; görününce 0.14.0'ı kullanın (JDK 17+) |
 
-SDK 0.13.0, 11 Kasım 2026'dan beri güncel sürümdür (seed yolu hesap yardımcısını değiştirir; bu yardımcı artık bir `QRC1` kurtarma kodu veya bağımsız 32 baytlık bir PQC sırrı gerektirir; mnemonic hesapları, imzalama ve zincir davranışı değişmemiştir; bkz. [0.13.0 neyi değiştiriyor](/sdk/install#whats-new-0130)). SDK 0.12.0, 30 Ekim 2026'dan beri güncel sürümdü. 0.10.0 ile karşılaştırıldığında ön ayarlar varsayılan olarak herkese açık uç noktaları kullanır (mainnet `api.qore.host`, `rpc.qore.host`, `evm.qore.host`; testnet için `-testnet` ana bilgisayarları; önceden varsayılan localhost'tu), yerel ön ayarın zincir kimliği `qorechain-devnet`'tir, v3.2.5 veya daha yeni düğümlerde gaz kesindir (simülasyon çarpı 1,02 artı 2.000; eski yol eski düğümler için korunur), ML-KEM-1024 anahtar kayıt defteri desteklenir (kaydetme, silme ve `/qorechain/pqc/v1/kem/\{address\}` sorgusu) ve [zincir geliştirici kiti](#group-chain-dev-sdk) dahildir. Hibrit imzalama değişmemiştir. Python, Rust, Go ve Java paketleri doğrudan 0.10.0'dan 0.12.0'a geçti; beş npm paketinin ayrıca kit içeriğini taşıyan bir 0.11.0 sürümü de vardır (29 Ekim 2026), 0.12.0 onun yerini alır.
+SDK 0.14.0, 12 Kasım 2026'dan beri güncel sürümdür (zincir v3.2.8 için istemci desteği: anahtar bağlantıları için sahiplik kanıtı, değer taşıyan anahtarlar için harcama kuralları, tüm alanlı yönetişim parametresi güncellemeleri, yürütme sonuçları, yeni EVM pencere kapsamı alanları, gas limitleri; bkz. [0.14.0 neyi değiştiriyor](/sdk/install#whats-new-0140)). SDK 0.13.0 (11 Kasım 2026) seed yolu hesap yardımcısını değiştirdi; bu yardımcı artık bir `QRC1` kurtarma kodu veya bağımsız 32 baytlık bir PQC sırrı gerektirir; mnemonic hesapları, imzalama ve zincir davranışı değişmemiştir; bkz. [0.13.0 neyi değiştiriyor](/sdk/install#whats-new-0130). SDK 0.12.0, 30 Ekim 2026'dan beri güncel sürümdü. 0.10.0 ile karşılaştırıldığında ön ayarlar varsayılan olarak herkese açık uç noktaları kullanır (mainnet `api.qore.host`, `rpc.qore.host`, `evm.qore.host`; testnet için `-testnet` ana bilgisayarları; önceden varsayılan localhost'tu), yerel ön ayarın zincir kimliği `qorechain-devnet`'tir, v3.2.5 veya daha yeni düğümlerde gaz kesindir (simülasyon çarpı 1,02 artı 2.000; eski yol eski düğümler için korunur), ML-KEM-1024 anahtar kayıt defteri desteklenir (kaydetme, silme ve `/qorechain/pqc/v1/kem/\{address\}` sorgusu) ve [zincir geliştirici kiti](#group-chain-dev-sdk) dahildir. Hibrit imzalama değişmemiştir. Python, Rust, Go ve Java paketleri doğrudan 0.10.0'dan 0.12.0'a geçti; beş npm paketinin ayrıca kit içeriğini taşıyan bir 0.11.0 sürümü de vardır (29 Ekim 2026), 0.12.0 onun yerini alır.
 
 ### QoreSign {#group-qoresign}
 
@@ -170,11 +170,11 @@ Sayfa: [Asset Kit](/developer-tools/asset-kit). Kaynak: [qorechain/qorechain-ass
 | [`@qorechain/asset-kit`](https://www.npmjs.com/package/@qorechain/asset-kit) | TypeScript (öneri için istemci) | 0.1.0 | `npm install @qorechain/asset-kit` | Yayınlandı |
 | [`qorechain-asset-kit`](https://pypi.org/project/qorechain-asset-kit/) | Python 3.10+ (öneri için istemci; `qorechain_asset_kit` olarak içe aktarılır) | 0.1.0 | `pip install qorechain-asset-kit` | Yayınlandı |
 
-### Zincir geliştirici kiti (SDK 0.13.0) {#group-chain-dev-sdk}
+### Zincir geliştirici kiti (SDK 0.14.0) {#group-chain-dev-sdk}
 
 Sayfa: [Zincir geliştirici kiti](/developer-tools/chain-dev-sdk). Kaynak: [qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk). QoreChain SDK'nın Solidity ve akıllı sözleşme ekiplerine yönelik bölümü: `@qorechain/evm` içinde viem zincir tanımları ve EVM yetkilendirme penceresi yardımcıları, dört `create-qorechain-dapp` şablonu (Foundry, Hardhat 3, wagmi'li viem ve bir QoreChain Native token'ı), EVM hızlı başlangıçları ve QoreChain EVM'in Ethereum'dan nasıl farklılaştığını anlatan bir sayfa.
 
-**Canlıdır ve SDK 0.13.0'a dahildir** (0.12.0'dan beri): ayrı bir paket yoktur. [SDK tablosundaki](#group-sdk) paketleri kurun (zincir tanımları ve pencere yardımcıları için `@qorechain/evm` 0.13.0, şablonlar için `create-qorechain-dapp` 0.13.1). Kit içeriği ilk olarak npm'de 0.11.0 olarak göründü (29 Ekim 2026); 0.12.0 onun yerini alır.
+**Canlıdır ve SDK 0.14.0'a dahildir** (0.12.0'dan beri): ayrı bir paket yoktur. [SDK tablosundaki](#group-sdk) paketleri kurun (zincir tanımları ve pencere yardımcıları için `@qorechain/evm` 0.14.0, şablonlar için `create-qorechain-dapp` 0.14.0). Kit içeriği ilk olarak npm'de 0.11.0 olarak göründü (29 Ekim 2026); 0.12.0 onun yerini alır.
 
 ### Rollup Development Kit (RDK) {#group-rdk}
 
@@ -209,7 +209,7 @@ Sayfa: [Cüzdan adaptörü](/developer-tools/wallet-adapter). Kaynak: [qorechain
 
 | Paket | Dil | Sürüm | Kurulum | Durum |
 |---|---|---|---|---|
-| [`@qorechain/wallet-adapter`](https://www.npmjs.com/package/@qorechain/wallet-adapter) | TypeScript (ES modülü, tür tanımlı düz JavaScript) | 0.5.0 | `npm install @qorechain/wallet-adapter @cosmjs/stargate @cosmjs/proto-signing` | Yayınlandı. Test edilmiş hızlı başlangıç yok |
+| [`@qorechain/wallet-adapter`](https://www.npmjs.com/package/@qorechain/wallet-adapter) | TypeScript (ES modülü, tür tanımlı düz JavaScript) | 0.6.0 | `npm install @qorechain/wallet-adapter @cosmjs/stargate @cosmjs/proto-signing` | Yayınlandı. Test edilmiş hızlı başlangıç yok |
 
 ### Chain bridge {#group-chain-bridge}
 
@@ -247,7 +247,7 @@ Kılavuz: [Geliştiriciler için QoreX](/qorex/overview#developers). Kaynak: [qo
 | [`@qorechain/connect`](https://www.npmjs.com/package/@qorechain/connect) | TypeScript | 0.2.1 | yok | **Kullanımdan kaldırıldı ve artık bakımı yapılmıyor.** Yeni işlerde kullanmayın. Aşağıdaki tabloda gösterildiği gibi değiştirin |
 
 :::caution @qorechain/connect kullanımdan kaldırıldı
-`@qorechain/connect`, npm üzerinde kullanımdan kaldırıldı olarak işaretlidir. Peer aralığı, 0.5.0'ı içermeyen `@qorechain/wallet-adapter` `^0.2.1` aralığıdır ve bir [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window) açmaz; bu yüzden hesap kayıtlı bir anahtara ve açık bir pencereye sahip olana kadar bunun üzerinden yapılan bir EVM gönderimi reddedilir. Kayıt defteri meta verisinde listelenen depoya herkese açık olarak erişilemiyor.
+`@qorechain/connect`, npm üzerinde kullanımdan kaldırıldı olarak işaretlidir. Peer aralığı, 0.6.0'ı içermeyen `@qorechain/wallet-adapter` `^0.2.1` aralığıdır ve bir [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window) açmaz; bu yüzden hesap kayıtlı bir anahtara ve açık bir pencereye sahip olana kadar bunun üzerinden yapılan bir EVM gönderimi reddedilir. Kayıt defteri meta verisinde listelenen depoya herkese açık olarak erişilemiyor.
 :::
 
 | İhtiyaç | Bunun yerine kullanın |

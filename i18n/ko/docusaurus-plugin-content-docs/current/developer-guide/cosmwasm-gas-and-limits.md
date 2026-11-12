@@ -189,7 +189,7 @@ const fee = {
 // Pass `fee` and `msgs` to signAndBroadcastHybrid exactly as in the SDK guide.
 ```
 
-`carriesWasmExecution(messages)`는 메시지 목록에 시뮬레이션된 가스가 필요한지 알려 주며, `WASM_GAS_MULTIPLIER_MIN`은 최소값 1.3입니다. CosmJS 클라이언트가 수수료로 `"auto"`를 받는 경우에는 클라이언트가 대신 시뮬레이션합니다.
+SDK 0.14.0은 같은 규칙을 직접 적용합니다. 50,000,000을 넘는 Cosmos 가스 한도는 서명 전에 거부하고, CosmWasm 및 크로스 VM 트랜잭션에는 시뮬레이션된 가스의 1.3배 이상을 부여하며, 이들에 고정 폴백 값을 쓰지 않습니다. `carriesWasmExecution(messages)`는 메시지 목록에 시뮬레이션된 가스가 필요한지 알려 주며, `WASM_GAS_MULTIPLIER_MIN`은 최소값 1.3입니다. CosmJS 클라이언트가 수수료로 `"auto"`를 받는 경우에는 클라이언트가 대신 시뮬레이션합니다.
 
 ### 테스트넷에서 검증됨 {#example-tested}
 

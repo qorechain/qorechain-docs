@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # 지갑 어댑터 (`@qorechain/wallet-adapter`)
 
-`@qorechain/wallet-adapter`는 `signDirect`를 제공하는 Cosmos 지갑(Keplr, Leap, Cosmostation)에 QoreChain을 추가하고, 체인이 요구하는 트랜잭션을 구성합니다. 네이티브 레인 트랜잭션은 계정의 기존 secp256k1 서명과 함께 ML-DSA-87(FIPS 204) 서명을 담아야 하는데, 일반 지갑은 ML-DSA-87 서명을 만들 수 없습니다. 어댑터가 이 서명을 만들어 트랜잭션 본문에 넣은 다음, 수정되지 않은 지갑에 일반 서명을 요청합니다. dApp 및 지갑 개발자, 그리고 JavaScript에서 통합 QoreChain 지갑, EVM 인가 윈도우 메시지, 연결된 키(authenticator) 메시지가 필요한 도구 제작자를 위한 패키지입니다. 현재 버전은 0.5.0입니다(2026년 11월 11일).
+`@qorechain/wallet-adapter`는 `signDirect`를 제공하는 Cosmos 지갑(Keplr, Leap, Cosmostation)에 QoreChain을 추가하고, 체인이 요구하는 트랜잭션을 구성합니다. 네이티브 레인 트랜잭션은 계정의 기존 secp256k1 서명과 함께 ML-DSA-87(FIPS 204) 서명을 담아야 하는데, 일반 지갑은 ML-DSA-87 서명을 만들 수 없습니다. 어댑터가 이 서명을 만들어 트랜잭션 본문에 넣은 다음, 수정되지 않은 지갑에 일반 서명을 요청합니다. dApp 및 지갑 개발자, 그리고 JavaScript에서 통합 QoreChain 지갑, EVM 인가 윈도우 메시지, 연결된 키(authenticator) 메시지가 필요한 도구 제작자를 위한 패키지입니다. 현재 버전은 0.6.0입니다(2026년 11월 12일).
 
 dApp에서 사용자의 QoreX 지갑으로 트랜잭션을 보내기만 하면 된다면, 가장 빠른 방법은 이 패키지의 [`qorexSignAndBroadcast`](#qorex)나 [개발자 패키지](/developer-tools/overview#group-qorex) 색인에 나열된 QoreX 패키지입니다. 지갑을 직접 만들면서 다섯 개 언어의 전체 서명 라이브러리가 필요하다면 먼저 [QoreSign](/qoresign/overview)을 읽으세요.
 
@@ -154,7 +154,7 @@ if (!status.live) {
 }
 ```
 
-순서가 중요합니다. 윈도우를 열고, EVM 논스를 읽고, EVM 트랜잭션에 서명하세요. 윈도우를 열면 계정의 시퀀스가 증가하고 이 시퀀스가 곧 EVM 논스이기 때문입니다. `openEvmWindowMsg`는 범위가 없는 형태의 윈도우만 만들며, 범위가 지정된 윈도우(`native_only`, `allowed_targets`)에는 SDK가 필요합니다. 배경 설명: [EVM 인가 윈도우](/sdk/guides/evm#evm-window), [첫 트랜잭션](/getting-started/first-transaction#evm-window).
+순서가 중요합니다. 윈도우를 열고, EVM 논스를 읽고, EVM 트랜잭션에 서명하세요. 윈도우를 열면 계정의 시퀀스가 증가하고 이 시퀀스가 곧 EVM 논스이기 때문입니다. 0.6.0부터 `openEvmWindowMsg`는 윈도우 범위도 받습니다. `nativeOnly`, `allowedTargets`, 그리고 체인 v3.2.8을 실행하는 네트워크에서는 `validators`, `stakingValidators`, `ibcReceivers`입니다. 배경 설명: [EVM 인가 윈도우](/sdk/guides/evm#evm-window), [첫 트랜잭션](/getting-started/first-transaction#evm-window).
 
 ### 기타 진입점
 
@@ -163,7 +163,60 @@ if (!status.live) {
 | PQC 키 복구 또는 로테이션 | `generatePqcRecoveryCode`, `pqcKeyFromRecoveryCode`, `pqcKeyFromSecret`, `pqcRecoveryCodeFromSecret`, `isValidRecoveryCode`, `rotatePqcKeyMsgFromMnemonic`, `rotateFromLegacyWalletKey`, `rotatePqcKeyMsg` |
 | eth-native 키로 서명 | `signClassicalEth` (기존 방식의 키 등록), `signHybridEth` |
 | 서명 바이트 헬퍼 | `hybridSignBytes(version, chainId, body, authInfo)`, `resolveSignBytesVersion`, `signBytesVersionFor`, `SIGN_BYTES_V2_UPGRADES` |
-| 외부 키로 연결 및 지출 | `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, `buildPhantom*` 및 `buildMetaMask*` 함수 |
+| 외부 키로 연결 및 지출 | `linkAuthenticatorMsgs`, `registerAuthenticatorMsg`, `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`, `buildPhantom*` 및 `buildMetaMask*` 함수 |
+
+## 0.6.0의 변경 사항 {#whats-new-060}
+
+0.6.0(2026년 11월 12일)은 체인 v3.2.8 지원을 추가합니다(테스트넷은 2026년 11월 12일부터 실행 중이며, 메인넷은 아직 적용하지 않았습니다). 새 규칙은 네트워크가 v3.2.8을 실행하는 시점부터 적용됩니다.
+
+**호환성을 깨는 변경.**
+
+- `registerAuthenticatorMsg`와 `registerEthAuthenticatorMsg`는 `possessionProof`가 필요합니다. 연결할 키가 체인, 계정, 스킴, 키를 명시한 일반 텍스트 연결 메시지에 서명합니다. 증명 없이 호출하면 오류가 발생합니다.
+- `decodeEvmWindowMsg`는 새 범위 필드를 반환합니다(없으면 빈 목록과 `nativeOnly: false`).
+- `buildPhantomSvmEnvelope`와 `buildPhantomTransfer`는 서명할 형식을 선택합니다. `rest`와 `chainId`를 전달하거나 `svmAuthVersion: "v2" | "v3"`를 전달하세요. 둘 다 없으면 네트워크가 거부할 수 있는 형식에 서명하는 대신 오류를 발생시킵니다.
+
+**새 함수.**
+
+| 작업 | 함수 |
+|---|---|
+| 키 연결 | `authenticatorLinkMessage`, `phantomPossessionProof`, `metaMaskPossessionProof` |
+| 가치를 이동하는 키의 지출 규칙 | `spendingRuleBoundsEveryDenom`, `updateSpendingRulesMsg`, `linkAuthenticatorMsgs`(지출 규칙과 연결을 소유자가 서명하는 한 트랜잭션으로) |
+| 실행 결과 | `authenticatorExecutionResults`, `assertAuthenticatorExecutionsSucceeded`: 코드 0 트랜잭션 안의 `MsgExecuteEVM` 또는 `MsgExecuteCosmos`에서 `success=false`를 읽습니다 |
+| EVM 윈도우 범위 | `openEvmWindowMsg`는 `nativeOnly`, `allowedTargets`, `validators`, `stakingValidators`, `ibcReceivers`를 받으며, `validateEvmWindowScope`가 이를 검사합니다 |
+| SVM 인가 | `authSignBytesV3`(네트워크가 `svm-relayed-chain-bound`를 활성화하면 검증하는 체인 바인딩 다이제스트)와 `"v3"` 또는 `"v2"`를 반환하는 `resolveSvmAuthVersion({ rest })` |
+
+QoreX 요청 검사는 또한 `GenericAuthorization`이 거부 대상 메시지를 지정하는 authz `MsgGrant`와 디코딩할 수 없는 `MsgGrant`를 거부합니다.
+
+`send`, `evm`, `deploy`, `svm`, `all` 권한이 있는 키는 계정의 첫 번째 활성 지출 규칙이 모든 denom을 제한해야 하며, 그렇지 않으면 `linkAuthenticatorMsgs`가 해당 조합을 거부합니다. `rules`는 계정의 규칙을 통째로 교체하므로 유지할 규칙을 모두 전달하세요. MetaMask 키를 연결하는 예입니다(이 스니펫은 0.6.0 타입 정의와 소스에서 가져왔으며 실행하지 않았습니다).
+
+```js
+import {
+  registerEthAuthenticatorMsg,
+  metaMaskPossessionProof,
+  linkAuthenticatorMsgs,
+} from "@qorechain/wallet-adapter";
+
+const possessionProof = await metaMaskPossessionProof({
+  provider: window.ethereum,
+  address: ethAddress,        // the 0x address being linked
+  chainId: "qorechain-diana",
+  account: qor1,
+});
+
+const registerMsg = registerEthAuthenticatorMsg({
+  owner: qor1,
+  ethAddress,
+  permissions: ["evm"],
+  expiryUnix,
+  possessionProof,
+});
+
+// The spending rule and the link, in order, for one owner-signed transaction.
+const msgs = linkAuthenticatorMsgs({
+  registerMsg,
+  rules: [{ enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+```
 
 ## 0.5.0의 변경 사항 {#whats-new-050}
 
@@ -181,16 +234,16 @@ if (!status.live) {
 
 | 레지스트리 | 패키지 | 버전 | 링크 |
 |---|---|---|---|
-| npm | `@qorechain/wallet-adapter` | 0.5.0 (2026년 11월 11일 게시) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
+| npm | `@qorechain/wallet-adapter` | 0.6.0 (2026년 11월 12일 게시) | [npmjs.com](https://www.npmjs.com/package/@qorechain/wallet-adapter) |
 
-소스: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (공개, 태그 `v0.5.0`, Apache-2.0). PyPI, crates.io, Maven Central, Go 프록시에는 게시되지 않았습니다. 관련 문서: [개발자 패키지](/developer-tools/overview), [QoreSign](/qoresign/overview), [포스트 퀀텀 서명](/developer-guide/post-quantum-signing), [거래소 통합](/developer-guide/exchange-integration).
+소스: [github.com/qorechain/qorechain-wallet-adapter](https://github.com/qorechain/qorechain-wallet-adapter) (공개, 태그 `v0.6.0`, Apache-2.0). PyPI, crates.io, Maven Central, Go 프록시에는 게시되지 않았습니다. 관련 문서: [개발자 패키지](/developer-tools/overview), [QoreSign](/qoresign/overview), [포스트 퀀텀 서명](/developer-guide/post-quantum-signing), [거래소 통합](/developer-guide/exchange-integration).
 
 ## 제한 사항 및 알려진 문제 {#limits}
 
 - **서명만 하며, 브로드캐스트, 키 등록, 윈도우 열기는 하지 않습니다.** ML-DSA-87 키를 등록하는 함수는 없고, 대신 EVM 윈도우를 열어주는 것도 없습니다.
-- **소유 증명 없음.** 이 패키지만 사용하는 도구로 만든 키 등록에는 소유 증명이 없습니다. 체인은 이를 그대로 받아들이며, 증명이 있을 때는 검증합니다([소유 증명](/developer-guide/post-quantum-signing#proof-of-possession)).
+- **소유 증명.** 0.6.0 이전에는 이 패키지로 만든 키 등록에 소유 증명이 없었습니다. 0.6.0부터 연결 함수가 이를 요구하며([0.6.0의 변경 사항](#whats-new-060) 참조), 체인은 v3.2.8을 실행하면 증명 없는 연결을 거부하고, 이전 네트워크에서는 증명이 있을 때 검증합니다([소유 증명](/developer-guide/post-quantum-signing#proof-of-possession)).
 - **`derivePqcKeyFromWallet`은 폐기되었으며**(0.3.0) 항상 오류를 발생시킵니다. 이 함수로 키를 등록한 계정은 `rotateFromLegacyWalletKey`로 로테이션해야 합니다.
-- **범위가 없는 윈도우만 지원.** `openEvmWindowMsg`에는 범위 필드가 없습니다.
+- **윈도우 범위.** 0.6.0 이전에는 `openEvmWindowMsg`에 범위 필드가 없었습니다. `validators`, `stakingValidators`, `ibcReceivers` 필드는 체인 v3.2.8을 실행하는 네트워크에서만 효력이 있습니다.
 - **`qoreChainInfo`의 기본값은 테스트넷입니다.** 메인넷에서는 항상 `chainId`를 전달하세요.
 - **Authenticator 논스.** 연결된 키의 authenticator 시퀀스를 노출하는 쿼리가 아직 없으므로 직접 추적해야 하며, 값이 틀리면 체인은 `abstractaccount` 코드 11로 응답합니다. authenticator 모듈은 테스트넷에서 활성화되어 있고 메인넷에서는 꺼져 있습니다([SDK 개요](/sdk/overview) 참조).
 - **cosmjs 0.32 피어.** SDK는 cosmjs 0.39를 사용하므로 한 프로젝트에 둘을 함께 설치하면 `ERESOLVE` 오류가 발생합니다. 따로 두거나 `--legacy-peer-deps`를 전달하세요.

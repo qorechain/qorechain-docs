@@ -133,9 +133,9 @@ pnpm --filter @qorechain/sdk docs:api
 
 | 言語 | 生成ドキュメント | インストール |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 公開APIにdocstringを完備 | `pip install qorechain-sdk`（バージョン`0.13.0`、インポート名は`qorsdk`） |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go)（godoc） | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.13.0`（タグ `packages/go/v0.13.0`） |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk)（rustdoc） | `cargo add qorechain-sdk`（0.13.0、インポート名は`qorechain`） |
-| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.13.0`（Maven Central で公開済み、2026年11月11日に確認） |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 公開APIにdocstringを完備 | `pip install qorechain-sdk`（バージョン`0.14.0`、インポート名は`qorsdk`） |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go)（godoc） | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.14.0`（タグ `packages/go/v0.14.0`） |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk)（rustdoc） | `cargo add qorechain-sdk`（0.14.0、インポート名は`qorechain`） |
+| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.14.0`（Maven Central では 2026年11月12日時点でまだ 0.13.0 が表示されます。0.14.0 が表示されたらそちらを使ってください） |
 
 各パッケージは同一のサーフェス（ネットワークプリセット、denom／アドレスユーティリティ、HD導出 — 統合ethネイティブアカウントを含む — PQCプリミティブとハイブリッド署名、型付きメッセージとクエリ、オーセンティケータレーン、REST + `qor_` JSON-RPC読み取りクライアント）を提供し、各言語ネイティブのドキュメントツールでレンダリングされるようソース内にインラインで文書化されています。TypeScriptのウォレットビルダー（`buildPhantom*` / `buildMetaMask*`）とブラウザウォレットアダプタはTypeScript専用です。
