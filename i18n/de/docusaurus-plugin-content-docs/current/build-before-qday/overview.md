@@ -15,6 +15,7 @@ Jeder Workshop in diesem Bereich dreht sich um die Eigenschaften, die QoreChain 
 
 - **Hybride Signatur.** Eine Transaktion wird zweimal signiert: einmal mit einem klassischen secp256k1-Schlüssel und einmal mit einem Post-Quanten-Schlüssel (ML-DSA-87). Wer nur den klassischen Schlüssel stiehlt, kann die zweite Signatur nicht erzeugen.
 - **On-chain verifiziert.** Die Validatoren prüfen beide Signaturen. Die Transaktion trägt eine `PQCHybridSignature`-Erweiterung, und die Chain gibt ein `pqc_hybrid_verify`-Ereignis mit dem Status `verified` aus. Beides können Sie über den öffentlichen REST-Endpunkt lesen und das Ergebnis im Explorer sehen.
+- **Ein Schlüssel, einmal gebunden.** Ihr Post-Quanten-Schlüssel wird abgeleitet, nicht erzeugt, und einmal mit einem Nachweis registriert. Siehe [Wie Ihr Post-Quanten-Schlüssel an Ihr Konto gebunden wird](/build-before-qday/key-binding).
 - **Gewohnte Werkzeuge.** Sie behalten Hardhat, Foundry oder Ihre bevorzugte Sprache. Die Kits kümmern sich um den Post-Quanten-Schlüssel und das Autorisierungsfenster.
 
 ## So funktioniert es {#how-it-works}

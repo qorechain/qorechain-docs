@@ -360,6 +360,8 @@ pnpm window status
 pnpm window register
 ```
 
+Para entender qué hace el registro, lee [Cómo se vincula tu clave poscuántica a tu cuenta](/build-before-qday/key-binding).
+
 Qué hace: envía una transacción que le dice a la cadena qué clave poscuántica pertenece a tu cuenta. Cuesta una comisión única de unos 0,09 QOR. La cadena acepta este mensaje firmado solo con la clave clásica, porque todavía no hay ninguna clave poscuántica registrada.
 
 Parámetros:

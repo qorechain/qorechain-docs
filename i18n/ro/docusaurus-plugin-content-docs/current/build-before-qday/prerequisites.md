@@ -288,6 +288,8 @@ Faucet-ul oferă **100 QOR o singură dată la 24 de ore, per cont** și per adr
 
 Fiecare cont QoreChain are două chei: o cheie clasică și o cheie post-cuantică ML-DSA-87. Chiar prima tranzacție a unui cont nou **înregistrează pe lanț cheia ML-DSA-87**. Se face o singură dată, pentru fiecare cont, și costă cam **0.09 QOR**. După aceea, fiecare tranzacție este semnată cu ambele chei.
 
+Ca să vezi cum se face cheia și cum este legată de contul tău, citește [Cum este legată cheia ta post-cuantică de contul tău](/build-before-qday/key-binding).
+
 Tutorialele rulează acest pas pentru tine, cu o comandă numită `register`. Acum nu trebuie să faci nimic. Cei 100 QOR de la faucet o acoperă de multe ori.
 
 ## QOR și uqor {#units}

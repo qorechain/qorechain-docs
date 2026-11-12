@@ -15,6 +15,7 @@ Bu bölümdeki her workshop, QoreChain'i farklı kılan özellikler etrafında k
 
 - **Hibrit imzalama.** Bir işlem iki kez imzalanır: bir kez klasik bir secp256k1 anahtarıyla, bir kez post-kuantum bir ML-DSA-87 anahtarıyla. Yalnızca klasik anahtarı çalan biri ikinci imzayı üretemez.
 - **Zincirde doğrulanır.** Validatörler her iki imzayı da kontrol eder. İşlem bir `PQCHybridSignature` uzantısı taşır ve zincir `verified` durumuyla bir `pqc_hybrid_verify` olayı yayar. İkisini de herkese açık REST uç noktasından okuyabilir ve sonucu explorer'da görebilirsiniz.
+- **Tek anahtar, bir kez bağlanır.** Post-kuantum anahtarınız üretilmez, türetilir ve bir kanıtla bir kez kaydedilir. Bkz. [Post-kuantum anahtarınız hesabınıza nasıl bağlanır](/build-before-qday/key-binding).
 - **Alışılmış araçlar.** Hardhat'i, Foundry'yi veya seçtiğiniz dili kullanmaya devam edersiniz. Kitler, post-kuantum anahtarını ve yetkilendirme penceresini sizin için halleder.
 
 ## Nasıl çalışır {#how-it-works}

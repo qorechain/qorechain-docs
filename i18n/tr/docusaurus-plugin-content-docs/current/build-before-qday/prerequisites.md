@@ -288,6 +288,8 @@ Faucet, hesap başına ve adres başına **24 saatte bir kez 100 QOR** öder. Ç
 
 Her QoreChain hesabının iki anahtarı vardır: klasik bir anahtar ve post-kuantum bir ML-DSA-87 anahtarı. Yeni bir hesabın ilk işlemi, **ML-DSA-87 anahtarını zincirde kaydeder**. Bu, hesap başına yalnızca bir kez yapılır ve yaklaşık **0,09 QOR** tutar. Ondan sonra her işlem iki anahtarla imzalanır.
 
+Anahtarın nasıl oluşturulduğunu ve hesabınıza nasıl bağlandığını görmek için [Post-kuantum anahtarınız hesabınıza nasıl bağlanır](/build-before-qday/key-binding) sayfasını okuyun.
+
 Eğitimler bu adımı sizin için `register` adlı bir komutla çalıştırır. Şimdi bir şey yapmanız gerekmez. Faucet'in 100 QOR'u bunu defalarca karşılar.
 
 ## QOR ve uqor {#units}

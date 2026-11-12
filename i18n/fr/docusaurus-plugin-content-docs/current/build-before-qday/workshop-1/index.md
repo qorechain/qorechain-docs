@@ -360,6 +360,8 @@ pnpm window status
 pnpm window register
 ```
 
+Pour comprendre ce que fait l'enregistrement, lisez [Comment votre clé post-quantique est liée à votre compte](/build-before-qday/key-binding).
+
 Ce que fait la commande : elle envoie une transaction qui indique à la chaîne quelle clé post-quantique appartient à votre compte. Elle coûte des frais uniques d'environ 0,09 QOR. La chaîne accepte ce message signé uniquement avec la clé classique, car aucune clé post-quantique n'est encore enregistrée.
 
 Paramètres :

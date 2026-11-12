@@ -288,6 +288,8 @@ Il faucet eroga **100 QOR una volta ogni 24 ore per account** e per indirizzo. S
 
 Ogni account QoreChain ha due chiavi: una chiave classica e una chiave post-quantistica ML-DSA-87. La primissima transazione di un nuovo account **registra on chain la chiave ML-DSA-87**. Succede una sola volta, per account, e costa circa **0,09 QOR**. Da quel momento, ogni transazione viene firmata con entrambe le chiavi.
 
+Per vedere come la chiave viene creata e legata al tuo account, leggi [Come la tua chiave post-quantistica viene legata al tuo account](/build-before-qday/key-binding).
+
 I tutorial eseguono questo passaggio per te con un comando chiamato `register`. Ora non devi fare nulla. I 100 QOR del faucet lo coprono molte volte.
 
 ## QOR e uqor {#units}

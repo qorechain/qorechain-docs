@@ -360,6 +360,8 @@ pnpm window status
 pnpm window register
 ```
 
+Was das Registrieren genau bewirkt, lesen Sie unter [Wie Ihr Post-Quanten-Schlüssel an Ihr Konto gebunden wird](/build-before-qday/key-binding).
+
 Was es tut: sendet eine Transaktion, die der Chain mitteilt, welcher Post-Quanten-Schlüssel zu Ihrem Konto gehört. Sie kostet einmalig eine Gebühr von etwa 0,09 QOR. Die Chain akzeptiert diese eine Nachricht nur mit dem klassischen Schlüssel signiert, weil noch kein Post-Quanten-Schlüssel hinterlegt ist.
 
 Parameter:

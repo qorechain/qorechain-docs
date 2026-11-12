@@ -360,6 +360,8 @@ pnpm window status
 pnpm window register
 ```
 
+Ca să înțelegi ce face înregistrarea, citește [Cum este legată cheia ta post-cuantică de contul tău](/build-before-qday/key-binding).
+
 Ce face: trimite o tranzacție care spune lanțului care cheie post-cuantică aparține contului tău. Costă o taxă unică de circa 0,09 QOR. Lanțul acceptă acest mesaj semnat doar cu cheia clasică, pentru că încă nu există nicio cheie post-cuantică înregistrată.
 
 Parametri:

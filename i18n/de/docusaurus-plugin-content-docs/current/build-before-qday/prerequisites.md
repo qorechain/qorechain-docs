@@ -288,6 +288,8 @@ Der Faucet zahlt **100 QOR einmal alle 24 Stunden pro Konto** und pro Adresse. F
 
 Jedes QoreChain-Konto hat zwei Schlüssel: einen klassischen Schlüssel und einen Post-Quanten-Schlüssel (ML-DSA-87). Die allererste Transaktion eines neuen Kontos **registriert den ML-DSA-87-Schlüssel on-chain**. Das geschieht nur einmal pro Konto und kostet etwa **0,09 QOR**. Danach wird jede Transaktion mit beiden Schlüsseln signiert.
 
+Wie der Schlüssel entsteht und an Ihr Konto gebunden wird, lesen Sie unter [Wie Ihr Post-Quanten-Schlüssel an Ihr Konto gebunden wird](/build-before-qday/key-binding).
+
 Die Tutorials führen diesen Schritt mit einem Befehl namens `register` für Sie aus. Sie müssen jetzt nichts tun. Die 100 QOR vom Faucet reichen dafür viele Male.
 
 ## QOR und uqor {#units}

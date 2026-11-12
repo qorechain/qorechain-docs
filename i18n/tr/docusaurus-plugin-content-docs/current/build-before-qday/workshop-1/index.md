@@ -360,6 +360,8 @@ pnpm window status
 pnpm window register
 ```
 
+Kaydetmenin ne yaptığını anlamak için [Post-kuantum anahtarınız hesabınıza nasıl bağlanır](/build-before-qday/key-binding) sayfasını okuyun.
+
 Ne yapar: zincire hesabınıza hangi kuantum sonrası anahtarın ait olduğunu söyleyen tek bir işlem gönderir. Tek seferlik yaklaşık 0,09 QOR ücreti vardır. Henüz kayıtlı kuantum sonrası anahtar olmadığı için zincir, yalnızca klasik anahtarla imzalanmış bu tek mesajı kabul eder.
 
 Parametreler:

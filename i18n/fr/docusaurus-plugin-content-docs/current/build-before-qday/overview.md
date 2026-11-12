@@ -15,6 +15,7 @@ Chaque atelier de cette section repose sur les fonctions qui distinguent QoreCha
 
 - **Signature hybride.** Une transaction est signée deux fois : une fois avec une clé classique secp256k1 et une fois avec une clé post-quantique ML-DSA-87. Quelqu'un qui ne vole que la clé classique ne peut pas produire la seconde signature.
 - **Vérifiée sur la chaîne.** Les validateurs contrôlent les deux signatures. La transaction porte une extension `PQCHybridSignature` et la chaîne émet un événement `pqc_hybrid_verify` avec le statut `verified`. Vous pouvez lire les deux sur le point de terminaison REST public et voir le résultat dans l'explorateur.
+- **Une clé, liée une seule fois.** Votre clé post-quantique est dérivée, pas générée, et enregistrée une seule fois avec une preuve. Voir [Comment votre clé post-quantique est liée à votre compte](/build-before-qday/key-binding).
 - **Des outils ordinaires.** Vous gardez Hardhat, Foundry ou le langage de votre choix. Les kits s'occupent pour vous de la clé post-quantique et de la fenêtre d'autorisation.
 
 ## Comment ça marche {#how-it-works}

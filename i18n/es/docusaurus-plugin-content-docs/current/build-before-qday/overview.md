@@ -15,6 +15,7 @@ Todos los talleres de esta sección giran en torno a las funciones que hacen dif
 
 - **Firma híbrida.** Una transacción se firma dos veces: una con una clave clásica secp256k1 y otra con una clave poscuántica ML-DSA-87. Quien robe solo la clave clásica no puede producir la segunda firma.
 - **Verificada en la cadena.** Los validadores comprueban ambas firmas. La transacción lleva una extensión `PQCHybridSignature` y la cadena emite un evento `pqc_hybrid_verify` con el estado `verified`. Puedes leer ambas cosas desde el endpoint REST público y ver el resultado en el explorador.
+- **Una clave, vinculada una sola vez.** Tu clave poscuántica se deriva, no se genera, y se registra una vez con una prueba. Consulta [Cómo se vincula tu clave poscuántica a tu cuenta](/build-before-qday/key-binding).
 - **Herramientas habituales.** Sigues usando Hardhat, Foundry o el lenguaje que prefieras. Los kits se encargan de la clave poscuántica y de la ventana de autorización por ti.
 
 ## Cómo funciona {#how-it-works}

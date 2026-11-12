@@ -15,6 +15,7 @@ Ogni workshop di questa sezione ruota attorno alle caratteristiche che rendono Q
 
 - **Firma ibrida.** Una transazione viene firmata due volte: una con una chiave classica secp256k1 e una con una chiave post-quantistica ML-DSA-87. Chi ruba solo la chiave classica non può produrre la seconda firma.
 - **Verificata on chain.** I validatori controllano entrambe le firme. La transazione porta un'estensione `PQCHybridSignature` e la catena emette un evento `pqc_hybrid_verify` con lo stato `verified`. Puoi leggere entrambi dall'endpoint REST pubblico e vedere il risultato nell'explorer.
+- **Una chiave, legata una sola volta.** La tua chiave post-quantistica viene derivata, non generata, e registrata una sola volta con una prova. Vedi [Come la tua chiave post-quantistica viene legata al tuo account](/build-before-qday/key-binding).
 - **Strumenti ordinari.** Continui a usare Hardhat, Foundry o il linguaggio che preferisci. I kit gestiscono per te la chiave post-quantistica e la finestra di autorizzazione.
 
 ## Come funziona {#how-it-works}

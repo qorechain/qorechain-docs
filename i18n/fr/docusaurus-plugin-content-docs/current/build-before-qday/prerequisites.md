@@ -288,6 +288,8 @@ Le faucet verse **100 QOR une fois toutes les 24 heures par compte** et par adre
 
 Chaque compte QoreChain a deux clés : une clé classique et une clé post-quantique ML-DSA-87. La toute première transaction d'un nouveau compte **enregistre la clé ML-DSA-87 sur la chaîne**. Cela n'arrive qu'une seule fois par compte et coûte environ **0,09 QOR**. Ensuite, chaque transaction est signée avec les deux clés.
 
+Pour voir comment la clé est créée et liée à votre compte, lisez [Comment votre clé post-quantique est liée à votre compte](/build-before-qday/key-binding).
+
 Les tutoriels exécutent cette étape pour vous avec une commande nommée `register`. Vous n'avez rien à faire maintenant. Les 100 QOR du faucet la couvrent largement.
 
 ## QOR et uqor {#units}

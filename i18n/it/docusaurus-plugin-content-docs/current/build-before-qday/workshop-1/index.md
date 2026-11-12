@@ -360,6 +360,8 @@ pnpm window status
 pnpm window register
 ```
 
+Per capire cosa fa la registrazione, leggi [Come la tua chiave post-quantistica viene legata al tuo account](/build-before-qday/key-binding).
+
 Cosa fa: invia una transazione che dice alla catena quale chiave post-quantistica appartiene al tuo account. Costa una commissione una tantum di circa 0,09 QOR. La catena accetta questo unico messaggio firmato solo con la chiave classica, perché non c'è ancora alcuna chiave post-quantistica registrata.
 
 Parametri:

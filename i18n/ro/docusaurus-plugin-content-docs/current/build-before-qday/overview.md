@@ -15,6 +15,7 @@ Fiecare workshop din această secțiune este construit în jurul funcțiilor car
 
 - **Semnare hibridă.** O tranzacție este semnată de două ori: o dată cu o cheie clasică secp256k1 și o dată cu o cheie post-cuantică ML-DSA-87. Cine fură doar cheia clasică nu poate produce a doua semnătură.
 - **Verificată pe lanț.** Validatorii verifică ambele semnături. Tranzacția poartă o extensie `PQCHybridSignature`, iar lanțul emite un eveniment `pqc_hybrid_verify` cu statusul `verified`. Poți citi ambele de la punctul final REST public și vezi rezultatul în explorer.
+- **O cheie, legată o singură dată.** Cheia ta post-cuantică este derivată, nu generată, și înregistrată o singură dată, cu o dovadă. Vezi [Cum este legată cheia ta post-cuantică de contul tău](/build-before-qday/key-binding).
 - **Instrumente obișnuite.** Păstrezi Hardhat, Foundry sau limbajul tău preferat. Kiturile se ocupă pentru tine de cheia post-cuantică și de fereastra de autorizare.
 
 ## Cum funcționează {#how-it-works}
