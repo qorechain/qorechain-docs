@@ -14,7 +14,7 @@ The bridge module is deployed on mainnet and testnet, but **no bridge route is a
 :::
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**, chain version **v3.2.7** since 6 November 2026). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.6** (since 4 November 2026). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page once a route is activated. Status checked 27 October 2026: all 37 chain configurations are `pending` on both networks.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**, chain version **v3.2.8** since 12 November 2026). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.6** (since 4 November 2026). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page once a route is activated. Status checked 27 October 2026: all 37 chain configurations are `pending` on both networks.
 :::
 
 ---
@@ -48,7 +48,7 @@ Read the limits with `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` (
 
 **Which network has what (testnet checked 27 October 2026, mainnet 4 November 2026).**
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.7) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.8) |
 |---|---|---|
 | ICS-20 transfer (IBC v1) | Built in, but no channel is open | Built in, one channel open |
 | IBC rate limit | Enabled, no limits set (query answers `200`, empty list) | Available, no limits set |

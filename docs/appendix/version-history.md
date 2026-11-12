@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.6** (applied by governance proposal 15 at height 4,020,000 on 4 November 2026; the previous release, v3.2.5, was applied at height 3,906,833 on 29 October 2026, v3.2.4 at height 3,742,566 on 23 October 2026 and v3.2.3 at height 3,662,051 on 20 October 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) runs **v3.2.7** (applied by testnet governance at height 9,594,600 on 6 November 2026; see [v3.2.7](#v327), which is **not on mainnet yet and has no date**); v3.2.4 reached it at height 8,337,253 (19 October 2026), v3.2.5 at height 8,890,800 (26 October 2026) and v3.2.6 at height 8,970,638 (27 October 2026).
+Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.6** (applied by governance proposal 15 at height 4,020,000 on 4 November 2026; the previous release, v3.2.5, was applied at height 3,906,833 on 29 October 2026, v3.2.4 at height 3,742,566 on 23 October 2026 and v3.2.3 at height 3,662,051 on 20 October 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) runs **v3.2.8** since 12 November 2026 (applied by testnet governance at height 9,929,500; see [v3.2.8](#v328), which is **not on mainnet yet and has no date**); v3.2.4 reached it at height 8,337,253 (19 October 2026), v3.2.5 at height 8,890,800 (26 October 2026), v3.2.6 at height 8,970,638 (27 October 2026) and v3.2.7 at height 9,594,600 (6 November 2026, see [v3.2.7](#v327)).
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet. The release manifest ([Connecting to Mainnet](/getting-started/connecting-to-mainnet)) is promoted separately from tagging and can lag a tag by some time — check it directly for what a fresh install actually downloads.
@@ -30,6 +30,28 @@ Proposals that changed the running mainnet since 14 October 2026. Proposals 7 to
 | 15 | Coordinated upgrade to v3.2.6 (build 3) at height 4,020,000 (nodes stayed on v3.2.5 until that height, halted there and restarted on v3.2.6; transaction signing is unchanged). The content is listed under [v3.2.6](#v326) | 1 November 2026 21:36 UTC to 3 November 2026 21:36 UTC | Passed; applied 4 November 2026 at height 4,020,000 |
 
 See [Tokenomics](/architecture/tokenomics#stranded-and-reserve) for what the releases mean and [Governance](/user-guide/governance) for how to vote.
+
+---
+
+## v3.2.8: Contract Fees, Gas Caps, EVM Window Options, Async Cross-VM Escrow, RDK Proofs (testnet) {#v328}
+
+:::note TESTNET only, not on mainnet yet, no date
+v3.2.8 runs on the `qorechain-diana` testnet only. Mainnet stays on v3.2.6; there is no date or height for a mainnet upgrade, and every item below is absent from mainnet today.
+:::
+
+**Release focus:** Smart contract fees that follow the real work, gas caps per transaction, optional EVM authorisation window lists, an escrowed and bounded asynchronous cross-VM call, a fuller Rollup Development Kit, stricter abstract accounts, and the Solana-compatible lane closed on the testnet.
+
+Testnet: applied at height 9,929,500 on 12 November 2026; mainnet has not applied it.
+
+* **Smart contract fees match the real work.** CosmWasm execution, uploads, code loading and memory are priced. There is a per-block contract budget and congestion pricing that only rises when blocks are full. Always estimate gas by simulation. See [CosmWasm in the SDK](/sdk/guides/cosmwasm#gas).
+* **Gas caps.** 50,000,000 per Cosmos transaction and 30,000,000 per EVM transaction (`GET /qorechain/pqc/v1/evm_limits`).
+* **EVM authorisation windows.** A window can carry optional lists of validators, staking validators and IBC receivers. Built-in Cosmos contracts reachable through a window are limited to a short safe list. Signatures that a contract verifies on chain (permits, EIP-712) need the verifying contract to be in the window. Rotating or re-registering a key closes the window. See [EVM window options](/developer-guide/evm-development#evm-window-v328).
+* **Cross-VM async calls.** An asynchronous call holds a refundable escrow, takes `async_gas_limit` and `async_max_factor`, and is capped at 100 pending calls per sender; the pending-calls query is paginated. See [Async calls](/developer-guide/cross-vm-interoperability#async-calls).
+* **RDK.** Data posting, based sequencing, optimistic `qledger-v1` rollups with fraud proofs (a fraud proof burns half of the slashed bond and pays half to the challenger) and private rollups with ML-KEM-1024 envelopes. STARK settlement is paused until the next release. SNARK inputs are reduced modulo the BLS12-381 field where the chain fixes them.
+* **Abstract accounts.** Linking a key needs a proof of possession, and keys that can move value need a spending rule. A failed execution is reported as failed.
+* **Solana-compatible lane closed on the testnet** until a governance vote reopens it. On mainnet it stays off.
+* **Node operators.** Copy the whole `lib/` folder of the release bundle (it adds a contract runtime library next to the existing ones) and keep the contract memory cache at 256 MiB or more. New route: `GET /qorechain/svm/v1/params`.
+* **Clients.** Gas by simulation for contracts is covered in [CosmWasm in the SDK](/sdk/guides/cosmwasm#gas), window options in [EVM window options](/developer-guide/evm-development#evm-window-v328) and async calls in [Async calls](/developer-guide/cross-vm-interoperability#async-calls).
 
 ---
 
@@ -59,7 +81,7 @@ v3.2.7 runs on the `qorechain-diana` testnet only. Mainnet stays on v3.2.6 until
 
 ## v3.2.6: Query Routes, IBC Rate Limits and Forwarding, Live PRISM Values (mainnet) {#v326}
 
-**Release focus:** The current mainnet release (the testnet is one release ahead, see [v3.2.7](#v327)). Governance proposal 15 applied it on mainnet at height **4,020,000** on 4 November 2026 (about 14:45 UTC): nodes stayed on v3.2.5 until that block, halted there and restarted on v3.2.6. The testnet `qorechain-diana` took it first, by testnet governance proposal 28 at height 8,970,638 (27 October 2026, 16:58 UTC). The mainnet manifest sets `version` and `minCompatible` to 3.2.6 with `upgradeHeight` 4020000, so a node joining mainnet needs v3.2.6 (new nodes join through state sync). Signing format (sign-bytes v2), addresses, decimals, memos and fees are unchanged.
+**Release focus:** The current mainnet release (the testnet is two releases ahead, see [v3.2.7](#v327) and [v3.2.8](#v328)). Governance proposal 15 applied it on mainnet at height **4,020,000** on 4 November 2026 (about 14:45 UTC): nodes stayed on v3.2.5 until that block, halted there and restarted on v3.2.6. The testnet `qorechain-diana` took it first, by testnet governance proposal 28 at height 8,970,638 (27 October 2026, 16:58 UTC). The mainnet manifest sets `version` and `minCompatible` to 3.2.6 with `upgradeHeight` 4020000, so a node joining mainnet needs v3.2.6 (new nodes join through state sync). Signing format (sign-bytes v2), addresses, decimals, memos and fees are unchanged.
 
 * **New read routes, now served on mainnet.** Checked on mainnet on 4 November 2026: `GET /qorechain/pqc/v1/params`, the full set of PRISM (`x/rlconsensus`) queries under `/qorechain/rlconsensus/v1/` (`agent`, `params`, `observation`, `reward`, `policy`, `applied_params`, `last_action`), the reputation routes under `/qorechain/reputation/v1/` (`params`, `validators` and `validator/{address}`), and the IBC v2 client routes `/ibc/core/client/v2/config/{client_id}` and `/ibc/core/client/v2/counterparty_info/{client_id}`. All of them answered HTTP 200 on `https://api.qore.host`, except `counterparty_info`, which answers 404 for a client that has no counterparty (mainnet has no IBC client yet). Before v3.2.6 mainnet answered 501 on these routes. The AMM routes under `/qorechain/amm/v1/` answer on both networks. See [REST / gRPC reference](/api-reference/rest-grpc-endpoints).
 * **PRISM on mainnet stays in observation mode.** The new routes expose the mainnet agent as it was: conservative mode, no policy weights loaded, no step taken (`current_epoch` and `total_steps` read `0` on 4 November 2026), and the four PRISM control messages are still switched off by the circuit breaker. On the testnet the agent runs in shadow mode (set by testnet governance proposal 29): it observes every 10 blocks and records a proposed action without changing any value. See [PRISM](/architecture/prism-consensus-engine).

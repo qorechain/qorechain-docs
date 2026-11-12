@@ -81,7 +81,7 @@ On 4 November 2026 the testnet's active-precompile list (`active_static_precompi
 
 ### Chain v3.2.5: allowlist, reply format and refusals (both networks) {#chain-v325}
 
-Chain v3.2.5 changes how the bridge behaves. Mainnet has run it since 29 October 2026 (governance proposal 14, height 3,906,833) and the testnet since 26 October; mainnet now runs v3.2.6 and the testnet v3.2.7. Because the precompile is not active on mainnet, the reply format below is the release's behaviour and has not been exercised there; the refusal format was seen on the testnet on 7 November 2026 (see [Tested on the testnet](#tested-testnet)). Wherever this page says the precompile returns the target's raw reply, that describes releases before v3.2.5.
+Chain v3.2.5 changes how the bridge behaves. Mainnet has run it since 29 October 2026 (governance proposal 14, height 3,906,833) and the testnet since 26 October; mainnet now runs v3.2.6 and the testnet v3.2.8. Because the precompile is not active on mainnet, the reply format below is the release's behaviour and has not been exercised there; the refusal format was seen on the testnet on 7 November 2026 (see [Tested on the testnet](#tested-testnet)). Wherever this page says the precompile returns the target's raw reply, that describes releases before v3.2.5.
 
 * **An allowlist route.** `GET /qorechain/crossvm/v1/params` serves the bridge parameters, including the allowlist of targets. On mainnet the allowlist is empty (checked 4 November 2026), so no target is allowed yet; on the testnet it was empty on 30 October (see the note above).
 * **A fixed reply format.** The precompile returns `abi.encode(bytes)`, so a reply is always at least 64 bytes and an empty reply can be told from a missing one; decode it with `abi.decode(ret, (bytes))`.
@@ -90,7 +90,7 @@ Chain v3.2.5 changes how the bridge behaves. Mainnet has run it since 29 October
 
 ### Tested on the testnet {#tested-testnet}
 
-The testnet runs chain v3.2.7 since 6 November 2026 (height 9,594,600). On 7 November 2026 two read-only `eth_call` requests were sent to `0x…0901` with the calldata of `executeCrossVMCall(uint8,string,bytes)` (target VM `1`, payload `{}`):
+The testnet runs chain v3.2.8 since 12 November 2026 (height 9,929,500). On 7 November 2026 two read-only `eth_call` requests were sent to `0x…0901` with the calldata of `executeCrossVMCall(uint8,string,bytes)` (target VM `1`, payload `{}`):
 
 | Target | Result |
 |---|---|

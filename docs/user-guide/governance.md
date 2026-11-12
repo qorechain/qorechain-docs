@@ -10,7 +10,7 @@ sidebar_position: 3
 This guide covers how on-chain governance works on QoreChain: how votes are tallied, how to submit proposals, and how to vote.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.6** since 4 November 2026 (v3.2.5 from 29 October, v3.2.4 from 23 October); the testnet has run **v3.2.7** since 6 November 2026 (v3.2.6 from 27 October). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when participating in governance on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.6** since 4 November 2026 (v3.2.5 from 29 October, v3.2.4 from 23 October); the testnet has run **v3.2.8** since 12 November 2026 (v3.2.7 from 6 November, v3.2.6 from 27 October). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when participating in governance on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`

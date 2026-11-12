@@ -90,7 +90,7 @@ The pages in this section:
 
 ## How to access {#how-to-access}
 
-- **Network.** Testnet `qorechain-diana` only (mainnet runs chain v3.2.6, the testnet v3.2.7 since 6 November 2026; QORel was measured at v3.2.6 and not re-checked on v3.2.7). Mainnet `qorechain-vladi` has no open IBC channel; see [Bridging Assets](/user-guide/bridging-assets#ibc-testnet-v326) for what each network has.
+- **Network.** Testnet `qorechain-diana` only (mainnet runs chain v3.2.6, the testnet v3.2.8 since 12 November 2026; QORel was measured at v3.2.6 and not re-checked on v3.2.7 or v3.2.8). Mainnet `qorechain-vladi` has no open IBC channel; see [Bridging Assets](/user-guide/bridging-assets#ibc-testnet-v326) for what each network has.
 - **Counterparty.** The Cosmos Hub public testnet, chain ID `provider`, over `channel-600`. Any other Cosmos SDK chain works the same way as the `provider` entry in the example config.
 - **Endpoints.** QORel needs a consensus RPC, a WebSocket and a gRPC endpoint for each chain. The QoreChain testnet has public RPC (`https://rpc-testnet.qore.host`) and REST (`https://api-testnet.qore.host`) but no public gRPC endpoint today, and none is promised, so a third-party relayer for `qorechain-diana` needs its own testnet node ([Running a Node](/developer-guide/running-a-node), [Connecting to the Testnet](/getting-started/connecting-to-testnet)). Public endpoints that rate-limit relayers can be used for a short test but not for steady relaying.
 - **Accounts.** One dedicated relayer account on each chain, with a small balance for fees. Testnet QOR comes from the [Dashboard Faucet](/dashboard/faucet); it has no value. Never use a validator operator key.

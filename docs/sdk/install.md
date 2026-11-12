@@ -117,7 +117,7 @@ Keep the recovery code: a different code gives a different key.
 
 SDK 0.12.0 is the client release for chain **v3.2.5**, which mainnet applied at
 height 3,906,833 on 29 October 2026 (the testnet applied it on 26 October). Mainnet
-has run v3.2.6 since 4 November; the testnet ran v3.2.6 from 27 October and v3.2.7 since 6 November; the
+has run v3.2.6 since 4 November; the testnet ran v3.2.6 from 27 October, v3.2.7 from 6 to 12 November and v3.2.8 since 12 November; the
 hybrid signing format, addresses, decimals and memos did not change, so a
 transaction built with 0.10.0 stays valid. TypeScript, Python, Go, Rust and Java
 all move to 0.12.0, with `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`
@@ -162,7 +162,7 @@ anything introduced after v3.2.4; the v3.2.5 additions came with
 [0.12.0](#whats-new-0120). Mainnet has run v3.2.6 since 4 November 2026 (height
 4,020,000, governance proposal 15; v3.2.5 before it, from 29 October at height
 3,906,833) and 0.10.0 keeps working there because the signing format did not
-change. The testnet applied v3.2.5 and v3.2.6 on 26 and 27 October 2026 and v3.2.7 on 6 November (no SDK release has builders for the v3.2.7 messages). What 0.10.0
+change. The testnet applied v3.2.5 and v3.2.6 on 26 and 27 October 2026, v3.2.7 on 6 November and v3.2.8 on 12 November (no SDK release has builders for the v3.2.7 messages). What 0.10.0
 brought (all of it is still in 0.13.0):
 
 | Area | In 0.10.0 |

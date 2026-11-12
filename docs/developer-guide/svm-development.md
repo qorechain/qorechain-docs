@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain includes a **Solana Virtual Machine (SVM)** execution environment, allowing developers to deploy and execute SBF/BPF programs using familiar Solana tooling. The SVM module exposes a Solana-compatible JSON-RPC interface on **port 8899**, which `qorechaind start` launches automatically (see [JSON-RPC Server](#json-rpc-server) below).
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.6** since 4 November 2026 (governance proposal 15, height 4,020,000; v3.2.5 since 29 October 2026, v3.2.4 since 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.7 (since 6 November 2026; v3.2.4 since 19 October 2026). **SVM transactions are disabled on both networks** (see the next box), so the `tx svm` commands on this page are reference only: they cannot succeed today.
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.6** since 4 November 2026 (governance proposal 15, height 4,020,000; v3.2.5 since 29 October 2026, v3.2.4 since 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026). **SVM transactions are disabled on both networks** (see the next box), so the `tx svm` commands on this page are reference only: they cannot succeed today.
 :::
 
 ---
@@ -45,7 +45,7 @@ As of chain version **v3.1.82**, the SVM interface is a **first-class native-QOR
 * **System Program transfers move native QOR** — a Solana-style transfer instruction moves the same funds a Cosmos `MsgSend` or an EVM transfer would.
 * **SVM address form** — an account's SVM address is its 20 account bytes right-padded to 32 bytes and base58-encoded. All three address forms (`qor1...`, `0x...`, base58) refer to the same account.
 
-**Release v3.2.8 (testnet, not yet applied).** The upgrade closes the SVM lane on `qorechain-diana`: SVM writes fail, `MsgRegisterSVMPQCKey` is refused, and the SVM JSON-RPC refuses write methods on the public chain ids, until a governance vote reopens it (the testnet has a governed switch). On mainnet the lane is off in the current release and enabling it requires a future release. Clients should read the lane state from the SVM module parameters (`enabled`) before offering SVM actions.
+**Release v3.2.8 (testnet since 12 November 2026).** The upgrade closes the SVM lane on `qorechain-diana`: SVM writes fail, `MsgRegisterSVMPQCKey` is refused, and the SVM JSON-RPC refuses write methods on the public chain ids, until a governance vote reopens it (the testnet has a governed switch). On mainnet the lane is off in the current release and enabling it requires a future release. Clients should read the lane state from the SVM module parameters (`enabled`) before offering SVM actions.
 
 The public endpoints (`https://svm.qore.host`, `https://svm-testnet.qore.host`) are **read-only** — transaction submission is disabled at the edge. Ordinarily you would run your own node (port 8899) to submit SVM transactions, but see the caution above: the `x/svm` transaction lane itself is currently disabled network-wide, including on your own node.
 
