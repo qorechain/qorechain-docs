@@ -7,41 +7,101 @@ sidebar_position: 2
 
 # Q-Day Guestbook
 
-Q-Day Guestbook は、QoreChain EVM テストネット上のオンチェーンのゲストブックです。誰でも、アドレスごとに1回、140文字までのメッセージで署名できます。2つの部分で構成されています。Solidity コントラクトと Hardhat プロジェクト（`contracts-app/`）、そして QoreX ウォレットを接続し、アカウントの EVM ウィンドウを表示し、最新の署名をライブで一覧表示する React のウェブページ（`web/`）です。
+Q-Day Guestbook は、QoreChain の EVM テストネット上にあるオンチェーンのゲストブックです。誰でも、1アドレスにつき1回、最大140文字のメッセージで署名できます。構成は2つの部分です:
 
-## 確認できること {#shows}
+- **`contracts-app/`**: Solidity コントラクトと Hardhat プロジェクト。デプロイでき、ターミナルから署名もできます。
+- **`web/`**: ブラウザーで開く Web ページ。QoreX ウォレットを接続し、アカウントの EVM ウィンドウを表示し、最新の署名をリアルタイムで一覧表示します。
 
-- **意識しなくてもハイブリッドで署名するブラウザー dApp。** このページは、通常の wagmi と RainbowKit のアプリです。署名の ML-DSA-87 の半分は QoreX が追加するため、同じトランザクションが secp256k1 とポスト量子鍵の両方で保護されます。
-- **EVM ウィンドウがインターフェースに表示されます。** ページはアカウントのウィンドウをチェーンから読み取り、有効かどうか、残りのブロック数とトランザクション数を表示します。
-- **わかりやすい拒否理由。** チェーンが書き込みを拒否すると、`classifyEvmWindowRejection` がそのエラーを4つの原因（登録済みの鍵がない、ウィンドウがない、ウィンドウを使い切った、パラメーターが不正）のどれかに対応づけ、ページが対処方法を表示します。
-- **オンチェーンで検証されたハイブリッド署名。** 書き込んだ署名はそれぞれ1件のトランザクションで、チェーンは両方の署名（ML-DSA-87 と secp256k1）を確認してから受け付けています。
+このガイドは初心者向けです。すべてのコマンドを説明し、各ステップの最後に、表示されるはずの内容を示します。
+
+**所要時間:** 初回は約35分です。コントラクトの部分に20分、Web ページに15分かかります。
+
+## 示すこと {#shows}
+
+- **気づかないうちにハイブリッド署名するブラウザー dApp。** このページは、普通の wagmi と RainbowKit のアプリです。QoreX が署名のポスト量子の半分（ML-DSA-87）を追加するので、同じトランザクションが、従来型の鍵（secp256k1）とポスト量子鍵の両方で保護されます。
+- **EVM ウィンドウが画面上で見えます。** ページはチェーンからアカウントのウィンドウを読み取り、それが有効かどうか、ブロック数とトランザクション数があと何件残っているかを表示します。
+- **読んで分かる拒否理由。** チェーンが書き込みを拒否すると、ページはそのエラーを4つの原因（登録済みの鍵がない、ウィンドウがない、ウィンドウを使い切った、パラメータが無効）のどれかに対応づけ、対処方法を表示します。
+- **チェーン上で検証されるハイブリッド署名。** あなたが書き込む署名はそれぞれ、チェーンが両方の署名を確認したうえで受け付けた、1つのトランザクションです。
 
 ## 始める前に {#prerequisites}
 
-macOS、Linux、または WSL か Git Bash を使う Windows のターミナルと、次のツールが必要です。
+このガイドのターミナルの部分では、使い捨てのテストネットアカウントを使います。本物のウォレットや本物の資金は決して使わないでください。テストネットの QOR に価値はありません。
 
-| ツール | 必要なバージョン | 確認コマンド |
+ターミナルが必要です。macOS では**ターミナル**を開きます。Windows では **PowerShell**（または Git に付属する **Git Bash**）を開きます。Linux では任意のターミナルを開きます。次の3つのツールをインストールします。確認コマンドがすでに適切なバージョンを表示するなら、インストールは省略して構いません。
+
+### Node.js 22 以降
+
+Node.js は、お使いのコンピューターで JavaScript を実行します。Hardhat 3 には Node.js 22 以降が必要です。
+
+| システム | インストール | 確認 |
 | --- | --- | --- |
-| Git | 比較的新しいバージョンなら何でも | `git --version` |
-| Node.js | 20.12 以降（22 LTS を推奨） | `node --version` |
-| pnpm | 9 以降 | `pnpm --version` |
+| macOS | `brew install node`（[Homebrew](https://brew.sh) が必要）、または https://nodejs.org からダウンロード | `node --version` |
+| Windows | `winget install OpenJS.NodeJS.LTS`、または https://nodejs.org からダウンロード | `node --version` |
+| Linux | `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh \| bash` を実行し、新しいターミナルを開いて、`nvm install 22` を実行 | `node --version` |
 
-Node.js は https://nodejs.org からインストールします。`pnpm --version` が失敗する場合は、`npm install -g pnpm`（または `corepack enable`）で pnpm をインストールして、もう一度確認してください。
+表示されるはずの内容: `v22` かそれ以上で始まる数字。Windows では、インストール後に PowerShell を閉じて開き直してください。
 
-フォーセット用の[QoreChain ダッシュボード](https://dashboard.qorechain.io)の無料アカウントと、ブラウザー部分で使う QoreX ウォレット（デスクトップブラウザーの拡張機能、またはアプリ）も必要です。[QoreX インテグレーション](/developer-tools/qorex-integrations)と [QoreX の概要](/qorex/overview)を参照してください。コントラクトのステップでは、実際のウォレットは使いません。使い捨てのテストネットアカウントを使います。テストネットの QOR に価値はありません。
+### pnpm
 
-## ステップバイステップ {#steps}
+pnpm は、プロジェクトに必要なライブラリをダウンロードします。Node.js には含まれていないので、どのシステムでも自分でインストールします。
 
-### 1. コードを取得する {#step-clone}
+```sh
+npm install -g pnpm
+```
+
+| 部分 | 意味 |
+| --- | --- |
+| `npm` | Node.js に付属するツール。ほかのツールをインストールします。 |
+| `install` | ダウンロードしてインストールする。 |
+| `-g` | グローバル。1つのフォルダーだけでなく、コンピューター全体にインストールする。 |
+| `pnpm` | インストールするツール。 |
+
+`pnpm --version` で確認します。`9.12.0` のような数字（9 以上）が表示されるはずです。`pnpm: command not found` と表示された場合は、上のインストールコマンドを実行し、新しいターミナルを開いてください。macOS や Linux で `EACCES: permission denied` と表示された場合は、`sudo npm install -g pnpm` を使います。
+
+### Git
+
+| システム | インストール | 確認 |
+| --- | --- | --- |
+| macOS | `xcode-select --install` または `brew install git` | `git --version` |
+| Windows | `winget install Git.Git`、または https://git-scm.com からダウンロード | `git --version` |
+| Linux | `sudo apt install git`（Debian、Ubuntu）または `sudo dnf install git`（Fedora） | `git --version` |
+
+表示されるはずの内容: `git version 2.` と数字。
+
+## テストネットウォレット {#wallet}
+
+このガイドでは2つのアカウントを使います。意図的に別のアカウントにしています:
+
+1. ターミナルの部分（ステップ3から6）で使う**鍵ファイルのアカウント**。ガイドが作ります。コントラクトをデプロイします。
+2. Web ページ（ステップ8と9）で使う **QoreX アカウント**。Web ページはこれで署名します。
+
+**テストネット上の QoreX。** [QoreX](/qorex/overview) は QoreChain のウォレットです。Web ページにはブラウザー拡張機能を使います（[QoreX 連携](/developer-tools/qorex-integrations)を参照）。使うブラウザーにインストールしてから、次を行います:
+
+- **QoreX ブラウザー拡張機能:** ロックを解除し、下部のバージョン番号を7回タップして、**Switch to testnet (diana)** を選びます。
+- **スマートフォンの QoreX アプリ:** 設定を開き、**Use testnet (developers)** を選びます。
+- EVM レーンでは、**Add an Ethereum account (coin 60)** を選びます。Web ページには coin 60 のアカウントが必要です。
+
+**フォーセット**は、テストネットの QOR を無料で配ります: https://dashboard.qorechain.io/faucet。サインインし、アドレスを貼り付けて、リクエストします。アカウントごとに24時間に 100 QOR を受け取れます。
+
+**金額について。** QOR はコインです。`uqor` はその最小単位です。1 QOR = 1,000,000 uqor。新しいアカウントの最初のトランザクションでポスト量子鍵が登録され、約 0.09 QOR の1回限りの手数料がかかります。
+
+## パート1: コントラクト {#contract}
+
+### 1. コードを入手する {#step-clone}
 
 ```sh
 git clone https://github.com/qorechain/build-before-qday
 cd build-before-qday/workshop-1/02-qday-guestbook
 ```
 
-このプロジェクトには2つのフォルダーがあり、それぞれ別にセットアップします。
+**このコマンドの働き**
 
-### 2. コントラクト: インストールとテスト {#step-contract-install}
+- `git clone <address>` は、GitHub からプロジェクトを、`build-before-qday` という新しいフォルダーにダウンロードします。
+- `cd <folder>` は、ターミナルを Guestbook のプロジェクトに移動します。中には `contracts-app` と `web` の2つのフォルダーがあり、それぞれ別にセットアップします。
+
+**表示されるはずの内容:** `Cloning into 'build-before-qday'...`。**所要時間:** 数秒。
+
+### 2. ライブラリをインストールしてテストする {#step-contract-install}
 
 ```sh
 cd contracts-app
@@ -49,33 +109,62 @@ pnpm install
 pnpm test
 ```
 
-`QDayGuestbook` のテストについて、`3 passing` と表示されるはずです。テストはローカルのシミュレートされたチェーン上で動き、鍵は不要です。
+**このコマンドの働き**
 
-### 3. コントラクト: テストネット用の鍵ファイルを作る {#step-account}
+- `cd contracts-app` は、コントラクトのフォルダーに入ります。
+- `pnpm install` は、`package.json` に書かれたライブラリ（Hardhat と QoreChain SDK）をダウンロードします。
+- `pnpm test` は、コンピューターの中にある模擬チェーン上で、コントラクトの検査を実行します。鍵もネットワーク上のアカウントも必要ありません。初回は Solidity コンパイラーをダウンロードします。
+
+**表示されるはずの内容:** パッケージの一覧、数秒の `Done in`、そのあと3つのチェックマーク付きの `QDayGuestbook` と `3 passing`。**所要時間:** 約1分。
+
+### 3. 鍵ファイルを作る {#step-account}
+
+プロジェクトは、秘密の情報を `.env` という名前のファイルから読み取ります。テンプレートから作成します。
+
+macOS、Linux、Git Bash:
 
 ```sh
 cp .env.example .env
 ```
 
-`.env` ファイルには使い捨ての鍵が入ります。コミットしないでください。また、その鍵を本物の用途に流用しないでください。`.env` を好きなエディターで開き、2つの値を入力します。
+Windows PowerShell:
 
-**a. 使い捨ての秘密鍵。** ランダムな 32 バイトの鍵を生成します。
+```sh
+copy .env.example .env
+```
+
+**このコマンドの働き**
+
+- `cp`（または `copy`）は、テンプレート `.env.example` を、新しいファイル `.env` にコピーします。
+
+`.env` ファイルはあなたの**鍵ファイル**です。`contracts-app` フォルダーの中にしかありません。**決して共有せず、Git にコミットせず、これらの鍵を本物のウォレットに再利用しないでください。** プロジェクトは、すでに Git で `.env` を無視する設定になっています。好きなテキストエディターで開き（macOS は `open -e .env`、Windows は `notepad .env`、Linux は `nano .env`）、2つの値を記入します。
+
+**a. 使い捨ての秘密鍵。**
 
 ```sh
 node -e "console.log('0x' + require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-表示された `0x...` の値を `.env` に `PRIVATE_KEY=0x...` としてコピーし、ゼロだけのプレースホルダーを置き換えます。
+**このコマンドの働き**
 
-**b. ポスト量子のリカバリーコード。** アカウントの ML-DSA-87 鍵は、別のリカバリーコードから導出されます。1つ作成します。
+- `node -e "..."` は、JavaScript を1行だけ実行します。その1行は、ランダムな32バイトを作り、先頭に `0x` を付けて16進数で表示します。これが秘密鍵です。
+
+**表示されるはずの内容:** 1行。`0x` に続く64文字の英数字。これを `.env` に `PRIVATE_KEY=0x...` としてコピーし、ゼロだけのプレースホルダーと置き換えます。
+
+**b. ポスト量子のリカバリーコード。**
 
 ```sh
 pnpm window recovery-code
 ```
 
-表示された `QRC1-...` の行を、`.env` に `QORE_PQC_RECOVERY_CODE=QRC1-...` としてコピーします。常に同じコードを使い続けてください。新しいコードにすると、アカウントの ML-DSA-87 鍵が別のものになります。
+**このコマンドの働き**
 
-`QORE_MNEMONIC` は空のままにし、`QORE_NETWORK=testnet` は維持します。`.env` は次のようになります（プレースホルダーで示しています）。
+- `pnpm window` は、ヘルパースクリプト `scripts/window.ts` を実行します。その後ろの単語がコマンドです。
+- `recovery-code` は、アカウントの ML-DSA-87 鍵の元になる、新しいランダムなコードを表示します。
+
+**表示されるはずの内容:** `QRC1-` で始まる1行。これを `.env` に `QORE_PQC_RECOVERY_CODE=QRC1-...` としてコピーします。このアカウントでは同じコードを保管してください。新しいコードにすると、ポスト量子鍵が別のものになります。
+
+`QORE_MNEMONIC` は空のままにし（ニーモニックは、12語または24語のフレーズで、上の2つの値の代わりになります。どちらか一方を使い、両方は使わないでください）、`QORE_NETWORK=testnet` はそのままにします。これは、ヘルパーにテストネットを使わせる設定です。`.env` は次のようになります（プレースホルダーで示しています）:
 
 ```sh
 PRIVATE_KEY=0x...
@@ -84,89 +173,195 @@ QORE_MNEMONIC=
 QORE_NETWORK=testnet
 ```
 
-### 4. コントラクト: アカウントに資金を入れる {#step-faucet}
+ファイルを保存します。
+
+### 4. アカウントに入金する {#step-faucet}
 
 ```sh
 pnpm window status
 ```
 
-1行目に、アカウントが `0x...` と `qor1...` の形式で表示されます。`qor1...` のアドレスをコピーして、次の手順に進みます。
+**このコマンドの働き**
 
-1. https://dashboard.qorechain.io/faucet を開いてサインインします。
-2. `qor1...` のアドレスを貼り付けて、QOR をリクエストします（24時間に1回、100 QOR）。
-3. 数秒待ってから、もう一度 `pnpm window status` を実行します。
+- あなたのアカウント、ポスト量子鍵が登録済みかどうか、EVM ウィンドウがあるかどうかを表示します。
 
-### 5. コントラクト: 鍵を登録し、ウィンドウを開いて、デプロイする {#step-window}
+**表示されるはずの内容:** `account:  0x...  (qor1...)`、続いて `PQC key:  not registered` と `window:   none`。`qor1...` アドレスをコピーします。そのあと:
 
-```sh
-pnpm window register        # once: registers your ML-DSA-87 key
-pnpm window open            # hybrid-signed: opens a window (600 blocks, 5 transactions)
-sleep 10                    # opening the window advances the account's nonce
-pnpm deploy:testnet         # Hardhat Ignition, answer y when asked to confirm
-```
+1. https://dashboard.qorechain.io/faucet を開き、サインインします。
+2. ページが **Testnet** になっていることを確認します。
+3. `qor1...` アドレスを貼り付けて、QOR をリクエストします（アカウントごとに24時間に1回、100 QOR）。
+4. 約10秒待ちます。https://explore.qore.network（Testnet）であなたのアドレスを検索すると、残高が表示されます。
 
-`pnpm deploy:testnet` は、デプロイされた `QDayGuestbook` のアドレス（`0x...`）を表示します。これをコピーしてください。登録は、チェーンが従来型の署名で受け付ける唯一のメッセージです。チェーン上にはまだ照合先の鍵がないためです。ウィンドウを開くときの署名はハイブリッドです。表示されるトランザクションハッシュを控えておいてください。
-
-### 6. コントラクト: コマンドラインから署名する {#step-cli}
+### 5. 鍵を登録し、ウィンドウを開き、デプロイする {#step-window}
 
 ```sh
-pnpm sign "Hello from my terminal"   # writes one entry
-pnpm sign --read                     # lists the latest entries
+pnpm window register
 ```
 
-各アドレスが署名できるのは1回だけなので、同じアカウントからの2回目の `pnpm sign` は、コントラクトに拒否されます。
+**このコマンドの働き**
 
-### 7. ウェブページ: インストールと設定 {#step-web}
+- ML-DSA-87 公開鍵をチェーンに、アカウントごとに1回送ります。チェーンにはまだ照合先の鍵がないので、ポスト量子署名なしでチェーンが受け付ける唯一のメッセージです。費用は約 0.09 QOR です。
 
-同じプロジェクトフォルダーで2つ目のターミナルを開く（または `cd ..` で戻る）か、次のコマンドを実行します。
+**表示されるはずの内容:** `registered: ` とトランザクションハッシュ。
+
+```sh
+pnpm window open
+```
+
+**このコマンドの働き**
+
+- 両方の鍵で署名した（ハイブリッド）トランザクションを1つ送り、EVM 認可ウィンドウを開きます。ウィンドウが有効な間は、通常の EVM トランザクションが許可されます。デフォルトでは 600 ブロックの間、5 件のトランザクションを許可します。
+
+**表示されるはずの内容:** `opened: ` とトランザクションハッシュ、続いて `window: 600 blocks, 5 txs, ...`。最後のステップのために、**このハッシュをコピーしてください。**
+
+```sh
+sleep 10
+```
+
+**このコマンドの働き**
+
+- 10秒待ちます（PowerShell と Git Bash でも動きます）。ウィンドウを開くとアカウントのトランザクションカウンターが変わるので、次のコマンドは新しい値を読み取る必要があります。
+
+```sh
+pnpm deploy:testnet
+```
+
+**このコマンドの働き**
+
+- コントラクトをデプロイするツールである Hardhat Ignition を、モジュール `QDayGuestbook`、ネットワーク `qorechainTestnet`（チェーン ID 9800、QoreChain テストネット）で実行します。
+- 確認を求められます。`y` と入力して Enter を押します。
+
+**表示されるはずの内容:** `QDayGuestbookModule#QDayGuestbook` で終わる行と、コントラクトのアドレス `0x...`。**このアドレスをコピーしてください。** Web ページで必要になります。**所要時間:** 約30秒。
+
+### 6. ターミナルから署名する {#step-cli}
+
+```sh
+pnpm sign "Hello from my terminal"
+pnpm sign --read
+```
+
+**このコマンドの働き**
+
+- `pnpm sign "<message>"` は、ゲストブックに1件の記入を書き込みます。引用符の中の文章があなたのメッセージで、最大140文字です。
+- `pnpm sign --read` は読み取り専用です。最新の記入を一覧表示するだけで、何も送りません。
+
+**表示されるはずの内容:** 最初のコマンドのあとに `tx: 0x...` と `status: success in block ...`。2つ目のコマンドのあとに `guestbook 0x...: 1 signatures`、そしてあなたのメッセージと、時刻、あなたのアドレス。
+
+各アドレスが署名できるのは1回だけです。同じアカウントで2回目の `pnpm sign` を行うと、コントラクトが `AlreadySigned` で拒否します。
+
+## パート2: Web ページ {#web}
+
+### 7. ページをインストールして設定する {#step-web}
+
+同じプロジェクトフォルダーで、2つ目のターミナルウィンドウを開くか、`cd ..` で戻ります。そのあと:
 
 ```sh
 cd web
 pnpm install
-cp .env.example .env
 ```
 
-`web/.env` を開き、ステップ5でコピーしたアドレスを設定します。
+**このコマンドの働き**
+
+- web フォルダーに入り、そのライブラリ（React、wagmi、RainbowKit、Vite）をダウンロードします。
+
+**表示されるはずの内容:** パッケージの一覧と、数秒の `Done in`。
+
+ページの設定ファイルを作ります。macOS、Linux、Git Bash では `cp .env.example .env`、Windows PowerShell では `copy .env.example .env` です。エディターで `web/.env` を開き、ステップ5でコピーしたコントラクトのアドレスを設定します:
 
 ```sh
 VITE_GUESTBOOK_ADDRESS=0x...
 ```
 
-`VITE_WALLETCONNECT_PROJECT_ID` は空のままにしてください。これは、`src/wagmi.ts` に WalletConnect ベースのウォレットを追加する場合にだけ必要です。
+`VITE_WALLETCONNECT_PROJECT_ID` は空のままにします。`src/wagmi.ts` に WalletConnect ウォレットを追加する場合にのみ必要です。
 
-### 8. ウェブページ: 実行する {#step-run}
+### 8. ページを起動して QoreX を接続する {#step-run}
 
 ```sh
 pnpm dev
 ```
 
-QoreX をインストールしたブラウザーで http://localhost:5174 を開きます。ページは EVM RPC 経由でチェーンを読み取ります。EVM ウィンドウは、Vite のプロキシ `/lcd` を通して REST で読み取ります。公開 REST エンドポイントが CORS ヘッダーを送らないためです。下部の署名一覧には、ステップ6で書き込んだエントリがすでに表示されています。
+**このコマンドの働き**
+
+- お使いのコンピューター上で、小さな Web サーバー（Vite）を起動します。ページは `http://localhost:5174` にあります。このサーバーは、`/lcd` で始まるリクエストを、公開テストネットの REST サーバーに転送もします。ブラウザーはそのサーバーを直接呼び出せない（CORS ヘッダーを送ってこない）ため、このプロキシがページの代わりに呼び出します。
+- このコマンドは動き続けます。このターミナルは開いたままにしてください。あとで止めるときは `Ctrl+C` を押します。`web/.env` を変更した場合は、止めてからもう一度起動してください。
+
+**表示されるはずの内容:** `VITE ... ready` と `Local: http://localhost:5174/`。
+
+次に、QoreX がインストールされているブラウザーで:
+
+1. http://localhost:5174 を開きます。
+2. QoreX のロックが解除され、テストネットに切り替わっていること（上の「テストネットウォレット」を参照）、そしてフォーセットで QOR を入手した coin 60 のアカウントがあることを確認します。QoreX が両方の形式のアドレスを表示する場合は、フォーセットのページでは `qor1...` 形式を使ってください。
+3. ページのカード1で、**Connect QoreX**（接続ボタン）を選びます。QoreX が最初に表示されない場合は、ウォレットの一覧から選んでください。
+4. QoreX が接続の可否を尋ねるウィンドウを開きます。承認します。
+
+**表示されるはずの内容:** カード1に、あなたの `0x...` アカウント、チェーン `qorechain-diana EVM (9800)`、残高、そして EVM ウィンドウが表示されます。新しいアカウントでは `no window open` です。カード3には `On chain now: 1 signatures` と、ステップ6で書き込んだ記入が表示されます。チェーンの行に `wrong chain` と表示された場合は、QoreX をテストネットに切り替えてください。
 
 ### 9. QoreX から署名する {#step-sign}
 
-1. QoreX をインストールして、テストネットに切り替えます。切り替え方は[5分でデプロイ](/getting-started/deploy-in-5-minutes#step-testnet)を参照してください。
-2. QoreX では、ML-DSA-87 鍵を登録済みの coin-60（Ethereum）アカウントを使い、[フォーセット](/dashboard/faucet)から資金を入れます（サインイン後にそのアドレスを貼り付けます）。
-3. ページで **Connect QoreX** を選び、メッセージを入力して、**Sign** を選びます。ウィンドウが開いていなければ、QoreX は承認画面で EVM ウィンドウを開くことを提案します。
-4. QoreX で承認します。
+1. カード2に、メッセージを入力します（最大140文字）。ページに、使った文字数が表示されます。
+2. **Sign** を選びます。
+3. QoreX が承認画面を開きます。アカウントにポスト量子鍵やウィンドウがまだない場合、QoreX は、同じ承認の中で、鍵の登録（約 0.09 QOR の1回限りの手数料）と EVM ウィンドウを開くことを提案します。それを実行してください。
+4. QoreX で承認します。待っている間、ボタンには `Approve in QoreX...` と表示されます。
 
-### 10. エクスプローラーで検索する {#step-explorer}
+**表示されるはずの内容:** エクスプローラーへのリンク付きの `tx 0x...` の行。最初は `waiting for the block...`、そのあと `success in block ...`。カード1では、EVM ウィンドウが、残りのブロック数とトランザクション数とともに `live` と表示されます。カード3の先頭に、あなたのメッセージが新しい順に追加されます。最大20件を表示し、数秒ごとに更新されます。同じアドレスでもう一度試すと、カード2に `This address has already signed.` と表示されます。
 
-https://explore.qore.network を開き、ネットワークセレクターを **Testnet** に切り替えます。ステップ6または9のトランザクションハッシュ、`pnpm window open` のハッシュ、または `QDayGuestbook` のアドレスを検索します。ウィンドウのトランザクションには、チェーンが検証したポスト量子署名が表示されます。
+### 10. チェーン上で検証する {#step-explorer}
 
-## 何が表示されるか {#result}
+`pnpm window open`（ステップ5）のハッシュを使います。ページの場合、QoreX はウィンドウを自分のトランザクションでも開きます。QoreX に履歴を表示してもらうか、エクスプローラーであなたのアドレスを検索してください。
 
-- `contracts-app` で `pnpm test` を実行すると、`3 passing` と表示されます。
-- `pnpm window status` が、`PQC key: registered` と、残りのブロック数とトランザクション数を伴う `window: live` を表示します。
+**a. 通常の Web リクエストで。** `<HASH>` をハッシュに置き換えます（`<` と `>` は外します）。
+
+```sh
+curl https://api-testnet.qore.host/cosmos/tx/v1beta1/txs/<HASH>
+```
+
+**このコマンドの働き**
+
+- `curl <address>` は、QoreChain の公開サーバーに、そのトランザクションの記録を問い合わせ、表示します。Windows PowerShell では、`curl` の代わりに `curl.exe` と入力してください。
+
+**長い応答の中で表示されるはずの内容:**
+
+- `"code": 0`。トランザクションが成功したことを意味します。
+- `PQCHybridSignature` タイプの拡張。ML-DSA-87 署名が入っており、長さは 4,627 バイトです。
+- `pqc_hybrid_verify` イベント。`status` が `verified` になっています。
+
+**b. エクスプローラーで。** https://explore.qore.network を開き、ネットワークセレクターを **Testnet** に切り替え、トランザクションのハッシュ（ステップ5、6、9のもの）、あなたのアカウントのアドレス、または `QDayGuestbook` のアドレスを検索します。ウィンドウのトランザクションには、チェーンが検証したポスト量子署名が表示されます。
+
+## 最後に表示されるはずの内容 {#result}
+
+- `contracts-app` で `pnpm test` が `3 passing` を表示します。
+- `pnpm window status` が `PQC key:  registered` と、残りのブロック数、トランザクション数、金額を含む `window:   live` を表示します。
 - `pnpm deploy:testnet` が、`QDayGuestbook` のアドレス（`0x...`）を表示します。
 - `pnpm sign "..."` が、トランザクションハッシュと `status: success in block ...` を表示します。
-- ページのステップ1に、あなたの `0x...` アカウント、チェーン `qorechain-diana EVM (9800)`、残高、そして残りのブロック数とトランザクション数を伴う `live` の EVM ウィンドウが表示されます。
-- **Sign** を選んで QoreX で承認すると、エクスプローラーへのトランザクションリンクが表示され、続いて `success in block ...` と表示されます。
-- 下部の一覧に、オンチェーンの署名の数と、最新のエントリ（最大20件）が新しい順に表示され、数秒ごとに更新されます。
-- 同じアドレスからもう一度試すと、そのアドレスはすでに署名済みであると表示されます。
+- ページに、あなたのアカウント、`qorechain-diana EVM (9800)`、残高、そして `live` のウィンドウが表示されます。**Sign** を選んで承認すると、トランザクションのリンクと `success in block ...` が表示されます。
+- 下部の一覧に、署名の件数と最新の記入が、新しい順に表示されます。
+- `curl` での確認で、`"code": 0`、`PQCHybridSignature` 拡張、`status` が `verified` の `pqc_hybrid_verify` が表示されます。
+
+## トラブルシューティング {#troubleshooting}
+
+| 表示される内容 | 原因 | 対処 |
+| --- | --- | --- |
+| `pnpm: command not found` | pnpm がインストールされていない。Node.js には含まれていません。 | `npm install -g pnpm` を実行し、新しいターミナルを開く。 |
+| `ERROR: You are using Node.js ... which is not supported by Hardhat` | Node.js が古すぎる。 | Node.js 22 以降をインストールする。 |
+| `node: .env: not found` | このフォルダーに `.env` ファイルがない。 | `contracts-app` でステップ3を行い、そのフォルダーからコマンドを実行する。 |
+| `Set QORE_MNEMONIC, or PRIVATE_KEY ...` または `Set QORE_PQC_RECOVERY_CODE ...` | `.env` の値が空、プレースホルダーのまま、または入力ミスがある。 | ステップ3のとおり両方の値を記入して保存する。 |
+| `... does not exist on chain yet: send it some QOR first` | アカウントにまだ QOR がない。 | フォーセットを使い（ステップ4）、10秒待つ。 |
+| フォーセットが上限に達したと表示する | アカウントごとに24時間に1回のリクエストのみ。 | 待ってから、もう一度試す。 |
+| `account has no PQC key and classical fallback is disabled` | 鍵を登録する前にトランザクションを送った。 | `pnpm window register` を実行し、そのあと `pnpm window open` を実行する。QoreX では、最初の送信で提案される登録を承認する。 |
+| `EVM authorisation window exhausted` または `open an EVM window first` | ウィンドウのブロック数かトランザクション数を使い切った、またはウィンドウを一度も開いていない。 | `pnpm window open`（ターミナル）を実行し、10秒待つ。ページでは、QoreX が新しいウィンドウを提案したときに承認する。 |
+| ウィンドウを開いたあとに `HHE10402` | アカウントのトランザクションカウンターが更新される前に、デプロイが実行された。 | 10秒待ってから、`pnpm deploy:testnet` をもう一度実行する。 |
+| `refused: ... (AlreadySigned)` | このアドレスはすでに署名している。 | 各アドレスが署名できるのは1回だけ。別のアカウントを使う。 |
+| `refused: ... (BadLength)` | メッセージが空、または140文字より長い。 | 1文字から140文字にする。 |
+| `Deploy first (pnpm deploy:testnet) or set GUESTBOOK_ADDRESS` | `pnpm sign` がコントラクトを見つけられない。 | `contracts-app` でステップ5を終わらせる。 |
+| ページに記入が表示されず、**Sign** ボタンがグレーになっている | `web/.env` の `VITE_GUESTBOOK_ADDRESS` が空。 | ステップ5のアドレスを貼り付け、`Ctrl+C` で止めてから `pnpm dev` を再起動する。 |
+| ページに `wrong chain` と表示される | QoreX がテストネットになっていない。 | QoreX をテストネット（diana）に切り替える。「テストネットウォレット」を参照。 |
+| 接続を選んでも QoreX が表示されない | QoreX 拡張機能のないブラウザーでページを開いた、または拡張機能がロックされている。 | QoreX があるブラウザーで http://localhost:5174 を開き、ロックを解除する。 |
+| ポート 5174 がすでに使われている | ほかのプログラムが使っている。 | それを閉じるか、Vite が表示する別のアドレスを使う。 |
+| EVM ウィンドウの横に `could not read`、またはブラウザーコンソールに CORS エラー | ページが REST サーバーを直接呼び出し、そのサーバーは CORS ヘッダーを送らない。 | このプロジェクトのように、REST は開発サーバーの `/lcd` プロキシ経由でのみ呼び出す。ページは `pnpm dev` で起動する。 |
 
 ## コード {#code}
 
-コントラクトはエントリーを配列に保持し、アドレスごとに署名を1回に制限します。
+コントラクトは、記入を配列に保持し、1アドレスにつき1回の署名だけを許可します:
 
 ```solidity
 uint256 public constant MAX_LENGTH = 140;
@@ -188,7 +383,7 @@ function count() external view returns (uint256) { return entries.length; }
 function latest(uint256 limit) external view returns (Entry[] memory out);
 ```
 
-QoreX は、コネクターの一覧（`web/src/wagmi.ts`）の最初のウォレットです。
+QoreX は、コネクターの一覧（`web/src/wagmi.ts`）の最初のウォレットです:
 
 ```ts
 import { qorechain, qorechainTestnet } from "@qorechain/evm";
@@ -199,7 +394,7 @@ wallets: [() => qorexWallet({ pollAccountsOnFocus: true }), injectedWallet],
 chains: [qorechainTestnet, qorechain],
 ```
 
-ページはウィンドウを表示し、拒否の理由を説明します（`web/src/App.tsx`）。
+ページはウィンドウを表示し、拒否された理由を説明します（`web/src/App.tsx`）:
 
 ```tsx
 const w = await evmWindowStatus({ rest: REST, address });   // found, live, remainingBlocks, remainingTxs
@@ -207,13 +402,13 @@ const rejection = write.error ? classifyEvmWindowRejection(write.error) : undefi
 // "no-pqc-key" | "no-window" | "exhausted" | "invalid"
 ```
 
-## 使用したパッケージ {#packages}
+## 使用するパッケージ {#packages}
 
 コントラクト（`contracts-app/`）:
 
 | パッケージ | バージョン | 用途 |
 | --- | --- | --- |
-| `@qorechain/sdk` | ^0.13.0 | ウィンドウ用ヘルパースクリプト、ハイブリッド署名 |
+| `@qorechain/sdk` | ^0.13.0 | ウィンドウのヘルパースクリプト、ハイブリッド署名 |
 | `@qorechain/evm` | ^0.13.0 | チェーン定義、`evmWindowStatus`、`evmWindowCost` |
 | `@cosmjs/stargate` | ^0.39.0 | ウィンドウのメッセージのブロードキャスト |
 | `hardhat` | ^3.21.1 | コンパイル、テスト、Ignition によるデプロイ |
@@ -221,7 +416,7 @@ const rejection = write.error ? classifyEvmWindowRejection(write.error) : undefi
 | `tsx` | ^4.19.0 | TypeScript スクリプトの実行 |
 | `typescript` | ^5.6.3 | 型チェック |
 
-ウェブページ（`web/`）:
+Web ページ（`web/`）:
 
 | パッケージ | バージョン | 用途 |
 | --- | --- | --- |
@@ -233,7 +428,7 @@ const rejection = write.error ? classifyEvmWindowRejection(write.error) : undefi
 | `@tanstack/react-query` | ^5.59.0 | ウィンドウとチェーンの読み取りのためのデータ取得 |
 | `react`、`react-dom` | ^18.3.1 | インターフェース |
 | `vite` | ^5.4.0 | 開発サーバー |
-| `@vitejs/plugin-react` | ^4.3.0 | Vite の React サポート |
+| `@vitejs/plugin-react` | ^4.3.0 | Vite 用の React サポート |
 | `typescript` | ^5.6.3 | 型チェック |
 
 ソース: https://github.com/qorechain/build-before-qday/tree/main/workshop-1/02-qday-guestbook

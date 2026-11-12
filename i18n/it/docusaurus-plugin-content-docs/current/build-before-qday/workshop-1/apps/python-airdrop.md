@@ -7,76 +7,162 @@ sidebar_position: 6
 
 # App Python: Q-Day Airdrop
 
-Il **Q-Day Airdrop** è un piccolo strumento Python che invia QOR di testnet a un'intera lista di indirizzi in **una** sola transazione, firmata con una chiave classica secp256k1 e una chiave post-quantistica ML-DSA-87 (FIPS 204). Poi dimostra, dal registro della catena stessa, che entrambe le firme sono state verificate. Gira sulla testnet di QoreChain (`qorechain-diana`, EVM chain ID 9800).
+Il **Q-Day Airdrop** è un piccolo strumento Python che invia QOR di testnet a un'intera lista di indirizzi in **una sola** transazione. La transazione è firmata con una chiave classica secp256k1 e una chiave post-quantistica ML-DSA-87 (FIPS 204). Lo strumento poi dimostra, dal registro della catena stessa, che entrambe le firme sono state verificate. Gira sulla testnet di QoreChain (`qorechain-diana`, EVM chain ID 9800).
+
+**Quanto ci vuole:** circa 20 minuti la prima volta (10 minuti per installare gli strumenti, 5 di configurazione, 5 per inviare e controllare).
+
+Non serve conoscere Python. Basta digitare i comandi qui sotto, uno alla volta, e confrontare il risultato con "Cosa dovresti vedere".
 
 ## Cosa mostra {#what-it-shows}
 
 - **Firma ibrida ML-DSA-87 + secp256k1** da Python.
-- **Una transazione firmata in modo ibrido e verificata on chain**, che paga molti destinatari in una volta con un unico messaggio multi-send.
-- **Un report di verifica** costruito dal registro della transazione della catena stessa, non dalla parola dello strumento.
+- **Una transazione firmata in modo ibrido e verificata on chain**, che paga molti destinatari in un colpo solo con un unico messaggio multi-invio.
+- **Un rapporto di verifica** costruito dal registro della transazione della catena, non dalla parola dello strumento.
 
-Perché è importante: una sola firma protegge un intero airdrop, e resta protetta da un futuro computer quantistico perché la metà ML-DSA-87 è post-quantistica. Vedi [Transazioni quantum-safe](/sdk/guides/quantum-safe).
+Perché è importante: una sola firma protegge un intero airdrop, e resta protetta contro un futuro computer quantistico perché la metà ML-DSA-87 è post-quantistica. Vedi [Transazioni a prova di quantistico](/sdk/guides/quantum-safe).
+
+:::warning Solo testnet
+Usa solo un account di testnet usa e getta. Il QOR di testnet non ha alcun valore. Non usare mai in questo tutorial il tuo wallet reale, la tua vera frase di recupero o fondi reali.
+:::
+
+## Parole che incontrerai {#words}
+
+| Parola | Significato |
+| --- | --- |
+| Testnet | Una copia di prova di QoreChain. Le monete al suo interno sono gratuite e non valgono nulla. |
+| QOR e uqor | Due nomi per la stessa moneta. 1 QOR = 1.000.000 uqor. Lo strumento chiede QOR. Le commissioni sono mostrate in uqor. |
+| Memo | Un breve testo allegato a una transazione, come la causale di un bonifico. |
+| Indirizzo | Il tuo numero di conto pubblico. Su QoreChain inizia con `qor1`. Si può condividere senza problemi. |
+| File della chiave | Un file con la tua frase di recupero segreta. Non condividerlo mai. |
+| Faucet | Un sito web che regala QOR di testnet gratuiti. |
+| Hash | L'ID univoco di una transazione. Serve per cercare la transazione. |
+
+## Prima di iniziare {#before}
+
+Servono **Git** (scarica il codice) e **Python 3.10 o successivo** con `venv` (una cartella privata per le librerie dello strumento). Dopo ogni installazione, **chiudi il terminale e aprine uno nuovo**, poi esegui il comando di verifica.
+
+| Strumento | macOS | Windows | Linux (Debian o Ubuntu) | Verifica |
+| --- | --- | --- | --- | --- |
+| Git | `brew install git` (Homebrew da https://brew.sh) | https://git-scm.com/download/win | `sudo apt install git` | `git --version` |
+| Python 3.10+ | `brew install python` | https://www.python.org/downloads/ (spunta "Add python.exe to PATH" nell'installer) | `sudo apt install python3 python3-venv python3-pip` | `python3 --version` (su Windows: `python --version`) |
+
+Su Windows usa PowerShell oppure Git Bash. Dove questa pagina dice `python3`, Windows di solito usa `python`. Tutto il resto è uguale, tranne la riga che attiva l'ambiente virtuale (passaggio 3).
+
+## Ottieni un wallet di testnet e QOR gratuiti {#wallet}
+
+Lo strumento crea da solo la propria chiave usa e getta (passaggio 4 qui sotto), quindi per questo tutorial non ti serve un'app wallet. Se vuoi anche vedere il tuo account in QoreX:
+
+1. **App QoreX:** apri Impostazioni, poi attiva **Use testnet (developers)**.
+2. **Estensione del browser QoreX:** sbloccala, tocca 7 volte il numero di versione in basso, poi scegli **Switch to testnet (diana)**.
+
+I QOR gratuiti arrivano dal faucet su https://dashboard.qorechain.io/faucet. Accedi, incolla l'indirizzo e fai la richiesta. Eroga **100 QOR ogni 24 ore per account**.
+
+La primissima transazione di un nuovo account registra sulla catena la sua chiave post-quantistica ML-DSA-87. È un passaggio una tantum con una commissione di circa 0,09 QOR. Lo strumento lo fa per te con il comando `register`.
 
 ## Passo dopo passo {#run}
 
-Tutto ciò che segue gira nel tuo terminale (macOS, Linux oppure Windows con WSL). Usi solo un account testnet usa e getta. I QOR di testnet non hanno alcun valore e qui non usi mai un wallet reale.
-
-### 1. Installa gli strumenti {#install}
-
-Ti servono Git e Python 3.10 o successivo (con `venv`). Controlla cosa hai:
-
-```bash
-git --version
-python3 --version      # must report 3.10 or later
-python3 -m venv --help # prints usage if venv is available
-```
-
-Se manca qualcosa, installalo prima, per esempio da [python.org](https://www.python.org/downloads/) o con il tuo gestore di pacchetti (`brew install python` su macOS, `sudo apt install python3 python3-venv git` su Debian o Ubuntu). Apri un nuovo terminale ed esegui di nuovo i controlli.
-
-### 2. Ottieni il codice {#clone}
+### 1. Scarica il codice {#clone}
 
 ```bash
 git clone https://github.com/qorechain/build-before-qday
 cd build-before-qday/workshop-1/06-python-airdrop
 ```
 
-### 3. Installa le dipendenze {#deps}
+**Cosa fa**
+
+- `git clone <indirizzo>`: copia il progetto da GitHub in una nuova cartella chiamata `build-before-qday`.
+- `cd <cartella>`: sposta il terminale nella cartella dell'app Python. Ogni comando successivo deve essere eseguito da questa cartella.
+
+**Cosa dovresti vedere:** righe come `Cloning into 'build-before-qday'...` e poi il prompt nella nuova cartella.
+
+### 2. Crea un ambiente Python privato {#venv}
 
 ```bash
 python3 -m venv .venv
+```
+
+**Cosa fa:** crea una cartella chiamata `.venv` che contiene le librerie di questo strumento, così non si mescolano con nient'altro sul tuo computer.
+
+| Parte | Significato |
+| --- | --- |
+| `python3` | Il programma Python. |
+| `-m venv` | Esegue il creatore di "ambienti virtuali" integrato in Python. |
+| `.venv` | Il nome della cartella da creare. |
+
+**Cosa dovresti vedere:** nessun output stampato e una nuova cartella `.venv`.
+
+### 3. Attivalo e installa le librerie {#deps}
+
+```bash
 source .venv/bin/activate
+```
+
+Su PowerShell di Windows usa invece `.venv\Scripts\activate` (se PowerShell lo blocca, esegui `Set-ExecutionPolicy -Scope Process RemoteSigned` e riprova). Nel Prompt dei comandi di Windows usa `.venv\Scripts\activate.bat`.
+
+**Cosa fa:** fa usare al tuo terminale l'ambiente privato.
+
+**Cosa dovresti vedere:** `(.venv)` all'inizio del prompt. Riattivalo con questo stesso comando in ogni nuovo terminale.
+
+```bash
 pip install -r requirements.txt
 ```
 
-Installa un solo pacchetto, `qorechain-sdk==0.13.0`, più ciò che gli serve. Tieni attivo l'ambiente virtuale per il resto dei passi (esegui di nuovo `source .venv/bin/activate` in ogni nuovo terminale). Controlla che lo strumento parta:
+| Parte | Significato |
+| --- | --- |
+| `pip` | L'installatore di librerie di Python. |
+| `install` | Scarica e installa librerie. |
+| `-r requirements.txt` | Legge l'elenco delle librerie da questo file. Nomina una libreria, `qorechain-sdk==0.13.0` (l'SDK di QoreChain, versione esatta 0.13.0), più ciò di cui ha bisogno. |
+
+**Cosa dovresti vedere:** righe di download che terminano con `Successfully installed ... qorechain-sdk-0.13.0`. Un avviso che è disponibile un nuovo pip è innocuo.
+
+**Quanto ci vuole:** da circa 15 secondi a 1 minuto.
+
+Ora controlla che lo strumento parta:
 
 ```bash
 python airdrop.py --help
 ```
 
-Dovresti vedere i comandi `new`, `status`, `register`, `drop` e `verify`.
+**Cosa dovresti vedere:** i comandi `new`, `status`, `register`, `drop` e `verify`.
 
-### 4. Crea il tuo account testnet usa e getta {#key}
+### 4. Crea il tuo account di testnet usa e getta {#key}
 
 ```bash
 python airdrop.py new
 ```
 
-Genera una nuova frase di recupero, la scrive nel file di chiavi `~/.config/qday/python.env` (leggibile solo da te, modalità 600) e stampa solo l'indirizzo dell'account, che inizia con `qor1...`. La frase non viene mai mostrata. Non condividere questo file, non farne il commit e non riutilizzarlo sulla mainnet. Per tenere la chiave altrove, metti `--key-file /path/to/file` prima del nome del comando (per esempio `python airdrop.py --key-file ~/my.env status`) oppure imposta `QORE_KEY_FILE`.
+**Cosa fa:** crea un account nuovo. Scrive una frase di recupero segreta nel file della chiave `~/.config/qday/python.env` (nella tua cartella home, leggibile solo da te) e stampa solo l'indirizzo pubblico.
 
-Copia dall'output l'indirizzo `qor1...`. Se lo perdi, `python airdrop.py status` lo stampa di nuovo.
+| Parte | Significato |
+| --- | --- |
+| `new` | Crea un nuovo file della chiave e stampa il suo indirizzo. |
+| `new --force` | Sostituisce un file della chiave esistente. La vecchia chiave è persa. |
 
-### 5. Ricevi QOR di testnet dal faucet {#faucet}
+**Cosa dovresti vedere:** `New testnet wallet`, un `address` che inizia con `qor1...`, il percorso del file della chiave con `(mode 600, mnemonic not shown)` e un suggerimento per il passaggio successivo.
+
+**Copia l'indirizzo `qor1...`.** Se lo perdi, `python airdrop.py status` lo stampa di nuovo. Non condividere mai il file della chiave, non farne mai il commit su Git e non riutilizzarlo mai sulla mainnet.
+
+Per tenere la chiave altrove, metti `--key-file` **prima** del nome del comando:
+
+```bash
+python airdrop.py --key-file ~/my.env status
+```
+
+`--key-file <percorso>` significa "usa questo file della chiave invece di quello predefinito". L'ordine conta: `--key-file` va prima di `status`, `drop` e degli altri comandi. In alternativa puoi impostare la variabile d'ambiente `QORE_KEY_FILE`.
+
+### 5. Ottieni QOR di testnet dal faucet {#faucet}
 
 1. Apri https://dashboard.qorechain.io/faucet e accedi.
-2. Incolla il tuo indirizzo `qor1...` e richiedi i token. Il faucet eroga 100 QOR ogni 24 ore.
-3. Controlla che siano arrivati:
+2. Incolla il tuo indirizzo `qor1...` e premi il pulsante di richiesta.
+3. Aspetta qualche secondo, poi esegui:
 
 ```bash
 python airdrop.py status
 ```
 
-Il saldo dovrebbe mostrare i tuoi QOR di testnet, e la chiave post-quantistica dovrebbe risultare non ancora registrata.
+**Cosa fa:** chiede alla testnet il tuo saldo e se la tua chiave post-quantistica è registrata.
+
+**Cosa dovresti vedere:** il tuo saldo (circa 100 QOR) e un avviso che la chiave ML-DSA-87 non è ancora registrata. Se dice che l'indirizzo "is not on chain yet", il pagamento del faucet non è ancora arrivato: aspetta 10 secondi e riprova.
 
 ### 6. Registra la tua chiave post-quantistica {#register}
 
@@ -84,18 +170,26 @@ Il saldo dovrebbe mostrare i tuoi QOR di testnet, e la chiave post-quantistica d
 python airdrop.py register
 ```
 
-Registra una sola volta la tua chiave ML-DSA-87 on chain. Si può rieseguire senza problemi. La registrazione è firmata in modo classico, perché una chiave non può cofirmare la propria registrazione. Ogni transazione successiva è firmata in modo ibrido.
+**Cosa fa:** registra sulla catena la tua chiave ML-DSA-87, una sola volta. Si può rieseguire senza rischi. Questa prima transazione è firmata in modo classico, perché una chiave non può cofirmare la propria registrazione. Costa circa 0,09 QOR. Ogni transazione successiva è firmata in modo ibrido.
+
+**Cosa dovresti vedere:** un hash di transazione e una riga `registered` (oppure `already registered` se lo hai eseguito due volte).
+
+**Quanto ci vuole:** qualche secondo (un blocco).
 
 ### 7. Scrivi la lista dei destinatari {#list}
 
-Crea un file di testo con un indirizzo testnet per riga. Per una prima prova, crea qualche indirizzo usa e getta puntando `--key-file` a nuovi file, oppure usa gli indirizzi di amici che usano anch'essi la testnet:
+Crea due account destinatari usa e getta. Ognuno ha il proprio file della chiave:
 
 ```bash
 python airdrop.py --key-file ~/.config/qday/r1.env new
 python airdrop.py --key-file ~/.config/qday/r2.env new
 ```
 
-Poi metti gli indirizzi stampati in `addresses.txt`:
+**Cosa fa:** è lo stesso `new` di prima, ma `--key-file` manda ogni chiave nel proprio file, così nulla viene sovrascritto. (Puoi anche usare indirizzi di amici che usano la testnet.)
+
+**Cosa dovresti vedere:** due indirizzi `qor1...` diversi. Copiali entrambi.
+
+Ora crea in questa cartella un file di testo semplice chiamato `addresses.txt`, un indirizzo per riga. Va bene qualsiasi editor di testo (Blocco note su Windows, TextEdit in modalità testo semplice su macOS, `nano addresses.txt` su Linux):
 
 ```text
 # One qor1 address per line. Blank lines and lines starting with # are ignored.
@@ -103,7 +197,7 @@ qor1...first-testnet-address
 qor1...second-testnet-address
 ```
 
-Le righe vuote, i commenti `#`, i duplicati, il mittente stesso e tutto ciò che non è un indirizzo di account `qor1...` valido vengono saltati con un avviso. Al massimo 100 destinatari per transazione. Il repository contiene anche `addresses.example.txt`, un esempio con righe segnaposto.
+Sostituisci le due righe di esempio con i tuoi indirizzi reali. Le righe vuote, i commenti `#`, i duplicati, il mittente stesso e tutto ciò che non è un indirizzo `qor1...` valido vengono saltati con un avviso. Al massimo 100 destinatari per transazione. La cartella contiene anche `addresses.example.txt`, un esempio con righe segnaposto.
 
 ### 8. Invia l'airdrop {#drop}
 
@@ -111,28 +205,90 @@ Le righe vuote, i commenti `#`, i duplicati, il mittente stesso e tutto ciò che
 python airdrop.py drop addresses.txt 0.1 --memo "Build Before Q-Day"
 ```
 
-`0.1` è l'importo in QOR inviato a ciascun destinatario. Lo strumento mostra un riepilogo (destinatari, importo a testa, totale) e ti chiede di confermare; aggiungi `--yes` per saltare la domanda. Poi simula la transazione per stabilire il gas, la firma con entrambe le chiavi, la trasmette come un'unica transazione e stampa il report di verifica. Se una trasmissione fallisce, attendi un minuto e riprova.
+| Parte | Significato |
+| --- | --- |
+| `drop` | Invia una transazione che paga tutti quelli nella lista. |
+| `addresses.txt` | Il file con i destinatari. |
+| `0.1` | L'importo in QOR **per ogni destinatario** (0,1 QOR = 100.000 uqor). Due destinatari ricevono 0,2 QOR in totale. |
+| `--memo "..."` | Un breve testo allegato alla transazione. Facoltativo. |
+| `--yes` (o `-y`) | Facoltativo: salta la domanda "sei sicuro". |
 
-### 9. Verifica una transazione qualsiasi {#verify}
+Ordine delle opzioni: prima l'importo e il file, poi `--memo` e `--yes`. `--key-file` è diverso: va prima di `drop`.
+
+**Cosa fa:** mostra un riepilogo (destinatari, importo ciascuno, totale) e ti chiede di confermare. Digita `y` e premi Invio. Poi chiede alla catena quanto gas serve (una prova), aggiunge il 30 per cento come margine di sicurezza, firma con entrambe le chiavi, invia una transazione e stampa il rapporto di verifica.
+
+**Cosa dovresti vedere:** l'hash e l'altezza della transazione, poi un rapporto con: code 0, lo stato `verified` di `pqc_hybrid_verify` del firmatario, una firma ML-DSA-87 di 4.627 byte e un numero di destinatari che corrisponde alla tua lista. Copia l'hash.
+
+**Quanto ci vuole:** circa 10 secondi.
+
+### 9. Verifica qualsiasi transazione {#verify}
 
 ```bash
 python airdrop.py verify <TX_HASH>
 ```
 
-Usa l'hash stampato da `drop`. Stampa da solo il report di verifica, per qualsiasi hash di transazione.
+**Cosa fa:** legge la transazione dalla catena e stampa da solo il rapporto di verifica. Funziona con qualsiasi hash di transazione, non solo con i tuoi.
 
-## Cosa dovresti vedere {#output}
+**Cosa dovresti vedere:** lo stesso rapporto della fine del passaggio 8.
 
-- `drop` stampa l'hash della transazione e l'altezza, poi il report di verifica: lo stato `pqc_hybrid_verify` del firmatario è `verified`, la firma ML-DSA-87 è di 4627 byte, il codice è 0 e il numero di destinatari corrisponde alla tua lista.
-- Nell'explorer: apri `https://explore.qore.network/tx/<HASH>` e imposta l'explorer su **Testnet**. La transazione risulta riuscita, con ogni destinatario pagato.
+## Verifica tu stesso la transazione {#check}
+
+Non devi fidarti dello strumento. Chiedi direttamente alla catena.
+
+**Modo 1, nel browser.** Apri `https://explore.qore.network/tx/<HASH>` (al posto di `<HASH>` metti il tuo hash), poi passa l'explorer a **Testnet**. Dovresti vedere una transazione riuscita con ogni destinatario pagato.
+
+**Modo 2, un solo comando:**
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/tx/v1beta1/txs/<HASH>
+```
+
+| Parte | Significato |
+| --- | --- |
+| `curl` | Uno strumento che scarica un indirizzo web. Incluso in macOS, Windows 10+ e nella maggior parte di Linux. |
+| `-s` | Silenzioso: nasconde la barra di avanzamento. |
+| l'indirizzo | L'API REST pubblica della testnet. Restituisce il registro completo della transazione in JSON. |
+
+**Cosa dovresti vedere** nel lungo output (aggiungi `| jq .` se hai installato jq, vedi https://jqlang.github.io/jq/download/):
+
+- `"code": 0` significa che la transazione è riuscita.
+- Un'estensione `PQCHybridSignature` che contiene una `pqc_signature` di **4.627 byte** (la firma ML-DSA-87), accanto a quella classica di 64 byte.
+- Un evento `pqc_hybrid_verify` con `status` impostato su `verified` per il tuo indirizzo.
 
 ## Come funziona la prova {#proof}
 
 `verify` legge `GET /cosmos/tx/v1beta1/txs/{hash}` dall'endpoint REST pubblico della testnet e controlla:
 
 - un evento di tipo `pqc_hybrid_verify` per il firmatario con `status=verified`;
-- che l'estensione `/qorechain.pqc.v1.PQCHybridSignature` porti una firma ML-DSA-87 da 4627 byte (accanto a quella secp256k1 da 64 byte);
-- che la transazione sia riuscita (code 0) e quanti destinatari abbia pagato.
+- che l'estensione `/qorechain.pqc.v1.PQCHybridSignature` contenga una firma ML-DSA-87 di 4.627 byte;
+- che la transazione sia riuscita (code 0), e quanti destinatari ha pagato.
+
+## Risoluzione dei problemi {#troubleshooting}
+
+| Cosa vedi | Perché | Cosa fare |
+| --- | --- | --- |
+| `python3: command not found` o versione inferiore alla 3.10 | Python manca o è vecchio. | Installa Python 3.10 o successivo, apri un nuovo terminale. Su Windows usa `python`. |
+| `No module named venv` o `ensurepip is not available` | La parte venv di Python non è installata (Debian, Ubuntu). | `sudo apt install python3-venv`, poi ripeti il passaggio 2. |
+| `ModuleNotFoundError: No module named 'qorsdk'` | L'ambiente non è attivo, oppure l'installazione è stata saltata. | Esegui `source .venv/bin/activate`, poi `pip install -r requirements.txt`. |
+| `unrecognized arguments: --key-file` | `--key-file` è stato messo dopo il comando. | Mettilo prima: `python airdrop.py --key-file <path> status`. |
+| `no key file at ... Run: python airdrop.py new` | Hai saltato il passaggio 4, oppure è in uso un altro `--key-file`. | Esegui `python airdrop.py new`. |
+| `... already exists (use --force to replace it)` | Un file della chiave è già presente. | Tienilo, oppure esegui `python airdrop.py new --force` (la vecchia chiave è persa). |
+| `... is readable by others (mode ...)` | I permessi del file della chiave sono troppo aperti. | Esegui `chmod 600 <path>`. |
+| `... is not on chain yet (fund it first)` | Non è arrivato alcun QOR dal faucet. | Aspetta 10 secondi, oppure fai la richiesta al faucet. |
+| `account has no PQC key and classical fallback is disabled` | La chiave post-quantistica non è ancora registrata. | Esegui prima `python airdrop.py register`. |
+| `the ML-DSA-87 key is not registered yet` | Stessa causa, rilevata dallo strumento prima dell'invio. | Esegui `python airdrop.py register`. |
+| `balance too low` | L'importo totale più la commissione supera ciò che possiedi. | Invia un importo minore, oppure aspetta la prossima richiesta al faucet. |
+| Il faucet dice che hai raggiunto il limite di richieste | Una richiesta ogni 24 ore per account. | Aspetta, oppure usa un altro account usa e getta. |
+| `skip line N: not a valid qor1 address` | Una riga di `addresses.txt` non è un indirizzo corretto. | Correggi o elimina quella riga. Le altre righe funzionano comunque. |
+| `no valid recipients` | Ogni riga è stata saltata. | Controlla che `addresses.txt` contenga veri indirizzi `qor1...`. |
+| `bad amount` | L'importo non è un numero semplice. | Usa QOR come numero, per esempio `0.1`. |
+| `refused by the node: code ...` | La catena ha rifiutato la transazione. | Leggi il messaggio. Aspetta un minuto e riprova se la testnet è occupata o in aggiornamento. |
+| `transaction not found on the testnet` | Hash sbagliato, oppure il blocco non è ancora finale. | Controlla l'hash e riprova tra qualche secondo. |
+| `the testnet may be pausing for an upgrade` | Gli endpoint pubblici limitano le richieste per indirizzo IP, oppure la testnet è in aggiornamento. | Aspetta un minuto ed eseguilo di nuovo. |
+| `EVM authorisation window exhausted` | Riguarda le app EVM, non questa. | In un'app EVM, apri una nuova finestra con `pnpm window open`. |
+| `HHE10402` dopo l'apertura della finestra | Solo app Hardhat: la finestra non era ancora attiva. | Esegui di nuovo il deploy. |
+| Errori `CORS` in un browser | Solo quando una pagina web chiama direttamente la catena. Questo strumento non lo fa. | In un'app del browser, usa il proxy `/lcd` del template. |
+| `pnpm: command not found` | pnpm non è installato. Qui non serve. | Solo per il tutorial Hardhat: esegui `npm install -g pnpm`. |
 
 ## Il codice dell'SDK che conta {#code}
 
@@ -158,18 +314,18 @@ res = hybrid_sign_and_broadcast(lambda v: build(fee, v), chain_id="qorechain-dia
 included = wait_for_tx(rest, res["tx_response"]["txhash"])
 ```
 
-La chiave viene registrata una sola volta con `ensure_pqc_registered(...)`, che non fa nulla se la stessa chiave è già on chain. Il gas non è mai fisso: la vera transazione firmata in modo ibrido viene prima simulata e il limite è il gas simulato per 1,3, con un prezzo di 0,15 uqor per unità di gas.
+La chiave viene registrata una volta con `ensure_pqc_registered(...)`, che non fa nulla se la stessa chiave è già sulla catena. Il gas non è mai fisso: la vera transazione firmata in modo ibrido viene prima simulata e il limite è il gas simulato moltiplicato per 1,3, con un prezzo di 0,15 uqor per unità di gas.
 
-L'account è di coin type 118 (`m/44'/118'/0'/0/0`). La chiave ML-DSA-87 è derivata dalla stessa frase di recupero e legata all'indirizzo con `derive_pqc_canonical`. Se invece costruisci la tua app sugli helper basati su seed, l'SDK 0.13.0 richiede un codice di recupero o un segreto PQC indipendente da 32 byte (in Python `unified_account_from_seed(seed32, recovery_code=...)`); vedi [Installare l'SDK](/sdk/install#whats-new-0130). Non stampare mai un codice di recupero.
+L'account è coin type 118 (`m/44'/118'/0'/0/0`). La chiave ML-DSA-87 deriva dalla stessa frase di recupero ed è legata all'indirizzo con `derive_pqc_canonical`. Se costruisci una tua app sugli helper basati sul seed, l'SDK 0.13.0 richiede un codice di recupero oppure un segreto PQC indipendente di 32 byte (in Python `unified_account_from_seed(seed32, recovery_code=...)`); vedi [Installazione dell'SDK](/sdk/install#whats-new-0130). Non stampare mai un codice di recupero.
 
 ## Pacchetti usati {#packages}
 
-| Voce | Versione |
+| Elemento | Versione |
 | --- | --- |
 | `qorechain-sdk` (PyPI, importato come `qorsdk`) | 0.13.0 (fissata in `requirements.txt` come `qorechain-sdk==0.13.0`) |
 | Python | 3.10 o successivo |
 
-Lo strumento importa anche i tipi protobuf `Input`, `Output` (da `cosmpy.protos.cosmos.bank.v1beta1.bank_pb2`) e `Coin` (da `cosmpy.protos.cosmos.base.v1beta1.coin_pb2`); arrivano con l'SDK. Vedi [Installare l'SDK](/sdk/install) per la tabella delle versioni in tutti i linguaggi.
+Lo strumento importa anche i tipi protobuf `Input`, `Output` (da `cosmpy.protos.cosmos.bank.v1beta1.bank_pb2`) e `Coin` (da `cosmpy.protos.cosmos.base.v1beta1.coin_pb2`); arrivano con l'SDK. Vedi [Installazione dell'SDK](/sdk/install) per la tabella delle versioni di tutti i linguaggi.
 
 ## Dove cercare le cose {#access}
 

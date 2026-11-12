@@ -7,21 +7,21 @@ sidebar_position: 10
 
 # QoreChain Kitleri
 
-QoreChain geliştirici yığını on dört kitten oluşur. Bu sayfa her birini tek satırda, sürümü ve yayımlandığı yerle birlikte listeler ve onlarla geliştirebileceğiniz altı fikirle biter. On iki kit kullanılabilir durumdadır. İkisi yayımlanmamıştır: Asset kit bir tekliftir, PQ hafif istemci (light client) ise bir şartnamedir.
+QoreChain geliştirici yığını on dört kitten oluşur. Bu sayfa her birini sürümü ve yayımlandığı yerle birlikte bir satırda listeler ve onlardan geliştirebileceğiniz altı fikirle biter. On iki kit kullanılabilir durumdadır. İkisi yayımlanmamıştır: Asset kit bir tekliftir ve PQ light client bir spesifikasyondur.
 
 ## Yenilikler {#innovations}
 
-- **Hibrit ML-DSA-87 + secp256k1 imzalama SDK'ya, cüzdanlara ve QoreSign'a yerleşiktir**; böylece bir uygulamanın kuantum sonrası imzalamayı kendisinin uygulaması gerekmez.
-- **Zincir üzerinde doğrulanan hibrit imzalı bir işlem**, uygulamalar arasında ortak kanıttır: bkz. [Q-Day Counter](/build-before-qday/workshop-1/apps/qday-counter), [Q-Day Guestbook](/build-before-qday/workshop-1/apps/qday-guestbook) ve [Hybrid Inspector](/build-before-qday/workshop-1/apps/hybrid-inspector).
-- **Aynı yapı birçok dilde.** SDK, QoreSign ve PQC kütüphanesi birkaç dilde yayımlanır ve ortak test vektörlerine karşı kontrol edilir.
+- **Hibrit ML-DSA-87 + secp256k1 imzalama SDK'nın, cüzdanların ve QoreSign'ın içine yerleşiktir**, böylece bir uygulamanın post-kuantum imzalamayı kendisinin gerçekleştirmesi gerekmez.
+- **Zincirde doğrulanmış tek bir hibrit imzalı işlem**, uygulamalar arasındaki ortak kanıttır: bkz. [Q-Day Counter](/build-before-qday/workshop-1/apps/qday-counter), [Q-Day Guestbook](/build-before-qday/workshop-1/apps/qday-guestbook) ve [Hybrid Inspector](/build-before-qday/workshop-1/apps/hybrid-inspector).
+- **Aynı yapı birçok dilde.** SDK, QoreSign ve PQC kütüphanesi birden çok dilde yayımlanır ve ortak test vektörlerine karşı kontrol edilir.
 
 ## Uygulama geliştirin {#build-apps}
 
 | Kit | Ne yapar | Sürüm ve kayıt defteri |
 | --- | --- | --- |
-| [QoreChain SDK](/sdk/overview) | Native, EVM ve SVM lane'leri için tek istemci: hibrit imzalama, PQC anahtar kaydı, EVM pencere yardımcıları, staking katmanları, tokenomik, AMM, cross-VM çağrılar ve rollup'lar. TypeScript, Python, Rust, Java ve Go. | 0.13.0: npm, PyPI, crates.io, Maven Central, Go |
+| [QoreChain SDK](/sdk/overview) | Native, EVM ve SVM lane'leri için hibrit imzalama, PQC anahtar kaydı, EVM pencere yardımcıları, staking katmanları, tokenomik, AMM, cross-VM çağrıları ve rollup'larla tek bir istemci. TypeScript, Python, Rust, Java ve Go. | 0.13.0: npm, PyPI, crates.io, Maven Central, Go |
 | [create-qorechain-dapp](/developer-tools/scaffolders-and-cli) | Yedi şablondan tek komutla çalışan bir proje iskeleti oluşturur: hardhat, foundry, viem-wagmi, fullstack-web, evm-solidity, cosmwasm ve rollup-app. | 0.13.1: npm |
-| [RDK, Rollup Geliştirme Kiti](/rollups/overview) | QoreChain üzerinde settlement yapan uygulamaya özel rollup'ları oluşturun, başlatın ve işletin: imzalı settlement batch'leri, çekimler ve veri erişilebilirliği okumaları. | `@qorechain/rdk` 0.8.0, beş dil |
+| [RDK, Rollup Geliştirme Kiti](/rollups/overview) | QoreChain üzerinde settlement yapan uygulamaya özel rollup'lar oluşturun, başlatın ve işletin; imzalı settlement toplu işlemleri, çekimler ve veri erişilebilirliği okumalarıyla. | `@qorechain/rdk` 0.8.0, beş dil |
 
 ```sh
 npm i @qorechain/sdk @qorechain/evm
@@ -32,10 +32,10 @@ npx create-qorechain-dapp my-app -t hardhat --network testnet
 
 | Kit | Ne yapar | Sürüm ve kayıt defteri |
 | --- | --- | --- |
-| [QoreX ve qorex-integrations](/developer-tools/qorex-integrations) | Resmi cüzdan her iki anahtarı da tutar, hibrit imzalar ve neyi imzaladığınızı gösterir. Entegrasyonlar QoreX'i RainbowKit ve wagmi'ye, cosmos-kit'e ve Interchain Kit'e ekler; tipler, bir sahte cüzdan ve Playwright fixture'ları da içerir. Ayrıca bkz. [QoreX genel bakış](/qorex/overview). | QoreX 1.2.3 (iOS, Android), uzantı 0.4.2 (Chrome, Firefox), `@qorechain/qorex-rainbowkit` 0.1.0 |
-| [Wallet Adapter](/developer-tools/wallet-adapter) | İnsanların zaten kullandığı cüzdanlara (Keplr, Leap, Cosmostation, MetaMask, Phantom) QoreChain'i ekler; zincirin gerektirdiği ML-DSA-87 hibrit imzası dahildir. | `@qorechain/wallet-adapter` 0.5.0 |
+| [QoreX ve qorex-integrations](/developer-tools/qorex-integrations) | Resmi cüzdan her iki anahtarı tutar, hibrit imzalar ve neyi imzaladığınızı gösterir. Entegrasyonlar QoreX'i RainbowKit ve wagmi'ye, cosmos-kit ve Interchain Kit'e ekler; tipler, bir sahte cüzdan ve Playwright fixture'ları ile. Ayrıca bkz. [QoreX genel bakış](/qorex/overview). | QoreX 1.2.3 (iOS, Android), eklenti 0.4.2 (Chrome, Firefox), `@qorechain/qorex-rainbowkit` 0.1.0 |
+| [Wallet Adapter](/developer-tools/wallet-adapter) | İnsanların zaten kullandığı cüzdanlara (Keplr, Leap, Cosmostation, MetaMask, Phantom) QoreChain'i ekler; zincirin istediği ML-DSA-87 hibrit imzası dahil. | `@qorechain/wallet-adapter` 0.5.0 |
 | [QoreSign](/qoresign/overview) | QoreX dışındaki cüzdanlar ve arka uçlar için hibrit imzalama: ML-DSA anahtarını türetin, native lane işlemlerini her iki anahtarla imzalayın, hibrit imzaları yerelde doğrulayın, imzalamadan önce simüle edin ve Sign In With QoreChain. | 0.2.0: TypeScript, Rust, Go, Swift, Kotlin |
-| [QoreChain PQC](/developer-tools/pqc-library) | Geri kalanın altındaki kuantum sonrası ilkeller: ML-DSA (FIPS 204), ML-KEM (FIPS 203) ve SHAKE-256; diller arasında bayt uyumludur ve ortak test vektörlerine karşı kontrol edilir. | `@qorechain/pqc` 0.2.3, altı dil |
+| [QoreChain PQC](/developer-tools/pqc-library) | Diğerlerinin altındaki post-kuantum yapı taşları: ML-DSA (FIPS 204), ML-KEM (FIPS 203) ve SHAKE-256; diller arasında bayt uyumlu ve ortak test vektörlerine karşı kontrol edilmiş. | `@qorechain/pqc` 0.2.3, altı dil |
 
 ```sh
 npm i @qorechain/qorex-rainbowkit @qorechain/qorex-types
@@ -48,8 +48,8 @@ npm i @qorechain/pqc
 
 | Kit | Ne yapar | Sürüm ve kayıt defteri |
 | --- | --- | --- |
-| [QoreSeal](/developer-tools/qoreseal) | Veriyi QoreChain hesaplarına ML-KEM-1024 ile şifreleyin (varsayılan olarak X25519 ile hibrit). Bir hesap anahtarını zincirde yayımlar ve herkes ona şifreleyebilir. Birden fazla alıcı, denetçi anahtarları ve dönen grup anahtarları. | 0.1.0: TypeScript, Rust, Go, Swift, Kotlin, Python |
-| [QoreChain MCP](/developer-tools/mcp) | Uyumlu geliştirici araçlarına QoreChain'e salt okunur erişim veren bir Model Context Protocol sunucusu ve komut satırı aracı: bloklar, işlemler, hesaplar, validatörler, staking katmanları, hibrit imza durumu, kontrat okumaları ve ücret tahminleri. Asla imzalamaz, anahtar tutmaz ve yayın yapmaz. | `@qorechain/mcp` 0.1.0 |
+| [QoreSeal](/developer-tools/qoreseal) | Verileri ML-KEM-1024 ile QoreChain hesaplarına şifreleyin (varsayılan olarak X25519 ile hibrit). Bir hesap anahtarını zincirde yayımlar ve herkes ona şifreleyebilir. Birden çok alıcı, denetçi anahtarları ve dönen grup anahtarları. | 0.1.0: TypeScript, Rust, Go, Swift, Kotlin, Python |
+| [QoreChain MCP](/developer-tools/mcp) | Uyumlu geliştirici araçlarına QoreChain'e salt okuma erişimi veren bir Model Context Protocol sunucusu ve komut satırı aracı: bloklar, işlemler, hesaplar, validatörler, staking katmanları, hibrit imza durumu, kontrat okumaları ve ücret tahminleri. Asla imzalamaz, anahtar tutmaz ve yayın yapmaz. | `@qorechain/mcp` 0.1.0 |
 
 ```sh
 npm i @qorechain/qoreseal
@@ -60,11 +60,11 @@ npx -y @qorechain/mcp
 
 | Kit | Ne yapar | Sürüm ve kayıt defteri |
 | --- | --- | --- |
-| [QORel](/qorel/overview) | Hermes'in bir fork'u olan bir IBC relayer'ı; her işlemde kuantum sonrası imza isteyen zincirlerin de relay edilebilmesi için takılabilir bir imzalayıcı katmanına sahiptir. Standart zincirler Hermes'in birebir formatını korur. | 0.1.0: GitHub, container imajı, Homebrew |
-| [Custody kiti](/developer-tools/custody-kit) | Saklama kuruluşları için: her lane'in neyi gerektirdiği, adres doğrulama, para yatırma tespiti, çekimleri imzalama ve doğrulama, staking ve ML-DSA-87 anahtarının yönetimi; test vektörleri ve referans koduyla. | 0.1.0: TypeScript, Python, Go, Rust, Java |
-| [QoreScan](/developer-tools/qorescan) | Bir dağıtımın kriptografisinin envanterini çıkarır (node yapılandırması, türüne göre anahtarlar, TLS uç noktaları, Solidity kaynakları, zincir durumu) ve çıktıları FINMA Guidance 05/2026, AB PQC yol haritası ve DORA ile eşlenmiş bir CycloneDX 1.6 CBOM olarak dışa aktarır. Bir envanter yardımcısıdır, sertifikasyon değildir. | `@qorechain/qorescan` 0.1.0 |
-| [Asset kit](/developer-tools/asset-kit) | **Teklif, bütün olarak yayımlanmadı.** Düzenlemeye tabi tokenlaştırılmış varlıklar için araçlar: kuantum sonrası sahip kontrolü içeren ERC-3643 ve CMTAT adaptörleri, ERC-4626 ve ERC-7540 kasaları (vault), bir ihraççı konsolu ve istemciler. EVM kontratları kullanılabilir; native varlık modülleri bir tekliftir. | 0.1.0 |
-| [PQ hafif istemci](/developer-tools/pq-light-client) | **Şartname, yayımlanmadı.** ML-DSA-87 ile imzalanmış checkpoint'leri takip eden bir hafif istemci. QoreChain bugün bu checkpoint'leri üretmiyor. Depo, tasarımın incelenebilmesi için şartnameyi ve referans doğrulayıcıları (Go, Rust, TypeScript) içerir. | 0.1.0 (şartname) |
+| [QORel](/qorel/overview) | Hermes'in bir çatalı olan bir IBC relayer'ı; her işlemde post-kuantum imza isteyen zincirlerin aktarılabilmesi için takılabilir bir imzalayıcı katmanı vardır. Standart zincirler tam Hermes biçimini korur. | 0.1.0: GitHub, konteyner imajı, Homebrew |
+| [Custody kit](/developer-tools/custody-kit) | Saklayıcılar için: her lane'in ne gerektirdiği, adres doğrulama, para yatırma algılama, çekimleri imzalama ve doğrulama, staking ve ML-DSA-87 anahtarını yönetme; test vektörleri ve referans kodla. | 0.1.0: TypeScript, Python, Go, Rust, Java |
+| [QoreScan](/developer-tools/qorescan) | Bir dağıtımın kriptografisinin envanterini çıkarır (düğüm yapılandırması, türe göre anahtarlar, TLS uç noktaları, Solidity kaynakları, zincir durumu) ve bir CycloneDX 1.6 CBOM dışa aktarır; çıktılar FINMA Guidance 05/2026, AB PQC yol haritası ve DORA ile eşlenir. Bir envanter yardımcısıdır, sertifikasyon değildir. | `@qorechain/qorescan` 0.1.0 |
+| [Asset kit](/developer-tools/asset-kit) | **Teklif, bütün olarak yayımlanmadı.** Düzenlemeye tabi tokenlaştırılmış varlıklar için araçlar: post-kuantum sahip kontrolüne sahip ERC-3643 ve CMTAT adaptörleri, ERC-4626 ve ERC-7540 kasaları, bir ihraççı konsolu ve istemciler. EVM kontratları kullanılabilir; native varlık modülleri bir tekliftir. | 0.1.0 |
+| [PQ light client](/developer-tools/pq-light-client) | **Spesifikasyon, yayımlanmadı.** ML-DSA-87 ile imzalanmış kontrol noktalarını izleyen bir light client. QoreChain bugün bu kontrol noktalarını üretmiyor. Depo, tasarımın incelenebilmesi için spesifikasyonu ve referans doğrulayıcıları (Go, Rust, TypeScript) barındırır. | 0.1.0 (spesifikasyon) |
 
 ```sh
 brew install qorechain/tap/qorel
@@ -73,18 +73,18 @@ npx @qorechain/qorescan --help
 
 ## Geliştirebileceğiniz altı şey {#ideas}
 
-| Fikir | Şunlarla geliştirilir | Nedir |
+| Fikir | Şunlardan yapılır | Nedir |
 | --- | --- | --- |
-| Kuantum güvenli ödeme sayfası | SDK, QoreX | Her ödemenin hibrit imzalandığı, bir web mağazası için QOR ile öde düğmesi. |
+| Kuantuma dayanıklı ödeme | SDK, QoreX | Bir web mağazası için, her ödemenin hibrit imzalandığı bir QOR ile öde düğmesi. |
 | Hackathon başlangıç paketi | create-qorechain-dapp | Sıfırdan testnet'te dağıtılmış bir kontrata on dakikada, öğrenci başına tek komutla. |
-| Sign In With QoreChain | QoreSign | Bir web uygulaması için parolasız giriş; hibrit imza sunucunuzda kontrol edilir. |
-| Kapalı teklifli açık artırma | QoreSeal | Teklifler açıklama anına kadar şifreli kalır. |
-| PQC hazırlık envanteri | QoreScan | Bir fintech ekibi ve denetçileri için kriptografi envanteri ve CBOM dosyası. |
-| Kendi kanalınızı relay edin | QORel | QoreChain testnet'i ile başka bir Cosmos testnet zinciri arasında relay. |
+| Sign In With QoreChain | QoreSign | Hibrit imzanın sunucunuzda kontrol edildiği, bir web uygulaması için parolasız giriş. |
+| Kapalı zarflı müzayede | QoreSeal | Teklifler açıklanana kadar şifreli kalır. |
+| PQC hazırlık envanteri | QoreScan | Bir fintech ekibi ve denetçileri için bir kriptografi envanteri ve CBOM dosyası. |
+| Kendi kanalınızı aktarın | QORel | QoreChain testnet ile başka bir Cosmos testnet zinciri arasında aktarım yapın. |
 
-## Kodu alın {#get-the-code}
+## Kodu edinin {#get-the-code}
 
-Her kitin, yukarıda bağlantısı verilen kendi kılavuz sayfası vardır. Bu workshop'un örnek uygulamaları herkese açık [qorechain/build-before-qday](https://github.com/qorechain/build-before-qday) deposundadır ve her uygulama sayfası onları ilk komuttan sonuncusuna kadar anlatır:
+Her kitin, yukarıda bağlantısı verilen kendi kılavuz sayfası vardır. Bu workshop'un örnek uygulamaları herkese açık [qorechain/build-before-qday](https://github.com/qorechain/build-before-qday) deposundadır ve her uygulama sayfası onları ilk komuttan sonuncuya kadar adım adım anlatır:
 
 ```sh
 git clone https://github.com/qorechain/build-before-qday
