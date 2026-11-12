@@ -10,7 +10,7 @@ sidebar_position: 34
 チェーン開発者キットは QoreChain SDK の一部で、Solidity とスマートコントラクトのチームが、すでに使っているツールで QoreChain 上に構築できるようにします。`@qorechain/evm` に viem のチェーン定義と EVM 認可ウィンドウのヘルパーを追加し、`create-qorechain-dapp` に 4 つのプロジェクトテンプレート（Foundry、Hardhat 3、wagmi を使う viem、QoreChain Native の CosmWasm トークン）を追加し、5 言語の EVM クイックスタートと、QoreChain の EVM が Ethereum とどう違うかのリファレンスを提供します。Ethereum からコントラクトを移植する Solidity チーム、wagmi や RainbowKit を使う dApp フロントエンド開発者、CosmWasm 開発者、そして QoreChain を追加したい EVM ツールのメンテナーを対象としています。
 
 :::note 稼働中: SDK 0.14.0 に含まれます
-このキットは QoreChain SDK **0.14.0**（npm、2026年11月12日）で**稼働中であり、インストールできます**: `@qorechain/evm`、`@qorechain/sdk`、`@qorechain/react`、`@qorechain/svm`、`create-qorechain-dapp`（0.13.1 のテンプレート修正も含みます）はすべて 0.14.0 です。Python、Rust、Go の SDK も 0.14.0 です（Maven Central では 2026年11月12日時点でまだ Java 0.13.0 が表示されます。0.14.0 が表示されたらそちらを使ってください）。その内容は最初に npm だけで 0.11.0 として公開され（2026年10月29日）、0.12.0（2026年10月30日）に含まれていました。ほかのレジストリに 0.11.0 はありません。このページのテスト実行は、2026年11月4日に 0.12.0 に対して行いました。0.13.0 ではシードパスのアカウントヘルパーとテンプレートの `PRIVATE_KEY` の扱いが変わりました（[0.13.0 の変更点](/sdk/install#whats-new-0130)を参照）。0.14.0 ではチェーン v3.2.8 のクライアントサポートが加わり、ウィンドウのスコープの新しいフィールドも含まれます（[0.14.0 の変更点](/sdk/install#whats-new-0140)を参照）。
+このキットは QoreChain SDK **0.14.0**（npm、2026年11月12日）で**稼働中であり、インストールできます**: `@qorechain/evm`、`@qorechain/sdk`、`@qorechain/react`、`@qorechain/svm`、`create-qorechain-dapp`（0.13.1 のテンプレート修正も含みます）はすべて 0.14.0 です。Python、Rust、Go の SDK も 0.14.0 で、Java も Maven Central で公開されています。その内容は最初に npm だけで 0.11.0 として公開され（2026年10月29日）、0.12.0（2026年10月30日）に含まれていました。ほかのレジストリに 0.11.0 はありません。このページのテスト実行は、2026年11月4日に 0.12.0 に対して行いました。0.13.0 ではシードパスのアカウントヘルパーとテンプレートの `PRIVATE_KEY` の扱いが変わりました（[0.13.0 の変更点](/sdk/install#whats-new-0130)を参照）。0.14.0 ではチェーン v3.2.8 のクライアントサポートが加わり、ウィンドウのスコープの新しいフィールドも含まれます（[0.14.0 の変更点](/sdk/install#whats-new-0140)を参照）。
 :::
 
 このキットは、メインネット（`qorechain-vladi`、EVM チェーン ID 9801）とテストネット（`qorechain-diana`、EVM チェーン ID 9800）を対象としています。
@@ -126,7 +126,7 @@ sidebar_position: 34
 | Python（EVM の読み取り） | `pip install "web3>=7,<8"`。ウィンドウメッセージは `pip install qorechain-sdk`（0.14.0）から | Python 3.10 以降 |
 | Go（EVM の読み取り） | `go get github.com/ethereum/go-ethereum@latest`。ウィンドウメッセージは `go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0` から | Go ツールチェーン |
 | Rust（EVM の読み取り） | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`。ウィンドウメッセージはクレート `qorechain-sdk` 0.14.0 から | stable の Rust |
-| Java（EVM の読み取り） | `org.web3j:core:5.0.0`。ウィンドウメッセージは `io.github.qorechain:qorechain-sdk:0.14.0` から（Maven Central では 2026年11月12日時点でまだ 0.13.0 が表示されます。0.14.0 が表示されたらそちらを使ってください） | JDK 21（QoreChain Java SDK は JDK 21 ツールチェーンでビルドされます） |
+| Java（EVM の読み取り） | `org.web3j:core:5.0.0`。ウィンドウメッセージは `io.github.qorechain:qorechain-sdk:0.14.0` から | JDK 21（QoreChain Java SDK は JDK 21 ツールチェーンでビルドされます） |
 
 ### クイックスタート 1: ethers v6 で読み取る {#quickstart-ethers}
 

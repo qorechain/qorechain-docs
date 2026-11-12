@@ -22,11 +22,11 @@ tableau) :
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.14.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.14.0 |
 | Proxy de modules Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | Maven Central affiche encore 0.13.0 le 12 novembre 2026 ; utilisez la 0.14.0 dès qu'elle apparaîtra (JDK 17 ou ultérieur) |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0 (JDK 17 ou ultérieur) |
 
 Il n'existe pas de 0.11.0 pour Python, Rust, Go ni Java : les paquets npm ont eu une 0.11.0 le
 29 octobre 2026 (le kit de développement de chaîne, voir plus bas) et chaque langage est passé
-de la 0.10.0 à la 0.12.0 en même temps. La 0.13.0 a suivi le 11 novembre 2026 et la 0.14.0 le 12 novembre 2026 dans tous les langages (Java : voir le tableau).
+de la 0.10.0 à la 0.12.0 en même temps. La 0.13.0 a suivi le 11 novembre 2026 et la 0.14.0 le 12 novembre 2026 dans tous les langages.
 
 Choisissez votre langage ci-dessous.
 
@@ -55,8 +55,7 @@ Go, Rust et Java, avec `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm` et
 `create-qorechain-dapp` (qui reprend aussi les correctifs de modèles de la 0.13.1). Elle ajoute la prise en charge
 côté client de la chaîne **v3.2.8**. Les nouvelles règles s'appliquent sur un réseau dès qu'il exécute la v3.2.8 :
 le testnet `qorechain-diana` l'exécute depuis le 12 novembre 2026 ; le mainnet ne l'a pas
-appliquée. Sur les réseaux antérieurs, les nouveaux champs restent facultatifs. (Maven Central affiche encore
-la 0.13.0 le 12 novembre 2026 ; utilisez la 0.14.0 pour Java dès qu'elle apparaîtra.)
+appliquée. Sur les réseaux antérieurs, les nouveaux champs restent facultatifs.
 
 | Domaine | Dans la 0.14.0 |
 | --- | --- |
@@ -81,7 +80,6 @@ Go, Rust et Java, avec `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm` et
 `create-qorechain-dapp`. Elle comporte un changement incompatible, sur l'assistant de compte par
 graine. Les comptes dérivés d'un mnémonique sont inchangés, tout comme le format de signature
 hybride et le comportement de la chaîne : une transaction construite avec la 0.12.0 reste valide.
-(Java est publié sur Maven Central en 0.13.0, vérifié le 11 novembre 2026.)
 
 **Changement incompatible.** Les assistants par graine `unifiedAccountFromSeed` (TypeScript),
 `unified_account_from_seed` (Python, Rust), `unified.UnifiedAccountFromSeed` (Go) et
@@ -391,9 +389,7 @@ Ou Gradle :
 implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 ```
 
-> Publié sur Maven Central sous `io.github.qorechain:qorechain-sdk`. Maven Central
-> affiche encore la 0.13.0 le 12 novembre 2026 (le POM de la 0.14.0 n'y était pas encore) ; utilisez
-> la 0.14.0 dès qu'elle apparaîtra, et la 0.13.0 d'ici là. Elle exige JDK 17 ou ultérieur. Central n'a aucune version 0.8.0 ni
+> Publié sur Maven Central sous `io.github.qorechain:qorechain-sdk` (la 0.14.0 est la version actuelle). Elle exige JDK 17 ou ultérieur. Central n'a aucune version 0.8.0 ni
 > 0.8.1, donc sur les réseaux en production utilisez la 0.8.2 ou une version ultérieure. La 0.9.1 était une
 > version Java uniquement qui a fait passer Bouncy Castle de la 1.80 à la 1.85, sans changement d'API.
 

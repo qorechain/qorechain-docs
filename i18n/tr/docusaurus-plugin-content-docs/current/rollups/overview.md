@@ -28,7 +28,7 @@ Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**, 7 Haziran 2026'dan
 
 ## Nasıl kullanılır {#how-to-use}
 
-Okumalar için anahtar da fon da gerekmez. Aşağıdaki kod parçaları, herkese açık test ağındaki (`qorechain-diana`) canlı `rdk` modülü parametrelerini ve rollup listesini okur ve 27 Ekim 2026'da yayımlanmış paketlerden çalıştırılmıştır (bu çalıştırmalarda 0.7.0 kullanıldı; güncel sürüm 0.8.0'dır, Python, Go, Rust ve Java istemcilerine hibrit imzalama ekler ve burada gösterilen okuma çağrılarını değiştirmez, ancak kod parçaları onunla yeniden çalıştırılmadı). Her biri test ağı parametrelerini (en fazla rollup 200, asgari stake 10.000 QOR, oluşturma yakım oranı 0,01, varsayılan itiraz penceresi 3.600 saniye, en büyük DA blob boyutu 2.097.152 bayt, blob saklama süresi 432.000 blok, blok başına en fazla 10 batch) ve `0 rollups` çıktısını verdi.
+Okumalar için anahtar da fon da gerekmez. Aşağıdaki kod parçaları, herkese açık test ağındaki (`qorechain-diana`) canlı `rdk` modülü parametrelerini ve rollup listesini okur ve 27 Ekim 2026'da yayımlanmış paketlerden çalıştırılmıştır (bu çalıştırmalarda 0.7.0 kullanıldı; güncel sürüm 0.9.0'dır; 0.8.0, Python, Go, Rust ve Java istemcilerine hibrit imzalama ekledi ve burada gösterilen okuma çağrılarını değiştirmez, ancak kod parçaları onunla yeniden çalıştırılmadı). Her biri test ağı parametrelerini (en fazla rollup 200, asgari stake 10.000 QOR, oluşturma yakım oranı 0,01, varsayılan itiraz penceresi 3.600 saniye, en büyük DA blob boyutu 2.097.152 bayt, blob saklama süresi 432.000 blok, blok başına en fazla 10 batch) ve `0 rollups` çıktısını verdi.
 
 ### TypeScript (test edildi)
 
@@ -76,7 +76,7 @@ Python 3.10 veya üstü. `qorechain-rdk`, `liboqs-python` getiren ve `liboqs` k�
 ### Go (test edildi)
 
 ```bash
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.9.0
 ```
 
 ```go
@@ -138,7 +138,7 @@ Kütüphane `qorechain_rdk`'dır. Rust 1.95 ile, crates.io'ya karşı derlenerek
 
 ```kotlin
 // build.gradle.kts
-implementation("io.github.qorechain:qorechain-rdk:0.8.0")
+implementation("io.github.qorechain:qorechain-rdk:0.9.0")
 ```
 
 ```java
@@ -183,7 +183,7 @@ npx create-qorechain-rollup my-rollup --template nft-rollup --network testnet --
 cd my-rollup && npm run doctor
 ```
 
-Şablonlar `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup` ve `multivm-rollup`'tır. İskeleti oluşturulan proje `@qorechain/rdk` `^0.8.0`'a bağlıdır (0.8.0 öncesinde `^0.7.0`). `nft-rollup` iskeletini 0.6.1 iskele oluşturucusuyla oluşturmak, `npm run doctor` komutu test ağına karşı geçen bir proje üretti (REST erişilebilir, parametreler okunabilir, ağ `qorechain-diana`; Celestia veri erişilebilirliği ve eksik bir imzalayıcı için uyarı verir); `defi-rollup` iskeletini oluşturup `npm run typecheck` çalıştırmak, güncel sürümle 27 Ekim 2026'da yeniden geçti. **Bir rollup başlatmak için henüz `defi-rollup` kullanmayın** (bkz. [Sınırlar](#limits)). Bir rollup oluşturmak ve batch göndermek için [Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasını izleyin; işlemler kayıtlı bir post-kuantum anahtar gerektirir ve RDK'da TypeScript istemcisine bir `pqcKeypair` verilmelidir.
+Şablonlar `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup` ve `multivm-rollup`'tır. İskeleti oluşturulan proje `@qorechain/rdk` `^0.9.0`'a bağlıdır (0.8.0'da `^0.8.0`, öncesinde `^0.7.0`). `nft-rollup` iskeletini 0.6.1 iskele oluşturucusuyla oluşturmak, `npm run doctor` komutu test ağına karşı geçen bir proje üretti (REST erişilebilir, parametreler okunabilir, ağ `qorechain-diana`; Celestia veri erişilebilirliği ve eksik bir imzalayıcı için uyarı verir); `defi-rollup` iskeletini oluşturup `npm run typecheck` çalıştırmak, güncel sürümle 27 Ekim 2026'da yeniden geçti. **Bir rollup başlatmak için henüz `defi-rollup` kullanmayın** (bkz. [Sınırlar](#limits)). Bir rollup oluşturmak ve batch göndermek için [Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasını izleyin; işlemler kayıtlı bir post-kuantum anahtar gerektirir ve RDK'da TypeScript istemcisine bir `pqcKeypair` verilmelidir.
 
 ## Nasıl erişilir {#how-to-access}
 
@@ -203,7 +203,7 @@ Her iki ağ da RDK sorgularını (`/qorechain/rdk/v1/...`) REST, gRPC ve CLI üz
 | **Fonlanmış hesap** | Stake, katman stake'i ve ücretler için yeterli QOR'a sahip bir hesap. |
 | **Emanete alınan stake** | Bir rollup oluşturmak `min_stake_for_rollup` tutarını, her iki ağda **10.000 QOR**, emanete alır. **Stake'in %1'i (100 QOR) oluşturma sırasında yakılır**; geri kalanı emanette kalır ve rollup durdurulduğunda iade edilir. |
 | **Katman stake'i** | Oluşturma ayrıca rollup'ın katmanını çok katmanlı modülde kaydeder (asgari stake 1.000 QOR). Katman kaydedilemezse rollup yine de oluşturulur ancak gerçek bir katmanı olmaz; bu yüzden batch'leri çapalanamaz ve hiçbir makbuz düzenlenemez. |
-| **Kayıtlı post-kuantum anahtar** | Hesap için kaydedilmiş bir ML-DSA-87 anahtarı. Yalnızca klasik anahtarla imzalanan yerel lane (native-lane) işlemleri reddedilir. |
+| **Kayıtlı post-kuantum anahtar** | Hesap için kaydedilmiş bir ML-DSA-87 anahtarı. Yalnızca klasik anahtarla imzalanan yerel lane (native-lane) işlemleri reddedilir. Yeni bir hesap, başka herhangi bir şeyden önce kuantum sonrası anahtarını kendi başına bir işlemde kaydetmelidir; RDK istemcileri 0.9.0 bu kaydı sizin için yapar. |
 | **Ücretler** | Ücret tabanı gas birimi başına 0,1 uqor'dur; gas limitini ve ücreti birlikte ayarlayın. |
 | **Araçlar** | CLI ve iskele oluşturucu için Node 20 veya üstü; Python istemcisi için Python 3.10 veya üstü (`liboqs` ile, yukarıya bakın); Java için Java 21 veya üstü (RDK 0.8.0'dan itibaren); Go modülü `github.com/qorechain/qorechain-rdk/packages/go`. |
 
@@ -249,19 +249,21 @@ Daha alt seviyedeki modül referansı (modül parametreleri, yaşam döngüsü i
 
 ## Nerede yayımlanır {#where-published}
 
-Sürümler 27 Ekim 2026'da kayıt defterlerinde kontrol edildi. Tüm paketler Apache-2.0 lisanslıdır.
+Sürümler 12 Kasım 2026'da kayıt defterlerinde kontrol edildi. Tüm paketler Apache-2.0 lisanslıdır.
+
+RDK 0.9.0 (12 Kasım 2026) zincir v3.2.8'i destekler (test ağı 12 Kasım 2026'dan beri onu çalıştırır): rollup veri gönderimi, tabanlı sıralama (based sequencing), hile kanıtlı (fraud proof) qledger-v1 optimistik rollup'ları, özel rollup'lar, kanonik ZK girdileri; STARK mutabakatı duraklatılmıştır. Bkz. [GitHub'daki sürüm notları](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0).
 
 | Kayıt defteri | Paket | Güncel sürüm | Bağlantı |
 | -------- | ------- | --------------- | ---- |
-| npm | `@qorechain/rdk` (TypeScript istemcisi) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
-| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
-| npm | `create-qorechain-rollup` (iskele oluşturucu) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
-| PyPI | `qorechain-rdk` (içe aktarma `qorrdk`) | 0.8.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
-| crates.io | `qorechain-rdk` (kütüphane `qorechain_rdk`) | 0.8.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
-| Go modül proxy'si | `github.com/qorechain/qorechain-rdk/packages/go` | v0.8.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
-| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.8.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
+| npm | `@qorechain/rdk` (TypeScript istemcisi) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
+| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
+| npm | `create-qorechain-rollup` (iskele oluşturucu) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
+| PyPI | `qorechain-rdk` (içe aktarma `qorrdk`) | 0.9.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
+| crates.io | `qorechain-rdk` (kütüphane `qorechain_rdk`) | 0.9.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
+| Go modül proxy'si | `github.com/qorechain/qorechain-rdk/packages/go` | v0.9.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
+| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.9.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
 
-Maven Central, önceki sürümlerin yanı sıra 0.7.0, 0.7.1 ve 0.8.0'ı da sunar ve Go proxy'sinin `@latest` değeri yeni bir etiketin gerisinde kalabilir; bu yüzden Go sürümünü sabitleyin. Kaynak kod [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk) adresinde herkese açıktır, sürüm notları [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0) (ve [v0.7.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.1)) adresindedir ve kitin kendi belgeleri [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/) adresindedir. TypeScript paketi `@qorechain/sdk` `^0.10.0`'a (0.7.0'dan itibaren; 0.6.x `^0.9.0` kullanıyordu; Python, Go, Rust ve Java paketleri 0.8.0'dan itibaren eşleşen QoreChain SDK 0.10.x sürümünü kullanır) ve `@qorechain/evm` `^0.8.0`'a, Python paketi ise `qorechain-pqc` 0.2.x'e bağlıdır. Zincirin `x/rdk` modül mantığının kendisi herkese açık kitin parçası değildir.
+Maven Central, önceki sürümlerin yanı sıra 0.7.0, 0.7.1, 0.8.0 ve 0.9.0'ı da sunar ve Go proxy'sinin `@latest` değeri yeni bir etiketin gerisinde kalabilir; bu yüzden Go sürümünü sabitleyin. Kaynak kod [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk) adresinde herkese açıktır, sürüm notları [v0.9.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0) (ve [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0), [v0.7.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.1)) adresindedir ve kitin kendi belgeleri [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/) adresindedir. TypeScript paketi `@qorechain/sdk` `^0.10.0`'a (0.7.0'dan itibaren; 0.6.x `^0.9.0` kullanıyordu; Python, Go, Rust ve Java paketleri 0.8.0'dan itibaren eşleşen QoreChain SDK 0.10.x sürümünü kullanır) ve `@qorechain/evm` `^0.8.0`'a, Python paketi ise `qorechain-pqc` 0.2.x'e bağlıdır. Zincirin `x/rdk` modül mantığının kendisi herkese açık kitin parçası değildir.
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
@@ -274,7 +276,7 @@ Maven Central, önceki sürümlerin yanı sıra 0.7.0, 0.7.1 ve 0.8.0'ı da suna
 * **(d) `defi` şablonunun demo devresi doğrulanamaz.** Bu bir `snarkjs` çarpıcısıdır ve zincir, önceki durum kökünü, durum kökünü ve veri özetini genel girdi olarak alan BLS12-381 üzerinde Groth16'yı kontrol eder; o devre bunları sunmaz. Anahtar kaydı yayımlandıktan sonra bile kendi devrenize ihtiyacınız vardır.
 * **Herhangi bir hesap bir itirazı çözebilir (v3.2.5 ve sonrası, her iki ağ).** Zincir sahtecilik ispatını kendisi kontrol eder; v3.2.5'ten önce çözümü yalnızca rollup'ın oluşturucusu gönderebilirdi (bkz. [zincir v3.2.5 davranışı](#v325) ve [Optimistic](#optimistic)).
 * **Canlı ağlarda kullanılamayanlar:** Celestia veri erişilebilirliği (uygulanmadı), [QCAI Rollup Copilot](/rollups/qcai-copilot) (danışmanlık servisleri herkese açık uç noktalarda yok), çapraz-VM çağrıları (`0x...0901` ön derlemesi mainnet'te etkin değil; test ağında bir izin listesiyle etkindir ve 7 Kasım 2026'da `eth_call` ile test edildi), paylaşımlı ve based sıralayıcılar (zincir yalnızca yapılandırılmış sıralayıcıyı veya hiçbiri ayarlanmamışsa oluşturucuyu kabul eder) ve `suggest-profile` (sabit bir yedek olarak `defi` döndürür).
-* **Sürüm notları.** Her şey için 0.8.0'ı kullanın (0.7.0 ve öncesi ağların kabul ettiği `qorollup` işlemlerini gönderemez ve 0.8.0 öncesinde Python, Go, Rust ve Java istemcileri hiçbir işlem gönderemez): 0.6.2 ve öncesi zincirde hiçbir zaman doğrulanmayan para çekme ispatları oluşturur ve 0.6.1 ve öncesi npm'den kurulduğunda `qorollup` hiçbir şey yazdırmaz. 0.5.0 ve öncesi makbuzlar, Watchtower veya çapraz-VM calldata'sı için kullanılmamalıdır. Her sürümün neyi değiştirdiğinin tam listesi [RDK 0.8.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits) sayfasındadır.
+* **Sürüm notları.** Her şey için 0.9.0'ı kullanın (0.7.0 ve öncesi ağların kabul ettiği `qorollup` işlemlerini gönderemez ve 0.8.0 öncesinde Python, Go, Rust ve Java istemcileri hiçbir işlem gönderemez): 0.6.2 ve öncesi zincirde hiçbir zaman doğrulanmayan para çekme ispatları oluşturur ve 0.6.1 ve öncesi npm'den kurulduğunda `qorollup` hiçbir şey yazdırmaz. 0.5.0 ve öncesi makbuzlar, Watchtower veya çapraz-VM calldata'sı için kullanılmamalıdır. Her sürümün neyi değiştirdiğinin tam listesi [RDK 0.8.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits) sayfasındadır.
 
 ---
 

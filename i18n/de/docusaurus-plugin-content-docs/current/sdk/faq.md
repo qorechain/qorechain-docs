@@ -101,8 +101,7 @@ npm; der Python-Client ist auf PyPI (`pip install qorechain-sdk` in Version 0.14
 Import `qorsdk`); der Go-Client ist über den Module-Proxy verfügbar
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`); der Rust-Client ist
 auf crates.io (`cargo add qorechain-sdk`, 0.14.0); und der Java-Client ist auf Maven
-Central (`io.github.qorechain:qorechain-sdk`, JDK 17 oder neuer), das am
-12. November 2026 weiterhin 0.13.0 zeigt; verwenden Sie 0.14.0, sobald es erscheint. Siehe [Installation](/sdk/install)
+Central (`io.github.qorechain:qorechain-sdk`, 0.14.0, JDK 17 oder neuer). Siehe [Installation](/sdk/install)
 für die vollständigen Befehle pro Sprache.
 
 ## Meine Mnemonic wird abgelehnt

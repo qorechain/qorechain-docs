@@ -92,7 +92,7 @@ QoreChain은 개발자 도구를 공개 레지스트리(npm, PyPI, crates.io, Go
 | [`qorechain-sdk`](https://pypi.org/project/qorechain-sdk/) | Python | 0.14.0 | `pip install qorechain-sdk` | Published |
 | [`qorechain-sdk`](https://crates.io/crates/qorechain-sdk) | Rust | 0.14.0 | `cargo add qorechain-sdk tokio --features tokio/macros,tokio/rt-multi-thread` | Published |
 | [`github.com/qorechain/qorechain-sdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) | Go | v0.14.0 | `go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0` | Published |
-| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.14.0 | `implementation("io.github.qorechain:qorechain-sdk:0.14.0")` | Maven Central에는 2026년 11월 12일 기준 0.13.0이 그대로 표시됩니다. 0.14.0이 나타나면 그것을 사용하세요(JDK 17+) |
+| [`io.github.qorechain:qorechain-sdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk) | Java (JDK 17+) | 0.14.0 | `implementation("io.github.qorechain:qorechain-sdk:0.14.0")` | Published (Maven Central, v0.14.0; JDK 17+) |
 
 SDK 0.14.0은 2026년 11월 12일부터 현재 릴리스입니다(체인 v3.2.8 클라이언트 지원: 키 연결의 소유 증명, 가치를 이동하는 키의 지출 규칙, 전체 필드 거버넌스 파라미터 업데이트, 실행 결과, 새 EVM 윈도우 범위 필드, 가스 한도. [0.14.0의 변경 사항](/sdk/install#whats-new-0140) 참조). SDK 0.13.0(2026년 11월 11일)은 시드 경로 계정 헬퍼를 바꾸었으며, 이제 `QRC1` 복구 코드 또는 독립적인 32바이트 PQC 비밀이 필요합니다. 니모닉 계정, 서명, 체인 동작은 그대로입니다. [0.13.0의 변경 사항](/sdk/install#whats-new-0130) 참조). SDK 0.12.0은 2026년 10월 30일부터 현재 릴리스였습니다. 0.10.0과 비교하면 프리셋이 기본값으로 공개 엔드포인트를 사용하고(메인넷 `api.qore.host`, `rpc.qore.host`, `evm.qore.host`, 테스트넷은 `-testnet` 호스트이며, 이전의 기본값은 localhost였습니다), 로컬 프리셋의 체인 ID는 `qorechain-devnet`이고, 가스는 v3.2.5 이상 노드에서 정확하며(시뮬레이션 값에 1.02를 곱하고 2,000을 더함. 이전 노드에는 기존 경로가 유지됨), ML-KEM-1024 키 레지스트리를 지원하고(등록, 삭제, 그리고 `/qorechain/pqc/v1/kem/\{address\}` 조회), [체인 개발자 키트](#group-chain-dev-sdk)가 포함됩니다. 하이브리드 서명은 변경되지 않았습니다. Python, Rust, Go, Java 패키지는 0.10.0에서 곧바로 0.12.0이 되었고, npm 패키지 다섯 개에는 키트 내용을 담은 0.11.0(2026년 10월 29일)도 있었으나 0.12.0이 이를 대체합니다.
 
@@ -144,8 +144,8 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 
 | 패키지 | 언어 | 버전 | 설치 | 상태 |
 |---|---|---|---|---|
-| GitHub release `v0.1.0` | TypeScript, Python, Go, Rust, Java | 0.1.0 | `git clone https://github.com/qorechain/qorechain-custody-kit` 후 사용하는 언어의 폴더를 빌드 | Published, 2026년 10월 27일. npm, PyPI, crates.io, Maven 패키지는 의도적으로 없음 |
-| [`github.com/qorechain/qorechain-custody-kit/code/go`](https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go) | Go (패키지 `custodykit`) | v0.1.0 | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0` | Published |
+| GitHub release `v0.1.1` | TypeScript, Python, Go, Rust, Java | 0.1.1 | `git clone https://github.com/qorechain/qorechain-custody-kit` 후 사용하는 언어의 폴더를 빌드 | Published, 2026년 11월 12일(0.1.0은 2026년 10월 27일). npm, PyPI, crates.io, Maven 패키지는 의도적으로 없음 |
+| [`github.com/qorechain/qorechain-custody-kit/code/go`](https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go) | Go (패키지 `custodykit`) | v0.1.1 | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1` | Published |
 
 ### QoreScan {#group-qorescan}
 
@@ -182,13 +182,13 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 
 | 패키지 | 언어 | 버전 | 설치 | 상태 |
 |---|---|---|---|---|
-| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.8.0 | `npm install @qorechain/rdk` | Published. `pqcKeypair`를 전달하면 하이브리드로 서명하며, 읽기에는 키가 필요 없음 |
-| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.8.0 | `npm install -g @qorechain/rdk-cli` | Published. 0.6.2부터 npm bin 링크를 통해 실행됨(0.6.1 이전은 아무것도 출력하지 않았음). 0.7.1부터 트랜잭션 명령은 사용자의 포스트 퀀텀 키를 확인하면 하이브리드로 서명함(0.7.0 이전은 클래식 서명만 했고 네트워크가 이를 거부함) |
-| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.8.0 | `npx create-qorechain-rollup my-rollup` | Published |
-| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, `qorrdk`로 import) | 0.8.0 | `pip install qorechain-rdk` | Published. 읽기는 동작하며, 0.8.0부터 트랜잭션은 포스트 퀀텀 키 쌍을 전달하면 하이브리드로 서명함(이전 버전은 클래식 서명만 했음) |
-| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.8.0 | `cargo add qorechain-rdk` | Published. 읽기는 동작하며, 0.8.0부터 트랜잭션은 포스트 퀀텀 키 쌍을 전달하면 하이브리드로 서명함(이전 버전은 클래식 서명만 했음) |
-| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.8.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0` | Published. 읽기는 동작하며, 0.8.0부터 트랜잭션은 포스트 퀀텀 키 쌍을 전달하면 하이브리드로 서명함(이전 버전은 클래식 서명만 했음) |
-| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (Java 21+) | 0.8.0 | `implementation("io.github.qorechain:qorechain-rdk:0.8.0")` | Published. 읽기는 동작하며, 0.8.0부터 트랜잭션은 포스트 퀀텀 키 쌍을 전달하면 하이브리드로 서명함(이전 버전은 클래식 서명만 했고 Java 17이 필요했음) |
+| [`@qorechain/rdk`](https://www.npmjs.com/package/@qorechain/rdk) | TypeScript | 0.9.0 | `npm install @qorechain/rdk` | Published. `pqcKeypair`를 전달하면 하이브리드로 서명하며, 읽기에는 키가 필요 없음 |
+| [`@qorechain/rdk-cli`](https://www.npmjs.com/package/@qorechain/rdk-cli) | TypeScript (CLI `qorollup`) | 0.9.0 | `npm install -g @qorechain/rdk-cli` | Published. 0.6.2부터 npm bin 링크를 통해 실행됨(0.6.1 이전은 아무것도 출력하지 않았음). 0.7.1부터 트랜잭션 명령은 사용자의 포스트 퀀텀 키를 확인하면 하이브리드로 서명함(0.7.0 이전은 클래식 서명만 했고 네트워크가 이를 거부함) |
+| [`create-qorechain-rollup`](https://www.npmjs.com/package/create-qorechain-rollup) | TypeScript (CLI) | 0.9.0 | `npx create-qorechain-rollup my-rollup` | Published |
+| [`qorechain-rdk`](https://pypi.org/project/qorechain-rdk/) | Python (3.10+, `qorrdk`로 import) | 0.9.0 | `pip install qorechain-rdk` | Published. 읽기는 동작하며, 0.8.0부터 트랜잭션은 포스트 퀀텀 키 쌍을 전달하면 하이브리드로 서명함(이전 버전은 클래식 서명만 했음) |
+| [`qorechain-rdk`](https://crates.io/crates/qorechain-rdk) | Rust | 0.9.0 | `cargo add qorechain-rdk` | Published. 읽기는 동작하며, 0.8.0부터 트랜잭션은 포스트 퀀텀 키 쌍을 전달하면 하이브리드로 서명함(이전 버전은 클래식 서명만 했음) |
+| [`github.com/qorechain/qorechain-rdk/packages/go`](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) | Go | v0.9.0 | `go get github.com/qorechain/qorechain-rdk/packages/go@v0.9.0` | Published. 읽기는 동작하며, 0.8.0부터 트랜잭션은 포스트 퀀텀 키 쌍을 전달하면 하이브리드로 서명함(이전 버전은 클래식 서명만 했음) |
+| [`io.github.qorechain:qorechain-rdk`](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) | Java (Java 21+) | 0.9.0 | `implementation("io.github.qorechain:qorechain-rdk:0.9.0")` | Published. 읽기는 동작하며, 0.8.0부터 트랜잭션은 포스트 퀀텀 키 쌍을 전달하면 하이브리드로 서명함(이전 버전은 클래식 서명만 했고 Java 17이 필요했음) |
 
 ### 포스트 퀀텀 프리미티브 (`qorechain-pqc`) {#group-pqc}
 
@@ -306,9 +306,9 @@ TypeScript 패키지에는 `@qorechain/qoresign/network` 하위 경로가 있고
 - **Kotlin 2.3 이상.** QoreSign과 QoreSeal의 Kotlin 및 Android 아티팩트에는 Kotlin 2.3 이상 컴파일러가 필요합니다. Kotlin 2.1은 이를 대상으로 컴파일에 실패합니다.
 - **Windows wheel 없음.** QoreSign과 QoreSeal Python 패키지의 wheel은 macOS와 Linux용만 있으며, 다른 플랫폼은 소스 배포본에서 빌드하고 이때 Rust가 필요합니다.
 - **실행하지 않은 예제:** 매니페스트의 45개 퀵스타트 항목 중 43개가 실행되어 통과했습니다(2026년 10월 27일부터 29일). 두 Android 예제(QoreSign과 QoreSeal)는 JVM 아티팩트 예제와 코드를 공유하며 기기에서 실행하지 않았습니다. 지갑 어댑터, 체인 브리지, handles, MCP 서버, CLI에는 퀵스타트 항목이 없으므로, 이 매뉴얼의 해당 예제는 패키지 타입 정의와 소스에서 가져온 것이며 끝까지 실행하지 않았습니다.
-- **0.6.2 이전의 `@qorechain/rdk-cli`**는 npm bin 링크로 시작하면 아무것도 출력하지 않았고, `--version`은 0.4.1을 출력했습니다. **0.7.0 이전의 `@qorechain/rdk`**는 체인에서 한 번도 검증되지 않는 출금 증명을 만들었습니다. 0.8.0을 사용하세요.
+- **0.6.2 이전의 `@qorechain/rdk-cli`**는 npm bin 링크로 시작하면 아무것도 출력하지 않았고, `--version`은 0.4.1을 출력했습니다. **0.7.0 이전의 `@qorechain/rdk`**는 체인에서 한 번도 검증되지 않는 출금 증명을 만들었습니다. 0.9.0을 사용하세요.
 - **cosmjs 버전 충돌.** `@qorechain/wallet-adapter`와 `@qorechain/chain-bridge`는 cosmjs 0.32를 사용하고, SDK는 cosmjs 0.39를 사용합니다. 한 프로젝트에 어댑터를 SDK와 함께 설치하면 npm이 `ERESOLVE`를 보고합니다. 별도의 프로젝트로 유지하거나 `--legacy-peer-deps`를 전달하세요.
 - **이전 RDK 릴리스의 중첩된 SDK 사본.** `@qorechain/rdk` 0.6.2 이하는 `@qorechain/sdk` `^0.9.0`에 의존했으므로, SDK 0.10.0을 쓰는 앱에는 두 번째로 중첩된 SDK 0.9.x 사본이 생겼습니다. 0.7.0부터 키트는 `@qorechain/sdk` `^0.10.0`에 의존하며 하나의 사본을 공유합니다. **`@qorechain/rdk` 0.8.0은 여전히 `@qorechain/sdk` `^0.10.0`에 의존하므로**, SDK 0.12.0을 쓰는 앱이 이를 설치하면 중첩된 SDK 0.10.0(그리고 `@qorechain/evm` 0.8.0)도 함께 설치됩니다. 0.x 버전의 캐럿 범위는 더 새로운 마이너 버전을 받지 않습니다(2026년 11월 4일 `npm ls`로 확인).
-- **0.8.0 이전의 클래식 서명 전용 RDK 클라이언트.** 0.8.0 이전의 Python, Rust, Go, Java RDK 클라이언트는 클래식 서명만 하며, 네이티브 레인은 두 네트워크 모두에서 이를 거부합니다(`qorollup`도 0.7.1 이전에는 그랬습니다). 포스트 퀀텀 키 쌍을 전달하면 다섯 가지 언어 모두에서 하이브리드로 서명하는 0.8.0으로 업그레이드하세요.
+- **0.8.0 이전의 클래식 서명 전용 RDK 클라이언트.** 0.8.0 이전의 Python, Rust, Go, Java RDK 클라이언트는 클래식 서명만 하며, 네이티브 레인은 두 네트워크 모두에서 이를 거부합니다(`qorollup`도 0.7.1 이전에는 그랬습니다). 포스트 퀀텀 키 쌍을 전달하면 다섯 가지 언어 모두에서 하이브리드로 서명하는 0.8.0 이상으로 업그레이드하세요.
 - **공개 소스 저장소가 없는 패키지.** `@qorechain/chain-bridge`와 `@qorechain/handles`는 레지스트리 메타데이터에 소스 저장소가 나열되어 있지 않습니다. 게시된 패키지 내용은 npm에서 읽을 수 있습니다.
 - **Python `qorechain-pqc`**는 0.2.3에서 시드 기반 키 생성이 없으며 liboqs가 필요합니다.

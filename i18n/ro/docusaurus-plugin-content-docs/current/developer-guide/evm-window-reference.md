@@ -152,7 +152,7 @@ Cu SDK 0.14.0, în aceeași zi, o fereastră deschisă cu `allowedTargets` (adre
 
 ### Python, Go, Rust și Java {#other-languages}
 
-Fiecare SDK are un constructor pentru mesaj și o citire REST. Toate verifică local limitele lanțului. Un constructor de limbaj care setează listele din v3.2.8 are nevoie de SDK 0.14.0 sau mai nou (Java: 0.14.0 când apare pe Maven Central, care arată încă 0.13.0 la 12 noiembrie 2026); versiunile anterioare construiesc doar câmpurile mai vechi.
+Fiecare SDK are un constructor pentru mesaj și o citire REST. Toate verifică local limitele lanțului. Un constructor de limbaj care setează listele din v3.2.8 are nevoie de SDK 0.14.0 sau mai nou (Java: 0.14.0 pe Maven Central); versiunile anterioare construiesc doar câmpurile mai vechi.
 
 | Limbaj | Deschidere (cu toate listele) | Închidere | Citire | Limite EVM |
 | ------ | ----------------------------- | --------- | ------ | ---------- |

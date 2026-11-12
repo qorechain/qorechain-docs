@@ -10,15 +10,15 @@ sidebar_position: 21
 Üç komut satırı aracı, bir QoreChain projesini sıfırdan tipli, derlenebilir bir başlangıç noktasına getirir. Node.js ile çalışan uygulama geliştiricileri (dApp'ler) ve rollup operatörleri içindir:
 
 * **`create-qorechain-dapp`** (0.14.0, 0.13.1 şablon düzeltmelerini de taşır), [QoreChain SDK](/sdk/overview) üzerine kurulu yedi şablondan biriyle bir dApp iskeleti oluşturur. Yedi şablondan dördü (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) [zincir geliştirici kitine](/developer-tools/chain-dev-sdk) aittir.
-* **`create-qorechain-rollup`** (0.8.0), TypeScript [Rollup Geliştirme Kiti](/rollups/overview) üzerine kurulu altı şablondan biriyle bir rollup projesi iskeleti oluşturur.
-* **`qorollup`**, `@qorechain/rdk-cli` paketinin (0.8.0) komutudur; operatör komut satırıdır: ön kontroller, bir rollup oluşturma ve izleme, canlı parametreleri okuma.
+* **`create-qorechain-rollup`** (0.9.0), TypeScript [Rollup Geliştirme Kiti](/rollups/overview) üzerine kurulu altı şablondan biriyle bir rollup projesi iskeleti oluşturur.
+* **`qorollup`**, `@qorechain/rdk-cli` paketinin (0.9.0) komutudur; operatör komut satırıdır: ön kontroller, bir rollup oluşturma ve izleme, canlı parametreleri okuma.
 
 Bu sayfa, 27 Ekim 2026'da npm'den kurulan yayımlanmış paketleri ve 4 Kasım 2026'da kurulan `create-qorechain-dapp` 0.12.0 sürümünü yansıtır; güncel sürüm 0.14.0'dır (12 Kasım 2026). Aşağıda anlatılan 0.13.1 şablon değişiklikleri yeni bir kurulum çalıştırmasından değil, paketin sürüm notlarından alınmıştır ve 0.14.0 bunları taşır. Kavramsal kılavuzlar [Rollup Dağıtımı](/rollups/deploying-a-rollup) ve [SDK CLI başvurusu](/sdk/reference/cli) sayfalarıdır.
 
 ## Yenilikler {#innovations}
 
 * **CI için etkileşimsiz iskele oluşturma.** Her soru için bir bayrak vardır: `--template`, `--network`, `--package-manager`, `--yes` (varsayılanları kabul et) ve `--no-install`. Bir işlem hattı (pipeline) tek komutla ve terminal olmadan bir proje üretip derleyebilir.
-* **Şablonlar güncel paketlere sabitlenmiştir.** dApp şablonları `@qorechain/sdk` `^0.14.0` sürümüne (EVM şablonları ayrıca `@qorechain/evm` `^0.14.0` sürümüne), rollup şablonları ise `@qorechain/rdk` `^0.8.0` sürümüne bağlıdır. Önceki bir iskele aracı (0.8.0), canlı ağlar için imzalayamayan bir SDK'ya çözülen aralıklar yazıyordu; güncel sürümde bu olmaz.
+* **Şablonlar güncel paketlere sabitlenmiştir.** dApp şablonları `@qorechain/sdk` `^0.14.0` sürümüne (EVM şablonları ayrıca `@qorechain/evm` `^0.14.0` sürümüne), rollup şablonları ise `@qorechain/rdk` `^0.9.0` sürümüne bağlıdır. Önceki bir iskele aracı (0.8.0), canlı ağlar için imzalayamayan bir SDK'ya çözülen aralıklar yazıyordu; güncel sürümde bu olmaz.
 * **Rollup şablonları her kullanım senaryosu için geçerli bir yapılandırma kodlar.** Her rollup şablonu, RDK'nın uyumluluk matrisinin kabul ettiği bir settlement, sequencer, veri erişilebilirliği, gaz ve VM birleşimi ayarlar ve iskele aracı, siz herhangi bir şey oluşturmadan önce canlı stake'i ve oluşturma yakımını yazdırır.
 * **Neyin eksik olduğunu söyleyen bir ön kontrol komutu.** `qorollup doctor` (ve bir rollup şablonunun içinde `npm run doctor`), REST uç noktasının yanıt verdiğini, modül parametrelerinin okunabildiğini, uç noktanın istediğiniz ağ olduğunu ve bir imzacının yapılandırıldığını kontrol eder ve her kontrol için bir satır yazdırır. Bir şablonun içinde ayrıca rollup yapılandırmasını uyumluluk matrisine karşı doğrular.
 * **Şablonlara bağlanmış hibrit imzalama.** Rollup şablonları, hesabın ML-DSA-87 anahtarını mnemonic'inizden türeten (veya ham özel anahtarla bir seed alan) ve ağların native lane üzerinde zorunlu kıldığı hibrit imzayı atan küçük bir `signer.ts` üzerinden bağlanır. `rollup-app` dApp şablonu da aynısını yapar ve `QORE_BROADCAST=1` ayarlamadığınız sürece bir deneme çalıştırması (dry run) olarak çalışır.
@@ -106,7 +106,7 @@ cd my-rollup && npm run typecheck
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # kurulu sürümü yazdırır (güncel: 0.8.0)
+qorollup --version          # kurulu sürümü yazdırır (güncel: 0.9.0)
 qorollup doctor --network testnet
 ```
 
@@ -171,11 +171,11 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (komut `create-qorechain-dapp`) | 0.14.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (komut `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (komut `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (şablonların kullandığı kütüphane) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (komut `create-qorechain-rollup`) | 0.9.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (komut `qorollup`) | 0.9.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (şablonların kullandığı kütüphane) | 0.9.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-Kaynak: https://github.com/qorechain/qorechain-sdk/tree/main/cli (dApp iskele aracı), https://github.com/qorechain/qorechain-rdk/tree/main/cli (rollup iskele aracı) ve https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). RDK'nın 0.8.0 sürümü ayrıca PyPI, crates.io, Maven Central ve Go modül proxy'sindedir (31 Ekim 2026'da kontrol edildi). Hepsi Apache-2.0'dır.
+Kaynak: https://github.com/qorechain/qorechain-sdk/tree/main/cli (dApp iskele aracı), https://github.com/qorechain/qorechain-rdk/tree/main/cli (rollup iskele aracı) ve https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). RDK'nın 0.9.0 sürümü ayrıca PyPI, crates.io, Maven Central ve Go modül proxy'sindedir (12 Kasım 2026'da kontrol edildi). Hepsi Apache-2.0'dır.
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 

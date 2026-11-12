@@ -152,7 +152,7 @@ Mit SDK 0.14.0 war am selben Tag ein Fenster, das mit `allowedTargets` (der Adre
 
 ### Python, Go, Rust und Java {#other-languages}
 
-Jedes SDK hat einen Builder für die Nachricht und einen REST-Lesezugriff. Alle prüfen die Grenzen der Chain lokal. Ein Sprach-Builder, der die Listen von v3.2.8 setzt, braucht SDK 0.14.0 oder neuer (Java: 0.14.0, sobald es auf Maven Central erscheint, das am 12. November 2026 weiterhin 0.13.0 zeigt); frühere Releases bauen nur die älteren Felder.
+Jedes SDK hat einen Builder für die Nachricht und einen REST-Lesezugriff. Alle prüfen die Grenzen der Chain lokal. Ein Sprach-Builder, der die Listen von v3.2.8 setzt, braucht SDK 0.14.0 oder neuer (Java: 0.14.0 auf Maven Central); frühere Releases bauen nur die älteren Felder.
 
 | Sprache | Öffnen (mit allen Listen) | Schließen | Lesen | EVM-Grenzen |
 | -------- | ---------------------- | ----- | ---- | ---------- |

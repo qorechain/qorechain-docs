@@ -22,11 +22,11 @@ tabelul):
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.14.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.14.0 |
 | Proxy de module Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | Maven Central arată încă 0.13.0 la 12 noiembrie 2026; folosiți 0.14.0 când apare (JDK 17 sau mai nou) |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0 (JDK 17 sau mai nou) |
 
 Nu există 0.11.0 pentru Python, Rust, Go sau Java: pachetele npm au avut un 0.11.0 pe
 29 octombrie 2026 (kitul pentru dezvoltatori de lanț, vezi mai jos), iar fiecare limbaj a trecut
-împreună de la 0.10.0 la 0.12.0. 0.13.0 a urmat pe 11 noiembrie 2026, iar 0.14.0 pe 12 noiembrie 2026, în fiecare limbaj (Java: vezi tabelul).
+împreună de la 0.10.0 la 0.12.0. 0.13.0 a urmat pe 11 noiembrie 2026, iar 0.14.0 pe 12 noiembrie 2026, în fiecare limbaj.
 
 Alege limbajul tău mai jos.
 
@@ -56,8 +56,7 @@ Python, Go, Rust și Java, împreună cu `@qorechain/react`, `@qorechain/evm`, `
 și `create-qorechain-dapp` (care poartă și corecțiile de șabloane din 0.13.1). Adaugă suport
 client pentru lanțul **v3.2.8**. Regulile noi se aplică pe o rețea de îndată ce rulează v3.2.8:
 testnet-ul `qorechain-diana` îl rulează din 12 noiembrie 2026; mainnet nu l-a aplicat. Pe
-rețelele anterioare, câmpurile noi rămân opționale. (Maven Central arată încă 0.13.0 la
-12 noiembrie 2026; folosiți 0.14.0 pentru Java când apare.)
+rețelele anterioare, câmpurile noi rămân opționale.
 
 | Zonă | În 0.14.0 |
 | --- | --- |
@@ -82,7 +81,7 @@ Python, Go, Rust și Java, împreună cu `@qorechain/react`, `@qorechain/evm`, `
 și `create-qorechain-dapp`. Are o singură schimbare care rupe compatibilitatea, la helperul
 de cont pe calea cu seed. Conturile derivate dintr-o mnemonică rămân neschimbate, la fel
 formatul de semnare hibridă și comportamentul lanțului: o tranzacție construită cu 0.12.0
-rămâne validă. (Java este publicat pe Maven Central, 0.13.0, verificat la 11 noiembrie 2026.)
+rămâne validă.
 
 **Schimbare care rupe compatibilitatea.** Helperele pentru calea cu seed
 `unifiedAccountFromSeed` (TypeScript), `unified_account_from_seed` (Python, Rust),
@@ -393,9 +392,7 @@ Sau Gradle:
 implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 ```
 
-> Publicat pe Maven Central ca `io.github.qorechain:qorechain-sdk`. Maven Central
-> arată încă 0.13.0 la 12 noiembrie 2026 (POM-ul 0.14.0 nu era încă acolo); folosiți
-> 0.14.0 când apare, iar până atunci 0.13.0. Necesită JDK 17 sau mai nou. Central nu are o
+> Publicat pe Maven Central ca `io.github.qorechain:qorechain-sdk` (0.14.0 este versiunea curentă). Necesită JDK 17 sau mai nou. Central nu are o
 > versiune 0.8.0 sau 0.8.1, așa că pe rețelele live folosește 0.8.2 sau mai nou. 0.9.1 a
 > fost o versiune doar pentru Java care a mutat Bouncy Castle de la 1.80 la 1.85, fără modificări de API.
 
@@ -408,12 +405,12 @@ implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 | `@qorechain/pqc` | Primitive ML-DSA / ML-KEM / SHAKE-256 strict conforme standardelor și `hybridSignBytes` (vezi [Semnare post-cuantică](/developer-guide/post-quantum-signing)); disponibil și pe PyPI, crates.io, Maven Central și proxy-ul Go (Go `v0.2.3`) la aceeași versiune | 0.2.3 |
 | `@qorechain/handles` | Rezolvare verificată de `@handle` (`HandleClient`): tu furnizezi cheia publică a registrului și un depozit de fixări (pin store), iar fixezi după ce utilizatorul a văzut adresa; pachetul nu fixează niciodată singur. Vezi [Chain bridge și handle-uri](/developer-tools/chain-bridge#handles) | 0.1.0 |
 | `@qorechain/connect` | **Depreciat pe npm și nemaiîntreținut; nu-l folosi pentru lucruri noi. Folosește în schimb [`@qorechain/wallet-adapter`](/developer-tools/wallet-adapter) (înlocuitorii pentru conectarea la QoreX sunt în [prezentarea generală a uneltelor pentru dezvoltatori](/developer-tools/overview#group-connect)).** Un singur conector pentru portofelele EVM, Cosmos și SVM, construit peste wallet adapter (intervalul său peer este `@qorechain/wallet-adapter` `^0.2.1`, care nu include 0.5.0). Nu deschide o [fereastră de autorizare EVM](/sdk/guides/evm#evm-window), deci o trimitere EVM prin el este refuzată până când contul are o cheie înregistrată și o fereastră deschisă | 0.2.1 |
-| `@qorechain/rdk` | Client Rollup Development Kit (vezi [Rollup-uri](/rollups/why)). Începând cu 0.7.0 depinde de `@qorechain/sdk` `^0.10.0` și `@qorechain/evm` `^0.8.0` (verificat pe npm, 4 noiembrie 2026). Un caret pe o versiune 0.x rămâne în interiorul acelui minor, deci o aplicație pe SDK 0.13.0 primește pentru kit o a doua copie imbricată a SDK 0.10.x; țineți cele două separate (nu transmiteți un client de la o copie la cealaltă) până când o versiune a kit-ului trece la 0.13. Semnează hibrid doar când transmiți un `pqcKeypair`; citirile funcționează fără el. Publicat și ca `qorechain-rdk` pe PyPI, crates.io și Maven Central și ca modul Go (fixează `@v0.8.0`); de la 0.8.0 acei patru clienți semnează și ei hibrid (versiunile anterioare semnau doar clasic; Java necesită Java 21). Vezi [RDK 0.8.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits) | 0.8.0 |
-| `@qorechain/rdk-cli` | CLI-ul de operator `qorollup` pentru RDK. De la 0.7.1 comenzile sale de tranzacție (`create`, `pause`, `resume`, `stop`, `withdraw`) semnează hibrid (0.7.0 și versiunile anterioare semnau doar clasic și erau refuzate de rețele); instalat de pe npm, rulează, iar `--version` afișează versiunea instalată (0.6.1 și versiunile anterioare nu afișau nimic) | 0.8.0 |
+| `@qorechain/rdk` | Client Rollup Development Kit (vezi [Rollup-uri](/rollups/why)). Începând cu 0.7.0 depinde de `@qorechain/sdk` `^0.10.0` și `@qorechain/evm` `^0.8.0` (verificat pe npm, 4 noiembrie 2026). Un caret pe o versiune 0.x rămâne în interiorul acelui minor, deci o aplicație pe SDK 0.13.0 primește pentru kit o a doua copie imbricată a SDK 0.10.x; țineți cele două separate (nu transmiteți un client de la o copie la cealaltă) până când o versiune a kit-ului trece la 0.13. Semnează hibrid doar când transmiți un `pqcKeypair`; citirile funcționează fără el. Publicat și ca `qorechain-rdk` pe PyPI, crates.io și Maven Central și ca modul Go (fixează `@v0.8.0`); de la 0.8.0 acei patru clienți semnează și ei hibrid (versiunile anterioare semnau doar clasic; Java necesită Java 21). Vezi [RDK 0.8.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits) | 0.9.0 |
+| `@qorechain/rdk-cli` | CLI-ul de operator `qorollup` pentru RDK. De la 0.7.1 comenzile sale de tranzacție (`create`, `pause`, `resume`, `stop`, `withdraw`) semnează hibrid (0.7.0 și versiunile anterioare semnau doar clasic și erau refuzate de rețele); instalat de pe npm, rulează, iar `--version` afișează versiunea instalată (0.6.1 și versiunile anterioare nu afișau nimic) | 0.9.0 |
 | `@qorechain/qoreseal` | QoreSeal: criptează un payload către cheile ML-KEM-1024 pe care conturile le publică în registrul KEM (SDK 0.12.0 și ulterior înregistrează și citesc cheile; QoreSeal face criptarea). Disponibil și pe PyPI (`qorechain-qoreseal`; wheel-uri pentru macOS și Linux, wheel pentru Windows în versiunea următoare), crates.io, Maven Central (`io.github.qorechain:qoreseal` și `qoreseal-android`; consumatorii Kotlin au nevoie de Kotlin 2.3 sau mai nou), proxy-ul de module Go (`github.com/qorechain/qoreseal/go`, Go `v0.1.0`) și ca pachet Swift. Vezi [QoreSeal](/developer-tools/qoreseal) | 0.1.0 |
 | `@qorechain/asset-kit` | Asset Kit: unelte pentru tokenuri de active din lumea reală cu permisiuni pe EVM Engine, cu clienți în TypeScript, Python, Java și Go și contracte Solidity (`forge install qorechain/qorechain-asset-kit@v0.1.0`). Apache-2.0, cu excepția scripturilor și testelor ERC-3643 (GPL-3.0-or-later). Modulele native pe care le descrie sunt o propunere, nu sunt construite. Disponibil și ca `qorechain-asset-kit` pe PyPI și `io.github.qorechain:asset-kit` pe Maven Central. Vezi [Asset Kit](/developer-tools/asset-kit) | 0.1.0 |
 | `@qorechain/qoresign` | QoreSign: semnare pentru portofel și backend, și `inspectTransaction` pentru a verifica stratul post-cuantic al unei tranzacții comise. Disponibil și pe PyPI, crates.io și Maven Central. Vezi [QoreSign](/qoresign/overview) | 0.2.0 |
-| `create-qorechain-rollup` | Generator de proiecte starter pentru rollup; șabloanele sale depind de `@qorechain/rdk` `^0.8.0` și semnează hibrid când își pot rezolva cheia post-cuantică din `QORE_MNEMONIC` sau `QORE_PQC_SEED_HEX` | 0.8.0 |
+| `create-qorechain-rollup` | Generator de proiecte starter pentru rollup; șabloanele sale depind de `@qorechain/rdk` `^0.9.0` și semnează hibrid când își pot rezolva cheia post-cuantică din `QORE_MNEMONIC` sau `QORE_PQC_SEED_HEX` | 0.9.0 |
 
 ## Următorul pas
 

@@ -9,7 +9,7 @@ sidebar_position: 32
 
 مجموعة الحفظ QoreChain Custody Kit هي دليل تكامل مكتوب، ومجموعة متجهات اختبار، وشيفرة مرجعية صغيرة لجهات الحفظ ومنصات التداول التي تحتفظ بأموال العملاء على QoreChain. تشرح ما تشترطه الشبكة على كل مسار تنفيذ، وتعرض بشيفرة مقروءة الأجزاء التي يسهل الخطأ فيها في أي تكامل: فحص العنوان، وفك ترميز المعاملة الموقّعة والتحقق منها قبل بثّها، والقرار بشأن التحويلات الواردة التي تُحتسب.
 
-وهي موجهة لجهات الحفظ ومنصات التداول ومعالجات المدفوعات والخوادم الخلفية للمحافظ، وللمهندسين والمدققين الذين يراجعون هذه التكاملات. الإصدار **0.1.0**، نُشر في 27 أكتوبر 2026، برخصة Apache-2.0. وهي تعمل مع الشبكة الرئيسية (`qorechain-vladi`) وشبكة الاختبار (`qorechain-diana`)؛ أما الفحوص الحية المرفقة بها فتعمل على شبكة الاختبار وللقراءة فقط.
+وهي موجهة لجهات الحفظ ومنصات التداول ومعالجات المدفوعات والخوادم الخلفية للمحافظ، وللمهندسين والمدققين الذين يراجعون هذه التكاملات. الإصدار **0.1.1**، نُشر في 12 نوفمبر 2026 (نُشر 0.1.0 في 27 أكتوبر 2026)، برخصة Apache-2.0. وهي تعمل مع الشبكة الرئيسية (`qorechain-vladi`) وشبكة الاختبار (`qorechain-diana`)؛ أما الفحوص الحية المرفقة بها فتعمل على شبكة الاختبار وللقراءة فقط.
 
 **اقرأ هذا أولاً: المجموعة شيفرة أمثلة، وليست مكتبة.** تستنسخ المستودع ثم تقرأ المجلد الخاص بلغتك أو تنسخه أو تضمّنه في مشروعك. لا توجد حزمة للمجموعة على npm أو PyPI أو crates.io أو Maven Central، وذلك عن قصد. والاستثناء الوحيد في الشكل هو Go: فمجلد Go وحدة Go بإصدار موسوم، لذا يستطيع `go get` جلبها، لكنها تبقى شيفرة أمثلة بلا وعد بواجهة API مستقرة (راجع [ما هو مكتبة وما هو شيفرة أمثلة](#library-vs-example)). أما التوقيع والتحقق التشفيري فيأتيان من [QoreSign](/qoresign/overview)، وهي مكتبة منشورة.
 
@@ -50,7 +50,7 @@ sidebar_position: 32
 |---|---|---|
 | QoreSign (التوقيع، والتحقق من ML-DSA-87 وsecp256k1، ورسالة تسجيل المفتاح) | مكتبة منشورة | npm وPyPI وcrates.io وGo وMaven Central. راجع [QoreSign](/qoresign/overview). |
 | شيفرة المجموعة بلغات TypeScript وPython وRust وJava | شيفرة أمثلة، غير منشورة في أي سجل | استنسخ `qorechain/qorechain-custody-kit` وانسخ المجلد أو ضمّنه في مشروعك. |
-| شيفرة المجموعة بلغة Go (الحزمة `custodykit`) | شيفرة أمثلة. يمكن جلبها كوحدة Go بإصدار موسوم، بلا وعد بواجهة API مستقرة | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0`، أو استنسخ وضمّن. |
+| شيفرة المجموعة بلغة Go (الحزمة `custodykit`) | شيفرة أمثلة. يمكن جلبها كوحدة Go بإصدار موسوم، بلا وعد بواجهة API مستقرة | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1`، أو استنسخ وضمّن. |
 | صفحات الدليل والمتجهات وقائمة التحقق | توثيق وبيانات | المستودع. |
 
 لا تنفّذ المجموعة أي مخطط توقيع. فالتحقق من ML-DSA-87 وsecp256k1 يأتي من QoreSign. وتحتوي شيفرة Python على Keccak-256 صغيرة تُستخدم لمجموع EIP-55 ولا شيء غيره.
@@ -95,6 +95,7 @@ sidebar_position: 32
 - تُفتح النافذة بـ `/qorechain.pqc.v1.MsgOpenEVMWindow` (`blocks` من 1 إلى 17,280، و`max_txs` من 1 إلى 1,000، و`max_value` بوحدة `uqor` يحتسب القيمة زائد أقصى رسوم، و`native_only` اختياري، و`allowed_targets` اختياري حتى 16 عنواناً) وتُغلق بـ `MsgCloseEVMWindow`. وحالتها في `GET /qorechain/pqc/v1/evm_window/{address}`.
 - فتح نافذة يستبدل أي نافذة قائمة ويقدّم تسلسل الحساب، وهو nonce الخاص بـ EVM: افتح النافذة ثم اقرأ الـ nonce.
 - لا تحتاج `eth_call` و`eth_estimateGas` إلى نافذة.
+- تقبل مفكّكات المجموعة (من 0.1.1) حقول نافذة EVM من 5 إلى 9 في رسائل النافذة، فتُفكّ المعاملة التي تفتح نافذة بحقول v3.2.8.
 
 ## طريقة الاستخدام {#how-to-use}
 
@@ -106,7 +107,7 @@ sidebar_position: 32
 |---|---|---|---|
 | TypeScript | `git clone https://github.com/qorechain/qorechain-custody-kit`، ثم `cd code/ts && pnpm install && pnpm build` | `@qorechain/qoresign` 0.1.0 (npm) | Node.js 20 |
 | Python | استنسخ، ثم `cd code/python && pip install -r requirements-dev.txt`. ولـ `verify_tx` نفّذ أيضاً `pip install qorechain-qoresign==0.1.1` | لا شيء وقت التشغيل؛ و`qorechain-qoresign` 0.1.1 (PyPI) لـ `verify_tx` | Python 3.9 |
-| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0` (الحزمة `custodykit`)، أو استنسخ | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
+| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1` (الحزمة `custodykit`)، أو استنسخ | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
 | Rust | استنسخ، ثم `cd code/rust && cargo build` (غير موجودة على crates.io) | `qorechain-qoresign` 0.1.0 (crates.io) | إصدار Rust 2021 |
 | Java | استنسخ، ثم `cd code/java && mvn test` (غير موجودة على Maven Central) | `io.github.qorechain:qoresign:0.1.0` (Maven Central)، وGson | Java 17 |
 
@@ -289,16 +290,16 @@ QORE_LIVE_TEST=1 go test -run Live ./...     # live reads against testnet
 - يستخدم التدوير `MsgRotatePQCKey`: يوقّع المفتاحان كلاهما، وتستخدم طبقة المعاملة نفسها المفتاح الحالي، ويُرفض إعادة استخدام مفتاح سابق. وإذا انكشف مفتاح secp256k1 فانقل الأموال إلى عنوان جديد بمفتاحين جديدين وأغلق أي نافذة EVM مفتوحة.
 - نوافذ EVM: استخدم `native_only` حيث لا يتحرك سوى QOR. يحدّ `allowed_targets` من العقود والرموز التي يجوز لمسها، لا من المقدار: الرمز المدرج يقبل أي مقدار، بما في ذلك `approve`، لذا لا تدرج عقود المُمرِّر أو الموجِّه أبدًا. وتحدّ النوافذ معاملات مسار EVM الموقَّعة بتوقيع كلاسيكي فقط؛ أما رسائل Cosmos الموقَّعة هجينًا (استدعاءات cross-VM وauthz) فخارجها. استخدم أصغر `max_value` و`blocks` تغطي الدفعة، وأغلق النافذة بعد الدفعة. عامِل `MsgSetWithdrawAddress` و`MsgRotatePQCKey` و`MsgOpenEVMWindow` و`MsgAuthorizeEVMDelegation` على أنها عمليات ذات امتياز.
 - لا تحتسب أبداً معاملة EVM يبلّغ حدث `ethereum_tx` فيها عن فشل، حتى لو كانت نتيجتها الأصلية `code == 0`.
-- هذه شيفرة مرجعية بالإصدار 0.1.0. راجعها قبل استخدامها في الإنتاج. أبلغ عن الثغرات سراً على security@qore.network، بما في ذلك أخطاء التوثيق التي قد تؤدي إلى احتساب خاطئ أو إلى توقيع غير مقصود.
+- هذه شيفرة مرجعية بالإصدار 0.1.1. راجعها قبل استخدامها في الإنتاج. أبلغ عن الثغرات سراً على security@qore.network، بما في ذلك أخطاء التوثيق التي قد تؤدي إلى احتساب خاطئ أو إلى توقيع غير مقصود.
 
 ## أين يُنشر {#where-published}
 
-جرى التحقق من السجلات في 4 نوفمبر 2026 (الإصدارات والوسوم دون تغيير منذ 27 أكتوبر).
+جرى التحقق من السجلات في 12 نوفمبر 2026.
 
 | السجل | الحزمة | الإصدار | الرابط |
 |---|---|---|---|
-| GitHub | `qorechain/qorechain-custody-kit` (اللغات الخمس وصفحات الدليل والمتجهات) | الإصدار `v0.1.0`، نُشر في 27 أكتوبر 2026 | https://github.com/qorechain/qorechain-custody-kit |
-| وكيل وحدات Go | `github.com/qorechain/qorechain-custody-kit/code/go` (شيفرة أمثلة، قابلة للجلب) | v0.1.0 (الوسم `code/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
+| GitHub | `qorechain/qorechain-custody-kit` (اللغات الخمس وصفحات الدليل والمتجهات) | الإصدار `v0.1.1`، نُشر في 12 نوفمبر 2026 (`v0.1.0` في 27 أكتوبر 2026) | https://github.com/qorechain/qorechain-custody-kit |
+| وكيل وحدات Go | `github.com/qorechain/qorechain-custody-kit/code/go` (شيفرة أمثلة، قابلة للجلب) | v0.1.1 (الوسم `code/go/v0.1.1`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
 | npm وPyPI وcrates.io وMaven Central | غير منشورة: المجموعة شيفرة أمثلة تُنسخ أو تُضمَّن | لا ينطبق | لا ينطبق |
 
 لا يحمل إصدار GitHub أي ملفات مرفقة؛ فالإصدار هو وسم المستودع. التبعيات التي تبني عليها المجموعة كلها منشورة: `@qorechain/qoresign` على npm (الأحدث 0.1.1، والمجموعة تثبّت 0.1.0)، و`qorechain-qoresign` على PyPI (0.1.1)، و`qorechain-qoresign` على crates.io (الأحدث 0.1.1، والمجموعة تثبّت 0.1.0)، و`github.com/qorechain/qoresign/go` (v0.1.0 وv0.1.1)، و`io.github.qorechain:qoresign` على Maven Central (0.1.0 و0.1.1).
@@ -313,7 +314,7 @@ QORE_LIVE_TEST=1 go test -run Live ./...     # live reads against testnet
 - تحتسب `extractDeposits` تلقائياً `MsgSend` و`MsgMultiSend` و`MsgEthereumTx` الناجحة. أما الرسائل الأخرى (سحب المكافآت واستدعاءات العقود وتحويلات IBC) فتُعاد للمراجعة ولا تُحتسب.
 - تتحقق `verifyTx` من معاملات الموقّع الواحد.
 - مسار SVM غير مفتوح للمعاملات. لا تبنِ عليه تدفقات إيداع أو سحب.
-- شيفرة المجموعة نفسها شيفرة أمثلة بالإصدار 0.1.0. يمكن أن تتغير أسماء الدوال وتواقيعها بين الإصدارات، ووسم وحدة Go لا يعد بواجهة API مستقرة.
+- شيفرة المجموعة نفسها شيفرة أمثلة بالإصدار 0.1.1. يمكن أن تتغير أسماء الدوال وتواقيعها بين الإصدارات، ووسم وحدة Go لا يعد بواجهة API مستقرة.
 - لم يُشغَّل عند كتابة هذه الصفحة سوى أمثلة Go ومجموعة اختباراتها. ولم تُعد الفحوص الحية وفحوص المتجهات في اللغات الأربع الأخرى.
 - قد يذكر README الخاص بـ Python في المستودع أن `verify_tx` يطلق خطأ استيراد إلى أن يتوفر `qorechain-qoresign` 0.1.1 على PyPI. وهذا الإصدار منشور، فالملاحظة قديمة.
 - يقتبس دليل المجموعة معاملات (أرقام الغاز وقيم مستوى التخزين) قُرئت في 27 أكتوبر 2026. اقرأها من السلسلة في الإنتاج.

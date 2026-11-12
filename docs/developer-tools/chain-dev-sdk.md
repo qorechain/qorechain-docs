@@ -335,7 +335,7 @@ Template environment variables (in `.env`, never committed): `PRIVATE_KEY`, `QOR
 
 ## Where it is published {#where-published}
 
-Versions read live from the registries on 12 November 2026 (Maven Central is the exception, see its row). The GitHub tag `v0.12.0` exists. The five npm packages also have a 0.11.0 (29 October 2026) that carried the same kit content; the Python, Rust, Go and Java SDKs went from 0.10.0 straight to 0.12.0, and every language except Java is at 0.14.0 (Java is at 0.13.0 on Maven Central).
+Versions read live from the registries on 12 November 2026 (including Maven Central). The GitHub tag `v0.12.0` exists. The five npm packages also have a 0.11.0 (29 October 2026) that carried the same kit content; the Python, Rust, Go and Java SDKs went from 0.10.0 straight to 0.12.0, and every language is at 0.14.0.
 
 | Registry | Package | Version | Link |
 |---|---|---|---|
@@ -348,7 +348,7 @@ Versions read live from the registries on 12 November 2026 (Maven Central is the
 | PyPI | `qorechain-sdk` | 0.14.0 | https://pypi.org/project/qorechain-sdk/ |
 | crates.io | `qorechain-sdk` | 0.14.0 | https://crates.io/crates/qorechain-sdk |
 | Go proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 | https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.13.0 on 12 November 2026; 0.14.0 not there yet | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0 (checked 12 November 2026) | https://central.sonatype.com/artifact/io.github.qorechain/qorechain-sdk |
 
 Source: [github.com/qorechain/qorechain-sdk](https://github.com/qorechain/qorechain-sdk), tag `v0.14.0`; paths `packages/evm`, `cli/`, `templates/`, `docs/docs/guides/`, `contrib/`. Apache-2.0, maintained by the QoreChain Association.
 

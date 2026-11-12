@@ -10,15 +10,15 @@ sidebar_position: 21
 Trei instrumente de linie de comandă duc un proiect QoreChain de la zero la un punct de pornire tipizat și compilabil. Sunt pentru dezvoltatorii de aplicații (dApp-uri) și pentru operatorii de rollup-uri care lucrează în Node.js:
 
 * **`create-qorechain-dapp`** (0.14.0, care poartă și corecțiile de șabloane din 0.13.1) generează un dApp pornind de la unul din șapte șabloane, construit pe [SDK-ul QoreChain](/sdk/overview). Patru din cele șapte (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) aparțin [kitului pentru dezvoltatori de lanț](/developer-tools/chain-dev-sdk).
-* **`create-qorechain-rollup`** (0.8.0) generează un proiect de rollup pornind de la unul din șase șabloane, construit pe [Rollup Development Kit](/rollups/overview) în TypeScript.
-* **`qorollup`**, comanda pachetului `@qorechain/rdk-cli` (0.8.0), este linia de comandă a operatorului: verificări preliminare, crearea și monitorizarea unui rollup, citirea parametrilor live.
+* **`create-qorechain-rollup`** (0.9.0) generează un proiect de rollup pornind de la unul din șase șabloane, construit pe [Rollup Development Kit](/rollups/overview) în TypeScript.
+* **`qorollup`**, comanda pachetului `@qorechain/rdk-cli` (0.9.0), este linia de comandă a operatorului: verificări preliminare, crearea și monitorizarea unui rollup, citirea parametrilor live.
 
 Pagina reflectă pachetele publicate, așa cum sunt instalate din npm la 27 octombrie 2026, iar `create-qorechain-dapp` 0.12.0 așa cum a fost instalat la 4 noiembrie 2026; versiunea curentă este 0.14.0 (12 noiembrie 2026). Modificările de șabloane din 0.13.1 descrise mai jos provin din notele de lansare ale pachetului, nu dintr-o rulare nouă de instalare, iar 0.14.0 le conține. Ghidurile conceptuale sunt [Implementarea unui Rollup](/rollups/deploying-a-rollup) și [Referința CLI a SDK-ului](/sdk/reference/cli).
 
 ## Inovații {#innovations}
 
 * **Generare non-interactivă pentru CI.** Fiecare întrebare are un flag: `--template`, `--network`, `--package-manager`, `--yes` (acceptă valorile implicite) și `--no-install`. Un pipeline poate genera și compila un proiect cu o singură comandă și fără terminal.
-* **Șabloanele sunt fixate pe pachetele curente.** Șabloanele de dApp depind de `@qorechain/sdk` `^0.14.0` (șabloanele EVM și de `@qorechain/evm` `^0.14.0`), iar șabloanele de rollup de `@qorechain/rdk` `^0.8.0`. Un generator anterior (0.8.0) scria intervale care se rezolvau la un SDK ce nu putea semna pentru rețelele live; acest lucru nu se mai întâmplă cu cel curent.
+* **Șabloanele sunt fixate pe pachetele curente.** Șabloanele de dApp depind de `@qorechain/sdk` `^0.14.0` (șabloanele EVM și de `@qorechain/evm` `^0.14.0`), iar șabloanele de rollup de `@qorechain/rdk` `^0.9.0`. Un generator anterior (0.8.0) scria intervale care se rezolvau la un SDK ce nu putea semna pentru rețelele live; acest lucru nu se mai întâmplă cu cel curent.
 * **Șabloanele de rollup codifică o configurație validă pentru fiecare caz de utilizare.** Fiecare șablon de rollup stabilește o combinație de settlement, sequencer, disponibilitate a datelor, gaz și VM pe care matricea de compatibilitate a RDK o acceptă, iar generatorul afișează stake-ul live și arderea la creare înainte de a crea ceva.
 * **O comandă de verificare preliminară care numește ce lipsește.** `qorollup doctor` (și `npm run doctor` într-un șablon de rollup) verifică dacă punctul final REST răspunde, dacă parametrii modulului pot fi citiți, dacă punctul final este rețeaua pe care ai cerut-o și dacă un semnatar este configurat, și afișează o linie pentru fiecare verificare. Într-un șablon validează și configurația rollup-ului față de matricea de compatibilitate.
 * **Semnare hibridă integrată în șabloane.** Șabloanele de rollup se conectează printr-un mic `signer.ts` care derivă cheia ML-DSA-87 a contului din mnemonic (sau primește un seed împreună cu o cheie privată brută) și semnează hibrid, ceea ce rețelele cer pe lane-ul nativ. Șablonul de dApp `rollup-app` face același lucru și rulează ca rulare de probă, dacă nu setezi `QORE_BROADCAST=1`.
@@ -106,7 +106,7 @@ Pașii următori, așa cum îi afișează generatorul: `npm install`, completeaz
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # afișează versiunea instalată (0.8.0 este cea curentă)
+qorollup --version          # afișează versiunea instalată (0.9.0 este cea curentă)
 qorollup doctor --network testnet
 ```
 
@@ -171,11 +171,11 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | Registru | Pachet | Versiune | Link |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (comanda `create-qorechain-dapp`) | 0.14.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (comanda `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (comanda `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (biblioteca folosită de șabloane) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (comanda `create-qorechain-rollup`) | 0.9.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (comanda `qorollup`) | 0.9.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (biblioteca folosită de șabloane) | 0.9.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-Sursa: https://github.com/qorechain/qorechain-sdk/tree/main/cli (generatorul de dApp-uri), https://github.com/qorechain/qorechain-rdk/tree/main/cli (generatorul de rollup-uri) și https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). Versiunea 0.8.0 a RDK este publicată și pe PyPI, crates.io, Maven Central și proxy-ul de module Go (verificat la 31 octombrie 2026). Toate sunt Apache-2.0.
+Sursa: https://github.com/qorechain/qorechain-sdk/tree/main/cli (generatorul de dApp-uri), https://github.com/qorechain/qorechain-rdk/tree/main/cli (generatorul de rollup-uri) și https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). Versiunea 0.9.0 a RDK este publicată și pe PyPI, crates.io, Maven Central și proxy-ul de module Go (verificat la 12 noiembrie 2026). Toate sunt Apache-2.0.
 
 ## Limite și probleme cunoscute {#limits}
 

@@ -10,7 +10,7 @@ sidebar_position: 34
 حزمة مطوّري السلسلة هي الجزء من QoreChain SDK الذي يساعد فرق Solidity والعقود الذكية على البناء على QoreChain بالأدوات التي تستخدمها بالفعل. تضيف تعريفات سلاسل viem ومساعِدات نافذة تفويض EVM إلى `@qorechain/evm`، وأربعة قوالب مشاريع إلى `create-qorechain-dapp` (Foundry وHardhat 3 وviem مع wagmi، ورمز QoreChain Native بصيغة CosmWasm)، وبدايات سريعة لـ EVM بخمس لغات، ومرجعًا يوضح كيف تختلف QoreChain EVM عن Ethereum. وهي موجّهة لفرق Solidity التي تنقل عقودها من Ethereum، ولمطوري الواجهات الأمامية لتطبيقات dApp على wagmi وRainbowKit، ولمطوري CosmWasm، ولمشرفي أدوات EVM الراغبين في إضافة QoreChain.
 
 :::note متاح: مضمَّن في SDK 0.14.0
-الحزمة **متاحة وقابلة للتثبيت** في QoreChain SDK **0.14.0** (npm، 12 نوفمبر 2026): `@qorechain/evm` و`@qorechain/sdk` و`@qorechain/react` و`@qorechain/svm` و`create-qorechain-dapp` (الذي يحمل أيضًا إصلاحات القوالب في 0.13.1) كلها بالإصدار 0.14.0، مع SDK لغات Python وRust وGo بالإصدار 0.14.0 أيضًا (ما زال Maven Central يعرض Java 0.13.0 في 12 نوفمبر 2026؛ استخدم 0.14.0 متى ظهر). صدر محتواها أول مرة بالإصدار 0.11.0 على npm وحدها (29 أكتوبر 2026) وكانت ضمن 0.12.0 (30 أكتوبر 2026)؛ ولا يوجد 0.11.0 في أي سجل آخر. أُجريت التشغيلات الاختبارية في هذه الصفحة مقابل 0.12.0 في 4 نوفمبر 2026؛ وغيّر 0.13.0 مساعد الحساب على مسار البذرة ومعالجة `PRIVATE_KEY` في القوالب (راجع [ما الذي يغيّره 0.13.0](/sdk/install#whats-new-0130))، ويضيف 0.14.0 دعم العميل لسلسلة v3.2.8، بما فيه حقول نطاق النافذة الجديدة (راجع [ما الذي يغيّره 0.14.0](/sdk/install#whats-new-0140)).
+الحزمة **متاحة وقابلة للتثبيت** في QoreChain SDK **0.14.0** (npm، 12 نوفمبر 2026): `@qorechain/evm` و`@qorechain/sdk` و`@qorechain/react` و`@qorechain/svm` و`create-qorechain-dapp` (الذي يحمل أيضًا إصلاحات القوالب في 0.13.1) كلها بالإصدار 0.14.0، مع SDK لغات Python وRust وGo بالإصدار 0.14.0 أيضًا، وJava على Maven Central كذلك. صدر محتواها أول مرة بالإصدار 0.11.0 على npm وحدها (29 أكتوبر 2026) وكانت ضمن 0.12.0 (30 أكتوبر 2026)؛ ولا يوجد 0.11.0 في أي سجل آخر. أُجريت التشغيلات الاختبارية في هذه الصفحة مقابل 0.12.0 في 4 نوفمبر 2026؛ وغيّر 0.13.0 مساعد الحساب على مسار البذرة ومعالجة `PRIVATE_KEY` في القوالب (راجع [ما الذي يغيّره 0.13.0](/sdk/install#whats-new-0130))، ويضيف 0.14.0 دعم العميل لسلسلة v3.2.8، بما فيه حقول نطاق النافذة الجديدة (راجع [ما الذي يغيّره 0.14.0](/sdk/install#whats-new-0140)).
 :::
 
 تستهدف الحزمة الشبكة الرئيسية (`qorechain-vladi`، معرّف سلسلة EVM هو 9801) وشبكة الاختبار (`qorechain-diana`، معرّف سلسلة EVM هو 9800).
@@ -126,7 +126,7 @@ sidebar_position: 34
 | Python (قراءات EVM) | `pip install "web3>=7,<8"`؛ ورسالة النافذة من `pip install qorechain-sdk` (0.14.0) | Python 3.10 أو أحدث |
 | Go (قراءات EVM) | `go get github.com/ethereum/go-ethereum@latest`؛ ورسالة النافذة من `go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0` | سلسلة أدوات Go |
 | Rust (قراءات EVM) | `alloy = { version = "1", features = ["provider-http", "contract", "sol-types"] }`؛ ورسالة النافذة من الحزمة `qorechain-sdk` 0.14.0 | Rust المستقر |
-| Java (قراءات EVM) | `org.web3j:core:5.0.0`؛ ورسالة النافذة من `io.github.qorechain:qorechain-sdk:0.14.0` (ما زال Maven Central يعرض 0.13.0 في 12 نوفمبر 2026؛ استخدم 0.14.0 متى ظهر) | JDK 21 (يُبنى QoreChain Java SDK بسلسلة أدوات JDK 21) |
+| Java (قراءات EVM) | `org.web3j:core:5.0.0`؛ ورسالة النافذة من `io.github.qorechain:qorechain-sdk:0.14.0` | JDK 21 (يُبنى QoreChain Java SDK بسلسلة أدوات JDK 21) |
 
 ### البداية السريعة 1: القراءة بـ ethers v6 {#quickstart-ethers}
 

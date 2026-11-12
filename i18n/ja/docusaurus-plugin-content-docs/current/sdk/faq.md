@@ -96,8 +96,7 @@ npm で公開されています。Python クライアントは PyPI にありま
 バージョン 0.14.0、インポート名は `qorsdk`）。Go クライアントはモジュールプロキシにあります
 （`go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`）。Rust クライアントは
 crates.io にあります（`cargo add qorechain-sdk`、0.14.0）。Java クライアントは Maven
-Central にあります（`io.github.qorechain:qorechain-sdk`、JDK 17 以降）。Maven Central では 2026年11月12日時点でまだ 0.13.0 が表示されます。
-0.14.0 が表示されたらそちらを使ってください。
+Central にあります（`io.github.qorechain:qorechain-sdk`、0.14.0、JDK 17 以降）。
 言語ごとの完全なコマンドは [インストール](/sdk/install) を参照してください。
 
 ## ニーモニックが拒否されます

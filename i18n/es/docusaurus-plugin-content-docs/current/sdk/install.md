@@ -23,11 +23,11 @@ tabla):
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.14.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.14.0 |
 | Proxy de módulos de Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | Maven Central todavía muestra la 0.13.0 el 12 de noviembre de 2026; usa la 0.14.0 cuando aparezca (JDK 17 o posterior) |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0 (JDK 17 o posterior) |
 
 No existe una 0.11.0 para Python, Rust, Go ni Java: los paquetes de npm tuvieron una 0.11.0 el
 29 de octubre de 2026 (el kit de desarrollo de la cadena, consulta más abajo) y todos los lenguajes pasaron
-de la 0.10.0 a la 0.12.0 a la vez. La 0.13.0 llegó el 11 de noviembre de 2026 y la 0.14.0 el 12 de noviembre de 2026 en todos los lenguajes (Java: consulta la tabla).
+de la 0.10.0 a la 0.12.0 a la vez. La 0.13.0 llegó el 11 de noviembre de 2026 y la 0.14.0 el 12 de noviembre de 2026 en todos los lenguajes.
 
 Elige tu lenguaje a continuación.
 
@@ -58,8 +58,7 @@ TypeScript, Python, Go, Rust y Java, con `@qorechain/react`, `@qorechain/evm`,
 plantillas de la 0.13.1). Añade soporte de cliente para la cadena **v3.2.8**. Las reglas
 nuevas se aplican en una red cuando ejecuta la v3.2.8: la testnet `qorechain-diana` la
 ejecuta desde el 12 de noviembre de 2026; la mainnet no la ha aplicado. En las redes
-anteriores los campos nuevos siguen siendo opcionales. (Maven Central todavía muestra la
-0.13.0 el 12 de noviembre de 2026; usa la 0.14.0 para Java cuando aparezca.)
+anteriores los campos nuevos siguen siendo opcionales.
 
 | Área | En la 0.14.0 |
 | --- | --- |
@@ -85,7 +84,6 @@ TypeScript, Python, Go, Rust y Java, con `@qorechain/react`, `@qorechain/evm`,
 ayudante de cuenta de la ruta de semilla. Las cuentas derivadas de una mnemónica no
 cambian, ni tampoco el formato de firma híbrida ni el comportamiento de la cadena: una
 transacción construida con la 0.12.0 sigue siendo válida.
-(Java está publicado en Maven Central como la 0.13.0, comprobado el 11 de noviembre de 2026.)
 
 **Cambio incompatible.** Los ayudantes de la ruta de semilla `unifiedAccountFromSeed`
 (TypeScript), `unified_account_from_seed` (Python, Rust), `unified.UnifiedAccountFromSeed`
@@ -397,9 +395,7 @@ O Gradle:
 implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 ```
 
-> Publicado en Maven Central como `io.github.qorechain:qorechain-sdk`. Maven Central
-> todavía muestra la 0.13.0 el 12 de noviembre de 2026 (el POM de la 0.14.0 aún no estaba allí); usa
-> la 0.14.0 cuando aparezca, y la 0.13.0 hasta entonces. Necesita JDK 17 o posterior. Central no tiene
+> Publicado en Maven Central como `io.github.qorechain:qorechain-sdk` (la 0.14.0 es la versión actual). Necesita JDK 17 o posterior. Central no tiene
 > una compilación 0.8.0 ni 0.8.1, así que en las redes en producción usa la 0.8.2 o
 > posterior. La 0.9.1 fue una versión solo de Java que actualizó Bouncy Castle de la 1.80
 > a la 1.85, sin cambios de API.
@@ -413,12 +409,12 @@ implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 | `@qorechain/pqc` | Primitivas ML-DSA / ML-KEM / SHAKE-256 que siguen solo los estándares y `hybridSignBytes` (consulta [Firma poscuántica](/developer-guide/post-quantum-signing)); también en PyPI, crates.io, Maven Central y el proxy de Go (Go `v0.2.3`) en la misma versión | 0.2.3 |
 | `@qorechain/handles` | Resolución verificada de `@handle` (`HandleClient`): tú aportas la clave pública del registro y un almacén de anclajes, y anclas después de que el usuario haya visto la dirección; el paquete nunca ancla por sí solo. Consulta [Chain bridge y handles](/developer-tools/chain-bridge#handles) | 0.1.0 |
 | `@qorechain/connect` | **Obsoleto en npm y sin mantenimiento; no lo uses en trabajo nuevo. Usa en su lugar [`@qorechain/wallet-adapter`](/developer-tools/wallet-adapter) (los reemplazos para la conexión con QoreX están en la [visión general de las herramientas para desarrolladores](/developer-tools/overview#group-connect)).** Un único conector para wallets EVM, Cosmos y SVM, construido sobre el wallet adapter (su rango de peer dependency es `@qorechain/wallet-adapter` `^0.2.1`, que no incluye la 0.5.0). No abre una [ventana de autorización EVM](/sdk/guides/evm#evm-window), por lo que un envío EVM a través de él es rechazado hasta que la cuenta tenga una clave registrada y una ventana abierta | 0.2.1 |
-| `@qorechain/rdk` | Cliente del Rollup Development Kit (consulta [Rollups](/rollups/why)). Desde la 0.7.0 depende de `@qorechain/sdk` `^0.10.0` y de `@qorechain/evm` `^0.8.0` (comprobado en npm, 4 de noviembre de 2026). Un caret sobre una versión 0.x se queda dentro de esa versión menor, así que una aplicación con el SDK 0.13.0 obtiene para el kit una segunda copia anidada del SDK 0.10.x; mantén ambos separados (no pases un cliente de una copia a la otra) hasta que una versión del kit pase a la 0.13. Firma de forma híbrida solo cuando pasas un `pqcKeypair`; las lecturas funcionan sin él. También se publica como `qorechain-rdk` en PyPI, crates.io y Maven Central y como módulo de Go (fija `@v0.8.0`); desde la 0.8.0 esos cuatro clientes también firman de forma híbrida (las versiones anteriores firmaban solo de forma clásica; Java necesita Java 21). Consulta [RDK 0.8.0: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits) | 0.8.0 |
-| `@qorechain/rdk-cli` | La CLI de operador `qorollup` para el RDK. Desde la 0.7.1 sus comandos de transacción (`create`, `pause`, `resume`, `stop`, `withdraw`) firman de forma híbrida (la 0.7.0 y anteriores firmaban solo de forma clásica y las redes las rechazaban); instalada desde npm se ejecuta y `--version` muestra la versión instalada (la 0.6.1 y anteriores no mostraban nada) | 0.8.0 |
+| `@qorechain/rdk` | Cliente del Rollup Development Kit (consulta [Rollups](/rollups/why)). Desde la 0.7.0 depende de `@qorechain/sdk` `^0.10.0` y de `@qorechain/evm` `^0.8.0` (comprobado en npm, 4 de noviembre de 2026). Un caret sobre una versión 0.x se queda dentro de esa versión menor, así que una aplicación con el SDK 0.13.0 obtiene para el kit una segunda copia anidada del SDK 0.10.x; mantén ambos separados (no pases un cliente de una copia a la otra) hasta que una versión del kit pase a la 0.13. Firma de forma híbrida solo cuando pasas un `pqcKeypair`; las lecturas funcionan sin él. También se publica como `qorechain-rdk` en PyPI, crates.io y Maven Central y como módulo de Go (fija `@v0.8.0`); desde la 0.8.0 esos cuatro clientes también firman de forma híbrida (las versiones anteriores firmaban solo de forma clásica; Java necesita Java 21). Consulta [RDK 0.8.0: cambios y límites](/rollups/deploying-a-rollup#rdk-050-limits) | 0.9.0 |
+| `@qorechain/rdk-cli` | La CLI de operador `qorollup` para el RDK. Desde la 0.7.1 sus comandos de transacción (`create`, `pause`, `resume`, `stop`, `withdraw`) firman de forma híbrida (la 0.7.0 y anteriores firmaban solo de forma clásica y las redes las rechazaban); instalada desde npm se ejecuta y `--version` muestra la versión instalada (la 0.6.1 y anteriores no mostraban nada) | 0.9.0 |
 | `@qorechain/qoreseal` | QoreSeal: cifra una carga útil hacia las claves ML-KEM-1024 que las cuentas publican en el registro KEM (el SDK 0.12.0 y posteriores registran y leen las claves; QoreSeal hace el cifrado). También en PyPI (`qorechain-qoreseal`; ruedas para macOS y Linux, la rueda de Windows en la próxima versión), crates.io, Maven Central (`io.github.qorechain:qoreseal` y `qoreseal-android`; los consumidores de Kotlin necesitan Kotlin 2.3 o posterior), el proxy de módulos de Go (`github.com/qorechain/qoreseal/go`, Go `v0.1.0`) y como paquete de Swift. Consulta [QoreSeal](/developer-tools/qoreseal) | 0.1.0 |
 | `@qorechain/asset-kit` | Asset Kit: herramientas para tokens de activos del mundo real con permisos en el EVM Engine, con clientes en TypeScript, Python, Java y Go y contratos Solidity (`forge install qorechain/qorechain-asset-kit@v0.1.0`). Apache-2.0, salvo los scripts y las pruebas de ERC-3643 (GPL-3.0-or-later). Los módulos nativos que describe son una propuesta, no están construidos. También `qorechain-asset-kit` en PyPI y `io.github.qorechain:asset-kit` en Maven Central. Consulta [Asset Kit](/developer-tools/asset-kit) | 0.1.0 |
 | `@qorechain/qoresign` | QoreSign: firma de wallets y de backend, e `inspectTransaction` para comprobar la capa poscuántica de una transacción confirmada. También en PyPI, crates.io y Maven Central. Consulta [QoreSign](/qoresign/overview) | 0.2.0 |
-| `create-qorechain-rollup` | Generador de proyectos de rollup; sus plantillas dependen de `@qorechain/rdk` `^0.8.0` y firman de forma híbrida cuando pueden resolver tu clave poscuántica desde `QORE_MNEMONIC` o `QORE_PQC_SEED_HEX` | 0.8.0 |
+| `create-qorechain-rollup` | Generador de proyectos de rollup; sus plantillas dependen de `@qorechain/rdk` `^0.9.0` y firman de forma híbrida cuando pueden resolver tu clave poscuántica desde `QORE_MNEMONIC` o `QORE_PQC_SEED_HEX` | 0.9.0 |
 
 ## Siguiente paso
 

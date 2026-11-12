@@ -22,11 +22,11 @@ bkz. tablo):
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.14.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.14.0 |
 | Go modül proxy'si | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | Maven Central 12 Kasım 2026'da hâlâ 0.13.0 gösteriyor; görününce 0.14.0'ı kullanın (JDK 17 veya üzeri) |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0 (JDK 17 veya üzeri) |
 
 Python, Rust, Go veya Java için 0.11.0 yoktur: npm paketlerinin 29 Ekim 2026'da bir
 0.11.0 sürümü vardı (zincir geliştirici kiti, aşağıya bakın) ve her dil 0.10.0'dan
-0.12.0'a birlikte geçti. 0.13.0, 11 Kasım 2026'da ve 0.14.0, 12 Kasım 2026'da her dilde onu izledi (Java: bkz. tablo).
+0.12.0'a birlikte geçti. 0.13.0, 11 Kasım 2026'da ve 0.14.0, 12 Kasım 2026'da her dilde onu izledi.
 
 Aşağıdan dilinizi seçin.
 
@@ -56,8 +56,7 @@ Go, Rust ve Java; `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm` ve
 `create-qorechain-dapp` ile birlikte (0.13.1 şablon düzeltmelerini de taşır). Zincir
 **v3.2.8** için istemci desteği ekler. Yeni kurallar, bir ağ v3.2.8 çalıştırdığında
 geçerli olur: test ağı `qorechain-diana` 12 Kasım 2026'dan beri onu çalıştırır; ana ağ
-henüz uygulamadı. Önceki ağlarda yeni alanlar isteğe bağlı kalır. (Maven Central
-12 Kasım 2026'da hâlâ 0.13.0 gösteriyor; Java için görününce 0.14.0'ı kullanın.)
+henüz uygulamadı. Önceki ağlarda yeni alanlar isteğe bağlı kalır.
 
 | Alan | 0.14.0'da |
 | --- | --- |
@@ -82,7 +81,6 @@ Go, Rust ve Java; `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm` ve
 `create-qorechain-dapp` ile birlikte. Seed yolu hesap yardımcısında tek bir uyumsuz
 değişiklik vardır. Mnemonic'ten türetilen hesaplar değişmemiştir; hibrit imzalama
 biçimi ve zincir davranışı da öyle: 0.12.0 ile oluşturulmuş bir işlem geçerli kalır.
-(Java da Maven Central'da yayımlandı: 0.13.0, 11 Kasım 2026'da kontrol edildi.)
 
 **Uyumsuz değişiklik.** Seed yolu yardımcıları `unifiedAccountFromSeed` (TypeScript),
 `unified_account_from_seed` (Python, Rust), `unified.UnifiedAccountFromSeed` (Go) ve
@@ -390,9 +388,7 @@ Ya da Gradle:
 implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 ```
 
-> Maven Central'da `io.github.qorechain:qorechain-sdk` adıyla yayımlanmıştır
-> Maven Central 12 Kasım 2026'da hâlâ 0.13.0 gösteriyor (0.14.0 POM'u henüz orada değildi);
-> görününce 0.14.0'ı kullanın, o zamana kadar 0.13.0'ı. JDK 17 veya üzeri gerekir.
+> Maven Central'da `io.github.qorechain:qorechain-sdk` adıyla yayımlanmıştır (güncel sürüm 0.14.0). JDK 17 veya üzeri gerekir.
 > Central'da 0.8.0 veya 0.8.1 derlemesi yoktur; bu nedenle canlı ağlarda 0.8.2
 > veya sonrasını kullanın. 0.9.1, Bouncy Castle'ı 1.80'den 1.85'e API değişikliği
 > olmadan taşıyan yalnızca Java'ya özel bir sürümdü.
@@ -406,12 +402,12 @@ implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 | `@qorechain/pqc` | Yalnızca standartlara uygun ML-DSA / ML-KEM / SHAKE-256 ilkelleri ve `hybridSignBytes` (bkz. [Post-Kuantum İmzalama](/developer-guide/post-quantum-signing)); ayrıca aynı sürümde PyPI, crates.io, Maven Central ve Go proxy'sinde (Go `v0.2.3`) | 0.2.3 |
 | `@qorechain/handles` | Doğrulanmış `@handle` çözümlemesi (`HandleClient`): kayıt defterinin açık anahtarını ve bir sabitleme deposunu siz sağlarsınız ve kullanıcı adresi gördükten sonra siz sabitlersiniz; paket kendiliğinden hiçbir zaman sabitlemez. Bkz. [Chain bridge ve handle'lar](/developer-tools/chain-bridge#handles) | 0.1.0 |
 | `@qorechain/connect` | **npm'de kullanımdan kaldırılmıştır ve artık bakımı yapılmamaktadır; yeni işlerde kullanmayın. Bunun yerine [`@qorechain/wallet-adapter`](/developer-tools/wallet-adapter) kullanın (QoreX bağlantısı için yedekler [geliştirici araçlarına genel bakışta](/developer-tools/overview#group-connect) yer alır).** EVM, Cosmos ve SVM cüzdanları için, cüzdan adaptörü üzerine kurulu tek bir bağlayıcı (peer aralığı `@qorechain/wallet-adapter` `^0.2.1`'dir ve 0.5.0'ı içermez). Bir [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window) açmaz; bu nedenle hesabın kayıtlı bir anahtarı ve açık bir penceresi olana kadar onun üzerinden yapılan bir EVM gönderimi reddedilir | 0.2.1 |
-| `@qorechain/rdk` | Rollup Development Kit istemcisi (bkz. [Rollup'lar](/rollups/why)). 0.7.0'dan itibaren `@qorechain/sdk` `^0.10.0` ve `@qorechain/evm` `^0.8.0` sürümlerine bağımlıdır (4 Kasım 2026'da npm'de kontrol edildi). 0.x sürümündeki bir caret o minor içinde kalır; bu yüzden SDK 0.13.0 kullanan bir uygulama, kit için ikinci, iç içe bir SDK 0.10.x kopyası alır; bir kit sürümü 0.13'e geçene kadar ikisini birbirinden ayrı tutun (bir kopyadan diğerine istemci geçirmeyin). Yalnızca bir `pqcKeypair` verdiğinizde hibrit imzalar; okumalar onsuz çalışır. Ayrıca PyPI, crates.io ve Maven Central'da `qorechain-rdk` olarak ve bir Go modülü olarak yayımlanmıştır (`@v0.8.0` sabitleyin); 0.8.0'dan itibaren bu dört istemci de hibrit imzalar (önceki sürümler yalnızca klasik imzalıyordu; Java için Java 21 gerekir). Bkz. [RDK 0.8.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits) | 0.8.0 |
-| `@qorechain/rdk-cli` | RDK için `qorollup` operatör CLI'ı. 0.7.1'den beri işlem komutları (`create`, `pause`, `resume`, `stop`, `withdraw`) hibrit imzalar (0.7.0 ve öncesi yalnızca klasik imzalıyordu ve ağlar tarafından reddediliyordu); npm'den kurulduğunda çalışır ve `--version` kurulu sürümü yazdırır (0.6.1 ve öncesi hiçbir şey yazdırmıyordu) | 0.8.0 |
+| `@qorechain/rdk` | Rollup Development Kit istemcisi (bkz. [Rollup'lar](/rollups/why)). 0.7.0'dan itibaren `@qorechain/sdk` `^0.10.0` ve `@qorechain/evm` `^0.8.0` sürümlerine bağımlıdır (4 Kasım 2026'da npm'de kontrol edildi). 0.x sürümündeki bir caret o minor içinde kalır; bu yüzden SDK 0.13.0 kullanan bir uygulama, kit için ikinci, iç içe bir SDK 0.10.x kopyası alır; bir kit sürümü 0.13'e geçene kadar ikisini birbirinden ayrı tutun (bir kopyadan diğerine istemci geçirmeyin). Yalnızca bir `pqcKeypair` verdiğinizde hibrit imzalar; okumalar onsuz çalışır. Ayrıca PyPI, crates.io ve Maven Central'da `qorechain-rdk` olarak ve bir Go modülü olarak yayımlanmıştır (`@v0.8.0` sabitleyin); 0.8.0'dan itibaren bu dört istemci de hibrit imzalar (önceki sürümler yalnızca klasik imzalıyordu; Java için Java 21 gerekir). Bkz. [RDK 0.8.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits) | 0.9.0 |
+| `@qorechain/rdk-cli` | RDK için `qorollup` operatör CLI'ı. 0.7.1'den beri işlem komutları (`create`, `pause`, `resume`, `stop`, `withdraw`) hibrit imzalar (0.7.0 ve öncesi yalnızca klasik imzalıyordu ve ağlar tarafından reddediliyordu); npm'den kurulduğunda çalışır ve `--version` kurulu sürümü yazdırır (0.6.1 ve öncesi hiçbir şey yazdırmıyordu) | 0.9.0 |
 | `@qorechain/qoreseal` | QoreSeal: bir yükü, hesapların KEM kayıt defterinde yayımladığı ML-KEM-1024 anahtarlarına şifreler (SDK 0.12.0 ve sonrası anahtarları kaydeder ve okur; şifrelemeyi QoreSeal yapar). Ayrıca PyPI (`qorechain-qoreseal`; macOS ve Linux wheel'leri, Windows wheel'i sonraki sürümde), crates.io, Maven Central (`io.github.qorechain:qoreseal` ve `qoreseal-android`; Kotlin kullanıcıları Kotlin 2.3 veya üstüne ihtiyaç duyar), Go modül proxy'si (`github.com/qorechain/qoreseal/go`, Go `v0.1.0`) ve bir Swift paketi olarak da bulunur. Bkz. [QoreSeal](/developer-tools/qoreseal) | 0.1.0 |
 | `@qorechain/asset-kit` | Asset Kit: EVM Engine üzerinde izinli gerçek dünya varlığı token'ları için araçlar; TypeScript, Python, Java ve Go istemcileri ve Solidity sözleşmeleriyle (`forge install qorechain/qorechain-asset-kit@v0.1.0`). Apache-2.0; ERC-3643 betikleri ve testleri hariç (GPL-3.0-or-later). Tanımladığı native modüller bir önerisidir, yapılmamıştır. Ayrıca PyPI'da `qorechain-asset-kit` ve Maven Central'da `io.github.qorechain:asset-kit`. Bkz. [Asset Kit](/developer-tools/asset-kit) | 0.1.0 |
 | `@qorechain/qoresign` | QoreSign: cüzdan ve arka uç imzalama ve işlenmiş (committed) bir işlemin post-kuantum katmanını denetlemek için `inspectTransaction`. Ayrıca PyPI, crates.io ve Maven Central'da. Bkz. [QoreSign](/qoresign/overview) | 0.2.0 |
-| `create-qorechain-rollup` | Rollup başlangıç iskelet oluşturucusu; şablonları `@qorechain/rdk` `^0.8.0` sürümüne bağımlıdır ve post-kuantum anahtarınızı `QORE_MNEMONIC` veya `QORE_PQC_SEED_HEX` içinden çözümleyebildiklerinde hibrit imzalar | 0.8.0 |
+| `create-qorechain-rollup` | Rollup başlangıç iskelet oluşturucusu; şablonları `@qorechain/rdk` `^0.9.0` sürümüne bağımlıdır ve post-kuantum anahtarınızı `QORE_MNEMONIC` veya `QORE_PQC_SEED_HEX` içinden çözümleyebildiklerinde hibrit imzalar | 0.9.0 |
 
 ## Sıradaki adım
 

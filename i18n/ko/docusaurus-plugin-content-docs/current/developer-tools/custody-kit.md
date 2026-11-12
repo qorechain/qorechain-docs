@@ -9,7 +9,7 @@ sidebar_position: 32
 
 QoreChain 커스터디 키트는 QoreChain에서 고객 자금을 보관하는 수탁 기관과 거래소를 위한 서면 통합 가이드, 테스트 벡터 세트, 작은 참조 코드입니다. 각 실행 레인에서 네트워크가 무엇을 요구하는지 설명하고, 통합에서 틀리기 쉬운 부분을 읽기 쉬운 코드로 보여줍니다. 주소 검사, 서명된 트랜잭션을 브로드캐스트하기 전에 디코딩하고 검증하는 일, 어떤 입금 전송을 반영할지 결정하는 일이 그에 해당합니다.
 
-수탁 기관, 거래소, 결제 처리 업체, 지갑 백엔드와, 이런 통합을 검토하는 엔지니어와 감사자를 위한 것입니다. 버전 **0.1.0**, 2026년 10월 27일 게시, Apache-2.0. 메인넷(`qorechain-vladi`)과 테스트넷(`qorechain-diana`)에서 동작하며, 함께 제공되는 라이브 검사는 테스트넷에서 실행되고 읽기만 합니다.
+수탁 기관, 거래소, 결제 처리 업체, 지갑 백엔드와, 이런 통합을 검토하는 엔지니어와 감사자를 위한 것입니다. 버전 **0.1.1**, 2026년 11월 12일 게시(0.1.0은 2026년 10월 27일 게시), Apache-2.0. 메인넷(`qorechain-vladi`)과 테스트넷(`qorechain-diana`)에서 동작하며, 함께 제공되는 라이브 검사는 테스트넷에서 실행되고 읽기만 합니다.
 
 **먼저 읽어 주세요. 이 키트는 라이브러리가 아니라 예제 코드입니다.** 저장소를 클론하고 사용하는 언어의 폴더를 읽고, 복사하거나, 벤더링합니다. 키트의 npm, PyPI, crates.io, Maven Central 패키지는 의도적으로 없습니다. 형식상 유일한 예외는 Go입니다. Go 폴더는 태그된 버전이 있는 Go 모듈이므로 `go get`으로 가져올 수 있지만, 여전히 안정적인 API를 약속하지 않는 예제 코드입니다([무엇이 라이브러리이고 무엇이 예제 코드인가](#library-vs-example) 참조). 서명과 암호학적 검증은 게시된 라이브러리인 [QoreSign](/qoresign/overview)에서 제공됩니다.
 
@@ -50,7 +50,7 @@ QoreChain 커스터디 키트는 QoreChain에서 고객 자금을 보관하는 �
 |---|---|---|
 | QoreSign(서명, ML-DSA-87 및 secp256k1 검증, 키 등록 메시지) | 게시된 라이브러리 | npm, PyPI, crates.io, Go, Maven Central. [QoreSign](/qoresign/overview) 참조. |
 | TypeScript, Python, Rust, Java로 된 키트의 코드 | 예제 코드이며 어떤 레지스트리에도 게시되지 않음 | `qorechain/qorechain-custody-kit`을 클론하여 폴더를 복사하거나 벤더링. |
-| Go로 된 키트의 코드(패키지 `custodykit`) | 예제 코드. 태그된 버전의 Go 모듈로 가져올 수 있으나 안정적인 API는 약속하지 않음 | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0`, 또는 클론하여 벤더링. |
+| Go로 된 키트의 코드(패키지 `custodykit`) | 예제 코드. 태그된 버전의 Go 모듈로 가져올 수 있으나 안정적인 API는 약속하지 않음 | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1`, 또는 클론하여 벤더링. |
 | 가이드 페이지, 벡터, 체크리스트 | 문서와 데이터 | 저장소. |
 
 키트는 어떤 서명 방식도 구현하지 않습니다. ML-DSA-87과 secp256k1 검증은 QoreSign에서 제공됩니다. Python 코드에는 EIP-55 체크섬에 쓰이는 작은 Keccak-256이 들어 있으며, 그 외의 용도는 없습니다.
@@ -95,6 +95,7 @@ QoreChain 커스터디 키트는 QoreChain에서 고객 자금을 보관하는 �
 - 윈도우는 `/qorechain.pqc.v1.MsgOpenEVMWindow`(`blocks` 1~17,280, `max_txs` 1~1,000, 값과 최대 수수료를 합산하는 `uqor` 단위의 `max_value`, 선택적 `native_only`, 최대 16개 주소의 선택적 `allowed_targets`)로 열고 `MsgCloseEVMWindow`로 닫습니다. 상태는 `GET /qorechain/pqc/v1/evm_window/{address}`에서 확인합니다.
 - 윈도우를 열면 기존 윈도우를 대체하고 계정의 시퀀스(EVM nonce)가 증가합니다. 윈도우를 먼저 열고 그다음에 nonce를 읽으세요.
 - `eth_call`과 `eth_estimateGas`에는 윈도우가 필요하지 않습니다.
+- 키트의 디코더(0.1.1부터)는 윈도우 메시지의 EVM 윈도우 필드 5~9를 받아들이므로, v3.2.8 필드로 윈도우를 여는 트랜잭션도 디코딩됩니다.
 
 ## 사용 방법 {#how-to-use}
 
@@ -106,7 +107,7 @@ QoreChain 커스터디 키트는 QoreChain에서 고객 자금을 보관하는 �
 |---|---|---|---|
 | TypeScript | `git clone https://github.com/qorechain/qorechain-custody-kit` 후 `cd code/ts && pnpm install && pnpm build` | `@qorechain/qoresign` 0.1.0 (npm) | Node.js 20 |
 | Python | 클론한 뒤 `cd code/python && pip install -r requirements-dev.txt`. `verify_tx`에는 추가로 `pip install qorechain-qoresign==0.1.1` | 런타임에는 없음. `verify_tx`에는 `qorechain-qoresign` 0.1.1 (PyPI) | Python 3.9 |
-| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0` (패키지 `custodykit`), 또는 클론 | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
+| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1` (패키지 `custodykit`), 또는 클론 | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
 | Rust | 클론한 뒤 `cd code/rust && cargo build` (crates.io에 없음) | `qorechain-qoresign` 0.1.0 (crates.io) | Rust 2021 edition |
 | Java | 클론한 뒤 `cd code/java && mvn test` (Maven Central에 없음) | `io.github.qorechain:qoresign:0.1.0` (Maven Central), Gson | Java 17 |
 
@@ -289,16 +290,16 @@ QORE_LIVE_TEST=1 go test -run Live ./...     # live reads against testnet
 - 교체에는 `MsgRotatePQCKey`를 사용합니다. 두 키가 모두 서명하고, 트랜잭션 자체의 계층은 현재 키를 사용하며, 이전 키의 재사용은 거부됩니다. secp256k1 키가 노출되었다면 두 키를 모두 새로 만든 새 주소로 자금을 옮기고 열려 있는 EVM 윈도우를 닫으세요.
 - EVM 윈도우: QOR만 이동하는 경우 `native_only`를 사용하세요. `allowed_targets`는 어떤 컨트랙트와 토큰을 건드릴 수 있는지만 제한하고 금액은 제한하지 않습니다. 나열된 토큰은 `approve`를 포함해 어떤 금액도 허용하므로 포워더나 라우터 컨트랙트는 절대 나열하지 마세요. 윈도우는 고전 서명된 EVM 레인 트랜잭션만 제한하며, 하이브리드 서명된 Cosmos 메시지(크로스 VM 호출, authz)는 윈도우 밖에 있습니다. 배치를 덮는 가장 작은 `max_value`와 `blocks`를 쓰며, 배치가 끝나면 윈도우를 닫으세요. `MsgSetWithdrawAddress`, `MsgRotatePQCKey`, `MsgOpenEVMWindow`, `MsgAuthorizeEVMDelegation`은 권한이 필요한 작업으로 취급하세요.
 - `ethereum_tx` 이벤트가 실패를 보고하는 EVM 트랜잭션은, 네이티브 결과가 `code == 0`이더라도 절대 반영하지 마세요.
-- 이것은 버전 0.1.0의 참조 코드입니다. 프로덕션에서 사용하기 전에 검토하세요. 취약점은 security@qore.network로 비공개 보고해 주세요. 잘못된 반영이나 의도하지 않은 서명으로 이어질 수 있는 문서 오류도 포함됩니다.
+- 이것은 버전 0.1.1의 참조 코드입니다. 프로덕션에서 사용하기 전에 검토하세요. 취약점은 security@qore.network로 비공개 보고해 주세요. 잘못된 반영이나 의도하지 않은 서명으로 이어질 수 있는 문서 오류도 포함됩니다.
 
 ## 게시 위치 {#where-published}
 
-2026년 11월 4일에 레지스트리와 대조해 확인했습니다(버전과 태그는 10월 27일 이후 변경 없음).
+2026년 11월 12일에 레지스트리와 대조해 확인했습니다.
 
 | 레지스트리 | 패키지 | 버전 | 링크 |
 |---|---|---|---|
-| GitHub | `qorechain/qorechain-custody-kit` (다섯 개 언어 전부, 가이드 페이지, 벡터) | 릴리스 `v0.1.0`, 2026년 10월 27일 게시 | https://github.com/qorechain/qorechain-custody-kit |
-| Go 모듈 프록시 | `github.com/qorechain/qorechain-custody-kit/code/go` (예제 코드, 가져올 수 있음) | v0.1.0 (태그 `code/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
+| GitHub | `qorechain/qorechain-custody-kit` (다섯 개 언어 전부, 가이드 페이지, 벡터) | 릴리스 `v0.1.1`, 2026년 11월 12일 게시(`v0.1.0`은 2026년 10월 27일) | https://github.com/qorechain/qorechain-custody-kit |
+| Go 모듈 프록시 | `github.com/qorechain/qorechain-custody-kit/code/go` (예제 코드, 가져올 수 있음) | v0.1.1 (태그 `code/go/v0.1.1`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
 | npm, PyPI, crates.io, Maven Central | 게시되지 않음: 키트는 복사하거나 벤더링하는 예제 코드 | 해당 없음 | 해당 없음 |
 
 GitHub 릴리스에는 첨부 파일이 없으며, 릴리스는 저장소의 태그입니다. 키트가 기반으로 삼는 의존성은 모두 게시되어 있습니다. npm의 `@qorechain/qoresign`(최신 0.1.1, 키트는 0.1.0에 고정), PyPI의 `qorechain-qoresign`(0.1.1), crates.io의 `qorechain-qoresign`(최신 0.1.1, 키트는 0.1.0에 고정), `github.com/qorechain/qoresign/go`(v0.1.0 및 v0.1.1), Maven Central의 `io.github.qorechain:qoresign`(0.1.0 및 0.1.1)입니다.
@@ -313,7 +314,7 @@ GitHub 릴리스에는 첨부 파일이 없으며, 릴리스는 저장소의 태
 - `extractDeposits`는 `MsgSend`, `MsgMultiSend`, 성공한 `MsgEthereumTx`를 자동으로 반영합니다. 다른 메시지(보상 출금, 컨트랙트 호출, IBC 전송)는 반영되지 않고 검토를 위해 반환됩니다.
 - `verifyTx`는 단일 서명자 트랜잭션을 검증합니다.
 - SVM 레인은 트랜잭션에 열려 있지 않습니다. 그 위에 입금이나 출금 흐름을 만들지 마세요.
-- 키트 자체의 코드는 0.1.0의 예제 코드입니다. 함수 이름과 시그니처는 버전 사이에 바뀔 수 있으며, Go 모듈 태그도 안정적인 API를 약속하지 않습니다.
+- 키트 자체의 코드는 0.1.1의 예제 코드입니다. 함수 이름과 시그니처는 버전 사이에 바뀔 수 있으며, Go 모듈 태그도 안정적인 API를 약속하지 않습니다.
 - 이 페이지를 작성할 때 실행한 것은 Go 예제와 테스트 스위트뿐입니다. 다른 네 개 언어의 라이브 검사와 벡터 검사는 다시 실행하지 않았습니다.
 - 저장소의 Python README에는 `qorechain-qoresign` 0.1.1이 PyPI에 올라올 때까지 `verify_tx`가 import 오류를 일으킨다는 안내가 아직 남아 있을 수 있습니다. 해당 버전은 게시되었으므로 그 안내는 최신이 아닙니다.
 - 키트의 가이드는 2026년 10월 27일에 읽은 파라미터(가스 수치, 스테이킹 티어 값)를 인용합니다. 프로덕션에서는 체인에서 읽으세요.

@@ -21,11 +21,11 @@ PQC 트랜잭션, WebSocket 구독)를 갖춘 채 각 레지스트리에 **게�
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.14.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.14.0 |
 | Go 모듈 프록시 | `github.com/qorechain/qorechain-sdk/packages/go` | v0.14.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | Maven Central에는 2026년 11월 12일 기준 0.13.0이 그대로 표시됩니다. 0.14.0이 나타나면 그것을 사용하세요(JDK 17 이상) |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.14.0 (JDK 17 이상) |
 
 Python, Rust, Go, Java에는 0.11.0이 없습니다. npm 패키지에는 2026년 10월 29일에
 0.11.0이 있었고(체인 개발자 키트, 아래 참조) 모든 언어가 0.10.0에서 0.12.0으로
-함께 올라갔습니다. 0.13.0이 2026년 11월 11일에, 0.14.0이 2026년 11월 12일에 모든 언어에서 뒤를 이었습니다(Java는 표를 참고하세요).
+함께 올라갔습니다. 0.13.0이 2026년 11월 11일에, 0.14.0이 2026년 11월 12일에 모든 언어에서 뒤를 이었습니다.
 
 아래에서 언어를 선택하세요.
 
@@ -56,8 +56,6 @@ Go, Rust, Java이며, `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`,
 클라이언트 지원을 추가합니다. 새 규칙은 네트워크가 v3.2.8을 실행하는 시점부터
 적용됩니다. 테스트넷 `qorechain-diana`는 2026년 11월 12일부터 실행 중이며, 메인넷은
 아직 적용하지 않았습니다. 이전 네트워크에서는 새 필드가 선택 사항으로 남습니다.
-(Maven Central에는 2026년 11월 12일 기준 0.13.0이 그대로 표시됩니다.
-Java는 0.14.0이 나타나면 그것을 사용하세요.)
 
 | 영역 | 0.14.0에서 |
 | --- | --- |
@@ -82,7 +80,6 @@ Go, Rust, Java와 함께 `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`,
 `create-qorechain-dapp`이 포함됩니다. 호환성을 깨는 변경이 하나 있으며, 시드 경로
 계정 헬퍼에 대한 것입니다. 니모닉에서 파생한 계정은 달라지지 않으며, 하이브리드
 서명 형식과 체인 동작도 그대로이므로 0.12.0으로 만든 트랜잭션은 계속 유효합니다.
-(Java는 Maven Central에 0.13.0으로 게시되어 있습니다. 2026년 11월 11일 확인.)
 
 **호환성을 깨는 변경.** 시드 경로 헬퍼 `unifiedAccountFromSeed`(TypeScript),
 `unified_account_from_seed`(Python, Rust), `unified.UnifiedAccountFromSeed`(Go),
@@ -390,9 +387,7 @@ Maven (`pom.xml`):
 implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 ```
 
-> Maven Central에 `io.github.qorechain:qorechain-sdk`로 게시되어 있습니다.
-> Maven Central에는 2026년 11월 12일 기준 여전히 0.13.0이 표시됩니다(0.14.0 POM은 아직 없었습니다). 0.14.0이 나타나면 그것을 사용하고, 그때까지는 0.13.0을 사용하세요.
-> JDK 17 이상이 필요합니다. Central에는 0.8.0
+> Maven Central에 `io.github.qorechain:qorechain-sdk`로 게시되어 있습니다(0.14.0이 현재 버전입니다). JDK 17 이상이 필요합니다. Central에는 0.8.0
 > 또는 0.8.1 빌드가 없으므로, 라이브 네트워크에서는 0.8.2 이상을 사용하세요.
 > 0.9.1은 Bouncy Castle을 1.80에서 1.85로 올린 Java 전용
 > 릴리스였으며 API 변경은 없었습니다.
@@ -406,12 +401,12 @@ implementation 'io.github.qorechain:qorechain-sdk:0.14.0'
 | `@qorechain/pqc` | 표준 전용 ML-DSA / ML-KEM / SHAKE-256 프리미티브와 `hybridSignBytes`([포스트 양자 서명](/developer-guide/post-quantum-signing) 참조). PyPI, crates.io, Maven Central, Go 프록시(Go `v0.2.3`)에도 같은 버전으로 있습니다 | 0.2.3 |
 | `@qorechain/handles` | 검증된 `@handle` 해석(`HandleClient`): 레지스트리의 공개 키와 고정(pin) 저장소를 직접 제공하고, 사용자가 주소를 확인한 뒤에 고정합니다. 이 패키지는 스스로 고정하지 않습니다. [체인 브리지와 handle](/developer-tools/chain-bridge#handles)을 참조하세요 | 0.1.0 |
 | `@qorechain/connect` | **npm에서 더 이상 사용되지 않으며(deprecated) 유지보수도 중단되었습니다. 새 작업에는 사용하지 마세요. 대신 [`@qorechain/wallet-adapter`](/developer-tools/wallet-adapter)를 사용하세요(QoreX 연결의 대체 수단은 [개발자 도구 개요](/developer-tools/overview#group-connect)에 있습니다).** 지갑 어댑터 위에 구축된, EVM, Cosmos, SVM 지갑을 위한 단일 커넥터(피어 범위는 `@qorechain/wallet-adapter` `^0.2.1`이며 0.5.0은 포함하지 않습니다). [EVM 인증 윈도우](/sdk/guides/evm#evm-window)를 열지 않으므로, 이를 통한 EVM 전송은 계정에 등록된 키와 열린 윈도우가 생길 때까지 거부됩니다 | 0.2.1 |
-| `@qorechain/rdk` | 롤업 개발 키트(Rollup Development Kit) 클라이언트([롤업](/rollups/why) 참조). 0.7.0부터 `@qorechain/sdk` `^0.10.0`과 `@qorechain/evm` `^0.8.0`에 의존합니다(2026년 11월 4일 npm에서 확인). 0.x 버전의 캐럿은 해당 마이너 안에 머무르므로, SDK 0.13.0을 사용하는 앱은 키트를 위해 중첩된 두 번째 SDK 0.10.x 사본을 받습니다. 키트 릴리스가 0.13으로 올라갈 때까지 둘을 분리해 두세요(한 사본의 클라이언트를 다른 사본에 전달하지 마세요). `pqcKeypair`를 전달할 때만 하이브리드로 서명하며, 읽기는 없어도 동작합니다. PyPI, crates.io, Maven Central에는 `qorechain-rdk`로, Go 모듈로도 게시되어 있습니다(`@v0.8.0`으로 고정하세요). 0.8.0부터 이 네 클라이언트도 하이브리드로 서명합니다(이전 버전은 클래식 전용으로 서명했으며, Java는 Java 21이 필요합니다). [RDK 0.8.0: 변경 사항과 한계](/rollups/deploying-a-rollup#rdk-050-limits)를 참조하세요 | 0.8.0 |
-| `@qorechain/rdk-cli` | RDK용 `qorollup` 운영자 CLI. 0.7.1부터 트랜잭션 명령(`create`, `pause`, `resume`, `stop`, `withdraw`)은 하이브리드로 서명합니다(0.7.0 이하는 클래식 전용으로 서명했으며 네트워크가 이를 거부했습니다). npm에서 설치하면 실행되며 `--version`이 설치된 버전을 출력합니다(0.6.1 이하는 아무것도 출력하지 않았습니다) | 0.8.0 |
+| `@qorechain/rdk` | 롤업 개발 키트(Rollup Development Kit) 클라이언트([롤업](/rollups/why) 참조). 0.7.0부터 `@qorechain/sdk` `^0.10.0`과 `@qorechain/evm` `^0.8.0`에 의존합니다(2026년 11월 4일 npm에서 확인). 0.x 버전의 캐럿은 해당 마이너 안에 머무르므로, SDK 0.13.0을 사용하는 앱은 키트를 위해 중첩된 두 번째 SDK 0.10.x 사본을 받습니다. 키트 릴리스가 0.13으로 올라갈 때까지 둘을 분리해 두세요(한 사본의 클라이언트를 다른 사본에 전달하지 마세요). `pqcKeypair`를 전달할 때만 하이브리드로 서명하며, 읽기는 없어도 동작합니다. PyPI, crates.io, Maven Central에는 `qorechain-rdk`로, Go 모듈로도 게시되어 있습니다(`@v0.8.0`으로 고정하세요). 0.8.0부터 이 네 클라이언트도 하이브리드로 서명합니다(이전 버전은 클래식 전용으로 서명했으며, Java는 Java 21이 필요합니다). [RDK 0.8.0: 변경 사항과 한계](/rollups/deploying-a-rollup#rdk-050-limits)를 참조하세요 | 0.9.0 |
+| `@qorechain/rdk-cli` | RDK용 `qorollup` 운영자 CLI. 0.7.1부터 트랜잭션 명령(`create`, `pause`, `resume`, `stop`, `withdraw`)은 하이브리드로 서명합니다(0.7.0 이하는 클래식 전용으로 서명했으며 네트워크가 이를 거부했습니다). npm에서 설치하면 실행되며 `--version`이 설치된 버전을 출력합니다(0.6.1 이하는 아무것도 출력하지 않았습니다) | 0.9.0 |
 | `@qorechain/qoreseal` | QoreSeal: 계정이 KEM 레지스트리에 게시한 ML-KEM-1024 키로 페이로드를 암호화합니다(SDK 0.12.0 이상은 키를 등록하고 읽으며, 암호화는 QoreSeal이 합니다). PyPI(`qorechain-qoreseal`, macOS와 Linux 휠이며 Windows 휠은 다음 버전), crates.io, Maven Central(`io.github.qorechain:qoreseal`과 `qoreseal-android`, Kotlin 사용자는 Kotlin 2.3 이상 필요), Go 모듈 프록시(`github.com/qorechain/qoreseal/go`, Go `v0.1.0`)에도 있고 Swift 패키지로도 제공됩니다. [QoreSeal](/developer-tools/qoreseal)을 참조하세요 | 0.1.0 |
 | `@qorechain/asset-kit` | Asset Kit: EVM 엔진에서 허가형 실물 자산 토큰을 위한 도구로, TypeScript, Python, Java, Go 클라이언트와 Solidity 컨트랙트를 제공합니다(`forge install qorechain/qorechain-asset-kit@v0.1.0`). Apache-2.0이며, ERC-3643 스크립트와 테스트는 GPL-3.0-or-later입니다. 설명된 네이티브 모듈은 제안일 뿐 구축되지 않았습니다. PyPI의 `qorechain-asset-kit`과 Maven Central의 `io.github.qorechain:asset-kit`에도 있습니다. [Asset Kit](/developer-tools/asset-kit)을 참조하세요 | 0.1.0 |
 | `@qorechain/qoresign` | QoreSign: 지갑 및 백엔드 서명, 그리고 커밋된 트랜잭션의 포스트 양자 계층을 확인하는 `inspectTransaction`. PyPI, crates.io, Maven Central에도 있습니다. [QoreSign](/qoresign/overview)을 참조하세요 | 0.2.0 |
-| `create-qorechain-rollup` | 롤업 스타터 스캐폴더. 템플릿은 `@qorechain/rdk` `^0.8.0`에 의존하며, `QORE_MNEMONIC` 또는 `QORE_PQC_SEED_HEX`에서 포스트 양자 키를 확보할 수 있으면 하이브리드로 서명합니다 | 0.8.0 |
+| `create-qorechain-rollup` | 롤업 스타터 스캐폴더. 템플릿은 `@qorechain/rdk` `^0.9.0`에 의존하며, `QORE_MNEMONIC` 또는 `QORE_PQC_SEED_HEX`에서 포스트 양자 키를 확보할 수 있으면 하이브리드로 서명합니다 | 0.9.0 |
 
 ## 다음
 

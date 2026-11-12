@@ -9,7 +9,7 @@ sidebar_position: 32
 
 El kit de custodia de QoreChain es una guía de integración escrita, un conjunto de vectores de prueba y código de referencia pequeño para custodios y exchanges que guardan fondos de clientes en QoreChain. Explica qué exige la red en cada carril de ejecución y muestra, en código legible, las partes de una integración que es fácil hacer mal: comprobar una dirección, decodificar y verificar una transacción firmada antes de transmitirla y decidir qué transferencias entrantes acreditar.
 
-Está pensado para custodios, exchanges, procesadores de pagos y backends de monederos, y para los ingenieros y auditores que revisan esas integraciones. Versión **0.1.0**, publicada el 27 de octubre de 2026, Apache-2.0. Funciona con mainnet (`qorechain-vladi`) y testnet (`qorechain-diana`); las comprobaciones en vivo que lo acompañan se ejecutan contra testnet y solo leen.
+Está pensado para custodios, exchanges, procesadores de pagos y backends de monederos, y para los ingenieros y auditores que revisan esas integraciones. Versión **0.1.1**, publicada el 12 de noviembre de 2026 (la 0.1.0 se publicó el 27 de octubre de 2026), Apache-2.0. Funciona con mainnet (`qorechain-vladi`) y testnet (`qorechain-diana`); las comprobaciones en vivo que lo acompañan se ejecutan contra testnet y solo leen.
 
 **Lee esto primero: el kit es código de ejemplo, no una biblioteca.** Clonas el repositorio y lees, copias o incorporas a tu repositorio la carpeta de tu lenguaje. No existe un paquete del kit en npm, PyPI, crates.io ni Maven Central, a propósito. La única excepción en la forma es Go: la carpeta de Go es un módulo de Go con una versión etiquetada, así que `go get` puede obtenerlo, pero sigue siendo código de ejemplo sin promesa de una API estable (consulta [Qué es una biblioteca y qué es código de ejemplo](#library-vs-example)). La firma y la verificación criptográfica proceden de [QoreSign](/qoresign/overview), que es una biblioteca publicada.
 
@@ -50,7 +50,7 @@ Está pensado para custodios, exchanges, procesadores de pagos y backends de mon
 |---|---|---|
 | QoreSign (firma, verificación ML-DSA-87 y secp256k1, mensaje de registro de clave) | Biblioteca publicada | npm, PyPI, crates.io, Go, Maven Central. Consulta [QoreSign](/qoresign/overview). |
 | El código del kit en TypeScript, Python, Rust y Java | Código de ejemplo, no publicado en ningún registro | Clona `qorechain/qorechain-custody-kit` y copia o incorpora la carpeta a tu repositorio. |
-| El código del kit en Go (paquete `custodykit`) | Código de ejemplo. Se puede obtener como módulo de Go en una versión etiquetada, sin promesa de una API estable | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0`, o clona e incorpora. |
+| El código del kit en Go (paquete `custodykit`) | Código de ejemplo. Se puede obtener como módulo de Go en una versión etiquetada, sin promesa de una API estable | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1`, o clona e incorpora. |
 | Las páginas de guía, los vectores y la lista de comprobación | Documentación y datos | El repositorio. |
 
 El kit no implementa ningún esquema de firma. La verificación de ML-DSA-87 y secp256k1 procede de QoreSign. El código de Python contiene un pequeño Keccak-256 usado para la suma de verificación EIP-55 y para nada más.
@@ -95,6 +95,7 @@ El kit no implementa ningún esquema de firma. La verificación de ML-DSA-87 y s
 - Una ventana se abre con `/qorechain.pqc.v1.MsgOpenEVMWindow` (`blocks` de 1 a 17,280, `max_txs` de 1 a 1,000, `max_value` en `uqor` contando el valor más la comisión máxima, `native_only` opcional, `allowed_targets` opcional de hasta 16 direcciones) y se cierra con `MsgCloseEVMWindow`. El estado está en `GET /qorechain/pqc/v1/evm_window/{address}`.
 - Abrir una ventana reemplaza cualquier ventana existente y avanza la secuencia de la cuenta, que es su nonce EVM: abre la ventana y luego lee el nonce.
 - `eth_call` y `eth_estimateGas` no necesitan ventana.
+- Los decodificadores del kit (desde la 0.1.1) aceptan los campos 5 a 9 de ventana EVM de los mensajes de ventana, de modo que se decodifica una transacción que abre una ventana con los campos de la v3.2.8.
 
 ## Cómo usarlo {#how-to-use}
 
@@ -106,7 +107,7 @@ El kit es código de referencia: clona el repositorio, o incorpora a tu reposito
 |---|---|---|---|
 | TypeScript | `git clone https://github.com/qorechain/qorechain-custody-kit`, y luego `cd code/ts && pnpm install && pnpm build` | `@qorechain/qoresign` 0.1.0 (npm) | Node.js 20 |
 | Python | clona, y luego `cd code/python && pip install -r requirements-dev.txt`. Para `verify_tx` también `pip install qorechain-qoresign==0.1.1` | nada en tiempo de ejecución; `qorechain-qoresign` 0.1.1 (PyPI) para `verify_tx` | Python 3.9 |
-| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0` (paquete `custodykit`), o clona | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
+| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1` (paquete `custodykit`), o clona | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
 | Rust | clona, y luego `cd code/rust && cargo build` (no está en crates.io) | `qorechain-qoresign` 0.1.0 (crates.io) | Rust edición 2021 |
 | Java | clona, y luego `cd code/java && mvn test` (no está en Maven Central) | `io.github.qorechain:qoresign:0.1.0` (Maven Central), Gson | Java 17 |
 
@@ -289,16 +290,16 @@ Ramifica según el codespace y el código juntos, y conserva el log en bruto.
 - La rotación usa `MsgRotatePQCKey`: firman ambas claves, la capa propia de la transacción usa la clave actual y se rechaza la reutilización de una clave anterior. Si la clave secp256k1 queda expuesta, mueve los fondos a una dirección nueva con ambas claves nuevas y cierra cualquier ventana EVM abierta.
 - Ventanas EVM: usa `native_only` cuando solo se mueva QOR. `allowed_targets` limita qué contratos y tokens se pueden tocar, no cuánto: un token listado admite cualquier cantidad, incluido `approve`, así que nunca listes contratos de reenvío o de router. Las ventanas acotan solo las transacciones del carril EVM firmadas de forma clásica; los mensajes de Cosmos con firma híbrida (llamadas entre VM, authz) quedan fuera de ellas. Usa el `max_value` y los `blocks` más pequeños que cubran el lote, y cierra la ventana después del lote. Trata `MsgSetWithdrawAddress`, `MsgRotatePQCKey`, `MsgOpenEVMWindow` y `MsgAuthorizeEVMDelegation` como operaciones privilegiadas.
 - No acredites nunca una transacción EVM cuyo evento `ethereum_tx` informe un fallo, aunque su resultado nativo sea `code == 0`.
-- Esto es código de referencia en la versión 0.1.0. Revísalo antes de usarlo en producción. Informa de las vulnerabilidades de forma privada a security@qore.network, incluidos los errores de documentación que pudieran llevar a una acreditación errónea o a una firma no deseada.
+- Esto es código de referencia en la versión 0.1.1. Revísalo antes de usarlo en producción. Informa de las vulnerabilidades de forma privada a security@qore.network, incluidos los errores de documentación que pudieran llevar a una acreditación errónea o a una firma no deseada.
 
 ## Dónde está publicado {#where-published}
 
-Comprobado contra los registros el 4 de noviembre de 2026 (versiones y etiquetas sin cambios desde el 27 de octubre).
+Comprobado contra los registros el 12 de noviembre de 2026.
 
 | Registro | Paquete | Versión | Enlace |
 |---|---|---|---|
-| GitHub | `qorechain/qorechain-custody-kit` (los cinco lenguajes, páginas de guía, vectores) | release `v0.1.0`, publicada el 27 de octubre de 2026 | https://github.com/qorechain/qorechain-custody-kit |
-| Proxy de módulos de Go | `github.com/qorechain/qorechain-custody-kit/code/go` (código de ejemplo, obtenible) | v0.1.0 (etiqueta `code/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
+| GitHub | `qorechain/qorechain-custody-kit` (los cinco lenguajes, páginas de guía, vectores) | release `v0.1.1`, publicada el 12 de noviembre de 2026 (`v0.1.0` el 27 de octubre de 2026) | https://github.com/qorechain/qorechain-custody-kit |
+| Proxy de módulos de Go | `github.com/qorechain/qorechain-custody-kit/code/go` (código de ejemplo, obtenible) | v0.1.1 (etiqueta `code/go/v0.1.1`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
 | npm, PyPI, crates.io, Maven Central | no publicado: el kit es código de ejemplo para copiar o incorporar | no aplicable | no aplicable |
 
 La release de GitHub no lleva archivos adjuntos; la release es la etiqueta del repositorio. Dependencias en las que se apoya el kit, todas publicadas: `@qorechain/qoresign` en npm (última 0.1.1, el kit fija 0.1.0), `qorechain-qoresign` en PyPI (0.1.1), `qorechain-qoresign` en crates.io (última 0.1.1, el kit fija 0.1.0), `github.com/qorechain/qoresign/go` (v0.1.0 y v0.1.1) e `io.github.qorechain:qoresign` en Maven Central (0.1.0 y 0.1.1).
@@ -313,7 +314,7 @@ Licencia Apache-2.0. Mantenedor: QoreChain Association.
 - `extractDeposits` acredita automáticamente `MsgSend`, `MsgMultiSend` y `MsgEthereumTx` exitosos. Otros mensajes (retiros de recompensas, llamadas a contratos, transferencias IBC) se devuelven para revisión, no se acreditan.
 - `verifyTx` verifica transacciones de un solo firmante.
 - El carril SVM no está abierto a transacciones. No construyas flujos de depósito ni de retiro sobre él.
-- El código propio del kit es código de ejemplo en 0.1.0. Los nombres y las firmas de las funciones pueden cambiar entre versiones, y la etiqueta del módulo de Go no promete una API estable.
+- El código propio del kit es código de ejemplo en 0.1.1. Los nombres y las firmas de las funciones pueden cambiar entre versiones, y la etiqueta del módulo de Go no promete una API estable.
 - Cuando se escribió esta página solo se ejecutaron los ejemplos y la batería de pruebas de Go. Las comprobaciones en vivo y las de vectores en los otros cuatro lenguajes no se volvieron a ejecutar.
 - Puede que el README de Python del repositorio todavía diga que `verify_tx` lanza un error de importación hasta que `qorechain-qoresign` 0.1.1 esté en PyPI. Esa versión está publicada, así que la nota está desactualizada.
 - La guía del kit cita parámetros (cifras de gas, valores del nivel de staking) leídos el 27 de octubre de 2026. Léelos de la cadena en producción.

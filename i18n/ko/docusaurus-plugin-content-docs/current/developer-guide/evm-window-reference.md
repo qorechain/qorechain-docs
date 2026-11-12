@@ -152,7 +152,7 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 
 ### Python, Go, Rust, Java {#other-languages}
 
-각 SDK에는 메시지 빌더와 REST 읽기가 있습니다. 모두 체인의 한도를 로컬에서 검사합니다. v3.2.8 목록을 설정하는 언어별 빌더는 SDK 0.14.0 이상이 필요하며(Java는 Maven Central에 나타난 뒤의 0.14.0이며, Maven Central에는 2026년 11월 12일 기준 0.13.0이 그대로 표시됩니다), 이전 릴리스는 이전 필드만 빌드합니다.
+각 SDK에는 메시지 빌더와 REST 읽기가 있습니다. 모두 체인의 한도를 로컬에서 검사합니다. v3.2.8 목록을 설정하는 언어별 빌더는 SDK 0.14.0 이상이 필요하며(Java는 Maven Central의 0.14.0), 이전 릴리스는 이전 필드만 빌드합니다.
 
 | 언어 | 열기(모든 목록 포함) | 닫기 | 읽기 | EVM 한도 |
 | -------- | ---------------------- | ----- | ---- | ---------- |

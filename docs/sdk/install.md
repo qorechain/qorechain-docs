@@ -13,8 +13,7 @@ EVM and SVM adapters (`@qorechain/evm`, `@qorechain/svm`), the React kit
 **published** to their registries with full native-chain parity (typed messages,
 queries, the tx lifecycle, hybrid PQC transactions, and WebSocket
 subscriptions). The current release is **0.14.0**, published on 12 November 2026
-(checked against the registries on 12 November 2026; Java is the exception, see the
-table):
+(checked against the registries on 12 November 2026):
 
 | Registry | Package | Version |
 | --- | --- | --- |

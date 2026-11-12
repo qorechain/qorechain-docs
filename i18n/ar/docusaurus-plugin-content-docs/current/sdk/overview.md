@@ -128,7 +128,7 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (الاستيراد باسم `qorsdk`) | منشورة (PyPI، الإصدار v0.14.0) |
 | `qorechain-sdk` (وحدة Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | منشورة (وكيل Go، الوسم `packages/go/v0.14.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (الاستيراد باسم `qorechain`) | منشورة (crates.io، الإصدار v0.14.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.14.0` | ما زال Maven Central يعرض 0.13.0 في 12 نوفمبر 2026؛ استخدم 0.14.0 متى ظهر (JDK 17 أو أحدث) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.14.0` | منشورة (Maven Central، الإصدار 0.14.0؛ JDK 17 أو أحدث) |
 | `@qorechain/evm` | TypeScript (محوِّل EVM) | `npm i @qorechain/evm viem` | منشورة (npm، الإصدار v0.14.0) |
 | `@qorechain/svm` | TypeScript (محوِّل SVM) | `npm i @qorechain/svm @solana/web3.js` | منشورة (npm، الإصدار v0.14.0) |
 | `@qorechain/react` | TypeScript (حزمة React) | `npm i @qorechain/react` | منشورة (npm، الإصدار v0.14.0) |
@@ -150,7 +150,7 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 PyPI ‏(`qorechain-sdk` 0.14.0، الاستيراد باسم `qorsdk`)، و Go على وكيل
 الوحدات (الوسم `packages/go/v0.14.0`)، و Rust على crates.io
 ‏(`qorechain-sdk` 0.14.0)، و Java على Maven Central
-‏(`io.github.qorechain:qorechain-sdk`، الذي ما زال يعرض 0.13.0 في 12 نوفمبر 2026؛ استخدم 0.14.0 متى ظهر). أما محوِّلات التنفيذ EVM/SVM
+‏(`io.github.qorechain:qorechain-sdk` 0.14.0). أما محوِّلات التنفيذ EVM/SVM
 ‏(`@qorechain/evm` و `@qorechain/svm`، وكلاهما 0.14.0)، وحزمة
 `@qorechain/react` ‏(0.14.0)، وأداة السقالة `create-qorechain-dapp` ‏(0.14.0، الذي يحمل أيضًا إصلاحات القوالب في 0.13.1)
 فهي خاصة بـ TypeScript فقط ومنشورة كذلك على npm. راجع

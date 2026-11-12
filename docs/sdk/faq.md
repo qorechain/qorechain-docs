@@ -91,7 +91,7 @@ is distinct from the Native `uqor` base of 10^6.
 
 ## Which packages are published, and where?
 
-All of them except the Java build of the newest release (checked 12 November 2026). The TypeScript core (`@qorechain/sdk`, 0.14.0),
+All of them (checked 12 November 2026). The TypeScript core (`@qorechain/sdk`, 0.14.0),
 the React kit (`@qorechain/react`, 0.14.0), the `create-qorechain-dapp` scaffolder
 (0.14.0, which also carries the 0.13.1 template fixes) and the EVM/SVM adapters (`@qorechain/evm`, `@qorechain/svm`, 0.14.0) are on
 npm; the Python client is on PyPI (`pip install qorechain-sdk` at 0.14.0, import

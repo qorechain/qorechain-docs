@@ -101,8 +101,7 @@ está en PyPI (`pip install qorechain-sdk` en 0.14.0, importa `qorsdk`); el clie
 de Go está en el proxy de módulos
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`); el cliente de
 Rust está en crates.io (`cargo add qorechain-sdk`, 0.14.0); y el cliente de Java
-está en Maven Central (`io.github.qorechain:qorechain-sdk`, JDK 17 o posterior), que todavía muestra la 0.13.0 el
-12 de noviembre de 2026; usa la 0.14.0 cuando aparezca. Consulta
+está en Maven Central (`io.github.qorechain:qorechain-sdk`, 0.14.0, JDK 17 o posterior). Consulta
 [Instalación](/sdk/install) para ver los comandos completos por lenguaje.
 
 ## Mi frase mnemotécnica es rechazada

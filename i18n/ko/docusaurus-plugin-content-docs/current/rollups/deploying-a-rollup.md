@@ -124,10 +124,10 @@ qorechaind query rdk list-rollups
 
 Rollup Development Kit는 CLI와 동일한 온체인 `x/rdk` 모듈을 위한 두 개의 공개 npm 패키지로 제공됩니다. 어느 네트워크에도 아직 롤업이 없으므로, 이 키트의 어떤 트랜잭션 경로도 라이브 롤업에서 실행된 적이 없습니다. 트랜잭션 전송에 의존하기 전에 [RDK 0.8.0: 변경 사항과 제한 사항](#rdk-050-limits)을 읽어 보세요.
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.8.0`) — TypeScript SDK: 프리셋 프로필을 갖춘 구성 빌더, 롤업 및 정산-배치 라이프사이클을 위한 트랜잭션 헬퍼, 네이티브 DA, 타입이 지정된 읽기 클라이언트, ML-DSA-87 서명이 있는 정산 영수증, QCAI Rollup Copilot, 크로스 VM 콜데이터 헬퍼, 워치타워. `@qorechain/sdk` `^0.10.0`(0.7.0부터이며, 0.6.x는 `^0.9.0`을 사용했습니다)과 `@qorechain/evm` `^0.8.0`에 의존합니다.
-* **`create-qorechain-rollup`** (`v0.8.0`) — 프로필별로 실행 가능한 스타터 템플릿(`multivm-rollup` 템플릿 포함)을 하나씩 클론하는 스캐폴더.
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.9.0`) — TypeScript SDK: 프리셋 프로필을 갖춘 구성 빌더, 롤업 및 정산-배치 라이프사이클을 위한 트랜잭션 헬퍼, 네이티브 DA, 타입이 지정된 읽기 클라이언트, ML-DSA-87 서명이 있는 정산 영수증, QCAI Rollup Copilot, 크로스 VM 콜데이터 헬퍼, 워치타워. `@qorechain/sdk` `^0.10.0`(0.7.0부터이며, 0.6.x는 `^0.9.0`을 사용했습니다)과 `@qorechain/evm` `^0.8.0`에 의존합니다.
+* **`create-qorechain-rollup`** (`v0.9.0`) — 프로필별로 실행 가능한 스타터 템플릿(`multivm-rollup` 템플릿 포함)을 하나씩 클론하는 스캐폴더.
 
-이들은 npm에 게시되어 있습니다. 이 저장소는 또한 게시된 오퍼레이터 CLI인 **`@qorechain/rdk-cli`**(`qorollup`, `v0.8.0`)도 제공하며, `doctor`, `create`, `status`, `watch`, `params`, `suggest`, 라이프사이클(`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw`, `faucet` 명령과 `receipt`, `advise`, `watchtower` 명령을 포함합니다. 0.7.1부터 이 CLI의 트랜잭션 명령은 하이브리드로 서명합니다(아래 제한 사항 참고).
+이들은 npm에 게시되어 있습니다. 이 저장소는 또한 게시된 오퍼레이터 CLI인 **`@qorechain/rdk-cli`**(`qorollup`, `v0.9.0`)도 제공하며, `doctor`, `create`, `status`, `watch`, `params`, `suggest`, 라이프사이클(`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw`, `faucet` 명령과 `receipt`, `advise`, `watchtower` 명령을 포함합니다. 0.7.1부터 이 CLI의 트랜잭션 명령은 하이브리드로 서명합니다(아래 제한 사항 참고).
 
 릴리스별 주요 사항:
 
@@ -140,9 +140,10 @@ Rollup Development Kit는 CLI와 동일한 온체인 `x/rdk` 모듈을 위한 �
 * **v0.6.2 (2026년 10월 27일의 GitHub 릴리스)**: 라이브러리 변경이 없는 CLI 핫픽스입니다. npm으로 설치한 `qorollup`(로컬, 전역 또는 `npx`)이 다시 실행되며, `qorollup --version`과 `create-qorechain-rollup --version`이 실제 버전을 출력합니다. 모든 레지스트리가 하나의 버전을 유지하도록 나머지 패키지도 0.6.2로 다시 릴리스되었습니다.
 * **v0.7.0 (2026년 10월 27일의 GitHub 릴리스)**: 다섯 개 언어 모두에서 체인 v3.2.5에 대비한 릴리스이며(두 네트워크 모두 이를 실행하며 v3.2.6도 실행합니다. 메인넷은 v3.2.5를 2026년 10월 29일에, v3.2.6을 11월 4일에 적용했고, 테스트넷은 v3.2.5를 10월 26일에, v3.2.6을 10월 27일에 적용했고, 이후 v3.2.7로, 이어서 v3.2.8로 옮겼습니다), 출금과 데이터 가용성 블롭의 해시 방식을 수정합니다. 0.6.x 기본값으로 만든 출금 증명은 체인에서 한 번도 검증되지 않았으며, 0.7.0은 체인과 정확히 같은 트리를 만듭니다. `@qorechain/sdk` `^0.10.0`으로 옮겨 가고, 템플릿은 `@qorechain/rdk` `^0.7.0`을 고정합니다. 자세한 내용은 아래에 있습니다.
 * **v0.7.1 (2026년 10월 30일의 GitHub 릴리스)**: `qorollup` 오퍼레이터 CLI를 위한 핫픽스로, 이제 이 CLI의 트랜잭션 명령이 두 네트워크가 요구하는 대로 하이브리드로 서명합니다.
-* **v0.8.0 (2026년 10월 30일의 GitHub 릴리스, 현재 버전)**: Python, Go, Rust, Java 클라이언트도 하이브리드로 서명하므로, 모든 RDK 클라이언트가 메인넷과 테스트넷에서 트랜잭션을 보낼 수 있습니다. Java 21이 필요합니다.
+* **v0.8.0 (2026년 10월 30일의 GitHub 릴리스)**: Python, Go, Rust, Java 클라이언트도 하이브리드로 서명하므로, 모든 RDK 클라이언트가 메인넷과 테스트넷에서 트랜잭션을 보낼 수 있습니다. Java 21이 필요합니다.
+* **v0.9.0 (2026년 11월 12일의 GitHub 릴리스, 현재 버전)**: 체인 v3.2.8을 지원합니다(테스트넷은 2026년 11월 12일부터 실행합니다): 롤업 데이터 게시, 기반 시퀀싱, qledger-v1 옵티미스틱 롤업과 사기 증명, 비공개 롤업, 정규 ZK 입력. STARK 정산은 일시 중지되어 있습니다. [GitHub의 릴리스 노트](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0)를 참고하세요. 새 계정은 다른 무엇보다 먼저 자체 트랜잭션으로 포스트 퀀텀 키를 등록해야 하며, RDK 클라이언트 0.9.0은 이 등록을 대신 수행합니다.
 
-**게시된 버전(2026년 10월 31일 모든 레지스트리에서 확인).** npm `@qorechain/rdk`, `@qorechain/rdk-cli`, `create-qorechain-rollup`: **0.8.0**(`latest`). PyPI `qorechain-rdk`: 0.8.0. crates.io `qorechain-rdk`: 0.8.0. Maven Central `io.github.qorechain:qorechain-rdk`: 0.8.0(`maven-metadata.xml`에는 이전 버전들뿐 아니라 0.7.0과 0.7.1도 나열됩니다). Go 모듈 `github.com/qorechain/qorechain-rdk/packages/go`: `v0.8.0`(모듈 프록시의 `@latest`는 새 태그보다 늦을 수 있으므로 `@v0.8.0`을 명시적으로 고정하세요). GitHub 릴리스는 [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0)입니다.
+**게시된 버전(2026년 11월 12일 모든 레지스트리에서 확인).** npm `@qorechain/rdk`, `@qorechain/rdk-cli`, `create-qorechain-rollup`: **0.9.0**(`latest`). PyPI `qorechain-rdk`: 0.9.0. crates.io `qorechain-rdk`: 0.9.0. Maven Central `io.github.qorechain:qorechain-rdk`: 0.9.0(이전 버전도 계속 제공됩니다). Go 모듈 `github.com/qorechain/qorechain-rdk/packages/go`: `v0.9.0`(모듈 프록시의 `@latest`는 새 태그보다 늦을 수 있으므로 `@v0.9.0`을 명시적으로 고정하세요). GitHub 릴리스는 [v0.9.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0)입니다.
 
 #### RDK 0.8.0: 변경 사항과 제한 사항 {#rdk-050-limits}
 
@@ -223,17 +224,17 @@ pip install qorechain-rdk
 cargo add qorechain-rdk
 
 # Go (pin the version)
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.9.0
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.8.0 (needs Java 21)
+# io.github.qorechain:qorechain-rdk:0.9.0 (needs Java 21)
 ```
 
 ```python
 import qorrdk
 ```
 
-현재 게시된 버전은 모두 **0.8.0**입니다(2026년 10월 31일 확인): Python `qorechain-rdk`(PyPI, `qorrdk`로 임포트), Go 모듈 `github.com/qorechain/qorechain-rdk/packages/go`(`v0.8.0`), Rust `qorechain-rdk`(crates.io), Java `io.github.qorechain:qorechain-rdk`(Maven Central, 0.8.0부터 **Java 21 이상**). 이 클라이언트들은 체인 상태를 읽으며, 0.8.0부터는 포스트 퀀텀 키페어를 주면 하이브리드로 서명한 트랜잭션을 보냅니다([RDK 0.8.0: 변경 사항과 제한 사항](#rdk-050-limits) 참고).
+현재 게시된 버전은 모두 **0.9.0**입니다(2026년 11월 12일 확인): Python `qorechain-rdk`(PyPI, `qorrdk`로 임포트), Go 모듈 `github.com/qorechain/qorechain-rdk/packages/go`(`v0.9.0`), Rust `qorechain-rdk`(crates.io), Java `io.github.qorechain:qorechain-rdk`(Maven Central, 0.8.0부터 **Java 21 이상**). 이 클라이언트들은 체인 상태를 읽으며, 0.8.0부터는 포스트 퀀텀 키페어를 주면 하이브리드로 서명한 트랜잭션을 보냅니다([RDK 0.8.0: 변경 사항과 제한 사항](#rdk-050-limits) 참고).
 
 :::note
 TypeScript RDK와 그 템플릿은 기본적으로 **`qorechain-diana`** 테스트넷을 대상으로 하며, 프리셋은 별도 설정 없이 라이브 공개 엔드포인트에 도달합니다. 버전을 고정하고 메인넷 이전에 테스트넷에서 검증하세요.
@@ -258,7 +259,7 @@ npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet -
 스캐폴더는 문서화된 스테이크 및 생성-소각 비용과 롤업을 생성하고 상태를 읽기 위한 다음 단계를 출력합니다.
 
 :::caution 스캐폴딩된 스크립트가 할 수 있는 것
-`create-qorechain-rollup` 0.8.0의 템플릿은 `@qorechain/rdk` `^0.8.0`에 의존합니다. 이들의 `create` 및 `submit-batch` 스크립트는 `src/signer.ts`의 `connectOperator()`를 통해 연결하며, 이 함수는 `QORE_MNEMONIC`(또는 `QORE_OPERATOR_PRIVATE_KEY_HEX`로 서명하는 경우 `QORE_PQC_SEED_HEX`)에서 포스트 퀀텀 키를 확인하고, 체인과 대조하여 검사한 뒤, 하이브리드로 서명합니다. 둘 다 설정되어 있지 않으면 스크립트가 경고를 출력하고 클래식 방식으로만 서명하며, 두 네트워크 모두 이를 거부합니다. 템플릿을 통해 라이브 네트워크에서 롤업이 생성된 적은 없으므로, 이 경로는 라이브에서 검증되지 않았습니다. 스타터의 `submit-batch` 스크립트는 참고용 흐름일 뿐입니다. 0.6.1부터는 `dataHash`를 비워 두고(체인은 네이티브 DA 롤업의 데이터 해시를 거부합니다), 옵티미스틱 템플릿은 플레이스홀더 대신 정규 상태 루트를 게시합니다. 나머지에는 여전히 예시용 값을 사용하며, 라이브 네트워크에서 배치를 확정하는 것을 기대해서는 안 됩니다. `defi-rollup` 템플릿(ZK)은 0.7.0부터 배치를 전송하기 전에 멈추는데, 체인이 이를 거부하기 때문입니다([ZK / STARK & 출금](/rollups/zk-stark-withdrawals) 참고).
+`create-qorechain-rollup` 0.9.0의 템플릿은 `@qorechain/rdk` `^0.9.0`에 의존합니다. 이들의 `create` 및 `submit-batch` 스크립트는 `src/signer.ts`의 `connectOperator()`를 통해 연결하며, 이 함수는 `QORE_MNEMONIC`(또는 `QORE_OPERATOR_PRIVATE_KEY_HEX`로 서명하는 경우 `QORE_PQC_SEED_HEX`)에서 포스트 퀀텀 키를 확인하고, 체인과 대조하여 검사한 뒤, 하이브리드로 서명합니다. 둘 다 설정되어 있지 않으면 스크립트가 경고를 출력하고 클래식 방식으로만 서명하며, 두 네트워크 모두 이를 거부합니다. 템플릿을 통해 라이브 네트워크에서 롤업이 생성된 적은 없으므로, 이 경로는 라이브에서 검증되지 않았습니다. 스타터의 `submit-batch` 스크립트는 참고용 흐름일 뿐입니다. 0.6.1부터는 `dataHash`를 비워 두고(체인은 네이티브 DA 롤업의 데이터 해시를 거부합니다), 옵티미스틱 템플릿은 플레이스홀더 대신 정규 상태 루트를 게시합니다. 나머지에는 여전히 예시용 값을 사용하며, 라이브 네트워크에서 배치를 확정하는 것을 기대해서는 안 됩니다. `defi-rollup` 템플릿(ZK)은 0.7.0부터 배치를 전송하기 전에 멈추는데, 체인이 이를 거부하기 때문입니다([ZK / STARK & 출금](/rollups/zk-stark-withdrawals) 참고).
 :::
 
 ### 코드로 롤업 구성 빌드하기

@@ -28,7 +28,7 @@ sidebar_position: 1
 
 ## كيفية الاستخدام {#how-to-use}
 
-القراءات لا تحتاج إلى مفتاح ولا إلى أموال. تقرأ المقتطفات أدناه معاملات وحدة `rdk` الحيّة وقائمة التجميعات على شبكة الاختبار العامة (`qorechain-diana`) وقد شُغّلت في 27 أكتوبر 2026 من الحزم المنشورة (استخدمت هذه التشغيلات 0.7.0؛ والإصدار الحالي هو 0.8.0 الذي يضيف التوقيع الهجين إلى عملاء Python وGo وRust وJava ويترك استدعاءات القراءة المعروضة هنا دون تغيير، لكن المقتطفات لم تُعد تشغيلها معه). طبعت كلٌّ منها معاملات شبكة الاختبار (الحد الأقصى للتجميعات 200، والحد الأدنى للحصة 10,000 QOR، ومعدل الحرق عند الإنشاء 0.01، ونافذة التحدي الافتراضية 3,600 ثانية، والحد الأقصى لحجم blob توافر البيانات 2,097,152 بايت، ومدة الاحتفاظ بالـ blob 432,000 كتلة، وحد أقصى 10 دفعات لكل كتلة) و`0 rollups`.
+القراءات لا تحتاج إلى مفتاح ولا إلى أموال. تقرأ المقتطفات أدناه معاملات وحدة `rdk` الحيّة وقائمة التجميعات على شبكة الاختبار العامة (`qorechain-diana`) وقد شُغّلت في 27 أكتوبر 2026 من الحزم المنشورة (استخدمت هذه التشغيلات 0.7.0؛ والإصدار الحالي هو 0.9.0؛ وأضاف 0.8.0 التوقيع الهجين إلى عملاء Python وGo وRust وJava ويترك استدعاءات القراءة المعروضة هنا دون تغيير، لكن المقتطفات لم تُعد تشغيلها معه). طبعت كلٌّ منها معاملات شبكة الاختبار (الحد الأقصى للتجميعات 200، والحد الأدنى للحصة 10,000 QOR، ومعدل الحرق عند الإنشاء 0.01، ونافذة التحدي الافتراضية 3,600 ثانية، والحد الأقصى لحجم blob توافر البيانات 2,097,152 بايت، ومدة الاحتفاظ بالـ blob 432,000 كتلة، وحد أقصى 10 دفعات لكل كتلة) و`0 rollups`.
 
 ### TypeScript (مُختبَر)
 
@@ -76,7 +76,7 @@ print(rdk.network.chain_id, params, f"{len(rollups)} rollups")
 ### Go (مُختبَر)
 
 ```bash
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.9.0
 ```
 
 ```go
@@ -138,7 +138,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```kotlin
 // build.gradle.kts
-implementation("io.github.qorechain:qorechain-rdk:0.8.0")
+implementation("io.github.qorechain:qorechain-rdk:0.9.0")
 ```
 
 ```java
@@ -183,7 +183,7 @@ npx create-qorechain-rollup my-rollup --template nft-rollup --network testnet --
 cd my-rollup && npm run doctor
 ```
 
-القوالب هي `defi-rollup` و`gaming-rollup` و`nft-rollup` و`enterprise-rollup` و`custom-rollup` و`multivm-rollup`. يعتمد المشروع المُهيكَل على `@qorechain/rdk` بالإصدار `^0.8.0` (و`^0.7.0` قبل 0.8.0). أنتج بناء هيكل `nft-rollup` بمولّد الهياكل 0.6.1 مشروعًا نجح `npm run doctor` فيه مقابل شبكة الاختبار (REST قابل للوصول، والمعاملات قابلة للقراءة، والشبكة `qorechain-diana`؛ ويحذّر من توافر البيانات عبر Celestia ومن غياب موقِّع)؛ ونجح بناء هيكل `defi-rollup` وتشغيل `npm run typecheck` مرة أخرى في 27 أكتوبر 2026 مع الإصدار الحالي. **لا تستخدم `defi-rollup` لإطلاق تجميع بعد** (راجع [الحدود](#limits)). لإنشاء تجميع وإرسال الدفعات، اتبع [نشر تجميع](/rollups/deploying-a-rollup)؛ تحتاج المعاملات إلى مفتاح ما بعد كمي مسجّل، وفي RDK إلى عميل TypeScript مزوَّد بـ `pqcKeypair`.
+القوالب هي `defi-rollup` و`gaming-rollup` و`nft-rollup` و`enterprise-rollup` و`custom-rollup` و`multivm-rollup`. يعتمد المشروع المُهيكَل على `@qorechain/rdk` بالإصدار `^0.9.0` (و`^0.8.0` في 0.8.0، و`^0.7.0` قبله). أنتج بناء هيكل `nft-rollup` بمولّد الهياكل 0.6.1 مشروعًا نجح `npm run doctor` فيه مقابل شبكة الاختبار (REST قابل للوصول، والمعاملات قابلة للقراءة، والشبكة `qorechain-diana`؛ ويحذّر من توافر البيانات عبر Celestia ومن غياب موقِّع)؛ ونجح بناء هيكل `defi-rollup` وتشغيل `npm run typecheck` مرة أخرى في 27 أكتوبر 2026 مع الإصدار الحالي. **لا تستخدم `defi-rollup` لإطلاق تجميع بعد** (راجع [الحدود](#limits)). لإنشاء تجميع وإرسال الدفعات، اتبع [نشر تجميع](/rollups/deploying-a-rollup)؛ تحتاج المعاملات إلى مفتاح ما بعد كمي مسجّل، وفي RDK إلى عميل TypeScript مزوَّد بـ `pqcKeypair`.
 
 ## كيفية الوصول {#how-to-access}
 
@@ -203,7 +203,7 @@ cd my-rollup && npm run doctor
 | **حساب ممول** | حساب فيه ما يكفي من QOR للحصة وحصة الطبقة والرسوم. |
 | **حصة مودعة في الضمان (escrow)** | يودع إنشاء تجميع `min_stake_for_rollup` في الضمان، أي **10,000 QOR** على الشبكتين. **يُحرق 1 % من الحصة (100 QOR)** عند الإنشاء؛ ويبقى الباقي في الضمان ويُعاد عند إيقاف التجميع. |
 | **حصة الطبقة** | يسجّل الإنشاء أيضًا طبقة التجميع في وحدة multilayer (الحد الأدنى للحصة 1,000 QOR). إذا تعذّر تسجيل الطبقة، يُنشأ التجميع مع ذلك لكن دون طبقة حقيقية، فلا يمكن ترسيخ دفعاته ولا يمكن إصدار إيصالات. |
-| **مفتاح ما بعد كمي مسجّل** | مفتاح ML-DSA-87 مسجّل للحساب. تُرفض معاملات المسار الأصلي الموقّعة بالمفتاح الكلاسيكي وحده. |
+| **مفتاح ما بعد كمي مسجّل** | مفتاح ML-DSA-87 مسجّل للحساب. تُرفض معاملات المسار الأصلي الموقّعة بالمفتاح الكلاسيكي وحده. يجب على الحساب الجديد تسجيل مفتاحه ما بعد الكمّي في معاملة مستقلة قبل أي شيء آخر؛ وعملاء RDK 0.9.0 يتولون هذا التسجيل عنك. |
 | **الرسوم** | الحد الأدنى للرسوم 0.1 uqor لكل وحدة غاز؛ اضبط حد الغاز والرسوم معًا. |
 | **الأدوات** | Node 20 أو أحدث لأداة سطر الأوامر ومولّد الهياكل؛ وPython 3.10 أو أحدث (مع `liboqs`، انظر أعلاه) لعميل Python؛ وJava 21 أو أحدث لـ Java (منذ RDK 0.8.0)؛ ووحدة Go ‏`github.com/qorechain/qorechain-rdk/packages/go`. |
 
@@ -249,19 +249,21 @@ cd my-rollup && npm run doctor
 
 ## أين تُنشر {#where-published}
 
-جرى التحقق من الإصدارات على السجلات في 27 أكتوبر 2026. جميع الحزم بترخيص Apache-2.0.
+جرى التحقق من الإصدارات على السجلات في 12 نوفمبر 2026. جميع الحزم بترخيص Apache-2.0.
+
+يدعم RDK 0.9.0 (12 نوفمبر 2026) السلسلة v3.2.8 (تعمل شبكة الاختبار بها منذ 12 نوفمبر 2026): نشر بيانات rollup، والتسلسل القائم على الأساس (based sequencing)، وrollups متفائلة من نوع qledger-v1 مع إثباتات الاحتيال، وrollups خاصة، ومدخلات ZK القانونية؛ والتسوية بـ STARK متوقفة مؤقتًا. راجع [ملاحظات الإصدار على GitHub](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0).
 
 | السجل | الحزمة | الإصدار الحالي | الرابط |
 | -------- | ------- | --------------- | ---- |
-| npm | `@qorechain/rdk` (عميل TypeScript) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
-| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
-| npm | `create-qorechain-rollup` (مولّد الهياكل) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
-| PyPI | `qorechain-rdk` (الاستيراد `qorrdk`) | 0.8.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
-| crates.io | `qorechain-rdk` (المكتبة `qorechain_rdk`) | 0.8.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
-| وكيل وحدات Go | `github.com/qorechain/qorechain-rdk/packages/go` | v0.8.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
-| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.8.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
+| npm | `@qorechain/rdk` (عميل TypeScript) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
+| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
+| npm | `create-qorechain-rollup` (مولّد الهياكل) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
+| PyPI | `qorechain-rdk` (الاستيراد `qorrdk`) | 0.9.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
+| crates.io | `qorechain-rdk` (المكتبة `qorechain_rdk`) | 0.9.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
+| وكيل وحدات Go | `github.com/qorechain/qorechain-rdk/packages/go` | v0.9.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
+| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.9.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
 
-تخدّم Maven Central الإصدارات 0.7.0 و0.7.1 و0.8.0 إضافة إلى الإصدارات الأقدم، وقد يتأخر `@latest` في وكيل Go عن وسم جديد، فثبّت إصدار Go. الشيفرة المصدرية عامة على [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk)، وملاحظات الإصدار على [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0) (و[v0.7.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.1))، ووثائق المجموعة نفسها على [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/). تعتمد حزمة TypeScript على `@qorechain/sdk` ‏`^0.10.0` (من 0.7.0؛ وكان 0.6.x يستخدم `^0.9.0`؛ وتستخدم حزم Python وGo وRust وJava QoreChain SDK 0.10.x المطابق منذ 0.8.0) و`@qorechain/evm` ‏`^0.8.0`، وتعتمد حزمة Python على `qorechain-pqc` ‏0.2.x. أما منطق وحدة `x/rdk` على السلسلة نفسه فليس جزءًا من المجموعة العامة.
+تخدّم Maven Central الإصدارات 0.7.0 و0.7.1 و0.8.0 و0.9.0 إضافة إلى الإصدارات الأقدم، وقد يتأخر `@latest` في وكيل Go عن وسم جديد، فثبّت إصدار Go. الشيفرة المصدرية عامة على [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk)، وملاحظات الإصدار على [v0.9.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0) (و[v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0) و[v0.7.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.1))، ووثائق المجموعة نفسها على [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/). تعتمد حزمة TypeScript على `@qorechain/sdk` ‏`^0.10.0` (من 0.7.0؛ وكان 0.6.x يستخدم `^0.9.0`؛ وتستخدم حزم Python وGo وRust وJava QoreChain SDK 0.10.x المطابق منذ 0.8.0) و`@qorechain/evm` ‏`^0.8.0`، وتعتمد حزمة Python على `qorechain-pqc` ‏0.2.x. أما منطق وحدة `x/rdk` على السلسلة نفسه فليس جزءًا من المجموعة العامة.
 
 ## الحدود والمشكلات المعروفة {#limits}
 
@@ -274,7 +276,7 @@ cd my-rollup && npm run doctor
 * **(d) لا تستطيع الدائرة التوضيحية في قالب `defi` التحقق.** إنها مضاعِف `snarkjs`، بينما تفحص السلسلة Groth16 على BLS12-381 مع جذر الحالة السابق وجذر الحالة وبصمة البيانات كمدخلات عامة، ولا تكشفها تلك الدائرة. وحتى بعد صدور تسجيل المفاتيح، تحتاج إلى دائرتك الخاصة.
 * **يستطيع أي حساب حسم التحدي (v3.2.5 وما بعده، على الشبكتين).** تتحقق السلسلة من إثبات الاحتيال بنفسها؛ وقبل v3.2.5 كان منشئ التجميع وحده يستطيع إرسال الحسم (راجع [سلوك إصدار السلسلة v3.2.5](#v325) و[المتفائل](#optimistic)).
 * **غير قابل للاستخدام على الشبكات الحيّة:** توافر البيانات عبر Celestia (غير منفَّذ)، و[مساعد QCAI للتجميعات](/rollups/qcai-copilot) (خدماته الاستشارية غير موجودة على نقاط النهاية العامة)، واستدعاءات الآلات الافتراضية المتقاطعة (العقد المُصرَّف مسبقًا عند `0x...0901` غير مفعّل على الشبكة الرئيسية؛ وعلى شبكة الاختبار هو نشط مع قائمة سماح، وجرى اختباره بـ `eth_call` في 7 نوفمبر 2026)، والمرتِّبون المشتركون والمستندون إلى L1 (لا تقبل السلسلة إلا المرتِّب المُهيَّأ أو، إذا لم يُعيَّن أحد، المنشئ)، و`suggest-profile` (يُرجع `defi` كبديل ثابت).
-* **ملاحظات الإصدار.** استخدم 0.8.0 لكل شيء (فالإصدار 0.7.0 وما قبله لا يستطيع إرسال معاملات `qorollup` تقبلها الشبكتان، وقبل 0.8.0 لا تستطيع عملاء Python وGo وRust وJava إرسال أي معاملة): فالإصدار 0.6.2 وما قبله يبني إثباتات سحب لا تتحقق على السلسلة أبدًا، والإصدار 0.6.1 وما قبله لا يطبع شيئًا من `qorollup` عند تثبيته من npm. ولا ينبغي استخدام 0.5.0 وما قبله للإيصالات أو Watchtower أو بيانات الاستدعاء عبر الآلات الافتراضية. القائمة الكاملة بما غيّره كل إصدار في [RDK 0.8.0: التغييرات والحدود](/rollups/deploying-a-rollup#rdk-050-limits).
+* **ملاحظات الإصدار.** استخدم 0.9.0 لكل شيء (فالإصدار 0.7.0 وما قبله لا يستطيع إرسال معاملات `qorollup` تقبلها الشبكتان، وقبل 0.8.0 لا تستطيع عملاء Python وGo وRust وJava إرسال أي معاملة): فالإصدار 0.6.2 وما قبله يبني إثباتات سحب لا تتحقق على السلسلة أبدًا، والإصدار 0.6.1 وما قبله لا يطبع شيئًا من `qorollup` عند تثبيته من npm. ولا ينبغي استخدام 0.5.0 وما قبله للإيصالات أو Watchtower أو بيانات الاستدعاء عبر الآلات الافتراضية. القائمة الكاملة بما غيّره كل إصدار في [RDK 0.8.0: التغييرات والحدود](/rollups/deploying-a-rollup#rdk-050-limits).
 
 ---
 

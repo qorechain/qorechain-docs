@@ -152,7 +152,7 @@ Con l'SDK 0.14.0, lo stesso giorno, una finestra aperta con `allowedTargets` (l'
 
 ### Python, Go, Rust e Java {#other-languages}
 
-Ogni SDK ha un builder per il messaggio e una lettura REST. Tutti controllano in locale i limiti della chain. Il builder di un linguaggio che imposta le liste della v3.2.8 richiede l'SDK 0.14.0 o successivo (Java: la 0.14.0 quando comparirà su Maven Central, che mostra ancora la 0.13.0 il 12 novembre 2026); le release precedenti costruiscono solo i campi più vecchi.
+Ogni SDK ha un builder per il messaggio e una lettura REST. Tutti controllano in locale i limiti della chain. Il builder di un linguaggio che imposta le liste della v3.2.8 richiede l'SDK 0.14.0 o successivo (Java: la 0.14.0 su Maven Central); le release precedenti costruiscono solo i campi più vecchi.
 
 | Linguaggio | Apertura (con ogni lista) | Chiusura | Lettura | Limiti EVM |
 | ---------- | ------------------------- | -------- | ------- | ---------- |

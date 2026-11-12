@@ -9,7 +9,7 @@ sidebar_position: 32
 
 QoreChainカストディキットは、QoreChain上で顧客の資金を保管するカストディアンや取引所向けの、文章による統合ガイド、テストベクターのセット、小さなリファレンスコードです。各実行レーンでネットワークが何を要求するかを説明し、統合で間違えやすい部分を読みやすいコードで示します。具体的には、アドレスのチェック、署名済みトランザクションのブロードキャスト前のデコードと検証、どの着金を計上するかの判断です。
 
-対象は、カストディアン、取引所、決済事業者、ウォレットのバックエンド、そしてそれらの統合をレビューするエンジニアと監査人です。バージョン**0.1.0**、2026年10月27日に公開、Apache-2.0。メインネット(`qorechain-vladi`)とテストネット(`qorechain-diana`)に対応しています。同梱のライブチェックはテストネットに対して実行され、読み取りのみを行います。
+対象は、カストディアン、取引所、決済事業者、ウォレットのバックエンド、そしてそれらの統合をレビューするエンジニアと監査人です。バージョン**0.1.1**、2026年11月12日に公開(0.1.0は2026年10月27日に公開)、Apache-2.0。メインネット(`qorechain-vladi`)とテストネット(`qorechain-diana`)に対応しています。同梱のライブチェックはテストネットに対して実行され、読み取りのみを行います。
 
 **最初にお読みください: このキットはライブラリではなく、サンプルコードです。** リポジトリをクローンし、お使いの言語のフォルダーを読む、コピーする、またはベンダリングしてください。このキットのnpm、PyPI、crates.io、Maven Centralのパッケージは、意図的に存在しません。形式上の例外はGoだけです。Goのフォルダーはタグ付きバージョンを持つGoモジュールなので`go get`で取得できますが、それでも安定したAPIが約束されたものではなく、サンプルコードです([ライブラリであるものとサンプルコードであるもの](#library-vs-example)を参照)。署名と暗号的な検証は、公開ライブラリである[QoreSign](/qoresign/overview)が担います。
 
@@ -50,7 +50,7 @@ QoreChainカストディキットは、QoreChain上で顧客の資金を保管�
 |---|---|---|
 | QoreSign(署名、ML-DSA-87とsecp256k1の検証、鍵登録メッセージ) | 公開ライブラリ | npm、PyPI、crates.io、Go、Maven Central。[QoreSign](/qoresign/overview)を参照。 |
 | TypeScript、Python、Rust、Javaのキットのコード | サンプルコード。どのレジストリにも公開されていません | `qorechain/qorechain-custody-kit`をクローンし、フォルダーをコピーまたはベンダリングします。 |
-| Goのキットのコード(パッケージ`custodykit`) | サンプルコード。タグ付きバージョンのGoモジュールとして取得できますが、安定したAPIの約束はありません | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0`、またはクローンしてベンダリングします。 |
+| Goのキットのコード(パッケージ`custodykit`) | サンプルコード。タグ付きバージョンのGoモジュールとして取得できますが、安定したAPIの約束はありません | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1`、またはクローンしてベンダリングします。 |
 | ガイドページ、ベクター、チェックリスト | ドキュメントとデータ | リポジトリ。 |
 
 キットは署名方式を実装していません。ML-DSA-87とsecp256k1の検証はQoreSignが提供します。Pythonのコードには、EIP-55チェックサムのためだけに使う小さなKeccak-256が含まれており、それ以外の用途はありません。
@@ -95,6 +95,7 @@ QoreChainカストディキットは、QoreChain上で顧客の資金を保管�
 - ウィンドウは`/qorechain.pqc.v1.MsgOpenEVMWindow`で開きます(`blocks`は1~17,280、`max_txs`は1~1,000、`max_value`は`uqor`で、値と最大手数料の合計として数えます。任意の`native_only`、最大16アドレスの任意の`allowed_targets`)。閉じるには`MsgCloseEVMWindow`を使います。状態は`GET /qorechain/pqc/v1/evm_window/{address}`にあります。
 - ウィンドウを開くと既存のウィンドウは置き換えられ、アカウントのシーケンス(これがEVMのnonceです)が進みます。まずウィンドウを開き、その後でnonceを読み取ってください。
 - `eth_call`と`eth_estimateGas`にはウィンドウは不要です。
+- キットのデコーダーは(0.1.1以降)、ウィンドウメッセージのEVMウィンドウのフィールド5から9を受け付けるため、v3.2.8のフィールドでウィンドウを開くトランザクションもデコードできます。
 
 ## 使い方 {#how-to-use}
 
@@ -106,7 +107,7 @@ QoreChainカストディキットは、QoreChain上で顧客の資金を保管�
 |---|---|---|---|
 | TypeScript | `git clone https://github.com/qorechain/qorechain-custody-kit`、その後`cd code/ts && pnpm install && pnpm build` | `@qorechain/qoresign` 0.1.0 (npm) | Node.js 20 |
 | Python | クローンし、`cd code/python && pip install -r requirements-dev.txt`。`verify_tx`には、さらに`pip install qorechain-qoresign==0.1.1` | 実行時には何もなし。`verify_tx`には`qorechain-qoresign` 0.1.1 (PyPI) | Python 3.9 |
-| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0`(パッケージ`custodykit`)、またはクローン | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
+| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1`(パッケージ`custodykit`)、またはクローン | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
 | Rust | クローンし、`cd code/rust && cargo build`(crates.ioにはありません) | `qorechain-qoresign` 0.1.0 (crates.io) | Rust 2021エディション |
 | Java | クローンし、`cd code/java && mvn test`(Maven Centralにはありません) | `io.github.qorechain:qoresign:0.1.0` (Maven Central)、Gson | Java 17 |
 
@@ -289,16 +290,16 @@ QORE_LIVE_TEST=1 go test -run Live ./...     # live reads against testnet
 - ローテーションには`MsgRotatePQCKey`を使います。両方の鍵が署名し、トランザクション自身のレイヤーは現在の鍵を使い、以前の鍵の再利用は拒否されます。secp256k1鍵が露出した場合は、両方の鍵を新しくした新しいアドレスに資金を移し、開いているEVMウィンドウを閉じてください。
 - EVMウィンドウ: QORだけが動く場合は`native_only`を使ってください。`allowed_targets`が制限するのは、触れてよいコントラクトとトークンの**種類**であり、**金額**ではありません。列挙されたトークンは、`approve`を含め任意の金額を受け付けるため、フォワーダーやルーターのコントラクトは決して列挙しないでください。ウィンドウが制限するのは、古典署名のみのEVMレーントランザクションだけで、ハイブリッド署名されたCosmosメッセージ(クロスVM呼び出し、authz)はその対象外です。バッチをカバーできる最小の`max_value`と`blocks`を設定し、バッチの後にウィンドウを閉じてください。`MsgSetWithdrawAddress`、`MsgRotatePQCKey`、`MsgOpenEVMWindow`、`MsgAuthorizeEVMDelegation`は、特権的な操作として扱ってください。
 - `ethereum_tx`イベントが失敗を報告しているEVMトランザクションは、ネイティブの結果が`code == 0`であっても、決して計上しないでください。
-- これはバージョン0.1.0のリファレンスコードです。本番で使う前にレビューしてください。脆弱性は、誤った計上や意図しない署名につながりうるドキュメントの誤りも含め、security@qore.networkに非公開で報告してください。
+- これはバージョン0.1.1のリファレンスコードです。本番で使う前にレビューしてください。脆弱性は、誤った計上や意図しない署名につながりうるドキュメントの誤りも含め、security@qore.networkに非公開で報告してください。
 
 ## 公開場所 {#where-published}
 
-2026年11月4日にレジストリと照合しました(バージョンとタグは10月27日から変わっていません)。
+2026年11月12日にレジストリと照合しました。
 
 | レジストリ | パッケージ | バージョン | リンク |
 |---|---|---|---|
-| GitHub | `qorechain/qorechain-custody-kit`(5つの言語すべて、ガイドページ、ベクター) | リリース`v0.1.0`、2026年10月27日に公開 | https://github.com/qorechain/qorechain-custody-kit |
-| Goモジュールプロキシ | `github.com/qorechain/qorechain-custody-kit/code/go`(サンプルコード、取得可能) | v0.1.0(タグ`code/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
+| GitHub | `qorechain/qorechain-custody-kit`(5つの言語すべて、ガイドページ、ベクター) | リリース`v0.1.1`、2026年11月12日に公開(`v0.1.0`は2026年10月27日) | https://github.com/qorechain/qorechain-custody-kit |
+| Goモジュールプロキシ | `github.com/qorechain/qorechain-custody-kit/code/go`(サンプルコード、取得可能) | v0.1.1(タグ`code/go/v0.1.1`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
 | npm、PyPI、crates.io、Maven Central | 未公開: キットはコピーまたはベンダリングするサンプルコードです | 該当なし | 該当なし |
 
 GitHubリリースには添付ファイルはありません。リリースはリポジトリのタグです。キットが依存するものはすべて公開済みです: npmの`@qorechain/qoresign`(最新は0.1.1、キットは0.1.0に固定)、PyPIの`qorechain-qoresign`(0.1.1)、crates.ioの`qorechain-qoresign`(最新は0.1.1、キットは0.1.0に固定)、`github.com/qorechain/qoresign/go`(v0.1.0とv0.1.1)、Maven Centralの`io.github.qorechain:qoresign`(0.1.0と0.1.1)。
@@ -313,7 +314,7 @@ GitHubリリースには添付ファイルはありません。リリースは�
 - `extractDeposits`が自動で計上するのは、`MsgSend`、`MsgMultiSend`、成功した`MsgEthereumTx`です。その他のメッセージ(報酬の引き出し、コントラクト呼び出し、IBC送金)は計上されず、レビュー用に返されます。
 - `verifyTx`は、単一署名者のトランザクションを検証します。
 - SVMレーンはトランザクションに対して開放されていません。その上に入金や出金のフローを構築しないでください。
-- キット自身のコードは、0.1.0のサンプルコードです。関数名とシグネチャはバージョン間で変わる可能性があり、Goモジュールのタグも安定したAPIを約束するものではありません。
+- キット自身のコードは、0.1.1のサンプルコードです。関数名とシグネチャはバージョン間で変わる可能性があり、Goモジュールのタグも安定したAPIを約束するものではありません。
 - このページを書いた時点で実行したのは、Goのサンプルとテストスイートのみです。他の4つの言語のライブチェックとベクターチェックは再実行していません。
 - リポジトリのPythonのREADMEには、`qorechain-qoresign` 0.1.1がPyPIに公開されるまで`verify_tx`がインポートエラーを出す、という記載がまだ残っている場合があります。そのバージョンは公開済みなので、この記載は古くなっています。
 - キットのガイドが引用しているパラメーター(ガスの数値、ステーキングティアの値)は、2026年10月27日に読み取ったものです。本番ではチェーンから読み取ってください。

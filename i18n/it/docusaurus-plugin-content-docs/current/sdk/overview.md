@@ -122,7 +122,7 @@ derivazione, aritmetica delle denominazioni e superfici di lettura.
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Pubblicato (PyPI, v0.14.0) |
 | `qorechain-sdk` (modulo Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Pubblicato (proxy Go, tag `packages/go/v0.14.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Pubblicato (crates.io, v0.14.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.14.0` | Maven Central mostra ancora la 0.13.0 il 12 novembre 2026; usa la 0.14.0 quando comparirà (JDK 17+) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.14.0` | Pubblicato (Maven Central, v0.14.0; JDK 17+) |
 | `@qorechain/evm` | TypeScript (adapter EVM) | `npm i @qorechain/evm viem` | Pubblicato (npm, v0.14.0) |
 | `@qorechain/svm` | TypeScript (adapter SVM) | `npm i @qorechain/svm @solana/web3.js` | Pubblicato (npm, v0.14.0) |
 | `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Pubblicato (npm, v0.14.0) |
@@ -144,7 +144,7 @@ WebSocket. Tutti questi client sono **pubblicati**: TypeScript su npm
 (`@qorechain/sdk` 0.14.0), Python su PyPI (`qorechain-sdk` 0.14.0, import
 `qorsdk`), Go sul module proxy (tag `packages/go/v0.14.0`), Rust su
 crates.io (`qorechain-sdk` 0.14.0) e Java su Maven Central
-(`io.github.qorechain:qorechain-sdk`, che mostra ancora la 0.13.0 il 12 novembre 2026; usa la 0.14.0 quando comparirà). Gli adapter di esecuzione EVM/SVM
+(`io.github.qorechain:qorechain-sdk` 0.14.0). Gli adapter di esecuzione EVM/SVM
 (`@qorechain/evm`, `@qorechain/svm`, entrambi 0.14.0), il kit `@qorechain/react`
 (0.14.0) e la CLI di scaffolding `create-qorechain-dapp` (0.14.0, che porta anche le correzioni ai template della 0.13.1) sono solo
 TypeScript e anch'essi pubblicati su npm. Vedi

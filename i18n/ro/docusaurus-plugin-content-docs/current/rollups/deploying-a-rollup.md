@@ -124,10 +124,10 @@ qorechaind query rdk list-rollups
 
 Rollup Development Kit-ul este livrat ca două pachete npm publice pentru același modul on-chain `x/rdk` ca și CLI-ul. Nu există încă niciun rollup pe vreuna dintre rețele, deci nicio cale de tranzacție a kitului nu a fost exersată pe un rollup live; citește [RDK 0.8.0: modificări și limite](#rdk-050-limits) înainte de a te baza pe el pentru a trimite tranzacții:
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.8.0`) — SDK-ul TypeScript: un constructor de configurație cu profiluri preset, helper-e de tranzacție pentru ciclurile de viață ale rollup-ului și ale batch-urilor de settlement, DA nativ, clienți de citire tipați, chitanțe de settlement cu semnătură ML-DSA-87, QCAI Rollup Copilot, helper-e de calldata cross-VM și watchtower. Depinde de `@qorechain/sdk` `^0.10.0` (de la 0.7.0; 0.6.x folosea `^0.9.0`) și `@qorechain/evm` `^0.8.0`.
-* **`create-qorechain-rollup`** (`v0.8.0`) — o schelă (scaffolder) care clonează câte un șablon de pornire funcțional pentru fiecare profil (inclusiv șablonul `multivm-rollup`).
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.9.0`) — SDK-ul TypeScript: un constructor de configurație cu profiluri preset, helper-e de tranzacție pentru ciclurile de viață ale rollup-ului și ale batch-urilor de settlement, DA nativ, clienți de citire tipați, chitanțe de settlement cu semnătură ML-DSA-87, QCAI Rollup Copilot, helper-e de calldata cross-VM și watchtower. Depinde de `@qorechain/sdk` `^0.10.0` (de la 0.7.0; 0.6.x folosea `^0.9.0`) și `@qorechain/evm` `^0.8.0`.
+* **`create-qorechain-rollup`** (`v0.9.0`) — o schelă (scaffolder) care clonează câte un șablon de pornire funcțional pentru fiecare profil (inclusiv șablonul `multivm-rollup`).
 
-Acestea sunt publicate pe npm. Repo-ul livrează de asemenea un CLI de operator publicat, **`@qorechain/rdk-cli`** (`qorollup`, `v0.8.0`), cu comenzile `doctor`, `create`, `status`, `watch`, `params`, `suggest`, cele de ciclu de viață (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw` și `faucet`, plus comenzile `receipt`, `advise` și `watchtower`. De la 0.7.1 comenzile sale de tranzacție semnează hibrid (vezi limitele de mai jos).
+Acestea sunt publicate pe npm. Repo-ul livrează de asemenea un CLI de operator publicat, **`@qorechain/rdk-cli`** (`qorollup`, `v0.9.0`), cu comenzile `doctor`, `create`, `status`, `watch`, `params`, `suggest`, cele de ciclu de viață (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw` și `faucet`, plus comenzile `receipt`, `advise` și `watchtower`. De la 0.7.1 comenzile sale de tranzacție semnează hibrid (vezi limitele de mai jos).
 
 Puncte importante, pe versiuni:
 
@@ -140,9 +140,10 @@ Puncte importante, pe versiuni:
 * **v0.6.2 (versiune GitHub din 27 octombrie 2026)**: o remediere urgentă a CLI-ului, fără modificări de bibliotecă: `qorollup` instalat din npm (local, global sau cu `npx`) rulează din nou, iar `qorollup --version` și `create-qorechain-rollup --version` afișează versiunile lor reale. Celelalte pachete au fost relansate ca 0.6.2, astfel încât fiecare registru să rămână pe o singură versiune.
 * **v0.7.0 (versiune GitHub din 27 octombrie 2026)**: pregătită pentru lanțul v3.2.5 în toate cele cinci limbaje (ambele rețele îl rulează, și pe v3.2.6 de asemenea: mainnetul a aplicat v3.2.5 pe 29 octombrie 2026 și v3.2.6 pe 4 noiembrie, testnetul v3.2.5 pe 26 octombrie și v3.2.6 pe 27 octombrie; testnetul a trecut între timp la v3.2.7 și apoi la v3.2.8) și corectează modul în care se calculează hash-ul retragerilor și al blob-urilor de disponibilitate a datelor: dovezile de retragere construite cu valorile implicite din 0.6.x nu s-au verificat niciodată on-chain, iar 0.7.0 construiește exact arborele lanțului. Trece la `@qorechain/sdk` `^0.10.0`, iar șabloanele fixează `@qorechain/rdk` `^0.7.0`. Detaliile sunt mai jos.
 * **v0.7.1 (versiune GitHub din 30 octombrie 2026)**: o remediere urgentă pentru CLI-ul de operator `qorollup`, ale cărui comenzi de tranzacție semnează acum hibrid, așa cum cer ambele rețele.
-* **v0.8.0 (versiune GitHub din 30 octombrie 2026; curentă)**: clienții Python, Go, Rust și Java semnează și ei hibrid, deci fiecare client RDK poate trimite tranzacții pe mainnet și pe testnet. Este necesar Java 21.
+* **v0.8.0 (versiune GitHub din 30 octombrie 2026)**: clienții Python, Go, Rust și Java semnează și ei hibrid, deci fiecare client RDK poate trimite tranzacții pe mainnet și pe testnet. Este necesar Java 21.
+* **v0.9.0 (versiune GitHub din 12 noiembrie 2026; curentă)**: suportă lanțul v3.2.8 (testnet-ul îl rulează din 12 noiembrie 2026): postarea datelor rollup-ului, secvențiere based, rollup-uri optimistic qledger-v1 cu dovezi de fraudă, rollup-uri private, intrări ZK canonice; settlement-ul STARK este în pauză. Vezi [notele de lansare pe GitHub](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0). Un cont nou trebuie să își înregistreze cheia post-cuantică într-o tranzacție separată, înaintea oricărei alte tranzacții; clienții RDK 0.9.0 fac această înregistrare pentru tine.
 
-**Versiuni publicate (verificat pe fiecare registru la 31 octombrie 2026).** npm `@qorechain/rdk`, `@qorechain/rdk-cli` și `create-qorechain-rollup`: **0.8.0** (`latest`); PyPI `qorechain-rdk`: 0.8.0; crates.io `qorechain-rdk`: 0.8.0; Maven Central `io.github.qorechain:qorechain-rdk`: 0.8.0 (`maven-metadata.xml` îi listează și pe 0.7.0 și 0.7.1, precum și versiunile anterioare); modulul Go `github.com/qorechain/qorechain-rdk/packages/go`: `v0.8.0` (`@latest` al proxy-ului de module poate rămâne în urma unui tag nou, așa că fixează explicit `@v0.8.0`). Versiunea GitHub este [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0).
+**Versiuni publicate (verificat pe fiecare registru la 12 noiembrie 2026).** npm `@qorechain/rdk`, `@qorechain/rdk-cli` și `create-qorechain-rollup`: **0.9.0** (`latest`); PyPI `qorechain-rdk`: 0.9.0; crates.io `qorechain-rdk`: 0.9.0; Maven Central `io.github.qorechain:qorechain-rdk`: 0.9.0 (versiunile anterioare rămân disponibile); modulul Go `github.com/qorechain/qorechain-rdk/packages/go`: `v0.9.0` (`@latest` al proxy-ului de module poate rămâne în urma unui tag nou, așa că fixează explicit `@v0.9.0`). Versiunea GitHub este [v0.9.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0).
 
 #### RDK 0.8.0: modificări și limite {#rdk-050-limits}
 
@@ -223,17 +224,17 @@ pip install qorechain-rdk
 cargo add qorechain-rdk
 
 # Go (pin the version)
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.9.0
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.8.0 (necesită Java 21)
+# io.github.qorechain:qorechain-rdk:0.9.0 (necesită Java 21)
 ```
 
 ```python
 import qorrdk
 ```
 
-Versiuni curente publicate, toate **0.8.0** (verificat la 31 octombrie 2026): Python `qorechain-rdk` (PyPI, import `qorrdk`), modulul Go `github.com/qorechain/qorechain-rdk/packages/go` (`v0.8.0`), Rust `qorechain-rdk` (crates.io) și Java `io.github.qorechain:qorechain-rdk` (Maven Central; **Java 21 sau mai nou** de la 0.8.0). Acești clienți citesc starea lanțului și, de la 0.8.0, trimit tranzacții semnate hibrid când le dai un keypair post-cuantic (vezi [RDK 0.8.0: modificări și limite](#rdk-050-limits)).
+Versiuni curente publicate, toate **0.9.0** (verificat la 12 noiembrie 2026): Python `qorechain-rdk` (PyPI, import `qorrdk`), modulul Go `github.com/qorechain/qorechain-rdk/packages/go` (`v0.9.0`), Rust `qorechain-rdk` (crates.io) și Java `io.github.qorechain:qorechain-rdk` (Maven Central; **Java 21 sau mai nou** de la 0.8.0). Acești clienți citesc starea lanțului și, de la 0.8.0, trimit tranzacții semnate hibrid când le dai un keypair post-cuantic (vezi [RDK 0.8.0: modificări și limite](#rdk-050-limits)).
 
 :::note
 RDK-ul TypeScript și șabloanele sale folosesc implicit testnetul **`qorechain-diana`**, iar preset-urile ajung la endpoint-urile publice live fără configurare suplimentară. Fixează versiunile (pin) și validează pe testnet înainte de mainnet.
@@ -258,7 +259,7 @@ npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet -
 Schela afișează costul documentat de stake și de ardere la creare, plus pașii următori pentru a crea rollup-ul și a-i citi statusul.
 
 :::caution Ce pot face scripturile create de schelă
-Șabloanele `create-qorechain-rollup` 0.8.0 depind de `@qorechain/rdk` `^0.8.0`. Scripturile lor `create` și `submit-batch` se conectează prin `connectOperator()` din `src/signer.ts`, care îți rezolvă cheia post-cuantică din `QORE_MNEMONIC` (sau din `QORE_PQC_SEED_HEX` când semnezi cu `QORE_OPERATOR_PRIVATE_KEY_HEX`), o verifică față de lanț și semnează hibrid; dacă niciuna nu este setată, scriptul avertizează și semnează exclusiv clasic, ceea ce ambele rețele refuză. Niciun rollup nu a fost creat printr-un șablon pe o rețea live, deci această cale este netestată live. Scriptul `submit-batch` al șablonului de pornire este doar un flux de referință: începând cu 0.6.1 lasă `dataHash` gol (lanțul refuză un hash de date pe un rollup cu DA nativ), iar șabloanele optimistic publică rădăcina canonică de stare în loc de un placeholder; folosește în continuare valori ilustrative pentru restul și nu este de așteptat să finalizeze un batch pe o rețea live. Șablonul `defi-rollup` (ZK) se oprește înainte de a trimite un batch de la 0.7.0, deoarece lanțul l-ar refuza (vezi [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)).
+Șabloanele `create-qorechain-rollup` 0.9.0 depind de `@qorechain/rdk` `^0.9.0`. Scripturile lor `create` și `submit-batch` se conectează prin `connectOperator()` din `src/signer.ts`, care îți rezolvă cheia post-cuantică din `QORE_MNEMONIC` (sau din `QORE_PQC_SEED_HEX` când semnezi cu `QORE_OPERATOR_PRIVATE_KEY_HEX`), o verifică față de lanț și semnează hibrid; dacă niciuna nu este setată, scriptul avertizează și semnează exclusiv clasic, ceea ce ambele rețele refuză. Niciun rollup nu a fost creat printr-un șablon pe o rețea live, deci această cale este netestată live. Scriptul `submit-batch` al șablonului de pornire este doar un flux de referință: începând cu 0.6.1 lasă `dataHash` gol (lanțul refuză un hash de date pe un rollup cu DA nativ), iar șabloanele optimistic publică rădăcina canonică de stare în loc de un placeholder; folosește în continuare valori ilustrative pentru restul și nu este de așteptat să finalizeze un batch pe o rețea live. Șablonul `defi-rollup` (ZK) se oprește înainte de a trimite un batch de la 0.7.0, deoarece lanțul l-ar refuza (vezi [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)).
 :::
 
 ### Construiește o configurație de rollup din cod

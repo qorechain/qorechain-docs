@@ -28,7 +28,7 @@ RDK는 두 네트워크 모두에 배포되어 있지만, **아직 어느 쪽에
 
 ## 사용 방법 {#how-to-use}
 
-조회에는 키도 자금도 필요하지 않습니다. 아래 스니펫은 공개 테스트넷(`qorechain-diana`)의 실시간 `rdk` 모듈 파라미터와 롤업 목록을 읽으며, 2026년 10월 27일에 게시된 패키지로 실행했습니다(이 실행에는 0.7.0을 사용했으며, 현재 버전은 0.8.0입니다. 0.8.0은 Python, Go, Rust, Java 클라이언트에 하이브리드 서명을 추가했고 여기에 나온 읽기 호출은 그대로이지만, 스니펫을 이 버전으로 다시 실행하지는 않았습니다). 각각 테스트넷 파라미터(최대 롤업 200, 최소 스테이크 10,000 QOR, 생성 소각률 0.01, 기본 챌린지 윈도우 3,600초, 최대 DA 블롭 크기 2,097,152바이트, 블롭 보존 432,000블록, 블록당 최대 10개 배치)와 `0 rollups`를 출력했습니다.
+조회에는 키도 자금도 필요하지 않습니다. 아래 스니펫은 공개 테스트넷(`qorechain-diana`)의 실시간 `rdk` 모듈 파라미터와 롤업 목록을 읽으며, 2026년 10월 27일에 게시된 패키지로 실행했습니다(이 실행에는 0.7.0을 사용했으며, 현재 버전은 0.9.0이며, 0.8.0은 Python, Go, Rust, Java 클라이언트에 하이브리드 서명을 추가했고 여기에 나온 읽기 호출은 그대로이지만, 스니펫을 이 버전으로 다시 실행하지는 않았습니다). 각각 테스트넷 파라미터(최대 롤업 200, 최소 스테이크 10,000 QOR, 생성 소각률 0.01, 기본 챌린지 윈도우 3,600초, 최대 DA 블롭 크기 2,097,152바이트, 블롭 보존 432,000블록, 블록당 최대 10개 배치)와 `0 rollups`를 출력했습니다.
 
 ### TypeScript (테스트됨)
 
@@ -76,7 +76,7 @@ Python 3.10 이상이 필요합니다. `qorechain-rdk`는 `qorechain-pqc`에 의
 ### Go (테스트됨)
 
 ```bash
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.9.0
 ```
 
 ```go
@@ -138,7 +138,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```kotlin
 // build.gradle.kts
-implementation("io.github.qorechain:qorechain-rdk:0.8.0")
+implementation("io.github.qorechain:qorechain-rdk:0.9.0")
 ```
 
 ```java
@@ -183,7 +183,7 @@ npx create-qorechain-rollup my-rollup --template nft-rollup --network testnet --
 cd my-rollup && npm run doctor
 ```
 
-템플릿은 `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup`, `multivm-rollup`입니다. 스캐폴딩된 프로젝트는 `@qorechain/rdk` `^0.8.0`에 의존합니다(0.8.0 이전에는 `^0.7.0`). 0.6.1 스캐폴더로 `nft-rollup`을 스캐폴딩한 프로젝트의 `npm run doctor`는 테스트넷을 대상으로 통과했습니다(REST 접근 가능, 파라미터 읽기 가능, 네트워크 `qorechain-diana`. Celestia 데이터 가용성과 서명자 누락에 대해서는 경고를 표시합니다). `defi-rollup`을 스캐폴딩하고 `npm run typecheck`를 실행한 결과도 2026년 10월 27일에 현재 릴리스로 다시 통과했습니다. **아직 `defi-rollup`으로 롤업을 시작하지 마세요**([한계](#limits) 참고). 롤업을 생성하고 배치를 제출하려면 [롤업 배포하기](/rollups/deploying-a-rollup)를 따르세요. 트랜잭션에는 등록된 포스트 퀀텀 키가 필요하며, RDK에서는 `pqcKeypair`가 주어진 TypeScript 클라이언트가 필요합니다.
+템플릿은 `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup`, `multivm-rollup`입니다. 스캐폴딩된 프로젝트는 `@qorechain/rdk` `^0.9.0`에 의존합니다(0.8.0에서는 `^0.8.0`, 그 이전에는 `^0.7.0`). 0.6.1 스캐폴더로 `nft-rollup`을 스캐폴딩한 프로젝트의 `npm run doctor`는 테스트넷을 대상으로 통과했습니다(REST 접근 가능, 파라미터 읽기 가능, 네트워크 `qorechain-diana`. Celestia 데이터 가용성과 서명자 누락에 대해서는 경고를 표시합니다). `defi-rollup`을 스캐폴딩하고 `npm run typecheck`를 실행한 결과도 2026년 10월 27일에 현재 릴리스로 다시 통과했습니다. **아직 `defi-rollup`으로 롤업을 시작하지 마세요**([한계](#limits) 참고). 롤업을 생성하고 배치를 제출하려면 [롤업 배포하기](/rollups/deploying-a-rollup)를 따르세요. 트랜잭션에는 등록된 포스트 퀀텀 키가 필요하며, RDK에서는 `pqcKeypair`가 주어진 TypeScript 클라이언트가 필요합니다.
 
 ## 접근 방법 {#how-to-access}
 
@@ -203,7 +203,7 @@ cd my-rollup && npm run doctor
 | **자금이 있는 계정** | 스테이크, 레이어 스테이크, 수수료를 감당할 만큼의 QOR이 있는 계정. |
 | **에스크로 스테이크** | 롤업을 생성하면 `min_stake_for_rollup`, 즉 두 네트워크 모두 **10,000 QOR**가 에스크로됩니다. 생성 시 **스테이크의 1%(100 QOR)가 소각**되며, 나머지는 에스크로에 남아 롤업이 중지될 때 반환됩니다. |
 | **레이어 스테이크** | 생성 시 롤업의 레이어도 멀티레이어 모듈에 등록됩니다(최소 스테이크 1,000 QOR). 레이어를 등록할 수 없으면 롤업은 생성되지만 실제 레이어가 없으므로 배치를 앵커링할 수 없고 영수증도 발급할 수 없습니다. |
-| **등록된 포스트 퀀텀 키** | 계정에 등록된 ML-DSA-87 키. 기존 방식의 키만으로 서명한 Native 레인 트랜잭션은 거부됩니다. |
+| **등록된 포스트 퀀텀 키** | 계정에 등록된 ML-DSA-87 키. 기존 방식의 키만으로 서명한 Native 레인 트랜잭션은 거부됩니다. 새 계정은 다른 무엇보다 먼저 자체 트랜잭션으로 포스트 퀀텀 키를 등록해야 하며, RDK 클라이언트 0.9.0은 이 등록을 대신 수행합니다. |
 | **수수료** | 수수료 하한은 가스 단위당 0.1 uqor입니다. 가스 한도와 수수료를 함께 설정하세요. |
 | **도구** | CLI와 스캐폴더에는 Node 20 이상, Python 클라이언트에는 Python 3.10 이상(`liboqs` 포함, 위 참고), Java에는 Java 21 이상(RDK 0.8.0부터), Go 모듈 `github.com/qorechain/qorechain-rdk/packages/go`. |
 
@@ -249,19 +249,21 @@ cd my-rollup && npm run doctor
 
 ## 게시 위치 {#where-published}
 
-2026년 10월 27일에 레지스트리에서 버전을 확인했습니다. 모든 패키지는 Apache-2.0입니다.
+2026년 11월 12일에 레지스트리에서 버전을 확인했습니다. 모든 패키지는 Apache-2.0입니다.
+
+RDK 0.9.0(2026년 11월 12일)은 체인 v3.2.8을 지원합니다(테스트넷은 2026년 11월 12일부터 실행합니다): 롤업 데이터 게시, 기반 시퀀싱, qledger-v1 옵티미스틱 롤업과 사기 증명, 비공개 롤업, 정규 ZK 입력. STARK 정산은 일시 중지되어 있습니다. [GitHub의 릴리스 노트](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0)를 참고하세요.
 
 | 레지스트리 | 패키지 | 현재 버전 | 링크 |
 | -------- | ------- | --------------- | ---- |
-| npm | `@qorechain/rdk` (TypeScript 클라이언트) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
-| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
-| npm | `create-qorechain-rollup` (스캐폴더) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
-| PyPI | `qorechain-rdk` (import `qorrdk`) | 0.8.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
-| crates.io | `qorechain-rdk` (라이브러리 `qorechain_rdk`) | 0.8.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
-| Go 모듈 프록시 | `github.com/qorechain/qorechain-rdk/packages/go` | v0.8.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
-| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.8.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
+| npm | `@qorechain/rdk` (TypeScript 클라이언트) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
+| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
+| npm | `create-qorechain-rollup` (스캐폴더) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
+| PyPI | `qorechain-rdk` (import `qorrdk`) | 0.9.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
+| crates.io | `qorechain-rdk` (라이브러리 `qorechain_rdk`) | 0.9.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
+| Go 모듈 프록시 | `github.com/qorechain/qorechain-rdk/packages/go` | v0.9.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
+| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.9.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
 
-Maven Central은 이전 버전과 함께 0.7.0, 0.7.1, 0.8.0을 제공하며, Go 프록시의 `@latest`는 새 태그보다 늦을 수 있으므로 Go 버전을 고정하세요. 소스는 [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk)에 공개되어 있고, 릴리스 노트는 [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0)(및 [v0.7.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.1))에 있으며, 키트 자체 문서는 [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/)에 있습니다. TypeScript 패키지는 `@qorechain/sdk` `^0.10.0`(0.7.0부터. 0.6.x는 `^0.9.0` 사용. Python, Go, Rust, Java 패키지는 0.8.0부터 대응하는 QoreChain SDK 0.10.x 사용)과 `@qorechain/evm` `^0.8.0`에 의존하며, Python 패키지는 `qorechain-pqc` 0.2.x에 의존합니다. 체인의 `x/rdk` 모듈 로직 자체는 공개 키트에 포함되지 않습니다.
+Maven Central은 이전 버전과 함께 0.7.0, 0.7.1, 0.8.0, 0.9.0을 제공하며, Go 프록시의 `@latest`는 새 태그보다 늦을 수 있으므로 Go 버전을 고정하세요. 소스는 [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk)에 공개되어 있고, 릴리스 노트는 [v0.9.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0)(및 [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0), [v0.7.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.1))에 있으며, 키트 자체 문서는 [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/)에 있습니다. TypeScript 패키지는 `@qorechain/sdk` `^0.10.0`(0.7.0부터. 0.6.x는 `^0.9.0` 사용. Python, Go, Rust, Java 패키지는 0.8.0부터 대응하는 QoreChain SDK 0.10.x 사용)과 `@qorechain/evm` `^0.8.0`에 의존하며, Python 패키지는 `qorechain-pqc` 0.2.x에 의존합니다. 체인의 `x/rdk` 모듈 로직 자체는 공개 키트에 포함되지 않습니다.
 
 ## 한계와 알려진 문제 {#limits}
 
@@ -274,7 +276,7 @@ Maven Central은 이전 버전과 함께 0.7.0, 0.7.1, 0.8.0을 제공하며, Go
 * **(d) `defi` 템플릿의 데모 회로는 검증할 수 없습니다.** 이는 `snarkjs` 곱셈기이며, 체인은 이전 상태 루트, 상태 루트, 데이터 해시를 공개 입력으로 하는 BLS12-381 위의 Groth16을 검사하는데, 이 회로는 그것들을 노출하지 않습니다. 키 등록이 제공된 뒤에도 자체 회로가 필요합니다.
 * **모든 계정이 챌린지를 해결할 수 있습니다(v3.2.5 이상, 두 네트워크 모두).** 체인이 사기 증명 자체를 확인하며, v3.2.5 이전에는 롤업의 생성자만 해결을 제출할 수 있었습니다([체인 v3.2.5 동작](#v325)과 [옵티미스틱](#optimistic) 참조).
 * **라이브 네트워크에서 사용할 수 없는 것:** Celestia 데이터 가용성(미구현), [QCAI 롤업 코파일럿](/rollups/qcai-copilot)(어드바이저리 서비스가 공개 엔드포인트에 없음), 크로스 VM 호출(`0x...0901`의 프리컴파일이 메인넷에서 활성화되지 않았고, 테스트넷에서는 허용 목록과 함께 활성화되어 있으며 2026년 11월 7일 `eth_call`로 테스트함), 공유 및 based 시퀀서(체인은 설정된 시퀀서만, 설정이 없으면 생성자만 허용), 그리고 `suggest-profile`(고정된 폴백으로 `defi`를 반환).
-* **버전 참고.** 모든 용도에 0.8.0을 사용하세요(0.7.0 이하는 네트워크가 수락하는 `qorollup` 트랜잭션을 보낼 수 없고, 0.8.0 이전의 Python, Go, Rust, Java 클라이언트는 어떤 트랜잭션도 보낼 수 없습니다). 0.6.2 이하는 체인에서 검증되지 않는 출금 증명을 만들고, 0.6.1 이하는 npm으로 설치했을 때 `qorollup`이 아무것도 출력하지 않습니다. 0.5.0 이하는 영수증, 워치타워, 크로스 VM 콜데이터에 사용하지 마세요. 각 릴리스가 바꾼 내용의 전체 목록은 [RDK 0.8.0: 변경 사항과 한계](/rollups/deploying-a-rollup#rdk-050-limits)에 있습니다.
+* **버전 참고.** 모든 용도에 0.9.0을 사용하세요(0.7.0 이하는 네트워크가 수락하는 `qorollup` 트랜잭션을 보낼 수 없고, 0.8.0 이전의 Python, Go, Rust, Java 클라이언트는 어떤 트랜잭션도 보낼 수 없습니다). 0.6.2 이하는 체인에서 검증되지 않는 출금 증명을 만들고, 0.6.1 이하는 npm으로 설치했을 때 `qorollup`이 아무것도 출력하지 않습니다. 0.5.0 이하는 영수증, 워치타워, 크로스 VM 콜데이터에 사용하지 마세요. 각 릴리스가 바꾼 내용의 전체 목록은 [RDK 0.8.0: 변경 사항과 한계](/rollups/deploying-a-rollup#rdk-050-limits)에 있습니다.
 
 ---
 

@@ -100,7 +100,7 @@ Python istemcisi PyPI'da (`pip install qorechain-sdk`, sürüm 0.14.0, import
 `qorsdk`); Go istemcisi modül proxy'sinde
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`); Rust istemcisi
 crates.io'da (`cargo add qorechain-sdk`, 0.14.0); Java istemcisi ise Maven
-Central'da (`io.github.qorechain:qorechain-sdk`, JDK 17 veya üzeri); Maven Central 12 Kasım 2026'da hâlâ 0.13.0 gösteriyor; görününce 0.14.0'ı kullanın. Dil başına tüm komutlar için
+Central'da (`io.github.qorechain:qorechain-sdk`, 0.14.0, JDK 17 veya üzeri). Dil başına tüm komutlar için
 [Kurulum](/sdk/install) bölümüne bakın.
 
 ## Anımsatıcı ifadem (mnemonic) reddediliyor

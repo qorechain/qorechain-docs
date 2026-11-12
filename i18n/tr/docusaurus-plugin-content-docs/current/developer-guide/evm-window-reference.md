@@ -152,7 +152,7 @@ Aynı gün SDK 0.14.0 ile, `allowedTargets` (staking precompile adresi), `stakin
 
 ### Python, Go, Rust ve Java {#other-languages}
 
-Her SDK'nın mesaj için bir oluşturucusu ve bir REST okuması vardır. Hepsi zincirin sınırlarını yerelde denetler. v3.2.8 listelerini ayarlayan bir dil oluşturucusu, SDK 0.14.0 veya sonrasını gerektirir (Java: Maven Central'da göründüğünde 0.14.0; Maven Central 12 Kasım 2026'da hâlâ 0.13.0 gösteriyor); önceki sürümler yalnızca eski alanları oluşturur.
+Her SDK'nın mesaj için bir oluşturucusu ve bir REST okuması vardır. Hepsi zincirin sınırlarını yerelde denetler. v3.2.8 listelerini ayarlayan bir dil oluşturucusu, SDK 0.14.0 veya sonrasını gerektirir (Java: Maven Central'da 0.14.0); önceki sürümler yalnızca eski alanları oluşturur.
 
 | Dil | Açma (her liste ile) | Kapatma | Okuma | EVM limitleri |
 | -------- | ---------------------- | ----- | ---- | ---------- |

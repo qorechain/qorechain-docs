@@ -124,10 +124,10 @@ qorechaind query rdk list-rollups
 
 Rollup Development Kit, CLI ile aynı zincir üstü `x/rdk` modülü için iki herkese açık npm paketi olarak sunulur. Henüz her iki ağda da rollup bulunmadığından, kitin hiçbir işlem yolu canlı bir rollup üzerinde denenmemiştir; işlem göndermek için ona güvenmeden önce [RDK 0.8.0: değişiklikler ve sınırlar](#rdk-050-limits) bölümünü okuyun:
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.8.0`) — TypeScript SDK'sı: ön ayar profilleriyle bir yapılandırma oluşturucu, rollup ve yerleşim toplu iş (settlement-batch) yaşam döngüleri için işlem yardımcıları, native DA, tipli okuma istemcileri, ML-DSA-87 imzalı yerleşim makbuzları, QCAI Rollup Copilot, VM'ler arası calldata yardımcıları ve watchtower. `@qorechain/sdk` `^0.10.0` (0.7.0'dan itibaren; 0.6.x `^0.9.0` kullanıyordu) ve `@qorechain/evm` `^0.8.0` sürümlerine bağımlıdır.
-* **`create-qorechain-rollup`** (`v0.8.0`) — profil başına bir çalıştırılabilir başlangıç şablonunu (`multivm-rollup` şablonu dahil) klonlayan bir iskelet oluşturucu.
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.9.0`) — TypeScript SDK'sı: ön ayar profilleriyle bir yapılandırma oluşturucu, rollup ve yerleşim toplu iş (settlement-batch) yaşam döngüleri için işlem yardımcıları, native DA, tipli okuma istemcileri, ML-DSA-87 imzalı yerleşim makbuzları, QCAI Rollup Copilot, VM'ler arası calldata yardımcıları ve watchtower. `@qorechain/sdk` `^0.10.0` (0.7.0'dan itibaren; 0.6.x `^0.9.0` kullanıyordu) ve `@qorechain/evm` `^0.8.0` sürümlerine bağımlıdır.
+* **`create-qorechain-rollup`** (`v0.9.0`) — profil başına bir çalıştırılabilir başlangıç şablonunu (`multivm-rollup` şablonu dahil) klonlayan bir iskelet oluşturucu.
 
-Bunlar npm'e yayınlanmıştır. Depo ayrıca yayınlanmış bir operatör CLI'si olan **`@qorechain/rdk-cli`**'yi (`qorollup`, `v0.8.0`) sunar; bu, `doctor`, `create`, `status`, `watch`, `params`, `suggest`, yaşam döngüsü komutları (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw` ve `faucet` komutlarına, artı `receipt`, `advise` ve `watchtower` komutlarına sahiptir. 0.7.1'den beri işlem komutları hibrit imzalar (aşağıdaki sınırlara bakın).
+Bunlar npm'e yayınlanmıştır. Depo ayrıca yayınlanmış bir operatör CLI'si olan **`@qorechain/rdk-cli`**'yi (`qorollup`, `v0.9.0`) sunar; bu, `doctor`, `create`, `status`, `watch`, `params`, `suggest`, yaşam döngüsü komutları (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw` ve `faucet` komutlarına, artı `receipt`, `advise` ve `watchtower` komutlarına sahiptir. 0.7.1'den beri işlem komutları hibrit imzalar (aşağıdaki sınırlara bakın).
 
 Sürümlere göre öne çıkanlar:
 
@@ -140,9 +140,10 @@ Sürümlere göre öne çıkanlar:
 * **v0.6.2 (27 Ekim 2026 tarihli GitHub sürümü)**: kütüphane değişikliği olmayan bir CLI acil düzeltmesi: npm'den kurulan `qorollup` (yerel, genel veya `npx`) yeniden çalışır ve `qorollup --version` ile `create-qorechain-rollup --version` gerçek sürümlerini yazdırır. Diğer paketler, her kayıt defteri tek bir sürümde kalsın diye 0.6.2 olarak yeniden yayınlandı.
 * **v0.7.0 (27 Ekim 2026 tarihli GitHub sürümü)**: beş dilin hepsinde zincir v3.2.5'e hazırdır (her iki ağ da onu ve v3.2.6'yı çalıştırır: mainnet v3.2.5'i 29 Ekim 2026'da ve v3.2.6'yı 4 Kasım'da, test ağı v3.2.5'i 26 Ekim'de ve v3.2.6'yı 27 Ekim'de uyguladı; test ağı o zamandan beri v3.2.7'ye ve ardından v3.2.8'e geçti) ve çekimlerin ile veri kullanılabilirliği blob'larının nasıl karmalandığını düzeltir: 0.6.x varsayılanlarıyla oluşturulan çekim kanıtları zincirde hiç doğrulanmıyordu, 0.7.0 ise zincirin tam ağacını oluşturur. `@qorechain/sdk` `^0.10.0` sürümüne geçer ve şablonlar `@qorechain/rdk` `^0.7.0` sürümünü sabitler. Ayrıntılar aşağıdadır.
 * **v0.7.1 (30 Ekim 2026 tarihli GitHub sürümü)**: işlem komutları artık her iki ağın gerektirdiği gibi hibrit imzalayan `qorollup` operatör CLI'si için bir acil düzeltme.
-* **v0.8.0 (30 Ekim 2026 tarihli GitHub sürümü; güncel)**: Python, Go, Rust ve Java istemcileri de hibrit imzalar; böylece her RDK istemcisi mainnet'te ve test ağında işlem gönderebilir. Java 21 gereklidir.
+* **v0.8.0 (30 Ekim 2026 tarihli GitHub sürümü)**: Python, Go, Rust ve Java istemcileri de hibrit imzalar; böylece her RDK istemcisi mainnet'te ve test ağında işlem gönderebilir. Java 21 gereklidir.
+* **v0.9.0 (12 Kasım 2026 tarihli GitHub sürümü; güncel)**: zincir v3.2.8'i destekler (test ağı 12 Kasım 2026'dan beri onu çalıştırır): rollup veri gönderimi, tabanlı sıralama (based sequencing), hile kanıtlı (fraud proof) qledger-v1 optimistik rollup'ları, özel rollup'lar, kanonik ZK girdileri; STARK mutabakatı duraklatılmıştır. Bkz. [GitHub'daki sürüm notları](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0). Yeni bir hesap, başka herhangi bir şeyden önce kuantum sonrası anahtarını kendi başına bir işlemde kaydetmelidir; RDK istemcileri 0.9.0 bu kaydı sizin için yapar.
 
-**Yayınlanmış sürümler (31 Ekim 2026'da her kayıt defterinde kontrol edildi).** npm `@qorechain/rdk`, `@qorechain/rdk-cli` ve `create-qorechain-rollup`: **0.8.0** (`latest`); PyPI `qorechain-rdk`: 0.8.0; crates.io `qorechain-rdk`: 0.8.0; Maven Central `io.github.qorechain:qorechain-rdk`: 0.8.0 (`maven-metadata.xml` dosyası daha önceki sürümlerin yanı sıra 0.7.0 ve 0.7.1'i de listeler); Go modülü `github.com/qorechain/qorechain-rdk/packages/go`: `v0.8.0` (modül proxy'sinin `@latest` değeri yeni bir etiketin gerisinde kalabilir, bu yüzden `@v0.8.0` sürümünü açıkça sabitleyin). GitHub sürümü [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0) sürümüdür.
+**Yayınlanmış sürümler (12 Kasım 2026'da her kayıt defterinde kontrol edildi).** npm `@qorechain/rdk`, `@qorechain/rdk-cli` ve `create-qorechain-rollup`: **0.9.0** (`latest`); PyPI `qorechain-rdk`: 0.9.0; crates.io `qorechain-rdk`: 0.9.0; Maven Central `io.github.qorechain:qorechain-rdk`: 0.9.0 (önceki sürümler erişilebilir kalır); Go modülü `github.com/qorechain/qorechain-rdk/packages/go`: `v0.9.0` (modül proxy'sinin `@latest` değeri yeni bir etiketin gerisinde kalabilir, bu yüzden `@v0.9.0` sürümünü açıkça sabitleyin). GitHub sürümü [v0.9.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0) sürümüdür.
 
 #### RDK 0.8.0: değişiklikler ve sınırlar {#rdk-050-limits}
 
@@ -223,17 +224,17 @@ pip install qorechain-rdk
 cargo add qorechain-rdk
 
 # Go (sürümü sabitleyin)
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.9.0
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.8.0 (Java 21 gerekir)
+# io.github.qorechain:qorechain-rdk:0.9.0 (Java 21 gerekir)
 ```
 
 ```python
 import qorrdk
 ```
 
-Güncel yayınlanmış sürümlerin hepsi **0.8.0**'dır (31 Ekim 2026'da kontrol edildi): Python `qorechain-rdk` (PyPI, `qorrdk` olarak içe aktarılır), Go modülü `github.com/qorechain/qorechain-rdk/packages/go` (`v0.8.0`), Rust `qorechain-rdk` (crates.io) ve Java `io.github.qorechain:qorechain-rdk` (Maven Central; 0.8.0'dan itibaren **Java 21 veya üstü**). Bu istemciler zincir durumunu okur ve 0.8.0'dan itibaren kuantum sonrası bir anahtar çifti verdiğinizde hibrit imzalı işlemler gönderir (bkz. [RDK 0.8.0: değişiklikler ve sınırlar](#rdk-050-limits)).
+Güncel yayınlanmış sürümlerin hepsi **0.9.0**'dır (12 Kasım 2026'da kontrol edildi): Python `qorechain-rdk` (PyPI, `qorrdk` olarak içe aktarılır), Go modülü `github.com/qorechain/qorechain-rdk/packages/go` (`v0.9.0`), Rust `qorechain-rdk` (crates.io) ve Java `io.github.qorechain:qorechain-rdk` (Maven Central; 0.8.0'dan itibaren **Java 21 veya üstü**). Bu istemciler zincir durumunu okur ve 0.8.0'dan itibaren kuantum sonrası bir anahtar çifti verdiğinizde hibrit imzalı işlemler gönderir (bkz. [RDK 0.8.0: değişiklikler ve sınırlar](#rdk-050-limits)).
 
 :::note
 TypeScript RDK ve şablonları varsayılan olarak **`qorechain-diana`** test ağını kullanır ve ön ayarlar kutudan çıktığı gibi herkese açık canlı uç noktalara ulaşır. Sürümleri sabitleyin ve mainnet öncesinde test ağında doğrulayın.
@@ -258,7 +259,7 @@ npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet -
 İskelet oluşturucu, belgelenmiş stake ve oluşturma yakımı (creation-burn) maliyetini ve rollup'ınızı oluşturmak ve durumunu okumak için sonraki adımları yazdırır.
 
 :::caution İskeletlenmiş betikler neler yapabilir
-`create-qorechain-rollup` 0.8.0 şablonları `@qorechain/rdk` `^0.8.0` sürümüne bağımlıdır. `create` ve `submit-batch` betikleri, kuantum sonrası anahtarınızı `QORE_MNEMONIC` değerinden (veya `QORE_OPERATOR_PRIVATE_KEY_HEX` ile imzalıyorsanız `QORE_PQC_SEED_HEX` değerinden) çözen, zincire karşı denetleyen ve hibrit imzalayan `src/signer.ts` içindeki `connectOperator()` üzerinden bağlanır; ikisi de ayarlı değilse betik uyarı verir ve yalnızca klasik imzalar; bunu her iki ağ da reddeder. Hiçbir ağda bir şablon aracılığıyla rollup oluşturulmamıştır; bu yüzden bu yol canlıda denenmemiştir. Başlangıç şablonunun `submit-batch` betiği yalnızca bir referans akıştır: 0.6.1'den beri `dataHash` alanını boş bırakır (zincir, native DA'lı bir rollup'ta veri karmasını reddeder) ve optimistic şablonlar yer tutucu yerine kanonik durum kökünü yayınlar; geri kalanı için hâlâ örnek değerler kullanır ve canlı bir ağda bir toplu işi sonlandırması beklenmez. `defi-rollup` şablonu (ZK), 0.7.0'dan itibaren bir toplu iş göndermeden önce durur, çünkü zincir onu reddederdi (bkz. [ZK / STARK ve Çekimler](/rollups/zk-stark-withdrawals)).
+`create-qorechain-rollup` 0.9.0 şablonları `@qorechain/rdk` `^0.9.0` sürümüne bağımlıdır. `create` ve `submit-batch` betikleri, kuantum sonrası anahtarınızı `QORE_MNEMONIC` değerinden (veya `QORE_OPERATOR_PRIVATE_KEY_HEX` ile imzalıyorsanız `QORE_PQC_SEED_HEX` değerinden) çözen, zincire karşı denetleyen ve hibrit imzalayan `src/signer.ts` içindeki `connectOperator()` üzerinden bağlanır; ikisi de ayarlı değilse betik uyarı verir ve yalnızca klasik imzalar; bunu her iki ağ da reddeder. Hiçbir ağda bir şablon aracılığıyla rollup oluşturulmamıştır; bu yüzden bu yol canlıda denenmemiştir. Başlangıç şablonunun `submit-batch` betiği yalnızca bir referans akıştır: 0.6.1'den beri `dataHash` alanını boş bırakır (zincir, native DA'lı bir rollup'ta veri karmasını reddeder) ve optimistic şablonlar yer tutucu yerine kanonik durum kökünü yayınlar; geri kalanı için hâlâ örnek değerler kullanır ve canlı bir ağda bir toplu işi sonlandırması beklenmez. `defi-rollup` şablonu (ZK), 0.7.0'dan itibaren bir toplu iş göndermeden önce durur, çünkü zincir onu reddederdi (bkz. [ZK / STARK ve Çekimler](/rollups/zk-stark-withdrawals)).
 :::
 
 ### Koddan bir rollup yapılandırması oluşturma

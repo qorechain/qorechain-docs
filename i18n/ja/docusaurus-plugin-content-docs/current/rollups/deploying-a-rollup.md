@@ -124,10 +124,10 @@ qorechaind query rdk list-rollups
 
 Rollup Development Kitは、CLIと同じオンチェーンの `x/rdk` モジュール向けに、2つの公開npmパッケージとして提供されています。どちらのネットワークにもまだロールアップは存在しないため、このキットのトランザクション経路はいずれも実際のロールアップでは試されていません。トランザクション送信にこれを頼る前に、[RDK 0.8.0:変更点と制限事項](#rdk-050-limits)を確認してください。
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)**(`v0.8.0`)— TypeScript SDK:プリセットプロファイル付きのコンフィグビルダー、ロールアップおよび決済バッチのライフサイクル向けトランザクションヘルパー、ネイティブDA、型付き読み取りクライアント、ML-DSA-87署名付きの決済レシート、QCAI Rollup Copilot、クロスVMのcalldataヘルパー、ウォッチタワー。`@qorechain/sdk` `^0.10.0`(0.7.0から。0.6.xは `^0.9.0` を使用)と `@qorechain/evm` `^0.8.0` に依存します。
-* **`create-qorechain-rollup`**(`v0.8.0`)— プロファイルごとに実行可能なスターターテンプレートを1つクローンするスキャフォルダー(`multivm-rollup` テンプレートを含む)。
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)**(`v0.9.0`)— TypeScript SDK:プリセットプロファイル付きのコンフィグビルダー、ロールアップおよび決済バッチのライフサイクル向けトランザクションヘルパー、ネイティブDA、型付き読み取りクライアント、ML-DSA-87署名付きの決済レシート、QCAI Rollup Copilot、クロスVMのcalldataヘルパー、ウォッチタワー。`@qorechain/sdk` `^0.10.0`(0.7.0から。0.6.xは `^0.9.0` を使用)と `@qorechain/evm` `^0.8.0` に依存します。
+* **`create-qorechain-rollup`**(`v0.9.0`)— プロファイルごとに実行可能なスターターテンプレートを1つクローンするスキャフォルダー(`multivm-rollup` テンプレートを含む)。
 
-これらはnpmで公開されています。リポジトリには公開済みのオペレーターCLI **`@qorechain/rdk-cli`**(`qorollup`、`v0.8.0`)も含まれており、`doctor`、`create`、`status`、`watch`、`params`、`suggest`、ライフサイクル(`pause`/`resume`/`stop`)、`keygen`、`manifest`、`withdraw`、`faucet` の各コマンドと、`receipt`、`advise`、`watchtower` コマンドが利用できます。0.7.1 以降、そのトランザクションコマンドはハイブリッドで署名します(下記の制限事項を参照)。
+これらはnpmで公開されています。リポジトリには公開済みのオペレーターCLI **`@qorechain/rdk-cli`**(`qorollup`、`v0.9.0`)も含まれており、`doctor`、`create`、`status`、`watch`、`params`、`suggest`、ライフサイクル(`pause`/`resume`/`stop`)、`keygen`、`manifest`、`withdraw`、`faucet` の各コマンドと、`receipt`、`advise`、`watchtower` コマンドが利用できます。0.7.1 以降、そのトランザクションコマンドはハイブリッドで署名します(下記の制限事項を参照)。
 
 リリースごとのハイライト:
 
@@ -140,9 +140,10 @@ Rollup Development Kitは、CLIと同じオンチェーンの `x/rdk` モジュ�
 * **v0.6.2(2026年10月27日のGitHubリリース)**:ライブラリの変更がないCLIのホットフィックスです。npmからインストールした(ローカル、グローバル、または `npx`)`qorollup` が再び動作し、`qorollup --version` と `create-qorechain-rollup --version` が実際のバージョンを表示します。他のパッケージも、すべてのレジストリを同じバージョンに保つために0.6.2として再リリースされました。
 * **v0.7.0(2026年10月27日のGitHubリリース)**:5言語すべてでチェーン v3.2.5 に対応しました(両ネットワークで稼働中で、v3.2.6 も同様です。メインネットは v3.2.5 を2026年10月29日に、v3.2.6 を11月4日に適用し、テストネットは v3.2.5 を10月26日に、v3.2.6 を10月27日に適用しました。テストネットはその後 v3.2.7、続いて v3.2.8 に移行しています)。また、出金とデータ可用性blobのハッシュ方法を修正しています。0.6.xのデフォルトで構築した出金証明はチェーン上で一度も検証を通りませんでしたが、0.7.0はチェーンとまったく同じツリーを構築します。`@qorechain/sdk` `^0.10.0` に移行し、テンプレートは `@qorechain/rdk` `^0.7.0` に固定されます(0.8.0 以降は `^0.8.0`)。詳細は以下のとおりです。
 * **v0.7.1(2026年10月30日のGitHubリリース)**:`qorollup` オペレーター CLI のホットフィックスです。そのトランザクションコマンドは、両ネットワークが要求するとおり、ハイブリッドで署名するようになりました。
-* **v0.8.0(2026年10月30日のGitHubリリース。現行)**:Python、Go、Rust、Java のクライアントもハイブリッドで署名するため、すべての RDK クライアントがメインネットとテストネットでトランザクションを送信できます。Java 21 が必要です。
+* **v0.8.0(2026年10月30日のGitHubリリース)**:Python、Go、Rust、Java のクライアントもハイブリッドで署名するため、すべての RDK クライアントがメインネットとテストネットでトランザクションを送信できます。Java 21 が必要です。
+* **v0.9.0(2026年11月12日のGitHubリリース。現行)**:チェーン v3.2.8 に対応します(テストネットは2026年11月12日から v3.2.8 で稼働しています)。ロールアップのデータ投稿、ベースドシーケンシング、不正証明付きの qledger-v1 オプティミスティックロールアップ、プライベートロールアップ、正準な ZK 入力に対応し、STARK 決済は一時停止されています。[GitHub のリリースノート](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0)を参照してください。新しいアカウントは、ほかの何よりも先に、専用のトランザクションでポスト量子鍵を登録する必要があります。RDK クライアント 0.9.0 はこの登録を代わりに行います。
 
-**公開バージョン(2026年10月31日にすべてのレジストリで確認)。** npm の `@qorechain/rdk`、`@qorechain/rdk-cli`、`create-qorechain-rollup`:**0.8.0**(`latest`)。PyPI `qorechain-rdk`:0.8.0。crates.io `qorechain-rdk`:0.8.0。Maven Central `io.github.qorechain:qorechain-rdk`:0.8.0(その `maven-metadata.xml` には、以前のバージョンに加えて0.7.0と0.7.1も記載されています)。Goモジュール `github.com/qorechain/qorechain-rdk/packages/go`:`v0.8.0`(モジュールプロキシの `@latest` は新しいタグに遅れることがあるため、`@v0.8.0` を明示的に指定してください)。GitHubリリースは [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0) です。
+**公開バージョン(2026年11月12日にすべてのレジストリで確認)。** npm の `@qorechain/rdk`、`@qorechain/rdk-cli`、`create-qorechain-rollup`:**0.9.0**(`latest`)。PyPI `qorechain-rdk`:0.9.0。crates.io `qorechain-rdk`:0.9.0。Maven Central `io.github.qorechain:qorechain-rdk`:0.9.0(以前のバージョンも引き続き利用できます)。Goモジュール `github.com/qorechain/qorechain-rdk/packages/go`:`v0.9.0`(モジュールプロキシの `@latest` は新しいタグに遅れることがあるため、`@v0.9.0` を明示的に指定してください)。GitHubリリースは [v0.9.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0) です。
 
 #### RDK 0.8.0:変更点と制限事項 {#rdk-050-limits}
 
@@ -223,17 +224,17 @@ pip install qorechain-rdk
 cargo add qorechain-rdk
 
 # Go (pin the version)
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.9.0
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.8.0 (needs Java 21)
+# io.github.qorechain:qorechain-rdk:0.9.0 (needs Java 21)
 ```
 
 ```python
 import qorrdk
 ```
 
-現在公開されているバージョンはすべて **0.8.0** です(2026年10月31日確認):Python `qorechain-rdk`(PyPI、インポート名 `qorrdk`)、Goモジュール `github.com/qorechain/qorechain-rdk/packages/go`(`v0.8.0`)、Rust `qorechain-rdk`(crates.io)、Java `io.github.qorechain:qorechain-rdk`(Maven Central。0.8.0 から **Java 21 以降**)。これらのクライアントはチェーンの状態を読み取り、0.8.0 以降は、ポスト量子キーペアを渡すとハイブリッドで署名したトランザクションを送信します([RDK 0.8.0:変更点と制限事項](#rdk-050-limits)を参照)。
+現在公開されているバージョンはすべて **0.9.0** です(2026年11月12日確認):Python `qorechain-rdk`(PyPI、インポート名 `qorrdk`)、Goモジュール `github.com/qorechain/qorechain-rdk/packages/go`(`v0.9.0`)、Rust `qorechain-rdk`(crates.io)、Java `io.github.qorechain:qorechain-rdk`(Maven Central。0.8.0 から **Java 21 以降**)。これらのクライアントはチェーンの状態を読み取り、0.8.0 以降は、ポスト量子キーペアを渡すとハイブリッドで署名したトランザクションを送信します([RDK 0.8.0:変更点と制限事項](#rdk-050-limits)を参照)。
 
 :::note
 TypeScript RDKとそのテンプレートはデフォルトで **`qorechain-diana`** テストネットを対象としており、プリセットは公開ライブエンドポイントにそのまま到達します。バージョンを固定し、メインネットの前にテストネットで検証してください。
@@ -258,7 +259,7 @@ npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet -
 スキャフォルダーは、ドキュメント化されたステーク額と作成時バーンのコスト、およびロールアップを作成してそのステータスを読み取るための次のステップを表示します。
 
 :::caution スキャフォールドされたスクリプトにできること
-`create-qorechain-rollup` 0.8.0 のテンプレートは `@qorechain/rdk` `^0.8.0` に依存しています。その `create` と `submit-batch` のスクリプトは `src/signer.ts` の `connectOperator()` を通じて接続します。これは `QORE_MNEMONIC`(または `QORE_OPERATOR_PRIVATE_KEY_HEX` で署名する場合は `QORE_PQC_SEED_HEX`)からポスト量子鍵を解決し、チェーンに対して確認して、ハイブリッドで署名します。どちらも設定されていない場合、スクリプトは警告を出してクラシック署名のみで署名しますが、両ネットワークはこれを拒否します。テンプレートを通じてライブネットワーク上でロールアップが作成されたことはないため、この経路はライブでは未検証です。スターターの `submit-batch` スクリプトは参照用のフローにすぎません。0.6.1以降は `dataHash` を空のままにし(チェーンはネイティブDAのロールアップのデータハッシュを拒否します)、オプティミスティックテンプレートはプレースホルダーの代わりに正準ステートルートを公開します。それ以外には引き続き例示的な値を使用しており、ライブネットワーク上でバッチをファイナライズすることは想定されていません。`defi-rollup` テンプレート(ZK)は、チェーンが拒否するため、0.7.0からバッチを送信する前に停止します([ZK / STARKと出金](/rollups/zk-stark-withdrawals)を参照)。
+`create-qorechain-rollup` 0.9.0 のテンプレートは `@qorechain/rdk` `^0.9.0` に依存しています。その `create` と `submit-batch` のスクリプトは `src/signer.ts` の `connectOperator()` を通じて接続します。これは `QORE_MNEMONIC`(または `QORE_OPERATOR_PRIVATE_KEY_HEX` で署名する場合は `QORE_PQC_SEED_HEX`)からポスト量子鍵を解決し、チェーンに対して確認して、ハイブリッドで署名します。どちらも設定されていない場合、スクリプトは警告を出してクラシック署名のみで署名しますが、両ネットワークはこれを拒否します。テンプレートを通じてライブネットワーク上でロールアップが作成されたことはないため、この経路はライブでは未検証です。スターターの `submit-batch` スクリプトは参照用のフローにすぎません。0.6.1以降は `dataHash` を空のままにし(チェーンはネイティブDAのロールアップのデータハッシュを拒否します)、オプティミスティックテンプレートはプレースホルダーの代わりに正準ステートルートを公開します。それ以外には引き続き例示的な値を使用しており、ライブネットワーク上でバッチをファイナライズすることは想定されていません。`defi-rollup` テンプレート(ZK)は、チェーンが拒否するため、0.7.0からバッチを送信する前に停止します([ZK / STARKと出金](/rollups/zk-stark-withdrawals)を参照)。
 :::
 
 ### コードからロールアップ構成を構築する

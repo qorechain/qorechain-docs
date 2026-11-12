@@ -98,7 +98,7 @@ Python 클라이언트는 PyPI에 있으며(`pip install qorechain-sdk`로 0.14.
 import), Go 클라이언트는 모듈 프록시에 있습니다
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`). Rust 클라이언트는
 crates.io에 있으며(`cargo add qorechain-sdk`, 0.14.0), Java 클라이언트는 Maven Central에
-있으며(`io.github.qorechain:qorechain-sdk`, JDK 17 이상), 2026년 11월 12일 기준 여전히 0.13.0이 표시됩니다. 0.14.0이 나타나면 그것을 사용하세요. 언어별 전체 설치 명령은
+있으며(`io.github.qorechain:qorechain-sdk`, 0.14.0, JDK 17 이상), 언어별 전체 설치 명령은
 [설치](/sdk/install) 문서를 참고하세요.
 
 ## 니모닉이 거부됩니다

@@ -9,7 +9,7 @@ sidebar_position: 32
 
 QoreChain custody kit este un ghid de integrare scris, un set de vectori de test și un cod de referință mic pentru custozii și bursele care dețin fondurile clienților pe QoreChain. Explică ce cere rețeaua pe fiecare traseu de execuție și arată, în cod ușor de citit, părțile unei integrări în care se greșește ușor: verificarea unei adrese, decodarea și verificarea unei tranzacții semnate înainte de a fi transmisă în rețea și decizia asupra transferurilor primite care se creditează.
 
-Este destinat custozilor, burselor, procesatorilor de plăți și backend-urilor de portofele, precum și inginerilor și auditorilor care revizuiesc aceste integrări. Versiunea **0.1.0**, publicată la 27 octombrie 2026, Apache-2.0. Funcționează cu mainnet-ul (`qorechain-vladi`) și cu testnet-ul (`qorechain-diana`); verificările live livrate odată cu el rulează pe testnet și doar citesc.
+Este destinat custozilor, burselor, procesatorilor de plăți și backend-urilor de portofele, precum și inginerilor și auditorilor care revizuiesc aceste integrări. Versiunea **0.1.1**, publicată la 12 noiembrie 2026 (0.1.0 a fost publicată la 27 octombrie 2026), Apache-2.0. Funcționează cu mainnet-ul (`qorechain-vladi`) și cu testnet-ul (`qorechain-diana`); verificările live livrate odată cu el rulează pe testnet și doar citesc.
 
 **Citește mai întâi: kitul este cod de exemplu, nu o bibliotecă.** Clonezi repository-ul și citești, copiezi sau incluzi în proiect (vendor) folderul pentru limbajul tău. Nu există pachet npm, PyPI, crates.io sau Maven Central al kitului, în mod intenționat. Singura excepție ca formă este Go: folderul Go este un modul Go cu versiune etichetată, așa că `go get` îl poate descărca, dar rămâne cod de exemplu, fără promisiunea unui API stabil (vezi [Ce este bibliotecă și ce este cod de exemplu](#library-vs-example)). Semnarea și verificarea criptografică provin din [QoreSign](/qoresign/overview), care este o bibliotecă publicată.
 
@@ -50,7 +50,7 @@ Este destinat custozilor, burselor, procesatorilor de plăți și backend-urilor
 |---|---|---|
 | QoreSign (semnare, verificare ML-DSA-87 și secp256k1, mesajul de înregistrare a cheii) | Bibliotecă publicată | npm, PyPI, crates.io, Go, Maven Central. Vezi [QoreSign](/qoresign/overview). |
 | Codul kitului în TypeScript, Python, Rust și Java | Cod de exemplu, nepublicat în niciun registru | Clonează `qorechain/qorechain-custody-kit` și copiază sau include în proiect (vendor) folderul. |
-| Codul kitului în Go (pachetul `custodykit`) | Cod de exemplu. Poate fi descărcat ca modul Go la o versiune etichetată, fără promisiunea unui API stabil | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0`, sau clonează și include în proiect (vendor). |
+| Codul kitului în Go (pachetul `custodykit`) | Cod de exemplu. Poate fi descărcat ca modul Go la o versiune etichetată, fără promisiunea unui API stabil | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1`, sau clonează și include în proiect (vendor). |
 | Paginile de ghid, vectorii și lista de verificare | Documentație și date | Repository-ul. |
 
 Kitul nu implementează nicio schemă de semnătură. Verificarea ML-DSA-87 și secp256k1 provine din QoreSign. Codul Python conține un mic Keccak-256 folosit pentru suma de control EIP-55 și nimic altceva.
@@ -95,6 +95,7 @@ Kitul nu implementează nicio schemă de semnătură. Verificarea ML-DSA-87 și 
 - O fereastră se deschide cu `/qorechain.pqc.v1.MsgOpenEVMWindow` (`blocks` de la 1 la 17,280, `max_txs` de la 1 la 1,000, `max_value` în `uqor` incluzând valoarea plus taxa maximă, `native_only` opțional, `allowed_targets` opțional cu până la 16 adrese) și se închide cu `MsgCloseEVMWindow`. Starea este la `GET /qorechain/pqc/v1/evm_window/{address}`.
 - Deschiderea unei ferestre înlocuiește orice fereastră existentă și avansează secvența contului, care este nonce-ul său EVM: deschide fereastra, apoi citește nonce-ul.
 - `eth_call` și `eth_estimateGas` nu necesită fereastră.
+- Decodoarele kitului (de la 0.1.1) acceptă câmpurile 5 până la 9 ale ferestrei EVM din mesajele ferestrei, deci o tranzacție care deschide o fereastră cu câmpurile din v3.2.8 se decodează.
 
 ## Cum se utilizează {#how-to-use}
 
@@ -106,7 +107,7 @@ Kitul este cod de referință: clonează repository-ul sau include în proiect (
 |---|---|---|---|
 | TypeScript | `git clone https://github.com/qorechain/qorechain-custody-kit`, apoi `cd code/ts && pnpm install && pnpm build` | `@qorechain/qoresign` 0.1.0 (npm) | Node.js 20 |
 | Python | clonează, apoi `cd code/python && pip install -r requirements-dev.txt`. Pentru `verify_tx` rulează și `pip install qorechain-qoresign==0.1.1` | nimic la rulare; `qorechain-qoresign` 0.1.1 (PyPI) pentru `verify_tx` | Python 3.9 |
-| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0` (pachetul `custodykit`), sau clonează | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
+| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1` (pachetul `custodykit`), sau clonează | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
 | Rust | clonează, apoi `cd code/rust && cargo build` (nu este pe crates.io) | `qorechain-qoresign` 0.1.0 (crates.io) | Rust ediția 2021 |
 | Java | clonează, apoi `cd code/java && mvn test` (nu este pe Maven Central) | `io.github.qorechain:qoresign:0.1.0` (Maven Central), Gson | Java 17 |
 
@@ -289,16 +290,16 @@ Ramifică logica după codespace și cod împreună și păstrează log-ul brut.
 - Rotația folosește `MsgRotatePQCKey`: ambele chei semnează, stratul propriu al tranzacției folosește cheia curentă, iar reutilizarea unei chei anterioare este refuzată. Dacă cheia secp256k1 este expusă, mută fondurile la o adresă nouă, cu ambele chei noi, și închide orice fereastră EVM deschisă.
 - Ferestre EVM: folosește `native_only` acolo unde se mișcă doar QOR. `allowed_targets` limitează ce contracte și tokenuri pot fi atinse, nu cât: un token listat admite orice sumă, inclusiv `approve`, deci nu lista niciodată contracte de tip forwarder sau router. Ferestrele limitează doar tranzacțiile pe lane-ul EVM semnate clasic; mesajele Cosmos cu semnătură hibridă (apeluri cross-VM, authz) sunt în afara lor. Folosește cele mai mici `max_value` și `blocks` care acoperă lotul și închide fereastra după lot. Tratează `MsgSetWithdrawAddress`, `MsgRotatePQCKey`, `MsgOpenEVMWindow` și `MsgAuthorizeEVMDelegation` ca operațiuni privilegiate.
 - Nu credita niciodată o tranzacție EVM al cărei eveniment `ethereum_tx` raportează un eșec, chiar dacă rezultatul ei native este `code == 0`.
-- Acesta este cod de referință la versiunea 0.1.0. Revizuiește-l înainte să-l folosești în producție. Raportează vulnerabilitățile în privat la security@qore.network, inclusiv erorile de documentație care ar putea duce la o creditare greșită sau la o semnare neintenționată.
+- Acesta este cod de referință la versiunea 0.1.1. Revizuiește-l înainte să-l folosești în producție. Raportează vulnerabilitățile în privat la security@qore.network, inclusiv erorile de documentație care ar putea duce la o creditare greșită sau la o semnare neintenționată.
 
 ## Unde este publicat {#where-published}
 
-Verificat față de registre la 4 noiembrie 2026 (versiuni și etichete neschimbate din 27 octombrie).
+Verificat față de registre la 12 noiembrie 2026.
 
 | Registru | Pachet | Versiune | Link |
 |---|---|---|---|
-| GitHub | `qorechain/qorechain-custody-kit` (toate cele cinci limbaje, paginile de ghid, vectorii) | release `v0.1.0`, publicat la 27 octombrie 2026 | https://github.com/qorechain/qorechain-custody-kit |
-| Proxy-ul de module Go | `github.com/qorechain/qorechain-custody-kit/code/go` (cod de exemplu, descărcabil) | v0.1.0 (eticheta `code/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
+| GitHub | `qorechain/qorechain-custody-kit` (toate cele cinci limbaje, paginile de ghid, vectorii) | release `v0.1.1`, publicat la 12 noiembrie 2026 (`v0.1.0` la 27 octombrie 2026) | https://github.com/qorechain/qorechain-custody-kit |
+| Proxy-ul de module Go | `github.com/qorechain/qorechain-custody-kit/code/go` (cod de exemplu, descărcabil) | v0.1.1 (eticheta `code/go/v0.1.1`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
 | npm, PyPI, crates.io, Maven Central | nepublicat: kitul este cod de exemplu de copiat sau inclus în proiect (vendor) | nu se aplică | nu se aplică |
 
 Release-ul GitHub nu are fișiere atașate; release-ul este eticheta repository-ului. Dependențele pe care se bazează kitul, toate publicate: `@qorechain/qoresign` pe npm (ultima 0.1.1, kitul fixează 0.1.0), `qorechain-qoresign` pe PyPI (0.1.1), `qorechain-qoresign` pe crates.io (ultima 0.1.1, kitul fixează 0.1.0), `github.com/qorechain/qoresign/go` (v0.1.0 și v0.1.1) și `io.github.qorechain:qoresign` pe Maven Central (0.1.0 și 0.1.1).
@@ -313,7 +314,7 @@ Licență Apache-2.0. Mentenanță: QoreChain Association.
 - `extractDeposits` creditează automat `MsgSend`, `MsgMultiSend` și `MsgEthereumTx` reușite. Celelalte mesaje (retrageri de recompense, apeluri de contract, transferuri IBC) sunt returnate pentru revizuire, nu creditate.
 - `verifyTx` verifică tranzacții cu un singur semnatar.
 - Traseul SVM nu este deschis pentru tranzacții. Nu construi fluxuri de depunere sau retragere pe el.
-- Codul propriu al kitului este cod de exemplu la 0.1.0. Numele și semnăturile funcțiilor se pot schimba între versiuni, iar eticheta modulului Go nu promite un API stabil.
+- Codul propriu al kitului este cod de exemplu la 0.1.1. Numele și semnăturile funcțiilor se pot schimba între versiuni, iar eticheta modulului Go nu promite un API stabil.
 - La scrierea acestei pagini au fost rulate doar exemplele și suita de teste Go. Verificările live și verificările de vectori din celelalte patru limbaje nu au fost rulate din nou.
 - README-ul Python al repository-ului poate spune încă faptul că `verify_tx` ridică o eroare de import până când `qorechain-qoresign` 0.1.1 ajunge pe PyPI. Acea versiune este publicată, deci nota este depășită.
 - Ghidul kitului citează parametri (cifre de gas, valori ale nivelului de staking) citiți la 27 octombrie 2026. În producție citește-i din lanț.

@@ -10,15 +10,15 @@ sidebar_position: 21
 تنقل ثلاث أدوات سطر أوامر مشروع QoreChain من الصفر إلى نقطة بداية مكتوبة الأنواع وقابلة للبناء. وهي موجّهة لمطوري التطبيقات (dApps) ومشغّلي rollup الذين يعملون بـ Node.js:
 
 * **`create-qorechain-dapp`** (0.14.0، الذي يحمل أيضًا إصلاحات القوالب في 0.13.1) يولّد تطبيقًا لامركزيًا من أحد سبعة قوالب، مبنيًا على [QoreChain SDK](/sdk/overview). أربعة من السبعة (`foundry` و`hardhat` و`viem-wagmi` و`cosmwasm`) تنتمي إلى [مجموعة أدوات مطوري السلسلة](/developer-tools/chain-dev-sdk).
-* **`create-qorechain-rollup`** (0.8.0) يولّد مشروع rollup من أحد ستة قوالب، مبنيًا على [حزمة تطوير Rollup](/rollups/overview) بلغة TypeScript.
-* **`qorollup`**، أمر الحزمة `@qorechain/rdk-cli` (0.8.0)، هو سطر أوامر المشغّل: فحوص ما قبل التشغيل، وإنشاء rollup ومراقبته، وقراءة المعاملات الحية.
+* **`create-qorechain-rollup`** (0.9.0) يولّد مشروع rollup من أحد ستة قوالب، مبنيًا على [حزمة تطوير Rollup](/rollups/overview) بلغة TypeScript.
+* **`qorollup`**، أمر الحزمة `@qorechain/rdk-cli` (0.9.0)، هو سطر أوامر المشغّل: فحوص ما قبل التشغيل، وإنشاء rollup ومراقبته، وقراءة المعاملات الحية.
 
 تعكس الصفحة الحزم المنشورة كما ثُبّتت من npm في 27 أكتوبر 2026، وحزمة `create-qorechain-dapp` ‏0.12.0 كما ثُبّتت في 4 نوفمبر 2026؛ والإصدار الحالي هو 0.14.0 (12 نوفمبر 2026). تأتي تغييرات القوالب في 0.13.1 الموصوفة أدناه من ملاحظات إصدار الحزمة، لا من تشغيل تثبيت جديد، ويحملها 0.14.0. الأدلة المفاهيمية هي [نشر Rollup](/rollups/deploying-a-rollup) و[مرجع SDK CLI](/sdk/reference/cli).
 
 ## الابتكارات {#innovations}
 
 * **توليد غير تفاعلي لأنظمة CI.** لكل سؤال علَم مقابل: `--template` و`--network` و`--package-manager` و`--yes` (قبول القيم الافتراضية) و`--no-install`. يستطيع خط إنتاج توليد مشروع وبناءه بأمر واحد ودون طرفية.
-* **القوالب مثبَّتة على الحزم الحالية.** تعتمد قوالب dApp على `@qorechain/sdk` ‏`^0.14.0` (وقوالب EVM أيضًا على `@qorechain/evm` ‏`^0.14.0`) وقوالب rollup على `@qorechain/rdk` ‏`^0.8.0`. كان مولّد سابق (0.8.0) يكتب نطاقات تُحَلّ إلى SDK لا يستطيع التوقيع للشبكات الحية؛ ولا يحدث ذلك مع المولّد الحالي.
+* **القوالب مثبَّتة على الحزم الحالية.** تعتمد قوالب dApp على `@qorechain/sdk` ‏`^0.14.0` (وقوالب EVM أيضًا على `@qorechain/evm` ‏`^0.14.0`) وقوالب rollup على `@qorechain/rdk` ‏`^0.9.0`. كان مولّد سابق (0.8.0) يكتب نطاقات تُحَلّ إلى SDK لا يستطيع التوقيع للشبكات الحية؛ ولا يحدث ذلك مع المولّد الحالي.
 * **قوالب rollup تُرمّز إعدادًا صالحًا لكل حالة استخدام.** يضبط كل قالب rollup توليفة من التسوية والمُسلسِل (sequencer) وإتاحة البيانات والغاز والآلة الافتراضية تقبلها مصفوفة التوافق في RDK، ويطبع المولّد الرهان الحي وحرق الإنشاء قبل أن تنشئ أي شيء.
 * **أمر ما قبل التشغيل يسمّي ما هو مفقود.** يفحص `qorollup doctor` (و`npm run doctor` داخل قالب rollup) أن نقطة REST تردّ، وأن معاملات الوحدة قابلة للقراءة، وأن نقطة النهاية هي الشبكة التي طلبتها، وأن موقّعًا مُعدّ، ويطبع سطرًا واحدًا لكل فحص. وداخل القالب يتحقق أيضًا من إعداد rollup مقابل مصفوفة التوافق.
 * **توقيع هجين موصول في القوالب.** تتصل قوالب rollup عبر `signer.ts` صغير يشتق مفتاح ML-DSA-87 للحساب من عبارتك الاسترجاعية (أو يأخذ بذرة مع مفتاح خاص خام) ويوقّع توقيعًا هجينًا، وهو ما تشترطه الشبكات على مسار Native. ويفعل قالب dApp ‏`rollup-app` الشيء نفسه ويعمل كتجربة جافة ما لم تضبط `QORE_BROADCAST=1`.
@@ -106,7 +106,7 @@ cd my-rollup && npm run typecheck
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # prints the installed version (0.8.0 is current)
+qorollup --version          # prints the installed version (0.9.0 is current)
 qorollup doctor --network testnet
 ```
 
@@ -171,11 +171,11 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | السجل | الحزمة | الإصدار | الرابط |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (الأمر `create-qorechain-dapp`) | 0.14.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (الأمر `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (الأمر `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (المكتبة التي تستخدمها القوالب) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (الأمر `create-qorechain-rollup`) | 0.9.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (الأمر `qorollup`) | 0.9.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (المكتبة التي تستخدمها القوالب) | 0.9.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-المصدر: https://github.com/qorechain/qorechain-sdk/tree/main/cli (مولّد dApp) وhttps://github.com/qorechain/qorechain-rdk/tree/main/cli (مولّد rollup) وhttps://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). إصدار RDK 0.8.0 منشور أيضًا على PyPI وcrates.io وMaven Central ووكيل وحدات Go (جرى التحقق في 31 أكتوبر 2026). وجميعها Apache-2.0.
+المصدر: https://github.com/qorechain/qorechain-sdk/tree/main/cli (مولّد dApp) وhttps://github.com/qorechain/qorechain-rdk/tree/main/cli (مولّد rollup) وhttps://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). إصدار RDK 0.9.0 منشور أيضًا على PyPI وcrates.io وMaven Central ووكيل وحدات Go (جرى التحقق في 12 نوفمبر 2026). وجميعها Apache-2.0.
 
 ## الحدود والمشكلات المعروفة {#limits}
 

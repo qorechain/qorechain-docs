@@ -124,10 +124,10 @@ qorechaind query rdk list-rollups
 
 تُشحن حزمة تطوير الـ Rollup على شكل حزمتي npm عامتين لوحدة `x/rdk` نفسها على السلسلة التي تتعامل معها واجهة سطر الأوامر. لم يُنشأ أي rollup على أي من الشبكتين بعد، لذا لم يُجرَّب أي مسار معاملات في الحزمة على rollup حي؛ اقرأ [RDK 0.8.0: التغييرات والحدود](#rdk-050-limits) قبل الاعتماد عليها لإرسال المعاملات:
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** ‏(`v0.8.0`) — حزمة TypeScript SDK: منشئ تكوين مع ملفات تعريف مسبقة، ومساعدات معاملات لدورتي حياة الـ rollup ودفعات التسوية، وDA أصلي، وعملاء قراءة منمّطون، وإيصالات تسوية بتوقيع ML-DSA-87، ومساعد QCAI Rollup Copilot، ومساعدات calldata عبر الآلات الافتراضية، وبرج المراقبة (watchtower). وتعتمد على `@qorechain/sdk` ‏`^0.10.0` (اعتبارًا من 0.7.0؛ وكانت 0.6.x تستخدم `^0.9.0`) و`@qorechain/evm` ‏`^0.8.0`.
-* **`create-qorechain-rollup`** ‏(`v0.8.0`) — أداة تهيئة تستنسخ قالب بداية قابلاً للتشغيل لكل ملف تعريف (بما في ذلك قالب `multivm-rollup`).
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** ‏(`v0.9.0`) — حزمة TypeScript SDK: منشئ تكوين مع ملفات تعريف مسبقة، ومساعدات معاملات لدورتي حياة الـ rollup ودفعات التسوية، وDA أصلي، وعملاء قراءة منمّطون، وإيصالات تسوية بتوقيع ML-DSA-87، ومساعد QCAI Rollup Copilot، ومساعدات calldata عبر الآلات الافتراضية، وبرج المراقبة (watchtower). وتعتمد على `@qorechain/sdk` ‏`^0.10.0` (اعتبارًا من 0.7.0؛ وكانت 0.6.x تستخدم `^0.9.0`) و`@qorechain/evm` ‏`^0.8.0`.
+* **`create-qorechain-rollup`** ‏(`v0.9.0`) — أداة تهيئة تستنسخ قالب بداية قابلاً للتشغيل لكل ملف تعريف (بما في ذلك قالب `multivm-rollup`).
 
-هذه الحزم منشورة على npm. يشحن المستودع أيضًا واجهة سطر أوامر منشورة للمشغّلين، **`@qorechain/rdk-cli`** ‏(`qorollup`، ‏`v0.8.0`)، مع أوامر `doctor` و`create` و`status` و`watch` و`params` و`suggest` وأوامر دورة الحياة (`pause`/`resume`/`stop`) و`keygen` و`manifest` و`withdraw` و`faucet`، بالإضافة إلى أوامر `receipt` و`advise` و`watchtower`. ومنذ 0.7.1 توقّع أوامر المعاملات فيها توقيعًا هجينًا (راجع الحدود أدناه).
+هذه الحزم منشورة على npm. يشحن المستودع أيضًا واجهة سطر أوامر منشورة للمشغّلين، **`@qorechain/rdk-cli`** ‏(`qorollup`، ‏`v0.9.0`)، مع أوامر `doctor` و`create` و`status` و`watch` و`params` و`suggest` وأوامر دورة الحياة (`pause`/`resume`/`stop`) و`keygen` و`manifest` و`withdraw` و`faucet`، بالإضافة إلى أوامر `receipt` و`advise` و`watchtower`. ومنذ 0.7.1 توقّع أوامر المعاملات فيها توقيعًا هجينًا (راجع الحدود أدناه).
 
 أبرز المستجدات حسب الإصدار:
 
@@ -140,9 +140,10 @@ qorechaind query rdk list-rollups
 * **v0.6.2 (إصدار GitHub بتاريخ 27 أكتوبر 2026)**: إصلاح عاجل لواجهة CLI دون أي تغيير في المكتبات: عاد `qorollup` المثبَّت من npm (محليًا أو عامًا أو عبر `npx`) إلى العمل، وتطبع `qorollup --version` و`create-qorechain-rollup --version` إصدارَيهما الحقيقيين. وأُعيد إصدار الحزم الأخرى بالرقم 0.6.2 ليبقى كل سجل على إصدار واحد.
 * **v0.7.0 (إصدار GitHub بتاريخ 27 أكتوبر 2026)**: جاهز للسلسلة v3.2.5 في اللغات الخمس كلها (تعمل به الشبكتان، وبـ v3.2.6 أيضًا: طبّقت الشبكة الرئيسية v3.2.5 في 29 أكتوبر 2026 وv3.2.6 في 4 نوفمبر، وشبكة الاختبار v3.2.5 في 26 أكتوبر وv3.2.6 في 27 أكتوبر؛ وانتقلت شبكة الاختبار منذ ذلك الحين إلى v3.2.7 ثم إلى v3.2.8)، ويصلح طريقة تجزئة السحوبات وblobs توفر البيانات: فبراهين السحب المبنية بالقيم الافتراضية في 0.6.x لم تكن تجتاز التحقق على السلسلة أبدًا، ويبني 0.7.0 شجرة السلسلة نفسها بالضبط. وينتقل إلى `@qorechain/sdk` ‏`^0.10.0`، وتثبّت القوالب `@qorechain/rdk` ‏`^0.7.0`. التفاصيل أدناه.
 * **v0.7.1 (إصدار GitHub بتاريخ 30 أكتوبر 2026)**: إصلاح عاجل لواجهة `qorollup` CLI للمشغّلين، التي صارت أوامر المعاملات فيها توقّع الآن توقيعًا هجينًا كما تتطلب الشبكتان.
-* **v0.8.0 (إصدار GitHub بتاريخ 30 أكتوبر 2026؛ الحالي)**: صارت عملاء Python وGo وRust وJava توقّع توقيعًا هجينًا أيضًا، فيستطيع كل عميل RDK إرسال المعاملات على الشبكة الرئيسية وشبكة الاختبار. ويلزم Java 21.
+* **v0.8.0 (إصدار GitHub بتاريخ 30 أكتوبر 2026)**: صارت عملاء Python وGo وRust وJava توقّع توقيعًا هجينًا أيضًا، فيستطيع كل عميل RDK إرسال المعاملات على الشبكة الرئيسية وشبكة الاختبار. ويلزم Java 21.
+* **v0.9.0 (إصدار GitHub بتاريخ 12 نوفمبر 2026؛ الحالي)**: يدعم السلسلة v3.2.8 (تعمل شبكة الاختبار بها منذ 12 نوفمبر 2026): نشر بيانات rollup، والتسلسل القائم على الأساس (based sequencing)، وrollups متفائلة من نوع qledger-v1 مع إثباتات الاحتيال، وrollups خاصة، ومدخلات ZK القانونية؛ والتسوية بـ STARK متوقفة مؤقتًا. راجع [ملاحظات الإصدار على GitHub](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0). يجب على الحساب الجديد تسجيل مفتاحه ما بعد الكمّي في معاملة مستقلة قبل أي شيء آخر؛ وعملاء RDK 0.9.0 يتولون هذا التسجيل عنك.
 
-**الإصدارات المنشورة (جرى التحقق على كل سجل في 31 أكتوبر 2026).** على npm: ‏`@qorechain/rdk` و`@qorechain/rdk-cli` و`create-qorechain-rollup`: ‏**0.8.0** (`latest`)؛ على PyPI: ‏`qorechain-rdk`: ‏0.8.0؛ على crates.io: ‏`qorechain-rdk`: ‏0.8.0؛ على Maven Central: ‏`io.github.qorechain:qorechain-rdk`: ‏0.8.0 (ويسرد ملف `maven-metadata.xml` فيه 0.7.0 و0.7.1 بالإضافة إلى الإصدارات الأقدم)؛ وحدة Go ‏`github.com/qorechain/qorechain-rdk/packages/go`: ‏`v0.8.0` (وقد يتأخر `@latest` في وكيل الوحدات عن وسم جديد، فثبّت `@v0.8.0` صراحةً). إصدار GitHub هو [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0).
+**الإصدارات المنشورة (جرى التحقق على كل سجل في 12 نوفمبر 2026).** على npm: ‏`@qorechain/rdk` و`@qorechain/rdk-cli` و`create-qorechain-rollup`: ‏**0.9.0** (`latest`)؛ على PyPI: ‏`qorechain-rdk`: ‏0.9.0؛ على crates.io: ‏`qorechain-rdk`: ‏0.9.0؛ على Maven Central: ‏`io.github.qorechain:qorechain-rdk`: ‏0.9.0 (وتبقى الإصدارات الأقدم متاحة)؛ وحدة Go ‏`github.com/qorechain/qorechain-rdk/packages/go`: ‏`v0.9.0` (وقد يتأخر `@latest` في وكيل الوحدات عن وسم جديد، فثبّت `@v0.9.0` صراحةً). إصدار GitHub هو [v0.9.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0).
 
 #### RDK 0.8.0: التغييرات والحدود {#rdk-050-limits}
 
@@ -223,17 +224,17 @@ pip install qorechain-rdk
 cargo add qorechain-rdk
 
 # Go (pin the version)
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.9.0
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.8.0 (needs Java 21)
+# io.github.qorechain:qorechain-rdk:0.9.0 (needs Java 21)
 ```
 
 ```python
 import qorrdk
 ```
 
-الإصدارات المنشورة حاليًا، وكلها **0.8.0** (جرى التحقق في 31 أكتوبر 2026): Python ‏`qorechain-rdk` ‏(PyPI، الاستيراد باسم `qorrdk`)، ووحدة Go ‏`github.com/qorechain/qorechain-rdk/packages/go` ‏(`v0.8.0`)، وRust ‏`qorechain-rdk` ‏(crates.io)، وJava ‏`io.github.qorechain:qorechain-rdk` ‏(Maven Central؛ **Java 21 أو أحدث** منذ 0.8.0). تقرأ هذه العملاء حالة السلسلة، ومنذ 0.8.0 ترسل معاملات موقَّعة توقيعًا هجينًا عندما تزوّدها بزوج مفاتيح ما بعد كمّي (راجع [RDK 0.8.0: التغييرات والحدود](#rdk-050-limits)).
+الإصدارات المنشورة حاليًا، وكلها **0.9.0** (جرى التحقق في 12 نوفمبر 2026): Python ‏`qorechain-rdk` ‏(PyPI، الاستيراد باسم `qorrdk`)، ووحدة Go ‏`github.com/qorechain/qorechain-rdk/packages/go` ‏(`v0.9.0`)، وRust ‏`qorechain-rdk` ‏(crates.io)، وJava ‏`io.github.qorechain:qorechain-rdk` ‏(Maven Central؛ **Java 21 أو أحدث** منذ 0.8.0). تقرأ هذه العملاء حالة السلسلة، ومنذ 0.8.0 ترسل معاملات موقَّعة توقيعًا هجينًا عندما تزوّدها بزوج مفاتيح ما بعد كمّي (راجع [RDK 0.8.0: التغييرات والحدود](#rdk-050-limits)).
 
 :::note
 تستهدف TypeScript RDK وقوالبها افتراضيًا شبكة الاختبار **`qorechain-diana`**، وتصل الإعدادات المسبقة إلى نقاط الوصول العامة الحية مباشرة دون إعداد. ثبّت الإصدارات وتحقق على شبكة الاختبار قبل الشبكة الرئيسية.
@@ -258,7 +259,7 @@ npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet -
 تعرض أداة التهيئة تكلفة الحصة وحرق الإنشاء الموثّقة، والخطوات التالية لإنشاء الـ rollup الخاص بك وقراءة حالته.
 
 :::caution ما الذي تستطيع النصوص المهيَّأة فعله
-تعتمد قوالب `create-qorechain-rollup` 0.8.0 على `@qorechain/rdk` ‏`^0.8.0`. تتصل نصوصها `create` و`submit-batch` عبر `connectOperator()` في `src/signer.ts`، التي تحلّ مفتاحك ما بعد الكمّي من `QORE_MNEMONIC` (أو من `QORE_PQC_SEED_HEX` عندما توقّع بـ `QORE_OPERATOR_PRIVATE_KEY_HEX`)، وتفحصه مقابل السلسلة، وتوقّع توقيعًا هجينًا؛ وإذا لم يُضبط أي منهما يحذّر النص ويوقّع توقيعًا كلاسيكيًا فقط، وترفضه الشبكتان. لم يُنشأ أي rollup عبر قالب على شبكة حية، لذا فهذا المسار غير مختبَر حيًا. نص `submit-batch` في قالب البداية هو تدفق مرجعي فقط: فهو يترك منذ 0.6.1 الحقل `dataHash` فارغًا (إذ ترفض السلسلة تجزئة بيانات على rollup بتوفر بيانات أصلي)، وتنشر القوالب المتفائلة جذر الحالة المعتمد بدلًا من قيمة نائبة؛ وما زال يستخدم قيمًا توضيحية لبقية الحقول، ولا يُتوقع أن ينهي دفعة على شبكة حية. ويتوقف قالب `defi-rollup` (ZK) قبل إرسال دفعة اعتبارًا من 0.7.0، لأن السلسلة سترفضها (راجع [ZK / STARK والسحوبات](/rollups/zk-stark-withdrawals)).
+تعتمد قوالب `create-qorechain-rollup` 0.9.0 على `@qorechain/rdk` ‏`^0.9.0`. تتصل نصوصها `create` و`submit-batch` عبر `connectOperator()` في `src/signer.ts`، التي تحلّ مفتاحك ما بعد الكمّي من `QORE_MNEMONIC` (أو من `QORE_PQC_SEED_HEX` عندما توقّع بـ `QORE_OPERATOR_PRIVATE_KEY_HEX`)، وتفحصه مقابل السلسلة، وتوقّع توقيعًا هجينًا؛ وإذا لم يُضبط أي منهما يحذّر النص ويوقّع توقيعًا كلاسيكيًا فقط، وترفضه الشبكتان. لم يُنشأ أي rollup عبر قالب على شبكة حية، لذا فهذا المسار غير مختبَر حيًا. نص `submit-batch` في قالب البداية هو تدفق مرجعي فقط: فهو يترك منذ 0.6.1 الحقل `dataHash` فارغًا (إذ ترفض السلسلة تجزئة بيانات على rollup بتوفر بيانات أصلي)، وتنشر القوالب المتفائلة جذر الحالة المعتمد بدلًا من قيمة نائبة؛ وما زال يستخدم قيمًا توضيحية لبقية الحقول، ولا يُتوقع أن ينهي دفعة على شبكة حية. ويتوقف قالب `defi-rollup` (ZK) قبل إرسال دفعة اعتبارًا من 0.7.0، لأن السلسلة سترفضها (راجع [ZK / STARK والسحوبات](/rollups/zk-stark-withdrawals)).
 :::
 
 ### بناء تكوين rollup من الكود

@@ -152,7 +152,7 @@ Avec le SDK 0.14.0, le même jour, une fenêtre ouverte avec `allowedTargets` (l
 
 ### Python, Go, Rust et Java {#other-languages}
 
-Chaque SDK a un constructeur pour le message et une lecture REST. Tous vérifient localement les bornes de la chaîne. Un constructeur de langage qui renseigne les listes v3.2.8 a besoin du SDK 0.14.0 ou ultérieur (Java : la 0.14.0 dès qu'elle apparaîtra sur Maven Central, qui affiche encore la 0.13.0 le 12 novembre 2026) ; les versions antérieures ne construisent que les anciens champs.
+Chaque SDK a un constructeur pour le message et une lecture REST. Tous vérifient localement les bornes de la chaîne. Un constructeur de langage qui renseigne les listes v3.2.8 a besoin du SDK 0.14.0 ou ultérieur (Java : la 0.14.0 sur Maven Central) ; les versions antérieures ne construisent que les anciens champs.
 
 | Langage | Ouvrir (avec toutes les listes) | Fermer | Lire | Limites EVM |
 | -------- | ---------------------- | ----- | ---- | ---------- |

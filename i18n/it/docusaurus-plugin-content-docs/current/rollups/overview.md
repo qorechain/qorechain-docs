@@ -28,7 +28,7 @@ La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**, attiva dal 7 giugno 20
 
 ## Come usarlo {#how-to-use}
 
-Le letture non richiedono alcuna chiave né fondi. Gli snippet seguenti leggono i parametri live del modulo `rdk` e l'elenco dei rollup sulla testnet pubblica (`qorechain-diana`) e sono stati eseguiti il 27 ottobre 2026 dai pacchetti pubblicati (queste esecuzioni hanno usato la 0.7.0; la versione corrente è la 0.8.0, che aggiunge la firma ibrida ai client Python, Go, Rust e Java e lascia invariate le chiamate di lettura mostrate qui, ma gli snippet non sono stati rieseguiti con essa). Ciascuno ha stampato i parametri della testnet (massimo 200 rollup, stake minimo 10.000 QOR, aliquota di burn alla creazione 0,01, finestra di contestazione predefinita 3.600 secondi, dimensione massima del blob DA 2.097.152 byte, conservazione dei blob 432.000 blocchi, massimo 10 batch per blocco) e `0 rollups`.
+Le letture non richiedono alcuna chiave né fondi. Gli snippet seguenti leggono i parametri live del modulo `rdk` e l'elenco dei rollup sulla testnet pubblica (`qorechain-diana`) e sono stati eseguiti il 27 ottobre 2026 dai pacchetti pubblicati (queste esecuzioni hanno usato la 0.7.0; la versione corrente è la 0.9.0; la 0.8.0 ha aggiunto la firma ibrida ai client Python, Go, Rust e Java e lascia invariate le chiamate di lettura mostrate qui, ma gli snippet non sono stati rieseguiti con essa). Ciascuno ha stampato i parametri della testnet (massimo 200 rollup, stake minimo 10.000 QOR, aliquota di burn alla creazione 0,01, finestra di contestazione predefinita 3.600 secondi, dimensione massima del blob DA 2.097.152 byte, conservazione dei blob 432.000 blocchi, massimo 10 batch per blocco) e `0 rollups`.
 
 ### TypeScript (testato)
 
@@ -76,7 +76,7 @@ Python 3.10 o successivo. `qorechain-rdk` dipende da `qorechain-pqc`, che richia
 ### Go (testato)
 
 ```bash
-go get github.com/qorechain/qorechain-rdk/packages/go@v0.8.0
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.9.0
 ```
 
 ```go
@@ -138,7 +138,7 @@ La libreria è `qorechain_rdk`. Testato con Rust 1.95, compilato rispetto a crat
 
 ```kotlin
 // build.gradle.kts
-implementation("io.github.qorechain:qorechain-rdk:0.8.0")
+implementation("io.github.qorechain:qorechain-rdk:0.9.0")
 ```
 
 ```java
@@ -183,7 +183,7 @@ npx create-qorechain-rollup my-rollup --template nft-rollup --network testnet --
 cd my-rollup && npm run doctor
 ```
 
-I template sono `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup` e `multivm-rollup`. Il progetto generato dipende da `@qorechain/rdk` `^0.8.0` (`^0.7.0` prima della 0.8.0). La generazione di `nft-rollup` con lo scaffolder 0.6.1 ha prodotto un progetto il cui `npm run doctor` è passato rispetto alla testnet (REST raggiungibile, parametri leggibili, rete `qorechain-diana`; segnala un avviso sulla disponibilità dei dati Celestia e sull'assenza di un signer); la generazione di `defi-rollup` e l'esecuzione di `npm run typecheck` sono passate di nuovo il 27 ottobre 2026 con la release corrente. **Non usate ancora `defi-rollup` per lanciare un rollup** (consultate [Limiti](#limits)). Per creare un rollup e inviare batch, seguite [Deploying a Rollup](/rollups/deploying-a-rollup); le transazioni richiedono una chiave post-quantistica registrata e, nell'RDK, il client TypeScript dotato di un `pqcKeypair`.
+I template sono `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup` e `multivm-rollup`. Il progetto generato dipende da `@qorechain/rdk` `^0.9.0` (`^0.8.0` nella 0.8.0, `^0.7.0` prima). La generazione di `nft-rollup` con lo scaffolder 0.6.1 ha prodotto un progetto il cui `npm run doctor` è passato rispetto alla testnet (REST raggiungibile, parametri leggibili, rete `qorechain-diana`; segnala un avviso sulla disponibilità dei dati Celestia e sull'assenza di un signer); la generazione di `defi-rollup` e l'esecuzione di `npm run typecheck` sono passate di nuovo il 27 ottobre 2026 con la release corrente. **Non usate ancora `defi-rollup` per lanciare un rollup** (consultate [Limiti](#limits)). Per creare un rollup e inviare batch, seguite [Deploying a Rollup](/rollups/deploying-a-rollup); le transazioni richiedono una chiave post-quantistica registrata e, nell'RDK, il client TypeScript dotato di un `pqcKeypair`.
 
 ## Come accedere {#how-to-access}
 
@@ -203,7 +203,7 @@ Entrambe le reti servono le query RDK (`/qorechain/rdk/v1/...`) tramite REST, gR
 | **Account finanziato** | Un account con QOR sufficienti per lo stake, lo stake del layer e le commissioni. |
 | **Stake in escrow** | La creazione di un rollup mette in escrow `min_stake_for_rollup`, **10.000 QOR** su entrambe le reti. **L'1 % dello stake (100 QOR) viene bruciato** alla creazione; il resto resta in escrow e viene restituito quando il rollup viene fermato. |
 | **Stake del layer** | La creazione registra anche il layer del rollup nel modulo multilayer (stake minimo 1.000 QOR). Se il layer non può essere registrato, il rollup viene comunque creato ma non ha un layer reale, quindi i suoi batch non possono essere ancorati e non si possono emettere ricevute. |
-| **Chiave post-quantistica registrata** | Una chiave ML-DSA-87 registrata per l'account. Le transazioni sul lane nativo firmate solo con la chiave classica vengono rifiutate. |
+| **Chiave post-quantistica registrata** | Una chiave ML-DSA-87 registrata per l'account. Le transazioni sul lane nativo firmate solo con la chiave classica vengono rifiutate. Un nuovo account deve registrare la propria chiave post-quantistica in una transazione a sé prima di qualsiasi altra cosa; i client RDK 0.9.0 eseguono questa registrazione per te. |
 | **Commissioni** | Il minimo di commissione è 0,1 uqor per unità di gas; impostate insieme il limite di gas e la commissione. |
 | **Strumenti** | Node 20 o successivo per la CLI e lo scaffolder; Python 3.10 o successivo (con `liboqs`, vedi sopra) per il client Python; Java 21 o successivo per Java (dall'RDK 0.8.0); il modulo Go `github.com/qorechain/qorechain-rdk/packages/go`. |
 
@@ -249,19 +249,21 @@ Per il riferimento a livello di modulo più tecnico (parametri del modulo, detta
 
 ## Dove è pubblicato {#where-published}
 
-Versioni verificate sui registry il 27 ottobre 2026. Tutti i pacchetti sono Apache-2.0.
+Versioni verificate sui registry il 12 novembre 2026. Tutti i pacchetti sono Apache-2.0.
+
+L'RDK 0.9.0 (12 novembre 2026) supporta la chain v3.2.8 (la testnet la esegue dal 12 novembre 2026): pubblicazione dei dati del rollup, sequencing based, rollup ottimistici qledger-v1 con fraud proof, rollup privati, input ZK canonici; il settlement STARK è in pausa. Vedi le [note di release su GitHub](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0).
 
 | Registry | Pacchetto | Versione attuale | Link |
 | -------- | --------- | ---------------- | ---- |
-| npm | `@qorechain/rdk` (client TypeScript) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
-| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
-| npm | `create-qorechain-rollup` (scaffolder) | 0.8.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
-| PyPI | `qorechain-rdk` (import `qorrdk`) | 0.8.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
-| crates.io | `qorechain-rdk` (libreria `qorechain_rdk`) | 0.8.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
-| Proxy dei moduli Go | `github.com/qorechain/qorechain-rdk/packages/go` | v0.8.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
-| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.8.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
+| npm | `@qorechain/rdk` (client TypeScript) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk) |
+| npm | `@qorechain/rdk-cli` (`qorollup`) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/@qorechain/rdk-cli) |
+| npm | `create-qorechain-rollup` (scaffolder) | 0.9.0 | [npmjs.com](https://www.npmjs.com/package/create-qorechain-rollup) |
+| PyPI | `qorechain-rdk` (import `qorrdk`) | 0.9.0 | [pypi.org](https://pypi.org/project/qorechain-rdk/) |
+| crates.io | `qorechain-rdk` (libreria `qorechain_rdk`) | 0.9.0 | [crates.io](https://crates.io/crates/qorechain-rdk) |
+| Proxy dei moduli Go | `github.com/qorechain/qorechain-rdk/packages/go` | v0.9.0 | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-rdk/packages/go) |
+| Maven Central | `io.github.qorechain:qorechain-rdk` | 0.9.0 | [central.sonatype.com](https://central.sonatype.com/artifact/io.github.qorechain/qorechain-rdk) |
 
-Maven Central serve la 0.7.0, la 0.7.1 e la 0.8.0 oltre alle versioni precedenti, e `@latest` del proxy Go può restare indietro rispetto a un nuovo tag, quindi fissate la versione Go. Il sorgente è pubblico su [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk), le note di rilascio sono su [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0) (e [v0.7.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.1)) e la documentazione propria del kit è su [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/). Il pacchetto TypeScript dipende da `@qorechain/sdk` `^0.10.0` (dalla 0.7.0; la 0.6.x usava `^0.9.0`; i pacchetti Python, Go, Rust e Java usano il corrispondente QoreChain SDK 0.10.x dalla 0.8.0) e `@qorechain/evm` `^0.8.0`, e il pacchetto Python da `qorechain-pqc` 0.2.x. La logica del modulo `x/rdk` della chain non fa parte del kit pubblico.
+Maven Central serve la 0.7.0, la 0.7.1, la 0.8.0 e la 0.9.0 oltre alle versioni precedenti, e `@latest` del proxy Go può restare indietro rispetto a un nuovo tag, quindi fissate la versione Go. Il sorgente è pubblico su [github.com/qorechain/qorechain-rdk](https://github.com/qorechain/qorechain-rdk), le note di rilascio sono su [v0.9.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0) (e [v0.8.0](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.8.0), [v0.7.1](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.7.1)) e la documentazione propria del kit è su [qorechain.github.io/qorechain-rdk](https://qorechain.github.io/qorechain-rdk/). Il pacchetto TypeScript dipende da `@qorechain/sdk` `^0.10.0` (dalla 0.7.0; la 0.6.x usava `^0.9.0`; i pacchetti Python, Go, Rust e Java usano il corrispondente QoreChain SDK 0.10.x dalla 0.8.0) e `@qorechain/evm` `^0.8.0`, e il pacchetto Python da `qorechain-pqc` 0.2.x. La logica del modulo `x/rdk` della chain non fa parte del kit pubblico.
 
 ## Limiti e problemi noti {#limits}
 
@@ -274,7 +276,7 @@ Maven Central serve la 0.7.0, la 0.7.1 e la 0.8.0 oltre alle versioni precedenti
 * **(d) Il circuito dimostrativo del template `defi` non può verificare.** È un moltiplicatore `snarkjs`, e la chain controlla Groth16 su BLS12-381 con la state root precedente, la state root e l'hash dei dati come input pubblici, che quel circuito non espone. Anche dopo la distribuzione della registrazione delle chiavi, serve un circuito proprio.
 * **Qualsiasi account può risolvere una contestazione (v3.2.5 e successive, entrambe le reti).** La chain verifica da sé la fraud proof; prima della v3.2.5 solo il creatore del rollup poteva inviare la risoluzione (consultate [comportamento della chain v3.2.5](#v325) e [Optimistic](#optimistic)).
 * **Non utilizzabili sulle reti live:** la disponibilità dei dati Celestia (non implementata), il [QCAI Rollup Copilot](/rollups/qcai-copilot) (i suoi servizi consultivi non sono sugli endpoint pubblici), le chiamate cross-VM (il precompile in `0x...0901` non è attivo sulla mainnet; sulla testnet è attivo con una allowlist, testato con `eth_call` il 7 novembre 2026), i sequencer condivisi e based (la chain ammette solo il sequencer configurato o, quando non ne è impostato nessuno, il creatore) e `suggest-profile` (restituisce `defi` come fallback fisso).
-* **Note sulle versioni.** Usate la 0.8.0 per tutto (la 0.7.0 e precedenti non possono inviare transazioni `qorollup` che le reti accettino, e prima della 0.8.0 i client Python, Go, Rust e Java non possono inviare alcuna transazione): la 0.6.2 e precedenti costruiscono prove di prelievo che non vengono mai verificate on-chain, e la 0.6.1 e precedenti non stampano nulla da `qorollup` se installate da npm. La 0.5.0 e precedenti non vanno usate per ricevute, Watchtower o calldata cross-VM. L'elenco completo di ciò che ogni release ha modificato è in [RDK 0.8.0: modifiche e limiti](/rollups/deploying-a-rollup#rdk-050-limits).
+* **Note sulle versioni.** Usate la 0.9.0 per tutto (la 0.7.0 e precedenti non possono inviare transazioni `qorollup` che le reti accettino, e prima della 0.8.0 i client Python, Go, Rust e Java non possono inviare alcuna transazione): la 0.6.2 e precedenti costruiscono prove di prelievo che non vengono mai verificate on-chain, e la 0.6.1 e precedenti non stampano nulla da `qorollup` se installate da npm. La 0.5.0 e precedenti non vanno usate per ricevute, Watchtower o calldata cross-VM. L'elenco completo di ciò che ogni release ha modificato è in [RDK 0.8.0: modifiche e limiti](/rollups/deploying-a-rollup#rdk-050-limits).
 
 ---
 

@@ -121,7 +121,7 @@ SDK는 원하는 언어로 개발할 수 있도록 패키지 제품군으로 배
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | 게시됨 (PyPI, v0.14.0) |
 | `qorechain-sdk` (Go 모듈) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 게시됨 (Go 프록시, 태그 `packages/go/v0.14.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | 게시됨 (crates.io, v0.14.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.14.0` | Maven Central에는 2026년 11월 12일 기준 0.13.0이 그대로 표시됩니다. 0.14.0이 나타나면 그것을 사용하세요(JDK 17 이상) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.14.0` | Published (Maven Central, v0.14.0; JDK 17 이상) |
 | `@qorechain/evm` | TypeScript (EVM 어댑터) | `npm i @qorechain/evm viem` | 게시됨 (npm, v0.14.0) |
 | `@qorechain/svm` | TypeScript (SVM 어댑터) | `npm i @qorechain/svm @solana/web3.js` | 게시됨 (npm, v0.14.0) |
 | `@qorechain/react` | TypeScript (React 키트) | `npm i @qorechain/react` | 게시됨 (npm, v0.14.0) |
@@ -142,7 +142,7 @@ Python, Go, Rust, Java 클라이언트는 TypeScript와 **완전한 네이티브
 npm(`@qorechain/sdk` 0.14.0), Python은 PyPI(`qorechain-sdk` 0.14.0, import
 `qorsdk`), Go는 모듈 프록시(태그 `packages/go/v0.14.0`), Rust는
 crates.io(`qorechain-sdk` 0.14.0), Java는 Maven
-Central(`io.github.qorechain:qorechain-sdk`)에 게시되어 있으며, 여기에는 2026년 11월 12일 기준 여전히 0.13.0이 표시됩니다. 0.14.0이 나타나면 그것을 사용하세요.
+Central(`io.github.qorechain:qorechain-sdk` 0.14.0)에 게시되어 있습니다.
 EVM/SVM 실행 어댑터(`@qorechain/evm`, `@qorechain/svm`, 둘 다 0.14.0),
 `@qorechain/react` 키트(0.14.0), `create-qorechain-dapp` 스캐폴딩 CLI(0.14.0, 0.13.1의 템플릿 수정도 포함)는
 TypeScript 전용이며 마찬가지로 npm에 게시되어 있습니다. 부속 패키지는

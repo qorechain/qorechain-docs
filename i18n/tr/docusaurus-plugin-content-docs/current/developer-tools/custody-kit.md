@@ -9,7 +9,7 @@ sidebar_position: 32
 
 QoreChain saklama kiti, QoreChain üzerinde müşteri fonlarını tutan saklama kuruluşları ve borsalar için yazılı bir entegrasyon kılavuzu, bir test vektörü kümesi ve küçük referans koddur. Ağın her yürütme rayında ne istediğini açıklar ve bir entegrasyonun yanlış yapılması kolay olan kısımlarını okunabilir kodla gösterir: bir adresi kontrol etmek, imzalı bir işlemi yayınlanmadan önce çözmek ve doğrulamak, ve hangi gelen transferlerin hesaba kaydedileceğine karar vermek.
 
-Saklama kuruluşları, borsalar, ödeme işleyicileri ve cüzdan arka uçları ile bu entegrasyonları inceleyen mühendisler ve denetçiler içindir. Sürüm **0.1.0**, 27 Ekim 2026'da yayınlandı, Apache-2.0. Mainnet (`qorechain-vladi`) ve testnet (`qorechain-diana`) ile çalışır; birlikte gelen canlı kontroller testnet üzerinde çalışır ve yalnızca okur.
+Saklama kuruluşları, borsalar, ödeme işleyicileri ve cüzdan arka uçları ile bu entegrasyonları inceleyen mühendisler ve denetçiler içindir. Sürüm **0.1.1**, 12 Kasım 2026'da yayınlandı (0.1.0, 27 Ekim 2026'da yayınlanmıştı), Apache-2.0. Mainnet (`qorechain-vladi`) ve testnet (`qorechain-diana`) ile çalışır; birlikte gelen canlı kontroller testnet üzerinde çalışır ve yalnızca okur.
 
 **Önce bunu okuyun: kit örnek koddur, bir kütüphane değildir.** Depoyu klonlar ve dilinize ait klasörü okur, kopyalar veya projenize eklersiniz. Kitin npm, PyPI, crates.io veya Maven Central paketi yoktur, tasarım gereği. Biçimce tek istisna Go'dur: Go klasörü etiketli bir sürümü olan bir Go modülüdür, dolayısıyla `go get` onu getirebilir, ancak yine de kararlı bir API sözü olmayan örnek koddur (bkz. [Kütüphane nedir, örnek kod nedir](#library-vs-example)). İmzalama ve kriptografik doğrulama, yayınlanmış bir kütüphane olan [QoreSign](/qoresign/overview)'dan gelir.
 
@@ -50,7 +50,7 @@ Saklama kuruluşları, borsalar, ödeme işleyicileri ve cüzdan arka uçları i
 |---|---|---|
 | QoreSign (imzalama, ML-DSA-87 ve secp256k1 doğrulaması, anahtar kayıt mesajı) | Yayınlanmış kütüphane | npm, PyPI, crates.io, Go, Maven Central. Bkz. [QoreSign](/qoresign/overview). |
 | Kitin TypeScript, Python, Rust ve Java kodu | Örnek kod, hiçbir kayıt defterinde yayınlanmaz | `qorechain/qorechain-custody-kit` deposunu klonlayın ve klasörü kopyalayın veya projenize ekleyin. |
-| Kitin Go kodu (paket `custodykit`) | Örnek kod. Etiketli bir sürümde Go modülü olarak getirilebilir, kararlı API sözü yoktur | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0` veya klonlayın ve projenize ekleyin. |
+| Kitin Go kodu (paket `custodykit`) | Örnek kod. Etiketli bir sürümde Go modülü olarak getirilebilir, kararlı API sözü yoktur | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1` veya klonlayın ve projenize ekleyin. |
 | Kılavuz sayfaları, vektörler ve kontrol listesi | Belgeler ve veri | Depo. |
 
 Kit hiçbir imza şeması uygulamaz. ML-DSA-87 ve secp256k1 doğrulaması QoreSign'dan gelir. Python kodu, EIP-55 sağlama toplamı için kullanılan küçük bir Keccak-256 içerir ve başka hiçbir şey içermez.
@@ -93,6 +93,7 @@ Kit hiçbir imza şeması uygulamaz. ML-DSA-87 ve secp256k1 doğrulaması QoreSi
 ### EVM yetkilendirme pencereleri {#evm-windows}
 
 - Bir pencere `/qorechain.pqc.v1.MsgOpenEVMWindow` ile açılır (`blocks` 1 ile 17.280, `max_txs` 1 ile 1.000, `uqor` cinsinden `max_value` değer artı azami ücreti sayar, isteğe bağlı `native_only`, en fazla 16 adreslik isteğe bağlı `allowed_targets`) ve `MsgCloseEVMWindow` ile kapatılır. Durum `GET /qorechain/pqc/v1/evm_window/{address}` adresindedir.
+- Kitin kod çözücüleri (0.1.1'den itibaren), pencere mesajlarının 5 ila 9 numaralı EVM penceresi alanlarını kabul eder; böylece v3.2.8 alanlarıyla bir pencere açan işlem de çözülür.
 - Bir pencere açmak mevcut pencerenin yerini alır ve hesabın EVM nonce'u olan sıra numarasını ilerletir: önce pencereyi açın, sonra nonce'u okuyun.
 - `eth_call` ve `eth_estimateGas` pencere gerektirmez.
 
@@ -106,7 +107,7 @@ Kit referans koddur: bir paket kurmak yerine depoyu klonlayın veya dilinize ait
 |---|---|---|---|
 | TypeScript | `git clone https://github.com/qorechain/qorechain-custody-kit`, ardından `cd code/ts && pnpm install && pnpm build` | `@qorechain/qoresign` 0.1.0 (npm) | Node.js 20 |
 | Python | klonlayın, ardından `cd code/python && pip install -r requirements-dev.txt`. `verify_tx` için ayrıca `pip install qorechain-qoresign==0.1.1` | çalışma zamanında hiçbiri; `verify_tx` için `qorechain-qoresign` 0.1.1 (PyPI) | Python 3.9 |
-| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.0` (paket `custodykit`) veya klonlayın | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
+| Go | `go get github.com/qorechain/qorechain-custody-kit/code/go@v0.1.1` (paket `custodykit`) veya klonlayın | `github.com/qorechain/qoresign/go` v0.1.0 | Go 1.25 |
 | Rust | klonlayın, ardından `cd code/rust && cargo build` (crates.io'da değil) | `qorechain-qoresign` 0.1.0 (crates.io) | Rust 2021 edition |
 | Java | klonlayın, ardından `cd code/java && mvn test` (Maven Central'da değil) | `io.github.qorechain:qoresign:0.1.0` (Maven Central), Gson | Java 17 |
 
@@ -293,12 +294,12 @@ Codespace ve kod üzerinden birlikte dallanın ve ham günlüğü saklayın.
 
 ## Nerede yayınlanıyor {#where-published}
 
-4 Kasım 2026'da kayıt defterlerine karşı kontrol edildi (sürümler ve etiketler 27 Ekim'den beri değişmedi).
+12 Kasım 2026'da kayıt defterlerine karşı kontrol edildi.
 
 | Kayıt defteri | Paket | Sürüm | Bağlantı |
 |---|---|---|---|
-| GitHub | `qorechain/qorechain-custody-kit` (beş dilin tamamı, kılavuz sayfaları, vektörler) | sürüm `v0.1.0`, 27 Ekim 2026'da yayınlandı | https://github.com/qorechain/qorechain-custody-kit |
-| Go modül proxy'si | `github.com/qorechain/qorechain-custody-kit/code/go` (örnek kod, getirilebilir) | v0.1.0 (etiket `code/go/v0.1.0`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
+| GitHub | `qorechain/qorechain-custody-kit` (beş dilin tamamı, kılavuz sayfaları, vektörler) | sürüm `v0.1.1`, 12 Kasım 2026'da yayınlandı (`v0.1.0` 27 Ekim 2026'da) | https://github.com/qorechain/qorechain-custody-kit |
+| Go modül proxy'si | `github.com/qorechain/qorechain-custody-kit/code/go` (örnek kod, getirilebilir) | v0.1.1 (etiket `code/go/v0.1.1`) | https://pkg.go.dev/github.com/qorechain/qorechain-custody-kit/code/go |
 | npm, PyPI, crates.io, Maven Central | yayınlanmadı: kit, kopyalanacak veya projeye eklenecek örnek koddur | uygulanamaz | uygulanamaz |
 
 GitHub sürümünde ekli dosya yoktur; sürüm, deponun etiketidir. Kitin üzerine kurulduğu bağımlılıkların hepsi yayınlanmıştır: npm üzerinde `@qorechain/qoresign` (en son 0.1.1, kit 0.1.0'a sabitler), PyPI üzerinde `qorechain-qoresign` (0.1.1), crates.io üzerinde `qorechain-qoresign` (en son 0.1.1, kit 0.1.0'a sabitler), `github.com/qorechain/qoresign/go` (v0.1.0 ve v0.1.1) ve Maven Central üzerinde `io.github.qorechain:qoresign` (0.1.0 ve 0.1.1).

@@ -101,8 +101,7 @@ npm; clientul Python este pe PyPI (`pip install qorechain-sdk` la 0.14.0, import
 `qorsdk`); clientul Go este pe module proxy
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.14.0`); clientul Rust este
 pe crates.io (`cargo add qorechain-sdk`, 0.14.0); iar clientul Java este pe Maven
-Central (`io.github.qorechain:qorechain-sdk`, JDK 17 sau mai nou), care arată încă 0.13.0 la
-12 noiembrie 2026; folosiți 0.14.0 când apare. Vedeți [Instalare](/sdk/install) pentru comenzile complete
+Central (`io.github.qorechain:qorechain-sdk`, 0.14.0, JDK 17 sau mai nou). Vedeți [Instalare](/sdk/install) pentru comenzile complete
 pentru fiecare limbaj.
 
 ## Mnemonicul meu este respins

@@ -10,15 +10,15 @@ sidebar_position: 21
 Tre strumenti da riga di comando portano un progetto QoreChain dal nulla a un punto di partenza tipizzato e compilabile. Sono pensati per gli sviluppatori di applicazioni (dApp) e per gli operatori di rollup che lavorano in Node.js:
 
 * **`create-qorechain-dapp`** (0.14.0, che porta anche le correzioni ai template della 0.13.1) genera lo scheletro di una dApp a partire da uno di sette template, costruiti sull'[SDK QoreChain](/sdk/overview). Quattro dei sette (`foundry`, `hardhat`, `viem-wagmi`, `cosmwasm`) appartengono al [kit di sviluppo della catena](/developer-tools/chain-dev-sdk).
-* **`create-qorechain-rollup`** (0.8.0) genera lo scheletro di un progetto rollup a partire da uno di sei template, costruiti sul [Rollup Development Kit](/rollups/overview) TypeScript.
-* **`qorollup`**, il comando del pacchetto `@qorechain/rdk-cli` (0.8.0), è la riga di comando dell'operatore: controlli preliminari, creazione e monitoraggio di un rollup, lettura dei parametri live.
+* **`create-qorechain-rollup`** (0.9.0) genera lo scheletro di un progetto rollup a partire da uno di sei template, costruiti sul [Rollup Development Kit](/rollups/overview) TypeScript.
+* **`qorollup`**, il comando del pacchetto `@qorechain/rdk-cli` (0.9.0), è la riga di comando dell'operatore: controlli preliminari, creazione e monitoraggio di un rollup, lettura dei parametri live.
 
 La pagina riflette i pacchetti pubblicati così come installati da npm il 27 ottobre 2026, e `create-qorechain-dapp` 0.12.0 così come installato il 4 novembre 2026; la versione attuale è la 0.14.0 (12 novembre 2026). Le modifiche ai template della 0.13.1 descritte sotto provengono dalle note di rilascio del pacchetto, non da una nuova esecuzione di installazione, e la 0.14.0 le include. Le guide concettuali sono [Distribuire un Rollup](/rollups/deploying-a-rollup) e il [riferimento della CLI dell'SDK](/sdk/reference/cli).
 
 ## Innovazioni {#innovations}
 
 * **Scaffolding non interattivo per la CI.** Ogni domanda ha un flag: `--template`, `--network`, `--package-manager`, `--yes` (accetta i valori predefiniti) e `--no-install`. Una pipeline può generare e compilare un progetto con un solo comando e senza terminale.
-* **I template sono vincolati ai pacchetti correnti.** I template dApp dipendono da `@qorechain/sdk` `^0.14.0` (i template EVM anche da `@qorechain/evm` `^0.14.0`) e i template rollup da `@qorechain/rdk` `^0.8.0`. Uno scaffolder precedente (0.8.0) scriveva intervalli che si risolvevano in un SDK incapace di firmare per le reti live; con quello attuale questo non accade.
+* **I template sono vincolati ai pacchetti correnti.** I template dApp dipendono da `@qorechain/sdk` `^0.14.0` (i template EVM anche da `@qorechain/evm` `^0.14.0`) e i template rollup da `@qorechain/rdk` `^0.9.0`. Uno scaffolder precedente (0.8.0) scriveva intervalli che si risolvevano in un SDK incapace di firmare per le reti live; con quello attuale questo non accade.
 * **I template rollup codificano una configurazione valida per ogni caso d'uso.** Ogni template rollup imposta una combinazione di settlement, sequencer, data availability, gas e VM che la matrice di compatibilità dell'RDK accetta, e lo scaffolder stampa lo stake e il burn di creazione correnti prima che tu crei qualsiasi cosa.
 * **Un comando di controllo preliminare che nomina ciò che manca.** `qorollup doctor` (e `npm run doctor` all'interno di un template rollup) verifica che l'endpoint REST risponda, che i parametri dei moduli siano leggibili, che l'endpoint sia la rete richiesta e che sia configurato un signer, e stampa una riga per ogni controllo. All'interno di un template convalida anche la configurazione del rollup rispetto alla matrice di compatibilità.
 * **Firma ibrida integrata nei template.** I template rollup si connettono tramite un piccolo `signer.ts` che deriva la chiave ML-DSA-87 dell'account dalla tua mnemonica (oppure accetta un seed insieme a una chiave privata grezza) e firma in modo ibrido, come richiesto dalle reti sulla lane nativa. Il template dApp `rollup-app` fa lo stesso ed è eseguito come dry run a meno che tu non imposti `QORE_BROADCAST=1`.
@@ -106,7 +106,7 @@ Passaggi successivi, così come li stampa lo scaffolder: `npm install`, inserire
 
 ```bash
 npm install -g @qorechain/rdk-cli
-qorollup --version          # stampa la versione installata (la 0.8.0 è l'attuale)
+qorollup --version          # stampa la versione installata (la 0.9.0 è l'attuale)
 qorollup doctor --network testnet
 ```
 
@@ -171,11 +171,11 @@ qorollup create --rollup-id my-roll --profile defi --dry-run --network testnet
 | Registro | Pacchetto | Versione | Link |
 | --- | --- | --- | --- |
 | npm | `create-qorechain-dapp` (comando `create-qorechain-dapp`) | 0.14.0 | https://www.npmjs.com/package/create-qorechain-dapp |
-| npm | `create-qorechain-rollup` (comando `create-qorechain-rollup`) | 0.8.0 | https://www.npmjs.com/package/create-qorechain-rollup |
-| npm | `@qorechain/rdk-cli` (comando `qorollup`) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
-| npm | `@qorechain/rdk` (libreria usata dai template) | 0.8.0 | https://www.npmjs.com/package/@qorechain/rdk |
+| npm | `create-qorechain-rollup` (comando `create-qorechain-rollup`) | 0.9.0 | https://www.npmjs.com/package/create-qorechain-rollup |
+| npm | `@qorechain/rdk-cli` (comando `qorollup`) | 0.9.0 | https://www.npmjs.com/package/@qorechain/rdk-cli |
+| npm | `@qorechain/rdk` (libreria usata dai template) | 0.9.0 | https://www.npmjs.com/package/@qorechain/rdk |
 
-Sorgenti: https://github.com/qorechain/qorechain-sdk/tree/main/cli (scaffolder dApp), https://github.com/qorechain/qorechain-rdk/tree/main/cli (scaffolder rollup) e https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). La release 0.8.0 dell'RDK è disponibile anche su PyPI, crates.io, Maven Central e sul Go module proxy (verificato il 31 ottobre 2026). Tutti sono Apache-2.0.
+Sorgenti: https://github.com/qorechain/qorechain-sdk/tree/main/cli (scaffolder dApp), https://github.com/qorechain/qorechain-rdk/tree/main/cli (scaffolder rollup) e https://github.com/qorechain/qorechain-rdk/tree/main/packages/rdk-cli (`qorollup`). La release 0.9.0 dell'RDK è disponibile anche su PyPI, crates.io, Maven Central e sul Go module proxy (verificato il 12 novembre 2026). Tutti sono Apache-2.0.
 
 ## Limiti e problemi noti {#limits}
 
