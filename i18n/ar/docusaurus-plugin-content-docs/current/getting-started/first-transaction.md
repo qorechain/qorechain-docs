@@ -68,6 +68,63 @@ qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from myke
 
 بعد قبول المعاملة الموقَّعة توقيعًا مشتركًا، تُعيد واجهة سطر الأوامر تجزئة المعاملة.
 
+## المعاملة الأولى لحساب جديد {#first-tx-pqc}
+
+ابتداءً من الإصدار **v3.2.8** (على شبكة الاختبار منذ 12 نوفمبر 2026؛ ولا موعد للشبكة الرئيسية بعد) يجب أن تكون أول معاملة لحساب جديد **تسجيل مفتاحه ما بعد الكمومي**: `MsgRegisterPQCKeyV2` مع إثبات الحيازة، موقَّعة بالمفتاح الكلاسيكي وحده. أي معاملة أولى أخرى من حساب لا مفتاح مسجَّل له تُرفض. ينطبق هذا على حساب جديد مُوّل لكنه لم يرسل شيئًا قط؛ أما الحساب الذي لديه مفتاح مسجَّل فلا يتأثر.
+
+**لماذا يهم هذا.** كل معاملة لاحقة في مسار Cosmos تُوقَّع توقيعًا هجينًا (secp256k1 مع ML-DSA-87)، ولا تستطيع السلسلة التحقق من جزء ML-DSA-87 إلا مقابل مفتاح تعرفه أصلًا. والتسجيل هو المعاملة الوحيدة التي لا تستطيع حمل هذا التوقيع بعد، فهي المعاملة الوحيدة التي تقبلها السلسلة بتوقيع كلاسيكي وحده، ويجب أن تأتي أولًا. إذا أرسلت تحويلًا أو تفويضًا أو استدعاء عقد قبل التسجيل تُرفض المعاملة وتسجّل أولًا.
+
+### سجّل المفتاح
+
+في واجهة سطر الأوامر استخدم `register-key-v2` تمامًا كما في [سجّل مفتاحك ما بعد الكمومي](#register-pqc-key) أعلاه (يجب توليد المفتاح أولًا بـ `qorechaind tx pqc gen-key mypqc`):
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
+```
+
+مع TypeScript SDK (الإصدار 0.9.0 أو أحدث) تقرأ `ensurePqcRegistered` حالة المفتاح أولًا، وتتخطى المعاملة إذا كان مفتاحك مسجَّلًا أصلًا، وتُرفق إثبات الحيازة، وترسل التسجيل بتوقيع كلاسيكي من تلقاء نفسها:
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  ensurePqcRegistered,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  endpoints: { rest: "https://api-testnet.qore.host", rpc: "https://rpc-testnet.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
+const tx = await client.connectTx(signer, { pqcKeypair });
+
+const res = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  rest: client.network.endpoints.rest,
+  fee: { amount: [{ denom: "uqor", amount: "90000" }], gas: "600000" },
+});
+console.log(res.alreadyRegistered ? "already registered" : res.txHash);
+```
+
+إذا كنت تحتاج الرسالة فقط (مثلًا لتضمينها في جسم معاملتك الخاص) فإن `buildRegisterPqcKeyMsg(sender, { pqcKeypair, ecdsaPubkey, proofOfPossession })` تعيد `MsgRegisterPQCKeyV2` من دون إرسالها.
+
+لدى بقية الـ SDK المساعد المتساوي القوة (idempotent) نفسه، وكلها تقرأ حالة المفتاح عبر REST أولًا ولا تسجّل أبدًا بلا فحص:
+
+| اللغة | المساعد |
+| --- | --- |
+| Python | `qorsdk.pqc_dx.ensure_pqc_registered(account=..., pqc_keypair=..., chain_id=..., account_number=..., sequence=..., rest_url=..., fee=...)` |
+| Go | `pqcdx.New(pqcdx.Signer{...}, pqcdx.Options{}).EnsurePQCRegistered(pqcdx.RegisterOptions{})` |
+| Rust | `PqcDx::ensure_pqc_registered().await` |
+| Java | `PqcDx.ensurePqcRegistered(signer, broadcaster, qor, new PqcDx.EnsureOptions())` |
+
+للإعداد الكامل للموقِّع في كل لغة راجع مرجع الـ SDK لتلك اللغة. يحتاج التسجيل إلى أن يملك الحساب QOR كافيًا لدفع الرسم، فموّل الحساب الجديد قبل التسجيل.
+
+**جُرِّب على شبكة الاختبار.** في 12 نوفمبر 2026 (الإصدار v3.2.8) أرسل حساب eth-native جديد يملك 500 QOR التسجيل أولًا (SDK 0.13.0، بتوقيع كلاسيكي، مع إثبات الحيازة): الرمز 0، والغاز المستخدم 299,233 تحت حد 600,000 ورسم 90,000 uqor. ثم استخدم أول تحويل له بتوقيع هجين 187,494 غاز تحت حد 400,000 (الرسم 60,000 uqor). وأظهرت قراءة المعاملة من `GET /cosmos/tx/v1beta1/txs/{hash}` الرمز 0، والامتداد `/qorechain.pqc.v1.PQCHybridSignature` الحامل لتوقيع ML-DSA-87 بحجم 4,627 بايت، والحدثين `pqc_verify` (`hybrid_mode=required`) و`pqc_hybrid_verify` (`status=verified`). أما القاعدة القائلة إن التسجيل يجب أن يكون أول معاملة فقد أُخذت من فريق السلسلة؛ ولم تُجرَّب معاملة أولى من نوع آخر.
+
 ## الاستعلام عن المعاملة
 
 ابحث عن معاملة مكتملة عبر تجزئتها:

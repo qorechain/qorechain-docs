@@ -68,6 +68,90 @@ Cosmos 레인에서는 네트워크 설정이 `hybrid_signature_mode = required`
 
 공동 서명된 트랜잭션이 수락되면 CLI가 트랜잭션 해시를 반환합니다.
 
+## 새 계정의 첫 트랜잭션 {#first-tx-pqc}
+
+릴리스 **v3.2.8**부터(테스트넷은 2026년 11월 12일부터, 메인넷은 아직 날짜 없음) 새 계정의 첫 트랜잭션은 반드시 **포스트 퀀텀 키 등록**이어야 합니다. 소유 증명을 담은 `MsgRegisterPQCKeyV2`를 클래식 키만으로 서명해야 합니다. 등록된 키가 없는 계정의 다른 모든 첫 트랜잭션은 거부됩니다. 이는 자금을 받았지만 아직 아무것도 보낸 적 없는 새 계정에 적용되며, 이미 등록된 키가 있는 계정은 영향을 받지 않습니다.
+
+**중요한 이유.** Cosmos 레인의 이후 모든 트랜잭션은 하이브리드(secp256k1 + ML-DSA-87)로 서명되며, 체인은 이미 알고 있는 키에 대해서만 ML-DSA-87 부분을 검증할 수 있습니다. 등록은 아직 그 서명을 담을 수 없는 유일한 트랜잭션이므로, 체인이 클래식 서명만으로 받아들이는 유일한 트랜잭션이며 반드시 가장 먼저 와야 합니다. 등록하기 전에 전송, 위임, 컨트랙트 호출을 보내면 트랜잭션이 거부되고 먼저 등록해야 합니다.
+
+### 키 등록하기
+
+CLI에서는 위의 [포스트 퀀텀 키 등록하기](#register-pqc-key)와 똑같이 `register-key-v2`를 사용하세요(키는 먼저 `qorechaind tx pqc gen-key mypqc`로 생성해야 합니다).
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
+```
+
+TypeScript SDK(0.9.0 이상)에서는 `ensurePqcRegistered`가 먼저 키 상태를 읽고, 키가 이미 등록되어 있으면 트랜잭션을 건너뛰며, 소유 증명을 첨부하고, 등록을 스스로 클래식 서명으로 전송합니다.
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  ensurePqcRegistered,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  endpoints: { rest: "https://api-testnet.qore.host", rpc: "https://rpc-testnet.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
+const tx = await client.connectTx(signer, { pqcKeypair });
+
+const res = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  rest: client.network.endpoints.rest,
+  fee: { amount: [{ denom: "uqor", amount: "90000" }], gas: "600000" },
+});
+console.log(res.alreadyRegistered ? "already registered" : res.txHash);
+```
+
+메시지만 필요하다면(예: 자체 트랜잭션 본문에 넣기 위해) `buildRegisterPqcKeyMsg(sender, { pqcKeypair, ecdsaPubkey, proofOfPossession })`가 전송하지 않고 `MsgRegisterPQCKeyV2`를 반환합니다.
+
+다른 SDK에도 같은 멱등(idempotent) 헬퍼가 있으며, 모두 먼저 REST로 키 상태를 읽고 맹목적으로 등록하지 않습니다.
+
+| 언어 | 헬퍼 |
+| --- | --- |
+| Python | `qorsdk.pqc_dx.ensure_pqc_registered(account=..., pqc_keypair=..., chain_id=..., account_number=..., sequence=..., rest_url=..., fee=...)` |
+| Go | `pqcdx.New(pqcdx.Signer{...}, pqcdx.Options{}).EnsurePQCRegistered(pqcdx.RegisterOptions{})` |
+| Rust | `PqcDx::ensure_pqc_registered().await` |
+| Java | `PqcDx.ensurePqcRegistered(signer, broadcaster, qor, new PqcDx.EnsureOptions())` |
+
+각 언어의 전체 서명자 설정은 해당 언어의 SDK 레퍼런스를 참고하세요. 등록에는 계정이 수수료를 낼 만큼의 QOR를 보유해야 하므로, 등록하기 전에 새 계정에 자금을 넣으세요.
+
+### 서명을 포함한 수수료 추정
+
+하이브리드 서명은 트랜잭션에 약 **4.7 KB**를 더하고 체인은 이에 대해 **검증 수수료**를 부과하므로, 서명되지 않았거나 클래식으로만 서명된 트랜잭션 사본으로 추정한 수수료는 너무 낮습니다. 하이브리드 서명을 포함해 트랜잭션을 시뮬레이션하거나 SDK가 대신하게 하세요. TypeScript 클라이언트의 기본 수수료는 `"auto"`이며, 하이브리드 트랜잭션을 시뮬레이션하여 그 결과로 가스 한도를 설정합니다.
+
+```ts
+import { toBase } from "@qorechain/sdk";
+
+// "auto" is the default: the client simulates the hybrid transaction itself.
+await tx.bankSend("qor1recipientaddress...", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+| 트랜잭션 | 일반적인 가스 | 가스당 0.15 uqor일 때의 수수료 예시 |
+| --- | --- | --- |
+| 하이브리드 서명 전송 | 약 160,000 ~ 240,000 | 24,000 ~ 36,000 uqor |
+| 키 등록 | 약 600,000(설정할 한도) | 90,000 uqor |
+
+**테스트넷에서 검증됨.** 2026년 11월 12일(릴리스 v3.2.8)에 500 QOR를 가진 새 eth-native 계정이 먼저 등록을 보냈습니다(SDK 0.13.0, 소유 증명과 함께 클래식 서명). 코드 0, 한도 600,000에서 사용 가스 299,233, 수수료 90,000 uqor였습니다. 이후 첫 하이브리드 서명 전송은 한도 400,000에서 187,494 가스를 사용했습니다(수수료 60,000 uqor). `GET /cosmos/tx/v1beta1/txs/{hash}`로 트랜잭션을 다시 읽으면 코드 0, 4,627바이트 ML-DSA-87 서명을 담은 `/qorechain.pqc.v1.PQCHybridSignature` 확장, 그리고 `pqc_verify`(`hybrid_mode=required`)와 `pqc_hybrid_verify`(`status=verified`) 이벤트가 확인되었습니다. 등록이 첫 트랜잭션이어야 한다는 규칙은 체인 팀에서 받은 것이며, 다른 종류의 첫 트랜잭션은 시도하지 않았습니다.
+
+네트워크 최저 수수료는 가스 1단위당 0.1 uqor입니다. v3.2.8부터 멤풀은 가스당 수수료 순으로 트랜잭션을 정렬하므로, 최저 수수료보다 조금 더 지불하면 블록이 붐빌 때 트랜잭션이 다른 트랜잭션 뒤에서 기다리지 않습니다.
+
+### 등록을 건너뛰면 보이는 현상
+
+| 보이는 현상 | 의미 | 대처 방법 |
+| --- | --- | --- |
+| 계정에 등록된 PQC 키가 없거나 하이브리드 서명이 있어야 한다는 거부(모듈 `pqc`, 코드 8. SDK는 `pqc_key_required`로 보고) | 계정에 아직 등록된 키가 없습니다 | 위와 같이 키를 등록한 다음 다시 보내세요 |
+| 등록이 `already registered`로 거부됨(모듈 `pqc`, 코드 7) | 계정이 이미 키를 보유하고 있습니다 | 할 일 없음. `GET /qorechain/pqc/v1/account/{address}`로 등록 정보를 읽거나 `ensurePqcRegistered`를 사용하세요(다른 키라면 `PqcKeyMismatchError`를 던집니다) |
+
+[SDK 퀵스타트](/sdk/quickstart), [포스트 퀀텀 서명](/developer-guide/post-quantum-signing), [지갑 설정](/getting-started/wallet-setup)도 참고하세요.
+
 ## 트랜잭션 조회하기
 
 해시로 완료된 트랜잭션을 조회합니다.

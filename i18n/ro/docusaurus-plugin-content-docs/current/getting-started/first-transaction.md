@@ -68,6 +68,90 @@ Pe lane-ul Cosmos, setarea rețelei este `hybrid_signature_mode = required` (re�
 
 După ce tranzacția cosemnată este acceptată, CLI returnează un hash de tranzacție.
 
+## Prima tranzacție a unui cont nou {#first-tx-pqc}
+
+Începând cu versiunea **v3.2.8** (testnet din 12 noiembrie 2026; mainnet-ul nu are încă o dată), prima tranzacție a unui cont nou trebuie să fie **înregistrarea cheii lui post-cuantice**: `MsgRegisterPQCKeyV2`, care poartă dovada deținerii, semnată doar cu cheia clasică. Orice altă primă tranzacție de la un cont care nu are o cheie înregistrată este refuzată. Aceasta se aplică unui cont nou care a fost alimentat, dar nu a trimis niciodată nimic; un cont care are deja o cheie înregistrată nu este afectat.
+
+**De ce contează.** Fiecare tranzacție ulterioară pe lane-ul Cosmos este semnată hibrid (secp256k1 plus ML-DSA-87), iar lanțul poate verifica partea ML-DSA-87 doar față de o cheie pe care o cunoaște deja. Înregistrarea este singura tranzacție care nu poate purta încă acea semnătură, deci este singura tranzacție pe care lanțul o acceptă doar cu semnătură clasică, și trebuie să vină prima. Dacă trimiteți un transfer, o delegare sau un apel de contract înainte de înregistrare, tranzacția este refuzată și înregistrați întâi cheia.
+
+### Înregistrați cheia
+
+Cu CLI, folosiți `register-key-v2` exact ca în [Înregistrarea cheii post-cuantice](#register-pqc-key) de mai sus (cheia trebuie generată mai întâi cu `qorechaind tx pqc gen-key mypqc`):
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
+```
+
+Cu SDK-ul TypeScript (0.9.0 sau mai nou), `ensurePqcRegistered` citește mai întâi starea cheii, sare peste tranzacție când cheia dumneavoastră este deja înregistrată, atașează dovada deținerii și trimite singur înregistrarea în mod clasic:
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  ensurePqcRegistered,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  endpoints: { rest: "https://api-testnet.qore.host", rpc: "https://rpc-testnet.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
+const tx = await client.connectTx(signer, { pqcKeypair });
+
+const res = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  rest: client.network.endpoints.rest,
+  fee: { amount: [{ denom: "uqor", amount: "90000" }], gas: "600000" },
+});
+console.log(res.alreadyRegistered ? "already registered" : res.txHash);
+```
+
+Dacă aveți nevoie doar de mesaj (de exemplu pentru a-l pune în propriul corp de tranzacție), `buildRegisterPqcKeyMsg(sender, { pqcKeypair, ecdsaPubkey, proofOfPossession })` returnează `MsgRegisterPQCKeyV2` fără să îl trimită.
+
+Celelalte SDK-uri au aceeași funcție ajutătoare idempotentă, toate citind mai întâi starea cheii prin REST și nu înregistrează niciodată pe nevăzute:
+
+| Limbaj | Funcție ajutătoare |
+| --- | --- |
+| Python | `qorsdk.pqc_dx.ensure_pqc_registered(account=..., pqc_keypair=..., chain_id=..., account_number=..., sequence=..., rest_url=..., fee=...)` |
+| Go | `pqcdx.New(pqcdx.Signer{...}, pqcdx.Options{}).EnsurePQCRegistered(pqcdx.RegisterOptions{})` |
+| Rust | `PqcDx::ensure_pqc_registered().await` |
+| Java | `PqcDx.ensurePqcRegistered(signer, broadcaster, qor, new PqcDx.EnsureOptions())` |
+
+Pentru configurarea completă a semnatarului în fiecare limbaj, vedeți referința SDK a limbajului respectiv. Înregistrarea cere ca în cont să existe suficient QOR pentru comision, deci alimentați contul nou înainte de a înregistra.
+
+### Estimați comisionul cu semnătura inclusă
+
+O semnătură hibridă adaugă tranzacției aproximativ **4.7 KB**, iar lanțul taxează pentru ea un **comision de verificare**, deci un comision estimat dintr-o copie nesemnată sau semnată doar clasic a tranzacției este prea mic. Simulați tranzacția cu semnătura hibridă inclusă sau lăsați SDK-ul să o facă: comisionul implicit al clientului TypeScript este `"auto"`, care simulează tranzacția hibridă și setează limita de gaz pornind de la rezultat.
+
+```ts
+import { toBase } from "@qorechain/sdk";
+
+// "auto" is the default: the client simulates the hybrid transaction itself.
+await tx.bankSend("qor1recipientaddress...", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+| Tranzacție | Gaz tipic | Comision exemplu la 0.15 uqor pe unitate de gaz |
+| --- | --- | --- |
+| Transfer semnat hibrid | aproximativ 160,000 până la 240,000 | 24,000 până la 36,000 uqor |
+| Înregistrarea cheii | aproximativ 600,000 (limita de setat) | 90,000 uqor |
+
+**Testat pe testnet.** Pe 12 noiembrie 2026 (release v3.2.8), un cont eth-native nou, cu 500 QOR, a trimis mai întâi înregistrarea (SDK 0.13.0, semnată clasic, cu dovada deținerii): cod 0, 299,233 gaz utilizat sub o limită de 600,000 și un comision de 90,000 uqor. Primul lui transfer semnat hibrid a folosit apoi 187,494 gaz sub o limită de 400,000 (comision 60,000 uqor). Citirea tranzacției înapoi din `GET /cosmos/tx/v1beta1/txs/{hash}` a arătat codul 0, extensia `/qorechain.pqc.v1.PQCHybridSignature` care poartă o semnătură ML-DSA-87 de 4,627 de octeți și evenimentele `pqc_verify` (`hybrid_mode=required`) și `pqc_hybrid_verify` (`status=verified`). Regula că înregistrarea trebuie să fie prima tranzacție a fost preluată de la echipa lanțului; o primă tranzacție de alt fel nu a fost încercată.
+
+Pragul minim al rețelei este 0.1 uqor pe unitate de gaz; începând cu v3.2.8, mempool-ul ordonează tranzacțiile după comisionul pe unitate de gaz, deci un preț puțin peste prag împiedică o tranzacție să aștepte în spatele altora când blocurile sunt aglomerate.
+
+### Ce vedeți dacă săriți peste înregistrare
+
+| Ce vedeți | Semnificație | Ce faceți |
+| --- | --- | --- |
+| Un refuz care spune că contul nu are o cheie PQC înregistrată sau trebuie să includă o semnătură hibridă (modul `pqc`, cod 8; SDK-ul raportează `pqc_key_required`) | Contul nu are încă o cheie înregistrată | Înregistrați cheia ca mai sus, apoi trimiteți din nou |
+| Înregistrare refuzată ca `already registered` (modul `pqc`, cod 7) | Contul deține deja o cheie | Nu e nimic de făcut; citiți înregistrarea cu `GET /qorechain/pqc/v1/account/{address}` sau folosiți `ensurePqcRegistered` (aruncă `PqcKeyMismatchError` pentru o cheie diferită) |
+
+Vedeți și [Ghid rapid SDK](/sdk/quickstart), [Semnare post-cuantică](/developer-guide/post-quantum-signing) și [Configurarea portofelului](/getting-started/wallet-setup).
+
 ## Interogarea unei tranzacții
 
 Căutați o tranzacție finalizată după hash-ul ei:

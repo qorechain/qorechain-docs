@@ -68,6 +68,90 @@ Cosmos hattında ağ ayarı `hybrid_signature_mode = required`'dır (canlı ağl
 
 Eş imzalı işlem kabul edildikten sonra CLI bir işlem karması (hash) döndürür.
 
+## Yeni Bir Hesabın İlk İşlemi {#first-tx-pqc}
+
+**v3.2.8** sürümünden itibaren (test ağında 12 Kasım 2026'dan beri; ana ağ için henüz tarih yok) yeni bir hesabın ilk işlemi, **kuantum sonrası anahtarının kaydı** olmalıdır: yalnızca klasik anahtarla imzalanan, sahiplik kanıtını taşıyan `MsgRegisterPQCKeyV2`. Kayıtlı anahtarı olmayan bir hesaptan gelen başka herhangi bir ilk işlem reddedilir. Bu kural, fonlanmış ama hiç işlem göndermemiş yeni bir hesap için geçerlidir; kayıtlı anahtarı zaten olan bir hesap etkilenmez.
+
+**Neden önemli.** Cosmos hattındaki sonraki her işlem hibrit imzalanır (secp256k1 artı ML-DSA-87) ve zincir ML-DSA-87 kısmını yalnızca önceden bildiği bir anahtara karşı doğrulayabilir. Kayıt, bu imzayı henüz taşıyamayan tek işlemdir; bu yüzden zincirin yalnızca klasik imzayla kabul ettiği tek işlemdir ve en başta gelmesi gerekir. Kayıttan önce bir transfer, bir delegasyon veya bir sözleşme çağrısı gönderirseniz işlem reddedilir ve önce kayıt yaparsınız.
+
+### Anahtarı kaydetme
+
+CLI ile, yukarıdaki [Kuantum sonrası anahtarınızı kaydedin](#register-pqc-key) bölümündeki gibi `register-key-v2` kullanın (anahtar önce `qorechaind tx pqc gen-key mypqc` ile oluşturulmalıdır):
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
+```
+
+TypeScript SDK ile (0.9.0 veya üzeri), `ensurePqcRegistered` önce anahtar durumunu okur, anahtarınız zaten kayıtlıysa işlemi atlar, sahiplik kanıtını ekler ve kaydı kendisi klasik olarak gönderir:
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  ensurePqcRegistered,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  endpoints: { rest: "https://api-testnet.qore.host", rpc: "https://rpc-testnet.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
+const tx = await client.connectTx(signer, { pqcKeypair });
+
+const res = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  rest: client.network.endpoints.rest,
+  fee: { amount: [{ denom: "uqor", amount: "90000" }], gas: "600000" },
+});
+console.log(res.alreadyRegistered ? "already registered" : res.txHash);
+```
+
+Yalnızca mesaja ihtiyacınız varsa (örneğin kendi işlem gövdenize paketlemek için), `buildRegisterPqcKeyMsg(sender, { pqcKeypair, ecdsaPubkey, proofOfPossession })` `MsgRegisterPQCKeyV2` mesajını göndermeden döndürür.
+
+Diğer SDK'ların da aynı idempotent yardımcısı vardır; hepsi önce anahtar durumunu REST üzerinden okur ve asla körlemesine kayıt yapmaz:
+
+| Dil | Yardımcı |
+| --- | --- |
+| Python | `qorsdk.pqc_dx.ensure_pqc_registered(account=..., pqc_keypair=..., chain_id=..., account_number=..., sequence=..., rest_url=..., fee=...)` |
+| Go | `pqcdx.New(pqcdx.Signer{...}, pqcdx.Options{}).EnsurePQCRegistered(pqcdx.RegisterOptions{})` |
+| Rust | `PqcDx::ensure_pqc_registered().await` |
+| Java | `PqcDx.ensurePqcRegistered(signer, broadcaster, qor, new PqcDx.EnsureOptions())` |
+
+Her dildeki tam imzalayıcı kurulumu için o dilin SDK başvurusuna bakın. Kayıt, hesabın ücreti ödemeye yetecek kadar QOR tutmasını gerektirir; bu yüzden kayıttan önce yeni hesabı fonlayın.
+
+### Ücreti imza dahil tahmin etme
+
+Hibrit bir imza işleme yaklaşık **4.7 KB** ekler ve zincir bunun için bir **doğrulama ücreti** alır; bu yüzden işlemin imzasız veya yalnızca klasik imzalı bir kopyasından tahmin edilen ücret çok düşük kalır. İşlemi hibrit imza dahil simüle edin veya bunu SDK'ya bırakın: TypeScript istemcisinin varsayılan ücreti `"auto"`'dur; hibrit işlemi simüle eder ve gaz limitini sonuçtan belirler.
+
+```ts
+import { toBase } from "@qorechain/sdk";
+
+// "auto" is the default: the client simulates the hybrid transaction itself.
+await tx.bankSend("qor1recipientaddress...", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+| İşlem | Tipik gaz | Gaz başına 0.15 uqor ile örnek ücret |
+| --- | --- | --- |
+| Hibrit imzalı transfer | yaklaşık 160,000 ile 240,000 arası | 24,000 ile 36,000 uqor |
+| Anahtar kaydı | yaklaşık 600,000 (ayarlanacak limit) | 90,000 uqor |
+
+**Test ağında denendi.** 12 Kasım 2026'da (v3.2.8 sürümü) 500 QOR'lu yepyeni bir eth-native hesap önce kaydı gönderdi (SDK 0.13.0, klasik imzalı, sahiplik kanıtıyla): kod 0, 600,000 limit ve 90,000 uqor ücret altında 299,233 gaz kullanıldı. Ardından ilk hibrit imzalı transferi 400,000 limit altında 187,494 gaz kullandı (ücret 60,000 uqor). İşlemi `GET /cosmos/tx/v1beta1/txs/{hash}` üzerinden geri okumak kod 0'ı, 4,627 baytlık bir ML-DSA-87 imzası taşıyan `/qorechain.pqc.v1.PQCHybridSignature` uzantısını ve `pqc_verify` (`hybrid_mode=required`) ile `pqc_hybrid_verify` (`status=verified`) olaylarını gösterdi. Kaydın ilk işlem olması gerektiği kuralı zincir ekibinden alındı; başka türden bir ilk işlem denenmedi.
+
+Ağ tabanı gaz birimi başına 0.1 uqor'dur; v3.2.8 sürümünden itibaren mempool işlemleri gaz başına ücrete göre sıraladığı için tabanın biraz üzerinde ödemek, bloklar yoğun olduğunda bir işlemin diğerlerinin arkasında beklemesini önler.
+
+### Kaydı atlarsanız ne görürsünüz
+
+| Ne görürsünüz | Anlamı | Ne yapmalı |
+| --- | --- | --- |
+| Hesabın kayıtlı bir PQC anahtarı olmadığını veya hibrit bir imza içermesi gerektiğini söyleyen bir ret (modül `pqc`, kod 8; SDK bunu `pqc_key_required` olarak bildirir) | Hesabın henüz kayıtlı anahtarı yok | Anahtarı yukarıdaki gibi kaydedin, sonra yeniden gönderin |
+| Kayıt `already registered` olarak reddedildi (modül `pqc`, kod 7) | Hesap zaten bir anahtar tutuyor | Yapılacak bir şey yok; kaydı `GET /qorechain/pqc/v1/account/{address}` ile okuyun veya `ensurePqcRegistered` kullanın (farklı bir anahtar için `PqcKeyMismatchError` fırlatır) |
+
+Ayrıca bkz. [SDK hızlı başlangıç](/sdk/quickstart), [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) ve [Cüzdan Kurulumu](/getting-started/wallet-setup).
+
 ## İşlemi Sorgulama
 
 Tamamlanmış bir işlemi karması (hash) ile arayın:

@@ -68,6 +68,90 @@ Cosmosレーンでは、ネットワークの設定は`hybrid_signature_mode = r
 
 共署名されたトランザクションが受理されると、CLIはトランザクションハッシュを返します。
 
+## 新しいアカウントの最初のトランザクション {#first-tx-pqc}
+
+リリース**v3.2.8**(テストネットでは2026年11月12日から。メインネットの日程は未定)以降、新規アカウントの最初のトランザクションは、**ポスト量子鍵の登録**でなければなりません。具体的には、証明付きの`MsgRegisterPQCKeyV2`(所有証明を含む)を、クラシック鍵のみで署名して送ります。登録済みの鍵を持たないアカウントからの、それ以外の最初のトランザクションは拒否されます。これは、入金されたもののまだ何も送信したことがない新規アカウントに適用されます。すでに登録済みの鍵を持つアカウントには影響しません。
+
+**なぜ重要か。** Cosmosレーン上の以降のトランザクションはすべてハイブリッド署名(secp256k1とML-DSA-87)で署名され、チェーンはML-DSA-87の部分を、すでに把握している鍵に対してしか検証できません。登録は、その署名をまだ付けられない唯一のトランザクションであるため、チェーンがクラシック署名のみで受け付ける唯一のトランザクションであり、必ず最初に行う必要があります。登録の前に送金、ステーキングの委任、コントラクト呼び出しを送ると、そのトランザクションは拒否されるので、先に登録してください。
+
+### 鍵を登録する
+
+CLIでは、上記の[ポスト量子鍵を登録する](#register-pqc-key)と同じように`register-key-v2`を使います(鍵は先に`qorechaind tx pqc gen-key mypqc`で生成しておく必要があります)。
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
+```
+
+TypeScript SDK(0.9.0以降)では、`ensurePqcRegistered`が最初に鍵のステータスを読み取り、鍵がすでに登録済みであればトランザクションを送らず、所有証明を添付し、登録をクラシック署名で自動的に送信します。
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  ensurePqcRegistered,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  endpoints: { rest: "https://api-testnet.qore.host", rpc: "https://rpc-testnet.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
+const tx = await client.connectTx(signer, { pqcKeypair });
+
+const res = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  rest: client.network.endpoints.rest,
+  fee: { amount: [{ denom: "uqor", amount: "90000" }], gas: "600000" },
+});
+console.log(res.alreadyRegistered ? "already registered" : res.txHash);
+```
+
+メッセージだけが必要な場合(たとえば独自のトランザクションボディに組み込む場合)は、`buildRegisterPqcKeyMsg(sender, { pqcKeypair, ecdsaPubkey, proofOfPossession })`が、送信せずに`MsgRegisterPQCKeyV2`を返します。
+
+他のSDKにも同じ冪等なヘルパーがあります。いずれも、最初にREST経由で鍵のステータスを読み取り、確認せずに登録することはありません。
+
+| 言語 | ヘルパー |
+| --- | --- |
+| Python | `qorsdk.pqc_dx.ensure_pqc_registered(account=..., pqc_keypair=..., chain_id=..., account_number=..., sequence=..., rest_url=..., fee=...)` |
+| Go | `pqcdx.New(pqcdx.Signer{...}, pqcdx.Options{}).EnsurePQCRegistered(pqcdx.RegisterOptions{})` |
+| Rust | `PqcDx::ensure_pqc_registered().await` |
+| Java | `PqcDx.ensurePqcRegistered(signer, broadcaster, qor, new PqcDx.EnsureOptions())` |
+
+各言語のsignerの完全なセットアップについては、その言語のSDKリファレンスを参照してください。登録には手数料を支払うのに十分なQORがアカウントに必要なので、登録の前に新しいアカウントに入金してください。
+
+### 署名を含めた手数料の見積もり
+
+ハイブリッド署名はトランザクションに約**4.7 KB**を加え、チェーンはそのための**検証手数料**を課します。そのため、未署名またはクラシック署名のみのコピーから見積もった手数料は低すぎます。ハイブリッド署名を含めた状態でトランザクションをシミュレーションするか、SDKに任せてください。TypeScriptクライアントのデフォルトの手数料は`"auto"`で、ハイブリッドトランザクションをシミュレーションし、その結果からガス上限を設定します。
+
+```ts
+import { toBase } from "@qorechain/sdk";
+
+// "auto" is the default: the client simulates the hybrid transaction itself.
+await tx.bankSend("qor1recipientaddress...", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+| トランザクション | 一般的なガス | ガス1単位あたり0.15 uqorでの手数料の例 |
+| --- | --- | --- |
+| ハイブリッド署名の送金 | 約160,000〜240,000 | 24,000〜36,000 uqor |
+| 鍵の登録 | 約600,000(設定する上限) | 90,000 uqor |
+
+**テストネットでの検証。** 2026年11月12日(リリースv3.2.8)に、500 QORを持つ新規のeth-nativeアカウントが、最初に登録を送信しました(SDK 0.13.0、所有証明付き、クラシック署名)。結果はコード0、上限600,000に対して使用ガス299,233、手数料90,000 uqorでした。続く最初のハイブリッド署名の送金は、上限400,000に対して187,494ガスを使用しました(手数料60,000 uqor)。トランザクションを`GET /cosmos/tx/v1beta1/txs/{hash}`から読み戻すと、コード0、4,627バイトのML-DSA-87署名を載せた`/qorechain.pqc.v1.PQCHybridSignature`拡張、およびイベント`pqc_verify`(`hybrid_mode=required`)と`pqc_hybrid_verify`(`status=verified`)が確認できました。登録が最初のトランザクションでなければならないというルールはチェーンチームから聞いたもので、他の種類のトランザクションを最初に送る試験は行っていません。
+
+ネットワークの下限はガス1単位あたり0.1 uqorです。v3.2.8からメモリプールはガス1単位あたりの手数料でトランザクションを順序付けるため、下限より少し多めに支払うと、ブロックが混み合っているときにトランザクションが他のトランザクションの後ろで待たされるのを防げます。
+
+### 登録を省略した場合の表示
+
+| 表示される内容 | 意味 | 対処 |
+| --- | --- | --- |
+| アカウントに登録済みのPQC鍵がない、またはハイブリッド署名を含める必要があるという拒否(モジュール`pqc`、コード8。SDKは`pqc_key_required`として報告) | アカウントにまだ登録済みの鍵がない | 上記のとおり鍵を登録してから、再度送信する |
+| 登録が`already registered`として拒否される(モジュール`pqc`、コード7) | アカウントがすでに鍵を保持している | 何もする必要はありません。`GET /qorechain/pqc/v1/account/{address}`で登録内容を読み取るか、`ensurePqcRegistered`を使用してください(別の鍵の場合は`PqcKeyMismatchError`をスローします) |
+
+関連ページ: [SDKクイックスタート](/sdk/quickstart)、[ポスト量子署名](/developer-guide/post-quantum-signing)、[ウォレットのセットアップ](/getting-started/wallet-setup)。
+
 ## トランザクションの照会
 
 完了したトランザクションをそのハッシュで照会します。
