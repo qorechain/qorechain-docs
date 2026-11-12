@@ -18,8 +18,8 @@ v3.2.8 runs on the public testnet `qorechain-diana` since 12 November 2026. Main
 :::note Which tools can do this today
 
 * **Node command line (`qorechaind`)**: every message on this page has a command. This is the Linux node binary; there is no packaged macOS binary, so on a Mac run it on a Linux host or read the chain over REST.
-* **RDK kit**: the latest published release of `@qorechain/rdk` is 0.8.0, and it does not carry v3.2.8 support. Support for these messages, the new batch rules and the new proof helpers arrives in the next RDK release. Until then, use the command line or the raw message for anything that changes state. The read-only helpers `RestClient.getParams`, `getRollup` and `getLatestBatch` work, but the 0.8.0 views do not show the new fields, so read those with `curl` as shown below.
-* **Python, Go, Rust and Java RDK clients**: same status as TypeScript. A later release adds this; use the command line or the raw message until then.
+* **RDK kit**: RDK 0.9.0 supports v3.2.8. It is published on every registry: npm (`@qorechain/rdk`, `@qorechain/rdk-cli`, `create-qorechain-rollup`), PyPI (`qorechain-rdk`), crates.io (`qorechain-rdk`), Maven (`io.github.qorechain:qorechain-rdk`) and Go (`github.com/qorechain/qorechain-rdk/packages/go` v0.9.0). Release notes: https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0.
+* **Python, Go, Rust and Java RDK clients**: version 0.9.0 of each supports v3.2.8. The end-to-end run below used the TypeScript client.
 
 :::
 
@@ -183,7 +183,7 @@ During the challenge window anyone may send `MsgChallengeBatch` with a `qledger-
 qorechaind tx rdk challenge-batch my-nft-rollup 1 --proof <hex-fraud-proof> --from <key> --chain-id qorechain-diana
 ```
 
-Building the proof bytes needs the kit's `qledger-v1` helpers, which arrive in the next RDK release. Until then a challenger builds the proof with its own tooling.
+RDK 0.9.0 has the `qledger-v1` helpers that build the proof bytes.
 
 Batches that are not challenged finalize on their own when the challenge window ends. Withdrawals are paid from finalized batches only, from the rollup's deposit pool, never from the creator's escrow. A rollup cannot be stopped while the pool holds deposits (error 54).
 
@@ -271,11 +271,28 @@ The only STARK statement the verifier supports proves iterated squaring between 
 
 ## Worked flow: create, bond, deposit, post, batch, challenge, finalize, withdraw {#worked-flow}
 
-:::caution Untested here
-
-The RDK kit has no end-to-end example for this flow yet, and none of these commands was run for this page. They follow the node CLI definitions. Run them on the testnet with a funded test key and read each result before moving on.
-
+:::note Run on the testnet by the RDK team, 12 November 2026
+The RDK team ran this flow end to end on the testnet `qorechain-diana` on 12 November 2026, from 06:22 to 07:27 UTC. It was driven entirely through RDK 0.9.0 (TypeScript) with the RDK `auto` fee at 0.15 uqor per gas. Every step returned code 0. It was not run by the author of this page.
 :::
+
+| Step | Message | Gas used / gas wanted |
+| --- | --- | --- |
+| 0 | Register the new account's post-quantum key first, in its own transaction (`MsgRegisterPQCKeyV2` with proof of possession). The RDK clients do this automatically; without it the first real transaction is refused with pqc code 8 | 348,917 / 600,000 |
+| 1 | `MsgCreateRollup`: profile `nft`, execution VM `qledger-v1`, sequencing `based`, stake 10,000 QOR (1% burned) | 301,260 / 349,199 |
+| 2 | `MsgBondRollupSubmitter`, 1,000 QOR | 178,059 / 263,425 |
+| 3 | `MsgDepositToRollup` twice (3 QOR and 1 QOR; the minimum is 1 QOR) | about 240,000 / 350,000 each |
+| 4 | `MsgPostRollupData` twice (a signed qledger transfer and a signed qledger withdrawal), plus the posted-data fee (10 uqor per billable byte, at least 1 KiB billed) | about 328,500 / 474,000 each |
+| 5 | `planQledgerBatch`, then `MsgSubmitBatch` for 4 inbox entries (`inbox_end` 4, `data_hash` the inbox range). Batch status `submitted`, bond `pending` 1 | 712,379 / 1,011,431 |
+| 6 | Fraud test: one more post, then a batch with a deliberately wrong state root (233,990 / 341,742), then `MsgChallengeBatch` with the RDK-built fraud proof (4,136 bytes) | 450,186 / 644,417 |
+| 7 | Batch 0 finalized on its own after the 3,600 second testnet challenge window | no transaction |
+| 8 | `MsgExecuteWithdrawal` of 0.3 QOR with the RDK's qledger Merkle proof | 192,768 / 284,220 |
+
+Results worth noting:
+
+* **Step 6**: the wrong batch was rejected, the submitter's bond was slashed (half burned, half paid to the challenger), the inbox rolled back, and the earlier good batch was untouched.
+* **Step 8**: the rollup's deposit pool went from 4.0 to 3.7 QOR, and the recipient's balance rose by 0.3 QOR minus the fee.
+
+The command line has an equivalent for each step. These individual commands were not run for this page and follow the node CLI definitions:
 
 ```bash
 CHAIN="--chain-id qorechain-diana --from <key>"
@@ -309,11 +326,11 @@ qorechaind tx rdk execute-withdrawal my-nft-rollup 0 <withdrawal-index> <recipie
   --proof <sibling-hex>,<sibling-hex> $CHAIN
 ```
 
-The challenge window of a rollup is in its `challenge_window_sec`. On the testnet `default_challenge_window` is 3,600 seconds on purpose, so rollups can be exercised within an hour; the core default and the mainnet-style value is 604,800 seconds (7 days). Steps 5 to 8 need roots and proofs computed from the ledger; the RDK kit's `qledger-v1` helpers do that from the next release on.
+The challenge window of a rollup is in its `challenge_window_sec`. On the testnet `default_challenge_window` is 3,600 seconds on purpose, so rollups can be exercised within an hour; the core default and the mainnet-style value is 604,800 seconds (7 days). Steps 5 to 8 need roots and proofs computed from the ledger; RDK 0.9.0 has the `qledger-v1` helpers that do that.
 
 ## Reading the chain with the published TypeScript kit {#typescript}
 
-These reads use names that exist in `@qorechain/rdk` 0.8.0. They return the fields the 0.8.0 views know, which do not include the new v3.2.8 fields; use `curl` for those.
+These reads use names from `@qorechain/rdk`, which supports v3.2.8 from 0.9.0. You can also read the new fields directly with `curl` as shown below.
 
 ```ts
 import { RestClient } from "@qorechain/rdk";
