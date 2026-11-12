@@ -10,7 +10,7 @@ sidebar_position: 5
 このガイドでは、QORトークンの送信、トランザクションの照会、そしてQoreChainのネイティブ、EVM、SVMの各インターフェースとの対話について説明します。
 
 :::note
-以下のコマンドは**`qorechain-diana`**テストネット(EVMチェーンID **9800**)を使用しています。メインネット(**`qorechain-vladi`**、EVMチェーンID **9801**)は2026年6月7日から稼働しており、2026年11月4日からリリースv3.2.6を実行しています(テストネットは2026年11月6日からv3.2.7を実行しています) — メインネット上で取引する場合は、**メインネットへの接続**ページに記載のメインネットのチェーンIDとエンドポイントに置き換えてください。
+以下のコマンドは**`qorechain-diana`**テストネット(EVMチェーンID **9800**)を使用しています。メインネット(**`qorechain-vladi`**、EVMチェーンID **9801**)は2026年6月7日から稼働しており、2026年11月4日からリリースv3.2.6を実行しています(テストネットは2026年11月12日からv3.2.8を実行しています) — メインネット上で取引する場合は、**メインネットへの接続**ページに記載のメインネットのチェーンIDとエンドポイントに置き換えてください。
 :::
 
 ## 残高の確認
@@ -31,14 +31,14 @@ QoreChainのアカウントは、Cosmosレーン上で**ハイブリッド署名
 # 1. Build the unsigned transaction (the fee is fixed here, because cosign signs the fee in this file)
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --generate-only > tx.json
 
 # 2. Add the ML-DSA-87 signature and broadcast
 qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
-これにより、**1 QOR**(1,000,000 uqor)が受取アドレスに送金され、40,000 uqor(0.04 QOR)の手数料が支払われます。ネットワークの下限は**ガス1単位あたり0.1 uqor**であるため、手数料はガス上限に0.1を掛けた額以上でなければなりません。つまり`--gas 400000`には`--fees 40000uqor`以上が必要です。署名によってトランザクションに約4.7 KBが加わるため、ハイブリッド署名の送金は通常160,000〜240,000ガスを使用します。`cosign`は、ネットワークがどの署名対象バイト形式を検証するかをノードに問い合わせるため、同じコマンドが両方のネットワークで動作します。
+これにより、**1 QOR**(1,000,000 uqor)が受取アドレスに送金され、60,000 uqor(0.06 QOR)の手数料が支払われます。ネットワークの下限は**ガス1単位あたり0.1 uqor**であるため、手数料はガス上限に0.1を掛けた額以上でなければなりません。つまり`--gas 400000`には`--fees 40000uqor`以上が必要です。この例では、ガス1単位あたり0.15 uqor(`--fees 60000uqor`)を支払っています。v3.2.8 からメモリプールはガス1単位あたりの手数料でトランザクションを順序付けるため、下限ちょうどを支払う送金は、ブロックが混み合っているときに他のトランザクションの後ろで待たされます。署名によってトランザクションに約4.7 KBが加わるため、ハイブリッド署名の送金は通常160,000〜240,000ガスを使用します。`cosign`は、ネットワークがどの署名対象バイト形式を検証するかをノードに問い合わせるため、同じコマンドが両方のネットワークで動作します。
 
 ### ポスト量子鍵を登録する {#register-pqc-key}
 
@@ -50,14 +50,14 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 v3.2.3以降、チェーンは登録時にオプションの**所有証明**も受け付け、脆弱な鍵、縮退した鍵、すでに使用済みの鍵を拒否します。所有証明を添付するには、`register-key-v2`で登録し、ローカルの鍵を指定します。
 
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 PQC鍵ファイルは、リカバリーフレーズと同じくらい慎重にバックアップしてください。リカバリーフレーズから`qorechaind tx pqc recover-key`で再導出できます。[QoreX](/qorex/overview)とQoreChain SDKは、鍵の登録を代行します。ハイブリッドフローの全体については、[ウォレットのセットアップ](/getting-started/wallet-setup)を参照してください。
@@ -152,7 +152,7 @@ EVMレーンのそれ以外の点は変わりません。引き続きMetaMask、
 ```bash
 # at most 1000 QOR in total, at most 20 transactions, for 7,200 blocks (about 6.4 hours on mainnet)
 qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
@@ -161,7 +161,7 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 
 ```bash
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 ```
 
 `--allowed-targets`が制限するのは、ウィンドウが触れてよいコントラクトとトークンの**種類**であり、**金額**ではありません。列挙されたトークンは、`approve`を含め、そのトークンの任意の金額を受け付け、列挙されたコントラクトは、そのコードと既存の承認が許す範囲で何でも動かせるため、汎用のフォワーダーやルーターのコントラクトを列挙しないでください。ウィンドウが制限するのは EVM レーン(古典署名)のトランザクションだけで、ハイブリッド PQC 署名された Cosmos メッセージ(クロス VM 呼び出しや authz など)はその対象外です。
@@ -183,7 +183,7 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/qor1youraddres
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor --generate-only > close.json
+  --gas 400000 --fees 60000uqor --generate-only > close.json
 qorechaind tx pqc cosign close.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
@@ -251,7 +251,7 @@ curl -s -X POST http://localhost:8899 \
 ```bash
 qorechaind tx bank send mykey qor1recipient... 500000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --node tcp://localhost:26657 \
   --output json \
   --generate-only > tx.json

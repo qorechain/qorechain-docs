@@ -229,6 +229,10 @@ Genel uç noktalar `rpc.qore.host` (Native RPC), `api.qore.host` (REST), `evm.qo
 Zincirin akıllı hesap ve bağlı cüzdan özellikleri testnet üzerinde etkin, mainnet üzerinde kapalıdır (`GET /qorechain/abstractaccount/v1/config` testnet'te `enabled: true`, mainnet'te `enabled: false` döndürür, 27 Ekim 2026 tarihinde kontrol edildi). Mainnet üzerinde zincir yeni bağlı imzalayıcı kayıtlarını reddeder; kartı orada bir önizleme olarak değerlendirin.
 :::
 
+:::note Solana uyumlu hat test ağında
+Solana uyumlu hat, bir yönetişim oyu onu yeniden açana kadar test ağında kapalıdır (v3.2.8 sürümü, test ağında 12 Kasım 2026'dan beri). O zamana kadar orada Solana tarzı işlemler kullanılamaz.
+:::
+
 :::caution Bağlı bir imzalayıcı, hesap üzerinde gerçek bir yetkidir
 Verdiğiniz izin, anahtarın ne kadar taşıyabileceğini değil, hangi yolda işlem yapabileceğini belirler ve bir kayıt 30 gün geçerli kalır. Yalnızca hesabın kendisi kadar güvendiğiniz bir anahtarı bağlayın ve artık ihtiyacınız kalmadığında iptal edin.
 :::

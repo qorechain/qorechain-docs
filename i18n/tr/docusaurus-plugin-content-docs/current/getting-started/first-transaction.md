@@ -10,7 +10,7 @@ sidebar_position: 5
 Bu kılavuz, QOR token gönderme, işlemleri sorgulama ve QoreChain ile yerel, EVM ve SVM arayüzleri üzerinden etkileşim kurma adımlarını anlatır.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve 4 Kasım 2026'dan beri v3.2.6 sürümünü çalıştırır (test ağı 6 Kasım 2026'dan beri v3.2.7 çalıştırır) — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ zincir kimliğini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve 4 Kasım 2026'dan beri v3.2.6 sürümünü çalıştırır (test ağı 12 Kasım 2026'dan beri v3.2.8 çalıştırır) — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ zincir kimliğini ve uç noktalarını kullanın.
 :::
 
 ## Bakiyenizi Kontrol Etme
@@ -31,14 +31,14 @@ Bir QoreChain hesabı, Cosmos hattında **hibrit bir imzayla** gönderim yapar: 
 # 1. Build the unsigned transaction (the fee is fixed here, because cosign signs the fee in this file)
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --generate-only > tx.json
 
 # 2. Add the ML-DSA-87 signature and broadcast
 qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
-Bu, alıcı adrese **1 QOR** (1,000,000 uqor) gönderir ve 40,000 uqor (0.04 QOR) ücret öder. Ağ tabanı **gaz birimi başına 0.1 uqor**'dur; dolayısıyla ücret en az gaz limitinin 0.1 ile çarpımı kadar olmalıdır: `--gas 400000` için `--fees 40000uqor` veya daha fazlası gerekir. Hibrit imzalı bir transfer, imza işleme yaklaşık 4.7 KB eklediği için genellikle 160,000 ile 240,000 arasında gaz kullanır. `cosign`, ağın hangi imzalanan bayt biçimini doğruladığını düğüme sorar; böylece aynı komut her iki ağda da çalışır.
+Bu, alıcı adrese **1 QOR** (1,000,000 uqor) gönderir ve 60,000 uqor (0.06 QOR) ücret öder. Ağ tabanı **gaz birimi başına 0.1 uqor**'dur; dolayısıyla ücret en az gaz limitinin 0.1 ile çarpımı kadar olmalıdır: `--gas 400000` için `--fees 40000uqor` veya daha fazlası gerekir. Örnekler gaz birimi başına 0.15 uqor öder (`--fees 60000uqor`): v3.2.8 sürümünden itibaren mempool işlemleri gaz başına ücrete göre sıralar; bu yüzden tam olarak tabanı ödeyen bir transfer, bloklar yoğun olduğunda diğerlerinin arkasında bekler. Hibrit imzalı bir transfer, imza işleme yaklaşık 4.7 KB eklediği için genellikle 160,000 ile 240,000 arasında gaz kullanır. `cosign`, ağın hangi imzalanan bayt biçimini doğruladığını düğüme sorar; böylece aynı komut her iki ağda da çalışır.
 
 ### Kuantum sonrası anahtarınızı kaydedin {#register-pqc-key}
 
@@ -50,14 +50,14 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 v3.2.3'ten beri zincir, kayıtla birlikte isteğe bağlı bir **sahiplik kanıtını** da kabul eder ve zayıf, dejenere veya daha önce kullanılmış anahtarları reddeder. Bir tane eklemek için `register-key-v2` ile kayıt yapın ve yerel anahtarınızı adlandırın:
 
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 PQC anahtar dosyasını kurtarma ifadeniz kadar dikkatle yedekleyin; `qorechaind tx pqc recover-key` ile ifadeden yeniden türetilebilir. [QoreX](/qorex/overview) ve QoreChain SDK'sı anahtar kaydını sizin yerinize yapar. Tam hibrit akış için [Cüzdan Kurulumu](/getting-started/wallet-setup) bölümüne bakın.
@@ -152,7 +152,7 @@ EVM hattıyla ilgili geri kalan her şey aynıdır: MetaMask, ethers.js, Hardhat
 ```bash
 # at most 1000 QOR in total, at most 20 transactions, for 7,200 blocks (about 6.4 hours on mainnet)
 qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
@@ -161,7 +161,7 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 
 ```bash
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 ```
 
 `--allowed-targets`, pencerenin **hangi** kontratlara ve token'lara dokunabileceğini sınırlar, **ne kadar** olduğunu değil. Listelenen bir token, `approve` dahil o token'ın her miktarını kabul eder ve listelenen bir kontrat, kodunun ve mevcut onaylarının izin verdiği her şeyi taşıyabilir; bu yüzden genel yönlendirici (forwarder veya router) kontratları listelemeyin. Bir pencere yalnızca EVM şeridindeki (klasik imzalı) işlemleri sınırlar; VM'ler arası çağrılar ve authz gibi hibrit PQC imzasıyla imzalanan Cosmos mesajları bunun dışındadır.
@@ -183,7 +183,7 @@ REST yanıtı, penceresi olmayan bir adres için asla hata vermez; `found: false
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor --generate-only > close.json
+  --gas 400000 --fees 60000uqor --generate-only > close.json
 qorechaind tx pqc cosign close.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
@@ -251,7 +251,7 @@ curl -s -X POST http://localhost:8899 \
 ```bash
 qorechaind tx bank send mykey qor1recipient... 500000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --node tcp://localhost:26657 \
   --output json \
   --generate-only > tx.json

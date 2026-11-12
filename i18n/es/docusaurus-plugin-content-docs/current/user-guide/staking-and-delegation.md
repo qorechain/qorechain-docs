@@ -10,7 +10,7 @@ sidebar_position: 2
 Esta guía explica cómo delegar tokens QOR a validadores, redelegar entre validadores, retirar tu stake (unbonding), reclamar recompensas y entender qué partes del diseño de staking de QoreChain están activas hoy.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.6** (aplicada el 4 de noviembre de 2026; la v3.2.5 el 29 de octubre y la v3.2.4 el 23 de octubre); la testnet ejecuta v3.2.7 desde el 6 de noviembre de 2026 (v3.2.6 desde el 27 de octubre). Sustituye el chain ID y los endpoints de mainnet desde la página **Conectando a Mainnet** al hacer staking en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.6** (aplicada el 4 de noviembre de 2026; la v3.2.5 el 29 de octubre y la v3.2.4 el 23 de octubre); la testnet ejecuta v3.2.8 desde el 12 de noviembre de 2026 (v3.2.7 desde el 6 de noviembre, v3.2.6 desde el 27 de octubre). Sustituye el chain ID y los endpoints de mainnet desde la página **Conectando a Mainnet** al hacer staking en mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -158,7 +158,7 @@ El chain ID anterior es el de la testnet; usa `qorechain-vladi` en mainnet. Como
 
 **Dónde funciona, comprobado el 27 de octubre de 2026 (la fila de la v3.2.6 para la mainnet procede de las notas de la versión y de la actualización del 4 de noviembre de 2026; los parámetros siguientes se volvieron a leer en la mainnet el 4 de noviembre de 2026).** Antes de la v3.2.6, la mainnet rechazaba la retirada de delegación solo cuando se ejecutaba la transacción, a través de la puerta de mensajes de staking.
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.7) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.8) |
 |---|---|---|
 | Módulo activo | Sí, desde la altura 3,742,566 | Sí, desde v3.2.4 (altura 8,337,253) |
 | Bloqueos abiertos | Ninguno todavía | 3 bloqueos de prueba |

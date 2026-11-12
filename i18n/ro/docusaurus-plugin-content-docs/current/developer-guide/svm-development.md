@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain include un mediu de execuție **Solana Virtual Machine (SVM)**, care permite dezvoltatorilor să implementeze și să execute programe SBF/BPF folosind uneltele Solana cu care sunt deja obișnuiți. Modulul SVM expune o interfață JSON-RPC compatibilă cu Solana pe **portul 8899**, pe care `qorechaind start` o pornește automat (vezi [Server JSON-RPC](#json-rpc-server) mai jos).
 
 :::note
-Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`** (live din 7 iunie 2026), care rulează versiunea de nod **v3.2.6** din 4 noiembrie 2026 (propunerea de guvernanță 15, înălțimea 4.020.000; v3.2.5 din 29 octombrie 2026, v3.2.4 din 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.7 (din 6 noiembrie 2026; v3.2.4 din 19 octombrie 2026). **Tranzacțiile SVM sunt dezactivate pe ambele rețele** (vezi caseta următoare), așa că comenzile `tx svm` de pe această pagină sunt doar de referință: nu pot reuși în prezent.
+Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`** (live din 7 iunie 2026), care rulează versiunea de nod **v3.2.6** din 4 noiembrie 2026 (propunerea de guvernanță 15, înălțimea 4.020.000; v3.2.5 din 29 octombrie 2026, v3.2.4 din 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.8 (din 12 noiembrie 2026; v3.2.4 din 19 octombrie 2026). **Tranzacțiile SVM sunt dezactivate pe ambele rețele** (vezi caseta următoare), așa că comenzile `tx svm` de pe această pagină sunt doar de referință: nu pot reuși în prezent.
 :::
 
 ---
@@ -45,7 +45,7 @@ Modulul `x/svm` oferă:
 * **Transferurile din System Program mută QOR nativ** — o instrucțiune de transfer în stil Solana mută aceiași bani pe care i-ar muta un `MsgSend` Cosmos sau un transfer EVM.
 * **Forma adresei SVM** — adresa SVM a unui cont este cei 20 de bytes ai contului, completați la dreapta până la 32 de bytes și codificați base58. Toate cele trei forme de adresă (`qor1...`, `0x...`, base58) se referă la același cont.
 
-**Release v3.2.8 (testnet, încă neaplicat).** Upgrade-ul închide lane-ul SVM pe `qorechain-diana`: scrierile SVM eșuează, `MsgRegisterSVMPQCKey` este refuzat, iar JSON-RPC SVM refuză metodele de scriere pe id-urile de chain publice, până când un vot de guvernanță îl redeschide (testnet-ul are un comutator guvernat). Pe mainnet, lane-ul este dezactivat în release-ul curent, iar activarea lui necesită un release viitor. Clienții ar trebui să citească starea lane-ului din parametrii modulului SVM (`enabled`) înainte de a oferi acțiuni SVM.
+**Release v3.2.8 (testnet din 12 noiembrie 2026).** Upgrade-ul închide lane-ul SVM pe `qorechain-diana`: scrierile SVM eșuează, `MsgRegisterSVMPQCKey` este refuzat, iar JSON-RPC SVM refuză metodele de scriere pe id-urile de chain publice, până când un vot de guvernanță îl redeschide (testnet-ul are un comutator guvernat). Pe mainnet, lane-ul este dezactivat în release-ul curent, iar activarea lui necesită un release viitor. Clienții ar trebui să citească starea lane-ului din parametrii modulului SVM (`enabled`) înainte de a oferi acțiuni SVM.
 
 Endpoint-urile publice (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sunt **doar pentru citire** — trimiterea de tranzacții este dezactivată la nivelul marginii rețelei. În mod normal ați rula propriul nod (portul 8899) pentru a trimite tranzacții SVM, dar vedeți avertismentul de mai sus: lane-ul de tranzacții `x/svm` însuși este momentan dezactivat la nivelul întregii rețele, inclusiv pe propriul nod.
 

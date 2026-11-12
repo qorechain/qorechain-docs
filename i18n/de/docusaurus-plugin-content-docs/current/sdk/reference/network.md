@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Netzwerk-Voreinstellung | `testnet` |
 | Chain-ID | `qorechain-diana` (live) |
-| Chain-Version (7. November 2026) | v3.2.7 (seit Höhe 9,594,600, 6. November 2026, per Governance angewendet; das Mainnet hat es nicht und hat kein Datum dafür. v3.2.6 wurde bei Höhe 8,970,638 am 27. Oktober angewendet; v3.2.5 wurde bei Höhe 8,890,800 am 26. Oktober und v3.2.4 bei Höhe 8,337,253 am 19. Oktober angewendet) |
+| Chain-Version | v3.2.8 (seit Höhe 9,929,500, 12. November 2026, per Governance angewendet; das Mainnet hat es nicht und hat kein Datum dafür. v3.2.7 wurde bei Höhe 9,594,600 am 6. November angewendet; v3.2.6 wurde bei Höhe 8,970,638 am 27. Oktober angewendet; v3.2.5 wurde bei Höhe 8,890,800 am 26. Oktober und v3.2.4 bei Höhe 8,337,253 am 19. Oktober angewendet) |
 | EVM-Chain-ID | `9800` |
 | Anzeige-Token | `QOR` |
 | Basis-Denomination | `uqor` |

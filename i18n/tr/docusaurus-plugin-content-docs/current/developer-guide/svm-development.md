@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain, geliştiricilerin tanıdık Solana araçlarını kullanarak SBF/BPF programları dağıtmasına ve çalıştırmasına olanak tanıyan bir **Solana Virtual Machine (SVM)** yürütme ortamı içerir. SVM modülü, `qorechaind start` komutunun otomatik olarak başlattığı, **8899 portu** üzerinde Solana uyumlu bir JSON-RPC arayüzü sunar (aşağıdaki [JSON-RPC Sunucusu](#json-rpc-server) bölümüne bakın).
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve 4 Kasım 2026'dan beri **v3.2.6** düğüm sürümünü çalıştıran (yönetişim önerisi 15, yükseklik 4.020.000; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını (mainnet) kullanır. v3.2.7 çalıştıran (6 Kasım 2026'dan beri; 19 Ekim 2026'dan beri v3.2.4) test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **Her iki ağda da SVM işlemleri devre dışıdır** (bir sonraki kutuya bakın); bu nedenle bu sayfadaki `tx svm` komutları yalnızca referans amaçlıdır: bugün başarılı olamazlar.
+Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve 4 Kasım 2026'dan beri **v3.2.6** düğüm sürümünü çalıştıran (yönetişim önerisi 15, yükseklik 4.020.000; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını (mainnet) kullanır. v3.2.8 çalıştıran (12 Kasım 2026'dan beri; 19 Ekim 2026'dan beri v3.2.4) test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **Her iki ağda da SVM işlemleri devre dışıdır** (bir sonraki kutuya bakın); bu nedenle bu sayfadaki `tx svm` komutları yalnızca referans amaçlıdır: bugün başarılı olamazlar.
 :::
 
 ---
@@ -45,7 +45,7 @@ v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM y
 * **System Program transferleri yerel QOR taşır** — Solana tarzı bir transfer talimatı, bir Cosmos `MsgSend` veya bir EVM transferinin taşıyacağı aynı fonları taşır.
 * **SVM adres biçimi** — bir hesabın SVM adresi, hesabın 20 baytının sağdan 32 bayta doldurulup base58 ile kodlanmış halidir. Üç adres biçiminin tümü (`qor1...`, `0x...`, base58) aynı hesaba işaret eder.
 
-**v3.2.8 sürümü (test ağı, henüz uygulanmadı).** Yükseltme, `qorechain-diana` üzerinde SVM hattını kapatır: SVM yazmaları başarısız olur, `MsgRegisterSVMPQCKey` reddedilir ve SVM JSON-RPC, genel zincir kimliklerinde yazma metotlarını reddeder; bir yönetişim oylaması hattı yeniden açana kadar böyle kalır (test ağında yönetişimle yönetilen bir anahtar vardır). Ana ağda hat mevcut sürümde kapalıdır ve açılması gelecekteki bir sürüm gerektirir. İstemciler, SVM eylemleri sunmadan önce hattın durumunu SVM modül parametrelerinden (`enabled`) okumalıdır.
+**v3.2.8 sürümü (test ağında 12 Kasım 2026'dan beri).** Yükseltme, `qorechain-diana` üzerinde SVM hattını kapatır: SVM yazmaları başarısız olur, `MsgRegisterSVMPQCKey` reddedilir ve SVM JSON-RPC, genel zincir kimliklerinde yazma metotlarını reddeder; bir yönetişim oylaması hattı yeniden açana kadar böyle kalır (test ağında yönetişimle yönetilen bir anahtar vardır). Ana ağda hat mevcut sürümde kapalıdır ve açılması gelecekteki bir sürüm gerektirir. İstemciler, SVM eylemleri sunmadan önce hattın durumunu SVM modül parametrelerinden (`enabled`) okumalıdır.
 
 Genel uç noktalar (`https://svm.qore.host`, `https://svm-testnet.qore.host`) **salt okunurdur** — işlem gönderimi uç noktada (edge) devre dışıdır. Normal koşullarda SVM işlemleri göndermek için kendi düğümünüzü (port 8899) çalıştırırdınız, ancak yukarıdaki uyarıyı unutmayın: `x/svm` işlem hattının kendisi, kendi düğümünüz dahil, şu anda ağ genelinde devre dışıdır.
 

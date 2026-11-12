@@ -94,7 +94,7 @@ contract CrossVMCaller {
 
 ### テストネットでの動作（許可リスト、2026 年 11 月 7 日に確認） {#testnet-allowlist}
 
-`qorechain-diana`（ノードリリース v3.2.7、2026 年 11 月 6 日から）では、プリコンパイルはブリッジの許可リストにある QoreChain Native コントラクトにのみ到達します。`GET /qorechain/crossvm/v1/params` は、それらを `bridge_allowed_targets` に列挙します（2026 年 11 月 7 日時点で 3 件。`cosmwasm:qor1...` の形式）。同じ箇所に `enabled` が `true`、`max_message_size` が 65536、`max_queue_size` が 1000、`queue_timeout_blocks` が 100 と並びます。2026 年 11 月 7 日に、`executeCrossVMCall(1, target, 0x7b7d)` を使って `0x…0901` に対する読み取り専用の `eth_call` を 2 回実行しました。
+`qorechain-diana`（ノードリリース v3.2.8、2026 年 11 月 12 日から）では、プリコンパイルはブリッジの許可リストにある QoreChain Native コントラクトにのみ到達します。`GET /qorechain/crossvm/v1/params` は、それらを `bridge_allowed_targets` に列挙します（2026 年 11 月 7 日時点で 3 件。`cosmwasm:qor1...` の形式）。同じ箇所に `enabled` が `true`、`max_message_size` が 65536、`max_queue_size` が 1000、`queue_timeout_blocks` が 100 と並びます。2026 年 11 月 7 日に、`executeCrossVMCall(1, target, 0x7b7d)` を使って `0x…0901` に対する読み取り専用の `eth_call` を 2 回実行しました。
 
 * **許可リスト外のターゲット:** `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted` でリバートします。
 * **許可リスト内のターゲット:** 呼び出しはコントラクトに到達します（空の `{}` メッセージに対して、ノードはコントラクト自身のエラー `Error parsing into type cw20::msg::Cw20ExecuteMsg` を報告します）。これは経路が機能していることを示します。このページのために、プリコンパイル経由で状態を変更するクロス VM トランザクションは送信していません。

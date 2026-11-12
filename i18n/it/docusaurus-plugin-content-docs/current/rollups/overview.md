@@ -211,7 +211,7 @@ Leggere lo stato non richiede nulla di tutto ciò. Potete anche richiedere un ro
 
 ### Comportamento della chain v3.2.5: attivo su entrambe le reti {#v325}
 
-La chain v3.2.5 è attiva sulla mainnet (applicata all'altezza 3.906.833 il 29 ottobre 2026, proposta di governance 14) e sulla testnet (dal 26 ottobre 2026). La mainnet esegue la v3.2.6 e la testnet la v3.2.7, ed entrambe la includono. L'RDK 0.7.0 e successive supportano entrambe. Queste regole si applicano su entrambe le reti; sulla mainnet non è ancora stato creato alcun rollup (`GET /qorechain/rdk/v1/rollups` ha restituito un elenco vuoto il 4 novembre 2026), quindi le regole seguenti sono quelle della release e non sono ancora state messe alla prova da un rollup live sulla mainnet. Per uno sviluppatore di rollup:
+La chain v3.2.5 è attiva sulla mainnet (applicata all'altezza 3.906.833 il 29 ottobre 2026, proposta di governance 14) e sulla testnet (dal 26 ottobre 2026). La mainnet esegue la v3.2.6 e la testnet la v3.2.8, ed entrambe la includono. L'RDK 0.7.0 e successive supportano entrambe. Queste regole si applicano su entrambe le reti; sulla mainnet non è ancora stato creato alcun rollup (`GET /qorechain/rdk/v1/rollups` ha restituito un elenco vuoto il 4 novembre 2026), quindi le regole seguenti sono quelle della release e non sono ancora state messe alla prova da un rollup live sulla mainnet. Per uno sviluppatore di rollup:
 
 | Comportamento | Entrambe le reti (v3.2.5 e successive) |
 | --------- | -------------------------------- |

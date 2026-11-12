@@ -11,7 +11,7 @@ sidebar_position: 1
 
 Rularea și sincronizarea unui nod nu necesită licență. Participarea la partea din recompense este un pas separat: necesită o licență `lightnode_operator`, miză delegată către validatori bonded și o înregistrare pe lanț (vezi [Cum accesați](#how-to-access)).
 
-Nodul light are **propria sa linie de versiune**, separată de versiunea de lansare a lanțului. La 12 noiembrie 2026, canalele de lansare ale ambelor rețele conțin nodul light **3.1.13** (testnet-ul rulează lanțul `v3.2.7`, mainnet-ul rulează `v3.2.6`; 3.1.13 funcționează neschimbat pe `v3.2.7`, unde heartbeat-ul și claim-ul returnează codul 0). Tratați cele două numere ca fiind fără legătură între ele.
+Nodul light are **propria sa linie de versiune**, separată de versiunea de lansare a lanțului. La 12 noiembrie 2026, canalele de lansare ale ambelor rețele conțin nodul light **3.1.13** (testnet-ul rulează lanțul `v3.2.8`, mainnet-ul rulează `v3.2.6`; 3.1.13 a funcționat neschimbat pe `v3.2.7`, unde heartbeat-ul și claim-ul au returnat codul 0, și nu a fost reverificat pe `v3.2.8`). Tratați cele două numere ca fiind fără legătură între ele.
 
 ## Inovații {#innovations}
 
@@ -74,7 +74,7 @@ RPC-ul lanțului pentru `onboard` este `https://rpc.qore.host` (mainnet) sau `ht
 
 | | Mainnet | Testnet |
 | --- | --- | --- |
-| Lanț | `qorechain-vladi` (lanț `v3.2.6`) | `qorechain-diana` (lanț `v3.2.7`) |
+| Lanț | `qorechain-vladi` (lanț `v3.2.6`) | `qorechain-diana` (lanț `v3.2.8`) |
 | RPC pentru nod | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | REST pentru interogări | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | Versiunea nodului light | 3.1.13 | 3.1.13 |
@@ -98,7 +98,7 @@ Puteți verifica o licență și direct: `GET /qorechain/license/v1/check/<addre
 ### Starea programului de recompense {#reward-program-status}
 
 :::note Înregistrarea este deschisă
-Înregistrarea este deschisă pe mainnet (`qorechain-vladi`, lanțul v3.2.6) și pe testnet (`qorechain-diana`, lanțul v3.2.7). La 4 noiembrie 2026 fuseseră acordate șapte licențe `lightnode_operator` pe mainnet, un nod light era înregistrat pe mainnet și două pe testnet (`total_registered` în `GET /qorechain/lightnode/v1/stats`: `1` și `2`). Contabilitatea recompenselor este activă în ambele rețele de la upgrade-ul v3.2.0. Timpul de funcționare este numărat **de la blocul în care nodul dvs. este înregistrat**, deci rularea unui nod înainte nu aduce credit. Începând cu lanțul v3.2.4, limita per nod începe și ea de la înregistrarea proprie a nodului: prima decontare după înregistrare creditează doar ce s-a acumulat de atunci.
+Înregistrarea este deschisă pe mainnet (`qorechain-vladi`, lanțul v3.2.6) și pe testnet (`qorechain-diana`, lanțul v3.2.8). La 4 noiembrie 2026 fuseseră acordate șapte licențe `lightnode_operator` pe mainnet, un nod light era înregistrat pe mainnet și două pe testnet (`total_registered` în `GET /qorechain/lightnode/v1/stats`: `1` și `2`). Contabilitatea recompenselor este activă în ambele rețele de la upgrade-ul v3.2.0. Timpul de funcționare este numărat **de la blocul în care nodul dvs. este înregistrat**, deci rularea unui nod înainte nu aduce credit. Începând cu lanțul v3.2.4, limita per nod începe și ea de la înregistrarea proprie a nodului: prima decontare după înregistrare creditează doar ce s-a acumulat de atunci.
 
 Manifestul de lansare (`https://download.qore.host/<net>/lightnode/latest.json`) conține semnalul oficial în câmpul `registration.open`. Pentru starea curentă interogați `GET /qorechain/license/v1/holders/lightnode_operator` și `GET /qorechain/lightnode/v1/stats` la `https://api.qore.host` (mainnet) sau `https://api-testnet.qore.host` (testnet).
 :::

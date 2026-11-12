@@ -30,7 +30,7 @@ cadena incluye el módulo IBC para la interoperabilidad entre cadenas (no hay ni
 canal IBC abierto en mainnet; la testnet tiene un canal `transfer` abierto hacia una
 cadena de prueba, comprobado el 27 de octubre de 2026).
 
-:::note Qué funciona hoy en las redes en vivo (la mainnet ejecuta la v3.2.6, la testnet la v3.2.7)
+:::note Qué funciona hoy en las redes en vivo (la mainnet ejecuta la v3.2.6, la testnet la v3.2.8)
 **Funciona:** lecturas en todos los carriles, transacciones Native con firma
 híbrida, cuentas unificadas, transacciones EVM dentro de una
 [ventana de autorización](/sdk/guides/evm#evm-window) y lecturas de SVM.
@@ -49,7 +49,7 @@ El SDK publicado (0.13.0, 11 de noviembre de 2026) firma en la forma que verific
 redes (sign-bytes híbridos v2, resueltos a partir del estado de la cadena), y el
 formato de firma, las direcciones, los decimales, los memos y las comisiones no
 cambiaron en la v3.2.3, la v3.2.4, la v3.2.5 ni la v3.2.6 (la mainnet ejecuta la v3.2.6 desde el 4 de noviembre de 2026,
-altura 4,020,000, propuesta de gobernanza 15; la testnet desde el 27 de octubre, y desde el 6 de noviembre la testnet ejecuta la v3.2.7, que añade mensajes para los que el SDK 0.13.0 no tiene constructores). Incluye el lado cliente de las reglas
+altura 4,020,000, propuesta de gobernanza 15; la testnet desde el 27 de octubre, y desde el 6 de noviembre la testnet ejecutó la v3.2.7 y desde el 12 de noviembre ejecuta la v3.2.8, que añaden mensajes para los que el SDK 0.13.0 no tiene constructores). Incluye el lado cliente de las reglas
 poscuánticas posteriores (la prueba de posesión en el registro de claves, las ventanas
 EVM con alcance, los mensajes de consentimiento EIP-7702) y de la v3.2.4 (niveles
 de staking, el nonce del autenticador, interruptores de funciones del protocolo) y de la v3.2.5 (gas exacto para

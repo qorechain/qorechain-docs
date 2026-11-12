@@ -92,7 +92,7 @@ Acolo unde este activ, precompile-ul execută imediat contractul QoreChain Nativ
 
 ### Comportamentul pe testnet (lista de permisiuni, verificat la 7 noiembrie 2026) {#testnet-allowlist}
 
-Pe `qorechain-diana` (versiunea de nod v3.2.7 din 6 noiembrie 2026), precompile-ul ajunge doar la contractele QoreChain Native din lista de permisiuni a punții. `GET /qorechain/crossvm/v1/params` le listează în `bridge_allowed_targets` (trei intrări la 7 noiembrie 2026, scrise `cosmwasm:qor1...`), alături de `enabled` `true`, `max_message_size` 65536, `max_queue_size` 1000 și `queue_timeout_blocks` 100. Două cereri `eth_call` doar pentru citire către `0x…0901`, cu `executeCrossVMCall(1, target, 0x7b7d)`, au fost rulate pe 7 noiembrie 2026:
+Pe `qorechain-diana` (versiunea de nod v3.2.8 din 12 noiembrie 2026), precompile-ul ajunge doar la contractele QoreChain Native din lista de permisiuni a punții. `GET /qorechain/crossvm/v1/params` le listează în `bridge_allowed_targets` (trei intrări la 7 noiembrie 2026, scrise `cosmwasm:qor1...`), alături de `enabled` `true`, `max_message_size` 65536, `max_queue_size` 1000 și `queue_timeout_blocks` 100. Două cereri `eth_call` doar pentru citire către `0x…0901`, cu `executeCrossVMCall(1, target, 0x7b7d)`, au fost rulate pe 7 noiembrie 2026:
 
 * **Țintă în afara listei de permisiuni:** se anulează cu `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted`.
 * **Țintă din lista de permisiuni:** apelul ajunge la contract (nodul raportează eroarea proprie a contractului pentru mesajul gol `{}`: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). Asta arată că ruta funcționează; pentru această pagină nu a fost trimisă nicio tranzacție cross-VM care schimbă starea prin precompile.

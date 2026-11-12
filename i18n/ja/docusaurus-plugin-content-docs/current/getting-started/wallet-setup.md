@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChainは、ネイティブ、EVM、SVMの各実行環境にわたって複数のウォレットタイプをサポートしています。ご自身のユースケースに合ったウォレットを選択してください。
 
 :::note
-以下の値は、**`qorechain-vladi`**メインネット（EVMチェーンID **9801**、2026年6月7日から稼働、2026年11月4日からリリースv3.2.6）と**`qorechain-diana`**テストネット（EVMチェーンID **9800**、2026年11月6日からリリースv3.2.7）の両方をカバーしています。両ネットワークの公開エンドポイントは[ネットワーク](/appendix/networks#public-endpoints)に記載されています。
+以下の値は、**`qorechain-vladi`**メインネット（EVMチェーンID **9801**、2026年6月7日から稼働、2026年11月4日からリリースv3.2.6）と**`qorechain-diana`**テストネット（EVMチェーンID **9800**、2026年11月12日からリリースv3.2.8）の両方をカバーしています。両ネットワークの公開エンドポイントは[ネットワーク](/appendix/networks#public-endpoints)に記載されています。
 :::
 
 ## QoreX（推奨） {#qorex}
@@ -109,6 +109,10 @@ console.log(w.svm);                            // base58 (same identity)
 スマートアカウントおよびリンクウォレット機能は実装されていますが、**メインネットではオフ**になっています（`abstractaccount.enabled = false`）。フラグがオフの間は、そこでオーセンティケーターの登録も、それを通じた実行も拒否されます。**テストネットではオン**になっている（`enabled = true`、2026年10月27日に確認）ため、そこでリンクのフローを試すことができます。リンクのフローを提供する前に、対象とするネットワークで`GET /qorechain/abstractaccount/v1/config`を確認してください。以下のセクションでは、設計された動作を説明します。
 :::
 
+:::note テストネットの Solana 互換レーン
+Solana 互換レーンは、ガバナンス投票で再び開かれるまで、テストネットでは閉じられています(リリース v3.2.8、テストネットでは 2026年11月12日から)。それまでは、テストネットで Solana 形式のトランザクションは利用できません。
+:::
+
 dApp内でQoreChainアカウントから支払いを行う際にルート鍵を公開しなくて済むように設計されています（チェーンバージョン**v3.1.85**で導入）：**Phantom**（ed25519）または**MetaMask**（`personal_sign`によるEthereumアドレス経由）の鍵を、アカウントに**オーセンティケーターとして登録**できます — スコープ付き権限、支払い上限、有効期限、即時取り消しを備えた上で — その後、dAppのバックエンドが中継する送金を承認できます。全体のモデルとコードについては[リンクウォレット・オーセンティケーター](/developer-guide/account-abstraction#authenticators)を、エンドツーエンドの例については[SDKオーセンティケーターガイド](/sdk/guides/authenticators)を参照してください。
 
 ## Solanaウォレット（SVM）
@@ -161,7 +165,7 @@ qorechaind tx pqc gen-key mypqc
 ```bash
 # register the public key printed by gen-key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+  --chain-id qorechain-vladi --gas 600000 --fees 90000uqor
 ```
 
 v3.2.3以降は、`qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...`で登録することで、オプションの所有証明を添付できます。チェーンは、脆弱な鍵、縮退した鍵、すでに使用済みの鍵も拒否します。PQC鍵ファイルは、ニーモニックと同じくらい慎重にバックアップしてください。（鍵は`qorechaind tx pqc recover-key`でニーモニックから再導出でき、`tx pqc rotate-key`で置き換えられます。）QoreXとQoreChain SDKは鍵を自動的に登録します。署名付き送金の完全な例については[初めてのトランザクション](/getting-started/first-transaction#register-pqc-key)を参照してください。

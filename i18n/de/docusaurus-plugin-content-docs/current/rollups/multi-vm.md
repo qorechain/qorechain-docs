@@ -81,7 +81,7 @@ Am 4. November 2026 enthielt die Liste der aktiven Precompiles des Testnets (`ac
 
 ### Chain v3.2.5: Allowlist, Antwortformat und Ablehnungen (beide Netzwerke) {#chain-v325}
 
-Chain v3.2.5 ändert das Verhalten der Bridge. Das Mainnet läuft seit dem 29. Oktober 2026 damit (Governance-Vorschlag 14, Höhe 3.906.833) und das Testnet seit dem 26. Oktober; das Mainnet läuft jetzt mit v3.2.6 und das Testnet mit v3.2.7. Da das Precompile im Mainnet nicht aktiv ist, ist das Antwortformat unten das Verhalten des Releases und wurde dort nicht erprobt; das Ablehnungsformat wurde am 7. November 2026 im Testnet gesehen (siehe [Im Testnet getestet](#tested-testnet)). Wo diese Seite sagt, das Precompile gebe die Rohantwort des Ziels zurück, beschreibt das Releases vor v3.2.5.
+Chain v3.2.5 ändert das Verhalten der Bridge. Das Mainnet läuft seit dem 29. Oktober 2026 damit (Governance-Vorschlag 14, Höhe 3.906.833) und das Testnet seit dem 26. Oktober; das Mainnet läuft jetzt mit v3.2.6 und das Testnet mit v3.2.8. Da das Precompile im Mainnet nicht aktiv ist, ist das Antwortformat unten das Verhalten des Releases und wurde dort nicht erprobt; das Ablehnungsformat wurde am 7. November 2026 im Testnet gesehen (siehe [Im Testnet getestet](#tested-testnet)). Wo diese Seite sagt, das Precompile gebe die Rohantwort des Ziels zurück, beschreibt das Releases vor v3.2.5.
 
 * **Eine Allowlist-Route.** `GET /qorechain/crossvm/v1/params` liefert die Bridge-Parameter, einschließlich der Allowlist der Ziele. Im Mainnet ist die Allowlist leer (geprüft am 4. November 2026), daher ist noch kein Ziel erlaubt; im Testnet war sie am 30. Oktober leer (siehe den Hinweis oben).
 * **Ein festes Antwortformat.** Das Precompile gibt `abi.encode(bytes)` zurück, sodass eine Antwort immer mindestens 64 Bytes lang ist und sich eine leere Antwort von einer fehlenden unterscheiden lässt; dekodieren Sie sie mit `abi.decode(ret, (bytes))`.
@@ -90,7 +90,7 @@ Chain v3.2.5 ändert das Verhalten der Bridge. Das Mainnet läuft seit dem 29. O
 
 ### Im Testnet getestet {#tested-testnet}
 
-Das Testnet läuft seit dem 6. November 2026 mit Chain v3.2.7 (Höhe 9.594.600). Am 7. November 2026 wurden zwei schreibgeschützte `eth_call`-Anfragen an `0x…0901` gesendet, mit den Calldata von `executeCrossVMCall(uint8,string,bytes)` (Ziel-VM `1`, Payload `{}`):
+Das Testnet läuft seit dem 12. November 2026 mit Chain v3.2.8 (Höhe 9.929.500). Am 7. November 2026 wurden zwei schreibgeschützte `eth_call`-Anfragen an `0x…0901` gesendet, mit den Calldata von `executeCrossVMCall(uint8,string,bytes)` (Ziel-VM `1`, Payload `{}`):
 
 | Ziel | Ergebnis |
 |---|---|

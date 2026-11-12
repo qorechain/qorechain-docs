@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain unterstützt mehrere Wallet-Typen über seine nativen, EVM- und SVM-Ausführungsumgebungen hinweg. Wählen Sie das Wallet, das zu Ihrem Anwendungsfall passt.
 
 :::note
-Die folgenden Werte gelten sowohl für das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live seit dem 7. Juni 2026, Release v3.2.6 seit dem 4. November 2026) als auch für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Release v3.2.7 seit dem 6. November 2026). Öffentliche Endpunkte für beide Netzwerke sind unter [Netzwerke](/appendix/networks#public-endpoints) aufgeführt.
+Die folgenden Werte gelten sowohl für das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live seit dem 7. Juni 2026, Release v3.2.6 seit dem 4. November 2026) als auch für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Release v3.2.8 seit dem 12. November 2026). Öffentliche Endpunkte für beide Netzwerke sind unter [Netzwerke](/appendix/networks#public-endpoints) aufgeführt.
 :::
 
 ## QoreX (empfohlen) {#qorex}
@@ -109,6 +109,10 @@ Gelder, die an eine der drei Formen gesendet werden, landen im selben Guthaben.
 Smart-Account- und Linked-Wallet-Funktionen sind implementiert, aber im **Mainnet abgeschaltet** (`abstractaccount.enabled = false`): Das Registrieren eines Authenticators und das Ausführen über einen solchen werden dort abgelehnt, solange das Flag aus ist. Im **Testnet sind sie aktiviert** (`enabled = true`, geprüft am 27. Oktober 2026), sodass Sie dort einen Verknüpfungsablauf ausprobieren können. Prüfen Sie `GET /qorechain/abstractaccount/v1/config` auf dem Netzwerk, das Sie ansteuern, bevor Sie einen Verknüpfungsablauf anbieten. Der folgende Abschnitt beschreibt das vorgesehene Verhalten.
 :::
 
+:::note Solana-kompatible Spur im Testnet
+Die Solana-kompatible Spur ist im Testnet geschlossen, bis eine Governance-Abstimmung sie wieder öffnet (Release v3.2.8, Testnet seit dem 12. November 2026). Solana-artige Transaktionen sind dort bis dahin nicht verfügbar.
+:::
+
 Entworfen, damit Sie Ihren Root-Schlüssel nicht preisgeben müssen, um in einer dApp von einem QoreChain-Konto auszugeben (eingeführt in Chain-Version **v3.1.85**): Ein **Phantom**-Schlüssel (ed25519) oder ein **MetaMask**-Schlüssel (über seine Ethereum-Adresse, via `personal_sign`) kann **als Authenticator auf Ihrem Konto registriert werden** — mit eingegrenzten Berechtigungen, Ausgabelimits, einem Ablaufdatum und sofortiger Widerrufbarkeit — und anschließend Überweisungen autorisieren, die vom Backend der dApp weitergeleitet werden. Siehe [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) für das vollständige Modell samt Code sowie den [SDK-Authenticators-Leitfaden](/sdk/guides/authenticators) für End-to-End-Beispiele.
 
 ## Solana-Wallets (SVM)
@@ -161,7 +165,7 @@ Ein Post-Quanten-Schlüssel wird **explizit registriert**, einmal pro Konto, mit
 ```bash
 # register the public key printed by gen-key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+  --chain-id qorechain-vladi --gas 600000 --fees 90000uqor
 ```
 
 Seit v3.2.3 können Sie einen optionalen Besitznachweis anhängen, indem Sie mit `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...` registrieren; die Chain lehnt außerdem schwache, degenerierte oder bereits verwendete Schlüssel ab. Sichern Sie die PQC-Schlüsseldatei ebenso sorgfältig wie Ihre Mnemonic. (Ein Schlüssel lässt sich mit `qorechaind tx pqc recover-key` aus der Mnemonic neu ableiten und mit `tx pqc rotate-key` ersetzen.) QoreX und das QoreChain SDK registrieren den Schlüssel für Sie. Eine vollständige signierte Überweisung finden Sie unter [Erste Transaktion](/getting-started/first-transaction#register-pqc-key).

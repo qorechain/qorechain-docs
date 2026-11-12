@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain은 네이티브, EVM, SVM 실행 환경 전반에서 여러 지갑 유형을 지원합니다. 사용 목적에 맞는 지갑을 선택하세요.
 
 :::note
-아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 운영 중, 2026년 11월 4일부터 릴리스 v3.2.6)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 2026년 11월 6일부터 릴리스 v3.2.7)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
+아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 운영 중, 2026년 11월 4일부터 릴리스 v3.2.6)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 2026년 11월 12일부터 릴리스 v3.2.8)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
 :::
 
 ## QoreX (권장) {#qorex}
@@ -109,6 +109,10 @@ console.log(w.svm);                            // base58 (same identity)
 스마트 계정 및 연결된 지갑 기능은 구현되어 있지만 메인넷에서는 **꺼져 있습니다**(`abstractaccount.enabled = false`). 이 플래그가 꺼져 있는 동안에는 그곳에서 인증자 등록과 인증자를 통한 실행이 거부됩니다. 테스트넷에서는 **켜져 있으므로**(`enabled = true`, 2026년 10월 27일 확인) 그곳에서 연결 흐름을 시험해 볼 수 있습니다. 연결 흐름을 제공하기 전에 대상 네트워크에서 `GET /qorechain/abstractaccount/v1/config`를 확인하세요. 아래 섹션은 설계된 동작을 설명합니다.
 :::
 
+:::note 테스트넷의 Solana 호환 레인
+Solana 호환 레인은 거버넌스 투표로 다시 열기 전까지 테스트넷에서 닫혀 있습니다(릴리스 v3.2.8, 테스트넷은 2026년 11월 12일부터). 그때까지 그곳에서는 Solana 방식의 트랜잭션을 사용할 수 없습니다.
+:::
+
 dApp에서 QoreChain 계정의 자금을 사용하기 위해 루트 키를 노출할 필요가 없도록 설계되었습니다(체인 버전 **v3.1.85**에서 도입). **Phantom**(ed25519) 또는 **MetaMask**(`personal_sign`을 통한 이더리움 주소 기반) 키를 계정의 **인증자(authenticator)로 등록**할 수 있으며 — 범위가 지정된 권한, 지출 한도, 만료 시각, 즉시 철회 기능과 함께 — 이후 dApp 백엔드가 중계하는 송금을 승인할 수 있습니다. 전체 모델과 코드는 [연결된 지갑 인증자](/developer-guide/account-abstraction#authenticators) 문서를, 종단 간 예제는 [SDK 인증자 가이드](/sdk/guides/authenticators)를 참고하세요.
 
 ## Solana 지갑 (SVM)
@@ -161,7 +165,7 @@ qorechaind tx pqc gen-key mypqc
 ```bash
 # register the public key printed by gen-key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+  --chain-id qorechain-vladi --gas 600000 --fees 90000uqor
 ```
 
 v3.2.3부터는 `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...`로 등록하여 선택적인 소유 증명을 첨부할 수 있으며, 체인은 약한 키, 퇴화(degenerate) 키, 이미 사용된 키도 거부합니다. PQC 키 파일을 니모닉만큼 신중하게 백업하세요. (키는 `qorechaind tx pqc recover-key`로 니모닉에서 다시 도출할 수 있으며, `tx pqc rotate-key`로 교체할 수 있습니다.) QoreX와 QoreChain SDK는 키를 대신 등록해 줍니다. 서명된 송금의 전체 예시는 [첫 번째 트랜잭션](/getting-started/first-transaction#register-pqc-key)을 참고하세요.

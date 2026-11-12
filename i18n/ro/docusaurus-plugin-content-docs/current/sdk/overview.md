@@ -30,7 +30,7 @@ Conturile, soldurile și token-urile sunt partajate între runtime-uri, iar lan�
 include modulul IBC pentru interoperabilitate cross-chain (niciun canal IBC nu este
 deschis pe mainnet; testnet-ul are un canal `transfer` deschis către un lanț de test, verificat la 27 octombrie 2026).
 
-:::note Ce funcționează astăzi pe rețelele live (mainnet-ul rulează v3.2.6, testnet-ul v3.2.7)
+:::note Ce funcționează astăzi pe rețelele live (mainnet-ul rulează v3.2.6, testnet-ul v3.2.8)
 **Funcționează:** citiri pe fiecare bandă, tranzacții Native semnate hibrid,
 conturi unificate, tranzacții EVM în interiorul unei
 [ferestre de autorizare](/sdk/guides/evm#evm-window) și citiri SVM.
@@ -48,7 +48,7 @@ SDK-ul publicat (0.13.0, 11 noiembrie 2026) semnează în forma pe care o verifi
 ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul
 de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în
 v3.2.3, v3.2.4, v3.2.5 sau v3.2.6 (mainnet-ul rulează v3.2.6 din 4 noiembrie 2026,
-înălțimea 4.020.000, propunerea de guvernanță 15; testnet-ul din 27 octombrie, iar din 6 noiembrie testnet-ul rulează v3.2.7, care adaugă mesaje pentru care SDK 0.13.0 nu are constructori). Poartă partea de client a regulilor post-cuantice ulterioare
+înălțimea 4.020.000, propunerea de guvernanță 15; testnet-ul din 27 octombrie, iar din 6 noiembrie testnet-ul a rulat v3.2.7 și din 12 noiembrie rulează v3.2.8, care adaugă mesaje pentru care SDK 0.13.0 nu are constructori). Poartă partea de client a regulilor post-cuantice ulterioare
 (dovada de posesie la înregistrarea cheii, ferestre EVM cu domeniu restrâns,
 mesaje de consimțământ EIP-7702) și a lui v3.2.4 (niveluri de staking, nonce-ul
 autentificatorului, comutatoarele de funcționalități de protocol) și a lui v3.2.5 (gaz exact pentru

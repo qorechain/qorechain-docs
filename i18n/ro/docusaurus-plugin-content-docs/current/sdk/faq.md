@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Este mainnet-ul activ?
 
 Da. Mainnet-ul este **activ** (chain id `qorechain-vladi`, activ din 7 iunie 2026)
-și rulează versiunea de chain v3.2.6 (aplicată la înălțimea 4.020.000 pe 4 noiembrie 2026, propunerea de guvernanță 15; v3.2.5 a fost aplicată la înălțimea 3.906.833 pe 29 octombrie 2026 și v3.2.4 la înălțimea 3.742.566 pe 23 octombrie 2026); testnet-ul rulează v3.2.6 din 27 octombrie 2026 și v3.2.7 din 6 noiembrie 2026 (înălțimea 9.594.600; nu este pe mainnet, fără dată). Presetul de testnet
+și rulează versiunea de chain v3.2.6 (aplicată la înălțimea 4.020.000 pe 4 noiembrie 2026, propunerea de guvernanță 15; v3.2.5 a fost aplicată la înălțimea 3.906.833 pe 29 octombrie 2026 și v3.2.4 la înălțimea 3.742.566 pe 23 octombrie 2026); testnet-ul rulează v3.2.6 din 27 octombrie 2026, v3.2.7 din 6 noiembrie și v3.2.8 din 12 noiembrie 2026 (înălțimea 9.929.500; nu este pe mainnet, fără dată). Presetul de testnet
 (`qorechain-diana`) rămâne de asemenea disponibil. Începând cu SDK 0.12.0, ambele preseturi folosesc implicit
 endpoint-urile publice; selectați rețeaua cu
 `createClient({ network: "mainnet" })` și suprascrieți `endpoints` doar pentru
@@ -159,7 +159,7 @@ vechi sunt respinse on-chain, pe fiecare cale (inclusiv eth-native).
 
 SDK **0.12.0** este versiunea de client pentru chain **v3.2.5** (mainnet din 29 octombrie
 2026, la înălțimea 3.906.833; testnet din 26 octombrie). Mainnet-ul rulează v3.2.6
-(din 4 noiembrie), iar testnet-ul v3.2.7 (din 6 noiembrie; v3.2.6 din 27 octombrie); formatul de semnare nu s-a
+(din 4 noiembrie), iar testnet-ul v3.2.8 (din 12 noiembrie; v3.2.7 din 6 noiembrie, v3.2.6 din 27 octombrie); formatul de semnare nu s-a
 schimbat până la v3.2.6, așa că 0.12.0 funcționează pe mainnet. 0.12.0 nu are constructori pentru adăugirile v3.2.7 (înregistrarea multisig PQC, modul de semnare textual, APR, identitatea clusterului și mesajele de cheie de verificare), iar calea sa de semnare nu a fost reverificată pe testnet-ul v3.2.7; folosiți CLI-ul pentru ele. Adaugă regula exactă de gaz pentru
 tranzacțiile hibride, constructorii și citirea registrului de chei ML-KEM, citirile
 de cont abstract și constructorii verificați pentru parametrii de guvernanță (vedeți
@@ -175,8 +175,8 @@ sign-bytes hibride, înregistrarea, trimiterile hibride și fereastra EVM funcț
 neschimbat), dar nu are niciunul dintre acei constructori: folosiți CLI-ul pentru ei
 (vedeți
 [Versiuni anterioare lui 0.9.0](/sdk/install#before-090)). Formatul de semnare nu s-a schimbat
-în v3.2.4, v3.2.5 sau v3.2.6. Mainnet-ul rulează v3.2.6, iar testnet-ul v3.2.7 (testnet-ul a aplicat v3.2.5 pe 26 octombrie 2026,
-v3.2.6 pe 27 octombrie și v3.2.7 pe 6 noiembrie; mainnet-ul a aplicat v3.2.5 pe 29 octombrie și v3.2.6 pe 4 noiembrie). SDK 0.10.0 și 0.9.0 continuă să funcționeze pe ele, dar nu au constructori pentru
+în v3.2.4, v3.2.5 sau v3.2.6. Mainnet-ul rulează v3.2.6, iar testnet-ul v3.2.8 (testnet-ul a aplicat v3.2.5 pe 26 octombrie 2026,
+v3.2.6 pe 27 octombrie, v3.2.7 pe 6 noiembrie și v3.2.8 pe 12 noiembrie; mainnet-ul a aplicat v3.2.5 pe 29 octombrie și v3.2.6 pe 4 noiembrie). SDK 0.10.0 și 0.9.0 continuă să funcționeze pe ele, dar nu au constructori pentru
 adăugirile v3.2.5 (registrul de chei ML-KEM, regula exactă de gaz); cu acele versiuni folosiți CLI-ul sau actualizați la 0.13.0. 0.12.0 a fost construit și verificat împotriva v3.2.5.
 
 ## Înregistrarea cheii mele PQC a fost refuzată, dar taxa a fost luată

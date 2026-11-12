@@ -10,7 +10,7 @@ sidebar_position: 5
 Acest ghid parcurge trimiterea de token-uri QOR, interogarea tranzacțiilor și interacțiunea cu QoreChain prin interfețele sale native, EVM și SVM.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 și rulează versiunea v3.2.6 din 4 noiembrie 2026 (testnet-ul rulează v3.2.7 din 6 noiembrie 2026) — înlocuiți ID-ul chain-ului și punctele finale ale rețelei principale de pe pagina **Conectarea la rețeaua principală** atunci când efectuați tranzacții pe rețeaua principală.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 și rulează versiunea v3.2.6 din 4 noiembrie 2026 (testnet-ul rulează v3.2.8 din 12 noiembrie 2026) — înlocuiți ID-ul chain-ului și punctele finale ale rețelei principale de pe pagina **Conectarea la rețeaua principală** atunci când efectuați tranzacții pe rețeaua principală.
 :::
 
 ## Verificarea soldului
@@ -31,14 +31,14 @@ Un cont QoreChain trimite pe lane-ul Cosmos cu o **semnătură hibridă**: semn�
 # 1. Build the unsigned transaction (the fee is fixed here, because cosign signs the fee in this file)
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --generate-only > tx.json
 
 # 2. Add the ML-DSA-87 signature and broadcast
 qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
-Aceasta trimite **1 QOR** (1,000,000 uqor) către adresa destinatarului și plătește un comision de 40,000 uqor (0.04 QOR). Pragul minim al rețelei este de **0.1 uqor pe unitate de gaz**, deci comisionul trebuie să fie cel puțin limita de gaz înmulțită cu 0.1: `--gas 400000` necesită `--fees 40000uqor` sau mai mult. Un transfer semnat hibrid folosește de obicei între 160,000 și 240,000 de gaz, deoarece semnătura adaugă tranzacției aproximativ 4.7 KB. `cosign` întreabă nodul ce formă a bytes-ilor semnați verifică rețeaua, așa că aceeași comandă funcționează pe ambele rețele.
+Aceasta trimite **1 QOR** (1,000,000 uqor) către adresa destinatarului și plătește un comision de 60,000 uqor (0.06 QOR). Pragul minim al rețelei este de **0.1 uqor pe unitate de gaz**, deci comisionul trebuie să fie cel puțin limita de gaz înmulțită cu 0.1: `--gas 400000` necesită `--fees 40000uqor` sau mai mult. Exemplele plătesc 0.15 uqor pe unitate de gaz (`--fees 60000uqor`): începând cu v3.2.8, mempool-ul ordonează tranzacțiile după comisionul per unitate de gaz, deci un transfer care plătește exact pragul minim așteaptă în spatele altora când blocurile sunt aglomerate. Un transfer semnat hibrid folosește de obicei între 160,000 și 240,000 de gaz, deoarece semnătura adaugă tranzacției aproximativ 4.7 KB. `cosign` întreabă nodul ce formă a bytes-ilor semnați verifică rețeaua, așa că aceeași comandă funcționează pe ambele rețele.
 
 ### Înregistrarea cheii post-cuantice {#register-pqc-key}
 
@@ -50,14 +50,14 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 Din v3.2.3, chain-ul acceptă și o **dovadă a deținerii** opțională odată cu înregistrarea și refuză cheile slabe, degenerate sau deja folosite. Pentru a atașa una, înregistrați cu `register-key-v2` și numiți cheia locală:
 
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 Păstrați o copie de rezervă a fișierului cheii PQC cu aceeași grijă ca fraza de recuperare; poate fi rederivat din frază cu `qorechaind tx pqc recover-key`. [QoreX](/qorex/overview) și SDK-ul QoreChain efectuează înregistrarea cheii în locul dumneavoastră. Vezi [Configurarea portofelului](/getting-started/wallet-setup) pentru fluxul hibrid complet.
@@ -152,7 +152,7 @@ Tot restul lane-ului EVM rămâne neschimbat: continuați să semnați cu MetaMa
 ```bash
 # at most 1000 QOR in total, at most 20 transactions, for 7,200 blocks (about 6.4 hours on mainnet)
 qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
@@ -161,7 +161,7 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 
 ```bash
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 ```
 
 `--allowed-targets` limitează **ce** contracte și tokenuri poate atinge fereastra, nu **cât**. Un token listat admite orice sumă din acel token, inclusiv `approve`, iar un contract listat poate muta tot ce permit codul său și aprobările existente, așa că nu listați contracte generice de tip forwarder sau router. O fereastră limitează doar tranzacțiile de pe banda EVM (semnate clasic); mesajele Cosmos semnate cu semnătura hibridă PQC, precum apelurile cross-VM și authz, sunt în afara ei.
@@ -183,7 +183,7 @@ Răspunsul REST nu eșuează niciodată pentru o adresă fără fereastră; retu
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor --generate-only > close.json
+  --gas 400000 --fees 60000uqor --generate-only > close.json
 qorechaind tx pqc cosign close.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
@@ -251,7 +251,7 @@ Când lucrați cu CLI-ul `qorechaind`, aceste opțiuni sunt folosite frecvent:
 ```bash
 qorechaind tx bank send mykey qor1recipient... 500000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --node tcp://localhost:26657 \
   --output json \
   --generate-only > tx.json

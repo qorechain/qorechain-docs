@@ -29,7 +29,7 @@ Account, saldi e token sono condivisi tra i runtime e la chain include il modulo
 IBC per l'interoperabilità cross-chain (al momento non è aperto alcun canale IBC
 sulla mainnet; la testnet ha un canale `transfer` aperto verso una chain di test, verificato il 27 ottobre 2026).
 
-:::note Cosa funziona oggi sulle reti attive (la mainnet esegue la v3.2.6, la testnet la v3.2.7)
+:::note Cosa funziona oggi sulle reti attive (la mainnet esegue la v3.2.6, la testnet la v3.2.8)
 **Funziona:** le letture su ogni corsia, le transazioni Native firmate in modo ibrido, gli account
 unificati, le transazioni EVM all'interno di una
 [finestra di autorizzazione](/sdk/guides/evm#evm-window) e le letture SVM.
@@ -45,7 +45,7 @@ applica. Verificato rispetto agli endpoint attivi il 27 ottobre 2026; il 7 novem
 L'SDK pubblicato (0.13.0, 11 novembre 2026) firma nella forma che entrambe le reti verificano
 (sign-bytes ibridi v2, risolti dallo stato della chain), e il formato di firma,
 gli indirizzi, i decimali, i memo e le commissioni non sono cambiati nella v3.2.3, v3.2.4, v3.2.5 né v3.2.6 (la mainnet esegue la v3.2.6 dal 4 novembre 2026,
-altezza 4.020.000, proposta di governance 15; la testnet dal 27 ottobre, e dal 6 novembre la testnet esegue la v3.2.7, che aggiunge messaggi per i quali l'SDK 0.13.0 non ha builder). Include
+altezza 4.020.000, proposta di governance 15; la testnet dal 27 ottobre, dal 6 novembre la testnet ha eseguito la v3.2.7 e dal 12 novembre esegue la v3.2.8, che aggiungono messaggi per i quali l'SDK 0.13.0 non ha builder). Include
 il lato client delle successive regole post-quantistiche (la prova di possesso alla registrazione
 della chiave, le finestre EVM con ambito limitato, i messaggi di consenso EIP-7702) e della v3.2.4 (tier di staking,
 il nonce dell'authenticator, gli interruttori delle funzionalità del protocollo) e della v3.2.5 (gas esatto per le

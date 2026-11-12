@@ -229,6 +229,10 @@ La scheda **SVM wallets** ti permette anche di collegare una chiave Phantom al t
 Le funzionalità di smart account e di wallet collegati della chain sono attivate sulla testnet e disattivate sulla mainnet (`GET /qorechain/abstractaccount/v1/config` restituisce `enabled: true` sulla testnet e `enabled: false` sulla mainnet, verificato il 27 ottobre 2026). Sulla mainnet la chain rifiuta le nuove registrazioni di firmatari collegati; considera lì la scheda un'anteprima.
 :::
 
+:::note Lane compatibile con Solana sulla testnet
+La lane compatibile con Solana è chiusa sulla testnet finché un voto di governance non la riapre (release v3.2.8, testnet dal 12 novembre 2026). Le transazioni in stile Solana lì non sono disponibili fino ad allora.
+:::
+
 :::caution Un firmatario collegato è un'autorità reale sull'account
 Il permesso che concedi decide su quale percorso la chiave può agire, non quanto può muovere, e una registrazione resta valida per 30 giorni. Collega solo una chiave di cui ti fidi quanto dell'account stesso, e revocala quando non ti serve più.
 :::

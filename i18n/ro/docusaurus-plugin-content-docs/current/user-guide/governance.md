@@ -10,7 +10,7 @@ sidebar_position: 3
 Acest ghid descrie cum funcționează guvernanța on-chain pe QoreChain: cum sunt numărate voturile, cum să trimiți propuneri și cum să votezi.
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.6** din 4 noiembrie 2026 (v3.2.5 din 29 octombrie, v3.2.4 din 23 octombrie); testnet-ul rulează **v3.2.7** din 6 noiembrie 2026 (v3.2.6 din 27 octombrie). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.6** din 4 noiembrie 2026 (v3.2.5 din 29 octombrie, v3.2.4 din 23 octombrie); testnet-ul rulează **v3.2.8** din 12 noiembrie 2026 (v3.2.7 din 6 noiembrie, v3.2.6 din 27 octombrie). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
 :::
 
 :::caution Semnează cu `tx pqc cosign`

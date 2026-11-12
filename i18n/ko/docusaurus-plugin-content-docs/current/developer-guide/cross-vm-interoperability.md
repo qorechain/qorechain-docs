@@ -92,7 +92,7 @@ contract CrossVMCaller {
 
 ### 테스트넷 동작 (허용 목록, 2026년 11월 7일 확인) {#testnet-allowlist}
 
-`qorechain-diana`(2026년 11월 6일부터 노드 릴리스 v3.2.7)에서 프리컴파일은 브리지 허용 목록에 있는 QoreChain Native 컨트랙트에만 접근합니다. `GET /qorechain/crossvm/v1/params`는 이를 `bridge_allowed_targets`에 나열하며(2026년 11월 7일 기준 세 항목, `cosmwasm:qor1...` 형식), 옆에 `enabled` `true`, `max_message_size` 65536, `max_queue_size` 1000, `queue_timeout_blocks` 100이 있습니다. 2026년 11월 7일에 `executeCrossVMCall(1, target, 0x7b7d)`로 `0x…0901`에 대한 읽기 전용 `eth_call` 요청 두 건을 실행했습니다.
+`qorechain-diana`(2026년 11월 12일부터 노드 릴리스 v3.2.8)에서 프리컴파일은 브리지 허용 목록에 있는 QoreChain Native 컨트랙트에만 접근합니다. `GET /qorechain/crossvm/v1/params`는 이를 `bridge_allowed_targets`에 나열하며(2026년 11월 7일 기준 세 항목, `cosmwasm:qor1...` 형식), 옆에 `enabled` `true`, `max_message_size` 65536, `max_queue_size` 1000, `queue_timeout_blocks` 100이 있습니다. 2026년 11월 7일에 `executeCrossVMCall(1, target, 0x7b7d)`로 `0x…0901`에 대한 읽기 전용 `eth_call` 요청 두 건을 실행했습니다.
 
 * **허용 목록 밖의 대상:** `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted`로 되돌려집니다.
 * **허용 목록에 있는 대상:** 호출이 컨트랙트에 도달합니다(빈 `{}` 메시지에 대해 노드가 컨트랙트 자체의 오류를 보고합니다: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). 이는 경로가 동작함을 보여 주며, 이 페이지를 위해 프리컴파일을 통한 상태 변경 크로스 VM 트랜잭션은 전송하지 않았습니다.

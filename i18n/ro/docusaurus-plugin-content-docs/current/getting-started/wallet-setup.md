@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain acceptă mai multe tipuri de portofele în mediile sale de execuție native, EVM și SVM. Alege portofelul care se potrivește cazului tău de utilizare.
 
 :::note
-Valorile de mai jos acoperă atât mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, activ din 7 iunie 2026, versiunea v3.2.6 din 4 noiembrie 2026), cât și testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea v3.2.7 din 6 noiembrie 2026). Endpoint-urile publice pentru ambele rețele sunt listate în [Rețele](/appendix/networks#public-endpoints).
+Valorile de mai jos acoperă atât mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, activ din 7 iunie 2026, versiunea v3.2.6 din 4 noiembrie 2026), cât și testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea v3.2.8 din 12 noiembrie 2026). Endpoint-urile publice pentru ambele rețele sunt listate în [Rețele](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recomandat) {#qorex}
@@ -109,6 +109,10 @@ Fondurile trimise către oricare dintre cele trei forme ajung în același sold.
 Funcțiile de cont inteligent și de portofel conectat sunt implementate, dar **dezactivate** pe mainnet (`abstractaccount.enabled = false`): înregistrarea unui authenticator și execuția prin intermediul unuia sunt refuzate acolo cât timp indicatorul este dezactivat. Sunt **activate pe testnet** (`enabled = true`, verificat la 27 octombrie 2026), deci poți încerca acolo un flux de conectare. Verifică `GET /qorechain/abstractaccount/v1/config` pe rețeaua țintă înainte de a oferi un flux de conectare. Secțiunea de mai jos descrie comportamentul proiectat.
 :::
 
+:::note Lane-ul compatibil Solana pe testnet
+Lane-ul compatibil Solana este închis pe testnet până când un vot de guvernanță îl redeschide (versiunea v3.2.8, pe testnet din 12 noiembrie 2026). Tranzacțiile în stil Solana nu sunt disponibile acolo până atunci.
+:::
+
 Proiectat astfel încât să nu fii nevoit să îți expui cheia rădăcină pentru a cheltui dintr-un cont QoreChain într-un dApp (introdus în versiunea de lanț **v3.1.85**): o cheie **Phantom** (ed25519) sau **MetaMask** (prin adresa sa Ethereum, via `personal_sign`) poate fi **înregistrată ca authenticator** pe contul tău — cu permisiuni delimitate, limite de cheltuire, o dată de expirare și revocare instantanee — și apoi poate autoriza transferuri retransmise de backend-ul dApp-ului. Vezi [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) pentru modelul complet și cod, precum și [ghidul SDK Authenticators](/sdk/guides/authenticators) pentru exemple cap-coadă.
 
 ## Portofele Solana (SVM)
@@ -161,7 +165,7 @@ O cheie post-cuantică este **înregistrată explicit**, o singură dată pentru
 ```bash
 # register the public key printed by gen-key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+  --chain-id qorechain-vladi --gas 600000 --fees 90000uqor
 ```
 
 Din v3.2.3 poți atașa o dovadă opțională a deținerii înregistrând cu `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...`; lanțul refuză, de asemenea, cheile slabe, degenerate sau deja folosite. Fă backup fișierului cheii PQC la fel de atent ca fraza mnemonică. (O cheie poate fi re-derivată din fraza mnemonică cu `qorechaind tx pqc recover-key` și înlocuită cu `tx pqc rotate-key`.) QoreX și SDK-ul QoreChain înregistrează cheia în locul tău. Vezi [Prima tranzacție](/getting-started/first-transaction#register-pqc-key) pentru un transfer semnat complet.

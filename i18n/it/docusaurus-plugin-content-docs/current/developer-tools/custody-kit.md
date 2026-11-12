@@ -271,12 +271,12 @@ Distingui in base a codespace e codice insieme, e conserva il log grezzo.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Release del nodo | v3.2.6 (applicata il 4 novembre 2026; la v3.2.5 il 29 ottobre) | v3.2.7 (applicata il 6 novembre; la v3.2.6 il 27 ottobre, la v3.2.5 il 26 ottobre) |
+| Release del nodo | v3.2.6 (applicata il 4 novembre 2026; la v3.2.5 il 29 ottobre) | v3.2.8 (applicata il 12 novembre; la v3.2.7 il 6 novembre, la v3.2.6 il 27 ottobre, la v3.2.5 il 26 ottobre) |
 
 - La denominazione è `uqor` (1 QOR = 10^6 uqor; sul rail EVM 1 uqor = 10^12 wei). Il gas price minimo è 0.1 uqor, il periodo di unbonding è di 21 giorni e il limite del memo è di 256 caratteri. Questi valori sono stati letti da entrambe le reti il 27 ottobre 2026 (mainnet riletta il 4 novembre 2026: unbonding 1.814.400 secondi, gas price minimo 0.1 uqor, limite del memo 256 caratteri) e possono cambiare per governance, quindi in produzione leggili dalla chain.
 - I depositi non richiedono né chiavi né registrazione. Inviare richiede una chiave ML-DSA-87 registrata per ogni indirizzo hot.
 - Esegui i tuoi full node per la produzione. Gli endpoint pubblici hanno limiti di frequenza e sono pensati per lo sviluppo. Se uno script riceve `403 Forbidden`, imposta un header `User-Agent` esplicito. Vedi [eseguire un nodo](/developer-guide/running-a-node) e [connettersi alla mainnet](/getting-started/connecting-to-mainnet).
-- La testnet riceve ogni release del nodo prima della mainnet. Cambia le regole del gas controllando l'upgrade applicato, non la data (entrambe le reti hanno applicato la v3.2.5 e la v3.2.6; la testnet anche la v3.2.7).
+- La testnet riceve ogni release del nodo prima della mainnet. Cambia le regole del gas controllando l'upgrade applicato, non la data (entrambe le reti hanno applicato la v3.2.5 e la v3.2.6; la testnet anche la v3.2.7 e la v3.2.8).
 - I token di test sulla testnet (denom bank della forma `erc20:0x...`, un token IBC) non esistono sulla mainnet. Accredita `uqor` su entrambe le reti.
 - I QOR di testnet provengono dal faucet della dashboard di QoreChain e non hanno alcun valore. Vedi [connettersi alla testnet](/getting-started/connecting-to-testnet).
 

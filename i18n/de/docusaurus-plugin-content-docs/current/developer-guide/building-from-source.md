@@ -68,7 +68,7 @@ QoreChain folgt einem **Open-Core**-Modell:
 
 Beide Builds erzeugen denselben Binärnamen `qorechaind` und stellen identische CLI-Befehle bereit. Der Unterschied liegt im Laufzeitverhalten der Keeper-Logik hinter diesen Schnittstellen.
 
-Der Tag `v3.2.6` von [github.com/qorechain/qorechain-core](https://github.com/qorechain/qorechain-core) ist der Open-Core-Quellcode des Releases, das das Mainnet ausführt (seit dem 4. November 2026). Das Testnet läuft seit dem 6. November 2026 mit v3.2.7; es gibt noch keinen öffentlichen Tag `v3.2.7`. Der öffentliche Build verwendet Stub-Keeper und kann den Konsenszustand nicht reproduzieren; ein Node muss daher das im Manifest genannte Release-Bundle (`latest.json` unter [download.qore.host](https://download.qore.host/mainnet/latest.json)) verwenden, nicht eine aus diesem Tag gebaute Binärdatei.
+Der Tag `v3.2.6` von [github.com/qorechain/qorechain-core](https://github.com/qorechain/qorechain-core) ist der Open-Core-Quellcode des Releases, das das Mainnet ausführt (seit dem 4. November 2026). Das Testnet läuft seit dem 12. November 2026 mit v3.2.8; es gibt noch keinen öffentlichen Tag `v3.2.8`. Der öffentliche Build verwendet Stub-Keeper und kann den Konsenszustand nicht reproduzieren; ein Node muss daher das im Manifest genannte Release-Bundle (`latest.json` unter [download.qore.host](https://download.qore.host/mainnet/latest.json)) verwenden, nicht eine aus diesem Tag gebaute Binärdatei.
 
 ## Community-Build
 

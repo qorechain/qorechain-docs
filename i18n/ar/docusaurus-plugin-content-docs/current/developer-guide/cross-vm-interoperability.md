@@ -92,7 +92,7 @@ contract CrossVMCaller {
 
 ### سلوك شبكة الاختبار (قائمة السماح، جرى التحقق في 7 نوفمبر 2026) {#testnet-allowlist}
 
-على `qorechain-diana` (إصدار العقدة v3.2.7 منذ 6 نوفمبر 2026) لا يصل الـ precompile إلا إلى عقود QoreChain Native الموجودة في قائمة سماح الجسر. يسردها `GET /qorechain/crossvm/v1/params` في `bridge_allowed_targets` (ثلاثة إدخالات في 7 نوفمبر 2026، مكتوبة بالصيغة `cosmwasm:qor1...`)، إلى جانب `enabled` بقيمة `true` و`max_message_size` بقيمة 65536 و`max_queue_size` بقيمة 1000 و`queue_timeout_blocks` بقيمة 100. أُجري طلبا `eth_call` للقراءة فقط إلى `0x…0901` بالاستدعاء `executeCrossVMCall(1, target, 0x7b7d)` في 7 نوفمبر 2026:
+على `qorechain-diana` (إصدار العقدة v3.2.8 منذ 12 نوفمبر 2026) لا يصل الـ precompile إلا إلى عقود QoreChain Native الموجودة في قائمة سماح الجسر. يسردها `GET /qorechain/crossvm/v1/params` في `bridge_allowed_targets` (ثلاثة إدخالات في 7 نوفمبر 2026، مكتوبة بالصيغة `cosmwasm:qor1...`)، إلى جانب `enabled` بقيمة `true` و`max_message_size` بقيمة 65536 و`max_queue_size` بقيمة 1000 و`queue_timeout_blocks` بقيمة 100. أُجري طلبا `eth_call` للقراءة فقط إلى `0x…0901` بالاستدعاء `executeCrossVMCall(1, target, 0x7b7d)` في 7 نوفمبر 2026:
 
 * **هدف خارج قائمة السماح:** يرتدّ مع الرسالة `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted`.
 * **هدف في قائمة السماح:** يصل الاستدعاء إلى العقد (وتُبلغ العقدة عن خطأ العقد نفسه بسبب الرسالة الفارغة `{}`: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). وهذا يبيّن أن المسار يعمل؛ ولم تُرسل لأجل هذه الصفحة أي معاملة عبر الآلات الافتراضية تغيّر الحالة من خلال الـ precompile.

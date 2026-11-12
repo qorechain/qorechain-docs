@@ -229,6 +229,10 @@ Mit der Karte **SVM-Wallets** können Sie außerdem einen Phantom-Schlüssel als
 Die Smart-Account- und Linked-Wallet-Funktionen der Chain sind im Testnet aktiviert und im Mainnet abgeschaltet (`GET /qorechain/abstractaccount/v1/config` liefert im Testnet `enabled: true` und im Mainnet `enabled: false`, geprüft am 27. Oktober 2026). Im Mainnet lehnt die Chain neue Registrierungen verknüpfter Signierer ab; betrachten Sie die Karte dort als Vorschau.
 :::
 
+:::note Solana-kompatible Spur im Testnet
+Die Solana-kompatible Spur ist im Testnet geschlossen, bis eine Governance-Abstimmung sie wieder öffnet (Release v3.2.8, Testnet seit dem 12. November 2026). Solana-artige Transaktionen sind dort bis dahin nicht verfügbar.
+:::
+
 :::caution Ein verknüpfter Signierer ist echte Autorität über das Konto
 Die erteilte Berechtigung bestimmt, auf welchem Lane der Schlüssel handeln darf, nicht wie viel er bewegen kann, und eine Registrierung bleibt 30 Tage gültig. Verknüpfen Sie nur einen Schlüssel, dem Sie so sehr vertrauen wie dem Konto selbst, und widerrufen Sie ihn, wenn Sie ihn nicht mehr benötigen.
 :::

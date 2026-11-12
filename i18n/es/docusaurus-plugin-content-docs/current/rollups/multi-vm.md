@@ -81,7 +81,7 @@ El 4 de noviembre de 2026 la lista de precompilados activos de la testnet (`acti
 
 ### Cadena v3.2.5: lista de permitidos, formato de respuesta y rechazos (ambas redes) {#chain-v325}
 
-La cadena v3.2.5 cambia el comportamiento del puente. La mainnet la ejecuta desde el 29 de octubre de 2026 (propuesta de gobernanza 14, altura 3,906,833) y la testnet desde el 26 de octubre; la mainnet ejecuta ahora la v3.2.6 y la testnet la v3.2.7. Como el precompilado no está activo en la mainnet, el formato de respuesta descrito a continuación es el comportamiento de la versión y no se ha ejercitado allí; el formato de rechazo se vio en la testnet el 7 de noviembre de 2026 (consulta [Probado en la testnet](#tested-testnet)). Donde esta página dice que el precompilado devuelve la respuesta en bruto del destino, eso describe las versiones anteriores a la v3.2.5.
+La cadena v3.2.5 cambia el comportamiento del puente. La mainnet la ejecuta desde el 29 de octubre de 2026 (propuesta de gobernanza 14, altura 3,906,833) y la testnet desde el 26 de octubre; la mainnet ejecuta ahora la v3.2.6 y la testnet la v3.2.8. Como el precompilado no está activo en la mainnet, el formato de respuesta descrito a continuación es el comportamiento de la versión y no se ha ejercitado allí; el formato de rechazo se vio en la testnet el 7 de noviembre de 2026 (consulta [Probado en la testnet](#tested-testnet)). Donde esta página dice que el precompilado devuelve la respuesta en bruto del destino, eso describe las versiones anteriores a la v3.2.5.
 
 * **Una ruta de lista de permitidos.** `GET /qorechain/crossvm/v1/params` sirve los parámetros del puente, incluida la lista de permitidos de destinos. En la mainnet la lista de permitidos está vacía (comprobado el 4 de noviembre de 2026), así que todavía no se permite ningún destino; en la testnet estaba vacía el 30 de octubre (véase la nota anterior).
 * **Un formato de respuesta fijo.** El precompilado devuelve `abi.encode(bytes)`, por lo que una respuesta siempre ocupa al menos 64 bytes y una respuesta vacía se distingue de una inexistente; decodifícala con `abi.decode(ret, (bytes))`.
@@ -90,7 +90,7 @@ La cadena v3.2.5 cambia el comportamiento del puente. La mainnet la ejecuta desd
 
 ### Probado en la testnet {#tested-testnet}
 
-La testnet ejecuta la cadena v3.2.7 desde el 6 de noviembre de 2026 (altura 9,594,600). El 7 de noviembre de 2026 se enviaron dos solicitudes `eth_call` de solo lectura a `0x…0901` con el calldata de `executeCrossVMCall(uint8,string,bytes)` (VM de destino `1`, payload `{}`):
+La testnet ejecuta la cadena v3.2.8 desde el 12 de noviembre de 2026 (altura 9,929,500). El 7 de noviembre de 2026 se enviaron dos solicitudes `eth_call` de solo lectura a `0x…0901` con el calldata de `executeCrossVMCall(uint8,string,bytes)` (VM de destino `1`, payload `{}`):
 
 | Destino | Resultado |
 |---|---|

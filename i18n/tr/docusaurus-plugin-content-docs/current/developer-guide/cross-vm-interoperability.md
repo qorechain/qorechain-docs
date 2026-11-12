@@ -92,7 +92,7 @@ Bu, düğümün çözdüğü düzendir; `@qorechain/rdk` kodlayıcısının olu�
 
 ### Test ağı davranışı (izin listesi, 7 Kasım 2026'da kontrol edildi) {#testnet-allowlist}
 
-`qorechain-diana` üzerinde (düğüm sürümü v3.2.7, 6 Kasım 2026'dan beri) önderlenmiş işlev yalnızca köprü izin listesindeki QoreChain Native sözleşmelerine ulaşır. `GET /qorechain/crossvm/v1/params` bunları `bridge_allowed_targets` içinde listeler (7 Kasım 2026'da üç kayıt, `cosmwasm:qor1...` biçiminde yazılmış); yanında `enabled` `true`, `max_message_size` 65536, `max_queue_size` 1000 ve `queue_timeout_blocks` 100 bulunur. `executeCrossVMCall(1, target, 0x7b7d)` ile `0x…0901` adresine yapılan iki salt okunur `eth_call` isteği 7 Kasım 2026'da çalıştırıldı:
+`qorechain-diana` üzerinde (düğüm sürümü v3.2.8, 12 Kasım 2026'dan beri) önderlenmiş işlev yalnızca köprü izin listesindeki QoreChain Native sözleşmelerine ulaşır. `GET /qorechain/crossvm/v1/params` bunları `bridge_allowed_targets` içinde listeler (7 Kasım 2026'da üç kayıt, `cosmwasm:qor1...` biçiminde yazılmış); yanında `enabled` `true`, `max_message_size` 65536, `max_queue_size` 1000 ve `queue_timeout_blocks` 100 bulunur. `executeCrossVMCall(1, target, 0x7b7d)` ile `0x…0901` adresine yapılan iki salt okunur `eth_call` isteği 7 Kasım 2026'da çalıştırıldı:
 
 * **İzin listesi dışındaki hedef:** `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted` ile geri alınır.
 * **İzin listesindeki hedef:** çağrı sözleşmeye ulaşır (düğüm, boş `{}` mesajı için sözleşmenin kendi hatasını bildirir: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). Bu, rotanın çalıştığını gösterir; bu sayfa için önderlenmiş işlev üzerinden durum değiştiren bir VM'ler arası işlem gönderilmedi.

@@ -10,7 +10,7 @@ sidebar_position: 5
 Ce guide explique comment envoyer des tokens QOR, interroger des transactions et interagir avec QoreChain via ses interfaces native, EVM et SVM.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version v3.2.6 depuis le 4 novembre 2026 (le testnet exécute la v3.2.7 depuis le 6 novembre 2026) — remplacez le chain ID et les endpoints par ceux du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous transactez sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version v3.2.6 depuis le 4 novembre 2026 (le testnet exécute la v3.2.8 depuis le 12 novembre 2026) — remplacez le chain ID et les endpoints par ceux du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous transactez sur le mainnet.
 :::
 
 ## Vérifier votre solde
@@ -31,14 +31,14 @@ Un compte QoreChain envoie sur la voie Cosmos avec une **signature hybride** : l
 # 1. Build the unsigned transaction (the fee is fixed here, because cosign signs the fee in this file)
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --generate-only > tx.json
 
 # 2. Add the ML-DSA-87 signature and broadcast
 qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
-Cela envoie **1 QOR** (1 000 000 uqor) à l'adresse destinataire et paie des frais de 40 000 uqor (0,04 QOR). Le plancher du réseau est de **0,1 uqor par unité de gas** : les frais doivent donc être au moins égaux à la limite de gas multipliée par 0,1 — `--gas 400000` nécessite `--fees 40000uqor` ou plus. Un transfert signé en hybride consomme généralement entre 160 000 et 240 000 de gas, car la signature ajoute environ 4,7 Ko à la transaction. `cosign` demande au nœud quelle forme d'octets signés le réseau vérifie, de sorte que la même commande fonctionne sur les deux réseaux.
+Cela envoie **1 QOR** (1 000 000 uqor) à l'adresse destinataire et paie des frais de 60 000 uqor (0,06 QOR). Le plancher du réseau est de **0,1 uqor par unité de gas** : les frais doivent donc être au moins égaux à la limite de gas multipliée par 0,1 — `--gas 400000` nécessite `--fees 40000uqor` ou plus. Les exemples paient 0,15 uqor par unité de gas (`--fees 60000uqor`) : à partir de la v3.2.8, le mempool ordonne les transactions par frais par unité de gas, de sorte qu'un transfert qui ne paie que le plancher attend derrière les autres lorsque les blocs sont chargés. Un transfert signé en hybride consomme généralement entre 160 000 et 240 000 de gas, car la signature ajoute environ 4,7 Ko à la transaction. `cosign` demande au nœud quelle forme d'octets signés le réseau vérifie, de sorte que la même commande fonctionne sur les deux réseaux.
 
 ### Enregistrer votre clé post-quantique {#register-pqc-key}
 
@@ -50,14 +50,14 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 Depuis la v3.2.3, la chaîne accepte aussi une **preuve de possession** facultative avec l'enregistrement, et refuse les clés faibles, dégénérées ou déjà utilisées. Pour en joindre une, enregistrez avec `register-key-v2` et nommez votre clé locale :
 
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 Sauvegardez le fichier de clé PQC aussi soigneusement que votre phrase de récupération ; il peut être re-dérivé à partir de la phrase avec `qorechaind tx pqc recover-key`. [QoreX](/qorex/overview) et le SDK QoreChain effectuent l'enregistrement de la clé pour vous. Consultez [Wallet Setup](/getting-started/wallet-setup) pour le flux hybride complet.
@@ -152,7 +152,7 @@ Tout le reste de la voie EVM est inchangé : vous continuez à signer avec MetaM
 ```bash
 # at most 1000 QOR in total, at most 20 transactions, for 7,200 blocks (about 6.4 hours on mainnet)
 qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
@@ -161,7 +161,7 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 
 ```bash
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 ```
 
 `--allowed-targets` limite **quels** contrats et tokens la fenêtre peut toucher, pas **combien**. Un token listé admet n'importe quel montant de ce token, y compris `approve`, et un contrat listé peut déplacer tout ce que son code et ses approbations existantes permettent ; ne listez donc pas de contrats de transfert ou de routeur génériques. Une fenêtre ne borne que les transactions de la voie EVM (signées de façon classique) ; les messages Cosmos signés avec la signature hybride PQC, comme les appels cross-VM et authz, sont hors de son champ.
@@ -183,7 +183,7 @@ La réponse REST n'échoue jamais pour une adresse sans fenêtre ; elle renvoie 
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor --generate-only > close.json
+  --gas 400000 --fees 60000uqor --generate-only > close.json
 qorechaind tx pqc cosign close.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
@@ -251,7 +251,7 @@ Lorsque vous travaillez avec le CLI `qorechaind`, ces options sont utilisées fr
 ```bash
 qorechaind tx bank send mykey qor1recipient... 500000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --node tcp://localhost:26657 \
   --output json \
   --generate-only > tx.json

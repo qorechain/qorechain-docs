@@ -11,7 +11,7 @@ sidebar_position: 1
 
 노드를 실행하고 동기화하는 데는 라이선스가 필요 없습니다. 보상 분배에 참여하는 것은 별도의 단계이며, `lightnode_operator` 라이선스, 본딩된 검증자에게 위임된 스테이크, 온체인 등록이 필요합니다([이용 방법](#how-to-access) 참조).
 
-라이트 노드는 체인 릴리스와는 별개인 **자체 버전 라인**을 가집니다. 2026년 11월 12일 기준 두 네트워크의 릴리스 채널은 모두 라이트 노드 **3.1.13**을 제공합니다(테스트넷은 체인 `v3.2.7`, 메인넷은 체인 `v3.2.6`을 실행하며, 3.1.13은 `v3.2.7`에서 변경 없이 동작하고 하트비트와 클레임이 코드 0을 반환합니다). 두 숫자는 서로 무관한 것으로 취급하세요.
+라이트 노드는 체인 릴리스와는 별개인 **자체 버전 라인**을 가집니다. 2026년 11월 12일 기준 두 네트워크의 릴리스 채널은 모두 라이트 노드 **3.1.13**을 제공합니다(테스트넷은 체인 `v3.2.8`, 메인넷은 체인 `v3.2.6`을 실행하며, 3.1.13은 `v3.2.7`에서 변경 없이 동작했고 하트비트와 클레임이 코드 0을 반환했으며, `v3.2.8`에서는 다시 확인하지 않았습니다). 두 숫자는 서로 무관한 것으로 취급하세요.
 
 ## 혁신 요소 {#innovations}
 
@@ -74,7 +74,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 | | 메인넷 | 테스트넷 |
 | --- | --- | --- |
-| 체인 | `qorechain-vladi` (체인 `v3.2.6`) | `qorechain-diana` (체인 `v3.2.7`) |
+| 체인 | `qorechain-vladi` (체인 `v3.2.6`) | `qorechain-diana` (체인 `v3.2.8`) |
 | 노드용 RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | 조회용 REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | 라이트 노드 릴리스 | 3.1.13 | 3.1.13 |
@@ -98,7 +98,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 ### 보상 프로그램 현황 {#reward-program-status}
 
 :::note 등록이 열려 있습니다
-메인넷(`qorechain-vladi`, 체인 v3.2.6)과 테스트넷(`qorechain-diana`, 체인 v3.2.7)에서 등록이 열려 있습니다. 2026년 11월 4일에 메인넷에서 7개의 `lightnode_operator` 라이선스가 부여되었고, 메인넷에 라이트 노드 1개, 테스트넷에 2개가 등록되었습니다(`GET /qorechain/lightnode/v1/stats`의 `total_registered`: `1`과 `2`). 보상 회계는 v3.2.0 업그레이드 이후 두 네트워크 모두에서 라이브입니다. 가동 시간은 **노드가 등록된 블록부터** 계산되므로 그 이전에 노드를 실행해도 크레딧은 적립되지 않습니다. 체인 v3.2.4부터는 노드별 보상 한도도 노드 자신의 등록 시점부터 시작됩니다. 등록 후 첫 정산에서는 그 이후에 누적된 금액만 크레딧됩니다.
+메인넷(`qorechain-vladi`, 체인 v3.2.6)과 테스트넷(`qorechain-diana`, 체인 v3.2.8)에서 등록이 열려 있습니다. 2026년 11월 4일에 메인넷에서 7개의 `lightnode_operator` 라이선스가 부여되었고, 메인넷에 라이트 노드 1개, 테스트넷에 2개가 등록되었습니다(`GET /qorechain/lightnode/v1/stats`의 `total_registered`: `1`과 `2`). 보상 회계는 v3.2.0 업그레이드 이후 두 네트워크 모두에서 라이브입니다. 가동 시간은 **노드가 등록된 블록부터** 계산되므로 그 이전에 노드를 실행해도 크레딧은 적립되지 않습니다. 체인 v3.2.4부터는 노드별 보상 한도도 노드 자신의 등록 시점부터 시작됩니다. 등록 후 첫 정산에서는 그 이후에 누적된 금액만 크레딧됩니다.
 
 릴리스 매니페스트(`https://download.qore.host/<net>/lightnode/latest.json`)는 `registration.open` 필드에 공식 신호를 담고 있습니다. 실시간 상태는 `https://api.qore.host`(메인넷) 또는 `https://api-testnet.qore.host`(테스트넷)에서 `GET /qorechain/license/v1/holders/lightnode_operator`와 `GET /qorechain/lightnode/v1/stats`를 조회하세요.
 :::

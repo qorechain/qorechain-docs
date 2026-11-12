@@ -10,7 +10,7 @@ sidebar_position: 3
 Bu kılavuz, QoreChain üzerinde zincir üstü yönetişimin nasıl çalıştığını, oyların nasıl sayıldığını, tekliflerin nasıl gönderileceğini ve nasıl oy kullanılacağını açıklar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve 4 Kasım 2026'dan beri **v3.2.6** sürümünü çalıştırıyor (v3.2.5, 29 Ekim'den; v3.2.4, 23 Ekim'den); testnet 6 Kasım 2026'dan beri **v3.2.7** çalıştırıyor (27 Ekim'den itibaren v3.2.6 idi). Mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve 4 Kasım 2026'dan beri **v3.2.6** sürümünü çalıştırıyor (v3.2.5, 29 Ekim'den; v3.2.4, 23 Ekim'den); testnet 12 Kasım 2026'dan beri **v3.2.8** çalıştırıyor (6 Kasım'dan itibaren v3.2.7, 27 Ekim'den itibaren v3.2.6 idi). Mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın

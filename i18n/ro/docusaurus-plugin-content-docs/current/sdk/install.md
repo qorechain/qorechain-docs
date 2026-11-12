@@ -120,7 +120,7 @@ Păstrați codul de recuperare: un alt cod dă o altă cheie.
 
 SDK 0.12.0 este versiunea de client pentru chain **v3.2.5**, pe care mainnet a aplicat-o
 la înălțimea 3.906.833, pe 29 octombrie 2026 (testnet-ul a aplicat-o pe 26 octombrie). Mainnet-ul
-rulează v3.2.6 din 4 noiembrie; testnet-ul a rulat v3.2.6 din 27 octombrie și v3.2.7 din 6 noiembrie; formatul de
+rulează v3.2.6 din 4 noiembrie; testnet-ul a rulat v3.2.6 din 27 octombrie, v3.2.7 din 6 până pe 12 noiembrie și v3.2.8 din 12 noiembrie; formatul de
 semnare hibridă, adresele, zecimalele și memo-urile nu s-au schimbat, deci o
 tranzacție construită cu 0.10.0 rămâne validă. TypeScript, Python, Go, Rust și Java
 trec toate la 0.12.0, împreună cu `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`
@@ -165,7 +165,7 @@ constructori pentru nimic introdus după v3.2.4; adăugirile v3.2.5 au venit cu
 [0.12.0](#whats-new-0120). Mainnet rulează v3.2.6 din 4 noiembrie 2026 (înălțimea
 4.020.000, propunerea de guvernanță 15; v3.2.5 înainte de ea, din 29 octombrie la înălțimea
 3.906.833), iar 0.10.0 continuă să funcționeze acolo deoarece formatul de semnare nu s-a
-schimbat. Testnet-ul a aplicat v3.2.5 și v3.2.6 pe 26 și 27 octombrie 2026 și v3.2.7 pe 6 noiembrie (nicio versiune SDK nu are constructori pentru mesajele v3.2.7). Ce a adus 0.10.0
+schimbat. Testnet-ul a aplicat v3.2.5 și v3.2.6 pe 26 și 27 octombrie 2026, v3.2.7 pe 6 noiembrie și v3.2.8 pe 12 noiembrie (nicio versiune SDK nu are constructori pentru mesajele v3.2.7). Ce a adus 0.10.0
 (totul este încă în 0.13.0):
 
 | Zonă | În 0.10.0 |

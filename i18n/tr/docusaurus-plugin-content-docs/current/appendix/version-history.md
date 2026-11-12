@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **v3.2.6** sürümünü çalıştırır (yönetişim önerisi 15 ile 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı; önceki sürüm v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde ve v3.2.3 ise 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) **v3.2.7** çalıştırır (test ağı yönetişimi tarafından 6 Kasım 2026'da 9.594.600 yüksekliğinde uygulandı; bkz. [v3.2.7](#v327), bu sürüm **henüz ana ağda değildir ve tarihi yoktur**); v3.2.4 ona 8.337.253 yüksekliğinde (19 Ekim 2026), v3.2.5 8.890.800 yüksekliğinde (26 Ekim 2026) ve v3.2.6 8.970.638 yüksekliğinde (27 Ekim 2026) ulaştı.
+QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **v3.2.6** sürümünü çalıştırır (yönetişim önerisi 15 ile 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı; önceki sürüm v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde ve v3.2.3 ise 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) 12 Kasım 2026'dan beri **v3.2.8** çalıştırır (test ağı yönetişimi tarafından 9.929.500 yüksekliğinde uygulandı; bkz. [v3.2.8](#v328), bu sürüm **henüz ana ağda değildir ve tarihi yoktur**); v3.2.4 ona 8.337.253 yüksekliğinde (19 Ekim 2026), v3.2.5 8.890.800 yüksekliğinde (26 Ekim 2026), v3.2.6 8.970.638 yüksekliğinde (27 Ekim 2026) ve v3.2.7 9.594.600 yüksekliğinde (6 Kasım 2026, bkz. [v3.2.7](#v327)) ulaştı.
 
 :::note
 Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır. Yayın manifesti ([Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet)) etiketlemeden ayrı olarak yükseltilir ve bir etiketin gerisinde bir süre kalabilir — taze bir kurulumun gerçekte ne indirdiğini görmek için doğrudan kontrol edin.
@@ -30,6 +30,28 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 | 15 | v3.2.6'ya (build 3) 4.020.000 yüksekliğinde koordineli yükseltme (düğümler o yüksekliğe kadar v3.2.5'te kaldı, orada durdu ve v3.2.6 ile yeniden başladı; işlem imzalama değişmez). İçeriği [v3.2.6](#v326) altında listelenir | 1 Kasım 2026 21:36 UTC ile 3 Kasım 2026 21:36 UTC arası | Kabul edildi; 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı |
 
 Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve); nasıl oy verileceği için bkz. [Yönetişim](/user-guide/governance).
+
+---
+
+## v3.2.8: Sözleşme Ücretleri, Gas Sınırları, EVM Pencere Seçenekleri, Asenkron VM'ler Arası Emanet, RDK Kanıtları (test ağı) {#v328}
+
+:::note YALNIZCA test ağı, henüz ana ağda değil, tarih yok
+v3.2.8 yalnızca `qorechain-diana` test ağında çalışır. Ana ağ v3.2.6'da kalır; ana ağ yükseltmesi için bir tarih veya yükseklik yoktur ve aşağıdaki her madde bugün ana ağda yoktur.
+:::
+
+**Sürüm odağı:** Gerçek işe göre ücretlenen akıllı sözleşmeler, işlem başına gas sınırları, isteğe bağlı EVM yetkilendirme penceresi listeleri, emanete alınan ve sınırlandırılan bir asenkron VM'ler arası çağrı, daha eksiksiz bir Rollup Geliştirme Kiti (RDK), daha katı soyut hesaplar ve test ağında kapatılan Solana uyumlu hat.
+
+Test ağı: 12 Kasım 2026'da 9.929.500 yüksekliğinde uygulandı; ana ağ uygulamadı.
+
+* **Akıllı sözleşme ücretleri gerçek işe uyar.** CosmWasm yürütme, yüklemeler, kod yükleme ve bellek ücretlendirilir. Blok başına bir sözleşme bütçesi ve yalnızca bloklar dolu olduğunda yükselen bir tıkanıklık fiyatlaması vardır. Gas'ı her zaman simülasyonla tahmin edin. Bkz. [SDK'da CosmWasm](/sdk/guides/cosmwasm#gas).
+* **Gas sınırları.** Cosmos işlemi başına 50.000.000 ve EVM işlemi başına 30.000.000 (`GET /qorechain/pqc/v1/evm_limits`).
+* **EVM yetkilendirme pencereleri.** Bir pencere; doğrulayıcılar, staking doğrulayıcıları ve IBC alıcıları için isteğe bağlı listeler taşıyabilir. Bir pencere üzerinden erişilebilen yerleşik Cosmos sözleşmeleri kısa bir güvenli listeyle sınırlıdır. Bir sözleşmenin zincir üzerinde doğruladığı imzalar (permit'ler, EIP-712) için doğrulayan sözleşmenin pencerede olması gerekir. Bir anahtarı döndürmek veya yeniden kaydetmek pencereyi kapatır. Bkz. [EVM pencere seçenekleri](/developer-guide/evm-development#evm-window-v328).
+* **VM'ler arası asenkron çağrılar.** Bir asenkron çağrı iade edilebilir bir emanet tutar, `async_gas_limit` ve `async_max_factor` alır ve gönderen başına 100 bekleyen çağrıyla sınırlıdır; bekleyen çağrılar sorgusu sayfalıdır. Bkz. [Asenkron çağrılar](/developer-guide/cross-vm-interoperability#async-calls).
+* **RDK.** Veri gönderme, tabanlı sıralama, sahtekârlık kanıtlı iyimser `qledger-v1` rollup'ları (bir sahtekârlık kanıtı, kesilen teminatın yarısını yakar ve yarısını itiraz edene öder) ve ML-KEM-1024 zarflı özel rollup'lar. STARK mutabakatı bir sonraki sürüme kadar duraklatılmıştır. SNARK girdileri, zincirin belirlediği yerlerde BLS12-381 alanına göre modüler olarak indirgenir.
+* **Soyut hesaplar.** Bir anahtarı bağlamak sahiplik kanıtı gerektirir ve değer taşıyabilen anahtarlar için harcama kuralı gerekir. Başarısız bir yürütme başarısız olarak raporlanır.
+* **Solana uyumlu hat test ağında kapatıldı**, bir yönetişim oyu onu yeniden açana kadar. Ana ağda kapalı kalır.
+* **Düğüm operatörleri.** Sürüm paketinin `lib/` klasörünün tamamını kopyalayın (mevcut kütüphanelerin yanına bir sözleşme çalışma zamanı kütüphanesi ekler) ve sözleşme bellek önbelleğini 256 MiB veya daha fazla tutun. Yeni rota: `GET /qorechain/svm/v1/params`.
+* **İstemciler.** Sözleşmeler için simülasyonla gas [SDK'da CosmWasm](/sdk/guides/cosmwasm#gas) sayfasında, pencere seçenekleri [EVM pencere seçenekleri](/developer-guide/evm-development#evm-window-v328) bölümünde ve asenkron çağrılar [Asenkron çağrılar](/developer-guide/cross-vm-interoperability#async-calls) bölümünde ele alınır.
 
 ---
 
@@ -59,7 +81,7 @@ v3.2.7 yalnızca `qorechain-diana` test ağında çalışır. Ana ağ, ayrı bir
 
 ## v3.2.6: Sorgu Rotaları, IBC Hız Sınırları ve İletme, Canlı PRISM Değerleri (ana ağ) {#v326}
 
-**Sürüm odağı:** Güncel ana ağ sürümü (test ağı bir sürüm öndedir, bkz. [v3.2.7](#v327)). Yönetişim önerisi 15 bunu ana ağda 4 Kasım 2026'da (yaklaşık 14:45 UTC) **4.020.000** yüksekliğinde uyguladı: düğümler o bloğa kadar v3.2.5'te kaldı, orada durdu ve v3.2.6 ile yeniden başladı. `qorechain-diana` test ağı onu önce aldı, test ağı yönetişim önerisi 28 ile 8.970.638 yüksekliğinde (27 Ekim 2026, 16:58 UTC). Ana ağ manifestosu `version` ve `minCompatible` değerlerini 3.2.6 olarak, `upgradeHeight` değerini 4020000 olarak ayarlar; dolayısıyla ana ağa katılan bir düğümün v3.2.6'ya ihtiyacı vardır (yeni düğümler state sync ile katılır). İmza biçimi (sign-bytes v2), adresler, ondalıklar, memolar ve ücretler değişmez.
+**Sürüm odağı:** Güncel ana ağ sürümü (test ağı iki sürüm öndedir, bkz. [v3.2.7](#v327) ve [v3.2.8](#v328)). Yönetişim önerisi 15 bunu ana ağda 4 Kasım 2026'da (yaklaşık 14:45 UTC) **4.020.000** yüksekliğinde uyguladı: düğümler o bloğa kadar v3.2.5'te kaldı, orada durdu ve v3.2.6 ile yeniden başladı. `qorechain-diana` test ağı onu önce aldı, test ağı yönetişim önerisi 28 ile 8.970.638 yüksekliğinde (27 Ekim 2026, 16:58 UTC). Ana ağ manifestosu `version` ve `minCompatible` değerlerini 3.2.6 olarak, `upgradeHeight` değerini 4020000 olarak ayarlar; dolayısıyla ana ağa katılan bir düğümün v3.2.6'ya ihtiyacı vardır (yeni düğümler state sync ile katılır). İmza biçimi (sign-bytes v2), adresler, ondalıklar, memolar ve ücretler değişmez.
 
 * **Yeni okuma rotaları, artık ana ağda sunuluyor.** 4 Kasım 2026'da ana ağda kontrol edildi: `GET /qorechain/pqc/v1/params`, `/qorechain/rlconsensus/v1/` altındaki PRISM (`x/rlconsensus`) sorgularının tamamı (`agent`, `params`, `observation`, `reward`, `policy`, `applied_params`, `last_action`), `/qorechain/reputation/v1/` altındaki itibar rotaları (`params`, `validators` ve `validator/{address}`) ve IBC v2 istemci rotaları `/ibc/core/client/v2/config/{client_id}` ile `/ibc/core/client/v2/counterparty_info/{client_id}`. Hepsi `https://api.qore.host` üzerinde HTTP 200 yanıtı verdi; karşı tarafı olmayan bir istemci için 404 döndüren `counterparty_info` hariç (ana ağda henüz IBC istemcisi yok). v3.2.6'dan önce ana ağ bu rotalarda 501 döndürüyordu. `/qorechain/amm/v1/` altındaki AMM rotaları her iki ağda da yanıt verir. Bkz. [REST / gRPC başvurusu](/api-reference/rest-grpc-endpoints).
 * **PRISM ana ağda gözlem modunda kalır.** Yeni rotalar ana ağ ajanını olduğu gibi gösterir: temkinli (conservative) mod, hiçbir politika ağırlığı yüklenmemiş, hiçbir adım atılmamış (`current_epoch` ve `total_steps` 4 Kasım 2026'da `0` okunur) ve dört PRISM kontrol mesajı devre kesici tarafından hâlâ kapalıdır. Test ağında ajan gölge modunda çalışır (test ağı yönetişim önerisi 29 ile ayarlandı): her 10 blokta bir gözlem yapar ve hiçbir değeri değiştirmeden önerilen bir eylemi kaydeder. Bkz. [PRISM](/architecture/prism-consensus-engine).

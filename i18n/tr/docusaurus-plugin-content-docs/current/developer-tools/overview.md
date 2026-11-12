@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain, geliştirici araçlarını genel kayıt defterlerinde (npm, PyPI, crates.io, Go modül proxy'si, Maven Central ve Swift Package Manager) küçük paketler olarak yayınlar. Bu sayfa dizindir: her paketin ne işe yaradığı, tam kayıt defteri adı, dili, güncel sürümü, kurulum komutu ve durumu ile nasıl kullanılacağını nerede okuyacağınız. QoreChain üzerinde dApp, cüzdan, arka uç ve rollup geliştiren ve bir kılavuzu okumadan önce doğru paketi seçmek isteyen geliştiriciler içindir.
 
-Tablolardaki sürümler 4 Kasım 2026 tarihinde kayıt defterlerinden okunmuştur. Mainnet `qorechain-vladi` v3.2.6 çalıştırır (4 Kasım 2026'da uygulandı; v3.2.5, 29 Ekim'de). Testnet `qorechain-diana` v3.2.6'yı 27 Ekim'de ve v3.2.7'yi 6 Kasım 2026'da uyguladı; v3.2.7 mainnet'te yoktur ve orada bir tarihi yoktur. Bu tablolardaki hiçbir paketin, sayfasında aksi belirtilmedikçe v3.2.7 mesajları için oluşturucusu yoktur. Yayınlanmış olarak listelenen her paket Apache-2.0 lisanslıdır.
+Tablolardaki sürümler 4 Kasım 2026 tarihinde kayıt defterlerinden okunmuştur. Mainnet `qorechain-vladi` v3.2.6 çalıştırır (4 Kasım 2026'da uygulandı; v3.2.5, 29 Ekim'de). Testnet `qorechain-diana` v3.2.6'yı 27 Ekim'de, v3.2.7'yi 6 Kasım'da ve v3.2.8'i 12 Kasım 2026'da uyguladı; v3.2.7 ve v3.2.8 mainnet'te yoktur ve orada bir tarihleri yoktur. Bu tablolardaki hiçbir paketin, sayfasında aksi belirtilmedikçe v3.2.7 mesajları için oluşturucusu yoktur. Yayınlanmış olarak listelenen her paket Apache-2.0 lisanslıdır.
 
 ## Yenilikler {#innovations}
 
@@ -300,7 +300,7 @@ Kapsamlı (scoped) bir npm adı için `@` işaretini koruyun, örneğin `https:/
 
 ## Sınırlar ve bilinen sorunlar {#limits}
 
-- **İki canlı ağ, iki zincir sürümü.** Mainnet v3.2.6 çalıştırır (4 Kasım 2026'dan beri); testnet v3.2.7 çalıştırır (6 Kasım 2026'dan beri). Yalnızca testnet'te bulunan bir özellik (örneğin EVM PQC precompile'ları) kendi sayfasında işaretlenir.
+- **İki canlı ağ, iki zincir sürümü.** Mainnet v3.2.6 çalıştırır (4 Kasım 2026'dan beri); testnet v3.2.8 çalıştırır (12 Kasım 2026'dan beri). Yalnızca testnet'te bulunan bir özellik (örneğin EVM PQC precompile'ları) kendi sayfasında işaretlenir.
 - **Henüz canlı değil:** Asset Kit yerel modülleri (planlanmamış bir öneri), QoreSign ve QoreSeal Python paketleri için Windows wheel'leri, SVM işlemleri ve mainnet üzerindeki EVM precompile'ları (yalnızca testnet'te etkindir; ray ray liste için [SDK genel bakış](/sdk/overview) sayfasına bakın).
 - **QoreSeal kayıt defteri ve PQ hafif istemci.** Zincirden okunan bir adrese şifrelemek, testnet'te canlı olan KEM anahtar kayıt defterini gerektirir; okuma rotası v3.2.5'ten beri mainnet'te yanıt verir (4 Kasım 2026'da yeniden kontrol edildi: mainnet'te henüz hiçbir anahtar yayımlanmamıştı). PQ hafif istemci iki ağdan hiçbirine bağlanmaz; kontrol noktaları için planlanmış bir zincir desteği yoktur.
 - **Kotlin 2.3 veya daha yeni.** QoreSign ve QoreSeal Kotlin ile Android yapıtları Kotlin 2.3 veya daha yeni derleyiciyi gerektirir; Kotlin 2.1 bunlara karşı derlenemez.

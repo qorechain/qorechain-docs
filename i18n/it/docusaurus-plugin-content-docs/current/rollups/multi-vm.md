@@ -81,7 +81,7 @@ Il 4 novembre 2026 l'elenco dei precompile attivi della testnet (`active_static_
 
 ### Chain v3.2.5: allowlist, formato della risposta e rifiuti (entrambe le reti) {#chain-v325}
 
-La chain v3.2.5 cambia il comportamento del bridge. Il mainnet la esegue dal 29 ottobre 2026 (proposta di governance 14, altezza 3.906.833) e il testnet dal 26 ottobre; la mainnet esegue ora la v3.2.6 e la testnet la v3.2.7. Poiché il precompile non è attivo sulla mainnet, il formato della risposta descritto sotto è il comportamento della release e non è stato verificato lì; il formato dei rifiuti è stato osservato sulla testnet il 7 novembre 2026 (vedi [Testato sulla testnet](#tested-testnet)). Ovunque questa pagina dica che il precompile restituisce la risposta grezza del target, ciò descrive le release precedenti alla v3.2.5.
+La chain v3.2.5 cambia il comportamento del bridge. Il mainnet la esegue dal 29 ottobre 2026 (proposta di governance 14, altezza 3.906.833) e il testnet dal 26 ottobre; la mainnet esegue ora la v3.2.6 e la testnet la v3.2.8. Poiché il precompile non è attivo sulla mainnet, il formato della risposta descritto sotto è il comportamento della release e non è stato verificato lì; il formato dei rifiuti è stato osservato sulla testnet il 7 novembre 2026 (vedi [Testato sulla testnet](#tested-testnet)). Ovunque questa pagina dica che il precompile restituisce la risposta grezza del target, ciò descrive le release precedenti alla v3.2.5.
 
 * **Una route per l'allowlist.** `GET /qorechain/crossvm/v1/params` serve i parametri del bridge, inclusa l'allowlist dei target. Sulla mainnet l'allowlist è vuota (verificato il 4 novembre 2026), quindi nessun target è ancora consentito; sulla testnet era vuota il 30 ottobre (vedi la nota sopra).
 * **Un formato di risposta fisso.** Il precompile restituisce `abi.encode(bytes)`, quindi una risposta è sempre di almeno 64 byte e una risposta vuota si distingue da una assente; decodificala con `abi.decode(ret, (bytes))`.
@@ -90,7 +90,7 @@ La chain v3.2.5 cambia il comportamento del bridge. Il mainnet la esegue dal 29 
 
 ### Testato sulla testnet {#tested-testnet}
 
-La testnet esegue la chain v3.2.7 dal 6 novembre 2026 (altezza 9.594.600). Il 7 novembre 2026 sono state inviate a `0x…0901` due richieste `eth_call` in sola lettura con i calldata di `executeCrossVMCall(uint8,string,bytes)` (VM di destinazione `1`, payload `{}`):
+La testnet esegue la chain v3.2.8 dal 12 novembre 2026 (altezza 9.929.500). Il 7 novembre 2026 sono state inviate a `0x…0901` due richieste `eth_call` in sola lettura con i calldata di `executeCrossVMCall(uint8,string,bytes)` (VM di destinazione `1`, payload `{}`):
 
 | Target | Risultato |
 |---|---|

@@ -81,7 +81,7 @@ Le 4 novembre 2026, la liste des précompilés actifs du testnet (`active_static
 
 ### Chaîne v3.2.5 : liste d'autorisation, format de réponse et refus (les deux réseaux) {#chain-v325}
 
-La chaîne v3.2.5 change le comportement du pont. Le mainnet l'exécute depuis le 29 octobre 2026 (proposition de gouvernance 14, hauteur 3 906 833) et le testnet depuis le 26 octobre ; le mainnet exécute désormais la v3.2.6 et le testnet la v3.2.7. Comme le précompilé n'est pas actif sur le mainnet, le format de réponse ci-dessous est le comportement de la version et n'y a pas été exercé ; le format de refus a été observé sur le testnet le 7 novembre 2026 (voir [Testé sur le testnet](#tested-testnet)). Partout où cette page dit que le précompilé renvoie la réponse brute de la cible, cela décrit les versions antérieures à la v3.2.5.
+La chaîne v3.2.5 change le comportement du pont. Le mainnet l'exécute depuis le 29 octobre 2026 (proposition de gouvernance 14, hauteur 3 906 833) et le testnet depuis le 26 octobre ; le mainnet exécute désormais la v3.2.6 et le testnet la v3.2.8. Comme le précompilé n'est pas actif sur le mainnet, le format de réponse ci-dessous est le comportement de la version et n'y a pas été exercé ; le format de refus a été observé sur le testnet le 7 novembre 2026 (voir [Testé sur le testnet](#tested-testnet)). Partout où cette page dit que le précompilé renvoie la réponse brute de la cible, cela décrit les versions antérieures à la v3.2.5.
 
 * **Une route de liste d'autorisation.** `GET /qorechain/crossvm/v1/params` sert les paramètres du pont, y compris la liste d'autorisation des cibles. Sur le mainnet, la liste d'autorisation est vide (vérifié le 4 novembre 2026) : aucune cible n'est donc encore autorisée ; sur le testnet, elle était vide le 30 octobre (voir la note ci-dessus).
 * **Un format de réponse fixe.** Le précompilé renvoie `abi.encode(bytes)`, de sorte qu'une réponse fait toujours au moins 64 octets et qu'une réponse vide se distingue d'une réponse absente ; décodez-la avec `abi.decode(ret, (bytes))`.
@@ -90,7 +90,7 @@ La chaîne v3.2.5 change le comportement du pont. Le mainnet l'exécute depuis l
 
 ### Testé sur le testnet {#tested-testnet}
 
-Le testnet exécute la chaîne v3.2.7 depuis le 6 novembre 2026 (hauteur 9,594,600). Le 7 novembre 2026, deux requêtes `eth_call` en lecture seule ont été envoyées à `0x…0901` avec les calldata de `executeCrossVMCall(uint8,string,bytes)` (VM cible `1`, charge utile `{}`) :
+Le testnet exécute la chaîne v3.2.8 depuis le 12 novembre 2026 (hauteur 9,929,500). Le 7 novembre 2026, deux requêtes `eth_call` en lecture seule ont été envoyées à `0x…0901` avec les calldata de `executeCrossVMCall(uint8,string,bytes)` (VM cible `1`, charge utile `{}`) :
 
 | Cible | Résultat |
 |---|---|

@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain admite múltiples tipos de billeteras en sus entornos de ejecución nativo, EVM y SVM. Elige la billetera que se ajuste a tu caso de uso.
 
 :::note
-Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026, versión v3.2.6 desde el 4 de noviembre de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**, versión v3.2.7 desde el 6 de noviembre de 2026). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
+Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026, versión v3.2.6 desde el 4 de noviembre de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**, versión v3.2.8 desde el 12 de noviembre de 2026). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recomendada) {#qorex}
@@ -109,6 +109,10 @@ Los fondos enviados a cualquiera de las tres formas llegan al mismo saldo.
 Las funciones de cuenta inteligente y de billetera vinculada están implementadas, pero **desactivadas en mainnet** (`abstractaccount.enabled = false`): allí, mientras el indicador esté desactivado, se rechazan tanto el registro de un autenticador como la ejecución a través de uno. Están **activadas en la testnet** (`enabled = true`, comprobado el 27 de octubre de 2026), por lo que puedes probar allí un flujo de vinculación. Consulta `GET /qorechain/abstractaccount/v1/config` en la red a la que te dirijas antes de ofrecer un flujo de vinculación. La sección siguiente describe el comportamiento diseñado.
 :::
 
+:::note Carril compatible con Solana en la testnet
+El carril compatible con Solana está cerrado en la testnet hasta que una votación de gobernanza lo reabra (versión v3.2.8, testnet desde el 12 de noviembre de 2026). Las transacciones al estilo Solana no están disponibles allí hasta entonces.
+:::
+
 Diseñado para que no tengas que exponer tu clave raíz al gastar desde una cuenta de QoreChain en una dApp (introducido en la versión de cadena **v3.1.85**): una clave de **Phantom** (ed25519) o de **MetaMask** (por su dirección de Ethereum, mediante `personal_sign`) puede **registrarse como autenticador** en tu cuenta — con permisos delimitados, límites de gasto, una fecha de expiración y revocación instantánea — y luego autorizar transferencias retransmitidas por el backend de la dApp. Consulta [Autenticadores de billeteras vinculadas](/developer-guide/account-abstraction#authenticators) para el modelo completo y el código, y la [guía de Autenticadores del SDK](/sdk/guides/authenticators) para ejemplos de principio a fin.
 
 ## Billeteras de Solana (SVM)
@@ -161,7 +165,7 @@ Una clave poscuántica se **registra de forma explícita**, una vez por cuenta, 
 ```bash
 # register the public key printed by gen-key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+  --chain-id qorechain-vladi --gas 600000 --fees 90000uqor
 ```
 
 Desde v3.2.3 puedes adjuntar una prueba de posesión opcional registrando con `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...`; la cadena también rechaza claves débiles, degeneradas o ya utilizadas. Respalda el archivo de la clave PQC con el mismo cuidado que tu mnemónica. (Una clave puede volver a derivarse de la mnemónica con `qorechaind tx pqc recover-key` y reemplazarse con `tx pqc rotate-key`.) QoreX y el SDK de QoreChain registran la clave por ti. Consulta [Primera transacción](/getting-started/first-transaction#register-pqc-key) para ver un envío firmado completo.

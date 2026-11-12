@@ -10,7 +10,7 @@ sidebar_position: 5
 이 가이드에서는 QOR 토큰 전송, 트랜잭션 조회, 그리고 QoreChain의 네이티브, EVM, SVM 인터페이스를 통한 상호작용 방법을 다룹니다.
 
 :::note
-아래 명령어는 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 기준으로 합니다. 메인넷(**`qorechain-vladi`**, EVM 체인 ID **9801**)은 2026년 6월 7일부터 운영 중이며 2026년 11월 4일부터 릴리스 v3.2.6을 실행합니다(테스트넷은 2026년 11월 6일부터 v3.2.7을 실행해 왔습니다) — 메인넷에서 트랜잭션을 수행할 때는 **메인넷 연결하기** 페이지에 나온 메인넷 체인 ID와 엔드포인트로 교체하세요.
+아래 명령어는 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 기준으로 합니다. 메인넷(**`qorechain-vladi`**, EVM 체인 ID **9801**)은 2026년 6월 7일부터 운영 중이며 2026년 11월 4일부터 릴리스 v3.2.6을 실행합니다(테스트넷은 2026년 11월 12일부터 v3.2.8을 실행해 왔습니다) — 메인넷에서 트랜잭션을 수행할 때는 **메인넷 연결하기** 페이지에 나온 메인넷 체인 ID와 엔드포인트로 교체하세요.
 :::
 
 ## 잔액 확인하기
@@ -31,14 +31,14 @@ QoreChain 계정은 Cosmos 레인에서 **하이브리드 서명**으로 전송�
 # 1. Build the unsigned transaction (the fee is fixed here, because cosign signs the fee in this file)
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --generate-only > tx.json
 
 # 2. Add the ML-DSA-87 signature and broadcast
 qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
-이 명령은 수신자 주소로 **1 QOR**(1,000,000 uqor)을 보내며, 수수료로 40,000 uqor(0.04 QOR)를 지불합니다. 네트워크 최저 수수료는 **가스 1단위당 0.1 uqor**이므로, 수수료는 가스 한도에 0.1을 곱한 값 이상이어야 합니다. 즉 `--gas 400000`에는 `--fees 40000uqor` 이상이 필요합니다. 하이브리드 서명이 적용된 전송은 서명이 트랜잭션에 약 4.7 KB를 추가하기 때문에 보통 160,000~240,000 가스를 사용합니다. `cosign`은 네트워크가 검증하는 서명 대상 바이트 형식을 노드에 물어보므로, 같은 명령이 두 네트워크 모두에서 동작합니다.
+이 명령은 수신자 주소로 **1 QOR**(1,000,000 uqor)을 보내며, 수수료로 60,000 uqor(0.06 QOR)를 지불합니다. 네트워크 최저 수수료는 **가스 1단위당 0.1 uqor**이므로, 수수료는 가스 한도에 0.1을 곱한 값 이상이어야 합니다. 즉 `--gas 400000`에는 `--fees 40000uqor` 이상이 필요합니다. 예제는 가스 1단위당 0.15 uqor를 지불합니다(`--fees 60000uqor`). v3.2.8부터 멤풀은 가스당 수수료 순으로 트랜잭션을 정렬하므로, 최저 수수료만 지불하는 전송은 블록이 붐빌 때 다른 트랜잭션 뒤에서 기다립니다. 하이브리드 서명이 적용된 전송은 서명이 트랜잭션에 약 4.7 KB를 추가하기 때문에 보통 160,000~240,000 가스를 사용합니다. `cosign`은 네트워크가 검증하는 서명 대상 바이트 형식을 노드에 물어보므로, 같은 명령이 두 네트워크 모두에서 동작합니다.
 
 ### 포스트 퀀텀 키 등록하기 {#register-pqc-key}
 
@@ -50,14 +50,14 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 v3.2.3부터 체인은 등록 시 선택적인 **소유 증명(proof of possession)**도 받으며, 약한 키, 퇴화(degenerate) 키, 이미 사용된 키는 거부합니다. 소유 증명을 첨부하려면 `register-key-v2`로 등록하고 로컬 키 이름을 지정하세요.
 
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 PQC 키 파일은 복구 문구만큼 신중하게 백업하세요. 이 키는 `qorechaind tx pqc recover-key`로 복구 문구에서 다시 도출할 수 있습니다. [QoreX](/qorex/overview)와 QoreChain SDK는 키 등록을 대신 처리해 줍니다. 전체 하이브리드 흐름은 [지갑 설정](/getting-started/wallet-setup)을 참고하세요.
@@ -152,7 +152,7 @@ EVM 레인의 나머지 부분은 달라지지 않았습니다. MetaMask, ethers
 ```bash
 # at most 1000 QOR in total, at most 20 transactions, for 7,200 blocks (about 6.4 hours on mainnet)
 qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
@@ -161,7 +161,7 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 
 ```bash
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 ```
 
 `--allowed-targets`는 윈도우가 건드릴 수 있는 컨트랙트와 토큰을 **어느 것으로** 제한할 뿐, **얼마나**는 제한하지 않습니다. 나열된 토큰은 `approve`를 포함해 그 토큰의 어떤 금액도 허용하며, 나열된 컨트랙트는 자신의 코드와 기존 승인이 허용하는 것을 모두 옮길 수 있으므로, 범용 포워더나 라우터 컨트랙트는 나열하지 마세요. 윈도우는 EVM 레인의(고전 서명) 트랜잭션만 제한하며, 크로스 VM 호출과 authz처럼 하이브리드 PQC 서명으로 서명된 Cosmos 메시지는 윈도우 밖에 있습니다.
@@ -183,7 +183,7 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/qor1youraddres
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor --generate-only > close.json
+  --gas 400000 --fees 60000uqor --generate-only > close.json
 qorechaind tx pqc cosign close.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
@@ -251,7 +251,7 @@ curl -s -X POST http://localhost:8899 \
 ```bash
 qorechaind tx bank send mykey qor1recipient... 500000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --node tcp://localhost:26657 \
   --output json \
   --generate-only > tx.json

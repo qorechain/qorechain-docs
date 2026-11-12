@@ -10,7 +10,7 @@ sidebar_position: 2
 Dieser Leitfaden behandelt, wie du QOR-Token an Validatoren delegierst, zwischen Validatoren neu delegierst, dein Stake entbindest, Belohnungen einforderst und verstehst, welche Teile des Staking-Designs von QoreChain heute live sind.
 
 :::note
-Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.6** (angewendet am 4. November 2026; v3.2.5 am 29. Oktober und v3.2.4 am 23. Oktober); das Testnet läuft seit dem 6. November 2026 mit v3.2.7 (v3.2.6 ab dem 27. Oktober). Ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
+Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.6** (angewendet am 4. November 2026; v3.2.5 am 29. Oktober und v3.2.4 am 23. Oktober); das Testnet läuft seit dem 12. November 2026 mit v3.2.8 (v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober). Ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -158,7 +158,7 @@ Die obige Chain-ID ist die des Testnets; verwende im Mainnet `qorechain-vladi`. 
 
 **Wo es funktioniert, geprüft am 27. Oktober 2026 (die v3.2.6-Angabe für das Mainnet stammt aus den Release Notes und dem Upgrade vom 4. November 2026; die Parameter unten wurden am 4. November 2026 im Mainnet erneut gelesen).** Vor v3.2.6 lehnte das Mainnet das Entbinden erst ab, wenn die Transaktion ausgeführt wurde, über das Staking-Nachrichten-Gate.
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.7) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.8) |
 |---|---|---|
 | Modul live | Ja, seit Höhe 3,742,566 | Ja, seit v3.2.4 (Höhe 8,337,253) |
 | Offene Sperren | Noch keine | 3 Testsperren |

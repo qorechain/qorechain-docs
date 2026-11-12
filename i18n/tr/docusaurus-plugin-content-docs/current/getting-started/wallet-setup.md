@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain; native, EVM ve SVM yürütme ortamlarında birden fazla cüzdan türünü destekler. Kullanım senaryonuza uygun cüzdanı seçin.
 
 :::note
-Aşağıdaki değerler hem **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri yayında, 4 Kasım 2026'dan beri v3.2.6 sürümü) hem de **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**, 6 Kasım 2026'dan beri v3.2.7 sürümü) kapsar. Her iki ağın herkese açık uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
+Aşağıdaki değerler hem **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri yayında, 4 Kasım 2026'dan beri v3.2.6 sürümü) hem de **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**, 12 Kasım 2026'dan beri v3.2.8 sürümü) kapsar. Her iki ağın herkese açık uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
 :::
 
 ## QoreX (önerilir) {#qorex}
@@ -109,6 +109,10 @@ console.log(w.svm);                            // base58 (same identity)
 Akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır ancak **ana ağda kapalıdır** (`abstractaccount.enabled = false`): bayrak kapalıyken orada bir kimlik doğrulayıcı (authenticator) kaydetmek ve onun üzerinden işlem yürütmek reddedilir. Test ağında **etkindir** (`enabled = true`, 27 Ekim 2026'da kontrol edildi), dolayısıyla orada bir bağlama akışını deneyebilirsiniz. Bir bağlama akışı sunmadan önce hedeflediğiniz ağda `GET /qorechain/abstractaccount/v1/config` adresini kontrol edin. Aşağıdaki bölüm tasarlanan davranışı açıklar.
 :::
 
+:::note Solana uyumlu hat test ağında
+Solana uyumlu hat, bir yönetişim oyu onu yeniden açana kadar test ağında kapalıdır (v3.2.8 sürümü, test ağında 12 Kasım 2026'dan beri). O zamana kadar orada Solana tarzı işlemler kullanılamaz.
+:::
+
 Bir dApp içinde QoreChain hesabınızdan harcama yapmak için kök anahtarınızı açığa çıkarmanız gerekmeyecek şekilde tasarlanmıştır (zincir sürümü **v3.1.85** ile tanıtıldı): bir **Phantom** (ed25519) veya **MetaMask** (Ethereum adresiyle, `personal_sign` üzerinden) anahtarı hesabınıza **kimlik doğrulayıcı (authenticator) olarak kaydedilebilir** — kapsamlandırılmış izinler, harcama limitleri, geçerlilik süresi ve anında iptal ile — ve ardından dApp'in arka ucu tarafından iletilen transferleri yetkilendirebilir. Modelin tamamı ve kod için [Bağlı Cüzdan Kimlik Doğrulayıcıları](/developer-guide/account-abstraction#authenticators) sayfasına, uçtan uca örnekler için [SDK Authenticators kılavuzuna](/sdk/guides/authenticators) bakın.
 
 ## Solana Cüzdanları (SVM)
@@ -161,7 +165,7 @@ Kuantum sonrası bir anahtar, hesap başına bir kez, bir anahtar kayıt işlemi
 ```bash
 # register the public key printed by gen-key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+  --chain-id qorechain-vladi --gas 600000 --fees 90000uqor
 ```
 
 v3.2.3'ten beri `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...` ile kayıt yaparak isteğe bağlı bir sahiplik kanıtı ekleyebilirsiniz; zincir ayrıca zayıf, dejenere veya daha önce kullanılmış anahtarları reddeder. PQC anahtar dosyasını anımsatıcı ifadeniz kadar dikkatle yedekleyin. (Bir anahtar, anımsatıcı ifadeden `qorechaind tx pqc recover-key` ile yeniden türetilebilir ve `tx pqc rotate-key` ile değiştirilebilir.) QoreX ve QoreChain SDK anahtarı sizin yerinize kaydeder. İmzalanmış eksiksiz bir gönderim için [İlk İşlem](/getting-started/first-transaction#register-pqc-key) sayfasına bakın.

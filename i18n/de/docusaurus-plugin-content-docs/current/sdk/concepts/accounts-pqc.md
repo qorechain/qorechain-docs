@@ -315,7 +315,7 @@ gültig bleibt und gleichzeitig Post-Quanten-Schutz erhält. Der Post-Quanten-
 Teil wird als `PQCHybridSignature`-Erweiterung an der Transaktion mitgeführt.
 
 :::caution Hybrid-Signierung ist auf dem Native-Pfad erforderlich
-Ab Chain-Version **v3.2.0** (das Mainnet läuft auf v3.2.6, das Testnet auf v3.2.7) ist die
+Ab Chain-Version **v3.2.0** (das Mainnet läuft auf v3.2.6, das Testnet auf v3.2.8) ist die
 Netzwerk-Voreinstellung `hybrid_signature_mode = required` mit
 `allow_classical_fallback = false`. Hybrid-Signierung über `buildHybridTx` /
 `signAndBroadcastHybrid` (übergeben Sie `rest`) oder `signHybridEth` /

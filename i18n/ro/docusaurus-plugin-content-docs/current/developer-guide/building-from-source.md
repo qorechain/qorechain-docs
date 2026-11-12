@@ -68,7 +68,7 @@ QoreChain urmează un model **open-core**:
 
 Ambele build-uri produc același nume de binar `qorechaind` și expun aceleași comenzi CLI. Diferența constă în comportamentul la runtime al logicii keeperilor din spatele acestor interfețe.
 
-Tag-ul `v3.2.6` din [github.com/qorechain/qorechain-core](https://github.com/qorechain/qorechain-core) este sursa open-core a versiunii pe care o rulează mainnet-ul (din 4 noiembrie 2026). Testnet-ul rulează v3.2.7 din 6 noiembrie 2026; nu există încă un tag public `v3.2.7`. Build-ul public folosește keeperi stub și nu poate reproduce starea de consens, așa că un nod trebuie să folosească bundle-ul de release indicat în manifest (`latest.json` la [download.qore.host](https://download.qore.host/mainnet/latest.json)), nu un binar compilat din acest tag.
+Tag-ul `v3.2.6` din [github.com/qorechain/qorechain-core](https://github.com/qorechain/qorechain-core) este sursa open-core a versiunii pe care o rulează mainnet-ul (din 4 noiembrie 2026). Testnet-ul rulează v3.2.8 din 12 noiembrie 2026; nu există încă un tag public `v3.2.8`. Build-ul public folosește keeperi stub și nu poate reproduce starea de consens, așa că un nod trebuie să folosească bundle-ul de release indicat în manifest (`latest.json` la [download.qore.host](https://download.qore.host/mainnet/latest.json)), nu un binar compilat din acest tag.
 
 ## Build-ul Comunitar
 

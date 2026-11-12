@@ -92,7 +92,7 @@ Wo das Precompile aktiv ist, führt es den QoreChain Native-Contract sofort aus 
 
 ### Testnet-Verhalten (Allowlist, geprüft am 7. November 2026) {#testnet-allowlist}
 
-Auf `qorechain-diana` (Node-Release v3.2.7 seit dem 6. November 2026) erreicht das Precompile nur QoreChain-Native-Contracts auf der Allowlist der Brücke. `GET /qorechain/crossvm/v1/params` listet sie in `bridge_allowed_targets` auf (drei Einträge am 7. November 2026, geschrieben als `cosmwasm:qor1...`), neben `enabled` `true`, `max_message_size` 65536, `max_queue_size` 1000 und `queue_timeout_blocks` 100. Zwei schreibgeschützte `eth_call`-Anfragen an `0x…0901` mit `executeCrossVMCall(1, target, 0x7b7d)` wurden am 7. November 2026 ausgeführt:
+Auf `qorechain-diana` (Node-Release v3.2.8 seit dem 12. November 2026) erreicht das Precompile nur QoreChain-Native-Contracts auf der Allowlist der Brücke. `GET /qorechain/crossvm/v1/params` listet sie in `bridge_allowed_targets` auf (drei Einträge am 7. November 2026, geschrieben als `cosmwasm:qor1...`), neben `enabled` `true`, `max_message_size` 65536, `max_queue_size` 1000 und `queue_timeout_blocks` 100. Zwei schreibgeschützte `eth_call`-Anfragen an `0x…0901` mit `executeCrossVMCall(1, target, 0x7b7d)` wurden am 7. November 2026 ausgeführt:
 
 * **Ziel außerhalb der Allowlist:** revertiert mit `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted`.
 * **Ziel auf der Allowlist:** Der Aufruf erreicht den Contract (der Node meldet den eigenen Fehler des Contracts für die leere Nachricht `{}`: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). Das zeigt, dass die Route funktioniert; für diese Seite wurde keine zustandsändernde Cross-VM-Transaktion über das Precompile gesendet.

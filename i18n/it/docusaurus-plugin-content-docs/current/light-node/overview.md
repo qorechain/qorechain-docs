@@ -11,7 +11,7 @@ Il **Light Node QoreChain** è un piccolo client che segue una rete QoreChain se
 
 Eseguire e sincronizzare un nodo non richiede alcuna licenza. Partecipare alla quota di ricompensa è un passaggio separato: richiede una licenza `lightnode_operator`, stake delegato a validatori bonded e una registrazione on-chain (vedi [Come accedere](#how-to-access)).
 
-Il light node ha una **propria linea di versione**, separata dalla release della chain. Al 12 novembre 2026 i canali di rilascio di entrambe le reti distribuiscono il light node **3.1.13** (la testnet esegue la chain `v3.2.7`, la mainnet la `v3.2.6`; la 3.1.13 funziona senza modifiche sulla `v3.2.7`, dove heartbeat e claim restituiscono il codice 0). Tratta i due numeri come indipendenti.
+Il light node ha una **propria linea di versione**, separata dalla release della chain. Al 12 novembre 2026 i canali di rilascio di entrambe le reti distribuiscono il light node **3.1.13** (la testnet esegue la chain `v3.2.8`, la mainnet la `v3.2.6`; la 3.1.13 funzionava senza modifiche sulla `v3.2.7`, dove heartbeat e claim restituivano il codice 0, e non è stata ricontrollata sulla `v3.2.8`). Tratta i due numeri come indipendenti.
 
 ## Innovazioni {#innovations}
 
@@ -74,7 +74,7 @@ L'RPC della chain per `onboard` è `https://rpc.qore.host` (mainnet) oppure `htt
 
 | | Mainnet | Testnet |
 | --- | --- | --- |
-| Chain | `qorechain-vladi` (chain `v3.2.6`) | `qorechain-diana` (chain `v3.2.7`) |
+| Chain | `qorechain-vladi` (chain `v3.2.6`) | `qorechain-diana` (chain `v3.2.8`) |
 | RPC per il nodo | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | REST per le query | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | Release del light node | 3.1.13 | 3.1.13 |
@@ -98,7 +98,7 @@ Puoi anche verificare una licenza direttamente: `GET /qorechain/license/v1/check
 ### Stato del programma di ricompense {#reward-program-status}
 
 :::note La registrazione è aperta
-La registrazione è aperta su mainnet (`qorechain-vladi`, chain v3.2.6) e su testnet (`qorechain-diana`, chain v3.2.7). Il 4 novembre 2026 sulla mainnet erano state concesse sette licenze `lightnode_operator`, un light node era registrato sulla mainnet e due sulla testnet (`total_registered` in `GET /qorechain/lightnode/v1/stats`: `1` e `2`). La contabilità delle ricompense è live su entrambe le reti dall'upgrade v3.2.0. L'uptime viene conteggiato **a partire dal blocco in cui il tuo nodo è registrato**, quindi far girare un nodo prima non fa guadagnare alcun credito. Dalla chain v3.2.4 anche il limite per nodo parte dalla registrazione del nodo stesso: il primo settlement dopo la registrazione accredita solo quanto si è accumulato da allora.
+La registrazione è aperta su mainnet (`qorechain-vladi`, chain v3.2.6) e su testnet (`qorechain-diana`, chain v3.2.8). Il 4 novembre 2026 sulla mainnet erano state concesse sette licenze `lightnode_operator`, un light node era registrato sulla mainnet e due sulla testnet (`total_registered` in `GET /qorechain/lightnode/v1/stats`: `1` e `2`). La contabilità delle ricompense è live su entrambe le reti dall'upgrade v3.2.0. L'uptime viene conteggiato **a partire dal blocco in cui il tuo nodo è registrato**, quindi far girare un nodo prima non fa guadagnare alcun credito. Dalla chain v3.2.4 anche il limite per nodo parte dalla registrazione del nodo stesso: il primo settlement dopo la registrazione accredita solo quanto si è accumulato da allora.
 
 Il manifest di rilascio (`https://download.qore.host/<net>/lightnode/latest.json`) riporta il segnale ufficiale nel campo `registration.open`. Per lo stato in tempo reale, interroga `GET /qorechain/license/v1/holders/lightnode_operator` e `GET /qorechain/lightnode/v1/stats` su `https://api.qore.host` (mainnet) o `https://api-testnet.qore.host` (testnet).
 :::

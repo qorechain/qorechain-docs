@@ -10,7 +10,7 @@ sidebar_position: 2
 Questa guida illustra come delegare token QOR ai validatori, ridelegare tra validatori, effettuare l'unbonding dello stake, riscuotere le ricompense e capire quali parti del design di staking di QoreChain sono attive oggi.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.6** (applicata il 4 novembre 2026; la v3.2.5 il 29 ottobre e la v3.2.4 il 23 ottobre); la testnet esegue la v3.2.7 dal 6 novembre 2026 (la v3.2.6 dal 27 ottobre). Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando esegui lo staking su mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.6** (applicata il 4 novembre 2026; la v3.2.5 il 29 ottobre e la v3.2.4 il 23 ottobre); la testnet esegue la v3.2.8 dal 12 novembre 2026 (la v3.2.7 dal 6 novembre, la v3.2.6 dal 27 ottobre). Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando esegui lo staking su mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -158,7 +158,7 @@ L'ID di chain qui sopra è quello della testnet; usa `qorechain-vladi` sulla mai
 
 **Dove funziona, verificato il 27 ottobre 2026 (la riga v3.2.6 per la mainnet deriva dalle note di release e dall'upgrade del 4 novembre 2026; i parametri qui sotto sono stati riletti sulla mainnet il 4 novembre 2026).** Prima della v3.2.6, la mainnet rifiutava l'unbonding solo quando la transazione veniva eseguita, tramite il gate dei messaggi di staking.
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.7) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.8) |
 |---|---|---|
 | Modulo attivo | Sì, dall'altezza 3.742.566 | Sì, dalla v3.2.4 (altezza 8.337.253) |
 | Blocchi aperti | Nessuno finora | 3 blocchi di test |

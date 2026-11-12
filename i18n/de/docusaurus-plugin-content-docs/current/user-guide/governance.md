@@ -10,7 +10,7 @@ sidebar_position: 3
 Dieser Leitfaden erklärt, wie die On-Chain-Governance bei QoreChain funktioniert: wie Stimmen ausgezählt werden, wie man Vorschläge einreicht und wie man abstimmt.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live und seit dem 4. November 2026 auf Release **v3.2.6** (v3.2.5 ab dem 29. Oktober, v3.2.4 ab dem 23. Oktober); das Testnet läuft seit dem 6. November 2026 mit **v3.2.7** (v3.2.6 ab dem 27. Oktober). Ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live und seit dem 4. November 2026 auf Release **v3.2.6** (v3.2.5 ab dem 29. Oktober, v3.2.4 ab dem 23. Oktober); das Testnet läuft seit dem 12. November 2026 mit **v3.2.8** (v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober). Ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
 :::
 
 :::caution Mit `tx pqc cosign` signieren

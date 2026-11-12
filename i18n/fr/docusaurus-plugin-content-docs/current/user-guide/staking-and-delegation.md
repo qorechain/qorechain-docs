@@ -10,7 +10,7 @@ sidebar_position: 2
 Ce guide explique comment déléguer des tokens QOR à des validateurs, redéléguer entre validateurs, désengager votre mise, réclamer vos récompenses, et comprendre quelles parties de la conception du staking de QoreChain sont actives aujourd'hui.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est actif depuis le 7 juin 2026 et exécute la version **v3.2.6** (appliquée le 4 novembre 2026 ; la v3.2.5 le 29 octobre et la v3.2.4 le 23 octobre) ; le testnet exécute la v3.2.7 depuis le 6 novembre 2026 (v3.2.6 depuis le 27 octobre). Substituez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au mainnet** lorsque vous staker sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est actif depuis le 7 juin 2026 et exécute la version **v3.2.6** (appliquée le 4 novembre 2026 ; la v3.2.5 le 29 octobre et la v3.2.4 le 23 octobre) ; le testnet exécute la v3.2.8 depuis le 12 novembre 2026 (v3.2.7 depuis le 6 novembre, v3.2.6 depuis le 27 octobre). Substituez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au mainnet** lorsque vous staker sur le mainnet.
 :::
 
 :::caution Signer avec `tx pqc cosign`
@@ -158,7 +158,7 @@ L'identifiant de chaîne ci-dessus est celui du testnet ; utilisez `qorechain-vl
 
 **Où cela fonctionne, vérifié le 27 octobre 2026 (la ligne v3.2.6 pour le mainnet provient des notes de version et de la mise à niveau du 4 novembre 2026 ; les paramètres ci-dessous ont été relus sur le mainnet le 4 novembre 2026).** Avant la v3.2.6, le mainnet ne refusait l'undelegate qu'à l'exécution de la transaction, par la barrière de messages de staking.
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.7) |
+| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.8) |
 |---|---|---|
 | Module actif | Oui, depuis la hauteur 3,742,566 | Oui, depuis la v3.2.4 (hauteur 8,337,253) |
 | Verrous ouverts | Aucun pour l'instant | 3 verrous de test |

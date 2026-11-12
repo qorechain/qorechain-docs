@@ -229,6 +229,10 @@ La carte **SVM wallets** vous permet aussi de lier une clé Phantom à votre com
 Les fonctionnalités de compte intelligent et de portefeuilles liés de la chaîne sont activées sur le testnet et désactivées sur le mainnet (`GET /qorechain/abstractaccount/v1/config` renvoie `enabled: true` sur le testnet et `enabled: false` sur le mainnet, vérifié le 27 octobre 2026). Sur le mainnet, la chaîne refuse les nouveaux enregistrements de signataires liés ; considérez la carte comme un aperçu à cet endroit.
 :::
 
+:::note Voie compatible Solana sur le testnet
+La voie compatible Solana est fermée sur le testnet jusqu'à ce qu'un vote de gouvernance la rouvre (version v3.2.8, testnet depuis le 12 novembre 2026). Les transactions de style Solana n'y sont donc pas disponibles pour l'instant.
+:::
+
 :::caution Un signataire lié est une véritable autorité sur le compte
 La permission que vous accordez détermine sur quelle voie la clé peut agir, et non quelle quantité elle peut déplacer, et un enregistrement reste valide 30 jours. Ne liez qu'une clé en laquelle vous avez autant confiance qu'en le compte lui-même, et révoquez-la lorsque vous n'en avez plus besoin.
 :::

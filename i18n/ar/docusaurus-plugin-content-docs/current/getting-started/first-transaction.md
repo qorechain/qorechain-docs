@@ -10,7 +10,7 @@ sidebar_position: 5
 يرشدك هذا الدليل خلال إرسال رموز QOR، والاستعلام عن المعاملات، والتفاعل مع QoreChain عبر واجهاتها الأصلية و EVM و SVM.
 
 :::note
-تستخدم الأوامر أدناه شبكة **`qorechain-diana`** للاختبار (معرّف سلسلة EVM **9800**). الشبكة الرئيسية (**`qorechain-vladi`**، معرّف سلسلة EVM **9801**) نشطة منذ 7 يونيو 2026 وتعمل بالإصدار v3.2.6 منذ 4 نوفمبر 2026 (وتعمل شبكة الاختبار بالإصدار v3.2.7 منذ 6 نوفمبر 2026) — استبدل معرّف سلسلة الشبكة الرئيسية ونقاط النهاية من صفحة **الاتصال بالشبكة الرئيسية** عند إجراء المعاملات على الشبكة الرئيسية.
+تستخدم الأوامر أدناه شبكة **`qorechain-diana`** للاختبار (معرّف سلسلة EVM **9800**). الشبكة الرئيسية (**`qorechain-vladi`**، معرّف سلسلة EVM **9801**) نشطة منذ 7 يونيو 2026 وتعمل بالإصدار v3.2.6 منذ 4 نوفمبر 2026 (وتعمل شبكة الاختبار بالإصدار v3.2.8 منذ 12 نوفمبر 2026) — استبدل معرّف سلسلة الشبكة الرئيسية ونقاط النهاية من صفحة **الاتصال بالشبكة الرئيسية** عند إجراء المعاملات على الشبكة الرئيسية.
 :::
 
 ## التحقق من رصيدك
@@ -31,14 +31,14 @@ qorechaind query bank balances qor1youraddress... --output json
 # 1. Build the unsigned transaction (the fee is fixed here, because cosign signs the fee in this file)
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --generate-only > tx.json
 
 # 2. Add the ML-DSA-87 signature and broadcast
 qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
-يرسل هذا **1 QOR** (1,000,000 uqor) إلى عنوان المستلم، مع دفع رسوم قدرها 40,000 uqor (0.04 QOR). الحد الأدنى للشبكة هو **0.1 uqor لكل وحدة غاز**، لذا يجب ألا تقل الرسوم عن حد الغاز مضروبًا في 0.1: فـ `--gas 400000` يتطلب `--fees 40000uqor` أو أكثر. تستهلك الحوالة الموقَّعة هجينيًا عادةً ما بين 160,000 و240,000 وحدة غاز لأن التوقيع يضيف نحو 4.7 كيلوبايت إلى المعاملة. يسأل `cosign` العقدة عن صيغة البايتات الموقَّعة التي تتحقق منها الشبكة، لذا يعمل الأمر نفسه على الشبكتين.
+يرسل هذا **1 QOR** (1,000,000 uqor) إلى عنوان المستلم، مع دفع رسوم قدرها 60,000 uqor (0.06 QOR). الحد الأدنى للشبكة هو **0.1 uqor لكل وحدة غاز**، لذا يجب ألا تقل الرسوم عن حد الغاز مضروبًا في 0.1: فـ `--gas 400000` يتطلب `--fees 40000uqor` أو أكثر. تدفع الأمثلة 0.15 uqor لكل وحدة غاز (`--fees 60000uqor`): فمنذ v3.2.8 يرتّب الـ mempool المعاملات بحسب الرسوم لكل وحدة غاز، لذا تنتظر الحوالة التي تدفع الحد الأدنى بالضبط خلف غيرها عندما تكون الكتل مزدحمة. تستهلك الحوالة الموقَّعة هجينيًا عادةً ما بين 160,000 و240,000 وحدة غاز لأن التوقيع يضيف نحو 4.7 كيلوبايت إلى المعاملة. يسأل `cosign` العقدة عن صيغة البايتات الموقَّعة التي تتحقق منها الشبكة، لذا يعمل الأمر نفسه على الشبكتين.
 
 ### سجّل مفتاحك ما بعد الكمومي {#register-pqc-key}
 
@@ -50,14 +50,14 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 منذ v3.2.3 تقبل السلسلة أيضًا **إثبات حيازة** اختياريًا مع التسجيل، وترفض المفاتيح الضعيفة والمنحلّة والمستخدمة سابقًا. لإرفاق إثبات، سجّل باستخدام `register-key-v2` وسمِّ مفتاحك المحلي:
 
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 احتفظ بنسخة احتياطية من ملف مفتاح PQC بعناية مماثلة لعبارة الاسترداد؛ إذ يمكن إعادة اشتقاقه من العبارة باستخدام `qorechaind tx pqc recover-key`. يتولى [QoreX](/qorex/overview) و QoreChain SDK تسجيل المفتاح نيابةً عنك. راجع [إعداد المحفظة](/getting-started/wallet-setup) للاطّلاع على التدفق الهجين الكامل.
@@ -152,7 +152,7 @@ curl -s -X POST http://localhost:8545 \
 ```bash
 # at most 1000 QOR in total, at most 20 transactions, for 7,200 blocks (about 6.4 hours on mainnet)
 qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
@@ -161,7 +161,7 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 
 ```bash
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 ```
 
 يحدّ `--allowed-targets` من **أي** العقود والرموز يجوز للنافذة أن تلمسها، لا من **المقدار**. فالرمز المدرج يقبل أي مقدار منه، بما في ذلك `approve`، ويمكن للعقد المدرج أن ينقل كل ما تسمح به شيفرته وموافقاته القائمة، لذا لا تدرج عقود المُمرِّر أو الموجِّه العامة. وتحدّ النافذة معاملات مسار EVM فقط (الموقَّعة بتوقيع كلاسيكي)؛ أما رسائل Cosmos الموقَّعة بتوقيع PQC الهجين، مثل استدعاءات cross-VM وauthz، فخارجها.
@@ -183,7 +183,7 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/qor1youraddres
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor --generate-only > close.json
+  --gas 400000 --fees 60000uqor --generate-only > close.json
 qorechaind tx pqc cosign close.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
@@ -251,7 +251,7 @@ curl -s -X POST http://localhost:8899 \
 ```bash
 qorechaind tx bank send mykey qor1recipient... 500000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --node tcp://localhost:26657 \
   --output json \
   --generate-only > tx.json

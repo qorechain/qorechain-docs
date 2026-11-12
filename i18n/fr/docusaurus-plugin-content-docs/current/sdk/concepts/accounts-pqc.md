@@ -321,7 +321,7 @@ transaction.
 
 :::caution La signature hybride est obligatoire sur le chemin Native
 Depuis la version **v3.2.0** de la chaîne (le mainnet
-exécute la v3.2.6, le testnet la v3.2.7), la valeur par défaut du réseau est
+exécute la v3.2.6, le testnet la v3.2.8), la valeur par défaut du réseau est
 `hybrid_signature_mode = required` avec `allow_classical_fallback = false`. La
 signature hybride via `buildHybridTx` / `signAndBroadcastHybrid` (passez
 `rest`), ou `signHybridEth` / `EthNativeSigner` pour les comptes unifiés

@@ -81,7 +81,7 @@ Pe 4 noiembrie 2026, lista precompilărilor active a testnet-ului (`active_stati
 
 ### Lanțul v3.2.5: lista permisă, formatul răspunsului și refuzurile (ambele rețele) {#chain-v325}
 
-Lanțul v3.2.5 schimbă comportamentul bridge-ului. Mainnet-ul îl rulează din 29 octombrie 2026 (propunerea de guvernanță 14, înălțimea 3.906.833), iar testnet-ul din 26 octombrie; acum mainnet-ul rulează v3.2.6, iar testnet-ul v3.2.7. Deoarece precompilul nu este activ pe mainnet, formatul răspunsului de mai jos este comportamentul versiunii și nu a fost exersat acolo; formatul refuzului a fost văzut pe testnet pe 7 noiembrie 2026 (vezi [Testat pe testnet](#tested-testnet)). Oriunde această pagină spune că precompilul întoarce răspunsul brut al țintei, aceasta descrie versiunile dinaintea v3.2.5.
+Lanțul v3.2.5 schimbă comportamentul bridge-ului. Mainnet-ul îl rulează din 29 octombrie 2026 (propunerea de guvernanță 14, înălțimea 3.906.833), iar testnet-ul din 26 octombrie; acum mainnet-ul rulează v3.2.6, iar testnet-ul v3.2.8. Deoarece precompilul nu este activ pe mainnet, formatul răspunsului de mai jos este comportamentul versiunii și nu a fost exersat acolo; formatul refuzului a fost văzut pe testnet pe 7 noiembrie 2026 (vezi [Testat pe testnet](#tested-testnet)). Oriunde această pagină spune că precompilul întoarce răspunsul brut al țintei, aceasta descrie versiunile dinaintea v3.2.5.
 
 * **O rută pentru lista permisă.** `GET /qorechain/crossvm/v1/params` servește parametrii bridge-ului, inclusiv lista permisă a țintelor. Pe mainnet lista permisă este goală (verificat la 4 noiembrie 2026), deci nicio țintă nu este încă permisă; pe testnet era goală la 30 octombrie (vezi nota de mai sus).
 * **Un format fix al răspunsului.** Precompilul întoarce `abi.encode(bytes)`, deci un răspuns are mereu cel puțin 64 de octeți și un răspuns gol poate fi deosebit de unul lipsă; decodează-l cu `abi.decode(ret, (bytes))`.
@@ -90,7 +90,7 @@ Lanțul v3.2.5 schimbă comportamentul bridge-ului. Mainnet-ul îl rulează din 
 
 ### Testat pe testnet {#tested-testnet}
 
-Testnet-ul rulează lanțul v3.2.7 din 6 noiembrie 2026 (înălțimea 9,594,600). Pe 7 noiembrie 2026 au fost trimise două cereri `eth_call` doar-citire către `0x…0901`, cu calldata pentru `executeCrossVMCall(uint8,string,bytes)` (VM țintă `1`, payload `{}`):
+Testnet-ul rulează lanțul v3.2.8 din 12 noiembrie 2026 (înălțimea 9,929,500). Pe 7 noiembrie 2026 au fost trimise două cereri `eth_call` doar-citire către `0x…0901`, cu calldata pentru `executeCrossVMCall(uint8,string,bytes)` (VM țintă `1`, payload `{}`):
 
 | Țintă | Rezultat |
 |---|---|

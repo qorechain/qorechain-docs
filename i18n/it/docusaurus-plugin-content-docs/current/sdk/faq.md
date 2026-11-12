@@ -10,7 +10,7 @@ sidebar_position: 8
 ## La mainnet è attiva?
 
 Sì. La mainnet è **attiva** (chain id `qorechain-vladi`, attiva dal 7 giugno
-2026) esegue la versione della chain v3.2.6 (applicata all'altezza 4.020.000 il 4 novembre 2026, proposta di governance 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre 2026 e la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026); la testnet esegue la v3.2.6 dal 27 ottobre 2026 e la v3.2.7 dal 6 novembre 2026 (altezza 9.594.600; non è sulla mainnet, senza data). Anche il
+2026) esegue la versione della chain v3.2.6 (applicata all'altezza 4.020.000 il 4 novembre 2026, proposta di governance 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre 2026 e la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026); la testnet esegue la v3.2.6 dal 27 ottobre 2026, la v3.2.7 dal 6 novembre e la v3.2.8 dal 12 novembre 2026 (altezza 9.929.500; non è sulla mainnet, senza data). Anche il
 preset testnet (`qorechain-diana`) rimane disponibile. Dall'SDK 0.12.0 entrambi i preset
 usano per default gli endpoint pubblici; seleziona la rete con
 `createClient({ network: "mainnet" })` e sovrascrivi `endpoints` solo per il
@@ -160,7 +160,7 @@ rifiutate on-chain, in ogni lane (incluso eth-native).
 
 L'SDK **0.12.0** è la release client per la chain **v3.2.5** (mainnet dal 29 ottobre
 2026 all'altezza 3.906.833; la testnet dal 26 ottobre). La mainnet esegue la v3.2.6
-(dal 4 novembre) e la testnet la v3.2.7 (dal 6 novembre; la v3.2.6 dal 27 ottobre); il formato di firma non è
+(dal 4 novembre) e la testnet la v3.2.8 (dal 12 novembre; la v3.2.7 dal 6 novembre, la v3.2.6 dal 27 ottobre); il formato di firma non è
 cambiato fino alla v3.2.6, quindi la 0.12.0 funziona sulla mainnet. La 0.12.0 non ha builder per le aggiunte della v3.2.7 (registrazione del multisig PQC, la modalità di firma textual, l'APR, l'identità del cluster e i messaggi per la verification key), e il suo percorso di firma non è stato ricontrollato rispetto alla testnet v3.2.7; per quelle usa la CLI. Aggiunge la regola esatta del gas per le
 transazioni ibride, i builder e la lettura del registro delle chiavi ML-KEM, le letture
 degli account astratti e i builder verificati dei parametri di governance (vedi
@@ -175,8 +175,8 @@ L'SDK **0.8.1 o successivo** transa anch'esso su entrambe le reti (la forma v2
 dei sign-bytes ibridi, la registrazione, gli invii ibridi e la finestra EVM
 funzionano senza modifiche), ma non ha nessuno di quei builder: usa la CLI per
 quelli (vedi [Versioni precedenti alla 0.9.0](/sdk/install#before-090)). Il
-formato di firma non è cambiato nella v3.2.4, nella v3.2.5 né nella v3.2.6. La mainnet esegue la v3.2.6 e la testnet la v3.2.7 (la testnet ha applicato la
-v3.2.5 il 26 ottobre 2026, la v3.2.6 il 27 ottobre e la v3.2.7 il 6 novembre; la mainnet ha applicato la v3.2.5 il 29 ottobre e la v3.2.6 il 4 novembre). L'SDK 0.10.0 e la 0.9.0 continuano a funzionare su di esse ma non hanno builder per
+formato di firma non è cambiato nella v3.2.4, nella v3.2.5 né nella v3.2.6. La mainnet esegue la v3.2.6 e la testnet la v3.2.8 (la testnet ha applicato la
+v3.2.5 il 26 ottobre 2026, la v3.2.6 il 27 ottobre, la v3.2.7 il 6 novembre e la v3.2.8 il 12 novembre; la mainnet ha applicato la v3.2.5 il 29 ottobre e la v3.2.6 il 4 novembre). L'SDK 0.10.0 e la 0.9.0 continuano a funzionare su di esse ma non hanno builder per
 le aggiunte della v3.2.5 (il registro delle chiavi ML-KEM, la regola esatta del gas); con quelle release usa la CLI, oppure passa alla 0.13.0. La 0.12.0 è stata costruita e verificata contro la v3.2.5.
 
 ## La registrazione della mia chiave PQC è stata rifiutata ma la fee è stata prelevata

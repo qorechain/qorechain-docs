@@ -229,6 +229,10 @@ Cardul **SVM wallets** îți permite și să legi o cheie Phantom la contul tău
 Funcțiile de cont inteligent și de portofele legate ale lanțului sunt activate pe testnet și dezactivate pe mainnet (`GET /qorechain/abstractaccount/v1/config` returnează `enabled: true` pe testnet și `enabled: false` pe mainnet, verificat la 27 octombrie 2026). Pe mainnet, lanțul refuză noile înregistrări de semnatari legați; tratează acolo cardul ca pe o previzualizare.
 :::
 
+:::note Lane-ul compatibil Solana pe testnet
+Lane-ul compatibil Solana este închis pe testnet până când un vot de guvernanță îl redeschide (versiunea v3.2.8, pe testnet din 12 noiembrie 2026). Tranzacțiile în stil Solana nu sunt disponibile acolo până atunci.
+:::
+
 :::caution Un semnatar legat este autoritate reală asupra contului
 Permisiunea pe care o acorzi decide pe ce cale poate acționa cheia, nu cât poate muta, iar o înregistrare rămâne valabilă 30 de zile. Leagă doar o cheie în care ai încredere la fel de mult ca în cont și revocă-o când nu mai ai nevoie de ea.
 :::

@@ -229,6 +229,10 @@ La tarjeta **SVM wallets** también te permite vincular una clave de Phantom a t
 Las funciones de cuenta inteligente y de monedero vinculado de la cadena están activadas en testnet y desactivadas en mainnet (`GET /qorechain/abstractaccount/v1/config` devuelve `enabled: true` en testnet y `enabled: false` en mainnet, comprobado el 27 de octubre de 2026). En mainnet la cadena rechaza nuevos registros de firmantes vinculados; trata la tarjeta como una vista previa allí.
 :::
 
+:::note Carril compatible con Solana en la testnet
+El carril compatible con Solana está cerrado en la testnet hasta que una votación de gobernanza lo reabra (versión v3.2.8, testnet desde el 12 de noviembre de 2026). Las transacciones al estilo Solana no están disponibles allí hasta entonces.
+:::
+
 :::caution Un firmante vinculado es autoridad real sobre la cuenta
 El permiso que concedes decide en qué carril puede actuar la clave, no cuánto puede mover, y un registro sigue siendo válido durante 30 días. Vincula solo una clave en la que confíes tanto como en la propia cuenta, y revócala cuando ya no la necesites.
 :::
