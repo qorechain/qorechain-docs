@@ -50,6 +50,7 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         "build-before-qday/overview",
+        "build-before-qday/prerequisites",
         {
           type: "category",
           label: "Workshop 1",

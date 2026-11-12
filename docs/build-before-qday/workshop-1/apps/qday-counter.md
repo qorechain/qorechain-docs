@@ -7,29 +7,80 @@ sidebar_position: 1
 
 # Q-Day Counter
 
-The Q-Day Counter is the smallest useful QoreChain EVM project: a Solidity contract that stores one number, a Hardhat project that deploys it to the testnet `qorechain-diana`, and a short script that reads and increments it. It is the `hardhat` template of `create-qorechain-dapp`, with a small `interact` script added.
+The Q-Day Counter is the smallest useful QoreChain EVM project. It is a Solidity contract that stores one number, a Hardhat project that puts it on the testnet `qorechain-diana`, and a short script that reads the number and adds one to it.
+
+This guide is written for beginners. You do not need to know Solidity or blockchain tools. Every command is explained, and every step ends with what you should see.
+
+**How long this takes:** about 25 minutes the first time, most of it installing tools and waiting for the faucet.
 
 ## What it shows {#shows}
 
-- **Hybrid signing is part of the deploy path.** Before any EVM transaction, including a contract deploy, the account needs a registered ML-DSA-87 key and a live EVM authorisation window. The window is opened by one native-lane message signed with both secp256k1 and ML-DSA-87 (hybrid), and the chain verifies both signatures.
-- **One hybrid-signed transaction, verified on chain.** The `pnpm window open` step sends that transaction. You can look it up on the explorer and see the chain's own verdict.
-- **Your normal EVM tools keep working.** Hardhat, Ignition and viem send ordinary Ethereum transactions. The post-quantum protection sits in the window, so a stolen secp256k1 key alone cannot spend from the account.
+- **Hybrid signing is part of the deploy path.** Before any EVM transaction, including a contract deploy, the account needs a registered post-quantum key (ML-DSA-87) and a live EVM authorisation window. The window is opened by one transaction signed twice, with the classic key (secp256k1) and with the post-quantum key. That is a hybrid signature. The chain checks both.
+- **One hybrid-signed transaction you can verify.** The step `pnpm window open` sends that transaction. You can look it up on the explorer and see the chain's own verdict.
+- **Your normal EVM tools keep working.** Hardhat and viem send ordinary Ethereum transactions. The post-quantum protection sits in the window, so a stolen secp256k1 key alone cannot spend from the account.
 
-A quantum computer large enough to break secp256k1 would let an attacker forge classical signatures. QoreChain requires a second, post-quantum signature (ML-DSA-87, FIPS 204) on the account. The Counter shows the whole developer loop with that rule switched on: register the key, open a window, deploy, call, read.
+A quantum computer large enough to break secp256k1 could forge classic signatures. QoreChain requires a second signature (ML-DSA-87, standard FIPS 204) that such a computer cannot forge. The Counter shows the whole developer loop with that rule switched on: register the key, open a window, deploy, call, read.
 
 ## Before you start {#prerequisites}
 
-You need a terminal on macOS, Linux, or Windows with WSL or Git Bash, and these tools:
+This guide uses a throwaway testnet account. Never use a real wallet or real funds. Testnet QOR has no value.
 
-| Tool | Needed version | Check with |
+You need a terminal. On macOS open **Terminal**. On Windows open **PowerShell** (or **Git Bash**, which comes with Git). On Linux open any terminal. Then install these three tools. If the check command already prints a good version, skip the install.
+
+### Node.js 22 or later
+
+Node.js runs JavaScript on your computer. Hardhat 3 needs Node.js 22 or later.
+
+| System | Install | Check |
 | --- | --- | --- |
-| Git | any recent version | `git --version` |
-| Node.js | 20.12 or newer (22 LTS recommended) | `node --version` |
-| pnpm | 9 or newer | `pnpm --version` |
+| macOS | `brew install node` (needs [Homebrew](https://brew.sh)), or download from https://nodejs.org | `node --version` |
+| Windows | `winget install OpenJS.NodeJS.LTS`, or download from https://nodejs.org | `node --version` |
+| Linux | `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh \| bash`, open a new terminal, then `nvm install 22` | `node --version` |
 
-Install Node.js from https://nodejs.org. If `pnpm --version` fails, install pnpm with `npm install -g pnpm` (or `corepack enable`) and check again.
+What you should see: a number that starts with `v22` or higher, such as `v22.12.0`. On Windows, close and reopen PowerShell after installing.
 
-You also need a free account on the [QoreChain dashboard](https://dashboard.qorechain.io) to use the faucet. You never use a real wallet in this guide: everything below uses a throwaway testnet account, and testnet QOR has no value.
+### pnpm
+
+pnpm downloads the libraries a project needs. It comes with no Node.js install, so you add it yourself, on every system.
+
+```sh
+npm install -g pnpm
+```
+
+| Part | Meaning |
+| --- | --- |
+| `npm` | The tool that comes with Node.js. It installs other tools. |
+| `install` | Download and install. |
+| `-g` | Global: install for the whole computer, not just one folder. |
+| `pnpm` | The tool to install. |
+
+Check it with `pnpm --version`. You should see a number such as `9.12.0` (9 or higher). If you ever see `pnpm: command not found`, you skipped this step: run the install command above, then open a new terminal.
+
+If Linux or macOS says `EACCES: permission denied`, run `sudo npm install -g pnpm` instead.
+
+### Git
+
+Git downloads the project from GitHub.
+
+| System | Install | Check |
+| --- | --- | --- |
+| macOS | `xcode-select --install` or `brew install git` | `git --version` |
+| Windows | `winget install Git.Git`, or download from https://git-scm.com | `git --version` |
+| Linux | `sudo apt install git` (Debian, Ubuntu) or `sudo dnf install git` (Fedora) | `git --version` |
+
+What you should see: `git version 2.` and a number.
+
+## A testnet wallet {#wallet}
+
+You need a testnet account with a little QOR in it. This guide creates one for you in the next steps (a key file). You do not need QoreX for the Counter. If you want to see the same account in a wallet later, use [QoreX](/qorex/overview) on testnet:
+
+- **QoreX app:** Settings, then **Use testnet (developers)**.
+- **QoreX browser extension:** unlock it, tap the version number at the bottom 7 times, then choose **Switch to testnet (diana)**.
+- For the EVM lane, choose **Add an Ethereum account (coin 60)**.
+
+The faucet gives free testnet QOR: https://dashboard.qorechain.io/faucet. You sign in, paste an address, and request. You get 100 QOR per 24 hours per account.
+
+**About amounts.** QOR is the coin. `uqor` is its smallest piece: 1 QOR = 1,000,000 uqor. Fees on the chain are shown in `uqor`. The first transaction of a new account registers its post-quantum key, which costs a one-time fee of about 0.09 QOR.
 
 ## Step by step {#steps}
 
@@ -40,50 +91,96 @@ git clone https://github.com/qorechain/build-before-qday
 cd build-before-qday/workshop-1/01-qday-counter
 ```
 
-### 2. Install the dependencies {#step-install}
+**What it does**
+
+- `git clone <address>` downloads a copy of the project from GitHub into a new folder named `build-before-qday`.
+- `cd <folder>` moves your terminal into the Counter project folder. Every later command runs from here.
+
+**What you should see:** `Cloning into 'build-before-qday'...` and then your prompt in the new folder. **How long:** a few seconds.
+
+Optional: if you would rather build the project from nothing, as in the live workshop, see [Build the same project from scratch](#scaffold) at the end of the steps.
+
+### 2. Install the libraries {#step-install}
 
 ```sh
 pnpm install
 ```
 
-### 3. Run the tests and the build {#step-test}
+**What it does**
 
-The tests run on a local simulated chain. They need no key and no network account.
+- `pnpm install` reads the list of libraries in `package.json` and downloads them into a `node_modules` folder (Hardhat, the QoreChain SDK, and more).
+
+**What you should see:** a list of packages with `+` signs and `Done in` a few seconds. **How long:** under a minute.
+
+### 3. Run the tests and the build {#step-test}
 
 ```sh
 pnpm test
+```
+
+**What it does**
+
+- `pnpm test` runs the project's checks on a fake chain inside your computer. It needs no key, no network and no QOR. The first run also downloads the Solidity compiler, so it needs internet.
+
+**What you should see:** `Counter`, two lines with a tick (`starts at the constructor value`, `increments and emits CountChanged`), and `2 passing`.
+
+```sh
 pnpm build
 ```
 
-You should see `2 passing` for the `Counter` tests.
+**What it does**
 
-### 4. Create the testnet key file {#step-account}
+- `pnpm build` turns the Solidity contract into machine code (compiles it). After `pnpm test` it prints `No contracts to compile`, which is fine: the test already compiled it.
 
-Create the settings file from the template:
+### 4. Create the settings file {#step-account}
+
+The project reads your secrets from a file named `.env`. Create it from the template.
+
+macOS, Linux, Git Bash:
 
 ```sh
 cp .env.example .env
 ```
 
-The `.env` file holds a throwaway key, so never commit it and never reuse the key anywhere real. Open `.env` in any editor. You will fill in two values.
+Windows PowerShell:
 
-**a. A throwaway private key.** Generate a random 32-byte key:
+```sh
+copy .env.example .env
+```
+
+**What it does**
+
+- `cp` (or `copy`) copies the template file `.env.example` to a new file `.env`.
+
+The `.env` file is your **key file**. It lives only in this project folder. It holds a throwaway key. **Never share it, never commit it to Git, and never reuse these keys for a real wallet.** The project already ignores `.env` in Git. Open it in any text editor (`open -e .env` on macOS, `notepad .env` on Windows, `nano .env` on Linux). You will fill in two values.
+
+**a. A throwaway private key.** Generate a random one:
 
 ```sh
 node -e "console.log('0x' + require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-Copy the printed `0x...` value into `.env` as `PRIVATE_KEY=0x...`, replacing the all-zero placeholder.
+**What it does**
 
-**b. A post-quantum recovery code.** The account's ML-DSA-87 key is derived from a separate recovery code. Create one:
+- `node -e "..."` runs one line of JavaScript.
+- The line makes 32 random bytes and prints them in hexadecimal with `0x` in front. That is a private key.
+
+**What you should see:** one line, `0x` followed by 64 letters and digits. Copy it into `.env` as `PRIVATE_KEY=0x...`, replacing the all-zero placeholder.
+
+**b. A post-quantum recovery code.** The account's ML-DSA-87 key is created from a second secret, the recovery code.
 
 ```sh
 pnpm window recovery-code
 ```
 
-Copy the printed `QRC1-...` line into `.env` as `QORE_PQC_RECOVERY_CODE=QRC1-...`. Keep this code with the private key and always reuse the same one: a new code gives the account a different ML-DSA-87 key.
+**What it does**
 
-Leave `QORE_MNEMONIC` empty, and keep `QORE_NETWORK=testnet`. Your `.env` now looks like this (placeholders shown):
+- `pnpm window` runs the helper script `scripts/window.ts`. The word after it is the command.
+- `recovery-code` prints a new random recovery code.
+
+**What you should see:** one line that starts with `QRC1-`, then a short reminder. Copy the `QRC1-...` line into `.env` as `QORE_PQC_RECOVERY_CODE=QRC1-...`. Keep the same code for this account: a new code gives the account a different post-quantum key.
+
+Leave `QORE_MNEMONIC` empty. (A mnemonic is a 12 or 24 word phrase that can replace the two values above. Use either one, not both.) Keep `QORE_NETWORK=testnet`, which tells the helper to talk to the test network. Your `.env` looks like this, with placeholders:
 
 ```sh
 PRIVATE_KEY=0x...
@@ -92,63 +189,174 @@ QORE_MNEMONIC=
 QORE_NETWORK=testnet
 ```
 
+Save the file.
+
 ### 5. Show your account address {#step-address}
 
 ```sh
 pnpm window status
 ```
 
-The first line prints your account as `0x...` and its `qor1...` form. At this point it also says the key is not registered and no window exists. Copy the `qor1...` address.
+**What it does**
+
+- `status` shows your account, whether its post-quantum key is registered, and whether you have an EVM window.
+
+**What you should see:** three lines. The first is `account:  0x...  (qor1...)`. Your account has two addresses: `0x...` for the EVM and `qor1...` for the native lane. They belong to the same account. The other two lines say `PQC key:  not registered` and `window:   none`. That is normal: the account is new. Copy the `qor1...` address from the first line.
 
 ### 6. Get testnet QOR from the faucet {#step-faucet}
 
 1. Open https://dashboard.qorechain.io/faucet and sign in.
-2. Paste your `qor1...` address and request the QOR (100 QOR once every 24 hours).
-3. Wait a few seconds, then run `pnpm window status` again. The account now exists on chain.
+2. Make sure the page is set to **Testnet**.
+3. Paste your `qor1...` address and request the QOR. You get 100 QOR once every 24 hours per account.
+4. Wait about 10 seconds, then run `pnpm window status` again.
+
+**What you should see:** the same three lines as before: the key is still `not registered` and there is no window. The account now holds QOR. If you want proof, open https://explore.qore.network (Testnet) and search for your `qor1...` address.
 
 ### 7. Register the key and open the window {#step-window}
 
 ```sh
-pnpm window register    # once: registers your ML-DSA-87 key
-pnpm window open        # hybrid-signed: opens a window (600 blocks, 5 transactions)
-sleep 10                # opening the window advances the account's nonce
-pnpm window status      # PQC key: registered, window: live
+pnpm window register
 ```
 
-Registration is the one message the chain accepts signed classically, because there is no key on chain yet to check against. Opening the window is signed hybrid. Keep the transaction hash that `window open` prints; you will look it up in the last step.
+**What it does**
+
+- `register` sends the account's ML-DSA-87 public key to the chain. You do this once per account. It is the one message the chain accepts without a post-quantum signature, because no key is on the chain yet to check against. It costs about 0.09 QOR.
+
+**What you should see:** `registered: ` followed by a transaction hash (64 characters).
+
+```sh
+pnpm window open
+```
+
+**What it does**
+
+- `open` sends one transaction, signed with both keys (hybrid), that opens an EVM authorisation window. While the window is live, your ordinary EVM transactions are allowed. By default it lasts 600 blocks and allows 5 transactions. You can change that with `QORE_WINDOW_BLOCKS` and `QORE_WINDOW_TXS` in `.env`.
+
+**What you should see:** `opened: ` followed by a transaction hash, then `window: 600 blocks, 5 txs, ... uqor (value plus fees)`. **Copy this hash.** You will check it in step 10.
+
+Now wait about 10 seconds. Opening the window changes the account's transaction counter, and the next command must see the new value.
+
+```sh
+sleep 10
+pnpm window status
+```
+
+**What it does**
+
+- `sleep 10` waits 10 seconds (it works in PowerShell and Git Bash too).
+- `status` shows the result.
+
+**What you should see:** `PQC key:  registered` and `window:   live; ... blocks, ... txs, ... uqor left`.
 
 ### 8. Deploy the contract {#step-deploy}
 
 ```sh
-pnpm deploy:testnet     # Hardhat Ignition, answer y when asked to confirm
+pnpm deploy:testnet
 ```
 
-The command prints the deployed `Counter` address (`0x...`).
+**What it does**
+
+- It runs Hardhat Ignition, the tool that deploys contracts, with the module `Counter` on the network `qorechainTestnet` (chain id 9800, the QoreChain testnet).
+- It asks you to confirm. Type `y` and press Enter.
+
+**What you should see:** a question a confirmation question about deploying to `qorechainTestnet` (9800), then after your `y` a line that ends with `CounterModule#Counter` and your contract address `0x...`. That is the address of your contract. **How long:** about 30 seconds.
 
 ### 9. Read and increment {#step-interact}
 
 ```sh
-pnpm interact           # read count, increment(), read again, explorer link
-pnpm interact --read    # read only
+pnpm interact
 ```
 
-### 10. Look it up on the explorer {#step-explorer}
+**What it does**
+
+- Reads the stored number, calls `increment()` (adds one), then reads it again. The call uses one of the 5 transactions of your window.
+
+**What you should see:** `Counter 0x... on qorechain-diana EVM (9800)`, `count: 0`, `increment tx: 0x...`, `status: success in block ...`, `count: 1`, and an explorer link.
+
+```sh
+pnpm interact --read
+```
+
+**What it does**
+
+- `--read` means read only: it shows the number and sends nothing.
+
+**What you should see:** the Counter address and `count: 1`.
+
+### 10. Verify the hybrid transaction {#step-explorer}
+
+The transaction from `pnpm window open` is your proof that the chain checked a post-quantum signature. Check it in two ways.
+
+**a. With the plain web request.** Replace `<HASH>` with the hash from step 7. Remove the `<` and `>`.
+
+```sh
+curl https://api-testnet.qore.host/cosmos/tx/v1beta1/txs/<HASH>
+```
+
+**What it does**
+
+- `curl <address>` asks a public QoreChain server for the record of that transaction and prints it. On Windows PowerShell, type `curl.exe` instead of `curl`.
+- `api-testnet.qore.host` is the public testnet server. `<HASH>` is the transaction you want.
+
+**What you should see in the long answer:**
+
+- `"code": 0`, which means the transaction succeeded.
+- An extension of type `PQCHybridSignature` that holds the ML-DSA-87 signature, 4,627 bytes long.
+- An event `pqc_hybrid_verify` with the attribute `status` set to `verified`.
+
+**b. With the explorer.**
 
 1. Open https://explore.qore.network and switch the network selector to **Testnet**.
-2. Search for the hash printed by `pnpm window open`. The transaction shows a post-quantum signature that the chain verified.
-3. Search for the `increment` transaction hash printed by `pnpm interact`, or the `Counter` address from step 8, to see the contract call.
+2. Search for the hash from `pnpm window open`. The page shows a post-quantum signature that the chain verified.
+3. Search for the `increment tx` hash from step 9, or for your Counter address, to see the contract call.
 
 The [Hybrid Inspector](/build-before-qday/workshop-1/apps/hybrid-inspector) shows the same kind of proof byte by byte.
 
-## What you should see {#result}
+## Build the same project from scratch {#scaffold}
+
+The live workshop starts from an empty folder. This command creates the same Hardhat project (without the `interact` script, which only the downloaded copy has). Run it in a folder where you keep projects, instead of step 1.
+
+```sh
+npx create-qorechain-dapp@latest qday-demo -t hardhat --network testnet --package-manager pnpm
+cd qday-demo
+```
+
+| Part | Meaning |
+| --- | --- |
+| `npx` | Runs a tool straight from the internet, without installing it. |
+| `create-qorechain-dapp@latest` | The QoreChain project creator, newest version. |
+| `qday-demo` | The name of the new folder. |
+| `-t hardhat` | Which project template to use: a Hardhat 3 project with a contract, tests and the window helper. |
+| `--network testnet` | Which QoreChain network the project talks to: the test network, not the real one. |
+| `--package-manager pnpm` | Which tool installs the libraries. |
+
+**What you should see:** a list of installed packages, then `Done! Created qday-demo`. The libraries are already installed, and a `.env` file already exists, so you can skip step 2 and the copy in step 4. Continue with `pnpm test` (step 3), then 4a and 4b (fill the `.env`), and steps 5 to 8. **How long:** about 30 seconds.
+
+## What you should see at the end {#result}
 
 - `pnpm test` prints `2 passing`.
-- `pnpm window status` prints the account (`0x...` with its `qor1...` form), `PQC key: registered`, and `window: live` with the blocks, transactions and value left.
+- `pnpm window status` prints `PQC key:  registered` and `window:   live` with the blocks, transactions and value left.
 - `pnpm deploy:testnet` prints the deployed `Counter` address (`0x...`).
-- `pnpm interact` prints the Counter address, `count`, the `increment` transaction hash, `status: success` with the block number, the new `count`, and a link to the transaction on the explorer.
-- On the explorer (Testnet), the `window open` transaction is marked as verified with both signatures.
+- `pnpm interact` prints `count` going from 0 to 1, `status: success`, and an explorer link.
+- The `curl` check shows `"code": 0`, the `PQCHybridSignature` extension and the event `pqc_hybrid_verify` with `status` `verified`. The explorer (Testnet) marks the same transaction as verified.
 
-If a step fails, run `pnpm window status` first: it tells you whether the key or the window is missing. A refused transaction after the window has been used up means you open a new one with `pnpm window open`.
+## Troubleshooting {#troubleshooting}
+
+| What you see | Why | What to do |
+| --- | --- | --- |
+| `pnpm: command not found` | pnpm is not installed. Node.js does not include it. | Run `npm install -g pnpm`, then open a new terminal. |
+| `ERROR: You are using Node.js ... which is not supported by Hardhat` | Node.js is too old. | Install Node.js 22 or later and check `node --version`. |
+| `node: .env: not found` | There is no `.env` file in this folder. | Do step 4, and run the command from the project folder. |
+| `Set QORE_MNEMONIC, or PRIVATE_KEY as 0x followed by 64 hex characters, in .env` | The `.env` file is missing, or `PRIVATE_KEY` is still the placeholder or has a typo. | Do step 4 again. Save the file. Run the command from the project folder. |
+| `Set QORE_PQC_RECOVERY_CODE in .env` or `not a valid QRC1 recovery code` | The recovery code is empty or has a typo. | Run `pnpm window recovery-code` and paste the whole `QRC1-...` line. |
+| `... does not exist on chain yet: send it some QOR first` (on `register` or `open`) | The account has no QOR yet. | Request QOR from the faucet (step 6) and wait 10 seconds. |
+| Faucet says you reached the limit | One request per 24 hours per account. | Wait, then try again. Or use a second throwaway account. |
+| `account has no PQC key and classical fallback is disabled` | You sent a transaction before registering the key. | Run `pnpm window register`, then `pnpm window open`. |
+| `EVM authorisation window exhausted` (or the hint `open an EVM window first`) | The window ran out of blocks or transactions, or it was never opened. | Run `pnpm window open`, wait 10 seconds, try again. |
+| `HHE10402` after the window opens | The deploy ran before the account's transaction counter updated. | Wait 10 seconds and run `pnpm deploy:testnet` again. |
+| `Deploy first (pnpm deploy:testnet) or set COUNTER_ADDRESS` | `pnpm interact` cannot find the contract. | Finish step 8 in this folder. |
+| `PQC key: registered, but NOT this key` | The recovery code in `.env` differs from the one used at registration. | Put the original recovery code back. A different code makes a different key. |
+| CORS errors in a browser app | The public REST server sends no CORS headers, so a browser blocks it. | Use the template's `/lcd` proxy, as the [Guestbook web page](/build-before-qday/workshop-1/apps/qday-guestbook) does. |
 
 ## The code {#code}
 
@@ -194,7 +402,7 @@ const res = await signer.signAndBroadcast(transport, {
 });
 ```
 
-`acc` is the unified account derived from your key material, and `net` is the network record for `QORE_NETWORK` (default `testnet`, chain id `qorechain-diana`). The fee used by the script is 100000 `uqor` with a gas limit of 800000, because hybrid transactions are large. The window size can be changed in `.env` with `QORE_WINDOW_BLOCKS` (default 600), `QORE_WINDOW_TXS` (default 5) and `QORE_WINDOW_MAX_UQOR`.
+`acc` is the account made from your key material, and `net` is the network record for `QORE_NETWORK` (default `testnet`, chain id `qorechain-diana`). The fee used by the script is 100000 `uqor` (0.1 QOR) with a gas limit of 800000, because hybrid transactions are large.
 
 ## Packages used {#packages}
 
@@ -208,7 +416,7 @@ const res = await signer.signAndBroadcast(transport, {
 | `tsx` | ^4.19.0 | Running the TypeScript scripts |
 | `typescript` | ^5.6.3 | Type checking |
 
-You can scaffold the same project yourself with `npx create-qorechain-dapp my-app -t hardhat --network testnet`. See [Scaffolders and CLI](/developer-tools/scaffolders-and-cli) and [Install the SDK](/sdk/install).
+See [Scaffolders and CLI](/developer-tools/scaffolders-and-cli) and [Install the SDK](/sdk/install).
 
 ## Network details {#networks}
 
