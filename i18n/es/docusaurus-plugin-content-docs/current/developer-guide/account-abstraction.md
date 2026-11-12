@@ -162,7 +162,7 @@ const msg = registerEthAuthenticatorMsg({
    El texto nombra la cadena, la cuenta, el esquema y la clave, así que una prueba no puede reutilizarse para otra cadena, cuenta o clave. Un registro sin una prueba válida se rechaza.
 2. **Una regla de gasto para las claves de valor.** Una clave cuyos permisos pueden mover valor (`send`, `evm`, `svm`, `deploy`, `all`) necesita una regla de gasto que acote cada denominación que pueda gastar, definida con `MsgUpdateSpendingRules` antes del vínculo o junto con él. La misma regla se aplica en la ejecución para las claves vinculadas antes de la actualización, así que añade reglas también para ellas.
 
-Desde código, el SDK 0.14.0 tiene los ayudantes para ambas cosas (TypeScript: `signAuthenticatorLinkPhantom`, `signAuthenticatorLinkMetaMask`, `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191` para la prueba; `linkAuthenticatorMsgs` para la regla de gasto y el vínculo en una sola transacción firmada por el propietario), y `@qorechain/wallet-adapter` 0.6.0 tiene `phantomPossessionProof`, `metaMaskPossessionProof` y `linkAuthenticatorMsgs`. Consulta [Vincular desde la cadena v3.2.8](/sdk/guides/authenticators#link-v328). Para el caso de la ejecución fallida, `assertAuthenticatorExecutionsSucceeded` lanza un error con `success=false`. Estos ayudantes no se han ejecutado en la testnet.
+Desde código, el SDK 0.14.0 tiene los ayudantes para ambas cosas (TypeScript: `signAuthenticatorLinkPhantom`, `signAuthenticatorLinkMetaMask`, `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191` para la prueba; `linkAuthenticatorMsgs` para la regla de gasto y el vínculo en una sola transacción firmada por el propietario), y `@qorechain/wallet-adapter` 0.6.0 tiene `phantomPossessionProof`, `metaMaskPossessionProof` y `linkAuthenticatorMsgs`. Consulta [Vincular desde la cadena v3.2.8](/sdk/guides/authenticators#link-v328). Para el caso de la ejecución fallida, `assertAuthenticatorExecutionsSucceeded` lanza un error con `success=false`. `linkAuthenticatorMsgs`, `metaMaskPossessionProof` y `revokeAuthenticatorMsg` se ejecutaron en la testnet (véase [Qué se comprobó](#link-example-checks)); los ayudantes de Phantom y ed25519 no.
 
 Una clave de Phantom se registra de la misma manera con el esquema `ed25519` y la clave pública de Phantom (`register-authenticator` en la CLI). La revocación es instantánea mediante `MsgRevokeAuthenticator`.
 
@@ -282,6 +282,193 @@ GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
 ```
+
+## Vincular una clave en v3.2.8: ejemplo completo {#link-example-v328}
+
+Esta sección recorre un vínculo completo en la testnet **`qorechain-diana`**, que ejecuta v3.2.8 desde el 12 de noviembre de 2026. La mainnet todavía no ejecuta v3.2.8 y su módulo de cuentas abstractas está desactivado, así que nada de esto se aplica allí hoy. En resumen: la clave que vinculas tiene que firmar un texto corto para demostrar que acepta ser vinculada, una clave que puede mover valor necesita una regla de gasto en la cuenta, y cuando una clave vinculada gasta más tarde, un gasto fallido se informa dentro de una transacción exitosa.
+
+Por qué importa: desde v3.2.8 el titular de la clave participa en el vínculo, así que una clave solo puede ser vinculada por quien realmente la posee, y una clave que puede mover valor siempre está acotada por un límite en la cuenta.
+
+:::note Qué puedes ejecutar hoy
+El texto del vínculo y los tres esquemas de firma de abajo funcionan con `node:crypto` y `@noble` simples, como se muestra. Los paquetes publicados (SDK 0.13.0 y wallet-adapter 0.5.0) todavía no pueden poner la prueba en `MsgRegisterAuthenticator`: sus `registerAuthenticator` y `registerEthAuthenticatorMsg` construyen el mensaje sin el campo de la prueba, y la testnet v3.2.8 lo rechaza. Una versión posterior del SDK y del wallet-adapter añade ayudantes que construyen el texto del vínculo, piden a la cartera que lo firme y adjuntan la prueba; hasta entonces usa la línea de comandos (paso 3) o el mensaje en bruto. Aquí `qorechaind` significa la CLI de nodo para Linux; no hay un binario empaquetado para macOS.
+:::
+
+### 1. El texto del vínculo y cómo lo firma cada esquema {#link-text}
+
+El texto tiene cinco líneas, unidas por un único salto de línea, sin salto de línea final:
+
+```text
+QoreChain authenticator link v1
+chain: qorechain-diana
+account: qor1youraccount...
+scheme: secp256k1
+key: b31c9bca95fa18bc6bf5cbf748f73925e0e05913
+```
+
+`chain` es el id de la cadena, `account` es la cuenta bech32 a la que se vincula la clave, `scheme` es el esquema que pasas a `register-authenticator`, y `key` es el hexadecimal en minúsculas de la clave pública (32 bytes para ed25519, 33 bytes para una clave secp256k1 comprimida) o, para una cuenta de MetaMask, de la dirección Ethereum de 20 bytes. Los bytes que comprueba la cadena son exactamente estos caracteres, así que un id de cadena, una cuenta o una clave distintos dan una prueba que no se verifica.
+
+| Clave vinculada | `scheme` | Qué contiene `key` | Qué se firma | Tamaño de la prueba |
+| --- | --- | --- | --- | --- |
+| Phantom (ed25519) | `ed25519` | clave pública de 32 bytes | los bytes UTF-8 del texto (`signMessage` de la cartera) | 64 bytes |
+| Clave secp256k1 comprimida | `secp256k1` | clave pública de 33 bytes | SHA-256 del texto, `r` compacto y luego `s` | 64 bytes |
+| Dirección Ethereum (MetaMask) | `secp256k1` | dirección de 20 bytes | `personal_sign` EIP-191 del texto | 65 bytes (`r`, `s`, `v` = 27 o 28) |
+
+Este TypeScript construye el texto y lo firma con tres claves desechables, usando `node:crypto`, `@noble/curves` 2.x y `@noble/hashes` 1.8 (ejecútalo en Node 20 o posterior; no uses nunca estas claves para otra cosa):
+
+```ts
+import { generateKeyPairSync, sign } from "node:crypto";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
+import { sha256 } from "@noble/hashes/sha2.js";
+import { keccak_256 } from "@noble/hashes/sha3.js";
+import { bytesToHex, utf8ToBytes, concatBytes } from "@noble/hashes/utils.js";
+
+const chainId = "qorechain-diana";
+const account = "qor1youraccount..."; // the account the key is linked to
+
+function linkText(scheme: string, key: Uint8Array): string {
+  return [
+    "QoreChain authenticator link v1",
+    `chain: ${chainId}`,
+    `account: ${account}`,
+    `scheme: ${scheme}`,
+    `key: ${bytesToHex(key)}`, // lowercase hex
+  ].join("\n");
+}
+
+// ed25519 (what Phantom signMessage does): sign the text bytes.
+const ed = generateKeyPairSync("ed25519");
+const edPub = ed.publicKey.export({ format: "der", type: "spki" }).subarray(-32);
+const edProof = sign(null, utf8ToBytes(linkText("ed25519", edPub)), ed.privateKey);
+
+// 33-byte secp256k1 key: sign sha256(text), 64-byte r||s.
+const sk = secp256k1.utils.randomSecretKey();
+const pub33 = secp256k1.getPublicKey(sk, true);
+const cosmosProof = secp256k1.sign(sha256(utf8ToBytes(linkText("secp256k1", pub33))), sk, { prehash: false });
+
+// Ethereum address: EIP-191 personal_sign, key = the 20-byte address.
+const ethSk = secp256k1.utils.randomSecretKey();
+const addr = keccak_256(secp256k1.getPublicKey(ethSk, false).subarray(1)).subarray(-20);
+const text = utf8ToBytes(linkText("secp256k1", addr));
+const digest = keccak_256(concatBytes(utf8ToBytes(`\x19Ethereum Signed Message:\n${text.length}`), text));
+const rec = secp256k1.sign(digest, ethSk, { prehash: false, format: "recovered" }); // recovery byte first
+const ethProof = concatBytes(rec.subarray(1), Uint8Array.of(rec[0] + 27));          // r || s || v
+
+// The CLI takes the proof as base64:
+console.log(Buffer.from(edProof).toString("base64"));
+```
+
+En una dApp de navegador no tienes la clave: pasa el mismo texto a la cartera (`signMessage` de Phantom con los bytes UTF-8, `personal_sign` de MetaMask con el texto) y codifica en base64 lo que devuelva. La cartera muestra al usuario las cinco líneas, que es justo la razón de usar texto simple.
+
+### 2. La regla de gasto {#link-spending-rule}
+
+Una clave cuyos permisos pueden mover valor (`send`, `evm`, `svm`, `deploy`, `all`) se rechaza en el registro a menos que la cuenta ya tenga una regla habilitada que acote cada denominación que la clave pueda gastar. Fija primero la regla, o en la misma transacción que el vínculo. La cadena aplica la **primera regla habilitada** de la cuenta a una clave que no tenga una propia. `update-rules` sustituye todas las reglas, así que incluye cada regla que la cuenta deba conservar. Desde la línea de comandos:
+
+```bash
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"linked","enabled":true,"daily_limit":5000000,"per_tx_limit":1000000,"allowed_denoms":["uqor"]}]' \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > rules.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast (see the caution at the top of this page)
+```
+
+En TypeScript con el SDK 0.13.0 publicado, el compositor es `msg.abstractaccount.updateSpendingRules`, que además comprueba la regla localmente y rechaza una regla habilitada que no acote nada:
+
+```ts
+import { msg } from "@qorechain/sdk";
+
+const rules = msg.abstractaccount.updateSpendingRules({
+  owner: "qor1owner...",
+  accountAddress: "qor1youraccount...",
+  rules: [
+    { id: "linked", enabled: true, dailyLimit: "5000000", perTxLimit: "1000000", allowedDenoms: ["uqor"] },
+  ],
+});
+// Sign with the owner's hybrid signer and broadcast (see the SDK guide on authenticators).
+```
+
+Una clave con solo permisos que no mueven valor (`vote`, `delegate`, `withdraw`, `amm`, `ibc`, `wasm`) no necesita una regla para ser vinculada. Las claves vinculadas antes de la actualización con permisos de valor quedan sujetas a la misma regla cuando ejecutan, así que añade también una regla para ellas.
+
+### 3. Vincular y luego revocar {#link-revoke}
+
+Imprime el texto de la clave que vas a vincular (no lee nada de la cadena; el id de la cadena viene de `--chain-id`), fírmalo como en el paso 1 y luego regístrala con la prueba:
+
+```bash
+# Print the exact text the key must sign. The key argument is base64 (for an Ethereum address: the 20 address bytes).
+qorechaind tx abstractaccount link-message <account-address> ed25519 <pubkey-base64> --chain-id qorechain-diana
+
+# Register the key with its proof (base64 of the signature):
+qorechaind tx abstractaccount register-authenticator <account-address> ed25519 <pubkey-base64> send <expiry-unix> phantom \
+  --possession-proof <proof-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > link.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast
+
+# Check the result:
+curl -s https://api-testnet.qore.host/qorechain/abstractaccount/v1/accounts/<account-address>/authenticators
+
+# Revoke the key (no proof is needed; only the owner can revoke):
+qorechaind tx abstractaccount revoke-authenticator <account-address> ed25519 <pubkey-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > revoke.json
+```
+
+La prueba es la opción `--possession-proof` de `register-authenticator`, así que los argumentos posicionales son los mismos de antes. El registro y la revocación deben ser mensajes firmados de nivel superior del propio propietario; no se pueden envolver en una concesión authz ni enviar desde la clave vinculada. La ruta de autenticadores lista la clave con `revoked: true` una vez incluida la revocación.
+
+### 4. Leer el resultado de una ejecución {#link-execution-result}
+
+Cuando una clave vinculada gasta mediante `MsgExecuteEVM` o `MsgExecuteCosmos`, un fallo posterior a la aceptación de la firma (por ejemplo un límite superado o una llamada que revierte) ya no hace fallar toda la transacción. La transacción se incluye con código `0`, la respuesta lleva `success=false`, el nonce de la clave queda consumido y la transacción emite un evento:
+
+| Evento | Atributo | Significado |
+| --- | --- | --- |
+| `abstractaccount_execution_failed` | `account` | la cuenta desde la que gastaba la clave |
+| | `lane` | el carril que se intentó (los valores exactos no figuran en la documentación del nodo) |
+| | `nonce` | el nonce que se consumió |
+| | `reason` | por qué falló la ejecución |
+
+Léelo por REST con el hash de la transacción y mira los eventos de `tx_response`:
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/tx/v1beta1/txs/<txhash> \
+  | jq '.tx_response | {code, events: [.events[] | select(.type=="abstractaccount_execution_failed")]}'
+```
+
+Para encontrar ejecuciones fallidas sin un hash, busca por evento (la ruta responde `200`; un resultado vacío es `"total":"0"`):
+
+```bash
+curl -s -g "https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=abstractaccount_execution_failed.account%3D%27<account-address>%27&limit=10"
+```
+
+Un cliente que solo compruebe `code === 0` informa de esa llamada como un éxito. Comprueba el evento (o decodifica `success` en la respuesta del mensaje) antes de decirle a un usuario que un gasto se realizó. Como el nonce se consume, lee el valor siguiente de `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` antes de volver a firmar.
+
+### 5. Errores {#link-errors}
+
+| Dónde | Qué ves | Significado y qué hacer |
+| --- | --- | --- |
+| Registro | rechazado sin una prueba de posesión válida | La prueba falta, tiene el tamaño equivocado o no se verifica para esta cadena, cuenta, esquema y clave. Reconstruye el texto con las cinco líneas exactas y firma de nuevo. Probado en la testnet el 12 de noviembre de 2026 (SDK 0.13.0, clave vinculada sin prueba, tras fijar la regla; el SDK 0.14.0 con la prueba de `metaMaskPossessionProof` vinculó la clave con código 0): codespace `abstractaccount`, código 10, `possession_proof is required: a signature by the linked key over the link message` |
+| Registro | rechazado para un permiso de valor sin regla | Fija antes una regla que acote cada denominación (paso 2). Probado en la testnet el 12 de noviembre de 2026: codespace `abstractaccount`, código 8, `a linked key with the send, evm, deploy, svm or all permission needs a spending rule on the account that bounds every denom it admits (a per_tx_limit or daily_limit, or an allowed_denoms list whose every denom has a denom_limits amount)` |
+| Revocar (cliente) | `revokeAuthenticatorMsg` falla o construye un mensaje erróneo | Recibe la clave pública como bytes. Para una dirección Ethereum pasa `Uint8Array.from(Buffer.from(pubkey_hex, "hex"))`, no una cadena `0x`. Ejecutado en la testnet el 12 de noviembre de 2026: la revocación tuvo éxito con 194,244 de gas usado |
+| Registro | rechazado por una cadena de permiso desconocida, o por una clave secp256k1 de 65 bytes | Usa solo los once permisos de la [taxonomía](#permission-taxonomy) y una clave de 33 bytes o una dirección de 20 bytes |
+| Registro o actualización | codespace `abstractaccount` código `8`, regla de gasto inválida | Una regla habilitada que no acota nada, un denom que no se puede interpretar o demasiadas entradas. Corrige el JSON de la regla y reenvía |
+| Registro, revocación, ejecución | código `9`, módulo desactivado | El módulo está apagado en esta red (hoy lo está en la mainnet) |
+| Ejecución | código `10`, permiso denegado | La clave no tiene el permiso para este mensaje, o el mensaje es de gestión de claves, que una clave vinculada nunca puede enviar |
+| Ejecución | código `6`, autenticador caducado | Vincula la clave de nuevo con una caducidad posterior |
+| Ejecución | código `11`, repetición rechazada | Nonce obsoleto: consulta `auth_nonce` (o el nonce EVM de la cuenta en el carril EVM) y firma de nuevo |
+| Ejecución | código `5`, límite de gasto superado | Por encima del límite por transacción o diario; espera al siguiente día UTC o sube la regla |
+| Ejecución | código `0` con `success=false` y el evento `abstractaccount_execution_failed` | Falló tras aceptarse la firma; el nonce está usado. Lee `reason` (sección 4) |
+| Sobre del relayer | codespace `pqc` código `21` | Falló la propia firma híbrida del relayer; no tiene relación con la clave vinculada |
+
+### Qué se comprobó {#link-example-checks}
+
+En la testnet el 12 de noviembre de 2026 (versión v3.2.8, SDK 0.13.0, firma híbrida): `MsgUpdateSpendingRules` con una regla (límite diario de 1,000,000 uqor, límite por transacción de 100,000 uqor, solo `uqor`) tuvo éxito con código 0 y 186,319 de gas usado. Un `MsgRegisterAuthenticator` para el permiso `evm` enviado antes de que existiera la regla fue rechazado con código 8, y enviado después de la regla pero sin prueba de posesión fue rechazado con código 10, con los mensajes en la tabla de errores. El SDK 0.13.0 no tiene campo de prueba de posesión en sus compositores de registro, así que el vínculo exitoso se ejecutó después con paquetes más nuevos, como se describe a continuación.
+
+**Ejecutado por el autor de la documentación en la testnet el 12 de noviembre de 2026, con el SDK 0.14.0 y el wallet-adapter 0.6.0 (todo con código 0):**
+
+* `linkAuthenticatorMsgs` construyó la regla de gasto (`MsgUpdateSpendingRules`) y `MsgRegisterAuthenticator` para una dirección Ethereum, con la prueba de posesión de `metaMaskPossessionProof` (firmada aquí por una clave desechable mediante un proveedor que responde a `personal_sign`). Ambos mensajes fueron en UNA sola transacción firmada por el propietario: 220,973 de gas usado con un límite de 600,000.
+* `GET /qorechain/abstractaccount/v1/accounts/{address}` mostró entonces `authenticators_count` 1, y `GET .../authenticators` listó la clave: esquema `secp256k1`, `pubkey_hex` la dirección de 20 bytes, permisos `evm`, `revoked` false.
+* `revokeAuthenticatorMsg` tuvo entonces éxito con 194,244 de gas usado, y la lista mostró `revoked` true. `revokeAuthenticatorMsg` recibe la clave pública como bytes, así que para una dirección Ethereum pasa `Uint8Array.from(Buffer.from(pubkey_hex, "hex"))`, no una cadena `0x`.
+
+Los ayudantes de Phantom y ed25519 y los constructores de Python, Go, Rust y Java no se ejecutaron.
+
+El código de firma del paso 1 se ejecutó con claves desechables: las pruebas ed25519 y secp256k1 comprimida se verifican contra sus claves públicas y la prueba EIP-191 recupera la dirección de 20 bytes para la que se hizo. Las rutas de lectura `config`, `params`, `accounts`, `accounts/{address}`, `accounts/{address}/spending_rules`, `accounts/{address}/authenticators`, `permission_schema`, `auth_nonce/{address}/{pubkey_hex}` y una consulta de transacción por hash respondieron todas en la testnet (la consulta de un hash desconocido responde `404`). Las formas de los comandos `link-message` y `--possession-proof` están tomadas del código fuente del nodo v3.2.8 y no se han ejecutado aquí, y no se ejecutaron aquí. El código de firma se ejecutó con claves desechables; no se muestra un evento `abstractaccount_execution_failed` real.
+
+Véase también: [Firma poscuántica](/developer-guide/post-quantum-signing), [Endpoints REST y gRPC](/api-reference/rest-grpc-endpoints), [Autenticadores en el SDK](/sdk/guides/authenticators), [Ventana de autorización EVM](/developer-guide/evm-window-reference).
 
 ## Consultar cuentas abstractas
 

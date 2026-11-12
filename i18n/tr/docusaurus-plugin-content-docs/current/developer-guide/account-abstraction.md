@@ -162,7 +162,7 @@ const msg = registerEthAuthenticatorMsg({
    Metin zinciri, hesabı, şemayı ve anahtarı adlandırır; bu yüzden bir kanıt başka bir zincir, hesap veya anahtar için yeniden kullanılamaz. Geçerli kanıtı olmayan bir kayıt reddedilir.
 2. **Değer anahtarları için bir harcama kuralı.** İzinleri değer taşıyabilen (`send`, `evm`, `svm`, `deploy`, `all`) bir anahtar, harcayabileceği her birimi (denom) sınırlayan bir harcama kuralına ihtiyaç duyar; kural `MsgUpdateSpendingRules` ile bağlantıdan önce veya onunla birlikte ayarlanır. Aynı kural, yükseltmeden önce bağlanan anahtarlar için de yürütmede uygulanır; onlar için de kural ekleyin.
 
-Kod tarafında SDK 0.14.0'da ikisi için de yardımcılar vardır (TypeScript: kanıt için `signAuthenticatorLinkPhantom`, `signAuthenticatorLinkMetaMask`, `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191`; harcama kuralını ve bağlantıyı sahibin imzaladığı tek bir işlemde birleştiren `linkAuthenticatorMsgs`) ve `@qorechain/wallet-adapter` 0.6.0'da `phantomPossessionProof`, `metaMaskPossessionProof` ve `linkAuthenticatorMsgs` vardır. Bkz. [Zincir v3.2.8'den itibaren bağlama](/sdk/guides/authenticators#link-v328). Başarısız yürütme durumu için `assertAuthenticatorExecutionsSucceeded`, `success=false` görünce hata fırlatır. Bu yardımcılar test ağında çalıştırılmadı.
+Kod tarafında SDK 0.14.0'da ikisi için de yardımcılar vardır (TypeScript: kanıt için `signAuthenticatorLinkPhantom`, `signAuthenticatorLinkMetaMask`, `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191`; harcama kuralını ve bağlantıyı sahibin imzaladığı tek bir işlemde birleştiren `linkAuthenticatorMsgs`) ve `@qorechain/wallet-adapter` 0.6.0'da `phantomPossessionProof`, `metaMaskPossessionProof` ve `linkAuthenticatorMsgs` vardır. Bkz. [Zincir v3.2.8'den itibaren bağlama](/sdk/guides/authenticators#link-v328). Başarısız yürütme durumu için `assertAuthenticatorExecutionsSucceeded`, `success=false` görünce hata fırlatır. `linkAuthenticatorMsgs`, `metaMaskPossessionProof` ve `revokeAuthenticatorMsg` test ağında çalıştırıldı ([Nelerin kontrol edildiği](#link-example-checks) bölümüne bakın); Phantom ve ed25519 yardımcıları çalıştırılmadı.
 
 Bir Phantom anahtarı, `ed25519` şeması ve Phantom ortak anahtarı ile aynı şekilde kaydedilir (CLI'da `register-authenticator`). İptal işlemi `MsgRevokeAuthenticator` ile anında gerçekleşir.
 
@@ -282,6 +282,193 @@ GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
 ```
+
+## v3.2.8'de Bir Anahtarı Bağlama: Çalışan Örnek {#link-example-v328}
+
+Bu bölüm, 12 Kasım 2026'dan beri v3.2.8 çalıştıran **`qorechain-diana` test ağında** tek bir eksiksiz bağlantıyı adım adım gösterir. Ana ağ henüz v3.2.8 çalıştırmıyor ve soyut hesap modülü orada kapalıdır; bu yüzden bunların hiçbiri bugün orada geçerli değildir. Kısacası: bağladığınız anahtarın bağlanmayı kabul ettiğini göstermek için kısa bir metni imzalaması gerekir, değer taşıyabilen bir anahtarın hesapta bir harcama kuralına ihtiyacı vardır ve bağlı bir anahtar daha sonra harcama yaptığında başarısız bir harcama başarılı bir işlemin içinde bildirilir.
+
+Neden önemli: v3.2.8'den itibaren anahtarın sahibi bağlantıya katılır; böylece bir anahtar yalnızca onu gerçekten elinde tutan biri tarafından bağlanabilir ve değer taşıyabilen bir anahtar her zaman hesap üzerindeki bir limitle sınırlanır.
+
+:::note Bugün neler çalıştırabilirsiniz
+Aşağıdaki bağlantı metni ve üç imzalama şeması, gösterildiği gibi düz `node:crypto` ve `@noble` ile çalışır. Yayımlanmış paketler (SDK 0.13.0 ve wallet-adapter 0.5.0) kanıtı henüz `MsgRegisterAuthenticator` içine koyamaz: `registerAuthenticator` ve `registerEthAuthenticatorMsg` işlevleri mesajı kanıt alanı olmadan oluşturur ve v3.2.8 test ağı bunu reddeder. Daha sonraki bir SDK ve wallet-adapter sürümü, bağlantı metnini oluşturan, cüzdandan imzalamasını isteyen ve kanıtı ekleyen yardımcılar ekleyecek; o zamana kadar komut satırını (adım 3) veya ham mesajı kullanın. Burada `qorechaind`, Linux düğüm CLI'sı demektir; paketlenmiş bir macOS ikili dosyası yoktur.
+:::
+
+### 1. Bağlantı metni ve her şemanın onu nasıl imzaladığı {#link-text}
+
+Metin beş satırdan oluşur, tek bir satır sonuyla birleştirilir ve sonunda satır sonu yoktur:
+
+```text
+QoreChain authenticator link v1
+chain: qorechain-diana
+account: qor1youraccount...
+scheme: secp256k1
+key: b31c9bca95fa18bc6bf5cbf748f73925e0e05913
+```
+
+`chain` zincir kimliğidir, `account` anahtarın bağlandığı bech32 hesaptır, `scheme` `register-authenticator` komutuna verdiğiniz şemadır ve `key`, ortak anahtarın (ed25519 için 32 bayt, sıkıştırılmış bir secp256k1 anahtarı için 33 bayt) veya bir MetaMask hesabı için 20 baytlık Ethereum adresinin küçük harfli onaltılık gösterimidir. Zincirin kontrol ettiği baytlar tam olarak bu karakterlerdir; bu yüzden farklı bir zincir kimliği, hesap veya anahtar doğrulanmayan bir kanıt üretir.
+
+| Bağlanan anahtar | `scheme` | `key` neyi tutar | Neyin imzalandığı | Kanıt boyutu |
+| --- | --- | --- | --- | --- |
+| Phantom (ed25519) | `ed25519` | 32 baytlık ortak anahtar | metnin UTF-8 baytları (cüzdan `signMessage`) | 64 bayt |
+| Sıkıştırılmış secp256k1 anahtarı | `secp256k1` | 33 baytlık ortak anahtar | metnin SHA-256 değeri, sıkıştırılmış `r` sonra `s` | 64 bayt |
+| Ethereum adresi (MetaMask) | `secp256k1` | 20 baytlık adres | metnin EIP-191 `personal_sign` imzası | 65 bayt (`r`, `s`, `v` = 27 veya 28) |
+
+Bu TypeScript, metni oluşturur ve üç tek kullanımlık anahtarla imzalar; `node:crypto`, `@noble/curves` 2.x ve `@noble/hashes` 1.8 kullanır (Node 20 veya üzerinde çalıştırın; bu anahtarları asla başka hiçbir şey için kullanmayın):
+
+```ts
+import { generateKeyPairSync, sign } from "node:crypto";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
+import { sha256 } from "@noble/hashes/sha2.js";
+import { keccak_256 } from "@noble/hashes/sha3.js";
+import { bytesToHex, utf8ToBytes, concatBytes } from "@noble/hashes/utils.js";
+
+const chainId = "qorechain-diana";
+const account = "qor1youraccount..."; // the account the key is linked to
+
+function linkText(scheme: string, key: Uint8Array): string {
+  return [
+    "QoreChain authenticator link v1",
+    `chain: ${chainId}`,
+    `account: ${account}`,
+    `scheme: ${scheme}`,
+    `key: ${bytesToHex(key)}`, // lowercase hex
+  ].join("\n");
+}
+
+// ed25519 (what Phantom signMessage does): sign the text bytes.
+const ed = generateKeyPairSync("ed25519");
+const edPub = ed.publicKey.export({ format: "der", type: "spki" }).subarray(-32);
+const edProof = sign(null, utf8ToBytes(linkText("ed25519", edPub)), ed.privateKey);
+
+// 33-byte secp256k1 key: sign sha256(text), 64-byte r||s.
+const sk = secp256k1.utils.randomSecretKey();
+const pub33 = secp256k1.getPublicKey(sk, true);
+const cosmosProof = secp256k1.sign(sha256(utf8ToBytes(linkText("secp256k1", pub33))), sk, { prehash: false });
+
+// Ethereum address: EIP-191 personal_sign, key = the 20-byte address.
+const ethSk = secp256k1.utils.randomSecretKey();
+const addr = keccak_256(secp256k1.getPublicKey(ethSk, false).subarray(1)).subarray(-20);
+const text = utf8ToBytes(linkText("secp256k1", addr));
+const digest = keccak_256(concatBytes(utf8ToBytes(`\x19Ethereum Signed Message:\n${text.length}`), text));
+const rec = secp256k1.sign(digest, ethSk, { prehash: false, format: "recovered" }); // recovery byte first
+const ethProof = concatBytes(rec.subarray(1), Uint8Array.of(rec[0] + 27));          // r || s || v
+
+// The CLI takes the proof as base64:
+console.log(Buffer.from(edProof).toString("base64"));
+```
+
+Bir tarayıcı dApp'inde anahtarı siz tutmazsınız: aynı metni cüzdana verin (UTF-8 baytlarıyla Phantom `signMessage`, metinle MetaMask `personal_sign`) ve dönenin base64 halini kullanın. Cüzdan kullanıcıya beş satırı gösterir; düz metin kullanmanın amacı budur.
+
+### 2. Harcama kuralı {#link-spending-rule}
+
+İzinleri değer taşıyabilen (`send`, `evm`, `svm`, `deploy`, `all`) bir anahtar, hesapta anahtarın harcayabileceği her birimi sınırlayan etkin bir kural yoksa kayıt sırasında reddedilir. Önce kuralı veya bağlantıyla aynı işlemde ayarlayın. Zincir, kendi kuralı olmayan bir anahtara hesabın **ilk etkin kuralını** uygular. `update-rules` tüm kuralları değiştirir; bu yüzden hesabın korumasını istediği her kuralı ekleyin. Komut satırından:
+
+```bash
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"linked","enabled":true,"daily_limit":5000000,"per_tx_limit":1000000,"allowed_denoms":["uqor"]}]' \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > rules.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast (see the caution at the top of this page)
+```
+
+Yayımlanmış SDK 0.13.0 ile TypeScript'te oluşturucu `msg.abstractaccount.updateSpendingRules` işlevidir; kuralı yerelde de kontrol eder ve hiçbir şeyi sınırlamayan etkin bir kuralı reddeder:
+
+```ts
+import { msg } from "@qorechain/sdk";
+
+const rules = msg.abstractaccount.updateSpendingRules({
+  owner: "qor1owner...",
+  accountAddress: "qor1youraccount...",
+  rules: [
+    { id: "linked", enabled: true, dailyLimit: "5000000", perTxLimit: "1000000", allowedDenoms: ["uqor"] },
+  ],
+});
+// Sign with the owner's hybrid signer and broadcast (see the SDK guide on authenticators).
+```
+
+Yalnızca değer taşımayan izinleri (`vote`, `delegate`, `withdraw`, `amm`, `ibc`, `wasm`) olan bir anahtarın bağlanmak için bir kurala ihtiyacı yoktur. Yükseltmeden önce değer izinleriyle bağlanmış anahtarlar yürütürken aynı kurala tabi tutulur; onlar için de bir kural ekleyin.
+
+### 3. Bağla, sonra iptal et {#link-revoke}
+
+Bağladığınız anahtar için metni yazdırın (zincirden hiçbir şey okumaz; zincir kimliği `--chain-id` değerinden gelir), adım 1'deki gibi imzalayın, sonra kanıtla kaydedin:
+
+```bash
+# Print the exact text the key must sign. The key argument is base64 (for an Ethereum address: the 20 address bytes).
+qorechaind tx abstractaccount link-message <account-address> ed25519 <pubkey-base64> --chain-id qorechain-diana
+
+# Register the key with its proof (base64 of the signature):
+qorechaind tx abstractaccount register-authenticator <account-address> ed25519 <pubkey-base64> send <expiry-unix> phantom \
+  --possession-proof <proof-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > link.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast
+
+# Check the result:
+curl -s https://api-testnet.qore.host/qorechain/abstractaccount/v1/accounts/<account-address>/authenticators
+
+# Revoke the key (no proof is needed; only the owner can revoke):
+qorechaind tx abstractaccount revoke-authenticator <account-address> ed25519 <pubkey-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > revoke.json
+```
+
+Kanıt, `register-authenticator` komutunun `--possession-proof` bayrağıdır; dolayısıyla konumsal bağımsız değişkenler öncekiyle aynıdır. Kayıt ve iptal, sahibin kendi üst düzey, imzalı mesajları olmalıdır; bir authz yetkisine sarılamaz veya bağlı anahtar tarafından gönderilemez. İptal dahil edildiğinde authenticators rotası anahtarı `revoked: true` ile listeler.
+
+### 4. Bir yürütmenin sonucunu okumak {#link-execution-result}
+
+Bağlı bir anahtar `MsgExecuteEVM` veya `MsgExecuteCosmos` üzerinden harcama yaptığında, imza kabul edildikten sonra oluşan bir başarısızlık (örneğin aşılan bir limit veya geri alınan bir çağrı) artık tüm işlemi başarısız kılmaz. İşlem kod `0` ile dahil edilir, yanıt `success=false` taşır, anahtarın nonce değeri tüketilir ve işlem bir olay yayar:
+
+| Olay | Öznitelik | Anlamı |
+| --- | --- | --- |
+| `abstractaccount_execution_failed` | `account` | anahtarın harcama yaptığı hesap |
+| | `lane` | denenen şerit (kesin değerler düğüm belgelerinde listelenmemiştir) |
+| | `nonce` | tüketilen nonce |
+| | `reason` | yürütmenin neden başarısız olduğu |
+
+REST üzerinden işlem özetiyle okuyun ve `tx_response` olaylarına bakın:
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/tx/v1beta1/txs/<txhash> \
+  | jq '.tx_response | {code, events: [.events[] | select(.type=="abstractaccount_execution_failed")]}'
+```
+
+Özet olmadan başarısız yürütmeleri bulmak için olaya göre arayın (rota `200` yanıtı verir; boş bir sonuç `"total":"0"` olur):
+
+```bash
+curl -s -g "https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=abstractaccount_execution_failed.account%3D%27<account-address>%27&limit=10"
+```
+
+Yalnızca `code === 0` değerini kontrol eden bir istemci böyle bir çağrıyı başarılı olarak bildirir. Bir kullanıcıya harcamanın gerçekleştiğini söylemeden önce olayı kontrol edin (veya mesaj yanıtındaki `success` değerini çözün). Nonce tüketildiği için, yeniden imzalamadan önce sonraki değeri `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` rotasından okuyun.
+
+### 5. Hatalar {#link-errors}
+
+| Nerede | Ne görürsünüz | Anlamı ve ne yapmalı |
+| --- | --- | --- |
+| Kayıt | geçerli bir sahiplik kanıtı olmadan reddedildi | Kanıt eksik, boyutu yanlış veya bu zincir, hesap, şema ve anahtar için doğrulanmıyor. Metni tam beş satırdan yeniden oluşturun ve yeniden imzalayın. 12 Kasım 2026'da test ağında denendi (SDK 0.13.0, kural ayarlandıktan sonra kanıtsız bağlanan anahtar; `metaMaskPossessionProof` kanıtıyla SDK 0.14.0 anahtarı kod 0 ile bağladı): codespace `abstractaccount`, kod 10, `possession_proof is required: a signature by the linked key over the link message` |
+| Kayıt | kuralı olmayan bir değer izni için reddedildi | Önce her birimi sınırlayan bir kural ayarlayın (adım 2). 12 Kasım 2026'da test ağında denendi: codespace `abstractaccount`, kod 8, `a linked key with the send, evm, deploy, svm or all permission needs a spending rule on the account that bounds every denom it admits (a per_tx_limit or daily_limit, or an allowed_denoms list whose every denom has a denom_limits amount)` |
+| İptal (istemci) | `revokeAuthenticatorMsg` başarısız olur veya yanlış bir mesaj oluşturur | Ortak anahtarı bayt olarak alır. Bir Ethereum adresi için `0x` dizesi değil, `Uint8Array.from(Buffer.from(pubkey_hex, "hex"))` verin. 12 Kasım 2026'da test ağında çalıştırıldı: iptal başarılı oldu, 194.244 gaz kullanıldı |
+| Kayıt | bilinmeyen bir izin dizesi veya 65 baytlık bir secp256k1 anahtarı için reddedildi | Yalnızca [taksonomideki](#permission-taxonomy) on bir izni ve 33 baytlık bir anahtarı veya 20 baytlık bir adresi kullanın |
+| Kayıt veya güncelleme | codespace `abstractaccount` kod `8`, geçersiz harcama kuralı | Hiçbir şeyi sınırlamayan etkin bir kural, ayrıştırılamayan bir birim veya çok fazla girdi. Kural JSON'unu düzeltin ve yeniden gönderin |
+| Kayıt, iptal, yürütme | kod `9`, modül kapalı | Modül bu ağda kapalıdır (ana ağda bugün kapalıdır) |
+| Yürütme | kod `10`, izin reddedildi | Anahtarın bu mesaj için izni yok veya mesaj, bağlı bir anahtarın asla gönderemeyeceği bir anahtar yönetimi mesajıdır |
+| Yürütme | kod `6`, kimlik doğrulayıcının süresi doldu | Anahtarı daha geç bir son kullanma tarihiyle yeniden bağlayın |
+| Yürütme | kod `11`, tekrar reddedildi | Eski nonce: `auth_nonce` değerini (veya EVM şeridinde hesabın EVM nonce değerini) sorgulayın ve yeniden imzalayın |
+| Yürütme | kod `5`, harcama limiti aşıldı | İşlem başına veya günlük limitin üzerinde; bir sonraki UTC gününü bekleyin veya kuralı yükseltin |
+| Yürütme | kod `0`, `success=false` ve `abstractaccount_execution_failed` olayı | İmza kabul edildikten sonra başarısız oldu; nonce kullanıldı. `reason` değerini okuyun (bölüm 4) |
+| Aktarıcı zarfı | codespace `pqc` kod `21` | Aktarıcının kendi hibrit imzası başarısız oldu; bağlı anahtarla ilgisi yoktur |
+
+### Nelerin kontrol edildiği {#link-example-checks}
+
+12 Kasım 2026'da test ağında (sürüm v3.2.8, SDK 0.13.0, hibrit imzalama): tek kurallı (günlük limit 1.000.000 uqor, işlem başına limit 100.000 uqor, yalnızca `uqor`) bir `MsgUpdateSpendingRules` kod 0 ile başarılı oldu ve 186.319 gaz kullanıldı. Kural yokken gönderilen `evm` izinli bir `MsgRegisterAuthenticator` kod 8 ile, kuraldan sonra ama sahiplik kanıtı olmadan gönderilen ise kod 10 ile reddedildi; mesajlar hatalar tablosundadır. SDK 0.13.0'ın kayıt oluşturucularında sahiplik kanıtı alanı yoktur; bu yüzden başarılı bağlantı, bir sonraki paragrafta anlatıldığı gibi daha yeni paketlerle sonradan çalıştırıldı.
+
+**Dokümantasyon yazarı tarafından 12 Kasım 2026'da test ağında, SDK 0.14.0 ve wallet-adapter 0.6.0 ile çalıştırıldı (hepsi kod 0):**
+
+* `linkAuthenticatorMsgs`, bir Ethereum adresi için harcama kuralını (`MsgUpdateSpendingRules`) ve `metaMaskPossessionProof` kaynaklı sahiplik kanıtıyla `MsgRegisterAuthenticator` mesajını oluşturdu (burada `personal_sign` yanıtlayan bir sağlayıcı üzerinden tek kullanımlık bir anahtarla imzalandı). İki mesaj TEK bir sahip imzalı işlemde gitti: 600.000 limit altında 220.973 gaz kullanıldı.
+* `GET /qorechain/abstractaccount/v1/accounts/{address}` ardından `authenticators_count` 1 gösterdi ve `GET .../authenticators` anahtarı listeledi: şema `secp256k1`, `pubkey_hex` 20 baytlık adres, izinler `evm`, `revoked` false.
+* `revokeAuthenticatorMsg` ardından 194.244 gaz kullanarak başarılı oldu ve liste `revoked` true gösterdi. `revokeAuthenticatorMsg` ortak anahtarı bayt olarak alır; bu yüzden bir Ethereum adresi için `0x` dizesi değil, `Uint8Array.from(Buffer.from(pubkey_hex, "hex"))` verin.
+
+Phantom ve ed25519 yardımcıları ile Python, Go, Rust ve Java oluşturucuları çalıştırılmadı.
+
+Adım 1'deki imzalama kodu tek kullanımlık anahtarlarla çalıştırıldı: ed25519 ve sıkıştırılmış secp256k1 kanıtları ortak anahtarlarına karşı doğrulanır ve EIP-191 kanıtı, için üretildiği 20 baytlık adresi geri kazandırır. `config`, `params`, `accounts`, `accounts/{address}`, `accounts/{address}/spending_rules`, `accounts/{address}/authenticators`, `permission_schema`, `auth_nonce/{address}/{pubkey_hex}` okuma rotalarının hepsi ve bir işlemi özetle sorgulama test ağında yanıt verdi (bilinmeyen bir özetin sorgusu `404` yanıtı verir). `link-message` ve `--possession-proof` komut biçimleri v3.2.8 düğüm kaynağından alınmıştır ve burada çalıştırılmamıştır. İmzalama kodu tek kullanımlık anahtarlarla çalıştırıldı; gerçek bir `abstractaccount_execution_failed` olayı gösterilmemiştir.
+
+Ayrıca bakın: [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing), [REST ve gRPC uç noktaları](/api-reference/rest-grpc-endpoints), [SDK'da kimlik doğrulayıcılar](/sdk/guides/authenticators), [EVM yetkilendirme penceresi](/developer-guide/evm-window-reference).
 
 ## Soyut Hesapları Sorgulama
 

@@ -162,7 +162,7 @@ const msg = registerEthAuthenticatorMsg({
    텍스트에 체인, 계정, 방식, 키가 명시되므로 증명을 다른 체인, 계정, 키에 재사용할 수 없습니다. 유효한 증명이 없는 등록은 거부됩니다.
 2. **가치 키를 위한 지출 규칙.** 가치를 이동할 수 있는 권한(`send`, `evm`, `svm`, `deploy`, `all`)을 가진 키에는 해당 키가 지출할 수 있는 모든 단위를 제한하는 지출 규칙이 필요하며, 연결 전이나 연결과 함께 `MsgUpdateSpendingRules`로 설정합니다. 업그레이드 이전에 연결된 키에도 같은 규칙이 실행 시 적용되므로 이들 키에도 규칙을 추가하십시오.
 
-코드에서는 SDK 0.14.0에 두 가지를 위한 헬퍼가 있습니다(TypeScript: 증명용 `signAuthenticatorLinkPhantom`, `signAuthenticatorLinkMetaMask`, `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191`, 지출 규칙과 연결을 소유자가 서명하는 한 트랜잭션으로 묶는 `linkAuthenticatorMsgs`). `@qorechain/wallet-adapter` 0.6.0에는 `phantomPossessionProof`, `metaMaskPossessionProof`, `linkAuthenticatorMsgs`가 있습니다. [체인 v3.2.8부터의 연결](/sdk/guides/authenticators#link-v328)을 참조하세요. 실행 실패 사례에는 `assertAuthenticatorExecutionsSucceeded`가 `success=false`에서 오류를 발생시킵니다. 이 헬퍼들은 테스트넷에서 실행해 보지 않았습니다.
+코드에서는 SDK 0.14.0에 두 가지를 위한 헬퍼가 있습니다(TypeScript: 증명용 `signAuthenticatorLinkPhantom`, `signAuthenticatorLinkMetaMask`, `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191`, 지출 규칙과 연결을 소유자가 서명하는 한 트랜잭션으로 묶는 `linkAuthenticatorMsgs`). `@qorechain/wallet-adapter` 0.6.0에는 `phantomPossessionProof`, `metaMaskPossessionProof`, `linkAuthenticatorMsgs`가 있습니다. [체인 v3.2.8부터의 연결](/sdk/guides/authenticators#link-v328)을 참조하세요. 실행 실패 사례에는 `assertAuthenticatorExecutionsSucceeded`가 `success=false`에서 오류를 발생시킵니다. `linkAuthenticatorMsgs`, `metaMaskPossessionProof`, `revokeAuthenticatorMsg`는 테스트넷에서 실행했습니다([확인한 내용](#link-example-checks) 참조). Phantom과 ed25519 헬퍼는 실행하지 않았습니다.
 
 Phantom 키도 동일한 방식으로 `ed25519` 방식과 Phantom 공개 키를 사용해 등록합니다(CLI에서는 `register-authenticator`). 철회는 `MsgRevokeAuthenticator`를 통해 즉시 이루어집니다.
 
@@ -282,6 +282,193 @@ GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
 ```
+
+## v3.2.8에서 키 연결하기: 실행 예시 {#link-example-v328}
+
+이 절은 2026년 11월 12일부터 v3.2.8을 실행하고 있는 **`qorechain-diana` 테스트넷**에서의 연결 과정 전체를 따라갑니다. 메인넷은 아직 v3.2.8을 실행하지 않으며 추상 계정 모듈이 꺼져 있으므로, 이 내용은 현재 메인넷에는 적용되지 않습니다. 요약하면 다음과 같습니다. 연결할 키는 연결에 동의함을 보여 주는 짧은 텍스트에 서명해야 하고, 가치를 이동할 수 있는 키에는 계정에 지출 규칙이 필요하며, 연결된 키가 나중에 지출할 때 실패한 지출은 성공한 트랜잭션 안에서 보고됩니다.
+
+중요한 이유: v3.2.8부터 키의 보유자가 연결에 참여하므로, 키는 실제로 그 키를 가진 사람만 연결할 수 있고, 가치를 이동할 수 있는 키는 항상 계정의 한도로 제한됩니다.
+
+:::note 오늘 실행할 수 있는 것
+아래의 연결 텍스트와 세 가지 서명 방식은 표시된 대로 일반 `node:crypto`와 `@noble`로 동작합니다. 게시된 패키지(SDK 0.13.0과 wallet-adapter 0.5.0)는 아직 증명을 `MsgRegisterAuthenticator`에 넣을 수 없습니다. 이들의 `registerAuthenticator`와 `registerEthAuthenticatorMsg`는 증명 필드 없이 메시지를 만들며, v3.2.8 테스트넷은 이를 거부합니다. 이후 SDK와 wallet-adapter 릴리스에서 연결 텍스트를 만들고, 지갑에 서명을 요청하고, 증명을 첨부하는 헬퍼가 추가됩니다. 그때까지는 명령줄(3단계)이나 원시 메시지를 사용하세요. 여기서 `qorechaind`는 Linux 노드 CLI를 뜻하며, 패키지된 macOS 바이너리는 없습니다.
+:::
+
+### 1. 연결 텍스트와 각 방식의 서명 방법 {#link-text}
+
+텍스트는 다섯 줄이며 줄바꿈 한 번으로 이어 붙이고 끝에 줄바꿈이 없습니다.
+
+```text
+QoreChain authenticator link v1
+chain: qorechain-diana
+account: qor1youraccount...
+scheme: secp256k1
+key: b31c9bca95fa18bc6bf5cbf748f73925e0e05913
+```
+
+`chain`은 체인 id, `account`는 키가 연결되는 bech32 계정, `scheme`는 `register-authenticator`에 전달하는 방식, `key`는 공개 키(ed25519는 32바이트, 압축 secp256k1 키는 33바이트)의 소문자 16진수 표기이며, MetaMask 계정에서는 20바이트 이더리움 주소의 소문자 16진수 표기입니다. 체인이 검사하는 바이트는 정확히 이 문자들이므로, 체인 id, 계정, 키가 다르면 검증되지 않는 증명이 됩니다.
+
+| 연결되는 키 | `scheme` | `key`에 들어가는 값 | 서명 대상 | 증명 크기 |
+| --- | --- | --- | --- | --- |
+| Phantom(ed25519) | `ed25519` | 32바이트 공개 키 | 텍스트의 UTF-8 바이트(지갑 `signMessage`) | 64바이트 |
+| 압축 secp256k1 키 | `secp256k1` | 33바이트 공개 키 | 텍스트의 SHA-256, 압축 형식 `r` 다음 `s` | 64바이트 |
+| 이더리움 주소(MetaMask) | `secp256k1` | 20바이트 주소 | 텍스트에 대한 EIP-191 `personal_sign` | 65바이트(`r`, `s`, `v` = 27 또는 28) |
+
+다음 TypeScript는 `node:crypto`, `@noble/curves` 2.x, `@noble/hashes` 1.8을 사용해(Node 20 이상에서 실행하며, 이 키들은 다른 용도로 절대 사용하지 마세요) 텍스트를 만들고 임시 키 세 개로 서명합니다.
+
+```ts
+import { generateKeyPairSync, sign } from "node:crypto";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
+import { sha256 } from "@noble/hashes/sha2.js";
+import { keccak_256 } from "@noble/hashes/sha3.js";
+import { bytesToHex, utf8ToBytes, concatBytes } from "@noble/hashes/utils.js";
+
+const chainId = "qorechain-diana";
+const account = "qor1youraccount..."; // the account the key is linked to
+
+function linkText(scheme: string, key: Uint8Array): string {
+  return [
+    "QoreChain authenticator link v1",
+    `chain: ${chainId}`,
+    `account: ${account}`,
+    `scheme: ${scheme}`,
+    `key: ${bytesToHex(key)}`, // lowercase hex
+  ].join("\n");
+}
+
+// ed25519 (what Phantom signMessage does): sign the text bytes.
+const ed = generateKeyPairSync("ed25519");
+const edPub = ed.publicKey.export({ format: "der", type: "spki" }).subarray(-32);
+const edProof = sign(null, utf8ToBytes(linkText("ed25519", edPub)), ed.privateKey);
+
+// 33-byte secp256k1 key: sign sha256(text), 64-byte r||s.
+const sk = secp256k1.utils.randomSecretKey();
+const pub33 = secp256k1.getPublicKey(sk, true);
+const cosmosProof = secp256k1.sign(sha256(utf8ToBytes(linkText("secp256k1", pub33))), sk, { prehash: false });
+
+// Ethereum address: EIP-191 personal_sign, key = the 20-byte address.
+const ethSk = secp256k1.utils.randomSecretKey();
+const addr = keccak_256(secp256k1.getPublicKey(ethSk, false).subarray(1)).subarray(-20);
+const text = utf8ToBytes(linkText("secp256k1", addr));
+const digest = keccak_256(concatBytes(utf8ToBytes(`\x19Ethereum Signed Message:\n${text.length}`), text));
+const rec = secp256k1.sign(digest, ethSk, { prehash: false, format: "recovered" }); // recovery byte first
+const ethProof = concatBytes(rec.subarray(1), Uint8Array.of(rec[0] + 27));          // r || s || v
+
+// The CLI takes the proof as base64:
+console.log(Buffer.from(edProof).toString("base64"));
+```
+
+브라우저 dApp에서는 키를 직접 가지고 있지 않습니다. 같은 텍스트를 지갑에 전달하고(Phantom `signMessage`에는 UTF-8 바이트, MetaMask `personal_sign`에는 텍스트), 돌려받은 값을 base64로 변환하세요. 지갑은 사용자에게 다섯 줄을 보여 주며, 일반 텍스트를 쓰는 이유가 바로 이것입니다.
+
+### 2. 지출 규칙 {#link-spending-rule}
+
+가치를 이동할 수 있는 권한(`send`, `evm`, `svm`, `deploy`, `all`)을 가진 키는, 계정에 해당 키가 지출할 수 있는 모든 단위를 제한하는 활성화된 규칙이 이미 있지 않으면 등록 시 거부됩니다. 규칙을 먼저 설정하거나 연결과 같은 트랜잭션에서 설정하세요. 체인은 자체 규칙이 없는 키에 계정의 **첫 번째 활성화된 규칙**을 적용합니다. `update-rules`는 모든 규칙을 교체하므로 계정이 유지해야 하는 모든 규칙을 포함하세요. 명령줄에서는 다음과 같습니다.
+
+```bash
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"linked","enabled":true,"daily_limit":5000000,"per_tx_limit":1000000,"allowed_denoms":["uqor"]}]' \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > rules.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast (see the caution at the top of this page)
+```
+
+게시된 SDK 0.13.0의 TypeScript에서 컴포저는 `msg.abstractaccount.updateSpendingRules`이며, 로컬에서 규칙도 검사하여 아무것도 제한하지 않는 활성화된 규칙을 거부합니다.
+
+```ts
+import { msg } from "@qorechain/sdk";
+
+const rules = msg.abstractaccount.updateSpendingRules({
+  owner: "qor1owner...",
+  accountAddress: "qor1youraccount...",
+  rules: [
+    { id: "linked", enabled: true, dailyLimit: "5000000", perTxLimit: "1000000", allowedDenoms: ["uqor"] },
+  ],
+});
+// Sign with the owner's hybrid signer and broadcast (see the SDK guide on authenticators).
+```
+
+가치 이동이 아닌 권한(`vote`, `delegate`, `withdraw`, `amm`, `ibc`, `wasm`)만 가진 키는 연결에 규칙이 필요하지 않습니다. 업그레이드 이전에 연결된 가치 권한 키도 실행 시 같은 규칙의 적용을 받으므로 이들에게도 규칙을 추가하세요.
+
+### 3. 연결 후 철회 {#link-revoke}
+
+연결할 키의 텍스트를 출력하고(체인에서 아무것도 읽지 않으며, 체인 id는 `--chain-id`에서 가져옵니다), 1단계처럼 서명한 다음, 증명과 함께 등록합니다.
+
+```bash
+# Print the exact text the key must sign. The key argument is base64 (for an Ethereum address: the 20 address bytes).
+qorechaind tx abstractaccount link-message <account-address> ed25519 <pubkey-base64> --chain-id qorechain-diana
+
+# Register the key with its proof (base64 of the signature):
+qorechaind tx abstractaccount register-authenticator <account-address> ed25519 <pubkey-base64> send <expiry-unix> phantom \
+  --possession-proof <proof-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > link.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast
+
+# Check the result:
+curl -s https://api-testnet.qore.host/qorechain/abstractaccount/v1/accounts/<account-address>/authenticators
+
+# Revoke the key (no proof is needed; only the owner can revoke):
+qorechaind tx abstractaccount revoke-authenticator <account-address> ed25519 <pubkey-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > revoke.json
+```
+
+증명은 `register-authenticator`의 `--possession-proof` 플래그이므로 위치 인자는 이전과 같습니다. 등록과 철회는 소유자 자신의 최상위 서명 메시지여야 하며, authz 부여로 감싸거나 연결된 키가 보낼 수 없습니다. 철회가 포함되면 인증자 경로는 해당 키를 `revoked: true`로 나열합니다.
+
+### 4. 실행 결과 읽기 {#link-execution-result}
+
+연결된 키가 `MsgExecuteEVM` 또는 `MsgExecuteCosmos`로 지출할 때, 서명이 받아들여진 후의 실패(예를 들어 한도 초과나 되돌려지는 호출)는 더 이상 트랜잭션 전체를 실패시키지 않습니다. 트랜잭션은 코드 `0`으로 포함되고, 응답에는 `success=false`가 담기며, 키의 논스는 소비되고, 트랜잭션은 이벤트를 발생시킵니다.
+
+| 이벤트 | 속성 | 의미 |
+| --- | --- | --- |
+| `abstractaccount_execution_failed` | `account` | 키가 지출하던 계정 |
+| | `lane` | 시도된 레인(정확한 값은 노드 문서에 나열되어 있지 않음) |
+| | `nonce` | 소비된 논스 |
+| | `reason` | 실행이 실패한 이유 |
+
+트랜잭션 해시로 REST에서 읽고 `tx_response`의 이벤트를 확인하세요.
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/tx/v1beta1/txs/<txhash> \
+  | jq '.tx_response | {code, events: [.events[] | select(.type=="abstractaccount_execution_failed")]}'
+```
+
+해시 없이 실패한 실행을 찾으려면 이벤트로 검색하세요(경로는 `200`으로 응답하며, 빈 결과는 `"total":"0"`입니다).
+
+```bash
+curl -s -g "https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=abstractaccount_execution_failed.account%3D%27<account-address>%27&limit=10"
+```
+
+`code === 0`만 확인하는 클라이언트는 이런 호출을 성공으로 보고합니다. 사용자에게 지출이 성공했다고 알리기 전에 이벤트를 확인하세요(또는 메시지 응답의 `success`를 디코딩하세요). 논스가 소비되므로, 다시 서명하기 전에 `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`에서 다음 값을 읽으세요.
+
+### 5. 오류 {#link-errors}
+
+| 위치 | 표시되는 내용 | 의미와 해야 할 일 |
+| --- | --- | --- |
+| 등록 | 유효한 소유 증명 없이 거부됨 | 증명이 없거나, 크기가 잘못되었거나, 이 체인, 계정, 방식, 키에 대해 검증되지 않습니다. 정확한 다섯 줄로 텍스트를 다시 만들어 다시 서명하세요. 2026년 11월 12일 테스트넷에서 확인함(SDK 0.13.0, 규칙을 설정한 뒤 증명 없이 키를 연결함. `metaMaskPossessionProof`의 증명을 사용한 SDK 0.14.0은 코드 0으로 키를 연결함): 코드스페이스 `abstractaccount`, 코드 10, `possession_proof is required: a signature by the linked key over the link message` |
+| 등록 | 규칙 없이 가치 권한을 요청하여 거부됨 | 먼저 모든 단위를 제한하는 규칙을 설정하세요(2단계). 2026년 11월 12일 테스트넷에서 확인함: 코드스페이스 `abstractaccount`, 코드 8, `a linked key with the send, evm, deploy, svm or all permission needs a spending rule on the account that bounds every denom it admits (a per_tx_limit or daily_limit, or an allowed_denoms list whose every denom has a denom_limits amount)` |
+| 철회(클라이언트) | `revokeAuthenticatorMsg`가 실패하거나 잘못된 메시지를 만듦 | 공개 키를 바이트로 받습니다. 이더리움 주소에는 `0x` 문자열이 아니라 `Uint8Array.from(Buffer.from(pubkey_hex, "hex"))`를 전달하세요. 2026년 11월 12일 테스트넷에서 실행함: 철회가 194,244 가스를 사용하며 성공함 |
+| 등록 | 알 수 없는 권한 문자열 또는 65바이트 secp256k1 키로 거부됨 | [분류 체계](#permission-taxonomy)의 열한 가지 권한과 33바이트 키 또는 20바이트 주소만 사용하세요 |
+| 등록 또는 업데이트 | 코드스페이스 `abstractaccount` 코드 `8`, 유효하지 않은 지출 규칙 | 아무것도 제한하지 않는 활성화된 규칙, 파싱할 수 없는 단위, 또는 너무 많은 항목입니다. 규칙 JSON을 바로잡아 다시 보내세요 |
+| 등록, 철회, 실행 | 코드 `9`, 모듈 비활성화 | 이 네트워크에서 모듈이 꺼져 있습니다(현재 메인넷에서는 꺼져 있습니다) |
+| 실행 | 코드 `10`, 권한 거부 | 키에 이 메시지에 대한 권한이 없거나, 연결된 키가 절대 보낼 수 없는 키 관리 메시지입니다 |
+| 실행 | 코드 `6`, 인증자 만료 | 더 늦은 만료 시각으로 키를 다시 연결하세요 |
+| 실행 | 코드 `11`, 재전송 거부 | 오래된 논스입니다. `auth_nonce`(EVM 레인에서는 계정의 EVM 논스)를 조회하고 다시 서명하세요 |
+| 실행 | 코드 `5`, 지출 한도 초과 | 건당 또는 일일 한도를 넘었습니다. 다음 UTC 날짜까지 기다리거나 규칙을 올리세요 |
+| 실행 | 코드 `0`과 `success=false` 및 `abstractaccount_execution_failed` 이벤트 | 서명이 받아들여진 후 실패했으며 논스는 소비되었습니다. `reason`을 읽으세요(4단계) |
+| 릴레이어 봉투 | 코드스페이스 `pqc` 코드 `21` | 릴레이어 자신의 하이브리드 서명이 실패했습니다. 연결된 키와는 무관합니다 |
+
+### 확인한 내용 {#link-example-checks}
+
+2026년 11월 12일 테스트넷(릴리스 v3.2.8, SDK 0.13.0, 하이브리드 서명)에서 규칙 하나(일일 한도 1,000,000 uqor, 건당 한도 100,000 uqor, `uqor`만)를 설정하는 `MsgUpdateSpendingRules`가 코드 0과 186,319 가스 사용으로 성공했습니다. 규칙이 생기기 전에 보낸 `evm` 권한의 `MsgRegisterAuthenticator`는 코드 8로 거부되었고, 규칙을 설정한 뒤 소유 증명 없이 보내면 코드 10으로 거부되었으며, 메시지는 오류 표에 있습니다. SDK 0.13.0의 등록 컴포저에는 소유 증명 필드가 없으므로, 성공한 연결은 다음에 설명하는 대로 더 새로운 패키지로 이후에 실행했습니다.
+
+**2026년 11월 12일 문서 작성자가 SDK 0.14.0과 wallet-adapter 0.6.0으로 테스트넷에서 실행함(모두 코드 0):**
+
+* `linkAuthenticatorMsgs`가 지출 규칙(`MsgUpdateSpendingRules`)과 이더리움 주소를 위한 `MsgRegisterAuthenticator`를 `metaMaskPossessionProof`의 소유 증명과 함께 만들었습니다(`personal_sign`에 응답하는 프로바이더를 통해 임시 키로 서명함). 두 메시지는 소유자가 서명한 하나의 트랜잭션에 들어갔으며, 한도 600,000에서 220,973 가스를 사용했습니다.
+* 이후 `GET /qorechain/abstractaccount/v1/accounts/{address}`는 `authenticators_count` 1을 보여 주었고, `GET .../authenticators`는 키를 방식 `secp256k1`, `pubkey_hex`가 20바이트 주소, 권한 `evm`, `revoked` false로 나열했습니다.
+* 이어서 `revokeAuthenticatorMsg`가 194,244 가스를 사용하며 성공했고, 목록에는 `revoked` true가 표시되었습니다. `revokeAuthenticatorMsg`는 공개 키를 바이트로 받으므로, 이더리움 주소에는 `0x` 문자열이 아니라 `Uint8Array.from(Buffer.from(pubkey_hex, "hex"))`를 전달하세요.
+
+Phantom과 ed25519 헬퍼, 그리고 Python, Go, Rust, Java 빌더는 실행하지 않았습니다.
+
+1단계의 서명 코드는 임시 키로 실행했습니다. ed25519 및 압축 secp256k1 증명은 해당 공개 키에 대해 검증되고, EIP-191 증명은 만들어진 대상인 20바이트 주소를 복원합니다. 읽기 경로 `config`, `params`, `accounts`, `accounts/{address}`, `accounts/{address}/spending_rules`, `accounts/{address}/authenticators`, `permission_schema`, `auth_nonce/{address}/{pubkey_hex}`, 그리고 트랜잭션 해시 조회가 모두 테스트넷에서 응답했습니다(알 수 없는 해시의 조회는 `404`로 응답합니다). `link-message`와 `--possession-proof` 명령 형태는 v3.2.8 노드 소스에서 가져왔으며 여기서는 실행하지 않았습니다. 서명 코드는 임시 키로 실행했습니다. 실제 `abstractaccount_execution_failed` 이벤트는 보여 주지 않습니다.
+
+함께 보기: [양자내성 서명](/developer-guide/post-quantum-signing), [REST 및 gRPC 엔드포인트](/api-reference/rest-grpc-endpoints), [SDK의 인증자](/sdk/guides/authenticators), [EVM 인가 윈도우](/developer-guide/evm-window-reference).
 
 ## 추상 계정 조회
 

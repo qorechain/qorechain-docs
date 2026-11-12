@@ -162,7 +162,7 @@ const msg = registerEthAuthenticatorMsg({
    يسمّي النص السلسلة والحساب والمخطط والمفتاح، فلا يمكن إعادة استخدام الإثبات لسلسلة أخرى أو حساب آخر أو مفتاح آخر. ويُرفض التسجيل الذي لا يحمل إثباتاً صالحاً.
 2. **قاعدة إنفاق لمفاتيح القيمة.** المفتاح الذي يمكن لصلاحياته نقل قيمة (`send` و`evm` و`svm` و`deploy` و`all`) يحتاج إلى قاعدة إنفاق تقيّد كل فئة عملة يستطيع إنفاقها، تُضبط بالرسالة `MsgUpdateSpendingRules` قبل الربط أو معه. وتُفرض القاعدة نفسها عند التنفيذ على المفاتيح المرتبطة قبل الترقية، فأضف قواعد لها أيضاً.
 
-من الشيفرة، يوفّر SDK 0.14.0 المساعدات للأمرين (في TypeScript: `signAuthenticatorLinkPhantom` و`signAuthenticatorLinkMetaMask` و`signAuthenticatorLinkEd25519` و`signAuthenticatorLinkSecp256k1` و`signAuthenticatorLinkEip191` للإثبات؛ و`linkAuthenticatorMsgs` لقاعدة الإنفاق والربط في معاملة واحدة يوقّعها المالك)، ويوفّر `@qorechain/wallet-adapter` 0.6.0 الدوال `phantomPossessionProof` و`metaMaskPossessionProof` و`linkAuthenticatorMsgs`. راجع [الربط منذ سلسلة v3.2.8](/sdk/guides/authenticators#link-v328). أما في حالة التنفيذ الفاشل فتُطلق `assertAuthenticatorExecutionsSucceeded` خطأً عند `success=false`. لم تُشغَّل هذه المساعدات على شبكة الاختبار.
+من الشيفرة، يوفّر SDK 0.14.0 المساعدات للأمرين (في TypeScript: `signAuthenticatorLinkPhantom` و`signAuthenticatorLinkMetaMask` و`signAuthenticatorLinkEd25519` و`signAuthenticatorLinkSecp256k1` و`signAuthenticatorLinkEip191` للإثبات؛ و`linkAuthenticatorMsgs` لقاعدة الإنفاق والربط في معاملة واحدة يوقّعها المالك)، ويوفّر `@qorechain/wallet-adapter` 0.6.0 الدوال `phantomPossessionProof` و`metaMaskPossessionProof` و`linkAuthenticatorMsgs`. راجع [الربط منذ سلسلة v3.2.8](/sdk/guides/authenticators#link-v328). أما في حالة التنفيذ الفاشل فتُطلق `assertAuthenticatorExecutionsSucceeded` خطأً عند `success=false`. شُغّلت `linkAuthenticatorMsgs` و`metaMaskPossessionProof` و`revokeAuthenticatorMsg` على شبكة الاختبار (انظر [ما جرى فحصه](#link-example-checks))؛ أما مساعدات Phantom وed25519 فلم تُشغَّل.
 
 يُسجَّل مفتاح Phantom بالطريقة نفسها بالمخطط `ed25519` والمفتاح العام لـ Phantom (`register-authenticator` في سطر الأوامر). يتم الإلغاء فوراً عبر `MsgRevokeAuthenticator`.
 
@@ -282,6 +282,193 @@ GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
 ```
+
+## ربط مفتاح في v3.2.8: مثال تطبيقي {#link-example-v328}
+
+يسير هذا القسم عبر ربط كامل واحد على شبكة اختبار **`qorechain-diana`**، التي تعمل بالإصدار v3.2.8 منذ 12 نوفمبر 2026. أما الشبكة الرئيسية فلا تعمل بـ v3.2.8 بعدُ، ووحدة الحساب المجرَّد فيها مطفأة، لذا لا ينطبق شيء من هذا عليها اليوم. باختصار: المفتاح الذي تربطه يجب أن يوقّع نصًا قصيرًا ليُظهر موافقته على الربط، والمفتاح الذي يستطيع نقل القيمة يحتاج إلى قاعدة إنفاق على الحساب، وحين ينفق مفتاح مرتبط لاحقًا يُبلَّغ عن الإنفاق الفاشل داخل معاملة ناجحة.
+
+لماذا يهم هذا: ابتداءً من v3.2.8 يشارك حامل المفتاح في الربط، فلا يمكن ربط مفتاح إلا بيد من يحمله فعلًا، ويبقى أي مفتاح يستطيع نقل القيمة محدودًا دائمًا بحد على الحساب.
+
+:::note ما الذي يمكنك تشغيله اليوم
+يعمل نص الربط وأنظمة التوقيع الثلاثة أدناه بـ `node:crypto` و`@noble` العاديتين كما هو موضح. أما الحزم المنشورة (SDK 0.13.0 وwallet-adapter 0.5.0) فلا تستطيع بعدُ وضع الإثبات في `MsgRegisterAuthenticator`: فالدالتان `registerAuthenticator` و`registerEthAuthenticatorMsg` فيهما تبنيان الرسالة بلا حقل الإثبات، وترفضها شبكة اختبار v3.2.8. وستضيف إصدارة SDK وwallet-adapter لاحقة دوال مساعدة تبني نص الربط وتطلب من المحفظة توقيعه وتُلحق الإثبات؛ وإلى ذلك الحين استخدم سطر الأوامر (الخطوة 3) أو الرسالة الخام. و`qorechaind` هنا تعني واجهة سطر أوامر العقدة على Linux؛ ولا يوجد ملف ثنائي مُحزَّم لـ macOS.
+:::
+
+### 1. نص الربط وكيف يوقّعه كل نظام {#link-text}
+
+يتألف النص من خمسة أسطر، يفصل بينها سطر جديد واحد، ومن دون سطر جديد في النهاية:
+
+```text
+QoreChain authenticator link v1
+chain: qorechain-diana
+account: qor1youraccount...
+scheme: secp256k1
+key: b31c9bca95fa18bc6bf5cbf748f73925e0e05913
+```
+
+`chain` هو معرّف السلسلة، و`account` هو حساب bech32 الذي يُربط المفتاح به، و`scheme` هو النظام الذي تمرّره إلى `register-authenticator`، و`key` هو الست عشري بأحرف صغيرة للمفتاح العام (32 بايتًا لـ ed25519، و33 بايتًا لمفتاح secp256k1 مضغوط) أو، لحساب MetaMask، لعنوان Ethereum ذي 20 بايتًا. والبايتات التي تتحقق منها السلسلة هي هذه الأحرف بالضبط، فمعرّف سلسلة أو حساب أو مفتاح مختلف يعطي إثباتًا لا يتحقق.
+
+| المفتاح المرتبط | `scheme` | ما يحمله `key` | ما يُوقَّع | حجم الإثبات |
+| --- | --- | --- | --- | --- |
+| Phantom (ed25519) | `ed25519` | مفتاح عام من 32 بايتًا | بايتات UTF-8 للنص (`signMessage` في المحفظة) | 64 بايتًا |
+| مفتاح secp256k1 مضغوط | `secp256k1` | مفتاح عام من 33 بايتًا | SHA-256 للنص، بصيغة compact: `r` ثم `s` | 64 بايتًا |
+| عنوان Ethereum (MetaMask) | `secp256k1` | عنوان من 20 بايتًا | `personal_sign` وفق EIP-191 للنص | 65 بايتًا (`r` و`s` و`v` = 27 أو 28) |
+
+تبني شيفرة TypeScript هذه النص وتوقّعه بثلاثة مفاتيح مؤقتة، باستخدام `node:crypto` و`@noble/curves` 2.x و`@noble/hashes` 1.8 (شغّلها على Node 20 أو أحدث؛ ولا تستخدم هذه المفاتيح لأي غرض آخر):
+
+```ts
+import { generateKeyPairSync, sign } from "node:crypto";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
+import { sha256 } from "@noble/hashes/sha2.js";
+import { keccak_256 } from "@noble/hashes/sha3.js";
+import { bytesToHex, utf8ToBytes, concatBytes } from "@noble/hashes/utils.js";
+
+const chainId = "qorechain-diana";
+const account = "qor1youraccount..."; // the account the key is linked to
+
+function linkText(scheme: string, key: Uint8Array): string {
+  return [
+    "QoreChain authenticator link v1",
+    `chain: ${chainId}`,
+    `account: ${account}`,
+    `scheme: ${scheme}`,
+    `key: ${bytesToHex(key)}`, // lowercase hex
+  ].join("\n");
+}
+
+// ed25519 (what Phantom signMessage does): sign the text bytes.
+const ed = generateKeyPairSync("ed25519");
+const edPub = ed.publicKey.export({ format: "der", type: "spki" }).subarray(-32);
+const edProof = sign(null, utf8ToBytes(linkText("ed25519", edPub)), ed.privateKey);
+
+// 33-byte secp256k1 key: sign sha256(text), 64-byte r||s.
+const sk = secp256k1.utils.randomSecretKey();
+const pub33 = secp256k1.getPublicKey(sk, true);
+const cosmosProof = secp256k1.sign(sha256(utf8ToBytes(linkText("secp256k1", pub33))), sk, { prehash: false });
+
+// Ethereum address: EIP-191 personal_sign, key = the 20-byte address.
+const ethSk = secp256k1.utils.randomSecretKey();
+const addr = keccak_256(secp256k1.getPublicKey(ethSk, false).subarray(1)).subarray(-20);
+const text = utf8ToBytes(linkText("secp256k1", addr));
+const digest = keccak_256(concatBytes(utf8ToBytes(`\x19Ethereum Signed Message:\n${text.length}`), text));
+const rec = secp256k1.sign(digest, ethSk, { prehash: false, format: "recovered" }); // recovery byte first
+const ethProof = concatBytes(rec.subarray(1), Uint8Array.of(rec[0] + 27));          // r || s || v
+
+// The CLI takes the proof as base64:
+console.log(Buffer.from(edProof).toString("base64"));
+```
+
+في تطبيق dApp على المتصفح لا تحمل المفتاح بنفسك: مرّر النص نفسه إلى المحفظة (`signMessage` في Phantom مع بايتات UTF-8، و`personal_sign` في MetaMask مع النص) وحوّل الناتج إلى base64. وتعرض المحفظة للمستخدم الأسطر الخمسة، وهذا هو الغرض من استخدام نص عادي.
+
+### 2. قاعدة الإنفاق {#link-spending-rule}
+
+المفتاح الذي تستطيع صلاحياته نقل القيمة (`send` و`evm` و`svm` و`deploy` و`all`) يُرفض عند التسجيل ما لم يكن للحساب قاعدة مفعّلة تحدّ كل فئة عملة يستطيع إنفاقها. اضبط القاعدة أولًا، أو في المعاملة نفسها مع الربط. وتطبّق السلسلة **أول قاعدة مفعّلة** في الحساب على مفتاح لا قاعدة خاصة به. ويستبدل `update-rules` كل القواعد، فضمّن كل قاعدة يجب أن يحتفظ بها الحساب. من سطر الأوامر:
+
+```bash
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"linked","enabled":true,"daily_limit":5000000,"per_tx_limit":1000000,"allowed_denoms":["uqor"]}]' \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > rules.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast (see the caution at the top of this page)
+```
+
+في TypeScript مع SDK 0.13.0 المنشور يكون المُركِّب هو `msg.abstractaccount.updateSpendingRules`، الذي يتحقق من القاعدة محليًا أيضًا ويرفض قاعدة مفعّلة لا تحدّ شيئًا:
+
+```ts
+import { msg } from "@qorechain/sdk";
+
+const rules = msg.abstractaccount.updateSpendingRules({
+  owner: "qor1owner...",
+  accountAddress: "qor1youraccount...",
+  rules: [
+    { id: "linked", enabled: true, dailyLimit: "5000000", perTxLimit: "1000000", allowedDenoms: ["uqor"] },
+  ],
+});
+// Sign with the owner's hybrid signer and broadcast (see the SDK guide on authenticators).
+```
+
+المفتاح الذي له صلاحيات غير ناقلة للقيمة فقط (`vote` و`delegate` و`withdraw` و`amm` و`ibc` و`wasm`) لا يحتاج إلى قاعدة ليُربط. أما المفاتيح المربوطة قبل الترقية بصلاحيات ناقلة للقيمة فتخضع للقاعدة نفسها عند التنفيذ، فأضف قاعدة لها أيضًا.
+
+### 3. الربط ثم الإلغاء {#link-revoke}
+
+اطبع النص للمفتاح الذي تربطه (لا يقرأ شيئًا من السلسلة؛ ويأتي معرّف السلسلة من `--chain-id`)، ووقّعه كما في الخطوة 1، ثم سجّل مع الإثبات:
+
+```bash
+# Print the exact text the key must sign. The key argument is base64 (for an Ethereum address: the 20 address bytes).
+qorechaind tx abstractaccount link-message <account-address> ed25519 <pubkey-base64> --chain-id qorechain-diana
+
+# Register the key with its proof (base64 of the signature):
+qorechaind tx abstractaccount register-authenticator <account-address> ed25519 <pubkey-base64> send <expiry-unix> phantom \
+  --possession-proof <proof-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > link.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast
+
+# Check the result:
+curl -s https://api-testnet.qore.host/qorechain/abstractaccount/v1/accounts/<account-address>/authenticators
+
+# Revoke the key (no proof is needed; only the owner can revoke):
+qorechaind tx abstractaccount revoke-authenticator <account-address> ed25519 <pubkey-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > revoke.json
+```
+
+الإثبات هو الخيار `--possession-proof` في `register-authenticator`، فالوسائط الموضعية هي نفسها كما كانت. ويجب أن يكون التسجيل والإلغاء رسالتين من المالك نفسه، على المستوى الأعلى وموقّعتين؛ فلا يمكن تغليفهما في منحة authz ولا إرسالهما بالمفتاح المرتبط. ويسرد مسار authenticators المفتاح بالقيمة `revoked: true` حين يُدرج الإلغاء.
+
+### 4. قراءة نتيجة التنفيذ {#link-execution-result}
+
+حين ينفق مفتاح مرتبط عبر `MsgExecuteEVM` أو `MsgExecuteCosmos`، فإن الفشل بعد قبول التوقيع (مثل تجاوز حد أو استدعاء يرتد) لم يعد يُفشل المعاملة كلها. تُدرج المعاملة بالرمز `0`، وتحمل الاستجابة `success=false`، ويُستنفد nonce المفتاح، وتُصدر المعاملة حدثًا:
+
+| الحدث | السمة | المعنى |
+| --- | --- | --- |
+| `abstractaccount_execution_failed` | `account` | الحساب الذي كان المفتاح ينفق منه |
+| | `lane` | المسار الذي جرت محاولته (القيم الدقيقة غير مدرجة في وثائق العقدة) |
+| | `nonce` | الـ nonce الذي استُهلك |
+| | `reason` | سبب فشل التنفيذ |
+
+اقرأه من REST بتجزئة المعاملة وانظر في أحداث `tx_response`:
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/tx/v1beta1/txs/<txhash> \
+  | jq '.tx_response | {code, events: [.events[] | select(.type=="abstractaccount_execution_failed")]}'
+```
+
+وللعثور على التنفيذات الفاشلة دون تجزئة، ابحث بالحدث (يجيب المسار بـ `200`؛ والنتيجة الفارغة هي `"total":"0"`):
+
+```bash
+curl -s -g "https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=abstractaccount_execution_failed.account%3D%27<account-address>%27&limit=10"
+```
+
+العميل الذي يفحص `code === 0` فقط يبلّغ عن مثل هذا الاستدعاء كأنه نجح. فتحقق من الحدث (أو فك ترميز `success` في استجابة الرسالة) قبل أن تخبر مستخدمًا بأن الإنفاق تم. ولأن الـ nonce استُهلك، اقرأ القيمة التالية من `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` قبل التوقيع من جديد.
+
+### 5. الأخطاء {#link-errors}
+
+| أين | ما تراه | المعنى وما تفعله |
+| --- | --- | --- |
+| التسجيل | يُرفض بلا إثبات حيازة صالح | الإثبات مفقود أو بحجم خاطئ أو لا يتحقق لهذه السلسلة والحساب والنظام والمفتاح. أعد بناء النص من الأسطر الخمسة بدقة ووقّع من جديد. اختُبر على شبكة الاختبار في 12 نوفمبر 2026 (SDK 0.13.0، مفتاح رُبط بلا إثبات، بعد ضبط القاعدة؛ أما SDK 0.14.0 مع الإثبات من `metaMaskPossessionProof` فربط المفتاح بالرمز 0): codespace باسم `abstractaccount`، الرمز 10، `possession_proof is required: a signature by the linked key over the link message` |
+| التسجيل | يُرفض لصلاحية ناقلة للقيمة بلا قاعدة | اضبط أولًا قاعدة تحدّ كل فئة عملة (الخطوة 2). اختُبر على شبكة الاختبار في 12 نوفمبر 2026: codespace باسم `abstractaccount`، الرمز 8، `a linked key with the send, evm, deploy, svm or all permission needs a spending rule on the account that bounds every denom it admits (a per_tx_limit or daily_limit, or an allowed_denoms list whose every denom has a denom_limits amount)` |
+| الإلغاء (العميل) | تفشل `revokeAuthenticatorMsg` أو تبني رسالة خاطئة | تأخذ المفتاح العام بايتات. لعنوان Ethereum مرّر `Uint8Array.from(Buffer.from(pubkey_hex, "hex"))`، لا سلسلة `0x`. شُغّل على شبكة الاختبار في 12 نوفمبر 2026: نجح الإلغاء باستخدام 194,244 غاز |
+| التسجيل | يُرفض لسلسلة صلاحية غير معروفة، أو مفتاح secp256k1 من 65 بايتًا | استخدم فقط الصلاحيات الإحدى عشرة في [التصنيف](#permission-taxonomy) ومفتاحًا من 33 بايتًا أو عنوانًا من 20 بايتًا |
+| التسجيل أو التحديث | codespace باسم `abstractaccount` والرمز `8`، قاعدة إنفاق غير صالحة | قاعدة مفعّلة لا تحدّ شيئًا، أو فئة عملة لا يمكن تحليلها، أو مدخلات كثيرة. صحّح JSON القاعدة وأعد الإرسال |
+| التسجيل أو الإلغاء أو التنفيذ | الرمز `9`، الوحدة معطّلة | الوحدة مطفأة على هذه الشبكة (وهي مطفأة على الشبكة الرئيسية اليوم) |
+| التنفيذ | الرمز `10`، الإذن مرفوض | ينقص المفتاحَ الإذنُ لهذه الرسالة، أو الرسالة رسالة إدارة مفاتيح لا يستطيع مفتاح مرتبط إرسالها أبدًا |
+| التنفيذ | الرمز `6`، انتهت صلاحية المصادِق | اربط المفتاح من جديد بانتهاء صلاحية أبعد |
+| التنفيذ | الرمز `11`، رُفض لإعادة الاستخدام | nonce قديم: استعلم عن `auth_nonce` (أو nonce حساب EVM في مسار EVM) ووقّع من جديد |
+| التنفيذ | الرمز `5`، تجاوز حد الإنفاق | فوق حد المعاملة أو الحد اليومي؛ انتظر يوم UTC التالي أو ارفع القاعدة |
+| التنفيذ | الرمز `0` مع `success=false` والحدث `abstractaccount_execution_failed` | فشل بعد قبول التوقيع؛ والـ nonce استُهلك. اقرأ `reason` (القسم 4) |
+| مظروف المُرحِّل | codespace باسم `pqc` والرمز `21` | فشل التوقيع الهجين للمُرحِّل نفسه؛ ولا علاقة له بالمفتاح المرتبط |
+
+### ما جرى فحصه {#link-example-checks}
+
+على شبكة الاختبار في 12 نوفمبر 2026 (الإصدار v3.2.8، SDK 0.13.0، توقيع هجين): نجحت `MsgUpdateSpendingRules` بقاعدة واحدة (حد يومي 1,000,000 uqor، وحد للمعاملة 100,000 uqor، و`uqor` فقط) بالرمز 0 واستخدام 186,319 غاز. ورُفضت `MsgRegisterAuthenticator` للصلاحية `evm` المرسلة قبل وجود القاعدة بالرمز 8، ورُفضت حين أُرسلت بعد القاعدة لكن بلا إثبات حيازة بالرمز 10، مع الرسائل في جدول الأخطاء. وليس في SDK 0.13.0 حقل إثبات حيازة في مُركِّبات التسجيل، فشُغّل الربط الناجح لاحقًا بحزم أحدث، كما يلي.
+
+**شغّله كاتب الوثائق على شبكة الاختبار في 12 نوفمبر 2026، مع SDK 0.14.0 وwallet-adapter 0.6.0 (كلها بالرمز 0):**
+
+* بنت `linkAuthenticatorMsgs` قاعدة الإنفاق (`MsgUpdateSpendingRules`) و`MsgRegisterAuthenticator` لعنوان Ethereum، مع إثبات الحيازة من `metaMaskPossessionProof` (وقّعه هنا مفتاح مؤقت عبر مزوّد يجيب على `personal_sign`). وذهبت الرسالتان في معاملة واحدة موقّعة من المالك: استُخدم 220,973 غاز بحد 600,000.
+* ثم أظهر `GET /qorechain/abstractaccount/v1/accounts/{address}` القيمة `authenticators_count` ‏1، وسرد `GET .../authenticators` المفتاح: النظام `secp256k1`، و`pubkey_hex` العنوان ذو 20 بايتًا، والصلاحيات `evm`، و`revoked` خاطئة.
+* ثم نجحت `revokeAuthenticatorMsg` باستخدام 194,244 غاز، وأظهرت القائمة `revoked` صحيحة. وتأخذ `revokeAuthenticatorMsg` المفتاح العام بايتات، فلعنوان Ethereum مرّر `Uint8Array.from(Buffer.from(pubkey_hex, "hex"))`، لا سلسلة `0x`.
+
+لم تُشغَّل مساعدات Phantom وed25519 ولا بُناة Python وGo وRust وJava.
+
+شُغّلت شيفرة التوقيع في الخطوة 1 بمفاتيح مؤقتة: يتحقق إثباتا ed25519 وsecp256k1 المضغوط من مفتاحيهما العامين، ويستعيد إثبات EIP-191 العنوان ذا 20 بايتًا الذي صُنع له. وأجابت على شبكة الاختبار مسارات القراءة `config` و`params` و`accounts` و`accounts/{address}` و`accounts/{address}/spending_rules` و`accounts/{address}/authenticators` و`permission_schema` و`auth_nonce/{address}/{pubkey_hex}` والبحث عن معاملة بتجزئتها (البحث عن تجزئة مجهولة يجيب بـ `404`). أما شكلا الأمرين `link-message` و`--possession-proof` فمأخوذان من مصدر عقدة v3.2.8 ولم يُشغَّلا هنا. وشُغّلت شيفرة التوقيع بمفاتيح مؤقتة؛ ولا يُعرض حدث `abstractaccount_execution_failed` حقيقي.
+
+انظر أيضًا: [التوقيع ما بعد الكمومي](/developer-guide/post-quantum-signing)، و[نقاط نهاية REST وgRPC](/api-reference/rest-grpc-endpoints)، و[المصادِقات في SDK](/sdk/guides/authenticators)، و[نافذة تفويض EVM](/developer-guide/evm-window-reference).
 
 ## الاستعلام عن الحسابات المجرَّدة
 

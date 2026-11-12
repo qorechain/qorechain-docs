@@ -162,7 +162,7 @@ const msg = registerEthAuthenticatorMsg({
    Textul numește chain-ul, contul, schema și cheia, deci o dovadă nu poate fi reutilizată pentru alt chain, cont sau cheie. O înregistrare fără o dovadă validă este refuzată.
 2. **O regulă de cheltuieli pentru cheile de valoare.** O cheie ale cărei permisiuni pot muta valoare (`send`, `evm`, `svm`, `deploy`, `all`) are nevoie de o regulă de cheltuieli care limitează fiecare denominație pe care o poate cheltui, setată cu `MsgUpdateSpendingRules` înainte de legare sau odată cu ea. Aceeași regulă este aplicată la execuție pentru cheile conectate înainte de upgrade, deci adăugați reguli și pentru ele.
 
-Din cod, SDK 0.14.0 are helperele pentru ambele (TypeScript: `signAuthenticatorLinkPhantom`, `signAuthenticatorLinkMetaMask`, `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191` pentru dovadă; `linkAuthenticatorMsgs` pentru regula de cheltuieli și legare într-o singură tranzacție semnată de proprietar), iar `@qorechain/wallet-adapter` 0.6.0 are `phantomPossessionProof`, `metaMaskPossessionProof` și `linkAuthenticatorMsgs`. Vedeți [Legarea de la lanțul v3.2.8](/sdk/guides/authenticators#link-v328). Pentru cazul unei execuții eșuate, `assertAuthenticatorExecutionsSucceeded` aruncă o eroare la `success=false`. Aceste helpere nu au fost rulate pe testnet.
+Din cod, SDK 0.14.0 are helperele pentru ambele (TypeScript: `signAuthenticatorLinkPhantom`, `signAuthenticatorLinkMetaMask`, `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`, `signAuthenticatorLinkEip191` pentru dovadă; `linkAuthenticatorMsgs` pentru regula de cheltuieli și legare într-o singură tranzacție semnată de proprietar), iar `@qorechain/wallet-adapter` 0.6.0 are `phantomPossessionProof`, `metaMaskPossessionProof` și `linkAuthenticatorMsgs`. Vedeți [Legarea de la lanțul v3.2.8](/sdk/guides/authenticators#link-v328). Pentru cazul unei execuții eșuate, `assertAuthenticatorExecutionsSucceeded` aruncă o eroare la `success=false`. `linkAuthenticatorMsgs`, `metaMaskPossessionProof` și `revokeAuthenticatorMsg` au fost rulate pe testnet (vedeți [Ce a fost verificat](#link-example-checks)); helperele Phantom și ed25519 nu au fost rulate.
 
 O cheie Phantom este înregistrată în același mod, cu schema `ed25519` și cheia publică Phantom (`register-authenticator` în CLI). Revocarea este instantanee prin `MsgRevokeAuthenticator`.
 
@@ -282,6 +282,193 @@ GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
 ```
+
+## Legarea unei chei în v3.2.8: exemplu lucrat {#link-example-v328}
+
+Această secțiune parcurge o legare completă pe testnet-ul **`qorechain-diana`**, care rulează v3.2.8 din 12 noiembrie 2026. Mainnet-ul nu rulează încă v3.2.8, iar modulul său abstract-account este oprit, deci nimic din toate acestea nu se aplică acolo astăzi. Pe scurt: cheia pe care o legați trebuie să semneze un text scurt prin care arată că este de acord să fie legată, o cheie care poate muta valoare are nevoie de o regulă de cheltuieli pe cont, iar când o cheie legată cheltuiește ulterior, o cheltuială eșuată este raportată în interiorul unei tranzacții reușite.
+
+De ce contează: din v3.2.8, deținătorul cheii participă la legare, deci o cheie poate fi legată doar de cineva care o deține cu adevărat, iar o cheie care poate muta valoare este întotdeauna limitată de o limită pe cont.
+
+:::note Ce puteți rula astăzi
+Textul de legare și cele trei scheme de semnare de mai jos funcționează cu `node:crypto` și `@noble` simplu, așa cum se arată. Pachetele publicate (SDK 0.13.0 și wallet-adapter 0.5.0) nu pot încă pune dovada în `MsgRegisterAuthenticator`: `registerAuthenticator` și `registerEthAuthenticatorMsg` ale lor construiesc mesajul fără câmpul dovezii, pe care testnet-ul v3.2.8 îl refuză. O versiune ulterioară a SDK-ului și a wallet-adapter adaugă helpere care construiesc textul de legare, cer portofelului să îl semneze și atașează dovada; până atunci folosiți linia de comandă (pasul 3) sau mesajul brut. Aici `qorechaind` înseamnă CLI-ul de nod pentru Linux; nu există un binar macOS împachetat.
+:::
+
+### 1. Textul de legare și cum îl semnează fiecare schemă {#link-text}
+
+Textul are cinci linii, unite printr-un singur newline, fără newline la final:
+
+```text
+QoreChain authenticator link v1
+chain: qorechain-diana
+account: qor1youraccount...
+scheme: secp256k1
+key: b31c9bca95fa18bc6bf5cbf748f73925e0e05913
+```
+
+`chain` este chain id-ul, `account` este contul bech32 la care este legată cheia, `scheme` este schema pe care o transmiteți lui `register-authenticator`, iar `key` este hex-ul cu litere mici al cheii publice (32 de octeți pentru ed25519, 33 de octeți pentru o cheie secp256k1 comprimată) sau, pentru un cont MetaMask, al adresei Ethereum de 20 de octeți. Octeții pe care îi verifică lanțul sunt exact aceste caractere, deci un chain id, un cont sau o cheie diferite dau o dovadă care nu se verifică.
+
+| Cheie legată | `scheme` | Ce conține `key` | Ce se semnează | Dimensiunea dovezii |
+| --- | --- | --- | --- | --- |
+| Phantom (ed25519) | `ed25519` | cheie publică de 32 de octeți | octeții UTF-8 ai textului (`signMessage` al portofelului) | 64 de octeți |
+| Cheie secp256k1 comprimată | `secp256k1` | cheie publică de 33 de octeți | SHA-256 al textului, `r` compact apoi `s` | 64 de octeți |
+| Adresă Ethereum (MetaMask) | `secp256k1` | adresă de 20 de octeți | EIP-191 `personal_sign` al textului | 65 de octeți (`r`, `s`, `v` = 27 sau 28) |
+
+Acest TypeScript construiește textul și îl semnează cu trei chei de unică folosință, folosind `node:crypto`, `@noble/curves` 2.x și `@noble/hashes` 1.8 (rulați pe Node 20 sau mai nou; nu folosiți niciodată aceste chei pentru altceva):
+
+```ts
+import { generateKeyPairSync, sign } from "node:crypto";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
+import { sha256 } from "@noble/hashes/sha2.js";
+import { keccak_256 } from "@noble/hashes/sha3.js";
+import { bytesToHex, utf8ToBytes, concatBytes } from "@noble/hashes/utils.js";
+
+const chainId = "qorechain-diana";
+const account = "qor1youraccount..."; // the account the key is linked to
+
+function linkText(scheme: string, key: Uint8Array): string {
+  return [
+    "QoreChain authenticator link v1",
+    `chain: ${chainId}`,
+    `account: ${account}`,
+    `scheme: ${scheme}`,
+    `key: ${bytesToHex(key)}`, // lowercase hex
+  ].join("\n");
+}
+
+// ed25519 (what Phantom signMessage does): sign the text bytes.
+const ed = generateKeyPairSync("ed25519");
+const edPub = ed.publicKey.export({ format: "der", type: "spki" }).subarray(-32);
+const edProof = sign(null, utf8ToBytes(linkText("ed25519", edPub)), ed.privateKey);
+
+// 33-byte secp256k1 key: sign sha256(text), 64-byte r||s.
+const sk = secp256k1.utils.randomSecretKey();
+const pub33 = secp256k1.getPublicKey(sk, true);
+const cosmosProof = secp256k1.sign(sha256(utf8ToBytes(linkText("secp256k1", pub33))), sk, { prehash: false });
+
+// Ethereum address: EIP-191 personal_sign, key = the 20-byte address.
+const ethSk = secp256k1.utils.randomSecretKey();
+const addr = keccak_256(secp256k1.getPublicKey(ethSk, false).subarray(1)).subarray(-20);
+const text = utf8ToBytes(linkText("secp256k1", addr));
+const digest = keccak_256(concatBytes(utf8ToBytes(`\x19Ethereum Signed Message:\n${text.length}`), text));
+const rec = secp256k1.sign(digest, ethSk, { prehash: false, format: "recovered" }); // recovery byte first
+const ethProof = concatBytes(rec.subarray(1), Uint8Array.of(rec[0] + 27));          // r || s || v
+
+// The CLI takes the proof as base64:
+console.log(Buffer.from(edProof).toString("base64"));
+```
+
+Într-un dApp de browser nu dețineți cheia: transmiteți același text portofelului (Phantom `signMessage` cu octeții UTF-8, MetaMask `personal_sign` cu textul) și codificați base64 ce se întoarce. Portofelul îi arată utilizatorului cele cinci linii, ceea ce este scopul folosirii textului simplu.
+
+### 2. Regula de cheltuieli {#link-spending-rule}
+
+O cheie ale cărei permisiuni pot muta valoare (`send`, `evm`, `svm`, `deploy`, `all`) este refuzată la înregistrare dacă contul nu are deja o regulă activă care limitează fiecare denominație pe care o poate cheltui cheia. Setați mai întâi regula, sau în aceeași tranzacție cu legarea. Lanțul aplică **prima regulă activă** a contului unei chei care nu are una proprie. `update-rules` înlocuiește toate regulile, deci includeți fiecare regulă pe care contul trebuie să o păstreze. Din linia de comandă:
+
+```bash
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"linked","enabled":true,"daily_limit":5000000,"per_tx_limit":1000000,"allowed_denoms":["uqor"]}]' \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > rules.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast (see the caution at the top of this page)
+```
+
+În TypeScript, cu SDK 0.13.0 publicat, composer-ul este `msg.abstractaccount.updateSpendingRules`, care verifică și local regula și refuză o regulă activă care nu limitează nimic:
+
+```ts
+import { msg } from "@qorechain/sdk";
+
+const rules = msg.abstractaccount.updateSpendingRules({
+  owner: "qor1owner...",
+  accountAddress: "qor1youraccount...",
+  rules: [
+    { id: "linked", enabled: true, dailyLimit: "5000000", perTxLimit: "1000000", allowedDenoms: ["uqor"] },
+  ],
+});
+// Sign with the owner's hybrid signer and broadcast (see the SDK guide on authenticators).
+```
+
+O cheie cu doar permisiuni fără valoare (`vote`, `delegate`, `withdraw`, `amm`, `ibc`, `wasm`) nu are nevoie de o regulă pentru a fi legată. Cheile legate înainte de upgrade, cu permisiuni de valoare, sunt ținute la aceeași regulă când execută, deci adăugați o regulă și pentru ele.
+
+### 3. Legare, apoi revocare {#link-revoke}
+
+Afișați textul pentru cheia pe care o legați (nu citește nimic din lanț; chain id-ul vine din `--chain-id`), semnați-l ca la pasul 1, apoi înregistrați cu dovada:
+
+```bash
+# Print the exact text the key must sign. The key argument is base64 (for an Ethereum address: the 20 address bytes).
+qorechaind tx abstractaccount link-message <account-address> ed25519 <pubkey-base64> --chain-id qorechain-diana
+
+# Register the key with its proof (base64 of the signature):
+qorechaind tx abstractaccount register-authenticator <account-address> ed25519 <pubkey-base64> send <expiry-unix> phantom \
+  --possession-proof <proof-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > link.json
+# cosign with `qorechaind tx pqc cosign`, then broadcast
+
+# Check the result:
+curl -s https://api-testnet.qore.host/qorechain/abstractaccount/v1/accounts/<account-address>/authenticators
+
+# Revoke the key (no proof is needed; only the owner can revoke):
+qorechaind tx abstractaccount revoke-authenticator <account-address> ed25519 <pubkey-base64> \
+  --chain-id qorechain-diana --from mykey --generate-only --gas 400000 --fees 40000uqor > revoke.json
+```
+
+Dovada este flag-ul `--possession-proof` al lui `register-authenticator`, deci argumentele poziționale sunt aceleași ca înainte. Înregistrarea și revocarea trebuie să fie mesaje proprii ale proprietarului, de nivel superior și semnate; nu pot fi învelite într-un grant authz și nu pot fi trimise de cheia legată. Ruta authenticators listează cheia cu `revoked: true` după ce revocarea este inclusă.
+
+### 4. Citirea rezultatului unei execuții {#link-execution-result}
+
+Când o cheie legată cheltuiește prin `MsgExecuteEVM` sau `MsgExecuteCosmos`, un eșec după ce semnătura a fost acceptată (de exemplu o limită depășită sau un apel care face revert) nu mai face să eșueze întreaga tranzacție. Tranzacția este inclusă cu codul `0`, răspunsul poartă `success=false`, nonce-ul cheii este consumat, iar tranzacția emite un eveniment:
+
+| Eveniment | Atribut | Semnificație |
+| --- | --- | --- |
+| `abstractaccount_execution_failed` | `account` | contul din care cheltuia cheia |
+| | `lane` | lane-ul care a fost încercat (valorile exacte nu sunt listate în documentația nodului) |
+| | `nonce` | nonce-ul care a fost consumat |
+| | `reason` | de ce a eșuat execuția |
+
+Citiți-l din REST după hash-ul tranzacției și uitați-vă la evenimentele din `tx_response`:
+
+```bash
+curl -s https://api-testnet.qore.host/cosmos/tx/v1beta1/txs/<txhash> \
+  | jq '.tx_response | {code, events: [.events[] | select(.type=="abstractaccount_execution_failed")]}'
+```
+
+Pentru a găsi execuții eșuate fără un hash, căutați după eveniment (ruta răspunde `200`; un rezultat gol este `"total":"0"`):
+
+```bash
+curl -s -g "https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=abstractaccount_execution_failed.account%3D%27<account-address>%27&limit=10"
+```
+
+Un client care verifică doar `code === 0` raportează un astfel de apel ca reușit. Verificați evenimentul (sau decodați `success` din răspunsul mesajului) înainte de a-i spune unui utilizator că o cheltuială a trecut. Deoarece nonce-ul este consumat, citiți următoarea valoare din `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` înainte de a semna din nou.
+
+### 5. Erori {#link-errors}
+
+| Unde | Ce vedeți | Semnificație și ce faceți |
+| --- | --- | --- |
+| Înregistrare | refuzată fără o dovadă de deținere validă | Dovada lipsește, are dimensiunea greșită sau nu se verifică pentru acest chain, cont, schemă și cheie. Reconstruiți textul din cele cinci linii exacte și semnați din nou. Testat pe testnet la 12 noiembrie 2026 (SDK 0.13.0, cheie legată fără dovadă, după ce regula a fost setată; SDK 0.14.0 cu dovada din `metaMaskPossessionProof` a legat cheia cu codul 0): codespace `abstractaccount`, cod 10, `possession_proof is required: a signature by the linked key over the link message` |
+| Înregistrare | refuzată pentru o permisiune de valoare fără regulă | Setați mai întâi o regulă care limitează fiecare denominație (pasul 2). Testat pe testnet la 12 noiembrie 2026: codespace `abstractaccount`, cod 8, `a linked key with the send, evm, deploy, svm or all permission needs a spending rule on the account that bounds every denom it admits (a per_tx_limit or daily_limit, or an allowed_denoms list whose every denom has a denom_limits amount)` |
+| Revocare (client) | `revokeAuthenticatorMsg` eșuează sau construiește un mesaj greșit | Primește cheia publică ca octeți. Pentru o adresă Ethereum transmiteți `Uint8Array.from(Buffer.from(pubkey_hex, "hex"))`, nu un șir `0x`. Rulat pe testnet la 12 noiembrie 2026: revocarea a reușit cu 194.244 de gaz folosit |
+| Înregistrare | refuzată pentru un șir de permisiune necunoscut sau o cheie secp256k1 de 65 de octeți | Folosiți doar cele unsprezece permisiuni din [taxonomie](#permission-taxonomy) și o cheie de 33 de octeți sau o adresă de 20 de octeți |
+| Înregistrare sau actualizare | codespace `abstractaccount` cod `8`, regulă de cheltuieli invalidă | O regulă activă care nu limitează nimic, o denominație care nu poate fi parsată sau prea multe intrări. Corectați JSON-ul regulii și retrimiteți |
+| Înregistrare, revocare, execuție | cod `9`, modul dezactivat | Modulul este oprit pe această rețea (este oprit astăzi pe mainnet) |
+| Execuție | cod `10`, permisiune refuzată | Cheii îi lipsește permisiunea pentru acest mesaj, sau mesajul este unul de gestionare a cheilor pe care o cheie legată nu îl poate trimite niciodată |
+| Execuție | cod `6`, autentificator expirat | Legați din nou cheia cu o expirare ulterioară |
+| Execuție | cod `11`, replay respins | Nonce vechi: interogați `auth_nonce` (sau nonce-ul EVM al contului pe lane-ul EVM) și semnați din nou |
+| Execuție | cod `5`, limita de cheltuieli depășită | Peste limita per tranzacție sau zilnică; așteptați următoarea zi UTC sau ridicați regula |
+| Execuție | cod `0` cu `success=false` și evenimentul `abstractaccount_execution_failed` | A eșuat după ce semnătura a fost acceptată; nonce-ul este consumat. Citiți `reason` (secțiunea 4) |
+| Plic relayer | codespace `pqc` cod `21` | Semnătura hibridă proprie a relayer-ului a eșuat; fără legătură cu cheia legată |
+
+### Ce a fost verificat {#link-example-checks}
+
+Pe testnet la 12 noiembrie 2026 (versiunea v3.2.8, SDK 0.13.0, semnare hibridă): `MsgUpdateSpendingRules` cu o regulă (limită zilnică 1.000.000 uqor, limită per tranzacție 100.000 uqor, doar `uqor`) a reușit cu codul 0 și 186.319 de gaz folosit. Un `MsgRegisterAuthenticator` pentru permisiunea `evm` trimis înainte ca regula să existe a fost refuzat cu codul 8, iar trimis după regulă dar fără dovadă de deținere a fost refuzat cu codul 10, cu mesajele din tabelul de erori. SDK 0.13.0 nu are câmp pentru dovada de deținere în composer-ele sale de înregistrare, deci legarea reușită a fost rulată ulterior cu pachete mai noi, așa cum se descrie în continuare.
+
+**Rulat de autorul documentației pe testnet la 12 noiembrie 2026, cu SDK 0.14.0 și wallet-adapter 0.6.0 (toate cu codul 0):**
+
+* `linkAuthenticatorMsgs` a construit regula de cheltuieli (`MsgUpdateSpendingRules`) și `MsgRegisterAuthenticator` pentru o adresă Ethereum, cu dovada de deținere din `metaMaskPossessionProof` (semnată aici de o cheie de unică folosință printr-un provider care răspunde la `personal_sign`). Ambele mesaje au mers într-o SINGURĂ tranzacție semnată de proprietar: 220.973 de gaz folosit sub o limită de 600.000.
+* `GET /qorechain/abstractaccount/v1/accounts/{address}` a arătat apoi `authenticators_count` 1, iar `GET .../authenticators` a listat cheia: schema `secp256k1`, `pubkey_hex` adresa de 20 de octeți, permisiuni `evm`, `revoked` false.
+* `revokeAuthenticatorMsg` a reușit apoi cu 194.244 de gaz folosit, iar lista a arătat `revoked` true. `revokeAuthenticatorMsg` primește cheia publică ca octeți, deci pentru o adresă Ethereum transmiteți `Uint8Array.from(Buffer.from(pubkey_hex, "hex"))`, nu un șir `0x`.
+
+Helperele Phantom și ed25519 și builder-ele Python, Go, Rust și Java nu au fost rulate.
+
+Codul de semnare din pasul 1 a fost rulat cu chei de unică folosință: dovezile ed25519 și secp256k1 comprimată se verifică față de cheile lor publice, iar dovada EIP-191 recuperează adresa de 20 de octeți pentru care a fost făcută. Rutele de citire `config`, `params`, `accounts`, `accounts/{address}`, `accounts/{address}/spending_rules`, `accounts/{address}/authenticators`, `permission_schema`, `auth_nonce/{address}/{pubkey_hex}` și o căutare de tranzacție după hash au răspuns toate pe testnet (căutarea unui hash necunoscut răspunde `404`). Formele comenzilor `link-message` și `--possession-proof` sunt luate din codul sursă al nodului v3.2.8 și nu au fost rulate aici. Codul de semnare a fost rulat cu chei de unică folosință; un eveniment real `abstractaccount_execution_failed` nu este arătat.
+
+Vedeți și: [Semnarea post-cuantică](/developer-guide/post-quantum-signing), [Endpoint-uri REST și gRPC](/api-reference/rest-grpc-endpoints), [Autentificatori în SDK](/sdk/guides/authenticators), [Fereastra de autorizare EVM](/developer-guide/evm-window-reference).
 
 ## Interogarea Conturilor Abstracte
 
