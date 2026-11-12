@@ -41,7 +41,7 @@ v3.2.8 s'exécute uniquement sur le testnet `qorechain-diana`. Le mainnet reste 
 
 **Axe de la version :** Des frais de contrats intelligents qui suivent le travail réel, des plafonds de gas par transaction, des listes facultatives pour la fenêtre d'autorisation EVM, un appel cross-VM asynchrone sous escrow et borné, un Rollup Development Kit plus complet, des comptes abstraits plus stricts, et la voie compatible Solana fermée sur le testnet.
 
-Testnet : appliquée à la hauteur 9 929 500 le 12 novembre 2026 ; le mainnet ne l'a pas appliquée.
+Testnet : appliquée par la proposition de gouvernance 36 à la hauteur 9 929 500 le 12 novembre 2026 (les nœuds se sont arrêtés vers 03h35 UTC et tous exécutaient la v3.2.8 à 03h37 UTC) ; le mainnet ne l'a pas appliquée.
 
 * **Les frais des contrats intelligents suivent le travail réel.** L'exécution CosmWasm, les envois, le chargement du code et la mémoire sont tarifés. Il existe un budget de contrats par bloc et une tarification de congestion qui ne monte que lorsque les blocs sont pleins. Estimez toujours le gas par simulation. Voir [CosmWasm dans le SDK](/sdk/guides/cosmwasm#gas).
 * **Plafonds de gas.** 50,000,000 par transaction Cosmos et 30,000,000 par transaction EVM (`GET /qorechain/pqc/v1/evm_limits`).

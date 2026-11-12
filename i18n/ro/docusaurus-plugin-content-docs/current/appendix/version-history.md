@@ -41,7 +41,7 @@ v3.2.8 rulează doar pe testnet-ul `qorechain-diana`. Mainnet-ul rămâne pe v3.
 
 **Focus lansare:** Taxe pentru contractele inteligente care urmează munca reală, plafoane de gaz pe tranzacție, liste opționale pentru fereastra de autorizare EVM, un apel cross-VM asincron cu escrow și limite, un Rollup Development Kit mai complet, conturi abstracte mai stricte și lane-ul compatibil Solana închis pe testnet.
 
-Testnet: aplicată la înălțimea 9.929.500 pe 12 noiembrie 2026; mainnet-ul nu a aplicat-o.
+Testnet: aplicată prin propunerea 36 de guvernanță la înălțimea 9.929.500, pe 12 noiembrie 2026 (nodurile s-au oprit în jurul orei 03:35 UTC și toate rulau v3.2.8 până la 03:37 UTC); mainnet-ul nu a aplicat-o.
 
 * **Taxele contractelor inteligente urmează munca reală.** Execuția CosmWasm, încărcările, încărcarea codului și memoria sunt tarifate. Există un buget de contract pe bloc și o tarifare la congestie care crește doar când blocurile sunt pline. Estimați mereu gazul prin simulare. Vezi [CosmWasm în SDK](/sdk/guides/cosmwasm#gas).
 * **Plafoane de gaz.** 50.000.000 pe tranzacție Cosmos și 30.000.000 pe tranzacție EVM (`GET /qorechain/pqc/v1/evm_limits`).

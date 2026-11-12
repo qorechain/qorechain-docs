@@ -41,7 +41,7 @@ v3.2.8 yalnızca `qorechain-diana` test ağında çalışır. Ana ağ v3.2.6'da 
 
 **Sürüm odağı:** Gerçek işe göre ücretlenen akıllı sözleşmeler, işlem başına gas sınırları, isteğe bağlı EVM yetkilendirme penceresi listeleri, emanete alınan ve sınırlandırılan bir asenkron VM'ler arası çağrı, daha eksiksiz bir Rollup Geliştirme Kiti (RDK), daha katı soyut hesaplar ve test ağında kapatılan Solana uyumlu hat.
 
-Test ağı: 12 Kasım 2026'da 9.929.500 yüksekliğinde uygulandı; ana ağ uygulamadı.
+Test ağı: 36 numaralı yönetişim önerisiyle 12 Kasım 2026'da 9.929.500 yüksekliğinde uygulandı (düğümler yaklaşık 03:35 UTC'de durdu ve hepsi 03:37 UTC'ye kadar v3.2.8 çalıştırıyordu); ana ağ uygulamadı.
 
 * **Akıllı sözleşme ücretleri gerçek işe uyar.** CosmWasm yürütme, yüklemeler, kod yükleme ve bellek ücretlendirilir. Blok başına bir sözleşme bütçesi ve yalnızca bloklar dolu olduğunda yükselen bir tıkanıklık fiyatlaması vardır. Gas'ı her zaman simülasyonla tahmin edin. Bkz. [SDK'da CosmWasm](/sdk/guides/cosmwasm#gas).
 * **Gas sınırları.** Cosmos işlemi başına 50.000.000 ve EVM işlemi başına 30.000.000 (`GET /qorechain/pqc/v1/evm_limits`).
