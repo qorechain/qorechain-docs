@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain supports **QoreChain Native** smart contracts. QoreChain Native is QoreChain's name for its **CosmWasm** runtime: developers write secure, sandboxed programs in Rust against the standard CosmWasm libraries (`cosmwasm-std`) and compile them to WebAssembly. QoreChain Native contracts run alongside EVM and SVM programs within the QoreChain triple-VM architecture.
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.6** since 4 November 2026 (governance proposal 15, height 4,020,000; v3.2.5 since 29 October 2026, v3.2.4 since 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026).
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.7** since 12 November 2026 (governance proposal 16, height 4,164,600; v3.2.6 since 4 November 2026; v3.2.5 since 29 October 2026, v3.2.4 since 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026).
 :::
 
 :::caution Code upload and instantiation require explicit permission on mainnet; the testnet differs
@@ -29,7 +29,7 @@ This restriction doesn't affect already-instantiated contracts — `execute` and
 :::
 
 :::caution Sign with `tx pqc cosign`
-Mainnet and testnet require a hybrid post-quantum signature on every Cosmos-lane transaction, so the `tx` commands on this page do not broadcast as written. They build the transaction with `--generate-only > tx.json`; then sign and broadcast it with `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` (the release binary from the [download manifest](/developer-guide/running-a-node#fetch-the-manifest) has the signer; a build from the public source does not). The network fee floor is **0.1 uqor per unit of gas**, which is what `--gas-prices 0.1uqor` expresses; the hybrid signature adds roughly 47,000 gas that a simulation does not include, hence the `1.5` adjustment. (From v3.2.7, on the testnet since 6 November 2026, the post-quantum verification charge is a flat 2,000 gas; mainnet is still on v3.2.6.) See [Post-Quantum Signing](/developer-guide/post-quantum-signing).
+Mainnet and testnet require a hybrid post-quantum signature on every Cosmos-lane transaction, so the `tx` commands on this page do not broadcast as written. They build the transaction with `--generate-only > tx.json`; then sign and broadcast it with `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` (the release binary from the [download manifest](/developer-guide/running-a-node#fetch-the-manifest) has the signer; a build from the public source does not). The network fee floor is **0.1 uqor per unit of gas**, which is what `--gas-prices 0.1uqor` expresses; the hybrid signature adds roughly 47,000 gas that a simulation does not include, hence the `1.5` adjustment. (From v3.2.7, on the testnet since 6 November 2026 and on mainnet since 12 November 2026, the post-quantum verification charge is a flat 2,000 gas.) See [Post-Quantum Signing](/developer-guide/post-quantum-signing).
 :::
 
 ---

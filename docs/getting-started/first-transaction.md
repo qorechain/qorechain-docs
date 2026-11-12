@@ -10,7 +10,7 @@ sidebar_position: 5
 This guide walks through sending QOR tokens, querying transactions, and interacting with QoreChain across its native, EVM, and SVM interfaces.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release v3.2.6 since 4 November 2026 (the testnet has run v3.2.8 since 12 November 2026) — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release v3.2.7 since 12 November 2026 (the testnet has run v3.2.8 since 12 November 2026) — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
 :::
 
 ## Check Your Balance
@@ -70,7 +70,7 @@ After the co-signed transaction is accepted, the CLI returns a transaction hash.
 
 ## The first transaction of a new account {#first-tx-pqc}
 
-From release **v3.2.8** (testnet since 12 November 2026; mainnet has no date yet) the first transaction of a fresh account must be the **registration of its post-quantum key**: `MsgRegisterPQCKeyV2`, carrying the proof of possession, signed with the classical key alone. Any other first transaction from an account that has no registered key is refused. This applies to a new account that has been funded but has never sent anything; an account that already has a registered key is not affected.
+From release **v3.2.8** (testnet since 12 November 2026; mainnet has not applied it) the first transaction of a fresh account must be the **registration of its post-quantum key**: `MsgRegisterPQCKeyV2`, carrying the proof of possession, signed with the classical key alone. Any other first transaction from an account that has no registered key is refused. This applies to a new account that has been funded but has never sent anything; an account that already has a registered key is not affected.
 
 **Why it matters.** Every later transaction on the Cosmos lane is signed hybrid (secp256k1 plus ML-DSA-87), and the chain can only verify the ML-DSA-87 part against a key it already knows. Registration is the one transaction that cannot carry that signature yet, so it is the one transaction the chain accepts with a classical signature alone, and it has to come first. If you send a transfer, a delegation or a contract call before registering, the transaction is refused and you register first.
 

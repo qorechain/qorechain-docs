@@ -81,12 +81,12 @@ On 4 November 2026 the testnet's active-precompile list (`active_static_precompi
 
 ### Chain v3.2.5: allowlist, reply format and refusals (both networks) {#chain-v325}
 
-Chain v3.2.5 changes how the bridge behaves. Mainnet has run it since 29 October 2026 (governance proposal 14, height 3,906,833) and the testnet since 26 October; mainnet now runs v3.2.6 and the testnet v3.2.8. Because the precompile is not active on mainnet, the reply format below is the release's behaviour and has not been exercised there; the refusal format was seen on the testnet on 7 November 2026 (see [Tested on the testnet](#tested-testnet)). Wherever this page says the precompile returns the target's raw reply, that describes releases before v3.2.5.
+Chain v3.2.5 changes how the bridge behaves. Mainnet has run it since 29 October 2026 (governance proposal 14, height 3,906,833) and the testnet since 26 October; mainnet now runs v3.2.7 and the testnet v3.2.8. Because the precompile is not active on mainnet, the reply format below is the release's behaviour and has not been exercised there; the refusal format was seen on the testnet on 7 November 2026 (see [Tested on the testnet](#tested-testnet)). Wherever this page says the precompile returns the target's raw reply, that describes releases before v3.2.5.
 
 * **An allowlist route.** `GET /qorechain/crossvm/v1/params` serves the bridge parameters, including the allowlist of targets. On mainnet the allowlist is empty (checked 4 November 2026), so no target is allowed yet; on the testnet it was empty on 30 October (see the note above).
 * **A fixed reply format.** The precompile returns `abi.encode(bytes)`, so a reply is always at least 64 bytes and an empty reply can be told from a missing one; decode it with `abi.decode(ret, (bytes))`.
 * **Refusals carry a reason.** When the bridge refuses a call it reverts with `Error(string)`, which a contract can read and pass on.
-* **Active on the testnet, not on mainnet.** `0x...0901` is not in mainnet's active precompile list; the testnet's list holds it (read 7 November 2026), and the refusal and the allowlist behaviour were tested there on that day. Mainnet keeps cross-VM calls off until a separate governance decision, also after a v3.2.7 upgrade.
+* **Active on the testnet, not on mainnet.** `0x...0901` is not in mainnet's active precompile list; the testnet's list holds it (read 7 November 2026), and the refusal and the allowlist behaviour were tested there on that day. Mainnet keeps cross-VM calls off until a separate governance decision, also after the v3.2.7 upgrade (applied on mainnet on 12 November 2026; the cross-VM call message stays paused by the circuit breaker).
 
 ### Tested on the testnet {#tested-testnet}
 

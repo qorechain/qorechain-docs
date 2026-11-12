@@ -272,12 +272,12 @@ Branch on the codespace and code together, and keep the raw log.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Node release | v3.2.6 (applied 4 November 2026; v3.2.5 on 29 October) | v3.2.8 (applied 12 November; v3.2.7 on 6 November, v3.2.6 on 27 October, v3.2.5 on 26 October) |
+| Node release | v3.2.7 (applied 12 November 2026; v3.2.6 on 4 November, v3.2.5 on 29 October) | v3.2.8 (applied 12 November; v3.2.7 on 6 November, v3.2.6 on 27 October, v3.2.5 on 26 October) |
 
 - The denomination is `uqor` (1 QOR = 10^6 uqor; on the EVM lane 1 uqor = 10^12 wei). The minimum gas price is 0.1 uqor, the unbonding period is 21 days and the memo limit is 256 characters. These values were read from both networks on 27 October 2026 (mainnet read again on 4 November 2026: unbonding 1,814,400 seconds, minimum gas price 0.1 uqor, memo limit 256 characters) and can change by governance, so read them from the chain in production.
 - Deposits need no keys and no registration. Sending needs a registered ML-DSA-87 key per hot address.
 - Run your own full nodes for production. The public endpoints are rate-limited and meant for development. If a script gets `403 Forbidden`, set an explicit `User-Agent` header. See [running a node](/developer-guide/running-a-node) and [connecting to mainnet](/getting-started/connecting-to-mainnet).
-- The testnet receives each node release before mainnet. Switch gas rules by checking the applied upgrade, not by date (both networks have applied v3.2.5 and v3.2.6; the testnet also v3.2.7 and v3.2.8).
+- The testnet receives each node release before mainnet. Switch gas rules by checking the applied upgrade, not by date (both networks have applied v3.2.5, v3.2.6 and v3.2.7; the testnet also v3.2.8).
 - Test tokens on testnet (bank denoms of the form `erc20:0x...`, an IBC token) do not exist on mainnet. Credit `uqor` on both networks.
 - Testnet QOR comes from the QoreChain dashboard faucet and has no value. See [connecting to testnet](/getting-started/connecting-to-testnet).
 

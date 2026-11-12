@@ -29,7 +29,7 @@ Accounts, balances, and tokens are shared across the runtimes, and the chain
 includes the IBC module for cross-chain interoperability (no IBC channel is
 open on mainnet; the testnet has one open `transfer` channel to a test chain, checked 27 October 2026).
 
-:::note What works on the live networks today (mainnet runs v3.2.6, the testnet v3.2.8)
+:::note What works on the live networks today (mainnet runs v3.2.7, the testnet v3.2.8)
 **Works:** reads on every lane, hybrid-signed Native transactions, unified
 accounts, EVM transactions inside an
 [authorization window](/sdk/guides/evm#evm-window), and SVM reads.
@@ -45,8 +45,8 @@ applies. Checked against the live endpoints on 27 October 2026; on 7 November 20
 
 The published SDK (0.14.0, 12 November 2026) signs in the form both networks verify
 (v2 hybrid sign-bytes, resolved from chain state), and the signing format,
-addresses, decimals, memos and fees did not change in v3.2.3, v3.2.4, v3.2.5 or v3.2.6 (mainnet has run v3.2.6 since 4 November 2026,
-height 4,020,000, governance proposal 15; the testnet since 27 October, and since 6 November the testnet ran v3.2.7 and since 12 November it runs v3.2.8, which add messages that SDK 0.14.0 has builders for; the testnet's new rules apply from v3.2.8 and mainnet has not applied it). It carries
+addresses, decimals, memos and fees did not change in v3.2.3, v3.2.4, v3.2.5 or v3.2.6 (mainnet has run v3.2.7 since 12 November 2026,
+height 4,164,600, governance proposal 16, after v3.2.6 on 4 November; the testnet since 27 October, and since 6 November the testnet ran v3.2.7 and since 12 November it runs v3.2.8, which add messages that SDK 0.14.0 has builders for; the testnet's new rules apply from v3.2.8 and mainnet has not applied it; the v3.2.7 messages are on mainnet from 12 November 2026). It carries
 the client side of the later post-quantum rules (the proof of possession on key
 registration, scoped EVM windows, EIP-7702 consent messages) and of v3.2.4 (staking
 tiers, the authenticator nonce, protocol feature switches) and v3.2.5 (exact gas for

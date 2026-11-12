@@ -51,7 +51,7 @@ The endpoints below default to a local node. On mainnet, use the **`qorechain-vl
 The synchronous path uses an EVM **precompile** at address `0x0000000000000000000000000000000000000901`. It is designed to let Solidity contracts call QoreChain Native contracts and receive a response within the same transaction.
 
 :::warning Not active on mainnet; active on the testnet with an allowlist
-The CrossVM bridge precompile is **not active** on `qorechain-vladi`: a call to `0x…0901` there succeeds and returns empty data. On `qorechain-diana` the `active_static_precompiles` list holds `0x…0901` (read 7 November 2026); a read-only `eth_call` through it was run on 7 November 2026, after the v3.2.7 upgrade (results below). The v3.2.3 binary carries a hardened version (it refuses a `STATICCALL`, meters its nested call against the calling frame's gas and journals it so an EVM revert also undoes the QoreChain Native side, reaches only allowlisted QoreChain Native targets, and honours the cross-VM circuit breaker), but it only runs where a governance-approved proposal has added it to the active list (the testnet so far, not mainnet). On mainnet the precompile and cross-VM calls stay off, even after a v3.2.7 upgrade (which has no date yet), until a separate governance decision. The example below is the layout the node decodes; it cannot run on mainnet until the precompile is active. On the testnet it can be called, within the allowlist (next section). See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+The CrossVM bridge precompile is **not active** on `qorechain-vladi`: a call to `0x…0901` there succeeds and returns empty data. On `qorechain-diana` the `active_static_precompiles` list holds `0x…0901` (read 7 November 2026); a read-only `eth_call` through it was run on 7 November 2026, after the v3.2.7 upgrade (results below). The v3.2.3 binary carries a hardened version (it refuses a `STATICCALL`, meters its nested call against the calling frame's gas and journals it so an EVM revert also undoes the QoreChain Native side, reaches only allowlisted QoreChain Native targets, and honours the cross-VM circuit breaker), but it only runs where a governance-approved proposal has added it to the active list (the testnet so far, not mainnet). On mainnet the precompile and cross-VM calls stay off, even after the v3.2.7 upgrade of 12 November 2026, until a separate governance decision. The example below is the layout the node decodes; it cannot run on mainnet until the precompile is active. On the testnet it can be called, within the allowlist (next section). See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Solidity Example
@@ -97,11 +97,11 @@ On `qorechain-diana` (node release v3.2.8 since 12 November 2026) the precompile
 * **Target outside the allowlist:** reverts with `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted`.
 * **Target on the allowlist:** the call reaches the contract (the node reports the contract's own error for the empty `{}` message: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). That shows the route works; no state-changing cross-VM transaction through the precompile was sent for this page.
 
-On mainnet the precompile (`0x…0901`) and cross-VM calls stay **off** (circuit breaker) even after the v3.2.7 upgrade, until a separate governance decision.
+On mainnet the precompile (`0x…0901`) and cross-VM calls stay **off** (circuit breaker) even after the v3.2.7 upgrade of 12 November 2026, until a separate governance decision.
 
-### What v3.2.7 changes for cross-VM calls (testnet only for now) {#v327}
+### What v3.2.7 changes for cross-VM calls {#v327}
 
-These apply on the testnet since 6 November 2026 and are **not on mainnet yet** (the upgrade has no date):
+These apply on the testnet since 6 November 2026 and on mainnet since 12 November 2026 (the cross-VM call itself stays off on mainnet, so on mainnet they matter only if it is switched on):
 
 * A call that fails in the target VM now fails cleanly: it is that call's failure and the queue goes on with the next message.
 * Malformed targets are refused at submit time with code 5 in codespace `crossvm`.

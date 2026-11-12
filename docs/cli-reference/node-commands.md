@@ -10,7 +10,7 @@ sidebar_position: 1
 Reference for `qorechaind` commands used to initialize, configure, and operate a QoreChain node.
 
 :::note
-QoreChain runs two networks: the **`qorechain-vladi`** mainnet (live since 7 June 2026; node release **v3.2.6**, applied at height 4,020,000 on 4 November 2026 by governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026, v3.2.4 at height 3,742,566 on 23 October 2026 and v3.2.3 at height 3,662,051 on 20 October 2026) and the **`qorechain-diana`** testnet (node release **v3.2.8**, applied at height 9,929,500 on 12 November 2026, after v3.2.7 at height 9,594,600 on 6 November, v3.2.6 at height 8,970,638 on 27 October, v3.2.5 at height 8,890,800 on 26 October and v3.2.4 at height 8,337,253 on 19 October; mainnet has no v3.2.8 date). Pass the appropriate `--chain-id` for the network you intend to join — the examples below target the testnet; use `--chain-id qorechain-vladi` for mainnet. The current release for each network is listed in `latest.json` under [download.qore.host](https://download.qore.host).
+QoreChain runs two networks: the **`qorechain-vladi`** mainnet (live since 7 June 2026; node release **v3.2.7**, applied at height 4,164,600 on 12 November 2026 by governance proposal 16; v3.2.6 was applied at height 4,020,000 on 4 November 2026; v3.2.5 was applied at height 3,906,833 on 29 October 2026, v3.2.4 at height 3,742,566 on 23 October 2026 and v3.2.3 at height 3,662,051 on 20 October 2026) and the **`qorechain-diana`** testnet (node release **v3.2.8**, applied at height 9,929,500 on 12 November 2026, after v3.2.7 at height 9,594,600 on 6 November, v3.2.6 at height 8,970,638 on 27 October, v3.2.5 at height 8,890,800 on 26 October and v3.2.4 at height 8,337,253 on 19 October; mainnet has not applied v3.2.8). Pass the appropriate `--chain-id` for the network you intend to join — the examples below target the testnet; use `--chain-id qorechain-vladi` for mainnet. The current release for each network is listed in `latest.json` under [download.qore.host](https://download.qore.host).
 
 The commands on this page were checked against the v3.2.3 release binary. The v3.2.4 binary adds commands that a v3.2.3 binary does not have (for example `stakingtier`); they run on both networks (testnet since 19 October 2026, mainnet since 23 October 2026), and where this manual mentions one it says so. The v3.2.6 binary (both networks) adds two more query commands, `query rlconsensus applied-params` and `last-action` (see [Query Commands](/cli-reference/query-commands#rlconsensus)). Everything else on this page behaves the same on both releases.
 :::
@@ -70,10 +70,11 @@ A binary built from the public source tree (the community build) refuses to star
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 / v3.2.4 / v3.2.5 / v3.2.6 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"})
+# has v3.2.3 / v3.2.4 / v3.2.5 / v3.2.6 / v3.2.7 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"})
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.6   # {"height":"4020000"}
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.7   # {"height":"4164600"}
 ```
 
 ---

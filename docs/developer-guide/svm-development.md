@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain includes a **Solana Virtual Machine (SVM)** execution environment, allowing developers to deploy and execute SBF/BPF programs using familiar Solana tooling. The SVM module exposes a Solana-compatible JSON-RPC interface on **port 8899**, which `qorechaind start` launches automatically (see [JSON-RPC Server](#json-rpc-server) below).
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.6** since 4 November 2026 (governance proposal 15, height 4,020,000; v3.2.5 since 29 October 2026, v3.2.4 since 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026). **SVM transactions are disabled on both networks** (see the next box), so the `tx svm` commands on this page are reference only: they cannot succeed today.
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.7** since 12 November 2026 (governance proposal 16, height 4,164,600; v3.2.6 since 4 November 2026; v3.2.5 since 29 October 2026, v3.2.4 since 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026). **SVM transactions are disabled on both networks** (see the next box), so the `tx svm` commands on this page are reference only: they cannot succeed today.
 :::
 
 ---
@@ -84,9 +84,9 @@ The defaults are `enable = true` and `address = "127.0.0.1:8899"`, so a freshly 
 | `getMinimumBalanceForRentExemption` | Minimum balance for a given data size     |
 | `getVersion`                        | SVM runtime version info                  |
 | `getHealth`                         | Health check for the SVM endpoint         |
-| `getGenesisHash`                    | Genesis hash of the cluster (testnet, since v3.2.7; base58) |
+| `getGenesisHash`                    | Genesis hash of the cluster (since v3.2.7: testnet from 6 November 2026, mainnet from 12 November 2026; base58) |
 
-**Cluster identity (v3.2.7, testnet only for now).** Wallets that follow the Wallet Standard need a stable cluster identity. From release v3.2.7 (testnet since 6 November 2026; mainnet is still on v3.2.6 and has no date for it) the node serves the cluster's genesis hash and its Wallet Standard chain id. On the testnet on 7 November 2026, `GET /qorechain/svm/v1/cluster_info` answered with `chain_id` `qorechain-diana`, a `genesis_hash`, a `caip2_chain_id` (`solana:` followed by the first 32 characters of the genesis hash) and `execution_enabled` `false`, and `getGenesisHash` on `https://svm-testnet.qore.host` returned the same genesis hash. The hash is derived from the chain id, not from a real Solana cluster. **SVM execution stays off on both networks**; this only identifies the cluster.
+**Cluster identity (v3.2.7).** Wallets that follow the Wallet Standard need a stable cluster identity. From release v3.2.7 (testnet since 6 November 2026, mainnet since 12 November 2026) the node serves the cluster's genesis hash and its Wallet Standard chain id. On the testnet on 7 November 2026, `GET /qorechain/svm/v1/cluster_info` answered with `chain_id` `qorechain-diana`, a `genesis_hash`, a `caip2_chain_id` (`solana:` followed by the first 32 characters of the genesis hash) and `execution_enabled` `false`, and `getGenesisHash` on `https://svm-testnet.qore.host` returned the same genesis hash. The hash is derived from the chain id, not from a real Solana cluster. **SVM execution stays off on both networks**; this only identifies the cluster. On 12 November 2026 the same route on mainnet answered `200` with `chain_id` `qorechain-vladi`, its own genesis hash and `execution_enabled` `false`.
 
 ---
 

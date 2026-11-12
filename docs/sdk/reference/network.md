@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Network preset | `mainnet` |
 | Chain id | `qorechain-vladi` (live since 7 June 2026) |
-| Chain version (4 November 2026) | v3.2.6 (since height 4,020,000, 4 November 2026, governance proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October and v3.2.4 at height 3,742,566 on 23 October). SDK 0.12.0 is the client for v3.2.5 and works on v3.2.6 (the signing format did not change); 0.10.0 was the client for v3.2.4 |
+| Chain version (12 November 2026) | v3.2.7 (since height 4,164,600, 12 November 2026, governance proposal 16; v3.2.6 was applied at height 4,020,000 on 4 November, v3.2.5 at height 3,906,833 on 29 October and v3.2.4 at height 3,742,566 on 23 October). SDK 0.12.0 is the client for v3.2.5 and works on v3.2.6 and v3.2.7 (the signing format did not change); 0.10.0 was the client for v3.2.4 |
 | EVM chain ID | `9801` |
 | Display token | `QOR` |
 | Base denomination | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Network preset | `testnet` |
 | Chain id | `qorechain-diana` (live) |
-| Chain version | v3.2.8 (since height 9,929,500, 12 November 2026, applied by governance; mainnet does not have it and has no date for it. v3.2.7 was applied at height 9,594,600 on 6 November; v3.2.6 was applied at height 8,970,638 on 27 October; v3.2.5 was applied at height 8,890,800 on 26 October and v3.2.4 at height 8,337,253 on 19 October) |
+| Chain version | v3.2.8 (since height 9,929,500, 12 November 2026, applied by governance; mainnet has not applied it. v3.2.7 was applied at height 9,594,600 on 6 November; v3.2.6 was applied at height 8,970,638 on 27 October; v3.2.5 was applied at height 8,890,800 on 26 October and v3.2.4 at height 8,337,253 on 19 October) |
 | EVM chain ID | `9800` |
 | Display token | `QOR` |
 | Base denomination | `uqor` |
@@ -63,7 +63,7 @@ read there are not on mainnet (checked 27 October 2026; the full list is in
 [Differences between testnet and mainnet](/appendix/chain-parameters#testnet-differences)):
 
 * **REST routes.** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`, `GET /qorechain/pqc/v1/params` and `GET /qorechain/crossvm/v1/params` answer on the testnet. Mainnet answered HTTP 501 for them until chain v3.2.6; since it applied v3.2.6 (4 November 2026) all of those routes answered HTTP 200 on mainnet when checked that day. The AMM routes under `/qorechain/amm/v1/` (`pools`, `params`) answer on both networks.
-* **Chain v3.2.7 routes.** On 7 November 2026 the testnet answered HTTP 200 for `GET /qorechain/pqc/v1/multisig/{address}` (`{"found":false,"multisig":null}` for an address with none), `GET /qorechain/stakingtier/v1/apr`, `GET /qorechain/stakingtier/v1/apr/{delegator}`, `GET /qorechain/stakingtier/v1/pool` and `GET /qorechain/svm/v1/cluster_info`; mainnet answered HTTP 501 for all of them except `/qorechain/stakingtier/v1/pool` (200). `GET /qorechain/pqc/v1/textual_sign_doc` answered 501 on both public endpoints, so it is not documented as available. SDK 0.12.0 has no builder or typed client for any of them.
+* **Chain v3.2.7 routes.** On 7 November 2026 the testnet answered HTTP 200 for `GET /qorechain/pqc/v1/multisig/{address}` (`{"found":false,"multisig":null}` for an address with none), `GET /qorechain/stakingtier/v1/apr`, `GET /qorechain/stakingtier/v1/apr/{delegator}`, `GET /qorechain/stakingtier/v1/pool` and `GET /qorechain/svm/v1/cluster_info`; mainnet answered HTTP 501 for all of them except `/qorechain/stakingtier/v1/pool` (200) that day, before it applied v3.2.7. Since mainnet applied v3.2.7 (12 November 2026) these routes answer there: on 12 November 2026 `GET /qorechain/pqc/v1/multisig/{address}`, `GET /qorechain/stakingtier/v1/apr`, `GET /qorechain/stakingtier/v1/apr/{delegator}`, `GET /qorechain/stakingtier/v1/pool` and `GET /qorechain/svm/v1/cluster_info` answered HTTP 200 on mainnet (the multisig route returned `{"found":false,"multisig":null}` for an address with none; `cluster_info` reports `execution_enabled` false, as the SVM lane is still off). The textual sign doc query is a POST route: `GET /qorechain/pqc/v1/textual_sign_doc` answers 501, and a POST with an empty body answered 400 ("tx_bytes or tx_json is required") on mainnet, so it is routed. The `GET /qorechain/pqc/v1/evm_limits` and `GET /qorechain/svm/v1/params` routes (v3.2.8) answered 501 on mainnet. SDK 0.12.0 has no builder or typed client for any of the v3.2.7 routes.
 * **Test tokens.** Three tokens with no value exist only on the testnet, as bank denominations named `erc20:<EIP-55 contract address>` (case-sensitive): fUSD (6 decimals), fETH (18) and fBTC (8). `GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` lists them. Mainnet's only bank denomination is `uqor`. See [Testnet test tokens (Fest)](/api-reference/rest-grpc-endpoints#fest-tokens).
 * **Modules switched on.** The `abstractaccount` module is enabled on the testnet and off on mainnet, EVM precompiles are active on the testnet (three on 27 October, four on 4 November) and none on mainnet, and QoreChain Native instantiate is open on the testnet.
 

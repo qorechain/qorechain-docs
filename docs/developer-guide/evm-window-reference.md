@@ -307,7 +307,7 @@ The testnet answered on 12 November 2026 with `tx_max_gas` **30000000** and `pre
 | Window `max_txs` | 1,000 | Most transactions in one window |
 | List entries | 16 per list | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-The response also carries a `limits` object with the governance-set values; read the top-level `tx_max_gas` and `precompile_input_max_bytes`, which are the values in force. The route is served from v3.2.8, so the public mainnet answers `501 Not Implemented` until it upgrades.
+The response also carries a `limits` object with the governance-set values; read the top-level `tx_max_gas` and `precompile_input_max_bytes`, which are the values in force. The route is served from v3.2.8, so the public mainnet answers `501 Not Implemented` until it applies v3.2.8 (checked on 12 November 2026, after mainnet moved to v3.2.7).
 
 A window opened at a normal gas price still counts the maximum fee: a gas limit of 30,000,000 at a fee cap of 100 gwei counts 3 QOR against `max_value` for one transaction.
 

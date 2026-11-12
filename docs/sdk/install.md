@@ -43,7 +43,7 @@ Hybrid builders take a `signBytesVersion` option (`"auto"` | `"v1"` | `"v2"`); `
 asks the network and therefore needs the REST endpoint (`rest`) on
 `qorechain-vladi` / `qorechain-diana`: it throws instead of guessing. See
 [Which sign-bytes form?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-The form did not change in chain v3.2.3 or v3.2.4 (v3.2.4 runs on the testnet since 19 October 2026 and on mainnet since 23 October 2026; v3.2.5 and v3.2.6 changed nothing here; mainnet runs v3.2.6 since 4 November 2026): `"auto"`
+The form did not change in chain v3.2.3 or v3.2.4 (v3.2.4 runs on the testnet since 19 October 2026 and on mainnet since 23 October 2026; v3.2.5 and v3.2.6 changed nothing here; mainnet runs v3.2.7 since 12 November 2026): `"auto"`
 resolves to v2 on both networks, because both applied the upgrade that switched to it.
 :::
 
@@ -140,7 +140,7 @@ Keep the recovery code: a different code gives a different key.
 
 SDK 0.12.0 is the client release for chain **v3.2.5**, which mainnet applied at
 height 3,906,833 on 29 October 2026 (the testnet applied it on 26 October). Mainnet
-has run v3.2.6 since 4 November; the testnet ran v3.2.6 from 27 October, v3.2.7 from 6 to 12 November and v3.2.8 since 12 November; the
+has run v3.2.6 since 4 November and v3.2.7 since 12 November; the testnet ran v3.2.6 from 27 October, v3.2.7 from 6 to 12 November and v3.2.8 since 12 November; the
 hybrid signing format, addresses, decimals and memos did not change, so a
 transaction built with 0.10.0 stays valid. TypeScript, Python, Go, Rust and Java
 all move to 0.12.0, with `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`
@@ -182,10 +182,10 @@ on 19 October). The signing format, addresses, decimals, memos and fees did not
 change, and a transaction built with 0.9.0 stays valid. The release was checked in
 every language with real transactions on the testnet. It had no builders for
 anything introduced after v3.2.4; the v3.2.5 additions came with
-[0.12.0](#whats-new-0120). Mainnet has run v3.2.6 since 4 November 2026 (height
-4,020,000, governance proposal 15; v3.2.5 before it, from 29 October at height
+[0.12.0](#whats-new-0120). Mainnet has run v3.2.7 since 12 November 2026 (height
+4,164,600, governance proposal 16; v3.2.6 from 4 November at height 4,020,000; v3.2.5 before it, from 29 October at height
 3,906,833) and 0.10.0 keeps working there because the signing format did not
-change. The testnet applied v3.2.5 and v3.2.6 on 26 and 27 October 2026, v3.2.7 on 6 November and v3.2.8 on 12 November (no SDK release has builders for the v3.2.7 messages). What 0.10.0
+change. The testnet applied v3.2.5 and v3.2.6 on 26 and 27 October 2026, v3.2.7 on 6 November and v3.2.8 on 12 November (no SDK release has builders for the v3.2.7 messages, which are on mainnet since 12 November 2026). What 0.10.0
 brought (all of it is still in 0.14.0):
 
 | Area | In 0.10.0 |
@@ -205,7 +205,7 @@ at 0.14.0 now.
 ## What 0.9.0 added {#whats-new-090}
 
 SDK 0.9.0 was the client release for chain **v3.2.2** and **v3.2.3** (mainnet
-applied them at heights 3,556,788 and 3,662,051; mainnet ran v3.2.4 from 23 October 2026 (height 3,742,566) and ran v3.2.5 from 29 October and has run v3.2.6 since 4 November 2026, and the testnet has run v3.2.4 or later since 19 October 2026). The
+applied them at heights 3,556,788 and 3,662,051; mainnet ran v3.2.4 from 23 October 2026 (height 3,742,566) and ran v3.2.5 from 29 October has run v3.2.6 since 4 November and runs v3.2.7 since 12 November 2026, and the testnet has run v3.2.4 or later since 19 October 2026). The
 signing format, addresses, decimals, memos and fees did not change, so the
 v2 hybrid sign-bytes form that 0.8.1 and later sign is still the right one.
 What is new:

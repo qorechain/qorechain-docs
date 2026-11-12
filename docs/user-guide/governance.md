@@ -10,7 +10,7 @@ sidebar_position: 3
 This guide covers how on-chain governance works on QoreChain: how votes are tallied, how to submit proposals, and how to vote.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.6** since 4 November 2026 (v3.2.5 from 29 October, v3.2.4 from 23 October); the testnet has run **v3.2.8** since 12 November 2026 (v3.2.7 from 6 November, v3.2.6 from 27 October). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when participating in governance on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.7** since 12 November 2026 (v3.2.6 from 4 November, v3.2.5 from 29 October, v3.2.4 from 23 October); the testnet has run **v3.2.8** since 12 November 2026 (v3.2.7 from 6 November, v3.2.6 from 27 October). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when participating in governance on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`
@@ -175,7 +175,7 @@ Key parameters include:
 
 ## Governance on mainnet so far {#mainnet-history}
 
-Mainnet governance has been used for parameter changes, circuit-breaker decisions, coordinated upgrades and, since October 2026, for releasing amounts that the chain recorded at the v3.2.0 upgrade. Proposals 7 to 14 passed on mainnet in October 2026 and proposal 15 in November, including proposal 12 (a further release, passed 21 October) and proposal 13 (the v3.2.4 upgrade, applied at height 3,742,566 on 23 October) proposal 14 (the v3.2.5 upgrade, applied at height 3,906,833 on 29 October 2026) and proposal 15 (the v3.2.6 upgrade, voting ended 3 November, applied at height 4,020,000 on 4 November 2026); the list and the outcomes are in [Version History](/appendix/version-history#governance-timeline), and every proposal can be read live at `GET /cosmos/gov/v1/proposals`.
+Mainnet governance has been used for parameter changes, circuit-breaker decisions, coordinated upgrades and, since October 2026, for releasing amounts that the chain recorded at the v3.2.0 upgrade. Proposals 7 to 14 passed on mainnet in October 2026 and proposals 15 and 16 in November, including proposal 12 (a further release, passed 21 October) and proposal 13 (the v3.2.4 upgrade, applied at height 3,742,566 on 23 October) proposal 14 (the v3.2.5 upgrade, applied at height 3,906,833 on 29 October 2026) proposal 15 (the v3.2.6 upgrade, voting ended 3 November, applied at height 4,020,000 on 4 November 2026) and proposal 16 (the v3.2.7 upgrade, applied at height 4,164,600 on 12 November 2026); the list and the outcomes are in [Version History](/appendix/version-history#governance-timeline), and every proposal can be read live at `GET /cosmos/gov/v1/proposals`.
 
 ---
 

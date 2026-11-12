@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Architecture Overview
 
-QoreChain is a modular blockchain node composed of three primary processes — the chain node, AI sidecar, and block indexer — backed by a Postgres database and monitored via Prometheus and Grafana. Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 on release **v3.2.6** (applied at height 4,020,000 on 4 November 2026; v3.2.5 had been applied at height 3,906,833 on 29 October), with a parallel testnet (`qorechain-diana`, EVM chain ID **9800**, on v3.2.8 since 12 November 2026, two releases ahead of mainnet). The chain is built on the Cosmos SDK v0.53. The following diagram shows the high-level component layout.
+QoreChain is a modular blockchain node composed of three primary processes — the chain node, AI sidecar, and block indexer — backed by a Postgres database and monitored via Prometheus and Grafana. Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 on release **v3.2.7** (applied at height 4,164,600 on 12 November 2026; v3.2.6 had been applied at height 4,020,000 on 4 November), with a parallel testnet (`qorechain-diana`, EVM chain ID **9800**, on v3.2.8 since 12 November 2026, one release ahead of mainnet). The chain is built on the Cosmos SDK v0.53. The following diagram shows the high-level component layout.
 
 The transaction lifecycle below summarises how a submitted transaction flows through the node — from the AnteHandler decorator chain (security and fee checks) into VM execution and on-chain settlement:
 

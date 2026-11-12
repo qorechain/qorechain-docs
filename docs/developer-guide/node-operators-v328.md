@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Node Operators: v3.2.8 Checklist
 
-Release **v3.2.8** is running on the testnet `qorechain-diana` since 12 November 2026 (height 9,929,500). Mainnet `qorechain-vladi` stays on v3.2.6 and has no v3.2.8 date yet, so nothing in this page applies to a mainnet node today.
+Release **v3.2.8** is running on the testnet `qorechain-diana` since 12 November 2026 (height 9,929,500). Mainnet `qorechain-vladi` has run v3.2.7 since 12 November 2026 (height 4,164,600, governance proposal 16) and has not applied v3.2.8, so nothing in this page applies to a mainnet node today.
 
 This page is the short list of what a node operator checks and changes for v3.2.8: the shared libraries in the bundle, the contract runtime settings, the new `app.toml` defaults, one new REST route and the steps to upgrade a node that is still on v3.2.7. For the full node guide, see [Running a Node](/developer-guide/running-a-node).
 
@@ -137,7 +137,7 @@ A new node joining the testnet starts from the v3.2.8 binary directly; see [Conn
 | Start-up error about a missing shared library | `lib/` was not copied whole, or the loader does not point at it | Section 1 |
 | Warning that `memory_cache_size` was raised | The configured value is below 256 MiB | Set 256 or more |
 | Warning about the contract directory | Contract code is still in the old location | Move it to `<home>/wasm` when convenient |
-| `501` from `/qorechain/svm/v1/params` | The node is not on v3.2.8 (mainnet today) | Expected on mainnet |
+| `501` from `/qorechain/svm/v1/params` | The node is not on v3.2.8 (mainnet runs v3.2.7) | Expected on mainnet |
 
 ## Related pages
 

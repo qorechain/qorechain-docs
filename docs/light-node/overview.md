@@ -11,7 +11,7 @@ The **QoreChain Light Node** is a small client that follows a QoreChain network 
 
 Running and syncing a node needs no licence. Taking part in the reward share is a separate step: it needs a `lightnode_operator` licence, stake delegated to bonded validators, and an on-chain registration (see [How to access](#how-to-access)).
 
-The light node has its **own version line**, separate from the chain release. As of 12 November 2026 both networks' release channels carry light node **3.1.13** (the testnet runs chain `v3.2.8`, mainnet runs `v3.2.6`; 3.1.13 worked unchanged on `v3.2.7`, where heartbeat and claim returned code 0, and was not re-checked on `v3.2.8`). Treat the two numbers as unrelated.
+The light node has its **own version line**, separate from the chain release. As of 12 November 2026 both networks' release channels carry light node **3.1.13** (the testnet runs chain `v3.2.8`, mainnet runs `v3.2.7` since 12 November 2026; 3.1.13 worked unchanged on `v3.2.7` on the testnet, where heartbeat and claim returned code 0, and was not re-checked on `v3.2.8` or on mainnet). Treat the two numbers as unrelated.
 
 ## Innovations {#innovations}
 
@@ -74,7 +74,7 @@ The chain RPC for `onboard` is `https://rpc.qore.host` (mainnet) or `https://rpc
 
 | | Mainnet | Testnet |
 | --- | --- | --- |
-| Chain | `qorechain-vladi` (chain `v3.2.6`) | `qorechain-diana` (chain `v3.2.8`) |
+| Chain | `qorechain-vladi` (chain `v3.2.7`) | `qorechain-diana` (chain `v3.2.8`) |
 | RPC for the node | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | REST for queries | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | Light node release | 3.1.13 | 3.1.13 |
@@ -98,7 +98,7 @@ You can also check a licence directly: `GET /qorechain/license/v1/check/<address
 ### Status of the reward program {#reward-program-status}
 
 :::note Registration is open
-Registration is open on mainnet (`qorechain-vladi`, chain v3.2.6) and on testnet (`qorechain-diana`, chain v3.2.8). On 4 November 2026 seven `lightnode_operator` licences had been granted on mainnet, one light node was registered on mainnet and two on the testnet (`total_registered` in `GET /qorechain/lightnode/v1/stats`: `1` and `2`). Reward accounting has been live on both networks since the v3.2.0 upgrade. Uptime is counted **from the block your node is registered**, so running a node beforehand does not earn credit. Since chain v3.2.4 the per-node bound also starts at the node's own registration: the first settlement after registering credits only what accrued since then.
+Registration is open on mainnet (`qorechain-vladi`, chain v3.2.7) and on testnet (`qorechain-diana`, chain v3.2.8). On 4 November 2026 seven `lightnode_operator` licences had been granted on mainnet, one light node was registered on mainnet and two on the testnet (`total_registered` in `GET /qorechain/lightnode/v1/stats`: `1` and `2`). Reward accounting has been live on both networks since the v3.2.0 upgrade. Uptime is counted **from the block your node is registered**, so running a node beforehand does not earn credit. Since chain v3.2.4 the per-node bound also starts at the node's own registration: the first settlement after registering credits only what accrued since then.
 
 The release manifest (`https://download.qore.host/<net>/lightnode/latest.json`) carries the official signal in its `registration.open` field. For the live state query `GET /qorechain/license/v1/holders/lightnode_operator` and `GET /qorechain/lightnode/v1/stats` on `https://api.qore.host` (mainnet) or `https://api-testnet.qore.host` (testnet).
 :::
