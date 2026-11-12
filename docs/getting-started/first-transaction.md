@@ -68,6 +68,90 @@ On the Cosmos lane the network setting is `hybrid_signature_mode = required` (li
 
 After the co-signed transaction is accepted, the CLI returns a transaction hash.
 
+## The first transaction of a new account {#first-tx-pqc}
+
+From release **v3.2.8** (testnet since 12 November 2026; mainnet has no date yet) the first transaction of a fresh account must be the **registration of its post-quantum key**: `MsgRegisterPQCKeyV2`, carrying the proof of possession, signed with the classical key alone. Any other first transaction from an account that has no registered key is refused. This applies to a new account that has been funded but has never sent anything; an account that already has a registered key is not affected.
+
+**Why it matters.** Every later transaction on the Cosmos lane is signed hybrid (secp256k1 plus ML-DSA-87), and the chain can only verify the ML-DSA-87 part against a key it already knows. Registration is the one transaction that cannot carry that signature yet, so it is the one transaction the chain accepts with a classical signature alone, and it has to come first. If you send a transfer, a delegation or a contract call before registering, the transaction is refused and you register first.
+
+### Register the key
+
+With the CLI, use `register-key-v2` exactly as in [Register your post-quantum key](#register-pqc-key) above (the key must be generated first with `qorechaind tx pqc gen-key mypqc`):
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
+```
+
+With the TypeScript SDK (0.9.0 or later), `ensurePqcRegistered` reads the key status first, skips the transaction when your key is already registered, attaches the proof of possession, and sends the registration classically by itself:
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  ensurePqcRegistered,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  endpoints: { rest: "https://api-testnet.qore.host", rpc: "https://rpc-testnet.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
+const tx = await client.connectTx(signer, { pqcKeypair });
+
+const res = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  rest: client.network.endpoints.rest,
+  fee: { amount: [{ denom: "uqor", amount: "90000" }], gas: "600000" },
+});
+console.log(res.alreadyRegistered ? "already registered" : res.txHash);
+```
+
+If you only need the message (for example to pack it into your own transaction body), `buildRegisterPqcKeyMsg(sender, { pqcKeypair, ecdsaPubkey, proofOfPossession })` returns the `MsgRegisterPQCKeyV2` without sending it.
+
+The other SDKs have the same idempotent helper, all of which read the key status over REST first and never register blind:
+
+| Language | Helper |
+| --- | --- |
+| Python | `qorsdk.pqc_dx.ensure_pqc_registered(account=..., pqc_keypair=..., chain_id=..., account_number=..., sequence=..., rest_url=..., fee=...)` |
+| Go | `pqcdx.New(pqcdx.Signer{...}, pqcdx.Options{}).EnsurePQCRegistered(pqcdx.RegisterOptions{})` |
+| Rust | `PqcDx::ensure_pqc_registered().await` |
+| Java | `PqcDx.ensurePqcRegistered(signer, broadcaster, qor, new PqcDx.EnsureOptions())` |
+
+For the full signer setup in each language, see the SDK reference for that language. Registration needs the account to hold enough QOR to pay the fee, so fund the new account before registering.
+
+### Estimate the fee with the signature included
+
+A hybrid signature adds about **4.7 KB** to the transaction and the chain charges a **verification fee** for it, so a fee estimated from an unsigned or classically signed copy of the transaction is too low. Simulate the transaction with the hybrid signature included, or let the SDK do it: the TypeScript client's default fee is `"auto"`, which simulates the hybrid transaction and sets the gas limit from the result.
+
+```ts
+import { toBase } from "@qorechain/sdk";
+
+// "auto" is the default: the client simulates the hybrid transaction itself.
+await tx.bankSend("qor1recipientaddress...", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+| Transaction | Typical gas | Example fee at 0.15 uqor per gas |
+| --- | --- | --- |
+| Hybrid-signed transfer | about 160,000 to 240,000 | 24,000 to 36,000 uqor |
+| Key registration | about 600,000 (limit to set) | 90,000 uqor |
+
+**Tested on the testnet.** On 12 November 2026 (release v3.2.8) a fresh eth-native account with 500 QOR sent the registration first (SDK 0.13.0, signed classically, with the proof of possession): code 0, 299,233 gas used under a limit of 600,000 and a fee of 90,000 uqor. Its first hybrid-signed transfer then used 187,494 gas under a limit of 400,000 (fee 60,000 uqor). Reading the transaction back from `GET /cosmos/tx/v1beta1/txs/{hash}` showed code 0, the `/qorechain.pqc.v1.PQCHybridSignature` extension carrying a 4,627-byte ML-DSA-87 signature, and the events `pqc_verify` (`hybrid_mode=required`) and `pqc_hybrid_verify` (`status=verified`). The rule that the registration has to be the first transaction was taken from the chain team; a first transaction of another kind was not tried.
+
+The network floor is 0.1 uqor per unit of gas; from v3.2.8 the mempool orders transactions by fee per gas, so paying a little above the floor keeps a transaction from waiting behind others when blocks are busy.
+
+### What you see if you skip registration
+
+| What you see | Meaning | What to do |
+| --- | --- | --- |
+| A refusal saying the account has no registered PQC key or must include a hybrid signature (module `pqc`, code 8; the SDK reports `pqc_key_required`) | The account has no registered key yet | Register the key as above, then send again |
+| Registration refused as `already registered` (module `pqc`, code 7) | The account already holds a key | Nothing to do; read the registration with `GET /qorechain/pqc/v1/account/{address}` or use `ensurePqcRegistered` (it throws `PqcKeyMismatchError` for a different key) |
+
+See also [SDK quickstart](/sdk/quickstart), [Post-Quantum Signing](/developer-guide/post-quantum-signing) and [Wallet Setup](/getting-started/wallet-setup).
+
 ## Query Transaction
 
 Look up a completed transaction by its hash:

@@ -71,7 +71,9 @@ const sidebars: SidebarsConfig = {
       items: [
         "developer-guide/building-from-source",
         "developer-guide/evm-development",
+        "developer-guide/evm-window-reference",
         "developer-guide/cosmwasm-development",
+        "developer-guide/cosmwasm-gas-and-limits",
         "developer-guide/svm-development",
         "developer-guide/cross-vm-interoperability",
         "developer-guide/evm-precompiles",
@@ -79,6 +81,7 @@ const sidebars: SidebarsConfig = {
         "developer-guide/post-quantum-signing",
         "developer-guide/running-a-validator",
         "developer-guide/running-a-node",
+        "developer-guide/node-operators-v328",
         "developer-guide/exchange-integration",
       ],
     },
