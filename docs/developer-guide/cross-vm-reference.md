@@ -49,6 +49,22 @@ The list route is spelled `disable_list` over REST (the `disabled_list` spelling
 
 A queued message moves through `pending`, then `executed`, `failed` or `timed_out`. It times out after `queue_timeout_blocks` (100 on the testnet). The queue runs oldest first, and the end-of-block pass runs at most 50 calls per block.
 
+### Who calls whom, sync or async {#who-calls-whom}
+
+Which of the two modes a call may use depends on who dispatches it.
+
+| Caller | Target | Synchronous | Asynchronous |
+| --- | --- | --- | --- |
+| Account (signs the transaction) | EVM, QoreChain Native | Yes (default) | Yes |
+| QoreChain Native contract, dispatching `MsgCrossVMCall` as itself | EVM | Yes (`async` false, the default) | Yes |
+| QoreChain Native contract, dispatching `MsgCrossVMCall` as itself | QoreChain Native | Refused (your own lane) | Refused (your own lane) |
+| Contract that the EVM bridge at `0x0901` called (below the bridge) | SVM | Yes | Not used |
+| Contract that the EVM bridge at `0x0901` called (below the bridge) | EVM | Not used | Yes |
+
+A QoreChain Native contract that dispatches `MsgCrossVMCall` as itself can call the EVM either way. Synchronous (`async` false, the default) runs on the transaction's own gas, the answer comes back in `MsgCrossVMCallResponse.data`, and a failure reverts the whole transaction. Asynchronous queues the call. Both were run on the testnet before: the synchronous call at height 9,795,779 and the asynchronous call at height 9,795,783.
+
+The phrase "sync to the SVM, async to the EVM" applies only below the `0x0901` bridge: for a contract that the EVM bridge called, what that contract dispatches may go synchronously to the SVM and asynchronously to the EVM. It is not a rule for a contract acting as itself, which may use either mode towards the EVM.
+
 ## MsgCrossVMCall fields {#fields}
 
 Type URL `/qorechain.crossvm.v1.MsgCrossVMCall`.
@@ -88,6 +104,7 @@ A cross-VM call that fails still pays for the work it did. An EVM call that reve
 - **At most 100 pending calls per sender** (`max_pending_per_sender`). A further async call is refused with `ErrQueueFull` (codespace `crossvm`, code 4) until one of yours has run or timed out. Synchronous calls are not affected.
 - **The whole queue holds at most `max_queue_size`** calls (1,000).
 - **The pending list is paginated.** Each page holds at most 100 messages, and each payload in the list is cut to its first **1,024 bytes** (`payload_hex`). To read a full payload, fetch the message by id.
+- **The page limit is clamped.** A `pagination.limit` of 0 or above 100 is silently clamped to 100. A request with `limit=101` answers `200` with at most 100 items, not an error. To read further, pass the `next_key` from the response and keep going until it is empty.
 
 ```bash
 # One page of pending calls (use the next key from the response for the next page)
@@ -303,7 +320,7 @@ The `@qorechain/rdk` helper `encodeCrossVmCalldata({ contract, msg })` builds th
 
 ### QoreChain Native contract to EVM contract {#wasm-to-evm}
 
-A QoreChain Native contract makes the call by dispatching a `MsgCrossVMCall` as a chain message, with itself as the sender. The message has the same fields as above; the chain treats the contract as a CosmWasm caller whatever `source_vm` says:
+A QoreChain Native contract makes the call by dispatching a `MsgCrossVMCall` as a chain message, with itself as the sender. The message has the same fields as above; the chain treats the contract as a CosmWasm caller whatever `source_vm` says. With `async` false (the default) the call is synchronous: it runs on the transaction's gas, the answer is in `MsgCrossVMCallResponse.data`, and a failure reverts the whole transaction. With `async` true it is queued. See [Who calls whom](#who-calls-whom). The example below queues the call:
 
 ```json
 {
@@ -324,7 +341,7 @@ Things to know before relying on it:
 - A contract acting as itself is not bounded by an EVM window. A call dispatched under an authz grant from an account is; see below.
 - Below the `0x0901` bridge, a `MsgCrossVMCall` is accepted only from a contract acting as itself, and an authz `MsgExec` there cannot carry one for another account.
 
-The contract-side Rust code that dispatches this message was not run for this page.
+Both modes were run on the testnet before (synchronous at height 9,795,779, asynchronous at height 9,795,783). The contract-side Rust code that dispatches this message was not run for this page.
 
 ## Authz and windows {#authz}
 

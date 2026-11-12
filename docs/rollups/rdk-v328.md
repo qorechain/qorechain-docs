@@ -176,7 +176,7 @@ qorechaind tx rdk submit-batch my-nft-rollup 0 <state-root-hex> \
 During the challenge window anyone may send `MsgChallengeBatch` with a `qledger-v1` fraud proof: the batch's inputs and a Merkle witness of the accounts they touch. The chain re-executes the batch.
 
 * If the state root or the withdrawals root is wrong, the batch is rejected, and so is every batch built on it. The inbox rolls back.
-* The submitter's whole bond is slashed. **Half is burned and half is paid to the challenger.** A submitter that challenges its own wrong batch still loses half of its bond.
+* The submitter's whole bond is slashed. **Half is burned and half is paid to the challenger.** The burned half is recorded in the burn module under the source `rollup_slash`. A submitter that challenges its own wrong batch still loses half of its bond.
 * A proof that does not show a wrong batch fails with error 51 and changes nothing.
 
 ```bash
@@ -194,6 +194,7 @@ Batches that are not challenged finalize on their own when the challenge window 
 * A stopped rollup keeps no commitment past its retention period.
 * `posted_data_retention_blocks` must be at least the longest challenge window in force, counted as one block per second (`default_challenge_window` and the window of every rollup that is not stopped). A parameter update that leaves it shorter, or raises a window above it, is refused with `invalid params`. The upper bound is 25,920,000.
 * At the v3.2.8 upgrade, a stored value below that window is raised to it. Default parameters are left as they are.
+* **Testnet values**: `default_challenge_window` is 3,600 seconds (the core default and the mainnet-style value is 604,800 seconds, 7 days). Posted data is kept for 648,000 blocks, and blobs and finalized batches for 432,000 blocks.
 
 After a long idle period, with more than 64 unconsumed posts and their commitments pruned, a submitter catches up in order: one batch to the next multiple of 64 if `consumed` is not one, then full batches of 64 from checkpoint to checkpoint, then a last batch to the head (or to any retained position under rule 5). In normal operation nothing changes: batch up to 64 entries, to the head or to just before a recent post.
 
@@ -308,7 +309,7 @@ qorechaind tx rdk execute-withdrawal my-nft-rollup 0 <withdrawal-index> <recipie
   --proof <sibling-hex>,<sibling-hex> $CHAIN
 ```
 
-The challenge window of a rollup is in its `challenge_window_sec` (the testnet default is 3,600 seconds, so a test batch finalizes within an hour). Steps 5 to 8 need roots and proofs computed from the ledger; the RDK kit's `qledger-v1` helpers do that from the next release on.
+The challenge window of a rollup is in its `challenge_window_sec`. On the testnet `default_challenge_window` is 3,600 seconds on purpose, so rollups can be exercised within an hour; the core default and the mainnet-style value is 604,800 seconds (7 days). Steps 5 to 8 need roots and proofs computed from the ledger; the RDK kit's `qledger-v1` helpers do that from the next release on.
 
 ## Reading the chain with the published TypeScript kit {#typescript}
 
