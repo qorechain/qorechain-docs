@@ -345,6 +345,8 @@ From release v3.2.8 (testnet only until a later mainnet upgrade) `MsgOpenEVMWind
 | ICS-20 | `transfer` | native QOR, over the `transfer` port, with no memo, to a pair in `ibc_receivers` |
 | ERC-20 token precompiles | `transfer`, `transferFrom`, `approve` | native QOR; another token only when the window lists that token's address |
 
+For staking and for claiming rewards, use the native Cosmos messages (QoreX, or the qorechaind staking and distribution commands); the window fields above describe what the chain accepts, but staking from MetaMask is not a supported path.
+
 Everything else is refused through a window: undelegating, voting and other governance actions, changing the withdraw address, creating or editing a validator, funding the community pool. Send those as post-quantum signed Cosmos transactions.
 
 **Signatures checked on chain need the verifying contract in the window.** An EIP-2612 permit, a Permit2 transfer, an EIP-712 order or a meta-transaction is checked by a contract with `ecrecover`. From v3.2.8 (both networks, once a network applies it) that check succeeds for an account that holds a usable post-quantum key only while the account's own live window admits the verifying contract, which is the token or Permit2 itself, not the router that forwards the call. List it in `allowed_targets` and open the window **before** the user signs. Without that window the signature is treated as invalid and the contract refuses it. A permit or approval granted inside a window stays after the window closes, so review and revoke approvals when the session ends.
