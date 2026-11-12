@@ -345,7 +345,7 @@ Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) `
 | ICS-20 | `transfer` | QOR nativo, sulla porta `transfer`, senza memo, verso una coppia in `ibc_receivers` |
 | Precompile dei token ERC-20 | `transfer`, `transferFrom`, `approve` | QOR nativo; un altro token solo quando la finestra elenca l'indirizzo di quel token |
 
-Per lo staking e per riscuotere le ricompense usa i messaggi Cosmos nativi (QoreX, oppure i comandi staking e distribution di qorechaind); i campi di finestra qui sopra descrivono ciò che la chain accetta, ma fare staking da MetaMask non è un percorso supportato.
+I precompile di staking (`0x…0800`) e di distribution (`0x…0801`), come gli altri precompile standard di questa tabella, **non sono attivi al momento né sulla testnet né sulla mainnet**; la governance può attivarli. Una chiamata all'indirizzo di un precompile non attivo raggiunge un indirizzo senza codice: riesce, non fa nulla e paga comunque il gas. I campi di finestra `staking_validators`, `validators` e `ibc_receivers` si applicano una volta che un precompile è attivo. Per lo staking e per riscuotere le ricompense usa i messaggi Cosmos nativi (QoreX, oppure i comandi staking e distribution di qorechaind). Quando un precompile è attivo, i suoi importi sono in `uqor` (6 decimali), non in unità EVM a 18 decimali.
 
 Tutto il resto viene rifiutato tramite una finestra: undelegate, voto e altre azioni di governance, cambio dell'indirizzo di prelievo, creazione o modifica di un validatore, finanziamento del community pool. Invia queste come transazioni Cosmos firmate in modo post-quantistico.
 

@@ -345,7 +345,7 @@ v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yal
 | ICS-20 | `transfer` | yerel QOR, `transfer` portu üzerinden, memo olmadan, `ibc_receivers` içindeki bir çifte |
 | ERC-20 token precompile'ları | `transfer`, `transferFrom`, `approve` | yerel QOR; başka bir token yalnızca pencere o token'ın adresini listeliyorsa |
 
-Staking ve ödül talep etme için yerel Cosmos mesajlarını kullanın (QoreX veya qorechaind staking ve distribution komutları); yukarıdaki pencere alanları zincirin neyi kabul ettiğini anlatır, ancak MetaMask'ten staking desteklenen bir yol değildir.
+Bu tablodaki diğer standart precompile'lar gibi staking (`0x…0800`) ve distribution (`0x…0801`) precompile'ları da **şu anda ne test ağında ne de ana ağda etkindir**; yönetişim bunları etkinleştirebilir. Etkin olmayan bir precompile adresine yapılan çağrı, kodu olmayan bir adrese ulaşır: başarılı olur, hiçbir şey yapmaz ve yine de gas öder. `staking_validators`, `validators` ve `ibc_receivers` pencere alanları, bir precompile etkinleştirildiğinde geçerli olur. Staking ve ödül talep etme için yerel Cosmos mesajlarını kullanın (QoreX veya qorechaind staking ve distribution komutları). Bir precompile etkin olduğunda tutarları `uqor` cinsindendir (6 ondalık), 18 ondalıklı EVM birimleri cinsinden değil.
 
 Geri kalan her şey bir pencere üzerinden reddedilir: delegasyonu bozma, oylama ve diğer yönetişim eylemleri, çekim adresini değiştirme, doğrulayıcı oluşturma veya düzenleme, topluluk havuzunu fonlama. Bunları kuantum sonrası imzalı Cosmos işlemleri olarak gönderin.
 

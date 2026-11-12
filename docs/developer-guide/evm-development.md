@@ -345,7 +345,7 @@ From release v3.2.8 (testnet only until a later mainnet upgrade) `MsgOpenEVMWind
 | ICS-20 | `transfer` | native QOR, over the `transfer` port, with no memo, to a pair in `ibc_receivers` |
 | ERC-20 token precompiles | `transfer`, `transferFrom`, `approve` | native QOR; another token only when the window lists that token's address |
 
-For staking and for claiming rewards, use the native Cosmos messages (QoreX, or the qorechaind staking and distribution commands); the window fields above describe what the chain accepts, but staking from MetaMask is not a supported path.
+The staking (`0x…0800`) and distribution (`0x…0801`) precompiles, like the other standard precompiles in this table, are **not active on the testnet or on mainnet at present**; governance can activate them. A call to an inactive precompile address reaches an address with no code: it succeeds, does nothing and still pays gas. The window fields `staking_validators`, `validators` and `ibc_receivers` apply once a precompile is active. For staking and for claiming rewards, use the native Cosmos messages (QoreX, or the qorechaind staking and distribution commands). When a precompile is active, its amounts are in `uqor` (6 decimals), not in 18-decimal EVM units.
 
 Everything else is refused through a window: undelegating, voting and other governance actions, changing the withdraw address, creating or editing a validator, funding the community pool. Send those as post-quantum signed Cosmos transactions.
 

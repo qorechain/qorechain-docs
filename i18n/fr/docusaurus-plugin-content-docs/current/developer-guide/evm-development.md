@@ -345,7 +345,7 @@ Une fenêtre ouverte sans portée se comporte exactement comme auparavant. Une t
 | ICS-20 | `transfer` | QOR natif, via le port `transfer`, sans mémo, vers une paire de `ibc_receivers` |
 | Précompilés de tokens ERC-20 | `transfer`, `transferFrom`, `approve` | QOR natif ; un autre token seulement lorsque la fenêtre liste l'adresse de ce token |
 
-Pour le staking et pour la réclamation des récompenses, utilisez les messages Cosmos natifs (QoreX, ou les commandes staking et distribution de qorechaind) ; les champs de fenêtre ci-dessus décrivent ce que la chaîne accepte, mais staker depuis MetaMask n'est pas une voie prise en charge.
+Les précompilés de staking (`0x…0800`) et de distribution (`0x…0801`), comme les autres précompilés standard de ce tableau, **ne sont actuellement pas actifs sur le testnet ni sur le mainnet** ; la gouvernance peut les activer. Un appel à l'adresse d'un précompilé inactif atteint une adresse sans code : il réussit, ne fait rien et consomme quand même du gas. Les champs de fenêtre `staking_validators`, `validators` et `ibc_receivers` s'appliquent dès qu'un précompilé est actif. Pour le staking et pour la réclamation des récompenses, utilisez les messages Cosmos natifs (QoreX, ou les commandes staking et distribution de qorechaind). Lorsqu'un précompilé est actif, ses montants sont en `uqor` (6 décimales), et non en unités EVM à 18 décimales.
 
 Tout le reste est refusé via une fenêtre : annuler une délégation, voter et les autres actions de gouvernance, changer l'adresse de retrait, créer ou modifier un validateur, alimenter le pool communautaire. Envoyez-les comme des transactions Cosmos signées en post-quantique.
 

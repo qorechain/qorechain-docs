@@ -345,7 +345,7 @@ O fereastră deschisă fără domeniu de aplicare se comportă exact ca înainte
 | ICS-20 | `transfer` | QOR nativ, prin portul `transfer`, fără memo, către o pereche din `ibc_receivers` |
 | precompile-uri de token ERC-20 | `transfer`, `transferFrom`, `approve` | QOR nativ; un alt token doar când fereastra listează adresa acelui token |
 
-Pentru staking și pentru revendicarea recompenselor, folosiți mesajele Cosmos native (QoreX sau comenzile qorechaind de staking și distribution); câmpurile ferestrei de mai sus descriu ce acceptă lanțul, dar staking-ul din MetaMask nu este o cale susținută.
+Precompilatele de staking (`0x…0800`) și de distribution (`0x…0801`), la fel ca celelalte precompilate standard din acest tabel, **nu sunt active în prezent pe testnet și nici pe mainnet**; guvernanța le poate activa. Un apel către adresa unui precompilat inactiv ajunge la o adresă fără cod: reușește, nu face nimic și plătește totuși gaz. Câmpurile ferestrei `staking_validators`, `validators` și `ibc_receivers` se aplică odată ce un precompilat este activ. Pentru staking și pentru revendicarea recompenselor, folosiți mesajele Cosmos native (QoreX sau comenzile qorechaind de staking și distribution). Când un precompilat este activ, sumele lui sunt în `uqor` (6 zecimale), nu în unități EVM cu 18 zecimale.
 
 Orice altceva este refuzat printr-o fereastră: dezlegarea delegării (undelegate), votul și alte acțiuni de guvernanță, schimbarea adresei de retragere, crearea sau editarea unui validator, finanțarea community pool-ului. Trimiteți-le ca tranzacții Cosmos semnate post-cuantic.
 

@@ -344,7 +344,7 @@ Desde la versión v3.2.8 (solo testnet hasta una actualización posterior de mai
 | ICS-20 | `transfer` | QOR nativo, por el puerto `transfer`, sin memo, a un par de `ibc_receivers` |
 | precompiles de tokens ERC-20 | `transfer`, `transferFrom`, `approve` | QOR nativo; otro token solo cuando la ventana lista la dirección de ese token |
 
-Para hacer staking y reclamar recompensas, usa los mensajes nativos de Cosmos (QoreX, o los comandos de staking y distribution de qorechaind); los campos de ventana anteriores describen lo que la cadena acepta, pero hacer staking desde MetaMask no es una vía admitida.
+Los precompilados de staking (`0x…0800`) y distribution (`0x…0801`), como los demás precompilados estándar de esta tabla, **no están activos actualmente en la testnet ni en mainnet**; la gobernanza puede activarlos. Una llamada a la dirección de un precompilado inactivo llega a una dirección sin código: tiene éxito, no hace nada y aun así paga gas. Los campos de ventana `staking_validators`, `validators` e `ibc_receivers` se aplican cuando un precompilado está activo. Para hacer staking y reclamar recompensas, usa los mensajes nativos de Cosmos (QoreX, o los comandos de staking y distribution de qorechaind). Cuando un precompilado está activo, sus importes van en `uqor` (6 decimales), no en unidades EVM de 18 decimales.
 
 Todo lo demás se rechaza a través de una ventana: desdelegar, votar y otras acciones de gobernanza, cambiar la dirección de retirada, crear o editar un validador, financiar el community pool. Envíalo como transacciones de Cosmos firmadas con firma poscuántica.
 
