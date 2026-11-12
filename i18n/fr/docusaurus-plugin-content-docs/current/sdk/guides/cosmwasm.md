@@ -197,7 +197,10 @@ mainnet), le gas CosmWasm est retarifé :
   simulez vous-même lorsque vous construisez les frais à la main comme ci-dessus.
 - **Restez sous le plafond de transaction.** Une transaction Cosmos ne peut pas
   fixer une limite de gas supérieure à 50,000,000 et elle est refusée avant que
-  ses frais ne soient prélevés.
+  ses frais ne soient prélevés. Le SDK 0.14.0 refuse une telle limite avant la signature (ainsi qu'une
+  transaction EVM au-delà de 30,000,000), donne aux transactions CosmWasm et cross-VM au moins 1.3 fois le gas
+  simulé, et ne retombe jamais sur une limite de gas fixe pour elles. Il propose aussi des assistants
+  facultatifs qui lisent le prix minimal du gas du réseau ; le prix du gas par défaut est inchangé.
 
 Cela vaut aussi pour l'instanciation, la migration et tout autre message qui
 exécute du code de contrat.

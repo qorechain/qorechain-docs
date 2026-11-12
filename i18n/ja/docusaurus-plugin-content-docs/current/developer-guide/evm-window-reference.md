@@ -133,11 +133,11 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg`は、署名の前に境界値とリストの形式を検査するため、間違いは、拒否されたトランザクションで費用を払うのではなく、ローカルで失敗します。`MAX_EVM_WINDOW_BLOCKS`と`MAX_EVM_WINDOW_TXS`は、その境界値をエクスポートします。読み戻し(`fetchEvmWindow`)は、境界値、カウンター、v3.2.3のスコープ(`nativeOnly`、`allowedTargets`)を返します。`validators`、`stakingValidators`、`ibcReceivers`はビルダーで受け付けられます。ハイブリッド署名の`connectTx`では、ポスト量子鍵があらかじめ登録されている必要があります。
+`openEvmWindowMsg`は、署名の前に境界値とリストの形式を検査するため、間違いは、拒否されたトランザクションで費用を払うのではなく、ローカルで失敗します。`MAX_EVM_WINDOW_BLOCKS`と`MAX_EVM_WINDOW_TXS`は、その境界値をエクスポートします。読み戻し(`fetchEvmWindow`)は、境界値、カウンター、v3.2.3のスコープ(`nativeOnly`、`allowedTargets`)を返します。`validators`(コントラクトアドレス)、`stakingValidators`(`qorvaloper1...`)、`ibcReceivers`(`"<channel>/<receiver>"`)は、v3.2.8のリストを持つSDK 0.14.0以降のビルダーで受け付けられます。読み戻しはそれらを返さないため、RESTで読み取ってください。上の例は`stakingValidators`を使っていますが、SDK 0.14.0に対しては実行していません。3つのリストを設定するのは、v3.2.8を実行しているネットワークだけにしてください。それより下のノードは、それらを設定したウィンドウメッセージを拒否します。ハイブリッド署名の`connectTx`では、ポスト量子鍵があらかじめ登録されている必要があります。
 
 ### テストネットでの検証 {#tested}
 
-2026年11月12日に`qorechain-diana`(リリースv3.2.8)で、ポスト量子鍵を登録済みのeth-nativeアカウントを使い、SDK 0.13.0(`openEvmWindowMsg`、`closeEvmWindowMsg`、`fetchEvmWindow`)とハイブリッド署名で実行しました。ウィンドウのフィールド`validators`、`staking_validators`、`ibc_receivers`は、公開されているSDK 0.13.0のビルダーにはまだありません。SDKのリリースで追加されるまでは、コマンドラインを使用してください。
+2026年11月12日に`qorechain-diana`(リリースv3.2.8)で、ポスト量子鍵を登録済みのeth-nativeアカウントを使い、SDK 0.13.0(`openEvmWindowMsg`、`closeEvmWindowMsg`、`fetchEvmWindow`)とハイブリッド署名で実行しました。ウィンドウのフィールド`validators`、`staking_validators`、`ibc_receivers`は、SDK 0.13.0のビルダーにはありませんでした。SDK 0.14.0がそれらを`openEvmWindowMsg`に追加しており、この実行では使用していません(SDK 0.13.0では、それらにコマンドラインを使用してください)。
 
 | ステップ | 結果 |
 | ---- | ------ |
@@ -146,11 +146,13 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | `nativeOnly: true`で再度開く | コード0、使用ガス187,803。新しいウィンドウが古いものを置き換えた: `native_only: true`、新しい`opened_height` |
 | 閉じる | コード0、使用ガス170,468。読み戻し: `found: false` |
 
+同日、SDK 0.14.0を使って、`allowedTargets`(ステーキングプリコンパイルのアドレス)、`stakingValidators`(バリデーターのオペレーターアドレス1件)、`ibcReceivers`(`channel-0/...`のペア1件)を指定してウィンドウを開いたところ、コード0で成功し、使用ガスは195,233でした。RESTの読み戻しには`allowed_targets`が含まれ、`found: true`、`live: true`が返されました。`validators`、`staking_validators`、`ibc_receivers`のリストは返されないため、ウィンドウを開いたときの値を保管してください。
+
 `fetchEvmWindow`は、同じフィールドをキャメルケース(`openedHeight`、`remainingBlocks`、`nativeOnly`、`allowedTargets`)で返しました。ウィンドウの開始と終了は、ハイブリッド署名のCosmosトランザクションであるため、アカウントが最初に送信するトランザクションには、先に鍵が登録されている必要があります。
 
 ### Python、Go、Rust、Java {#other-languages}
 
-各SDKには、メッセージのビルダーとRESTでの読み取りがあります。いずれも、チェーンの境界値をローカルで検査します。v3.2.8のリストを設定する言語のビルダーには、v3.2.8に対応したSDKリリースが必要です。それ以前のリリースでは、古いフィールドのみが構築されます。
+各SDKには、メッセージのビルダーとRESTでの読み取りがあります。いずれも、チェーンの境界値をローカルで検査します。v3.2.8のリストを設定する言語のビルダーには、SDK 0.14.0以降が必要です(Javaは、Maven Centralに0.14.0が表示されてからです。2026年11月12日時点では0.13.0が表示されています)。それ以前のリリースでは、古いフィールドのみが構築されます。
 
 | 言語 | 開く(すべてのリスト付き) | 閉じる | 読み取る | EVMの上限 |
 | -------- | ---------------------- | ----- | ---- | ---------- |

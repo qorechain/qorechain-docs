@@ -226,6 +226,34 @@ await tx.signAndBroadcast(
 );
 ```
 
+### Autres listes de périmètre (depuis la chaîne v3.2.8, SDK 0.14.0) {#evm-window-scope-v328}
+
+À partir de la chaîne v3.2.8 (le testnet depuis le 12 novembre 2026 ; le mainnet ne l'a pas
+appliquée), une fenêtre peut porter trois listes de plus, que `openEvmWindowMsg` accepte à partir du SDK 0.14.0 :
+`validators` (jusqu'à 16 adresses de contrats dont la vérification de la signature du compte compte pour
+les propres actions du compte, comme un module de validateur ou un point d'entrée ERC-4337),
+`stakingValidators` (des validateurs `qorvaloper1...` auxquels la fenêtre peut déléguer ou redéléguer
+via le precompile de staking) et `ibcReceivers` (des destinataires ICS-20, chacun écrit
+`"<channel>/<receiver>"`). Le constructeur vérifie le format et refuse les doublons avant que
+quoi que ce soit soit signé. Ne les renseignez que sur un réseau qui exécute la v3.2.8 : un nœud antérieur refuse
+le message. `fetchEvmWindow` ne renvoie pas ces trois listes ; lisez-les via REST. Un appel de cette
+forme (avec `allowedTargets`, `stakingValidators` et `ibcReceivers` renseignés) a été exécuté sur le
+testnet le 12 novembre 2026 avec le SDK 0.14.0 et a réussi avec le code 0 (195,233 de gas utilisé) ; la
+relecture REST a listé `allowed_targets` et n'a pas renvoyé les deux autres listes :
+
+```ts
+openEvmWindowMsg({
+  sender: account.address,
+  blocks: 7200,
+  maxTxs: 20,
+  maxValue: "1000000000",
+  stakingValidators: ["qorvaloper1..."],
+  ibcReceivers: ["channel-0/cosmos1..."],
+});
+```
+
+Voir la [référence de la fenêtre EVM](/developer-guide/evm-window-reference) pour les règles.
+
 ### Consentement EIP-7702 (depuis la chaîne v3.2.2, SDK 0.9.0) {#evm-delegation-consent}
 
 Une transaction de type 4 (EIP-7702) n'est admise qu'après que chaque compte dont

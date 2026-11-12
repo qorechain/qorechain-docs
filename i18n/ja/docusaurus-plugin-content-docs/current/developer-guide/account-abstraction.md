@@ -162,6 +162,8 @@ const msg = registerEthAuthenticatorMsg({
    このテキストにはチェーン、アカウント、スキーム、鍵が含まれるため、証明を別のチェーン、アカウント、鍵に使い回すことはできません。有効な証明のない登録は拒否されます。
 2. **価値を扱う鍵の支出ルール。** 価値を動かせる権限(`send`、`evm`、`svm`、`deploy`、`all`)を持つ鍵には、その鍵が支出できるすべてのデノミネーションを制限する支出ルールが必要です。連携の前、または連携と同時に `MsgUpdateSpendingRules` で設定します。アップグレード前に連携された鍵にも実行時に同じルールが適用されるため、それらの鍵にもルールを追加してください。
 
+コードからは、SDK 0.14.0 に両方のヘルパーがあります(TypeScript: 証明には `signAuthenticatorLinkPhantom`、`signAuthenticatorLinkMetaMask`、`signAuthenticatorLinkEd25519`、`signAuthenticatorLinkSecp256k1`、`signAuthenticatorLinkEip191`。支出ルールとリンクをオーナーが署名する 1 つのトランザクションにまとめるには `linkAuthenticatorMsgs`)。また `@qorechain/wallet-adapter` 0.6.0 には `phantomPossessionProof`、`metaMaskPossessionProof`、`linkAuthenticatorMsgs` があります。[チェーン v3.2.8 からのリンク](/sdk/guides/authenticators#link-v328)を参照してください。実行が失敗した場合については、`assertAuthenticatorExecutionsSucceeded` が `success=false` で例外を発生させます。これらのヘルパーはテストネットで実行していません。
+
 Phantomの鍵も同じ方法で、スキーム`ed25519`とPhantomの公開鍵を使って登録します（CLIでは`register-authenticator`）。失効は`MsgRevokeAuthenticator`により即座に行われます。
 
 **実行は、成功したトランザクションの中で失敗することがあります。** v3.2.8 以降(後のメインネットアップグレードまではテストネットのみ)では、失敗した `MsgExecuteEVM` または `MsgExecuteCosmos` は、トランザクションコード 0 のままレスポンスに `success=false` を返し、理由を添えたイベント `abstractaccount_execution_failed` を発行し、それでもオーセンティケーターのナンスを消費します。トランザクションコードだけを確認するクライアントは、そのような呼び出しを成功と報告してしまいます。レスポンスまたはイベントを読んでください。

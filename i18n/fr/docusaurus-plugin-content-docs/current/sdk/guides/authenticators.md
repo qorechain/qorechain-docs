@@ -123,6 +123,53 @@ Pour désactiver instantanément une clé, le propriétaire diffuse
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`.
 
+### Lier à partir de la chaîne v3.2.8 (SDK 0.14.0) {#link-v328}
+
+À partir de la chaîne v3.2.8 (le testnet depuis le 12 novembre 2026 ; le mainnet ne l'a pas
+appliquée), l'enregistrement ci-dessus est refusé s'il ne porte pas une **preuve de possession** :
+la clé liée signe un message en texte brut qui nomme la chaîne, le compte, le schéma
+et la clé. Une clé avec `send`, `evm`, `deploy`, `svm` ou `all` exige aussi que la
+première règle de dépense activée du compte borne chaque dénomination. Le SDK 0.14.0 fournit des assistants
+pour les deux ; `linkAuthenticatorMsgs` construit la règle de dépense et le lien dans l'ordre
+où les envoyer, dans une seule transaction signée par le propriétaire. Cet extrait suit le code source de la 0.14.0
+et n'a pas été exécuté :
+
+```ts
+import { linkAuthenticatorMsgs, signAuthenticatorLinkPhantom } from "@qorechain/sdk";
+
+// The key being linked signs the link message (Phantom signMessage here).
+const proof = await signAuthenticatorLinkPhantom({
+  chainId: "qorechain-diana",
+  account: canonicalAccount,
+  wallet: window.solana,
+});
+
+const msgs = linkAuthenticatorMsgs({
+  owner: canonicalAccount,
+  chainId: "qorechain-diana",   // optional: checks the proof before anything is built
+  scheme: proof.scheme,
+  pubkey: proof.pubkey,
+  possessionProof: proof.possessionProof,
+  permissions: ["send"],
+  expiryUnix: Math.floor(Date.now() / 1000) + 7 * 24 * 3600,
+  label: "phantom",
+  // Replaces the account's rules wholesale: pass every rule to keep.
+  spendingRules: [{ id: "phantom-hot", enabled: true, perTxLimit: "1000000", allowedDenoms: ["uqor"] }],
+});
+// Sign msgs in one owner-signed hybrid transaction.
+```
+
+Le même fichier contient `signAuthenticatorLinkEd25519`, `signAuthenticatorLinkSecp256k1`,
+`signAuthenticatorLinkEip191` et `signAuthenticatorLinkMetaMask` pour les autres types de
+clés, et les composeurs d'enregistrement refusent une preuve vide. Sur un réseau antérieur à la v3.2.8, la
+preuve reste facultative.
+
+À partir de la v3.2.8, un `MsgExecuteEVM` ou `MsgExecuteCosmos` autorisé qui échoue renvoie
+`success=false` dans une transaction de code 0 et consomme quand même le nonce. Après une
+diffusion par relayeur, appelez `assertAuthenticatorExecutionsSucceeded(result, messages)`, ou
+`decodeAuthenticatorExecutions` pour lire chaque résultat, afin qu'une exécution échouée ne soit pas
+prise pour un succès.
+
 ## Dépenser depuis Phantom (voie Native, via un relayeur)
 
 Une fois la clé liée, le navigateur construit un `MsgExecuteCosmos` prêt pour
