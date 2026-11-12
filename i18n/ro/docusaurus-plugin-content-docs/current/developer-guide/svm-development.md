@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain include un mediu de execuție **Solana Virtual Machine (SVM)**, care permite dezvoltatorilor să implementeze și să execute programe SBF/BPF folosind uneltele Solana cu care sunt deja obișnuiți. Modulul SVM expune o interfață JSON-RPC compatibilă cu Solana pe **portul 8899**, pe care `qorechaind start` o pornește automat (vezi [Server JSON-RPC](#json-rpc-server) mai jos).
 
 :::note
-Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`** (live din 7 iunie 2026), care rulează versiunea de nod **v3.2.6** din 4 noiembrie 2026 (propunerea de guvernanță 15, înălțimea 4.020.000; v3.2.5 din 29 octombrie 2026, v3.2.4 din 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.8 (din 12 noiembrie 2026; v3.2.4 din 19 octombrie 2026). **Tranzacțiile SVM sunt dezactivate pe ambele rețele** (vezi caseta următoare), așa că comenzile `tx svm` de pe această pagină sunt doar de referință: nu pot reuși în prezent.
+Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`** (live din 7 iunie 2026), care rulează versiunea de nod **v3.2.7** din 12 noiembrie 2026 (propunerea de guvernanță 16, înălțimea 4.164.600; v3.2.6 din 4 noiembrie 2026; v3.2.5 din 29 octombrie 2026, v3.2.4 din 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.8 (din 12 noiembrie 2026; v3.2.4 din 19 octombrie 2026). **Tranzacțiile SVM sunt dezactivate pe ambele rețele** (vezi caseta următoare), așa că comenzile `tx svm` de pe această pagină sunt doar de referință: nu pot reuși în prezent.
 :::
 
 ---
@@ -84,9 +84,9 @@ Valorile implicite sunt `enable = true` și `address = "127.0.0.1:8899"`, astfel
 | `getMinimumBalanceForRentExemption` | Soldul minim pentru o dimensiune de date dată     |
 | `getVersion`                        | Informații despre versiunea runtime-ului SVM        |
 | `getHealth`                         | Verificare de sănătate pentru endpoint-ul SVM         |
-| `getGenesisHash`                    | Genesis hash-ul clusterului (testnet, din v3.2.7; base58) |
+| `getGenesisHash`                    | Genesis hash-ul clusterului (din v3.2.7: testnet din 6 noiembrie 2026, mainnet din 12 noiembrie 2026; base58) |
 
-**Identitatea clusterului (v3.2.7, deocamdată doar pe testnet).** Wallet-urile care urmează Wallet Standard au nevoie de o identitate stabilă a clusterului. Începând cu versiunea v3.2.7 (testnet din 6 noiembrie 2026; mainnet-ul este încă pe v3.2.6 și nu are o dată pentru ea), nodul servește genesis hash-ul clusterului și ID-ul său de lanț Wallet Standard. Pe testnet, pe 7 noiembrie 2026, `GET /qorechain/svm/v1/cluster_info` a răspuns cu `chain_id` `qorechain-diana`, un `genesis_hash`, un `caip2_chain_id` (`solana:` urmat de primele 32 de caractere ale genesis hash-ului) și `execution_enabled` `false`, iar `getGenesisHash` pe `https://svm-testnet.qore.host` a returnat același genesis hash. Hash-ul este derivat din chain id, nu dintr-un cluster Solana real. **Execuția SVM rămâne oprită pe ambele rețele**; aceasta doar identifică clusterul.
+**Identitatea clusterului (v3.2.7).** Wallet-urile care urmează Wallet Standard au nevoie de o identitate stabilă a clusterului. Începând cu versiunea v3.2.7 (testnet din 6 noiembrie 2026, mainnet din 12 noiembrie 2026), nodul servește genesis hash-ul clusterului și ID-ul său de lanț Wallet Standard. Pe testnet, pe 7 noiembrie 2026, `GET /qorechain/svm/v1/cluster_info` a răspuns cu `chain_id` `qorechain-diana`, un `genesis_hash`, un `caip2_chain_id` (`solana:` urmat de primele 32 de caractere ale genesis hash-ului) și `execution_enabled` `false`, iar `getGenesisHash` pe `https://svm-testnet.qore.host` a returnat același genesis hash. Hash-ul este derivat din chain id, nu dintr-un cluster Solana real. **Execuția SVM rămâne oprită pe ambele rețele**; aceasta doar identifică clusterul. Pe 12 noiembrie 2026, aceeași rută pe mainnet a răspuns cu `200`, cu `chain_id` `qorechain-vladi`, propriul genesis hash și `execution_enabled` `false`.
 
 ---
 

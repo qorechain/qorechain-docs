@@ -10,7 +10,7 @@ sidebar_position: 4
 Únete a la red de pruebas activa QoreChain Diana configurando tu nodo con el archivo génesis, los pares y la configuración de red correctos.
 
 :::note
-Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión **v3.2.6** desde el 4 de noviembre de 2026; la red de pruebas va dos versiones por delante) y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes. La red de pruebas ejecuta la versión **v3.2.8** desde el 12 de noviembre de 2026 (ejecutó la v3.2.7 desde el 6 de noviembre y la v3.2.6 desde el 27 de octubre; la red principal aplicó la v3.2.6 el 4 de noviembre de 2026); su manifiesto de versión está en [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión **v3.2.7** desde el 12 de noviembre de 2026; la red de pruebas va una versión por delante) y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes. La red de pruebas ejecuta la versión **v3.2.8** desde el 12 de noviembre de 2026 (ejecutó la v3.2.7 desde el 6 de noviembre y la v3.2.6 desde el 27 de octubre; la red principal aplicó la v3.2.6 el 4 de noviembre de 2026 y la v3.2.7 el 12 de noviembre de 2026); su manifiesto de versión está en [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Endpoints públicos
@@ -66,7 +66,7 @@ La red de pruebas recibe actualizaciones coordinadas mediante propuestas de gobe
 | v3.2.7 | 9,594,600 | 6 de noviembre de 2026 (hacia las 15:00 UTC) |
 | v3.2.8 | 9,929,500 | 12 de noviembre de 2026 (hacia las 03:35 UTC) |
 
-La red de pruebas recibe cada versión antes que la red principal. La red principal aplicó v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026 , v3.2.5 en la altura 3,906,833 el 29 de octubre de 2026 (propuesta de gobernanza 14) y v3.2.6 en la altura 4,020,000 el 4 de noviembre de 2026 (propuesta de gobernanza 15). Por tanto, la red principal va dos versiones por detrás: la red de pruebas ejecuta v3.2.8 (tras la v3.2.7), que la red principal no tiene y para la que todavía no hay fecha ni altura. Los manifiestos son independientes, así que nunca copies un binario de una red a la otra (las novedades de v3.2.8 se enumeran en el [Historial de versiones](/appendix/version-history#v328)).
+La red de pruebas recibe cada versión antes que la red principal. La red principal aplicó v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026 , v3.2.5 en la altura 3,906,833 el 29 de octubre de 2026 (propuesta de gobernanza 14), v3.2.6 en la altura 4,020,000 el 4 de noviembre de 2026 (propuesta de gobernanza 15) y v3.2.7 en la altura 4,164,600 el 12 de noviembre de 2026 (propuesta de gobernanza 16). Por tanto, la red principal va una versión por detrás: la red de pruebas ejecuta v3.2.8 desde el 12 de noviembre de 2026, que la red principal no ha aplicado. Los manifiestos son independientes, así que nunca copies un binario de una red a la otra (las novedades de v3.2.8 se enumeran en el [Historial de versiones](/appendix/version-history#v328)).
 
 ---
 

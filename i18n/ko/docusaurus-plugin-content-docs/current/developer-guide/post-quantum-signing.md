@@ -188,19 +188,19 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 
 SDK 0.9.0 이상과 `@qorechain/wallet-adapter` 0.4.0 이상의 로테이션 헬퍼는 레거시 파생 방식을 **새** 키로 사용하는 것을 거부합니다(계정에 바인딩되지 않기 때문입니다). 레거시 키도 이전 키로는 여전히 사용할 수 있습니다. 로테이션이 성공하면 새 키의 서명이 통과되고(code 0), 이전 키는 거부됩니다(`pqc` code 21). v3.2.3부터 로테이션은(마이그레이션과 마찬가지로) 양자내성 보호를 제공하지 않는 새 키(코드 230)와 계정이 이전에 사용한 키(코드 232)를 거부하며, `authz`를 통해 보낼 수 없습니다.
 
-## 테스트넷의 체인 v3.2.7: 멀티시그, 텍스추얼 서명, 검증 가스 {#v327}
+## 체인 v3.2.7: 멀티시그, 텍스추얼 서명, 검증 가스 {#v327}
 
-:::note 지금은 테스트넷 전용
-아래 항목은 2026년 11월 6일부터 `qorechain-diana`에서 실행됩니다(노드 릴리스 v3.2.7, 높이 9,594,600). **메인넷은 아직 v3.2.6**이며 이 중 어느 것도 없습니다. 메인넷용 v3.2.7 업그레이드 제안은 아직 날짜가 없습니다. `@qorechain/sdk` 0.12.0과 `@qorechain/rdk` 0.8.0 패키지에는 멀티시그나 텍스추얼 서명 항목을 위한 빌더가 없으므로(2026년 11월 7일 확인), 이들에는 노드의 CLI와 REST를 사용하십시오.
+:::note 테스트넷은 2026년 11월 6일부터, 메인넷은 2026년 11월 12일부터
+아래 항목은 2026년 11월 6일부터 `qorechain-diana`에서 실행됩니다(노드 릴리스 v3.2.7, 높이 9,594,600), 그리고 2026년 11월 12일부터 `qorechain-vladi`에서 실행됩니다(높이 4,164,600, 거버넌스 제안 16). 메인넷에서는 스위치 `pqc-multisig`, `pqc-verify-gas-calibrated`, `evm-window-used-event`가 활성화되어 있습니다(2026년 11월 12일 `GET /qorechain/pqc/v1/protocol_features`에서 읽음, 기능은 총 101개). 텍스추얼 서명은 v3.2.7 바이너리에 포함되어 있으며 별도의 스위치가 필요 없습니다. `@qorechain/sdk` 0.12.0과 `@qorechain/rdk` 0.8.0 패키지에는 멀티시그나 텍스추얼 서명 항목을 위한 빌더가 없으므로(2026년 11월 7일 확인), 이들에는 노드의 CLI와 REST를 사용하십시오.
 :::
 
-**하이브리드 k-of-n 멀티시그.** 클래식 멀티시그 계정은 이제 이를 따르는 포스트 양자 서명자 집합을 가질 수 있습니다. 새 메시지 `/qorechain.pqc.v1.MsgRegisterPQCMultisig`가 그 집합을 등록합니다. 포스트 양자 멤버와 키는 클래식 멀티시그의 멤버와 현재 키를 따릅니다. 어느 주소든 `GET /qorechain/pqc/v1/multisig/{address}`로 등록 정보를 읽을 수 있으며, 등록된 집합이 없는 주소는 `200`과 `{"found":false,"multisig":null}`로 응답합니다(2026년 11월 7일 테스트넷에서 읽음). 프로토콜 기능 `pqc-multisig`는 테스트넷에서 활성화되어 있습니다(`GET /qorechain/pqc/v1/protocol_features`).
+**하이브리드 k-of-n 멀티시그.** 클래식 멀티시그 계정은 이제 이를 따르는 포스트 양자 서명자 집합을 가질 수 있습니다. 새 메시지 `/qorechain.pqc.v1.MsgRegisterPQCMultisig`가 그 집합을 등록합니다. 포스트 양자 멤버와 키는 클래식 멀티시그의 멤버와 현재 키를 따릅니다. 어느 주소든 `GET /qorechain/pqc/v1/multisig/{address}`로 등록 정보를 읽을 수 있으며, 등록된 집합이 없는 주소는 `200`과 `{"found":false,"multisig":null}`로 응답합니다(2026년 11월 7일 테스트넷에서 읽음. 2026년 11월 12일 메인넷에서는 등록된 집합이 없는 주소에 대해 같은 경로가 그 본문과 함께 `200`으로 응답했습니다). 프로토콜 기능 `pqc-multisig`는 두 네트워크에서 활성화되어 있습니다(`GET /qorechain/pqc/v1/protocol_features`).
 
-**검증 가스.** 트랜잭션에서 포스트 양자 서명을 검증하는 데에는 측정값으로 보정된 고정 2,000 가스가 듭니다(ML-DSA-87 검증은 플릿 서버에서 secp256k1보다 약 1.8배 느립니다). 기능 `pqc-verify-gas-calibrated`는 테스트넷에서 활성화되어 있습니다.
+**검증 가스.** 트랜잭션에서 포스트 양자 서명을 검증하는 데에는 측정값으로 보정된 고정 2,000 가스가 듭니다(ML-DSA-87 검증은 플릿 서버에서 secp256k1보다 약 1.8배 느립니다). 기능 `pqc-verify-gas-calibrated`는 두 네트워크에서 활성화되어 있습니다.
 
-**하드웨어 및 웹 지갑(SIGN_MODE_TEXTUAL).** `qorechaind tx pqc cosign`은 포스트 양자 확장과 함께 `SIGN_MODE_TEXTUAL`로 서명할 수 있으며, 이것이 하드웨어 지갑에 필요한 모드입니다. 웹 지갑에는 노드가 서명할 문서를 제공합니다. 트랜잭션을 `tx_bytes` 또는 `tx_json`으로 담아 `/qorechain/pqc/v1/textual_sign_doc`에 `POST`를 보내십시오. 2026년 11월 7일 테스트넷 게이트웨이는 빈 본문에 `400`(`tx_bytes or tx_json is required`)으로, `GET`에는 `501`로 응답했으므로 `POST`를 사용하십시오. 이 페이지를 위해 하드웨어 지갑으로 끝까지 서명해 보지는 않았으므로, 특정 기기가 이를 지원한다고 가정하지 마십시오.
+**하드웨어 및 웹 지갑(SIGN_MODE_TEXTUAL).** `qorechaind tx pqc cosign`은 포스트 양자 확장과 함께 `SIGN_MODE_TEXTUAL`로 서명할 수 있으며, 이것이 하드웨어 지갑에 필요한 모드입니다. 웹 지갑에는 노드가 서명할 문서를 제공합니다. 트랜잭션을 `tx_bytes` 또는 `tx_json`으로 담아 `/qorechain/pqc/v1/textual_sign_doc`에 `POST`를 보내십시오. 2026년 11월 7일 테스트넷 게이트웨이는 빈 본문에 `400`(`tx_bytes or tx_json is required`)으로, `GET`에는 `501`로 응답했으므로 `POST`를 사용하십시오. 2026년 11월 12일에는 메인넷 게이트웨이가 빈 `POST`에 같은 메시지와 함께 `400`으로 응답했으므로 이 경로는 그곳에서도 제공됩니다. 이 페이지를 위해 하드웨어 지갑으로 끝까지 서명해 보지는 않았으므로, 특정 기기가 이를 지원한다고 가정하지 마십시오.
 
-**EVM 윈도우 이벤트.** 포스트 양자 인가 윈도우를 소비하는 EVM 트랜잭션은 이제 `pqc_evm_window_used` 이벤트(속성 `source`)를 방출하며, 기능 `evm-window-used-event`는 테스트넷에서 활성화되어 있습니다.
+**EVM 윈도우 이벤트.** 포스트 양자 인가 윈도우를 소비하는 EVM 트랜잭션은 이제 `pqc_evm_window_used` 이벤트(속성 `source`)를 방출하며, 기능 `evm-window-used-event`는 두 네트워크에서 활성화되어 있습니다.
 
 ---
 

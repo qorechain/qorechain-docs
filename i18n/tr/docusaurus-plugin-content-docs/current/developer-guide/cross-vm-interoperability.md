@@ -51,7 +51,7 @@ Aşağıdaki uç noktalar varsayılan olarak yerel bir düğüme yöneliktir. An
 Senkron yol, `0x0000000000000000000000000000000000000901` adresinde bir EVM **önderlenmiş işlevi** kullanır. Solidity sözleşmelerinin QoreChain Native sözleşmelerini çağırmasına ve aynı işlem içinde bir yanıt almasına olanak tanımak üzere tasarlanmıştır.
 
 :::warning Ana ağda etkin değil; test ağında izin listesiyle etkin
-CrossVM köprüsü önderlenmiş işlevi `qorechain-vladi` üzerinde **etkin değildir**: orada `0x…0901` adresine yapılan bir çağrı başarılı olur ve boş veri döndürür. `qorechain-diana` üzerinde `active_static_precompiles` listesi `0x…0901` içerir (7 Kasım 2026'da okundu); üzerinden salt okunur bir `eth_call` 7 Kasım 2026'da, v3.2.7 yükseltmesinden sonra çalıştırıldı (sonuçlar aşağıda). v3.2.3 ikili dosyası güçlendirilmiş bir sürümü taşır (`STATICCALL` çağrısını reddeder, iç içe çağrısını çağıran çerçevenin gazına göre ölçer ve günlüğe kaydeder; böylece bir EVM geri alması (revert) QoreChain Native tarafını da geri alır, yalnızca izin listesindeki QoreChain Native hedeflerine ulaşır ve VM'ler arası devre kesiciye uyar), ancak yalnızca yönetişim onaylı bir öneri onu etkin listeye eklediği yerde çalışır (şimdiye kadar test ağı, ana ağ değil). Ana ağda önderlenmiş işlev ve VM'ler arası çağrılar, henüz tarihi olmayan bir v3.2.7 yükseltmesinden sonra bile, ayrı bir yönetişim kararına kadar kapalı kalır. Aşağıdaki örnek, düğümün çözdüğü düzendir; ana ağda önderlenmiş işlev etkinleşene kadar çalışamaz. Test ağında izin listesi dahilinde çağrılabilir (sonraki bölüm). Bkz. [EVM Önderlenmiş İşlevleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+CrossVM köprüsü önderlenmiş işlevi `qorechain-vladi` üzerinde **etkin değildir**: orada `0x…0901` adresine yapılan bir çağrı başarılı olur ve boş veri döndürür. `qorechain-diana` üzerinde `active_static_precompiles` listesi `0x…0901` içerir (7 Kasım 2026'da okundu); üzerinden salt okunur bir `eth_call` 7 Kasım 2026'da, v3.2.7 yükseltmesinden sonra çalıştırıldı (sonuçlar aşağıda). v3.2.3 ikili dosyası güçlendirilmiş bir sürümü taşır (`STATICCALL` çağrısını reddeder, iç içe çağrısını çağıran çerçevenin gazına göre ölçer ve günlüğe kaydeder; böylece bir EVM geri alması (revert) QoreChain Native tarafını da geri alır, yalnızca izin listesindeki QoreChain Native hedeflerine ulaşır ve VM'ler arası devre kesiciye uyar), ancak yalnızca yönetişim onaylı bir öneri onu etkin listeye eklediği yerde çalışır (şimdiye kadar test ağı, ana ağ değil). Ana ağda önderlenmiş işlev ve VM'ler arası çağrılar, 12 Kasım 2026 tarihli v3.2.7 yükseltmesinden sonra bile, ayrı bir yönetişim kararına kadar kapalı kalır. Aşağıdaki örnek, düğümün çözdüğü düzendir; ana ağda önderlenmiş işlev etkinleşene kadar çalışamaz. Test ağında izin listesi dahilinde çağrılabilir (sonraki bölüm). Bkz. [EVM Önderlenmiş İşlevleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Solidity Örneği
@@ -97,11 +97,11 @@ Bu, düğümün çözdüğü düzendir; `@qorechain/rdk` kodlayıcısının olu�
 * **İzin listesi dışındaki hedef:** `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted` ile geri alınır.
 * **İzin listesindeki hedef:** çağrı sözleşmeye ulaşır (düğüm, boş `{}` mesajı için sözleşmenin kendi hatasını bildirir: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). Bu, rotanın çalıştığını gösterir; bu sayfa için önderlenmiş işlev üzerinden durum değiştiren bir VM'ler arası işlem gönderilmedi.
 
-Ana ağda önderlenmiş işlev (`0x…0901`) ve VM'ler arası çağrılar, v3.2.7 yükseltmesinden sonra bile, ayrı bir yönetişim kararına kadar **kapalı** kalır (devre kesici).
+Ana ağda önderlenmiş işlev (`0x…0901`) ve VM'ler arası çağrılar, 12 Kasım 2026 tarihli v3.2.7 yükseltmesinden sonra bile, ayrı bir yönetişim kararına kadar **kapalı** kalır (devre kesici).
 
-### v3.2.7'nin VM'ler arası çağrılar için değiştirdikleri (şimdilik yalnızca test ağı) {#v327}
+### v3.2.7'nin VM'ler arası çağrılar için değiştirdikleri {#v327}
 
-Bunlar test ağında 6 Kasım 2026'dan beri geçerlidir ve **henüz ana ağda değildir** (yükseltmenin tarihi yoktur):
+Bunlar test ağında 6 Kasım 2026'dan beri ve ana ağda 12 Kasım 2026'dan beri geçerlidir (VM'ler arası çağrının kendisi ana ağda kapalı kalır; bu yüzden ana ağda yalnızca açılırsa önem taşırlar):
 
 * Hedef VM'de başarısız olan bir çağrı artık temiz biçimde başarısız olur: bu yalnızca o çağrının başarısızlığıdır ve kuyruk sonraki mesajla devam eder.
 * Hatalı biçimli hedefler gönderim sırasında `crossvm` codespace'inde 5 koduyla reddedilir.

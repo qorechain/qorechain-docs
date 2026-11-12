@@ -11,7 +11,7 @@ sidebar_position: 1
 
 Bir düğümü çalıştırmak ve senkronize etmek lisans gerektirmez. Ödül payına katılmak ayrı bir adımdır: bir `lightnode_operator` lisansı, bağlı doğrulayıcılara delege edilmiş stake ve bir zincir üzeri kayıt gerekir ([Nasıl erişilir](#how-to-access) bölümüne bakın).
 
-Hafif düğümün zincir sürümünden ayrı, **kendine ait bir sürüm hattı** vardır. 12 Kasım 2026 itibarıyla her iki ağın sürüm kanalı da hafif düğüm **3.1.13** sürümünü taşır (test ağı zincir `v3.2.8` çalıştırır, ana ağ `v3.2.6`; 3.1.13 `v3.2.7` üzerinde değişiklik olmadan çalıştı, orada heartbeat ve claim 0 kodu döndü ve `v3.2.8` üzerinde yeniden kontrol edilmedi). İki numarayı birbiriyle ilgisiz kabul edin.
+Hafif düğümün zincir sürümünden ayrı, **kendine ait bir sürüm hattı** vardır. 12 Kasım 2026 itibarıyla her iki ağın sürüm kanalı da hafif düğüm **3.1.13** sürümünü taşır (test ağı zincir `v3.2.8` çalıştırır, ana ağ 12 Kasım 2026'dan beri `v3.2.7`; 3.1.13 test ağında `v3.2.7` üzerinde değişiklik olmadan çalıştı, orada heartbeat ve claim 0 kodu döndü ve `v3.2.8` üzerinde veya ana ağda yeniden kontrol edilmedi). İki numarayı birbiriyle ilgisiz kabul edin.
 
 ## Yenilikler {#innovations}
 
@@ -74,7 +74,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 | | Ana ağ | Test ağı |
 | --- | --- | --- |
-| Zincir | `qorechain-vladi` (zincir `v3.2.6`) | `qorechain-diana` (zincir `v3.2.8`) |
+| Zincir | `qorechain-vladi` (zincir `v3.2.7`) | `qorechain-diana` (zincir `v3.2.8`) |
 | Düğüm için RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | Sorgular için REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | Hafif düğüm sürümü | 3.1.13 | 3.1.13 |
@@ -98,7 +98,7 @@ Bir lisansı doğrudan da kontrol edebilirsiniz: `GET /qorechain/license/v1/chec
 ### Ödül programının durumu {#reward-program-status}
 
 :::note Kayıt açık
-Kayıt ana ağda (`qorechain-vladi`, zincir v3.2.6) ve test ağında (`qorechain-diana`, zincir v3.2.8) açıktır. 4 Kasım 2026'da ana ağda yedi `lightnode_operator` lisansı verilmişti, ana ağda bir ve test ağında iki hafif düğüm kayıtlıydı (`GET /qorechain/lightnode/v1/stats` içinde `total_registered`: `1` ve `2`). Ödül muhasebesi, v3.2.0 yükseltmesinden beri her iki ağda canlıdır. Çalışma süresi **düğümünüzün kaydedildiği bloktan itibaren** sayılır; bu nedenle öncesinde bir düğüm çalıştırmak kredi kazandırmaz. Zincir v3.2.4'ten beri düğüm başına sınır da düğümün kendi kaydıyla başlar: kayıttan sonraki ilk uzlaşma yalnızca o andan bu yana biriken tutarı kredilendirir.
+Kayıt ana ağda (`qorechain-vladi`, zincir v3.2.7) ve test ağında (`qorechain-diana`, zincir v3.2.8) açıktır. 4 Kasım 2026'da ana ağda yedi `lightnode_operator` lisansı verilmişti, ana ağda bir ve test ağında iki hafif düğüm kayıtlıydı (`GET /qorechain/lightnode/v1/stats` içinde `total_registered`: `1` ve `2`). Ödül muhasebesi, v3.2.0 yükseltmesinden beri her iki ağda canlıdır. Çalışma süresi **düğümünüzün kaydedildiği bloktan itibaren** sayılır; bu nedenle öncesinde bir düğüm çalıştırmak kredi kazandırmaz. Zincir v3.2.4'ten beri düğüm başına sınır da düğümün kendi kaydıyla başlar: kayıttan sonraki ilk uzlaşma yalnızca o andan bu yana biriken tutarı kredilendirir.
 
 Sürüm manifesti (`https://download.qore.host/<net>/lightnode/latest.json`) resmi sinyali `registration.open` alanında taşır. Canlı durum için `https://api.qore.host` (ana ağ) veya `https://api-testnet.qore.host` (test ağı) üzerinde `GET /qorechain/license/v1/holders/lightnode_operator` ve `GET /qorechain/lightnode/v1/stats` adreslerini sorgulayın.
 :::

@@ -81,12 +81,12 @@ Pe 4 noiembrie 2026, lista precompilărilor active a testnet-ului (`active_stati
 
 ### Lanțul v3.2.5: lista permisă, formatul răspunsului și refuzurile (ambele rețele) {#chain-v325}
 
-Lanțul v3.2.5 schimbă comportamentul bridge-ului. Mainnet-ul îl rulează din 29 octombrie 2026 (propunerea de guvernanță 14, înălțimea 3.906.833), iar testnet-ul din 26 octombrie; acum mainnet-ul rulează v3.2.6, iar testnet-ul v3.2.8. Deoarece precompilul nu este activ pe mainnet, formatul răspunsului de mai jos este comportamentul versiunii și nu a fost exersat acolo; formatul refuzului a fost văzut pe testnet pe 7 noiembrie 2026 (vezi [Testat pe testnet](#tested-testnet)). Oriunde această pagină spune că precompilul întoarce răspunsul brut al țintei, aceasta descrie versiunile dinaintea v3.2.5.
+Lanțul v3.2.5 schimbă comportamentul bridge-ului. Mainnet-ul îl rulează din 29 octombrie 2026 (propunerea de guvernanță 14, înălțimea 3.906.833), iar testnet-ul din 26 octombrie; acum mainnet-ul rulează v3.2.7, iar testnet-ul v3.2.8. Deoarece precompilul nu este activ pe mainnet, formatul răspunsului de mai jos este comportamentul versiunii și nu a fost exersat acolo; formatul refuzului a fost văzut pe testnet pe 7 noiembrie 2026 (vezi [Testat pe testnet](#tested-testnet)). Oriunde această pagină spune că precompilul întoarce răspunsul brut al țintei, aceasta descrie versiunile dinaintea v3.2.5.
 
 * **O rută pentru lista permisă.** `GET /qorechain/crossvm/v1/params` servește parametrii bridge-ului, inclusiv lista permisă a țintelor. Pe mainnet lista permisă este goală (verificat la 4 noiembrie 2026), deci nicio țintă nu este încă permisă; pe testnet era goală la 30 octombrie (vezi nota de mai sus).
 * **Un format fix al răspunsului.** Precompilul întoarce `abi.encode(bytes)`, deci un răspuns are mereu cel puțin 64 de octeți și un răspuns gol poate fi deosebit de unul lipsă; decodează-l cu `abi.decode(ret, (bytes))`.
 * **Refuzurile au un motiv.** Când bridge-ul refuză un apel, face revert cu `Error(string)`, pe care un contract îl poate citi și transmite mai departe.
-* **Activ pe testnet, nu pe mainnet.** `0x...0901` nu se află în lista precompilurilor active a mainnet-ului; lista testnet-ului îl conține (citit la 7 noiembrie 2026), iar refuzul și comportamentul listei permise au fost testate acolo în acea zi. Mainnet-ul ține apelurile cross-VM oprite până la o decizie separată de guvernanță, și după un upgrade v3.2.7.
+* **Activ pe testnet, nu pe mainnet.** `0x...0901` nu se află în lista precompilurilor active a mainnet-ului; lista testnet-ului îl conține (citit la 7 noiembrie 2026), iar refuzul și comportamentul listei permise au fost testate acolo în acea zi. Mainnet-ul ține apelurile cross-VM oprite până la o decizie separată de guvernanță, și după upgrade-ul v3.2.7 (aplicat pe mainnet pe 12 noiembrie 2026; mesajul de apel cross-VM rămâne oprit de întrerupătorul de circuit).
 
 ### Testat pe testnet {#tested-testnet}
 

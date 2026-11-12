@@ -10,7 +10,7 @@ sidebar_position: 4
 Unisciti alla testnet Diana di QoreChain configurando il tuo nodo con il file genesis, i peer e le impostazioni di rete corretti.
 
 :::note
-Questa pagina riguarda la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è attiva dal 7 giugno 2026 (release **v3.2.6** dal 4 novembre 2026; la testnet è due release avanti) e dispone di una pagina dedicata **Connessione alla Mainnet** con genesis, peer e dettagli di connessione separati. La testnet esegue la **v3.2.8** dal 12 novembre 2026 (ha eseguito la v3.2.7 dal 6 novembre e la v3.2.6 dal 27 ottobre; la mainnet ha applicato la v3.2.6 il 4 novembre 2026); il suo manifesto di rilascio si trova all'indirizzo [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Questa pagina riguarda la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è attiva dal 7 giugno 2026 (release **v3.2.7** dal 12 novembre 2026; la testnet è una release avanti) e dispone di una pagina dedicata **Connessione alla Mainnet** con genesis, peer e dettagli di connessione separati. La testnet esegue la **v3.2.8** dal 12 novembre 2026 (ha eseguito la v3.2.7 dal 6 novembre e la v3.2.6 dal 27 ottobre; la mainnet ha applicato la v3.2.6 il 4 novembre 2026 e la v3.2.7 il 12 novembre 2026); il suo manifesto di rilascio si trova all'indirizzo [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Endpoint Pubblici
@@ -66,7 +66,7 @@ La testnet adotta aggiornamenti coordinati tramite proposte di governance, quind
 | v3.2.7 | 9.594.600 | 6 novembre 2026 (circa 15:00 UTC) |
 | v3.2.8 | 9.929.500 | 12 novembre 2026 (circa 03:35 UTC) |
 
-La testnet adotta ogni release prima della mainnet. La mainnet ha applicato la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026 la v3.2.5 all'altezza 3.906.833 il 29 ottobre 2026 (proposta di governance 14) e la v3.2.6 all'altezza 4.020.000 il 4 novembre 2026 (proposta di governance 15). La mainnet è quindi due release indietro: la testnet esegue la v3.2.8 (dopo la v3.2.7), che la mainnet non ha e per la quale non esistono ancora una data o un'altezza. I manifesti sono separati, quindi non copiare mai un binario da una rete all'altra (le aggiunte della v3.2.8 sono elencate in [Cronologia delle Versioni](/appendix/version-history#v328)).
+La testnet adotta ogni release prima della mainnet. La mainnet ha applicato la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026 la v3.2.5 all'altezza 3.906.833 il 29 ottobre 2026 (proposta di governance 14), la v3.2.6 all'altezza 4.020.000 il 4 novembre 2026 (proposta di governance 15) e la v3.2.7 all'altezza 4.164.600 il 12 novembre 2026 (proposta di governance 16). La mainnet è quindi una release indietro: la testnet esegue la v3.2.8 dal 12 novembre 2026, che la mainnet non ha applicato. I manifesti sono separati, quindi non copiare mai un binario da una rete all'altra (le aggiunte della v3.2.8 sono elencate in [Cronologia delle Versioni](/appendix/version-history#v328)).
 
 ---
 

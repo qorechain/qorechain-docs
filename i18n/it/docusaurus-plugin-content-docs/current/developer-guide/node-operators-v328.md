@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Operatori di nodo: checklist v3.2.8
 
-La release **v3.2.8** è attiva sulla testnet `qorechain-diana` dal 12 novembre 2026 (altezza 9,929,500). La mainnet `qorechain-vladi` resta sulla v3.2.6 e non ha ancora una data per la v3.2.8, quindi nulla in questa pagina si applica oggi a un nodo mainnet.
+La release **v3.2.8** è attiva sulla testnet `qorechain-diana` dal 12 novembre 2026 (altezza 9,929,500). La mainnet `qorechain-vladi` esegue la v3.2.7 dal 12 novembre 2026 (altezza 4,164,600, proposta di governance 16) e non ha applicato la v3.2.8, quindi nulla in questa pagina si applica oggi a un nodo mainnet.
 
 Questa pagina è l'elenco breve di ciò che un operatore di nodo controlla e cambia per la v3.2.8: le librerie condivise nel bundle, le impostazioni del runtime dei contratti, i nuovi valori predefiniti di `app.toml`, una nuova route REST e i passaggi per aggiornare un nodo che è ancora sulla v3.2.7. Per la guida completa al nodo, vedi [Esecuzione di un nodo](/developer-guide/running-a-node).
 
@@ -137,7 +137,7 @@ Un nuovo nodo che entra nella testnet parte direttamente dal binario v3.2.8; ved
 | Errore di avvio su una libreria condivisa mancante | `lib/` non è stata copiata per intero, o il loader non punta ad essa | Sezione 1 |
 | Avviso che `memory_cache_size` è stato aumentato | Il valore configurato è sotto i 256 MiB | Imposta 256 o più |
 | Avviso sulla directory dei contratti | Il codice dei contratti è ancora nella vecchia posizione | Spostalo in `<home>/wasm` quando ti è comodo |
-| `501` da `/qorechain/svm/v1/params` | Il nodo non è sulla v3.2.8 (la mainnet oggi) | Atteso sulla mainnet |
+| `501` da `/qorechain/svm/v1/params` | Il nodo non è sulla v3.2.8 (la mainnet esegue la v3.2.7) | Atteso sulla mainnet |
 
 ## Pagine correlate
 

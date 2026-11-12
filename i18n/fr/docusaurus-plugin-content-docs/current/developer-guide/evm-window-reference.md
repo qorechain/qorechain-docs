@@ -307,7 +307,7 @@ Le testnet a répondu le 12 novembre 2026 avec `tx_max_gas` **30000000** et `pre
 | `max_txs` de la fenêtre | 1,000 | Maximum de transactions dans une fenêtre |
 | Entrées de liste | 16 par liste | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-La réponse contient aussi un objet `limits` avec les valeurs fixées par la gouvernance ; lisez `tx_max_gas` et `precompile_input_max_bytes` de premier niveau, qui sont les valeurs en vigueur. La route est servie à partir de la v3.2.8 : le mainnet public répond donc `501 Not Implemented` jusqu'à sa mise à niveau.
+La réponse contient aussi un objet `limits` avec les valeurs fixées par la gouvernance ; lisez `tx_max_gas` et `precompile_input_max_bytes` de premier niveau, qui sont les valeurs en vigueur. La route est servie à partir de la v3.2.8 : le mainnet public répond donc `501 Not Implemented` jusqu'à ce qu'il applique la v3.2.8 (vérifié le 12 novembre 2026, après le passage du mainnet à la v3.2.7).
 
 Une fenêtre ouverte à un prix de gas normal compte quand même les frais maximum : une limite de gas de 30,000,000 avec un plafond de frais de 100 gwei compte 3 QOR contre `max_value` pour une transaction.
 

@@ -30,7 +30,7 @@ Les comptes, soldes et tokens sont partagés entre les environnements
 d'exécution, et la chaîne inclut le module IBC pour l'interopérabilité
 inter-chaînes (aucun canal IBC n'est ouvert sur le mainnet ; le testnet a un canal `transfer` ouvert vers une chaîne de test, vérifié le 27 octobre 2026).
 
-:::note Ce qui fonctionne aujourd'hui sur les réseaux actifs (le mainnet exécute la v3.2.6, le testnet la v3.2.8)
+:::note Ce qui fonctionne aujourd'hui sur les réseaux actifs (le mainnet exécute la v3.2.7, le testnet la v3.2.8)
 **Fonctionne :** les lectures sur toutes les voies, les transactions Native à signature hybride, les comptes
 unifiés, les transactions EVM à l'intérieur d'une
 [fenêtre d'autorisation](/sdk/guides/evm#evm-window), et les lectures SVM.
@@ -45,8 +45,8 @@ s'applique. Vérifié sur les points de terminaison actifs le 27 octobre 2026 ; 
 
 Le SDK publié (0.14.0, 12 novembre 2026) signe sous la forme que vérifient les deux réseaux
 (sign-bytes hybrides v2, déterminés à partir de l'état de la chaîne), et le format de signature,
-les adresses, les décimales, les memos et les frais n'ont pas changé dans la v3.2.3, la v3.2.4 ni la v3.2.5 ni la v3.2.6 (le mainnet exécute la v3.2.6 depuis le 4 novembre 2026,
-hauteur 4,020,000, proposition de gouvernance 15 ; le testnet depuis le 27 octobre, et depuis le 6 novembre le testnet exécutait la v3.2.7 et depuis le 12 novembre il exécute la v3.2.8, qui ajoutent des messages pour lesquels le SDK 0.14.0 a des constructeurs ; les nouvelles règles du testnet s'appliquent à partir de la v3.2.8 et le mainnet ne l'a pas appliquée). Il porte
+les adresses, les décimales, les memos et les frais n'ont pas changé dans la v3.2.3, la v3.2.4 ni la v3.2.5 ni la v3.2.6 (le mainnet exécute la v3.2.7 depuis le 12 novembre 2026,
+hauteur 4,164,600, proposition de gouvernance 16, après la v3.2.6 le 4 novembre ; le testnet depuis le 27 octobre, et depuis le 6 novembre le testnet exécutait la v3.2.7 et depuis le 12 novembre il exécute la v3.2.8, qui ajoutent des messages pour lesquels le SDK 0.14.0 a des constructeurs ; les nouvelles règles du testnet s'appliquent à partir de la v3.2.8 et le mainnet ne l'a pas appliquée ; les messages de la v3.2.7 sont sur le mainnet depuis le 12 novembre 2026). Il porte
 le côté client des règles post-quantiques ultérieures (la preuve de possession lors de l'enregistrement
 de clé, les fenêtres EVM à portée restreinte, les messages de consentement EIP-7702) et de la v3.2.4 (niveaux
 de staking, le nonce d'authenticator, les interrupteurs de fonctionnalités de protocole) et de la v3.2.5 (gas exact pour

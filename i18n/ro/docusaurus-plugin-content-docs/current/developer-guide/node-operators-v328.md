@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Operatori de noduri: lista de verificare v3.2.8
 
-Versiunea **v3.2.8** rulează pe testnet-ul `qorechain-diana` din 12 noiembrie 2026 (înălțimea 9,929,500). Mainnet-ul `qorechain-vladi` rămâne pe v3.2.6 și nu are încă o dată pentru v3.2.8, deci nimic din această pagină nu se aplică azi unui nod de mainnet.
+Versiunea **v3.2.8** rulează pe testnet-ul `qorechain-diana` din 12 noiembrie 2026 (înălțimea 9,929,500). Mainnet-ul `qorechain-vladi` rulează v3.2.7 din 12 noiembrie 2026 (înălțimea 4,164,600, propunerea de guvernanță 16) și nu a aplicat v3.2.8, deci nimic din această pagină nu se aplică azi unui nod de mainnet.
 
 Această pagină este lista scurtă a ceea ce verifică și schimbă un operator de nod pentru v3.2.8: bibliotecile partajate din pachet, setările runtime-ului de contracte, noile valori implicite din `app.toml`, o rută REST nouă și pașii pentru a actualiza un nod aflat încă pe v3.2.7. Pentru ghidul complet al nodului, vedeți [Rularea unui nod](/developer-guide/running-a-node).
 
@@ -137,7 +137,7 @@ Un nod nou care se alătură testnet-ului pornește direct de la binarul v3.2.8;
 | Eroare la pornire despre o bibliotecă partajată lipsă | `lib/` nu a fost copiat integral sau loader-ul nu indică spre el | Secțiunea 1 |
 | Avertisment că `memory_cache_size` a fost ridicat | Valoarea configurată este sub 256 MiB | Setați 256 sau mai mult |
 | Avertisment despre directorul de contracte | Codul contractelor este încă în vechea locație | Mutați-l în `<home>/wasm` când vă este convenabil |
-| `501` de la `/qorechain/svm/v1/params` | Nodul nu este pe v3.2.8 (mainnet azi) | De așteptat pe mainnet |
+| `501` de la `/qorechain/svm/v1/params` | Nodul nu este pe v3.2.8 (mainnet-ul rulează v3.2.7) | De așteptat pe mainnet |
 
 ## Pagini conexe
 

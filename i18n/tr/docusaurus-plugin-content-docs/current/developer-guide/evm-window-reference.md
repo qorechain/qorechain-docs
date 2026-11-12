@@ -307,7 +307,7 @@ Test ağı 12 Kasım 2026'da `tx_max_gas` **30000000** ve `precompile_input_max_
 | Pencere `max_txs` | 1,000 | Bir penceredeki en fazla işlem |
 | Liste girdileri | liste başına 16 | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-Yanıt ayrıca yönetişimin belirlediği değerleri içeren bir `limits` nesnesi taşır; yürürlükteki değerler olan üst düzey `tx_max_gas` ve `precompile_input_max_bytes` değerlerini okuyun. Rota v3.2.8'den itibaren sunulur; bu yüzden herkese açık ana ağ, yükseltilene kadar `501 Not Implemented` yanıtı verir.
+Yanıt ayrıca yönetişimin belirlediği değerleri içeren bir `limits` nesnesi taşır; yürürlükteki değerler olan üst düzey `tx_max_gas` ve `precompile_input_max_bytes` değerlerini okuyun. Rota v3.2.8'den itibaren sunulur; bu yüzden herkese açık ana ağ, v3.2.8'i uygulayana kadar `501 Not Implemented` yanıtı verir (ana ağ v3.2.7'ye geçtikten sonra, 12 Kasım 2026'da kontrol edildi).
 
 Normal bir gaz fiyatında açılan bir pencere de azami ücreti sayar: 100 gwei ücret tavanında 30,000,000 gaz limiti, bir işlem için `max_value` hesabına 3 QOR sayar.
 

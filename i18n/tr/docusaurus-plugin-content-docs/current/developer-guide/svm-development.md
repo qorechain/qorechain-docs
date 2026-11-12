@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain, geliştiricilerin tanıdık Solana araçlarını kullanarak SBF/BPF programları dağıtmasına ve çalıştırmasına olanak tanıyan bir **Solana Virtual Machine (SVM)** yürütme ortamı içerir. SVM modülü, `qorechaind start` komutunun otomatik olarak başlattığı, **8899 portu** üzerinde Solana uyumlu bir JSON-RPC arayüzü sunar (aşağıdaki [JSON-RPC Sunucusu](#json-rpc-server) bölümüne bakın).
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve 4 Kasım 2026'dan beri **v3.2.6** düğüm sürümünü çalıştıran (yönetişim önerisi 15, yükseklik 4.020.000; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını (mainnet) kullanır. v3.2.8 çalıştıran (12 Kasım 2026'dan beri; 19 Ekim 2026'dan beri v3.2.4) test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **Her iki ağda da SVM işlemleri devre dışıdır** (bir sonraki kutuya bakın); bu nedenle bu sayfadaki `tx svm` komutları yalnızca referans amaçlıdır: bugün başarılı olamazlar.
+Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve 12 Kasım 2026'dan beri **v3.2.7** düğüm sürümünü çalıştıran (yönetişim önerisi 16, yükseklik 4.164.600; v3.2.6 4 Kasım 2026'dan beri; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını (mainnet) kullanır. v3.2.8 çalıştıran (12 Kasım 2026'dan beri; 19 Ekim 2026'dan beri v3.2.4) test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **Her iki ağda da SVM işlemleri devre dışıdır** (bir sonraki kutuya bakın); bu nedenle bu sayfadaki `tx svm` komutları yalnızca referans amaçlıdır: bugün başarılı olamazlar.
 :::
 
 ---
@@ -84,9 +84,9 @@ Varsayılan değerler `enable = true` ve `address = "127.0.0.1:8899"` olduğunda
 | `getMinimumBalanceForRentExemption`  | Belirli bir veri boyutu için minimum bakiye          |
 | `getVersion`                         | SVM çalışma zamanı sürüm bilgisi                     |
 | `getHealth`                          | SVM uç noktası için sağlık kontrolü                  |
-| `getGenesisHash`                    | Kümenin genesis hash'i (testnet, v3.2.7'den beri; base58) |
+| `getGenesisHash`                    | Kümenin genesis hash'i (v3.2.7'den beri: testnet'te 6 Kasım 2026'dan, mainnet'te 12 Kasım 2026'dan itibaren; base58) |
 
-**Küme kimliği (v3.2.7, şimdilik yalnızca testnet).** Wallet Standard'ı izleyen cüzdanlar kararlı bir küme kimliğine ihtiyaç duyar. v3.2.7 sürümünden itibaren (6 Kasım 2026'dan beri testnet'te; mainnet hâlâ v3.2.6'dadır ve bunun için bir tarih yoktur) düğüm, kümenin genesis hash'ini ve Wallet Standard zincir kimliğini sunar. 7 Kasım 2026'da testnet'te `GET /qorechain/svm/v1/cluster_info`, `chain_id` `qorechain-diana`, bir `genesis_hash`, bir `caip2_chain_id` (`solana:` ve ardından genesis hash'in ilk 32 karakteri) ve `execution_enabled` `false` ile yanıt verdi; `https://svm-testnet.qore.host` üzerindeki `getGenesisHash` aynı genesis hash'i döndürdü. Hash, gerçek bir Solana kümesinden değil, zincir kimliğinden türetilir. **SVM yürütmesi her iki ağda da kapalı kalır**; bu yalnızca kümeyi tanımlar.
+**Küme kimliği (v3.2.7).** Wallet Standard'ı izleyen cüzdanlar kararlı bir küme kimliğine ihtiyaç duyar. v3.2.7 sürümünden itibaren (6 Kasım 2026'dan beri testnet'te, 12 Kasım 2026'dan beri mainnet'te) düğüm, kümenin genesis hash'ini ve Wallet Standard zincir kimliğini sunar. 7 Kasım 2026'da testnet'te `GET /qorechain/svm/v1/cluster_info`, `chain_id` `qorechain-diana`, bir `genesis_hash`, bir `caip2_chain_id` (`solana:` ve ardından genesis hash'in ilk 32 karakteri) ve `execution_enabled` `false` ile yanıt verdi; `https://svm-testnet.qore.host` üzerindeki `getGenesisHash` aynı genesis hash'i döndürdü. Hash, gerçek bir Solana kümesinden değil, zincir kimliğinden türetilir. **SVM yürütmesi her iki ağda da kapalı kalır**; bu yalnızca kümeyi tanımlar. 12 Kasım 2026'da aynı rota mainnet'te `chain_id` `qorechain-vladi`, kendi genesis hash'i ve `execution_enabled` `false` ile `200` yanıtı verdi.
 
 ---
 

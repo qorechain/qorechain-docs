@@ -10,7 +10,7 @@ sidebar_position: 5
 Bu kılavuz, QOR token gönderme, işlemleri sorgulama ve QoreChain ile yerel, EVM ve SVM arayüzleri üzerinden etkileşim kurma adımlarını anlatır.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve 4 Kasım 2026'dan beri v3.2.6 sürümünü çalıştırır (test ağı 12 Kasım 2026'dan beri v3.2.8 çalıştırır) — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ zincir kimliğini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve 12 Kasım 2026'dan beri v3.2.7 sürümünü çalıştırır (test ağı 12 Kasım 2026'dan beri v3.2.8 çalıştırır) — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ zincir kimliğini ve uç noktalarını kullanın.
 :::
 
 ## Bakiyenizi Kontrol Etme
@@ -70,7 +70,7 @@ Eş imzalı işlem kabul edildikten sonra CLI bir işlem karması (hash) döndü
 
 ## Yeni Bir Hesabın İlk İşlemi {#first-tx-pqc}
 
-**v3.2.8** sürümünden itibaren (test ağında 12 Kasım 2026'dan beri; ana ağ için henüz tarih yok) yeni bir hesabın ilk işlemi, **kuantum sonrası anahtarının kaydı** olmalıdır: yalnızca klasik anahtarla imzalanan, sahiplik kanıtını taşıyan `MsgRegisterPQCKeyV2`. Kayıtlı anahtarı olmayan bir hesaptan gelen başka herhangi bir ilk işlem reddedilir. Bu kural, fonlanmış ama hiç işlem göndermemiş yeni bir hesap için geçerlidir; kayıtlı anahtarı zaten olan bir hesap etkilenmez.
+**v3.2.8** sürümünden itibaren (test ağında 12 Kasım 2026'dan beri; ana ağ uygulamadı) yeni bir hesabın ilk işlemi, **kuantum sonrası anahtarının kaydı** olmalıdır: yalnızca klasik anahtarla imzalanan, sahiplik kanıtını taşıyan `MsgRegisterPQCKeyV2`. Kayıtlı anahtarı olmayan bir hesaptan gelen başka herhangi bir ilk işlem reddedilir. Bu kural, fonlanmış ama hiç işlem göndermemiş yeni bir hesap için geçerlidir; kayıtlı anahtarı zaten olan bir hesap etkilenmez.
 
 **Neden önemli.** Cosmos hattındaki sonraki her işlem hibrit imzalanır (secp256k1 artı ML-DSA-87) ve zincir ML-DSA-87 kısmını yalnızca önceden bildiği bir anahtara karşı doğrulayabilir. Kayıt, bu imzayı henüz taşıyamayan tek işlemdir; bu yüzden zincirin yalnızca klasik imzayla kabul ettiği tek işlemdir ve en başta gelmesi gerekir. Kayıttan önce bir transfer, bir delegasyon veya bir sözleşme çağrısı gönderirseniz işlem reddedilir ve önce kayıt yaparsınız.
 

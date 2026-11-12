@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain에는 **Solana Virtual Machine(SVM)** 실행 환경이 포함되어 있어, 개발자가 익숙한 Solana 툴링을 사용해 SBF/BPF 프로그램을 배포하고 실행할 수 있습니다. SVM 모듈은 **8899번 포트**에서 Solana 호환 JSON-RPC 인터페이스를 노출하며, 이는 `qorechaind start`가 자동으로 실행합니다(아래 [JSON-RPC 서버](#json-rpc-server) 참고).
 
 :::note
-아래 명령은 2026년 6월 7일부터 가동 중이며 노드 릴리스 **v3.2.6**을 2026년 11월 4일부터 실행하는(거버넌스 제안 15, 높이 4,020,000. v3.2.5는 2026년 10월 29일부터, v3.2.4는 2026년 10월 23일부터) **`qorechain-vladi`** 메인넷을 기준으로 합니다. v3.2.8을 실행하는(2026년 11월 12일부터. 2026년 10월 19일부터 v3.2.4) 테스트넷의 경우 `--chain-id qorechain-diana`로 대체하세요. **두 네트워크 모두에서 SVM 트랜잭션은 비활성화되어 있으므로**(다음 상자 참고), 이 페이지의 `tx svm` 명령은 참고용일 뿐이며 현재로서는 성공할 수 없습니다.
+아래 명령은 2026년 6월 7일부터 가동 중이며 노드 릴리스 **v3.2.7**을 2026년 11월 12일부터 실행하는(거버넌스 제안 16, 높이 4,164,600. v3.2.6은 2026년 11월 4일부터, v3.2.5는 2026년 10월 29일부터, v3.2.4는 2026년 10월 23일부터) **`qorechain-vladi`** 메인넷을 기준으로 합니다. v3.2.8을 실행하는(2026년 11월 12일부터. 2026년 10월 19일부터 v3.2.4) 테스트넷의 경우 `--chain-id qorechain-diana`로 대체하세요. **두 네트워크 모두에서 SVM 트랜잭션은 비활성화되어 있으므로**(다음 상자 참고), 이 페이지의 `tx svm` 명령은 참고용일 뿐이며 현재로서는 성공할 수 없습니다.
 :::
 
 ---
@@ -84,9 +84,9 @@ address = "127.0.0.1:8899"
 | `getMinimumBalanceForRentExemption` | 특정 데이터 크기에 필요한 최소 잔액         |
 | `getVersion`                        | SVM 런타임 버전 정보                        |
 | `getHealth`                         | SVM 엔드포인트 상태 확인                    |
-| `getGenesisHash`                    | 클러스터의 제네시스 해시(테스트넷, v3.2.7부터, base58) |
+| `getGenesisHash`                    | 클러스터의 제네시스 해시(v3.2.7부터: 테스트넷은 2026년 11월 6일부터, 메인넷은 2026년 11월 12일부터, base58) |
 
-**클러스터 식별 정보(v3.2.7, 지금은 테스트넷만).** Wallet Standard를 따르는 지갑에는 안정적인 클러스터 식별 정보가 필요합니다. 릴리스 v3.2.7부터(테스트넷은 2026년 11월 6일부터. 메인넷은 아직 v3.2.6이며 날짜가 없음) 노드는 클러스터의 제네시스 해시와 Wallet Standard 체인 id를 제공합니다. 2026년 11월 7일 테스트넷에서 `GET /qorechain/svm/v1/cluster_info`는 `chain_id` `qorechain-diana`, `genesis_hash`, `caip2_chain_id`(`solana:` 뒤에 제네시스 해시의 첫 32자), `execution_enabled` `false`로 응답했고, `https://svm-testnet.qore.host`의 `getGenesisHash`는 같은 제네시스 해시를 반환했습니다. 이 해시는 실제 Solana 클러스터가 아니라 체인 id에서 도출됩니다. **두 네트워크 모두에서 SVM 실행은 꺼진 상태로 유지됩니다.** 이는 클러스터를 식별할 뿐입니다.
+**클러스터 식별 정보(v3.2.7).** Wallet Standard를 따르는 지갑에는 안정적인 클러스터 식별 정보가 필요합니다. 릴리스 v3.2.7부터(테스트넷은 2026년 11월 6일부터, 메인넷은 2026년 11월 12일부터) 노드는 클러스터의 제네시스 해시와 Wallet Standard 체인 id를 제공합니다. 2026년 11월 7일 테스트넷에서 `GET /qorechain/svm/v1/cluster_info`는 `chain_id` `qorechain-diana`, `genesis_hash`, `caip2_chain_id`(`solana:` 뒤에 제네시스 해시의 첫 32자), `execution_enabled` `false`로 응답했고, `https://svm-testnet.qore.host`의 `getGenesisHash`는 같은 제네시스 해시를 반환했습니다. 이 해시는 실제 Solana 클러스터가 아니라 체인 id에서 도출됩니다. **두 네트워크 모두에서 SVM 실행은 꺼진 상태로 유지됩니다.** 이는 클러스터를 식별할 뿐입니다. 2026년 11월 12일에 메인넷의 같은 경로는 `chain_id` `qorechain-vladi`, 고유한 제네시스 해시, `execution_enabled` `false`와 함께 `200`으로 응답했습니다.
 
 ---
 

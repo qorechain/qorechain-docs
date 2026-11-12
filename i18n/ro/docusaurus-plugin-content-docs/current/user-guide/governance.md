@@ -10,7 +10,7 @@ sidebar_position: 3
 Acest ghid descrie cum funcționează guvernanța on-chain pe QoreChain: cum sunt numărate voturile, cum să trimiți propuneri și cum să votezi.
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.6** din 4 noiembrie 2026 (v3.2.5 din 29 octombrie, v3.2.4 din 23 octombrie); testnet-ul rulează **v3.2.8** din 12 noiembrie 2026 (v3.2.7 din 6 noiembrie, v3.2.6 din 27 octombrie). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.7** din 12 noiembrie 2026 (v3.2.6 din 4 noiembrie, v3.2.5 din 29 octombrie, v3.2.4 din 23 octombrie); testnet-ul rulează **v3.2.8** din 12 noiembrie 2026 (v3.2.7 din 6 noiembrie, v3.2.6 din 27 octombrie). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
 :::
 
 :::caution Semnează cu `tx pqc cosign`
@@ -175,7 +175,7 @@ Parametrii cheie includ:
 
 ## Guvernanța pe mainnet până acum {#mainnet-history}
 
-Guvernanța mainnet-ului a fost folosită pentru modificări de parametri, decizii privind circuit breaker-ul, upgrade-uri coordonate și, din octombrie 2026, pentru eliberarea unor sume pe care lanțul le-a înregistrat la upgrade-ul v3.2.0. Propunerile 7 până la 14 au trecut pe mainnet în octombrie 2026, iar propunerea 15 în noiembrie, inclusiv propunerea 12 (o eliberare ulterioară, aprobată la 21 octombrie), propunerea 13 (upgrade-ul v3.2.4, aplicat la înălțimea 3,742,566 pe 23 octombrie), propunerea 14 (upgrade-ul v3.2.5, aplicat la înălțimea 3,906,833 pe 29 octombrie 2026) și propunerea 15 (upgrade-ul v3.2.6, votul s-a încheiat pe 3 noiembrie, aplicat la înălțimea 4,020,000 pe 4 noiembrie 2026); lista și rezultatele se află în [Istoric versiuni](/appendix/version-history#governance-timeline), iar fiecare propunere poate fi citită live la `GET /cosmos/gov/v1/proposals`.
+Guvernanța mainnet-ului a fost folosită pentru modificări de parametri, decizii privind circuit breaker-ul, upgrade-uri coordonate și, din octombrie 2026, pentru eliberarea unor sume pe care lanțul le-a înregistrat la upgrade-ul v3.2.0. Propunerile 7 până la 14 au trecut pe mainnet în octombrie 2026, iar propunerile 15 și 16 în noiembrie, inclusiv propunerea 12 (o eliberare ulterioară, aprobată la 21 octombrie), propunerea 13 (upgrade-ul v3.2.4, aplicat la înălțimea 3,742,566 pe 23 octombrie), propunerea 14 (upgrade-ul v3.2.5, aplicat la înălțimea 3,906,833 pe 29 octombrie 2026), propunerea 15 (upgrade-ul v3.2.6, votul s-a încheiat pe 3 noiembrie, aplicat la înălțimea 4,020,000 pe 4 noiembrie 2026) și propunerea 16 (upgrade-ul v3.2.7, aplicat la înălțimea 4,164,600 pe 12 noiembrie 2026); lista și rezultatele se află în [Istoric versiuni](/appendix/version-history#governance-timeline), iar fiecare propunere poate fi citită live la `GET /cosmos/gov/v1/proposals`.
 
 ---
 

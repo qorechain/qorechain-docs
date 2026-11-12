@@ -43,7 +43,7 @@ hybrides acceptent une option `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`) ; 
 interroge le réseau et nécessite donc le point d'accès REST (`rest`) sur
 `qorechain-vladi` / `qorechain-diana` : il lève une erreur au lieu de deviner. Voir
 [Quelle forme de sign-bytes ?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-La forme n'a pas changé dans la chaîne v3.2.3 ni v3.2.4 (la v3.2.4 s'exécute sur le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026 ; les v3.2.5 et v3.2.6 n'ont rien changé ici ; le mainnet exécute la v3.2.6 depuis le 4 novembre 2026) : `"auto"`
+La forme n'a pas changé dans la chaîne v3.2.3 ni v3.2.4 (la v3.2.4 s'exécute sur le testnet depuis le 19 octobre 2026 et sur le mainnet depuis le 23 octobre 2026 ; les v3.2.5 et v3.2.6 n'ont rien changé ici ; le mainnet exécute la v3.2.7 depuis le 12 novembre 2026) : `"auto"`
 se résout en v2 sur les deux réseaux, car les deux ont appliqué la mise à niveau qui y a basculé.
 :::
 
@@ -140,7 +140,7 @@ Conservez le code de récupération : un autre code donne une autre clé.
 
 Le SDK 0.12.0 est la version cliente pour la chaîne **v3.2.5**, que le mainnet a appliquée à la
 hauteur 3,906,833 le 29 octobre 2026 (le testnet l'a appliquée le 26 octobre). Le mainnet
-exécute la v3.2.6 depuis le 4 novembre ; le testnet a exécuté la v3.2.6 dès le 27 octobre, la v3.2.7 du 6 au 12 novembre et la v3.2.8 depuis le 12 novembre ; le
+exécute la v3.2.6 depuis le 4 novembre et la v3.2.7 depuis le 12 novembre ; le testnet a exécuté la v3.2.6 dès le 27 octobre, la v3.2.7 du 6 au 12 novembre et la v3.2.8 depuis le 12 novembre ; le
 format de signature hybride, les adresses, les décimales et les memos n'ont pas changé, de sorte qu'une
 transaction construite avec la 0.10.0 reste valide. TypeScript, Python, Go, Rust et Java
 passent tous à la 0.12.0, avec `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`
@@ -182,10 +182,10 @@ le 19 octobre). Le format de signature, les adresses, les décimales, les memos 
 changé, et une transaction construite avec la 0.9.0 reste valide. La version a été vérifiée dans
 chaque langage avec de vraies transactions sur le testnet. Elle n'avait pas de constructeurs pour
 quoi que ce soit introduit après la v3.2.4 ; les ajouts de la v3.2.5 sont arrivés avec la
-[0.12.0](#whats-new-0120). Le mainnet exécute la v3.2.6 depuis le 4 novembre 2026 (hauteur
-4,020,000, proposition de gouvernance 15 ; la v3.2.5 avant elle, depuis le 29 octobre à la hauteur
+[0.12.0](#whats-new-0120). Le mainnet exécute la v3.2.7 depuis le 12 novembre 2026 (hauteur
+4,164,600, proposition de gouvernance 16 ; la v3.2.6 depuis le 4 novembre à la hauteur 4,020,000 ; la v3.2.5 avant elle, depuis le 29 octobre à la hauteur
 3,906,833) et la 0.10.0 y continue de fonctionner, car le format de signature n'a pas
-changé. Le testnet a appliqué la v3.2.5 et la v3.2.6 les 26 et 27 octobre 2026, la v3.2.7 le 6 novembre et la v3.2.8 le 12 novembre (aucune version du SDK n'a de constructeurs pour les messages de la v3.2.7). Ce qu'a apporté la 0.10.0
+changé. Le testnet a appliqué la v3.2.5 et la v3.2.6 les 26 et 27 octobre 2026, la v3.2.7 le 6 novembre et la v3.2.8 le 12 novembre (aucune version du SDK n'a de constructeurs pour les messages de la v3.2.7, qui sont sur le mainnet depuis le 12 novembre 2026). Ce qu'a apporté la 0.10.0
 (tout cela est toujours dans la 0.14.0) :
 
 | Domaine | Dans la 0.10.0 |
@@ -205,7 +205,7 @@ changé. Le testnet a appliqué la v3.2.5 et la v3.2.6 les 26 et 27 octobre 2026
 ## Ce qu'a ajouté la 0.9.0 {#whats-new-090}
 
 Le SDK 0.9.0 était la version cliente pour les chaînes **v3.2.2** et **v3.2.3** (le mainnet
-les a appliquées aux hauteurs 3,556,788 et 3,662,051 ; le mainnet a exécuté la v3.2.4 à partir du 23 octobre 2026 (hauteur 3,742,566) et a exécuté la v3.2.5 à partir du 29 octobre et exécute la v3.2.6 depuis le 4 novembre 2026, et le testnet exécute la v3.2.4 ou une version ultérieure depuis le 19 octobre 2026). Le
+les a appliquées aux hauteurs 3,556,788 et 3,662,051 ; le mainnet a exécuté la v3.2.4 à partir du 23 octobre 2026 (hauteur 3,742,566) et a exécuté la v3.2.5 à partir du 29 octobre, exécute la v3.2.6 depuis le 4 novembre et exécute la v3.2.7 depuis le 12 novembre 2026, et le testnet exécute la v3.2.4 ou une version ultérieure depuis le 19 octobre 2026). Le
 format de signature, les adresses, les décimales, les memos et les frais n'ont pas changé,
 si bien que la forme sign-bytes hybride v2 que signent la 0.8.1 et les versions suivantes
 reste la bonne.

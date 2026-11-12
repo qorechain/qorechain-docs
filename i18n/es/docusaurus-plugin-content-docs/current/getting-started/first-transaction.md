@@ -10,7 +10,7 @@ sidebar_position: 5
 Esta guía explica cómo enviar tokens QOR, consultar transacciones e interactuar con QoreChain a través de sus interfaces nativa, EVM y SVM.
 
 :::note
-Los comandos siguientes usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está en vivo desde el 7 de junio de 2026 y ejecuta la versión v3.2.6 desde el 4 de noviembre de 2026 (la testnet ejecuta v3.2.8 desde el 12 de noviembre de 2026) — sustituye el chain ID y los endpoints de mainnet indicados en la página **Conexión a Mainnet** al operar en mainnet.
+Los comandos siguientes usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está en vivo desde el 7 de junio de 2026 y ejecuta la versión v3.2.7 desde el 12 de noviembre de 2026 (la testnet ejecuta v3.2.8 desde el 12 de noviembre de 2026) — sustituye el chain ID y los endpoints de mainnet indicados en la página **Conexión a Mainnet** al operar en mainnet.
 :::
 
 ## Consultar tu Saldo
@@ -70,7 +70,7 @@ Una vez aceptada la transacción cofirmada, la CLI devuelve un hash de transacci
 
 ## La primera transacción de una cuenta nueva {#first-tx-pqc}
 
-Desde la versión **v3.2.8** (testnet desde el 12 de noviembre de 2026; la mainnet todavía no tiene fecha) la primera transacción de una cuenta recién creada debe ser el **registro de su clave post-cuántica**: `MsgRegisterPQCKeyV2`, con la prueba de posesión, firmada solo con la clave clásica. Cualquier otra primera transacción de una cuenta que no tiene una clave registrada se rechaza. Esto se aplica a una cuenta nueva que ha recibido fondos pero nunca ha enviado nada; una cuenta que ya tiene una clave registrada no se ve afectada.
+Desde la versión **v3.2.8** (testnet desde el 12 de noviembre de 2026; la mainnet no la ha aplicado) la primera transacción de una cuenta recién creada debe ser el **registro de su clave post-cuántica**: `MsgRegisterPQCKeyV2`, con la prueba de posesión, firmada solo con la clave clásica. Cualquier otra primera transacción de una cuenta que no tiene una clave registrada se rechaza. Esto se aplica a una cuenta nueva que ha recibido fondos pero nunca ha enviado nada; una cuenta que ya tiene una clave registrada no se ve afectada.
 
 **Por qué importa.** Cada transacción posterior en la vía Cosmos se firma de forma híbrida (secp256k1 más ML-DSA-87), y la cadena solo puede verificar la parte ML-DSA-87 frente a una clave que ya conoce. El registro es la única transacción que todavía no puede llevar esa firma, así que es la única transacción que la cadena acepta con una firma solo clásica, y tiene que ir primero. Si envías una transferencia, una delegación o una llamada a un contrato antes de registrar, la transacción se rechaza y registras primero.
 

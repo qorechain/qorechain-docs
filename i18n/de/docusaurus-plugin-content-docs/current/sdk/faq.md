@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Ist das Mainnet live?
 
 Ja. Das Mainnet ist **live** (Chain-ID `qorechain-vladi`, live seit dem 7. Juni 2026)
-und läuft mit der Chain-Version v3.2.6 (angewendet bei Höhe 4.020.000 am 4. November 2026, Governance-Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober 2026 angewendet und v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026); das Testnet läuft seit dem 27. Oktober 2026 mit v3.2.6, ab dem 6. November mit v3.2.7 und seit dem 12. November 2026 mit v3.2.8 (Höhe 9.929.500; nicht im Mainnet, kein Datum). Das Testnet-Preset
+und läuft mit der Chain-Version v3.2.7 (angewendet bei Höhe 4.164.600 am 12. November 2026, Governance-Vorschlag 16; v3.2.6 wurde bei Höhe 4.020.000 am 4. November 2026 angewendet, Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober 2026 angewendet und v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026); das Testnet läuft seit dem 27. Oktober 2026 mit v3.2.6, ab dem 6. November mit v3.2.7 und seit dem 12. November 2026 mit v3.2.8 (Höhe 9.929.500; das Mainnet hat es nicht angewendet). Das Testnet-Preset
 (`qorechain-diana`) bleibt ebenfalls verfügbar. Ab SDK 0.12.0 verwenden beide Presets standardmäßig die öffentlichen Endpoints; wählen Sie das Netzwerk mit
 `createClient({ network: "mainnet" })` und überschreiben Sie `endpoints` nur für
 Ihren eigenen Node. Siehe
@@ -157,9 +157,9 @@ werden on-chain abgelehnt, und zwar in jeder Lane (einschließlich eth-native).
 ## Mit welchen Chain-Versionen funktioniert das SDK?
 
 SDK **0.12.0** ist das Client-Release für die Chain **v3.2.5** (Mainnet seit dem 29. Oktober
-2026 auf Höhe 3.906.833; das Testnet seit dem 26. Oktober). Das Mainnet läuft mit v3.2.6
-(seit dem 4. November) und das Testnet mit v3.2.8 (seit dem 12. November; v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober); das Signaturformat hat sich bis v3.2.6 nicht
-geändert, daher funktioniert 0.12.0 im Mainnet. 0.12.0 hat keine Builder für die Ergänzungen von v3.2.7 (Registrierung von PQC-Multisig, den Textual-Signiermodus, die APR, die Cluster-Identität und die Nachrichten für Verifikationsschlüssel), und sein Signierpfad wurde nicht erneut gegen das v3.2.7-Testnet geprüft; verwenden Sie dafür die CLI. Es fügt die exakte Gas-Regel für Hybrid-Transaktionen,
+2026 auf Höhe 3.906.833; das Testnet seit dem 26. Oktober). Das Mainnet läuft mit v3.2.7
+(seit dem 12. November) und das Testnet mit v3.2.8 (seit dem 12. November; v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober); das Signaturformat hat sich bis v3.2.7 nicht
+geändert, daher funktioniert 0.12.0 im Mainnet. 0.12.0 hat keine Builder für die Ergänzungen von v3.2.7 (Registrierung von PQC-Multisig, den Textual-Signiermodus, die APR, die Cluster-Identität und die Nachrichten für Verifikationsschlüssel), die seit dem 12. November 2026 im Mainnet sind, und sein Signierpfad wurde nicht erneut gegen v3.2.7 geprüft; verwenden Sie dafür die CLI. Es fügt die exakte Gas-Regel für Hybrid-Transaktionen,
 die Builder und den Lesezugriff des ML-KEM-Schlüsselregisters, die Lesezugriffe für Abstract Accounts und die geprüften
 Builder für Governance-Parameter hinzu (siehe [Was 0.12.0 hinzufügt](/sdk/install#whats-new-0120)),
 zusätzlich zu dem, was 0.10.0 für v3.2.4 hinzugefügt hat (die Staking-Tier-Builder und -Lesezugriffe,
@@ -172,8 +172,8 @@ Sign-Bytes-Form v2 für Hybrid, die Registrierung, hybride Sendungen und das
 EVM-Fenster funktionieren unverändert), hat aber keinen dieser Builder: Verwenden Sie
 dafür die CLI (siehe
 [Versionen vor 0.9.0](/sdk/install#before-090)). Das Signaturformat hat sich in v3.2.4,
-v3.2.5 oder v3.2.6 nicht geändert. Das Mainnet läuft mit v3.2.6 und das Testnet mit v3.2.8 (das Testnet hat v3.2.5 am 26. Oktober 2026,
-v3.2.6 am 27. Oktober, v3.2.7 am 6. November und v3.2.8 am 12. November angewendet; das Mainnet v3.2.5 am 29. Oktober und v3.2.6 am 4. November). SDK 0.10.0 und 0.9.0 funktionieren dort weiter, haben aber keine Builder für die
+v3.2.5 oder v3.2.6 nicht geändert. Das Mainnet läuft mit v3.2.7 und das Testnet mit v3.2.8 (das Testnet hat v3.2.5 am 26. Oktober 2026,
+v3.2.6 am 27. Oktober, v3.2.7 am 6. November und v3.2.8 am 12. November angewendet; das Mainnet v3.2.5 am 29. Oktober, v3.2.6 am 4. November und v3.2.7 am 12. November). SDK 0.10.0 und 0.9.0 funktionieren dort weiter, haben aber keine Builder für die
 Ergänzungen von v3.2.5 (das ML-KEM-Schlüsselregister, die exakte Gas-Regel); verwenden Sie mit diesen Releases die CLI oder aktualisieren Sie auf 0.14.0. 0.12.0 wurde gegen v3.2.5 gebaut und geprüft.
 
 ## Meine PQC-Schlüsselregistrierung wurde abgelehnt, aber die Gebühr wurde abgebucht

@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Node-Betreiber: Checkliste für v3.2.8
 
-Das Release **v3.2.8** läuft seit dem 12. November 2026 (Höhe 9,929,500) im Testnet `qorechain-diana`. Das Mainnet `qorechain-vladi` bleibt auf v3.2.6 und hat noch kein Datum für v3.2.8, sodass nichts auf dieser Seite heute für einen Mainnet-Node gilt.
+Das Release **v3.2.8** läuft seit dem 12. November 2026 (Höhe 9,929,500) im Testnet `qorechain-diana`. Das Mainnet `qorechain-vladi` läuft seit dem 12. November 2026 mit v3.2.7 (Höhe 4,164,600, Governance-Vorschlag 16) und hat v3.2.8 nicht angewendet, sodass nichts auf dieser Seite heute für einen Mainnet-Node gilt.
 
 Diese Seite ist die kurze Liste dessen, was ein Node-Betreiber für v3.2.8 prüft und ändert: die gemeinsam genutzten Bibliotheken im Bundle, die Einstellungen der Contract-Laufzeitumgebung, die neuen `app.toml`-Standardwerte, eine neue REST-Route und die Schritte, um einen Node zu aktualisieren, der noch auf v3.2.7 läuft. Den vollständigen Node-Leitfaden finden Sie unter [Einen Node betreiben](/developer-guide/running-a-node).
 
@@ -137,7 +137,7 @@ Ein neuer Node, der dem Testnet beitritt, startet direkt mit der v3.2.8-Binärda
 | Startfehler wegen einer fehlenden gemeinsam genutzten Bibliothek | `lib/` wurde nicht vollständig kopiert, oder der Loader zeigt nicht darauf | Abschnitt 1 |
 | Warnung, dass `memory_cache_size` angehoben wurde | Der konfigurierte Wert liegt unter 256 MiB | 256 oder mehr setzen |
 | Warnung zum Contract-Verzeichnis | Der Contract-Code liegt noch am alten Ort | Bei Gelegenheit nach `<home>/wasm` verschieben |
-| `501` von `/qorechain/svm/v1/params` | Der Node läuft nicht mit v3.2.8 (heute das Mainnet) | Im Mainnet erwartet |
+| `501` von `/qorechain/svm/v1/params` | Der Node läuft nicht mit v3.2.8 (das Mainnet läuft mit v3.2.7) | Im Mainnet erwartet |
 
 ## Verwandte Seiten
 

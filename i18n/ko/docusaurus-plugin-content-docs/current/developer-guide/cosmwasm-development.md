@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain은 **QoreChain Native** 스마트 컨트랙트를 지원합니다. QoreChain Native는 QoreChain이 자사의 **CosmWasm** 런타임에 붙인 이름으로, 개발자는 표준 CosmWasm 라이브러리(`cosmwasm-std`)를 기반으로 안전하고 샌드박스화된 프로그램을 Rust로 작성하고 이를 WebAssembly로 컴파일합니다. QoreChain Native 컨트랙트는 QoreChain의 트리플 VM 아키텍처 내에서 EVM 및 SVM 프로그램과 함께 실행됩니다.
 
 :::note
-아래 명령은 2026년 6월 7일부터 운영 중이며 2026년 11월 4일부터 노드 릴리스 **v3.2.6**(거버넌스 제안 15, 높이 4,020,000. v3.2.5는 2026년 10월 29일부터, v3.2.4는 2026년 10월 23일부터)을 실행하는 **`qorechain-vladi`** 메인넷을 사용합니다. v3.2.8을 실행하는 테스트넷(2026년 11월 12일부터. 2026년 10월 19일부터 v3.2.4)의 경우 `--chain-id qorechain-diana`로 대체하세요.
+아래 명령은 2026년 6월 7일부터 운영 중이며 2026년 11월 12일부터 노드 릴리스 **v3.2.7**(거버넌스 제안 16, 높이 4,164,600. v3.2.6은 2026년 11월 4일부터, v3.2.5는 2026년 10월 29일부터, v3.2.4는 2026년 10월 23일부터)을 실행하는 **`qorechain-vladi`** 메인넷을 사용합니다. v3.2.8을 실행하는 테스트넷(2026년 11월 12일부터. 2026년 10월 19일부터 v3.2.4)의 경우 `--chain-id qorechain-diana`로 대체하세요.
 :::
 
 :::caution 코드 업로드 및 인스턴스화에는 메인넷에서 명시적 권한이 필요하며, 테스트넷은 다릅니다
@@ -29,7 +29,7 @@ qorechaind query wasm params
 :::
 
 :::caution `tx pqc cosign`으로 서명하세요
-메인넷과 테스트넷은 모든 Cosmos 레인 트랜잭션에 하이브리드 양자 내성 서명을 요구하므로, 이 페이지의 `tx` 명령은 그대로는 브로드캐스트되지 않습니다. 이 명령들은 `--generate-only > tx.json`으로 트랜잭션을 구성합니다. 그런 다음 `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`로 서명하고 브로드캐스트하세요(서명기는 [다운로드 매니페스트](/developer-guide/running-a-node#fetch-the-manifest)의 릴리스 바이너리에 포함되어 있으며, 공개 소스에서 빌드한 바이너리에는 없습니다). 네트워크 수수료 하한은 **가스 단위당 0.1 uqor**이며, `--gas-prices 0.1uqor`가 이를 나타냅니다. 하이브리드 서명은 시뮬레이션에 포함되지 않는 약 47,000 가스를 추가하므로 `1.5` 조정값을 사용합니다. (v3.2.7부터, 테스트넷은 2026년 11월 6일부터, 포스트 양자 검증 비용은 고정 2,000 가스이며 메인넷은 아직 v3.2.6입니다.) [양자 내성 서명](/developer-guide/post-quantum-signing)을 참조하세요.
+메인넷과 테스트넷은 모든 Cosmos 레인 트랜잭션에 하이브리드 양자 내성 서명을 요구하므로, 이 페이지의 `tx` 명령은 그대로는 브로드캐스트되지 않습니다. 이 명령들은 `--generate-only > tx.json`으로 트랜잭션을 구성합니다. 그런 다음 `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`로 서명하고 브로드캐스트하세요(서명기는 [다운로드 매니페스트](/developer-guide/running-a-node#fetch-the-manifest)의 릴리스 바이너리에 포함되어 있으며, 공개 소스에서 빌드한 바이너리에는 없습니다). 네트워크 수수료 하한은 **가스 단위당 0.1 uqor**이며, `--gas-prices 0.1uqor`가 이를 나타냅니다. 하이브리드 서명은 시뮬레이션에 포함되지 않는 약 47,000 가스를 추가하므로 `1.5` 조정값을 사용합니다. (v3.2.7부터, 테스트넷은 2026년 11월 6일부터, 메인넷은 2026년 11월 12일부터, 포스트 양자 검증 비용은 고정 2,000 가스입니다.) [양자 내성 서명](/developer-guide/post-quantum-signing)을 참조하세요.
 :::
 
 ---

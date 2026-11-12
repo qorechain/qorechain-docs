@@ -12,7 +12,7 @@ Die SVM-Lane ist der Solana-kompatible Teil von QoreChain: Sie deployen kompilie
 Diese Seite erklärt, wie man den Zustand der Lane liest, wie Programme, Accounts und Rent funktionieren, wie ein SVM-Wallet einen Post-Quanten-Schlüssel registriert, was die Verwahrungslimits bedeuten und welche Beispiele heute laufen können.
 
 :::note Zuerst das Testnet, und die Lane ist dort seit Vorschlag 37 offen
-v3.2.8 läuft seit dem 12. November 2026 im Testnet **`qorechain-diana`**. Das Mainnet (`qorechain-vladi`) steht noch auf v3.2.6, hat kein Datum für v3.2.8, und **die Lane bleibt im Mainnet aus**. Das Upgrade hat die Lane im Testnet geschlossen (SVM-Schreibzugriffe schlugen fehl, `MsgRegisterSVMPQCKey` wurde abgelehnt). **Der Governance-Vorschlag 37 wurde angenommen und hat sie auf `qorechain-diana` geöffnet**: Er setzte `enabled: true`, ließ die übrigen Parameter unverändert und hob die Circuit-Breaker-Pause für `MsgExecuteProgram` und für Cross-VM-Aufrufe auf. Bei der Prüfung am 12. November 2026 nach der Abstimmung zeigte `GET /qorechain/svm/v1/params` `enabled: true`, und die Circuit-Breaker-Liste enthielt nur `/cosmwasm.wasm.v1.MsgStoreCode`. Das öffentliche SVM-JSON-RPC bleibt schreibgeschützt. Lesen Sie immer zuerst den aktuellen Zustand (nächster Abschnitt) und nehmen Sie ihn nicht als gegeben an.
+v3.2.8 läuft seit dem 12. November 2026 im Testnet **`qorechain-diana`**. Das Mainnet (`qorechain-vladi`) läuft mit v3.2.7 (seit dem 12. November 2026), hat v3.2.8 nicht angewendet, und **die Lane bleibt im Mainnet aus**. Das Upgrade hat die Lane im Testnet geschlossen (SVM-Schreibzugriffe schlugen fehl, `MsgRegisterSVMPQCKey` wurde abgelehnt). **Der Governance-Vorschlag 37 wurde angenommen und hat sie auf `qorechain-diana` geöffnet**: Er setzte `enabled: true`, ließ die übrigen Parameter unverändert und hob die Circuit-Breaker-Pause für `MsgExecuteProgram` und für Cross-VM-Aufrufe auf. Bei der Prüfung am 12. November 2026 nach der Abstimmung zeigte `GET /qorechain/svm/v1/params` `enabled: true`, und die Circuit-Breaker-Liste enthielt nur `/cosmwasm.wasm.v1.MsgStoreCode`. Das öffentliche SVM-JSON-RPC bleibt schreibgeschützt. Lesen Sie immer zuerst den aktuellen Zustand (nächster Abschnitt) und nehmen Sie ihn nicht als gegeben an.
 :::
 
 ## Warum das wichtig ist {#why}
@@ -69,7 +69,7 @@ Antwort am 12. November 2026, gelesen nach Annahme von Vorschlag 37, mit `execut
 {"chain_id":"qorechain-diana","genesis_hash":"6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj","caip2_chain_id":"solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR","derivation":"base58(SHA-256(\"qorechain/svm/genesis-hash/v1\" || 0x00 || chain_id))","execution_enabled":true}
 ```
 
-Die Knoten-CLI hat dieselbe Abfrage: `qorechaind query svm cluster-info`. Die JSON-RPC-Methode `getGenesisHash` auf `https://svm-testnet.qore.host` liefert denselben Hash. Der Hash wird aus der Chain-ID abgeleitet; er ist nicht der Genesis-Hash eines echten Solana-Clusters.
+Die Knoten-CLI hat dieselbe Abfrage: `qorechaind query svm cluster-info`. Die JSON-RPC-Methode `getGenesisHash` auf `https://svm-testnet.qore.host` liefert denselben Hash. Der Hash wird aus der Chain-ID abgeleitet; er ist nicht der Genesis-Hash eines echten Solana-Clusters. Die Route wird auch im Mainnet bedient (v3.2.7): Am 12. November 2026 antwortete `https://api.qore.host/qorechain/svm/v1/cluster_info` mit `200` und `execution_enabled` `false`.
 
 ## Das öffentliche SVM-RPC ist schreibgeschützt {#public-rpc}
 
@@ -272,7 +272,7 @@ Nicht ausgeführt (UNTESTED): Programm-Deploy, Programm-Execute und Anlage eines
 
 ## Mainnet {#mainnet}
 
-Das Mainnet bleibt vorerst auf v3.2.6, mit ausgeschalteter SVM-Lane, und sie im Mainnet zu aktivieren erfordert ein späteres Release und eine Governance-Abstimmung. Planen Sie nur gegen das Testnet.
+Das Mainnet bleibt vorerst auf v3.2.7, mit ausgeschalteter SVM-Lane, und sie im Mainnet zu aktivieren erfordert ein späteres Release und eine Governance-Abstimmung. Planen Sie nur gegen das Testnet.
 
 ## Siehe auch {#see-also}
 

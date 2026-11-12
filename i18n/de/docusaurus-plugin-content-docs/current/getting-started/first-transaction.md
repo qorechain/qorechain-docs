@@ -10,7 +10,7 @@ sidebar_position: 5
 Diese Anleitung führt durch das Senden von QOR-Token, das Abfragen von Transaktionen und die Interaktion mit QoreChain über seine nativen, EVM- und SVM-Schnittstellen.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 aktiv und läuft seit dem 4. November 2026 auf Release v3.2.6 (das Testnet läuft seit dem 12. November 2026 auf v3.2.8) — ersetzen Sie beim Durchführen von Transaktionen auf dem Mainnet die Chain-ID und die Endpunkte durch die des Mainnets von der Seite **Verbindung zum Mainnet**.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 aktiv und läuft seit dem 12. November 2026 auf Release v3.2.7 (das Testnet läuft seit dem 12. November 2026 auf v3.2.8) — ersetzen Sie beim Durchführen von Transaktionen auf dem Mainnet die Chain-ID und die Endpunkte durch die des Mainnets von der Seite **Verbindung zum Mainnet**.
 :::
 
 ## Ihr Guthaben prüfen
@@ -70,7 +70,7 @@ Nachdem die co-signierte Transaktion akzeptiert wurde, gibt die CLI einen Transa
 
 ## Die erste Transaktion eines neuen Kontos {#first-tx-pqc}
 
-Ab dem Release **v3.2.8** (Testnet seit dem 12. November 2026; für das Mainnet gibt es noch kein Datum) muss die erste Transaktion eines frischen Kontos die **Registrierung seines Post-Quanten-Schlüssels** sein: `MsgRegisterPQCKeyV2` mit dem Besitznachweis, signiert allein mit dem klassischen Schlüssel. Jede andere erste Transaktion eines Kontos ohne registrierten Schlüssel wird abgelehnt. Das gilt für ein neues Konto, das finanziert wurde, aber noch nie etwas gesendet hat; ein Konto, das bereits einen registrierten Schlüssel hat, ist nicht betroffen.
+Ab dem Release **v3.2.8** (Testnet seit dem 12. November 2026; das Mainnet hat es nicht angewendet) muss die erste Transaktion eines frischen Kontos die **Registrierung seines Post-Quanten-Schlüssels** sein: `MsgRegisterPQCKeyV2` mit dem Besitznachweis, signiert allein mit dem klassischen Schlüssel. Jede andere erste Transaktion eines Kontos ohne registrierten Schlüssel wird abgelehnt. Das gilt für ein neues Konto, das finanziert wurde, aber noch nie etwas gesendet hat; ein Konto, das bereits einen registrierten Schlüssel hat, ist nicht betroffen.
 
 **Warum das wichtig ist.** Jede spätere Transaktion auf der Cosmos-Lane wird hybrid signiert (secp256k1 plus ML-DSA-87), und die Chain kann den ML-DSA-87-Teil nur gegen einen Schlüssel prüfen, den sie bereits kennt. Die Registrierung ist die eine Transaktion, die diese Signatur noch nicht tragen kann; deshalb ist sie die eine Transaktion, die die Chain allein mit einer klassischen Signatur akzeptiert, und sie muss zuerst kommen. Senden Sie vor der Registrierung eine Überweisung, eine Delegation oder einen Contract-Aufruf, wird die Transaktion abgelehnt, und Sie registrieren zuerst.
 

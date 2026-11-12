@@ -12,7 +12,7 @@ SVM 레인은 QoreChain에서 Solana와 호환되는 부분입니다. Solana 방
 이 페이지는 레인 상태를 읽는 방법, 프로그램, 계정, 렌트가 동작하는 방식, SVM 지갑이 포스트 퀀텀 키를 등록하는 방법, 커스터디 한도의 의미, 지금 실행할 수 있는 예시가 무엇인지를 설명합니다.
 
 :::note 테스트넷이 먼저이며, 제안 37 이후 그곳에서 레인이 열려 있습니다
-v3.2.8은 2026년 11월 12일부터 **`qorechain-diana`** 테스트넷에서 실행되고 있습니다. 메인넷(`qorechain-vladi`)은 아직 v3.2.6이며 v3.2.8 날짜가 없고, **메인넷에서는 레인이 꺼진 상태로 유지됩니다**. 업그레이드는 테스트넷의 레인을 닫았습니다(SVM 쓰기가 실패했고 `MsgRegisterSVMPQCKey`가 거부되었습니다). **거버넌스 제안 37이 통과되어 `qorechain-diana`에서 레인을 열었습니다**. 이 제안은 `enabled: true`로 설정하고, 다른 파라미터는 그대로 두었으며, `MsgExecuteProgram`과 크로스 VM 호출에 걸려 있던 서킷 브레이커 중지를 해제했습니다. 투표 후인 2026년 11월 12일에 확인했을 때 `GET /qorechain/svm/v1/params`는 `enabled: true`를 보여 주었고 서킷 브레이커 목록에는 `/cosmwasm.wasm.v1.MsgStoreCode`만 들어 있었습니다. 공개 SVM JSON-RPC는 계속 읽기 전용입니다. 항상 실시간 상태를 먼저 읽고(다음 절) 추정하지 마세요.
+v3.2.8은 2026년 11월 12일부터 **`qorechain-diana`** 테스트넷에서 실행되고 있습니다. 메인넷(`qorechain-vladi`)은 v3.2.7을 실행하고 있으며(2026년 11월 12일부터) v3.2.8을 아직 적용하지 않았고, **메인넷에서는 레인이 꺼진 상태로 유지됩니다**. 업그레이드는 테스트넷의 레인을 닫았습니다(SVM 쓰기가 실패했고 `MsgRegisterSVMPQCKey`가 거부되었습니다). **거버넌스 제안 37이 통과되어 `qorechain-diana`에서 레인을 열었습니다**. 이 제안은 `enabled: true`로 설정하고, 다른 파라미터는 그대로 두었으며, `MsgExecuteProgram`과 크로스 VM 호출에 걸려 있던 서킷 브레이커 중지를 해제했습니다. 투표 후인 2026년 11월 12일에 확인했을 때 `GET /qorechain/svm/v1/params`는 `enabled: true`를 보여 주었고 서킷 브레이커 목록에는 `/cosmwasm.wasm.v1.MsgStoreCode`만 들어 있었습니다. 공개 SVM JSON-RPC는 계속 읽기 전용입니다. 항상 실시간 상태를 먼저 읽고(다음 절) 추정하지 마세요.
 :::
 
 ## 왜 중요한가 {#why}
@@ -69,7 +69,7 @@ curl -s https://api-testnet.qore.host/qorechain/svm/v1/cluster_info
 {"chain_id":"qorechain-diana","genesis_hash":"6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj","caip2_chain_id":"solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR","derivation":"base58(SHA-256(\"qorechain/svm/genesis-hash/v1\" || 0x00 || chain_id))","execution_enabled":true}
 ```
 
-노드 CLI에도 같은 조회가 있습니다. `qorechaind query svm cluster-info`입니다. `https://svm-testnet.qore.host`의 JSON-RPC 메서드 `getGenesisHash`는 같은 해시를 반환합니다. 이 해시는 체인 id에서 파생된 것이며 실제 Solana 클러스터의 제네시스 해시가 아닙니다.
+노드 CLI에도 같은 조회가 있습니다. `qorechaind query svm cluster-info`입니다. `https://svm-testnet.qore.host`의 JSON-RPC 메서드 `getGenesisHash`는 같은 해시를 반환합니다. 이 해시는 체인 id에서 파생된 것이며 실제 Solana 클러스터의 제네시스 해시가 아닙니다. 이 경로는 메인넷(v3.2.7)에서도 제공됩니다. 2026년 11월 12일 `https://api.qore.host/qorechain/svm/v1/cluster_info`는 `execution_enabled` `false`와 함께 `200`으로 응답했습니다.
 
 ## 공개 SVM RPC는 읽기 전용입니다 {#public-rpc}
 
@@ -272,7 +272,7 @@ Python 컴포저는 `msg.svm.register_svm_pqc_key(sender=, ...)`이고 Go는 `Sv
 
 ## 메인넷 {#mainnet}
 
-메인넷은 당분간 SVM 레인이 꺼진 채 v3.2.6에 머물며, 메인넷에서 이를 활성화하려면 이후 릴리스와 거버넌스 투표가 필요합니다. 테스트넷만을 기준으로 계획하세요.
+메인넷은 당분간 SVM 레인이 꺼진 채 v3.2.7에 머물며, 메인넷에서 이를 활성화하려면 이후 릴리스와 거버넌스 투표가 필요합니다. 테스트넷만을 기준으로 계획하세요.
 
 ## 함께 보기 {#see-also}
 

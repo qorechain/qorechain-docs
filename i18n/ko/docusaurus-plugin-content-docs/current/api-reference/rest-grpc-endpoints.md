@@ -18,7 +18,7 @@ QoreChain은 프로그래밍 방식 접근을 위해 세 가지 기본 인터페
 모든 REST 엔드포인트는 JSON을 반환합니다. gRPC 엔드포인트는 Protocol Buffers를 사용하며 어떤 gRPC 클라이언트로도 사용할 수 있습니다. RPC 인터페이스는 합의 수준의 조회와 트랜잭션 브로드캐스트를 제공합니다.
 
 :::note
-이 인터페이스들은 **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 가동 중)과 **`qorechain-diana`** 테스트넷 모두에서 사용할 수 있습니다. 테스트넷은 노드 릴리스 **v3.2.8**(2026년 11월 12일 높이 9,929,500에서 테스트넷 거버넌스가 적용. 그에 앞서 v3.2.7은 2026년 11월 6일 높이 9,594,600에서 적용)을, 메인넷은 **v3.2.6**을 실행합니다. 메인넷은 2026년 11월 4일 높이 4,020,000에서 v3.2.6을 적용했으며(거버넌스 제안 15. 그에 앞서 v3.2.5는 2026년 10월 29일 높이 3,906,833에서 제안 14로, v3.2.4는 2026년 10월 23일 높이 3,742,566에서 적용되었습니다), 테스트넷은 2026년 10월 26일 높이 8,890,800에서 v3.2.5를, 2026년 10월 27일 높이 8,970,638에서 v3.2.6을, 높이 9,594,600에서 v3.2.7을, 높이 9,929,500에서 v3.2.8을 적용했습니다. v3.2.7과 v3.2.8의 메인넷 날짜나 높이는 아직 없습니다. 릴리스가 추가한 라우트와 필드는 해당 네트워크가 그 릴리스를 적용한 뒤에야 나타납니다. 아래에서 2026년 11월 4일로 표시된 라우트 확인은 v3.2.6 업그레이드 이후 공개 메인넷 호스트를 대상으로 수행했습니다. **v3.2.7**로 표시된 라우트는 2026년 11월 7일 공개 테스트넷 호스트에서 확인했으며 메인넷에서는 `501`로 응답합니다. 아래의 기본 URL은 로컬에서 실행 중인 노드를 기준으로 합니다. 공개 호스팅 엔드포인트는 `https://api.qore.host` / `https://api-testnet.qore.host`(REST)와 `https://rpc.qore.host` / `https://rpc-testnet.qore.host`(RPC)이며, [네트워크](/appendix/networks#public-endpoints)에 정리되어 있습니다. **공개 gRPC 엔드포인트는 없습니다**: 호스트 이름 `grpc.qore.host`와 `grpc-testnet.qore.host`는 존재하지 않으므로, gRPC가 필요하면 직접 노드를 실행하십시오.
+이 인터페이스들은 **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 가동 중)과 **`qorechain-diana`** 테스트넷 모두에서 사용할 수 있습니다. 테스트넷은 노드 릴리스 **v3.2.8**(2026년 11월 12일 높이 9,929,500에서 테스트넷 거버넌스가 적용. 그에 앞서 v3.2.7은 2026년 11월 6일 높이 9,594,600에서 적용)을, 메인넷은 한 릴리스 뒤처진 **v3.2.7**을 실행합니다. 메인넷은 2026년 11월 12일 높이 4,164,600에서 v3.2.7을 적용했으며(거버넌스 제안 16. 그에 앞서 v3.2.6은 2026년 11월 4일 높이 4,020,000에서 거버넌스 제안 15로, v3.2.5는 2026년 10월 29일 높이 3,906,833에서 제안 14로, v3.2.4는 2026년 10월 23일 높이 3,742,566에서 적용되었습니다), 테스트넷은 2026년 10월 26일 높이 8,890,800에서 v3.2.5를, 2026년 10월 27일 높이 8,970,638에서 v3.2.6을, 높이 9,594,600에서 v3.2.7을, 높이 9,929,500에서 v3.2.8을 적용했습니다. 메인넷은 v3.2.8을 아직 적용하지 않았습니다. 릴리스가 추가한 라우트와 필드는 해당 네트워크가 그 릴리스를 적용한 뒤에야 나타납니다. 아래에서 2026년 11월 4일로 표시된 라우트 확인은 v3.2.6 업그레이드 이후 공개 메인넷 호스트를 대상으로 수행했습니다. **v3.2.7**로 표시된 라우트는 2026년 11월 7일 공개 테스트넷 호스트에서, 그리고 메인넷이 v3.2.7을 적용한 뒤인 2026년 11월 12일 공개 메인넷 호스트에서 확인했습니다(모두 라우팅됨. 각 라우트의 설명 참조). 아래의 기본 URL은 로컬에서 실행 중인 노드를 기준으로 합니다. 공개 호스팅 엔드포인트는 `https://api.qore.host` / `https://api-testnet.qore.host`(REST)와 `https://rpc.qore.host` / `https://rpc-testnet.qore.host`(RPC)이며, [네트워크](/appendix/networks#public-endpoints)에 정리되어 있습니다. **공개 gRPC 엔드포인트는 없습니다**: 호스트 이름 `grpc.qore.host`와 `grpc-testnet.qore.host`는 존재하지 않으므로, gRPC가 필요하면 직접 노드를 실행하십시오.
 :::
 
 ## 기본 URL
@@ -35,7 +35,7 @@ QoreChain 전용 모듈은 REST에서 `/qorechain/<module>/v1/...` 접두사 아
 
 존재하지 않는 라우트는 HTTP `501`과 `{"code":12,"message":"Not Implemented"}`로 응답합니다. 이는 쿼리 결과가 비어 있다는 뜻이 아니라 해당 라우트가 제공되지 않는다는 뜻입니다. `/qorechain/` 접두사가 없는 짧은 경로(예: `/bridge/v1/chains` 또는 `/pqc/v1/params`)는 제공되지 **않습니다**. 존재하는 라우트에서 알 수 없는 레코드를 조회하면 HTTP `404`와 `{"code":5,"message":"... not found"}`가 반환됩니다.
 
-아래 예시는 공개 메인넷 호스트를 사용합니다. 테스트넷에서는 `https://api-testnet.qore.host`로 바꾸십시오. 샘플의 값은 2026년 10월 20일부터 27일 사이에 실제 네트워크에서 읽은 것이며 시간이 지나면 변하므로, 응답의 형태를 파악하는 용도로만 사용하십시오. v3.2.4 릴리스는 일부 라우트와 필드를 추가했습니다. 이들은 아래에서 **v3.2.4**로 표시됩니다. 테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터 이를 제공하고 있습니다. v3.2.5 릴리스(메인넷은 2026년 10월 29일부터, 테스트넷은 10월 26일부터)는 크로스 VM 파라미터 및 메시지 라우트와 네이티브 키 레지스트리 라우트를 추가했으며 **v3.2.5**로 표시됩니다. v3.2.6 릴리스(테스트넷은 2026년 10월 27일부터, 메인넷은 2026년 11월 4일부터)는 더 많은 항목을 추가했으며 **v3.2.6**으로 표시됩니다. 메인넷 호스트는 2026년 11월 4일 이들에 `200`으로 응답했습니다(해당되는 곳에는 예외가 명시되어 있습니다). 아직 이전 릴리스인 노드는 새 라우트에 `501`로 응답합니다. v3.2.7 릴리스(지금까지는 테스트넷만, 메인넷에는 없음)는 **v3.2.7**로 표시된 라우트를 추가했습니다. PQC 멀티시그와 텍스추얼 서명, 스테이킹 APR, SVM 클러스터 식별 정보입니다.
+아래 예시는 공개 메인넷 호스트를 사용합니다. 테스트넷에서는 `https://api-testnet.qore.host`로 바꾸십시오. 샘플의 값은 2026년 10월 20일부터 27일 사이에 실제 네트워크에서 읽은 것이며 시간이 지나면 변하므로, 응답의 형태를 파악하는 용도로만 사용하십시오. v3.2.4 릴리스는 일부 라우트와 필드를 추가했습니다. 이들은 아래에서 **v3.2.4**로 표시됩니다. 테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터 이를 제공하고 있습니다. v3.2.5 릴리스(메인넷은 2026년 10월 29일부터, 테스트넷은 10월 26일부터)는 크로스 VM 파라미터 및 메시지 라우트와 네이티브 키 레지스트리 라우트를 추가했으며 **v3.2.5**로 표시됩니다. v3.2.6 릴리스(테스트넷은 2026년 10월 27일부터, 메인넷은 2026년 11월 4일부터)는 더 많은 항목을 추가했으며 **v3.2.6**으로 표시됩니다. 메인넷 호스트는 2026년 11월 4일 이들에 `200`으로 응답했습니다(해당되는 곳에는 예외가 명시되어 있습니다). 아직 이전 릴리스인 노드는 새 라우트에 `501`로 응답합니다. v3.2.7 릴리스(테스트넷은 2026년 11월 6일부터, 메인넷은 2026년 11월 12일부터)는 **v3.2.7**로 표시된 라우트를 추가했습니다. PQC 멀티시그와 텍스추얼 서명, 스테이킹 APR, SVM 클러스터 식별 정보입니다.
 
 ## PQC 모듈 {#pqc-module}
 
@@ -43,29 +43,29 @@ QoreChain 전용 모듈은 REST에서 `/qorechain/<module>/v1/...` 접두사 아
 | ------ | ---------------------------------------- | --------------------------------------------------------------------------- |
 | GET    | `/qorechain/pqc/v1/account/{address}`    | 계정의 포스트 양자 키 등록 정보(`found`, 키 유형, 알고리즘) |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | 계정의 EVM 레인 승인 윈도우와 그 잔여 한도          |
-| GET    | `/qorechain/pqc/v1/evm_limits`           | 적용 중인 EVM 가스 한도(트랜잭션당 30,000,000), v3.2.8부터 테스트넷 전용 |
+| GET    | `/qorechain/pqc/v1/evm_limits`           | 적용 중인 EVM 가스 한도(트랜잭션당 30,000,000), 테스트넷 전용, v3.2.8부터. 메인넷은 v3.2.8을 적용하지 않았으며 `501`로 응답합니다(2026년 11월 12일 확인) |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | 계정의 EIP-7702 위임 동의, 현재 위임 및 EVM 논스(v3.2.2부터) |
 | GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4**(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터이며 이전 릴리스 노드에서는 `501`). 바이너리가 알고 있는 모든 프로토콜 기능과 `enabled`, `known`, `staged` 플래그 |
 | GET    | `/qorechain/pqc/v1/kem/{address}`        | **v3.2.5**(메인넷은 2026년 10월 29일부터, 테스트넷은 10월 26일부터 두 네트워크 모두 제공하며 이전 노드에서는 `501`). 네이티브 키 레지스트리에서 주소에 등록된 ML-KEM 암호화 키: 등록된 것이 없으면 `{"found":false,"key":null}` |
 | GET    | `/qorechain/pqc/v1/params`               | **v3.2.6**(테스트넷은 2026년 10월 27일부터, 메인넷은 2026년 11월 4일부터이며 이전 노드에서는 `501`). 모듈 파라미터 |
-| GET    | `/qorechain/pqc/v1/multisig/{address}`   | **v3.2.7, 테스트넷 전용**(메인넷과 이전 노드에서는 `501`). 주소의 하이브리드 포스트 양자 멀티시그 레코드: 등록된 것이 없으면 `{"found":false,"multisig":null}` |
-| POST   | `/qorechain/pqc/v1/textual_sign_doc`     | **v3.2.7, 테스트넷 전용**(메인넷에서는 `501`이며 `GET`도 `501`로 응답). 웹 지갑이 표시하고 서명할 트랜잭션의 SIGN_MODE_TEXTUAL 문서를 생성합니다(아래 참조) |
+| GET    | `/qorechain/pqc/v1/multisig/{address}`   | **v3.2.7**(테스트넷은 2026년 11월 6일부터, 메인넷은 2026년 11월 12일부터이며 이전 노드에서는 `501`). 주소의 하이브리드 포스트 양자 멀티시그 레코드: 등록된 것이 없으면 `{"found":false,"multisig":null}` |
+| POST   | `/qorechain/pqc/v1/textual_sign_doc`     | **v3.2.7**(테스트넷은 2026년 11월 6일부터, 메인넷은 2026년 11월 12일부터이며 이전 노드에서는 `501`, `GET`도 `501`로 응답). 웹 지갑이 표시하고 서명할 트랜잭션의 SIGN_MODE_TEXTUAL 문서를 생성합니다(아래 참조) |
 
 경로 세그먼트는 단수형 `account`입니다. `/qorechain/pqc/v1/stats` 라우트는 없습니다(`qorechaind query pqc stats`를 사용하십시오). `/qorechain/pqc/v1/params`는 v3.2.6부터 제공되며 2026년 11월 4일 두 네트워크 모두에서 `200`으로 응답했습니다(메인넷: `pqc_primary` `true`, `allow_classical_fallback` `false`, `min_security_level` `5`, `default_signature_algo_name` `dilithium5`, `hybrid_signature_mode_name` `required`). v3.2.6보다 오래된 노드에서는 대신 `qorechaind query pqc params`를 사용하십시오.
 
-### PQC 멀티시그와 텍스추얼 서명 (v3.2.7, 테스트넷) {#pqc-multisig-textual}
+### PQC 멀티시그와 텍스추얼 서명 (v3.2.7) {#pqc-multisig-textual}
 
-v3.2.7부터 계정은 하이브리드 포스트 양자 k-of-n 멀티시그를 가질 수 있습니다. 메시지는 `/qorechain.pqc.v1.MsgRegisterPQCMultisig`이며, 포스트 양자 집합은 계정의 현재 클래식 멀티시그의 멤버와 키를 따릅니다. `GET /qorechain/pqc/v1/multisig/{address}`는 등록 정보를 반환합니다. 2026년 11월 7일에 멀티시그가 없는 계정에 대해 `200`과 `{"found":false,"multisig":null}`로 응답했습니다(이 라우트에는 유효한 `qor1...` 주소가 필요하며, 형식이 잘못된 주소는 `400`으로 응답합니다). 메인넷에서는 `501`로 응답합니다. 아직 테스트넷에 등록된 멀티시그가 없으므로, 등록된 멀티시그의 레코드 필드는 여기서 읽지 못했습니다.
+v3.2.7부터(테스트넷은 2026년 11월 6일, 메인넷은 2026년 11월 12일부터이며, 메인넷에서는 `pqc-multisig` 프로토콜 기능이 높이 4,164,600부터 활성화됨) 계정은 하이브리드 포스트 양자 k-of-n 멀티시그를 가질 수 있습니다. 메시지는 `/qorechain.pqc.v1.MsgRegisterPQCMultisig`이며, 포스트 양자 집합은 계정의 현재 클래식 멀티시그의 멤버와 키를 따릅니다. `GET /qorechain/pqc/v1/multisig/{address}`는 등록 정보를 반환합니다. 2026년 11월 7일에 멀티시그가 없는 계정에 대해 `200`과 `{"found":false,"multisig":null}`로 응답했습니다(이 라우트에는 유효한 `qor1...` 주소가 필요하며, 형식이 잘못된 주소는 `400`으로 응답합니다). 메인넷에서는 2026년 11월 12일부터 이 라우트가 제공됩니다(유효하지 않은 주소로 요청하면 `400`으로 응답했으며, 이는 라우트가 마운트되어 있음을 보여 줍니다). 아직 테스트넷에 등록된 멀티시그가 없으므로, 등록된 멀티시그의 레코드 필드는 여기서 읽지 못했습니다.
 
-`POST /qorechain/pqc/v1/textual_sign_doc`는 SIGN_MODE_TEXTUAL로 서명하는 하드웨어 및 웹 지갑을 위한 것입니다. JSON 본문에는 `tx_json`(JSON 문자열로 된 서명 전 트랜잭션) 또는 `tx_bytes`(base64)와 함께 `chain_id`, `account_number`, `sequence`, `public_key`(`@type`과 `key`를 가진 Any)가 들어갑니다. 응답에는 `sign_bytes`(base64, 서명할 문서)와 기기가 표시하는 줄의 목록인 `screens`(`title`, `content`, `indent`, `expert`)가 담깁니다. 트랜잭션이 없는 본문은 `400`(`tx_bytes or tx_json is required`)으로 응답하며, 메시지가 없거나 32개를 초과하는 트랜잭션은 거부됩니다. 명령줄에서는 `qorechaind tx pqc cosign`이 v3.2.7부터 텍스추얼 서명 모드를 지원합니다([트랜잭션 명령](/cli-reference/transaction-commands#cosign) 참조).
+`POST /qorechain/pqc/v1/textual_sign_doc`는 SIGN_MODE_TEXTUAL로 서명하는 하드웨어 및 웹 지갑을 위한 것입니다. JSON 본문에는 `tx_json`(JSON 문자열로 된 서명 전 트랜잭션) 또는 `tx_bytes`(base64)와 함께 `chain_id`, `account_number`, `sequence`, `public_key`(`@type`과 `key`를 가진 Any)가 들어갑니다. 응답에는 `sign_bytes`(base64, 서명할 문서)와 기기가 표시하는 줄의 목록인 `screens`(`title`, `content`, `indent`, `expert`)가 담깁니다. 메인넷에서는 2026년 11월 12일에 빈 JSON 본문이 `400`으로 응답했으므로 이 라우트는 그곳에 마운트되어 있습니다. 트랜잭션이 없는 본문은 `400`(`tx_bytes or tx_json is required`)으로 응답하며, 메시지가 없거나 32개를 초과하는 트랜잭션은 거부됩니다. 명령줄에서는 `qorechaind tx pqc cosign`이 v3.2.7부터 텍스추얼 서명 모드를 지원합니다([트랜잭션 명령](/cli-reference/transaction-commands#cosign) 참조).
 
 ```bash
-curl -s https://api-testnet.qore.host/qorechain/pqc/v1/multisig/qor1...
-curl -s -X POST https://api-testnet.qore.host/qorechain/pqc/v1/textual_sign_doc \
+curl -s https://api.qore.host/qorechain/pqc/v1/multisig/qor1...   # or api-testnet.qore.host
+curl -s -X POST https://api.qore.host/qorechain/pqc/v1/textual_sign_doc \
   -H 'content-type: application/json' -d @request.json
 ```
 
-포스트 양자 서명 검증에 부과되는 가스는 v3.2.7에서 측정값을 기준으로 재조정되었습니다. [버전 이력](/appendix/version-history#v327)을 참조하십시오.
+포스트 양자 서명 검증에 부과되는 가스는 v3.2.7부터(테스트넷은 2026년 11월 6일, 메인넷은 2026년 11월 12일부터, 스위치 `pqc-verify-gas-calibrated`) 검증당 고정 2,000 가스입니다. [버전 이력](/appendix/version-history#v327)을 참조하십시오.
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -432,7 +432,7 @@ curl -s https://api.qore.host/qorechain/rdk/v1/params
 
 작성 시점 기준으로 `rollups`는 두 네트워크 모두에서 빈 목록이므로, 롤업별 라우트는 `404`로 응답합니다(예: `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window`는 초 단위(`604800`)로 표현됩니다. v3.2.4부터 새로 제출된 배치의 낙관적 챌린지 윈도우는 블록 시간으로 측정됩니다. 테스트넷에서는 높이 8,337,253(2026년 10월 19일)부터, 메인넷에서는 높이 3,742,566(2026년 10월 23일)부터입니다. 업그레이드 이전에는 체인이 초 값을 블록당 6초로 고정하여 블록 수로 환산했습니다. 테스트넷에서는 거버넌스 제안 17(2026년 10월 27일 통과)이 빌더 이벤트를 위해 `default_challenge_window`를 `3600`(1시간)으로, `max_rollups`를 `200`으로 설정했으므로, 위 샘플(메인넷)은 이 부분에서 테스트넷과 다릅니다. 작성 시점에 테스트넷의 `rollups`는 여전히 빈 목록입니다.
 
-**v3.2.7(테스트넷 전용):** ZK 롤업은 `MsgSetVerificationKey`로 검증 키를 등록할 수 있으며(이후 `MsgUpdateVerificationKey`로 변경), 키가 없는 롤업의 ZK 배치는 수수료가 지불되기 전에 거부됩니다. 이들은 쿼리가 아니라 메시지입니다. 등록된 키를 읽는 REST 라우트는 없으며(명백한 경로들은 2026년 11월 7일에 `501`로 응답했습니다), 테스트넷에는 등록된 ZK 롤업이 없으므로(`rollups`가 비어 있음) 등록은 여기서 끝까지 실행해 보지 못했습니다. ZK 정산은 계속 테스트넷 전용이며 메인넷에는 없습니다. [버전 이력](/appendix/version-history#v327)을 참조하십시오.
+**v3.2.7(테스트넷은 2026년 11월 6일부터. `rdk-zk-verification-key` 스위치는 메인넷에서 2026년 11월 12일부터 켜져 있음):** ZK 롤업은 `MsgSetVerificationKey`로 검증 키를 등록할 수 있으며(이후 `MsgUpdateVerificationKey`로 변경), 키가 없는 롤업의 ZK 배치는 수수료가 지불되기 전에 거부됩니다. 이들은 쿼리가 아니라 메시지입니다. 등록된 키를 읽는 REST 라우트는 없으며(명백한 경로들은 2026년 11월 7일에 `501`로 응답했습니다), 테스트넷에는 등록된 ZK 롤업이 없으므로(`rollups`가 비어 있음. 메인넷도 2026년 11월 4일 마지막으로 확인했을 때 없었음) 등록은 여기서 끝까지 실행해 보지 못했습니다. [버전 이력](/appendix/version-history#v327)을 참조하십시오.
 
 ## 인플레이션 모듈 {#inflation-module}
 
@@ -525,20 +525,20 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
 | GET    | `/qorechain/stakingtier/v1/params`        | 락 티어, 최소 락 금액, 조기 해제 페널티      |
 | GET    | `/qorechain/stakingtier/v1/locks/{holder}` | 보유자의 락, 각 락에 현재 누적된 금액 및 청구할 수 있는 금액 |
 | GET    | `/qorechain/stakingtier/v1/pool`          | 보너스 풀: 잔액, 미지급액, 잉여금 및 마지막 정산 |
-| GET    | `/qorechain/stakingtier/v1/apr`           | **v3.2.7, 테스트넷 전용**(메인넷에서는 `501`). 기본 스테이킹 이율과 티어 보너스 |
-| GET    | `/qorechain/stakingtier/v1/apr/{delegator}` | **v3.2.7, 테스트넷 전용.** 한 위임자에 대한 같은 정보: 라이트 노드 보너스 상태, 위임 내역, 유효 이율 |
+| GET    | `/qorechain/stakingtier/v1/apr`           | **v3.2.7**(테스트넷은 2026년 11월 6일부터, 메인넷은 2026년 11월 12일부터이며 이전 노드에서는 `501`). 기본 스테이킹 이율과 티어 보너스 |
+| GET    | `/qorechain/stakingtier/v1/apr/{delegator}` | **v3.2.7**(같은 제공 시점). 한 위임자에 대한 같은 정보: 라이트 노드 보너스 상태, 위임 내역, 유효 이율 |
 
 `params`는 세 가지 락 기간(3개월, 6개월, 12개월)과 해당 파라미터, 그리고 `min_lock_amount`(`"10000000"` uqor, 10 QOR)를 나열합니다. 락은 `tx stakingtier lock`으로 생성합니다([트랜잭션 명령](/cli-reference/transaction-commands#stakingtier) 참조).
 
-**APR 라우트(v3.2.7, 테스트넷).** `GET /qorechain/stakingtier/v1/apr`는 `base`(`gross_base_apr_bps`, `source`, `computed_height`, `bonus_enabled`, `max_total_apy_bps`), `base_apr_bps`, `tiers` 목록(3개월, 6개월, 12개월에 대해 `bonus_bps` 150, 300, 500과 유효 값), 그리고 라이트 노드 및 검증자 보너스(`light_node_bonus_bps` 200, `validator_bonus_bps` 300)를 반환합니다. 2026년 11월 7일 테스트넷의 기본 이율은 `0`(`source`는 `fees_only`)으로 읽혔으므로 티어 보너스만 0이 아니었으며, 풀 라우트는 보너스 풀을 보고합니다. 위임이 없는 주소에 대해 위임자 라우트는 빈 `delegations` 목록과 `0`의 유효 이율로 `200`을 응답합니다. 모든 수치는 체인이 마지막 정산에서 계산한 값을 베이시스 포인트로 읽은 것입니다. 이는 **보장되지 않으며**, 수수료와 자금에 따라 변하고, 어떤 수익에 대한 약속도 아닙니다.
+**APR 라우트(v3.2.7).** 2026년 11월 12일 메인넷 라우트는 `source` `emission`, `bonus_enabled` `true`, `max_total_apy_bps` `2500`과 함께 `200`으로 응답했고, 위임자 라우트는 유효하지 않은 주소에 `400`으로 응답했습니다. `GET /qorechain/stakingtier/v1/apr`는 `base`(`gross_base_apr_bps`, `source`, `computed_height`, `bonus_enabled`, `max_total_apy_bps`), `base_apr_bps`, `tiers` 목록(3개월, 6개월, 12개월에 대해 `bonus_bps` 150, 300, 500과 유효 값), 그리고 라이트 노드 및 검증자 보너스(`light_node_bonus_bps` 200, `validator_bonus_bps` 300)를 반환합니다. 2026년 11월 7일 테스트넷의 기본 이율은 `0`(`source`는 `fees_only`)으로 읽혔으므로 티어 보너스만 0이 아니었으며, 풀 라우트는 보너스 풀을 보고합니다. 위임이 없는 주소에 대해 위임자 라우트는 빈 `delegations` 목록과 `0`의 유효 이율로 `200`을 응답합니다. 모든 수치는 체인이 마지막 정산에서 계산한 값을 베이시스 포인트로 읽은 것입니다. 이는 **보장되지 않으며**, 수수료와 자금에 따라 변하고, 어떤 수익에 대한 약속도 아닙니다.
 
-## SVM 클러스터 식별 정보 (v3.2.7, 테스트넷) {#reputation-module}
+## SVM 클러스터 식별 정보 (v3.2.7) {#reputation-module}
 
 | 메서드 | 엔드포인트                       | 설명 |
 | ------ | -------------------------------- | ----------- |
-| GET    | `/qorechain/svm/v1/cluster_info` | **v3.2.7, 테스트넷 전용**(메인넷에서는 `501`). SVM 클러스터의 식별 정보: `chain_id`, `genesis_hash`, `caip2_chain_id`(Wallet Standard 체인 id), `derivation`, `execution_enabled` |
+| GET    | `/qorechain/svm/v1/cluster_info` | **v3.2.7**(테스트넷은 2026년 11월 6일부터, 메인넷은 2026년 11월 12일부터이며 이전 노드에서는 `501`). SVM 클러스터의 식별 정보: `chain_id`, `genesis_hash`, `caip2_chain_id`(Wallet Standard 체인 id), `derivation`, `execution_enabled` |
 
-2026년 11월 7일 테스트넷은 `genesis_hash` `6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj`, `caip2_chain_id` `solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR`, `execution_enabled` `false`로 응답했습니다. 제네시스 해시는 체인 ID에서 도출되므로(고정 레이블과 체인 ID의 SHA-256을 base58로 인코딩) 안정적입니다. 같은 값이 SVM JSON-RPC의 `getGenesisHash`와 `getVersion`에도 있습니다([JSON-RPC Solana 호환](/api-reference/json-rpc-solana-compatible) 참조). SVM은 계속 꺼져 있습니다. `execution_enabled`는 `false`입니다.
+2026년 11월 7일 테스트넷은 `genesis_hash` `6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj`, `caip2_chain_id` `solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR`, `execution_enabled` `false`로 응답했습니다. 제네시스 해시는 체인 ID에서 도출되므로(고정 레이블과 체인 ID의 SHA-256을 base58로 인코딩) 안정적입니다. 같은 값이 SVM JSON-RPC의 `getGenesisHash`와 `getVersion`에도 있습니다([JSON-RPC Solana 호환](/api-reference/json-rpc-solana-compatible) 참조). SVM은 계속 꺼져 있습니다. `execution_enabled`는 `false`입니다. 2026년 11월 12일 메인넷은 `chain_id` `qorechain-vladi`, `genesis_hash` `4LQ9znKk8J3C8YBz2unNdqRCC35ZXvSiFN9YGJNwu3er`, `caip2_chain_id` `solana:4LQ9znKk8J3C8YBz2unNdqRCC35ZXvSi`, `execution_enabled` `false`로 `200` 응답했으며, 메인넷에서도 SVM 레인은 아직 꺼져 있습니다.
 
 ## 평판 모듈 {#svm-cluster-info}
 
@@ -554,15 +554,15 @@ curl -s https://api-testnet.qore.host/qorechain/rlconsensus/v1/last_action
 
 ## gRPC 전용 모듈 {#grpc-only-modules}
 
-메인넷(노드 릴리스 v3.2.6, 2026년 11월 4일 확인)에서 이 모듈들은 gRPC `Query` 서비스는 있지만, 표에 있는 예외를 제외하면 **REST 라우트는 없습니다**. 서비스 이름은 `qorechain.<module>.v1.Query` 형식을 따릅니다.
+메인넷(노드 릴리스 v3.2.7은 2026년 11월 12일부터이며, 모듈 목록은 `svm` 행을 제외하고 v3.2.6에서 2026년 11월 4일에 확인)에서 이 모듈들은 gRPC `Query` 서비스는 있지만, 표에 있는 예외를 제외하면 **REST 라우트는 없습니다**. 서비스 이름은 `qorechain.<module>.v1.Query` 형식을 따릅니다.
 
-| 모듈        | gRPC 쿼리 메서드(메인넷, 체인 버전 v3.2.6)     |
+| 모듈        | gRPC 쿼리 메서드(메인넷, 체인 버전 v3.2.7)     |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `PendingMessages` (v3.2.5부터 REST로 제공: `Params`는 `/qorechain/crossvm/v1/params`, `Message`는 `/qorechain/crossvm/v1/message/{id}`) |
 | `reputation`  | `Params` (v3.2.6부터 REST로도 제공, [평판 모듈](#reputation-module) 참조) |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy`, `AppliedParams`, `LastAction` (v3.2.6부터 REST로도 제공) |
-| `svm`         | `Slot`, `Account`, `Program` (테스트넷 v3.2.7은 `ClusterInfo`를 추가하며 REST로도 제공, [SVM 클러스터 식별 정보](#svm-cluster-info) 참조) |
+| `svm`         | `Slot`, `Account`, `Program` (v3.2.7은 두 네트워크 모두에 `ClusterInfo`를 추가하며 REST로도 제공, [SVM 클러스터 식별 정보](#svm-cluster-info) 참조) |
 | `qca`         | `Config`                                               |
 
 `rlconsensus` 쿼리는 v3.2.6부터 두 네트워크 모두에서 REST로 제공됩니다(`AppliedParams`와 `LastAction` 두 메서드가 추가됨). [RL 합의 모듈](#rlconsensus-module)을 참조하십시오. 직접 실행하는 노드에 `grpcurl`을 사용하거나 [CLI 쿼리 명령](/cli-reference/query-commands)을 사용하십시오. `rdk` 쿼리는 REST로도 사용할 수 있으며([RDK 모듈](#rdk-module) 참조), v3.2.2 이전에는 gRPC 전용이었습니다.
@@ -649,7 +649,7 @@ grpcurl -plaintext localhost:9090 list
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query`에는 v3.2.3 노드에서 `Account`, `EVMWindow`, `EVMDelegationConsent`의 세 가지 메서드가 있으며, v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터) `ProtocolFeatures`라는 네 번째 메서드가 있습니다. `Params` 메서드는 v3.2.6에서 추가되었으며(테스트넷은 2026년 10월 27일부터, 메인넷은 2026년 11월 4일부터), v3.2.6보다 오래된 노드에는 `Params` 메서드가 없습니다. v3.2.7 테스트넷은 [PQC 멀티시그와 텍스추얼 서명](#pqc-multisig-textual)에 설명된 멀티시그 및 텍스추얼 문서 라우트를 추가합니다.
+`qorechain.pqc.v1.Query`에는 v3.2.3 노드에서 `Account`, `EVMWindow`, `EVMDelegationConsent`의 세 가지 메서드가 있으며, v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터) `ProtocolFeatures`라는 네 번째 메서드가 있습니다. `Params` 메서드는 v3.2.6에서 추가되었으며(테스트넷은 2026년 10월 27일부터, 메인넷은 2026년 11월 4일부터), v3.2.6보다 오래된 노드에는 `Params` 메서드가 없습니다. v3.2.7(두 네트워크 모두)은 [PQC 멀티시그와 텍스추얼 서명](#pqc-multisig-textual)에 설명된 멀티시그 및 텍스추얼 문서 라우트를 추가합니다.
 
 ## 인증
 

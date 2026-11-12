@@ -10,7 +10,7 @@ sidebar_position: 3
 Bu kılavuz, QoreChain üzerinde zincir üstü yönetişimin nasıl çalıştığını, oyların nasıl sayıldığını, tekliflerin nasıl gönderileceğini ve nasıl oy kullanılacağını açıklar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve 4 Kasım 2026'dan beri **v3.2.6** sürümünü çalıştırıyor (v3.2.5, 29 Ekim'den; v3.2.4, 23 Ekim'den); testnet 12 Kasım 2026'dan beri **v3.2.8** çalıştırıyor (6 Kasım'dan itibaren v3.2.7, 27 Ekim'den itibaren v3.2.6 idi). Mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve 12 Kasım 2026'dan beri **v3.2.7** sürümünü çalıştırıyor (v3.2.6, 4 Kasım'dan; v3.2.5, 29 Ekim'den; v3.2.4, 23 Ekim'den); testnet 12 Kasım 2026'dan beri **v3.2.8** çalıştırıyor (6 Kasım'dan itibaren v3.2.7, 27 Ekim'den itibaren v3.2.6 idi). Mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -175,7 +175,7 @@ Başlıca parametreler şunlardır:
 
 ## Mainnet'te şimdiye kadarki yönetişim {#mainnet-history}
 
-Mainnet yönetişimi; parametre değişiklikleri, devre kesici kararları, koordineli yükseltmeler ve Ekim 2026'dan itibaren zincirin v3.2.0 yükseltmesinde kaydettiği tutarların serbest bırakılması için kullanılmıştır. 7 ila 14 numaralı teklifler Ekim 2026'da, 15 numaralı teklif ise Kasım'da mainnet'te kabul edildi; bunların arasında 12 numaralı (başka bir serbest bırakma, 21 Ekim'de kabul edildi), 13 numaralı (v3.2.4 yükseltmesi, 23 Ekim'de 3.742.566 yüksekliğinde uygulandı), 14 numaralı (v3.2.5 yükseltmesi, 29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı) ve 15 numaralı (v3.2.6 yükseltmesi, oylama 3 Kasım'da sona erdi, 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı) teklifler de vardır; liste ve sonuçlar [Sürüm Geçmişi](/appendix/version-history#governance-timeline) sayfasındadır ve her teklif `GET /cosmos/gov/v1/proposals` adresinden canlı olarak okunabilir.
+Mainnet yönetişimi; parametre değişiklikleri, devre kesici kararları, koordineli yükseltmeler ve Ekim 2026'dan itibaren zincirin v3.2.0 yükseltmesinde kaydettiği tutarların serbest bırakılması için kullanılmıştır. 7 ila 14 numaralı teklifler Ekim 2026'da, 15 ve 16 numaralı teklifler ise Kasım'da mainnet'te kabul edildi; bunların arasında 12 numaralı (başka bir serbest bırakma, 21 Ekim'de kabul edildi), 13 numaralı (v3.2.4 yükseltmesi, 23 Ekim'de 3.742.566 yüksekliğinde uygulandı), 14 numaralı (v3.2.5 yükseltmesi, 29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı), 15 numaralı (v3.2.6 yükseltmesi, oylama 3 Kasım'da sona erdi, 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı) ve 16 numaralı (v3.2.7 yükseltmesi, 12 Kasım 2026'da 4.164.600 yüksekliğinde uygulandı) teklifler de vardır; liste ve sonuçlar [Sürüm Geçmişi](/appendix/version-history#governance-timeline) sayfasındadır ve her teklif `GET /cosmos/gov/v1/proposals` adresinden canlı olarak okunabilir.
 
 ---
 

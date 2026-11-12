@@ -26,8 +26,8 @@ Binarul curent, genesis-ul, peers, seeds și un punct de încredere pentru state
 Câmpurile manifestului includ `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un punct de încredere actualizat orar) și `minCompatible`. Pașii de instalare și conectare de mai jos preiau acest manifest și folosesc valorile lui curente.
 :::
 
-:::caution Folosiți versiunea indicată de manifest: v3.2.6 pe mainnet, v3.2.8 pe testnet
-Un nod care se sincronizează de la genesis sau reface starea dintr-un instantaneu trece prin mai multe upgrade-uri de guvernanță (consultați [Upgrade-uri](#upgrades) mai jos), așa că instalați întotdeauna binarul indicat de manifest: acesta conține toate handler-ele de upgrade. Pe **mainnet**, `minCompatible` și `version` din manifest sunt ambele `3.2.6` (aplicată la înălțimea 4.020.000 pe 4 noiembrie 2026, propunerea de guvernanță 15), deci un nod care se alătură acum are nevoie de v3.2.6: un binar mai vechi se oprește la o înălțime de upgrade pe care nu o cunoaște. Versiunea este pachetul `qorechaind-v3.2.6-b3-linux-amd64.tar.gz` (98.878.438 de octeți, SHA-256 `acd9f95bfd8d6f3c6c5ea306fe9dacb6362336ddaa96c61197599298bb1e2fb2`, citit din manifest pe 4 noiembrie 2026; manifestul live este sursa de adevăr). Manifestul recomandă ca nodurile noi să se alăture prin state sync. Conține `qorechaind` și `lib/` cu `libqorepqc.so`, `libqoresvm.so` și `libwasmvm.x86_64.so`. Un nod rămas pe v3.2.5 se oprește la înălțimea 4.020.000 cu `UPGRADE "v3.2.6" NEEDED`: instalați pachetul și reporniți, iar starea sa este păstrată. Niciun alt upgrade de mainnet nu este programat (`current_plan` este `null`, verificat la 4 noiembrie 2026); când manifestul indică o versiune mai nouă, aceea este binarul de instalat. Pe **testnet**, `minCompatible` și `version` din manifest sunt ambele `3.2.8` (v3.2.5 a fost aplicată la înălțimea 8.890.800 pe 26 octombrie 2026, v3.2.6 la înălțimea 8.970.638 pe 27 octombrie, v3.2.7 la înălțimea 9.594.600 pe 6 noiembrie și v3.2.8 la înălțimea 9.929.500 pe 12 noiembrie), deci un nod care se alătură testnet-ului are nevoie de binarul v3.2.8: luați numele pachetului, dimensiunea și SHA-256 din manifestul live al testnet-ului, care este sursa de adevăr (pe 7 noiembrie 2026, pe v3.2.7, acesta indica `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`, 99.472.930 de octeți, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`). Un nod de testnet rămas pe v3.2.7 se oprește la înălțimea 9.929.500 cu `UPGRADE "v3.2.8" NEEDED`: înlocuiți `qorechaind` și copiați întregul folder `lib/` din pachet, apoi porniți-l din nou; starea sa este păstrată și nu are nevoie de resincronizare. Mainnet-ul rămâne pe v3.2.6; un upgrade de mainnet la v3.2.8 nu are încă o dată de propunere, deci nimic nu se schimbă pentru nodurile de mainnet. Nu rulați un binar de testnet împotriva mainnet-ului sau invers: fiecare director conține propria versiune (consultați [Upgrade-uri](#upgrades)). Manifestul este promovat deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj), așa că verificați câmpul său `"version"` în raport cu `minCompatible` înainte de a avea încredere în `binary.url`.
+:::caution Folosiți versiunea indicată de manifest: v3.2.7 pe mainnet, v3.2.8 pe testnet
+Un nod care se sincronizează de la genesis sau reface starea dintr-un instantaneu trece prin mai multe upgrade-uri de guvernanță (consultați [Upgrade-uri](#upgrades) mai jos), așa că instalați întotdeauna binarul indicat de manifest: acesta conține toate handler-ele de upgrade. Pe **mainnet**, `minCompatible` și `version` din manifest sunt ambele `3.2.7` (aplicată la înălțimea 4.164.600 pe 12 noiembrie 2026, propunerea de guvernanță 16), deci un nod care se alătură acum are nevoie de v3.2.7: un binar mai vechi se oprește la o înălțime de upgrade pe care nu o cunoaște. Versiunea este pachetul `qorechaind-v3.2.7-b3-linux-amd64.tar.gz` (99.472.930 de octeți, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`, citit din manifest pe 12 noiembrie 2026; manifestul live este sursa de adevăr). Manifestul recomandă ca nodurile noi să se alăture prin state sync. Conține `qorechaind` și `lib/` cu `libqorepqc.so`, `libqoresvm.so` și `libwasmvm.x86_64.so`. Un nod rămas pe v3.2.6 s-a oprit la înălțimea 4.164.600 cu `UPGRADE "v3.2.7" NEEDED`: instalați pachetul și reporniți, iar starea sa este păstrată. Niciun alt upgrade de mainnet nu este programat (`current_plan` este `null`, verificat la 12 noiembrie 2026); când manifestul indică o versiune mai nouă, aceea este binarul de instalat. Pe **testnet**, `minCompatible` și `version` din manifest sunt ambele `3.2.8` (v3.2.5 a fost aplicată la înălțimea 8.890.800 pe 26 octombrie 2026, v3.2.6 la înălțimea 8.970.638 pe 27 octombrie, v3.2.7 la înălțimea 9.594.600 pe 6 noiembrie și v3.2.8 la înălțimea 9.929.500 pe 12 noiembrie), deci un nod care se alătură testnet-ului are nevoie de binarul v3.2.8: luați numele pachetului, dimensiunea și SHA-256 din manifestul live al testnet-ului, care este sursa de adevăr (pe 7 noiembrie 2026, pe v3.2.7, acesta indica `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`, 99.472.930 de octeți, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`). Un nod de testnet rămas pe v3.2.7 se oprește la înălțimea 9.929.500 cu `UPGRADE "v3.2.8" NEEDED`: înlocuiți `qorechaind` și copiați întregul folder `lib/` din pachet, apoi porniți-l din nou; starea sa este păstrată și nu are nevoie de resincronizare. Mainnet-ul rămâne pe v3.2.7, cu o versiune în urma testnet-ului; nu a aplicat v3.2.8, deci nimic din notele v3.2.8 nu se schimbă pentru nodurile de mainnet. Nu rulați un binar de testnet împotriva mainnet-ului sau invers: fiecare director conține propria versiune (consultați [Upgrade-uri](#upgrades)). Manifestul este promovat deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj), așa că verificați câmpul său `"version"` în raport cu `minCompatible` înainte de a avea încredere în `binary.url`.
 
 Un binar compilat din sursa publică (build-ul comunitar) refuză să pornească pe oricare dintre rețelele publice (v3.2.3 și mai nou): nu poate verifica semnăturile post-cuantice și nu poate reda fidel blocurile rețelelor. Folosiți doar arhiva de release.
 
@@ -52,7 +52,7 @@ Două setări contează începând cu v3.2.1: mențineți ceasul sistemului sinc
 
 | Rețea    | Chain ID            | Chain ID EVM          | Note                          |
 | -------- | ------------------- | ---------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principală — live din 7 iun 2026; versiunea de nod v3.2.6 (din 4 nov 2026) |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principală — live din 7 iun 2026; versiunea de nod v3.2.7 (din 12 nov 2026) |
 | Testnet  | `qorechain-diana`   | `9800`                 | Testați integrările aici mai întâi; versiunea de nod v3.2.8 (din 12 nov 2026) |
 
 Înlocuiți `--chain-id`-ul corespunzător pentru rețeaua țintă pe parcursul acestui ghid. Exemplele folosesc implicit mainnet.
@@ -92,7 +92,7 @@ COPY lib/ /opt/qorechain/lib/
 ENV LD_LIBRARY_PATH=/opt/qorechain/lib
 ENTRYPOINT ["qorechaind"]
 EOF
-docker build -t qorechain-node:v3.2.6 release/
+docker build -t qorechain-node:v3.2.7 release/
 ```
 
 Arhiva conține `qorechaind` și un director `lib/` cu bibliotecile sale partajate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` și, începând cu v3.2.8, `libwasmvmqore_v1.x86_64.so`). Copiați întregul director `lib/`, nu fișiere individuale; imaginea de mai sus este doar `linux/amd64`, ca și arhiva de release.
@@ -101,7 +101,7 @@ Arhiva conține `qorechaind` și un director `lib/` cu bibliotecile sale partaja
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.2.6
+    image: qorechain-node:v3.2.7
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -288,21 +288,23 @@ Schimbările de consens sosesc ca **upgrade-uri de guvernanță coordonate**: o 
 | v3.2.4 | înălțimea 3.742.566 (23 oct 2026, propunerea de guvernanță 13) | înălțimea 8.337.253 (19 oct 2026, propunerea de guvernanță 13) |
 | v3.2.5 | înălțimea 3.906.833 (29 oct 2026, propunerea de guvernanță 14) | înălțimea 8.890.800 (26 oct 2026) |
 | v3.2.6 | înălțimea 4.020.000 (4 nov 2026, propunerea de guvernanță 15) | înălțimea 8.970.638 (27 oct 2026) |
-| v3.2.7 | neaplicată (încă fără dată de propunere) | înălțimea 9.594.600 (6 nov 2026, propunerea de guvernanță 33) |
-| v3.2.8 | neaplicată (încă fără dată de propunere) | înălțimea 9.929.500 (12 nov 2026) |
+| v3.2.7 | înălțimea 4.164.600 (12 nov 2026, propunerea de guvernanță 16) | înălțimea 9.594.600 (6 nov 2026, propunerea de guvernanță 33) |
+| v3.2.8 | neaplicată | înălțimea 9.929.500 (12 nov 2026) |
 
 **Ce a făcut un operator de nod pentru v3.2.4 (înălțimea mainnet 3.742.566).** Propunerea de guvernanță 13 a numit planul `v3.2.4` la înălțimea 3.742.566 (aplicat pe 23 octombrie 2026): nodurile au rămas pe v3.2.3 până la acea înălțime, s-au oprit acolo și au repornit pe v3.2.4. Pentru următorul upgrade coordonat pașii sunt aceiași:
 
 1. Urmăriți manifestul (`https://download.qore.host/mainnet/latest.json`): până când indică noua versiune nu aveți nimic de instalat, iar un binar din directorul de testnet nu este versiunea de mainnet.
 2. Când manifestul indică versiunea, descărcați arhiva de la `binary.url`, verificați `sha256` (textul propunerii publică și el sha256-ul binarului) și pregătiți-o **înainte** de acea înălțime. Verificați planul în așteptare cu `GET /cosmos/upgrade/v1beta1/current_plan` (`name` și `height`) și înălțimea curentă cu `GET /status` pe RPC.
 3. La înălțimea planului, un nod aflat încă pe binarul vechi **se oprește** (acesta este comportamentul intenționat al modulului de upgrade, nu o defecțiune); un nod care rulează deja noul binar aplică handler-ul de upgrade și continuă. Dacă al dumneavoastră s-a oprit primul, înlocuiți binarul și reporniți. După upgrade, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` returnează înălțimea în loc de `0` (3742566 pe mainnet, 8337253 pe testnet).
-4. Un nod care se alătură acum mainnet-ului instalează versiunea pe care o indică manifestul (v3.2.6 la momentul redactării; verificați `version` în raport cu `minCompatible`).
+4. Un nod care se alătură acum mainnet-ului instalează versiunea pe care o indică manifestul (v3.2.7 la momentul redactării; verificați `version` în raport cu `minCompatible`).
 
 Semnarea tranzacțiilor, adresele, zecimalele, memo-urile și taxele nu sunt schimbate de v3.2.4.
 
 **v3.2.5 pe mainnet (înălțimea 3.906.833, 29 octombrie 2026, propunerea de guvernanță 14).** Au fost aplicați aceiași pași: manifestul a indicat `3.2.5` atât ca `version`, cât și ca `minCompatible`, iar un nod rămas pe v3.2.4 s-a oprit la înălțimea planului cu `UPGRADE "v3.2.5" NEEDED`. Remedierea este instalarea pachetului v3.2.5 (conține împreună `qorechaind` și bibliotecile partajate din `lib/`; păstrați-le una lângă alta) și repornirea; starea nodului este păstrată.
 
 **v3.2.6 pe mainnet (înălțimea 4.020.000, 4 noiembrie 2026, propunerea de guvernanță 15).** Au fost aplicați aceiași pași: manifestul indică `3.2.6` atât ca `version`, cât și ca `minCompatible`, iar un nod rămas pe v3.2.5 se oprește la înălțimea planului cu `UPGRADE "v3.2.6" NEEDED`; instalați pachetul v3.2.6 și reporniți. Semnarea (sign-bytes v2), adresele, zecimalele, memo-urile și taxele nu sunt schimbate, iar manifestul cere operatorilor să mențină ceasul sincronizat prin NTP. `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.6` returnează `{"height":"4020000"}` pe mainnet. Niciun alt upgrade de mainnet nu este programat.
+
+**v3.2.7 pe mainnet (înălțimea 4.164.600, 12 noiembrie 2026, propunerea de guvernanță 16).** Au fost aplicați aceiași pași: manifestul indică `3.2.7` atât ca `version`, cât și ca `minCompatible`, iar un nod rămas pe v3.2.6 se oprește la înălțimea planului cu `UPGRADE "v3.2.7" NEEDED`; instalați pachetul v3.2.7 și reporniți. `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.7` returnează `{"height":"4164600"}` pe mainnet. Upgrade-ul a activat unsprezece funcționalități de protocol (multisig post-cuantic hibrid, un gaz fix de 2.000 per verificare post-cuantică, evenimentul ferestrei EVM, mesajele de chei de verificare RDK și mai multe corecturi SVM de adrese și cross-VM), 101 în total. Lane-ul SVM, apelul cross-VM și încărcarea și instanțierea CosmWasm rămân oprite pe mainnet.
 
 Citiți înregistrarea live cu `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = neaplicat) și orice plan în așteptare cu `GET /cosmos/upgrade/v1beta1/current_plan`. v3.2.2 a ridicat versiunile dependențelor motorului de consens, Cosmos SDK (v0.53.8) și IBC, iar verificările mai stricte ale tranzacțiilor din SDK fac ca această versiune să înlocuiască binarul anterior la înălțimea de upgrade, nu nod cu nod. Semnarea tranzacțiilor, adresele, zecimalele, memo-urile și taxele nu s-au schimbat în v3.2.2 sau v3.2.3.
 
@@ -451,7 +453,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bune practici operaționale
 
-1. **Fixați versiunea de lanț.** Rulați versiunea recomandată de manifest (**v3.2.6** pe mainnet și **v3.2.8** pe testnet, la momentul redactării), urmăriți versiunile oficiale pentru upgrade-uri coordonate și mențineți ceasul sistemului sincronizat prin NTP.
+1. **Fixați versiunea de lanț.** Rulați versiunea recomandată de manifest (**v3.2.7** pe mainnet și **v3.2.8** pe testnet, la momentul redactării), urmăriți versiunile oficiale pentru upgrade-uri coordonate și mențineți ceasul sistemului sincronizat prin NTP.
 
 2. **Rulați noduri redundante.** Operați cel puțin două noduri în spatele unui load balancer, astfel încât o singură repornire sau resincronizare să nu întrerupă traficul de integrare.
 

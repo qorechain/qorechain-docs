@@ -12,7 +12,7 @@ SVM レーンは、QoreChain の Solana 互換部分です。Solana スタイル
 このページでは、レーンの状態の読み取り方、プログラム、アカウント、レントの仕組み、SVM ウォレットがポスト量子鍵を登録する方法、カストディ制限の意味、そして現時点で実行できる例を説明します。
 
 :::note まずテストネット。提案 37 以降、レーンはそこで開放されています
-v3.2.8 は、**`qorechain-diana`** テストネットで 2026 年 11 月 12 日から稼働しています。メインネット（`qorechain-vladi`）はまだ v3.2.6 で、v3.2.8 の日付はなく、**メインネットではレーンはオフのままです**。アップグレードはテストネットでレーンを閉じました（SVM の書き込みは失敗し、`MsgRegisterSVMPQCKey` は拒否されました）。**ガバナンス提案 37 が可決され、`qorechain-diana` でレーンが開放されました**。これは `enabled: true` を設定し、他のパラメータはそのままにして、`MsgExecuteProgram` とクロス VM 呼び出しに対するサーキットブレーカーの一時停止を解除しました。投票後の 2026 年 11 月 12 日に確認したところ、`GET /qorechain/svm/v1/params` は `enabled: true` を示し、サーキットブレーカーのリストには `/cosmwasm.wasm.v1.MsgStoreCode` のみが含まれていました。公開 SVM JSON-RPC は引き続き読み取り専用です。必ず最初に実際の状態を読み取り（次のセクション）、決めつけないでください。
+v3.2.8 は、**`qorechain-diana`** テストネットで 2026 年 11 月 12 日から稼働しています。メインネット（`qorechain-vladi`）は v3.2.7（2026年11月12日から）を実行しており、v3.2.8 は適用しておらず、**メインネットではレーンはオフのままです**。アップグレードはテストネットでレーンを閉じました（SVM の書き込みは失敗し、`MsgRegisterSVMPQCKey` は拒否されました）。**ガバナンス提案 37 が可決され、`qorechain-diana` でレーンが開放されました**。これは `enabled: true` を設定し、他のパラメータはそのままにして、`MsgExecuteProgram` とクロス VM 呼び出しに対するサーキットブレーカーの一時停止を解除しました。投票後の 2026 年 11 月 12 日に確認したところ、`GET /qorechain/svm/v1/params` は `enabled: true` を示し、サーキットブレーカーのリストには `/cosmwasm.wasm.v1.MsgStoreCode` のみが含まれていました。公開 SVM JSON-RPC は引き続き読み取り専用です。必ず最初に実際の状態を読み取り（次のセクション）、決めつけないでください。
 :::
 
 ## なぜ重要か {#why}
@@ -69,7 +69,7 @@ curl -s https://api-testnet.qore.host/qorechain/svm/v1/cluster_info
 {"chain_id":"qorechain-diana","genesis_hash":"6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj","caip2_chain_id":"solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR","derivation":"base58(SHA-256(\"qorechain/svm/genesis-hash/v1\" || 0x00 || chain_id))","execution_enabled":true}
 ```
 
-ノード CLI にも同じクエリがあります: `qorechaind query svm cluster-info`。`https://svm-testnet.qore.host` の JSON-RPC メソッド `getGenesisHash` も同じハッシュを返します。このハッシュはチェーン ID から導出されたもので、実際の Solana クラスターのジェネシスハッシュではありません。
+ノード CLI にも同じクエリがあります: `qorechaind query svm cluster-info`。`https://svm-testnet.qore.host` の JSON-RPC メソッド `getGenesisHash` も同じハッシュを返します。このハッシュはチェーン ID から導出されたもので、実際の Solana クラスターのジェネシスハッシュではありません。この経路はメインネット（v3.2.7）でも提供されています。2026年11月12日に `https://api.qore.host/qorechain/svm/v1/cluster_info` は `200` を返し、`execution_enabled` は `false` でした。
 
 ## 公開 SVM RPC は読み取り専用です {#public-rpc}
 
@@ -272,7 +272,7 @@ Python のコンポーザーは `msg.svm.register_svm_pqc_key(sender=, ...)`、G
 
 ## メインネット {#mainnet}
 
-メインネットは当面 v3.2.6 のままで、SVM レーンはオフです。メインネットで有効にするには、後のリリースとガバナンス投票が必要です。計画はテストネットのみを基準にしてください。
+メインネットは当面 v3.2.7 のままで、SVM レーンはオフです。メインネットで有効にするには、後のリリースとガバナンス投票が必要です。計画はテストネットのみを基準にしてください。
 
 ## 関連項目 {#see-also}
 

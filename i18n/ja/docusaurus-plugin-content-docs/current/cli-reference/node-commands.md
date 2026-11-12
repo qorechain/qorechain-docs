@@ -10,7 +10,7 @@ sidebar_position: 1
 QoreChainノードの初期化・設定・運用に使用する `qorechaind` コマンドのリファレンスです。
 
 :::note
-QoreChainは2つのネットワークを運用しています。**`qorechain-vladi`** メインネット(2026年6月7日から稼働中、ノードリリース **v3.2.6**、2026年11月4日にガバナンス提案 15 によりブロック高 4,020,000 で適用。v3.2.5 は2026年10月29日にブロック高 3,906,833 で、v3.2.4 は2026年10月23日にブロック高 3,742,566 で、v3.2.3 は2026年10月20日にブロック高 3,662,051 で適用)と、**`qorechain-diana`** テストネット(ノードリリース **v3.2.8**、2026年11月12日にブロック高 9,929,500 で適用。その前に v3.2.7 が11月6日にブロック高 9,594,600 で、v3.2.6 が10月27日にブロック高 8,970,638 で、v3.2.5 が10月26日にブロック高 8,890,800 で、v3.2.4 が10月19日にブロック高 8,337,253 で適用。メインネットの v3.2.8 の日付はありません)です。参加するネットワークに応じて適切な `--chain-id` を指定してください — 以下の例はテストネットを対象としています。メインネットの場合は `--chain-id qorechain-vladi` を使用してください。各ネットワークの現在のリリースは、[download.qore.host](https://download.qore.host) の `latest.json` に記載されています。
+QoreChainは2つのネットワークを運用しています。**`qorechain-vladi`** メインネット(2026年6月7日から稼働中、ノードリリース **v3.2.7**、2026年11月12日にガバナンス提案 16 によりブロック高 4,164,600 で適用。v3.2.6 は2026年11月4日にブロック高 4,020,000 で、v3.2.5 は2026年10月29日にブロック高 3,906,833 で、v3.2.4 は2026年10月23日にブロック高 3,742,566 で、v3.2.3 は2026年10月20日にブロック高 3,662,051 で適用)と、**`qorechain-diana`** テストネット(ノードリリース **v3.2.8**、2026年11月12日にブロック高 9,929,500 で適用。その前に v3.2.7 が11月6日にブロック高 9,594,600 で、v3.2.6 が10月27日にブロック高 8,970,638 で、v3.2.5 が10月26日にブロック高 8,890,800 で、v3.2.4 が10月19日にブロック高 8,337,253 で適用。メインネットは v3.2.8 を適用していません)です。参加するネットワークに応じて適切な `--chain-id` を指定してください — 以下の例はテストネットを対象としています。メインネットの場合は `--chain-id qorechain-vladi` を使用してください。各ネットワークの現在のリリースは、[download.qore.host](https://download.qore.host) の `latest.json` に記載されています。
 
 このページのコマンドは、v3.2.3 のリリースバイナリで確認しています。v3.2.4 バイナリには、v3.2.3 バイナリにはないコマンド(例: `stakingtier`)が追加されています。これらは両ネットワークで動作します(テストネットでは2026年10月19日から、メインネットでは2026年10月23日から)。このマニュアルでそれに触れる箇所には、その旨を明記しています。v3.2.6 バイナリ(両ネットワーク)には、さらに2つのクエリコマンド `query rlconsensus applied-params` と `last-action` が追加されています([クエリコマンド](/cli-reference/query-commands#rlconsensus)を参照)。このページのそれ以外はすべて、両リリースで同じように動作します。
 :::
@@ -70,10 +70,11 @@ qorechaind start [flags]
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 / v3.2.4 / v3.2.5 / v3.2.6 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"})
+# has v3.2.3 / v3.2.4 / v3.2.5 / v3.2.6 / v3.2.7 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"})
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.6   # {"height":"4020000"}
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.7   # {"height":"4164600"}
 ```
 
 ---

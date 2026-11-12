@@ -14,7 +14,7 @@ Modulul de punte este implementat pe mainnet și testnet, dar **nicio rută de p
 :::
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea de lanț **v3.2.8** din 12 noiembrie 2026). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) rulează versiunea de lanț **v3.2.6** (din 4 noiembrie 2026). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** după ce o rută este activată. Stare verificată la 27 octombrie 2026: toate cele 37 de configurații de lanț sunt `pending` pe ambele rețele.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea de lanț **v3.2.8** din 12 noiembrie 2026). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) rulează versiunea de lanț **v3.2.7** (din 12 noiembrie 2026). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** după ce o rută este activată. Stare verificată la 27 octombrie 2026: toate cele 37 de configurații de lanț sunt `pending` pe ambele rețele.
 :::
 
 ---
@@ -48,7 +48,7 @@ Citește limitele cu `GET /Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits` (
 
 **Ce rețea ce are (testnet verificat la 27 octombrie 2026, mainnet la 4 noiembrie 2026).**
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.8) |
+| | Mainnet `qorechain-vladi` (v3.2.7) | Testnet `qorechain-diana` (v3.2.8) |
 |---|---|---|
 | Transfer ICS-20 (IBC v1) | Integrat, dar niciun canal nu este deschis | Integrat, un canal deschis |
 | Limită de rată IBC | Activată, fără limite setate (interogarea răspunde `200`, listă goală) | Disponibilă, fără limite setate |

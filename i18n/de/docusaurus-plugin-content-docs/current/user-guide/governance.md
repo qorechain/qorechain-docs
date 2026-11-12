@@ -10,7 +10,7 @@ sidebar_position: 3
 Dieser Leitfaden erklärt, wie die On-Chain-Governance bei QoreChain funktioniert: wie Stimmen ausgezählt werden, wie man Vorschläge einreicht und wie man abstimmt.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live und seit dem 4. November 2026 auf Release **v3.2.6** (v3.2.5 ab dem 29. Oktober, v3.2.4 ab dem 23. Oktober); das Testnet läuft seit dem 12. November 2026 mit **v3.2.8** (v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober). Ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live und seit dem 12. November 2026 auf Release **v3.2.7** (v3.2.6 ab dem 4. November, v3.2.5 ab dem 29. Oktober, v3.2.4 ab dem 23. Oktober); das Testnet läuft seit dem 12. November 2026 mit **v3.2.8** (v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober). Ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -175,7 +175,7 @@ Wichtige Parameter sind unter anderem:
 
 ## Governance im Mainnet bisher {#mainnet-history}
 
-Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 14 wurden im Oktober 2026 im Mainnet angenommen und Vorschlag 15 im November, darunter Vorschlag 12 (eine weitere Freigabe, angenommen am 21. Oktober) und Vorschlag 13 (das Upgrade auf v3.2.4, angewendet auf Höhe 3.742.566 am 23. Oktober) Vorschlag 14 (das Upgrade auf v3.2.5, angewendet auf Höhe 3.906.833 am 29. Oktober 2026) und Vorschlag 15 (das Upgrade auf v3.2.6, Abstimmung beendet am 3. November, angewendet auf Höhe 4.020.000 am 4. November 2026); die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
+Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 14 wurden im Oktober 2026 im Mainnet angenommen und Vorschläge 15 und 16 im November, darunter Vorschlag 12 (eine weitere Freigabe, angenommen am 21. Oktober) und Vorschlag 13 (das Upgrade auf v3.2.4, angewendet auf Höhe 3.742.566 am 23. Oktober) Vorschlag 14 (das Upgrade auf v3.2.5, angewendet auf Höhe 3.906.833 am 29. Oktober 2026), Vorschlag 15 (das Upgrade auf v3.2.6, Abstimmung beendet am 3. November, angewendet auf Höhe 4.020.000 am 4. November 2026) und Vorschlag 16 (das Upgrade auf v3.2.7, angewendet auf Höhe 4.164.600 am 12. November 2026); die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
 
 ---
 

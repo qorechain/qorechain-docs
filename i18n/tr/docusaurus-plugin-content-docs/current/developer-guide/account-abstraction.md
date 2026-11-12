@@ -14,7 +14,7 @@ Soyut hesap modülü, yazım sırasında **`qorechain-vladi` ana ağında kapal�
 :::
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve düğüm sürümü **v3.2.6**'yı çalıştıran (4 Kasım 2026'da 4.020.000 yüksekliğinde uygulandı, yönetişim önerisi 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, öneri 14, ve v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı) **`qorechain-vladi`** ana ağını kullanır. v3.2.8 çalıştıran (12 Kasım 2026'dan beri; v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` ile değiştirin.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve düğüm sürümü **v3.2.7**'yi çalıştıran (12 Kasım 2026'da 4.164.600 yüksekliğinde uygulandı, yönetişim önerisi 16; v3.2.6, 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulanmıştı, öneri 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, öneri 14, ve v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı) **`qorechain-vladi`** ana ağını kullanır. v3.2.8 çalıştıran (12 Kasım 2026'dan beri; v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` ile değiştirin.
 :::
 
 :::caution Her Cosmos hattı işlemi hibrit kuantum sonrası eş imza gerektirir

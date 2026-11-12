@@ -14,7 +14,7 @@ Das Abstract-Account-Modul ist zum Zeitpunkt der Erstellung **auf dem Mainnet `q
 :::
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das die Node-Version **v3.2.6** ausführt (angewendet bei Höhe 4.020.000 am 4. November 2026, Governance-Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober 2026 angewendet, Vorschlag 14, und v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026). Ersetzen Sie für das Testnet, das v3.2.8 ausführt (seit dem 12. November 2026; v3.2.4 seit dem 19. Oktober 2026), `--chain-id qorechain-diana`.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das die Node-Version **v3.2.7** ausführt (angewendet bei Höhe 4.164.600 am 12. November 2026, Governance-Vorschlag 16; v3.2.6 wurde bei Höhe 4.020.000 am 4. November 2026 angewendet, Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober 2026 angewendet, Vorschlag 14, und v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026). Ersetzen Sie für das Testnet, das v3.2.8 ausführt (seit dem 12. November 2026; v3.2.4 seit dem 19. Oktober 2026), `--chain-id qorechain-diana`.
 :::
 
 :::caution Jede Cosmos-Lane-Transaktion benötigt die hybride Post-Quantum-Mitsignatur

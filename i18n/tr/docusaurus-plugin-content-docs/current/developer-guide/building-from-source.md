@@ -68,7 +68,7 @@ QoreChain bir **açık çekirdek** modelini izler:
 
 Her iki derleme de aynı `qorechaind` ikili dosya adını üretir ve aynı CLI komutlarını sunar. Fark, bu arabirimlerin arkasındaki keeper mantığının çalışma zamanı davranışındadır.
 
-[github.com/qorechain/qorechain-core](https://github.com/qorechain/qorechain-core) deposunun `v3.2.6` etiketi, mainnet'in çalıştırdığı sürümün (4 Kasım 2026'dan beri) açık çekirdek kaynağıdır. Testnet 12 Kasım 2026'dan beri v3.2.8 çalıştırır; henüz herkese açık bir `v3.2.8` etiketi yoktur. Herkese açık derleme stub keeper'lar kullanır ve konsensüs durumunu yeniden üretemez; bu nedenle bir düğüm, bu etiketten derlenmiş bir ikili dosyayı değil, manifestte (`latest.json`, [download.qore.host](https://download.qore.host/mainnet/latest.json)) adı geçen sürüm paketini kullanmalıdır.
+[github.com/qorechain/qorechain-core](https://github.com/qorechain/qorechain-core) deposunun `v3.2.6` etiketi, en son herkese açık open-core kaynak etiketidir; mainnet 12 Kasım 2026'dan beri v3.2.7 çalıştırır ve henüz herkese açık bir `v3.2.7` etiketi yoktur. Testnet 12 Kasım 2026'dan beri v3.2.8 çalıştırır; henüz herkese açık bir `v3.2.8` etiketi yoktur. Herkese açık derleme stub keeper'lar kullanır ve konsensüs durumunu yeniden üretemez; bu nedenle bir düğüm, bu etiketten derlenmiş bir ikili dosyayı değil, manifestte (`latest.json`, [download.qore.host](https://download.qore.host/mainnet/latest.json)) adı geçen sürüm paketini kullanmalıdır.
 
 ## Topluluk Derlemesi
 

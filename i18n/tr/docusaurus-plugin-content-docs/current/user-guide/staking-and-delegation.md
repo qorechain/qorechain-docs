@@ -10,7 +10,7 @@ sidebar_position: 2
 Bu kılavuz, QOR token'larını doğrulayıcılara (validator) delege etme, doğrulayıcılar arasında yeniden delege etme (redelegate), stake'inizi çözme (unbond), ödülleri talep etme ve QoreChain'in stake tasarımının hangi bölümlerinin bugün canlı olduğunu anlama konularını kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve **v3.2.6** sürümünü çalıştırır (4 Kasım 2026'da uygulandı; v3.2.5, 29 Ekim'de ve v3.2.4, 23 Ekim'de); testnet 12 Kasım 2026'dan beri v3.2.8 çalıştırır (6 Kasım'dan itibaren v3.2.7, 27 Ekim'den itibaren v3.2.6 idi). Mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve **v3.2.7** sürümünü çalıştırır (12 Kasım 2026'da uygulandı; v3.2.6, 4 Kasım'da, v3.2.5, 29 Ekim'de ve v3.2.4, 23 Ekim'de); testnet 12 Kasım 2026'dan beri v3.2.8 çalıştırır (6 Kasım'dan itibaren v3.2.7, 27 Ekim'den itibaren v3.2.6 idi). Mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -126,7 +126,7 @@ Stake ödülleri iki kaynaktan finanse edilir: protokolün sınırlandırılmı�
 ## Zamana kilitli stake (v3.2.4) {#time-locked-staking}
 
 :::note Bu ne zaman geçerli olur
-v3.2.4 sürümü, isteğe bağlı bir zamana kilitli stake modülü olan `x/stakingtier`'ı ekler. **`qorechain-diana` testnet'inde** 19 Ekim 2026'dan beri, **mainnet'te** ise 23 Ekim 2026'dan beri canlıdır (yönetişim önerisi 13 ile 3,742,566 yüksekliğinde uygulandı); mainnet 29 Ekim 2026'dan beri v3.2.5, 4 Kasım 2026'dan beri v3.2.6 çalıştırıyor ve bu sürümler aşağıda anlatılan undelegate denetimi dışında onu değiştirmeden bırakır. Kilitleme bir seçenek olarak sunulur ve olağan delegasyon kilitsiz kalır (bkz. [yukarıda](#lock-in-period)). Aşağıdaki mekanizma, 23 Ekim 2026'da canlı mainnet ve testnet parametrelerine karşı kontrol edilmiştir.
+v3.2.4 sürümü, isteğe bağlı bir zamana kilitli stake modülü olan `x/stakingtier`'ı ekler. **`qorechain-diana` testnet'inde** 19 Ekim 2026'dan beri, **mainnet'te** ise 23 Ekim 2026'dan beri canlıdır (yönetişim önerisi 13 ile 3,742,566 yüksekliğinde uygulandı); mainnet 29 Ekim 2026'dan beri v3.2.5, 4 Kasım 2026'dan beri v3.2.6 ve 12 Kasım 2026'dan beri v3.2.7 çalıştırıyor ve bu sürümler aşağıda anlatılan undelegate denetimi ile v3.2.7'de eklenen APR rotaları dışında onu değiştirmeden bırakır. Kilitleme bir seçenek olarak sunulur ve olağan delegasyon kilitsiz kalır (bkz. [yukarıda](#lock-in-period)). Aşağıdaki mekanizma, 23 Ekim 2026'da canlı mainnet ve testnet parametrelerine karşı kontrol edilmiştir.
 :::
 
 Bir delegatör, bir doğrulayıcıya yaptığı mevcut bir delegasyonun bir kısmını 3, 6 veya 12 aylık sabit bir vade için taahhüt edebilir. Vadeler ve tutarlar zincir parametreleridir; güncel olanları bu sayfadan değil `GET /qorechain/stakingtier/v1/params` adresinden okuyun.
@@ -138,7 +138,7 @@ Bir delegatör, bir doğrulayıcıya yaptığı mevcut bir delegasyonun bir kıs
 * **Talep etme.** Bir kilit, modül parametreleriyle belirlenen, dönem başına ek bir ödül bileşeni kazanır; otomatik olarak değil, siz talep ettiğinizde ödenir. Bu sayfa oranları belirtmez: canlı ayarlar için `params` değerini okuyun.
 * **Süre sonunda** kilit serbest bırakılır ve delegasyon olağan bir delegasyon olarak devam eder.
 
-Komutlara komut satırı ve `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` ve `/pool` REST rotaları üzerinden erişilebilir; v3.2.7 sürümünden itibaren (testnet'te 6 Kasım 2026'dan beri, henüz mainnet'te değil) ayrıca `GET /qorechain/stakingtier/v1/apr` (bir taban oran artı katman bonusları) ve modülün şu anda hesapladığını gösteren `GET /qorechain/stakingtier/v1/apr/{delegator}` rotaları vardır. Bunlar geçerli ayarların okumalarıdır, **garanti edilmiş veya vaat edilmiş bir getiri değildir**: taban oran ücretlere ve fonlamaya bağlıdır ve sıfır olabilir, bonuslar ise yönetişim tarafından değiştirilebilir. Komutlardaki tutarlar, tam sayı cinsinden `uqor` miktarıdır (1 QOR = 1.000.000 uqor).
+Komutlara komut satırı ve `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` ve `/pool` REST rotaları üzerinden erişilebilir; v3.2.7 sürümünden itibaren (testnet'te 6 Kasım 2026'dan, mainnet'te 12 Kasım 2026'dan beri) ayrıca `GET /qorechain/stakingtier/v1/apr` (bir taban oran artı katman bonusları) ve modülün şu anda hesapladığını gösteren `GET /qorechain/stakingtier/v1/apr/{delegator}` rotaları vardır. Bunlar geçerli ayarların okumalarıdır, **garanti edilmiş veya vaat edilmiş bir getiri değildir**: taban oran ücretlere ve fonlamaya bağlıdır ve sıfır olabilir, bonuslar ise yönetişim tarafından değiştirilebilir. Komutlardaki tutarlar, tam sayı cinsinden `uqor` miktarıdır (1 QOR = 1.000.000 uqor).
 
 ```bash
 qorechaind tx stakingtier lock <validator_address> <amount_in_uqor> <months> --from mykey \
@@ -158,11 +158,11 @@ Yukarıdaki zincir kimliği testnet'e aittir; mainnet'te `qorechain-vladi` kulla
 
 **Nerede çalışır, 27 Ekim 2026'da kontrol edildi (mainnet için v3.2.6 satırı sürüm notlarından ve 4 Kasım 2026 yükseltmesinden gelir; aşağıdaki parametreler mainnet'te 4 Kasım 2026'da yeniden okundu).** v3.2.6'dan önce mainnet, undelegate işlemini yalnızca işlem çalıştığında, staking mesaj geçidi aracılığıyla reddediyordu.
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.8) |
+| | Mainnet `qorechain-vladi` (v3.2.7) | Testnet `qorechain-diana` (v3.2.8) |
 |---|---|---|
 | Modül canlı | Evet, 3,742,566 yüksekliğinden beri | Evet, v3.2.4'ten beri (yükseklik 8,337,253) |
 | Açık kilitler | Henüz yok | 3 test kilidi |
-| Kilitli stake'i undelegate etme | Herhangi bir ücret alınmadan önce mempool tarafından reddedilir (v3.2.6, mainnet'te 4 Kasım 2026'da uygulandı) | Herhangi bir ücret alınmadan önce mempool tarafından reddedilir |
+| Kilitli stake'i undelegate etme | Herhangi bir ücret alınmadan önce mempool tarafından reddedilir (v3.2.6'dan beri, mainnet'te 4 Kasım 2026'da uygulandı) | Herhangi bir ücret alınmadan önce mempool tarafından reddedilir |
 
 Her iki ağ da `GET /qorechain/stakingtier/v1/params` isteğine aynı ayarlarla yanıt verir: üç vade, 10 QOR minimum (`min_lock_amount` `"10000000"` uqor), 500 baz puanlık (%5) erken açma cezası ve `enabled: true`. Yanıt ayrıca baz puan cinsinden bonus ayarlarını da taşır; bu kılavuz bunları belirtmez, çünkü bir bonus vaat edilmiş bir getiri değildir ve ayarlar yönetişim tarafından değiştirilebilir. `GET /qorechain/stakingtier/v1/pool`, kilit ödüllerini ödeyen havuzu gösterir.
 

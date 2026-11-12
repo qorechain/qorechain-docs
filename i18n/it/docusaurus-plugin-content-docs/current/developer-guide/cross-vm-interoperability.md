@@ -51,7 +51,7 @@ Gli endpoint seguenti utilizzano per impostazione predefinita un nodo locale. Su
 Il percorso sincrono utilizza una **precompile** EVM all'indirizzo `0x0000000000000000000000000000000000000901`. È progettata per consentire ai contratti Solidity di chiamare i contratti QoreChain Native e di ricevere una risposta all'interno della stessa transazione.
 
 :::warning Non attiva sulla mainnet; attiva sulla testnet con un'allowlist
-La precompile del bridge CrossVM **non è attiva** su `qorechain-vladi`: una chiamata a `0x…0901` lì riesce e restituisce dati vuoti. Su `qorechain-diana` l'elenco `active_static_precompiles` contiene `0x…0901` (letto il 7 novembre 2026); una `eth_call` in sola lettura tramite essa è stata eseguita il 7 novembre 2026, dopo l'upgrade alla v3.2.7 (risultati sotto). Il binario v3.2.3 include una versione rinforzata (rifiuta una `STATICCALL`, misura la sua chiamata annidata sul gas del frame chiamante e la registra nel journal in modo che un revert EVM annulli anche il lato QoreChain Native, raggiunge solo destinazioni QoreChain Native in allowlist e rispetta il circuit breaker cross-VM), ma viene eseguita solo dove una proposta approvata dalla governance l'ha aggiunta all'elenco attivo (finora la testnet, non la mainnet). Sulla mainnet la precompile e le chiamate cross-VM restano disattivate, anche dopo un upgrade alla v3.2.7 (che non ha ancora una data), fino a una decisione di governance separata. L'esempio seguente è il layout che il nodo decodifica; non può essere eseguito sulla mainnet finché la precompile non è attiva. Sulla testnet può essere chiamata, entro l'allowlist (sezione successiva). Vedi [Precompile EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
+La precompile del bridge CrossVM **non è attiva** su `qorechain-vladi`: una chiamata a `0x…0901` lì riesce e restituisce dati vuoti. Su `qorechain-diana` l'elenco `active_static_precompiles` contiene `0x…0901` (letto il 7 novembre 2026); una `eth_call` in sola lettura tramite essa è stata eseguita il 7 novembre 2026, dopo l'upgrade alla v3.2.7 (risultati sotto). Il binario v3.2.3 include una versione rinforzata (rifiuta una `STATICCALL`, misura la sua chiamata annidata sul gas del frame chiamante e la registra nel journal in modo che un revert EVM annulli anche il lato QoreChain Native, raggiunge solo destinazioni QoreChain Native in allowlist e rispetta il circuit breaker cross-VM), ma viene eseguita solo dove una proposta approvata dalla governance l'ha aggiunta all'elenco attivo (finora la testnet, non la mainnet). Sulla mainnet la precompile e le chiamate cross-VM restano disattivate, anche dopo l'upgrade alla v3.2.7 del 12 novembre 2026, fino a una decisione di governance separata. L'esempio seguente è il layout che il nodo decodifica; non può essere eseguito sulla mainnet finché la precompile non è attiva. Sulla testnet può essere chiamata, entro l'allowlist (sezione successiva). Vedi [Precompile EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Esempio Solidity
@@ -97,11 +97,11 @@ Su `qorechain-diana` (release del nodo v3.2.8 dal 12 novembre 2026) la precompil
 * **Destinazione fuori dall'allowlist:** va in revert con `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted`.
 * **Destinazione nell'allowlist:** la chiamata raggiunge il contratto (il nodo riporta l'errore del contratto stesso per il messaggio vuoto `{}`: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). Questo mostra che il percorso funziona; per questa pagina non è stata inviata alcuna transazione cross-VM che modifichi lo stato tramite la precompile.
 
-Sulla mainnet la precompile (`0x…0901`) e le chiamate cross-VM restano **disattivate** (circuit breaker) anche dopo l'upgrade alla v3.2.7, fino a una decisione di governance separata.
+Sulla mainnet la precompile (`0x…0901`) e le chiamate cross-VM restano **disattivate** (circuit breaker) anche dopo l'upgrade alla v3.2.7 del 12 novembre 2026, fino a una decisione di governance separata.
 
-### Cosa cambia la v3.2.7 per le chiamate cross-VM (per ora solo testnet) {#v327}
+### Cosa cambia la v3.2.7 per le chiamate cross-VM {#v327}
 
-Si applicano sulla testnet dal 6 novembre 2026 e **non sono ancora sulla mainnet** (l'upgrade non ha una data):
+Si applicano sulla testnet dal 6 novembre 2026 e sulla mainnet dal 12 novembre 2026 (la chiamata cross-VM in sé resta disattivata sulla mainnet, quindi lì contano solo se viene attivata):
 
 * Una chiamata che fallisce nella VM di destinazione ora fallisce in modo pulito: è il fallimento di quella chiamata e la coda prosegue con il messaggio successivo.
 * Le destinazioni malformate vengono rifiutate al momento dell'invio con codice 5 nel codespace `crossvm`.

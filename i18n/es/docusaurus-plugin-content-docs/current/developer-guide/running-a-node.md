@@ -26,8 +26,8 @@ El binario actual, el génesis, los peers, las seeds y un punto de confianza par
 Los campos del manifiesto incluyen `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un punto de confianza actualizado cada hora) y `minCompatible`. Los pasos de instalación y unión a la red que siguen obtienen este manifiesto y usan sus valores actuales.
 :::
 
-:::caution Usa el lanzamiento que indica el manifiesto: v3.2.6 en mainnet, v3.2.8 en la testnet
-Un nodo que sincroniza desde el génesis o reproduce desde un snapshot atraviesa varias actualizaciones de gobernanza (consulta [Actualizaciones](#upgrades) más abajo), así que instala siempre el binario al que apunta el manifiesto: incluye todos los manejadores de actualización. En **mainnet**, `minCompatible` y `version` del manifiesto son ambos `3.2.6` (aplicada en la altura 4,020,000 el 4 de noviembre de 2026, propuesta de gobernanza 15), por lo que un nodo que se une ahora necesita v3.2.6: un binario anterior se detiene en una altura de actualización que no conoce. El lanzamiento es el bundle `qorechaind-v3.2.6-b3-linux-amd64.tar.gz` (98,878,438 bytes, SHA-256 `acd9f95bfd8d6f3c6c5ea306fe9dacb6362336ddaa96c61197599298bb1e2fb2`, leído del manifiesto el 4 de noviembre de 2026; el manifiesto en vivo es la fuente de verdad). El manifiesto aconseja que los nodos nuevos se unan mediante state sync. Contiene `qorechaind` y `lib/` con `libqorepqc.so`, `libqoresvm.so` y `libwasmvm.x86_64.so`. Un nodo que siga en v3.2.5 se detiene en la altura 4,020,000 con `UPGRADE "v3.2.6" NEEDED`: instala el bundle y reinicia, y su estado se conserva. No hay programada ninguna otra actualización de mainnet (`current_plan` es `null`, comprobado el 4 de noviembre de 2026); cuando el manifiesto nombre un lanzamiento más reciente, ese es el binario que hay que instalar. En la **testnet**, `minCompatible` y `version` del manifiesto son ambos `3.2.8` (v3.2.5 se aplicó en la altura 8,890,800 el 26 de octubre de 2026, v3.2.6 en la altura 8,970,638 el 27 de octubre y v3.2.7 en la altura 9,594,600 el 6 de noviembre y v3.2.8 en la altura 9,929,500 el 12 de noviembre), por lo que un nodo que se une a la testnet necesita el binario v3.2.8: toma el nombre, el tamaño y el SHA-256 del bundle del manifiesto en vivo de la testnet, que es la fuente de verdad (el 7 de noviembre de 2026, con v3.2.7, nombraba `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`, 99,472,930 bytes, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`). Un nodo de la testnet que siga en v3.2.7 se detiene en la altura 9,929,500 con `UPGRADE "v3.2.8" NEEDED`: sustituye `qorechaind` y copia la carpeta `lib/` completa del bundle, y vuelve a iniciarlo; su estado se conserva y no necesita resincronizar. La mainnet sigue en v3.2.6; una actualización de la mainnet a v3.2.8 todavía no tiene fecha de propuesta, así que nada cambia para los nodos de la mainnet. No ejecutes un binario de testnet contra mainnet ni al revés: cada directorio lleva su propio lanzamiento (consulta [Actualizaciones](#upgrades)). El manifiesto se promueve de forma deliberada (primero testnet, mainnet después de un período de rodaje), así que comprueba su campo `"version"` frente a `minCompatible` antes de confiar en `binary.url`.
+:::caution Usa el lanzamiento que indica el manifiesto: v3.2.7 en mainnet, v3.2.8 en la testnet
+Un nodo que sincroniza desde el génesis o reproduce desde un snapshot atraviesa varias actualizaciones de gobernanza (consulta [Actualizaciones](#upgrades) más abajo), así que instala siempre el binario al que apunta el manifiesto: incluye todos los manejadores de actualización. En **mainnet**, `minCompatible` y `version` del manifiesto son ambos `3.2.7` (aplicada en la altura 4,164,600 el 12 de noviembre de 2026, propuesta de gobernanza 16), por lo que un nodo que se une ahora necesita v3.2.7: un binario anterior se detiene en una altura de actualización que no conoce. El lanzamiento es el bundle `qorechaind-v3.2.7-b3-linux-amd64.tar.gz` (99,472,930 bytes, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`, leído del manifiesto el 12 de noviembre de 2026; el manifiesto en vivo es la fuente de verdad). El manifiesto aconseja que los nodos nuevos se unan mediante state sync. Contiene `qorechaind` y `lib/` con `libqorepqc.so`, `libqoresvm.so` y `libwasmvm.x86_64.so`. Un nodo que siguiera en v3.2.6 se detuvo en la altura 4,164,600 con `UPGRADE "v3.2.7" NEEDED`: instala el bundle y reinicia, y su estado se conserva. No hay programada ninguna otra actualización de mainnet (`current_plan` es `null`, comprobado el 12 de noviembre de 2026); cuando el manifiesto nombre un lanzamiento más reciente, ese es el binario que hay que instalar. En la **testnet**, `minCompatible` y `version` del manifiesto son ambos `3.2.8` (v3.2.5 se aplicó en la altura 8,890,800 el 26 de octubre de 2026, v3.2.6 en la altura 8,970,638 el 27 de octubre y v3.2.7 en la altura 9,594,600 el 6 de noviembre y v3.2.8 en la altura 9,929,500 el 12 de noviembre), por lo que un nodo que se une a la testnet necesita el binario v3.2.8: toma el nombre, el tamaño y el SHA-256 del bundle del manifiesto en vivo de la testnet, que es la fuente de verdad (el 7 de noviembre de 2026, con v3.2.7, nombraba `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`, 99,472,930 bytes, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`). Un nodo de la testnet que siga en v3.2.7 se detiene en la altura 9,929,500 con `UPGRADE "v3.2.8" NEEDED`: sustituye `qorechaind` y copia la carpeta `lib/` completa del bundle, y vuelve a iniciarlo; su estado se conserva y no necesita resincronizar. La mainnet sigue en v3.2.7, una versión por detrás de la testnet; no ha aplicado v3.2.8, así que nada de las notas de v3.2.8 cambia para los nodos de la mainnet. No ejecutes un binario de testnet contra mainnet ni al revés: cada directorio lleva su propio lanzamiento (consulta [Actualizaciones](#upgrades)). El manifiesto se promueve de forma deliberada (primero testnet, mainnet después de un período de rodaje), así que comprueba su campo `"version"` frente a `minCompatible` antes de confiar en `binary.url`.
 
 Un binario compilado a partir del código fuente público (la compilación community) se niega a arrancar en cualquiera de las dos redes públicas (v3.2.3 y posteriores): no puede verificar firmas poscuánticas y no puede reproducir fielmente los bloques de las redes. Usa solo el archivo de lanzamiento.
 
@@ -52,7 +52,7 @@ Dos ajustes importan desde v3.2.1: mantén el reloj del sistema sincronizado con
 
 | Red      | Chain ID            | EVM chain ID          | Notas                              |
 | -------- | ------------------- | ---------------------- | ----------------------------------- |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — activa desde el 7 jun 2026; versión de nodo v3.2.6 (desde el 4 nov 2026) |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — activa desde el 7 jun 2026; versión de nodo v3.2.7 (desde el 12 nov 2026) |
 | Testnet  | `qorechain-diana`   | `9800`                 | Ensaya aquí primero tus integraciones; versión de nodo v3.2.8 (desde el 12 nov 2026) |
 
 Sustituye el `--chain-id` apropiado para tu red objetivo a lo largo de esta guía. Los ejemplos usan mainnet por defecto.
@@ -92,7 +92,7 @@ COPY lib/ /opt/qorechain/lib/
 ENV LD_LIBRARY_PATH=/opt/qorechain/lib
 ENTRYPOINT ["qorechaind"]
 EOF
-docker build -t qorechain-node:v3.2.6 release/
+docker build -t qorechain-node:v3.2.7 release/
 ```
 
 El archivo contiene `qorechaind` y un directorio `lib/` con sus bibliotecas compartidas (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` y, desde v3.2.8, `libwasmvmqore_v1.x86_64.so`). Copia el directorio `lib/` completo, no archivos sueltos; la imagen anterior es solo `linux/amd64`, igual que el archivo de lanzamiento.
@@ -101,7 +101,7 @@ El archivo contiene `qorechaind` y un directorio `lib/` con sus bibliotecas comp
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.2.6
+    image: qorechain-node:v3.2.7
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -288,21 +288,23 @@ Los cambios de consenso llegan como **actualizaciones de gobernanza coordinadas*
 | v3.2.4 | altura 3,742,566 (23 oct 2026, propuesta de gobernanza 13) | altura 8,337,253 (19 oct 2026, propuesta de gobernanza 13) |
 | v3.2.5 | altura 3,906,833 (29 oct 2026, propuesta de gobernanza 14) | altura 8,890,800 (26 oct 2026) |
 | v3.2.6 | altura 4,020,000 (4 nov 2026, propuesta de gobernanza 15) | altura 8,970,638 (27 oct 2026) |
-| v3.2.7 | sin aplicar (todavía no hay fecha de propuesta) | altura 9,594,600 (6 nov 2026, propuesta de gobernanza 33) |
-| v3.2.8 | sin aplicar (todavía no hay fecha de propuesta) | altura 9,929,500 (12 nov 2026) |
+| v3.2.7 | altura 4,164,600 (12 nov 2026, propuesta de gobernanza 16) | altura 9,594,600 (6 nov 2026, propuesta de gobernanza 33) |
+| v3.2.8 | sin aplicar | altura 9,929,500 (12 nov 2026) |
 
 **Qué hizo el operador de un nodo para v3.2.4 (altura 3,742,566 de mainnet).** La propuesta de gobernanza 13 nombró el plan `v3.2.4` en la altura 3,742,566 (aplicada el 23 de octubre de 2026): los nodos permanecieron en v3.2.3 hasta esa altura, se detuvieron allí y se reiniciaron con v3.2.4. Para la próxima actualización coordinada los pasos son los mismos:
 
 1. Vigila el manifiesto (`https://download.qore.host/mainnet/latest.json`): hasta que nombre el nuevo lanzamiento no hay nada que instalar, y un binario del directorio de testnet no es el lanzamiento de mainnet.
 2. Cuando el manifiesto nombre el lanzamiento, descarga el archivo desde su `binary.url`, verifica el `sha256` (el texto de la propuesta también publica el sha256 del binario) y déjalo preparado **antes** de la altura. Consulta el plan pendiente (`name` y `height`) con `GET /cosmos/upgrade/v1beta1/current_plan` y la altura actual con `GET /status` en el RPC.
 3. En la altura del plan, un nodo que siga con el binario antiguo **se detiene** (es el comportamiento previsto del módulo de actualización, no un fallo); un nodo que ya tenga el nuevo binario aplica el manejador de actualización y continúa. Si el tuyo se detuvo primero, cambia el binario y reinícialo. Tras la actualización, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` devuelve la altura en lugar de `0` (3742566 en mainnet, 8337253 en la testnet).
-4. Un nodo que se une ahora a mainnet instala el lanzamiento que nombra el manifiesto (v3.2.6 en el momento de escribir esto; comprueba `version` frente a `minCompatible`).
+4. Un nodo que se une ahora a mainnet instala el lanzamiento que nombra el manifiesto (v3.2.7 en el momento de escribir esto; comprueba `version` frente a `minCompatible`).
 
 La firma de transacciones, las direcciones, los decimales, los memos y las comisiones no cambian con v3.2.4.
 
 **v3.2.5 en mainnet (altura 3,906,833, 29 de octubre de 2026, propuesta de gobernanza 14).** Se aplicaron los mismos pasos: el manifiesto nombró `3.2.5` como `version` y como `minCompatible`, y un nodo que seguía en v3.2.4 se detuvo en la altura del plan con `UPGRADE "v3.2.5" NEEDED`. La solución es instalar el bundle v3.2.5 (incluye `qorechaind` y las bibliotecas compartidas de `lib/` juntos; mantenlos uno junto al otro) y reiniciar; el estado del nodo se conserva.
 
 **v3.2.6 en mainnet (altura 4,020,000, 4 de noviembre de 2026, propuesta de gobernanza 15).** Se aplicaron los mismos pasos: el manifiesto nombra `3.2.6` como `version` y como `minCompatible`, y un nodo que siga en v3.2.5 se detiene en la altura del plan con `UPGRADE "v3.2.6" NEEDED`; instala el bundle v3.2.6 y reinicia. La firma (sign-bytes v2), las direcciones, los decimales, los memos y las comisiones no cambian, y el manifiesto pide a los operadores que mantengan el reloj sincronizado con NTP. `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.6` devuelve `{"height":"4020000"}` en mainnet. No hay programada ninguna otra actualización de mainnet.
+
+**v3.2.7 en mainnet (altura 4,164,600, 12 de noviembre de 2026, propuesta de gobernanza 16).** Se aplicaron los mismos pasos: el manifiesto nombra `3.2.7` como `version` y como `minCompatible`, y un nodo que siga en v3.2.6 se detiene en la altura del plan con `UPGRADE "v3.2.7" NEEDED`; instala el bundle v3.2.7 y reinicia. `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.7` devuelve `{"height":"4164600"}` en mainnet. La actualización activó once funcionalidades de protocolo (multisig post-cuántico híbrido, un gas fijo de 2,000 por verificación post-cuántica, el evento de ventana EVM, mensajes de clave de verificación de RDK y varias correcciones de direcciones SVM y de cross-VM), 101 en total. El carril SVM, la llamada cross-VM y la carga e instanciación de CosmWasm siguen desactivados en mainnet.
 
 Lee el registro en vivo con `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = no aplicada) y cualquier plan pendiente con `GET /cosmos/upgrade/v1beta1/current_plan`. v3.2.2 actualizó el motor de consenso, el Cosmos SDK (v0.53.8) y las dependencias de IBC, y las comprobaciones de transacciones más estrictas del SDK hacen que ese lanzamiento sustituya al binario anterior en la altura de actualización en lugar de nodo por nodo. La firma de transacciones, las direcciones, los decimales, los memos y las comisiones no cambiaron en v3.2.2 ni en v3.2.3.
 
@@ -451,7 +453,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Buenas prácticas operativas
 
-1. **Fija la versión de la cadena.** Ejecuta el lanzamiento que recomienda el manifiesto (**v3.2.6** en mainnet y **v3.2.8** en la testnet en el momento de escribir esto), sigue los lanzamientos oficiales para las actualizaciones coordinadas y mantén el reloj del sistema sincronizado con NTP.
+1. **Fija la versión de la cadena.** Ejecuta el lanzamiento que recomienda el manifiesto (**v3.2.7** en mainnet y **v3.2.8** en la testnet en el momento de escribir esto), sigue los lanzamientos oficiales para las actualizaciones coordinadas y mantén el reloj del sistema sincronizado con NTP.
 
 2. **Ejecuta nodos redundantes.** Opera al menos dos nodos detrás de un balanceador de carga para que un único reinicio o resincronización no interrumpa el tráfico de integración.
 

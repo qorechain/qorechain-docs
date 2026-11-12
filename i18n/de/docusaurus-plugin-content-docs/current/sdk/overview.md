@@ -31,7 +31,7 @@ Konten, Guthaben und Token werden über die Laufzeitumgebungen hinweg geteilt,
 und die Chain enthält das IBC-Modul für Cross-Chain-Interoperabilität (im
 Mainnet ist kein IBC-Channel geöffnet; das Testnet hat einen geöffneten `transfer`-Channel zu einer Test-Chain, geprüft am 27. Oktober 2026).
 
-:::note Was heute auf den Live-Netzwerken funktioniert (das Mainnet läuft mit v3.2.6, das Testnet mit v3.2.8)
+:::note Was heute auf den Live-Netzwerken funktioniert (das Mainnet läuft mit v3.2.7, das Testnet mit v3.2.8)
 **Funktioniert:** Lesezugriffe auf jeder Lane, hybrid-signierte Native-Transaktionen,
 vereinheitlichte Konten, EVM-Transaktionen innerhalb eines
 [Autorisierungsfensters](/sdk/guides/evm#evm-window) und SVM-Lesezugriffe.
@@ -48,8 +48,8 @@ Vorbehalt dort, wo er zutrifft. Geprüft gegen die Live-Endpunkte am 27. Oktober
 Das veröffentlichte SDK (0.14.0, 12. November 2026) signiert in der Form, die beide
 Netzwerke verifizieren (v2-Hybrid-Sign-Bytes, aus dem Chain-Zustand aufgelöst),
 und das Signaturformat, die Adressen, Dezimalstellen, Memos und Gebühren haben
-sich in v3.2.3, v3.2.4, v3.2.5 oder v3.2.6 nicht geändert (das Mainnet läuft seit dem 4. November 2026 mit v3.2.6,
-Höhe 4.020.000, Governance-Vorschlag 15; das Testnet seit dem 27. Oktober, und seit dem 6. November lief das Testnet mit v3.2.7 und seit dem 12. November läuft es mit v3.2.8, die Nachrichten hinzufügen, für die SDK 0.14.0 Builder hat; die neuen Regeln des Testnets gelten ab v3.2.8, und das Mainnet hat sie nicht angewendet). Es enthält die Client-Seite der
+sich in v3.2.3, v3.2.4, v3.2.5 oder v3.2.6 nicht geändert (das Mainnet läuft seit dem 12. November 2026 mit v3.2.7,
+Höhe 4.164.600, Governance-Vorschlag 16, nach v3.2.6 am 4. November; das Testnet seit dem 27. Oktober, und seit dem 6. November lief das Testnet mit v3.2.7 und seit dem 12. November läuft es mit v3.2.8, die Nachrichten hinzufügen, für die SDK 0.14.0 Builder hat; die neuen Regeln des Testnets gelten ab v3.2.8, und das Mainnet hat sie nicht angewendet; die Nachrichten von v3.2.7 sind seit dem 12. November 2026 im Mainnet). Es enthält die Client-Seite der
 späteren Post-Quanten-Regeln (den Besitznachweis bei der Schlüsselregistrierung,
 EVM-Fenster mit Gültigkeitsbereich, EIP-7702-Einwilligungsnachrichten) und von v3.2.4 (Staking-
 Stufen, die Authenticator-Nonce, Schalter für Protokollfunktionen) und v3.2.5 (exaktes Gas für

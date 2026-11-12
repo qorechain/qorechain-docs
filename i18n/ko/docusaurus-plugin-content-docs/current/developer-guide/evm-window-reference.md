@@ -307,7 +307,7 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_limits
 | 윈도우 `max_txs` | 1,000 | 한 윈도우의 최대 트랜잭션 수 |
 | 목록 항목 | 목록당 16 | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-응답에는 거버넌스가 설정한 값이 담긴 `limits` 객체도 들어 있습니다. 적용 중인 값인 최상위 `tx_max_gas`와 `precompile_input_max_bytes`를 읽으세요. 이 경로는 v3.2.8부터 제공되므로, 공개 메인넷은 업그레이드할 때까지 `501 Not Implemented`로 응답합니다.
+응답에는 거버넌스가 설정한 값이 담긴 `limits` 객체도 들어 있습니다. 적용 중인 값인 최상위 `tx_max_gas`와 `precompile_input_max_bytes`를 읽으세요. 이 경로는 v3.2.8부터 제공되므로, 공개 메인넷은 v3.2.8을 적용할 때까지 `501 Not Implemented`로 응답합니다(2026년 11월 12일 확인, 메인넷이 v3.2.7로 올라간 이후).
 
 일반 가스 가격으로 열린 윈도우도 최대 수수료를 계산합니다. 가스 한도 30,000,000에 수수료 상한 100 gwei이면 트랜잭션 하나당 `max_value`에 3 QOR가 계산됩니다.
 

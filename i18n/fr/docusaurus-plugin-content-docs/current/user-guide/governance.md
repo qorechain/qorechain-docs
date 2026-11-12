@@ -10,7 +10,7 @@ sidebar_position: 3
 Ce guide explique le fonctionnement de la gouvernance on-chain sur QoreChain : comment les votes sont décomptés, comment soumettre des propositions et comment voter.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.6** depuis le 4 novembre 2026 (v3.2.5 depuis le 29 octobre, v3.2.4 à partir du 23 octobre) ; le testnet exécute la **v3.2.8** depuis le 12 novembre 2026 (v3.2.7 depuis le 6 novembre, v3.2.6 depuis le 27 octobre). Remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous participez à la gouvernance sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.7** depuis le 12 novembre 2026 (v3.2.6 depuis le 4 novembre, v3.2.5 depuis le 29 octobre, v3.2.4 à partir du 23 octobre) ; le testnet exécute la **v3.2.8** depuis le 12 novembre 2026 (v3.2.7 depuis le 6 novembre, v3.2.6 depuis le 27 octobre). Remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous participez à la gouvernance sur le mainnet.
 :::
 
 :::caution Signez avec `tx pqc cosign`
@@ -175,7 +175,7 @@ Paramètres clés :
 
 ## La gouvernance sur le mainnet jusqu'ici {#mainnet-history}
 
-La gouvernance du mainnet a servi à des changements de paramètres, à des décisions de disjoncteur, à des mises à niveau coordonnées et, depuis octobre 2026, à la libération de montants que la chaîne avait enregistrés lors de la mise à niveau v3.2.0. Les propositions 7 à 14 ont été adoptées sur le mainnet en octobre 2026 et la proposition 15 en novembre, dont la proposition 12 (une nouvelle libération, adoptée le 21 octobre), la proposition 13 (la mise à niveau v3.2.4, appliquée à la hauteur 3 742 566 le 23 octobre), la proposition 14 (la mise à niveau v3.2.5, appliquée à la hauteur 3 906 833 le 29 octobre 2026) et la proposition 15 (la mise à niveau v3.2.6, vote terminé le 3 novembre, appliquée à la hauteur 4 020 000 le 4 novembre 2026) ; la liste et les résultats se trouvent dans l'[Historique des versions](/appendix/version-history#governance-timeline), et chaque proposition peut être lue en direct à `GET /cosmos/gov/v1/proposals`.
+La gouvernance du mainnet a servi à des changements de paramètres, à des décisions de disjoncteur, à des mises à niveau coordonnées et, depuis octobre 2026, à la libération de montants que la chaîne avait enregistrés lors de la mise à niveau v3.2.0. Les propositions 7 à 14 ont été adoptées sur le mainnet en octobre 2026 et les propositions 15 et 16 en novembre, dont la proposition 12 (une nouvelle libération, adoptée le 21 octobre), la proposition 13 (la mise à niveau v3.2.4, appliquée à la hauteur 3 742 566 le 23 octobre), la proposition 14 (la mise à niveau v3.2.5, appliquée à la hauteur 3 906 833 le 29 octobre 2026), la proposition 15 (la mise à niveau v3.2.6, vote terminé le 3 novembre, appliquée à la hauteur 4 020 000 le 4 novembre 2026) et la proposition 16 (la mise à niveau v3.2.7, appliquée à la hauteur 4 164 600 le 12 novembre 2026) ; la liste et les résultats se trouvent dans l'[Historique des versions](/appendix/version-history#governance-timeline), et chaque proposition peut être lue en direct à `GET /cosmos/gov/v1/proposals`.
 
 ---
 

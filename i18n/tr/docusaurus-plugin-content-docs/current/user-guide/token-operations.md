@@ -10,7 +10,7 @@ sidebar_position: 1
 Bu kılavuz QOR token'ını, token gönderme ve alma işlemlerini, bakiye sorgulamayı ve QoreChain üzerindeki ücret dağıtım modelini ele alır.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri canlıdır ve 4 Kasım 2026'dan beri **v3.2.6** sürümünü çalıştırır (v3.2.5, 29 Ekim'den, v3.2.4, 23 Ekim'den); testnet 12 Kasım 2026'dan beri **v3.2.8** çalıştırır (6 Kasım'dan itibaren v3.2.7, 27 Ekim'den itibaren v3.2.6 idi). Mainnet üzerinde işlem yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID ve endpoint'lerini kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri canlıdır ve 12 Kasım 2026'dan beri **v3.2.7** sürümünü çalıştırır (v3.2.6, 4 Kasım'dan, v3.2.5, 29 Ekim'den, v3.2.4, 23 Ekim'den); testnet 12 Kasım 2026'dan beri **v3.2.8** çalıştırır (6 Kasım'dan itibaren v3.2.7, 27 Ekim'den itibaren v3.2.6 idi). Mainnet üzerinde işlem yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID ve endpoint'lerini kullanın.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın

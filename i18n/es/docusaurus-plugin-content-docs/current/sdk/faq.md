@@ -10,7 +10,7 @@ sidebar_position: 8
 ## ¿Está la mainnet en funcionamiento?
 
 Sí. La mainnet está **en funcionamiento** (id de cadena `qorechain-vladi`, en
-funcionamiento desde el 7 de junio de 2026) y ejecuta la versión de cadena v3.2.6 (aplicada en la altura 4,020,000 el 4 de noviembre de 2026, propuesta de gobernanza 15; la v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026 y la v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026); la testnet ejecuta v3.2.6 desde el 27 de octubre de 2026, v3.2.7 desde el 6 de noviembre y v3.2.8 desde el 12 de noviembre de 2026 (altura 9,929,500; no está en la mainnet, sin fecha). El preajuste de testnet (`qorechain-diana`)
+funcionamiento desde el 7 de junio de 2026) y ejecuta la versión de cadena v3.2.7 (aplicada en la altura 4,164,600 el 12 de noviembre de 2026, propuesta de gobernanza 16; la v3.2.6 se aplicó en la altura 4,020,000 el 4 de noviembre de 2026, propuesta 15; la v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026 y la v3.2.4 en la altura 3,742,566 el 23 de octubre de 2026); la testnet ejecuta v3.2.6 desde el 27 de octubre de 2026, v3.2.7 desde el 6 de noviembre y v3.2.8 desde el 12 de noviembre de 2026 (altura 9,929,500; la mainnet no la ha aplicado). El preajuste de testnet (`qorechain-diana`)
 también sigue disponible. Desde el SDK 0.12.0 ambos preajustes usan por defecto los
 endpoints públicos; selecciona la red con `createClient({ network: "mainnet" })` y
 sobrescribe `endpoints` solo para tu propio nodo. Consulta
@@ -159,9 +159,9 @@ eth-native).
 
 El SDK **0.12.0** es la versión de cliente para la cadena **v3.2.5** (la mainnet
 desde el 29 de octubre de 2026 en la altura 3,906,833; la testnet desde el 26 de
-octubre). La mainnet ejecuta la v3.2.6
-(desde el 4 de noviembre) y la testnet la v3.2.8 (desde el 12 de noviembre; la v3.2.7 desde el 6 de noviembre, la v3.2.6 desde el 27 de octubre); el formato de firma no
-cambió hasta la v3.2.6, así que la 0.12.0 funciona en la mainnet. La 0.12.0 no tiene constructores para las novedades de la v3.2.7 (el registro de multifirma PQC, el modo de firma textual, el APR, la identidad de clúster y los mensajes de verification key), y su ruta de firma no se volvió a comprobar contra la testnet v3.2.7; usa la CLI para ellos. Añade la regla exacta de gas para las transacciones híbridas, los
+octubre). La mainnet ejecuta la v3.2.7
+(desde el 12 de noviembre) y la testnet la v3.2.8 (desde el 12 de noviembre; la v3.2.7 desde el 6 de noviembre, la v3.2.6 desde el 27 de octubre); el formato de firma no
+cambió hasta la v3.2.7, así que la 0.12.0 funciona en la mainnet. La 0.12.0 no tiene constructores para las novedades de la v3.2.7 (el registro de multifirma PQC, el modo de firma textual, el APR, la identidad de clúster y los mensajes de verification key), que están en la mainnet desde el 12 de noviembre de 2026, y su ruta de firma no se volvió a comprobar contra la v3.2.7; usa la CLI para ellos. Añade la regla exacta de gas para las transacciones híbridas, los
 constructores y la lectura del registro de claves ML-KEM, las lecturas de cuentas
 abstractas y los constructores verificados de parámetros de gobernanza (consulta
 [Qué añade la 0.12.0](/sdk/install#whats-new-0120)), además de lo que la 0.10.0 añadió
@@ -175,8 +175,8 @@ también opera en ambas redes (la forma v2 de los sign-bytes híbridos, el regis
 los envíos híbridos y la ventana EVM funcionan sin cambios), pero no tiene ninguno
 de esos constructores: usa la CLI para ellos (consulta
 [Versiones anteriores a la 0.9.0](/sdk/install#before-090)). El formato de firma no
-cambió en v3.2.4, v3.2.5 ni v3.2.6. La mainnet ejecuta v3.2.6 y la testnet v3.2.8 (la testnet aplicó la v3.2.5 el 26 de octubre
-de 2026, la v3.2.6 el 27 de octubre, la v3.2.7 el 6 de noviembre y la v3.2.8 el 12 de noviembre; la mainnet aplicó la v3.2.5 el 29 de octubre y la v3.2.6 el 4 de noviembre). El SDK 0.10.0 y el 0.9.0 siguen funcionando en ellas, pero no tienen constructores para las
+cambió en v3.2.4, v3.2.5 ni v3.2.6. La mainnet ejecuta v3.2.7 y la testnet v3.2.8 (la testnet aplicó la v3.2.5 el 26 de octubre
+de 2026, la v3.2.6 el 27 de octubre, la v3.2.7 el 6 de noviembre y la v3.2.8 el 12 de noviembre; la mainnet aplicó la v3.2.5 el 29 de octubre, la v3.2.6 el 4 de noviembre y la v3.2.7 el 12 de noviembre). El SDK 0.10.0 y el 0.9.0 siguen funcionando en ellas, pero no tienen constructores para las
 novedades de la v3.2.5 (el registro de claves ML-KEM, la regla exacta de gas); con esas versiones usa la CLI, o actualiza a la 0.14.0. La 0.12.0 se construyó y se verificó contra la v3.2.5.
 
 ## Mi registro de clave PQC fue rechazado pero se cobró la comisión

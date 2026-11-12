@@ -307,7 +307,7 @@ La testnet respondió el 12 de noviembre de 2026 con `tx_max_gas` **30000000** y
 | Ventana `max_txs` | 1,000 | Máximo de transacciones en una ventana |
 | Entradas de lista | 16 por lista | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-La respuesta también lleva un objeto `limits` con los valores fijados por la gobernanza; lee los `tx_max_gas` y `precompile_input_max_bytes` de nivel superior, que son los valores vigentes. La ruta se sirve desde v3.2.8, así que la mainnet pública responde `501 Not Implemented` hasta que se actualice.
+La respuesta también lleva un objeto `limits` con los valores fijados por la gobernanza; lee los `tx_max_gas` y `precompile_input_max_bytes` de nivel superior, que son los valores vigentes. La ruta se sirve desde v3.2.8, así que la mainnet pública responde `501 Not Implemented` hasta que aplique v3.2.8 (comprobado el 12 de noviembre de 2026, tras pasar la mainnet a v3.2.7).
 
 Una ventana abierta a un precio de gas normal sigue contando la comisión máxima: un límite de gas de 30,000,000 con un tope de comisión de 100 gwei cuenta 3 QOR contra `max_value` por una transacción.
 

@@ -12,7 +12,7 @@ Lane-ul SVM este partea QoreChain compatibilă cu Solana: implementezi programe 
 Această pagină explică cum citești starea lane-ului, cum funcționează programele, conturile și chiria, cum înregistrează un portofel SVM o cheie post-cuantică, ce înseamnă limitele de custodie și care exemple pot rula astăzi.
 
 :::note Mai întâi testnet-ul, iar lane-ul este deschis acolo din propunerea 37
-v3.2.8 rulează pe testnet-ul **`qorechain-diana`** din 12 noiembrie 2026. Mainnet-ul (`qorechain-vladi`) este încă pe v3.2.6, nu are o dată pentru v3.2.8, iar **lane-ul rămâne oprit pe mainnet**. Upgrade-ul a închis lane-ul pe testnet (scrierile SVM au eșuat, `MsgRegisterSVMPQCKey` a fost refuzat). **Propunerea de guvernanță 37 a trecut și l-a deschis pe `qorechain-diana`**: a setat `enabled: true`, a păstrat ceilalți parametri așa cum erau și a ridicat pauza circuit breaker-ului pe `MsgExecuteProgram` și pe apelurile între VM-uri. La verificarea din 12 noiembrie 2026, după vot, `GET /qorechain/svm/v1/params` arăta `enabled: true`, iar lista circuit breaker-ului conținea doar `/cosmwasm.wasm.v1.MsgStoreCode`. JSON-RPC-ul SVM public rămâne doar pentru citire. Citește întotdeauna starea live mai întâi (secțiunea următoare) și nu o presupune.
+v3.2.8 rulează pe testnet-ul **`qorechain-diana`** din 12 noiembrie 2026. Mainnet-ul (`qorechain-vladi`) rulează v3.2.7 (din 12 noiembrie 2026), nu a aplicat v3.2.8, iar **lane-ul rămâne oprit pe mainnet**. Upgrade-ul a închis lane-ul pe testnet (scrierile SVM au eșuat, `MsgRegisterSVMPQCKey` a fost refuzat). **Propunerea de guvernanță 37 a trecut și l-a deschis pe `qorechain-diana`**: a setat `enabled: true`, a păstrat ceilalți parametri așa cum erau și a ridicat pauza circuit breaker-ului pe `MsgExecuteProgram` și pe apelurile între VM-uri. La verificarea din 12 noiembrie 2026, după vot, `GET /qorechain/svm/v1/params` arăta `enabled: true`, iar lista circuit breaker-ului conținea doar `/cosmwasm.wasm.v1.MsgStoreCode`. JSON-RPC-ul SVM public rămâne doar pentru citire. Citește întotdeauna starea live mai întâi (secțiunea următoare) și nu o presupune.
 :::
 
 ## De ce contează {#why}
@@ -69,7 +69,7 @@ Răspuns la 12 noiembrie 2026, citit după ce propunerea 37 a trecut, cu `execut
 {"chain_id":"qorechain-diana","genesis_hash":"6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj","caip2_chain_id":"solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR","derivation":"base58(SHA-256(\"qorechain/svm/genesis-hash/v1\" || 0x00 || chain_id))","execution_enabled":true}
 ```
 
-CLI-ul de nod are aceeași interogare: `qorechaind query svm cluster-info`. Metoda JSON-RPC `getGenesisHash` de pe `https://svm-testnet.qore.host` returnează același hash. Hash-ul este derivat din chain id; nu este hash-ul genesis al unui cluster Solana real.
+CLI-ul de nod are aceeași interogare: `qorechaind query svm cluster-info`. Metoda JSON-RPC `getGenesisHash` de pe `https://svm-testnet.qore.host` returnează același hash. Hash-ul este derivat din chain id; nu este hash-ul genesis al unui cluster Solana real. Ruta este servită și pe mainnet (v3.2.7): pe 12 noiembrie 2026, `https://api.qore.host/qorechain/svm/v1/cluster_info` a răspuns cu `200`, cu `execution_enabled` `false`.
 
 ## RPC-ul SVM public este doar pentru citire {#public-rpc}
 
@@ -272,7 +272,7 @@ Nerulate (UNTESTED): implementarea unui program, execuția unui program și crea
 
 ## Mainnet {#mainnet}
 
-Mainnet-ul rămâne deocamdată pe v3.2.6, cu lane-ul SVM oprit, iar activarea lui pe mainnet are nevoie de o versiune ulterioară și de un vot de guvernanță. Planifică doar în funcție de testnet.
+Mainnet-ul rămâne deocamdată pe v3.2.7, cu lane-ul SVM oprit, iar activarea lui pe mainnet are nevoie de o versiune ulterioară și de un vot de guvernanță. Planifică doar în funcție de testnet.
 
 ## Vezi și {#see-also}
 

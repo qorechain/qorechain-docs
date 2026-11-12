@@ -10,7 +10,7 @@ sidebar_position: 5
 Ce guide explique comment envoyer des tokens QOR, interroger des transactions et interagir avec QoreChain via ses interfaces native, EVM et SVM.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version v3.2.6 depuis le 4 novembre 2026 (le testnet exécute la v3.2.8 depuis le 12 novembre 2026) — remplacez le chain ID et les endpoints par ceux du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous transactez sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version v3.2.7 depuis le 12 novembre 2026 (le testnet exécute la v3.2.8 depuis le 12 novembre 2026) — remplacez le chain ID et les endpoints par ceux du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous transactez sur le mainnet.
 :::
 
 ## Vérifier votre solde
@@ -70,7 +70,7 @@ Une fois la transaction cosignée acceptée, le CLI renvoie un hash de transacti
 
 ## La première transaction d'un nouveau compte {#first-tx-pqc}
 
-À partir de la version **v3.2.8** (testnet depuis le 12 novembre 2026 ; pas encore de date pour le mainnet), la première transaction d'un compte tout neuf doit être l'**enregistrement de sa clé post-quantique** : `MsgRegisterPQCKeyV2`, accompagné de la preuve de possession et signé avec la seule clé classique. Toute autre première transaction d'un compte sans clé enregistrée est refusée. Cela concerne un nouveau compte qui a été approvisionné mais n'a encore rien envoyé ; un compte qui possède déjà une clé enregistrée n'est pas concerné.
+À partir de la version **v3.2.8** (testnet depuis le 12 novembre 2026 ; le mainnet ne l'a pas appliquée), la première transaction d'un compte tout neuf doit être l'**enregistrement de sa clé post-quantique** : `MsgRegisterPQCKeyV2`, accompagné de la preuve de possession et signé avec la seule clé classique. Toute autre première transaction d'un compte sans clé enregistrée est refusée. Cela concerne un nouveau compte qui a été approvisionné mais n'a encore rien envoyé ; un compte qui possède déjà une clé enregistrée n'est pas concerné.
 
 **Pourquoi c'est important.** Chaque transaction suivante sur la voie Cosmos est signée en hybride (secp256k1 plus ML-DSA-87), et la chaîne ne peut vérifier la partie ML-DSA-87 que par rapport à une clé qu'elle connaît déjà. L'enregistrement est la seule transaction qui ne peut pas encore porter cette signature ; c'est donc la seule que la chaîne accepte avec une signature classique seule, et elle doit venir en premier. Si vous envoyez un transfert, une délégation ou un appel de contrat avant d'enregistrer, la transaction est refusée et vous enregistrez d'abord.
 

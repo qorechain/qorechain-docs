@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Opérateurs de nœuds : liste de contrôle v3.2.8
 
-La version **v3.2.8** fonctionne sur le testnet `qorechain-diana` depuis le 12 novembre 2026 (hauteur 9,929,500). Le mainnet `qorechain-vladi` reste sur la v3.2.6 et n'a pas encore de date pour la v3.2.8 ; rien dans cette page ne s'applique donc aujourd'hui à un nœud mainnet.
+La version **v3.2.8** fonctionne sur le testnet `qorechain-diana` depuis le 12 novembre 2026 (hauteur 9,929,500). Le mainnet `qorechain-vladi` exécute la v3.2.7 depuis le 12 novembre 2026 (hauteur 4,164,600, proposition de gouvernance 16) et n'a pas appliqué la v3.2.8 ; rien dans cette page ne s'applique donc aujourd'hui à un nœud mainnet.
 
 Cette page est la liste courte de ce qu'un opérateur de nœud vérifie et modifie pour la v3.2.8 : les bibliothèques partagées du paquet, les réglages du runtime des contrats, les nouvelles valeurs par défaut de `app.toml`, une nouvelle route REST et les étapes pour mettre à niveau un nœud encore en v3.2.7. Pour le guide complet du nœud, voir [Exécution d'un nœud](/developer-guide/running-a-node).
 
@@ -137,7 +137,7 @@ Un nouveau nœud qui rejoint le testnet démarre directement avec le binaire v3.
 | Erreur au démarrage à propos d'une bibliothèque partagée manquante | `lib/` n'a pas été copié en entier, ou le chargeur ne pointe pas dessus | Section 1 |
 | Avertissement indiquant que `memory_cache_size` a été relevé | La valeur configurée est inférieure à 256 MiB | Fixez 256 ou plus |
 | Avertissement à propos du dossier des contrats | Le code de contrat est encore à l'ancien emplacement | Déplacez-le vers `<home>/wasm` quand cela vous arrange |
-| `501` sur `/qorechain/svm/v1/params` | Le nœud n'est pas en v3.2.8 (le mainnet aujourd'hui) | Normal sur le mainnet |
+| `501` sur `/qorechain/svm/v1/params` | Le nœud n'est pas en v3.2.8 (le mainnet exécute la v3.2.7) | Normal sur le mainnet |
 
 ## Pages associées
 

@@ -10,7 +10,7 @@ sidebar_position: 4
 Düğümünüzü doğru genesis dosyası, eşler ve ağ ayarlarıyla yapılandırarak canlı QoreChain Diana test ağına katılın.
 
 :::note
-Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır (sürüm **v3.2.6**, 4 Kasım 2026'dan beri; test ağı iki sürüm öndedir) ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı 12 Kasım 2026'dan beri **v3.2.8** sürümünü çalıştırmaktadır (6 Kasım'dan itibaren v3.2.7, 27 Ekim'den itibaren v3.2.6 çalıştırıyordu; ana ağ v3.2.6'yı 4 Kasım 2026'da uyguladı); sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
+Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır (sürüm **v3.2.7**, 12 Kasım 2026'dan beri; test ağı bir sürüm öndedir) ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı 12 Kasım 2026'dan beri **v3.2.8** sürümünü çalıştırmaktadır (6 Kasım'dan itibaren v3.2.7, 27 Ekim'den itibaren v3.2.6 çalıştırıyordu; ana ağ v3.2.6'yı 4 Kasım 2026'da, v3.2.7'yi 12 Kasım 2026'da uyguladı); sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
 :::
 
 ## Genel Uç Noktalar
@@ -66,7 +66,7 @@ Test ağı, governance önerileri aracılığıyla koordineli yükseltmeler alı
 | v3.2.7 | 9.594.600 | 6 Kasım 2026 (yaklaşık 15:00 UTC) |
 | v3.2.8 | 9.929.500 | 12 Kasım 2026 (yaklaşık 03:35 UTC) |
 
-Test ağı her sürümü ana ağdan önce alır. Ana ağ v3.2.4'ü 23 Ekim 2026'da 3.742.566 yüksekliğinde, v3.2.5'i 29 Ekim 2026'da 3.906.833 yüksekliğinde (yönetişim önerisi 14) ve v3.2.6'yı 4 Kasım 2026'da 4.020.000 yüksekliğinde (yönetişim önerisi 15) uyguladı. Dolayısıyla ana ağ iki sürüm geridedir: test ağı, ana ağda bulunmayan ve henüz tarihi ya da yüksekliği olmayan v3.2.8'i (v3.2.7'den sonra) çalıştırır. Manifestolar ayrıdır; bu yüzden ikili dosyayı asla iki ağ arasında kopyalamayın (v3.2.8 eklemeleri [Sürüm Geçmişi](/appendix/version-history#v328) sayfasında listelenmiştir).
+Test ağı her sürümü ana ağdan önce alır. Ana ağ v3.2.4'ü 23 Ekim 2026'da 3.742.566 yüksekliğinde, v3.2.5'i 29 Ekim 2026'da 3.906.833 yüksekliğinde (yönetişim önerisi 14), v3.2.6'yı 4 Kasım 2026'da 4.020.000 yüksekliğinde (yönetişim önerisi 15) ve v3.2.7'yi 12 Kasım 2026'da 4.164.600 yüksekliğinde (yönetişim önerisi 16) uyguladı. Dolayısıyla ana ağ bir sürüm geridedir: test ağı 12 Kasım 2026'dan beri, ana ağın uygulamadığı v3.2.8'i çalıştırır. Manifestolar ayrıdır; bu yüzden ikili dosyayı asla iki ağ arasında kopyalamayın (v3.2.8 eklemeleri [Sürüm Geçmişi](/appendix/version-history#v328) sayfasında listelenmiştir).
 
 ---
 

@@ -10,7 +10,7 @@ sidebar_position: 4
 Alăturați-vă rețelei de test active QoreChain Diana configurând nodul cu fișierul genesis, partenerii și setările de rețea corecte.
 
 :::note
-Această pagină acoperă rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 (versiunea **v3.2.6** din 4 noiembrie 2026; testnet-ul este cu două versiuni înainte) și are propria pagină dedicată **Conectarea la rețeaua principală**, cu genesis, parteneri și detalii de conectare separate. Rețeaua de test rulează **v3.2.8** din 12 noiembrie 2026 (a rulat v3.2.7 din 6 noiembrie și v3.2.6 din 27 octombrie; mainnet-ul a aplicat v3.2.6 pe 4 noiembrie 2026); manifestul său de lansare se află la [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Această pagină acoperă rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 (versiunea **v3.2.7** din 12 noiembrie 2026; testnet-ul este cu o versiune înainte) și are propria pagină dedicată **Conectarea la rețeaua principală**, cu genesis, parteneri și detalii de conectare separate. Rețeaua de test rulează **v3.2.8** din 12 noiembrie 2026 (a rulat v3.2.7 din 6 noiembrie și v3.2.6 din 27 octombrie; mainnet-ul a aplicat v3.2.6 pe 4 noiembrie 2026 și v3.2.7 pe 12 noiembrie 2026); manifestul său de lansare se află la [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Puncte finale publice
@@ -66,7 +66,7 @@ Rețeaua de test primește upgrade-uri coordonate prin propuneri de guvernanță
 | v3.2.7 | 9,594,600 | 6 noiembrie 2026 (în jur de 15:00 UTC) |
 | v3.2.8 | 9,929,500 | 12 noiembrie 2026 (în jur de 03:35 UTC) |
 
-Rețeaua de test primește fiecare versiune înaintea mainnet-ului. Rețeaua principală a aplicat v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026, v3.2.5 la înălțimea 3.906.833, pe 29 octombrie 2026 (propunerea de guvernanță 14) și v3.2.6 la înălțimea 4.020.000, pe 4 noiembrie 2026 (propunerea de guvernanță 15). Mainnet-ul este deci cu două versiuni în urmă: testnet-ul rulează v3.2.8 (după v3.2.7), pe care mainnet-ul nu o are și pentru care nu există încă o dată sau o înălțime. Manifestele sunt separate, așa că nu copiați niciodată un binar de pe o rețea pe cealaltă (adăugirile v3.2.8 sunt listate în [Istoric versiuni](/appendix/version-history#v328)).
+Rețeaua de test primește fiecare versiune înaintea mainnet-ului. Rețeaua principală a aplicat v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026, v3.2.5 la înălțimea 3.906.833, pe 29 octombrie 2026 (propunerea de guvernanță 14), v3.2.6 la înălțimea 4.020.000, pe 4 noiembrie 2026 (propunerea de guvernanță 15) și v3.2.7 la înălțimea 4.164.600, pe 12 noiembrie 2026 (propunerea de guvernanță 16). Mainnet-ul este deci cu o versiune în urmă: testnet-ul rulează v3.2.8 din 12 noiembrie 2026, pe care mainnet-ul nu a aplicat-o. Manifestele sunt separate, așa că nu copiați niciodată un binar de pe o rețea pe cealaltă (adăugirile v3.2.8 sunt listate în [Istoric versiuni](/appendix/version-history#v328)).
 
 ---
 

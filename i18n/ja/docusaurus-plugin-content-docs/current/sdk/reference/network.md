@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | ネットワークプリセット | `mainnet` |
 | チェーン ID | `qorechain-vladi`（2026年6月7日から稼働） |
-| チェーンバージョン（2026年11月4日） | v3.2.6（2026年11月4日の高さ 4,020,000 以降、ガバナンス提案 15。v3.2.5 は10月29日に高さ 3,906,833 で、v3.2.4 は10月23日に高さ 3,742,566 で適用）。SDK 0.12.0 は v3.2.5 向けのクライアントで v3.2.6 でも動作します（署名形式は変わっていません）。0.10.0 は v3.2.4 向けのクライアントでした。動作しますが、v3.2.5 と v3.2.6 での追加分のビルダーはありません |
+| チェーンバージョン（2026年11月12日） | v3.2.7（2026年11月12日の高さ 4,164,600 以降、ガバナンス提案 16。v3.2.6 は11月4日に高さ 4,020,000 で、v3.2.5 は10月29日に高さ 3,906,833 で、v3.2.4 は10月23日に高さ 3,742,566 で適用）。SDK 0.12.0 は v3.2.5 向けのクライアントで v3.2.6 と v3.2.7 でも動作します（署名形式は変わっていません）。0.10.0 は v3.2.4 向けのクライアントでした。動作しますが、v3.2.5 と v3.2.6 での追加分のビルダーはありません |
 | EVM チェーン ID | `9801` |
 | 表示トークン | `QOR` |
 | 基本額面 | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | ネットワークプリセット | `testnet` |
 | チェーン ID | `qorechain-diana`（稼働中） |
-| チェーンバージョン | v3.2.8（2026年11月12日の高さ 9,929,500 以降、ガバナンスにより適用。メインネットにはなく、その日付もありません。v3.2.7 は11月6日の高さ 9,594,600 で適用。v3.2.6 は10月27日の高さ 8,970,638 で適用。v3.2.5 は10月26日の高さ 8,890,800 で、v3.2.4 は10月19日の高さ 8,337,253 で適用） |
+| チェーンバージョン | v3.2.8（2026年11月12日の高さ 9,929,500 以降、ガバナンスにより適用。メインネットはまだ適用していません。v3.2.7 は11月6日の高さ 9,594,600 で適用。v3.2.6 は10月27日の高さ 8,970,638 で適用。v3.2.5 は10月26日の高さ 8,890,800 で、v3.2.4 は10月19日の高さ 8,337,253 で適用） |
 | EVM チェーン ID | `9800` |
 | 表示トークン | `QOR` |
 | 基本額面 | `uqor` |
@@ -60,7 +60,7 @@ EVM JSON-RPC の URL（およびテストネットの EVM WebSocket）を既定�
 テストネットはステージングネットワークでメインネットより先行して動作するため、そこで読み取れるいくつかの内容はメインネットにはありません（2026年10月27日に確認。完全な一覧は[テストネットとメインネットの差異](/appendix/chain-parameters#testnet-differences)にあります）。
 
 * **REST ルート。** `GET /qorechain/rlconsensus/v1/{agent,params,observation,reward,policy,applied_params,last_action}`、`GET /qorechain/pqc/v1/params`、`GET /qorechain/crossvm/v1/params` はテストネットで応答します。メインネットは チェーン v3.2.6 までこれらに HTTP 501 を返していました。v3.2.6 の適用（2026年11月4日）以降、これらのルートはすべて、当日の確認でメインネットでも HTTP 200 を返しました。`/qorechain/amm/v1/` 配下の AMM ルート（`pools`、`params`）は両方のネットワークで応答します。
-* **チェーン v3.2.7 のルート。** 2026年11月7日、テストネットは `GET /qorechain/pqc/v1/multisig/{address}`（マルチシグのないアドレスには `{"found":false,"multisig":null}`）、`GET /qorechain/stakingtier/v1/apr`、`GET /qorechain/stakingtier/v1/apr/{delegator}`、`GET /qorechain/stakingtier/v1/pool`、`GET /qorechain/svm/v1/cluster_info` に HTTP 200 を返しました。メインネットは、`/qorechain/stakingtier/v1/pool`（200）を除くすべてに HTTP 501 を返しました。`GET /qorechain/pqc/v1/textual_sign_doc` は両方の公開エンドポイントで 501 を返したため、利用可能とは記載していません。SDK 0.12.0 には、これらのいずれに対するビルダーも型付きクライアントもありません。
+* **チェーン v3.2.7 のルート。** 2026年11月7日、テストネットは `GET /qorechain/pqc/v1/multisig/{address}`（マルチシグのないアドレスには `{"found":false,"multisig":null}`）、`GET /qorechain/stakingtier/v1/apr`、`GET /qorechain/stakingtier/v1/apr/{delegator}`、`GET /qorechain/stakingtier/v1/pool`、`GET /qorechain/svm/v1/cluster_info` に HTTP 200 を返しました。メインネットは、v3.2.7 を適用する前のその日は、`/qorechain/stakingtier/v1/pool`（200）を除くすべてに HTTP 501 を返しました。メインネットが v3.2.7 を適用した（2026年11月12日）後は、これらのルートはそこで応答します。2026年11月12日に、`GET /qorechain/pqc/v1/multisig/{address}`、`GET /qorechain/stakingtier/v1/apr`、`GET /qorechain/stakingtier/v1/apr/{delegator}`、`GET /qorechain/stakingtier/v1/pool`、`GET /qorechain/svm/v1/cluster_info` はメインネットで HTTP 200 を返しました（マルチシグのルートは、マルチシグのないアドレスには `{"found":false,"multisig":null}` を返しました。`cluster_info` は、SVM レーンがまだオフであるため `execution_enabled` が false と報告します）。テキスト署名ドキュメントのクエリは POST ルートです。`GET /qorechain/pqc/v1/textual_sign_doc` は 501 を返し、空のボディの POST はメインネットで 400（"tx_bytes or tx_json is required"）を返したため、ルーティングされています。`GET /qorechain/pqc/v1/evm_limits` と `GET /qorechain/svm/v1/params` のルート（v3.2.8）は、メインネットで 501 を返しました。SDK 0.12.0 には、v3.2.7 のルートのいずれに対するビルダーも型付きクライアントもありません。
 * **テストトークン。** 価値のない 3 つのトークンがテストネットにのみ存在し、`erc20:<EIP-55 contract address>`（大文字と小文字を区別）という名前のバンクデノミネーションとして登録されています。fUSD（小数桁 6）、fETH（18）、fBTC（8）です。`GET https://api-testnet.qore.host/cosmos/bank/v1beta1/denoms_metadata` でそれらを一覧できます。メインネットのバンクデノミネーションは `uqor` のみです。[テストネットのテストトークン（Fest）](/api-reference/rest-grpc-endpoints#fest-tokens)を参照してください。
 * **有効化されているモジュール。** `abstractaccount` モジュールはテストネットでは有効、メインネットでは無効です。EVM プリコンパイルはテストネットで有効（10月27日には 3 つ、11月4日には 4 つ）、メインネットでは 1 つも有効ではありません。また、QoreChain Native のインスタンス化はテストネットで開放されています。
 

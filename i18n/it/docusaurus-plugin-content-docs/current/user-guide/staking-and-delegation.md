@@ -10,7 +10,7 @@ sidebar_position: 2
 Questa guida illustra come delegare token QOR ai validatori, ridelegare tra validatori, effettuare l'unbonding dello stake, riscuotere le ricompense e capire quali parti del design di staking di QoreChain sono attive oggi.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.6** (applicata il 4 novembre 2026; la v3.2.5 il 29 ottobre e la v3.2.4 il 23 ottobre); la testnet esegue la v3.2.8 dal 12 novembre 2026 (la v3.2.7 dal 6 novembre, la v3.2.6 dal 27 ottobre). Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando esegui lo staking su mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.7** (applicata il 12 novembre 2026; la v3.2.6 il 4 novembre, la v3.2.5 il 29 ottobre e la v3.2.4 il 23 ottobre); la testnet esegue la v3.2.8 dal 12 novembre 2026 (la v3.2.7 dal 6 novembre, la v3.2.6 dal 27 ottobre). Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando esegui lo staking su mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -126,7 +126,7 @@ Le ricompense di staking sono finanziate da due fonti: il budget di emissione li
 ## Staking con blocco temporale (v3.2.4) {#time-locked-staking}
 
 :::note Quando si applica
-La release v3.2.4 aggiunge un modulo facoltativo di staking con blocco temporale, `x/stakingtier`. È attivo sulla **testnet `qorechain-diana`** dal 19 ottobre 2026 e sulla **mainnet** dal 23 ottobre 2026 (applicato all'altezza 3.742.566 dalla proposta di governance 13); la mainnet esegue la v3.2.5 dal 29 ottobre 2026 e la v3.2.6 dal 4 novembre 2026, che lo lasciano invariato a parte il controllo sull'unbonding descritto sotto. Il blocco è disponibile come opzione e la delega ordinaria resta senza blocco (vedi [sopra](#lock-in-period)). Il meccanismo descritto sotto è stato verificato rispetto ai parametri live della mainnet e della testnet il 23 ottobre 2026.
+La release v3.2.4 aggiunge un modulo facoltativo di staking con blocco temporale, `x/stakingtier`. È attivo sulla **testnet `qorechain-diana`** dal 19 ottobre 2026 e sulla **mainnet** dal 23 ottobre 2026 (applicato all'altezza 3.742.566 dalla proposta di governance 13); la mainnet esegue la v3.2.5 dal 29 ottobre 2026, la v3.2.6 dal 4 novembre 2026 e la v3.2.7 dal 12 novembre 2026, che lo lasciano invariato a parte il controllo sull'unbonding descritto sotto e le route APR aggiunte nella v3.2.7. Il blocco è disponibile come opzione e la delega ordinaria resta senza blocco (vedi [sopra](#lock-in-period)). Il meccanismo descritto sotto è stato verificato rispetto ai parametri live della mainnet e della testnet il 23 ottobre 2026.
 :::
 
 Un delegatore può vincolare una parte di una delega esistente a un validatore per un termine fisso di 3, 6 o 12 mesi. Termini e importi sono parametri della chain; leggi quelli attuali da `GET /qorechain/stakingtier/v1/params` anziché da questa pagina.
@@ -138,7 +138,7 @@ Un delegatore può vincolare una parte di una delega esistente a un validatore p
 * **Riscossione.** Un blocco guadagna una componente di ricompensa aggiuntiva per epoca, stabilita dai parametri del modulo; viene pagata quando la riscuoti, non automaticamente. Questa pagina non riporta tassi: leggi `params` per le impostazioni live.
 * **Alla scadenza** il blocco viene rilasciato e la delega prosegue come una delega ordinaria.
 
-I comandi sono disponibili tramite la riga di comando e le route REST `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` e `/pool`; dalla release v3.2.7 (testnet dal 6 novembre 2026, non ancora sulla mainnet) ci sono anche `GET /qorechain/stakingtier/v1/apr` (un tasso base più i bonus dei tier) e `GET /qorechain/stakingtier/v1/apr/{delegator}`, che mostrano ciò che il modulo calcola attualmente. Sono letture delle impostazioni correnti, **non un rendimento garantito o promesso**: il tasso base dipende dalle commissioni e dai finanziamenti e può essere zero, e i bonus possono essere modificati dalla governance. Gli importi nei comandi sono un numero intero di `uqor` (1 QOR = 1.000.000 uqor).
+I comandi sono disponibili tramite la riga di comando e le route REST `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` e `/pool`; dalla release v3.2.7 (testnet dal 6 novembre 2026, mainnet dal 12 novembre 2026) ci sono anche `GET /qorechain/stakingtier/v1/apr` (un tasso base più i bonus dei tier) e `GET /qorechain/stakingtier/v1/apr/{delegator}`, che mostrano ciò che il modulo calcola attualmente. Sono letture delle impostazioni correnti, **non un rendimento garantito o promesso**: il tasso base dipende dalle commissioni e dai finanziamenti e può essere zero, e i bonus possono essere modificati dalla governance. Gli importi nei comandi sono un numero intero di `uqor` (1 QOR = 1.000.000 uqor).
 
 ```bash
 qorechaind tx stakingtier lock <validator_address> <amount_in_uqor> <months> --from mykey \
@@ -158,11 +158,11 @@ L'ID di chain qui sopra è quello della testnet; usa `qorechain-vladi` sulla mai
 
 **Dove funziona, verificato il 27 ottobre 2026 (la riga v3.2.6 per la mainnet deriva dalle note di release e dall'upgrade del 4 novembre 2026; i parametri qui sotto sono stati riletti sulla mainnet il 4 novembre 2026).** Prima della v3.2.6, la mainnet rifiutava l'unbonding solo quando la transazione veniva eseguita, tramite il gate dei messaggi di staking.
 
-| | Mainnet `qorechain-vladi` (v3.2.6) | Testnet `qorechain-diana` (v3.2.8) |
+| | Mainnet `qorechain-vladi` (v3.2.7) | Testnet `qorechain-diana` (v3.2.8) |
 |---|---|---|
 | Modulo attivo | Sì, dall'altezza 3.742.566 | Sì, dalla v3.2.4 (altezza 8.337.253) |
 | Blocchi aperti | Nessuno finora | 3 blocchi di test |
-| Unbonding dello stake bloccato | Rifiutato dalla mempool prima che venga addebitata qualsiasi commissione (v3.2.6, applicata sulla mainnet il 4 novembre 2026) | Rifiutato dalla mempool prima che venga addebitata qualsiasi commissione |
+| Unbonding dello stake bloccato | Rifiutato dalla mempool prima che venga addebitata qualsiasi commissione (dalla v3.2.6, applicata sulla mainnet il 4 novembre 2026) | Rifiutato dalla mempool prima che venga addebitata qualsiasi commissione |
 
 Entrambe le reti rispondono a `GET /qorechain/stakingtier/v1/params` con le stesse impostazioni: tre termini, un minimo di 10 QOR (`min_lock_amount` `"10000000"` uqor), una penale di sblocco anticipato di 500 punti base (5%) e `enabled: true`. La risposta riporta anche le impostazioni del bonus in punti base; questo manuale non le cita, perché un bonus non è un rendimento promesso e le impostazioni possono essere modificate dalla governance. `GET /qorechain/stakingtier/v1/pool` mostra il pool che paga le ricompense dei blocchi.
 

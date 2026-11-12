@@ -272,12 +272,12 @@ Raisonnez sur le codespace et le code ensemble, et conservez le log brut.
 | REST | `https://api.qore.host` | `https://api-testnet.qore.host` |
 | RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | JSON-RPC EVM | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
-| Version du nœud | v3.2.6 (appliquée le 4 novembre 2026 ; v3.2.5 le 29 octobre) | v3.2.8 (appliquée le 12 novembre ; v3.2.7 le 6 novembre, v3.2.6 le 27 octobre, v3.2.5 le 26 octobre) |
+| Version du nœud | v3.2.7 (appliquée le 12 novembre 2026 ; v3.2.6 le 4 novembre, v3.2.5 le 29 octobre) | v3.2.8 (appliquée le 12 novembre ; v3.2.7 le 6 novembre, v3.2.6 le 27 octobre, v3.2.5 le 26 octobre) |
 
 - La dénomination est `uqor` (1 QOR = 10^6 uqor ; sur la voie EVM, 1 uqor = 10^12 wei). Le prix minimal du gas est de 0.1 uqor, la période de unbonding est de 21 jours et la limite du mémo est de 256 caractères. Ces valeurs ont été lues sur les deux réseaux le 27 octobre 2026 (mainnet relu le 4 novembre 2026 : unbonding 1,814,400 secondes, prix minimal du gas 0.1 uqor, limite du mémo 256 caractères) et peuvent changer par gouvernance ; lisez-les donc depuis la chaîne en production.
 - Les dépôts ne nécessitent ni clés ni enregistrement. L'envoi nécessite une clé ML-DSA-87 enregistrée par adresse chaude.
 - Exécutez vos propres nœuds complets en production. Les points de terminaison publics sont limités en débit et destinés au développement. Si un script obtient `403 Forbidden`, définissez un en-tête `User-Agent` explicite. Voir [exécuter un nœud](/developer-guide/running-a-node) et [se connecter au mainnet](/getting-started/connecting-to-mainnet).
-- Le testnet reçoit chaque version de nœud avant le mainnet. Changez de règles de gas en vérifiant la mise à niveau appliquée, pas la date (les deux réseaux ont appliqué la v3.2.5 et la v3.2.6 ; le testnet a aussi appliqué la v3.2.7 et la v3.2.8).
+- Le testnet reçoit chaque version de nœud avant le mainnet. Changez de règles de gas en vérifiant la mise à niveau appliquée, pas la date (les deux réseaux ont appliqué la v3.2.5, la v3.2.6 et la v3.2.7 ; le testnet a aussi appliqué la v3.2.8).
 - Les jetons de test sur le testnet (dénominations bank de la forme `erc20:0x...`, un jeton IBC) n'existent pas sur le mainnet. Créditez `uqor` sur les deux réseaux.
 - Les QOR de testnet proviennent du faucet du dashboard QoreChain et n'ont aucune valeur. Voir [se connecter au testnet](/getting-started/connecting-to-testnet).
 

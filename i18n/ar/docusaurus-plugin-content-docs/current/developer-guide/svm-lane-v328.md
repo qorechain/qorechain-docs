@@ -12,7 +12,7 @@ sidebar_position: 10
 تشرح هذه الصفحة كيف تقرأ حالة المسار، وكيف تعمل البرامج والحسابات والإيجار (rent)، وكيف تسجّل محفظة SVM مفتاحًا ما بعد كمومي، وماذا تعني حدود الحضانة، وأي الأمثلة يمكن تشغيله اليوم.
 
 :::note شبكة الاختبار أولًا، والمسار مفتوح فيها منذ المقترح 37
-يعمل v3.2.8 على شبكة الاختبار **`qorechain-diana`** منذ 12 نوفمبر 2026. أما الشبكة الرئيسية (`qorechain-vladi`) فما زالت على v3.2.6، وليس لها موعد لـ v3.2.8، و**يبقى المسار مطفأً على الشبكة الرئيسية**. أغلقت الترقية المسار على شبكة الاختبار (فشلت كتابات SVM ورُفضت `MsgRegisterSVMPQCKey`). و**اجتاز مقترح الحوكمة 37 وفتحه على `qorechain-diana`**: ضبط `enabled: true`، وأبقى المعاملات الأخرى كما كانت، ورفع إيقاف قاطع الدائرة عن `MsgExecuteProgram` وعن الاستدعاءات عبر الأنوية الافتراضية. وعند التحقق في 12 نوفمبر 2026 بعد التصويت أظهر `GET /qorechain/svm/v1/params` القيمة `enabled: true`، ولم تحتوِ قائمة قاطع الدائرة إلا على `/cosmwasm.wasm.v1.MsgStoreCode`. ويبقى JSON-RPC العام لـ SVM للقراءة فقط. اقرأ دائمًا الحالة الحيّة أولًا (القسم التالي) ولا تفترضها.
+يعمل v3.2.8 على شبكة الاختبار **`qorechain-diana`** منذ 12 نوفمبر 2026. أما الشبكة الرئيسية (`qorechain-vladi`) فتشغّل v3.2.7 (منذ 12 نوفمبر 2026)، ولم تطبّق v3.2.8، و**يبقى المسار مطفأً على الشبكة الرئيسية**. أغلقت الترقية المسار على شبكة الاختبار (فشلت كتابات SVM ورُفضت `MsgRegisterSVMPQCKey`). و**اجتاز مقترح الحوكمة 37 وفتحه على `qorechain-diana`**: ضبط `enabled: true`، وأبقى المعاملات الأخرى كما كانت، ورفع إيقاف قاطع الدائرة عن `MsgExecuteProgram` وعن الاستدعاءات عبر الأنوية الافتراضية. وعند التحقق في 12 نوفمبر 2026 بعد التصويت أظهر `GET /qorechain/svm/v1/params` القيمة `enabled: true`، ولم تحتوِ قائمة قاطع الدائرة إلا على `/cosmwasm.wasm.v1.MsgStoreCode`. ويبقى JSON-RPC العام لـ SVM للقراءة فقط. اقرأ دائمًا الحالة الحيّة أولًا (القسم التالي) ولا تفترضها.
 :::
 
 ## لماذا يهم هذا {#why}
@@ -69,7 +69,7 @@ curl -s https://api-testnet.qore.host/qorechain/svm/v1/cluster_info
 {"chain_id":"qorechain-diana","genesis_hash":"6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj","caip2_chain_id":"solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR","derivation":"base58(SHA-256(\"qorechain/svm/genesis-hash/v1\" || 0x00 || chain_id))","execution_enabled":true}
 ```
 
-لواجهة سطر أوامر العقدة الاستعلام نفسه: `qorechaind query svm cluster-info`. وتعيد الدالة `getGenesisHash` في JSON-RPC على `https://svm-testnet.qore.host` التجزئة نفسها. وتُشتق التجزئة من معرّف السلسلة؛ وليست تجزئة genesis لعنقود Solana حقيقي.
+لواجهة سطر أوامر العقدة الاستعلام نفسه: `qorechaind query svm cluster-info`. وتعيد الدالة `getGenesisHash` في JSON-RPC على `https://svm-testnet.qore.host` التجزئة نفسها. وتُشتق التجزئة من معرّف السلسلة؛ وليست تجزئة genesis لعنقود Solana حقيقي. ويُخدَّم المسار أيضًا على الشبكة الرئيسية (v3.2.7): ففي 12 نوفمبر 2026 ردّ `https://api.qore.host/qorechain/svm/v1/cluster_info` بالرمز `200` مع `execution_enabled` `false`.
 
 ## JSON-RPC العام لـ SVM للقراءة فقط {#public-rpc}
 
@@ -272,7 +272,7 @@ await tx.signAndBroadcast(
 
 ## الشبكة الرئيسية {#mainnet}
 
-تبقى الشبكة الرئيسية على v3.2.6 في الوقت الحالي، ومسار SVM مطفأ فيها، وتفعيله عليها يحتاج إصدارًا لاحقًا وتصويت حوكمة. فخطّط وفق شبكة الاختبار وحدها.
+تبقى الشبكة الرئيسية على v3.2.7 في الوقت الحالي، ومسار SVM مطفأ فيها، وتفعيله عليها يحتاج إصدارًا لاحقًا وتصويت حوكمة. فخطّط وفق شبكة الاختبار وحدها.
 
 ## انظر أيضًا {#see-also}
 

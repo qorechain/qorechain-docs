@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain își publică uneltele pentru dezvoltatori sub formă de pachete mici în registrele publice (npm, PyPI, crates.io, proxy-ul de module Go, Maven Central și Swift Package Manager). Această pagină este indexul: la ce folosește fiecare pachet, numele său exact din registru, limbajul, versiunea curentă, comanda de instalare și starea, plus unde poți citi cum se folosește. Este pentru dezvoltatorii care construiesc dApp-uri, portofele, backend-uri și rollup-uri pe QoreChain și vor să aleagă pachetul potrivit înainte de a citi un ghid.
 
-Versiunile din tabele au fost citite din registre la 4 noiembrie 2026. Mainnet-ul `qorechain-vladi` rulează v3.2.6 (aplicată pe 4 noiembrie 2026; v3.2.5 pe 29 octombrie). Testnet-ul `qorechain-diana` a aplicat v3.2.6 pe 27 octombrie, v3.2.7 pe 6 noiembrie și v3.2.8 pe 12 noiembrie 2026; v3.2.7 și v3.2.8 nu sunt pe mainnet și nu au acolo o dată. Niciun pachet din aceste tabele nu are constructori pentru mesajele v3.2.7, cu excepția cazului în care pagina sa spune altfel. Fiecare pachet listat ca publicat are licența Apache-2.0.
+Versiunile din tabele au fost citite din registre la 4 noiembrie 2026. Mainnet-ul `qorechain-vladi` rulează v3.2.7 (aplicată pe 12 noiembrie 2026 la înălțimea 4.164.600, propunerea de guvernanță 16; v3.2.6 pe 4 noiembrie, v3.2.5 pe 29 octombrie). Testnet-ul `qorechain-diana` a aplicat v3.2.6 pe 27 octombrie, v3.2.7 pe 6 noiembrie și v3.2.8 pe 12 noiembrie 2026; v3.2.8 nu este pe mainnet. Niciun pachet din aceste tabele nu are constructori pentru mesajele v3.2.7, cu excepția cazului în care pagina sa spune altfel. Fiecare pachet listat ca publicat are licența Apache-2.0.
 
 ## Inovații {#innovations}
 
@@ -300,7 +300,7 @@ Pentru un nume npm cu scope păstrează `@`, de exemplu `https://registry.npmjs.
 
 ## Limite și probleme cunoscute {#limits}
 
-- **Două rețele live, două versiuni de lanț.** Mainnet-ul rulează v3.2.6 (din 4 noiembrie 2026); testnet-ul rulează v3.2.8 (din 12 noiembrie 2026). O funcție care există doar pe testnet (precompilările EVM PQC, de exemplu) este marcată pe pagina ei.
+- **Două rețele live, două versiuni de lanț.** Mainnet-ul rulează v3.2.7 (din 12 noiembrie 2026); testnet-ul rulează v3.2.8 (din 12 noiembrie 2026). O funcție care există doar pe testnet (precompilările EVM PQC, de exemplu) este marcată pe pagina ei.
 - **Încă nu sunt live:** modulele native Asset Kit (o propunere care nu este programată), wheel-urile pentru Windows ale pachetelor Python QoreSign și QoreSeal, tranzacțiile SVM și precompilările EVM pe mainnet (sunt active doar pe testnet; vezi [prezentarea SDK](/sdk/overview) pentru lista pe trasee).
 - **Registrul QoreSeal și PQ light client.** Criptarea către o adresă citită din lanț necesită registrul de chei KEM, live pe testnet, iar ruta sa de citire răspunde pe mainnet începând cu v3.2.5 (verificat din nou la 4 noiembrie 2026: nicio cheie nu fusese publicată pe mainnet). PQ light client nu se conectează la niciuna dintre rețele; nu este programat niciun suport în lanț pentru checkpoint-urile sale.
 - **Kotlin 2.3 sau mai nou.** Artefactele Kotlin și Android QoreSign și QoreSeal au nevoie de compilatorul Kotlin 2.3 sau mai nou; Kotlin 2.1 nu se compilează împotriva lor.

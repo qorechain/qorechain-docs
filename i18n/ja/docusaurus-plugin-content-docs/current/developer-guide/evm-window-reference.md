@@ -307,7 +307,7 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_limits
 | ウィンドウの`max_txs` | 1,000 | 1つのウィンドウ内の最大トランザクション数 |
 | リストのエントリー | リストごとに16 | `allowed_targets`、`validators`、`staking_validators`、`ibc_receivers` |
 
-応答には、ガバナンスで設定された値を持つ`limits`オブジェクトも含まれます。適用中の値である、最上位の`tx_max_gas`と`precompile_input_max_bytes`を読み取ってください。この経路はv3.2.8から提供されるため、公開メインネットは、アップグレードされるまで`501 Not Implemented`を返します。
+応答には、ガバナンスで設定された値を持つ`limits`オブジェクトも含まれます。適用中の値である、最上位の`tx_max_gas`と`precompile_input_max_bytes`を読み取ってください。この経路はv3.2.8から提供されるため、公開メインネットは、v3.2.8を適用するまで`501 Not Implemented`を返します（メインネットがv3.2.7に移行した後の2026年11月12日に確認）。
 
 通常のガス価格で開いたウィンドウも、最大手数料をカウントします。ガス上限30,000,000で手数料上限100 gweiの場合、1つのトランザクションにつき`max_value`に対して3 QORがカウントされます。
 

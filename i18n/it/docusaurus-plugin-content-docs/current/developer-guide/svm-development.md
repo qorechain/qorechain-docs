@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain include un ambiente di esecuzione **Solana Virtual Machine (SVM)**, che consente agli sviluppatori di distribuire ed eseguire programmi SBF/BPF utilizzando gli strumenti Solana con cui hanno già familiarità. Il modulo SVM espone un'interfaccia JSON-RPC compatibile con Solana sulla **porta 8899**, che `qorechaind start` avvia automaticamente (vedi [JSON-RPC Server](#json-rpc-server) qui sotto).
 
 :::note
-I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.6** dal 4 novembre 2026 (proposta di governance 15, altezza 4.020.000; la v3.2.5 dal 29 ottobre 2026, la v3.2.4 dal 23 ottobre 2026). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.7 (dal 6 novembre 2026; la v3.2.4 dal 19 ottobre 2026). **Le transazioni SVM sono disabilitate su entrambe le reti** (vedi il riquadro successivo), quindi i comandi `tx svm` di questa pagina hanno valore di sola consultazione: oggi non possono andare a buon fine.
+I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.7** dal 12 novembre 2026 (proposta di governance 16, altezza 4.164.600; la v3.2.6 dal 4 novembre 2026; la v3.2.5 dal 29 ottobre 2026, la v3.2.4 dal 23 ottobre 2026). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.7 (dal 6 novembre 2026; la v3.2.4 dal 19 ottobre 2026). **Le transazioni SVM sono disabilitate su entrambe le reti** (vedi il riquadro successivo), quindi i comandi `tx svm` di questa pagina hanno valore di sola consultazione: oggi non possono andare a buon fine.
 :::
 
 ---
@@ -84,9 +84,9 @@ I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi
 | `getMinimumBalanceForRentExemption` | Saldo minimo per una data dimensione dei dati     |
 | `getVersion`                        | Informazioni sulla versione del runtime SVM        |
 | `getHealth`                         | Controllo dello stato dell'endpoint SVM         |
-| `getGenesisHash`                    | Hash di genesi del cluster (testnet, dalla v3.2.7; base58) |
+| `getGenesisHash`                    | Hash di genesi del cluster (dalla v3.2.7: testnet dal 6 novembre 2026, mainnet dal 12 novembre 2026; base58) |
 
-**Identità del cluster (v3.2.7, per ora solo testnet).** I wallet che seguono il Wallet Standard hanno bisogno di un'identità del cluster stabile. Dalla release v3.2.7 (testnet dal 6 novembre 2026; la mainnet è ancora sulla v3.2.6 e non ha una data per essa) il nodo serve l'hash di genesi del cluster e il suo chain id del Wallet Standard. Sulla testnet il 7 novembre 2026, `GET /qorechain/svm/v1/cluster_info` ha risposto con `chain_id` `qorechain-diana`, un `genesis_hash`, un `caip2_chain_id` (`solana:` seguito dai primi 32 caratteri dell'hash di genesi) e `execution_enabled` `false`, e `getGenesisHash` su `https://svm-testnet.qore.host` ha restituito lo stesso hash di genesi. L'hash è derivato dal chain id, non da un vero cluster Solana. **L'esecuzione SVM resta disattivata su entrambe le reti**; questo serve solo a identificare il cluster.
+**Identità del cluster (v3.2.7).** I wallet che seguono il Wallet Standard hanno bisogno di un'identità del cluster stabile. Dalla release v3.2.7 (testnet dal 6 novembre 2026, mainnet dal 12 novembre 2026) il nodo serve l'hash di genesi del cluster e il suo chain id del Wallet Standard. Sulla testnet il 7 novembre 2026, `GET /qorechain/svm/v1/cluster_info` ha risposto con `chain_id` `qorechain-diana`, un `genesis_hash`, un `caip2_chain_id` (`solana:` seguito dai primi 32 caratteri dell'hash di genesi) e `execution_enabled` `false`, e `getGenesisHash` su `https://svm-testnet.qore.host` ha restituito lo stesso hash di genesi. L'hash è derivato dal chain id, non da un vero cluster Solana. **L'esecuzione SVM resta disattivata su entrambe le reti**; questo serve solo a identificare il cluster. Il 12 novembre 2026 la stessa route sulla mainnet ha risposto `200` con `chain_id` `qorechain-vladi`, un proprio hash di genesi e `execution_enabled` `false`.
 
 ---
 

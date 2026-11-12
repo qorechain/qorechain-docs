@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Düğüm Operatörleri: v3.2.8 Kontrol Listesi
 
-**v3.2.8** sürümü, 12 Kasım 2026'dan beri (yükseklik 9,929,500) `qorechain-diana` test ağında çalışmaktadır. Ana ağ `qorechain-vladi` v3.2.6'da kalır ve v3.2.8 için henüz bir tarih yoktur; bu nedenle bu sayfadaki hiçbir şey bugün bir ana ağ düğümü için geçerli değildir.
+**v3.2.8** sürümü, 12 Kasım 2026'dan beri (yükseklik 9,929,500) `qorechain-diana` test ağında çalışmaktadır. Ana ağ `qorechain-vladi` 12 Kasım 2026'dan beri v3.2.7 çalıştırır (yükseklik 4,164,600, yönetişim önerisi 16) ve v3.2.8'i uygulamamıştır; bu nedenle bu sayfadaki hiçbir şey bugün bir ana ağ düğümü için geçerli değildir.
 
 Bu sayfa, bir düğüm operatörünün v3.2.8 için neyi kontrol edip değiştireceğinin kısa listesidir: paketteki paylaşımlı kütüphaneler, sözleşme çalışma zamanı ayarları, yeni `app.toml` varsayılanları, yeni bir REST rotası ve hâlâ v3.2.7 üzerinde olan bir düğümü yükseltme adımları. Tam düğüm kılavuzu için bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node).
 
@@ -137,7 +137,7 @@ Test ağına yeni katılan bir düğüm doğrudan v3.2.8 ikili dosyasıyla başl
 | Eksik bir paylaşımlı kütüphane hakkında başlatma hatası | `lib/` bütün olarak kopyalanmadı veya yükleyici ona işaret etmiyor | Bölüm 1 |
 | `memory_cache_size` değerinin yükseltildiğine dair uyarı | Yapılandırılan değer 256 MiB'ın altında | 256 veya daha fazlasını ayarlayın |
 | Sözleşme dizini hakkında uyarı | Sözleşme kodu hâlâ eski konumda | Uygun bir zamanda `<home>/wasm` içine taşıyın |
-| `/qorechain/svm/v1/params` rotasından `501` | Düğüm v3.2.8 üzerinde değil (bugün ana ağ) | Ana ağda beklenen durum |
+| `/qorechain/svm/v1/params` rotasından `501` | Düğüm v3.2.8 üzerinde değil (ana ağ v3.2.7 çalıştırır) | Ana ağda beklenen durum |
 
 ## İlgili sayfalar
 

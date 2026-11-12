@@ -26,8 +26,8 @@ Le binaire actuel, le genesis, les pairs, les seeds et un point de confiance de 
 Les champs du manifeste incluent `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un point de confiance actualisé toutes les heures) et `minCompatible`. Les étapes d'installation et de connexion ci-dessous récupèrent ce manifeste et utilisent ses valeurs actuelles.
 :::
 
-:::caution Utilisez la version que nomme le manifeste : v3.2.6 sur le mainnet, v3.2.8 sur le testnet
-Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis un snapshot franchit plusieurs mises à niveau de gouvernance (voir [Mises à niveau](#upgrades) ci-dessous) : installez donc toujours le binaire vers lequel pointe le manifeste, car il porte tous les gestionnaires de mise à niveau. Sur le **mainnet**, `minCompatible` et `version` du manifeste valent tous deux `3.2.6` (appliquée à la hauteur 4,020,000 le 4 novembre 2026, proposition de gouvernance 15) ; un nœud qui rejoint le réseau maintenant a donc besoin de la v3.2.6 : un binaire plus ancien s'arrête à la hauteur de mise à niveau qu'il ne connaît pas. La version est le bundle `qorechaind-v3.2.6-b3-linux-amd64.tar.gz` (98,878,438 octets, SHA-256 `acd9f95bfd8d6f3c6c5ea306fe9dacb6362336ddaa96c61197599298bb1e2fb2`, lu dans le manifeste le 4 novembre 2026 ; le manifeste en direct fait foi). Le manifeste conseille aux nouveaux nœuds de rejoindre le réseau par synchronisation d'état (state sync). Il contient `qorechaind` et `lib/` avec `libqorepqc.so`, `libqoresvm.so` et `libwasmvm.x86_64.so`. Un nœud encore sur la v3.2.5 s'arrête à la hauteur 4,020,000 avec `UPGRADE "v3.2.6" NEEDED` : installez le bundle et redémarrez, et son état est conservé. Aucune autre mise à niveau du mainnet n'est programmée (`current_plan` vaut `null`, vérifié le 4 novembre 2026) ; lorsque le manifeste nomme une version plus récente, c'est ce binaire qu'il faut installer. Sur le **testnet**, `minCompatible` et `version` du manifeste valent tous deux `3.2.8` (la v3.2.5 a été appliquée à la hauteur 8,890,800 le 26 octobre 2026, la v3.2.6 à la hauteur 8,970,638 le 27 octobre, la v3.2.7 à la hauteur 9,594,600 le 6 novembre et la v3.2.8 à la hauteur 9,929,500 le 12 novembre) ; un nœud qui rejoint le testnet a donc besoin du binaire v3.2.8 : prenez le nom du bundle, sa taille et son SHA-256 dans le manifeste du testnet en direct, qui fait foi (le 7 novembre 2026, en v3.2.7, il nommait `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`, 99,472,930 octets, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`). Un nœud de testnet encore sur la v3.2.7 s'arrête à la hauteur 9,929,500 avec `UPGRADE "v3.2.8" NEEDED` : remplacez `qorechaind` et copiez le répertoire `lib/` entier du bundle, puis redémarrez-le ; son état est conservé et il n'a pas besoin de se resynchroniser. Le mainnet reste en v3.2.6 ; une mise à niveau du mainnet vers la v3.2.8 n'a pas encore de date de proposition, rien ne change donc pour les nœuds du mainnet. N'exécutez pas un binaire de testnet sur le mainnet, ni l'inverse : chaque répertoire porte sa propre version (voir [Mises à niveau](#upgrades)). Le manifeste est promu de façon délibérée (d'abord sur testnet, puis sur mainnet après une période de rodage) ; vérifiez donc son champ `"version"` par rapport à `minCompatible` avant de faire confiance à `binary.url`.
+:::caution Utilisez la version que nomme le manifeste : v3.2.7 sur le mainnet, v3.2.8 sur le testnet
+Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis un snapshot franchit plusieurs mises à niveau de gouvernance (voir [Mises à niveau](#upgrades) ci-dessous) : installez donc toujours le binaire vers lequel pointe le manifeste, car il porte tous les gestionnaires de mise à niveau. Sur le **mainnet**, `minCompatible` et `version` du manifeste valent tous deux `3.2.7` (appliquée à la hauteur 4,164,600 le 12 novembre 2026, proposition de gouvernance 16) ; un nœud qui rejoint le réseau maintenant a donc besoin de la v3.2.7 : un binaire plus ancien s'arrête à la hauteur de mise à niveau qu'il ne connaît pas. La version est le bundle `qorechaind-v3.2.7-b3-linux-amd64.tar.gz` (99,472,930 octets, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`, lu dans le manifeste le 12 novembre 2026 ; le manifeste en direct fait foi). Le manifeste conseille aux nouveaux nœuds de rejoindre le réseau par synchronisation d'état (state sync). Il contient `qorechaind` et `lib/` avec `libqorepqc.so`, `libqoresvm.so` et `libwasmvm.x86_64.so`. Un nœud encore sur la v3.2.6 s'est arrêté à la hauteur 4,164,600 avec `UPGRADE "v3.2.7" NEEDED` : installez le bundle et redémarrez, et son état est conservé. Aucune autre mise à niveau du mainnet n'est programmée (`current_plan` vaut `null`, vérifié le 12 novembre 2026) ; lorsque le manifeste nomme une version plus récente, c'est ce binaire qu'il faut installer. Sur le **testnet**, `minCompatible` et `version` du manifeste valent tous deux `3.2.8` (la v3.2.5 a été appliquée à la hauteur 8,890,800 le 26 octobre 2026, la v3.2.6 à la hauteur 8,970,638 le 27 octobre, la v3.2.7 à la hauteur 9,594,600 le 6 novembre et la v3.2.8 à la hauteur 9,929,500 le 12 novembre) ; un nœud qui rejoint le testnet a donc besoin du binaire v3.2.8 : prenez le nom du bundle, sa taille et son SHA-256 dans le manifeste du testnet en direct, qui fait foi (le 7 novembre 2026, en v3.2.7, il nommait `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`, 99,472,930 octets, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`). Un nœud de testnet encore sur la v3.2.7 s'arrête à la hauteur 9,929,500 avec `UPGRADE "v3.2.8" NEEDED` : remplacez `qorechaind` et copiez le répertoire `lib/` entier du bundle, puis redémarrez-le ; son état est conservé et il n'a pas besoin de se resynchroniser. Le mainnet reste en v3.2.7, une version derrière le testnet ; il n'a pas appliqué la v3.2.8, rien dans les notes de la v3.2.8 ne change donc pour les nœuds du mainnet. N'exécutez pas un binaire de testnet sur le mainnet, ni l'inverse : chaque répertoire porte sa propre version (voir [Mises à niveau](#upgrades)). Le manifeste est promu de façon délibérée (d'abord sur testnet, puis sur mainnet après une période de rodage) ; vérifiez donc son champ `"version"` par rapport à `minCompatible` avant de faire confiance à `binary.url`.
 
 Un binaire compilé à partir des sources publiques (la compilation communautaire) refuse de démarrer sur l'un ou l'autre des réseaux publics (v3.2.3 et ultérieures) : il ne peut pas vérifier les signatures post-quantiques ni rejouer fidèlement les blocs des réseaux. Utilisez uniquement l'archive de release.
 
@@ -52,7 +52,7 @@ Deux paramètres comptent à partir de la v3.2.1 : gardez l'horloge système syn
 
 | Réseau   | Chain ID            | EVM chain ID         | Notes                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — en direct depuis le 7 juin 2026 ; version de nœud v3.2.6 (depuis le 4 nov. 2026) |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — en direct depuis le 7 juin 2026 ; version de nœud v3.2.7 (depuis le 12 nov. 2026) |
 | Testnet  | `qorechain-diana`   | `9800`               | Répétez d'abord vos intégrations ici ; version de nœud v3.2.8 (depuis le 12 nov. 2026) |
 
 Remplacez le `--chain-id` approprié pour votre réseau cible tout au long de ce guide. Les exemples utilisent le mainnet par défaut.
@@ -92,7 +92,7 @@ COPY lib/ /opt/qorechain/lib/
 ENV LD_LIBRARY_PATH=/opt/qorechain/lib
 ENTRYPOINT ["qorechaind"]
 EOF
-docker build -t qorechain-node:v3.2.6 release/
+docker build -t qorechain-node:v3.2.7 release/
 ```
 
 L'archive contient `qorechaind` et un répertoire `lib/` avec ses bibliothèques partagées (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` et, à partir de la v3.2.8, `libwasmvmqore_v1.x86_64.so`). Copiez le répertoire `lib/` entier, et non des fichiers isolés ; l'image ci-dessus est uniquement `linux/amd64`, comme l'archive de release.
@@ -101,7 +101,7 @@ L'archive contient `qorechaind` et un répertoire `lib/` avec ses bibliothèques
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.2.6
+    image: qorechain-node:v3.2.7
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -288,21 +288,23 @@ Les changements de consensus arrivent sous forme de **mises à niveau de gouvern
 | v3.2.4 | hauteur 3,742,566 (23 octobre 2026, proposition de gouvernance 13) | hauteur 8,337,253 (19 octobre 2026, proposition de gouvernance 13) |
 | v3.2.5 | hauteur 3,906,833 (29 oct. 2026, proposition de gouvernance 14) | hauteur 8,890,800 (26 oct. 2026) |
 | v3.2.6 | hauteur 4,020,000 (4 nov. 2026, proposition de gouvernance 15) | hauteur 8,970,638 (27 oct. 2026) |
-| v3.2.7 | non appliquée (pas encore de date de proposition) | hauteur 9,594,600 (6 nov. 2026, proposition de gouvernance 33) |
-| v3.2.8 | non appliquée (pas encore de date de proposition) | hauteur 9,929,500 (12 nov. 2026) |
+| v3.2.7 | hauteur 4,164,600 (12 nov. 2026, proposition de gouvernance 16) | hauteur 9,594,600 (6 nov. 2026, proposition de gouvernance 33) |
+| v3.2.8 | non appliquée | hauteur 9,929,500 (12 nov. 2026) |
 
 **Ce qu'a fait l'opérateur d'un nœud pour la v3.2.4 (hauteur mainnet 3,742,566).** La proposition de gouvernance 13 a nommé le plan `v3.2.4` à la hauteur 3,742,566 (appliqué le 23 octobre 2026) : les nœuds sont restés en v3.2.3 jusqu'à cette hauteur, s'y sont arrêtés, puis ont redémarré en v3.2.4. Pour la prochaine mise à niveau coordonnée, les étapes sont les mêmes :
 
 1. Surveillez le manifeste (`https://download.qore.host/mainnet/latest.json`) : tant qu'il ne nomme pas la nouvelle version, il n'y a rien à installer, et un binaire du répertoire testnet n'est pas la version du mainnet.
 2. Lorsque le manifeste nomme la version, téléchargez l'archive depuis son `binary.url`, vérifiez le `sha256` (le texte de la proposition publie aussi le sha256 du binaire) et préparez-la **avant** la hauteur. Consultez `GET /cosmos/upgrade/v1beta1/current_plan` pour le plan en attente (`name` et `height`) et la hauteur actuelle avec `GET /status` sur le RPC.
 3. À la hauteur du plan, un nœud encore sur l'ancien binaire **s'arrête** (c'est le comportement voulu du module de mise à niveau, pas une défaillance) ; un nœud déjà sur le nouveau binaire applique le gestionnaire de mise à niveau et continue. Si le vôtre s'est arrêté en premier, remplacez le binaire et redémarrez. Après la mise à niveau, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` renvoie la hauteur au lieu de `0` (3742566 sur le mainnet, 8337253 sur le testnet).
-4. Un nœud qui rejoint le mainnet maintenant installe la version que nomme le manifeste (v3.2.6 au moment de la rédaction ; vérifiez `version` par rapport à `minCompatible`).
+4. Un nœud qui rejoint le mainnet maintenant installe la version que nomme le manifeste (v3.2.7 au moment de la rédaction ; vérifiez `version` par rapport à `minCompatible`).
 
 La signature des transactions, les adresses, les décimales, les memos et les frais ne changent pas avec la v3.2.4.
 
 **v3.2.5 sur le mainnet (hauteur 3,906,833, 29 octobre 2026, proposition de gouvernance 14).** Les mêmes étapes se sont appliquées : le manifeste nommait `3.2.5` comme `version` et `minCompatible`, et un nœud encore sur la v3.2.4 s'est arrêté à la hauteur du plan avec `UPGRADE "v3.2.5" NEEDED`. La solution est d'installer le bundle v3.2.5 (il livre `qorechaind` et les bibliothèques partagées de `lib/` ensemble ; gardez-les côte à côte) et de redémarrer ; l'état du nœud est conservé.
 
 **v3.2.6 sur le mainnet (hauteur 4,020,000, 4 novembre 2026, proposition de gouvernance 15).** Les mêmes étapes se sont appliquées : le manifeste nomme `3.2.6` comme `version` et `minCompatible`, et un nœud encore sur la v3.2.5 s'arrête à la hauteur du plan avec `UPGRADE "v3.2.6" NEEDED` ; installez le bundle v3.2.6 et redémarrez. La signature (sign-bytes v2), les adresses, les décimales, les memos et les frais sont inchangés, et le manifeste demande aux opérateurs de garder l'horloge synchronisée via NTP. `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.6` renvoie `{"height":"4020000"}` sur le mainnet. Aucune autre mise à niveau du mainnet n'est programmée.
+
+**v3.2.7 sur le mainnet (hauteur 4,164,600, 12 novembre 2026, proposition de gouvernance 16).** Les mêmes étapes se sont appliquées : le manifeste nomme `3.2.7` comme `version` et `minCompatible`, et un nœud encore sur la v3.2.6 s'arrête à la hauteur du plan avec `UPGRADE "v3.2.7" NEEDED` ; installez le bundle v3.2.7 et redémarrez. `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.7` renvoie `{"height":"4164600"}` sur le mainnet. La mise à niveau a activé onze fonctionnalités de protocole (multisig post-quantique hybride, un gas fixe de 2 000 par vérification post-quantique, l'événement de fenêtre EVM, les messages de clé de vérification RDK et plusieurs corrections d'adresses SVM et d'appels inter-VM), 101 au total. La lane SVM, l'appel inter-VM ainsi que le téléversement et l'instanciation CosmWasm restent désactivés sur le mainnet.
 
 Lisez l'enregistrement en direct avec `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = non appliquée) et tout plan en attente avec `GET /cosmos/upgrade/v1beta1/current_plan`. La v3.2.2 a relevé les dépendances du moteur de consensus, de Cosmos SDK (v0.53.8) et d'IBC, et les contrôles de transaction plus stricts du SDK font que cette version remplace le binaire précédent à la hauteur de mise à niveau plutôt que nœud par nœud. La signature des transactions, les adresses, les décimales, les memos et les frais n'ont pas changé dans la v3.2.2 ni dans la v3.2.3.
 
@@ -451,7 +453,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bonnes pratiques opérationnelles
 
-1. **Épinglez la version de la chaîne.** Exécutez la version que recommande le manifeste (**v3.2.6** sur le mainnet et **v3.2.8** sur le testnet au moment de la rédaction), suivez les versions officielles pour les mises à niveau coordonnées et gardez l'horloge système synchronisée via NTP.
+1. **Épinglez la version de la chaîne.** Exécutez la version que recommande le manifeste (**v3.2.7** sur le mainnet et **v3.2.8** sur le testnet au moment de la rédaction), suivez les versions officielles pour les mises à niveau coordonnées et gardez l'horloge système synchronisée via NTP.
 
 2. **Faites tourner des nœuds redondants.** Faites fonctionner au moins deux nœuds derrière un répartiteur de charge afin qu'un simple redémarrage ou une resynchronisation n'interrompe pas le trafic d'intégration.
 

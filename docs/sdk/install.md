@@ -205,7 +205,7 @@ at 0.14.0 now.
 ## What 0.9.0 added {#whats-new-090}
 
 SDK 0.9.0 was the client release for chain **v3.2.2** and **v3.2.3** (mainnet
-applied them at heights 3,556,788 and 3,662,051; mainnet ran v3.2.4 from 23 October 2026 (height 3,742,566) and ran v3.2.5 from 29 October has run v3.2.6 since 4 November and runs v3.2.7 since 12 November 2026, and the testnet has run v3.2.4 or later since 19 October 2026). The
+applied them at heights 3,556,788 and 3,662,051; mainnet ran v3.2.4 from 23 October 2026 (height 3,742,566) ran v3.2.5 from 29 October and v3.2.6 from 4 November, and runs v3.2.7 since 12 November 2026; the testnet has run v3.2.4 or later since 19 October 2026). The
 signing format, addresses, decimals, memos and fees did not change, so the
 v2 hybrid sign-bytes form that 0.8.1 and later sign is still the right one.
 What is new:

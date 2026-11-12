@@ -307,7 +307,7 @@ Testnet-ul a răspuns pe 12 noiembrie 2026 cu `tx_max_gas` **30000000** și `pre
 | `max_txs` fereastră | 1,000 | Cele mai multe tranzacții într-o fereastră |
 | Intrări în liste | 16 pe listă | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-Răspunsul conține și un obiect `limits` cu valorile setate de guvernanță; citiți `tx_max_gas` și `precompile_input_max_bytes` de la nivelul de sus, care sunt valorile în vigoare. Ruta este servită începând cu v3.2.8, deci mainnet-ul public răspunde `501 Not Implemented` până se actualizează.
+Răspunsul conține și un obiect `limits` cu valorile setate de guvernanță; citiți `tx_max_gas` și `precompile_input_max_bytes` de la nivelul de sus, care sunt valorile în vigoare. Ruta este servită începând cu v3.2.8, deci mainnet-ul public răspunde `501 Not Implemented` până aplică v3.2.8 (verificat la 12 noiembrie 2026, după ce mainnet-ul a trecut la v3.2.7).
 
 O fereastră deschisă la un preț normal al gazului numără tot comisionul maxim: o limită de gaz de 30,000,000 la un plafon de comision de 100 gwei numără 3 QOR din `max_value` pentru o singură tranzacție.
 

@@ -81,12 +81,12 @@ const calldata = encodeCrossVmCalldata({
 
 ### Zincir v3.2.5: izin listesi, yanıt biçimi ve retler (her iki ağda) {#chain-v325}
 
-Zincir v3.2.5 köprünün davranışını değiştirir. Mainnet onu 29 Ekim 2026'dan beri (yönetişim önerisi 14, yükseklik 3,906,833), testnet ise 26 Ekim'den beri çalıştırır; mainnet şimdi v3.2.6, test ağı v3.2.8 çalıştırır. Ön derleme mainnet'te etkin olmadığından, aşağıdaki yanıt biçimi sürümün davranışıdır ve orada denenmemiştir; ret biçimi test ağında 7 Kasım 2026'da görüldü ([Test ağında test edildi](#tested-testnet) bölümüne bakın). Bu sayfanın başka yerlerinde ön derlemenin hedefin ham yanıtını döndürdüğünü söyleyen açıklamalar v3.2.5 öncesi sürümleri anlatır.
+Zincir v3.2.5 köprünün davranışını değiştirir. Mainnet onu 29 Ekim 2026'dan beri (yönetişim önerisi 14, yükseklik 3,906,833), testnet ise 26 Ekim'den beri çalıştırır; mainnet şimdi v3.2.7, test ağı v3.2.8 çalıştırır. Ön derleme mainnet'te etkin olmadığından, aşağıdaki yanıt biçimi sürümün davranışıdır ve orada denenmemiştir; ret biçimi test ağında 7 Kasım 2026'da görüldü ([Test ağında test edildi](#tested-testnet) bölümüne bakın). Bu sayfanın başka yerlerinde ön derlemenin hedefin ham yanıtını döndürdüğünü söyleyen açıklamalar v3.2.5 öncesi sürümleri anlatır.
 
 * **Bir izin listesi rotası.** `GET /qorechain/crossvm/v1/params`, hedeflerin izin listesi dahil köprü parametrelerini sunar. Mainnet'te izin listesi boştur (4 Kasım 2026'da kontrol edildi), yani henüz hiçbir hedefe izin verilmemiştir; testnet'te 30 Ekim'de boştu (yukarıdaki nota bakın).
 * **Sabit bir yanıt biçimi.** Ön derleme `abi.encode(bytes)` döndürür; böylece bir yanıt her zaman en az 64 bayttır ve boş bir yanıt, eksik bir yanıttan ayırt edilebilir; onu `abi.decode(ret, (bytes))` ile çözün.
 * **Retler bir gerekçe taşır.** Köprü bir çağrıyı reddettiğinde bir sözleşmenin okuyup iletebileceği `Error(string)` ile geri döner (revert).
-* **Test ağında etkin, mainnet'te değil.** `0x...0901` mainnet'in etkin ön derleme listesinde yoktur; test ağının listesi onu içerir (7 Kasım 2026'da okundu) ve ret ile izin listesi davranışı orada o gün test edildi. Mainnet, bir v3.2.7 yükseltmesinden sonra da, ayrı bir yönetişim kararına kadar VM'ler arası çağrıları kapalı tutar.
+* **Test ağında etkin, mainnet'te değil.** `0x...0901` mainnet'in etkin ön derleme listesinde yoktur; test ağının listesi onu içerir (7 Kasım 2026'da okundu) ve ret ile izin listesi davranışı orada o gün test edildi. Mainnet, v3.2.7 yükseltmesinden sonra da (12 Kasım 2026'da mainnet'te uygulandı; VM'ler arası çağrı mesajı devre kesici tarafından durdurulmuş kalır), ayrı bir yönetişim kararına kadar VM'ler arası çağrıları kapalı tutar.
 
 ### Test ağında test edildi {#tested-testnet}
 

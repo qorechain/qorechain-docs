@@ -10,7 +10,7 @@ sidebar_position: 4
 Rejoignez le testnet QoreChain Diana en service en configurant votre nœud avec le bon fichier genesis, les bons pairs et les bons paramètres réseau.
 
 :::note
-Cette page couvre le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 (version **v3.2.6** depuis le 4 novembre 2026 ; le testnet a deux versions d'avance) et dispose de sa propre page dédiée **Connexion au mainnet**, avec un genesis, des pairs et des détails de connexion distincts. Le testnet exécute la version **v3.2.8** depuis le 12 novembre 2026 (il a exécuté la v3.2.7 à partir du 6 novembre et la v3.2.6 à partir du 27 octobre ; le mainnet a appliqué la v3.2.6 le 4 novembre 2026) ; son manifeste de version se trouve à l'adresse [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Cette page couvre le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 (version **v3.2.7** depuis le 12 novembre 2026 ; le testnet a une version d'avance) et dispose de sa propre page dédiée **Connexion au mainnet**, avec un genesis, des pairs et des détails de connexion distincts. Le testnet exécute la version **v3.2.8** depuis le 12 novembre 2026 (il a exécuté la v3.2.7 à partir du 6 novembre et la v3.2.6 à partir du 27 octobre ; le mainnet a appliqué la v3.2.6 le 4 novembre 2026 et la v3.2.7 le 12 novembre 2026) ; son manifeste de version se trouve à l'adresse [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Points d'accès publics
@@ -66,7 +66,7 @@ Le testnet applique des mises à niveau coordonnées via des propositions de gou
 | v3.2.7 | 9,594,600 | 6 novembre 2026 (vers 15:00 UTC) |
 | v3.2.8 | 9,929,500 | 12 novembre 2026 (vers 03:35 UTC) |
 
-Le testnet reçoit chaque version avant le mainnet. Le mainnet a appliqué la v3.2.4 à la hauteur 3,742,566 le 23 octobre 2026 et la v3.2.5 à la hauteur 3,906,833 le 29 octobre 2026 (proposition de gouvernance 14) et la v3.2.6 à la hauteur 4,020,000 le 4 novembre 2026 (proposition de gouvernance 15). Le mainnet a donc deux versions de retard : le testnet exécute la v3.2.8 (après la v3.2.7), que le mainnet n'a pas et pour laquelle il n'y a pas encore de date ni de hauteur. Les manifestes sont distincts ; ne copiez donc jamais un binaire d'un réseau à l'autre (les ajouts de la v3.2.8 sont listés dans l'[Historique des versions](/appendix/version-history#v328)).
+Le testnet reçoit chaque version avant le mainnet. Le mainnet a appliqué la v3.2.4 à la hauteur 3,742,566 le 23 octobre 2026 et la v3.2.5 à la hauteur 3,906,833 le 29 octobre 2026 (proposition de gouvernance 14), la v3.2.6 à la hauteur 4,020,000 le 4 novembre 2026 (proposition de gouvernance 15) et la v3.2.7 à la hauteur 4,164,600 le 12 novembre 2026 (proposition de gouvernance 16). Le mainnet a donc une version de retard : le testnet exécute la v3.2.8 depuis le 12 novembre 2026, que le mainnet n'a pas appliquée. Les manifestes sont distincts ; ne copiez donc jamais un binaire d'un réseau à l'autre (les ajouts de la v3.2.8 sont listés dans l'[Historique des versions](/appendix/version-history#v328)).
 
 ---
 

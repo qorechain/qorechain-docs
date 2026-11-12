@@ -21,7 +21,7 @@ Aşağıdaki komutlar `qorechaind` kullanır. Ortamınız için olağan işlem b
 :::
 
 :::caution Ana ağda henüz hiç havuz yok
-AMM modülü ana ağda ve test ağında canlıdır (ana ağ 4 Kasım 2026'dan beri v3.2.6'da; test ağı 12 Kasım 2026'dan beri v3.2.8'de). **Ana ağda henüz hiçbir havuz oluşturulmamıştır** (30 Ekim 2026'da ve tekrar 4 Kasım 2026'da kontrol edildi: `GET /qorechain/amm/v1/pools` orada boş bir liste döndürür). Test ağında bir havuz vardır (kimlik 1, `uqor` karşısında bir Fest test tokenı; yalnızca test ağı, değeri yoktur). Aşağıdaki örneklerdeki birimler (`uusdc`, `uusdt`) açıklayıcıdır: bugün ağlarda böyle varlıklar bulunmaz. Bir havuz oluşana kadar her takas veya likidite ekleme komutu, havuz bulunamadı hatasıyla başarısız olur.
+AMM modülü ana ağda ve test ağında canlıdır (ana ağ 12 Kasım 2026'dan beri v3.2.7'de; test ağı 12 Kasım 2026'dan beri v3.2.8'de). **Ana ağda henüz hiçbir havuz oluşturulmamıştır** (30 Ekim 2026'da ve tekrar 4 Kasım 2026'da kontrol edildi: `GET /qorechain/amm/v1/pools` orada boş bir liste döndürür). Test ağında bir havuz vardır (kimlik 1, `uqor` karşısında bir Fest test tokenı; yalnızca test ağı, değeri yoktur). Aşağıdaki örneklerdeki birimler (`uusdc`, `uusdt`) açıklayıcıdır: bugün ağlarda böyle varlıklar bulunmaz. Bir havuz oluşana kadar her takas veya likidite ekleme komutu, havuz bulunamadı hatasıyla başarısız olur.
 :::
 
 ## Modül parametreleri {#parameters}

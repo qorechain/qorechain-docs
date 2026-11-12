@@ -10,7 +10,7 @@ sidebar_position: 1
 Dieser Leitfaden behandelt den QOR-Token, das Senden und Empfangen von Token, das Abfragen von Guthaben sowie das Verständnis des Gebührenverteilungsmodells von QoreChain.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft seit dem 4. November 2026 auf Release **v3.2.6** (v3.2.5 ab dem 29. Oktober, v3.2.4 ab dem 23. Oktober); das Testnet läuft seit dem 12. November 2026 mit **v3.2.8** (v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober). Ersetzen Sie die Mainnet-Chain-ID und -Endpunkte von der Seite **Connecting to Mainnet**, wenn Sie im Mainnet Transaktionen durchführen.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft seit dem 12. November 2026 auf Release **v3.2.7** (v3.2.6 ab dem 4. November, v3.2.5 ab dem 29. Oktober, v3.2.4 ab dem 23. Oktober); das Testnet läuft seit dem 12. November 2026 mit **v3.2.8** (v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober). Ersetzen Sie die Mainnet-Chain-ID und -Endpunkte von der Seite **Connecting to Mainnet**, wenn Sie im Mainnet Transaktionen durchführen.
 :::
 
 :::caution Mit `tx pqc cosign` signieren

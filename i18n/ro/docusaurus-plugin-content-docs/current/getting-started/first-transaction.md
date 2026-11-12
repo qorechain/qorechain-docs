@@ -10,7 +10,7 @@ sidebar_position: 5
 Acest ghid parcurge trimiterea de token-uri QOR, interogarea tranzacțiilor și interacțiunea cu QoreChain prin interfețele sale native, EVM și SVM.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 și rulează versiunea v3.2.6 din 4 noiembrie 2026 (testnet-ul rulează v3.2.8 din 12 noiembrie 2026) — înlocuiți ID-ul chain-ului și punctele finale ale rețelei principale de pe pagina **Conectarea la rețeaua principală** atunci când efectuați tranzacții pe rețeaua principală.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 și rulează versiunea v3.2.7 din 12 noiembrie 2026 (testnet-ul rulează v3.2.8 din 12 noiembrie 2026) — înlocuiți ID-ul chain-ului și punctele finale ale rețelei principale de pe pagina **Conectarea la rețeaua principală** atunci când efectuați tranzacții pe rețeaua principală.
 :::
 
 ## Verificarea soldului
@@ -70,7 +70,7 @@ După ce tranzacția cosemnată este acceptată, CLI returnează un hash de tran
 
 ## Prima tranzacție a unui cont nou {#first-tx-pqc}
 
-Începând cu versiunea **v3.2.8** (testnet din 12 noiembrie 2026; mainnet-ul nu are încă o dată), prima tranzacție a unui cont nou trebuie să fie **înregistrarea cheii lui post-cuantice**: `MsgRegisterPQCKeyV2`, care poartă dovada deținerii, semnată doar cu cheia clasică. Orice altă primă tranzacție de la un cont care nu are o cheie înregistrată este refuzată. Aceasta se aplică unui cont nou care a fost alimentat, dar nu a trimis niciodată nimic; un cont care are deja o cheie înregistrată nu este afectat.
+Începând cu versiunea **v3.2.8** (testnet din 12 noiembrie 2026; mainnet-ul nu a aplicat-o), prima tranzacție a unui cont nou trebuie să fie **înregistrarea cheii lui post-cuantice**: `MsgRegisterPQCKeyV2`, care poartă dovada deținerii, semnată doar cu cheia clasică. Orice altă primă tranzacție de la un cont care nu are o cheie înregistrată este refuzată. Aceasta se aplică unui cont nou care a fost alimentat, dar nu a trimis niciodată nimic; un cont care are deja o cheie înregistrată nu este afectat.
 
 **De ce contează.** Fiecare tranzacție ulterioară pe lane-ul Cosmos este semnată hibrid (secp256k1 plus ML-DSA-87), iar lanțul poate verifica partea ML-DSA-87 doar față de o cheie pe care o cunoaște deja. Înregistrarea este singura tranzacție care nu poate purta încă acea semnătură, deci este singura tranzacție pe care lanțul o acceptă doar cu semnătură clasică, și trebuie să vină prima. Dacă trimiteți un transfer, o delegare sau un apel de contract înainte de înregistrare, tranzacția este refuzată și înregistrați întâi cheia.
 

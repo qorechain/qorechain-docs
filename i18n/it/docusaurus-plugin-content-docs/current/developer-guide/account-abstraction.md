@@ -14,7 +14,7 @@ Il modulo di account astratti è **disattivato sulla mainnet `qorechain-vladi`**
 :::
 
 :::note
-I comandi seguenti usano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.6** (applicata all'altezza 4.020.000 il 4 novembre 2026, proposta di governance 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre 2026, proposta 14, e la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.7 (dal 6 novembre 2026; v3.2.4 dal 19 ottobre 2026).
+I comandi seguenti usano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.7** (applicata all'altezza 4.164.600 il 12 novembre 2026, proposta di governance 16; la v3.2.6 è stata applicata all'altezza 4.020.000 il 4 novembre 2026, proposta 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre 2026, proposta 14, e la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.7 (dal 6 novembre 2026; v3.2.4 dal 19 ottobre 2026).
 :::
 
 :::caution Ogni transazione sulla lane Cosmos richiede la co-firma ibrida post-quantistica

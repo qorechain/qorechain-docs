@@ -30,7 +30,7 @@ Hesaplar, bakiyeler ve token'lar çalışma ortamları arasında paylaşılır v
 zincir, zincirler arası birlikte çalışabilirlik için IBC modülünü içerir
 (mainnet üzerinde açık bir IBC kanalı yoktur; testnet'te test zincirine giden açık bir `transfer` kanalı vardır, 27 Ekim 2026'da kontrol edildi).
 
-:::note Canlı ağlarda bugün çalışanlar (mainnet v3.2.6, testnet v3.2.8 çalıştırır)
+:::note Canlı ağlarda bugün çalışanlar (mainnet v3.2.7, testnet v3.2.8 çalıştırır)
 **Çalışır:** her şeritte okumalar, hibrit imzalı Native işlemler, birleşik
 hesaplar, bir [yetkilendirme penceresi](/sdk/guides/evm#evm-window) içindeki EVM
 işlemleri ve SVM okumaları.
@@ -45,8 +45,8 @@ soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler. 27 Ekim
 
 Yayımlanan SDK (0.14.0, 12 Kasım 2026), her iki ağın doğruladığı biçimde imzalar
 (v2 hibrit sign-bytes, zincir durumundan çözümlenir); imzalama biçimi, adresler,
-ondalık basamaklar, memo'lar ve ücretler v3.2.3, v3.2.4, v3.2.5 veya v3.2.6'da değişmedi (mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırır,
-yükseklik 4.020.000, yönetişim önerisi 15; testnet 27 Ekim'den beri; testnet 6 Kasım'dan beri v3.2.7, 12 Kasım'dan beri v3.2.8 çalıştırır ve bu sürümler, SDK 0.14.0'ın oluşturucularına sahip olduğu mesajlar ekler; test ağının yeni kuralları v3.2.8'den itibaren geçerlidir ve ana ağ onu henüz uygulamadı). Sonraki
+ondalık basamaklar, memo'lar ve ücretler v3.2.3, v3.2.4, v3.2.5 veya v3.2.6'da değişmedi (mainnet 12 Kasım 2026'dan beri v3.2.7 çalıştırır,
+yükseklik 4.164.600, yönetişim önerisi 16, 4 Kasım'daki v3.2.6'dan sonra; testnet 27 Ekim'den beri; testnet 6 Kasım'dan beri v3.2.7, 12 Kasım'dan beri v3.2.8 çalıştırır ve bu sürümler, SDK 0.14.0'ın oluşturucularına sahip olduğu mesajlar ekler; test ağının yeni kuralları v3.2.8'den itibaren geçerlidir ve ana ağ onu henüz uygulamadı; v3.2.7 mesajları mainnet'te 12 Kasım 2026'dan beri vardır). Sonraki
 kuantum sonrası kuralların istemci tarafını (anahtar kaydında sahiplik
 kanıtı, kapsamlı EVM pencereleri, EIP-7702 onay mesajları) ve v3.2.4'ün istemci tarafını (staking
 katmanları, authenticator nonce'u, protokol özelliği anahtarları) ve v3.2.5'in (hibrit işlemler için kesin gas,

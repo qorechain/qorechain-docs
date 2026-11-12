@@ -12,7 +12,7 @@ La lane SVM est la partie de QoreChain compatible avec Solana : vous déployez d
 Cette page explique comment lire l'état de la lane, comment fonctionnent les programmes, les comptes et le loyer, comment un portefeuille SVM enregistre une clé post-quantique, ce que signifient les limites de garde, et quels exemples peuvent être exécutés aujourd'hui.
 
 :::note Testnet d'abord, et la lane y est ouverte depuis la proposition 37
-La v3.2.8 s'exécute sur le testnet **`qorechain-diana`** depuis le 12 novembre 2026. Le mainnet (`qorechain-vladi`) est encore en v3.2.6, n'a pas de date pour la v3.2.8, et **la lane reste désactivée sur le mainnet**. La mise à niveau a fermé la lane sur le testnet (les écritures SVM échouaient, `MsgRegisterSVMPQCKey` était refusé). **La proposition de gouvernance 37 a été adoptée et l'a ouverte sur `qorechain-diana`** : elle a mis `enabled: true`, laissé les autres paramètres tels quels et levé la pause du coupe-circuit sur `MsgExecuteProgram` et sur les appels inter-VM. Lors de la vérification du 12 novembre 2026 après le vote, `GET /qorechain/svm/v1/params` montrait `enabled: true` et la liste du coupe-circuit ne contenait que `/cosmwasm.wasm.v1.MsgStoreCode`. Le JSON-RPC SVM public reste en lecture seule. Lisez toujours l'état en direct d'abord (section suivante) et ne le supposez pas.
+La v3.2.8 s'exécute sur le testnet **`qorechain-diana`** depuis le 12 novembre 2026. Le mainnet (`qorechain-vladi`) exécute la v3.2.7 (depuis le 12 novembre 2026), n'a pas appliqué la v3.2.8, et **la lane reste désactivée sur le mainnet**. La mise à niveau a fermé la lane sur le testnet (les écritures SVM échouaient, `MsgRegisterSVMPQCKey` était refusé). **La proposition de gouvernance 37 a été adoptée et l'a ouverte sur `qorechain-diana`** : elle a mis `enabled: true`, laissé les autres paramètres tels quels et levé la pause du coupe-circuit sur `MsgExecuteProgram` et sur les appels inter-VM. Lors de la vérification du 12 novembre 2026 après le vote, `GET /qorechain/svm/v1/params` montrait `enabled: true` et la liste du coupe-circuit ne contenait que `/cosmwasm.wasm.v1.MsgStoreCode`. Le JSON-RPC SVM public reste en lecture seule. Lisez toujours l'état en direct d'abord (section suivante) et ne le supposez pas.
 :::
 
 ## Pourquoi c'est important {#why}
@@ -69,7 +69,7 @@ Réponse du 12 novembre 2026, lue après l'adoption de la proposition 37, avec `
 {"chain_id":"qorechain-diana","genesis_hash":"6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj","caip2_chain_id":"solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR","derivation":"base58(SHA-256(\"qorechain/svm/genesis-hash/v1\" || 0x00 || chain_id))","execution_enabled":true}
 ```
 
-La CLI de nœud a la même requête : `qorechaind query svm cluster-info`. La méthode JSON-RPC `getGenesisHash` sur `https://svm-testnet.qore.host` renvoie le même hash. Le hash est dérivé de l'identifiant de chaîne ; ce n'est pas le hash de genèse d'un vrai cluster Solana.
+La CLI de nœud a la même requête : `qorechaind query svm cluster-info`. La méthode JSON-RPC `getGenesisHash` sur `https://svm-testnet.qore.host` renvoie le même hash. Le hash est dérivé de l'identifiant de chaîne ; ce n'est pas le hash de genèse d'un vrai cluster Solana. La route est aussi servie sur le mainnet (v3.2.7) : le 12 novembre 2026, `https://api.qore.host/qorechain/svm/v1/cluster_info` a répondu `200` avec `execution_enabled` à `false`.
 
 ## Le RPC SVM public est en lecture seule {#public-rpc}
 
@@ -272,7 +272,7 @@ Non exécutés (UNTESTED) : déploiement de programme, exécution de programme e
 
 ## Mainnet {#mainnet}
 
-Le mainnet reste pour l'instant en v3.2.6, avec la lane SVM désactivée, et son activation sur le mainnet demande une version ultérieure et un vote de gouvernance. Planifiez uniquement par rapport au testnet.
+Le mainnet reste pour l'instant en v3.2.7, avec la lane SVM désactivée, et son activation sur le mainnet demande une version ultérieure et un vote de gouvernance. Planifiez uniquement par rapport au testnet.
 
 ## Voir aussi {#see-also}
 

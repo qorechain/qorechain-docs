@@ -10,7 +10,7 @@ sidebar_position: 1
 Référence des commandes `qorechaind` utilisées pour initialiser, configurer et faire fonctionner un nœud QoreChain.
 
 :::note
-QoreChain exploite deux réseaux : le mainnet **`qorechain-vladi`** (en service depuis le 7 juin 2026 ; version du nœud **v3.2.6**, appliquée à la hauteur 4 020 000 le 4 novembre 2026 par la proposition de gouvernance 15 ; la v3.2.5 a été appliquée à la hauteur 3 906 833 le 29 octobre 2026, la v3.2.4 à la hauteur 3 742 566 le 23 octobre 2026 et la v3.2.3 à la hauteur 3 662 051 le 20 octobre 2026) et le testnet **`qorechain-diana`** (version du nœud **v3.2.8**, appliquée à la hauteur 9 929 500 le 12 novembre 2026, après la v3.2.7 à la hauteur 9 594 600 le 6 novembre, la v3.2.6 à la hauteur 8 970 638 le 27 octobre, la v3.2.5 à la hauteur 8 890 800 le 26 octobre et la v3.2.4 à la hauteur 8 337 253 le 19 octobre ; le mainnet n'a pas de date pour la v3.2.8). Indiquez le `--chain-id` correspondant au réseau que vous souhaitez rejoindre — les exemples ci-dessous ciblent le testnet ; utilisez `--chain-id qorechain-vladi` pour le mainnet. La version actuelle de chaque réseau est indiquée dans `latest.json` sur [download.qore.host](https://download.qore.host).
+QoreChain exploite deux réseaux : le mainnet **`qorechain-vladi`** (en service depuis le 7 juin 2026 ; version du nœud **v3.2.7**, appliquée à la hauteur 4 164 600 le 12 novembre 2026 par la proposition de gouvernance 16 ; la v3.2.6 a été appliquée à la hauteur 4 020 000 le 4 novembre 2026 ; la v3.2.5 a été appliquée à la hauteur 3 906 833 le 29 octobre 2026, la v3.2.4 à la hauteur 3 742 566 le 23 octobre 2026 et la v3.2.3 à la hauteur 3 662 051 le 20 octobre 2026) et le testnet **`qorechain-diana`** (version du nœud **v3.2.8**, appliquée à la hauteur 9 929 500 le 12 novembre 2026, après la v3.2.7 à la hauteur 9 594 600 le 6 novembre, la v3.2.6 à la hauteur 8 970 638 le 27 octobre, la v3.2.5 à la hauteur 8 890 800 le 26 octobre et la v3.2.4 à la hauteur 8 337 253 le 19 octobre ; le mainnet n'a pas appliqué la v3.2.8). Indiquez le `--chain-id` correspondant au réseau que vous souhaitez rejoindre — les exemples ci-dessous ciblent le testnet ; utilisez `--chain-id qorechain-vladi` pour le mainnet. La version actuelle de chaque réseau est indiquée dans `latest.json` sur [download.qore.host](https://download.qore.host).
 
 Les commandes de cette page ont été vérifiées avec le binaire de la version v3.2.3. Le binaire v3.2.4 ajoute des commandes qu'un binaire v3.2.3 n'a pas (par exemple `stakingtier`) ; elles fonctionnent sur les deux réseaux (testnet depuis le 19 octobre 2026, mainnet depuis le 23 octobre 2026), et lorsque ce manuel en mentionne une, il l'indique. Le binaire v3.2.6 (les deux réseaux) ajoute deux commandes de requête supplémentaires, `query rlconsensus applied-params` et `last-action` (voir [Commandes de requête](/cli-reference/query-commands#rlconsensus)). Tout le reste de cette page se comporte de la même façon sur les deux versions.
 :::
@@ -70,10 +70,11 @@ Un binaire compilé à partir de l'arborescence de sources publique (la version 
 ```bash
 # archive checksum, as published
 curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
-# has v3.2.3 / v3.2.4 / v3.2.5 / v3.2.6 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"})
+# has v3.2.3 / v3.2.4 / v3.2.5 / v3.2.6 / v3.2.7 been applied on mainnet, and at which height? (a name that was not applied returns {"height":"0"})
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.4   # {"height":"3742566"}
 curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.6   # {"height":"4020000"}
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.7   # {"height":"4164600"}
 ```
 
 ---

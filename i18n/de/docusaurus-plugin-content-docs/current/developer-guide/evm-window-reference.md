@@ -307,7 +307,7 @@ Das Testnet antwortete am 12. November 2026 mit `tx_max_gas` **30000000** und `p
 | Fenster-`max_txs` | 1,000 | Meiste Transaktionen in einem Fenster |
 | Listeneinträge | 16 pro Liste | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-Die Antwort enthält auch ein Objekt `limits` mit den von der Governance gesetzten Werten; lesen Sie die obersten Felder `tx_max_gas` und `precompile_input_max_bytes`, das sind die geltenden Werte. Die Route wird ab v3.2.8 bedient, das öffentliche Mainnet antwortet daher mit `501 Not Implemented`, bis es aktualisiert wird.
+Die Antwort enthält auch ein Objekt `limits` mit den von der Governance gesetzten Werten; lesen Sie die obersten Felder `tx_max_gas` und `precompile_input_max_bytes`, das sind die geltenden Werte. Die Route wird ab v3.2.8 bedient, das öffentliche Mainnet antwortet daher mit `501 Not Implemented`, bis es v3.2.8 anwendet (geprüft am 12. November 2026, nachdem das Mainnet auf v3.2.7 gewechselt war).
 
 Ein zu einem normalen Gaspreis geöffnetes Fenster zählt trotzdem die maximale Gebühr: Ein Gaslimit von 30,000,000 bei einer Gebührenobergrenze von 100 gwei zählt für eine Transaktion 3 QOR gegen `max_value`.
 

@@ -10,7 +10,7 @@ sidebar_position: 1
 Ce guide couvre le jeton QOR, l'envoi et la réception de jetons, la consultation des soldes, ainsi que le modèle de répartition des frais sur QoreChain.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.6** depuis le 4 novembre 2026 (v3.2.5 depuis le 29 octobre, v3.2.4 à partir du 23 octobre) ; le testnet exécute la **v3.2.8** depuis le 12 novembre 2026 (v3.2.7 depuis le 6 novembre, v3.2.6 depuis le 27 octobre). Remplacez le chain ID et les points de terminaison du mainnet indiqués sur la page **Connecting to Mainnet** lors de transactions sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.7** depuis le 12 novembre 2026 (v3.2.6 depuis le 4 novembre, v3.2.5 depuis le 29 octobre, v3.2.4 à partir du 23 octobre) ; le testnet exécute la **v3.2.8** depuis le 12 novembre 2026 (v3.2.7 depuis le 6 novembre, v3.2.6 depuis le 27 octobre). Remplacez le chain ID et les points de terminaison du mainnet indiqués sur la page **Connecting to Mainnet** lors de transactions sur le mainnet.
 :::
 
 :::caution Signer avec `tx pqc cosign`

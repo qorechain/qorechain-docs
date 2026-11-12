@@ -10,7 +10,7 @@ sidebar_position: 5
 Questa guida illustra l'invio di token QOR, l'interrogazione delle transazioni e l'interazione con QoreChain attraverso le sue interfacce native, EVM e SVM.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la release v3.2.6 dal 4 novembre 2026 (la testnet esegue la v3.2.8 dal 12 novembre 2026) — sostituisci il chain ID e gli endpoint della mainnet riportati nella pagina **Connessione alla mainnet** quando esegui transazioni sulla mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la release v3.2.7 dal 12 novembre 2026 (la testnet esegue la v3.2.8 dal 12 novembre 2026) — sostituisci il chain ID e gli endpoint della mainnet riportati nella pagina **Connessione alla mainnet** quando esegui transazioni sulla mainnet.
 :::
 
 ## Verifica del saldo
@@ -70,7 +70,7 @@ Dopo che la transazione cofirmata è stata accettata, la CLI restituisce un hash
 
 ## La prima transazione di un nuovo account {#first-tx-pqc}
 
-Dalla release **v3.2.8** (testnet dal 12 novembre 2026; la mainnet non ha ancora una data) la prima transazione di un account nuovo deve essere la **registrazione della sua chiave post-quantistica**: `MsgRegisterPQCKeyV2`, che porta la prova di possesso, firmata con la sola chiave classica. Qualsiasi altra prima transazione da un account che non ha una chiave registrata viene rifiutata. Questo vale per un account nuovo che è stato finanziato ma non ha mai inviato nulla; un account che ha già una chiave registrata non è interessato.
+Dalla release **v3.2.8** (testnet dal 12 novembre 2026; la mainnet non l'ha applicata) la prima transazione di un account nuovo deve essere la **registrazione della sua chiave post-quantistica**: `MsgRegisterPQCKeyV2`, che porta la prova di possesso, firmata con la sola chiave classica. Qualsiasi altra prima transazione da un account che non ha una chiave registrata viene rifiutata. Questo vale per un account nuovo che è stato finanziato ma non ha mai inviato nulla; un account che ha già una chiave registrata non è interessato.
 
 **Perché è importante.** Ogni transazione successiva sulla lane Cosmos è firmata in modo ibrido (secp256k1 più ML-DSA-87), e la chain può verificare la parte ML-DSA-87 solo rispetto a una chiave che già conosce. La registrazione è l'unica transazione che non può ancora portare quella firma, quindi è l'unica transazione che la chain accetta con la sola firma classica, e deve venire per prima. Se invii un trasferimento, una delega o una chiamata a un contratto prima di registrare, la transazione viene rifiutata e prima devi registrare.
 

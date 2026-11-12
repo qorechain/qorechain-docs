@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain acceptă contracte inteligente **QoreChain Native**. QoreChain Native este numele dat de QoreChain runtime-ului său **CosmWasm**: dezvoltatorii scriu programe sigure, izolate în sandbox, în Rust, folosind bibliotecile standard CosmWasm (`cosmwasm-std`), și le compilează în WebAssembly. Contractele QoreChain Native rulează alături de programele EVM și SVM în cadrul arhitecturii triple-VM a QoreChain.
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.6** din 4 noiembrie 2026 (propunerea de guvernanță 15, înălțimea 4.020.000; v3.2.5 din 29 octombrie 2026, v3.2.4 din 23 octombrie 2026). Înlocuiește cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.8 (din 12 noiembrie 2026; v3.2.4 din 19 octombrie 2026).
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.7** din 12 noiembrie 2026 (propunerea de guvernanță 16, înălțimea 4.164.600; v3.2.6 din 4 noiembrie 2026; v3.2.5 din 29 octombrie 2026, v3.2.4 din 23 octombrie 2026). Înlocuiește cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.8 (din 12 noiembrie 2026; v3.2.4 din 19 octombrie 2026).
 :::
 
 :::caution Încărcarea codului și instanțierea necesită permisiune explicită pe mainnet; testnet-ul diferă
@@ -29,7 +29,7 @@ Această restricție nu afectează contractele deja instanțiate — `execute` �
 :::
 
 :::caution Semnează cu `tx pqc cosign`
-Mainnet-ul și testnet-ul cer o semnătură post-cuantică hibridă pe fiecare tranzacție din lane-ul Cosmos, așa că comenzile `tx` de pe această pagină nu se difuzează așa cum sunt scrise. Ele construiesc tranzacția cu `--generate-only > tx.json`; apoi o semnezi și o difuzezi cu `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` (binarul de release din [manifestul de descărcare](/developer-guide/running-a-node#fetch-the-manifest) include semnatarul; un build din sursa publică nu îl include). Pragul minim de taxă al rețelei este de **0,1 uqor per unitate de gas**, exact ceea ce exprimă `--gas-prices 0.1uqor`; semnătura hibridă adaugă aproximativ 47.000 de gas pe care o simulare nu îi include, de aici ajustarea `1.5`. (Începând cu v3.2.7, pe testnet din 6 noiembrie 2026, taxa de verificare post-cuantică este fixă, de 2.000 de gaz; mainnet-ul este încă pe v3.2.6.) Vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing).
+Mainnet-ul și testnet-ul cer o semnătură post-cuantică hibridă pe fiecare tranzacție din lane-ul Cosmos, așa că comenzile `tx` de pe această pagină nu se difuzează așa cum sunt scrise. Ele construiesc tranzacția cu `--generate-only > tx.json`; apoi o semnezi și o difuzezi cu `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` (binarul de release din [manifestul de descărcare](/developer-guide/running-a-node#fetch-the-manifest) include semnatarul; un build din sursa publică nu îl include). Pragul minim de taxă al rețelei este de **0,1 uqor per unitate de gas**, exact ceea ce exprimă `--gas-prices 0.1uqor`; semnătura hibridă adaugă aproximativ 47.000 de gas pe care o simulare nu îi include, de aici ajustarea `1.5`. (Începând cu v3.2.7, pe testnet din 6 noiembrie 2026 și pe mainnet din 12 noiembrie 2026, taxa de verificare post-cuantică este fixă, de 2.000 de gaz.) Vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing).
 :::
 
 ---

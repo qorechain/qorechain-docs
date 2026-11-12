@@ -322,7 +322,7 @@ mientras gana protección poscuántica. La parte poscuántica viaja como una
 extensión `PQCHybridSignature` en la transacción.
 
 :::caution La firma híbrida es obligatoria en la ruta Native
-Desde la versión de cadena **v3.2.0** (la mainnet ejecuta la v3.2.6, la testnet la v3.2.8), el valor predeterminado de la red es `hybrid_signature_mode = required` con
+Desde la versión de cadena **v3.2.0** (la mainnet ejecuta la v3.2.7, la testnet la v3.2.8), el valor predeterminado de la red es `hybrid_signature_mode = required` con
 `allow_classical_fallback = false`. La firma híbrida mediante
 `buildHybridTx` / `signAndBroadcastHybrid` (pasa `rest`), o `signHybridEth` /
 `EthNativeSigner` para cuentas unificadas eth-native, es **obligatoria** para

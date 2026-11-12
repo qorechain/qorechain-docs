@@ -12,7 +12,7 @@ El carril SVM es la parte de QoreChain compatible con Solana: despliegas program
 Esta página explica cómo leer el estado del carril, cómo funcionan los programas, las cuentas y la renta, cómo registra una clave poscuántica una cartera SVM, qué significan los límites de custodia y qué ejemplos pueden ejecutarse hoy.
 
 :::note Primero la testnet, y el carril está abierto allí desde la propuesta 37
-v3.2.8 se ejecuta en la testnet **`qorechain-diana`** desde el 12 de noviembre de 2026. La mainnet (`qorechain-vladi`) sigue en v3.2.6, no tiene fecha para v3.2.8 y **el carril sigue desactivado en la mainnet**. La actualización cerró el carril en la testnet (las escrituras SVM fallaban, `MsgRegisterSVMPQCKey` se rechazaba). **La propuesta de gobernanza 37 se aprobó y lo abrió en `qorechain-diana`**: puso `enabled: true`, dejó los demás parámetros como estaban y levantó la pausa del disyuntor (circuit breaker) sobre `MsgExecuteProgram` y sobre las llamadas entre VM. Al comprobarlo el 12 de noviembre de 2026 tras la votación, `GET /qorechain/svm/v1/params` mostraba `enabled: true` y la lista del disyuntor contenía solo `/cosmwasm.wasm.v1.MsgStoreCode`. El JSON-RPC público de SVM sigue siendo de solo lectura. Lee siempre el estado en vivo primero (sección siguiente) y no lo des por supuesto.
+v3.2.8 se ejecuta en la testnet **`qorechain-diana`** desde el 12 de noviembre de 2026. La mainnet (`qorechain-vladi`) ejecuta v3.2.7 (desde el 12 de noviembre de 2026), no ha aplicado v3.2.8 y **el carril sigue desactivado en la mainnet**. La actualización cerró el carril en la testnet (las escrituras SVM fallaban, `MsgRegisterSVMPQCKey` se rechazaba). **La propuesta de gobernanza 37 se aprobó y lo abrió en `qorechain-diana`**: puso `enabled: true`, dejó los demás parámetros como estaban y levantó la pausa del disyuntor (circuit breaker) sobre `MsgExecuteProgram` y sobre las llamadas entre VM. Al comprobarlo el 12 de noviembre de 2026 tras la votación, `GET /qorechain/svm/v1/params` mostraba `enabled: true` y la lista del disyuntor contenía solo `/cosmwasm.wasm.v1.MsgStoreCode`. El JSON-RPC público de SVM sigue siendo de solo lectura. Lee siempre el estado en vivo primero (sección siguiente) y no lo des por supuesto.
 :::
 
 ## Por qué importa {#why}
@@ -69,7 +69,7 @@ Respuesta del 12 de noviembre de 2026, leída tras aprobarse la propuesta 37, co
 {"chain_id":"qorechain-diana","genesis_hash":"6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj","caip2_chain_id":"solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR","derivation":"base58(SHA-256(\"qorechain/svm/genesis-hash/v1\" || 0x00 || chain_id))","execution_enabled":true}
 ```
 
-La CLI del nodo tiene la misma consulta: `qorechaind query svm cluster-info`. El método JSON-RPC `getGenesisHash` en `https://svm-testnet.qore.host` devuelve el mismo hash. El hash se deriva del id de la cadena; no es el hash génesis de un clúster real de Solana.
+La CLI del nodo tiene la misma consulta: `qorechaind query svm cluster-info`. El método JSON-RPC `getGenesisHash` en `https://svm-testnet.qore.host` devuelve el mismo hash. El hash se deriva del id de la cadena; no es el hash génesis de un clúster real de Solana. La ruta también se sirve en la mainnet (v3.2.7): el 12 de noviembre de 2026 `https://api.qore.host/qorechain/svm/v1/cluster_info` respondió `200` con `execution_enabled` `false`.
 
 ## El RPC público de SVM es de solo lectura {#public-rpc}
 
@@ -272,7 +272,7 @@ No ejecutado (UNTESTED): despliegue de programa, ejecución de programa y creaci
 
 ## Mainnet {#mainnet}
 
-La mainnet sigue por ahora en v3.2.6, con el carril SVM desactivado, y activarlo en la mainnet requiere una versión posterior y una votación de gobernanza. Planifica solo contra la testnet.
+La mainnet sigue por ahora en v3.2.7, con el carril SVM desactivado, y activarlo en la mainnet requiere una versión posterior y una votación de gobernanza. Planifica solo contra la testnet.
 
 ## Véase también {#see-also}
 

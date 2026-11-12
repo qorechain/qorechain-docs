@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain veröffentlicht sein Entwickler-Tooling als kleine Pakete in den öffentlichen Registries (npm, PyPI, crates.io, Go-Modul-Proxy, Maven Central und Swift Package Manager). Diese Seite ist der Index: wofür jedes Paket gedacht ist, sein exakter Registry-Name, die Sprache, die aktuelle Version, der Installationsbefehl und der Status sowie wo Sie nachlesen, wie man es verwendet. Sie richtet sich an Entwickler, die dApps, Wallets, Backends und Rollups auf QoreChain bauen und vor dem Lesen einer Anleitung das passende Paket auswählen möchten.
 
-Die Versionen in den Tabellen wurden am 4. November 2026 aus den Registries gelesen. Das Mainnet `qorechain-vladi` läuft auf v3.2.6 (angewendet am 4. November 2026; v3.2.5 am 29. Oktober). Das Testnet `qorechain-diana` hat v3.2.6 am 27. Oktober, v3.2.7 am 6. November und v3.2.8 am 12. November 2026 angewendet; v3.2.7 und v3.2.8 sind nicht im Mainnet und haben dort kein Datum. Kein Paket in diesen Tabellen hat Builder für die v3.2.7-Nachrichten, sofern seine Seite es nicht anders angibt. Jedes als veröffentlicht aufgeführte Paket steht unter der Apache-2.0-Lizenz.
+Die Versionen in den Tabellen wurden am 4. November 2026 aus den Registries gelesen. Das Mainnet `qorechain-vladi` läuft auf v3.2.7 (angewendet am 12. November 2026 bei Höhe 4.164.600, Governance-Vorschlag 16; v3.2.6 am 4. November, v3.2.5 am 29. Oktober). Das Testnet `qorechain-diana` hat v3.2.6 am 27. Oktober, v3.2.7 am 6. November und v3.2.8 am 12. November 2026 angewendet; v3.2.8 ist nicht im Mainnet. Kein Paket in diesen Tabellen hat Builder für die v3.2.7-Nachrichten, sofern seine Seite es nicht anders angibt. Jedes als veröffentlicht aufgeführte Paket steht unter der Apache-2.0-Lizenz.
 
 ## Innovationen {#innovations}
 
@@ -300,7 +300,7 @@ Behalten Sie bei einem npm-Namen mit Scope das `@`, zum Beispiel `https://regist
 
 ## Grenzen und bekannte Probleme {#limits}
 
-- **Zwei Live-Netzwerke, zwei Chain-Versionen.** Das Mainnet läuft auf v3.2.6 (seit dem 4. November 2026); das Testnet läuft auf v3.2.8 (seit dem 12. November 2026). Eine Funktion, die nur im Testnet existiert (zum Beispiel die EVM-PQC-Precompiles), ist auf ihrer eigenen Seite gekennzeichnet.
+- **Zwei Live-Netzwerke, zwei Chain-Versionen.** Das Mainnet läuft auf v3.2.7 (seit dem 12. November 2026); das Testnet läuft auf v3.2.8 (seit dem 12. November 2026). Eine Funktion, die nur im Testnet existiert (zum Beispiel die EVM-PQC-Precompiles), ist auf ihrer eigenen Seite gekennzeichnet.
 - **Noch nicht live:** die nativen Module des Asset Kit (ein Vorschlag, der nicht eingeplant ist), Windows-Wheels für die Python-Pakete von QoreSign und QoreSeal, SVM-Transaktionen und die EVM-Precompiles im Mainnet (sie sind nur im Testnet aktiv; die Liste nach Lane finden Sie im [SDK-Überblick](/sdk/overview)).
 - **QoreSeal-Register und der PQ-Light-Client.** Das Verschlüsseln an eine von der Chain gelesene Adresse braucht das KEM-Schlüsselregister, das im Testnet live ist, und dessen Leseroute im Mainnet seit v3.2.5 antwortet (am 4. November 2026 erneut geprüft: Im Mainnet war noch kein Schlüssel veröffentlicht). Der PQ-Light-Client verbindet sich mit keinem der beiden Netzwerke; für seine Checkpoints ist keine Chain-Unterstützung geplant.
 - **Kotlin 2.3 oder neuer.** Die Kotlin- und Android-Artefakte von QoreSign und QoreSeal benötigen den Kotlin-Compiler 2.3 oder neuer; mit Kotlin 2.1 lassen sie sich nicht kompilieren.

@@ -44,7 +44,7 @@ primesc o opțiune `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`); `"auto"`
 interoghează rețeaua și are deci nevoie de endpoint-ul REST (`rest`) pe
 `qorechain-vladi` / `qorechain-diana`: aruncă o eroare în loc să ghicească. Vezi
 [Ce formă de sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-Forma nu s-a schimbat în chain v3.2.3 sau v3.2.4 (v3.2.4 rulează pe testnet din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026; v3.2.5 și v3.2.6 nu au schimbat nimic aici; mainnet rulează v3.2.6 din 4 noiembrie 2026): `"auto"`
+Forma nu s-a schimbat în chain v3.2.3 sau v3.2.4 (v3.2.4 rulează pe testnet din 19 octombrie 2026 și pe mainnet din 23 octombrie 2026; v3.2.5 și v3.2.6 nu au schimbat nimic aici; mainnet rulează v3.2.7 din 12 noiembrie 2026): `"auto"`
 se rezolvă la v2 pe ambele rețele, deoarece ambele au aplicat upgrade-ul care a comutat la ea.
 :::
 
@@ -144,7 +144,7 @@ Păstrați codul de recuperare: un alt cod dă o altă cheie.
 
 SDK 0.12.0 este versiunea de client pentru chain **v3.2.5**, pe care mainnet a aplicat-o
 la înălțimea 3.906.833, pe 29 octombrie 2026 (testnet-ul a aplicat-o pe 26 octombrie). Mainnet-ul
-rulează v3.2.6 din 4 noiembrie; testnet-ul a rulat v3.2.6 din 27 octombrie, v3.2.7 din 6 până pe 12 noiembrie și v3.2.8 din 12 noiembrie; formatul de
+rulează v3.2.6 din 4 noiembrie și v3.2.7 din 12 noiembrie; testnet-ul a rulat v3.2.6 din 27 octombrie, v3.2.7 din 6 până pe 12 noiembrie și v3.2.8 din 12 noiembrie; formatul de
 semnare hibridă, adresele, zecimalele și memo-urile nu s-au schimbat, deci o
 tranzacție construită cu 0.10.0 rămâne validă. TypeScript, Python, Go, Rust și Java
 trec toate la 0.12.0, împreună cu `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`
@@ -186,10 +186,10 @@ la înălțimea 3.742.566, pe 23 octombrie 2026 (testnet-ul a aplicat-o la înă
 comisioanele nu s-au schimbat, iar o tranzacție construită cu 0.9.0 rămâne validă.
 Versiunea a fost verificată în fiecare limbaj cu tranzacții reale pe testnet. Nu avea
 constructori pentru nimic introdus după v3.2.4; adăugirile v3.2.5 au venit cu
-[0.12.0](#whats-new-0120). Mainnet rulează v3.2.6 din 4 noiembrie 2026 (înălțimea
-4.020.000, propunerea de guvernanță 15; v3.2.5 înainte de ea, din 29 octombrie la înălțimea
+[0.12.0](#whats-new-0120). Mainnet rulează v3.2.7 din 12 noiembrie 2026 (înălțimea
+4.164.600, propunerea de guvernanță 16; v3.2.6 din 4 noiembrie la înălțimea 4.020.000; v3.2.5 înainte de ea, din 29 octombrie la înălțimea
 3.906.833), iar 0.10.0 continuă să funcționeze acolo deoarece formatul de semnare nu s-a
-schimbat. Testnet-ul a aplicat v3.2.5 și v3.2.6 pe 26 și 27 octombrie 2026, v3.2.7 pe 6 noiembrie și v3.2.8 pe 12 noiembrie (nicio versiune SDK nu are constructori pentru mesajele v3.2.7). Ce a adus 0.10.0
+schimbat. Testnet-ul a aplicat v3.2.5 și v3.2.6 pe 26 și 27 octombrie 2026, v3.2.7 pe 6 noiembrie și v3.2.8 pe 12 noiembrie (nicio versiune SDK nu are constructori pentru mesajele v3.2.7, care sunt pe mainnet din 12 noiembrie 2026). Ce a adus 0.10.0
 (totul este încă în 0.14.0):
 
 | Zonă | În 0.10.0 |
@@ -209,7 +209,7 @@ sunt acum la 0.14.0.
 ## Ce a adăugat 0.9.0 {#whats-new-090}
 
 SDK 0.9.0 a fost versiunea de client pentru chain **v3.2.2** și **v3.2.3** (mainnet
-le-a aplicat la înălțimile 3.556.788 și 3.662.051; mainnet a rulat v3.2.4 din 23 octombrie 2026 (înălțimea 3.742.566) a rulat v3.2.5 din 29 octombrie și rulează v3.2.6 din 4 noiembrie 2026, iar testnet-ul rulează v3.2.4 sau mai nou din 19 octombrie 2026).
+le-a aplicat la înălțimile 3.556.788 și 3.662.051; mainnet a rulat v3.2.4 din 23 octombrie 2026 (înălțimea 3.742.566) a rulat v3.2.5 din 29 octombrie, a rulat v3.2.6 din 4 noiembrie și rulează v3.2.7 din 12 noiembrie 2026, iar testnet-ul rulează v3.2.4 sau mai nou din 19 octombrie 2026).
 Formatul de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au
 schimbat, deci forma v2 a sign-bytes hibride pe care o semnează 0.8.1 și versiunile
 ulterioare este în continuare cea corectă. Ce este nou:

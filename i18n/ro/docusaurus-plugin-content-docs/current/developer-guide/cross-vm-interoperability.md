@@ -51,7 +51,7 @@ Endpoint-urile de mai jos folosesc implicit un nod local. Pe mainnet, folosește
 Calea sincronă folosește un **precompile** EVM la adresa `0x0000000000000000000000000000000000000901`. Este conceput pentru a permite contractelor Solidity să apeleze contracte QoreChain Native și să primească un răspuns în cadrul aceleiași tranzacții.
 
 :::warning Inactiv pe mainnet; activ pe testnet, cu listă de permisiuni
-Precompile-ul punții CrossVM **nu este activ** pe `qorechain-vladi`: un apel către `0x…0901` acolo reușește și returnează date goale. Pe `qorechain-diana`, lista `active_static_precompiles` conține `0x…0901` (citit la 7 noiembrie 2026); un `eth_call` doar pentru citire prin el a fost rulat pe 7 noiembrie 2026, după upgrade-ul v3.2.7 (rezultatele mai jos). Binarul v3.2.3 conține o versiune întărită (refuză un `STATICCALL`, contorizează apelul său imbricat din gazul frame-ului apelant și îl jurnalizează astfel încât un revert EVM să anuleze și partea QoreChain Native, ajunge doar la ținte QoreChain Native din lista permisă și respectă circuit breaker-ul cross-VM), dar rulează abia acolo unde o propunere aprobată prin guvernanță l-a adăugat în lista activă (până acum testnet-ul, nu mainnet-ul). Pe mainnet, precompile-ul și apelurile cross-VM rămân dezactivate, chiar și după un upgrade la v3.2.7 (care nu are încă o dată), până la o decizie separată de guvernanță. Exemplul de mai jos este structura pe care o decodifică nodul; nu poate rula pe mainnet până când precompile-ul nu este activ. Pe testnet poate fi apelat, în limitele listei de permisiuni (secțiunea următoare). Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
+Precompile-ul punții CrossVM **nu este activ** pe `qorechain-vladi`: un apel către `0x…0901` acolo reușește și returnează date goale. Pe `qorechain-diana`, lista `active_static_precompiles` conține `0x…0901` (citit la 7 noiembrie 2026); un `eth_call` doar pentru citire prin el a fost rulat pe 7 noiembrie 2026, după upgrade-ul v3.2.7 (rezultatele mai jos). Binarul v3.2.3 conține o versiune întărită (refuză un `STATICCALL`, contorizează apelul său imbricat din gazul frame-ului apelant și îl jurnalizează astfel încât un revert EVM să anuleze și partea QoreChain Native, ajunge doar la ținte QoreChain Native din lista permisă și respectă circuit breaker-ul cross-VM), dar rulează abia acolo unde o propunere aprobată prin guvernanță l-a adăugat în lista activă (până acum testnet-ul, nu mainnet-ul). Pe mainnet, precompile-ul și apelurile cross-VM rămân dezactivate, chiar și după upgrade-ul v3.2.7 din 12 noiembrie 2026, până la o decizie separată de guvernanță. Exemplul de mai jos este structura pe care o decodifică nodul; nu poate rula pe mainnet până când precompile-ul nu este activ. Pe testnet poate fi apelat, în limitele listei de permisiuni (secțiunea următoare). Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Exemplu Solidity
@@ -97,11 +97,11 @@ Pe `qorechain-diana` (versiunea de nod v3.2.8 din 12 noiembrie 2026), precompile
 * **Țintă în afara listei de permisiuni:** se anulează cu `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted`.
 * **Țintă din lista de permisiuni:** apelul ajunge la contract (nodul raportează eroarea proprie a contractului pentru mesajul gol `{}`: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). Asta arată că ruta funcționează; pentru această pagină nu a fost trimisă nicio tranzacție cross-VM care schimbă starea prin precompile.
 
-Pe mainnet, precompile-ul (`0x…0901`) și apelurile cross-VM rămân **dezactivate** (circuit breaker) chiar și după upgrade-ul v3.2.7, până la o decizie separată de guvernanță.
+Pe mainnet, precompile-ul (`0x…0901`) și apelurile cross-VM rămân **dezactivate** (circuit breaker) chiar și după upgrade-ul v3.2.7 din 12 noiembrie 2026, până la o decizie separată de guvernanță.
 
-### Ce schimbă v3.2.7 pentru apelurile cross-VM (deocamdată doar pe testnet) {#v327}
+### Ce schimbă v3.2.7 pentru apelurile cross-VM {#v327}
 
-Acestea se aplică pe testnet din 6 noiembrie 2026 și **nu sunt încă pe mainnet** (upgrade-ul nu are dată):
+Acestea se aplică pe testnet din 6 noiembrie 2026 și pe mainnet din 12 noiembrie 2026 (apelul cross-VM în sine rămâne dezactivat pe mainnet, deci acolo contează doar dacă este pornit):
 
 * Un apel care eșuează în VM-ul țintă eșuează acum curat: este eșecul acelui apel, iar coada continuă cu mesajul următor.
 * Țintele malformate sunt refuzate la momentul trimiterii, cu codul 5 în codespace-ul `crossvm`.

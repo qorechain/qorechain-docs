@@ -44,7 +44,7 @@ seçeneği alır (`"auto"` | `"v1"` | `"v2"`); `"auto"` ağa sorar ve bu nedenle
 `qorechain-vladi` / `qorechain-diana` üzerinde REST uç noktasına (`rest`) ihtiyaç
 duyar: tahmin etmek yerine hata fırlatır. Bkz.
 [Hangi sign-bytes biçimi?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-Biçim, zincir v3.2.3 veya v3.2.4 ile değişmedi (v3.2.4 test ağında 19 Ekim 2026'dan beri, mainnet'te 23 Ekim 2026'dan beri çalışır; v3.2.5 ve v3.2.6 burada hiçbir şeyi değiştirmedi; mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırır): `"auto"` her
+Biçim, zincir v3.2.3 veya v3.2.4 ile değişmedi (v3.2.4 test ağında 19 Ekim 2026'dan beri, mainnet'te 23 Ekim 2026'dan beri çalışır; v3.2.5 ve v3.2.6 burada hiçbir şeyi değiştirmedi; mainnet 12 Kasım 2026'dan beri v3.2.7 çalıştırır): `"auto"` her
 iki ağda da v2'ye çözümlenir, çünkü ikisi de v2'ye geçiren yükseltmeyi uyguladı.
 :::
 
@@ -140,7 +140,7 @@ Kurtarma kodunu saklayın: farklı bir kod farklı bir anahtar verir.
 
 SDK 0.12.0, mainnet'in 29 Ekim 2026'da 3.906.833 yüksekliğinde uyguladığı (testnet
 bunu 26 Ekim'de uyguladı) zincir **v3.2.5** için istemci sürümüdür. Mainnet
-4 Kasım'dan beri v3.2.6 çalıştırır; testnet 27 Ekim'den v3.2.6, 6 ile 12 Kasım arasında v3.2.7, 12 Kasım'dan beri v3.2.8 çalıştırır;
+4 Kasım'dan beri v3.2.6 ve 12 Kasım'dan beri v3.2.7 çalıştırır; testnet 27 Ekim'den v3.2.6, 6 ile 12 Kasım arasında v3.2.7, 12 Kasım'dan beri v3.2.8 çalıştırır;
 hibrit imzalama biçimi, adresler, ondalık basamaklar ve memo'lar değişmedi, dolayısıyla
 0.10.0 ile oluşturulmuş bir işlem geçerli kalır. TypeScript, Python, Go, Rust ve Java
 tümü `@qorechain/react`, `@qorechain/evm`, `@qorechain/svm`
@@ -181,8 +181,8 @@ bunu 19 Ekim'de 8.337.253 yüksekliğinde uyguladı) zincir **v3.2.4** için ist
 sürümüdür. İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler
 değişmedi ve 0.9.0 ile oluşturulmuş bir işlem geçerli kalır. Sürüm, her dilde testnet
 üzerinde gerçek işlemlerle kontrol edildi. v3.2.4'ten sonra getirilen hiçbir şey için
-oluşturucuları yoktu; v3.2.5 ekleri [0.12.0](#whats-new-0120) ile geldi. Mainnet 4 Kasım 2026'dan beri v3.2.6 çalıştırır (yükseklik 4.020.000, yönetişim önerisi 15; öncesinde v3.2.5, 29 Ekim'den beri, yükseklik 3.906.833) ve imzalama biçimi değişmediği için 0.10.0 orada çalışmaya devam eder. Testnet v3.2.5 ve
-v3.2.6'yı 26 ve 27 Ekim 2026'da, v3.2.7'yi 6 Kasım'da ve v3.2.8'i 12 Kasım'da uyguladı (hiçbir SDK sürümünde v3.2.7 mesajları için oluşturucu yoktur). 0.10.0'ın getirdikleri (hepsi hâlâ 0.14.0'da):
+oluşturucuları yoktu; v3.2.5 ekleri [0.12.0](#whats-new-0120) ile geldi. Mainnet 12 Kasım 2026'dan beri v3.2.7 çalıştırır (yükseklik 4.164.600, yönetişim önerisi 16; v3.2.6, 4 Kasım'dan beri, yükseklik 4.020.000; öncesinde v3.2.5, 29 Ekim'den beri, yükseklik 3.906.833) ve imzalama biçimi değişmediği için 0.10.0 orada çalışmaya devam eder. Testnet v3.2.5 ve
+v3.2.6'yı 26 ve 27 Ekim 2026'da, v3.2.7'yi 6 Kasım'da ve v3.2.8'i 12 Kasım'da uyguladı (hiçbir SDK sürümünde v3.2.7 mesajları için oluşturucu yoktur; bunlar mainnet'te 12 Kasım 2026'dan beri vardır). 0.10.0'ın getirdikleri (hepsi hâlâ 0.14.0'da):
 
 | Alan | 0.10.0'da |
 | --- | --- |
@@ -201,7 +201,7 @@ artık 0.14.0'dadır.
 ## 0.9.0 neler ekledi {#whats-new-090}
 
 SDK 0.9.0, zincir **v3.2.2** ve **v3.2.3** için istemci sürümüydü (mainnet
-bunları 3.556.788 ve 3.662.051 yüksekliklerinde uyguladı; mainnet v3.2.4'ü 23 Ekim 2026'dan itibaren (yükseklik 3.742.566) çalıştırdı, 29 Ekim'den itibaren v3.2.5'i çalıştırdı ve 4 Kasım 2026'dan beri v3.2.6 çalıştırır, testnet ise 19 Ekim 2026'dan beri v3.2.4 veya üstünü çalıştırır). İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler
+bunları 3.556.788 ve 3.662.051 yüksekliklerinde uyguladı; mainnet v3.2.4'ü 23 Ekim 2026'dan itibaren (yükseklik 3.742.566) çalıştırdı, 29 Ekim'den itibaren v3.2.5'i çalıştırdı, 4 Kasım'dan beri v3.2.6 çalıştırdı ve 12 Kasım 2026'dan beri v3.2.7 çalıştırır, testnet ise 19 Ekim 2026'dan beri v3.2.4 veya üstünü çalıştırır). İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler
 değişmedi; dolayısıyla 0.8.1 ve sonrasının imzaladığı v2 hibrit sign-bytes biçimi
 hâlâ doğru olandır. Yenilikler:
 

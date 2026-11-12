@@ -12,7 +12,7 @@ SVM şeridi, QoreChain'in Solana uyumlu kısmıdır: derlenmiş programlar dağ�
 Bu sayfa, şerit durumunun nasıl okunacağını, programların, hesapların ve kiranın nasıl çalıştığını, bir SVM cüzdanının kuantum sonrası anahtarı nasıl kaydettiğini, saklama limitlerinin ne anlama geldiğini ve bugün hangi örneklerin çalışabileceğini açıklar.
 
 :::note Önce test ağı ve şerit orada öneri 37'den beri açık
-v3.2.8, **`qorechain-diana`** test ağında 12 Kasım 2026'dan beri çalışmaktadır. Ana ağ (`qorechain-vladi`) hâlâ v3.2.6'dadır, bir v3.2.8 tarihi yoktur ve **şerit ana ağda kapalı kalır**. Yükseltme şeridi test ağında kapattı (SVM yazmaları başarısız oldu, `MsgRegisterSVMPQCKey` reddedildi). **Yönetişim önerisi 37 geçti ve `qorechain-diana` üzerinde şeridi açtı**: `enabled: true` yaptı, diğer parametreleri olduğu gibi bıraktı ve `MsgExecuteProgram` ile VM'ler arası çağrılar üzerindeki devre kesici duraklatmasını kaldırdı. Oylamadan sonra 12 Kasım 2026'da kontrol edildiğinde `GET /qorechain/svm/v1/params` `enabled: true` gösterdi ve devre kesici listesinde yalnızca `/cosmwasm.wasm.v1.MsgStoreCode` vardı. Herkese açık SVM JSON-RPC salt okunur kalır. Her zaman önce canlı durumu okuyun (sonraki bölüm) ve varsaymayın.
+v3.2.8, **`qorechain-diana`** test ağında 12 Kasım 2026'dan beri çalışmaktadır. Ana ağ (`qorechain-vladi`) 12 Kasım 2026'dan beri v3.2.7 çalıştırır, v3.2.8'i uygulamamıştır ve **şerit ana ağda kapalı kalır**. Yükseltme şeridi test ağında kapattı (SVM yazmaları başarısız oldu, `MsgRegisterSVMPQCKey` reddedildi). **Yönetişim önerisi 37 geçti ve `qorechain-diana` üzerinde şeridi açtı**: `enabled: true` yaptı, diğer parametreleri olduğu gibi bıraktı ve `MsgExecuteProgram` ile VM'ler arası çağrılar üzerindeki devre kesici duraklatmasını kaldırdı. Oylamadan sonra 12 Kasım 2026'da kontrol edildiğinde `GET /qorechain/svm/v1/params` `enabled: true` gösterdi ve devre kesici listesinde yalnızca `/cosmwasm.wasm.v1.MsgStoreCode` vardı. Herkese açık SVM JSON-RPC salt okunur kalır. Her zaman önce canlı durumu okuyun (sonraki bölüm) ve varsaymayın.
 :::
 
 ## Neden önemli {#why}
@@ -69,7 +69,7 @@ curl -s https://api-testnet.qore.host/qorechain/svm/v1/cluster_info
 {"chain_id":"qorechain-diana","genesis_hash":"6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zRw31gQVnF4Czj","caip2_chain_id":"solana:6Z9pa53SwiprqiAoNCqqUdj5c3C4P1zR","derivation":"base58(SHA-256(\"qorechain/svm/genesis-hash/v1\" || 0x00 || chain_id))","execution_enabled":true}
 ```
 
-Düğüm CLI'sında aynı sorgu vardır: `qorechaind query svm cluster-info`. `https://svm-testnet.qore.host` adresindeki `getGenesisHash` JSON-RPC yöntemi aynı özeti döndürür. Özet zincir kimliğinden türetilir; gerçek bir Solana kümesinin genesis özeti değildir.
+Düğüm CLI'sında aynı sorgu vardır: `qorechaind query svm cluster-info`. `https://svm-testnet.qore.host` adresindeki `getGenesisHash` JSON-RPC yöntemi aynı özeti döndürür. Özet zincir kimliğinden türetilir; gerçek bir Solana kümesinin genesis özeti değildir. Rota mainnet'te de sunulur (v3.2.7): 12 Kasım 2026'da `https://api.qore.host/qorechain/svm/v1/cluster_info` `execution_enabled` `false` ile `200` yanıtı verdi.
 
 ## Herkese açık SVM RPC'si salt okunurdur {#public-rpc}
 
@@ -272,7 +272,7 @@ Her çerçevenin 32 KiB yığını (stack) ve 256 KiB öbeği (heap) vardır. Yu
 
 ## Ana ağ {#mainnet}
 
-Ana ağ şimdilik v3.2.6'da kalır ve SVM şeridi kapalıdır; bunu ana ağda etkinleştirmek daha sonraki bir sürüm ve bir yönetişim oylaması gerektirir. Yalnızca test ağına göre plan yapın.
+Ana ağ şimdilik v3.2.7'de kalır ve SVM şeridi kapalıdır; bunu ana ağda etkinleştirmek daha sonraki bir sürüm ve bir yönetişim oylaması gerektirir. Yalnızca test ağına göre plan yapın.
 
 ## Ayrıca bakın {#see-also}
 
