@@ -31,14 +31,14 @@ A QoreChain account sends on the Cosmos lane with a **hybrid signature**: the cl
 # 1. Build the unsigned transaction (the fee is fixed here, because cosign signs the fee in this file)
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --generate-only > tx.json
 
 # 2. Add the ML-DSA-87 signature and broadcast
 qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
-This sends **1 QOR** (1,000,000 uqor) to the recipient address and pays a fee of 40,000 uqor (0.04 QOR). The network floor is **0.1 uqor per unit of gas**, so the fee must be at least the gas limit multiplied by 0.1: `--gas 400000` needs `--fees 40000uqor` or more. A hybrid-signed transfer typically uses 160,000 to 240,000 gas because the signature adds about 4.7 KB to the transaction. `cosign` asks the node which signed-bytes form the network verifies, so the same command works on both networks.
+This sends **1 QOR** (1,000,000 uqor) to the recipient address and pays a fee of 60,000 uqor (0.06 QOR). The network floor is **0.1 uqor per unit of gas**, so the fee must be at least the gas limit multiplied by 0.1: `--gas 400000` needs `--fees 40000uqor` or more. The examples pay 0.15 uqor per unit of gas (`--fees 60000uqor`): from v3.2.8 the mempool orders transactions by fee per gas, so a transfer that pays exactly the floor waits behind others when blocks are busy. A hybrid-signed transfer typically uses 160,000 to 240,000 gas because the signature adds about 4.7 KB to the transaction. `cosign` asks the node which signed-bytes form the network verifies, so the same command works on both networks.
 
 ### Register your post-quantum key {#register-pqc-key}
 
@@ -50,14 +50,14 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 Since v3.2.3 the chain also accepts an optional **proof of possession** with the registration, and refuses weak, degenerate or already-used keys. To attach one, register with `register-key-v2` and name your local key:
 
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
-  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+  --chain-id qorechain-diana --gas 600000 --fees 90000uqor
 ```
 
 Back up the PQC key file as carefully as your recovery phrase; it can be re-derived from the phrase with `qorechaind tx pqc recover-key`. [QoreX](/qorex/overview) and the QoreChain SDK perform key registration for you. See [Wallet Setup](/getting-started/wallet-setup) for the full hybrid flow.
@@ -152,7 +152,7 @@ Everything else about the EVM lane is unchanged: you keep signing with MetaMask,
 ```bash
 # at most 1000 QOR in total, at most 20 transactions, for 7,200 blocks (about 6.4 hours on mainnet)
 qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
@@ -161,7 +161,7 @@ qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qor
 
 ```bash
 qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
-  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
+  --chain-id qorechain-diana --gas 400000 --fees 60000uqor --generate-only > window.json
 ```
 
 `--allowed-targets` limits **which** contracts and tokens the window may touch, not **how much**. A listed token admits any amount of that token, including `approve`, and a listed contract can move whatever its code and existing approvals allow, so do not list generic forwarder or router contracts. A window bounds only transactions on the EVM lane (classically signed); Cosmos messages signed with the hybrid PQC signature, such as cross-VM calls and authz, are outside it.
@@ -183,7 +183,7 @@ The REST answer never fails for an address without a window; it returns `found: 
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor --generate-only > close.json
+  --gas 400000 --fees 60000uqor --generate-only > close.json
 qorechaind tx pqc cosign close.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
 ```
 
@@ -251,7 +251,7 @@ When working with the `qorechaind` CLI, these flags are used frequently:
 ```bash
 qorechaind tx bank send mykey qor1recipient... 500000uqor \
   --chain-id qorechain-diana \
-  --gas 400000 --fees 40000uqor \
+  --gas 400000 --fees 60000uqor \
   --node tcp://localhost:26657 \
   --output json \
   --generate-only > tx.json

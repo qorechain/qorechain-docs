@@ -229,6 +229,10 @@ The **SVM wallets** card also lets you link a Phantom key to your account as a *
 The chain's smart-account and linked-wallet features are enabled on the testnet and switched off on mainnet (`GET /qorechain/abstractaccount/v1/config` returns `enabled: true` on testnet and `enabled: false` on mainnet, checked 27 October 2026). On mainnet the chain refuses new linked-signer registrations; treat the card as a preview there.
 :::
 
+:::note Solana-compatible lane on the testnet
+The Solana-compatible lane is closed on the testnet until a governance vote reopens it (release v3.2.8, testnet since 12 November 2026). Solana-style transactions are not available there until then.
+:::
+
 :::caution A linked signer is real authority over the account
 The permission you grant decides which lane the key may act on, not how much it can move, and a registration stays valid for 30 days. Link only a key you trust as much as the account itself, and revoke it when you no longer need it.
 :::

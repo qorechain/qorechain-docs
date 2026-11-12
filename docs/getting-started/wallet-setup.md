@@ -109,6 +109,10 @@ Funds sent to any of the three forms land in the same balance.
 Smart-account and linked-wallet features are implemented but **switched off on mainnet** (`abstractaccount.enabled = false`): registering an authenticator and executing through one are refused there while the flag is off. They are **enabled on the testnet** (`enabled = true`, checked 27 October 2026), so you can try a linking flow there. Check `GET /qorechain/abstractaccount/v1/config` on the network you target before offering a linking flow. The section below describes the designed behaviour.
 :::
 
+:::note Solana-compatible lane on the testnet
+The Solana-compatible lane is closed on the testnet until a governance vote reopens it (release v3.2.8, testnet since 12 November 2026). Solana-style transactions are not available there until then.
+:::
+
 Designed so that you don't have to expose your root key to spend from a QoreChain account in a dApp (introduced in chain version **v3.1.85**): a **Phantom** (ed25519) or **MetaMask** (by its Ethereum address, via `personal_sign`) key can be **registered as an authenticator** on your account — with scoped permissions, spending limits, an expiry, and instant revocation — and then authorize transfers relayed by the dApp's backend. See [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) for the full model and code, and the [SDK Authenticators guide](/sdk/guides/authenticators) for end-to-end examples.
 
 ## Solana Wallets (SVM)
@@ -161,7 +165,7 @@ A post-quantum key is **registered explicitly**, once per account, with a key-re
 ```bash
 # register the public key printed by gen-key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
-  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+  --chain-id qorechain-vladi --gas 600000 --fees 90000uqor
 ```
 
 Since v3.2.3 you can attach an optional proof of possession by registering with `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...`; the chain also refuses weak, degenerate or already-used keys. Back up the PQC key file as carefully as your mnemonic. (A key can be re-derived from the mnemonic with `qorechaind tx pqc recover-key`, and replaced with `tx pqc rotate-key`.) QoreX and the QoreChain SDK register the key for you. See [First Transaction](/getting-started/first-transaction#register-pqc-key) for a complete signed send.
