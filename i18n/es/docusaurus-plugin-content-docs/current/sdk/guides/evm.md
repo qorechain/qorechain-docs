@@ -240,7 +240,7 @@ validador o un punto de entrada ERC-4337), `stakingValidators` (validadores
 de staking) e `ibcReceivers` (receptores ICS-20, cada uno escrito
 `"<channel>/<receiver>"`). El constructor comprueba el formato y rechaza duplicados antes
 de firmar nada. Fíjalas solo en una red que ejecute v3.2.8: un nodo anterior rechaza el
-mensaje. `fetchEvmWindow` no devuelve estas tres listas; léelas por REST. Una llamada que fijó
+mensaje. `fetchEvmWindow` no devuelve estas tres listas, y la ruta REST de la ventana tampoco las devuelve en v3.2.8: conserva los valores con los que abriste la ventana. Una llamada que fijó
 las tres listas se ejecutó
 en la testnet el 12 de noviembre de 2026 con el SDK 0.14.0 y tuvo éxito con code 0
 (195,233 de gas usado); la lectura REST posterior listó `allowed_targets` y no devolvió las

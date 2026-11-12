@@ -246,8 +246,8 @@ bir ERC-4337 giriş noktası), `stakingValidators` (pencerenin staking precompil
 doğrulayıcıları) ve `ibcReceivers` (her biri `"<channel>/<receiver>"` biçiminde yazılan
 ICS-20 alıcıları). Oluşturucu biçimi denetler ve herhangi bir şey imzalanmadan önce
 yinelenenleri reddeder. Bunları yalnızca v3.2.8 çalıştıran bir ağda ayarlayın: bunun
-altındaki bir düğüm mesajı reddeder. `fetchEvmWindow` bu üç listeyi döndürmez; onları
-REST üzerinden okuyun. Üç listenin de ayarlandığı bir çağrı, 12 Kasım 2026'da SDK 0.14.0 ile
+altındaki bir düğüm mesajı reddeder. `fetchEvmWindow` bu üç listeyi döndürmez ve REST pencere rotası da v3.2.8'de
+bunları döndürmez: pencereyi açtığınız değerleri saklayın. Üç listenin de ayarlandığı bir çağrı, 12 Kasım 2026'da SDK 0.14.0 ile
 test ağında çalıştırıldı ve kod 0 ile başarılı oldu (195,233 gaz kullanıldı); REST geri okuması `allowed_targets`
 değerini listeledi ve diğer iki listeyi döndürmedi:
 

@@ -234,7 +234,7 @@ Aktionen des Kontos zählt, etwa ein Validator-Modul oder ein ERC-4337-Entry-Poi
 delegieren oder umdelegieren darf) und `ibcReceivers` (ICS-20-Empfänger, jeweils als
 `"<channel>/<receiver>"` geschrieben). Der Builder prüft das Format und lehnt Duplikate ab, bevor
 etwas signiert wird. Setzen Sie sie nur in einem Netzwerk, das v3.2.8 betreibt: Ein Node darunter lehnt
-die Nachricht ab. `fetchEvmWindow` liefert diese drei Listen nicht; lesen Sie sie über REST. Ein Aufruf, der alle drei
+die Nachricht ab. `fetchEvmWindow` liefert diese drei Listen nicht, und die REST-Fensterroute liefert sie in v3.2.8 ebenfalls nicht: Behalten Sie die Werte, mit denen Sie das Fenster geöffnet haben. Ein Aufruf, der alle drei
 Listen setzte, wurde am 12. November 2026 mit SDK 0.14.0 im
 Testnet ausgeführt und war mit Code 0 erfolgreich (195,233 Gas verbraucht); das
 REST-Zurücklesen listete `allowed_targets` und lieferte die anderen beiden Listen nicht:

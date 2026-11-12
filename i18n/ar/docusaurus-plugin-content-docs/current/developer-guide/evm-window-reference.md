@@ -131,7 +131,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-تفحص `openEvmWindowMsg` الحدود وصيغ القوائم قبل التوقيع بأي شيء، فيفشل الخطأ محليًا بدل أن يكلّف معاملة مرفوضة. وتصدّر `MAX_EVM_WINDOW_BLOCKS` و`MAX_EVM_WINDOW_TXS` الحدود. تعيد القراءة (`fetchEvmWindow`) الحدود والعدّادات ونطاق v3.2.3 (`nativeOnly` و`allowedTargets`)؛ أما `validators` (عناوين العقود) و`stakingValidators` (`qorvaloper1...`) و`ibcReceivers` (`"<channel>/<receiver>"`) فيقبلها الباني منذ SDK 0.14.0 الذي يحمل قوائم v3.2.8؛ ولا تعيدها القراءة، فاقرأها عبر REST. يستخدم المثال أعلاه `stakingValidators`؛ ولم يُشغَّل على SDK 0.14.0. اضبط القوائم الثلاث فقط لشبكة تشغّل v3.2.8: فالعقدة الأقدم ترفض رسالة نافذة تضبطها. ومع `connectTx` الموقِّع هجينًا يجب أن يكون المفتاح ما بعد الكمومي مسجَّلًا أصلًا.
+تفحص `openEvmWindowMsg` الحدود وصيغ القوائم قبل التوقيع بأي شيء، فيفشل الخطأ محليًا بدل أن يكلّف معاملة مرفوضة. وتصدّر `MAX_EVM_WINDOW_BLOCKS` و`MAX_EVM_WINDOW_TXS` الحدود. تعيد القراءة (`fetchEvmWindow`) الحدود والعدّادات ونطاق v3.2.3 (`nativeOnly` و`allowedTargets`)؛ أما `validators` (عناوين العقود) و`stakingValidators` (`qorvaloper1...`) و`ibcReceivers` (`"<channel>/<receiver>"`) فيقبلها الباني منذ SDK 0.14.0 الذي يحمل قوائم v3.2.8؛ ولا تعيدها القراءة، ولا يعيدها كذلك مسار REST للنافذة في v3.2.8، فاحتفظ بالقيم التي فتحت بها النافذة. اضبط القوائم الثلاث فقط لشبكة تشغّل v3.2.8: فالعقدة الأقدم ترفض رسالة نافذة تضبطها. ومع `connectTx` الموقِّع هجينًا يجب أن يكون المفتاح ما بعد الكمومي مسجَّلًا أصلًا.
 
 ### جُرِّب على شبكة الاختبار {#tested}
 

@@ -236,7 +236,7 @@ les propres actions du compte, comme un module de validateur ou un point d'entr�
 via le precompile de staking) et `ibcReceivers` (des destinataires ICS-20, chacun écrit
 `"<channel>/<receiver>"`). Le constructeur vérifie le format et refuse les doublons avant que
 quoi que ce soit soit signé. Ne les renseignez que sur un réseau qui exécute la v3.2.8 : un nœud antérieur refuse
-le message. `fetchEvmWindow` ne renvoie pas ces trois listes ; lisez-les via REST. Un appel renseignant les trois
+le message. `fetchEvmWindow` ne renvoie pas ces trois listes, et la route REST de la fenêtre ne les renvoie pas non plus en v3.2.8 : conservez les valeurs avec lesquelles vous avez ouvert la fenêtre. Un appel renseignant les trois
 listes a été exécuté sur le testnet le 12 novembre 2026 avec le SDK 0.14.0 et a réussi avec le code 0 (195,233 de gas utilisé) ; la
 relecture REST a listé `allowed_targets` et n'a pas renvoyé les deux autres listes :
 

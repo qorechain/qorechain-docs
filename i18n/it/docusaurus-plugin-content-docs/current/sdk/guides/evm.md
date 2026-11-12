@@ -244,7 +244,7 @@ le azioni dell'account stesso, come un modulo validatore o un entry point ERC-43
 tramite il precompile di staking) e `ibcReceivers` (destinatari ICS-20, ciascuno scritto
 `"<channel>/<receiver>"`). Il builder controlla il formato e rifiuta i duplicati prima che
 venga firmato qualsiasi cosa. Impostale solo su una rete che esegue la v3.2.8: un nodo precedente rifiuta
-il messaggio. `fetchEvmWindow` non restituisce queste tre liste; leggile via REST. Una chiamata che imposta
+il messaggio. `fetchEvmWindow` non restituisce queste tre liste, e nemmeno la route REST della finestra le restituisce nella v3.2.8: conserva i valori con cui hai aperto la finestra. Una chiamata che imposta
 tutte e tre le liste è stata eseguita sulla
 testnet il 12 novembre 2026 con l'SDK 0.14.0 ed è riuscita con code 0 (195,233 di gas usato); la
 lettura REST ha elencato `allowed_targets` e non ha restituito le altre due liste:

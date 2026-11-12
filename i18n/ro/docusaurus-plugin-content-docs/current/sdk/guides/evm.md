@@ -237,7 +237,7 @@ fereastra poate delega sau redelega prin precompile-ul de staking) și `ibcRecei
 (destinatari ICS-20, fiecare scris `"<channel>/<receiver>"`). Constructorul verifică
 formatul și refuză duplicatele înainte de orice semnare. Setați-le doar pe o rețea care
 rulează v3.2.8: un nod sub această versiune refuză mesajul.
-`fetchEvmWindow` nu returnează aceste trei liste; citiți-le prin REST. Un apel de această
+`fetchEvmWindow` nu returnează aceste trei liste, iar ruta REST a ferestrei nu le returnează nici ea în v3.2.8: păstrați valorile cu care ați deschis fereastra. Un apel de această
 formă (cu toate cele trei liste setate) a fost rulat pe
 testnet pe 12 noiembrie 2026 cu SDK 0.14.0 și a reușit cu cod 0 (195.233 gaz folosit); citirea
 înapoi prin REST a listat `allowed_targets` și nu a returnat celelalte două liste:

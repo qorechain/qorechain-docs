@@ -131,7 +131,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg`は、署名の前に境界値とリストの形式を検査するため、間違いは、拒否されたトランザクションで費用を払うのではなく、ローカルで失敗します。`MAX_EVM_WINDOW_BLOCKS`と`MAX_EVM_WINDOW_TXS`は、その境界値をエクスポートします。読み戻し(`fetchEvmWindow`)は、境界値、カウンター、v3.2.3のスコープ(`nativeOnly`、`allowedTargets`)を返します。`validators`(コントラクトアドレス)、`stakingValidators`(`qorvaloper1...`)、`ibcReceivers`(`"<channel>/<receiver>"`)は、v3.2.8のリストを持つSDK 0.14.0以降のビルダーで受け付けられます。読み戻しはそれらを返さないため、RESTで読み取ってください。上の例は`stakingValidators`を使っていますが、SDK 0.14.0に対しては実行していません。3つのリストを設定するのは、v3.2.8を実行しているネットワークだけにしてください。それより下のノードは、それらを設定したウィンドウメッセージを拒否します。ハイブリッド署名の`connectTx`では、ポスト量子鍵があらかじめ登録されている必要があります。
+`openEvmWindowMsg`は、署名の前に境界値とリストの形式を検査するため、間違いは、拒否されたトランザクションで費用を払うのではなく、ローカルで失敗します。`MAX_EVM_WINDOW_BLOCKS`と`MAX_EVM_WINDOW_TXS`は、その境界値をエクスポートします。読み戻し(`fetchEvmWindow`)は、境界値、カウンター、v3.2.3のスコープ(`nativeOnly`、`allowedTargets`)を返します。`validators`(コントラクトアドレス)、`stakingValidators`(`qorvaloper1...`)、`ibcReceivers`(`"<channel>/<receiver>"`)は、v3.2.8のリストを持つSDK 0.14.0以降のビルダーで受け付けられます。読み戻しはそれらを返さず、v3.2.8のRESTウィンドウ経路も返さないため、ウィンドウを開いたときの値を保管してください。3つのリストを設定するのは、v3.2.8を実行しているネットワークだけにしてください。それより下のノードは、それらを設定したウィンドウメッセージを拒否します。ハイブリッド署名の`connectTx`では、ポスト量子鍵があらかじめ登録されている必要があります。
 
 ### テストネットでの検証 {#tested}
 

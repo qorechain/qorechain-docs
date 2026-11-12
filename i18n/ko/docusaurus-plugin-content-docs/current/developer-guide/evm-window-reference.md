@@ -131,7 +131,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg`는 서명하기 전에 한도와 목록 형식을 검사하므로, 실수가 있으면 거부된 트랜잭션으로 비용을 치르는 대신 로컬에서 실패합니다. `MAX_EVM_WINDOW_BLOCKS`와 `MAX_EVM_WINDOW_TXS`가 한도를 내보냅니다. 읽기(`fetchEvmWindow`)는 한도, 카운터, v3.2.3 범위(`nativeOnly`, `allowedTargets`)를 반환하며, `validators`(컨트랙트 주소), `stakingValidators`(`qorvaloper1...`), `ibcReceivers`(`"<channel>/<receiver>"`)는 v3.2.8 목록을 담은 SDK 0.14.0부터 빌더가 받으며, 읽기는 이를 반환하지 않으므로 REST로 읽으세요. 위 예제는 `stakingValidators`를 사용하며, SDK 0.14.0으로 실행해 보지는 않았습니다. 세 목록은 v3.2.8을 실행하는 네트워크에서만 설정하세요. 그보다 낮은 노드는 이를 설정한 윈도우 메시지를 거부합니다. 하이브리드 서명을 하는 `connectTx`에서는 포스트 퀀텀 키가 이미 등록되어 있어야 합니다.
+`openEvmWindowMsg`는 서명하기 전에 한도와 목록 형식을 검사하므로, 실수가 있으면 거부된 트랜잭션으로 비용을 치르는 대신 로컬에서 실패합니다. `MAX_EVM_WINDOW_BLOCKS`와 `MAX_EVM_WINDOW_TXS`가 한도를 내보냅니다. 읽기(`fetchEvmWindow`)는 한도, 카운터, v3.2.3 범위(`nativeOnly`, `allowedTargets`)를 반환하며, `validators`(컨트랙트 주소), `stakingValidators`(`qorvaloper1...`), `ibcReceivers`(`"<channel>/<receiver>"`)는 v3.2.8 목록을 담은 SDK 0.14.0부터 빌더가 받으며, 읽기는 이를 반환하지 않으며 v3.2.8의 REST 윈도우 경로도 마찬가지이므로, 윈도우를 열 때 사용한 값을 직접 보관하세요. 세 목록은 v3.2.8을 실행하는 네트워크에서만 설정하세요. 그보다 낮은 노드는 이를 설정한 윈도우 메시지를 거부합니다. 하이브리드 서명을 하는 `connectTx`에서는 포스트 퀀텀 키가 이미 등록되어 있어야 합니다.
 
 ### 테스트넷에서 검증됨 {#tested}
 
