@@ -13,8 +13,8 @@ sidebar_position: 5
 
 | القدرة | precompile | العنوان |
 |---|---|---|
-| درجة مخاطر لـ calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
-| فحص شذوذ لـ `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+| درجة مخاطر لـ calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000b01` |
+| فحص شذوذ لـ `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000b02` |
 
 :::caution غير متاحة على الشبكات العامة اليوم
 تقرأ `simulateWithRiskScore` و`aiRiskScore` و`aiAnomalyCheck` الـ precompiles عند

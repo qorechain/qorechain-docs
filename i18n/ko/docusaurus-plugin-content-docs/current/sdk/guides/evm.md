@@ -325,11 +325,11 @@ QoreChain은 고정된 주소에서 컨트랙트로 호출 가능한 프리컴�
 | 프리컴파일 | 함수 | 주소 |
 | --- | --- | --- |
 | Cross-VM Bridge | (브리지 라우팅) | `0x0000000000000000000000000000000000000901` |
-| PQC verify | `pqcVerify` | `0x0000000000000000000000000000000000000A01` |
-| PQC key status | `pqcKeyStatus` | `0x0000000000000000000000000000000000000A02` |
-| QCAI risk score | `aiRiskScore` | `0x0000000000000000000000000000000000000B01` |
-| QCAI anomaly check | `aiAnomalyCheck` | `0x0000000000000000000000000000000000000B02` |
-| Consensus params | `rlConsensusParams` | `0x0000000000000000000000000000000000000C01` |
+| PQC verify | `pqcVerify` | `0x0000000000000000000000000000000000000a01` |
+| PQC key status | `pqcKeyStatus` | `0x0000000000000000000000000000000000000a02` |
+| QCAI risk score | `aiRiskScore` | `0x0000000000000000000000000000000000000b01` |
+| QCAI anomaly check | `aiAnomalyCheck` | `0x0000000000000000000000000000000000000b02` |
+| Consensus params | `rlConsensusParams` | `0x0000000000000000000000000000000000000c01` |
 
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";

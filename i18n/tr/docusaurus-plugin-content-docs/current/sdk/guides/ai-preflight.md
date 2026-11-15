@@ -14,8 +14,8 @@ puanlamanıza olanak tanımak üzere tasarlanmıştır:
 
 | Yetenek | Precompile | Adres |
 |---|---|---|
-| Calldata için risk puanı | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
-| `(sender, amount)` için anomali kontrolü | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+| Calldata için risk puanı | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000b01` |
+| `(sender, amount)` için anomali kontrolü | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000b02` |
 
 :::caution Bugün herkese açık ağlarda kullanılamaz
 `simulateWithRiskScore`, `aiRiskScore` ve `aiAnomalyCheck`, `0x…0B01` / `0x…0B02`

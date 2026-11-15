@@ -38,7 +38,7 @@ curl -s https://api-testnet.qore.host/cosmos/evm/vm/v1/params | jq .params.activ
 Etkin olmayan (veya QoreChain'e ait olmayan) bir adres veri olmadan başarı döndürdüğü için, düşük seviyeli bir çağrının ham dönüş baytlarını uzunluklarını kontrol etmeden asla okumayın. `abi.decode` ve tipli arayüz çağrıları boş veride revert eder, bu da güvenli sonuçtur; elle yazılmış düşük seviyeli bir çağrı bunu açıkça kontrol etmelidir:
 
 ```solidity
-(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000A02)
+(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000a02)
     .staticcall(abi.encodeWithSignature("pqcKeyStatus(address)", account));
 require(ok && ret.length >= 96, "precompile not active");
 (bool registered, uint8 algorithmId, bytes memory pubkey) = abi.decode(ret, (bool, uint8, bytes));
@@ -50,8 +50,8 @@ Test ağında, etkin üç ön derlemenin yanıt verdiğini hızlıca denetlemek 
 
 ```bash
 RPC=https://evm-testnet.qore.host
-cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
-cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000c01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000a02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
 ```
 
 ---
@@ -82,11 +82,11 @@ Gaz rakamları, bir ön derleme etkin olduktan sonra düğümün tahsil ettiği 
 | Ön Derleme              | Adres                                      | Temel Gaz        | Açıklama                                      |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
 | **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 4/byte | Senkron VM'ler arası çağrılar (EVM'den QoreChain Native'a)     |
-| **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte | ML-DSA-87 kuantum sonrası imzalarını doğrular         |
-| **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | Bir hesabın kayıtlı bir PQC anahtarı olup olmadığını kontrol eder     |
-| **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | İşlem verileri için AI tarafından oluşturulan risk puanını alır |
-| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000B02` | 40,000          | Bir transferin anormal olarak işaretlenip işaretlenmediğini kontrol eder      |
-| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1,500        | Mevcut PRISM ile ayarlanmış konsensüs parametrelerini okur    |
+| **PQC Verify**          | `0x0000000000000000000000000000000000000a01` | 25,000 + 8/byte | ML-DSA-87 kuantum sonrası imzalarını doğrular         |
+| **PQC Key Status**      | `0x0000000000000000000000000000000000000a02` | 2,500           | Bir hesabın kayıtlı bir PQC anahtarı olup olmadığını kontrol eder     |
+| **AI Risk Score**       | `0x0000000000000000000000000000000000000b01` | 50,000          | İşlem verileri için AI tarafından oluşturulan risk puanını alır |
+| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000b02` | 40,000          | Bir transferin anormal olarak işaretlenip işaretlenmediğini kontrol eder      |
+| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000c01` | 1,500        | Mevcut PRISM ile ayarlanmış konsensüs parametrelerini okur    |
 
 ---
 
@@ -190,7 +190,7 @@ pragma solidity ^0.8.24;
 import "./interfaces/IQorePQC.sol";
 
 contract PQCVerifier {
-    IQorePQC constant PQC = IQorePQC(0x0000000000000000000000000000000000000A01);
+    IQorePQC constant PQC = IQorePQC(0x0000000000000000000000000000000000000a01);
 
     /// @notice Verify a PQC signature and revert if invalid
     function verifyOrRevert(
@@ -210,7 +210,7 @@ contract PQCVerifier {
 
 ```solidity
 contract PQCChecker {
-    IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
+    IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000a02);
 
     function requirePQCKey(address account) external view {
         (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
@@ -232,7 +232,7 @@ Sahiplik kanıtı kayıtta isteğe bağlıdır, bu yüzden tek başına `registe
 import "./interfaces/IQoreAI.sol";
 
 contract RiskGate {
-    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000B01);
+    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000b01);
 
     uint8 constant MAX_ALLOWED_RISK = 2; // Allow up to MEDIUM
 
@@ -263,7 +263,7 @@ Seviye, AI motorunun işlem için verdiği önem derecesi etiketinden gelir; pua
 
 ```solidity
 contract AnomalyGuard {
-    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000B02);
+    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000b02);
 
     function safeTransfer(address sender, uint256 amount) external view {
         (uint256 anomalyScore, bool flagged) = AI.aiAnomalyCheck(sender, amount);
@@ -282,7 +282,7 @@ contract AnomalyGuard {
 ```solidity
 contract ConsensusReader {
     IQoreConsensus constant RL = IQoreConsensus(
-        0x0000000000000000000000000000000000000C01
+        0x0000000000000000000000000000000000000c01
     );
 
     function getBlockTime() external view returns (uint256) {

@@ -14,8 +14,8 @@ folosind doar `eth_call`:
 
 | Capabilitate | Precompile | Adresă |
 |---|---|---|
-| Scor de risc pentru calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
-| Verificare de anomalii pentru `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+| Scor de risc pentru calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000b01` |
+| Verificare de anomalii pentru `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000b02` |
 
 :::caution Nu este disponibil astăzi pe rețelele publice
 `simulateWithRiskScore`, `aiRiskScore` și `aiAnomalyCheck` citesc precompile-urile de la

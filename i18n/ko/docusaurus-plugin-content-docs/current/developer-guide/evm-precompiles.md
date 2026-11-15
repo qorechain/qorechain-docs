@@ -38,7 +38,7 @@ curl -s https://api-testnet.qore.host/cosmos/evm/vm/v1/params | jq .params.activ
 비활성(또는 QoreChain이 아닌) 주소는 데이터 없이 성공을 반환하므로, 길이를 확인하지 않고 저수준 호출의 원시 반환 바이트를 읽어서는 안 됩니다. `abi.decode`와 타입이 지정된 인터페이스 호출은 빈 데이터에서 리버트하며 이는 안전한 결과입니다. 직접 작성한 저수준 호출은 이를 명시적으로 확인해야 합니다.
 
 ```solidity
-(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000A02)
+(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000a02)
     .staticcall(abi.encodeWithSignature("pqcKeyStatus(address)", account));
 require(ok && ret.length >= 96, "precompile not active");
 (bool registered, uint8 algorithmId, bytes memory pubkey) = abi.decode(ret, (bool, uint8, bytes));
@@ -50,8 +50,8 @@ require(ok && ret.length >= 96, "precompile not active");
 
 ```bash
 RPC=https://evm-testnet.qore.host
-cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
-cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000c01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000a02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
 ```
 
 ---
@@ -82,11 +82,11 @@ cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool
 | 프리컴파일              | 주소                                      | 기본 가스        | 설명                                      |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
 | **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 바이트당 4 | 동기식 크로스 VM 호출(EVM에서 QoreChain Native으로)     |
-| **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 바이트당 8 | ML-DSA-87 포스트 퀀텀 서명 검증         |
-| **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | 계정에 등록된 PQC 키가 있는지 확인     |
-| **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | 트랜잭션 데이터에 대한 AI 생성 리스크 스코어 조회 |
-| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000B02` | 40,000          | 전송이 이상 거래로 플래그되는지 확인      |
-| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1,500        | 현재 PRISM 튜닝 합의 파라미터 조회    |
+| **PQC Verify**          | `0x0000000000000000000000000000000000000a01` | 25,000 + 바이트당 8 | ML-DSA-87 포스트 퀀텀 서명 검증         |
+| **PQC Key Status**      | `0x0000000000000000000000000000000000000a02` | 2,500           | 계정에 등록된 PQC 키가 있는지 확인     |
+| **AI Risk Score**       | `0x0000000000000000000000000000000000000b01` | 50,000          | 트랜잭션 데이터에 대한 AI 생성 리스크 스코어 조회 |
+| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000b02` | 40,000          | 전송이 이상 거래로 플래그되는지 확인      |
+| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000c01` | 1,500        | 현재 PRISM 튜닝 합의 파라미터 조회    |
 
 ---
 
@@ -190,7 +190,7 @@ pragma solidity ^0.8.24;
 import "./interfaces/IQorePQC.sol";
 
 contract PQCVerifier {
-    IQorePQC constant PQC = IQorePQC(0x0000000000000000000000000000000000000A01);
+    IQorePQC constant PQC = IQorePQC(0x0000000000000000000000000000000000000a01);
 
     /// @notice Verify a PQC signature and revert if invalid
     function verifyOrRevert(
@@ -210,7 +210,7 @@ contract PQCVerifier {
 
 ```solidity
 contract PQCChecker {
-    IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
+    IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000a02);
 
     function requirePQCKey(address account) external view {
         (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
@@ -232,7 +232,7 @@ contract PQCChecker {
 import "./interfaces/IQoreAI.sol";
 
 contract RiskGate {
-    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000B01);
+    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000b01);
 
     uint8 constant MAX_ALLOWED_RISK = 2; // Allow up to MEDIUM
 
@@ -263,7 +263,7 @@ contract RiskGate {
 
 ```solidity
 contract AnomalyGuard {
-    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000B02);
+    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000b02);
 
     function safeTransfer(address sender, uint256 amount) external view {
         (uint256 anomalyScore, bool flagged) = AI.aiAnomalyCheck(sender, amount);
@@ -282,7 +282,7 @@ contract AnomalyGuard {
 ```solidity
 contract ConsensusReader {
     IQoreConsensus constant RL = IQoreConsensus(
-        0x0000000000000000000000000000000000000C01
+        0x0000000000000000000000000000000000000c01
     );
 
     function getBlockTime() external view returns (uint256) {

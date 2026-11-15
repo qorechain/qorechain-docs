@@ -38,7 +38,7 @@ curl -s https://api-testnet.qore.host/cosmos/evm/vm/v1/params | jq .params.activ
 Deoarece o adresă inactivă (sau care nu aparține QoreChain) întoarce succes fără date, nu citi niciodată octeții bruți returnați de un apel de nivel jos fără a-le verifica lungimea. `abi.decode` și apelurile prin interfețe tipate fac revert pe date goale, ceea ce este rezultatul sigur; un apel de nivel jos scris de mână trebuie să verifice explicit acest lucru:
 
 ```solidity
-(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000A02)
+(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000a02)
     .staticcall(abi.encodeWithSignature("pqcKeyStatus(address)", account));
 require(ok && ret.length >= 96, "precompile not active");
 (bool registered, uint8 algorithmId, bytes memory pubkey) = abi.decode(ret, (bool, uint8, bytes));
@@ -50,8 +50,8 @@ Pe testnet, o verificare rapidă că cele trei precompilate active răspund (cu 
 
 ```bash
 RPC=https://evm-testnet.qore.host
-cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
-cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000c01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000a02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
 ```
 
 ---
@@ -82,11 +82,11 @@ Cifrele de gaz sunt cele pe care nodul le taxează după ce un precompilat este 
 | Precompilat              | Adresă                                      | Gaz de bază      | Descriere                                          |
 | ------------------------ | -------------------------------------------- | --------------- | --------------------------------------------------- |
 | **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50.000 + 4/octet | Apeluri sincrone cross-VM (de la EVM la QoreChain Native)   |
-| **PQC Verify**           | `0x0000000000000000000000000000000000000A01` | 25.000 + 8/octet | Verifică semnături post-cuantice ML-DSA-87          |
-| **PQC Key Status**       | `0x0000000000000000000000000000000000000A02` | 2.500           | Verifică dacă un cont are o cheie PQC înregistrată  |
-| **AI Risk Score**        | `0x0000000000000000000000000000000000000B01` | 50.000          | Obține scorul de risc generat de AI pentru date de tranzacție |
-| **AI Anomaly Check**     | `0x0000000000000000000000000000000000000B02` | 40.000          | Verifică dacă un transfer este marcat drept anormal |
-| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1.500        | Citește parametrii de consens curenți, ajustați de PRISM |
+| **PQC Verify**           | `0x0000000000000000000000000000000000000a01` | 25.000 + 8/octet | Verifică semnături post-cuantice ML-DSA-87          |
+| **PQC Key Status**       | `0x0000000000000000000000000000000000000a02` | 2.500           | Verifică dacă un cont are o cheie PQC înregistrată  |
+| **AI Risk Score**        | `0x0000000000000000000000000000000000000b01` | 50.000          | Obține scorul de risc generat de AI pentru date de tranzacție |
+| **AI Anomaly Check**     | `0x0000000000000000000000000000000000000b02` | 40.000          | Verifică dacă un transfer este marcat drept anormal |
+| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000c01` | 1.500        | Citește parametrii de consens curenți, ajustați de PRISM |
 
 ---
 
@@ -190,7 +190,7 @@ pragma solidity ^0.8.24;
 import "./interfaces/IQorePQC.sol";
 
 contract PQCVerifier {
-    IQorePQC constant PQC = IQorePQC(0x0000000000000000000000000000000000000A01);
+    IQorePQC constant PQC = IQorePQC(0x0000000000000000000000000000000000000a01);
 
     /// @notice Verify a PQC signature and revert if invalid
     function verifyOrRevert(
@@ -210,7 +210,7 @@ contract PQCVerifier {
 
 ```solidity
 contract PQCChecker {
-    IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
+    IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000a02);
 
     function requirePQCKey(address account) external view {
         (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
@@ -232,7 +232,7 @@ Dovada de posesie este opțională la înregistrare, deci `registered` singur nu
 import "./interfaces/IQoreAI.sol";
 
 contract RiskGate {
-    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000B01);
+    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000b01);
 
     uint8 constant MAX_ALLOWED_RISK = 2; // Allow up to MEDIUM
 
@@ -263,7 +263,7 @@ Nivelul provine din eticheta de severitate a motorului AI pentru tranzacție; sc
 
 ```solidity
 contract AnomalyGuard {
-    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000B02);
+    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000b02);
 
     function safeTransfer(address sender, uint256 amount) external view {
         (uint256 anomalyScore, bool flagged) = AI.aiAnomalyCheck(sender, amount);
@@ -282,7 +282,7 @@ contract AnomalyGuard {
 ```solidity
 contract ConsensusReader {
     IQoreConsensus constant RL = IQoreConsensus(
-        0x0000000000000000000000000000000000000C01
+        0x0000000000000000000000000000000000000c01
     );
 
     function getBlockTime() external view returns (uint256) {

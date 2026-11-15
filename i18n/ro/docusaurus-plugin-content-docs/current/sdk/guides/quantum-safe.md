@@ -61,7 +61,7 @@ lanțul nu o servește.
 
 Aceeași stare este citibilă și pe partea EVM prin precompila
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
-de la `0x0000000000000000000000000000000000000A02` (expusă ca
+de la `0x0000000000000000000000000000000000000a02` (expusă ca
 `pqcKeyStatus` în `@qorechain/evm`) odată ce acea precompilă este activă; nu este
 activă pe mainnet și este listată ca activă pe testnet (verificat la 27 octombrie 2026; vezi
 [Starea rețelei](/developer-guide/evm-precompiles#network-status)).

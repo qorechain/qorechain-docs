@@ -59,7 +59,7 @@ ruta en plural `/accounts/` que la cadena no sirve.
 
 El mismo estado también se puede leer desde el lado EVM mediante el
 precompilado `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
-en `0x0000000000000000000000000000000000000A02` (expuesto como
+en `0x0000000000000000000000000000000000000a02` (expuesto como
 `pqcKeyStatus` en `@qorechain/evm`) una vez que ese precompilado esté activo; no
 está activo en mainnet, y figura como activo en la testnet (comprobado el 27 de octubre de 2026; consulta
 [Estado de la red](/developer-guide/evm-precompiles#network-status)).

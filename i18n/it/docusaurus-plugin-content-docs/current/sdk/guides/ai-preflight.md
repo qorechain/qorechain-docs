@@ -13,8 +13,8 @@ dall'EVM. Due precompile EVM in sola lettura sono pensati per permetterti di ass
 
 | Capacità | Precompile | Indirizzo |
 |---|---|---|
-| Punteggio di rischio per calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
-| Controllo anomalia per `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+| Punteggio di rischio per calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000b01` |
+| Controllo anomalia per `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000b02` |
 
 :::caution Non disponibile oggi sulle reti pubbliche
 `simulateWithRiskScore`, `aiRiskScore` e `aiAnomalyCheck` leggono i precompile a

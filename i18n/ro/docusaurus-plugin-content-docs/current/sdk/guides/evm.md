@@ -321,11 +321,11 @@ exportate.
 | Precompilă | Funcție | Adresă |
 | --- | --- | --- |
 | Cross-VM Bridge | (rutare bridge) | `0x0000000000000000000000000000000000000901` |
-| Verificare PQC | `pqcVerify` | `0x0000000000000000000000000000000000000A01` |
-| Stare cheie PQC | `pqcKeyStatus` | `0x0000000000000000000000000000000000000A02` |
-| Scor de risc QCAI | `aiRiskScore` | `0x0000000000000000000000000000000000000B01` |
-| Verificare anomalii QCAI | `aiAnomalyCheck` | `0x0000000000000000000000000000000000000B02` |
-| Parametri de consens | `rlConsensusParams` | `0x0000000000000000000000000000000000000C01` |
+| Verificare PQC | `pqcVerify` | `0x0000000000000000000000000000000000000a01` |
+| Stare cheie PQC | `pqcKeyStatus` | `0x0000000000000000000000000000000000000a02` |
+| Scor de risc QCAI | `aiRiskScore` | `0x0000000000000000000000000000000000000b01` |
+| Verificare anomalii QCAI | `aiAnomalyCheck` | `0x0000000000000000000000000000000000000b02` |
+| Parametri de consens | `rlConsensusParams` | `0x0000000000000000000000000000000000000c01` |
 
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";

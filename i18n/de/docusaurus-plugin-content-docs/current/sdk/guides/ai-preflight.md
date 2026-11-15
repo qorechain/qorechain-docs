@@ -13,8 +13,8 @@ sie signiert oder gesendet wird, und das nur mit `eth_call`:
 
 | Fähigkeit | Precompile | Adresse |
 |---|---|---|
-| Risiko-Score für Calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
-| Anomalie-Prüfung für `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+| Risiko-Score für Calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000b01` |
+| Anomalie-Prüfung für `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000b02` |
 
 :::caution Heute in den öffentlichen Netzwerken nicht verfügbar
 `simulateWithRiskScore`, `aiRiskScore` und `aiAnomalyCheck` lesen die Precompiles unter

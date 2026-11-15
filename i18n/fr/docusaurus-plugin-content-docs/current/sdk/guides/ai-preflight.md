@@ -13,8 +13,8 @@ depuis l'EVM. Deux précompilés EVM en lecture seule sont destinés à vous per
 
 | Capacité | Précompilé | Adresse |
 |---|---|---|
-| Score de risque pour les données d'appel | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
-| Vérification d'anomalie pour `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+| Score de risque pour les données d'appel | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000b01` |
+| Vérification d'anomalie pour `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000b02` |
 
 :::caution Non disponible aujourd'hui sur les réseaux publics
 `simulateWithRiskScore`, `aiRiskScore` et `aiAnomalyCheck` lisent les précompilés à

@@ -14,8 +14,8 @@ QoreChain은 dApp이 EVM에서 읽을 수 있는 **온체인 AI 위험/이상 �
 
 | 기능 | 프리컴파일 | 주소 |
 |---|---|---|
-| 콜데이터에 대한 위험 점수 | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
-| `(sender, amount)`에 대한 이상 검사 | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+| 콜데이터에 대한 위험 점수 | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000b01` |
+| `(sender, amount)`에 대한 이상 검사 | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000b02` |
 
 :::caution 현재 공개 네트워크에서는 사용할 수 없습니다
 `simulateWithRiskScore`, `aiRiskScore`, `aiAnomalyCheck`는 `0x…0B01` / `0x…0B02`의

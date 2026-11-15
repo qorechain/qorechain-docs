@@ -14,8 +14,8 @@ puntuar una transacción *antes* de que se firme o se difunda, usando únicament
 
 | Capacidad | Precompilado | Dirección |
 |---|---|---|
-| Puntuación de riesgo para los datos de llamada | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
-| Comprobación de anomalías para `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+| Puntuación de riesgo para los datos de llamada | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000b01` |
+| Comprobación de anomalías para `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000b02` |
 
 :::caution No disponible hoy en las redes públicas
 `simulateWithRiskScore`, `aiRiskScore` y `aiAnomalyCheck` leen los precompilados en

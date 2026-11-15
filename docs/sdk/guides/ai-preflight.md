@@ -13,8 +13,8 @@ the EVM. Two read-only EVM precompiles are meant to let you score a transaction
 
 | Capability | Precompile | Address |
 |---|---|---|
-| Risk score for calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
-| Anomaly check for `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+| Risk score for calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000b01` |
+| Anomaly check for `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000b02` |
 
 :::caution Not available on the public networks today
 `simulateWithRiskScore`, `aiRiskScore` and `aiAnomalyCheck` read the precompiles at

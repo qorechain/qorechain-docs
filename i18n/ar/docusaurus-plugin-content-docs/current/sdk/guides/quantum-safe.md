@@ -58,7 +58,7 @@ const status = await getPqcStatus(client, address);
 
 تكون الحالة نفسها قابلة للقراءة أيضًا على جانب EVM عبر مكوّن ما قبل التجميع
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
-على العنوان `0x0000000000000000000000000000000000000A02` (مكشوف باسم
+على العنوان `0x0000000000000000000000000000000000000a02` (مكشوف باسم
 `pqcKeyStatus` في `@qorechain/evm`) متى أصبح ذلك الـ precompile فعّالًا؛ وهو غير
 فعّال على الشبكة الرئيسية، ومُدرج بوصفه فعّالًا على الشبكة التجريبية (جرى التحقق في 27 أكتوبر 2026؛ انظر
 [حالة الشبكة](/developer-guide/evm-precompiles#network-status)).

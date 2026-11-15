@@ -57,7 +57,7 @@ dönüştürür. Okunamayan bir yanıt (bir HTTP hatası, bir aktarım hatası) 
 denemeden sonra hata olarak fırlatılır: asla "kayıtlı değil" olarak okunmaz. 0.8.x'te
 `getPqcAccount`, zincirin sunmadığı çoğul bir `/accounts/` yolunu çağırıyordu.
 
-Aynı durum EVM tarafında da `0x0000000000000000000000000000000000000A02` adresindeki
+Aynı durum EVM tarafında da `0x0000000000000000000000000000000000000a02` adresindeki
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
 ön derlemesi (`@qorechain/evm` içinde `pqcKeyStatus` olarak sunulur) etkinleştiğinde
 okunabilir; bu ön derleme mainnet üzerinde etkin değildir ve testnet üzerinde etkin olarak listelenir (27 Ekim 2026'da kontrol edildi; bkz.

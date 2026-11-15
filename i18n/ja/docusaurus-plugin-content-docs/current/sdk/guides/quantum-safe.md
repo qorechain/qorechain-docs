@@ -58,7 +58,7 @@ const status = await getPqcStatus(client, address);
 `/accounts/` パスを呼び出していましたが、チェーンはそのパスを提供していません。
 
 同じステータスは EVM 側でも、
-`0x0000000000000000000000000000000000000A02` にある
+`0x0000000000000000000000000000000000000a02` にある
 `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
 プリコンパイル（`@qorechain/evm` では `pqcKeyStatus` として公開）が有効になれば、それを介して読み取れます。
 このプリコンパイルはメインネットでは有効ではなく、テストネットでは有効として列挙されています（2026年10月27日に確認。

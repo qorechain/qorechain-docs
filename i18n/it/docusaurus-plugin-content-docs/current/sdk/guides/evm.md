@@ -328,11 +328,11 @@ esportati.
 | Precompilato | Funzione | Indirizzo |
 | --- | --- | --- |
 | Cross-VM Bridge | (routing del bridge) | `0x0000000000000000000000000000000000000901` |
-| Verifica PQC | `pqcVerify` | `0x0000000000000000000000000000000000000A01` |
-| Stato chiave PQC | `pqcKeyStatus` | `0x0000000000000000000000000000000000000A02` |
-| Punteggio di rischio QCAI | `aiRiskScore` | `0x0000000000000000000000000000000000000B01` |
-| Controllo anomalie QCAI | `aiAnomalyCheck` | `0x0000000000000000000000000000000000000B02` |
-| Parametri di consenso | `rlConsensusParams` | `0x0000000000000000000000000000000000000C01` |
+| Verifica PQC | `pqcVerify` | `0x0000000000000000000000000000000000000a01` |
+| Stato chiave PQC | `pqcKeyStatus` | `0x0000000000000000000000000000000000000a02` |
+| Punteggio di rischio QCAI | `aiRiskScore` | `0x0000000000000000000000000000000000000b01` |
+| Controllo anomalie QCAI | `aiAnomalyCheck` | `0x0000000000000000000000000000000000000b02` |
+| Parametri di consenso | `rlConsensusParams` | `0x0000000000000000000000000000000000000c01` |
 
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";

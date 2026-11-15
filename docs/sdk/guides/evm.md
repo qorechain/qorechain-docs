@@ -323,11 +323,11 @@ exported.
 | Precompile | Function | Address |
 | --- | --- | --- |
 | Cross-VM Bridge | (bridge routing) | `0x0000000000000000000000000000000000000901` |
-| PQC verify | `pqcVerify` | `0x0000000000000000000000000000000000000A01` |
-| PQC key status | `pqcKeyStatus` | `0x0000000000000000000000000000000000000A02` |
-| QCAI risk score | `aiRiskScore` | `0x0000000000000000000000000000000000000B01` |
-| QCAI anomaly check | `aiAnomalyCheck` | `0x0000000000000000000000000000000000000B02` |
-| Consensus params | `rlConsensusParams` | `0x0000000000000000000000000000000000000C01` |
+| PQC verify | `pqcVerify` | `0x0000000000000000000000000000000000000a01` |
+| PQC key status | `pqcKeyStatus` | `0x0000000000000000000000000000000000000a02` |
+| QCAI risk score | `aiRiskScore` | `0x0000000000000000000000000000000000000b01` |
+| QCAI anomaly check | `aiAnomalyCheck` | `0x0000000000000000000000000000000000000b02` |
+| Consensus params | `rlConsensusParams` | `0x0000000000000000000000000000000000000c01` |
 
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";

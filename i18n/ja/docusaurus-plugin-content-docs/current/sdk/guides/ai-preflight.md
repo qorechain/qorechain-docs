@@ -13,8 +13,8 @@ QoreChain は、dApp が EVM から読み取れる**オンチェーンの AI リ
 
 | 機能 | プリコンパイル | アドレス |
 |---|---|---|
-| calldata のリスクスコア | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
-| `(sender, amount)` の異常チェック | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+| calldata のリスクスコア | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000b01` |
+| `(sender, amount)` の異常チェック | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000b02` |
 
 :::caution 現在、公開ネットワークでは利用できません
 `simulateWithRiskScore`、`aiRiskScore`、`aiAnomalyCheck` は

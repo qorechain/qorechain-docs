@@ -38,7 +38,7 @@ curl -s https://api-testnet.qore.host/cosmos/evm/vm/v1/params | jq .params.activ
 Because an inactive (or non-QoreChain) address returns success with no data, never read the raw return bytes of a low-level call without checking their length. `abi.decode` and typed interface calls revert on empty data, which is the safe outcome; a hand-rolled low-level call must check it explicitly:
 
 ```solidity
-(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000A02)
+(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000a02)
     .staticcall(abi.encodeWithSignature("pqcKeyStatus(address)", account));
 require(ok && ret.length >= 96, "precompile not active");
 (bool registered, uint8 algorithmId, bytes memory pubkey) = abi.decode(ret, (bool, uint8, bytes));
@@ -50,8 +50,8 @@ On the testnet, a quick check that the three active precompiles answer (with Fou
 
 ```bash
 RPC=https://evm-testnet.qore.host
-cast call 0x0000000000000000000000000000000000000C01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
-cast call 0x0000000000000000000000000000000000000A02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000c01 "rlConsensusParams()(uint256,uint256,uint256,uint256)" --rpc-url $RPC
+cast call 0x0000000000000000000000000000000000000a02 "pqcKeyStatus(address)(bool,uint8,bytes,bool)" 0x0000000000000000000000000000000000000001 --rpc-url $RPC
 ```
 
 ---
@@ -82,11 +82,11 @@ Gas figures are what the node charges once a precompile is active (per byte mean
 | Precompile              | Address                                      | Base Gas        | Description                                      |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
 | **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 4/byte | Synchronous cross-VM calls (EVM to QoreChain Native)     |
-| **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte | Verify ML-DSA-87 post-quantum signatures         |
-| **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | Check if an account has a registered PQC key     |
-| **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | Get AI-generated risk score for transaction data |
-| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000B02` | 40,000          | Check if a transfer is flagged as anomalous      |
-| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1,500        | Read current PRISM-tuned consensus parameters    |
+| **PQC Verify**          | `0x0000000000000000000000000000000000000a01` | 25,000 + 8/byte | Verify ML-DSA-87 post-quantum signatures         |
+| **PQC Key Status**      | `0x0000000000000000000000000000000000000a02` | 2,500           | Check if an account has a registered PQC key     |
+| **AI Risk Score**       | `0x0000000000000000000000000000000000000b01` | 50,000          | Get AI-generated risk score for transaction data |
+| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000b02` | 40,000          | Check if a transfer is flagged as anomalous      |
+| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000c01` | 1,500        | Read current PRISM-tuned consensus parameters    |
 
 ---
 
@@ -190,7 +190,7 @@ pragma solidity ^0.8.24;
 import "./interfaces/IQorePQC.sol";
 
 contract PQCVerifier {
-    IQorePQC constant PQC = IQorePQC(0x0000000000000000000000000000000000000A01);
+    IQorePQC constant PQC = IQorePQC(0x0000000000000000000000000000000000000a01);
 
     /// @notice Verify a PQC signature and revert if invalid
     function verifyOrRevert(
@@ -210,7 +210,7 @@ contract PQCVerifier {
 
 ```solidity
 contract PQCChecker {
-    IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000A02);
+    IQorePQC constant PQC_STATUS = IQorePQC(0x0000000000000000000000000000000000000a02);
 
     function requirePQCKey(address account) external view {
         (bool registered, , , bool possessionProven) = PQC_STATUS.pqcKeyStatus(account);
@@ -232,7 +232,7 @@ Proof of possession is optional at registration, so `registered` alone does not 
 import "./interfaces/IQoreAI.sol";
 
 contract RiskGate {
-    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000B01);
+    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000b01);
 
     uint8 constant MAX_ALLOWED_RISK = 2; // Allow up to MEDIUM
 
@@ -263,7 +263,7 @@ The level comes from the AI engine's severity label for the transaction; the sco
 
 ```solidity
 contract AnomalyGuard {
-    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000B02);
+    IQoreAI constant AI = IQoreAI(0x0000000000000000000000000000000000000b02);
 
     function safeTransfer(address sender, uint256 amount) external view {
         (uint256 anomalyScore, bool flagged) = AI.aiAnomalyCheck(sender, amount);
@@ -282,7 +282,7 @@ contract AnomalyGuard {
 ```solidity
 contract ConsensusReader {
     IQoreConsensus constant RL = IQoreConsensus(
-        0x0000000000000000000000000000000000000C01
+        0x0000000000000000000000000000000000000c01
     );
 
     function getBlockTime() external view returns (uint256) {
