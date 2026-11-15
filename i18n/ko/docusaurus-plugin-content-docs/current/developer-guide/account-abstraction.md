@@ -193,12 +193,12 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 인증자가 승인한 작업은 두 가지 메시지로 전달됩니다. 두 경우 모두 릴레이어가 트랜잭션의 서명자/수수료 지불자이며, 인증자의 서명은 메시지 내부에 담겨 전달됩니다.
 
-**`MsgExecuteEVM`** — 표준 계정의 `0x…` 주소에서 이루어지는 EVM 호출 또는 전송입니다. 인증자는 `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)`(모든 필드는 길이 접두사 포함)에 서명합니다. v3.2.3(`abstractaccount-hardening` 기능)부터 체인은 **v2 다이제스트**, 즉 `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`를 요구하며, 이는 호출의 가스 한도(8바이트 빅엔디언)도 바인딩하므로 릴레이어가 다른 한도로 서명을 재전송할 수 없습니다. 어떤 블록도 두 형식을 모두 수락하지 않습니다. `qorechaind query abstractaccount auth-sign-evm`은 이를 위해 `--gas-limit`을 받으며, 같은 값을 `execute-evm`에도 전달합니다. 재전송 방지는 계정 자체의 EVM 논스를 통해 이루어집니다.
+**`MsgExecuteEVM`** — 표준 계정의 `0x…` 주소에서 이루어지는 EVM 호출 또는 전송입니다. 인증자는 `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)`(모든 필드는 길이 접두사 포함)에 서명합니다. v3.2.3(`abstractaccount-hardening` 기능)부터 체인은 **v2 다이제스트**, 즉 `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`를 요구하며, 이는 호출의 가스 한도(8바이트 빅엔디언)도 바인딩하므로 릴레이어가 다른 한도로 서명을 재전송할 수 없습니다. 어떤 블록도 두 형식을 모두 수락하지 않습니다. `qorechaind query abstractaccount auth-sign-evm`은 이를 위해 `--gas-limit`을 받으며, 같은 값을 `execute-evm`에도 전달합니다. 재전송 방지는 모듈이 관리하는 인증 키별 시퀀스로 이루어지며, 네이티브 레인과 같은 종류의 카운터입니다. 계정의 EVM 논스가 아닙니다.
 
 **`MsgExecuteCosmos`** — 표준 계정에서 이루어지는 네이티브 레인 뱅크 전송입니다. 인증자는 `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`에 서명합니다. 재전송 방지는 모듈이 관리하는 **인증자별 시퀀스**를 통해 이루어집니다(뱅크 전송은 계정 논스를 증가시키지 않습니다). 자기 자신에게 보내는 전송은 거부됩니다.
 
 :::caution 논스 규칙
-* `MsgExecuteEVM.nonce`는 계정의 **현재** EVM 논스(`eth_getTransactionCount(account0x, "latest")`)여야 합니다. 실제 운영 환경에서 릴레이어는 *다른* 계정이므로 +1을 더하지 **마십시오**. 오래된 논스로 서명하면 코드 `11`이 반환됩니다.
+* `MsgExecuteEVM.nonce` = 연결된 키 자체의 시퀀스(`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`)이며, 계정의 EVM 논스(`eth_getTransactionCount`)가 **아닙니다**. 오래된 논스로 서명하면 코드 `11`이 반환됩니다.
 * `MsgExecuteCosmos.nonce`는 인증자별 시퀀스입니다(계정의 인증자 상태를 조회하십시오). 계정의 Cosmos 시퀀스가 **아닙니다**. v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 2026년 10월 23일부터) `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`가 해당 시퀀스(`nonce`, `linked`)를 직접 반환합니다.
 :::
 
@@ -235,7 +235,7 @@ const msg = await buildMetaMaskExecuteEvm({
   to: "0xRecipient...",
   value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
   gasLimit: 100000,
-  nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
+  nonce: authNonce,                   // GET /qorechain/abstractaccount/v1/auth_nonce/{owner}/{pubkey_hex}
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
 // against the registered 20-byte address.
@@ -449,7 +449,7 @@ curl -s -g "https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=abstractac
 | 등록, 철회, 실행 | 코드 `9`, 모듈 비활성화 | 이 네트워크에서 모듈이 꺼져 있습니다(현재 메인넷에서는 꺼져 있습니다) |
 | 실행 | 코드 `10`, 권한 거부 | 키에 이 메시지에 대한 권한이 없거나, 연결된 키가 절대 보낼 수 없는 키 관리 메시지입니다 |
 | 실행 | 코드 `6`, 인증자 만료 | 더 늦은 만료 시각으로 키를 다시 연결하세요 |
-| 실행 | 코드 `11`, 재전송 거부 | 오래된 논스입니다. `auth_nonce`(EVM 레인에서는 계정의 EVM 논스)를 조회하고 다시 서명하세요 |
+| 실행 | 코드 `11`, 재전송 거부 | 오래된 논스입니다. `auth_nonce`(두 레인 모두 같은 카운터)를 조회하고 다시 서명하세요 |
 | 실행 | 코드 `5`, 지출 한도 초과 | 건당 또는 일일 한도를 넘었습니다. 다음 UTC 날짜까지 기다리거나 규칙을 올리세요 |
 | 실행 | 코드 `0`과 `success=false` 및 `abstractaccount_execution_failed` 이벤트 | 서명이 받아들여진 후 실패했으며 논스는 소비되었습니다. `reason`을 읽으세요(4단계) |
 | 릴레이어 봉투 | 코드스페이스 `pqc` 코드 `21` | 릴레이어 자신의 하이브리드 서명이 실패했습니다. 연결된 키와는 무관합니다 |

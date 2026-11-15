@@ -193,12 +193,12 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 Două mesaje transportă acțiuni autorizate de autentificator. În ambele cazuri, releul este semnatarul/plătitorul de taxe al tranzacției; semnătura autentificatorului călătorește în interiorul mesajului.
 
-**`MsgExecuteEVM`** — un apel sau transfer EVM **de la adresa `0x…` a contului canonic**. Autentificatorul semnează `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (toate câmpurile prefixate cu lungime). Începând cu v3.2.3 (funcția `abstractaccount-hardening`), chain-ul cere **digest-ul v2**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, care leagă și limita de gaz a apelului (8 octeți big-endian), astfel încât un releu nu poate reda semnătura cu o altă limită; niciun bloc nu acceptă ambele forme. `qorechaind query abstractaccount auth-sign-evm` primește `--gas-limit` pentru aceasta, iar aceeași valoare o transmiteți și lui `execute-evm`. Protecția anti-replay este nonce-ul EVM propriu al contului.
+**`MsgExecuteEVM`** — un apel sau transfer EVM **de la adresa `0x…` a contului canonic**. Autentificatorul semnează `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (toate câmpurile prefixate cu lungime). Începând cu v3.2.3 (funcția `abstractaccount-hardening`), chain-ul cere **digest-ul v2**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, care leagă și limita de gaz a apelului (8 octeți big-endian), astfel încât un releu nu poate reda semnătura cu o altă limită; niciun bloc nu acceptă ambele forme. `qorechaind query abstractaccount auth-sign-evm` primește `--gas-limit` pentru aceasta, iar aceeași valoare o transmiteți și lui `execute-evm`. Protecția anti-replay este o secvență per-autentificator ținută de modul, același tip de contor ca pe lane-ul nativ, nu nonce-ul EVM al contului.
 
 **`MsgExecuteCosmos`** — un transfer bancar pe lane-ul nativ din contul canonic. Autentificatorul semnează `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`. Protecția anti-replay este o **secvență per-autentificator** păstrată de modul (un transfer bancar nu incrementează nonce-ul contului). Auto-trimiterile sunt respinse.
 
 :::caution Reguli privind nonce-ul
-* `MsgExecuteEVM.nonce` = nonce-ul EVM **curent** al contului (`eth_getTransactionCount(account0x, "latest")`). În producție releul este un cont *diferit*, deci **nu** adăugați +1. Semnarea unui nonce învechit returnează codul `11`.
+* `MsgExecuteEVM.nonce` = secvența proprie a cheii legate (`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`), **nu** nonce-ul EVM al contului (`eth_getTransactionCount`). Semnarea unui nonce învechit returnează codul `11`.
 * `MsgExecuteCosmos.nonce` = secvența per-autentificator (interogați starea autentificatorului contului), **nu** secvența Cosmos a contului. Începând cu v3.2.4 (testnet din 19 octombrie 2026, mainnet din 23 octombrie 2026), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` returnează direct această secvență (`nonce`, `linked`).
 :::
 
@@ -235,7 +235,7 @@ const msg = await buildMetaMaskExecuteEvm({
   to: "0xRecipient...",
   value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
   gasLimit: 100000,
-  nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
+  nonce: authNonce,                   // GET /qorechain/abstractaccount/v1/auth_nonce/{owner}/{pubkey_hex}
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
 // against the registered 20-byte address.
@@ -449,7 +449,7 @@ Un client care verifică doar `code === 0` raportează un astfel de apel ca reu�
 | Înregistrare, revocare, execuție | cod `9`, modul dezactivat | Modulul este oprit pe această rețea (este oprit astăzi pe mainnet) |
 | Execuție | cod `10`, permisiune refuzată | Cheii îi lipsește permisiunea pentru acest mesaj, sau mesajul este unul de gestionare a cheilor pe care o cheie legată nu îl poate trimite niciodată |
 | Execuție | cod `6`, autentificator expirat | Legați din nou cheia cu o expirare ulterioară |
-| Execuție | cod `11`, replay respins | Nonce vechi: interogați `auth_nonce` (sau nonce-ul EVM al contului pe lane-ul EVM) și semnați din nou |
+| Execuție | cod `11`, replay respins | Nonce vechi: interogați `auth_nonce` (același contor pe ambele lane-uri) și semnați din nou |
 | Execuție | cod `5`, limita de cheltuieli depășită | Peste limita per tranzacție sau zilnică; așteptați următoarea zi UTC sau ridicați regula |
 | Execuție | cod `0` cu `success=false` și evenimentul `abstractaccount_execution_failed` | A eșuat după ce semnătura a fost acceptată; nonce-ul este consumat. Citiți `reason` (secțiunea 4) |
 | Plic relayer | codespace `pqc` cod `21` | Semnătura hibridă proprie a relayer-ului a eșuat; fără legătură cu cheia legată |

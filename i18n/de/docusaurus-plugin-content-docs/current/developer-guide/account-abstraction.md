@@ -193,12 +193,12 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 Zwei Nachrichten transportieren authenticator-autorisierte Aktionen. In beiden Fällen ist der Relayer der Signierer und Fee-Payer der Transaktion; die Signatur des Authenticators reist innerhalb der Nachricht mit.
 
-**`MsgExecuteEVM`** — ein EVM-Aufruf oder Transfer **von der `0x…`-Adresse des kanonischen Kontos**. Der Authenticator signiert `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (alle Felder mit Längenpräfix). Ab v3.2.3 (das Feature `abstractaccount-hardening`) verlangt die Chain den **v2-Digest**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, der zusätzlich das Gas-Limit des Aufrufs bindet (8 Byte, Big-Endian), sodass ein Relayer die Signatur nicht mit einem anderen Limit wiederverwenden kann; kein Block akzeptiert beide Formen. `qorechaind query abstractaccount auth-sign-evm` nimmt dafür `--gas-limit` entgegen, und Sie übergeben denselben Wert an `execute-evm`. Der Replay-Schutz ist die eigene EVM-Nonce des Kontos.
+**`MsgExecuteEVM`** — ein EVM-Aufruf oder Transfer **von der `0x…`-Adresse des kanonischen Kontos**. Der Authenticator signiert `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (alle Felder mit Längenpräfix). Ab v3.2.3 (das Feature `abstractaccount-hardening`) verlangt die Chain den **v2-Digest**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, der zusätzlich das Gas-Limit des Aufrufs bindet (8 Byte, Big-Endian), sodass ein Relayer die Signatur nicht mit einem anderen Limit wiederverwenden kann; kein Block akzeptiert beide Formen. `qorechaind query abstractaccount auth-sign-evm` nimmt dafür `--gas-limit` entgegen, und Sie übergeben denselben Wert an `execute-evm`. Der Replay-Schutz ist eine Pro-Authenticator-Sequenz, die das Modul führt, derselbe Zähler wie auf der Native-Lane, nicht die EVM-Nonce des Kontos.
 
 **`MsgExecuteCosmos`** — ein Bank-Send auf der Native Lane vom kanonischen Konto. Der Authenticator signiert `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`. Der Replay-Schutz ist eine **pro Authenticator geführte Sequenz**, die das Modul verwaltet (ein Bank-Send erhöht die Konto-Nonce nicht). Sends an sich selbst werden abgelehnt.
 
 :::caution Nonce-Regeln
-* `MsgExecuteEVM.nonce` = die **aktuelle** EVM-Nonce des Kontos (`eth_getTransactionCount(account0x, "latest")`). In Produktion ist der Relayer ein *anderes* Konto, addieren Sie also **kein** +1. Das Signieren einer veralteten Nonce liefert Code `11`.
+* `MsgExecuteEVM.nonce` = die eigene Sequenz des verknüpften Schlüssels (`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`), **nicht** die EVM-Nonce des Kontos (`eth_getTransactionCount`). Das Signieren einer veralteten Nonce liefert Code `11`.
 * `MsgExecuteCosmos.nonce` = die Pro-Authenticator-Sequenz (fragen Sie den Authenticator-Zustand des Kontos ab), **nicht** die Cosmos-Sequenz des Kontos. Ab v3.2.4 (Testnet seit dem 19. Oktober 2026, Mainnet seit dem 23. Oktober 2026) liefert `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` diese Sequenz direkt (`nonce`, `linked`).
 :::
 
@@ -235,7 +235,7 @@ const msg = await buildMetaMaskExecuteEvm({
   to: "0xRecipient...",
   value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
   gasLimit: 100000,
-  nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
+  nonce: authNonce,                   // GET /qorechain/abstractaccount/v1/auth_nonce/{owner}/{pubkey_hex}
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
 // against the registered 20-byte address.
@@ -449,7 +449,7 @@ Ein Client, der nur `code === 0` prüft, meldet einen solchen Aufruf als Erfolg.
 | Registrierung, Widerruf, Ausführung | Code `9`, Modul deaktiviert | Das Modul ist in diesem Netzwerk aus (im Mainnet ist es heute aus) |
 | Ausführung | Code `10`, Berechtigung verweigert | Dem Schlüssel fehlt die Berechtigung für diese Nachricht, oder die Nachricht ist eine Schlüsselverwaltungs-Nachricht, die ein verknüpfter Schlüssel nie senden kann |
 | Ausführung | Code `6`, Authenticator abgelaufen | Verknüpfen Sie den Schlüssel erneut mit einem späteren Ablaufdatum |
-| Ausführung | Code `11`, Replay abgelehnt | Veraltete Nonce: Fragen Sie `auth_nonce` ab (oder die EVM-Nonce des Kontos auf der EVM-Lane) und signieren Sie erneut |
+| Ausführung | Code `11`, Replay abgelehnt | Veraltete Nonce: Fragen Sie `auth_nonce` ab (derselbe Zähler auf beiden Lanes) und signieren Sie erneut |
 | Ausführung | Code `5`, Ausgabenlimit überschritten | Über dem Limit pro Transaktion oder dem Tageslimit; warten Sie auf den nächsten UTC-Tag oder erhöhen Sie die Regel |
 | Ausführung | Code `0` mit `success=false` und dem Ereignis `abstractaccount_execution_failed` | Nach der Annahme der Signatur fehlgeschlagen; die Nonce ist verbraucht. Lesen Sie `reason` (Abschnitt 4) |
 | Relayer-Envelope | Codespace `pqc` Code `21` | Die eigene hybride Signatur des Relayers ist fehlgeschlagen; unabhängig vom verknüpften Schlüssel |

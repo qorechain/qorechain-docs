@@ -193,12 +193,12 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 Dos mensajes transportan acciones autorizadas por un autenticador. En ambos, el relayer es el firmante/pagador de comisiones de la transacción; la firma del autenticador viaja dentro del mensaje.
 
-**`MsgExecuteEVM`** — una llamada o transferencia EVM **desde la dirección `0x…` de la cuenta canónica**. El autenticador firma `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (todos los campos con prefijo de longitud). Desde v3.2.3 (la función `abstractaccount-hardening`), la cadena exige el **digest v2**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, que además vincula el límite de gas de la llamada (8 bytes big-endian) para que un relayer no pueda repetir la firma con un límite distinto; ningún bloque acepta ambas formas. `qorechaind query abstractaccount auth-sign-evm` admite `--gas-limit` para esto, y pasas el mismo valor a `execute-evm`. La protección contra repetición es el propio nonce EVM de la cuenta.
+**`MsgExecuteEVM`** — una llamada o transferencia EVM **desde la dirección `0x…` de la cuenta canónica**. El autenticador firma `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (todos los campos con prefijo de longitud). Desde v3.2.3 (la función `abstractaccount-hardening`), la cadena exige el **digest v2**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, que además vincula el límite de gas de la llamada (8 bytes big-endian) para que un relayer no pueda repetir la firma con un límite distinto; ningún bloque acepta ambas formas. `qorechaind query abstractaccount auth-sign-evm` admite `--gas-limit` para esto, y pasas el mismo valor a `execute-evm`. La protección contra repetición es una secuencia por autenticador que lleva el módulo, el mismo tipo de contador que en el carril nativo, no el nonce EVM de la cuenta.
 
 **`MsgExecuteCosmos`** — un envío bancario en la vía nativa desde la cuenta canónica. El autenticador firma `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`. La protección contra repetición es una **secuencia por autenticador** que mantiene el módulo (un envío bancario no incrementa el nonce de la cuenta). Los envíos a uno mismo se rechazan.
 
 :::caution Reglas del nonce
-* `MsgExecuteEVM.nonce` = el nonce EVM **actual** de la cuenta (`eth_getTransactionCount(account0x, "latest")`). En producción el relayer es una cuenta *distinta*, así que **no** sumes +1. Firmar un nonce obsoleto devuelve el código `11`.
+* `MsgExecuteEVM.nonce` = la secuencia propia de la clave vinculada (`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`), **no** el nonce EVM de la cuenta (`eth_getTransactionCount`). Firmar un nonce obsoleto devuelve el código `11`.
 * `MsgExecuteCosmos.nonce` = la secuencia por autenticador (consulta el estado de autenticadores de la cuenta), **no** la secuencia Cosmos de la cuenta. Desde v3.2.4 (testnet desde el 19 de octubre de 2026, mainnet desde el 23 de octubre de 2026), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` devuelve directamente esa secuencia (`nonce`, `linked`).
 :::
 
@@ -235,7 +235,7 @@ const msg = await buildMetaMaskExecuteEvm({
   to: "0xRecipient...",
   value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
   gasLimit: 100000,
-  nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
+  nonce: authNonce,                   // GET /qorechain/abstractaccount/v1/auth_nonce/{owner}/{pubkey_hex}
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
 // against the registered 20-byte address.
@@ -449,7 +449,7 @@ Un cliente que solo compruebe `code === 0` informa de esa llamada como un éxito
 | Registro, revocación, ejecución | código `9`, módulo desactivado | El módulo está apagado en esta red (hoy lo está en la mainnet) |
 | Ejecución | código `10`, permiso denegado | La clave no tiene el permiso para este mensaje, o el mensaje es de gestión de claves, que una clave vinculada nunca puede enviar |
 | Ejecución | código `6`, autenticador caducado | Vincula la clave de nuevo con una caducidad posterior |
-| Ejecución | código `11`, repetición rechazada | Nonce obsoleto: consulta `auth_nonce` (o el nonce EVM de la cuenta en el carril EVM) y firma de nuevo |
+| Ejecución | código `11`, repetición rechazada | Nonce obsoleto: consulta `auth_nonce` (el mismo contador en ambos carriles) y firma de nuevo |
 | Ejecución | código `5`, límite de gasto superado | Por encima del límite por transacción o diario; espera al siguiente día UTC o sube la regla |
 | Ejecución | código `0` con `success=false` y el evento `abstractaccount_execution_failed` | Falló tras aceptarse la firma; el nonce está usado. Lee `reason` (sección 4) |
 | Sobre del relayer | codespace `pqc` código `21` | Falló la propia firma híbrida del relayer; no tiene relación con la clave vinculada |

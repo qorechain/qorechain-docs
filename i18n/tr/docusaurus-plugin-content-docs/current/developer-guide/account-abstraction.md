@@ -193,12 +193,12 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 Kimlik doğrulayıcı tarafından yetkilendirilen eylemleri iki mesaj taşır. Her ikisinde de röle, işlemin imzalayıcısı/ücret ödeyicisidir; kimlik doğrulayıcının imzası mesajın içinde taşınır.
 
-**`MsgExecuteEVM`** — **kanonik hesabın `0x…` adresinden** yapılan bir EVM çağrısı veya transferi. Kimlik doğrulayıcı `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` değerini imzalar (tüm alanlar uzunluk ön ekli). v3.2.3'ten itibaren (`abstractaccount-hardening` özelliği) zincir **v2 özetini** (digest) zorunlu kılar: `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`; bu, çağrının gaz limitini (8 baytlık big-endian) de bağlar, böylece bir röle imzayı farklı bir limitle tekrar oynatamaz; hiçbir blok her iki biçimi birden kabul etmez. `qorechaind query abstractaccount auth-sign-evm` bunun için `--gas-limit` alır ve aynı değeri `execute-evm`'e verirsiniz. Tekrar oynatma koruması hesabın kendi EVM nonce'udur.
+**`MsgExecuteEVM`** — **kanonik hesabın `0x…` adresinden** yapılan bir EVM çağrısı veya transferi. Kimlik doğrulayıcı `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` değerini imzalar (tüm alanlar uzunluk ön ekli). v3.2.3'ten itibaren (`abstractaccount-hardening` özelliği) zincir **v2 özetini** (digest) zorunlu kılar: `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`; bu, çağrının gaz limitini (8 baytlık big-endian) de bağlar, böylece bir röle imzayı farklı bir limitle tekrar oynatamaz; hiçbir blok her iki biçimi birden kabul etmez. `qorechaind query abstractaccount auth-sign-evm` bunun için `--gas-limit` alır ve aynı değeri `execute-evm`'e verirsiniz. Tekrar oynatma koruması, modülün tuttuğu kimlik doğrulayıcı başına bir sıradır; yerel şeritteki ile aynı türde bir sayaçtır, hesabın EVM nonce'u değildir.
 
 **`MsgExecuteCosmos`** — kanonik hesaptan yapılan bir Native-lane banka gönderimi. Kimlik doğrulayıcı `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)` değerini imzalar. Tekrar oynatma koruması, modül tarafından tutulan **kimlik doğrulayıcı başına bir sıra numarasıdır** (bir banka gönderimi hesabın nonce'unu artırmaz). Kendine gönderimler reddedilir.
 
 :::caution Nonce kuralları
-* `MsgExecuteEVM.nonce` = hesabın **mevcut** EVM nonce'u (`eth_getTransactionCount(account0x, "latest")`). Üretimde röle *farklı* bir hesap olduğundan, +1 **eklemeyin**. Eski bir nonce'un imzalanması `11` kodunu döndürür.
+* `MsgExecuteEVM.nonce` = bağlı anahtarın kendi sırası (`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`), hesabın EVM nonce'u (`eth_getTransactionCount`) **değildir**. Eski bir nonce imzalamak `11` kodunu döndürür.
 * `MsgExecuteCosmos.nonce` = kimlik doğrulayıcı başına sıra numarası (hesabın kimlik doğrulayıcı durumunu sorgulayın), hesabın Cosmos sıra numarası **değil**. v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri, ana ağda 23 Ekim 2026'dan beri), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` bu sıra numarasını doğrudan döndürür (`nonce`, `linked`).
 :::
 
@@ -235,7 +235,7 @@ const msg = await buildMetaMaskExecuteEvm({
   to: "0xRecipient...",
   value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
   gasLimit: 100000,
-  nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
+  nonce: authNonce,                   // GET /qorechain/abstractaccount/v1/auth_nonce/{owner}/{pubkey_hex}
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
 // against the registered 20-byte address.
@@ -449,7 +449,7 @@ Yalnızca `code === 0` değerini kontrol eden bir istemci böyle bir çağrıyı
 | Kayıt, iptal, yürütme | kod `9`, modül kapalı | Modül bu ağda kapalıdır (ana ağda bugün kapalıdır) |
 | Yürütme | kod `10`, izin reddedildi | Anahtarın bu mesaj için izni yok veya mesaj, bağlı bir anahtarın asla gönderemeyeceği bir anahtar yönetimi mesajıdır |
 | Yürütme | kod `6`, kimlik doğrulayıcının süresi doldu | Anahtarı daha geç bir son kullanma tarihiyle yeniden bağlayın |
-| Yürütme | kod `11`, tekrar reddedildi | Eski nonce: `auth_nonce` değerini (veya EVM şeridinde hesabın EVM nonce değerini) sorgulayın ve yeniden imzalayın |
+| Yürütme | kod `11`, tekrar reddedildi | Eski nonce: `auth_nonce` değerini (iki şeritte de aynı sayaç) sorgulayın ve yeniden imzalayın |
 | Yürütme | kod `5`, harcama limiti aşıldı | İşlem başına veya günlük limitin üzerinde; bir sonraki UTC gününü bekleyin veya kuralı yükseltin |
 | Yürütme | kod `0`, `success=false` ve `abstractaccount_execution_failed` olayı | İmza kabul edildikten sonra başarısız oldu; nonce kullanıldı. `reason` değerini okuyun (bölüm 4) |
 | Aktarıcı zarfı | codespace `pqc` kod `21` | Aktarıcının kendi hibrit imzası başarısız oldu; bağlı anahtarla ilgisi yoktur |

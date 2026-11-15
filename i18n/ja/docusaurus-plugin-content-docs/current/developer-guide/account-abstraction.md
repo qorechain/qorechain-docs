@@ -193,12 +193,12 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 オーセンティケーターによって承認されたアクションは2つのメッセージで運ばれます。どちらの場合も、リレイヤーがトランザクションの署名者／手数料負担者であり、オーセンティケーターの署名はメッセージの内部に含まれます。
 
-**`MsgExecuteEVM`** — **正規アカウントの`0x…`アドレスから**行われるEVMコールまたは送金。オーセンティケーターは`sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)`（すべてのフィールドは長さ接頭辞付き）に署名します。v3.2.3（`abstractaccount-hardening`機能）以降、チェーンは**v2ダイジェスト**`sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`を要求します。これはコールのガスリミット（8バイトのビッグエンディアン）も束縛するため、リレイヤーが異なるリミットで署名をリプレイすることはできません。どのブロックも両方の形式を受け付けることはありません。`qorechaind query abstractaccount auth-sign-evm`にはこのための`--gas-limit`があり、同じ値を`execute-evm`にも渡します。リプレイ対策はアカウント自身のEVMナンスです。
+**`MsgExecuteEVM`** — **正規アカウントの`0x…`アドレスから**行われるEVMコールまたは送金。オーセンティケーターは`sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)`（すべてのフィールドは長さ接頭辞付き）に署名します。v3.2.3（`abstractaccount-hardening`機能）以降、チェーンは**v2ダイジェスト**`sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`を要求します。これはコールのガスリミット（8バイトのビッグエンディアン）も束縛するため、リレイヤーが異なるリミットで署名をリプレイすることはできません。どのブロックも両方の形式を受け付けることはありません。`qorechaind query abstractaccount auth-sign-evm`にはこのための`--gas-limit`があり、同じ値を`execute-evm`にも渡します。リプレイ対策はモジュールが保持する認証キーごとのシーケンスで、ネイティブレーンと同じ種類のカウンターです。アカウントの EVM ナンスではありません。
 
 **`MsgExecuteCosmos`** — 正規アカウントからのネイティブレーンの銀行送金。オーセンティケーターは`sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`に署名します。リプレイ対策は、モジュールが保持する**オーセンティケーターごとのシーケンス**です（銀行送金はアカウントのナンスを増やしません）。自分自身への送金は拒否されます。
 
 :::caution ナンスに関するルール
-* `MsgExecuteEVM.nonce`はアカウントの**現在の**EVMナンス（`eth_getTransactionCount(account0x, "latest")`）です。本番環境ではリレイヤーは*別の*アカウントであるため、+1を加算しては**いけません**。古いナンスで署名するとコード`11`が返されます。
+* `MsgExecuteEVM.nonce` = リンクされたキー自身のシーケンス（`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`）であり、アカウントの EVM ナンス（`eth_getTransactionCount`）では**ありません**。古いナンスで署名するとコード `11` が返ります。
 * `MsgExecuteCosmos.nonce`は（アカウントのオーセンティケーター状態を照会して得られる）オーセンティケーターごとのシーケンスであり、アカウントのCosmosシーケンス**ではありません**。v3.2.4以降（テストネットでは2026年10月19日から、メインネットでは2026年10月23日から）、`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`がそのシーケンスを直接返します（`nonce`、`linked`）。
 :::
 
@@ -235,7 +235,7 @@ const msg = await buildMetaMaskExecuteEvm({
   to: "0xRecipient...",
   value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
   gasLimit: 100000,
-  nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
+  nonce: authNonce,                   // GET /qorechain/abstractaccount/v1/auth_nonce/{owner}/{pubkey_hex}
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
 // against the registered 20-byte address.
@@ -449,7 +449,7 @@ curl -s -g "https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=abstractac
 | 登録、失効、実行 | コード `9`、モジュールが無効 | このネットワークではモジュールがオフです（メインネットでは現在オフです） |
 | 実行 | コード `10`、権限が拒否された | 鍵にこのメッセージに対する権限がないか、連携された鍵が送信できない鍵管理メッセージです |
 | 実行 | コード `6`、オーセンティケーターの期限切れ | より遅い有効期限で、鍵をもう一度連携してください |
-| 実行 | コード `11`、リプレイが拒否された | 古いナンス: `auth_nonce`（EVM レーンではアカウントの EVM ナンス）を照会して、もう一度署名してください |
+| 実行 | コード `11`、リプレイが拒否された | 古いナンス: `auth_nonce`（両方のレーンで同じカウンター）を照会して、もう一度署名してください |
 | 実行 | コード `5`、支出上限を超過 | 1 トランザクションあたりまたは 1 日の上限を超えています。次の UTC の日まで待つか、ルールを引き上げてください |
 | 実行 | コード `0` で `success=false` と `abstractaccount_execution_failed` イベント | 署名が受理された後に失敗しました。ナンスは使用済みです。`reason` を読んでください（セクション 4） |
 | リレイヤーエンベロープ | codespace `pqc` コード `21` | リレイヤー自身のハイブリッド署名が失敗しました。連携された鍵とは無関係です |

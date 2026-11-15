@@ -193,12 +193,12 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 Two messages carry authenticator-authorized actions. In both, the relayer is the transaction's signer/fee-payer; the authenticator's signature travels inside the message.
 
-**`MsgExecuteEVM`** — an EVM call or transfer **from the canonical account's `0x…` address**. The authenticator signs `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (all fields length-prefixed). From v3.2.3 (the `abstractaccount-hardening` feature) the chain requires the **v2 digest**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, which also binds the call's gas limit (8-byte big-endian) so a relayer cannot replay the signature with a different limit; no block accepts both forms. `qorechaind query abstractaccount auth-sign-evm` takes `--gas-limit` for this, and you pass the same value to `execute-evm`. Replay protection is the account's own EVM nonce.
+**`MsgExecuteEVM`** — an EVM call or transfer **from the canonical account's `0x…` address**. The authenticator signs `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (all fields length-prefixed). From v3.2.3 (the `abstractaccount-hardening` feature) the chain requires the **v2 digest**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, which also binds the call's gas limit (8-byte big-endian) so a relayer cannot replay the signature with a different limit; no block accepts both forms. `qorechaind query abstractaccount auth-sign-evm` takes `--gas-limit` for this, and you pass the same value to `execute-evm`. Replay protection is a per-authenticator sequence kept by the module, the same kind of counter as on the Native lane, not the account's EVM nonce.
 
 **`MsgExecuteCosmos`** — a Native-lane bank send from the canonical account. The authenticator signs `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`. Replay protection is a **per-authenticator sequence** kept by the module (a bank send does not bump the account nonce). Self-sends are rejected.
 
 :::caution Nonce rules
-* `MsgExecuteEVM.nonce` = the account's **current** EVM nonce (`eth_getTransactionCount(account0x, "latest")`). In production the relayer is a *different* account, so do **not** add +1. Signing a stale nonce returns code `11`.
+* `MsgExecuteEVM.nonce` = the linked key's own sequence (`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`), **not** the account's EVM nonce (`eth_getTransactionCount`). Signing a stale nonce returns code `11`.
 * `MsgExecuteCosmos.nonce` = the per-authenticator sequence (query the account's authenticator state), **not** the account's Cosmos sequence. From v3.2.4 (testnet since 19 October 2026, mainnet since 23 October 2026), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` returns that sequence directly (`nonce`, `linked`).
 :::
 
@@ -235,7 +235,7 @@ const msg = await buildMetaMaskExecuteEvm({
   to: "0xRecipient...",
   value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
   gasLimit: 100000,
-  nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
+  nonce: authNonce,                   // GET /qorechain/abstractaccount/v1/auth_nonce/{owner}/{pubkey_hex}
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
 // against the registered 20-byte address.
@@ -449,7 +449,7 @@ A client that checks only `code === 0` reports such a call as a success. Check f
 | Registration, revoke, execute | code `9`, module disabled | The module is off on this network (it is off on the mainnet today) |
 | Execute | code `10`, permission denied | The key lacks the permission for this message, or the message is a key-management message that a linked key can never send |
 | Execute | code `6`, authenticator expired | Link the key again with a later expiry |
-| Execute | code `11`, replay rejected | Stale nonce: query `auth_nonce` (or the account's EVM nonce on the EVM lane) and sign again |
+| Execute | code `11`, replay rejected | Stale nonce: query `auth_nonce` (the same counter on both lanes) and sign again |
 | Execute | code `5`, spending limit exceeded | Over the per-transaction or daily limit; wait for the next UTC day or raise the rule |
 | Execute | code `0` with `success=false` and the `abstractaccount_execution_failed` event | Failed after the signature was accepted; the nonce is used. Read `reason` (section 4) |
 | Relayer envelope | codespace `pqc` code `21` | The relayer's own hybrid signature failed; unrelated to the linked key |

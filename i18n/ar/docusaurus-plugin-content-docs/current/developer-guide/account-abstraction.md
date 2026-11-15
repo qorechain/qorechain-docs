@@ -193,12 +193,12 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 رسالتان تحملان الإجراءات المخوَّلة عبر المصادقة. في كلتيهما، المُرحِّل هو موقّع المعاملة ودافع الرسوم؛ ويسافر توقيع المصادقة داخل الرسالة.
 
-**`MsgExecuteEVM`** — استدعاء EVM أو تحويل **من عنوان `0x…` للحساب الأساسي**. توقّع المصادقة `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (جميع الحقول مسبوقة بالطول). ومنذ v3.2.3 (الميزة `abstractaccount-hardening`) تشترط السلسلة **الملخص v2**، أي `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`، الذي يربط أيضاً حد غاز الاستدعاء (8 بايت big-endian) حتى لا يستطيع مُرحِّل إعادة تشغيل التوقيع بحد مختلف؛ ولا تقبل أي كتلة الصيغتين معاً. يقبل `qorechaind query abstractaccount auth-sign-evm` الراية `--gas-limit` لهذا الغرض، وتمرّر القيمة نفسها إلى `execute-evm`. الحماية من إعادة التشغيل هي nonce الـ EVM الخاص بالحساب نفسه.
+**`MsgExecuteEVM`** — استدعاء EVM أو تحويل **من عنوان `0x…` للحساب الأساسي**. توقّع المصادقة `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (جميع الحقول مسبوقة بالطول). ومنذ v3.2.3 (الميزة `abstractaccount-hardening`) تشترط السلسلة **الملخص v2**، أي `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`، الذي يربط أيضاً حد غاز الاستدعاء (8 بايت big-endian) حتى لا يستطيع مُرحِّل إعادة تشغيل التوقيع بحد مختلف؛ ولا تقبل أي كتلة الصيغتين معاً. يقبل `qorechaind query abstractaccount auth-sign-evm` الراية `--gas-limit` لهذا الغرض، وتمرّر القيمة نفسها إلى `execute-evm`. الحماية من إعادة التشغيل هي تسلسل خاص بكل مُصادِق يحتفظ به الموديول، وهو نفس نوع العدّاد في المسار الأصلي، وليس nonce الـ EVM الخاص بالحساب.
 
 **`MsgExecuteCosmos`** — إرسال بنكي على المسار الأصلي من الحساب الأساسي. توقّع المصادقة `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`. الحماية من إعادة التشغيل هي **تسلسل لكل مصادقة** تحتفظ به الوحدة (الإرسال البنكي لا يزيد nonce الحساب). تُرفض عمليات الإرسال إلى النفس.
 
 :::caution قواعد nonce
-* `MsgExecuteEVM.nonce` = nonce الـ EVM **الحالي** للحساب (`eth_getTransactionCount(account0x, "latest")`). في بيئة الإنتاج يكون المُرحِّل حساباً *مختلفاً*، لذا **لا** تُضِف +1. توقيع nonce قديم يُرجع الرمز `11`.
+* `MsgExecuteEVM.nonce` = التسلسل الخاص بالمفتاح المرتبط (`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`)، **وليس** nonce الـ EVM الخاص بالحساب (`eth_getTransactionCount`). توقيع nonce قديم يُرجع الرمز `11`.
 * `MsgExecuteCosmos.nonce` = التسلسل الخاص بكل مصادقة (استعلم عن حالة مصادقات الحساب)، **وليس** تسلسل Cosmos الخاص بالحساب. ومن v3.2.4 (شبكة الاختبار منذ 19 أكتوبر 2026، والشبكة الرئيسية منذ 23 أكتوبر 2026)، يُرجع `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` ذلك التسلسل مباشرةً (`nonce` و`linked`).
 :::
 
@@ -235,7 +235,7 @@ const msg = await buildMetaMaskExecuteEvm({
   to: "0xRecipient...",
   value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
   gasLimit: 100000,
-  nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
+  nonce: authNonce,                   // GET /qorechain/abstractaccount/v1/auth_nonce/{owner}/{pubkey_hex}
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
 // against the registered 20-byte address.
@@ -449,7 +449,7 @@ curl -s -g "https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=abstractac
 | التسجيل أو الإلغاء أو التنفيذ | الرمز `9`، الوحدة معطّلة | الوحدة مطفأة على هذه الشبكة (وهي مطفأة على الشبكة الرئيسية اليوم) |
 | التنفيذ | الرمز `10`، الإذن مرفوض | ينقص المفتاحَ الإذنُ لهذه الرسالة، أو الرسالة رسالة إدارة مفاتيح لا يستطيع مفتاح مرتبط إرسالها أبدًا |
 | التنفيذ | الرمز `6`، انتهت صلاحية المصادِق | اربط المفتاح من جديد بانتهاء صلاحية أبعد |
-| التنفيذ | الرمز `11`، رُفض لإعادة الاستخدام | nonce قديم: استعلم عن `auth_nonce` (أو nonce حساب EVM في مسار EVM) ووقّع من جديد |
+| التنفيذ | الرمز `11`، رُفض لإعادة الاستخدام | nonce قديم: استعلم عن `auth_nonce` (العدّاد نفسه في المسارين) ووقّع من جديد |
 | التنفيذ | الرمز `5`، تجاوز حد الإنفاق | فوق حد المعاملة أو الحد اليومي؛ انتظر يوم UTC التالي أو ارفع القاعدة |
 | التنفيذ | الرمز `0` مع `success=false` والحدث `abstractaccount_execution_failed` | فشل بعد قبول التوقيع؛ والـ nonce استُهلك. اقرأ `reason` (القسم 4) |
 | مظروف المُرحِّل | codespace باسم `pqc` والرمز `21` | فشل التوقيع الهجين للمُرحِّل نفسه؛ ولا علاقة له بالمفتاح المرتبط |
