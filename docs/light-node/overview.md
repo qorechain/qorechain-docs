@@ -11,7 +11,7 @@ The **QoreChain Light Node** is a small client that follows a QoreChain network 
 
 Running and syncing a node needs no licence. Taking part in the reward share is a separate step: it needs a `lightnode_operator` licence, stake delegated to bonded validators, and an on-chain registration (see [How to access](#how-to-access)).
 
-The light node has its **own version line**, separate from the chain release. As of 12 November 2026 both networks' release channels carry light node **3.1.13** (the testnet runs chain `v3.2.8`, mainnet runs `v3.2.7` since 12 November 2026; 3.1.13 worked unchanged on `v3.2.7` on the testnet, where heartbeat and claim returned code 0, and was not re-checked on `v3.2.8` or on mainnet). Treat the two numbers as unrelated.
+The light node has its **own version line**, separate from the chain release. As of 12 November 2026 both networks' release channels carry light node **3.1.14** (the testnet runs chain `v3.2.8`, mainnet runs `v3.2.7` since 12 November 2026; 3.1.14 works on `v3.2.8` on the testnet, where the heartbeat returns code 0, and was not re-checked on mainnet). Treat the two numbers as unrelated.
 
 ## Innovations {#innovations}
 
@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 The chain RPC for `onboard` is `https://rpc.qore.host` (mainnet) or `https://rpc-testnet.qore.host` (testnet). For the UX edition use `lightnode-ux` with the same commands and open `http://127.0.0.1:8420`. Details of every step: [SX Edition](/light-node/sx-edition) and [Registration and Licensing](/light-node/registration-and-licensing).
 
-**3. Keep it updated.** Light node 3.1.11 and later update themselves outside containers (see the self-update item above). A node on 3.1.10 or earlier must install 3.1.13 by hand once: download the versioned binary as above and replace the file. With Docker, run `docker compose pull && docker compose up -d`. See [SX Edition: updating](/light-node/sx-edition#updating).
+**3. Keep it updated.** Light node 3.1.11 and later update themselves outside containers (see the self-update item above). A node on 3.1.10 or earlier must install 3.1.14 by hand once: download the versioned binary as above and replace the file. With Docker, run `docker compose pull && docker compose up -d`. See [SX Edition: updating](/light-node/sx-edition#updating).
 
 ## How to access {#how-to-access}
 
@@ -77,7 +77,7 @@ The chain RPC for `onboard` is `https://rpc.qore.host` (mainnet) or `https://rpc
 | Chain | `qorechain-vladi` (chain `v3.2.7`) | `qorechain-diana` (chain `v3.2.8`) |
 | RPC for the node | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | REST for queries | `https://api.qore.host` | `https://api-testnet.qore.host` |
-| Light node release | 3.1.13 | 3.1.13 |
+| Light node release | 3.1.14 | 3.1.14 |
 | Licence | $50, bought on the Dashboard; the grant is signed by hand in batches | Free, self-service: **Nodes & Validators > Light Node**, **Request licence**; signed automatically, usually within minutes |
 
 **What you need to register**
@@ -115,12 +115,12 @@ To be eligible for rewards a light node must be **registered on-chain, active** 
 
 | What | Where | Current version |
 | --- | --- | --- |
-| Release manifest, mainnet | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, registration open) |
-| Release manifest, testnet | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, registration open) |
+| Release manifest, mainnet | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.14 (`minCompatible` 3.1.9, registration open) |
+| Release manifest, testnet | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.14 (`minCompatible` 3.1.9, registration open) |
 | Binaries | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 12 files per release (SX and UX, Linux, macOS and Windows, amd64 and arm64) plus `SHA256SUMS` |
-| Source and releases | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Release `v3.1.13` (current) and earlier tags; each carries the 12 binaries, `SHA256SUMS`, `lightnode-build.json` and an Android preview APK |
+| Source and releases | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Release `v3.1.14` (current) and earlier tags; each carries the 12 binaries, `SHA256SUMS`, `lightnode-build.json` and an Android preview APK |
 | Android | Attached to the GitHub release only | Preview: follows the chain, does not register, does not earn |
-| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` and `ghcr.io/qorechain/qorechain-lightnode-ux`, public, tags `latest` and `v<version>` (see [SX Edition: Docker](/light-node/sx-edition#docker)) | `v3.1.13` |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` and `ghcr.io/qorechain/qorechain-lightnode-ux`, public, tags `latest` and `v<version>` (see [SX Edition: Docker](/light-node/sx-edition#docker)) | `v3.1.14` |
 
 Check the `version` in the manifest of your network before you download, rather than relying on this table. The release signing key is built into the binary; nothing for you to install.
 
@@ -130,7 +130,7 @@ Check the `version` in the manifest of your network before you download, rather 
 - **Rewards are a ceiling.** The per-node bound (2,000 QOR per 30 days) is a maximum, and the node is paid only what accrues to the pool and only while eligible.
 - **A heartbeat is a liveness signature.** It proves the operator key signed on time, not that the full software ran continuously.
 - **Reputation warnings.** Since chain v3.2.6 (mainnet, 4 November 2026) mainnet serves per-validator reputation scores, so the check can run on both networks; on 4 November `GET /qorechain/reputation/v1/validator/<valoper>` answered 200 on mainnet for a bonded validator. Against a chain older than v3.2.6 (or a validator the chain has not scored) the node skips that one check and says so in its log. The jailed, not-in-the-active-set and low-stake warnings do not depend on it. Node versions before 3.1.11 logged a failed reputation check every five minutes and never warned about anything.
-- **Self-update starts at 3.1.11.** A node on 3.1.10 or earlier does not update itself and needs one manual install of 3.1.13. In a container or an unwritable folder the node only announces new releases.
+- **Self-update starts at 3.1.11.** A node on 3.1.10 or earlier does not update itself and needs one manual install of 3.1.14. In a container or an unwritable folder the node only announces new releases.
 - **Docker nodes do not update themselves.** They are told about a new release, and the update is `docker compose pull && docker compose up -d`.
 - **Android is a preview** and does not register or earn.
 - **Licences.** Mainnet grants are signed by hand in batches, so there is a wait between payment and registration. The testnet licence is limited to one per account and one per address.

@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Ediția SX — Daemon Server
 
-Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Versiunile light node-ului au o linie proprie, separată de versiunea lanțului: canalele ambelor rețele poartă versiunea **3.1.13** (12 noiembrie 2026). Această pagină indică unde o funcție necesită 3.1.11 sau o versiune ulterioară.
+Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Versiunile light node-ului au o linie proprie, separată de versiunea lanțului: canalele ambelor rețele poartă versiunea **3.1.14** (13 noiembrie 2026). Această pagină indică unde o funcție necesită 3.1.11 sau o versiune ulterioară.
 
 ## Instalare {#install}
 
@@ -17,7 +17,7 @@ Binarele precompilate sunt calea cea mai simplă. Clientul light node este un si
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.14 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ Light node-ul necesită **Go 1.26.1**. Criptografia sa post-cuantică este o imp
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Construiește din tag-ul de release pe care îl indică manifestul (`git checkout v3.1.13` astăzi). Aceasta produce `build/lightnode-sx`. Rulează-l direct sau copiază-l în `PATH`. Înainte de înregistrare, verifică rapid stiva de semnare post-cuantică cu [`selftest`](#verify-the-pqc-stack-selftest).
+Construiește din tag-ul de release pe care îl indică manifestul (`git checkout v3.1.14` astăzi). Aceasta produce `build/lightnode-sx`. Rulează-l direct sau copiază-l în `PATH`. Înainte de înregistrare, verifică rapid stiva de semnare post-cuantică cu [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-Imaginile publicate sunt publice și pot fi descărcate anonim: `ghcr.io/qorechain/qorechain-lightnode-sx` și `ghcr.io/qorechain/qorechain-lightnode-ux`, fiecare cu tag-urile `latest` și `v<version>` (de exemplu `v3.1.13`). Fișierul `docker-compose.yml` din ramura `main` a depozitului sursă le folosește și revine la construirea din sursă (`Dockerfile.sx`, `Dockerfile.ux`) când registrul nu este accesibil. Pentru a fixa un release, schimbă tag-ul `image:` din fișierul compose; pentru a construi în schimb dintr-un tag de release, rulează `git checkout v<version>` și apoi `docker compose build`. Cheile, configurația și volumul de date se păstrează când actualizezi.
+Imaginile publicate sunt publice și pot fi descărcate anonim: `ghcr.io/qorechain/qorechain-lightnode-sx` și `ghcr.io/qorechain/qorechain-lightnode-ux`, fiecare cu tag-urile `latest` și `v<version>` (de exemplu `v3.1.14`). Fișierul `docker-compose.yml` din ramura `main` a depozitului sursă le folosește și revine la construirea din sursă (`Dockerfile.sx`, `Dockerfile.ux`) când registrul nu este accesibil. Pentru a fixa un release, schimbă tag-ul `image:` din fișierul compose; pentru a construi în schimb dintr-un tag de release, rulează `git checkout v<version>` și apoi `docker compose build`. Cheile, configurația și volumul de date se păstrează când actualizezi.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,8 +78,8 @@ Nodul semnează nativ în interiorul containerului, deci nu este nevoie de nimic
 - **Setări.** `[update] mode = "auto"` (implicit, și pentru o configurație fără secțiune) anunță și instalează; `"notify"` doar anunță; `"off"` nu verifică. Manual: `lightnode-sx update --check`, apoi `lightnode-sx update`, apoi repornește nodul.
 - **Cum vezi un anunț.** Nodul jurnalizează un release mai nou și îl servește în API-ul tabloului de bord local la `GET /api/update` (câmpuri `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); tabloul de bord UX afișează un banner.
 - **Container sau folder fără drept de scriere.** Nodul doar anunță: actualizează tu imaginea sau fișierul.
-- **Light node 3.1.11 și ulterior** instalează singure 3.1.13 în 6 ore de la publicare (verificat pe nodul de test de pe testnet).
-- **Light node 3.1.10 și anterioare** nu se actualizează singure. Instalează 3.1.13 manual o dată: descarcă binarul versionat din calea manifestului (vezi [Instalare](#install)), verifică-l, înlocuiește fișierul și repornește. După aceea nodul urmează canalul său.
+- **Light node 3.1.11 și ulterior** instalează singure versiunile noi în 6 ore de la publicare (verificat pe nodul de test de pe testnet).
+- **Light node 3.1.10 și anterioare** nu se actualizează singure. Instalează 3.1.14 manual o dată: descarcă binarul versionat din calea manifestului (vezi [Instalare](#install)), verifică-l, înlocuiește fișierul și repornește. După aceea nodul urmează canalul său.
 - **Docker.** Un nod Docker este notificat despre un release nou (în jurnal și la `GET /api/update`), dar nu se înlocuiește niciodată singur; descărcarea este actualizarea: `docker compose pull && docker compose up -d` (păstrează `QORECHAIN_RPC_ADDR` exportat). Alternativa este construirea din noul tag sursă.
 
 ## Configurare {#configure}
@@ -207,6 +207,14 @@ lightnode-sx register --delegate-to qorvaloper1...
 
 `register` verifică licența, atașează cheia post-cuantică dacă contul nu o are deja, delegă stake-ul lipsă doar dacă numești un validator cu `--delegate-to` și înregistrează nodul; fiecare pas este confirmat într-un bloc înainte de următorul. Vezi [Înregistrare și Licențiere](/light-node/registration-and-licensing) pentru detalii și pentru alternativa `register --print`, destinată operatorilor care păstrează cheia contului într-un keyring `qorechaind`.
 
+## Protecții adăugate în 3.1.14 {#protections-3114}
+
+- **Importul cheii nu apare în lista de procese.** `keys import <name>` citește cheia privată hex de la intrarea standard sau din `--key-file <file>`. O cheie tastată ca al doilea argument este refuzată. `--unsafe-argv` restabilește vechea formă, cu un avertisment.
+- **Keystore-ul se scrie atomic.** `keystore/keys.enc` este înlocuit dintr-o singură mișcare, iar versiunea anterioară se păstrează ca `keystore/keys.enc.bak`. După configurare, fă o copie de siguranță a lui `keys.enc` (sau a cuvintelor de recuperare) în afara mașinii.
+- **Auto-revendicare limitată.** Nodul verifică cel mult la fiecare 10 minute (un `compound_interval` mai mic este ridicat la `10m`) și trimite cel mult o revendicare la fiecare 6 ore.
+- **Conexiuni limitate la dashboard.** WebSocket-ul dashboard-ului acceptă cel mult 32 de conexiuni.
+- **Răspunsuri limitate de la lanț.** Fiecare răspuns REST de la lanț este plafonat la 4 MiB. La pornire, nodul avertizează dacă `api_addr` este `http://` simplu către altă mașină: folosește `https://`.
+
 ## Comenzi de administrare
 
 CLI-ul SX include comenzi pentru inspectarea stării nodului și gestionarea cheilor. Începând cu 3.1.7, binarul UX (`lightnode-ux`) are aceleași comenzi.
@@ -220,7 +228,7 @@ CLI-ul SX include comenzi pentru inspectarea stării nodului și gestionarea che
 | `keys create <name>` | Creează o cheie de nod Dilithium-5 nouă și afișează cheia ei publică. |
 | `keys list` | Listează cheile din keyring (nume, tip, adresă dacă există, cheie publică). |
 | `keys show <name>` | Afișează tipul unei chei și cheia publică completă. |
-| `keys import <name> <hex-privkey>` | Importă o cheie privată codificată hex. |
+| `keys import <name> [--key-file <file>]` | Importă o cheie privată codificată hex. De la 3.1.14 cheia este citită de la intrarea standard sau din `--key-file <file>`. O cheie dată ca al doilea argument este refuzată, pentru că ar apărea în lista de procese și în istoricul shell-ului; `--unsafe-argv` restabilește vechea formă, cu un avertisment. |
 | `keys export <name> [--out <file>]` | Exportă o cheie privată în format hex. `--out` scrie fișierul pe care îl citește `qorechaind --pqc-key` (fără linie nouă la final, mod 0600). |
 | `keys add-operator [--recover]` | Stochează cheia contului de operator (nouă sau recuperată din cuvintele sale, citite de la intrarea standard) și alege cheia post-cuantică; completează `operator_address`. Vezi [Portofelul operatorului](#operator-wallet). |
 | `register [--delegate-to <qorvaloper>] [--print]` | Înregistrează nodul pe lanț: cheia post-cuantică, stake-ul lipsă, înregistrarea, fiecare confirmată într-un bloc. `--print` afișează în schimb comenzile `qorechaind` — vezi [Înregistrare și Licențiere](/light-node/registration-and-licensing). |

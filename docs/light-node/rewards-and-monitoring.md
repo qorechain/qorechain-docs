@@ -64,7 +64,7 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
 
 ### Claiming
 
-Credited rewards stay on the node record until you claim them. The node can claim them for you: set `auto_claim = true` under `[delegation]`, and the daemon claims accrued light-node rewards to the operator account once they pass `min_reward_claim` (default `1000000` uqor, 1 QOR), checking every `compound_interval` (default `1h`). It signs the claim the same way as heartbeats (natively, or through the `qorechaind` fallback). Auto-claim is **off by default**, and it only claims: the node never re-delegates or moves stake.
+Credited rewards stay on the node record until you claim them. The node can claim them for you: set `auto_claim = true` under `[delegation]`, and the daemon claims accrued light-node rewards to the operator account once they pass `min_reward_claim` (default `1000000` uqor, 1 QOR), checking every `compound_interval` (default `1h`; from 3.1.14 a value below 10 minutes is raised to 10 minutes) and submitting at most one claim every 6 hours. It signs the claim the same way as heartbeats (natively, or through the `qorechaind` fallback). Auto-claim is **off by default**, and it only claims: the node never re-delegates or moves stake.
 
 To claim by hand with `qorechaind` (the operator key in a `qorechaind` keyring, and the post-quantum key exported with `lightnode-sx keys export <key-name> --out ~/.qorechaind/pqc/<key-name>.dilithium`), use a generate-then-cosign pair:
 
@@ -81,7 +81,7 @@ The node mirrors the operator account's delegations from the chain when it start
 
 - **3.1.11 and later (with `rebalance_enabled = true`, the default).** It warns when a validator you delegate to is jailed, when it is not in the active set, and when your bonded stake falls below `min_delegated_stake` (1,000 QOR). In all three cases the chain stops crediting the node and gives no message. A warning is logged when it appears, hourly while it lasts, and once when it clears.
 - **Reputation score (3.1.12).** The node also reads each delegated validator's score from `GET /qorechain/reputation/v1/validator/<valoper>` and warns when it is below `min_reputation` (default `0.5`). A validator the chain has not scored yet (`404`) is skipped. Both networks serve this route now: the testnet did already, and **mainnet has served it since chain v3.2.6 (4 November 2026; checked that day, the route answered 200 with a score for a bonded validator, where on 30 October it answered "Not Implemented")**. Until a route is served, the node notes once that scores are not published and asks again every six hours.
-- **3.1.10 and earlier.** The reputation check never worked: it logged "failed to check reputation" every five minutes and raised no warning. Do not rely on alerts on those versions; install 3.1.13 by hand once (see [SX Edition: updating](/light-node/sx-edition#updating)).
+- **3.1.10 and earlier.** The reputation check never worked: it logged "failed to check reputation" every five minutes and raised no warning. Do not rely on alerts on those versions; install 3.1.14 by hand once (see [SX Edition: updating](/light-node/sx-edition#updating)).
 
 The `validators` and `split_weights` options in `[delegation]` are accepted but not currently acted on.
 

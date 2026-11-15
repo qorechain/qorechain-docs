@@ -11,7 +11,7 @@ Il **Light Node QoreChain** è un piccolo client che segue una rete QoreChain se
 
 Eseguire e sincronizzare un nodo non richiede alcuna licenza. Partecipare alla quota di ricompensa è un passaggio separato: richiede una licenza `lightnode_operator`, stake delegato a validatori bonded e una registrazione on-chain (vedi [Come accedere](#how-to-access)).
 
-Il light node ha una **propria linea di versione**, separata dalla release della chain. Al 12 novembre 2026 i canali di rilascio di entrambe le reti distribuiscono il light node **3.1.13** (la testnet esegue la chain `v3.2.8`, la mainnet la `v3.2.7` dal 12 novembre 2026; la 3.1.13 funzionava senza modifiche sulla `v3.2.7` della testnet, dove heartbeat e claim restituivano il codice 0, e non è stata ricontrollata sulla `v3.2.8` né sulla mainnet). Tratta i due numeri come indipendenti.
+Il light node ha una **propria linea di versione**, separata dalla release della chain. Al 12 novembre 2026 i canali di rilascio di entrambe le reti distribuiscono il light node **3.1.14** (la testnet esegue la chain `v3.2.8`, la mainnet la `v3.2.7` dal 12 novembre 2026; la 3.1.14 funziona sulla `v3.2.8` della testnet, dove l'heartbeat restituisce il codice 0, e non è stata ricontrollata sulla mainnet). Tratta i due numeri come indipendenti.
 
 ## Innovazioni {#innovations}
 
@@ -68,7 +68,7 @@ export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
 
 L'RPC della chain per `onboard` è `https://rpc.qore.host` (mainnet) oppure `https://rpc-testnet.qore.host` (testnet). Per l'edizione UX usa `lightnode-ux` con gli stessi comandi e apri `http://127.0.0.1:8420`. Dettagli di ogni passaggio: [Edizione SX](/light-node/sx-edition) e [Registrazione e Licenze](/light-node/registration-and-licensing).
 
-**3. Mantienilo aggiornato.** Il light node 3.1.11 e successivi si aggiornano da soli fuori dai container (vedi la voce sull'auto-aggiornamento qui sopra). Un nodo alla 3.1.10 o precedente deve installare a mano la 3.1.13 una volta: scarica il binario versionato come sopra e sostituisci il file. Con Docker, esegui `docker compose pull && docker compose up -d`. Vedi [Edizione SX: aggiornamento](/light-node/sx-edition#updating).
+**3. Mantienilo aggiornato.** Il light node 3.1.11 e successivi si aggiornano da soli fuori dai container (vedi la voce sull'auto-aggiornamento qui sopra). Un nodo alla 3.1.10 o precedente deve installare a mano la 3.1.14 una volta: scarica il binario versionato come sopra e sostituisci il file. Con Docker, esegui `docker compose pull && docker compose up -d`. Vedi [Edizione SX: aggiornamento](/light-node/sx-edition#updating).
 
 ## Come accedere {#how-to-access}
 
@@ -77,7 +77,7 @@ L'RPC della chain per `onboard` è `https://rpc.qore.host` (mainnet) oppure `htt
 | Chain | `qorechain-vladi` (chain `v3.2.7`) | `qorechain-diana` (chain `v3.2.8`) |
 | RPC per il nodo | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
 | REST per le query | `https://api.qore.host` | `https://api-testnet.qore.host` |
-| Release del light node | 3.1.13 | 3.1.13 |
+| Release del light node | 3.1.14 | 3.1.14 |
 | Licenza | $50, acquistata sulla Dashboard; la concessione viene firmata a mano in lotti | Gratuita, self-service: **Nodes & Validators > Light Node**, **Request licence**; firmata automaticamente, di solito entro pochi minuti |
 
 **Cosa serve per registrarsi**
@@ -115,12 +115,12 @@ Per essere idoneo alle ricompense un light node deve essere **registrato on-chai
 
 | Cosa | Dove | Versione corrente |
 | --- | --- | --- |
-| Manifest di rilascio, mainnet | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, registrazione aperta) |
-| Manifest di rilascio, testnet | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.13 (`minCompatible` 3.1.9, registrazione aperta) |
+| Manifest di rilascio, mainnet | `https://download.qore.host/mainnet/lightnode/latest.json` | 3.1.14 (`minCompatible` 3.1.9, registrazione aperta) |
+| Manifest di rilascio, testnet | `https://download.qore.host/testnet/lightnode/latest.json` | 3.1.14 (`minCompatible` 3.1.9, registrazione aperta) |
 | Binari | `https://download.qore.host/<net>/lightnode/v<version>/<file>` | 12 file per release (SX e UX, Linux, macOS e Windows, amd64 e arm64) più `SHA256SUMS` |
-| Sorgente e release | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Release `v3.1.13` (corrente) e tag precedenti; ciascuna contiene i 12 binari, `SHA256SUMS`, `lightnode-build.json` e un APK Android in anteprima |
+| Sorgente e release | `github.com/qorechain/qorechain-lightnode` (Apache 2.0) | Release `v3.1.14` (corrente) e tag precedenti; ciascuna contiene i 12 binari, `SHA256SUMS`, `lightnode-build.json` e un APK Android in anteprima |
 | Android | Allegato solo alla release GitHub | Anteprima: segue la chain, non si registra, non guadagna |
-| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` e `ghcr.io/qorechain/qorechain-lightnode-ux`, pubbliche, tag `latest` e `v<version>` (vedi [Edizione SX: Docker](/light-node/sx-edition#docker)) | `v3.1.13` |
+| Docker | `ghcr.io/qorechain/qorechain-lightnode-sx` e `ghcr.io/qorechain/qorechain-lightnode-ux`, pubbliche, tag `latest` e `v<version>` (vedi [Edizione SX: Docker](/light-node/sx-edition#docker)) | `v3.1.14` |
 
 Controlla la `version` nel manifest della tua rete prima di scaricare, invece di affidarti a questa tabella. La chiave di firma del rilascio è incorporata nel binario; non c'è nulla da installare da parte tua.
 
@@ -130,7 +130,7 @@ Controlla la `version` nel manifest della tua rete prima di scaricare, invece di
 - **Le ricompense sono un tetto.** Il limite per nodo (2,000 QOR ogni 30 giorni) è un massimo, e il nodo è pagato solo per ciò che si accumula nel pool e solo mentre è idoneo.
 - **Un heartbeat è una firma di liveness.** Dimostra che la chiave dell'operatore ha firmato in tempo, non che il software completo sia rimasto in esecuzione in modo continuo.
 - **Avvisi di reputazione.** Dalla chain v3.2.6 (mainnet, 4 novembre 2026) la mainnet serve i punteggi di reputazione per validatore, quindi il controllo può essere eseguito su entrambe le reti; il 4 novembre `GET /qorechain/reputation/v1/validator/<valoper>` ha risposto 200 sulla mainnet per un validatore bonded. Verso una chain precedente alla v3.2.6 (o un validatore a cui la chain non ha assegnato un punteggio) il nodo salta quel controllo e lo dice nel suo log. Gli avvisi di jail, di assenza dal set attivo e di stake basso non ne dipendono. Le versioni del nodo precedenti alla 3.1.11 registravano un controllo di reputazione fallito ogni cinque minuti e non avvisavano mai di nulla.
-- **L'auto-aggiornamento parte dalla 3.1.11.** Un nodo alla 3.1.10 o precedente non si aggiorna da solo e richiede un'installazione manuale della 3.1.13. In un container o in una cartella non scrivibile il nodo si limita ad annunciare le nuove release.
+- **L'auto-aggiornamento parte dalla 3.1.11.** Un nodo alla 3.1.10 o precedente non si aggiorna da solo e richiede un'installazione manuale della 3.1.14. In un container o in una cartella non scrivibile il nodo si limita ad annunciare le nuove release.
 - **I nodi Docker non si aggiornano da soli.** Vengono avvisati di una nuova release e l'aggiornamento è `docker compose pull && docker compose up -d`.
 - **Android è un'anteprima** e non si registra né guadagna.
 - **Licenze.** Le concessioni sulla mainnet vengono firmate a mano in lotti, quindi c'è un'attesa tra il pagamento e la registrazione. La licenza della testnet è limitata a una per account e una per indirizzo.

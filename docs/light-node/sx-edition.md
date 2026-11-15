@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX Edition — Server Daemon
 
-The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. Light node versions are on their own line, separate from the chain version: both networks' channels carry **3.1.13** (12 November 2026). This page notes where a feature needs 3.1.11 or later.
+The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. Light node versions are on their own line, separate from the chain version: both networks' channels carry **3.1.14** (13 November 2026). This page notes where a feature needs 3.1.11 or later.
 
 ## Install {#install}
 
@@ -17,7 +17,7 @@ Prebuilt binaries are the easiest path. The light node client is a single static
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.14 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ The light node requires **Go 1.26.1**. Its post-quantum cryptography is a pure-G
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Build from the release tag the manifest names (`git checkout v3.1.13` today). This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`. Before registering, sanity-check the post-quantum signing stack with [`selftest`](#verify-the-pqc-stack-selftest).
+Build from the release tag the manifest names (`git checkout v3.1.14` today). This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`. Before registering, sanity-check the post-quantum signing stack with [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-The released images are public and can be pulled anonymously: `ghcr.io/qorechain/qorechain-lightnode-sx` and `ghcr.io/qorechain/qorechain-lightnode-ux`, each tagged `latest` and `v<version>` (for example `v3.1.13`). The `docker-compose.yml` on the `main` branch of the source repository uses them and falls back to building from source (`Dockerfile.sx`, `Dockerfile.ux`) when the registry is not reachable. To pin a release, change the `image:` tag in the compose file; to build from a release tag instead, `git checkout v<version>` and run `docker compose build`. Keys, config and the data volume carry over when you update.
+The released images are public and can be pulled anonymously: `ghcr.io/qorechain/qorechain-lightnode-sx` and `ghcr.io/qorechain/qorechain-lightnode-ux`, each tagged `latest` and `v<version>` (for example `v3.1.14`). The `docker-compose.yml` on the `main` branch of the source repository uses them and falls back to building from source (`Dockerfile.sx`, `Dockerfile.ux`) when the registry is not reachable. To pin a release, change the `image:` tag in the compose file; to build from a release tag instead, `git checkout v<version>` and run `docker compose build`. Keys, config and the data volume carry over when you update.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,8 +78,8 @@ The node signs natively inside the container, so nothing else is required. The S
 - **Settings.** `[update] mode = "auto"` (default, also for a config without the section) announces and installs; `"notify"` announces only; `"off"` does not check. By hand: `lightnode-sx update --check`, then `lightnode-sx update`, then restart the node.
 - **Seeing an announcement.** The node logs a newer release and serves it on the local dashboard API at `GET /api/update` (fields `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); the UX dashboard shows a banner.
 - **Container or unwritable folder.** The node only announces: update the image or the file yourself.
-- **Light node 3.1.11 and later** install 3.1.13 by themselves within 6 hours of its publication (checked on the testnet test node).
-- **Light node 3.1.10 and earlier** do not update themselves. Install 3.1.13 by hand once: download the versioned binary from the manifest path (see [Install](#install)), verify it, replace the file and restart. After that the node follows its channel.
+- **Light node 3.1.11 and later** install new releases by themselves within 6 hours of publication (checked on the testnet test node).
+- **Light node 3.1.10 and earlier** do not update themselves. Install 3.1.14 by hand once: download the versioned binary from the manifest path (see [Install](#install)), verify it, replace the file and restart. After that the node follows its channel.
 - **Docker.** A Docker node is notified of a new release (log and `GET /api/update`) but never replaces itself; the pull is the update: `docker compose pull && docker compose up -d` (keep `QORECHAIN_RPC_ADDR` exported). Building from the new source tag is the alternative.
 
 ## Configure {#configure}
@@ -207,6 +207,14 @@ lightnode-sx register --delegate-to qorvaloper1...
 
 `register` checks the licence, attaches the post-quantum key unless the account already has it, delegates the missing stake only if you name a validator with `--delegate-to`, and registers the node; each step is confirmed in a block before the next. See [Registration and Licensing](/light-node/registration-and-licensing) for the details and for the `register --print` fallback for operators who keep the account key in a `qorechaind` keyring.
 
+## Protections added in 3.1.14 {#protections-3114}
+
+- **Key import stays out of the process list.** `keys import <name>` reads the hex private key from standard input or from `--key-file <file>`. A key typed as a second argument is refused. `--unsafe-argv` restores the old form with a warning.
+- **The keystore is written atomically.** `keystore/keys.enc` is replaced in one step and the previous version is kept as `keystore/keys.enc.bak`. After setup, back up `keys.enc` (or your recovery words) somewhere off the machine.
+- **Bounded auto-claim.** The node checks at most every 10 minutes (a lower `compound_interval` is raised to `10m`) and submits at most one claim every 6 hours.
+- **Bounded dashboard connections.** The dashboard WebSocket accepts at most 32 connections.
+- **Bounded chain responses.** Every chain REST response is capped at 4 MiB. At start the node warns if `api_addr` is plain `http://` to another machine: use `https://`.
+
 ## Management commands
 
 The SX CLI includes commands for inspecting node state and managing keys. Since 3.1.7 the UX binary (`lightnode-ux`) has the same commands.
@@ -220,7 +228,7 @@ The SX CLI includes commands for inspecting node state and managing keys. Since 
 | `keys create <name>` | Create a new Dilithium-5 node key and print its public key. |
 | `keys list` | List keys in the keyring (name, type, address if any, public key). |
 | `keys show <name>` | Print a key's type and full public key. |
-| `keys import <name> <hex-privkey>` | Import a hex-encoded private key. |
+| `keys import <name> [--key-file <file>]` | Import a hex-encoded private key. From 3.1.14 the key is read from standard input, or from `--key-file <file>`. A key given as a second argument is refused, because it would show in the process list and in the shell history; `--unsafe-argv` restores the old form with a warning. |
 | `keys export <name> [--out <file>]` | Export a private key in hex. `--out` writes the file `qorechaind --pqc-key` reads (no trailing newline, mode 0600). |
 | `keys add-operator [--recover]` | Store the operator account key (new, or recovered from its words on standard input) and choose the post-quantum key; fills in `operator_address`. See [The operator wallet](#operator-wallet). |
 | `register [--delegate-to <qorvaloper>] [--print]` | Register the node on chain: post-quantum key, missing stake, registration, each confirmed in a block. `--print` prints the `qorechaind` commands instead — see [Registration and Licensing](/light-node/registration-and-licensing). |

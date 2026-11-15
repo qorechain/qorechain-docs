@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX Sürümü — Sunucu Daemon'u
 
-**SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Hafif düğüm sürümleri, zincir sürümünden ayrı, kendi hatlarındadır: her iki ağın kanalı da **3.1.13** sürümünü taşır (12 Kasım 2026). Bu sayfa, bir özelliğin 3.1.11 veya daha yenisini gerektirdiği yerleri belirtir.
+**SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Hafif düğüm sürümleri, zincir sürümünden ayrı, kendi hatlarındadır: her iki ağın kanalı da **3.1.14** sürümünü taşır (13 Kasım 2026). Bu sayfa, bir özelliğin 3.1.11 veya daha yenisini gerektirdiği yerleri belirtir.
 
 ## Kurulum {#install}
 
@@ -17,7 +17,7 @@ sidebar_position: 2
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.14 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ Hafif düğüm **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go i
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Manifestonun adını verdiği sürüm etiketinden derleyin (bugün `git checkout v3.1.13`). Bu, `build/lightnode-sx` üretir. Doğrudan çalıştırın veya `PATH`'inize kopyalayın. Kaydolmadan önce kuantum sonrası imzalama yığınını [`selftest`](#verify-the-pqc-stack-selftest) ile sağlık kontrolünden geçirin.
+Manifestonun adını verdiği sürüm etiketinden derleyin (bugün `git checkout v3.1.14`). Bu, `build/lightnode-sx` üretir. Doğrudan çalıştırın veya `PATH`'inize kopyalayın. Kaydolmadan önce kuantum sonrası imzalama yığınını [`selftest`](#verify-the-pqc-stack-selftest) ile sağlık kontrolünden geçirin.
 
 ### Docker {#docker}
 
-Yayımlanan imajlar herkese açıktır ve anonim olarak çekilebilir: `ghcr.io/qorechain/qorechain-lightnode-sx` ve `ghcr.io/qorechain/qorechain-lightnode-ux`; her biri `latest` ve `v<version>` (örneğin `v3.1.13`) olarak etiketlenir. Kaynak deposunun `main` dalındaki `docker-compose.yml` bunları kullanır ve kayıt defterine ulaşılamadığında kaynaktan derlemeye (`Dockerfile.sx`, `Dockerfile.ux`) geri döner. Bir sürümü sabitlemek için compose dosyasındaki `image:` etiketini değiştirin; bunun yerine bir sürüm etiketinden derlemek için `git checkout v<version>` yapıp `docker compose build` çalıştırın. Güncellediğinizde anahtarlar, yapılandırma ve veri birimi korunur.
+Yayımlanan imajlar herkese açıktır ve anonim olarak çekilebilir: `ghcr.io/qorechain/qorechain-lightnode-sx` ve `ghcr.io/qorechain/qorechain-lightnode-ux`; her biri `latest` ve `v<version>` (örneğin `v3.1.14`) olarak etiketlenir. Kaynak deposunun `main` dalındaki `docker-compose.yml` bunları kullanır ve kayıt defterine ulaşılamadığında kaynaktan derlemeye (`Dockerfile.sx`, `Dockerfile.ux`) geri döner. Bir sürümü sabitlemek için compose dosyasındaki `image:` etiketini değiştirin; bunun yerine bir sürüm etiketinden derlemek için `git checkout v<version>` yapıp `docker compose build` çalıştırın. Güncellediğinizde anahtarlar, yapılandırma ve veri birimi korunur.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,8 +78,8 @@ Düğüm konteyner içinde yerel olarak imzalar, bu nedenle başka hiçbir şey 
 - **Ayarlar.** `[update] mode = "auto"` (varsayılan, bölümü olmayan bir yapılandırma için de) duyurur ve kurar; `"notify"` yalnızca duyurur; `"off"` kontrol etmez. Elle: `lightnode-sx update --check`, ardından `lightnode-sx update`, sonra düğümü yeniden başlatın.
 - **Bir duyuruyu görme.** Düğüm daha yeni bir sürümü günlüğe yazar ve yerel pano API'sinde `GET /api/update` üzerinden sunar (alanlar `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); UX panosu bir afiş gösterir.
 - **Konteyner veya yazılamayan klasör.** Düğüm yalnızca duyurur: imajı veya dosyayı kendiniz güncelleyin.
-- **Hafif düğüm 3.1.11 ve sonrası** 3.1.13'ü yayımlanmasından sonraki 6 saat içinde kendileri kurar (test ağındaki test düğümünde doğrulandı).
-- **Hafif düğüm 3.1.10 ve öncesi** kendini güncellemez. 3.1.13'ü bir kez elle kurun: sürüm numaralı ikili dosyayı manifesto yolundan indirin ([Kurulum](#install) bölümüne bakın), doğrulayın, dosyayı değiştirin ve yeniden başlatın. Bundan sonra düğüm kendi kanalını izler.
+- **Hafif düğüm 3.1.11 ve sonrası** yeni sürümleri yayımlanmasından sonraki 6 saat içinde kendileri kurar (test ağındaki test düğümünde doğrulandı).
+- **Hafif düğüm 3.1.10 ve öncesi** kendini güncellemez. 3.1.14'ü bir kez elle kurun: sürüm numaralı ikili dosyayı manifesto yolundan indirin ([Kurulum](#install) bölümüne bakın), doğrulayın, dosyayı değiştirin ve yeniden başlatın. Bundan sonra düğüm kendi kanalını izler.
 - **Docker.** Bir Docker düğümü yeni bir sürümden haberdar edilir (günlük ve `GET /api/update`) ancak kendini asla değiştirmez; güncelleme çekmektir: `docker compose pull && docker compose up -d` (`QORECHAIN_RPC_ADDR` değerini dışa aktarılmış tutun). Alternatif, yeni kaynak etiketinden derlemektir.
 
 ## Yapılandırma {#configure}
@@ -149,6 +149,14 @@ Uç noktayı boş bırakırsanız, daemon yalnızca yerel modda başlar: PQC yı
 :::caution Sonraki adım: operatör hesabı
 `onboard` hangi hesabın sizin olduğunu bilmez. `register` komutunu çalıştırmadan önce operatör hesabını [`keys add-operator`](#operator-wallet) ile ekleyin. Bu komut `operator_address` değerini sizin için doldurur. `onboard` sırasında uç noktaya ulaşılamadıysa, `config.toml` içindeki `chain_id` değerinin `qorechain-vladi` (mainnet) veya `qorechain-diana` (testnet) olduğunu ve `api_addr` değerinin ayarlandığını da kontrol edin (`onboard` bunu yazar; 3.1.12 veya daha eski bir test ağı düğümünde boş `api_addr`, "404 page not found" yanıtı verebilir).
 :::
+
+## 3.1.14 ile eklenen korumalar {#protections-3114}
+
+- **Anahtar içe aktarma süreç listesinde görünmez.** `keys import <name>` onaltılık özel anahtarı standart girdiden veya `--key-file <file>` ile bir dosyadan okur. İkinci argüman olarak yazılan bir anahtar reddedilir. `--unsafe-argv` eski biçimi bir uyarıyla geri getirir.
+- **Anahtar deposu atomik olarak yazılır.** `keystore/keys.enc` tek adımda değiştirilir ve önceki sürüm `keystore/keys.enc.bak` olarak saklanır. Kurulumdan sonra `keys.enc` dosyasının (veya kurtarma kelimelerinizin) bir yedeğini makine dışında bir yerde tutun.
+- **Sınırlı otomatik talep.** Düğüm en fazla her 10 dakikada bir kontrol eder (daha düşük bir `compound_interval` değeri `10m` değerine yükseltilir) ve 6 saatte en fazla bir talep gönderir.
+- **Sınırlı dashboard bağlantıları.** Dashboard WebSocket'i en fazla 32 bağlantı kabul eder.
+- **Sınırlı zincir yanıtları.** Her zincir REST yanıtı 4 MiB ile sınırlanır. Başlangıçta `api_addr` başka bir makineye giden düz `http://` ise düğüm uyarır: `https://` kullanın.
 
 ## Çalıştırma: `start`
 
@@ -220,7 +228,7 @@ SX CLI'si, düğüm durumunu incelemek ve anahtarları yönetmek için komutlar 
 | `keys create <name>` | Yeni bir Dilithium-5 düğüm anahtarı oluştur ve genel anahtarını yazdır. |
 | `keys list` | Anahtarlıktaki anahtarları listele (ad, tür, varsa adres, genel anahtar). |
 | `keys show <name>` | Bir anahtarın türünü ve tam genel anahtarını yazdır. |
-| `keys import <name> <hex-privkey>` | Onaltılık kodlanmış bir özel anahtarı içe aktar. |
+| `keys import <name> [--key-file <file>]` | Onaltılık kodlanmış bir özel anahtarı içe aktar. 3.1.14'ten itibaren anahtar standart girdiden veya `--key-file <file>` ile bir dosyadan okunur. İkinci argüman olarak verilen bir anahtar reddedilir, çünkü süreç listesinde ve kabuk geçmişinde görünürdü; `--unsafe-argv` eski biçimi bir uyarıyla geri getirir. |
 | `keys export <name> [--out <file>]` | Bir özel anahtarı onaltılık olarak dışa aktar. `--out`, `qorechaind --pqc-key`'in okuduğu dosyayı yazar (sonda satır sonu yok, mod 0600). |
 | `keys add-operator [--recover]` | Operatör hesabı anahtarını sakla (yeni veya standart girdiden okunan kelimelerinden kurtarılmış) ve kuantum sonrası anahtarı seç; `operator_address` değerini doldurur. Bkz. [Operatör cüzdanı](#operator-wallet). |
 | `register [--delegate-to <qorvaloper>] [--print]` | Düğümü zincire kaydet: kuantum sonrası anahtar, eksik stake, kayıt; her biri bir blokta onaylanır. `--print` bunun yerine `qorechaind` komutlarını yazdırır — bkz. [Kayıt ve Lisanslama](/light-node/registration-and-licensing). |

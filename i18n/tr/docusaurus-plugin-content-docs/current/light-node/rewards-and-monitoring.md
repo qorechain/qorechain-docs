@@ -64,7 +64,7 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
 
 ### Talep etme
 
-Kredilendirilen ödüller, siz talep edene kadar node kaydında kalır. Node bunları sizin için talep edebilir: `[delegation]` altında `auto_claim = true` ayarlayın; daemon, biriken hafif-node ödülleri `min_reward_claim` değerini (varsayılan `1000000` uqor, 1 QOR) aştığında bunları operatör hesabına talep eder ve her `compound_interval` (varsayılan `1h`) aralığında kontrol eder. Talebi heartbeat'lerle aynı şekilde imzalar (yerel olarak veya `qorechaind` alternatifi aracılığıyla). Otomatik talep **varsayılan olarak kapalıdır** ve yalnızca talep eder: node asla yeniden delege etmez veya stake'i taşımaz.
+Kredilendirilen ödüller, siz talep edene kadar node kaydında kalır. Node bunları sizin için talep edebilir: `[delegation]` altında `auto_claim = true` ayarlayın; daemon, biriken hafif-node ödülleri `min_reward_claim` değerini (varsayılan `1000000` uqor, 1 QOR) aştığında bunları operatör hesabına talep eder ve her `compound_interval` (varsayılan `1h`; 3.1.14'ten itibaren 10 dakikanın altındaki bir değer 10 dakikaya yükseltilir) aralığında kontrol eder ve 6 saatte en fazla bir talep gönderir. Talebi heartbeat'lerle aynı şekilde imzalar (yerel olarak veya `qorechaind` alternatifi aracılığıyla). Otomatik talep **varsayılan olarak kapalıdır** ve yalnızca talep eder: node asla yeniden delege etmez veya stake'i taşımaz.
 
 `qorechaind` ile elle talep etmek için (operatör anahtarı bir `qorechaind` keyring'inde ve post-kuantum anahtar `lightnode-sx keys export <key-name> --out ~/.qorechaind/pqc/<key-name>.dilithium` ile dışa aktarılmış olarak) bir generate-then-cosign çifti kullanın:
 
@@ -81,7 +81,7 @@ Node, operatör hesabının delegasyonlarını zincirden başlangıçta ve ardı
 
 - **3.1.11 ve sonrası (`rebalance_enabled = true` ile, varsayılan).** Delege ettiğiniz bir validatör hapsedildiğinde (jailed), aktif kümede olmadığında ve bonded stake'iniz `min_delegated_stake` değerinin (1,000 QOR) altına düştüğünde uyarır. Üç durumda da zincir node'u kredilendirmeyi durdurur ve herhangi bir mesaj vermez. Uyarı ortaya çıktığında, sürdüğü sürece saatlik olarak ve ortadan kalktığında bir kez kaydedilir.
 - **İtibar puanı (3.1.12).** Node ayrıca delege edilen her validatörün puanını `GET /qorechain/reputation/v1/validator/<valoper>` üzerinden okur ve `min_reputation` değerinin (varsayılan `0.5`) altındaysa uyarır. Zincirin henüz puanlamadığı bir validatör (`404`) atlanır. Her iki ağ da bu rotayı şimdi sunar: testnet zaten sunuyordu ve **mainnet bunu zincir v3.2.6'dan (4 Kasım 2026) beri sunuyor; o gün kontrol edildi, rota bağlı bir validatör için bir puanla 200 yanıtı verdi; 30 Ekim'de ise "Not Implemented" yanıtı veriyordu**. Bir rota sunulana kadar node, puanların yayımlanmadığını bir kez not eder ve altı saatte bir yeniden sorar.
-- **3.1.10 ve öncesi.** İtibar kontrolü hiç çalışmadı: beş dakikada bir "failed to check reputation" kaydediyordu ve hiçbir uyarı üretmiyordu. Bu sürümlerde uyarılara güvenmeyin; 3.1.13'ü bir kez elle kurun (bkz. [SX Edition: güncelleme](/light-node/sx-edition#updating)).
+- **3.1.10 ve öncesi.** İtibar kontrolü hiç çalışmadı: beş dakikada bir "failed to check reputation" kaydediyordu ve hiçbir uyarı üretmiyordu. Bu sürümlerde uyarılara güvenmeyin; 3.1.14'ü bir kez elle kurun (bkz. [SX Edition: güncelleme](/light-node/sx-edition#updating)).
 
 `[delegation]` içindeki `validators` ve `split_weights` seçenekleri kabul edilir ancak şu anda kullanılmamaktadır.
 

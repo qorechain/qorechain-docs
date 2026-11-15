@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX-Edition — Server-Daemon
 
-Die **SX-Edition (Server eXperience)** ist der headless Light Node: ein Daemon plus eine vollständige Management-CLI, gebaut für Server und Automatisierung. Die Binärdatei ist `lightnode-sx`. Die Light-Node-Versionen haben eine eigene Linie, getrennt von der Chain-Version: Die Kanäle beider Netzwerke führen **3.1.13** (12. November 2026). Diese Seite weist darauf hin, wo eine Funktion 3.1.11 oder neuer erfordert.
+Die **SX-Edition (Server eXperience)** ist der headless Light Node: ein Daemon plus eine vollständige Management-CLI, gebaut für Server und Automatisierung. Die Binärdatei ist `lightnode-sx`. Die Light-Node-Versionen haben eine eigene Linie, getrennt von der Chain-Version: Die Kanäle beider Netzwerke führen **3.1.14** (13. November 2026). Diese Seite weist darauf hin, wo eine Funktion 3.1.11 oder neuer erfordert.
 
 ## Installation {#install}
 
@@ -17,7 +17,7 @@ Vorgefertigte Binärdateien sind der einfachste Weg. Der Light-Node-Client ist e
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.14 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ Der Light Node benötigt **Go 1.26.1**. Seine Post-Quantum-Kryptografie ist eine
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Baue aus dem Release-Tag, den das Manifest nennt (heute `git checkout v3.1.13`). Dies erzeugt `build/lightnode-sx`. Führe es direkt aus oder kopiere es in deinen `PATH`. Prüfe vor der Registrierung den Post-Quantum-Signatur-Stack mit [`selftest`](#verify-the-pqc-stack-selftest).
+Baue aus dem Release-Tag, den das Manifest nennt (heute `git checkout v3.1.14`). Dies erzeugt `build/lightnode-sx`. Führe es direkt aus oder kopiere es in deinen `PATH`. Prüfe vor der Registrierung den Post-Quantum-Signatur-Stack mit [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-Die veröffentlichten Images sind öffentlich und lassen sich anonym ziehen: `ghcr.io/qorechain/qorechain-lightnode-sx` und `ghcr.io/qorechain/qorechain-lightnode-ux`, jeweils mit den Tags `latest` und `v<version>` (zum Beispiel `v3.1.13`). Die `docker-compose.yml` auf dem Branch `main` des Quell-Repositorys verwendet sie und baut aus dem Quellcode (`Dockerfile.sx`, `Dockerfile.ux`), wenn die Registry nicht erreichbar ist. Um ein Release festzulegen, ändere den `image:`-Tag in der Compose-Datei; um stattdessen aus einem Release-Tag zu bauen, führe `git checkout v<version>` aus und starte `docker compose build`. Schlüssel, Konfiguration und das Daten-Volume bleiben bei einem Update erhalten.
+Die veröffentlichten Images sind öffentlich und lassen sich anonym ziehen: `ghcr.io/qorechain/qorechain-lightnode-sx` und `ghcr.io/qorechain/qorechain-lightnode-ux`, jeweils mit den Tags `latest` und `v<version>` (zum Beispiel `v3.1.14`). Die `docker-compose.yml` auf dem Branch `main` des Quell-Repositorys verwendet sie und baut aus dem Quellcode (`Dockerfile.sx`, `Dockerfile.ux`), wenn die Registry nicht erreichbar ist. Um ein Release festzulegen, ändere den `image:`-Tag in der Compose-Datei; um stattdessen aus einem Release-Tag zu bauen, führe `git checkout v<version>` aus und starte `docker compose build`. Schlüssel, Konfiguration und das Daten-Volume bleiben bei einem Update erhalten.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,8 +78,8 @@ Der Node signiert nativ im Container, daher wird nichts weiter benötigt. Das SX
 - **Einstellungen.** `[update] mode = "auto"` (Standard, auch bei einer Konfiguration ohne diesen Abschnitt) kündigt an und installiert; `"notify"` kündigt nur an; `"off"` prüft nicht. Von Hand: `lightnode-sx update --check`, dann `lightnode-sx update`, dann den Node neu starten.
 - **Eine Ankündigung sehen.** Der Node protokolliert ein neueres Release und stellt es in der lokalen Dashboard-API unter `GET /api/update` bereit (Felder `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`); das UX-Dashboard zeigt ein Banner.
 - **Container oder nicht beschreibbarer Ordner.** Der Node kündigt nur an: Aktualisiere das Image oder die Datei selbst.
-- **Light Node 3.1.11 und neuer** installieren 3.1.13 innerhalb von 6 Stunden nach dessen Veröffentlichung selbst (am Test-Node im Testnet geprüft).
-- **Light Node 3.1.10 und früher** aktualisieren sich nicht selbst. Installiere 3.1.13 einmal von Hand: Lade die versionierte Binärdatei vom Manifestpfad herunter (siehe [Installation](#install)), verifiziere sie, ersetze die Datei und starte neu. Danach folgt der Node seinem Kanal.
+- **Light Node 3.1.11 und neuer** installieren neue Releases innerhalb von 6 Stunden nach der Veröffentlichung selbst (am Test-Node im Testnet geprüft).
+- **Light Node 3.1.10 und früher** aktualisieren sich nicht selbst. Installiere 3.1.14 einmal von Hand: Lade die versionierte Binärdatei vom Manifestpfad herunter (siehe [Installation](#install)), verifiziere sie, ersetze die Datei und starte neu. Danach folgt der Node seinem Kanal.
 - **Docker.** Ein Docker-Node wird über ein neues Release benachrichtigt (Log und `GET /api/update`), ersetzt sich aber nie selbst; das Pullen ist das Update: `docker compose pull && docker compose up -d` (lass `QORECHAIN_RPC_ADDR` exportiert). Alternativ kannst du aus dem neuen Quell-Tag bauen.
 
 ## Konfiguration {#configure}
@@ -207,6 +207,14 @@ lightnode-sx register --delegate-to qorvaloper1...
 
 `register` prüft die Lizenz, hängt den Post-Quantum-Schlüssel an, sofern das Konto ihn nicht bereits hat, delegiert den fehlenden Stake nur, wenn du mit `--delegate-to` einen Validator angibst, und registriert den Node; jeder Schritt wird in einem Block bestätigt, bevor der nächste folgt. Siehe [Registrierung und Lizenzierung](/light-node/registration-and-licensing) für die Details und für den Fallback `register --print` für Betreiber, die den Kontoschlüssel in einem `qorechaind`-Keyring aufbewahren.
 
+## Neue Schutzmaßnahmen in 3.1.14 {#protections-3114}
+
+- **Der Schlüsselimport bleibt aus der Prozessliste heraus.** `keys import <name>` liest den privaten Hex-Schlüssel von der Standardeingabe oder aus `--key-file <file>`. Ein als zweites Argument getippter Schlüssel wird abgelehnt. `--unsafe-argv` stellt die alte Form mit einer Warnung wieder her.
+- **Der Schlüsselspeicher wird atomar geschrieben.** `keystore/keys.enc` wird in einem Schritt ersetzt, und die vorherige Version bleibt als `keystore/keys.enc.bak` erhalten. Sichere nach der Einrichtung `keys.enc` (oder deine Wiederherstellungsworte) an einem Ort außerhalb der Maschine.
+- **Begrenzter Auto-Claim.** Der Node prüft höchstens alle 10 Minuten (ein niedrigerer `compound_interval` wird auf `10m` angehoben) und sendet höchstens alle 6 Stunden eine Anforderung.
+- **Begrenzte Dashboard-Verbindungen.** Der Dashboard-WebSocket akzeptiert höchstens 32 Verbindungen.
+- **Begrenzte Chain-Antworten.** Jede REST-Antwort der Chain ist auf 4 MiB begrenzt. Beim Start warnt der Node, wenn `api_addr` einfaches `http://` zu einer anderen Maschine ist: Verwende `https://`.
+
 ## Management-Befehle
 
 Die SX-CLI enthält Befehle zum Einsehen des Node-Zustands und zur Schlüsselverwaltung. Seit 3.1.7 hat die UX-Binärdatei (`lightnode-ux`) dieselben Befehle.
@@ -220,7 +228,7 @@ Die SX-CLI enthält Befehle zum Einsehen des Node-Zustands und zur Schlüsselver
 | `keys create <name>` | Einen neuen Dilithium-5-Node-Schlüssel erstellen und seinen öffentlichen Schlüssel ausgeben. |
 | `keys list` | Schlüssel im Keyring auflisten (Name, Typ, ggf. Adresse, öffentlicher Schlüssel). |
 | `keys show <name>` | Typ und vollständigen öffentlichen Schlüssel eines Schlüssels ausgeben. |
-| `keys import <name> <hex-privkey>` | Einen hex-kodierten privaten Schlüssel importieren. |
+| `keys import <name> [--key-file <file>]` | Einen hex-kodierten privaten Schlüssel importieren. Ab 3.1.14 wird der Schlüssel von der Standardeingabe oder aus `--key-file <file>` gelesen. Ein als zweites Argument angegebener Schlüssel wird abgelehnt, weil er in der Prozessliste und im Shell-Verlauf sichtbar wäre; `--unsafe-argv` stellt die alte Form mit einer Warnung wieder her. |
 | `keys export <name> [--out <file>]` | Einen privaten Schlüssel im Hex-Format exportieren. `--out` schreibt die Datei, die `qorechaind --pqc-key` liest (ohne abschließenden Zeilenumbruch, Modus 0600). |
 | `keys add-operator [--recover]` | Den Schlüssel des Operator-Kontos ablegen (neu oder aus seinen Wörtern über die Standardeingabe wiederhergestellt) und den Post-Quantum-Schlüssel wählen; trägt `operator_address` ein. Siehe [Die Operator-Wallet](#operator-wallet). |
 | `register [--delegate-to <qorvaloper>] [--print]` | Den Node on-chain registrieren: Post-Quantum-Schlüssel, fehlender Stake, Registrierung, jeweils in einem Block bestätigt. `--print` gibt stattdessen die `qorechaind`-Befehle aus — siehe [Registrierung und Lizenzierung](/light-node/registration-and-licensing). |

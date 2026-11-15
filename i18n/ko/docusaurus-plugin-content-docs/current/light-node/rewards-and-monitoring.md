@@ -64,7 +64,7 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
 
 ### 청구
 
-지급된 보상은 청구할 때까지 노드 기록에 남아 있습니다. 노드가 대신 청구할 수 있습니다: `[delegation]` 아래에 `auto_claim = true`를 설정하면, 데몬이 누적된 라이트 노드 보상이 `min_reward_claim`(기본값 `1000000` uqor, 1 QOR)을 넘을 때 운영자 계정으로 청구하며, `compound_interval`(기본값 `1h`)마다 확인합니다. 청구 트랜잭션은 하트비트와 같은 방식(네이티브 서명 또는 `qorechaind` 대체 경로)으로 서명됩니다. 자동 청구는 **기본적으로 꺼져 있으며**, 청구만 수행합니다. 노드는 재위임하거나 스테이크를 이동하지 않습니다.
+지급된 보상은 청구할 때까지 노드 기록에 남아 있습니다. 노드가 대신 청구할 수 있습니다: `[delegation]` 아래에 `auto_claim = true`를 설정하면, 데몬이 누적된 라이트 노드 보상이 `min_reward_claim`(기본값 `1000000` uqor, 1 QOR)을 넘을 때 운영자 계정으로 청구하며, `compound_interval`(기본값 `1h`, 3.1.14부터 10분 미만의 값은 10분으로 올려 적용됩니다)마다 확인하고, 청구는 6시간에 최대 한 번만 제출합니다. 청구 트랜잭션은 하트비트와 같은 방식(네이티브 서명 또는 `qorechaind` 대체 경로)으로 서명됩니다. 자동 청구는 **기본적으로 꺼져 있으며**, 청구만 수행합니다. 노드는 재위임하거나 스테이크를 이동하지 않습니다.
 
 `qorechaind`로 직접 청구하려면(운영자 키는 `qorechaind` 키링에 두고, 포스트 양자 키는 `lightnode-sx keys export <key-name> --out ~/.qorechaind/pqc/<key-name>.dilithium`으로 내보낸 상태에서) generate-then-cosign 쌍을 사용하세요:
 
@@ -81,7 +81,7 @@ qorechaind tx pqc cosign claim.json --from operator --pqc-key <key-name> --chain
 
 - **3.1.11 이상(`rebalance_enabled = true`, 기본값).** 위임하는 검증자가 감금(jailed)된 경우, 활성 집합에 속하지 않은 경우, 그리고 본딩된 스테이크가 `min_delegated_stake`(1,000 QOR) 미만으로 떨어진 경우에 경고합니다. 세 경우 모두 체인은 노드에 대한 보상 지급을 중단하며 아무런 메시지도 주지 않습니다. 경고는 나타날 때 기록되고, 지속되는 동안 매시간 기록되며, 해소될 때 한 번 기록됩니다.
 - **평판 점수(3.1.12).** 노드는 또한 `GET /qorechain/reputation/v1/validator/<valoper>`에서 위임된 각 검증자의 점수를 읽고 `min_reputation`(기본값 `0.5`) 미만이면 경고합니다. 체인이 아직 점수를 매기지 않은 검증자(`404`)는 건너뜁니다. 이제 두 네트워크 모두 이 경로를 제공합니다. 테스트넷은 이미 제공했고, **메인넷은 체인 v3.2.6(2026년 11월 4일)부터 제공합니다(그날 확인했을 때 이 경로는 본딩된 검증자의 점수와 함께 200으로 응답했으며, 10월 30일에는 "Not Implemented"로 응답했습니다)**. 경로가 제공되기 전까지 노드는 점수가 게시되지 않았다고 한 번 알리고 여섯 시간마다 다시 확인합니다.
-- **3.1.10 및 이전.** 평판 확인은 한 번도 동작하지 않았습니다. 5분마다 "failed to check reputation"을 기록할 뿐 경고를 내지 않았습니다. 해당 버전에서는 경고에 의존하지 마시고, 한 번 직접 3.1.13을 설치하세요([SX 에디션: 업데이트](/light-node/sx-edition#updating) 참고).
+- **3.1.10 및 이전.** 평판 확인은 한 번도 동작하지 않았습니다. 5분마다 "failed to check reputation"을 기록할 뿐 경고를 내지 않았습니다. 해당 버전에서는 경고에 의존하지 마시고, 한 번 직접 3.1.14를 설치하세요([SX 에디션: 업데이트](/light-node/sx-edition#updating) 참고).
 
 `[delegation]`의 `validators` 및 `split_weights` 옵션은 허용되지만 현재는 사용되지 않습니다.
 

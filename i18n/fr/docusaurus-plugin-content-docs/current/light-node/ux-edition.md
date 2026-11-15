@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Édition UX — dashboard web
 
-L'édition **UX (User eXperience)** exécute le même démon de nœud léger que l'édition SX, mais ajoute un **dashboard web intégré** pour que vous puissiez surveiller le nœud et le réseau dans un navigateur. Le binaire est `lightnode-ux`. Comme pour l'édition SX, il suit la propre ligne de version du nœud léger, distincte de la version de la chaîne (les canaux des deux réseaux portent la 3.1.13 au 12 novembre 2026).
+L'édition **UX (User eXperience)** exécute le même démon de nœud léger que l'édition SX, mais ajoute un **dashboard web intégré** pour que vous puissiez surveiller le nœud et le réseau dans un navigateur. Le binaire est `lightnode-ux`. Comme pour l'édition SX, il suit la propre ligne de version du nœud léger, distincte de la version de la chaîne (les canaux des deux réseaux portent la 3.1.14 au 13 novembre 2026).
 
 L'édition UX est le bon choix pour une utilisation sur ordinateur de bureau et pour les opérateurs qui préfèrent une interface visuelle à la ligne de commande.
 
@@ -23,11 +23,11 @@ L'édition UX nécessite **Go 1.26.1**. Sa cryptographie post-quantique est une 
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Compilez à partir du tag de version que nomme le manifeste (`git checkout v3.1.13` aujourd'hui). Cela produit `build/lightnode-ux`.
+Compilez à partir du tag de version que nomme le manifeste (`git checkout v3.1.14` aujourd'hui). Cela produit `build/lightnode-ux`.
 
 ### Docker
 
-Le service UX exécute l'image publique `ghcr.io/qorechain/qorechain-lightnode-ux` (tags `latest` et `v<version>`, par exemple `v3.1.13`), récupérée par le `docker-compose.yml` de la branche `main` de `github.com/qorechain/qorechain-lightnode` ; si le registre n'est pas joignable, compose compile `Dockerfile.ux` depuis les sources. Le conteneur a besoin d'un `config.toml` dans son volume de données avant de pouvoir démarrer. Le binaire UX dispose des commandes de configuration, vous pouvez donc la créer directement dans le volume :
+Le service UX exécute l'image publique `ghcr.io/qorechain/qorechain-lightnode-ux` (tags `latest` et `v<version>`, par exemple `v3.1.14`), récupérée par le `docker-compose.yml` de la branche `main` de `github.com/qorechain/qorechain-lightnode` ; si le registre n'est pas joignable, compose compile `Dockerfile.ux` depuis les sources. Le conteneur a besoin d'un `config.toml` dans son volume de données avant de pouvoir démarrer. Le binaire UX dispose des commandes de configuration, vous pouvez donc la créer directement dans le volume :
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
@@ -90,7 +90,7 @@ Certains textes ailleurs font référence au port 8080 pour le dashboard. La val
 :::
 
 :::caution Protégez le dashboard
-Le dashboard n'a pas de connexion. Tant que vous ne définissez pas `[dashboard] token`, quiconque peut atteindre le port 8420 peut lire votre configuration, vos délégations et vos récompenses ; aucune clé privée n'est jamais servie. Avec un token défini, chaque route `/api` et la connexion `/ws` exigent `Authorization: Bearer <token>` (le token que QoreX envoie lorsqu'il s'appaire avec le nœud) ; en `http` simple, ce token traverse le réseau en clair. Le binaire se lie désormais **par défaut à la boucle locale uniquement** (`127.0.0.1:8420`) plutôt qu'à toutes les interfaces, et affiche un avertissement au démarrage si vous l'avez configuré pour écouter plus largement — mais cet avertissement n'est pas un refus. Si vous élargissez délibérément la liaison (par exemple pour l'atteindre depuis une autre machine, ou parce que vous publiez le port depuis Docker), définissez un token et placez le dashboard derrière https (un reverse proxy ou un tunnel SSH) plutôt que de l'exposer directement. La connexion WebSocket de télémétrie vérifie également l'`Origin` du navigateur, car une liaison réseau large ne suffit pas à elle seule à empêcher une autre page ouverte dans le même navigateur de s'y connecter.
+Le dashboard n'a pas de connexion. Tant que vous ne définissez pas `[dashboard] token`, quiconque peut atteindre le port 8420 peut lire votre configuration, vos délégations et vos récompenses ; aucune clé privée n'est jamais servie. Avec un token défini, chaque route `/api` et la connexion `/ws` exigent `Authorization: Bearer <token>` (le token que QoreX envoie lorsqu'il s'appaire avec le nœud) ; en `http` simple, ce token traverse le réseau en clair. Le binaire se lie désormais **par défaut à la boucle locale uniquement** (`127.0.0.1:8420`) plutôt qu'à toutes les interfaces, et affiche un avertissement au démarrage si vous l'avez configuré pour écouter plus largement — mais cet avertissement n'est pas un refus. Si vous élargissez délibérément la liaison (par exemple pour l'atteindre depuis une autre machine, ou parce que vous publiez le port depuis Docker), définissez un token et placez le dashboard derrière https (un reverse proxy ou un tunnel SSH) plutôt que de l'exposer directement. À partir de la 3.1.14, le WebSocket accepte au plus 32 connexions à la fois. La connexion WebSocket de télémétrie vérifie également l'`Origin` du navigateur, car une liaison réseau large ne suffit pas à elle seule à empêcher une autre page ouverte dans le même navigateur de s'y connecter.
 :::
 
 ## Ce que montre le dashboard

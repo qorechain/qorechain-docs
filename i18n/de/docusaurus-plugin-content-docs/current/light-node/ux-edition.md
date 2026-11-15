@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Edition — Web-Dashboard
 
-Die **UX (User eXperience)**-Edition führt denselben Light-Node-Daemon aus wie die SX-Edition, fügt aber ein **eingebettetes Web-Dashboard** hinzu, mit dem du den Node und das Netzwerk im Browser beobachten kannst. Die Binärdatei heißt `lightnode-ux`. Wie bei der SX-Edition liegt sie auf der eigenen Versionslinie des Light Nodes, getrennt von der Chain-Version (die Kanäle beider Netzwerke tragen am 12. November 2026 3.1.13).
+Die **UX (User eXperience)**-Edition führt denselben Light-Node-Daemon aus wie die SX-Edition, fügt aber ein **eingebettetes Web-Dashboard** hinzu, mit dem du den Node und das Netzwerk im Browser beobachten kannst. Die Binärdatei heißt `lightnode-ux`. Wie bei der SX-Edition liegt sie auf der eigenen Versionslinie des Light Nodes, getrennt von der Chain-Version (die Kanäle beider Netzwerke tragen am 13. November 2026 3.1.14).
 
 Die UX-Edition ist die richtige Wahl für den Desktop-Einsatz und für Betreiber, die eine visuelle Oberfläche der Kommandozeile vorziehen.
 
@@ -23,11 +23,11 @@ Die UX-Edition benötigt **Go 1.26.1**. Ihre Post-Quanten-Kryptografie ist eine 
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Baue aus dem Release-Tag, den das Manifest nennt (heute `git checkout v3.1.13`). Das erzeugt `build/lightnode-ux`.
+Baue aus dem Release-Tag, den das Manifest nennt (heute `git checkout v3.1.14`). Das erzeugt `build/lightnode-ux`.
 
 ### Docker
 
-Der UX-Dienst führt das öffentliche Image `ghcr.io/qorechain/qorechain-lightnode-ux` aus (Tags `latest` und `v<version>`, zum Beispiel `v3.1.13`), das von der `docker-compose.yml` auf dem Branch `main` von `github.com/qorechain/qorechain-lightnode` gezogen wird; ist die Registry nicht erreichbar, baut Compose `Dockerfile.ux` aus dem Quellcode. Der Container benötigt eine `config.toml` in seinem Daten-Volume, bevor er startet. Die UX-Binärdatei enthält die Einrichtungsbefehle, du kannst sie also direkt im Volume erstellen:
+Der UX-Dienst führt das öffentliche Image `ghcr.io/qorechain/qorechain-lightnode-ux` aus (Tags `latest` und `v<version>`, zum Beispiel `v3.1.14`), das von der `docker-compose.yml` auf dem Branch `main` von `github.com/qorechain/qorechain-lightnode` gezogen wird; ist die Registry nicht erreichbar, baut Compose `Dockerfile.ux` aus dem Quellcode. Der Container benötigt eine `config.toml` in seinem Daten-Volume, bevor er startet. Die UX-Binärdatei enthält die Einrichtungsbefehle, du kannst sie also direkt im Volume erstellen:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
@@ -90,7 +90,7 @@ An anderer Stelle wird in manchen Texten Port 8080 für das Dashboard genannt. D
 :::
 
 :::caution Schütze das Dashboard
-Das Dashboard hat keinen Login. Solange du `[dashboard] token` nicht setzt, kann jeder, der Port 8420 erreicht, deine Konfiguration, Delegationen und Rewards einsehen; ein privater Schlüssel wird jedoch nie ausgeliefert. Mit gesetztem Token verlangen jede `/api`-Route und die `/ws`-Verbindung den Header `Authorization: Bearer <token>` (das Token, das QoreX beim Koppeln mit dem Node sendet); über einfaches `http` geht dieses Token im Klartext über das Netzwerk. Die Binärdatei bindet jetzt **standardmäßig nur an Loopback** (`127.0.0.1:8420`) statt an alle Schnittstellen und gibt beim Start eine Warnung aus, falls du sie so konfiguriert hast, dass sie weiter reichend lauscht — aber die Warnung ist keine Verweigerung. Wenn du die Bindung absichtlich erweiterst (etwa um von einer anderen Maschine darauf zuzugreifen, oder weil du den Port aus Docker heraus veröffentlichst), setze ein Token und stelle das Dashboard hinter https (einen Reverse-Proxy oder einen SSH-Tunnel), statt es direkt offenzulegen. Die WebSocket-Telemetrieverbindung prüft außerdem den `Origin`-Header des Browsers, da eine weit geöffnete Netzwerkbindung allein nicht verhindert, dass eine andere im selben Browser geöffnete Seite sich verbindet.
+Das Dashboard hat keinen Login. Solange du `[dashboard] token` nicht setzt, kann jeder, der Port 8420 erreicht, deine Konfiguration, Delegationen und Rewards einsehen; ein privater Schlüssel wird jedoch nie ausgeliefert. Mit gesetztem Token verlangen jede `/api`-Route und die `/ws`-Verbindung den Header `Authorization: Bearer <token>` (das Token, das QoreX beim Koppeln mit dem Node sendet); über einfaches `http` geht dieses Token im Klartext über das Netzwerk. Die Binärdatei bindet jetzt **standardmäßig nur an Loopback** (`127.0.0.1:8420`) statt an alle Schnittstellen und gibt beim Start eine Warnung aus, falls du sie so konfiguriert hast, dass sie weiter reichend lauscht — aber die Warnung ist keine Verweigerung. Wenn du die Bindung absichtlich erweiterst (etwa um von einer anderen Maschine darauf zuzugreifen, oder weil du den Port aus Docker heraus veröffentlichst), setze ein Token und stelle das Dashboard hinter https (einen Reverse-Proxy oder einen SSH-Tunnel), statt es direkt offenzulegen. Ab 3.1.14 akzeptiert der WebSocket höchstens 32 Verbindungen gleichzeitig. Die WebSocket-Telemetrieverbindung prüft außerdem den `Origin`-Header des Browsers, da eine weit geöffnete Netzwerkbindung allein nicht verhindert, dass eine andere im selben Browser geöffnete Seite sich verbindet.
 :::
 
 ## Was das Dashboard zeigt

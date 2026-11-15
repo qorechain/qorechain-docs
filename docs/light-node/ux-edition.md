@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Edition — Web Dashboard
 
-The **UX (User eXperience)** edition runs the same light node daemon as the SX edition, but adds an **embedded web dashboard** so you can watch the node and the network in a browser. The binary is `lightnode-ux`. Like the SX edition, it is on the light node's own version line, separate from the chain version (both networks' channels carry 3.1.13 on 12 November 2026).
+The **UX (User eXperience)** edition runs the same light node daemon as the SX edition, but adds an **embedded web dashboard** so you can watch the node and the network in a browser. The binary is `lightnode-ux`. Like the SX edition, it is on the light node's own version line, separate from the chain version (both networks' channels carry 3.1.14 on 13 November 2026).
 
 The UX edition is the right choice for desktop use and for operators who prefer a visual interface over the command line.
 
@@ -23,11 +23,11 @@ The UX edition requires **Go 1.26.1**. Its post-quantum cryptography is a pure-G
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Build from the release tag the manifest names (`git checkout v3.1.13` today). This produces `build/lightnode-ux`.
+Build from the release tag the manifest names (`git checkout v3.1.14` today). This produces `build/lightnode-ux`.
 
 ### Docker
 
-The UX service runs the public image `ghcr.io/qorechain/qorechain-lightnode-ux` (tags `latest` and `v<version>`, for example `v3.1.13`), pulled by the `docker-compose.yml` on the `main` branch of `github.com/qorechain/qorechain-lightnode`; if the registry is not reachable, compose builds `Dockerfile.ux` from source. The container needs a `config.toml` in its data volume before it will start. The UX binary has the setup commands, so you can create it in the volume:
+The UX service runs the public image `ghcr.io/qorechain/qorechain-lightnode-ux` (tags `latest` and `v<version>`, for example `v3.1.14`), pulled by the `docker-compose.yml` on the `main` branch of `github.com/qorechain/qorechain-lightnode`; if the registry is not reachable, compose builds `Dockerfile.ux` from source. The container needs a `config.toml` in its data volume before it will start. The UX binary has the setup commands, so you can create it in the volume:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
@@ -90,7 +90,7 @@ Some prose elsewhere references port 8080 for the dashboard. The authoritative v
 :::
 
 :::caution Protect the dashboard
-The dashboard has no login. Unless you set `[dashboard] token`, anyone who can reach port 8420 can read your configuration, delegations, and rewards; no private key is ever served. With a token set, every `/api` route and the `/ws` connection require `Authorization: Bearer <token>` (the token QoreX sends when it pairs with the node); over plain `http` that token crosses the network in the clear. The binary now **defaults to loopback only** (`127.0.0.1:8420`) rather than all interfaces, and prints a warning at startup if you've configured it to listen more widely — but the warning is not a refusal. If you deliberately widen the bind (for example to reach it from another machine, or because you're publishing the port from Docker), set a token and put it behind https (a reverse proxy or an SSH tunnel) rather than exposing it directly. The WebSocket telemetry connection also checks the browser's `Origin`, since a wide network bind alone doesn't stop another page open in the same browser from connecting.
+The dashboard has no login. Unless you set `[dashboard] token`, anyone who can reach port 8420 can read your configuration, delegations, and rewards; no private key is ever served. With a token set, every `/api` route and the `/ws` connection require `Authorization: Bearer <token>` (the token QoreX sends when it pairs with the node); over plain `http` that token crosses the network in the clear. The binary now **defaults to loopback only** (`127.0.0.1:8420`) rather than all interfaces, and prints a warning at startup if you've configured it to listen more widely — but the warning is not a refusal. If you deliberately widen the bind (for example to reach it from another machine, or because you're publishing the port from Docker), set a token and put it behind https (a reverse proxy or an SSH tunnel) rather than exposing it directly. From 3.1.14 the WebSocket accepts at most 32 connections at a time. The WebSocket telemetry connection also checks the browser's `Origin`, since a wide network bind alone doesn't stop another page open in the same browser from connecting.
 :::
 
 ## What the dashboard shows

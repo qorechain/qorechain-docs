@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX 에디션 — 서버 데몬
 
-**SX(Server eXperience)** 에디션은 헤드리스 라이트 노드입니다. 데몬과 완전한 관리 CLI로 구성되며, 서버 환경과 자동화를 위해 만들어졌습니다. 바이너리 이름은 `lightnode-sx`입니다. 라이트 노드 버전은 체인 버전과는 별개인 자체 버전 라인에 있으며, 두 네트워크의 채널 모두 **3.1.13**(2026년 11월 12일)을 제공합니다. 이 페이지는 어떤 기능에 3.1.11 이상이 필요한지 함께 표시합니다.
+**SX(Server eXperience)** 에디션은 헤드리스 라이트 노드입니다. 데몬과 완전한 관리 CLI로 구성되며, 서버 환경과 자동화를 위해 만들어졌습니다. 바이너리 이름은 `lightnode-sx`입니다. 라이트 노드 버전은 체인 버전과는 별개인 자체 버전 라인에 있으며, 두 네트워크의 채널 모두 **3.1.14**(2026년 11월 13일)을 제공합니다. 이 페이지는 어떤 기능에 3.1.11 이상이 필요한지 함께 표시합니다.
 
 ## 설치 {#install}
 
@@ -17,7 +17,7 @@ sidebar_position: 2
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.14 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ Windows에서는 `certutil -hashfile lightnode-sx-<platform>.exe SHA256`의 결�
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-매니페스트가 지정하는 릴리스 태그에서 빌드하세요(현재는 `git checkout v3.1.13`). 이 명령은 `build/lightnode-sx`를 생성합니다. 바로 실행하거나 `PATH`에 복사해서 사용하세요. 등록하기 전에 [`selftest`](#verify-the-pqc-stack-selftest)로 포스트 퀀텀 서명 스택이 정상인지 먼저 점검하시기 바랍니다.
+매니페스트가 지정하는 릴리스 태그에서 빌드하세요(현재는 `git checkout v3.1.14`). 이 명령은 `build/lightnode-sx`를 생성합니다. 바로 실행하거나 `PATH`에 복사해서 사용하세요. 등록하기 전에 [`selftest`](#verify-the-pqc-stack-selftest)로 포스트 퀀텀 서명 스택이 정상인지 먼저 점검하시기 바랍니다.
 
 ### Docker {#docker}
 
-릴리스된 이미지는 공개되어 있으며 익명으로 가져올 수 있습니다: `ghcr.io/qorechain/qorechain-lightnode-sx`와 `ghcr.io/qorechain/qorechain-lightnode-ux`이며, 각각 `latest`와 `v<version>` 태그(예: `v3.1.13`)가 있습니다. 소스 저장소 `main` 브랜치의 `docker-compose.yml`이 이 이미지를 사용하며, 레지스트리에 접근할 수 없으면 소스에서 빌드하는 방식(`Dockerfile.sx`, `Dockerfile.ux`)으로 대체됩니다. 특정 릴리스에 고정하려면 compose 파일의 `image:` 태그를 변경하세요. 대신 릴리스 태그에서 빌드하려면 `git checkout v<version>`을 실행한 뒤 `docker compose build`를 실행하세요. 업데이트할 때 키, 설정, 데이터 볼륨은 그대로 유지됩니다.
+릴리스된 이미지는 공개되어 있으며 익명으로 가져올 수 있습니다: `ghcr.io/qorechain/qorechain-lightnode-sx`와 `ghcr.io/qorechain/qorechain-lightnode-ux`이며, 각각 `latest`와 `v<version>` 태그(예: `v3.1.14`)가 있습니다. 소스 저장소 `main` 브랜치의 `docker-compose.yml`이 이 이미지를 사용하며, 레지스트리에 접근할 수 없으면 소스에서 빌드하는 방식(`Dockerfile.sx`, `Dockerfile.ux`)으로 대체됩니다. 특정 릴리스에 고정하려면 compose 파일의 `image:` 태그를 변경하세요. 대신 릴리스 태그에서 빌드하려면 `git checkout v<version>`을 실행한 뒤 `docker compose build`를 실행하세요. 업데이트할 때 키, 설정, 데이터 볼륨은 그대로 유지됩니다.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,8 +78,8 @@ docker compose run --rm lightnode-sx status
 - **설정.** `[update] mode = "auto"`(기본값이며, 이 섹션이 없는 설정도 동일)는 알리고 설치합니다. `"notify"`는 알리기만 합니다. `"off"`는 확인하지 않습니다. 수동으로는 `lightnode-sx update --check`, 이어서 `lightnode-sx update`를 실행한 다음 노드를 다시 시작하세요.
 - **공지 확인.** 노드는 더 새로운 릴리스를 로그에 기록하고 로컬 대시보드 API의 `GET /api/update`에서 제공합니다(필드 `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`). UX 대시보드는 배너를 표시합니다.
 - **컨테이너 또는 쓰기 불가능한 폴더.** 노드는 알리기만 합니다. 이미지나 파일은 직접 업데이트하세요.
-- **라이트 노드 3.1.11 이상**은 3.1.13이 게시된 후 6시간 이내에 스스로 3.1.13을 설치합니다(테스트넷 테스트 노드에서 확인).
-- **라이트 노드 3.1.10 이하**는 스스로 업데이트하지 않습니다. 3.1.13을 한 번 직접 설치하세요. 매니페스트 경로에서 버전이 포함된 바이너리를 다운로드하고([설치](#install) 참조), 검증한 다음, 파일을 교체하고 다시 시작합니다. 그 이후에는 노드가 자신의 채널을 따라갑니다.
+- **라이트 노드 3.1.11 이상**은 새 릴리스가 게시된 후 6시간 이내에 스스로 설치합니다(테스트넷 테스트 노드에서 확인).
+- **라이트 노드 3.1.10 이하**는 스스로 업데이트하지 않습니다. 3.1.14를 한 번 직접 설치하세요. 매니페스트 경로에서 버전이 포함된 바이너리를 다운로드하고([설치](#install) 참조), 검증한 다음, 파일을 교체하고 다시 시작합니다. 그 이후에는 노드가 자신의 채널을 따라갑니다.
 - **Docker.** Docker 노드는 새 릴리스를 알림(로그와 `GET /api/update`)으로 받지만 스스로를 교체하지는 않습니다. 업데이트는 pull입니다: `docker compose pull && docker compose up -d`(`QORECHAIN_RPC_ADDR`를 export된 상태로 유지하세요). 대안은 새 소스 태그에서 빌드하는 것입니다.
 
 ## 설정 {#configure}
@@ -207,6 +207,14 @@ lightnode-sx register --delegate-to qorvaloper1...
 
 `register`는 라이선스를 확인하고, 계정에 이미 포스트 퀀텀 키가 없다면 이를 연결하며, `--delegate-to`로 검증인을 지정한 경우에만 부족한 스테이크를 위임하고, 노드를 등록합니다. 각 단계는 다음 단계 전에 블록에서 확인됩니다. 자세한 내용과, 계정 키를 `qorechaind` 키링에 보관하는 운영자를 위한 `register --print` 대체 경로는 [등록 및 라이선스](/light-node/registration-and-licensing)를 참고하세요.
 
+## 3.1.14에서 추가된 보호 장치 {#protections-3114}
+
+- **키 가져오기가 프로세스 목록에 노출되지 않습니다.** `keys import <name>`은 16진수 개인 키를 표준 입력 또는 `--key-file <file>`에서 읽습니다. 두 번째 인자로 입력한 키는 거부됩니다. `--unsafe-argv`는 경고와 함께 이전 방식을 되살립니다.
+- **키스토어는 원자적으로 기록됩니다.** `keystore/keys.enc`는 한 번에 교체되며 이전 버전은 `keystore/keys.enc.bak`으로 보관됩니다. 설정 후에는 `keys.enc`(또는 복구 단어)를 머신 밖의 안전한 곳에 백업하세요.
+- **자동 청구에 상한이 있습니다.** 노드는 최대 10분마다 확인하며(더 낮은 `compound_interval`은 `10m`으로 올려 적용됩니다) 청구는 6시간에 최대 한 번만 제출합니다.
+- **대시보드 연결에 상한이 있습니다.** 대시보드 WebSocket은 최대 32개의 연결만 받습니다.
+- **체인 응답 크기에 상한이 있습니다.** 모든 체인 REST 응답은 4 MiB로 제한됩니다. 시작 시 `api_addr`가 다른 머신을 가리키는 일반 `http://`이면 노드가 경고합니다. `https://`를 사용하세요.
+
 ## 관리 명령
 
 SX CLI에는 노드 상태를 확인하고 키를 관리하기 위한 명령들이 포함되어 있습니다. 3.1.7부터 UX 바이너리(`lightnode-ux`)도 동일한 명령을 갖추고 있습니다.
@@ -220,7 +228,7 @@ SX CLI에는 노드 상태를 확인하고 키를 관리하기 위한 명령들�
 | `keys create <name>` | 새 Dilithium-5 노드 키를 생성하고 공개 키를 출력합니다. |
 | `keys list` | 키링에 있는 키 목록(이름, 유형, 있는 경우 주소, 공개 키)을 표시합니다. |
 | `keys show <name>` | 키의 유형과 전체 공개 키를 출력합니다. |
-| `keys import <name> <hex-privkey>` | 16진수로 인코딩된 개인 키를 가져옵니다. |
+| `keys import <name> [--key-file <file>]` | 16진수로 인코딩된 개인 키를 가져옵니다. 3.1.14부터 키는 표준 입력 또는 `--key-file <file>`에서 읽습니다. 두 번째 인자로 준 키는 프로세스 목록과 셸 기록에 노출되므로 거부됩니다. `--unsafe-argv`는 경고와 함께 이전 방식을 되살립니다. |
 | `keys export <name> [--out <file>]` | 개인 키를 16진수로 내보냅니다. `--out`은 `qorechaind --pqc-key`가 읽는 파일을 작성합니다(끝 줄바꿈 없음, 모드 0600). |
 | `keys add-operator [--recover]` | 운영자 계정 키(새로 만들거나, 표준 입력으로 받은 단어에서 복구)를 저장하고 포스트 퀀텀 키를 선택하며, `operator_address`를 채웁니다. [운영자 지갑](#operator-wallet)을 참고하세요. |
 | `register [--delegate-to <qorvaloper>] [--print]` | 노드를 체인에 등록합니다: 포스트 퀀텀 키, 부족한 스테이크, 등록, 각각 블록에서 확인됩니다. `--print`는 대신 `qorechaind` 명령을 출력합니다 — [등록 및 라이선스](/light-node/registration-and-licensing) 참고. |

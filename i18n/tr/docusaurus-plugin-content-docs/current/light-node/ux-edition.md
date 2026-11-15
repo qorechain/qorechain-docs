@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Sürümü — Web Dashboard
 
-**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, hafif düğümün kendi sürüm hattındadır, zincir sürümünden ayrıdır (12 Kasım 2026'da her iki ağın kanalları da 3.1.13 taşır).
+**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, hafif düğümün kendi sürüm hattındadır, zincir sürümünden ayrıdır (13 Kasım 2026'da her iki ağın kanalları da 3.1.14 taşır).
 
 UX sürümü, masaüstü kullanımı ve komut satırı yerine görsel bir arabirimi tercih eden operatörler için doğru seçimdir.
 
@@ -23,11 +23,11 @@ UX sürümü **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go ile
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Manifestin adlandırdığı sürüm etiketinden derleyin (bugün `git checkout v3.1.13`). Bu, `build/lightnode-ux` üretir.
+Manifestin adlandırdığı sürüm etiketinden derleyin (bugün `git checkout v3.1.14`). Bu, `build/lightnode-ux` üretir.
 
 ### Docker
 
-UX hizmeti, `github.com/qorechain/qorechain-lightnode` deposunun `main` dalındaki `docker-compose.yml` tarafından çekilen herkese açık `ghcr.io/qorechain/qorechain-lightnode-ux` imajını çalıştırır (etiketler `latest` ve `v<version>`, örneğin `v3.1.13`); kayıt defterine ulaşılamazsa compose `Dockerfile.ux` dosyasını kaynaktan derler. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir. UX ikili dosyası kurulum komutlarına sahip olduğundan bunu birim içinde oluşturabilirsiniz:
+UX hizmeti, `github.com/qorechain/qorechain-lightnode` deposunun `main` dalındaki `docker-compose.yml` tarafından çekilen herkese açık `ghcr.io/qorechain/qorechain-lightnode-ux` imajını çalıştırır (etiketler `latest` ve `v<version>`, örneğin `v3.1.14`); kayıt defterine ulaşılamazsa compose `Dockerfile.ux` dosyasını kaynaktan derler. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir. UX ikili dosyası kurulum komutlarına sahip olduğundan bunu birim içinde oluşturabilirsiniz:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
@@ -90,7 +90,7 @@ Başka yerlerdeki bazı metinler dashboard için 8080 bağlantı noktasına atı
 :::
 
 :::caution Dashboard'u koruyun
-Dashboard'da giriş yoktur. `[dashboard] token` ayarlamadığınız sürece 8420 numaralı bağlantı noktasına ulaşabilen herkes yapılandırmanızı, delegasyonlarınızı ve ödüllerinizi okuyabilir; hiçbir özel anahtar asla sunulmaz. Bir token ayarlandığında her `/api` rotası ve `/ws` bağlantısı `Authorization: Bearer <token>` gerektirir (QoreX'in düğümle eşleşirken gönderdiği token); düz `http` üzerinden bu token ağda şifrelenmeden iletilir. İkili dosya artık tüm arabirimler yerine **varsayılan olarak yalnızca loopback'e** bağlanır (`127.0.0.1:8420`) ve daha geniş dinleyecek şekilde yapılandırdıysanız başlangıçta bir uyarı yazdırır — ancak bu uyarı bir reddetme değildir. Bağı kasıtlı olarak genişletiyorsanız (örneğin başka bir makineden erişmek için veya bağlantı noktasını Docker'dan yayınladığınız için), doğrudan açığa çıkarmak yerine bir token ayarlayın ve https'in (bir ters proxy veya bir SSH tüneli) arkasına yerleştirin. WebSocket telemetri bağlantısı da tarayıcının `Origin` bilgisini kontrol eder, çünkü geniş bir ağ bağı tek başına aynı tarayıcıda açık başka bir sayfanın bağlanmasını engellemez.
+Dashboard'da giriş yoktur. `[dashboard] token` ayarlamadığınız sürece 8420 numaralı bağlantı noktasına ulaşabilen herkes yapılandırmanızı, delegasyonlarınızı ve ödüllerinizi okuyabilir; hiçbir özel anahtar asla sunulmaz. Bir token ayarlandığında her `/api` rotası ve `/ws` bağlantısı `Authorization: Bearer <token>` gerektirir (QoreX'in düğümle eşleşirken gönderdiği token); düz `http` üzerinden bu token ağda şifrelenmeden iletilir. İkili dosya artık tüm arabirimler yerine **varsayılan olarak yalnızca loopback'e** bağlanır (`127.0.0.1:8420`) ve daha geniş dinleyecek şekilde yapılandırdıysanız başlangıçta bir uyarı yazdırır — ancak bu uyarı bir reddetme değildir. Bağı kasıtlı olarak genişletiyorsanız (örneğin başka bir makineden erişmek için veya bağlantı noktasını Docker'dan yayınladığınız için), doğrudan açığa çıkarmak yerine bir token ayarlayın ve https'in (bir ters proxy veya bir SSH tüneli) arkasına yerleştirin. 3.1.14'ten itibaren WebSocket aynı anda en fazla 32 bağlantı kabul eder. WebSocket telemetri bağlantısı da tarayıcının `Origin` bilgisini kontrol eder, çünkü geniş bir ağ bağı tek başına aynı tarayıcıda açık başka bir sayfanın bağlanmasını engellemez.
 :::
 
 ## Dashboard neleri gösterir

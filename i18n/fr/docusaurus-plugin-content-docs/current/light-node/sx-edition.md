@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Édition SX — Démon serveur
 
-L'édition **SX (Server eXperience)** est le light node headless : un démon associé à une CLI de gestion complète, conçu pour les serveurs et l'automatisation. Le binaire s'appelle `lightnode-sx`. Les versions du light node suivent leur propre ligne, distincte de la version de la chaîne : les canaux des deux réseaux portent la **3.1.13** (12 novembre 2026). Cette page indique où une fonctionnalité nécessite la 3.1.11 ou une version ultérieure.
+L'édition **SX (Server eXperience)** est le light node headless : un démon associé à une CLI de gestion complète, conçu pour les serveurs et l'automatisation. Le binaire s'appelle `lightnode-sx`. Les versions du light node suivent leur propre ligne, distincte de la version de la chaîne : les canaux des deux réseaux portent la **3.1.14** (13 novembre 2026). Cette page indique où une fonctionnalité nécessite la 3.1.11 ou une version ultérieure.
 
 ## Installation {#install}
 
@@ -17,7 +17,7 @@ Les binaires précompilés constituent la voie la plus simple. Le client light n
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.14 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ Le light node nécessite **Go 1.26.1**. Sa cryptographie post-quantique est une 
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Compilez à partir du tag de version que nomme le manifeste (`git checkout v3.1.13` aujourd'hui). Cela produit `build/lightnode-sx`. Exécutez-le directement, ou copiez-le dans votre `PATH`. Avant d'enregistrer le nœud, vérifiez la pile de signature post-quantique avec [`selftest`](#verify-the-pqc-stack-selftest).
+Compilez à partir du tag de version que nomme le manifeste (`git checkout v3.1.14` aujourd'hui). Cela produit `build/lightnode-sx`. Exécutez-le directement, ou copiez-le dans votre `PATH`. Avant d'enregistrer le nœud, vérifiez la pile de signature post-quantique avec [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-Les images publiées sont publiques et peuvent être récupérées de façon anonyme : `ghcr.io/qorechain/qorechain-lightnode-sx` et `ghcr.io/qorechain/qorechain-lightnode-ux`, chacune avec les tags `latest` et `v<version>` (par exemple `v3.1.13`). Le `docker-compose.yml` de la branche `main` du dépôt source les utilise et se rabat sur une compilation depuis les sources (`Dockerfile.sx`, `Dockerfile.ux`) lorsque le registre n'est pas joignable. Pour épingler une version, modifiez le tag `image:` dans le fichier compose ; pour compiler plutôt depuis un tag de version, faites `git checkout v<version>` puis exécutez `docker compose build`. Les clés, la configuration et le volume de données sont conservés lors d'une mise à jour.
+Les images publiées sont publiques et peuvent être récupérées de façon anonyme : `ghcr.io/qorechain/qorechain-lightnode-sx` et `ghcr.io/qorechain/qorechain-lightnode-ux`, chacune avec les tags `latest` et `v<version>` (par exemple `v3.1.14`). Le `docker-compose.yml` de la branche `main` du dépôt source les utilise et se rabat sur une compilation depuis les sources (`Dockerfile.sx`, `Dockerfile.ux`) lorsque le registre n'est pas joignable. Pour épingler une version, modifiez le tag `image:` dans le fichier compose ; pour compiler plutôt depuis un tag de version, faites `git checkout v<version>` puis exécutez `docker compose build`. Les clés, la configuration et le volume de données sont conservés lors d'une mise à jour.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,8 +78,8 @@ Le nœud signe nativement à l'intérieur du conteneur ; rien d'autre n'est donc
 - **Paramètres.** `[update] mode = "auto"` (par défaut, y compris pour une configuration sans cette section) annonce et installe ; `"notify"` annonce seulement ; `"off"` ne vérifie pas. À la main : `lightnode-sx update --check`, puis `lightnode-sx update`, puis redémarrez le nœud.
 - **Voir une annonce.** Le nœud journalise une version plus récente et la sert sur l'API du tableau de bord local à `GET /api/update` (champs `network`, `mode`, `current`, `latest`, `min_compatible`, `notes`, `update_available`, `mandatory`, `can_install`, `blocked`, `last_check`, `last_error`) ; le tableau de bord UX affiche une bannière.
 - **Conteneur ou dossier non inscriptible.** Le nœud se contente d'annoncer : mettez à jour l'image ou le fichier vous-même.
-- **Light node 3.1.11 et versions ultérieures** installent la 3.1.13 d'eux-mêmes dans les 6 heures suivant sa publication (vérifié sur le nœud de test du testnet).
-- **Light node 3.1.10 et versions antérieures** ne se mettent pas à jour seuls. Installez la 3.1.13 à la main une fois : téléchargez le binaire versionné depuis le chemin du manifeste (voir [Installation](#install)), vérifiez-le, remplacez le fichier et redémarrez. Ensuite, le nœud suit son canal.
+- **Light node 3.1.11 et versions ultérieures** installent les nouvelles versions d'eux-mêmes dans les 6 heures suivant leur publication (vérifié sur le nœud de test du testnet).
+- **Light node 3.1.10 et versions antérieures** ne se mettent pas à jour seuls. Installez la 3.1.14 à la main une fois : téléchargez le binaire versionné depuis le chemin du manifeste (voir [Installation](#install)), vérifiez-le, remplacez le fichier et redémarrez. Ensuite, le nœud suit son canal.
 - **Docker.** Un nœud Docker est informé d'une nouvelle version (journal et `GET /api/update`) mais ne se remplace jamais lui-même ; le pull est la mise à jour : `docker compose pull && docker compose up -d` (gardez `QORECHAIN_RPC_ADDR` exportée). Compiler depuis le nouveau tag source est l'alternative.
 
 ## Configuration {#configure}
@@ -207,6 +207,14 @@ lightnode-sx register --delegate-to qorvaloper1...
 
 `register` vérifie la licence, rattache la clé post-quantique sauf si le compte la possède déjà, délègue le stake manquant uniquement si vous désignez un validateur avec `--delegate-to`, et enregistre le nœud ; chaque étape est confirmée dans un bloc avant la suivante. Voir [Enregistrement et licences](/light-node/registration-and-licensing) pour les détails et pour la solution de repli `register --print` destinée aux opérateurs qui conservent la clé du compte dans un trousseau `qorechaind`.
 
+## Protections ajoutées en 3.1.14 {#protections-3114}
+
+- **L'import de clé reste hors de la liste des processus.** `keys import <name>` lit la clé privée hexadécimale sur l'entrée standard ou depuis `--key-file <file>`. Une clé saisie comme second argument est refusée. `--unsafe-argv` rétablit l'ancienne forme avec un avertissement.
+- **Le keystore est écrit de façon atomique.** `keystore/keys.enc` est remplacé en une seule étape et la version précédente est conservée sous `keystore/keys.enc.bak`. Après la configuration, sauvegardez `keys.enc` (ou vos mots de récupération) quelque part en dehors de la machine.
+- **Réclamation automatique bornée.** Le nœud vérifie au plus toutes les 10 minutes (un `compound_interval` plus bas est porté à `10m`) et soumet au plus une réclamation toutes les 6 heures.
+- **Connexions au dashboard bornées.** Le WebSocket du dashboard accepte au plus 32 connexions.
+- **Réponses de la chaîne bornées.** Chaque réponse REST de la chaîne est plafonnée à 4 MiB. Au démarrage, le nœud avertit si `api_addr` est en `http://` simple vers une autre machine : utilisez `https://`.
+
 ## Commandes de gestion
 
 La CLI SX inclut des commandes pour inspecter l'état du nœud et gérer les clés. Depuis la version 3.1.7, le binaire UX (`lightnode-ux`) dispose des mêmes commandes.
@@ -220,7 +228,7 @@ La CLI SX inclut des commandes pour inspecter l'état du nœud et gérer les cl�
 | `keys create <name>` | Crée une nouvelle clé de nœud Dilithium-5 et affiche sa clé publique. |
 | `keys list` | Liste les clés du trousseau (nom, type, adresse le cas échéant, clé publique). |
 | `keys show <name>` | Affiche le type d'une clé et sa clé publique complète. |
-| `keys import <name> <hex-privkey>` | Importe une clé privée encodée en hexadécimal. |
+| `keys import <name> [--key-file <file>]` | Importe une clé privée encodée en hexadécimal. À partir de la 3.1.14, la clé est lue sur l'entrée standard, ou depuis `--key-file <file>`. Une clé donnée en second argument est refusée, car elle apparaîtrait dans la liste des processus et dans l'historique du shell ; `--unsafe-argv` rétablit l'ancienne forme avec un avertissement. |
 | `keys export <name> [--out <file>]` | Exporte une clé privée en hexadécimal. `--out` écrit le fichier que lit `qorechaind --pqc-key` (sans saut de ligne final, mode 0600). |
 | `keys add-operator [--recover]` | Stocke la clé du compte opérateur (nouvelle, ou récupérée à partir de ses mots sur l'entrée standard) et choisit la clé post-quantique ; renseigne `operator_address`. Voir [Le wallet de l'opérateur](#operator-wallet). |
 | `register [--delegate-to <qorvaloper>] [--print]` | Enregistre le nœud on-chain : clé post-quantique, stake manquant, enregistrement, chacun confirmé dans un bloc. `--print` affiche à la place les commandes `qorechaind` — voir [Enregistrement et licences](/light-node/registration-and-licensing). |

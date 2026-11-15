@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX エディション — サーバーデーモン
 
-**SX**(Server eXperience)エディションはヘッドレスのライトノードです。デーモンと完全な管理 CLI から成り、サーバーと自動化のために作られています。バイナリは `lightnode-sx` です。ライトノードのバージョンはチェーンバージョンとは別の独自のラインで、両ネットワークのチャンネルが **3.1.13**(2026年11月12日)を配信しています。このページでは、機能に 3.1.11 以降が必要な箇所を明記しています。
+**SX**(Server eXperience)エディションはヘッドレスのライトノードです。デーモンと完全な管理 CLI から成り、サーバーと自動化のために作られています。バイナリは `lightnode-sx` です。ライトノードのバージョンはチェーンバージョンとは別の独自のラインで、両ネットワークのチャンネルが **3.1.14**(2026年11月13日)を配信しています。このページでは、機能に 3.1.11 以降が必要な箇所を明記しています。
 
 ## インストール {#install}
 
@@ -17,7 +17,7 @@ sidebar_position: 2
 
 ```bash
 NET=mainnet            # or testnet
-V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.13 on both networks today
+V=$(curl -fsS https://download.qore.host/$NET/lightnode/latest.json | jq -r .version)   # 3.1.14 on both networks today
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/$F
 curl -fsSLO https://download.qore.host/$NET/lightnode/v$V/SHA256SUMS
@@ -39,11 +39,11 @@ Windows では、`certutil -hashfile lightnode-sx-<platform>.exe SHA256` の出�
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-マニフェストが示すリリースタグからビルドしてください(現在は `git checkout v3.1.13`)。これにより `build/lightnode-sx` が生成されます。直接実行するか、`PATH` にコピーしてください。登録する前に、[`selftest`](#verify-the-pqc-stack-selftest) でポスト量子署名スタックの健全性を確認してください。
+マニフェストが示すリリースタグからビルドしてください(現在は `git checkout v3.1.14`)。これにより `build/lightnode-sx` が生成されます。直接実行するか、`PATH` にコピーしてください。登録する前に、[`selftest`](#verify-the-pqc-stack-selftest) でポスト量子署名スタックの健全性を確認してください。
 
 ### Docker {#docker}
 
-リリース済みのイメージは公開されており、匿名でプルできます。`ghcr.io/qorechain/qorechain-lightnode-sx` と `ghcr.io/qorechain/qorechain-lightnode-ux` で、それぞれに `latest` と `v<version>`(例: `v3.1.13`)のタグが付いています。ソースリポジトリの `main` ブランチにある `docker-compose.yml` はこれらを使用し、レジストリに到達できない場合はソースからのビルド(`Dockerfile.sx`、`Dockerfile.ux`)にフォールバックします。リリースを固定するには compose ファイルの `image:` タグを変更してください。代わりにリリースタグからビルドするには、`git checkout v<version>` を実行してから `docker compose build` を実行します。アップデートしても、キー、設定、データボリュームはそのまま引き継がれます。
+リリース済みのイメージは公開されており、匿名でプルできます。`ghcr.io/qorechain/qorechain-lightnode-sx` と `ghcr.io/qorechain/qorechain-lightnode-ux` で、それぞれに `latest` と `v<version>`(例: `v3.1.14`)のタグが付いています。ソースリポジトリの `main` ブランチにある `docker-compose.yml` はこれらを使用し、レジストリに到達できない場合はソースからのビルド(`Dockerfile.sx`、`Dockerfile.ux`)にフォールバックします。リリースを固定するには compose ファイルの `image:` タグを変更してください。代わりにリリースタグからビルドするには、`git checkout v<version>` を実行してから `docker compose build` を実行します。アップデートしても、キー、設定、データボリュームはそのまま引き継がれます。
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
@@ -78,7 +78,8 @@ docker compose run --rm lightnode-sx status
 - **設定。** `[update] mode = "auto"`(デフォルト。セクションがない設定でも同様)は通知とインストールを行い、`"notify"` は通知のみ、`"off"` はチェックを行いません。手動の場合: `lightnode-sx update --check`、続いて `lightnode-sx update`、その後ノードを再起動します。
 - **通知の確認。** ノードはより新しいリリースをログに出力し、ローカルのダッシュボード API の `GET /api/update` で提供します(フィールド `network`、`mode`、`current`、`latest`、`min_compatible`、`notes`、`update_available`、`mandatory`、`can_install`、`blocked`、`last_check`、`last_error`)。UX ダッシュボードにはバナーが表示されます。
 - **コンテナまたは書き込み不可のフォルダー。** ノードは通知のみを行います。イメージまたはファイルは自分で更新してください。
-- **ライトノード 3.1.10 以前**は自己更新しません。一度だけ手動で 3.1.13 をインストールしてください。マニフェストのパスからバージョン付きバイナリをダウンロードし([インストール](#install)を参照)、検証し、ファイルを置き換えて再起動します。その後、ノードはチャンネルに追従します。
+- **ライトノード 3.1.11 以降**は、新しいリリースが公開されてから6時間以内に自動でインストールします(テストネットのテストノードで確認済み)。
+- **ライトノード 3.1.10 以前**は自己更新しません。一度だけ手動で 3.1.14 をインストールしてください。マニフェストのパスからバージョン付きバイナリをダウンロードし([インストール](#install)を参照)、検証し、ファイルを置き換えて再起動します。その後、ノードはチャンネルに追従します。
 - **Docker。** Docker ノードは新しいリリースの通知(ログと `GET /api/update`)を受け取りますが、自分自身を置き換えることはありません。プルがそのままアップデートになります: `docker compose pull && docker compose up -d`(`QORECHAIN_RPC_ADDR` はエクスポートしたままにしてください)。新しいソースタグからビルドする方法も代替手段として使えます。
 
 ## 設定 {#configure}
@@ -206,6 +207,14 @@ lightnode-sx register --delegate-to qorvaloper1...
 
 `register` はライセンスを確認し、アカウントがまだ持っていなければポスト量子キーを紐づけ、`--delegate-to` でバリデーターを指定した場合にのみ不足しているステークを委任し、ノードを登録します。各ステップは、次のステップの前にブロックで確認されます。詳細と、アカウントキーを `qorechaind` キーリングに保管するオペレーター向けの `register --print` フォールバックについては、[登録とライセンス](/light-node/registration-and-licensing)を参照してください。
 
+## 3.1.14 で追加された保護 {#protections-3114}
+
+- **キーのインポートがプロセス一覧に現れません。** `keys import <name>` は、16進の秘密鍵を標準入力または `--key-file <file>` から読み取ります。2番目の引数として入力されたキーは拒否されます。`--unsafe-argv` を付けると、警告付きで従来の形式に戻せます。
+- **キーストアはアトミックに書き込まれます。** `keystore/keys.enc` は一度の操作で置き換えられ、以前のバージョンは `keystore/keys.enc.bak` として残ります。セットアップ後は、`keys.enc`(またはリカバリーワード)をマシンの外のどこかにバックアップしてください。
+- **自動請求に上限があります。** ノードは最大でも10分ごとに確認し(それより小さい `compound_interval` は `10m` に引き上げられます)、請求の送信は6時間に最大1回です。
+- **ダッシュボード接続に上限があります。** ダッシュボードの WebSocket が受け付ける接続は最大32件です。
+- **チェーンからの応答に上限があります。** チェーンの REST 応答はすべて 4 MiB が上限です。起動時に、`api_addr` が別のマシンへのプレーンな `http://` である場合、ノードは警告を出します。`https://` を使用してください。
+
 ## 管理コマンド
 
 SX CLI には、ノードの状態を確認しキーを管理するためのコマンドが含まれます。3.1.7 以降、UX バイナリ(`lightnode-ux`)にも同じコマンドがあります。
@@ -219,7 +228,7 @@ SX CLI には、ノードの状態を確認しキーを管理するためのコ�
 | `keys create <name>` | 新しい Dilithium-5 ノードキーを作成し、その公開鍵を出力します。 |
 | `keys list` | キーリング内のキーを一覧表示します(名前、タイプ、あればアドレス、公開鍵)。 |
 | `keys show <name>` | キーのタイプと完全な公開鍵を出力します。 |
-| `keys import <name> <hex-privkey>` | 16進エンコードされた秘密鍵をインポートします。 |
+| `keys import <name> [--key-file <file>]` | 16進エンコードされた秘密鍵をインポートします。3.1.14 からは、キーは標準入力または `--key-file <file>` から読み取られます。2番目の引数として渡されたキーは、プロセス一覧とシェルの履歴に残るため拒否されます。`--unsafe-argv` を付けると、警告付きで従来の形式に戻せます。 |
 | `keys export <name> [--out <file>]` | 秘密鍵を16進形式でエクスポートします。`--out` は `qorechaind --pqc-key` が読み取るファイルを書き込みます(末尾の改行なし、モード 0600)。 |
 | `keys add-operator [--recover]` | オペレーターアカウントのキー(新規作成、または標準入力から受け取ったワードで復元)を保存し、ポスト量子キーを選択します。`operator_address` を設定します。[オペレーターウォレット](#operator-wallet)を参照してください。 |
 | `register [--delegate-to <qorvaloper>] [--print]` | ノードをチェーンに登録します: ポスト量子キー、不足しているステーク、登録で、それぞれブロックで確認されます。`--print` は代わりに `qorechaind` コマンドを出力します — [登録とライセンス](/light-node/registration-and-licensing)を参照。 |
