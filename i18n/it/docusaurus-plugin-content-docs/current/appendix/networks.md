@@ -54,6 +54,15 @@ Se uno script riceve `403 Forbidden` da un endpoint pubblico, imposta un header 
 Oltre al fatto che gli endpoint pubblici sono in sola lettura, la lane di esecuzione SVM è **attualmente disabilitata a livello di rete per l'invio di transazioni** (a partire dalla versione della chain v3.1.89, 22 agosto) — questo include l'invio tramite il tuo stesso nodo, non solo gli endpoint pubblici `svm.qore.host` / `svm-testnet.qore.host`. Vedi [Sviluppo SVM](/developer-guide/svm-development) per i dettagli. Usa le interfacce Cosmos o EVM finché la lane non riapre.
 :::
 
+## Limiti sugli endpoint pubblici {#public-limits}
+
+Gli host pubblici sono condivisi, quindi hanno dei limiti. Rispettali, oppure esegui un nodo tuo (vedi [Eseguire un nodo](/developer-guide/running-a-node)) per un uso più intensivo.
+
+- **Frequenza delle richieste.** Gli host della testnet accettano 1.200 richieste ogni 60 secondi da un singolo indirizzo IP; oltre questa soglia l'indirizzo viene bloccato per 60 secondi.
+- **SVM JSON-RPC.** `getSignaturesForAddress` restituisce al massimo 1.000 voci per chiamata, un batch contiene al massimo 100 richieste e il corpo di una richiesta è al massimo di 1 MB.
+- **Filtri EVM.** Un client può mantenere al massimo 16 filtri. Sulla testnet il limite è conteggiato per utente; la mainnet seguirà con l'aggiornamento v3.2.8.
+- **Esecuzione EVM tramite JSON-RPC.** Per chiamare un contratto senza inviare una transazione, o per stimare il gas, usa `eth_call` e `eth_estimateGas` sull'host EVM JSON-RPC (`evm.qore.host`, `evm-testnet.qore.host`). Le route REST sotto `/cosmos/evm/vm/v1/` per `eth_call`, `estimate_gas` e il tracing, e le relative forme gRPC-web, non sono disponibili sugli endpoint pubblici e rispondono 403. Anche le API di debug e trace non sono offerte sugli endpoint pubblici: esegui un nodo tuo per usarle. La simulazione delle transazioni Cosmos (`/cosmos/tx/v1beta1/simulate`) resta disponibile, quindi i wallet che stimano il gas tramite simulazione, Keplr incluso, continuano a funzionare.
+
 ## Token e indirizzi
 
 | Voce | Valore |

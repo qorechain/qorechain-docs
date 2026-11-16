@@ -28,6 +28,8 @@ Wenn Sie lediglich **das Testnet abfragen oder Transaktionen broadcasten** möch
 
 Testnet-QOR erhalten Sie über den [Dashboard-Faucet](/dashboard/faucet), der auch die reinen Testnet-[Fest-Testtoken](/dashboard/faucet#fest-tokens) (fUSD, fETH, fBTC; ohne Wert) senden kann.
 
+Die öffentlichen Hosts werden gemeinsam genutzt und unterliegen Limits (Anfragerate, SVM-RPC-Größen, EVM-Filter); `eth_call` und die Gasschätzung laufen über den EVM-JSON-RPC-Host. Siehe [Limits der öffentlichen Endpunkte](/appendix/networks#public-limits).
+
 ---
 
 ## Installation

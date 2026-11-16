@@ -27,6 +27,8 @@ Si solo necesitas **consultar la cadena o difundir transacciones**, no necesitas
 
 Para cargas de trabajo intensivas o de producción (exchanges, indexadores), ejecuta tu propio nodo tal como se describe a continuación.
 
+Los hosts públicos son compartidos y tienen límites (tasa de solicitudes, tamaños del RPC de SVM, filtros EVM); `eth_call` y la estimación de gas pasan por el host JSON-RPC de EVM. Consulte [Límites de los endpoints públicos](/appendix/networks#public-limits).
+
 ---
 
 ## Instalación

@@ -27,6 +27,8 @@ Si vous avez seulement besoin d'**interroger la chaîne ou de diffuser des trans
 
 Pour des charges de travail lourdes ou de production (exchanges, indexeurs), exécutez votre propre nœud comme décrit ci-dessous.
 
+Les hôtes publics sont partagés et soumis à des limites (débit de requêtes, tailles RPC SVM, filtres EVM) ; `eth_call` et l'estimation du gas passent par l'hôte JSON-RPC EVM. Voir [Limites des points de terminaison publics](/appendix/networks#public-limits).
+
 ---
 
 ## Installation

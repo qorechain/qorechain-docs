@@ -27,6 +27,8 @@ sidebar_position: 3
 
 거래소·인덱서 등 부하가 큰 프로덕션 워크로드의 경우, 아래 설명대로 자체 노드를 운영하세요.
 
+퍼블릭 호스트는 여러 사용자가 함께 쓰므로 제한이 있습니다(요청 속도, SVM RPC 크기, EVM 필터). `eth_call`과 가스 추정은 EVM JSON-RPC 호스트를 통해 처리됩니다. [퍼블릭 엔드포인트 제한](/appendix/networks#public-limits)을 참조하세요.
+
 ---
 
 ## 설치

@@ -54,6 +54,15 @@ Bir betik genel bir uç noktadan `403 Forbidden` alıyorsa, açıkça bir `User-
 Genel uç noktaların salt okunur olmasının ötesinde, SVM yürütme hattı **şu anda ağ genelinde işlem gönderimi için devre dışıdır** (v3.1.89 zincir sürümünden bu yana, 22 Ağustos) — bu yalnızca genel `svm.qore.host` / `svm-testnet.qore.host` uç noktalarını değil, kendi düğümünüz üzerinden yapılan gönderimi de kapsar. Ayrıntılar için bkz. [SVM Geliştirme](/developer-guide/svm-development). Hat yeniden açılana kadar Cosmos veya EVM arayüzlerini kullanın.
 :::
 
+## Genel uç noktalardaki sınırlar {#public-limits}
+
+Genel ana makineler paylaşımlıdır, bu yüzden sınırları vardır. Bu sınırlar içinde çalışın ya da daha yoğun kullanım için kendi düğümünüzü çalıştırın ([Düğüm Çalıştırma](/developer-guide/running-a-node) sayfasına bakın).
+
+- **İstek hızı.** Test ağı ana makineleri tek bir IP adresinden 60 saniyede 1.200 isteği kabul eder; bunun üzerinde adres 60 saniye boyunca engellenir.
+- **SVM JSON-RPC.** `getSignaturesForAddress` çağrı başına en fazla 1.000 kayıt döndürür, bir toplu istek (batch) en fazla 100 istek içerir ve bir istek gövdesi en fazla 1 MB olabilir.
+- **EVM filtreleri.** Bir istemci en fazla 16 filtre tutabilir. Test ağında sınır kullanıcı başına sayılır; ana ağ v3.2.8 yükseltmesiyle bunu izler.
+- **JSON-RPC üzerinden EVM yürütme.** İşlem göndermeden bir kontrat çağırmak veya gas tahmini yapmak için EVM JSON-RPC ana makinesinde (`evm.qore.host`, `evm-testnet.qore.host`) `eth_call` ve `eth_estimateGas` kullanın. `eth_call`, `estimate_gas` ve tracing için `/cosmos/evm/vm/v1/` altındaki REST yolları ile bunların gRPC-web biçimleri genel uç noktalarda kullanılamaz ve 403 döner. Debug ve trace API'leri de genel uç noktalarda sunulmaz: bunlar için kendi düğümünüzü çalıştırın. Cosmos işlem simülasyonu (`/cosmos/tx/v1beta1/simulate`) kullanılabilir kalır, bu yüzden gas'i simülasyonla tahmin eden cüzdanlar, Keplr dahil, çalışmaya devam eder.
+
 ## Token ve adresler
 
 | Öğe | Değer |

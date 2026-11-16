@@ -54,6 +54,15 @@ Wenn ein Skript von einem öffentlichen Endpunkt `403 Forbidden` erhält, setzen
 Über die reine Lesbarkeit der öffentlichen Endpunkte hinaus ist der SVM-Ausführungspfad **derzeit netzwerkweit für das Einreichen von Transaktionen deaktiviert** (seit Chain-Version v3.1.89, 22. August) — dies gilt auch für das Einreichen über einen eigenen Node, nicht nur über die öffentlichen Endpunkte `svm.qore.host` / `svm-testnet.qore.host`. Details siehe [SVM-Entwicklung](/developer-guide/svm-development). Verwenden Sie bis zur Wiedereröffnung des Pfads die Cosmos- oder EVM-Schnittstellen.
 :::
 
+## Limits der öffentlichen Endpunkte {#public-limits}
+
+Die öffentlichen Hosts werden gemeinsam genutzt und unterliegen daher Limits. Arbeiten Sie innerhalb dieser Limits, oder betreiben Sie für höhere Lasten einen eigenen Node (siehe [Betrieb eines Nodes](/developer-guide/running-a-node)).
+
+- **Anfragerate.** Die Testnet-Hosts akzeptieren 1.200 Anfragen pro 60 Sekunden von einer IP-Adresse; darüber hinaus wird die Adresse für 60 Sekunden gesperrt.
+- **SVM-JSON-RPC.** `getSignaturesForAddress` liefert höchstens 1.000 Einträge pro Aufruf, ein Batch enthält höchstens 100 Anfragen, und ein Request-Body ist höchstens 1 MB groß.
+- **EVM-Filter.** Ein Client kann höchstens 16 Filter gleichzeitig halten. Im Testnet wird das Limit pro Nutzer gezählt; das Mainnet folgt mit dem Upgrade v3.2.8.
+- **EVM-Ausführung über JSON-RPC.** Um einen Contract ohne Transaktion aufzurufen oder Gas zu schätzen, verwenden Sie `eth_call` und `eth_estimateGas` auf dem EVM-JSON-RPC-Host (`evm.qore.host`, `evm-testnet.qore.host`). Die REST-Routen unter `/cosmos/evm/vm/v1/` für `eth_call`, `estimate_gas` und Tracing sowie ihre gRPC-web-Formen sind auf den öffentlichen Endpunkten nicht verfügbar und antworten mit 403. Auch die Debug- und Trace-APIs werden auf den öffentlichen Endpunkten nicht angeboten: Betreiben Sie dafür einen eigenen Node. Die Cosmos-Transaktionssimulation (`/cosmos/tx/v1beta1/simulate`) bleibt verfügbar, sodass Wallets, die Gas per Simulation schätzen, darunter Keplr, weiterhin funktionieren.
+
 ## Token und Adressen
 
 | Element | Wert |

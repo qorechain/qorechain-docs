@@ -54,6 +54,15 @@ Dacă un script primește `403 Forbidden` de la un punct final public, setează 
 Pe lângă faptul că punctele finale publice sunt doar pentru citire, lane-ul de execuție SVM este **momentan dezactivat la nivelul întregii rețele pentru trimiterea de tranzacții** (începând cu versiunea de lanț v3.1.89, 22 august) — aceasta include trimiterea prin propriul nod, nu doar prin punctele finale publice `svm.qore.host` / `svm-testnet.qore.host`. Vezi [Dezvoltare SVM](/developer-guide/svm-development) pentru detalii. Folosește interfețele Cosmos sau EVM până la redeschiderea lane-ului.
 :::
 
+## Limite pe punctele finale publice {#public-limits}
+
+Gazdele publice sunt partajate, deci au limite. Lucrează în interiorul lor sau rulează propriul nod (vezi [Rularea unui nod](/developer-guide/running-a-node)) pentru utilizare intensă.
+
+- **Rata cererilor.** Gazdele testnet acceptă 1.200 de cereri la 60 de secunde de la o singură adresă IP; peste această limită adresa este blocată 60 de secunde.
+- **SVM JSON-RPC.** `getSignaturesForAddress` returnează cel mult 1.000 de intrări per apel, un batch conține cel mult 100 de cereri, iar corpul unei cereri are cel mult 1 MB.
+- **Filtre EVM.** Un client poate ține cel mult 16 de filtre. Pe testnet limita se numără per utilizator; mainnet urmează odată cu upgrade-ul v3.2.8.
+- **Execuție EVM prin JSON-RPC.** Pentru a apela un contract fără a trimite o tranzacție sau pentru a estima gazul, folosește `eth_call` și `eth_estimateGas` pe gazda EVM JSON-RPC (`evm.qore.host`, `evm-testnet.qore.host`). Rutele REST de sub `/cosmos/evm/vm/v1/` pentru `eth_call`, `estimate_gas` și tracing, precum și formele lor gRPC-web, nu sunt disponibile pe punctele finale publice și răspund cu 403. API-urile debug și trace nu sunt oferite nici ele pe punctele finale publice: rulează propriul nod pentru ele. Simularea tranzacțiilor Cosmos (`/cosmos/tx/v1beta1/simulate`) rămâne disponibilă, deci portofelele care estimează gazul prin simulare, inclusiv Keplr, continuă să funcționeze.
+
 ## Token și adrese
 
 | Element | Valoare |

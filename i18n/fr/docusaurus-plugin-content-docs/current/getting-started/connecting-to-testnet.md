@@ -28,6 +28,8 @@ Si vous avez seulement besoin d'**interroger le testnet ou de diffuser des trans
 
 Des QOR de testnet sont disponibles via le [Faucet du tableau de bord](/dashboard/faucet), qui peut aussi envoyer les [jetons de test Fest](/dashboard/faucet#fest-tokens) réservés au testnet (fUSD, fETH, fBTC ; sans valeur).
 
+Les hôtes publics sont partagés et soumis à des limites (débit de requêtes, tailles RPC SVM, filtres EVM) ; `eth_call` et l'estimation du gas passent par l'hôte JSON-RPC EVM. Voir [Limites des points de terminaison publics](/appendix/networks#public-limits).
+
 ---
 
 ## Installation

@@ -28,6 +28,8 @@ sidebar_position: 4
 
 テストネット用の QOR は [ダッシュボードのフォーセット](/dashboard/faucet) から入手できます。このフォーセットでは、テストネット専用の[Fest テストトークン](/dashboard/faucet#fest-tokens)(fUSD、fETH、fBTC。価値なし)も送ることができます。
 
+パブリックホストは共有されており、制限があります（リクエストレート、SVM RPC のサイズ、EVM フィルター）。`eth_call` とガス見積もりは EVM JSON-RPC ホスト経由で行います。[パブリックエンドポイントの制限](/appendix/networks#public-limits)を参照してください。
+
 ---
 
 ## インストール

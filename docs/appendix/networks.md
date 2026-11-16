@@ -54,6 +54,15 @@ If a script gets `403 Forbidden` from a public endpoint, set an explicit `User-A
 Beyond the public endpoints being read-only, the SVM execution lane is **currently disabled network-wide for transaction submission** (since chain version v3.1.89, 22 August) — this includes submission via your own node, not just the public `svm.qore.host` / `svm-testnet.qore.host` endpoints. See [SVM Development](/developer-guide/svm-development) for details. Use the Cosmos or EVM interfaces until the lane reopens.
 :::
 
+## Limits on the public endpoints {#public-limits}
+
+The public hosts are shared, so they carry limits. Work within them, or run your own node (see [Running a Node](/developer-guide/running-a-node)) for heavier use.
+
+- **Request rate.** The testnet hosts accept 1,200 requests per 60 seconds from one IP address; above that the address is blocked for 60 seconds.
+- **SVM JSON-RPC.** `getSignaturesForAddress` returns at most 1,000 entries per call, a batch holds at most 100 requests, and a request body is at most 1 MB.
+- **EVM filters.** A client can hold at most 16 filters. On the testnet the limit is counted per user; mainnet follows with the v3.2.8 upgrade.
+- **EVM execution over JSON-RPC.** To call a contract without sending a transaction, or to estimate gas, use `eth_call` and `eth_estimateGas` on the EVM JSON-RPC host (`evm.qore.host`, `evm-testnet.qore.host`). The REST routes under `/cosmos/evm/vm/v1/` for `eth_call`, `estimate_gas` and tracing, and their gRPC-web forms, are not available on the public endpoints and answer 403. The debug and trace APIs are not offered on the public endpoints either: run your own node for them. Cosmos transaction simulation (`/cosmos/tx/v1beta1/simulate`) stays available, so wallets that estimate gas by simulation, Keplr included, keep working.
+
 ## Token and addresses
 
 | Item | Value |

@@ -27,6 +27,8 @@ If you only need to **query the chain or broadcast transactions**, you do not ne
 
 For heavy or production workloads (exchanges, indexers), run your own node as described below.
 
+The public hosts are shared and carry limits (request rate, SVM RPC sizes, EVM filters); `eth_call` and gas estimation go through the EVM JSON-RPC host. See [Limits on the public endpoints](/appendix/networks#public-limits).
+
 ---
 
 ## Install

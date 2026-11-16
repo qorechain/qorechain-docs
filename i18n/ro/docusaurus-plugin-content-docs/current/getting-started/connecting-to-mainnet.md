@@ -27,6 +27,8 @@ Dacă ai nevoie doar să **interoghezi chain-ul sau să transmiți tranzacții**
 
 Pentru sarcini grele sau de producție (exchange-uri, indexere), rulează propriul nod conform descrierii de mai jos.
 
+Gazdele publice sunt partajate și au limite (rata cererilor, dimensiuni SVM RPC, filtre EVM); `eth_call` și estimarea gazului merg prin gazda EVM JSON-RPC. Vezi [Limite pe punctele finale publice](/appendix/networks#public-limits).
+
 ---
 
 ## Instalare

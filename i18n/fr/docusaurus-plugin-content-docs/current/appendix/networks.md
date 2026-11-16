@@ -54,6 +54,15 @@ Si un script reçoit `403 Forbidden` d'un point de terminaison public, définiss
 Au-delà du fait que les points de terminaison publics soient en lecture seule, la voie d'exécution SVM est **actuellement désactivée sur l'ensemble du réseau pour la soumission de transactions** (depuis la version de chaîne v3.1.89, le 22 août) — cela inclut la soumission via votre propre nœud, pas seulement via les points de terminaison publics `svm.qore.host` / `svm-testnet.qore.host`. Voir [Développement SVM](/developer-guide/svm-development) pour plus de détails. Utilisez les interfaces Cosmos ou EVM jusqu'à la réouverture de cette voie.
 :::
 
+## Limites des points de terminaison publics {#public-limits}
+
+Les hôtes publics sont partagés, ils sont donc soumis à des limites. Respectez-les, ou exécutez votre propre nœud (voir [Exécuter un nœud](/developer-guide/running-a-node)) pour un usage plus intensif.
+
+- **Débit de requêtes.** Les hôtes du testnet acceptent 1,200 requêtes par 60 secondes depuis une même adresse IP ; au-delà, l'adresse est bloquée pendant 60 secondes.
+- **JSON-RPC SVM.** `getSignaturesForAddress` renvoie au plus 1,000 entrées par appel, un lot contient au plus 100 requêtes, et le corps d'une requête fait au plus 1 Mo.
+- **Filtres EVM.** Un client peut détenir au plus 16 filtres. Sur le testnet, la limite est comptée par utilisateur ; le mainnet suivra avec la mise à niveau v3.2.8.
+- **Exécution EVM via JSON-RPC.** Pour appeler un contrat sans envoyer de transaction, ou pour estimer le gas, utilisez `eth_call` et `eth_estimateGas` sur l'hôte JSON-RPC EVM (`evm.qore.host`, `evm-testnet.qore.host`). Les routes REST sous `/cosmos/evm/vm/v1/` pour `eth_call`, `estimate_gas` et le traçage, ainsi que leurs formes gRPC-web, ne sont pas disponibles sur les points de terminaison publics et répondent 403. Les API debug et trace ne sont pas non plus proposées sur les points de terminaison publics : exécutez votre propre nœud pour les utiliser. La simulation de transaction Cosmos (`/cosmos/tx/v1beta1/simulate`) reste disponible, de sorte que les wallets qui estiment le gas par simulation, Keplr compris, continuent de fonctionner.
+
 ## Token et adresses
 
 | Élément | Valeur |

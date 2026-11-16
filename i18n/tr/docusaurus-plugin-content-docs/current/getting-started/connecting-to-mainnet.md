@@ -27,6 +27,8 @@ Yalnızca **zinciri sorgulamanız veya işlem yayınlamanız** gerekiyorsa kendi
 
 Yoğun veya üretim düzeyindeki iş yükleri (borsalar, indeksleyiciler) için aşağıda açıklandığı gibi kendi düğümünüzü çalıştırın.
 
+Genel ana makineler paylaşımlıdır ve sınırları vardır (istek hızı, SVM RPC boyutları, EVM filtreleri); `eth_call` ve gas tahmini EVM JSON-RPC ana makinesi üzerinden yapılır. Bkz. [Genel uç noktalardaki sınırlar](/appendix/networks#public-limits).
+
 ---
 
 ## Kurulum

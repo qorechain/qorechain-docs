@@ -28,6 +28,8 @@ Si solo necesitas **consultar la red de pruebas o difundir transacciones**, util
 
 El QOR de la red de pruebas está disponible en el [faucet del panel de control](/dashboard/faucet), que también puede enviar los [tokens de prueba Fest](/dashboard/faucet#fest-tokens) exclusivos de la red de pruebas (fUSD, fETH, fBTC; sin valor).
 
+Los hosts públicos son compartidos y tienen límites (tasa de solicitudes, tamaños del RPC de SVM, filtros EVM); `eth_call` y la estimación de gas pasan por el host JSON-RPC de EVM. Consulte [Límites de los endpoints públicos](/appendix/networks#public-limits).
+
 ---
 
 ## Instalación

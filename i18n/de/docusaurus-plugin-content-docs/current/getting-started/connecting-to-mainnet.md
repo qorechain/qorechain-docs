@@ -27,6 +27,8 @@ Wenn Sie lediglich **die Chain abfragen oder Transaktionen broadcasten** möchte
 
 Für hohe Lasten oder Produktions-Workloads (Börsen, Indexer) betreiben Sie einen eigenen Node, wie unten beschrieben.
 
+Die öffentlichen Hosts werden gemeinsam genutzt und unterliegen Limits (Anfragerate, SVM-RPC-Größen, EVM-Filter); `eth_call` und die Gasschätzung laufen über den EVM-JSON-RPC-Host. Siehe [Limits der öffentlichen Endpunkte](/appendix/networks#public-limits).
+
 ---
 
 ## Installation

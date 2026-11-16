@@ -28,6 +28,8 @@ sidebar_position: 4
 
 테스트넷 QOR은 [대시보드 Faucet](/dashboard/faucet)에서 받을 수 있으며, 이 Faucet은 테스트넷 전용 [페스트 테스트 토큰](/dashboard/faucet#fest-tokens)(fUSD, fETH, fBTC. 가치 없음)도 보낼 수 있습니다.
 
+퍼블릭 호스트는 여러 사용자가 함께 쓰므로 제한이 있습니다(요청 속도, SVM RPC 크기, EVM 필터). `eth_call`과 가스 추정은 EVM JSON-RPC 호스트를 통해 처리됩니다. [퍼블릭 엔드포인트 제한](/appendix/networks#public-limits)을 참조하세요.
+
 ---
 
 ## 설치

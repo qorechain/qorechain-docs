@@ -28,6 +28,8 @@ Yalnızca **test ağını sorgulamanız veya işlem yayınlamanız** gerekiyorsa
 
 Test ağı QOR'u [Panel Musluğu](/dashboard/faucet) üzerinden edinilebilir; musluk ayrıca yalnızca test ağına özel [Fest test tokenlerini](/dashboard/faucet#fest-tokens) (fUSD, fETH, fBTC; değersiz) da gönderebilir.
 
+Genel ana makineler paylaşımlıdır ve sınırları vardır (istek hızı, SVM RPC boyutları, EVM filtreleri); `eth_call` ve gas tahmini EVM JSON-RPC ana makinesi üzerinden yapılır. Bkz. [Genel uç noktalardaki sınırlar](/appendix/networks#public-limits).
+
 ---
 
 ## Kurulum
