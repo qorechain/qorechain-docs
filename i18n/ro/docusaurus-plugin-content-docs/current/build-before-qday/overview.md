@@ -70,6 +70,7 @@ Duratele se referă la pașii de după instalarea instrumentelor. Instalarea ins
 | Tutorial | Nivel | Limbaj | Durată | Ce vei avea la final |
 | --- | --- | --- | --- | --- |
 | [Ghidul Workshop 1](/build-before-qday/workshop-1) | Începător | TypeScript, Solidity | 30 de minute | Un proiect generat, testat și implementat de tine pe testnet și o tranzacție semnată hibrid, verificată pe lanț. |
+| [Ghidul Workshop 2](/build-before-qday/workshop-2) | Intermediar | Solidity, TypeScript, Node.js | 75 de minute | Un seif care plătește doar împotriva unei semnături post-cuantice, un agent ale cărui limite de cheltuială le impune lanțul și întrebări doar de citire către lanț cu MCP. |
 | [Q-Day Counter](/build-before-qday/workshop-1/apps/qday-counter) | Începător | TypeScript, Solidity | 25 de minute | Un contract contor pe testnet, pe care îl crești printr-un flux semnat hibrid. |
 | [Q-Day Guestbook](/build-before-qday/workshop-1/apps/qday-guestbook) | Intermediar | TypeScript, Solidity, React | 45 de minute | Propria ta carte de oaspeți pe lanț, cu o pagină web în care semnezi din portofelul QoreX. |
 | [Hybrid Inspector](/build-before-qday/workshop-1/apps/hybrid-inspector) | Începător | TypeScript, React | 25 de minute | O pagină web care trimite QOR din QoreX și arată ambele semnături și verdictul lanțului. |
@@ -97,13 +98,13 @@ Citește o singură dată [Înainte de a începe: instrumente și un portofel de
 ## De unde începi {#where-to-start}
 
 1. Citește [Înainte de a începe](/build-before-qday/prerequisites) și instalează instrumentele pentru primul tău tutorial.
-2. Urmează [ghidul Workshop 1](/build-before-qday/workshop-1) pe testnet.
+2. Urmează [ghidul Workshop 1](/build-before-qday/workshop-1) pe testnet. Apoi [ghidul Workshop 2](/build-before-qday/workshop-2).
 3. Încearcă una dintre aplicațiile de exemplu din tabelul de mai sus.
 4. Dacă nu ai mai implementat niciodată pe QoreChain, [Implementare în 5 minute](/getting-started/deploy-in-5-minutes) explică ideea în profunzime. Kiturile din spatele aplicațiilor sunt pe pagina [Kituri](/build-before-qday/workshop-1/kits).
 
 ## Codul {#code}
 
-Toate aplicațiile de exemplu sunt într-un singur depozit public, în folderul `workshop-1`: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). Fiecare tutorial îți spune ce folder să deschizi. Obține codul o singură dată cu:
+Toate aplicațiile de exemplu sunt într-un singur depozit public, în folderele `workshop-1` și `workshop-2`: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). Fiecare tutorial îți spune ce folder să deschizi. Obține codul o singură dată cu:
 
 ```bash
 git clone https://github.com/qorechain/build-before-qday

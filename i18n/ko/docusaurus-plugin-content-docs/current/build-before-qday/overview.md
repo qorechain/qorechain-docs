@@ -70,6 +70,7 @@ sidebar_position: 1
 | 튜토리얼 | 레벨 | 언어 | 소요 시간 | 마치면 얻는 것 |
 | --- | --- | --- | --- | --- |
 | [워크숍 1 가이드](/build-before-qday/workshop-1) | 초급 | TypeScript, Solidity | 30분 | 직접 스캐폴딩하고 테스트하고 테스트넷에 배포한 프로젝트와, 온체인에서 검증된 하이브리드 서명 트랜잭션 하나. |
+| [워크숍 2 가이드](/build-before-qday/workshop-2) | 중급 | Solidity, TypeScript, Node.js | 75분 | 포스트 양자 서명이 있을 때만 지급하는 금고, 체인이 지출 한도를 강제하는 에이전트, 그리고 MCP로 체인에 하는 읽기 전용 질문. |
 | [Q-Day Counter](/build-before-qday/workshop-1/apps/qday-counter) | 초급 | TypeScript, Solidity | 25분 | 하이브리드 서명 흐름으로 값을 올리는, 테스트넷 위의 카운터 컨트랙트. |
 | [Q-Day Guestbook](/build-before-qday/workshop-1/apps/qday-guestbook) | 중급 | TypeScript, Solidity, React | 45분 | 나만의 온체인 방명록과, QoreX 지갑으로 서명하는 웹 페이지. |
 | [Hybrid Inspector](/build-before-qday/workshop-1/apps/hybrid-inspector) | 초급 | TypeScript, React | 25분 | QoreX에서 QOR를 보내고 두 서명과 체인의 판정을 보여 주는 웹 페이지. |
@@ -97,13 +98,13 @@ sidebar_position: 1
 ## 어디서 시작할까요 {#where-to-start}
 
 1. [시작하기 전에](/build-before-qday/prerequisites)를 읽고 첫 튜토리얼에 필요한 도구를 설치합니다.
-2. 테스트넷에서 [워크숍 1 가이드](/build-before-qday/workshop-1)를 따라 합니다.
+2. 테스트넷에서 [워크숍 1 가이드](/build-before-qday/workshop-1)를 따라 합니다. 그다음 [워크숍 2 가이드](/build-before-qday/workshop-2)를 따라 합니다.
 3. 위 표의 예제 앱 중 하나를 해 봅니다.
 4. QoreChain에 배포해 본 적이 없다면 [5분 만에 배포하기](/getting-started/deploy-in-5-minutes)가 개념을 자세히 설명합니다. 앱의 바탕이 되는 키트는 [키트](/build-before-qday/workshop-1/kits) 페이지에 있습니다.
 
 ## 코드 {#code}
 
-모든 예제 앱은 하나의 공개 저장소의 `workshop-1` 폴더에 있습니다. [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). 각 튜토리얼이 어느 폴더를 열어야 하는지 알려 줍니다. 코드는 다음 명령으로 한 번만 받으면 됩니다.
+모든 예제 앱은 하나의 공개 저장소의 `workshop-1`과 `workshop-2` 폴더에 있습니다. [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). 각 튜토리얼이 어느 폴더를 열어야 하는지 알려 줍니다. 코드는 다음 명령으로 한 번만 받으면 됩니다.
 
 ```bash
 git clone https://github.com/qorechain/build-before-qday

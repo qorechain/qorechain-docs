@@ -66,6 +66,7 @@ const sidebars: SidebarsConfig = {
             "build-before-qday/workshop-1/kits",
           ],
         },
+        "build-before-qday/workshop-2/index",
       ],
     },
     {

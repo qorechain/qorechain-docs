@@ -70,6 +70,7 @@ sidebar_position: 1
 | الدرس | المستوى | اللغة | المدة | ما سيكون لديك في النهاية |
 | --- | --- | --- | --- | --- |
 | [دليل الورشة 1](/build-before-qday/workshop-1) | مبتدئ | TypeScript وSolidity | 30 دقيقة | مشروع أنشأته واختبرته ونشرته على الشبكة التجريبية، ومعاملة واحدة بتوقيع هجين متحقَّق منها على السلسلة. |
+| [دليل الورشة 2](/build-before-qday/workshop-2) | متوسط | Solidity وTypeScript وNode.js | 75 دقيقة | خزنة لا تدفع إلا مقابل توقيع ما بعد كمّي، ووكيل تفرض السلسلة حدود إنفاقه، وأسئلة للقراءة فقط إلى السلسلة عبر MCP. |
 | [Q-Day Counter](/build-before-qday/workshop-1/apps/qday-counter) | مبتدئ | TypeScript وSolidity | 25 دقيقة | عقد عدّاد على الشبكة التجريبية تزيد قيمته بمسار موقّع توقيعًا هجينًا. |
 | [Q-Day Guestbook](/build-before-qday/workshop-1/apps/qday-guestbook) | متوسط | TypeScript وSolidity وReact | 45 دقيقة | سجل زوار خاص بك على السلسلة، مع صفحة ويب توقّع منها من محفظة QoreX. |
 | [Hybrid Inspector](/build-before-qday/workshop-1/apps/hybrid-inspector) | مبتدئ | TypeScript وReact | 25 دقيقة | صفحة ويب ترسل QOR من QoreX وتعرض التوقيعين وحكم السلسلة. |
@@ -97,13 +98,13 @@ sidebar_position: 1
 ## من أين تبدأ {#where-to-start}
 
 1. اقرأ [قبل أن تبدأ](/build-before-qday/prerequisites) وثبّت أدوات درسك الأول.
-2. اتبع [دليل الورشة 1](/build-before-qday/workshop-1) على الشبكة التجريبية.
+2. اتبع [دليل الورشة 1](/build-before-qday/workshop-1) على الشبكة التجريبية. ثم [دليل الورشة 2](/build-before-qday/workshop-2).
 3. جرّب أحد التطبيقات النموذجية من الجدول أعلاه.
 4. إذا لم تنشر على QoreChain من قبل، فإن [النشر في 5 دقائق](/getting-started/deploy-in-5-minutes) يشرح الفكرة بتعمق. والأطقم التي تقف خلف التطبيقات في صفحة [الأطقم](/build-before-qday/workshop-1/kits).
 
 ## الشيفرة {#code}
 
-كل التطبيقات النموذجية في مستودع عام واحد، المجلد `workshop-1`: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). يخبرك كل درس بالمجلد الذي تفتحه. احصل على الشيفرة مرة واحدة بالأمر:
+كل التطبيقات النموذجية في مستودع عام واحد، المجلدان `workshop-1` و`workshop-2`: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). يخبرك كل درس بالمجلد الذي تفتحه. احصل على الشيفرة مرة واحدة بالأمر:
 
 ```bash
 git clone https://github.com/qorechain/build-before-qday
