@@ -56,6 +56,7 @@ Pagina tranzacției arată hash-ul (cu copiere), starea și tipul, Block Height,
 
 O tranzacție EVM are două hash-uri. Hash-ul `0x` este hash-ul de tranzacție Ethereum folosit de MetaMask, ethers.js și `eth_getTransactionReceipt`. ID-ul cu majuscule, fără `0x`, este hash-ul tranzacției native care o poartă (`MsgEthereumTx`). Niciunul nu poate fi calculat din celălalt, iar eliminarea `0x` din hash-ul EVM și trecerea lui la majuscule nu dă ID-ul nativ.
 
+- **explore.qore.network.** Caută doar ID-uri de tranzacții native, deci un hash EVM `0x` nu este găsit acolo. Folosește explorerul din Dashboard pentru hash-ul EVM sau găsește ID-ul nativ cu căutarea REST de mai jos și deschide-l. Contează și comutatorul Testnet / Mainnet: un hash din cealaltă rețea dă "not found".
 - **Explorerul din Dashboard.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` acceptă hash-ul EVM așa cum este, cu `0x`. Explorerul citește rețeaua aleasă în selectorul de rețea din Dashboard (mainnet implicit, reținută în browserul tău), așa că un hash de testnet afișează "Transaction Not Found" până treci selectorul pe Testnet.
 - **Găsirea ID-ului nativ prin REST.** Caută după hash-ul EVM complet, cu litere mici și cu `0x`, și codifică interogarea ca URL: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (folosește `https://api.qore.host` pentru mainnet). ID-ul nativ este `tx_responses[0].txhash`. Fără `0x` căutarea nu returnează nimic, iar `ethereum_tx.txHash` nu este cheia corectă.
 - **Chitanța din partea EVM.** Apelează `eth_getTransactionReceipt` pe `https://evm-testnet.qore.host` sau `https://evm.qore.host`.
@@ -95,7 +96,7 @@ Prezentarea generală conține faptele despre lanț și endpoint-urile publice, 
 | `/tokens`, `/token/{denom}`, `/assets` | Liste de tokenuri și active. |
 | `/contracts`, `/nfts`, `/collections` | Contracte, NFT-uri și colecții. |
 
-Căutarea acceptă o înălțime de bloc, un hash de 64 de caractere hex (cu sau fără `0x`), o adresă `qor1...` sau `0x...` ori o adresă `qorvaloper1...`. O căutare `qorvaloper1...` deschide lista de validatori, nu pagina acelui validator. O secțiune **Add to wallet** oferă suggestChain (Keplr, Leap, Cosmostation), EIP-3085 (MetaMask și alte portofele EVM), instrucțiuni de custom-RPC pentru SVM și asocierea WalletConnect v2.
+Căutarea acceptă o înălțime de bloc, un ID de tranzacție nativă de 64 de caractere hex (cu sau fără `0x`; un hash EVM `0x` introdus aici afișează "Transaction not found", vezi [Hash-urile tranzacțiilor EVM](#evm-hashes)), o adresă `qor1...` sau `0x...` ori o adresă `qorvaloper1...`. O căutare `qorvaloper1...` deschide lista de validatori, nu pagina acelui validator. O secțiune **Add to wallet** oferă suggestChain (Keplr, Leap, Cosmostation), EIP-3085 (MetaMask și alte portofele EVM), instrucțiuni de custom-RPC pentru SVM și asocierea WalletConnect v2.
 
 Rutele `/tx/`, `/block/` și `/address/` funcționează cu linkurile de block-explorer EIP-3085, astfel încât portofelele care deschid un URL de explorer ajung pe pagina potrivită.
 

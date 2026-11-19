@@ -56,6 +56,7 @@ sidebar_position: 2
 
 EVM 트랜잭션에는 해시가 두 개 있습니다. `0x` 해시는 MetaMask, ethers.js, `eth_getTransactionReceipt`가 사용하는 Ethereum 트랜잭션 해시입니다. `0x` 없는 대문자 ID는 이를 담고 있는 네이티브 트랜잭션(`MsgEthereumTx`)의 해시입니다. 어느 쪽도 다른 쪽에서 계산할 수 없으며, EVM 해시에서 `0x`를 떼고 대문자로 바꿔도 네이티브 ID가 되지 않습니다.
 
+- **explore.qore.network.** 네이티브 트랜잭션 ID만 조회하므로 EVM `0x` 해시는 여기서 찾을 수 없습니다. EVM 해시는 대시보드 익스플로러를 쓰거나, 아래 REST 검색으로 네이티브 ID를 찾아 그것을 여세요. Testnet / Mainnet 전환도 중요합니다. 다른 네트워크의 해시는 "not found"가 됩니다.
 - **대시보드 익스플로러.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>`는 EVM 해시를 `0x`를 붙인 그대로 받습니다. 익스플로러는 대시보드 네트워크 선택기에서 고른 네트워크(기본값은 메인넷이며 브라우저에 저장됩니다)를 읽으므로, 테스트넷 해시는 선택기를 Testnet으로 바꾸기 전까지 "Transaction Not Found"로 표시됩니다.
 - **REST로 네이티브 ID 찾기.** `0x`를 붙인 소문자 전체 EVM 해시로 검색하고, 쿼리를 URL 인코딩하세요: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (메인넷은 `https://api.qore.host` 사용). 네이티브 ID는 `tx_responses[0].txhash`입니다. `0x`가 없으면 검색 결과가 없으며, `ethereum_tx.txHash`는 올바른 키가 아닙니다.
 - **EVM 쪽에서 영수증 조회.** `https://evm-testnet.qore.host` 또는 `https://evm.qore.host`에서 `eth_getTransactionReceipt`를 호출하세요.
@@ -95,7 +96,7 @@ QoreChain 주소는 Native(`qor1...`), EVM(`0x...`), SVM(base58)의 세 가지 �
 | `/tokens`, `/token/{denom}`, `/assets` | 토큰 및 자산 목록. |
 | `/contracts`, `/nfts`, `/collections` | 컨트랙트, NFT, 컬렉션. |
 
-검색은 블록 높이, 64자리 16진수 해시(`0x` 유무 무관), `qor1...` 또는 `0x...` 주소, `qorvaloper1...` 주소를 받습니다. `qorvaloper1...` 검색은 해당 밸리데이터 페이지가 아니라 밸리데이터 목록을 엽니다. **Add to wallet** 섹션은 suggestChain(Keplr, Leap, Cosmostation), EIP-3085(MetaMask 및 기타 EVM 지갑), SVM 사용자 지정 RPC 안내, WalletConnect v2 페어링을 제공합니다.
+검색은 블록 높이, 64자리 16진수 네이티브 트랜잭션 ID(`0x` 유무 무관, 여기에 입력한 EVM `0x` 해시는 "Transaction not found"로 표시됩니다. [EVM 트랜잭션 해시](#evm-hashes) 참고), `qor1...` 또는 `0x...` 주소, `qorvaloper1...` 주소를 받습니다. `qorvaloper1...` 검색은 해당 밸리데이터 페이지가 아니라 밸리데이터 목록을 엽니다. **Add to wallet** 섹션은 suggestChain(Keplr, Leap, Cosmostation), EIP-3085(MetaMask 및 기타 EVM 지갑), SVM 사용자 지정 RPC 안내, WalletConnect v2 페어링을 제공합니다.
 
 `/tx/`, `/block/`, `/address/` 경로는 EIP-3085 블록 익스플로러 링크와 함께 동작하므로, 익스플로러 URL을 여는 지갑은 올바른 페이지로 이동합니다.
 

@@ -57,6 +57,7 @@ The transaction page shows the hash (with copy), status and type, Block Height, 
 An EVM transaction has two hashes. The `0x` hash is the Ethereum transaction hash that MetaMask, ethers.js and `eth_getTransactionReceipt` use. The uppercase ID without `0x` is the hash of the native transaction that carries it (`MsgEthereumTx`). Neither can be computed from the other, and removing `0x` from the EVM hash and uppercasing it does not give the native ID.
 
 - **Dashboard explorer.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` accepts the EVM hash as it is, with `0x`. The explorer reads the network chosen in the Dashboard network selector (mainnet by default, remembered in your browser), so a testnet hash shows "Transaction Not Found" until you switch the selector to Testnet.
+- **explore.qore.network.** It looks up native transaction IDs only, so an EVM `0x` hash is not found there. Use the Dashboard explorer for the EVM hash, or find the native ID with the REST search below and open that. Its Testnet / Mainnet toggle matters too: a hash from the other network is "not found".
 - **Find the native ID over REST.** Search by the full lowercase EVM hash, with `0x`, and URL-encode the query: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (use `https://api.qore.host` for mainnet). The native ID is `tx_responses[0].txhash`. Without `0x` the search returns nothing, and `ethereum_tx.txHash` is not the key.
 - **Receipt from the EVM side.** Call `eth_getTransactionReceipt` on `https://evm-testnet.qore.host` or `https://evm.qore.host`.
 
@@ -95,7 +96,7 @@ The overview carries the chain facts and the public endpoints, each copyable, an
 | `/tokens`, `/token/{denom}`, `/assets` | Token and asset listings. |
 | `/contracts`, `/nfts`, `/collections` | Contracts, NFTs and collections. |
 
-Search accepts a block height, a 64-hex hash (with or without `0x`), a `qor1...` or `0x...` address, or a `qorvaloper1...` address. A `qorvaloper1...` search opens the validators list, not that validator's page. An **Add to wallet** section offers suggestChain (Keplr, Leap, Cosmostation), EIP-3085 (MetaMask and other EVM wallets), SVM custom-RPC instructions and WalletConnect v2 pairing.
+Search accepts a block height, a 64-hex native transaction ID (with or without `0x`; an EVM `0x` hash typed here shows "Transaction not found", see [EVM transaction hashes](#evm-hashes)), a `qor1...` or `0x...` address, or a `qorvaloper1...` address. A `qorvaloper1...` search opens the validators list, not that validator's page. An **Add to wallet** section offers suggestChain (Keplr, Leap, Cosmostation), EIP-3085 (MetaMask and other EVM wallets), SVM custom-RPC instructions and WalletConnect v2 pairing.
 
 The `/tx/`, `/block/` and `/address/` routes work with EIP-3085 block-explorer links, so wallets that open an explorer URL land on the right page.
 

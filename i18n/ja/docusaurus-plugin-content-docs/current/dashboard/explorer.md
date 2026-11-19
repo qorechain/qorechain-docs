@@ -56,6 +56,7 @@ sidebar_position: 2
 
 EVM トランザクションにはハッシュが 2 つあります。`0x` 付きのハッシュは、MetaMask、ethers.js、`eth_getTransactionReceipt` が使う Ethereum トランザクションハッシュです。`0x` なしの大文字の ID は、それを運ぶネイティブトランザクション(`MsgEthereumTx`)のハッシュです。どちらか一方からもう一方を計算することはできず、EVM ハッシュから `0x` を外して大文字にしても、ネイティブ ID にはなりません。
 
+- **explore.qore.network。** ネイティブトランザクション ID のみを検索するため、EVM の `0x` ハッシュは見つかりません。EVM ハッシュにはダッシュボードのエクスプローラーを使うか、下の REST 検索でネイティブ ID を探してそれを開いてください。Testnet / Mainnet の切り替えも重要で、別のネットワークのハッシュは「not found」になります。
 - **ダッシュボードのエクスプローラー。** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` は EVM ハッシュを `0x` 付きのまま受け付けます。エクスプローラーは、ダッシュボードのネットワークセレクターで選ばれたネットワーク(既定はメインネットで、ブラウザーに記憶されます)を読むため、テストネットのハッシュは、セレクターを Testnet に切り替えるまで "Transaction Not Found" と表示されます。
 - **REST でネイティブ ID を探す。** `0x` 付きで小文字の完全な EVM ハッシュで検索し、クエリを URL エンコードします: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'`(メインネットでは `https://api.qore.host` を使います)。ネイティブ ID は `tx_responses[0].txhash` です。`0x` がないと検索結果は空になり、`ethereum_tx.txHash` は正しいキーではありません。
 - **EVM 側からのレシート。** `https://evm-testnet.qore.host` または `https://evm.qore.host` で `eth_getTransactionReceipt` を呼び出します。
@@ -95,7 +96,7 @@ QoreChain のアドレスは、Native（`qor1...`）、EVM（`0x...`）、SVM（
 | `/tokens`、`/token/{denom}`、`/assets` | トークンとアセットの一覧。 |
 | `/contracts`、`/nfts`、`/collections` | コントラクト、NFT、コレクション。 |
 
-検索は、ブロック高、64 桁の 16 進ハッシュ（`0x` の有無は問いません）、`qor1...` または `0x...` アドレス、`qorvaloper1...` アドレスを受け付けます。`qorvaloper1...` の検索は、そのバリデーターのページではなく、バリデーター一覧を開きます。**Add to wallet** セクションでは、suggestChain（Keplr、Leap、Cosmostation）、EIP-3085（MetaMask とその他の EVM ウォレット）、SVM のカスタム RPC の手順、WalletConnect v2 のペアリングを提供します。
+検索は、ブロック高、64 桁の 16 進のネイティブトランザクション ID（`0x` の有無は問いません。ここに入力した EVM の `0x` ハッシュは「Transaction not found」と表示されます。[EVM トランザクションハッシュ](#evm-hashes)を参照）、`qor1...` または `0x...` アドレス、`qorvaloper1...` アドレスを受け付けます。`qorvaloper1...` の検索は、そのバリデーターのページではなく、バリデーター一覧を開きます。**Add to wallet** セクションでは、suggestChain（Keplr、Leap、Cosmostation）、EIP-3085（MetaMask とその他の EVM ウォレット）、SVM のカスタム RPC の手順、WalletConnect v2 のペアリングを提供します。
 
 `/tx/`、`/block/`、`/address/` のルートは EIP-3085 のブロックエクスプローラーリンクに対応しているため、エクスプローラーの URL を開くウォレットは正しいページに到達します。
 

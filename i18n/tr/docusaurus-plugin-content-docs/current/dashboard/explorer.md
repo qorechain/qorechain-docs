@@ -56,6 +56,7 @@ Dashboard araması `0x...` girdisini bir işlem hash'i olarak ele alır. Bir EVM
 
 Bir EVM işleminin iki hash'i vardır. `0x` hash'i, MetaMask, ethers.js ve `eth_getTransactionReceipt` tarafından kullanılan Ethereum işlem hash'idir. `0x` olmadan büyük harfli kimlik, onu taşıyan yerel işlemin (`MsgEthereumTx`) hash'idir. Biri diğerinden hesaplanamaz; EVM hash'inden `0x` çıkarıp büyük harfe çevirmek yerel kimliği vermez.
 
+- **explore.qore.network.** Yalnızca yerel işlem kimliklerini arar, bu yüzden bir EVM `0x` hash'i orada bulunmaz. EVM hash'i için Dashboard gezginini kullanın ya da yerel kimliği aşağıdaki REST aramasıyla bulup onu açın. Testnet / Mainnet düğmesi de önemlidir: diğer ağdan bir hash "not found" verir.
 - **Dashboard gezgini.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` EVM hash'ini olduğu gibi, `0x` ile kabul eder. Gezgin, Dashboard ağ seçicisinde seçilen ağı okur (varsayılan mainnet, tarayıcınızda hatırlanır); bu yüzden bir testnet hash'i, seçiciyi Testnet'e geçirene kadar "Transaction Not Found" gösterir.
 - **Yerel kimliği REST ile bulma.** `0x` ile, küçük harfli tam EVM hash'iyle arayın ve sorguyu URL olarak kodlayın: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (mainnet için `https://api.qore.host` kullanın). Yerel kimlik `tx_responses[0].txhash` alanıdır. `0x` olmadan arama hiçbir şey döndürmez ve `ethereum_tx.txHash` doğru anahtar değildir.
 - **EVM tarafından makbuz.** `https://evm-testnet.qore.host` veya `https://evm.qore.host` üzerinde `eth_getTransactionReceipt` çağırın.
@@ -95,7 +96,7 @@ Genel bakış, zincir bilgilerini ve her biri kopyalanabilir herkese açık endp
 | `/tokens`, `/token/{denom}`, `/assets` | Token ve varlık listeleri. |
 | `/contracts`, `/nfts`, `/collections` | Sözleşmeler, NFT'ler ve koleksiyonlar. |
 
-Arama bir blok yüksekliğini, 64 onaltılık basamaklı bir hash'i (`0x` ile veya onsuz), bir `qor1...` veya `0x...` adresini ya da bir `qorvaloper1...` adresini kabul eder. Bir `qorvaloper1...` araması o doğrulayıcının sayfasını değil, doğrulayıcılar listesini açar. Bir **Add to wallet** bölümü suggestChain (Keplr, Leap, Cosmostation), EIP-3085 (MetaMask ve diğer EVM cüzdanları), SVM özel RPC yönergeleri ve WalletConnect v2 eşleştirmesi sunar.
+Arama bir blok yüksekliğini, 64 onaltılık basamaklı bir yerel işlem kimliğini (`0x` ile veya onsuz; buraya yazılan bir EVM `0x` hash'i "Transaction not found" gösterir, bkz. [EVM işlem hash'leri](#evm-hashes)), bir `qor1...` veya `0x...` adresini ya da bir `qorvaloper1...` adresini kabul eder. Bir `qorvaloper1...` araması o doğrulayıcının sayfasını değil, doğrulayıcılar listesini açar. Bir **Add to wallet** bölümü suggestChain (Keplr, Leap, Cosmostation), EIP-3085 (MetaMask ve diğer EVM cüzdanları), SVM özel RPC yönergeleri ve WalletConnect v2 eşleştirmesi sunar.
 
 `/tx/`, `/block/` ve `/address/` rotaları EIP-3085 blok gezgini bağlantılarıyla çalışır; böylece bir gezgin URL'si açan cüzdanlar doğru sayfaya düşer.
 

@@ -56,6 +56,7 @@ sidebar_position: 2
 
 لمعاملة EVM تجزئتان. تجزئة `0x` هي تجزئة معاملة Ethereum التي تستخدمها MetaMask وethers.js و`eth_getTransactionReceipt`. أما المعرّف بالأحرف الكبيرة دون `0x` فهو تجزئة المعاملة الأصلية التي تحملها (`MsgEthereumTx`). لا يمكن حساب إحداهما من الأخرى، وحذف `0x` من تجزئة EVM وتحويلها إلى أحرف كبيرة لا يعطي المعرّف الأصلي.
 
+- **explore.qore.network.** يبحث عن معرّفات المعاملات الأصلية فقط، لذا لا تُوجد فيه تجزئة EVM بصيغة `0x`. استخدم مستكشف لوحة التحكم لتجزئة EVM، أو اعثر على المعرّف الأصلي ببحث REST أدناه وافتحه. ويهمّ كذلك مفتاح التبديل Testnet / Mainnet فيه: تجزئة من الشبكة الأخرى تظهر "not found".
 - **مستكشف لوحة التحكم.** يقبل `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` تجزئة EVM كما هي، مع `0x`. يقرأ المستكشف الشبكة المختارة في محدد الشبكة في لوحة التحكم (الشبكة الرئيسية افتراضيًا، ويحفظها متصفحك)، لذا تعرض تجزئة الشبكة التجريبية "Transaction Not Found" إلى أن تحوّل المحدد إلى Testnet.
 - **إيجاد المعرّف الأصلي عبر REST.** ابحث بتجزئة EVM الكاملة بأحرف صغيرة، مع `0x`، وقم بترميز الاستعلام بصيغة URL: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (استخدم `https://api.qore.host` للشبكة الرئيسية). المعرّف الأصلي هو `tx_responses[0].txhash`. بدون `0x` لا يُرجع البحث شيئًا، و`ethereum_tx.txHash` ليس المفتاح الصحيح.
 - **الإيصال من جهة EVM.** استدعِ `eth_getTransactionReceipt` على `https://evm-testnet.qore.host` أو `https://evm.qore.host`.
@@ -95,7 +96,7 @@ sidebar_position: 2
 | `/tokens`، `/token/{denom}`، `/assets` | قوائم الرموز والأصول. |
 | `/contracts`، `/nfts`، `/collections` | العقود وNFT والمجموعات. |
 
-يقبل البحث ارتفاع كتلة، أو تجزئة من 64 رقمًا سداسيًا عشريًا (مع `0x` أو بدونه)، أو عنوان `qor1...` أو `0x...`، أو عنوان `qorvaloper1...`. ويفتح البحث عن `qorvaloper1...` قائمة المدقّقين، لا صفحة ذلك المدقّق. يقدّم قسم **Add to wallet** كلًا من suggestChain (Keplr وLeap وCosmostation)، وEIP-3085 (MetaMask ومحافظ EVM الأخرى)، وتعليمات RPC المخصص لـ SVM، وإقران WalletConnect v2.
+يقبل البحث ارتفاع كتلة، أو معرّف معاملة أصلية من 64 رقمًا سداسيًا عشريًا (مع `0x` أو بدونه؛ وتجزئة EVM بصيغة `0x` المكتوبة هنا تعرض "Transaction not found"، راجع [تجزئتا معاملة EVM](#evm-hashes))، أو عنوان `qor1...` أو `0x...`، أو عنوان `qorvaloper1...`. ويفتح البحث عن `qorvaloper1...` قائمة المدقّقين، لا صفحة ذلك المدقّق. يقدّم قسم **Add to wallet** كلًا من suggestChain (Keplr وLeap وCosmostation)، وEIP-3085 (MetaMask ومحافظ EVM الأخرى)، وتعليمات RPC المخصص لـ SVM، وإقران WalletConnect v2.
 
 تعمل المسارات `/tx/` و`/block/` و`/address/` مع روابط مستكشف الكتل بصيغة EIP-3085، فتصل المحافظ التي تفتح رابط مستكشف إلى الصفحة الصحيحة.
 
