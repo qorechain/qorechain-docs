@@ -167,7 +167,7 @@ Ordinea contează: deschideți fereastra, apoi citiți nonce-ul EVM, apoi semna�
 
 ## Ce schimbă 0.6.0 {#whats-new-060}
 
-0.6.0 (12 noiembrie 2026) adaugă suport pentru lanțul v3.2.8 (testnet-ul îl rulează din 12 noiembrie 2026; mainnet nu l-a aplicat). Regulile noi se aplică pe o rețea de îndată ce rulează v3.2.8.
+0.6.0 (12 noiembrie 2026) adaugă suport pentru lanțul v3.2.8 (testnet-ul îl rulează din 12 noiembrie 2026, mainnet-ul din 18 noiembrie 2026). Regulile noi se aplică pe o rețea de îndată ce rulează v3.2.8, ceea ce fac acum ambele rețele.
 
 **Schimbări care rup compatibilitatea.**
 

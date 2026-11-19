@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **v3.2.7** sürümünü çalıştırır (yönetişim önerisi 16 ile 12 Kasım 2026'da 4.164.600 yüksekliğinde uygulandı; önceki sürüm v3.2.6, 4 Kasım 2026'da 4.020.000 yüksekliğinde, v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde ve v3.2.3 ise 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) 12 Kasım 2026'dan beri **v3.2.8** çalıştırır (test ağı yönetişimi tarafından 9.929.500 yüksekliğinde uygulandı; bkz. [v3.2.8](#v328), bu sürüm **henüz ana ağda değildir**, yani test ağı ana ağdan bir sürüm öndedir); v3.2.4 ona 8.337.253 yüksekliğinde (19 Ekim 2026), v3.2.5 8.890.800 yüksekliğinde (26 Ekim 2026), v3.2.6 8.970.638 yüksekliğinde (27 Ekim 2026) ve v3.2.7 9.594.600 yüksekliğinde (6 Kasım 2026, bkz. [v3.2.7](#v327)) ulaştı.
+QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **v3.2.8** sürümünü çalıştırır (yönetişim önerisi 17 ile 18 Kasım 2026'da 4.273.000 yüksekliğinde uygulandı; önceki sürüm v3.2.7, yönetişim önerisi 16 ile 12 Kasım 2026'da 4.164.600 yüksekliğinde, v3.2.6, 4 Kasım 2026'da 4.020.000 yüksekliğinde, v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde ve v3.2.3 ise 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştı). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) 12 Kasım 2026'dan beri **v3.2.8** çalıştırır (test ağı yönetişimi tarafından 9.929.500 yüksekliğinde uygulandı; bkz. [v3.2.8](#v328), bu sürümü ana ağ altı gün sonra uyguladı, yani her iki ağ da aynı sürümü çalıştırır); v3.2.4 ona 8.337.253 yüksekliğinde (19 Ekim 2026), v3.2.5 8.890.800 yüksekliğinde (26 Ekim 2026), v3.2.6 8.970.638 yüksekliğinde (27 Ekim 2026) ve v3.2.7 9.594.600 yüksekliğinde (6 Kasım 2026, bkz. [v3.2.7](#v327)) ulaştı.
 
 :::note
 Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır. Yayın manifesti ([Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet)) etiketlemeden ayrı olarak yükseltilir ve bir etiketin gerisinde bir süre kalabilir — taze bir kurulumun gerçekte ne indirdiğini görmek için doğrudan kontrol edin.
@@ -34,15 +34,15 @@ Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics
 
 ---
 
-## v3.2.8: Sözleşme Ücretleri, Gas Sınırları, EVM Pencere Seçenekleri, Asenkron VM'ler Arası Emanet, RDK Kanıtları (test ağı) {#v328}
+## v3.2.8: Sözleşme Ücretleri, Gas Sınırları, EVM Pencere Seçenekleri, Asenkron VM'ler Arası Emanet, RDK Kanıtları (ana ağ ve test ağı) {#v328}
 
-:::note YALNIZCA test ağı, henüz ana ağda değil, tarih yok
-v3.2.8 yalnızca `qorechain-diana` test ağında çalışır. Ana ağ v3.2.7 çalıştırır ve v3.2.8'i uygulamadı; bu nedenle aşağıdaki her madde bugün ana ağda yoktur.
+:::note Ana ağda ve test ağında canlı
+v3.2.8, `qorechain-diana` test ağında 12 Kasım 2026'dan beri, `qorechain-vladi` ana ağında 18 Kasım 2026'dan beri çalışır. Ana ağın devre kesicisinin hâlâ duraklattığı bir mesaja bağlı maddeler (sözleşme yükleme ve örnekleme, VM'ler arası çağrılar ve [Zincir Parametreleri](/appendix/chain-parameters#circuit-breaker) bölümünde listelenen diğer duraklatılmış mesajlar) ana ağda şimdilik duraklatılmış kalır ve Solana uyumlu hat orada kapalı kalır.
 :::
 
 **Sürüm odağı:** Gerçek işe göre ücretlenen akıllı sözleşmeler, işlem başına gas sınırları, isteğe bağlı EVM yetkilendirme penceresi listeleri, emanete alınan ve sınırlandırılan bir asenkron VM'ler arası çağrı, daha eksiksiz bir Rollup Geliştirme Kiti (RDK), daha katı soyut hesaplar ve test ağında kapatılan Solana uyumlu hat.
 
-Test ağı: 36 numaralı yönetişim önerisiyle 12 Kasım 2026'da 9.929.500 yüksekliğinde uygulandı (düğümler yaklaşık 03:35 UTC'de durdu ve hepsi 03:37 UTC'ye kadar v3.2.8 çalıştırıyordu); ana ağ uygulamadı.
+Test ağı: 36 numaralı yönetişim önerisiyle 12 Kasım 2026'da 9.929.500 yüksekliğinde uygulandı (düğümler yaklaşık 03:35 UTC'de durdu ve hepsi 03:37 UTC'ye kadar v3.2.8 çalıştırıyordu); ana ağ: 18 Kasım 2026'da 4.273.000 yüksekliğinde yönetişim önerisi 17 ile uygulandı (blok zamanı yaklaşık 15:01 UTC). Ana ağ manifestosu (`https://download.qore.host/mainnet/latest.json`, 19 Kasım 2026'da okundu) `version` değerini 3.2.8, `minCompatible` değerini 3.2.7 ve `upgradeHeight` değerini 4273000 olarak ayarlar; paket `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107.091.599 bayt, sha256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`). 19 Kasım 2026'da ana ağ EVM işlemi başına 30.000.000 gas ve 16.384 bayt precompile girdisi bildirdi.
 
 * **Akıllı sözleşme ücretleri gerçek işe uyar.** CosmWasm yürütme, yüklemeler, kod yükleme ve bellek ücretlendirilir. Blok başına bir sözleşme bütçesi ve yalnızca bloklar dolu olduğunda yükselen bir tıkanıklık fiyatlaması vardır. Gas'ı her zaman simülasyonla tahmin edin. Bkz. [SDK'da CosmWasm](/sdk/guides/cosmwasm#gas).
 * **Gas sınırları.** Cosmos işlemi başına 50.000.000 ve EVM işlemi başına 30.000.000 (`GET /qorechain/pqc/v1/evm_limits`).
@@ -50,7 +50,7 @@ Test ağı: 36 numaralı yönetişim önerisiyle 12 Kasım 2026'da 9.929.500 yü
 * **VM'ler arası asenkron çağrılar.** Bir asenkron çağrı iade edilebilir bir emanet tutar, `async_gas_limit` ve `async_max_factor` alır ve gönderen başına 100 bekleyen çağrıyla sınırlıdır; bekleyen çağrılar sorgusu sayfalıdır. Bkz. [Asenkron çağrılar](/developer-guide/cross-vm-interoperability#async-calls).
 * **RDK.** Veri gönderme, tabanlı sıralama, sahtekârlık kanıtlı iyimser `qledger-v1` rollup'ları (bir sahtekârlık kanıtı, kesilen teminatın yarısını yakar ve yarısını itiraz edene öder) ve ML-KEM-1024 zarflı özel rollup'lar. STARK mutabakatı bir sonraki sürüme kadar duraklatılmıştır. SNARK girdileri, zincirin belirlediği yerlerde BLS12-381 alanına göre modüler olarak indirgenir.
 * **Soyut hesaplar.** Bir anahtarı bağlamak sahiplik kanıtı gerektirir ve değer taşıyabilen anahtarlar için harcama kuralı gerekir. Başarısız bir yürütme başarısız olarak raporlanır.
-* **Solana uyumlu hat test ağında kapatıldı**, bir yönetişim oyu onu yeniden açana kadar. Ana ağda kapalı kalır.
+* **Solana uyumlu hat test ağında kapatıldı**, bir yönetişim oyu onu yeniden açana kadar. Ana ağda hat kapalı kalır ve genel uç noktaları salt okunurdur.
 * **Düğüm operatörleri.** Sürüm paketinin `lib/` klasörünün tamamını kopyalayın (mevcut kütüphanelerin yanına bir sözleşme çalışma zamanı kütüphanesi ekler) ve sözleşme bellek önbelleğini 256 MiB veya daha fazla tutun. Yeni rota: `GET /qorechain/svm/v1/params`.
 * **İstemciler.** Sözleşmeler için simülasyonla gas [SDK'da CosmWasm](/sdk/guides/cosmwasm#gas) sayfasında, pencere seçenekleri [EVM pencere seçenekleri](/developer-guide/evm-development#evm-window-v328) bölümünde ve asenkron çağrılar [Asenkron çağrılar](/developer-guide/cross-vm-interoperability#async-calls) bölümünde ele alınır.
 

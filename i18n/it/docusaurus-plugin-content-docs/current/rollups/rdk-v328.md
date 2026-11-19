@@ -9,9 +9,9 @@ sidebar_position: 11
 
 La release v3.2.8 di QoreChain cambia il modo in cui i rollup si regolano (settle). I rollup possono ora mettere i propri dati sulla chain, lasciare che sia la chain a ordinare le loro transazioni (based sequencing), regolarsi in modo optimistic con una fraud proof che riesegue il batch, mantenere privati i propri post per un insieme di membri e vincolare le root di prelievo Groth16 in un modo che accetta qualsiasi root di 32 byte. Il settlement STARK è in pausa fino a una release successiva. Questa pagina descrive cosa fa ciascuna modifica e come usarla. È rivolta agli operatori di rollup e agli sviluppatori che costruiscono sul modulo `x/rdk`.
 
-:::caution Per ora solo testnet
+:::note Attiva su entrambe le reti
 
-La v3.2.8 gira sulla testnet pubblica `qorechain-diana` dal 12 novembre 2026. La mainnet non l'ha ancora applicata, quindi ogni funzionalità di questa pagina vi viene rifiutata finché non lo farà. Considera gli esempi come esempi per la testnet.
+La v3.2.8 gira sulla testnet pubblica `qorechain-diana` dal 12 novembre 2026 e sulla mainnet `qorechain-vladi` dal 18 novembre 2026 (proposta di governance 17, altezza 4.273.000). Gli esempi sono stati eseguiti sulla testnet.
 
 :::
 

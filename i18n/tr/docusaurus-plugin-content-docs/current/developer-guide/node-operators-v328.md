@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Düğüm Operatörleri: v3.2.8 Kontrol Listesi
 
-**v3.2.8** sürümü, 12 Kasım 2026'dan beri (yükseklik 9,929,500) `qorechain-diana` test ağında çalışmaktadır. Ana ağ `qorechain-vladi` 12 Kasım 2026'dan beri v3.2.7 çalıştırır (yükseklik 4,164,600, yönetişim önerisi 16) ve v3.2.8'i uygulamamıştır; bu nedenle bu sayfadaki hiçbir şey bugün bir ana ağ düğümü için geçerli değildir.
+**v3.2.8** sürümü her iki ağda da çalışmaktadır: `qorechain-diana` test ağında 12 Kasım 2026'dan beri (yükseklik 9,929,500) ve `qorechain-vladi` ana ağında 18 Kasım 2026'dan beri (yükseklik 4,273,000, yönetişim önerisi 17). Ana ağ 12 Kasım 2026'dan beri v3.2.7 çalıştırıyordu (yükseklik 4,164,600, yönetişim önerisi 16). Bu sayfadaki her şey bir ana ağ düğümü için de geçerlidir; örnekler, aksi belirtilmedikçe test ağı uç noktalarını kullanır.
 
 Bu sayfa, bir düğüm operatörünün v3.2.8 için neyi kontrol edip değiştireceğinin kısa listesidir: paketteki paylaşımlı kütüphaneler, sözleşme çalışma zamanı ayarları, yeni `app.toml` varsayılanları, yeni bir REST rotası ve hâlâ v3.2.7 üzerinde olan bir düğümü yükseltme adımları. Tam düğüm kılavuzu için bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node).
 
@@ -78,7 +78,7 @@ Bu ayar yalnızca kendi düğümünüzün sözleşme sorgularına verdiği yanı
 
 ## 6. Yeni rota: `GET /qorechain/svm/v1/params` {#svm-params}
 
-v3.2.8, SVM modülü parametreleri için salt okunur bir rota ekler. v3.2.8 üzerindeki düğümler (test ağı) bunu sunar; sürümün uygulanmadığı ana ağda HTTP `501` yanıtı verir.
+v3.2.8, SVM modülü parametreleri için salt okunur bir rota ekler. v3.2.8 üzerindeki düğümler (her iki ağ) bunu sunar; daha eski bir sürüm çalıştıran düğüm HTTP `501` yanıtı verir. 19 Kasım 2026'da herkese açık ana ağ `enabled` `false` ile `200` yanıtı verdi: SVM şeridi ana ağda kapalı kalır.
 
 ```bash
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params
@@ -109,11 +109,11 @@ Manifest, hangi ikili dosyanın kurulacağı konusunda gerçeğin kaynağıdır:
 curl -s https://download.qore.host/testnet/latest.json | jq '{version, minCompatible, upgradeType, upgradeHeight, binary: .binary.url}'
 ```
 
-12 Kasım 2026'da `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` ve ikili dosya olarak `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` yanıtını verdi. `binary.url` değerine güvenmeden önce `version` değerinin `minCompatible` değerine eşit olduğunu kontrol edin ve arşivi aynı dosyadaki `sha256` ile doğrulayın. Ana ağ manifesti `https://download.qore.host/mainnet/latest.json` adresindedir ve bir ana ağ yükseltmesi duyurulana kadar v3.2.6'yı belirtir.
+12 Kasım 2026'da `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` ve ikili dosya olarak `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` yanıtını verdi. `binary.url` değerine güvenmeden önce `version` değerinin `minCompatible` değerine eşit olduğunu kontrol edin ve arşivi aynı dosyadaki `sha256` ile doğrulayın. Ana ağ manifesti `https://download.qore.host/mainnet/latest.json` adresindedir. 19 Kasım 2026'da okunduğunda `version` `3.2.8`, `minCompatible` `3.2.7`, `upgradeHeight` `4273000` ve ikili dosya olarak `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107.091.599 bayt, SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`) belirtiyordu; ana ağda `minCompatible`, `version` değerinden düşüktür; bu yüzden ikisini de kurduğunuz sürümle karşılaştırın.
 
 ## 8. Hâlâ v3.2.7 üzerinde olan bir düğümü yükseltin {#upgrade-from-v327}
 
-Test ağı yükseltme yüksekliği geçti; bu yüzden hâlâ v3.2.7 üzerinde olan bir düğüm 9,929,500 yüksekliğinde `UPGRADE "v3.2.8" NEEDED` ile durur. Durumu korunur ve yeniden eşitlenmesi gerekmez.
+Yükseltme yüksekliği her iki ağda da geçti (test ağı 9,929,500; ana ağ 4,273,000); bu yüzden hâlâ v3.2.7 üzerinde olan bir düğüm o yükseklikte `UPGRADE "v3.2.8" NEEDED` ile durur. Durumu korunur ve yeniden eşitlenmesi gerekmez.
 
 1. Manifestte adı geçen arşivi indirin ve SHA-256 değerini doğrulayın.
 2. Düğümü durdurun.
@@ -127,17 +127,17 @@ curl -s localhost:26657/status | jq '.result.sync_info.catching_up'
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params | jq '.params.enabled'
 ```
 
-Test ağına yeni katılan bir düğüm doğrudan v3.2.8 ikili dosyasıyla başlar; durum eşitleme ve eşler için bkz. [Test Ağına Bağlanma](/getting-started/connecting-to-testnet), yükseltme geçmişi için [Düğüm Çalıştırma](/developer-guide/running-a-node#upgrades).
+Her iki ağa yeni katılan bir düğüm doğrudan v3.2.8 ikili dosyasıyla başlar; durum eşitleme ve eşler için bkz. [Test Ağına Bağlanma](/getting-started/connecting-to-testnet), yükseltme geçmişi için [Düğüm Çalıştırma](/developer-guide/running-a-node#upgrades).
 
 ## Sınırlar ve hatalar
 
 | Ne görürsünüz | Anlamı | Ne yapmalı |
 | --- | --- | --- |
-| `UPGRADE "v3.2.8" NEEDED` ve düğüm 9,929,500 yüksekliğinde durur | Düğüm hâlâ v3.2.7 ikili dosyasında | Bölüm 8 |
+| `UPGRADE "v3.2.8" NEEDED` ve düğüm 9,929,500 (test ağı) veya 4,273,000 (ana ağ) yüksekliğinde durur | Düğüm hâlâ v3.2.7 ikili dosyasında | Bölüm 8 |
 | Eksik bir paylaşımlı kütüphane hakkında başlatma hatası | `lib/` bütün olarak kopyalanmadı veya yükleyici ona işaret etmiyor | Bölüm 1 |
 | `memory_cache_size` değerinin yükseltildiğine dair uyarı | Yapılandırılan değer 256 MiB'ın altında | 256 veya daha fazlasını ayarlayın |
 | Sözleşme dizini hakkında uyarı | Sözleşme kodu hâlâ eski konumda | Uygun bir zamanda `<home>/wasm` içine taşıyın |
-| `/qorechain/svm/v1/params` rotasından `501` | Düğüm v3.2.8 üzerinde değil (ana ağ v3.2.7 çalıştırır) | Ana ağda beklenen durum |
+| `/qorechain/svm/v1/params` rotasından `501` | Düğüm v3.2.8 üzerinde değil | Düğümü yükseltin ([bölüm 8](#upgrade-from-v327)) |
 
 ## İlgili sayfalar
 

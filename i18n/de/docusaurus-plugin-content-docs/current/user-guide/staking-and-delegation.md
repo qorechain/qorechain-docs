@@ -10,7 +10,7 @@ sidebar_position: 2
 Dieser Leitfaden behandelt, wie du QOR-Token an Validatoren delegierst, zwischen Validatoren neu delegierst, dein Stake entbindest, Belohnungen einforderst und verstehst, welche Teile des Staking-Designs von QoreChain heute live sind.
 
 :::note
-Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.7** (angewendet am 12. November 2026; v3.2.6 am 4. November, v3.2.5 am 29. Oktober und v3.2.4 am 23. Oktober); das Testnet läuft seit dem 12. November 2026 mit v3.2.8 (v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober). Ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
+Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.8** (angewendet am 18. November 2026; v3.2.7 am 12. November, v3.2.6 am 4. November, v3.2.5 am 29. Oktober und v3.2.4 am 23. Oktober); das Testnet läuft seit dem 12. November 2026 mit v3.2.8 (v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober). Ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -126,7 +126,7 @@ Staking-Belohnungen werden aus zwei Quellen finanziert: dem gedeckelten Emission
 ## Zeitgesperrtes Staking (v3.2.4) {#time-locked-staking}
 
 :::note Wann das gilt
-Das Release v3.2.4 fügt ein optionales Modul für zeitgesperrtes Staking hinzu, `x/stakingtier`. Es ist im **`qorechain-diana`-Testnet** seit dem 19. Oktober 2026 und im **Mainnet** seit dem 23. Oktober 2026 live (bei Höhe 3.742.566 durch Governance-Vorschlag 13 angewendet); das Mainnet läuft seit dem 29. Oktober 2026 mit v3.2.5, seit dem 4. November 2026 mit v3.2.6 und seit dem 12. November 2026 mit v3.2.7, die daran nichts ändern, abgesehen von der unten beschriebenen Prüfung beim Entbinden und den in v3.2.7 hinzugekommenen APR-Routen. Das Sperren steht als Option zur Verfügung, und die gewöhnliche Delegation bleibt sperrfrei (siehe [oben](#lock-in-period)). Der unten beschriebene Mechanismus wurde am 23. Oktober 2026 anhand der Live-Parameter von Mainnet und Testnet geprüft.
+Das Release v3.2.4 fügt ein optionales Modul für zeitgesperrtes Staking hinzu, `x/stakingtier`. Es ist im **`qorechain-diana`-Testnet** seit dem 19. Oktober 2026 und im **Mainnet** seit dem 23. Oktober 2026 live (bei Höhe 3.742.566 durch Governance-Vorschlag 13 angewendet); das Mainnet läuft seit dem 29. Oktober 2026 mit v3.2.5, seit dem 4. November 2026 mit v3.2.6, seit dem 12. November 2026 mit v3.2.7 und seit dem 18. November 2026 mit v3.2.8, die daran nichts ändern, abgesehen von der unten beschriebenen Prüfung beim Entbinden und den in v3.2.7 hinzugekommenen APR-Routen. Das Sperren steht als Option zur Verfügung, und die gewöhnliche Delegation bleibt sperrfrei (siehe [oben](#lock-in-period)). Der unten beschriebene Mechanismus wurde am 23. Oktober 2026 anhand der Live-Parameter von Mainnet und Testnet geprüft.
 :::
 
 Ein Delegator kann einen Teil einer bestehenden Delegation an einen Validator für eine feste Laufzeit von 3, 6 oder 12 Monaten festlegen. Laufzeiten und Beträge sind Chain-Parameter; lies die aktuellen aus `GET /qorechain/stakingtier/v1/params` aus, statt von dieser Seite.
@@ -158,7 +158,7 @@ Die obige Chain-ID ist die des Testnets; verwende im Mainnet `qorechain-vladi`. 
 
 **Wo es funktioniert, geprüft am 27. Oktober 2026 (die v3.2.6-Angabe für das Mainnet stammt aus den Release Notes und dem Upgrade vom 4. November 2026; die Parameter unten wurden am 4. November 2026 im Mainnet erneut gelesen).** Vor v3.2.6 lehnte das Mainnet das Entbinden erst ab, wenn die Transaktion ausgeführt wurde, über das Staking-Nachrichten-Gate.
 
-| | Mainnet `qorechain-vladi` (v3.2.7) | Testnet `qorechain-diana` (v3.2.8) |
+| | Mainnet `qorechain-vladi` (v3.2.8) | Testnet `qorechain-diana` (v3.2.8) |
 |---|---|---|
 | Modul live | Ja, seit Höhe 3,742,566 | Ja, seit v3.2.4 (Höhe 8,337,253) |
 | Offene Sperren | Noch keine | 3 Testsperren |

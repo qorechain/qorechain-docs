@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Operatori de noduri: lista de verificare v3.2.8
 
-Versiunea **v3.2.8** rulează pe testnet-ul `qorechain-diana` din 12 noiembrie 2026 (înălțimea 9,929,500). Mainnet-ul `qorechain-vladi` rulează v3.2.7 din 12 noiembrie 2026 (înălțimea 4,164,600, propunerea de guvernanță 16) și nu a aplicat v3.2.8, deci nimic din această pagină nu se aplică azi unui nod de mainnet.
+Versiunea **v3.2.8** rulează pe ambele rețele: testnet-ul `qorechain-diana` din 12 noiembrie 2026 (înălțimea 9,929,500) și mainnet-ul `qorechain-vladi` din 18 noiembrie 2026 (înălțimea 4,273,000, propunerea de guvernanță 17). Mainnet-ul rulase v3.2.7 din 12 noiembrie 2026 (înălțimea 4,164,600, propunerea de guvernanță 16). Tot ce este pe această pagină se aplică și unui nod de mainnet; exemplele folosesc endpoint-urile de testnet, dacă nu se spune altfel.
 
 Această pagină este lista scurtă a ceea ce verifică și schimbă un operator de nod pentru v3.2.8: bibliotecile partajate din pachet, setările runtime-ului de contracte, noile valori implicite din `app.toml`, o rută REST nouă și pașii pentru a actualiza un nod aflat încă pe v3.2.7. Pentru ghidul complet al nodului, vedeți [Rularea unui nod](/developer-guide/running-a-node).
 
@@ -78,7 +78,7 @@ Această setare schimbă doar ce răspunde propriul dumneavoastră nod la intero
 
 ## 6. Rută nouă: `GET /qorechain/svm/v1/params` {#svm-params}
 
-v3.2.8 adaugă o rută numai pentru citire pentru parametrii modulului SVM. Este servită de nodurile pe v3.2.8 (testnet) și răspunde HTTP `501` pe mainnet, unde release-ul nu este aplicat.
+v3.2.8 adaugă o rută numai pentru citire pentru parametrii modulului SVM. Este servită de nodurile pe v3.2.8 (ambele rețele) și răspunde HTTP `501` pe un nod care rulează o versiune mai veche. La 19 noiembrie 2026, mainnet-ul public a răspuns `200` cu `enabled` `false`: lane-ul SVM rămâne oprit pe mainnet.
 
 ```bash
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params
@@ -109,11 +109,11 @@ Manifestul este sursa de adevăr pentru ce binar se instalează:
 curl -s https://download.qore.host/testnet/latest.json | jq '{version, minCompatible, upgradeType, upgradeHeight, binary: .binary.url}'
 ```
 
-Pe 12 noiembrie 2026 a răspuns cu `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` și binarul `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`. Verificați că `version` este egal cu `minCompatible` înainte de a vă baza pe `binary.url` și verificați arhiva față de `sha256` din același fișier. Manifestul de mainnet este la `https://download.qore.host/mainnet/latest.json` și numește v3.2.6 până când se anunță un upgrade de mainnet.
+Pe 12 noiembrie 2026 a răspuns cu `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` și binarul `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`. Verificați că `version` este egal cu `minCompatible` înainte de a vă baza pe `binary.url` și verificați arhiva față de `sha256` din același fișier. Manifestul de mainnet este la `https://download.qore.host/mainnet/latest.json`. Citit la 19 noiembrie 2026, indica `version` `3.2.8`, `minCompatible` `3.2.7`, `upgradeHeight` `4273000` și binarul `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107.091.599 de octeți, SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`); pe mainnet `minCompatible` este mai mic decât `version`, așa că comparați ambele cu versiunea instalată.
 
 ## 8. Actualizați un nod aflat încă pe v3.2.7 {#upgrade-from-v327}
 
-Înălțimea upgrade-ului de testnet a trecut, deci un nod aflat încă pe v3.2.7 se oprește la înălțimea 9,929,500 cu `UPGRADE "v3.2.8" NEEDED`. Starea lui este păstrată și nu trebuie resincronizat.
+Înălțimea upgrade-ului a trecut pe ambele rețele (testnet 9,929,500; mainnet 4,273,000), deci un nod aflat încă pe v3.2.7 se oprește la acea înălțime cu `UPGRADE "v3.2.8" NEEDED`. Starea lui este păstrată și nu trebuie resincronizat.
 
 1. Descărcați arhiva numită în manifest și verificați SHA-256.
 2. Opriți nodul.
@@ -127,17 +127,17 @@ curl -s localhost:26657/status | jq '.result.sync_info.catching_up'
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params | jq '.params.enabled'
 ```
 
-Un nod nou care se alătură testnet-ului pornește direct de la binarul v3.2.8; vedeți [Conectarea la Testnet](/getting-started/connecting-to-testnet) pentru state sync și peer-uri și [Rularea unui nod](/developer-guide/running-a-node#upgrades) pentru istoricul upgrade-urilor.
+Un nod nou care se alătură oricărei rețele pornește direct de la binarul v3.2.8; vedeți [Conectarea la Testnet](/getting-started/connecting-to-testnet) pentru state sync și peer-uri și [Rularea unui nod](/developer-guide/running-a-node#upgrades) pentru istoricul upgrade-urilor.
 
 ## Limite și erori
 
 | Ce vedeți | Semnificație | Ce faceți |
 | --- | --- | --- |
-| `UPGRADE "v3.2.8" NEEDED` și nodul se oprește la înălțimea 9,929,500 | Nodul este încă pe binarul v3.2.7 | Secțiunea 8 |
+| `UPGRADE "v3.2.8" NEEDED` și nodul se oprește la înălțimea 9,929,500 (testnet) sau 4,273,000 (mainnet) | Nodul este încă pe binarul v3.2.7 | Secțiunea 8 |
 | Eroare la pornire despre o bibliotecă partajată lipsă | `lib/` nu a fost copiat integral sau loader-ul nu indică spre el | Secțiunea 1 |
 | Avertisment că `memory_cache_size` a fost ridicat | Valoarea configurată este sub 256 MiB | Setați 256 sau mai mult |
 | Avertisment despre directorul de contracte | Codul contractelor este încă în vechea locație | Mutați-l în `<home>/wasm` când vă este convenabil |
-| `501` de la `/qorechain/svm/v1/params` | Nodul nu este pe v3.2.8 (mainnet-ul rulează v3.2.7) | De așteptat pe mainnet |
+| `501` de la `/qorechain/svm/v1/params` | Nodul nu este pe v3.2.8 | Actualizați nodul ([secțiunea 8](#upgrade-from-v327)) |
 
 ## Pagini conexe
 

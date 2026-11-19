@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain, **QoreChain Native** akıllı sözleşmelerini destekler. QoreChain Native, QoreChain'in **CosmWasm** çalışma zamanına verdiği addır: geliştiriciler standart CosmWasm kütüphanelerine (`cosmwasm-std`) karşı güvenli, sandbox'lanmış Rust programları yazar ve bunları WebAssembly'ye derler. QoreChain Native sözleşmeleri, QoreChain'in üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve 12 Kasım 2026'dan beri **v3.2.7** düğüm sürümünü çalıştıran (yönetişim önerisi 16, yükseklik 4.164.600; v3.2.6 4 Kasım 2026'dan beri; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını kullanır. v3.2.8 çalıştıran (12 Kasım 2026'dan beri; v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve 18 Kasım 2026'dan beri **v3.2.8** düğüm sürümünü çalıştıran (yönetişim önerisi 17, yükseklik 4.273.000; v3.2.7 12 Kasım 2026'dan beri; v3.2.6 4 Kasım 2026'dan beri; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını kullanır. ayrıca v3.2.8 çalıştıran (12 Kasım 2026'dan beri; v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` kullanın.
 :::
 
 :::caution Kod yükleme ve örnekleme ana ağda açık izin gerektirir; test ağı farklıdır
@@ -144,7 +144,7 @@ QoreChain Native sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **De
 
 ## Gas ve yükleme limitleri (v3.2.8) {#gas-and-limits}
 
-v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında):
+v3.2.8 sürümünden itibaren (test ağında 12 Kasım 2026'dan, ana ağda 18 Kasım 2026'dan beri):
 
 - **Yürütme gas'i yeniden fiyatlandırıldı.** Bir sözleşme kodunun bir blokta ilk çağrısı bir yükleme maliyeti öder (bir cw20 transferi blokta ilk seferinde yaklaşık 533.000 gas, tekrarlarda yaklaşık 84.000 gas tutar), çağrı kurulumu ve bellek büyümesi ücretlendirilir ve bir tıkanıklık çarpanı fiyatı varsayılan olarak 1x'ten 20x'e kadar ölçekler. Her zaman simülasyon yapın ve en az %30 ekleyin; bir sözleşme çağrısı için gas'i asla sabit yazmayın. Bkz. [Sözleşme çağrıları için gas](/sdk/guides/cosmwasm#gas).
 - **Yüklemeler sınırlıdır ve yönetişim denetiminde kalır.** Önce erişim kontrol edilir ve mempool bir yüklemeyi yalnızca izin verilen bir göndericiden kabul eder. Yükleme, bildirilen boyutu için gas'i baştan öder (cw20 için yaklaşık 9,9 milyon gas, cw721 için yaklaşık 22,8 milyon gas). Bir modülde en fazla 4.096 işlev olabilir ve en fazla 32 MiB'a derlenmelidir; kayan nokta komutları hem yüklemede hem de zaten saklanmış kod için çağrı anında reddedilir.

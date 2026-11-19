@@ -228,7 +228,7 @@ await tx.signAndBroadcast(
 
 ### Mai multe liste de domeniu (de la lanțul v3.2.8, SDK 0.14.0) {#evm-window-scope-v328}
 
-De la lanțul v3.2.8 (testnet-ul din 12 noiembrie 2026; mainnet nu l-a aplicat) o
+De la lanțul v3.2.8 (testnet-ul din 12 noiembrie 2026, mainnet din 18 noiembrie 2026) o
 fereastră poate purta încă trei liste, pe care `openEvmWindowMsg` le acceptă de la SDK 0.14.0:
 `validators` (până la 16 adrese de contract a căror verificare a semnăturii contului
 contează pentru acțiunile proprii ale contului, cum ar fi un modul de validare sau un

@@ -233,7 +233,7 @@ await tx.signAndBroadcast(
 
 ### More scope lists (since chain v3.2.8, SDK 0.14.0) {#evm-window-scope-v328}
 
-From chain v3.2.8 (the testnet since 12 November 2026; mainnet has not applied it) a
+From chain v3.2.8 (the testnet since 12 November 2026, mainnet since 18 November 2026) a
 window can carry three more lists, which `openEvmWindowMsg` accepts from SDK 0.14.0:
 `validators` (up to 16 contract addresses whose check of the account's signature counts for
 the account's own actions, such as a validator module or an ERC-4337 entry point),

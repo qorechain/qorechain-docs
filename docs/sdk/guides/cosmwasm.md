@@ -176,7 +176,7 @@ const result = await signAndBroadcastHybrid({
 
 **Do not hardcode gas for a contract call.** A fixed 400,000 is enough for a
 simple transfer on one call and runs out on the next. From release v3.2.8
-(testnet only until a later mainnet upgrade) CosmWasm gas is repriced:
+(the testnet since 12 November 2026, mainnet since 18 November 2026) CosmWasm gas is repriced:
 
 - **The first call of a contract code in a block pays a load cost.** A cw20
   transfer costs about 533,000 gas as the first call of its code in a block and

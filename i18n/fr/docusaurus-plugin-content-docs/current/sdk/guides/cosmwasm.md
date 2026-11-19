@@ -177,8 +177,8 @@ const result = await signAndBroadcastHybrid({
 
 **Ne codez pas le gas en dur pour un appel de contrat.** Un gas fixe de 400,000
 suffit pour un simple transfert sur un appel et s'épuise au suivant. À partir de
-la version v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du
-mainnet), le gas CosmWasm est retarifé :
+la version v3.2.8 (le testnet depuis le 12 novembre 2026, le mainnet depuis le
+18 novembre 2026), le gas CosmWasm est retarifé :
 
 - **Le premier appel d'un code de contrat dans un bloc paie un coût de
   chargement.** Un transfert cw20 coûte environ 533,000 gas comme premier appel

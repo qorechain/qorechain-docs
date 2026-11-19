@@ -178,7 +178,7 @@ const result = await signAndBroadcastHybrid({
 
 ### Gas für Contract-Aufrufe {#gas}
 
-**Legen Sie Gas für einen Contract-Aufruf nicht fest im Code ab.** Feste 400,000 reichen für einen einfachen Transfer bei einem Aufruf und gehen beim nächsten aus. Ab Release v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) wird CosmWasm-Gas neu bepreist:
+**Legen Sie Gas für einen Contract-Aufruf nicht fest im Code ab.** Feste 400,000 reichen für einen einfachen Transfer bei einem Aufruf und gehen beim nächsten aus. Ab Release v3.2.8 (das Testnet seit dem 12. November 2026, das Mainnet seit dem 18. November 2026) wird CosmWasm-Gas neu bepreist:
 
 - **Der erste Aufruf eines Contract-Codes in einem Block zahlt Ladekosten.** Ein cw20-Transfer kostet etwa 533,000 Gas als erster Aufruf seines Codes in einem Block und etwa 84,000 für jede Wiederholung. Die Governance kann beliebte Codes anheften (Pinning), und bei angehefteten Codes entfällt die Ladegebühr.
 - **Gebühren steigen mit der Auslastung.** Ein Auslastungsfaktor skaliert das Contract-Gas standardmäßig von 1x bis 20x, wenn Blöcke mit Contract-Aufrufen ausgelastet sind, und ein Block hat ein begrenztes Budget für Contract-Ausführung, von dem eine einzelne Transaktion höchstens die Hälfte nutzen kann.

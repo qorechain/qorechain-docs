@@ -126,7 +126,7 @@ pubkey })`.
 
 ### Legarea de la lanțul v3.2.8 (SDK 0.14.0) {#link-v328}
 
-De la lanțul v3.2.8 (testnet-ul din 12 noiembrie 2026; mainnet nu l-a aplicat)
+De la lanțul v3.2.8 (testnet-ul din 12 noiembrie 2026, mainnet din 18 noiembrie 2026)
 înregistrarea de mai sus este refuzată dacă nu poartă o **dovadă de posesie**: cheia
 care este legată semnează un mesaj în text simplu, care numește lanțul, contul, schema
 și cheia. O cheie cu `send`, `evm`, `deploy`, `svm` sau `all` cere, de asemenea, ca

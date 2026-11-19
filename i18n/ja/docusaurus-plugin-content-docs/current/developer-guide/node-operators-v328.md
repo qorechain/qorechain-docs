@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # ノード運用者向け: v3.2.8チェックリスト
 
-リリース**v3.2.8**は、2026年11月12日(高さ9,929,500)からテストネット`qorechain-diana`で稼働しています。メインネット`qorechain-vladi`は2026年11月12日(高さ4,164,600、ガバナンス提案16)からv3.2.7を実行しており、v3.2.8は適用していないため、このページの内容は現時点ではメインネットのノードには適用されません。
+リリース**v3.2.8**は両ネットワークで稼働しています。テストネット`qorechain-diana`は2026年11月12日(高さ9,929,500)から、メインネット`qorechain-vladi`は2026年11月18日(高さ4,273,000、ガバナンス提案17)からです。メインネットは2026年11月12日(高さ4,164,600、ガバナンス提案16)からv3.2.7を実行していました。このページの内容はメインネットのノードにも適用されます。例は、特に記載がない限りテストネットのエンドポイントを使用します。
 
 このページは、v3.2.8でノード運用者が確認・変更すべき事項の短いリストです。バンドルに含まれる共有ライブラリ、コントラクトランタイムの設定、`app.toml`の新しいデフォルト値、新しいREST経路1つ、そしてまだv3.2.7のノードをアップグレードする手順を扱います。ノードガイドの全体については、[ノードの運用](/developer-guide/running-a-node)を参照してください。
 
@@ -78,7 +78,7 @@ query_gas_limit = 0
 
 ## 6. 新しい経路: `GET /qorechain/svm/v1/params` {#svm-params}
 
-v3.2.8は、SVMモジュールのパラメーターを読み取る専用の経路を追加します。v3.2.8のノード(テストネット)で提供され、リリースが適用されていないメインネットではHTTP `501`を返します。
+v3.2.8は、SVMモジュールのパラメーターを読み取る専用の経路を追加します。v3.2.8のノード(両ネットワーク)で提供され、より古いリリースのノードではHTTP `501`を返します。2026年11月19日には、公開メインネットは`enabled`が`false`で`200`を返しました。メインネットではSVMレーンはオフのままです。
 
 ```bash
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params
@@ -109,11 +109,11 @@ SVMの送信ボタンを表示する前に`enabled`を読み取ってくださ�
 curl -s https://download.qore.host/testnet/latest.json | jq '{version, minCompatible, upgradeType, upgradeHeight, binary: .binary.url}'
 ```
 
-2026年11月12日には、`version`が`3.2.8`、`minCompatible`が`3.2.8`、`upgradeType`が`height`、`upgradeHeight`が`9929500`、バイナリが`qorechaind-v3.2.8-b3-linux-amd64.tar.gz`と応答しました。`binary.url`を信頼する前に、`version`が`minCompatible`と等しいことを確認し、同じファイル内の`sha256`でアーカイブを検証してください。メインネットのマニフェストは`https://download.qore.host/mainnet/latest.json`にあり、メインネットのアップグレードが告知されるまでv3.2.6を示します。
+2026年11月12日には、`version`が`3.2.8`、`minCompatible`が`3.2.8`、`upgradeType`が`height`、`upgradeHeight`が`9929500`、バイナリが`qorechaind-v3.2.8-b3-linux-amd64.tar.gz`と応答しました。`binary.url`を信頼する前に、`version`が`minCompatible`と等しいことを確認し、同じファイル内の`sha256`でアーカイブを検証してください。メインネットのマニフェストは`https://download.qore.host/mainnet/latest.json`にあります。2026年11月19日の時点で、`version`は`3.2.8`、`minCompatible`は`3.2.7`、`upgradeHeight`は`4273000`、バイナリは`qorechaind-v3.2.8-b3-linux-amd64.tar.gz`(107,091,599バイト、SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`)でした。メインネットでは`minCompatible`が`version`より低いため、両方をインストールしたリリースと照らし合わせてください。
 
 ## 8. まだv3.2.7のノードをアップグレードする {#upgrade-from-v327}
 
-テストネットのアップグレード高さはすでに過ぎているため、まだv3.2.7のノードは、高さ9,929,500で`UPGRADE "v3.2.8" NEEDED`と表示して停止します。状態は保持されており、再同期は不要です。
+アップグレード高さは両ネットワークですでに過ぎている(テストネットは9,929,500、メインネットは4,273,000)ため、まだv3.2.7のノードは、その高さで`UPGRADE "v3.2.8" NEEDED`と表示して停止します。状態は保持されており、再同期は不要です。
 
 1. マニフェストに記載されたアーカイブをダウンロードし、SHA-256を検証します。
 2. ノードを停止します。
@@ -127,17 +127,17 @@ curl -s localhost:26657/status | jq '.result.sync_info.catching_up'
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params | jq '.params.enabled'
 ```
 
-テストネットに新しく参加するノードは、v3.2.8のバイナリから直接開始します。ステートシンクとピアについては[テストネットへの接続](/getting-started/connecting-to-testnet)を、アップグレードの履歴については[ノードの運用](/developer-guide/running-a-node#upgrades)を参照してください。
+どちらのネットワークでも、新しく参加するノードは、v3.2.8のバイナリから直接開始します。ステートシンクとピアについては[テストネットへの接続](/getting-started/connecting-to-testnet)を、アップグレードの履歴については[ノードの運用](/developer-guide/running-a-node#upgrades)を参照してください。
 
 ## 制限とエラー
 
 | 表示される内容 | 意味 | 対処 |
 | --- | --- | --- |
-| `UPGRADE "v3.2.8" NEEDED`が表示され、ノードが高さ9,929,500で停止する | ノードがまだv3.2.7のバイナリである | セクション8 |
+| `UPGRADE "v3.2.8" NEEDED`が表示され、ノードが高さ9,929,500(テストネット)または4,273,000(メインネット)で停止する | ノードがまだv3.2.7のバイナリである | セクション8 |
 | 共有ライブラリが見つからないという起動エラー | `lib/`が全体としてコピーされていないか、ローダーがそこを指していない | セクション1 |
 | `memory_cache_size`が引き上げられたという警告 | 設定値が256 MiB未満である | 256以上に設定する |
 | コントラクトのディレクトリについての警告 | コントラクトコードがまだ古い場所にある | 都合のよいときに`<home>/wasm`へ移動する |
-| `/qorechain/svm/v1/params`からの`501` | ノードがv3.2.8ではない(メインネットはv3.2.7) | メインネットでは想定どおり |
+| `/qorechain/svm/v1/params`からの`501` | ノードがv3.2.8ではない | ノードをアップグレードする([セクション8](#upgrade-from-v327)) |
 
 ## 関連ページ
 

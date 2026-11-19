@@ -226,7 +226,7 @@ await tx.signAndBroadcast(
 
 ### Weitere Scope-Listen (seit Chain v3.2.8, SDK 0.14.0) {#evm-window-scope-v328}
 
-Ab Chain v3.2.8 (das Testnet seit dem 12. November 2026; das Mainnet hat sie nicht angewendet) kann ein
+Ab Chain v3.2.8 (das Testnet seit dem 12. November 2026, das Mainnet seit dem 18. November 2026) kann ein
 Fenster drei weitere Listen tragen, die `openEvmWindowMsg` ab SDK 0.14.0 entgegennimmt:
 `validators` (bis zu 16 Contract-Adressen, deren Prüfung der Signatur des Kontos für die eigenen
 Aktionen des Kontos zählt, etwa ein Validator-Modul oder ein ERC-4337-Entry-Point),

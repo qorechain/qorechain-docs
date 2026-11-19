@@ -228,8 +228,8 @@ await tx.signAndBroadcast(
 
 ### Autres listes de périmètre (depuis la chaîne v3.2.8, SDK 0.14.0) {#evm-window-scope-v328}
 
-À partir de la chaîne v3.2.8 (le testnet depuis le 12 novembre 2026 ; le mainnet ne l'a pas
-appliquée), une fenêtre peut porter trois listes de plus, que `openEvmWindowMsg` accepte à partir du SDK 0.14.0 :
+À partir de la chaîne v3.2.8 (le testnet depuis le 12 novembre 2026, le mainnet depuis le 18 novembre 2026),
+une fenêtre peut porter trois listes de plus, que `openEvmWindowMsg` accepte à partir du SDK 0.14.0 :
 `validators` (jusqu'à 16 adresses de contrats dont la vérification de la signature du compte compte pour
 les propres actions du compte, comme un module de validateur ou un point d'entrée ERC-4337),
 `stakingValidators` (des validateurs `qorvaloper1...` auxquels la fenêtre peut déléguer ou redéléguer

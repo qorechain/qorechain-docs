@@ -121,7 +121,7 @@ pubkey })`.
 
 ### Linking from chain v3.2.8 (SDK 0.14.0) {#link-v328}
 
-From chain v3.2.8 (the testnet since 12 November 2026; mainnet has not applied it)
+From chain v3.2.8 (the testnet since 12 November 2026, mainnet since 18 November 2026)
 the registration above is refused unless it carries a **possession proof**: the key
 being linked signs a plain-text message that names the chain, the account, the scheme
 and the key. A key with `send`, `evm`, `deploy`, `svm` or `all` also needs the

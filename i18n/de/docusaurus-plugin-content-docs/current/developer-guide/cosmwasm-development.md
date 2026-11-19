@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain unterstützt **QoreChain Native**-Smart-Contracts. QoreChain Native ist der Name, den QoreChain für seine **CosmWasm**-Runtime verwendet: Entwickler schreiben sichere, sandboxed Programme in Rust gegen die Standard-CosmWasm-Bibliotheken (`cosmwasm-std`) und kompilieren sie zu WebAssembly. QoreChain Native-Contracts laufen innerhalb der Triple-VM-Architektur von QoreChain parallel zu EVM- und SVM-Programmen.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), auf dem das Node-Release **v3.2.7** seit dem 12. November 2026 läuft (Governance-Vorschlag 16, Höhe 4.164.600; v3.2.6 seit dem 4. November 2026; v3.2.5 seit dem 29. Oktober 2026, v3.2.4 seit dem 23. Oktober 2026). Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, auf dem v3.2.8 läuft (seit dem 12. November 2026; v3.2.4 seit dem 19. Oktober 2026).
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), auf dem das Node-Release **v3.2.8** seit dem 18. November 2026 läuft (Governance-Vorschlag 17, Höhe 4.273.000; v3.2.7 seit dem 12. November 2026; v3.2.6 seit dem 4. November 2026; v3.2.5 seit dem 29. Oktober 2026, v3.2.4 seit dem 23. Oktober 2026). Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, auf dem ebenfalls v3.2.8 läuft (seit dem 12. November 2026; v3.2.4 seit dem 19. Oktober 2026).
 :::
 
 :::caution Code-Upload und Instanziierung erfordern im Mainnet eine explizite Berechtigung; das Testnet weicht ab
@@ -144,7 +144,7 @@ QoreChain Native-Contracts folgen einem fünfstufigen Lebenszyklus: **Build**, *
 
 ## Gas und Upload-Limits (v3.2.8) {#gas-and-limits}
 
-Ab Release v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt):
+Ab Release v3.2.8 (Testnet seit dem 12. November 2026, Mainnet seit dem 18. November 2026):
 
 - **Die Ausführungs-Gaskosten werden neu bepreist.** Der erste Aufruf eines Contract-Codes in einem Block zahlt Ladekosten (ein cw20-Transfer kostet beim ersten Mal in einem Block etwa 533,000 Gas und bei Wiederholungen etwa 84,000), Aufrufvorbereitung und Speicherwachstum werden berechnet, und ein Auslastungsfaktor skaliert den Preis standardmäßig von 1x bis 20x. Simulieren Sie immer und addieren Sie mindestens 30 %; legen Sie Gas für einen Contract-Aufruf nie fest im Code ab. Siehe [Gas für Contract-Aufrufe](/sdk/guides/cosmwasm#gas).
 - **Uploads sind begrenzt und bleiben unter Governance-Kontrolle.** Zuerst wird der Zugriff geprüft, und der Mempool lässt einen Upload nur von einem erlaubten Absender zu. Der Upload zahlt das Gas für seine angegebene Größe im Voraus (etwa 9.9 Millionen Gas für cw20, etwa 22.8 Millionen für cw721). Ein Modul darf höchstens 4,096 Funktionen haben und höchstens auf 32 MiB kompiliert werden, und Gleitkommabefehle werden abgelehnt, sowohl beim Upload als auch beim Aufruf bereits gespeicherten Codes.

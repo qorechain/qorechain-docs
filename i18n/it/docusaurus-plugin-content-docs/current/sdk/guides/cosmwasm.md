@@ -175,7 +175,7 @@ const result = await signAndBroadcastHybrid({
 
 ### Gas per le chiamate ai contratti {#gas}
 
-**Non scrivere il gas di una chiamata a un contratto in modo fisso.** Un valore fisso di 400.000 basta per un semplice trasferimento in una chiamata e si esaurisce alla successiva. Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) il gas di CosmWasm è ridefinito:
+**Non scrivere il gas di una chiamata a un contratto in modo fisso.** Un valore fisso di 400.000 basta per un semplice trasferimento in una chiamata e si esaurisce alla successiva. Dalla release v3.2.8 (la testnet dal 12 novembre 2026, la mainnet dal 18 novembre 2026) il gas di CosmWasm è ridefinito:
 
 - **La prima chiamata di un codice di contratto in un blocco paga un costo di caricamento.** Un trasferimento cw20 costa circa 533.000 gas come prima chiamata del suo codice in un blocco e circa 84.000 per ogni ripetizione. La governance può fissare (pin) i codici più popolari, e i codici fissati saltano l'addebito del caricamento.
 - **Le commissioni salgono con la congestione.** Un fattore di congestione scala il gas dei contratti da 1x fino a 20x per impostazione predefinita quando i blocchi sono occupati da chiamate a contratti, e un blocco ha un budget limitato di esecuzione dei contratti, di cui una transazione può usare al massimo la metà.

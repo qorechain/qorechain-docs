@@ -10,7 +10,7 @@ sidebar_position: 4
 Treten Sie dem laufenden QoreChain-Diana-Testnet bei, indem Sie Ihren Node mit der korrekten Genesis-Datei, den richtigen Peers und Netzwerkeinstellungen konfigurieren.
 
 :::note
-Diese Seite behandelt das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live (Release **v3.2.7** seit dem 12. November 2026; das Testnet ist ein Release voraus) und hat eine eigene Seite **Verbindung zum Mainnet** mit separater Genesis, eigenen Peers und Verbindungsdetails. Das Testnet läuft seit dem 12. November 2026 mit **v3.2.8** (zuvor v3.2.7 ab dem 6. November und v3.2.6 ab dem 27. Oktober; das Mainnet hat v3.2.6 am 4. November 2026 und v3.2.7 am 12. November 2026 angewendet); sein Release-Manifest finden Sie unter [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Diese Seite behandelt das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live (Release **v3.2.8** seit dem 18. November 2026, dasselbe Release wie das Testnet) und hat eine eigene Seite **Verbindung zum Mainnet** mit separater Genesis, eigenen Peers und Verbindungsdetails. Das Testnet läuft seit dem 12. November 2026 mit **v3.2.8** (zuvor v3.2.7 ab dem 6. November und v3.2.6 ab dem 27. Oktober; das Mainnet hat v3.2.6 am 4. November 2026, v3.2.7 am 12. November 2026 und v3.2.8 am 18. November 2026 angewendet); sein Release-Manifest finden Sie unter [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Öffentliche Endpunkte
@@ -68,7 +68,7 @@ Das Testnet erhält koordinierte Upgrades über Governance-Vorschläge, daher en
 | v3.2.7 | 9.594.600 | 6. November 2026 (gegen 15:00 UTC) |
 | v3.2.8 | 9.929.500 | 12. November 2026 (gegen 03:35 UTC) |
 
-Das Testnet übernimmt jedes Release vor dem Mainnet. Das Mainnet hat v3.2.4 am 23. Oktober 2026 bei Höhe 3.742.566 v3.2.5 am 29. Oktober 2026 bei Höhe 3.906.833 (Governance-Vorschlag 14), v3.2.6 am 4. November 2026 bei Höhe 4.020.000 (Governance-Vorschlag 15) und v3.2.7 am 12. November 2026 bei Höhe 4.164.600 (Governance-Vorschlag 16) angewendet. Das Mainnet ist daher ein Release zurück: Das Testnet läuft seit dem 12. November 2026 mit v3.2.8, das das Mainnet nicht angewendet hat. Die Manifeste sind getrennt; kopieren Sie daher niemals ein Binary von einem Netzwerk ins andere (die Ergänzungen von v3.2.8 sind in der [Versionshistorie](/appendix/version-history#v328) aufgeführt).
+Das Testnet übernimmt jedes Release vor dem Mainnet. Das Mainnet hat v3.2.4 am 23. Oktober 2026 bei Höhe 3.742.566 v3.2.5 am 29. Oktober 2026 bei Höhe 3.906.833 (Governance-Vorschlag 14), v3.2.6 am 4. November 2026 bei Höhe 4.020.000 (Governance-Vorschlag 15) und v3.2.7 am 12. November 2026 bei Höhe 4.164.600 (Governance-Vorschlag 16) angewendet. Danach hat das Mainnet v3.2.8 bei Höhe 4.273.000 am 18. November 2026 angewendet (Governance-Vorschlag 17); beide Netzwerke laufen damit jetzt mit v3.2.8: das Testnet seit dem 12. November 2026, das Mainnet seit dem 18. November 2026. Die Manifeste sind getrennt; kopieren Sie daher niemals ein Binary von einem Netzwerk ins andere (die Ergänzungen von v3.2.8 sind in der [Versionshistorie](/appendix/version-history#v328) aufgeführt).
 
 ---
 

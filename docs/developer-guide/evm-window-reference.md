@@ -10,7 +10,7 @@ sidebar_position: 7
 An Ethereum transaction carries one secp256k1 signature and nothing else, so it cannot carry the post-quantum (ML-DSA-87) signature that QoreChain asks of every other transaction. The **EVM authorisation window** closes that gap. The account first opens a bounded window with a QoreChain Native message that **is** signed with its post-quantum key, and the EVM lane then admits the account's ordinary MetaMask, ethers.js, Hardhat or Foundry transactions only while the window covers them. This page is the complete reference for how a window behaves in release **v3.2.8**.
 
 :::note Where v3.2.8 runs
-The **`qorechain-diana`** testnet has run **v3.2.8** since 12 November 2026. The **`qorechain-vladi`** mainnet has not applied it yet; on mainnet the window works as described in [EVM Development](/developer-guide/evm-development#evm-window), without the options and rules marked "v3.2.8" below. A node below v3.2.8 refuses a window message that sets the new lists.
+Both networks run **v3.2.8**: the **`qorechain-diana`** testnet since 12 November 2026, and the **`qorechain-vladi`** mainnet since 18 November 2026 (governance proposal 17, height 4,273,000). The options and rules marked "v3.2.8" below apply on both. A node below v3.2.8 refuses a window message that sets the new lists. The checks and test runs on this page were made on the testnet.
 :::
 
 ## Why it matters {#why}
@@ -274,7 +274,7 @@ Deploying a contract needs an **unscoped** window. A window with `native_only` o
 
 ## Permits, EIP-712 orders and Permit2 {#permits}
 
-An EIP-2612 permit, a Permit2 transfer, a signed order or a meta-transaction is checked by a contract with the `ecrecover` precompile. From v3.2.8 (both networks, once a network applies it), for an account that holds a usable post-quantum key that check succeeds only while the account's own **live** window admits the **verifying contract**, which is the token or Permit2 itself and not the router that forwards the call.
+An EIP-2612 permit, a Permit2 transfer, a signed order or a meta-transaction is checked by a contract with the `ecrecover` precompile. From v3.2.8 (both networks), for an account that holds a usable post-quantum key that check succeeds only while the account's own **live** window admits the **verifying contract**, which is the token or Permit2 itself and not the router that forwards the call.
 
 1. If the window is scoped, list the verifying contract in `allowed_targets` (`native_only` admits no such signature).
 2. Open the window **before** the user signs. Without a live window the signature is treated as invalid and the contract refuses it.
@@ -307,7 +307,7 @@ The testnet answered on 12 November 2026 with `tx_max_gas` **30000000** and `pre
 | Window `max_txs` | 1,000 | Most transactions in one window |
 | List entries | 16 per list | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-The response also carries a `limits` object with the governance-set values; read the top-level `tx_max_gas` and `precompile_input_max_bytes`, which are the values in force. The route is served from v3.2.8, so the public mainnet answers `501 Not Implemented` until it applies v3.2.8 (checked on 12 November 2026, after mainnet moved to v3.2.7).
+The response also carries a `limits` object with the governance-set values; read the top-level `tx_max_gas` and `precompile_input_max_bytes`, which are the values in force. The route is served from v3.2.8, which both networks run. The public mainnet answered `501 Not Implemented` on 12 November 2026, before it applied v3.2.8; on 19 November 2026 it answered `200` with `tx_max_gas` `30000000` and `precompile_input_max_bytes` `16384`.
 
 A window opened at a normal gas price still counts the maximum fee: a gas limit of 30,000,000 at a fee cap of 100 gwei counts 3 QOR against `max_value` for one transaction.
 

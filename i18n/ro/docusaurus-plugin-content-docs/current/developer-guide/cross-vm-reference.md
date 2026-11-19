@@ -12,11 +12,11 @@ Un apel între VM-uri permite codului de pe o mașină virtuală să ruleze un c
 Această pagină este referința de câmpuri, costuri și limite pentru versiunea v3.2.8, cu un exemplu lucrat pentru fiecare direcție. Conceptele, ciclul de viață și comportamentul mai vechi se găsesc în [Interoperabilitate între VM-uri](/developer-guide/cross-vm-interoperability); ghidul pentru SDK este în [ghidul Cross-VM](/sdk/guides/cross-vm).
 
 :::note Unde rulează v3.2.8
-Testnet-ul **`qorechain-diana`** rulează **v3.2.8** din 12 noiembrie 2026. Mainnet-ul **`qorechain-vladi`** nu a aplicat-o încă, iar pe mainnet `MsgCrossVMCall` este oprit. Tot ce este marcat "v3.2.8" mai jos este deocamdată comportament de testnet.
+Ambele rețele rulează **v3.2.8**: testnet-ul **`qorechain-diana`** din 12 noiembrie 2026 și mainnet-ul **`qorechain-vladi`** din 18 noiembrie 2026 (propunerea de guvernanță 17, înălțimea 4.273.000). Pe mainnet `MsgCrossVMCall` este deocamdată în pauză, deci apelul nu poate fi trimis acolo. Exemplele și verificările de mai jos au fost rulate pe testnet.
 :::
 
 :::caution Este mesajul de apel disponibil chiar acum?
-Pe testnet, `MsgCrossVMCall` a fost pus în pauză de upgrade. Propunerea de guvernanță 37 a trecut și a ridicat pauza, deci apelul este deschis pe testnet (verificat la 12 noiembrie 2026: lista circuit breaker-ului conține doar `/cosmwasm.wasm.v1.MsgStoreCode`). Pe mainnet rămâne oprit. Dacă apelul este disponibil la un moment dat se vede din două lucruri: parametrii modulului (`enabled`) și lista circuit breaker-ului. Verifică-le pe amândouă înainte de a construi ceva pe el:
+Pe testnet, `MsgCrossVMCall` a fost pus în pauză de upgrade. Propunerea de guvernanță 37 a trecut și a ridicat pauza, deci apelul este deschis pe testnet (verificat la 12 noiembrie 2026: lista circuit breaker-ului conține doar `/cosmwasm.wasm.v1.MsgStoreCode`). Pe mainnet este deocamdată în pauză (lista circuit breaker-ului de acolo conține încă `MsgCrossVMCall`, citită la 19 noiembrie 2026). Dacă apelul este disponibil la un moment dat se vede din două lucruri: parametrii modulului (`enabled`) și lista circuit breaker-ului. Verifică-le pe amândouă înainte de a construi ceva pe el:
 
 ```bash
 # Module parameters: look for "enabled": true

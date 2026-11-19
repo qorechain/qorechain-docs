@@ -14,7 +14,7 @@ Il modulo di account astratti è **disattivato sulla mainnet `qorechain-vladi`**
 :::
 
 :::note
-I comandi seguenti usano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.7** (applicata all'altezza 4.164.600 il 12 novembre 2026, proposta di governance 16; la v3.2.6 è stata applicata all'altezza 4.020.000 il 4 novembre 2026, proposta 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre 2026, proposta 14, e la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.7 (dal 6 novembre 2026; v3.2.4 dal 19 ottobre 2026).
+I comandi seguenti usano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.8** (applicata all'altezza 4.273.000 il 18 novembre 2026, proposta di governance 17; la v3.2.7 è stata applicata all'altezza 4.164.600 il 12 novembre 2026, proposta 16; la v3.2.6 è stata applicata all'altezza 4.020.000 il 4 novembre 2026, proposta 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre 2026, proposta 14, e la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue anch'essa la v3.2.8 (dal 12 novembre 2026; v3.2.4 dal 19 ottobre 2026).
 :::
 
 :::caution Ogni transazione sulla lane Cosmos richiede la co-firma ibrida post-quantistica
@@ -118,7 +118,7 @@ Il record dell'account include le sue regole e il numero di chiavi collegate:
 qorechaind query abstractaccount account <account-address>
 ```
 
-Dalla v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) una chiave con permessi di valore viene rifiutata alla registrazione e all'esecuzione a meno che una regola non la delimiti, quindi "nessun limite" non vale più per tali chiavi.
+Dalla v3.2.8 (testnet dal 12 novembre 2026, mainnet dal 18 novembre 2026) una chiave con permessi di valore viene rifiutata alla registrazione e all'esecuzione a meno che una regola non la delimiti, quindi "nessun limite" non vale più per tali chiavi.
 
 :::caution Una regola delimita una chiave solo se esiste
 La chain risolve il limite in questo ordine: la regola propria dell'autenticatore se impostata e `enabled`; altrimenti la prima regola `enabled` sull'account; altrimenti **non c'è alcun limite**. Una regola memorizzata con `enabled: false` significa nessun limite, non un limite pari a zero. `MsgRegisterAuthenticator` non porta alcuna regola, quindi una chiave collegata con questo solo messaggio è delimitata unicamente da una regola a livello di account. Imposta una regola deliberatamente con `update-rules` e registra solo i permessi di cui la chiave ha bisogno. Un limite circoscrive il danno che una chiave collegata può fare; non sostituisce la revoca della chiave.
@@ -147,7 +147,7 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-**Dalla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) la registrazione richiede due cose in più.**
+**Dalla release v3.2.8 (testnet dal 12 novembre 2026, mainnet dal 18 novembre 2026) la registrazione richiede due cose in più.**
 
 1. **Una prova di possesso.** `MsgRegisterAuthenticator` ha un campo obbligatorio `possession_proof` (campo 8): una firma della chiave che viene collegata, che prova che accetta il collegamento. La chiave firma questo testo semplice con il proprio schema, così un wallet del browser mostra all'utente ciò che firma (Phantom `signMessage`, MetaMask `personal_sign`); una chiave secp256k1 da 33 byte firma lo SHA-256 del testo:
 
@@ -166,7 +166,7 @@ Da codice, l'SDK 0.14.0 ha gli helper per entrambe (TypeScript: `signAuthenticat
 
 Una chiave Phantom viene registrata allo stesso modo con lo schema `ed25519` e la chiave pubblica Phantom (`register-authenticator` da CLI). La revoca è istantanea tramite `MsgRevokeAuthenticator`.
 
-**Un'esecuzione può fallire all'interno di una transazione riuscita.** Dalla v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) un `MsgExecuteEVM` o `MsgExecuteCosmos` fallito restituisce `success=false` nella sua risposta con codice di transazione 0, emette l'evento `abstractaccount_execution_failed` con il motivo e consuma comunque il nonce dell'autenticatore. Un client che controlla solo il codice della transazione segnalerà una tale chiamata come riuscita: leggi la risposta o l'evento.
+**Un'esecuzione può fallire all'interno di una transazione riuscita.** Dalla v3.2.8 (testnet dal 12 novembre 2026, mainnet dal 18 novembre 2026) un `MsgExecuteEVM` o `MsgExecuteCosmos` fallito restituisce `success=false` nella sua risposta con codice di transazione 0, emette l'evento `abstractaccount_execution_failed` con il motivo e consuma comunque il nonce dell'autenticatore. Un client che controlla solo il codice della transazione segnalerà una tale chiamata come riuscita: leggi la risposta o l'evento.
 
 ### Tassonomia dei permessi {#permission-taxonomy}
 
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Collegare una chiave nella v3.2.8: esempio completo {#link-example-v328}
 
-Questa sezione percorre un collegamento completo sulla testnet **`qorechain-diana`**, che esegue la v3.2.8 dal 12 novembre 2026. La mainnet non esegue ancora la v3.2.8 e il suo modulo di astrazione dell'account è spento, quindi nulla di tutto questo vi si applica oggi. In breve: la chiave che colleghi deve firmare un breve testo per mostrare che accetta di essere collegata, una chiave che può muovere valore richiede una regola di spesa sull'account, e quando una chiave collegata in seguito spende, una spesa fallita viene segnalata all'interno di una transazione riuscita.
+Questa sezione percorre un collegamento completo sulla testnet **`qorechain-diana`**, che esegue la v3.2.8 dal 12 novembre 2026. Anche la mainnet esegue la v3.2.8 (dal 18 novembre 2026), ma il suo modulo di astrazione dell'account era spento all'ultimo controllo (27 ottobre 2026), quindi nulla di tutto questo vi si applicava in quel controllo. In breve: la chiave che colleghi deve firmare un breve testo per mostrare che accetta di essere collegata, una chiave che può muovere valore richiede una regola di spesa sull'account, e quando una chiave collegata in seguito spende, una spesa fallita viene segnalata all'interno di una transazione riuscita.
 
 Perché è importante: dalla v3.2.8 il titolare della chiave partecipa al collegamento, quindi una chiave può essere collegata solo da chi la detiene davvero, e una chiave che può muovere valore è sempre limitata da un tetto sull'account.
 

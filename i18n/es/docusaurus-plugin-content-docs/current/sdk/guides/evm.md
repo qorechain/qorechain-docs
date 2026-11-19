@@ -231,8 +231,8 @@ await tx.signAndBroadcast(
 
 ### Más listas de alcance (desde la cadena v3.2.8, SDK 0.14.0) {#evm-window-scope-v328}
 
-Desde la cadena v3.2.8 (la testnet desde el 12 de noviembre de 2026; la mainnet no la
-ha aplicado) una ventana puede llevar tres listas más, que `openEvmWindowMsg` acepta
+Desde la cadena v3.2.8 (la testnet desde el 12 de noviembre de 2026, la mainnet desde el
+18 de noviembre de 2026) una ventana puede llevar tres listas más, que `openEvmWindowMsg` acepta
 desde el SDK 0.14.0: `validators` (hasta 16 direcciones de contrato cuya comprobación de
 la firma de la cuenta cuenta para las acciones propias de la cuenta, como un módulo
 validador o un punto de entrada ERC-4337), `stakingValidators` (validadores

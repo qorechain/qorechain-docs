@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Versionshistorie
 
-Öffentliche Versionshistorie für QoreChain. Das Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, live seit 7. Juni 2026) läuft mit **v3.2.7** (per Governance-Vorschlag 16 bei Höhe 4.164.600 am 12. November 2026 angewendet; das vorherige Release v3.2.6 wurde bei Höhe 4.020.000 am 4. November 2026 angewendet, v3.2.5 bei Höhe 3.906.833 am 29. Oktober 2026, v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026 und v3.2.3 bei Höhe 3.662.051 am 20. Oktober 2026). Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) läuft mit **v3.2.8** seit dem 12. November 2026 (von der Testnet-Governance bei Höhe 9.929.500 angewendet; siehe [v3.2.8](#v328), das **noch nicht im Mainnet ist**, sodass das Testnet dem Mainnet ein Release voraus ist); v3.2.4 erreichte es bei Höhe 8.337.253 (19. Oktober 2026), v3.2.5 bei Höhe 8.890.800 (26. Oktober 2026), v3.2.6 bei Höhe 8.970.638 (27. Oktober 2026) und v3.2.7 bei Höhe 9.594.600 (6. November 2026, siehe [v3.2.7](#v327)).
+Öffentliche Versionshistorie für QoreChain. Das Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, live seit 7. Juni 2026) läuft mit **v3.2.8** (per Governance-Vorschlag 17 bei Höhe 4.273.000 am 18. November 2026 angewendet; das vorherige Release v3.2.7 wurde bei Höhe 4.164.600 am 12. November 2026 per Vorschlag 16 angewendet, v3.2.6 bei Höhe 4.020.000 am 4. November 2026, v3.2.5 bei Höhe 3.906.833 am 29. Oktober 2026, v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026 und v3.2.3 bei Höhe 3.662.051 am 20. Oktober 2026). Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) läuft mit **v3.2.8** seit dem 12. November 2026 (von der Testnet-Governance bei Höhe 9.929.500 angewendet; siehe [v3.2.8](#v328), das das Mainnet sechs Tage später angewendet hat, sodass beide Netzwerke dasselbe Release ausführen); v3.2.4 erreichte es bei Höhe 8.337.253 (19. Oktober 2026), v3.2.5 bei Höhe 8.890.800 (26. Oktober 2026), v3.2.6 bei Höhe 8.970.638 (27. Oktober 2026) und v3.2.7 bei Höhe 9.594.600 (6. November 2026, siehe [v3.2.7](#v327)).
 
 :::note
 Die folgenden Einträge sind Zusammenfassungen der wichtigsten Funktionen auf hoher Ebene. Frühere `v1.x`-Einträge werden als historische Aufzeichnung der Testnet-Releaselinie vor dem Mainnet beibehalten. Das Release-Manifest ([Verbindung zum Mainnet](/getting-started/connecting-to-mainnet)) wird separat vom Taggen freigegeben und kann einem Tag zeitlich etwas hinterherhinken — prüfen Sie es direkt, um zu sehen, was eine frische Installation tatsächlich herunterlädt.
@@ -34,15 +34,15 @@ Siehe [Tokenomics](/architecture/tokenomics#stranded-and-reserve) dazu, was die 
 
 ---
 
-## v3.2.8: Contract-Gebühren, Gas-Obergrenzen, EVM-Fenster-Optionen, asynchroner Cross-VM-Escrow, RDK-Beweise (Testnet) {#v328}
+## v3.2.8: Contract-Gebühren, Gas-Obergrenzen, EVM-Fenster-Optionen, asynchroner Cross-VM-Escrow, RDK-Beweise (Mainnet und Testnet) {#v328}
 
-:::note NUR Testnet, noch nicht im Mainnet, kein Datum
-v3.2.8 läuft nur im Testnet `qorechain-diana`. Das Mainnet läuft mit v3.2.7 und hat v3.2.8 nicht angewendet, sodass jeder Punkt unten heute im Mainnet fehlt.
+:::note Live im Mainnet und im Testnet
+v3.2.8 läuft seit dem 12. November 2026 im Testnet `qorechain-diana` und seit dem 18. November 2026 im Mainnet `qorechain-vladi`. Punkte, die von einer Nachricht abhängen, die der Mainnet-Circuit-Breaker weiterhin pausiert (Contract-Upload und -Instanziierung, Cross-VM-Aufrufe und die übrigen pausierten Nachrichten, aufgeführt unter [Chain-Parameter](/appendix/chain-parameters#circuit-breaker)), bleiben im Mainnet vorerst pausiert, und die Solana-kompatible Spur bleibt dort ausgeschaltet.
 :::
 
 **Release-Schwerpunkt:** Smart-Contract-Gebühren, die der tatsächlichen Arbeit folgen, Gas-Obergrenzen pro Transaktion, optionale Listen für EVM-Autorisierungsfenster, ein mit Escrow abgesicherter und begrenzter asynchroner Cross-VM-Aufruf, ein umfassenderes Rollup Development Kit, strengere Abstract Accounts und die Solana-kompatible Spur, die im Testnet geschlossen ist.
 
-Testnet: per Governance-Vorschlag 36 auf Höhe 9.929.500 am 12. November 2026 angewendet (die Nodes hielten gegen 03:35 UTC an und liefen um 03:37 UTC alle mit v3.2.8); das Mainnet hat es nicht angewendet.
+Testnet: per Governance-Vorschlag 36 auf Höhe 9.929.500 am 12. November 2026 angewendet (die Nodes hielten gegen 03:35 UTC an und liefen um 03:37 UTC alle mit v3.2.8); Mainnet: per Governance-Vorschlag 17 auf Höhe 4.273.000 am 18. November 2026 angewendet (Blockzeit etwa 15:01 UTC). Das Mainnet-Manifest (`https://download.qore.host/mainnet/latest.json`, am 19. November 2026 gelesen) setzt `version` auf 3.2.8, `minCompatible` auf 3.2.7 und `upgradeHeight` auf 4273000, mit dem Bundle `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107.091.599 Bytes, sha256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`). Am 19. November 2026 meldete das Mainnet 30.000.000 Gas pro EVM-Transaktion und 16.384 Bytes Precompile-Eingabe.
 
 * **Smart-Contract-Gebühren entsprechen der tatsächlichen Arbeit.** Die Ausführung von CosmWasm, Uploads, das Laden von Code und der Speicher werden bepreist. Es gibt ein Contract-Budget pro Block und eine Auslastungsbepreisung, die nur steigt, wenn die Blöcke voll sind. Schätzen Sie Gas immer per Simulation. Siehe [CosmWasm im SDK](/sdk/guides/cosmwasm#gas).
 * **Gas-Obergrenzen.** 50.000.000 pro Cosmos-Transaktion und 30.000.000 pro EVM-Transaktion (`GET /qorechain/pqc/v1/evm_limits`).
@@ -50,7 +50,7 @@ Testnet: per Governance-Vorschlag 36 auf Höhe 9.929.500 am 12. November 2026 an
 * **Asynchrone Cross-VM-Aufrufe.** Ein asynchroner Aufruf hält einen erstattbaren Escrow, nimmt `async_gas_limit` und `async_max_factor` entgegen und ist auf 100 ausstehende Aufrufe pro Absender begrenzt; die Abfrage der ausstehenden Aufrufe ist paginiert. Siehe [Asynchrone Aufrufe](/developer-guide/cross-vm-interoperability#async-calls).
 * **RDK.** Datenveröffentlichung, Based Sequencing, optimistische `qledger-v1`-Rollups mit Fraud Proofs (ein Fraud Proof verbrennt die Hälfte der geslashten Bond und zahlt die Hälfte an den Herausforderer) und private Rollups mit ML-KEM-1024-Umschlägen. Das STARK-Settlement ist bis zum nächsten Release pausiert. SNARK-Eingaben werden modulo dem BLS12-381-Körper reduziert, wo die Chain sie festlegt.
 * **Abstract Accounts.** Das Verknüpfen eines Schlüssels erfordert einen Besitznachweis, und Schlüssel, die Werte bewegen können, brauchen eine Ausgabenregel. Eine fehlgeschlagene Ausführung wird als fehlgeschlagen gemeldet.
-* **Solana-kompatible Spur im Testnet geschlossen,** bis eine Governance-Abstimmung sie wieder öffnet. Im Mainnet bleibt sie aus.
+* **Solana-kompatible Spur im Testnet geschlossen,** bis eine Governance-Abstimmung sie wieder öffnet. Im Mainnet bleibt die Spur aus, und ihre öffentlichen Endpunkte sind dort nur lesbar.
 * **Node-Betreiber.** Kopieren Sie den gesamten Ordner `lib/` des Release-Bundles (er fügt neben den vorhandenen eine Contract-Runtime-Bibliothek hinzu) und halten Sie den Contract-Speicher-Cache bei mindestens 256 MiB. Neue Route: `GET /qorechain/svm/v1/params`.
 * **Clients.** Gas per Simulation für Contracts ist unter [CosmWasm im SDK](/sdk/guides/cosmwasm#gas) beschrieben, Fenster-Optionen unter [EVM-Fenster-Optionen](/developer-guide/evm-development#evm-window-v328) und asynchrone Aufrufe unter [Asynchrone Aufrufe](/developer-guide/cross-vm-interoperability#async-calls).
 

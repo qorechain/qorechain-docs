@@ -26,8 +26,8 @@ Il binario corrente, il genesis, i peer, i seed e un trust point per lo state-sy
 I campi del manifest includono `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un trust point aggiornato ogni ora) e `minCompatible`. I passaggi di installazione e collegamento riportati di seguito recuperano questo manifest e ne usano i valori correnti.
 :::
 
-:::caution Usa la release indicata dal manifest: v3.2.7 sulla mainnet, v3.2.8 sulla testnet
-Un nodo che si sincronizza dal genesis o che effettua il replay da uno snapshot attraversa diversi upgrade di governance (vedi [Upgrade](#upgrades) più sotto), quindi installa sempre il binario a cui punta il manifest: contiene tutti i gestori di upgrade. Sulla **mainnet** `minCompatible` e `version` del manifest sono entrambi `3.2.7` (applicata all'altezza 4.164.600 il 12 novembre 2026, proposta di governance 16), quindi un nodo che si unisce ora richiede la v3.2.7: un binario più vecchio si ferma a un'altezza di upgrade che non conosce. La release è il bundle `qorechaind-v3.2.7-b3-linux-amd64.tar.gz` (99.472.930 byte, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`, letto dal manifest il 12 novembre 2026; il manifest live è la fonte di verità). Il manifest consiglia che i nodi nuovi si uniscano tramite state sync. Contiene `qorechaind` e `lib/` con `libqorepqc.so`, `libqoresvm.so` e `libwasmvm.x86_64.so`. Un nodo ancora sulla v3.2.6 si è fermato all'altezza 4.164.600 con `UPGRADE "v3.2.7" NEEDED`: installa il bundle e riavvia, e il suo stato viene mantenuto. Non è pianificato alcun altro upgrade della mainnet (`current_plan` è `null`, verificato il 12 novembre 2026); quando il manifest nomina una release più recente, è quella da installare. Sulla **testnet** `minCompatible` e `version` del manifest sono entrambi `3.2.8` (la v3.2.5 è stata applicata all'altezza 8.890.800 il 26 ottobre 2026, la v3.2.6 all'altezza 8.970.638 il 27 ottobre, la v3.2.7 all'altezza 9.594.600 il 6 novembre e la v3.2.8 all'altezza 9.929.500 il 12 novembre), quindi un nodo che si unisce alla testnet richiede il binario v3.2.8: prendi nome, dimensione e SHA-256 del bundle dal manifest live della testnet, che è la fonte di verità (il 7 novembre 2026, sulla v3.2.7, indicava `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`, 99.472.930 byte, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`). Un nodo testnet ancora sulla v3.2.7 si ferma all'altezza 9.929.500 con `UPGRADE "v3.2.8" NEEDED`: sostituisci `qorechaind` e copia l'intera cartella `lib/` del bundle, poi riavvialo; il suo stato viene mantenuto e non ha bisogno di risincronizzarsi. La mainnet resta sulla v3.2.7, una release indietro rispetto alla testnet; non ha applicato la v3.2.8, quindi nulla nelle note sulla v3.2.8 cambia per i nodi della mainnet. Non eseguire un binario testnet contro la mainnet né il contrario: ogni directory contiene la propria release (vedi [Upgrade](#upgrades)). Il manifest viene promosso deliberatamente (prima sulla testnet, poi sulla mainnet dopo un periodo di stabilizzazione), quindi controlla il suo campo `"version"` rispetto a `minCompatible` prima di fidarti di `binary.url`.
+:::caution Usa la release indicata dal manifest: v3.2.8 sulla mainnet e sulla testnet
+Un nodo che si sincronizza dal genesis o che effettua il replay da uno snapshot attraversa diversi upgrade di governance (vedi [Upgrade](#upgrades) più sotto), quindi installa sempre il binario a cui punta il manifest: contiene tutti i gestori di upgrade. Sulla **mainnet** `version` del manifest è `3.2.8` e `minCompatible` è `3.2.7` (la v3.2.8 è stata applicata all'altezza 4.273.000 il 18 novembre 2026, proposta di governance 17, dopo la v3.2.7 all'altezza 4.164.600 il 12 novembre 2026), quindi un nodo che si unisce ora richiede la v3.2.8: un binario più vecchio si ferma a un'altezza di upgrade che non conosce. La release è il bundle `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107.091.599 byte, SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`, letto dal manifest il 19 novembre 2026; il manifest live è la fonte di verità). Il manifest consiglia che i nodi nuovi si uniscano tramite state sync. Contiene `qorechaind` e `lib/` con `libqorepqc.so`, `libqoresvm.so` e `libwasmvm.x86_64.so`. Un nodo ancora sulla v3.2.7 si è fermato all'altezza 4.273.000 con `UPGRADE "v3.2.8" NEEDED`: installa il bundle e riavvia, e il suo stato viene mantenuto. Non è pianificato alcun altro upgrade della mainnet (`current_plan` è `null`, verificato il 19 novembre 2026); quando il manifest nomina una release più recente, è quella da installare. Sulla **testnet** `minCompatible` e `version` del manifest sono entrambi `3.2.8` (la v3.2.5 è stata applicata all'altezza 8.890.800 il 26 ottobre 2026, la v3.2.6 all'altezza 8.970.638 il 27 ottobre, la v3.2.7 all'altezza 9.594.600 il 6 novembre e la v3.2.8 all'altezza 9.929.500 il 12 novembre), quindi un nodo che si unisce alla testnet richiede il binario v3.2.8: prendi nome, dimensione e SHA-256 del bundle dal manifest live della testnet, che è la fonte di verità (il 7 novembre 2026, sulla v3.2.7, indicava `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`, 99.472.930 byte, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`). Un nodo testnet ancora sulla v3.2.7 si ferma all'altezza 9.929.500 con `UPGRADE "v3.2.8" NEEDED`: sostituisci `qorechaind` e copia l'intera cartella `lib/` del bundle, poi riavvialo; il suo stato viene mantenuto e non ha bisogno di risincronizzarsi. Entrambe le reti eseguono la v3.2.8, quindi le note sulla v3.2.8 valgono anche per i nodi della mainnet. Non eseguire un binario testnet contro la mainnet né il contrario: ogni directory contiene la propria release (vedi [Upgrade](#upgrades)). Il manifest viene promosso deliberatamente (prima sulla testnet, poi sulla mainnet dopo un periodo di stabilizzazione), quindi controlla il suo campo `"version"` rispetto a `minCompatible` prima di fidarti di `binary.url`.
 
 Un binario compilato dai sorgenti pubblici (la build community) si rifiuta di avviarsi su entrambe le reti pubbliche (dalla v3.2.3 in poi): non può verificare le firme post-quantum e non può rieseguire fedelmente i blocchi delle reti. Usa solo l'archivio di release.
 
@@ -52,7 +52,7 @@ Dalla v3.2.1 contano due impostazioni: mantieni l'orologio di sistema sincronizz
 
 | Rete  | Chain ID            | EVM chain ID         | Note                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primaria — live dal 7 giu 2026; release del nodo v3.2.7 (dal 12 nov 2026) |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primaria — live dal 7 giu 2026; release del nodo v3.2.8 (dal 18 nov 2026) |
 | Testnet  | `qorechain-diana`   | `9800`               | Prova qui le integrazioni per prima cosa; release del nodo v3.2.8 (dal 12 nov 2026) |
 
 Sostituisci il `--chain-id` appropriato per la rete di destinazione in tutta questa guida. Gli esempi usano di default la mainnet.
@@ -92,7 +92,7 @@ COPY lib/ /opt/qorechain/lib/
 ENV LD_LIBRARY_PATH=/opt/qorechain/lib
 ENTRYPOINT ["qorechaind"]
 EOF
-docker build -t qorechain-node:v3.2.7 release/
+docker build -t qorechain-node:v3.2.8 release/
 ```
 
 L'archivio contiene `qorechaind` e una directory `lib/` con le sue librerie condivise (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so` e, dalla v3.2.8, `libwasmvmqore_v1.x86_64.so`). Copia l'intera directory `lib/`, non i singoli file; l'immagine qui sopra è solo `linux/amd64`, come l'archivio di release.
@@ -101,7 +101,7 @@ L'archivio contiene `qorechaind` e una directory `lib/` con le sue librerie cond
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.2.7
+    image: qorechain-node:v3.2.8
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -289,14 +289,14 @@ Le modifiche al consenso arrivano come **upgrade di governance coordinati**: una
 | v3.2.5 | altezza 3.906.833 (29 ott 2026, proposta di governance 14) | altezza 8.890.800 (26 ott 2026) |
 | v3.2.6 | altezza 4.020.000 (4 nov 2026, proposta di governance 15) | altezza 8.970.638 (27 ott 2026) |
 | v3.2.7 | altezza 4.164.600 (12 nov 2026, proposta di governance 16) | altezza 9.594.600 (6 nov 2026, proposta di governance 33) |
-| v3.2.8 | non applicata | altezza 9.929.500 (12 nov 2026) |
+| v3.2.8 | altezza 4.273.000 (18 nov 2026, proposta di governance 17) | altezza 9.929.500 (12 nov 2026, proposta di governance 36) |
 
 **Cosa ha fatto l'operatore di un nodo per la v3.2.4 (altezza mainnet 3.742.566).** La proposta di governance 13 ha chiamato il piano `v3.2.4` all'altezza 3.742.566 (applicato il 23 ottobre 2026): i nodi sono rimasti sulla v3.2.3 fino a quell'altezza, si sono fermati lì e sono ripartiti sulla v3.2.4. Per il prossimo upgrade coordinato i passaggi sono gli stessi:
 
 1. Controlla il manifest (`https://download.qore.host/mainnet/latest.json`): finché non nomina la nuova release non c'è nulla da installare, e un binario dalla directory della testnet non è la release della mainnet.
 2. Quando il manifest nomina la release, scarica l'archivio dal suo `binary.url`, verifica lo `sha256` (anche il testo della proposta pubblica lo sha256 del binario) e preparalo **prima** dell'altezza. Controlla `GET /cosmos/upgrade/v1beta1/current_plan` per il piano in sospeso (`name` e `height`) e l'altezza corrente con `GET /status` sull'RPC.
 3. All'altezza del piano un nodo ancora sul vecchio binario **si ferma** (è il comportamento previsto del modulo di upgrade, non un guasto); un nodo già sul nuovo binario applica il gestore di upgrade e prosegue. Se il tuo si è fermato per primo, sostituisci il binario e riavvia. Dopo l'upgrade, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` restituisce l'altezza invece di `0` (3742566 sulla mainnet, 8337253 sulla testnet).
-4. Un nodo che si unisce ora alla mainnet installa la release che il manifest nomina (v3.2.7 al momento della stesura; controlla `version` rispetto a `minCompatible`).
+4. Un nodo che si unisce ora alla mainnet installa la release che il manifest nomina (v3.2.8 al momento della stesura; controlla `version` rispetto a `minCompatible`).
 
 Firma delle transazioni, indirizzi, decimali, memo e commissioni non sono cambiati dalla v3.2.4.
 
@@ -305,6 +305,8 @@ Firma delle transazioni, indirizzi, decimali, memo e commissioni non sono cambia
 **v3.2.6 sulla mainnet (altezza 4.020.000, 4 novembre 2026, proposta di governance 15).** Sono valsi gli stessi passaggi: il manifest nomina `3.2.6` sia come `version` sia come `minCompatible`, e un nodo ancora sulla v3.2.5 si ferma all'altezza del piano con `UPGRADE "v3.2.6" NEEDED`; installa il bundle v3.2.6 e riavvia. La firma (sign-bytes v2), gli indirizzi, i decimali, i memo e le commissioni non cambiano, e il manifest chiede agli operatori di mantenere l'orologio sincronizzato tramite NTP. `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.6` restituisce `{"height":"4020000"}` sulla mainnet. Non è pianificato alcun altro upgrade della mainnet.
 
 **v3.2.7 sulla mainnet (altezza 4.164.600, 12 novembre 2026, proposta di governance 16).** Sono valsi gli stessi passaggi: il manifest nomina `3.2.7` sia come `version` sia come `minCompatible`, e un nodo ancora sulla v3.2.6 si ferma all'altezza del piano con `UPGRADE "v3.2.7" NEEDED`; installa il bundle v3.2.7 e riavvia. `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.7` restituisce `{"height":"4164600"}` sulla mainnet. L'upgrade ha attivato undici funzionalità di protocollo (multisig post-quantistico ibrido, 2.000 gas fissi per ogni verifica post-quantistica, l'evento della finestra EVM, i messaggi delle chiavi di verifica RDK e diverse correzioni su indirizzi SVM e cross-VM), 101 in totale. La lane SVM, la chiamata cross-VM e l'upload e l'istanziazione CosmWasm restano spenti sulla mainnet.
+
+**v3.2.8 sulla mainnet (altezza 4.273.000, 18 novembre 2026, proposta di governance 17).** Sono valsi gli stessi passaggi: il manifest nomina `3.2.8` come `version` (il suo `minCompatible` è `3.2.7`), e un nodo ancora sulla v3.2.7 si ferma all'altezza del piano con `UPGRADE "v3.2.8" NEEDED`; installa il bundle v3.2.8, compresa l'intera cartella `lib/`, e riavvia (vedi [Runtime dei contratti nella v3.2.8](#v328-node) e la [checklist v3.2.8 per gli operatori di nodo](/developer-guide/node-operators-v328)). `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.8` restituisce `{"height":"4273000"}` sulla mainnet (letto il 19 novembre 2026). La lane SVM resta spenta sulla mainnet e il circuit breaker lì mette ancora in pausa la chiamata cross-VM e l'upload e l'istanziazione CosmWasm.
 
 Leggi il registro live con `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = non applicato) e qualsiasi piano in sospeso con `GET /cosmos/upgrade/v1beta1/current_plan`. La v3.2.2 ha aggiornato le dipendenze del motore di consenso, del Cosmos SDK (v0.53.8) e di IBC, e i controlli più severi sulle transazioni dell'SDK fanno sì che quella release sostituisca il binario precedente all'altezza di upgrade anziché nodo per nodo. Firma delle transazioni, indirizzi, decimali, memo e commissioni non sono cambiati nella v3.2.2 né nella v3.2.3.
 
@@ -334,7 +336,7 @@ pruning = "default"
 
 ### Runtime dei contratti nella v3.2.8 {#v328-node}
 
-Un nodo sulla release v3.2.8 (solo testnet fino a un successivo upgrade della mainnet) richiede: l'intera directory `lib/` del bundle (contiene `libwasmvmqore` accanto a `libwasmvm`, `libqorepqc` e `libqoresvm`); un `[wasm] memory_cache_size` di almeno 256 MiB (un valore inferiore viene portato a 256 con un avviso, quindi pianifica la memoria); e la directory del codice dei contratti in `<home>/wasm` (una directory del codice esistente altrove continua a funzionare con un avviso). Un nuovo `app.toml` imposta inoltre `simulation_gas_limit = 50000000` ed espone i namespace JSON-RPC `eth,net,web3`.
+Un nodo sulla release v3.2.8 (entrambe le reti) richiede: l'intera directory `lib/` del bundle (contiene `libwasmvmqore` accanto a `libwasmvm`, `libqorepqc` e `libqoresvm`); un `[wasm] memory_cache_size` di almeno 256 MiB (un valore inferiore viene portato a 256 con un avviso, quindi pianifica la memoria); e la directory del codice dei contratti in `<home>/wasm` (una directory del codice esistente altrove continua a funzionare con un avviso). Un nuovo `app.toml` imposta inoltre `simulation_gas_limit = 50000000` ed espone i namespace JSON-RPC `eth,net,web3`.
 
 ### Limiti del nodo (`app.toml`) {#node-limits}
 
@@ -453,7 +455,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Best practice operative
 
-1. **Fissa la versione della chain.** Esegui la release consigliata dal manifest (**v3.2.7** sulla mainnet e **v3.2.8** sulla testnet al momento della stesura), segui le release ufficiali per gli aggiornamenti coordinati e mantieni l'orologio di sistema sincronizzato tramite NTP.
+1. **Fissa la versione della chain.** Esegui la release consigliata dal manifest (**v3.2.8** sia sulla mainnet sia sulla testnet al momento della stesura), segui le release ufficiali per gli aggiornamenti coordinati e mantieni l'orologio di sistema sincronizzato tramite NTP.
 
 2. **Esegui nodi ridondanti.** Gestisci almeno due nodi dietro un load balancer in modo che un singolo riavvio o una risincronizzazione non interrompano il traffico di integrazione.
 

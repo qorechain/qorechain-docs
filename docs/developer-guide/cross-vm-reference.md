@@ -12,11 +12,11 @@ A cross-VM call lets code on one virtual machine run a contract on another: an a
 This page is the field, cost and limit reference for release v3.2.8, with a worked example for each direction. The concepts, the lifecycle and the older behaviour are in [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability); the SDK walkthrough is in the [Cross-VM guide](/sdk/guides/cross-vm).
 
 :::note Where v3.2.8 runs
-The **`qorechain-diana`** testnet has run **v3.2.8** since 12 November 2026. The **`qorechain-vladi`** mainnet has not applied it yet, and on mainnet `MsgCrossVMCall` is switched off. Everything marked "v3.2.8" below is testnet behaviour for now.
+Both networks run **v3.2.8**: the **`qorechain-diana`** testnet since 12 November 2026, and the **`qorechain-vladi`** mainnet since 18 November 2026 (governance proposal 17, height 4,273,000). On mainnet `MsgCrossVMCall` is paused for now, so the call cannot be sent there. The examples and the checks below were run on the testnet.
 :::
 
 :::caution Is the call message available right now?
-On the testnet `MsgCrossVMCall` was paused by the upgrade. Governance proposal 37 passed and lifted the pause, so the call is open on the testnet (checked on 12 November 2026: the circuit breaker list holds only `/cosmwasm.wasm.v1.MsgStoreCode`). On mainnet it stays switched off. Whether the call is available at a given moment is shown by two things: the module parameters (`enabled`) and the circuit breaker list. Check both before you build anything on it:
+On the testnet `MsgCrossVMCall` was paused by the upgrade. Governance proposal 37 passed and lifted the pause, so the call is open on the testnet (checked on 12 November 2026: the circuit breaker list holds only `/cosmwasm.wasm.v1.MsgStoreCode`). On mainnet it is paused for now (the circuit breaker list there still holds `MsgCrossVMCall`, read on 19 November 2026). Whether the call is available at a given moment is shown by two things: the module parameters (`enabled`) and the circuit breaker list. Check both before you build anything on it:
 
 ```bash
 # Module parameters: look for "enabled": true

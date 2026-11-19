@@ -125,8 +125,8 @@ pubkey })`.
 
 ### Lier à partir de la chaîne v3.2.8 (SDK 0.14.0) {#link-v328}
 
-À partir de la chaîne v3.2.8 (le testnet depuis le 12 novembre 2026 ; le mainnet ne l'a pas
-appliquée), l'enregistrement ci-dessus est refusé s'il ne porte pas une **preuve de possession** :
+À partir de la chaîne v3.2.8 (le testnet depuis le 12 novembre 2026, le mainnet depuis le 18 novembre 2026),
+l'enregistrement ci-dessus est refusé s'il ne porte pas une **preuve de possession** :
 la clé liée signe un message en texte brut qui nomme la chaîne, le compte, le schéma
 et la clé. Une clé avec `send`, `evm`, `deploy`, `svm` ou `all` exige aussi que la
 première règle de dépense activée du compte borne chaque dénomination. Le SDK 0.14.0 fournit des assistants

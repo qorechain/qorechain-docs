@@ -10,7 +10,7 @@ sidebar_position: 7
 Une transaction Ethereum ne porte qu'une signature secp256k1 et rien d'autre : elle ne peut donc pas porter la signature post-quantique (ML-DSA-87) que QoreChain demande à toutes les autres transactions. La **fenêtre d'autorisation EVM** comble ce vide. Le compte ouvre d'abord une fenêtre bornée avec un message QoreChain Native qui **est** signé avec sa clé post-quantique, puis la voie EVM n'admet les transactions ordinaires MetaMask, ethers.js, Hardhat ou Foundry du compte que tant que la fenêtre les couvre. Cette page est la référence complète du comportement d'une fenêtre dans la version **v3.2.8**.
 
 :::note Où fonctionne la v3.2.8
-Le testnet **`qorechain-diana`** exécute la **v3.2.8** depuis le 12 novembre 2026. Le mainnet **`qorechain-vladi`** ne l'a pas encore appliquée ; sur le mainnet, la fenêtre fonctionne comme décrit dans [Développement EVM](/developer-guide/evm-development#evm-window), sans les options et règles marquées « v3.2.8 » ci-dessous. Un nœud antérieur à la v3.2.8 refuse un message de fenêtre qui renseigne les nouvelles listes.
+Les deux réseaux exécutent la **v3.2.8** : le testnet **`qorechain-diana`** depuis le 12 novembre 2026 et le mainnet **`qorechain-vladi`** depuis le 18 novembre 2026 (proposition de gouvernance 17, hauteur 4,273,000). Les options et règles marquées « v3.2.8 » ci-dessous s'appliquent aux deux. Un nœud antérieur à la v3.2.8 refuse un message de fenêtre qui renseigne les nouvelles listes. Les vérifications et les essais de cette page ont été faits sur le testnet.
 :::
 
 ## Pourquoi c'est important {#why}
@@ -274,7 +274,7 @@ Déployer un contrat exige une fenêtre **sans périmètre**. Une fenêtre avec 
 
 ## Permits, ordres EIP-712 et Permit2 {#permits}
 
-Un permit EIP-2612, un transfert Permit2, un ordre signé ou une méta-transaction est vérifié par un contrat avec le précompilé `ecrecover`. À partir de la v3.2.8 (sur les deux réseaux, dès qu'un réseau l'applique), pour un compte qui détient une clé post-quantique utilisable, cette vérification ne réussit que tant que la fenêtre **active** du compte elle-même admet le **contrat vérificateur**, c'est-à-dire le token ou Permit2 lui-même et non le routeur qui relaie l'appel.
+Un permit EIP-2612, un transfert Permit2, un ordre signé ou une méta-transaction est vérifié par un contrat avec le précompilé `ecrecover`. À partir de la v3.2.8 (sur les deux réseaux), pour un compte qui détient une clé post-quantique utilisable, cette vérification ne réussit que tant que la fenêtre **active** du compte elle-même admet le **contrat vérificateur**, c'est-à-dire le token ou Permit2 lui-même et non le routeur qui relaie l'appel.
 
 1. Si la fenêtre a un périmètre, listez le contrat vérificateur dans `allowed_targets` (`native_only` n'admet aucune signature de ce type).
 2. Ouvrez la fenêtre **avant** que l'utilisateur signe. Sans fenêtre active, la signature est considérée comme invalide et le contrat la refuse.
@@ -307,7 +307,7 @@ Le testnet a répondu le 12 novembre 2026 avec `tx_max_gas` **30000000** et `pre
 | `max_txs` de la fenêtre | 1,000 | Maximum de transactions dans une fenêtre |
 | Entrées de liste | 16 par liste | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-La réponse contient aussi un objet `limits` avec les valeurs fixées par la gouvernance ; lisez `tx_max_gas` et `precompile_input_max_bytes` de premier niveau, qui sont les valeurs en vigueur. La route est servie à partir de la v3.2.8 : le mainnet public répond donc `501 Not Implemented` jusqu'à ce qu'il applique la v3.2.8 (vérifié le 12 novembre 2026, après le passage du mainnet à la v3.2.7).
+La réponse contient aussi un objet `limits` avec les valeurs fixées par la gouvernance ; lisez `tx_max_gas` et `precompile_input_max_bytes` de premier niveau, qui sont les valeurs en vigueur. La route est servie à partir de la v3.2.8, que les deux réseaux exécutent. Le mainnet public a répondu `501 Not Implemented` le 12 novembre 2026, avant d'appliquer la v3.2.8 ; le 19 novembre 2026, il a répondu `200` avec `tx_max_gas` `30000000` et `precompile_input_max_bytes` `16384`.
 
 Une fenêtre ouverte à un prix de gas normal compte quand même les frais maximum : une limite de gas de 30,000,000 avec un plafond de frais de 100 gwei compte 3 QOR contre `max_value` pour une transaction.
 

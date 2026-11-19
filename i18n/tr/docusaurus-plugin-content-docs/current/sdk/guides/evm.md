@@ -237,7 +237,7 @@ await tx.signAndBroadcast(
 
 ### Daha fazla kapsam listesi (zincir v3.2.8'den beri, SDK 0.14.0) {#evm-window-scope-v328}
 
-Zincir v3.2.8'den itibaren (test ağı 12 Kasım 2026'dan beri; ana ağ henüz uygulamadı)
+Zincir v3.2.8'den itibaren (test ağı 12 Kasım 2026'dan beri, ana ağ 18 Kasım 2026'dan beri)
 bir pencere üç liste daha taşıyabilir ve `openEvmWindowMsg` bunları SDK 0.14.0'dan
 itibaren kabul eder: `validators` (hesabın imzasını denetlemesi, hesabın kendi
 eylemleri için sayılan en fazla 16 sözleşme adresi; örneğin bir doğrulayıcı modülü veya

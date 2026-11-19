@@ -9,9 +9,9 @@ sidebar_position: 11
 
 QoreChain release v3.2.8 changes how rollups settle. Rollups can now put their data on the chain, let the chain order their transactions (based sequencing), settle optimistically with a fraud proof that re-runs the batch, keep their posts private to a set of members, and bind Groth16 withdrawal roots in a way that accepts any 32-byte root. STARK settlement is paused until a later release. This page describes what each change does and how to use it. It is for rollup operators and developers who build on the `x/rdk` module.
 
-:::caution Testnet only for now
+:::note Live on both networks
 
-v3.2.8 runs on the public testnet `qorechain-diana` since 12 November 2026. Mainnet has not applied it yet, so every feature on this page is refused there until it does. Treat the examples as testnet examples.
+v3.2.8 runs on the public testnet `qorechain-diana` since 12 November 2026 and on mainnet `qorechain-vladi` since 18 November 2026 (governance proposal 17, height 4,273,000). The examples were run on the testnet.
 
 :::
 

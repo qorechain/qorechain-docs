@@ -123,7 +123,7 @@ pubkey })`.
 
 ### Collegamento dalla chain v3.2.8 (SDK 0.14.0) {#link-v328}
 
-Dalla chain v3.2.8 (la testnet dal 12 novembre 2026; la mainnet non l'ha applicata)
+Dalla chain v3.2.8 (la testnet dal 12 novembre 2026, la mainnet dal 18 novembre 2026)
 la registrazione qui sopra viene rifiutata se non porta una **prova di possesso**: la chiave
 che viene collegata firma un messaggio in chiaro che nomina la chain, l'account, lo schema
 e la chiave. Una chiave con `send`, `evm`, `deploy`, `svm` o `all` richiede inoltre che la

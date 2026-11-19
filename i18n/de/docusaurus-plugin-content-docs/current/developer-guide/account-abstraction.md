@@ -14,7 +14,7 @@ Das Abstract-Account-Modul ist zum Zeitpunkt der Erstellung **auf dem Mainnet `q
 :::
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das die Node-Version **v3.2.7** ausführt (angewendet bei Höhe 4.164.600 am 12. November 2026, Governance-Vorschlag 16; v3.2.6 wurde bei Höhe 4.020.000 am 4. November 2026 angewendet, Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober 2026 angewendet, Vorschlag 14, und v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026). Ersetzen Sie für das Testnet, das v3.2.8 ausführt (seit dem 12. November 2026; v3.2.4 seit dem 19. Oktober 2026), `--chain-id qorechain-diana`.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das die Node-Version **v3.2.8** ausführt (angewendet bei Höhe 4.273.000 am 18. November 2026, Governance-Vorschlag 17; v3.2.7 wurde bei Höhe 4.164.600 am 12. November 2026 angewendet, Vorschlag 16; v3.2.6 wurde bei Höhe 4.020.000 am 4. November 2026 angewendet, Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober 2026 angewendet, Vorschlag 14, und v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026). Ersetzen Sie für das Testnet, das ebenfalls v3.2.8 ausführt (seit dem 12. November 2026; v3.2.4 seit dem 19. Oktober 2026), `--chain-id qorechain-diana`.
 :::
 
 :::caution Jede Cosmos-Lane-Transaktion benötigt die hybride Post-Quantum-Mitsignatur
@@ -118,7 +118,7 @@ Der Kontodatensatz enthält seine Regeln und die Anzahl der verknüpften Schlüs
 qorechaind query abstractaccount account <account-address>
 ```
 
-Ab v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) wird ein Schlüssel mit Wertberechtigungen bei der Registrierung und bei der Ausführung abgelehnt, sofern keine Regel ihn begrenzt; „kein Limit“ gilt für solche Schlüssel also nicht mehr.
+Ab v3.2.8 (Testnet seit dem 12. November 2026, Mainnet seit dem 18. November 2026) wird ein Schlüssel mit Wertberechtigungen bei der Registrierung und bei der Ausführung abgelehnt, sofern keine Regel ihn begrenzt; „kein Limit“ gilt für solche Schlüssel also nicht mehr.
 
 :::caution Eine Regel begrenzt einen Schlüssel nur, wenn eine existiert
 Die Chain ermittelt das Limit in dieser Reihenfolge: die eigene Regel des Authenticators, falls gesetzt und `enabled`; andernfalls die erste `enabled`-Regel des Kontos; andernfalls **gibt es kein Limit**. Eine mit `enabled: false` gespeicherte Regel bedeutet kein Limit, nicht ein Limit von null. `MsgRegisterAuthenticator` enthält keine Regel, ein allein mit dieser Nachricht verknüpfter Schlüssel wird also nur durch eine Regel auf Kontoebene begrenzt. Legen Sie mit `update-rules` bewusst eine Regel fest und registrieren Sie nur die Berechtigungen, die der Schlüssel benötigt. Ein Limit begrenzt den Schaden, den ein verknüpfter Schlüssel anrichten kann; es ersetzt nicht den Widerruf des Schlüssels.
@@ -147,7 +147,7 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-**Ab Release v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) braucht die Registrierung zwei weitere Dinge.**
+**Ab Release v3.2.8 (Testnet seit dem 12. November 2026, Mainnet seit dem 18. November 2026) braucht die Registrierung zwei weitere Dinge.**
 
 1. **Einen Besitznachweis.** `MsgRegisterAuthenticator` hat ein Pflichtfeld `possession_proof` (Feld 8): eine Signatur des zu verknüpfenden Schlüssels, die belegt, dass er der Verknüpfung zustimmt. Der Schlüssel signiert diesen Klartext nach seinem eigenen Schema, sodass eine Browser-Wallet dem Nutzer zeigt, was er signiert (Phantom `signMessage`, MetaMask `personal_sign`); ein 33-Byte-secp256k1-Schlüssel signiert den SHA-256 des Textes:
 
@@ -166,7 +166,7 @@ Im Code hat SDK 0.14.0 die Helfer für beides (TypeScript: `signAuthenticatorLin
 
 Ein Phantom-Schlüssel wird auf dieselbe Weise registriert, mit dem Schema `ed25519` und dem öffentlichen Phantom-Schlüssel (`register-authenticator` in der CLI). Der Widerruf erfolgt sofort über `MsgRevokeAuthenticator`.
 
-**Eine Ausführung kann innerhalb einer erfolgreichen Transaktion fehlschlagen.** Ab v3.2.8 (nur Testnet, bis ein späteres Mainnet-Upgrade folgt) liefert ein fehlgeschlagenes `MsgExecuteEVM` oder `MsgExecuteCosmos` in seiner Antwort `success=false` bei Transaktionscode 0, sendet das Event `abstractaccount_execution_failed` mit dem Grund und verbraucht trotzdem die Authenticator-Nonce. Ein Client, der nur den Transaktionscode prüft, meldet einen solchen Aufruf als Erfolg: Lesen Sie die Antwort oder das Event.
+**Eine Ausführung kann innerhalb einer erfolgreichen Transaktion fehlschlagen.** Ab v3.2.8 (Testnet seit dem 12. November 2026, Mainnet seit dem 18. November 2026) liefert ein fehlgeschlagenes `MsgExecuteEVM` oder `MsgExecuteCosmos` in seiner Antwort `success=false` bei Transaktionscode 0, sendet das Event `abstractaccount_execution_failed` mit dem Grund und verbraucht trotzdem die Authenticator-Nonce. Ein Client, der nur den Transaktionscode prüft, meldet einen solchen Aufruf als Erfolg: Lesen Sie die Antwort oder das Event.
 
 ### Berechtigungstaxonomie {#permission-taxonomy}
 
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Einen Schlüssel in v3.2.8 verknüpfen: durchgespieltes Beispiel {#link-example-v328}
 
-Dieser Abschnitt führt eine vollständige Verknüpfung im **Testnet `qorechain-diana`** durch, das seit dem 12. November 2026 mit v3.2.8 läuft. Das Mainnet läuft noch nicht mit v3.2.8, und sein Abstract-Account-Modul ist abgeschaltet, daher gilt nichts davon dort heute. Kurz gesagt: Der Schlüssel, den Sie verknüpfen, muss einen kurzen Text signieren, um zu zeigen, dass er der Verknüpfung zustimmt, ein Schlüssel, der Wert bewegen kann, braucht eine Ausgabenregel auf dem Konto, und wenn ein verknüpfter Schlüssel später ausgibt, wird eine fehlgeschlagene Ausgabe innerhalb einer erfolgreichen Transaktion gemeldet.
+Dieser Abschnitt führt eine vollständige Verknüpfung im **Testnet `qorechain-diana`** durch, das seit dem 12. November 2026 mit v3.2.8 läuft. Das Mainnet läuft ebenfalls mit v3.2.8 (seit dem 18. November 2026), aber sein Abstract-Account-Modul war bei der letzten Prüfung (27. Oktober 2026) abgeschaltet, daher galt nichts davon dort bei dieser Prüfung. Kurz gesagt: Der Schlüssel, den Sie verknüpfen, muss einen kurzen Text signieren, um zu zeigen, dass er der Verknüpfung zustimmt, ein Schlüssel, der Wert bewegen kann, braucht eine Ausgabenregel auf dem Konto, und wenn ein verknüpfter Schlüssel später ausgibt, wird eine fehlgeschlagene Ausgabe innerhalb einer erfolgreichen Transaktion gemeldet.
 
 Warum das wichtig ist: Ab v3.2.8 wirkt der Inhaber des Schlüssels an der Verknüpfung mit, sodass ein Schlüssel nur von jemandem verknüpft werden kann, der ihn tatsächlich hält, und ein Schlüssel, der Wert bewegen kann, immer durch ein Limit auf dem Konto begrenzt ist.
 

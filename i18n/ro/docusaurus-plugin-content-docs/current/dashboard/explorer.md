@@ -52,6 +52,14 @@ Pagina tranzacției arată hash-ul (cu copiere), starea și tipul, Block Height,
 - **PQC Verified.** O tranzacție de pe lane-ul nativ care a reușit și a cărei semnătură hibridă (inclusiv partea ML-DSA-87) a fost verificată de lanțul însuși. O tranzacție eșuată sau una fără o semnătură hibridă verificată afișează în schimb securitate standard.
 - **Authorised by a PQC window.** O tranzacție EVM trimisă cât timp expeditorul avea deschisă o [fereastră de autorizare EVM](/developer-guide/evm-development#evm-window), cu link-ul **Window opened by**.
 
+### Hash-urile tranzacțiilor EVM {#evm-hashes}
+
+O tranzacție EVM are două hash-uri. Hash-ul `0x` este hash-ul de tranzacție Ethereum folosit de MetaMask, ethers.js și `eth_getTransactionReceipt`. ID-ul cu majuscule, fără `0x`, este hash-ul tranzacției native care o poartă (`MsgEthereumTx`). Niciunul nu poate fi calculat din celălalt, iar eliminarea `0x` din hash-ul EVM și trecerea lui la majuscule nu dă ID-ul nativ.
+
+- **Explorerul din Dashboard.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` acceptă hash-ul EVM așa cum este, cu `0x`. Explorerul citește rețeaua aleasă în selectorul de rețea din Dashboard (mainnet implicit, reținută în browserul tău), așa că un hash de testnet afișează "Transaction Not Found" până treci selectorul pe Testnet.
+- **Găsirea ID-ului nativ prin REST.** Caută după hash-ul EVM complet, cu litere mici și cu `0x`, și codifică interogarea ca URL: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (folosește `https://api.qore.host` pentru mainnet). ID-ul nativ este `tx_responses[0].txhash`. Fără `0x` căutarea nu returnează nimic, iar `ethereum_tx.txHash` nu este cheia corectă.
+- **Chitanța din partea EVM.** Apelează `eth_getTransactionReceipt` pe `https://evm-testnet.qore.host` sau `https://evm.qore.host`.
+
 ### Pagina blocului
 
 Săgețile anterior și următor parcurg lanțul. **Core Information** conține înălțimea, hash-ul, proponentul, numărul de semnături și Gas Used; urmează **Technical Hashes** și **Block Transactions**. Blocurile nu poartă nicio etichetă post-cuantică.

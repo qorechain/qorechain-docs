@@ -29,7 +29,7 @@ Accounts, balances, and tokens are shared across the runtimes, and the chain
 includes the IBC module for cross-chain interoperability (no IBC channel is
 open on mainnet; the testnet has one open `transfer` channel to a test chain, checked 27 October 2026).
 
-:::note What works on the live networks today (mainnet runs v3.2.7, the testnet v3.2.8)
+:::note What works on the live networks today (mainnet and the testnet run v3.2.8)
 **Works:** reads on every lane, hybrid-signed Native transactions, unified
 accounts, EVM transactions inside an
 [authorization window](/sdk/guides/evm#evm-window), and SVM reads.
@@ -45,8 +45,8 @@ applies. Checked against the live endpoints on 27 October 2026; on 7 November 20
 
 The published SDK (0.14.0, 12 November 2026) signs in the form both networks verify
 (v2 hybrid sign-bytes, resolved from chain state), and the signing format,
-addresses, decimals, memos and fees did not change in v3.2.3, v3.2.4, v3.2.5 or v3.2.6 (mainnet has run v3.2.7 since 12 November 2026,
-height 4,164,600, governance proposal 16, after v3.2.6 on 4 November; the testnet since 27 October, and since 6 November the testnet ran v3.2.7 and since 12 November it runs v3.2.8, which add messages that SDK 0.14.0 has builders for; the testnet's new rules apply from v3.2.8 and mainnet has not applied it; the v3.2.7 messages are on mainnet from 12 November 2026). It carries
+addresses, decimals, memos and fees did not change in v3.2.3, v3.2.4, v3.2.5 or v3.2.6 (mainnet ran v3.2.7 from 12 November 2026,
+height 4,164,600, governance proposal 16, after v3.2.6 on 4 November, and has run v3.2.8 since 18 November 2026, height 4,273,000, governance proposal 17; the testnet since 27 October, and since 6 November the testnet ran v3.2.7 and since 12 November it runs v3.2.8, which add messages that SDK 0.14.0 has builders for; the new rules apply from v3.2.8 on both networks; the v3.2.7 messages are on mainnet from 12 November 2026). It carries
 the client side of the later post-quantum rules (the proof of possession on key
 registration, scoped EVM windows, EIP-7702 consent messages) and of v3.2.4 (staking
 tiers, the authenticator nonce, protocol feature switches) and v3.2.5 (exact gas for
@@ -242,7 +242,7 @@ behaviour are unchanged. Recovery-code helpers were added in every language, and
 `migrateToHybrid` reports `keyVerified`. See
 [What 0.13.0 changes](/sdk/install#whats-new-0130).
 
-**0.14.0, client support for chain v3.2.8.** Linking a key needs a possession proof, keys that move value need a spending rule (a helper builds the pair), governance parameter updates need every field, failed authorised executions can be read, and the EVM window takes three more lists. The new rules apply once a network runs v3.2.8: the testnet since 12 November 2026; mainnet has not applied it. See
+**0.14.0, client support for chain v3.2.8.** Linking a key needs a possession proof, keys that move value need a spending rule (a helper builds the pair), governance parameter updates need every field, failed authorised executions can be read, and the EVM window takes three more lists. The new rules apply once a network runs v3.2.8: the testnet since 12 November 2026 and mainnet since 18 November 2026. See
 [What 0.14.0 changes](/sdk/install#whats-new-0140).
 
 ## Where to go next

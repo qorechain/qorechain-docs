@@ -10,7 +10,7 @@ sidebar_position: 7
 Eine Ethereum-Transaktion trägt genau eine secp256k1-Signatur und nichts weiter, sie kann daher nicht die Post-Quanten-Signatur (ML-DSA-87) tragen, die QoreChain bei jeder anderen Transaktion verlangt. Das **EVM-Autorisierungsfenster** schließt diese Lücke. Das Konto öffnet zuerst ein begrenztes Fenster mit einer QoreChain-Native-Nachricht, die **mit** seinem Post-Quanten-Schlüssel signiert ist, und die EVM-Lane lässt die gewöhnlichen MetaMask-, ethers.js-, Hardhat- oder Foundry-Transaktionen des Kontos nur zu, solange das Fenster sie abdeckt. Diese Seite ist die vollständige Referenz dafür, wie sich ein Fenster im Release **v3.2.8** verhält.
 
 :::note Wo v3.2.8 läuft
-Das **`qorechain-diana`**-Testnet führt **v3.2.8** seit dem 12. November 2026 aus. Das **`qorechain-vladi`**-Mainnet hat es noch nicht angewendet; im Mainnet funktioniert das Fenster wie in [EVM-Entwicklung](/developer-guide/evm-development#evm-window) beschrieben, ohne die unten mit „v3.2.8" gekennzeichneten Optionen und Regeln. Ein Node unter v3.2.8 lehnt eine Fensternachricht ab, die die neuen Listen setzt.
+Beide Netzwerke führen **v3.2.8** aus: das **`qorechain-diana`**-Testnet seit dem 12. November 2026 und das **`qorechain-vladi`**-Mainnet seit dem 18. November 2026 (Governance-Vorschlag 17, Höhe 4,273,000). Die unten mit „v3.2.8" gekennzeichneten Optionen und Regeln gelten für beide. Ein Node unter v3.2.8 lehnt eine Fensternachricht ab, die die neuen Listen setzt. Die Prüfungen und Testläufe auf dieser Seite wurden im Testnet gemacht.
 :::
 
 ## Warum das wichtig ist {#why}
@@ -307,7 +307,7 @@ Das Testnet antwortete am 12. November 2026 mit `tx_max_gas` **30000000** und `p
 | Fenster-`max_txs` | 1,000 | Meiste Transaktionen in einem Fenster |
 | Listeneinträge | 16 pro Liste | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-Die Antwort enthält auch ein Objekt `limits` mit den von der Governance gesetzten Werten; lesen Sie die obersten Felder `tx_max_gas` und `precompile_input_max_bytes`, das sind die geltenden Werte. Die Route wird ab v3.2.8 bedient, das öffentliche Mainnet antwortet daher mit `501 Not Implemented`, bis es v3.2.8 anwendet (geprüft am 12. November 2026, nachdem das Mainnet auf v3.2.7 gewechselt war).
+Die Antwort enthält auch ein Objekt `limits` mit den von der Governance gesetzten Werten; lesen Sie die obersten Felder `tx_max_gas` und `precompile_input_max_bytes`, das sind die geltenden Werte. Die Route wird ab v3.2.8 bedient, das beide Netzwerke ausführen. Das öffentliche Mainnet antwortete am 12. November 2026, vor dem v3.2.8-Upgrade, mit `501 Not Implemented`; am 19. November 2026 antwortete es mit `200`, `tx_max_gas` `30000000` und `precompile_input_max_bytes` `16384`.
 
 Ein zu einem normalen Gaspreis geöffnetes Fenster zählt trotzdem die maximale Gebühr: Ein Gaslimit von 30,000,000 bei einer Gebührenobergrenze von 100 gwei zählt für eine Transaktion 3 QOR gegen `max_value`.
 

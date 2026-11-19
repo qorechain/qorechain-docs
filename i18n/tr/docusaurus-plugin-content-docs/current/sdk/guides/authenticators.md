@@ -127,7 +127,7 @@ pubkey })` mesajını yayınlar.
 
 ### Zincir v3.2.8'den itibaren bağlama (SDK 0.14.0) {#link-v328}
 
-Zincir v3.2.8'den itibaren (test ağı 12 Kasım 2026'dan beri; ana ağ henüz uygulamadı)
+Zincir v3.2.8'den itibaren (test ağı 12 Kasım 2026'dan beri, ana ağ 18 Kasım 2026'dan beri)
 yukarıdaki kayıt, bir **sahiplik kanıtı** taşımadıkça reddedilir: bağlanan anahtar,
 zinciri, hesabı, şemayı ve anahtarı adlandıran düz metin bir mesajı imzalar.
 `send`, `evm`, `deploy`, `svm` veya `all` iznine sahip bir anahtar için ayrıca

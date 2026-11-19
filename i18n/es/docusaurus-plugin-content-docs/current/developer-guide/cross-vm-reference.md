@@ -12,11 +12,11 @@ Una llamada entre VM permite que el código de una máquina virtual ejecute un c
 Esta página es la referencia de campos, costes y límites de la versión v3.2.8, con un ejemplo práctico para cada dirección. Los conceptos, el ciclo de vida y el comportamiento anterior están en [Interoperabilidad entre VM](/developer-guide/cross-vm-interoperability); el recorrido con el SDK está en la [guía de Cross-VM](/sdk/guides/cross-vm).
 
 :::note Dónde se ejecuta v3.2.8
-La testnet **`qorechain-diana`** ejecuta **v3.2.8** desde el 12 de noviembre de 2026. La mainnet **`qorechain-vladi`** todavía no la ha aplicado, y en la mainnet `MsgCrossVMCall` está desactivado. Todo lo marcado como "v3.2.8" a continuación es, por ahora, comportamiento de la testnet.
+Ambas redes ejecutan **v3.2.8**: la testnet **`qorechain-diana`** desde el 12 de noviembre de 2026 y la mainnet **`qorechain-vladi`** desde el 18 de noviembre de 2026 (propuesta de gobernanza 17, altura 4,273,000). En la mainnet `MsgCrossVMCall` está en pausa por ahora, así que la llamada no se puede enviar allí. Los ejemplos y las comprobaciones de abajo se ejecutaron en la testnet.
 :::
 
 :::caution ¿Está disponible ahora el mensaje de llamada?
-En la testnet, `MsgCrossVMCall` quedó en pausa con la actualización. La propuesta de gobernanza 37 se aprobó y levantó la pausa, así que la llamada está abierta en la testnet (comprobado el 12 de noviembre de 2026: la lista del disyuntor (circuit breaker) solo contiene `/cosmwasm.wasm.v1.MsgStoreCode`). En la mainnet sigue desactivada. Dos cosas indican si la llamada está disponible en un momento dado: los parámetros del módulo (`enabled`) y la lista del disyuntor. Comprueba ambas antes de construir nada sobre ella:
+En la testnet, `MsgCrossVMCall` quedó en pausa con la actualización. La propuesta de gobernanza 37 se aprobó y levantó la pausa, así que la llamada está abierta en la testnet (comprobado el 12 de noviembre de 2026: la lista del disyuntor (circuit breaker) solo contiene `/cosmwasm.wasm.v1.MsgStoreCode`). En la mainnet está en pausa por ahora (la lista del disyuntor de allí sigue conteniendo `MsgCrossVMCall`, leída el 19 de noviembre de 2026). Dos cosas indican si la llamada está disponible en un momento dado: los parámetros del módulo (`enabled`) y la lista del disyuntor. Comprueba ambas antes de construir nada sobre ella:
 
 ```bash
 # Module parameters: look for "enabled": true

@@ -52,6 +52,14 @@ Dashboard araması `0x...` girdisini bir işlem hash'i olarak ele alır. Bir EVM
 - **PQC Verified.** Başarılı olmuş ve hibrit imzası (ML-DSA-87 kısmı dahil) zincirin kendisi tarafından doğrulanmış bir native lane işlemi. Başarısız bir işlem veya doğrulanmış hibrit imzası olmayan bir işlem bunun yerine standart güvenlik gösterir.
 - **Authorised by a PQC window.** Göndericinin açık bir [EVM yetkilendirme penceresi](/developer-guide/evm-development#evm-window) varken gönderilmiş bir EVM işlemi, **Window opened by** bağlantısıyla.
 
+### EVM işlem hash'leri {#evm-hashes}
+
+Bir EVM işleminin iki hash'i vardır. `0x` hash'i, MetaMask, ethers.js ve `eth_getTransactionReceipt` tarafından kullanılan Ethereum işlem hash'idir. `0x` olmadan büyük harfli kimlik, onu taşıyan yerel işlemin (`MsgEthereumTx`) hash'idir. Biri diğerinden hesaplanamaz; EVM hash'inden `0x` çıkarıp büyük harfe çevirmek yerel kimliği vermez.
+
+- **Dashboard gezgini.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` EVM hash'ini olduğu gibi, `0x` ile kabul eder. Gezgin, Dashboard ağ seçicisinde seçilen ağı okur (varsayılan mainnet, tarayıcınızda hatırlanır); bu yüzden bir testnet hash'i, seçiciyi Testnet'e geçirene kadar "Transaction Not Found" gösterir.
+- **Yerel kimliği REST ile bulma.** `0x` ile, küçük harfli tam EVM hash'iyle arayın ve sorguyu URL olarak kodlayın: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (mainnet için `https://api.qore.host` kullanın). Yerel kimlik `tx_responses[0].txhash` alanıdır. `0x` olmadan arama hiçbir şey döndürmez ve `ethereum_tx.txHash` doğru anahtar değildir.
+- **EVM tarafından makbuz.** `https://evm-testnet.qore.host` veya `https://evm.qore.host` üzerinde `eth_getTransactionReceipt` çağırın.
+
 ### Blok sayfası
 
 Önceki ve sonraki okları zincirde ilerletir. **Core Information** yüksekliği, hash'i, önericiyi, imza sayısını ve Gas Used'ı içerir; ardından **Technical Hashes** ve **Block Transactions** gelir. Bloklar kuantum sonrası etiket taşımaz.

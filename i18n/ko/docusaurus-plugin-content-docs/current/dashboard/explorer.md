@@ -52,6 +52,14 @@ sidebar_position: 2
 - **PQC Verified.** 성공했고 체인 자체가 하이브리드 서명(ML-DSA-87 부분 포함)을 검증한 네이티브 레인 트랜잭션입니다. 실패한 트랜잭션이나 검증된 하이브리드 서명이 없는 트랜잭션은 대신 표준 보안을 표시합니다.
 - **Authorised by a PQC window.** 발신자가 열린 [EVM 승인 윈도우](/developer-guide/evm-development#evm-window)를 가지고 있을 때 보낸 EVM 트랜잭션이며, **Window opened by** 링크가 함께 표시됩니다.
 
+### EVM 트랜잭션 해시 {#evm-hashes}
+
+EVM 트랜잭션에는 해시가 두 개 있습니다. `0x` 해시는 MetaMask, ethers.js, `eth_getTransactionReceipt`가 사용하는 Ethereum 트랜잭션 해시입니다. `0x` 없는 대문자 ID는 이를 담고 있는 네이티브 트랜잭션(`MsgEthereumTx`)의 해시입니다. 어느 쪽도 다른 쪽에서 계산할 수 없으며, EVM 해시에서 `0x`를 떼고 대문자로 바꿔도 네이티브 ID가 되지 않습니다.
+
+- **대시보드 익스플로러.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>`는 EVM 해시를 `0x`를 붙인 그대로 받습니다. 익스플로러는 대시보드 네트워크 선택기에서 고른 네트워크(기본값은 메인넷이며 브라우저에 저장됩니다)를 읽으므로, 테스트넷 해시는 선택기를 Testnet으로 바꾸기 전까지 "Transaction Not Found"로 표시됩니다.
+- **REST로 네이티브 ID 찾기.** `0x`를 붙인 소문자 전체 EVM 해시로 검색하고, 쿼리를 URL 인코딩하세요: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (메인넷은 `https://api.qore.host` 사용). 네이티브 ID는 `tx_responses[0].txhash`입니다. `0x`가 없으면 검색 결과가 없으며, `ethereum_tx.txHash`는 올바른 키가 아닙니다.
+- **EVM 쪽에서 영수증 조회.** `https://evm-testnet.qore.host` 또는 `https://evm.qore.host`에서 `eth_getTransactionReceipt`를 호출하세요.
+
 ### 블록 페이지
 
 이전 및 다음 화살표로 체인을 한 단계씩 이동합니다. **Core Information**에는 높이, 해시, 제안자, 서명 수, Gas Used가 있고, 그 뒤에 **Technical Hashes**와 **Block Transactions**가 이어집니다. 블록에는 포스트 양자 라벨이 없습니다.

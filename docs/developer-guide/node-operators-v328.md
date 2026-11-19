@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Node Operators: v3.2.8 Checklist
 
-Release **v3.2.8** is running on the testnet `qorechain-diana` since 12 November 2026 (height 9,929,500). Mainnet `qorechain-vladi` has run v3.2.7 since 12 November 2026 (height 4,164,600, governance proposal 16) and has not applied v3.2.8, so nothing in this page applies to a mainnet node today.
+Release **v3.2.8** is running on both networks: the testnet `qorechain-diana` since 12 November 2026 (height 9,929,500) and the mainnet `qorechain-vladi` since 18 November 2026 (height 4,273,000, governance proposal 17). Mainnet had run v3.2.7 since 12 November 2026 (height 4,164,600, governance proposal 16). Everything in this page applies to a mainnet node as well; the examples use the testnet endpoints unless they say otherwise.
 
 This page is the short list of what a node operator checks and changes for v3.2.8: the shared libraries in the bundle, the contract runtime settings, the new `app.toml` defaults, one new REST route and the steps to upgrade a node that is still on v3.2.7. For the full node guide, see [Running a Node](/developer-guide/running-a-node).
 
@@ -78,7 +78,7 @@ This setting only changes what your own node answers for contract queries; it do
 
 ## 6. New route: `GET /qorechain/svm/v1/params` {#svm-params}
 
-v3.2.8 adds a read-only route for the SVM module parameters. It is served by nodes on v3.2.8 (testnet) and answers HTTP `501` on mainnet, where the release is not applied.
+v3.2.8 adds a read-only route for the SVM module parameters. It is served by nodes on v3.2.8 (both networks) and answers HTTP `501` on a node that runs an older release. On 19 November 2026 the public mainnet answered `200` with `enabled` `false`: the SVM lane stays off on mainnet.
 
 ```bash
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params
@@ -109,11 +109,11 @@ The manifest is the source of truth for which binary to install:
 curl -s https://download.qore.host/testnet/latest.json | jq '{version, minCompatible, upgradeType, upgradeHeight, binary: .binary.url}'
 ```
 
-On 12 November 2026 it answered `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` and the binary `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`. Check that `version` equals `minCompatible` before trusting `binary.url`, and verify the archive against the `sha256` in the same file. The mainnet manifest is at `https://download.qore.host/mainnet/latest.json` and names v3.2.6 until a mainnet upgrade is announced.
+On 12 November 2026 it answered `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` and the binary `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`. Check that `version` equals `minCompatible` before trusting `binary.url`, and verify the archive against the `sha256` in the same file. The mainnet manifest is at `https://download.qore.host/mainnet/latest.json`. Read on 19 November 2026 it named `version` `3.2.8`, `minCompatible` `3.2.7`, `upgradeHeight` `4273000` and the binary `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107,091,599 bytes, SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`); on mainnet `minCompatible` is lower than `version`, so compare both against the release you installed.
 
 ## 8. Upgrade a node that is still on v3.2.7 {#upgrade-from-v327}
 
-The testnet upgrade height has passed, so a node still on v3.2.7 stops at height 9,929,500 with `UPGRADE "v3.2.8" NEEDED`. Its state is kept and it does not need to resync.
+The upgrade height has passed on both networks (testnet 9,929,500; mainnet 4,273,000), so a node still on v3.2.7 stops at that height with `UPGRADE "v3.2.8" NEEDED`. Its state is kept and it does not need to resync.
 
 1. Download the archive named in the manifest and verify its SHA-256.
 2. Stop the node.
@@ -127,17 +127,17 @@ curl -s localhost:26657/status | jq '.result.sync_info.catching_up'
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params | jq '.params.enabled'
 ```
 
-A new node joining the testnet starts from the v3.2.8 binary directly; see [Connecting to Testnet](/getting-started/connecting-to-testnet) for state sync and peers, and [Running a Node](/developer-guide/running-a-node#upgrades) for the upgrade history.
+A new node joining either network starts from the v3.2.8 binary directly; see [Connecting to Testnet](/getting-started/connecting-to-testnet) for state sync and peers, and [Running a Node](/developer-guide/running-a-node#upgrades) for the upgrade history.
 
 ## Limits and errors
 
 | What you see | Meaning | What to do |
 | --- | --- | --- |
-| `UPGRADE "v3.2.8" NEEDED` and the node stops at height 9,929,500 | The node is still on the v3.2.7 binary | Section 8 |
+| `UPGRADE "v3.2.8" NEEDED` and the node stops at height 9,929,500 (testnet) or 4,273,000 (mainnet) | The node is still on the v3.2.7 binary | Section 8 |
 | Start-up error about a missing shared library | `lib/` was not copied whole, or the loader does not point at it | Section 1 |
 | Warning that `memory_cache_size` was raised | The configured value is below 256 MiB | Set 256 or more |
 | Warning about the contract directory | Contract code is still in the old location | Move it to `<home>/wasm` when convenient |
-| `501` from `/qorechain/svm/v1/params` | The node is not on v3.2.8 (mainnet runs v3.2.7) | Expected on mainnet |
+| `501` from `/qorechain/svm/v1/params` | The node is not on v3.2.8 | Upgrade the node ([section 8](#upgrade-from-v327)) |
 
 ## Related pages
 

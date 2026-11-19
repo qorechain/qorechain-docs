@@ -52,6 +52,14 @@ sidebar_position: 2
 - **PQC Verified。** 成功したネイティブレーンのトランザクションで、チェーン自身がそのハイブリッド署名（ML-DSA-87 部分を含む）を検証したもの。失敗したトランザクション、またはハイブリッド署名が検証されていないトランザクションには、代わりに標準のセキュリティが表示されます。
 - **Authorised by a PQC window。** 送信者が開いている [EVM 承認ウィンドウ](/developer-guide/evm-development#evm-window)を持っているときに送信された EVM トランザクション。**Window opened by** リンクが付きます。
 
+### EVM トランザクションハッシュ {#evm-hashes}
+
+EVM トランザクションにはハッシュが 2 つあります。`0x` 付きのハッシュは、MetaMask、ethers.js、`eth_getTransactionReceipt` が使う Ethereum トランザクションハッシュです。`0x` なしの大文字の ID は、それを運ぶネイティブトランザクション(`MsgEthereumTx`)のハッシュです。どちらか一方からもう一方を計算することはできず、EVM ハッシュから `0x` を外して大文字にしても、ネイティブ ID にはなりません。
+
+- **ダッシュボードのエクスプローラー。** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` は EVM ハッシュを `0x` 付きのまま受け付けます。エクスプローラーは、ダッシュボードのネットワークセレクターで選ばれたネットワーク(既定はメインネットで、ブラウザーに記憶されます)を読むため、テストネットのハッシュは、セレクターを Testnet に切り替えるまで "Transaction Not Found" と表示されます。
+- **REST でネイティブ ID を探す。** `0x` 付きで小文字の完全な EVM ハッシュで検索し、クエリを URL エンコードします: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'`(メインネットでは `https://api.qore.host` を使います)。ネイティブ ID は `tx_responses[0].txhash` です。`0x` がないと検索結果は空になり、`ethereum_tx.txHash` は正しいキーではありません。
+- **EVM 側からのレシート。** `https://evm-testnet.qore.host` または `https://evm.qore.host` で `eth_getTransactionReceipt` を呼び出します。
+
 ### ブロックページ
 
 前へ・次への矢印で、チェーンをたどれます。**Core Information** には高さ、ハッシュ、プロポーザー、署名数、Gas Used があり、**Technical Hashes** と **Block Transactions** が続きます。ブロックにポスト量子のラベルはありません。

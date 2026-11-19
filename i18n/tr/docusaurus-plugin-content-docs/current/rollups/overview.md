@@ -12,7 +12,7 @@ QoreChain **Rollup Development Kit (RDK)**; QoreChain üzerinde zincir üstü `x
 :::caution Erken aşama bir yetenek
 RDK her iki ağda da dağıtılmıştır, ancak **henüz hiçbirinde bir rollup oluşturulmamıştır** (27 Ekim 2026 itibarıyla kontrol edildi); dolayısıyla bu bölümde anlatılan akışlar üçüncü taraflarca denenmemiştir. **ZK mutabakatı (`defi` profili, `defi-rollup` şablonu ve her `zk` rollup'ı) hiçbir ağda denenmemiştir:** doğrulama anahtarı mesajları mainnet'te zincir v3.2.7'den (12 Kasım 2026) ve test ağında 6 Kasım 2026'dan beri etkindir ([ZK / STARK ve Para Çekme](/rollups/zk-stark-withdrawals) sayfasına bakın), ancak hiçbir ZK rollup'ı oluşturulmamıştır. Bir ZK rollup'ı uçtan uca çalıştırılana kadar `optimistic` mutabakatı kullanın.
 
-Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) zincir sürümü **v3.2.7**'yi çalıştırır (yönetişim önerisi 16 onu 12 Kasım 2026'da 4.164.600 yüksekliğinde uyguladı; v3.2.6, öneri 15 ile 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulanmıştı; v3.2.5, öneri 14 ile 29 Ekim 2026'da 3.906.833 yüksekliğinde ve v3.2.4 23 Ekim 2026'da 3.742.566 yüksekliğinde, öneri 13, uygulanmıştı); test ağı (**`qorechain-diana`**, EVM zincir kimliği **9800**) 12 Kasım 2026'dan beri **v3.2.8** çalıştırır (9.929.500 yüksekliğinde; v3.2.4 ona 19 Ekim 2026'da, v3.2.5 26 Ekim'de, v3.2.6 27 Ekim'de, v3.2.7 6 Kasım'da ulaştı). Ana ağ test ağının bir sürüm gerisindedir: v3.2.8'i uygulamadı. v3.2.5'in rollup'lar için neyi değiştirdiği [zincir v3.2.5 davranışı](#v325) altında listelenir; her iki ağda da geçerlidir. Davranışın v3.2.3 ile v3.2.4 arasında değiştiği yerlerde bu bölüm hangi sürümün geçerli olduğunu belirtir. Her dağıtımı önce test ağında doğrulayın ve her sayfadaki durum notlarını okuyun: birçok yetenek (ZK doğrulaması, Celestia veri erişilebilirliği, QCAI Copilot, çapraz-VM çağrıları, mutabakat makbuzları) bugün uçtan uca kullanılamaz.
+Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) zincir sürümü **v3.2.8**'i çalıştırır (yönetişim önerisi 17 onu 18 Kasım 2026'da 4.273.000 yüksekliğinde uyguladı; v3.2.7, öneri 16 ile 12 Kasım 2026'da 4.164.600 yüksekliğinde uygulanmıştı; v3.2.6, öneri 15 ile 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulanmıştı; v3.2.5, öneri 14 ile 29 Ekim 2026'da 3.906.833 yüksekliğinde ve v3.2.4 23 Ekim 2026'da 3.742.566 yüksekliğinde, öneri 13, uygulanmıştı); test ağı (**`qorechain-diana`**, EVM zincir kimliği **9800**) 12 Kasım 2026'dan beri **v3.2.8** çalıştırır (9.929.500 yüksekliğinde; v3.2.4 ona 19 Ekim 2026'da, v3.2.5 26 Ekim'de, v3.2.6 27 Ekim'de, v3.2.7 6 Kasım'da ulaştı). Her iki ağ da v3.2.8 çalıştırır. v3.2.5'in rollup'lar için neyi değiştirdiği [zincir v3.2.5 davranışı](#v325) altında listelenir; her iki ağda da geçerlidir. Davranışın v3.2.3 ile v3.2.4 arasında değiştiği yerlerde bu bölüm hangi sürümün geçerli olduğunu belirtir. Her dağıtımı önce test ağında doğrulayın ve her sayfadaki durum notlarını okuyun: birçok yetenek (ZK doğrulaması, Celestia veri erişilebilirliği, QCAI Copilot, çapraz-VM çağrıları, mutabakat makbuzları) bugün uçtan uca kullanılamaz.
 :::
 
 ## Yenilikler {#innovations}
@@ -191,7 +191,7 @@ cd my-rollup && npm run doctor
 
 | Ağ | Zincir kimliği | EVM zincir kimliği | REST uç noktası | Zincir sürümü |
 | ------- | -------- | ------------ | ------------- | ------------- |
-| Ana ağ | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.7 |
+| Ana ağ | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.8 |
 | Test ağı | `qorechain-diana` | 9800 | `https://api-testnet.qore.host` | v3.2.8 |
 
 Her iki ağ da RDK sorgularını (`/qorechain/rdk/v1/...`) REST, gRPC ve CLI üzerinden sunar; bu nedenle `rdk.params()` gibi okumalar her ikisine karşı da çalışır. Test ağı, kendi parametreleri olan bir hazırlık (staging) ağıdır: varsayılan itiraz penceresi test ağında 3.600 saniye, ana ağda 604.800'dür, test ağında en fazla 200, ana ağda 100 rollup bulunabilir ve çok katmanlı modül test ağında 64, ana ağda 10 yan zincir katmanına izin verir (27 Ekim 2026'da kontrol edildi). Hedeflediğiniz ağda `GET /qorechain/rdk/v1/params` çağrısını okuyun.
@@ -211,7 +211,7 @@ Durumu okumak bunların hiçbirini gerektirmez. Ayrıca Dashboard üzerinden bir
 
 ### Zincir v3.2.5 davranışı: her iki ağda canlı {#v325}
 
-Zincir v3.2.5 ana ağda (yönetişim önerisi 14 ile 29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı) ve test ağında (26 Ekim 2026'dan beri) canlıdır. Ana ağ v3.2.7'yi, test ağı v3.2.8'i çalıştırır ve ikisi de onu içerir. RDK 0.7.0 ve sonrası her ikisini de destekler. Bu kurallar her iki ağda da geçerlidir; ana ağda henüz hiç rollup oluşturulmamıştır (`GET /qorechain/rdk/v1/rollups` 4 Kasım 2026'da boş bir liste döndürdü), bu nedenle aşağıdaki kurallar sürümün kurallarıdır ve canlı bir ana ağ rollup'ı tarafından henüz denenmemiştir. Bir rollup geliştiricisi için:
+Zincir v3.2.5 ana ağda (yönetişim önerisi 14 ile 29 Ekim 2026'da 3.906.833 yüksekliğinde uygulandı) ve test ağında (26 Ekim 2026'dan beri) canlıdır. Her iki ağ da v3.2.8 çalıştırır ve ikisi de onu içerir. RDK 0.7.0 ve sonrası her ikisini de destekler. Bu kurallar her iki ağda da geçerlidir; ana ağda henüz hiç rollup oluşturulmamıştır (`GET /qorechain/rdk/v1/rollups` 4 Kasım 2026'da boş bir liste döndürdü), bu nedenle aşağıdaki kurallar sürümün kurallarıdır ve canlı bir ana ağ rollup'ı tarafından henüz denenmemiştir. Bir rollup geliştiricisi için:
 
 | Davranış | Her iki ağ (v3.2.5 ve sonrası) |
 | --------- | -------------------------------- |
@@ -228,7 +228,7 @@ Zincir v3.2.6 her iki ağda da canlıdır (mainnet 4 Kasım 2026'dan, yükseklik
 
 ### Zincir v3.2.7: her iki ağ {#v327}
 
-Test ağı zincir v3.2.7'yi 6 Kasım 2026'dan (yükseklik 9.594.600, yönetişimle uygulandı) itibaren çalıştırdı ve 12 Kasım'da v3.2.8'e geçti. Mainnet v3.2.7'yi 12 Kasım 2026'dan beri çalıştırır (yükseklik 4.164.600, yönetişim önerisi 16). Aşağıdaki kontroller test ağında 7 Kasım 2026'da yapıldı; mainnet'te tekrarlanmadı, orada yalnızca sürümün anahtarları bilinir. Rollup'lar için:
+Test ağı zincir v3.2.7'yi 6 Kasım 2026'dan (yükseklik 9.594.600, yönetişimle uygulandı) itibaren çalıştırdı ve 12 Kasım'da v3.2.8'e geçti. Mainnet v3.2.7'yi 12 Kasım 2026'da uyguladı (yükseklik 4.164.600, yönetişim önerisi 16) ve 18 Kasım'da v3.2.8'e geçti. Aşağıdaki kontroller test ağında 7 Kasım 2026'da yapıldı; mainnet'te tekrarlanmadı, orada yalnızca sürümün anahtarları bilinir. Rollup'lar için:
 
 * **ZK doğrulama anahtarı mesajları.** Test ağı `MsgSetVerificationKey` ve `MsgUpdateVerificationKey` mesajlarını kabul etti (boş mesajlı simüle edilmiş bir işlem mesaj türü çözümlemesini geçti ve boş adres alanında başarısız oldu; mainnet aynı mesaj için 7 Kasım'da, v3.2.7'yi uygulamadan önce "unable to resolve type URL" yanıtını verdi). Doğrulama anahtarı mesajları mainnet'te 12 Kasım 2026'dan beri etkindir. Sürüm notları, kayıtlı anahtarı olmayan bir ZK batch'inin ücret ödenmeden önce reddedildiğini söyler. Test ağında hiçbir rollup yoktur (`GET /qorechain/rdk/v1/rollups` boş bir liste döndürdü) ve `GET /qorechain/rdk/v1/rollups` mainnet'te de 12 Kasım 2026'da boş bir liste döndürdü, bu yüzden hiçbir anahtar kaydedilmedi ve hiçbir ZK batch'i doğrulanmadı. RDK 0.8.0'da bu mesajlar için bir oluşturucu yoktur.
 * **VM'ler arası precompile `0x...0901`.** Test ağında, incelenmiş üç CosmWasm sözleşmesinden oluşan bir izin listesiyle etkindir; salt okunur bir `eth_call` izin listesindeki bir sözleşmeye ulaştı ve başka her hedef için reddedildi (ayrıntılar [Multi-VM](/rollups/multi-vm#tested-testnet) sayfasında). Mainnet'te precompile ve VM'ler arası çağrılar, v3.2.7 sonrasında da kapalı kalır (VM'ler arası çağrı mesajı durdurulmuştur).
@@ -251,7 +251,7 @@ Daha alt seviyedeki modül referansı (modül parametreleri, yaşam döngüsü i
 
 Sürümler 12 Kasım 2026'da kayıt defterlerinde kontrol edildi. Tüm paketler Apache-2.0 lisanslıdır.
 
-RDK 0.9.0 (12 Kasım 2026) zincir v3.2.8'i destekler (test ağı 12 Kasım 2026'dan beri onu çalıştırır): rollup veri gönderimi, tabanlı sıralama (based sequencing), hile kanıtlı (fraud proof) qledger-v1 optimistik rollup'ları, özel rollup'lar, kanonik ZK girdileri; STARK mutabakatı duraklatılmıştır. Bkz. [GitHub'daki sürüm notları](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0).
+RDK 0.9.0 (12 Kasım 2026) zincir v3.2.8'i destekler (test ağı 12 Kasım 2026'dan beri, mainnet 18 Kasım 2026'dan beri onu çalıştırır): rollup veri gönderimi, tabanlı sıralama (based sequencing), hile kanıtlı (fraud proof) qledger-v1 optimistik rollup'ları, özel rollup'lar, kanonik ZK girdileri; STARK mutabakatı duraklatılmıştır. Bkz. [GitHub'daki sürüm notları](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0).
 
 | Kayıt defteri | Paket | Güncel sürüm | Bağlantı |
 | -------- | ------- | --------------- | ---- |

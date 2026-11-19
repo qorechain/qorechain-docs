@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Node-Betreiber: Checkliste für v3.2.8
 
-Das Release **v3.2.8** läuft seit dem 12. November 2026 (Höhe 9,929,500) im Testnet `qorechain-diana`. Das Mainnet `qorechain-vladi` läuft seit dem 12. November 2026 mit v3.2.7 (Höhe 4,164,600, Governance-Vorschlag 16) und hat v3.2.8 nicht angewendet, sodass nichts auf dieser Seite heute für einen Mainnet-Node gilt.
+Das Release **v3.2.8** läuft auf beiden Netzwerken: im Testnet `qorechain-diana` seit dem 12. November 2026 (Höhe 9,929,500) und im Mainnet `qorechain-vladi` seit dem 18. November 2026 (Höhe 4,273,000, Governance-Vorschlag 17). Das Mainnet lief seit dem 12. November 2026 mit v3.2.7 (Höhe 4,164,600, Governance-Vorschlag 16). Alles auf dieser Seite gilt auch für einen Mainnet-Node; die Beispiele verwenden die Testnet-Endpunkte, sofern nichts anderes dasteht.
 
 Diese Seite ist die kurze Liste dessen, was ein Node-Betreiber für v3.2.8 prüft und ändert: die gemeinsam genutzten Bibliotheken im Bundle, die Einstellungen der Contract-Laufzeitumgebung, die neuen `app.toml`-Standardwerte, eine neue REST-Route und die Schritte, um einen Node zu aktualisieren, der noch auf v3.2.7 läuft. Den vollständigen Node-Leitfaden finden Sie unter [Einen Node betreiben](/developer-guide/running-a-node).
 
@@ -78,7 +78,7 @@ Diese Einstellung ändert nur, was Ihr eigener Node auf Contract-Abfragen antwor
 
 ## 6. Neue Route: `GET /qorechain/svm/v1/params` {#svm-params}
 
-v3.2.8 fügt eine schreibgeschützte Route für die Parameter des SVM-Moduls hinzu. Sie wird von Nodes mit v3.2.8 (Testnet) bedient und antwortet im Mainnet, wo das Release nicht angewendet ist, mit HTTP `501`.
+v3.2.8 fügt eine schreibgeschützte Route für die Parameter des SVM-Moduls hinzu. Sie wird von Nodes mit v3.2.8 (beide Netzwerke) bedient und antwortet bei einem Node mit älterem Release mit HTTP `501`. Am 19. November 2026 antwortete das öffentliche Mainnet mit `200` und `enabled` `false`: Die SVM-Lane bleibt im Mainnet aus.
 
 ```bash
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params
@@ -109,11 +109,11 @@ Das Manifest ist die maßgebliche Quelle dafür, welche Binärdatei zu installie
 curl -s https://download.qore.host/testnet/latest.json | jq '{version, minCompatible, upgradeType, upgradeHeight, binary: .binary.url}'
 ```
 
-Am 12. November 2026 antwortete es mit `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` und der Binärdatei `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`. Prüfen Sie, dass `version` gleich `minCompatible` ist, bevor Sie `binary.url` vertrauen, und verifizieren Sie das Archiv anhand des `sha256` in derselben Datei. Das Mainnet-Manifest liegt unter `https://download.qore.host/mainnet/latest.json` und nennt v3.2.6, bis ein Mainnet-Upgrade angekündigt wird.
+Am 12. November 2026 antwortete es mit `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` und der Binärdatei `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`. Prüfen Sie, dass `version` gleich `minCompatible` ist, bevor Sie `binary.url` vertrauen, und verifizieren Sie das Archiv anhand des `sha256` in derselben Datei. Das Mainnet-Manifest liegt unter `https://download.qore.host/mainnet/latest.json`. Am 19. November 2026 gelesen, nannte es `version` `3.2.8`, `minCompatible` `3.2.7`, `upgradeHeight` `4273000` und die Binärdatei `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107,091,599 Bytes, SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`); im Mainnet ist `minCompatible` niedriger als `version`, vergleichen Sie daher beide mit dem installierten Release.
 
 ## 8. Einen Node aktualisieren, der noch auf v3.2.7 läuft {#upgrade-from-v327}
 
-Die Upgrade-Höhe des Testnets ist überschritten, ein Node auf v3.2.7 hält daher bei Höhe 9,929,500 mit `UPGRADE "v3.2.8" NEEDED` an. Sein Zustand bleibt erhalten, und er muss nicht neu synchronisieren.
+Die Upgrade-Höhe ist auf beiden Netzwerken überschritten (Testnet 9,929,500; Mainnet 4,273,000), ein Node auf v3.2.7 hält daher bei dieser Höhe mit `UPGRADE "v3.2.8" NEEDED` an. Sein Zustand bleibt erhalten, und er muss nicht neu synchronisieren.
 
 1. Laden Sie das im Manifest genannte Archiv herunter und verifizieren Sie dessen SHA-256.
 2. Stoppen Sie den Node.
@@ -127,17 +127,17 @@ curl -s localhost:26657/status | jq '.result.sync_info.catching_up'
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params | jq '.params.enabled'
 ```
 
-Ein neuer Node, der dem Testnet beitritt, startet direkt mit der v3.2.8-Binärdatei; siehe [Mit dem Testnet verbinden](/getting-started/connecting-to-testnet) für State Sync und Peers und [Einen Node betreiben](/developer-guide/running-a-node#upgrades) für die Upgrade-Historie.
+Ein neuer Node, der einem der beiden Netzwerke beitritt, startet direkt mit der v3.2.8-Binärdatei; siehe [Mit dem Testnet verbinden](/getting-started/connecting-to-testnet) für State Sync und Peers und [Einen Node betreiben](/developer-guide/running-a-node#upgrades) für die Upgrade-Historie.
 
 ## Grenzen und Fehler
 
 | Was Sie sehen | Bedeutung | Was zu tun ist |
 | --- | --- | --- |
-| `UPGRADE "v3.2.8" NEEDED` und der Node hält bei Höhe 9,929,500 an | Der Node läuft noch mit der Binärdatei v3.2.7 | Abschnitt 8 |
+| `UPGRADE "v3.2.8" NEEDED` und der Node hält bei Höhe 9,929,500 (Testnet) oder 4,273,000 (Mainnet) an | Der Node läuft noch mit der Binärdatei v3.2.7 | Abschnitt 8 |
 | Startfehler wegen einer fehlenden gemeinsam genutzten Bibliothek | `lib/` wurde nicht vollständig kopiert, oder der Loader zeigt nicht darauf | Abschnitt 1 |
 | Warnung, dass `memory_cache_size` angehoben wurde | Der konfigurierte Wert liegt unter 256 MiB | 256 oder mehr setzen |
 | Warnung zum Contract-Verzeichnis | Der Contract-Code liegt noch am alten Ort | Bei Gelegenheit nach `<home>/wasm` verschieben |
-| `501` von `/qorechain/svm/v1/params` | Der Node läuft nicht mit v3.2.8 (das Mainnet läuft mit v3.2.7) | Im Mainnet erwartet |
+| `501` von `/qorechain/svm/v1/params` | Der Node läuft nicht mit v3.2.8 | Den Node aktualisieren ([Abschnitt 8](#upgrade-from-v327)) |
 
 ## Verwandte Seiten
 

@@ -9,9 +9,9 @@ sidebar_position: 11
 
 Versiunea QoreChain v3.2.8 schimbă felul în care se decontează rollup-urile. Rollup-urile își pot acum pune datele pe lanț, pot lăsa lanțul să le ordoneze tranzacțiile (secvențiere bazată, based sequencing), se pot deconta optimist cu o dovadă de fraudă care reexecută batch-ul, își pot ține postările private pentru un set de membri și pot lega rădăcini de retragere Groth16 într-un mod care acceptă orice rădăcină de 32 de octeți. Decontarea STARK este în pauză până la o versiune ulterioară. Această pagină descrie ce face fiecare schimbare și cum se folosește. Este pentru operatorii și dezvoltatorii de rollup-uri care construiesc pe modulul `x/rdk`.
 
-:::caution Deocamdată doar testnet
+:::note Activă pe ambele rețele
 
-v3.2.8 rulează pe testnet-ul public `qorechain-diana` din 12 noiembrie 2026. Mainnet-ul nu a aplicat-o încă, deci fiecare funcție de pe această pagină este refuzată acolo până când o face. Tratează exemplele ca exemple de testnet.
+v3.2.8 rulează pe testnet-ul public `qorechain-diana` din 12 noiembrie 2026 și pe mainnet-ul `qorechain-vladi` din 18 noiembrie 2026 (propunerea de guvernanță 17, înălțimea 4.273.000). Exemplele au fost rulate pe testnet.
 
 :::
 

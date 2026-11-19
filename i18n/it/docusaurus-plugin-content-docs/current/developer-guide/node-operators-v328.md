@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Operatori di nodo: checklist v3.2.8
 
-La release **v3.2.8** è attiva sulla testnet `qorechain-diana` dal 12 novembre 2026 (altezza 9,929,500). La mainnet `qorechain-vladi` esegue la v3.2.7 dal 12 novembre 2026 (altezza 4,164,600, proposta di governance 16) e non ha applicato la v3.2.8, quindi nulla in questa pagina si applica oggi a un nodo mainnet.
+La release **v3.2.8** è attiva su entrambe le reti: la testnet `qorechain-diana` dal 12 novembre 2026 (altezza 9,929,500) e la mainnet `qorechain-vladi` dal 18 novembre 2026 (altezza 4,273,000, proposta di governance 17). La mainnet aveva eseguito la v3.2.7 dal 12 novembre 2026 (altezza 4,164,600, proposta di governance 16). Tutto ciò che è in questa pagina vale anche per un nodo mainnet; gli esempi usano gli endpoint della testnet, salvo diversa indicazione.
 
 Questa pagina è l'elenco breve di ciò che un operatore di nodo controlla e cambia per la v3.2.8: le librerie condivise nel bundle, le impostazioni del runtime dei contratti, i nuovi valori predefiniti di `app.toml`, una nuova route REST e i passaggi per aggiornare un nodo che è ancora sulla v3.2.7. Per la guida completa al nodo, vedi [Esecuzione di un nodo](/developer-guide/running-a-node).
 
@@ -78,7 +78,7 @@ Questa impostazione cambia solo ciò che il tuo nodo risponde alle query sui con
 
 ## 6. Nuova route: `GET /qorechain/svm/v1/params` {#svm-params}
 
-La v3.2.8 aggiunge una route in sola lettura per i parametri del modulo SVM. È servita dai nodi sulla v3.2.8 (testnet) e risponde HTTP `501` sulla mainnet, dove la release non è applicata.
+La v3.2.8 aggiunge una route in sola lettura per i parametri del modulo SVM. È servita dai nodi sulla v3.2.8 (entrambe le reti) e risponde HTTP `501` su un nodo che esegue una release più vecchia. Il 19 novembre 2026 la mainnet pubblica ha risposto `200` con `enabled` `false`: la lane SVM resta spenta sulla mainnet.
 
 ```bash
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params
@@ -109,11 +109,11 @@ Il manifest è la fonte di verità su quale binario installare:
 curl -s https://download.qore.host/testnet/latest.json | jq '{version, minCompatible, upgradeType, upgradeHeight, binary: .binary.url}'
 ```
 
-Il 12 novembre 2026 ha risposto `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` e il binario `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`. Controlla che `version` sia uguale a `minCompatible` prima di fidarti di `binary.url`, e verifica l'archivio con lo `sha256` nello stesso file. Il manifest della mainnet è su `https://download.qore.host/mainnet/latest.json` e indica la v3.2.6 finché non viene annunciato un upgrade della mainnet.
+Il 12 novembre 2026 ha risposto `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` e il binario `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`. Controlla che `version` sia uguale a `minCompatible` prima di fidarti di `binary.url`, e verifica l'archivio con lo `sha256` nello stesso file. Il manifest della mainnet è su `https://download.qore.host/mainnet/latest.json`. Letto il 19 novembre 2026, indicava `version` `3.2.8`, `minCompatible` `3.2.7`, `upgradeHeight` `4273000` e il binario `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107.091.599 byte, SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`); sulla mainnet `minCompatible` è inferiore a `version`, quindi confronta entrambi con la release che hai installato.
 
 ## 8. Aggiorna un nodo ancora sulla v3.2.7 {#upgrade-from-v327}
 
-L'altezza di upgrade della testnet è passata, quindi un nodo ancora sulla v3.2.7 si ferma all'altezza 9,929,500 con `UPGRADE "v3.2.8" NEEDED`. Il suo stato viene mantenuto e non serve una nuova sincronizzazione.
+L'altezza di upgrade è passata su entrambe le reti (testnet 9,929,500; mainnet 4,273,000), quindi un nodo ancora sulla v3.2.7 si ferma a quell'altezza con `UPGRADE "v3.2.8" NEEDED`. Il suo stato viene mantenuto e non serve una nuova sincronizzazione.
 
 1. Scarica l'archivio indicato nel manifest e verifica il suo SHA-256.
 2. Ferma il nodo.
@@ -127,17 +127,17 @@ curl -s localhost:26657/status | jq '.result.sync_info.catching_up'
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params | jq '.params.enabled'
 ```
 
-Un nuovo nodo che entra nella testnet parte direttamente dal binario v3.2.8; vedi [Connessione alla testnet](/getting-started/connecting-to-testnet) per lo state sync e i peer, e [Esecuzione di un nodo](/developer-guide/running-a-node#upgrades) per la cronologia degli upgrade.
+Un nuovo nodo che entra in una delle due reti parte direttamente dal binario v3.2.8; vedi [Connessione alla testnet](/getting-started/connecting-to-testnet) per lo state sync e i peer, e [Esecuzione di un nodo](/developer-guide/running-a-node#upgrades) per la cronologia degli upgrade.
 
 ## Limiti ed errori
 
 | Cosa vedi | Significato | Cosa fare |
 | --- | --- | --- |
-| `UPGRADE "v3.2.8" NEEDED` e il nodo si ferma all'altezza 9,929,500 | Il nodo è ancora sul binario v3.2.7 | Sezione 8 |
+| `UPGRADE "v3.2.8" NEEDED` e il nodo si ferma all'altezza 9,929,500 (testnet) o 4,273,000 (mainnet) | Il nodo è ancora sul binario v3.2.7 | Sezione 8 |
 | Errore di avvio su una libreria condivisa mancante | `lib/` non è stata copiata per intero, o il loader non punta ad essa | Sezione 1 |
 | Avviso che `memory_cache_size` è stato aumentato | Il valore configurato è sotto i 256 MiB | Imposta 256 o più |
 | Avviso sulla directory dei contratti | Il codice dei contratti è ancora nella vecchia posizione | Spostalo in `<home>/wasm` quando ti è comodo |
-| `501` da `/qorechain/svm/v1/params` | Il nodo non è sulla v3.2.8 (la mainnet esegue la v3.2.7) | Atteso sulla mainnet |
+| `501` da `/qorechain/svm/v1/params` | Il nodo non è sulla v3.2.8 | Aggiorna il nodo ([sezione 8](#upgrade-from-v327)) |
 
 ## Pagine correlate
 

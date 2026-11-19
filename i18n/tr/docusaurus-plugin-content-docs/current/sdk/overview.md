@@ -30,7 +30,7 @@ Hesaplar, bakiyeler ve token'lar çalışma ortamları arasında paylaşılır v
 zincir, zincirler arası birlikte çalışabilirlik için IBC modülünü içerir
 (mainnet üzerinde açık bir IBC kanalı yoktur; testnet'te test zincirine giden açık bir `transfer` kanalı vardır, 27 Ekim 2026'da kontrol edildi).
 
-:::note Canlı ağlarda bugün çalışanlar (mainnet v3.2.7, testnet v3.2.8 çalıştırır)
+:::note Canlı ağlarda bugün çalışanlar (mainnet ve testnet v3.2.8 çalıştırır)
 **Çalışır:** her şeritte okumalar, hibrit imzalı Native işlemler, birleşik
 hesaplar, bir [yetkilendirme penceresi](/sdk/guides/evm#evm-window) içindeki EVM
 işlemleri ve SVM okumaları.
@@ -45,8 +45,8 @@ soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler. 27 Ekim
 
 Yayımlanan SDK (0.14.0, 12 Kasım 2026), her iki ağın doğruladığı biçimde imzalar
 (v2 hibrit sign-bytes, zincir durumundan çözümlenir); imzalama biçimi, adresler,
-ondalık basamaklar, memo'lar ve ücretler v3.2.3, v3.2.4, v3.2.5 veya v3.2.6'da değişmedi (mainnet 12 Kasım 2026'dan beri v3.2.7 çalıştırır,
-yükseklik 4.164.600, yönetişim önerisi 16, 4 Kasım'daki v3.2.6'dan sonra; testnet 27 Ekim'den beri; testnet 6 Kasım'dan beri v3.2.7, 12 Kasım'dan beri v3.2.8 çalıştırır ve bu sürümler, SDK 0.14.0'ın oluşturucularına sahip olduğu mesajlar ekler; test ağının yeni kuralları v3.2.8'den itibaren geçerlidir ve ana ağ onu henüz uygulamadı; v3.2.7 mesajları mainnet'te 12 Kasım 2026'dan beri vardır). Sonraki
+ondalık basamaklar, memo'lar ve ücretler v3.2.3, v3.2.4, v3.2.5 veya v3.2.6'da değişmedi (mainnet 12 Kasım 2026'dan itibaren v3.2.7 çalıştırdı,
+yükseklik 4.164.600, yönetişim önerisi 16, 4 Kasım'daki v3.2.6'dan sonra, ve 18 Kasım 2026'dan beri v3.2.8 çalıştırır, yükseklik 4.273.000, yönetişim önerisi 17; testnet 27 Ekim'den beri; testnet 6 Kasım'dan beri v3.2.7, 12 Kasım'dan beri v3.2.8 çalıştırır ve bu sürümler, SDK 0.14.0'ın oluşturucularına sahip olduğu mesajlar ekler; yeni kurallar v3.2.8'den itibaren her iki ağda da geçerlidir; v3.2.7 mesajları mainnet'te 12 Kasım 2026'dan beri vardır). Sonraki
 kuantum sonrası kuralların istemci tarafını (anahtar kaydında sahiplik
 kanıtı, kapsamlı EVM pencereleri, EIP-7702 onay mesajları) ve v3.2.4'ün istemci tarafını (staking
 katmanları, authenticator nonce'u, protokol özelliği anahtarları) ve v3.2.5'in (hibrit işlemler için kesin gas,
@@ -251,7 +251,7 @@ npm dışında 0.11.0 yoktu; diğer diller 0.10.0'dan 0.12.0'a geçti. Bkz.
 **0.13.0, seed yolu hesap yardımcısında tek bir değişiklik.** `unifiedAccountFromSeed` ve diğer dillerdeki karşılıkları artık bir `QRC1` kurtarma kodu veya bağımsız 32 baytlık bir PQC sırrı gerektirir; mnemonic'ten türetilen hesaplar, imzalama biçimi ve zincir davranışı değişmemiştir. Kurtarma kodu yardımcıları her dile eklendi ve `migrateToHybrid` `keyVerified` bildirir. Bkz.
 [0.13.0 neyi değiştiriyor](/sdk/install#whats-new-0130).
 
-**0.14.0, zincir v3.2.8 için istemci desteği.** Bir anahtarı bağlamak sahiplik kanıtı gerektirir, değer taşıyan anahtarlar bir harcama kuralı gerektirir (bir yardımcı çifti oluşturur), yönetişim parametresi güncellemeleri her alanı gerektirir, başarısız yetkilendirilmiş yürütmeler okunabilir ve EVM penceresi üç liste daha alır. Yeni kurallar, bir ağ v3.2.8 çalıştırdığında geçerli olur: test ağı 12 Kasım 2026'dan beri; ana ağ henüz uygulamadı. Bkz.
+**0.14.0, zincir v3.2.8 için istemci desteği.** Bir anahtarı bağlamak sahiplik kanıtı gerektirir, değer taşıyan anahtarlar bir harcama kuralı gerektirir (bir yardımcı çifti oluşturur), yönetişim parametresi güncellemeleri her alanı gerektirir, başarısız yetkilendirilmiş yürütmeler okunabilir ve EVM penceresi üç liste daha alır. Yeni kurallar, bir ağ v3.2.8 çalıştırdığında geçerli olur: test ağı 12 Kasım 2026'dan beri ve ana ağ 18 Kasım 2026'dan beri. Bkz.
 [0.14.0 neyi değiştiriyor](/sdk/install#whats-new-0140).
 
 ## Sonraki adımlar

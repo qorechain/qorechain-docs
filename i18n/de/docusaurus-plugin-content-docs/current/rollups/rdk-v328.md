@@ -9,9 +9,9 @@ sidebar_position: 11
 
 QoreChain-Release v3.2.8 ändert, wie Rollups abgewickelt werden. Rollups können ihre Daten jetzt auf der Chain ablegen, die Chain ihre Transaktionen ordnen lassen (Based Sequencing), optimistisch mit einem Fraud Proof abwickeln, der den Batch erneut ausführt, ihre Posts auf eine Gruppe von Mitgliedern beschränken und Groth16-Abhebungs-Roots so binden, dass jede 32-Byte-Root akzeptiert wird. Das STARK-Settlement ist bis zu einem späteren Release pausiert. Diese Seite beschreibt, was jede Änderung bewirkt und wie man sie nutzt. Sie richtet sich an Rollup-Betreiber und Entwickler, die auf dem Modul `x/rdk` aufbauen.
 
-:::caution Vorerst nur im Testnet
+:::note Auf beiden Netzwerken aktiv
 
-v3.2.8 läuft seit dem 12. November 2026 im öffentlichen Testnet `qorechain-diana`. Das Mainnet hat es noch nicht angewendet, daher wird jede Funktion auf dieser Seite dort abgelehnt, bis es so weit ist. Betrachten Sie die Beispiele als Testnet-Beispiele.
+v3.2.8 läuft seit dem 12. November 2026 im öffentlichen Testnet `qorechain-diana` und seit dem 18. November 2026 im Mainnet `qorechain-vladi` (Governance-Vorschlag 17, Höhe 4.273.000). Die Beispiele wurden im Testnet ausgeführt.
 
 :::
 

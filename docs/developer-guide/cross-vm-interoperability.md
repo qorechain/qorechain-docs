@@ -15,7 +15,7 @@ Cross-VM calls are only as available as their target lane:
 * `MsgCrossVMCall` is **switched off on mainnet** by the circuit breaker (`qorechaind query circuit disabled-list`); it is enabled on the testnet.
 * The **SVM lane is disabled** for transactions on both networks, so an SVM leg cannot run.
 * **QoreChain Native upload is permissioned** on both networks and **instantiation is permissioned on mainnet**, which has no stored contract code, so there is no QoreChain Native contract to call on mainnet yet. On the testnet, governance stored a few reviewed contracts that any account can instantiate (see [QoreChain Native Development](/developer-guide/cosmwasm-development)), so a QoreChain Native target can exist there.
-* The synchronous **EVM precompile is not active on mainnet** and is **active on the testnet** with an allowlist of reviewed QoreChain Native contracts (read 7 November 2026; a read-only call through it was run after the v3.2.7 upgrade, see below). A hardened version has been in the binary since v3.2.3. (On 27 October 2026 testnet governance activated three other precompiles, PQC Verify, PQC Key Status and PRISM Consensus Params, and the CrossVM bridge joined the testnet list by 4 November; mainnet has none active.)
+* The synchronous **EVM precompile is not active on mainnet** and is **active on the testnet** with an allowlist of reviewed QoreChain Native contracts (read 7 November 2026; a read-only call through it was run on the testnet after its v3.2.7 upgrade, see below). A hardened version has been in the binary since v3.2.3. (On 27 October 2026 testnet governance activated three other precompiles, PQC Verify, PQC Key Status and PRISM Consensus Params, and the CrossVM bridge joined the testnet list by 4 November; mainnet has none active.)
 
 On mainnet the module's REST routes (`/qorechain/crossvm/v1/...`) are not served by the public gateway (`501`); read messages with the CLI or a gRPC/ABCI query client.
 :::
@@ -51,7 +51,7 @@ The endpoints below default to a local node. On mainnet, use the **`qorechain-vl
 The synchronous path uses an EVM **precompile** at address `0x0000000000000000000000000000000000000901`. It is designed to let Solidity contracts call QoreChain Native contracts and receive a response within the same transaction.
 
 :::warning Not active on mainnet; active on the testnet with an allowlist
-The CrossVM bridge precompile is **not active** on `qorechain-vladi`: a call to `0x…0901` there succeeds and returns empty data. On `qorechain-diana` the `active_static_precompiles` list holds `0x…0901` (read 7 November 2026); a read-only `eth_call` through it was run on 7 November 2026, after the v3.2.7 upgrade (results below). The v3.2.3 binary carries a hardened version (it refuses a `STATICCALL`, meters its nested call against the calling frame's gas and journals it so an EVM revert also undoes the QoreChain Native side, reaches only allowlisted QoreChain Native targets, and honours the cross-VM circuit breaker), but it only runs where a governance-approved proposal has added it to the active list (the testnet so far, not mainnet). On mainnet the precompile and cross-VM calls stay off, even after the v3.2.7 upgrade of 12 November 2026, until a separate governance decision. The example below is the layout the node decodes; it cannot run on mainnet until the precompile is active. On the testnet it can be called, within the allowlist (next section). See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+The CrossVM bridge precompile is **not active** on `qorechain-vladi`: a call to `0x…0901` there succeeds and returns empty data. On `qorechain-diana` the `active_static_precompiles` list holds `0x…0901` (read 7 November 2026); a read-only `eth_call` through it was run on 7 November 2026, after the v3.2.7 upgrade (results below). The v3.2.3 binary carries a hardened version (it refuses a `STATICCALL`, meters its nested call against the calling frame's gas and journals it so an EVM revert also undoes the QoreChain Native side, reaches only allowlisted QoreChain Native targets, and honours the cross-VM circuit breaker), but it only runs where a governance-approved proposal has added it to the active list (the testnet so far, not mainnet). On mainnet the precompile and cross-VM calls stay off, even though mainnet runs v3.2.7 (since 12 November 2026) and v3.2.8 (since 18 November 2026), until a separate governance decision. The example below is the layout the node decodes; it cannot run on mainnet until the precompile is active. On the testnet it can be called, within the allowlist (next section). See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Solidity Example
@@ -97,7 +97,7 @@ On `qorechain-diana` (node release v3.2.8 since 12 November 2026) the precompile
 * **Target outside the allowlist:** reverts with `cross-VM bridge call refused: target cosmwasm:qor1... is not allowlisted`.
 * **Target on the allowlist:** the call reaches the contract (the node reports the contract's own error for the empty `{}` message: `Error parsing into type cw20::msg::Cw20ExecuteMsg`). That shows the route works; no state-changing cross-VM transaction through the precompile was sent for this page.
 
-On mainnet the precompile (`0x…0901`) and cross-VM calls stay **off** (circuit breaker) even after the v3.2.7 upgrade of 12 November 2026, until a separate governance decision.
+On mainnet the precompile (`0x…0901`) and cross-VM calls stay **off** (circuit breaker) even though mainnet runs v3.2.8 (since 18 November 2026, governance proposal 17, height 4,273,000), until a separate governance decision.
 
 ### What v3.2.7 changes for cross-VM calls {#v327}
 
@@ -154,7 +154,7 @@ Since v3.2.3 a queued call that fails is rolled back as a whole: only its `Faile
 
 ### Async calls into CosmWasm (v3.2.8) {#async-calls}
 
-From release v3.2.8 (testnet only until a later mainnet upgrade) an asynchronous call into CosmWasm is prepaid and queued with limits:
+From release v3.2.8 (both networks run it; on mainnet `MsgCrossVMCall` is paused for now) an asynchronous call into CosmWasm is prepaid and queued with limits:
 
 | `MsgCrossVMCall` field | Meaning |
 | ---------------------- | ------- |

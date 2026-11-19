@@ -12,11 +12,11 @@ Una chiamata cross-VM permette al codice di una macchina virtuale di eseguire un
 Questa pagina è il riferimento di campi, costi e limiti per la release v3.2.8, con un esempio completo per ogni direzione. I concetti, il ciclo di vita e il comportamento precedente sono in [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability); la guida passo passo all'SDK è nella [guida Cross-VM](/sdk/guides/cross-vm).
 
 :::note Dove gira la v3.2.8
-La testnet **`qorechain-diana`** esegue la **v3.2.8** dal 12 novembre 2026. La mainnet **`qorechain-vladi`** non l'ha ancora applicata e sulla mainnet `MsgCrossVMCall` è disattivato. Per ora tutto ciò che è contrassegnato "v3.2.8" qui sotto è comportamento della testnet.
+Entrambe le reti eseguono la **v3.2.8**: la testnet **`qorechain-diana`** dal 12 novembre 2026 e la mainnet **`qorechain-vladi`** dal 18 novembre 2026 (proposta di governance 17, altezza 4.273.000). Sulla mainnet `MsgCrossVMCall` per ora è in pausa, quindi la chiamata non può essere inviata lì. Gli esempi e i controlli qui sotto sono stati eseguiti sulla testnet.
 :::
 
 :::caution Il messaggio di chiamata è disponibile adesso?
-Sulla testnet `MsgCrossVMCall` era stato messo in pausa dall'upgrade. La proposta di governance 37 è passata e ha tolto la pausa, quindi la chiamata è aperta sulla testnet (verificato il 12 novembre 2026: l'elenco del circuit breaker contiene solo `/cosmwasm.wasm.v1.MsgStoreCode`). Sulla mainnet resta disattivata. Se la chiamata è disponibile in un dato momento lo dicono due cose: i parametri del modulo (`enabled`) e l'elenco del circuit breaker. Controlla entrambi prima di costruirci sopra qualcosa:
+Sulla testnet `MsgCrossVMCall` era stato messo in pausa dall'upgrade. La proposta di governance 37 è passata e ha tolto la pausa, quindi la chiamata è aperta sulla testnet (verificato il 12 novembre 2026: l'elenco del circuit breaker contiene solo `/cosmwasm.wasm.v1.MsgStoreCode`). Sulla mainnet per ora è in pausa (l'elenco del circuit breaker lì contiene ancora `MsgCrossVMCall`, letto il 19 novembre 2026). Se la chiamata è disponibile in un dato momento lo dicono due cose: i parametri del modulo (`enabled`) e l'elenco del circuit breaker. Controlla entrambi prima di costruirci sopra qualcosa:
 
 ```bash
 # Module parameters: look for "enabled": true

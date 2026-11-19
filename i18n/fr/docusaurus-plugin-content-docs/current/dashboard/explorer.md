@@ -52,6 +52,14 @@ La page de transaction affiche le hash (avec copie), le statut et le type, Block
 - **PQC Verified.** Une transaction de la voie native qui a réussi et dont la chaîne elle-même a vérifié la signature hybride (y compris la partie ML-DSA-87). Une transaction échouée, ou sans signature hybride vérifiée, affiche à la place une sécurité standard.
 - **Authorised by a PQC window.** Une transaction EVM envoyée alors que l'expéditeur avait une [fenêtre d'autorisation EVM](/developer-guide/evm-development#evm-window) ouverte, avec le lien **Window opened by**.
 
+### Hashes des transactions EVM {#evm-hashes}
+
+Une transaction EVM a deux hashes. Le hash `0x` est le hash de transaction Ethereum qu'utilisent MetaMask, ethers.js et `eth_getTransactionReceipt`. L'ID en majuscules sans `0x` est le hash de la transaction native qui la porte (`MsgEthereumTx`). L'un ne se calcule pas à partir de l'autre, et retirer `0x` du hash EVM puis le passer en majuscules ne donne pas l'ID natif.
+
+- **Explorer du Dashboard.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` accepte le hash EVM tel quel, avec `0x`. L'explorer lit le réseau choisi dans le sélecteur de réseau du Dashboard (mainnet par défaut, mémorisé dans votre navigateur) ; un hash de testnet affiche donc "Transaction Not Found" tant que vous n'avez pas basculé le sélecteur sur Testnet.
+- **Trouver l'ID natif via REST.** Recherchez avec le hash EVM complet en minuscules, avec `0x`, et encodez la requête en URL : `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (utilisez `https://api.qore.host` pour mainnet). L'ID natif est `tx_responses[0].txhash`. Sans `0x`, la recherche ne renvoie rien, et `ethereum_tx.txHash` n'est pas la bonne clé.
+- **Reçu côté EVM.** Appelez `eth_getTransactionReceipt` sur `https://evm-testnet.qore.host` ou `https://evm.qore.host`.
+
 ### Page de bloc
 
 Les flèches précédent et suivant permettent de parcourir la chaîne. **Core Information** contient la hauteur, le hash, le proposant, le nombre de signatures et Gas Used ; **Technical Hashes** et **Block Transactions** suivent. Les blocs ne portent aucun libellé post-quantique.

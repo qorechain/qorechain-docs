@@ -12,11 +12,11 @@ VM'ler arası bir çağrı, bir sanal makinedeki kodun başka bir makinedeki sö
 Bu sayfa, v3.2.8 sürümü için alan, maliyet ve limit başvurusudur ve her yön için çalışan bir örnek içerir. Kavramlar, yaşam döngüsü ve eski davranış [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasındadır; SDK adım adım anlatımı [VM'ler Arası rehberinde](/sdk/guides/cross-vm) yer alır.
 
 :::note v3.2.8 nerede çalışır
-**`qorechain-diana`** test ağı 12 Kasım 2026'dan beri **v3.2.8** çalıştırmaktadır. **`qorechain-vladi`** ana ağı bunu henüz uygulamamıştır ve ana ağda `MsgCrossVMCall` kapalıdır. Aşağıda "v3.2.8" olarak işaretlenen her şey şimdilik yalnızca test ağı davranışıdır.
+Her iki ağ da **v3.2.8** çalıştırır: **`qorechain-diana`** test ağı 12 Kasım 2026'dan beri, **`qorechain-vladi`** ana ağı 18 Kasım 2026'dan beri (yönetişim önerisi 17, yükseklik 4.273.000). Ana ağda `MsgCrossVMCall` şimdilik duraklatılmıştır; bu nedenle çağrı orada gönderilemez. Aşağıdaki örnekler ve denetimler test ağında çalıştırıldı.
 :::
 
 :::caution Çağrı mesajı şu anda kullanılabilir mi?
-Test ağında `MsgCrossVMCall` yükseltme tarafından duraklatılmıştı. Yönetişim önerisi 37 geçti ve duraklatmayı kaldırdı; dolayısıyla çağrı test ağında açıktır (12 Kasım 2026'da kontrol edildi: devre kesici listesinde yalnızca `/cosmwasm.wasm.v1.MsgStoreCode` var). Ana ağda kapalı kalır. Çağrının belirli bir anda kullanılabilir olup olmadığını iki şey gösterir: modül parametreleri (`enabled`) ve devre kesici listesi. Üzerine bir şey inşa etmeden önce ikisini de kontrol edin:
+Test ağında `MsgCrossVMCall` yükseltme tarafından duraklatılmıştı. Yönetişim önerisi 37 geçti ve duraklatmayı kaldırdı; dolayısıyla çağrı test ağında açıktır (12 Kasım 2026'da kontrol edildi: devre kesici listesinde yalnızca `/cosmwasm.wasm.v1.MsgStoreCode` var). Ana ağda şimdilik duraklatılmıştır (oradaki devre kesici listesi 19 Kasım 2026'da okunduğunda hâlâ `MsgCrossVMCall` içeriyordu). Çağrının belirli bir anda kullanılabilir olup olmadığını iki şey gösterir: modül parametreleri (`enabled`) ve devre kesici listesi. Üzerine bir şey inşa etmeden önce ikisini de kontrol edin:
 
 ```bash
 # Module parameters: look for "enabled": true

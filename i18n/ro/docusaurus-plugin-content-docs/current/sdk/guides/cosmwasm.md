@@ -177,7 +177,7 @@ const result = await signAndBroadcastHybrid({
 
 ### Gaz pentru apelurile de contract {#gas}
 
-**Nu codificați gazul fix pentru un apel de contract.** Un 400.000 fix este suficient pentru un transfer simplu la un apel și se epuizează la următorul. Începând cu release-ul v3.2.8 (doar pe testnet până la un upgrade ulterior de mainnet), gazul CosmWasm este reprețuit:
+**Nu codificați gazul fix pentru un apel de contract.** Un 400.000 fix este suficient pentru un transfer simplu la un apel și se epuizează la următorul. Începând cu release-ul v3.2.8 (testnet-ul din 12 noiembrie 2026, mainnet din 18 noiembrie 2026), gazul CosmWasm este reprețuit:
 
 - **Primul apel al unui cod de contract într-un bloc plătește un cost de încărcare.** Un transfer cw20 costă aproximativ 533.000 de gas ca prim apel al codului său într-un bloc și aproximativ 84.000 pentru fiecare repetare. Guvernanța poate fixa (pin) codurile populare, iar codurile fixate sar peste taxa de încărcare.
 - **Taxele cresc odată cu congestia.** Un factor de congestie scalează gazul de contract de la 1x până la 20x implicit când blocurile sunt aglomerate cu apeluri de contract, iar un bloc are un buget limitat de execuție de contracte, din care o tranzacție poate folosi cel mult jumătate.

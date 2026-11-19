@@ -236,7 +236,7 @@ await tx.signAndBroadcast(
 
 ### Altre liste di ambito (dalla chain v3.2.8, SDK 0.14.0) {#evm-window-scope-v328}
 
-Dalla chain v3.2.8 (la testnet dal 12 novembre 2026; la mainnet non l'ha applicata) una
+Dalla chain v3.2.8 (la testnet dal 12 novembre 2026, la mainnet dal 18 novembre 2026) una
 finestra può portare tre liste in più, che `openEvmWindowMsg` accetta dall'SDK 0.14.0:
 `validators` (fino a 16 indirizzi di contratto la cui verifica della firma dell'account vale per
 le azioni dell'account stesso, come un modulo validatore o un entry point ERC-4337),

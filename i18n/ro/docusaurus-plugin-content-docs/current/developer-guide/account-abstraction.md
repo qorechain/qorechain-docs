@@ -14,7 +14,7 @@ Modulul de conturi abstracte este **oprit pe mainnet-ul `qorechain-vladi`** la m
 :::
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.7** (aplicată la înălțimea 4,164,600 pe 12 noiembrie 2026, propunerea de guvernanță 16; v3.2.6 a fost aplicată la înălțimea 4,020,000 pe 4 noiembrie 2026, propunerea 15; v3.2.5 a fost aplicată la înălțimea 3,906,833 pe 29 octombrie 2026, propunerea 14, iar v3.2.4 la înălțimea 3,742,566 pe 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.8 (din 12 noiembrie 2026; v3.2.4 din 19 octombrie 2026).
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.8** (aplicată la înălțimea 4,273,000 pe 18 noiembrie 2026, propunerea de guvernanță 17; v3.2.7 a fost aplicată la înălțimea 4,164,600 pe 12 noiembrie 2026, propunerea 16; v3.2.6 a fost aplicată la înălțimea 4,020,000 pe 4 noiembrie 2026, propunerea 15; v3.2.5 a fost aplicată la înălțimea 3,906,833 pe 29 octombrie 2026, propunerea 14, iar v3.2.4 la înălțimea 3,742,566 pe 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează și v3.2.8 (din 12 noiembrie 2026; v3.2.4 din 19 octombrie 2026).
 :::
 
 :::caution Fiecare tranzacție pe lane-ul Cosmos necesită cosemnătura hibridă post-cuantică
@@ -118,7 +118,7 @@ qorechaind tx abstractaccount update-rules <account-address> \
 qorechaind query abstractaccount account <account-address>
 ```
 
-Începând cu v3.2.8 (doar pe testnet până la un upgrade ulterior de mainnet), o cheie cu permisiuni de valoare este refuzată la înregistrare și la execuție dacă nu este limitată de o regulă, deci „nicio limită” nu se mai aplică unor astfel de chei.
+Începând cu v3.2.8 (pe testnet din 12 noiembrie 2026, pe mainnet din 18 noiembrie 2026), o cheie cu permisiuni de valoare este refuzată la înregistrare și la execuție dacă nu este limitată de o regulă, deci „nicio limită” nu se mai aplică unor astfel de chei.
 
 :::caution O regulă limitează o cheie doar dacă există una
 Chain-ul determină limita în această ordine: regula proprie a autentificatorului, dacă este setată și `enabled`; altfel prima regulă `enabled` de pe cont; altfel **nu există nicio limită**. O regulă stocată cu `enabled: false` înseamnă lipsa limitei, nu o limită zero. `MsgRegisterAuthenticator` nu poartă nicio regulă, deci o cheie conectată doar prin acel mesaj este limitată numai de o regulă la nivel de cont. Setați o regulă în mod deliberat cu `update-rules` și înregistrați doar permisiunile de care cheia are nevoie. O limită restrânge paguba pe care o poate face o cheie conectată; nu înlocuiește revocarea cheii.
@@ -147,7 +147,7 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-**Începând cu release-ul v3.2.8 (doar pe testnet până la un upgrade ulterior de mainnet), înregistrarea necesită încă două lucruri.**
+**Începând cu release-ul v3.2.8 (pe testnet din 12 noiembrie 2026, pe mainnet din 18 noiembrie 2026), înregistrarea necesită încă două lucruri.**
 
 1. **O dovadă de posesie.** `MsgRegisterAuthenticator` are un câmp obligatoriu `possession_proof` (câmpul 8): o semnătură a cheii care se conectează, care dovedește că este de acord cu legătura. Cheia semnează acest text simplu în propria schemă, astfel încât un portofel de browser arată utilizatorului ce semnează (Phantom `signMessage`, MetaMask `personal_sign`); o cheie secp256k1 de 33 de octeți semnează SHA-256 al textului:
 
@@ -166,7 +166,7 @@ Din cod, SDK 0.14.0 are helperele pentru ambele (TypeScript: `signAuthenticatorL
 
 O cheie Phantom este înregistrată în același mod, cu schema `ed25519` și cheia publică Phantom (`register-authenticator` în CLI). Revocarea este instantanee prin `MsgRevokeAuthenticator`.
 
-**O execuție poate eșua în interiorul unei tranzacții reușite.** Începând cu v3.2.8 (doar pe testnet până la un upgrade ulterior de mainnet), un `MsgExecuteEVM` sau `MsgExecuteCosmos` eșuat returnează `success=false` în răspunsul său cu codul de tranzacție 0, emite evenimentul `abstractaccount_execution_failed` cu motivul și consumă totuși nonce-ul autentificatorului. Un client care verifică doar codul tranzacției va raporta un astfel de apel ca fiind reușit: citiți răspunsul sau evenimentul.
+**O execuție poate eșua în interiorul unei tranzacții reușite.** Începând cu v3.2.8 (pe testnet din 12 noiembrie 2026, pe mainnet din 18 noiembrie 2026), un `MsgExecuteEVM` sau `MsgExecuteCosmos` eșuat returnează `success=false` în răspunsul său cu codul de tranzacție 0, emite evenimentul `abstractaccount_execution_failed` cu motivul și consumă totuși nonce-ul autentificatorului. Un client care verifică doar codul tranzacției va raporta un astfel de apel ca fiind reușit: citiți răspunsul sau evenimentul.
 
 ### Taxonomia permisiunilor {#permission-taxonomy}
 
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Legarea unei chei în v3.2.8: exemplu lucrat {#link-example-v328}
 
-Această secțiune parcurge o legare completă pe testnet-ul **`qorechain-diana`**, care rulează v3.2.8 din 12 noiembrie 2026. Mainnet-ul nu rulează încă v3.2.8, iar modulul său abstract-account este oprit, deci nimic din toate acestea nu se aplică acolo astăzi. Pe scurt: cheia pe care o legați trebuie să semneze un text scurt prin care arată că este de acord să fie legată, o cheie care poate muta valoare are nevoie de o regulă de cheltuieli pe cont, iar când o cheie legată cheltuiește ulterior, o cheltuială eșuată este raportată în interiorul unei tranzacții reușite.
+Această secțiune parcurge o legare completă pe testnet-ul **`qorechain-diana`**, care rulează v3.2.8 din 12 noiembrie 2026. Mainnet-ul rulează și el v3.2.8 (din 18 noiembrie 2026), dar modulul său abstract-account era oprit la ultima verificare (27 octombrie 2026), deci nimic din toate acestea nu se aplica acolo la acea verificare. Pe scurt: cheia pe care o legați trebuie să semneze un text scurt prin care arată că este de acord să fie legată, o cheie care poate muta valoare are nevoie de o regulă de cheltuieli pe cont, iar când o cheie legată cheltuiește ulterior, o cheltuială eșuată este raportată în interiorul unei tranzacții reușite.
 
 De ce contează: din v3.2.8, deținătorul cheii participă la legare, deci o cheie poate fi legată doar de cineva care o deține cu adevărat, iar o cheie care poate muta valoare este întotdeauna limitată de o limită pe cont.
 

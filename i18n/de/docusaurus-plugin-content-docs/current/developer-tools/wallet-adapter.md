@@ -167,7 +167,7 @@ Die Reihenfolge ist wichtig: Öffnen Sie das Fenster, lesen Sie dann die EVM-Non
 
 ## Was 0.6.0 ändert {#whats-new-060}
 
-0.6.0 (12. November 2026) bringt Unterstützung für Chain v3.2.8 (das Testnet läuft seit dem 12. November 2026 mit ihr; das Mainnet hat sie nicht angewendet). Die neuen Regeln gelten in einem Netzwerk, sobald es v3.2.8 betreibt.
+0.6.0 (12. November 2026) bringt Unterstützung für Chain v3.2.8 (das Testnet läuft seit dem 12. November 2026 mit ihr, das Mainnet seit dem 18. November 2026). Die neuen Regeln gelten in einem Netzwerk, sobald es v3.2.8 betreibt, was jetzt beide Netzwerke tun.
 
 **Inkompatible Änderungen.**
 

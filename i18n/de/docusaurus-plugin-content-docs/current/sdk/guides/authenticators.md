@@ -128,7 +128,7 @@ pubkey })`.
 
 ### Verknüpfen ab Chain v3.2.8 (SDK 0.14.0) {#link-v328}
 
-Ab Chain v3.2.8 (das Testnet seit dem 12. November 2026; das Mainnet hat sie nicht angewendet)
+Ab Chain v3.2.8 (das Testnet seit dem 12. November 2026, das Mainnet seit dem 18. November 2026)
 wird die obige Registrierung abgelehnt, wenn sie keinen **Besitznachweis** trägt: Der zu
 verknüpfende Schlüssel signiert eine Klartextnachricht, die die Chain, das Konto, das Schema
 und den Schlüssel nennt. Ein Schlüssel mit `send`, `evm`, `deploy`, `svm` oder `all` braucht

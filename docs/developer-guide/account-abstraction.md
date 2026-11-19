@@ -14,7 +14,7 @@ The abstract-account module is **switched off on the `qorechain-vladi` mainnet**
 :::
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.7** (applied at height 4,164,600 on 12 November 2026, governance proposal 16; v3.2.6 was applied at height 4,020,000 on 4 November 2026, proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026, proposal 14, and v3.2.4 at height 3,742,566 on 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026).
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.8** (applied at height 4,273,000 on 18 November 2026, governance proposal 17; v3.2.7 was applied at height 4,164,600 on 12 November 2026, proposal 16; v3.2.6 was applied at height 4,020,000 on 4 November 2026, proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026, proposal 14, and v3.2.4 at height 3,742,566 on 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026).
 :::
 
 :::caution Every Cosmos-lane transaction needs the hybrid post-quantum cosign
@@ -118,7 +118,7 @@ The account record includes its rules and the number of linked keys:
 qorechaind query abstractaccount account <account-address>
 ```
 
-From v3.2.8 (testnet only until a later mainnet upgrade) a key with value permissions is refused at registration and at execution unless a rule bounds it, so "no limit" no longer applies to such keys.
+From v3.2.8 (testnet since 12 November 2026, mainnet since 18 November 2026) a key with value permissions is refused at registration and at execution unless a rule bounds it, so "no limit" no longer applies to such keys.
 
 :::caution A rule bounds a key only when one exists
 The chain resolves the limit in this order: the authenticator's own rule if set and `enabled`; otherwise the first `enabled` rule on the account; otherwise **there is no limit**. A rule stored with `enabled: false` is no limit, not a zero limit. `MsgRegisterAuthenticator` carries no rule, so a key linked by that message alone is bounded only by an account-level rule. Set a rule deliberately with `update-rules`, and register only the permissions the key needs. A limit bounds the damage a linked key can do; it does not replace revoking the key.
@@ -147,7 +147,7 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-**From release v3.2.8 (testnet only until a later mainnet upgrade) registration needs two more things.**
+**From release v3.2.8 (testnet since 12 November 2026, mainnet since 18 November 2026) registration needs two more things.**
 
 1. **A possession proof.** `MsgRegisterAuthenticator` has a required field `possession_proof` (field 8): a signature by the key being linked, proving it agrees to the link. The key signs this plain text under its own scheme, so a browser wallet shows the user what they sign (Phantom `signMessage`, MetaMask `personal_sign`); a 33-byte secp256k1 key signs the SHA-256 of the text:
 
@@ -166,7 +166,7 @@ From code, SDK 0.14.0 has the helpers for both (TypeScript: `signAuthenticatorLi
 
 A Phantom key is registered the same way with scheme `ed25519` and the Phantom public key (`register-authenticator` on the CLI). Revocation is instant via `MsgRevokeAuthenticator`.
 
-**An execution can fail inside a successful transaction.** From v3.2.8 (testnet only until a later mainnet upgrade) a failed `MsgExecuteEVM` or `MsgExecuteCosmos` returns `success=false` in its response with transaction code 0, emits the event `abstractaccount_execution_failed` with the reason, and still consumes the authenticator nonce. A client that checks only the transaction code will report such a call as a success: read the response or the event.
+**An execution can fail inside a successful transaction.** From v3.2.8 (testnet since 12 November 2026, mainnet since 18 November 2026) a failed `MsgExecuteEVM` or `MsgExecuteCosmos` returns `success=false` in its response with transaction code 0, emits the event `abstractaccount_execution_failed` with the reason, and still consumes the authenticator nonce. A client that checks only the transaction code will report such a call as a success: read the response or the event.
 
 ### Permission taxonomy {#permission-taxonomy}
 
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Linking a key in v3.2.8: worked example {#link-example-v328}
 
-This section walks through one complete link on the **`qorechain-diana` testnet**, which runs v3.2.8 since 12 November 2026. The mainnet does not run v3.2.8 yet, and its abstract-account module is switched off, so none of this applies there today. In short: the key you link has to sign a short text to show it agrees to be linked, a key that can move value needs a spending rule on the account, and when a linked key later spends, a failed spend is reported inside a successful transaction.
+This section walks through one complete link on the **`qorechain-diana` testnet**, which runs v3.2.8 since 12 November 2026. The mainnet runs v3.2.8 too (since 18 November 2026), but its abstract-account module was switched off when last checked (27 October 2026), so none of this applied there at that check. In short: the key you link has to sign a short text to show it agrees to be linked, a key that can move value needs a spending rule on the account, and when a linked key later spends, a failed spend is reported inside a successful transaction.
 
 Why it matters: from v3.2.8 the holder of the key takes part in the link, so a key can only be linked by someone who actually holds it, and a key that can move value is always bounded by a limit on the account.
 

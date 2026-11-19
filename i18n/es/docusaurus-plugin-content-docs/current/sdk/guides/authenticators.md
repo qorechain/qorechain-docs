@@ -125,8 +125,8 @@ pubkey })`.
 
 ### Vincular desde la cadena v3.2.8 (SDK 0.14.0) {#link-v328}
 
-Desde la cadena v3.2.8 (la testnet desde el 12 de noviembre de 2026; la mainnet no la ha
-aplicado) el registro anterior se rechaza si no lleva una **prueba de posesión**: la clave
+Desde la cadena v3.2.8 (la testnet desde el 12 de noviembre de 2026, la mainnet desde el
+18 de noviembre de 2026) el registro anterior se rechaza si no lleva una **prueba de posesión**: la clave
 que se vincula firma un mensaje de texto plano que nombra la cadena, la cuenta, el esquema
 y la clave. Una clave con `send`, `evm`, `deploy`, `svm` o `all` necesita además que la
 primera regla de gasto habilitada de la cuenta acote cada denominación. El SDK 0.14.0 tiene

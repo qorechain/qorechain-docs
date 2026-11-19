@@ -52,6 +52,14 @@ Die Transaktionsseite zeigt den Hash (mit Kopieren), Status und Typ, Block Heigh
 - **PQC Verified.** Eine Transaktion auf der Native-Lane, die erfolgreich war und deren Hybridsignatur (einschließlich des ML-DSA-87-Anteils) die Chain selbst verifiziert hat. Eine fehlgeschlagene Transaktion oder eine ohne verifizierte Hybridsignatur zeigt stattdessen Standardsicherheit.
 - **Authorised by a PQC window.** Eine EVM-Transaktion, die gesendet wurde, während der Absender ein offenes [EVM-Autorisierungsfenster](/developer-guide/evm-development#evm-window) hatte, mit dem Link **Window opened by**.
 
+### EVM-Transaktions-Hashes {#evm-hashes}
+
+Eine EVM-Transaktion hat zwei Hashes. Der `0x`-Hash ist der Ethereum-Transaktions-Hash, den MetaMask, ethers.js und `eth_getTransactionReceipt` verwenden. Die ID in Großbuchstaben ohne `0x` ist der Hash der nativen Transaktion, die sie trägt (`MsgEthereumTx`). Keiner lässt sich aus dem anderen berechnen, und wer `0x` vom EVM-Hash entfernt und ihn in Großbuchstaben umwandelt, erhält nicht die native ID.
+
+- **Dashboard-Explorer.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` akzeptiert den EVM-Hash unverändert, mit `0x`. Der Explorer liest das Netzwerk, das im Netzwerkwähler des Dashboards gewählt ist (standardmäßig Mainnet, in Ihrem Browser gespeichert); ein Testnet-Hash zeigt daher "Transaction Not Found", bis Sie den Wähler auf Testnet umstellen.
+- **Native ID über REST finden.** Suchen Sie mit dem vollständigen EVM-Hash in Kleinbuchstaben, mit `0x`, und kodieren Sie die Abfrage als URL: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (für Mainnet `https://api.qore.host` verwenden). Die native ID ist `tx_responses[0].txhash`. Ohne `0x` liefert die Suche nichts, und `ethereum_tx.txHash` ist nicht der richtige Schlüssel.
+- **Quittung von der EVM-Seite.** Rufen Sie `eth_getTransactionReceipt` auf `https://evm-testnet.qore.host` oder `https://evm.qore.host` auf.
+
 ### Blockseite
 
 Pfeile für Zurück und Vor führen durch die Chain. **Core Information** enthält die Höhe, den Hash, den Proposer, die Signaturanzahl und das verbrauchte Gas; **Technical Hashes** und **Block Transactions** folgen. Blöcke tragen keine Post-Quantum-Kennzeichnung.

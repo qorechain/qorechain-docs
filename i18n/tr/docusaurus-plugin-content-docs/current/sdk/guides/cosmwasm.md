@@ -177,7 +177,7 @@ const result = await signAndBroadcastHybrid({
 
 ### Sözleşme çağrıları için gas {#gas}
 
-**Bir sözleşme çağrısı için gas'i sabit yazmayın.** Sabit 400.000, basit bir transfer için bir çağrıda yeterli olur ve bir sonrakinde yetmez. v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) CosmWasm gas'i yeniden fiyatlandırılır:
+**Bir sözleşme çağrısı için gas'i sabit yazmayın.** Sabit 400.000, basit bir transfer için bir çağrıda yeterli olur ve bir sonrakinde yetmez. v3.2.8 sürümünden itibaren (test ağında 12 Kasım 2026'dan beri, ana ağda 18 Kasım 2026'dan beri) CosmWasm gas'i yeniden fiyatlandırılır:
 
 - **Bir sözleşme kodunun bir blokta ilk çağrısı bir yükleme maliyeti öder.** Bir cw20 transferi, kodunun blokta ilk çağrısı olarak yaklaşık 533.000 gas, her tekrar için yaklaşık 84.000 gas tutar. Yönetişim popüler kodları sabitleyebilir (pin) ve sabitlenmiş kodlar yükleme ücretinden muaftır.
 - **Ücretler tıkanıklıkla artar.** Bloklar sözleşme çağrılarıyla meşgulken bir tıkanıklık çarpanı sözleşme gas'ini varsayılan olarak 1x'ten 20x'e kadar ölçekler ve bir bloğun, tek bir işlemin en fazla yarısını kullanabileceği sınırlı bir sözleşme yürütme bütçesi vardır.

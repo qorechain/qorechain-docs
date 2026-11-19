@@ -10,7 +10,7 @@ sidebar_position: 7
 O tranzacție Ethereum poartă o singură semnătură secp256k1 și nimic altceva, deci nu poate purta semnătura post-cuantică (ML-DSA-87) pe care QoreChain o cere oricărei alte tranzacții. **Fereastra de autorizare EVM** închide această lacună. Contul deschide mai întâi o fereastră limitată printr-un mesaj QoreChain Native care **este** semnat cu cheia lui post-cuantică, iar lane-ul EVM admite apoi tranzacțiile obișnuite ale contului (MetaMask, ethers.js, Hardhat sau Foundry) doar cât timp fereastra le acoperă. Această pagină este referința completă despre cum se comportă o fereastră în versiunea **v3.2.8**.
 
 :::note Unde rulează v3.2.8
-Testnet-ul **`qorechain-diana`** rulează **v3.2.8** din 12 noiembrie 2026. Mainnet-ul **`qorechain-vladi`** nu a aplicat-o încă; pe mainnet fereastra funcționează așa cum este descris în [Dezvoltare EVM](/developer-guide/evm-development#evm-window), fără opțiunile și regulile marcate „v3.2.8" mai jos. Un nod sub v3.2.8 refuză un mesaj de fereastră care setează listele noi.
+Ambele rețele rulează **v3.2.8**: testnet-ul **`qorechain-diana`** din 12 noiembrie 2026 și mainnet-ul **`qorechain-vladi`** din 18 noiembrie 2026 (propunerea de guvernanță 17, înălțimea 4.273.000). Opțiunile și regulile marcate „v3.2.8" mai jos se aplică pe ambele. Un nod sub v3.2.8 refuză un mesaj de fereastră care setează listele noi. Verificările și rulările de test de pe această pagină au fost făcute pe testnet.
 :::
 
 ## De ce contează {#why}
@@ -274,7 +274,7 @@ Implementarea unui contract are nevoie de o fereastră **fără domeniu**. O fer
 
 ## Permit-uri, ordine EIP-712 și Permit2 {#permits}
 
-Un permit EIP-2612, un transfer Permit2, un ordin semnat sau o meta-tranzacție este verificat de un contract cu precompilatul `ecrecover`. Începând cu v3.2.8 (ambele rețele, odată ce o rețea o aplică), pentru un cont care deține o cheie post-cuantică utilizabilă, această verificare reușește doar cât timp fereastra **live** a contului admite **contractul verificator**, adică tokenul sau Permit2 însuși, nu routerul care transmite apelul.
+Un permit EIP-2612, un transfer Permit2, un ordin semnat sau o meta-tranzacție este verificat de un contract cu precompilatul `ecrecover`. Începând cu v3.2.8 (ambele rețele), pentru un cont care deține o cheie post-cuantică utilizabilă, această verificare reușește doar cât timp fereastra **live** a contului admite **contractul verificator**, adică tokenul sau Permit2 însuși, nu routerul care transmite apelul.
 
 1. Dacă fereastra are domeniu, listați contractul verificator în `allowed_targets` (`native_only` nu admite nicio astfel de semnătură).
 2. Deschideți fereastra **înainte** ca utilizatorul să semneze. Fără o fereastră live, semnătura este tratată ca invalidă, iar contractul o refuză.
@@ -307,7 +307,7 @@ Testnet-ul a răspuns pe 12 noiembrie 2026 cu `tx_max_gas` **30000000** și `pre
 | `max_txs` fereastră | 1,000 | Cele mai multe tranzacții într-o fereastră |
 | Intrări în liste | 16 pe listă | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-Răspunsul conține și un obiect `limits` cu valorile setate de guvernanță; citiți `tx_max_gas` și `precompile_input_max_bytes` de la nivelul de sus, care sunt valorile în vigoare. Ruta este servită începând cu v3.2.8, deci mainnet-ul public răspunde `501 Not Implemented` până aplică v3.2.8 (verificat la 12 noiembrie 2026, după ce mainnet-ul a trecut la v3.2.7).
+Răspunsul conține și un obiect `limits` cu valorile setate de guvernanță; citiți `tx_max_gas` și `precompile_input_max_bytes` de la nivelul de sus, care sunt valorile în vigoare. Ruta este servită începând cu v3.2.8, pe care o rulează ambele rețele. Mainnet-ul public a răspuns `501 Not Implemented` la 12 noiembrie 2026, înainte să aplice v3.2.8; la 19 noiembrie 2026 a răspuns `200` cu `tx_max_gas` `30000000` și `precompile_input_max_bytes` `16384`.
 
 O fereastră deschisă la un preț normal al gazului numără tot comisionul maxim: o limită de gaz de 30,000,000 la un plafon de comision de 100 gwei numără 3 QOR din `max_value` pentru o singură tranzacție.
 

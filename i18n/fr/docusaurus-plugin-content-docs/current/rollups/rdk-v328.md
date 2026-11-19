@@ -9,9 +9,9 @@ sidebar_position: 11
 
 La version v3.2.8 de QoreChain change la façon dont les rollups se règlent. Les rollups peuvent désormais placer leurs données sur la chaîne, laisser la chaîne ordonner leurs transactions (séquencement basé, ou « based »), se régler de façon optimiste avec une preuve de fraude qui ré-exécute le batch, garder leurs publications privées au sein d'un ensemble de membres, et lier des racines de retrait Groth16 de manière à accepter n'importe quelle racine de 32 octets. Le règlement STARK est suspendu jusqu'à une version ultérieure. Cette page décrit ce que fait chaque changement et comment l'utiliser. Elle s'adresse aux opérateurs de rollups et aux développeurs qui construisent sur le module `x/rdk`.
 
-:::caution Testnet uniquement pour l'instant
+:::note Active sur les deux réseaux
 
-La v3.2.8 s'exécute sur le testnet public `qorechain-diana` depuis le 12 novembre 2026. Le mainnet ne l'a pas encore appliquée : chaque fonctionnalité de cette page y est donc refusée tant qu'il ne l'a pas fait. Considérez les exemples comme des exemples de testnet.
+La v3.2.8 s'exécute sur le testnet public `qorechain-diana` depuis le 12 novembre 2026 et sur le mainnet `qorechain-vladi` depuis le 18 novembre 2026 (proposition de gouvernance 17, hauteur 4 273 000). Les exemples ont été exécutés sur le testnet.
 
 :::
 

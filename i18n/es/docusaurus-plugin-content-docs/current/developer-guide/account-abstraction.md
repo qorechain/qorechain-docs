@@ -14,7 +14,7 @@ El módulo de cuentas abstractas está **desactivado en la mainnet `qorechain-vl
 :::
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (en funcionamiento desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.7** (aplicada en la altura 4,164,600 el 12 de noviembre de 2026, propuesta de gobernanza 16; la v3.2.6 se aplicó en la altura 4,020,000 el 4 de noviembre de 2026, propuesta 15; la v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026, propuesta 14, y la v3.2.4 se aplicó en la altura 3,742,566 el 23 de octubre de 2026). Sustituye por `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.8 (desde el 12 de noviembre de 2026; v3.2.4 desde el 19 de octubre de 2026).
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (en funcionamiento desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.8** (aplicada en la altura 4,273,000 el 18 de noviembre de 2026, propuesta de gobernanza 17; la v3.2.7 se aplicó en la altura 4,164,600 el 12 de noviembre de 2026, propuesta 16; la v3.2.6 se aplicó en la altura 4,020,000 el 4 de noviembre de 2026, propuesta 15; la v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026, propuesta 14, y la v3.2.4 se aplicó en la altura 3,742,566 el 23 de octubre de 2026). Sustituye por `--chain-id qorechain-diana` para la testnet, que también ejecuta v3.2.8 (desde el 12 de noviembre de 2026; v3.2.4 desde el 19 de octubre de 2026).
 :::
 
 :::caution Toda transacción de la vía Cosmos necesita la cofirma post-cuántica híbrida
@@ -118,7 +118,7 @@ El registro de la cuenta incluye sus reglas y el número de claves vinculadas:
 qorechaind query abstractaccount account <account-address>
 ```
 
-Desde v3.2.8 (solo testnet hasta una actualización posterior de mainnet) una clave con permisos de valor se rechaza en el registro y en la ejecución salvo que una regla la acote, así que "sin límite" ya no se aplica a esas claves.
+Desde v3.2.8 (testnet desde el 12 de noviembre de 2026, mainnet desde el 18 de noviembre de 2026) una clave con permisos de valor se rechaza en el registro y en la ejecución salvo que una regla la acote, así que "sin límite" ya no se aplica a esas claves.
 
 :::caution Una regla acota una clave solo cuando existe
 La cadena resuelve el límite en este orden: la regla propia del autenticador si está definida y `enabled`; en caso contrario, la primera regla `enabled` de la cuenta; en caso contrario, **no hay límite**. Una regla almacenada con `enabled: false` significa que no hay límite, no un límite cero. `MsgRegisterAuthenticator` no lleva ninguna regla, por lo que una clave vinculada solo con ese mensaje queda acotada únicamente por una regla a nivel de cuenta. Define una regla de forma deliberada con `update-rules` y registra solo los permisos que la clave necesita. Un límite acota el daño que puede causar una clave vinculada; no sustituye a revocar la clave.
@@ -147,7 +147,7 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-**Desde la versión v3.2.8 (solo testnet hasta una actualización posterior de mainnet) el registro exige dos cosas más.**
+**Desde la versión v3.2.8 (testnet desde el 12 de noviembre de 2026, mainnet desde el 18 de noviembre de 2026) el registro exige dos cosas más.**
 
 1. **Una prueba de posesión.** `MsgRegisterAuthenticator` tiene un campo obligatorio `possession_proof` (campo 8): una firma de la clave que se vincula, que demuestra que acepta el vínculo. La clave firma este texto plano con su propio esquema, de modo que una cartera de navegador muestra al usuario lo que firma (Phantom `signMessage`, MetaMask `personal_sign`); una clave secp256k1 de 33 bytes firma el SHA-256 del texto:
 
@@ -166,7 +166,7 @@ Desde código, el SDK 0.14.0 tiene los ayudantes para ambas cosas (TypeScript: `
 
 Una clave de Phantom se registra de la misma manera con el esquema `ed25519` y la clave pública de Phantom (`register-authenticator` en la CLI). La revocación es instantánea mediante `MsgRevokeAuthenticator`.
 
-**Una ejecución puede fallar dentro de una transacción exitosa.** Desde v3.2.8 (solo testnet hasta una actualización posterior de mainnet) un `MsgExecuteEVM` o `MsgExecuteCosmos` fallido devuelve `success=false` en su respuesta con código de transacción 0, emite el evento `abstractaccount_execution_failed` con el motivo y aun así consume el nonce del autenticador. Un cliente que solo compruebe el código de la transacción informará de esa llamada como un éxito: lee la respuesta o el evento.
+**Una ejecución puede fallar dentro de una transacción exitosa.** Desde v3.2.8 (testnet desde el 12 de noviembre de 2026, mainnet desde el 18 de noviembre de 2026) un `MsgExecuteEVM` o `MsgExecuteCosmos` fallido devuelve `success=false` en su respuesta con código de transacción 0, emite el evento `abstractaccount_execution_failed` con el motivo y aun así consume el nonce del autenticador. Un cliente que solo compruebe el código de la transacción informará de esa llamada como un éxito: lee la respuesta o el evento.
 
 ### Taxonomía de permisos {#permission-taxonomy}
 
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Vincular una clave en v3.2.8: ejemplo completo {#link-example-v328}
 
-Esta sección recorre un vínculo completo en la testnet **`qorechain-diana`**, que ejecuta v3.2.8 desde el 12 de noviembre de 2026. La mainnet todavía no ejecuta v3.2.8 y su módulo de cuentas abstractas está desactivado, así que nada de esto se aplica allí hoy. En resumen: la clave que vinculas tiene que firmar un texto corto para demostrar que acepta ser vinculada, una clave que puede mover valor necesita una regla de gasto en la cuenta, y cuando una clave vinculada gasta más tarde, un gasto fallido se informa dentro de una transacción exitosa.
+Esta sección recorre un vínculo completo en la testnet **`qorechain-diana`**, que ejecuta v3.2.8 desde el 12 de noviembre de 2026. La mainnet también ejecuta v3.2.8 (desde el 18 de noviembre de 2026), pero su módulo de cuentas abstractas estaba desactivado en la última comprobación (27 de octubre de 2026), así que nada de esto se aplicaba allí en esa comprobación. En resumen: la clave que vinculas tiene que firmar un texto corto para demostrar que acepta ser vinculada, una clave que puede mover valor necesita una regla de gasto en la cuenta, y cuando una clave vinculada gasta más tarde, un gasto fallido se informa dentro de una transacción exitosa.
 
 Por qué importa: desde v3.2.8 el titular de la clave participa en el vínculo, así que una clave solo puede ser vinculada por quien realmente la posee, y una clave que puede mover valor siempre está acotada por un límite en la cuenta.
 

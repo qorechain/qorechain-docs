@@ -12,11 +12,11 @@ Un appel inter-VM permet à du code exécuté sur une machine virtuelle de lance
 Cette page est la référence des champs, des coûts et des limites pour la version v3.2.8, avec un exemple détaillé pour chaque direction. Les concepts, le cycle de vie et le comportement des versions antérieures se trouvent dans [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) ; le pas-à-pas côté SDK se trouve dans le [guide inter-VM](/sdk/guides/cross-vm).
 
 :::note Où la v3.2.8 est en service
-Le testnet **`qorechain-diana`** exécute la **v3.2.8** depuis le 12 novembre 2026. Le mainnet **`qorechain-vladi`** ne l'a pas encore appliquée, et sur le mainnet `MsgCrossVMCall` est désactivé. Tout ce qui est marqué « v3.2.8 » ci-dessous décrit, pour l'instant, le comportement du testnet.
+Les deux réseaux exécutent la **v3.2.8** : le testnet **`qorechain-diana`** depuis le 12 novembre 2026 et le mainnet **`qorechain-vladi`** depuis le 18 novembre 2026 (proposition de gouvernance 17, hauteur 4,273,000). Sur le mainnet, `MsgCrossVMCall` est suspendu pour l'instant : l'appel ne peut pas y être envoyé. Les exemples et les vérifications ci-dessous ont été exécutés sur le testnet.
 :::
 
 :::caution Le message d'appel est-il disponible en ce moment ?
-Sur le testnet, `MsgCrossVMCall` a été mis en pause par la mise à niveau. La proposition de gouvernance 37 a été adoptée et a levé la pause : l'appel est donc ouvert sur le testnet (vérifié le 12 novembre 2026 : la liste du coupe-circuit ne contient que `/cosmwasm.wasm.v1.MsgStoreCode`). Sur le mainnet, il reste désactivé. Deux éléments indiquent si l'appel est disponible à un instant donné : les paramètres du module (`enabled`) et la liste du coupe-circuit. Vérifiez les deux avant de construire quoi que ce soit dessus :
+Sur le testnet, `MsgCrossVMCall` a été mis en pause par la mise à niveau. La proposition de gouvernance 37 a été adoptée et a levé la pause : l'appel est donc ouvert sur le testnet (vérifié le 12 novembre 2026 : la liste du coupe-circuit ne contient que `/cosmwasm.wasm.v1.MsgStoreCode`). Sur le mainnet, il est suspendu pour l'instant (la liste du coupe-circuit y contient toujours `MsgCrossVMCall`, lue le 19 novembre 2026). Deux éléments indiquent si l'appel est disponible à un instant donné : les paramètres du module (`enabled`) et la liste du coupe-circuit. Vérifiez les deux avant de construire quoi que ce soit dessus :
 
 ```bash
 # Module parameters: look for "enabled": true

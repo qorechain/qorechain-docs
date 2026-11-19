@@ -9,9 +9,9 @@ sidebar_position: 11
 
 La versión v3.2.8 de QoreChain cambia la forma en que se liquidan los rollups. Ahora los rollups pueden poner sus datos en la cadena, dejar que la cadena ordene sus transacciones (secuenciación basada), liquidar de forma optimista con una prueba de fraude que vuelve a ejecutar el lote, mantener sus publicaciones privadas para un conjunto de miembros y vincular raíces de retiro Groth16 de un modo que acepta cualquier raíz de 32 bytes. La liquidación STARK queda en pausa hasta una versión posterior. Esta página describe qué hace cada cambio y cómo usarlo. Está dirigida a operadores y desarrolladores de rollups que construyen sobre el módulo `x/rdk`.
 
-:::caution Solo testnet por ahora
+:::note Activa en ambas redes
 
-v3.2.8 se ejecuta en la testnet pública `qorechain-diana` desde el 12 de noviembre de 2026. La mainnet todavía no la ha aplicado, así que todas las funciones de esta página se rechazan allí hasta que lo haga. Trata los ejemplos como ejemplos de la testnet.
+v3.2.8 se ejecuta en la testnet pública `qorechain-diana` desde el 12 de noviembre de 2026 y en la mainnet `qorechain-vladi` desde el 18 de noviembre de 2026 (propuesta de gobernanza 17, altura 4,273,000). Los ejemplos se ejecutaron en la testnet.
 
 :::
 

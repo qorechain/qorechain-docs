@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain admite contratos inteligentes **QoreChain Native**. QoreChain Native es el nombre que QoreChain da a su runtime **CosmWasm**: los desarrolladores escriben programas seguros y aislados (sandboxed) en Rust con las bibliotecas estándar de CosmWasm (`cosmwasm-std`) y los compilan a WebAssembly. Los contratos QoreChain Native se ejecutan junto con los programas EVM y SVM dentro de la arquitectura triple-VM de QoreChain.
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.7** desde el 12 de noviembre de 2026 (propuesta de gobernanza 16, altura 4,164,600; v3.2.6 desde el 4 de noviembre de 2026; v3.2.5 desde el 29 de octubre de 2026, v3.2.4 desde el 23 de octubre de 2026). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta la v3.2.8 (desde el 12 de noviembre de 2026; v3.2.4 desde el 19 de octubre de 2026).
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.8** desde el 18 de noviembre de 2026 (propuesta de gobernanza 17, altura 4,273,000; v3.2.7 desde el 12 de noviembre de 2026; v3.2.6 desde el 4 de noviembre de 2026; v3.2.5 desde el 29 de octubre de 2026, v3.2.4 desde el 23 de octubre de 2026). Sustituya `--chain-id qorechain-diana` para la testnet, que también ejecuta la v3.2.8 (desde el 12 de noviembre de 2026; v3.2.4 desde el 19 de octubre de 2026).
 :::
 
 :::caution La subida y la instanciación de código requieren permiso explícito en la mainnet; la testnet difiere
@@ -144,7 +144,7 @@ Los contratos QoreChain Native siguen un ciclo de vida de cinco pasos: **Build**
 
 ## Gas y límites de subida (v3.2.8) {#gas-and-limits}
 
-Desde la versión v3.2.8 (solo testnet hasta una actualización posterior de mainnet):
+Desde la versión v3.2.8 (testnet desde el 12 de noviembre de 2026, mainnet desde el 18 de noviembre de 2026):
 
 - **El gas de ejecución se reajusta.** La primera llamada de un código de contrato en un bloque paga un coste de carga (una transferencia cw20 cuesta unos 533,000 de gas la primera vez en un bloque y unos 84,000 las repeticiones), se cobran la preparación de la llamada y el crecimiento de memoria, y un factor de congestión escala el precio de 1x hasta 20x por defecto. Simula siempre y añade al menos un 30%; nunca fijes el gas de una llamada a un contrato. Consulta [Gas para llamadas a contratos](/sdk/guides/cosmwasm#gas).
 - **Las subidas están acotadas y siguen bajo control de la gobernanza.** Primero se comprueba el acceso, y el mempool admite una subida solo de un remitente permitido. La subida paga por adelantado el gas de su tamaño declarado (unos 9.9 millones de gas para cw20, unos 22.8 millones para cw721). Un módulo puede tener como máximo 4,096 funciones y compilar a un máximo de 32 MiB, y las instrucciones de coma flotante se rechazan, tanto en la subida como en la llamada para el código ya almacenado.

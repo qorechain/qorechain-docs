@@ -52,6 +52,14 @@ The transaction page shows the hash (with copy), status and type, Block Height, 
 - **PQC Verified.** A native-lane transaction that succeeded and whose hybrid signature (including the ML-DSA-87 part) the chain itself verified. A failed transaction, or one without a verified hybrid signature, shows standard security instead.
 - **Authorised by a PQC window.** An EVM transaction that was sent while the sender had an open [EVM authorisation window](/developer-guide/evm-development#evm-window), with the **Window opened by** link.
 
+### EVM transaction hashes {#evm-hashes}
+
+An EVM transaction has two hashes. The `0x` hash is the Ethereum transaction hash that MetaMask, ethers.js and `eth_getTransactionReceipt` use. The uppercase ID without `0x` is the hash of the native transaction that carries it (`MsgEthereumTx`). Neither can be computed from the other, and removing `0x` from the EVM hash and uppercasing it does not give the native ID.
+
+- **Dashboard explorer.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` accepts the EVM hash as it is, with `0x`. The explorer reads the network chosen in the Dashboard network selector (mainnet by default, remembered in your browser), so a testnet hash shows "Transaction Not Found" until you switch the selector to Testnet.
+- **Find the native ID over REST.** Search by the full lowercase EVM hash, with `0x`, and URL-encode the query: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (use `https://api.qore.host` for mainnet). The native ID is `tx_responses[0].txhash`. Without `0x` the search returns nothing, and `ethereum_tx.txHash` is not the key.
+- **Receipt from the EVM side.** Call `eth_getTransactionReceipt` on `https://evm-testnet.qore.host` or `https://evm.qore.host`.
+
 ### Block page
 
 Previous and next arrows step through the chain. **Core Information** has the height, hash, proposer, signature count and Gas Used; **Technical Hashes** and **Block Transactions** follow. Blocks carry no post-quantum label.

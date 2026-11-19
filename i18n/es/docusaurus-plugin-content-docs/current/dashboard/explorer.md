@@ -52,6 +52,14 @@ La página de la transacción muestra el hash (con copiar), el estado y el tipo,
 - **PQC Verified.** Una transacción del carril nativo que tuvo éxito y cuya firma híbrida (incluida la parte ML-DSA-87) verificó la propia cadena. Una transacción fallida, o una sin firma híbrida verificada, muestra en su lugar seguridad estándar.
 - **Authorised by a PQC window.** Una transacción EVM enviada mientras el remitente tenía abierta una [ventana de autorización EVM](/developer-guide/evm-development#evm-window), con el enlace **Window opened by**.
 
+### Hashes de transacciones EVM {#evm-hashes}
+
+Una transacción EVM tiene dos hashes. El hash `0x` es el hash de transacción de Ethereum que usan MetaMask, ethers.js y `eth_getTransactionReceipt`. El ID en mayúsculas sin `0x` es el hash de la transacción nativa que la contiene (`MsgEthereumTx`). Ninguno se puede calcular a partir del otro, y quitar `0x` del hash EVM y pasarlo a mayúsculas no da el ID nativo.
+
+- **Explorador del Dashboard.** `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` acepta el hash EVM tal cual, con `0x`. El explorador lee la red elegida en el selector de red del Dashboard (mainnet por defecto, recordada en tu navegador), así que un hash de testnet muestra "Transaction Not Found" hasta que cambies el selector a Testnet.
+- **Encontrar el ID nativo por REST.** Busca por el hash EVM completo en minúsculas, con `0x`, y codifica la consulta como URL: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (usa `https://api.qore.host` para mainnet). El ID nativo es `tx_responses[0].txhash`. Sin `0x` la búsqueda no devuelve nada, y `ethereum_tx.txHash` no es la clave.
+- **Recibo desde el lado EVM.** Llama a `eth_getTransactionReceipt` en `https://evm-testnet.qore.host` o `https://evm.qore.host`.
+
 ### Página del bloque
 
 Las flechas de anterior y siguiente recorren la cadena. **Core Information** tiene la altura, el hash, el proponente, el recuento de firmas y Gas Used; le siguen **Technical Hashes** y **Block Transactions**. Los bloques no llevan etiqueta poscuántica.

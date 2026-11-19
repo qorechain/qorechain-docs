@@ -167,7 +167,7 @@ El orden importa: abre la ventana, luego lee el nonce EVM y después firma la tr
 
 ## Qué cambia la 0.6.0 {#whats-new-060}
 
-La 0.6.0 (12 de noviembre de 2026) añade soporte para la cadena v3.2.8 (la testnet la ejecuta desde el 12 de noviembre de 2026; la mainnet no la ha aplicado). Las reglas nuevas se aplican en una red cuando ejecuta la v3.2.8.
+La 0.6.0 (12 de noviembre de 2026) añade soporte para la cadena v3.2.8 (la testnet la ejecuta desde el 12 de noviembre de 2026, la mainnet desde el 18 de noviembre de 2026). Las reglas nuevas se aplican en una red cuando ejecuta la v3.2.8, lo que ya hacen ambas redes.
 
 **Cambios incompatibles.**
 

@@ -52,6 +52,14 @@ sidebar_position: 2
 - **PQC Verified.** معاملة على المسار الأصلي نجحت وتحققت السلسلة نفسها من توقيعها الهجين (بما في ذلك جزء ML-DSA-87). أما المعاملة الفاشلة، أو التي لا يوجد لها توقيع هجين متحقَّق منه، فتعرض أمانًا قياسيًا بدلًا من ذلك.
 - **Authorised by a PQC window.** معاملة EVM أُرسلت بينما كانت لدى المرسل [نافذة تفويض EVM](/developer-guide/evm-development#evm-window) مفتوحة، مع رابط **Window opened by**.
 
+### تجزئتا معاملة EVM {#evm-hashes}
+
+لمعاملة EVM تجزئتان. تجزئة `0x` هي تجزئة معاملة Ethereum التي تستخدمها MetaMask وethers.js و`eth_getTransactionReceipt`. أما المعرّف بالأحرف الكبيرة دون `0x` فهو تجزئة المعاملة الأصلية التي تحملها (`MsgEthereumTx`). لا يمكن حساب إحداهما من الأخرى، وحذف `0x` من تجزئة EVM وتحويلها إلى أحرف كبيرة لا يعطي المعرّف الأصلي.
+
+- **مستكشف لوحة التحكم.** يقبل `https://dashboard.qorechain.io/explorer/tx/0x<EVM hash>` تجزئة EVM كما هي، مع `0x`. يقرأ المستكشف الشبكة المختارة في محدد الشبكة في لوحة التحكم (الشبكة الرئيسية افتراضيًا، ويحفظها متصفحك)، لذا تعرض تجزئة الشبكة التجريبية "Transaction Not Found" إلى أن تحوّل المحدد إلى Testnet.
+- **إيجاد المعرّف الأصلي عبر REST.** ابحث بتجزئة EVM الكاملة بأحرف صغيرة، مع `0x`، وقم بترميز الاستعلام بصيغة URL: `GET https://api-testnet.qore.host/cosmos/tx/v1beta1/txs?query=ethereum_tx.ethereumTxHash='0x<hash>'` (استخدم `https://api.qore.host` للشبكة الرئيسية). المعرّف الأصلي هو `tx_responses[0].txhash`. بدون `0x` لا يُرجع البحث شيئًا، و`ethereum_tx.txHash` ليس المفتاح الصحيح.
+- **الإيصال من جهة EVM.** استدعِ `eth_getTransactionReceipt` على `https://evm-testnet.qore.host` أو `https://evm.qore.host`.
+
 ### صفحة الكتلة
 
 تتيح الأسهم السابق والتالي التنقل عبر السلسلة. تحتوي **Core Information** على الارتفاع والتجزئة والمقترِح وعدد التوقيعات وGas Used؛ ثم تليها **Technical Hashes** و**Block Transactions**. لا تحمل الكتل أي تسمية لما بعد الكم.

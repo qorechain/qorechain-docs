@@ -181,7 +181,7 @@ const result = await signAndBroadcastHybrid({
 
 **No fijes el gas de una llamada a un contrato.** Un valor fijo de 400,000 basta
 para una transferencia simple en una llamada y se agota en la siguiente. Desde
-la versión v3.2.8 (solo testnet hasta una actualización posterior de mainnet)
+la versión v3.2.8 (la testnet desde el 12 de noviembre de 2026, la mainnet desde el 18 de noviembre de 2026)
 el gas de CosmWasm se reajusta:
 
 - **La primera llamada de un código de contrato en un bloque paga un coste de

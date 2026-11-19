@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # 노드 운영자: v3.2.8 체크리스트
 
-릴리스 **v3.2.8**은 2026년 11월 12일(높이 9,929,500)부터 테스트넷 `qorechain-diana`에서 실행되고 있습니다. 메인넷 `qorechain-vladi`는 2026년 11월 12일부터 v3.2.7을 실행하고 있으며(높이 4,164,600, 거버넌스 제안 16) v3.2.8을 아직 적용하지 않았으므로, 이 페이지의 내용은 현재 메인넷 노드에는 적용되지 않습니다.
+릴리스 **v3.2.8**은 두 네트워크에서 실행되고 있습니다. 테스트넷 `qorechain-diana`는 2026년 11월 12일(높이 9,929,500)부터, 메인넷 `qorechain-vladi`는 2026년 11월 18일(높이 4,273,000, 거버넌스 제안 17)부터입니다. 메인넷은 2026년 11월 12일(높이 4,164,600, 거버넌스 제안 16)부터 v3.2.7을 실행했습니다. 이 페이지의 모든 내용은 메인넷 노드에도 적용되며, 별도 표시가 없으면 예제는 테스트넷 엔드포인트를 사용합니다.
 
 이 페이지는 v3.2.8에서 노드 운영자가 확인하고 변경해야 할 사항의 짧은 목록입니다. 번들에 들어 있는 공유 라이브러리, 컨트랙트 런타임 설정, 새로운 `app.toml` 기본값, 새 REST 경로 하나, 그리고 아직 v3.2.7에 있는 노드를 업그레이드하는 단계를 다룹니다. 전체 노드 가이드는 [노드 실행](/developer-guide/running-a-node)을 참고하세요.
 
@@ -78,7 +78,7 @@ query_gas_limit = 0
 
 ## 6. 새 경로: `GET /qorechain/svm/v1/params` {#svm-params}
 
-v3.2.8은 SVM 모듈 파라미터를 위한 읽기 전용 경로를 추가합니다. v3.2.8을 실행하는 노드(테스트넷)에서 제공되며, 릴리스가 적용되지 않은 메인넷에서는 HTTP `501`로 응답합니다.
+v3.2.8은 SVM 모듈 파라미터를 위한 읽기 전용 경로를 추가합니다. v3.2.8을 실행하는 노드(두 네트워크 모두)에서 제공되며, 더 오래된 릴리스를 실행하는 노드에서는 HTTP `501`로 응답합니다. 2026년 11월 19일 공개 메인넷은 `enabled` `false`와 함께 `200`으로 응답했습니다. SVM 레인은 메인넷에서 꺼진 상태로 유지됩니다.
 
 ```bash
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params
@@ -109,11 +109,11 @@ SVM 전송 버튼을 보여 주기 전에 `enabled`를 읽으세요. [SVM 개발
 curl -s https://download.qore.host/testnet/latest.json | jq '{version, minCompatible, upgradeType, upgradeHeight, binary: .binary.url}'
 ```
 
-2026년 11월 12일에는 `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500`, 바이너리 `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`로 응답했습니다. `binary.url`을 신뢰하기 전에 `version`이 `minCompatible`과 같은지 확인하고, 같은 파일의 `sha256`으로 아카이브를 검증하세요. 메인넷 매니페스트는 `https://download.qore.host/mainnet/latest.json`에 있으며, 메인넷 업그레이드가 공지되기 전까지는 v3.2.6을 가리킵니다.
+2026년 11월 12일에는 `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500`, 바이너리 `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`로 응답했습니다. `binary.url`을 신뢰하기 전에 `version`이 `minCompatible`과 같은지 확인하고, 같은 파일의 `sha256`으로 아카이브를 검증하세요. 메인넷 매니페스트는 `https://download.qore.host/mainnet/latest.json`에 있습니다. 2026년 11월 19일에 읽은 값은 `version` `3.2.8`, `minCompatible` `3.2.7`, `upgradeHeight` `4273000`, 바이너리 `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`(107,091,599바이트, SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`)였습니다. 메인넷에서는 `minCompatible`이 `version`보다 낮으므로, 설치한 릴리스와 두 값을 모두 비교하세요.
 
 ## 8. 아직 v3.2.7인 노드 업그레이드 {#upgrade-from-v327}
 
-테스트넷 업그레이드 높이가 지났으므로, 아직 v3.2.7인 노드는 높이 9,929,500에서 `UPGRADE "v3.2.8" NEEDED`와 함께 정지합니다. 상태는 유지되며 재동기화할 필요가 없습니다.
+업그레이드 높이는 두 네트워크 모두에서 지났으므로(테스트넷 9,929,500, 메인넷 4,273,000), 아직 v3.2.7인 노드는 해당 높이에서 `UPGRADE "v3.2.8" NEEDED`와 함께 정지합니다. 상태는 유지되며 재동기화할 필요가 없습니다.
 
 1. 매니페스트에 명시된 아카이브를 다운로드하고 SHA-256을 검증합니다.
 2. 노드를 중지합니다.
@@ -133,11 +133,11 @@ curl -s https://api-testnet.qore.host/qorechain/svm/v1/params | jq '.params.enab
 
 | 보이는 현상 | 의미 | 대처 방법 |
 | --- | --- | --- |
-| `UPGRADE "v3.2.8" NEEDED`와 함께 노드가 높이 9,929,500에서 정지 | 노드가 아직 v3.2.7 바이너리를 사용 중입니다 | 8단계 |
+| `UPGRADE "v3.2.8" NEEDED`와 함께 노드가 높이 9,929,500(테스트넷) 또는 4,273,000(메인넷)에서 정지 | 노드가 아직 v3.2.7 바이너리를 사용 중입니다 | 8단계 |
 | 공유 라이브러리가 없다는 시작 오류 | `lib/`를 전체 복사하지 않았거나 로더가 그 위치를 가리키지 않습니다 | 1단계 |
 | `memory_cache_size`가 올려졌다는 경고 | 설정된 값이 256 MiB보다 작습니다 | 256 이상으로 설정하세요 |
 | 컨트랙트 디렉터리에 대한 경고 | 컨트랙트 코드가 아직 이전 위치에 있습니다 | 편할 때 `<home>/wasm`으로 옮기세요 |
-| `/qorechain/svm/v1/params`에서 `501` | 노드가 v3.2.8이 아닙니다(메인넷은 v3.2.7 실행 중) | 메인넷에서는 예상되는 응답입니다 |
+| `/qorechain/svm/v1/params`에서 `501` | 노드가 v3.2.8이 아닙니다 | 노드를 업그레이드하세요([8단계](#upgrade-from-v327)) |
 
 ## 관련 페이지
 

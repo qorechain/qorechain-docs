@@ -12,11 +12,11 @@ Ein Cross-VM-Aufruf lässt Code auf einer virtuellen Maschine einen Contract auf
 Diese Seite ist die Referenz zu Feldern, Kosten und Limits für Release v3.2.8, mit einem durchgespielten Beispiel für jede Richtung. Die Konzepte, der Lebenszyklus und das ältere Verhalten stehen in [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability); die SDK-Anleitung steht im [Cross-VM-Leitfaden](/sdk/guides/cross-vm).
 
 :::note Wo v3.2.8 läuft
-Das Testnet **`qorechain-diana`** läuft seit dem 12. November 2026 mit **v3.2.8**. Das Mainnet **`qorechain-vladi`** hat es noch nicht angewendet, und im Mainnet ist `MsgCrossVMCall` abgeschaltet. Alles, was unten mit "v3.2.8" markiert ist, ist vorerst Testnet-Verhalten.
+Beide Netzwerke führen **v3.2.8** aus: das Testnet **`qorechain-diana`** seit dem 12. November 2026 und das Mainnet **`qorechain-vladi`** seit dem 18. November 2026 (Governance-Vorschlag 17, Höhe 4,273,000). Im Mainnet ist `MsgCrossVMCall` vorerst pausiert, der Aufruf kann dort also nicht gesendet werden. Die Beispiele und die Prüfungen unten wurden im Testnet ausgeführt.
 :::
 
 :::caution Ist die Aufrufnachricht gerade verfügbar?
-Im Testnet wurde `MsgCrossVMCall` durch das Upgrade pausiert. Der Governance-Vorschlag 37 wurde angenommen und hat die Pause aufgehoben, daher ist der Aufruf im Testnet offen (geprüft am 12. November 2026: Die Circuit-Breaker-Liste enthält nur `/cosmwasm.wasm.v1.MsgStoreCode`). Im Mainnet bleibt er abgeschaltet. Ob der Aufruf zu einem bestimmten Zeitpunkt verfügbar ist, zeigen zwei Dinge: die Modulparameter (`enabled`) und die Circuit-Breaker-Liste. Prüfen Sie beides, bevor Sie darauf aufbauen:
+Im Testnet wurde `MsgCrossVMCall` durch das Upgrade pausiert. Der Governance-Vorschlag 37 wurde angenommen und hat die Pause aufgehoben, daher ist der Aufruf im Testnet offen (geprüft am 12. November 2026: Die Circuit-Breaker-Liste enthält nur `/cosmwasm.wasm.v1.MsgStoreCode`). Im Mainnet ist er vorerst pausiert (die Circuit-Breaker-Liste dort enthält weiterhin `MsgCrossVMCall`, gelesen am 19. November 2026). Ob der Aufruf zu einem bestimmten Zeitpunkt verfügbar ist, zeigen zwei Dinge: die Modulparameter (`enabled`) und die Circuit-Breaker-Liste. Prüfen Sie beides, bevor Sie darauf aufbauen:
 
 ```bash
 # Module parameters: look for "enabled": true

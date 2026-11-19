@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Istoric versiuni
 
-Istoricul public al versiunilor QoreChain. Mainnet-ul **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026) rulează **v3.2.7** (aplicată prin propunerea 16 de guvernanță la înălțimea 4.164.600, pe 12 noiembrie 2026; versiunea anterioară, v3.2.6, a fost aplicată la înălțimea 4.020.000, pe 4 noiembrie 2026, v3.2.5 la înălțimea 3.906.833, pe 29 octombrie 2026, v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026, iar v3.2.3 la înălțimea 3.662.051, pe 20 octombrie 2026). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) rulează **v3.2.8** din 12 noiembrie 2026 (aplicată prin guvernanța testnet-ului la înălțimea 9.929.500; vezi [v3.2.8](#v328), care **nu este încă pe mainnet**, deci testnetul este cu o versiune înaintea mainnet-ului); v3.2.4 a ajuns pe el la înălțimea 8.337.253 (19 octombrie 2026), v3.2.5 la înălțimea 8.890.800 (26 octombrie 2026), v3.2.6 la înălțimea 8.970.638 (27 octombrie 2026) și v3.2.7 la înălțimea 9.594.600 (6 noiembrie 2026, vezi [v3.2.7](#v327)).
+Istoricul public al versiunilor QoreChain. Mainnet-ul **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026) rulează **v3.2.8** (aplicată prin propunerea 17 de guvernanță la înălțimea 4.273.000, pe 18 noiembrie 2026; versiunea anterioară, v3.2.7, a fost aplicată la înălțimea 4.164.600, pe 12 noiembrie 2026, prin propunerea 16, v3.2.6 a fost aplicată la înălțimea 4.020.000, pe 4 noiembrie 2026, v3.2.5 la înălțimea 3.906.833, pe 29 octombrie 2026, v3.2.4 la înălțimea 3.742.566, pe 23 octombrie 2026, iar v3.2.3 la înălțimea 3.662.051, pe 20 octombrie 2026). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) rulează **v3.2.8** din 12 noiembrie 2026 (aplicată prin guvernanța testnet-ului la înălțimea 9.929.500; vezi [v3.2.8](#v328), pe care mainnet-ul a aplicat-o șase zile mai târziu, deci ambele rețele rulează aceeași versiune); v3.2.4 a ajuns pe el la înălțimea 8.337.253 (19 octombrie 2026), v3.2.5 la înălțimea 8.890.800 (26 octombrie 2026), v3.2.6 la înălțimea 8.970.638 (27 octombrie 2026) și v3.2.7 la înălțimea 9.594.600 (6 noiembrie 2026, vezi [v3.2.7](#v327)).
 
 :::note
 Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intrările `v1.x` mai vechi sunt păstrate ca înregistrare istorică a liniei de lansări testnet care a precedat mainnet-ul. Manifestul de lansare ([Conectarea la Mainnet](/getting-started/connecting-to-mainnet)) este promovat separat de etichetare (tagging) și poate rămâne în urma unui tag pentru o perioadă — verificați-l direct pentru a afla ce descarcă efectiv o instalare nouă.
@@ -34,15 +34,15 @@ Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve) pentru ce înse
 
 ---
 
-## v3.2.8: Taxe pentru contracte, plafoane de gaz, opțiuni pentru fereastra EVM, escrow cross-VM asincron, dovezi RDK (testnet) {#v328}
+## v3.2.8: Taxe pentru contracte, plafoane de gaz, opțiuni pentru fereastra EVM, escrow cross-VM asincron, dovezi RDK (mainnet și testnet) {#v328}
 
-:::note Doar pe TESTNET, încă nu este pe mainnet, fără dată
-v3.2.8 rulează doar pe testnet-ul `qorechain-diana`. Mainnet-ul rulează v3.2.7 și nu a aplicat v3.2.8, deci fiecare element de mai jos lipsește astăzi de pe mainnet.
+:::note Live pe mainnet și pe testnet
+v3.2.8 rulează pe testnet-ul `qorechain-diana` din 12 noiembrie 2026 și pe mainnet-ul `qorechain-vladi` din 18 noiembrie 2026. Elementele care depind de un mesaj pe care întrerupătorul de circuit al mainnet-ului îl suspendă în continuare (încărcarea și instanțierea contractelor, apelurile cross-VM și celelalte mesaje suspendate enumerate în [Parametrii lanțului](/appendix/chain-parameters#circuit-breaker)) rămân deocamdată suspendate pe mainnet, iar lane-ul compatibil Solana rămâne oprit acolo.
 :::
 
 **Focus lansare:** Taxe pentru contractele inteligente care urmează munca reală, plafoane de gaz pe tranzacție, liste opționale pentru fereastra de autorizare EVM, un apel cross-VM asincron cu escrow și limite, un Rollup Development Kit mai complet, conturi abstracte mai stricte și lane-ul compatibil Solana închis pe testnet.
 
-Testnet: aplicată prin propunerea 36 de guvernanță la înălțimea 9.929.500, pe 12 noiembrie 2026 (nodurile s-au oprit în jurul orei 03:35 UTC și toate rulau v3.2.8 până la 03:37 UTC); mainnet-ul nu a aplicat-o.
+Testnet: aplicată prin propunerea 36 de guvernanță la înălțimea 9.929.500, pe 12 noiembrie 2026 (nodurile s-au oprit în jurul orei 03:35 UTC și toate rulau v3.2.8 până la 03:37 UTC); mainnet: aplicată prin propunerea 17 de guvernanță la înălțimea 4.273.000, pe 18 noiembrie 2026 (ora blocului în jurul 15:01 UTC). Manifestul mainnet-ului (`https://download.qore.host/mainnet/latest.json`, citit pe 19 noiembrie 2026) setează `version` la 3.2.8, `minCompatible` la 3.2.7 și `upgradeHeight` la 4273000, cu pachetul `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107.091.599 de octeți, sha256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`). Pe 19 noiembrie 2026, mainnet-ul raporta 30.000.000 de gaz pe tranzacție EVM și 16.384 de octeți de intrare pentru precompilări.
 
 * **Taxele contractelor inteligente urmează munca reală.** Execuția CosmWasm, încărcările, încărcarea codului și memoria sunt tarifate. Există un buget de contract pe bloc și o tarifare la congestie care crește doar când blocurile sunt pline. Estimați mereu gazul prin simulare. Vezi [CosmWasm în SDK](/sdk/guides/cosmwasm#gas).
 * **Plafoane de gaz.** 50.000.000 pe tranzacție Cosmos și 30.000.000 pe tranzacție EVM (`GET /qorechain/pqc/v1/evm_limits`).
@@ -50,7 +50,7 @@ Testnet: aplicată prin propunerea 36 de guvernanță la înălțimea 9.929.500,
 * **Apeluri cross-VM asincrone.** Un apel asincron reține un escrow rambursabil, primește `async_gas_limit` și `async_max_factor` și este plafonat la 100 de apeluri în așteptare per expeditor; interogarea apelurilor în așteptare este paginată. Vezi [Apeluri asincrone](/developer-guide/cross-vm-interoperability#async-calls).
 * **RDK.** Postarea datelor, secvențiere bazată (based), rollup-uri optimistic `qledger-v1` cu dovezi de fraudă (o dovadă de fraudă arde jumătate din garanția penalizată prin slashing și plătește jumătate contestatarului) și rollup-uri private cu plicuri ML-KEM-1024. Decontarea STARK este oprită până la următoarea versiune. Intrările SNARK sunt reduse modulo câmpul BLS12-381 acolo unde lanțul le fixează.
 * **Conturi abstracte.** Legarea unei chei cere o dovadă de posesie, iar cheile care pot muta valoare au nevoie de o regulă de cheltuială. O execuție eșuată este raportată ca eșuată.
-* **Lane-ul compatibil Solana este închis pe testnet** până când un vot de guvernanță îl redeschide. Pe mainnet rămâne oprit.
+* **Lane-ul compatibil Solana este închis pe testnet** până când un vot de guvernanță îl redeschide. Pe mainnet lane-ul rămâne oprit, iar endpoint-urile sale publice sunt doar pentru citire.
 * **Operatori de noduri.** Copiați întregul folder `lib/` din pachetul versiunii (adaugă o bibliotecă de runtime pentru contracte lângă cele existente) și păstrați cache-ul de memorie al contractelor la 256 MiB sau mai mult. Rută nouă: `GET /qorechain/svm/v1/params`.
 * **Clienți.** Gazul prin simulare pentru contracte este tratat în [CosmWasm în SDK](/sdk/guides/cosmwasm#gas), opțiunile ferestrei în [Opțiuni pentru fereastra EVM](/developer-guide/evm-development#evm-window-v328), iar apelurile asincrone în [Apeluri asincrone](/developer-guide/cross-vm-interoperability#async-calls).
 

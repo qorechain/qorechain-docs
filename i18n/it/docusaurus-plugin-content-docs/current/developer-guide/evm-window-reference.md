@@ -10,7 +10,7 @@ sidebar_position: 7
 Una transazione Ethereum porta una sola firma secp256k1 e nient'altro, quindi non può portare la firma post-quantistica (ML-DSA-87) che QoreChain richiede a ogni altra transazione. La **finestra di autorizzazione EVM** colma questa lacuna. L'account apre prima una finestra delimitata con un messaggio QoreChain Native che **è** firmato con la sua chiave post-quantistica, e la corsia EVM ammette poi le normali transazioni dell'account da MetaMask, ethers.js, Hardhat o Foundry solo finché la finestra le copre. Questa pagina è il riferimento completo di come si comporta una finestra nella release **v3.2.8**.
 
 :::note Dove gira la v3.2.8
-La testnet **`qorechain-diana`** esegue la **v3.2.8** dal 12 novembre 2026. La mainnet **`qorechain-vladi`** non l'ha ancora applicata; sulla mainnet la finestra funziona come descritto in [Sviluppo EVM](/developer-guide/evm-development#evm-window), senza le opzioni e le regole contrassegnate "v3.2.8" qui sotto. Un nodo precedente alla v3.2.8 rifiuta un messaggio di finestra che imposta le nuove liste.
+Entrambe le reti eseguono la **v3.2.8**: la testnet **`qorechain-diana`** dal 12 novembre 2026 e la mainnet **`qorechain-vladi`** dal 18 novembre 2026 (proposta di governance 17, altezza 4.273.000). Le opzioni e le regole contrassegnate "v3.2.8" qui sotto valgono su entrambe. Un nodo precedente alla v3.2.8 rifiuta un messaggio di finestra che imposta le nuove liste. I controlli e le prove di questa pagina sono stati eseguiti sulla testnet.
 :::
 
 ## Perché è importante {#why}
@@ -274,7 +274,7 @@ Distribuire un contratto richiede una finestra **senza ambito**. Una finestra co
 
 ## Permit, ordini EIP-712 e Permit2 {#permits}
 
-Un permit EIP-2612, un trasferimento Permit2, un ordine firmato o una meta-transazione vengono controllati da un contratto con il precompile `ecrecover`. Dalla v3.2.8 (su entrambe le reti, una volta che una rete la applica), per un account che detiene una chiave post-quantistica utilizzabile quel controllo riesce solo finché la **finestra live** dell'account stesso ammette il **contratto verificatore**, cioè il token o Permit2 stesso e non il router che inoltra la chiamata.
+Un permit EIP-2612, un trasferimento Permit2, un ordine firmato o una meta-transazione vengono controllati da un contratto con il precompile `ecrecover`. Dalla v3.2.8 (su entrambe le reti), per un account che detiene una chiave post-quantistica utilizzabile quel controllo riesce solo finché la **finestra live** dell'account stesso ammette il **contratto verificatore**, cioè il token o Permit2 stesso e non il router che inoltra la chiamata.
 
 1. Se la finestra ha un ambito, elenca il contratto verificatore in `allowed_targets` (`native_only` non ammette alcuna firma di questo tipo).
 2. Apri la finestra **prima** che l'utente firmi. Senza una finestra live la firma viene trattata come non valida e il contratto la rifiuta.
@@ -307,7 +307,7 @@ La testnet ha risposto il 12 novembre 2026 con `tx_max_gas` **30000000** e `prec
 | `max_txs` della finestra | 1,000 | Massimo di transazioni in una finestra |
 | Voci delle liste | 16 per lista | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-La risposta contiene anche un oggetto `limits` con i valori impostati dalla governance; leggi i `tx_max_gas` e `precompile_input_max_bytes` di primo livello, che sono i valori in vigore. La route è servita dalla v3.2.8, quindi la mainnet pubblica risponde `501 Not Implemented` finché non applica la v3.2.8 (verificato il 12 novembre 2026, dopo il passaggio della mainnet alla v3.2.7).
+La risposta contiene anche un oggetto `limits` con i valori impostati dalla governance; leggi i `tx_max_gas` e `precompile_input_max_bytes` di primo livello, che sono i valori in vigore. La route è servita dalla v3.2.8, che entrambe le reti eseguono. La mainnet pubblica ha risposto `501 Not Implemented` il 12 novembre 2026, prima di applicare la v3.2.8; il 19 novembre 2026 ha risposto `200` con `tx_max_gas` `30000000` e `precompile_input_max_bytes` `16384`.
 
 Una finestra aperta a un normale prezzo del gas conta comunque la commissione massima: un limite di gas di 30,000,000 con un tetto della commissione di 100 gwei conta 3 QOR contro `max_value` per una transazione.
 

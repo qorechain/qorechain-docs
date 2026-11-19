@@ -7,7 +7,7 @@ sidebar_position: 11
 
 # Opérateurs de nœuds : liste de contrôle v3.2.8
 
-La version **v3.2.8** fonctionne sur le testnet `qorechain-diana` depuis le 12 novembre 2026 (hauteur 9,929,500). Le mainnet `qorechain-vladi` exécute la v3.2.7 depuis le 12 novembre 2026 (hauteur 4,164,600, proposition de gouvernance 16) et n'a pas appliqué la v3.2.8 ; rien dans cette page ne s'applique donc aujourd'hui à un nœud mainnet.
+La version **v3.2.8** fonctionne sur les deux réseaux : le testnet `qorechain-diana` depuis le 12 novembre 2026 (hauteur 9,929,500) et le mainnet `qorechain-vladi` depuis le 18 novembre 2026 (hauteur 4,273,000, proposition de gouvernance 17). Le mainnet exécutait la v3.2.7 depuis le 12 novembre 2026 (hauteur 4,164,600, proposition de gouvernance 16). Tout ce que dit cette page s'applique aussi à un nœud mainnet ; les exemples utilisent les points de terminaison du testnet sauf indication contraire.
 
 Cette page est la liste courte de ce qu'un opérateur de nœud vérifie et modifie pour la v3.2.8 : les bibliothèques partagées du paquet, les réglages du runtime des contrats, les nouvelles valeurs par défaut de `app.toml`, une nouvelle route REST et les étapes pour mettre à niveau un nœud encore en v3.2.7. Pour le guide complet du nœud, voir [Exécution d'un nœud](/developer-guide/running-a-node).
 
@@ -78,7 +78,7 @@ Ce réglage ne change que ce que votre propre nœud répond aux requêtes de con
 
 ## 6. Nouvelle route : `GET /qorechain/svm/v1/params` {#svm-params}
 
-La v3.2.8 ajoute une route en lecture seule pour les paramètres du module SVM. Elle est servie par les nœuds en v3.2.8 (testnet) et répond HTTP `501` sur le mainnet, où la version n'est pas appliquée.
+La v3.2.8 ajoute une route en lecture seule pour les paramètres du module SVM. Elle est servie par les nœuds en v3.2.8 (les deux réseaux) et répond HTTP `501` sur un nœud qui exécute une version plus ancienne. Le 19 novembre 2026, le mainnet public a répondu `200` avec `enabled` à `false` : la lane SVM reste désactivée sur le mainnet.
 
 ```bash
 curl -s https://api-testnet.qore.host/qorechain/svm/v1/params
@@ -109,7 +109,7 @@ Le manifeste est la source de vérité pour savoir quel binaire installer :
 curl -s https://download.qore.host/testnet/latest.json | jq '{version, minCompatible, upgradeType, upgradeHeight, binary: .binary.url}'
 ```
 
-Le 12 novembre 2026, il répondait `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` et le binaire `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`. Vérifiez que `version` est égal à `minCompatible` avant de vous fier à `binary.url`, et contrôlez l'archive avec le `sha256` du même fichier. Le manifeste du mainnet se trouve à `https://download.qore.host/mainnet/latest.json` et mentionne la v3.2.6 jusqu'à l'annonce d'une mise à niveau du mainnet.
+Le 12 novembre 2026, il répondait `version` `3.2.8`, `minCompatible` `3.2.8`, `upgradeType` `height`, `upgradeHeight` `9929500` et le binaire `qorechaind-v3.2.8-b3-linux-amd64.tar.gz`. Vérifiez que `version` est égal à `minCompatible` avant de vous fier à `binary.url`, et contrôlez l'archive avec le `sha256` du même fichier. Le manifeste du mainnet se trouve à `https://download.qore.host/mainnet/latest.json`. Lu le 19 novembre 2026, il indiquait `version` `3.2.8`, `minCompatible` `3.2.7`, `upgradeHeight` `4273000` et le binaire `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107,091,599 octets, SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`) ; sur le mainnet, `minCompatible` est inférieur à `version` : comparez les deux à la version que vous avez installée.
 
 ## 8. Mettre à niveau un nœud encore en v3.2.7 {#upgrade-from-v327}
 
@@ -137,7 +137,7 @@ Un nouveau nœud qui rejoint le testnet démarre directement avec le binaire v3.
 | Erreur au démarrage à propos d'une bibliothèque partagée manquante | `lib/` n'a pas été copié en entier, ou le chargeur ne pointe pas dessus | Section 1 |
 | Avertissement indiquant que `memory_cache_size` a été relevé | La valeur configurée est inférieure à 256 MiB | Fixez 256 ou plus |
 | Avertissement à propos du dossier des contrats | Le code de contrat est encore à l'ancien emplacement | Déplacez-le vers `<home>/wasm` quand cela vous arrange |
-| `501` sur `/qorechain/svm/v1/params` | Le nœud n'est pas en v3.2.8 (le mainnet exécute la v3.2.7) | Normal sur le mainnet |
+| `501` sur `/qorechain/svm/v1/params` | Le nœud n'est pas en v3.2.8 | Mettez le nœud à niveau ([section 8](#upgrade-from-v327)) |
 
 ## Pages associées
 

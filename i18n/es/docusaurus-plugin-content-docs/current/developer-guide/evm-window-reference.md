@@ -10,7 +10,7 @@ sidebar_position: 7
 Una transacción de Ethereum lleva una firma secp256k1 y nada más, así que no puede llevar la firma post-cuántica (ML-DSA-87) que QoreChain exige a todas las demás transacciones. La **ventana de autorización EVM** cierra esa brecha. La cuenta abre primero una ventana acotada con un mensaje QoreChain Native que **sí** está firmado con su clave post-cuántica, y el carril EVM admite entonces las transacciones normales de la cuenta hechas con MetaMask, ethers.js, Hardhat o Foundry solo mientras la ventana las cubra. Esta página es la referencia completa de cómo se comporta una ventana en la versión **v3.2.8**.
 
 :::note Dónde se ejecuta v3.2.8
-La testnet **`qorechain-diana`** ejecuta **v3.2.8** desde el 12 de noviembre de 2026. La mainnet **`qorechain-vladi`** todavía no la ha aplicado; en mainnet la ventana funciona como se describe en [Desarrollo EVM](/developer-guide/evm-development#evm-window), sin las opciones y reglas marcadas como "v3.2.8" más abajo. Un nodo anterior a v3.2.8 rechaza un mensaje de ventana que fije las nuevas listas.
+Ambas redes ejecutan **v3.2.8**: la testnet **`qorechain-diana`** desde el 12 de noviembre de 2026 y la mainnet **`qorechain-vladi`** desde el 18 de noviembre de 2026 (propuesta de gobernanza 17, altura 4,273,000). Las opciones y reglas marcadas como "v3.2.8" más abajo se aplican en ambas. Un nodo anterior a v3.2.8 rechaza un mensaje de ventana que fije las nuevas listas. Las comprobaciones y pruebas de esta página se hicieron en la testnet.
 :::
 
 ## Por qué importa {#why}
@@ -274,7 +274,7 @@ Desplegar un contrato necesita una ventana **sin alcance**. Una ventana con `nat
 
 ## Permits, órdenes EIP-712 y Permit2 {#permits}
 
-Un permit EIP-2612, una transferencia Permit2, una orden firmada o una meta-transacción las comprueba un contrato con el precompilado `ecrecover`. Desde v3.2.8 (en ambas redes, cuando cada red la aplique), para una cuenta que tiene una clave post-cuántica utilizable esa comprobación tiene éxito solo mientras la **ventana activa** de la propia cuenta admita el **contrato verificador**, que es el propio token o Permit2 y no el router que reenvía la llamada.
+Un permit EIP-2612, una transferencia Permit2, una orden firmada o una meta-transacción las comprueba un contrato con el precompilado `ecrecover`. Desde v3.2.8 (en ambas redes), para una cuenta que tiene una clave post-cuántica utilizable esa comprobación tiene éxito solo mientras la **ventana activa** de la propia cuenta admita el **contrato verificador**, que es el propio token o Permit2 y no el router que reenvía la llamada.
 
 1. Si la ventana tiene alcance, lista el contrato verificador en `allowed_targets` (`native_only` no admite ninguna firma así).
 2. Abre la ventana **antes** de que el usuario firme. Sin una ventana activa la firma se trata como inválida y el contrato la rechaza.
@@ -307,7 +307,7 @@ La testnet respondió el 12 de noviembre de 2026 con `tx_max_gas` **30000000** y
 | Ventana `max_txs` | 1,000 | Máximo de transacciones en una ventana |
 | Entradas de lista | 16 por lista | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-La respuesta también lleva un objeto `limits` con los valores fijados por la gobernanza; lee los `tx_max_gas` y `precompile_input_max_bytes` de nivel superior, que son los valores vigentes. La ruta se sirve desde v3.2.8, así que la mainnet pública responde `501 Not Implemented` hasta que aplique v3.2.8 (comprobado el 12 de noviembre de 2026, tras pasar la mainnet a v3.2.7).
+La respuesta también lleva un objeto `limits` con los valores fijados por la gobernanza; lee los `tx_max_gas` y `precompile_input_max_bytes` de nivel superior, que son los valores vigentes. La ruta se sirve desde v3.2.8, que ejecutan ambas redes. La mainnet pública respondió `501 Not Implemented` el 12 de noviembre de 2026, antes de aplicar v3.2.8; el 19 de noviembre de 2026 respondió `200` con `tx_max_gas` `30000000` y `precompile_input_max_bytes` `16384`.
 
 Una ventana abierta a un precio de gas normal sigue contando la comisión máxima: un límite de gas de 30,000,000 con un tope de comisión de 100 gwei cuenta 3 QOR contra `max_value` por una transacción.
 

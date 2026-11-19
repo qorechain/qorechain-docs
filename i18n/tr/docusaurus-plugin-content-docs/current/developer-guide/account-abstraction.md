@@ -14,7 +14,7 @@ Soyut hesap modülü, yazım sırasında **`qorechain-vladi` ana ağında kapal�
 :::
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve düğüm sürümü **v3.2.7**'yi çalıştıran (12 Kasım 2026'da 4.164.600 yüksekliğinde uygulandı, yönetişim önerisi 16; v3.2.6, 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulanmıştı, öneri 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, öneri 14, ve v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı) **`qorechain-vladi`** ana ağını kullanır. v3.2.8 çalıştıran (12 Kasım 2026'dan beri; v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` ile değiştirin.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve düğüm sürümü **v3.2.8**'i çalıştıran (18 Kasım 2026'da 4.273.000 yüksekliğinde uygulandı, yönetişim önerisi 17; v3.2.7, 12 Kasım 2026'da 4.164.600 yüksekliğinde uygulanmıştı, öneri 16; v3.2.6, 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulanmıştı, öneri 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, öneri 14, ve v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı) **`qorechain-vladi`** ana ağını kullanır. ayrıca v3.2.8 çalıştıran (12 Kasım 2026'dan beri; v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` ile değiştirin.
 :::
 
 :::caution Her Cosmos hattı işlemi hibrit kuantum sonrası eş imza gerektirir
@@ -118,7 +118,7 @@ Hesap kaydı, kurallarını ve bağlı anahtar sayısını içerir:
 qorechaind query abstractaccount account <account-address>
 ```
 
-v3.2.8'den itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) değer izinleri taşıyan bir anahtar, bir kural onu sınırlamadıkça kayıtta da yürütmede de reddedilir; dolayısıyla "limit yok" durumu bu tür anahtarlar için artık geçerli değildir.
+v3.2.8'den itibaren (test ağında 12 Kasım 2026'dan, ana ağda 18 Kasım 2026'dan beri) değer izinleri taşıyan bir anahtar, bir kural onu sınırlamadıkça kayıtta da yürütmede de reddedilir; dolayısıyla "limit yok" durumu bu tür anahtarlar için artık geçerli değildir.
 
 :::caution Bir kural, bir anahtarı yalnızca anahtar varsa sınırlar
 Zincir limiti şu sırayla belirler: kimlik doğrulayıcının kendi kuralı ayarlıysa ve `enabled` ise o; değilse hesaptaki ilk `enabled` kural; değilse **limit yoktur**. `enabled: false` ile saklanan bir kural, sıfır limit değil, limitsizlik anlamına gelir. `MsgRegisterAuthenticator` herhangi bir kural taşımaz; bu nedenle yalnızca bu mesajla bağlanan bir anahtar, ancak hesap düzeyindeki bir kuralla sınırlanır. `update-rules` ile bir kuralı bilinçli olarak ayarlayın ve yalnızca anahtarın ihtiyaç duyduğu izinleri kaydedin. Bir limit, bağlı bir anahtarın verebileceği zararı sınırlar; anahtarı iptal etmenin yerini tutmaz.
@@ -147,7 +147,7 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-**v3.2.8 sürümünden itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) kayıt için iki şey daha gerekir.**
+**v3.2.8 sürümünden itibaren (test ağında 12 Kasım 2026'dan, ana ağda 18 Kasım 2026'dan beri) kayıt için iki şey daha gerekir.**
 
 1. **Bir sahiplik kanıtı.** `MsgRegisterAuthenticator` zorunlu bir `possession_proof` alanına (alan 8) sahiptir: bağlanan anahtarın attığı, bağlantıyı kabul ettiğini gösteren bir imza. Anahtar, bu düz metni kendi şemasıyla imzalar; böylece bir tarayıcı cüzdanı kullanıcıya neyi imzaladığını gösterir (Phantom `signMessage`, MetaMask `personal_sign`); 33 baytlık bir secp256k1 anahtarı metnin SHA-256 değerini imzalar:
 
@@ -166,7 +166,7 @@ Kod tarafında SDK 0.14.0'da ikisi için de yardımcılar vardır (TypeScript: k
 
 Bir Phantom anahtarı, `ed25519` şeması ve Phantom ortak anahtarı ile aynı şekilde kaydedilir (CLI'da `register-authenticator`). İptal işlemi `MsgRevokeAuthenticator` ile anında gerçekleşir.
 
-**Bir yürütme, başarılı bir işlemin içinde başarısız olabilir.** v3.2.8'den itibaren (daha sonraki bir ana ağ yükseltmesine kadar yalnızca test ağında) başarısız bir `MsgExecuteEVM` veya `MsgExecuteCosmos`, yanıtında işlem kodu 0 ile `success=false` döndürür, nedeniyle birlikte `abstractaccount_execution_failed` olayını yayar ve yine de kimlik doğrulayıcı nonce değerini tüketir. Yalnızca işlem koduna bakan bir istemci böyle bir çağrıyı başarılı sayar: yanıtı veya olayı okuyun.
+**Bir yürütme, başarılı bir işlemin içinde başarısız olabilir.** v3.2.8'den itibaren (test ağında 12 Kasım 2026'dan, ana ağda 18 Kasım 2026'dan beri) başarısız bir `MsgExecuteEVM` veya `MsgExecuteCosmos`, yanıtında işlem kodu 0 ile `success=false` döndürür, nedeniyle birlikte `abstractaccount_execution_failed` olayını yayar ve yine de kimlik doğrulayıcı nonce değerini tüketir. Yalnızca işlem koduna bakan bir istemci böyle bir çağrıyı başarılı sayar: yanıtı veya olayı okuyun.
 
 ### İzin taksonomisi {#permission-taxonomy}
 
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## v3.2.8'de Bir Anahtarı Bağlama: Çalışan Örnek {#link-example-v328}
 
-Bu bölüm, 12 Kasım 2026'dan beri v3.2.8 çalıştıran **`qorechain-diana` test ağında** tek bir eksiksiz bağlantıyı adım adım gösterir. Ana ağ henüz v3.2.8 çalıştırmıyor ve soyut hesap modülü orada kapalıdır; bu yüzden bunların hiçbiri bugün orada geçerli değildir. Kısacası: bağladığınız anahtarın bağlanmayı kabul ettiğini göstermek için kısa bir metni imzalaması gerekir, değer taşıyabilen bir anahtarın hesapta bir harcama kuralına ihtiyacı vardır ve bağlı bir anahtar daha sonra harcama yaptığında başarısız bir harcama başarılı bir işlemin içinde bildirilir.
+Bu bölüm, 12 Kasım 2026'dan beri v3.2.8 çalıştıran **`qorechain-diana` test ağında** tek bir eksiksiz bağlantıyı adım adım gösterir. Ana ağ da v3.2.8 çalıştırıyor (18 Kasım 2026'dan beri), ancak soyut hesap modülü son kontrolde (27 Ekim 2026) orada kapalıydı; bu yüzden bunların hiçbiri o kontrolde orada geçerli değildi. Kısacası: bağladığınız anahtarın bağlanmayı kabul ettiğini göstermek için kısa bir metni imzalaması gerekir, değer taşıyabilen bir anahtarın hesapta bir harcama kuralına ihtiyacı vardır ve bağlı bir anahtar daha sonra harcama yaptığında başarısız bir harcama başarılı bir işlemin içinde bildirilir.
 
 Neden önemli: v3.2.8'den itibaren anahtarın sahibi bağlantıya katılır; böylece bir anahtar yalnızca onu gerçekten elinde tutan biri tarafından bağlanabilir ve değer taşıyabilen bir anahtar her zaman hesap üzerindeki bir limitle sınırlanır.
 

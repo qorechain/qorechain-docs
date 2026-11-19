@@ -30,7 +30,7 @@ Conturile, soldurile și token-urile sunt partajate între runtime-uri, iar lan�
 include modulul IBC pentru interoperabilitate cross-chain (niciun canal IBC nu este
 deschis pe mainnet; testnet-ul are un canal `transfer` deschis către un lanț de test, verificat la 27 octombrie 2026).
 
-:::note Ce funcționează astăzi pe rețelele live (mainnet-ul rulează v3.2.7, testnet-ul v3.2.8)
+:::note Ce funcționează astăzi pe rețelele live (mainnet-ul și testnet-ul rulează v3.2.8)
 **Funcționează:** citiri pe fiecare bandă, tranzacții Native semnate hibrid,
 conturi unificate, tranzacții EVM în interiorul unei
 [ferestre de autorizare](/sdk/guides/evm#evm-window) și citiri SVM.
@@ -47,8 +47,8 @@ Verificat față de endpoint-urile live la 27 octombrie 2026; pe 7 noiembrie 202
 SDK-ul publicat (0.14.0, 12 noiembrie 2026) semnează în forma pe care o verifică
 ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul
 de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în
-v3.2.3, v3.2.4, v3.2.5 sau v3.2.6 (mainnet-ul rulează v3.2.7 din 12 noiembrie 2026,
-înălțimea 4.164.600, propunerea de guvernanță 16, după v3.2.6 pe 4 noiembrie; testnet-ul din 27 octombrie, iar din 6 noiembrie testnet-ul a rulat v3.2.7 și din 12 noiembrie rulează v3.2.8, care adaugă mesaje pentru care SDK 0.14.0 are constructori; regulile noi ale testnet-ului se aplică de la v3.2.8, iar mainnet nu l-a aplicat; mesajele v3.2.7 sunt pe mainnet din 12 noiembrie 2026). Poartă partea de client a regulilor post-cuantice ulterioare
+v3.2.3, v3.2.4, v3.2.5 sau v3.2.6 (mainnet-ul a rulat v3.2.7 din 12 noiembrie 2026,
+înălțimea 4.164.600, propunerea de guvernanță 16, după v3.2.6 pe 4 noiembrie, și rulează v3.2.8 din 18 noiembrie 2026, înălțimea 4.273.000, propunerea de guvernanță 17; testnet-ul din 27 octombrie, iar din 6 noiembrie testnet-ul a rulat v3.2.7 și din 12 noiembrie rulează v3.2.8, care adaugă mesaje pentru care SDK 0.14.0 are constructori; regulile noi se aplică de la v3.2.8 pe ambele rețele; mesajele v3.2.7 sunt pe mainnet din 12 noiembrie 2026). Poartă partea de client a regulilor post-cuantice ulterioare
 (dovada de posesie la înregistrarea cheii, ferestre EVM cu domeniu restrâns,
 mesaje de consimțământ EIP-7702) și a lui v3.2.4 (niveluri de staking, nonce-ul
 autentificatorului, comutatoarele de funcționalități de protocol) și a lui v3.2.5 (gaz exact pentru
@@ -255,7 +255,7 @@ semnare și comportamentul lanțului rămân neschimbate. Helperele pentru codul
 `migrateToHybrid` raportează `keyVerified`. Vezi
 [Ce schimbă 0.13.0](/sdk/install#whats-new-0130).
 
-**0.14.0, suport client pentru lanțul v3.2.8.** Legarea unei chei cere o dovadă de posesie, cheile care mută valoare cer o regulă de cheltuire (un helper construiește perechea), actualizările de parametri de guvernanță cer toate câmpurile, execuțiile autorizate eșuate pot fi citite, iar fereastra EVM primește încă trei liste. Regulile noi se aplică de îndată ce o rețea rulează v3.2.8: testnet-ul din 12 noiembrie 2026; mainnet nu l-a aplicat. Vezi
+**0.14.0, suport client pentru lanțul v3.2.8.** Legarea unei chei cere o dovadă de posesie, cheile care mută valoare cer o regulă de cheltuire (un helper construiește perechea), actualizările de parametri de guvernanță cer toate câmpurile, execuțiile autorizate eșuate pot fi citite, iar fereastra EVM primește încă trei liste. Regulile noi se aplică de îndată ce o rețea rulează v3.2.8: testnet-ul din 12 noiembrie 2026 și mainnet din 18 noiembrie 2026. Vezi
 [Ce schimbă 0.14.0](/sdk/install#whats-new-0140).
 
 ## Unde să mergi mai departe

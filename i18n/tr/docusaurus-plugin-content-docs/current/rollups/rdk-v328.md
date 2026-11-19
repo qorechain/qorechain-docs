@@ -9,9 +9,9 @@ sidebar_position: 11
 
 QoreChain v3.2.8 sürümü rollup'ların nasıl mutabakata vardığını değiştirir. Rollup'lar artık verilerini zincire koyabilir, işlemlerini zincire sıralatabilir (based sıralama), batch'i yeniden çalıştıran bir sahtekarlık ispatıyla iyimser (optimistic) biçimde mutabakata varabilir, gönderilerini bir üye kümesine özel tutabilir ve Groth16 para çekme köklerini herhangi bir 32 baytlık kökü kabul edecek biçimde bağlayabilir. STARK mutabakatı daha sonraki bir sürüme kadar duraklatılmıştır. Bu sayfa her değişikliğin ne yaptığını ve nasıl kullanılacağını anlatır. `x/rdk` modülü üzerinde çalışan rollup operatörleri ve geliştiricileri içindir.
 
-:::caution Şimdilik yalnızca test ağı
+:::note Her iki ağda da çalışıyor
 
-v3.2.8, herkese açık `qorechain-diana` test ağında 12 Kasım 2026'dan beri çalışmaktadır. Ana ağ bunu henüz uygulamamıştır; bu yüzden bu sayfadaki her özellik orada uygulanana kadar reddedilir. Örnekleri test ağı örnekleri olarak değerlendirin.
+v3.2.8, herkese açık `qorechain-diana` test ağında 12 Kasım 2026'dan beri, `qorechain-vladi` ana ağında 18 Kasım 2026'dan beri çalışmaktadır (yönetişim önerisi 17, yükseklik 4.273.000). Örnekler test ağında çalıştırıldı.
 
 :::
 

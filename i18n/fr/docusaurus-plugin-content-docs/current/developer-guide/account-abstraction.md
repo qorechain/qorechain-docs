@@ -14,7 +14,7 @@ Le module d'abstraction de compte est **désactivé sur le mainnet `qorechain-vl
 :::
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.7** (appliquée à la hauteur 4 164 600 le 12 novembre 2026, proposition de gouvernance 16 ; la v3.2.6 a été appliquée à la hauteur 4 020 000 le 4 novembre 2026, proposition 15 ; la v3.2.5 a été appliquée à la hauteur 3 906 833 le 29 octobre 2026, proposition 14, et la v3.2.4 à la hauteur 3 742 566 le 23 octobre 2026). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.8 (depuis le 12 novembre 2026 ; v3.2.4 depuis le 19 octobre 2026).
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.8** (appliquée à la hauteur 4 273 000 le 18 novembre 2026, proposition de gouvernance 17 ; la v3.2.7 a été appliquée à la hauteur 4 164 600 le 12 novembre 2026, proposition 16 ; la v3.2.6 a été appliquée à la hauteur 4 020 000 le 4 novembre 2026, proposition 15 ; la v3.2.5 a été appliquée à la hauteur 3 906 833 le 29 octobre 2026, proposition 14, et la v3.2.4 à la hauteur 3 742 566 le 23 octobre 2026). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute aussi la v3.2.8 (depuis le 12 novembre 2026 ; v3.2.4 depuis le 19 octobre 2026).
 :::
 
 :::caution Toute transaction sur la voie Cosmos exige la co-signature post-quantique hybride
@@ -118,7 +118,7 @@ L'enregistrement du compte inclut ses règles et le nombre de clés liées :
 qorechaind query abstractaccount account <account-address>
 ```
 
-À partir de la v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du mainnet), une clé dotée de permissions de valeur est refusée à l'enregistrement comme à l'exécution si aucune règle ne la borne : « aucune limite » ne s'applique donc plus à ces clés.
+À partir de la v3.2.8 (testnet depuis le 12 novembre 2026, mainnet depuis le 18 novembre 2026), une clé dotée de permissions de valeur est refusée à l'enregistrement comme à l'exécution si aucune règle ne la borne : « aucune limite » ne s'applique donc plus à ces clés.
 
 :::caution Une règle ne borne une clé que si elle existe
 La chaîne résout la limite dans cet ordre : la règle propre à l'authentificateur si elle est définie et `enabled` ; sinon la première règle `enabled` du compte ; sinon **il n'y a aucune limite**. Une règle stockée avec `enabled: false` signifie aucune limite, et non une limite nulle. `MsgRegisterAuthenticator` ne porte aucune règle, donc une clé liée par ce seul message n'est bornée que par une règle au niveau du compte. Définissez une règle délibérément avec `update-rules`, et n'enregistrez que les permissions dont la clé a besoin. Une limite borne les dégâts qu'une clé liée peut causer ; elle ne remplace pas la révocation de la clé.
@@ -147,7 +147,7 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-**À partir de la version v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du mainnet), l'enregistrement demande deux éléments de plus.**
+**À partir de la version v3.2.8 (testnet depuis le 12 novembre 2026, mainnet depuis le 18 novembre 2026), l'enregistrement demande deux éléments de plus.**
 
 1. **Une preuve de possession.** `MsgRegisterAuthenticator` a un champ obligatoire `possession_proof` (champ 8) : une signature par la clé liée, prouvant qu'elle consent au lien. La clé signe ce texte brut selon son propre schéma, de sorte qu'un portefeuille de navigateur montre à l'utilisateur ce qu'il signe (Phantom `signMessage`, MetaMask `personal_sign`) ; une clé secp256k1 de 33 octets signe le SHA-256 du texte :
 
@@ -166,7 +166,7 @@ const msg = registerEthAuthenticatorMsg({
 
 Une clé Phantom s'enregistre de la même manière avec le schéma `ed25519` et la clé publique Phantom (`register-authenticator` en CLI). La révocation est instantanée via `MsgRevokeAuthenticator`.
 
-**Une exécution peut échouer à l'intérieur d'une transaction réussie.** À partir de la v3.2.8 (testnet uniquement jusqu'à une mise à niveau ultérieure du mainnet), un `MsgExecuteEVM` ou `MsgExecuteCosmos` en échec renvoie `success=false` dans sa réponse avec le code de transaction 0, émet l'événement `abstractaccount_execution_failed` avec la raison, et consomme quand même le nonce de l'authentificateur. Un client qui ne vérifie que le code de transaction signalera un tel appel comme un succès : lisez la réponse ou l'événement.
+**Une exécution peut échouer à l'intérieur d'une transaction réussie.** À partir de la v3.2.8 (testnet depuis le 12 novembre 2026, mainnet depuis le 18 novembre 2026), un `MsgExecuteEVM` ou `MsgExecuteCosmos` en échec renvoie `success=false` dans sa réponse avec le code de transaction 0, émet l'événement `abstractaccount_execution_failed` avec la raison, et consomme quand même le nonce de l'authentificateur. Un client qui ne vérifie que le code de transaction signalera un tel appel comme un succès : lisez la réponse ou l'événement.
 
 ### Taxonomie des permissions {#permission-taxonomy}
 
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Lier une clé en v3.2.8 : exemple détaillé {#link-example-v328}
 
-Cette section décrit pas à pas un lien complet sur le testnet **`qorechain-diana`**, qui exécute la v3.2.8 depuis le 12 novembre 2026. Le mainnet n'exécute pas encore la v3.2.8, et son module de compte abstrait est désactivé : rien de tout cela ne s'y applique donc aujourd'hui. En bref : la clé que vous liez doit signer un court texte pour montrer qu'elle consent à être liée, une clé qui peut déplacer de la valeur a besoin d'une règle de dépense sur le compte, et lorsqu'une clé liée dépense ensuite, une dépense échouée est signalée à l'intérieur d'une transaction réussie.
+Cette section décrit pas à pas un lien complet sur le testnet **`qorechain-diana`**, qui exécute la v3.2.8 depuis le 12 novembre 2026. Le mainnet exécute aussi la v3.2.8 (depuis le 18 novembre 2026), mais son module de compte abstrait était désactivé lors de la dernière vérification (27 octobre 2026) : rien de tout cela ne s'y appliquait donc à cette vérification. En bref : la clé que vous liez doit signer un court texte pour montrer qu'elle consent à être liée, une clé qui peut déplacer de la valeur a besoin d'une règle de dépense sur le compte, et lorsqu'une clé liée dépense ensuite, une dépense échouée est signalée à l'intérieur d'une transaction réussie.
 
 Pourquoi c'est important : à partir de la v3.2.8, le détenteur de la clé participe au lien ; une clé ne peut donc être liée que par quelqu'un qui la détient réellement, et une clé qui peut déplacer de la valeur est toujours bornée par une limite sur le compte.
 

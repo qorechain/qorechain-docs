@@ -12,7 +12,7 @@ The QoreChain **Rollup Development Kit (RDK)** is a set of client libraries (Typ
 :::caution Early-stage capability
 The RDK is deployed on both networks, but **no rollup has been created on either one yet** (checked 27 October 2026), so the flows described in this section have not been exercised by third parties. **ZK settlement (the `defi` profile, the `defi-rollup` template and every `zk` rollup) has not been tried on either network:** the verification-key messages are enabled on mainnet since chain v3.2.7 (12 November 2026) and on the testnet since 6 November 2026 (see [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)), but no ZK rollup has been created. Use `optimistic` settlement until a ZK rollup has been run end to end.
 
-Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, live since 7 June 2026) runs chain version **v3.2.7** (governance proposal 16 applied it at height 4,164,600 on 12 November 2026; v3.2.6 had been applied at height 4,020,000 on 4 November 2026 by proposal 15; v3.2.5 had been applied at height 3,906,833 on 29 October 2026 by proposal 14, and v3.2.4 at height 3,742,566 on 23 October 2026, proposal 13); the testnet (**`qorechain-diana`**, EVM chain ID **9800**) runs **v3.2.8** since 12 November 2026 (height 9,929,500; v3.2.4 reached it on 19 October 2026, v3.2.5 on 26 October, v3.2.6 on 27 October, v3.2.7 on 6 November). Mainnet is one release behind the testnet: it has not applied v3.2.8. What v3.2.5 changes for rollups is listed under [chain v3.2.5 behaviour](#v325); it applies on both networks. Where behaviour changed between v3.2.3 and v3.2.4, this section says which release applies. Validate every deployment on the testnet first, and read the status notes on each page: several capabilities (ZK verification, Celestia data availability, the QCAI Copilot, cross-VM calls, settlement receipts) are not usable end to end today.
+Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, live since 7 June 2026) runs chain version **v3.2.8** (governance proposal 17 applied it at height 4,273,000 on 18 November 2026; v3.2.7 had been applied at height 4,164,600 on 12 November 2026 by proposal 16; v3.2.6 had been applied at height 4,020,000 on 4 November 2026 by proposal 15; v3.2.5 had been applied at height 3,906,833 on 29 October 2026 by proposal 14, and v3.2.4 at height 3,742,566 on 23 October 2026, proposal 13); the testnet (**`qorechain-diana`**, EVM chain ID **9800**) runs **v3.2.8** since 12 November 2026 (height 9,929,500; v3.2.4 reached it on 19 October 2026, v3.2.5 on 26 October, v3.2.6 on 27 October, v3.2.7 on 6 November). Both networks run v3.2.8. What v3.2.5 changes for rollups is listed under [chain v3.2.5 behaviour](#v325); it applies on both networks. Where behaviour changed between v3.2.3 and v3.2.4, this section says which release applies. Validate every deployment on the testnet first, and read the status notes on each page: several capabilities (ZK verification, Celestia data availability, the QCAI Copilot, cross-VM calls, settlement receipts) are not usable end to end today.
 :::
 
 ## Innovations {#innovations}
@@ -191,7 +191,7 @@ Templates are `defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`,
 
 | Network | Chain id | EVM chain ID | REST endpoint | Chain version |
 | ------- | -------- | ------------ | ------------- | ------------- |
-| Mainnet | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.7 |
+| Mainnet | `qorechain-vladi` | 9801 | `https://api.qore.host` | v3.2.8 |
 | Testnet | `qorechain-diana` | 9800 | `https://api-testnet.qore.host` | v3.2.8 |
 
 Both networks serve the RDK queries (`/qorechain/rdk/v1/...`) over REST, gRPC and the CLI, so reads such as `rdk.params()` work against either. The testnet is a staging network with its own parameters: the default challenge window is 3,600 seconds on the testnet and 604,800 on mainnet, at most 200 rollups can exist on the testnet and 100 on mainnet, and the multilayer module allows 64 sidechain layers on the testnet and 10 on mainnet (checked 27 October 2026). Read `GET /qorechain/rdk/v1/params` on the network you target.
@@ -211,7 +211,7 @@ Reading state needs none of these. You can also request a rollup through the Das
 
 ### Chain v3.2.5 behaviour: live on both networks {#v325}
 
-Chain v3.2.5 is live on mainnet (applied at height 3,906,833 on 29 October 2026, governance proposal 14) and on the testnet (since 26 October 2026). Mainnet runs v3.2.7 and the testnet v3.2.8, and both include it. RDK 0.7.0 and later support both. These rules apply on both networks; no rollup has been created on mainnet yet (`GET /qorechain/rdk/v1/rollups` returned an empty list on 4 November 2026), so the rules below are the release's rules and have not yet been exercised by a live mainnet rollup. For a rollup developer:
+Chain v3.2.5 is live on mainnet (applied at height 3,906,833 on 29 October 2026, governance proposal 14) and on the testnet (since 26 October 2026). Both networks run v3.2.8, and both include it. RDK 0.7.0 and later support both. These rules apply on both networks; no rollup has been created on mainnet yet (`GET /qorechain/rdk/v1/rollups` returned an empty list on 4 November 2026), so the rules below are the release's rules and have not yet been exercised by a live mainnet rollup. For a rollup developer:
 
 | Behaviour | Both networks (v3.2.5 and later) |
 | --------- | -------------------------------- |
@@ -228,7 +228,7 @@ Chain v3.2.6 is live on both networks (mainnet since 4 November 2026, height 4,0
 
 ### Chain v3.2.7: both networks {#v327}
 
-The testnet ran chain v3.2.7 from 6 November 2026 (height 9,594,600, applied by governance) and moved to v3.2.8 on 12 November. Mainnet has run v3.2.7 since 12 November 2026 (height 4,164,600, governance proposal 16). The checks below were made on the testnet on 7 November 2026; they were not repeated on mainnet, where only the release's switches are known. For rollups:
+The testnet ran chain v3.2.7 from 6 November 2026 (height 9,594,600, applied by governance) and moved to v3.2.8 on 12 November. Mainnet applied v3.2.7 on 12 November 2026 (height 4,164,600, governance proposal 16) and moved to v3.2.8 on 18 November. The checks below were made on the testnet on 7 November 2026; they were not repeated on mainnet, where only the release's switches are known. For rollups:
 
 * **ZK verification key messages.** The testnet accepted `MsgSetVerificationKey` and `MsgUpdateVerificationKey` (a simulated transaction with an empty message got past message-type resolution and failed on the empty address field; mainnet answered "unable to resolve type URL" for the same message on 7 November, before it applied v3.2.7). The verification-key messages are enabled on mainnet from 12 November 2026. The release notes say a ZK batch without a registered key is refused before the fee is paid. No rollup exists on the testnet (`GET /qorechain/rdk/v1/rollups` returned an empty list), and `GET /qorechain/rdk/v1/rollups` also returned an empty list on mainnet on 12 November 2026, so no key has been registered and no ZK batch verified. RDK 0.8.0 has no builder for these messages.
 * **Cross-VM precompile `0x...0901`.** Active on the testnet with an allowlist of three reviewed CosmWasm contracts; a read-only `eth_call` reached an allowlisted contract and was refused for any other target (details in [Multi-VM](/rollups/multi-vm#tested-testnet)). On mainnet the precompile and cross-VM calls stay off, including after v3.2.7 (the cross-VM call message is paused).
@@ -251,7 +251,7 @@ For the lower-level module reference (module parameters, lifecycle internals, bu
 
 Versions checked on the registries on 12 November 2026. All packages are Apache-2.0.
 
-RDK 0.9.0 (12 November 2026) supports chain v3.2.8 (the testnet runs it since 12 November 2026): rollup data posting, based sequencing, qledger-v1 optimistic rollups with fraud proofs, private rollups, canonical ZK inputs; STARK settlement is paused. See the [release notes on GitHub](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0).
+RDK 0.9.0 (12 November 2026) supports chain v3.2.8 (the testnet runs it since 12 November 2026, mainnet since 18 November 2026): rollup data posting, based sequencing, qledger-v1 optimistic rollups with fraud proofs, private rollups, canonical ZK inputs; STARK settlement is paused. See the [release notes on GitHub](https://github.com/qorechain/qorechain-rdk/releases/tag/v0.9.0).
 
 | Registry | Package | Current version | Link |
 | -------- | ------- | --------------- | ---- |

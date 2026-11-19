@@ -10,7 +10,7 @@ sidebar_position: 7
 Bir Ethereum işlemi yalnızca bir secp256k1 imzası taşır, başka hiçbir şey taşımaz; bu yüzden QoreChain'in diğer tüm işlemlerden istediği kuantum sonrası (ML-DSA-87) imzayı taşıyamaz. **EVM yetkilendirme penceresi** bu boşluğu kapatır. Hesap önce kuantum sonrası anahtarıyla imzalanmış **olan** bir QoreChain Native mesajıyla sınırlı bir pencere açar; EVM hattı da hesabın sıradan MetaMask, ethers.js, Hardhat veya Foundry işlemlerini yalnızca pencere onları kapsadığı sürece kabul eder. Bu sayfa, bir pencerenin **v3.2.8** sürümünde nasıl davrandığının eksiksiz başvurusudur.
 
 :::note v3.2.8 nerede çalışır
-**`qorechain-diana`** test ağı, 12 Kasım 2026'dan beri **v3.2.8** çalıştırmaktadır. **`qorechain-vladi`** ana ağı bunu henüz uygulamadı; ana ağda pencere, aşağıda "v3.2.8" olarak işaretlenen seçenekler ve kurallar olmadan [EVM Geliştirme](/developer-guide/evm-development#evm-window) sayfasında anlatıldığı gibi çalışır. v3.2.8'in altındaki bir düğüm, yeni listeleri ayarlayan bir pencere mesajını reddeder.
+Her iki ağ da **v3.2.8** çalıştırır: **`qorechain-diana`** test ağı 12 Kasım 2026'dan beri, **`qorechain-vladi`** ana ağı 18 Kasım 2026'dan beri (yönetişim önerisi 17, yükseklik 4.273.000). Aşağıda "v3.2.8" olarak işaretlenen seçenekler ve kurallar her ikisinde de geçerlidir. v3.2.8'in altındaki bir düğüm, yeni listeleri ayarlayan bir pencere mesajını reddeder. Bu sayfadaki denetimler ve test çalıştırmaları test ağında yapıldı.
 :::
 
 ## Neden önemli {#why}
@@ -274,7 +274,7 @@ Bir sözleşme dağıtmak, **kapsamı daraltılmamış** bir pencere gerektirir.
 
 ## Permit'ler, EIP-712 emirleri ve Permit2 {#permits}
 
-Bir EIP-2612 permit'i, bir Permit2 transferi, imzalı bir emir veya bir meta-işlem, bir sözleşme tarafından `ecrecover` precompile'ı ile denetlenir. v3.2.8'den itibaren (her iki ağda, bir ağ uyguladığında), kullanılabilir bir kuantum sonrası anahtarı olan bir hesap için bu denetim yalnızca hesabın kendi **canlı** penceresi **doğrulayan sözleşmeyi** kabul ettiği sürece başarılı olur; bu, çağrıyı ileten yönlendirici değil, token'ın veya Permit2'nin kendisidir.
+Bir EIP-2612 permit'i, bir Permit2 transferi, imzalı bir emir veya bir meta-işlem, bir sözleşme tarafından `ecrecover` precompile'ı ile denetlenir. v3.2.8'den itibaren (her iki ağda), kullanılabilir bir kuantum sonrası anahtarı olan bir hesap için bu denetim yalnızca hesabın kendi **canlı** penceresi **doğrulayan sözleşmeyi** kabul ettiği sürece başarılı olur; bu, çağrıyı ileten yönlendirici değil, token'ın veya Permit2'nin kendisidir.
 
 1. Pencerenin kapsamı daraltılmışsa, doğrulayan sözleşmeyi `allowed_targets` içinde listeleyin (`native_only` böyle bir imzayı kabul etmez).
 2. Pencereyi kullanıcı imzalamadan **önce** açın. Canlı bir pencere olmadan imza geçersiz sayılır ve sözleşme onu reddeder.
@@ -307,7 +307,7 @@ Test ağı 12 Kasım 2026'da `tx_max_gas` **30000000** ve `precompile_input_max_
 | Pencere `max_txs` | 1,000 | Bir penceredeki en fazla işlem |
 | Liste girdileri | liste başına 16 | `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers` |
 
-Yanıt ayrıca yönetişimin belirlediği değerleri içeren bir `limits` nesnesi taşır; yürürlükteki değerler olan üst düzey `tx_max_gas` ve `precompile_input_max_bytes` değerlerini okuyun. Rota v3.2.8'den itibaren sunulur; bu yüzden herkese açık ana ağ, v3.2.8'i uygulayana kadar `501 Not Implemented` yanıtı verir (ana ağ v3.2.7'ye geçtikten sonra, 12 Kasım 2026'da kontrol edildi).
+Yanıt ayrıca yönetişimin belirlediği değerleri içeren bir `limits` nesnesi taşır; yürürlükteki değerler olan üst düzey `tx_max_gas` ve `precompile_input_max_bytes` değerlerini okuyun. Rota v3.2.8'den itibaren sunulur ve her iki ağ da v3.2.8 çalıştırır. Herkese açık ana ağ, v3.2.8'i uygulamadan önce, 12 Kasım 2026'da `501 Not Implemented` yanıtı verdi; 19 Kasım 2026'da `tx_max_gas` `30000000` ve `precompile_input_max_bytes` `16384` ile `200` yanıtı verdi.
 
 Normal bir gaz fiyatında açılan bir pencere de azami ücreti sayar: 100 gwei ücret tavanında 30,000,000 gaz limiti, bir işlem için `max_value` hesabına 3 QOR sayar.
 

@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain supports **QoreChain Native** smart contracts. QoreChain Native is QoreChain's name for its **CosmWasm** runtime: developers write secure, sandboxed programs in Rust against the standard CosmWasm libraries (`cosmwasm-std`) and compile them to WebAssembly. QoreChain Native contracts run alongside EVM and SVM programs within the QoreChain triple-VM architecture.
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.7** since 12 November 2026 (governance proposal 16, height 4,164,600; v3.2.6 since 4 November 2026; v3.2.5 since 29 October 2026, v3.2.4 since 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026).
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.8** since 18 November 2026 (governance proposal 17, height 4,273,000; v3.2.7 since 12 November 2026; v3.2.6 since 4 November 2026; v3.2.5 since 29 October 2026, v3.2.4 since 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which also runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026).
 :::
 
 :::caution Code upload and instantiation require explicit permission on mainnet; the testnet differs
@@ -144,7 +144,7 @@ QoreChain Native contracts follow a five-step lifecycle: **Build**, **Store**, *
 
 ## Gas and upload limits (v3.2.8) {#gas-and-limits}
 
-From release v3.2.8 (testnet only until a later mainnet upgrade):
+From release v3.2.8 (testnet since 12 November 2026, mainnet since 18 November 2026):
 
 - **Execution gas is repriced.** The first call of a contract code in a block pays a load cost (a cw20 transfer is about 533,000 gas the first time in a block and about 84,000 for repeats), call setup and memory growth are charged, and a congestion factor scales the price from 1x up to 20x by default. Always simulate and add at least 30%; never hardcode gas for a contract call. See [Gas for contract calls](/sdk/guides/cosmwasm#gas).
 - **Uploads are bounded and stay governance-controlled.** Access is checked first, and the mempool admits an upload only from an allowed sender. The upload pays gas for its declared size up front (about 9.9 million gas for cw20, about 22.8 million for cw721). A module may have at most 4,096 functions and compile to at most 32 MiB, and floating-point instructions are refused, both at upload and at call time for code already stored.
