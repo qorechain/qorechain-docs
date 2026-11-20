@@ -71,6 +71,7 @@ Workshop 1 は、Quantum Pass レベルが求める内容そのものを扱い�
 | --- | --- | --- | --- | --- |
 | [Workshop 1 ガイド](/build-before-qday/workshop-1) | Beginner | TypeScript、Solidity | 30分 | スキャフォールド、テスト、テストネットへのデプロイまで行ったプロジェクトと、オンチェーンで検証された1つのハイブリッド署名トランザクション。 |
 | [Workshop 2 ガイド](/build-before-qday/workshop-2) | Intermediate | Solidity、TypeScript、Node.js | 75分 | ポスト量子署名があるときだけ支払う Vault、チェーンが支出の上限を強制するエージェント、そして MCP によるチェーンへの読み取り専用の質問。 |
+| [Workshop 3 ガイド](/build-before-qday/workshop-3) | Advanced | Node.js、Solidity、Rust | 70分 | `qor1...` アドレスあてにポスト量子暗号で暗号化され、持ち主だけが開けるメッセージと、Native コントラクトに書き込む1つの EVM トランザクション。すべて成功するか、まったく何も起きないかのどちらかです。 |
 | [Q-Day Counter](/build-before-qday/workshop-1/apps/qday-counter) | Beginner | TypeScript、Solidity | 25分 | ハイブリッド署名のフローで値を増やす、テストネット上のカウンターコントラクト。 |
 | [Q-Day Guestbook](/build-before-qday/workshop-1/apps/qday-guestbook) | Intermediate | TypeScript、Solidity、React | 45分 | あなた自身のオンチェーンのゲストブックと、QoreX ウォレットで署名する Web ページ。 |
 | [Hybrid Inspector](/build-before-qday/workshop-1/apps/hybrid-inspector) | Beginner | TypeScript、React | 25分 | QoreX から QOR を送り、2つの署名とチェーンの判定を表示する Web ページ。 |
@@ -98,13 +99,13 @@ Workshop 1 は、Quantum Pass レベルが求める内容そのものを扱い�
 ## どこから始めるか {#where-to-start}
 
 1. [始める前に](/build-before-qday/prerequisites)を読み、最初のチュートリアルに必要なツールをインストールします。
-2. テストネットで [Workshop 1 ガイド](/build-before-qday/workshop-1)に従います。そのあとで [Workshop 2 ガイド](/build-before-qday/workshop-2)に進みます。
+2. テストネットで [Workshop 1 ガイド](/build-before-qday/workshop-1)に従います。そのあとで [Workshop 2 ガイド](/build-before-qday/workshop-2)と [Workshop 3 ガイド](/build-before-qday/workshop-3)に進みます。
 3. 上の表のサンプルアプリを1つ試します。
 4. QoreChain にデプロイしたことがない場合は、[5分でデプロイ](/getting-started/deploy-in-5-minutes)で考え方を詳しく説明しています。アプリの土台になっているキットは、[キット](/build-before-qday/workshop-1/kits)のページにあります。
 
 ## コード {#code}
 
-サンプルアプリはすべて、1つの公開リポジトリの `workshop-1` フォルダーと `workshop-2` フォルダーにあります: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday)。どのフォルダーを開くかは、各チュートリアルに書かれています。コードは、次のコマンドで一度だけ取得します。
+サンプルアプリはすべて、1つの公開リポジトリの `workshop-1`、`workshop-2`、`workshop-3` の各フォルダーにあります: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday)。どのフォルダーを開くかは、各チュートリアルに書かれています。コードは、次のコマンドで一度だけ取得します。
 
 ```bash
 git clone https://github.com/qorechain/build-before-qday

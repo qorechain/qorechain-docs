@@ -71,6 +71,7 @@ I tempi si riferiscono ai passaggi successivi all'installazione degli strumenti.
 | --- | --- | --- | --- | --- |
 | [Guida del Workshop 1](/build-before-qday/workshop-1) | Principiante | TypeScript, Solidity | 30 minuti | Un progetto creato, testato e distribuito sulla testnet, e una transazione firmata in modo ibrido e verificata on chain. |
 | [Guida del Workshop 2](/build-before-qday/workshop-2) | Intermedio | Solidity, TypeScript, Node.js | 75 minuti | Un vault che paga solo contro una firma post-quantistica, un agente i cui limiti di spesa sono imposti dalla catena e domande in sola lettura alla catena con MCP. |
+| [Guida del Workshop 3](/build-before-qday/workshop-3) | Avanzato | Node.js, Solidity, Rust | 70 minuti | Un messaggio cifrato verso un indirizzo `qor1...` con cifratura post-quantistica che solo il suo proprietario può aprire, e una transazione EVM che scrive in un contratto Native, tutto o niente. |
 | [Q-Day Counter](/build-before-qday/workshop-1/apps/qday-counter) | Principiante | TypeScript, Solidity | 25 minuti | Un contratto contatore sulla testnet che incrementi con un flusso firmato in modo ibrido. |
 | [Q-Day Guestbook](/build-before-qday/workshop-1/apps/qday-guestbook) | Intermedio | TypeScript, Solidity, React | 45 minuti | Il tuo libro degli ospiti on chain, con una pagina web in cui firmi dal wallet QoreX. |
 | [Hybrid Inspector](/build-before-qday/workshop-1/apps/hybrid-inspector) | Principiante | TypeScript, React | 25 minuti | Una pagina web che invia QOR da QoreX e mostra entrambe le firme e il verdetto della catena. |
@@ -98,13 +99,13 @@ Leggi una volta [Prima di iniziare: strumenti e wallet testnet](/build-before-qd
 ## Da dove iniziare {#where-to-start}
 
 1. Leggi [Prima di iniziare](/build-before-qday/prerequisites) e installa gli strumenti per il tuo primo tutorial.
-2. Segui la [guida del Workshop 1](/build-before-qday/workshop-1) sulla testnet. Poi la [guida del Workshop 2](/build-before-qday/workshop-2).
+2. Segui la [guida del Workshop 1](/build-before-qday/workshop-1) sulla testnet. Poi la [guida del Workshop 2](/build-before-qday/workshop-2) e la [guida del Workshop 3](/build-before-qday/workshop-3).
 3. Prova una delle app di esempio della tabella qui sopra.
 4. Se non hai mai distribuito su QoreChain, [Deploy in 5 minuti](/getting-started/deploy-in-5-minutes) spiega l'idea in modo approfondito. I kit dietro le app sono nella pagina [Kit](/build-before-qday/workshop-1/kits).
 
 ## Il codice {#code}
 
-Tutte le app di esempio sono in un unico repository pubblico, cartelle `workshop-1` e `workshop-2`: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). Ogni tutorial ti dice quale cartella aprire. Scarica il codice una sola volta con:
+Tutte le app di esempio sono in un unico repository pubblico, cartelle `workshop-1`, `workshop-2` e `workshop-3`: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). Ogni tutorial ti dice quale cartella aprire. Scarica il codice una sola volta con:
 
 ```bash
 git clone https://github.com/qorechain/build-before-qday
