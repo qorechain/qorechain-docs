@@ -90,7 +90,7 @@ La chain v3.2.5 cambia il comportamento del bridge. Il mainnet la esegue dal 29 
 
 ### Testato sulla testnet {#tested-testnet}
 
-La testnet esegue la chain v3.2.8 dal 12 novembre 2026 (altezza 9.929.500). Il 7 novembre 2026 sono state inviate a `0x…0901` due richieste `eth_call` in sola lettura con i calldata di `executeCrossVMCall(uint8,string,bytes)` (VM di destinazione `1`, payload `{}`):
+La testnet esegue la chain v3.2.9 dal 20 novembre 2026, dopo la v3.2.8 dal 12 novembre (altezza 9.929.500), e ha applicato la v3.2.9 all'altezza 10.424.000. Il 7 novembre 2026 sono state inviate a `0x…0901` due richieste `eth_call` in sola lettura con i calldata di `executeCrossVMCall(uint8,string,bytes)` (VM di destinazione `1`, payload `{}`):
 
 | Target | Risultato |
 |---|---|

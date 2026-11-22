@@ -12,7 +12,7 @@ sidebar_position: 9
 このページは、リリース v3.2.8 のフィールド、コスト、制限のリファレンスで、方向ごとの実例を載せています。概念、ライフサイクル、以前の挙動は[クロス VM 相互運用性](/developer-guide/cross-vm-interoperability)に、SDK のウォークスルーは [Cross-VM ガイド](/sdk/guides/cross-vm)にあります。
 
 :::note v3.2.8 が稼働している場所
-両ネットワークが **v3.2.8** で稼働しています。**`qorechain-diana`** テストネットは 2026 年 11 月 12 日から、**`qorechain-vladi`** メインネットは 2026 年 11 月 18 日から(ガバナンス提案 17、高さ 4,273,000)です。メインネットでは `MsgCrossVMCall` は当面一時停止中のため、そこでは呼び出しを送信できません。以下の例と確認は、テストネットで実行したものです。
+**`qorechain-vladi`** メインネットは 2026 年 11 月 18 日から **v3.2.8** で稼働しています(ガバナンス提案 17、高さ 4,273,000)。**`qorechain-diana`** テストネットは 2026 年 11 月 12 日から v3.2.8 で稼働し、2026 年 11 月 20 日から v3.2.9 で稼働しています。v3.2.9 は SVM 向けのクロス VM ルールを追加します([v3.2.9](/appendix/version-history#v329)を参照)。メインネットでは `MsgCrossVMCall` は当面一時停止中のため、そこでは呼び出しを送信できません。以下の例と確認は、テストネットで実行したものです。
 :::
 
 :::caution 呼び出しメッセージは今すぐ使えるか
@@ -139,7 +139,7 @@ curl -s https://api-testnet.qore.host/qorechain/crossvm/v1/params
 | `max_message_size` | `65536` | ペイロードの最大バイト数。 |
 | `max_queue_size` | `1000` | 同時にキューに入れられる最大の呼び出し数。 |
 | `queue_timeout_blocks` | `100` | 未実行の呼び出しがタイムアウトするまでのブロック数。 |
-| `bridge_allowed_targets` | `cosmwasm:qor1...` のエントリが 3 件 | `0x0901` ブリッジが呼び出せる QoreChain Native コントラクト。空ならブリッジは閉じたままです。 |
+| `bridge_allowed_targets` | テストネットでは `cosmwasm:qor1...` のエントリが 4 件(2026 年 11 月 22 日)、メインネットでは空 | `0x0901` ブリッジが呼び出せる QoreChain Native コントラクト。空ならブリッジは閉じたままです。 |
 | `bridge_target_pins` | ターゲットごとに 1 エントリ: `target`、`code_id`、`history_len` | ブリッジが呼び出すために、許可された各ターゲットが引き続き実行していなければならないコード。 |
 | `max_pending_per_sender` | `100` | 1 人の送信者が保持できるキュー内の呼び出し数。 |
 | `max_cosmos_tx_gas` | `"50000000"` | 1 つの Native トランザクションが宣言できる最大ガス。 |
@@ -158,11 +158,11 @@ curl -s https://api-testnet.qore.host/qorechain/crossvm/v1/params
 
 ## 方向別の例 {#examples}
 
-すべての例は、Native トランザクションと同様に、アカウントのポスト量子鍵で署名します。[ポスト量子署名](/developer-guide/post-quantum-signing)を参照してください。このページのために送信したのは、ネイティブアカウントから QoreChain Native への例だけです（[テストネットでの検証](#tested)を参照）。EVM の例は実行しておらず、該当箇所に UNTESTED と記しています。
+すべての例は、Native トランザクションと同様に、アカウントのポスト量子鍵で署名します。[ポスト量子署名](/developer-guide/post-quantum-signing)を参照してください。このページのために送信したのは、ネイティブアカウントから QoreChain Native への例だけです（[テストネットでの検証](#tested)を参照）。EVM の例は実行しておらず、該当箇所に「ライブネットワークでは未テスト」と記しています。
 
 ### ネイティブアカウントから EVM コントラクトへ {#native-to-evm}
 
-**UNTESTED:** この方向は、このページのために実行していません。
+**ライブネットワークでは未テスト:** この方向は、このページのために実行していません。
 
 ターゲットは EVM コントラクトで、ペイロードは ABI エンコードされた呼び出しデータです。呼び出しは自分の `0x` アドレスとして実行されるため、EVM 側は自分を `msg.sender` として認識します。コマンドライン（Linux ノード CLI）では、構築してからポスト量子署名を追加します。
 
@@ -289,7 +289,7 @@ SDK 0.13.0 には `async_gas_limit` と `async_max_factor` のオプションが
 
 ### 0x0901 経由で EVM コントラクトから QoreChain Native コントラクトへ {#evm-to-wasm}
 
-**UNTESTED:** この方向は、このページのために実行していません。
+**ライブネットワークでは未テスト:** この方向は、このページのために実行していません。
 
 Solidity コントラクトが、`0x0000000000000000000000000000000000000901` のブリッジプリコンパイルを呼び出します。呼び出しは EVM トランザクション内で実行され、QoreChain Native 側の送信者は呼び出し元のアカウントまたはコントラクト（その `qor1` アドレス）となり、どこでリバートが起きても両側が取り消されます。
 
@@ -334,7 +334,7 @@ qorechaind tx pqc open-evm-window 600 5 10qor \
 
 ### QoreChain Native コントラクトから EVM コントラクトへ {#wasm-to-evm}
 
-ドキュメント作成者は **UNTESTED** です。チェーンチームによると、v3.2.8 より前に、テストネットで両方のモードが実行されています。
+**このページからはライブネットワークでまだテストしていません。** v3.2.8 より前に、テストネットで両方のモードが実行されています。
 
 QoreChain Native コントラクトは、自身を送信者として、チェーンメッセージとして `MsgCrossVMCall` をディスパッチすることで呼び出しを行います。メッセージのフィールドは上記と同じです。`source_vm` に何が指定されていても、チェーンはそのコントラクトを CosmWasm の呼び出し元として扱います。`async` が false（デフォルト）の場合、呼び出しは同期で、トランザクションのガスで実行され、結果は `MsgCrossVMCallResponse.data` で返り、失敗するとトランザクション全体がリバートされます。`async` が true の場合は、キューに入れられます。[誰が誰を呼ぶか](#who-calls-whom)を参照してください。以下の例は呼び出しをキューに入れます。
 
@@ -394,7 +394,7 @@ authz の付与のもとでの ERC-20 トークンの変換（`MsgConvertERC20`�
 | それを列挙したウィンドウなしでの `0x0901` 呼び出し | 拒否 |
 | `0x0901` のターゲットが `bridge_allowed_targets` にない、または固定されて以降コードが変更された | リバート。リストにないターゲットでは `cross-VM bridge call refused: target ... is not allowlisted` |
 | サーキットブレーカーのリストにある `MsgCrossVMCall` | トランザクションは拒否され、キューに入った呼び出しは保留のまま |
-| SVM への呼び出し | このレーンは提案 37 以降テストネットで開放され、メインネットではオフ。このページのために SVM への呼び出しは実行していません（UNTESTED） |
+| SVM への呼び出し | このレーンは提案 37 以降テストネットで開放され、メインネットではオフ。このページのために SVM への呼び出しは実行していません（ライブネットワークでは未テスト） |
 
 失敗したキュー呼び出しに記録されるエラーは、ソースファイルの注釈なしのプレーンテキストです。
 
@@ -422,7 +422,7 @@ authz の付与のもとでの ERC-20 トークンの変換（`MsgConvertERC20`�
 | その後の `GET /qorechain/crossvm/v1/pending` | 空のリスト |
 | `async_max_factor` に `6` を指定 | 何も実行される前に拒否: codespace `crossvm` のコード 2、`async_max_factor 6 is outside 1000000..100000000 (millionths): invalid cross-VM message` |
 
-このページのために実行していないもの（UNTESTED）は、`0x0901` 経由の EVM から QoreChain Native への呼び出しと、QoreChain Native から EVM への呼び出しです。チェーンチームによると、QoreChain Native から EVM への同期および非同期のパスは、v3.2.8 より前の高さ 9,795,779 と 9,795,783 でテストネット上で実行されています。
+このページのために実行していないもの（ライブネットワークでは未テスト）は、`0x0901` 経由の EVM から QoreChain Native への呼び出しと、QoreChain Native から EVM への呼び出しです。QoreChain Native から EVM への同期および非同期のパスは、v3.2.8 より前の高さ 9,795,779 と 9,795,783 でテストネット上で実行されています。
 
 ## 関連ページ {#related}
 

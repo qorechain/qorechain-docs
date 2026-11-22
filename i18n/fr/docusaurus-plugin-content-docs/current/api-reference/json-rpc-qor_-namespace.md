@@ -9,22 +9,22 @@ sidebar_position: 2
 
 L'espace de noms `qor_` a été conçu pour fournir des méthodes JSON-RPC spécifiques à QoreChain afin d'interroger le statut de la cryptographie post-quantique, les analyses IA, la messagerie inter-VM, l'état multi-couche, les opérations de pont, la tokenomics, l'infrastructure de rollup et l'état du consensus PRISM.
 
-:::warning Les méthodes prévues ne sont pas encore servies
-**Aucune des méthodes du tableau ci-dessous n'est encore servie sur un réseau.** Elles sont implémentées dans le code source du nœud mais ne sont pas enregistrées auprès du serveur JSON-RPC, et chacune renvoie `-32601` (method not found). Leur enregistrement est prévu pour une version du nœud, et cette page indiquera laquelle lorsqu'elle sera livrée. Ne développez pas dessus dès aujourd'hui ; utilisez les routes REST du tableau lorsqu'il en existe une. Les bibliothèques clientes qui exposent des helpers `client.qor.*` encapsulent ces mêmes méthodes, de sorte que ces helpers échouent de la même façon.
+:::warning Servies sur le testnet à partir de la v3.2.9, pas sur le mainnet
+À partir de la v3.2.9, le point de terminaison EVM du testnet (`https://evm-testnet.qore.host`) sert toutes les méthodes listées sur cette page. Le mainnet exécute la v3.2.8, et son point de terminaison EVM public ne liste pas l'espace de noms `qor` : toute méthode `qor_` y renvoie `-32601` (method not found), y compris celles du tableau ci-dessous. Vérifié le 22 novembre 2026 : chacun des 26 noms de méthodes de cette page, appelé sur le testnet sans arguments, a répondu soit par un résultat, soit par une erreur de paramètres invalides nommant un argument manquant, et aucun n'a renvoyé `-32601` ; sur le mainnet, `qor_getBurnStats` a renvoyé `-32601`. Appuyez-vous sur les routes REST du tableau ci-dessous pour tout ce qui doit fonctionner sur les deux réseaux. Les bibliothèques clientes qui exposent des helpers `client.qor.*` encapsulent ces mêmes méthodes, de sorte que ces helpers fonctionnent sur le testnet et échouent sur le mainnet.
 :::
 
 ## Ce qui est servi : `qor_getKEMKey` {#qor-getkemkey}
 
-Une méthode de l'espace de noms est servie : `qor_getKEMKey(address)` renvoie la clé publique ML-KEM qu'une adresse a publiée (`address` peut être `qor1...` ou `0x`). Elle répond `{"address": ..., "found": false}` lorsqu'aucune clé n'est publiée et ajoute sinon `algorithm_id`, `algorithm_name`, `public_key` (hex `0x`) et `registered_height`. Le nœud ne sert l'espace de noms `qor` que là où la liste `api` de sa section `[json-rpc]` dans `app.toml` inclut `qor`.
+`qor_getKEMKey(address)` était la seule méthode servie avant la v3.2.9, et c'est celle à utiliser sur tout point de terminaison qui liste l'espace de noms `qor`. Elle renvoie la clé publique ML-KEM qu'une adresse a publiée (`address` peut être `qor1...` ou `0x`). Elle répond `{"address": ..., "found": false}` lorsqu'aucune clé n'est publiée et ajoute sinon `algorithm_id`, `algorithm_name`, `public_key` (hex `0x`) et `registered_height`. Le nœud ne sert l'espace de noms `qor` que là où la liste `api` de sa section `[json-rpc]` dans `app.toml` inclut `qor`.
 
-Observé le 7 novembre 2026 :
+Observé le 7 novembre 2026 (avant la v3.2.9) :
 
 | Réseau | `rpc_modules` | `qor_getKEMKey` |
 | --- | --- | --- |
 | Testnet (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | répond (`found: false` pour une adresse sans clé publiée) |
 | Mainnet (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (le point de terminaison mainnet public ne liste pas `qor`) |
 
-Sur le testnet, chaque autre méthode `qor_` vérifiée (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) a encore renvoyé `-32601`.
+À cette date, le testnet renvoyait `-32601` pour chaque autre méthode `qor_` vérifiée (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) ; à partir de la v3.2.9, elles répondent sur le testnet, comme l'indique la note en haut de cette page.
 
 Vous pouvez vérifier vous-même la liste des espaces de noms :
 
@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 
 ---
 
-## Méthodes prévues et ce qu'il faut utiliser aujourd'hui
+## Les autres méthodes et ce qu'il faut utiliser sur le mainnet
 
 | Méthode prévue                | Ce qu'il faut utiliser aujourd'hui |
 | ----------------------------- | ----------------- |

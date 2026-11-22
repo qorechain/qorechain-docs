@@ -11,7 +11,7 @@ sidebar_position: 1
 
 Bir düğümü çalıştırmak ve senkronize etmek lisans gerektirmez. Ödül payına katılmak ayrı bir adımdır: bir `lightnode_operator` lisansı, bağlı doğrulayıcılara delege edilmiş stake ve bir zincir üzeri kayıt gerekir ([Nasıl erişilir](#how-to-access) bölümüne bakın).
 
-Hafif düğümün zincir sürümünden ayrı, **kendine ait bir sürüm hattı** vardır. 12 Kasım 2026 itibarıyla her iki ağın sürüm kanalı da hafif düğüm **3.1.14** sürümünü taşır (her iki ağ da zincir `v3.2.8` çalıştırır, test ağı 12 Kasım 2026'dan, ana ağ 18 Kasım 2026'dan beri; 3.1.14 test ağında `v3.2.8` üzerinde çalışır, orada heartbeat 0 kodu döndürür ve ana ağda yeniden kontrol edilmedi). İki numarayı birbiriyle ilgisiz kabul edin.
+Hafif düğümün zincir sürümünden ayrı, **kendine ait bir sürüm hattı** vardır. 12 Kasım 2026 itibarıyla her iki ağın sürüm kanalı da hafif düğüm **3.1.14** sürümünü taşır (ana ağ 18 Kasım 2026'dan beri zincir `v3.2.8` çalıştırır; test ağı onu 12 Kasım 2026'dan itibaren çalıştırdı ve 20 Kasım 2026'da `v3.2.9`'a geçti; 3.1.14 test ağında `v3.2.8` üzerinde çalışır, orada heartbeat 0 kodu döndürür ve ana ağda yeniden kontrol edilmedi). İki numarayı birbiriyle ilgisiz kabul edin.
 
 ## Yenilikler {#innovations}
 
@@ -98,7 +98,7 @@ Bir lisansı doğrudan da kontrol edebilirsiniz: `GET /qorechain/license/v1/chec
 ### Ödül programının durumu {#reward-program-status}
 
 :::note Kayıt açık
-Kayıt ana ağda (`qorechain-vladi`, zincir v3.2.8) ve test ağında (`qorechain-diana`, zincir v3.2.8) açıktır. 4 Kasım 2026'da ana ağda yedi `lightnode_operator` lisansı verilmişti, ana ağda bir ve test ağında iki hafif düğüm kayıtlıydı (`GET /qorechain/lightnode/v1/stats` içinde `total_registered`: `1` ve `2`). Ödül muhasebesi, v3.2.0 yükseltmesinden beri her iki ağda canlıdır. Çalışma süresi **düğümünüzün kaydedildiği bloktan itibaren** sayılır; bu nedenle öncesinde bir düğüm çalıştırmak kredi kazandırmaz. Zincir v3.2.4'ten beri düğüm başına sınır da düğümün kendi kaydıyla başlar: kayıttan sonraki ilk uzlaşma yalnızca o andan bu yana biriken tutarı kredilendirir.
+Kayıt ana ağda (`qorechain-vladi`, zincir v3.2.8) ve test ağında (`qorechain-diana`, zincir v3.2.9) açıktır. 4 Kasım 2026'da ana ağda yedi `lightnode_operator` lisansı verilmişti, ana ağda bir ve test ağında iki hafif düğüm kayıtlıydı (`GET /qorechain/lightnode/v1/stats` içinde `total_registered`: `1` ve `2`). Ödül muhasebesi, v3.2.0 yükseltmesinden beri her iki ağda canlıdır. Çalışma süresi **düğümünüzün kaydedildiği bloktan itibaren** sayılır; bu nedenle öncesinde bir düğüm çalıştırmak kredi kazandırmaz. Zincir v3.2.4'ten beri düğüm başına sınır da düğümün kendi kaydıyla başlar: kayıttan sonraki ilk uzlaşma yalnızca o andan bu yana biriken tutarı kredilendirir.
 
 Sürüm manifesti (`https://download.qore.host/<net>/lightnode/latest.json`) resmi sinyali `registration.open` alanında taşır. Canlı durum için `https://api.qore.host` (ana ağ) veya `https://api-testnet.qore.host` (test ağı) üzerinde `GET /qorechain/license/v1/holders/lightnode_operator` ve `GET /qorechain/lightnode/v1/stats` adreslerini sorgulayın.
 :::

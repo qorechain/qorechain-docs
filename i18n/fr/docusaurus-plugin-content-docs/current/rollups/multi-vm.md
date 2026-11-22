@@ -90,7 +90,7 @@ La chaîne v3.2.5 change le comportement du pont. Le mainnet l'exécute depuis l
 
 ### Testé sur le testnet {#tested-testnet}
 
-Le testnet exécute la chaîne v3.2.8 depuis le 12 novembre 2026 (hauteur 9,929,500). Le 7 novembre 2026, deux requêtes `eth_call` en lecture seule ont été envoyées à `0x…0901` avec les calldata de `executeCrossVMCall(uint8,string,bytes)` (VM cible `1`, charge utile `{}`) :
+Le testnet exécute la chaîne v3.2.9 depuis le 20 novembre 2026, après la v3.2.8 du 12 novembre (hauteur 9,929,500), et a appliqué la v3.2.9 à la hauteur 10,424,000. Le 7 novembre 2026, deux requêtes `eth_call` en lecture seule ont été envoyées à `0x…0901` avec les calldata de `executeCrossVMCall(uint8,string,bytes)` (VM cible `1`, charge utile `{}`) :
 
 | Cible | Résultat |
 |---|---|

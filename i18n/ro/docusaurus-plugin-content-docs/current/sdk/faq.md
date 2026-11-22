@@ -72,9 +72,9 @@ eroarea să fie tratată per apel.
 
 ## Apelul meu `client.qor` eșuează cu -32601
 
-`client.qor` apelează namespace-ul JSON-RPC `qor_`, pe care nicio versiune
-publicată a nodului nu îl servește; `rpc_modules` pe endpoint-urile EVM publice
-listează doar `eth`, `net`, `rpc`, `txpool` și `web3`. Folosiți în schimb o rută
+`client.qor` apelează namespace-ul JSON-RPC `qor_`, pe care endpoint-ul EVM
+public de mainnet nu îl servește (mainnet-ul rulează v3.2.8; `rpc_modules` de acolo
+listează doar `eth`, `net`, `rpc`, `txpool` și `web3`). Endpoint-ul de testnet îl servește începând cu v3.2.9. Folosiți în schimb o rută
 REST, de exemplu `GET /qorechain/pqc/v1/account/{address}` (starea cheii PQC) sau
 `GET /qorechain/burn/v1/stats`, prin `client.rest.get(...)`. Vedeți
 [namespace-ul `qor_`](/api-reference/json-rpc-qor_-namespace).

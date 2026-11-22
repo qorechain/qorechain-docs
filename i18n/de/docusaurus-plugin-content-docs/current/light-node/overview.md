@@ -11,7 +11,7 @@ Die **QoreChain Light Node** ist ein kleiner Client, der einem QoreChain-Netzwer
 
 Der Betrieb und die Synchronisierung eines Knotens braucht keine Lizenz. Die Teilnahme am Belohnungsanteil ist ein separater Schritt: Sie erfordert eine `lightnode_operator`-Lizenz, an gebondete Validatoren delegierten Stake und eine On-Chain-Registrierung (siehe [So erhalten Sie Zugang](#how-to-access)).
 
-Die Light Node hat eine **eigene Versionslinie**, getrennt vom Chain-Release. Stand 12. November 2026 führen die Release-Channels beider Netzwerke die Light Node **3.1.14** (beide Netzwerke laufen mit Chain `v3.2.8`, das Testnet seit dem 12. November 2026 und das Mainnet seit dem 18. November 2026; 3.1.14 funktioniert im Testnet auf `v3.2.8`, wo der Heartbeat den Code 0 zurückgibt, und wurde im Mainnet nicht erneut geprüft). Behandeln Sie die beiden Nummern als voneinander unabhängig.
+Die Light Node hat eine **eigene Versionslinie**, getrennt vom Chain-Release. Stand 12. November 2026 führen die Release-Channels beider Netzwerke die Light Node **3.1.14** (das Mainnet läuft seit dem 18. November 2026 mit Chain `v3.2.8`, und das Testnet lief ab dem 12. November 2026 damit, bevor es am 20. November 2026 auf `v3.2.9` wechselte; 3.1.14 funktioniert im Testnet auf `v3.2.8`, wo der Heartbeat den Code 0 zurückgibt, und wurde im Mainnet nicht erneut geprüft). Behandeln Sie die beiden Nummern als voneinander unabhängig.
 
 ## Innovationen {#innovations}
 
@@ -98,7 +98,7 @@ Sie können eine Lizenz auch direkt prüfen: `GET /qorechain/license/v1/check/<a
 ### Status des Belohnungsprogramms {#reward-program-status}
 
 :::note Die Registrierung ist offen
-Die Registrierung ist im Mainnet (`qorechain-vladi`, Chain v3.2.8) und im Testnet (`qorechain-diana`, Chain v3.2.8) offen. Am 4. November 2026 waren im Mainnet sieben `lightnode_operator`-Lizenzen vergeben, im Mainnet war eine Light Node registriert und im Testnet zwei (`total_registered` in `GET /qorechain/lightnode/v1/stats`: `1` und `2`). Die Belohnungsabrechnung ist seit dem Upgrade auf v3.2.0 auf beiden Netzwerken live. Die Uptime wird **ab dem Block gezählt, in dem Ihr Knoten registriert wird**, sodass ein vorheriger Betrieb keine Gutschrift bringt. Seit Chain v3.2.4 beginnt auch die Grenze pro Knoten mit der eigenen Registrierung des Knotens: Die erste Abrechnung nach der Registrierung schreibt nur gut, was seitdem angefallen ist.
+Die Registrierung ist im Mainnet (`qorechain-vladi`, Chain v3.2.8) und im Testnet (`qorechain-diana`, Chain v3.2.9) offen. Am 4. November 2026 waren im Mainnet sieben `lightnode_operator`-Lizenzen vergeben, im Mainnet war eine Light Node registriert und im Testnet zwei (`total_registered` in `GET /qorechain/lightnode/v1/stats`: `1` und `2`). Die Belohnungsabrechnung ist seit dem Upgrade auf v3.2.0 auf beiden Netzwerken live. Die Uptime wird **ab dem Block gezählt, in dem Ihr Knoten registriert wird**, sodass ein vorheriger Betrieb keine Gutschrift bringt. Seit Chain v3.2.4 beginnt auch die Grenze pro Knoten mit der eigenen Registrierung des Knotens: Die erste Abrechnung nach der Registrierung schreibt nur gut, was seitdem angefallen ist.
 
 Das Release-Manifest (`https://download.qore.host/<net>/lightnode/latest.json`) trägt das offizielle Signal im Feld `registration.open`. Für den aktuellen Stand fragen Sie `GET /qorechain/license/v1/holders/lightnode_operator` und `GET /qorechain/lightnode/v1/stats` auf `https://api.qore.host` (Mainnet) oder `https://api-testnet.qore.host` (Testnet) ab.
 :::

@@ -10,7 +10,7 @@ sidebar_position: 7
 Una transazione Ethereum porta una sola firma secp256k1 e nient'altro, quindi non può portare la firma post-quantistica (ML-DSA-87) che QoreChain richiede a ogni altra transazione. La **finestra di autorizzazione EVM** colma questa lacuna. L'account apre prima una finestra delimitata con un messaggio QoreChain Native che **è** firmato con la sua chiave post-quantistica, e la corsia EVM ammette poi le normali transazioni dell'account da MetaMask, ethers.js, Hardhat o Foundry solo finché la finestra le copre. Questa pagina è il riferimento completo di come si comporta una finestra nella release **v3.2.8**.
 
 :::note Dove gira la v3.2.8
-Entrambe le reti eseguono la **v3.2.8**: la testnet **`qorechain-diana`** dal 12 novembre 2026 e la mainnet **`qorechain-vladi`** dal 18 novembre 2026 (proposta di governance 17, altezza 4.273.000). Le opzioni e le regole contrassegnate "v3.2.8" qui sotto valgono su entrambe. Un nodo precedente alla v3.2.8 rifiuta un messaggio di finestra che imposta le nuove liste. I controlli e le prove di questa pagina sono stati eseguiti sulla testnet.
+La mainnet **`qorechain-vladi`** esegue la **v3.2.8** dal 18 novembre 2026 (proposta di governance 17, altezza 4.273.000); la testnet **`qorechain-diana`** ha eseguito la v3.2.8 dal 12 novembre 2026 ed esegue la v3.2.9 dal 20 novembre 2026. Le opzioni e le regole contrassegnate "v3.2.8" qui sotto valgono su entrambe; le liste della query contrassegnate "v3.2.9" sono solo testnet. Un nodo precedente alla v3.2.8 rifiuta un messaggio di finestra che imposta le nuove liste. I controlli e le prove di questa pagina sono stati eseguiti sulla testnet.
 :::
 
 ## Perché è importante {#why}
@@ -84,6 +84,24 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 Un account senza finestra risponde con HTTP 200 e `found: false`, quindi la route è sicura da interrogare ripetutamente. Ogni numero è una stringa JSON. Una finestra memorizzata può essere scaduta o esaurita: `live` ti dice se ammette ancora almeno un'altra transazione a valore zero all'altezza corrente.
 
+### Le tre liste di ambito nella query (testnet, v3.2.9) {#window-query-lists}
+
+Dalla v3.2.9 la query della finestra restituisce l'intero ambito con cui la finestra è stata aperta, non solo `allowed_targets`. La risposta ha tre campi in più, tutti liste di stringhe:
+
+| Campo | Numero nella risposta gRPC | Contiene |
+| ----- | -------------------------- | -------- |
+| `validators` | 14 | Gli indirizzi di contratto (`0x...`) il cui controllo della firma vale per l'account |
+| `staking_validators` | 15 | I validatori `qorvaloper1...` verso cui la finestra consente di delegare o ridelegare |
+| `ibc_receivers` | 16 | Le destinazioni `<channel>/<receiver>` verso cui può andare un trasferimento IBC di QOR nativo |
+
+Una lista vuota significa che la finestra è stata aperta senza alcun valore, il che rifiuta quel tipo di azione, quindi puoi rileggere ciò che una finestra consente senza conservare i valori usati per aprirla. Questo funziona solo sulla testnet: la mainnet esegue la v3.2.8, la cui query della finestra non restituisce questi tre campi. Verificato il 22 novembre 2026 sulla REST della testnet: un indirizzo senza finestra ha risposto `found: false` con `allowed_targets`, `validators`, `staking_validators` e `ibc_receivers` tutti presenti come liste vuote. Per questa pagina non è stata riletta una finestra con liste non vuote.
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
+```
+
+Nella risposta dovresti vedere i tre nomi di campo. Se mancano, il nodo che hai raggiunto è precedente alla v3.2.9 (per esempio l'endpoint della mainnet).
+
 ### TypeScript {#typescript}
 
 Gli helper della finestra sono in `@qorechain/sdk` (vedi la [guida EVM dell'SDK](/sdk/guides/evm#evm-window-scope) per la configurazione della firma). `openEvmWindowMsg` accetta ogni campo qui sotto, `closeEvmWindowMsg` costruisce il messaggio di chiusura, `fetchEvmWindow` legge la finestra e `classifyEvmWindowRejection` spiega un rifiuto.
@@ -131,7 +149,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg` controlla i limiti e i formati delle liste prima che venga firmato qualsiasi cosa, quindi un errore fallisce in locale invece di costare una transazione rifiutata. `MAX_EVM_WINDOW_BLOCKS` e `MAX_EVM_WINDOW_TXS` esportano i limiti. La lettura (`fetchEvmWindow`) restituisce i limiti, i contatori e l'ambito della v3.2.3 (`nativeOnly`, `allowedTargets`); `validators` (indirizzi di contratto), `stakingValidators` (`qorvaloper1...`) e `ibcReceivers` (`"<channel>/<receiver>"`) sono accettati dal builder dall'SDK 0.14.0, che porta le liste della v3.2.8; la lettura non le restituisce, e nemmeno la route REST della finestra nella v3.2.8, quindi conserva i valori con cui hai aperto la finestra. Imposta le tre liste solo per una rete che esegue la v3.2.8: un nodo precedente rifiuta un messaggio di finestra che le imposta. Con un `connectTx` che firma in modo ibrido la chiave post-quantistica deve essere già registrata.
+`openEvmWindowMsg` controlla i limiti e i formati delle liste prima che venga firmato qualsiasi cosa, quindi un errore fallisce in locale invece di costare una transazione rifiutata. `MAX_EVM_WINDOW_BLOCKS` e `MAX_EVM_WINDOW_TXS` esportano i limiti. La lettura (`fetchEvmWindow`) restituisce i limiti, i contatori e l'ambito della v3.2.3 (`nativeOnly`, `allowedTargets`); `validators` (indirizzi di contratto), `stakingValidators` (`qorvaloper1...`) e `ibcReceivers` (`"<channel>/<receiver>"`) sono accettati dal builder dall'SDK 0.14.0, che porta le liste della v3.2.8; la lettura non le restituisce, e nemmeno la route REST della finestra nella v3.2.8 (la testnet le restituisce dalla v3.2.9, vedi [le tre liste di ambito nella query](#window-query-lists)), quindi conserva i valori con cui hai aperto la finestra quando leggi una rete v3.2.8. Imposta le tre liste solo per una rete che esegue la v3.2.8: un nodo precedente rifiuta un messaggio di finestra che le imposta. Con un `connectTx` che firma in modo ibrido la chiave post-quantistica deve essere già registrata.
 
 ### Testato sulla testnet {#tested}
 
@@ -144,7 +162,7 @@ Eseguito su `qorechain-diana` il 12 novembre 2026 (release v3.2.8) con un accoun
 | Apertura di nuovo con `nativeOnly: true` | code 0, 187,803 di gas usato. La nuova finestra ha sostituito la vecchia: `native_only: true`, un nuovo `opened_height` |
 | Chiusura | code 0, 170,468 di gas usato. Lettura: `found: false` |
 
-Con l'SDK 0.14.0, lo stesso giorno, una finestra aperta con `allowedTargets` (un indirizzo di destinazione consentito), `stakingValidators` (un indirizzo operatore di validatore) e `ibcReceivers` (una coppia `channel-0/...`) è riuscita con code 0 e 195,233 di gas usato. La lettura REST ha elencato `allowed_targets` e ha restituito `found: true`, `live: true`; non restituisce le liste `validators`, `staking_validators` o `ibc_receivers`, quindi conserva i valori con cui hai aperto la finestra.
+Con l'SDK 0.14.0, lo stesso giorno, una finestra aperta con `allowedTargets` (un indirizzo di destinazione consentito), `stakingValidators` (un indirizzo operatore di validatore) e `ibcReceivers` (una coppia `channel-0/...`) è riuscita con code 0 e 195,233 di gas usato. La lettura REST ha elencato `allowed_targets` e ha restituito `found: true`, `live: true`; non restituiva le liste `validators`, `staking_validators` o `ibc_receivers` sulla v3.2.8 (dalla v3.2.9 sulla testnet le restituisce, vedi [le tre liste di ambito nella query](#window-query-lists)), quindi su una rete v3.2.8 conserva i valori con cui hai aperto la finestra.
 
 `fetchEvmWindow` ha restituito gli stessi campi in camel case (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). Aprire e chiudere sono transazioni Cosmos firmate in modo ibrido, quindi la prima che un account invia richiede che la sua chiave sia registrata prima.
 

@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain publishes its developer tooling as small packages on the public registries (npm, PyPI, crates.io, the Go module proxy, Maven Central and Swift Package Manager). This page is the index: what each package is for, its exact registry name, language, current version, install command and status, and where to read how to use it. It is for developers who build dApps, wallets, backends and rollups on QoreChain and want to pick the right package before they read a guide.
 
-Versions in the tables were read from the registries on 4 November 2026. Mainnet `qorechain-vladi` runs v3.2.8 (applied 18 November 2026 at height 4,273,000, governance proposal 17; v3.2.7 on 12 November, v3.2.6 on 4 November, v3.2.5 on 29 October). Testnet `qorechain-diana` applied v3.2.6 on 27 October, v3.2.7 on 6 November and v3.2.8 on 12 November 2026, so both networks run the same release. No package in these tables has builders for the v3.2.7 messages unless its page says so. Every package listed as published is licensed Apache-2.0.
+Versions in the tables were read from the registries on 4 November 2026. Mainnet `qorechain-vladi` runs v3.2.8 (applied 18 November 2026 at height 4,273,000, governance proposal 17; v3.2.7 on 12 November, v3.2.6 on 4 November, v3.2.5 on 29 October). Testnet `qorechain-diana` applied v3.2.6 on 27 October, v3.2.7 on 6 November v3.2.8 on 12 November 2026 and v3.2.9 on 20 November 2026, so the testnet is one release ahead of mainnet (v3.2.8). No package in these tables has builders for the v3.2.7 messages unless its page says so. Every package listed as published is licensed Apache-2.0.
 
 ## Innovations {#innovations}
 

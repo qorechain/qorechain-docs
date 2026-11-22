@@ -230,7 +230,7 @@ Zincirin akıllı hesap ve bağlı cüzdan özellikleri testnet üzerinde etkin,
 :::
 
 :::note Solana uyumlu hat test ağında
-Solana uyumlu hat, bir yönetişim oyu onu yeniden açana kadar test ağında kapalıdır (v3.2.8 sürümü, test ağında 12 Kasım 2026'dan beri). O zamana kadar orada Solana tarzı işlemler kullanılamaz.
+Solana uyumlu hat, yönetişim önerisi 37'den beri (12 Kasım 2026) test ağında açıktır. Solana tarzı işlemler için cüzdan desteği henüz yoktur. Onları komut satırından göndermek için bkz. [Test Ağında SVM](/developer-guide/svm-testnet-v329).
 :::
 
 :::caution Bağlı bir imzalayıcı, hesap üzerinde gerçek bir yetkidir

@@ -71,9 +71,9 @@ da gestire l'errore per ciascuna chiamata.
 
 ## La mia chiamata `client.qor` fallisce con -32601
 
-`client.qor` chiama il namespace JSON-RPC `qor_`, che nessuna build di nodo
-rilasciata serve; `rpc_modules` sugli endpoint EVM pubblici elenca solo `eth`,
-`net`, `rpc`, `txpool` e `web3`. Usa invece una route REST, ad esempio
+`client.qor` chiama il namespace JSON-RPC `qor_`, che l'endpoint EVM pubblico
+della mainnet non serve (la mainnet esegue la v3.2.8; `rpc_modules` lì elenca solo `eth`,
+`net`, `rpc`, `txpool` e `web3`). L'endpoint della testnet lo serve dalla v3.2.9. Usa invece una route REST, ad esempio
 `GET /qorechain/pqc/v1/account/{address}` (stato della chiave PQC) oppure
 `GET /qorechain/burn/v1/stats`, tramite `client.rest.get(...)`. Vedi
 [il namespace `qor_`](/api-reference/json-rpc-qor_-namespace).

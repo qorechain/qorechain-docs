@@ -69,9 +69,9 @@ EVM 모듈의 `active_static_precompiles` 파라미터에 나열된 곳에서만
 
 ## `client.qor` 호출이 -32601로 실패합니다
 
-`client.qor`는 `qor_` JSON-RPC 네임스페이스를 호출하는데, 릴리스된 어떤 노드
-빌드도 이를 제공하지 않습니다. 퍼블릭 EVM 엔드포인트의 `rpc_modules`에는 `eth`,
-`net`, `rpc`, `txpool`, `web3`만 나열됩니다. 대신 REST 경로를 사용하세요. 예를 들어
+`client.qor`는 `qor_` JSON-RPC 네임스페이스를 호출하는데, 공개 메인넷 EVM
+엔드포인트는 이를 제공하지 않습니다(메인넷은 v3.2.8을 실행하며, 그곳의 `rpc_modules`에는 `eth`,
+`net`, `rpc`, `txpool`, `web3`만 나열됩니다). 테스트넷 엔드포인트는 v3.2.9부터 이를 제공합니다. 대신 REST 경로를 사용하세요. 예를 들어
 `client.rest.get(...)`을 통해 `GET /qorechain/pqc/v1/account/{address}`(PQC 키 상태)
 또는 `GET /qorechain/burn/v1/stats`를 호출할 수 있습니다.
 [`qor_` 네임스페이스](/api-reference/json-rpc-qor_-namespace)를 참고하세요.

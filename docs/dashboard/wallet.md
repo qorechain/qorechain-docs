@@ -230,7 +230,7 @@ The chain's smart-account and linked-wallet features are enabled on the testnet 
 :::
 
 :::note Solana-compatible lane on the testnet
-The Solana-compatible lane is closed on the testnet until a governance vote reopens it (release v3.2.8, testnet since 12 November 2026). Solana-style transactions are not available there until then.
+The Solana-compatible lane is open on the testnet since governance proposal 37 (12 November 2026). Wallet support for Solana-style transactions is not available yet. See [SVM on the Testnet](/developer-guide/svm-testnet-v329) to send them from the command line.
 :::
 
 :::caution A linked signer is real authority over the account

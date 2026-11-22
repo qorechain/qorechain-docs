@@ -9,22 +9,22 @@ sidebar_position: 2
 
 El espacio de nombres `qor_` se diseñó para proporcionar métodos JSON-RPC específicos de QoreChain con los que consultar el estado de la criptografía poscuántica, la analítica de IA, la mensajería entre VM, el estado multicapa, las operaciones de puente, la tokenómica, la infraestructura de rollups y el estado del consenso PRISM.
 
-:::warning Los métodos previstos aún no se sirven
-**Ninguno de los métodos de la tabla siguiente se sirve todavía en ninguna red.** Están implementados en el código fuente del nodo pero no registrados en el servidor JSON-RPC, y cada uno devuelve `-32601` (method not found). Su registro está previsto para una versión del nodo, y esta página indicará cuál cuando se publique. No desarrolle hoy sobre ellos; use las rutas REST de la tabla cuando exista una. Las bibliotecas cliente que exponen utilidades `client.qor.*` envuelven estos mismos métodos, por lo que esas utilidades fallan de la misma manera.
+:::warning Se sirven en la testnet desde v3.2.9, no en la mainnet
+Desde v3.2.9, el endpoint EVM de la testnet (`https://evm-testnet.qore.host`) sirve todos los métodos listados en esta página. La mainnet ejecuta v3.2.8 y su endpoint EVM público no lista el espacio de nombres `qor`: todos los métodos `qor_` allí, incluidos los de la tabla siguiente, devuelven `-32601` (method not found). Comprobado el 22 de noviembre de 2026: cada uno de los 26 nombres de método de esta página, llamado en la testnet sin argumentos, respondió con un resultado o con un error de parámetros no válidos que nombraba un argumento ausente, y ninguno devolvió `-32601`; en la mainnet `qor_getBurnStats` devolvió `-32601`. Desarrolle sobre las rutas REST de la tabla siguiente para todo lo que deba funcionar en ambas redes. Las bibliotecas cliente que exponen utilidades `client.qor.*` envuelven estos mismos métodos, por lo que esas utilidades funcionan en la testnet y fallan en la mainnet.
 :::
 
 ## Qué se sirve: `qor_getKEMKey` {#qor-getkemkey}
 
-Se sirve un método del espacio de nombres: `qor_getKEMKey(address)` devuelve la clave pública ML-KEM que ha publicado una dirección (`address` puede ser `qor1...` o `0x`). Responde `{"address": ..., "found": false}` cuando no hay ninguna clave publicada y, en caso contrario, añade `algorithm_id`, `algorithm_name`, `public_key` (hex `0x`) y `registered_height`. El nodo sirve el espacio de nombres `qor` solo donde la lista `api` de su sección `[json-rpc]` en `app.toml` incluye `qor`.
+`qor_getKEMKey(address)` era el único método que se servía antes de v3.2.9, y es el que hay que usar en cualquier endpoint que liste el espacio de nombres `qor`. Devuelve la clave pública ML-KEM que ha publicado una dirección (`address` puede ser `qor1...` o `0x`). Responde `{"address": ..., "found": false}` cuando no hay ninguna clave publicada y, en caso contrario, añade `algorithm_id`, `algorithm_name`, `public_key` (hex `0x`) y `registered_height`. El nodo sirve el espacio de nombres `qor` solo donde la lista `api` de su sección `[json-rpc]` en `app.toml` incluye `qor`.
 
-Observado el 7 de noviembre de 2026:
+Observado el 7 de noviembre de 2026 (antes de v3.2.9):
 
 | Red | `rpc_modules` | `qor_getKEMKey` |
 | --- | --- | --- |
 | Testnet (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | responde (`found: false` para una dirección sin clave publicada) |
 | Mainnet (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (el endpoint público de la mainnet no lista `qor`) |
 
-En la testnet, todos los demás métodos `qor_` comprobados (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) siguieron devolviendo `-32601`.
+En esa fecha la testnet devolvió `-32601` para todos los demás métodos `qor_` comprobados (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`); desde v3.2.9 responden en la testnet, como indica la nota al principio de esta página.
 
 Puede comprobar usted mismo la lista del espacio de nombres:
 
@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 
 ---
 
-## Métodos previstos y qué usar hoy
+## Los demás métodos y qué usar en la mainnet
 
 | Método previsto                | Qué usar hoy |
 | ----------------------------- | ----------------- |

@@ -45,7 +45,7 @@ applica. Verificato rispetto agli endpoint attivi il 27 ottobre 2026; il 7 novem
 L'SDK pubblicato (0.14.0, 12 novembre 2026) firma nella forma che entrambe le reti verificano
 (sign-bytes ibridi v2, risolti dallo stato della chain), e il formato di firma,
 gli indirizzi, i decimali, i memo e le commissioni non sono cambiati nella v3.2.3, v3.2.4, v3.2.5 né v3.2.6 (la mainnet ha eseguito la v3.2.7 dal 12 novembre 2026,
-altezza 4.164.600, proposta di governance 16, dopo la v3.2.6 del 4 novembre, ed esegue la v3.2.8 dal 18 novembre 2026, altezza 4.273.000, proposta di governance 17; la testnet dal 27 ottobre, dal 6 novembre la testnet ha eseguito la v3.2.7 e dal 12 novembre esegue la v3.2.8, che aggiungono messaggi per i quali l'SDK 0.14.0 ha i builder; le nuove regole valgono dalla v3.2.8 su entrambe le reti; i messaggi della v3.2.7 sono sulla mainnet dal 12 novembre 2026). Include
+altezza 4.164.600, proposta di governance 16, dopo la v3.2.6 del 4 novembre, ed esegue la v3.2.8 dal 18 novembre 2026, altezza 4.273.000, proposta di governance 17; la testnet dal 27 ottobre, dal 6 novembre la testnet ha eseguito la v3.2.7, dal 12 novembre la v3.2.8 e dal 20 novembre esegue la v3.2.9, che aggiungono messaggi per i quali l'SDK 0.14.0 ha i builder; le nuove regole valgono dalla v3.2.8 su entrambe le reti; i messaggi della v3.2.7 sono sulla mainnet dal 12 novembre 2026). Include
 il lato client delle successive regole post-quantistiche (la prova di possesso alla registrazione
 della chiave, le finestre EVM con ambito limitato, i messaggi di consenso EIP-7702) e della v3.2.4 (tier di staking,
 il nonce dell'authenticator, gli interruttori delle funzionalità del protocollo) e della v3.2.5 (gas esatto per le

@@ -230,7 +230,7 @@ Die Smart-Account- und Linked-Wallet-Funktionen der Chain sind im Testnet aktivi
 :::
 
 :::note Solana-kompatible Spur im Testnet
-Die Solana-kompatible Spur ist im Testnet geschlossen, bis eine Governance-Abstimmung sie wieder öffnet (Release v3.2.8, Testnet seit dem 12. November 2026). Solana-artige Transaktionen sind dort bis dahin nicht verfügbar.
+Die Solana-kompatible Spur ist im Testnet seit dem Governance-Vorschlag 37 (12. November 2026) offen. Wallet-Unterstützung für Solana-artige Transaktionen gibt es noch nicht. Siehe [SVM im Testnet](/developer-guide/svm-testnet-v329), um sie von der Kommandozeile aus zu senden.
 :::
 
 :::caution Ein verknüpfter Signierer ist echte Autorität über das Konto

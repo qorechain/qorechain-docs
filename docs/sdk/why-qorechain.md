@@ -94,7 +94,7 @@ await crossVM.callAtomic([
 module (`crossvm`, plus the `CrossVMBridge` precompile once it is active; it is not active on mainnet; the testnet has it active with an allowlist, tested with `eth_call` on 7 November 2026), so one
 SDK interface can address all three. Single-VM chains have nothing equivalent to
 wrap. Today the reach of a call is limited by the lane it targets: `MsgCrossVMCall`
-is switched off on mainnet, SVM transactions are disabled, and QoreChain Native upload and
+is switched off on mainnet, the SVM lane is off, and QoreChain Native upload and
 instantiate are permissioned (instantiate is open on the testnet). See [Cross-VM calls](/sdk/guides/cross-vm).
 
 ---

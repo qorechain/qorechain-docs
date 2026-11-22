@@ -10,7 +10,7 @@ sidebar_position: 2
 Dieser Leitfaden behandelt, wie du QOR-Token an Validatoren delegierst, zwischen Validatoren neu delegierst, dein Stake entbindest, Belohnungen einforderst und verstehst, welche Teile des Staking-Designs von QoreChain heute live sind.
 
 :::note
-Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.8** (angewendet am 18. November 2026; v3.2.7 am 12. November, v3.2.6 am 4. November, v3.2.5 am 29. Oktober und v3.2.4 am 23. Oktober); das Testnet läuft seit dem 12. November 2026 mit v3.2.8 (v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober). Ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
+Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.8** (angewendet am 18. November 2026; v3.2.7 am 12. November, v3.2.6 am 4. November, v3.2.5 am 29. Oktober und v3.2.4 am 23. Oktober); das Testnet läuft seit dem 20. November 2026 mit v3.2.9, nach v3.2.8 ab dem 12. November (v3.2.7 ab dem 6. November, v3.2.6 ab dem 27. Oktober). Ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
 :::
 
 :::caution Mit `tx pqc cosign` signieren

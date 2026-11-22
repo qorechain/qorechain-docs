@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Network preset | `testnet` |
 | Chain id | `qorechain-diana` (live) |
-| Chain version | v3.2.8 (since height 9,929,500, 12 November 2026, applied by governance; mainnet applied v3.2.8 on 18 November 2026. v3.2.7 was applied at height 9,594,600 on 6 November; v3.2.6 was applied at height 8,970,638 on 27 October; v3.2.5 was applied at height 8,890,800 on 26 October and v3.2.4 at height 8,337,253 on 19 October) |
+| Chain version | v3.2.9 (since height 10,424,000, 20 November 2026, applied by governance proposal 39; testnet only, mainnet runs v3.2.8). v3.2.8 was applied at height 9,929,500 on 12 November 2026 (mainnet applied v3.2.8 on 18 November 2026). v3.2.7 was applied at height 9,594,600 on 6 November; v3.2.6 was applied at height 8,970,638 on 27 October; v3.2.5 was applied at height 8,890,800 on 26 October and v3.2.4 at height 8,337,253 on 19 October) |
 | EVM chain ID | `9800` |
 | Display token | `QOR` |
 | Base denomination | `uqor` |

@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain prend en charge plusieurs types de portefeuilles dans ses environnements d'exécution natif, EVM et SVM. Choisissez le portefeuille adapté à votre cas d'usage.
 
 :::note
-Les valeurs ci-dessous couvrent à la fois le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, actif depuis le 7 juin 2026, version v3.2.8 depuis le 18 novembre 2026) et le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version v3.2.8 depuis le 12 novembre 2026). Les points de terminaison publics des deux réseaux sont répertoriés dans [Réseaux](/appendix/networks#public-endpoints).
+Les valeurs ci-dessous couvrent à la fois le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, actif depuis le 7 juin 2026, version v3.2.8 depuis le 18 novembre 2026) et le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version v3.2.9 depuis le 20 novembre 2026, après la v3.2.8 du 12 novembre). Les points de terminaison publics des deux réseaux sont répertoriés dans [Réseaux](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recommandé) {#qorex}
@@ -110,7 +110,7 @@ Les fonctionnalités de compte intelligent et de portefeuille lié sont impléme
 :::
 
 :::note Voie compatible Solana sur le testnet
-La voie compatible Solana est fermée sur le testnet jusqu'à ce qu'un vote de gouvernance la rouvre (version v3.2.8, testnet depuis le 12 novembre 2026). Les transactions de style Solana n'y sont donc pas disponibles pour l'instant.
+La voie compatible Solana est ouverte sur le testnet depuis la proposition de gouvernance 37 (12 novembre 2026). La prise en charge des transactions de style Solana dans le portefeuille n'est pas encore disponible. Voir [SVM sur le testnet](/developer-guide/svm-testnet-v329) pour les envoyer depuis la ligne de commande.
 :::
 
 Conçu pour que vous n'ayez pas à exposer votre clé racine pour dépenser depuis un compte QoreChain dans une dApp (introduit dans la version de chaîne **v3.1.85**) : une clé **Phantom** (ed25519) ou **MetaMask** (via son adresse Ethereum, par `personal_sign`) peut être **enregistrée comme authentificateur** sur votre compte — avec des permissions limitées, des plafonds de dépense, une expiration et une révocation instantanée — puis autoriser des transferts relayés par le backend de la dApp. Consultez [Authentificateurs de portefeuilles liés](/developer-guide/account-abstraction#authenticators) pour le modèle complet et le code, ainsi que le [guide des authentificateurs du SDK](/sdk/guides/authenticators) pour des exemples de bout en bout.

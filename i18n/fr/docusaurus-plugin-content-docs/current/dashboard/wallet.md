@@ -230,7 +230,7 @@ Les fonctionnalités de compte intelligent et de portefeuilles liés de la chaî
 :::
 
 :::note Voie compatible Solana sur le testnet
-La voie compatible Solana est fermée sur le testnet jusqu'à ce qu'un vote de gouvernance la rouvre (version v3.2.8, testnet depuis le 12 novembre 2026). Les transactions de style Solana n'y sont donc pas disponibles pour l'instant.
+La voie compatible Solana est ouverte sur le testnet depuis la proposition de gouvernance 37 (12 novembre 2026). La prise en charge des transactions de style Solana dans le portefeuille n'est pas encore disponible. Voir [SVM sur le testnet](/developer-guide/svm-testnet-v329) pour les envoyer depuis la ligne de commande.
 :::
 
 :::caution Un signataire lié est une véritable autorité sur le compte

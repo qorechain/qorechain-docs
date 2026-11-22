@@ -9,22 +9,22 @@ sidebar_position: 2
 
 Il namespace `qor_` è stato progettato per fornire metodi JSON-RPC specifici di QoreChain per interrogare lo stato della crittografia post-quantistica, le analitiche AI, la messaggistica cross-VM, lo stato multi-layer, le operazioni di bridge, la tokenomics, l'infrastruttura di rollup e lo stato del consenso PRISM.
 
-:::warning I metodi previsti non sono ancora serviti
-**Nessuno dei metodi nella tabella qui sotto è ancora servito su alcuna rete.** Sono implementati nel codice sorgente del nodo ma non registrati nel server JSON-RPC, e ciascuno restituisce `-32601` (method not found). La loro registrazione è prevista per una release del nodo, e questa pagina indicherà quale quando verrà rilasciata. Non sviluppare oggi su di essi; usa le route REST nella tabella dove ne esiste una. Le librerie client che espongono helper `client.qor.*` incapsulano questi stessi metodi, quindi quegli helper falliscono allo stesso modo.
+:::warning Serviti sulla testnet dalla v3.2.9, non sulla mainnet
+Dalla v3.2.9 l'endpoint EVM della testnet (`https://evm-testnet.qore.host`) serve tutti i metodi elencati in questa pagina. La mainnet esegue la v3.2.8 e il suo endpoint EVM pubblico non elenca il namespace `qor`: ogni metodo `qor_` lì, compresi quelli della tabella qui sotto, restituisce `-32601` (method not found). Verificato il 22 novembre 2026: ciascuno dei 26 nomi di metodo di questa pagina, chiamato sulla testnet senza argomenti, ha risposto con un risultato oppure con un errore di parametri non validi che indicava un argomento mancante, e nessuno ha restituito `-32601`; sulla mainnet `qor_getBurnStats` ha restituito `-32601`. Per tutto ciò che deve funzionare su entrambe le reti, sviluppa sulle route REST della tabella qui sotto. Le librerie client che espongono helper `client.qor.*` incapsulano questi stessi metodi, quindi quegli helper funzionano sulla testnet e falliscono sulla mainnet.
 :::
 
 ## Cosa è servito: `qor_getKEMKey` {#qor-getkemkey}
 
-Un metodo del namespace è servito: `qor_getKEMKey(address)` restituisce la chiave pubblica ML-KEM che un indirizzo ha pubblicato (`address` può essere `qor1...` oppure `0x`). Risponde `{"address": ..., "found": false}` quando non è pubblicata alcuna chiave e altrimenti aggiunge `algorithm_id`, `algorithm_name`, `public_key` (hex `0x`) e `registered_height`. Il nodo serve il namespace `qor` solo dove l'elenco `api` di `[json-rpc]` in `app.toml` include `qor`.
+`qor_getKEMKey(address)` era l'unico metodo servito prima della v3.2.9 ed è quello da usare su qualsiasi endpoint che elenchi il namespace `qor`. Restituisce la chiave pubblica ML-KEM che un indirizzo ha pubblicato (`address` può essere `qor1...` oppure `0x`). Risponde `{"address": ..., "found": false}` quando non è pubblicata alcuna chiave e altrimenti aggiunge `algorithm_id`, `algorithm_name`, `public_key` (hex `0x`) e `registered_height`. Il nodo serve il namespace `qor` solo dove l'elenco `api` di `[json-rpc]` in `app.toml` include `qor`.
 
-Osservato il 7 novembre 2026:
+Osservato il 7 novembre 2026 (prima della v3.2.9):
 
 | Rete | `rpc_modules` | `qor_getKEMKey` |
 | --- | --- | --- |
 | Testnet (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | risponde (`found: false` per un indirizzo senza chiave pubblicata) |
 | Mainnet (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (l'endpoint mainnet pubblico non elenca `qor`) |
 
-Sulla testnet ogni altro metodo `qor_` verificato (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) ha comunque restituito `-32601`.
+In quella data la testnet ha restituito `-32601` per ogni altro metodo `qor_` verificato (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`); dalla v3.2.9 rispondono sulla testnet, come indica la nota all'inizio di questa pagina.
 
 Puoi verificare da solo l'elenco dei namespace:
 
@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 
 ---
 
-## Metodi previsti e cosa usare oggi
+## Gli altri metodi e cosa usare sulla mainnet
 
 | Metodo previsto               | Cosa usare oggi |
 | ----------------------------- | ----------------- |

@@ -14,7 +14,7 @@ The abstract-account module is **switched off on the `qorechain-vladi` mainnet**
 :::
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.8** (applied at height 4,273,000 on 18 November 2026, governance proposal 17; v3.2.7 was applied at height 4,164,600 on 12 November 2026, proposal 16; v3.2.6 was applied at height 4,020,000 on 4 November 2026, proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026, proposal 14, and v3.2.4 at height 3,742,566 on 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026).
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.8** (applied at height 4,273,000 on 18 November 2026, governance proposal 17; v3.2.7 was applied at height 4,164,600 on 12 November 2026, proposal 16; v3.2.6 was applied at height 4,020,000 on 4 November 2026, proposal 15; v3.2.5 was applied at height 3,906,833 on 29 October 2026, proposal 14, and v3.2.4 at height 3,742,566 on 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.9 (since 20 November 2026; v3.2.8 from 12 November, v3.2.4 since 19 October 2026).
 :::
 
 :::caution Every Cosmos-lane transaction needs the hybrid post-quantum cosign
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Linking a key in v3.2.8: worked example {#link-example-v328}
 
-This section walks through one complete link on the **`qorechain-diana` testnet**, which runs v3.2.8 since 12 November 2026. The mainnet runs v3.2.8 too (since 18 November 2026), but its abstract-account module was switched off when last checked (27 October 2026), so none of this applied there at that check. In short: the key you link has to sign a short text to show it agrees to be linked, a key that can move value needs a spending rule on the account, and when a linked key later spends, a failed spend is reported inside a successful transaction.
+This section walks through one complete link on the **`qorechain-diana` testnet**, which runs v3.2.9 since 20 November 2026, after v3.2.8 from 12 November. The mainnet runs v3.2.8 too (since 18 November 2026), but its abstract-account module was switched off when last checked (27 October 2026), so none of this applied there at that check. In short: the key you link has to sign a short text to show it agrees to be linked, a key that can move value needs a spending rule on the account, and when a linked key later spends, a failed spend is reported inside a successful transaction.
 
 Why it matters: from v3.2.8 the holder of the key takes part in the link, so a key can only be linked by someone who actually holds it, and a key that can move value is always bounded by a limit on the account.
 
@@ -458,7 +458,7 @@ A client that checks only `code === 0` reports such a call as a success. Check f
 
 On the testnet on 12 November 2026 (release v3.2.8, SDK 0.13.0, hybrid signing): `MsgUpdateSpendingRules` with one rule (daily limit 1,000,000 uqor, per-transaction limit 100,000 uqor, `uqor` only) succeeded with code 0 and 186,319 gas used. A `MsgRegisterAuthenticator` for the `evm` permission sent before the rule existed was refused with code 8, and sent after the rule but without a possession proof it was refused with code 10, with the messages in the errors table. SDK 0.13.0 has no possession-proof field in its register composers, so the successful link was run afterwards with newer packages, as described next.
 
-**Run by the docs author on the testnet on 12 November 2026, with SDK 0.14.0 and wallet-adapter 0.6.0 (all code 0):**
+**Run for this page on the testnet on 12 November 2026, with SDK 0.14.0 and wallet-adapter 0.6.0 (all code 0):**
 
 * `linkAuthenticatorMsgs` built the spending rule (`MsgUpdateSpendingRules`) and `MsgRegisterAuthenticator` for an Ethereum address, with the possession proof from `metaMaskPossessionProof` (signed here by a throwaway key through a provider that answers `personal_sign`). Both messages went in ONE owner-signed transaction: 220,973 gas used under a limit of 600,000.
 * `GET /qorechain/abstractaccount/v1/accounts/{address}` then showed `authenticators_count` 1, and `GET .../authenticators` listed the key: scheme `secp256k1`, `pubkey_hex` the 20-byte address, permissions `evm`, `revoked` false.

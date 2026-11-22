@@ -12,7 +12,7 @@ Un appel inter-VM permet à du code exécuté sur une machine virtuelle de lance
 Cette page est la référence des champs, des coûts et des limites pour la version v3.2.8, avec un exemple détaillé pour chaque direction. Les concepts, le cycle de vie et le comportement des versions antérieures se trouvent dans [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) ; le pas-à-pas côté SDK se trouve dans le [guide inter-VM](/sdk/guides/cross-vm).
 
 :::note Où la v3.2.8 est en service
-Les deux réseaux exécutent la **v3.2.8** : le testnet **`qorechain-diana`** depuis le 12 novembre 2026 et le mainnet **`qorechain-vladi`** depuis le 18 novembre 2026 (proposition de gouvernance 17, hauteur 4,273,000). Sur le mainnet, `MsgCrossVMCall` est suspendu pour l'instant : l'appel ne peut pas y être envoyé. Les exemples et les vérifications ci-dessous ont été exécutés sur le testnet.
+Le mainnet **`qorechain-vladi`** exécute la **v3.2.8** depuis le 18 novembre 2026 (proposition de gouvernance 17, hauteur 4,273,000) ; le testnet **`qorechain-diana`** a exécuté la v3.2.8 à partir du 12 novembre 2026 et exécute la v3.2.9 depuis le 20 novembre 2026, qui ajoute des règles cross-VM pour le SVM (voir [v3.2.9](/appendix/version-history#v329)). Sur le mainnet, `MsgCrossVMCall` est suspendu pour l'instant : l'appel ne peut pas y être envoyé. Les exemples et les vérifications ci-dessous ont été exécutés sur le testnet.
 :::
 
 :::caution Le message d'appel est-il disponible en ce moment ?
@@ -139,7 +139,7 @@ Réponse `200` le 12 novembre 2026 avec ces champs :
 | `max_message_size` | `65536` | Plus grand payload, en octets. |
 | `max_queue_size` | `1000` | Nombre maximal d'appels en file à la fois. |
 | `queue_timeout_blocks` | `100` | Nombre de blocs avant qu'un appel non exécuté n'expire. |
-| `bridge_allowed_targets` | trois entrées `cosmwasm:qor1...` | Les contrats QoreChain Native que le pont `0x0901` peut appeler. Vide, il garde le pont fermé. |
+| `bridge_allowed_targets` | quatre entrées `cosmwasm:qor1...` sur le testnet (22 novembre 2026), vide sur le mainnet | Les contrats QoreChain Native que le pont `0x0901` peut appeler. Vide, il garde le pont fermé. |
 | `bridge_target_pins` | une entrée par cible : `target`, `code_id`, `history_len` | Le code que chaque cible autorisée doit toujours exécuter pour que le pont l'appelle. |
 | `max_pending_per_sender` | `100` | Appels en file qu'un expéditeur peut détenir. |
 | `max_cosmos_tx_gas` | `"50000000"` | Gas maximal qu'une transaction Native peut déclarer. |
@@ -158,11 +158,11 @@ Utilisez `wasm_congestion_factor_micro` pour voir ce qu'un appel en file prépai
 
 ## Exemples par direction {#examples}
 
-Tous les exemples signent avec la clé post-quantique du compte, comme toute transaction Native ; voir [Signature post-quantique](/developer-guide/post-quantum-signing). Seuls les exemples de compte natif vers QoreChain Native ont été envoyés pour cette page (voir [Testé sur le testnet](#tested)) ; les exemples EVM n'ont pas été exécutés et sont marqués UNTESTED là où ils apparaissent.
+Tous les exemples signent avec la clé post-quantique du compte, comme toute transaction Native ; voir [Signature post-quantique](/developer-guide/post-quantum-signing). Seuls les exemples de compte natif vers QoreChain Native ont été envoyés pour cette page (voir [Testé sur le testnet](#tested)) ; les exemples EVM n'ont pas été exécutés et sont marqués « pas encore testé sur le réseau réel » là où ils apparaissent.
 
 ### Compte natif vers contrat EVM {#native-to-evm}
 
-**UNTESTED :** cette direction n'a pas été exécutée pour cette page.
+**Pas encore testé sur le réseau réel :** cette direction n'a pas été exécutée pour cette page.
 
 La cible est un contrat EVM ; le payload est une donnée d'appel encodée en ABI. L'appel s'exécute sous votre propre adresse `0x`, de sorte que le côté EVM vous voit comme `msg.sender`. En ligne de commande (CLI de nœud Linux), construisez la transaction puis ajoutez la signature post-quantique :
 
@@ -289,7 +289,7 @@ Le SDK 0.13.0 n'a pas d'option pour `async_gas_limit` ni `async_max_factor` : se
 
 ### Contrat EVM vers contrat QoreChain Native via 0x0901 {#evm-to-wasm}
 
-**UNTESTED :** cette direction n'a pas été exécutée pour cette page.
+**Pas encore testé sur le réseau réel :** cette direction n'a pas été exécutée pour cette page.
 
 Un contrat Solidity appelle le précompilé de pont à `0x0000000000000000000000000000000000000901`. L'appel s'exécute dans la transaction EVM, avec le compte ou le contrat appelant (sous son adresse `qor1`) comme expéditeur QoreChain Native, et un revert à n'importe quel endroit annule les deux côtés.
 
@@ -334,7 +334,7 @@ L'assistant `@qorechain/rdk` `encodeCrossVmCalldata({ contract, msg })` construi
 
 ### Contrat QoreChain Native vers contrat EVM {#wasm-to-evm}
 
-**UNTESTED** par l'auteur de la documentation. L'équipe de la chaîne indique que les deux modes ont été exécutés sur le testnet avant la v3.2.8.
+**Pas encore testé sur le réseau réel depuis cette page.** Les deux modes ont été exécutés sur le testnet avant la v3.2.8.
 
 Un contrat QoreChain Native effectue l'appel en envoyant un `MsgCrossVMCall` comme message de chaîne, avec lui-même comme expéditeur. Le message a les mêmes champs que plus haut ; la chaîne traite le contrat comme un appelant CosmWasm quelle que soit la valeur de `source_vm`. Avec `async` à false (la valeur par défaut), l'appel est synchrone : il s'exécute avec le gas de la transaction, la réponse se trouve dans `MsgCrossVMCallResponse.data`, et un échec annule la transaction entière. Avec `async` à true, il est mis en file. Voir [Qui appelle qui](#who-calls-whom). L'exemple ci-dessous met l'appel en file :
 
@@ -394,7 +394,7 @@ La conversion d'un jeton ERC-20 sous un octroi authz (`MsgConvertERC20`) est adm
 | Appel à `0x0901` sans fenêtre qui le liste | Refusé |
 | Cible `0x0901` absente de `bridge_allowed_targets`, ou code modifié depuis son épinglage | Revert : `cross-VM bridge call refused: target ... is not allowlisted` pour une cible non listée |
 | `MsgCrossVMCall` dans la liste du coupe-circuit | Transaction refusée ; les appels en file restent en attente |
-| Un appel vers le SVM | La lane est ouverte sur le testnet depuis la proposition 37 et désactivée sur le mainnet ; aucun appel vers le SVM n'a été exécuté pour cette page (UNTESTED) |
+| Un appel vers le SVM | La lane est ouverte sur le testnet depuis la proposition 37 et désactivée sur le mainnet ; aucun appel vers le SVM n'a été exécuté pour cette page (pas encore testé sur le réseau réel) |
 
 Une erreur enregistrée sur un appel en file échoué contient du texte brut, sans annotation de fichier source.
 
@@ -422,7 +422,7 @@ Exécuté sur `qorechain-diana` le 12 novembre 2026 (version v3.2.8) après l'ad
 | `GET /qorechain/crossvm/v1/pending` ensuite | Liste vide |
 | `async_max_factor` à `6` | Refusé avant toute exécution : codespace `crossvm` code 2, `async_max_factor 6 is outside 1000000..100000000 (millionths): invalid cross-VM message` |
 
-Non exécutés pour cette page (UNTESTED) : EVM vers QoreChain Native via `0x0901`, et QoreChain Native vers EVM. L'équipe de la chaîne indique que les chemins synchrone et asynchrone de QoreChain Native vers l'EVM ont été exécutés sur le testnet aux hauteurs 9 795 779 et 9 795 783, avant la v3.2.8.
+Non exécutés pour cette page (pas encore testé sur le réseau réel) : EVM vers QoreChain Native via `0x0901`, et QoreChain Native vers EVM. Les chemins synchrone et asynchrone de QoreChain Native vers l'EVM ont été exécutés sur le testnet aux hauteurs 9 795 779 et 9 795 783, avant la v3.2.8.
 
 ## Pages liées {#related}
 

@@ -210,8 +210,8 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 
 EVM JSON-RPC 엔드포인트를 통해 제공되는 타입 지정 `qor_*` JSON-RPC
 네임스페이스(`client.qor`)로 토크노믹스 상태를 읽습니다. 세 개의 읽기는 서로
-독립적이므로, 다른 호출이 불가능하더라도 각각 개별적으로 보고됩니다. 아직
-어떤 릴리스 노드 빌드도 `qor_` 네임스페이스를 제공하지 않으므로, 현재는 각
+독립적이므로, 다른 호출이 불가능하더라도 각각 개별적으로 보고됩니다.
+메인넷 엔드포인트는 `qor_` 네임스페이스를 제공하지 않으므로(테스트넷은 v3.2.9부터 제공), 메인넷에서는 각
 읽기가 `-32601`로 실패합니다([`qor_` 네임스페이스](/api-reference/json-rpc-qor_-namespace) 참조).
 
 ```ts

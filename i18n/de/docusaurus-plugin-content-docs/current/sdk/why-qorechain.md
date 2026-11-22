@@ -97,7 +97,7 @@ Bridge-Modul (`crossvm`, plus der Precompile `CrossVMBridge`, sobald er aktiv is
 sodass eine einzige SDK-Schnittstelle alle drei ansprechen kann. Single-VM-Chains
 haben nichts Vergleichbares, das sich kapseln ließe. Heute wird die Reichweite eines
 Aufrufs durch die Lane begrenzt, die er anspricht: `MsgCrossVMCall` ist auf Mainnet
-abgeschaltet, SVM-Transaktionen sind deaktiviert, und QoreChain Native-Upload und
+abgeschaltet, die SVM-Lane ist aus, und QoreChain Native-Upload und
 -Instanziierung sind erlaubnispflichtig (die Instanziierung ist im Testnet offen). Siehe
 [Cross-VM-Aufrufe](/sdk/guides/cross-vm).
 

@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain admite múltiples tipos de billeteras en sus entornos de ejecución nativo, EVM y SVM. Elige la billetera que se ajuste a tu caso de uso.
 
 :::note
-Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026, versión v3.2.8 desde el 18 de noviembre de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**, versión v3.2.8 desde el 12 de noviembre de 2026). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
+Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026, versión v3.2.8 desde el 18 de noviembre de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**, versión v3.2.9 desde el 20 de noviembre de 2026, después de v3.2.8 desde el 12 de noviembre). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recomendada) {#qorex}
@@ -110,7 +110,7 @@ Las funciones de cuenta inteligente y de billetera vinculada están implementada
 :::
 
 :::note Carril compatible con Solana en la testnet
-El carril compatible con Solana está cerrado en la testnet hasta que una votación de gobernanza lo reabra (versión v3.2.8, testnet desde el 12 de noviembre de 2026). Las transacciones al estilo Solana no están disponibles allí hasta entonces.
+El carril compatible con Solana está abierto en la testnet desde la propuesta de gobernanza 37 (12 de noviembre de 2026). El soporte de carteras para transacciones al estilo Solana todavía no está disponible. Consulta [SVM en la testnet](/developer-guide/svm-testnet-v329) para enviarlas desde la línea de comandos.
 :::
 
 Diseñado para que no tengas que exponer tu clave raíz al gastar desde una cuenta de QoreChain en una dApp (introducido en la versión de cadena **v3.1.85**): una clave de **Phantom** (ed25519) o de **MetaMask** (por su dirección de Ethereum, mediante `personal_sign`) puede **registrarse como autenticador** en tu cuenta — con permisos delimitados, límites de gasto, una fecha de expiración y revocación instantánea — y luego autorizar transferencias retransmitidas por el backend de la dApp. Consulta [Autenticadores de billeteras vinculadas](/developer-guide/account-abstraction#authenticators) para el modelo completo y el código, y la [guía de Autenticadores del SDK](/sdk/guides/authenticators) para ejemplos de principio a fin.

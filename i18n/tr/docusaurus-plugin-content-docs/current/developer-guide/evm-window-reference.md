@@ -10,7 +10,7 @@ sidebar_position: 7
 Bir Ethereum işlemi yalnızca bir secp256k1 imzası taşır, başka hiçbir şey taşımaz; bu yüzden QoreChain'in diğer tüm işlemlerden istediği kuantum sonrası (ML-DSA-87) imzayı taşıyamaz. **EVM yetkilendirme penceresi** bu boşluğu kapatır. Hesap önce kuantum sonrası anahtarıyla imzalanmış **olan** bir QoreChain Native mesajıyla sınırlı bir pencere açar; EVM hattı da hesabın sıradan MetaMask, ethers.js, Hardhat veya Foundry işlemlerini yalnızca pencere onları kapsadığı sürece kabul eder. Bu sayfa, bir pencerenin **v3.2.8** sürümünde nasıl davrandığının eksiksiz başvurusudur.
 
 :::note v3.2.8 nerede çalışır
-Her iki ağ da **v3.2.8** çalıştırır: **`qorechain-diana`** test ağı 12 Kasım 2026'dan beri, **`qorechain-vladi`** ana ağı 18 Kasım 2026'dan beri (yönetişim önerisi 17, yükseklik 4.273.000). Aşağıda "v3.2.8" olarak işaretlenen seçenekler ve kurallar her ikisinde de geçerlidir. v3.2.8'in altındaki bir düğüm, yeni listeleri ayarlayan bir pencere mesajını reddeder. Bu sayfadaki denetimler ve test çalıştırmaları test ağında yapıldı.
+**`qorechain-vladi`** ana ağı 18 Kasım 2026'dan beri **v3.2.8** çalıştırır (yönetişim önerisi 17, yükseklik 4.273.000); **`qorechain-diana`** test ağı v3.2.8'i 12 Kasım 2026'dan beri çalıştırdı ve 20 Kasım 2026'dan beri v3.2.9 çalıştırır. Aşağıda "v3.2.8" olarak işaretlenen seçenekler ve kurallar her ikisinde de geçerlidir; "v3.2.9" olarak işaretlenen sorgu listeleri yalnızca test ağındadır. v3.2.8'in altındaki bir düğüm, yeni listeleri ayarlayan bir pencere mesajını reddeder. Bu sayfadaki denetimler ve test çalıştırmaları test ağında yapıldı.
 :::
 
 ## Neden önemli {#why}
@@ -84,6 +84,24 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 Penceresi olmayan bir hesap, `found: false` ile HTTP 200 yanıtı verir; bu yüzden rotayı yoklamak güvenlidir. Her sayı bir JSON dizesidir. Saklanmış bir pencere süresi dolmuş veya tükenmiş olabilir: `live`, pencerenin geçerli yükseklikte hâlâ en az bir sıfır değerli işlem daha kabul edip etmeyeceğini söyler.
 
+### Sorgudaki üç kapsam listesi (test ağı, v3.2.9) {#window-query-lists}
+
+v3.2.9'dan itibaren pencere sorgusu, yalnızca `allowed_targets` değil, pencerenin açıldığı kapsamın tamamını döndürür. Yanıtta üç alan daha vardır; hepsi dize listesidir:
+
+| Alan | gRPC yanıtındaki numara | İçerik |
+| ----- | --------------------------- | ----- |
+| `validators` | 14 | İmza denetimi hesap için sayılan sözleşme adresleri (`0x...`) |
+| `staking_validators` | 15 | Pencerenin delege etmeye veya yeniden delege etmeye izin verdiği `qorvaloper1...` doğrulayıcıları |
+| `ibc_receivers` | 16 | Yerel QOR IBC transferinin gidebileceği `<channel>/<receiver>` hedefleri |
+
+Boş bir liste, pencerenin o listeden hiçbiri olmadan açıldığı anlamına gelir; bu da o türden eylemi reddeder. Böylece bir pencerenin neye izin verdiğini, onu açarken kullandığınız değerleri saklamadan geri okuyabilirsiniz. Bu yalnızca test ağında çalışır: ana ağ v3.2.8 çalıştırır ve pencere sorgusu bu üç alanı döndürmez. 22 Kasım 2026'da test ağı REST'ine karşı kontrol edildi: penceresi olmayan bir adres `found: false` ile yanıt verdi; `allowed_targets`, `validators`, `staking_validators` ve `ibc_receivers` hepsi boş liste olarak mevcuttu. Boş olmayan listelere sahip bir pencere bu sayfa için geri okunmadı.
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
+```
+
+Yanıtta üç alan adını görmelisiniz. Eksiklerse eriştiğiniz düğüm v3.2.9'dan eskidir (örneğin ana ağ uç noktası).
+
 ### TypeScript {#typescript}
 
 Pencere yardımcıları `@qorechain/sdk` içindedir (imzalama kurulumu için [SDK EVM kılavuzuna](/sdk/guides/evm#evm-window-scope) bakın). `openEvmWindowMsg` aşağıdaki her alanı alır, `closeEvmWindowMsg` kapatma mesajını oluşturur, `fetchEvmWindow` pencereyi okur ve `classifyEvmWindowRejection` bir reddi açıklar.
@@ -131,7 +149,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg`, herhangi bir şey imzalanmadan önce sınırları ve liste biçimlerini denetler; bu yüzden bir hata, reddedilmiş bir işleme mal olmak yerine yerelde başarısız olur. `MAX_EVM_WINDOW_BLOCKS` ve `MAX_EVM_WINDOW_TXS` sınırları dışa aktarır. Geri okuma (`fetchEvmWindow`) sınırları, sayaçları ve v3.2.3 kapsamını (`nativeOnly`, `allowedTargets`) döndürür; `validators` (sözleşme adresleri), `stakingValidators` (`qorvaloper1...`) ve `ibcReceivers` (`"<channel>/<receiver>"`) v3.2.8 listelerini taşıyan SDK 0.14.0'dan itibaren oluşturucu tarafından kabul edilir; geri okuma bunları döndürmez, v3.2.8'deki REST pencere rotası da döndürmez, bu yüzden pencereyi açtığınız değerleri saklayın. Üç listeyi yalnızca v3.2.8 çalıştıran bir ağ için ayarlayın: bunun altındaki bir düğüm, onları ayarlayan bir pencere mesajını reddeder. Hibrit imzalı bir `connectTx` ile kuantum sonrası anahtar önceden kayıtlı olmalıdır.
+`openEvmWindowMsg`, herhangi bir şey imzalanmadan önce sınırları ve liste biçimlerini denetler; bu yüzden bir hata, reddedilmiş bir işleme mal olmak yerine yerelde başarısız olur. `MAX_EVM_WINDOW_BLOCKS` ve `MAX_EVM_WINDOW_TXS` sınırları dışa aktarır. Geri okuma (`fetchEvmWindow`) sınırları, sayaçları ve v3.2.3 kapsamını (`nativeOnly`, `allowedTargets`) döndürür; `validators` (sözleşme adresleri), `stakingValidators` (`qorvaloper1...`) ve `ibcReceivers` (`"<channel>/<receiver>"`) v3.2.8 listelerini taşıyan SDK 0.14.0'dan itibaren oluşturucu tarafından kabul edilir; geri okuma bunları döndürmez, v3.2.8'deki REST pencere rotası da döndürmez (test ağı bunları v3.2.9'dan itibaren döndürür, bkz. [sorgudaki üç kapsam listesi](#window-query-lists)), bu yüzden bir v3.2.8 ağını okurken pencereyi açtığınız değerleri saklayın. Üç listeyi yalnızca v3.2.8 çalıştıran bir ağ için ayarlayın: bunun altındaki bir düğüm, onları ayarlayan bir pencere mesajını reddeder. Hibrit imzalı bir `connectTx` ile kuantum sonrası anahtar önceden kayıtlı olmalıdır.
 
 ### Test ağında denendi {#tested}
 
@@ -144,7 +162,7 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | `nativeOnly: true` ile yeniden açma | kod 0, 187,803 gaz kullanıldı. Yeni pencere eskisinin yerini aldı: `native_only: true`, yeni bir `opened_height` |
 | Kapatma | kod 0, 170,468 gaz kullanıldı. Geri okuma: `found: false` |
 
-Aynı gün SDK 0.14.0 ile, `allowedTargets` (izin verilen bir hedef adresi), `stakingValidators` (bir doğrulayıcı operatör adresi) ve `ibcReceivers` (bir `channel-0/...` çifti) ile açılan bir pencere kod 0 ve 195,233 gaz kullanımıyla başarılı oldu. REST geri okuması `allowed_targets` değerini listeledi ve `found: true`, `live: true` döndürdü; `validators`, `staking_validators` veya `ibc_receivers` listelerini döndürmez, bu yüzden pencereyi açtığınız değerleri saklayın.
+Aynı gün SDK 0.14.0 ile, `allowedTargets` (izin verilen bir hedef adresi), `stakingValidators` (bir doğrulayıcı operatör adresi) ve `ibcReceivers` (bir `channel-0/...` çifti) ile açılan bir pencere kod 0 ve 195,233 gaz kullanımıyla başarılı oldu. REST geri okuması `allowed_targets` değerini listeledi ve `found: true`, `live: true` döndürdü; v3.2.8'de `validators`, `staking_validators` veya `ibc_receivers` listelerini döndürmedi (test ağında v3.2.9'dan itibaren döndürür, bkz. [sorgudaki üç kapsam listesi](#window-query-lists)), bu yüzden bir v3.2.8 ağında pencereyi açtığınız değerleri saklayın.
 
 `fetchEvmWindow` aynı alanları camel case biçiminde döndürdü (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). Açma ve kapatma hibrit imzalı Cosmos işlemleridir; bu yüzden bir hesabın gönderdiği ilk işlem için önce anahtarının kaydedilmesi gerekir.
 

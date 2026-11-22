@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain include un ambiente di esecuzione **Solana Virtual Machine (SVM)**, che consente agli sviluppatori di distribuire ed eseguire programmi SBF/BPF utilizzando gli strumenti Solana con cui hanno già familiarità. Il modulo SVM espone un'interfaccia JSON-RPC compatibile con Solana sulla **porta 8899**, che `qorechaind start` avvia automaticamente (vedi [JSON-RPC Server](#json-rpc-server) qui sotto).
 
 :::note
-I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.8** dal 18 novembre 2026 (proposta di governance 17, altezza 4.273.000; la v3.2.7 dal 12 novembre 2026; la v3.2.6 dal 4 novembre 2026; la v3.2.5 dal 29 ottobre 2026, la v3.2.4 dal 23 ottobre 2026). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.8 (dal 12 novembre 2026; la v3.2.4 dal 19 ottobre 2026). **Le transazioni SVM sono disabilitate su entrambe le reti** (vedi il riquadro successivo), quindi i comandi `tx svm` di questa pagina hanno valore di sola consultazione: oggi non possono andare a buon fine.
+I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.8** dal 18 novembre 2026 (proposta di governance 17, altezza 4.273.000; la v3.2.7 dal 12 novembre 2026; la v3.2.6 dal 4 novembre 2026; la v3.2.5 dal 29 ottobre 2026, la v3.2.4 dal 23 ottobre 2026). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.9 (dal 20 novembre 2026; la v3.2.8 dal 12 novembre, la v3.2.4 dal 19 ottobre 2026). **Le transazioni SVM sono aperte sulla testnet** (proposta di governance 37) e **spente sulla mainnet**, quindi i comandi `tx svm` di questa pagina possono andare a buon fine solo sulla testnet; per il percorso completo sulla testnet vedi [SVM sulla Testnet (v3.2.9)](/developer-guide/svm-testnet-v329).
 :::
 
 ---
 
-:::caution L'invio di transazioni SVM è attualmente disabilitato
-A partire dalla versione della chain v3.1.89 (22 agosto), in seguito a un incidente, la lane di esecuzione SVM è **disabilitata a livello di rete per l'invio di transazioni** sia su `qorechain-vladi` sia su `qorechain-diana` — qualsiasi transazione inviata a `x/svm` (distribuzione di programmi, esecuzione di istruzioni, creazione di account, trasferimenti) restituisce `code 11, "SVM module is disabled"`. Questo vale sia per il tuo nodo personale sia per gli endpoint pubblici. I metodi RPC di sola lettura possono ancora rispondere, ma non costruire né provare un'integrazione SVM live finché la lane non viene riaperta. Sulla mainnet la lane SVM è disattivata nella release attuale e per attivarla sulla mainnet serve una release futura; si prevede che rimarrà disattivata finché un audit esterno non la autorizzi.
+:::note Stato della lane SVM (verificato il 22 novembre 2026)
+Sulla testnet **`qorechain-diana`** la lane SVM è **aperta** dalla proposta di governance 37 (12 novembre 2026), e la release v3.2.9 aggiunge le transazioni wire Solana e le finestre SVM: vedi [SVM sulla Testnet](/developer-guide/svm-testnet-v329). Sulla mainnet **`qorechain-vladi`** la lane è **spenta**: qualsiasi transazione `x/svm` lì restituisce `code 11, "SVM module is disabled"`. Leggi `GET /qorechain/svm/v1/params` e controlla `enabled` prima di sviluppare.
 :::
 
 ## Panoramica
@@ -47,7 +47,7 @@ A partire dalla versione della chain **v3.1.82**, l'interfaccia SVM è un'**inte
 
 **Release v3.2.8 (testnet dal 12 novembre 2026, mainnet dal 18 novembre 2026).** L'upgrade chiude la lane SVM su `qorechain-diana`: le scritture SVM falliscono, `MsgRegisterSVMPQCKey` viene rifiutato e il JSON-RPC SVM rifiuta i metodi di scrittura sugli id di chain pubblici, finché un voto di governance non la riapre (la testnet ha un interruttore governato). Sulla mainnet la lane resta spenta (letto il 19 novembre 2026: `enabled` `false`). I client dovrebbero leggere lo stato della lane dai parametri del modulo SVM (`enabled`) prima di proporre azioni SVM.
 
-Gli endpoint pubblici (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sono **di sola lettura** — l'invio di transazioni è disabilitato a livello di edge. Normalmente dovresti eseguire il tuo nodo (porta 8899) per inviare transazioni SVM, ma vedi l'avviso sopra: la lane di transazione `x/svm` stessa è attualmente disabilitata a livello di rete, incluso sul tuo stesso nodo.
+Gli endpoint pubblici (`https://svm.qore.host`, `https://svm-testnet.qore.host`) servono le letture. Il 22 novembre 2026 il gateway pubblico della testnet non faceva da relay a `sendTransaction` (rispondeva che non è impostata alcuna chiave relayer), quindi per inviare transazioni SVM sulla testnet invii tu stesso la transazione di trasporto oppure esegui il tuo nodo (porta 8899). Vedi [SVM sulla Testnet](/developer-guide/svm-testnet-v329#relay). Sulla mainnet la lane è spenta.
 
 ---
 
@@ -246,7 +246,7 @@ I programmi che superano il compute budget vengono interrotti e la transazione v
 
 ## Interoperabilità Cross-VM
 
-I programmi SVM sono progettati per comunicare con i contratti EVM e QoreChain Native tramite il messaggio `MsgCrossVMCall` del modulo `x/crossvm` (la chain determina da sola la lane di origine). Poiché la lane SVM è disabilitata per le transazioni e `MsgCrossVMCall` è disattivato sulla mainnet, oggi non esiste alcun percorso cross-VM SVM funzionante. Vedi [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per lo stato attuale, il ciclo di vita dei messaggi e il comportamento in caso di timeout.
+I programmi SVM sono progettati per comunicare con i contratti EVM e QoreChain Native tramite il messaggio `MsgCrossVMCall` del modulo `x/crossvm` (la chain determina da sola la lane di origine). Le chiamate cross-VM sono in pausa sulla mainnet e lì la lane SVM è spenta, quindi sulla mainnet non esiste alcun percorso cross-VM SVM. Sulla testnet la lane SVM è aperta e le regole della v3.2.9 sono in [SVM sulla Testnet](/developer-guide/svm-testnet-v329). Vedi [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per lo stato attuale, il ciclo di vita dei messaggi e il comportamento in caso di timeout.
 
 ---
 

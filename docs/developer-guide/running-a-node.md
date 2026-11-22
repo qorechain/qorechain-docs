@@ -27,7 +27,7 @@ The manifest's fields include `binary` (url + sha256), `genesis` (url + sha256 +
 :::
 
 :::caution Use the release the manifest names: v3.2.8 on mainnet and on the testnet
-A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (see [Upgrades](#upgrades) below), so always install the binary the manifest points to: it carries every upgrade handler. On **mainnet** the manifest's `version` is `3.2.8` and its `minCompatible` is `3.2.7` (v3.2.8 was applied at height 4,273,000 on 18 November 2026, governance proposal 17, after v3.2.7 at height 4,164,600 on 12 November 2026), so a node joining now needs v3.2.8: an older binary stops at an upgrade height it does not know. The release is the bundle `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107,091,599 bytes, SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`, read from the manifest on 19 November 2026; the live manifest is the source of truth). The manifest advises that new nodes join through state sync. It contains `qorechaind` and `lib/` with `libqorepqc.so`, `libqoresvm.so` and `libwasmvm.x86_64.so`. A node still on v3.2.7 halted at height 4,273,000 with `UPGRADE "v3.2.8" NEEDED`: install the bundle and restart, and its state is kept. No further mainnet upgrade is scheduled (`current_plan` is `null`, checked 19 November 2026); when the manifest names a newer release, that is the binary to install. On the **testnet** the manifest's `minCompatible` and `version` are both `3.2.8` (v3.2.5 was applied at height 8,890,800 on 26 October 2026, v3.2.6 at height 8,970,638 on 27 October, v3.2.7 at height 9,594,600 on 6 November and v3.2.8 at height 9,929,500 on 12 November), so a node joining the testnet needs the v3.2.8 binary: take the bundle name, size and SHA-256 from the live testnet manifest, which is the source of truth (on 7 November 2026, on v3.2.7, it named `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`, 99,472,930 bytes, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`). A testnet node still on v3.2.7 stops at height 9,929,500 with `UPGRADE "v3.2.8" NEEDED`: replace `qorechaind` and copy the whole `lib/` folder of the bundle, then start it again; its state is kept and it does not need to resync. Both networks run v3.2.8, so the v3.2.8 notes apply to mainnet nodes too. Do not run a testnet binary against mainnet or the reverse: each directory carries its own release (see [Upgrades](#upgrades)). The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`.
+A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (see [Upgrades](#upgrades) below), so always install the binary the manifest points to: it carries every upgrade handler. On **mainnet** the manifest's `version` is `3.2.8` and its `minCompatible` is `3.2.7` (v3.2.8 was applied at height 4,273,000 on 18 November 2026, governance proposal 17, after v3.2.7 at height 4,164,600 on 12 November 2026), so a node joining now needs v3.2.8: an older binary stops at an upgrade height it does not know. The release is the bundle `qorechaind-v3.2.8-b3-linux-amd64.tar.gz` (107,091,599 bytes, SHA-256 `ead3f3e869d1fe52229b683d3d7c206fca7e56d6f984a2b721f3fb21cb0b9954`, read from the manifest on 19 November 2026; the live manifest is the source of truth). The manifest advises that new nodes join through state sync. It contains `qorechaind` and `lib/` with `libqorepqc.so`, `libqoresvm.so` and `libwasmvm.x86_64.so`. A node still on v3.2.7 halted at height 4,273,000 with `UPGRADE "v3.2.8" NEEDED`: install the bundle and restart, and its state is kept. No further mainnet upgrade is scheduled (`current_plan` is `null`, checked 19 November 2026); when the manifest names a newer release, that is the binary to install. On the **testnet** the manifest's `minCompatible` and `version` are both `3.2.8` (v3.2.5 was applied at height 8,890,800 on 26 October 2026, v3.2.6 at height 8,970,638 on 27 October, v3.2.7 at height 9,594,600 on 6 November and v3.2.8 at height 9,929,500 on 12 November), so a node joining the testnet needs at least the v3.2.8 binary and then the v3.2.9 upgrade (applied at height 10,424,000 on 20 November 2026 by governance proposal 39; the manifest still read 3.2.8 when checked on 22 November 2026, so take the v3.2.9 bundle named in the plan `info` of `GET /cosmos/gov/v1/proposals/39` on `https://api-testnet.qore.host` and copy its whole `lib/` folder): take the bundle name, size and SHA-256 from the live testnet manifest, which is the source of truth (on 7 November 2026, on v3.2.7, it named `qorechaind-v3.2.7-b3-linux-amd64.tar.gz`, 99,472,930 bytes, SHA-256 `d4b2f166a75900d2354759b067b3e21c6fbd96003ac056163791cf4b7fb242b5`). A testnet node still on v3.2.7 stops at height 9,929,500 with `UPGRADE "v3.2.8" NEEDED`: replace `qorechaind` and copy the whole `lib/` folder of the bundle, then start it again; its state is kept and it does not need to resync. Both networks run v3.2.8, so the v3.2.8 notes apply to mainnet nodes too. Do not run a testnet binary against mainnet or the reverse: each directory carries its own release (see [Upgrades](#upgrades)). The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`.
 
 A binary built from the public source (the community build) refuses to start on either public network (v3.2.3 and later): it cannot verify post-quantum signatures and cannot replay the networks' blocks faithfully. Use the release archive only.
 
@@ -53,7 +53,7 @@ Two settings matter from v3.2.1 on: keep the system clock synchronised with NTP 
 | Network  | Chain ID            | EVM chain ID         | Notes                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
 | Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primary — live since 7 Jun 2026; node release v3.2.8 (since 18 Nov 2026) |
-| Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first; node release v3.2.8 (since 12 Nov 2026) |
+| Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first; node release v3.2.9 (since 20 Nov 2026; v3.2.8 from 12 Nov) |
 
 Substitute the appropriate `--chain-id` for your target network throughout this guide. The examples default to mainnet.
 
@@ -114,7 +114,7 @@ services:
       - "9090:9090"     # gRPC
       - "8545:8545"     # EVM JSON-RPC
       - "8546:8546"     # EVM WebSocket
-      - "8899:8899"     # SVM RPC (read-only: SVM transactions are disabled)
+      - "8899:8899"     # SVM RPC (reads; writes need a relayer key)
       - "26660:26660"   # Prometheus
 
 volumes:
@@ -290,6 +290,7 @@ Consensus changes arrive as **coordinated governance upgrades**: a passed propos
 | v3.2.6 | height 4,020,000 (4 Nov 2026, governance proposal 15) | height 8,970,638 (27 Oct 2026) |
 | v3.2.7 | height 4,164,600 (12 Nov 2026, governance proposal 16) | height 9,594,600 (6 Nov 2026, governance proposal 33) |
 | v3.2.8 | height 4,273,000 (18 Nov 2026, governance proposal 17) | height 9,929,500 (12 Nov 2026, governance proposal 36) |
+| v3.2.9 | not applied (testnet only) | height 10,424,000 (20 Nov 2026, governance proposal 39) |
 
 **What a node operator did for v3.2.4 (mainnet height 3,742,566).** Governance proposal 13 named the plan `v3.2.4` at height 3,742,566 (applied on 23 October 2026): nodes stayed on v3.2.3 until that height, halted there, and restarted on v3.2.4. For the next coordinated upgrade the steps are the same:
 
@@ -406,7 +407,7 @@ laddr = "tcp://0.0.0.0:26657"
 | gRPC         | `9090`  | High-throughput programmatic access                    |
 | EVM JSON-RPC | `8545`  | Ethereum-compatible integrations (chain ID `9801`)     |
 | EVM WS       | `8546`  | EVM event subscriptions                                |
-| SVM RPC      | `8899`  | Solana-compatible reads (SVM transactions are disabled) |
+| SVM RPC      | `8899`  | Solana-compatible reads (writes need a relayer key; lane off on mainnet) |
 
 :::warning
 Never expose RPC, EVM JSON-RPC, or gRPC directly to the public internet without a reverse proxy, rate limiting, authentication, and a firewall. Bind to `0.0.0.0` only behind a controlled ingress layer.

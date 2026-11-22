@@ -10,7 +10,7 @@ sidebar_position: 7
 Eine Ethereum-Transaktion trägt genau eine secp256k1-Signatur und nichts weiter, sie kann daher nicht die Post-Quanten-Signatur (ML-DSA-87) tragen, die QoreChain bei jeder anderen Transaktion verlangt. Das **EVM-Autorisierungsfenster** schließt diese Lücke. Das Konto öffnet zuerst ein begrenztes Fenster mit einer QoreChain-Native-Nachricht, die **mit** seinem Post-Quanten-Schlüssel signiert ist, und die EVM-Lane lässt die gewöhnlichen MetaMask-, ethers.js-, Hardhat- oder Foundry-Transaktionen des Kontos nur zu, solange das Fenster sie abdeckt. Diese Seite ist die vollständige Referenz dafür, wie sich ein Fenster im Release **v3.2.8** verhält.
 
 :::note Wo v3.2.8 läuft
-Beide Netzwerke führen **v3.2.8** aus: das **`qorechain-diana`**-Testnet seit dem 12. November 2026 und das **`qorechain-vladi`**-Mainnet seit dem 18. November 2026 (Governance-Vorschlag 17, Höhe 4,273,000). Die unten mit „v3.2.8" gekennzeichneten Optionen und Regeln gelten für beide. Ein Node unter v3.2.8 lehnt eine Fensternachricht ab, die die neuen Listen setzt. Die Prüfungen und Testläufe auf dieser Seite wurden im Testnet gemacht.
+Das **`qorechain-vladi`**-Mainnet führt **v3.2.8** seit dem 18. November 2026 aus (Governance-Vorschlag 17, Höhe 4,273,000); das **`qorechain-diana`**-Testnet führte v3.2.8 ab dem 12. November 2026 aus und führt seit dem 20. November 2026 v3.2.9 aus. Die unten mit „v3.2.8" gekennzeichneten Optionen und Regeln gelten für beide; die mit „v3.2.9" gekennzeichneten Abfragelisten gelten nur für das Testnet. Ein Node unter v3.2.8 lehnt eine Fensternachricht ab, die die neuen Listen setzt. Die Prüfungen und Testläufe auf dieser Seite wurden im Testnet gemacht.
 :::
 
 ## Warum das wichtig ist {#why}
@@ -84,6 +84,24 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 Ein Konto ohne Fenster antwortet mit HTTP 200 und `found: false`, die Route lässt sich also gefahrlos abfragen. Jede Zahl ist ein JSON-String. Ein gespeichertes Fenster kann abgelaufen oder erschöpft sein: `live` sagt, ob es bei der aktuellen Höhe noch mindestens eine weitere Transaktion mit Wert null zulässt.
 
+### Die drei Geltungsbereichslisten in der Abfrage (Testnet, v3.2.9) {#window-query-lists}
+
+Ab v3.2.9 liefert die Fensterabfrage den gesamten Geltungsbereich, mit dem das Fenster geöffnet wurde, nicht nur `allowed_targets`. Die Antwort enthält drei weitere Felder, alle Listen von Strings:
+
+| Feld | Nummer in der gRPC-Antwort | Enthält |
+| ---- | -------------------------- | ------- |
+| `validators` | 14 | Die Contract-Adressen (`0x...`), deren Signaturprüfung für das Konto zählt |
+| `staking_validators` | 15 | Die `qorvaloper1...`-Validatoren, an die das Fenster Delegieren oder Redelegieren erlaubt |
+| `ibc_receivers` | 16 | Die Ziele `<channel>/<receiver>`, an die eine native QOR-IBC-Überweisung gehen darf |
+
+Eine leere Liste bedeutet, dass das Fenster ohne sie geöffnet wurde, was diese Art von Aktion ablehnt; so können Sie zurücklesen, was ein Fenster erlaubt, ohne die Werte aufzubewahren, mit denen Sie es geöffnet haben. Das läuft nur im Testnet: Das Mainnet führt v3.2.8 aus, dessen Fensterabfrage diese drei Felder nicht liefert. Am 22. November 2026 gegen die Testnet-REST geprüft: Eine Adresse ohne Fenster antwortete mit `found: false`, wobei `allowed_targets`, `validators`, `staking_validators` und `ibc_receivers` alle als leere Listen vorhanden waren. Ein Fenster mit nicht leeren Listen wurde für diese Seite nicht zurückgelesen.
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
+```
+
+Sie sollten die drei Feldnamen in der Antwort sehen. Fehlen sie, ist der erreichte Node älter als v3.2.9 (zum Beispiel der Mainnet-Endpunkt).
+
 ### TypeScript {#typescript}
 
 Die Fenster-Helfer stecken in `@qorechain/sdk` (die Signatureinrichtung steht im [SDK-EVM-Leitfaden](/sdk/guides/evm#evm-window-scope)). `openEvmWindowMsg` nimmt jedes der unten genannten Felder entgegen, `closeEvmWindowMsg` baut die Schließen-Nachricht, `fetchEvmWindow` liest das Fenster, und `classifyEvmWindowRejection` erklärt eine Ablehnung.
@@ -131,7 +149,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg` prüft die Grenzen und die Listenformate, bevor etwas signiert wird, sodass ein Fehler lokal auffällt, statt eine abgelehnte Transaktion zu kosten. `MAX_EVM_WINDOW_BLOCKS` und `MAX_EVM_WINDOW_TXS` exportieren die Grenzen. Das Zurücklesen (`fetchEvmWindow`) liefert die Grenzen, die Zähler und den Geltungsbereich von v3.2.3 (`nativeOnly`, `allowedTargets`); `validators` (Contract-Adressen), `stakingValidators` (`qorvaloper1...`) und `ibcReceivers` (`"<channel>/<receiver>"`) nimmt der Builder ab SDK 0.14.0 entgegen, das die Listen von v3.2.8 trägt; das Zurücklesen liefert sie nicht, und die REST-Fensterroute in v3.2.8 liefert sie ebenfalls nicht, bewahren Sie also die Werte auf, mit denen Sie das Fenster geöffnet haben. Setzen Sie die drei Listen nur für ein Netzwerk, das v3.2.8 betreibt: Ein Node darunter lehnt eine Fensternachricht ab, die sie setzt. Bei einem hybrid signierenden `connectTx` muss der Post-Quanten-Schlüssel bereits registriert sein.
+`openEvmWindowMsg` prüft die Grenzen und die Listenformate, bevor etwas signiert wird, sodass ein Fehler lokal auffällt, statt eine abgelehnte Transaktion zu kosten. `MAX_EVM_WINDOW_BLOCKS` und `MAX_EVM_WINDOW_TXS` exportieren die Grenzen. Das Zurücklesen (`fetchEvmWindow`) liefert die Grenzen, die Zähler und den Geltungsbereich von v3.2.3 (`nativeOnly`, `allowedTargets`); `validators` (Contract-Adressen), `stakingValidators` (`qorvaloper1...`) und `ibcReceivers` (`"<channel>/<receiver>"`) nimmt der Builder ab SDK 0.14.0 entgegen, das die Listen von v3.2.8 trägt; das Zurücklesen liefert sie nicht, und die REST-Fensterroute in v3.2.8 liefert sie ebenfalls nicht (das Testnet liefert sie ab v3.2.9, siehe [die drei Geltungsbereichslisten in der Abfrage](#window-query-lists)); bewahren Sie also beim Lesen eines v3.2.8-Netzwerks die Werte auf, mit denen Sie das Fenster geöffnet haben. Setzen Sie die drei Listen nur für ein Netzwerk, das v3.2.8 betreibt: Ein Node darunter lehnt eine Fensternachricht ab, die sie setzt. Bei einem hybrid signierenden `connectTx` muss der Post-Quanten-Schlüssel bereits registriert sein.
 
 ### Im Testnet getestet {#tested}
 
@@ -144,7 +162,7 @@ Lauf auf `qorechain-diana` am 12. November 2026 (Release v3.2.8) mit einem eth-n
 | Erneut öffnen mit `nativeOnly: true` | Code 0, 187,803 Gas verbraucht. Das neue Fenster ersetzte das alte: `native_only: true`, ein neues `opened_height` |
 | Schließen | Code 0, 170,468 Gas verbraucht. Zurückgelesen: `found: false` |
 
-Mit SDK 0.14.0 war am selben Tag ein Fenster, das mit `allowedTargets` (einer zugelassenen Zieladresse), `stakingValidators` (eine Operator-Adresse eines Validators) und `ibcReceivers` (ein Paar `channel-0/...`) geöffnet wurde, mit Code 0 und 195,233 verbrauchtem Gas erfolgreich. Das REST-Zurücklesen listete `allowed_targets` und lieferte `found: true`, `live: true`; es liefert die Listen `validators`, `staking_validators` und `ibc_receivers` nicht, bewahren Sie also die Werte auf, mit denen Sie das Fenster geöffnet haben.
+Mit SDK 0.14.0 war am selben Tag ein Fenster, das mit `allowedTargets` (einer zugelassenen Zieladresse), `stakingValidators` (eine Operator-Adresse eines Validators) und `ibcReceivers` (ein Paar `channel-0/...`) geöffnet wurde, mit Code 0 und 195,233 verbrauchtem Gas erfolgreich. Das REST-Zurücklesen listete `allowed_targets` und lieferte `found: true`, `live: true`; es lieferte die Listen `validators`, `staking_validators` und `ibc_receivers` auf v3.2.8 nicht (ab v3.2.9 liefert das Testnet sie, siehe [die drei Geltungsbereichslisten in der Abfrage](#window-query-lists)); bewahren Sie also in einem v3.2.8-Netzwerk die Werte auf, mit denen Sie das Fenster geöffnet haben.
 
 `fetchEvmWindow` lieferte dieselben Felder in camelCase (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). Öffnen und Schließen sind hybrid signierte Cosmos-Transaktionen, sodass bei der ersten Transaktion eines Kontos zuvor dessen Schlüssel registriert sein muss.
 

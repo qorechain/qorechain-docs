@@ -90,7 +90,7 @@ Zincir v3.2.5 köprünün davranışını değiştirir. Mainnet onu 29 Ekim 2026
 
 ### Test ağında test edildi {#tested-testnet}
 
-Test ağı, 12 Kasım 2026'dan beri (yükseklik 9.929.500) zincir v3.2.8'i çalıştırır. 7 Kasım 2026'da `0x…0901` adresine, `executeCrossVMCall(uint8,string,bytes)` çağrı verisiyle (hedef VM `1`, yük `{}`) salt okunur iki `eth_call` isteği gönderildi:
+Test ağı, 20 Kasım 2026'dan beri zincir v3.2.9'u çalıştırır; 12 Kasım'dan itibaren v3.2.8'in ardından (yükseklik 9.929.500) v3.2.9'u 10.424.000 yüksekliğinde uyguladı. 7 Kasım 2026'da `0x…0901` adresine, `executeCrossVMCall(uint8,string,bytes)` çağrı verisiyle (hedef VM `1`, yük `{}`) salt okunur iki `eth_call` isteği gönderildi:
 
 | Hedef | Sonuç |
 |---|---|

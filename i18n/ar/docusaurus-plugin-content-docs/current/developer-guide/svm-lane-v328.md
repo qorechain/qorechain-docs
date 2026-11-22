@@ -71,9 +71,9 @@ curl -s https://api-testnet.qore.host/qorechain/svm/v1/cluster_info
 
 لواجهة سطر أوامر العقدة الاستعلام نفسه: `qorechaind query svm cluster-info`. وتعيد الدالة `getGenesisHash` في JSON-RPC على `https://svm-testnet.qore.host` التجزئة نفسها. وتُشتق التجزئة من معرّف السلسلة؛ وليست تجزئة genesis لعنقود Solana حقيقي. ويُخدَّم المسار أيضًا على الشبكة الرئيسية (منذ v3.2.7): ففي 12 نوفمبر 2026 ردّ `https://api.qore.host/qorechain/svm/v1/cluster_info` بالرمز `200` مع `execution_enabled` `false`.
 
-## JSON-RPC العام لـ SVM للقراءة فقط {#public-rpc}
+## JSON-RPC العام لـ SVM والكتابة {#public-rpc}
 
-تجيب نقطتا النهاية العامتان `https://svm.qore.host` و`https://svm-testnet.qore.host` عن القراءات وترفضان دوال الكتابة (`sendTransaction` وما شابهها) على معرّفات السلسلة العامة، سواء كان المسار مفتوحًا أم لا. ولإرسال معاملات SVM تشغّل عقدتك الخاصة، التي تخدم JSON-RPC المتوافق مع Solana على المنفذ 8899 افتراضيًا (انظر [تطوير SVM](/developer-guide/svm-development#json-rpc-server))، ويجب أن يكون المسار نفسه مفتوحًا على الشبكة التي تتبعها تلك العقدة. أما القراءات فتعمل الآن:
+تجيب نقطتا النهاية العامتان `https://svm.qore.host` و`https://svm-testnet.qore.host` عن القراءات. وترحّلان `sendTransaction` فقط حين يكون للبوابة مفتاح relayer مضبوط؛ وفي 22 نوفمبر 2026 لم يكن للبوابة العامة لشبكة الاختبار مفتاح، فرفضت الكتابة (انظر [SVM على شبكة الاختبار](/developer-guide/svm-testnet-v329#relay)). ولإرسال معاملات SVM ترسل المعاملة الحاملة بنفسك أو تشغّل عقدتك الخاصة، التي تخدم JSON-RPC المتوافق مع Solana على المنفذ 8899 افتراضيًا (انظر [تطوير SVM](/developer-guide/svm-development#json-rpc-server))، ويجب أن يكون المسار نفسه مفتوحًا على الشبكة التي تتبعها تلك العقدة. أما القراءات فتعمل الآن:
 
 ```bash
 # Health, version, cluster hash, slot and a rent quote (all HTTP 200 on 12 November 2026)
@@ -93,7 +93,7 @@ curl -s -X POST https://svm-testnet.qore.host -H 'Content-Type: application/json
 
 متى فُتح المسار فالتدفق هو: ابنِ برنامج SBF بسلسلة أدوات Solana الحالية، وانشره، وأنشئ الحسابات التي يحتاجها، ثم استدعه. كل أمر `tx svm` هو معاملة في مسار Cosmos، فيحتاج حد غاز صريحًا ورسمًا لا يقل عن الغاز × 0.1 uqor، والتوقيع المشترك الهجين ما بعد الكمومي (انظر [التوقيع ما بعد الكمومي](/developer-guide/post-quantum-signing)).
 
-هذه أوامر واجهة سطر أوامر العقدة على Linux من مرجع العقدة. **UNTESTED: لم يُفتح المسار على شبكة الاختبار إلا بعد المقترح 37، ولم يُشغَّل أي نشر لبرنامج أو تنفيذ أو إنشاء حساب لهذه الصفحة.**
+هذه أوامر واجهة سطر أوامر العقدة على Linux من مرجع العقدة. **لم يُختبر بعد على الشبكة الحية: لم يُفتح المسار على شبكة الاختبار إلا بعد المقترح 37، ولم يُشغَّل أي نشر لبرنامج أو تنفيذ أو إنشاء حساب لهذه الصفحة.**
 
 ```bash
 # 1. Build (platform-tools v1.53, --arch v0 or --arch v3)
@@ -154,7 +154,7 @@ const sim = await client.simulateTransaction(tx);          // dry run first
 const signature = await client.sendTransaction(tx, [payer]);
 ```
 
-**UNTESTED:** يحتاج هذا المثال إلى عقدة تشغّلها بنفسك (المسار مفتوح على شبكة الاختبار). أما مقابل نقطة النهاية العامة فيُرفض الإرسال. وتعمل الاستدعاءات للقراءة فقط (`client.getBalance` و`client.getAccountInfo` و`client.getSignaturesForAddress`) مقابل `https://svm-testnet.qore.host` لأن `createSvmClient({ rpcUrl })` يقبل أي عنوان.
+**لم يُختبر بعد على الشبكة الحية:** يحتاج هذا المثال إلى عقدة تشغّلها بنفسك (المسار مفتوح على شبكة الاختبار). أما مقابل نقطة النهاية العامة فيُرفض الإرسال. وتعمل الاستدعاءات للقراءة فقط (`client.getBalance` و`client.getAccountInfo` و`client.getSignaturesForAddress`) مقابل `https://svm-testnet.qore.host` لأن `createSvmClient({ rpcUrl })` يقبل أي عنوان.
 
 Python وGo وRust وJava: محوّلات SVM في هذه اللغات تبني الرسائل نفسها؛ وستضيف إصدارة SDK لاحقة دوال v3.2.8 المساعدة. وإلى ذلك الحين استخدم واجهة سطر أوامر العقدة أعلاه أو الرسالة الخام. ويستطيع أي مكتبة عميل Solana كذلك التخاطب مع المنفذ 8899 في عقدتك الخاصة لأن مجموعة الدوال متوافقة مع Solana.
 
@@ -178,7 +178,7 @@ Python وGo وRust وJava: محوّلات SVM في هذه اللغات تبني 
 
 محفظة SVM التي تريد مفتاحًا ما بعد كمومي على السلسلة تسجّله بالرسالة **`MsgRegisterSVMPQCKey`**. وتحمل المرسل وعنوان SVM ذا 32 بايتًا والمفتاح العام ML-DSA-87. وهي رسالة في مسار Cosmos، فيوقّعها المرسل توقيعًا هجينًا كأي معاملة أصلية أخرى. وتُرفض ما دام المسار مغلقًا، و**يجب أن يكون حساب SVM موجودًا قبل تسجيل مفتاحه** (انظر الرفض في [ما اختُبر على شبكة الاختبار](#tested)).
 
-لا يوجد أمر `tx svm` لها؛ فاستخدم مُركِّب SDK. في TypeScript المُركِّب هو `msg.svm.registerSvmPqcKey` في `@qorechain/sdk`. **UNTESTED لحساب موجود: الإرسال الوحيد كان لعنوان بلا حساب، ورُفض.**
+لا يوجد أمر `tx svm` لها؛ فاستخدم مُركِّب SDK. في TypeScript المُركِّب هو `msg.svm.registerSvmPqcKey` في `@qorechain/sdk`. **لم يُختبر بعد على الشبكة الحية لحساب موجود: الإرسال الوحيد كان لعنوان بلا حساب، ورُفض.**
 
 ```ts
 import {
@@ -240,8 +240,8 @@ await tx.signAndBroadcast(
 
 المسار مفتوح، لكن JSON-RPC العام لـ SVM لا يتصرف بعدُ كعقدة Solana كاملة. خطّط وفق هذه الحدود:
 
-- **تعيد `getLatestBlockhash` تجزئة الكتلة على هيئة 64 حرفًا ست عشريًا**، لا بصيغة base58 كما تفعل عقد Solana (قُرئت في 12 نوفمبر 2026: `blockhash` ‏`e8d4...d449`، و`lastValidBlockHeight` ‏9944659). والعميل الذي يتوقع base58 عليه أن يحوّلها. وقد جدول فريق السلسلة تغييرًا.
-- **`sendTransaction` بصيغة Solana السلكية من أدوات Solana القياسية غير مدعومة بعدُ** على نقطة النهاية العامة. تُنشر البرامج وتُستدعى برسائل Cosmos ‏`MsgDeployProgram` و`MsgExecuteProgram`، موقّعة بالتوقيع الهجين كأي معاملة في مسار Cosmos (انظر دوال TypeScript المساعدة أعلاه). والتكافؤ الكامل مع أدوات Solana مخطط له لإصدار لاحق.
+- **تعيد `getLatestBlockhash` تجزئة الكتلة على هيئة 64 حرفًا ست عشريًا**، لا بصيغة base58 كما تفعل عقد Solana (قُرئت في 12 نوفمبر 2026: `blockhash` ‏`e8d4...d449`، و`lastValidBlockHeight` ‏9944659). والعميل الذي يتوقع base58 عليه أن يحوّلها. ومن المخطط إجراء تغيير.
+- **تُحمل معاملات Solana السلكية** في `MsgSolanaTransaction` منذ الإصدار v3.2.9 على شبكة الاختبار (انظر [SVM على شبكة الاختبار](/developer-guide/svm-testnet-v329)). وفي v3.2.8 تُنشر البرامج وتُستدعى برسائل Cosmos ‏`MsgDeployProgram` و`MsgExecuteProgram`، موقّعة بالتوقيع الهجين كأي معاملة في مسار Cosmos (انظر دوال TypeScript المساعدة أعلاه).
 - **يستطيع مفتاح أجنبي تفويض إجراء SVM عبر مُرحِّل (relayer).** يوقّع التفويض ملخّصًا مرتبطًا بالسلسلة (النطاق `qorechain-svm-auth-v3`) متى فعّلت الشبكة ميزة البروتوكول `svm-relayed-chain-bound`؛ ويبنيه `@qorechain/wallet-adapter` 0.6.0 بالدالة `authSignBytesV3`، وتقرأ `resolveSvmAuthVersion` أي صيغة تريدها الشبكة.
 
 ## الأخطاء والرفض {#errors}
@@ -251,7 +251,7 @@ await tx.signAndBroadcast(
 | `SVM module is disabled` (الرمز 11) | المسار مغلق (الشبكة الرئيسية، أو شبكة الاختبار قبل المقترح 37) | اقرأ `enabled`؛ ولا تعِد المحاولة |
 | رُفضت `MsgRegisterSVMPQCKey` بالخطأ `SVM account ... not found` (codespace باسم `svm`، الرمز 3) | حساب SVM غير موجود بعد | أنشئ الحساب أولًا ثم سجّل مفتاحه |
 | رُفضت `MsgRegisterSVMPQCKey` والمسار مغلق | المسار مغلق | سجّل بعد فتح المسار |
-| رُفضت دالة كتابة على `svm.qore.host` أو `svm-testnet.qore.host` | نقطتا النهاية العامتان للقراءة فقط | استخدم عقدتك الخاصة |
+| رُفضت دالة كتابة على `svm.qore.host` أو `svm-testnet.qore.host` | لا مفتاح relayer للبوابة العامة | أرسل المعاملة الحاملة بنفسك أو استخدم عقدتك الخاصة (انظر [SVM على شبكة الاختبار](/developer-guide/svm-testnet-v329#relay)) |
 | `svm custody cap exceeded` (الرمز 23) | المخزون عند سقفه | أعد المحاولة لاحقًا أو بمبلغ أقل |
 | `airdrop rate limit exceeded` (الرمز 19) | استُدعيت `requestAirdrop` كثيرًا (شبكة الاختبار فقط) | انتظر |
 | `blockhash expired` (الرمز 20) | تجزئة الكتلة الحديثة قديمة جدًا | اجلب واحدة جديدة ووقّع من جديد |
@@ -268,7 +268,7 @@ await tx.signAndBroadcast(
 | `GET /qorechain/svm/v1/params` | `enabled` صحيحة؛ `max_program_size` ‏10485760، و`max_account_data_size` ‏10485760، و`compute_budget_max` ‏1400000، و`lamports_per_byte` ‏3480، و`rent_exemption_multi` ‏2، و`max_cpi` ‏4، و`max_custody_uqor` ‏10000000000، و`max_custody_hard_uqor` ‏1000000000000، و`max_account_excess_uqor` ‏10000000000 |
 | `MsgRegisterSVMPQCKey` لعنوان SVM غير موجود بعد | رُفضت: codespace باسم `svm` والرمز 3، ‏`SVM account ... not found: SVM account not found`. يجب أن يوجد الحساب قبل تسجيل مفتاحه ما بعد الكمومي |
 
-لم يُشغَّل (UNTESTED): نشر برنامج، وتنفيذ برنامج، وإنشاء حساب SVM.
+لم يُشغَّل (لم يُختبر بعد على الشبكة الحية): نشر برنامج، وتنفيذ برنامج، وإنشاء حساب SVM.
 
 ## الشبكة الرئيسية {#mainnet}
 

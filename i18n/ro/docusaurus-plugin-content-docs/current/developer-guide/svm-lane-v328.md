@@ -71,9 +71,9 @@ Răspuns la 12 noiembrie 2026, citit după ce propunerea 37 a trecut, cu `execut
 
 CLI-ul de nod are aceeași interogare: `qorechaind query svm cluster-info`. Metoda JSON-RPC `getGenesisHash` de pe `https://svm-testnet.qore.host` returnează același hash. Hash-ul este derivat din chain id; nu este hash-ul genesis al unui cluster Solana real. Ruta este servită și pe mainnet (din v3.2.7): pe 12 noiembrie 2026, `https://api.qore.host/qorechain/svm/v1/cluster_info` a răspuns cu `200`, cu `execution_enabled` `false`.
 
-## RPC-ul SVM public este doar pentru citire {#public-rpc}
+## RPC-ul SVM public și scrierile {#public-rpc}
 
-Endpoint-urile publice `https://svm.qore.host` și `https://svm-testnet.qore.host` răspund la citiri și refuză metodele de scriere (`sendTransaction` și similare) pe chain id-urile publice, indiferent dacă lane-ul este deschis sau nu. Pentru a trimite tranzacții SVM rulezi propriul nod, care servește JSON-RPC compatibil Solana pe portul 8899 implicit (vezi [Dezvoltare SVM](/developer-guide/svm-development#json-rpc-server)), iar lane-ul însuși trebuie să fie deschis pe rețeaua pe care o urmează acel nod. Citirile funcționează acum:
+Endpoint-urile publice `https://svm.qore.host` și `https://svm-testnet.qore.host` răspund la citiri. Ele retransmit `sendTransaction` doar când gateway-ul are o cheie de relayer setată; pe 22 noiembrie 2026 gateway-ul public al testnet-ului nu avea niciuna, deci a refuzat scrierile (vezi [SVM pe testnet](/developer-guide/svm-testnet-v329#relay)). Pentru a trimite tranzacții SVM trimiți tu însuți tranzacția purtătoare sau rulezi propriul nod, care servește JSON-RPC compatibil Solana pe portul 8899 implicit (vezi [Dezvoltare SVM](/developer-guide/svm-development#json-rpc-server)), iar lane-ul însuși trebuie să fie deschis pe rețeaua pe care o urmează acel nod. Citirile funcționează acum:
 
 ```bash
 # Health, version, cluster hash, slot and a rent quote (all HTTP 200 on 12 November 2026)
@@ -93,7 +93,7 @@ curl -s -X POST https://svm-testnet.qore.host -H 'Content-Type: application/json
 
 Odată ce lane-ul este deschis, fluxul este: construiești un program SBF cu toolchain-ul Solana curent, îl implementezi, creezi conturile de care are nevoie, apoi îl apelezi. Fiecare comandă `tx svm` este o tranzacție pe lane-ul Cosmos, deci are nevoie de o limită de gaz explicită, de un comision de cel puțin gaz înmulțit cu 0,1 uqor și de cosemnătura hibridă post-cuantică (vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing)).
 
-Acestea sunt comenzile CLI de nod pentru Linux din referința nodului. **UNTESTED: lane-ul s-a deschis pe testnet abia după propunerea 37, iar pentru această pagină nu a fost rulată nicio implementare de program, execuție sau creare de cont.**
+Acestea sunt comenzile CLI de nod pentru Linux din referința nodului. **Netestat încă pe rețeaua live: lane-ul s-a deschis pe testnet abia după propunerea 37, iar pentru această pagină nu a fost rulată nicio implementare de program, execuție sau creare de cont.**
 
 ```bash
 # 1. Build (platform-tools v1.53, --arch v0 or --arch v3)
@@ -154,7 +154,7 @@ const sim = await client.simulateTransaction(tx);          // dry run first
 const signature = await client.sendTransaction(tx, [payer]);
 ```
 
-**UNTESTED:** acest exemplu are nevoie de un nod pe care îl rulezi tu (lane-ul este deschis pe testnet). Pe endpoint-ul public trimiterea este refuzată. Apelurile doar pentru citire (`client.getBalance`, `client.getAccountInfo`, `client.getSignaturesForAddress`) funcționează față de `https://svm-testnet.qore.host`, deoarece `createSvmClient({ rpcUrl })` acceptă orice URL.
+**Netestat încă pe rețeaua live:** acest exemplu are nevoie de un nod pe care îl rulezi tu (lane-ul este deschis pe testnet). Pe endpoint-ul public trimiterea este refuzată. Apelurile doar pentru citire (`client.getBalance`, `client.getAccountInfo`, `client.getSignaturesForAddress`) funcționează față de `https://svm-testnet.qore.host`, deoarece `createSvmClient({ rpcUrl })` acceptă orice URL.
 
 Python, Go, Rust și Java: adaptoarele SVM pentru aceste limbaje construiesc aceleași mesaje; o versiune SDK ulterioară adaugă helperii v3.2.8. Până atunci folosește CLI-ul de nod de mai sus sau mesajul brut. Orice bibliotecă client Solana poate vorbi și cu portul 8899 al propriului tău nod, deoarece setul de metode este compatibil Solana.
 
@@ -178,7 +178,7 @@ Adrese: adresa SVM a unui cont este cei 20 de octeți ai contului completați la
 
 Un portofel SVM care vrea o cheie post-cuantică on-chain o înregistrează cu **`MsgRegisterSVMPQCKey`**. Mesajul poartă expeditorul, adresa SVM de 32 de octeți și cheia publică ML-DSA-87. Este un mesaj pe lane-ul Cosmos, deci expeditorul îl semnează hibrid ca orice altă tranzacție nativă. Este refuzat cât timp lane-ul este închis, iar **contul SVM trebuie să existe deja înainte ca cheia lui să fie înregistrată** (vezi refuzul de la [Testat pe testnet](#tested)).
 
-Nu există o comandă `tx svm` pentru el; folosește composer-ul din SDK. În TypeScript, composer-ul este `msg.svm.registerSvmPqcKey` din `@qorechain/sdk`. **UNTESTED pentru un cont existent: singura trimitere a fost pentru o adresă fără cont și a fost refuzată.**
+Nu există o comandă `tx svm` pentru el; folosește composer-ul din SDK. În TypeScript, composer-ul este `msg.svm.registerSvmPqcKey` din `@qorechain/sdk`. **Netestat încă pe rețeaua live pentru un cont existent: singura trimitere a fost pentru o adresă fără cont și a fost refuzată.**
 
 ```ts
 import {
@@ -240,8 +240,8 @@ Fiecare frame are o stivă de 32 KiB și un heap de 256 KiB. Valorile de mai sus
 
 Lane-ul este deschis, dar JSON-RPC-ul SVM public nu se comportă încă ca un nod Solana complet. Planifică în jurul acestor limite:
 
-- **`getLatestBlockhash` returnează blockhash-ul ca 64 de caractere hexazecimale,** nu în base58 cum fac nodurile Solana (citit la 12 noiembrie 2026: `blockhash` `e8d4...d449`, `lastValidBlockHeight` 9944659). Un client care așteaptă base58 trebuie să îl convertească. Echipa lanțului a programat o schimbare.
-- **`sendTransaction` în format wire Solana din uneltele Solana standard nu este încă suportat** pe endpoint-ul public. Programele sunt implementate și apelate cu mesajele Cosmos `MsgDeployProgram` și `MsgExecuteProgram`, semnate cu semnătura hibridă ca orice tranzacție pe lane-ul Cosmos (vezi helperii TypeScript de mai sus). Paritatea completă cu uneltele Solana este planificată pentru o versiune ulterioară.
+- **`getLatestBlockhash` returnează blockhash-ul ca 64 de caractere hexazecimale,** nu în base58 cum fac nodurile Solana (citit la 12 noiembrie 2026: `blockhash` `e8d4...d449`, `lastValidBlockHeight` 9944659). Un client care așteaptă base58 trebuie să îl convertească. O schimbare este planificată.
+- **Tranzacțiile în format wire Solana** sunt purtate de `MsgSolanaTransaction` începând cu versiunea v3.2.9 pe testnet (vezi [SVM pe testnet](/developer-guide/svm-testnet-v329)). În v3.2.8 programele sunt implementate și apelate cu mesajele Cosmos `MsgDeployProgram` și `MsgExecuteProgram`, semnate cu semnătura hibridă ca orice tranzacție pe lane-ul Cosmos (vezi helperii TypeScript de mai sus).
 - **O cheie străină poate autoriza o acțiune SVM printr-un relayer.** Autorizarea semnează un digest legat de lanț (domeniul `qorechain-svm-auth-v3`) odată ce rețeaua activează funcția de protocol `svm-relayed-chain-bound`; `@qorechain/wallet-adapter` 0.6.0 îl construiește cu `authSignBytesV3`, iar `resolveSvmAuthVersion` citește ce formă vrea rețeaua.
 
 ## Erori și refuzuri {#errors}
@@ -251,7 +251,7 @@ Lane-ul este deschis, dar JSON-RPC-ul SVM public nu se comportă încă ca un no
 | `SVM module is disabled` (cod 11) | Lane-ul este închis (mainnet, sau testnet înainte de propunerea 37) | Citește `enabled`; nu reîncerca |
 | `MsgRegisterSVMPQCKey` refuzat cu `SVM account ... not found` (codespace `svm`, cod 3) | Contul SVM nu există încă | Creează mai întâi contul, apoi înregistrează-i cheia |
 | `MsgRegisterSVMPQCKey` refuzat cât timp lane-ul este închis | Lane închis | Înregistrează după ce lane-ul se deschide |
-| Metodă de scriere refuzată pe `svm.qore.host` sau `svm-testnet.qore.host` | Endpoint-urile publice sunt doar pentru citire | Folosește propriul nod |
+| Metodă de scriere refuzată pe `svm.qore.host` sau `svm-testnet.qore.host` | Gateway-ul public nu are cheie de relayer | Trimite tu însuți tranzacția purtătoare sau folosește propriul nod (vezi [SVM pe testnet](/developer-guide/svm-testnet-v329#relay)) |
 | `svm custody cap exceeded` (cod 23) | Fondul este la plafon | Reîncearcă mai târziu sau cu o sumă mai mică |
 | `airdrop rate limit exceeded` (cod 19) | `requestAirdrop` apelat prea des (doar testnet) | Așteaptă |
 | `blockhash expired` (cod 20) | Blockhash-ul recent este prea vechi | Ia unul proaspăt și semnează din nou |
@@ -268,7 +268,7 @@ Rulat pe `qorechain-diana` la 12 noiembrie 2026 (versiunea v3.2.8), după ce pro
 | `GET /qorechain/svm/v1/params` | `enabled` true; `max_program_size` 10485760, `max_account_data_size` 10485760, `compute_budget_max` 1400000, `lamports_per_byte` 3480, `rent_exemption_multi` 2, `max_cpi` 4, `max_custody_uqor` 10000000000, `max_custody_hard_uqor` 1000000000000, `max_account_excess_uqor` 10000000000 |
 | `MsgRegisterSVMPQCKey` pentru o adresă SVM care nu există încă | Refuzat: codespace `svm` cod 3, `SVM account ... not found: SVM account not found`. Contul trebuie să existe înainte ca cheia sa post-cuantică să fie înregistrată |
 
-Nerulate (UNTESTED): implementarea unui program, execuția unui program și crearea unui cont SVM.
+Nerulate (netestat încă pe rețeaua live): implementarea unui program, execuția unui program și crearea unui cont SVM.
 
 ## Mainnet {#mainnet}
 

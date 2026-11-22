@@ -10,7 +10,7 @@ sidebar_position: 7
 Ethereumトランザクションが持つのはsecp256k1署名1つだけで、QoreChainが他のすべてのトランザクションに求めるポスト量子(ML-DSA-87)署名を載せることができません。**EVM認可ウィンドウ**は、このギャップを埋めます。アカウントはまず、ポスト量子鍵で署名された**QoreChain Nativeメッセージ**で、範囲を限定したウィンドウを開きます。その後、EVMレーンは、ウィンドウがカバーしている間に限り、そのアカウントの通常のMetaMask、ethers.js、Hardhat、Foundryのトランザクションを受け付けます。このページは、リリース**v3.2.8**でウィンドウがどのように動作するかについての完全なリファレンスです。
 
 :::note v3.2.8が稼働している場所
-両ネットワークが**v3.2.8**を実行しています。**`qorechain-diana`**テストネットは2026年11月12日から、**`qorechain-vladi`**メインネットは2026年11月18日から(ガバナンス提案17、高さ4,273,000)です。以下で「v3.2.8」と記されたオプションとルールは、両方に適用されます。v3.2.8未満のノードは、新しいリストを設定するウィンドウメッセージを拒否します。このページの確認とテスト実行は、テストネットで行いました。
+**`qorechain-vladi`**メインネットは2026年11月18日から**v3.2.8**を実行しています(ガバナンス提案17、高さ4,273,000)。**`qorechain-diana`**テストネットは2026年11月12日からv3.2.8を、2026年11月20日からv3.2.9を実行しています。以下で「v3.2.8」と記されたオプションとルールは、両方に適用されます。「v3.2.9」と記されたクエリのリストはテストネット専用です。v3.2.8未満のノードは、新しいリストを設定するウィンドウメッセージを拒否します。このページの確認とテスト実行は、テストネットで行いました。
 :::
 
 ## なぜ重要か {#why}
@@ -84,6 +84,24 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 ウィンドウを持たないアカウントには、HTTP 200で`found: false`が返されるため、この経路は安全にポーリングできます。数値はすべてJSON文字列です。保存されているウィンドウは、期限切れまたは使い切られている場合があります。`live`は、現在の高さで、少なくともあと1つの値ゼロのトランザクションをまだ受け付けるかどうかを示します。
 
+### クエリの3つのスコープリスト(テストネット、v3.2.9) {#window-query-lists}
+
+v3.2.9から、ウィンドウのクエリは、`allowed_targets`だけでなく、ウィンドウを開いたときのスコープ全体を返します。レスポンスには、いずれも文字列のリストである3つのフィールドが加わります。
+
+| フィールド | gRPCレスポンスの番号 | 内容 |
+| ----- | --------------------------- | ----- |
+| `validators` | 14 | 署名チェックがアカウントのものとして数えられるコントラクトアドレス(`0x...`) |
+| `staking_validators` | 15 | ウィンドウが委任または再委任を許可する`qorvaloper1...`のバリデーター |
+| `ibc_receivers` | 16 | ネイティブQORのIBC転送の宛先として認められる`<channel>/<receiver>` |
+
+空のリストは、ウィンドウがそのリストなしで開かれたことを意味し、その種類の操作は拒否されます。そのため、開くときに使った値を保管しておかなくても、ウィンドウが何を許可しているかを読み戻せます。これはテストネットのみで動作します。メインネットはv3.2.8を実行しており、そのウィンドウクエリはこの3つのフィールドを返しません。2026年11月22日にテストネットのRESTで確認しました。ウィンドウのないアドレスは`found: false`を返し、`allowed_targets`、`validators`、`staking_validators`、`ibc_receivers`のすべてが空のリストとして含まれていました。リストが空でないウィンドウの読み戻しは、このページのためには行っていません。
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
+```
+
+回答に3つのフィールド名が含まれているはずです。含まれていない場合、到達したノードはv3.2.9より古いものです(たとえば、メインネットのエンドポイント)。
+
 ### TypeScript {#typescript}
 
 ウィンドウのヘルパーは`@qorechain/sdk`にあります(署名のセットアップについては[SDK EVMガイド](/sdk/guides/evm#evm-window-scope)を参照)。`openEvmWindowMsg`は以下のすべてのフィールドを受け取り、`closeEvmWindowMsg`は終了メッセージを構築し、`fetchEvmWindow`はウィンドウを読み取り、`classifyEvmWindowRejection`は拒否の理由を説明します。
@@ -131,7 +149,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg`は、署名の前に境界値とリストの形式を検査するため、間違いは、拒否されたトランザクションで費用を払うのではなく、ローカルで失敗します。`MAX_EVM_WINDOW_BLOCKS`と`MAX_EVM_WINDOW_TXS`は、その境界値をエクスポートします。読み戻し(`fetchEvmWindow`)は、境界値、カウンター、v3.2.3のスコープ(`nativeOnly`、`allowedTargets`)を返します。`validators`(コントラクトアドレス)、`stakingValidators`(`qorvaloper1...`)、`ibcReceivers`(`"<channel>/<receiver>"`)は、v3.2.8のリストを持つSDK 0.14.0以降のビルダーで受け付けられます。読み戻しはそれらを返さず、v3.2.8のRESTウィンドウ経路も返さないため、ウィンドウを開いたときの値を保管してください。3つのリストを設定するのは、v3.2.8を実行しているネットワークだけにしてください。それより下のノードは、それらを設定したウィンドウメッセージを拒否します。ハイブリッド署名の`connectTx`では、ポスト量子鍵があらかじめ登録されている必要があります。
+`openEvmWindowMsg`は、署名の前に境界値とリストの形式を検査するため、間違いは、拒否されたトランザクションで費用を払うのではなく、ローカルで失敗します。`MAX_EVM_WINDOW_BLOCKS`と`MAX_EVM_WINDOW_TXS`は、その境界値をエクスポートします。読み戻し(`fetchEvmWindow`)は、境界値、カウンター、v3.2.3のスコープ(`nativeOnly`、`allowedTargets`)を返します。`validators`(コントラクトアドレス)、`stakingValidators`(`qorvaloper1...`)、`ibcReceivers`(`"<channel>/<receiver>"`)は、v3.2.8のリストを持つSDK 0.14.0以降のビルダーで受け付けられます。読み戻しはそれらを返さず、v3.2.8のRESTウィンドウ経路も返しません(テストネットはv3.2.9から返します。[クエリの3つのスコープリスト](#window-query-lists)を参照)。そのため、v3.2.8のネットワークを読み取るときは、ウィンドウを開いたときの値を保管してください。3つのリストを設定するのは、v3.2.8を実行しているネットワークだけにしてください。それより下のノードは、それらを設定したウィンドウメッセージを拒否します。ハイブリッド署名の`connectTx`では、ポスト量子鍵があらかじめ登録されている必要があります。
 
 ### テストネットでの検証 {#tested}
 
@@ -144,7 +162,7 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | `nativeOnly: true`で再度開く | コード0、使用ガス187,803。新しいウィンドウが古いものを置き換えた: `native_only: true`、新しい`opened_height` |
 | 閉じる | コード0、使用ガス170,468。読み戻し: `found: false` |
 
-同日、SDK 0.14.0を使って、`allowedTargets`(許可対象のアドレス1件)、`stakingValidators`(バリデーターのオペレーターアドレス1件)、`ibcReceivers`(`channel-0/...`のペア1件)を指定してウィンドウを開いたところ、コード0で成功し、使用ガスは195,233でした。RESTの読み戻しには`allowed_targets`が含まれ、`found: true`、`live: true`が返されました。`validators`、`staking_validators`、`ibc_receivers`のリストは返されないため、ウィンドウを開いたときの値を保管してください。
+同日、SDK 0.14.0を使って、`allowedTargets`(許可対象のアドレス1件)、`stakingValidators`(バリデーターのオペレーターアドレス1件)、`ibcReceivers`(`channel-0/...`のペア1件)を指定してウィンドウを開いたところ、コード0で成功し、使用ガスは195,233でした。RESTの読み戻しには`allowed_targets`が含まれ、`found: true`、`live: true`が返されました。`validators`、`staking_validators`、`ibc_receivers`のリストはv3.2.8では返されませんでした(テストネットのv3.2.9からは返します。[クエリの3つのスコープリスト](#window-query-lists)を参照)。そのため、v3.2.8のネットワークでは、ウィンドウを開いたときの値を保管してください。
 
 `fetchEvmWindow`は、同じフィールドをキャメルケース(`openedHeight`、`remainingBlocks`、`nativeOnly`、`allowedTargets`)で返しました。ウィンドウの開始と終了は、ハイブリッド署名のCosmosトランザクションであるため、アカウントが最初に送信するトランザクションには、先に鍵が登録されている必要があります。
 

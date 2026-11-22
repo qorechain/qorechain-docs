@@ -14,7 +14,7 @@ The bridge module is deployed on mainnet and testnet, but **no bridge route is a
 :::
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**, chain version **v3.2.8** since 12 November 2026). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.8** (since 18 November 2026, height 4,273,000, governance proposal 17; v3.2.7 from 12 November). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page once a route is activated. Status checked 27 October 2026: all 37 chain configurations are `pending` on both networks.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**, chain version **v3.2.9** since 20 November 2026, after v3.2.8 from 12 November). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.8** (since 18 November 2026, height 4,273,000, governance proposal 17; v3.2.7 from 12 November). Substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page once a route is activated. Status checked 27 October 2026: all 37 chain configurations are `pending` on both networks.
 :::
 
 ---

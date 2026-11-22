@@ -12,7 +12,7 @@ Un apel între VM-uri permite codului de pe o mașină virtuală să ruleze un c
 Această pagină este referința de câmpuri, costuri și limite pentru versiunea v3.2.8, cu un exemplu lucrat pentru fiecare direcție. Conceptele, ciclul de viață și comportamentul mai vechi se găsesc în [Interoperabilitate între VM-uri](/developer-guide/cross-vm-interoperability); ghidul pentru SDK este în [ghidul Cross-VM](/sdk/guides/cross-vm).
 
 :::note Unde rulează v3.2.8
-Ambele rețele rulează **v3.2.8**: testnet-ul **`qorechain-diana`** din 12 noiembrie 2026 și mainnet-ul **`qorechain-vladi`** din 18 noiembrie 2026 (propunerea de guvernanță 17, înălțimea 4.273.000). Pe mainnet `MsgCrossVMCall` este deocamdată în pauză, deci apelul nu poate fi trimis acolo. Exemplele și verificările de mai jos au fost rulate pe testnet.
+Mainnet-ul **`qorechain-vladi`** rulează **v3.2.8** din 18 noiembrie 2026 (propunerea de guvernanță 17, înălțimea 4.273.000); testnet-ul **`qorechain-diana`** a rulat v3.2.8 din 12 noiembrie 2026 și rulează v3.2.9 din 20 noiembrie 2026, care adaugă reguli cross-VM pentru SVM (vezi [v3.2.9](/appendix/version-history#v329)). Pe mainnet `MsgCrossVMCall` este deocamdată în pauză, deci apelul nu poate fi trimis acolo. Exemplele și verificările de mai jos au fost rulate pe testnet.
 :::
 
 :::caution Este mesajul de apel disponibil chiar acum?
@@ -139,7 +139,7 @@ A răspuns `200` la 12 noiembrie 2026 cu aceste câmpuri:
 | `max_message_size` | `65536` | Cel mai mare payload, în octeți. |
 | `max_queue_size` | `1000` | Cele mai multe apeluri puse în coadă simultan. |
 | `queue_timeout_blocks` | `100` | Blocuri până când un apel nerulat expiră. |
-| `bridge_allowed_targets` | trei intrări `cosmwasm:qor1...` | Contractele QoreChain Native pe care puntea `0x0901` le poate apela. Gol ține puntea închisă. |
+| `bridge_allowed_targets` | patru intrări `cosmwasm:qor1...` pe testnet (22 noiembrie 2026), gol pe mainnet | Contractele QoreChain Native pe care puntea `0x0901` le poate apela. Gol ține puntea închisă. |
 | `bridge_target_pins` | o intrare per țintă: `target`, `code_id`, `history_len` | Codul pe care fiecare țintă permisă trebuie să îl ruleze în continuare pentru ca puntea să o poată apela. |
 | `max_pending_per_sender` | `100` | Apeluri în coadă pe care le poate ține un expeditor. |
 | `max_cosmos_tx_gas` | `"50000000"` | Cel mai mult gaz pe care îl poate declara o tranzacție Native. |
@@ -158,11 +158,11 @@ Folosește `wasm_congestion_factor_micro` ca să vezi cât va plăti în avans a
 
 ## Exemple pe direcții {#examples}
 
-Toate exemplele semnează cu cheia post-cuantică a contului, ca orice tranzacție Native; vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing). Pentru această pagină au fost trimise doar exemplele cont nativ către contract QoreChain Native (vezi [Testat pe testnet](#tested)); exemplele EVM nu au fost rulate și sunt marcate UNTESTED acolo unde apar.
+Toate exemplele semnează cu cheia post-cuantică a contului, ca orice tranzacție Native; vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing). Pentru această pagină au fost trimise doar exemplele cont nativ către contract QoreChain Native (vezi [Testat pe testnet](#tested)); exemplele EVM nu au fost rulate și sunt marcate „netestat încă pe rețeaua live" acolo unde apar.
 
 ### Cont nativ către contract EVM {#native-to-evm}
 
-**UNTESTED:** această direcție nu a fost rulată pentru această pagină.
+**Netestat încă pe rețeaua live:** această direcție nu a fost rulată pentru această pagină.
 
 Ținta este un contract EVM; payload-ul este un call data codificat ABI. Apelul rulează ca propria ta adresă `0x`, deci partea EVM te vede ca `msg.sender`. Linia de comandă (CLI de nod pentru Linux), construiește apoi adaugă semnătura post-cuantică:
 
@@ -289,7 +289,7 @@ SDK 0.13.0 nu are nicio opțiune pentru `async_gas_limit` sau `async_max_factor`
 
 ### Contract EVM către contract QoreChain Native prin 0x0901 {#evm-to-wasm}
 
-**UNTESTED:** această direcție nu a fost rulată pentru această pagină.
+**Netestat încă pe rețeaua live:** această direcție nu a fost rulată pentru această pagină.
 
 Un contract Solidity apelează precompile-ul punții de la `0x0000000000000000000000000000000000000901`. Apelul rulează în interiorul tranzacției EVM, cu contul sau contractul apelant (ca adresa sa `qor1`) drept expeditor QoreChain Native, iar un revert oriunde le anulează pe amândouă.
 
@@ -334,7 +334,7 @@ Helperul `@qorechain/rdk` `encodeCrossVmCalldata({ contract, msg })` construieș
 
 ### Contract QoreChain Native către contract EVM {#wasm-to-evm}
 
-**UNTESTED** de autorul documentației. Echipa lanțului raportează că ambele moduri au rulat pe testnet înainte de v3.2.8.
+**Netestat încă pe rețeaua live, pornind de la această pagină.** Ambele moduri au rulat pe testnet înainte de v3.2.8.
 
 Un contract QoreChain Native face apelul trimițând un `MsgCrossVMCall` ca mesaj de lanț, cu el însuși ca expeditor. Mesajul are aceleași câmpuri ca mai sus; lanțul tratează contractul ca apelant CosmWasm, indiferent ce spune `source_vm`. Cu `async` false (implicit), apelul este sincron: rulează pe gazul tranzacției, răspunsul este în `MsgCrossVMCallResponse.data`, iar un eșec anulează întreaga tranzacție. Cu `async` true este pus în coadă. Vezi [Cine pe cine apelează](#who-calls-whom). Exemplul de mai jos pune apelul în coadă:
 
@@ -394,7 +394,7 @@ O conversie a unui token ERC-20 sub un grant authz (`MsgConvertERC20`) este admi
 | Apel `0x0901` fără o fereastră care îl listează | Refuzat |
 | Ținta `0x0901` nu este în `bridge_allowed_targets`, sau codul s-a schimbat de când a fost fixată | Revert: `cross-VM bridge call refused: target ... is not allowlisted` pentru o țintă nelistată |
 | `MsgCrossVMCall` în lista circuit breaker-ului | Tranzacție refuzată; apelurile din coadă rămân în așteptare |
-| Un apel în SVM | Lane-ul este deschis pe testnet din propunerea 37 și oprit pe mainnet; niciun apel în SVM nu a fost rulat pentru această pagină (UNTESTED) |
+| Un apel în SVM | Lane-ul este deschis pe testnet din propunerea 37 și oprit pe mainnet; niciun apel în SVM nu a fost rulat pentru această pagină (netestat încă pe rețeaua live) |
 
 O eroare înregistrată pe un apel eșuat din coadă conține text simplu, fără adnotare de fișier sursă.
 
@@ -422,7 +422,7 @@ Rulat pe `qorechain-diana` la 12 noiembrie 2026 (versiunea v3.2.8), după ce pro
 | `GET /qorechain/crossvm/v1/pending` după aceea | Listă goală |
 | `async_max_factor` de `6` | Refuzat înainte să ruleze ceva: codespace `crossvm` cod 2, `async_max_factor 6 is outside 1000000..100000000 (millionths): invalid cross-VM message` |
 
-Nerulate pentru această pagină (UNTESTED): EVM către QoreChain Native prin `0x0901` și QoreChain Native către EVM. Echipa lanțului raportează că traseele sincron și asincron de la QoreChain Native către EVM au rulat pe testnet la înălțimile 9.795.779 și 9.795.783, înainte de v3.2.8.
+Nerulate pentru această pagină (netestat încă pe rețeaua live): EVM către QoreChain Native prin `0x0901` și QoreChain Native către EVM. Traseele sincron și asincron de la QoreChain Native către EVM au rulat pe testnet la înălțimile 9.795.779 și 9.795.783, înainte de v3.2.8.
 
 ## Pagini conexe {#related}
 

@@ -100,7 +100,7 @@ de puente nativo (`crossvm`, más el precompilado `CrossVMBridge` una vez que es
 activo; no está activo en la mainnet; la testnet lo tiene activo con una lista de permitidos, probado con `eth_call` el 7 de noviembre de 2026), de modo que una única interfaz
 cadenas de una sola VM no tienen nada equivalente que envolver. Hoy el alcance de
 una llamada está limitado por el carril al que se dirige: `MsgCrossVMCall` está
-desactivado en mainnet, las transacciones SVM están deshabilitadas, y la subida e
+desactivado en mainnet, el carril SVM está desactivado, y la subida e
 instanciación de QoreChain Native requieren permisos (la instanciación está abierta en la testnet). Consulta
 [Llamadas cross-VM](/sdk/guides/cross-vm).
 

@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain은 네이티브, EVM, SVM 실행 환경 전반에서 여러 지갑 유형을 지원합니다. 사용 목적에 맞는 지갑을 선택하세요.
 
 :::note
-아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 운영 중, 2026년 11월 12일부터 릴리스 v3.2.8)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 2026년 11월 18일부터 릴리스 v3.2.8)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
+아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 운영 중, 2026년 11월 12일부터 릴리스 v3.2.8)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 2026년 11월 20일부터 릴리스 v3.2.9, 그 전에는 11월 12일부터 v3.2.8)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
 :::
 
 ## QoreX (권장) {#qorex}
@@ -110,7 +110,7 @@ console.log(w.svm);                            // base58 (same identity)
 :::
 
 :::note 테스트넷의 Solana 호환 레인
-Solana 호환 레인은 거버넌스 투표로 다시 열기 전까지 테스트넷에서 닫혀 있습니다(릴리스 v3.2.8, 테스트넷은 2026년 11월 12일부터). 그때까지 그곳에서는 Solana 방식의 트랜잭션을 사용할 수 없습니다.
+Solana 호환 레인은 테스트넷에서 거버넌스 제안 37(2026년 11월 12일) 이후 열려 있습니다. Solana 방식 트랜잭션에 대한 지갑 지원은 아직 없습니다. 명령줄에서 보내려면 [테스트넷의 SVM](/developer-guide/svm-testnet-v329)을 참조하세요.
 :::
 
 dApp에서 QoreChain 계정의 자금을 사용하기 위해 루트 키를 노출할 필요가 없도록 설계되었습니다(체인 버전 **v3.1.85**에서 도입). **Phantom**(ed25519) 또는 **MetaMask**(`personal_sign`을 통한 이더리움 주소 기반) 키를 계정의 **인증자(authenticator)로 등록**할 수 있으며 — 범위가 지정된 권한, 지출 한도, 만료 시각, 즉시 철회 기능과 함께 — 이후 dApp 백엔드가 중계하는 송금을 승인할 수 있습니다. 전체 모델과 코드는 [연결된 지갑 인증자](/developer-guide/account-abstraction#authenticators) 문서를, 종단 간 예제는 [SDK 인증자 가이드](/sdk/guides/authenticators)를 참고하세요.

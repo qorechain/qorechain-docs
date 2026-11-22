@@ -71,9 +71,9 @@ curl -s https://api-testnet.qore.host/qorechain/svm/v1/cluster_info
 
 Düğüm CLI'sında aynı sorgu vardır: `qorechaind query svm cluster-info`. `https://svm-testnet.qore.host` adresindeki `getGenesisHash` JSON-RPC yöntemi aynı özeti döndürür. Özet zincir kimliğinden türetilir; gerçek bir Solana kümesinin genesis özeti değildir. Rota mainnet'te de sunulur (v3.2.7'den beri): 12 Kasım 2026'da `https://api.qore.host/qorechain/svm/v1/cluster_info` `execution_enabled` `false` ile `200` yanıtı verdi.
 
-## Herkese açık SVM RPC'si salt okunurdur {#public-rpc}
+## Herkese açık SVM RPC'si ve yazmalar {#public-rpc}
 
-`https://svm.qore.host` ve `https://svm-testnet.qore.host` herkese açık uç noktaları okumalara yanıt verir ve şerit açık olsun olmasın, herkese açık zincir kimliklerinde yazma yöntemlerini (`sendTransaction` ve benzerleri) reddeder. SVM işlemleri göndermek için, varsayılan olarak 8899 numaralı bağlantı noktasında Solana uyumlu JSON-RPC sunan kendi düğümünüzü çalıştırırsınız ([SVM Geliştirme](/developer-guide/svm-development#json-rpc-server) sayfasına bakın) ve şeridin kendisi o düğümün izlediği ağda açık olmalıdır. Okumalar şimdi çalışır:
+`https://svm.qore.host` ve `https://svm-testnet.qore.host` herkese açık uç noktaları okumalara yanıt verir. `sendTransaction` işlemini yalnızca ağ geçidinde bir relayer anahtarı ayarlıysa relay ederler; 22 Kasım 2026'da genel test ağı ağ geçidinde hiçbiri ayarlı değildi, bu yüzden yazmaları reddetti (bkz. [Test Ağında SVM](/developer-guide/svm-testnet-v329#relay)). SVM işlemleri göndermek için taşıyıcı işlemi kendiniz gönderirsiniz veya varsayılan olarak 8899 numaralı bağlantı noktasında Solana uyumlu JSON-RPC sunan kendi düğümünüzü çalıştırırsınız ([SVM Geliştirme](/developer-guide/svm-development#json-rpc-server) sayfasına bakın) ve şeridin kendisi o düğümün izlediği ağda açık olmalıdır. Okumalar şimdi çalışır:
 
 ```bash
 # Health, version, cluster hash, slot and a rent quote (all HTTP 200 on 12 November 2026)
@@ -93,7 +93,7 @@ curl -s -X POST https://svm-testnet.qore.host -H 'Content-Type: application/json
 
 Şerit açıldığında akış şöyledir: güncel Solana araç zinciriyle bir SBF programı derleyin, dağıtın, ihtiyaç duyduğu hesapları oluşturun, sonra çağırın. Her `tx svm` komutu bir Cosmos şeridi işlemidir; bu yüzden açık bir gaz limiti, en az gaz çarpı 0,1 uqor ücret ve hibrit kuantum sonrası ortak imza gerektirir ([Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) sayfasına bakın).
 
-Bunlar düğüm başvurusundaki Linux düğüm CLI komutlarıdır. **UNTESTED: şerit test ağında yalnızca öneri 37'den sonra açıldı ve bu sayfa için hiçbir program dağıtımı, yürütmesi veya hesap oluşturma çalıştırılmadı.**
+Bunlar düğüm başvurusundaki Linux düğüm CLI komutlarıdır. **Henüz canlı ağa karşı test edilmedi: şerit test ağında yalnızca öneri 37'den sonra açıldı ve bu sayfa için hiçbir program dağıtımı, yürütmesi veya hesap oluşturma çalıştırılmadı.**
 
 ```bash
 # 1. Build (platform-tools v1.53, --arch v0 or --arch v3)
@@ -154,7 +154,7 @@ const sim = await client.simulateTransaction(tx);          // dry run first
 const signature = await client.sendTransaction(tx, [payer]);
 ```
 
-**UNTESTED:** bu örnek, sizin çalıştırdığınız bir düğüm gerektirir (şerit test ağında açıktır). Herkese açık uç noktaya karşı gönderim reddedilir. Salt okunur çağrılar (`client.getBalance`, `client.getAccountInfo`, `client.getSignaturesForAddress`), `createSvmClient({ rpcUrl })` herhangi bir URL kabul ettiği için `https://svm-testnet.qore.host` adresine karşı çalışır.
+**Henüz canlı ağa karşı test edilmedi:** bu örnek, sizin çalıştırdığınız bir düğüm gerektirir (şerit test ağında açıktır). Herkese açık uç noktaya karşı gönderim reddedilir. Salt okunur çağrılar (`client.getBalance`, `client.getAccountInfo`, `client.getSignaturesForAddress`), `createSvmClient({ rpcUrl })` herhangi bir URL kabul ettiği için `https://svm-testnet.qore.host` adresine karşı çalışır.
 
 Python, Go, Rust ve Java: bu dillerin SVM bağdaştırıcıları aynı mesajları oluşturur; daha sonraki bir SDK sürümü v3.2.8 yardımcılarını ekleyecek. O zamana kadar yukarıdaki düğüm CLI'sını veya ham mesajı kullanın. Yöntem kümesi Solana uyumlu olduğu için herhangi bir Solana istemci kütüphanesi de kendi düğümünüzün 8899 numaralı bağlantı noktasıyla konuşabilir.
 
@@ -178,7 +178,7 @@ Adresler: bir hesabın SVM adresi, 20 hesap baytının 32 bayta tamamlanıp base
 
 Zincirde kuantum sonrası bir anahtar isteyen bir SVM cüzdanı, bunu **`MsgRegisterSVMPQCKey`** ile kaydeder. Gönderen, 32 baytlık SVM adresi ve ML-DSA-87 genel anahtarını taşır. Bir Cosmos şeridi mesajıdır; bu yüzden gönderen onu diğer her Native işlem gibi hibrit imzalar. Şerit kapalıyken reddedilir ve **SVM hesabı, anahtarı kaydedilmeden önce zaten var olmalıdır** ([Test ağında denendi](#tested) altındaki reddedilme örneğine bakın).
 
-Bunun için bir `tx svm` komutu yoktur; SDK oluşturucusunu kullanın. TypeScript'te oluşturucu `@qorechain/sdk` içindeki `msg.svm.registerSvmPqcKey` işlevidir. **Var olan bir hesap için UNTESTED: tek gönderim, hesabı olmayan bir adres içindi ve reddedildi.**
+Bunun için bir `tx svm` komutu yoktur; SDK oluşturucusunu kullanın. TypeScript'te oluşturucu `@qorechain/sdk` içindeki `msg.svm.registerSvmPqcKey` işlevidir. **Var olan bir hesap için henüz canlı ağa karşı test edilmedi: tek gönderim, hesabı olmayan bir adres içindi ve reddedildi.**
 
 ```ts
 import {
@@ -240,8 +240,8 @@ Her çerçevenin 32 KiB yığını (stack) ve 256 KiB öbeği (heap) vardır. Yu
 
 Şerit açıktır, ancak herkese açık SVM JSON-RPC henüz tam bir Solana düğümü gibi davranmaz. Planınızı şu limitlere göre yapın:
 
-- **`getLatestBlockhash`, blok özetini Solana düğümlerinin yaptığı gibi base58 olarak değil, 64 onaltılık karakter olarak döndürür** (12 Kasım 2026'da okundu: `blockhash` `e8d4...d449`, `lastValidBlockHeight` 9944659). Base58 bekleyen bir istemcinin bunu dönüştürmesi gerekir. Zincir ekibi bir değişiklik planladı.
-- **Standart Solana araçlarından Solana tel biçimiyle (wire-format) `sendTransaction` herkese açık uç noktada henüz desteklenmiyor.** Programlar `MsgDeployProgram` ve `MsgExecuteProgram` Cosmos mesajlarıyla dağıtılır ve çağrılır; bunlar her Cosmos şeridi işlemi gibi hibrit imzayla imzalanır (yukarıdaki TypeScript yardımcılarına bakın). Solana araçlarıyla tam eşdeğerlik daha sonraki bir sürüm için planlanmıştır.
+- **`getLatestBlockhash`, blok özetini Solana düğümlerinin yaptığı gibi base58 olarak değil, 64 onaltılık karakter olarak döndürür** (12 Kasım 2026'da okundu: `blockhash` `e8d4...d449`, `lastValidBlockHeight` 9944659). Base58 bekleyen bir istemcinin bunu dönüştürmesi gerekir. Bir değişiklik planlanmıştır.
+- **Solana tel işlemleri**, test ağında v3.2.9 sürümünden itibaren `MsgSolanaTransaction` ile taşınır (bkz. [Test Ağında SVM](/developer-guide/svm-testnet-v329)). v3.2.8'de programlar `MsgDeployProgram` ve `MsgExecuteProgram` Cosmos mesajlarıyla dağıtılır ve çağrılır; bunlar her Cosmos şeridi işlemi gibi hibrit imzayla imzalanır (yukarıdaki TypeScript yardımcılarına bakın).
 - **Yabancı bir anahtar, bir aktarıcı (relayer) üzerinden bir SVM eylemini yetkilendirebilir.** Ağ `svm-relayed-chain-bound` protokol özelliğini etkinleştirdiğinde yetkilendirme, zincire bağlı bir özeti (alan `qorechain-svm-auth-v3`) imzalar; `@qorechain/wallet-adapter` 0.6.0 bunu `authSignBytesV3` ile oluşturur ve `resolveSvmAuthVersion` ağın hangi biçimi istediğini okur.
 
 ## Hatalar ve reddedilmeler {#errors}
@@ -251,7 +251,7 @@ Her çerçevenin 32 KiB yığını (stack) ve 256 KiB öbeği (heap) vardır. Yu
 | `SVM module is disabled` (kod 11) | Şerit kapalı (ana ağ veya öneri 37'den önceki test ağı) | `enabled` değerini okuyun; yeniden denemeyin |
 | `MsgRegisterSVMPQCKey`, `SVM account ... not found` ile reddedildi (codespace `svm`, kod 3) | SVM hesabı henüz yok | Önce hesabı oluşturun, sonra anahtarını kaydedin |
 | `MsgRegisterSVMPQCKey` şerit kapalıyken reddedildi | Şerit kapalı | Şerit açıldıktan sonra kaydedin |
-| `svm.qore.host` veya `svm-testnet.qore.host` üzerinde yazma yöntemi reddedildi | Herkese açık uç noktalar salt okunurdur | Kendi düğümünüzü kullanın |
+| `svm.qore.host` veya `svm-testnet.qore.host` üzerinde yazma yöntemi reddedildi | Herkese açık ağ geçidinde relayer anahtarı yok | Taşıyıcı işlemi kendiniz gönderin veya kendi düğümünüzü kullanın (bkz. [Test Ağında SVM](/developer-guide/svm-testnet-v329#relay)) |
 | `svm custody cap exceeded` (kod 23) | Havuz üst sınırında | Daha sonra veya daha küçük bir miktarla yeniden deneyin |
 | `airdrop rate limit exceeded` (kod 19) | `requestAirdrop` çok sık çağrıldı (yalnızca test ağı) | Bekleyin |
 | `blockhash expired` (kod 20) | Yakın zamanlı blok özeti çok eski | Yenisini alın ve yeniden imzalayın |
@@ -268,7 +268,7 @@ Her çerçevenin 32 KiB yığını (stack) ve 256 KiB öbeği (heap) vardır. Yu
 | `GET /qorechain/svm/v1/params` | `enabled` true; `max_program_size` 10485760, `max_account_data_size` 10485760, `compute_budget_max` 1400000, `lamports_per_byte` 3480, `rent_exemption_multi` 2, `max_cpi` 4, `max_custody_uqor` 10000000000, `max_custody_hard_uqor` 1000000000000, `max_account_excess_uqor` 10000000000 |
 | Henüz var olmayan bir SVM adresi için `MsgRegisterSVMPQCKey` | Reddedildi: codespace `svm` kod 3, `SVM account ... not found: SVM account not found`. Hesabın, kuantum sonrası anahtarı kaydedilmeden önce var olması gerekir |
 
-Çalıştırılmadı (UNTESTED): program dağıtımı, program yürütmesi ve SVM hesabı oluşturma.
+Çalıştırılmadı (henüz canlı ağa karşı test edilmedi): program dağıtımı, program yürütmesi ve SVM hesabı oluşturma.
 
 ## Ana ağ {#mainnet}
 

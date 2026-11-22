@@ -70,9 +70,10 @@ Precompile-Aufruf, sodass der Fehler pro Aufruf behandelt wird.
 
 ## Mein `client.qor`-Aufruf scheitert mit -32601
 
-`client.qor` ruft den JSON-RPC-Namespace `qor_` auf, den kein veröffentlichter
-Node-Build bereitstellt; `rpc_modules` auf den öffentlichen EVM-Endpoints listet
-nur `eth`, `net`, `rpc`, `txpool` und `web3`. Verwenden Sie stattdessen eine
+`client.qor` ruft den JSON-RPC-Namespace `qor_` auf, den der öffentliche
+Mainnet-EVM-Endpunkt nicht bereitstellt (das Mainnet läuft mit v3.2.8; `rpc_modules`
+dort listet nur `eth`, `net`, `rpc`, `txpool` und `web3`). Der Testnet-Endpunkt
+stellt ihn ab v3.2.9 bereit. Verwenden Sie stattdessen eine
 REST-Route, zum Beispiel `GET /qorechain/pqc/v1/account/{address}`
 (PQC-Schlüsselstatus) oder `GET /qorechain/burn/v1/stats`, über
 `client.rest.get(...)`. Siehe

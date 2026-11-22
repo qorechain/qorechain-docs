@@ -90,7 +90,7 @@ La cadena v3.2.5 cambia el comportamiento del puente. La mainnet la ejecuta desd
 
 ### Probado en la testnet {#tested-testnet}
 
-La testnet ejecuta la cadena v3.2.8 desde el 12 de noviembre de 2026 (altura 9,929,500). El 7 de noviembre de 2026 se enviaron dos solicitudes `eth_call` de solo lectura a `0x…0901` con el calldata de `executeCrossVMCall(uint8,string,bytes)` (VM de destino `1`, payload `{}`):
+La testnet ejecuta la cadena v3.2.9 desde el 20 de noviembre de 2026, después de v3.2.8 desde el 12 de noviembre (altura 9,929,500), y aplicó v3.2.9 en la altura 10,424,000. El 7 de noviembre de 2026 se enviaron dos solicitudes `eth_call` de solo lectura a `0x…0901` con el calldata de `executeCrossVMCall(uint8,string,bytes)` (VM de destino `1`, payload `{}`):
 
 | Destino | Resultado |
 |---|---|

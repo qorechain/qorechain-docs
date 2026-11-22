@@ -214,8 +214,7 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 Tokenomik durumunu, EVM JSON-RPC uç noktası üzerinden sunulan tipli `qor_*`
 JSON-RPC ad alanı (`client.qor`) aracılığıyla okuyun. Üç okuma birbirinden
 bağımsızdır; bu nedenle diğerleri kullanılamıyor olsa bile her biri ayrı ayrı
-raporlanır. Henüz hiçbir yayımlanmış düğüm sürümü `qor_` ad alanını sunmadığından,
-bugün her okuma `-32601` ile başarısız olur
+raporlanır. Mainnet uç noktası `qor_` ad alanını sunmaz (testnet v3.2.9'dan itibaren sunar); bu yüzden mainnet'te her okuma `-32601` ile başarısız olur
 ([`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace) sayfasına bakın).
 
 ```ts

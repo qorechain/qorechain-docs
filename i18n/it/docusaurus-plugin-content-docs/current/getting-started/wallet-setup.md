@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain supporta diversi tipi di wallet nei suoi ambienti di esecuzione nativo, EVM e SVM. Scegli il wallet più adatto al tuo caso d'uso.
 
 :::note
-I valori riportati di seguito coprono sia la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026, release v3.2.8 dal 18 novembre 2026) sia la testnet **`qorechain-diana`** (chain ID EVM **9800**, release v3.2.8 dal 12 novembre 2026). Gli endpoint pubblici di entrambe le reti sono elencati in [Reti](/appendix/networks#public-endpoints).
+I valori riportati di seguito coprono sia la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026, release v3.2.8 dal 18 novembre 2026) sia la testnet **`qorechain-diana`** (chain ID EVM **9800**, release v3.2.9 dal 20 novembre 2026, dopo la v3.2.8 dal 12 novembre). Gli endpoint pubblici di entrambe le reti sono elencati in [Reti](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (consigliato) {#qorex}
@@ -110,7 +110,7 @@ Le funzionalità di smart account e di wallet collegati sono implementate ma **d
 :::
 
 :::note Lane compatibile con Solana sulla testnet
-La lane compatibile con Solana è chiusa sulla testnet finché un voto di governance non la riapre (release v3.2.8, testnet dal 12 novembre 2026). Le transazioni in stile Solana lì non sono disponibili fino ad allora.
+La lane compatibile con Solana è aperta sulla testnet dalla proposta di governance 37 (12 novembre 2026). Il supporto dei wallet per le transazioni in stile Solana non è ancora disponibile. Vedi [SVM sulla Testnet](/developer-guide/svm-testnet-v329) per inviarle da riga di comando.
 :::
 
 Progettato in modo che non sia necessario esporre la propria chiave radice per spendere da un account QoreChain in una dApp (introdotto nella versione della chain **v3.1.85**): una chiave **Phantom** (ed25519) o **MetaMask** (tramite il suo indirizzo Ethereum, via `personal_sign`) può essere **registrata come authenticator** sul tuo account — con permessi delimitati, limiti di spesa, una scadenza e revoca istantanea — e quindi autorizzare trasferimenti inoltrati dal backend della dApp. Consulta [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) per il modello completo e il codice, e la [guida agli authenticator dell'SDK](/sdk/guides/authenticators) per esempi end-to-end.

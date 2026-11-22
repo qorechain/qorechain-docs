@@ -67,9 +67,9 @@ viem は `returned no data ("0x")` を報告し、ヘルパーは例外を投げ
 
 ## `client.qor` の呼び出しが -32601 で失敗します
 
-`client.qor` は `qor_` JSON-RPC 名前空間を呼び出しますが、リリース済みのどのノードビルドも
-これを提供していません。公開 EVM エンドポイントの `rpc_modules` には `eth`、`net`、`rpc`、
-`txpool`、`web3` のみが列挙されます。代わりに REST ルートを使用してください。例えば
+`client.qor` は `qor_` JSON-RPC 名前空間を呼び出しますが、公開メインネット EVM エンドポイントは
+これを提供していません（メインネットは v3.2.8 を実行しており、そこの `rpc_modules` には `eth`、`net`、`rpc`、
+`txpool`、`web3` のみが列挙されます）。テストネットのエンドポイントは v3.2.9 からこれを提供します。代わりに REST ルートを使用してください。例えば
 `GET /qorechain/pqc/v1/account/{address}`（PQC 鍵のステータス）や
 `GET /qorechain/burn/v1/stats` を、`client.rest.get(...)` 経由で呼び出します。詳細は
 [`qor_` 名前空間](/api-reference/json-rpc-qor_-namespace) を参照してください。

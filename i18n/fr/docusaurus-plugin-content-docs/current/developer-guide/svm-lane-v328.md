@@ -71,9 +71,9 @@ Réponse du 12 novembre 2026, lue après l'adoption de la proposition 37, avec `
 
 La CLI de nœud a la même requête : `qorechaind query svm cluster-info`. La méthode JSON-RPC `getGenesisHash` sur `https://svm-testnet.qore.host` renvoie le même hash. Le hash est dérivé de l'identifiant de chaîne ; ce n'est pas le hash de genèse d'un vrai cluster Solana. La route est aussi servie sur le mainnet (depuis la v3.2.7) : le 12 novembre 2026, `https://api.qore.host/qorechain/svm/v1/cluster_info` a répondu `200` avec `execution_enabled` à `false`.
 
-## Le RPC SVM public est en lecture seule {#public-rpc}
+## Le RPC SVM public et les écritures {#public-rpc}
 
-Les points de terminaison publics `https://svm.qore.host` et `https://svm-testnet.qore.host` répondent aux lectures et refusent les méthodes d'écriture (`sendTransaction` et similaires) sur les identifiants de chaîne publics, que la lane soit ouverte ou non. Pour soumettre des transactions SVM, vous exécutez votre propre nœud, qui sert par défaut le JSON-RPC compatible Solana sur le port 8899 (voir [Développement SVM](/developer-guide/svm-development#json-rpc-server)), et la lane elle-même doit être ouverte sur le réseau que ce nœud suit. Les lectures fonctionnent dès maintenant :
+Les points de terminaison publics `https://svm.qore.host` et `https://svm-testnet.qore.host` répondent aux lectures. Ils ne relaient `sendTransaction` que lorsque la passerelle a une clé de relayeur définie ; le 22 novembre 2026, la passerelle publique du testnet n'en avait aucune et refusait donc les écritures (voir [SVM sur le testnet](/developer-guide/svm-testnet-v329#relay)). Pour soumettre des transactions SVM, vous envoyez vous-même la transaction porteuse ou vous exécutez votre propre nœud, qui sert par défaut le JSON-RPC compatible Solana sur le port 8899 (voir [Développement SVM](/developer-guide/svm-development#json-rpc-server)), et la lane elle-même doit être ouverte sur le réseau que ce nœud suit. Les lectures fonctionnent dès maintenant :
 
 ```bash
 # Health, version, cluster hash, slot and a rent quote (all HTTP 200 on 12 November 2026)
@@ -93,7 +93,7 @@ curl -s -X POST https://svm-testnet.qore.host -H 'Content-Type: application/json
 
 Une fois la lane ouverte, le déroulement est le suivant : construire un programme SBF avec la chaîne d'outils Solana actuelle, le déployer, créer les comptes dont il a besoin, puis l'appeler. Chaque commande `tx svm` est une transaction de la lane Cosmos : elle exige donc une limite de gas explicite, des frais d'au moins le gas multiplié par 0,1 uqor, et la cosignature post-quantique hybride (voir [Signature post-quantique](/developer-guide/post-quantum-signing)).
 
-Voici les commandes de la CLI de nœud Linux tirées de la référence du nœud. **UNTESTED : la lane ne s'est ouverte sur le testnet qu'après la proposition 37, et aucun déploiement de programme, aucune exécution ni aucune création de compte n'a été exécuté pour cette page.**
+Voici les commandes de la CLI de nœud Linux tirées de la référence du nœud. **Pas encore testé sur le réseau réel : la lane ne s'est ouverte sur le testnet qu'après la proposition 37, et aucun déploiement de programme, aucune exécution ni aucune création de compte n'a été exécuté pour cette page.**
 
 ```bash
 # 1. Build (platform-tools v1.53, --arch v0 or --arch v3)
@@ -154,7 +154,7 @@ const sim = await client.simulateTransaction(tx);          // dry run first
 const signature = await client.sendTransaction(tx, [payer]);
 ```
 
-**UNTESTED :** cet exemple nécessite un nœud que vous exécutez (la lane est ouverte sur le testnet). Face au point de terminaison public, l'envoi est refusé. Les appels en lecture seule (`client.getBalance`, `client.getAccountInfo`, `client.getSignaturesForAddress`) fonctionnent contre `https://svm-testnet.qore.host`, car `createSvmClient({ rpcUrl })` accepte n'importe quelle URL.
+**Pas encore testé sur le réseau réel :** cet exemple nécessite un nœud que vous exécutez (la lane est ouverte sur le testnet). Face au point de terminaison public, l'envoi est refusé. Les appels en lecture seule (`client.getBalance`, `client.getAccountInfo`, `client.getSignaturesForAddress`) fonctionnent contre `https://svm-testnet.qore.host`, car `createSvmClient({ rpcUrl })` accepte n'importe quelle URL.
 
 Python, Go, Rust et Java : les adaptateurs SVM de ces langages construisent les mêmes messages ; une prochaine version du SDK ajoutera les assistants de la v3.2.8. D'ici là, utilisez la CLI de nœud ci-dessus ou le message brut. N'importe quelle bibliothèque cliente Solana peut aussi dialoguer avec le port 8899 de votre propre nœud, car l'ensemble de méthodes est compatible Solana.
 
@@ -178,7 +178,7 @@ Adresses : l'adresse SVM d'un compte est ses 20 octets de compte complétés jus
 
 Un portefeuille SVM qui veut une clé post-quantique on-chain l'enregistre avec **`MsgRegisterSVMPQCKey`**. Ce message porte l'expéditeur, l'adresse SVM de 32 octets et la clé publique ML-DSA-87. C'est un message de la lane Cosmos : l'expéditeur le signe donc en hybride comme toute autre transaction native. Il est refusé tant que la lane est fermée, et **le compte SVM doit déjà exister avant l'enregistrement de sa clé** (voir le refus sous [Testé sur le testnet](#tested)).
 
-Il n'y a pas de commande `tx svm` pour cela ; utilisez le compositeur du SDK. En TypeScript, le compositeur est `msg.svm.registerSvmPqcKey` dans `@qorechain/sdk`. **UNTESTED pour un compte existant : le seul envoi concernait une adresse sans compte, et il a été refusé.**
+Il n'y a pas de commande `tx svm` pour cela ; utilisez le compositeur du SDK. En TypeScript, le compositeur est `msg.svm.registerSvmPqcKey` dans `@qorechain/sdk`. **Pas encore testé sur le réseau réel pour un compte existant : le seul envoi concernait une adresse sans compte, et il a été refusé.**
 
 ```ts
 import {
@@ -240,8 +240,8 @@ Chaque cadre a une pile de 32 Kio et un tas de 256 Kio. Les valeurs ci-dessus pe
 
 La lane est ouverte, mais le JSON-RPC SVM public ne se comporte pas encore comme un nœud Solana complet. Planifiez en tenant compte de ces limites :
 
-- **`getLatestBlockhash` renvoie le blockhash sous forme de 64 caractères hexadécimaux,** et non en base58 comme le font les nœuds Solana (lu le 12 novembre 2026 : `blockhash` `e8d4...d449`, `lastValidBlockHeight` 9944659). Un client qui attend du base58 doit le convertir. L'équipe de la chaîne a programmé une modification.
-- **Le `sendTransaction` au format de fil Solana, depuis les outils Solana standard, n'est pas encore pris en charge** sur le point de terminaison public. Les programmes sont déployés et appelés avec les messages Cosmos `MsgDeployProgram` et `MsgExecuteProgram`, signés avec la signature hybride comme toute transaction de la lane Cosmos (voir les assistants TypeScript ci-dessus). Une parité complète avec les outils Solana est prévue pour une version ultérieure.
+- **`getLatestBlockhash` renvoie le blockhash sous forme de 64 caractères hexadécimaux,** et non en base58 comme le font les nœuds Solana (lu le 12 novembre 2026 : `blockhash` `e8d4...d449`, `lastValidBlockHeight` 9944659). Un client qui attend du base58 doit le convertir. Une modification est prévue.
+- **Les transactions filaires Solana** sont portées par `MsgSolanaTransaction` à partir de la version v3.2.9 sur le testnet (voir [SVM sur le testnet](/developer-guide/svm-testnet-v329)). En v3.2.8, les programmes sont déployés et appelés avec les messages Cosmos `MsgDeployProgram` et `MsgExecuteProgram`, signés avec la signature hybride comme toute transaction de la lane Cosmos (voir les assistants TypeScript ci-dessus).
 - **Une clé étrangère peut autoriser une action SVM par l'intermédiaire d'un relayeur.** L'autorisation signe un condensat lié à la chaîne (domaine `qorechain-svm-auth-v3`) dès que le réseau active la fonctionnalité de protocole `svm-relayed-chain-bound` ; `@qorechain/wallet-adapter` 0.6.0 le construit avec `authSignBytesV3`, et `resolveSvmAuthVersion` lit la forme que le réseau attend.
 
 ## Erreurs et refus {#errors}
@@ -251,7 +251,7 @@ La lane est ouverte, mais le JSON-RPC SVM public ne se comporte pas encore comme
 | `SVM module is disabled` (code 11) | La lane est fermée (mainnet, ou testnet avant la proposition 37) | Lisez `enabled` ; ne réessayez pas |
 | `MsgRegisterSVMPQCKey` refusé avec `SVM account ... not found` (codespace `svm`, code 3) | Le compte SVM n'existe pas encore | Créez d'abord le compte, puis enregistrez sa clé |
 | `MsgRegisterSVMPQCKey` refusé alors que la lane est fermée | Lane fermée | Enregistrez après l'ouverture de la lane |
-| Méthode d'écriture refusée sur `svm.qore.host` ou `svm-testnet.qore.host` | Les points de terminaison publics sont en lecture seule | Utilisez votre propre nœud |
+| Méthode d'écriture refusée sur `svm.qore.host` ou `svm-testnet.qore.host` | La passerelle publique n'a pas de clé de relayeur | Envoyez vous-même la transaction porteuse ou utilisez votre propre nœud (voir [SVM sur le testnet](/developer-guide/svm-testnet-v329#relay)) |
 | `svm custody cap exceeded` (code 23) | Le réservoir est à son plafond | Réessayez plus tard ou avec un montant plus petit |
 | `airdrop rate limit exceeded` (code 19) | `requestAirdrop` appelé trop souvent (testnet uniquement) | Patientez |
 | `blockhash expired` (code 20) | Le blockhash récent est trop ancien | Récupérez-en un nouveau et signez de nouveau |
@@ -268,7 +268,7 @@ Exécuté sur `qorechain-diana` le 12 novembre 2026 (version v3.2.8) après l'ad
 | `GET /qorechain/svm/v1/params` | `enabled` true ; `max_program_size` 10485760, `max_account_data_size` 10485760, `compute_budget_max` 1400000, `lamports_per_byte` 3480, `rent_exemption_multi` 2, `max_cpi` 4, `max_custody_uqor` 10000000000, `max_custody_hard_uqor` 1000000000000, `max_account_excess_uqor` 10000000000 |
 | `MsgRegisterSVMPQCKey` pour une adresse SVM qui n'existe pas encore | Refusé : codespace `svm` code 3, `SVM account ... not found: SVM account not found`. Le compte doit exister avant l'enregistrement de sa clé post-quantique |
 
-Non exécutés (UNTESTED) : déploiement de programme, exécution de programme et création de compte SVM.
+Non exécutés (pas encore testé sur le réseau réel) : déploiement de programme, exécution de programme et création de compte SVM.
 
 ## Mainnet {#mainnet}
 

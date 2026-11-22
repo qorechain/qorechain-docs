@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain incluye un entorno de ejecución **Solana Virtual Machine (SVM)** que permite a los desarrolladores desplegar y ejecutar programas SBF/BPF usando las herramientas habituales de Solana. El módulo SVM expone una interfaz JSON-RPC compatible con Solana en el **puerto 8899**, que `qorechaind start` inicia automáticamente (véase [Servidor JSON-RPC](#json-rpc-server) más abajo).
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.8** desde el 18 de noviembre de 2026 (propuesta de gobernanza 17, altura 4,273,000; v3.2.7 desde el 12 de noviembre de 2026; v3.2.6 desde el 4 de noviembre de 2026; v3.2.5 desde el 29 de octubre de 2026, v3.2.4 desde el 23 de octubre de 2026). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.8 (desde el 12 de noviembre de 2026; v3.2.4 desde el 19 de octubre de 2026). **Las transacciones SVM están deshabilitadas en ambas redes** (véase el recuadro siguiente), por lo que los comandos `tx svm` de esta página son solo de referencia: hoy no pueden tener éxito.
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.8** desde el 18 de noviembre de 2026 (propuesta de gobernanza 17, altura 4,273,000; v3.2.7 desde el 12 de noviembre de 2026; v3.2.6 desde el 4 de noviembre de 2026; v3.2.5 desde el 29 de octubre de 2026, v3.2.4 desde el 23 de octubre de 2026). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.9 (desde el 20 de noviembre de 2026; v3.2.8 desde el 12 de noviembre, v3.2.4 desde el 19 de octubre de 2026). **Las transacciones SVM están abiertas en la testnet** (propuesta de gobernanza 37) y **desactivadas en la mainnet**, por lo que los comandos `tx svm` de esta página solo pueden tener éxito en la testnet; para el recorrido completo en la testnet consulta [SVM en la testnet (v3.2.9)](/developer-guide/svm-testnet-v329).
 :::
 
 ---
 
-:::caution El envío de transacciones SVM está actualmente deshabilitado
-Desde la versión de cadena v3.1.89 (22 de agosto), tras un incidente, el carril de ejecución SVM está **deshabilitado en toda la red para el envío de transacciones**, tanto en `qorechain-vladi` como en `qorechain-diana` — cualquier transacción enviada a `x/svm` (despliegue de programas, ejecución de instrucciones, creación de cuentas, transferencias) devuelve `code 11, "SVM module is disabled"`. Esto se aplica tanto a su propio nodo como a los endpoints públicos. Los métodos RPC de solo lectura pueden seguir respondiendo, pero no construya ni ensaye una integración SVM en producción hasta que el carril vuelva a abrirse. En mainnet el carril SVM está desactivado en la versión actual, y activarlo en mainnet requiere una versión futura; se espera que permanezca deshabilitado hasta que una auditoría externa lo autorice.
+:::note Estado del carril SVM (comprobado el 22 de noviembre de 2026)
+En la testnet **`qorechain-diana`** el carril SVM está **abierto** desde la propuesta de gobernanza 37 (12 de noviembre de 2026), y la versión v3.2.9 añade transacciones Solana en formato nativo y ventanas SVM: consulta [SVM en la testnet](/developer-guide/svm-testnet-v329). En la mainnet **`qorechain-vladi`** el carril está **desactivado**: cualquier transacción `x/svm` allí devuelve `code 11, "SVM module is disabled"`. Lee `GET /qorechain/svm/v1/params` y comprueba `enabled` antes de construir.
 :::
 
 ## Visión general
@@ -47,7 +47,7 @@ Desde la versión de cadena **v3.1.82**, la interfaz SVM es una **interfaz de QO
 
 **Versión v3.2.8 (testnet desde el 12 de noviembre de 2026, mainnet desde el 18 de noviembre de 2026).** La actualización cierra el carril SVM en `qorechain-diana`: las escrituras SVM fallan, `MsgRegisterSVMPQCKey` se rechaza y el JSON-RPC de SVM rechaza los métodos de escritura en los chain ids públicos, hasta que una votación de gobernanza lo reabra (la testnet tiene un interruptor gobernado). En mainnet el carril sigue desactivado (leído el 19 de noviembre de 2026: `enabled` `false`). Los clientes deben leer el estado del carril en los parámetros del módulo SVM (`enabled`) antes de ofrecer acciones SVM.
 
-Los endpoints públicos (`https://svm.qore.host`, `https://svm-testnet.qore.host`) son **de solo lectura** — el envío de transacciones está deshabilitado en el borde. Normalmente ejecutaría su propio nodo (puerto 8899) para enviar transacciones SVM, pero véase la advertencia anterior: el propio carril de transacciones de `x/svm` está actualmente deshabilitado en toda la red, incluido en su propio nodo.
+Los endpoints públicos (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sirven lecturas. El 22 de noviembre de 2026 el gateway público de la testnet no retransmitía `sendTransaction` (respondía que no hay clave de relayer configurada), así que para enviar transacciones SVM en la testnet envías tú mismo la transacción portadora o ejecutas tu propio nodo (puerto 8899). Consulte [SVM en la testnet](/developer-guide/svm-testnet-v329#relay). En la mainnet el carril está desactivado.
 
 ---
 
@@ -246,7 +246,7 @@ Los programas que superan el presupuesto de cómputo se detienen y la transacci�
 
 ## Interoperabilidad entre VMs
 
-Los programas SVM están diseñados para comunicarse con contratos EVM y QoreChain Native a través del mensaje `MsgCrossVMCall` del módulo `x/crossvm` (la cadena determina por sí misma el carril de origen). Dado que el carril SVM está deshabilitado para transacciones y `MsgCrossVMCall` está desactivado en mainnet, hoy no existe una ruta entre VMs funcional para SVM. Véase [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) para conocer el estado actual, el ciclo de vida del mensaje y el comportamiento de tiempo de espera.
+Los programas SVM están diseñados para comunicarse con contratos EVM y QoreChain Native a través del mensaje `MsgCrossVMCall` del módulo `x/crossvm` (la cadena determina por sí misma el carril de origen). Las llamadas cross-VM están en pausa en la mainnet y el carril SVM está desactivado allí, así que no hay ruta cross-VM para SVM en la mainnet. En la testnet el carril SVM está abierto y las reglas de v3.2.9 figuran en [SVM en la testnet](/developer-guide/svm-testnet-v329). Véase [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) para conocer el estado actual, el ciclo de vida del mensaje y el comportamiento de tiempo de espera.
 
 ---
 

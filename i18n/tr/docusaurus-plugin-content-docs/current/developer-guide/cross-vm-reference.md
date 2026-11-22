@@ -12,7 +12,7 @@ VM'ler arası bir çağrı, bir sanal makinedeki kodun başka bir makinedeki sö
 Bu sayfa, v3.2.8 sürümü için alan, maliyet ve limit başvurusudur ve her yön için çalışan bir örnek içerir. Kavramlar, yaşam döngüsü ve eski davranış [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasındadır; SDK adım adım anlatımı [VM'ler Arası rehberinde](/sdk/guides/cross-vm) yer alır.
 
 :::note v3.2.8 nerede çalışır
-Her iki ağ da **v3.2.8** çalıştırır: **`qorechain-diana`** test ağı 12 Kasım 2026'dan beri, **`qorechain-vladi`** ana ağı 18 Kasım 2026'dan beri (yönetişim önerisi 17, yükseklik 4.273.000). Ana ağda `MsgCrossVMCall` şimdilik duraklatılmıştır; bu nedenle çağrı orada gönderilemez. Aşağıdaki örnekler ve denetimler test ağında çalıştırıldı.
+**`qorechain-vladi`** ana ağı 18 Kasım 2026'dan beri **v3.2.8** çalıştırır (yönetişim önerisi 17, yükseklik 4.273.000); **`qorechain-diana`** test ağı v3.2.8'i 12 Kasım 2026'dan beri çalıştırdı ve 20 Kasım 2026'dan beri v3.2.9 çalıştırır; bu sürüm SVM için VM'ler arası kurallar ekler (bkz. [v3.2.9](/appendix/version-history#v329)). Ana ağda `MsgCrossVMCall` şimdilik duraklatılmıştır; bu nedenle çağrı orada gönderilemez. Aşağıdaki örnekler ve denetimler test ağında çalıştırıldı.
 :::
 
 :::caution Çağrı mesajı şu anda kullanılabilir mi?
@@ -139,7 +139,7 @@ curl -s https://api-testnet.qore.host/qorechain/crossvm/v1/params
 | `max_message_size` | `65536` | Bayt cinsinden en büyük yük. |
 | `max_queue_size` | `1000` | Aynı anda kuyruklanabilecek en fazla çağrı. |
 | `queue_timeout_blocks` | `100` | Çalışmayan bir çağrının zaman aşımına uğramasından önceki blok sayısı. |
-| `bridge_allowed_targets` | üç `cosmwasm:qor1...` girdisi | `0x0901` köprüsünün çağırabileceği QoreChain Native sözleşmeleri. Boş olması köprüyü kapalı tutar. |
+| `bridge_allowed_targets` | test ağında dört `cosmwasm:qor1...` girdisi (22 Kasım 2026), ana ağda boş | `0x0901` köprüsünün çağırabileceği QoreChain Native sözleşmeleri. Boş olması köprüyü kapalı tutar. |
 | `bridge_target_pins` | hedef başına bir girdi: `target`, `code_id`, `history_len` | Köprünün çağırabilmesi için her izinli hedefin hâlâ çalıştırması gereken kod. |
 | `max_pending_per_sender` | `100` | Bir göndericinin tutabileceği kuyruklanmış çağrılar. |
 | `max_cosmos_tx_gas` | `"50000000"` | Bir Native işleminin bildirebileceği en fazla gaz. |
@@ -158,11 +158,11 @@ Kuyruklanan bir çağrının şu anda ne kadar ön ödeme yapacağını görmek 
 
 ## Yönlere göre örnekler {#examples}
 
-Tüm örnekler, her Native işlemde olduğu gibi hesabın kuantum sonrası anahtarıyla imzalar; bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing). Bu sayfa için yalnızca Native hesaptan QoreChain Native'e örnekler gönderildi ([Test ağında denendi](#tested) bölümüne bakın); EVM örnekleri çalıştırılmadı ve göründükleri yerde UNTESTED olarak işaretlenmiştir.
+Tüm örnekler, her Native işlemde olduğu gibi hesabın kuantum sonrası anahtarıyla imzalar; bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing). Bu sayfa için yalnızca Native hesaptan QoreChain Native'e örnekler gönderildi ([Test ağında denendi](#tested) bölümüne bakın); EVM örnekleri çalıştırılmadı ve göründükleri yerde "henüz canlı ağa karşı test edilmedi" olarak işaretlenmiştir.
 
 ### Native hesaptan EVM sözleşmesine {#native-to-evm}
 
-**UNTESTED:** bu yön bu sayfa için çalıştırılmadı.
+**Henüz canlı ağa karşı test edilmedi:** bu yön bu sayfa için çalıştırılmadı.
 
 Hedef bir EVM sözleşmesidir; yük ABI kodlu çağrı verisidir. Çağrı kendi `0x` adresiniz olarak çalışır, dolayısıyla EVM tarafı sizi `msg.sender` olarak görür. Komut satırı (Linux düğüm CLI'sı), önce oluşturun sonra kuantum sonrası imzayı ekleyin:
 
@@ -289,7 +289,7 @@ SDK 0.13.0'da `async_gas_limit` veya `async_max_factor` için bir seçenek yoktu
 
 ### EVM sözleşmesinden QoreChain Native sözleşmesine, 0x0901 üzerinden {#evm-to-wasm}
 
-**UNTESTED:** bu yön bu sayfa için çalıştırılmadı.
+**Henüz canlı ağa karşı test edilmedi:** bu yön bu sayfa için çalıştırılmadı.
 
 Bir Solidity sözleşmesi `0x0000000000000000000000000000000000000901` adresindeki köprü ön derlemesini çağırır. Çağrı EVM işleminin içinde, çağıran hesap veya sözleşme (`qor1` adresi olarak) QoreChain Native göndereni olacak şekilde çalışır ve herhangi bir yerdeki bir geri alma her iki tarafı da geri alır.
 
@@ -334,7 +334,7 @@ qorechaind tx pqc open-evm-window 600 5 10qor \
 
 ### QoreChain Native sözleşmesinden EVM sözleşmesine {#wasm-to-evm}
 
-Dokümantasyon yazarı tarafından **UNTESTED**. Zincir ekibi, her iki modun da v3.2.8'den önce test ağında çalıştığını bildiriyor.
+**Bu sayfadan canlı ağa karşı henüz test edilmedi.** Her iki mod da v3.2.8'den önce test ağında çalıştı.
 
 Bir QoreChain Native sözleşmesi, kendisi gönderen olarak bir `MsgCrossVMCall` mesajını zincir mesajı olarak göndererek çağrıyı yapar. Mesaj yukarıdakiyle aynı alanlara sahiptir; `source_vm` ne derse desin zincir sözleşmeyi bir CosmWasm çağıranı olarak ele alır. `async` false (varsayılan) iken çağrı senkrondur: işlemin gazıyla çalışır, yanıt `MsgCrossVMCallResponse.data` içindedir ve bir başarısızlık tüm işlemi geri alır. `async` true iken kuyruğa alınır. Bkz. [Kim kimi çağırır](#who-calls-whom). Aşağıdaki örnek çağrıyı kuyruğa alır:
 
@@ -394,7 +394,7 @@ Bir authz yetkisi altında bir ERC-20 token'ının dönüştürülmesi (`MsgConv
 | Onu listeleyen bir pencere olmadan `0x0901` çağrısı | Reddedilir |
 | `0x0901` hedefi `bridge_allowed_targets` içinde değil veya sabitlendiğinden beri kodu değişti | Geri alınır: izinsiz bir hedef için `cross-VM bridge call refused: target ... is not allowlisted` |
 | Devre kesici listesindeki `MsgCrossVMCall` | İşlem reddedilir; kuyruklanmış çağrılar bekler |
-| SVM'ye bir çağrı | Şerit öneri 37'den beri test ağında açık, ana ağda kapalı; bu sayfa için SVM'ye hiçbir çağrı çalıştırılmadı (UNTESTED) |
+| SVM'ye bir çağrı | Şerit öneri 37'den beri test ağında açık, ana ağda kapalı; bu sayfa için SVM'ye hiçbir çağrı çalıştırılmadı (henüz canlı ağa karşı test edilmedi) |
 
 Başarısız bir kuyruklanmış çağrıda kaydedilen hata, kaynak dosya notu içermeyen düz metin taşır.
 
@@ -422,7 +422,7 @@ Başarısız bir kuyruklanmış çağrıda kaydedilen hata, kaynak dosya notu i�
 | Sonrasında `GET /qorechain/crossvm/v1/pending` | Boş liste |
 | `async_max_factor` değeri `6` | Hiçbir şey çalışmadan reddedildi: codespace `crossvm` kod 2, `async_max_factor 6 is outside 1000000..100000000 (millionths): invalid cross-VM message` |
 
-Bu sayfa için çalıştırılmadı (UNTESTED): `0x0901` üzerinden EVM'den QoreChain Native'e ve QoreChain Native'den EVM'ye. Zincir ekibi, QoreChain Native'den EVM'ye senkron ve asenkron yolların v3.2.8'den önce test ağında 9.795.779 ve 9.795.783 yüksekliklerinde çalıştığını bildiriyor.
+Bu sayfa için çalıştırılmadı (henüz canlı ağa karşı test edilmedi): `0x0901` üzerinden EVM'den QoreChain Native'e ve QoreChain Native'den EVM'ye. QoreChain Native'den EVM'ye senkron ve asenkron yollar v3.2.8'den önce test ağında 9.795.779 ve 9.795.783 yüksekliklerinde çalıştı.
 
 ## İlgili sayfalar {#related}
 

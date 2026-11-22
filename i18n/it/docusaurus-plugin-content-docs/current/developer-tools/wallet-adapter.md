@@ -167,7 +167,7 @@ L'ordine conta: apri la finestra, poi leggi il nonce EVM, poi firma la transazio
 
 ## Cosa cambia la 0.6.0 {#whats-new-060}
 
-La 0.6.0 (12 novembre 2026) aggiunge il supporto per la chain v3.2.8 (la testnet la esegue dal 12 novembre 2026, la mainnet dal 18 novembre 2026). Le nuove regole valgono su una rete una volta che esegue la v3.2.8, cosa che ora fanno entrambe le reti.
+La 0.6.0 (12 novembre 2026) aggiunge il supporto per la chain v3.2.8 (la testnet la esegue dal 12 novembre 2026, la mainnet dal 18 novembre 2026). Le nuove regole valgono su una rete una volta che esegue la v3.2.8, cosa che ora fanno entrambe le reti (la testnet esegue la v3.2.9 dal 20 novembre 2026, per la quale il wallet-adapter 0.6.0 non è stato scritto).
 
 **Modifiche incompatibili.**
 

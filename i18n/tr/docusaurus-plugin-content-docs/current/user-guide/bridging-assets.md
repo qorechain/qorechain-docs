@@ -14,7 +14,7 @@ Köprü modülü mainnet ve testnet'te dağıtılmıştır, ancak **hiçbir köp
 :::
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**, zincir sürümü **v3.2.8**, 12 Kasım 2026'dan beri) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 18 Kasım 2026'dan beri **v3.2.8** zincir sürümünü çalıştırır (yükseklik 4.273.000, yönetişim önerisi 17; v3.2.7, 12 Kasım'dan beri). Bir rota etkinleştirildiğinde **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın. Durum 27 Ekim 2026'da kontrol edildi: her iki ağda da 37 zincir yapılandırmasının tamamı `pending` durumundadır.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**, zincir sürümü **v3.2.9**, 20 Kasım 2026'dan beri, 12 Kasım'dan itibaren v3.2.8'in ardından) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 18 Kasım 2026'dan beri **v3.2.8** zincir sürümünü çalıştırır (yükseklik 4.273.000, yönetişim önerisi 17; v3.2.7, 12 Kasım'dan beri). Bir rota etkinleştirildiğinde **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın. Durum 27 Ekim 2026'da kontrol edildi: her iki ağda da 37 zincir yapılandırmasının tamamı `pending` durumundadır.
 :::
 
 ---

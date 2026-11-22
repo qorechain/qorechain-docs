@@ -10,7 +10,7 @@ sidebar_position: 7
 O tranzacție Ethereum poartă o singură semnătură secp256k1 și nimic altceva, deci nu poate purta semnătura post-cuantică (ML-DSA-87) pe care QoreChain o cere oricărei alte tranzacții. **Fereastra de autorizare EVM** închide această lacună. Contul deschide mai întâi o fereastră limitată printr-un mesaj QoreChain Native care **este** semnat cu cheia lui post-cuantică, iar lane-ul EVM admite apoi tranzacțiile obișnuite ale contului (MetaMask, ethers.js, Hardhat sau Foundry) doar cât timp fereastra le acoperă. Această pagină este referința completă despre cum se comportă o fereastră în versiunea **v3.2.8**.
 
 :::note Unde rulează v3.2.8
-Ambele rețele rulează **v3.2.8**: testnet-ul **`qorechain-diana`** din 12 noiembrie 2026 și mainnet-ul **`qorechain-vladi`** din 18 noiembrie 2026 (propunerea de guvernanță 17, înălțimea 4.273.000). Opțiunile și regulile marcate „v3.2.8" mai jos se aplică pe ambele. Un nod sub v3.2.8 refuză un mesaj de fereastră care setează listele noi. Verificările și rulările de test de pe această pagină au fost făcute pe testnet.
+Mainnet-ul **`qorechain-vladi`** rulează **v3.2.8** din 18 noiembrie 2026 (propunerea de guvernanță 17, înălțimea 4.273.000); testnet-ul **`qorechain-diana`** a rulat v3.2.8 din 12 noiembrie 2026 și rulează v3.2.9 din 20 noiembrie 2026. Opțiunile și regulile marcate „v3.2.8" mai jos se aplică pe ambele; listele din interogare marcate „v3.2.9" sunt doar pentru testnet. Un nod sub v3.2.8 refuză un mesaj de fereastră care setează listele noi. Verificările și rulările de test de pe această pagină au fost făcute pe testnet.
 :::
 
 ## De ce contează {#why}
@@ -84,6 +84,24 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 Un cont fără fereastră răspunde cu HTTP 200 și `found: false`, deci ruta poate fi interogată periodic fără risc. Fiecare număr este un șir JSON. O fereastră stocată poate fi expirată sau epuizată: `live` vă spune dacă mai admite cel puțin încă o tranzacție de valoare zero la înălțimea curentă.
 
+### Cele trei liste de domeniu din interogare (testnet, v3.2.9) {#window-query-lists}
+
+Începând cu v3.2.9, interogarea ferestrei întoarce întregul domeniu cu care a fost deschisă fereastra, nu doar `allowed_targets`. Răspunsul are încă trei câmpuri, toate liste de șiruri:
+
+| Câmp | Numărul în răspunsul gRPC | Conține |
+| ----- | --------------------------- | ----- |
+| `validators` | 14 | Adresele de contract (`0x...`) a căror verificare de semnătură se numără pentru cont |
+| `staking_validators` | 15 | Validatorii `qorvaloper1...` către care fereastra permite delegarea sau redelegarea |
+| `ibc_receivers` | 16 | Destinațiile `<channel>/<receiver>` către care poate merge un transfer IBC de QOR nativ |
+
+O listă goală înseamnă că fereastra a fost deschisă fără niciun element, ceea ce refuză acel tip de acțiune, așa că poți citi ce permite o fereastră fără să păstrezi valorile cu care ai deschis-o. Acest lucru rulează doar pe testnet: mainnet-ul rulează v3.2.8, a cărui interogare a ferestrei nu întoarce aceste trei câmpuri. Verificat pe 22 noiembrie 2026 pe REST-ul testnet-ului: o adresă fără fereastră a răspuns `found: false`, cu `allowed_targets`, `validators`, `staking_validators` și `ibc_receivers` toate prezente ca liste goale. O fereastră cu liste nevide nu a fost citită înapoi pentru această pagină.
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
+```
+
+Ar trebui să vezi cele trei nume de câmpuri în răspuns. Dacă lipsesc, nodul la care ai ajuns este mai vechi decât v3.2.9 (de exemplu endpoint-ul mainnet-ului).
+
 ### TypeScript {#typescript}
 
 Funcțiile ajutătoare pentru fereastră sunt în `@qorechain/sdk` (vedeți [ghidul SDK EVM](/sdk/guides/evm#evm-window-scope) pentru configurarea semnării). `openEvmWindowMsg` primește toate câmpurile de mai jos, `closeEvmWindowMsg` construiește mesajul de închidere, `fetchEvmWindow` citește fereastra, iar `classifyEvmWindowRejection` explică un refuz.
@@ -131,7 +149,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg` verifică limitele și formatele listelor înainte să se semneze ceva, deci o greșeală eșuează local în loc să coste o tranzacție refuzată. `MAX_EVM_WINDOW_BLOCKS` și `MAX_EVM_WINDOW_TXS` exportă limitele. Citirea înapoi (`fetchEvmWindow`) returnează limitele, contoarele și domeniul din v3.2.3 (`nativeOnly`, `allowedTargets`); `validators` (adrese de contract), `stakingValidators` (`qorvaloper1...`) și `ibcReceivers` (`"<channel>/<receiver>"`) sunt acceptate de constructor începând cu SDK 0.14.0, care poartă listele din v3.2.8; citirea înapoi nu le returnează, iar nici ruta REST a ferestrei din v3.2.8 nu le returnează, așa că păstrați valorile cu care ați deschis fereastra. Setați cele trei liste doar pentru o rețea care rulează v3.2.8: un nod sub această versiune refuză un mesaj de fereastră care le setează. Cu un `connectTx` care semnează hibrid, cheia post-cuantică trebuie să fie deja înregistrată.
+`openEvmWindowMsg` verifică limitele și formatele listelor înainte să se semneze ceva, deci o greșeală eșuează local în loc să coste o tranzacție refuzată. `MAX_EVM_WINDOW_BLOCKS` și `MAX_EVM_WINDOW_TXS` exportă limitele. Citirea înapoi (`fetchEvmWindow`) returnează limitele, contoarele și domeniul din v3.2.3 (`nativeOnly`, `allowedTargets`); `validators` (adrese de contract), `stakingValidators` (`qorvaloper1...`) și `ibcReceivers` (`"<channel>/<receiver>"`) sunt acceptate de constructor începând cu SDK 0.14.0, care poartă listele din v3.2.8; citirea înapoi nu le returnează, iar nici ruta REST a ferestrei din v3.2.8 nu le returnează (testnet-ul le returnează începând cu v3.2.9, vezi [cele trei liste de domeniu din interogare](#window-query-lists)), așa că, atunci când citiți o rețea v3.2.8, păstrați valorile cu care ați deschis fereastra. Setați cele trei liste doar pentru o rețea care rulează v3.2.8: un nod sub această versiune refuză un mesaj de fereastră care le setează. Cu un `connectTx` care semnează hibrid, cheia post-cuantică trebuie să fie deja înregistrată.
 
 ### Testat pe testnet {#tested}
 
@@ -144,7 +162,7 @@ Rulat pe `qorechain-diana` pe 12 noiembrie 2026 (release v3.2.8) cu un cont eth-
 | Deschidere din nou cu `nativeOnly: true` | cod 0, 187,803 gaz utilizat. Fereastra nouă a înlocuit-o pe cea veche: `native_only: true`, un `opened_height` nou |
 | Închidere | cod 0, 170,468 gaz utilizat. Citit înapoi: `found: false` |
 
-Cu SDK 0.14.0, în aceeași zi, o fereastră deschisă cu `allowedTargets` (o adresă de țintă admisă), `stakingValidators` (o adresă de operator de validator) și `ibcReceivers` (o pereche `channel-0/...`) a reușit cu cod 0 și 195,233 gaz utilizat. Citirea înapoi prin REST a listat `allowed_targets` și a returnat `found: true`, `live: true`; nu returnează listele `validators`, `staking_validators` sau `ibc_receivers`, așa că păstrați valorile cu care ați deschis fereastra.
+Cu SDK 0.14.0, în aceeași zi, o fereastră deschisă cu `allowedTargets` (o adresă de țintă admisă), `stakingValidators` (o adresă de operator de validator) și `ibcReceivers` (o pereche `channel-0/...`) a reușit cu cod 0 și 195,233 gaz utilizat. Citirea înapoi prin REST a listat `allowed_targets` și a returnat `found: true`, `live: true`; nu a returnat listele `validators`, `staking_validators` sau `ibc_receivers` pe v3.2.8 (începând cu v3.2.9 pe testnet le returnează, vezi [cele trei liste de domeniu din interogare](#window-query-lists)), așa că, pe o rețea v3.2.8, păstrați valorile cu care ați deschis fereastra.
 
 `fetchEvmWindow` a returnat aceleași câmpuri în camel case (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). Deschiderea și închiderea sunt tranzacții Cosmos semnate hibrid, deci prima tranzacție pe care o trimite un cont are nevoie ca cheia lui să fie înregistrată mai întâi.
 

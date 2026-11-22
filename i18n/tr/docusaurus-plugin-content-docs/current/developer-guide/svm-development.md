@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain, geliştiricilerin tanıdık Solana araçlarını kullanarak SBF/BPF programları dağıtmasına ve çalıştırmasına olanak tanıyan bir **Solana Virtual Machine (SVM)** yürütme ortamı içerir. SVM modülü, `qorechaind start` komutunun otomatik olarak başlattığı, **8899 portu** üzerinde Solana uyumlu bir JSON-RPC arayüzü sunar (aşağıdaki [JSON-RPC Sunucusu](#json-rpc-server) bölümüne bakın).
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve 18 Kasım 2026'dan beri **v3.2.8** düğüm sürümünü çalıştıran (yönetişim önerisi 17, yükseklik 4.273.000; v3.2.7 12 Kasım 2026'dan beri; v3.2.6 4 Kasım 2026'dan beri; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını (mainnet) kullanır. v3.2.8 çalıştıran (12 Kasım 2026'dan beri; 19 Ekim 2026'dan beri v3.2.4) test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **Her iki ağda da SVM işlemleri devre dışıdır** (bir sonraki kutuya bakın); bu nedenle bu sayfadaki `tx svm` komutları yalnızca referans amaçlıdır: bugün başarılı olamazlar.
+Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve 18 Kasım 2026'dan beri **v3.2.8** düğüm sürümünü çalıştıran (yönetişim önerisi 17, yükseklik 4.273.000; v3.2.7 12 Kasım 2026'dan beri; v3.2.6 4 Kasım 2026'dan beri; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını (mainnet) kullanır. v3.2.9 çalıştıran (20 Kasım 2026'dan beri; v3.2.8 12 Kasım'dan beri, 19 Ekim 2026'dan beri v3.2.4) test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **SVM işlemleri test ağında açıktır** (yönetişim önerisi 37) ve **ana ağda kapalıdır**; bu nedenle bu sayfadaki `tx svm` komutları yalnızca test ağında başarılı olabilir; test ağı için tam adım adım anlatım için bkz. [Test Ağında SVM (v3.2.9)](/developer-guide/svm-testnet-v329).
 :::
 
 ---
 
-:::caution SVM işlem gönderimi şu anda devre dışı
-v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM yürütme hattı hem `qorechain-vladi` hem de `qorechain-diana` üzerinde **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — `x/svm`'e gönderilen herhangi bir işlem (program dağıtımı, talimat yürütmesi, hesap oluşturma, transferler) `code 11, "SVM module is disabled"` hatası döndürür. Bu durum hem kendi düğümünüz hem de genel uç noktalar için geçerlidir. Okuma türü RPC metodları yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar canlı bir SVM entegrasyonu kurmayın veya provasını yapmayın. Ana ağda SVM hattı mevcut sürümde kapalıdır ve ana ağda açılması gelecekteki bir sürüm gerektirir; harici bir denetim onaylayana kadar kapalı kalması beklenmektedir.
+:::note SVM hattı durumu (22 Kasım 2026'da kontrol edildi)
+**`qorechain-diana`** test ağında SVM hattı, yönetişim önerisi 37'den (12 Kasım 2026) beri **açıktır** ve v3.2.9 sürümü Solana tel işlemleri ile SVM pencereleri ekler: bkz. [Test Ağında SVM](/developer-guide/svm-testnet-v329). **`qorechain-vladi`** ana ağında hat **kapalıdır**: orada `x/svm`'e gönderilen herhangi bir işlem `code 11, "SVM module is disabled"` döndürür. Geliştirmeye başlamadan önce `GET /qorechain/svm/v1/params` yanıtını okuyun ve `enabled` alanını kontrol edin.
 :::
 
 ## Genel Bakış
@@ -47,7 +47,7 @@ v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM y
 
 **v3.2.8 sürümü (test ağında 12 Kasım 2026'dan beri, ana ağda 18 Kasım 2026'dan beri).** Yükseltme, `qorechain-diana` üzerinde SVM hattını kapatır: SVM yazmaları başarısız olur, `MsgRegisterSVMPQCKey` reddedilir ve SVM JSON-RPC, genel zincir kimliklerinde yazma metotlarını reddeder; bir yönetişim oylaması hattı yeniden açana kadar böyle kalır (test ağında yönetişimle yönetilen bir anahtar vardır). Ana ağda hat kapalı kalır (19 Kasım 2026'da okundu: `enabled` `false`). İstemciler, SVM eylemleri sunmadan önce hattın durumunu SVM modül parametrelerinden (`enabled`) okumalıdır.
 
-Genel uç noktalar (`https://svm.qore.host`, `https://svm-testnet.qore.host`) **salt okunurdur** — işlem gönderimi uç noktada (edge) devre dışıdır. Normal koşullarda SVM işlemleri göndermek için kendi düğümünüzü (port 8899) çalıştırırdınız, ancak yukarıdaki uyarıyı unutmayın: `x/svm` işlem hattının kendisi, kendi düğümünüz dahil, şu anda ağ genelinde devre dışıdır.
+Genel uç noktalar (`https://svm.qore.host`, `https://svm-testnet.qore.host`) okumalara yanıt verir. 22 Kasım 2026'da genel test ağı ağ geçidi `sendTransaction` işlemini relay etmedi (hiçbir relayer anahtarı ayarlı olmadığını bildirdi); bu yüzden test ağında SVM işlemleri göndermek için taşıyıcı işlemi kendiniz gönderirsiniz veya kendi düğümünüzü (port 8899) çalıştırırsınız. Bkz. [Test Ağında SVM](/developer-guide/svm-testnet-v329#relay). Ana ağda hat kapalıdır.
 
 ---
 
@@ -246,7 +246,7 @@ Hesaplama bütçesini aşan programlar durdurulur ve işlem geri alınır.
 
 ## VM'ler Arası Birlikte Çalışabilirlik
 
-SVM programları, `x/crossvm` modülünün `MsgCrossVMCall` mesajı aracılığıyla EVM ve QoreChain Native sözleşmeleriyle iletişim kurmak üzere tasarlanmıştır (kaynak hattı zincir kendisi belirler). SVM hattı işlemler için devre dışı olduğundan ve `MsgCrossVMCall` ana ağda kapalı olduğundan, bugün çalışan bir SVM VM'ler arası yolu yoktur. Güncel durum, mesaj yaşam döngüsü ve zaman aşımı davranışı için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın.
+SVM programları, `x/crossvm` modülünün `MsgCrossVMCall` mesajı aracılığıyla EVM ve QoreChain Native sözleşmeleriyle iletişim kurmak üzere tasarlanmıştır (kaynak hattı zincir kendisi belirler). VM'ler arası çağrılar ana ağda duraklatılmıştır ve SVM hattı orada kapalıdır; bu nedenle ana ağda bir SVM VM'ler arası yolu yoktur. Test ağında SVM hattı açıktır ve v3.2.9 kuralları [Test Ağında SVM](/developer-guide/svm-testnet-v329) sayfasındadır. Güncel durum, mesaj yaşam döngüsü ve zaman aşımı davranışı için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın.
 
 ---
 

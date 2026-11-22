@@ -46,7 +46,7 @@ applies. Checked against the live endpoints on 27 October 2026; on 7 November 20
 The published SDK (0.14.0, 12 November 2026) signs in the form both networks verify
 (v2 hybrid sign-bytes, resolved from chain state), and the signing format,
 addresses, decimals, memos and fees did not change in v3.2.3, v3.2.4, v3.2.5 or v3.2.6 (mainnet ran v3.2.7 from 12 November 2026,
-height 4,164,600, governance proposal 16, after v3.2.6 on 4 November, and has run v3.2.8 since 18 November 2026, height 4,273,000, governance proposal 17; the testnet since 27 October, and since 6 November the testnet ran v3.2.7 and since 12 November it runs v3.2.8, which add messages that SDK 0.14.0 has builders for; the new rules apply from v3.2.8 on both networks; the v3.2.7 messages are on mainnet from 12 November 2026). It carries
+height 4,164,600, governance proposal 16, after v3.2.6 on 4 November, and has run v3.2.8 since 18 November 2026, height 4,273,000, governance proposal 17; the testnet since 27 October, and since 6 November the testnet ran v3.2.7 since 12 November it ran v3.2.8 and since 20 November it runs v3.2.9, which add messages that SDK 0.14.0 has builders for; the new rules apply from v3.2.8 on both networks; the v3.2.7 messages are on mainnet from 12 November 2026). It carries
 the client side of the later post-quantum rules (the proof of possession on key
 registration, scoped EVM windows, EIP-7702 consent messages) and of v3.2.4 (staking
 tiers, the authenticator nonce, protocol feature switches) and v3.2.5 (exact gas for

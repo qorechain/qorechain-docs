@@ -218,7 +218,7 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 Lisez l'état de la tokenomics via l'espace de noms JSON-RPC typé `qor_*`
 (`client.qor`) sur le point de terminaison JSON-RPC EVM. Les trois lectures sont
 indépendantes, chacune est donc rapportée même si les autres sont indisponibles.
-Aucune version publiée du nœud ne sert encore l'espace de noms `qor_` ; aujourd'hui,
+Le point de terminaison du mainnet ne sert pas l'espace de noms `qor_` (le testnet le sert à partir de la v3.2.9) ; sur le mainnet,
 chaque lecture échoue donc avec `-32601` (voir
 [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace)).
 

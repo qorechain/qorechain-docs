@@ -14,7 +14,7 @@ Il modulo di account astratti è **disattivato sulla mainnet `qorechain-vladi`**
 :::
 
 :::note
-I comandi seguenti usano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.8** (applicata all'altezza 4.273.000 il 18 novembre 2026, proposta di governance 17; la v3.2.7 è stata applicata all'altezza 4.164.600 il 12 novembre 2026, proposta 16; la v3.2.6 è stata applicata all'altezza 4.020.000 il 4 novembre 2026, proposta 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre 2026, proposta 14, e la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue anch'essa la v3.2.8 (dal 12 novembre 2026; v3.2.4 dal 19 ottobre 2026).
+I comandi seguenti usano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.8** (applicata all'altezza 4.273.000 il 18 novembre 2026, proposta di governance 17; la v3.2.7 è stata applicata all'altezza 4.164.600 il 12 novembre 2026, proposta 16; la v3.2.6 è stata applicata all'altezza 4.020.000 il 4 novembre 2026, proposta 15; la v3.2.5 è stata applicata all'altezza 3.906.833 il 29 ottobre 2026, proposta 14, e la v3.2.4 all'altezza 3.742.566 il 23 ottobre 2026). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.9 (dal 20 novembre 2026; la v3.2.8 dal 12 novembre, la v3.2.4 dal 19 ottobre 2026).
 :::
 
 :::caution Ogni transazione sulla lane Cosmos richiede la co-firma ibrida post-quantistica
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Collegare una chiave nella v3.2.8: esempio completo {#link-example-v328}
 
-Questa sezione percorre un collegamento completo sulla testnet **`qorechain-diana`**, che esegue la v3.2.8 dal 12 novembre 2026. Anche la mainnet esegue la v3.2.8 (dal 18 novembre 2026), ma il suo modulo di astrazione dell'account era spento all'ultimo controllo (27 ottobre 2026), quindi nulla di tutto questo vi si applicava in quel controllo. In breve: la chiave che colleghi deve firmare un breve testo per mostrare che accetta di essere collegata, una chiave che può muovere valore richiede una regola di spesa sull'account, e quando una chiave collegata in seguito spende, una spesa fallita viene segnalata all'interno di una transazione riuscita.
+Questa sezione percorre un collegamento completo sulla testnet **`qorechain-diana`**, che esegue la v3.2.9 dal 20 novembre 2026, dopo la v3.2.8 dal 12 novembre. La mainnet esegue la v3.2.8 (dal 18 novembre 2026), ma il suo modulo di astrazione dell'account era spento all'ultimo controllo (27 ottobre 2026), quindi nulla di tutto questo vi si applicava in quel controllo. In breve: la chiave che colleghi deve firmare un breve testo per mostrare che accetta di essere collegata, una chiave che può muovere valore richiede una regola di spesa sull'account, e quando una chiave collegata in seguito spende, una spesa fallita viene segnalata all'interno di una transazione riuscita.
 
 Perché è importante: dalla v3.2.8 il titolare della chiave partecipa al collegamento, quindi una chiave può essere collegata solo da chi la detiene davvero, e una chiave che può muovere valore è sempre limitata da un tetto sull'account.
 
@@ -458,7 +458,7 @@ Un client che controlla solo `code === 0` segnala una tale chiamata come riuscit
 
 Sulla testnet il 12 novembre 2026 (release v3.2.8, SDK 0.13.0, firma ibrida): `MsgUpdateSpendingRules` con una regola (limite giornaliero 1.000.000 uqor, limite per transazione 100.000 uqor, solo `uqor`) è riuscito con codice 0 e 186.319 gas usati. Un `MsgRegisterAuthenticator` per la permission `evm` inviato prima che la regola esistesse è stato rifiutato con codice 8, e inviato dopo la regola ma senza una prova di possesso è stato rifiutato con codice 10, con i messaggi nella tabella degli errori. L'SDK 0.13.0 non ha un campo per la prova di possesso nei suoi composer di registrazione, quindi il collegamento riuscito è stato eseguito poi con pacchetti più recenti, come descritto di seguito.
 
-**Eseguito dall'autore della documentazione sulla testnet il 12 novembre 2026, con SDK 0.14.0 e wallet-adapter 0.6.0 (tutto con codice 0):**
+**Eseguito per questa pagina sulla testnet il 12 novembre 2026, con SDK 0.14.0 e wallet-adapter 0.6.0 (tutto con codice 0):**
 
 * `linkAuthenticatorMsgs` ha costruito la regola di spesa (`MsgUpdateSpendingRules`) e `MsgRegisterAuthenticator` per un indirizzo Ethereum, con la prova di possesso di `metaMaskPossessionProof` (firmata qui da una chiave usa e getta tramite un provider che risponde a `personal_sign`). Entrambi i messaggi sono andati in UNA sola transazione firmata dal proprietario: 220.973 gas usati con un limite di 600.000.
 * `GET /qorechain/abstractaccount/v1/accounts/{address}` ha poi mostrato `authenticators_count` 1, e `GET .../authenticators` ha elencato la chiave: schema `secp256k1`, `pubkey_hex` l'indirizzo di 20 byte, permission `evm`, `revoked` false.

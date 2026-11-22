@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain, **QoreChain Native** akıllı sözleşmelerini destekler. QoreChain Native, QoreChain'in **CosmWasm** çalışma zamanına verdiği addır: geliştiriciler standart CosmWasm kütüphanelerine (`cosmwasm-std`) karşı güvenli, sandbox'lanmış Rust programları yazar ve bunları WebAssembly'ye derler. QoreChain Native sözleşmeleri, QoreChain'in üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve 18 Kasım 2026'dan beri **v3.2.8** düğüm sürümünü çalıştıran (yönetişim önerisi 17, yükseklik 4.273.000; v3.2.7 12 Kasım 2026'dan beri; v3.2.6 4 Kasım 2026'dan beri; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını kullanır. ayrıca v3.2.8 çalıştıran (12 Kasım 2026'dan beri; v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve 18 Kasım 2026'dan beri **v3.2.8** düğüm sürümünü çalıştıran (yönetişim önerisi 17, yükseklik 4.273.000; v3.2.7 12 Kasım 2026'dan beri; v3.2.6 4 Kasım 2026'dan beri; v3.2.5 29 Ekim 2026'dan beri, v3.2.4 23 Ekim 2026'dan beri) **`qorechain-vladi`** ana ağını kullanır. v3.2.9 çalıştıran (20 Kasım 2026'dan beri; v3.2.8 12 Kasım'dan beri, v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` kullanın.
 :::
 
 :::caution Kod yükleme ve örnekleme ana ağda açık izin gerektirir; test ağı farklıdır

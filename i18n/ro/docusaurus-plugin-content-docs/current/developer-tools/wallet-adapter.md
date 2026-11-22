@@ -167,7 +167,7 @@ Ordinea contează: deschideți fereastra, apoi citiți nonce-ul EVM, apoi semna�
 
 ## Ce schimbă 0.6.0 {#whats-new-060}
 
-0.6.0 (12 noiembrie 2026) adaugă suport pentru lanțul v3.2.8 (testnet-ul îl rulează din 12 noiembrie 2026, mainnet-ul din 18 noiembrie 2026). Regulile noi se aplică pe o rețea de îndată ce rulează v3.2.8, ceea ce fac acum ambele rețele.
+0.6.0 (12 noiembrie 2026) adaugă suport pentru lanțul v3.2.8 (testnet-ul îl rulează din 12 noiembrie 2026, mainnet-ul din 18 noiembrie 2026). Regulile noi se aplică pe o rețea de îndată ce rulează v3.2.8, ceea ce fac acum ambele rețele (testnet-ul rulează v3.2.9 din 20 noiembrie 2026, pentru care wallet-adapter 0.6.0 nu a fost scris).
 
 **Schimbări care rup compatibilitatea.**
 

@@ -213,8 +213,8 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 Lee el estado de la tokenómica a través del espacio de nombres JSON-RPC tipado
 `qor_*` (`client.qor`), sobre el endpoint JSON-RPC de EVM. Las tres
 lecturas son independientes, por lo que cada una se informa aunque las demás no
-estén disponibles. Ninguna build de nodo publicada sirve todavía el espacio de
-nombres `qor_`, así que hoy cada lectura falla con `-32601` (consulta
+estén disponibles. El endpoint de mainnet no sirve el espacio de nombres `qor_`
+(la testnet lo sirve desde v3.2.9), así que en mainnet cada lectura falla con `-32601` (consulta
 [el espacio de nombres `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
 ```ts

@@ -69,9 +69,9 @@ per call.
 
 ## My `client.qor` call fails with -32601
 
-`client.qor` calls the `qor_` JSON-RPC namespace, which no released node build
-serves; `rpc_modules` on the public EVM endpoints lists only `eth`, `net`, `rpc`,
-`txpool` and `web3`. Use a REST route instead, for example
+`client.qor` calls the `qor_` JSON-RPC namespace, which the public mainnet EVM
+endpoint does not serve (mainnet runs v3.2.8; `rpc_modules` there lists only `eth`,
+`net`, `rpc`, `txpool` and `web3`). The testnet endpoint serves it from v3.2.9. Use a REST route instead, for example
 `GET /qorechain/pqc/v1/account/{address}` (PQC key status) or
 `GET /qorechain/burn/v1/stats`, through `client.rest.get(...)`. See
 [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace).

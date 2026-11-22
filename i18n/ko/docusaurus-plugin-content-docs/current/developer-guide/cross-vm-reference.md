@@ -12,7 +12,7 @@ sidebar_position: 9
 이 페이지는 릴리스 v3.2.8의 필드, 비용, 제한을 정리한 레퍼런스이며 방향별 실행 예시를 담고 있습니다. 개념, 수명 주기, 이전 동작은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)에, SDK 안내는 [크로스 VM 가이드](/sdk/guides/cross-vm)에 있습니다.
 
 :::note v3.2.8이 실행되는 곳
-두 네트워크 모두 **v3.2.8**을 실행합니다. **`qorechain-diana`** 테스트넷은 2026년 11월 12일부터, **`qorechain-vladi`** 메인넷은 2026년 11월 18일부터(거버넌스 제안 17, 높이 4,273,000) 실행합니다. 메인넷에서는 `MsgCrossVMCall`이 현재 일시 중지되어 있어 그곳에서 호출을 보낼 수 없습니다. 아래의 예제와 확인은 테스트넷에서 실행한 것입니다.
+**`qorechain-vladi`** 메인넷은 2026년 11월 18일부터 **v3.2.8**을 실행합니다(거버넌스 제안 17, 높이 4,273,000). **`qorechain-diana`** 테스트넷은 2026년 11월 12일부터 v3.2.8을 실행했고 2026년 11월 20일부터 v3.2.9를 실행하며, v3.2.9는 SVM용 크로스 VM 규칙을 추가합니다([v3.2.9](/appendix/version-history#v329) 참조). 메인넷에서는 `MsgCrossVMCall`이 현재 일시 중지되어 있어 그곳에서 호출을 보낼 수 없습니다. 아래의 예제와 확인은 테스트넷에서 실행한 것입니다.
 :::
 
 :::caution 호출 메시지를 지금 사용할 수 있나요?
@@ -139,7 +139,7 @@ curl -s https://api-testnet.qore.host/qorechain/crossvm/v1/params
 | `max_message_size` | `65536` | 페이로드의 최대 바이트 수. |
 | `max_queue_size` | `1000` | 한 번에 큐에 넣을 수 있는 최대 호출 수. |
 | `queue_timeout_blocks` | `100` | 실행되지 않은 호출이 시간 초과되기까지의 블록 수. |
-| `bridge_allowed_targets` | `cosmwasm:qor1...` 항목 세 개 | `0x0901` 브리지가 호출할 수 있는 QoreChain Native 컨트랙트. 비어 있으면 브리지가 닫힌 상태입니다. |
+| `bridge_allowed_targets` | 테스트넷에서는 `cosmwasm:qor1...` 항목 네 개(2026년 11월 22일), 메인넷에서는 비어 있음 | `0x0901` 브리지가 호출할 수 있는 QoreChain Native 컨트랙트. 비어 있으면 브리지가 닫힌 상태입니다. |
 | `bridge_target_pins` | 대상마다 한 항목: `target`, `code_id`, `history_len` | 브리지가 호출하려면 허용된 각 대상이 계속 실행하고 있어야 하는 코드. |
 | `max_pending_per_sender` | `100` | 한 발신자가 가질 수 있는 큐 호출 수. |
 | `max_cosmos_tx_gas` | `"50000000"` | Native 트랜잭션 하나가 선언할 수 있는 최대 가스. |
@@ -158,11 +158,11 @@ curl -s https://api-testnet.qore.host/qorechain/crossvm/v1/params
 
 ## 방향별 예시 {#examples}
 
-모든 예시는 모든 Native 트랜잭션과 마찬가지로 계정의 포스트 퀀텀 키로 서명합니다. [양자내성 서명](/developer-guide/post-quantum-signing)을 참조하세요. 이 페이지를 위해 실제로 전송한 것은 Native 계정에서 QoreChain Native 컨트랙트로 가는 예시뿐이며([테스트넷에서 검증한 내용](#tested) 참조), EVM 예시는 실행하지 않았고 해당 위치에 UNTESTED로 표시했습니다.
+모든 예시는 모든 Native 트랜잭션과 마찬가지로 계정의 포스트 퀀텀 키로 서명합니다. [양자내성 서명](/developer-guide/post-quantum-signing)을 참조하세요. 이 페이지를 위해 실제로 전송한 것은 Native 계정에서 QoreChain Native 컨트랙트로 가는 예시뿐이며([테스트넷에서 검증한 내용](#tested) 참조), EVM 예시는 실행하지 않았고 해당 위치에 "라이브 네트워크에서 아직 테스트하지 않음"으로 표시했습니다.
 
 ### Native 계정에서 EVM 컨트랙트로 {#native-to-evm}
 
-**UNTESTED:** 이 페이지를 위해 이 방향은 실행하지 않았습니다.
+**라이브 네트워크에서 아직 테스트하지 않음:** 이 페이지를 위해 이 방향은 실행하지 않았습니다.
 
 대상은 EVM 컨트랙트이며 페이로드는 ABI 인코딩된 호출 데이터입니다. 호출은 사용자 자신의 `0x` 주소로 실행되므로 EVM 쪽에서는 사용자가 `msg.sender`로 보입니다. 명령줄(Linux 노드 CLI)에서는 먼저 만든 뒤 포스트 퀀텀 서명을 추가합니다.
 
@@ -289,7 +289,7 @@ SDK 0.13.0에는 `async_gas_limit`나 `async_max_factor` 옵션이 없으므로 
 
 ### 0x0901을 통한 EVM 컨트랙트에서 QoreChain Native 컨트랙트로 {#evm-to-wasm}
 
-**UNTESTED:** 이 페이지를 위해 이 방향은 실행하지 않았습니다.
+**라이브 네트워크에서 아직 테스트하지 않음:** 이 페이지를 위해 이 방향은 실행하지 않았습니다.
 
 Solidity 컨트랙트가 `0x0000000000000000000000000000000000000901`의 브리지 프리컴파일을 호출합니다. 호출은 EVM 트랜잭션 안에서 실행되며, 호출하는 계정 또는 컨트랙트(`qor1` 주소로)가 QoreChain Native 발신자가 되고, 어디서든 되돌림이 발생하면 양쪽이 모두 취소됩니다.
 
@@ -334,7 +334,7 @@ qorechaind tx pqc open-evm-window 600 5 10qor \
 
 ### QoreChain Native 컨트랙트에서 EVM 컨트랙트로 {#wasm-to-evm}
 
-문서 작성자는 **UNTESTED**입니다. 체인 팀은 v3.2.8 이전에 두 모드 모두 테스트넷에서 실행했다고 보고합니다.
+**이 페이지에서는 라이브 네트워크에 대해 아직 테스트하지 않았습니다.** 두 모드 모두 v3.2.8 이전에 테스트넷에서 실행되었습니다.
 
 QoreChain Native 컨트랙트는 자기 자신을 발신자로 하여 `MsgCrossVMCall`을 체인 메시지로 디스패치하는 방식으로 호출합니다. 메시지의 필드는 위와 같으며, 체인은 `source_vm`이 무엇이라고 하든 컨트랙트를 CosmWasm 호출자로 취급합니다. `async`가 false(기본값)이면 호출은 동기입니다. 트랜잭션의 가스로 실행되고, 응답은 `MsgCrossVMCallResponse.data`에 담기며, 실패하면 트랜잭션 전체가 되돌려집니다. `async`가 true이면 큐에 들어갑니다. [누가 누구를 호출하는가](#who-calls-whom)를 참조하세요. 아래 예시는 호출을 큐에 넣습니다.
 
@@ -394,7 +394,7 @@ authz 부여 아래의 ERC-20 토큰 변환(`MsgConvertERC20`)도 같은 방식�
 | `0x0901`을 나열한 윈도우 없이 `0x0901` 호출 | 거부됨 |
 | `0x0901` 대상이 `bridge_allowed_targets`에 없거나 고정된 이후 코드가 바뀜 | 되돌려짐. 목록에 없는 대상이면 `cross-VM bridge call refused: target ... is not allowlisted` |
 | `MsgCrossVMCall`이 서킷 브레이커 목록에 있음 | 트랜잭션 거부됨. 큐에 있는 호출은 대기 상태로 남음 |
-| SVM으로의 호출 | 레인은 제안 37 이후 테스트넷에서 열려 있고 메인넷에서는 꺼져 있음. 이 페이지를 위해 SVM으로 보내는 호출은 실행하지 않음(UNTESTED) |
+| SVM으로의 호출 | 레인은 제안 37 이후 테스트넷에서 열려 있고 메인넷에서는 꺼져 있음. 이 페이지를 위해 SVM으로 보내는 호출은 실행하지 않음(라이브 네트워크에서 아직 테스트하지 않음) |
 
 실패한 큐 호출에 기록되는 오류는 소스 파일 주석이 없는 일반 텍스트입니다.
 
@@ -422,7 +422,7 @@ authz 부여 아래의 ERC-20 토큰 변환(`MsgConvertERC20`)도 같은 방식�
 | 이후 `GET /qorechain/crossvm/v1/pending` | 빈 목록 |
 | `async_max_factor`가 `6` | 아무것도 실행되기 전에 거부됨: 코드스페이스 `crossvm` 코드 2, `async_max_factor 6 is outside 1000000..100000000 (millionths): invalid cross-VM message` |
 
-이 페이지를 위해 실행하지 않은 것(UNTESTED)은 `0x0901`을 통한 EVM에서 QoreChain Native로, 그리고 QoreChain Native에서 EVM으로입니다. 체인 팀은 QoreChain Native에서 EVM으로 가는 동기 및 비동기 경로가 v3.2.8 이전에 테스트넷의 높이 9,795,779와 9,795,783에서 실행되었다고 보고합니다.
+이 페이지를 위해 실행하지 않은 것(라이브 네트워크에서 아직 테스트하지 않음)은 `0x0901`을 통한 EVM에서 QoreChain Native로, 그리고 QoreChain Native에서 EVM으로입니다. QoreChain Native에서 EVM으로 가는 동기 및 비동기 경로가 v3.2.8 이전에 테스트넷의 높이 9,795,779와 9,795,783에서 실행되었습니다.
 
 ## 관련 페이지 {#related}
 

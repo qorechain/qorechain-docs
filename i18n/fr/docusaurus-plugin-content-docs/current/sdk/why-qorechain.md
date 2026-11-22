@@ -101,7 +101,7 @@ module de pont natif (`crossvm`, plus le precompile `CrossVMBridge` une fois
 actif ; il n'est pas actif sur le mainnet ; le testnet l'a actif avec une liste d'autorisation, testé avec `eth_call` le 7 novembre 2026), de sorte qu'une seule interface du SDK peut adresser les trois. Les
 chaînes mono-VM n'ont rien d'équivalent à encapsuler. Aujourd'hui, la portée d'un
 appel est limitée par la voie qu'il cible : `MsgCrossVMCall` est désactivé sur le
-mainnet, les transactions SVM sont désactivées, et le téléversement et
+mainnet, la voie SVM est désactivée, et le téléversement et
 l'instanciation QoreChain Native sont soumis à autorisation (l'instanciation est ouverte sur le testnet). Voir
 [Appels cross-VM](/sdk/guides/cross-vm).
 

@@ -230,7 +230,7 @@ Le funzionalità di smart account e di wallet collegati della chain sono attivat
 :::
 
 :::note Lane compatibile con Solana sulla testnet
-La lane compatibile con Solana è chiusa sulla testnet finché un voto di governance non la riapre (release v3.2.8, testnet dal 12 novembre 2026). Le transazioni in stile Solana lì non sono disponibili fino ad allora.
+La lane compatibile con Solana è aperta sulla testnet dalla proposta di governance 37 (12 novembre 2026). Il supporto dei wallet per le transazioni in stile Solana non è ancora disponibile. Vedi [SVM sulla Testnet](/developer-guide/svm-testnet-v329) per inviarle da riga di comando.
 :::
 
 :::caution Un firmatario collegato è un'autorità reale sull'account

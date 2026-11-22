@@ -230,7 +230,7 @@ Funcțiile de cont inteligent și de portofele legate ale lanțului sunt activat
 :::
 
 :::note Lane-ul compatibil Solana pe testnet
-Lane-ul compatibil Solana este închis pe testnet până când un vot de guvernanță îl redeschide (versiunea v3.2.8, pe testnet din 12 noiembrie 2026). Tranzacțiile în stil Solana nu sunt disponibile acolo până atunci.
+Lane-ul compatibil Solana este deschis pe testnet din propunerea de guvernanță 37 (12 noiembrie 2026). Suportul din wallet pentru tranzacțiile în stil Solana nu este încă disponibil. Vezi [SVM pe testnet](/developer-guide/svm-testnet-v329) pentru a le trimite din linia de comandă.
 :::
 
 :::caution Un semnatar legat este autoritate reală asupra contului

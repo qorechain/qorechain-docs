@@ -215,8 +215,8 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 Tokenomics-State über den typisierten `qor_*`-JSON-RPC-Namespace
 (`client.qor`) lesen, über den EVM-JSON-RPC-Endpunkt. Die drei Lesevorgänge
 sind unabhängig, daher wird jeder gemeldet, auch wenn die anderen nicht
-verfügbar sind. Bisher stellt kein veröffentlichter Node-Build den
-`qor_`-Namespace bereit, daher schlägt heute jeder Lesevorgang mit `-32601`
+verfügbar sind. Der Mainnet-Endpunkt stellt den `qor_`-Namespace nicht bereit
+(das Testnet ab v3.2.9 schon), daher schlägt im Mainnet jeder Lesevorgang mit `-32601`
 fehl (siehe [den `qor_`-Namespace](/api-reference/json-rpc-qor_-namespace)).
 
 ```ts

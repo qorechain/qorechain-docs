@@ -211,8 +211,8 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 
 Read tokenomics state through the typed `qor_*` JSON-RPC namespace
 (`client.qor`) over the EVM JSON-RPC endpoint. The three reads are independent,
-so each is reported even if the others are unavailable. No released node build
-serves the `qor_` namespace yet, so today each read fails with `-32601` (see
+so each is reported even if the others are unavailable. The mainnet
+endpoint does not serve the `qor_` namespace (the testnet does from v3.2.9), so on mainnet each read fails with `-32601` (see
 [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)).
 
 ```ts

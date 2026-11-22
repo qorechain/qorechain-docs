@@ -14,7 +14,7 @@ Le module d'abstraction de compte est **désactivé sur le mainnet `qorechain-vl
 :::
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.8** (appliquée à la hauteur 4 273 000 le 18 novembre 2026, proposition de gouvernance 17 ; la v3.2.7 a été appliquée à la hauteur 4 164 600 le 12 novembre 2026, proposition 16 ; la v3.2.6 a été appliquée à la hauteur 4 020 000 le 4 novembre 2026, proposition 15 ; la v3.2.5 a été appliquée à la hauteur 3 906 833 le 29 octobre 2026, proposition 14, et la v3.2.4 à la hauteur 3 742 566 le 23 octobre 2026). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute aussi la v3.2.8 (depuis le 12 novembre 2026 ; v3.2.4 depuis le 19 octobre 2026).
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.8** (appliquée à la hauteur 4 273 000 le 18 novembre 2026, proposition de gouvernance 17 ; la v3.2.7 a été appliquée à la hauteur 4 164 600 le 12 novembre 2026, proposition 16 ; la v3.2.6 a été appliquée à la hauteur 4 020 000 le 4 novembre 2026, proposition 15 ; la v3.2.5 a été appliquée à la hauteur 3 906 833 le 29 octobre 2026, proposition 14, et la v3.2.4 à la hauteur 3 742 566 le 23 octobre 2026). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.9 (depuis le 20 novembre 2026 ; v3.2.8 depuis le 12 novembre, v3.2.4 depuis le 19 octobre 2026).
 :::
 
 :::caution Toute transaction sur la voie Cosmos exige la co-signature post-quantique hybride
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Lier une clé en v3.2.8 : exemple détaillé {#link-example-v328}
 
-Cette section décrit pas à pas un lien complet sur le testnet **`qorechain-diana`**, qui exécute la v3.2.8 depuis le 12 novembre 2026. Le mainnet exécute aussi la v3.2.8 (depuis le 18 novembre 2026), mais son module de compte abstrait était désactivé lors de la dernière vérification (27 octobre 2026) : rien de tout cela ne s'y appliquait donc à cette vérification. En bref : la clé que vous liez doit signer un court texte pour montrer qu'elle consent à être liée, une clé qui peut déplacer de la valeur a besoin d'une règle de dépense sur le compte, et lorsqu'une clé liée dépense ensuite, une dépense échouée est signalée à l'intérieur d'une transaction réussie.
+Cette section décrit pas à pas un lien complet sur le testnet **`qorechain-diana`**, qui exécute la v3.2.9 depuis le 20 novembre 2026, après la v3.2.8 du 12 novembre. Le mainnet exécute aussi la v3.2.8 (depuis le 18 novembre 2026), mais son module de compte abstrait était désactivé lors de la dernière vérification (27 octobre 2026) : rien de tout cela ne s'y appliquait donc à cette vérification. En bref : la clé que vous liez doit signer un court texte pour montrer qu'elle consent à être liée, une clé qui peut déplacer de la valeur a besoin d'une règle de dépense sur le compte, et lorsqu'une clé liée dépense ensuite, une dépense échouée est signalée à l'intérieur d'une transaction réussie.
 
 Pourquoi c'est important : à partir de la v3.2.8, le détenteur de la clé participe au lien ; une clé ne peut donc être liée que par quelqu'un qui la détient réellement, et une clé qui peut déplacer de la valeur est toujours bornée par une limite sur le compte.
 
@@ -458,7 +458,7 @@ Un client qui ne vérifie que `code === 0` signale un tel appel comme un succès
 
 Sur le testnet le 12 novembre 2026 (version v3.2.8, SDK 0.13.0, signature hybride) : `MsgUpdateSpendingRules` avec une règle (limite quotidienne de 1 000 000 uqor, limite par transaction de 100 000 uqor, `uqor` uniquement) a réussi avec le code 0 et 186 319 gas utilisés. Un `MsgRegisterAuthenticator` pour la permission `evm` envoyé avant que la règle n'existe a été refusé avec le code 8, et envoyé après la règle mais sans preuve de possession, il a été refusé avec le code 10, avec les messages du tableau des erreurs. Le SDK 0.13.0 n'a pas de champ de preuve de possession dans ses compositeurs d'enregistrement : le lien réussi a donc été exécuté ensuite avec des paquets plus récents, comme décrit ci-après.
 
-**Exécuté par l'auteur de la documentation sur le testnet le 12 novembre 2026, avec le SDK 0.14.0 et wallet-adapter 0.6.0 (tous en code 0) :**
+**Exécuté pour cette page sur le testnet le 12 novembre 2026, avec le SDK 0.14.0 et wallet-adapter 0.6.0 (tous en code 0) :**
 
 * `linkAuthenticatorMsgs` a construit la règle de dépense (`MsgUpdateSpendingRules`) et `MsgRegisterAuthenticator` pour une adresse Ethereum, avec la preuve de possession de `metaMaskPossessionProof` (signée ici par une clé jetable via un fournisseur qui répond à `personal_sign`). Les deux messages sont passés dans UNE seule transaction signée par le propriétaire : 220 973 gas utilisés pour une limite de 600 000.
 * `GET /qorechain/abstractaccount/v1/accounts/{address}` a alors montré `authenticators_count` 1, et `GET .../authenticators` a listé la clé : schéma `secp256k1`, `pubkey_hex` l'adresse de 20 octets, permissions `evm`, `revoked` false.

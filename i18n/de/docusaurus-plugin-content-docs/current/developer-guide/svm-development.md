@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain enthält eine **Solana Virtual Machine (SVM)**-Ausführungsumgebung, die es Entwicklern ermöglicht, SBF/BPF-Programme mit vertrauten Solana-Tools bereitzustellen und auszuführen. Das SVM-Modul stellt eine Solana-kompatible JSON-RPC-Schnittstelle auf **Port 8899** bereit, die von `qorechaind start` automatisch gestartet wird (siehe [JSON-RPC-Server](#json-rpc-server) unten).
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das das Node-Release **v3.2.8** seit dem 18. November 2026 ausführt (Governance-Vorschlag 17, Höhe 4.273.000; v3.2.7 seit dem 12. November 2026; v3.2.6 seit dem 4. November 2026; v3.2.5 seit dem 29. Oktober 2026, v3.2.4 seit dem 23. Oktober 2026). Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, das v3.2.8 ausführt (seit dem 12. November 2026; v3.2.4 seit dem 19. Oktober 2026). **SVM-Transaktionen sind auf beiden Netzwerken deaktiviert** (siehe den nächsten Kasten), daher dienen die `tx svm`-Befehle auf dieser Seite nur als Referenz: Sie können heute nicht gelingen.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das das Node-Release **v3.2.8** seit dem 18. November 2026 ausführt (Governance-Vorschlag 17, Höhe 4.273.000; v3.2.7 seit dem 12. November 2026; v3.2.6 seit dem 4. November 2026; v3.2.5 seit dem 29. Oktober 2026, v3.2.4 seit dem 23. Oktober 2026). Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, das v3.2.9 ausführt (seit dem 20. November 2026; v3.2.8 ab dem 12. November, v3.2.4 seit dem 19. Oktober 2026). **SVM-Transaktionen sind im Testnet offen** (Governance-Vorschlag 37) und **im Mainnet aus**, daher können die `tx svm`-Befehle auf dieser Seite nur im Testnet gelingen; die vollständige Testnet-Anleitung finden Sie unter [SVM im Testnet (v3.2.9)](/developer-guide/svm-testnet-v329).
 :::
 
 ---
 
-:::caution Übermittlung von SVM-Transaktionen derzeit deaktiviert
-Seit Chain-Version v3.1.89 (22. August) ist die SVM-Ausführungsspur infolge eines Vorfalls **netzwerkweit für die Übermittlung von Transaktionen deaktiviert**, sowohl auf `qorechain-vladi` als auch auf `qorechain-diana` — jede an `x/svm` gesendete Transaktion (Programm-Deployment, Instruktionsausführung, Kontoerstellung, Überweisungen) liefert `code 11, "SVM module is disabled"` zurück. Dies gilt sowohl für Ihren eigenen Node als auch für die öffentlichen Endpunkte. Lesende RPC-Methoden können weiterhin antworten, aber bauen oder proben Sie keine produktive SVM-Integration, bevor die Spur wieder geöffnet ist. Im Mainnet ist die SVM-Spur im aktuellen Release deaktiviert, und sie dort zu aktivieren erfordert ein künftiges Release; sie wird voraussichtlich deaktiviert bleiben, bis ein externes Audit sie freigibt.
+:::note Status der SVM-Spur (geprüft am 22. November 2026)
+Im Testnet **`qorechain-diana`** ist die SVM-Spur seit dem Governance-Vorschlag 37 (12. November 2026) **offen**, und das Release v3.2.9 fügt Solana-Wire-Transaktionen und SVM-Fenster hinzu: siehe [SVM im Testnet](/developer-guide/svm-testnet-v329). Im Mainnet **`qorechain-vladi`** ist die Spur **aus**: Jede dort an `x/svm` gesendete Transaktion liefert `code 11, "SVM module is disabled"`. Lesen Sie `GET /qorechain/svm/v1/params` und prüfen Sie `enabled`, bevor Sie bauen.
 :::
 
 ## Übersicht
@@ -47,7 +47,7 @@ Seit Chain-Version **v3.1.82** ist die SVM-Schnittstelle eine **erstklassige nat
 
 **Release v3.2.8 (Testnet seit dem 12. November 2026, Mainnet seit dem 18. November 2026).** Das Upgrade schließt die SVM-Spur auf `qorechain-diana`: SVM-Schreibvorgänge schlagen fehl, `MsgRegisterSVMPQCKey` wird abgelehnt, und das SVM-JSON-RPC lehnt Schreibmethoden auf den öffentlichen Chain-IDs ab, bis eine Governance-Abstimmung sie wieder öffnet (das Testnet hat einen per Governance gesteuerten Schalter). Im Mainnet bleibt die Spur aus (gelesen am 19. November 2026: `enabled` `false`). Clients sollten den Zustand der Spur aus den SVM-Modulparametern (`enabled`) lesen, bevor sie SVM-Aktionen anbieten.
 
-Die öffentlichen Endpunkte (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sind **nur lesend** — die Übermittlung von Transaktionen ist am Edge deaktiviert. Normalerweise würden Sie einen eigenen Node (Port 8899) betreiben, um SVM-Transaktionen zu übermitteln, aber beachten Sie den Hinweis oben: Die `x/svm`-Transaktionsspur selbst ist derzeit netzwerkweit deaktiviert, auch auf Ihrem eigenen Node.
+Die öffentlichen Endpunkte (`https://svm.qore.host`, `https://svm-testnet.qore.host`) beantworten Lesezugriffe. Am 22. November 2026 relayte das öffentliche Testnet-Gateway `sendTransaction` nicht (es antwortete, dass kein Relayer-Schlüssel gesetzt ist); um SVM-Transaktionen im Testnet zu übermitteln, senden Sie daher die tragende Transaktion selbst oder betreiben einen eigenen Node (Port 8899). Siehe [SVM im Testnet](/developer-guide/svm-testnet-v329#relay). Im Mainnet ist die Spur aus.
 
 ---
 
@@ -246,7 +246,7 @@ Programme, die das Compute-Budget überschreiten, werden angehalten, und die Tra
 
 ## Cross-VM-Interoperabilität
 
-SVM-Programme sind dafür ausgelegt, über die Nachricht `MsgCrossVMCall` des Moduls `x/crossvm` mit EVM- und QoreChain Native-Contracts zu kommunizieren (die Chain ermittelt die Quellspur selbst). Da die SVM-Spur für Transaktionen deaktiviert und `MsgCrossVMCall` auf dem Mainnet abgeschaltet ist, gibt es heute keinen funktionierenden SVM-Cross-VM-Pfad. Siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) für den aktuellen Status, den Nachrichtenlebenszyklus und das Timeout-Verhalten.
+SVM-Programme sind dafür ausgelegt, über die Nachricht `MsgCrossVMCall` des Moduls `x/crossvm` mit EVM- und QoreChain Native-Contracts zu kommunizieren (die Chain ermittelt die Quellspur selbst). Cross-VM-Aufrufe sind im Mainnet pausiert und die SVM-Spur ist dort aus, daher gibt es im Mainnet keinen SVM-Cross-VM-Pfad. Im Testnet ist die SVM-Spur offen, und die Regeln von v3.2.9 stehen unter [SVM im Testnet](/developer-guide/svm-testnet-v329). Siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) für den aktuellen Status, den Nachrichtenlebenszyklus und das Timeout-Verhalten.
 
 ---
 

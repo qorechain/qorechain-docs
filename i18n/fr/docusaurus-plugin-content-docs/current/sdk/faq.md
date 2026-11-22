@@ -73,9 +73,9 @@ l'erreur soit gérée appel par appel.
 
 ## Mon appel `client.qor` échoue avec -32601
 
-`client.qor` appelle l'espace de noms JSON-RPC `qor_`, qu'aucune version publiée
-du nœud ne sert ; `rpc_modules` sur les points de terminaison EVM publics ne
-liste que `eth`, `net`, `rpc`, `txpool` et `web3`. Utilisez plutôt une route
+`client.qor` appelle l'espace de noms JSON-RPC `qor_`, que le point de terminaison
+EVM public du mainnet ne sert pas (le mainnet exécute la v3.2.8 ; `rpc_modules` n'y
+liste que `eth`, `net`, `rpc`, `txpool` et `web3`). Le point de terminaison du testnet le sert à partir de la v3.2.9. Utilisez plutôt une route
 REST, par exemple `GET /qorechain/pqc/v1/account/{address}` (statut de la clé
 PQC) ou `GET /qorechain/burn/v1/stats`, via `client.rest.get(...)`. Voir
 [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace).

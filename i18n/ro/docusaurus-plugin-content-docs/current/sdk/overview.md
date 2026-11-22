@@ -48,7 +48,7 @@ SDK-ul publicat (0.14.0, 12 noiembrie 2026) semnează în forma pe care o verifi
 ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul
 de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în
 v3.2.3, v3.2.4, v3.2.5 sau v3.2.6 (mainnet-ul a rulat v3.2.7 din 12 noiembrie 2026,
-înălțimea 4.164.600, propunerea de guvernanță 16, după v3.2.6 pe 4 noiembrie, și rulează v3.2.8 din 18 noiembrie 2026, înălțimea 4.273.000, propunerea de guvernanță 17; testnet-ul din 27 octombrie, iar din 6 noiembrie testnet-ul a rulat v3.2.7 și din 12 noiembrie rulează v3.2.8, care adaugă mesaje pentru care SDK 0.14.0 are constructori; regulile noi se aplică de la v3.2.8 pe ambele rețele; mesajele v3.2.7 sunt pe mainnet din 12 noiembrie 2026). Poartă partea de client a regulilor post-cuantice ulterioare
+înălțimea 4.164.600, propunerea de guvernanță 16, după v3.2.6 pe 4 noiembrie, și rulează v3.2.8 din 18 noiembrie 2026, înălțimea 4.273.000, propunerea de guvernanță 17; testnet-ul din 27 octombrie, iar din 6 noiembrie testnet-ul a rulat v3.2.7, din 12 noiembrie a rulat v3.2.8 și din 20 noiembrie rulează v3.2.9, care adaugă mesaje pentru care SDK 0.14.0 are constructori; regulile noi se aplică de la v3.2.8 pe ambele rețele; mesajele v3.2.7 sunt pe mainnet din 12 noiembrie 2026). Poartă partea de client a regulilor post-cuantice ulterioare
 (dovada de posesie la înregistrarea cheii, ferestre EVM cu domeniu restrâns,
 mesaje de consimțământ EIP-7702) și a lui v3.2.4 (niveluri de staking, nonce-ul
 autentificatorului, comutatoarele de funcționalități de protocol) și a lui v3.2.5 (gaz exact pentru

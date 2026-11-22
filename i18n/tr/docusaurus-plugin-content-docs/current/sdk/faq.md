@@ -71,9 +71,9 @@ alınması için her precompile çağrısını sarmalayın.
 
 ## `client.qor` çağrım -32601 ile başarısız oluyor
 
-`client.qor`, yayımlanmış hiçbir düğüm sürümünün sunmadığı `qor_` JSON-RPC ad
-alanını çağırır; genel EVM uç noktalarındaki `rpc_modules` yalnızca `eth`, `net`,
-`rpc`, `txpool` ve `web3` listeler. Bunun yerine bir REST rotası kullanın; örneğin
+`client.qor`, genel mainnet EVM uç noktasının sunmadığı `qor_` JSON-RPC ad
+alanını çağırır (mainnet v3.2.8 çalıştırır; oradaki `rpc_modules` yalnızca `eth`,
+`net`, `rpc`, `txpool` ve `web3` listeler). Testnet uç noktası onu v3.2.9'dan itibaren sunar. Bunun yerine bir REST rotası kullanın; örneğin
 `client.rest.get(...)` üzerinden `GET /qorechain/pqc/v1/account/{address}` (PQC
 anahtar durumu) veya `GET /qorechain/burn/v1/stats`. Bkz.
 [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).

@@ -99,7 +99,7 @@ de bridge nativ (`crossvm`, plus precompilarea `CrossVMBridge` odată ce este
 activă; nu este activă pe mainnet; testnet-ul o are activă cu o listă de permisiuni, testată cu `eth_call` pe 7 noiembrie 2026), astfel încât o singură interfață SDK poate adresa toate cele trei.
 Lanțurile cu un singur VM nu au nimic echivalent de încapsulat. Astăzi raza de
 acțiune a unui apel este limitată de banda pe care o vizează: `MsgCrossVMCall`
-este oprit pe mainnet, tranzacțiile SVM sunt dezactivate, iar încărcarea și
+este oprit pe mainnet, lane-ul SVM este oprit, iar încărcarea și
 instanțierea QoreChain Native sunt cu permisiuni (instanțierea este deschisă pe testnet). Vezi
 [Apeluri cross-VM](/sdk/guides/cross-vm).
 

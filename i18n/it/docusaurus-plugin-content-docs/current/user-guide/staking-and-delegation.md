@@ -10,7 +10,7 @@ sidebar_position: 2
 Questa guida illustra come delegare token QOR ai validatori, ridelegare tra validatori, effettuare l'unbonding dello stake, riscuotere le ricompense e capire quali parti del design di staking di QoreChain sono attive oggi.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.8** (applicata il 18 novembre 2026; la v3.2.7 il 12 novembre, la v3.2.6 il 4 novembre, la v3.2.5 il 29 ottobre e la v3.2.4 il 23 ottobre); la testnet esegue la v3.2.8 dal 12 novembre 2026 (la v3.2.7 dal 6 novembre, la v3.2.6 dal 27 ottobre). Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando esegui lo staking su mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.8** (applicata il 18 novembre 2026; la v3.2.7 il 12 novembre, la v3.2.6 il 4 novembre, la v3.2.5 il 29 ottobre e la v3.2.4 il 23 ottobre); la testnet esegue la v3.2.9 dal 20 novembre 2026, dopo la v3.2.8 dal 12 novembre (la v3.2.7 dal 6 novembre, la v3.2.6 dal 27 ottobre). Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando esegui lo staking su mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`

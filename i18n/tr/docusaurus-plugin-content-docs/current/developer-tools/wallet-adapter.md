@@ -167,7 +167,7 @@ Sıra önemlidir: önce pencereyi açın, sonra EVM nonce'unu okuyun, sonra EVM 
 
 ## 0.6.0 neyi değiştiriyor {#whats-new-060}
 
-0.6.0 (12 Kasım 2026), zincir v3.2.8 için destek ekler (test ağı 12 Kasım 2026'dan beri, ana ağ 18 Kasım 2026'dan beri onu çalıştırır). Yeni kurallar, bir ağ v3.2.8 çalıştırdığında o ağda geçerli olur; artık iki ağ da çalıştırıyor.
+0.6.0 (12 Kasım 2026), zincir v3.2.8 için destek ekler (test ağı 12 Kasım 2026'dan beri, ana ağ 18 Kasım 2026'dan beri onu çalıştırır). Yeni kurallar, bir ağ v3.2.8 çalıştırdığında o ağda geçerli olur; artık iki ağ da çalıştırıyor (test ağı 20 Kasım 2026'dan beri, wallet-adapter 0.6.0'ın yazılmadığı v3.2.9'u çalıştırır).
 
 **Uyumsuz değişiklikler.**
 

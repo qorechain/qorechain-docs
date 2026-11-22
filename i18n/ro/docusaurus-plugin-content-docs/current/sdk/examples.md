@@ -209,7 +209,7 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 Citiți starea tokenomics prin namespace-ul JSON-RPC tipizat `qor_*`
 (`client.qor`), servit prin endpoint-ul EVM JSON-RPC. Cele trei citiri sunt
 independente, astfel încât fiecare este raportată chiar dacă celelalte nu sunt disponibile.
-Nicio versiune de nod lansată nu servește încă namespace-ul `qor_`, așa că astăzi fiecare
+Endpoint-ul de mainnet nu servește namespace-ul `qor_` (testnet-ul îl servește începând cu v3.2.9), așa că pe mainnet fiecare
 citire eșuează cu `-32601` (consultați
 [namespace-ul `qor_`](/api-reference/json-rpc-qor_-namespace)).
 

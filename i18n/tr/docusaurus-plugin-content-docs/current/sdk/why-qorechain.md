@@ -101,7 +101,7 @@ await crossVM.callAtomic([
 çalıştırır; böylece tek bir SDK arayüzü üçünü de adresleyebilir. Tek VM'li
 zincirlerde sarmalanacak eşdeğer bir şey yoktur. Bugün bir çağrının erişimi,
 hedeflediği şerit tarafından sınırlanır: `MsgCrossVMCall` mainnet'te
-kapatılmıştır, SVM işlemleri devre dışıdır ve QoreChain Native yükleme ile örnekleme
+kapatılmıştır, SVM şeridi kapalıdır ve QoreChain Native yükleme ile örnekleme
 (instantiate) izne tabidir (testnet'te örnekleme açıktır). Bkz. [Cross-VM calls](/sdk/guides/cross-vm).
 
 ---

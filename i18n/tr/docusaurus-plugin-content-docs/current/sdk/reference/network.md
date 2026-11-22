@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `testnet` |
 | Chain id | `qorechain-diana` (yayında) |
-| Zincir sürümü | v3.2.8 (9.929.500 yüksekliğinden beri, 12 Kasım 2026, yönetişimle uygulandı; mainnet v3.2.8'i 18 Kasım 2026'da uyguladı. v3.2.7 6 Kasım'da 9.594.600 yüksekliğinde uygulandı; v3.2.6 27 Ekim'de 8.970.638 yüksekliğinde, v3.2.5 26 Ekim'de 8.890.800 yüksekliğinde ve v3.2.4 19 Ekim'de 8.337.253 yüksekliğinde uygulandı) |
+| Zincir sürümü | v3.2.9 (10.424.000 yüksekliğinden beri, 20 Kasım 2026, yönetişim önerisi 39 ile uygulandı; yalnızca testnet, mainnet v3.2.8 çalıştırır). v3.2.8, 12 Kasım 2026'da 9.929.500 yüksekliğinde uygulandı (mainnet v3.2.8'i 18 Kasım 2026'da uyguladı). v3.2.7 6 Kasım'da 9.594.600 yüksekliğinde uygulandı; v3.2.6 27 Ekim'de 8.970.638 yüksekliğinde, v3.2.5 26 Ekim'de 8.890.800 yüksekliğinde ve v3.2.4 19 Ekim'de 8.337.253 yüksekliğinde uygulandı) |
 | EVM zincir kimliği | `9800` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |

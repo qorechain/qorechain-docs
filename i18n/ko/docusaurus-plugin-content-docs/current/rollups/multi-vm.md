@@ -90,7 +90,7 @@ const calldata = encodeCrossVmCalldata({
 
 ### 테스트넷에서 테스트함 {#tested-testnet}
 
-테스트넷은 2026년 11월 12일부터(높이 9,929,500) 체인 v3.2.8을 실행합니다. 2026년 11월 7일에 `executeCrossVMCall(uint8,string,bytes)`의 calldata(대상 VM `1`, 페이로드 `{}`)로 `0x…0901`에 읽기 전용 `eth_call` 요청 두 건을 보냈습니다.
+테스트넷은 2026년 11월 20일부터 체인 v3.2.9를 실행하며, 그 전에는 11월 12일부터(높이 9,929,500) v3.2.8이었고, v3.2.9는 높이 10,424,000에서 적용되었습니다. 2026년 11월 7일에 `executeCrossVMCall(uint8,string,bytes)`의 calldata(대상 VM `1`, 페이로드 `{}`)로 `0x…0901`에 읽기 전용 `eth_call` 요청 두 건을 보냈습니다.
 
 | 대상 | 결과 |
 |---|---|

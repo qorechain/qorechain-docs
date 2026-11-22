@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain unterstützt mehrere Wallet-Typen über seine nativen, EVM- und SVM-Ausführungsumgebungen hinweg. Wählen Sie das Wallet, das zu Ihrem Anwendungsfall passt.
 
 :::note
-Die folgenden Werte gelten sowohl für das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live seit dem 7. Juni 2026, Release v3.2.8 seit dem 18. November 2026) als auch für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Release v3.2.8 seit dem 12. November 2026). Öffentliche Endpunkte für beide Netzwerke sind unter [Netzwerke](/appendix/networks#public-endpoints) aufgeführt.
+Die folgenden Werte gelten sowohl für das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live seit dem 7. Juni 2026, Release v3.2.8 seit dem 18. November 2026) als auch für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Release v3.2.9 seit dem 20. November 2026, nach v3.2.8 ab dem 12. November). Öffentliche Endpunkte für beide Netzwerke sind unter [Netzwerke](/appendix/networks#public-endpoints) aufgeführt.
 :::
 
 ## QoreX (empfohlen) {#qorex}
@@ -110,7 +110,7 @@ Smart-Account- und Linked-Wallet-Funktionen sind implementiert, aber im **Mainne
 :::
 
 :::note Solana-kompatible Spur im Testnet
-Die Solana-kompatible Spur ist im Testnet geschlossen, bis eine Governance-Abstimmung sie wieder öffnet (Release v3.2.8, Testnet seit dem 12. November 2026). Solana-artige Transaktionen sind dort bis dahin nicht verfügbar.
+Die Solana-kompatible Spur ist im Testnet seit dem Governance-Vorschlag 37 (12. November 2026) offen. Wallet-Unterstützung für Solana-artige Transaktionen gibt es noch nicht. Siehe [SVM im Testnet](/developer-guide/svm-testnet-v329), um sie von der Kommandozeile aus zu senden.
 :::
 
 Entworfen, damit Sie Ihren Root-Schlüssel nicht preisgeben müssen, um in einer dApp von einem QoreChain-Konto auszugeben (eingeführt in Chain-Version **v3.1.85**): Ein **Phantom**-Schlüssel (ed25519) oder ein **MetaMask**-Schlüssel (über seine Ethereum-Adresse, via `personal_sign`) kann **als Authenticator auf Ihrem Konto registriert werden** — mit eingegrenzten Berechtigungen, Ausgabelimits, einem Ablaufdatum und sofortiger Widerrufbarkeit — und anschließend Überweisungen autorisieren, die vom Backend der dApp weitergeleitet werden. Siehe [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) für das vollständige Modell samt Code sowie den [SDK-Authenticators-Leitfaden](/sdk/guides/authenticators) für End-to-End-Beispiele.

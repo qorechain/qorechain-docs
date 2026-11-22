@@ -100,7 +100,7 @@ nativo (`crossvm`, più il precompile `CrossVMBridge` una volta attivo; non è a
 un'unica interfaccia dell'SDK può indirizzarle tutte e tre. Le chain a VM
 singola non hanno nulla di equivalente da incapsulare. Oggi la portata di una
 chiamata è limitata dalla corsia a cui è destinata: `MsgCrossVMCall` è
-disattivato su mainnet, le transazioni SVM sono disabilitate e il caricamento e
+disattivato su mainnet, la lane SVM è spenta e il caricamento e
 l'istanziazione di QoreChain Native sono soggetti ad autorizzazione (l'istanziazione è aperta sulla testnet). Vedi
 [Chiamate cross-VM](/sdk/guides/cross-vm).
 

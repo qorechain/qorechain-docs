@@ -71,9 +71,9 @@ el error se maneje por llamada.
 
 ## Mi llamada a `client.qor` falla con -32601
 
-`client.qor` llama al espacio de nombres JSON-RPC `qor_`, que ninguna compilación
-publicada del nodo sirve; `rpc_modules` en los endpoints EVM públicos solo lista
-`eth`, `net`, `rpc`, `txpool` y `web3`. Usa en su lugar una ruta REST, por ejemplo
+`client.qor` llama al espacio de nombres JSON-RPC `qor_`, que el endpoint EVM
+público de mainnet no sirve (mainnet ejecuta v3.2.8; `rpc_modules` allí solo lista
+`eth`, `net`, `rpc`, `txpool` y `web3`). El endpoint de la testnet lo sirve desde v3.2.9. Usa en su lugar una ruta REST, por ejemplo
 `GET /qorechain/pqc/v1/account/{address}` (estado de la clave PQC) o
 `GET /qorechain/burn/v1/stats`, mediante `client.rest.get(...)`. Consulta
 [el espacio de nombres `qor_`](/api-reference/json-rpc-qor_-namespace).

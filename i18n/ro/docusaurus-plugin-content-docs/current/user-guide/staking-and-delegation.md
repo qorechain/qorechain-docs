@@ -10,7 +10,7 @@ sidebar_position: 2
 Acest ghid acoperă modul de delegare a token-urilor QOR către validatori, redelegarea între validatori, debondarea stake-ului, revendicarea recompenselor și înțelegerea părților din designul de staking al QoreChain care sunt active astăzi.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.8** (aplicată pe 18 noiembrie 2026; v3.2.7 pe 12 noiembrie, v3.2.6 pe 4 noiembrie, v3.2.5 pe 29 octombrie și v3.2.4 pe 23 octombrie); testnet-ul rulează v3.2.8 din 12 noiembrie 2026 (v3.2.7 din 6 noiembrie, v3.2.6 din 27 octombrie). Înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.8** (aplicată pe 18 noiembrie 2026; v3.2.7 pe 12 noiembrie, v3.2.6 pe 4 noiembrie, v3.2.5 pe 29 octombrie și v3.2.4 pe 23 octombrie); testnet-ul rulează v3.2.9 din 20 noiembrie 2026, după v3.2.8 din 12 noiembrie (v3.2.7 din 6 noiembrie, v3.2.6 din 27 octombrie). Înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
 :::
 
 :::caution Semnați cu `tx pqc cosign`

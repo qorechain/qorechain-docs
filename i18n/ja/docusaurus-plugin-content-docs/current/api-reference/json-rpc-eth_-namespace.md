@@ -17,7 +17,7 @@ QoreChainはEVM互換のJSON-RPCインターフェースを実装しており、
 | WebSocket        | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネット(EVMチェーンID **9801**、16進数 `0x2649`、ノードリリース **v3.2.8**、ブロック高4,273,000で2026年11月18日から(ガバナンス提案 17)、2026年6月7日から稼働)と **`qorechain-diana`** テストネット(EVMチェーンID **9800**、16進数 `0x2648`、ノードリリース **v3.2.8**、ブロック高9,929,500で2026年11月12日から、両ネットワークとも v3.2.8 を実行)によって提供されます。v3.2.7 以降(テストネットでは2026年11月6日から、メインネットでは2026年11月12日から)、`eth_getBlockByNumber`、`eth_getBlockReceipts`、`eth_feeHistory` は、失敗した EVM トランザクションを含むブロックに対してもより確実に応答します。上記のローカルアドレスは自分で実行するノードに適用されます。公開HTTPエンドポイントは `https://evm.qore.host`(メインネット)と `https://evm-testnet.qore.host`(テストネット)で、[ネットワーク](/appendix/networks#public-endpoints)に記載されています。公開されているEVM WebSocketはテストネットのもの(`wss://evm-ws-testnet.qore.host`)のみで、メインネットの公開EVM WebSocketはありません。
+EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネット(EVMチェーンID **9801**、16進数 `0x2649`、ノードリリース **v3.2.8**、ブロック高4,273,000で2026年11月18日から(ガバナンス提案 17)、2026年6月7日から稼働)と **`qorechain-diana`** テストネット(EVMチェーンID **9800**、16進数 `0x2648`、ノードリリース **v3.2.9**、ブロック高10,424,000で2026年11月20日から。それ以前は v3.2.8 を2026年11月12日からブロック高9,929,500で実行。メインネットは v3.2.8 を実行)によって提供されます。v3.2.7 以降(テストネットでは2026年11月6日から、メインネットでは2026年11月12日から)、`eth_getBlockByNumber`、`eth_getBlockReceipts`、`eth_feeHistory` は、失敗した EVM トランザクションを含むブロックに対してもより確実に応答します。上記のローカルアドレスは自分で実行するノードに適用されます。公開HTTPエンドポイントは `https://evm.qore.host`(メインネット)と `https://evm-testnet.qore.host`(テストネット)で、[ネットワーク](/appendix/networks#public-endpoints)に記載されています。公開されているEVM WebSocketはテストネットのもの(`wss://evm-ws-testnet.qore.host`)のみで、メインネットの公開EVM WebSocketはありません。
 :::
 
 ## サポートされている名前空間

@@ -71,9 +71,9 @@ curl -s https://api-testnet.qore.host/qorechain/svm/v1/cluster_info
 
 ノード CLI にも同じクエリがあります: `qorechaind query svm cluster-info`。`https://svm-testnet.qore.host` の JSON-RPC メソッド `getGenesisHash` も同じハッシュを返します。このハッシュはチェーン ID から導出されたもので、実際の Solana クラスターのジェネシスハッシュではありません。この経路はメインネットでも（v3.2.7 以降）提供されています。2026年11月12日に `https://api.qore.host/qorechain/svm/v1/cluster_info` は `200` を返し、`execution_enabled` は `false` でした。
 
-## 公開 SVM RPC は読み取り専用です {#public-rpc}
+## 公開 SVM RPC と書き込み {#public-rpc}
 
-公開エンドポイント `https://svm.qore.host` と `https://svm-testnet.qore.host` は、読み取りには応答し、公開チェーン ID 上の書き込みメソッド（`sendTransaction` など）は、レーンが開放されているかどうかにかかわらず拒否します。SVM トランザクションを送信するには、自分のノードを実行する必要があります。ノードは、デフォルトでポート 8899 で Solana 互換の JSON-RPC を提供します（[SVM 開発](/developer-guide/svm-development#json-rpc-server)を参照）。また、そのノードが追従するネットワークでレーン自体が開放されている必要があります。読み取りは今すぐ利用できます。
+公開エンドポイント `https://svm.qore.host` と `https://svm-testnet.qore.host` は、読み取りに応答します。`sendTransaction` は、ゲートウェイにリレイヤー鍵が設定されている場合にのみリレーします。2026年11月22日時点で、公開テストネットゲートウェイには設定されておらず、書き込みを拒否しました（[テストネット上の SVM](/developer-guide/svm-testnet-v329#relay)を参照）。SVM トランザクションを送信するには、運搬用トランザクションを自分で送信するか、自分のノードを実行します。ノードは、デフォルトでポート 8899 で Solana 互換の JSON-RPC を提供します（[SVM 開発](/developer-guide/svm-development#json-rpc-server)を参照）。また、そのノードが追従するネットワークでレーン自体が開放されている必要があります。読み取りは今すぐ利用できます。
 
 ```bash
 # Health, version, cluster hash, slot and a rent quote (all HTTP 200 on 12 November 2026)
@@ -93,7 +93,7 @@ curl -s -X POST https://svm-testnet.qore.host -H 'Content-Type: application/json
 
 レーンが開放されたら、流れは次のとおりです。最新の Solana ツールチェーンで SBF プログラムをビルドし、デプロイし、必要なアカウントを作成してから、呼び出します。`tx svm` のコマンドはすべて Cosmos レーンのトランザクションなので、明示的なガスの上限、ガス × 0.1 uqor 以上の手数料、そしてハイブリッドのポスト量子連署が必要です（[ポスト量子署名](/developer-guide/post-quantum-signing)を参照）。
 
-以下は、ノードリファレンスにある Linux ノード CLI のコマンドです。**UNTESTED: テストネットでレーンが開放されたのは提案 37 の後であり、このページのために、プログラムのデプロイ、実行、アカウント作成は実行していません。**
+以下は、ノードリファレンスにある Linux ノード CLI のコマンドです。**ライブネットワークでは未テスト: テストネットでレーンが開放されたのは提案 37 の後であり、このページのために、プログラムのデプロイ、実行、アカウント作成は実行していません。**
 
 ```bash
 # 1. Build (platform-tools v1.53, --arch v0 or --arch v3)
@@ -154,7 +154,7 @@ const sim = await client.simulateTransaction(tx);          // dry run first
 const signature = await client.sendTransaction(tx, [payer]);
 ```
 
-**UNTESTED:** この例には、自分で実行するノードが必要です（レーンはテストネットで開放されています）。公開エンドポイントに対しては、送信は拒否されます。読み取り専用の呼び出し（`client.getBalance`、`client.getAccountInfo`、`client.getSignaturesForAddress`）は、`createSvmClient({ rpcUrl })` が任意の URL を受け付けるため、`https://svm-testnet.qore.host` に対して動作します。
+**ライブネットワークでは未テスト:** この例には、自分で実行するノードが必要です（レーンはテストネットで開放されています）。公開エンドポイントに対しては、送信は拒否されます。読み取り専用の呼び出し（`client.getBalance`、`client.getAccountInfo`、`client.getSignaturesForAddress`）は、`createSvmClient({ rpcUrl })` が任意の URL を受け付けるため、`https://svm-testnet.qore.host` に対して動作します。
 
 Python、Go、Rust、Java については、それらの言語の SVM アダプターが同じメッセージを構築します。v3.2.8 のヘルパーは後の SDK リリースで追加されます。それまでは、上記のノード CLI または生のメッセージを使ってください。メソッドセットが Solana 互換であるため、どの Solana クライアントライブラリでも、自分のノードのポート 8899 と通信できます。
 
@@ -178,7 +178,7 @@ lamports と uqor の関係は、1 uqor = 1,000 lamports です。正確な最�
 
 ポスト量子鍵をオンチェーンに持ちたい SVM ウォレットは、**`MsgRegisterSVMPQCKey`** で登録します。このメッセージは、送信者、32 バイトの SVM アドレス、ML-DSA-87 公開鍵を運びます。これは Cosmos レーンのメッセージなので、送信者は他のネイティブトランザクションと同様にハイブリッドで署名します。レーンが閉じている間は拒否され、**鍵を登録する前に SVM アカウントがすでに存在している必要があります**（[テストネットでの検証](#tested)の拒否を参照）。
 
-そのための `tx svm` コマンドはありません。SDK のコンポーザーを使ってください。TypeScript では、コンポーザーは `@qorechain/sdk` の `msg.svm.registerSvmPqcKey` です。**既存のアカウントについては UNTESTED: 唯一の送信はアカウントのないアドレス向けで、拒否されました。**
+そのための `tx svm` コマンドはありません。SDK のコンポーザーを使ってください。TypeScript では、コンポーザーは `@qorechain/sdk` の `msg.svm.registerSvmPqcKey` です。**既存のアカウントについてはライブネットワークでは未テスト: 唯一の送信はアカウントのないアドレス向けで、拒否されました。**
 
 ```ts
 import {
@@ -240,8 +240,8 @@ Python のコンポーザーは `msg.svm.register_svm_pqc_key(sender=, ...)`、G
 
 レーンは開放されていますが、公開 SVM JSON-RPC はまだ完全な Solana ノードのようには動作しません。次の制限を前提に計画してください。
 
-- **`getLatestBlockhash` は、ブロックハッシュを 64 桁の 16 進文字として返します。** Solana ノードのような base58 ではありません（2026 年 11 月 12 日に読み取り: `blockhash` は `e8d4...d449`、`lastValidBlockHeight` は 9944659）。base58 を想定するクライアントは変換する必要があります。チェーンチームは変更を予定しています。
-- **標準的な Solana ツールからの Solana ワイヤフォーマットの `sendTransaction` は、公開エンドポイントではまだサポートされていません。** プログラムは、Cosmos メッセージ `MsgDeployProgram` と `MsgExecuteProgram` でデプロイおよび呼び出され、他の Cosmos レーンのトランザクションと同様にハイブリッド署名で署名されます（上記の TypeScript ヘルパーを参照）。Solana ツールとの完全な互換性は、後のリリースで予定されています。
+- **`getLatestBlockhash` は、ブロックハッシュを 64 桁の 16 進文字として返します。** Solana ノードのような base58 ではありません（2026 年 11 月 12 日に読み取り: `blockhash` は `e8d4...d449`、`lastValidBlockHeight` は 9944659）。base58 を想定するクライアントは変換する必要があります。変更が予定されています。
+- **Solana ワイヤトランザクション** は、テストネットではリリース v3.2.9 から `MsgSolanaTransaction` で運ばれます（[テストネット上の SVM](/developer-guide/svm-testnet-v329)を参照）。v3.2.8 では、プログラムは、Cosmos メッセージ `MsgDeployProgram` と `MsgExecuteProgram` でデプロイおよび呼び出され、他の Cosmos レーンのトランザクションと同様にハイブリッド署名で署名されます（上記の TypeScript ヘルパーを参照）。
 - **外部の鍵は、リレーヤー経由で SVM の操作を認可できます。** ネットワークがプロトコル機能 `svm-relayed-chain-bound` を有効にすると、認可はチェーンに束縛されたダイジェスト（ドメイン `qorechain-svm-auth-v3`）に署名します。`@qorechain/wallet-adapter` 0.6.0 は `authSignBytesV3` でそれを構築し、`resolveSvmAuthVersion` はネットワークが求める形式を読み取ります。
 
 ## エラーと拒否 {#errors}
@@ -251,7 +251,7 @@ Python のコンポーザーは `msg.svm.register_svm_pqc_key(sender=, ...)`、G
 | `SVM module is disabled`（コード 11） | レーンが閉じている（メインネット、または提案 37 より前のテストネット） | `enabled` を読み取る。再試行しない |
 | `MsgRegisterSVMPQCKey` が `SVM account ... not found`（codespace `svm`、コード 3）で拒否される | SVM アカウントがまだ存在しない | 先にアカウントを作成し、それから鍵を登録する |
 | レーンが閉じている間に `MsgRegisterSVMPQCKey` が拒否される | レーンが閉じている | レーンが開放された後に登録する |
-| `svm.qore.host` または `svm-testnet.qore.host` で書き込みメソッドが拒否される | 公開エンドポイントは読み取り専用 | 自分のノードを使う |
+| `svm.qore.host` または `svm-testnet.qore.host` で書き込みメソッドが拒否される | 公開ゲートウェイにリレイヤー鍵がない | 運搬用トランザクションを自分で送信するか、自分のノードを使う（[テストネット上の SVM](/developer-guide/svm-testnet-v329#relay)を参照） |
 | `svm custody cap exceeded`（コード 23） | プールが上限に達している | 後で、またはもっと少ない額で再試行する |
 | `airdrop rate limit exceeded`（コード 19） | `requestAirdrop` の呼び出しが多すぎる（テストネットのみ） | 待つ |
 | `blockhash expired`（コード 20） | 直近のブロックハッシュが古すぎる | 新しいものを取得して再署名する |
@@ -268,7 +268,7 @@ Python のコンポーザーは `msg.svm.register_svm_pqc_key(sender=, ...)`、G
 | `GET /qorechain/svm/v1/params` | `enabled` は true。`max_program_size` 10485760、`max_account_data_size` 10485760、`compute_budget_max` 1400000、`lamports_per_byte` 3480、`rent_exemption_multi` 2、`max_cpi` 4、`max_custody_uqor` 10000000000、`max_custody_hard_uqor` 1000000000000、`max_account_excess_uqor` 10000000000 |
 | まだ存在しない SVM アドレスに対する `MsgRegisterSVMPQCKey` | 拒否: codespace `svm` のコード 3、`SVM account ... not found: SVM account not found`。ポスト量子鍵を登録する前にアカウントが存在していなければなりません |
 
-実行していないもの（UNTESTED）は、プログラムのデプロイ、プログラムの実行、SVM アカウントの作成です。
+実行していないもの（ライブネットワークでは未テスト）は、プログラムのデプロイ、プログラムの実行、SVM アカウントの作成です。
 
 ## メインネット {#mainnet}
 

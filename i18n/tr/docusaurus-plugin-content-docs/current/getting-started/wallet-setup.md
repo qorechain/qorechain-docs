@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain; native, EVM ve SVM yürütme ortamlarında birden fazla cüzdan türünü destekler. Kullanım senaryonuza uygun cüzdanı seçin.
 
 :::note
-Aşağıdaki değerler hem **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri yayında, 18 Kasım 2026'dan beri v3.2.8 sürümü) hem de **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**, 12 Kasım 2026'dan beri v3.2.8 sürümü) kapsar. Her iki ağın herkese açık uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
+Aşağıdaki değerler hem **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri yayında, 18 Kasım 2026'dan beri v3.2.8 sürümü) hem de **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**, 20 Kasım 2026'dan beri v3.2.9 sürümü, 12 Kasım'dan itibaren v3.2.8'in ardından) kapsar. Her iki ağın herkese açık uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
 :::
 
 ## QoreX (önerilir) {#qorex}
@@ -110,7 +110,7 @@ Akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır ancak **ana ağd
 :::
 
 :::note Solana uyumlu hat test ağında
-Solana uyumlu hat, bir yönetişim oyu onu yeniden açana kadar test ağında kapalıdır (v3.2.8 sürümü, test ağında 12 Kasım 2026'dan beri). O zamana kadar orada Solana tarzı işlemler kullanılamaz.
+Solana uyumlu hat, yönetişim önerisi 37'den beri (12 Kasım 2026) test ağında açıktır. Solana tarzı işlemler için cüzdan desteği henüz yoktur. Onları komut satırından göndermek için bkz. [Test Ağında SVM](/developer-guide/svm-testnet-v329).
 :::
 
 Bir dApp içinde QoreChain hesabınızdan harcama yapmak için kök anahtarınızı açığa çıkarmanız gerekmeyecek şekilde tasarlanmıştır (zincir sürümü **v3.1.85** ile tanıtıldı): bir **Phantom** (ed25519) veya **MetaMask** (Ethereum adresiyle, `personal_sign` üzerinden) anahtarı hesabınıza **kimlik doğrulayıcı (authenticator) olarak kaydedilebilir** — kapsamlandırılmış izinler, harcama limitleri, geçerlilik süresi ve anında iptal ile — ve ardından dApp'in arka ucu tarafından iletilen transferleri yetkilendirebilir. Modelin tamamı ve kod için [Bağlı Cüzdan Kimlik Doğrulayıcıları](/developer-guide/account-abstraction#authenticators) sayfasına, uçtan uca örnekler için [SDK Authenticators kılavuzuna](/sdk/guides/authenticators) bakın.

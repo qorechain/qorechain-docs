@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain include un mediu de execuție **Solana Virtual Machine (SVM)**, care permite dezvoltatorilor să implementeze și să execute programe SBF/BPF folosind uneltele Solana cu care sunt deja obișnuiți. Modulul SVM expune o interfață JSON-RPC compatibilă cu Solana pe **portul 8899**, pe care `qorechaind start` o pornește automat (vezi [Server JSON-RPC](#json-rpc-server) mai jos).
 
 :::note
-Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`** (live din 7 iunie 2026), care rulează versiunea de nod **v3.2.8** din 18 noiembrie 2026 (propunerea de guvernanță 17, înălțimea 4.273.000; v3.2.7 din 12 noiembrie 2026; v3.2.6 din 4 noiembrie 2026; v3.2.5 din 29 octombrie 2026, v3.2.4 din 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.8 (din 12 noiembrie 2026; v3.2.4 din 19 octombrie 2026). **Tranzacțiile SVM sunt dezactivate pe ambele rețele** (vezi caseta următoare), așa că comenzile `tx svm` de pe această pagină sunt doar de referință: nu pot reuși în prezent.
+Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`** (live din 7 iunie 2026), care rulează versiunea de nod **v3.2.8** din 18 noiembrie 2026 (propunerea de guvernanță 17, înălțimea 4.273.000; v3.2.7 din 12 noiembrie 2026; v3.2.6 din 4 noiembrie 2026; v3.2.5 din 29 octombrie 2026, v3.2.4 din 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.9 (din 20 noiembrie 2026; v3.2.8 din 12 noiembrie, v3.2.4 din 19 octombrie 2026). **Tranzacțiile SVM sunt deschise pe testnet** (propunerea de guvernanță 37) și **oprite pe mainnet**, așa că comenzile `tx svm` de pe această pagină pot reuși doar pe testnet; pentru parcursul complet pe testnet vezi [SVM pe testnet (v3.2.9)](/developer-guide/svm-testnet-v329).
 :::
 
 ---
 
-:::caution Trimiterea de tranzacții SVM este momentan dezactivată
-Începând cu versiunea de chain v3.1.89 (22 august), în urma unui incident, lane-ul de execuție SVM este **dezactivat la nivelul întregii rețele pentru trimiterea de tranzacții** atât pe `qorechain-vladi`, cât și pe `qorechain-diana` — orice tranzacție trimisă către `x/svm` (implementare de programe, execuție de instrucțiuni, creare de conturi, transferuri) returnează `code 11, "SVM module is disabled"`. Acest lucru se aplică atât nodului propriu, cât și endpoint-urilor publice. Metodele RPC de tip citire pot răspunde în continuare, dar nu construiți și nu repetați o integrare SVM live până când lane-ul nu se redeschide. Pe mainnet, lane-ul SVM este dezactivat în release-ul curent, iar activarea lui pe mainnet necesită un release viitor; se așteaptă să rămână dezactivat până când un audit extern îl aprobă.
+:::note Starea lane-ului SVM (verificat pe 22 noiembrie 2026)
+Pe testnet-ul **`qorechain-diana`**, lane-ul SVM este **deschis** din propunerea de guvernanță 37 (12 noiembrie 2026), iar versiunea v3.2.9 adaugă tranzacțiile Solana pe lanț și ferestrele SVM: vezi [SVM pe testnet](/developer-guide/svm-testnet-v329). Pe mainnet-ul **`qorechain-vladi`** lane-ul este **oprit**: orice tranzacție `x/svm` de acolo returnează `code 11, "SVM module is disabled"`. Citește `GET /qorechain/svm/v1/params` și verifică `enabled` înainte să construiești.
 :::
 
 ## Prezentare generală
@@ -47,7 +47,7 @@ Modulul `x/svm` oferă:
 
 **Release v3.2.8 (testnet din 12 noiembrie 2026, mainnet din 18 noiembrie 2026).** Upgrade-ul închide lane-ul SVM pe `qorechain-diana`: scrierile SVM eșuează, `MsgRegisterSVMPQCKey` este refuzat, iar JSON-RPC SVM refuză metodele de scriere pe id-urile de chain publice, până când un vot de guvernanță îl redeschide (testnet-ul are un comutator guvernat). Pe mainnet, lane-ul rămâne oprit (citit la 19 noiembrie 2026: `enabled` `false`). Clienții ar trebui să citească starea lane-ului din parametrii modulului SVM (`enabled`) înainte de a oferi acțiuni SVM.
 
-Endpoint-urile publice (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sunt **doar pentru citire** — trimiterea de tranzacții este dezactivată la nivelul marginii rețelei. În mod normal ați rula propriul nod (portul 8899) pentru a trimite tranzacții SVM, dar vedeți avertismentul de mai sus: lane-ul de tranzacții `x/svm` însuși este momentan dezactivat la nivelul întregii rețele, inclusiv pe propriul nod.
+Endpoint-urile publice (`https://svm.qore.host`, `https://svm-testnet.qore.host`) servesc citiri. Pe 22 noiembrie 2026, gateway-ul public al testnet-ului nu retransmitea `sendTransaction` (a răspuns că nu este setată nicio cheie de relayer), așa că, pentru a trimite tranzacții SVM pe testnet, trimiți tu însuți tranzacția purtătoare sau rulezi propriul nod (portul 8899). Vezi [SVM pe testnet](/developer-guide/svm-testnet-v329#relay). Pe mainnet lane-ul este oprit.
 
 ---
 
@@ -246,7 +246,7 @@ Programele care depășesc bugetul de calcul sunt oprite, iar tranzacția este a
 
 ## Interoperabilitate cross-VM
 
-Programele SVM sunt concepute să comunice cu contractele EVM și QoreChain Native prin mesajul `MsgCrossVMCall` al modulului `x/crossvm` (chain-ul stabilește singur lane-ul sursă). Deoarece lane-ul SVM este dezactivat pentru tranzacții, iar `MsgCrossVMCall` este oprit pe mainnet, în prezent nu există nicio cale cross-VM SVM funcțională. Vezi [Interoperabilitate cross-VM](/developer-guide/cross-vm-interoperability) pentru starea curentă, ciclul de viață al mesajelor și comportamentul de timeout.
+Programele SVM sunt concepute să comunice cu contractele EVM și QoreChain Native prin mesajul `MsgCrossVMCall` al modulului `x/crossvm` (chain-ul stabilește singur lane-ul sursă). Apelurile cross-VM sunt în pauză pe mainnet, iar lane-ul SVM este oprit acolo, deci nu există o cale cross-VM SVM pe mainnet. Pe testnet lane-ul SVM este deschis, iar regulile v3.2.9 sunt în [SVM pe testnet](/developer-guide/svm-testnet-v329). Vezi [Interoperabilitate cross-VM](/developer-guide/cross-vm-interoperability) pentru starea curentă, ciclul de viață al mesajelor și comportamentul de timeout.
 
 ---
 

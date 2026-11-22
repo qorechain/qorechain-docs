@@ -14,7 +14,7 @@ Soyut hesap modülü, yazım sırasında **`qorechain-vladi` ana ağında kapal�
 :::
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve düğüm sürümü **v3.2.8**'i çalıştıran (18 Kasım 2026'da 4.273.000 yüksekliğinde uygulandı, yönetişim önerisi 17; v3.2.7, 12 Kasım 2026'da 4.164.600 yüksekliğinde uygulanmıştı, öneri 16; v3.2.6, 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulanmıştı, öneri 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, öneri 14, ve v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı) **`qorechain-vladi`** ana ağını kullanır. ayrıca v3.2.8 çalıştıran (12 Kasım 2026'dan beri; v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` ile değiştirin.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve düğüm sürümü **v3.2.8**'i çalıştıran (18 Kasım 2026'da 4.273.000 yüksekliğinde uygulandı, yönetişim önerisi 17; v3.2.7, 12 Kasım 2026'da 4.164.600 yüksekliğinde uygulanmıştı, öneri 16; v3.2.6, 4 Kasım 2026'da 4.020.000 yüksekliğinde uygulanmıştı, öneri 15; v3.2.5, 29 Ekim 2026'da 3.906.833 yüksekliğinde, öneri 14, ve v3.2.4, 23 Ekim 2026'da 3.742.566 yüksekliğinde uygulanmıştı) **`qorechain-vladi`** ana ağını kullanır. ayrıca v3.2.9 çalıştıran (20 Kasım 2026'dan beri; v3.2.8 12 Kasım'dan beri, v3.2.4 19 Ekim 2026'dan beri) test ağı için `--chain-id qorechain-diana` ile değiştirin.
 :::
 
 :::caution Her Cosmos hattı işlemi hibrit kuantum sonrası eş imza gerektirir
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## v3.2.8'de Bir Anahtarı Bağlama: Çalışan Örnek {#link-example-v328}
 
-Bu bölüm, 12 Kasım 2026'dan beri v3.2.8 çalıştıran **`qorechain-diana` test ağında** tek bir eksiksiz bağlantıyı adım adım gösterir. Ana ağ da v3.2.8 çalıştırıyor (18 Kasım 2026'dan beri), ancak soyut hesap modülü son kontrolde (27 Ekim 2026) orada kapalıydı; bu yüzden bunların hiçbiri o kontrolde orada geçerli değildi. Kısacası: bağladığınız anahtarın bağlanmayı kabul ettiğini göstermek için kısa bir metni imzalaması gerekir, değer taşıyabilen bir anahtarın hesapta bir harcama kuralına ihtiyacı vardır ve bağlı bir anahtar daha sonra harcama yaptığında başarısız bir harcama başarılı bir işlemin içinde bildirilir.
+Bu bölüm, 20 Kasım 2026'dan beri, 12 Kasım'dan itibaren v3.2.8'in ardından v3.2.9 çalıştıran **`qorechain-diana` test ağında** tek bir eksiksiz bağlantıyı adım adım gösterir. Ana ağ da v3.2.8 çalıştırıyor (18 Kasım 2026'dan beri), ancak soyut hesap modülü son kontrolde (27 Ekim 2026) orada kapalıydı; bu yüzden bunların hiçbiri o kontrolde orada geçerli değildi. Kısacası: bağladığınız anahtarın bağlanmayı kabul ettiğini göstermek için kısa bir metni imzalaması gerekir, değer taşıyabilen bir anahtarın hesapta bir harcama kuralına ihtiyacı vardır ve bağlı bir anahtar daha sonra harcama yaptığında başarısız bir harcama başarılı bir işlemin içinde bildirilir.
 
 Neden önemli: v3.2.8'den itibaren anahtarın sahibi bağlantıya katılır; böylece bir anahtar yalnızca onu gerçekten elinde tutan biri tarafından bağlanabilir ve değer taşıyabilen bir anahtar her zaman hesap üzerindeki bir limitle sınırlanır.
 
@@ -458,7 +458,7 @@ Yalnızca `code === 0` değerini kontrol eden bir istemci böyle bir çağrıyı
 
 12 Kasım 2026'da test ağında (sürüm v3.2.8, SDK 0.13.0, hibrit imzalama): tek kurallı (günlük limit 1.000.000 uqor, işlem başına limit 100.000 uqor, yalnızca `uqor`) bir `MsgUpdateSpendingRules` kod 0 ile başarılı oldu ve 186.319 gaz kullanıldı. Kural yokken gönderilen `evm` izinli bir `MsgRegisterAuthenticator` kod 8 ile, kuraldan sonra ama sahiplik kanıtı olmadan gönderilen ise kod 10 ile reddedildi; mesajlar hatalar tablosundadır. SDK 0.13.0'ın kayıt oluşturucularında sahiplik kanıtı alanı yoktur; bu yüzden başarılı bağlantı, bir sonraki paragrafta anlatıldığı gibi daha yeni paketlerle sonradan çalıştırıldı.
 
-**Dokümantasyon yazarı tarafından 12 Kasım 2026'da test ağında, SDK 0.14.0 ve wallet-adapter 0.6.0 ile çalıştırıldı (hepsi kod 0):**
+**Bu sayfa için 12 Kasım 2026'da test ağında, SDK 0.14.0 ve wallet-adapter 0.6.0 ile çalıştırıldı (hepsi kod 0):**
 
 * `linkAuthenticatorMsgs`, bir Ethereum adresi için harcama kuralını (`MsgUpdateSpendingRules`) ve `metaMaskPossessionProof` kaynaklı sahiplik kanıtıyla `MsgRegisterAuthenticator` mesajını oluşturdu (burada `personal_sign` yanıtlayan bir sağlayıcı üzerinden tek kullanımlık bir anahtarla imzalandı). İki mesaj TEK bir sahip imzalı işlemde gitti: 600.000 limit altında 220.973 gaz kullanıldı.
 * `GET /qorechain/abstractaccount/v1/accounts/{address}` ardından `authenticators_count` 1 gösterdi ve `GET .../authenticators` anahtarı listeledi: şema `secp256k1`, `pubkey_hex` 20 baytlık adres, izinler `evm`, `revoked` false.

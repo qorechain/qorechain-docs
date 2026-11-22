@@ -14,7 +14,7 @@ Das Abstract-Account-Modul ist zum Zeitpunkt der Erstellung **auf dem Mainnet `q
 :::
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das die Node-Version **v3.2.8** ausführt (angewendet bei Höhe 4.273.000 am 18. November 2026, Governance-Vorschlag 17; v3.2.7 wurde bei Höhe 4.164.600 am 12. November 2026 angewendet, Vorschlag 16; v3.2.6 wurde bei Höhe 4.020.000 am 4. November 2026 angewendet, Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober 2026 angewendet, Vorschlag 14, und v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026). Ersetzen Sie für das Testnet, das ebenfalls v3.2.8 ausführt (seit dem 12. November 2026; v3.2.4 seit dem 19. Oktober 2026), `--chain-id qorechain-diana`.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das die Node-Version **v3.2.8** ausführt (angewendet bei Höhe 4.273.000 am 18. November 2026, Governance-Vorschlag 17; v3.2.7 wurde bei Höhe 4.164.600 am 12. November 2026 angewendet, Vorschlag 16; v3.2.6 wurde bei Höhe 4.020.000 am 4. November 2026 angewendet, Vorschlag 15; v3.2.5 wurde bei Höhe 3.906.833 am 29. Oktober 2026 angewendet, Vorschlag 14, und v3.2.4 bei Höhe 3.742.566 am 23. Oktober 2026). Ersetzen Sie für das Testnet, das v3.2.9 ausführt (seit dem 20. November 2026; v3.2.8 ab dem 12. November, v3.2.4 seit dem 19. Oktober 2026), `--chain-id qorechain-diana`.
 :::
 
 :::caution Jede Cosmos-Lane-Transaktion benötigt die hybride Post-Quantum-Mitsignatur
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Einen Schlüssel in v3.2.8 verknüpfen: durchgespieltes Beispiel {#link-example-v328}
 
-Dieser Abschnitt führt eine vollständige Verknüpfung im **Testnet `qorechain-diana`** durch, das seit dem 12. November 2026 mit v3.2.8 läuft. Das Mainnet läuft ebenfalls mit v3.2.8 (seit dem 18. November 2026), aber sein Abstract-Account-Modul war bei der letzten Prüfung (27. Oktober 2026) abgeschaltet, daher galt nichts davon dort bei dieser Prüfung. Kurz gesagt: Der Schlüssel, den Sie verknüpfen, muss einen kurzen Text signieren, um zu zeigen, dass er der Verknüpfung zustimmt, ein Schlüssel, der Wert bewegen kann, braucht eine Ausgabenregel auf dem Konto, und wenn ein verknüpfter Schlüssel später ausgibt, wird eine fehlgeschlagene Ausgabe innerhalb einer erfolgreichen Transaktion gemeldet.
+Dieser Abschnitt führt eine vollständige Verknüpfung im **Testnet `qorechain-diana`** durch, das seit dem 20. November 2026 mit v3.2.9 läuft, nach v3.2.8 ab dem 12. November. Das Mainnet läuft ebenfalls mit v3.2.8 (seit dem 18. November 2026), aber sein Abstract-Account-Modul war bei der letzten Prüfung (27. Oktober 2026) abgeschaltet, daher galt nichts davon dort bei dieser Prüfung. Kurz gesagt: Der Schlüssel, den Sie verknüpfen, muss einen kurzen Text signieren, um zu zeigen, dass er der Verknüpfung zustimmt, ein Schlüssel, der Wert bewegen kann, braucht eine Ausgabenregel auf dem Konto, und wenn ein verknüpfter Schlüssel später ausgibt, wird eine fehlgeschlagene Ausgabe innerhalb einer erfolgreichen Transaktion gemeldet.
 
 Warum das wichtig ist: Ab v3.2.8 wirkt der Inhaber des Schlüssels an der Verknüpfung mit, sodass ein Schlüssel nur von jemandem verknüpft werden kann, der ihn tatsächlich hält, und ein Schlüssel, der Wert bewegen kann, immer durch ein Limit auf dem Konto begrenzt ist.
 
@@ -458,7 +458,7 @@ Ein Client, der nur `code === 0` prüft, meldet einen solchen Aufruf als Erfolg.
 
 Am 12. November 2026 im Testnet (Release v3.2.8, SDK 0.13.0, hybrides Signieren): `MsgUpdateSpendingRules` mit einer Regel (Tageslimit 1,000,000 uqor, Limit pro Transaktion 100,000 uqor, nur `uqor`) gelang mit Code 0 und 186,319 verbrauchtem Gas. Ein `MsgRegisterAuthenticator` für die Berechtigung `evm`, gesendet bevor die Regel existierte, wurde mit Code 8 abgelehnt, und gesendet nach der Regel, aber ohne Besitznachweis, mit Code 10 abgelehnt, mit den Meldungen in der Fehlertabelle. SDK 0.13.0 hat in seinen Register-Composern kein Feld für den Besitznachweis, daher wurde die erfolgreiche Verknüpfung anschließend mit neueren Paketen ausgeführt, wie als Nächstes beschrieben.
 
-**Vom Autor der Dokumentation am 12. November 2026 im Testnet ausgeführt, mit SDK 0.14.0 und wallet-adapter 0.6.0 (alles Code 0):**
+**Für diese Seite am 12. November 2026 im Testnet ausgeführt, mit SDK 0.14.0 und wallet-adapter 0.6.0 (alles Code 0):**
 
 * `linkAuthenticatorMsgs` baute die Ausgabenregel (`MsgUpdateSpendingRules`) und `MsgRegisterAuthenticator` für eine Ethereum-Adresse, mit dem Besitznachweis aus `metaMaskPossessionProof` (hier von einem Wegwerfschlüssel über einen Provider signiert, der `personal_sign` beantwortet). Beide Nachrichten gingen in EINER vom Eigentümer signierten Transaktion: 220,973 Gas verbraucht bei einem Limit von 600,000.
 * `GET /qorechain/abstractaccount/v1/accounts/{address}` zeigte danach `authenticators_count` 1, und `GET .../authenticators` listete den Schlüssel: Verfahren `secp256k1`, `pubkey_hex` die 20-Byte-Adresse, Berechtigungen `evm`, `revoked` false.

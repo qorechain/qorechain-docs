@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.8** (applied by governance proposal 17 at height 4,273,000 on 18 November 2026; the previous release, v3.2.7, was applied at height 4,164,600 on 12 November 2026 by proposal 16, v3.2.6 at height 4,020,000 on 4 November 2026, v3.2.5 at height 3,906,833 on 29 October 2026, v3.2.4 at height 3,742,566 on 23 October 2026 and v3.2.3 at height 3,662,051 on 20 October 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) runs **v3.2.8** since 12 November 2026 (applied by testnet governance at height 9,929,500; see [v3.2.8](#v328), which mainnet applied six days later, so both networks run the same release); v3.2.4 reached it at height 8,337,253 (19 October 2026), v3.2.5 at height 8,890,800 (26 October 2026), v3.2.6 at height 8,970,638 (27 October 2026) and v3.2.7 at height 9,594,600 (6 November 2026, see [v3.2.7](#v327)).
+Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.8** (applied by governance proposal 17 at height 4,273,000 on 18 November 2026; the previous release, v3.2.7, was applied at height 4,164,600 on 12 November 2026 by proposal 16, v3.2.6 at height 4,020,000 on 4 November 2026, v3.2.5 at height 3,906,833 on 29 October 2026, v3.2.4 at height 3,742,566 on 23 October 2026 and v3.2.3 at height 3,662,051 on 20 October 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) runs **v3.2.9** since 20 November 2026 (applied by testnet governance proposal 39 at height 10,424,000; see [v3.2.9](#v329), which is testnet only: mainnet stays on v3.2.8). Before that the testnet ran v3.2.8 from 12 November 2026 (height 9,929,500; see [v3.2.8](#v328), which mainnet applied six days later); v3.2.4 reached it at height 8,337,253 (19 October 2026), v3.2.5 at height 8,890,800 (26 October 2026), v3.2.6 at height 8,970,638 (27 October 2026) and v3.2.7 at height 9,594,600 (6 November 2026, see [v3.2.7](#v327)).
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet. The release manifest ([Connecting to Mainnet](/getting-started/connecting-to-mainnet)) is promoted separately from tagging and can lag a tag by some time — check it directly for what a fresh install actually downloads.
@@ -15,7 +15,7 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ## Mainnet governance timeline {#governance-timeline}
 
-Proposals that changed the running mainnet since 14 October 2026. Proposals 7 to 14 and 16 were expedited (one-day voting period); proposal 15 used the normal two-day voting period. All ten passed with all voting bonded stake in favour. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
+Proposals that changed the running mainnet since 14 October 2026. Proposals 7 to 14, 16 and 17 were expedited (one-day voting period); proposal 15 used the normal two-day voting period. All eleven passed with all voting bonded stake in favour. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
 
 | Proposal | What it does | Voting | Outcome |
 | --- | --- | --- | --- |
@@ -29,8 +29,30 @@ Proposals that changed the running mainnet since 14 October 2026. Proposals 7 to
 | 14 | Coordinated upgrade to v3.2.5 (build 2) at height 3,906,833 (nodes stayed on v3.2.4 until that height, halted there and restarted on v3.2.5; transaction signing is unchanged). The content is listed under [v3.2.5](#v325) | 27 October 2026 00:29 UTC to 28 October 2026 00:29 UTC | Passed; applied 29 October 2026 at height 3,906,833 |
 | 15 | Coordinated upgrade to v3.2.6 (build 3) at height 4,020,000 (nodes stayed on v3.2.5 until that height, halted there and restarted on v3.2.6; transaction signing is unchanged). The content is listed under [v3.2.6](#v326) | 1 November 2026 21:36 UTC to 3 November 2026 21:36 UTC | Passed; applied 4 November 2026 at height 4,020,000 |
 | 16 | Coordinated upgrade to v3.2.7 (build 3) at height 4,164,600 (nodes stayed on v3.2.6 until that height, halted there and restarted on v3.2.7; transaction signing is unchanged). The content is listed under [v3.2.7](#v327) | 9 November 2026 23:08 UTC to 10 November 2026 23:08 UTC | Passed; applied 12 November 2026 at height 4,164,600 |
+| 17 | Coordinated upgrade to v3.2.8 (build 3) at height 4,273,000 (nodes stayed on v3.2.7 until that height, halted there and restarted on v3.2.8; transaction signing is unchanged). The content is listed under [v3.2.8](#v328) | 15 November 2026 20:23 UTC to 16 November 2026 20:23 UTC | Passed; applied 18 November 2026 at height 4,273,000 |
 
 See [Tokenomics](/architecture/tokenomics#stranded-and-reserve) for what the releases mean and [Governance](/user-guide/governance) for how to vote.
+
+---
+
+## v3.2.9: Solana Wire Transactions, SVM Authorisation Window, Window Query Lists, Cross-VM Rules for the SVM (testnet only) {#v329}
+
+:::note Testnet only
+v3.2.9 runs on the `qorechain-diana` testnet since 20 November 2026. Mainnet `qorechain-vladi` stays on v3.2.8: the Solana-compatible lane is off there, cross-VM calls stay paused and contract upload stays governance only, so none of the items below can be used on mainnet.
+:::
+
+**Release focus:** The Solana-compatible lane on the testnet accepts the transactions a Solana wallet signs, an account can authorise a Solana key for bounded use, the EVM window query returns the whole scope, and the cross-VM calls into the SVM follow the same rules as the calls into the EVM.
+
+Testnet: applied by governance proposal 39 at height 10,424,000 on 20 November 2026 (block time about 08:58 UTC; checked on the live testnet REST on 22 November 2026, when the proposal showed as passed with all voting bonded stake in favour). Gas for existing transaction kinds is unchanged. Node operators copy the whole `lib/` folder of the release bundle, as for v3.2.8. The testnet release manifest (`https://download.qore.host/testnet/latest.json`) still listed version 3.2.8 when read on 22 November 2026, so a node that needs v3.2.9 takes the bundle named in the proposal text.
+
+* **Solana wire transactions.** A transaction signed by a Solana wallet is carried on chain in `MsgSolanaTransaction`. The chain checks every Solana signature, the recent blockhash and the fee payer, runs the instructions in order and in one step, and refuses a signature it has already seen. The message runs only as a top-level message of its own carrying transaction: it is refused under authz and when a contract dispatches it. A node's Solana-compatible JSON-RPC accepts a signed transaction through `sendTransaction` and signs and sends the carrying transaction for you when it has a relayer key set. On 22 November 2026 the public testnet gateway had none set, so use the command line relay or your own node (see [SVM on the Testnet](/developer-guide/svm-testnet-v329#relay)).
+* **Signed carrier fee bound.** The fee of the transaction that carries a Solana transaction must be paid in QOR and must be covered by what the Solana transactions inside it pay. A carrier whose fee is not covered is refused before anything is kept.
+* **SVM authorisation window with a key proof.** `MsgOpenSVMWindow` and `MsgCloseSVMWindow` let an account that has a post-quantum key authorise one Solana key for a bounded number of blocks, transactions and QOR, optionally limited to listed programs. Opening a window needs a proof that you hold the Solana key (field 7, `svm_key_proof`). Two optional fields set a separate budget for executions sent in your name under an authz grant (`on_behalf_max_txs`, `on_behalf_max_value`); leave them out and such executions are refused. Token amounts are not counted in the window's value limit, and a window with no program list refuses lasting token grants such as approving a delegate.
+* **EVM window query scope lists.** The window query (`GET /qorechain/pqc/v1/evm_window/{address}` and the matching gRPC and command-line query) now returns the three lists a window was opened with: `validators` (field 14), `staking_validators` (field 15) and `ibc_receivers` (field 16). Before v3.2.9 the read-back returned `allowed_targets` only. See [EVM window reference](/developer-guide/evm-window-reference#window-query-lists).
+* **All `qor_` JSON-RPC methods served.** The other 25 methods of the `qor_` namespace (every method listed on the [qor_ namespace page](/api-reference/json-rpc-qor_-namespace) except `qor_getKEMKey`, which was already served) answer on the testnet EVM endpoint. On 22 November 2026 none of the 26 names returned method-not-found.
+* **Cross-VM rules for the SVM.** Send SVM messages as top-level messages of the transaction. A `MsgExecuteProgram` wrapped in an authz execution with the account itself as grantee counts as sent on the account's behalf and then needs a window with an on-behalf budget. A `MsgCrossVMCall` into the SVM sent in your name by another account is refused; grant `MsgExecuteProgram` instead. A failed call into the SVM reports `svm execution failed` with the code and a short description, and return data is the called program's own.
+* **Addresses in new messages.** Every message type new in v3.2.9 refuses a bech32 address that is not in its canonical lower-case form.
+* **Relay limits.** A Solana transaction sent through a gateway counts against its fee payer: 600 per 30 blocks (about a minute) at the default. A large program deploy from one key can pass it; write the program buffer first, wait a minute and deploy from the buffer.
 
 ---
 
@@ -50,7 +72,7 @@ Testnet: applied by governance proposal 36 at height 9,929,500 on 12 November 20
 * **Cross-VM async calls.** An asynchronous call holds a refundable escrow, takes `async_gas_limit` and `async_max_factor`, and is capped at 100 pending calls per sender; the pending-calls query is paginated. See [Async calls](/developer-guide/cross-vm-interoperability#async-calls).
 * **RDK.** Data posting, based sequencing, optimistic `qledger-v1` rollups with fraud proofs (a fraud proof burns half of the slashed bond and pays half to the challenger) and private rollups with ML-KEM-1024 envelopes. STARK settlement is paused until the next release. SNARK inputs are reduced modulo the BLS12-381 field where the chain fixes them.
 * **Abstract accounts.** Linking a key needs a proof of possession, and keys that can move value need a spending rule. A failed execution is reported as failed.
-* **Solana-compatible lane closed on the testnet** until a governance vote reopens it. On mainnet the lane stays off, and its public endpoints are read-only.
+* **Solana-compatible lane closed on the testnet** until a governance vote reopens it (testnet governance proposal 37 reopened it on 12 November 2026). On mainnet the lane stays off, and its public endpoints are read-only.
 * **Node operators.** Copy the whole `lib/` folder of the release bundle (it adds a contract runtime library next to the existing ones) and keep the contract memory cache at 256 MiB or more. New route: `GET /qorechain/svm/v1/params`.
 * **Clients.** Gas by simulation for contracts is covered in [CosmWasm in the SDK](/sdk/guides/cosmwasm#gas), window options in [EVM window options](/developer-guide/evm-development#evm-window-v328) and async calls in [Async calls](/developer-guide/cross-vm-interoperability#async-calls).
 

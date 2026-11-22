@@ -9,22 +9,22 @@ sidebar_position: 2
 
 The `qor_` namespace was designed to provide QoreChain-specific JSON-RPC methods for querying post-quantum cryptography status, AI analytics, cross-VM messaging, multi-layer state, bridge operations, tokenomics, rollup infrastructure, and PRISM consensus state.
 
-:::warning The planned methods are not served yet
-**None of the methods in the table below is served on any network yet.** They are implemented in the node source but not registered with the JSON-RPC server, and each returns `-32601` (method not found). Registering them is planned for a node release, and this page will say which release when it ships. Do not build against them today; use the REST routes in the table where one exists. Client libraries that expose `client.qor.*` helpers wrap these same methods, so those helpers fail the same way.
+:::warning Served on the testnet from v3.2.9, not on mainnet
+From v3.2.9, the testnet EVM endpoint (`https://evm-testnet.qore.host`) serves all the methods listed on this page. Mainnet runs v3.2.8, and its public EVM endpoint does not list the `qor` namespace: every `qor_` method there, including those in the table below, returns `-32601` (method not found). Checked on 22 November 2026: each of the 26 method names on this page, called on the testnet without arguments, answered either with a result or with an invalid-parameters error naming a missing argument, and none returned `-32601`; on mainnet `qor_getBurnStats` returned `-32601`. Build against the REST routes in the table below for anything that has to work on both networks. Client libraries that expose `client.qor.*` helpers wrap these same methods, so those helpers work on the testnet and fail on mainnet.
 :::
 
 ## What is served: `qor_getKEMKey` {#qor-getkemkey}
 
-One method of the namespace is served: `qor_getKEMKey(address)` returns the ML-KEM public key an address has published (`address` may be `qor1...` or `0x`). It answers `{"address": ..., "found": false}` when no key is published and otherwise adds `algorithm_id`, `algorithm_name`, `public_key` (`0x` hex) and `registered_height`. The node serves the `qor` namespace only where its `[json-rpc]` `api` list in `app.toml` includes `qor`.
+`qor_getKEMKey(address)` was the only method served before v3.2.9, and it is the one to use on any endpoint that lists the `qor` namespace. It returns the ML-KEM public key an address has published (`address` may be `qor1...` or `0x`). It answers `{"address": ..., "found": false}` when no key is published and otherwise adds `algorithm_id`, `algorithm_name`, `public_key` (`0x` hex) and `registered_height`. The node serves the `qor` namespace only where its `[json-rpc]` `api` list in `app.toml` includes `qor`.
 
-Observed on 7 November 2026:
+Observed on 7 November 2026 (before v3.2.9):
 
 | Network | `rpc_modules` | `qor_getKEMKey` |
 | --- | --- | --- |
 | Testnet (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | answers (`found: false` for an address with no published key) |
 | Mainnet (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (the public mainnet endpoint does not list `qor`) |
 
-On the testnet every other `qor_` method checked (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) still returned `-32601`.
+On that date the testnet returned `-32601` for every other `qor_` method checked (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`); from v3.2.9 they answer on the testnet, as the note at the top of this page says.
 
 You can check the namespace list yourself:
 
@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 
 ---
 
-## Planned methods and what to use today
+## The other methods and what to use on mainnet
 
 | Planned method                | What to use today |
 | ----------------------------- | ----------------- |

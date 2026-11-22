@@ -71,9 +71,9 @@ Respuesta del 12 de noviembre de 2026, leída tras aprobarse la propuesta 37, co
 
 La CLI del nodo tiene la misma consulta: `qorechaind query svm cluster-info`. El método JSON-RPC `getGenesisHash` en `https://svm-testnet.qore.host` devuelve el mismo hash. El hash se deriva del id de la cadena; no es el hash génesis de un clúster real de Solana. La ruta también se sirve en la mainnet (desde v3.2.7): el 12 de noviembre de 2026 `https://api.qore.host/qorechain/svm/v1/cluster_info` respondió `200` con `execution_enabled` `false`.
 
-## El RPC público de SVM es de solo lectura {#public-rpc}
+## El RPC público de SVM y las escrituras {#public-rpc}
 
-Los endpoints públicos `https://svm.qore.host` y `https://svm-testnet.qore.host` responden a lecturas y rechazan los métodos de escritura (`sendTransaction` y similares) en los ids de cadena públicos, esté o no abierto el carril. Para enviar transacciones SVM ejecutas tu propio nodo, que sirve el JSON-RPC compatible con Solana en el puerto 8899 por defecto (véase [Desarrollo con SVM](/developer-guide/svm-development#json-rpc-server)), y el propio carril debe estar abierto en la red que sigue ese nodo. Las lecturas funcionan ahora:
+Los endpoints públicos `https://svm.qore.host` y `https://svm-testnet.qore.host` responden a lecturas. Retransmiten `sendTransaction` solo cuando el gateway tiene configurada una clave de relayer; el 22 de noviembre de 2026 el gateway público de la testnet no tenía ninguna, así que rechazaba las escrituras (véase [SVM en la testnet](/developer-guide/svm-testnet-v329#relay)). Para enviar transacciones SVM envías tú mismo la transacción portadora o ejecutas tu propio nodo, que sirve el JSON-RPC compatible con Solana en el puerto 8899 por defecto (véase [Desarrollo con SVM](/developer-guide/svm-development#json-rpc-server)), y el propio carril debe estar abierto en la red que sigue ese nodo. Las lecturas funcionan ahora:
 
 ```bash
 # Health, version, cluster hash, slot and a rent quote (all HTTP 200 on 12 November 2026)
@@ -93,7 +93,7 @@ curl -s -X POST https://svm-testnet.qore.host -H 'Content-Type: application/json
 
 Una vez abierto el carril, el flujo es: construir un programa SBF con la cadena de herramientas actual de Solana, desplegarlo, crear las cuentas que necesita y luego llamarlo. Cada comando `tx svm` es una transacción del carril Cosmos, así que necesita un límite de gas explícito, una comisión de al menos el gas por 0.1 uqor y la cofirma poscuántica híbrida (véase [Firma poscuántica](/developer-guide/post-quantum-signing)).
 
-Estos son los comandos de la CLI de nodo para Linux de la referencia del nodo. **UNTESTED (sin probar): el carril se abrió en la testnet solo después de la propuesta 37, y para esta página no se ejecutó ningún despliegue de programa, ejecución ni creación de cuenta.**
+Estos son los comandos de la CLI de nodo para Linux de la referencia del nodo. **Aún no probado contra la red en vivo: el carril se abrió en la testnet solo después de la propuesta 37, y para esta página no se ejecutó ningún despliegue de programa, ejecución ni creación de cuenta.**
 
 ```bash
 # 1. Build (platform-tools v1.53, --arch v0 or --arch v3)

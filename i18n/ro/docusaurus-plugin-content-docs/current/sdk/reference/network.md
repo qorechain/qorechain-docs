@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Presetare de rețea | `testnet` |
 | Chain id | `qorechain-diana` (live) |
-| Versiune lanț | v3.2.8 (de la înălțimea 9,929,500, 12 noiembrie 2026, aplicată prin guvernanță; mainnet-ul a aplicat v3.2.8 pe 18 noiembrie 2026. v3.2.7 a fost aplicată la înălțimea 9,594,600 pe 6 noiembrie; v3.2.6 a fost aplicată la înălțimea 8,970,638 pe 27 octombrie; v3.2.5 a fost aplicată la înălțimea 8,890,800 pe 26 octombrie, iar v3.2.4 la înălțimea 8,337,253 pe 19 octombrie) |
+| Versiune lanț | v3.2.9 (de la înălțimea 10,424,000, 20 noiembrie 2026, aplicată prin propunerea de guvernanță 39; doar testnet, mainnet-ul rulează v3.2.8). v3.2.8 a fost aplicată la înălțimea 9,929,500 pe 12 noiembrie 2026 (mainnet-ul a aplicat v3.2.8 pe 18 noiembrie 2026). v3.2.7 a fost aplicată la înălțimea 9,594,600 pe 6 noiembrie; v3.2.6 a fost aplicată la înălțimea 8,970,638 pe 27 octombrie; v3.2.5 a fost aplicată la înălțimea 8,890,800 pe 26 octombrie, iar v3.2.4 la înălțimea 8,337,253 pe 19 octombrie) |
 | ID lanț EVM | `9800` |
 | Token afișat | `QOR` |
 | Denominare de bază | `uqor` |

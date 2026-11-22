@@ -11,7 +11,7 @@ Allgemeine Fragen zu QoreChain, beantwortet anhand der Dokumentation. Jede Antwo
 
 ### Ist das Mainnet live?
 
-Ja. Das QoreChain-Mainnet (Chain `qorechain-vladi`, EVM-Chain-ID 9801) ist seit dem 7. Juni 2026 live und läuft mit Release v3.2.8 (angewendet auf Höhe 4.273.000 am 18. November 2026 durch Governance-Vorschlag 17; v3.2.7 war auf Höhe 4.164.600 am 12. November 2026 durch Vorschlag 16 angewendet worden); das Testnet `qorechain-diana` läuft seit dem 12. November 2026 mit v3.2.8 (Höhe 9.929.500). Siehe [Netzwerke](/appendix/networks) und [Verbindung mit dem Mainnet](/getting-started/connecting-to-mainnet).
+Ja. Das QoreChain-Mainnet (Chain `qorechain-vladi`, EVM-Chain-ID 9801) ist seit dem 7. Juni 2026 live und läuft mit Release v3.2.8 (angewendet auf Höhe 4.273.000 am 18. November 2026 durch Governance-Vorschlag 17; v3.2.7 war auf Höhe 4.164.600 am 12. November 2026 durch Vorschlag 16 angewendet worden); das Testnet `qorechain-diana` läuft seit dem 20. November 2026 mit v3.2.9, nach v3.2.8 ab dem 12. November (v3.2.9 auf Höhe 10.424.000; v3.2.8 auf Höhe 9.929.500). Siehe [Netzwerke](/appendix/networks) und [Verbindung mit dem Mainnet](/getting-started/connecting-to-mainnet).
 
 ### Welche Chain-IDs und EVM-Chain-IDs gibt es?
 

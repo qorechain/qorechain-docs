@@ -9,22 +9,22 @@ sidebar_position: 2
 
 Spațiul de nume `qor_` a fost conceput pentru a oferi metode JSON-RPC specifice QoreChain pentru interogarea stării criptografiei post-cuantice, a analizelor AI, a mesageriei cross-VM, a stării multi-layer, a operațiunilor de bridge, a tokenomics, a infrastructurii de rollup și a stării consensului PRISM.
 
-:::warning Metodele planificate nu sunt încă servite
-**Niciuna dintre metodele din tabelul de mai jos nu este servită încă în vreo rețea.** Sunt implementate în codul sursă al nodului, dar nu sunt înregistrate în serverul JSON-RPC, iar fiecare întoarce `-32601` (method not found). Înregistrarea lor este planificată pentru o versiune a nodului, iar această pagină va indica versiunea respectivă când va fi livrată. Nu construiți astăzi pe ele; folosiți rutele REST din tabel acolo unde există una. Bibliotecile client care expun helperi `client.qor.*` încapsulează aceleași metode, deci acei helperi eșuează la fel.
+:::warning Servite pe testnet din v3.2.9, nu pe mainnet
+Începând cu v3.2.9, endpoint-ul EVM al testnet-ului (`https://evm-testnet.qore.host`) servește toate metodele enumerate pe această pagină. Mainnet-ul rulează v3.2.8, iar endpoint-ul său EVM public nu listează spațiul de nume `qor`: orice metodă `qor_` de acolo, inclusiv cele din tabelul de mai jos, întoarce `-32601` (method not found). Verificat la 22 noiembrie 2026: fiecare dintre cele 26 de nume de metode de pe această pagină, apelat pe testnet fără argumente, a răspuns fie cu un rezultat, fie cu o eroare de parametri invalizi care numea un argument lipsă, iar niciunul nu a întors `-32601`; pe mainnet, `qor_getBurnStats` a întors `-32601`. Pentru tot ce trebuie să funcționeze pe ambele rețele, construiți pe rutele REST din tabelul de mai jos. Bibliotecile client care expun helperi `client.qor.*` încapsulează aceleași metode, deci acei helperi funcționează pe testnet și eșuează pe mainnet.
 :::
 
 ## Ce este servit: `qor_getKEMKey` {#qor-getkemkey}
 
-O singură metodă a spațiului de nume este servită: `qor_getKEMKey(address)` întoarce cheia publică ML-KEM publicată de o adresă (`address` poate fi `qor1...` sau `0x`). Răspunde cu `{"address": ..., "found": false}` când nu este publicată nicio cheie și, altfel, adaugă `algorithm_id`, `algorithm_name`, `public_key` (hex `0x`) și `registered_height`. Nodul servește spațiul de nume `qor` doar acolo unde lista sa `api` din secțiunea `[json-rpc]` a lui `app.toml` include `qor`.
+`qor_getKEMKey(address)` a fost singura metodă servită înainte de v3.2.9 și este cea de folosit pe orice endpoint care listează spațiul de nume `qor`. Ea întoarce cheia publică ML-KEM publicată de o adresă (`address` poate fi `qor1...` sau `0x`). Răspunde cu `{"address": ..., "found": false}` când nu este publicată nicio cheie și, altfel, adaugă `algorithm_id`, `algorithm_name`, `public_key` (hex `0x`) și `registered_height`. Nodul servește spațiul de nume `qor` doar acolo unde lista sa `api` din secțiunea `[json-rpc]` a lui `app.toml` include `qor`.
 
-Observat la 7 noiembrie 2026:
+Observat la 7 noiembrie 2026 (înainte de v3.2.9):
 
 | Rețea | `rpc_modules` | `qor_getKEMKey` |
 | --- | --- | --- |
 | Testnet (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | răspunde (`found: false` pentru o adresă fără cheie publicată) |
 | Mainnet (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (punctul de acces public de mainnet nu listează `qor`) |
 
-Pe testnet, toate celelalte metode `qor_` verificate (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) au întors în continuare `-32601`.
+La acea dată, testnet-ul a întors `-32601` pentru toate celelalte metode `qor_` verificate (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`); începând cu v3.2.9 ele răspund pe testnet, după cum arată nota din partea de sus a acestei pagini.
 
 Puteți verifica singuri lista spațiilor de nume:
 
@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 
 ---
 
-## Metode planificate și ce se folosește astăzi
+## Celelalte metode și ce se folosește pe mainnet
 
 | Metodă planificată            | Ce se folosește astăzi |
 | ----------------------------- | ----------------- |

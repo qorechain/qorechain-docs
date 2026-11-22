@@ -9,22 +9,22 @@ sidebar_position: 2
 
 Der `qor_`-Namespace wurde entworfen, um QoreChain-spezifische JSON-RPC-Methoden bereitzustellen, mit denen sich der Status der Post-Quanten-Kryptografie, KI-Analysen, VM-übergreifendes Messaging, mehrschichtiger State, Bridge-Operationen, Tokenomics, Rollup-Infrastruktur und PRISM-Konsensstatus abfragen lassen.
 
-:::warning Die geplanten Methoden werden noch nicht bereitgestellt
-**Keine der Methoden in der folgenden Tabelle wird bisher auf einem Netzwerk bereitgestellt.** Sie sind im Node-Quellcode implementiert, aber nicht beim JSON-RPC-Server registriert, und jede liefert `-32601` (method not found). Ihre Registrierung ist für ein Node-Release geplant, und diese Seite nennt das Release, sobald es erscheint. Entwickeln Sie heute nicht gegen sie; nutzen Sie die REST-Routen in der Tabelle, wo eine existiert. Client-Bibliotheken, die `client.qor.*`-Helfer anbieten, kapseln dieselben Methoden, sodass diese Helfer auf dieselbe Weise fehlschlagen.
+:::warning Ab v3.2.9 im Testnet bereitgestellt, nicht im Mainnet
+Ab v3.2.9 stellt der Testnet-EVM-Endpunkt (`https://evm-testnet.qore.host`) alle auf dieser Seite aufgeführten Methoden bereit. Das Mainnet läuft auf v3.2.8, und sein öffentlicher EVM-Endpunkt listet den Namespace `qor` nicht: Jede `qor_`-Methode liefert dort `-32601` (method not found), auch die in der folgenden Tabelle. Geprüft am 22. November 2026: Jeder der 26 Methodennamen auf dieser Seite, ohne Argumente im Testnet aufgerufen, antwortete entweder mit einem Ergebnis oder mit einem Fehler wegen ungültiger Parameter, der ein fehlendes Argument nennt, und keiner lieferte `-32601`; im Mainnet lieferte `qor_getBurnStats` `-32601`. Nutzen Sie für alles, was in beiden Netzwerken funktionieren muss, die REST-Routen in der folgenden Tabelle. Client-Bibliotheken, die `client.qor.*`-Helfer anbieten, kapseln dieselben Methoden, sodass diese Helfer im Testnet funktionieren und im Mainnet fehlschlagen.
 :::
 
 ## Was bereitgestellt wird: `qor_getKEMKey` {#qor-getkemkey}
 
-Eine Methode des Namespace wird bereitgestellt: `qor_getKEMKey(address)` liefert den ML-KEM-Public-Key, den eine Adresse veröffentlicht hat (`address` kann `qor1...` oder `0x` sein). Sie antwortet mit `{"address": ..., "found": false}`, wenn kein Schlüssel veröffentlicht ist, und fügt andernfalls `algorithm_id`, `algorithm_name`, `public_key` (`0x`-Hex) und `registered_height` hinzu. Der Node stellt den Namespace `qor` nur dort bereit, wo seine `[json-rpc]`-`api`-Liste in `app.toml` `qor` enthält.
+`qor_getKEMKey(address)` war vor v3.2.9 die einzige bereitgestellte Methode und ist die, die Sie auf jedem Endpunkt nutzen sollten, der den Namespace `qor` listet. Sie liefert den ML-KEM-Public-Key, den eine Adresse veröffentlicht hat (`address` kann `qor1...` oder `0x` sein). Sie antwortet mit `{"address": ..., "found": false}`, wenn kein Schlüssel veröffentlicht ist, und fügt andernfalls `algorithm_id`, `algorithm_name`, `public_key` (`0x`-Hex) und `registered_height` hinzu. Der Node stellt den Namespace `qor` nur dort bereit, wo seine `[json-rpc]`-`api`-Liste in `app.toml` `qor` enthält.
 
-Beobachtet am 7. November 2026:
+Beobachtet am 7. November 2026 (vor v3.2.9):
 
 | Netzwerk | `rpc_modules` | `qor_getKEMKey` |
 | --- | --- | --- |
 | Testnet (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | antwortet (`found: false` für eine Adresse ohne veröffentlichten Schlüssel) |
 | Mainnet (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (der öffentliche Mainnet-Endpunkt listet `qor` nicht) |
 
-Im Testnet lieferte jede andere geprüfte `qor_`-Methode (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) weiterhin `-32601`.
+An diesem Datum lieferte das Testnet für jede andere geprüfte `qor_`-Methode (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) `-32601`; ab v3.2.9 antworten sie im Testnet, wie der Hinweis am Anfang dieser Seite sagt.
 
 Sie können die Namespace-Liste selbst prüfen:
 
@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 
 ---
 
-## Geplante Methoden und was Sie heute nutzen
+## Die übrigen Methoden und was Sie im Mainnet nutzen
 
 | Geplante Methode                | Was Sie heute nutzen |
 | ----------------------------- | ----------------- |

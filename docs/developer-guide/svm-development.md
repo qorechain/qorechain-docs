@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain includes a **Solana Virtual Machine (SVM)** execution environment, allowing developers to deploy and execute SBF/BPF programs using familiar Solana tooling. The SVM module exposes a Solana-compatible JSON-RPC interface on **port 8899**, which `qorechaind start` launches automatically (see [JSON-RPC Server](#json-rpc-server) below).
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.8** since 18 November 2026 (governance proposal 17, height 4,273,000; v3.2.7 since 12 November 2026; v3.2.6 since 4 November 2026; v3.2.5 since 29 October 2026, v3.2.4 since 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.8 (since 12 November 2026; v3.2.4 since 19 October 2026). **SVM transactions are disabled on both networks** (see the next box), so the `tx svm` commands on this page are reference only: they cannot succeed today.
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.8** since 18 November 2026 (governance proposal 17, height 4,273,000; v3.2.7 since 12 November 2026; v3.2.6 since 4 November 2026; v3.2.5 since 29 October 2026, v3.2.4 since 23 October 2026). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.9 (since 20 November 2026; v3.2.8 from 12 November, v3.2.4 since 19 October 2026). **SVM transactions are open on the testnet** (governance proposal 37) and **off on mainnet**, so the `tx svm` commands on this page can succeed on the testnet only; for the full testnet walkthrough see [SVM on the Testnet (v3.2.9)](/developer-guide/svm-testnet-v329).
 :::
 
 ---
 
-:::caution SVM transaction submission is currently disabled
-As of chain version v3.1.89 (22 August), following an incident, the SVM execution lane is **disabled network-wide for transaction submission** on both `qorechain-vladi` and `qorechain-diana` — any transaction sent to `x/svm` (program deployment, instruction execution, account creation, transfers) returns `code 11, "SVM module is disabled"`. This applies to your own node as well as the public endpoints. Read-style RPC methods may still respond, but do not build or rehearse a live SVM integration until the lane reopens. On mainnet the SVM lane is off in the current release, and enabling it on mainnet requires a future release; it is expected to stay off until an external audit clears it.
+:::note SVM lane status (checked 22 November 2026)
+On the **`qorechain-diana`** testnet the SVM lane is **open** since governance proposal 37 (12 November 2026), and release v3.2.9 adds Solana wire transactions and SVM windows: see [SVM on the Testnet](/developer-guide/svm-testnet-v329). On the **`qorechain-vladi`** mainnet the lane is **off**: any `x/svm` transaction there returns `code 11, "SVM module is disabled"`. Read `GET /qorechain/svm/v1/params` and check `enabled` before you build.
 :::
 
 ## Overview
@@ -47,7 +47,7 @@ As of chain version **v3.1.82**, the SVM interface is a **first-class native-QOR
 
 **Release v3.2.8 (testnet since 12 November 2026, mainnet since 18 November 2026).** The upgrade closes the SVM lane on `qorechain-diana`: SVM writes fail, `MsgRegisterSVMPQCKey` is refused, and the SVM JSON-RPC refuses write methods on the public chain ids, until a governance vote reopens it (the testnet has a governed switch). On mainnet the lane stays off (read on 19 November 2026: `enabled` `false`). Clients should read the lane state from the SVM module parameters (`enabled`) before offering SVM actions.
 
-The public endpoints (`https://svm.qore.host`, `https://svm-testnet.qore.host`) are **read-only** — transaction submission is disabled at the edge. Ordinarily you would run your own node (port 8899) to submit SVM transactions, but see the caution above: the `x/svm` transaction lane itself is currently disabled network-wide, including on your own node.
+The public endpoints (`https://svm.qore.host`, `https://svm-testnet.qore.host`) serve reads. On 22 November 2026 the public testnet gateway did not relay `sendTransaction` (it answered that no relayer key is set), so to submit SVM transactions on the testnet you send the carrying transaction yourself or run your own node (port 8899). See [SVM on the Testnet](/developer-guide/svm-testnet-v329#relay). On mainnet the lane is off.
 
 ---
 
@@ -246,7 +246,7 @@ Programs that exceed the compute budget are halted and the transaction is revert
 
 ## Cross-VM Interoperability
 
-SVM programs are designed to communicate with EVM and QoreChain Native contracts through the `x/crossvm` module's `MsgCrossVMCall` message (the chain works out the source lane itself). Because the SVM lane is disabled for transactions and `MsgCrossVMCall` is switched off on mainnet, there is no working SVM cross-VM path today. See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the current status, the message lifecycle and the timeout behaviour.
+SVM programs are designed to communicate with EVM and QoreChain Native contracts through the `x/crossvm` module's `MsgCrossVMCall` message (the chain works out the source lane itself). Cross-VM calls are paused on mainnet and the SVM lane is off there, so there is no SVM cross-VM path on mainnet. On the testnet the SVM lane is open and the v3.2.9 rules are in [SVM on the Testnet](/developer-guide/svm-testnet-v329). See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the current status, the message lifecycle and the timeout behaviour.
 
 ---
 

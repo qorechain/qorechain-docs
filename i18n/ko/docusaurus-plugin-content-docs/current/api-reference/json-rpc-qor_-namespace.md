@@ -9,22 +9,22 @@ sidebar_position: 2
 
 `qor_` 네임스페이스는 포스트 양자 암호화 상태, AI 분석, 크로스 VM 메시징, 다중 계층 상태, 브리지 작업, 토크노믹스, 롤업 인프라 및 PRISM 합의 상태를 조회하기 위한 QoreChain 전용 JSON-RPC 메서드를 제공하도록 설계되었습니다.
 
-:::warning 계획된 메서드는 아직 제공되지 않음
-**아래 표의 메서드는 어느 네트워크에서도 아직 제공되지 않습니다.** 메서드는 노드 소스에 구현되어 있지만 JSON-RPC 서버에 등록되지 않았으며, 각각 `-32601`(method not found)을 반환합니다. 등록은 향후 노드 릴리스에서 이루어질 예정이며, 출시되면 이 페이지에 해당 릴리스를 명시하겠습니다. 현재는 이 메서드들을 기반으로 개발하지 마세요. 표에 REST 경로가 있는 경우 그것을 사용하세요. `client.qor.*` 헬퍼를 제공하는 클라이언트 라이브러리는 바로 이 메서드들을 감싸고 있으므로, 해당 헬퍼도 동일하게 실패합니다.
+:::warning v3.2.9부터 테스트넷에서 제공되며 메인넷에서는 제공되지 않음
+v3.2.9부터 테스트넷 EVM 엔드포인트(`https://evm-testnet.qore.host`)는 이 페이지에 나열된 모든 메서드를 제공합니다. 메인넷은 v3.2.8을 실행하며, 그 공개 EVM 엔드포인트는 `qor` 네임스페이스를 나열하지 않습니다. 아래 표의 메서드를 포함해 그곳의 모든 `qor_` 메서드는 `-32601`(method not found)을 반환합니다. 2026년 11월 22일에 확인했습니다. 이 페이지의 메서드 이름 26개를 인수 없이 테스트넷에서 호출했을 때 각각 결과가 반환되거나 누락된 인수를 명시한 잘못된 매개변수 오류로 응답했으며, `-32601`을 반환한 것은 없었습니다. 메인넷에서는 `qor_getBurnStats`가 `-32601`을 반환했습니다. 두 네트워크에서 모두 동작해야 하는 것은 아래 표의 REST 경로를 기반으로 개발하세요. `client.qor.*` 헬퍼를 제공하는 클라이언트 라이브러리는 바로 이 메서드들을 감싸고 있으므로, 해당 헬퍼는 테스트넷에서는 동작하고 메인넷에서는 실패합니다.
 :::
 
 ## 제공되는 메서드: `qor_getKEMKey` {#qor-getkemkey}
 
-네임스페이스의 메서드 하나가 제공됩니다. `qor_getKEMKey(address)`는 주소가 게시한 ML-KEM 공개 키를 반환합니다(`address`는 `qor1...` 또는 `0x` 형식 모두 가능). 게시된 키가 없으면 `{"address": ..., "found": false}`로 응답하고, 그렇지 않으면 `algorithm_id`, `algorithm_name`, `public_key`(`0x` 16진수), `registered_height`가 추가됩니다. 노드는 `app.toml`의 `[json-rpc]` `api` 목록에 `qor`가 포함된 경우에만 `qor` 네임스페이스를 제공합니다.
+`qor_getKEMKey(address)`는 v3.2.9 이전에 제공되던 유일한 메서드이며, `qor` 네임스페이스를 나열하는 모든 엔드포인트에서 사용할 수 있는 메서드입니다. 이 메서드는 주소가 게시한 ML-KEM 공개 키를 반환합니다(`address`는 `qor1...` 또는 `0x` 형식 모두 가능). 게시된 키가 없으면 `{"address": ..., "found": false}`로 응답하고, 그렇지 않으면 `algorithm_id`, `algorithm_name`, `public_key`(`0x` 16진수), `registered_height`가 추가됩니다. 노드는 `app.toml`의 `[json-rpc]` `api` 목록에 `qor`가 포함된 경우에만 `qor` 네임스페이스를 제공합니다.
 
-2026년 11월 7일 확인 결과:
+2026년 11월 7일 확인 결과(v3.2.9 이전):
 
 | 네트워크 | `rpc_modules` | `qor_getKEMKey` |
 | --- | --- | --- |
 | 테스트넷(`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | 응답함(게시된 키가 없는 주소는 `found: false`) |
 | 메인넷(`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601`(공개 메인넷 엔드포인트는 `qor`를 나열하지 않음) |
 
-테스트넷에서 확인한 다른 모든 `qor_` 메서드(`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`)는 여전히 `-32601`을 반환했습니다.
+그 날짜에 테스트넷은 확인한 다른 모든 `qor_` 메서드(`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`)에 대해 `-32601`을 반환했습니다. v3.2.9부터는 이 페이지 맨 위의 안내에 있는 것처럼 테스트넷에서 응답합니다.
 
 네임스페이스 목록은 직접 확인할 수 있습니다.
 
@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 
 ---
 
-## 계획된 메서드와 현재 사용할 수 있는 방법
+## 그 밖의 메서드와 메인넷에서 사용할 수 있는 방법
 
 | 계획된 메서드                | 현재 사용할 수 있는 방법 |
 | ----------------------------- | ----------------- |

@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain, geliştirici araçlarını genel kayıt defterlerinde (npm, PyPI, crates.io, Go modül proxy'si, Maven Central ve Swift Package Manager) küçük paketler olarak yayınlar. Bu sayfa dizindir: her paketin ne işe yaradığı, tam kayıt defteri adı, dili, güncel sürümü, kurulum komutu ve durumu ile nasıl kullanılacağını nerede okuyacağınız. QoreChain üzerinde dApp, cüzdan, arka uç ve rollup geliştiren ve bir kılavuzu okumadan önce doğru paketi seçmek isteyen geliştiriciler içindir.
 
-Tablolardaki sürümler 4 Kasım 2026 tarihinde kayıt defterlerinden okunmuştur. Mainnet `qorechain-vladi` v3.2.8 çalıştırır (18 Kasım 2026'da 4.273.000 yüksekliğinde, yönetişim önerisi 17 ile uygulandı; v3.2.7, 12 Kasım'da, v3.2.6, 4 Kasım'da, v3.2.5, 29 Ekim'de). Testnet `qorechain-diana` v3.2.6'yı 27 Ekim'de, v3.2.7'yi 6 Kasım'da ve v3.2.8'i 12 Kasım 2026'da uyguladı; yani her iki ağ da aynı sürümü çalıştırır. Bu tablolardaki hiçbir paketin, sayfasında aksi belirtilmedikçe v3.2.7 mesajları için oluşturucusu yoktur. Yayınlanmış olarak listelenen her paket Apache-2.0 lisanslıdır.
+Tablolardaki sürümler 4 Kasım 2026 tarihinde kayıt defterlerinden okunmuştur. Mainnet `qorechain-vladi` v3.2.8 çalıştırır (18 Kasım 2026'da 4.273.000 yüksekliğinde, yönetişim önerisi 17 ile uygulandı; v3.2.7, 12 Kasım'da, v3.2.6, 4 Kasım'da, v3.2.5, 29 Ekim'de). Testnet `qorechain-diana` v3.2.6'yı 27 Ekim'de, v3.2.7'yi 6 Kasım'da, v3.2.8'i 12 Kasım'da ve v3.2.9'u 20 Kasım 2026'da uyguladı; yani testnet ana ağdan (v3.2.8) bir sürüm öndedir. Bu tablolardaki hiçbir paketin, sayfasında aksi belirtilmedikçe v3.2.7 mesajları için oluşturucusu yoktur. Yayınlanmış olarak listelenen her paket Apache-2.0 lisanslıdır.
 
 ## Yenilikler {#innovations}
 

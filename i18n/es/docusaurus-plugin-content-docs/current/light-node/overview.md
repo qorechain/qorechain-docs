@@ -11,7 +11,7 @@ El **nodo ligero de QoreChain** es un cliente pequeño que sigue una red QoreCha
 
 Ejecutar y sincronizar un nodo no requiere licencia. Participar en la parte de recompensas es un paso aparte: requiere una licencia `lightnode_operator`, stake delegado a validadores bonded y un registro on-chain (consulta [Cómo acceder](#how-to-access)).
 
-El nodo ligero tiene su **propia línea de versiones**, separada de la versión de lanzamiento de la cadena. A fecha de 12 de noviembre de 2026, los canales de versiones de ambas redes llevan el nodo ligero **3.1.14** (ambas redes ejecutan la cadena `v3.2.8`, la testnet desde el 12 de noviembre de 2026 y la mainnet desde el 18 de noviembre de 2026; la 3.1.14 funciona en `v3.2.8` en la testnet, donde el heartbeat devuelve código 0, y no se ha vuelto a comprobar en la mainnet). Trata los dos números como no relacionados.
+El nodo ligero tiene su **propia línea de versiones**, separada de la versión de lanzamiento de la cadena. A fecha de 12 de noviembre de 2026, los canales de versiones de ambas redes llevan el nodo ligero **3.1.14** (la mainnet ejecuta la cadena `v3.2.8` desde el 18 de noviembre de 2026 y la testnet la ejecutó desde el 12 de noviembre de 2026 antes de pasar a `v3.2.9` el 20 de noviembre de 2026; la 3.1.14 funciona en `v3.2.8` en la testnet, donde el heartbeat devuelve código 0, y no se ha vuelto a comprobar en la mainnet). Trata los dos números como no relacionados.
 
 ## Innovaciones {#innovations}
 
@@ -98,7 +98,7 @@ También puedes comprobar una licencia directamente: `GET /qorechain/license/v1/
 ### Estado del programa de recompensas {#reward-program-status}
 
 :::note El registro está abierto
-El registro está abierto en mainnet (`qorechain-vladi`, cadena v3.2.8) y en testnet (`qorechain-diana`, cadena v3.2.8). El 4 de noviembre de 2026 se habían concedido siete licencias `lightnode_operator` en mainnet, había un nodo ligero registrado en mainnet y dos en la testnet (`total_registered` en `GET /qorechain/lightnode/v1/stats`: `1` y `2`). La contabilidad de recompensas está activa en ambas redes desde la actualización v3.2.0. El tiempo de actividad se cuenta **desde el bloque en que tu nodo se registra**, así que ejecutar un nodo antes no genera crédito. Desde la cadena v3.2.4 el límite por nodo también comienza en el propio registro del nodo: la primera liquidación tras registrarse acredita solo lo acumulado desde entonces.
+El registro está abierto en mainnet (`qorechain-vladi`, cadena v3.2.8) y en testnet (`qorechain-diana`, cadena v3.2.9). El 4 de noviembre de 2026 se habían concedido siete licencias `lightnode_operator` en mainnet, había un nodo ligero registrado en mainnet y dos en la testnet (`total_registered` en `GET /qorechain/lightnode/v1/stats`: `1` y `2`). La contabilidad de recompensas está activa en ambas redes desde la actualización v3.2.0. El tiempo de actividad se cuenta **desde el bloque en que tu nodo se registra**, así que ejecutar un nodo antes no genera crédito. Desde la cadena v3.2.4 el límite por nodo también comienza en el propio registro del nodo: la primera liquidación tras registrarse acredita solo lo acumulado desde entonces.
 
 El manifiesto de versión (`https://download.qore.host/<net>/lightnode/latest.json`) lleva la señal oficial en su campo `registration.open`. Para el estado en vivo, consulta `GET /qorechain/license/v1/holders/lightnode_operator` y `GET /qorechain/lightnode/v1/stats` en `https://api.qore.host` (mainnet) o `https://api-testnet.qore.host` (testnet).
 :::

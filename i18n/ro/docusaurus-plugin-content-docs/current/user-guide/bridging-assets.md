@@ -14,7 +14,7 @@ Modulul de punte este implementat pe mainnet și testnet, dar **nicio rută de p
 :::
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea de lanț **v3.2.8** din 12 noiembrie 2026). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) rulează versiunea de lanț **v3.2.8** (din 18 noiembrie 2026, înălțimea 4.273.000, propunerea de guvernanță 17; v3.2.7 din 12 noiembrie). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** după ce o rută este activată. Stare verificată la 27 octombrie 2026: toate cele 37 de configurații de lanț sunt `pending` pe ambele rețele.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea de lanț **v3.2.9** din 20 noiembrie 2026, după v3.2.8 din 12 noiembrie). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) rulează versiunea de lanț **v3.2.8** (din 18 noiembrie 2026, înălțimea 4.273.000, propunerea de guvernanță 17; v3.2.7 din 12 noiembrie). Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** după ce o rută este activată. Stare verificată la 27 octombrie 2026: toate cele 37 de configurații de lanț sunt `pending` pe ambele rețele.
 :::
 
 ---

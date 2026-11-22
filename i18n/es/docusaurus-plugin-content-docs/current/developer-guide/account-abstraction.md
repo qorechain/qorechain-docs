@@ -14,7 +14,7 @@ El módulo de cuentas abstractas está **desactivado en la mainnet `qorechain-vl
 :::
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (en funcionamiento desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.8** (aplicada en la altura 4,273,000 el 18 de noviembre de 2026, propuesta de gobernanza 17; la v3.2.7 se aplicó en la altura 4,164,600 el 12 de noviembre de 2026, propuesta 16; la v3.2.6 se aplicó en la altura 4,020,000 el 4 de noviembre de 2026, propuesta 15; la v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026, propuesta 14, y la v3.2.4 se aplicó en la altura 3,742,566 el 23 de octubre de 2026). Sustituye por `--chain-id qorechain-diana` para la testnet, que también ejecuta v3.2.8 (desde el 12 de noviembre de 2026; v3.2.4 desde el 19 de octubre de 2026).
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (en funcionamiento desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.8** (aplicada en la altura 4,273,000 el 18 de noviembre de 2026, propuesta de gobernanza 17; la v3.2.7 se aplicó en la altura 4,164,600 el 12 de noviembre de 2026, propuesta 16; la v3.2.6 se aplicó en la altura 4,020,000 el 4 de noviembre de 2026, propuesta 15; la v3.2.5 se aplicó en la altura 3,906,833 el 29 de octubre de 2026, propuesta 14, y la v3.2.4 se aplicó en la altura 3,742,566 el 23 de octubre de 2026). Sustituye por `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.9 (desde el 20 de noviembre de 2026; v3.2.8 desde el 12 de noviembre, v3.2.4 desde el 19 de octubre de 2026).
 :::
 
 :::caution Toda transacción de la vía Cosmos necesita la cofirma post-cuántica híbrida
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Vincular una clave en v3.2.8: ejemplo completo {#link-example-v328}
 
-Esta sección recorre un vínculo completo en la testnet **`qorechain-diana`**, que ejecuta v3.2.8 desde el 12 de noviembre de 2026. La mainnet también ejecuta v3.2.8 (desde el 18 de noviembre de 2026), pero su módulo de cuentas abstractas estaba desactivado en la última comprobación (27 de octubre de 2026), así que nada de esto se aplicaba allí en esa comprobación. En resumen: la clave que vinculas tiene que firmar un texto corto para demostrar que acepta ser vinculada, una clave que puede mover valor necesita una regla de gasto en la cuenta, y cuando una clave vinculada gasta más tarde, un gasto fallido se informa dentro de una transacción exitosa.
+Esta sección recorre un vínculo completo en la testnet **`qorechain-diana`**, que ejecuta v3.2.9 desde el 20 de noviembre de 2026, después de v3.2.8 desde el 12 de noviembre. La mainnet también ejecuta v3.2.8 (desde el 18 de noviembre de 2026), pero su módulo de cuentas abstractas estaba desactivado en la última comprobación (27 de octubre de 2026), así que nada de esto se aplicaba allí en esa comprobación. En resumen: la clave que vinculas tiene que firmar un texto corto para demostrar que acepta ser vinculada, una clave que puede mover valor necesita una regla de gasto en la cuenta, y cuando una clave vinculada gasta más tarde, un gasto fallido se informa dentro de una transacción exitosa.
 
 Por qué importa: desde v3.2.8 el titular de la clave participa en el vínculo, así que una clave solo puede ser vinculada por quien realmente la posee, y una clave que puede mover valor siempre está acotada por un límite en la cuenta.
 
@@ -458,7 +458,7 @@ Un cliente que solo compruebe `code === 0` informa de esa llamada como un éxito
 
 En la testnet el 12 de noviembre de 2026 (versión v3.2.8, SDK 0.13.0, firma híbrida): `MsgUpdateSpendingRules` con una regla (límite diario de 1,000,000 uqor, límite por transacción de 100,000 uqor, solo `uqor`) tuvo éxito con código 0 y 186,319 de gas usado. Un `MsgRegisterAuthenticator` para el permiso `evm` enviado antes de que existiera la regla fue rechazado con código 8, y enviado después de la regla pero sin prueba de posesión fue rechazado con código 10, con los mensajes en la tabla de errores. El SDK 0.13.0 no tiene campo de prueba de posesión en sus compositores de registro, así que el vínculo exitoso se ejecutó después con paquetes más nuevos, como se describe a continuación.
 
-**Ejecutado por el autor de la documentación en la testnet el 12 de noviembre de 2026, con el SDK 0.14.0 y el wallet-adapter 0.6.0 (todo con código 0):**
+**Ejecutado para esta página en la testnet el 12 de noviembre de 2026, con el SDK 0.14.0 y el wallet-adapter 0.6.0 (todo con código 0):**
 
 * `linkAuthenticatorMsgs` construyó la regla de gasto (`MsgUpdateSpendingRules`) y `MsgRegisterAuthenticator` para una dirección Ethereum, con la prueba de posesión de `metaMaskPossessionProof` (firmada aquí por una clave desechable mediante un proveedor que responde a `personal_sign`). Ambos mensajes fueron en UNA sola transacción firmada por el propietario: 220,973 de gas usado con un límite de 600,000.
 * `GET /qorechain/abstractaccount/v1/accounts/{address}` mostró entonces `authenticators_count` 1, y `GET .../authenticators` listó la clave: esquema `secp256k1`, `pubkey_hex` la dirección de 20 bytes, permisos `evm`, `revoked` false.

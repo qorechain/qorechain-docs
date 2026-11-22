@@ -9,22 +9,22 @@ sidebar_position: 2
 
 `qor_` ad alanı; kuantum sonrası kriptografi durumu, AI analitiği, VM'ler arası mesajlaşma, çok katmanlı durum, köprü işlemleri, tokenomik, rollup altyapısı ve PRISM konsensüs durumunu sorgulamak için QoreChain'e özgü JSON-RPC yöntemleri sağlamak üzere tasarlanmıştır.
 
-:::warning Planlanan yöntemler henüz sunulmuyor
-**Aşağıdaki tablodaki yöntemlerin hiçbiri henüz hiçbir ağda sunulmuyor.** Düğüm kaynak kodunda uygulanmışlardır ancak JSON-RPC sunucusuna kaydedilmemiştir ve her biri `-32601` (method not found) döndürür. Kaydedilmeleri bir düğüm sürümü için planlanmıştır ve yayınlandığında bu sayfa hangi sürüm olduğunu belirtecektir. Bugün bunlar üzerine geliştirme yapmayın; tabloda bir REST rotası bulunan yerlerde onu kullanın. `client.qor.*` yardımcılarını sunan istemci kitaplıkları aynı yöntemleri sarmalar, dolayısıyla bu yardımcılar da aynı şekilde başarısız olur.
+:::warning v3.2.9'dan itibaren test ağında sunulur, ana ağda sunulmaz
+v3.2.9'dan itibaren test ağı EVM uç noktası (`https://evm-testnet.qore.host`) bu sayfada listelenen tüm yöntemleri sunar. Ana ağ v3.2.8 çalıştırır ve genel EVM uç noktası `qor` ad alanını listelemez: oradaki her `qor_` yöntemi, aşağıdaki tablodakiler dahil, `-32601` (method not found) döndürür. 22 Kasım 2026'da kontrol edildi: bu sayfadaki 26 yöntem adının her biri test ağında argümansız çağrıldığında ya bir sonuçla ya da eksik bir argümanı belirten geçersiz parametre hatasıyla yanıt verdi ve hiçbiri `-32601` döndürmedi; ana ağda `qor_getBurnStats` `-32601` döndürdü. Her iki ağda da çalışması gereken her şey için aşağıdaki tablodaki REST rotalarını kullanarak geliştirin. `client.qor.*` yardımcılarını sunan istemci kitaplıkları aynı yöntemleri sarmalar, dolayısıyla bu yardımcılar test ağında çalışır, ana ağda başarısız olur.
 :::
 
 ## Sunulan yöntem: `qor_getKEMKey` {#qor-getkemkey}
 
-Ad alanının tek bir yöntemi sunulur: `qor_getKEMKey(address)`, bir adresin yayımladığı ML-KEM açık anahtarını döndürür (`address` `qor1...` veya `0x` olabilir). Yayımlanmış anahtar yoksa `{"address": ..., "found": false}` yanıtını verir; aksi halde `algorithm_id`, `algorithm_name`, `public_key` (`0x` onaltılık) ve `registered_height` alanlarını ekler. Düğüm `qor` ad alanını yalnızca `app.toml` içindeki `[json-rpc]` `api` listesinde `qor` bulunan yerde sunar.
+`qor_getKEMKey(address)` v3.2.9'dan önce sunulan tek yöntemdi ve `qor` ad alanını listeleyen her uç noktada kullanılacak yöntem odur. Bir adresin yayımladığı ML-KEM açık anahtarını döndürür (`address` `qor1...` veya `0x` olabilir). Yayımlanmış anahtar yoksa `{"address": ..., "found": false}` yanıtını verir; aksi halde `algorithm_id`, `algorithm_name`, `public_key` (`0x` onaltılık) ve `registered_height` alanlarını ekler. Düğüm `qor` ad alanını yalnızca `app.toml` içindeki `[json-rpc]` `api` listesinde `qor` bulunan yerde sunar.
 
-7 Kasım 2026'da gözlemlenen durum:
+7 Kasım 2026'da gözlemlenen durum (v3.2.9'dan önce):
 
 | Ağ | `rpc_modules` | `qor_getKEMKey` |
 | --- | --- | --- |
 | Test ağı (`https://evm-testnet.qore.host`) | `eth`, `net`, `qor`, `rpc`, `txpool`, `web3` | yanıt verir (yayımlanmış anahtarı olmayan bir adres için `found: false`) |
 | Ana ağ (`https://evm.qore.host`) | `eth`, `net`, `rpc`, `txpool`, `web3` | `-32601` (genel ana ağ uç noktası `qor` listelemiyor) |
 
-Test ağında kontrol edilen diğer tüm `qor_` yöntemleri (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) hâlâ `-32601` döndürdü.
+O tarihte test ağı, kontrol edilen diğer tüm `qor_` yöntemleri (`qor_getPQCKeyStatus`, `qor_getHybridSignatureMode`, `qor_getAIStats`, `qor_getBurnStats`) için `-32601` döndürdü; v3.2.9'dan itibaren, bu sayfanın başındaki notun söylediği gibi test ağında yanıt verirler.
 
 Ad alanı listesini kendiniz kontrol edebilirsiniz:
 
@@ -40,7 +40,7 @@ curl -s -X POST https://evm.qore.host \
 
 ---
 
-## Planlanan yöntemler ve bugün ne kullanılmalı
+## Diğer yöntemler ve ana ağda ne kullanılmalı
 
 | Planlanan yöntem              | Bugün ne kullanılmalı |
 | ----------------------------- | ----------------- |

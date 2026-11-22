@@ -10,7 +10,7 @@ sidebar_position: 7
 An Ethereum transaction carries one secp256k1 signature and nothing else, so it cannot carry the post-quantum (ML-DSA-87) signature that QoreChain asks of every other transaction. The **EVM authorisation window** closes that gap. The account first opens a bounded window with a QoreChain Native message that **is** signed with its post-quantum key, and the EVM lane then admits the account's ordinary MetaMask, ethers.js, Hardhat or Foundry transactions only while the window covers them. This page is the complete reference for how a window behaves in release **v3.2.8**.
 
 :::note Where v3.2.8 runs
-Both networks run **v3.2.8**: the **`qorechain-diana`** testnet since 12 November 2026, and the **`qorechain-vladi`** mainnet since 18 November 2026 (governance proposal 17, height 4,273,000). The options and rules marked "v3.2.8" below apply on both. A node below v3.2.8 refuses a window message that sets the new lists. The checks and test runs on this page were made on the testnet.
+The **`qorechain-vladi`** mainnet runs **v3.2.8** since 18 November 2026 (governance proposal 17, height 4,273,000); the **`qorechain-diana`** testnet ran v3.2.8 from 12 November 2026 and runs v3.2.9 since 20 November 2026. The options and rules marked "v3.2.8" below apply on both; the query lists marked "v3.2.9" are testnet only. A node below v3.2.8 refuses a window message that sets the new lists. The checks and test runs on this page were made on the testnet.
 :::
 
 ## Why it matters {#why}
@@ -84,6 +84,24 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 An account with no window answers HTTP 200 with `found: false`, so the route is safe to poll. Every number is a JSON string. A stored window can be expired or exhausted: `live` tells you whether it still admits at least one more zero-value transaction at the current height.
 
+### The three scope lists in the query (testnet, v3.2.9) {#window-query-lists}
+
+From v3.2.9 the window query returns the whole scope the window was opened with, not only `allowed_targets`. The response has three more fields, all lists of strings:
+
+| Field | Number in the gRPC response | Holds |
+| ----- | --------------------------- | ----- |
+| `validators` | 14 | The contract addresses (`0x...`) whose signature check counts for the account |
+| `staking_validators` | 15 | The `qorvaloper1...` validators the window allows delegating or redelegating to |
+| `ibc_receivers` | 16 | The `<channel>/<receiver>` destinations a native QOR IBC transfer may go to |
+
+An empty list means the window opened with none, which refuses that kind of action, so you can read back what a window allows without keeping the values you used to open it. This runs on the testnet only: mainnet runs v3.2.8, whose window query does not return these three fields. Checked on 22 November 2026 against the testnet REST: an address with no window answered `found: false` with `allowed_targets`, `validators`, `staking_validators` and `ibc_receivers` all present as empty lists. A window with non-empty lists was not read back for this page.
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
+```
+
+You should see the three field names in the answer. If they are missing, the node you reached is older than v3.2.9 (for example the mainnet endpoint).
+
 ### TypeScript {#typescript}
 
 The window helpers are in `@qorechain/sdk` (see the [SDK EVM guide](/sdk/guides/evm#evm-window-scope) for the signing set-up). `openEvmWindowMsg` takes every field below, `closeEvmWindowMsg` builds the close message, `fetchEvmWindow` reads the window, and `classifyEvmWindowRejection` explains a refusal.
@@ -131,7 +149,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg` checks the bounds and the list formats before anything is signed, so a mistake fails locally instead of costing a refused transaction. `MAX_EVM_WINDOW_BLOCKS` and `MAX_EVM_WINDOW_TXS` export the bounds. The read-back (`fetchEvmWindow`) returns the bounds, the counters and the v3.2.3 scope (`nativeOnly`, `allowedTargets`); `validators` (contract addresses), `stakingValidators` (`qorvaloper1...`) and `ibcReceivers` (`"<channel>/<receiver>"`) are accepted by the builder from SDK 0.14.0, which carries the v3.2.8 lists; the read-back does not return them, and neither does the REST window route in v3.2.8, so keep the values you opened the window with. Set the three lists only for a network that runs v3.2.8: a node below it refuses a window message that sets them. With a hybrid-signing `connectTx` the post-quantum key must already be registered.
+`openEvmWindowMsg` checks the bounds and the list formats before anything is signed, so a mistake fails locally instead of costing a refused transaction. `MAX_EVM_WINDOW_BLOCKS` and `MAX_EVM_WINDOW_TXS` export the bounds. The read-back (`fetchEvmWindow`) returns the bounds, the counters and the v3.2.3 scope (`nativeOnly`, `allowedTargets`); `validators` (contract addresses), `stakingValidators` (`qorvaloper1...`) and `ibcReceivers` (`"<channel>/<receiver>"`) are accepted by the builder from SDK 0.14.0, which carries the v3.2.8 lists; the read-back does not return them, and neither does the REST window route in v3.2.8 (the testnet returns them from v3.2.9, see [the three scope lists in the query](#window-query-lists)), so keep the values you opened the window with when you read a v3.2.8 network. Set the three lists only for a network that runs v3.2.8: a node below it refuses a window message that sets them. With a hybrid-signing `connectTx` the post-quantum key must already be registered.
 
 ### Tested on the testnet {#tested}
 
@@ -144,7 +162,7 @@ Run on `qorechain-diana` on 12 November 2026 (release v3.2.8) with an eth-native
 | Open again with `nativeOnly: true` | code 0, 187,803 gas used. The new window replaced the old one: `native_only: true`, a new `opened_height` |
 | Close | code 0, 170,468 gas used. Read back: `found: false` |
 
-With SDK 0.14.0 the same day, a window opened with `allowedTargets` (one allowed target address), `stakingValidators` (one validator operator address) and `ibcReceivers` (one `channel-0/...` pair) succeeded with code 0 and 195,233 gas used. The REST read-back listed `allowed_targets` and returned `found: true`, `live: true`; it does not return the `validators`, `staking_validators` or `ibc_receivers` lists, so keep the values you opened the window with.
+With SDK 0.14.0 the same day, a window opened with `allowedTargets` (one allowed target address), `stakingValidators` (one validator operator address) and `ibcReceivers` (one `channel-0/...` pair) succeeded with code 0 and 195,233 gas used. The REST read-back listed `allowed_targets` and returned `found: true`, `live: true`; it did not return the `validators`, `staking_validators` or `ibc_receivers` lists on v3.2.8 (from v3.2.9 on the testnet it does, see [the three scope lists in the query](#window-query-lists)), so on a v3.2.8 network keep the values you opened the window with.
 
 `fetchEvmWindow` returned the same fields in camel case (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). Opening and closing are hybrid-signed Cosmos transactions, so the first one an account sends needs its key registered first.
 

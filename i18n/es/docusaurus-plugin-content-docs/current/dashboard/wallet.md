@@ -230,7 +230,7 @@ Las funciones de cuenta inteligente y de monedero vinculado de la cadena están 
 :::
 
 :::note Carril compatible con Solana en la testnet
-El carril compatible con Solana está cerrado en la testnet hasta que una votación de gobernanza lo reabra (versión v3.2.8, testnet desde el 12 de noviembre de 2026). Las transacciones al estilo Solana no están disponibles allí hasta entonces.
+El carril compatible con Solana está abierto en la testnet desde la propuesta de gobernanza 37 (12 de noviembre de 2026). El soporte de carteras para transacciones al estilo Solana todavía no está disponible. Consulta [SVM en la testnet](/developer-guide/svm-testnet-v329) para enviarlas desde la línea de comandos.
 :::
 
 :::caution Un firmante vinculado es autoridad real sobre la cuenta

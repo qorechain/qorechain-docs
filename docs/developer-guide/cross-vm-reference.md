@@ -12,7 +12,7 @@ A cross-VM call lets code on one virtual machine run a contract on another: an a
 This page is the field, cost and limit reference for release v3.2.8, with a worked example for each direction. The concepts, the lifecycle and the older behaviour are in [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability); the SDK walkthrough is in the [Cross-VM guide](/sdk/guides/cross-vm).
 
 :::note Where v3.2.8 runs
-Both networks run **v3.2.8**: the **`qorechain-diana`** testnet since 12 November 2026, and the **`qorechain-vladi`** mainnet since 18 November 2026 (governance proposal 17, height 4,273,000). On mainnet `MsgCrossVMCall` is paused for now, so the call cannot be sent there. The examples and the checks below were run on the testnet.
+The **`qorechain-vladi`** mainnet runs **v3.2.8** since 18 November 2026 (governance proposal 17, height 4,273,000); the **`qorechain-diana`** testnet ran v3.2.8 from 12 November 2026 and runs v3.2.9 since 20 November 2026, which adds cross-VM rules for the SVM (see [v3.2.9](/appendix/version-history#v329)). On mainnet `MsgCrossVMCall` is paused for now, so the call cannot be sent there. The examples and the checks below were run on the testnet.
 :::
 
 :::caution Is the call message available right now?
@@ -139,7 +139,7 @@ Answered `200` on 12 November 2026 with these fields:
 | `max_message_size` | `65536` | Largest payload in bytes. |
 | `max_queue_size` | `1000` | Most calls queued at once. |
 | `queue_timeout_blocks` | `100` | Blocks before an unrun call times out. |
-| `bridge_allowed_targets` | three `cosmwasm:qor1...` entries | The QoreChain Native contracts the `0x0901` bridge may call. Empty keeps the bridge shut. |
+| `bridge_allowed_targets` | four `cosmwasm:qor1...` entries on the testnet (22 November 2026), empty on mainnet | The QoreChain Native contracts the `0x0901` bridge may call. Empty keeps the bridge shut. |
 | `bridge_target_pins` | one entry per target: `target`, `code_id`, `history_len` | The code each allowed target must still run for the bridge to call it. |
 | `max_pending_per_sender` | `100` | Queued calls one sender may hold. |
 | `max_cosmos_tx_gas` | `"50000000"` | Most gas one Native transaction may declare. |
@@ -158,11 +158,11 @@ Use `wasm_congestion_factor_micro` to see what a queued call will prepay right n
 
 ## Examples by direction {#examples}
 
-All examples sign with the account's post-quantum key as every Native transaction does; see [Post-Quantum Signing](/developer-guide/post-quantum-signing). Only the native-account to QoreChain Native examples were sent for this page (see [Tested on the testnet](#tested)); the EVM examples were not run and are marked UNTESTED where they appear.
+All examples sign with the account's post-quantum key as every Native transaction does; see [Post-Quantum Signing](/developer-guide/post-quantum-signing). Only the native-account to QoreChain Native examples were sent for this page (see [Tested on the testnet](#tested)); the EVM examples were not run and are marked "not yet tested against the live network" where they appear.
 
 ### Native account to EVM contract {#native-to-evm}
 
-**UNTESTED:** this direction was not run for this page.
+**Not yet tested against the live network:** this direction was not run for this page.
 
 The target is an EVM contract; the payload is ABI-encoded call data. The call runs as your own `0x` address, so the EVM side sees you as `msg.sender`. Command line (Linux node CLI), build then add the post-quantum signature:
 
@@ -289,7 +289,7 @@ SDK 0.13.0 has no option for `async_gas_limit` or `async_max_factor`, so its que
 
 ### EVM contract to QoreChain Native contract through 0x0901 {#evm-to-wasm}
 
-**UNTESTED:** this direction was not run for this page.
+**Not yet tested against the live network:** this direction was not run for this page.
 
 A Solidity contract calls the bridge precompile at `0x0000000000000000000000000000000000000901`. The call runs inside the EVM transaction, with the calling account or contract (as its `qor1` address) as the QoreChain Native sender, and a revert anywhere undoes both sides.
 
@@ -334,7 +334,7 @@ The `@qorechain/rdk` helper `encodeCrossVmCalldata({ contract, msg })` builds th
 
 ### QoreChain Native contract to EVM contract {#wasm-to-evm}
 
-**UNTESTED** by the docs author. The chain team reports that both modes ran on the testnet before v3.2.8.
+**Not yet tested against the live network from this page.** Both modes ran on the testnet before v3.2.8.
 
 A QoreChain Native contract makes the call by dispatching a `MsgCrossVMCall` as a chain message, with itself as the sender. The message has the same fields as above; the chain treats the contract as a CosmWasm caller whatever `source_vm` says. With `async` false (the default) the call is synchronous: it runs on the transaction's gas, the answer is in `MsgCrossVMCallResponse.data`, and a failure reverts the whole transaction. With `async` true it is queued. See [Who calls whom](#who-calls-whom). The example below queues the call:
 
@@ -394,7 +394,7 @@ A conversion of an ERC-20 token under an authz grant (`MsgConvertERC20`) is admi
 | `0x0901` call without a window that lists it | Refused |
 | `0x0901` target not in `bridge_allowed_targets`, or code changed since it was pinned | Reverts: `cross-VM bridge call refused: target ... is not allowlisted` for an unlisted target |
 | `MsgCrossVMCall` on the circuit breaker list | Transaction refused; queued calls stay pending |
-| A call into the SVM | The lane is open on the testnet since proposal 37 and off on mainnet; no call into the SVM was run for this page (UNTESTED) |
+| A call into the SVM | The lane is open on the testnet since proposal 37 and off on mainnet; no call into the SVM was run for this page (not yet tested against the live network) |
 
 An error recorded on a failed queued call carries plain text without a source-file annotation.
 
@@ -422,7 +422,7 @@ Run on `qorechain-diana` on 12 November 2026 (release v3.2.8) after proposal 37 
 | `GET /qorechain/crossvm/v1/pending` afterwards | Empty list |
 | `async_max_factor` of `6` | Refused before anything ran: codespace `crossvm` code 2, `async_max_factor 6 is outside 1000000..100000000 (millionths): invalid cross-VM message` |
 
-Not run for this page (UNTESTED): EVM to QoreChain Native through `0x0901`, and QoreChain Native to EVM. The chain team reports that the QoreChain Native to EVM synchronous and asynchronous paths ran on the testnet at heights 9,795,779 and 9,795,783, before v3.2.8.
+Not run for this page (not yet tested against the live network): EVM to QoreChain Native through `0x0901`, and QoreChain Native to EVM. The QoreChain Native to EVM synchronous and asynchronous paths ran on the testnet at heights 9,795,779 and 9,795,783, before v3.2.8.
 
 ## Related pages {#related}
 

@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Préréglage réseau | `testnet` |
 | Chain id | `qorechain-diana` (en ligne) |
-| Version de la chaîne | v3.2.8 (depuis la hauteur 9,929,500, 12 novembre 2026, appliquée par la gouvernance ; le mainnet a appliqué la v3.2.8 le 18 novembre 2026. La v3.2.7 a été appliquée à la hauteur 9,594,600 le 6 novembre ; la v3.2.6 a été appliquée à la hauteur 8,970,638 le 27 octobre ; la v3.2.5 a été appliquée à la hauteur 8,890,800 le 26 octobre et la v3.2.4 à la hauteur 8,337,253 le 19 octobre) |
+| Version de la chaîne | v3.2.9 (depuis la hauteur 10,424,000, 20 novembre 2026, appliquée par la proposition de gouvernance 39 ; testnet uniquement, le mainnet exécute la v3.2.8). La v3.2.8 a été appliquée à la hauteur 9,929,500 le 12 novembre 2026 (le mainnet a appliqué la v3.2.8 le 18 novembre 2026). La v3.2.7 a été appliquée à la hauteur 9,594,600 le 6 novembre ; la v3.2.6 a été appliquée à la hauteur 8,970,638 le 27 octobre ; la v3.2.5 a été appliquée à la hauteur 8,890,800 le 26 octobre et la v3.2.4 à la hauteur 8,337,253 le 19 octobre) |
 | EVM chain ID | `9800` |
 | Token d'affichage | `QOR` |
 | Dénomination de base | `uqor` |

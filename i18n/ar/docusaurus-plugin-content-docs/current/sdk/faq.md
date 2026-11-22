@@ -70,9 +70,9 @@ npm i @qorechain/svm @solana/web3.js
 
 ## استدعاء `client.qor` لديّ يفشل بالرمز -32601
 
-يستدعي `client.qor` نطاق JSON-RPC المسمى `qor_`، وهو نطاق لا تخدمه أي نسخة
-منشورة من العقدة؛ إذ تُدرج `rpc_modules` على نقاط نهاية EVM العامة فقط `eth` و
-`net` و`rpc` و`txpool` و`web3`. استخدم مسار REST بدلًا من ذلك، على سبيل المثال
+يستدعي `client.qor` نطاق JSON-RPC المسمى `qor_`، وهو نطاق لا تخدمه نقطة نهاية
+EVM العامة للشبكة الرئيسية (تعمل الشبكة الرئيسية بالإصدار v3.2.8؛ وتُدرج `rpc_modules` هناك فقط `eth` و
+`net` و`rpc` و`txpool` و`web3`). وتخدمه نقطة نهاية شبكة الاختبار منذ v3.2.9. استخدم مسار REST بدلًا من ذلك، على سبيل المثال
 `GET /qorechain/pqc/v1/account/{address}` (حالة مفتاح PQC) أو
 `GET /qorechain/burn/v1/stats`، عبر `client.rest.get(...)`. راجع
 [نطاق `qor_`](/api-reference/json-rpc-qor_-namespace).

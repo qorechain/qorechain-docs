@@ -14,7 +14,7 @@ Modulul de conturi abstracte este **oprit pe mainnet-ul `qorechain-vladi`** la m
 :::
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.8** (aplicată la înălțimea 4,273,000 pe 18 noiembrie 2026, propunerea de guvernanță 17; v3.2.7 a fost aplicată la înălțimea 4,164,600 pe 12 noiembrie 2026, propunerea 16; v3.2.6 a fost aplicată la înălțimea 4,020,000 pe 4 noiembrie 2026, propunerea 15; v3.2.5 a fost aplicată la înălțimea 3,906,833 pe 29 octombrie 2026, propunerea 14, iar v3.2.4 la înălțimea 3,742,566 pe 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează și v3.2.8 (din 12 noiembrie 2026; v3.2.4 din 19 octombrie 2026).
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.8** (aplicată la înălțimea 4,273,000 pe 18 noiembrie 2026, propunerea de guvernanță 17; v3.2.7 a fost aplicată la înălțimea 4,164,600 pe 12 noiembrie 2026, propunerea 16; v3.2.6 a fost aplicată la înălțimea 4,020,000 pe 4 noiembrie 2026, propunerea 15; v3.2.5 a fost aplicată la înălțimea 3,906,833 pe 29 octombrie 2026, propunerea 14, iar v3.2.4 la înălțimea 3,742,566 pe 23 octombrie 2026). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.9 (din 20 noiembrie 2026; v3.2.8 din 12 noiembrie, v3.2.4 din 19 octombrie 2026).
 :::
 
 :::caution Fiecare tranzacție pe lane-ul Cosmos necesită cosemnătura hibridă post-cuantică
@@ -285,7 +285,7 @@ GET /qorechain/abstractaccount/v1/permission_schema
 
 ## Legarea unei chei în v3.2.8: exemplu lucrat {#link-example-v328}
 
-Această secțiune parcurge o legare completă pe testnet-ul **`qorechain-diana`**, care rulează v3.2.8 din 12 noiembrie 2026. Mainnet-ul rulează și el v3.2.8 (din 18 noiembrie 2026), dar modulul său abstract-account era oprit la ultima verificare (27 octombrie 2026), deci nimic din toate acestea nu se aplica acolo la acea verificare. Pe scurt: cheia pe care o legați trebuie să semneze un text scurt prin care arată că este de acord să fie legată, o cheie care poate muta valoare are nevoie de o regulă de cheltuieli pe cont, iar când o cheie legată cheltuiește ulterior, o cheltuială eșuată este raportată în interiorul unei tranzacții reușite.
+Această secțiune parcurge o legare completă pe testnet-ul **`qorechain-diana`**, care rulează v3.2.9 din 20 noiembrie 2026, după v3.2.8 din 12 noiembrie. Mainnet-ul rulează v3.2.8 (din 18 noiembrie 2026), dar modulul său abstract-account era oprit la ultima verificare (27 octombrie 2026), deci nimic din toate acestea nu se aplica acolo la acea verificare. Pe scurt: cheia pe care o legați trebuie să semneze un text scurt prin care arată că este de acord să fie legată, o cheie care poate muta valoare are nevoie de o regulă de cheltuieli pe cont, iar când o cheie legată cheltuiește ulterior, o cheltuială eșuată este raportată în interiorul unei tranzacții reușite.
 
 De ce contează: din v3.2.8, deținătorul cheii participă la legare, deci o cheie poate fi legată doar de cineva care o deține cu adevărat, iar o cheie care poate muta valoare este întotdeauna limitată de o limită pe cont.
 
@@ -458,7 +458,7 @@ Un client care verifică doar `code === 0` raportează un astfel de apel ca reu�
 
 Pe testnet la 12 noiembrie 2026 (versiunea v3.2.8, SDK 0.13.0, semnare hibridă): `MsgUpdateSpendingRules` cu o regulă (limită zilnică 1.000.000 uqor, limită per tranzacție 100.000 uqor, doar `uqor`) a reușit cu codul 0 și 186.319 de gaz folosit. Un `MsgRegisterAuthenticator` pentru permisiunea `evm` trimis înainte ca regula să existe a fost refuzat cu codul 8, iar trimis după regulă dar fără dovadă de deținere a fost refuzat cu codul 10, cu mesajele din tabelul de erori. SDK 0.13.0 nu are câmp pentru dovada de deținere în composer-ele sale de înregistrare, deci legarea reușită a fost rulată ulterior cu pachete mai noi, așa cum se descrie în continuare.
 
-**Rulat de autorul documentației pe testnet la 12 noiembrie 2026, cu SDK 0.14.0 și wallet-adapter 0.6.0 (toate cu codul 0):**
+**Rulat pentru această pagină pe testnet la 12 noiembrie 2026, cu SDK 0.14.0 și wallet-adapter 0.6.0 (toate cu codul 0):**
 
 * `linkAuthenticatorMsgs` a construit regula de cheltuieli (`MsgUpdateSpendingRules`) și `MsgRegisterAuthenticator` pentru o adresă Ethereum, cu dovada de deținere din `metaMaskPossessionProof` (semnată aici de o cheie de unică folosință printr-un provider care răspunde la `personal_sign`). Ambele mesaje au mers într-o SINGURĂ tranzacție semnată de proprietar: 220.973 de gaz folosit sub o limită de 600.000.
 * `GET /qorechain/abstractaccount/v1/accounts/{address}` a arătat apoi `authenticators_count` 1, iar `GET .../authenticators` a listat cheia: schema `secp256k1`, `pubkey_hex` adresa de 20 de octeți, permisiuni `evm`, `revoked` false.

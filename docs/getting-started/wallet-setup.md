@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain supports multiple wallet types across its native, EVM, and SVM execution environments. Choose the wallet that matches your use case.
 
 :::note
-The values below cover both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 7 June 2026, release v3.2.8 since 18 November 2026) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, release v3.2.8 since 12 November 2026). Public endpoints for both networks are listed in [Networks](/appendix/networks#public-endpoints).
+The values below cover both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 7 June 2026, release v3.2.8 since 18 November 2026) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, release v3.2.9 since 20 November 2026, after v3.2.8 from 12 November). Public endpoints for both networks are listed in [Networks](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recommended) {#qorex}
@@ -110,7 +110,7 @@ Smart-account and linked-wallet features are implemented but **switched off on m
 :::
 
 :::note Solana-compatible lane on the testnet
-The Solana-compatible lane is closed on the testnet until a governance vote reopens it (release v3.2.8, testnet since 12 November 2026). Solana-style transactions are not available there until then.
+The Solana-compatible lane is open on the testnet since governance proposal 37 (12 November 2026). Wallet support for Solana-style transactions is not available yet. See [SVM on the Testnet](/developer-guide/svm-testnet-v329) to send them from the command line.
 :::
 
 Designed so that you don't have to expose your root key to spend from a QoreChain account in a dApp (introduced in chain version **v3.1.85**): a **Phantom** (ed25519) or **MetaMask** (by its Ethereum address, via `personal_sign`) key can be **registered as an authenticator** on your account — with scoped permissions, spending limits, an expiry, and instant revocation — and then authorize transfers relayed by the dApp's backend. See [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) for the full model and code, and the [SDK Authenticators guide](/sdk/guides/authenticators) for end-to-end examples.

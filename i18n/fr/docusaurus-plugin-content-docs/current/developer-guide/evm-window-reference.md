@@ -10,7 +10,7 @@ sidebar_position: 7
 Une transaction Ethereum ne porte qu'une signature secp256k1 et rien d'autre : elle ne peut donc pas porter la signature post-quantique (ML-DSA-87) que QoreChain demande à toutes les autres transactions. La **fenêtre d'autorisation EVM** comble ce vide. Le compte ouvre d'abord une fenêtre bornée avec un message QoreChain Native qui **est** signé avec sa clé post-quantique, puis la voie EVM n'admet les transactions ordinaires MetaMask, ethers.js, Hardhat ou Foundry du compte que tant que la fenêtre les couvre. Cette page est la référence complète du comportement d'une fenêtre dans la version **v3.2.8**.
 
 :::note Où fonctionne la v3.2.8
-Les deux réseaux exécutent la **v3.2.8** : le testnet **`qorechain-diana`** depuis le 12 novembre 2026 et le mainnet **`qorechain-vladi`** depuis le 18 novembre 2026 (proposition de gouvernance 17, hauteur 4,273,000). Les options et règles marquées « v3.2.8 » ci-dessous s'appliquent aux deux. Un nœud antérieur à la v3.2.8 refuse un message de fenêtre qui renseigne les nouvelles listes. Les vérifications et les essais de cette page ont été faits sur le testnet.
+Le mainnet **`qorechain-vladi`** exécute la **v3.2.8** depuis le 18 novembre 2026 (proposition de gouvernance 17, hauteur 4,273,000) ; le testnet **`qorechain-diana`** a exécuté la v3.2.8 à partir du 12 novembre 2026 et exécute la v3.2.9 depuis le 20 novembre 2026. Les options et règles marquées « v3.2.8 » ci-dessous s'appliquent aux deux ; les listes de requête marquées « v3.2.9 » valent pour le testnet uniquement. Un nœud antérieur à la v3.2.8 refuse un message de fenêtre qui renseigne les nouvelles listes. Les vérifications et les essais de cette page ont été faits sur le testnet.
 :::
 
 ## Pourquoi c'est important {#why}
@@ -84,6 +84,24 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 Un compte sans fenêtre répond HTTP 200 avec `found: false` : la route peut donc être interrogée en toute sécurité. Chaque nombre est une chaîne JSON. Une fenêtre stockée peut être expirée ou épuisée : `live` indique si elle admet encore au moins une transaction de valeur nulle à la hauteur courante.
 
+### Les trois listes de périmètre dans la requête (testnet, v3.2.9) {#window-query-lists}
+
+À partir de la v3.2.9, la requête de fenêtre renvoie tout le périmètre avec lequel la fenêtre a été ouverte, et non plus seulement `allowed_targets`. La réponse comporte trois champs de plus, tous des listes de chaînes :
+
+| Champ | Numéro dans la réponse gRPC | Contient |
+| ----- | --------------------------- | -------- |
+| `validators` | 14 | Les adresses de contrats (`0x...`) dont la vérification de signature compte pour le compte |
+| `staking_validators` | 15 | Les validateurs `qorvaloper1...` auprès desquels la fenêtre autorise à déléguer ou à redéléguer |
+| `ibc_receivers` | 16 | Les destinations `<channel>/<receiver>` vers lesquelles un transfert IBC de QOR natif peut aller |
+
+Une liste vide signifie que la fenêtre a été ouverte sans aucune valeur, ce qui refuse ce type d'action : vous pouvez donc relire ce qu'une fenêtre autorise sans conserver les valeurs utilisées à l'ouverture. Cela fonctionne sur le testnet uniquement : le mainnet exécute la v3.2.8, dont la requête de fenêtre ne renvoie pas ces trois champs. Vérifié le 22 novembre 2026 sur le REST du testnet : une adresse sans fenêtre a répondu `found: false` avec `allowed_targets`, `validators`, `staking_validators` et `ibc_receivers` tous présents sous forme de listes vides. Une fenêtre avec des listes non vides n'a pas été relue pour cette page.
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
+```
+
+Vous devez voir les trois noms de champs dans la réponse. S'ils manquent, le nœud que vous avez atteint est antérieur à la v3.2.9 (par exemple le point de terminaison du mainnet).
+
 ### TypeScript {#typescript}
 
 Les assistants de fenêtre se trouvent dans `@qorechain/sdk` (voir le [guide EVM du SDK](/sdk/guides/evm#evm-window-scope) pour la configuration de signature). `openEvmWindowMsg` accepte tous les champs ci-dessous, `closeEvmWindowMsg` construit le message de fermeture, `fetchEvmWindow` lit la fenêtre, et `classifyEvmWindowRejection` explique un refus.
@@ -131,7 +149,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg` vérifie les bornes et les formats de listes avant toute signature : une erreur échoue donc localement au lieu de coûter une transaction refusée. `MAX_EVM_WINDOW_BLOCKS` et `MAX_EVM_WINDOW_TXS` exportent les bornes. La relecture (`fetchEvmWindow`) renvoie les bornes, les compteurs et le périmètre v3.2.3 (`nativeOnly`, `allowedTargets`) ; `validators` (adresses de contrats), `stakingValidators` (`qorvaloper1...`) et `ibcReceivers` (`"<channel>/<receiver>"`) sont acceptés par le constructeur à partir du SDK 0.14.0, qui porte les listes v3.2.8 ; la relecture ne les renvoie pas, et la route REST de la fenêtre dans la v3.2.8 non plus : conservez donc les valeurs avec lesquelles vous avez ouvert la fenêtre. Ne renseignez les trois listes que pour un réseau qui exécute la v3.2.8 : un nœud antérieur refuse un message de fenêtre qui les renseigne. Avec un `connectTx` à signature hybride, la clé post-quantique doit déjà être enregistrée.
+`openEvmWindowMsg` vérifie les bornes et les formats de listes avant toute signature : une erreur échoue donc localement au lieu de coûter une transaction refusée. `MAX_EVM_WINDOW_BLOCKS` et `MAX_EVM_WINDOW_TXS` exportent les bornes. La relecture (`fetchEvmWindow`) renvoie les bornes, les compteurs et le périmètre v3.2.3 (`nativeOnly`, `allowedTargets`) ; `validators` (adresses de contrats), `stakingValidators` (`qorvaloper1...`) et `ibcReceivers` (`"<channel>/<receiver>"`) sont acceptés par le constructeur à partir du SDK 0.14.0, qui porte les listes v3.2.8 ; la relecture ne les renvoie pas, et la route REST de la fenêtre dans la v3.2.8 non plus (le testnet les renvoie à partir de la v3.2.9, voir [les trois listes de périmètre dans la requête](#window-query-lists)) : conservez donc les valeurs avec lesquelles vous avez ouvert la fenêtre quand vous lisez un réseau en v3.2.8. Ne renseignez les trois listes que pour un réseau qui exécute la v3.2.8 : un nœud antérieur refuse un message de fenêtre qui les renseigne. Avec un `connectTx` à signature hybride, la clé post-quantique doit déjà être enregistrée.
 
 ### Testé sur le testnet {#tested}
 
@@ -144,7 +162,7 @@ Exécuté sur `qorechain-diana` le 12 novembre 2026 (version v3.2.8) avec un com
 | Nouvelle ouverture avec `nativeOnly: true` | code 0, 187,803 de gas utilisé. La nouvelle fenêtre a remplacé l'ancienne : `native_only: true`, un nouveau `opened_height` |
 | Fermeture | code 0, 170,468 de gas utilisé. Relecture : `found: false` |
 
-Avec le SDK 0.14.0, le même jour, une fenêtre ouverte avec `allowedTargets` (une adresse cible autorisée), `stakingValidators` (une adresse d'opérateur de validateur) et `ibcReceivers` (une paire `channel-0/...`) a réussi avec le code 0 et 195,233 de gas utilisé. La relecture REST a listé `allowed_targets` et renvoyé `found: true`, `live: true` ; elle ne renvoie pas les listes `validators`, `staking_validators` ni `ibc_receivers` : conservez donc les valeurs avec lesquelles vous avez ouvert la fenêtre.
+Avec le SDK 0.14.0, le même jour, une fenêtre ouverte avec `allowedTargets` (une adresse cible autorisée), `stakingValidators` (une adresse d'opérateur de validateur) et `ibcReceivers` (une paire `channel-0/...`) a réussi avec le code 0 et 195,233 de gas utilisé. La relecture REST a listé `allowed_targets` et renvoyé `found: true`, `live: true` ; elle ne renvoyait pas les listes `validators`, `staking_validators` ni `ibc_receivers` en v3.2.8 (à partir de la v3.2.9 sur le testnet, elle le fait, voir [les trois listes de périmètre dans la requête](#window-query-lists)) : sur un réseau en v3.2.8, conservez donc les valeurs avec lesquelles vous avez ouvert la fenêtre.
 
 `fetchEvmWindow` a renvoyé les mêmes champs en camel case (`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`). L'ouverture et la fermeture sont des transactions Cosmos signées en hybride : la première qu'un compte envoie exige donc que sa clé soit d'abord enregistrée.
 

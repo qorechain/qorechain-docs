@@ -10,7 +10,7 @@ sidebar_position: 7
 이더리움 트랜잭션에는 secp256k1 서명 하나만 들어 있고 다른 것은 없으므로, QoreChain이 다른 모든 트랜잭션에 요구하는 포스트 퀀텀(ML-DSA-87) 서명을 담을 수 없습니다. **EVM 인가 윈도우**가 이 간극을 메웁니다. 계정이 먼저 포스트 퀀텀 키로 서명된 QoreChain Native 메시지로 제한된 윈도우를 열고, 그러면 EVM 레인은 윈도우가 허용하는 동안에만 해당 계정의 일반 MetaMask, ethers.js, Hardhat, Foundry 트랜잭션을 받아들입니다. 이 페이지는 릴리스 **v3.2.8**에서 윈도우가 동작하는 방식에 대한 전체 레퍼런스입니다.
 
 :::note v3.2.8이 실행되는 곳
-두 네트워크 모두 **v3.2.8**을 실행합니다. **`qorechain-diana`** 테스트넷은 2026년 11월 12일부터, **`qorechain-vladi`** 메인넷은 2026년 11월 18일부터(거버넌스 제안 17, 높이 4,273,000) 실행합니다. 아래에서 "v3.2.8"로 표시된 옵션과 규칙은 두 네트워크 모두에 적용됩니다. v3.2.8 미만의 노드는 새 목록을 설정하는 윈도우 메시지를 거부합니다. 이 페이지의 확인과 테스트 실행은 테스트넷에서 수행했습니다.
+**`qorechain-vladi`** 메인넷은 2026년 11월 18일부터 **v3.2.8**을 실행합니다(거버넌스 제안 17, 높이 4,273,000). **`qorechain-diana`** 테스트넷은 2026년 11월 12일부터 v3.2.8을 실행했고 2026년 11월 20일부터 v3.2.9를 실행합니다. 아래에서 "v3.2.8"로 표시된 옵션과 규칙은 두 네트워크 모두에 적용되며, "v3.2.9"로 표시된 쿼리 목록은 테스트넷 전용입니다. v3.2.8 미만의 노드는 새 목록을 설정하는 윈도우 메시지를 거부합니다. 이 페이지의 확인과 테스트 실행은 테스트넷에서 수행했습니다.
 :::
 
 ## 중요한 이유 {#why}
@@ -84,6 +84,24 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
 
 윈도우가 없는 계정은 `found: false`와 함께 HTTP 200으로 응답하므로 이 경로는 폴링해도 안전합니다. 모든 숫자는 JSON 문자열입니다. 저장된 윈도우는 만료되었거나 소진되었을 수 있습니다. `live`는 현재 높이에서 값이 0인 트랜잭션을 하나 이상 더 허용하는지를 알려 줍니다.
 
+### 쿼리의 세 가지 범위 목록 (테스트넷, v3.2.9) {#window-query-lists}
+
+v3.2.9부터 윈도우 쿼리는 `allowed_targets`만이 아니라 윈도우를 열 때 사용한 전체 범위를 반환합니다. 응답에는 문자열 목록인 필드가 세 개 더 있습니다.
+
+| 필드 | gRPC 응답의 번호 | 담는 내용 |
+| ----- | --------------------------- | ----- |
+| `validators` | 14 | 서명 확인이 계정에 대해 인정되는 컨트랙트 주소(`0x...`) |
+| `staking_validators` | 15 | 윈도우가 위임 또는 재위임을 허용하는 `qorvaloper1...` 검증인 |
+| `ibc_receivers` | 16 | 네이티브 QOR IBC 전송이 향할 수 있는 `<channel>/<receiver>` 목적지 |
+
+빈 목록은 윈도우가 그 항목 없이 열렸다는 뜻이며 해당 종류의 동작을 거부합니다. 따라서 윈도우를 열 때 사용한 값을 보관하지 않고도 윈도우가 무엇을 허용하는지 다시 읽을 수 있습니다. 이는 테스트넷에서만 동작합니다. 메인넷은 v3.2.8을 실행하며, 그 윈도우 쿼리는 이 세 필드를 반환하지 않습니다. 2026년 11월 22일에 테스트넷 REST에서 확인했습니다. 윈도우가 없는 주소는 `found: false`로 응답했고 `allowed_targets`, `validators`, `staking_validators`, `ibc_receivers`가 모두 빈 목록으로 존재했습니다. 비어 있지 않은 목록을 가진 윈도우는 이 페이지를 위해 다시 읽지 않았습니다.
+
+```bash
+curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/<qor1-address>
+```
+
+응답에 세 필드 이름이 보여야 합니다. 보이지 않으면 연결한 노드가 v3.2.9보다 오래된 것입니다(예: 메인넷 엔드포인트).
+
 ### TypeScript {#typescript}
 
 윈도우 헬퍼는 `@qorechain/sdk`에 있습니다(서명 설정은 [SDK EVM 가이드](/sdk/guides/evm#evm-window-scope) 참고). `openEvmWindowMsg`는 아래의 모든 필드를 받고, `closeEvmWindowMsg`는 닫기 메시지를 만들고, `fetchEvmWindow`는 윈도우를 읽고, `classifyEvmWindowRejection`은 거부 사유를 설명합니다.
@@ -131,7 +149,7 @@ console.log(w.live, w.remainingBlocks, w.remainingTxs, w.remainingValue);
 await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 ```
 
-`openEvmWindowMsg`는 서명하기 전에 한도와 목록 형식을 검사하므로, 실수가 있으면 거부된 트랜잭션으로 비용을 치르는 대신 로컬에서 실패합니다. `MAX_EVM_WINDOW_BLOCKS`와 `MAX_EVM_WINDOW_TXS`가 한도를 내보냅니다. 읽기(`fetchEvmWindow`)는 한도, 카운터, v3.2.3 범위(`nativeOnly`, `allowedTargets`)를 반환하며, `validators`(컨트랙트 주소), `stakingValidators`(`qorvaloper1...`), `ibcReceivers`(`"<channel>/<receiver>"`)는 v3.2.8 목록을 담은 SDK 0.14.0부터 빌더가 받으며, 읽기는 이를 반환하지 않으며 v3.2.8의 REST 윈도우 경로도 마찬가지이므로, 윈도우를 열 때 사용한 값을 직접 보관하세요. 세 목록은 v3.2.8을 실행하는 네트워크에서만 설정하세요. 그보다 낮은 노드는 이를 설정한 윈도우 메시지를 거부합니다. 하이브리드 서명을 하는 `connectTx`에서는 포스트 퀀텀 키가 이미 등록되어 있어야 합니다.
+`openEvmWindowMsg`는 서명하기 전에 한도와 목록 형식을 검사하므로, 실수가 있으면 거부된 트랜잭션으로 비용을 치르는 대신 로컬에서 실패합니다. `MAX_EVM_WINDOW_BLOCKS`와 `MAX_EVM_WINDOW_TXS`가 한도를 내보냅니다. 읽기(`fetchEvmWindow`)는 한도, 카운터, v3.2.3 범위(`nativeOnly`, `allowedTargets`)를 반환하며, `validators`(컨트랙트 주소), `stakingValidators`(`qorvaloper1...`), `ibcReceivers`(`"<channel>/<receiver>"`)는 v3.2.8 목록을 담은 SDK 0.14.0부터 빌더가 받으며, 읽기는 이를 반환하지 않으며 v3.2.8의 REST 윈도우 경로도 마찬가지이므로(테스트넷은 v3.2.9부터 이를 반환합니다. [쿼리의 세 가지 범위 목록](#window-query-lists) 참조), v3.2.8 네트워크를 읽을 때는 윈도우를 열 때 사용한 값을 직접 보관하세요. 세 목록은 v3.2.8을 실행하는 네트워크에서만 설정하세요. 그보다 낮은 노드는 이를 설정한 윈도우 메시지를 거부합니다. 하이브리드 서명을 하는 `connectTx`에서는 포스트 퀀텀 키가 이미 등록되어 있어야 합니다.
 
 ### 테스트넷에서 검증됨 {#tested}
 
@@ -144,7 +162,7 @@ await tx.signAndBroadcast([closeEvmWindowMsg(account.address)], "auto");
 | `nativeOnly: true`로 다시 열기 | 코드 0, 사용 가스 187,803. 새 윈도우가 이전 윈도우를 대체함: `native_only: true`, 새로운 `opened_height` |
 | 닫기 | 코드 0, 사용 가스 170,468. 다시 읽기: `found: false` |
 
-같은 날 SDK 0.14.0으로, `allowedTargets`(허용 대상 주소 하나), `stakingValidators`(검증인 운영자 주소 하나), `ibcReceivers`(`channel-0/...` 쌍 하나)를 지정해 연 윈도우가 코드 0, 사용 가스 195,233으로 성공했습니다. REST 읽기에는 `allowed_targets`가 나열되었고 `found: true`, `live: true`가 반환되었습니다. `validators`, `staking_validators`, `ibc_receivers` 목록은 반환하지 않으므로, 윈도우를 열 때 사용한 값을 직접 보관하세요.
+같은 날 SDK 0.14.0으로, `allowedTargets`(허용 대상 주소 하나), `stakingValidators`(검증인 운영자 주소 하나), `ibcReceivers`(`channel-0/...` 쌍 하나)를 지정해 연 윈도우가 코드 0, 사용 가스 195,233으로 성공했습니다. REST 읽기에는 `allowed_targets`가 나열되었고 `found: true`, `live: true`가 반환되었습니다. `validators`, `staking_validators`, `ibc_receivers` 목록은 v3.2.8에서는 반환하지 않았습니다(테스트넷은 v3.2.9부터 반환합니다. [쿼리의 세 가지 범위 목록](#window-query-lists) 참조). 따라서 v3.2.8 네트워크에서는 윈도우를 열 때 사용한 값을 직접 보관하세요.
 
 `fetchEvmWindow`는 같은 필드를 카멜 케이스(`openedHeight`, `remainingBlocks`, `nativeOnly`, `allowedTargets`)로 반환했습니다. 열기와 닫기는 하이브리드 서명된 Cosmos 트랜잭션이므로, 계정이 처음 보내는 트랜잭션은 먼저 키를 등록해야 합니다.
 

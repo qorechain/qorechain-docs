@@ -71,9 +71,9 @@ curl -s https://api-testnet.qore.host/qorechain/svm/v1/cluster_info
 
 노드 CLI에도 같은 조회가 있습니다. `qorechaind query svm cluster-info`입니다. `https://svm-testnet.qore.host`의 JSON-RPC 메서드 `getGenesisHash`는 같은 해시를 반환합니다. 이 해시는 체인 id에서 파생된 것이며 실제 Solana 클러스터의 제네시스 해시가 아닙니다. 이 경로는 메인넷에서도 제공됩니다(v3.2.7부터). 2026년 11월 12일 `https://api.qore.host/qorechain/svm/v1/cluster_info`는 `execution_enabled` `false`와 함께 `200`으로 응답했습니다.
 
-## 공개 SVM RPC는 읽기 전용입니다 {#public-rpc}
+## 공개 SVM RPC와 쓰기 {#public-rpc}
 
-공개 엔드포인트 `https://svm.qore.host`와 `https://svm-testnet.qore.host`는 읽기에는 응답하고, 레인이 열려 있든 아니든 공개 체인 id에서 쓰기 메서드(`sendTransaction` 등)를 거부합니다. SVM 트랜잭션을 제출하려면 자체 노드를 실행해야 하며, 이 노드는 기본적으로 포트 8899에서 Solana 호환 JSON-RPC를 제공합니다([SVM 개발](/developer-guide/svm-development#json-rpc-server) 참조). 또한 그 노드가 따르는 네트워크에서 레인 자체가 열려 있어야 합니다. 읽기는 지금 동작합니다.
+공개 엔드포인트 `https://svm.qore.host`와 `https://svm-testnet.qore.host`는 읽기에 응답합니다. 게이트웨이에 릴레이어 키가 설정되어 있을 때만 `sendTransaction`을 릴레이하며, 2026년 11월 22일 공개 테스트넷 게이트웨이에는 설정된 키가 없어 쓰기를 거부했습니다([테스트넷의 SVM](/developer-guide/svm-testnet-v329#relay) 참조). SVM 트랜잭션을 제출하려면 이를 담는 트랜잭션을 직접 보내거나 자체 노드를 실행해야 하며, 이 노드는 기본적으로 포트 8899에서 Solana 호환 JSON-RPC를 제공합니다([SVM 개발](/developer-guide/svm-development#json-rpc-server) 참조). 또한 그 노드가 따르는 네트워크에서 레인 자체가 열려 있어야 합니다. 읽기는 지금 동작합니다.
 
 ```bash
 # Health, version, cluster hash, slot and a rent quote (all HTTP 200 on 12 November 2026)
@@ -93,7 +93,7 @@ curl -s -X POST https://svm-testnet.qore.host -H 'Content-Type: application/json
 
 레인이 열리면 흐름은 다음과 같습니다. 최신 Solana 툴체인으로 SBF 프로그램을 빌드하고, 배포하고, 필요한 계정을 만든 뒤 호출합니다. 모든 `tx svm` 명령은 Cosmos 레인 트랜잭션이므로 명시적인 가스 한도, 최소 가스 곱하기 0.1 uqor의 수수료, 하이브리드 포스트 퀀텀 공동 서명이 필요합니다([양자내성 서명](/developer-guide/post-quantum-signing) 참조).
 
-다음은 노드 레퍼런스의 Linux 노드 CLI 명령입니다. **UNTESTED: 레인은 제안 37 이후에야 테스트넷에서 열렸으며, 이 페이지를 위해 프로그램 배포, 실행, 계정 생성은 실행하지 않았습니다.**
+다음은 노드 레퍼런스의 Linux 노드 CLI 명령입니다. **라이브 네트워크에서 아직 테스트하지 않음: 레인은 제안 37 이후에야 테스트넷에서 열렸으며, 이 페이지를 위해 프로그램 배포, 실행, 계정 생성은 실행하지 않았습니다.**
 
 ```bash
 # 1. Build (platform-tools v1.53, --arch v0 or --arch v3)
@@ -154,7 +154,7 @@ const sim = await client.simulateTransaction(tx);          // dry run first
 const signature = await client.sendTransaction(tx, [payer]);
 ```
 
-**UNTESTED:** 이 예시에는 직접 실행하는 노드가 필요합니다(테스트넷에서 레인은 열려 있습니다). 공개 엔드포인트에 대해서는 전송이 거부됩니다. `createSvmClient({ rpcUrl })`이 어떤 URL이든 받으므로, 읽기 전용 호출(`client.getBalance`, `client.getAccountInfo`, `client.getSignaturesForAddress`)은 `https://svm-testnet.qore.host`에 대해 동작합니다.
+**라이브 네트워크에서 아직 테스트하지 않음:** 이 예시에는 직접 실행하는 노드가 필요합니다(테스트넷에서 레인은 열려 있습니다). 공개 엔드포인트에 대해서는 전송이 거부됩니다. `createSvmClient({ rpcUrl })`이 어떤 URL이든 받으므로, 읽기 전용 호출(`client.getBalance`, `client.getAccountInfo`, `client.getSignaturesForAddress`)은 `https://svm-testnet.qore.host`에 대해 동작합니다.
 
 Python, Go, Rust, Java의 경우 해당 언어의 SVM 어댑터가 같은 메시지를 만들며, v3.2.8 헬퍼는 이후 SDK 릴리스에서 추가됩니다. 그때까지는 위의 노드 CLI나 원시 메시지를 사용하세요. 메서드 집합이 Solana와 호환되므로 어떤 Solana 클라이언트 라이브러리든 자체 노드의 포트 8899와 통신할 수 있습니다.
 
@@ -178,7 +178,7 @@ lamport와 uqor의 관계는 1 uqor = 1,000 lamport입니다. 최소 금액은 �
 
 체인에 포스트 퀀텀 키를 두고 싶은 SVM 지갑은 **`MsgRegisterSVMPQCKey`**로 이를 등록합니다. 이 메시지에는 발신자, 32바이트 SVM 주소, ML-DSA-87 공개 키가 담깁니다. Cosmos 레인 메시지이므로 발신자는 다른 모든 네이티브 트랜잭션처럼 하이브리드로 서명합니다. 레인이 닫혀 있는 동안에는 거부되며, **키를 등록하기 전에 SVM 계정이 이미 존재해야 합니다**([테스트넷에서 검증한 내용](#tested)의 거부 사례 참조).
 
-이를 위한 `tx svm` 명령은 없습니다. SDK 컴포저를 사용하세요. TypeScript에서 컴포저는 `@qorechain/sdk`의 `msg.svm.registerSvmPqcKey`입니다. **이미 존재하는 계정에 대해서는 UNTESTED: 유일한 전송은 계정이 없는 주소에 대한 것이었고 거부되었습니다.**
+이를 위한 `tx svm` 명령은 없습니다. SDK 컴포저를 사용하세요. TypeScript에서 컴포저는 `@qorechain/sdk`의 `msg.svm.registerSvmPqcKey`입니다. **이미 존재하는 계정에 대해서는 라이브 네트워크에서 아직 테스트하지 않음: 유일한 전송은 계정이 없는 주소에 대한 것이었고 거부되었습니다.**
 
 ```ts
 import {
@@ -240,8 +240,8 @@ Python 컴포저는 `msg.svm.register_svm_pqc_key(sender=, ...)`이고 Go는 `Sv
 
 레인은 열려 있지만 공개 SVM JSON-RPC는 아직 완전한 Solana 노드처럼 동작하지 않습니다. 다음 제한을 감안해 계획하세요.
 
-- **`getLatestBlockhash`는 블록해시를 64자리 16진수 문자로 반환합니다.** Solana 노드처럼 base58이 아닙니다(2026년 11월 12일에 읽은 값: `blockhash` `e8d4...d449`, `lastValidBlockHeight` 9944659). base58을 기대하는 클라이언트는 변환해야 합니다. 체인 팀이 변경을 예정해 두었습니다.
-- **표준 Solana 도구의 Solana 와이어 형식 `sendTransaction`은 공개 엔드포인트에서 아직 지원되지 않습니다.** 프로그램은 Cosmos 메시지 `MsgDeployProgram`과 `MsgExecuteProgram`으로 배포하고 호출하며, 다른 Cosmos 레인 트랜잭션처럼 하이브리드 서명으로 서명합니다(위의 TypeScript 헬퍼 참조). Solana 도구와의 완전한 동등성은 이후 릴리스에서 계획되어 있습니다.
+- **`getLatestBlockhash`는 블록해시를 64자리 16진수 문자로 반환합니다.** Solana 노드처럼 base58이 아닙니다(2026년 11월 12일에 읽은 값: `blockhash` `e8d4...d449`, `lastValidBlockHeight` 9944659). base58을 기대하는 클라이언트는 변환해야 합니다. 변경이 계획되어 있습니다.
+- **Solana 와이어 트랜잭션**은 테스트넷에서 릴리스 v3.2.9부터 `MsgSolanaTransaction`에 담겨 전달됩니다([테스트넷의 SVM](/developer-guide/svm-testnet-v329) 참조). v3.2.8에서는 프로그램을 Cosmos 메시지 `MsgDeployProgram`과 `MsgExecuteProgram`으로 배포하고 호출하며, 다른 Cosmos 레인 트랜잭션처럼 하이브리드 서명으로 서명합니다(위의 TypeScript 헬퍼 참조).
 - **외부 키가 릴레이어를 통해 SVM 동작을 승인할 수 있습니다.** 네트워크가 프로토콜 기능 `svm-relayed-chain-bound`를 활성화하면 승인은 체인에 묶인 다이제스트(도메인 `qorechain-svm-auth-v3`)에 서명합니다. `@qorechain/wallet-adapter` 0.6.0은 `authSignBytesV3`로 이를 만들고, `resolveSvmAuthVersion`은 네트워크가 어느 형식을 원하는지 읽습니다.
 
 ## 오류와 거부 {#errors}
@@ -251,7 +251,7 @@ Python 컴포저는 `msg.svm.register_svm_pqc_key(sender=, ...)`이고 Go는 `Sv
 | `SVM module is disabled`(코드 11) | 레인이 닫혀 있음(메인넷, 또는 제안 37 이전의 테스트넷) | `enabled`를 읽으세요. 재시도하지 마세요 |
 | `SVM account ... not found`와 함께 거부된 `MsgRegisterSVMPQCKey`(코드스페이스 `svm`, 코드 3) | SVM 계정이 아직 존재하지 않음 | 먼저 계정을 만든 다음 키를 등록하세요 |
 | 레인이 닫혀 있는 동안 거부된 `MsgRegisterSVMPQCKey` | 레인이 닫혀 있음 | 레인이 열린 후에 등록하세요 |
-| `svm.qore.host` 또는 `svm-testnet.qore.host`에서 쓰기 메서드 거부 | 공개 엔드포인트는 읽기 전용 | 자체 노드를 사용하세요 |
+| `svm.qore.host` 또는 `svm-testnet.qore.host`에서 쓰기 메서드 거부 | 공개 게이트웨이에 릴레이어 키가 없음 | 이를 담는 트랜잭션을 직접 보내거나 자체 노드를 사용하세요([테스트넷의 SVM](/developer-guide/svm-testnet-v329#relay) 참조) |
 | `svm custody cap exceeded`(코드 23) | 풀이 상한에 도달함 | 나중에 또는 더 적은 금액으로 다시 시도하세요 |
 | `airdrop rate limit exceeded`(코드 19) | `requestAirdrop`을 너무 자주 호출함(테스트넷 전용) | 기다리세요 |
 | `blockhash expired`(코드 20) | 최근 블록해시가 너무 오래됨 | 새 것을 가져와 다시 서명하세요 |
@@ -268,7 +268,7 @@ Python 컴포저는 `msg.svm.register_svm_pqc_key(sender=, ...)`이고 Go는 `Sv
 | `GET /qorechain/svm/v1/params` | `enabled` true, `max_program_size` 10485760, `max_account_data_size` 10485760, `compute_budget_max` 1400000, `lamports_per_byte` 3480, `rent_exemption_multi` 2, `max_cpi` 4, `max_custody_uqor` 10000000000, `max_custody_hard_uqor` 1000000000000, `max_account_excess_uqor` 10000000000 |
 | 아직 존재하지 않는 SVM 주소에 대한 `MsgRegisterSVMPQCKey` | 거부됨: 코드스페이스 `svm` 코드 3, `SVM account ... not found: SVM account not found`. 포스트 퀀텀 키를 등록하기 전에 계정이 존재해야 합니다 |
 
-실행하지 않은 것(UNTESTED): 프로그램 배포, 프로그램 실행, SVM 계정 생성.
+실행하지 않은 것(라이브 네트워크에서 아직 테스트하지 않음): 프로그램 배포, 프로그램 실행, SVM 계정 생성.
 
 ## 메인넷 {#mainnet}
 

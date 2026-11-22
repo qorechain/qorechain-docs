@@ -90,7 +90,7 @@ Lanțul v3.2.5 schimbă comportamentul bridge-ului. Mainnet-ul îl rulează din 
 
 ### Testat pe testnet {#tested-testnet}
 
-Testnet-ul rulează lanțul v3.2.8 din 12 noiembrie 2026 (înălțimea 9,929,500). Pe 7 noiembrie 2026 au fost trimise două cereri `eth_call` doar-citire către `0x…0901`, cu calldata pentru `executeCrossVMCall(uint8,string,bytes)` (VM țintă `1`, payload `{}`):
+Testnet-ul rulează lanțul v3.2.9 din 20 noiembrie 2026, după v3.2.8 din 12 noiembrie (înălțimea 9,929,500), și a aplicat v3.2.9 la înălțimea 10,424,000. Pe 7 noiembrie 2026 au fost trimise două cereri `eth_call` doar-citire către `0x…0901`, cu calldata pentru `executeCrossVMCall(uint8,string,bytes)` (VM țintă `1`, payload `{}`):
 
 | Țintă | Rezultat |
 |---|---|

@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain acceptă mai multe tipuri de portofele în mediile sale de execuție native, EVM și SVM. Alege portofelul care se potrivește cazului tău de utilizare.
 
 :::note
-Valorile de mai jos acoperă atât mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, activ din 7 iunie 2026, versiunea v3.2.8 din 18 noiembrie 2026), cât și testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea v3.2.8 din 12 noiembrie 2026). Endpoint-urile publice pentru ambele rețele sunt listate în [Rețele](/appendix/networks#public-endpoints).
+Valorile de mai jos acoperă atât mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, activ din 7 iunie 2026, versiunea v3.2.8 din 18 noiembrie 2026), cât și testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea v3.2.9 din 20 noiembrie 2026, după v3.2.8 din 12 noiembrie). Endpoint-urile publice pentru ambele rețele sunt listate în [Rețele](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recomandat) {#qorex}
@@ -110,7 +110,7 @@ Funcțiile de cont inteligent și de portofel conectat sunt implementate, dar **
 :::
 
 :::note Lane-ul compatibil Solana pe testnet
-Lane-ul compatibil Solana este închis pe testnet până când un vot de guvernanță îl redeschide (versiunea v3.2.8, pe testnet din 12 noiembrie 2026). Tranzacțiile în stil Solana nu sunt disponibile acolo până atunci.
+Lane-ul compatibil Solana este deschis pe testnet din propunerea de guvernanță 37 (12 noiembrie 2026). Suportul din wallet pentru tranzacțiile în stil Solana nu este încă disponibil. Vezi [SVM pe testnet](/developer-guide/svm-testnet-v329) pentru a le trimite din linia de comandă.
 :::
 
 Proiectat astfel încât să nu fii nevoit să îți expui cheia rădăcină pentru a cheltui dintr-un cont QoreChain într-un dApp (introdus în versiunea de lanț **v3.1.85**): o cheie **Phantom** (ed25519) sau **MetaMask** (prin adresa sa Ethereum, via `personal_sign`) poate fi **înregistrată ca authenticator** pe contul tău — cu permisiuni delimitate, limite de cheltuire, o dată de expirare și revocare instantanee — și apoi poate autoriza transferuri retransmise de backend-ul dApp-ului. Vezi [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) pentru modelul complet și cod, precum și [ghidul SDK Authenticators](/sdk/guides/authenticators) pentru exemple cap-coadă.
