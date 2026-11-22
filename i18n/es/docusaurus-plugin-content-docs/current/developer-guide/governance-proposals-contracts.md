@@ -227,6 +227,8 @@ qorechaind tx pqc cosign submit.json --from mykey --pqc-key mypqc \
 
 Fija `--gas` y `--fees` con una prueba en seco: ejecuta primero `tx pqc cosign` con `--dry-run` (imprime una estimación de gas y no envía nada), luego usa la estimación más un 30 % como `<GAS>` y una comisión de al menos `<GAS>` por 0,1 uqor como `<FEES>`. Una transferencia simple necesita unos 300.000 a 400.000 de gas; un despliegue o una propuesta que lleva código necesita mucho más.
 
+Medido en el testnet: una propuesta con unos 99 KB de código comprimido (102,6 KB de JSON) usó 14.961.429 de gas. Calcula unos 150 de gas por byte de JSON de la propuesta, así que para una propuesta de 100 KB usa al menos `--gas 20000000 --fees 2000000uqor`. Un voto usó unos 153.400 de gas: usa `--gas 300000 --fees 30000uqor`. El código se almacena al terminar la votación y no cuesta nada extra a quien presenta la propuesta.
+
 `--generate-only` escribe la transacción sin firmar. `tx pqc cosign` añade ambas firmas y la difunde; contexto en [Firma híbrida](/cli-reference/transaction-commands#hybrid-signing) y en los [comandos gov](/cli-reference/transaction-commands#submit-proposal). Deberías ver un hash de transacción y el código 0. Si ves un error de falta de gas, sube `--gas` y las `--fees` correspondientes (la comisión debe ser al menos gas por 0.1 uqor).
 
 Busca el id de tu propuesta, que también es el número de los eventos de la transacción:

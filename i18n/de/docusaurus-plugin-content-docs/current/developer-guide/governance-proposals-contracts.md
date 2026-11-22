@@ -227,6 +227,8 @@ qorechaind tx pqc cosign submit.json --from mykey --pqc-key mypqc \
 
 Bestimmen Sie `--gas` und `--fees` mit einem Probelauf: Führen Sie zuerst `tx pqc cosign` mit `--dry-run` aus (es gibt eine Gas-Schätzung aus und sendet nichts), verwenden Sie dann die Schätzung plus 30 % als `<GAS>` und eine Gebühr von mindestens `<GAS>` mal 0,1 uqor als `<FEES>`. Eine einfache Überweisung braucht etwa 300.000 bis 400.000 Gas, ein Deploy oder ein Vorschlag mit Code deutlich mehr.
 
+Auf dem Testnet gemessen: Ein Vorschlag mit etwa 99 KB komprimiertem Code (102,6 KB JSON) verbrauchte 14.961.429 Gas. Rechnen Sie mit etwa 150 Gas pro Byte Vorschlags-JSON, für einen Vorschlag von 100 KB also mindestens `--gas 20000000 --fees 2000000uqor`. Eine Stimme verbrauchte etwa 153.400 Gas: verwenden Sie `--gas 300000 --fees 30000uqor`. Der Code wird am Ende der Abstimmung gespeichert und kostet den Einreicher nichts extra.
+
 `--generate-only` schreibt die unsignierte Transaktion. `tx pqc cosign` fügt beide Signaturen hinzu und sendet sie; Hintergrund unter [Hybride Signierung](/cli-reference/transaction-commands#hybrid-signing) und den [gov-Befehlen](/cli-reference/transaction-commands#submit-proposal). Sie sollten einen Transaktions-Hash und Code 0 sehen. Sehen Sie einen Out-of-Gas-Fehler, erhöhen Sie `--gas` und die passenden `--fees` (die Gebühr muss mindestens Gas mal 0,1 uqor betragen).
 
 Finden Sie Ihre Vorschlags-ID, die auch die Nummer in den Transaktions-Events ist:

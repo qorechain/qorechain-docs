@@ -227,6 +227,8 @@ qorechaind tx pqc cosign submit.json --from mykey --pqc-key mypqc \
 
 `--gas` と `--fees` はドライランで決めます。まず `tx pqc cosign` を `--dry-run` 付きで実行し（ガスの見積もりを表示し、何も送信しません）、見積もりに30%を足した値を `<GAS>`、`<GAS>` に 0.1 uqor を掛けた額以上を `<FEES>` として使います。単純な送金はおよそ30万から40万ガス、デプロイやコードを含む提案ははるかに多く必要です。
 
+テストネットでの実測：圧縮後のコードが約 99 KB（JSON で 102.6 KB）の提案は 14,961,429 ガスを使いました。提案 JSON 1 バイトあたり約 150 ガスを見込み、100 KB の提案なら少なくとも `--gas 20000000 --fees 2000000uqor` を使ってください。投票は約 153,400 ガスで、`--gas 300000 --fees 30000uqor` を使います。コードは投票終了時に保存され、提出者に追加費用はかかりません。
+
 `--generate-only` は未署名のトランザクションを書き出します。`tx pqc cosign` は両方の署名を追加してブロードキャストします。背景は[ハイブリッド署名](/cli-reference/transaction-commands#hybrid-signing)と [gov コマンド](/cli-reference/transaction-commands#submit-proposal)にあります。トランザクションハッシュとコード 0 が表示されます。ガス不足のエラーが出た場合は、`--gas` と、それに合わせた `--fees` を引き上げてください (手数料は少なくともガスの 0.1 uqor 倍が必要です)。
 
 提案 ID を調べます。これはトランザクションのイベントにある番号でもあります。

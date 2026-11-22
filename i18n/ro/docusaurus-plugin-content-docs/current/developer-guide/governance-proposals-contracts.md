@@ -227,6 +227,8 @@ qorechaind tx pqc cosign submit.json --from mykey --pqc-key mypqc \
 
 Alege `--gas` și `--fees` dintr-o rulare de probă: rulează mai întâi `tx pqc cosign` cu `--dry-run` (afișează o estimare de gaz și nu trimite nimic), apoi folosește estimarea plus 30% ca `<GAS>` și o taxă de cel puțin `<GAS>` ori 0,1 uqor ca `<FEES>`. Un transfer simplu are nevoie de aproximativ 300.000 până la 400.000 de gaz, iar un deploy sau o propunere care conține cod are nevoie de mult mai mult.
 
+Măsurat pe testnet: o propunere cu aproximativ 99 KB de cod comprimat (102,6 KB de JSON) a folosit 14.961.429 de gaz. Socotește aproximativ 150 de gaz pe octet de JSON al propunerii, deci pentru o propunere de 100 KB folosește cel puțin `--gas 20000000 --fees 2000000uqor`. Un vot a folosit aproximativ 153.400 de gaz: folosește `--gas 300000 --fees 30000uqor`. Codul este stocat la sfârșitul votului și nu costă nimic în plus pe cel care depune propunerea.
+
 `--generate-only` scrie tranzacția nesemnată. `tx pqc cosign` adaugă ambele semnături și o difuzează; context în [Semnarea hibridă](/cli-reference/transaction-commands#hybrid-signing) și în [comenzile gov](/cli-reference/transaction-commands#submit-proposal). Ar trebui să vezi un hash de tranzacție și codul 0. Dacă vezi o eroare de gaz epuizat, mărește `--gas` și `--fees` corespunzător (comisionul trebuie să fie cel puțin gaz înmulțit cu 0,1 uqor).
 
 Găsește id-ul propunerii tale, care este și numărul din evenimentele tranzacției:

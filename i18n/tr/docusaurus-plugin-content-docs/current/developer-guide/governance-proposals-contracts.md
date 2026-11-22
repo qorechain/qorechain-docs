@@ -227,6 +227,8 @@ qorechaind tx pqc cosign submit.json --from mykey --pqc-key mypqc \
 
 `--gas` ve `--fees` değerlerini bir deneme çalıştırmasıyla belirleyin: önce `tx pqc cosign` komutunu `--dry-run` ile çalıştırın (gaz tahmini yazdırır, hiçbir şey göndermez), sonra tahmini artı %30 değerini `<GAS>`, en az `<GAS>` çarpı 0,1 uqor tutarını `<FEES>` olarak kullanın. Basit bir transfer yaklaşık 300.000 ile 400.000 gaz tutar; bir deploy veya kod taşıyan bir öneri çok daha fazlasına ihtiyaç duyar.
 
+Test ağında ölçüldü: yaklaşık 99 KB sıkıştırılmış kod içeren (102,6 KB JSON) bir öneri 14.961.429 gaz kullandı. Öneri JSON'unun bayt başına yaklaşık 150 gaz hesaplayın; 100 KB'lık bir öneri için en az `--gas 20000000 --fees 2000000uqor` kullanın. Bir oy yaklaşık 153.400 gaz kullandı: `--gas 300000 --fees 30000uqor` kullanın. Kod oylama bittiğinde saklanır ve öneriyi sunana ek maliyeti yoktur.
+
 `--generate-only` imzasız işlemi yazar. `tx pqc cosign` her iki imzayı da ekler ve işlemi yayınlar; arka plan için bkz. [Hibrit imzalama](/cli-reference/transaction-commands#hybrid-signing) ve [gov komutları](/cli-reference/transaction-commands#submit-proposal). Bir işlem özeti ve kod 0 görmelisiniz. Gaz yetersiz hatası görürseniz `--gas` ve buna uygun `--fees` değerini artırın (ücret en az gaz çarpı 0,1 uqor olmalıdır).
 
 Öneri kimliğinizi bulun; bu aynı zamanda işlem olaylarındaki sayıdır:
