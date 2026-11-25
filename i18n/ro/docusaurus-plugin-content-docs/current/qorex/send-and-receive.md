@@ -16,7 +16,7 @@ Această pagină acoperă trimiterea și primirea de QOR, plata către un @handl
 - **Semnalarea adreselor asemănătoare.** O adresă care doar seamănă cu una pe care o cunoști deja este semnalată înainte să trimiți. Vezi [Contacte și favorite](#contacts).
 - **Avertismente despre comisioane în cuvinte simple.** QoreX îți spune când comisionul este mai mare decât suma trimisă și arată comisionul unic de înregistrare a cheii și totalul la prima ta trimitere.
 
-Fila Acasă (Portofel) este punctul tău de plecare. Aceasta afișează un **ecuson de rețea** (MAINNET implicit, sau TESTNET dacă ai activat comutatorul pentru dezvoltatori), **soldul tău total** (atinge pentru a-l ascunde/afișa) și acțiunile principale: **Trimite · Primește · Schimbă · Mizează** (**Schimbă** nu apare pe iOS). Lista ta de active afișează **QOR** (un sold unificat în lane-urile Native, EVM și SVM, trimis pe lane-ul nativ semnat hibrid) și **Toate rețelele** (o vedere unificată pentru ETH, BNB, POL, ARB și celelalte [rețele externe](#external-networks-tokens) suportate de QoreX).
+Fila Acasă (Portofel) este punctul tău de plecare. Aceasta afișează un **ecuson de rețea** (MAINNET implicit, sau TESTNET dacă ai activat comutatorul pentru dezvoltatori), **soldul tău total** (atinge pentru a-l ascunde/afișa) și acțiunile principale: **Trimite · Primește · Schimbă · Stake** (**Schimbă** nu apare pe iOS). Lista ta de active afișează **QOR** (un sold unificat în lane-urile Native, EVM și SVM, trimis pe lane-ul nativ semnat hibrid) și **Toate rețelele** (o vedere unificată pentru ETH, BNB, POL, ARB și celelalte [rețele externe](#external-networks-tokens) suportate de QoreX).
 
 ## Trimite QOR pe lane-ul nativ semnat hibrid
 
@@ -111,7 +111,7 @@ Deocamdată, QoreX plătește cererile doar în QOR. O cerere de testnet spune *
 
 ## Istoric {#history}
 
-Istoricul arată fiecare tranzacție QoreChain a unui cont, nu doar trimiterile: primire, staking, retragere din staking, miză mutată, recompense revendicate, blocări, bonus, ferestre EVM, adresa pentru recompense și înregistrarea cheii ML-DSA-87, cu suma, comisionul și tranzacțiile eșuate marcate *Eșuată (taxa s-a plătit totuși)*. Insigna hibridă apare doar pe o tranzacție pe care lanțul însuși a verificat-o. Rețelele externe nu sunt încă în Istoric.
+Istoricul arată fiecare tranzacție QoreChain a unui cont, nu doar trimiterile: primire, staking, retragere din staking, stake mutat, recompense revendicate, blocări, bonus, ferestre EVM, adresa pentru recompense și înregistrarea cheii ML-DSA-87, cu suma, comisionul și tranzacțiile eșuate marcate *Eșuată (taxa s-a plătit totuși)*. Insigna hibridă apare doar pe o tranzacție pe care lanțul însuși a verificat-o. Rețelele externe nu sunt încă în Istoric.
 
 - **Unde.** Aplicație: **Activitate**, cu un selector de cont și un link **Istoric** pe fiecare cont din **Conturile tale**. Extensie: **Istoric** pe ecranul principal, cu un selector de cont.
 - **În așteptare, confirmată, eșuată.** Un transfer pe care tocmai l-ai trimis arată **În așteptare: rețeaua nu a confirmat încă** până când lanțul îl cunoaște. O tranzacție pe care lanțul nu a văzut-o după câteva minute afișează *Negăsită în rețea: este posibil să fi eșuat. Verifică tranzacția înainte să trimiți din nou.* Nu este niciodată afișată ca trimisă pe baza unei presupuneri. **Închide** elimină un astfel de rând.
@@ -148,7 +148,7 @@ Fila Swap nu apare deloc în build-ul din App Store - Apple tratează schimbul d
 
 ## Pași următori
 
-- [Portofoliu și mizare](/qorex/portfolio-and-staking) - vezi alocarea ta și câștigă recompense.
+- [Portofoliu și staking](/qorex/portfolio-and-staking) - vezi alocarea ta și câștigă recompense.
 - [Securitate și recuperare](/qorex/security-and-recovery) - protejează-ți și recuperează-ți portofelul.
 
 ## Limite și probleme cunoscute {#limits}

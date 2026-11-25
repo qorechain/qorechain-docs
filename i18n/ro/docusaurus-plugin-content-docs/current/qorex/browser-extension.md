@@ -29,7 +29,7 @@ Este **live și public** pe trei magazine (Chrome, Firefox și Safari), toate pu
 
 1. Instalează extensia (vezi [Cum accesezi](#how-to-access)) și deschide popup-ul.
 2. Alege **Creează un portofel nou** (o parolă, apoi 24 de cuvinte afișate o singură dată) sau **Importă o frază de recuperare**. Vezi [Creează sau restaurează un portofel](#wallet). Apoi alege **Ce vrei să faci mai întâi?** sau sari peste.
-3. Folosește **Send**, **Receive**, **Mizează QOR**, **Istoric** și **Monede și tokenuri** în popup. Vezi [Trimite QOR](#send), [Istoric](#history), [Fă staking din extensie](#stake) și [Trimiterea pe rețele externe](#send-external).
+3. Folosește **Send**, **Receive**, **Staking QOR**, **Istoric** și **Monede și tokenuri** în popup. Vezi [Trimite QOR](#send), [Istoric](#history), [Fă staking din extensie](#stake) și [Trimiterea pe rețele externe](#send-external).
 4. Deschide un dApp. Prima conexiune afișează o aprobare cu originea site-ului; aprobarea dezvăluie doar adresa ta publică. Revocă orice site la [Site-uri conectate](#connected-sites).
 5. Ca dezvoltator, detectează QoreX cu EIP-6963 și trimite o tranzacție cu `signAndBroadcast`. Vezi [Conectează un dApp la QoreX](#connect) și [Trimiterea unei tranzacții QoreChain dintr-un dApp](#sign-and-broadcast).
 
@@ -61,7 +61,7 @@ Recenziile magazinelor ajung în momente diferite, astfel încât un magazin poa
 
 Extensia 0.4.x adaugă [blocarea automată](#unlock), o [verificare înaintea fiecărui transfer](#send), [Istoricul cu export CSV](#history), [cererile de plată](#pay-requests), [contactele](#contacts), [Protecția banilor mei](#protection), [repararea, rotirea și multisig-ul cheii post-cuantice](#pqc-care), [ecrane de staking](#stake) separate, un [ecran Primește care începe cu moneda](#receive), [semnarea EVM pentru dApp-uri](#standards), [ferestre de acces EVM mai sigure](#evm-window) și [Uneltele pentru dezvoltatori](#developer-tools). Lista completă pe versiuni este în [Ce adaugă versiunile 1.2.5 / 0.4.5](/qorex/overview#whats-new-125) și în listele care urmează.
 
-De la 0.2.6, extensia a primit și: [mai multe portofele cu o singură parolă](#wallets), un [cont în stil Ethereum pe care îl adaugi manual](#coin60), [Revendică și restachează](#stake), o listă **Retrageri din mizare în curs**, [adăugarea unui token prin contract](#custom-tokens), [Primește pe orice rețea](#receive), [Site-uri conectate cu Revocă](#connected-sites), [fereastra de acces EVM](#evm-window), [`signAndBroadcast` pentru dApp-uri](#sign-and-broadcast) și ecrane de aprobare care arată fiecare mesaj, comision și expirare.
+De la 0.2.6, extensia a primit și: [mai multe portofele cu o singură parolă](#wallets), un [cont în stil Ethereum pe care îl adaugi manual](#coin60), [Revendică și restachează](#stake), o listă **Retrageri din staking în curs**, [adăugarea unui token prin contract](#custom-tokens), [Primește pe orice rețea](#receive), [Site-uri conectate cu Revocă](#connected-sites), [fereastra de acces EVM](#evm-window), [`signAndBroadcast` pentru dApp-uri](#sign-and-broadcast) și ecrane de aprobare care arată fiecare mesaj, comision și expirare.
 
 **Suprafața de permisiuni nu s-a schimbat din versiunea 0.1.3.** Vezi [Ce permisiuni cere QoreX](#permissions).
 
@@ -150,7 +150,7 @@ Rețelele acceptate sunt QoreChain, Ethereum, BNB Chain, Polygon, Arbitrum, Base
 
 Atinge **Istoric** pe ecranul principal al popupului ca să vezi ce s-a întâmplat în cont:
 
-- **Fiecare tip de tranzacție QoreChain**, nu doar trimiterile: trimise, primite, puse la staking, retrase, miză mutată, recompense revendicate, blocări de staking, fereastra EVM și modificări de chei, cu suma și comisionul. O tranzacție EVM arată și cât a luat din [fereastra de acces EVM](#evm-window).
+- **Fiecare tip de tranzacție QoreChain**, nu doar trimiterile: trimise, primite, puse în staking, retrase din staking, stake mutat, recompense revendicate, blocări de staking, fereastra EVM și modificări de chei, cu suma și comisionul. O tranzacție EVM arată și cât a luat din [fereastra de acces EVM](#evm-window).
 - **Stare citită din lanț.** Un transfer trimis de pe acest dispozitiv pe care istoricul lanțului nu îl arată încă este listat ca **În așteptare: rețeaua nu a confirmat încă**. Dacă rețeaua nu îl găsește, QoreX spune că poate a eșuat, așa că verifică-l înainte să trimiți din nou (poți apăsa **Închide** pe rând). O tranzacție eșuată este marcată, cu comisionul totuși plătit.
 - **Per cont** - cu mai multe conturi, alege contul sus.
 - **Repetă plata** - completează din nou formularul de trimitere pornind de la o plată anterioară. Tot tu o verifici și o confirmi.
@@ -206,19 +206,19 @@ Gardienii și recuperarea socială sunt în aplicația mobilă. Vezi [Securitate
 
 ## Fă staking din extensie {#stake}
 
-Începând cu **0.2.2**, popupul are propriul ecran de staking - un portofel creat doar în extensie nu mai are nevoie de aplicația mobilă ca să câștige recompense din staking. Deschide **Mizează QOR** pe ecranul principal al popupului. Se deschide un **meniu** cu un rând de explicație pentru fiecare acțiune; fiecare acțiune deschide propriul ecran, cu propriul rând de eroare, iar **Înapoi la mizare** revine la meniu.
+Începând cu **0.2.2**, popupul are propriul ecran de staking - un portofel creat doar în extensie nu mai are nevoie de aplicația mobilă ca să câștige recompense din staking. Deschide **Staking QOR** pe ecranul principal al popupului. Se deschide un **meniu** cu un rând de explicație pentru fiecare acțiune; fiecare acțiune deschide propriul ecran, cu propriul rând de eroare, iar **Înapoi la staking** revine la meniu.
 
 | Ecran | Ce face |
 |---|---|
-| **Mizează QOR** | Alegi un validator și o sumă. Validatorii activi sunt listați cu comisionul lor; cei **întemnițați (jailed)** sunt excluși. În timp ce scrii, QoreX te avertizează dacă suma ar lăsa mai puțin decât comisionul unei tranzacții (nu ai mai putea face unstake sau claim până când contul nu deține din nou QOR). |
-| **Retrage din staking** | Pornește unbonding-ul. Timpul până când QOR redevine al tău de mutat este **citit din rețea**, iar suma apare sub **Retrageri din mizare în curs** cu timpul rămas. |
-| **Mută miza** | Redelegare fără așteptare de unbonding, în trei pași: (1) validatorul **de pe care** muți (cei de pe care nu poți muta încă sunt estompați, cu data), (2) validatorii **către care** muți, (3) **cât**, cu **Max** și ruta și împărțirea afișate înainte să semnezi. O mutare pe care rețeaua ar refuza-o este prinsă din timp. Vezi [Mută miza între validatori](/qorex/portfolio-and-staking#move-stake). |
+| **Staking QOR** | Alegi un validator și o sumă. Validatorii activi sunt listați cu comisionul lor; cei **întemnițați (jailed)** sunt excluși. În timp ce scrii, QoreX te avertizează dacă suma ar lăsa mai puțin decât comisionul unei tranzacții (nu ai mai putea face unstake sau claim până când contul nu deține din nou QOR). |
+| **Retrage din staking** | Pornește unbonding-ul. Timpul până când QOR redevine al tău de mutat este **citit din rețea**, iar suma apare sub **Retrageri din staking în curs** cu timpul rămas. |
+| **Mută stake-ul** | Redelegare fără așteptare de unbonding, în trei pași: (1) validatorul **de pe care** muți (cei de pe care nu poți muta încă sunt estompați, cu data), (2) validatorii **către care** muți, (3) **cât**, cu **Max** și ruta și împărțirea afișate înainte să semnezi. O mutare pe care rețeaua ar refuza-o este prinsă din timp. Vezi [Mută stake-ul între validatori](/qorex/portfolio-and-staking#move-stake). |
 | **Revendică** | Colectează recompensele. Dacă comisionul este mai mare decât recompensele, prima apăsare te avertizează. |
 | **Revendică și restachează** | Reinvestește recompensele la validatorii care le-au câștigat, într-o singură tranzacție (până la 127 de validatori). QoreX verifică mai întâi că QOR-ul tău **deblocat** poate plăti comisionul, care se plătește înainte să sosească recompensele. |
-| **Blochează pentru bonus** | Blochează o parte din miză pentru 3, 6 sau 12 luni. Vezi [blocările de staking](/qorex/portfolio-and-staking#staking-locks). |
-| **Recompensele merg în** | Trimite recompensele viitoare din staking în **alt cont al aceluiași portofel** și la nicio altă adresă. Arată unde ajung recompensele acum, numește noul cont complet la prima apăsare și semnează la a doua. Miza ta nu se mută. |
+| **Blochează pentru bonus** | Blochează o parte din stake pentru 3, 6 sau 12 luni. Vezi [blocările de staking](/qorex/portfolio-and-staking#staking-locks). |
+| **Recompensele merg în** | Trimite recompensele viitoare din staking în **alt cont al aceluiași portofel** și la nicio altă adresă. Arată unde ajung recompensele acum, numește noul cont complet la prima apăsare și semnează la a doua. Stake-ul tău nu se mută. |
 
-Sub meniu, un card **Mizarea, pe scurt** prezintă recompensele câștigate până acum, cât costă staking-ul (comisionul validatorului și comisioanele de rețea) și când sosește QOR retras. Cu mai multe conturi, alege contul care face staking din selectorul de conturi. Fiecare acțiune este semnată cu semnătura hibridă obligatorie (secp256k1 și ML-DSA-87), la fel ca la un Send, iar ecranul spune când prima ta tranzacție îți înregistrează și cheia. Rata anuală se citește din cifra proprie a lanțului. Staking-ul, delegarea și recompensele au loc exclusiv pe lane-ul **Native**, niciodată printr-un precompile EVM - vezi [Staking & Delegation](/user-guide/staking-and-delegation).
+Sub meniu, un card **Staking-ul, pe scurt** prezintă recompensele câștigate până acum, cât costă staking-ul (comisionul validatorului și comisioanele de rețea) și când sosește QOR retras. Cu mai multe conturi, alege contul care face staking din selectorul de conturi. Fiecare acțiune este semnată cu semnătura hibridă obligatorie (secp256k1 și ML-DSA-87), la fel ca la un Send, iar ecranul spune când prima ta tranzacție îți înregistrează și cheia. Rata anuală se citește din cifra proprie a lanțului. Staking-ul, delegarea și recompensele au loc exclusiv pe lane-ul **Native**, niciodată printr-un precompile EVM - vezi [Staking & Delegation](/user-guide/staking-and-delegation).
 
 ### Aprobarea unei cereri de staking din Dashboard {#stake-dashboard}
 

@@ -110,7 +110,7 @@ Revizuirea din magazine se desfășoară după propriul program, astfel încât 
 | **Asistență** (canale oficiale) | ✅ | ✅ |
 | Banner de stare a rețelei | ✅ | ✅ |
 | Blocare automată (implicit 15 minute) | ✅ (cere din nou biometria sau PIN-ul) | ✅ (cere din nou parola) |
-| Staking: delegare, retragere, mutare de miză, revendicare, revendicare și re-stake, blocări, alegerea destinației recompenselor | ✅ | ✅ (câte un ecran pentru fiecare) |
+| Staking: delegare, retragere, mutare de stake, revendicare, revendicare și re-stake, blocări, alegerea destinației recompenselor | ✅ | ✅ (câte un ecran pentru fiecare) |
 | Repararea și rotirea cheii post-cuantice | ✅ | ✅ |
 | Conturi multisig post-cuantice | ✅ | ✅ |
 | Rețele externe (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + tokenuri) | ✅ | ✅ (trimitere din popup) |
@@ -205,7 +205,7 @@ Ce au schimbat pentru tine versiunile 1.2.0 / 0.4.0:
 - **Blocare automată** (1, 5, 15, 30, 60 sau 240 de minute; implicit 15) și un buton **Blochează** în extensie.
 - **O verificare înaintea fiecărui transfer** în extensie și un avertisment când o adresă doar seamănă cu una pe care ai plătit-o înainte.
 - **Istoric per cont** cu fiecare tip de tranzacție QoreChain.
-- **Ecranele de staking** din extensie sunt separate (Mizează QOR, Retrage din staking, Mută miza, Revendică, Revendică și restachează, Blochează pentru bonus, Recompensele merg în), **Mută miza** se face în trei pași și prinde mutările pe care rețeaua le-ar refuza, iar tu poți **alege unde ajung recompensele din staking** (alt cont al aceluiași portofel).
+- **Ecranele de staking** din extensie sunt separate (Staking QOR, Retrage din staking, Mută stake-ul, Revendică, Revendică și restachează, Blochează pentru bonus, Recompensele merg în), **Mută stake-ul** se face în trei pași și prinde mutările pe care rețeaua le-ar refuza, iar tu poți **alege unde ajung recompensele din staking** (alt cont al aceluiași portofel).
 - **dApp-urile EVM semnează prin QoreX** (`personal_sign`, date tipizate și tranzacții), cu riscul decodificat al fiecărei cereri și o simulare înainte de semnare.
 - **Ultimele valori cunoscute** sunt afișate și etichetate ca atare când rețeaua nu răspunde.
 - Un avertisment când comisionul este mai mare decât valoarea pe care o muți.
