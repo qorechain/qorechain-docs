@@ -82,7 +82,7 @@ Birinden paylaşacağınız veya kopyalayacağınız imzalı bir bağlantıyla b
 3. **Bağlantı oluştur**'a dokunun. QoreX isteği kendi hesap anahtarınızla imzalar ve *"İsteğiniz hazır. Herkes QoreX'te veya başka bir cüzdanda ödeyebilir."* mesajını gösterir.
 4. **Bağlantıyı paylaş** veya **Bağlantıyı kopyala** seçeneğini kullanın.
 
-Bağlantı hesap anahtarınızla imzalanır, bu yüzden değiştirilmiş bir tutar veya adres algılanır. Anahtar, alıcı adrese ait olmalıdır: başka hiç kimse değiştirilmiş bir bağlantıyı sizin adınıza yeniden imzalayamaz. İmza yalnızca bağlantı üzerinde bir bütünlük kontrolüdür; ödemenin kendisi ödeyen tarafından normal şekilde, native lane'de hibrit imzayla imzalanır. Bağlantı biçimi `qorex://pay?v=1&...` şeklindedir ve tam ağı (mainnet veya testnet) adıyla belirtir.
+Bağlantı hesap anahtarınızla imzalanır, bu yüzden değiştirilmiş bir tutar veya adres algılanır. Anahtar, alıcı adrese ait olmalıdır: başka hiç kimse değiştirilmiş bir bağlantıyı sizin adınıza yeniden imzalayamaz. İmza yalnızca bağlantı üzerinde bir bütünlük kontrolüdür; ödemenin kendisi ödeyen tarafından normal şekilde, native lane'de hibrit imzayla imzalanır. Bağlantı biçimi `qorex://pay?v=1&...` şeklindedir ve tam ağı (mainnet veya testnet) adıyla belirtir. **Bağlantıyı paylaş** ve **Bağlantıyı kopyala** size QoreX'te açılan bir ödeme bağlantısı verir; bağlantı `https://link.qore.network/pay?` ile başlar.
 
 Uygulamanın Ana Sayfa ekranındaki **İste** düğmesi, belirli bir QoreX kullanıcısından @handle'ı ile istekte bulunur ([oturum açma](/qorex/account-and-dashboard#sign-in) ve kendi @handle'ınız gerekir). Oluşturulan bu istek imzalı bir bağlantı olarak da paylaşılabilir.
 

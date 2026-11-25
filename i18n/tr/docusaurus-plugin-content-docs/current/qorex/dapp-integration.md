@@ -59,7 +59,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 
 | Yetenek | Eklenti | Uygulama |
 |---|---|---|
-| `signAndBroadcast` | 0.3.5 | 1.2.1 (yöntem 1.2.0'dan itibaren mevcut) |
+| `signAndBroadcast` | 0.3.5 | 1.2.1 (yöntem 1.1.5'dan itibaren mevcut) |
 | `signDirectAddsPqcLayer` | 0.4.0 | 1.2.1 (davranış 1.2.0'dan itibaren) |
 | `signArbitrary` | 0.4.0 | 1.2.1 (yöntem 1.2.0'dan itibaren mevcut) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | uygulamada yok |

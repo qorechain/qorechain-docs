@@ -83,7 +83,7 @@ Chiedi a qualcuno un importo in QOR con un link firmato da condividere o copiare
 3. Tocca **Crea link**. QoreX firma la richiesta con la chiave del tuo account e mostra *"La tua richiesta è pronta. Chiunque può pagarla, in QoreX o in un altro wallet."*
 4. **Condividi link** o **Copia link**.
 
-Il link è firmato con la chiave del tuo account, quindi un importo o un indirizzo modificato viene rilevato. La chiave deve appartenere all'indirizzo che riceve: nessun altro può rifirmare a tuo nome un link alterato. La firma è solo un controllo di integrità del link; il pagamento stesso viene firmato normalmente da chi paga, con la firma ibrida sulla lane nativa. Il formato del link è `qorex://pay?v=1&...` e nomina la rete esatta (mainnet o testnet).
+Il link è firmato con la chiave del tuo account, quindi un importo o un indirizzo modificato viene rilevato. La chiave deve appartenere all'indirizzo che riceve: nessun altro può rifirmare a tuo nome un link alterato. La firma è solo un controllo di integrità del link; il pagamento stesso viene firmato normalmente da chi paga, con la firma ibrida sulla lane nativa. Il formato del link è `qorex://pay?v=1&...` e nomina la rete esatta (mainnet o testnet). **Condividi link** e **Copia link** forniscono un link di pagamento che si apre in QoreX; inizia con `https://link.qore.network/pay?`.
 
 Il pulsante **Richiedi** nella Home dell'app chiede a un determinato utente di QoreX tramite il suo @handle (richiede l'[accesso](/qorex/account-and-dashboard#sign-in) e un tuo @handle). Una volta creata, anche quella richiesta può essere condivisa come link firmato.
 

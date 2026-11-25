@@ -59,7 +59,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 
 | القدرة | الإضافة | التطبيق |
 |---|---|---|
-| `signAndBroadcast` | 0.3.5 | 1.2.1 (الطريقة موجودة من 1.2.0) |
+| `signAndBroadcast` | 0.3.5 | 1.2.1 (الطريقة موجودة من 1.1.5) |
 | `signDirectAddsPqcLayer` | 0.4.0 | 1.2.1 (السلوك من 1.2.0) |
 | `signArbitrary` | 0.4.0 | 1.2.1 (الطريقة موجودة من 1.2.0) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | ليست في التطبيق |

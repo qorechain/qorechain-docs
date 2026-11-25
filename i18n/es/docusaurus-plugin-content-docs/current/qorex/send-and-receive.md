@@ -83,7 +83,7 @@ Pide a alguien una cantidad de QOR con un enlace firmado que compartes o copias.
 3. Toca **Crear enlace**. QoreX firma la solicitud con tu propia clave de cuenta y muestra *"Tu solicitud está lista. Cualquiera puede pagarla, en QoreX o en otra cartera."*
 4. **Compartir enlace** o **Copiar enlace**.
 
-El enlace se firma con tu clave de cuenta, así que se detecta un importe o una dirección modificados. La clave debe pertenecer a la dirección que recibe: nadie más puede volver a firmar en tu nombre un enlace alterado. La firma es solo una comprobación de integridad del enlace; el pago en sí lo firma normalmente quien paga, con la firma híbrida en el carril nativo. El formato del enlace es `qorex://pay?v=1&...` y nombra la red exacta (mainnet o testnet).
+El enlace se firma con tu clave de cuenta, así que se detecta un importe o una dirección modificados. La clave debe pertenecer a la dirección que recibe: nadie más puede volver a firmar en tu nombre un enlace alterado. La firma es solo una comprobación de integridad del enlace; el pago en sí lo firma normalmente quien paga, con la firma híbrida en el carril nativo. El formato del enlace es `qorex://pay?v=1&...` y nombra la red exacta (mainnet o testnet). Lo que obtienes con **Compartir enlace** y **Copiar enlace** es un enlace de pago que se abre en QoreX; empieza por `https://link.qore.network/pay?`.
 
 El botón **Solicitar** de Inicio en la app pide a un usuario concreto de QoreX por su @handle (necesita [iniciar sesión](/qorex/account-and-dashboard#sign-in) y tu propio @handle). Una vez creada, esa solicitud también se puede compartir como enlace firmado.
 

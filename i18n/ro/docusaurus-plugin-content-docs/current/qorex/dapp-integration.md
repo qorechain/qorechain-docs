@@ -59,7 +59,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 
 | Capabilitate | Extensie | Aplicație |
 |---|---|---|
-| `signAndBroadcast` | 0.3.5 | 1.2.1 (metoda este prezentă din 1.2.0) |
+| `signAndBroadcast` | 0.3.5 | 1.2.1 (metoda este prezentă din 1.1.5) |
 | `signDirectAddsPqcLayer` | 0.4.0 | 1.2.1 (comportamentul din 1.2.0) |
 | `signArbitrary` | 0.4.0 | 1.2.1 (metoda este prezentă din 1.2.0) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | nu sunt în aplicație |

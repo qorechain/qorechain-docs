@@ -83,7 +83,7 @@ Cere cuiva o sumă de QOR cu un link semnat pe care îl distribui sau îl copiez
 3. Atinge **Creează linkul**. QoreX semnează cererea cu cheia propriului tău cont și arată *"Cererea ta e gata. Oricine o poate plăti, în QoreX sau în alt portofel."*
 4. **Distribuie linkul** sau **Copiază linkul**.
 
-Linkul este semnat cu cheia contului tău, așa că o sumă sau o adresă modificată este detectată. Cheia trebuie să aparțină adresei de primire: nimeni altcineva nu poate re-semna în numele tău un link modificat. Semnătura este doar o verificare a integrității linkului; plata însăși este semnată în mod normal de plătitor, cu semnătura hibridă pe lane-ul nativ. Formatul linkului este `qorex://pay?v=1&...` și numește rețeaua exactă (mainnet sau testnet).
+Linkul este semnat cu cheia contului tău, așa că o sumă sau o adresă modificată este detectată. Cheia trebuie să aparțină adresei de primire: nimeni altcineva nu poate re-semna în numele tău un link modificat. Semnătura este doar o verificare a integrității linkului; plata însăși este semnată în mod normal de plătitor, cu semnătura hibridă pe lane-ul nativ. Formatul linkului este `qorex://pay?v=1&...` și numește rețeaua exactă (mainnet sau testnet). Ce primești prin **Distribuie linkul** și **Copiază linkul** este un link de plată care se deschide în QoreX; începe cu `https://link.qore.network/pay?`.
 
 Butonul **Cere** de pe Acasă în aplicație cere unui anumit utilizator QoreX prin @handle (are nevoie de [autentificare](/qorex/account-and-dashboard#sign-in) și de propriul tău @handle). Odată creată, cererea respectivă poate fi distribuită și ca link semnat.
 

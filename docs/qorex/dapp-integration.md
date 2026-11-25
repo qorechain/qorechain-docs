@@ -59,7 +59,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 
 | Capability | Extension | App |
 |---|---|---|
-| `signAndBroadcast` | 0.3.5 | 1.2.1 (method present from 1.2.0) |
+| `signAndBroadcast` | 0.3.5 | 1.2.1 (method present from 1.1.5) |
 | `signDirectAddsPqcLayer` | 0.4.0 | 1.2.1 (behaviour from 1.2.0) |
 | `signArbitrary` | 0.4.0 | 1.2.1 (method present from 1.2.0) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | not in the app |

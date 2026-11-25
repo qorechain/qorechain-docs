@@ -59,7 +59,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 
 | 기능 | 확장 프로그램 | 앱 |
 |---|---|---|
-| `signAndBroadcast` | 0.3.5 | 1.2.1 (메서드는 1.2.0부터 존재) |
+| `signAndBroadcast` | 0.3.5 | 1.2.1 (메서드는 1.1.5부터 존재) |
 | `signDirectAddsPqcLayer` | 0.4.0 | 1.2.1 (동작은 1.2.0부터) |
 | `signArbitrary` | 0.4.0 | 1.2.1 (메서드는 1.2.0부터 존재) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | 앱에는 없음 |

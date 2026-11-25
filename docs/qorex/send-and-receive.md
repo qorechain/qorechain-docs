@@ -83,7 +83,7 @@ Ask someone for an amount of QOR with a signed link that you share or copy. It w
 3. Tap **Create link**. QoreX signs the request with your own account key and shows *"Your request is ready. Anyone can pay it, in QoreX or in another wallet."*
 4. **Share link** or **Copy link**.
 
-The link is signed with your account key, so a changed amount or address is detected. The key must belong to the receiving address: nobody else can re-sign an altered link in your name. The signature is an integrity check on the link only; the payment itself is signed normally by the payer, with the hybrid signature on the native lane. The link format is `qorex://pay?v=1&...` and it names the exact network (mainnet or testnet).
+The link is signed with your account key, so a changed amount or address is detected. The key must belong to the receiving address: nobody else can re-sign an altered link in your name. The signature is an integrity check on the link only; the payment itself is signed normally by the payer, with the hybrid signature on the native lane. The link format is `qorex://pay?v=1&...` and it names the exact network (mainnet or testnet). What **Share link** and **Copy link** give you is a payment link that opens in QoreX; it starts with `https://link.qore.network/pay?`.
 
 The **Request** button on the app's Home asks a particular QoreX user by their @handle (it needs [sign-in](/qorex/account-and-dashboard#sign-in) and your own @handle). Once created, that request can also be shared as a signed link.
 

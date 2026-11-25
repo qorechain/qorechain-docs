@@ -59,7 +59,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 
 | ケイパビリティ | 拡張機能 | アプリ |
 |---|---|---|
-| `signAndBroadcast` | 0.3.5 | 1.2.1（メソッドは 1.2.0 から存在） |
+| `signAndBroadcast` | 0.3.5 | 1.2.1（メソッドは 1.1.5 から存在） |
 | `signDirectAddsPqcLayer` | 0.4.0 | 1.2.1（動作は 1.2.0 から） |
 | `signArbitrary` | 0.4.0 | 1.2.1（メソッドは 1.2.0 から存在） |
 | `listAccounts`、`connectProofPicksAccount`、`executeRequest` | 0.3.x | アプリにはなし |
