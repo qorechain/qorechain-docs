@@ -64,7 +64,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 | `signArbitrary` | 0.4.0 | 1.2.1 (metoda este prezentă din 1.2.0) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | nu sunt în aplicație |
 
-Aplicația 1.2.0 are metodele, dar nu declară nicio capabilitate; ca să o acoperi, folosește ca rezervă `typeof window.qorex?.native?.signArbitrary === "function"`. `executeRequest` este puntea Dashboard, care funcționează doar pentru `dashboard.qorechain.io` (vezi [Puntea Dashboard](/qorex/browser-extension#dashboard-bridge)); celelalte site-uri nu au nevoie de ea. Build-urile 1.2.5 și 0.4.4 declară aceleași capabilități ca înainte.
+Aplicația 1.2.0 are metodele, dar nu declară nicio capabilitate; ca să o acoperi, folosește ca rezervă `typeof window.qorex?.native?.signArbitrary === "function"`. `executeRequest` este puntea Dashboard, care funcționează doar pentru `dashboard.qorechain.io` (vezi [Puntea Dashboard](/qorex/browser-extension#dashboard-bridge)); celelalte site-uri nu au nevoie de ea. Build-urile 1.2.5 și 0.4.5 declară aceleași capabilități ca înainte.
 
 **Extensie sau aplicație.** O pagină nu poate întreba cu care vorbește și nici nu ar trebui să aibă nevoie. Diferențele care contează sunt în tabelul de mai jos.
 
@@ -255,7 +255,7 @@ Browserul integrat al aplicației nu semnează tranzacții Solana. Solana pe Qor
 
 ## Când portofelul este blocat {#locked}
 
-Începând cu extensia 0.4.4 și Safari 1.8.2, o cerere de semnare făcută cât timp QoreX este blocat (nativă, EVM sau Solana) deschide portofelul pe ecranul de parolă, numind site-ul. După ce utilizatorul deblochează, fereastra se închide, iar cererea își afișează propria aprobare. Dacă utilizatorul închide în schimb fereastra, cererea este refuzată cu codul `4001`. Înainte, o astfel de cerere eșua imediat cu "wallet is locked".
+Începând cu extensia 0.4.5 și Safari 1.8.2, o cerere de semnare făcută cât timp QoreX este blocat (nativă, EVM sau Solana) deschide portofelul pe ecranul de parolă, numind site-ul. După ce utilizatorul deblochează, fereastra se închide, iar cererea își afișează propria aprobare. Dacă utilizatorul închide în schimb fereastra, cererea este refuzată cu codul `4001`. Înainte, o astfel de cerere eșua imediat cu "wallet is locked".
 
 - `enable`, `getKey`, `eth_requestAccounts` și metodele de semnare trezesc portofelul în acest fel.
 - Citirile pe care o pagină le face la încărcare (`eth_accounts`, `eth_chainId`, citiri din lanț) nu deschid niciodată o fereastră: `eth_accounts` returnează pur și simplu o listă goală.

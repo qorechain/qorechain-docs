@@ -12,7 +12,7 @@ QoreX entegrasyonları, [QoreX cüzdanının](/qorex/overview) bir EVM, Cosmos v
 Yapmadıkları şeyler: anahtar tutmazlar ve QoreX'i bugün olduğundan fazlası haline getirmezler. Üzerlerine bir şey inşa etmeden önce [Sınırlar ve bilinen sorunlar](#limits) bölümünü okuyun: QoreX'in yayında olan mağaza sürümleri, bu paketlerin bağlanabildiği şeylerin yalnızca bir kısmını destekler ve sınırlar orada belirtilmiştir.
 
 :::tip Bu paketler olmadan entegrasyon veya cüzdanın şu an ne yaptığını kontrol etme
-[Bir dApp'i QoreX ile entegre edin](/qorex/dapp-integration), cüzdanın kendisinin eksiksiz rehberidir: QoreX uygulaması 1.2.5, eklenti 0.4.4 ve Safari 1.8.2 için algılama, `signAndBroadcast`, cosmjs imzacıları, mesaj imzalama, EVM, Solana, hatalar ve bağlantılar. 0.1.0 paketleri 27 Ekim 2026'da yayımlandı ve cüzdan o zamandan beri yeni özellikler kazandı. Bu sayfa paketlerin nasıl davrandığını anlatır; cüzdanın ne yaptığı için güncel olan o rehberdir.
+[Bir dApp'i QoreX ile entegre edin](/qorex/dapp-integration), cüzdanın kendisinin eksiksiz rehberidir: QoreX uygulaması 1.2.5, eklenti 0.4.5 ve Safari 1.8.2 için algılama, `signAndBroadcast`, cosmjs imzacıları, mesaj imzalama, EVM, Solana, hatalar ve bağlantılar. 0.1.0 paketleri 27 Ekim 2026'da yayımlandı ve cüzdan o zamandan beri yeni özellikler kazandı. Bu sayfa paketlerin nasıl davrandığını anlatır; cüzdanın ne yaptığı için güncel olan o rehberdir.
 :::
 
 ## Yenilikler {#innovations}
@@ -49,7 +49,7 @@ Yapmadıkları şeyler: anahtar tutmazlar ve QoreX'i bugün olduğundan fazlası
 
 ### Cüzdanın destekledikleri {#qorex-today}
 
-[Bir dApp'i QoreX ile entegre edin](/qorex/dapp-integration), QoreX uygulaması 1.2.5, eklenti 0.4.4 ve Safari 1.8.2'nin her yüzeyde ne yanıtladığını listeler: [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [cosmjs imzacıları](/qorex/dapp-integration#cosmjs), [mesaj imzalama](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana) ve [hatalar ve olaylar](/qorex/dapp-integration#errors). QoreChain'in EVM lane'inde bir işlem, gönderenin kayıtlı bir ML-DSA-87 anahtarı ve bir EVM yetkilendirme penceresi olduğunda kabul edilir; işlemi kapsayan bir pencere yoksa QoreX'in onayı bir tane açar. Kullanıcı mainnet ile testnet arasında QoreX içinden geçiş yapar; dApp bunu değiştiremez.
+[Bir dApp'i QoreX ile entegre edin](/qorex/dapp-integration), QoreX uygulaması 1.2.5, eklenti 0.4.5 ve Safari 1.8.2'nin her yüzeyde ne yanıtladığını listeler: [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [cosmjs imzacıları](/qorex/dapp-integration#cosmjs), [mesaj imzalama](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana) ve [hatalar ve olaylar](/qorex/dapp-integration#errors). QoreChain'in EVM lane'inde bir işlem, gönderenin kayıtlı bir ML-DSA-87 anahtarı ve bir EVM yetkilendirme penceresi olduğunda kabul edilir; işlemi kapsayan bir pencere yoksa QoreX'in onayı bir tane açar. Kullanıcı mainnet ile testnet arasında QoreX içinden geçiş yapar; dApp bunu değiştiremez.
 
 ## Nasıl kullanılır {#how-to-use}
 

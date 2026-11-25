@@ -12,7 +12,7 @@ sidebar_position: 22
 ما لا تفعله: فهي لا تحتفظ بالمفاتيح، ولا تجعل QoreX أكثر مما هو عليه اليوم. اقرأ [الحدود والمشكلات المعروفة](#limits) قبل أن تبني عليها: فإصدارات المتاجر الحيّة من QoreX تدعم جزءًا مما يمكن ربط هذه الحزم به، والحدود مذكورة هناك.
 
 :::tip الدمج دون هذه الحزم، أو معرفة ما تفعله المحفظة الآن
-[دمج تطبيق لامركزي مع QoreX](/qorex/dapp-integration) هو الدليل الكامل للمحفظة نفسها: الاكتشاف، و`signAndBroadcast`، وموقّعو cosmjs، وتوقيع الرسائل، وEVM، وSolana، والأخطاء والروابط، لتطبيق QoreX 1.2.5 والإضافة 0.4.4 وSafari 1.8.2. نُشرت حزم 0.1.0 في 27 أكتوبر 2026، واكتسبت المحفظة ميزات منذ ذلك الحين. تصف هذه الصفحة كيف تتصرف الحزم؛ أما ما تفعله المحفظة فذلك الدليل هو المحدَّث بشأنه.
+[دمج تطبيق لامركزي مع QoreX](/qorex/dapp-integration) هو الدليل الكامل للمحفظة نفسها: الاكتشاف، و`signAndBroadcast`، وموقّعو cosmjs، وتوقيع الرسائل، وEVM، وSolana، والأخطاء والروابط، لتطبيق QoreX 1.2.5 والإضافة 0.4.5 وSafari 1.8.2. نُشرت حزم 0.1.0 في 27 أكتوبر 2026، واكتسبت المحفظة ميزات منذ ذلك الحين. تصف هذه الصفحة كيف تتصرف الحزم؛ أما ما تفعله المحفظة فذلك الدليل هو المحدَّث بشأنه.
 :::
 
 ## الابتكارات {#innovations}
@@ -49,7 +49,7 @@ sidebar_position: 22
 
 ### ما تدعمه المحفظة {#qorex-today}
 
-يسرد [دمج تطبيق لامركزي مع QoreX](/qorex/dapp-integration) ما يجيب به تطبيق QoreX 1.2.5 والإضافة 0.4.4 وSafari 1.8.2 على كل سطح: [EVM](/qorex/dapp-integration#evm)، و[`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast)، و[موقّعو cosmjs](/qorex/dapp-integration#cosmjs)، و[توقيع الرسائل](/qorex/dapp-integration#sign-arbitrary)، و[Solana](/qorex/dapp-integration#solana)، و[الأخطاء والأحداث](/qorex/dapp-integration#errors). وعلى مسار EVM في QoreChain تُقبل المعاملة عندما يكون للمرسل مفتاح ML-DSA-87 مسجّل ونافذة تفويض EVM؛ وتفتح موافقة QoreX واحدة للمعاملة عندما لا تغطيها أي نافذة. يبدّل المستخدم بين الشبكة الرئيسية والتجريبية داخل QoreX؛ ولا يستطيع الـ dApp تبديلها.
+يسرد [دمج تطبيق لامركزي مع QoreX](/qorex/dapp-integration) ما يجيب به تطبيق QoreX 1.2.5 والإضافة 0.4.5 وSafari 1.8.2 على كل سطح: [EVM](/qorex/dapp-integration#evm)، و[`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast)، و[موقّعو cosmjs](/qorex/dapp-integration#cosmjs)، و[توقيع الرسائل](/qorex/dapp-integration#sign-arbitrary)، و[Solana](/qorex/dapp-integration#solana)، و[الأخطاء والأحداث](/qorex/dapp-integration#errors). وعلى مسار EVM في QoreChain تُقبل المعاملة عندما يكون للمرسل مفتاح ML-DSA-87 مسجّل ونافذة تفويض EVM؛ وتفتح موافقة QoreX واحدة للمعاملة عندما لا تغطيها أي نافذة. يبدّل المستخدم بين الشبكة الرئيسية والتجريبية داخل QoreX؛ ولا يستطيع الـ dApp تبديلها.
 
 ## كيفية الاستخدام {#how-to-use}
 

@@ -9,7 +9,7 @@ sidebar_position: 2
 
 QoreX **tarayıcı uzantısı**, masaüstü QoreChain cüzdanıdır. **Bağımsız bir cüzdandır** (cüzdan oluşturabilir veya içe aktarabilir, QOR tutup gönderebilir, stake edebilir ve dApp'lere bağlanabilirsiniz) ve herhangi bir web sitesinin QoreX'i keşfetmesini ve her isteği açık, çözümlenmiş bir onaya dönüştürmesini sağlayan parçadır. QoreChain'i masaüstü tarayıcıdan kullanan herkes ve web uygulamasının bir QoreChain cüzdanıyla çalışmasını isteyen geliştiriciler içindir.
 
-Üç mağazada (Chrome, Firefox ve Safari) **yayında ve herkese açıktır** ve hepsi uzantı 0.4.4 sürümünü taşır. Bkz. [hangi sürüm nerede yayında](#versions).
+Üç mağazada (Chrome, Firefox ve Safari) **yayında ve herkese açıktır** ve hepsi uzantı 0.4.5 sürümünü taşır. Bkz. [hangi sürüm nerede yayında](#versions).
 
 ## Yenilikler {#innovations}
 
@@ -53,13 +53,13 @@ Her mağazadaki güncel sürüm:
 
 | Mağaza | Güncel sürüm |
 |---|---|
-| Chrome Web Store | 0.4.4 |
-| Firefox Add-ons | 0.4.4 |
-| Safari (Mac App Store, **QoreX Wallet** macOS uygulaması) | 1.8.2, 0.4.4 uzantısını taşır (Mac App Store kendi `1.x` numaralandırmasını kullanır) |
+| Chrome Web Store | 0.4.5 |
+| Firefox Add-ons | 0.4.5 |
+| Safari (Mac App Store, **QoreX Wallet** macOS uygulaması) | 1.8.2, 0.4.5 uzantısını taşır (Mac App Store kendi `1.x` numaralandırmasını kullanır) |
 
 Mağaza incelemeleri farklı zamanlarda sonuçlandığı için bir mağaza diğerinden daha eski bir derleme sunabilir; mağaza listelemesi her zaman güncel sürümünü gösterir. Ayrıca bkz. [Hangi sürüm nerede yayında](/qorex/overview#versions).
 
-Uzantı 0.4.x şunları ekler: [otomatik kilit](#unlock), [her transferden önce inceleme](#send), [CSV dışa aktarımlı Geçmiş](#history), [ödeme istekleri](#pay-requests), [kişiler](#contacts), [Paramın korunması](#protection), [kuantum sonrası anahtar onarımı, rotasyonu ve multisig](#pqc-care), ayrı [staking ekranları](#stake), [coin ile başlayan bir Al ekranı](#receive), [dApp'ler için EVM imzalama](#standards), [daha güvenli EVM erişim pencereleri](#evm-window) ve [Geliştirici araçları](#developer-tools). Sürüme göre tam liste [1.2.5 / 0.4.4 yapılarının ekledikleri](/qorex/overview#whats-new-125) ve onu izleyen listelerdedir.
+Uzantı 0.4.x şunları ekler: [otomatik kilit](#unlock), [her transferden önce inceleme](#send), [CSV dışa aktarımlı Geçmiş](#history), [ödeme istekleri](#pay-requests), [kişiler](#contacts), [Paramın korunması](#protection), [kuantum sonrası anahtar onarımı, rotasyonu ve multisig](#pqc-care), ayrı [staking ekranları](#stake), [coin ile başlayan bir Al ekranı](#receive), [dApp'ler için EVM imzalama](#standards), [daha güvenli EVM erişim pencereleri](#evm-window) ve [Geliştirici araçları](#developer-tools). Sürüme göre tam liste [1.2.5 / 0.4.5 yapılarının ekledikleri](/qorex/overview#whats-new-125) ve onu izleyen listelerdedir.
 
 0.2.6'dan bu yana uzantıya ayrıca şunlar eklendi: [tek parolayla birden fazla cüzdan](#wallets), [elle eklediğiniz Ethereum tarzı bir hesap](#coin60), [Talep et ve yeniden stake et](#stake), bir **Stake'ten çıkış sürüyor** listesi, [bir token'ı kontratıyla ekleme](#custom-tokens), [her ağda Al](#receive), [İptal özellikli bağlı siteler](#connected-sites), [EVM erişim penceresi](#evm-window), [dApp'ler için `signAndBroadcast`](#sign-and-broadcast) ve her mesajı, ücreti ve son kullanma süresini gösteren onay ekranları.
 
@@ -341,7 +341,7 @@ Uzantının `manifest.json` dosyası şunları beyan eder:
 ```
 
 - **`storage`** - şifrelenmiş kasayı, köken başına bağlantı onaylarınızı ve cüzdanınızın kendi ayarlarını ve listelerini (kişiler gibi) **yerel olarak**, uzantı depolamasında saklar.
-- **`nativeMessaging`** - 0.4.4'te yenidir ve yalnızca Geliştirici modundaki [Yapay zeka ajanları](#developer-tools) aracı tarafından, kendi bilgisayarınızdaki bir yardımcı programla (henüz yayımlanmadı) konuşmak için kullanılır. QoreX bu bağlantıyı yalnızca o araçta **Bu bilgisayarda yapay zeka ajanı bağlantılarına izin ver** seçeneğini açtıktan sonra kurar. **Safari** paketi bu izni beyan etmez.
+- **`nativeMessaging`** - 0.4.5'te yenidir ve yalnızca Geliştirici modundaki [Yapay zeka ajanları](#developer-tools) aracı tarafından, kendi bilgisayarınızdaki bir yardımcı programla (henüz yayımlanmadı) konuşmak için kullanılır. QoreX bu bağlantıyı yalnızca o araçta **Bu bilgisayarda yapay zeka ajanı bağlantılarına izin ver** seçeneğini açtıktan sonra kurar. **Safari** paketi bu izni beyan etmez.
 - **`host_permissions: []`** - QoreX **hiçbir** host izni beyan etmez. Sizin adınıza rastgele sitelere kökenler arası ağ isteği yapma yetkisi istemez.
 - **`web_accessible_resources`** - sayfaların, sağlayıcıyı sunan küçük betik olan QoreX'in kendi `inpage.js` dosyasını yüklemesine izin verir. `use_dynamic_url` ona oturum başına bir adres verir, böylece siteler uzantıyı yoklayarak parmak izini çıkaramaz.
 - **`content_scripts` eşleşmesi `<all_urls>`** - Firefox'un *"Tüm web sitelerindeki verilerinize erişme"* demesinin dürüst nedeni budur. QoreX, **her sayfaya** küçük bir sağlayıcı betiği (`content.js` → `inpage.js`) enjekte eder. Tüm sitelerde çalışan bir içerik betiği teknik olarak sayfayı okuyabilir ve tarayıcılar bu yetkiyi tam olarak bu ifadeyle tanımlar - ister `host_permissions` üzerinden gelsin, ister bir içerik betiği eşleşmesinden.
@@ -354,7 +354,7 @@ Uzantının `manifest.json` dosyası şunları beyan eder:
 
 Bir dApp, QoreX'i **EIP-6963** üzerinden keşfeder (isteği duyurun, `rdns` değeri `network.qore.qorex` olan cüzdanı seçin) ve ardından dönen EIP-1193 sağlayıcısını kullanır; QoreChain **Native** hattı için `window.qorex.native` kullanır ve bu derlemenin neyi desteklediğini görmek için `capabilities` değerini okur. QoreX `window.ethereum` veya `window.keplr` değerini asla ayarlamaz. Kodlu tam geliştirici rehberi kendi sayfasındadır: [Bir dApp'i QoreX ile entegre edin](/qorex/dapp-integration) ([QoreX'i algılama](/qorex/dapp-integration#detection) ve [Bağlanma](/qorex/dapp-integration#connect) bölümlerine bakın). Bir web uygulamasında [wallet adapter](/developer-tools/wallet-adapter) bu tespiti sizin yerinize sarmalar ve [QoreX geliştirici kiti](/developer-tools/qorex-integrations) uygulama tarafı entegrasyonunu kapsar. (`@qorechain/connect` kullanımdan kaldırılmıştır; üzerinde yeni çalışma başlatmayın.)
 
-Onaylar **köken başınadır**: bir siteye ilk bağlantı, kökeni gösteren bir onay penceresi açar, onaylamak yalnızca genel adresinizi açığa çıkarır ve bir sitenin onayı bir başkasına hiçbir yetki vermez. Onaylar cüzdan başına tutulur, siz **Bağlı siteler** altından iptal edene kadar kalıcıdır ve bir sitenin bekleyen bir isteği olabilir (toplamda üç); cüzdan değiştirmek veya kilitlemek bekleyen isteklere "hayır" yanıtı verir. 0.4.4'ten itibaren, QoreX kilitliyken yapılan bir sitenin imza isteği siteyi adıyla belirterek parola ekranını açar ve kilidi açtıktan sonra onayını gösterir; pencereyi kapatmak isteği reddeder. Bkz. [Onay penceresi neyi gösterir](/qorex/security-and-recovery#approvals).
+Onaylar **köken başınadır**: bir siteye ilk bağlantı, kökeni gösteren bir onay penceresi açar, onaylamak yalnızca genel adresinizi açığa çıkarır ve bir sitenin onayı bir başkasına hiçbir yetki vermez. Onaylar cüzdan başına tutulur, siz **Bağlı siteler** altından iptal edene kadar kalıcıdır ve bir sitenin bekleyen bir isteği olabilir (toplamda üç); cüzdan değiştirmek veya kilitlemek bekleyen isteklere "hayır" yanıtı verir. 0.4.5'ten itibaren, QoreX kilitliyken yapılan bir sitenin imza isteği siteyi adıyla belirterek parola ekranını açar ve kilidi açtıktan sonra onayını gösterir; pencereyi kapatmak isteği reddeder. Bkz. [Onay penceresi neyi gösterir](/qorex/security-and-recovery#approvals).
 
 ### Dashboard köprüsü (v0.1.5, v0.2.2'de genişletildi) {#dashboard-bridge}
 
@@ -388,9 +388,9 @@ QoreX'in kendi başlattığı her Native QOR transferi iki kez imzalanır: klasi
 
 | Mağaza | Listeleme | Güncel sürüm | Bağlantı |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| Firefox Add-ons | `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Mac App Store (Safari) | **QoreX Wallet**, uygulama 1.8.2 | uzantı 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| Mac App Store (Safari) | **QoreX Wallet**, uygulama 1.8.2 | uzantı 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 
 QoreX kaynak kodu herkese açık değildir. Mağaza listelemeleri her zaman güncel sürümü gösterir.
 

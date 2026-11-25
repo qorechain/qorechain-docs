@@ -71,9 +71,9 @@ QoreX este non-custodial: QoreChain Association nu poate recupera, reseta sau re
 |---|---|---|---|
 | Aplicația iOS | App Store, **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
 | Aplicația Android | Google Play, `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| Extensia Chrome | Chrome Web Store, **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| Extensia Firefox | Firefox Add-ons, `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Extensia Safari | Mac App Store, **QoreX Wallet** (id 6794132220) | aplicația 1.8.2, extensia 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Extensia Chrome | Chrome Web Store, **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Extensia Firefox | Firefox Add-ons, `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| Extensia Safari | Mac App Store, **QoreX Wallet** (id 6794132220) | aplicația 1.8.2, extensia 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | Kitul pentru dezvoltatori | șase pachete npm, vezi [Pentru dezvoltatori](#developers) | 0.1.0 | [Integrări QoreX](/developer-tools/qorex-integrations) |
 
 Revizuirea din magazine se desfășoară după propriul program, astfel încât un magazin poate servi o versiune mai veche decât altul; vezi [Ce versiune este disponibilă unde](#versions). Codul sursă QoreX nu este public.
@@ -147,13 +147,13 @@ Revizuirea din magazine se desfășoară după propriul program, astfel încât 
 |---|---|---|
 | Apple App Store (iOS) | 1.2.5 | |
 | Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.4 | |
-| Firefox Add-ons | 0.4.4 | |
-| Safari (Mac App Store) | 1.8.2, cu extensia 0.4.4 | Mac App Store folosește propria numerotare `1.x` |
+| Chrome Web Store | 0.4.5 | |
+| Firefox Add-ons | 0.4.5 | |
+| Safari (Mac App Store) | 1.8.2, cu extensia 0.4.5 | Mac App Store folosește propria numerotare `1.x` |
 
 Magazinele afișează întotdeauna versiunea lor curentă, iar un magazin care încă servește o versiune mai veche se va actualiza automat. Versiunile pe care un magazin nu le-a lansat încă nu sunt descrise în acest manual ca fiind disponibile.
 
-### Ce adaugă versiunile 1.2.5 / 0.4.4 {#whats-new-125}
+### Ce adaugă versiunile 1.2.5 / 0.4.5 {#whats-new-125}
 
 Pentru utilizarea de zi cu zi (aplicație și extensie, mainnet și testnet dacă nu se specifică altfel):
 

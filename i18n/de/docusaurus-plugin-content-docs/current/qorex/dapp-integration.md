@@ -64,7 +64,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 | `signArbitrary` | 0.4.0 | 1.2.1 (Methode ab 1.2.0 vorhanden) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | nicht in der App |
 
-App 1.2.0 hat die Methoden, deklariert aber keine Fähigkeiten; um sie abzudecken, greifen Sie auf `typeof window.qorex?.native?.signArbitrary === "function"` zurück. `executeRequest` ist die Dashboard-Brücke, die nur für `dashboard.qorechain.io` funktioniert (siehe [Dashboard-Brücke](/qorex/browser-extension#dashboard-bridge)); andere Websites benötigen sie nicht. Die Builds 1.2.5 und 0.4.4 deklarieren dieselben Fähigkeiten wie zuvor.
+App 1.2.0 hat die Methoden, deklariert aber keine Fähigkeiten; um sie abzudecken, greifen Sie auf `typeof window.qorex?.native?.signArbitrary === "function"` zurück. `executeRequest` ist die Dashboard-Brücke, die nur für `dashboard.qorechain.io` funktioniert (siehe [Dashboard-Brücke](/qorex/browser-extension#dashboard-bridge)); andere Websites benötigen sie nicht. Die Builds 1.2.5 und 0.4.5 deklarieren dieselben Fähigkeiten wie zuvor.
 
 **Erweiterung oder App.** Eine Seite kann nicht erfragen, mit welcher von beiden sie spricht, und sollte das auch nicht müssen. Die relevanten Unterschiede stehen in der folgenden Tabelle.
 
@@ -255,7 +255,7 @@ Der In-App-Browser der App signiert keine Solana-Transaktionen. Solana auf QoreC
 
 ## Wenn die Wallet gesperrt ist {#locked}
 
-Ab Erweiterung 0.4.4 und Safari 1.8.2 öffnet eine Signaturanfrage, die gestellt wird, während QoreX gesperrt ist (nativ, EVM oder Solana), die Wallet auf dem Passwortbildschirm und nennt die Website. Nach dem Entsperren durch den Nutzer schließt sich das Fenster, und die Anfrage zeigt ihre eigene Freigabe. Schließt der Nutzer stattdessen das Fenster, wird die Anfrage mit Code `4001` abgelehnt. Zuvor schlug eine solche Anfrage sofort mit „wallet is locked“ fehl.
+Ab Erweiterung 0.4.5 und Safari 1.8.2 öffnet eine Signaturanfrage, die gestellt wird, während QoreX gesperrt ist (nativ, EVM oder Solana), die Wallet auf dem Passwortbildschirm und nennt die Website. Nach dem Entsperren durch den Nutzer schließt sich das Fenster, und die Anfrage zeigt ihre eigene Freigabe. Schließt der Nutzer stattdessen das Fenster, wird die Anfrage mit Code `4001` abgelehnt. Zuvor schlug eine solche Anfrage sofort mit „wallet is locked“ fehl.
 
 - `enable`, `getKey`, `eth_requestAccounts` und die Signiermethoden wecken die Wallet auf diese Weise.
 - Lesezugriffe, die eine Seite beim Laden ausführt (`eth_accounts`, `eth_chainId`, Chain-Lesezugriffe), öffnen nie ein Fenster: `eth_accounts` liefert einfach eine leere Liste.

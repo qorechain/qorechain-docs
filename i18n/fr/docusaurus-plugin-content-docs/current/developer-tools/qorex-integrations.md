@@ -12,7 +12,7 @@ Les intégrations QoreX sont six petits paquets npm destinés aux développeurs 
 Ce qu'ils ne font pas : ils ne détiennent pas de clés, et ils ne font pas de QoreX davantage que ce qu'il est aujourd'hui. Lisez [Limites et problèmes connus](#limits) avant de construire dessus : les versions publiées de QoreX dans les stores prennent en charge une partie seulement de ce à quoi ces paquets peuvent être reliés, et les limites y sont énoncées.
 
 :::tip Intégrer sans ces paquets, ou vérifier ce que le portefeuille fait aujourd'hui
-[Intégrer une dApp à QoreX](/qorex/dapp-integration) est le guide complet du portefeuille lui-même : détection, `signAndBroadcast`, signataires cosmjs, signature de message, EVM, Solana, erreurs et liens, pour l'application QoreX 1.2.5, l'extension 0.4.4 et Safari 1.8.2. Les paquets 0.1.0 ont été publiés le 27 octobre 2026, et le portefeuille a gagné des fonctionnalités depuis. Cette page décrit le comportement des paquets ; pour ce que fait le portefeuille, c'est ce guide qui est à jour.
+[Intégrer une dApp à QoreX](/qorex/dapp-integration) est le guide complet du portefeuille lui-même : détection, `signAndBroadcast`, signataires cosmjs, signature de message, EVM, Solana, erreurs et liens, pour l'application QoreX 1.2.5, l'extension 0.4.5 et Safari 1.8.2. Les paquets 0.1.0 ont été publiés le 27 octobre 2026, et le portefeuille a gagné des fonctionnalités depuis. Cette page décrit le comportement des paquets ; pour ce que fait le portefeuille, c'est ce guide qui est à jour.
 :::
 
 ## Innovations {#innovations}
@@ -49,7 +49,7 @@ Ce qu'ils ne font pas : ils ne détiennent pas de clés, et ils ne font pas de Q
 
 ### Ce que le portefeuille prend en charge {#qorex-today}
 
-[Intégrer une dApp à QoreX](/qorex/dapp-integration) liste ce que l'application QoreX 1.2.5, l'extension 0.4.4 et Safari 1.8.2 répondent sur chaque surface : [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [signataires cosmjs](/qorex/dapp-integration#cosmjs), [signature de message](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana) et [erreurs et événements](/qorex/dapp-integration#errors). Sur la voie EVM de QoreChain, une transaction est acceptée quand l'expéditeur a une clé ML-DSA-87 enregistrée et une fenêtre d'autorisation EVM ; l'approbation de QoreX en ouvre une pour la transaction quand aucune ne la couvre. L'utilisateur bascule entre mainnet et testnet dans QoreX ; la dApp ne peut pas changer de réseau.
+[Intégrer une dApp à QoreX](/qorex/dapp-integration) liste ce que l'application QoreX 1.2.5, l'extension 0.4.5 et Safari 1.8.2 répondent sur chaque surface : [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [signataires cosmjs](/qorex/dapp-integration#cosmjs), [signature de message](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana) et [erreurs et événements](/qorex/dapp-integration#errors). Sur la voie EVM de QoreChain, une transaction est acceptée quand l'expéditeur a une clé ML-DSA-87 enregistrée et une fenêtre d'autorisation EVM ; l'approbation de QoreX en ouvre une pour la transaction quand aucune ne la couvre. L'utilisateur bascule entre mainnet et testnet dans QoreX ; la dApp ne peut pas changer de réseau.
 
 ## Comment l'utiliser {#how-to-use}
 

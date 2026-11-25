@@ -9,7 +9,7 @@ sidebar_position: 2
 
 QoreX の **ブラウザ拡張機能** は、デスクトップ向けの QoreChain ウォレットです。**単体で完結するウォレット**であり(ウォレットの作成/インポート、QOR の保有・送金・ステーキング、dApp との接続ができます)、あらゆるウェブサイトが QoreX を検出し、すべてのリクエストを明示的にデコードされた承認へと変える役割も担っています。デスクトップブラウザから QoreChain を使うすべての人と、自分のウェブアプリを QoreChain ウォレットに対応させたい開発者を対象としています。
 
-3つのストア(Chrome、Firefox、Safari)で **公開・提供中** で、いずれも拡張機能 0.4.4 を提供しています。[どのバージョンがどこで提供されているか](#versions)を参照してください。
+3つのストア(Chrome、Firefox、Safari)で **公開・提供中** で、いずれも拡張機能 0.4.5 を提供しています。[どのバージョンがどこで提供されているか](#versions)を参照してください。
 
 ## 革新的な点 {#innovations}
 
@@ -53,13 +53,13 @@ QoreX の **ブラウザ拡張機能** は、デスクトップ向けの QoreCha
 
 | ストア | 現在のバージョン |
 |---|---|
-| Chrome ウェブストア | 0.4.4 |
-| Firefox アドオン | 0.4.4 |
-| Safari(Mac App Store、**QoreX Wallet** macOS アプリ) | 1.8.2、拡張機能 0.4.4 を内蔵(Mac App Store は独自の `1.x` 番号体系を使用) |
+| Chrome ウェブストア | 0.4.5 |
+| Firefox アドオン | 0.4.5 |
+| Safari(Mac App Store、**QoreX Wallet** macOS アプリ) | 1.8.2、拡張機能 0.4.5 を内蔵(Mac App Store は独自の `1.x` 番号体系を使用) |
 
 ストアの審査完了時期はそれぞれ異なるため、ストアによっては他のストアより古いビルドが提供されることがあります。ストアの掲載ページには常に現在のバージョンが表示されます。[どのバージョンがどこで提供されているか](/qorex/overview#versions)も参照してください。
 
-拡張機能 0.4.x では、[自動ロック](#unlock)、[すべての送金前の確認画面](#send)、[CSV 書き出し付きの履歴](#history)、[支払いリクエスト](#pay-requests)、[連絡先](#contacts)、[資産の保護状況](#protection)、[ポスト量子鍵の修復、ローテーション、マルチシグ](#pqc-care)、個別の[ステーキング画面](#stake)、[コインを先に選ぶ受け取り画面](#receive)、[dApp 向けの EVM 署名](#standards)、[より安全な EVM アクセスウィンドウ](#evm-window)、[開発者ツール](#developer-tools)が追加されます。バージョンごとの完全な一覧は、[1.2.5 / 0.4.4 ビルドの追加点](/qorex/overview#whats-new-125)とそれに続く一覧にあります。
+拡張機能 0.4.x では、[自動ロック](#unlock)、[すべての送金前の確認画面](#send)、[CSV 書き出し付きの履歴](#history)、[支払いリクエスト](#pay-requests)、[連絡先](#contacts)、[資産の保護状況](#protection)、[ポスト量子鍵の修復、ローテーション、マルチシグ](#pqc-care)、個別の[ステーキング画面](#stake)、[コインを先に選ぶ受け取り画面](#receive)、[dApp 向けの EVM 署名](#standards)、[より安全な EVM アクセスウィンドウ](#evm-window)、[開発者ツール](#developer-tools)が追加されます。バージョンごとの完全な一覧は、[1.2.5 / 0.4.5 ビルドの追加点](/qorex/overview#whats-new-125)とそれに続く一覧にあります。
 
 0.2.6 以降、拡張機能には次の機能も追加されました: [1つのパスワードで複数のウォレット](#wallets)、[手動で追加するイーサリアム形式のアカウント](#coin60)、[受け取って再ステーク](#stake)、**アンステーク処理中**の一覧、[コントラクトによるトークンの追加](#custom-tokens)、[任意のネットワークでの受け取り](#receive)、[取り消し可能な接続済みサイト](#connected-sites)、[EVM アクセスウィンドウ](#evm-window)、[dApp 向けの `signAndBroadcast`](#sign-and-broadcast)、そしてすべてのメッセージ・手数料・有効期限を表示する承認画面。
 
@@ -341,7 +341,7 @@ QoreX は、単に信頼されるだけでなく検証可能であるように�
 ```
 
 - **`storage`** - 暗号化されたボルト、オリジンごとの接続承認、ウォレット自体の設定と一覧(連絡先など)を拡張機能のストレージに**ローカルに**保存します。
-- **`nativeMessaging`** - 0.4.4 で追加され、開発者モードの [AI エージェント](#developer-tools)ツールだけが、自分のコンピューター上のコンパニオンプログラム(未公開)と通信するために使います。QoreX がその接続を開くのは、そのツールで**このコンピューターでAIエージェントの接続を許可する**をオンにした後だけです。**Safari** パッケージはこの権限を宣言していません。
+- **`nativeMessaging`** - 0.4.5 で追加され、開発者モードの [AI エージェント](#developer-tools)ツールだけが、自分のコンピューター上のコンパニオンプログラム(未公開)と通信するために使います。QoreX がその接続を開くのは、そのツールで**このコンピューターでAIエージェントの接続を許可する**をオンにした後だけです。**Safari** パッケージはこの権限を宣言していません。
 - **`host_permissions: []`** - QoreX は**いかなる**ホスト権限も宣言していません。あなたに代わって任意のサイトへクロスオリジンのネットワークリクエストを行う能力は要求していません。
 - **`web_accessible_resources`** - ページが QoreX 自身の `inpage.js`(プロバイダーを公開する小さなスクリプト)を読み込めるようにします。`use_dynamic_url` により、セッションごとのアドレスが割り当てられるため、サイトが存在を探ることで拡張機能をフィンガープリントすることはできません。
 - **`content_scripts` の matches が `<all_urls>`** - これが、Firefox が「すべてのウェブサイトのデータへのアクセス」と表示する正直な理由です。QoreX は小さなプロバイダースクリプト(`content.js` → `inpage.js`)を**すべてのページ**に注入します。すべてのサイトで動作するコンテンツスクリプトは、技術的にはページを読み取ることが**可能**であり、ブラウザは、その能力の由来が `host_permissions` であってもコンテンツスクリプトのマッチであっても、まさにその文言で説明します。
@@ -354,7 +354,7 @@ QoreX は、単に信頼されるだけでなく検証可能であるように�
 
 dApp は **EIP-6963** を通じて QoreX を検出し(リクエストをアナウンスし、`rdns` が `network.qore.qorex` のウォレットを選びます)、返された EIP-1193 プロバイダーを使います。QoreChain の **Native** レーンには `window.qorex.native` を使い、このビルドの対応機能は `capabilities` を読んで確認します。QoreX が `window.ethereum` や `window.keplr` を設定することはありません。コード付きの完全な開発者ガイドは専用ページにあります: [dApp を QoreX と連携する](/qorex/dapp-integration)([QoreX を検出する](/qorex/dapp-integration#detection)と[接続](/qorex/dapp-integration#connect)を参照)。ウェブアプリでは、[ウォレットアダプター](/developer-tools/wallet-adapter)がこの検出をラップして提供し、[QoreX デベロッパーキット](/developer-tools/qorex-integrations)がアプリ側の統合を扱います。(`@qorechain/connect` は非推奨です。これを使った新しい作業は始めないでください。)
 
-承認は**オリジンごと**に行われます。あるサイトへの最初の接続で、そのオリジンを示す承認ポップアップが開き、承認しても公開されるのはあなたの公開アドレスのみで、あるサイトへの承認が他のサイトに何かを許可することはありません。承認はウォレットごとに保持され、**接続済みサイト**で取り消すまで保持されます。1つのサイトが待機させられるリクエストは1件です(合計で3件まで)。ウォレットの切り替えやロックを行うと、待機中のリクエストには「拒否」が返されます。0.4.4 以降、QoreX がロックされている間のサイトの署名リクエストは、サイト名を表示したパスワード画面を開き、ロック解除後に承認画面を表示します。ウィンドウを閉じると拒否されます。[承認ウィンドウに表示される内容](/qorex/security-and-recovery#approvals)を参照してください。
+承認は**オリジンごと**に行われます。あるサイトへの最初の接続で、そのオリジンを示す承認ポップアップが開き、承認しても公開されるのはあなたの公開アドレスのみで、あるサイトへの承認が他のサイトに何かを許可することはありません。承認はウォレットごとに保持され、**接続済みサイト**で取り消すまで保持されます。1つのサイトが待機させられるリクエストは1件です(合計で3件まで)。ウォレットの切り替えやロックを行うと、待機中のリクエストには「拒否」が返されます。0.4.5 以降、QoreX がロックされている間のサイトの署名リクエストは、サイト名を表示したパスワード画面を開き、ロック解除後に承認画面を表示します。ウィンドウを閉じると拒否されます。[承認ウィンドウに表示される内容](/qorex/security-and-recovery#approvals)を参照してください。
 
 ### Dashboard ブリッジ(v0.1.5、v0.2.2 で拡張){#dashboard-bridge}
 
@@ -388,9 +388,9 @@ QoreX 自身が開始するすべてのネイティブ QOR 送金は、`@qorecha
 
 | ストア | 掲載名 | 現在のバージョン | リンク |
 |---|---|---|---|
-| Chrome ウェブストア | **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| Firefox アドオン | `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Mac App Store(Safari) | **QoreX Wallet**、アプリ 1.8.2 | 拡張機能 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Chrome ウェブストア | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Firefox アドオン | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| Mac App Store(Safari) | **QoreX Wallet**、アプリ 1.8.2 | 拡張機能 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 
 QoreX のソースコードは公開されていません。ストアの掲載ページには常に現在のバージョンが表示されます。
 

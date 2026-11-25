@@ -64,7 +64,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 | `signArbitrary` | 0.4.0 | 1.2.1 (الطريقة موجودة من 1.2.0) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | ليست في التطبيق |
 
-في التطبيق 1.2.0 الطرق موجودة لكنه لا يعلن أي قدرات؛ ولتغطيته ارجع إلى `typeof window.qorex?.native?.signArbitrary === "function"`. أما `executeRequest` فهو جسر Dashboard، ويعمل لـ `dashboard.qorechain.io` فقط (راجع [جسر Dashboard](/qorex/browser-extension#dashboard-bridge))؛ ولا تحتاج إليه المواقع الأخرى. وتعلن البنيتان 1.2.5 و0.4.4 القدرات نفسها كما من قبل.
+في التطبيق 1.2.0 الطرق موجودة لكنه لا يعلن أي قدرات؛ ولتغطيته ارجع إلى `typeof window.qorex?.native?.signArbitrary === "function"`. أما `executeRequest` فهو جسر Dashboard، ويعمل لـ `dashboard.qorechain.io` فقط (راجع [جسر Dashboard](/qorex/browser-extension#dashboard-bridge))؛ ولا تحتاج إليه المواقع الأخرى. وتعلن البنيتان 1.2.5 و0.4.5 القدرات نفسها كما من قبل.
 
 **الإضافة أم التطبيق.** لا تستطيع الصفحة أن تسأل أيهما تخاطب، ولا ينبغي أن تحتاج إلى ذلك. والفروق المهمة في الجدول أدناه.
 
@@ -255,7 +255,7 @@ const hash = await qorex.provider.request({
 
 ## عندما تكون المحفظة مقفلة {#locked}
 
-بدءًا من الإضافة 0.4.4 وSafari 1.8.2، فإن طلب التوقيع المقدَّم أثناء قفل QoreX (Native أو EVM أو Solana) يفتح المحفظة على شاشة كلمة المرور مع تسمية الموقع. وبعد أن يفتح المستخدم القفل، تُغلق النافذة ويعرض الطلب موافقته الخاصة. وإذا أغلق المستخدم النافذة بدلًا من ذلك، يُرفض الطلب بالرمز `4001`. وقبل ذلك كان مثل هذا الطلب يفشل فورًا بـ "wallet is locked".
+بدءًا من الإضافة 0.4.5 وSafari 1.8.2، فإن طلب التوقيع المقدَّم أثناء قفل QoreX (Native أو EVM أو Solana) يفتح المحفظة على شاشة كلمة المرور مع تسمية الموقع. وبعد أن يفتح المستخدم القفل، تُغلق النافذة ويعرض الطلب موافقته الخاصة. وإذا أغلق المستخدم النافذة بدلًا من ذلك، يُرفض الطلب بالرمز `4001`. وقبل ذلك كان مثل هذا الطلب يفشل فورًا بـ "wallet is locked".
 
 - توقظ `enable` و`getKey` و`eth_requestAccounts` وطرق التوقيع المحفظة بهذه الطريقة.
 - عمليات القراءة التي تجريها الصفحة عند التحميل (`eth_accounts` و`eth_chainId` وقراءات السلسلة) لا تفتح نافذة أبدًا: فـ `eth_accounts` تعيد قائمة فارغة فقط.

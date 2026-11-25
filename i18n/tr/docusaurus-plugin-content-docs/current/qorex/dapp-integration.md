@@ -64,7 +64,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 | `signArbitrary` | 0.4.0 | 1.2.1 (yöntem 1.2.0'dan itibaren mevcut) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | uygulamada yok |
 
-Uygulama 1.2.0'da yöntemler vardır ancak hiçbir yetenek bildirmez; onu da kapsamak için `typeof window.qorex?.native?.signArbitrary === "function"` kontrolüne geri dönün. `executeRequest`, yalnızca `dashboard.qorechain.io` için çalışan Dashboard köprüsüdür ([Dashboard köprüsü](/qorex/browser-extension#dashboard-bridge) bölümüne bakın); diğer sitelerin buna ihtiyacı yoktur. 1.2.5 ve 0.4.4 yapıları öncekilerle aynı yetenekleri bildirir.
+Uygulama 1.2.0'da yöntemler vardır ancak hiçbir yetenek bildirmez; onu da kapsamak için `typeof window.qorex?.native?.signArbitrary === "function"` kontrolüne geri dönün. `executeRequest`, yalnızca `dashboard.qorechain.io` için çalışan Dashboard köprüsüdür ([Dashboard köprüsü](/qorex/browser-extension#dashboard-bridge) bölümüne bakın); diğer sitelerin buna ihtiyacı yoktur. 1.2.5 ve 0.4.5 yapıları öncekilerle aynı yetenekleri bildirir.
 
 **Eklenti mi uygulama mı.** Bir sayfa hangisiyle konuştuğunu soramaz ve sormasına da gerek olmamalıdır. Önemli farklar aşağıdaki tablodadır.
 
@@ -255,7 +255,7 @@ Uygulamanın uygulama içi tarayıcısı Solana işlemlerini imzalamaz. QoreChai
 
 ## Cüzdan kilitliyken {#locked}
 
-Eklenti 0.4.4 ve Safari 1.8.2'den itibaren, QoreX kilitliyken yapılan bir imzalama isteği (native, EVM veya Solana), siteyi adıyla belirterek cüzdanı parola ekranında açar. Kullanıcı kilidi açtıktan sonra pencere kapanır ve istek kendi onayını gösterir. Kullanıcı bunun yerine pencereyi kapatırsa istek `4001` koduyla reddedilir. Bundan önce böyle bir istek hemen "wallet is locked" ile başarısız oluyordu.
+Eklenti 0.4.5 ve Safari 1.8.2'den itibaren, QoreX kilitliyken yapılan bir imzalama isteği (native, EVM veya Solana), siteyi adıyla belirterek cüzdanı parola ekranında açar. Kullanıcı kilidi açtıktan sonra pencere kapanır ve istek kendi onayını gösterir. Kullanıcı bunun yerine pencereyi kapatırsa istek `4001` koduyla reddedilir. Bundan önce böyle bir istek hemen "wallet is locked" ile başarısız oluyordu.
 
 - `enable`, `getKey`, `eth_requestAccounts` ve imzalama yöntemleri cüzdanı bu şekilde uyandırır.
 - Bir sayfanın yüklenirken yaptığı okumalar (`eth_accounts`, `eth_chainId`, zincir okumaları) asla pencere açmaz: `eth_accounts` yalnızca boş bir liste döndürür.

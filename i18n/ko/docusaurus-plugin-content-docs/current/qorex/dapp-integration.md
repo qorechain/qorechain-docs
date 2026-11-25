@@ -64,7 +64,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 | `signArbitrary` | 0.4.0 | 1.2.1 (메서드는 1.2.0부터 존재) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | 앱에는 없음 |
 
-앱 1.2.0에는 메서드가 있지만 capabilities를 선언하지 않습니다. 이를 지원하려면 `typeof window.qorex?.native?.signArbitrary === "function"`으로 대체 확인하세요. `executeRequest`는 `dashboard.qorechain.io`에서만 작동하는 Dashboard 브리지이며([Dashboard 브리지](/qorex/browser-extension#dashboard-bridge) 참고), 다른 사이트에는 필요하지 않습니다. 빌드 1.2.5와 0.4.4는 이전과 같은 capabilities를 선언합니다.
+앱 1.2.0에는 메서드가 있지만 capabilities를 선언하지 않습니다. 이를 지원하려면 `typeof window.qorex?.native?.signArbitrary === "function"`으로 대체 확인하세요. `executeRequest`는 `dashboard.qorechain.io`에서만 작동하는 Dashboard 브리지이며([Dashboard 브리지](/qorex/browser-extension#dashboard-bridge) 참고), 다른 사이트에는 필요하지 않습니다. 빌드 1.2.5와 0.4.5는 이전과 같은 capabilities를 선언합니다.
 
 **확장 프로그램인가 앱인가.** 페이지는 어느 쪽과 통신하는지 물을 수 없고, 그럴 필요도 없어야 합니다. 중요한 차이는 아래 표에 있습니다.
 
@@ -255,7 +255,7 @@ const hash = await qorex.provider.request({
 
 ## 지갑이 잠겨 있을 때 {#locked}
 
-확장 프로그램 0.4.4와 Safari 1.8.2부터는 QoreX가 잠긴 상태에서의 서명 요청(네이티브, EVM 또는 Solana)이 사이트 이름을 표시하며 비밀번호 화면으로 지갑을 엽니다. 사용자가 잠금을 해제하면 창이 닫히고 요청의 승인 화면이 나타납니다. 대신 사용자가 창을 닫으면 요청은 코드 `4001`로 거부됩니다. 이전에는 이런 요청이 "wallet is locked"로 즉시 실패했습니다.
+확장 프로그램 0.4.5와 Safari 1.8.2부터는 QoreX가 잠긴 상태에서의 서명 요청(네이티브, EVM 또는 Solana)이 사이트 이름을 표시하며 비밀번호 화면으로 지갑을 엽니다. 사용자가 잠금을 해제하면 창이 닫히고 요청의 승인 화면이 나타납니다. 대신 사용자가 창을 닫으면 요청은 코드 `4001`로 거부됩니다. 이전에는 이런 요청이 "wallet is locked"로 즉시 실패했습니다.
 
 - `enable`, `getKey`, `eth_requestAccounts`와 서명 메서드는 이 방식으로 지갑을 깨웁니다.
 - 페이지가 로드할 때 하는 읽기(`eth_accounts`, `eth_chainId`, 체인 읽기)는 창을 열지 않습니다. `eth_accounts`는 빈 목록을 반환할 뿐입니다.

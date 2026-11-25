@@ -64,7 +64,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 | `signArbitrary` | 0.4.0 | 1.2.1 (metodo presente dalla 1.2.0) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | non nell'app |
 
-L'app 1.2.0 ha i metodi ma non dichiara alcuna capacità; per coprirla, ripiega su `typeof window.qorex?.native?.signArbitrary === "function"`. `executeRequest` è il bridge della Dashboard, che funziona solo per `dashboard.qorechain.io` (vedi [Bridge della Dashboard](/qorex/browser-extension#dashboard-bridge)); agli altri siti non serve. Le build 1.2.5 e 0.4.4 dichiarano le stesse capacità di prima.
+L'app 1.2.0 ha i metodi ma non dichiara alcuna capacità; per coprirla, ripiega su `typeof window.qorex?.native?.signArbitrary === "function"`. `executeRequest` è il bridge della Dashboard, che funziona solo per `dashboard.qorechain.io` (vedi [Bridge della Dashboard](/qorex/browser-extension#dashboard-bridge)); agli altri siti non serve. Le build 1.2.5 e 0.4.5 dichiarano le stesse capacità di prima.
 
 **Estensione o app.** Una pagina non può chiedere con quale dei due sta parlando, e non dovrebbe averne bisogno. Le differenze che contano sono nella tabella qui sotto.
 
@@ -255,7 +255,7 @@ Il browser integrato nell'app non firma transazioni Solana. Solana su QoreChain 
 
 ## Quando il wallet è bloccato {#locked}
 
-Dall'estensione 0.4.4 e da Safari 1.8.2, una richiesta di firma fatta mentre QoreX è bloccato (nativa, EVM o Solana) apre il wallet sulla schermata della password, nominando il sito. Dopo che l'utente ha sbloccato, la finestra si chiude e la richiesta mostra la propria approvazione. Se invece l'utente chiude la finestra, la richiesta viene rifiutata con codice `4001`. In precedenza, una richiesta di questo tipo falliva subito con "wallet is locked".
+Dall'estensione 0.4.5 e da Safari 1.8.2, una richiesta di firma fatta mentre QoreX è bloccato (nativa, EVM o Solana) apre il wallet sulla schermata della password, nominando il sito. Dopo che l'utente ha sbloccato, la finestra si chiude e la richiesta mostra la propria approvazione. Se invece l'utente chiude la finestra, la richiesta viene rifiutata con codice `4001`. In precedenza, una richiesta di questo tipo falliva subito con "wallet is locked".
 
 - `enable`, `getKey`, `eth_requestAccounts` e i metodi di firma risvegliano il wallet in questo modo.
 - Le letture che una pagina fa al caricamento (`eth_accounts`, `eth_chainId`, letture della chain) non aprono mai una finestra: `eth_accounts` restituisce semplicemente un elenco vuoto.

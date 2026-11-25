@@ -71,9 +71,9 @@ QoreX는 비수탁형입니다. QoreChain Association은 분실한 지갑을 복
 |---|---|---|---|
 | iOS 앱 | App Store, **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
 | Android 앱 | Google Play, `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| Chrome 확장 프로그램 | Chrome Web Store, **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| Firefox 확장 프로그램 | Firefox Add-ons, `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Safari 확장 프로그램 | Mac App Store, **QoreX Wallet** (id 6794132220) | 앱 1.8.2, 확장 프로그램 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Chrome 확장 프로그램 | Chrome Web Store, **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Firefox 확장 프로그램 | Firefox Add-ons, `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| Safari 확장 프로그램 | Mac App Store, **QoreX Wallet** (id 6794132220) | 앱 1.8.2, 확장 프로그램 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | 개발자 키트 | npm 패키지 6개, [개발자용](#developers) 참고 | 0.1.0 | [QoreX 연동](/developer-tools/qorex-integrations) |
 
 스토어 심사는 자체 일정에 따라 진행되므로 한 스토어가 다른 스토어보다 이전 빌드를 제공할 수 있습니다. [어느 버전이 어디에 배포되어 있는지](#versions)를 참고하세요. QoreX 소스 코드는 공개되어 있지 않습니다.
@@ -147,13 +147,13 @@ QoreX는 비수탁형입니다. QoreChain Association은 분실한 지갑을 복
 |---|---|---|
 | Apple App Store (iOS) | 1.2.5 | |
 | Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.4 | |
-| Firefox Add-ons | 0.4.4 | |
-| Safari (Mac App Store) | 1.8.2, 확장 프로그램 0.4.4 포함 | Mac App Store는 자체 `1.x` 번호 체계를 사용 |
+| Chrome Web Store | 0.4.5 | |
+| Firefox Add-ons | 0.4.5 | |
+| Safari (Mac App Store) | 1.8.2, 확장 프로그램 0.4.5 포함 | Mac App Store는 자체 `1.x` 번호 체계를 사용 |
 
 스토어에는 항상 현재 버전이 표시되며, 아직 이전 빌드를 제공하는 스토어는 자동으로 따라잡습니다. 스토어에서 아직 출시하지 않은 빌드는 이 매뉴얼에서 이용 가능한 것으로 설명하지 않습니다.
 
-### 1.2.5 / 0.4.4 빌드에서 추가된 점 {#whats-new-125}
+### 1.2.5 / 0.4.5 빌드에서 추가된 점 {#whats-new-125}
 
 일상적인 사용(별도 표시가 없으면 앱과 확장 프로그램, 메인넷과 테스트넷):
 

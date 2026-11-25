@@ -9,7 +9,7 @@ sidebar_position: 2
 
 **Extensia de browser** QoreX este portofelul QoreChain pentru desktop. Este un **portofel de sine stătător** (creezi sau imporți un portofel, deții, trimiți și pui în stake QOR și te conectezi la dApp-uri) și este elementul care permite oricărui site web să descopere QoreX și să transforme fiecare cerere într-o aprobare explicită și decodată. Este pentru oricine folosește QoreChain dintr-un browser de desktop și pentru dezvoltatorii care vor ca aplicația lor web să funcționeze cu un portofel QoreChain.
 
-Este **live și public** pe trei magazine (Chrome, Firefox și Safari), toate purtând extensia 0.4.4. Vezi [ce versiune este live unde](#versions).
+Este **live și public** pe trei magazine (Chrome, Firefox și Safari), toate purtând extensia 0.4.5. Vezi [ce versiune este live unde](#versions).
 
 ## Inovații {#innovations}
 
@@ -53,13 +53,13 @@ Versiunea curentă din fiecare magazin:
 
 | Magazin | Versiunea curentă |
 |---|---|
-| Chrome Web Store | 0.4.4 |
-| Firefox Add-ons | 0.4.4 |
-| Safari (Mac App Store, aplicația macOS **QoreX Wallet**) | 1.8.2, care conține extensia 0.4.4 (Mac App Store folosește propria numerotare `1.x`) |
+| Chrome Web Store | 0.4.5 |
+| Firefox Add-ons | 0.4.5 |
+| Safari (Mac App Store, aplicația macOS **QoreX Wallet**) | 1.8.2, care conține extensia 0.4.5 (Mac App Store folosește propria numerotare `1.x`) |
 
 Recenziile magazinelor ajung în momente diferite, astfel încât un magazin poate servi un build mai vechi decât altul; listarea din magazin arată mereu versiunea sa curentă. Vezi și [Ce versiune este live unde](/qorex/overview#versions).
 
-Extensia 0.4.x adaugă [blocarea automată](#unlock), o [verificare înaintea fiecărui transfer](#send), [Istoricul cu export CSV](#history), [cererile de plată](#pay-requests), [contactele](#contacts), [Protecția banilor mei](#protection), [repararea, rotirea și multisig-ul cheii post-cuantice](#pqc-care), [ecrane de staking](#stake) separate, un [ecran Primește care începe cu moneda](#receive), [semnarea EVM pentru dApp-uri](#standards), [ferestre de acces EVM mai sigure](#evm-window) și [Uneltele pentru dezvoltatori](#developer-tools). Lista completă pe versiuni este în [Ce adaugă versiunile 1.2.5 / 0.4.4](/qorex/overview#whats-new-125) și în listele care urmează.
+Extensia 0.4.x adaugă [blocarea automată](#unlock), o [verificare înaintea fiecărui transfer](#send), [Istoricul cu export CSV](#history), [cererile de plată](#pay-requests), [contactele](#contacts), [Protecția banilor mei](#protection), [repararea, rotirea și multisig-ul cheii post-cuantice](#pqc-care), [ecrane de staking](#stake) separate, un [ecran Primește care începe cu moneda](#receive), [semnarea EVM pentru dApp-uri](#standards), [ferestre de acces EVM mai sigure](#evm-window) și [Uneltele pentru dezvoltatori](#developer-tools). Lista completă pe versiuni este în [Ce adaugă versiunile 1.2.5 / 0.4.5](/qorex/overview#whats-new-125) și în listele care urmează.
 
 De la 0.2.6, extensia a primit și: [mai multe portofele cu o singură parolă](#wallets), un [cont în stil Ethereum pe care îl adaugi manual](#coin60), [Revendică și restachează](#stake), o listă **Retrageri din mizare în curs**, [adăugarea unui token prin contract](#custom-tokens), [Primește pe orice rețea](#receive), [Site-uri conectate cu Revocă](#connected-sites), [fereastra de acces EVM](#evm-window), [`signAndBroadcast` pentru dApp-uri](#sign-and-broadcast) și ecrane de aprobare care arată fiecare mesaj, comision și expirare.
 
@@ -341,7 +341,7 @@ Această secțiune există pentru că listarea de pe Firefox afișează permisiu
 ```
 
 - **`storage`** - stochează seiful criptat, aprobările tale de conexiune per origine și setările și listele proprii ale portofelului (cum ar fi contactele) **local**, în stocarea extensiei.
-- **`nativeMessaging`** - nouă în 0.4.4, folosită doar de unealta [Agenți AI](#developer-tools) din modul dezvoltator, pentru a comunica cu un program companion de pe propriul tău computer (încă nepublicat). QoreX deschide acea conexiune doar după ce activezi **Permite conexiuni de la agenți AI pe acest computer** în unealta respectivă. Pachetul pentru **Safari** nu declară această permisiune.
+- **`nativeMessaging`** - nouă în 0.4.5, folosită doar de unealta [Agenți AI](#developer-tools) din modul dezvoltator, pentru a comunica cu un program companion de pe propriul tău computer (încă nepublicat). QoreX deschide acea conexiune doar după ce activezi **Permite conexiuni de la agenți AI pe acest computer** în unealta respectivă. Pachetul pentru **Safari** nu declară această permisiune.
 - **`host_permissions: []`** - QoreX nu declară **nicio** permisiune de gazdă. Nu cere capacitatea de a face cereri de rețea cross-origin către site-uri arbitrare în numele tău.
 - **`web_accessible_resources`** - permite paginilor să încarce propriul `inpage.js` al QoreX, micul script care expune furnizorul. `use_dynamic_url` îi dă o adresă per sesiune, astfel încât site-urile nu pot identifica extensia prin amprentare, sondând-o.
 - **`content_scripts` cu potriviri `<all_urls>`** - acesta este motivul onest pentru care Firefox afișează *"Access your data for all websites."* QoreX injectează un mic script furnizor (`content.js` → `inpage.js`) în **fiecare pagină**. Un content script care rulează pe toate site-urile *poate* tehnic citi pagina, iar browserele descriu această capacitate cu exact această formulare - indiferent dacă provine din `host_permissions` sau dintr-o potrivire de content script.
@@ -354,7 +354,7 @@ Această secțiune există pentru că listarea de pe Firefox afișează permisiu
 
 Un dApp descoperă QoreX prin **EIP-6963** (anunță cererea, alege portofelul al cărui `rdns` este `network.qore.qorex`) și apoi folosește furnizorul EIP-1193 returnat; pentru lane-ul **Native** al QoreChain folosește `window.qorex.native` și citește `capabilities` ca să vadă ce acceptă acest build. QoreX nu setează niciodată `window.ethereum` sau `window.keplr`. Ghidul complet pentru dezvoltatori, cu cod, este pe propria pagină: [Integrează un dApp cu QoreX](/qorex/dapp-integration) (vezi [Detectează QoreX](/qorex/dapp-integration#detection) și [Conectare](/qorex/dapp-integration#connect)). Într-o aplicație web, [adaptorul de portofel](/developer-tools/wallet-adapter) învelește pentru tine această detecție, iar [kitul de dezvoltare QoreX](/developer-tools/qorex-integrations) acoperă integrarea de partea aplicației. (`@qorechain/connect` este depreciat; nu începe lucrări noi pe el.)
 
-Aprobările sunt **per origine**: prima conexiune la un site deschide un popup de aprobare care arată originea, aprobarea dezvăluie doar adresa ta publică, iar aprobarea unui site nu acordă nimic altui site. Aprobările sunt păstrate per portofel, persistă până când le revoci la **Site-uri conectate**, iar un site poate avea o cerere în așteptare (trei în total); comutarea portofelului sau blocarea răspunde cererilor în așteptare cu "nu". Începând cu 0.4.4, o cerere de semnare a unui site făcută cât timp QoreX este blocat deschide ecranul de parolă, numind site-ul, și își afișează aprobarea după ce deblochezi; închiderea ferestrei o refuză. Vezi [Ce arată fereastra de aprobare](/qorex/security-and-recovery#approvals).
+Aprobările sunt **per origine**: prima conexiune la un site deschide un popup de aprobare care arată originea, aprobarea dezvăluie doar adresa ta publică, iar aprobarea unui site nu acordă nimic altui site. Aprobările sunt păstrate per portofel, persistă până când le revoci la **Site-uri conectate**, iar un site poate avea o cerere în așteptare (trei în total); comutarea portofelului sau blocarea răspunde cererilor în așteptare cu "nu". Începând cu 0.4.5, o cerere de semnare a unui site făcută cât timp QoreX este blocat deschide ecranul de parolă, numind site-ul, și își afișează aprobarea după ce deblochezi; închiderea ferestrei o refuză. Vezi [Ce arată fereastra de aprobare](/qorex/security-and-recovery#approvals).
 
 ### Puntea către Dashboard (v0.1.5, extinsă în v0.2.2) {#dashboard-bridge}
 
@@ -388,9 +388,9 @@ Fiecare transfer nativ de QOR pe care QoreX îl inițiază singur este semnat de
 
 | Magazin | Listare | Versiunea curentă | Link |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| Firefox Add-ons | `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Mac App Store (Safari) | **QoreX Wallet**, aplicația 1.8.2 | extensia 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| Mac App Store (Safari) | **QoreX Wallet**, aplicația 1.8.2 | extensia 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 
 Codul sursă QoreX nu este public. Listările din magazine arată mereu versiunea curentă.
 

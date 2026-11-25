@@ -12,7 +12,7 @@ QoreX 통합은 [QoreX 지갑](/qorex/overview)이 EVM, Cosmos, Solana 프런트
 이 패키지들이 하지 않는 일: 키를 보관하지 않으며, QoreX를 현재의 모습 이상으로 만들어 주지도 않습니다. 이를 기반으로 구축하기 전에 [한계와 알려진 문제](#limits)를 읽어 보세요. 현재 라이브 상태인 QoreX 스토어 빌드는 이 패키지들이 연결될 수 있는 기능의 일부만 지원하며, 그 한계는 그곳에 명시되어 있습니다.
 
 :::tip 이 패키지 없이 연동하거나 지갑의 현재 동작을 확인하려면
-[QoreX와 dApp 연동하기](/qorex/dapp-integration)는 지갑 자체에 대한 완전한 가이드입니다: QoreX 앱 1.2.5, 확장 프로그램 0.4.4, Safari 1.8.2를 기준으로 감지, `signAndBroadcast`, cosmjs 서명자, 메시지 서명, EVM, Solana, 오류, 링크를 다룹니다. 0.1.0 패키지는 2026년 10월 27일에 공개되었으며, 그 이후 지갑에는 기능이 추가되었습니다. 이 페이지는 패키지의 동작을 설명합니다. 지갑의 동작은 해당 가이드가 최신입니다.
+[QoreX와 dApp 연동하기](/qorex/dapp-integration)는 지갑 자체에 대한 완전한 가이드입니다: QoreX 앱 1.2.5, 확장 프로그램 0.4.5, Safari 1.8.2를 기준으로 감지, `signAndBroadcast`, cosmjs 서명자, 메시지 서명, EVM, Solana, 오류, 링크를 다룹니다. 0.1.0 패키지는 2026년 10월 27일에 공개되었으며, 그 이후 지갑에는 기능이 추가되었습니다. 이 페이지는 패키지의 동작을 설명합니다. 지갑의 동작은 해당 가이드가 최신입니다.
 :::
 
 ## 혁신 {#innovations}
@@ -49,7 +49,7 @@ QoreX 통합은 [QoreX 지갑](/qorex/overview)이 EVM, Cosmos, Solana 프런트
 
 ### 지갑이 지원하는 것 {#qorex-today}
 
-[QoreX와 dApp 연동하기](/qorex/dapp-integration)에는 QoreX 앱 1.2.5, 확장 프로그램 0.4.4, Safari 1.8.2가 각 표면에서 무엇에 응답하는지 나와 있습니다: [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [cosmjs 서명자](/qorex/dapp-integration#cosmjs), [메시지 서명](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana), [오류와 이벤트](/qorex/dapp-integration#errors). QoreChain의 EVM 레인에서는 발신자에게 등록된 ML-DSA-87 키와 EVM 인가 창이 있을 때 트랜잭션이 허용되며, 이를 포함하는 창이 없으면 QoreX의 승인이 해당 트랜잭션용 창을 엽니다. 메인넷과 테스트넷 전환은 사용자가 QoreX 안에서 하며, dApp은 전환할 수 없습니다.
+[QoreX와 dApp 연동하기](/qorex/dapp-integration)에는 QoreX 앱 1.2.5, 확장 프로그램 0.4.5, Safari 1.8.2가 각 표면에서 무엇에 응답하는지 나와 있습니다: [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [cosmjs 서명자](/qorex/dapp-integration#cosmjs), [메시지 서명](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana), [오류와 이벤트](/qorex/dapp-integration#errors). QoreChain의 EVM 레인에서는 발신자에게 등록된 ML-DSA-87 키와 EVM 인가 창이 있을 때 트랜잭션이 허용되며, 이를 포함하는 창이 없으면 QoreX의 승인이 해당 트랜잭션용 창을 엽니다. 메인넷과 테스트넷 전환은 사용자가 QoreX 안에서 하며, dApp은 전환할 수 없습니다.
 
 ## 사용 방법 {#how-to-use}
 

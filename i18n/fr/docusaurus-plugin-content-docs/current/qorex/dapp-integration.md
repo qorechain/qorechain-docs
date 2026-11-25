@@ -64,7 +64,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 | `signArbitrary` | 0.4.0 | 1.2.1 (méthode présente depuis la 1.2.0) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | absent de l'application |
 
-L'application 1.2.0 a les méthodes mais ne déclare aucune capacité ; pour la couvrir, rabattez-vous sur `typeof window.qorex?.native?.signArbitrary === "function"`. `executeRequest` est le pont avec le Dashboard, qui ne fonctionne que pour `dashboard.qorechain.io` (voir [Pont avec le Dashboard](/qorex/browser-extension#dashboard-bridge)) ; les autres sites n'en ont pas besoin. Les versions 1.2.5 et 0.4.4 déclarent les mêmes capacités qu'auparavant.
+L'application 1.2.0 a les méthodes mais ne déclare aucune capacité ; pour la couvrir, rabattez-vous sur `typeof window.qorex?.native?.signArbitrary === "function"`. `executeRequest` est le pont avec le Dashboard, qui ne fonctionne que pour `dashboard.qorechain.io` (voir [Pont avec le Dashboard](/qorex/browser-extension#dashboard-bridge)) ; les autres sites n'en ont pas besoin. Les versions 1.2.5 et 0.4.5 déclarent les mêmes capacités qu'auparavant.
 
 **Extension ou application.** Une page ne peut pas demander à laquelle elle parle, et ne devrait pas en avoir besoin. Les différences qui comptent figurent dans le tableau ci-dessous.
 
@@ -255,7 +255,7 @@ Le navigateur intégré à l'application ne signe pas les transactions Solana. S
 
 ## Quand le portefeuille est verrouillé {#locked}
 
-À partir de l'extension 0.4.4 et de Safari 1.8.2, une demande de signature faite alors que QoreX est verrouillé (native, EVM ou Solana) ouvre le portefeuille sur l'écran du mot de passe, en nommant le site. Après le déverrouillage par l'utilisateur, la fenêtre se ferme et la demande affiche sa propre approbation. Si l'utilisateur ferme la fenêtre à la place, la demande est refusée avec le code `4001`. Auparavant, une telle demande échouait immédiatement avec « wallet is locked ».
+À partir de l'extension 0.4.5 et de Safari 1.8.2, une demande de signature faite alors que QoreX est verrouillé (native, EVM ou Solana) ouvre le portefeuille sur l'écran du mot de passe, en nommant le site. Après le déverrouillage par l'utilisateur, la fenêtre se ferme et la demande affiche sa propre approbation. Si l'utilisateur ferme la fenêtre à la place, la demande est refusée avec le code `4001`. Auparavant, une telle demande échouait immédiatement avec « wallet is locked ».
 
 - `enable`, `getKey`, `eth_requestAccounts` et les méthodes de signature réveillent le portefeuille de cette façon.
 - Les lectures qu'une page effectue au chargement (`eth_accounts`, `eth_chainId`, lectures de la chaîne) n'ouvrent jamais de fenêtre : `eth_accounts` renvoie simplement une liste vide.

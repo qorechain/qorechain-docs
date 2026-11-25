@@ -9,7 +9,7 @@ sidebar_position: 2
 
 L'**extension navigateur** QoreX est le portefeuille QoreChain de bureau. C'est un **portefeuille autonome** (créez ou importez un portefeuille, détenez, envoyez et stakez des QOR, et connectez-vous à des dApps) et c'est elle qui permet à n'importe quel site web de découvrir QoreX et de transformer chaque requête en une approbation explicite et décodée. Elle s'adresse à toute personne qui utilise QoreChain depuis un navigateur de bureau, et aux développeurs qui veulent que leur application web fonctionne avec un portefeuille QoreChain.
 
-Elle est **en ligne et publique** sur trois stores (Chrome, Firefox et Safari), qui proposent tous l'extension 0.4.4. Voir [quelle version est en ligne et où](#versions).
+Elle est **en ligne et publique** sur trois stores (Chrome, Firefox et Safari), qui proposent tous l'extension 0.4.5. Voir [quelle version est en ligne et où](#versions).
 
 ## Innovations {#innovations}
 
@@ -53,13 +53,13 @@ Version actuelle sur chaque store :
 
 | Boutique | Version actuelle |
 |---|---|
-| Chrome Web Store | 0.4.4 |
-| Firefox Add-ons | 0.4.4 |
-| Safari (Mac App Store, application macOS **QoreX Wallet**) | 1.8.2, intégrant l'extension 0.4.4 (le Mac App Store utilise sa propre numérotation `1.x`) |
+| Chrome Web Store | 0.4.5 |
+| Firefox Add-ons | 0.4.5 |
+| Safari (Mac App Store, application macOS **QoreX Wallet**) | 1.8.2, intégrant l'extension 0.4.5 (le Mac App Store utilise sa propre numérotation `1.x`) |
 
 Les revues des boutiques n'arrivent pas au même moment, donc une boutique peut servir une version plus ancienne qu'une autre ; la fiche de la boutique affiche toujours sa version actuelle. Voir aussi [Quelle version est en ligne où](/qorex/overview#versions).
 
-L'extension 0.4.x ajoute le [verrouillage automatique](#unlock), une [vérification avant chaque transfert](#send), l'[Historique avec export CSV](#history), les [demandes de paiement](#pay-requests), les [contacts](#contacts), [La protection de mon argent](#protection), la [réparation, le changement de la clé post-quantique et la multisignature](#pqc-care), des [écrans de staking](#stake) séparés, un [écran Recevoir qui commence par la cryptomonnaie](#receive), la [signature EVM pour les dApps](#standards), des [fenêtres d'accès EVM plus sûres](#evm-window) et les [Outils développeur](#developer-tools). La liste complète par version se trouve dans [Ce qu'ajoutent les versions 1.2.5 / 0.4.4](/qorex/overview#whats-new-125) et dans les listes qui suivent.
+L'extension 0.4.x ajoute le [verrouillage automatique](#unlock), une [vérification avant chaque transfert](#send), l'[Historique avec export CSV](#history), les [demandes de paiement](#pay-requests), les [contacts](#contacts), [La protection de mon argent](#protection), la [réparation, le changement de la clé post-quantique et la multisignature](#pqc-care), des [écrans de staking](#stake) séparés, un [écran Recevoir qui commence par la cryptomonnaie](#receive), la [signature EVM pour les dApps](#standards), des [fenêtres d'accès EVM plus sûres](#evm-window) et les [Outils développeur](#developer-tools). La liste complète par version se trouve dans [Ce qu'ajoutent les versions 1.2.5 / 0.4.5](/qorex/overview#whats-new-125) et dans les listes qui suivent.
 
 Depuis la 0.2.6, l'extension a aussi gagné : [plusieurs portefeuilles avec un seul mot de passe](#wallets), un [compte de style Ethereum que vous ajoutez à la main](#coin60), [Réclamer et redéléguer](#stake), une liste **Retraits de staking en cours**, l'[ajout d'un jeton par contrat](#custom-tokens), [Recevoir sur n'importe quel réseau](#receive), [Sites connectés avec Révoquer](#connected-sites), la [fenêtre d'accès EVM](#evm-window), [`signAndBroadcast` pour les dApps](#sign-and-broadcast), et des écrans d'approbation qui affichent chaque message, les frais et l'expiration.
 
@@ -341,7 +341,7 @@ Le `manifest.json` de l'extension déclare :
 ```
 
 - **`storage`** - stocke **localement**, dans le stockage de l'extension, le coffre chiffré, vos approbations de connexion par origine ainsi que les réglages et listes de votre portefeuille (comme les contacts).
-- **`nativeMessaging`** - nouveau dans la 0.4.4, utilisé uniquement par l'outil [Agents IA](#developer-tools) du Mode développeur pour communiquer avec un programme compagnon sur votre propre ordinateur (pas encore publié). QoreX n'ouvre cette connexion qu'après que vous avez activé **Autoriser les connexions d'agents IA sur cet ordinateur** dans cet outil. Le paquet **Safari** ne déclare pas cette autorisation.
+- **`nativeMessaging`** - nouveau dans la 0.4.5, utilisé uniquement par l'outil [Agents IA](#developer-tools) du Mode développeur pour communiquer avec un programme compagnon sur votre propre ordinateur (pas encore publié). QoreX n'ouvre cette connexion qu'après que vous avez activé **Autoriser les connexions d'agents IA sur cet ordinateur** dans cet outil. Le paquet **Safari** ne déclare pas cette autorisation.
 - **`host_permissions: []`** - QoreX ne déclare **aucune** permission d'hôte. Elle ne demande pas la capacité de faire des requêtes réseau inter-origines vers des sites arbitraires en votre nom.
 - **`web_accessible_resources`** - permet aux pages de charger le propre `inpage.js` de QoreX, le petit script qui expose le fournisseur. `use_dynamic_url` lui donne une adresse propre à chaque session, afin que les sites ne puissent pas identifier l'extension par empreinte en sondant sa présence.
 - **`content_scripts` correspond à `<all_urls>`** - c'est la raison honnête pour laquelle Firefox indique *« Accéder à vos données pour tous les sites web »*. QoreX injecte un petit script fournisseur (`content.js` → `inpage.js`) dans **chaque page**. Un content script qui s'exécute sur tous les sites *peut* techniquement lire la page, et les navigateurs décrivent cette capacité avec exactement ce libellé - qu'elle provienne de `host_permissions` ou d'une correspondance de content script.
@@ -354,7 +354,7 @@ Le `manifest.json` de l'extension déclare :
 
 Une dApp découvre QoreX via **EIP-6963** (elle émet la requête et choisit le portefeuille dont le `rdns` est `network.qore.qorex`), puis utilise le fournisseur EIP-1193 renvoyé ; pour la voie **native** de QoreChain, elle utilise `window.qorex.native`, et elle lit `capabilities` pour voir ce que cette version prend en charge. QoreX ne définit jamais `window.ethereum` ni `window.keplr`. Le guide développeur complet, avec du code, a sa propre page : [Intégrer une dApp à QoreX](/qorex/dapp-integration) (voir [Détecter QoreX](/qorex/dapp-integration#detection) et [Se connecter](/qorex/dapp-integration#connect)). Dans une application web, l'[adaptateur de portefeuille](/developer-tools/wallet-adapter) encapsule cette détection pour vous, et le [kit développeur QoreX](/developer-tools/qorex-integrations) couvre l'intégration côté application. (`@qorechain/connect` est obsolète ; ne démarrez aucun nouveau travail dessus.)
 
-Les approbations sont **par origine** : la première connexion à un site ouvre une fenêtre d'approbation affichant l'origine, approuver ne révèle que votre adresse publique, et l'approbation d'un site n'accorde rien à un autre. Les approbations sont conservées par portefeuille, persistent jusqu'à ce que vous les révoquiez sous **Sites connectés**, et un site peut avoir une demande en attente (trois au total) ; changer de portefeuille ou verrouiller répond « non » aux demandes en attente. À partir de la 0.4.4, une demande de signature d'un site faite alors que QoreX est verrouillé ouvre l'écran du mot de passe, en nommant le site, et affiche son approbation après le déverrouillage ; fermer la fenêtre la refuse. Voir [Ce que montre la fenêtre d'approbation](/qorex/security-and-recovery#approvals).
+Les approbations sont **par origine** : la première connexion à un site ouvre une fenêtre d'approbation affichant l'origine, approuver ne révèle que votre adresse publique, et l'approbation d'un site n'accorde rien à un autre. Les approbations sont conservées par portefeuille, persistent jusqu'à ce que vous les révoquiez sous **Sites connectés**, et un site peut avoir une demande en attente (trois au total) ; changer de portefeuille ou verrouiller répond « non » aux demandes en attente. À partir de la 0.4.5, une demande de signature d'un site faite alors que QoreX est verrouillé ouvre l'écran du mot de passe, en nommant le site, et affiche son approbation après le déverrouillage ; fermer la fenêtre la refuse. Voir [Ce que montre la fenêtre d'approbation](/qorex/security-and-recovery#approvals).
 
 ### Pont Dashboard (v0.1.5, étendu en v0.2.2) {#dashboard-bridge}
 
@@ -388,9 +388,9 @@ Chaque transfert QOR natif initié par QoreX lui-même est signé deux fois : av
 
 | Boutique | Fiche | Version actuelle | Lien |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| Firefox Add-ons | `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Mac App Store (Safari) | **QoreX Wallet**, application 1.8.2 | extension 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| Mac App Store (Safari) | **QoreX Wallet**, application 1.8.2 | extension 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 
 Le code source de QoreX n'est pas public. Les fiches des stores affichent toujours la version actuelle.
 

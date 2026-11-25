@@ -12,7 +12,7 @@ Integrările QoreX sunt șase pachete npm mici, pentru dezvoltatorii de dApp-uri
 Ce nu fac: nu dețin chei și nu transformă QoreX în mai mult decât este astăzi. Citiți [Limite și probleme cunoscute](#limits) înainte de a construi pe ele: build-urile QoreX live din magazine acceptă o parte din ceea ce aceste pachete pot fi conectate să facă, iar limitele sunt precizate acolo.
 
 :::tip Integrezi fără aceste pachete sau verifici ce face portofelul acum
-[Integrează un dApp cu QoreX](/qorex/dapp-integration) este ghidul complet al portofelului însuși: detectare, `signAndBroadcast`, semnatari cosmjs, semnarea de mesaje, EVM, Solana, erori și linkuri, pentru aplicația QoreX 1.2.5, extensia 0.4.4 și Safari 1.8.2. Pachetele 0.1.0 au fost publicate pe 27 octombrie 2026, iar portofelul a căpătat funcții de atunci. Această pagină descrie cum se comportă pachetele; pentru ce face portofelul, ghidul respectiv este cel actual.
+[Integrează un dApp cu QoreX](/qorex/dapp-integration) este ghidul complet al portofelului însuși: detectare, `signAndBroadcast`, semnatari cosmjs, semnarea de mesaje, EVM, Solana, erori și linkuri, pentru aplicația QoreX 1.2.5, extensia 0.4.5 și Safari 1.8.2. Pachetele 0.1.0 au fost publicate pe 27 octombrie 2026, iar portofelul a căpătat funcții de atunci. Această pagină descrie cum se comportă pachetele; pentru ce face portofelul, ghidul respectiv este cel actual.
 :::
 
 ## Inovații {#innovations}
@@ -49,7 +49,7 @@ Ce nu fac: nu dețin chei și nu transformă QoreX în mai mult decât este ast�
 
 ### Ce acceptă portofelul {#qorex-today}
 
-[Integrează un dApp cu QoreX](/qorex/dapp-integration) listează la ce răspund aplicația QoreX 1.2.5, extensia 0.4.4 și Safari 1.8.2 pe fiecare suprafață: [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [semnatari cosmjs](/qorex/dapp-integration#cosmjs), [semnarea de mesaje](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana) și [erori și evenimente](/qorex/dapp-integration#errors). Pe lane-ul EVM al QoreChain, o tranzacție este acceptată când expeditorul are o cheie ML-DSA-87 înregistrată și o fereastră de autorizare EVM; aprobarea din QoreX deschide una pentru tranzacție atunci când nicio fereastră nu o acoperă. Utilizatorul comută între mainnet și testnet în QoreX; dApp-ul nu poate face comutarea.
+[Integrează un dApp cu QoreX](/qorex/dapp-integration) listează la ce răspund aplicația QoreX 1.2.5, extensia 0.4.5 și Safari 1.8.2 pe fiecare suprafață: [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [semnatari cosmjs](/qorex/dapp-integration#cosmjs), [semnarea de mesaje](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana) și [erori și evenimente](/qorex/dapp-integration#errors). Pe lane-ul EVM al QoreChain, o tranzacție este acceptată când expeditorul are o cheie ML-DSA-87 înregistrată și o fereastră de autorizare EVM; aprobarea din QoreX deschide una pentru tranzacție atunci când nicio fereastră nu o acoperă. Utilizatorul comută între mainnet și testnet în QoreX; dApp-ul nu poate face comutarea.
 
 ## Cum se folosește {#how-to-use}
 

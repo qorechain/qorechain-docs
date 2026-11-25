@@ -71,9 +71,9 @@ QoreX saklamasızdır: QoreChain Association kaybolan bir cüzdanı kurtaramaz, 
 |---|---|---|---|
 | iOS uygulaması | App Store, **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
 | Android uygulaması | Google Play, `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| Chrome eklentisi | Chrome Web Store, **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| Firefox eklentisi | Firefox Add-ons, `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Safari eklentisi | Mac App Store, **QoreX Wallet** (id 6794132220) | uygulama 1.8.2, eklenti 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Chrome eklentisi | Chrome Web Store, **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Firefox eklentisi | Firefox Add-ons, `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| Safari eklentisi | Mac App Store, **QoreX Wallet** (id 6794132220) | uygulama 1.8.2, eklenti 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | Geliştirici kiti | altı npm paketi, bkz. [Geliştiriciler için](#developers) | 0.1.0 | [QoreX entegrasyonları](/developer-tools/qorex-integrations) |
 
 Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza diğerinden daha eski bir yapı sunabilir; bkz. [Hangi sürüm nerede canlı](#versions). QoreX kaynak kodu herkese açık değildir.
@@ -147,13 +147,13 @@ Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza bir
 |---|---|---|
 | Apple App Store (iOS) | 1.2.5 | |
 | Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.4 | |
-| Firefox Add-ons | 0.4.4 | |
-| Safari (Mac App Store) | 1.8.2, eklenti 0.4.4 ile birlikte | Mac App Store kendi `1.x` numaralandırmasını kullanır |
+| Chrome Web Store | 0.4.5 | |
+| Firefox Add-ons | 0.4.5 | |
+| Safari (Mac App Store) | 1.8.2, eklenti 0.4.5 ile birlikte | Mac App Store kendi `1.x` numaralandırmasını kullanır |
 
 Mağazalar her zaman güncel sürümlerini gösterir ve hâlâ eski bir yapı sunan bir mağaza otomatik olarak yetişir. Bir mağazanın henüz yayımlamadığı yapılar bu kılavuzda kullanılabilir olarak anlatılmaz.
 
-### 1.2.5 / 0.4.4 yapılarının ekledikleri {#whats-new-125}
+### 1.2.5 / 0.4.5 yapılarının ekledikleri {#whats-new-125}
 
 Günlük kullanım için (aksi belirtilmedikçe uygulama ve eklenti, mainnet ve testnet):
 

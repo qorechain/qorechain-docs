@@ -64,7 +64,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 | `signArbitrary` | 0.4.0 | 1.2.1 (method present from 1.2.0) |
 | `listAccounts`, `connectProofPicksAccount`, `executeRequest` | 0.3.x | not in the app |
 
-App 1.2.0 has the methods but declares no capabilities; to cover it, fall back to `typeof window.qorex?.native?.signArbitrary === "function"`. `executeRequest` is the Dashboard bridge, which works for `dashboard.qorechain.io` only (see [Dashboard bridge](/qorex/browser-extension#dashboard-bridge)); other sites do not need it. Builds 1.2.5 and 0.4.4 declare the same capabilities as before.
+App 1.2.0 has the methods but declares no capabilities; to cover it, fall back to `typeof window.qorex?.native?.signArbitrary === "function"`. `executeRequest` is the Dashboard bridge, which works for `dashboard.qorechain.io` only (see [Dashboard bridge](/qorex/browser-extension#dashboard-bridge)); other sites do not need it. Builds 1.2.5 and 0.4.5 declare the same capabilities as before.
 
 **Extension or app.** A page cannot ask which one it is talking to, and should not need to. The differences that matter are in the table below.
 
@@ -255,7 +255,7 @@ The app's in-app browser does not sign Solana transactions. Solana on QoreChain 
 
 ## When the wallet is locked {#locked}
 
-From extension 0.4.4 and Safari 1.8.2, a signing request made while QoreX is locked (native, EVM or Solana) opens the wallet on the password screen, naming the site. After the user unlocks, the window closes and the request shows its own approval. If the user closes the window instead, the request is refused with code `4001`. Before this, such a request failed at once with "wallet is locked".
+From extension 0.4.5 and Safari 1.8.2, a signing request made while QoreX is locked (native, EVM or Solana) opens the wallet on the password screen, naming the site. After the user unlocks, the window closes and the request shows its own approval. If the user closes the window instead, the request is refused with code `4001`. Before this, such a request failed at once with "wallet is locked".
 
 - `enable`, `getKey`, `eth_requestAccounts` and the signing methods wake the wallet this way.
 - Reads a page makes on load (`eth_accounts`, `eth_chainId`, chain reads) never open a window: `eth_accounts` just returns an empty list.

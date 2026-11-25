@@ -64,7 +64,7 @@ const can = (name) => native?.capabilities?.includes(name) === true;
 | `signArbitrary` | 0.4.0 | 1.2.1（メソッドは 1.2.0 から存在） |
 | `listAccounts`、`connectProofPicksAccount`、`executeRequest` | 0.3.x | アプリにはなし |
 
-アプリ 1.2.0 にはメソッドがありますが、ケイパビリティは宣言しません。これに対応するには、`typeof window.qorex?.native?.signArbitrary === "function"` にフォールバックしてください。`executeRequest` は Dashboard ブリッジで、`dashboard.qorechain.io` でのみ動作します（[Dashboard ブリッジ](/qorex/browser-extension#dashboard-bridge)を参照）。他のサイトには必要ありません。ビルド 1.2.5 と 0.4.4 は、以前と同じケイパビリティを宣言します。
+アプリ 1.2.0 にはメソッドがありますが、ケイパビリティは宣言しません。これに対応するには、`typeof window.qorex?.native?.signArbitrary === "function"` にフォールバックしてください。`executeRequest` は Dashboard ブリッジで、`dashboard.qorechain.io` でのみ動作します（[Dashboard ブリッジ](/qorex/browser-extension#dashboard-bridge)を参照）。他のサイトには必要ありません。ビルド 1.2.5 と 0.4.5 は、以前と同じケイパビリティを宣言します。
 
 **拡張機能かアプリか。** ページは相手がどちらかを問い合わせることはできず、その必要もないはずです。重要な違いは次の表のとおりです。
 
@@ -255,7 +255,7 @@ const hash = await qorex.provider.request({
 
 ## ウォレットがロックされている場合 {#locked}
 
-拡張機能 0.4.4 と Safari 1.8.2 以降、QoreX がロックされている間の署名リクエスト（ネイティブ、EVM、Solana）は、サイト名を表示したパスワード画面でウォレットを開きます。ユーザーがロックを解除すると、そのウィンドウは閉じ、リクエストの承認画面が表示されます。代わりにユーザーがウィンドウを閉じると、リクエストはコード `4001` で拒否されます。以前は、このようなリクエストは「wallet is locked」ですぐに失敗していました。
+拡張機能 0.4.5 と Safari 1.8.2 以降、QoreX がロックされている間の署名リクエスト（ネイティブ、EVM、Solana）は、サイト名を表示したパスワード画面でウォレットを開きます。ユーザーがロックを解除すると、そのウィンドウは閉じ、リクエストの承認画面が表示されます。代わりにユーザーがウィンドウを閉じると、リクエストはコード `4001` で拒否されます。以前は、このようなリクエストは「wallet is locked」ですぐに失敗していました。
 
 - `enable`、`getKey`、`eth_requestAccounts` と署名メソッドは、このようにウォレットを起こします。
 - ページが読み込み時に行う読み取り（`eth_accounts`、`eth_chainId`、チェーンの読み取り）はウィンドウを開きません。`eth_accounts` は空のリストを返すだけです。

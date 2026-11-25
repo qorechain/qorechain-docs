@@ -71,9 +71,9 @@ QoreX es no custodial: QoreChain Association no puede recuperar un monedero perd
 |---|---|---|---|
 | Aplicación para iOS | App Store, **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
 | Aplicación para Android | Google Play, `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| Extensión de Chrome | Chrome Web Store, **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| Extensión de Firefox | Firefox Add-ons, `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Extensión de Safari | Mac App Store, **QoreX Wallet** (id 6794132220) | aplicación 1.8.2, extensión 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Extensión de Chrome | Chrome Web Store, **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Extensión de Firefox | Firefox Add-ons, `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| Extensión de Safari | Mac App Store, **QoreX Wallet** (id 6794132220) | aplicación 1.8.2, extensión 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | Kit para desarrolladores | seis paquetes npm, consulta [Para desarrolladores](#developers) | 0.1.0 | [Integraciones de QoreX](/developer-tools/qorex-integrations) |
 
 La revisión de cada tienda sigue su propio calendario, así que una tienda puede servir una compilación más antigua que otra; consulta [Qué versión está disponible en cada plataforma](#versions). El código fuente de QoreX no es público.
@@ -147,13 +147,13 @@ La revisión de cada tienda sigue su propio calendario, así que una tienda pued
 |---|---|---|
 | Apple App Store (iOS) | 1.2.5 | |
 | Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.4 | |
-| Firefox Add-ons | 0.4.4 | |
-| Safari (Mac App Store) | 1.8.2, con la extensión 0.4.4 | la Mac App Store usa su propia numeración `1.x` |
+| Chrome Web Store | 0.4.5 | |
+| Firefox Add-ons | 0.4.5 | |
+| Safari (Mac App Store) | 1.8.2, con la extensión 0.4.5 | la Mac App Store usa su propia numeración `1.x` |
 
 Las tiendas siempre muestran su versión actual, y una tienda que todavía sirva una compilación anterior se pondrá al día automáticamente. En este manual no se describe como disponible ninguna compilación que una tienda aún no haya publicado.
 
-### Qué añaden las compilaciones 1.2.5 / 0.4.4 {#whats-new-125}
+### Qué añaden las compilaciones 1.2.5 / 0.4.5 {#whats-new-125}
 
 Para el uso diario (app y extensión, mainnet y testnet salvo que se indique):
 

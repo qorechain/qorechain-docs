@@ -9,7 +9,7 @@ sidebar_position: 2
 
 QoreX **브라우저 확장 프로그램**은 데스크톱용 QoreChain 지갑입니다. 지갑을 생성하거나 가져오고, QOR을 보관, 전송, 스테이킹하며, dApp에 연결할 수 있는 **독립형 지갑**인 동시에, 모든 웹사이트가 QoreX를 발견하고 모든 요청을 명시적이고 해독된 승인 절차로 바꿀 수 있게 해주는 구성 요소입니다. 데스크톱 브라우저에서 QoreChain을 사용하는 모든 분과, 웹 앱이 QoreChain 지갑과 함께 동작하기를 원하는 개발자를 위한 것입니다.
 
-세 개의 스토어(Chrome, Firefox, Safari)에서 **정식 공개되어 사용 가능**하며, 모두 확장 프로그램 0.4.4를 제공합니다. [브라우저별로 어떤 버전이 서비스 중인가](#versions)를 참고하세요.
+세 개의 스토어(Chrome, Firefox, Safari)에서 **정식 공개되어 사용 가능**하며, 모두 확장 프로그램 0.4.5를 제공합니다. [브라우저별로 어떤 버전이 서비스 중인가](#versions)를 참고하세요.
 
 ## 혁신 요소 {#innovations}
 
@@ -53,13 +53,13 @@ QoreX **브라우저 확장 프로그램**은 데스크톱용 QoreChain 지갑�
 
 | 스토어 | 현재 버전 |
 |---|---|
-| Chrome Web Store | 0.4.4 |
-| Firefox Add-ons | 0.4.4 |
-| Safari (Mac App Store, **QoreX Wallet** macOS 앱) | 1.8.2, 확장 프로그램 0.4.4 포함 (Mac App Store는 자체 `1.x` 번호 체계를 사용합니다) |
+| Chrome Web Store | 0.4.5 |
+| Firefox Add-ons | 0.4.5 |
+| Safari (Mac App Store, **QoreX Wallet** macOS 앱) | 1.8.2, 확장 프로그램 0.4.5 포함 (Mac App Store는 자체 `1.x` 번호 체계를 사용합니다) |
 
 스토어 심사 완료 시점이 서로 다르기 때문에 한 스토어가 다른 스토어보다 오래된 빌드를 제공할 수 있습니다. 스토어 등록 정보에는 항상 현재 버전이 표시됩니다. [브라우저별로 어떤 버전이 서비스 중인가](/qorex/overview#versions)도 참고하세요.
 
-확장 프로그램 0.4.x에는 [자동 잠금](#unlock), [모든 전송 전 검토](#send), [CSV 내보내기가 있는 내역](#history), [결제 요청](#pay-requests), [연락처](#contacts), [내 자산 보호](#protection), [양자 내성 키 복구, 교체, 멀티시그](#pqc-care), 분리된 [스테이킹 화면](#stake), [코인 선택부터 시작하는 받기 화면](#receive), [dApp용 EVM 서명](#standards), [더 안전한 EVM 접근 창](#evm-window), [개발자 도구](#developer-tools)가 추가됩니다. 버전별 전체 목록은 [1.2.5 / 0.4.4 빌드에서 추가된 점](/qorex/overview#whats-new-125)과 그 뒤의 목록에 있습니다.
+확장 프로그램 0.4.x에는 [자동 잠금](#unlock), [모든 전송 전 검토](#send), [CSV 내보내기가 있는 내역](#history), [결제 요청](#pay-requests), [연락처](#contacts), [내 자산 보호](#protection), [양자 내성 키 복구, 교체, 멀티시그](#pqc-care), 분리된 [스테이킹 화면](#stake), [코인 선택부터 시작하는 받기 화면](#receive), [dApp용 EVM 서명](#standards), [더 안전한 EVM 접근 창](#evm-window), [개발자 도구](#developer-tools)가 추가됩니다. 버전별 전체 목록은 [1.2.5 / 0.4.5 빌드에서 추가된 점](/qorex/overview#whats-new-125)과 그 뒤의 목록에 있습니다.
 
 0.2.6 이후 확장 프로그램에는 다음도 추가되었습니다. [하나의 비밀번호로 여러 지갑](#wallets), [직접 추가하는 Ethereum 방식 계정](#coin60), [Claim & restake](#stake)(청구 후 재스테이킹), **언스테이킹 진행 중** 목록, [컨트랙트로 토큰 추가](#custom-tokens), [모든 네트워크에서 받기](#receive), [취소 기능이 있는 연결된 사이트](#connected-sites), [EVM 접근 창](#evm-window), [dApp용 `signAndBroadcast`](#sign-and-broadcast), 그리고 모든 메시지, 수수료, 만료 시점을 보여주는 승인 화면.
 
@@ -341,7 +341,7 @@ QoreX는 단순히 신뢰를 요구하는 것이 아니라 검증 가능하도�
 ```
 
 - **`storage`** - 암호화된 볼트, 출처(origin)별 연결 승인 정보, 지갑 자체의 설정과 목록(연락처 등)을 확장 프로그램 저장소에 **로컬로** 저장합니다.
-- **`nativeMessaging`** - 0.4.4에서 새로 추가되었으며, 개발자 모드 [AI 에이전트](#developer-tools) 도구에서만 사용해 사용자 컴퓨터의 보조 프로그램(아직 미공개)과 통신합니다. QoreX는 해당 도구에서 **이 컴퓨터에서 AI 에이전트 연결 허용**을 켠 후에만 이 연결을 엽니다. **Safari** 패키지는 이 권한을 선언하지 않습니다.
+- **`nativeMessaging`** - 0.4.5에서 새로 추가되었으며, 개발자 모드 [AI 에이전트](#developer-tools) 도구에서만 사용해 사용자 컴퓨터의 보조 프로그램(아직 미공개)과 통신합니다. QoreX는 해당 도구에서 **이 컴퓨터에서 AI 에이전트 연결 허용**을 켠 후에만 이 연결을 엽니다. **Safari** 패키지는 이 권한을 선언하지 않습니다.
 - **`host_permissions: []`** - QoreX는 호스트 권한을 **전혀** 선언하지 않습니다. 사용자를 대신해 임의의 사이트로 교차 출처 네트워크 요청을 보낼 수 있는 권한을 요청하지 않습니다.
 - **`web_accessible_resources`** - 페이지가 QoreX 자체의 `inpage.js`, 즉 프로바이더를 노출하는 작은 스크립트를 로드할 수 있게 합니다. `use_dynamic_url`은 세션마다 고유한 주소를 부여하므로, 사이트가 확장 프로그램을 탐색하여 지문을 수집할 수 없습니다.
 - **`content_scripts`가 `<all_urls>`와 일치** - Firefox가 <em>"모든 웹사이트의 데이터에 접근"</em>이라고 표시하는 솔직한 이유가 바로 이것입니다. QoreX는 **모든 페이지**에 작은 프로바이더 스크립트(`content.js` → `inpage.js`)를 주입합니다. 모든 사이트에서 실행되는 콘텐츠 스크립트는 기술적으로 페이지를 읽을 *수* 있고, 브라우저는 그 기능을 정확히 그런 문구로 설명합니다 - 그것이 `host_permissions`에서 비롯되든 콘텐츠 스크립트 매칭에서 비롯되든 마찬가지입니다.
@@ -354,7 +354,7 @@ QoreX는 단순히 신뢰를 요구하는 것이 아니라 검증 가능하도�
 
 dApp은 **EIP-6963**을 통해 QoreX를 발견합니다(요청을 알리고 `rdns`가 `network.qore.qorex`인 지갑을 선택). 그런 다음 반환된 EIP-1193 프로바이더를 사용합니다. QoreChain **Native** 레인에는 `window.qorex.native`를 사용하며, `capabilities`를 읽어 이 빌드가 지원하는 기능을 확인합니다. QoreX는 `window.ethereum`이나 `window.keplr`를 설정하지 않습니다. 코드가 포함된 전체 개발자 가이드는 별도 페이지에 있습니다: [QoreX와 dApp 연동하기](/qorex/dapp-integration)([QoreX 감지](/qorex/dapp-integration#detection)와 [연결](/qorex/dapp-integration#connect) 참고). 웹 앱에서는 [지갑 어댑터](/developer-tools/wallet-adapter)가 이 감지를 대신 처리해 주며, [QoreX 개발자 키트](/developer-tools/qorex-integrations)가 앱 측 통합을 다룹니다. (`@qorechain/connect`는 더 이상 사용되지 않으니 새 작업에는 사용하지 마세요.)
 
-승인은 **출처별**로 이루어집니다. 사이트에 처음 연결할 때 출처를 표시하는 승인 팝업이 열리고, 승인 시 공개 주소만 공개되며, 한 사이트의 승인이 다른 사이트에 어떤 권한도 부여하지 않습니다. 승인은 지갑별로 유지되고, **연결된 사이트**에서 취소할 때까지 지속되며, 한 사이트는 대기 중인 요청을 하나(전체로는 세 개)까지 가질 수 있습니다. 지갑을 전환하거나 잠그면 대기 중인 요청에는 "거부"로 응답합니다. 0.4.4부터는 QoreX가 잠긴 상태에서 사이트가 서명을 요청하면 사이트 이름을 표시하며 비밀번호 화면을 열고, 잠금 해제 후 승인 화면을 보여 줍니다. 창을 닫으면 거부됩니다. [승인 창이 보여주는 것](/qorex/security-and-recovery#approvals)을 참고하세요.
+승인은 **출처별**로 이루어집니다. 사이트에 처음 연결할 때 출처를 표시하는 승인 팝업이 열리고, 승인 시 공개 주소만 공개되며, 한 사이트의 승인이 다른 사이트에 어떤 권한도 부여하지 않습니다. 승인은 지갑별로 유지되고, **연결된 사이트**에서 취소할 때까지 지속되며, 한 사이트는 대기 중인 요청을 하나(전체로는 세 개)까지 가질 수 있습니다. 지갑을 전환하거나 잠그면 대기 중인 요청에는 "거부"로 응답합니다. 0.4.5부터는 QoreX가 잠긴 상태에서 사이트가 서명을 요청하면 사이트 이름을 표시하며 비밀번호 화면을 열고, 잠금 해제 후 승인 화면을 보여 줍니다. 창을 닫으면 거부됩니다. [승인 창이 보여주는 것](/qorex/security-and-recovery#approvals)을 참고하세요.
 
 ### Dashboard 브리지 (v0.1.5, v0.2.2에서 확장) {#dashboard-bridge}
 
@@ -388,9 +388,9 @@ QoreX가 직접 개시하는 모든 네이티브 QOR 전송은 두 번 서명됩
 
 | 스토어 | 등록 정보 | 현재 버전 | 링크 |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| Firefox Add-ons | `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Mac App Store (Safari) | **QoreX Wallet**, 앱 1.8.2 | 확장 프로그램 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| Mac App Store (Safari) | **QoreX Wallet**, 앱 1.8.2 | 확장 프로그램 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 
 QoreX 소스 코드는 공개되어 있지 않습니다. 스토어 등록 정보에는 항상 현재 버전이 표시됩니다.
 

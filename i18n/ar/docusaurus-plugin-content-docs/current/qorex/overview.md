@@ -71,9 +71,9 @@ QoreX غير احتجازية: لا تستطيع QoreChain Association استع�
 |---|---|---|---|
 | تطبيق iOS | App Store، **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
 | تطبيق Android | Google Play، `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| إضافة Chrome | Chrome Web Store، **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| إضافة Firefox | Firefox Add-ons، `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| إضافة Safari | Mac App Store، **QoreX Wallet** (id 6794132220) | التطبيق 1.8.2، الإضافة 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| إضافة Chrome | Chrome Web Store، **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| إضافة Firefox | Firefox Add-ons، `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| إضافة Safari | Mac App Store، **QoreX Wallet** (id 6794132220) | التطبيق 1.8.2، الإضافة 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | حزمة المطورين | ست حزم npm، راجع [للمطورين](#developers) | 0.1.0 | [تكاملات QoreX](/developer-tools/qorex-integrations) |
 
 تسير مراجعة المتاجر وفق جدولها الخاص، لذا قد يقدّم متجر إصدارًا أقدم من متجر آخر؛ راجع [أي إصدار متاح على كل منصة](#versions). الشيفرة المصدرية لـ QoreX غير عامة.
@@ -147,13 +147,13 @@ QoreX غير احتجازية: لا تستطيع QoreChain Association استع�
 |---|---|---|
 | Apple App Store (iOS) | 1.2.5 | |
 | Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.4 | |
-| Firefox Add-ons | 0.4.4 | |
-| Safari (Mac App Store) | 1.8.2، ويحمل الإضافة 0.4.4 | يستخدم Mac App Store ترقيمه الخاص `1.x` |
+| Chrome Web Store | 0.4.5 | |
+| Firefox Add-ons | 0.4.5 | |
+| Safari (Mac App Store) | 1.8.2، ويحمل الإضافة 0.4.5 | يستخدم Mac App Store ترقيمه الخاص `1.x` |
 
 تعرض المتاجر دائمًا إصدارها الحالي، وأي متجر ما زال يقدّم إصدارًا أقدم سيلحق بالتحديث تلقائيًا. لا يُوصف في هذا الدليل أي إصدار لم يطرحه المتجر بعد على أنه متاح.
 
-### ما الذي تضيفه إصدارات 1.2.5 / 0.4.4 {#whats-new-125}
+### ما الذي تضيفه إصدارات 1.2.5 / 0.4.5 {#whats-new-125}
 
 للاستخدام اليومي (التطبيق والإضافة، على الشبكة الرئيسية والتجريبية ما لم يُذكر خلاف ذلك):
 

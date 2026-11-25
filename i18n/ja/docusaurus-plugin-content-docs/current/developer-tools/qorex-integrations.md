@@ -12,7 +12,7 @@ QoreX インテグレーションは、[QoreX ウォレット](/qorex/overview)�
 これらにできないこと: 鍵を保持することはなく、QoreX を現在の姿以上のものにすることもありません。これらの上に構築する前に[制限と既知の問題](#limits)を読んでください。現在公開されている QoreX のストア版ビルドがサポートしているのは、これらのパッケージが接続できる機能の一部であり、その制限はそこに記載されています。
 
 :::tip これらのパッケージを使わずに連携する場合や、ウォレットの現在の機能を確認する場合
-[dApp を QoreX と連携する](/qorex/dapp-integration)は、ウォレット自体の完全なガイドです。検出、`signAndBroadcast`、cosmjs の署名者、メッセージ署名、EVM、Solana、エラー、リンクを、QoreX アプリ 1.2.5、拡張機能 0.4.4、Safari 1.8.2 を対象に扱います。0.1.0 のパッケージは 2026 年 10 月 27 日に公開され、その後ウォレットには機能が追加されています。このページはパッケージの動作を説明します。ウォレットの機能については、そのガイドが最新です。
+[dApp を QoreX と連携する](/qorex/dapp-integration)は、ウォレット自体の完全なガイドです。検出、`signAndBroadcast`、cosmjs の署名者、メッセージ署名、EVM、Solana、エラー、リンクを、QoreX アプリ 1.2.5、拡張機能 0.4.5、Safari 1.8.2 を対象に扱います。0.1.0 のパッケージは 2026 年 10 月 27 日に公開され、その後ウォレットには機能が追加されています。このページはパッケージの動作を説明します。ウォレットの機能については、そのガイドが最新です。
 :::
 
 ## 革新点 {#innovations}
@@ -49,7 +49,7 @@ QoreX インテグレーションは、[QoreX ウォレット](/qorex/overview)�
 
 ### ウォレットがサポートする内容 {#qorex-today}
 
-[dApp を QoreX と連携する](/qorex/dapp-integration)には、QoreX アプリ 1.2.5、拡張機能 0.4.4、Safari 1.8.2 が各対象で何に応答するかが記載されています: [EVM](/qorex/dapp-integration#evm)、[`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast)、[cosmjs の署名者](/qorex/dapp-integration#cosmjs)、[メッセージ署名](/qorex/dapp-integration#sign-arbitrary)、[Solana](/qorex/dapp-integration#solana)、[エラーとイベント](/qorex/dapp-integration#errors)。QoreChain の EVM レーンでは、送信者が登録済みの ML-DSA-87 鍵と EVM 認可ウィンドウを持っている場合にトランザクションが受け付けられます。トランザクションを許可するウィンドウがない場合は、QoreX の承認がそのトランザクション用に開きます。メインネットとテストネットの切り替えはユーザーが QoreX 内で行います。dApp から切り替えることはできません。
+[dApp を QoreX と連携する](/qorex/dapp-integration)には、QoreX アプリ 1.2.5、拡張機能 0.4.5、Safari 1.8.2 が各対象で何に応答するかが記載されています: [EVM](/qorex/dapp-integration#evm)、[`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast)、[cosmjs の署名者](/qorex/dapp-integration#cosmjs)、[メッセージ署名](/qorex/dapp-integration#sign-arbitrary)、[Solana](/qorex/dapp-integration#solana)、[エラーとイベント](/qorex/dapp-integration#errors)。QoreChain の EVM レーンでは、送信者が登録済みの ML-DSA-87 鍵と EVM 認可ウィンドウを持っている場合にトランザクションが受け付けられます。トランザクションを許可するウィンドウがない場合は、QoreX の承認がそのトランザクション用に開きます。メインネットとテストネットの切り替えはユーザーが QoreX 内で行います。dApp から切り替えることはできません。
 
 ## 使い方 {#how-to-use}
 
