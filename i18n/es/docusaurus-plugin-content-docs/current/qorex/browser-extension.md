@@ -50,7 +50,7 @@ Instala siempre desde una de estas fichas.
 ### Qué versión está activa en cada uno {#versions}
 
 :::note
-Versiones comprobadas el 25 de noviembre de 2026. La app 1.2.5, la extensión 0.4.5 y Safari 1.8.2 están pasando la revisión de las tiendas: las funciones que este manual describe para ellas llegan cuando tu tienda ofrezca la actualización. Firefox ya sirve la 0.4.4, que tiene todas estas funciones; la 0.4.5 solo añade pequeñas correcciones. La página web de los enlaces de pago compartidos se activa junto con la 1.2.5.
+Versiones comprobadas el 25 de noviembre de 2026. La app para iPhone 1.2.5 y la extensión para Firefox 0.4.5 ya están disponibles. La app para Android 1.2.5, la extensión para Chrome 0.4.5 y Safari 1.8.2 están en revisión de las tiendas: las funciones que este manual describe para ellas llegan cuando tu tienda ofrezca la actualización. La página web de los enlaces de pago compartidos todavía no está en línea; los enlaces se abren en QoreX.
 :::
 
 Versión actual en cada tienda:
@@ -58,7 +58,7 @@ Versión actual en cada tienda:
 | Tienda | Versión actual |
 |---|---|
 | Chrome Web Store | 0.4.3 |
-| Firefox Add-ons | 0.4.4 |
+| Firefox Add-ons | 0.4.5 |
 | Safari (Mac App Store, app de macOS **QoreX Wallet**) | 1.8.1, que incluye la extensión 0.4.3 (la Mac App Store usa su propia numeración `1.x`) |
 
 Las revisiones de cada tienda se completan en momentos distintos, así que una tienda puede servir un build más antiguo que otra; la ficha de la tienda siempre muestra su versión actual. Consulta también [Qué versión está activa en cada uno](/qorex/overview#versions).
@@ -392,9 +392,9 @@ Cada transferencia nativa de QOR que QoreX inicia por sí misma se firma dos vec
 
 | Tienda | Ficha | Versión actual | Enlace |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Chrome Web Store | **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Mac App Store (Safari) | **QoreX Wallet**, app 1.8.2 | extensión 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Mac App Store (Safari) | **QoreX Wallet**, app 1.8.1 | extensión 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 
 El código fuente de QoreX no es público. Las fichas de las tiendas siempre muestran la versión actual.
 

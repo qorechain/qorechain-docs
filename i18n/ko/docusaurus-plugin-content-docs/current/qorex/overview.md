@@ -70,10 +70,10 @@ QoreX는 비수탁형입니다. QoreChain Association은 분실한 지갑을 복
 | 빌드 | 목록 및 패키지 이름 | 현재 버전 | 링크 |
 |---|---|---|---|
 | iOS 앱 | App Store, **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
-| Android 앱 | Google Play, `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| Chrome 확장 프로그램 | Chrome Web Store, **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Android 앱 | Google Play, `network.qore.qorex` | 1.2.4 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
+| Chrome 확장 프로그램 | Chrome Web Store, **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox 확장 프로그램 | Firefox Add-ons, `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Safari 확장 프로그램 | Mac App Store, **QoreX Wallet** (id 6794132220) | 앱 1.8.2, 확장 프로그램 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Safari 확장 프로그램 | Mac App Store, **QoreX Wallet** (id 6794132220) | 앱 1.8.1, 확장 프로그램 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | 개발자 키트 | npm 패키지 6개, [개발자용](#developers) 참고 | 0.1.0 | [QoreX 연동](/developer-tools/qorex-integrations) |
 
 스토어 심사는 자체 일정에 따라 진행되므로 한 스토어가 다른 스토어보다 이전 빌드를 제공할 수 있습니다. [어느 버전이 어디에 배포되어 있는지](#versions)를 참고하세요. QoreX 소스 코드는 공개되어 있지 않습니다.
@@ -142,17 +142,17 @@ QoreX는 비수탁형입니다. QoreChain Association은 분실한 지갑을 복
 ## 어느 버전이 어디에 배포되어 있는지 {#versions}
 
 :::note
-2026년 11월 25일에 확인한 버전입니다. 앱 1.2.5, 확장 프로그램 0.4.5, Safari 1.8.2는 스토어 심사 중입니다. 이 설명서가 해당 버전에 대해 설명하는 기능은 사용 중인 스토어에서 업데이트를 제공할 때 이용할 수 있습니다. Firefox는 이미 0.4.4를 배포하고 있으며 이 기능이 모두 들어 있습니다. 0.4.5는 작은 수정만 추가합니다. 공유한 결제 링크의 웹 페이지는 1.2.5와 함께 공개됩니다.
+2026년 11월 25일에 확인한 버전입니다. iPhone 앱 1.2.5와 Firefox 확장 프로그램 0.4.5는 출시되었습니다. Android 앱 1.2.5, Chrome 확장 프로그램 0.4.5, Safari 1.8.2는 스토어 심사 중입니다. 이 설명서가 해당 버전에 대해 설명하는 기능은 사용 중인 스토어에서 업데이트를 제공할 때 이용할 수 있습니다. 공유한 결제 링크의 웹 페이지는 아직 공개되지 않았으며, 링크는 QoreX에서 열립니다.
 :::
 
 스토어 심사는 자체 일정에 따라 진행되므로 한 스토어가 다른 스토어보다 한동안 이전 빌드를 제공할 수 있습니다. 다음은 **각 스토어**의 현재 버전입니다.
 
 | 스토어 | 현재 버전 | 비고 |
 |---|---|---|
-| Apple App Store (iOS) | 1.2.4 | |
+| Apple App Store (iOS) | 1.2.5 | |
 | Google Play (Android) | 1.2.4 | |
 | Chrome Web Store | 0.4.3 | |
-| Firefox Add-ons | 0.4.4 | |
+| Firefox Add-ons | 0.4.5 | |
 | Safari (Mac App Store) | 1.8.1, 확장 프로그램 0.4.3 포함 | Mac App Store는 자체 `1.x` 번호 체계를 사용 |
 
 스토어에는 항상 현재 버전이 표시되며, 아직 이전 빌드를 제공하는 스토어는 자동으로 따라잡습니다.

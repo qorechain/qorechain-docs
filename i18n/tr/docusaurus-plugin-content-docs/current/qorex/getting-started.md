@@ -30,7 +30,7 @@ sidebar_position: 2
 - **iOS**: App Store (iOS 15.1 veya üzeri): https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
-Güncel sürümler [Hangi sürüm nerede yayında](/qorex/overview#versions) bölümünde listelenir: iOS ve Android uygulaması 1.2.5'tir. Uygulama ücretsizdir ve hesap gerektirmez. Varsayılan olarak mainnet `qorechain-vladi` kullanılır; **Ayarlar → Testneti kullan (geliştiriciler)** `qorechain-diana`'ya geçer. Gönderme ve staking, normal ağ ücretini öder (taban gas başına 0.1 uqor). Uygulama, sağdan sola düzenli Arapça dahil 10 dili destekler ve telefonun dilini takip eder.
+Güncel sürümler [Hangi sürüm nerede yayında](/qorex/overview#versions) bölümünde listelenir: iOS uygulaması 1.2.5, Android uygulaması 1.2.4'tür (1.2.5, 25 Kasım 2026 itibarıyla mağaza incelemesindedir). Uygulama ücretsizdir ve hesap gerektirmez. Varsayılan olarak mainnet `qorechain-vladi` kullanılır; **Ayarlar → Testneti kullan (geliştiriciler)** `qorechain-diana`'ya geçer. Gönderme ve staking, normal ağ ücretini öder (taban gas başına 0.1 uqor). Uygulama, sağdan sola düzenli Arapça dahil 10 dili destekler ve telefonun dilini takip eder.
 
 ## Nasıl kullanılır {#how-to-use}
 

@@ -50,7 +50,7 @@ Instalează întotdeauna din una dintre aceste listări.
 ### Ce versiune este live unde {#versions}
 
 :::note
-Versiuni verificate pe 25 noiembrie 2026. Aplicația 1.2.5, extensia 0.4.5 și Safari 1.8.2 trec acum prin verificarea magazinelor: funcțiile pe care acest manual le descrie pentru ele ajung la tine când magazinul tău oferă actualizarea. Firefox oferă deja 0.4.4, care are toate aceste funcții; 0.4.5 aduce doar corecții mici. Pagina web a linkurilor de plată distribuite intră online odată cu 1.2.5.
+Versiuni verificate pe 25 noiembrie 2026. Aplicația pentru iPhone 1.2.5 și extensia pentru Firefox 0.4.5 sunt disponibile. Aplicația pentru Android 1.2.5, extensia pentru Chrome 0.4.5 și Safari 1.8.2 sunt în verificare la magazine: funcțiile pe care acest manual le descrie pentru ele ajung la tine când magazinul tău oferă actualizarea. Pagina web a linkurilor de plată distribuite nu este încă online; linkurile se deschid în QoreX.
 :::
 
 Versiunea curentă din fiecare magazin:
@@ -58,7 +58,7 @@ Versiunea curentă din fiecare magazin:
 | Magazin | Versiunea curentă |
 |---|---|
 | Chrome Web Store | 0.4.3 |
-| Firefox Add-ons | 0.4.4 |
+| Firefox Add-ons | 0.4.5 |
 | Safari (Mac App Store, aplicația macOS **QoreX Wallet**) | 1.8.1, care conține extensia 0.4.3 (Mac App Store folosește propria numerotare `1.x`) |
 
 Recenziile magazinelor ajung în momente diferite, astfel încât un magazin poate servi un build mai vechi decât altul; listarea din magazin arată mereu versiunea sa curentă. Vezi și [Ce versiune este live unde](/qorex/overview#versions).
@@ -392,9 +392,9 @@ Fiecare transfer nativ de QOR pe care QoreX îl inițiază singur este semnat de
 
 | Magazin | Listare | Versiunea curentă | Link |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Chrome Web Store | **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Mac App Store (Safari) | **QoreX Wallet**, aplicația 1.8.2 | extensia 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Mac App Store (Safari) | **QoreX Wallet**, aplicația 1.8.1 | extensia 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 
 Codul sursă QoreX nu este public. Listările din magazine arată mereu versiunea curentă.
 

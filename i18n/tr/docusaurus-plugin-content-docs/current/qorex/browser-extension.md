@@ -50,7 +50,7 @@ Her zaman bu listelemelerden birinden kurun.
 ### Hangi sürüm nerede yayında {#versions}
 
 :::note
-Sürümler 25 Kasım 2026 tarihinde kontrol edilmiştir. Uygulama 1.2.5, eklenti 0.4.5 ve Safari 1.8.2 mağaza incelemesindedir: bu kılavuzun bu sürümler için anlattığı özellikler, mağazanız güncellemeyi sunduğunda gelir. Firefox şimdiden bu özelliklerin tümünü içeren 0.4.4 sürümünü sunuyor; 0.4.5 yalnızca küçük düzeltmeler ekler. Paylaşılan ödeme bağlantılarının web sayfası 1.2.5 ile birlikte yayına girer.
+Sürümler 25 Kasım 2026 tarihinde kontrol edilmiştir. iPhone uygulaması 1.2.5 ve Firefox eklentisi 0.4.5 yayında. Android uygulaması 1.2.5, Chrome eklentisi 0.4.5 ve Safari 1.8.2 mağaza incelemesinde: bu kılavuzun bu sürümler için anlattığı özellikler, mağazanız güncellemeyi sunduğunda gelir. Paylaşılan ödeme bağlantılarının web sayfası henüz yayında değil; bağlantılar QoreX'te açılır.
 :::
 
 Her mağazadaki güncel sürüm:
@@ -58,7 +58,7 @@ Her mağazadaki güncel sürüm:
 | Mağaza | Güncel sürüm |
 |---|---|
 | Chrome Web Store | 0.4.3 |
-| Firefox Add-ons | 0.4.4 |
+| Firefox Add-ons | 0.4.5 |
 | Safari (Mac App Store, **QoreX Wallet** macOS uygulaması) | 1.8.1, 0.4.3 uzantısını taşır (Mac App Store kendi `1.x` numaralandırmasını kullanır) |
 
 Mağaza incelemeleri farklı zamanlarda sonuçlandığı için bir mağaza diğerinden daha eski bir derleme sunabilir; mağaza listelemesi her zaman güncel sürümünü gösterir. Ayrıca bkz. [Hangi sürüm nerede yayında](/qorex/overview#versions).
@@ -392,9 +392,9 @@ QoreX'in kendi başlattığı her Native QOR transferi iki kez imzalanır: klasi
 
 | Mağaza | Listeleme | Güncel sürüm | Bağlantı |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Chrome Web Store | **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Mac App Store (Safari) | **QoreX Wallet**, uygulama 1.8.2 | uzantı 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Mac App Store (Safari) | **QoreX Wallet**, uygulama 1.8.1 | uzantı 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 
 QoreX kaynak kodu herkese açık değildir. Mağaza listelemeleri her zaman güncel sürümü gösterir.
 

@@ -70,10 +70,10 @@ QoreX saklamasızdır: QoreChain Association kaybolan bir cüzdanı kurtaramaz, 
 | Yapı | Liste ve paket adı | Güncel sürüm | Bağlantı |
 |---|---|---|---|
 | iOS uygulaması | App Store, **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
-| Android uygulaması | Google Play, `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| Chrome eklentisi | Chrome Web Store, **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Android uygulaması | Google Play, `network.qore.qorex` | 1.2.4 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
+| Chrome eklentisi | Chrome Web Store, **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox eklentisi | Firefox Add-ons, `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Safari eklentisi | Mac App Store, **QoreX Wallet** (id 6794132220) | uygulama 1.8.2, eklenti 0.4.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Safari eklentisi | Mac App Store, **QoreX Wallet** (id 6794132220) | uygulama 1.8.1, eklenti 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | Geliştirici kiti | altı npm paketi, bkz. [Geliştiriciler için](#developers) | 0.1.0 | [QoreX entegrasyonları](/developer-tools/qorex-integrations) |
 
 Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza diğerinden daha eski bir yapı sunabilir; bkz. [Hangi sürüm nerede canlı](#versions). QoreX kaynak kodu herkese açık değildir.
@@ -142,17 +142,17 @@ Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza di�
 ## Hangi sürüm nerede canlı {#versions}
 
 :::note
-Sürümler 25 Kasım 2026 tarihinde kontrol edilmiştir. Uygulama 1.2.5, eklenti 0.4.5 ve Safari 1.8.2 mağaza incelemesindedir: bu kılavuzun bu sürümler için anlattığı özellikler, mağazanız güncellemeyi sunduğunda gelir. Firefox şimdiden bu özelliklerin tümünü içeren 0.4.4 sürümünü sunuyor; 0.4.5 yalnızca küçük düzeltmeler ekler. Paylaşılan ödeme bağlantılarının web sayfası 1.2.5 ile birlikte yayına girer.
+Sürümler 25 Kasım 2026 tarihinde kontrol edilmiştir. iPhone uygulaması 1.2.5 ve Firefox eklentisi 0.4.5 yayında. Android uygulaması 1.2.5, Chrome eklentisi 0.4.5 ve Safari 1.8.2 mağaza incelemesinde: bu kılavuzun bu sürümler için anlattığı özellikler, mağazanız güncellemeyi sunduğunda gelir. Paylaşılan ödeme bağlantılarının web sayfası henüz yayında değil; bağlantılar QoreX'te açılır.
 :::
 
 Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza bir süre diğerinden daha eski bir yapı sunabilir. Bu, **her mağazadaki** güncel sürümdür:
 
 | Mağaza | Güncel sürüm | Not |
 |---|---|---|
-| Apple App Store (iOS) | 1.2.4 | |
+| Apple App Store (iOS) | 1.2.5 | |
 | Google Play (Android) | 1.2.4 | |
 | Chrome Web Store | 0.4.3 | |
-| Firefox Add-ons | 0.4.4 | |
+| Firefox Add-ons | 0.4.5 | |
 | Safari (Mac App Store) | 1.8.1, eklenti 0.4.3 ile birlikte | Mac App Store kendi `1.x` numaralandırmasını kullanır |
 
 Mağazalar her zaman güncel sürümlerini gösterir ve hâlâ eski bir yapı sunan bir mağaza otomatik olarak yetişir.

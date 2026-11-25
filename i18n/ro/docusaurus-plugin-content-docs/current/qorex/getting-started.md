@@ -30,7 +30,7 @@ sidebar_position: 2
 - **iOS**: App Store (iOS 15.1 sau ulterior): https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
-Versiunile curente sunt listate la [Ce versiune este live unde](/qorex/overview#versions): aplicația iOS și Android este 1.2.5. Aplicația este gratuită și nu necesită cont. Mainnet `qorechain-vladi` este implicit; **Setări → Folosește testnet (dezvoltatori)** comută la `qorechain-diana`. Trimiterea și staking-ul plătesc taxa normală de rețea (prag de 0,1 uqor per gas). Aplicația are 10 limbi, inclusiv araba cu aranjare de la dreapta la stânga, și urmează limba telefonului.
+Versiunile curente sunt listate la [Ce versiune este live unde](/qorex/overview#versions): aplicația iOS este 1.2.5, iar aplicația Android este 1.2.4 (1.2.5 este în verificare la magazin, la 25 noiembrie 2026). Aplicația este gratuită și nu necesită cont. Mainnet `qorechain-vladi` este implicit; **Setări → Folosește testnet (dezvoltatori)** comută la `qorechain-diana`. Trimiterea și staking-ul plătesc taxa normală de rețea (prag de 0,1 uqor per gas). Aplicația are 10 limbi, inclusiv araba cu aranjare de la dreapta la stânga, și urmează limba telefonului.
 
 ## Cum folosești {#how-to-use}
 
