@@ -49,7 +49,7 @@ QOR stake etmek, QoreChain'i güvence altına almaya yardımcı olur ve size gar
 ### Bir doğrulayıcı ile stake edin
 
 1. **Stake** ekranını açın.
-2. Listeden bir doğrulayıcı seçin (zincirden canlı olarak yüklenir, en düşük stake'e sahip olan önce gösterilir ve şu anda hapiste (jailed) olan doğrulayıcılar listeden çıkarılır - böyle birine delege etmek zaten hiçbir zaman istediğiniz şey değildir). QOR'unuzun zaten bulunduğu doğrulayıcılarda bir *mizada* rozeti bulunur.
+2. Listeden bir doğrulayıcı seçin (zincirden canlı olarak yüklenir, en düşük stake'e sahip olan önce gösterilir ve şu anda hapiste (jailed) olan doğrulayıcılar listeden çıkarılır - böyle birine delege etmek zaten hiçbir zaman istediğiniz şey değildir). QOR'unuzun zaten bulunduğu doğrulayıcılarda bir *stake'te* rozeti bulunur.
 3. Bir tutar girin. Siz yazarken, geriye kalacak tutar bir sonraki ağ ücretini karşılamayacaksa QoreX sizi uyarır: *"Bu işlem \{remaining\} QOR bırakır, yani bir işlemin maliyeti olan \{fee\} QOR'dan az. Bu hesap ücret için yeniden QOR tutana kadar stake'ten çekemez veya ödül talep edemezsiniz."* Bu bir engel değil, bir uyarıdır - bu sizin paranız - ancak stake'ten çekmek ve talep etmek, her ikisi de **likit** bakiyenizden bir ücrete mal olur; bu yüzden neredeyse sıfıra kadar stake etmek, biri QOR gönderene kadar stake'i kilitler.
 4. **Onaylayın** (mobilde biyometri). Vesting QOR'u toplamınıza kadar stake edebilirsiniz, ancak ağ ücreti **kilidi açılmış** QOR'unuzdan karşılanmalıdır - vesting QOR ücret ödeyemez.
 5. Ödüller biriktikçe talep edin - aşağıya bakın.
