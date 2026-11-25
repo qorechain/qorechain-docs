@@ -141,17 +141,21 @@ Instala desde las fichas oficiales de [Cómo acceder](#how-to-access). La aplica
 
 ## Qué versión está disponible en cada plataforma {#versions}
 
+:::note
+Versiones comprobadas el 25 de noviembre de 2026. La app 1.2.5, la extensión 0.4.5 y Safari 1.8.2 están pasando la revisión de las tiendas: las funciones que este manual describe para ellas llegan cuando tu tienda ofrezca la actualización. Firefox ya sirve la 0.4.4, que tiene todas estas funciones; la 0.4.5 solo añade pequeñas correcciones. La página web de los enlaces de pago compartidos se activa junto con la 1.2.5.
+:::
+
 La revisión de cada tienda sigue su propio calendario, así que una tienda puede servir durante un tiempo una compilación más antigua que otra. Esta es la versión actual **en cada tienda**:
 
 | Tienda | Versión actual | Nota |
 |---|---|---|
-| Apple App Store (iOS) | 1.2.5 | |
-| Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.5 | |
-| Firefox Add-ons | 0.4.5 | |
-| Safari (Mac App Store) | 1.8.2, con la extensión 0.4.5 | la Mac App Store usa su propia numeración `1.x` |
+| Apple App Store (iOS) | 1.2.4 | |
+| Google Play (Android) | 1.2.4 | |
+| Chrome Web Store | 0.4.3 | |
+| Firefox Add-ons | 0.4.4 | |
+| Safari (Mac App Store) | 1.8.1, con la extensión 0.4.3 | la Mac App Store usa su propia numeración `1.x` |
 
-Las tiendas siempre muestran su versión actual, y una tienda que todavía sirva una compilación anterior se pondrá al día automáticamente. En este manual no se describe como disponible ninguna compilación que una tienda aún no haya publicado.
+Las tiendas siempre muestran su versión actual, y una tienda que todavía sirva una compilación anterior se pondrá al día automáticamente.
 
 ### Qué añaden las compilaciones 1.2.5 / 0.4.5 {#whats-new-125}
 

@@ -49,13 +49,17 @@ Installez toujours depuis l'une de ces fiches.
 
 ### Quelle version est en ligne où {#versions}
 
+:::note
+Versions vérifiées le 25 novembre 2026. L'application 1.2.5, l'extension 0.4.5 et Safari 1.8.2 sont en cours d'examen par les boutiques : les fonctions que ce manuel décrit pour elles arrivent dès que votre boutique propose la mise à jour. Firefox distribue déjà la 0.4.4, qui contient toutes ces fonctions ; la 0.4.5 n'ajoute que de petites corrections. La page web des liens de paiement partagés est mise en ligne en même temps que la 1.2.5.
+:::
+
 Version actuelle sur chaque store :
 
 | Boutique | Version actuelle |
 |---|---|
-| Chrome Web Store | 0.4.5 |
-| Firefox Add-ons | 0.4.5 |
-| Safari (Mac App Store, application macOS **QoreX Wallet**) | 1.8.2, intégrant l'extension 0.4.5 (le Mac App Store utilise sa propre numérotation `1.x`) |
+| Chrome Web Store | 0.4.3 |
+| Firefox Add-ons | 0.4.4 |
+| Safari (Mac App Store, application macOS **QoreX Wallet**) | 1.8.1, intégrant l'extension 0.4.3 (le Mac App Store utilise sa propre numérotation `1.x`) |
 
 Les revues des boutiques n'arrivent pas au même moment, donc une boutique peut servir une version plus ancienne qu'une autre ; la fiche de la boutique affiche toujours sa version actuelle. Voir aussi [Quelle version est en ligne où](/qorex/overview#versions).
 

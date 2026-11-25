@@ -141,17 +141,21 @@ Installa dalle schede ufficiali indicate in [Come accedere](#how-to-access). L'a
 
 ## Quale versione è live dove {#versions}
 
+:::note
+Versioni verificate il 25 novembre 2026. L'app 1.2.5, l'estensione 0.4.5 e Safari 1.8.2 stanno passando la revisione degli store: le funzioni che questo manuale descrive per queste versioni arrivano quando il tuo store propone l'aggiornamento. Firefox distribuisce già la 0.4.4, che include tutte queste funzioni; la 0.4.5 aggiunge solo piccole correzioni. La pagina web dei link di pagamento condivisi va online insieme alla 1.2.5.
+:::
+
 La revisione degli store segue una propria tempistica, quindi uno store può servire per un po' una build più vecchia di un altro. Questa è la versione corrente **su ciascuno store**:
 
 | Store | Versione corrente | Nota |
 |---|---|---|
-| Apple App Store (iOS) | 1.2.5 | |
-| Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.5 | |
-| Firefox Add-ons | 0.4.5 | |
-| Safari (Mac App Store) | 1.8.2, con l'estensione 0.4.5 | il Mac App Store usa una propria numerazione `1.x` |
+| Apple App Store (iOS) | 1.2.4 | |
+| Google Play (Android) | 1.2.4 | |
+| Chrome Web Store | 0.4.3 | |
+| Firefox Add-ons | 0.4.4 | |
+| Safari (Mac App Store) | 1.8.1, con l'estensione 0.4.3 | il Mac App Store usa una propria numerazione `1.x` |
 
-Gli store mostrano sempre la loro versione corrente, e uno store che serve ancora una build più vecchia si aggiornerà automaticamente. Le build che uno store non ha ancora rilasciato non sono descritte in questo manuale come disponibili.
+Gli store mostrano sempre la loro versione corrente, e uno store che serve ancora una build più vecchia si aggiornerà automaticamente.
 
 ### Cosa aggiungono le build 1.2.5 / 0.4.5 {#whats-new-125}
 

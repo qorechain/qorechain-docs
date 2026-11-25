@@ -141,17 +141,21 @@ Installez depuis les fiches officielles de [Comment y accéder](#how-to-access).
 
 ## Quelle version est disponible où {#versions}
 
+:::note
+Versions vérifiées le 25 novembre 2026. L'application 1.2.5, l'extension 0.4.5 et Safari 1.8.2 sont en cours d'examen par les boutiques : les fonctions que ce manuel décrit pour elles arrivent dès que votre boutique propose la mise à jour. Firefox distribue déjà la 0.4.4, qui contient toutes ces fonctions ; la 0.4.5 n'ajoute que de petites corrections. La page web des liens de paiement partagés est mise en ligne en même temps que la 1.2.5.
+:::
+
 L'examen par les stores suit son propre calendrier ; un store peut donc servir pendant un temps une version plus ancienne qu'un autre. Voici la version actuelle **sur chaque store** :
 
 | Store | Version actuelle | Remarque |
 |---|---|---|
-| Apple App Store (iOS) | 1.2.5 | |
-| Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.5 | |
-| Firefox Add-ons | 0.4.5 | |
-| Safari (Mac App Store) | 1.8.2, intégrant l'extension 0.4.5 | le Mac App Store utilise sa propre numérotation `1.x` |
+| Apple App Store (iOS) | 1.2.4 | |
+| Google Play (Android) | 1.2.4 | |
+| Chrome Web Store | 0.4.3 | |
+| Firefox Add-ons | 0.4.4 | |
+| Safari (Mac App Store) | 1.8.1, intégrant l'extension 0.4.3 | le Mac App Store utilise sa propre numérotation `1.x` |
 
-Les stores affichent toujours leur version actuelle, et un store qui sert encore une version plus ancienne rattrapera son retard automatiquement. Les versions qu'un store n'a pas encore publiées ne sont pas décrites comme disponibles dans ce manuel.
+Les stores affichent toujours leur version actuelle, et un store qui sert encore une version plus ancienne rattrapera son retard automatiquement.
 
 ### Ce qu'ajoutent les versions 1.2.5 / 0.4.5 {#whats-new-125}
 

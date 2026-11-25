@@ -141,17 +141,21 @@ Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza di�
 
 ## Hangi sürüm nerede canlı {#versions}
 
+:::note
+Sürümler 25 Kasım 2026 tarihinde kontrol edilmiştir. Uygulama 1.2.5, eklenti 0.4.5 ve Safari 1.8.2 mağaza incelemesindedir: bu kılavuzun bu sürümler için anlattığı özellikler, mağazanız güncellemeyi sunduğunda gelir. Firefox şimdiden bu özelliklerin tümünü içeren 0.4.4 sürümünü sunuyor; 0.4.5 yalnızca küçük düzeltmeler ekler. Paylaşılan ödeme bağlantılarının web sayfası 1.2.5 ile birlikte yayına girer.
+:::
+
 Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza bir süre diğerinden daha eski bir yapı sunabilir. Bu, **her mağazadaki** güncel sürümdür:
 
 | Mağaza | Güncel sürüm | Not |
 |---|---|---|
-| Apple App Store (iOS) | 1.2.5 | |
-| Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.5 | |
-| Firefox Add-ons | 0.4.5 | |
-| Safari (Mac App Store) | 1.8.2, eklenti 0.4.5 ile birlikte | Mac App Store kendi `1.x` numaralandırmasını kullanır |
+| Apple App Store (iOS) | 1.2.4 | |
+| Google Play (Android) | 1.2.4 | |
+| Chrome Web Store | 0.4.3 | |
+| Firefox Add-ons | 0.4.4 | |
+| Safari (Mac App Store) | 1.8.1, eklenti 0.4.3 ile birlikte | Mac App Store kendi `1.x` numaralandırmasını kullanır |
 
-Mağazalar her zaman güncel sürümlerini gösterir ve hâlâ eski bir yapı sunan bir mağaza otomatik olarak yetişir. Bir mağazanın henüz yayımlamadığı yapılar bu kılavuzda kullanılabilir olarak anlatılmaz.
+Mağazalar her zaman güncel sürümlerini gösterir ve hâlâ eski bir yapı sunan bir mağaza otomatik olarak yetişir.
 
 ### 1.2.5 / 0.4.5 yapılarının ekledikleri {#whats-new-125}
 

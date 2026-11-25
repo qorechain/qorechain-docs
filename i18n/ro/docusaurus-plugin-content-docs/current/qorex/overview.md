@@ -141,17 +141,21 @@ Instalează din listările oficiale de la [Cum accesezi](#how-to-access). Aplica
 
 ## Ce versiune este disponibilă unde {#versions}
 
+:::note
+Versiuni verificate pe 25 noiembrie 2026. Aplicația 1.2.5, extensia 0.4.5 și Safari 1.8.2 trec acum prin verificarea magazinelor: funcțiile pe care acest manual le descrie pentru ele ajung la tine când magazinul tău oferă actualizarea. Firefox oferă deja 0.4.4, care are toate aceste funcții; 0.4.5 aduce doar corecții mici. Pagina web a linkurilor de plată distribuite intră online odată cu 1.2.5.
+:::
+
 Revizuirea din magazine se desfășoară după propriul program, astfel încât un magazin poate servi pentru o vreme o versiune mai veche decât altul. Aceasta este versiunea curentă din fiecare magazin:
 
 | Magazin | Versiune curentă | Notă |
 |---|---|---|
-| Apple App Store (iOS) | 1.2.5 | |
-| Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.5 | |
-| Firefox Add-ons | 0.4.5 | |
-| Safari (Mac App Store) | 1.8.2, cu extensia 0.4.5 | Mac App Store folosește propria numerotare `1.x` |
+| Apple App Store (iOS) | 1.2.4 | |
+| Google Play (Android) | 1.2.4 | |
+| Chrome Web Store | 0.4.3 | |
+| Firefox Add-ons | 0.4.4 | |
+| Safari (Mac App Store) | 1.8.1, cu extensia 0.4.3 | Mac App Store folosește propria numerotare `1.x` |
 
-Magazinele afișează întotdeauna versiunea lor curentă, iar un magazin care încă servește o versiune mai veche se va actualiza automat. Versiunile pe care un magazin nu le-a lansat încă nu sunt descrise în acest manual ca fiind disponibile.
+Magazinele afișează întotdeauna versiunea lor curentă, iar un magazin care încă servește o versiune mai veche se va actualiza automat.
 
 ### Ce adaugă versiunile 1.2.5 / 0.4.5 {#whats-new-125}
 

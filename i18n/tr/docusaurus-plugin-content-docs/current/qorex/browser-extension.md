@@ -49,13 +49,17 @@ Her zaman bu listelemelerden birinden kurun.
 
 ### Hangi sürüm nerede yayında {#versions}
 
+:::note
+Sürümler 25 Kasım 2026 tarihinde kontrol edilmiştir. Uygulama 1.2.5, eklenti 0.4.5 ve Safari 1.8.2 mağaza incelemesindedir: bu kılavuzun bu sürümler için anlattığı özellikler, mağazanız güncellemeyi sunduğunda gelir. Firefox şimdiden bu özelliklerin tümünü içeren 0.4.4 sürümünü sunuyor; 0.4.5 yalnızca küçük düzeltmeler ekler. Paylaşılan ödeme bağlantılarının web sayfası 1.2.5 ile birlikte yayına girer.
+:::
+
 Her mağazadaki güncel sürüm:
 
 | Mağaza | Güncel sürüm |
 |---|---|
-| Chrome Web Store | 0.4.5 |
-| Firefox Add-ons | 0.4.5 |
-| Safari (Mac App Store, **QoreX Wallet** macOS uygulaması) | 1.8.2, 0.4.5 uzantısını taşır (Mac App Store kendi `1.x` numaralandırmasını kullanır) |
+| Chrome Web Store | 0.4.3 |
+| Firefox Add-ons | 0.4.4 |
+| Safari (Mac App Store, **QoreX Wallet** macOS uygulaması) | 1.8.1, 0.4.3 uzantısını taşır (Mac App Store kendi `1.x` numaralandırmasını kullanır) |
 
 Mağaza incelemeleri farklı zamanlarda sonuçlandığı için bir mağaza diğerinden daha eski bir derleme sunabilir; mağaza listelemesi her zaman güncel sürümünü gösterir. Ayrıca bkz. [Hangi sürüm nerede yayında](/qorex/overview#versions).
 

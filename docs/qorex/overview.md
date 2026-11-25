@@ -141,17 +141,21 @@ Install from the official listings in [How to access](#how-to-access). The Andro
 
 ## Which version is live where {#versions}
 
+:::note
+Versions as checked on 25 November 2026. App 1.2.5, extension 0.4.5 and Safari 1.8.2 are on their way through store review: the features this manual describes for them arrive when your store offers the update. Firefox already serves 0.4.4, which has all of these features; 0.4.5 adds only small fixes. The web page behind shared payment links goes live together with 1.2.5.
+:::
+
 Store review runs on its own schedule, so a store can serve an older build than another for a while. This is the current version **on each store**:
 
 | Store | Current version | Note |
 |---|---|---|
-| Apple App Store (iOS) | 1.2.5 | |
-| Google Play (Android) | 1.2.5 | |
-| Chrome Web Store | 0.4.5 | |
-| Firefox Add-ons | 0.4.5 | |
-| Safari (Mac App Store) | 1.8.2, carrying extension 0.4.5 | the Mac App Store uses its own `1.x` numbering |
+| Apple App Store (iOS) | 1.2.4 | |
+| Google Play (Android) | 1.2.4 | |
+| Chrome Web Store | 0.4.3 | |
+| Firefox Add-ons | 0.4.4 | |
+| Safari (Mac App Store) | 1.8.1, carrying extension 0.4.3 | the Mac App Store uses its own `1.x` numbering |
 
-The stores always show their current version, and a store still serving an older build catches up automatically. Builds that a store has not yet released are not described in this manual as available.
+The stores always show their current version, and a store still serving an older build catches up automatically.
 
 ### What the 1.2.5 / 0.4.5 builds add {#whats-new-125}
 
