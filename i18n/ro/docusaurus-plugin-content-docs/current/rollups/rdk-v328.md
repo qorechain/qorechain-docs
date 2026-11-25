@@ -278,7 +278,7 @@ Echipa RDK a rulat acest flux cap-coadă pe testnet-ul `qorechain-diana` la 12 n
 | Pas | Mesaj | Gaz folosit / gaz cerut |
 | --- | --- | --- |
 | 0 | Înregistrează mai întâi cheia post-cuantică a contului nou, într-o tranzacție separată (`MsgRegisterPQCKeyV2` cu dovada deținerii). Clienții RDK fac asta automat; fără ea, prima tranzacție reală este refuzată cu pqc cod 8 | 348.917 / 600.000 |
-| 1 | `MsgCreateRollup`: profil `nft`, VM de execuție `qledger-v1`, secvențiere `based`, miză 10.000 QOR (1% ars) | 301.260 / 349.199 |
+| 1 | `MsgCreateRollup`: profil `nft`, VM de execuție `qledger-v1`, secvențiere `based`, stake 10.000 QOR (1% ars) | 301.260 / 349.199 |
 | 2 | `MsgBondRollupSubmitter`, 1.000 QOR | 178.059 / 263.425 |
 | 3 | `MsgDepositToRollup` de două ori (3 QOR și 1 QOR; minimul este 1 QOR) | circa 240.000 / 350.000 fiecare |
 | 4 | `MsgPostRollupData` de două ori (un transfer qledger semnat și o retragere qledger semnată), plus taxa pentru datele postate (10 uqor per octet facturabil, minimum 1 KiB facturat) | circa 328.500 / 474.000 fiecare |

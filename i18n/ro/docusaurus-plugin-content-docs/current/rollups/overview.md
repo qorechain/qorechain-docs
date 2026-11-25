@@ -28,7 +28,7 @@ Mainnetul (**`qorechain-vladi`**, EVM chain ID **9801**, activ din 7 iunie 2026)
 
 ## Cum se folosește {#how-to-use}
 
-Citirile nu necesită nicio cheie și niciun fond. Fragmentele de mai jos citesc parametrii live ai modulului `rdk` și lista de rollup-uri de pe testnetul public (`qorechain-diana`) și au fost rulate la 27 octombrie 2026 din pachetele publicate (aceste rulări au folosit 0.7.0; versiunea curentă este 0.9.0; 0.8.0 a adăugat semnarea hibridă clienților Python, Go, Rust și Java și lasă neschimbate apelurile de citire arătate aici, dar fragmentele nu au fost rulate din nou cu ea). Fiecare a afișat parametrii testnetului (maximum 200 de rollup-uri, miză minimă 10.000 QOR, rată de burn la creare 0,01, fereastră de contestare implicită 3.600 de secunde, dimensiune maximă a blob-ului DA 2.097.152 de octeți, retenția blob-urilor 432.000 de blocuri, maximum 10 batch-uri per bloc) și `0 rollups`.
+Citirile nu necesită nicio cheie și niciun fond. Fragmentele de mai jos citesc parametrii live ai modulului `rdk` și lista de rollup-uri de pe testnetul public (`qorechain-diana`) și au fost rulate la 27 octombrie 2026 din pachetele publicate (aceste rulări au folosit 0.7.0; versiunea curentă este 0.9.0; 0.8.0 a adăugat semnarea hibridă clienților Python, Go, Rust și Java și lasă neschimbate apelurile de citire arătate aici, dar fragmentele nu au fost rulate din nou cu ea). Fiecare a afișat parametrii testnetului (maximum 200 de rollup-uri, stake minim 10.000 QOR, rată de burn la creare 0,01, fereastră de contestare implicită 3.600 de secunde, dimensiune maximă a blob-ului DA 2.097.152 de octeți, retenția blob-urilor 432.000 de blocuri, maximum 10 batch-uri per bloc) și `0 rollups`.
 
 ### TypeScript (testat)
 
@@ -200,9 +200,9 @@ Ambele rețele servesc interogările RDK (`/qorechain/rdk/v1/...`) prin REST, gR
 
 | Cerință | Detalii |
 | ----------- | ------- |
-| **Cont alimentat** | Un cont cu suficient QOR pentru miză, miza stratului și comisioane. |
-| **Miză în escrow** | Crearea unui rollup blochează în escrow `min_stake_for_rollup`, **10.000 QOR** pe ambele rețele. **1 % din miză (100 QOR) este ars (burn)** la creare; restul rămâne în escrow și este returnat când rollup-ul este oprit. |
-| **Miza stratului** | Crearea înregistrează și stratul rollup-ului în modulul multilayer (miză minimă 1.000 QOR). Dacă stratul nu poate fi înregistrat, rollup-ul este totuși creat, dar nu are un strat real, deci batch-urile sale nu pot fi ancorate și nu se pot emite chitanțe. |
+| **Cont alimentat** | Un cont cu suficient QOR pentru stake, stake-ul stratului și comisioane. |
+| **Stake în escrow** | Crearea unui rollup blochează în escrow `min_stake_for_rollup`, **10.000 QOR** pe ambele rețele. **1 % din stake (100 QOR) este ars (burn)** la creare; restul rămâne în escrow și este returnat când rollup-ul este oprit. |
+| **Stake-ul stratului** | Crearea înregistrează și stratul rollup-ului în modulul multilayer (stake minim 1.000 QOR). Dacă stratul nu poate fi înregistrat, rollup-ul este totuși creat, dar nu are un strat real, deci batch-urile sale nu pot fi ancorate și nu se pot emite chitanțe. |
 | **Cheie post-cuantică înregistrată** | O cheie ML-DSA-87 înregistrată pentru cont. Tranzacțiile pe lane-ul nativ semnate doar cu cheia clasică sunt refuzate. Un cont nou trebuie să își înregistreze cheia post-cuantică într-o tranzacție separată, înaintea oricărei alte tranzacții; clienții RDK 0.9.0 fac această înregistrare pentru tine. |
 | **Comisioane** | Pragul minim al comisionului este 0,1 uqor per unitate de gaz; setați împreună limita de gaz și comisionul. |
 | **Unelte** | Node 20 sau mai nou pentru CLI și scaffolder; Python 3.10 sau mai nou (cu `liboqs`, vezi mai sus) pentru clientul Python; Java 21 sau mai nou pentru Java (de la RDK 0.8.0); modulul Go `github.com/qorechain/qorechain-rdk/packages/go`. |
@@ -293,7 +293,7 @@ Un rollup creat prin RDK grupează patru aspecte configurabile:
 | **Modul de secvențiere** | Cine ordonează tranzacțiile înainte de a fi decontate | `dedicated`, `shared`, `based` |
 | **Disponibilitatea datelor** | Unde sunt publicate datele tranzacțiilor, astfel încât oricine să poată reconstrui starea | `native`, `celestia`, `both` |
 
-Fiecare rollup este înregistrat cu un `rollup-id` unic, susținut de o garanție de miză (stake bond) în QOR și primește un statut de ciclu de viață (`pending`, `active`, `paused`, `stopped`). Consultați **[Deploying a Rollup](/rollups/deploying-a-rollup)** pentru fluxul complet de creare și ciclu de viață.
+Fiecare rollup este înregistrat cu un `rollup-id` unic, susținut de o garanție de stake (stake bond) în QOR și primește un statut de ciclu de viață (`pending`, `active`, `paused`, `stopped`). Consultați **[Deploying a Rollup](/rollups/deploying-a-rollup)** pentru fluxul complet de creare și ciclu de viață.
 
 ### Capabilități specifice QoreChain și starea lor
 

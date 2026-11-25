@@ -347,6 +347,6 @@ qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorecha
 
 Acum că ați trimis prima tranzacție, explorați mai mult din ceea ce oferă QoreChain:
 
-* **Staking și delegare** — Mizați QOR și câștigați recompense
+* **Staking și delegare** — Puneți QOR în staking și câștigați recompense
 * **Punte pentru active** — Mutați active între chain-uri
 * **Dezvoltare EVM** — Implementați contracte inteligente Solidity pe QoreChain

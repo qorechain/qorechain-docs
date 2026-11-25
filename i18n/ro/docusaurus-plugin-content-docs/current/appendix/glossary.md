@@ -25,11 +25,11 @@ Referință alfabetică a termenilor, abrevierilor și acronimelor folosite în 
 
 **CPI** — Cross-Program Invocation (invocare între programe). Un mecanism din runtime-ul SVM care permite unui program implementat să apeleze alt program în cadrul aceluiași context de tranzacție.
 
-**CPoS** — Composite Proof-of-Stake (dovadă de miză compozită). Designul de clasificare a consensului al QoreChain care grupează validatorii în trei pool-uri (RPoS, DPoS, PoS) pe baza reputației și a delegării. Fiecare pool are ponderi distincte în algoritmul de selecție a propunătorului. Implementat în `x/qca`, dar încă neactiv în producția de blocuri.
+**CPoS** — Composite Proof-of-Stake (Proof-of-Stake compozit). Designul de clasificare a consensului al QoreChain care grupează validatorii în trei pool-uri (RPoS, DPoS, PoS) pe baza reputației și a delegării. Fiecare pool are ponderi distincte în algoritmul de selecție a propunătorului. Implementat în `x/qca`, dar încă neactiv în producția de blocuri.
 
 **DA** — Data Availability (disponibilitatea datelor). Garanția că datele de tranzacție publicate pe lanț pot fi recuperate de orice nod. Modulul RDK oferă DA nativ pentru rollup-uri, stocând blob-uri on-chain cu perioade de reținere configurabile.
 
-**DPoS** — Delegated Proof-of-Stake (dovadă de miză delegată). Un mecanism de consens în care deținătorii de tokenuri își deleagă miza către validatori care produc blocuri în numele lor.
+**DPoS** — Delegated Proof-of-Stake (Proof-of-Stake delegat). Un mecanism de consens în care deținătorii de tokenuri își deleagă stake-ul către validatori care produc blocuri în numele lor.
 
 **EIP-1559** — Ethereum Improvement Proposal 1559. Un model de comisioane de tranzacție care folosește un comision de bază (ars) plus un comision de prioritate (plătit validatorilor). QoreChain implementează mecanici de comisioane în stil EIP-1559 în QoreChain EVM Engine.
 
@@ -67,13 +67,13 @@ Referință alfabetică a termenilor, abrevierilor și acronimelor folosite în 
 
 **QCB** — QoreChain Bridge. Protocolul de bridge nativ al QoreChain pentru conectarea la lanțuri non-IBC (de ex., Ethereum, Bitcoin, Solana, Avalanche). QCB folosește un prag de atestare al validatorilor (7 din 10 semnături ML-DSA-87) pentru atestarea cross-chain. Vezi [Arhitectura bridge-ului](/architecture/bridge-architecture).
 
-**QDRW** — Quadratic Delegation with Reputation Weighting (delegare pătratică cu ponderare după reputație). O formulă de putere de vot în guvernanță (rădăcina pătrată a mizei plus xQORE ponderat, scalată cu un multiplicator de reputație). Implementat în `x/qca`, dar dezactivat pe rețelele live (`qdrw_enabled = false`).
+**QDRW** — Quadratic Delegation with Reputation Weighting (delegare pătratică cu ponderare după reputație). O formulă de putere de vot în guvernanță (rădăcina pătrată a stake-ului plus xQORE ponderat, scalată cu un multiplicator de reputație). Implementat în `x/qca`, dar dezactivat pe rețelele live (`qdrw_enabled = false`).
 
 **RDK** — Rollup Development Kit. Cadrul nativ al QoreChain pentru implementarea și gestionarea rollup-urilor cu patru paradigme de settlement (optimistic, zk, based, sovereign), cinci profiluri preset și disponibilitate integrată a datelor. Vezi [Prezentare generală rollup-uri](/rollups/overview).
 
 **RL** — Reinforcement Learning (învățare prin întărire). O abordare de învățare automată în care un agent învață acțiunile optime prin încercare și recompensă. PRISM este conceput să folosească RL pentru a regla parametrii lanțului în cadrul QoreChain Consensus Engine (astăzi doar observare).
 
-**RPoS** — Reputation Proof-of-Stake (dovadă de miză bazată pe reputație). Pool-ul pentru validatorii situați la sau peste percentila 70 de reputație, cu cel puțin miza proprie (self-bonded) mediană. Validatorii câștigă reputație prin uptime, participare și contribuții comunitare.
+**RPoS** — Reputation Proof-of-Stake (Proof-of-Stake bazat pe reputație). Pool-ul pentru validatorii situați la sau peste percentila 70 de reputație, cu cel puțin stake-ul propriu (self-bonded) median. Validatorii câștigă reputație prin uptime, participare și contribuții comunitare.
 
 **SHAKE-256** — O funcție de hash cu lungime variabilă a ieșirii din familia SHA-3. SHAKE-256 este hash-ul implicit de aplicație al QoreChain (pachetul `qorehash`) și este folosit pentru operațiuni legate de PQC, precum derivarea cheilor.
 

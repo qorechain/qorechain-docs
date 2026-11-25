@@ -76,7 +76,7 @@ Sidechain-urile gestionează **operațiuni intensive din punct de vedere computa
 | -------------------------- | ----------------- |
 | Validatori minimi          | 3                 |
 | Validatori maximi          | 10                |
-| Miză minimă a creatorului  | 1,000 QOR         |
+| Stake minim al creatorului | 1,000 QOR         |
 | Sidechain-uri active maxime | 10               |
 | Domenii vizate             | DeFi, Gaming, IoT |
 
@@ -88,7 +88,7 @@ Paychain-urile sunt optimizate pentru **microtranzacții de frecvență ridicat�
 | ------------------------- | --------------------------------------- |
 | Timp de bloc țintă        | 500 ms                                  |
 | Paychain-uri active maxime | 50                                     |
-| Miză minimă a creatorului | 100 QOR                                 |
+| Stake minim al creatorului | 100 QOR                                 |
 | Domenii vizate            | Plăți, streaming, microtranzacții       |
 
 ### Rollup-uri
@@ -99,7 +99,7 @@ Rollup-urile sunt **lanțuri specifice aplicațiilor** implementate prin Rollup 
 | ----------------------- | ------------------------------------------- |
 | Moduri de decontare     | 4 (optimistic, zk, based, sovereign)        |
 | Rollup-uri înregistrate maxime | 100 (`max_rollups`); dar pot exista simultan doar 10 straturi de tip sidechain (`max_sidechains`), deci cel mult 10 rollup-uri pot avea un strat ancorabil |
-| Miză minimă a creatorului | 10,000 QOR pentru rollup, plus 1,000 QOR miză de înregistrare a stratului (`min_sidechain_stake`) |
+| Stake minim al creatorului | 10,000 QOR pentru rollup, plus 1,000 QOR stake de înregistrare a stratului (`min_sidechain_stake`) |
 | Tip de strat            | Rollup-urile înregistrate prin RDK folosesc tipul de strat `sidechain` (tipul de strat `rollup` este definit, dar încă nefolosit de `x/rdk`) |
 | Domenii vizate          | DeFi, Gaming, NFT, Enterprise               |
 
@@ -268,8 +268,8 @@ Tranzițiile de status sunt impuse de keeper. Tranzițiile invalide (de ex., de 
 | `min_anchor_interval`          | uint64 | `100`           | Numărul minim de blocuri între ancorele de stare       |
 | `max_anchor_interval`          | uint64 | `1,000`         | Numărul maxim de blocuri între ancorele de stare (ancoră forțată) |
 | `default_challenge_period`     | uint64 | `86,400`        | Perioada de contestare implicită în secunde (24 de ore) |
-| `min_sidechain_stake`          | string | `1,000,000,000` | Miza minimă pentru a crea un sidechain (1,000 QOR în uqor) |
-| `min_paychain_stake`           | string | `100,000,000`   | Miza minimă pentru a crea un paychain (100 QOR în uqor) |
+| `min_sidechain_stake`          | string | `1,000,000,000` | Stake-ul minim pentru a crea un sidechain (1,000 QOR în uqor) |
+| `min_paychain_stake`           | string | `100,000,000`   | Stake-ul minim pentru a crea un paychain (100 QOR în uqor) |
 | `routing_enabled`              | bool   | `true`          | Activează rutarea tranzacțiilor bazată pe QCAI         |
 | `routing_confidence_threshold` | string | `0.6`           | Încrederea minimă pentru deciziile de rutare QCAI      |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Activează la nivel global Cross-Layer Fee Bundling     |

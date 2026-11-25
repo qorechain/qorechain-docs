@@ -10,7 +10,7 @@ sidebar_position: 1
 QoreChain implementează **Triple-Pool Composite Proof-of-Stake (CPoS)**, un mecanism de consens care clasifică validatorii în trei grupuri specializate și folosește o selecție ponderată cu reputație pentru a echilibra securitatea, descentralizarea și performanța. CPoS este implementat în modulul `x/qca` și operează deasupra **QoreChain Consensus Engine**.
 
 :::note Stare curentă (mainnet verificat la 23 octombrie 2026 pe v3.2.4; mainnet-ul rulează v3.2.8 din 18 noiembrie 2026, iar testnet-ul rulează v3.2.9 din 20 noiembrie 2026, după v3.2.8 din 12 noiembrie)
-Logica Triple-Pool CPoS descrisă în această pagină — clasificarea grupurilor, selecția propunătorului ponderată pe grupuri, curba de bondare a recompenselor, slashing-ul progresiv și numărarea voturilor QDRW — este implementată în modulul `x/qca`, iar parametrii săi sunt on-chain, dar **nu este încă conectată la producerea blocurilor, la recompense, la slashing sau la numărarea voturilor de guvernanță**. Astăzi rotația propunătorilor este rotația standard a validatorilor ponderată pe miză, slashing-ul urmează parametrii standard `x/slashing` (fereastră de downtime de 10,000 de blocuri, validator închis („jailed”) sub 5 % semnat, slash de 1 % pentru downtime și de 5 % pentru dublă semnare, închisoare de 10 minute), iar propunerile sunt numărate pe baza mizei bondate (cvorum 33.4 %, prag 50 %, veto 33.4 %). Designul de mai jos descrie direcția în care evoluează modulul. Nicio versiune până la v3.2.7 pe mainnet nu schimbă acest lucru, iar parametrii de staking, slashing și guvernanță ai testnet-ului corespund cu cei ai mainnet-ului (verificat la 27 octombrie 2026, în afară de perioadele de votare mai scurte); regulile care **sunt** aplicate astăzi sunt listate în [Regulile de admitere a validatorilor și de staking în vigoare](#admission).
+Logica Triple-Pool CPoS descrisă în această pagină — clasificarea grupurilor, selecția propunătorului ponderată pe grupuri, curba de bondare a recompenselor, slashing-ul progresiv și numărarea voturilor QDRW — este implementată în modulul `x/qca`, iar parametrii săi sunt on-chain, dar **nu este încă conectată la producerea blocurilor, la recompense, la slashing sau la numărarea voturilor de guvernanță**. Astăzi rotația propunătorilor este rotația standard a validatorilor ponderată după stake, slashing-ul urmează parametrii standard `x/slashing` (fereastră de downtime de 10,000 de blocuri, validator închis („jailed”) sub 5 % semnat, slash de 1 % pentru downtime și de 5 % pentru dublă semnare, închisoare de 10 minute), iar propunerile sunt numărate pe baza stake-ului bondat (cvorum 33.4 %, prag 50 %, veto 33.4 %). Designul de mai jos descrie direcția în care evoluează modulul. Nicio versiune până la v3.2.7 pe mainnet nu schimbă acest lucru, iar parametrii de staking, slashing și guvernanță ai testnet-ului corespund cu cei ai mainnet-ului (verificat la 27 octombrie 2026, în afară de perioadele de votare mai scurte); regulile care **sunt** aplicate astăzi sunt listate în [Regulile de admitere a validatorilor și de staking în vigoare](#admission).
 :::
 
 Stratul de optimizare prin învățare prin întărire, conceput pentru a regla parametrii de consens în timpul execuției, poartă marca **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). Consultați [PRISM Consensus Engine](/architecture/prism-consensus-engine) pentru detalii.
@@ -49,13 +49,13 @@ Parametrii de staking citiți pe ambele rețele pe 27 octombrie 2026: `max_valid
 
 ## Arhitectura Triple-Pool
 
-CPoS împarte setul activ de validatori în trei grupuri pe baza reputației, a mizei (stake) și a metricilor de delegare. Fiecare grup are un rol distinct în procesul de consens.
+CPoS împarte setul activ de validatori în trei grupuri pe baza reputației, a stake-ului și a metricilor de delegare. Fiecare grup are un rol distinct în procesul de consens.
 
 ### Clasificarea grupurilor
 
 | Grup                                 | Criterii                                                                | Pondere de selecție |
 | ------------------------------------ | ----------------------------------------------------------------------- | ---------------- |
-| **RPoS** (Reputation Proof-of-Stake) | Scor de reputație >= percentila 70 **ȘI** miză auto-bondată >= mediană | 40%              |
+| **RPoS** (Reputation Proof-of-Stake) | Scor de reputație >= percentila 70 **ȘI** stake auto-bondat >= median | 40%              |
 | **DPoS** (Delegated Proof-of-Stake)  | Delegare totală >= 10,000 QOR                                          | 35%              |
 | **PoS** (Standard Proof-of-Stake)    | Toți validatorii activi rămași                                         | 25%              |
 
@@ -65,7 +65,7 @@ Reclasificarea are loc la fiecare **1,000 de blocuri**. La fiecare epocă de rec
 
 1. **Colectarea scorurilor de reputație** — Scorurile de reputație sunt colectate din modulul `x/reputation` pentru toți validatorii activi.
 2. **Calcularea pragului de reputație** — Pragul de reputație la percentila 70 este calculat din distribuția sortată a scorurilor.
-3. **Calcularea mizei mediane auto-bondate** — Miza mediană auto-bondată este calculată din distribuția sortată a mizelor.
+3. **Calcularea stake-ului median auto-bondat** — Stake-ul median auto-bondat este calculat din distribuția sortată a valorilor de stake.
 4. **Reatribuirea validatorilor** — Fiecare validator activ este reatribuit grupului cu cea mai mare prioritate pentru care se califică.
 5. **Atribuire implicită** — Validatorii neclasificați (cei care nu au fost încă evaluați) sunt atribuiți implicit grupului PoS.
 
@@ -92,7 +92,7 @@ Grupul este ales prin compararea `randVal` cu pragurile cumulative de pondere:
 
 ### Etapa 2: Selecția în cadrul grupului
 
-În cadrul grupului selectat, propunătorul este ales printr-un **CDF ponderat reputație × miză**. Pentru fiecare validator din grup:
+În cadrul grupului selectat, propunătorul este ales printr-un **CDF ponderat reputație × stake**. Pentru fiecare validator din grup:
 
 1. Scorul de reputație `r` este preluat din `x/reputation`.
 2. Ponderea compozită este `w = r * tokens`.
@@ -120,7 +120,7 @@ R(v, t) = beta * S_v * (1 + alpha * ln(1 + L_v)) * Q(r_v) * P(t)
 | Factor                 | Simbol   | Descriere                                                 | Implicit   |
 | ---------------------- | -------- | ----------------------------------------------------------- | --------- |
 | Multiplicator de recompensă de bază | `beta`   | Scalează magnitudinea generală a recompensei                         | 1.0       |
-| Miză auto-bondată      | `S_v`    | Token-urile auto-bondate ale validatorului (uqor)                   | --        |
+| Stake auto-bondat      | `S_v`    | Token-urile auto-bondate ale validatorului (uqor)                   | --        |
 | Sensibilitate la loialitate    | `alpha`  | Controlează cât de mult amplifică durata loialității recompensele        | 0.1       |
 | Durata loialității       | `L_v`    | Numărul de blocuri consecutive în care validatorul a fost activ  | --        |
 | Calitatea reputației     | `Q(r_v)` | Mapează reputația `r` la un multiplicator de recompensă în \[0.75, 1.25] | --        |
@@ -244,7 +244,7 @@ ReputationMultiplier(r) = 0.5 + 1.5 * sigmoid(6 * (r - 0.5))
 
 ### Scalare pătratică
 
-Funcția radical asigură că puterea de vot crește sub-liniar cu miza. Un votant cu de 4 ori miza altui votant primește doar de 2 ori puterea de vot, nu de 4 ori. Acesta este comportamentul proiectat al QDRW; cât timp este dezactivat, propunerile sunt numărate pe baza mizei bondate. Formula folosește xQORE, care nu poate fi încă blocat pe rețelele live.
+Funcția radical asigură că puterea de vot crește sub-liniar cu stake-ul. Un votant cu de 4 ori stake-ul altui votant primește doar de 2 ori puterea de vot, nu de 4 ori. Acesta este comportamentul proiectat al QDRW; cât timp este dezactivat, propunerile sunt numărate pe baza stake-ului bondat. Formula folosește xQORE, care nu poate fi încă blocat pe rețelele live.
 
 ### Matematică deterministă
 
@@ -295,7 +295,7 @@ Tabelele de mai jos listează parametrii configurabili prin guvernanță ai modu
 | Parametru            | Tip      | Implicit | Descriere                            |
 | -------------------- | --------- | ------- | -------------------------------------- |
 | `qdrw_enabled`       | bool      | `false` | Activează numărarea voturilor de guvernanță QDRW (dezactivată pe rețelele live)           |
-| `qdrw_xqore_multiplier` | LegacyDec | `2.0` | Ponderea xQORE raportată la token-urile mizate |
+| `qdrw_xqore_multiplier` | LegacyDec | `2.0` | Ponderea xQORE raportată la token-urile în staking |
 | `qdrw_rep_min_multiplier` | LegacyDec | `0.5` | Multiplicatorul minim de reputație          |
 | `qdrw_rep_max_multiplier` | LegacyDec | `2.0` | Multiplicatorul maxim de reputație          |
 
