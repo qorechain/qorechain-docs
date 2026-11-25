@@ -11,6 +11,10 @@ QoreX インテグレーションは、[QoreX ウォレット](/qorex/overview)�
 
 これらにできないこと: 鍵を保持することはなく、QoreX を現在の姿以上のものにすることもありません。これらの上に構築する前に[制限と既知の問題](#limits)を読んでください。現在公開されている QoreX のストア版ビルドがサポートしているのは、これらのパッケージが接続できる機能の一部であり、その制限はそこに記載されています。
 
+:::tip これらのパッケージを使わずに連携する場合や、ウォレットの現在の機能を確認する場合
+[dApp を QoreX と連携する](/qorex/dapp-integration)は、ウォレット自体の完全なガイドです。検出、`signAndBroadcast`、cosmjs の署名者、メッセージ署名、EVM、Solana、エラー、リンクを、QoreX アプリ 1.2.5、拡張機能 0.4.4、Safari 1.8.2 を対象に扱います。0.1.0 のパッケージは 2026 年 10 月 27 日に公開され、その後ウォレットには機能が追加されています。このページはパッケージの動作を説明します。ウォレットの機能については、そのガイドが最新です。
+:::
+
 ## 革新点 {#innovations}
 
 * **誤ったウォレットを選ぶことのない検出。** QoreX は EIP-6963 を通じて逆引きドメイン名 `network.qore.qorex` で自身を通知し、`window.ethereum` には決して書き込みません。`@qorechain/qorex-types` はその名前のみでプロバイダーを選択し、RainbowKit ウォレットはコネクタを通知されたプロバイダーに固定して、`window.ethereum` にフォールバックすることはありません。
@@ -18,9 +22,9 @@ QoreX インテグレーションは、[QoreX ウォレット](/qorex/overview)�
 * **バージョンチェックではなくケイパビリティチェック。** パッケージはウォレットの `capabilities` リスト（`hasCapability`）を読み取るため、`signAndBroadcast` のような機能はバージョン番号から推測されるのではなく、検出されます。
 * **拒否は明示的で、安定したコードを持ちます。** Amino JSON ではハイブリッド署名を運べないため、Amino 署名は設計上拒否されます。コネクタは `QOREX_AMINO_REFUSED`、`QOREX_USE_SIGN_AND_BROADCAST`、`QOREX_NOT_SUPPORTED_YET` といったコードで `QorexIntegrationError` をスローし、`isQorexIntegrationError(err, code)` でそれらを判定できます。
 * **本当に署名するテストダブル。** `@qorechain/qorex-wallet-mock` は QoreX が注入するのと同じオブジェクト（`window.qorex = { evm, native, svm }`）を注入し、Solana ウォレットを登録し、デフォルトではテストネットの公開テスト用ニーモニックから、実際のアルゴリズム（ネイティブレーンでは QoreSign によるハイブリッド ML-DSA-87、EVM では secp256k1、Solana では ed25519）で署名します。`network.qore.qorex.mock` として自身を通知するため、QoreX を厳密に選択するコードがこれを本物のウォレットと取り違えることはありません。
-* **2 つの動作プロファイル。** モックの `current` プロファイルは現在公開されている QoreX と同様に動作します。`planned` は QoreX チームが発表した内容を追加するため、ウォレットがまだ行わないことをモックが主張することなく、先行して構築できます。
+* **2 つの動作プロファイル。** モックの `current` プロファイルは、0.1.0 の公開時（2026 年 10 月 27 日）に公開されていた QoreX と同様に動作します。`planned` は当時発表されていた内容を追加します。QoreX はその後、EVM 署名、アカウントイベント、ウォレットが追加する `signDirect` レイヤーを提供したため、これらについては `planned` プロファイルのほうが実態に近くなっています。
 * **Synpress v4 スタイルの Playwright フィクスチャ**（`qorexMockFixtures`）は、ナビゲーションの前にモックを注入するため、エンドツーエンドのテストにブラウザ拡張機能は不要です。
-* **イベントなしのウォレット主導アカウント。** QoreX はまだ `accountsChanged` や `chainChanged` を発行しないため、RainbowKit ウォレットにはオプトインの `pollAccountsOnFocus` があり、ページがフォーカスを取り戻したときに `eth_accounts` と `eth_chainId` を再読み取りします。
+* **イベントの有無にかかわらずアカウントを追跡。** RainbowKit ウォレットにはオプトインの `pollAccountsOnFocus` があり、ページがフォーカスを取り戻したときに `eth_accounts` と `eth_chainId` を再読み取りします。これは `accountsChanged` や `chainChanged` を発行しないウォレットビルド向けに書かれたもので、現在の QoreX ビルドはこれらを発行します。
 
 ## 用途 {#use-cases}
 
@@ -28,7 +32,7 @@ QoreX インテグレーションは、[QoreX ウォレット](/qorex/overview)�
 2. **Interchain Kit または cosmos-kit 上の Cosmos dApp に QoreX を追加する。** `ChainProvider` に QoreX ウォレットを追加し、`qorexSignAndBroadcast` で QoreChain のトランザクションを送信します。ページは ML-DSA-87 鍵を保持できないため、QoreX がトランザクションを構築し、ハイブリッド署名を付加してブロードキャストします。
 3. **すでに Keplr をサポートしている dApp。** `window.qorex.native` は Keplr のパターン（`enable`、`getKey`、`signDirect`）に従うため、統合は数行で済みます。リポジトリのガイドに、すべての違いが記載されています。
 4. **拡張機能なしでのウォレットフローの CI テスト。** QA チームが `qorexMockFixtures({ profile: "current" })` を使って Playwright を実行し、Connect をクリックして、ページが `qorex.addresses.evm` を表示することをアサートします。`qorex.rejectNext()` で拒否パスをテストします。
-5. **新しい QoreX 機能に先行して構築する。** 同じスイートを `profile: "planned"` で実行すると、発表済みの機能（EVM 署名、アカウント変更イベント、ハイブリッドレイヤーを追加する `signDirect`）を、QoreX が提供する前に試せます。
+5. **新しいウォレットの動作をテストする。** 同じスイートを `profile: "planned"` で実行すると、EVM 署名、アカウント変更イベント、ハイブリッドレイヤーを追加する `signDirect` を試せます。
 6. **テストネットでの実際のブロードキャストのテスト。** チームは、資金のある自前のテストネット用ニーモニックを使い、モックにハイブリッド署名付きトランザクションを `qorechain-diana` へ `signAndBroadcast` させ、ページで結果を確認します。
 7. **バージョンチェックの代わりの機能検出。** `hasCapability(native, "signAndBroadcast")` が true のとき、dApp は QoreChain 上で Send ボタンを表示します。そのため、新しい QoreX ビルドは dApp を変更することなく機能を有効にします。
 
@@ -36,22 +40,16 @@ QoreX インテグレーションは、[QoreX ウォレット](/qorex/overview)�
 
 * **EVM レーン。** QoreX は `window.ethereum` には決して書き込みません。EIP-6963 を通じて、逆引きドメイン名 `network.qore.qorex` で EIP-1193 プロバイダーを通知します。`qorexWallet()` と `discoverQorexEip1193()` は、まさにそのプロバイダーを選択します。同じオブジェクトは `window.qorex.evm` にもあります。
 * **ネイティブレーン。** `window.qorex.native` は Keplr パターンのプロバイダーです（`window.keplr` のエイリアスではありません）。QoreChain はネイティブレーンのトランザクションにハイブリッドの secp256k1 と ML-DSA-87 の署名を必要とし、ML-DSA-87 鍵を保持するのはウォレットだけなので、dApp はメッセージを `signAndBroadcast` に送ります。QoreX はそれらを表示し、手数料を設定し、両方の鍵で署名し、ブロードキャストして `shield` を報告します。
-* **Solana。** QoreX は `solana:mainnet`（Solana 本体）に Solana Wallet Standard ウォレットを登録します。QoreChain 独自の SVM レーンはトランザクションをまだ受け付けておらず、Wallet Standard のチェーン ID もありません。
+* **Solana。** QoreX は `solana:mainnet`（Solana 本体）に Solana Wallet Standard ウォレットを登録します。QoreChain 独自の SVM レーンには Wallet Standard のチェーン ID がありません。QoreX ではテストネット専用のツールです（[テストネット機能](/qorex/testnet-features#solana-on-qorechain)を参照）。
 * **バージョンではなくケイパビリティ。** キットは `hasCapability` を通じて `window.qorex.native.capabilities` を読み取ります。QoreX ビルドは `listAccounts`、`connectProofPicksAccount`、`executeRequest`、`signAndBroadcast` を宣言することがあります。
 * **Amino は設計上拒否されます。** Amino JSON はハイブリッドの ML-DSA-87 署名を運べないためです。キットはすべての署名者リクエストを direct signer で処理します。
-* **`signDirect` とポスト量子レイヤー、正確に。** 現在、QoreX の `signDirect` は SignDoc をそのまま secp256k1 鍵で署名します。QoreChain では、本文に署名者の登録済み鍵に対する有効なハイブリッド ML-DSA-87 レイヤーがすでに含まれている必要がありますが、ページはこれを生成できません。そのため `qorechain-vladi` と `qorechain-diana` では、キットのオフライン署名者の `signDirect` は QoreX に到達する前に `QOREX_USE_SIGN_AND_BROADCAST` をスローします。`getAccounts` はすべてのチェーンで動作します。他のチェーン ID では、キットは `signDirect` を QoreX に転送しますが、QoreX が現在提供するのは 2 つの QoreChain チェーン ID のみです。将来の QoreX リリースで、`signDirect` 内でレイヤー自体を追加し、ケイパビリティ `signDirectAddsPqcLayer` を宣言することが予定されていますが、現在のビルドでこれを宣言しているものはありません。キットはすでにこれを確認しており、宣言されている場合、オフライン署名者は QoreChain の SignDoc を QoreX に転送します。その際 QoreX がガスを再見積もりしてガスリミットと手数料を引き上げることがあるため、返された `signed` ドキュメントを必ずブロードキャストしてください。
+* **`signDirect` とポスト量子レイヤー。** QoreChain のトランザクションにはハイブリッド ML-DSA-87 レイヤーが必要ですが、ページはこれを生成できません。キットはケイパビリティ `signDirectAddsPqcLayer` を読み取ります。ウォレットがこれを宣言している場合（現在の QoreX ビルドは宣言しています）、オフライン署名者は QoreChain の SignDoc を QoreX に転送し、QoreX がレイヤーを追加します。その際 QoreX がガスを再見積もりしてガスリミットと手数料を引き上げることがあるため、返された `signed` ドキュメントを必ずブロードキャストしてください。ウォレットが宣言していない場合、署名者は `qorechain-vladi` と `qorechain-diana` で `QOREX_USE_SIGN_AND_BROADCAST` をスローします。`getAccounts` はすべてのチェーンで動作します。
 * **`shield` の状態**は `signAndBroadcast` が返します: `shielded`（コミットされたトランザクションがハイブリッドレイヤーを持つ）、`pending`（ブロードキャスト済み、確認は未完了）、`downgraded`（レイヤーなしでコミットされた。警告として扱ってください）、`classical`（レイヤーが適用されないレーン）。
 * **モック**は、QoreX と同じ方法で BIP-39 ニーモニック（デフォルトは公開テスト用フレーズ）からアカウントを構築します: `m/44'/118'/0'/0/i` とその `qor1` アドレスの正規の ML-DSA-87 鍵、EVM には `m/44'/60'/0'/0/i`、Solana には `m/44'/501'/i'/0'`。その `signAndBroadcast` は REST からアカウントの ML-DSA-87 鍵を読み取り、未登録であれば `MsgRegisterPQCKeyV2` で一度だけ登録し、[QoreSign](/qoresign/overview) でハイブリッド署名し、ブロードキャストし（ネットワークが求めた場合は、もう一方の sign-bytes バージョンで一度だけ再試行します）、取り込みを待って `{ txHash, code, height, shield }` を返します。
 
-### 現在 QoreX がサポートする内容 {#qorex-today}
+### ウォレットがサポートする内容 {#qorex-today}
 
-| 対象 | 現在 | QoreX チームの予定 |
-|---|---|---|
-| EVM（EIP-6963 を通じた EIP-1193、`network.qore.qorex`） | 接続（`eth_requestAccounts`）、`eth_accounts`、`eth_chainId`、QoreX ですでに選択されているネットワークへの `wallet_switchEthereumChain` | `accountsChanged` と `chainChanged` イベント、すべての拒否に対する EIP-1193 エラーコード 4200 と 4902、`personal_sign`、`eth_signTypedData_v4`、`eth_sendTransaction`、`wallet_addEthereumChain` |
-| QoreChain ネイティブレーン（`window.qorex.native`） | `enable`、`getKey`、`signAndBroadcast`、`listAccounts`、`experimentalSuggestChain`（QoreChain の ID）、`signDirect`（SignDoc がすでにハイブリッドレイヤーを持っている必要があります） | ML-DSA-87 レイヤー自体を追加する `signDirect`、メッセージ署名（ADR-36 と ML-DSA-87） |
-| Solana（Wallet Standard、`solana:mainnet`） | 接続、`signMessage`、`signTransaction` | `solana:signIn` |
-
-EVM 側では、署名と送信は現在 "QoreX: EVM method ... not yet supported" で失敗します。QoreChain 上のトランザクションにはネイティブレーンを使用してください。QoreChain の EVM レーンでは、送信者が登録済みの ML-DSA-87 鍵と、ネイティブレーンから開いた EVM 認可ウィンドウを持っている場合にトランザクションが受け付けられます。ネットワークの切り替えはユーザーが QoreX 内で行います。dApp から切り替えることはできません。
+[dApp を QoreX と連携する](/qorex/dapp-integration)には、QoreX アプリ 1.2.5、拡張機能 0.4.4、Safari 1.8.2 が各対象で何に応答するかが記載されています: [EVM](/qorex/dapp-integration#evm)、[`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast)、[cosmjs の署名者](/qorex/dapp-integration#cosmjs)、[メッセージ署名](/qorex/dapp-integration#sign-arbitrary)、[Solana](/qorex/dapp-integration#solana)、[エラーとイベント](/qorex/dapp-integration#errors)。QoreChain の EVM レーンでは、送信者が登録済みの ML-DSA-87 鍵と EVM 認可ウィンドウを持っている場合にトランザクションが受け付けられます。トランザクションを許可するウィンドウがない場合は、QoreX の承認がそのトランザクション用に開きます。メインネットとテストネットの切り替えはユーザーが QoreX 内で行います。dApp から切り替えることはできません。
 
 ## 使い方 {#how-to-use}
 
@@ -273,7 +271,7 @@ Synpress v4 では、フィクスチャを `testWithSynpress(qorexMockFixtures({
 |---|---|---|
 | `connect` または `enable`、`getAccount`、`getKey` | QoreX の `enable` と `getKey`、バイト列は `Uint8Array` に変換 | 同じ |
 | `getOfflineSigner(chainId)` | すべての設定に対して direct signer | cosmos-kit のデフォルト `"amino"` を含め、すべての設定に対して direct signer |
-| QoreChain 上の署名者 `signDirect` | `QOREX_USE_SIGN_AND_BROADCAST` をスロー（QoreX が `signDirectAddsPqcLayer` を宣言するまで） | 同じ |
+| QoreChain 上の署名者 `signDirect` | `QOREX_USE_SIGN_AND_BROADCAST` をスロー（ウォレットが `signDirectAddsPqcLayer` を宣言していない場合。現在の QoreX ビルドは宣言しています） | 同じ |
 | 他のチェーン ID 上の署名者 `signDirect` | QoreX の `signDirect` に転送 | 同じ |
 | `signAmino`、`getOfflineSignerAmino` | `QOREX_AMINO_REFUSED` をスロー | 同じ |
 | `signArbitrary`（ADR-36） | `QOREX_NOT_SUPPORTED_YET` をスロー（`verifyArbitrary` も同様） | `QOREX_NOT_SUPPORTED_YET` をスロー |
@@ -283,7 +281,7 @@ Synpress v4 では、フィクスチャを `testWithSynpress(qorexMockFixtures({
 
 | オプション | デフォルト | 意味 |
 |---|---|---|
-| `profile` | `"current"` | `"current"` は現在の QoreX、`"planned"` は発表済みの機能を追加します |
+| `profile` | `"current"` | `"current"` は 2026 年 10 月 27 日時点の QoreX、`"planned"` は当時発表された機能を追加します |
 | `mnemonic` | 公開の BIP-39 テスト用フレーズ | 入金するものにはご自身のものを使用してください |
 | `accountIndex` | `0` | すべてのレーンで同じインデックス |
 | `chainId` | `"qorechain-diana"` | モックで選択されているネットワーク |
@@ -344,14 +342,12 @@ Bech32 プレフィックスは `qor`（バリデーターは `qorvaloper`）、
 
 ## 制限と既知の問題 {#limits}
 
-**現在の QoreX ビルドがサポートする内容。** 公開されているストア版ビルド（QoreX モバイルアプリ 1.1.8、ブラウザ拡張機能 0.3.8、Firefox では 0.3.9）は、ウォレットが追加する ML-DSA レイヤーを伴う `getOfflineSigner` をまだサポートしておらず、`signArbitrary` もサポートしていません。cosmos-kit と Interchain Kit を通じた `getOfflineSigner` による署名は、ページ自身がポスト量子レイヤーを付加する場合にのみ機能しますが、ページは鍵を保持しないため、通常これはできません。現時点でネイティブレーンのトランザクションを送信するサポートされた方法は `window.qorex.native.signAndBroadcast` であり、`qorexSignAndBroadcast` がこれをラップしています。現在のストア版ビルドでは、各パッケージの README に記載されている範囲を超えて、コネクタを完全な cosmos-kit や Interchain Kit のウォレットとして解釈しないでください。コネクタは、将来の QoreX リリースが `signDirect` にレイヤーを追加できる（`signDirectAddsPqcLayer` ケイパビリティで宣言）ように書かれており、お客様のコードを変更する必要はありません。
+**パッケージはウォレットより古いものです。** バージョン 0.1.0 は 2026 年 10 月 27 日の QoreX を対象に書かれました。ユーザーのウォレットが宣言している内容を `hasCapability` で確認し、ウォレットの現在の動作については [dApp 連携ガイド](/qorex/dapp-integration)を使用してください。知っておくべきパッケージの動作は 2 つあります。
 
-**現在 QoreX が応答するもの**（パッケージの README より）:
+* 0.1.0 のコネクタでは、`signArbitrary` と `verifyArbitrary` は `QOREX_NOT_SUPPORTED_YET` をスローします。ウォレット自体はメッセージに署名できます。[`window.qorex.native.signArbitrary`](/qorex/dapp-integration#sign-arbitrary) を呼び出してください。
+* Amino 署名は、コネクタとウォレットの両方で拒否されます（`QOREX_AMINO_REFUSED`）。
 
-* **EVM:** QoreX で選択されているネットワークに対する `eth_chainId`、`eth_accounts`、`eth_requestAccounts`、`wallet_switchEthereumChain`（未知のチェーンはコード 4902 で拒否されます）。署名メソッド（`personal_sign`、`eth_signTypedData_v4`、`eth_sendTransaction`）と `wallet_addEthereumChain` はまだサポートされておらず、"QoreX: EVM method ... not yet supported" で拒否されます。`accountsChanged` や `chainChanged` イベントはまだありません。QoreX チームが予定としているもの（公開済みではありません）: イベント、すべての拒否に対するエラーコード、その後に署名メソッドとトランザクションメソッド。
-* **EVM トランザクション全般。** QoreChain では、EVM トランザクションは、登録済みの ML-DSA-87 鍵と開いている EVM 認可ウィンドウの両方を持つアカウントからのみ受け付けられます。どちらもネイティブレーンからセットアップします（[EVM 開発](/developer-guide/evm-development#evm-window)を参照）。モックの予定されている `eth_sendTransaction` は、そのウィンドウを開きません。
-* **ネイティブ:** `enable`、`getKey`、`signDirect`、`signAndBroadcast`、`listAccounts`、`experimentalSuggestChain`。`qorechain-vladi` と `qorechain-diana` のみが対象です。QoreChain では、`signDirect` にはハイブリッドレイヤーがすでに存在している必要がありますが、ページはそれを構築できないため、`signAndBroadcast` を使用してください。`signArbitrary`、Amino 署名、`sendTx` は利用できません。コネクタでは、`signArbitrary` は `QOREX_NOT_SUPPORTED_YET` をスローし、Amino は `QOREX_AMINO_REFUSED` をスローします。
-* **Solana:** `solana:mainnet` 上の Wallet Standard。connect、disconnect、イベント、`signAndSendTransaction`、`signTransaction`、`signMessage` に対応。`solana:signIn` は非対応です。チェーンの SVM レーンはまだトランザクションを受け付けないため、ここでの Solana サポートはウォレット側のみです。
+**QoreChain 上の EVM トランザクション。** チェーンが受け付けるのは、登録済みの ML-DSA-87 鍵と EVM 認可ウィンドウを持つアカウントからのトランザクションのみです（[EVM 開発](/developer-guide/evm-development#evm-window)を参照）。モックの `eth_sendTransaction` は、そのウィンドウを開きません。
 
 **クイックスタートのテスト中に見つかった注意点:**
 

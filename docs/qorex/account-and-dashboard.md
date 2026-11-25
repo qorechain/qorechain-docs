@@ -7,9 +7,9 @@ sidebar_position: 6
 
 # Account & Dashboard
 
-This page covers the optional QoreX account: signing in, several accounts from one recovery phrase, @handles, linking to the Dashboard, and deleting your account. It is for mobile users who want these conveniences; none of them is needed to hold or send QOR.
+This page covers the optional QoreX account: signing in, several accounts from one recovery phrase, @handles, linking to the Dashboard, and deleting your account. For help with QoreX, see [Help and support](/qorex/security-and-recovery#support). It is for mobile users who want these conveniences; none of them is needed to hold or send QOR.
 
-QoreX works **fully without an account** - your keys never depend on one. Signing in adds conveniences such as payment requests and Dashboard pairing, and it is **required to claim an @handle**. Sign-in is by email, or by Apple or Google - see below.
+QoreX works **fully without an account** - your keys never depend on one. Signing in adds conveniences such as requesting by @handle and Dashboard pairing, and it is **required to claim an @handle**. [Payment request links](/qorex/send-and-receive#payment-requests) do not need an account. Sign-in is by email, or by Apple or Google - see below.
 
 ## Sign in {#sign-in}
 
@@ -27,10 +27,11 @@ The passkey offer appears only after **email-code** sign-in. When you sign in wi
 
 ## Several accounts from one phrase {#accounts}
 
-Settings → **Your accounts** lets you create and switch between up to **20 accounts** per wallet, all derived from the same 24-word recovery phrase (there is nothing extra to back up). Each account is its own `qor1…` address with its own balance, its own optional @handle (a handle binds to an **address**, not to the wallet), and, after its first send, its own ML-DSA-87 key. Tap an account to make it the one in use. Whichever account is active is the one Send, Receive, Staking and the dApp browser use - switching moves everything with it, and the app shows which account you're on whenever more than one exists. Accounts are numbered *Account 1, 2, …*; they cannot be renamed. The browser extension has the same screen - see [Several accounts from one phrase](/qorex/browser-extension#wallet).
+Settings → **Your accounts** lets you create and switch between up to **20 accounts** per wallet, all derived from the same 24-word recovery phrase (there is nothing extra to back up). Each account is its own `qor1…` address with its own balance, its own optional @handle (a handle binds to an **address**, not to the wallet), and, after its first send, its own ML-DSA-87 key. Tap an account to make it the one in use. Whichever account is active is the one Send, Receive, Staking and the dApp browser use - switching moves everything with it, and the app shows which account you're on whenever more than one exists. Accounts are numbered *Account 1, 2, …*; they cannot be renamed. Each account also has a **History** link in **Your accounts** (extension: *History of ...*), which opens that account's transactions - see [History](/qorex/send-and-receive#history). The browser extension has the same screen - see [Several accounts from one phrase](/qorex/browser-extension#wallet).
 
 - **Add an account** adds the next account on the same phrase. A new account registers its own ML-DSA-87 key the first time it sends, which costs a small one-time network fee.
 - **Add an Ethereum account (coin 60)** is for a recovery phrase first used in MetaMask or on the QoreChain Dashboard - that is where its funds are. It uses the Ethereum path `m/44'/60'` and is labelled *Ethereum · coin 60*; its `0x…` address is the same on every EVM network and is the same key as that QoreChain account. See [Restore a phrase from MetaMask or the Dashboard](/qorex/getting-started#restore-dashboard).
+- **Rewards between your accounts.** You can have an account's future staking rewards go to another account of the same wallet - see [Choose where rewards go](/qorex/portfolio-and-staking#rewards-address).
 - **Restoring** a phrase on a new device brings back **Account 1** only; use **Add an account** (and **Add an Ethereum account (coin 60)**) to bring back the others. The Addresses screen (**Settings → Your addresses**) is separate: it lists every account in this wallet plus read-only addresses linked from other wallets.
 
 ## @handle {#handle}

@@ -18,7 +18,9 @@ Die **mobile QoreX-App** (iOS und Android) ist die vollständige QoreChain-Walle
 - **EVM-Zugriffsfenster.** QoreX öffnet, zeigt und schließt das Fenster, mit dem ein Konto im Ethereum-Stil auf der EVM-Lane senden kann. Siehe [Sicherheit & Wiederherstellung](/qorex/security-and-recovery#evm-window).
 - **@Handles mit Pinning.** Zwei Signaturen binden einen Namen an eine Adresse; die zuerst aufgelöste Adresse wird angeheftet, und eine stille Änderung wird markiert.
 - **Wiederherstellung ohne Unternehmen.** Social Recovery (verschlüsselte Shares, 2 von 3, 48 Stunden Timelock), Legacy (ein Dead-Man's-Switch über Ihre Guardians) und Geräteverknüpfung. Siehe [Sicherheit & Wiederherstellung](/qorex/security-and-recovery).
-- **Q-Day Scanner.** Ein Exposure-Bericht für jede Bitcoin- oder Ethereum-Adresse.
+- **Erster Start mit Ziel.** Nach der kurzen Tour fragt QoreX **Was möchtest du zuerst tun?** und führt Sie dorthin, einschließlich einer kurzen Prüfung, ob Ihre Wiederherstellungsphrase korrekt aufgeschrieben ist. Siehe [Erster Start](#first-run).
+- **Schutz meines Geldes.** Ein Bildschirm, der Ihre Sicherung, Ihren Wiederherstellungstest, Ihre Vertrauenspersonen, verbundene Websites und dauerhafte Berechtigungen prüft. Siehe [Sicherheit und Wiederherstellung](/qorex/security-and-recovery).
+- **Q-Day-Scanner.** Ein Exposure-Bericht für jede Bitcoin- oder Ethereum-Adresse. Bei einer Bitcoin-Adresse fragt QoreX einen von Dritten betriebenen Dienst ab, der die Adresse und Ihre IP-Adresse sieht, und das erst, nachdem Sie zugestimmt haben.
 - **Push und Widget mit kleinem Fußabdruck.** Push teilt dem Server nur Ihre öffentlichen Adressen mit, und die Benachrichtigung sagt nur „QOR received“. Das Widget zeigt das QOR-Guthaben des gerade verwendeten Kontos.
 
 ## Zugang {#how-to-access}
@@ -28,7 +30,7 @@ Die **mobile QoreX-App** (iOS und Android) ist die vollständige QoreChain-Walle
 - **iOS**: der App Store (iOS 15.1 oder neuer): https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
-Die aktuellen Versionen sind unter [Welche Version wo live ist](/qorex/overview#versions) aufgeführt. Die App ist kostenlos und erfordert kein Konto. Standard ist das Mainnet `qorechain-vladi`; **Settings → Use testnet (developers)** wechselt zu `qorechain-diana`. Senden und Staking zahlen die normale Netzwerkgebühr (Untergrenze 0,1 uqor pro Gas). Die App ist in 10 Sprachen verfügbar, darunter Arabisch mit Rechts-nach-links-Layout, und folgt der Sprache des Telefons.
+Die aktuellen Versionen sind unter [Welche Version wo live ist](/qorex/overview#versions) aufgeführt: Die App für iOS und Android ist 1.2.5. Die App ist kostenlos und erfordert kein Konto. Standard ist das Mainnet `qorechain-vladi`; **Settings → Testnet verwenden (Entwickler)** wechselt zu `qorechain-diana`. Senden und Staking zahlen die normale Netzwerkgebühr (Untergrenze 0,1 uqor pro Gas). Die App ist in 10 Sprachen verfügbar, darunter Arabisch mit Rechts-nach-links-Layout, und folgt der Sprache des Telefons.
 
 ## Verwendung {#how-to-use}
 
@@ -58,10 +60,11 @@ Es gibt drei Möglichkeiten zur Einrichtung:
 1. Tippen Sie auf **Neue Wallet erstellen**.
 2. QoreX generiert auf Ihrem Gerät eine **24-Wörter-Wiederherstellungsphrase** (256-Bit-Entropie), versiegelt sie direkt im hardwaregestützten, biometrisch abgesicherten Tresor und leitet daraus Ihre QoreChain-Identität ab - Coin-Typ 118, eine `qor1…`-Adresse (Ihre ETH- und SOL-Konten stammen aus demselben Seed). **Die App zeigt Ihnen die Phrase beim Erstellen der Wallet nicht an.**
 3. **Lassen Sie sich die Phrase anzeigen und schreiben Sie sie sofort auf:** Öffnen Sie **Einstellungen → Sicherheit → Wiederherstellungsphrase anzeigen**, bestätigen Sie mit Biometrie oder der Geräte-PIN und schreiben Sie die 24 Wörter der Reihe nach auf Papier ab. Bewahren Sie sie offline auf. Diese Phrase ist die **einzige** Möglichkeit, Ihre Wallet wiederherzustellen, falls Sie das Gerät verlieren.
-4. Richten Sie optional [Social Recovery](/qorex/security-and-recovery#social-recovery) ein. Beachten Sie, dass die Karte **Backup-Status** auf Home nur Social Recovery verfolgt - sie kann nicht erkennen, ob Sie die Phrase aufgeschrieben haben, und erinnert Sie daher auch nicht daran.
+4. Prüfen Sie, was Sie geschrieben haben: Tippen Sie auf dem Bildschirm, der Ihre Phrase zeigt, auf **Mein Backup prüfen** und geben Sie die drei abgefragten Wörter ein (siehe [Die Backup-Prüfung](#backup-check)).
+5. Richten Sie optional [Social Recovery](/qorex/security-and-recovery#social-recovery) ein. Beachten Sie, dass die Karte **Backup-Status** auf Home nur Social Recovery verfolgt. Ob Ihre aufgeschriebene Phrase geprüft wurde, zeigt **Schutz meines Geldes**.
 
-:::danger Erledigen Sie Schritt 3 jetzt - nichts in der App erinnert Sie daran
-Da die App nach dem Erstellen der Wallet direkt zu Home wechselt, ist es leicht, weiterzumachen, ohne die Phrase jemals aufzuschreiben. **Tun Sie es, bevor Sie etwas empfangen oder senden.** Wenn Sie die App verlieren oder deinstallieren oder das Telefon verlieren, ohne die aufgeschriebene Phrase oder eine eingerichtete [Social Recovery](/qorex/security-and-recovery#social-recovery), kann niemand - auch nicht die QoreChain Association - Ihre Guthaben zurückholen.
+:::danger Erledigen Sie Schritt 3 jetzt - verlassen Sie sich nicht auf eine Erinnerung
+Da die App die Phrase beim Erstellen der Wallet nicht anzeigt, ist es leicht, weiterzumachen, ohne sie jemals aufzuschreiben. **Tun Sie es, bevor Sie etwas empfangen oder senden.** Wenn Sie die App verlieren oder deinstallieren oder das Telefon verlieren, ohne die aufgeschriebene Phrase oder eine eingerichtete [Social Recovery](/qorex/security-and-recovery#social-recovery), kann niemand - auch nicht die QoreChain Association - Ihre Guthaben zurückholen.
 :::
 
 :::caution Ihre Wiederherstellungsphrase ist alles
@@ -82,6 +85,26 @@ Die Wiederherstellung über die Phrase bringt **Konto 1** zurück. Wenn Sie in d
 ### 3. Von einem anderen Gerät verknüpfen
 
 Wenn Sie QoreX bereits auf einem anderen Smartphone oder Tablet installiert haben, können Sie die Wallet **ohne Server und ohne Tippen** übertragen - siehe [Neues Gerät verknüpfen](/qorex/security-and-recovery#link-device). Wählen Sie auf dem neuen Gerät **Von einem anderen Gerät verknüpfen**, um zu beginnen.
+
+## Erster Start: Was möchtest du zuerst tun? {#first-run}
+
+Einmal pro Wallet fragt QoreX nach der kurzen Tour **Was möchtest du zuerst tun?** Wählen Sie eines von drei Zielen oder tippen Sie auf **Vorerst überspringen**. Sie können es später unter **Settings → Was möchtest du tun?** erneut öffnen. Es funktioniert im Mainnet und im Testnet gleich (im Testnet hat QOR keinen Wert).
+
+| Ziel | Wodurch QoreX Sie führt |
+|---|---|
+| **Ich möchte Geld empfangen** | Wählen Sie die Münze, die Sie empfangen möchten, sehen Sie die richtige Adresse als QR-Code mit der Warnung, nur diese Münze in diesem Netzwerk zu senden, dann **Zahlungslink erstellen** (Zahlungslinks fordern QOR auf QoreChain an). Siehe [Zahlungsanforderungen](/qorex/send-and-receive). |
+| **Ich möchte Geld senden** | **Add funds**: Ihre QoreChain-Adresse und QR-Code. **Hol dir einen @handle** (oder sehen Sie den vorhandenen). **Meine erste Zahlung**: die Gebühr, ungefähr wie hoch sie ist (und die einmalige Gebühr für die Registrierung des Post-Quanten-Schlüssels, falls Ihr Konto noch keinen registriert hat), dann **Meine erste Zahlung machen**. Sie sehen den genauen Betrag, bevor Sie signieren. |
+| **Ich möchte meine Krypto sicher aufbewahren** | **Deine Einzahlungsadresse**; **Wiederherstellung einrichten** mit [Vertrauenspersonen](/qorex/security-and-recovery#social-recovery), die Ihre Phrase niemals sehen; dann **Mein Backup prüfen**, das zeigt, ob Ihr Backup geprüft wurde, und Sie zu Ihrer Phrase führt, um es zu prüfen. |
+
+In der Browser-Erweiterung erscheint dieselbe Frage, nachdem Sie eine Wallet erstellt oder importiert haben; das Sicherheitsziel besteht dort aus der Einzahlungsadresse und der Backup-Prüfung, und @handles werden in der App beansprucht. Siehe [Wallet erstellen oder wiederherstellen](/qorex/browser-extension#wallet).
+
+### Die Backup-Prüfung {#backup-check}
+
+Die Backup-Prüfung ist ein kurzes Quiz: QoreX fragt nach **drei Wörtern Ihrer Wiederherstellungsphrase** an zufälligen Positionen, und Sie tippen sie so ein, wie Sie sie aufgeschrieben haben.
+
+- In der **App**: Öffnen Sie **Settings → Security → Reveal recovery phrase**, bestätigen Sie mit Biometrie oder Ihrer Geräte-PIN, schreiben Sie die Wörter auf und tippen Sie dann auf **Mein Backup prüfen**. Passt ein Wort nicht, vergleichen Sie mit Ihrem Papier und versuchen Sie es erneut; **Phrase erneut anzeigen** bringt Sie zurück zu den Wörtern, und **Später prüfen** verlässt den Bildschirm. Wenn Sie bestehen, vermerkt QoreX nur, dass geprüft wurde und wann.
+- In der **Erweiterung**: Die Prüfung folgt auf den Bildschirm, der die neue Phrase anzeigt. **Mein Backup prüfen** fragt später nach Ihrem Passwort und zeigt die Phrase nicht an.
+- **Schutz meines Geldes** bietet **Meine Wiederherstellungsphrase testen**, das auf dieselbe Weise nach drei Wörtern fragt. Die Wörter werden auf Ihrem Gerät verglichen; nichts, was Sie eingeben, wird gespeichert oder gesendet.
 
 ## Mehrere Wallets auf einem Gerät {#several-wallets}
 
@@ -105,7 +128,11 @@ Ein Konto im Ethereum-Stil hat kein @Handle (Handles werden auf einem QoreChain-
 ## Orientierung {#find-your-way}
 
 - **Suche** - die Lupe oben auf Home durchsucht Bildschirme („stake“), Coins („USDC“), Personen (ein @Handle oder eine Adresse), Memos und den Anfang eines Transaktions-Hashs; die Eingabe eines @Handles oder einer `qor1…`-Adresse bietet direkt **Send QOR to …** an.
-- **Tour** - beim ersten Öffnen einer Wallet auf Home erklären fünf kurze Karten, was QoreX kann und wo sich was befindet. Sie läuft einmal; wiederholen Sie sie unter Einstellungen → **Tour erneut starten**.
+- **Tour** - beim ersten Öffnen einer Wallet auf Home erklären fünf kurze Karten, was QoreX kann und wo sich was befindet. Sie läuft einmal; wiederholen Sie sie unter Einstellungen → **Tour erneut ansehen**. Danach folgt [Was möchtest du zuerst tun?](#first-run).
+- **Einstellungen** enthält außerdem **Zahlungsanforderungen**, **Eine Anforderung bezahlen**, **Kontakte**, **Schutz meines Geldes**, **Hilfe** und **Was möchtest du tun?** (und, nur im Testnet, das Senden an eine andere Chain und den QoreChain-Bridge-Bildschirm - siehe [Testnet-Funktionen](/qorex/testnet-features)).
+- **Entwicklermodus** - ein Schalter in den Einstellungen, standardmäßig aus. Ist er an, erscheint in der unteren Leiste ein Tab **Entwickler** mit einem `</>`-Symbol. Siehe [Entwicklermodus](/qorex/developer-mode).
+- **Automatische Sperre** - nach einer Zeit ohne Nutzung fragt QoreX erneut nach Biometrie oder PIN; das Intervall (1, 5, 15, 30, 60 oder 240 Minuten, Standard 15) legen Sie mit **Automatisch sperren nach** unter Einstellungen → Sicherheit fest.
+- **Netzwerkstatus** - ist der neueste Block der Chain älter als eine Minute oder ist das Netzwerk nicht erreichbar, weist ein Banner darauf hin.
 
 ## Optional: Ein @Handle beanspruchen
 
@@ -134,8 +161,8 @@ Der Quellcode der mobilen App ist nicht öffentlich. Installieren Sie immer übe
 
 - **Swap ist nicht verfügbar**: Er ist abgeschaltet, bis Pool-Liquidität vorhanden ist, und wird unter iOS nicht angezeigt.
 - **Verknüpfte Signer** (Phantom oder MetaMask als verknüpfter Schlüssel mit Ausgabenlimits) sind in QoreX noch nicht verfügbar.
-- **Schlüsselrotation** für Ihren ML-DSA-87-Schlüssel ist in QoreX noch nicht verfügbar.
-- **Die App zeigt die Phrase beim Erstellen der Wallet nicht an.** Lassen Sie sie sich sofort unter Einstellungen → Sicherheit anzeigen. Die Karte Backup-Status verfolgt nur Social Recovery.
+- **Nur Testnet:** das Senden an eine andere Chain über IBC, der QoreChain-Bridge-Bildschirm und Solana auf QoreChain. Siehe [Testnet-Funktionen](/qorex/testnet-features).
+- **Die App zeigt die Phrase beim Erstellen der Wallet nicht an.** Lassen Sie sie sich sofort unter Einstellungen → Sicherheit anzeigen. Die Karte Backup-Status verfolgt nur Social Recovery; **Schutz meines Geldes** zeigt, ob Ihr Backup geprüft wurde.
 - **EVM- und SVM-Überweisungen werden nicht von der Hybrid-Signatur abgedeckt.** Eine EVM-Transaktion trägt nur eine secp256k1-Signatur und braucht ein geöffnetes Zugriffsfenster; Überweisungen in externen Netzwerken sind ausschließlich klassisch.
 - **Push** gibt es nur im Mainnet; unter iPhone ist es als Best Effort zu betrachten.
 - Eine verlorene Wallet ohne aufgeschriebene Phrase und ohne Social Recovery kann von niemandem wiederhergestellt werden.

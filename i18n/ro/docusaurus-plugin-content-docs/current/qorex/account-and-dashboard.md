@@ -7,9 +7,9 @@ sidebar_position: 6
 
 # Cont și Dashboard
 
-Această pagină acoperă contul opțional QoreX: autentificarea, mai multe conturi dintr-o singură frază de recuperare, @handle-urile, asocierea cu Dashboard și ștergerea contului. Este destinată utilizatorilor de mobil care doresc aceste facilități; niciuna nu este necesară pentru a deține sau a trimite QOR.
+Această pagină acoperă contul opțional QoreX: autentificarea, mai multe conturi dintr-o singură frază de recuperare, @handle-urile, asocierea cu Dashboard și ștergerea contului. Pentru ajutor cu QoreX, vezi [Ajutor și asistență](/qorex/security-and-recovery#support). Pagina este destinată utilizatorilor de mobil care doresc aceste facilități; niciuna nu este necesară pentru a deține sau a trimite QOR.
 
-QoreX funcționează **complet fără cont** - cheile tale nu depind niciodată de unul. Autentificarea adaugă facilități precum cererile de plată și asocierea cu Dashboard și este **necesară pentru a revendica un @handle**. Autentificarea se face prin e-mail sau prin Apple ori Google - vezi mai jos.
+QoreX funcționează **complet fără cont** - cheile tale nu depind niciodată de unul. Autentificarea adaugă facilități precum cererile prin @handle și asocierea cu Dashboard și este **necesară pentru a revendica un @handle**. [Linkurile de cerere de plată](/qorex/send-and-receive#payment-requests) nu au nevoie de cont. Autentificarea se face prin e-mail sau prin Apple ori Google - vezi mai jos.
 
 ## Autentificare {#sign-in}
 
@@ -27,10 +27,11 @@ Oferta de passkey apare doar după autentificarea cu **cod pe e-mail**. Când te
 
 ## Mai multe conturi dintr-o singură frază {#accounts}
 
-Settings → **Your accounts** îți permite să creezi și să comuți între până la **20 de conturi** per portofel, toate derivate din aceeași frază de recuperare de 24 de cuvinte (nu mai există nimic suplimentar de salvat). Fiecare cont este propria sa adresă `qor1…`, cu propriul sold, propriul @handle opțional (un handle se leagă de o **adresă**, nu de portofel) și, după prima sa trimitere, propria cheie ML-DSA-87. Atinge un cont pentru a-l face pe cel în uz. Contul activ la un moment dat este cel folosit de Send, Receive, Staking și de browserul de dApp-uri - comutarea mută totul odată cu el, iar aplicația arată pe ce cont te afli ori de câte ori există mai mult de unul. Conturile sunt numerotate *Account 1, 2, …*; nu pot fi redenumite. Extensia de browser are același ecran - vezi [Mai multe conturi dintr-o singură frază](/qorex/browser-extension#wallet).
+Settings → **Your accounts** îți permite să creezi și să comuți între până la **20 de conturi** per portofel, toate derivate din aceeași frază de recuperare de 24 de cuvinte (nu mai există nimic suplimentar de salvat). Fiecare cont este propria sa adresă `qor1…`, cu propriul sold, propriul @handle opțional (un handle se leagă de o **adresă**, nu de portofel) și, după prima sa trimitere, propria cheie ML-DSA-87. Atinge un cont pentru a-l face pe cel în uz. Contul activ la un moment dat este cel folosit de Send, Receive, Staking și de browserul de dApp-uri - comutarea mută totul odată cu el, iar aplicația arată pe ce cont te afli ori de câte ori există mai mult de unul. Conturile sunt numerotate *Account 1, 2, …*; nu pot fi redenumite. Fiecare cont are și un link **History** în **Your accounts** (extensie: *History of ...*), care deschide tranzacțiile acelui cont - vezi [Istoric](/qorex/send-and-receive#history). Extensia de browser are același ecran - vezi [Mai multe conturi dintr-o singură frază](/qorex/browser-extension#wallet).
 
 - **Add an account** adaugă următorul cont pe aceeași frază. Un cont nou își înregistrează propria cheie ML-DSA-87 la prima trimitere, ceea ce costă o mică taxă de rețea unică.
 - **Add an Ethereum account (coin 60)** este pentru o frază de recuperare folosită prima dată în MetaMask sau în Dashboard-ul QoreChain - acolo se află fondurile ei. Folosește calea Ethereum `m/44'/60'` și este etichetat *Ethereum · coin 60*; adresa sa `0x…` este aceeași pe orice rețea EVM și este aceeași cheie ca acel cont QoreChain. Vezi [Restaurarea unei fraze din MetaMask sau din Dashboard](/qorex/getting-started#restore-dashboard).
+- **Recompense între conturile tale.** Poți face ca recompensele viitoare din staking ale unui cont să ajungă în alt cont al aceluiași portofel - vezi [Alege unde ajung recompensele](/qorex/portfolio-and-staking#rewards-address).
 - **Restaurarea** unei fraze pe un dispozitiv nou readuce doar **Account 1**; folosește **Add an account** (și **Add an Ethereum account (coin 60)**) pentru a le readuce pe celelalte. Ecranul Addresses (**Settings → Your addresses**) este separat: listează fiecare cont din acest portofel, plus adresele read-only legate din alte portofele.
 
 ## @handle {#handle}

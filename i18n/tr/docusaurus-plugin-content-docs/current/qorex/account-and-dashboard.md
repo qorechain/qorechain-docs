@@ -7,9 +7,9 @@ sidebar_position: 6
 
 # Hesap ve Dashboard
 
-Bu sayfa isteğe bağlı QoreX hesabını kapsar: oturum açma, tek bir kurtarma ifadesinden birden fazla hesap, @handle'lar, Dashboard'a bağlama ve hesabınızı silme. Bu kolaylıkları isteyen mobil kullanıcılar içindir; QOR tutmak veya göndermek için bunların hiçbiri gerekli değildir.
+Bu sayfa isteğe bağlı QoreX hesabını kapsar: oturum açma, tek bir kurtarma ifadesinden birden fazla hesap, @handle'lar, Dashboard'a bağlama ve hesabınızı silme. QoreX ile ilgili yardım için [Yardım ve destek](/qorex/security-and-recovery#support) bölümüne bakın. Bu kolaylıkları isteyen mobil kullanıcılar içindir; QOR tutmak veya göndermek için bunların hiçbiri gerekli değildir.
 
-QoreX **hesap olmadan da tamamen çalışır** - anahtarlarınız asla bir hesaba bağlı olmaz. Oturum açmak ödeme istekleri ve Dashboard eşleştirmesi gibi kolaylıklar ekler ve **bir @handle talep etmek için gereklidir**. Oturum açma e-posta ile ya da Apple veya Google ile yapılır - aşağıya bakın.
+QoreX **hesap olmadan da tamamen çalışır** - anahtarlarınız asla bir hesaba bağlı olmaz. Oturum açmak @handle ile ödeme isteme ve Dashboard eşleştirmesi gibi kolaylıklar ekler ve **bir @handle talep etmek için gereklidir**. [Ödeme isteği bağlantıları](/qorex/send-and-receive#payment-requests) için hesap gerekmez. Oturum açma e-posta ile ya da Apple veya Google ile yapılır - aşağıya bakın.
 
 ## Oturum açma {#sign-in}
 
@@ -27,10 +27,11 @@ Passkey teklifi yalnızca **e-posta koduyla** oturum açtıktan sonra görünür
 
 ## Tek bir ifadeden birden fazla hesap {#accounts}
 
-Ayarlar → **Hesaplarınız**, cüzdan başına **20 hesaba** kadar oluşturmanıza ve aralarında geçiş yapmanıza olanak tanır; hepsi aynı 24 kelimelik kurtarma ifadesinden türetilir (ayrıca yedeklenmesi gereken hiçbir şey yoktur). Her hesap, kendi bakiyesine ve kendi isteğe bağlı @handle'ına sahip (bir handle cüzdana değil bir **adrese** bağlıdır) ayrı bir `qor1…` adresidir ve ilk gönderiminden sonra kendi ML-DSA-87 anahtarına da sahip olur. Kullanımdaki hesap yapmak için bir hesaba dokunun. Hangi hesap etkinse Gönder, Al, Staking ve dApp tarayıcısı tarafından kullanılan hesap odur - geçiş yapmak her şeyi beraberinde taşır ve birden fazla hesap var olduğunda uygulama hangi hesapta olduğunuzu gösterir. Hesaplar *Hesap 1, 2, …* olarak numaralandırılır; yeniden adlandırılamaz. Tarayıcı eklentisinde de aynı ekran bulunur - bkz. [Tek bir ifadeden birden fazla hesap](/qorex/browser-extension#wallet).
+Ayarlar → **Hesapların**, cüzdan başına **20 hesaba** kadar oluşturmanıza ve aralarında geçiş yapmanıza olanak tanır; hepsi aynı 24 kelimelik kurtarma ifadesinden türetilir (ayrıca yedeklenmesi gereken hiçbir şey yoktur). Her hesap, kendi bakiyesine ve kendi isteğe bağlı @handle'ına sahip (bir handle cüzdana değil bir **adrese** bağlıdır) ayrı bir `qor1…` adresidir ve ilk gönderiminden sonra kendi ML-DSA-87 anahtarına da sahip olur. Kullanımdaki hesap yapmak için bir hesaba dokunun. Hangi hesap etkinse Gönder, Al, Staking ve dApp tarayıcısı tarafından kullanılan hesap odur - geçiş yapmak her şeyi beraberinde taşır ve birden fazla hesap var olduğunda uygulama hangi hesapta olduğunuzu gösterir. Hesaplar *Hesap 1, 2, …* olarak numaralandırılır; yeniden adlandırılamaz. Her hesabın **Hesapların** içinde ayrıca o hesabın işlemlerini açan bir **Geçmiş** bağlantısı vardır (eklentide: *History of ...*) - bkz. [Geçmiş](/qorex/send-and-receive#history). Tarayıcı eklentisinde de aynı ekran bulunur - bkz. [Tek bir ifadeden birden fazla hesap](/qorex/browser-extension#wallet).
 
 - **Hesap ekle**, aynı ifadeye bir sonraki hesabı ekler. Yeni bir hesap, ilk gönderiminde kendi ML-DSA-87 anahtarını kaydeder; bu, küçük, tek seferlik bir ağ ücretine mal olur.
 - **Ethereum hesabı ekle (coin 60)**, ilk olarak MetaMask'ta veya QoreChain Dashboard'unda kullanılmış bir kurtarma ifadesi içindir - fonları orada bulunur. Ethereum yolu `m/44'/60'` kullanır ve *Ethereum · coin 60* olarak etiketlenir; `0x…` adresi her EVM ağında aynıdır ve o QoreChain hesabıyla aynı anahtardır. Bkz. [MetaMask'tan veya Dashboard'dan bir ifadeyi geri yükleme](/qorex/getting-started#restore-dashboard).
+- **Hesaplarınız arasında ödüller.** Bir hesabın gelecekteki staking ödüllerinin aynı cüzdanın başka bir hesabına gitmesini sağlayabilirsiniz - bkz. [Ödüllerin nereye gideceğini seçin](/qorex/portfolio-and-staking#rewards-address).
 - Yeni bir cihazda bir ifadeyi **geri yüklemek** yalnızca **Hesap 1**'i geri getirir; diğerlerini geri getirmek için **Hesap ekle** (ve **Ethereum hesabı ekle (coin 60)**) seçeneğini kullanın. Adresler ekranı (**Ayarlar → Adresleriniz**) ayrıdır: bu cüzdandaki her hesabı ve diğer cüzdanlardan bağlanan salt okunur adresleri listeler.
 
 ## @handle {#handle}

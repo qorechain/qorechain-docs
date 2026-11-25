@@ -11,6 +11,10 @@ Integrările QoreX sunt șase pachete npm mici, pentru dezvoltatorii de dApp-uri
 
 Ce nu fac: nu dețin chei și nu transformă QoreX în mai mult decât este astăzi. Citiți [Limite și probleme cunoscute](#limits) înainte de a construi pe ele: build-urile QoreX live din magazine acceptă o parte din ceea ce aceste pachete pot fi conectate să facă, iar limitele sunt precizate acolo.
 
+:::tip Integrezi fără aceste pachete sau verifici ce face portofelul acum
+[Integrează un dApp cu QoreX](/qorex/dapp-integration) este ghidul complet al portofelului însuși: detectare, `signAndBroadcast`, semnatari cosmjs, semnarea de mesaje, EVM, Solana, erori și linkuri, pentru aplicația QoreX 1.2.5, extensia 0.4.4 și Safari 1.8.2. Pachetele 0.1.0 au fost publicate pe 27 octombrie 2026, iar portofelul a căpătat funcții de atunci. Această pagină descrie cum se comportă pachetele; pentru ce face portofelul, ghidul respectiv este cel actual.
+:::
+
 ## Inovații {#innovations}
 
 * **Descoperire care nu poate alege portofelul greșit.** QoreX se anunță prin EIP-6963 cu numele reverse-DNS `network.qore.qorex` și nu scrie niciodată `window.ethereum`. `@qorechain/qorex-types` selectează providerul doar după acest nume, iar portofelul RainbowKit fixează conectorul pe providerul anunțat și nu revine niciodată la `window.ethereum`.
@@ -18,9 +22,9 @@ Ce nu fac: nu dețin chei și nu transformă QoreX în mai mult decât este ast�
 * **Verificări de capabilități în loc de verificări de versiune.** Pachetele citesc lista `capabilities` a portofelului (`hasCapability`), astfel încât o funcție precum `signAndBroadcast` este detectată, nu ghicită dintr-un număr de versiune.
 * **Refuzurile sunt explicite, cu coduri stabile.** Semnarea Amino este refuzată prin design, deoarece Amino JSON nu poate purta semnătura hibridă; conectorii aruncă `QorexIntegrationError` cu coduri precum `QOREX_AMINO_REFUSED`, `QOREX_USE_SIGN_AND_BROADCAST` și `QOREX_NOT_SUPPORTED_YET`, iar `isQorexIntegrationError(err, code)` le testează.
 * **Un dublu de test care semnează cu adevărat.** `@qorechain/qorex-wallet-mock` injectează aceleași obiecte pe care le injectează QoreX (`window.qorex = { evm, native, svm }`), înregistrează un portofel Solana și semnează cu algoritmii reali (ML-DSA-87 hibrid prin QoreSign pe lane-ul nativ, secp256k1 pe EVM, ed25519 pe Solana) pornind de la fraza de test publică, implicit pe testnet. Se anunță ca `network.qore.qorex.mock`, astfel încât codul care selectează strict QoreX nu îl poate confunda cu portofelul.
-* **Două profiluri de comportament.** Profilul `current` al mock-ului se comportă ca QoreX-ul live astăzi; `planned` adaugă ce a anunțat echipa QoreX, astfel încât puteți construi în avans fără ca mock-ul să pretindă ceva ce portofelul nu face încă.
+* **Două profiluri de comportament.** Profilul `current` al mock-ului se comportă ca QoreX-ul care era live când a fost publicată versiunea 0.1.0 (27 octombrie 2026); `planned` adaugă ce se anunțase la acel moment. De atunci, QoreX a livrat semnarea EVM, evenimentele de cont și stratul adăugat de portofel la `signDirect`, așa că profilul `planned` este potrivirea mai apropiată pentru acestea.
 * **Fixture-uri Playwright în stilul Synpress v4** (`qorexMockFixtures`) injectează mock-ul înainte de navigare, așa că un test cap-coadă nu are nevoie de nicio extensie de browser.
-* **Conturi conduse de portofel, fără evenimente.** Deoarece QoreX nu emite încă `accountsChanged` sau `chainChanged`, portofelul RainbowKit are un `pollAccountsOnFocus` opt-in, care recitește `eth_accounts` și `eth_chainId` când pagina recapătă focusul.
+* **Conturi urmărite cu sau fără evenimente.** Portofelul RainbowKit are un `pollAccountsOnFocus` opt-in, care recitește `eth_accounts` și `eth_chainId` când pagina recapătă focusul. A fost scris pentru build-uri de portofel care nu emiteau `accountsChanged` sau `chainChanged`; build-urile QoreX actuale le emit.
 
 ## La ce se folosește {#use-cases}
 
@@ -28,7 +32,7 @@ Ce nu fac: nu dețin chei și nu transformă QoreX în mai mult decât este ast�
 2. **Un dApp Cosmos pe Interchain Kit sau cosmos-kit adaugă QoreX.** Adăugați portofelul QoreX în `ChainProvider` și trimiteți tranzacții QoreChain cu `qorexSignAndBroadcast`: QoreX construiește tranzacția, adaugă semnătura hibridă și o transmite, deoarece o pagină nu poate deține cheia ML-DSA-87.
 3. **Un dApp care acceptă deja Keplr.** `window.qorex.native` urmează modelul Keplr (`enable`, `getKey`, `signDirect`), așa că integrarea înseamnă câteva rânduri. Ghidul din repository listează fiecare diferență.
 4. **Teste CI ale fluxurilor de portofel, fără extensie.** O echipă QA rulează Playwright cu `qorexMockFixtures({ profile: "current" })`, apasă Connect și verifică dacă pagina afișează `qorex.addresses.evm`. `qorex.rejectNext()` testează calea de refuz.
-5. **Construit în avans față de funcțiile noi QoreX.** Rulați aceeași suită cu `profile: "planned"` pentru a exersa funcțiile anunțate (semnare EVM, evenimente de schimbare a contului, `signDirect` care adaugă stratul hibrid) înainte ca QoreX să le livreze.
+5. **Testarea comportamentului mai nou al portofelului.** Rulați aceeași suită cu `profile: "planned"` pentru a exersa semnarea EVM, evenimentele de schimbare a contului și `signDirect` care adaugă stratul hibrid.
 6. **Testarea transmiterilor reale pe testnet.** Cu o mnemonică de testnet alimentată, proprie, o echipă lasă mock-ul să facă `signAndBroadcast` pentru o tranzacție semnată hibrid către `qorechain-diana` și verifică rezultatul în pagină.
 7. **Detecție de funcții în loc de verificări de versiune.** Un dApp afișează un buton Send pe QoreChain când `hasCapability(native, "signAndBroadcast")` este adevărat, astfel încât build-urile noi QoreX activează funcții fără nicio schimbare în dApp.
 
@@ -36,22 +40,16 @@ Ce nu fac: nu dețin chei și nu transformă QoreX în mai mult decât este ast�
 
 * **Lane-ul EVM.** QoreX nu scrie niciodată `window.ethereum`. Anunță un provider EIP-1193 prin EIP-6963 cu numele reverse-DNS `network.qore.qorex`; `qorexWallet()` și `discoverQorexEip1193()` selectează exact acel provider. Același obiect se găsește și la `window.qorex.evm`.
 * **Lane-ul nativ.** `window.qorex.native` este un provider în modelul Keplr (nu este un alias pentru `window.keplr`). QoreChain cere o semnătură hibridă secp256k1 plus ML-DSA-87 pe tranzacțiile din lane-ul nativ, iar cheia ML-DSA-87 o deține doar portofelul, deci dApp-ul trimite mesajele către `signAndBroadcast`. QoreX le afișează, stabilește comisionul, semnează cu ambele chei, transmite și raportează `shield`.
-* **Solana.** QoreX înregistrează un portofel Solana Wallet Standard pe `solana:mainnet` (Solana propriu-zisă). Lane-ul SVM al QoreChain nu este deschis pentru tranzacții și nu are un chain id Wallet Standard.
+* **Solana.** QoreX înregistrează un portofel Solana Wallet Standard pe `solana:mainnet` (Solana propriu-zisă). Lane-ul SVM propriu al QoreChain nu are un chain id Wallet Standard; în QoreX este o unealtă doar pentru testnet (vedeți [Funcții de testnet](/qorex/testnet-features#solana-on-qorechain)).
 * **Capabilități, nu versiuni.** Kiturile citesc `window.qorex.native.capabilities` prin `hasCapability`. Un build QoreX poate declara `listAccounts`, `connectProofPicksAccount`, `executeRequest` și `signAndBroadcast`.
 * **Amino este refuzat prin design**, deoarece Amino JSON nu poate purta semnătura hibridă ML-DSA-87. Kiturile răspund fiecărei cereri de signer cu un signer direct.
-* **`signDirect` și stratul post-cuantic, precis.** Astăzi `signDirect` din QoreX semnează SignDoc-ul așa cum este, cu cheia secp256k1. Pe QoreChain, corpul trebuie să conțină deja un strat hibrid ML-DSA-87 valid pentru cheia înregistrată a semnatarului, lucru pe care o pagină nu îl poate produce. Așadar, pe `qorechain-vladi` și `qorechain-diana`, `signDirect` al signerului offline din kituri aruncă `QOREX_USE_SIGN_AND_BROADCAST` înainte să ajungă la QoreX; `getAccounts` funcționează pe orice chain. Pe alte chain id-uri, kiturile trimit `signDirect` către QoreX, care astăzi servește doar cele două chain id-uri QoreChain. O versiune viitoare QoreX este planificată să adauge ea însăși stratul în `signDirect` și să declare capabilitatea `signDirectAddsPqcLayer`; niciun build actual nu o declară. Kiturile o verifică deja, iar când este declarată, signerul offline trimite SignDoc-urile QoreChain către QoreX. QoreX poate atunci să reestimeze gazul și să mărească limita de gaz și comisionul, așa că transmiteți întotdeauna documentul `signed` primit înapoi.
+* **`signDirect` și stratul post-cuantic.** O tranzacție QoreChain are nevoie de un strat hibrid ML-DSA-87, pe care o pagină nu îl poate produce. Kiturile citesc capabilitatea `signDirectAddsPqcLayer`. Când portofelul o declară (build-urile QoreX actuale o fac), signerul offline trimite SignDoc-urile QoreChain către QoreX, care adaugă stratul. QoreX poate atunci să reestimeze gazul și să mărească limita de gaz și comisionul, așa că transmiteți întotdeauna documentul `signed` primit înapoi. Când portofelul nu o declară, signerul aruncă `QOREX_USE_SIGN_AND_BROADCAST` pe `qorechain-vladi` și `qorechain-diana`; `getAccounts` funcționează pe orice chain.
 * **Stările `shield`** returnate de `signAndBroadcast`: `shielded` (tranzacția confirmată poartă stratul hibrid), `pending` (transmisă, verificarea nu s-a încheiat), `downgraded` (confirmată fără strat; tratați-o ca pe o alertă) și `classical` (un lane în care stratul nu se aplică).
 * **Mock-ul** își construiește conturile dintr-o mnemonică BIP-39 (implicit: fraza de test publică) așa cum o face QoreX: `m/44'/118'/0'/0/i` cu cheia ML-DSA-87 canonică a acelei adrese `qor1`, `m/44'/60'/0'/0/i` pentru EVM și `m/44'/501'/i'/0'` pentru Solana. `signAndBroadcast` al său citește cheia ML-DSA-87 a contului din REST, o înregistrează o singură dată cu `MsgRegisterPQCKeyV2` dacă lipsește, semnează hibrid cu [QoreSign](/qoresign/overview), transmite (reîncercând o dată cu cealaltă versiune de sign-bytes dacă rețeaua o cere), așteaptă includerea și returnează `{ txHash, code, height, shield }`.
 
-### Ce acceptă QoreX astăzi {#qorex-today}
+### Ce acceptă portofelul {#qorex-today}
 
-| Suprafață | Astăzi | Planificat de echipa QoreX |
-|---|---|---|
-| EVM (EIP-1193 prin EIP-6963, `network.qore.qorex`) | connect (`eth_requestAccounts`), `eth_accounts`, `eth_chainId`, `wallet_switchEthereumChain` către rețeaua deja selectată în QoreX | evenimentele `accountsChanged` și `chainChanged`, codurile de eroare EIP-1193 4200 și 4902 la fiecare refuz, `personal_sign`, `eth_signTypedData_v4`, `eth_sendTransaction`, `wallet_addEthereumChain` |
-| Lane-ul nativ QoreChain (`window.qorex.native`) | `enable`, `getKey`, `signAndBroadcast`, `listAccounts`, `experimentalSuggestChain` (id-uri QoreChain), `signDirect` (SignDoc-ul trebuie să poarte deja stratul hibrid) | `signDirect` care adaugă singur stratul ML-DSA-87, semnarea mesajelor (ADR-36 plus ML-DSA-87) |
-| Solana (Wallet Standard, `solana:mainnet`) | connect, `signMessage`, `signTransaction` | `solana:signIn` |
-
-Pe partea EVM, semnarea și trimiterea eșuează în prezent cu „QoreX: EVM method ... not yet supported”. Pentru tranzacții pe QoreChain folosiți lane-ul nativ. Pe lane-ul EVM al QoreChain, o tranzacție este acceptată când expeditorul are o cheie ML-DSA-87 înregistrată și o fereastră de autorizare EVM deschisă din lane-ul nativ. Utilizatorul schimbă rețeaua în QoreX; dApp-ul nu o poate schimba.
+[Integrează un dApp cu QoreX](/qorex/dapp-integration) listează la ce răspund aplicația QoreX 1.2.5, extensia 0.4.4 și Safari 1.8.2 pe fiecare suprafață: [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [semnatari cosmjs](/qorex/dapp-integration#cosmjs), [semnarea de mesaje](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana) și [erori și evenimente](/qorex/dapp-integration#errors). Pe lane-ul EVM al QoreChain, o tranzacție este acceptată când expeditorul are o cheie ML-DSA-87 înregistrată și o fereastră de autorizare EVM; aprobarea din QoreX deschide una pentru tranzacție atunci când nicio fereastră nu o acoperă. Utilizatorul comută între mainnet și testnet în QoreX; dApp-ul nu poate face comutarea.
 
 ## Cum se folosește {#how-to-use}
 
@@ -273,7 +271,7 @@ Cu Synpress v4, îmbinați fixture-urile ca `testWithSynpress(qorexMockFixtures(
 |---|---|---|
 | `connect` sau `enable`, `getAccount`, `getKey` | `enable` și `getKey` din QoreX, octeții convertiți în `Uint8Array` | la fel |
 | `getOfflineSigner(chainId)` | signer direct pentru orice preferință | signer direct pentru orice preferință, inclusiv `"amino"`, implicitul cosmos-kit |
-| `signDirect` al signerului pe QoreChain | aruncă `QOREX_USE_SIGN_AND_BROADCAST` (până când QoreX declară `signDirectAddsPqcLayer`) | la fel |
+| `signDirect` al signerului pe QoreChain | aruncă `QOREX_USE_SIGN_AND_BROADCAST` (când portofelul nu declară `signDirectAddsPqcLayer`; build-urile QoreX actuale o declară) | la fel |
 | `signDirect` al signerului pe alt chain id | trimis către `signDirect` din QoreX | la fel |
 | `signAmino`, `getOfflineSignerAmino` | aruncă `QOREX_AMINO_REFUSED` | la fel |
 | `signArbitrary` (ADR-36) | aruncă `QOREX_NOT_SUPPORTED_YET` (la fel `verifyArbitrary`) | aruncă `QOREX_NOT_SUPPORTED_YET` |
@@ -283,7 +281,7 @@ Cu Synpress v4, îmbinați fixture-urile ca `testWithSynpress(qorexMockFixtures(
 
 | Opțiune | Implicit | Semnificație |
 |---|---|---|
-| `profile` | `"current"` | `"current"` este QoreX de astăzi; `"planned"` adaugă funcțiile anunțate |
+| `profile` | `"current"` | `"current"` este QoreX la 27 octombrie 2026; `"planned"` adaugă funcțiile anunțate atunci |
 | `mnemonic` | fraza de test BIP-39 publică | folosiți-o pe a dvs. pentru orice alimentați |
 | `accountIndex` | `0` | același index pe fiecare lane |
 | `chainId` | `"qorechain-diana"` | rețeaua selectată în mock |
@@ -344,14 +342,12 @@ Sursa: https://github.com/qorechain/qorex-integrations (public, release `v0.1.0`
 
 ## Limite și probleme cunoscute {#limits}
 
-**Ce acceptă astăzi build-urile QoreX.** Build-urile din magazine care sunt live (aplicația mobilă QoreX 1.1.8; extensia de browser 0.3.8, și 0.3.9 pe Firefox) nu acceptă încă `getOfflineSigner` cu un strat ML-DSA adăugat de portofel și nu acceptă `signArbitrary`. Prin cosmos-kit și Interchain Kit, semnarea cu `getOfflineSigner` funcționează doar dacă pagina însăși atașează stratul post-cuantic, lucru pe care o pagină nu îl poate face în mod normal, deoarece nu deține cheia. Modul acceptat de a trimite astăzi o tranzacție pe lane-ul nativ este `window.qorex.native.signAndBroadcast`, pe care `qorexSignAndBroadcast` îl învelește. Nu considerați conectorii un portofel cosmos-kit sau Interchain Kit complet cu build-urile din magazine de astăzi, dincolo de ceea ce precizează README-ul fiecărui pachet. Conectorii sunt scriși astfel încât o versiune QoreX ulterioară să poată adăuga stratul în `signDirect` (declarat printr-o capabilitate `signDirectAddsPqcLayer`) fără nicio schimbare în codul dvs.
+**Pachetele sunt mai vechi decât portofelul.** Versiunea 0.1.0 a fost scrisă pentru QoreX-ul din 27 octombrie 2026. Verificați ce declară portofelul utilizatorului cu `hasCapability` și folosiți [ghidul de integrare dApp](/qorex/dapp-integration) pentru comportamentul actual al portofelului. Două comportamente ale pachetelor pe care trebuie să le cunoașteți:
 
-**La ce răspunde QoreX astăzi** (din README-urile pachetelor):
+* În conectorii 0.1.0, `signArbitrary` și `verifyArbitrary` aruncă `QOREX_NOT_SUPPORTED_YET`. Portofelul însuși semnează mesaje: apelați [`window.qorex.native.signArbitrary`](/qorex/dapp-integration#sign-arbitrary).
+* Semnarea Amino este refuzată de conectori și de portofel (`QOREX_AMINO_REFUSED`).
 
-* **EVM:** `eth_chainId`, `eth_accounts`, `eth_requestAccounts` și `wallet_switchEthereumChain` pentru rețeaua selectată în QoreX (un chain necunoscut respinge cu codul 4902). Metodele de semnare (`personal_sign`, `eth_signTypedData_v4`, `eth_sendTransaction`) și `wallet_addEthereumChain` nu sunt încă acceptate și respinge cu „QoreX: EVM method ... not yet supported”. Încă nu există evenimente `accountsChanged` sau `chainChanged`. Listate de echipa QoreX ca planificate, nu live: evenimente, coduri de eroare la fiecare refuz, apoi metodele de semnare și de tranzacție.
-* **Tranzacții EVM în general.** Pe QoreChain, o tranzacție EVM este acceptată doar de la un cont cu o cheie ML-DSA-87 înregistrată și o fereastră de autorizare EVM deschisă, ambele configurate de pe lane-ul nativ (vedeți [Dezvoltare EVM](/developer-guide/evm-development#evm-window)). `eth_sendTransaction` planificat al mock-ului nu deschide acea fereastră.
-* **Nativ:** `enable`, `getKey`, `signDirect`, `signAndBroadcast`, `listAccounts` și `experimentalSuggestChain`, doar pentru `qorechain-vladi` și `qorechain-diana`. Pe QoreChain, `signDirect` are nevoie ca stratul hibrid să fie deja prezent, lucru pe care o pagină nu îl poate construi, așa că folosiți `signAndBroadcast`. `signArbitrary`, semnarea Amino și `sendTx` nu sunt disponibile; în conectori, `signArbitrary` aruncă `QOREX_NOT_SUPPORTED_YET`, iar Amino aruncă `QOREX_AMINO_REFUSED`.
-* **Solana:** Wallet Standard pe `solana:mainnet` cu connect, disconnect, evenimente, `signAndSendTransaction`, `signTransaction` și `signMessage`; fără `solana:signIn`. Lane-ul SVM al chain-ului nu acceptă încă tranzacții, deci suportul Solana de aici este doar de partea portofelului.
+**Tranzacții EVM pe QoreChain.** Chain-ul acceptă una doar de la un cont cu o cheie ML-DSA-87 înregistrată și o fereastră de autorizare EVM (vedeți [Dezvoltare EVM](/developer-guide/evm-development#evm-window)). `eth_sendTransaction` al mock-ului nu deschide acea fereastră.
 
 **Avertismente găsite la testarea quickstart-urilor:**
 

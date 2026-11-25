@@ -9,22 +9,27 @@ sidebar_position: 2
 
 **Extensia de browser** QoreX este portofelul QoreChain pentru desktop. Este un **portofel de sine stătător** (creezi sau imporți un portofel, deții, trimiți și pui în stake QOR și te conectezi la dApp-uri) și este elementul care permite oricărui site web să descopere QoreX și să transforme fiecare cerere într-o aprobare explicită și decodată. Este pentru oricine folosește QoreChain dintr-un browser de desktop și pentru dezvoltatorii care vor ca aplicația lor web să funcționeze cu un portofel QoreChain.
 
-Este **live și public** pe trei magazine (Chrome, Firefox și Safari). Firefox poartă în prezent cel mai nou build; Chrome și Safari urmează cu o versiune în urmă. Vezi [ce versiune este live unde](#versions).
+Este **live și public** pe trei magazine (Chrome, Firefox și Safari), toate purtând extensia 0.4.4. Vezi [ce versiune este live unde](#versions).
 
 ## Inovații {#innovations}
 
 - **`signAndBroadcast`.** Un dApp trimite mesajele; portofelul arată fiecare mesaj decodat și comisionul, apoi adaugă stratul ML-DSA-87 pe care doar portofelul îl poate face și transmite tranzacția. O pagină nu deține niciodată cheia ML-DSA-87.
-- **`signDirect` verifică stratul față de cheia înregistrată.** Dacă un dApp atașează singur un strat ML-DSA-87, QoreX îl verifică față de cheia înregistrată on-chain pentru cont, înainte să se deschidă orice fereastră de aprobare. O tranzacție exclusiv clasică este refuzată. Aceasta nu este calea recomandată (vezi [Limite](#limits)).
-- **O singură permisiune de API.** Singura permisiune de API a extensiei este `storage`, nu există permisiuni de gazdă și nu există cod de analiză, de raportare a erorilor sau de urmărire. Vezi [Ce permisiuni cere QoreX](#permissions).
+- **`signDirect` verifică stratul față de cheia înregistrată.** Dacă un dApp atașează singur un strat ML-DSA-87, QoreX îl verifică față de cheia înregistrată on-chain pentru cont, înainte să se deschidă orice fereastră de aprobare. Dacă tranzacția nu poartă niciun strat, QoreX îl adaugă. `signAndBroadcast` rămâne calea cea mai simplă (vezi [Trimiterea unei tranzacții QoreChain](#sign-and-broadcast)).
+- **O suprafață mică de permisiuni.** Extensia declară `storage`, plus (în Chrome și Firefox) `nativeMessaging` pentru unealta opțională Agenți AI din modul dezvoltator. Nu există permisiuni de gazdă și nu există cod de analiză, de raportare a erorilor sau de urmărire. Vezi [Ce permisiuni cere QoreX](#permissions).
 - **Seif sigilat.** Seiful este criptat cu AES-256-GCM sub o cheie derivată din parolă (Argon2id). Acolo unde browserul expune WebAuthn PRF (Chrome și Edge), poți debloca cu un passkey în loc de parolă; parola rămâne întotdeauna o soluție de rezervă.
 - **Descoperire fără preluare.** QoreX se anunță prin EIP-6963 (`rdns` `network.qore.qorex`) și Solana Wallet Standard. Nu suprascrie niciodată `window.ethereum` sau `window.keplr`.
 - **Aprobări per origine, identificate de browser.** Site-ul este originea pe care browserul însuși o atestă, niciodată ceea ce pretinde cererea. O cerere care repetă un câmp pentru a putea fi citită în două moduri este refuzată.
+- **Un portofel blocat îți cere parola, nu o reîncercare.** O cerere de semnare a unui site făcută cât timp QoreX este blocat deschide ecranul de parolă și numește site-ul; după ce deblochezi, cererea își afișează propria aprobare. Nu se semnează nimic fără parolă.
+- **O verificare înaintea fiecărui transfer.** Formularul de trimitere duce la un ecran de verificare cu destinatarul complet, comisioanele și avertismentele, și abia apoi la semnare.
+- **Istoric cu export CSV**, per cont, cu fiecare tranzacție în așteptare, confirmată sau eșuată, așa cum raportează lanțul.
+- **Cereri de plată, contacte, Protecția banilor mei și Asistență** în popup. Vezi [Cereri de plată](#pay-requests), [Contacte](#contacts) și [Protecția banilor mei](#protection).
+- **Modul dezvoltator cu 17 unelte.** Un singur buton **Unelte pentru dezvoltatori** le deschide pe toate pe propria lor pagină. Vezi [Modul dezvoltator](/qorex/developer-mode).
 
 ## Cum se folosește {#how-to-use}
 
 1. Instalează extensia (vezi [Cum accesezi](#how-to-access)) și deschide popup-ul.
-2. Alege **Create a new wallet** (o parolă, apoi 24 de cuvinte afișate o singură dată) sau **Import a recovery phrase**. Vezi [Creează sau restaurează un portofel](#wallet).
-3. Folosește **Send**, **Receive**, **Stake** și **Coins and tokens** în popup. Vezi [Fă staking din extensie](#stake) și [Trimiterea pe rețele externe](#send-external).
+2. Alege **Creează un portofel nou** (o parolă, apoi 24 de cuvinte afișate o singură dată) sau **Importă o frază de recuperare**. Vezi [Creează sau restaurează un portofel](#wallet). Apoi alege **Ce vrei să faci mai întâi?** sau sari peste.
+3. Folosește **Send**, **Receive**, **Mizează QOR**, **Istoric** și **Monede și tokenuri** în popup. Vezi [Trimite QOR](#send), [Istoric](#history), [Fă staking din extensie](#stake) și [Trimiterea pe rețele externe](#send-external).
 4. Deschide un dApp. Prima conexiune afișează o aprobare cu originea site-ului; aprobarea dezvăluie doar adresa ta publică. Revocă orice site la [Site-uri conectate](#connected-sites).
 5. Ca dezvoltator, detectează QoreX cu EIP-6963 și trimite o tranzacție cu `signAndBroadcast`. Vezi [Conectează un dApp la QoreX](#connect) și [Trimiterea unei tranzacții QoreChain dintr-un dApp](#sign-and-broadcast).
 
@@ -44,24 +49,24 @@ Instalează întotdeauna din una dintre aceste listări.
 
 ### Ce versiune este live unde {#versions}
 
-Versiunea curentă din fiecare magazin, la data de **27 octombrie 2026**:
+Versiunea curentă din fiecare magazin:
 
 | Magazin | Versiunea curentă |
 |---|---|
-| Chrome Web Store | 0.3.8 |
-| Firefox Add-ons | 0.3.9 |
-| Safari (Mac App Store, aplicația macOS **QoreX Wallet**) | 1.7.8, care conține extensia 0.3.8 (Mac App Store folosește propria numerotare `1.x`) |
+| Chrome Web Store | 0.4.4 |
+| Firefox Add-ons | 0.4.4 |
+| Safari (Mac App Store, aplicația macOS **QoreX Wallet**) | 1.8.2, care conține extensia 0.4.4 (Mac App Store folosește propria numerotare `1.x`) |
 
 Recenziile magazinelor ajung în momente diferite, astfel încât un magazin poate servi un build mai vechi decât altul; listarea din magazin arată mereu versiunea sa curentă. Vezi și [Ce versiune este live unde](/qorex/overview#versions).
 
-Firefox 0.3.9 adaugă [blocări de staking](/qorex/portfolio-and-staking#staking-locks), memo-uri de transfer IBC în cuvinte simple pe ecranele de aprobare și [staking din conturi importate din MetaMask](#coin60). Chrome și Safari le poartă după ce magazinele lor servesc un build 0.3.9.
+Extensia 0.4.x adaugă [blocarea automată](#unlock), o [verificare înaintea fiecărui transfer](#send), [Istoricul cu export CSV](#history), [cererile de plată](#pay-requests), [contactele](#contacts), [Protecția banilor mei](#protection), [repararea, rotirea și multisig-ul cheii post-cuantice](#pqc-care), [ecrane de staking](#stake) separate, un [ecran Primește care începe cu moneda](#receive), [semnarea EVM pentru dApp-uri](#standards), [ferestre de acces EVM mai sigure](#evm-window) și [Uneltele pentru dezvoltatori](#developer-tools). Lista completă pe versiuni este în [Ce adaugă versiunile 1.2.5 / 0.4.4](/qorex/overview#whats-new-125) și în listele care urmează.
 
-De la 0.2.6, extensia a primit: [mai multe portofele cu o singură parolă](#wallets), un [cont în stil Ethereum pe care îl adaugi manual](#coin60), [Claim & restake](#stake), o listă **Unstaking in progress**, [adăugarea unui token prin contract](#custom-tokens), [Receive pe orice rețea](#receive), [Site-uri conectate cu Revoke](#connected-sites), [fereastra de acces EVM](#evm-window), [`signAndBroadcast` pentru dApp-uri](#sign-and-broadcast) și ecrane de aprobare care arată fiecare mesaj, comision și expirare.
+De la 0.2.6, extensia a primit și: [mai multe portofele cu o singură parolă](#wallets), un [cont în stil Ethereum pe care îl adaugi manual](#coin60), [Revendică și restachează](#stake), o listă **Retrageri din mizare în curs**, [adăugarea unui token prin contract](#custom-tokens), [Primește pe orice rețea](#receive), [Site-uri conectate cu Revocă](#connected-sites), [fereastra de acces EVM](#evm-window), [`signAndBroadcast` pentru dApp-uri](#sign-and-broadcast) și ecrane de aprobare care arată fiecare mesaj, comision și expirare.
 
 **Suprafața de permisiuni nu s-a schimbat din versiunea 0.1.3.** Vezi [Ce permisiuni cere QoreX](#permissions).
 
 :::note
-Pe Safari, aprobările se deschid într-o filă de browser, nu într-o fereastră popup. Extensia este împachetată cu wrapper-ul Apple pentru extensii web Safari, pornind de la aceeași bază de cod.
+Pe Safari, aprobările se deschid într-o filă de browser, nu într-o fereastră popup. Extensia este împachetată cu wrapper-ul Apple pentru extensii web Safari, pornind de la aceeași bază de cod. Unealta **Agenți AI** din modul dezvoltator nu este disponibilă în Safari.
 :::
 
 ## Creează sau restaurează un portofel {#wallet}
@@ -69,13 +74,23 @@ Pe Safari, aprobările se deschid într-o filă de browser, nu într-o fereastr�
 Deschide popup-ul și alege:
 
 - **Create a new wallet** - alege o parolă (cel puțin 8 caractere); QoreX generează pe dispozitivul tău o frază de recuperare nouă din 24 de cuvinte (entropie de 256 de biți), derivă identitatea ta QoreChain și o sigilează în seif sub acea parolă (și, opțional, un passkey - vezi [Securitate](#security)). Cele 24 de cuvinte sunt afișate **o singură dată** - notează-le, bifează *I have saved my recovery phrase somewhere safe*, apoi continuă. Le poți afișa din nou mai târziu cu **Reveal recovery phrase** în popup (necesită parola).
+- **Verifică-ți backupul** - imediat după ce confirmi că ai salvat fraza, QoreX îți cere să scrii trei dintre cuvintele ei, de pe poziții aleatorii, așa cum le-ai notat. Dacă unul nu se potrivește, uită-te pe foaie și încearcă din nou. Poți alege **Verific mai târziu**; mai târziu, **Verifică-mi backupul** îți cere parola și nu arată fraza, pentru că scopul este să verifici copia ta scrisă.
 - **Import a recovery phrase** - restaurează dintr-o frază existentă. O frază de mai puțin de 24 de cuvinte îți restaurează fondurile normal, dar QoreX te avertizează că cheia ta ML-DSA-87 are atunci doar puterea frazei; pentru putere completă, creează un portofel nou cu 24 de cuvinte și mută-ți fondurile acolo.
 
 :::danger Notează fraza înainte de a continua
 Seiful extensiei există doar în acest browser. **Eliminarea extensiei, ștergerea datelor ei sau resetarea browserului îți șterge cheile**, iar nimeni - inclusiv QoreChain Association - nu le poate restaura. Fără cele 24 de cuvinte notate, fondurile tale sunt pierdute definitiv. Vezi [Fă backup acum](/qorex/security-and-recovery#back-up-now).
 :::
 
+După creare sau import, QoreX întreabă o dată **Ce vrei să faci mai întâi?**. În extensie, **Vreau să primesc bani** te trece prin monedă, adresa ei și un link de plată; **Vreau să trimit bani** prin alimentarea portofelului, nota despre @handle (handle-urile se revendică în aplicație) și prima ta plată, cu comisionul explicat; **Vreau să-mi păstrez criptomonedele în siguranță** arată adresa ta de depunere și verificarea backupului. Atinge **Sari peste deocamdată** ca să treci mai departe; **Ce vrei să faci?** de pe ecranul principal al popupului îl redeschide.
+
 Extensia deține propriile chei; nu necesită aplicația mobilă. Cheile nu părăsesc niciodată dispozitivul.
+
+## Deblocare și blocare automată {#unlock}
+
+- **Deblocare** - scrie parola și apasă **Enter** sau atinge **Deblochează**. Butonul arată că lucrează (cheia seifului este intenționat lentă de derivat). **Parolă greșită.** apare doar pentru o parolă greșită; orice altă eroare este numită. Acolo unde [deblocarea cu passkey](#security) este activată, poți folosi **Deblochează cu passkey**.
+- **Blocare automată** - pe ecranul principal al popupului, **Blochează automat după** stabilește cât rămâne QoreX deschis fără utilizare: 1, 5, 15, 30, 60 sau 240 de minute (afișate ca minute sau ore). Implicit sunt 15 minute.
+- **Blochează** - butonul **Blochează** de pe ecranul principal al popupului blochează imediat; ecranul următor îți cere parola.
+- **Un site cere ceva cât ești blocat** - o cerere de semnare de la un site (nativă, EVM sau Solana) deschide QoreX pe ecranul de parolă, numind site-ul. După ce deblochezi, fereastra aceea se închide, iar cererea își afișează propria aprobare. Dacă închizi în schimb fereastra, cererea este refuzată și nu se semnează nimic.
 
 ## Mai multe portofele și conturi {#wallets}
 
@@ -84,9 +99,9 @@ Extensia deține propriile chei; nu necesită aplicația mobilă. Cheile nu păr
 
 ### Cont în stil Ethereum {#coin60}
 
-Din 0.3.2, **Add an Ethereum account (coin 60)** (pe ecranul **Your accounts**) adaugă contul pentru o frază folosită prima dată în MetaMask sau pe Dashboard; vezi [Restaurează o frază din MetaMask sau din Dashboard](/qorex/getting-started#restore-dashboard). Adresa lui 0x este cea pe care MetaMask o arată pentru aceleași cuvinte. Handle-urile nu sunt oferite pe el. Începând cu Firefox 0.3.9 poți face staking din acest cont în extensie.
+Din 0.3.2, **Adaugă un cont Ethereum (coin 60)** (pe ecranul **Conturile tale**) adaugă contul pentru o frază folosită prima dată în MetaMask sau pe Dashboard; vezi [Restaurează o frază din MetaMask sau din Dashboard](/qorex/getting-started#restore-dashboard). Adresa lui 0x este cea pe care MetaMask o arată pentru aceleași cuvinte. Handle-urile nu sunt oferite pe el. Începând cu extensia 0.3.9 poți face staking din acest cont în extensie.
 
-Portfolio, Q-Day Scanner, recuperarea socială, Legacy Protocol, cererile de plată, autentificarea contului și asocierea dispozitivelor rămân disponibile doar pe mobil - vezi [QoreX Wallet](/qorex/overview#platform-availability).
+Portfolio, Q-Day Scanner, recuperarea socială, Legacy Protocol, autentificarea contului și asocierea dispozitivelor rămân disponibile doar pe mobil - vezi [QoreX Wallet](/qorex/overview#platform-availability).
 
 ## Contul, soldul și @handle-ul tău {#account}
 
@@ -100,6 +115,16 @@ Dacă contul tău deține QOR aflat în vesting (de exemplu, o alocare TGE nedeb
 
 Revendicarea unui **@handle** unic (de exemplu `@liviu`) necesită un **cont autentificat** și are loc **în aplicația mobilă**; extensia te trimite acolo și nu revendică ea însăși handle-uri. Odată revendicat, handle-ul se leagă de acea adresă, astfel încât extensia îl rezolvă atunci când îl plătești, iar ceilalți te pot plăti după nume. Vezi [@handle](/qorex/account-and-dashboard#handle) pentru modul în care handle-urile sunt legate de adrese (nu de un portofel ca întreg).
 
+## Trimite QOR {#send}
+
+1. Deschide popupul și atinge **Send**.
+2. Introdu destinatarul (adresa `qor1…` sau @handle), suma și un memo opțional. [Favoritele](#contacts) apar pe formular ca chip-uri de o singură atingere.
+3. **Verifică transferul.** Ecranul de verificare arată destinatarul complet (și numele contactului, dacă este un contact salvat), suma și memo-ul. Dacă este prima tranzacție a contului, arată și comisionul unic de înregistrare a cheii ML-DSA-87 și totalul.
+4. Citește orice avertisment. QoreX îți spune când este prima plată către acea adresă din acest portofel, când adresa doar **seamănă** cu una pe care ai plătit-o sau ai salvat-o (compară fiecare caracter; ai nevoie de o a doua apăsare, **Apasă din nou ca să trimiți totuși la această adresă**) și când comisionul de rețea este mai mare decât suma pe care o trimiți.
+5. Atinge **Confirmă și trimite**. QoreX semnează cu semnătura hibridă și trimite.
+
+Disponibil pe mainnet și testnet. O tranzacție peste limita de gaz per tranzacție a rețelei este refuzată înainte să se semneze ceva.
+
 ## Trimite către un @handle {#handle-send}
 
 Începând cu 0.1.9 poți plăti direct un @handle înregistrat, în loc să cauți o adresă (căutările au fost întrerupte de o eroare în versiunile până la 0.3.6 și funcționează din nou începând cu 0.3.7):
@@ -107,28 +132,93 @@ Revendicarea unui **@handle** unic (de exemplu `@liviu`) necesită un **cont aut
 1. Deschide popup-ul și atinge **Send**.
 2. În câmpul destinatarului, scrie `@` urmat de handle (de exemplu `@liviu`) în loc de o adresă `qor1…`.
 3. QoreX rezolvă handle-ul și îți arată **adresa rezolvată** înainte să semnezi orice - verifică mereu aceasta față de ce te aștepți.
-4. Introdu suma și confirmă.
+4. Introdu suma, verifică [ecranul de verificare](#send) și confirmă.
 
 Rezolvarea este verificată în două moduri înainte ca QoreX să o folosească: o atestare de registru verificată față de o cheie de încredere integrată în extensie, și semnătura proprie a proprietarului handle-ului peste revendicare. Un răspuns care eșuează la oricare dintre verificări este respins categoric - QoreX nu recurge la afișarea unei adrese neverificate. Prima dată când plătești un anumit handle, QoreX reține (fixează) adresa la care s-a rezolvat; dacă acel handle se rezolvă ulterior la o adresă **diferită**, QoreX se oprește și îți arată integral atât adresa veche, cât și cea nouă, ca să poți decide dacă vrei să continui. Această memorare există **per browser** - plătirea aceluiași handle pentru prima dată dintr-un alt browser sau computer îl arată ca nou și acolo. Este comportamentul așteptat, nu o eroare.
 
 ## Receive {#receive}
 
-Atinge **Receive** în popup pentru a-ți afișa adresa `qor1…` sub formă de cod QR (cu pictograma QoreChain integrată), alături de un buton de copiere - scaneaz-o de pe un telefon sau lipește adresa direct.
+Atinge **Receive** în popup. **Începe cu moneda**:
 
-**Selector de rețea.** Receive poate afișa și adresa pentru Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis și Celestia, fiecare cu un avertisment "doar această rețea" (QoreChain rămâne prima).
+1. **Alege moneda pe care vrei să o primești** - o listă cu căutare (**Caută monedă sau rețea**), cu QOR primul, apoi moneda proprie a fiecărei rețele și tokenurile incluse, fiecare cu imaginea ei și a rețelei sale. Sunt listate și tokenurile pe care le-ai [adăugat prin contract](#custom-tokens). Imaginile vin în interiorul portofelului, așa că nu se descarcă nimic de la un terț ca să fie afișate.
+2. QoreX arată adresa pentru rețeaua acelei monede sub formă de cod QR cu buton de copiere și un avertisment care numește moneda: trimite la această adresă doar acea monedă, pe acea rețea. Acolo unde o adresă funcționează pe mai multe rețele (rețelele EVM), spune pe care.
+3. **Alege altă monedă** te duce înapoi la listă.
+
+Rețelele acceptate sunt QoreChain, Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis și Celestia. O adresă pentru altă rețea este derivată din fraza ta de recuperare, așa că poate avea nevoie de o confirmare ca să fie afișată. Pentru Cosmos Hub, Osmosis și Celestia, QoreX arată adresa cu care semnează trimiterile tale de pe acele rețele.
+
+## Istoric {#history}
+
+Atinge **Istoric** pe ecranul principal al popupului ca să vezi ce s-a întâmplat în cont:
+
+- **Fiecare tip de tranzacție QoreChain**, nu doar trimiterile: trimise, primite, puse la staking, retrase, miză mutată, recompense revendicate, blocări de staking, fereastra EVM și modificări de chei, cu suma și comisionul. O tranzacție EVM arată și cât a luat din [fereastra de acces EVM](#evm-window).
+- **Stare citită din lanț.** Un transfer trimis de pe acest dispozitiv pe care istoricul lanțului nu îl arată încă este listat ca **În așteptare: rețeaua nu a confirmat încă**. Dacă rețeaua nu îl găsește, QoreX spune că poate a eșuat, așa că verifică-l înainte să trimiți din nou (poți apăsa **Închide** pe rând). O tranzacție eșuată este marcată, cu comisionul totuși plătit.
+- **Per cont** - cu mai multe conturi, alege contul sus.
+- **Repetă plata** - completează din nou formularul de trimitere pornind de la o plată anterioară. Tot tu o verifici și o confirmi.
+- **Exportă CSV** - fișierul se creează pe dispozitivul tău, conține doar istoricul tău (nicio frază, nicio cheie) și este făcut sigur de deschis într-o foaie de calcul.
+
+Dacă rețeaua nu poate fi accesată, QoreX spune că nu a putut încărca istoricul; nu arată niciodată asta ca "nicio tranzacție". Istoricul acoperă deocamdată doar QoreChain. Este disponibil pe mainnet și testnet.
+
+## Cereri de plată {#pay-requests}
+
+Cere cuiva o sumă de QOR cu un link care nu poate fi modificat fără să se vadă.
+
+**Cere o plată:**
+
+1. Deschide **Cereri de plată** pe ecranul principal al popupului și creează o **Cerere nouă**: suma în QOR, o notă opțională (până la 140 de caractere) și, dacă ai unul, dacă să arăți @handle-ul.
+2. Atinge **Creează linkul**. QoreX semnează cererea cu cheia contului tău. Copiază linkul cu **Copiază linkul** și trimite-l celui care trebuie să plătească.
+3. **Cererile mele** le listează. **Verifică starea** citește lanțul și arată **Plătită** sau **Neplătită încă** (ori că rețeaua nu a răspuns). **Refolosește luna viitoare** creează o cerere nouă dintr-una veche.
+
+**Plătește o cerere:**
+
+1. Deschide **Plătește o cerere**, lipește linkul și atinge **Deschide**.
+2. QoreX verifică semnătura, că semnatarul deține adresa de primire, rețeaua exactă și orice @handle din cerere. Un link modificat, un semnatar greșit, o rețea necunoscută sau altă monedă decât QOR este refuzată. Dacă cererea este pentru cealaltă rețea, comută tu; QoreX nu o va face.
+3. Atinge **Pay**. Primești [ecranul de verificare](#send) obișnuit înainte să se trimită ceva. Plata poartă eticheta cererii în memo, și așa o găsește pe lanț QoreX-ul solicitantului.
+
+O cerere semnată nu are nevoie de cont și nici de autentificare. O cerere de testnet spune acest lucru: QOR de testnet nu are valoare. Formatele de link pentru dezvoltatori sunt în [Integrare dApp](/qorex/dapp-integration).
+
+## Contacte și favorite {#contacts}
+
+**Contacte** de pe ecranul principal al popupului păstrează nume pentru adresele pe care le plătești, **doar pe acest dispozitiv**.
+
+- **Adaugă contact** - un nume și cel puțin o adresă: QoreChain (`qor1…`), EVM (`0x…`), Solana sau Cosmos și un @handle opțional. Marchează-l **Favorit** ca să îl vezi ca chip de o singură atingere pe formularul de trimitere. **Plătește-i lui &#123;name&#125;** deschide formularul completat. Ștergerea cere două apăsări. Lista conține până la 200 de contacte.
+- **Contactele cu @handle** arată dacă handle-ul indică aceeași adresă ca la ultima ta plată și te avertizează dacă adresa lui s-a **schimbat**.
+- **Adrese asemănătoare** - o adresă care doar seamănă cu una pe care o cunoști deja este semnalată, cu ambele afișate ca să poți compara fiecare caracter.
+
+Un contact nu este o verificare de siguranță: fiecare plată arată în continuare adresa completă pentru verificare.
+
+## Protecția banilor mei {#protection}
+
+**Protecția banilor mei** de pe ecranul principal al popupului este un singur ecran în care fiecare rând este verificat când îl deschizi, pe dispozitivul tău și în rețea. O verificare care nu poate fi citită spune acest lucru; nu contează niciodată ca "în regulă" sau "niciuna".
+
+- **Copia de siguranță verificată** și **Recuperarea testată** - data sau **Încă nu**. **Testează fraza de recuperare** cere trei cuvinte din frază. Sunt comparate pe dispozitivul tău; nimic din ce scrii nu este păstrat sau trimis.
+- **Aplicații cu permisiuni** - site-urile care îți pot vedea adresa și îți pot cere să semnezi, cu **Revocă**.
+- **Permisiuni acordate în rețea** - granturi care lasă alt cont să trimită în numele tău (authz) sau să îți cheltuie QOR pe comisioane de rețea (granturi de comisioane), cele nelimitate primele, cu **Revocă**. La revocare vezi ce urmează să semnezi și comisionul, apoi confirmi.
+- **Aprobări de tokeni pe EVM-ul QoreChain** - atinge **Verifică aprobările de tokeni** (citirea lor cere o dată fraza ta). QoreX spune cât de departe a verificat; deschide din nou ecranul ca să continue. **Revocă** trimite `approve(spender, 0)` după deschiderea unei ferestre EVM pentru o singură tranzacție, limitată la contractul tokenului. Doar un cont în stil Ethereum (coin 60) poate revoca aici.
+- **Protecția post-cuantică, pe fiecare canal** - în cuvinte simple: tranzacțiile native QoreChain poartă două semnături (ML-DSA-87 și clasică); tranzacțiile EVM sunt semnate clasic și admise doar într-o fereastră pe care ai deschis-o cu semnătura ta post-cuantică; alte rețele acceptă doar semnături clasice.
+
+Gardienii și recuperarea socială sunt în aplicația mobilă. Vezi [Securitate și recuperare](/qorex/security-and-recovery).
+
+## Asistență și starea rețelei {#help-and-status}
+
+- **Asistență** de pe ecranul principal al popupului listează singurele canale oficiale: [comunitatea Telegram](https://t.me/QorechainCommunity), [Discord](https://discord.gg/qorechain), [pagina de ajutor](https://qorechain.io/help/qorex), e-mail la team@qorechain.io și **Raportează o vulnerabilitate**. Personalul QoreChain nu îți cere niciodată fraza de recuperare, parola sau cheile. **Arată rezumatul** oferă un rezumat de diagnostic opțional (versiunea aplicației, rețeaua și coduri de eroare, fără frază, chei, adrese sau solduri), de copiat doar dacă îl cere asistența.
+- **Banner de stare a rețelei** - QoreX citește ora ultimului bloc din lanț. Dacă este mai vechi de un minut, un banner spune că rețeaua este lentă și cât de vechi este blocul; dacă rețeaua nu poate fi accesată, spune că soldurile pot fi neactualizate. Nu arată nimic cât timp rețeaua este în regulă.
+- **Ultimele valori cunoscute** - când rețeaua nu răspunde, popupul arată ultimul sold și ultimele delegări citite și spune de când sunt.
 
 ## Fă staking din extensie {#stake}
 
-Începând cu **0.2.2**, popup-ul are propriul ecran **Stake** - un portofel creat doar în extensie nu mai are nevoie de aplicația mobilă pentru a câștiga recompense din staking.
+Începând cu **0.2.2**, popupul are propriul ecran de staking - un portofel creat doar în extensie nu mai are nevoie de aplicația mobilă ca să câștige recompense din staking. Deschide **Mizează QOR** pe ecranul principal al popupului. Se deschide un **meniu** cu un rând de explicație pentru fiecare acțiune; fiecare acțiune deschide propriul ecran, cu propriul rând de eroare, iar **Înapoi la mizare** revine la meniu.
 
-1. Deschide popup-ul și mergi la **Stake**.
-2. Ecranul listează validatorii activi cu comisionul lor, totalul tău aflat curent în stake și orice recompense în așteptare de revendicat. Validatorii pe care rețeaua i-a **întemnițat (jailed)** sunt excluși din listă - delegarea către unul dintre ei nu este niciodată ceea ce vrei.
-3. Pentru a delega, alege un validator și o sumă, apoi confirmă. QoreX semnează cu semnătura hibridă obligatorie (secp256k1 și ML-DSA-87), la fel ca la un Send. În timp ce scrii, te avertizează dacă suma ar lăsa mai puțin decât comisionul unei tranzacții (nu ai mai putea face unstake sau claim până când contul nu deține din nou QOR). Cu mai multe conturi, alege contul care face staking din selectorul de conturi de pe ecranul Stake.
-4. **Claim** colectează recompensele; **Claim & restake** le compune înapoi către validatorii care le-au câștigat, într-o singură tranzacție. QoreX verifică mai întâi că QOR-ul tău **deblocat** poate plăti comisionul (acesta se plătește înainte ca recompensele să ajungă) și te anunță dacă nu.
-5. **Unstake** pornește perioada de unbonding de 21 de zile, iar suma apare sub **Unstaking in progress** cu timpul rămas - vezi [Staking & Delegation](/user-guide/staking-and-delegation).
-6. **Move stake** mută stake-ul către unul sau mai mulți alți validatori (redelegare) - fără așteptare de unbonding, fără penalizare, iar recompensele continuă să curgă. Vezi [Mută stake-ul între validatori](/qorex/portfolio-and-staking#move-stake).
+| Ecran | Ce face |
+|---|---|
+| **Mizează QOR** | Alegi un validator și o sumă. Validatorii activi sunt listați cu comisionul lor; cei **întemnițați (jailed)** sunt excluși. În timp ce scrii, QoreX te avertizează dacă suma ar lăsa mai puțin decât comisionul unei tranzacții (nu ai mai putea face unstake sau claim până când contul nu deține din nou QOR). |
+| **Retrage din staking** | Pornește unbonding-ul. Timpul până când QOR redevine al tău de mutat este **citit din rețea**, iar suma apare sub **Retrageri din mizare în curs** cu timpul rămas. |
+| **Mută miza** | Redelegare fără așteptare de unbonding, în trei pași: (1) validatorul **de pe care** muți (cei de pe care nu poți muta încă sunt estompați, cu data), (2) validatorii **către care** muți, (3) **cât**, cu **Max** și ruta și împărțirea afișate înainte să semnezi. O mutare pe care rețeaua ar refuza-o este prinsă din timp. Vezi [Mută miza între validatori](/qorex/portfolio-and-staking#move-stake). |
+| **Revendică** | Colectează recompensele. Dacă comisionul este mai mare decât recompensele, prima apăsare te avertizează. |
+| **Revendică și restachează** | Reinvestește recompensele la validatorii care le-au câștigat, într-o singură tranzacție (până la 127 de validatori). QoreX verifică mai întâi că QOR-ul tău **deblocat** poate plăti comisionul, care se plătește înainte să sosească recompensele. |
+| **Blochează pentru bonus** | Blochează o parte din miză pentru 3, 6 sau 12 luni. Vezi [blocările de staking](/qorex/portfolio-and-staking#staking-locks). |
+| **Recompensele merg în** | Trimite recompensele viitoare din staking în **alt cont al aceluiași portofel** și la nicio altă adresă. Arată unde ajung recompensele acum, numește noul cont complet la prima apăsare și semnează la a doua. Miza ta nu se mută. |
 
-Staking-ul, delegarea și recompensele au loc exclusiv pe lane-ul **Native**, niciodată printr-un precompile EVM. Firefox 0.3.9 adaugă și [blocări de staking](/qorex/portfolio-and-staking#staking-locks).
+Sub meniu, un card **Mizarea, pe scurt** prezintă recompensele câștigate până acum, cât costă staking-ul (comisionul validatorului și comisioanele de rețea) și când sosește QOR retras. Cu mai multe conturi, alege contul care face staking din selectorul de conturi. Fiecare acțiune este semnată cu semnătura hibridă obligatorie (secp256k1 și ML-DSA-87), la fel ca la un Send, iar ecranul spune când prima ta tranzacție îți înregistrează și cheia. Rata anuală se citește din cifra proprie a lanțului. Staking-ul, delegarea și recompensele au loc exclusiv pe lane-ul **Native**, niciodată printr-un precompile EVM - vezi [Staking & Delegation](/user-guide/staking-and-delegation).
 
 ### Aprobarea unei cereri de staking din Dashboard {#stake-dashboard}
 
@@ -140,7 +230,7 @@ Dashboard-ul afișează ocazional o tranzacție ca **downgraded**, în loc de un
 
 ### Trimiterea pe rețele externe {#send-external}
 
-Pe lângă QOR pe lane-ul Native, popup-ul poate trimite active pe rețele externe, toate derivate din aceeași frază de recuperare (pentru rețelele EVM afișează **comisionul maxim de rețea** - "Network fee: at most …" - înainte să confirmi):
+Pe lângă QOR pe lane-ul Native, ecranul **Trimite pe rețele externe** al popupului trimite active pe alte rețele, toate derivate din aceeași frază de recuperare. Toate rețelele de mai jos pot trimite și primi:
 
 | Tip | Rețele | Token-uri incluse |
 |---|---|---|
@@ -148,7 +238,10 @@ Pe lângă QOR pe lane-ul Native, popup-ul poate trimite active pe rețele exter
 | SVM | Solana | Intrări SPL (USDC, USDT) |
 | Cosmos | Cosmos Hub, Osmosis, Celestia | Noble USDC prin IBC; câmp opțional de memo |
 
-Înainte ca un transfer extern să fie trimis, trebuie să bifezi o confirmare explicită: **"External networks accept only classical signatures — unlike your QOR, this transfer is NOT quantum-safe."** Acesta este textul exact pe care îl afișează build-urile live. Lanțurile externe nu pot purta o semnătură ML-DSA-87, iar QoreX nu ascunde niciodată acest lucru.
+1. Alege moneda sau tokenul, apoi introdu destinatarul și suma (și, pe rețelele Cosmos, un memo opțional).
+2. Bifează confirmarea. În engleză sună astfel: **"External networks accept only classical signatures. Unlike your QOR, this transfer has NO ML-DSA-87 signature. I understand."** Lanțurile externe nu pot purta o semnătură ML-DSA-87, iar QoreX nu ascunde niciodată acest lucru.
+3. Pe rețelele EVM, prima apăsare cotează **comisionul maxim de rețea** ("Network fee: at most …"); a doua trimite exact cu acea cotație. Orice editare anulează cotația. Dacă comisionul, plătit în moneda pe care o trimiți, este mai mare decât suma, ești avertizat.
+4. Un destinatar care doar seamănă cu o adresă pe care ai plătit-o deja pe acea rețea este afișat complet și cere încă o apăsare.
 
 ## Standarde de portofel acceptate {#standards}
 
@@ -156,9 +249,9 @@ QoreX expune trei interfețe, toate injectate în pagină ca `window.qorex` (`{ 
 
 | Standard | Ce este | Ce înseamnă pentru tine ca dezvoltator |
 |---|---|---|
-| **EIP-1193** | API-ul JavaScript al furnizorului Ethereum (`request(...)`, evenimente). | Furnizorul EVM al QoreX răspunde la interogări despre cont și rețea - `eth_requestAccounts`, `eth_accounts`, `eth_chainId` și `wallet_switchEthereumChain` (orice alt lanț returnează standardul `4902`). **Nu** semnează și nu trimite încă tranzacții sau mesaje EVM: celelalte metode returnează "EVM method … not yet supported". Folosește MetaMask sau alt portofel EVM pentru tranzacțiile pe lane-ul EVM (care acum necesită și o [fereastră de acces EVM](#evm-window) deschisă). |
+| **EIP-1193** | API-ul JavaScript al furnizorului Ethereum (`request(...)`, evenimente). | Pe lângă interogările despre cont și rețea (`eth_requestAccounts`, `eth_accounts`, `eth_chainId`, `wallet_switchEthereumChain`), QoreX semnează `personal_sign`, `eth_signTypedData_v4` și `eth_sendTransaction` pe lane-ul EVM al QoreChain (chain id 9801, testnet 9800) și pe Ethereum. Fiecare aprobare spune, decodificat pe dispozitivul tău, ce se autorizează și simulează mai întâi tranzacția acolo unde poate. Pe QoreChain, doar conturile în stil Ethereum (coin 60) pot trimite, iar o tranzacție are nevoie de o [fereastră de acces EVM](#evm-window). Vezi [Integrare dApp](/qorex/dapp-integration). |
 | **EIP-6963** | Descoperirea furnizorilor de portofele multiple (evenimente announce / request). | QoreX se anunță alături de fiecare alt portofel - **nu suprascrie niciodată `window.ethereum`** - astfel încât utilizatorul alege QoreX per site, fără conflicte. |
-| **Furnizor Native (în stil Keplr)** | `window.qorex.native`: `enable`, `getKey`, `signAndBroadcast` și `signDirect`, plus o listă `capabilities`. **Nu** este un înlocuitor complet pentru Keplr: QoreX nu creează alias pentru `window.keplr`, iar `signAmino` și `sendTx` lipsesc. | Pentru a trimite o tranzacție QoreChain apelează **`signAndBroadcast`** (vezi [Trimiterea unei tranzacții QoreChain](#sign-and-broadcast)): QoreX arată mesajele decodate și comisionul, adaugă stratul ML-DSA-87 pe care doar portofelul îl poate face și transmite tranzacția. `signDirect` este disponibil, dar nu este calea recomandată: verifică un strat atașat de pagina ta față de cheia înregistrată a contului înainte de orice fereastră de aprobare și refuză o tranzacție exclusiv clasică. |
+| **Furnizor Native (în stil Keplr)** | `window.qorex.native`: `enable`, `getKey`, `signAndBroadcast`, `signDirect`, `getOfflineSigner` (pentru cosmjs, cosmos-kit și Interchain Kit), `signArbitrary` / `verifyArbitrary`, plus o listă `capabilities`. **Nu** este un înlocuitor complet pentru Keplr: QoreX nu creează alias pentru `window.keplr`, iar semnarea Amino și `sendTx` nu sunt disponibile. | Cea mai simplă cale de a trimite o tranzacție QoreChain este **`signAndBroadcast`** (vezi [Trimiterea unei tranzacții QoreChain](#sign-and-broadcast)): QoreX arată mesajele decodificate și comisionul, adaugă stratul ML-DSA-87 pe care doar portofelul îl poate face și transmite tranzacția. Cu `signDirect` sau `getOfflineSigner`, QoreX verifică un strat atașat de pagina ta față de cheia înregistrată a contului sau adaugă el însuși stratul când nu există. Vezi [Integrare dApp](/qorex/dapp-integration). |
 | **Solana Wallet Standard** *(de la 0.1.5)* | Descoperire nativă de portofel pentru dApp-urile Solana (`wallet-standard:register-wallet` / `app-ready`). | dApp-urile Solana **detectează automat QoreX** - fără integrare personalizată. Funcții: `standard:connect`, `standard:disconnect`, `standard:events`, `solana:signMessage`, `solana:signTransaction`, `solana:signAndSendTransaction`; lanțul `solana:mainnet`; tranzacții atât `legacy`, cât și `v0`. |
 
 :::note Accesarea directă a lane-ului SVM
@@ -169,7 +262,7 @@ Aprobările Solana afișează **o linie pe instrucțiune**, decodată acolo unde
 
 ## Monede și token-uri {#custom-tokens}
 
-Ecranul **Coins and tokens** al popup-ului îți permite să adaugi un **token ERC-20 prin contractul său**: alege rețeaua, lipește adresa contractului, **Check contract**. QoreX citește numele și zecimalele token-ului din contractul însuși - și le citește din nou în fundal când îl adaugi, în loc să aibă încredere în popup - apoi le afișează cu un memento că oricine poate crea un token cu orice nume. Token-ul apare apoi în **Send on external networks**. Refuză token-urile incluse, duplicatele, rețelele non-EVM, adresele greșite, contractele ilizibile și contractele care împrumută numele unui token inclus.
+Ecranul **Monede și tokenuri** al popupului îți permite să adaugi un **token ERC-20 prin contractul său**: alege rețeaua, lipește adresa contractului, **Verifică contractul**. QoreX citește numele și zecimalele tokenului din contractul însuși - și le citește din nou în fundal când îl adaugi, în loc să aibă încredere în popup - apoi le afișează cu un memento că oricine poate crea un token cu orice nume. Tokenul apare apoi în **Trimite pe rețele externe** și pe [Primește](#receive). Refuză tokenurile incluse, duplicatele, rețelele non-EVM, adresele greșite, contractele ilizibile și contractele care împrumută numele unui token inclus.
 
 ## Site-uri conectate {#connected-sites}
 
@@ -177,7 +270,40 @@ Ecranul **Coins and tokens** al popup-ului îți permite să adaugi un **token E
 
 ## Fereastra de acces EVM {#evm-window}
 
-Ecranul **EVM access window** al popup-ului deschide și închide fereastra care permite unui cont în stil Ethereum (coin 60) să trimită pe lane-ul EVM al QoreChain (v3.2.0 și ulterior) - același ecran ca în aplicație, cu aceleași limite (până la 17,280 de blocuri și 1,000 de tranzacții, plus un plafon de QOR care numără fiecare sumă împreună cu comisionul ei maxim). Vezi [Fereastra de acces EVM](/qorex/security-and-recovery#evm-window).
+Ecranul **Fereastră de acces EVM** al popupului deschide și închide fereastra care permite unui cont în stil Ethereum (coin 60) să trimită pe lane-ul EVM al QoreChain (v3.2.0 și ulterior), cu aceleași limite ca în aplicație: până la 17,280 de blocuri și 1,000 de tranzacții și un plafon de cheltuieli în QOR care numără tot QOR care părăsește contul, plus fiecare comision maxim. Tokenii nu sunt numărați în plafon.
+
+1. Alege durata (în blocuri), numărul de tranzacții și plafonul de cheltuieli.
+2. Alege **Ce admite fereastra**:
+   - **Doar transferuri de QOR (recomandat)**, implicit: fără apeluri de contracte, fără contracte noi și fără destinatar care este contract;
+   - **Orice contract**: poate fi apelat orice contract, iar ecranul avertizează că tokenii, NFT-urile și aprobările mutate de un contract nu sunt limitate de fereastră. Dacă rețeaua nu poate limita o fereastră la transferuri de QOR, QoreX te întreabă înainte să deschidă una pentru orice contract; dacă refuzi, nu se deschide nimic.
+3. Atinge **Deschide fereastra**. Fereastra deschisă spune exact ce admite. **Închide fereastra** o încheie.
+
+O fereastră pe care ai deschis-o cu **doar transferuri de QOR** nu permite unui site să apeleze un contract. Pentru tranzacția proprie a unui site, QoreX poate deschide din aprobarea ei o fereastră exact pentru acea tranzacție, care numește fiecare contract pe care fereastra l-ar admite și spune că înlocuiește orice fereastră deschisă.
+
+Un cont coin-118 nu poate folosi lane-ul EVM; ecranul listează cei trei pași de urmat și are un buton către **Conturile tale**. Doar ecranele proprii ale portofelului pot deschide, închide sau șterge o fereastră; un site nu poate. Vezi [Fereastra de acces EVM](/qorex/security-and-recovery#evm-window).
+
+## Îngrijirea cheii post-cuantice și multisig {#pqc-care}
+
+**Înregistrează din nou cheia (reparare).** Dacă înregistrarea cheii post-cuantice a contului în rețea nu mai poate semna (este goală, doar clasică sau altfel inutilizabilă), ecranul principal al popupului arată un card. Atingând **Înregistrează din nou cheia** vezi comisionul de rețea; atinge din nou pentru înregistrare. QoreX nu face asta niciodată de la sine. Dacă contul are o fereastră EVM, rețeaua o închide, așa că deschide una nouă după aceea.
+
+**Rotește cheia post-cuantică.** Butonul **Rotește cheia post-cuantică** înlocuiește cheia ML-DSA-87 a contului din rețea cu următoarea cheie derivată din fraza ta de recuperare. Apasă de două ori; comisionul este arătat în rezultat. Rotirea te protejează dacă a fost expusă doar cheia post-cuantică; **nu** ajută dacă a fost expusă fraza de recuperare. După aceea, alte portofele care folosesc aceeași frază nu pot semna pentru acest cont până când nu acceptă chei rotite, iar rețeaua închide fereastra EVM a contului. QoreX găsește cheia corectă când restaurezi din frază.
+
+**Conturi multisig.** **Conturi multisig** gestionează conturi care au nevoie de semnătura mai multor membri, cu o semnătură post-cuantică de la fiecare membru, pe lângă una clasică. QoreX folosește aceleași fișiere ca linia de comandă QoreChain, așa că fiecare membru poate semna în QoreX sau în linia de comandă.
+
+1. **Creează un multisig** din adresele membrilor (fiecare trebuie să fi trimis cel puțin o tranzacție), numărul de semnături necesare și un nume opțional, sau **Adaugă un multisig existent** lipindu-i cheia.
+2. Ecranul arată soldul și starea cheii fiecărui membru. Mai întâi **Pregătește înregistrarea** setului de membri post-cuantic; până când nu este înregistrat, contul nu poate trimite. Apoi **Pregătește o trimitere**.
+3. În extensie, fișierele se descarcă și se deschid. **Runda 1:** membrii adaugă semnăturile post-cuantice; combină-le. **Runda 2:** membrii conveniți semnează clasic. Apoi **Trimite în rețea**.
+4. Semnarea cere două apăsări, iar tu verifici mai întâi ce semnezi. QoreX te avertizează dacă tranzacția înregistrează un autentificator, pentru că un autentificator poate muta fondurile multisig-ului fără semnăturile celorlalți membri.
+
+## Unelte pentru dezvoltatori {#developer-tools}
+
+Modul dezvoltator este dezactivat implicit. Ca să îl activezi în extensie, atinge de șapte ori **numărul versiunii** din partea de jos a popupului. În partea de jos a ecranului principal al popupului apare o secțiune pentru dezvoltatori cu **Unelte pentru dezvoltatori** (butonul `</>`), **Comută pe testnet (diana)** (sau **Revino pe mainnet**) și **Oprește modul dezvoltator**.
+
+**Unelte pentru dezvoltatori** deschide o singură pagină cu uneltele grupate în **Inspectare**, **Tranzacții**, **Contracte și rollup-uri**, **Alte mașini virtuale** și **Semnare și agenți**. Sunt 17 unelte, aceleași ca în aplicație; pe testnet, printre ele apare și **Solana pe QoreChain**. Modul dezvoltator nu schimbă nicio regulă de semnare: orice semnează arată în continuare ce semnează și așteaptă aprobarea ta. Fiecare unealtă este descrisă în [Modul dezvoltator](/qorex/developer-mode).
+
+Unealta **Agenți AI** îi permite unui asistent AI de pe computerul tău să citească ce permiți și să **propună** o tranzacție. QoreX verifică și simulează fiecare propunere, iar tu o aprobi sau o respingi în fereastra normală de aprobare; niciun agent nu poate semna. În extensie are nevoie de un program companion pe computer care **nu este încă publicat** și nu este disponibilă în Safari.
+
+Doar pe **testnet**, ecranul principal al popupului oferă și trimiterea pe alt lanț prin IBC și ecranul QoreChain Bridge; niciuna nu este oferită pe mainnet. Vezi [Funcții de testnet](/qorex/testnet-features).
 
 ## Limbă {#language}
 
@@ -193,6 +319,7 @@ QoreX este construit pentru a fi verificabil, nu doar de încredere:
   :::note Unde apare deblocarea cu passkey
   QoreX detectează automat WebAuthn și afișează **Enable passkey unlock** doar acolo unde browserul îl expune paginilor de extensie - adică **Chrome și Edge**. Pe **Firefox** opțiunea este ascunsă, pentru că Firefox nu expune WebAuthn paginilor de extensie. Acest lucru este așteptat, nu un bug.
   :::
+- **Blocare automată** - QoreX se blochează singur după un timp fără utilizare (implicit 15 minute) și are un buton **Blochează**. Vezi [Deblocare și blocare automată](#unlock).
 - **Manifest V3 + CSP strict** - `script-src 'self'; object-src 'self'; base-uri 'self'`. Nu există **nicio încărcare de cod la distanță** după instalare și niciun `wasm-unsafe-eval`.
 - **Fără analiză, fără raportare de erori, fără SDK de urmărire, fără înregistrare** - extensia nu are nevoie de un cont pentru a deține, trimite sau pune în stake QOR. Cheile tale, fraza de recuperare, seiful și aprobările nu părăsesc niciodată browserul. Ea face totuși cereri de rețea: către endpoint-urile publice QoreChain pentru solduri, istoric și transmitere (acestea poartă adresa ta publică `qor1…`), o căutare de preț (fără adresă), serviciile publice ale oricărei rețele externe pe care o deții sau o vizualizezi (adresa ta publică pe acea rețea) și registrul de @handle (handle-ul sau o adresă publică). Doar dacă folosești [asocierea cu Dashboard](#dashboard-bridge) trimite o dovadă semnată că deții adresa. Vezi [Ce trimite QoreX prin rețea](/qorex/overview#data-and-privacy).
 
@@ -203,7 +330,7 @@ Această secțiune există pentru că listarea de pe Firefox afișează permisiu
 `manifest.json` al extensiei declară:
 
 ```json
-"permissions": ["storage"],
+"permissions": ["storage", "nativeMessaging"],
 "host_permissions": [],
 "content_scripts": [
   { "matches": ["<all_urls>"], "js": ["dist/content.js"], "run_at": "document_start" }
@@ -213,7 +340,8 @@ Această secțiune există pentru că listarea de pe Firefox afișează permisiu
 ]
 ```
 
-- **`permissions: ["storage"]`** - singura permisiune de API. Stochează seiful criptat și aprobările tale de conexiune per origine **local**, în stocarea extensiei.
+- **`storage`** - stochează seiful criptat, aprobările tale de conexiune per origine și setările și listele proprii ale portofelului (cum ar fi contactele) **local**, în stocarea extensiei.
+- **`nativeMessaging`** - nouă în 0.4.4, folosită doar de unealta [Agenți AI](#developer-tools) din modul dezvoltator, pentru a comunica cu un program companion de pe propriul tău computer (încă nepublicat). QoreX deschide acea conexiune doar după ce activezi **Permite conexiuni de la agenți AI pe acest computer** în unealta respectivă. Pachetul pentru **Safari** nu declară această permisiune.
 - **`host_permissions: []`** - QoreX nu declară **nicio** permisiune de gazdă. Nu cere capacitatea de a face cereri de rețea cross-origin către site-uri arbitrare în numele tău.
 - **`web_accessible_resources`** - permite paginilor să încarce propriul `inpage.js` al QoreX, micul script care expune furnizorul. `use_dynamic_url` îi dă o adresă per sesiune, astfel încât site-urile nu pot identifica extensia prin amprentare, sondând-o.
 - **`content_scripts` cu potriviri `<all_urls>`** - acesta este motivul onest pentru care Firefox afișează *"Access your data for all websites."* QoreX injectează un mic script furnizor (`content.js` → `inpage.js`) în **fiecare pagină**. Un content script care rulează pe toate site-urile *poate* tehnic citi pagina, iar browserele descriu această capacitate cu exact această formulare - indiferent dacă provine din `host_permissions` sau dintr-o potrivire de content script.
@@ -224,33 +352,9 @@ Această secțiune există pentru că listarea de pe Firefox afișează permisiu
 
 ## Conectează un dApp la QoreX {#connect}
 
-Un dApp descoperă QoreX prin **EIP-6963**. Announce-and-request, apoi folosește furnizorul EIP-1193 returnat (care răspunde doar la interogări despre cont și rețea - vezi tabelul de mai sus):
+Un dApp descoperă QoreX prin **EIP-6963** (anunță cererea, alege portofelul al cărui `rdns` este `network.qore.qorex`) și apoi folosește furnizorul EIP-1193 returnat; pentru lane-ul **Native** al QoreChain folosește `window.qorex.native` și citește `capabilities` ca să vadă ce acceptă acest build. QoreX nu setează niciodată `window.ethereum` sau `window.keplr`. Ghidul complet pentru dezvoltatori, cu cod, este pe propria pagină: [Integrează un dApp cu QoreX](/qorex/dapp-integration) (vezi [Detectează QoreX](/qorex/dapp-integration#detection) și [Conectare](/qorex/dapp-integration#connect)). Într-o aplicație web, [adaptorul de portofel](/developer-tools/wallet-adapter) învelește pentru tine această detecție, iar [kitul de dezvoltare QoreX](/developer-tools/qorex-integrations) acoperă integrarea de partea aplicației. (`@qorechain/connect` este depreciat; nu începe lucrări noi pe el.)
 
-```ts
-import type { EIP6963ProviderDetail } from "./types";
-
-const wallets = new Map<string, EIP6963ProviderDetail>();
-
-// 1. Collect every wallet that announces itself.
-window.addEventListener("eip6963:announceProvider", (event) => {
-  const detail = (event as CustomEvent<EIP6963ProviderDetail>).detail;
-  wallets.set(detail.info.rdns, detail);
-});
-
-// 2. Ask installed wallets to announce.
-window.dispatchEvent(new Event("eip6963:requestProvider"));
-
-// 3. Pick QoreX by its rdns and use the standard EIP-1193 provider.
-const qorex = wallets.get("network.qore.qorex");
-if (qorex) {
-  const accounts = await qorex.provider.request({ method: "eth_requestAccounts" });
-  console.log("QoreX EVM account:", accounts[0]);
-}
-```
-
-Pentru lane-ul **Native** al QoreChain, folosește furnizorul de la `window.qorex.native` (`enable`, `getKey`, `signAndBroadcast`, `signDirect`; citește `capabilities` pentru a vedea ce acceptă acest build). Într-o aplicație web, [adaptorul de portofel](/developer-tools/wallet-adapter) învelește pentru tine această detecție EIP-6963, iar [kitul de dezvoltare QoreX](/developer-tools/qorex-integrations) acoperă integrarea de partea aplicației. (`@qorechain/connect` este depreciat; nu începe lucrări noi pe el.)
-
-Aprobările sunt **per origine**: prima conexiune la un site deschide un popup de aprobare care arată originea, aprobarea dezvăluie doar adresa ta publică, iar aprobarea unui site nu acordă nimic altui site. Aprobările sunt păstrate per portofel, persistă până când le revoci la **Connected sites**, iar un site poate avea o cerere în așteptare (trei în total); comutarea portofelului sau blocarea răspunde cererilor în așteptare cu „nu". Vezi [Ce arată fereastra de aprobare](/qorex/security-and-recovery#approvals).
+Aprobările sunt **per origine**: prima conexiune la un site deschide un popup de aprobare care arată originea, aprobarea dezvăluie doar adresa ta publică, iar aprobarea unui site nu acordă nimic altui site. Aprobările sunt păstrate per portofel, persistă până când le revoci la **Site-uri conectate**, iar un site poate avea o cerere în așteptare (trei în total); comutarea portofelului sau blocarea răspunde cererilor în așteptare cu "nu". Începând cu 0.4.4, o cerere de semnare a unui site făcută cât timp QoreX este blocat deschide ecranul de parolă, numind site-ul, și își afișează aprobarea după ce deblochezi; închiderea ferestrei o refuză. Vezi [Ce arată fereastra de aprobare](/qorex/security-and-recovery#approvals).
 
 ### Puntea către Dashboard (v0.1.5, extinsă în v0.2.2) {#dashboard-bridge}
 
@@ -262,34 +366,20 @@ Deoarece o adresă `qor1…` este la fel de validă atât pe mainnet, cât și p
 
 ## Trimiterea unei tranzacții QoreChain dintr-un dApp: `signAndBroadcast` {#sign-and-broadcast}
 
-Fiecare tranzacție QoreChain pe lane-ul nativ dintr-un cont cu o cheie ML-DSA-87 înregistrată are nevoie de o semnătură hibridă - secp256k1 **și** ML-DSA-87 - iar doar portofelul deține cheia ML-DSA, deci o pagină nu o poate construi. Trimite mesajele; QoreX face restul: arată mesajele decodate și comisionul, construiește tranzacția pentru contul selectat de utilizator, adaugă semnătura hibridă (înregistrând mai întâi cheia ML-DSA-87 a contului dacă este prima lui tranzacție), o transmite și se rezolvă cu rezultatul. Disponibil din extensia **0.3.5** și aplicația **1.1.5** (fiecare build din magazine de azi).
+Fiecare tranzacție QoreChain pe lane-ul nativ dintr-un cont cu o cheie ML-DSA-87 înregistrată are nevoie de o semnătură hibridă - secp256k1 **și** ML-DSA-87 - iar doar portofelul deține cheia ML-DSA, deci o pagină nu o poate construi. Un dApp trimite mesajele cu `window.qorex.native.signAndBroadcast({ chainId, messages, memo?, gasLimit? })`; QoreX arată mesajele decodificate și comisionul, construiește tranzacția pentru contul pe care l-ai selectat, adaugă semnătura hibridă (înregistrând mai întâi cheia ML-DSA-87 a contului dacă este prima lui tranzacție), o transmite și se rezolvă cu `{ txHash, code, height?, shield }`. Disponibil din extensia **0.3.5**.
 
-```js
-const provider = window.qorex.native;
-if (!provider.capabilities?.includes("signAndBroadcast")) {
-  throw new Error("Please update QoreX");
-}
-await provider.enable("qorechain-vladi");            // connect, once per site
+- Lanțul trebuie să fie rețeaua activă a portofelului (`qorechain-vladi` pe mainnet). Un dApp nu poate comuta rețeaua; doar tu poți.
+- 1-32 de mesaje per apel; comisionul este arătat înainte de aprobare; mesajele rezervate portofelului, cum ar fi gestionarea cheii ML-DSA-87, sunt refuzate.
+- cosmjs, cosmos-kit și Interchain Kit funcționează prin `getOfflineSigner` (de la 0.4.0), unde QoreX adaugă stratul ML-DSA-87 și comisionul aferent.
+- `signArbitrary` semnează un mesaj cu cheia clasică a contului și cu ML-DSA-87 (de la 0.4.0).
 
-const res = await provider.signAndBroadcast({
-  chainId: "qorechain-vladi",                        // must be the wallet's active network
-  messages: [{ typeUrl: "/cosmos.bank.v1beta1.MsgSend", value: msgSendBytes }],  // protobuf bytes: Uint8Array, number[] or base64
-  memo: "",                                          // optional, up to 256 bytes
-  gasLimit: 300000,                                  // optional
-});
-// → { txHash, code, height? }
-```
-
-- `chainId` trebuie să fie egal cu rețeaua activă a portofelului (`qorechain-vladi` pe mainnet). Un dApp nu poate comuta rețeaua; doar utilizatorul o poate face.
-- 1-32 de mesaje per apel; octeții mesajelor sunt semnați exact așa cum au fost trimiși.
-- Comisionul (`gasLimit` × prețul de gaz al rețelei) este afișat înainte de aprobare. O respingere aruncă `QoreX: signature rejected`.
-- Gestionarea cheii ML-DSA-87 (înregistrare, migrare, rotație - inclusiv în interiorul authz `MsgExec`) este refuzată: portofelul gestionează singur cheia contului.
+Regulile, gazul, erorile și exemplele complete de cod sunt în [Integrează un dApp cu QoreX](/qorex/dapp-integration#sign-and-broadcast).
 
 ## Semnarea hibridă {#pqc}
 
 Fiecare transfer nativ de QOR pe care QoreX îl inițiază singur este semnat de două ori: cu o cheie clasică secp256k1 și cu **ML-DSA-87** (FIPS 204), folosind pipeline-ul hibrid din `@qorechain/sdk`. **Nu există comutator**: QoreChain o impune, iar QoreX nu trimite niciodată un transfer de QOR pe lane-ul Native fără ea.
 
-- **Semnarea Native inițiată de dApp** - folosește [`signAndBroadcast`](#sign-and-broadcast): QoreX decodează fiecare mesaj, arată comisionul și adaugă singur stratul ML-DSA-87. `signDirect` semnează o tranzacție construită de pagină; nu este calea recomandată, deoarece un strat atașat de pagină este verificat față de cheia înregistrată a contului înainte de orice fereastră de aprobare, iar o tranzacție exclusiv clasică este refuzată (este refuzată și pentru conturile în stil Ethereum, care folosesc `signAndBroadcast`). QoreX nu semnează niciodată orb: o cerere pe care nu o poate decoda este refuzată și nu semnează niciodată o tranzacție QoreChain exclusiv clasică.
+- **Semnarea Native inițiată de dApp** - folosește [`signAndBroadcast`](#sign-and-broadcast): QoreX decodifică fiecare mesaj, arată comisionul și adaugă singur stratul ML-DSA-87. `signDirect` și semnatarii cosmjs (`getOfflineSigner`) semnează o tranzacție construită de pagină; când nu poartă niciun strat ML-DSA-87, QoreX adaugă unul, iar un strat atașat de pagină este verificat față de cheia înregistrată a contului înainte de orice fereastră de aprobare (conturile importate din MetaMask folosesc `signAndBroadcast`). QoreX nu semnează niciodată orb: o cerere pe care nu o poate decodifica este refuzată și nu semnează niciodată o tranzacție QoreChain exclusiv clasică. Vezi [Integrează un dApp cu QoreX](/qorex/dapp-integration#cosmjs).
 - **Semnăturile clasice sunt mereu etichetate** - transferurile pe rețele externe (ETH, BNB, Solana, …) nu pot purta o semnătură ML-DSA-87; QoreX te pune să bifezi o confirmare explicită și le marchează drept clasice, în loc să retrogradeze silențios.
 
 **Ce înseamnă asta pentru dimensiunea tranzacției.** ML-DSA-87 este o semnătură mare: semnătura are **4,627 de octeți**, iar cheia publică **2,592 de octeți** (fixate de FIPS-204). O tranzacție hibridă QoreChain este, prin urmare, cu câțiva kiloocteți mai mare decât una pur clasică. Dacă îți construiești și transmiți singur tranzacțiile, dimensionează-ți buffer-ele și estimările de comision pentru octeții suplimentari; contabilizarea gazului din QoreChain îi așteaptă deja. Vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing) (ghidul dezvoltatorului) pentru primitive și cerința de semnare deterministă.
@@ -298,20 +388,22 @@ Fiecare transfer nativ de QOR pe care QoreX îl inițiază singur este semnat de
 
 | Magazin | Listare | Versiunea curentă | Link |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.3.8 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
-| Firefox Add-ons | `qorex` | 0.3.9 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
-| Mac App Store (Safari) | **QoreX Wallet**, aplicația 1.7.8 | extensia 0.3.8 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
+| Chrome Web Store | **QoreX** | 0.4.4 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Firefox Add-ons | `qorex` | 0.4.4 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
+| Mac App Store (Safari) | **QoreX Wallet**, aplicația 1.8.2 | extensia 0.4.4 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 
-Codul sursă QoreX nu este public. Versiunile sunt la data de 27 octombrie 2026; listările din magazine arată mereu versiunea curentă.
+Codul sursă QoreX nu este public. Listările din magazine arată mereu versiunea curentă.
 
 ## Limite și probleme cunoscute {#limits}
 
-- **Furnizorul EVM răspunde doar la interogări despre cont și rețea.** Nu semnează și nu trimite încă tranzacții sau mesaje EVM. Folosește MetaMask sau alt portofel EVM pentru tranzacțiile pe lane-ul EVM, care necesită și o [fereastră de acces EVM](#evm-window) deschisă; o tranzacție EVM poartă doar o semnătură secp256k1.
-- **`window.qorex.native` este în stil Keplr, nu un înlocuitor complet pentru Keplr.** Nu există alias `window.keplr`. `signAmino` și `sendTx` lipsesc. `getOfflineSigner` funcționează doar când pagina însăși atașează stratul ML-DSA-87; un strat adăugat de portofel prin `getOfflineSigner` nu este acceptat. `signArbitrary` (semnarea de mesaje) nu este acceptat. Calea nativă acceptată este `window.qorex.native.signAndBroadcast`.
-- **Doar pe mobil:** Portfolio, Q-Day Scanner, recuperarea socială, Legacy, cererile de plată, autentificarea, asocierea dispozitivelor și revendicarea unui @handle.
+- **Semnarea EVM are limite.** Furnizorul semnează `personal_sign`, `eth_signTypedData_v4` și `eth_sendTransaction` (QoreChain și Ethereum, per site) și refuză alte metode de semnare. Pe QoreChain pot trimite doar conturile importate din MetaMask, o tranzacție EVM are nevoie de o fereastră de autorizare (aprobarea deschide una pentru acea tranzacție) și poartă doar o semnătură secp256k1. Vezi [Integrează un dApp cu QoreX](/qorex/dapp-integration#evm).
+- **`window.qorex.native` este în stil Keplr, nu un înlocuitor complet pentru Keplr.** Nu există alias `window.keplr`. `signAmino` și `sendTx` lipsesc: Amino este refuzat cu codul `4200`. `getOfflineSigner` și `signDirect` funcționează, iar QoreX adaugă stratul ML-DSA-87 când pagina nu aduce niciunul. `signArbitrary` și `verifyArbitrary` (semnarea de mesaje) funcționează de la 0.4.0. Un dApp nu poate comuta rețeaua, iar mesajele rezervate portofelului (gestionarea cheilor, regulile de cheltuieli, ferestrele EVM, anumite granturi) sunt refuzate de pe orice site.
+- **Doar pe mobil:** Portfolio, Q-Day Scanner, recuperarea socială, Legacy, autentificarea, asocierea dispozitivelor și revendicarea unui @handle.
 - **Fără ecran Swap** în extensie.
 - **Deblocarea cu passkey** este oferită doar acolo unde browserul expune WebAuthn paginilor de extensie (Chrome și Edge); pe Firefox este ascunsă.
 - **Safari** deschide aprobările într-o filă de browser, nu într-un popup.
 - **Rețelele externe** acceptă doar semnături clasice; QoreX te pune să confirmi acest lucru înainte de fiecare transfer.
-- **Chrome și Safari sunt cu o versiune în urma Firefox** la momentul redactării (vezi [versiuni](#versions)).
+- **Doar testnet:** trimiterea pe alt lanț prin IBC, ecranul QoreChain Bridge și Solana pe QoreChain. Vezi [Funcții de testnet](/qorex/testnet-features).
+- **Agenții AI** au nevoie de un program companion care nu este încă publicat și nu sunt disponibili în Safari.
+- **Istoricul** acoperă deocamdată doar QoreChain.
 - Seiful extensiei există doar în acest browser. Eliminarea extensiei, ștergerea datelor ei sau resetarea browserului îți șterge cheile; doar cele 24 de cuvinte notate de tine le restaurează.

@@ -18,7 +18,9 @@ sidebar_position: 2
 - **EVM erişim penceresi.** QoreX, Ethereum tarzı bir hesabın EVM lane'inde göndermesine izin veren pencereyi açar, gösterir ve kapatır. Bkz. [Güvenlik ve Kurtarma](/qorex/security-and-recovery#evm-window).
 - **Sabitlemeli @kullanıcı adları.** İki imza bir adı bir adrese bağlar; çözümlenen ilk adres sabitlenir ve sessiz bir değişiklik işaretlenir.
 - **Bir şirket olmadan kurtarma.** Sosyal kurtarma (şifreli paylaşımlar, 3 üzerinden 2, 48 saatlik zaman kilidi), Legacy (koruyucularınız üzerinde bir ölü adam anahtarı) ve cihaz bağlama. Bkz. [Güvenlik ve Kurtarma](/qorex/security-and-recovery).
-- **Q-Day Scanner.** Herhangi bir Bitcoin veya Ethereum adresi için bir maruziyet raporu.
+- **Amaçlı ilk çalıştırma.** Kısa turdan sonra QoreX **Önce ne yapmak istersiniz?** diye sorar ve kurtarma ifadenizin doğru yazıldığını kontrol eden kısa bir adım da dahil olmak üzere sizi hedefinize götürür. Bkz. [İlk çalıştırma](#first-run).
+- **Paramın korunması.** Yedeğinizi, kurtarma testinizi, koruyucularınızı, bağlı siteleri ve kalıcı izinleri kontrol eden tek bir ekran. Bkz. [Güvenlik ve Kurtarma](/qorex/security-and-recovery).
+- **Q-Day Scanner.** Herhangi bir Bitcoin veya Ethereum adresi için bir maruziyet raporu. Bir Bitcoin adresi için QoreX, başkasının işlettiği ve adresi ile IP adresinizi gören bir hizmete sorar; bunu yalnızca siz kabul ettikten sonra yapar.
 - **Küçük ayak izli bildirim ve widget.** Bildirim, sunucuya yalnızca herkese açık adreslerinizi söyler ve bildirim yalnızca "QOR received" der. Widget, kullanımdaki hesabın QOR bakiyesini gösterir.
 
 ## Nasıl erişilir {#how-to-access}
@@ -28,7 +30,7 @@ sidebar_position: 2
 - **iOS**: App Store (iOS 15.1 veya üzeri): https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
-Güncel sürümler [Hangi sürüm nerede yayında](/qorex/overview#versions) bölümünde listelenir. Uygulama ücretsizdir ve hesap gerektirmez. Varsayılan olarak mainnet `qorechain-vladi` kullanılır; **Ayarlar → Testnet kullan (geliştiriciler)** `qorechain-diana`'ya geçer. Gönderme ve staking, normal ağ ücretini öder (taban gas başına 0.1 uqor). Uygulama, sağdan sola düzenli Arapça dahil 10 dili destekler ve telefonun dilini takip eder.
+Güncel sürümler [Hangi sürüm nerede yayında](/qorex/overview#versions) bölümünde listelenir: iOS ve Android uygulaması 1.2.5'tir. Uygulama ücretsizdir ve hesap gerektirmez. Varsayılan olarak mainnet `qorechain-vladi` kullanılır; **Ayarlar → Testneti kullan (geliştiriciler)** `qorechain-diana`'ya geçer. Gönderme ve staking, normal ağ ücretini öder (taban gas başına 0.1 uqor). Uygulama, sağdan sola düzenli Arapça dahil 10 dili destekler ve telefonun dilini takip eder.
 
 ## Nasıl kullanılır {#how-to-use}
 
@@ -58,10 +60,11 @@ Kurulum için üç yolunuz var:
 1. **Yeni bir cüzdan oluştur**'a dokunun.
 2. QoreX, cihazınızda **24 kelimelik bir kurtarma ifadesi** (256 bit entropi) üretir, bunu doğrudan donanım destekli, biyometri korumalı kasaya mühürler ve QoreChain kimliğinizi türetir - coin type 118, bir `qor1…` adresi (ETH ve SOL hesaplarınız aynı tohumdan gelir). **Uygulama, cüzdanı oluştururken ifadeyi size göstermez.**
 3. **İfadeyi görüntüleyin ve hemen yazıya dökün:** **Ayarlar → Güvenlik → Kurtarma ifadesini göster**'i açın, biyometri veya cihaz PIN'inizle onaylayın ve 24 kelimeyi sırayla kâğıda kopyalayın. Çevrimdışı olarak saklayın. Bu ifade, cihazınızı kaybetmeniz durumunda cüzdanınızı kurtarmanın **tek** yoludur.
-4. İsteğe bağlı olarak [sosyal kurtarma](/qorex/security-and-recovery#social-recovery) kurun. Ana Sayfa'daki **Yedek durumu** kartının yalnızca sosyal kurtarmayı takip ettiğini unutmayın - ifadeyi yazıp yazmadığınızı bilemez, bu yüzden size hatırlatmaz.
+4. Yazdığınızı kontrol edin: ifadenizi gösteren ekranda **Yedeğimi kontrol et** düğmesine dokunun ve istediği üç kelimeyi yazın (bkz. [Yedek kontrolü](#backup-check)).
+5. İsteğe bağlı olarak [sosyal kurtarma](/qorex/security-and-recovery#social-recovery) kurun. Ana Sayfa'daki **Yedek durumu** kartının yalnızca sosyal kurtarmayı takip ettiğini unutmayın. Yazılı ifadenizin kontrol edilip edilmediği **Paramın korunması** ekranında gösterilir.
 
-:::danger 3. adımı şimdi yapın - uygulamada hiçbir şey size hatırlatmayacak
-Uygulama cüzdanı oluşturduktan sonra doğrudan Ana Sayfa'ya geçtiği için, ifadeyi hiç yazmadan devam etmek kolaydır. **Herhangi bir şey almadan veya göndermeden önce yapın.** Yazılı ifade ya da önceden kurulmuş bir [sosyal kurtarma](/qorex/security-and-recovery#social-recovery) olmadan uygulamayı kaybederseniz veya kaldırırsanız ya da telefonunuzu kaybederseniz, QoreChain Association dahil hiç kimse fonlarınızı geri getiremez.
+:::danger 3. adımı şimdi yapın - bir hatırlatmaya güvenmeyin
+Uygulama cüzdanı oluştururken ifadeyi göstermediği için, onu hiç yazmadan devam etmek kolaydır. **Herhangi bir şey almadan veya göndermeden önce yapın.** Yazılı ifade ya da önceden kurulmuş bir [sosyal kurtarma](/qorex/security-and-recovery#social-recovery) olmadan uygulamayı kaybederseniz veya kaldırırsanız ya da telefonunuzu kaybederseniz, QoreChain Association dahil hiç kimse fonlarınızı geri getiremez.
 :::
 
 :::caution Kurtarma ifadeniz her şeydir
@@ -76,13 +79,32 @@ Uygulama cüzdanı oluşturduktan sonra doğrudan Ana Sayfa'ya geçtiği için, 
 4. QoreX aynı adresleri yeniden türetir - cüzdanınız herhangi bir cihazda aynı görünür.
 
 :::note Ek hesaplar tek tek geri gelir
-İfadeden geri yükleme **Hesap 1**'i getirir. Eski cüzdanda birden fazla hesap kullandıysanız, sonrakileri geri getirmek için **Hesap ekle**'ye (Ayarlar → Hesaplarınız) dokunun - aynı ifadeden türetildikleri için aynı adreslerde yeniden görünürler. Ethereum tarzı hesaplar **Ethereum hesabı ekle (coin 60)** ile eklenir; bkz. [MetaMask'ten veya Dashboard'dan bir ifadeyi geri yükleyin](#restore-dashboard). Bunları eski cüzdanda oluşturduğunuz sırayla ekleyin: hesaplar yuvaya göre numaralandırılır ve yeni bir cihazda farklı bir sıra, bir yuvada farklı bir hesap verebilir.
+İfadeden geri yükleme **Hesap 1**'i getirir. Eski cüzdanda birden fazla hesap kullandıysanız, sonrakileri geri getirmek için **Hesap ekle**'ye (Ayarlar → Hesapların) dokunun - aynı ifadeden türetildikleri için aynı adreslerde yeniden görünürler. Ethereum tarzı hesaplar **Ethereum hesabı ekle (coin 60)** ile eklenir; bkz. [MetaMask'ten veya Dashboard'dan bir ifadeyi geri yükleyin](#restore-dashboard). Bunları eski cüzdanda oluşturduğunuz sırayla ekleyin: hesaplar yuvaya göre numaralandırılır ve yeni bir cihazda farklı bir sıra, bir yuvada farklı bir hesap verebilir.
 :::
 
 ### 3. Başka bir cihazdan bağlayın
 
 QoreX'i başka bir telefonunuzda veya tabletinizde zaten kullanıyorsanız, cüzdanı **sunucu olmadan ve yazmadan** karşıya taşıyabilirsiniz - bkz. [Yeni bir cihaz bağlayın](/qorex/security-and-recovery#link-device). Başlamak için yeni cihazda **Başka bir cihazdan bağla**'yı seçin.
 
+## İlk çalıştırma: Önce ne yapmak istersiniz? {#first-run}
+
+Cüzdan başına bir kez, kısa turdan sonra QoreX **Önce ne yapmak istersiniz?** diye sorar. Üç hedeften birini seçin veya **Şimdilik atla** düğmesine dokunun. Daha sonra **Ayarlar → Ne yapmak istersiniz?** üzerinden yeniden açabilirsiniz. Mainnet ve testnet'te aynı şekilde çalışır (testnet'te QOR'un değeri yoktur).
+
+| Hedef | QoreX'in sizi adım adım götürdüğü yer |
+|---|---|
+| **Para almak istiyorum** | Almak istediğiniz coin'i seçin, o ağda yalnızca o coin'in gönderilmesi gerektiği uyarısıyla doğru adresi QR kodu olarak görün, ardından **Ödeme bağlantısı oluştur** (ödeme bağlantıları QoreChain üzerinde QOR ister). Bkz. [Ödeme istekleri](/qorex/send-and-receive). |
+| **Para göndermek istiyorum** | **Add funds**: QoreChain adresiniz ve QR kodu. **Bir @handle alın** (veya sahip olduğunuzu görün). **İlk ödemeniz**: ücret, yaklaşık ne kadar olduğu (ve hesabınız henüz kuantum sonrası anahtar kaydetmediyse tek seferlik anahtar kayıt ücreti), ardından **İlk ödememi yap**. İmzalamadan önce tam tutarı görürsünüz. |
+| **Kriptomu güvende tutmak istiyorum** | **Yatırma adresiniz**; ifadenizi asla görmeyen [koruyucularla](/qorex/security-and-recovery#social-recovery) **Kurtarmayı ayarla**; ardından yedeğinizin kontrol edilip edilmediğini gösteren ve kontrol etmeniz için sizi ifadenize götüren **Yedeğimi kontrol et**. |
+
+Tarayıcı eklentisinde aynı soru, bir cüzdan oluşturduktan veya içe aktardıktan sonra görünür; oradaki güvenlik hedefi yatırma adresi ve yedek kontrolüdür, @handle'lar ise uygulamada talep edilir. Bkz. [Cüzdan oluşturma veya geri yükleme](/qorex/browser-extension#wallet).
+
+### Yedek kontrolü {#backup-check}
+
+Yedek kontrolü kısa bir sınavdır: QoreX, **kurtarma ifadenizin üç kelimesini** rastgele konumlarda sorar, siz de bunları yazdığınız şekilde girersiniz.
+
+- **Uygulamada:** **Ayarlar → Güvenlik → Kurtarma ifadesini göster**'i açın, biyometri veya cihaz PIN'inizle onaylayın, kelimeleri yazın, ardından **Yedeğimi kontrol et** düğmesine dokunun. Bir kelime eşleşmezse kâğıdınızla karşılaştırıp yeniden deneyin; **İfadeyi yeniden göster** sizi kelimelere geri götürür, **Daha sonra kontrol et** ise ekrandan çıkar. Geçtiğinizde QoreX yalnızca kontrol edildiğini ve ne zaman edildiğini kaydeder.
+- **Eklentide:** kontrol, yeni ifadeyi gösteren ekranın ardından gelir. Sonradan **Yedeğimi kontrol et** parolanızı ister ve ifadeyi göstermez.
+- **Paramın korunması** ekranında, aynı şekilde üç kelime isteyen **Kurtarma ifademi test et** vardır. Kelimeler cihazınızda karşılaştırılır; yazdığınız hiçbir şey saklanmaz veya gönderilmez.
 ## Tek cihazda birden fazla cüzdan {#several-wallets}
 
 Her cüzdanın **kendi kurtarma ifadesi** vardır. Bir telefonda birden fazla cüzdan tutabilirsiniz - örneğin ana cüzdanınız ve başka bir hizmetten geri yüklenmiş bir cüzdan - ve tek dokunuşla aralarında geçiş yapabilirsiniz.
@@ -97,7 +119,7 @@ QoreX, varsayılan olarak `qor1…` adresinizi bir kurtarma ifadesinden coin typ
 
 1. QoreX'i mağazanızdan güncel sürüme güncelleyin.
 2. **Cüzdan ekleyin** (Ayarlar → Cüzdanlar → *Cüzdan ekle* → *Mevcut cüzdanı geri yükle*) ve ifadeyi girin. Mevcut cüzdanınız olduğu yerde kalır. Eklentide: **Cüzdanlar** → geri yükle.
-3. Ayarlar → **Hesaplarınız**'ı açın ve **Ethereum hesabı ekle (coin 60)**'a dokunun. İlk dokunuş hesabı 0 dizininde ekler - MetaMask'in bu kelimeler için gösterdiği aynı `0x…` adresi ve o hesap için QoreChain `qor1…` adresinizle aynı anahtar. QOR'unuz orada durur.
+3. Ayarlar → **Hesapların**'ı açın ve **Ethereum hesabı ekle (coin 60)**'a dokunun. İlk dokunuş hesabı 0 dizininde ekler - MetaMask'in bu kelimeler için gösterdiği aynı `0x…` adresi ve o hesap için QoreChain `qor1…` adresinizle aynı anahtar. QOR'unuz orada durur.
 4. O hesaba geçin (*Ethereum · coin 60* etiketlidir). Ondan gönderebilir, staking yapabilir ve ödül talep edebilirsiniz. İlk gönderim ayrıca o hesabın ML-DSA-87 anahtarını da kaydeder; bunun küçük, tek seferlik bir ücreti vardır.
 
 Ethereum tarzı bir hesabın @kullanıcı adı yoktur (kullanıcı adları coin type 118'deki bir QoreChain `qor1…` hesabında talep edilir) ve web siteleri bununla `signDirect` yerine `signAndBroadcast` üzerinden imzalar. Aynı zamanda [EVM erişim penceresinin](/qorex/security-and-recovery#evm-window) önem taşıdığı hesap türüdür: MetaMask aynı anahtarla imzalar, dolayısıyla bir pencere açıldığında MetaMask işlemleri bu hesabın QOR'unu taşıyabilir. **Ethereum hesabı ekle (coin 60)**'a her dokunuş bir sonraki dizini ekler.
@@ -105,7 +127,11 @@ Ethereum tarzı bir hesabın @kullanıcı adı yoktur (kullanıcı adları coin 
 ## Yolunuzu bulun {#find-your-way}
 
 - **Arama** - Ana Sayfa'nın üstündeki büyüteç ekranları ("stake"), coinleri ("USDC"), kişileri (bir @kullanıcı adı veya adres), notları ve bir işlem hash'inin başlangıcını arar; bir @kullanıcı adı veya `qor1…` adresi yazmak doğrudan **… adresine QOR gönder** seçeneğini sunar.
-- **Tur** - bir cüzdan Ana Sayfa'da ilk kez açıldığında, beş kısa kart QoreX'in ne yaptığını ve şeylerin nerede olduğunu açıklar. Bir kez çalışır; Ayarlar → **Turu yeniden izle** ile tekrar oynatın.
+- **Tur** - bir cüzdan Ana Sayfa'da ilk kez açıldığında, beş kısa kart QoreX'in ne yaptığını ve şeylerin nerede olduğunu açıklar. Bir kez çalışır; Ayarlar → **Turu yeniden izle** ile tekrar oynatın. Ardından [Önce ne yapmak istersiniz?](#first-run) gelir.
+- **Ayarlar**'da ayrıca **Ödeme istekleri**, **Bir isteği öde**, **Kişiler**, **Paramın korunması**, **Destek** ve **Ne yapmak istersiniz?** (yalnızca testnet'te ise başka bir zincire gönderme ve QoreChain Bridge ekranı - bkz. [Testnet özellikleri](/qorex/testnet-features)) bulunur.
+- **Geliştirici modu** - Ayarlar'da bir anahtardır, varsayılan olarak kapalıdır. Açıkken alt çubukta `</>` simgeli bir **Geliştirici** sekmesi belirir. Bkz. [Geliştirici modu](/qorex/developer-mode).
+- **Otomatik kilit** - QoreX bir süre kullanılmadıktan sonra biyometrinizi veya PIN'inizi yeniden ister; aralığı (1, 5, 15, 30, 60 veya 240 dakika, varsayılan 15) Ayarlar → Güvenlik'te **Otomatik kilitleme süresi** ile belirleyin.
+- **Ağ durumu** - zincirin en son bloğu bir dakikadan eskiyse veya ağa ulaşılamıyorsa bir bant bunu söyler.
 
 ## İsteğe bağlı: bir @kullanıcı adı alın
 
@@ -134,8 +160,8 @@ Mobil uygulamanın kaynak kodu herkese açık değildir. Her zaman resmi listede
 
 - **Swap kullanılamıyor**: havuz likiditesi oluşana kadar kapalıdır ve iOS'ta gösterilmez.
 - **Bağlı imzalayıcılar** (harcama limitli bağlı anahtar olarak Phantom veya MetaMask) henüz QoreX içinde kullanılamıyor.
-- ML-DSA-87 anahtarınız için **anahtar rotasyonu** henüz QoreX içinde kullanılamıyor.
-- **Uygulama, cüzdanı oluştururken ifadeyi göstermez.** Hemen Ayarlar → Güvenlik'ten görüntüleyin. Yedek durumu kartı yalnızca sosyal kurtarmayı takip eder.
+- **Yalnızca testnet:** IBC üzerinden başka bir zincire gönderme, QoreChain Bridge ekranı ve QoreChain üzerinde Solana. Bkz. [Testnet özellikleri](/qorex/testnet-features).
+- **Uygulama, cüzdanı oluştururken ifadeyi göstermez.** Hemen Ayarlar → Güvenlik'ten görüntüleyin. Yedek durumu kartı yalnızca sosyal kurtarmayı takip eder; **Paramın korunması** yedeğinizin kontrol edilip edilmediğini gösterir.
 - **EVM ve SVM transferleri hibrit imzayla kapsanmaz.** Bir EVM işlemi yalnızca secp256k1 imzası taşır ve açık bir erişim penceresi gerektirir; harici ağlardaki transferler yalnızca klasiktir.
 - **Bildirim** yalnızca mainnet'te çalışır; iPhone'da en iyi çabayla çalışan bir özellik olarak değerlendirin.
 - Yazılı ifadesi ve sosyal kurtarması olmayan kayıp bir cüzdan hiç kimse tarafından kurtarılamaz.

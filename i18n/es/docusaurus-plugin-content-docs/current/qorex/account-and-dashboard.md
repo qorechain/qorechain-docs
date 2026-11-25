@@ -7,9 +7,9 @@ sidebar_position: 6
 
 # Cuenta y Dashboard
 
-Esta página cubre la cuenta opcional de QoreX: iniciar sesión, varias cuentas a partir de una frase de recuperación, los @handles, la vinculación con el Dashboard y la eliminación de tu cuenta. Está pensada para usuarios móviles que quieren estas comodidades; ninguna es necesaria para guardar o enviar QOR.
+Esta página cubre la cuenta opcional de QoreX: iniciar sesión, varias cuentas a partir de una frase de recuperación, los @handles, la vinculación con el Dashboard y la eliminación de tu cuenta. Para obtener ayuda con QoreX, consulta [Ayuda y soporte](/qorex/security-and-recovery#support). Está pensada para usuarios móviles que quieren estas comodidades; ninguna es necesaria para guardar o enviar QOR.
 
-QoreX funciona **completamente sin una cuenta** - tus claves nunca dependen de una. Iniciar sesión añade comodidades como las solicitudes de pago y el emparejamiento con el Dashboard, y es **obligatorio para reclamar un @handle**. El inicio de sesión es por correo electrónico, o con Apple o Google - consulta más abajo.
+QoreX funciona **completamente sin una cuenta** - tus claves nunca dependen de una. Iniciar sesión añade comodidades como solicitar pagos por @handle y el emparejamiento con el Dashboard, y es **obligatorio para reclamar un @handle**. Los [enlaces de solicitud de pago](/qorex/send-and-receive#payment-requests) no necesitan cuenta. El inicio de sesión es por correo electrónico, o con Apple o Google - consulta más abajo.
 
 ## Iniciar sesión {#sign-in}
 
@@ -27,10 +27,11 @@ La oferta de passkey solo aparece después de iniciar sesión con **código por 
 
 ## Varias cuentas a partir de una frase {#accounts}
 
-Settings → **Your accounts** te permite crear hasta **20 cuentas** por monedero y cambiar entre ellas, todas derivadas de la misma frase de recuperación de 24 palabras (no hay nada adicional que respaldar). Cada cuenta es su propia dirección `qor1…` con su propio saldo, su propio @handle opcional (un handle se vincula a una **dirección**, no al monedero) y, tras su primer envío, su propia clave ML-DSA-87. Toca una cuenta para ponerla en uso. La cuenta que esté activa es la que usan Send, Receive, Staking y el navegador de dApps: cambiar de cuenta lo mueve todo con ella, y la app muestra en qué cuenta estás siempre que exista más de una. Las cuentas se numeran *Account 1, 2, …*; no se pueden renombrar. La extensión de navegador tiene la misma pantalla - consulta [Varias cuentas a partir de una frase](/qorex/browser-extension#wallet).
+Settings → **Your accounts** te permite crear hasta **20 cuentas** por monedero y cambiar entre ellas, todas derivadas de la misma frase de recuperación de 24 palabras (no hay nada adicional que respaldar). Cada cuenta es su propia dirección `qor1…` con su propio saldo, su propio @handle opcional (un handle se vincula a una **dirección**, no al monedero) y, tras su primer envío, su propia clave ML-DSA-87. Toca una cuenta para ponerla en uso. La cuenta que esté activa es la que usan Send, Receive, Staking y el navegador de dApps: cambiar de cuenta lo mueve todo con ella, y la app muestra en qué cuenta estás siempre que exista más de una. Las cuentas se numeran *Account 1, 2, …*; no se pueden renombrar. Cada cuenta tiene además un enlace **Historial** en **Your accounts** (extensión: *Historial de ...*), que abre las transacciones de esa cuenta - consulta [Historial](/qorex/send-and-receive#history). La extensión de navegador tiene la misma pantalla - consulta [Varias cuentas a partir de una frase](/qorex/browser-extension#wallet).
 
 - **Add an account** añade la siguiente cuenta sobre la misma frase. Una cuenta nueva registra su propia clave ML-DSA-87 la primera vez que envía, lo cual cuesta una pequeña comisión de red única.
 - **Add an Ethereum account (coin 60)** es para una frase de recuperación usada primero en MetaMask o en el Dashboard de QoreChain - ahí es donde están sus fondos. Usa la ruta de Ethereum `m/44'/60'` y se etiqueta *Ethereum · coin 60*; su dirección `0x…` es la misma en todas las redes EVM y es la misma clave que esa cuenta de QoreChain. Consulta [Restaurar una frase desde MetaMask o el Dashboard](/qorex/getting-started#restore-dashboard).
+- **Recompensas entre tus cuentas.** Puedes hacer que las futuras recompensas de staking de una cuenta vayan a otra cuenta de la misma wallet - consulta [Elige adónde van las recompensas](/qorex/portfolio-and-staking#rewards-address).
 - **Restaurar** una frase en un dispositivo nuevo recupera solo **Account 1**; usa **Add an account** (y **Add an Ethereum account (coin 60)**) para recuperar las demás. La pantalla Addresses (**Settings → Your addresses**) es independiente: enumera todas las cuentas de este monedero más las direcciones de solo lectura vinculadas desde otros monederos.
 
 ## @handle {#handle}

@@ -11,6 +11,10 @@ QoreX 통합은 [QoreX 지갑](/qorex/overview)이 EVM, Cosmos, Solana 프런트
 
 이 패키지들이 하지 않는 일: 키를 보관하지 않으며, QoreX를 현재의 모습 이상으로 만들어 주지도 않습니다. 이를 기반으로 구축하기 전에 [한계와 알려진 문제](#limits)를 읽어 보세요. 현재 라이브 상태인 QoreX 스토어 빌드는 이 패키지들이 연결될 수 있는 기능의 일부만 지원하며, 그 한계는 그곳에 명시되어 있습니다.
 
+:::tip 이 패키지 없이 연동하거나 지갑의 현재 동작을 확인하려면
+[QoreX와 dApp 연동하기](/qorex/dapp-integration)는 지갑 자체에 대한 완전한 가이드입니다: QoreX 앱 1.2.5, 확장 프로그램 0.4.4, Safari 1.8.2를 기준으로 감지, `signAndBroadcast`, cosmjs 서명자, 메시지 서명, EVM, Solana, 오류, 링크를 다룹니다. 0.1.0 패키지는 2026년 10월 27일에 공개되었으며, 그 이후 지갑에는 기능이 추가되었습니다. 이 페이지는 패키지의 동작을 설명합니다. 지갑의 동작은 해당 가이드가 최신입니다.
+:::
+
 ## 혁신 {#innovations}
 
 * **잘못된 지갑을 고를 수 없는 탐지.** QoreX는 EIP-6963을 통해 역 DNS 이름 `network.qore.qorex`로 자신을 알리며 `window.ethereum`을 절대 덮어쓰지 않습니다. `@qorechain/qorex-types`는 오직 그 이름으로만 프로바이더를 선택하고, RainbowKit 지갑은 커넥터를 알려진 프로바이더에 고정하며 `window.ethereum`으로 대체하지 않습니다.
@@ -18,9 +22,9 @@ QoreX 통합은 [QoreX 지갑](/qorex/overview)이 EVM, Cosmos, Solana 프런트
 * **버전 확인 대신 기능 확인.** 패키지는 지갑의 `capabilities` 목록을 읽으므로(`hasCapability`), `signAndBroadcast` 같은 기능은 버전 번호로 추측하지 않고 탐지됩니다.
 * **거부는 명시적이며, 코드는 안정적입니다.** Amino JSON은 하이브리드 서명을 담을 수 없으므로 Amino 서명은 설계상 거부됩니다. 커넥터는 `QOREX_AMINO_REFUSED`, `QOREX_USE_SIGN_AND_BROADCAST`, `QOREX_NOT_SUPPORTED_YET` 같은 코드로 `QorexIntegrationError`를 던지며, `isQorexIntegrationError(err, code)`로 이를 검사합니다.
 * **실제로 서명하는 테스트 더블.** `@qorechain/qorex-wallet-mock`은 QoreX가 주입하는 것과 같은 객체(`window.qorex = { evm, native, svm }`)를 주입하고, Solana 지갑을 등록하며, 실제 알고리즘(Native 레인에서는 QoreSign을 통한 하이브리드 ML-DSA-87, EVM에서는 secp256k1, Solana에서는 ed25519)으로 서명합니다. 기본값은 테스트넷의 공개 테스트 니모닉입니다. `network.qore.qorex.mock`으로 자신을 알리므로, QoreX를 엄격히 선택하는 코드가 이를 실제 지갑으로 착각할 수 없습니다.
-* **두 가지 동작 프로필.** 모의 지갑의 `current` 프로필은 현재 라이브인 QoreX처럼 동작하고, `planned`는 QoreX 팀이 발표한 내용을 추가하므로, 모의 지갑이 지갑이 아직 하지 않는 일을 한다고 주장하지 않으면서 앞서서 개발할 수 있습니다.
+* **두 가지 동작 프로필.** 모의 지갑의 `current` 프로필은 0.1.0이 공개된 당시(2026년 10월 27일)의 라이브 QoreX처럼 동작하고, `planned`는 당시 발표된 내용을 추가합니다. 이후 QoreX는 EVM 서명, 계정 이벤트, 지갑이 추가하는 `signDirect` 계층을 출시했으므로, 이 기능에는 `planned` 프로필이 더 가깝습니다.
 * **Synpress v4 스타일의 Playwright 픽스처**(`qorexMockFixtures`)는 탐색 전에 모의 지갑을 주입하므로, 엔드 투 엔드 테스트에 브라우저 확장 프로그램이 필요하지 않습니다.
-* **이벤트 없이 지갑이 주도하는 계정.** QoreX는 아직 `accountsChanged`나 `chainChanged`를 내보내지 않으므로, RainbowKit 지갑에는 페이지가 포커스를 되찾을 때 `eth_accounts`와 `eth_chainId`를 다시 읽는 선택적 `pollAccountsOnFocus`가 있습니다.
+* **이벤트가 있든 없든 계정을 따라갑니다.** RainbowKit 지갑에는 페이지가 포커스를 되찾을 때 `eth_accounts`와 `eth_chainId`를 다시 읽는 선택적 `pollAccountsOnFocus`가 있습니다. `accountsChanged`나 `chainChanged`를 내보내지 않던 지갑 빌드를 위해 작성되었으며, 현재 QoreX 빌드는 이를 내보냅니다.
 
 ## 용도 {#use-cases}
 
@@ -28,7 +32,7 @@ QoreX 통합은 [QoreX 지갑](/qorex/overview)이 EVM, Cosmos, Solana 프런트
 2. **Interchain Kit 또는 cosmos-kit 기반 Cosmos dApp에 QoreX를 추가합니다.** `ChainProvider`에 QoreX 지갑을 추가하고 `qorexSignAndBroadcast`로 QoreChain 트랜잭션을 보냅니다. 페이지는 ML-DSA-87 키를 보유할 수 없으므로, QoreX가 트랜잭션을 구성하고 하이브리드 서명을 더해 브로드캐스트합니다.
 3. **이미 Keplr를 지원하는 dApp.** `window.qorex.native`는 Keplr 패턴(`enable`, `getKey`, `signDirect`)을 따르므로 통합은 몇 줄이면 됩니다. 저장소 가이드에 모든 차이점이 나열되어 있습니다.
 4. **확장 프로그램 없이 하는 지갑 흐름의 CI 테스트.** QA 팀이 `qorexMockFixtures({ profile: "current" })`로 Playwright를 실행하고, Connect를 클릭한 뒤 페이지가 `qorex.addresses.evm`을 표시하는지 검증합니다. `qorex.rejectNext()`로 거부 경로를 테스트합니다.
-5. **새로운 QoreX 기능에 앞서 개발하기.** 같은 테스트 모음을 `profile: "planned"`로 실행하면, QoreX가 출시하기 전에 발표된 기능(EVM 서명, 계정 변경 이벤트, 하이브리드 계층을 추가하는 `signDirect`)을 검증할 수 있습니다.
+5. **새로운 지갑 동작 테스트하기.** 같은 테스트 모음을 `profile: "planned"`로 실행해 EVM 서명, 계정 변경 이벤트, 하이브리드 계층을 추가하는 `signDirect`를 검증하세요.
 6. **테스트넷에서 실제 브로드캐스트 테스트.** 팀이 자금이 있는 자신의 테스트넷 니모닉으로 모의 지갑이 하이브리드 서명된 트랜잭션을 `qorechain-diana`에 `signAndBroadcast`하게 하고 페이지에서 결과를 확인합니다.
 7. **버전 확인 대신 기능 탐지.** `hasCapability(native, "signAndBroadcast")`가 true이면 dApp이 QoreChain에서 Send 버튼을 표시하므로, 새 QoreX 빌드는 dApp 변경 없이 기능을 켭니다.
 
@@ -36,22 +40,16 @@ QoreX 통합은 [QoreX 지갑](/qorex/overview)이 EVM, Cosmos, Solana 프런트
 
 * **EVM 레인.** QoreX는 `window.ethereum`을 절대 덮어쓰지 않습니다. EIP-6963을 통해 역 DNS 이름 `network.qore.qorex`로 EIP-1193 프로바이더를 알리며, `qorexWallet()`과 `discoverQorexEip1193()`은 정확히 그 프로바이더를 선택합니다. 같은 객체가 `window.qorex.evm`에도 있습니다.
 * **Native 레인.** `window.qorex.native`는 Keplr 패턴의 프로바이더입니다(`window.keplr`의 별칭이 아닙니다). QoreChain은 Native 레인 트랜잭션에 secp256k1 더하기 ML-DSA-87의 하이브리드 서명을 요구하고 ML-DSA-87 키는 지갑만 보유하므로, dApp은 메시지를 `signAndBroadcast`로 보냅니다. QoreX가 메시지를 보여 주고, 수수료를 설정하고, 두 키로 서명하고, 브로드캐스트한 뒤 `shield`를 보고합니다.
-* **Solana.** QoreX는 `solana:mainnet`(Solana 자체)에 Solana Wallet Standard 지갑을 등록합니다. QoreChain 자체의 SVM 레인은 트랜잭션을 받지 않으며 Wallet Standard 체인 ID도 없습니다.
+* **Solana.** QoreX는 `solana:mainnet`(Solana 자체)에 Solana Wallet Standard 지갑을 등록합니다. QoreChain 자체의 SVM 레인에는 Wallet Standard 체인 ID가 없으며, QoreX에서는 테스트넷 전용 도구입니다([테스트넷 기능](/qorex/testnet-features#solana-on-qorechain) 참고).
 * **버전이 아닌 기능.** 키트는 `hasCapability`를 통해 `window.qorex.native.capabilities`를 읽습니다. QoreX 빌드는 `listAccounts`, `connectProofPicksAccount`, `executeRequest`, `signAndBroadcast`를 선언할 수 있습니다.
 * **Amino는 설계상 거부됩니다.** Amino JSON은 하이브리드 ML-DSA-87 서명을 담을 수 없기 때문입니다. 키트는 모든 서명자 요청을 direct 서명자로 처리합니다.
-* **`signDirect`와 포스트 퀀텀 계층, 정확히.** 현재 QoreX의 `signDirect`는 SignDoc을 그대로 secp256k1 키로 서명합니다. QoreChain에서는 본문에 서명자의 등록된 키에 대한 유효한 하이브리드 ML-DSA-87 계층이 이미 들어 있어야 하는데, 페이지는 이를 만들 수 없습니다. 그래서 `qorechain-vladi`와 `qorechain-diana`에서는 키트의 오프라인 서명자 `signDirect`가 QoreX에 도달하기 전에 `QOREX_USE_SIGN_AND_BROADCAST`를 던지며, `getAccounts`는 모든 체인에서 작동합니다. 다른 체인 ID에서는 키트가 `signDirect`를 QoreX로 전달하는데, QoreX는 현재 두 QoreChain 체인 ID만 제공합니다. 이후 QoreX 릴리스가 `signDirect`에서 이 계층을 직접 추가하고 `signDirectAddsPqcLayer` 기능을 선언할 예정이지만, 현재 어떤 빌드도 이를 선언하지 않습니다. 키트는 이미 이를 확인하며, 선언되면 오프라인 서명자가 QoreChain SignDoc을 QoreX로 전달합니다. 그러면 QoreX가 가스를 다시 추정해 가스 한도와 수수료를 올릴 수 있으므로, 돌아오는 `signed` 문서를 항상 브로드캐스트하세요.
+* **`signDirect`와 포스트 퀀텀 계층.** QoreChain 트랜잭션에는 하이브리드 ML-DSA-87 계층이 필요하며, 페이지는 이를 만들 수 없습니다. 키트는 `signDirectAddsPqcLayer` 기능을 읽습니다. 지갑이 이를 선언하면(현재 QoreX 빌드는 선언합니다) 오프라인 서명자가 QoreChain SignDoc을 QoreX로 전달하고 QoreX가 계층을 추가합니다. 그러면 QoreX가 가스를 다시 추정해 가스 한도와 수수료를 올릴 수 있으므로, 돌아오는 `signed` 문서를 항상 브로드캐스트하세요. 지갑이 이를 선언하지 않으면 서명자는 `qorechain-vladi`와 `qorechain-diana`에서 `QOREX_USE_SIGN_AND_BROADCAST`를 던지며, `getAccounts`는 모든 체인에서 작동합니다.
 * **`shield` 상태**는 `signAndBroadcast`가 반환합니다. `shielded`(확정된 트랜잭션이 하이브리드 계층을 담고 있음), `pending`(브로드캐스트 완료, 확인은 미완료), `downgraded`(계층 없이 확정됨, 경보로 취급하세요), `classical`(계층이 적용되지 않는 레인).
 * **모의 지갑**은 BIP-39 니모닉(기본값: 공개 테스트 문구)에서 QoreX와 같은 방식으로 계정을 만듭니다. 해당 `qor1` 주소의 표준 ML-DSA-87 키와 함께 `m/44'/118'/0'/0/i`, EVM은 `m/44'/60'/0'/0/i`, Solana는 `m/44'/501'/i'/0'`입니다. 모의 지갑의 `signAndBroadcast`는 REST에서 계정의 ML-DSA-87 키를 읽고, 없으면 `MsgRegisterPQCKeyV2`로 한 번 등록하며, [QoreSign](/qoresign/overview)으로 하이브리드 서명하고, 브로드캐스트하며(네트워크가 요구하면 다른 서명 바이트 버전으로 한 번 재시도), 포함될 때까지 기다린 뒤 `{ txHash, code, height, shield }`를 반환합니다.
 
-### 현재 QoreX가 지원하는 것 {#qorex-today}
+### 지갑이 지원하는 것 {#qorex-today}
 
-| 영역 | 현재 | QoreX 팀의 예정 사항 |
-|---|---|---|
-| EVM (EIP-6963을 통한 EIP-1193, `network.qore.qorex`) | 연결(`eth_requestAccounts`), `eth_accounts`, `eth_chainId`, QoreX에서 이미 선택된 네트워크로의 `wallet_switchEthereumChain` | `accountsChanged`와 `chainChanged` 이벤트, 모든 거부에 대한 EIP-1193 오류 코드 4200과 4902, `personal_sign`, `eth_signTypedData_v4`, `eth_sendTransaction`, `wallet_addEthereumChain` |
-| QoreChain Native 레인 (`window.qorex.native`) | `enable`, `getKey`, `signAndBroadcast`, `listAccounts`, `experimentalSuggestChain`(QoreChain ID), `signDirect`(SignDoc에 하이브리드 계층이 이미 있어야 함) | ML-DSA-87 계층을 직접 추가하는 `signDirect`, 메시지 서명(ADR-36 더하기 ML-DSA-87) |
-| Solana (Wallet Standard, `solana:mainnet`) | 연결, `signMessage`, `signTransaction` | `solana:signIn` |
-
-EVM 쪽에서는 서명과 전송이 현재 "QoreX: EVM method ... not yet supported"로 실패합니다. QoreChain에서의 트랜잭션에는 Native 레인을 사용하세요. QoreChain의 EVM 레인에서는 발신자가 등록된 ML-DSA-87 키를 가지고 있고 Native 레인에서 연 EVM 인가 윈도우가 있을 때 트랜잭션이 허용됩니다. 네트워크는 사용자가 QoreX 안에서 바꾸며, dApp은 전환할 수 없습니다.
+[QoreX와 dApp 연동하기](/qorex/dapp-integration)에는 QoreX 앱 1.2.5, 확장 프로그램 0.4.4, Safari 1.8.2가 각 표면에서 무엇에 응답하는지 나와 있습니다: [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [cosmjs 서명자](/qorex/dapp-integration#cosmjs), [메시지 서명](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana), [오류와 이벤트](/qorex/dapp-integration#errors). QoreChain의 EVM 레인에서는 발신자에게 등록된 ML-DSA-87 키와 EVM 인가 창이 있을 때 트랜잭션이 허용되며, 이를 포함하는 창이 없으면 QoreX의 승인이 해당 트랜잭션용 창을 엽니다. 메인넷과 테스트넷 전환은 사용자가 QoreX 안에서 하며, dApp은 전환할 수 없습니다.
 
 ## 사용 방법 {#how-to-use}
 
@@ -273,7 +271,7 @@ Synpress v4에서는 픽스처를 `testWithSynpress(qorexMockFixtures({ profile:
 |---|---|---|
 | `connect` 또는 `enable`, `getAccount`, `getKey` | QoreX `enable`과 `getKey`, 바이트는 `Uint8Array`로 변환 | 동일 |
 | `getOfflineSigner(chainId)` | 모든 선호 설정에 대해 direct 서명자 | cosmos-kit의 기본값 `"amino"`를 포함해 모든 선호 설정에 대해 direct 서명자 |
-| QoreChain에서의 서명자 `signDirect` | `QOREX_USE_SIGN_AND_BROADCAST`를 던짐(QoreX가 `signDirectAddsPqcLayer`를 선언할 때까지) | 동일 |
+| QoreChain에서의 서명자 `signDirect` | `QOREX_USE_SIGN_AND_BROADCAST`를 던짐(지갑이 `signDirectAddsPqcLayer`를 선언하지 않을 때. 현재 QoreX 빌드는 선언함) | 동일 |
 | 다른 체인 ID에서의 서명자 `signDirect` | QoreX `signDirect`로 전달 | 동일 |
 | `signAmino`, `getOfflineSignerAmino` | `QOREX_AMINO_REFUSED`를 던짐 | 동일 |
 | `signArbitrary` (ADR-36) | `QOREX_NOT_SUPPORTED_YET`를 던짐(`verifyArbitrary`도 마찬가지) | `QOREX_NOT_SUPPORTED_YET`를 던짐 |
@@ -283,7 +281,7 @@ Synpress v4에서는 픽스처를 `testWithSynpress(qorexMockFixtures({ profile:
 
 | 옵션 | 기본값 | 의미 |
 |---|---|---|
-| `profile` | `"current"` | `"current"`는 현재의 QoreX이고, `"planned"`는 발표된 기능을 추가 |
+| `profile` | `"current"` | `"current"`는 2026년 10월 27일 기준 QoreX이고, `"planned"`는 당시 발표된 기능을 추가 |
 | `mnemonic` | 공개 BIP-39 테스트 문구 | 자금을 넣는 용도에는 자신의 것을 사용하세요 |
 | `accountIndex` | `0` | 모든 레인에서 같은 인덱스 |
 | `chainId` | `"qorechain-diana"` | 모의 지갑에서 선택된 네트워크 |
@@ -344,14 +342,12 @@ Bech32 접두사 `qor`(검증인은 `qorvaloper`), 코인 타입 118, 디놈 `uq
 
 ## 한계와 알려진 문제 {#limits}
 
-**현재 QoreX 빌드가 지원하는 것.** 현재 라이브인 스토어 빌드(QoreX 모바일 앱 1.1.8, 브라우저 확장 프로그램 0.3.8이며 Firefox는 0.3.9)는 지갑이 ML-DSA 계층을 추가하는 `getOfflineSigner`를 아직 지원하지 않고, `signArbitrary`도 지원하지 않습니다. cosmos-kit과 Interchain Kit를 통한 `getOfflineSigner` 서명은 페이지 자체가 포스트 퀀텀 계층을 붙이는 경우에만 작동하는데, 페이지는 키를 보유하지 않으므로 보통 불가능합니다. 현재 Native 레인 트랜잭션을 보내는 지원되는 방법은 `window.qorex.native.signAndBroadcast`이며, `qorexSignAndBroadcast`가 이를 감쌉니다. 각 패키지 README에 명시된 범위를 넘어서, 커넥터를 현재 스토어 빌드에서의 완전한 cosmos-kit 또는 Interchain Kit 지갑으로 간주하지 마세요. 커넥터는 이후 QoreX 릴리스가 `signDirect`에 이 계층을 추가할 수 있도록(`signDirectAddsPqcLayer` 기능으로 선언) 작성되어 있어서, 여러분의 코드를 바꾸지 않아도 됩니다.
+**패키지는 지갑보다 오래되었습니다.** 버전 0.1.0은 2026년 10월 27일의 QoreX를 기준으로 작성되었습니다. `hasCapability`로 사용자의 지갑이 선언하는 것을 확인하고, 지갑의 현재 동작은 [dApp 연동 가이드](/qorex/dapp-integration)를 참고하세요. 알아 둘 패키지 동작 두 가지:
 
-**현재 QoreX가 응답하는 것**(패키지 README 기준):
+* 0.1.0 커넥터에서 `signArbitrary`와 `verifyArbitrary`는 `QOREX_NOT_SUPPORTED_YET`을 던집니다. 지갑 자체는 메시지에 서명합니다. [`window.qorex.native.signArbitrary`](/qorex/dapp-integration#sign-arbitrary)를 호출하세요.
+* Amino 서명은 커넥터와 지갑 모두에서 거부됩니다(`QOREX_AMINO_REFUSED`).
 
-* **EVM:** QoreX에서 선택된 네트워크에 대한 `eth_chainId`, `eth_accounts`, `eth_requestAccounts`, `wallet_switchEthereumChain`(알 수 없는 체인은 코드 4902로 거부). 서명 메서드(`personal_sign`, `eth_signTypedData_v4`, `eth_sendTransaction`)와 `wallet_addEthereumChain`은 아직 지원되지 않으며 "QoreX: EVM method ... not yet supported"로 거부됩니다. `accountsChanged`나 `chainChanged` 이벤트도 아직 없습니다. QoreX 팀이 예정으로 밝힌 것이지 라이브가 아닌 항목: 이벤트, 모든 거부에 대한 오류 코드, 그다음 서명 및 트랜잭션 메서드.
-* **EVM 트랜잭션 일반.** QoreChain에서 EVM 트랜잭션은 등록된 ML-DSA-87 키가 있고 열린 EVM 인가 윈도우가 있는 계정에서만 허용되며, 둘 다 Native 레인에서 설정합니다([EVM 개발](/developer-guide/evm-development#evm-window) 참고). 모의 지갑의 예정된 `eth_sendTransaction`은 그 윈도우를 열지 않습니다.
-* **Native:** `qorechain-vladi`와 `qorechain-diana`에 한정된 `enable`, `getKey`, `signDirect`, `signAndBroadcast`, `listAccounts`, `experimentalSuggestChain`. QoreChain에서 `signDirect`는 하이브리드 계층이 이미 존재해야 하는데 페이지는 이를 만들 수 없으므로, `signAndBroadcast`를 사용하세요. `signArbitrary`, Amino 서명, `sendTx`는 사용할 수 없습니다. 커넥터에서 `signArbitrary`는 `QOREX_NOT_SUPPORTED_YET`을, Amino는 `QOREX_AMINO_REFUSED`를 던집니다.
-* **Solana:** `solana:mainnet`의 Wallet Standard로, connect, disconnect, 이벤트, `signAndSendTransaction`, `signTransaction`, `signMessage`를 지원하며 `solana:signIn`은 없습니다. 체인의 SVM 레인은 아직 트랜잭션을 받지 않으므로, 여기서 Solana 지원은 지갑 쪽에 한정됩니다.
+**QoreChain의 EVM 트랜잭션.** 체인은 등록된 ML-DSA-87 키와 EVM 인가 창이 있는 계정의 트랜잭션만 허용합니다([EVM 개발](/developer-guide/evm-development#evm-window) 참고). 모의 지갑의 `eth_sendTransaction`은 그 창을 열지 않습니다.
 
 **퀵스타트를 테스트하면서 발견한 주의 사항:**
 

@@ -7,7 +7,14 @@ sidebar_position: 3
 
 # Trimite și primește
 
-Această pagină acoperă trimiterea și primirea de QOR, plata către un @handle, deținerea de active pe alte rețele și extra-urile din ecranul Acasă. Este pentru oricine folosește aplicația mobilă QoreX (extensia are aceleași ecrane Trimite și Primește, vezi [Extensia de browser](/qorex/browser-extension)).
+Această pagină acoperă trimiterea și primirea de QOR, plata către un @handle, cererile de plată, contactele, istoricul tranzacțiilor, deținerea de active pe alte rețele și extra-urile din ecranul Acasă. Este pentru oricine folosește aplicația mobilă QoreX (extensia are aceleași ecrane Trimite și Primește, vezi [Extensia de browser](/qorex/browser-extension)). Acolo unde ceva diferă între aplicație, extensia de browser și extensia Safari, textul spune acest lucru.
+
+## Inovații {#innovations}
+
+- **Cereri de plată semnate.** O cerere este un link semnat cu cheia propriului tău cont. Cine o plătește vede cum QoreX verifică semnătura, rețeaua exactă și orice @handle înainte să apară verificarea obișnuită, așa că o sumă sau un destinatar modificat iese la iveală în loc să treacă neobservat. Vezi [Cereri de plată](#payment-requests).
+- **Stare citită din lanț.** Un transfer este *în așteptare*, *confirmat* sau *eșuat* pentru că așa spune rețeaua, iar o cerere de plată este marcată *plătită* doar când lanțul arată o plată care se potrivește. Vezi [Istoric](#history).
+- **Semnalarea adreselor asemănătoare.** O adresă care doar seamănă cu una pe care o cunoști deja este semnalată înainte să trimiți. Vezi [Contacte și favorite](#contacts).
+- **Avertismente despre comisioane în cuvinte simple.** QoreX îți spune când comisionul este mai mare decât suma trimisă și arată comisionul unic de înregistrare a cheii și totalul la prima ta trimitere.
 
 Fila Acasă (Portofel) este punctul tău de plecare. Aceasta afișează un **ecuson de rețea** (MAINNET implicit, sau TESTNET dacă ai activat comutatorul pentru dezvoltatori), **soldul tău total** (atinge pentru a-l ascunde/afișa) și acțiunile principale: **Trimite · Primește · Schimbă · Mizează** (**Schimbă** nu apare pe iOS). Lista ta de active afișează **QOR** (un sold unificat în lane-urile Native, EVM și SVM, trimis pe lane-ul nativ semnat hibrid) și **Toate rețelele** (o vedere unificată pentru ETH, BNB, POL, ARB și celelalte [rețele externe](#external-networks-tokens) suportate de QoreX).
 
@@ -18,9 +25,13 @@ Fila Acasă (Portofel) este punctul tău de plecare. Aceasta afișează un **ecu
 3. Introdu suma. Previzualizarea arată destinatarul, suma, **comisionul de rețea** și starea semnăturii (dacă transferul poartă stratul ML-DSA-87).
 4. Confirmă cu aprobare **biometrică**. Fiecare transfer QOR nativ este semnat de două ori: cu o cheie clasică și cu ML-DSA-87 (FIPS 204). QoreX semnează cu acea semnătură hibridă obligatorie și difuzează pe lane-ul nativ. După difuzare, verifică dacă tranzacția confirmată poartă stratul ML-DSA-87 și te avertizează dacă nu îl poartă.
 
-Pe primul ecran, caseta de completare rapidă (**Ask QoreX**) te lasă să scrii o cerere simplă, precum „send 50 QOR to @maria", și completează formularul pentru tine. Este un cititor simplu de text care rulează **în întregime pe dispozitivul tău** - nimic din ce scrii acolo nu este trimis nicăieri și nu este un asistent AI (QoreX nu are unul). Tot tu verifici totul și confirmi cu biometrie, ca de obicei; dacă nu poate citi ce ai scris, o spune, iar tu completezi formularul manual. Destinatarii recenți apar sub formă de chip-uri.
+Pe primul ecran, caseta de completare rapidă (**Întreabă QoreX**) te lasă să scrii o cerere simplă, precum "send 50 QOR to @maria", și completează formularul pentru tine. Este un cititor simplu de text care rulează **în întregime pe dispozitivul tău** - nimic din ce scrii acolo nu este trimis nicăieri și nu este un asistent AI (QoreX nu are unul). Tot tu verifici totul și confirmi cu biometrie, ca de obicei; dacă nu poate citi ce ai scris, o spune, iar tu completezi formularul manual. Contactele tale favorite și destinatarii recenți apar sub formă de chip-uri de o singură atingere (vezi [Contacte și favorite](#contacts)).
 
 QoreChain nu îți înregistrează singur cheia ML-DSA-87. QoreX o face pentru tine în cadrul **primului** tău transfer (un mic comision de rețea, o singură dată), iar starea o poți vedea în [Securitate și recuperare](/qorex/security-and-recovery#pqc-key). Nu este nevoie de niciun pas separat în QoreX.
+
+**Verificarea unei prime trimiteri arată costul de la început.** Pe lângă sumă și **Comision de rețea**, verificarea listează *Înregistrare unică a cheii ML-DSA-87* cu comisionul ei și apoi **Total comisioane**, așa că nu există surprize după ce confirmi. Trimiterile ulterioare din același cont arată doar comisionul de rețea.
+
+**Comision mai mare decât suma.** Dacă taxa de rețea este mai mare decât suma pe care o trimiți, verificarea spune acest lucru (*"Taxa de rețea ... e mai mare decât suma trimisă ..."*) ca atenționare. Nu blochează niciodată trimiterea. QoreX o afișează pentru trimiterile native de QOR și pentru moneda proprie a unei rețele externe când comisionul este exprimat în acea monedă. Revendicarea recompenselor din staking primește aceeași verificare, vezi [Portofoliu și staking](/qorex/portfolio-and-staking#claim).
 
 ### Trimite către un @handle, pas cu pas {#handle-send}
 
@@ -36,11 +47,15 @@ Dacă o parte din soldul tău este încă în **vesting** - de exemplu o alocare
 
 ## Primește {#receive}
 
-Atinge **Primește**. QoreChain este selectat primul - adresa ta `qor1…` (și @handle-ul tău, dacă ai unul) sub formă de cod QR cu pictograma QoreChain, plus **Copiază** și **Partajează**. Tot ce este trimis către ea ajunge pe lane-ul nativ, unde fiecare transfer poartă o semnătură clasică și una ML-DSA-87.
+Atinge **Primește**. Începe cu moneda: o **listă cu căutare** (*Alege moneda pe care vrei să o primești*, caseta de căutare *Caută monedă sau rețea*) cu **QOR primul**, apoi moneda proprie a fiecărei rețele acceptate și tokenurile incluse, fiecare cu imaginea ei și a rețelei sale. Dacă nimic nu se potrivește cu căutarea ta, lista spune *Nicio monedă nu se potrivește.* Imaginile vin în interiorul QoreX, așa că nu se descarcă nimic de la un terț pentru a desena lista.
 
-Pentru a primi pe altă rețea, folosește selectorul **Rețea** de sus: Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis și Celestia afișează fiecare **propria adresă** și avertismentul *„Trimite către această adresă doar \{coin\} sau tokenuri de pe \{network\}. Monedele trimise dintr-o altă rețea se pot pierde."* Toate rețelele EVM au aceeași adresă `0x…`. Adresele tale EVM și Solana sunt derivate din fraza ta de recuperare, așa că QoreX îți cere o confirmare biometrică (**Show the address**) înainte de a le afișa. Celelalte rețele nu pot transporta semnături ML-DSA-87. Vezi [Rețele externe](#external-networks-tokens).
+- **QOR** arată adresa ta `qor1...` (și @handle-ul tău, dacă ai unul) sub formă de cod QR cu pictograma QoreChain, plus **Copiază** și **Partajează**. Tot ce este trimis către ea ajunge pe lane-ul nativ, unde fiecare transfer poartă o semnătură clasică și una ML-DSA-87.
+- **Orice altă monedă sau token** arată adresa proprie a acelei rețele și avertismentul *"Trimite la adresa asta doar \{coin\} sau tokenuri de pe \{network\}. Monedele trimise din altă rețea se pot pierde."* Avertismentul numește moneda pe care ai ales-o. Folosește **Alege altă monedă** pentru a reveni la listă.
+- **Rețele acoperite:** Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis și Celestia. Toate rețelele EVM au aceeași adresă `0x...`. Adresele tale EVM și Solana sunt derivate din fraza ta de recuperare, așa că QoreX îți cere o singură confirmare biometrică (**Arată adresa**) înainte de a le afișa. Celelalte rețele nu pot transporta semnături ML-DSA-87. Vezi [Rețele externe](#external-networks-tokens).
+- **Și tokenurile personalizate sunt pe listă.** Un token adăugat prin adresa de contract (sau, pe Solana, prin adresa de mint) este oferit pe Primește cu adresa rețelei sale, la fel ca un token inclus. Vezi [Monede și tokenuri](#coins-and-tokens).
+- **Adrese Cosmos Hub, Osmosis și Celestia.** Adresa afișată este cea cu care semnează trimiterile tale de pe acea rețea (cheia ta coin-118). Build-urile anterioare puteau afișa o adresă diferită pentru un cont coin-60 sau puteau urma contul activ; acest lucru este remediat, iar trimiterea verifică din nou adresa înainte de semnare.
 
-În extensia de browser, **Primește** are același selector de rețea.
+Extensia și extensia Safari au aceeași listă de monede pe **Primește**.
 
 ## Monede și tokenuri {#coins-and-tokens}
 
@@ -53,13 +68,63 @@ O monedă fără rând nu are o adresă pe care să fie primită. Pentru a vedea
 3. QoreX citește simbolul și numărul de zecimale chiar din contract și afișează *„Contractul spune: \{symbol\} · \{decimals\} zecimale"*. Oricine poate crea un token și îi poate da orice nume - QoreX nu garantează pentru el, așa că asigură-te că este contractul pe care l-ai vrut.
 4. Atinge **Add \{symbol\}**. Este marcat *Added by you* și poate fi trimis ca tokenurile incluse. Îl poți elimina oricând.
 
+Odată adăugat, tokenul apare și pe [Primește](#receive).
+
 QoreX refuză un token care este deja inclus, unul pe care l-ai adăugat deja, o rețea non-EVM, o adresă greșită, un contract care nu răspunde ca token și un contract care folosește numele unui token pe care QoreX îl livrează deja pe acea rețea (probabil o copie).
 
-## Solicită o plată
+## Cereri de plată {#payment-requests}
 
-Atinge **Solicită** (necesită [autentificare](/qorex/account-and-dashboard#sign-in)) pentru a crea o solicitare de plată - o sumă plus un memo opțional - sub formă de cod QR sau link. Oricine îl scanează vede transferul precompletat.
+Cere cuiva o sumă de QOR cu un link semnat pe care îl distribui sau îl copiezi. Funcționează în aplicație, în extensie și în extensia Safari, pe mainnet și pe testnet, și **nu** are nevoie de autentificare în QoreX.
+
+**Creează o cerere**
+
+1. Deschide **Cereri de plată** (aplicație: Setări; extensie: un buton pe ecranul principal).
+2. Atinge **Cerere nouă**, introdu **Sumă (QOR)** și o **Notă** opțională (cel mult 140 de caractere). Dacă ai un @handle, poți bifa *Show my @handle on the request*.
+3. Atinge **Creează linkul**. QoreX semnează cererea cu cheia propriului tău cont și arată *"Cererea ta e gata. Oricine o poate plăti, în QoreX sau în alt portofel."*
+4. **Distribuie linkul** sau **Copiază linkul**.
+
+Linkul este semnat cu cheia contului tău, așa că o sumă sau o adresă modificată este detectată. Cheia trebuie să aparțină adresei de primire: nimeni altcineva nu poate re-semna în numele tău un link modificat. Semnătura este doar o verificare a integrității linkului; plata însăși este semnată în mod normal de plătitor, cu semnătura hibridă pe lane-ul nativ. Formatul linkului este `qorex://pay?v=1&...` și numește rețeaua exactă (mainnet sau testnet).
+
+Butonul **Cere** de pe Acasă în aplicație cere unui anumit utilizator QoreX prin @handle (are nevoie de [autentificare](/qorex/account-and-dashboard#sign-in) și de propriul tău @handle). Odată creată, cererea respectivă poate fi distribuită și ca link semnat.
+
+**Plătește o cerere**
+
+1. Deschide linkul pe un telefon cu QoreX sau mergi la **Plătește o cerere** și folosește **Lipește un link de plată** (și în extensie), apoi **Deschide**.
+2. QoreX verifică semnătura, rețeaua și orice @handle *înainte* de a arăta ceva de plătit. Apoi arată destinatarul, suma, nota și eticheta din memo, după care urmează verificarea obișnuită. Confirmi ca la orice trimitere.
+3. Mesajele pe care le poți vedea: *"Semnătură verificată: cererea e neschimbată de când a fost semnată."* sau un refuz precum *"Acest link a fost modificat după ce a fost semnat. Nu îl plăti."*, *"Acest link nu a fost semnat de proprietarul adresei care primește. Nu îl plăti."* sau *"Această cerere este pentru \{network\}. Schimbă rețeaua în QoreX ca să o plătești."*
+4. Dacă linkul poartă un @handle, QoreX îl verifică în registrul de handle-uri: verificat, prima plată către el, *indică acum altă adresă decât înainte* (verifică cu persoana respectivă înainte să plătești) sau nu indică această adresă (nu plăti decât dacă ești sigur). Un avertisment de handle cere o a doua confirmare.
+
+Deocamdată, QoreX plătește cererile doar în QOR. O cerere de testnet spune *"Cerere pe testnet. QOR de testnet nu are valoare."*
+
+**Urmărește și refolosește**
+
+**Cererile mele** listează cererile pe care le-ai creat. Fiecare arată **Plătită** sau **Neplătită încă**, citit din lanț: QoreX caută o plată care se potrivește (eticheta din memo de pe transfer), iar cererea este marcată plătită doar când lanțul o arată. Dacă rețeaua nu răspunde, spune *Stare necunoscută*, niciodată o presupunere. **Verifică starea** întreabă din nou. **Refolosește luna viitoare** creează o cerere nouă cu aceleași detalii și un id nou. Cu un @handle vezi și **Cereri către mine** și **Cereri trimise de mine prin @handle**.
+
+## Contacte și favorite {#contacts}
+
+**Contacte** (aplicație: Setări; extensie: un buton pe ecranul principal) sunt nume pentru adresele pe care le plătești. Sunt păstrate **doar pe acest dispozitiv**. Un contact are un nume, cel mult o adresă per rețea (QoreChain, EVM, Solana, Cosmos) și un @handle opțional; lista conține cel mult 200.
+
+- **Favorite.** Bifează *Favorit (apare pe ecranul de trimitere)*, iar contactul apare ca un chip de o singură atingere deasupra câmpului destinatarului. Un chip doar completează formularul: tot tu verifici și confirmi.
+- **Repetă plata.** Pe o plată anterioară (aplicație: ecranul ei de detalii; extensie: rândul din istoric), **Repetă plata** completează din nou formularul de trimitere cu același destinatar, aceeași sumă și același memo. Întotdeauna verifici și confirmi înainte să se trimită ceva.
+- **Semnalarea adreselor asemănătoare.** Un contact nu este o verificare de siguranță, iar QoreX spune acest lucru. Când o adresă pe care urmează să o plătești doar *seamănă* cu una pe care o cunoști deja (aceleași prime și ultime caractere, un truc folosit de escroci, care plantează adrese asemănătoare în istoricul tău), verificarea avertizează *"Atenție: această adresă doar SEAMĂNĂ cu una pe care o cunoști deja"* și arată adresa cunoscută pentru comparare caracter cu caracter. Cere o a doua apăsare (extensie) sau o confirmare a riscului (aplicație). Semnalarea compară cu contactele salvate, conturile pe care le deții și adresele pe care le-ai plătit.
+- **Un contact salvat este numit în verificare** (*Contact salvat: \{name\}*). Un @handle salvat arată și dacă adresa lui este aceeași ca la ultima ta plată, nouă sau **schimbată**.
+
+## Istoric {#history}
+
+Istoricul arată fiecare tranzacție QoreChain a unui cont, nu doar trimiterile: primire, staking, retragere din staking, miză mutată, recompense revendicate, blocări, bonus, ferestre EVM, adresa pentru recompense și înregistrarea cheii ML-DSA-87, cu suma, comisionul și tranzacțiile eșuate marcate *Eșuată (taxa s-a plătit totuși)*. Insigna hibridă apare doar pe o tranzacție pe care lanțul însuși a verificat-o. Rețelele externe nu sunt încă în Istoric.
+
+- **Unde.** Aplicație: **Activitate**, cu un selector de cont și un link **Istoric** pe fiecare cont din **Conturile tale**. Extensie: **Istoric** pe ecranul principal, cu un selector de cont.
+- **În așteptare, confirmată, eșuată.** Un transfer pe care tocmai l-ai trimis arată **În așteptare: rețeaua nu a confirmat încă** până când lanțul îl cunoaște. O tranzacție pe care lanțul nu a văzut-o după câteva minute afișează *Negăsită în rețea: este posibil să fi eșuat. Verifică tranzacția înainte să trimiți din nou.* Nu este niciodată afișată ca trimisă pe baza unei presupuneri. **Închide** elimină un astfel de rând.
+- **Per cont.** Fiecare cont al portofelului are propriul Istoric.
+- **Exportă CSV.** **Exportă CSV** scrie istoricul contului într-un fișier **pe acest dispozitiv**. Conține doar istoricul tău: nicio frază și nicio cheie. Coloanele sunt fixe și în engleză, iar orice celulă pe care o foaie de calcul ar putea-o citi ca formulă (o adresă sau un memo care începe cu `=`, `+`, `-` sau `@`) primește un prefix, ca să se deschidă ca text.
+- **Spamul este ascuns.** Transferurile primite sub 0,1 QOR al căror memo conține un link sau un domeniu sunt ascunse din Activitate și din notificări, cu un rând precum *"\{n\} transferuri probabil spam ascunse"* și **Arată-le**. Transferurile de valoare zero sunt ascunse. Un memo cu link poartă un avertisment în detaliile tranzacției: QoreChain și QoreX nu îți cer niciodată să accesezi un link trimis cu un transfer.
+- **Noduri pruned.** Dacă un nod nu mai păstrează blocurile vechi, QoreX cere o pagină mai mică până când nodul răspunde și spune când rețeaua nu poate fi accesată. În acest caz nu mai afișează o listă goală.
+
+**Pagina QOR** (atinge QOR pe Acasă) listează fiecare tranzacție a contului, primită sau trimisă, cu **Arată mai multe** în partea de jos.
 
 ## Rețele și tokenuri externe {#external-networks-tokens}
+
+Trimiterea este activă pentru fiecare rețea pe care o listează QoreX: Ethereum, BNB Smart Chain, Polygon, Arbitrum One, Base, OP Mainnet, Avalanche C-Chain, Solana, Cosmos Hub, Osmosis și Celestia, cu tokenurile lor. BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche și Celestia funcționează din nou, după ce o vreme au fost doar pentru primire. Trimiterile native pe Arbitrum folosesc estimarea de gaz proprie a rețelei.
 
 Din **Toate rețelele** (sau Trimite-extern) poți trimite nativ **ETH, BNB, POL, AVAX și SOL**, plus ETH pe **Arbitrum, Base și OP Mainnet**, și **ATOM, OSMO și TIA** pe Cosmos, plus tokenuri **ERC-20**, **SPL** și **IBC** - USDC și USDT pe lanțurile EVM și pe Solana, DAI pe Ethereum și Noble USDC prin IBC - toate derivate din aceeași frază de recuperare (ETH folosește `m/44'/60'`, SOL folosește calea sa standard, iar SPL folosește conturi de token asociate).
 
@@ -91,6 +156,7 @@ Fila Swap nu apare deloc în build-ul din App Store - Apple tratează schimbul d
 - Transferurile pe rețele externe (EVM, Solana, Cosmos) sunt exclusiv clasice. Transferurile SVM și EVM nu sunt acoperite de semnătura hibridă.
 - Swap nu este disponibil: este dezactivat până când există lichiditate în pool-uri și nu apare pe iOS.
 - Revendicarea unui @handle necesită un cont autentificat și se face în aplicația mobilă. Conturile de tip Ethereum (coin 60) nu au handle. Dacă serviciul de handle-uri este indisponibil, poți plăti în continuare prin adresa `qor1…`.
-- Solicitările de plată necesită autentificare și există doar pe mobil.
+- Cererile de plată se plătesc doar în QOR. Cererea prin @handle (pentru a vedea cererile trimise unui handle) are nevoie de un @handle revendicat.
+- Istoricul acoperă deocamdată doar QoreChain; alte rețele vor urma.
 - Notificările push sunt doar pe mainnet, iar pe iPhone pe cât posibil (best effort).
 - QOR aflat în vesting nu poate plăti comisioane; doar partea disponibilă poate fi trimisă.

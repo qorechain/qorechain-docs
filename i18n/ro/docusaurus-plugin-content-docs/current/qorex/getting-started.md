@@ -18,7 +18,9 @@ sidebar_position: 2
 - **Fereastra de acces EVM.** QoreX deschide, arată și închide fereastra care permite unui cont de tip Ethereum să trimită pe lane-ul EVM. Vezi [Securitate și Recuperare](/qorex/security-and-recovery#evm-window).
 - **@handle-uri cu fixare.** Două semnături leagă un nume de o adresă; prima adresă rezolvată este fixată, iar o schimbare silențioasă este semnalată.
 - **Recuperare fără o companie.** Recuperare socială (fragmente criptate, 2 din 3, timelock de 48 de ore), Legacy (un dead-man's switch peste garanții tăi) și conectarea dispozitivelor. Vezi [Securitate și Recuperare](/qorex/security-and-recovery).
-- **Q-Day Scanner.** Un raport de expunere pentru orice adresă Bitcoin sau Ethereum.
+- **Prima rulare cu un scop.** După scurtul tur, QoreX întreabă **Ce vrei să faci mai întâi?** și te ghidează până acolo, inclusiv cu o scurtă verificare că fraza ta de recuperare este notată corect. Vezi [Prima rulare](#first-run).
+- **Protecția banilor mei.** Un singur ecran care verifică backupul, testul de recuperare, gardienii, site-urile conectate și permisiunile permanente. Vezi [Securitate și recuperare](/qorex/security-and-recovery).
+- **Scaner Q-Day.** Un raport de expunere pentru orice adresă Bitcoin sau Ethereum. Pentru o adresă Bitcoin, QoreX întreabă un serviciu operat de altcineva, care vede adresa și adresa ta IP, și doar după ce accepți.
 - **Push și widget cu amprentă redusă.** Push-ul comunică serverului doar adresele tale publice, iar notificarea spune doar „QOR received". Widgetul arată soldul QOR al contului folosit.
 
 ## Cum accesezi {#how-to-access}
@@ -28,7 +30,7 @@ sidebar_position: 2
 - **iOS**: App Store (iOS 15.1 sau ulterior): https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
-Versiunile curente sunt listate la [Ce versiune este live unde](/qorex/overview#versions). Aplicația este gratuită și nu necesită cont. Mainnet `qorechain-vladi` este implicit; **Setări → Use testnet (developers)** comută la `qorechain-diana`. Trimiterea și staking-ul plătesc taxa normală de rețea (prag de 0,1 uqor per gas). Aplicația are 10 limbi, inclusiv araba cu aranjare de la dreapta la stânga, și urmează limba telefonului.
+Versiunile curente sunt listate la [Ce versiune este live unde](/qorex/overview#versions): aplicația iOS și Android este 1.2.5. Aplicația este gratuită și nu necesită cont. Mainnet `qorechain-vladi` este implicit; **Setări → Folosește testnet (dezvoltatori)** comută la `qorechain-diana`. Trimiterea și staking-ul plătesc taxa normală de rețea (prag de 0,1 uqor per gas). Aplicația are 10 limbi, inclusiv araba cu aranjare de la dreapta la stânga, și urmează limba telefonului.
 
 ## Cum folosești {#how-to-use}
 
@@ -58,10 +60,11 @@ Ai trei moduri de configurare:
 1. Atinge **Creează un portofel nou**.
 2. QoreX generează o **frază de recuperare din 24 de cuvinte** pe dispozitivul tău (entropie de 256 de biți), o sigilează direct în vaultul protejat hardware și blocat biometric și derivă identitatea ta QoreChain - coin type 118, o adresă `qor1…` (conturile tale ETH și SOL provin din aceeași sămânță). **Aplicația nu îți arată fraza cât timp creează portofelul.**
 3. **Dezvăluie fraza și notează-o imediat:** deschide **Setări → Securitate → Dezvăluie fraza de recuperare**, confirmă cu biometric sau cu PIN-ul dispozitivului și copiază cele 24 de cuvinte pe hârtie, în ordine. Păstrează-le offline. Această frază este **singura** modalitate de a-ți recupera portofelul dacă pierzi dispozitivul.
-4. Opțional, configurează [recuperarea socială](/qorex/security-and-recovery#social-recovery). Reține că cardul **Starea backup-ului** din Acasă urmărește doar recuperarea socială - nu poate ști dacă ai notat fraza, deci nu îți va aminti.
+4. Verifică ce ai notat: pe ecranul care îți arată fraza, atinge **Verifică-mi backupul** și scrie cele trei cuvinte cerute (vezi [Verificarea backupului](#backup-check)).
+5. Opțional, configurează [recuperarea socială](/qorex/security-and-recovery#social-recovery). Reține că cardul **Starea copiei de siguranță** din Acasă urmărește doar recuperarea socială. Dacă fraza ta scrisă a fost verificată se vede pe **Protecția banilor mei**.
 
-:::danger Fă pasul 3 acum - nimic din aplicație nu ți-l va aminti
-Deoarece aplicația trece direct la Acasă după crearea portofelului, este ușor să continui fără să fi notat vreodată fraza. **Fă-o înainte de a primi sau de a trimite orice.** Dacă pierzi sau dezinstalezi aplicația, ori pierzi telefonul, fără fraza scrisă sau fără [recuperare socială](/qorex/security-and-recovery#social-recovery) configurată, nimeni - inclusiv QoreChain Association - nu îți poate recupera fondurile.
+:::danger Fă pasul 3 acum - nu te baza pe un memento
+Deoarece aplicația nu arată fraza cât timp creează portofelul, este ușor să continui fără să o fi notat vreodată. **Fă-o înainte de a primi sau de a trimite orice.** Dacă pierzi sau dezinstalezi aplicația, ori pierzi telefonul, fără fraza scrisă sau fără o [recuperare socială](/qorex/security-and-recovery#social-recovery) configurată, nimeni - inclusiv QoreChain Association - nu îți poate recupera fondurile.
 :::
 
 :::caution Fraza ta de recuperare este totul
@@ -82,6 +85,26 @@ Restaurarea din frază readuce **Contul 1**. Dacă ai folosit mai multe conturi 
 ### 3. Conectează-te de pe alt dispozitiv
 
 Dacă ai deja QoreX pe alt telefon sau tabletă, poți muta portofelul între dispozitive **fără server și fără a scrie nimic** - vezi [Conectează un dispozitiv nou](/qorex/security-and-recovery#link-device). Alege **Conectează-te de pe alt dispozitiv** pe noul dispozitiv pentru a începe.
+
+## Prima rulare: Ce vrei să faci mai întâi? {#first-run}
+
+O singură dată per portofel, după scurtul tur, QoreX întreabă **Ce vrei să faci mai întâi?** Alege unul dintre trei obiective sau atinge **Sari peste deocamdată**. Îl poți redeschide mai târziu din **Setări → Ce vrei să faci?** Funcționează la fel pe mainnet și pe testnet (pe testnet, QOR nu are nicio valoare).
+
+| Obiectiv | Prin ce te ghidează QoreX |
+|---|---|
+| **Vreau să primesc bani** | Alegi moneda pe care vrei să o primești, vezi adresa corectă ca și cod QR, cu avertismentul de a trimite doar acea monedă pe acea rețea, apoi **Creează un link de plată** (linkurile de plată cer QOR pe QoreChain). Vezi [Cereri de plată](/qorex/send-and-receive). |
+| **Vreau să trimit bani** | **Adaugă fonduri**: adresa ta QoreChain și codul QR. **Ia-ți un @handle** (sau vezi-l pe cel pe care îl ai). **Prima ta plată**: comisionul, cam cât este (și comisionul unic de înregistrare a cheii post-cuantice, dacă contul tău nu a înregistrat încă una), apoi **Fă prima mea plată**. Vezi suma exactă înainte de a semna. |
+| **Vreau să-mi păstrez criptomonedele în siguranță** | **Adresa ta de depunere**; **Configurează recuperarea** cu [gardieni](/qorex/security-and-recovery#social-recovery), care nu îți văd niciodată fraza; apoi **Verifică-mi backupul**, care arată dacă backupul tău a fost verificat și te duce la frază ca să o verifici. |
+
+În extensia de browser, aceeași întrebare apare după ce creezi sau imporți un portofel; acolo obiectivul de siguranță este adresa de depunere și verificarea backupului, iar @handle-urile se revendică în aplicație. Vezi [Creează sau restaurează un portofel](/qorex/browser-extension#wallet).
+
+### Verificarea backupului {#backup-check}
+
+Verificarea backupului este un scurt test: QoreX cere **trei cuvinte din fraza ta de recuperare**, de pe poziții aleatorii, iar tu le scrii așa cum le-ai notat.
+
+- În **aplicație**: deschide **Setări → Securitate → Reveal recovery phrase**, confirmă cu biometria sau cu PIN-ul dispozitivului, notează cuvintele, apoi atinge **Verifică-mi backupul**. Dacă un cuvânt nu se potrivește, compară cu foaia ta și încearcă din nou; **Arată din nou fraza** te duce înapoi la cuvinte, iar **Verific mai târziu** părăsește ecranul. Când treci verificarea, QoreX înregistrează doar că a fost verificată și când.
+- În **extensie**: verificarea urmează ecranului care arată fraza nouă. Mai târziu, **Verifică-mi backupul** îți cere parola și nu arată fraza.
+- **Protecția banilor mei** are **Testează fraza de recuperare**, care cere trei cuvinte în același mod. Cuvintele sunt comparate pe dispozitivul tău; nimic din ce scrii nu este păstrat sau trimis.
 
 ## Mai multe portofele pe un singur dispozitiv {#several-wallets}
 
@@ -105,7 +128,11 @@ Un cont de tip Ethereum nu are @handle (handle-urile se revendică pe un cont Qo
 ## Orientează-te în aplicație {#find-your-way}
 
 - **Căutare** - lupa din partea de sus a ecranului Acasă caută ecrane („stake"), monede („USDC"), persoane (un @handle sau o adresă), memo-uri și începutul unui hash de tranzacție; dacă tastezi un @handle sau o adresă `qor1…`, îți oferă direct **Trimite QOR către …**.
-- **Tur** - prima dată când un portofel se deschide pe Acasă, cinci carduri scurte explică ce face QoreX și unde sunt lucrurile. Rulează o singură dată; reia-l din Setări → **Reia turul**.
+- **Tur** - prima dată când un portofel se deschide pe Acasă, cinci carduri scurte explică ce face QoreX și unde sunt lucrurile. Rulează o singură dată; reia-l din Setări → **Revezi turul aplicației**. După el urmează [Ce vrei să faci mai întâi?](#first-run).
+- **Setări** are și **Cereri de plată**, **Plătește o cerere**, **Contacte**, **Protecția banilor mei**, **Asistență** și **Ce vrei să faci?** (și, doar pe testnet, trimiterea pe alt lanț și ecranul QoreChain Bridge - vezi [Funcții de testnet](/qorex/testnet-features)).
+- **Mod dezvoltator** - un comutator din Setări, dezactivat implicit. Când este activ, în bara de jos apare un tab **Dezvoltator** cu o pictogramă `</>`. Vezi [Modul dezvoltator](/qorex/developer-mode).
+- **Blocare automată** - QoreX cere din nou biometria sau PIN-ul după un timp fără utilizare; setează intervalul (1, 5, 15, 30, 60 sau 240 de minute, implicit 15) cu **Blochează automat după** în Setări → Securitate.
+- **Starea rețelei** - dacă ultimul bloc al lanțului este mai vechi de un minut sau rețeaua nu poate fi accesată, un banner anunță acest lucru.
 
 ## Opțional: revendică un @handle
 
@@ -134,8 +161,8 @@ Codul sursă al aplicației mobile nu este public. Instalează întotdeauna din 
 
 - **Swap-ul nu este disponibil**: este dezactivat până când există lichiditate în pool-uri și nu apare pe iOS.
 - **Semnatarii conectați** (Phantom sau MetaMask ca cheie conectată cu limite de cheltuieli) nu sunt încă disponibili în QoreX.
-- **Rotația cheii** pentru cheia ta ML-DSA-87 nu este încă disponibilă în QoreX.
-- **Aplicația nu arată fraza cât timp creează portofelul.** Dezvăluie-o imediat din Setări → Securitate. Cardul Starea backup-ului urmărește doar recuperarea socială.
+- **Doar testnet:** trimiterea pe alt lanț prin IBC, ecranul QoreChain Bridge și Solana pe QoreChain. Vezi [Funcții de testnet](/qorex/testnet-features).
+- **Aplicația nu arată fraza cât timp creează portofelul.** Dezvăluie-o imediat din Setări → Securitate. Cardul Starea copiei de siguranță urmărește doar recuperarea socială; **Protecția banilor mei** arată dacă backupul tău a fost verificat.
 - **Transferurile EVM și SVM nu sunt acoperite de semnătura hibridă.** O tranzacție EVM poartă doar o semnătură secp256k1 și necesită o fereastră de acces deschisă; transferurile pe rețele externe sunt doar clasice.
 - **Push-ul** este doar pe mainnet; pe iPhone consideră-l „best effort".
 - Un portofel pierdut, fără frază notată și fără recuperare socială, nu poate fi recuperat de nimeni.

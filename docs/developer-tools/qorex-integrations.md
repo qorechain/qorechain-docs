@@ -11,6 +11,10 @@ The QoreX integrations are six small npm packages for dApp developers who want t
 
 What they do not do: they do not hold keys, and they do not turn QoreX into more than it is today. Read [Limits and known issues](#limits) before you build on them: the live store builds of QoreX support part of what these packages can be wired to, and the limits are stated there.
 
+:::tip Integrating without these packages, or checking what the wallet does now
+[Integrate a dApp with QoreX](/qorex/dapp-integration) is the complete guide to the wallet itself: detection, `signAndBroadcast`, cosmjs signers, message signing, EVM, Solana, errors and links, for QoreX app 1.2.5, extension 0.4.4 and Safari 1.8.2. The 0.1.0 packages were published on 27 October 2026, and the wallet has gained features since. This page describes how the packages behave; for what the wallet does, that guide is current.
+:::
+
 ## Innovations {#innovations}
 
 * **Discovery that cannot pick the wrong wallet.** QoreX announces itself through EIP-6963 with the reverse-DNS name `network.qore.qorex` and never writes `window.ethereum`. `@qorechain/qorex-types` selects the provider by that name only, and the RainbowKit wallet pins the connector to the announced provider and never falls back to `window.ethereum`.
@@ -18,9 +22,9 @@ What they do not do: they do not hold keys, and they do not turn QoreX into more
 * **Capability checks instead of version checks.** The packages read the wallet's `capabilities` list (`hasCapability`), so a feature such as `signAndBroadcast` is detected, not guessed from a version number.
 * **Refusals are explicit, with stable codes.** Amino signing is refused by design, because Amino JSON cannot carry the hybrid signature; the connectors throw `QorexIntegrationError` with codes such as `QOREX_AMINO_REFUSED`, `QOREX_USE_SIGN_AND_BROADCAST` and `QOREX_NOT_SUPPORTED_YET`, and `isQorexIntegrationError(err, code)` tests for them.
 * **A test double that signs for real.** `@qorechain/qorex-wallet-mock` injects the same objects QoreX injects (`window.qorex = { evm, native, svm }`), registers a Solana wallet, and signs with the real algorithms (hybrid ML-DSA-87 through QoreSign on the native lane, secp256k1 on EVM, ed25519 on Solana) from the public test mnemonic on the testnet by default. It announces itself as `network.qore.qorex.mock`, so code that selects QoreX strictly cannot mistake it for the wallet.
-* **Two behaviour profiles.** The mock's `current` profile behaves like the QoreX that is live today; `planned` adds what the QoreX team has announced, so you can build ahead without the mock claiming something the wallet does not do yet.
+* **Two behaviour profiles.** The mock's `current` profile behaves like the QoreX that was live when 0.1.0 was published (27 October 2026); `planned` adds what had been announced at that time. QoreX has since shipped EVM signing, account events and the wallet-added `signDirect` layer, so the `planned` profile is the closer match for those.
 * **Playwright fixtures in the Synpress v4 style** (`qorexMockFixtures`) inject the mock before navigation, so an end-to-end test needs no browser extension.
-* **Wallet-driven accounts without events.** Because QoreX does not emit `accountsChanged` or `chainChanged` yet, the RainbowKit wallet has an opt-in `pollAccountsOnFocus` that re-reads `eth_accounts` and `eth_chainId` when the page regains focus.
+* **Accounts followed with or without events.** The RainbowKit wallet has an opt-in `pollAccountsOnFocus` that re-reads `eth_accounts` and `eth_chainId` when the page regains focus. It was written for wallet builds that emitted no `accountsChanged` or `chainChanged`; current QoreX builds emit them.
 
 ## What it is used for {#use-cases}
 
@@ -28,7 +32,7 @@ What they do not do: they do not hold keys, and they do not turn QoreX into more
 2. **A Cosmos dApp on Interchain Kit or cosmos-kit adds QoreX.** Add the QoreX wallet to `ChainProvider` and send QoreChain transactions with `qorexSignAndBroadcast`: QoreX builds the transaction, adds the hybrid signature and broadcasts it, because a page cannot hold the ML-DSA-87 key.
 3. **A dApp that already supports Keplr.** `window.qorex.native` follows the Keplr pattern (`enable`, `getKey`, `signDirect`), so the integration is a few lines. The repository guide lists every difference.
 4. **CI tests of wallet flows without an extension.** A QA team runs Playwright with `qorexMockFixtures({ profile: "current" })`, clicks Connect and asserts that the page shows `qorex.addresses.evm`. `qorex.rejectNext()` tests the rejection path.
-5. **Building ahead of new QoreX features.** Run the same suite with `profile: "planned"` to exercise announced features (EVM signing, account change events, `signDirect` adding the hybrid layer) before QoreX ships them.
+5. **Testing the newer wallet behaviour.** Run the same suite with `profile: "planned"` to exercise EVM signing, account change events and `signDirect` adding the hybrid layer.
 6. **Testing real broadcasts on the testnet.** With a funded testnet mnemonic of their own, a team lets the mock `signAndBroadcast` a hybrid-signed transaction to `qorechain-diana` and checks the result in the page.
 7. **Feature detection instead of version checks.** A dApp shows a Send button on QoreChain when `hasCapability(native, "signAndBroadcast")` is true, so new QoreX builds switch features on without a dApp change.
 
@@ -36,22 +40,16 @@ What they do not do: they do not hold keys, and they do not turn QoreX into more
 
 * **EVM lane.** QoreX never writes `window.ethereum`. It announces an EIP-1193 provider through EIP-6963 with the reverse-DNS name `network.qore.qorex`; `qorexWallet()` and `discoverQorexEip1193()` select exactly that provider. The same object is also at `window.qorex.evm`.
 * **Native lane.** `window.qorex.native` is a Keplr-pattern provider (it is not aliased to `window.keplr`). QoreChain requires a hybrid secp256k1 plus ML-DSA-87 signature on native-lane transactions and only the wallet holds the ML-DSA-87 key, so the dApp sends messages to `signAndBroadcast`. QoreX shows them, sets the fee, signs with both keys, broadcasts and reports `shield`.
-* **Solana.** QoreX registers a Solana Wallet Standard wallet on `solana:mainnet` (Solana itself). QoreChain's own SVM lane is not open for transactions and has no Wallet Standard chain id.
+* **Solana.** QoreX registers a Solana Wallet Standard wallet on `solana:mainnet` (Solana itself). QoreChain's own SVM lane has no Wallet Standard chain id; in QoreX it is a testnet-only tool (see [Testnet features](/qorex/testnet-features#solana-on-qorechain)).
 * **Capabilities, not versions.** The kits read `window.qorex.native.capabilities` through `hasCapability`. A QoreX build may declare `listAccounts`, `connectProofPicksAccount`, `executeRequest` and `signAndBroadcast`.
 * **Amino is refused by design**, because Amino JSON cannot carry the hybrid ML-DSA-87 signature. The kits serve every signer request with a direct signer.
-* **`signDirect` and the post-quantum layer, precisely.** Today QoreX `signDirect` signs the SignDoc as it is with the secp256k1 key. On QoreChain the body must already contain a valid hybrid ML-DSA-87 layer for the signer's registered key, which a page cannot produce. So on `qorechain-vladi` and `qorechain-diana` the kits' offline signer `signDirect` throws `QOREX_USE_SIGN_AND_BROADCAST` before it reaches QoreX; `getAccounts` works on every chain. On other chain ids the kits forward `signDirect` to QoreX, which today serves only the two QoreChain chain ids. A future QoreX release is planned to add the layer itself in `signDirect` and to declare the capability `signDirectAddsPqcLayer`; no current build declares it. The kits already check for it, and when it is declared the offline signer forwards QoreChain SignDocs to QoreX. QoreX may then re-estimate gas and raise the gas limit and fee, so always broadcast the `signed` document that comes back.
+* **`signDirect` and the post-quantum layer.** A QoreChain transaction needs a hybrid ML-DSA-87 layer, which a page cannot produce. The kits read the capability `signDirectAddsPqcLayer`. When the wallet declares it (current QoreX builds do), the offline signer forwards QoreChain SignDocs to QoreX, which adds the layer. QoreX may then re-estimate gas and raise the gas limit and fee, so always broadcast the `signed` document that comes back. When the wallet does not declare it, the signer throws `QOREX_USE_SIGN_AND_BROADCAST` on `qorechain-vladi` and `qorechain-diana`; `getAccounts` works on every chain.
 * **`shield` states** returned by `signAndBroadcast`: `shielded` (the committed transaction carries the hybrid layer), `pending` (broadcast done, check not complete), `downgraded` (committed without the layer; treat it as an alert) and `classical` (a lane where the layer does not apply).
 * **The mock** builds its accounts from a BIP-39 mnemonic (default: the public test phrase) the way QoreX does: `m/44'/118'/0'/0/i` with the canonical ML-DSA-87 key of that `qor1` address, `m/44'/60'/0'/0/i` for EVM and `m/44'/501'/i'/0'` for Solana. Its `signAndBroadcast` reads the account's ML-DSA-87 key from REST, registers it once with `MsgRegisterPQCKeyV2` if it is missing, signs hybrid with [QoreSign](/qoresign/overview), broadcasts (retrying once with the other sign-bytes version if the network asks), waits for inclusion and returns `{ txHash, code, height, shield }`.
 
-### What QoreX supports today {#qorex-today}
+### What the wallet supports {#qorex-today}
 
-| Surface | Today | Planned by the QoreX team |
-|---|---|---|
-| EVM (EIP-1193 through EIP-6963, `network.qore.qorex`) | connect (`eth_requestAccounts`), `eth_accounts`, `eth_chainId`, `wallet_switchEthereumChain` to the network already selected in QoreX | `accountsChanged` and `chainChanged` events, EIP-1193 error codes 4200 and 4902 on every refusal, `personal_sign`, `eth_signTypedData_v4`, `eth_sendTransaction`, `wallet_addEthereumChain` |
-| QoreChain native lane (`window.qorex.native`) | `enable`, `getKey`, `signAndBroadcast`, `listAccounts`, `experimentalSuggestChain` (QoreChain ids), `signDirect` (the SignDoc must already carry the hybrid layer) | `signDirect` adding the ML-DSA-87 layer itself, message signing (ADR-36 plus ML-DSA-87) |
-| Solana (Wallet Standard, `solana:mainnet`) | connect, `signMessage`, `signTransaction` | `solana:signIn` |
-
-On the EVM side, signing and sending currently fail with "QoreX: EVM method ... not yet supported". For transactions on QoreChain use the native lane. On QoreChain's EVM lane a transaction is accepted when the sender has a registered ML-DSA-87 key and an EVM authorization window opened from the native lane. The user changes the network inside QoreX; the dApp cannot switch it.
+[Integrate a dApp with QoreX](/qorex/dapp-integration) lists what QoreX app 1.2.5, extension 0.4.4 and Safari 1.8.2 answer on each surface: [EVM](/qorex/dapp-integration#evm), [`signAndBroadcast`](/qorex/dapp-integration#sign-and-broadcast), [cosmjs signers](/qorex/dapp-integration#cosmjs), [message signing](/qorex/dapp-integration#sign-arbitrary), [Solana](/qorex/dapp-integration#solana) and [errors and events](/qorex/dapp-integration#errors). On QoreChain's EVM lane a transaction is accepted when the sender has a registered ML-DSA-87 key and an EVM authorization window; QoreX's approval opens one for the transaction when none covers it. The user changes between mainnet and testnet inside QoreX; the dApp cannot switch it.
 
 ## How to use {#how-to-use}
 
@@ -273,7 +271,7 @@ With Synpress v4 merge the fixtures as `testWithSynpress(qorexMockFixtures({ pro
 |---|---|---|
 | `connect` or `enable`, `getAccount`, `getKey` | QoreX `enable` and `getKey`, bytes converted to `Uint8Array` | same |
 | `getOfflineSigner(chainId)` | direct signer for every preference | direct signer for every preference, including cosmos-kit's default `"amino"` |
-| signer `signDirect` on QoreChain | throws `QOREX_USE_SIGN_AND_BROADCAST` (until QoreX declares `signDirectAddsPqcLayer`) | same |
+| signer `signDirect` on QoreChain | throws `QOREX_USE_SIGN_AND_BROADCAST` (when the wallet does not declare `signDirectAddsPqcLayer`; current QoreX builds declare it) | same |
 | signer `signDirect` on another chain id | forwarded to QoreX `signDirect` | same |
 | `signAmino`, `getOfflineSignerAmino` | throws `QOREX_AMINO_REFUSED` | same |
 | `signArbitrary` (ADR-36) | throws `QOREX_NOT_SUPPORTED_YET` (also `verifyArbitrary`) | throws `QOREX_NOT_SUPPORTED_YET` |
@@ -283,7 +281,7 @@ With Synpress v4 merge the fixtures as `testWithSynpress(qorexMockFixtures({ pro
 
 | Option | Default | Meaning |
 |---|---|---|
-| `profile` | `"current"` | `"current"` is QoreX today; `"planned"` adds announced features |
+| `profile` | `"current"` | `"current"` is QoreX as of 27 October 2026; `"planned"` adds the features announced then |
 | `mnemonic` | the public BIP-39 test phrase | use your own for anything you fund |
 | `accountIndex` | `0` | the same index on every lane |
 | `chainId` | `"qorechain-diana"` | the network selected in the mock |
@@ -344,14 +342,12 @@ Source: https://github.com/qorechain/qorex-integrations (public, release `v0.1.0
 
 ## Limits and known issues {#limits}
 
-**What today's QoreX builds support.** The store builds that are live (the QoreX mobile app 1.1.8; browser extension 0.3.8, and 0.3.9 on Firefox) do not yet support `getOfflineSigner` with a wallet-added ML-DSA layer, and do not support `signArbitrary`. Through cosmos-kit and Interchain Kit, signing with `getOfflineSigner` works only if the page itself attaches the post-quantum layer, which a page cannot normally do because it does not hold the key. The supported way to send a native-lane transaction today is `window.qorex.native.signAndBroadcast`, which `qorexSignAndBroadcast` wraps. Do not read the connectors as a full cosmos-kit or Interchain Kit wallet with today's store builds beyond what each package README states. The connectors are written so that a later QoreX release can add the layer in `signDirect` (declared through a `signDirectAddsPqcLayer` capability) without a change in your code.
+**The packages are older than the wallet.** Version 0.1.0 was written against the QoreX of 27 October 2026. Check what the user's wallet declares with `hasCapability`, and use the [dApp integration guide](/qorex/dapp-integration) for the wallet's current behaviour. Two package behaviours to know:
 
-**What QoreX answers today** (from the package READMEs):
+* In the 0.1.0 connectors `signArbitrary` and `verifyArbitrary` throw `QOREX_NOT_SUPPORTED_YET`. The wallet itself signs messages: call [`window.qorex.native.signArbitrary`](/qorex/dapp-integration#sign-arbitrary).
+* Amino signing is refused by the connectors and by the wallet (`QOREX_AMINO_REFUSED`).
 
-* **EVM:** `eth_chainId`, `eth_accounts`, `eth_requestAccounts` and `wallet_switchEthereumChain` for the network selected in QoreX (an unknown chain rejects with code 4902). Signing methods (`personal_sign`, `eth_signTypedData_v4`, `eth_sendTransaction`) and `wallet_addEthereumChain` are not supported yet and reject with "QoreX: EVM method ... not yet supported". No `accountsChanged` or `chainChanged` events yet. Listed by the QoreX team as planned, not live: events, error codes on every refusal, then the signing and transaction methods.
-* **EVM transactions in general.** On QoreChain an EVM transaction is accepted only from an account with a registered ML-DSA-87 key and an open EVM authorization window, both set up from the native lane (see [EVM Development](/developer-guide/evm-development#evm-window)). The mock's planned `eth_sendTransaction` does not open that window.
-* **Native:** `enable`, `getKey`, `signDirect`, `signAndBroadcast`, `listAccounts` and `experimentalSuggestChain`, for `qorechain-vladi` and `qorechain-diana` only. On QoreChain `signDirect` needs the hybrid layer to be present already, which a page cannot build, so use `signAndBroadcast`. `signArbitrary`, Amino signing and `sendTx` are not available; in the connectors `signArbitrary` throws `QOREX_NOT_SUPPORTED_YET` and Amino throws `QOREX_AMINO_REFUSED`.
-* **Solana:** Wallet Standard on `solana:mainnet` with connect, disconnect, events, `signAndSendTransaction`, `signTransaction` and `signMessage`; no `solana:signIn`. The SVM lane of the chain does not accept transactions yet, so Solana support here is the wallet side only.
+**EVM transactions on QoreChain.** The chain accepts one only from an account with a registered ML-DSA-87 key and an EVM authorization window (see [EVM Development](/developer-guide/evm-development#evm-window)). The mock's `eth_sendTransaction` does not open that window.
 
 **Caveats found while testing the quickstarts:**
 

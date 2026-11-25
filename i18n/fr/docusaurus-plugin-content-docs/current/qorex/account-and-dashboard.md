@@ -7,9 +7,9 @@ sidebar_position: 6
 
 # Compte et Dashboard
 
-Cette page présente le compte QoreX facultatif : la connexion, plusieurs comptes à partir d'une seule phrase de récupération, les @handles, la liaison au Dashboard et la suppression de votre compte. Elle s'adresse aux utilisateurs mobiles qui souhaitent ces commodités ; aucune n'est nécessaire pour détenir ou envoyer du QOR.
+Cette page couvre le compte QoreX facultatif : la connexion, plusieurs comptes à partir d'une seule phrase de récupération, les @handles, la liaison au Dashboard et la suppression de votre compte. Pour obtenir de l'aide sur QoreX, voir [Aide et assistance](/qorex/security-and-recovery#support). Elle s'adresse aux utilisateurs mobiles qui souhaitent ces commodités ; aucune n'est nécessaire pour détenir ou envoyer des QOR.
 
-QoreX fonctionne **entièrement sans compte** - vos clés n'en dépendent jamais. La connexion ajoute des commodités comme les demandes de paiement et l'appairage au Dashboard, et elle est **requise pour réserver un @handle**. La connexion se fait par e-mail, ou avec Apple ou Google - voir ci-dessous.
+QoreX fonctionne **entièrement sans compte** - vos clés n'en dépendent jamais. La connexion ajoute des commodités comme les demandes par @handle et l'appairage avec le Dashboard, et elle est **obligatoire pour réserver un @handle**. Les [liens de demande de paiement](/qorex/send-and-receive#payment-requests) ne nécessitent pas de compte. La connexion se fait par e-mail, ou avec Apple ou Google - voir ci-dessous.
 
 ## Se connecter {#sign-in}
 
@@ -27,11 +27,12 @@ La proposition de passkey n'apparaît qu'après une connexion par **code e-mail*
 
 ## Plusieurs comptes à partir d'une seule phrase {#accounts}
 
-Paramètres → **Vos comptes** vous permet de créer et de basculer entre jusqu'à **20 comptes** par portefeuille, tous dérivés de la même phrase de récupération à 24 mots (il n'y a rien de plus à sauvegarder). Chaque compte possède sa propre adresse `qor1…` avec son propre solde, son propre @handle optionnel (un handle se lie à une **adresse**, et non au portefeuille) et, après son premier envoi, sa propre clé ML-DSA-87. Touchez un compte pour en faire celui en cours d'utilisation. Le compte actif est celui utilisé par Envoyer, Recevoir, le Staking et le navigateur dApp - changer de compte déplace tout avec lui, et l'application indique sur quel compte vous êtes dès qu'il en existe plus d'un. Les comptes sont numérotés *Compte 1, 2, …* ; ils ne peuvent pas être renommés. L'extension de navigateur dispose du même écran - voir [Plusieurs comptes à partir d'une seule phrase](/qorex/browser-extension#wallet).
+Réglages → **Tes comptes** permet de créer jusqu'à **20 comptes** par portefeuille et de passer de l'un à l'autre, tous dérivés de la même phrase de récupération de 24 mots (il n'y a rien de plus à sauvegarder). Chaque compte a sa propre adresse `qor1…` avec son propre solde, son propre @handle facultatif (un handle est lié à une **adresse**, pas au portefeuille) et, après son premier envoi, sa propre clé ML-DSA-87. Touchez un compte pour en faire le compte utilisé. Le compte actif, quel qu'il soit, est celui qu'utilisent Envoyer, Recevoir, Staking et le navigateur dApp - en changer déplace tout avec lui, et l'application indique sur quel compte vous êtes dès qu'il en existe plusieurs. Les comptes sont numérotés *Compte 1, 2, …* ; ils ne peuvent pas être renommés. Chaque compte a aussi un lien **Historique** dans **Tes comptes** (extension : *History of ...*), qui ouvre les transactions de ce compte - voir [Historique](/qorex/send-and-receive#history). L'extension de navigateur a le même écran - voir [Plusieurs comptes à partir d'une seule phrase](/qorex/browser-extension#wallet).
 
 - **Ajouter un compte** ajoute le compte suivant sur la même phrase. Un nouveau compte enregistre sa propre clé ML-DSA-87 lors de son premier envoi, ce qui entraîne de faibles frais réseau uniques.
 - **Ajouter un compte Ethereum (coin 60)** est destiné à une phrase de récupération utilisée en premier lieu dans MetaMask ou sur le Dashboard QoreChain - c'est là que se trouvent ses fonds. Il utilise le chemin Ethereum `m/44'/60'` et porte l'étiquette *Ethereum · coin 60* ; son adresse `0x…` est la même sur tous les réseaux EVM et correspond à la même clé que ce compte QoreChain. Voir [Restaurer une phrase depuis MetaMask ou le Dashboard](/qorex/getting-started#restore-dashboard).
-- **Restaurer** une phrase sur un nouvel appareil ne ramène que le **Compte 1** ; utilisez **Ajouter un compte** (et **Ajouter un compte Ethereum (coin 60)**) pour retrouver les autres. L'écran Adresses (**Paramètres → Vos adresses**) est distinct : il liste chaque compte de ce portefeuille ainsi que les adresses en lecture seule liées depuis d'autres portefeuilles.
+- **Des récompenses entre vos comptes.** Vous pouvez faire en sorte que les futures récompenses de staking d'un compte aillent vers un autre compte du même portefeuille - voir [Choisir la destination des récompenses](/qorex/portfolio-and-staking#rewards-address).
+- **Restaurer** une phrase sur un nouvel appareil ne ramène que le **Compte 1** ; utilisez **Ajouter un compte** (et **Ajouter un compte Ethereum (coin 60)**) pour retrouver les autres. L'écran Adresses (**Réglages → Vos adresses**) est distinct : il liste chaque compte de ce portefeuille ainsi que les adresses en lecture seule liées depuis d'autres portefeuilles.
 
 ## @handle {#handle}
 
@@ -47,7 +48,7 @@ Ce sont deux actions distinctes et sans rapport. Réserver un @handle permet **a
 
 ## Compte lié {#linked-account}
 
-**Paramètres → Compte lié** connecte votre portefeuille QoreX et votre compte Dashboard dans les deux sens :
+**Réglages → Compte lié** connecte votre portefeuille QoreX et votre compte Dashboard dans les deux sens :
 
 1. Saisissez le code à 8 caractères affiché par le Dashboard, **ou** générez-en un dans QoreX (valable 10 minutes) et saisissez-le dans le Dashboard.
 2. Si vous avez [plusieurs comptes](#accounts), la fenêtre d'approbation propre à QoreX vous laisse choisir **lequel** se lie - elle ne présuppose pas le compte actuellement actif.
@@ -63,11 +64,11 @@ Avec le Dashboard connecté :
 - **Connect with QoreX** sur le Dashboard l'appaire à votre portefeuille via un deep link `qorex://connect` accompagné d'une preuve de propriété signée.
 - **Les transferts initiés sur le Dashboard** arrivent dans QoreX sous forme de requêtes `qorex://tx`. Elles sont décodées, présentées intégralement, et signées **uniquement dans l'application** après approbation biométrique - et seulement depuis l'adresse dérivée propre à l'application. Comme une adresse `qor1…` est valide aussi bien sur le mainnet que sur le testnet, chaque requête initiée depuis le Dashboard indique le réseau qu'elle cible, et QoreX refuse d'agir dessus si celui-ci ne correspond pas au réseau auquel vous êtes actuellement connecté - l'application ne change jamais de réseau au nom d'une requête.
 - Si une requête Connect ou de transfert arrive alors que vous n'êtes **pas connecté**, QoreX propose une étape intégrée **« Se connecter au Dashboard »** afin que vous puissiez continuer sans vous retrouver dans une impasse.
-- **Vos adresses (Paramètres)** - répertorie chaque compte dérivé de ce portefeuille, ainsi que les adresses en **lecture seule** que vous avez liées depuis d'autres portefeuilles (Keplr / MetaMask / Phantom). Les entrées en lecture seule portent le nom du portefeuille qui les a créées ; tenter d'envoyer depuis l'une d'elles explique que vous devez envoyer depuis le portefeuille qui l'a créée.
+- **Vos adresses (Réglages)** - répertorie chaque compte dérivé de ce portefeuille, ainsi que les adresses en **lecture seule** que vous avez liées depuis d'autres portefeuilles (Keplr / MetaMask / Phantom). Les entrées en lecture seule portent le nom du portefeuille qui les a créées ; tenter d'envoyer depuis l'une d'elles explique que vous devez envoyer depuis le portefeuille qui l'a créée.
 
 ## Supprimer votre compte {#delete-account}
 
-Paramètres → **Supprimer le compte** (l'entrée rouge en bas). Après une confirmation et un déverrouillage biométrique, QoreX efface définitivement : le portefeuille et les clés privées de cet appareil ; votre @handle dans le registre QoreX (le cas échéant) ; votre compte Dashboard QoreChain (si vous vous êtes connecté) ; et votre configuration de récupération sociale (si elle est configurée). Cette action est irréversible. Comme QoreX est non custodial, **si vous n'avez pas sauvegardé votre phrase de récupération, vous perdrez l'accès à tous les fonds** - sauvegardez-la d'abord. Les suppressions côté serveur sont effectuées au mieux ; l'effacement sur l'appareil aboutit toujours et ramène l'application à l'écran de premier lancement.
+Réglages → **Supprimer le compte** (l'entrée rouge en bas). Après une confirmation et un déverrouillage biométrique, QoreX efface définitivement : le portefeuille et les clés privées de cet appareil ; votre @handle dans le registre QoreX (le cas échéant) ; votre compte Dashboard QoreChain (si vous vous êtes connecté) ; et votre configuration de récupération sociale (si elle est configurée). Cette action est irréversible. Comme QoreX est non custodial, **si vous n'avez pas sauvegardé votre phrase de récupération, vous perdrez l'accès à tous les fonds** - sauvegardez-la d'abord. Les suppressions côté serveur sont effectuées au mieux ; l'effacement sur l'appareil aboutit toujours et ramène l'application à l'écran de premier lancement.
 
 ## Étapes suivantes
 

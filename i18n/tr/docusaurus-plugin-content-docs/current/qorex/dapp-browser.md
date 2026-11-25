@@ -11,9 +11,11 @@ QoreX, QoreChain uygulamalarını cüzdandan çıkmadan kullanabilmeniz için uy
 
 ## Yenilikler {#innovations}
 
-- **Oturum kapsamlı bağlantılar.** Köken başına bir onay ve her bağlantı tarayıcıyı kapattığınızda sona erer.
+- **Site başına bir onay, her zaman iptal edilebilir.** Her köken ayrı ayrı onaylanır; bağlı siteler bu cihazda, cüzdan başına kaydedilir ve herhangi birini [Paramın korunması](/qorex/security-and-recovery#protection) ekranından iptal edebilirsiniz.
 - **Çözümlenmiş, biyometrik korumalı imzalar.** Her imza, yükü çözümlenmiş olarak kendi onayına sahiptir; QoreX'in çözümleyemediğini reddeder.
 - **`signAndBroadcast`.** Bir sayfa mesajları gönderir; QoreX bunları gösterir, yalnızca cüzdanın üretebildiği ML-DSA-87 katmanını ekler ve yayınlar.
+- **Tarayıcıda EVM ve mesaj imzalama.** EVM dApp'leri QoreChain'de mesajları, typed data'yı ve işlemleri imzalayabilir; her birinin ne yaptığı önce çözülüp simüle edilir ve herhangi bir sayfa, ML-DSA-87 yarısı da taşıyan bir mesaj imzası isteyebilir.
+- **Bir bağlantıdan sayfa açın.** Bir `browse` bağlantısı sayfanızı doğrudan dApp tarayıcısında açar ve başlangıç sayfası favori ve son sitelerinizi cihazda tutar.
 - **Devralmadan keşif.** QoreX kendini EIP-6963 ile duyurur ve başka bir cüzdanın `window.ethereum` veya `window.keplr` değerinin üzerine asla yazmaz.
 
 ## Nasıl erişilir {#how-to-access}
@@ -22,12 +24,23 @@ dApp tarayıcısı mobil uygulamanın bir parçasıdır: App Store'dan (iOS 15.1
 
 ## Bir dApp'e bağlanma {#how-to-use}
 
-Home sekmesinden **dApp tarayıcısını** açın ve bir uygulamaya gidin. dApp'in adresini **Enter a dApp URL** kutusuna yazın veya yapıştırın (yalnızca `https://` adresleri bağlanır). QoreX, sağlayıcılarını sayfaya `window.qorex` olarak enjekte eder - bir QoreChain Native sağlayıcısı (`signAndBroadcast` dahil), salt okunur bir EVM sağlayıcısı (yalnızca hesap ve zincir sorguları) ve bir Solana sağlayıcısı - ayrıca EIP-6963 aracılığıyla da kendini duyurur. `window.ethereum` değerini yalnızca başka hiçbir cüzdan ayarlamadığında ayarlar ve başka bir cüzdanın üzerine asla yazmaz. `window.keplr` takma adı yoktur.
+Home sekmesinden **dApp tarayıcısını** açın ve bir uygulamaya gidin. dApp'in adresini **Enter a dApp URL** kutusuna yazın veya yapıştırın (yalnızca `https://` adresleri bağlanır). QoreX, sağlayıcılarını sayfaya `window.qorex` olarak enjekte eder - bir QoreChain Native sağlayıcısı (`signAndBroadcast`, `signDirect` ve mesaj imzalama dahil), bir EVM sağlayıcısı ve bir Solana sağlayıcı nesnesi - ayrıca EIP-6963 aracılığıyla da kendini duyurur. `window.ethereum` değerini yalnızca başka hiçbir cüzdan ayarlamadığında ayarlar ve başka bir cüzdanın üzerine asla yazmaz. `window.keplr` takma adı yoktur. Geliştiriciler: [Bir dApp'i QoreX ile entegre edin](/qorex/dapp-integration) sayfasına bakın.
+
+### Favori ve son siteler {#favourites}
+
+Tarayıcının başlangıç sayfası **Favoriler** ve **Son ziyaret edilenler** sitelerinizi (son 8 tanesi) listeler. Açık sayfayı favori olarak tutmak için adres çubuğundaki yıldıza dokunun (kaldırmak için yeniden dokunun) ve listeye dönmek için ana sayfa düğmesini kullanın. **Temizle**, son siteler listesini boşaltır. Bir [browse bağlantısından](#browse-links) açtığınız sayfa da ziyaret sayılır. Her iki liste de bu telefonda kalır ve sayfanın sorgu veya parça (fragment) kısmı olmadan kaydedilir.
+
+### Bir bağlantıdan sayfa açma {#browse-links}
+
+Web'deki bir bağlantı dApp tarayıcısında bir sayfa açabilir: `https://link.qore.network/browse?url=<encoded https address>` veya `qorex://browse?url=<encoded https address>`. QoreX önce dApp tarayıcısını açan biyometrik istemi gösterir. Bir alan adı üzerinde `https://` olmayan ya da port, kullanıcı adı, IP adresi veya `localhost` içeren bir adresi reddeder. Bağlantı sayfaya hiçbir şey vermez: sayfa yine de bağlanmayı istemek zorundadır ve her imza yine onay ekranından geçer. Telefonda cüzdan yoksa uygulama ilk kurulum ekranında kalır. [Bir hizmetin üretebileceği bağlantılar](/qorex/dapp-integration#links) bölümüne bakın.
 
 - **Bağlanma**, **köken başına bir onay** gerektirir. Onaylamak, o siteye yalnızca genel adresinizi açıklar.
 - **Her imza**, kendi biyometrik korumalı onayına sahiptir ve yükün **çözümlenmiş** olması sayesinde neyi imzaladığınızı tam olarak görebilirsiniz - **kör imzalama yoktur**.
-- **Tarayıcı kapandığında tüm izinler sona erer** - bağlantılar oturum kapsamlıdır.
-- **Yerel işlemler `signAndBroadcast` üzerinden geçer:** QoreX her mesajı, ücreti ve imzalayan hesabı gösterir, ML-DSA-87 katmanını ekler ve yayınlar. Buradaki EVM sağlayıcısı yalnızca hesap ve zincir sorgularına yanıt verir; EVM işlemlerini imzalamaz veya göndermez. Bkz. [Onay penceresinin gösterdikleri](/qorex/security-and-recovery#approvals).
+- **Bağlantılar siz iptal edene kadar sürer.** 1.2.5'ten itibaren sitenin adresi bu cihazda, cüzdan başına kaydedilir. Bağlı siteleri [Paramın korunması](/qorex/security-and-recovery#protection) ekranında görün ve iptal edin. Bir bağlantı tek başına hiçbir şeyi imzalamaz: her imza yine kendi onayını gerektirir.
+- **Yerel işlemler `signAndBroadcast` üzerinden geçer:** QoreX her mesajı, ücreti ve imzalayan hesabı gösterir, ML-DSA-87 katmanını ekler ve yayınlar. Bkz. [Onay penceresinin gösterdikleri](/qorex/security-and-recovery#approvals).
+- **EVM dApp'leri** QoreChain'de `personal_sign`, typed data ve işlem isteyebilir. Onay bunları çözer ve ağın izin verdiği ölçüde işlemin bakiyenize ne yaptığını gösterir. QoreChain'in EVM lane'inde onay ayrıca işlemin ihtiyaç duyduğu kısa yetkilendirme penceresini açar ve pencerenin kabul ettiği her sözleşmeyi adıyla belirtir; bkz. [EVM erişim penceresi](/qorex/security-and-recovery#evm-window). Bu lane'de yalnızca MetaMask'tan içe aktarılan hesaplar gönderim yapabilir.
+- **Mesaj imzalama:** bir sayfa sizden bir mesaj imzalamanızı isteyebilir; önce mesajın tamamını görürsünüz.
+- **Ağ:** bir sayfa ağı değiştiremez. Ağı QoreX'in içinden değiştirin (aşağıdaki ayarlara bakın); sayfa da cüzdanla aynı ağda olmalıdır.
 
 ## Q-Day Scanner
 
@@ -45,6 +58,7 @@ Home sekmesindeki hızlı düğmelerden ayrıca **Q-Day Scanner**'ı da açabili
 - **Your accounts** ve **Your addresses** → [Hesap ve Dashboard](/qorex/account-and-dashboard)
 - **Claim your @handle** ve **Linked account** → [Hesap ve Dashboard](/qorex/account-and-dashboard)
 - **Use testnet (developers)** - `qorechain-diana` test ağına geçer (EVM chain ID 9800); uygulama yeniden başlatılmadan canlı olarak yeniden bağlanır. Varsayılan her zaman mainnet'tir. Testnet bakiyeleri USD değeri göstermez.
+- **Geliştirici modu** - varsayılan olarak kapalıdır; QoreChain üzerinde geliştirme yapanlar için araçlar içeren bir **Geliştirici** sekmesi ekler. Bkz. [Geliştirici modu](/qorex/developer-mode).
 - **Portfolio animation** - Aurora arka planını açıp kapatır.
 - **Delete account** → [Hesabınızı silin](/qorex/account-and-dashboard#delete-account)
 - **Connected to** - etkin ağı ve zincir kimliğini gösterir.
@@ -63,7 +77,6 @@ dApp tarayıcısı QoreX mobil uygulamasının içinde gelir (App Store ve Googl
 ## Sınırlar ve bilinen sorunlar {#limits}
 
 - Yalnızca `https://` adresleri bağlanır.
-- Buradaki EVM sağlayıcısı yalnızca hesap ve zincir sorgularına yanıt verir; EVM işlemlerini veya mesajlarını imzalamaz veya göndermez. `signArbitrary` (mesaj imzalama) desteklenmez.
-- `window.qorex.native` Keplr tarzıdır, Keplr'ın yerine geçen bir bileşen değildir ve `window.keplr` takma adı yoktur.
-- Bağlantılar kalıcı değildir: tarayıcı kapandığında sona erirler.
+- Uygulama içi tarayıcı yalnızca QoreChain'in etkin ağında imzalar ve yalnızca EVM `connect` olayını yayar: hesap veya ağ değiştirmek için kapatılır. Solana işlemlerini imzalamaz ve Ethereum ağı yoktur.
+- `window.qorex.native` Keplr tarzıdır, Keplr'ın yerine geçen bir bileşen değildir ve `window.keplr` takma adı yoktur. Amino imzalama reddedilir.
 - Q-Day Scanner, sosyal kurtarma ve Legacy uygulamadadır, uzantıda değildir.
